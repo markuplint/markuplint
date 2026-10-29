@@ -3,7 +3,7 @@ import HomepageFeatures from '@site/src/components/HomepageFeatures';
 import Layout from '@theme/Layout';
 import React from 'react';
 
-export default function Home(): JSX.Element {
+export default function Home(): React.JSX.Element {
 	return (
 		<Layout
 			title="Markuplint - An HTML linter for all markup developers."

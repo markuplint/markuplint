@@ -26,9 +26,9 @@ const file = await MLEngine.toMLFile('./path/to/page.html');
 
 | Property            | Type       | Optional | Description                                                                                                                                                                  |
 | ------------------- | ---------- | -------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `configFile`        | `string`   | ✓        | The file path of the configuration.                                                                                                                                          |
-| `config`            | `Object`   | ✓        | The configuration.                                                                                                                                                           |
-| `defaultConfig`     | `Object`   | ✓        | The Fallback configuration when failing to auto search.                                                                                                                      |
+| `configFile`        | `string`   | ✓        | The file path of the configuration. When specified, the automatic search for a configuration file is not performed.                                                          |
+| `config`            | `Object`   | ✓        | The configuration. A relative path in it is based on the working directory.                                                                                                  |
+| `defaultConfig`     | `Object`   | ✓        | The Fallback configuration when the auto search finds none or is disabled. A relative path in it is based on the working directory.                                          |
 | `noSearchConfig`    | `boolean`  | ✓        | No search a configure file automatically.                                                                                                                                    |
 | `locale`            | `string`   | ✓        | Locale.                                                                                                                                                                      |
 | `fix`               | `boolean`  | ✓        | Returns the fixed code after the execution.                                                                                                                                  |

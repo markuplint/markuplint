@@ -3,6 +3,29 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [5.4.0](https://github.com/markuplint/markuplint/compare/v5.3.0...v5.4.0) (2026-10-29)
+
+### Bug Fixes
+
+* **file-resolver:** do not run a throwing config file again through require() ([21b2e87](https://github.com/markuplint/markuplint/commit/21b2e87d836baa3e0747dee623845ddfc077c091)), closes [#4413](https://github.com/markuplint/markuplint/issues/4413)
+* **file-resolver:** find a Windows path written with forward slashes in the stack ([ea7336c](https://github.com/markuplint/markuplint/commit/ea7336c839365d67a3b0d6427d8d1c2b864769f1)), closes [#4413](https://github.com/markuplint/markuplint/issues/4413)
+* **file-resolver:** find the configuration above a nested package.json ([de7c887](https://github.com/markuplint/markuplint/commit/de7c887aebc5ce59bfdad08802ae23554abbda27)), closes [#4405](https://github.com/markuplint/markuplint/issues/4405)
+* **file-resolver:** report a config file that fails to load by its own path ([0fafeca](https://github.com/markuplint/markuplint/commit/0fafeca63d28164bcbbd7fecdaeefcb593a2ae7f)), closes [#4413](https://github.com/markuplint/markuplint/issues/4413)
+* **file-resolver:** resolve the paths of a configuration from the file that declares it ([b819519](https://github.com/markuplint/markuplint/commit/b819519236e3640b65965376ba2e78ea336e9593)), closes [#4406](https://github.com/markuplint/markuplint/issues/4406)
+* **file-resolver:** search the ancestors of a target whose directory does not exist ([75bdf1c](https://github.com/markuplint/markuplint/commit/75bdf1c7affce5eab88c091ca6a031c89ae29840)), closes [#4412](https://github.com/markuplint/markuplint/issues/4412)
+* **markuplint:** skip the config search when it is disabled ([e2e8da9](https://github.com/markuplint/markuplint/commit/e2e8da9a81fb113b726fc30877b16cfab4d53736)), closes [#4409](https://github.com/markuplint/markuplint/issues/4409)
+* **markuplint:** watch a config file the search found broken ([1a51145](https://github.com/markuplint/markuplint/commit/1a51145b3eb34c18c0475205466b608787352b66)), closes [#4413](https://github.com/markuplint/markuplint/issues/4413)
+* **ml-config:** rebase a hand-written pretender filePath that has no line and column ([dcb49ac](https://github.com/markuplint/markuplint/commit/dcb49acfd3546cc3e7f4bb2951e4e43a28b0f5bd)), closes [#4406](https://github.com/markuplint/markuplint/issues/4406)
+* **ml-spec:** keep roles that are not permitted and align the accessible name with AccName ([6c38c60](https://github.com/markuplint/markuplint/commit/6c38c60971690edec8b6453e50c76146eb10deb2)), closes [#4408](https://github.com/markuplint/markuplint/issues/4408)
+* **rules:** do not report descendant attributes that take part in a text alternative ([46002a7](https://github.com/markuplint/markuplint/commit/46002a75e06f877938d134ce0958a625e5d989d3)), closes [#4408](https://github.com/markuplint/markuplint/issues/4408)
+* **website:** make the website type-check pass ([e2746cc](https://github.com/markuplint/markuplint/commit/e2746cceebb18daa728888c009f07a6d85b68bd1))
+
+### Features
+
+* **ml-core:** expose what the accessible name computation reaches ([2a29d84](https://github.com/markuplint/markuplint/commit/2a29d84ca196ad1808ede49e75796df7c599d2e8)), closes [#4408](https://github.com/markuplint/markuplint/issues/4408)
+* **shared:** keep the cause of a ConfigLoadError ([bc4da29](https://github.com/markuplint/markuplint/commit/bc4da2968f1fc0df094302196f652d1d22235659)), closes [#4413](https://github.com/markuplint/markuplint/issues/4413)
+
+
 # [5.3.0](https://github.com/markuplint/markuplint/compare/v5.2.0...v5.3.0) (2026-10-21)
 
 ### Bug Fixes

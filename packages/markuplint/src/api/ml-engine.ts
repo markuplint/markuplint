@@ -7,6 +7,7 @@ import type { Ruleset, Plugin, Document, RuleConfigValue, MLFabric, FixSummary }
 
 import {
 	ConfigProvider,
+	configLoadErrorFiles,
 	createPretenderResolver,
 	disambiguatePretendersForFile,
 	invalidatePretenderResolutionCaches,
@@ -1000,7 +1001,7 @@ export class MLEngine extends Emitter<MLEngineEventMap> {
 		// in the middle of this one's `set()`/`search()` calls, which would
 		// wipe the keys just registered below before `resolve()` gets to use
 		// them. See #4015.
-		const resolvedConfigSet = await this.#configProvider.runExclusive(async () => {
+		const resolvedConfigSet = await this.#runResolution(async () => {
 			if (!cache) {
 				// Must run before any `set()` call below — `ConfigProvider#resolve()`
 				// no longer clears its own store on `cache: false`, so invalidating
@@ -1019,13 +1020,18 @@ export class MLEngine extends Emitter<MLEngineEventMap> {
 			configLog('defaultConfigKey: %s', defaultConfigKey ?? 'N/A');
 			this.emit('log', 'defaultConfigKey', defaultConfigKey ?? 'N/A');
 
-			const targetConfig = await this.#configProvider.search(this.#file);
-			this.emit('log', 'targetConfig', targetConfig ?? 'N/A');
+			// Skipped, not run and discarded: the search reads and parses every
+			// config file it reaches, so a malformed one would still surface as a
+			// `config-error` in a run that asked not to search. See #4409.
+			let targetConfig: string | null = null;
+			if (this.#options?.noSearchConfig || this.#options?.configFile) {
+				this.emit('log', 'targetConfig', 'skipped (search is disabled)');
+			} else {
+				targetConfig = await this.#configProvider.search(this.#file);
+				this.emit('log', 'targetConfig', targetConfig ?? 'N/A');
+			}
 
-			const configFilePathsFromTarget =
-				this.#options?.noSearchConfig || this.#options?.configFile
-					? (defaultConfigKey ?? null)
-					: (targetConfig ?? defaultConfigKey);
+			const configFilePathsFromTarget = targetConfig ?? defaultConfigKey ?? null;
 			configLog('configFilePathsFromTarget: %s', configFilePathsFromTarget ?? 'N/A');
 			this.emit('log', 'configFilePathsFromTarget', configFilePathsFromTarget ?? 'N/A');
 
@@ -1033,7 +1039,7 @@ export class MLEngine extends Emitter<MLEngineEventMap> {
 				this.#options?.config &&
 				this.#configProvider.set(mergeConfig(this.#options.config), undefined, this.#options.config);
 			configLog('option.config: %s', configKey ?? 'N/A');
-			this.emit('log', 'option.config', configFilePathsFromTarget ?? 'N/A');
+			this.emit('log', 'option.config', configKey ?? 'N/A');
 
 			let defaultRecommended: string | null = null;
 			if (!defaultConfigKey && !configFilePathsFromTarget && !configKey && !this.#options?.configFile) {
@@ -1079,6 +1085,38 @@ export class MLEngine extends Emitter<MLEngineEventMap> {
 		await this.#syncWatch();
 
 		return configSet;
+	}
+
+	/**
+	 * Runs `resolve` exclusively on the provider (see {@link resolveConfig}).
+	 * When it throws a `ConfigLoadError` (a config file that the search found
+	 * cannot be loaded, or a preset that is not found), the files whose change
+	 * can fix it ({@link configLoadErrorFiles}: the file it names, and a
+	 * `$import` target that does not exist yet) are added to the watched files
+	 * before the error goes on: there is no config set to take
+	 * {@link ConfigSet.files} from, and the files of the previous resolution
+	 * alone would miss the fix of a file that was broken from the start. They
+	 * stay watched, as the error names only the first thing that failed, not
+	 * every file the config depends on. A directory that the search cannot
+	 * examine is not among them, as the shared watcher takes file paths (see
+	 * its module JSDoc in `shared-watcher.ts`).
+	 *
+	 * @param resolve - The resolution, which runs inside `runExclusive`
+	 * @returns The config set that `resolve` returns
+	 */
+	async #runResolution(resolve: () => Promise<ConfigSet>) {
+		try {
+			return await this.#configProvider.runExclusive(resolve);
+		} catch (error: unknown) {
+			if (isFatalError(error)) {
+				throw error;
+			}
+			if (error instanceof ConfigLoadError) {
+				this.#configFiles = new Set([...this.#configFiles, ...configLoadErrorFiles(error)]);
+				await this.#syncWatch();
+			}
+			throw error;
+		}
 	}
 
 	async #resolveParser(

@@ -3,6 +3,13 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [5.4.0](https://github.com/markuplint/markuplint/compare/v5.3.0...v5.4.0) (2026-10-29)
+
+### Bug Fixes
+
+* **ml-config:** rebase a hand-written pretender filePath that has no line and column ([dcb49ac](https://github.com/markuplint/markuplint/commit/dcb49acfd3546cc3e7f4bb2951e4e43a28b0f5bd)), closes [#4406](https://github.com/markuplint/markuplint/issues/4406)
+
+
 # [5.3.0](https://github.com/markuplint/markuplint/compare/v5.2.0...v5.3.0) (2026-10-21)
 
 ### Bug Fixes

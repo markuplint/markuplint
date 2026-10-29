@@ -3,6 +3,18 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [5.4.0](https://github.com/markuplint/markuplint/compare/v5.3.0...v5.4.0) (2026-10-29)
+
+### Bug Fixes
+
+* **file-resolver:** do not run a throwing config file again through require() ([21b2e87](https://github.com/markuplint/markuplint/commit/21b2e87d836baa3e0747dee623845ddfc077c091)), closes [#4413](https://github.com/markuplint/markuplint/issues/4413)
+* **file-resolver:** find a Windows path written with forward slashes in the stack ([ea7336c](https://github.com/markuplint/markuplint/commit/ea7336c839365d67a3b0d6427d8d1c2b864769f1)), closes [#4413](https://github.com/markuplint/markuplint/issues/4413)
+* **file-resolver:** find the configuration above a nested package.json ([de7c887](https://github.com/markuplint/markuplint/commit/de7c887aebc5ce59bfdad08802ae23554abbda27)), closes [#4405](https://github.com/markuplint/markuplint/issues/4405)
+* **file-resolver:** report a config file that fails to load by its own path ([0fafeca](https://github.com/markuplint/markuplint/commit/0fafeca63d28164bcbbd7fecdaeefcb593a2ae7f)), closes [#4413](https://github.com/markuplint/markuplint/issues/4413)
+* **file-resolver:** resolve the paths of a configuration from the file that declares it ([b819519](https://github.com/markuplint/markuplint/commit/b819519236e3640b65965376ba2e78ea336e9593)), closes [#4406](https://github.com/markuplint/markuplint/issues/4406)
+* **file-resolver:** search the ancestors of a target whose directory does not exist ([75bdf1c](https://github.com/markuplint/markuplint/commit/75bdf1c7affce5eab88c091ca6a031c89ae29840)), closes [#4412](https://github.com/markuplint/markuplint/issues/4412)
+
+
 # [5.3.0](https://github.com/markuplint/markuplint/compare/v5.2.0...v5.3.0) (2026-10-21)
 
 ### Bug Fixes

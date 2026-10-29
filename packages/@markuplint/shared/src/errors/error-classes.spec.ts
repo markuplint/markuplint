@@ -79,6 +79,12 @@ describe('ConfigLoadError', () => {
 		expect(err.referrer).toBe('/parent.json');
 		expect(err.name).toBe('ConfigLoadError');
 	});
+
+	test('keeps the cause when one is given', () => {
+		const cause = new SyntaxError('unexpected token');
+		expect(new ConfigLoadError('not loaded', '/cfg.js', '/target.html', { cause }).cause).toBe(cause);
+		expect(Object.hasOwn(new ConfigLoadError('not loaded', '/cfg.js', '/target.html'), 'cause')).toBe(false);
+	});
 });
 
 describe('InvalidSelectorError', () => {

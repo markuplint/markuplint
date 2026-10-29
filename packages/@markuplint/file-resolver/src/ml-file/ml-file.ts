@@ -62,6 +62,10 @@ export class MLFile {
 		return path.resolve(this.#dirname, this.#basename);
 	}
 
+	/**
+	 * Whether the file's directory exists. Only ENOENT counts as missing; any other `stat` failure
+	 * throws. Kept as part of the public `MLFile` type, though nothing in this repository calls it.
+	 */
 	async dirExists() {
 		return !!(await stat(this.#dirname));
 	}

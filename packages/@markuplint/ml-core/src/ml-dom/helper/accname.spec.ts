@@ -7,7 +7,7 @@ import { dummySchemas } from '../../test/index.js';
 import { MLDocument } from '../node/document.js';
 import type { MLElement } from '../node/element.js';
 
-import { getAccname } from './accname.js';
+import { getAccname, getAccnameVisits, getHostLanguageLabelSource } from './accname.js';
 import { createNode } from './create-node.js';
 
 function c(sourceCode: string) {
@@ -86,4 +86,79 @@ test('accname-1.2 Example 3', () => {
 test('with comment', () => {
 	expect(getAccname(c('<button>label</button>'), '1.2')).toBe('label');
 	expect(getAccname(c('<button>label<!-- comment --></button>'), '1.2')).toBe('label');
+});
+
+test.each([
+	['<img src="s.svg" alt="Save" role="none">', ''],
+	['<button><img src="s.svg" alt="Save" role="none">Click</button>', 'Click'],
+	['<button><svg role="presentation"><title>Save</title></svg>Click</button>', 'Click'],
+	// The same markup without the role
+	['<button><img src="s.svg" alt="Save">Click</button>', 'Save Click'],
+	['<button><svg><title>Save</title></svg>Click</button>', 'Save Click'],
+])('the name of %s, where a presentational role drops a host language label', (html, name) => {
+	expect(getAccname(c(html), '1.2')).toBe(name);
+});
+
+test.each([
+	['<img src="s.svg" alt="Save" role="none">', 'alt'],
+	['<svg role="none"><title>Save</title></svg>', 'svg-title'],
+	['<img src="s.svg" alt="">', null],
+	['<fieldset title="t"></fieldset>', null],
+])('the host language label source of %s', (html, source) => {
+	expect(getHostLanguageLabelSource(c(html), '1.2')).toBe(source);
+});
+
+test('SVG title and desc are not content', () => {
+	expect(getAccname(c('<button><svg><desc>A floppy disk</desc></svg>Save</button>'), '1.2')).toBe('Save');
+});
+
+function visited(el: MLElement<any, any>, asReferenced = false) {
+	return [...getAccnameVisits(el, '1.2', asReferenced)].map(([target, visits]) => [
+		target.localName,
+		visits.map(v => [v.hidden, v.embeddedControl, v.inLabelledbyTraversal]),
+	]);
+}
+
+test('the elements the computation of a name reaches', () => {
+	expect(
+		visited(c('<button><span aria-hidden="true"><b>x</b></span><i aria-label="y"><u>z</u></i></button>')),
+	).toStrictEqual([
+		['button', [[false, false, false]]],
+		['span', [[true, false, false]]],
+		['i', [[false, false, false]]],
+	]);
+});
+
+test('the computation of a name not from content reaches only the element', () => {
+	expect(visited(c('<div role="img"><span>x</span></div>'))).toStrictEqual([['div', [[false, false, false]]]]);
+});
+
+test('the computation as a referenced node reaches the content', () => {
+	expect(visited(c('<div role="img"><span>x</span></div>'), true)).toStrictEqual([
+		['div', [[false, false, true]]],
+		['span', [[false, false, true]]],
+	]);
+});
+
+test('an embedded control is reached as one', () => {
+	expect(
+		visited(c('<div role="checkbox">a <input type="text" value="v"> <input type="text" aria-hidden="true"></div>')),
+	).toStrictEqual([
+		['div', [[false, false, false]]],
+		['input', [[false, true, false]]],
+		['input', [[true, true, false]]],
+	]);
+});
+
+test('MLElement memoizes the visits and the host language label source', () => {
+	const button = c('<button><svg role="none"><title>Save</title></svg>Click</button>');
+	// Compared by identity: the maps hold MLElements, which the matchers cannot compare
+	const visits = button.getAccessibleNameVisits('1.2');
+	expect([
+		visits === button.getAccessibleNameVisits('1.2'),
+		visits === button.getAccessibleNameVisits('1.2', true),
+	]).toStrictEqual([true, false]);
+	const svg = button.children[0]!;
+	expect(svg.getHostLanguageLabelSource('1.2')).toBe('svg-title');
+	expect(svg.getHostLanguageLabelSource('1.2')).toBe(svg.getHostLanguageLabelSource('1.2'));
 });

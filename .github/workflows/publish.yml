@@ -4,6 +4,7 @@ on:
     push:
         tags:
             - 'v*'
+    workflow_dispatch:
 
 concurrency:
     group: publish
@@ -15,6 +16,9 @@ permissions:
 
 jobs:
     publish:
+        # A run started by hand publishes whatever the branch's package.json
+        # versions say that the registry lacks: only `main` (stable) is allowed.
+        if: github.ref_type == 'tag' || github.ref == 'refs/heads/main'
         runs-on: ubuntu-latest
         steps:
             - name: Checkout code
@@ -40,7 +44,7 @@ jobs:
             - name: Determine dist-tag
               id: dist-tag
               run: |
-                  VERSION="${GITHUB_REF#refs/tags/v}"
+                  VERSION="$(node -p "require('./lerna.json').version")"
                   if [[ "$VERSION" == *"-alpha"* ]]; then
                     echo "tag=alpha" >> "$GITHUB_OUTPUT"
                   elif [[ "$VERSION" == *"-beta"* ]]; then
@@ -51,8 +55,30 @@ jobs:
                     echo "::error::Unknown prerelease tag in version: $VERSION"
                     exit 1
                   else
-                    echo "tag=latest" >> "$GITHUB_OUTPUT"
+                    # A stable release from a maintenance line (its major is
+                    # below the major currently on `latest`) must not take
+                    # `latest` away from the current line: publish it under
+                    # the `v<major>` dist-tag instead.
+                    MAJOR="${VERSION%%.*}"
+                    LATEST_MAJOR="$(npm view markuplint@latest version | cut -d. -f1)"
+                    if [[ "$MAJOR" -lt "$LATEST_MAJOR" ]]; then
+                      echo "tag=v${MAJOR}" >> "$GITHUB_OUTPUT"
+                    else
+                      echo "tag=latest" >> "$GITHUB_OUTPUT"
+                    fi
                   fi
 
             - name: Publish
-              run: npx lerna publish from-git --dist-tag ${{ steps.dist-tag.outputs.tag }} --yes
+              # `from-package` (not `from-git`) publishes only the packages whose
+              # version is not yet on the registry. `from-git` tries every package at
+              # the tag again, so after a partial publish the re-run signs an
+              # already-published package a second time, fails with
+              # TLOG_CREATE_ENTRY_ERROR 409 ("an equivalent entry already exists in
+              # the transparency log") on it, and never reaches the unpublished ones
+              # (v5.4.0, run 40820957423).
+              #
+              # --concurrency 1: the v4.18.4 publish (run 39725467477) failed three
+              # times with the same 409 on packages published in the same batch.
+              # Publishing one package at a time is the suspected fix; v5.4.0 hit the
+              # 409 on its first attempt even with it, so it does not prevent it.
+              run: npx lerna publish from-package --dist-tag ${{ steps.dist-tag.outputs.tag }} --yes --concurrency 1

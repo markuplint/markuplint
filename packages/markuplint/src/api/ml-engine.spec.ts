@@ -7,6 +7,7 @@ import path from 'node:path';
 
 import { ConfigProvider } from '@markuplint/file-resolver';
 import { Document } from '@markuplint/ml-core';
+import { FSWatcher } from 'chokidar';
 import debug from 'debug';
 import { afterEach, beforeEach, describe, it, expect, vi } from 'vitest';
 
@@ -425,6 +426,37 @@ describe('#1862 configFile skips default config search', () => {
 		// Default .markuplintrc should NOT be loaded
 		// @ts-ignore
 		expect(configSet?.config.rules?.['wai-aria']).toBe(undefined);
+	});
+});
+
+describe('#4412 a source whose directory does not exist yet', () => {
+	let tmpDir: string;
+
+	beforeEach(async () => {
+		tmpDir = await fs.realpath(await fs.mkdtemp(path.join(os.tmpdir(), 'ml-engine-missing-dir-')));
+		await fs.writeFile(path.join(tmpDir, '.markuplintrc'), '{ "rules": { "__test-rule": true } }');
+	});
+
+	afterEach(async () => {
+		await fs.rm(tmpDir, { recursive: true, force: true });
+	});
+
+	it('gets the configuration file of an existing ancestor', async () => {
+		const dirname = path.join(tmpDir, 'missing', 'deeper');
+		const engine = await MLEngine.fromCode('<div></div>', { name: 'index.html', dirname });
+
+		const configSets: ConfigSet[] = [];
+		engine.once('config', (_, configSet) => {
+			configSets.push(configSet);
+		});
+		await engine.exec();
+
+		// The recommended configuration, applied when no configuration file is found, does not
+		// list the ancestor's file nor have `__test-rule`.
+		expect(configSets.map(configSet => configSet.files)).toStrictEqual([
+			new Set([path.join(tmpDir, '.markuplintrc')]),
+		]);
+		expect(configSets[0]?.config.rules?.['__test-rule']).toBe(true);
 	});
 });
 
@@ -1577,6 +1609,99 @@ describe('config that cannot be loaded (#4113)', () => {
 		}
 	});
 
+	it('lints in watch mode once a config file the search found broken is fixed', async () => {
+		const tmpDir = await fs.realpath(await fs.mkdtemp(path.join(os.tmpdir(), 'ml-engine-config-failure-')));
+		let engine: MLEngine | undefined;
+		try {
+			const configFile = path.join(tmpDir, '.markuplintrc.json');
+			const targetFile = path.join(tmpDir, 'a.html');
+			await fs.writeFile(configFile, '{');
+			await fs.writeFile(targetFile, '<dl><span>no</span></dl>');
+			const file = await MLEngine.toMLFile(targetFile);
+			const watched = new MLEngine(file!, { watch: true });
+			engine = watched;
+
+			const first = await watched.exec();
+			expect(first?.violations.map(v => [v.ruleId, v.severity])).toStrictEqual([['config-error', 'error']]);
+			expect(first?.violations[0]?.message).toContain(`JSON Error in ${configFile}:`);
+
+			const recovered = new Promise<readonly Violation[]>(resolve => {
+				watched.on('lint', (_, __, violations) => {
+					if (violations.some(v => v.ruleId === 'permitted-contents')) {
+						resolve(violations);
+					}
+				});
+			});
+			await fs.writeFile(configFile, JSON.stringify({ extends: ['markuplint:html-standard'] }));
+			expect((await recovered).filter(v => v.ruleId === 'config-error')).toStrictEqual([]);
+		} finally {
+			await engine?.close();
+			await fs.rm(tmpDir, { recursive: true, force: true });
+		}
+	});
+
+	it('lints in watch mode once the missing target of a `$import` is created', async () => {
+		const tmpDir = await fs.realpath(await fs.mkdtemp(path.join(os.tmpdir(), 'ml-engine-missing-import-')));
+		let engine: MLEngine | undefined;
+		try {
+			const configFile = path.join(tmpDir, '.markuplintrc.json');
+			const imported = path.join(tmpDir, 'base.json');
+			const targetFile = path.join(tmpDir, 'a.html');
+			await fs.writeFile(configFile, JSON.stringify({ $import: ['./base.json'] }));
+			await fs.writeFile(targetFile, '<dl><span>no</span></dl>');
+			const file = await MLEngine.toMLFile(targetFile);
+			const watched = new MLEngine(file!, { watch: true });
+			engine = watched;
+
+			const first = await watched.exec();
+			expect(first?.violations.map(v => [v.ruleId, v.severity])).toStrictEqual([['config-error', 'error']]);
+			expect(first?.violations[0]?.message).toContain(`Failed to load ${configFile}: Cannot import ./base.json:`);
+
+			const recovered = new Promise<readonly Violation[]>(resolve => {
+				watched.on('lint', (_, __, violations) => {
+					if (violations.some(v => v.ruleId === 'permitted-contents')) {
+						resolve(violations);
+					}
+				});
+			});
+			await fs.writeFile(imported, JSON.stringify({ extends: ['markuplint:html-standard'] }));
+			expect((await recovered).filter(v => v.ruleId === 'config-error')).toStrictEqual([]);
+		} finally {
+			await engine?.close();
+			await fs.rm(tmpDir, { recursive: true, force: true });
+		}
+	});
+
+	it('does not watch a directory that the search cannot examine', async () => {
+		const tmpDir = await fs.realpath(await fs.mkdtemp(path.join(os.tmpdir(), 'ml-engine-unexaminable-')));
+		const dirname = path.join(tmpDir, 'locked');
+		// `stat` of the directory fails with something other than "does not exist", as for a
+		// directory whose parent cannot be searched; mocked, as permissions do not work so on
+		// every platform.
+		const stat = fs.stat;
+		const statSpy = vi.spyOn(fs, 'stat').mockImplementation(((filePath: string, options?: object) =>
+			filePath === dirname
+				? Promise.reject(
+						Object.assign(new Error(`EACCES: permission denied, stat '${dirname}'`), {
+							code: 'EACCES',
+						}),
+					)
+				: stat(filePath, options)) as typeof fs.stat);
+		const add = vi.spyOn(FSWatcher.prototype, 'add');
+		let engine: MLEngine | undefined;
+		try {
+			engine = await MLEngine.fromCode('<div></div>', { name: 'a.html', dirname, watch: true });
+			const result = await engine.exec();
+			expect(result?.violations.map(v => v.ruleId)).toStrictEqual(['config-error']);
+			expect(add.mock.calls.flat().filter(watched => String(watched).startsWith(tmpDir))).toStrictEqual([]);
+		} finally {
+			add.mockRestore();
+			statSpy.mockRestore();
+			await engine?.close();
+			await fs.rm(tmpDir, { recursive: true, force: true });
+		}
+	});
+
 	it('keeps a rule that is not found as a warning while the other rules still lint', async () => {
 		const file = await MLEngine.toMLFile({ sourceCode: '<dl><span>no</span></dl>', name: 'a.html' });
 		const engine = new MLEngine(file!, {
@@ -1588,6 +1713,174 @@ describe('config that cannot be loaded (#4113)', () => {
 
 		expect(result?.violations.find(v => v.ruleId === 'config-error')?.severity).toBe('warning');
 		expect(result?.violations.some(v => v.ruleId === 'permitted-contents')).toBe(true);
+	});
+});
+
+describe('a malformed config file the search would reach (#4409)', () => {
+	let tmpDir: string;
+	let targetFile: string;
+	let validConfigFile: string;
+
+	let malformedConfigFile: string;
+	let foundConfigDir: string;
+
+	beforeEach(async () => {
+		// `realpath`: the search reports the path it found, and `os.tmpdir()` is a symlink on macOS.
+		tmpDir = await fs.realpath(await fs.mkdtemp(path.join(os.tmpdir(), 'ml-engine-no-search-')));
+		// The malformed file sits in the target's own directory, so the search
+		// reaches it before any configuration in an ancestor of `os.tmpdir()`.
+		await fs.mkdir(path.join(tmpDir, 'malformed'));
+		malformedConfigFile = path.join(tmpDir, 'malformed', '.markuplintrc');
+		await fs.writeFile(malformedConfigFile, '{ "rules":');
+		targetFile = path.join(tmpDir, 'malformed', 'index.html');
+		await fs.writeFile(targetFile, '<!doctype html><html lang="en"><title>a</title><p>a</p></html>');
+		validConfigFile = path.join(tmpDir, 'valid.json');
+		await fs.writeFile(validConfigFile, JSON.stringify({ rules: { 'no-duplicate-id': true } }));
+		foundConfigDir = path.join(tmpDir, 'found');
+		await fs.mkdir(foundConfigDir);
+		await fs.writeFile(
+			path.join(foundConfigDir, '.markuplintrc'),
+			JSON.stringify({ rules: { 'no-duplicate-id': true } }),
+		);
+		await fs.writeFile(path.join(foundConfigDir, 'index.html'), '<p>a</p>');
+	});
+
+	afterEach(async () => {
+		vi.restoreAllMocks();
+		await fs.rm(tmpDir, { recursive: true, force: true });
+	});
+
+	const configErrors = (violations?: readonly Violation[]) =>
+		(violations ?? []).filter(v => v.ruleId === 'config-error');
+
+	it('is reported when the search is enabled', async () => {
+		const file = await MLEngine.toMLFile(targetFile);
+		const engine = new MLEngine(file!);
+
+		const result = await engine.exec();
+
+		const errors = configErrors(result?.violations);
+		expect(errors).toHaveLength(1);
+		expect(errors[0]?.message).toContain(malformedConfigFile);
+	});
+
+	it('is searched once when the search is enabled', async () => {
+		const configProvider = new ConfigProvider();
+		const search = vi.spyOn(configProvider, 'search');
+		const file = await MLEngine.toMLFile(targetFile);
+		const engine = new MLEngine(file!, { configProvider });
+
+		await engine.exec();
+
+		expect(search).toHaveBeenCalledTimes(1);
+	});
+
+	it.each([
+		['config', () => ({ config: {} })],
+		['defaultConfig', () => ({ defaultConfig: {} })],
+		['no other option (the recommended fallback)', () => ({})],
+	])('does not affect a run with noSearchConfig and %s', async (_, createOptions) => {
+		const file = await MLEngine.toMLFile(targetFile);
+		const engine = new MLEngine(file!, { noSearchConfig: true, ...createOptions() });
+
+		const result = await engine.exec();
+
+		expect(result?.status).toBe('processed');
+		expect(configErrors(result?.violations)).toStrictEqual([]);
+	});
+
+	it('does not affect a run with configFile', async () => {
+		const file = await MLEngine.toMLFile(targetFile);
+		const engine = new MLEngine(file!, { configFile: validConfigFile });
+		let rules: unknown;
+		engine.once('config', (_, configSet) => {
+			rules = configSet.config.rules;
+		});
+
+		const result = await engine.exec();
+
+		expect(configErrors(result?.violations)).toStrictEqual([]);
+		expect(rules).toStrictEqual({ 'no-duplicate-id': true });
+	});
+
+	// The options are built by a function because `validConfigFile` is assigned in `beforeEach`.
+	it.each([
+		['noSearchConfig', () => ({ noSearchConfig: true, config: {} })],
+		['configFile', () => ({ configFile: validConfigFile })],
+	])('does not search for a config file with %s', async (_, createOptions) => {
+		const configProvider = new ConfigProvider();
+		const search = vi.spyOn(configProvider, 'search');
+		const file = await MLEngine.toMLFile(targetFile);
+		const engine = new MLEngine(file!, { configProvider, ...createOptions() });
+
+		const result = await engine.exec();
+
+		expect(result?.status).toBe('processed');
+		expect(search).not.toHaveBeenCalled();
+	});
+
+	it('does not search with both noSearchConfig and configFile', async () => {
+		const configProvider = new ConfigProvider();
+		const search = vi.spyOn(configProvider, 'search');
+		const file = await MLEngine.toMLFile(targetFile);
+		const engine = new MLEngine(file!, { configProvider, noSearchConfig: true, configFile: validConfigFile });
+
+		const result = await engine.exec();
+
+		expect(search).not.toHaveBeenCalled();
+		expect(configErrors(result?.violations)).toStrictEqual([]);
+	});
+
+	it('does not search when the config is resolved again without the cache', async () => {
+		const configProvider = new ConfigProvider();
+		const search = vi.spyOn(configProvider, 'search');
+		const file = await MLEngine.toMLFile(targetFile);
+		const engine = new MLEngine(file!, { configProvider, noSearchConfig: true, config: {} });
+
+		await engine.resolveConfig(true);
+		await engine.resolveConfig(false);
+
+		expect(search).not.toHaveBeenCalled();
+	});
+
+	const collectLogs = (engine: MLEngine) => {
+		const logs = new Map<string, string>();
+		engine.on('log', (phase, message) => {
+			logs.set(phase, message);
+		});
+		return logs;
+	};
+
+	it('logs that the search was skipped', async () => {
+		const file = await MLEngine.toMLFile(targetFile);
+		const engine = new MLEngine(file!, { noSearchConfig: true, config: {} });
+		const logs = collectLogs(engine);
+
+		await engine.resolveConfig(false);
+
+		expect(logs.get('targetConfig')).toBe('skipped (search is disabled)');
+	});
+
+	it('logs the config file the search found', async () => {
+		const file = await MLEngine.toMLFile(path.join(foundConfigDir, 'index.html'));
+		const engine = new MLEngine(file!);
+		const logs = collectLogs(engine);
+
+		const configSet = await engine.resolveConfig(false);
+
+		expect(logs.get('targetConfig')).toBe(path.join(foundConfigDir, '.markuplintrc'));
+		expect(configSet.files).toContain(logs.get('targetConfig'));
+	});
+
+	it('logs the key of the inline config under option.config', async () => {
+		const file = await MLEngine.toMLFile(targetFile);
+		const engine = new MLEngine(file!, { noSearchConfig: true, config: { rules: {} } });
+		const logs = collectLogs(engine);
+
+		const configSet = await engine.resolveConfig(false);
+
+		// The inline config is the only source, so its key is the only one resolved.
+		expect([...configSet.files]).toStrictEqual([logs.get('option.config')]);
 	});
 });
 
@@ -1620,5 +1913,103 @@ describe('debug option of the constructor', () => {
 		new MLEngine(file!, { noSearchConfig: true, config: {} });
 
 		expect(debug.enabled('markuplint-cli')).toBe(false);
+	});
+});
+
+describe('a relative filePath of an inline pretender is resolved from the configuration that declares it', () => {
+	const pretender = (filePath: string) => ({ selector: 'Item', as: 'li', filePath });
+
+	const createConfig = (filePath: string) => ({
+		parser: { '\\.tsx$': '@markuplint/jsx-parser' },
+		specs: { '\\.tsx$': '@markuplint/react-spec' },
+		pretenders: [pretender(filePath)],
+		rules: { 'require-owned-elements': true },
+	});
+
+	const lint = async (target: string, options: { configFile: string } | { config: Config }) => {
+		const file = (await MLEngine.toMLFile(target))!;
+		const engine = new MLEngine(file, { noSearchConfig: true, locale: 'en', ...options });
+		const result = await engine.exec();
+		// A file that is not linted at all has no violation either, which would pass for the component being kept.
+		expect(result).not.toBeNull();
+		return result!.violations;
+	};
+
+	let tmpDir: string;
+
+	beforeEach(async () => {
+		tmpDir = await fs.realpath(await fs.mkdtemp(path.join(os.tmpdir(), 'ml-engine-inline-filepath-')));
+		await fs.mkdir(path.join(tmpDir, 'app'));
+		await fs.writeFile(
+			path.join(tmpDir, 'app', 'Item.tsx'),
+			'export function Item() {\n\treturn <li>item</li>;\n}\n',
+		);
+		await fs.writeFile(
+			path.join(tmpDir, 'app', 'list.tsx'),
+			"import { Item } from './Item';\nexport const List = () => (\n\t<ul>\n\t\t<Item />\n\t</ul>\n);\n",
+		);
+		await fs.writeFile(
+			path.join(tmpDir, 'app', 'markuplint.config.json'),
+			JSON.stringify(createConfig('./Item.tsx:1:17')),
+		);
+	});
+
+	afterEach(async () => {
+		vi.restoreAllMocks();
+		await fs.rm(tmpDir, { recursive: true, force: true });
+	});
+
+	it('keeps the component when the configuration file is given', async () => {
+		const violations = await lint(path.join(tmpDir, 'app', 'list.tsx'), {
+			configFile: path.join(tmpDir, 'app', 'markuplint.config.json'),
+		});
+		expect(violations).toStrictEqual([]);
+	});
+
+	it('keeps the component when the configuration file is extended from another directory', async () => {
+		await fs.mkdir(path.join(tmpDir, 'extending'));
+		await fs.writeFile(
+			path.join(tmpDir, 'extending', 'markuplint.config.json'),
+			JSON.stringify({ extends: ['../app/markuplint.config.json'] }),
+		);
+
+		const violations = await lint(path.join(tmpDir, 'app', 'list.tsx'), {
+			configFile: path.join(tmpDir, 'extending', 'markuplint.config.json'),
+		});
+		expect(violations).toStrictEqual([]);
+	});
+
+	it('keeps the component when the pretender is in the value of an override', async () => {
+		const { pretenders, ...rest } = createConfig('./Item.tsx:1:17');
+		await fs.writeFile(
+			path.join(tmpDir, 'app', 'overridden.config.json'),
+			JSON.stringify({ ...rest, overrideMode: 'merge', overrides: { './list.tsx': { pretenders } } }),
+		);
+
+		const violations = await lint(path.join(tmpDir, 'app', 'list.tsx'), {
+			configFile: path.join(tmpDir, 'app', 'overridden.config.json'),
+		});
+		expect(violations).toStrictEqual([]);
+	});
+
+	it('drops a component the filePath of which is another file than the one the import resolves to', async () => {
+		await fs.writeFile(
+			path.join(tmpDir, 'app', 'other.config.json'),
+			JSON.stringify(createConfig('./Other.tsx:1:17')),
+		);
+
+		const violations = await lint(path.join(tmpDir, 'app', 'list.tsx'), {
+			configFile: path.join(tmpDir, 'app', 'other.config.json'),
+		});
+		expect(violations.map(v => v.ruleId)).toStrictEqual(['require-owned-elements']);
+	});
+
+	it('reads the filePath of a configuration with no file behind it from the working directory', async () => {
+		vi.spyOn(process, 'cwd').mockReturnValue(path.join(tmpDir, 'app'));
+
+		const violations = await lint(path.join(tmpDir, 'app', 'list.tsx'), {
+			config: createConfig('./Item.tsx:1:17'),
+		});
+		expect(violations).toStrictEqual([]);
 	});
 });

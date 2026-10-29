@@ -24,7 +24,7 @@ import type {
 	RuleInfo,
 	Slot,
 } from '@markuplint/ml-config';
-import type { ARIAVersion } from '@markuplint/ml-spec';
+import type { AccnameSource, AccnameVisit, ARIAVersion } from '@markuplint/ml-spec';
 
 import { getSpecByTagName, resolveNamespace } from '@markuplint/ml-spec';
 import { pretenderNamespaceToURI } from '@markuplint/ml-config';
@@ -32,7 +32,12 @@ import { getChildNamespace } from '@markuplint/parser-utils';
 import type { SelectorMatches } from '@markuplint/selector';
 import { matchSelector, typeNameMatches } from '@markuplint/selector';
 
-import { getAccname } from '../helper/accname.js';
+import {
+	getAccname,
+	getAccnameVisits,
+	getHostLanguageLabelSource,
+	getReferencedTextAlternative,
+} from '../helper/accname.js';
 import {
 	after,
 	before,
@@ -277,6 +282,21 @@ export class MLElement<T extends RuleConfigValue, O extends PlainData = undefine
 	 * @see {@link getAccessibleName} — the public method that reads/writes this cache
 	 */
 	#accessibleNameCache: Map<ARIAVersion, string> = new Map();
+	/**
+	 * Memoizes {@link getAccessibleNameVisits}, keyed by `${version}:${asReferenced}`.
+	 * Safe for the same reason as {@link #accessibleNameCache}.
+	 */
+	#accessibleNameVisitsCache: Map<string, ReadonlyMap<MLElement<any, any>, readonly AccnameVisit[]>> = new Map();
+	/**
+	 * Memoizes {@link getHostLanguageLabelSource}. Safe for the same reason as
+	 * {@link #accessibleNameCache}.
+	 */
+	#hostLanguageLabelSourceCache: Map<ARIAVersion, AccnameSource | null> = new Map();
+	/**
+	 * Memoizes {@link getReferencedTextAlternative}. Safe for the same reason as
+	 * {@link #accessibleNameCache}.
+	 */
+	#referencedTextAlternativeCache: Map<ARIAVersion, string> = new Map();
 	#normalizedAttrs: Map<MLAttr<T, O>[], MLNamedNodeMap<T, O>> = new Map();
 	#normalizedString: string | null = null;
 
@@ -3609,6 +3629,74 @@ export class MLElement<T extends RuleConfigValue, O extends PlainData = undefine
 		const name = getAccname(this, version);
 		this.#accessibleNameCache.set(version, name);
 		return name;
+	}
+
+	/**
+	 * Returns the elements that the computation of this element's text
+	 * alternative reaches, with how it reaches each, memoized per ARIA version
+	 * and mode like {@link getAccessibleName}.
+	 *
+	 * A descendant missing from the map takes no part in the text alternative:
+	 * the computation ends before it (a hidden element, a name given before
+	 * content, a component that does not render its children). When the
+	 * computation fails, the map is empty.
+	 *
+	 * @implements `@markuplint/ml-core` API: `MLElement`
+	 * @param version - The ARIA specification version to use for computation
+	 * @param asReferenced - Computes it as a node referenced by `aria-labelledby`
+	 *   or `aria-describedby` instead of as this element's accessible name
+	 * @returns The reached elements and their visits
+	 */
+	getAccessibleNameVisits(
+		version: ARIAVersion,
+		asReferenced = false,
+	): ReadonlyMap<MLElement<any, any>, readonly AccnameVisit[]> {
+		const key = `${version}:${asReferenced}`;
+		const cached = this.#accessibleNameVisitsCache.get(key);
+		if (cached != null) {
+			return cached;
+		}
+		const visits = getAccnameVisits(this, version, asReferenced);
+		this.#accessibleNameVisitsCache.set(key, visits);
+		return visits;
+	}
+
+	/**
+	 * Returns the text alternative of this element as a node referenced by
+	 * `aria-labelledby` or `aria-describedby` (AccName Step 2B, LabelledBy
+	 * Traversal), memoized per ARIA version like {@link getAccessibleName}.
+	 *
+	 * @implements `@markuplint/ml-core` API: `MLElement`
+	 * @param version - The ARIA specification version to use for computation
+	 * @returns The text alternative (may be empty)
+	 */
+	getReferencedTextAlternative(version: ARIAVersion): string {
+		const cached = this.#referencedTextAlternativeCache.get(version);
+		if (cached != null) {
+			return cached;
+		}
+		const text = getReferencedTextAlternative(this, version);
+		this.#referencedTextAlternativeCache.set(version, text);
+		return text;
+	}
+
+	/**
+	 * Returns the source of this element's host language text alternative
+	 * (AccName Step 2E), such as `'alt'` or `'svg-title'`, whether or not an
+	 * explicit `none` or `presentation` role keeps it out of the name.
+	 * Memoized per ARIA version like {@link getAccessibleName}.
+	 *
+	 * @implements `@markuplint/ml-core` API: `MLElement`
+	 * @param version - The ARIA specification version to use for computation
+	 * @returns The source, or `null` if the element has no host language text alternative
+	 */
+	getHostLanguageLabelSource(version: ARIAVersion): AccnameSource | null {
+		if (this.#hostLanguageLabelSourceCache.has(version)) {
+			return this.#hostLanguageLabelSourceCache.get(version) ?? null;
+		}
+		const source = getHostLanguageLabelSource(this, version);
+		this.#hostLanguageLabelSourceCache.set(version, source);
+		return source;
 	}
 
 	/**

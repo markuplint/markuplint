@@ -88,8 +88,8 @@
 		"lerna": "10.1.1",
 		"lint-staged": "17.6.0",
 		"npm-run-all2": "9.0.3",
-		"oxfmt": "0.72.0",
-		"oxlint": "1.87.0",
+		"oxfmt": "0.73.0",
+		"oxlint": "1.88.0",
 		"textlint": "15.8.0",
 		"textlint-filter-rule-comments": "1.3.0",
 		"textlint-rule-preset-ja-spacing": "3.0.3",
@@ -100,9 +100,8 @@
 		"tsx": "4.23.15",
 		"typedoc": "0.28.20",
 		"typedoc-plugin-mdn-links": "5.1.1",
-		"typedoc-plugin-resolve-crossmodule-references": "0.3.3",
 		"typescript": "6.0.3",
-		"vitest": "4.1.11"
+		"vitest": "4.1.12"
 	},
 	"config": {
 		"commitizen": {
@@ -111,7 +110,8 @@
 	},
 	"packageManager": "yarn@4.18.1",
 	"resolutions": {
-		"markuplint": "workspace:*"
+		"markuplint": "workspace:*",
+		"undici@npm:7.29.0": "7.30.1"
 	},
 	"dependenciesMeta": {
 		"@vscode/vsce-sign": {

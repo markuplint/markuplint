@@ -218,6 +218,15 @@ test('[require-accessible-name-invalid-012] The accessible name may be mutable',
 	).toStrictEqual([]);
 });
 
+test('[require-accessible-name-issue-4408-001] an image whose alt a presentational role drops does not name the button', async () => {
+	const { violations } = await mlRuleTest(rule, '<button><img src="s.svg" alt="Save" role="none"></button>');
+	expect(violations).toStrictEqual([
+		{ severity: 'error', col: 1, line: 1, message: 'Require accessible name', raw: '<button>' },
+	]);
+	// Control: the same image without the role names it
+	expect((await mlRuleTest(rule, '<button><img src="s.svg" alt="Save"></button>')).violations).toStrictEqual([]);
+});
+
 test('[require-accessible-name-invalid-013] Pretenders Option', async () => {
 	expect(
 		(

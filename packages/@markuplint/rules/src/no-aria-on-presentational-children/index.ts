@@ -15,7 +15,9 @@ export default createRule<boolean, Options>({
 			const elSpec = getSpec(el, document.specs.specs);
 			if (!elSpec) return;
 			if (!elSpec.globalAttrs['#ARIAAttrs']) return;
-			report(checkingPresentationalChildren({ el }));
+			for (const attr of el.attributes) {
+				report(checkingPresentationalChildren({ attr, el }));
+			}
 		});
 	},
 });

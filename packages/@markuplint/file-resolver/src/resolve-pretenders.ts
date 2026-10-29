@@ -2,17 +2,19 @@ import type { OptimizedConfig, Pretender, PretenderAutoOptions, PretenderFileDat
 
 import path from 'node:path';
 
-import { rebasePretenderFilePath } from '@markuplint/ml-config';
+import { rebaseHandWrittenPretenderFilePath, rebasePretenderFilePath } from '@markuplint/ml-config';
 import { glob } from 'glob';
 
 import { generalImport } from './general-import.js';
+import { normalizeForGlob } from './path-utils.js';
 
 type PretendersConfig = OptimizedConfig['pretenders'];
 
 /**
- * `Pretender.filePath` is written by scanners relative to their own base
- * directory, which is meaningless once entries from files/scan results
- * scattered across different directories are merged into one flat list.
+ * `Pretender.filePath` is written by scanners (and by hand, in `data`) relative to
+ * their own base directory, which is meaningless once entries from
+ * files/scan results/configurations scattered across different directories are
+ * merged into one flat list.
  * Rebasing to an absolute path immediately after each source is read is
  * what lets {@link disambiguatePretendersForFile} later compare a
  * pretender's origin file against the lint target's resolved imports.
@@ -205,14 +207,26 @@ async function resolveTargetIndependentPretenders(
 	}
 
 	if (config.data) {
-		data.push(...config.data);
+		// A configuration file's `data` is already absolute (resolved by the config provider
+		// from the file's own directory). What is relative here comes from a configuration with
+		// no file behind it (`MLEngine`'s `config` / `defaultConfig` option), which has no
+		// directory of its own, so it is read from `process.cwd()` — as its `scan` globs are.
+		const cwd = process.cwd();
+		data.push(
+			...config.data.map(pretender => rebaseHandWrittenPretenderFilePath(pretender, p => path.resolve(cwd, p))),
+		);
 	}
 
 	if (config.scan) {
 		const { scan } = await import('@markuplint/pretenders');
 		for (const entry of config.scan) {
 			const patterns = typeof entry.files === 'string' ? [entry.files] : [...entry.files];
-			const globResults = await Promise.all(patterns.map(p => glob(p)));
+			// The patterns are absolute paths of the platform (`#pathResolve`), which Windows writes
+			// with backslashes, and a glob reads one as an escape unless it is a slash. Only there:
+			// elsewhere a backslash is the escape a pattern may mean (`\[id\]`, a directory of brackets).
+			const globResults = await Promise.all(
+				patterns.map(p => glob(process.platform === 'win32' ? normalizeForGlob(p) : p)),
+			);
 			const resolved = globResults.flat().map(f => path.resolve(f));
 			if (resolved.length > 0) {
 				const scanned = await scan(resolved, {

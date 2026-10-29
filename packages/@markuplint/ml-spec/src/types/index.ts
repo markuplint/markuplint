@@ -392,6 +392,10 @@ export type Matches = (selector: string) => boolean;
  * The result of computing an element's ARIA role, containing the element reference,
  * the resolved role specification (or null if no role applies), and an optional
  * error type indicating issues during role computation.
+ *
+ * An error type does not mean the role was dropped: with `NO_PERMITTED` (a role
+ * ARIA in HTML does not permit on the element) the `role` is the one the author
+ * specified, as user agents still expose it.
  */
 export type ComputedRole = {
 	readonly el: Element;

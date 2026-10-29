@@ -1,17 +1,17 @@
 import type { MLFile } from './ml-file/index.js';
 import type { ConfigSet } from './types.js';
-import type { Config, OptimizedConfig } from '@markuplint/ml-config';
+import type { Config, OptimizedConfig, OptimizedOverrideConfig } from '@markuplint/ml-config';
 import type { Nullable } from '@markuplint/shared';
 
 import path from 'node:path';
 
-import { mergeConfig } from '@markuplint/ml-config';
+import { mergeConfig, rebaseHandWrittenPretenderFilePath } from '@markuplint/ml-config';
 import { ConfigParserError } from '@markuplint/parser-utils';
 import { InvalidSelectorError, createSelector } from '@markuplint/selector';
 import { nonNullableFilter, toNoEmptyStringArrayFromStringOrArray, ConfigLoadError } from '@markuplint/shared';
 
 import { clearAutoLoadRulesCache } from './auto-load-rules.js';
-import { load as loadConfig, search, clearExplorerCache } from './cosmiconfig.js';
+import { load as loadConfig, search, clearExplorerCache, configLoadErrorFiles } from './cosmiconfig.js';
 import { log } from './debug.js';
 import { generalImport } from './general-import.js';
 import { getPreset } from './get-preset.js';
@@ -160,7 +160,14 @@ export class ConfigProvider {
 		}
 
 		if (config instanceof ConfigLoadError) {
-			stack.add(config.filePath);
+			// The files whose change can fix the error are recorded as well as `key`, as they can be
+			// ones that `key` imports through `$import`, or a target of it that does not exist yet.
+			// `key` is added last, so that it stays the file `#resolveBase` validates against, as when
+			// the load succeeds.
+			for (const filePath of configLoadErrorFiles(config)) {
+				stack.add(filePath);
+			}
+			stack.add(key);
 			return {
 				stack,
 				errs: [config],
@@ -219,7 +226,7 @@ export class ConfigProvider {
 			this.#cache.set(key, baseConfigSet);
 		}
 
-		return this.#applyOverrides(baseConfigSet, targetFile);
+		return await this.#applyOverrides(baseConfigSet, targetFile);
 	}
 
 	/**
@@ -283,8 +290,13 @@ export class ConfigProvider {
 	 * replaces every earlier match, not just the base config. `appliedOverrides`
 	 * records that match order for `--show-config=details` to surface, since this
 	 * "last match wins outright" behavior is easy to mistake for a bug (see #4023).
+	 *
+	 * The plugins an override declares are loaded here, as `#resolveBase` cannot know which
+	 * overrides apply. The result keeps every plugin of the base, replaced where the override
+	 * declares the same one: a `reset` override that declares none still reaches the rules of
+	 * the plugins the base loaded, as it did before the override's own were loaded at all.
 	 */
-	#applyOverrides(baseConfigSet: ConfigSet, targetFile: Readonly<MLFile>): ConfigSet {
+	async #applyOverrides(baseConfigSet: ConfigSet, targetFile: Readonly<MLFile>): Promise<ConfigSet> {
 		let config = baseConfigSet.config;
 		const appliedOverrides: string[] = [];
 		if (config.overrides) {
@@ -296,27 +308,59 @@ export class ConfigProvider {
 					appliedOverrides.push(glob);
 				}
 			}
-			return config === baseConfigSet.config ? baseConfigSet : { ...baseConfigSet, config, appliedOverrides };
+			if (config === baseConfigSet.config) {
+				return baseConfigSet;
+			}
+			return {
+				...(await this.#resolveOverridePlugins(baseConfigSet, config)),
+				config,
+				appliedOverrides,
+			};
 		}
 		return baseConfigSet;
 	}
 
 	/**
-	 * Searches for a markuplint configuration file starting from the target file's directory.
+	 * @param baseConfigSet - The base configuration set, which is never mutated
+	 * @param config - The configuration after the overrides are applied
+	 * @returns `baseConfigSet` with the plugins of `config` loaded in, or itself (same
+	 * reference) when `config` declares none
+	 */
+	async #resolveOverridePlugins(baseConfigSet: ConfigSet, config: OptimizedConfig): Promise<ConfigSet> {
+		if (!config.plugins || config.plugins === baseConfigSet.config.plugins) {
+			return baseConfigSet;
+		}
+
+		const { plugins: declared, errors } = await resolvePlugins(config.plugins);
+
+		const baseNames = new Set(baseConfigSet.plugins.map(plugin => plugin.name));
+		const plugins = [
+			...baseConfigSet.plugins.map(plugin => declared.find(d => d.name === plugin.name) ?? plugin),
+			...declared.filter(plugin => !baseNames.has(plugin.name)),
+		];
+
+		// `merge` mode declares the base's plugins again, and a plugin that is not found is cached
+		// as the error, so what the base already reported is not reported twice.
+		const reported = new Set(baseConfigSet.errs.map(error => error.message));
+		const errs = [...baseConfigSet.errs, ...errors.filter(error => !reported.has(error.message))];
+
+		return { ...baseConfigSet, plugins, errs };
+	}
+
+	/**
+	 * Searches for a markuplint configuration file starting from the target file's directory
+	 * and going up through its ancestors; the nearest one wins. A `package.json` without a
+	 * `markuplint` field is not a configuration file, so the search passes over it. A target
+	 * directory that does not exist yet, such as that of an unsaved editor buffer in a new folder,
+	 * does not end the search either: the search starts from that directory and goes on through
+	 * its ancestors, the missing ones yielding nothing.
 	 *
 	 * @param targetFile - The file whose directory to search from
 	 * @returns The file path of the found config, or `null` if none was found
 	 */
 	async search(targetFile: Readonly<MLFile>) {
-		const isExists = await targetFile.dirExists();
-
 		if (cpLog.enabled) {
 			cpLog('search: %s', targetFile.path);
-			cpLog('isExists: %s', isExists);
-		}
-
-		if (!isExists) {
-			return null;
 		}
 
 		const res = await search<Config>(targetFile.path, false);
@@ -441,27 +485,21 @@ export class ConfigProvider {
 	async #pathResolve(config: Config, filePath: string): Promise<OptimizedConfig> {
 		const optimizedConfig = mergeConfig(config);
 		const dir = path.dirname(filePath);
+		// Only the keys of `overrides` (the globs) are resolved here; each value is a
+		// configuration of its own, whose paths are relative to the same directory.
+		const overrides = await relPathToNameOrAbsPath(dir, optimizedConfig.overrides, undefined, true);
 		return {
-			...optimizedConfig,
+			...(await resolveConfigPaths(dir, optimizedConfig)),
 			extends: await relPathToNameOrAbsPath(dir, optimizedConfig.extends),
-			plugins: await relPathToNameOrAbsPath(dir, optimizedConfig.plugins, ['name']),
-			parser: await relPathToNameOrAbsPath(dir, optimizedConfig.parser),
-			specs: await relPathToNameOrAbsPath(dir, optimizedConfig.specs),
-			excludeFiles: await relPathToNameOrAbsPath(dir, optimizedConfig.excludeFiles),
-			pretenders: optimizedConfig.pretenders
-				? {
-						...optimizedConfig.pretenders,
-						files: await relPathToNameOrAbsPath(dir, optimizedConfig.pretenders?.files),
-						scan: optimizedConfig.pretenders?.scan?.map(entry => ({
-							...entry,
-							files:
-								typeof entry.files === 'string'
-									? path.resolve(dir, entry.files)
-									: entry.files.map(f => path.resolve(dir, f)),
-						})),
-					}
+			overrides: overrides
+				? Object.fromEntries(
+						await Promise.all(
+							Object.entries(overrides).map(
+								async ([glob, value]) => [glob, await resolveConfigPaths(dir, value)] as const,
+							),
+						),
+					)
 				: undefined,
-			overrides: await relPathToNameOrAbsPath(dir, optimizedConfig.overrides, undefined, true),
 		};
 	}
 
@@ -486,6 +524,59 @@ export class ConfigProvider {
 			}
 		return errors;
 	}
+}
+
+/**
+ * Resolves the paths a configuration holds against `dir`, the directory of the file that
+ * declares it. Once configurations from different directories are merged (`extends`), the
+ * directory a relative path belongs to is no longer known, so this runs for the top level and
+ * for the value of every `overrides` entry while it still is.
+ *
+ * Every property of a configuration that holds a path has to be resolved here: one missed is
+ * resolved at the top level but left relative inside `overrides` (or the reverse), and what is
+ * left relative is read from the working directory later.
+ *
+ * The result has no `undefined` property for what the configuration does not hold. An
+ * `overrides` value is the configuration itself under `reset` mode, so an `undefined` key
+ * would show up in it as a property it never had; under `merge` mode it would overwrite the
+ * value the base configuration holds. `mergeConfig` leaves none in an `overrides` value for
+ * the same reason.
+ *
+ * @template T - The configuration type: the top level, or the value of an `overrides` entry
+ * @param dir - The directory of the configuration file that declares `config`
+ * @param config - The configuration whose paths are resolved
+ * @returns The configuration with the paths resolved
+ */
+async function resolveConfigPaths<T extends OptimizedOverrideConfig>(dir: string, config: T): Promise<T> {
+	return {
+		...config,
+		...(config.plugins && { plugins: await relPathToNameOrAbsPath(dir, config.plugins, ['name']) }),
+		...(config.parser && { parser: await relPathToNameOrAbsPath(dir, config.parser) }),
+		...(config.specs && { specs: await relPathToNameOrAbsPath(dir, config.specs) }),
+		...(config.excludeFiles && { excludeFiles: await relPathToNameOrAbsPath(dir, config.excludeFiles) }),
+		...(config.pretenders && {
+			pretenders: {
+				...config.pretenders,
+				...(config.pretenders.files && {
+					files: await relPathToNameOrAbsPath(dir, config.pretenders.files),
+				}),
+				...(config.pretenders.scan && {
+					scan: config.pretenders.scan.map(entry => ({
+						...entry,
+						files:
+							typeof entry.files === 'string'
+								? path.resolve(dir, entry.files)
+								: entry.files.map(f => path.resolve(dir, f)),
+					})),
+				}),
+				...(config.pretenders.data && {
+					data: config.pretenders.data.map(pretender =>
+						rebaseHandWrittenPretenderFilePath(pretender, relPath => path.resolve(dir, relPath)),
+					),
+				}),
+			},
+		}),
+	};
 }
 
 async function load(filePath: string, cache: boolean, referrer: string): Promise<Config | ConfigLoadError> {

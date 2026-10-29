@@ -3,6 +3,13 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [5.4.0](https://github.com/markuplint/markuplint/compare/v5.3.0...v5.4.0) (2026-10-29)
+
+### Bug Fixes
+
+* **rules:** do not report descendant attributes that take part in a text alternative ([46002a7](https://github.com/markuplint/markuplint/commit/46002a75e06f877938d134ce0958a625e5d989d3)), closes [#4408](https://github.com/markuplint/markuplint/issues/4408)
+
+
 # [5.3.0](https://github.com/markuplint/markuplint/compare/v5.2.0...v5.3.0) (2026-10-21)
 
 ### Bug Fixes

@@ -19,5 +19,5 @@
 	],
 	"exclude": ["**/*.d.ts"],
 	"out": "./apidoc",
-	"plugin": ["typedoc-plugin-mdn-links", "typedoc-plugin-resolve-crossmodule-references"]
+	"plugin": ["typedoc-plugin-mdn-links"]
 }

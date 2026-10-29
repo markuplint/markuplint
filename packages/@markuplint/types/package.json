@@ -1,6 +1,6 @@
 {
 	"name": "@markuplint/types",
-	"version": "5.3.0",
+	"version": "5.4.0",
 	"description": "Type declaration and value checker",
 	"repository": {
 		"type": "git",
@@ -34,7 +34,7 @@
 		"schema:schema": "npx json2ts \"./types.schema.json\" > \"./src/types.schema.ts\""
 	},
 	"dependencies": {
-		"@markuplint/shared": "5.3.0",
+		"@markuplint/shared": "5.4.0",
 		"@types/css-tree": "^3.2.0",
 		"@types/debug": "^4.1.13",
 		"bcp-47": "^2.1.1",

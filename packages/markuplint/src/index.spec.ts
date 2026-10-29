@@ -175,8 +175,6 @@ describe('basic test', () => {
 			'require-accessible-name',
 			'require-accessible-name',
 			'require-accessible-name',
-			'require-accessible-name',
-			'require-accessible-name',
 			'no-unknown-role',
 			'no-abstract-role',
 			'permitted-roles',

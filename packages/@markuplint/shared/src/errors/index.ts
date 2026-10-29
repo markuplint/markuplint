@@ -39,12 +39,13 @@
  * Known intentional exceptions to rule 1, documented at their call sites:
  * accessible-name computation (`accname.ts` in `@markuplint/ml-core`),
  * dynamic module import (`general-import.ts` in `@markuplint/file-resolver`),
+ * configuration file loading (`cosmiconfig.ts` in `@markuplint/file-resolver`),
  * and the spec citation monitor (`fetch.ts` and `collect.ts` under
  * `scripts/spec-citations`, whose `catch` wraps the runtime's `fetch`,
  * `new URL` or `decodeURIComponent` call alone), where Tier-1-shaped errors
- * can originate from the runtime environment or from third-party module code
- * rather than from markuplint itself — `fetch` reports a network failure as a
- * `TypeError`.
+ * can originate from the runtime environment, from third-party module code or
+ * from the user's configuration rather than from markuplint itself — `fetch`
+ * reports a network failure as a `TypeError`.
  *
  * Placement policy: tier-classified error classes are defined here rather
  * than in a dedicated `@markuplint/errors` package because most packages
