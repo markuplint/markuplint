@@ -1,8 +1,8 @@
 /* eslint-disable @typescript-eslint/prefer-readonly-parameter-types -- AccnameElement wraps mutable DOM types */
 
-import type { AccnameElement, AccnameResolver, AccnameResult } from './types.js';
+import type { AccnameComputeFn, AccnameElement, AccnameResolver, AccnameResult } from './types.js';
 
-import { flattenText, makeResult } from './helpers.js';
+import { flattenText, makeResult } from './result.js';
 
 /**
  * Implements AccName 1.2 §4.3.2 Step 2B:
@@ -25,12 +25,7 @@ export function resolveAriaLabelledby(
 	el: AccnameElement,
 	resolver: AccnameResolver,
 	visited: ReadonlySet<string>,
-	computeFn: (
-		el: AccnameElement,
-		resolver: AccnameResolver,
-		inLabelledbyTraversal: boolean,
-		visited: ReadonlySet<string>,
-	) => AccnameResult,
+	computeFn: AccnameComputeFn,
 ): AccnameResult | null {
 	const labelledbyAttr = el.getAttribute('aria-labelledby');
 	if (!labelledbyAttr?.trim()) {
@@ -72,7 +67,7 @@ export function resolveAriaLabelledby(
 		// traversal doesn't block resolution of a later IDREF.
 		const innerVisited = new Set([...newVisited, id]);
 
-		const result = computeFn(referenced, resolver, true, innerVisited);
+		const result = computeReferenced(referenced, resolver, innerVisited, computeFn);
 		if (result.name) {
 			parts.push(result.name);
 		}
@@ -83,6 +78,32 @@ export function resolveAriaLabelledby(
 		return makeResult(name, 'aria-labelledby');
 	}
 	return null;
+}
+
+/**
+ * Computes the text alternative of a node directly referenced by
+ * `aria-labelledby` (Step 2B, LabelledBy Traversal).
+ *
+ * Step 2A is skipped for the whole subtree only when the referenced node is
+ * hidden; otherwise its hidden descendants contribute nothing.
+ *
+ * @see https://w3c.github.io/accname/#comp_hidden_not_referenced
+ *
+ * > If the current node is hidden and is: Not part of an aria-labelledby or aria-describedby traversal, where the node directly referenced by that relation was hidden.
+ */
+export function computeReferenced(
+	referenced: AccnameElement,
+	resolver: AccnameResolver,
+	visited: ReadonlySet<string>,
+	computeFn: AccnameComputeFn,
+): AccnameResult {
+	const traversalResolver: AccnameResolver = resolver.isHidden(referenced)
+		? {
+				...resolver,
+				isHidden: () => false,
+			}
+		: resolver;
+	return computeFn(referenced, traversalResolver, true, visited);
 }
 
 /**

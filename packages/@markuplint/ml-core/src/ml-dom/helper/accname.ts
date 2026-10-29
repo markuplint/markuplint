@@ -1,11 +1,21 @@
 import type { MLElement } from '../node/element.js';
-import type { AccnameElement, AccnameNode, AccnameResolver, ARIAVersion } from '@markuplint/ml-spec';
+import type {
+	AccnameElement,
+	AccnameNode,
+	AccnameResolver,
+	AccnameSource,
+	AccnameVisit,
+	ARIAVersion,
+} from '@markuplint/ml-spec';
 
 import {
 	computeAccessibleName,
+	computeHostLanguageLabel,
+	computeReferencedTextAlternative,
 	escapeCSS,
 	getComputedRole,
 	EMBEDDED_CONTROL_ROLES,
+	isExposedAsPresentational,
 	isNativeEmbeddedControl,
 } from '@markuplint/ml-spec';
 
@@ -36,11 +46,96 @@ export function getAccname(
 		const result = computeAccessibleName(el, resolver);
 		return result.name;
 	} catch (error) {
-		if (accnameLog.enabled) {
-			accnameLog('Raw: %s', el.raw);
-			accnameLog('Error: %O', error);
-		}
+		logFailure(el, error);
 		return '';
+	}
+}
+
+/**
+ * The elements that the computation of the element's text alternative reaches,
+ * with how it reaches each (see `AccnameResolver.onVisit` of `@markuplint/ml-spec`).
+ * Errors are handled as in {@link getAccname}: the computation is taken to reach
+ * nothing, so a caller that exempts what the computation reads (such as
+ * `no-aria-on-presentational-children`) exempts nothing for that element.
+ *
+ * @param el - The element whose text alternative is computed
+ * @param version - The ARIA version
+ * @param asReferenced - Computes it as a node referenced by `aria-labelledby` or
+ *   `aria-describedby` instead of its accessible name
+ */
+export function getAccnameVisits(
+	// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
+	el: MLElement<any, any>,
+	version: ARIAVersion,
+	asReferenced: boolean,
+): ReadonlyMap<MLElement<any, any>, readonly AccnameVisit[]> {
+	const visits = new Map<MLElement<any, any>, AccnameVisit[]>();
+	try {
+		const resolver: AccnameResolver = {
+			...createMLCoreResolver(el, version),
+			onVisit(target, visit) {
+				// TODO: Remove cast when AccnameResolver is generic (#3178)
+				const targetEl = target as MLElement<any, any>;
+				const list = visits.get(targetEl) ?? [];
+				list.push(visit);
+				visits.set(targetEl, list);
+			},
+		};
+		if (asReferenced) {
+			computeReferencedTextAlternative(el, resolver);
+		} else {
+			computeAccessibleName(el, resolver);
+		}
+		return visits;
+	} catch (error) {
+		logFailure(el, error);
+		return new Map();
+	}
+}
+
+/**
+ * The text alternative of the element as a node referenced by `aria-labelledby`
+ * or `aria-describedby`. Errors are handled as in {@link getAccname}.
+ */
+export function getReferencedTextAlternative(
+	// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
+	el: MLElement<any, any>,
+	version: ARIAVersion,
+): string {
+	try {
+		return computeReferencedTextAlternative(el, createMLCoreResolver(el, version)).name;
+	} catch (error) {
+		logFailure(el, error);
+		return '';
+	}
+}
+
+/**
+ * The source of the host language text alternative of the element (AccName
+ * Step 2E), whether or not the element is exposed as presentational. Errors are
+ * handled as in {@link getAccname}: the element is taken to have none.
+ */
+export function getHostLanguageLabelSource(
+	// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
+	el: MLElement<any, any>,
+	version: ARIAVersion,
+): AccnameSource | null {
+	try {
+		return computeHostLanguageLabel(el, createMLCoreResolver(el, version))?.source ?? null;
+	} catch (error) {
+		logFailure(el, error);
+		return null;
+	}
+}
+
+function logFailure(
+	// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
+	el: MLElement<any, any>,
+	error: unknown,
+): void {
+	if (accnameLog.enabled) {
+		accnameLog('Raw: %s', el.raw);
+		accnameLog('Error: %O', error);
 	}
 }
 
@@ -77,6 +172,11 @@ function createMLCoreResolver(
 				return EMBEDDED_CONTROL_ROLES.has(role.role.name);
 			}
 			return isNativeEmbeddedControl(target);
+		},
+		// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
+		isExposedAsPresentational(target: AccnameElement): boolean {
+			// TODO: Remove cast when getComputedRole accepts AccnameElement (#3178)
+			return isExposedAsPresentational(getComputedRole(doc.specs, target as Element, version));
 		},
 		// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
 		getPrecomputedName(target: AccnameElement): string | null {

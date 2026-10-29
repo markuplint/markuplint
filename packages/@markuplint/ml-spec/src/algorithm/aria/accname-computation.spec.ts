@@ -18,6 +18,71 @@ test('Get accessible name', () => {
 	);
 });
 
+test('Host language label of an element exposed as presentational', () => {
+	expect(getAccname(c('<img src="s.svg" alt="Save" role="none">'), specs, version)).toBe('');
+	expect(getAccname(c('<button><img src="s.svg" alt="Save" role="none">Click</button>'), specs, version)).toBe(
+		'Click',
+	);
+	expect(
+		getAccname(c('<button><svg role="presentation"><title>Save</title></svg>Click</button>'), specs, version),
+	).toBe('Click');
+	// Control: the same markup without the role
+	expect(getAccname(c('<button><img src="s.svg" alt="Save">Click</button>'), specs, version)).toBe('Save Click');
+	expect(getAccname(c('<button><svg><title>Save</title></svg>Click</button>'), specs, version)).toBe('Save Click');
+});
+
+/**
+ * @see https://w3c.github.io/accname/#comp_hidden_not_referenced
+ */
+test('Hidden descendants of a node referenced by aria-labelledby', () => {
+	// Example 1: the referenced node is hidden, so its hidden descendant is included
+	const hiddenRoot = c(
+		'<div><div id="el1" role="button" aria-labelledby="el2"></div><div id="el2" hidden><span id="el3" hidden>hello</span></div></div>',
+	);
+	expect(getAccname(hiddenRoot.children[0]!, specs, version)).toBe('hello');
+	// Example 2: the referenced node is not hidden, so its hidden descendant is not
+	const visibleRoot = c(
+		'<div><div id="el1" role="button" aria-labelledby="el2"></div><div id="el2"><span id="el3" hidden>hello</span></div></div>',
+	);
+	expect(getAccname(visibleRoot.children[0]!, specs, version)).toBe('');
+	const mixed = c(
+		'<div><button aria-labelledby="l"></button><div id="l">Save<span aria-hidden="true">x</span></div></div>',
+	);
+	expect(getAccname(mixed.children[0]!, specs, version)).toBe('Save');
+});
+
+test('A hidden embedded control contributes nothing', () => {
+	expect(
+		getAccname(
+			c('<label for="c"><input id="c" type="checkbox">Flash <input type="text" value="5" hidden> times</label>')
+				.children[0]!,
+			specs,
+			version,
+		),
+	).toBe('Flash times');
+});
+
+test('aria-labelledby of an embedded control comes before its value, and aria-label does not', () => {
+	const doc = c(
+		'<div><div role="checkbox" aria-checked="false">Flash <input type="text" value="5" aria-labelledby="n"> times <input type="text" value="9" aria-label="nine"></div><span id="n">five</span></div>',
+	);
+	expect(getAccname(doc.children[0]!, specs, version)).toBe('Flash five times 9');
+});
+
+test.each([
+	['<label for="i"><svg><desc>A floppy disk</desc></svg>Save</label>', 'Save'],
+	['<label for="i"><svg role="none"><title>T</title></svg>Save</label>', 'Save'],
+	['<label for="i"><span aria-hidden="true">x</span>Save</label>', 'Save'],
+	['<label for="i">Flash <input type="text" value="5"> times</label>', 'Flash 5 times'],
+])('Label text of %s', (label, name) => {
+	const doc = c(`<div><input id="i" type="checkbox">${label}</div>`);
+	expect(getAccname(doc.children[0]!, specs, version)).toBe(name);
+});
+
+test('SVG title and desc are not content', () => {
+	expect(getAccname(c('<button><svg><desc>A floppy disk</desc></svg>Save</button>'), specs, version)).toBe('Save');
+});
+
 test('Invisible element', () => {
 	expect(getAccname(c('<button>label</button>'), specs, version)).toBe('label');
 	expect(getAccname(c('<button aria-disabled="true">label</button>'), specs, version)).toBe('label');

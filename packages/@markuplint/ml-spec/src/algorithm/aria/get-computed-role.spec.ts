@@ -54,7 +54,7 @@ describe('1.2', () => {
 	test('multiple', () => {
 		expect(c('<div role="presentation heading"></div>', '1.2').role?.name).toBe('presentation');
 		expect(c('<div role="roletype heading"></div>', '1.2').role?.name).toBe('heading');
-		expect(c('<img alt="alt" role="banner button"/>', '1.2').role?.name).toBe('button');
+		expect(c('<img alt="alt" role="banner button"/>', '1.2').role?.name).toBe('banner');
 		expect(c('<img alt="alt" role="foo button"/>', '1.2').role?.name).toBe('button');
 		expect(c('<img alt="alt" role="graphics-symbol button"/>', '1.2').role?.name).toBe('button');
 	});
@@ -89,7 +89,7 @@ describe('1.2', () => {
 		expect(c('<button></button>', '1.2').role?.name).toBe('button');
 		expect(c('<button disabled></button>', '1.2').role?.name).toBe('button');
 		expect(c('<button role="none"></button>', '1.2').role?.name).toBe('button'); // No permitted role
-		expect(c('<button role="none" disabled></button>', '1.2').role?.name).toBe('button'); // No permitted role
+		expect(c('<button role="none" disabled></button>', '1.2').role?.name).toBe('none'); // Not permitted, but exposed: a disabled button is not focusable
 		expect(c('<div></div>', '1.2').role?.name).toBe('generic');
 		expect(c('<div role="none"></div>', '1.2').role?.name).toBe('none');
 		expect(c('<div tabindex="0"></div>', '1.2').role?.name).toBe('generic');
@@ -141,7 +141,7 @@ describe('1.2', () => {
 			// table with default/table/grid/treegrid role — even `role="row"` matching
 			// the implicit role is disallowed.
 			['tr', 'row', 'NO_PERMITTED'],
-			['td', 'cell', 'NO_PERMITTED'],
+			['td', 'gridcell', 'NO_PERMITTED'],
 		]);
 		expect(
 			tree(
@@ -212,7 +212,7 @@ describe('1.3', () => {
 	test('multiple', () => {
 		expect(c('<div role="presentation heading"></div>', '1.3').role?.name).toBe('presentation');
 		expect(c('<div role="roletype heading"></div>', '1.3').role?.name).toBe('heading');
-		expect(c('<img alt="alt" role="banner button"/>', '1.3').role?.name).toBe('button');
+		expect(c('<img alt="alt" role="banner button"/>', '1.3').role?.name).toBe('banner');
 		expect(c('<img alt="alt" role="foo button"/>', '1.3').role?.name).toBe('button');
 		expect(c('<img alt="alt" role="graphics-symbol button"/>', '1.3').role?.name).toBe('button');
 	});
@@ -247,7 +247,7 @@ describe('1.3', () => {
 		expect(c('<button></button>', '1.3').role?.name).toBe('button');
 		expect(c('<button disabled></button>', '1.3').role?.name).toBe('button');
 		expect(c('<button role="none"></button>', '1.3').role?.name).toBe('button'); // No permitted role
-		expect(c('<button role="none" disabled></button>', '1.3').role?.name).toBe('button'); // No permitted role
+		expect(c('<button role="none" disabled></button>', '1.3').role?.name).toBe('none'); // Not permitted, but exposed: a disabled button is not focusable
 		expect(c('<div></div>', '1.3').role?.name).toBe('generic');
 		expect(c('<div role="none"></div>', '1.3').role?.name).toBe('none');
 		expect(c('<div tabindex="0"></div>', '1.3').role?.name).toBe('generic');
@@ -301,7 +301,7 @@ describe('1.3', () => {
 			// Per ARIA in HTML §3.4 `tr` conditional: "No role permitted" inside a
 			// table — even `role="row"` matching the implicit role is disallowed.
 			['tr', 'row', 'NO_PERMITTED'],
-			['td', 'cell', 'NO_PERMITTED'],
+			['td', 'gridcell', 'NO_PERMITTED'],
 		]);
 		expect(
 			tree(
@@ -395,5 +395,39 @@ describe('isNativeContextIntact — implicit role context check skip (#3214)', (
 		expect(c('<select><optgroup><option>A</option></optgroup></select>', '1.3', 'option').role?.name).toBe(
 			'option',
 		);
+	});
+});
+
+describe('a role that ARIA in HTML does not permit', () => {
+	test.each([
+		['1.2', '<img src="s.svg" alt="Save" role="none">', 'none'],
+		['1.3', '<img src="s.svg" alt="Save" role="none">', 'none'],
+		['1.2', '<area href="/" alt="Home" role="button">', 'button'],
+		['1.3', '<area href="/" alt="Home" role="button">', 'button'],
+	] as const)('is exposed with the error, as user agents still use it (%s: %s)', (version, html, role) => {
+		const computed = c(html, version);
+		expect([computed.role?.name, computed.role?.isImplicit, computed.errorType]).toStrictEqual([
+			role,
+			false,
+			'NO_PERMITTED',
+		]);
+	});
+
+	test.each([
+		['1.2', '<script role="button"></script>'],
+		['1.3', '<script role="button"></script>'],
+		['1.2', '<input type="hidden" role="button">'],
+		['1.3', '<input type="hidden" role="button">'],
+		['1.2', '<input type="HIDDEN" role="button">'],
+		['1.2', '<template role="button"></template>'],
+	] as const)('is dropped on an element that is never rendered (%s: %s)', (version, html) => {
+		const computed = c(html, version);
+		expect([computed.role?.name ?? null, computed.errorType]).toStrictEqual([null, 'NO_PERMITTED']);
+	});
+
+	test('does not take the place of a landmark that needs a name', () => {
+		// `region` is not permitted on an image with alt, but it is checked for a name first
+		const computed = c('<img src="s.svg" alt="Save" role="region">', '1.2');
+		expect([computed.role?.name, computed.errorType]).toStrictEqual(['img', 'INVALID_LANDMARK']);
 	});
 });

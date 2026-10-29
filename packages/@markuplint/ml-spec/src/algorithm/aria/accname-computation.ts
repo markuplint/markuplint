@@ -5,6 +5,7 @@ import { computeAccessibleName } from './accname/compute.js';
 import { EMBEDDED_CONTROL_ROLES, escapeCSS } from './accname/helpers.js';
 import { isNativeEmbeddedControl } from '../../const/index.js';
 import { getComputedRole } from './get-computed-role.js';
+import { isExposedAsPresentational } from './is-presentational.js';
 
 /**
  * [Implementation-specific] Reentrant guard to prevent infinite recursion when
@@ -130,6 +131,11 @@ function createDomResolver(
 			}
 			// Native HTML embedded controls without explicit role
 			return isNativeEmbeddedControl(target);
+		},
+		// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
+		isExposedAsPresentational(target: AccnameElement): boolean {
+			// TODO: Remove cast when getComputedRole accepts AccnameElement (#3178)
+			return isExposedAsPresentational(getComputedRole(specs, target as Element, version));
 		},
 	};
 }

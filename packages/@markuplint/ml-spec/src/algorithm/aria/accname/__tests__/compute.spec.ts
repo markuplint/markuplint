@@ -909,7 +909,7 @@ describe('T4-9: label containing embedded control', () => {
 		expect(result.source).toBe('label');
 	});
 
-	test('non-labeled embedded control inside label — computeFn resolves its name, not value', () => {
+	test('non-labeled embedded control inside label — its value is used, not its name', () => {
 		const target = element('input', {
 			attrs: { id: 'name', type: 'text' },
 		});
@@ -925,10 +925,9 @@ describe('T4-9: label containing embedded control', () => {
 			nameFromContent: new Set(['label']),
 		});
 		const result = computeAccessibleName(target, resolver);
-		// collectLabelText calls computeFn (full AccName algorithm) on child
-		// elements, NOT resolveNameFromContent. So the input's accessible name
-		// (from title fallback) is used, not its embedded control value.
-		expect(result.name).toBe('Donate Amount dollars');
+		// collectLabelText treats an embedded control as name-from-content
+		// recursion does (Step 2C): its value is used, not its accessible name.
+		expect(result.name).toBe('Donate 50 dollars');
 		expect(result.source).toBe('label');
 	});
 });

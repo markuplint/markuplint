@@ -1,4 +1,4 @@
-import type { ARIAVersion } from '../../types/index.js';
+import type { ARIAVersion, ComputedRole } from '../../types/index.js';
 
 /**
  * Determines whether a given role name corresponds to a presentational role
@@ -13,6 +13,21 @@ export function isPresentational(roleName?: string) {
 		return false;
 	}
 	return ['presentation', 'none'].includes(roleName);
+}
+
+/**
+ * Determines whether an element is exposed with the `none` or `presentation`
+ * role that its author specified, after the Presentational Roles Conflict
+ * Resolution. The implicit `presentation` role of `<img alt="">` does not count:
+ * HTML-AAM gives that image no name by its own rule.
+ *
+ * @see https://w3c.github.io/accname/#comp_host_language_label
+ *
+ * @param computed - The computed role of the element
+ * @returns `true` if the computed role is an explicit presentational role
+ */
+export function isExposedAsPresentational(computed: ComputedRole): boolean {
+	return !!computed.role && !computed.role.isImplicit && isPresentational(computed.role.name);
 }
 
 /**

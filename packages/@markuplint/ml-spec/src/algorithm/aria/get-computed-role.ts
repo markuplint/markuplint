@@ -197,7 +197,7 @@ function computeRole(
 	 */
 	if (
 		// It doesn't been specified a valid explicit role.
-		(explicitRole.role === null || explicitRole.errorType != null) &&
+		explicitRole.role === null &&
 		// It is an SVG element.
 		el.namespaceURI === SVG_NAMESPACE &&
 		!hasSvgAccessibleNameSource(el)
@@ -231,10 +231,9 @@ function computeRole(
 		 *
 		 * 1. It may be focusable
 		 *
-		 * THIS CONDITION IS ALMOST MEANINGLESS.
-		 * Because it has already been determined that
-		 * the interactive elements can not specify the presentational role
-		 * in the previous processing that computes the permitted role (`getExplicitRole`).
+		 * ARIA in HTML does not permit the presentational roles on most
+		 * interactive elements, but `getExplicitRole` keeps such a role with
+		 * `NO_PERMITTED`, as user agents expose it, so this resolves it.
 		 */
 		mayBeFocusable(el, specs) &&
 		/**

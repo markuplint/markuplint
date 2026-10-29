@@ -1,9 +1,10 @@
 /* eslint-disable @typescript-eslint/prefer-readonly-parameter-types -- AccnameElement wraps mutable DOM types */
 
-import type { AccnameElement, AccnameResolver, AccnameResult } from './types.js';
+import type { AccnameComputeFn, AccnameElement, AccnameResolver, AccnameResult } from './types.js';
 
 import { ELEMENT_NODE, TEXT_NODE } from '../../../const/index.js';
-import { flattenText, getChildNodes, makeResult, resolveLabel } from './helpers.js';
+import { embeddedControlText, getChildNodes, isSvgDescriptiveElement, resolveLabel } from './helpers.js';
+import { flattenText, makeResult } from './result.js';
 
 /**
  * Part of AccName 1.2 §4.3.2 Step 2E — for labelable elements, the HTML label
@@ -16,12 +17,7 @@ export function resolveLabelText(
 	el: AccnameElement,
 	resolver: AccnameResolver,
 	visited: ReadonlySet<string>,
-	computeFn: (
-		el: AccnameElement,
-		resolver: AccnameResolver,
-		inLabelledbyTraversal: boolean,
-		visited: ReadonlySet<string>,
-	) => AccnameResult,
+	computeFn: AccnameComputeFn,
 	inLabelledbyTraversal: boolean,
 ): AccnameResult | null {
 	const labels = resolveLabel(el, resolver);
@@ -48,18 +44,17 @@ export function resolveLabelText(
  * Excludes the labeled element itself to prevent circular inclusion. Parts are
  * joined with a space separator, matching the AccName 1.2 concatenation
  * behavior for label text.
+ *
+ * The children are treated as name-from-content recursion treats them
+ * (`resolveNameFromContent`): a hidden one and an SVG `title` or `desc`
+ * contribute nothing, and an embedded control contributes its value.
  */
 function collectLabelText(
 	label: AccnameElement,
 	labeledElement: AccnameElement,
 	resolver: AccnameResolver,
 	visited: ReadonlySet<string>,
-	computeFn: (
-		el: AccnameElement,
-		resolver: AccnameResolver,
-		inLabelledbyTraversal: boolean,
-		visited: ReadonlySet<string>,
-	) => AccnameResult,
+	computeFn: AccnameComputeFn,
 	inLabelledbyTraversal: boolean,
 ): string {
 	const parts: string[] = [];
@@ -68,13 +63,17 @@ function collectLabelText(
 			parts.push(child.textContent ?? '');
 		} else if (child.nodeType === ELEMENT_NODE) {
 			const childEl = child as AccnameElement;
-			if (childEl === labeledElement) {
+			if (childEl === labeledElement || isSvgDescriptiveElement(childEl)) {
+				continue;
+			}
+			if (resolver.isEmbeddedControl(childEl)) {
+				parts.push(embeddedControlText(childEl, resolver, visited, computeFn, inLabelledbyTraversal));
 				continue;
 			}
 			const result = computeFn(childEl, resolver, inLabelledbyTraversal, visited);
 			if (result.name) {
 				parts.push(result.name);
-			} else {
+			} else if (!resolver.isHidden(childEl)) {
 				// Transparent traversal: when the child element has no accessible name
 				// (e.g., <span> with role="generic"), recursively collect its descendant text.
 				// This matches the behavior of resolveNameFromContent's fallback.
