@@ -77,8 +77,8 @@
 		"vscode"
 	],
 	"devDependencies": {
-		"@commitlint/cli": "21.2.3",
-		"@commitlint/config-conventional": "21.2.3",
+		"@commitlint/cli": "21.2.4",
+		"@commitlint/config-conventional": "21.2.4",
 		"@commitlint/config-lerna-scopes": "21.2.0",
 		"cheerio": "1.2.0",
 		"commitizen": "4.3.2",
