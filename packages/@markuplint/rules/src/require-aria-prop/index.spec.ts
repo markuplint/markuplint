@@ -138,3 +138,16 @@ test('[require-aria-prop-issue-4309-004] JSX: an upper-case required prop on an 
 	const control = await mlRuleTest(rule, '<svg role="separator" tabindex="0" aria-valuenow="50" />', { parser });
 	expect(control.violations).toStrictEqual([]);
 });
+
+test('[require-aria-prop-issue-4408-001] a role that ARIA in HTML does not permit still requires its props, as user agents expose it', async () => {
+	const { violations } = await mlRuleTest(rule, '<h1 role="checkbox">Agree</h1>');
+	expect(violations).toStrictEqual([
+		{
+			severity: 'error',
+			line: 1,
+			col: 1,
+			message: 'Require the "aria-checked" ARIA state on the "checkbox" role',
+			raw: '<h1 role="checkbox">',
+		},
+	]);
+});
