@@ -6940,12 +6940,12 @@ __metadata:
   languageName: node
   linkType: hard
 
-"dotenv@npm:18.0.8":
-  version: 18.0.8
-  resolution: "dotenv@npm:18.0.8"
+"dotenv@npm:18.0.9":
+  version: 18.0.9
+  resolution: "dotenv@npm:18.0.9"
   bin:
     dotenv: dist/index.cjs
-  checksum: 10c0/88a6a81afe58aaad7f9ae5d97422731c6e7b9efa4db752ea5add7fb6035f5866ce6e10a76fb7ad2d7f606bdf0afc9507ffd7e04d86d9b347b38d4614a3a0c2ac
+  checksum: 10c0/62a70960e611f1d26bf5ade0e0baa7850513f65d56789ba282c8ae7f690411d364457d33d4302b2611cc18157d03dea589ac7e33f1aa85b8f69737b8c05cf726
   languageName: node
   linkType: hard
 
@@ -9863,7 +9863,7 @@ __metadata:
     "@playwright/test": "npm:1.64.1"
     "@tsconfig/strictest": "npm:2.0.8"
     clsx: "npm:2.1.1"
-    dotenv: "npm:18.0.8"
+    dotenv: "npm:18.0.9"
     eslint-plugin-react: "npm:7.37.5"
     eslint-plugin-react-hooks: "npm:7.1.1"
     glob: "npm:13.0.6"
