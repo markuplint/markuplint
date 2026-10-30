@@ -1702,7 +1702,7 @@ __metadata:
     cosmiconfig: "npm:^10.0.1"
     debug: "npm:^4.4.3"
     glob: "npm:^13.0.6"
-    ignore: "npm:^7.0.12"
+    ignore: "npm:^7.0.13"
     import-meta-resolve: "npm:^4.2.0"
     jsonc: "npm:^3.0.0"
     minimatch: "npm:^10.2.6"
@@ -7583,10 +7583,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"ignore@npm:^7.0.12":
-  version: 7.0.12
-  resolution: "ignore@npm:7.0.12"
-  checksum: 10c0/d3a1aab740f3e9e1b634d50e1ad9d7d5db36728ea56a9bf4ef2f3761f4c29a42543ce94761fd637ba8c25a5592ef778d03828bbdf2a599c05c4e32da6095b45c
+"ignore@npm:^7.0.13":
+  version: 7.0.13
+  resolution: "ignore@npm:7.0.13"
+  checksum: 10c0/e6d122726609d57be39a12a91a5479eefe6d4298233695651de21f2d0bb40216e5fe89e01f343f7fb2e265887136ad3bfae1a14e0b06d8ca4c6e9ea4891e53e4
   languageName: node
   linkType: hard
 
