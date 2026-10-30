@@ -9301,7 +9301,7 @@ __metadata:
     husky: "npm:9.1.7"
     lerna: "npm:10.1.1"
     lint-staged: "npm:17.6.0"
-    npm-run-all2: "npm:9.0.3"
+    npm-run-all2: "npm:9.0.4"
     oxfmt: "npm:0.73.0"
     oxlint: "npm:1.88.0"
     textlint: "npm:15.8.0"
@@ -10783,9 +10783,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"npm-run-all2@npm:9.0.3":
-  version: 9.0.3
-  resolution: "npm-run-all2@npm:9.0.3"
+"npm-run-all2@npm:9.0.4":
+  version: 9.0.4
+  resolution: "npm-run-all2@npm:9.0.4"
   dependencies:
     ansi-styles: "npm:^7.0.0"
     cross-spawn: "npm:^7.0.6"
@@ -10793,14 +10793,14 @@ __metadata:
     picomatch: "npm:^4.0.2"
     pidtree: "npm:^1.0.0"
     read-package-json-fast: "npm:^6.0.0"
-    shell-quote: "npm:^1.8.4"
+    shell-quote: "npm:^1.12.0"
     which: "npm:^7.0.0"
   bin:
     npm-run-all: bin/npm-run-all/index.js
     npm-run-all2: bin/npm-run-all/index.js
     run-p: bin/run-p/index.js
     run-s: bin/run-s/index.js
-  checksum: 10c0/71a72e7ed7e11a8f4e326ab9769333a4f096998c1117e6cf804f7d0cf6e6fe04725a5c80a509b1d6275015d33d3f41f13c530e01dbd5e89b5bad6cf499deebe1
+  checksum: 10c0/fe10762bb9c4093dd2bf70b4a593ef5d8f1d4c3486e15abd96842b9dd1d9f706ced440387f118a216110404e2987795b5d1e9cdb7e13afdeb7f29601b73a3e07
   languageName: node
   linkType: hard
 
@@ -12588,7 +12588,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"shell-quote@npm:^1.8.4":
+"shell-quote@npm:^1.12.0":
   version: 1.12.0
   resolution: "shell-quote@npm:1.12.0"
   checksum: 10c0/1605a4ed6a758bf13de7cb8197a4184d8015f7a4dbdcd6cd4a717d5b30b3ae7666300cc4ae7f3155cf80ace9739e9e82061ee5aa1a648f53f5fab31a220816d0
