@@ -9306,7 +9306,7 @@ __metadata:
     oxlint: "npm:1.88.0"
     textlint: "npm:15.8.0"
     textlint-filter-rule-comments: "npm:1.3.0"
-    textlint-rule-preset-ja-spacing: "npm:3.0.3"
+    textlint-rule-preset-ja-spacing: "npm:3.0.4"
     textlint-rule-preset-ja-technical-writing: "npm:12.0.2"
     textlint-rule-preset-japanese: "npm:10.0.4"
     textlint-rule-preset-jtf-style: "npm:3.0.3"
@@ -13214,12 +13214,12 @@ __metadata:
   languageName: node
   linkType: hard
 
-"textlint-rule-ja-nakaguro-or-halfwidth-space-between-katakana@npm:^3.0.3":
-  version: 3.0.3
-  resolution: "textlint-rule-ja-nakaguro-or-halfwidth-space-between-katakana@npm:3.0.3"
+"textlint-rule-ja-nakaguro-or-halfwidth-space-between-katakana@npm:^3.0.4":
+  version: 3.0.4
+  resolution: "textlint-rule-ja-nakaguro-or-halfwidth-space-between-katakana@npm:3.0.4"
   dependencies:
     textlint-rule-helper: "npm:^2.2.4"
-  checksum: 10c0/2626b635bea2819fb6cf946ba6ea3848d23e492e3e2c9029af0e0d4dcab1444013c1e1712d526464653005d45e6018169e3bf8bde20d59f25c2d4fcd9ad3ebde
+  checksum: 10c0/12a1de1d52391c86f440e2d47eab8147dbf4bb06a65f66e05c55fd3d09b840c5c7f4ed181c002807a9513a4ee6aecde57b5ad258e38488547bdec8de88c26df3
   languageName: node
   linkType: hard
 
@@ -13258,31 +13258,31 @@ __metadata:
   languageName: node
   linkType: hard
 
-"textlint-rule-ja-no-space-around-parentheses@npm:^3.0.3":
-  version: 3.0.3
-  resolution: "textlint-rule-ja-no-space-around-parentheses@npm:3.0.3"
+"textlint-rule-ja-no-space-around-parentheses@npm:^3.0.4":
+  version: 3.0.4
+  resolution: "textlint-rule-ja-no-space-around-parentheses@npm:3.0.4"
   dependencies:
     textlint-rule-helper: "npm:^2.2.4"
-  checksum: 10c0/87b2ef6b4b2e98df6252bb58bdc5ba5105c9ae12c63ac27841cd1c451b84abf424357acd4490bd5f2b0bf75192360e3f46939759312a246e9f9221015f1f19b8
+  checksum: 10c0/92b64d4411f1049cac18ddd64f42d88dc47729a572dae7024667e6abdae3fffbf9128e384ca1b2e14eb4367b781e95766967e85c040b87039d3a707e5d7d9838
   languageName: node
   linkType: hard
 
-"textlint-rule-ja-no-space-around-slash@npm:^3.0.3":
-  version: 3.0.3
-  resolution: "textlint-rule-ja-no-space-around-slash@npm:3.0.3"
+"textlint-rule-ja-no-space-around-slash@npm:^3.0.4":
+  version: 3.0.4
+  resolution: "textlint-rule-ja-no-space-around-slash@npm:3.0.4"
   dependencies:
     textlint-rule-helper: "npm:^2.2.4"
-  checksum: 10c0/030c14532907031fb59b57f14c816b7da104d1b30018789e30f5bbf177e8d354730df1afbb15fa35802570a6c91f5a51b771aabfca9dabedd8fd7ed649807ddc
+  checksum: 10c0/8225587370f2ad450f3dbe3a56442de226b070a87abcf56445d038ab5835a970f8180da6dc6bdeb0fbf5e3215123023d9d835622dfa014325b45d42a8dd03383
   languageName: node
   linkType: hard
 
-"textlint-rule-ja-no-space-between-full-width@npm:^3.0.3":
-  version: 3.0.3
-  resolution: "textlint-rule-ja-no-space-between-full-width@npm:3.0.3"
+"textlint-rule-ja-no-space-between-full-width@npm:^3.0.4":
+  version: 3.0.4
+  resolution: "textlint-rule-ja-no-space-between-full-width@npm:3.0.4"
   dependencies:
     regx: "npm:^1.0.4"
     textlint-rule-helper: "npm:^2.2.4"
-  checksum: 10c0/cbad1f8e4b273d778d9bcda0895e3315046b7572160c71bd27ab1af7d423b1bfb0171882810663456ff308c44fb1a8faec06b3017818eea1d93edd3ceb523468
+  checksum: 10c0/6b0dfa137b0ed97b39f341753347f01e2b7012a4b0a1962ed4aafb6711b02b01d6579efec6d7bea8b105335f7824afdadaa0a5497ee56ffe294f8ba402cf8bf4
   languageName: node
   linkType: hard
 
@@ -13307,67 +13307,67 @@ __metadata:
   languageName: node
   linkType: hard
 
-"textlint-rule-ja-space-after-exclamation@npm:^3.0.3":
-  version: 3.0.3
-  resolution: "textlint-rule-ja-space-after-exclamation@npm:3.0.3"
+"textlint-rule-ja-space-after-exclamation@npm:^3.0.4":
+  version: 3.0.4
+  resolution: "textlint-rule-ja-space-after-exclamation@npm:3.0.4"
   dependencies:
     textlint-rule-helper: "npm:^2.2.4"
-  checksum: 10c0/6307de80a7c195601abbe88ff56d42e432b48542cc2126f40e8eec294022660b72adce97a754a31490a817f83eecbb26cf805122b7fc4846b221255754a12587
+  checksum: 10c0/cc88ffda8e3814cf7b6bfc7dc466293496a48946435442d5bba609a87d2107eb09a40b431972ea5a014ff16a27a24c446eb41f64b0a71740c4cea99e6903604f
   languageName: node
   linkType: hard
 
-"textlint-rule-ja-space-after-question@npm:^3.0.3":
-  version: 3.0.3
-  resolution: "textlint-rule-ja-space-after-question@npm:3.0.3"
+"textlint-rule-ja-space-after-question@npm:^3.0.4":
+  version: 3.0.4
+  resolution: "textlint-rule-ja-space-after-question@npm:3.0.4"
   dependencies:
     textlint-rule-helper: "npm:^2.2.4"
-  checksum: 10c0/1d9d5b60a2a1113524f0e86795f700bfc3c7865d7a8c551b9757fb2243b5a8120e0810115aa6a3a375a9a88bf6d3f066bcfa53fa21e0128f64c46ad36a37af54
+  checksum: 10c0/18de83478b8980f5ec9737102337e573ab73b24fdb8e4ac06cf8273d1631699a203d2f0e968e7e546b82026236e86e05a520c1b25ae099bab29acdb3ba8fa91a
   languageName: node
   linkType: hard
 
-"textlint-rule-ja-space-around-code@npm:^3.0.3":
-  version: 3.0.3
-  resolution: "textlint-rule-ja-space-around-code@npm:3.0.3"
+"textlint-rule-ja-space-around-code@npm:^3.0.4":
+  version: 3.0.4
+  resolution: "textlint-rule-ja-space-around-code@npm:3.0.4"
   dependencies:
     textlint-rule-helper: "npm:^2.2.4"
-  checksum: 10c0/8e07de9f7be03b4f19def95469928425048e26ae47043294b43d5378f2f5b95dc8b8ef7e58064cd337b029869e9d7237a4f338a8483df4a49932d64f1320d778
+  checksum: 10c0/b1d36ebd919a002c8ebaf99ef4a573df0e141695f0eab03dbc11af47612edaac7151f6d938d279e8de19a7c3885abc7393abac8355e40b076c71ea33abf632bc
   languageName: node
   linkType: hard
 
-"textlint-rule-ja-space-around-emphasis@npm:^3.0.3":
-  version: 3.0.3
-  resolution: "textlint-rule-ja-space-around-emphasis@npm:3.0.3"
+"textlint-rule-ja-space-around-emphasis@npm:^3.0.4":
+  version: 3.0.4
+  resolution: "textlint-rule-ja-space-around-emphasis@npm:3.0.4"
   dependencies:
     textlint-rule-helper: "npm:^2.2.4"
-  checksum: 10c0/e8b332a81cafe67bbad1ff72e15c3897e3eedbd292e0532ddff51d67eb2081281718756e2a19e39e472a0dcce8bf280cfa7f0eb4cb2b113af763162dccf1d1b3
+  checksum: 10c0/663e3ab9b53cfe7625f2c07b130af806c57916c063f6b28d3d94168f5560152847d3ba561bf304354dac5cfde87feb91bfda48c781bf55e33d1a0ccdcdb90390
   languageName: node
   linkType: hard
 
-"textlint-rule-ja-space-around-link@npm:^3.0.3":
-  version: 3.0.3
-  resolution: "textlint-rule-ja-space-around-link@npm:3.0.3"
+"textlint-rule-ja-space-around-link@npm:^3.0.4":
+  version: 3.0.4
+  resolution: "textlint-rule-ja-space-around-link@npm:3.0.4"
   dependencies:
     textlint-rule-helper: "npm:^2.2.4"
-  checksum: 10c0/02216fcc63d4d1ad9f3986053ac90632a0d6fe8c8f2edc25e94f8c098d3ea685ea5f93b7ccb2975f3e27cedb1ba009cf42bb5401130b5651e4a72dc8c906b4f8
+  checksum: 10c0/7d82e3bcde8793b222860f58ec4f7cfe737bdfdcbf14cb17ed6479794c61c9eaf1fd210ee339b201878e8dccbaffe957013098673d5f4197f36d75440bf685c0
   languageName: node
   linkType: hard
 
-"textlint-rule-ja-space-around-strong@npm:^3.0.3":
-  version: 3.0.3
-  resolution: "textlint-rule-ja-space-around-strong@npm:3.0.3"
+"textlint-rule-ja-space-around-strong@npm:^3.0.4":
+  version: 3.0.4
+  resolution: "textlint-rule-ja-space-around-strong@npm:3.0.4"
   dependencies:
     textlint-rule-helper: "npm:^2.2.4"
-  checksum: 10c0/d49720d3e40c6aa77f87e77281b757c2eda235ccd79dad077c27b6288473519f0fdcc11cb7fcd1da2f8561f2e3c53a8066d87f67c755301694e102f072b5ed13
+  checksum: 10c0/23ed9bb519cbe286cee26afaa8f85bae51180910fa9f314160d5aab011d5d78ac1f0c043856a673c7a68fc9d5ad6bb3a8ccb99bf9352d4533a1ac2511371695f
   languageName: node
   linkType: hard
 
-"textlint-rule-ja-space-between-half-and-full-width@npm:^3.0.3":
-  version: 3.0.3
-  resolution: "textlint-rule-ja-space-between-half-and-full-width@npm:3.0.3"
+"textlint-rule-ja-space-between-half-and-full-width@npm:^3.0.4":
+  version: 3.0.4
+  resolution: "textlint-rule-ja-space-between-half-and-full-width@npm:3.0.4"
   dependencies:
     "@textlint/regexp-string-matcher": "npm:^2.0.2"
     textlint-rule-helper: "npm:^2.2.4"
-  checksum: 10c0/60d3696577ee06f2410adcab66536afbdd4103557bde5e0244c4bf2c4a988424dbe09df79e4cb1b1fa7d70078c6de247a487b1fe5103bb7f58ab75e480a53466
+  checksum: 10c0/4526c83020f35a4b2ddf64c5dccf33dcd69962a9abe6595c9211846974003a830fd4e6f66ba84d9d1f594f8120bd510da4a28bf4b2a19be642aaec061dbb5a0b
   languageName: node
   linkType: hard
 
@@ -13525,22 +13525,22 @@ __metadata:
   languageName: node
   linkType: hard
 
-"textlint-rule-preset-ja-spacing@npm:3.0.3":
-  version: 3.0.3
-  resolution: "textlint-rule-preset-ja-spacing@npm:3.0.3"
+"textlint-rule-preset-ja-spacing@npm:3.0.4":
+  version: 3.0.4
+  resolution: "textlint-rule-preset-ja-spacing@npm:3.0.4"
   dependencies:
-    textlint-rule-ja-nakaguro-or-halfwidth-space-between-katakana: "npm:^3.0.3"
-    textlint-rule-ja-no-space-around-parentheses: "npm:^3.0.3"
-    textlint-rule-ja-no-space-around-slash: "npm:^3.0.3"
-    textlint-rule-ja-no-space-between-full-width: "npm:^3.0.3"
-    textlint-rule-ja-space-after-exclamation: "npm:^3.0.3"
-    textlint-rule-ja-space-after-question: "npm:^3.0.3"
-    textlint-rule-ja-space-around-code: "npm:^3.0.3"
-    textlint-rule-ja-space-around-emphasis: "npm:^3.0.3"
-    textlint-rule-ja-space-around-link: "npm:^3.0.3"
-    textlint-rule-ja-space-around-strong: "npm:^3.0.3"
-    textlint-rule-ja-space-between-half-and-full-width: "npm:^3.0.3"
-  checksum: 10c0/589523936582ff0bea79d4387bda92f3f94e7140c9a1dd3d3ce2f12d50501a8be798969d530df23b04ff77483d060b93ab5ccfe40532fdd2ef7fe5de8a65a96f
+    textlint-rule-ja-nakaguro-or-halfwidth-space-between-katakana: "npm:^3.0.4"
+    textlint-rule-ja-no-space-around-parentheses: "npm:^3.0.4"
+    textlint-rule-ja-no-space-around-slash: "npm:^3.0.4"
+    textlint-rule-ja-no-space-between-full-width: "npm:^3.0.4"
+    textlint-rule-ja-space-after-exclamation: "npm:^3.0.4"
+    textlint-rule-ja-space-after-question: "npm:^3.0.4"
+    textlint-rule-ja-space-around-code: "npm:^3.0.4"
+    textlint-rule-ja-space-around-emphasis: "npm:^3.0.4"
+    textlint-rule-ja-space-around-link: "npm:^3.0.4"
+    textlint-rule-ja-space-around-strong: "npm:^3.0.4"
+    textlint-rule-ja-space-between-half-and-full-width: "npm:^3.0.4"
+  checksum: 10c0/251970b5bad6f02c24882b4d88eaa0c06393ef57c3c21ef8be4b6a6bd13a4aeae1f395c44846410123e9ba65c92cd4c25570af77c3a6b391589908d0fa30bb58
   languageName: node
   linkType: hard
 
