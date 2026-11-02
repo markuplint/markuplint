@@ -21,7 +21,7 @@ describe('templateScanner: an attribute that forwards a prop of the component', 
 	test('[vue] defineProps: a name that is a prop, and an expression that is not just a name', async () => {
 		expect(await scan('PropsLabel.vue')).toStrictEqual({
 			element: 'button',
-			attrs: [forward('aria-label', 'label'), { name: 'data-size', value: { dynamic: true } }],
+			attrs: [forward('aria-label', 'label'), { name: 'data-size', value: { expression: "size ?? 'm'" } }],
 			slots: true,
 		});
 	});
@@ -29,7 +29,7 @@ describe('templateScanner: an attribute that forwards a prop of the component', 
 	test('[vue] defineProps in a script with lang="tsx" that holds JSX before it (issue #4322)', async () => {
 		expect(await scan('PropsLabelTsx.vue')).toStrictEqual({
 			element: 'button',
-			attrs: [forward('aria-label', 'label'), { name: 'data-size', value: { dynamic: true } }],
+			attrs: [forward('aria-label', 'label'), { name: 'data-size', value: { expression: "size ?? 'm'" } }],
 			slots: true,
 		});
 	});
@@ -37,7 +37,7 @@ describe('templateScanner: an attribute that forwards a prop of the component', 
 	test('[vue] defineProps in a script with lang="jsx" that holds JSX before it (issue #4322)', async () => {
 		expect(await scan('PropsLabelJsx.vue')).toStrictEqual({
 			element: 'button',
-			attrs: [forward('aria-label', 'label'), { name: 'data-size', value: { dynamic: true } }],
+			attrs: [forward('aria-label', 'label'), { name: 'data-size', value: { expression: "size ?? 'm'" } }],
 			slots: true,
 		});
 	});
@@ -60,7 +60,7 @@ describe('templateScanner: an attribute that forwards a prop of the component', 
 	test('[svelte] $props(): a destructured prop, a prop with a default, and the rest as a spread', async () => {
 		expect(await scan('PropsRest.svelte')).toStrictEqual({
 			element: 'button',
-			attrs: [forward('aria-label', 'label'), { name: 'data-size', value: { dynamic: true } }],
+			attrs: [forward('aria-label', 'label'), { name: 'data-size', value: { expression: 'size' } }],
 			slots: true,
 			inheritAttrs: true,
 		});
@@ -69,7 +69,7 @@ describe('templateScanner: an attribute that forwards a prop of the component', 
 	test('[svelte] export let, and $$restProps as a spread', async () => {
 		expect(await scan('PropsLegacy.svelte')).toStrictEqual({
 			element: 'button',
-			attrs: [forward('aria-label', 'label'), { name: 'data-size', value: { dynamic: true } }],
+			attrs: [forward('aria-label', 'label'), { name: 'data-size', value: { expression: 'size' } }],
 			slots: true,
 			inheritAttrs: true,
 		});
@@ -78,7 +78,7 @@ describe('templateScanner: an attribute that forwards a prop of the component', 
 	test('[astro] Astro.props destructured, and the rest as a spread', async () => {
 		expect(await scan('PropsRest.astro')).toStrictEqual({
 			element: 'button',
-			attrs: [forward('aria-label', 'label'), { name: 'data-size', value: { dynamic: true } }],
+			attrs: [forward('aria-label', 'label'), { name: 'data-size', value: { expression: 'size' } }],
 			slots: true,
 			inheritAttrs: true,
 		});

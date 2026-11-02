@@ -17,26 +17,26 @@ async function scan(name: string) {
  * `type` is present with a value that is not known at scan time.
  */
 describe('templateScanner dynamic attributes (issue #4058)', () => {
-	test('[vue] a binding is a dynamic attribute of its own name; events and directives are not attributes', async () => {
+	test('[vue] a binding is an attribute of its own name written as code; events and directives are not attributes', async () => {
 		expect(await scan('DynamicAttrs.vue')).toStrictEqual({
 			element: 'button',
 			attrs: [
 				{ name: 'class', value: 'btn' },
-				{ name: 'type', value: { dynamic: true } },
-				{ name: 'tabindex', value: { dynamic: true } },
+				{ name: 'type', value: { expression: 'kind' } },
+				{ name: 'tabindex', value: { expression: 'selected ? 0 : -1' } },
 			],
 			slots: null,
 			inheritAttrs: true,
 		});
 	});
 
-	test('[svelte] an expression is a dynamic attribute; directives other than bind are not attributes', async () => {
+	test('[svelte] an expression is an attribute written as code; directives other than bind are not attributes', async () => {
 		expect(await scan('DynamicAttrs.svelte')).toStrictEqual({
 			element: 'input',
 			attrs: [
 				{ name: 'class', value: 'field' },
-				{ name: 'type', value: { dynamic: true } },
-				{ name: 'disabled', value: { dynamic: true } },
+				{ name: 'type', value: { expression: 'kind' } },
+				{ name: 'disabled', value: { expression: 'disabled' } },
 				{ name: 'value', value: { dynamic: true } },
 				{ name: 'data-id', value: { dynamic: true } },
 			],
@@ -44,13 +44,13 @@ describe('templateScanner dynamic attributes (issue #4058)', () => {
 		});
 	});
 
-	test('[astro] an expression is a dynamic attribute; directives are not attributes', async () => {
+	test('[astro] an expression is an attribute written as code; directives are not attributes', async () => {
 		expect(await scan('DynamicAttrs.astro')).toStrictEqual({
 			element: 'input',
 			attrs: [
 				{ name: 'class', value: 'field' },
-				{ name: 'type', value: { dynamic: true } },
-				{ name: 'disabled', value: { dynamic: true } },
+				{ name: 'type', value: { expression: 'kind' } },
+				{ name: 'disabled', value: { expression: 'disabled' } },
 				{ name: 'data-id', value: { dynamic: true } },
 			],
 			slots: null,
