@@ -26,6 +26,12 @@ export interface SelectorAttr {
 	 * camelized (Vue: `my-label` and `myLabel` are one prop). Absent means it does not.
 	 */
 	readonly nameIsCamelized?: boolean;
+	/**
+	 * Whether the framework does not output the attribute (`disabled={false}`): it is in the list
+	 * of the attributes of the element but is not an attribute of the DOM, so no selector matches it.
+	 * Absent means that it is output.
+	 */
+	readonly absent?: boolean;
 }
 
 /**
