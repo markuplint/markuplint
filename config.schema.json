@@ -488,6 +488,16 @@
 						{
 							"type": "object",
 							"additionalProperties": false,
+							"required": ["expression"],
+							"properties": {
+								"expression": {
+									"type": "string"
+								}
+							}
+						},
+						{
+							"type": "object",
+							"additionalProperties": false,
 							"required": ["dynamic"],
 							"properties": {
 								"dynamic": {
