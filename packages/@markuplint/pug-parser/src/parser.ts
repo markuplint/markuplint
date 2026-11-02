@@ -9,8 +9,9 @@ import type {
 import type { ChildToken, ParseOptions, Token } from '@markuplint/parser-utils';
 
 import { HtmlParser } from '@markuplint/html-parser';
-import { ParserError, Parser, AttrState, scriptParser, getNamespace } from '@markuplint/parser-utils';
+import { ParserError, Parser, AttrState, getNamespace } from '@markuplint/parser-utils';
 
+import { PUG_LITERAL_VALUES } from './literal-values.js';
 import { pugParse } from './pug-parser/index.js';
 
 class HtmlInPugParser extends HtmlParser {
@@ -45,6 +46,9 @@ class PugParser extends Parser<ASTNode> {
 		super({
 			// Pug expresses nesting through indentation and never emits explicit closing tags.
 			endTagType: 'never',
+			// A value of `=` is JavaScript ("their values are just regular JavaScript")
+			attrExpressionLanguage: 'javascript',
+			literalValues: PUG_LITERAL_VALUES,
 		});
 	}
 
@@ -386,45 +390,16 @@ class PugParser extends Parser<ASTNode> {
 			});
 		}
 
-		const valueCodeTokens = scriptParser(attr.value.raw.trim());
-
-		if (valueCodeTokens.length === 1) {
-			const token = valueCodeTokens[0]!;
-			switch (token.type) {
-				case 'Numeric': {
-					return {
-						...attr,
-						valueType: 'number',
-					};
-				}
-				case 'Boolean': {
-					return {
-						...attr,
-						valueType: 'boolean',
-					};
-				}
-				case 'String':
-				case 'Template': {
-					const value = super.visitAttr(attr.value, {
-						startState: AttrState.BeforeValue,
-						noQuoteValueType: 'script',
-					});
-
-					if (value.type === 'spread') {
-						throw new ParserError('Unexpected attribute value', value);
-					}
-
-					return {
-						...attr,
-						startQuote: value.startQuote,
-						value: value.value,
-						endQuote: value.endQuote,
-						...(attr.name.raw.endsWith('!') ? { valueType: 'code' } : {}),
-					};
-				}
-			}
+		// An attribute without a value (`disabled`) is `true` and is not written as code, while any value after
+		// `=` is JavaScript ("their values are just regular JavaScript"): whether it is a literal, and what Pug
+		// renders it as, is up to `@markuplint/ml-core`, which reads it as it reads the code of any language.
+		// @see https://pugjs.org/language/attributes.html
+		if (attr.equal.raw === '') {
+			return attr;
 		}
 
+		// The value is code. A literal that `@markuplint/ml-core` reads is a string there, and any other code
+		// (and an unescaped one, `href!="x"`) stays code.
 		return {
 			...attr,
 			isDynamicValue: true,
