@@ -996,9 +996,10 @@ const MyPicture = () => {
 属性値を受け取ります。省略可能です。省略した場合、その属性は真偽値属性になります。
 
 - **文字列**: 静的な値です。
-- **`{ "fromAttr": "name" }`**: コンポーネントが持つ属性の値です。その属性が式（`<MyButton kind={kind} />`）であれば、値も動的になります。コンポーネントがその属性を持たない場合、要素はその属性を空の値で持ちます。
+- **`{ "fromAttr": "name" }`**: コンポーネントが持つ属性の値です。その属性がリテラル（`<MyButton kind={false} />`）であれば、コンポーネントが渡す先の要素の属性名で、フレームワークの描画結果として扱われます。その属性がそれ以外の式（`<MyButton kind={kind} />`）であれば、値も動的になります。コンポーネントがその属性を持たない場合、要素はその属性を空の値で持ちます。
 - **`{ "fromAttr": "name", "omitIfMissing": true }`**: 同上ですが、コンポーネントがその属性を持たない場合、要素もその属性を持ちません。省略可能なpropをそのまま渡すコンポーネントが描画する結果です（`<button type={kind}>`は`kind`が`undefined`のとき`type`を持ちません）。
-- **`{ "dynamic": true }`**: 属性は存在しますが、値はコンポーネントがレンダリングされるまで分からない場合（例：`tabIndex={selected ? 0 : -1}`）に指定します。ルールは動的な値として扱い、検証しません。
+- **`{ "expression": "code" }`**: コンポーネントのソースで、その属性が書かれているコードです。`aria-busy={true}`なら`{ "expression": "true" }`、`tabIndex={selected ? 0 : -1}`なら`{ "expression": "selected ? 0 : -1" }`です。コードの中のリテラル（`true`、`false`、`null`、`undefined`、文字列、数値）は、要素に直接書いた場合と同じく、フレームワークの描画結果として扱われます。`aria-busy={true}`は`aria-busy="true"`、`disabled={false}`は属性なしで、`aria-busy`の`{ "expression": "\"true\"" }`は`{ "expression": "true" }`と同じです。それ以外のコードは動的な値です。スキャナーが書くので、手で書くことはあまりありません。
+- **`{ "dynamic": true }`**: 属性は存在しますが、値はコンポーネントがレンダリングされるまで分からず、コードも分からない場合に指定します。ルールは動的な値として扱い、検証しません。
 
 `fromAttr`は、使用箇所の属性を、それを描画するフレームワークの規則で探します。Vueでは`my-label`と`myLabel`は同じpropですが、`mylabel`は別のpropです。JSXではpropを完全一致で照合するため、`Label`と`label`は別のpropです。HTMLベースの構文では、DOMが属性名を比較するのと同じく、ASCIIの大文字・小文字を区別せずに比較します。`fromAttr`には、コンポーネントがpropを宣言している綴りのとおりに名前を書いてください。
 
@@ -1174,7 +1175,7 @@ const Details = ({ children }) => <details>{children}</details>;
 
 `<Picture />`は、コンポーネント自身が`img`要素をレンダリングするため、`img`要素の欠如は報告されません。`<Details></Details>`は、`summary`要素を用意できるのは使用側だけなので、`summary`要素の欠如が報告されます。
 
-現在、`contents`を利用するのは`permitted-contents`、`require-owned-elements`と、アクセシブルな名前の算出（`require-accessible-name`などが利用）だけです。名前の算出では、`{ "dynamic": true }`は名前の出どころになりません（ただし、それ以外に名前の出どころがないコンポーネントは、その内容が名前かもしれないため`require-accessible-name`は報告しません）。また`slots`が`null`のコンポーネントに渡された子要素は使われません。要素の子を参照するほかのルールには、コンポーネントに渡された子要素だけが見えます。
+現在、`contents`を利用するのは`permitted-contents`、`require-owned-elements`と、アクセシブルな名前の算出（`require-accessible-name`などが利用）だけです。名前の算出では、`{ "dynamic": true }`は名前の出どころになりません（ただし、それ以外に名前の出どころがないコンポーネントは、その内容が名前かもしれないため`require-accessible-name`は報告しません）。属性が`{ "expression": "code" }`のとき、コードがフレームワークの描画するリテラル（`aria-label={'x'}`）ならその値が名前になり、それ以外のコードは動的な値です。また`slots`が`null`のコンポーネントに渡された子要素は使われません。要素の子を参照するほかのルールには、コンポーネントに渡された子要素だけが見えます。
 
 コンポーネントがルートに複数の要素をレンダリングする場合は、`element`に`"#fragment"`を指定します。コンポーネント自身は要素ではなく、その`contents`が親の中でコンポーネントの位置に置かれます。
 
@@ -1322,6 +1323,9 @@ type OriginalNode = {
       | {
           fromAttr: string;
           omitIfMissing?: true;
+        }
+      | {
+          expression: string;
         }
       | {
           dynamic: true;
