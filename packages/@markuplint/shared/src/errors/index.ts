@@ -40,6 +40,10 @@
  * accessible-name computation (`accname.ts` in `@markuplint/ml-core`),
  * dynamic module import (`general-import.ts` in `@markuplint/file-resolver`),
  * configuration file loading (`cosmiconfig.ts` in `@markuplint/file-resolver`),
+ * the literal reader of an expression and the check of a braced expression
+ * (`parse-literal-expression.ts` and `is-braced-expression.ts` in `@markuplint/parser-utils`,
+ * whose `catch` wraps espree's reading of the author's own code alone, and takes its
+ * `SyntaxError` for "not a literal" and "not one expression"),
  * and the spec citation monitor (`fetch.ts` and `collect.ts` under
  * `scripts/spec-citations`, whose `catch` wraps the runtime's `fetch`,
  * `new URL` or `decodeURIComponent` call alone), where Tier-1-shaped errors
