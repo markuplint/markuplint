@@ -12,6 +12,7 @@ import type {
 import type {
 	AttrNameRoute,
 	EndTagType,
+	ExpressionLanguage,
 	MLASTDocument,
 	MLASTParentNode,
 	MLParser,
@@ -35,6 +36,7 @@ import type {
 	MLASTBlockBehavior,
 	MLASTParseError,
 	NamespaceURI,
+	LiteralValueDeclaration,
 } from '@markuplint/ml-ast';
 
 import { randomUUID } from 'node:crypto';
@@ -73,6 +75,13 @@ const timer = new PerformanceTimer();
  * - **Direct `Parser` subclass** only when the document structure itself
  *   diverges from HTML (JSX, Vue SFC, Svelte, Pug, Astro).
  *
+ * A framework whose attribute values are code (`{…}`, `:x="…"`) says so for `@markuplint/ml-core`, which
+ * reads a value that is nothing but a literal and renders it as the framework does (`aria-busy={true}`
+ * is `aria-busy="true"`; `disabled={false}` is no attribute). The parser only records what is written
+ * (`isDynamicValue`) and declares the language of that code (`attrExpressionLanguage`); a template language
+ * that an HTML parser reads says it in a `DirectivePattern` of its spec (`expressionLanguage`). How the
+ * framework renders is `literalValues` of its spec, or of its parser when it has no spec package.
+ *
  * Direct subclasses should delegate tokenization to the framework's
  * established parser library rather than hand-rolling one, and those
  * libraries are chosen to span multiple major framework versions (e.g.
@@ -84,6 +93,8 @@ const timer = new PerformanceTimer();
  */
 export abstract class Parser<Node extends {} = {}, State extends unknown = null> implements MLParser {
 	readonly #booleanish: boolean = false;
+	readonly #attrExpressionLanguage?: ExpressionLanguage;
+	readonly #literalValues?: LiteralValueDeclaration;
 	readonly #defaultState: State;
 	readonly #endTagType: EndTagType = 'omittable';
 	readonly #ignoreTags: readonly IgnoreTag[] = [];
@@ -131,6 +142,8 @@ export abstract class Parser<Node extends {} = {}, State extends unknown = null>
 	 */
 	constructor(options?: ParserOptions, defaultState?: State) {
 		this.#booleanish = options?.booleanish ?? this.#booleanish;
+		this.#attrExpressionLanguage = options?.attrExpressionLanguage ?? this.#attrExpressionLanguage;
+		this.#literalValues = options?.literalValues ?? this.#literalValues;
 		this.#endTagType = options?.endTagType ?? this.#endTagType;
 		this.#ignoreTags = options?.ignoreTags ?? this.#ignoreTags;
 		this.#maskChar = options?.maskChar ?? this.#maskChar;
@@ -165,6 +178,22 @@ export abstract class Parser<Node extends {} = {}, State extends unknown = null>
 	 */
 	get booleanish(): boolean {
 		return this.#booleanish;
+	}
+
+	/**
+	 * The language of the code that an attribute value is written in when it is written as code.
+	 * See {@link MLParser.attrExpressionLanguage}.
+	 */
+	get attrExpressionLanguage(): ExpressionLanguage | undefined {
+		return this.#attrExpressionLanguage;
+	}
+
+	/**
+	 * How the framework renders a literal in an attribute value, where it differs from the default
+	 * of `@markuplint/ml-core`. See {@link MLParser.literalValues}.
+	 */
+	get literalValues(): LiteralValueDeclaration | undefined {
+		return this.#literalValues;
 	}
 
 	/**

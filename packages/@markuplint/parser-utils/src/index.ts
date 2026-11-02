@@ -3,6 +3,8 @@ export * from './decision.js';
 export * from './enums.js';
 export * from './get-namespace.js';
 export * from './idl-attributes.js';
+export * from './is-braced-expression.js';
+export * from './parse-literal-expression.js';
 export * from './parser-error.js';
 export * from './parser.js';
 export * from './script-parser.js';
