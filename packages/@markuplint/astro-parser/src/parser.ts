@@ -6,6 +6,7 @@ import { AttrState, Parser, ParserError, isPotentialCustomElementName } from '@m
 
 import { astroParse } from './astro-parser.js';
 import { detectBlockBehavior } from './detect-block-behavior.js';
+import { ASTRO_LITERAL_VALUES } from './literal-values.js';
 import { extractSpreadAttribute } from './spread-attr.js';
 import { toNodes } from './to-nodes.js';
 
@@ -29,6 +30,9 @@ class AstroParser extends Parser<Node> {
 			selfCloseType: 'html+xml',
 			// Distinguishes components (`<MyComp>`) from HTML elements (`<div>`).
 			tagNameCaseSensitive: true,
+			// A value in `{…}` is JavaScript
+			attrExpressionLanguage: 'javascript',
+			literalValues: ASTRO_LITERAL_VALUES,
 		});
 	}
 
