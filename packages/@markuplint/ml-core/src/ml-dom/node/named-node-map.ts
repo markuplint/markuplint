@@ -8,7 +8,8 @@ export class MLNamedNodeMap<T extends RuleConfigValue, O extends PlainData = und
 	implements NamedNodeMap
 {
 	getNamedItem(qualifiedName: string): MLAttr<T, O> | null {
-		return this.find(attr => attr.isNamedBy(qualifiedName)) ?? null;
+		// An attribute that the framework does not output (`MLAttr#isAbsent`) is not found, as the DOM has none
+		return this.find(attr => !attr.isAbsent && attr.isNamedBy(qualifiedName)) ?? null;
 	}
 
 	/**

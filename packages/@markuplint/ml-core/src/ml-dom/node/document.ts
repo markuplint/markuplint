@@ -10,7 +10,15 @@ import type { Ruleset } from '../../ruleset/index.js';
 import type { MLSchema } from '../../types.js';
 import type { Walker } from '../helper/walkers.js';
 import type { MLToken } from '../token/token.js';
-import type { AttrNameRoute, EndTagType, MLASTDocument, MLASTNodeTreeItem, MLASTParseError } from '@markuplint/ml-ast';
+import type {
+	AttrNameRoute,
+	EndTagType,
+	ExpressionLanguage,
+	LiteralValueDeclaration,
+	MLASTDocument,
+	MLASTNodeTreeItem,
+	MLASTParseError,
+} from '@markuplint/ml-ast';
 import type { PlainData, Pretender, RuleCommonSettings, RuleConfigValue } from '@markuplint/ml-config';
 import type { ARIAVersion, MLMLSpec } from '@markuplint/ml-spec';
 
@@ -68,6 +76,20 @@ export class MLDocument<T extends RuleConfigValue, O extends PlainData = undefin
 	 * @default false
 	 */
 	readonly booleanish: boolean;
+
+	/**
+	 * The language of the code that an attribute value is written in when it is written as code
+	 * (`MLParser#attrExpressionLanguage`). Absent when the parser does not say; then no attribute
+	 * value of the document is read as a literal (a pretender's attribute is, whatever it says).
+	 */
+	readonly attrExpressionLanguage?: ExpressionLanguage;
+
+	/**
+	 * How the framework of the parser renders a literal in an attribute value, where it differs from
+	 * the default (`MLParser#literalValues`). What the spec says (`MLMLSpec#literalValues`) wins over
+	 * this.
+	 */
+	readonly literalValues?: LiteralValueDeclaration;
 
 	/**
 	 * The rule currently being evaluated during a lint pass.
@@ -232,6 +254,8 @@ export class MLDocument<T extends RuleConfigValue, O extends PlainData = undefin
 			readonly filename?: string;
 			readonly endTag?: 'xml' | 'omittable' | 'never';
 			readonly booleanish?: boolean;
+			readonly attrExpressionLanguage?: ExpressionLanguage;
+			readonly literalValues?: LiteralValueDeclaration;
 			readonly tagNameCaseSensitive?: boolean;
 			readonly componentNameVariants?: boolean;
 			readonly isComponentName?: (name: string) => boolean;
@@ -247,6 +271,8 @@ export class MLDocument<T extends RuleConfigValue, O extends PlainData = undefin
 		this.isFragment = ast.isFragment;
 		this.specs = schemaToSpec(schemas);
 		this.booleanish = options?.booleanish ?? false;
+		this.attrExpressionLanguage = options?.attrExpressionLanguage;
+		this.literalValues = options?.literalValues;
 		this.endTag = options?.endTag ?? 'omittable';
 		this.#filename = options?.filename;
 		this.tagNameCaseSensitive = options?.tagNameCaseSensitive ?? false;

@@ -78,7 +78,9 @@ function attributesToDebugMaps(
 			r.push(
 				//
 				`  isDirective: ${!!n.isDirective}`,
+				`  isExpressionValue: ${!!n.isExpressionValue}`,
 				`  isDynamicValue: ${!!n.isDynamicValue}`,
+				`  isAbsent: ${!!n.isAbsent}`,
 			);
 		}
 		if (n.candidate) {

@@ -224,7 +224,10 @@ export class MLRule<T extends RuleConfigValue, O extends PlainData = undefined> 
 
 		const violations = context.reports.map<Violation>(report => {
 			let fixData: FixData | undefined;
-			if (fix && report.fix) {
+			// An attribute that a pretender made is not in the source: the position of its tokens is that of
+			// the element, so a fix that edits the range of the attribute would rewrite the tag
+			const isPretendedScope = 'scope' in report && 'isPretended' in report.scope && report.scope.isPretended;
+			if (fix && report.fix && !isPretendedScope) {
 				const edits = report.fix(sharedFixer);
 				const editArray: readonly TextEdit[] = Array.isArray(edits) ? edits : [edits];
 				if (editArray.length > 0) {

@@ -1,12 +1,16 @@
 import type { MLElement } from './element.js';
 import type { AttributeNodeType } from './types.js';
-import type { MLASTAttr } from '@markuplint/ml-ast';
+import type { LiteralRenderingContext } from '../helper/literal-values.js';
+import type { ExpressionLanguage, MLASTAttr } from '@markuplint/ml-ast';
 import type { PlainData, RuleConfigValue } from '@markuplint/ml-config';
+import type { LiteralExpression } from '@markuplint/parser-utils';
 
 import { resolveNamespace, compileDirectivePatterns, resolveDirective } from '@markuplint/ml-spec';
-import { searchIDLAttribute, suggestIDLAttribute } from '@markuplint/parser-utils';
+import { parseLiteralExpression, searchIDLAttribute, suggestIDLAttribute } from '@markuplint/parser-utils';
 
 import { adjustForeignAttrName } from '../helper/foreign-attr-names.js';
+import { getBooleanAttrNames, literalToString, renderLiteral } from '../helper/literal-values.js';
+import { isPretendedAttr } from '../helper/pretended-attrs.js';
 import { MLToken } from '../token/token.js';
 
 import { MLDomTokenList } from './dom-token-list.js';
@@ -52,9 +56,13 @@ export class MLAttr<T extends RuleConfigValue, O extends PlainData = undefined>
 	readonly isDuplicatable: boolean;
 
 	/**
-	 * Whether this attribute has a dynamic value (e.g., a template expression rather than a static string).
+	 * Whether the value of this attribute is written as code (`{x}` of JSX, `:x="…"` of Vue, a value of
+	 * `=` in Pug, a masked block of a template language), whatever the code is: a literal (`{true}`) or not
+	 * (`{cond}`). It is a matter of syntax, which a rule that checks how the value is written reads
+	 * (`attr-value-quotes`, `no-unescaped-char`), while {@link MLAttr.isDynamicValue} is a matter of the
+	 * value that results.
 	 */
-	readonly isDynamicValue?: true;
+	readonly isExpressionValue?: true;
 	readonly #localName: string;
 
 	/**
@@ -69,6 +77,10 @@ export class MLAttr<T extends RuleConfigValue, O extends PlainData = undefined>
 	readonly ownerElement: MLElement<T, O>;
 	readonly #potentialName: string;
 	readonly #potentialValue: string;
+	readonly #literal: LiteralExpression | null = null;
+	readonly #isPretended: boolean = false;
+	readonly #valueType: 'string' | 'number' | 'boolean' | 'code' = 'string';
+	#rendering?: Rendering;
 	/**
 	 * The whitespace token after the equal sign, or null if absent.
 	 */
@@ -95,14 +107,6 @@ export class MLAttr<T extends RuleConfigValue, O extends PlainData = undefined>
 	readonly valueNode: MLToken | null = null;
 
 	/**
-	 * Returns the "string" if HTML syntax. Otherwise, returns a type in its syntax.
-	 *
-	 * @default "string"
-	 * @implements `@markuplint/ml-core` API: `MLAttr`
-	 */
-	readonly valueType: 'string' | 'number' | 'boolean' | 'code' = 'string';
-
-	/**
 	 * Creates a new MLAttr instance from an AST attribute token.
 	 *
 	 * @param astToken - The AST attribute token to wrap
@@ -119,12 +123,12 @@ export class MLAttr<T extends RuleConfigValue, O extends PlainData = undefined>
 
 		if (this._astToken.type === 'spread') {
 			this.#namespaceURI = null;
-			this.valueType = 'code';
+			this.#valueType = 'code';
 			this.#localName = '#spread';
 			this.#potentialName = '#spread';
 			this.#potentialValue = this._astToken.raw;
 			this.isDirective = true;
-			this.isDynamicValue = true;
+			this.isExpressionValue = true;
 			this.isDuplicatable = true;
 			return;
 		}
@@ -139,6 +143,10 @@ export class MLAttr<T extends RuleConfigValue, O extends PlainData = undefined>
 		this.endQuote = new MLToken(this._astToken.endQuote);
 		this.candidate = this._astToken.candidate;
 		this.#potentialValue = this._astToken.potentialValue ?? this.valueNode?.raw ?? '';
+		this.#isPretended = isPretendedAttr(this._astToken);
+
+		// The language that the value is written in, when the value is code of a language that can be read as a literal
+		let language: ExpressionLanguage | undefined;
 
 		if (this._astToken.potentialName == null) {
 			// Try declarative directive pattern resolution from spec
@@ -150,17 +158,19 @@ export class MLAttr<T extends RuleConfigValue, O extends PlainData = undefined>
 
 			if (resolution) {
 				this.#potentialName = resolution.potentialName ?? this.nameNode?.raw ?? '';
-				this.isDynamicValue = resolution.isDynamicValue;
+				this.isExpressionValue = resolution.isDynamicValue;
 				this.isDirective = resolution.isDirective;
 				this.isDuplicatable = resolution.isDuplicatable ?? this._astToken.isDuplicatable;
 				if (resolution.valueType) {
-					this.valueType = resolution.valueType;
+					this.#valueType = resolution.valueType;
 				}
+				language = resolution.expressionLanguage;
 			} else {
 				this.#potentialName = this.nameNode?.raw ?? '';
-				this.isDynamicValue = this._astToken.isDynamicValue;
+				this.isExpressionValue = this._astToken.isDynamicValue;
 				this.isDirective = this._astToken.isDirective;
 				this.isDuplicatable = this._astToken.isDuplicatable;
+				language = ownElement.ownerMLDocument.attrExpressionLanguage;
 			}
 
 			// IDL attribute resolution (after directivePatterns).
@@ -183,12 +193,15 @@ export class MLAttr<T extends RuleConfigValue, O extends PlainData = undefined>
 				}
 			}
 		} else {
-			// Parser-set potentialName takes precedence
+			// Parser-set potentialName takes precedence. Its value is not the value of the attribute
+			// (a condition of `class:list`, a variable of a shorthand), so it is not read as a literal.
 			this.#potentialName = this._astToken.potentialName;
-			this.isDynamicValue = this._astToken.isDynamicValue;
+			this.isExpressionValue = this._astToken.isDynamicValue;
 			this.isDirective = this._astToken.isDirective;
 			this.isDuplicatable = this._astToken.isDuplicatable;
 		}
+
+		this.#literal = this.#readLiteral(language);
 
 		// The HTML parser lower-cases the name before it adjusts a foreign attribute, so `XLINK:HREF`
 		// is `xlink:href` there; a name that code sets keeps the case of its prefix.
@@ -202,6 +215,81 @@ export class MLAttr<T extends RuleConfigValue, O extends PlainData = undefined>
 		const hasPrefix = ns.localName !== nameWithPrefix;
 		const prefix = nameWithPrefix.split(':')[0];
 		this.#namespaceURI = hasPrefix && ns.namespace === prefix ? ns.namespaceURI : null;
+	}
+
+	/**
+	 * Whether the framework does not output this attribute, which is known from its value being a literal
+	 * that the framework drops (`disabled={false}`, `title={null}`). It is still in the list of the
+	 * attributes of the element (`MLElement#attributes`), as a name that is misspelled is so whatever its
+	 * value is, and a lookup by name (`getAttribute`, `hasAttribute`) does not find it, as the DOM does not.
+	 * An absent attribute is {@link MLAttr.isDynamicValue} as well, so that a rule that reads the value skips it.
+	 *
+	 * Which rules skip it: a rule that judges the value or the presence of an attribute (the value of
+	 * `aria-*`, a required attribute, a conflict between two attributes) reads what the framework outputs,
+	 * and an attribute that is not output is not there to judge. A rule that judges the name (a misspelling,
+	 * a deprecated or obsolete attribute, the order) judges what the author wrote, so it still reports an
+	 * absent attribute.
+	 */
+	get isAbsent(): true | undefined {
+		return this.#render().absent ? true : undefined;
+	}
+
+	/**
+	 * Whether the value of this attribute is not known: the code is not a literal (`{cond}`), the
+	 * framework renders a literal in a way that is not known (`disabled={""}`), or the attribute is
+	 * not output ({@link MLAttr.isAbsent}), where there is no value to read.
+	 *
+	 * It is not whether the value is written as code (that is {@link MLAttr.isExpressionValue}): a
+	 * literal that is written as code (`aria-busy={true}`) is rendered by the framework to a value
+	 * (`"true"`), which is known.
+	 *
+	 * A rule that reads it to skip a value that it cannot know reads this; a rule that asks how the
+	 * value is written (its quotes, its escapes) reads {@link MLAttr.isExpressionValue} instead.
+	 *
+	 * On a component (`elementType: "authored"`) an attribute is a prop, which is rendered where it is
+	 * forwarded to, not here: a literal in it is not dynamic, and its `value` is the string form of the
+	 * literal ({@link MLAttr.literal}). What the component renders is not known, and that is told by
+	 * `MLElement#hasMutableChildren`, not by the attributes of the component.
+	 */
+	get isDynamicValue(): true | undefined {
+		return this.#render().dynamic ? true : undefined;
+	}
+
+	/**
+	 * Whether this attribute is made by a pretender (`pretenders` of a configuration): it is not in the
+	 * source, so the position of its tokens is that of the element, and a fix of a violation on it
+	 * would rewrite the tag.
+	 *
+	 * An attribute that a pretender takes over from the source (`inheritAttrs`) is not.
+	 *
+	 * A fix of a violation that is reported on a pretended attribute is dropped (`MLRule`), and a rule
+	 * that fixes by the range of the attributes of an element (`attr-order`) leaves them out.
+	 */
+	get isPretended(): boolean {
+		return this.#isPretended;
+	}
+
+	/**
+	 * The literal that the value of this attribute is written as, when it is nothing but a literal in a
+	 * language that can be read as one: `{true}`, `{"x"}`, `:x="0"`, or no value at all in the
+	 * shorthand of JSX (`<div aria-hidden>` is `true`). `null` otherwise.
+	 *
+	 * What a literal is rendered as depends on the framework, the element and the attribute name
+	 * ({@link MLAttr.value}, {@link MLAttr.isAbsent}); this is what is written.
+	 */
+	get literal(): LiteralExpression | null {
+		return this.#literal;
+	}
+
+	/**
+	 * Returns the "string" if HTML syntax. Otherwise, returns a type in its syntax. An attribute whose value
+	 * is a literal that is resolved is "string", whichever language it is written in.
+	 *
+	 * @default "string"
+	 * @implements `@markuplint/ml-core` API: `MLAttr`
+	 */
+	get valueType(): 'string' | 'number' | 'boolean' | 'code' {
+		return this.#render().resolved ? 'string' : this.#valueType;
 	}
 
 	/**
@@ -323,11 +411,12 @@ export class MLAttr<T extends RuleConfigValue, O extends PlainData = undefined>
 	 * Whether the name of this attribute reaches the DOM through the DOM API (`setAttribute`) and
 	 * not through the HTML parser of the browser: what the parser says of its language
 	 * (`MLDocument#attrNameRoute`), and for a parser that says it of a dynamic attribute only
-	 * (Svelte), whether this one is dynamic.
+	 * (Svelte), whether this one is written as code: how its name is set is a matter of how it is
+	 * written, not of the value that results.
 	 */
 	get isSetThroughDOMAPI(): boolean {
 		const route = this.ownerElement.ownerMLDocument.attrNameRoute;
-		return route === 'dom-api' || (route === 'dom-api-when-dynamic' && this.isDynamicValue === true);
+		return route === 'dom-api' || (route === 'dom-api-when-dynamic' && this.isExpressionValue === true);
 	}
 
 	/**
@@ -339,6 +428,17 @@ export class MLAttr<T extends RuleConfigValue, O extends PlainData = undefined>
 	get nameCaseInsensitive(): boolean {
 		const el = this.ownerElement;
 		return el.elementType !== 'authored' && !el.isForeignElement;
+	}
+
+	/**
+	 * Whether the framework does not output this attribute, so that no selector matches it
+	 * ({@link MLAttr.isAbsent}). It is a boolean because `SelectorAttr#absent` of `@markuplint/selector`
+	 * is the one that a selector reads.
+	 *
+	 * @implements `SelectorAttr#absent` of `@markuplint/selector`
+	 */
+	get absent(): boolean {
+		return this.isAbsent === true;
 	}
 
 	/**
@@ -444,7 +544,114 @@ export class MLAttr<T extends RuleConfigValue, O extends PlainData = undefined>
 	 * @see https://dom.spec.whatwg.org/#dom-attr-value
 	 */
 	get value(): string {
-		return this.#potentialValue;
+		return this.#render().value;
+	}
+
+	/**
+	 * Reads the literal that the value is written as, which is decided by the language of the
+	 * code: what the parser says for the attribute it reads, what the directive pattern says for the
+	 * one that a spec resolves, and always JavaScript for the one that a pretender makes.
+	 *
+	 * An attribute that has no value (`:disabled`, which Vue reads as `:disabled="disabled"`) is not the
+	 * empty string, and a value that is not an attribute value (the condition of a directive, a
+	 * `{name}` shorthand, which have a `potentialName`) is not read.
+	 *
+	 * @param language - The language that the parser or the pattern says
+	 */
+	#readLiteral(language: ExpressionLanguage | undefined): LiteralExpression | null {
+		if (this.isDirective || !this.valueNode) {
+			return null;
+		}
+
+		if (this.isExpressionValue) {
+			const isJavaScript = this.#isPretended || language === 'javascript';
+			// A value that is not written has no equal sign. A pretender's expression has none either.
+			const isWritten = this.#isPretended || this.equal?.raw !== '';
+			// `potentialValue` is the expression itself when the value of the token has more than it
+			// (Svelte's `disabled="{false}"` is the expression `false` in quotes)
+			return isJavaScript && isWritten ? parseLiteralExpression(this.#potentialValue) : null;
+		}
+
+		// The shorthand of JSX: an attribute without a value is `true`. An attribute that a pretender made has no
+		// tokens of a value either, and is not written in JSX.
+		const document = this.ownerElement.ownerMLDocument;
+		if (
+			document.booleanish &&
+			!this.#isPretended &&
+			this._astToken.type === 'attr' &&
+			this._astToken.potentialName == null &&
+			this.equal?.raw === '' &&
+			this.valueNode.raw === ''
+		) {
+			return { type: 'boolean', value: true, key: 'true' };
+		}
+
+		return null;
+	}
+
+	/**
+	 * What the attribute is: the value, whether it is known, and whether it is output at all.
+	 * A literal is rendered as the framework renders it (see `renderLiteral`), which depends on the
+	 * owner element, so it is done on first use and not by the constructor: `MLElement` makes its
+	 * attributes before it knows its own type.
+	 */
+	#render(): Rendering {
+		if (this.#rendering) {
+			return this.#rendering;
+		}
+
+		const literal = this.#literal;
+		let rendering: Rendering;
+		if (!literal) {
+			rendering = {
+				value: this.#potentialValue,
+				dynamic: this.isExpressionValue === true,
+				absent: false,
+				resolved: false,
+			};
+		} else if (this.ownerElement.elementType === 'authored') {
+			// A component receives the literal as a prop. It is rendered by the element that the
+			// prop is forwarded to, which is not known here.
+			rendering = { value: literalToString(literal), dynamic: false, absent: false, resolved: true };
+		} else {
+			const rendered = renderLiteral(literal, this.#renderingContext());
+			switch (rendered.kind) {
+				case 'value': {
+					rendering = { value: rendered.value, dynamic: false, absent: false, resolved: true };
+					break;
+				}
+				case 'absent': {
+					rendering = { value: '', dynamic: true, absent: true, resolved: true };
+					break;
+				}
+				default: {
+					rendering = { value: '', dynamic: true, absent: false, resolved: false };
+				}
+			}
+		}
+
+		// Before the owner element is complete, what depends on it is not final
+		if (this.ownerElement.elementType !== undefined) {
+			this.#rendering = rendering;
+		}
+		return rendering;
+	}
+
+	#renderingContext(): LiteralRenderingContext {
+		const el = this.ownerElement;
+		const document = el.ownerMLDocument;
+		const specs = document.specs;
+		const name = asciiLowerCase(this.#potentialName);
+		return {
+			name,
+			isBoolean: getBooleanAttrNames(specs).has(name),
+			// A target of a pretender is made as an element of HTML even when its name is a custom element's
+			isCustomElement:
+				el.elementType === 'web-component' ||
+				(el.elementType === 'html' && !el.isForeignElement && el.localName.includes('-')),
+			specLiteralValues: specs.literalValues,
+			parserLiteralValues: document.literalValues,
+		};
 	}
 
 	/**
@@ -472,3 +679,17 @@ export class MLAttr<T extends RuleConfigValue, O extends PlainData = undefined>
 		return this.raw;
 	}
 }
+
+/**
+ * What an attribute is once its value is read.
+ */
+type Rendering = {
+	/** The attribute value. For code that is not a literal, the text of the code. */
+	readonly value: string;
+	/** `MLAttr#isDynamicValue` */
+	readonly dynamic: boolean;
+	/** `MLAttr#isAbsent` */
+	readonly absent: boolean;
+	/** Whether the value is that of a literal that is read: the attribute is a "string" then. */
+	readonly resolved: boolean;
+};
