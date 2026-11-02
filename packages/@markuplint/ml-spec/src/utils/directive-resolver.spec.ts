@@ -47,6 +47,25 @@ describe('resolveDirective', () => {
 		});
 	});
 
+	test('carries the expression language of a pattern that declares it', () => {
+		const patterns = [
+			{
+				pattern: '^:([^.]+)$',
+				potentialName: '$1',
+				isDynamicValue: true as const,
+				expressionLanguage: 'javascript' as const,
+			},
+		];
+		const result = resolveDirective(':href', compileDirectivePatterns(patterns));
+		expect(result?.expressionLanguage).toBe('javascript');
+	});
+
+	test('has no expression language for a pattern that does not declare it', () => {
+		const patterns = [{ pattern: '^:([^.]+)$', potentialName: '$1', isDynamicValue: true as const }];
+		const result = resolveDirective(':href', compileDirectivePatterns(patterns));
+		expect(result).not.toHaveProperty('expressionLanguage');
+	});
+
 	test('resolves potentialName with capture group', () => {
 		const patterns = [
 			{

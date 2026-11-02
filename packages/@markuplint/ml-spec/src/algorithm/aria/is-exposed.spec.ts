@@ -70,4 +70,30 @@ describe('isExposed', () => {
 		expect(x('<font></font>')).toBe(true);
 		expect(x('<x-component></x-component>')).toBe(true);
 	});
+
+	describe('an attribute that the host does not output', () => {
+		// The attribute is in the list of the element but is not an attribute of the DOM (`MLAttr#isAbsent`),
+		// so it is not read for a global ARIA attribute. `isExposed` is `true` by default and the global ARIA
+		// attribute only confirms it, so the result does not tell whether an attribute was counted: what is
+		// observable is which attributes are read, whatever the order.
+		function withAttributes(html: string, attributes: readonly object[]) {
+			const el = _(html);
+			Object.defineProperty(el, 'attributes', { value: attributes });
+			return el;
+		}
+
+		test('is not read', () => {
+			const read: string[] = [];
+			const attr = (name: string, isAbsent?: true) => ({
+				get localName() {
+					read.push(name);
+					return name;
+				},
+				isAbsent,
+			});
+			const el = withAttributes('<span></span>', [attr('aria-label', true), attr('aria-busy')]);
+			expect(isExposed(el, specs, '1.2')).toBe(true);
+			expect([...new Set(read)]).toStrictEqual(['aria-busy']);
+		});
+	});
 });

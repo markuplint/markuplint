@@ -8,6 +8,12 @@ import { resolveNamespace } from '../../utils/resolve-namespace.js';
 import { getComputedRole } from './get-computed-role.js';
 
 /**
+ * The attribute of the element that `@markuplint/ml-core` hands over (`MLAttr`): the DOM `Attr` does not
+ * have `isAbsent`, which is `true` for an attribute that the host does not output.
+ */
+type AttrOfMLDOM = Attr & { readonly isAbsent?: true };
+
+/**
  * Detects whether an element is included in (exposed to) the Accessibility Tree.
  * Applies WAI-ARIA exclusion/inclusion rules, SVG rendering rules, and
  * HTML metadata element filtering.
@@ -198,6 +204,11 @@ function isIncluding(
 		}
 		// Has a global WAI-ARIA attribute
 		for (const attr of el.attributes) {
+			// An attribute that the host does not output (`MLAttr#isAbsent`, e.g. `aria-label={null}`)
+			// is not an attribute of the DOM
+			if ((attr as AttrOfMLDOM).isAbsent) {
+				continue;
+			}
 			if (globalAria.some(aria => aria.name === attr.localName)) {
 				results.push(true);
 				break;
