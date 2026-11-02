@@ -716,7 +716,8 @@ https://svelte.dev/e/expected_token
 				'  [1:21]>[1:33](20,32)value: {isSelected}',
 				'  [1:33]>[1:34](32,33)eQ: "',
 				'  isDirective: false',
-				'  isDynamicValue: false',
+				'  isDynamicValue: true',
+				'  potentialValue: isSelected',
 			],
 			[
 				'[1:35]>[1:62](34,61)class:focused: class:focused="{isFocused}"',
@@ -729,7 +730,8 @@ https://svelte.dev/e/expected_token
 				'  [1:50]>[1:61](49,60)value: {isFocused}',
 				'  [1:61]>[1:62](60,61)eQ: "',
 				'  isDirective: false',
-				'  isDynamicValue: false',
+				'  isDynamicValue: true',
+				'  potentialValue: isFocused',
 			],
 		]);
 	});
