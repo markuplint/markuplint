@@ -78,7 +78,7 @@ export default createRule<boolean, Option>({
 			const ms = severity === 'error' ? 'must' : 'should';
 			const message = t(`{0} ${ms} {1}`, 'Illegal characters', 'escape in character reference');
 			for (const attr of node.attributes) {
-				if (attr.isDynamicValue || attr.isDirective) {
+				if (attr.isExpressionValue || attr.isDirective) {
 					continue;
 				}
 				const valueNode = attr.valueNode;

@@ -15,6 +15,11 @@ export default createRule({
 				return;
 			}
 
+			// The value of an attribute that is not known, or that is not output, is not the default value
+			if (attr.isDynamicValue) {
+				return;
+			}
+
 			const spec = findAttrSpec(attrSpec, attr);
 
 			if (!spec) {

@@ -14,6 +14,11 @@ export default createRule<boolean>({
 				return;
 			}
 
+			// The value of an attribute that is not known, or that is not output, is not a name to judge
+			if (attr.isDynamicValue) {
+				return;
+			}
+
 			const attrSpecs = getAttrSpecs(attr.ownerElement, document.specs);
 
 			if (!attrSpecs) {

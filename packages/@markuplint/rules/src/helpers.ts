@@ -43,9 +43,13 @@ export function conditionDependsOnDynamicAttr<T extends RuleConfigValue, O exten
 			}
 		}
 	}
-	// Whether the attribute is the one that the selector names is up to the attribute (`isNamedBy`)
+	// Whether the attribute is the one that the selector names is up to the attribute (`isNamedBy`).
+	// An attribute that the framework does not output (`type={null}`) is known not to be there, so the
+	// condition is decided: it is not met.
 	const names = [...referencedNames];
-	return node.attributes.some(attr => attr.isDynamicValue && names.some(name => attr.isNamedBy(name)));
+	return node.attributes.some(
+		attr => attr.isDynamicValue && !attr.isAbsent && names.some(name => attr.isNamedBy(name)),
+	);
 }
 
 /**
@@ -140,6 +144,22 @@ export function namespaceKeyOf(
 	},
 ): string {
 	return attr.ownerElement.elementType === 'authored' ? asciiLowerCase(attr.name) : attr.nameKey;
+}
+
+/**
+ * The `aria-*` attributes that the element has. An attribute that the framework does not output
+ * (`aria-label={null}`, `MLAttr#isAbsent`) is not one of them: the DOM does not have it, so what a rule
+ * says of an attribute of the element (it is unsupported, deprecated, redundant, or its value is
+ * invalid) is not said of it.
+ *
+ * @param el - The element
+ * @returns The `aria-*` attributes that are output
+ */
+export function getAriaAttrs<T extends RuleConfigValue, O extends PlainData>(
+	// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
+	el: Element<T, O>,
+): Attr<T, O>[] {
+	return el.attributes.filter(attr => !attr.isAbsent && isAriaAttr(attr));
 }
 
 /**

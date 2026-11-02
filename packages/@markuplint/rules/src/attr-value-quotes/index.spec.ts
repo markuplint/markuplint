@@ -132,14 +132,14 @@ describe('fix', () => {
 });
 
 describe('fix with parsers', () => {
-	test('[attr-value-quotes-fix-003] fix: Pug single → double', async () => {
+	test('[attr-value-quotes-fix-003] fix: Pug is not fixed, its value is code', async () => {
 		const { fixedCode } = await mlRuleTest(
 			rule,
 			"div(class='foo')",
 			{ rule: { severity: 'error', value: 'double' }, parser: { '.*': '@markuplint/pug-parser' } },
 			true,
 		);
-		expect(fixedCode).toBe('div(class="foo")');
+		expect(fixedCode).toBe("div(class='foo')");
 	});
 
 	test('[attr-value-quotes-fix-004] fix: Vue single → double', async () => {
