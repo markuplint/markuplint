@@ -5,7 +5,7 @@ import { ARIA_RECOMMENDED_VERSION } from '@markuplint/ml-spec';
 
 import { checkingProhibitedNaming } from '../wai-aria/checkings/prohibited-naming.js';
 import { defaultOptions } from '../wai-aria/default-options.js';
-import { isAriaAttr } from '../helpers.js';
+import { getAriaAttrs } from '../helpers.js';
 import meta from './meta.js';
 
 /**
@@ -25,7 +25,7 @@ export default createRule<boolean, Options>({
 			// prohibition for unnamed-role custom elements.
 			if (!elSpec && el.elementType !== 'web-component') return;
 			if (elSpec && !elSpec.globalAttrs['#ARIAAttrs']) return;
-			const propAttrs = el.attributes.filter(attr => isAriaAttr(attr));
+			const propAttrs = getAriaAttrs(el);
 			if (propAttrs.length === 0) return;
 			const ariaVersion =
 				el.rule.options?.version ?? document.ruleCommonSettings?.ariaVersion ?? ARIA_RECOMMENDED_VERSION;

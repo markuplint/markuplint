@@ -171,8 +171,8 @@ describe('multi-pass fix with parsers', () => {
 			'en',
 			true,
 		);
-		// disabled='disabled' → disabled (boolean fix), type='text' → type="text" (quote fix)
-		expect(fixedCode).toBe('input(disabled type="text")');
+		// The value of Pug is code: neither the boolean fix nor the quote fix applies
+		expect(fixedCode).toBe("input(disabled='disabled' type='text')");
 	});
 
 	test('[multi-pass-fix-fix-006] Pug: attr-value-quotes + no-default-value', async () => {
@@ -189,9 +189,9 @@ describe('multi-pass fix with parsers', () => {
 			'en',
 			true,
 		);
-		// type='text' → removed (default value), placeholder='enter' → placeholder="enter" (quote fix)
+		// type='text' → removed (default value), placeholder='enter' stays (the value of Pug is code)
 		// Leading space remains after attribute removal in Pug bracket syntax
-		expect(fixedCode).toBe('input( placeholder="enter")');
+		expect(fixedCode).toBe("input( placeholder='enter')");
 	});
 
 	test('[multi-pass-fix-fix-007] Vue: attr-value-quotes + no-boolean-attr-value', async () => {

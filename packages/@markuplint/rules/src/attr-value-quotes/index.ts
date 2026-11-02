@@ -33,7 +33,7 @@ export default createRule<Type>({
 				'quote',
 				`${attr.rule.value} quotation mark`,
 			);
-			if (attr.isDynamicValue || attr.isDirective || !attr.equal || attr.equal?.raw === '') {
+			if (attr.isExpressionValue || attr.isDirective || !attr.equal || attr.equal?.raw === '') {
 				return;
 			}
 			const quote = attr.startQuote?.raw;

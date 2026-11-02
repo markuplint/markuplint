@@ -1040,9 +1040,10 @@ It accepts an attribute name. It's required.
 It accepts an attribute value. It's optional. If it is omitted, the attribute is a boolean attribute.
 
 - **string**: A static value.
-- **`{ "fromAttr": "name" }`**: The value of the attribute that the component has. If that attribute is an expression (`<MyButton kind={kind} />`), the value is dynamic too. If the component does not have the attribute, the element has the attribute with an empty value.
+- **`{ "fromAttr": "name" }`**: The value of the attribute that the component has. If that attribute is a literal (`<MyButton kind={false} />`), it is rendered under the name of the attribute that the element has, as the component forwards it. If that attribute is any other expression (`<MyButton kind={kind} />`), the value is dynamic too. If the component does not have the attribute, the element has the attribute with an empty value.
 - **`{ "fromAttr": "name", "omitIfMissing": true }`**: The same, except that the element does not have the attribute if the component does not have it. It is what a component that passes an optional prop on renders (`<button type={kind}>` has no `type` when `kind` is `undefined`).
-- **`{ "dynamic": true }`**: The attribute exists but its value is not known until the component renders, such as `tabIndex={selected ? 0 : -1}`. Rules treat it as a dynamic value and do not validate it.
+- **`{ "expression": "code" }`**: The code that the attribute is written as in the component, such as `{ "expression": "true" }` for `aria-busy={true}` and `{ "expression": "selected ? 0 : -1" }` for `tabIndex={selected ? 0 : -1}`. A literal in it (`true`, `false`, `null`, `undefined`, a string, a number) is rendered as the framework renders it, as it is for an element written directly: `aria-busy={true}` is `aria-busy="true"`, `disabled={false}` is no attribute, and `{ "expression": "\"true\"" }` is the same as `{ "expression": "true" }` on `aria-busy`. Any other code is a dynamic value. The scanners write it, so you rarely write it by hand.
+- **`{ "dynamic": true }`**: The attribute exists but its value is not known until the component renders, and the code is not known either. Rules treat it as a dynamic value and do not validate it.
 
 `fromAttr` finds the attribute at the usage site by the rules of the framework that renders it. In Vue, `my-label` and `myLabel` are the same prop, but `mylabel` is not. In JSX, a prop is matched exactly, so `Label` is not `label`. In an HTML-based syntax, the name is compared as the DOM compares attribute names, without regard to ASCII case. Write the name in `fromAttr` the way the component declares its prop.
 
@@ -1220,7 +1221,7 @@ const Details = ({ children }) => <details>{children}</details>;
 
 `<Picture />` is not reported for the missing `img` element because the component renders it. `<Details></Details>` is reported for the missing `summary` element because only the usage can provide it.
 
-Currently only `permitted-contents`, `require-owned-elements` and the accessible name computation (used by rules such as `require-accessible-name`) use `contents`. In the name computation, `{ "dynamic": true }` is not a source of a name (a component whose only possible name is such an entry is not reported by `require-accessible-name`, because the entry may be the name), and children given to a component whose `slots` is `null` are not used. Other rules that look at the children of the element see only the children given to the component.
+Currently only `permitted-contents`, `require-owned-elements` and the accessible name computation (used by rules such as `require-accessible-name`) use `contents`. In the name computation, `{ "dynamic": true }` is not a source of a name (a component whose only possible name is such an entry is not reported by `require-accessible-name`, because the entry may be the name), an attribute of `{ "expression": "code" }` is a name when the code is a literal that the framework renders (`aria-label={'x'}`) and is dynamic for any other code, and children given to a component whose `slots` is `null` are not used. Other rules that look at the children of the element see only the children given to the component.
 
 If the component renders several elements at its root, set `element` to `"#fragment"`. The component is not an element itself; its `contents` stand in its place in the parent.
 
@@ -1368,6 +1369,9 @@ type OriginalNode = {
       | {
           fromAttr: string;
           omitIfMissing?: true;
+        }
+      | {
+          expression: string;
         }
       | {
           dynamic: true;

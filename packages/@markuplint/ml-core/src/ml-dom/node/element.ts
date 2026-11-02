@@ -38,6 +38,8 @@ import {
 	getHostLanguageLabelSource,
 	getReferencedTextAlternative,
 } from '../helper/accname.js';
+import { literalToExpression } from '../helper/literal-values.js';
+import { markPretendedAttr } from '../helper/pretended-attrs.js';
 import {
 	after,
 	before,
@@ -3725,7 +3727,8 @@ export class MLElement<T extends RuleConfigValue, O extends PlainData = undefine
 		let first: MLAttr<T, O> | null = null;
 		let lastSetByCode: MLAttr<T, O> | null = null;
 		for (const attr of this.attributes) {
-			if (!attr.isNamedBy(attrName)) {
+			// An attribute that the framework does not output (`disabled={false}`) is not an attribute of the element
+			if (attr.isAbsent || !attr.isNamedBy(attrName)) {
 				continue;
 			}
 			first ??= attr;
@@ -3757,7 +3760,7 @@ export class MLElement<T extends RuleConfigValue, O extends PlainData = undefine
 	 * @see https://dom.spec.whatwg.org/#ref-for-dom-element-getattributenames%E2%91%A0
 	 */
 	getAttributeNames(): string[] {
-		return [...this.attributes].map(attr => attr.name);
+		return [...this.attributes].filter(attr => !attr.isAbsent).map(attr => attr.name);
 	}
 
 	/**
@@ -3793,7 +3796,7 @@ export class MLElement<T extends RuleConfigValue, O extends PlainData = undefine
 	 */
 	getAttributePretended(attrName: string) {
 		for (const attr of this.#attributes) {
-			if (attr.isNamedBy(attrName)) {
+			if (!attr.isAbsent && attr.isNamedBy(attrName)) {
 				return attr.value;
 			}
 		}
@@ -3802,7 +3805,8 @@ export class MLElement<T extends RuleConfigValue, O extends PlainData = undefine
 
 	/**
 	 * Returns all attribute tokens matching the given name, including duplicates.
-	 * Unlike `getAttribute`, this returns the full `MLAttr` token objects.
+	 * Unlike `getAttribute`, this returns the full `MLAttr` token objects. An attribute that the
+	 * framework does not output (`MLAttr#isAbsent`) is not one of them, as it is not for `getAttribute`.
 	 *
 	 * @implements `@markuplint/ml-core` API: `MLElement`
 	 * @param attrName - The attribute name to look up (see {@link MLAttr.isNamedBy} for how its case is compared)
@@ -3811,7 +3815,7 @@ export class MLElement<T extends RuleConfigValue, O extends PlainData = undefine
 	getAttributeToken(attrName: string) {
 		const attrs: MLAttr<T, O>[] = [];
 		for (const attr of this.getAttributeTokens()) {
-			if (attr.isNamedBy(attrName)) {
+			if (!attr.isAbsent && attr.isNamedBy(attrName)) {
 				attrs.push(attr);
 			}
 		}
@@ -3821,6 +3825,9 @@ export class MLElement<T extends RuleConfigValue, O extends PlainData = undefine
 	/**
 	 * Returns all attribute tokens for this element, respecting the pretender context.
 	 * If the element is pretending to be another, returns the pretender's attributes.
+	 * It lists every attribute that is written, those that the framework does not output
+	 * (`MLAttr#isAbsent`) too, as a name that is misspelled is so whatever its value is; what is asked
+	 * of the DOM by name (`getAttributeToken`, `getAttribute`) does not find them.
 	 *
 	 * @implements `@markuplint/ml-core` API: `MLElement`
 	 * @returns A frozen array of all attribute tokens
@@ -3970,7 +3977,7 @@ export class MLElement<T extends RuleConfigValue, O extends PlainData = undefine
 	 * @see https://dom.spec.whatwg.org/#dom-element-hasattributes
 	 */
 	hasAttributes() {
-		return this.attributes.length > 0;
+		return this.attributes.some(attr => !attr.isAbsent);
 	}
 
 	/**
@@ -3985,7 +3992,8 @@ export class MLElement<T extends RuleConfigValue, O extends PlainData = undefine
 			if (!attr.nameNode) {
 				return true;
 			}
-			if (attr.isDynamicValue) {
+			// An attribute that is known not to be output does not change
+			if (attr.isDynamicValue && !attr.isAbsent) {
 				return true;
 			}
 		}
@@ -3995,7 +4003,7 @@ export class MLElement<T extends RuleConfigValue, O extends PlainData = undefine
 	/**
 	 * Checks whether this element has children that are potentially mutable,
 	 * such as preprocessor-specific blocks, slot elements, or (optionally) elements
-	 * with dynamic attributes.
+	 * with dynamic attributes and components that no pretender resolved.
 	 *
 	 * Blocks that carry a `blockBehavior` are not treated as mutable because
 	 * their branches are deterministically enumerable via
@@ -4003,8 +4011,15 @@ export class MLElement<T extends RuleConfigValue, O extends PlainData = undefine
 	 * like `{value}`) can produce arbitrary content, so the children are
 	 * considered mutable.
 	 *
+	 * A component that no pretender resolved renders something that is not known, however its
+	 * attributes are written (`size={size}`, `size={16}` and `size="16"` tell the same): a rule that
+	 * asks about what the descendants are or have (the accessible name, the owned elements) cannot decide
+	 * on it, so it is mutable when `attr` is true. A component that a pretender resolved is the element
+	 * that it renders, which the rules read themselves.
+	 *
 	 * @implements `@markuplint/ml-core` API: `MLElement`
-	 * @param attr - When true, also considers children with mutable attributes as mutable
+	 * @param attr - When true, also considers children with mutable attributes, and components that no
+	 * pretender resolved, as mutable
 	 * @returns True if this element has potentially mutable children
 	 */
 	hasMutableChildren(attr = false) {
@@ -4017,6 +4032,9 @@ export class MLElement<T extends RuleConfigValue, O extends PlainData = undefine
 			}
 			if (child.is(child.ELEMENT_NODE)) {
 				if (attr && child.hasMutableAttributes()) {
+					return true;
+				}
+				if (attr && child.elementType === 'authored' && child.pretenderContext?.type !== 'pretender') {
 					return true;
 				}
 				if (child.hasMutableChildren(attr)) {
@@ -4401,9 +4419,19 @@ export class MLElement<T extends RuleConfigValue, O extends PlainData = undefine
 	}
 
 	/**
-	 * Converts pretender attributes to AST attributes for a virtual element.
+	 * Converts pretender attributes to AST attributes for a virtual element. They are marked as made by
+	 * a pretender (`MLAttr#isPretended`): the position of their tokens is the element's, not the source's.
 	 *
-	 * `{ fromAttr }` reads this (the origin) element's attribute. When that attribute is an
+	 * `{ expression }` is the code that the attribute is written as in the component. It becomes an
+	 * attribute written as code (`{` and `}` are its quotes), which `MLAttr` reads as JavaScript
+	 * whatever the language of the document is: a literal in it is rendered as the framework renders
+	 * it, and any other code is dynamic.
+	 *
+	 * `{ fromAttr }` reads this (the origin) element's attribute. When that attribute is a literal
+	 * (`kind={false}`, `kind`), the literal is rendered under the name of the attribute that the
+	 * virtual element gets, which is what the component does with the prop it forwards
+	 * (`<Button disabled={false}>` forwarded to `<button disabled={props.disabled}>` has no `disabled`,
+	 * and forwarded to `aria-label={props.disabled}` it has `aria-label="false"`). When it is any other
 	 * expression (`kind={kind}`), the result is dynamic as well: the value the component
 	 * receives is unknown, and the source text of the expression is not a value to validate.
 	 * When the attribute is not written and `omitIfMissing` is set, the virtual element gets
@@ -4417,8 +4445,12 @@ export class MLElement<T extends RuleConfigValue, O extends PlainData = undefine
 		return attrs.flatMap(({ name, value }, i): MLASTAttr[] => {
 			let isDynamic = value != null && typeof value === 'object' && 'dynamic' in value;
 			let _value = '';
+			// The code that the attribute is written as, when it is known
+			let expression: string | undefined;
 			if (typeof value === 'string') {
 				_value = value;
+			} else if (value != null && 'expression' in value) {
+				expression = value.expression;
 			} else if (value != null && 'fromAttr' in value) {
 				// The attribute of the usage site that the prop is. Vue gives a prop the attribute by the camelCase
 				// of its name (`my-label` and `myLabel` are the prop `myLabel`, and `mylabel` is another),
@@ -4432,14 +4464,19 @@ export class MLElement<T extends RuleConfigValue, O extends PlainData = undefine
 				if (!origin && value.omitIfMissing) {
 					return [];
 				}
-				if (origin?.isDynamicValue) {
+				if (origin?.literal) {
+					// The key of a literal is the code that it is written as (`true`, `"x"`, `0`), except for a number that
+					// is not finite (`Infinity` is a name, which is not a literal)
+					expression = literalToExpression(origin.literal);
+				} else if (origin?.isDynamicValue) {
 					isDynamic = true;
 				} else {
 					_value = origin?.value ?? '';
 				}
 			}
+			const isExpression = expression !== undefined;
 			return [
-				{
+				markPretendedAttr({
 					...this._astToken,
 					uuid: `${uuidBase}_attr_${i}`,
 					type: 'attr',
@@ -4466,24 +4503,24 @@ export class MLElement<T extends RuleConfigValue, O extends PlainData = undefine
 					},
 					startQuote: {
 						...this._astToken,
-						raw: '',
+						raw: isExpression ? '{' : '',
 					},
 					value: {
 						...this._astToken,
-						raw: _value,
+						raw: expression ?? _value,
 					},
 					endQuote: {
 						...this._astToken,
-						raw: '',
+						raw: isExpression ? '}' : '',
 					},
 					isDuplicatable: true,
-					...(isDynamic ? { isDynamicValue: true } : {}),
+					...(isDynamic || isExpression ? { isDynamicValue: true } : {}),
 					parentNode: null,
 					nextNode: null,
 					prevNode: null,
 					isFragment: false,
 					isGhost: false,
-				} as MLASTAttr,
+				} as MLASTAttr),
 			];
 		});
 	}

@@ -25,8 +25,9 @@
  * produced a file: the report is written once every check has run, and before `--update` touches the lock.
  *
  * Citations are collected from the rules package (README, `*.ts` comments,
- * `schema.json`) and from the website's hand-written pages; `discover.ts` lists
- * which files and how each is read.
+ * `schema.json`), from the declarations of how a framework renders a literal (a
+ * spec package and a parser), and from the website's hand-written pages;
+ * `discover.ts` lists which files and how each is read.
  */
 import type { CollectResult, PageResult } from './types.ts';
 

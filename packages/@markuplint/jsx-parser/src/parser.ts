@@ -32,6 +32,8 @@ class JSXParser extends Parser<JSXNode, State> {
 			{
 				endTagType: 'xml',
 				booleanish: true,
+				// A value in `{…}` is JavaScript
+				attrExpressionLanguage: 'javascript',
 				tagNameCaseSensitive: true,
 				attrNameCaseSensitive: true,
 				attrNameRoute: 'dom-api',

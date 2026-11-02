@@ -1,6 +1,8 @@
 import type {
 	AttrNameRoute,
 	EndTagType,
+	ExpressionLanguage,
+	LiteralValueDeclaration,
 	MLASTParentNode,
 	MLASTParseError,
 	ParserOptions as ConfigParserOptions,
@@ -12,6 +14,8 @@ import type {
  */
 export type ParserOptions = {
 	readonly booleanish?: boolean;
+	readonly attrExpressionLanguage?: ExpressionLanguage;
+	readonly literalValues?: LiteralValueDeclaration;
 	readonly endTagType?: EndTagType;
 	readonly ignoreTags?: readonly IgnoreTag[];
 	readonly maskChar?: string;

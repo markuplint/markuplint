@@ -633,6 +633,10 @@ function attrMatch(
 	// SelectorTarget#matchWithoutCombineChecking.
 	const isHTML = isPureHTMLElement(el);
 	return [...el.attributes].some(attrOfEl => {
+		// An attribute that the framework does not output is not an attribute of the DOM
+		if (attrOfEl.absent) {
+			return false;
+		}
 		const elAttrName = attrOfEl.domName ?? attrOfEl.localName;
 		const isCaseInsensitive = attrOfEl.nameCaseInsensitive ?? isHTML;
 		const selectorName = attrOfEl.nameIsCamelized ? vuePropKey(attr.attribute) : attr.attribute;

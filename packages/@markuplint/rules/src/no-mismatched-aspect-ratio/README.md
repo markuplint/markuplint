@@ -15,7 +15,7 @@ Incorrect `width`/`height` attributes can cause layout shifts (CLS) because the 
 - `<source>` elements inside `<picture>` with `srcset`, `width`, and `height` attributes are also checked. The first URL from the `srcset` attribute is used for dimension lookup.
 - Remote URLs (`http://`, `https://`) and data URIs (`data:`) are skipped.
 - If the image file cannot be found or read, no violation is reported (silent skip).
-- Dynamic attribute values (e.g., Vue `:src`, JSX `src={...}`) and elements with spread attributes are skipped.
+- Dynamic attribute values (e.g., Vue `:src="x"`, JSX `src={x}`) and elements with spread attributes are skipped. A literal written as code (`src={"a.png"}`) is evaluated as the value that the framework renders it to; a literal that the framework does not output (`null`, `false`) or renders in a way that is not known is skipped, as a dynamic value is.
 - Query strings (`?v=123`) and fragments (`#section`) in `src` are stripped when resolving the file path, but preserved in the cache key. This mirrors browser cache-busting behavior: the same file with different query strings is treated as a separate cache entry.
 - The comparison allows a ±0.5 pixel tolerance: `width`/`height` attributes are integers, so an image whose intrinsic ratio doesn't divide evenly can never have an exact integer match. The tolerance is computed via cross-multiplication (`|attrWidth * actualHeight - attrHeight * actualWidth| / actualWidth`) to avoid floating-point errors while still expressing the mismatch in pixel-equivalent units.
 - Image dimensions are cached in a temporary directory to avoid redundant file reads.

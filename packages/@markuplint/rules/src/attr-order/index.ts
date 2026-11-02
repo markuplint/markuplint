@@ -319,7 +319,8 @@ export default createRule<Value, Options>({
 		let cachedCompiled: CompiledEntry[] | undefined;
 
 		await document.walkOn('Element', node => {
-			const attrs = node.getAttributeTokens();
+			// An attribute that a pretender made is not in the source, so it has no place in the order of it
+			const attrs = node.getAttributeTokens().filter(attr => !attr.isPretended);
 			if (attrs.length <= 1) {
 				return;
 			}

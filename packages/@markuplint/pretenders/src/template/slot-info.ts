@@ -48,15 +48,21 @@ export function deriveSlotInfo(scan: ComponentScanResult, resolveProp?: Template
 /**
  * A dynamic attribute whose expression is just a prop of the component is
  * `{ fromAttr, omitIfMissing: true }`: the attribute the usage site writes, and none when it
- * does not (see `createTemplatePropResolver`). Any other dynamic attribute is `{ dynamic: true }`.
+ * does not (see `createTemplatePropResolver`). Any other dynamic attribute whose expression is known
+ * is `{ expression }`, the code as it is written, which `@markuplint/ml-core` reads (a literal in it is
+ * rendered as the framework renders it). One whose expression is not known (`"a-{b}"`, a name written
+ * in several forms) is `{ dynamic: true }`.
  */
 export function toAttrs(attrs: readonly ComponentScanAttr[], resolveProp?: TemplatePropResolver): PretenderAttr[] {
 	return attrs.map((attr): PretenderAttr => {
 		if (attr.dynamic) {
 			const prop = resolveProp?.(attr.expression);
-			return prop === undefined
+			if (prop !== undefined) {
+				return { name: attr.name, value: { fromAttr: prop, omitIfMissing: true } };
+			}
+			return attr.expression === undefined
 				? { name: attr.name, value: { dynamic: true } }
-				: { name: attr.name, value: { fromAttr: prop, omitIfMissing: true } };
+				: { name: attr.name, value: { expression: attr.expression } };
 		}
 		return attr.value === undefined ? { name: attr.name } : { name: attr.name, value: attr.value };
 	});

@@ -44,7 +44,8 @@ export default createRule({
 				hasDynamicId = true;
 			}
 			if (attr.valueType !== 'code') {
-				idList.add(decodeEntities(attr.value));
+				// An expression is code, not markup: its string has no character reference to decode
+				idList.add(attr.isExpressionValue ? attr.value : decodeEntities(attr.value));
 			}
 		}
 
@@ -61,7 +62,7 @@ export default createRule({
 				hasDynamicName = true;
 			}
 			if (attr.valueType !== 'code') {
-				nameList.add(decodeEntities(attr.value));
+				nameList.add(attr.isExpressionValue ? attr.value : decodeEntities(attr.value));
 			}
 		}
 

@@ -91,14 +91,14 @@ describe('fix', () => {
 });
 
 describe('fix with parsers', () => {
-	test('[no-boolean-attr-value-fix-006] fix: Pug remove boolean attr value', async () => {
+	test('[no-boolean-attr-value-fix-006] fix: Pug is not fixed, its value is code', async () => {
 		const { fixedCode } = await mlRuleTest(
 			rule,
 			'input(disabled="disabled")',
 			{ parser: { '.*': '@markuplint/pug-parser' } },
 			true,
 		);
-		expect(fixedCode).toBe('input(disabled)');
+		expect(fixedCode).toBe('input(disabled="disabled")');
 	});
 
 	test('[no-boolean-attr-value-fix-007] fix: JSX remove boolean attr value', async () => {

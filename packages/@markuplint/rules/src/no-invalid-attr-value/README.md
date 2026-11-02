@@ -25,7 +25,7 @@ Whether the attribute name is known and applicable at all is [`no-unknown-attr`]
 
 :::note
 
-This rule doesn't evaluate the element that has the **spread attribute** in some condition, mirroring [`no-disallowed-attr`](/docs/rules/no-disallowed-attr)'s note on the same subject — dynamic (template-interpolated) values are never reported as invalid, since their content isn't known at lint time.
+This rule doesn't evaluate the element that has the **spread attribute** in some condition, mirroring [`no-disallowed-attr`](/docs/rules/no-disallowed-attr)'s note on the same subject — dynamic (template-interpolated) values are never reported as invalid, since their content isn't known at lint time. A literal written as code (`type={"bogus"}`) is judged as the value that the framework renders it to; a literal that the framework does not output (`null`, `false`) or renders in a way that is not known is skipped, as a dynamic value is.
 
 :::
 

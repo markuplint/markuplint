@@ -1684,7 +1684,80 @@ describe('a relative filePath of an inline pretender is resolved from the config
 		const violations = await lint(path.join(tmpDir, 'app', 'list.tsx'), {
 			configFile: path.join(tmpDir, 'app', 'other.config.json'),
 		});
-		expect(violations.map(v => v.ruleId)).toStrictEqual(['require-owned-elements']);
+		expect(violations).toStrictEqual([]);
+	});
+
+	// A component that no pretender resolved is not known to render the owned element, so `require-owned-elements`
+	// reports nothing whether the pretender is kept or dropped. What tells them apart is the element that the rules
+	// judge: `li` for the pretender, and the component for none.
+	describe('what the rules judge', () => {
+		const restricted = (filePath: string) => ({
+			...createConfig(filePath),
+			rules: { 'no-restricted-element': ['li'] },
+		});
+
+		it('is the element that the component stands for when the pretender is kept', async () => {
+			await fs.writeFile(
+				path.join(tmpDir, 'app', 'restricted.config.json'),
+				JSON.stringify(restricted('./Item.tsx:1:17')),
+			);
+
+			const violations = await lint(path.join(tmpDir, 'app', 'list.tsx'), {
+				configFile: path.join(tmpDir, 'app', 'restricted.config.json'),
+			});
+			expect(violations.map(v => v.ruleId)).toStrictEqual(['no-restricted-element']);
+		});
+
+		it('is the component when the pretender is dropped', async () => {
+			await fs.writeFile(
+				path.join(tmpDir, 'app', 'restricted-other.config.json'),
+				JSON.stringify(restricted('./Other.tsx:1:17')),
+			);
+
+			const violations = await lint(path.join(tmpDir, 'app', 'list.tsx'), {
+				configFile: path.join(tmpDir, 'app', 'restricted-other.config.json'),
+			});
+			expect(violations).toStrictEqual([]);
+		});
+
+		it('is the element that the component stands for when the configuration file is extended from another directory', async () => {
+			await fs.writeFile(
+				path.join(tmpDir, 'app', 'restricted.config.json'),
+				JSON.stringify(restricted('./Item.tsx:1:17')),
+			);
+			await fs.mkdir(path.join(tmpDir, 'extending'));
+			await fs.writeFile(
+				path.join(tmpDir, 'extending', 'markuplint.config.json'),
+				JSON.stringify({ extends: ['../app/restricted.config.json'] }),
+			);
+
+			const violations = await lint(path.join(tmpDir, 'app', 'list.tsx'), {
+				configFile: path.join(tmpDir, 'extending', 'markuplint.config.json'),
+			});
+			expect(violations.map(v => v.ruleId)).toStrictEqual(['no-restricted-element']);
+		});
+
+		it('is the element that the component stands for when the pretender is in the value of an override', async () => {
+			const { pretenders, ...rest } = restricted('./Item.tsx:1:17');
+			await fs.writeFile(
+				path.join(tmpDir, 'app', 'restricted-overridden.config.json'),
+				JSON.stringify({ ...rest, overrideMode: 'merge', overrides: { './list.tsx': { pretenders } } }),
+			);
+
+			const violations = await lint(path.join(tmpDir, 'app', 'list.tsx'), {
+				configFile: path.join(tmpDir, 'app', 'restricted-overridden.config.json'),
+			});
+			expect(violations.map(v => v.ruleId)).toStrictEqual(['no-restricted-element']);
+		});
+
+		it('is the element that the component stands for when the configuration has no file behind it', async () => {
+			vi.spyOn(process, 'cwd').mockReturnValue(path.join(tmpDir, 'app'));
+
+			const violations = await lint(path.join(tmpDir, 'app', 'list.tsx'), {
+				config: restricted('./Item.tsx:1:17'),
+			});
+			expect(violations.map(v => v.ruleId)).toStrictEqual(['no-restricted-element']);
+		});
 	});
 
 	it('reads the filePath of a configuration with no file behind it from the working directory', async () => {

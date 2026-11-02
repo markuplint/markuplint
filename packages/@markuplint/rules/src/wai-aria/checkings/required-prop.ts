@@ -49,7 +49,8 @@ export const checkingRequiredProp: ElementChecker<
 			return true;
 		});
 		for (const { name: requiredProp } of requiredProps) {
-			const has = el.attributes.some(attr => attr.nameKey === requiredProp);
+			// An attribute that the framework does not output (`aria-checked={null}`) is not there
+			const has = el.attributes.some(attr => !attr.isAbsent && attr.nameKey === requiredProp);
 			if (!has) {
 				const propSpec = propSpecs.find(p => p.name === requiredProp);
 

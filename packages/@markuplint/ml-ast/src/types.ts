@@ -335,7 +335,11 @@ export interface MLASTHTMLAttr extends MLASTToken {
 	readonly value: MLASTToken;
 	/** The closing quote token */
 	readonly endQuote: MLASTToken;
-	/** Whether the value is a dynamic expression (e.g. a binding in a framework) */
+	/**
+	 * Whether the value is written as code (e.g. a binding in a framework). It is the source of
+	 * `MLAttr#isExpressionValue`; whether the value is known is up to `MLAttr#isDynamicValue`, which
+	 * reads the code.
+	 */
 	readonly isDynamicValue?: true;
 	/** Whether the attribute is a framework directive (e.g. `v-if`, `@click`) */
 	readonly isDirective?: true;
@@ -548,6 +552,22 @@ export interface MLParser {
 	 */
 	booleanish?: boolean;
 
+	/**
+	 * The language of the code that an attribute value is written in when it is written as code
+	 * (`{…}` of JSX, Svelte and Astro, `:x="…"` of Vue, a value of `=` in Pug). Absent means that the
+	 * parser does not say, and no value is read as a literal. A value that is written in it and is
+	 * nothing but a literal is rendered as the framework renders it; see {@link LiteralValues}.
+	 */
+	attrExpressionLanguage?: ExpressionLanguage;
+
+	/**
+	 * How the framework renders a literal in an attribute value, where it differs from the default of
+	 * `@markuplint/ml-core`. A parser that has a spec package (`@markuplint/vue-spec`) leaves it to the
+	 * spec; one that has none (Astro, Pug) declares it here. What the spec says wins over this.
+	 * Both say it in the same form ({@link LiteralValueDeclaration}).
+	 */
+	literalValues?: LiteralValueDeclaration;
+
 	/** Whether tag names should be treated as case-sensitive (e.g. for XHTML or JSX) */
 	tagNameCaseSensitive?: boolean;
 
@@ -619,6 +639,65 @@ export interface MLParser {
  * @see https://dom.spec.whatwg.org/#dom-element-setattribute
  */
 export type AttrNameRoute = 'html-parser' | 'dom-api' | 'dom-api-when-dynamic';
+
+/**
+ * The language of the code in an attribute value that is written as code (`{…}` of JSX, `:x="…"` of
+ * Vue). Only JavaScript is known: a value in it that is nothing but a literal is rendered as the
+ * framework renders it (see {@link LiteralValues}).
+ */
+export type ExpressionLanguage = 'javascript';
+
+/**
+ * How a literal in an attribute value written as code is rendered when it differs from the default of
+ * `@markuplint/ml-core`: the key is the normal form of the literal (`"true"` is the boolean, `"\"true\""`
+ * is the string, `"0"` is the number, `"null"`, `"undefined"`, `"\"\""` is the empty string; `'x'`, `"x"` and
+ * `` `x` `` are one key), and the value is the attribute value that results, or `null` when the
+ * framework does not output the attribute (as `getAttribute()` returns `null`).
+ *
+ * Only a literal that is rendered other than the default is written. A string or a number that
+ * is not listed is rendered by the default (the string, `String(n)`).
+ *
+ * @example { "true": "", "false": null } — `disabled={true}` is `disabled=""`, `disabled={false}` is no attribute
+ */
+export type LiteralValues = Readonly<Record<string, string | null>>;
+
+/**
+ * The tables of {@link LiteralValues} by kind of attribute: a name that starts with `aria-`, one that
+ * starts with `data-`, a boolean attribute (a name whose type is `Boolean` in the spec), and the
+ * others. The kinds are independent: an attribute is of one kind and does not fall back to another.
+ */
+export type LiteralValueKinds = {
+	readonly booleanAttrs?: LiteralValues;
+	readonly ariaAttrs?: LiteralValues;
+	readonly dataAttrs?: LiteralValues;
+	readonly otherAttrs?: LiteralValues;
+};
+
+/**
+ * The tables of {@link LiteralValues} by kind of attribute, and `attrs` by attribute name, in lower case,
+ * for an attribute that is rendered differently from the kind it is of. A framework decides how to
+ * render an attribute by its name and not by the element it is on, so a table is written once for
+ * a name (`value`, `download`) whatever elements have it.
+ */
+export type LiteralValueTable = LiteralValueKinds & {
+	readonly attrs?: Readonly<Record<string, LiteralValues>>;
+};
+
+/**
+ * How a framework renders a literal in an attribute value, where it differs from the default of
+ * `@markuplint/ml-core`. A spec (`MLMLSpec#literalValues`) and a parser (`MLParser#literalValues`) say it
+ * in this form. `customElements` overrides the tables on a custom element (`elementType: "web-component"`),
+ * which some frameworks render differently (React sets `true` as `""` on any attribute of it).
+ *
+ * A declaration is a reading of the source of the framework, which the JSDoc of each one cites. When the
+ * framework changes how it renders, read the cited source again and correct the table; the specs of
+ * `@markuplint/ml-core` that hold a table (`framework-literal-values.spec.ts`) and the names that the
+ * spec types as `Boolean` and the framework does not (`literal-values-declarations.spec.ts`) fail
+ * where a table no longer says what the framework renders.
+ */
+export type LiteralValueDeclaration = LiteralValueTable & {
+	readonly customElements?: LiteralValueTable;
+};
 
 /**
  * A module that exports a parser. Used for dynamic parser resolution.

@@ -239,6 +239,10 @@ function uncombinedRegexSelect(el: SelectorNode, selector: RegexSelectorWithoutC
 	if (selector.attrName || selector.attrValue) {
 		const matchedAttrList: MatchedAttr[] = [...el.attributes]
 			.map<MatchedAttr | null>(attr => {
+				// An attribute that the framework does not output is not an attribute of the DOM
+				if (attr.absent) {
+					return null;
+				}
 				const ignoreCase = attr.nameCaseInsensitive ?? isPure;
 				// A prop that the framework camelizes has two spellings, the DOM's and the one written
 				const matchedAttrName =

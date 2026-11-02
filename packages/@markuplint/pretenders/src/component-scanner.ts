@@ -48,14 +48,15 @@ export interface ComponentScanResult {
 
 /**
  * An attribute extracted from an element of a component: a static one with its value, or
- * a `dynamic` one whose value is an expression.
+ * a `dynamic` one whose value is written as code. The scanner does not tell a literal in the code
+ * (`type={"button"}`) from any other code: `@markuplint/ml-core` reads it.
  */
 export interface ComponentScanAttr {
 	/** The attribute name */
 	readonly name: string;
 	/** The attribute value (omitted for boolean attributes) */
 	readonly value?: string;
-	/** The attribute is present and its value is an expression, unknown at scan time. `value` is omitted. */
+	/** The attribute is present and its value is written as code. `value` is omitted. */
 	readonly dynamic?: true;
 	/**
 	 * The source of the expression of a `dynamic` attribute that is written as one expression

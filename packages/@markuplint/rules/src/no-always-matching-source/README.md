@@ -12,7 +12,7 @@ Split out of the former `srcset-sizes-constraint` rule, alongside [`no-unpaired-
 ## How It Works
 
 - Only `<source>` elements inside `<picture>` are checked. Elements with spread attributes are skipped.
-- A `media` attribute counts as distinguishing the source only when its value, after stripping leading and trailing ASCII whitespace, is neither empty nor an ASCII case-insensitive match for `all`. A `type` attribute (any value) always counts. Dynamic `media`/`type` values are assumed to qualify and are skipped.
+- A `media` attribute counts as distinguishing the source only when its value, after stripping leading and trailing ASCII whitespace, is neither empty nor an ASCII case-insensitive match for `all`. A `type` attribute (any value) always counts. Dynamic `media`/`type` values are assumed to qualify and are skipped. A literal written as code (`media={"all"}`) is evaluated as the value that the framework renders it to; a literal that the framework does not output (`null`, `false`) or renders in a way that is not known is skipped, as a dynamic value is.
 - Whether the current `<source>` itself has a `srcset` attribute does not matter — the requirement is about distinguishing it from a **following** sibling's candidates.
 
 ❌ Examples of **incorrect** code for this rule

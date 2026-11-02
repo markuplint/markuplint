@@ -55,6 +55,11 @@ export default createRule<boolean, Option>({
 				return;
 			}
 
+			// An attribute that the framework does not output (`async={false}`) is not an attribute of the element
+			if (attr.isAbsent) {
+				return;
+			}
+
 			const name = attr.name;
 			const attrName = attr.nameNode;
 

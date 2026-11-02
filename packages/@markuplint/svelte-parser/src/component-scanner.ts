@@ -195,7 +195,8 @@ function extractAttrs(el: MLASTElement): ComponentScanAttr[] {
 		}
 		const value = attr.value.raw;
 		if (attr.isDynamicValue) {
-			const expression = value.trim();
+			// `disabled="{false}"` is the expression `false` in quotes, which the parser keeps as `potentialValue`
+			const expression = (attr.potentialValue ?? value).trim();
 			addAttr(attrs, { name: attr.nodeName, dynamic: true, ...(expression === '' ? {} : { expression }) });
 		} else if (INTERPOLATION.test(value)) {
 			addAttr(attrs, { name: attr.nodeName, dynamic: true });

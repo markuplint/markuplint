@@ -2,7 +2,7 @@ import type { ARIA } from './aria.js';
 import type { AttributeJSON, AttributeType, ConditionalAttributeType, GlobalAttributes } from './attributes.js';
 import type { ContentModel, Category } from './permitted-structures.js';
 import type { ariaVersions } from '../utils/aria-version.js';
-import type { NamespaceURI } from '@markuplint/ml-ast';
+import type { ExpressionLanguage, LiteralValueDeclaration, NamespaceURI } from '@markuplint/ml-ast';
 import type { ReadonlyDeep } from 'type-fest';
 
 /**
@@ -24,6 +24,13 @@ export interface MLMLSpec {
 	 *   names and IDL property names without suggesting either. Used by Svelte.
 	 */
 	readonly acceptedAttrNames?: 'idl' | 'both';
+	/**
+	 * How the framework renders a literal in an attribute value that is written as code, where it
+	 * differs from the default of `@markuplint/ml-core`: by kind of attribute, and by attribute name
+	 * in `attrs`, in the form that a parser declares as well (see {@link LiteralValueDeclaration}).
+	 * What differs on a custom element is in `customElements`.
+	 */
+	readonly literalValues?: LiteralValueDeclaration;
 }
 
 /**
@@ -50,6 +57,11 @@ export type ExtendedSpec = {
 	 * specs; omitting the property does not reset a previously set value.
 	 */
 	readonly acceptedAttrNames?: 'idl' | 'both';
+	/**
+	 * See {@link MLMLSpec.literalValues}. Merged by kind of attribute, by attribute name and by key,
+	 * and the later spec wins on a key that two specs have.
+	 */
+	readonly literalValues?: LiteralValueDeclaration;
 };
 
 /**
@@ -94,9 +106,19 @@ export type DirectivePattern = {
 	readonly isDirective?: true;
 
 	/**
-	 * Whether this attribute has a dynamic value.
+	 * Whether the value of this attribute is written as code (a binding). It is the source of
+	 * `MLAttr#isExpressionValue`; whether the value is known is up to `MLAttr#isDynamicValue`, which
+	 * reads the code.
 	 */
 	readonly isDynamicValue?: true;
+
+	/**
+	 * The language of the code that the value is written in. A value that is nothing but a literal is
+	 * rendered as the framework renders it (see {@link MLMLSpec.literalValues}), which needs the
+	 * attribute to be the one the pattern names (`potentialName`) and the value to be what the attribute
+	 * becomes, not a condition or a binding target. A pattern without it is not read as a literal.
+	 */
+	readonly expressionLanguage?: ExpressionLanguage;
 
 	/**
 	 * The semantic value type for matched attributes.

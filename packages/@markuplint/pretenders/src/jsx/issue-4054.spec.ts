@@ -15,25 +15,28 @@ describe('jsxScanner: issue #4054', () => {
 	});
 
 	describe('the reported components', () => {
-		test('Button: the conditional `type` is one dynamic attribute, not literals harvested from the expression', () => {
+		test('Button: the conditional `type` is one expression, not literals harvested from the expression', () => {
 			expect(asOf('Button')).toStrictEqual({
 				element: 'button',
 				attrs: [
 					{ name: 'aria-label', value: 'Save' },
-					{ name: 'type', value: { dynamic: true } },
+					{
+						name: 'type',
+						value: { expression: "type === 'submit' ? 'submit' : type === 'reset' ? 'reset' : 'button'" },
+					},
 				],
 				slots: null,
 			});
 		});
 
-		test('Tab: `tabIndex` is dynamic instead of an attribute without a value', () => {
+		test('Tab: `tabIndex` is an expression instead of an attribute without a value', () => {
 			expect(asOf('Tab')).toStrictEqual({
 				element: 'button',
 				attrs: [
 					{ name: 'type', value: 'button' },
 					{ name: 'role', value: 'tab' },
 					{ name: 'aria-label', value: 'Example' },
-					{ name: 'tabIndex', value: { dynamic: true } },
+					{ name: 'tabIndex', value: { expression: 'selected ? 0 : -1' } },
 				],
 				slots: null,
 			});
@@ -61,14 +64,14 @@ describe('jsxScanner: issue #4054', () => {
 	});
 
 	describe('attribute classification', () => {
-		test('literal expressions are static values', () => {
+		test('literal expressions are the code as it is written', () => {
 			expect(asOf('Literals')).toStrictEqual({
 				element: 'div',
 				attrs: [
-					{ name: 'tabIndex', value: '0' },
-					{ name: 'title', value: 'x' },
-					{ name: 'data-n', value: '-1' },
-					{ name: 'data-t', value: 't' },
+					{ name: 'tabIndex', value: { expression: '0' } },
+					{ name: 'title', value: { expression: "'x'" } },
+					{ name: 'data-n', value: { expression: '-1' } },
+					{ name: 'data-t', value: { expression: '`t`' } },
 				],
 				slots: null,
 			});
@@ -116,7 +119,7 @@ describe('jsxScanner: issue #4054', () => {
 			expect(asOf('Memo')).toStrictEqual({ element: 'aside', slots: null });
 			expect(asOf('Fwd')).toStrictEqual({
 				element: 'nav',
-				attrs: [{ name: 'ref', value: { dynamic: true } }],
+				attrs: [{ name: 'ref', value: { expression: 'ref' } }],
 				slots: null,
 			});
 		});
