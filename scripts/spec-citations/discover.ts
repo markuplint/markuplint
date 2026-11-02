@@ -10,6 +10,14 @@ export type FileKind = 'readme' | 'source' | 'data' | 'doc';
 
 const RULES = 'packages/@markuplint/rules/src';
 const DOCS = ['website/docs', 'website/i18n/ja/docusaurus-plugin-content-docs'];
+/**
+ * Outside the rules package, a citation is in the declaration of a spec package (`*-spec/src/index.ts`), and
+ * in the table of how a parser without a spec package renders a literal (`*-parser/src/literal-values.ts`).
+ */
+const DECLARATIONS = [
+	'packages/@markuplint/*-spec/src/index.ts',
+	'packages/@markuplint/*-parser/src/literal-values.ts',
+];
 
 /**
  * Which files hold citations, and how they are read.
@@ -28,6 +36,12 @@ export function classify(path: string): FileKind | null {
 	if (path.startsWith(`${RULES}/`) && path.endsWith('.ts') && !path.endsWith('.spec.ts') && !path.endsWith('.d.ts')) {
 		return 'source';
 	}
+	if (/^packages\/@markuplint\/[^/]+-spec\/src\/index\.ts$/.test(path)) {
+		return 'source';
+	}
+	if (/^packages\/@markuplint\/[^/]+-parser\/src\/literal-values\.ts$/.test(path)) {
+		return 'source';
+	}
 	if (/^website\/(?:docs|i18n\/ja\/docusaurus-plugin-content-docs)\/.+\.mdx?$/.test(path)) {
 		return 'doc';
 	}
@@ -40,7 +54,7 @@ export function classify(path: string): FileKind | null {
  * READMEs into `website/docs`, and those must not be counted twice.
  */
 export function listCitingFiles(root: string): { path: string; kind: FileKind }[] {
-	const listed = execFileSync('git', ['ls-files', '-z', '--', RULES, ...DOCS], {
+	const listed = execFileSync('git', ['ls-files', '-z', '--', RULES, ...DECLARATIONS, ...DOCS], {
 		cwd: root,
 		encoding: 'utf8',
 		maxBuffer: 64 * 1024 * 1024,

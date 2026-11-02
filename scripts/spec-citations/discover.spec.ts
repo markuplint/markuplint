@@ -25,12 +25,35 @@ describe('classify', () => {
 	});
 });
 
+describe('classify: the declarations of how a framework renders', () => {
+	test('[discover-006] reads the declaration of a spec package and the table of a parser as sources', () => {
+		expect(classify('packages/@markuplint/react-spec/src/index.ts')).toBe('source');
+		expect(classify('packages/@markuplint/alpine-spec/src/index.ts')).toBe('source');
+		expect(classify('packages/@markuplint/astro-parser/src/literal-values.ts')).toBe('source');
+		expect(classify('packages/@markuplint/pug-parser/src/literal-values.ts')).toBe('source');
+	});
+
+	test('[discover-007] does not read the other files of those packages', () => {
+		expect(classify('packages/@markuplint/react-spec/src/index.spec.ts')).toBeNull();
+		expect(classify('packages/@markuplint/react-spec/README.md')).toBeNull();
+		expect(classify('packages/@markuplint/astro-parser/src/parser.ts')).toBeNull();
+	});
+});
+
 describe('listCitingFiles', () => {
 	test('[discover-004] lists tracked files only, relative to the root with forward slashes', () => {
 		const root = fileURLToPath(new URL('../../', import.meta.url));
 		const paths = listCitingFiles(root).map(f => f.path);
 		expect(paths).toContain('packages/@markuplint/rules/src/no-input-file-value/README.md');
 		expect(paths.every(p => !p.includes('\\') && !p.startsWith('/'))).toBe(true);
+	});
+});
+
+describe('listCitingFiles: the declarations of how a framework renders', () => {
+	test('[discover-008] lists the declaration of a spec package', () => {
+		const root = fileURLToPath(new URL('../../', import.meta.url));
+		const found = listCitingFiles(root).find(f => f.path === 'packages/@markuplint/react-spec/src/index.ts');
+		expect(found?.kind).toBe('source');
 	});
 });
 
