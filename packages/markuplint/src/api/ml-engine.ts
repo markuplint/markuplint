@@ -646,10 +646,18 @@ export class MLEngine extends Emitter<MLEngineEventMap> {
 	 * of `@markuplint/shared`'s `errors/index.ts`): any non-fatal error thrown by
 	 * the resolution, or a `ConfigLoadError` collected into the config set's
 	 * `errs`, fails the file. Tier 1 errors — markuplint's own bugs
-	 * (`isFatalError()`) — are not caught here. The other `errs` (a rule or a
-	 * plugin that is not found, an invalid selector, a circular `extends`)
-	 * leave the rest of the config usable, so they stay `config-error` warnings
-	 * that `MLCore.verify()` reports.
+	 * (`isFatalError()`) — are not caught here.
+	 *
+	 * The pretenders that the config asks for are resolved here as well, and
+	 * fail the file in the same way. `@markuplint/pretenders` is an optional
+	 * peer, so a config that needs it fails with how to install it when it is
+	 * missing; any other non-fatal failure of the resolution, a component that
+	 * cannot be read for one, is reported as a `config-error` too, instead of
+	 * rejecting {@link exec} and ending a run that has other files to lint.
+	 *
+	 * The other `errs` (a rule or a plugin that is not found, an invalid
+	 * selector, a circular `extends`) leave the rest of the config usable, so
+	 * they stay `config-error` warnings that `MLCore.verify()` reports.
 	 */
 	async #provide(cache = true): Promise<MLFabric | null> {
 		this.#configFailure = null;
@@ -706,7 +714,18 @@ export class MLEngine extends Emitter<MLEngineEventMap> {
 			...this.#options?.severity,
 		};
 
-		const pretenders = await this.#resolvePretenders(configSet, cache);
+		let pretenders: readonly Pretender[];
+		try {
+			pretenders = await this.#resolvePretenders(configSet, cache);
+		} catch (error: unknown) {
+			// What the configuration asks of pretenders cannot be resolved: `@markuplint/pretenders`, an optional
+			// peer, is not installed, or a component it reads is unreadable. As with the config itself, that fails
+			// this file, not the run.
+			if (isFatalError(error) || !(error instanceof Error)) {
+				throw error;
+			}
+			return this.#failConfig(error);
+		}
 		fileLog('Resolved pretenders: %O', pretenders);
 
 		const ruleset = this.#resolveRuleset(configSet);
