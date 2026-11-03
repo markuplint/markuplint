@@ -237,6 +237,12 @@ const Component = ({ list }) => {
 
 すべてのコンポーネントを手動でリスト化する代わりに、Markuplintにコンポーネントの**ソースファイルをスキャン**させ、プリテンダーマッピングを自動的に発見させることができます。
 
+スキャンには、`markuplint`がインストールしない`@markuplint/pretenders`が必要です。Vue、Svelte、Astroのファイルをスキャンするには、その言語のパーサーパッケージ（`@markuplint/vue-parser`、`@markuplint/svelte-parser`、`@markuplint/astro-parser`）も必要です:
+
+```shell npm2yarn
+npm install -D @markuplint/pretenders
+```
+
 ```json class=config
 {
   "pretenders": {

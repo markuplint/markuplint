@@ -1191,6 +1191,8 @@ const Details = ({ children }) => <details>{children}</details>;
 
 スキャン（`scan`、`auto`）は、この値を自動で書き込みます。手で書く相対パスの基準は、[パスの解決](#resolving-specified-paths)を参照してください。
 
+`filePath`のあるエントリ（手で書いたもの、スキャンが書いたもの、`files`や`imports`のデータにあるもの。`npx @markuplint/pretenders`が書き出すデータも含みます）は、`@markuplint/pretenders`が、リントするファイルがインポートしているファイルと照合します。`markuplint`はこれをインストールしません。[`scan`](#pretenders/scan)の手順でインストールしてください。ない場合、markuplintはその旨のメッセージで失敗します。
+
 #### `scan` {#pretenders/scan}
 
 :::caution[実験的機能]
@@ -1198,6 +1200,12 @@ const Details = ({ children }) => <details>{children}</details>;
 :::
 
 `pretenders`の**オブジェクト形式**を使用する場合、`scan`フィールドで**動的コンポーネントスキャン**を有効にできます。すべてのコンポーネントを手動でリストアップする代わりに、markuplintがコンポーネントファイルをスキャンしてプリテンダーマッピングを自動的に発見します。
+
+`markuplint`がインストールしない`@markuplint/pretenders`が必要です。プロジェクトに追加してください。Vue、Svelte、Astroのファイルをスキャンするには、その言語のパーサーパッケージ（`@markuplint/vue-parser`、`@markuplint/svelte-parser`、`@markuplint/astro-parser`）も必要です。`@markuplint/pretenders`がない場合、markuplintはインストール方法を示すメッセージで失敗します。
+
+```shell npm2yarn
+npm install -D @markuplint/pretenders
+```
 
 ファイルの拡張子によってスキャナーが決定されます:
 
@@ -1259,7 +1267,7 @@ const Details = ({ children }) => <details>{children}</details>;
 このプロパティは**実験的機能**であり、将来のリリースで変更される可能性があります。
 :::
 
-オブジェクト形式を使用する場合、`auto: true`を指定すると、`data`/`scan`をあらかじめ設定しなくても、リント対象ファイル自身のimportグラフをスキャンしてプリテンダーを解決します:
+オブジェクト形式を使用する場合、`auto: true`を指定すると、`data`/`scan`をあらかじめ設定しなくても、リント対象ファイル自身のimportグラフをスキャンしてプリテンダーを解決します。[`scan`](#pretenders/scan)と同じく、`@markuplint/pretenders`が必要です:
 
 ```json class=config
 {
