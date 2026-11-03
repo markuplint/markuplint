@@ -43,6 +43,17 @@ describe('missingPackageOf', () => {
 		expect(missingPackageOf(error)).toBe('svelte');
 	});
 
+	test.each([
+		['@markuplint/vue-parser', '@markuplint/vue-parser'],
+		['svelte', 'svelte'],
+		['@markuplint/vue-parser/component-scanner', '@markuplint/vue-parser'],
+		['svelte/compiler', 'svelte'],
+	])('names the package of the message that Deno raises for %s', (specifier, name) => {
+		// What `import()` of a package that is not a dependency raises in Deno, which does not say "Cannot find package"
+		const error = notFound(`Import "${specifier}" not a dependency\n  at file:///project/a.mts:1:8\n`);
+		expect(missingPackageOf(error)).toBe(name);
+	});
+
 	test('is undefined for a message that names no package (a missing file of a package)', () => {
 		const error = notFound("Cannot find module '/p/node_modules/x/lib/missing.js' imported from /p/a.js");
 		expect(missingPackageOf(error)).toBeUndefined();
