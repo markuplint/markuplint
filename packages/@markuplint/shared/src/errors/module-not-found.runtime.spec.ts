@@ -26,13 +26,18 @@ describe('what the runtime raises for a package that is not installed', () => {
 		expect(isModuleNotFoundError(importInRuntime('@markuplint/not-installed-package'))).toBe(true);
 	});
 
-	test.each(['@markuplint/not-installed-package', 'not-installed-package'])('%s is the package named', name => {
-		expect(missingPackageOf(importInRuntime(name))).toBe(name);
-	});
+	// The message is part of what is compared so that a runtime whose wording is not read shows it in the failure.
+	test.each([
+		['@markuplint/not-installed-package', '@markuplint/not-installed-package'],
+		['not-installed-package', 'not-installed-package'],
+		// a subpath of a package: the package is named, not the subpath
+		['@markuplint/not-installed-package/component-scanner', '@markuplint/not-installed-package'],
+	])('%s names the package %s', (specifier, name) => {
+		const error = importInRuntime(specifier);
 
-	test('names the package, not the subpath, for a subpath of it', () => {
-		expect(missingPackageOf(importInRuntime('@markuplint/not-installed-package/component-scanner'))).toBe(
-			'@markuplint/not-installed-package',
-		);
+		expect({ name: missingPackageOf(error), message: error.message }).toStrictEqual({
+			name,
+			message: error.message,
+		});
 	});
 });
