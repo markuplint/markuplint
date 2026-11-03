@@ -41,11 +41,35 @@
 		"meow": "^14.1.0",
 		"typescript": "~6.0.3"
 	},
-	"optionalDependencies": {
+	"devDependencies": {
 		"@markuplint/astro-parser": "5.4.0",
 		"@markuplint/jsx-parser": "5.4.0",
 		"@markuplint/mdx-parser": "5.4.0",
 		"@markuplint/svelte-parser": "5.4.0",
 		"@markuplint/vue-parser": "5.4.0"
+	},
+	"peerDependencies": {
+		"@markuplint/astro-parser": "^5.4.0",
+		"@markuplint/jsx-parser": "^5.4.0",
+		"@markuplint/mdx-parser": "^5.4.0",
+		"@markuplint/svelte-parser": "^5.4.0",
+		"@markuplint/vue-parser": "^5.4.0"
+	},
+	"peerDependenciesMeta": {
+		"@markuplint/astro-parser": {
+			"optional": true
+		},
+		"@markuplint/jsx-parser": {
+			"optional": true
+		},
+		"@markuplint/mdx-parser": {
+			"optional": true
+		},
+		"@markuplint/svelte-parser": {
+			"optional": true
+		},
+		"@markuplint/vue-parser": {
+			"optional": true
+		}
 	}
 }

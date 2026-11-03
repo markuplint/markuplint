@@ -51,7 +51,9 @@
  *
  * - {@link clearPretenderCaches} — Clears the module-level caches that back import/export
  *   resolution (module resolution, tsconfig parsing, export tables, parsed JSX
- *   `SourceFile`s, auto-scan results). A long-running host (watch mode, an editor
+ *   `SourceFile`s, auto-scan results) and what was settled about the parsers: one that
+ *   was not installed is looked for again, as the parsers are the user's to install while
+ *   the host runs. A long-running host (watch mode, an editor
  *   extension) that re-resolves pretenders across file edits must call this after each
  *   edit. Some of these caches do notice a file's content changing on their own, but the
  *   ones keyed by path alone — module resolution, tsconfig parsing, disk-backed export
@@ -75,6 +77,7 @@ import { clearAutoScanCache } from './auto-scan.js';
 import { clearExportTableCache } from './dependency-mapper.js';
 import { clearModuleResolutionCaches } from './import-resolver/resolve-module-file.js';
 import { clearSourceFileCache } from './jsx/compiler-host.js';
+import { clearScannerLoaderCaches } from './scanner-loader.js';
 
 export type { AutoScanOptions } from './auto-scan.js';
 export { autoScan } from './auto-scan.js';
@@ -97,6 +100,7 @@ export function clearPretenderCaches() {
 	clearModuleResolutionCaches();
 	clearSourceFileCache();
 	clearAutoScanCache();
+	clearScannerLoaderCaches();
 }
 
 // Companion Module pattern types

@@ -3,7 +3,7 @@ import path from 'node:path';
 import { describe, test, expect } from 'vitest';
 
 import { detectSlots } from './detect-slots.js';
-import { parseComponent } from './parse-component.js';
+import { parseComponent } from '../../test/helpers/parse-component.js';
 
 const fixtureDir = path.resolve(import.meta.dirname, '..', '..', 'test', 'fixtures', 'template');
 
