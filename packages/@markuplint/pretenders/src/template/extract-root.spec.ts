@@ -2,7 +2,7 @@ import path from 'node:path';
 
 import { describe, test, expect } from 'vitest';
 
-import { parseComponent } from './parse-component.js';
+import { parseComponent } from '../../test/helpers/parse-component.js';
 import { extractRoot } from './extract-root.js';
 
 const fixtureDir = path.resolve(import.meta.dirname, '..', '..', 'test', 'fixtures', 'template');

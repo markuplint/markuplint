@@ -1237,6 +1237,8 @@ Matching a pretender to an element is by [`selector`](#selector) alone. When sev
 
 A scan (`scan`, `auto`) writes it for you. The base of a relative path you write is described in [Resolving specified paths](#resolving-specified-paths).
 
+An entry that has a `filePath` — one you write, one a scan writes, or one in the data of `files` and `imports` (what `npx @markuplint/pretenders` writes) — is matched to the file that the linted file imports by `@markuplint/pretenders`, which `markuplint` does not install. Install it as described in [`scan`](#pretenders/scan); without it, markuplint fails with a message that says so.
+
 #### `scan` {#pretenders/scan}
 
 :::caution[Experimental]
@@ -1244,6 +1246,12 @@ This property is **experimental** and may change in future releases.
 :::
 
 When using the **object form** of `pretenders`, the `scan` field enables **dynamic component scanning**. Instead of manually listing every component, markuplint scans your component files and automatically discovers pretender mappings.
+
+It needs `@markuplint/pretenders`, which `markuplint` does not install: add it to your project. To scan Vue, Svelte or Astro files it also needs the parser package of the language (`@markuplint/vue-parser`, `@markuplint/svelte-parser`, `@markuplint/astro-parser`). Without `@markuplint/pretenders`, markuplint fails with a message that says how to install it.
+
+```shell npm2yarn
+npm install -D @markuplint/pretenders
+```
 
 File extensions determine the scanner:
 
@@ -1305,7 +1313,7 @@ When using the object form, inline pretender definitions go in the `data` field:
 This property is **experimental** and may change in future releases.
 :::
 
-When using the object form, `auto: true` resolves pretenders by scanning the file being linted's own import graph, instead of requiring `data`/`scan` to be configured up front:
+When using the object form, `auto: true` resolves pretenders by scanning the file being linted's own import graph, instead of requiring `data`/`scan` to be configured up front. It needs `@markuplint/pretenders` in the same way as [`scan`](#pretenders/scan):
 
 ```json class=config
 {

@@ -212,6 +212,9 @@ export type PretenderDetails = {
 	 * `.js/.jsx/.ts/.tsx` use the JSX scanner, `.vue/.svelte/.astro` use
 	 * the template scanner.
 	 *
+	 * Needs `@markuplint/pretenders`, which `markuplint` does not install, and
+	 * the parser package of the language for `.vue/.svelte/.astro`.
+	 *
 	 * @experimental
 	 */
 	readonly scan?: readonly PretenderScanConfig[];
@@ -226,6 +229,8 @@ export type PretenderDetails = {
 	 * The object form tunes the walk ({@link PretenderAutoOptions}); `true`
 	 * and `{}` use the defaults. When configs are merged, the right side
 	 * replaces this value as a whole (the two forms are never combined).
+	 *
+	 * Needs `@markuplint/pretenders`, which `markuplint` does not install.
 	 *
 	 * @experimental
 	 */
@@ -314,6 +319,9 @@ export type Pretender = {
 	 * configuration with no file behind it (`MLEngine`'s `config` / `defaultConfig` option, one
 	 * a plugin provides), it is read from the working directory. An entry of an npm package
 	 * listed in `pretenders.imports` is not rebased.
+	 *
+	 * An entry that has it is matched to the file that the linted file imports by
+	 * `@markuplint/pretenders`, which `markuplint` does not install.
 	 *
 	 * @experimental
 	 */

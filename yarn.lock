@@ -1706,6 +1706,11 @@ __metadata:
     import-meta-resolve: "npm:^4.2.0"
     jsonc: "npm:^3.0.0"
     minimatch: "npm:^10.2.6"
+  peerDependencies:
+    "@markuplint/pretenders": ^5.4.0
+  peerDependenciesMeta:
+    "@markuplint/pretenders":
+      optional: true
   languageName: unknown
   linkType: soft
 
@@ -1937,7 +1942,13 @@ __metadata:
     glob: "npm:^13.0.6"
     meow: "npm:^14.1.0"
     typescript: "npm:~6.0.3"
-  dependenciesMeta:
+  peerDependencies:
+    "@markuplint/astro-parser": ^5.4.0
+    "@markuplint/jsx-parser": ^5.4.0
+    "@markuplint/mdx-parser": ^5.4.0
+    "@markuplint/svelte-parser": ^5.4.0
+    "@markuplint/vue-parser": ^5.4.0
+  peerDependenciesMeta:
     "@markuplint/astro-parser":
       optional: true
     "@markuplint/jsx-parser":
@@ -9351,17 +9362,23 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "markuplint@workspace:packages/markuplint"
   dependencies:
+    "@markuplint/astro-parser": "npm:5.4.0"
     "@markuplint/cli-utils": "npm:5.3.0"
     "@markuplint/file-resolver": "npm:5.4.0"
     "@markuplint/html-parser": "npm:5.4.0"
     "@markuplint/html-spec": "npm:5.4.0"
     "@markuplint/i18n": "npm:5.3.0"
+    "@markuplint/jsx-parser": "npm:5.4.0"
+    "@markuplint/mdx-parser": "npm:5.4.0"
     "@markuplint/ml-ast": "npm:5.3.0"
     "@markuplint/ml-config": "npm:5.4.0"
     "@markuplint/ml-core": "npm:5.4.0"
     "@markuplint/ml-spec": "npm:5.4.0"
+    "@markuplint/pretenders": "npm:5.4.0"
     "@markuplint/rules": "npm:5.4.0"
     "@markuplint/shared": "npm:5.4.0"
+    "@markuplint/svelte-parser": "npm:5.4.0"
+    "@markuplint/vue-parser": "npm:5.4.0"
     "@types/debug": "npm:^4.1.13"
     chokidar: "npm:^5.0.0"
     debug: "npm:^4.4.3"
@@ -9370,6 +9387,26 @@ __metadata:
     strict-event-emitter: "npm:^0.5.1"
     strip-ansi: "npm:^7.2.0"
     type-fest: "npm:^5.10.0"
+  peerDependencies:
+    "@markuplint/astro-parser": ^5.4.0
+    "@markuplint/jsx-parser": ^5.4.0
+    "@markuplint/mdx-parser": ^5.4.0
+    "@markuplint/pretenders": ^5.4.0
+    "@markuplint/svelte-parser": ^5.4.0
+    "@markuplint/vue-parser": ^5.4.0
+  peerDependenciesMeta:
+    "@markuplint/astro-parser":
+      optional: true
+    "@markuplint/jsx-parser":
+      optional: true
+    "@markuplint/mdx-parser":
+      optional: true
+    "@markuplint/pretenders":
+      optional: true
+    "@markuplint/svelte-parser":
+      optional: true
+    "@markuplint/vue-parser":
+      optional: true
   bin:
     markuplint: ./bin/markuplint.mjs
   languageName: unknown

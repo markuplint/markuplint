@@ -3,8 +3,15 @@ import type { Log } from '../types.js';
 
 import { isFatalError } from 'markuplint/suppressions';
 
-import { BUNDLED_PARSER_LOAD_COMPAT_ERROR, BUNDLED_PARSER_LOAD_ERROR, PARSER_NOT_FOUND_ERROR } from '../const.js';
+import {
+	BUNDLED_PARSER_LOAD_COMPAT_ERROR,
+	BUNDLED_PARSER_LOAD_ERROR,
+	BUNDLED_PRETENDERS_NOT_FOUND_ERROR,
+	PARSER_NOT_FOUND_ERROR,
+} from '../const.js';
 import { t } from '../i18n.js';
+
+const PRETENDERS_PACKAGE = '@markuplint/pretenders';
 
 /**
  * What the document was linted with, needed to tell the user where the missing parser must be installed.
@@ -60,15 +67,42 @@ function packageNameOf(spec: string): string | null {
 }
 
 /**
+ * Whether an error is what markuplint raises for a configuration that needs `@markuplint/pretenders` when it
+ * is not installed: an error that says how to install it, with the `ERR_MODULE_NOT_FOUND` of the import as its
+ * `cause`. It is reported as a `config-error` of the file (the `lint-error` event of `MLEngine`) rather than
+ * as a rejection of `exec()`, so it is told by its cause.
+ *
+ * @param error - The error of the `lint-error` event, or of a rejection
+ * @returns `true` when the cause is the missing `@markuplint/pretenders`
+ */
+export function isPretendersNotInstalled(error: unknown): boolean {
+	return (
+		error instanceof Error &&
+		error.cause instanceof Error &&
+		extractMissingParserName(error.cause.message) === PRETENDERS_PACKAGE
+	);
+}
+
+/**
  * Builds the user-facing explanation for a parser load failure.
  *
- * @param error - The rejection from `MLEngine#exec()`
+ * @param error - The rejection from `MLEngine#exec()`, or the error of its `lint-error` event
  * @param context - Which markuplint module linted the document
  * @returns The message to show, or `null` if the error is not a parser load failure
  */
 export function describeParserLoadFailure(error: unknown, context: ParserLoadFailureContext): string | null {
 	if (!(error instanceof Error)) {
 		return null;
+	}
+	if (isPretendersNotInstalled(error)) {
+		if (context.isLocalModule) {
+			// The message of the error says how to install it, which is the fix for a local markuplint.
+			return error.message;
+		}
+		if (context.fallbackReason === 'import-assertion-compat') {
+			return t(BUNDLED_PARSER_LOAD_COMPAT_ERROR, context.version, PRETENDERS_PACKAGE, context.workspace);
+		}
+		return t(BUNDLED_PRETENDERS_NOT_FOUND_ERROR, context.version, context.workspace);
 	}
 	const parser = extractMissingParserName(error.message);
 	if (!parser) {

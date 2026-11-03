@@ -13,7 +13,29 @@ This module features both an API and a CLI that generate **[Pretenders](https://
 | Svelte      | `.svelte`                    | `templateScanner` | MLAST via `@markuplint/svelte-parser` |
 | Astro       | `.astro`                     | `templateScanner` | MLAST via `@markuplint/astro-parser`  |
 
+## Installation
+
+Installing `markuplint` does not install this package or the parsers behind it. Install it where you use it (the parsers are optional peer dependencies of this package):
+
+```sh
+npm install --save-dev @markuplint/pretenders
+```
+
+Scanning a Vue, Svelte or Astro file needs the parser package of that language next to it. Without it, the file is skipped with a warning:
+
+| Language | Parser package              |
+| -------- | --------------------------- |
+| Vue      | `@markuplint/vue-parser`    |
+| Svelte   | `@markuplint/svelte-parser` |
+| Astro    | `@markuplint/astro-parser`  |
+
+The JSX scanner needs no parser. The parser of a language also decides what a component name is in it (and, for Vue, which tags are native), so `@markuplint/jsx-parser` and `@markuplint/mdx-parser` matter when you resolve components of JSX and MDX through `pretenders.auto`; without the parser of a language, the rule that most languages share is used.
+
+markuplint needs this package for the `pretenders.scan` and `pretenders.auto` options, and for a pretender that has a `filePath`: one written by hand, by a scan, or in the data of `pretenders.files` and `pretenders.imports` (the CLI below writes it). It fails with how to install this package when it is missing.
+
 ## CLI Usage
+
+Install this package in the project first, so that `npx` runs it from there and the parsers are found next to it.
 
 ```sh
 $ npx @markuplint/pretenders "./src/**/*.{jsx,tsx,vue,svelte,astro}" --out "./pretenders.json"

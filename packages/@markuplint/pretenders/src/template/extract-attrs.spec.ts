@@ -4,7 +4,7 @@ import { describe, test, expect } from 'vitest';
 
 import { extractAttrs } from './extract-attrs.js';
 import { extractRoot } from './extract-root.js';
-import { parseComponent } from './parse-component.js';
+import { parseComponent } from '../../test/helpers/parse-component.js';
 
 const fixtureDir = path.resolve(import.meta.dirname, '..', '..', 'test', 'fixtures', 'template');
 

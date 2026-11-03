@@ -236,6 +236,12 @@ This feature is **experimental** and may change in future releases.
 
 Instead of manually listing every component, you can let Markuplint **scan your component source files** and discover pretender mappings automatically.
 
+Scanning needs `@markuplint/pretenders`, which `markuplint` does not install. To scan Vue, Svelte or Astro files it also needs the parser package of the language (`@markuplint/vue-parser`, `@markuplint/svelte-parser`, `@markuplint/astro-parser`):
+
+```shell npm2yarn
+npm install -D @markuplint/pretenders
+```
+
 ```json class=config
 {
   "pretenders": {

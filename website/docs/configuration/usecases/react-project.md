@@ -32,6 +32,12 @@ This configuration:
 
 ## With Pretenders
 
+Scanning needs `@markuplint/pretenders`, which `markuplint` does not install:
+
+```shell npm2yarn
+npm install -D @markuplint/pretenders
+```
+
 If you want Markuplint to validate your custom components as if they were native HTML elements, add the [Pretenders](/docs/guides/beyond-html#pretenders) configuration. We recommend using **automatic scanning** — it discovers component-to-element mappings from your source files, so you don't need to maintain them manually:
 
 ```json class=config title=".markuplintrc"

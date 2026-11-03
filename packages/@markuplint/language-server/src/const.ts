@@ -54,3 +54,15 @@ export const BUNDLED_PARSER_LOAD_ERROR =
  */
 export const BUNDLED_PARSER_LOAD_COMPAT_ERROR =
 	'The markuplint bundled with the language server (v{0}) cannot load {1*} from {2*} because the markuplint installed there is incompatible with Node.js 22+. Upgrade it to markuplint@4.10.0 or later, then restart the language server.';
+
+/**
+ * Error message shown when the configuration needs `@markuplint/pretenders` (`pretenders.scan`, `pretenders.auto`,
+ * or a pretender that has a `filePath`) and the markuplint bundled with the language server is the one in use.
+ * markuplint does not install `@markuplint/pretenders` and the extension does not bundle it, and the bundled
+ * `@markuplint/file-resolver` imports it relative to itself, so installing it in the workspace is not enough
+ * until markuplint itself is installed there. The message of the error that markuplint raises tells to install
+ * it in the project, which does not fix this case.
+ * Displayed as a popup via `errorToPopup`. `{0}` is the bundled version, `{1*}` the working directory.
+ */
+export const BUNDLED_PRETENDERS_NOT_FOUND_ERROR =
+	'The markuplint bundled with the language server (v{0}) does not include @markuplint/pretenders, which your configuration needs. Install markuplint and @markuplint/pretenders in {1*}, then restart the language server so that it can use the local installation.';
