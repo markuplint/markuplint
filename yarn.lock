@@ -6519,9 +6519,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"eslint-plugin-regexp@npm:3.3.1":
-  version: 3.3.1
-  resolution: "eslint-plugin-regexp@npm:3.3.1"
+"eslint-plugin-regexp@npm:3.3.2":
+  version: 3.3.2
+  resolution: "eslint-plugin-regexp@npm:3.3.2"
   dependencies:
     "@eslint-community/eslint-utils": "npm:^4.2.0"
     "@eslint-community/regexpp": "npm:^4.11.0"
@@ -6532,7 +6532,7 @@ __metadata:
     scslre: "npm:^0.3.0"
   peerDependencies:
     eslint: ">=9.38.0"
-  checksum: 10c0/fc88e8282e860b7af0c15c80000412db88b66c2f30c069037593b71b42492f328a4c024bed1fb11795bc93000c7ce7d6dfea52a381311bd9625ea6f50cdf1cfc
+  checksum: 10c0/ab5d1074ecd8071c15510015b4a047787c393fbe3992d20896e62435cc8c428415c69da567262c9d9c3b983b716011b0a4b0d8601755bfa43996cf132fe55148
   languageName: node
   linkType: hard
 
@@ -9308,7 +9308,7 @@ __metadata:
     cheerio: "npm:1.2.0"
     commitizen: "npm:4.3.2"
     cz-conventional-changelog: "npm:3.3.0"
-    eslint-plugin-regexp: "npm:3.3.1"
+    eslint-plugin-regexp: "npm:3.3.2"
     husky: "npm:9.1.7"
     lerna: "npm:10.1.1"
     lint-staged: "npm:17.6.0"
