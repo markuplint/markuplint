@@ -54,6 +54,43 @@ test('structure', () => {
 	}
 });
 
+/**
+ * The generator reads deprecation only from marker wording in the spec text
+ * (`generator/utils.ts`), so a rewording upstream drops the flags without any
+ * error. These are the roles and properties the specs list as deprecated.
+ */
+describe('deprecation flags scraped from the specs', () => {
+	const aria = htmlSpec.def['#aria'];
+
+	test.each(['1.2', '1.3'])('ARIA %s: directory is deprecated', version => {
+		expect(aria[version].roles.find(role => role.name === 'directory')?.deprecated).toBe(true);
+	});
+
+	test.each(['1.1', '1.2', '1.3'])('ARIA %s: doc-biblioentry and doc-endnote are deprecated', version => {
+		const deprecated = aria[version].dpubRoles.filter(role => role.deprecated).map(role => role.name);
+		expect(deprecated).toStrictEqual(['doc-biblioentry', 'doc-endnote']);
+	});
+
+	test.each(['1.2', '1.3'])('ARIA %s: aria-errormessage is deprecated on the button role', version => {
+		const button = aria[version].roles.find(role => role.name === 'button');
+		expect(button?.ownedProperties?.find(prop => prop.name === 'aria-errormessage')?.deprecated).toBe(true);
+	});
+
+	test.each(['1.1', '1.2', '1.3'])('ARIA %s: no DPUB-ARIA role lists a property twice', version => {
+		const duplicated = aria[version].dpubRoles.filter(role => {
+			const names = (role.ownedProperties ?? []).map(prop => prop.name);
+			return new Set(names).size !== names.length;
+		});
+		expect(duplicated.map(role => role.name)).toStrictEqual([]);
+	});
+
+	test.each(['1.2', '1.3'])('ARIA %s: doc-noteref takes the deprecated properties of link', version => {
+		const noteref = aria[version].dpubRoles.find(role => role.name === 'doc-noteref');
+		const deprecated = noteref?.ownedProperties?.filter(prop => prop.deprecated).map(prop => prop.name);
+		expect(deprecated).toStrictEqual(['aria-errormessage', 'aria-invalid']);
+	});
+});
+
 describe('schema', () => {
 	const map = [
 		[

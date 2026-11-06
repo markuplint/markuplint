@@ -11,6 +11,26 @@ test('[no-deprecated-aria-prop-valid-002] no aria props', async () => {
 	expect((await mlRuleTest(rule, '<div></div>')).violations).toStrictEqual([]);
 });
 
+test('[no-deprecated-aria-prop-valid-003] a DPUB-ARIA subclass of link keeps the properties link supports', async () => {
+	expect(
+		(await mlRuleTest(rule, '<a href="#n1" role="doc-noteref" aria-haspopup="true">1</a>')).violations,
+	).toStrictEqual([]);
+});
+
+test('[no-deprecated-aria-prop-invalid-001] a DPUB-ARIA subclass of section takes the properties deprecated on section', async () => {
+	expect(
+		(await mlRuleTest(rule, '<section role="doc-abstract" aria-errormessage="x"></section>')).violations,
+	).toStrictEqual([
+		{
+			severity: 'warning',
+			line: 1,
+			col: 30,
+			message: 'The "aria-errormessage" ARIA property is deprecated on the "doc-abstract" role',
+			raw: 'aria-errormessage="x"',
+		},
+	]);
+});
+
 test('[no-deprecated-aria-prop-issue-4309-001] the lower-case spelling is reported (baseline of the upper-case one)', async () => {
 	const { violations } = await mlRuleTest(rule, '<div role="button" aria-errormessage="x"></div>');
 	expect(violations).toStrictEqual([
