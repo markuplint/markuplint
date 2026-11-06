@@ -1712,7 +1712,7 @@ __metadata:
     ignore: "npm:^7.0.14"
     import-meta-resolve: "npm:^4.2.0"
     jsonc: "npm:^3.0.0"
-    minimatch: "npm:^10.2.6"
+    minimatch: "npm:^11.0.0"
   peerDependencies:
     "@markuplint/pretenders": ^5.4.0
   peerDependenciesMeta:
