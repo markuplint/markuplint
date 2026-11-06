@@ -1,4 +1,3 @@
-import fs from 'node:fs/promises';
 import { createRequire } from 'node:module';
 import path from 'node:path';
 
@@ -6,7 +5,8 @@ import { isFatalError } from '@markuplint/shared';
 import { resolve } from 'import-meta-resolve';
 
 import { log } from './debug.js';
-import { fromFileURL, toFileURL } from './path-utils.js';
+import { importModule } from './import-module.js';
+import { fromFileURL, isRelativePath, toFileURL } from './path-utils.js';
 
 const gLog = log.extend('general-import');
 const gLogSuccess = gLog.extend('success');
@@ -16,6 +16,24 @@ const cache = new Map<string, unknown>();
 
 const require = createRequire(import.meta.url);
 
+/**
+ * Imports the module that a configuration names (a configuration to `extends`, a parser, a
+ * plugin, the data of `pretenders`) and returns what it exports: the default export when there is
+ * one, the namespace otherwise. Whatever cannot be imported, for whatever reason, yields `null`,
+ * as the callers report a missing module in their own terms; the reason goes to the debug log.
+ *
+ * A subpath of a package that its `exports` map does not expose is turned into the absolute path
+ * of the file first (see {@link resolvePackageSubpath}), as `import()` refuses it. A JSON module
+ * is taken by {@link importModule} through `require()`, so no `.json` file is read by hand: what
+ * `require()` takes as JSON, a byte order mark included, is what is accepted.
+ *
+ * The result is cached by specifier for the life of the process, `null` included; `import()`
+ * itself keeps a module for as long, so a fresh read is not to be had either way.
+ *
+ * @template T - What the module exports
+ * @param name - A bare specifier, with a subpath or not, or an absolute path
+ * @returns What the module exports, or `null` when it cannot be imported
+ */
 export async function generalImport<T>(name: string): Promise<T | null> {
 	if (cache.has(name)) {
 		return cache.get(name) as T | null;
@@ -42,46 +60,20 @@ export async function generalImport<T>(name: string): Promise<T | null> {
 			gLog('Converted to file URL: %s', importPath);
 		}
 
-		const imported = await import(importPath);
-		const mod = imported?.default ?? imported ?? null;
+		const imported = await importModule(importPath);
+		// A JSON module whose value is `null` is `null`, as a file with nothing in it; `??` would
+		// hand the namespace over instead.
+		const mod = (('default' in imported ? imported.default : imported) ?? null) as T | null;
 		gLogSuccess('Success by import("%s"): %O', importPath, mod);
 		cache.set(name, mod);
 		return mod;
 	} catch (error) {
-		// NOTE: `isFatalError()` is intentionally NOT applied at this catch
-		// boundary. `await import()` / `require()` invoke third-party module
-		// code, so any Tier-1-shaped error (TypeError / SyntaxError / etc.)
-		// at this point may originate from inside the imported module and
-		// not from markuplint's own code — we cannot distinguish the two.
-		// The Tier 1 classification (see `isFatalError()` in
-		// `@markuplint/shared`) only covers errors raised by markuplint's
-		// own code, which excludes third-party import failures (e.g. Node 22+ removing
-		// import assertion syntax, or bun's stricter ESM parser). Treating
-		// every error as a recoverable null-return is the correct policy
-		// here; callers (config / parser / plugin loaders) decide how to
-		// surface the missing module.
-		if (
-			// @ts-ignore
-			'code' in error &&
-			// @ts-ignore
-			error.code === 'ERR_IMPORT_ASSERTION_TYPE_MISSING'
-		) {
-			try {
-				const mod = require(name) ?? null;
-				gLogSuccess('Success by require("%s"): %O', name, mod);
-				cache.set(name, mod);
-				return mod;
-			} catch (error) {
-				if (error instanceof Error && /^parse failure/i.test(error.message)) {
-					gLogError('Error in `createRequire(import.meta.url)()`: %O', error);
-					cache.set(name, null);
-					return null;
-				}
-
-				gLogError('Error in generalImport: %O', error);
-			}
-		}
-
+		// `isFatalError()` is intentionally NOT applied at this catch: `importModule()` runs
+		// `import()`, which evaluates third-party module code, so a Tier-1-shaped error here
+		// (TypeError / SyntaxError / etc.) may come from the imported module or from the runtime's
+		// loader rather than from markuplint's own code, and the two cannot be told apart. Every
+		// error is a recoverable `null`; the callers (config / parser / plugin loaders) decide how
+		// to surface the missing module.
 		if (error instanceof Error) {
 			const { filePath, packageName } =
 				/Missing\s"(?<filePath>[^"]+)"\sspecifier\sin\s"(?<packageName>[^"]+)"\spackage/.exec(error.message)
@@ -95,18 +87,6 @@ export async function generalImport<T>(name: string): Promise<T | null> {
 				const result = await generalImport<T>(candidate);
 				cache.set(name, result);
 				return result;
-			}
-		}
-
-		if (path.isAbsolute(name) && name.endsWith('.json')) {
-			try {
-				const file = await fs.readFile(name, 'utf8');
-				const json = JSON.parse(file);
-				gLogSuccess('Success by readFile("%s") and JSON.parse: %O', name, json);
-				cache.set(name, json);
-				return json;
-			} catch (readError) {
-				gLogError('Error in readFile("%s"): %O', name, readError);
 			}
 		}
 
@@ -125,7 +105,7 @@ export async function generalImport<T>(name: string): Promise<T | null> {
  * - The package cannot be found at all
  */
 function resolvePackageSubpath(name: string): string | null {
-	if (path.isAbsolute(name) || name.startsWith('.')) {
+	if (path.isAbsolute(name) || isRelativePath(name)) {
 		return null;
 	}
 

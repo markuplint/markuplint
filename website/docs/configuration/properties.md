@@ -59,8 +59,10 @@ Most projects only need a few properties. Here's what to use based on what you w
 and [`excludeFiles`](#excludefiles) can specify paths.
 In `extends`, `plugins`, `parser`, and `specs` , it can specify a npm package instead of a path.
 
-First, it tries to import it as a package.
-If it fails, such as the package doesn't exist, or the strings are not a package, **it resolves strings as just a path**.
+A value written as a path, one that starts with a `.` or `..` segment or is an absolute path, is always resolved as a path, and never tried as a package.
+So is a value with the `!` prefix, which excludes what it matches.
+Any other value is first tried as a package.
+If that fails, such as when the package doesn't exist, **it resolves the string as just a path**.
 If it is a relative path, the basis becomes the directory that has the configuration file.
 
 The same applies to these properties in the value of [`overrides`](#overrides),
