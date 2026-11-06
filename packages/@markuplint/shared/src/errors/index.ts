@@ -39,6 +39,12 @@
  * Known intentional exceptions to rule 1, documented at their call sites:
  * accessible-name computation (`accname.ts` in `@markuplint/ml-core`),
  * dynamic module import (`general-import.ts` in `@markuplint/file-resolver`),
+ * the JSON-aware `import()` (`import-module.ts` there, whose `catch` wraps one `import()` alone,
+ * retries it with the JSON import attribute, and re-throws the first error, or the retry's when
+ * the module is JSON, when the retry fails too: Node.js reports the missing attribute with a
+ * `TypeError`),
+ * the module probe (`module-exists.ts` there, whose `catch` turns to `require.resolve()` after
+ * `import()` fails),
  * configuration file loading (`cosmiconfig.ts` in `@markuplint/file-resolver`),
  * the import of the component scanner of a parser (`getScanner` in `scanner-loader.ts` of
  * `@markuplint/pretenders`, whose `catch` wraps that `import()` alone and skips the language with a
