@@ -6,11 +6,14 @@ on:
         - cron: '0 12 * * *' # Daily at 21:00 JST
     workflow_dispatch:
 
+# The push and the PR go through a GitHub App token, not GITHUB_TOKEN: a `pull_request` run
+# caused by GITHUB_TOKEN stops at `action_required` until someone approves it by hand, and
+# GITHUB_TOKEN cannot approve it. An App token triggers test.yml like a person's push does.
 permissions:
-    contents: write
-    pull-requests: write
+    contents: read
 
 env:
+    # test.yml narrows its matrix for PRs from this branch; keep the name in sync there.
     BRANCH_NAME: auto/update-html-spec
     NODE_BUILD_VERSION: 26
     NX_DISABLE_DB: true
@@ -19,9 +22,21 @@ jobs:
     update-html-spec:
         runs-on: ubuntu-latest
         steps:
+            # The App needs Contents and Pull requests (read and write) on this repository.
+            - name: Create GitHub App token
+              id: app-token
+              uses: actions/create-github-app-token@64ab729a6294000f5aa4a4bc0b73d1f32bc45510 # v3.3.0
+              with:
+                  client-id: ${{ vars.BOT_APP_CLIENT_ID }}
+                  private-key: ${{ secrets.BOT_APP_PRIVATE_KEY }}
+                  permission-contents: write
+                  permission-pull-requests: write
+
             - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
               with:
                   ref: dev
+                  # `git push` below authenticates with the credentials checkout persists.
+                  token: ${{ steps.app-token.outputs.token }}
 
             - name: Use Node.js ${{ env.NODE_BUILD_VERSION }}
               uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7
@@ -64,7 +79,7 @@ jobs:
               if: steps.changes.outputs.has_changes == 'true'
               id: existing-pr
               env:
-                  GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+                  GH_TOKEN: ${{ steps.app-token.outputs.token }}
               run: |
                   PR_NUMBER=$(gh pr list --head "$BRANCH_NAME" --state open --json number --jq '.[0].number // empty')
                   if [ -n "$PR_NUMBER" ]; then
@@ -110,7 +125,7 @@ jobs:
             - name: Create PR
               if: steps.changes.outputs.has_changes == 'true' && steps.existing-pr.outputs.pr_exists == 'false'
               env:
-                  GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+                  GH_TOKEN: ${{ steps.app-token.outputs.token }}
               run: |
                   gh pr create \
                     --base dev \
@@ -122,5 +137,5 @@ jobs:
             - name: Update existing PR body
               if: steps.changes.outputs.has_changes == 'true' && steps.existing-pr.outputs.pr_exists == 'true'
               env:
-                  GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+                  GH_TOKEN: ${{ steps.app-token.outputs.token }}
               run: gh pr edit "${{ steps.existing-pr.outputs.pr_number }}" --body-file pr-body.md
