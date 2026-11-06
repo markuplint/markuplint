@@ -1,49 +1,64 @@
+import { createRequire } from 'node:module';
+
 import { isModuleNotFoundError } from '@markuplint/shared';
 
+import { fromFileURL } from './path-utils.js';
+
+const require = createRequire(import.meta.url);
+
 /**
- * `import()` that takes a JSON module as one. Node.js and Deno load a JSON module only with the
- * import attribute `type: 'json'` (Bun takes it either way), and a module that a configuration
- * names can be one, a configuration to `extends` or the data of `pretenders`, with or without the
- * `.json` extension, as the `exports` map of a package can redirect a specifier. The attribute
- * cannot be given up front: a `.json` specifier can be redirected to a JavaScript module the same
- * way, and the attribute would then be rejected. So the specifier is imported as it is, and when
- * that fails for any reason but the module being absent, once more with the attribute. A success
- * of the retry is a JSON module on every runtime, without reading the code or the message by which
- * each runtime reports the missing attribute.
+ * `import()` that takes a JSON module as one. Node.js and Deno load a JSON module through
+ * `import()` only with the import attribute `type: 'json'` (Bun takes it either way), and a
+ * module that a configuration names can be one, a configuration to `extends` or the data of
+ * `pretenders`, with or without the `.json` extension, as the `exports` map of a package can
+ * redirect a specifier. The attribute cannot be given up front, as a `.json` specifier can be
+ * redirected to a JavaScript module the same way, and the attribute would then be rejected; and
+ * Deno rejects a dynamic `import()` with the attribute as it rejects one without. So the
+ * specifier is imported as it is, and when the runtime reports a JSON module without the
+ * attribute ({@link isJsonWithoutAttribute}), or the `.json` extension says so, it is
+ * `require()`d instead: CommonJS takes a JSON module as it is on every runtime, a bare specifier
+ * and a path alike, and what it returns is handed over as the default export, the shape
+ * `import()` gives a JSON module. Any other failure of `import()` is thrown as it is, as that is
+ * what the callers read (a package that is not installed, a subpath that `exports` does not
+ * expose), and `require()` would only run the module's code again.
  *
- * When the retry fails too, the error of the attempt that tells more is thrown: the retry's when
- * the module is JSON, which Node.js said with `ERR_IMPORT_ATTRIBUTE_MISSING` or the `.json`
- * extension says (a syntax error in the file, say), and the first attempt's otherwise (a package
- * that is not installed, a subpath that `exports` does not expose), as that is what the callers
- * read.
- *
- * The `catch` is not guarded by `isFatalError()`: Node.js reports the missing attribute with a
- * `TypeError`, which the guard would re-throw before the retry.
+ * The `catch` is not guarded by `isFatalError()`: the runtimes report the missing attribute with
+ * a `TypeError`, which the guard would re-throw before the retry.
  *
  * @param specifier - What `import()` takes: a bare specifier, a `file:` URL, or an absolute path
  *   as `moduleExists()` passes it (a Windows drive path fails here and is left to its
  *   `require.resolve()`)
- * @returns The module namespace that `import()` resolves to
+ * @returns The module namespace that `import()` resolves to, or `{ default }` of what
+ *   `require()` returns for a JSON module
  */
 export async function importModule(specifier: string): Promise<Record<string, unknown>> {
 	try {
 		return await import(specifier);
 	} catch (error) {
-		if (isModuleNotFoundError(error)) {
+		if (isModuleNotFoundError(error) || !(isJsonWithoutAttribute(error) || specifier.endsWith('.json'))) {
 			throw error;
 		}
-		try {
-			return await import(specifier, { with: { type: 'json' } });
-		} catch (retryError) {
-			throw isImportAttributeMissing(error) || specifier.endsWith('.json') ? retryError : error;
-		}
+		return { default: require(specifier.startsWith('file:') ? fromFileURL(specifier) : specifier) };
 	}
 }
 
 /**
+ * Whether `import()` reported that the module is JSON and the attribute was not given. The
+ * wording is each runtime's own, observed in `general-import.runtime.spec.ts` in a fresh process
+ * of the runtime that runs the specs:
+ *
+ * - Node.js: the code `ERR_IMPORT_ATTRIBUTE_MISSING`
+ * - Deno: `Attempted to load JSON module without specifying "type": "json" attribute in the
+ *   import statement.`, with no code
+ * - Bun: never, as it takes a JSON module without the attribute
+ *
  * @param error - What `import()` threw
- * @returns `true` for Node.js's report that the module is JSON and the attribute was not given
+ * @returns `true` for that report
  */
-function isImportAttributeMissing(error: unknown): boolean {
-	return error instanceof Error && 'code' in error && error.code === 'ERR_IMPORT_ATTRIBUTE_MISSING';
+function isJsonWithoutAttribute(error: unknown): boolean {
+	return (
+		error instanceof Error &&
+		(('code' in error && error.code === 'ERR_IMPORT_ATTRIBUTE_MISSING') ||
+			error.message.startsWith('Attempted to load JSON module without specifying "type": "json" attribute'))
+	);
 }

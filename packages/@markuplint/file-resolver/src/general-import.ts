@@ -24,8 +24,8 @@ const require = createRequire(import.meta.url);
  *
  * A subpath of a package that its `exports` map does not expose is turned into the absolute path
  * of the file first (see {@link resolvePackageSubpath}), as `import()` refuses it. A JSON module
- * is imported with its attribute by {@link importModule}, so no `.json` file is read by hand: what
- * `import()` takes as JSON, a byte order mark included, is what is accepted.
+ * is taken by {@link importModule} through `require()`, so no `.json` file is read by hand: what
+ * `require()` takes as JSON, a byte order mark included, is what is accepted.
  *
  * The result is cached by specifier for the life of the process, `null` included; `import()`
  * itself keeps a module for as long, so a fresh read is not to be had either way.

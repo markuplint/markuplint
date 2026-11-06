@@ -43,7 +43,7 @@ describe('a JSON file of a package without an exports map, as `extends: ["<packa
 	const specifier = '@markuplint-test/react-pkg-pretenders/package.json';
 
 	// Without an `exports` map, nothing turns the specifier into a path first: it reaches the
-	// runtime's `import()` as it is, which takes a JSON module only with an import attribute.
+	// runtime's `import()` as it is, which refuses a JSON module without an import attribute.
 	test('precondition: the package has no exports map', () => {
 		expect(require(specifier)).not.toHaveProperty('exports');
 	});
