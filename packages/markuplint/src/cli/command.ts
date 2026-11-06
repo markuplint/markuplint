@@ -62,9 +62,7 @@ export async function command(files: readonly Readonly<Target>[], options: CLIOp
 		return true;
 	}
 
-	const configFile =
-		options.config &&
-		(path.isAbsolute(options.config) ? options.config : path.resolve(process.cwd(), options.config));
+	const configFile = options.config;
 	const locale = options.locale;
 	const searchConfig = options.searchConfig;
 	const ignoreExt = options.ignoreExt;

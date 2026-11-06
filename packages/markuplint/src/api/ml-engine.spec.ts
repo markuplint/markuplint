@@ -429,6 +429,44 @@ describe('#1862 configFile skips default config search', () => {
 	});
 });
 
+describe('configFile is resolved as a value of extends is', () => {
+	it('a module name is loaded as such', async () => {
+		const filePath = path.resolve(import.meta.dirname, '../../test/issue1862/index.html');
+		const file = await MLEngine.toMLFile(filePath);
+		const engine = new MLEngine(file!, { configFile: 'markuplint:recommended' });
+
+		let configSet: ConfigSet | null = null;
+		engine.once('config', (_, _configSet) => {
+			configSet = _configSet;
+		});
+		await engine.exec();
+
+		expect([...configSet!.files]).toContain('markuplint:recommended');
+		// @ts-ignore
+		expect(configSet?.config.rules?.['__test-rule']).toBe(undefined);
+	});
+
+	it('a relative path is based on the working directory', async () => {
+		const filePath = path.resolve(import.meta.dirname, '../../test/issue1862/index.html');
+		const configFilePath = path.resolve(import.meta.dirname, '../../test/issue1862/config.json');
+		const configFile = path.relative(process.cwd(), configFilePath);
+		expect(path.isAbsolute(configFile)).toBe(false);
+
+		const file = await MLEngine.toMLFile(filePath);
+		const engine = new MLEngine(file!, { configFile });
+
+		let configSet: ConfigSet | null = null;
+		engine.once('config', (_, _configSet) => {
+			configSet = _configSet;
+		});
+		await engine.exec();
+
+		expect([...configSet!.files]).toStrictEqual([configFilePath]);
+		// @ts-ignore
+		expect(configSet?.config.rules?.['__test-rule']).toBe(true);
+	});
+});
+
 describe('#4412 a source whose directory does not exist yet', () => {
 	let tmpDir: string;
 
