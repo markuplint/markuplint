@@ -13,7 +13,7 @@ markuplint-html-parser = { path = "../markuplint-html-parser", optional = true }
 markuplint-types = { path = "../markuplint-types", optional = true }
 
 [dev-dependencies]
-insta = "1"
+insta = "=1.47.1"
 serde_json = { workspace = true }
 
 [features]
