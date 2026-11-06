@@ -12,7 +12,7 @@ name: Spec citation watch
 
 on:
     schedule:
-        - cron: '0 3 1 * *' # Monthly on the 1st at 12:00 JST
+        - cron: '0 3 * * 1' # Weekly on Monday at 12:00 JST
     workflow_dispatch:
     pull_request:
         branches:
@@ -81,14 +81,28 @@ jobs:
         if: github.event_name != 'pull_request'
         runs-on: ubuntu-latest
         timeout-minutes: 60
+        # The lock branch is pushed and its PR opened with a GitHub App token, not GITHUB_TOKEN: a
+        # `pull_request` run caused by GITHUB_TOKEN stops at `action_required` until someone approves
+        # it by hand. The Issue steps keep GITHUB_TOKEN, since an Issue triggers no workflow here.
         permissions:
-            contents: write
+            contents: read
             issues: write
-            pull-requests: write
         steps:
+            # Same App as update-html-spec.yml (Contents and Pull requests, read and write).
+            - name: Create GitHub App token
+              id: app-token
+              uses: actions/create-github-app-token@64ab729a6294000f5aa4a4bc0b73d1f32bc45510 # v3.3.0
+              with:
+                  client-id: ${{ vars.BOT_APP_CLIENT_ID }}
+                  private-key: ${{ secrets.BOT_APP_PRIVATE_KEY }}
+                  permission-contents: write
+                  permission-pull-requests: write
+
             - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
               with:
                   ref: dev
+                  # `git push` below authenticates with the credentials checkout persists.
+                  token: ${{ steps.app-token.outputs.token }}
 
             - name: Use Node.js ${{ env.NODE_BUILD_VERSION }}
               uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7
@@ -111,7 +125,7 @@ jobs:
               run: |
                   set +e
                   # Same as the pull request job: a page that could not be fetched (status 2) is tried again, up to
-                  # three more times, five minutes apart, so that one outage does not skip the month for that page.
+                  # three more times, five minutes apart, so that one outage does not skip the week for that page.
                   for attempt in 1 2 3 4; do
                       rm -f report.md report-full.md
                       yarn spec-citations --update --report report.md --report-full report-full.md
@@ -142,7 +156,7 @@ jobs:
                       echo "<!-- spec-citation-watch -->"
                       echo "## Specification citations: the check crashed"
                       echo ""
-                      echo "The monthly check stopped before it could report. See the log: $RUN_URL"
+                      echo "The weekly check stopped before it could report. See the log: $RUN_URL"
                   } > report.md
 
             # One open Issue collects the reports: the first run opens it, and a
