@@ -64,6 +64,11 @@ env:
     NODE_BUILD_VERSION: 26
     NX_DISABLE_DB: true
 
+# PRs from update-html-spec.yml (head branch `auto/update-html-spec` in this repository) change
+# only generated spec data, so they run one Node.js version on Ubuntu and skip the cross-OS,
+# isolated-env, Bun and Deno jobs. The head repository is checked so that a fork cannot opt out
+# of the full matrix by naming its branch the same. `env` is not available in `strategy`, so
+# the single version is written as 26: keep it equal to NODE_BUILD_VERSION.
 jobs:
     dev-setup:
         runs-on: ${{ matrix.os }}
@@ -71,7 +76,7 @@ jobs:
             fail-fast: false
             matrix:
                 os: [ubuntu-latest]
-                node: [24, 26]
+                node: ${{ fromJSON(github.event.pull_request.head.repo.full_name == github.repository && github.head_ref == 'auto/update-html-spec' && '[26]' || '[24, 26]') }}
         steps:
             - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
               with:
@@ -226,10 +231,15 @@ jobs:
 
         # For PRs from Renovate, update production dependencies only and then run tests.
         # For PRs not from Renovate, proceed with the usual setup and tests.
+        # Skipped for html-spec update PRs (see the comment above `jobs`).
         if: |
-            !contains(github.event.pull_request.labels.*.name, 'Renovate')
-            ||
-            contains(github.event.pull_request.labels.*.name, 'Dependencies: Production')
+            !(github.event.pull_request.head.repo.full_name == github.repository && github.head_ref == 'auto/update-html-spec')
+            &&
+            (
+                !contains(github.event.pull_request.labels.*.name, 'Renovate')
+                ||
+                contains(github.event.pull_request.labels.*.name, 'Dependencies: Production')
+            )
 
         strategy:
             fail-fast: false
@@ -286,7 +296,8 @@ jobs:
         strategy:
             fail-fast: false
             matrix:
-                node: [24, 26]
+                # Same narrowing as `dev-setup`, whose cache this job restores.
+                node: ${{ fromJSON(github.event.pull_request.head.repo.full_name == github.repository && github.head_ref == 'auto/update-html-spec' && '[26]' || '[24, 26]') }}
         steps:
             - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
               with:
@@ -410,6 +421,8 @@ jobs:
 
     isolated-env:
         needs: [dev-setup, build]
+        # Skipped for html-spec update PRs (see the comment above `jobs`).
+        if: ${{ !(github.event.pull_request.head.repo.full_name == github.repository && github.head_ref == 'auto/update-html-spec') }}
         runs-on: ${{ matrix.os }}
         strategy:
             fail-fast: false
@@ -515,6 +528,8 @@ jobs:
 
     test-bun:
         needs: build
+        # Skipped for html-spec update PRs (see the comment above `jobs`).
+        if: ${{ !(github.event.pull_request.head.repo.full_name == github.repository && github.head_ref == 'auto/update-html-spec') }}
         runs-on: ubuntu-latest
         continue-on-error: true
         steps:
@@ -578,6 +593,8 @@ jobs:
 
     test-deno:
         needs: build
+        # Skipped for html-spec update PRs (see the comment above `jobs`).
+        if: ${{ !(github.event.pull_request.head.repo.full_name == github.repository && github.head_ref == 'auto/update-html-spec') }}
         runs-on: ubuntu-latest
         continue-on-error: true
         steps:
