@@ -2,9 +2,12 @@ import { createRequire } from 'node:module';
 
 import { isModuleNotFoundError } from '@markuplint/shared';
 
+import { log } from './debug.js';
 import { fromFileURL } from './path-utils.js';
 
 const require = createRequire(import.meta.url);
+
+const iLog = log.extend('import-module');
 
 /**
  * `import()` that takes a JSON module as one. Node.js and Deno load a JSON module through
@@ -20,7 +23,9 @@ const require = createRequire(import.meta.url);
  * and a path alike, and what it returns is handed over as the default export, the shape
  * `import()` gives a JSON module. Any other failure of `import()` is thrown as it is, as that is
  * what the callers read (a package that is not installed, a subpath that `exports` does not
- * expose), and `require()` would only run the module's code again.
+ * expose), and `require()` would only run the module's code again. The report is read before the
+ * code of a missing module, as Deno attaches that code to the report as well; the code decides
+ * only for a `.json` specifier that the runtime did not report as JSON.
  *
  * The `catch` is not guarded by `isFatalError()`: the runtimes report the missing attribute with
  * a `TypeError`, which the guard would re-throw before the retry.
@@ -35,9 +40,11 @@ export async function importModule(specifier: string): Promise<Record<string, un
 	try {
 		return await import(specifier);
 	} catch (error) {
-		if (isModuleNotFoundError(error) || !(isJsonWithoutAttribute(error) || specifier.endsWith('.json'))) {
+		const isJson = isJsonWithoutAttribute(error) || (specifier.endsWith('.json') && !isModuleNotFoundError(error));
+		if (!isJson) {
 			throw error;
 		}
+		iLog('`import()` refused %s as a JSON module (%O); taking `require()`', specifier, error);
 		return { default: require(specifier.startsWith('file:') ? fromFileURL(specifier) : specifier) };
 	}
 }
@@ -49,7 +56,7 @@ export async function importModule(specifier: string): Promise<Record<string, un
  *
  * - Node.js: the code `ERR_IMPORT_ATTRIBUTE_MISSING`
  * - Deno: `Attempted to load JSON module without specifying "type": "json" attribute in the
- *   import statement.`, with no code
+ *   import statement.`
  * - Bun: never, as it takes a JSON module without the attribute
  *
  * @param error - What `import()` threw
