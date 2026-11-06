@@ -19,6 +19,7 @@ import { isPluginModuleName } from './is-plugin-module-name.js';
 import { isPresetModuleName } from './is-preset-module-name.js';
 import { moduleExists } from './module-exists.js';
 import { relPathToNameOrAbsPath } from './path-to-abs-or-name.js';
+import { resolveNameOrAbsPath } from './resolve-name-or-abs-path.js';
 import { cacheClear, resolvePlugins } from './resolve-plugins.js';
 import { fileExists, uuid } from './utils.js';
 
@@ -212,12 +213,19 @@ export class ConfigProvider {
 	 * right before calling this) — see #4015.
 	 *
 	 * @param targetFile - The file being linted
-	 * @param names - Config file paths or module names to merge
+	 * @param names - Config file paths or module names to merge. A key of a configuration already
+	 * stored (by {@link set} or {@link search}) is taken as it is; any other name is resolved as a
+	 * value of `extends` is, from the working directory: a module name stays, a path becomes
+	 * absolute
 	 * @param cache - Whether to reuse already-loaded/cached entries
 	 * @returns The fully resolved configuration set including plugins and errors
 	 */
 	async resolve(targetFile: Readonly<MLFile>, names: readonly Nullable<string>[], cache = true): Promise<ConfigSet> {
-		const keys = names.filter(nonNullableFilter);
+		const keys = await Promise.all(
+			names
+				.filter(nonNullableFilter)
+				.map(name => (this.#store.has(name) ? name : resolveNameOrAbsPath(process.cwd(), name))),
+		);
 		const key = keys.join(KEY_SEPARATOR);
 
 		let baseConfigSet = this.#cache.get(key);

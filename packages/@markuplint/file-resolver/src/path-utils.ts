@@ -86,3 +86,15 @@ export function normalizeForIgnore(filePath: string, relative = false): string {
 export function normalizeForGlob(filePath: string): string {
 	return toSlash(filePath);
 }
+
+/**
+ * Whether `filePath` is written as a relative path: a `.` or `..` segment first, followed by
+ * either separator (`./x`, `../x`, `.\x`, `..\x`) or by nothing (`.`, `..`). A dot-file name such
+ * as `.markuplintrc` is not one.
+ *
+ * @param filePath - A value of a configuration that names a file or a module
+ * @returns `true` for a relative path
+ */
+export function isRelativePath(filePath: string): boolean {
+	return /^\.\.?(?:[/\\]|$)/.test(filePath);
+}

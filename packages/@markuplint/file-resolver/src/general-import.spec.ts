@@ -3,8 +3,9 @@ import { test, expect } from 'vitest';
 import { generalImport } from './general-import.js';
 
 test('imports a JSON subpath from a package whose exports map does not include it', async () => {
-	// @markuplint-test/react has "exports": { ".": "./index.js" } — no ./pretenders.json entry.
-	// generalImport should resolve the absolute path via package subpath pre-resolution.
+	// The exports map of @markuplint-test/react exposes ".", "./preset" and "./config.json", but
+	// not "./pretenders.json". generalImport should resolve the absolute path via package subpath
+	// pre-resolution.
 	const result = await generalImport<{ data: unknown[] }>('@markuplint-test/react/pretenders.json');
 	expect(result).not.toBeNull();
 	expect(result!.data).toStrictEqual([

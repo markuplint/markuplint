@@ -1,0 +1,8 @@
+{
+	"private": true,
+	"markuplint": {
+		"rules": {
+			"no-duplicate-attr": true
+		}
+	}
+}

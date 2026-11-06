@@ -453,9 +453,13 @@ test('invalidate() clears entries registered via set() (#4015)', async () => {
 	const key = provider.set({ rules: { foo: true } });
 	provider.invalidate();
 
-	// The key only ever lived in the store; once cleared, resolving it falls
-	// through to `#load()`, which treats it as a file path/module name.
-	await expect(provider.resolve(file, [key], false)).rejects.toThrow(/is not an absolute path/);
+	// The key only ever lived in the store; once cleared, it is resolved as a name that is not
+	// stored: a path from the working directory, where no such file exists.
+	const configSet = await provider.resolve(file, [key], false);
+	expect(configSet.config).toStrictEqual({});
+	expect(configSet.errs).toHaveLength(1);
+	expect(configSet.errs[0]).toBeInstanceOf(ConfigLoadError);
+	expect((configSet.errs[0] as ConfigLoadError).filePath).toBe(path.resolve(key));
 });
 
 test('runExclusive() serializes overlapping calls, deferring a later call until an earlier one settles (#4015)', async () => {
@@ -984,5 +988,45 @@ describe('Plugins in the value of an override are loaded for the file it applies
 			`Plugin not found: ${path.resolve(pluginsDir, 'not-found.js')}`,
 		]);
 		expect(unmatched.errs).toStrictEqual([]);
+	});
+});
+
+describe('A relative extends that also names a file next to the resolver itself', () => {
+	const testDir = path.resolve(import.meta.dirname, '..', 'test', 'fixtures', '017');
+
+	// `../package.json` from `sub/` is the fixture's own; from the resolver's directory it is the
+	// `package.json` of this package, which is what `resolveNameOrAbsPath` must not take it for.
+	test('the target is read from the directory of the configuration that declares it', async () => {
+		const file = getFile(path.resolve(testDir, 'sub', 'target.html'));
+		const configSet = await new ConfigProvider().resolve(file, [path.resolve(testDir, 'sub', '.markuplintrc')]);
+		expect(configSet.errs).toStrictEqual([]);
+		expect([...configSet.files]).toStrictEqual([
+			path.resolve(testDir, 'package.json'),
+			path.resolve(testDir, 'sub', '.markuplintrc'),
+		]);
+		expect(configSet.config.rules).toStrictEqual({ 'no-duplicate-attr': true });
+	});
+});
+
+describe('A name given to resolve() that is not a stored key is resolved as a value of extends is', () => {
+	const testDir = path.resolve(import.meta.dirname, '..', 'test', 'fixtures', '017');
+	const file = getFile(path.resolve(testDir, 'sub', 'target.html'));
+
+	test('a relative path, from the working directory', async () => {
+		const configFile = path.resolve(testDir, 'package.json');
+		const relative = path.relative(process.cwd(), configFile);
+		expect(path.isAbsolute(relative)).toBe(false);
+
+		const configSet = await new ConfigProvider().resolve(file, [relative]);
+		expect([...configSet.files]).toStrictEqual([configFile]);
+		expect(configSet.config.rules).toStrictEqual({ 'no-duplicate-attr': true });
+	});
+
+	test('a module name, as it is', async () => {
+		const name = '@markuplint/config-presets/preset.recommended.json';
+		const configSet = await new ConfigProvider().resolve(file, [name]);
+		expect(configSet.errs).toStrictEqual([]);
+		expect([...configSet.files]).toContain(name);
+		expect([...configSet.files]).toContain('markuplint:html-standard');
 	});
 });
