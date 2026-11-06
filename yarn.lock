@@ -1776,7 +1776,7 @@ __metadata:
     ignore: "npm:^7.0.12"
     import-meta-resolve: "npm:^4.2.0"
     jsonc: "npm:^3.0.0"
-    minimatch: "npm:^10.2.6"
+    minimatch: "npm:^11.0.0"
   languageName: unknown
   linkType: soft
 
