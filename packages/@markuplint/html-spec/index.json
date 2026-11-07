@@ -48342,6 +48342,7 @@
 				"small",
 				"span",
 				"strong",
+				"style:first-child",
 				"sub",
 				"sup",
 				"svg|svg",
@@ -48876,7 +48877,7 @@
 			"contentModel": {
 				"contents": [
 					{
-						"oneOrMore": ":model(flow):not(address, :model(heading), :model(sectioning), header, foooter, :has(address, :model(heading), :model(sectioning), header, foooter))"
+						"oneOrMore": ":model(flow):not(address, :model(heading), :model(sectioning), header, footer, :has(address, :model(heading), :model(sectioning), header, footer))"
 					}
 				],
 				"forbiddenAncestors": ["address"]

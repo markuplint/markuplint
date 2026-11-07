@@ -1,16 +1,16 @@
 // https://html.spec.whatwg.org/multipage/sections.html#the-address-element
 // https://www.w3.org/TR/html-aria/#el-address
-// https://w3c.github.io/html-aria/#el-address
-// https://www.w3.org/TR/html-aam-1.0/#:~:text=abbr-,address,-area%20(represents%20a
+// https://www.w3.org/TR/html-aam/#:~:text=abbr-,address,-area%20(represents%20a
 {
 	"contentModel": {
 		"contents": [
 			{
-				"oneOrMore": ":model(flow):not(address, :model(heading), :model(sectioning), header, foooter, :has(address, :model(heading), :model(sectioning), header, foooter))"
+				"oneOrMore": ":model(flow):not(address, :model(heading), :model(sectioning), header, footer, :has(address, :model(heading), :model(sectioning), header, footer))"
 			}
 		],
-		// https://html.spec.whatwg.org/multipage/sections.html#the-address-element
-		// "The address element must not appear as a descendant of an address element."
+		// @see https://html.spec.whatwg.org/multipage/sections.html#the-address-element
+		// > Flow content, but with no heading content descendants, no sectioning content descendants, and no header, footer, or address element descendants.
+		// `contents` above checks the descendants; this checks an address inside an address.
 		"forbiddenAncestors": ["address"]
 	},
 	"globalAttrs": {
