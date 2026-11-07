@@ -3,6 +3,7 @@ import type { Category, MLMLSpec } from '@markuplint/ml-spec';
 
 import { contentModelCategoryToTagNames } from '@markuplint/ml-spec';
 
+import { contentModelFirstChildBase, isContentModelFirstChild } from '../content-model-first-child.js';
 import { createSelector } from '../create-selector.js';
 
 export function contentModelPseudoClass(specs: MLMLSpec) {
@@ -45,6 +46,22 @@ export function contentModelPseudoClass(specs: MLMLSpec) {
 								matched: false,
 							},
 						];
+					}
+
+					// `style:first-child`: the first child as the HTML Standard counts it
+					const firstChildBase = contentModelFirstChildBase(selector);
+					if (firstChildBase != null) {
+						const results = createSelector(firstChildBase, specs).search(el);
+						// The siblings are walked only for an element that matches the rest
+						if (results.some(r => r.matched) && !isContentModelFirstChild(el)) {
+							return [
+								{
+									specificity: [0, 1, 0],
+									matched: false,
+								},
+							];
+						}
+						return results;
 					}
 
 					return createSelector(selector, specs).search(el);

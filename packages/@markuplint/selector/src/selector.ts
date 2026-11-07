@@ -865,6 +865,32 @@ function pseudoMatch(
 				matched: false,
 			};
 		}
+		/**
+		 * Selectors Level 4 counts only sibling elements: a text node or a comment before the
+		 * element does not stop it from being the first child. An element without a parent
+		 * matches as well, as the Level 4 definition no longer requires one.
+		 *
+		 * Siblings are those `previousElementSibling` gives, as for the sibling combinators,
+		 * so whether an element inside a template block before it is one depends on how the
+		 * parser places the content of the block. A content model category counts text as
+		 * well (`isContentModelFirstChild`).
+		 *
+		 * @see https://drafts.csswg.org/selectors/#the-first-child-pseudo
+		 */
+		case ':first-child': {
+			if (el.previousElementSibling == null) {
+				return {
+					specificity: [0, 1, 0],
+					matched: true,
+					nodes: [el],
+					has: [],
+				};
+			}
+			return {
+				specificity: [0, 1, 0],
+				matched: false,
+			};
+		}
 		case ':enable':
 		case ':disable':
 		case ':read-write':
@@ -884,7 +910,6 @@ function pseudoMatch(
 		case ':empty':
 		case ':nth-child':
 		case ':nth-last-child':
-		case ':first-child':
 		case ':last-child':
 		case ':only-child':
 		case ':nth-of-type':

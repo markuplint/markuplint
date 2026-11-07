@@ -30,6 +30,28 @@ describe('Extended Selector', () => {
 		expect(c(':not(:model(interactive))', '<a href="path/to"></a>')).toBeFalsy();
 	});
 
+	test.each([
+		['<div>\n<!-- c --><style></style></div>', 'style', true],
+		['<div><p></p><style></style></div>', 'style', false],
+		['<div>text<style></style></div>', 'style', false],
+		['<div>\u00A0<style></style></div>', 'style', false],
+		['<div>text<p></p></div>', 'p', true],
+	])(
+		':model(flow) matches a style element only as the first child of its parent, as the HTML Standard counts it: %j',
+		(html, target, expected) => {
+			const el = createJSDOMElement(html, target);
+			expect(createSelector(':model(flow)', specs).match(el) !== false).toBe(expected);
+			expect(createSelector(':not(:model(flow))', specs).match(el) !== false).toBe(!expected);
+		},
+	);
+
+	test('style:first-child written as a selector keeps the Selectors definition, which does not count text', () => {
+		const el = createJSDOMElement('<div>text<style></style></div>', 'style');
+		expect(createSelector('style:first-child', specs).match(el)).toBeTruthy();
+		const afterElement = createJSDOMElement('<div><p></p><style></style></div>', 'style');
+		expect(createSelector('style:first-child', specs).match(afterElement)).toBe(false);
+	});
+
 	test(':model matches #custom only for an element that reports isCustomElement', () => {
 		const plain = createJSDOMElement('<x-foo></x-foo>');
 		const custom = Object.defineProperty(createJSDOMElement('<x-foo></x-foo>'), 'isCustomElement', {
