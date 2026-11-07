@@ -24,12 +24,12 @@ import type { ExtendedSpec } from '@markuplint/ml-spec';
 import { readFile, writeFile } from 'node:fs/promises';
 
 import { getAria } from './aria.ts';
-import { getFailedUrls, getReferences } from './fetch.ts';
+import { getFailedUrls, getReferences, getUnexpectedlyFoundUrls, hasFetchProblems } from './fetch.ts';
 import { getGlobalAttrs } from './global-attrs.ts';
 import { getElements } from './html-elements.ts';
 import { readJson } from './read-json.ts';
 import { expandConditionAliases, resolveAliases } from './selector-aliases.ts';
-import { summarizeChanges } from './summarize.ts';
+import { summarizeChanges, summarizeFetchProblems } from './summarize.ts';
 import { validateSpecs } from './validate.ts';
 
 export type Options = {
@@ -51,6 +51,9 @@ export type Options = {
  * regeneration must not change the edited entries again — if it does, the
  * manual spec data and the generator's merge logic disagree, and that
  * disagreement must be investigated before committing.
+ *
+ * @returns `fetchProblems` is true when a fetch failed or a page expected not
+ * to exist answered; the output and the summary are written either way.
  */
 export async function main({
 	outputFilePath,
@@ -88,6 +91,19 @@ export async function main({
 		}
 	}
 
+	const unexpectedlyFoundUrls = getUnexpectedlyFoundUrls();
+
+	if (unexpectedlyFoundUrls.length > 0) {
+		// eslint-disable-next-line no-console
+		console.error(
+			`\n⚠️ ${unexpectedlyFoundUrls.length} page(s) expected not to exist were found; take them out of \`obsoleteWithoutMDNPage\` in generator/html-elements.ts:`,
+		);
+		for (const url of unexpectedlyFoundUrls) {
+			// eslint-disable-next-line no-console
+			console.error(`   - ${url}`);
+		}
+	}
+
 	const json: ExtendedSpec = {
 		cites,
 		def: {
@@ -112,11 +128,14 @@ export async function main({
 	console.log(`🎁 Output: ${outputFilePath}`);
 
 	if (summaryFilePath) {
-		const summary = summarizeChanges(previous, json);
+		const fetchProblems = summarizeFetchProblems(failedUrls, unexpectedlyFoundUrls);
+		const summary = [summarizeChanges(previous, json), fetchProblems].filter(Boolean).join('\n\n');
 		await writeFile(summaryFilePath, summary + '\n');
 		// eslint-disable-next-line no-console
 		console.log(`📝 Summary: ${summaryFilePath}`);
 	}
+
+	return { fetchProblems: hasFetchProblems() };
 }
 
 /**

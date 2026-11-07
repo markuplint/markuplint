@@ -14,6 +14,8 @@ Constraints and judgment rules for editing spec data. None of this is derivable 
 
 `.github/workflows/update-html-spec.yml` regenerates `index.json` from a fresh `dev` checkout on a schedule and, only when `yarn up:gen` changed something against that `dev`, force-pushes the result to the reused branch `auto/update-html-spec` and opens or updates a single PR. A run that produces no diff pushes nothing, so the open PR keeps the snapshot of an earlier run, and its own diff view (`gh pr diff`, the GitHub UI) compares against that stale merge-base, not against the current `dev` tip. A scraper or generator fix merged into `dev` after the snapshot is invisible there. If that fix changed the generator but not the same lines of `index.json` (a scraper fix usually leaves the committed data alone), the bot PR merges cleanly and reapplies the stale output; only a fix that touched the same lines surfaces as a conflict.
 
+A failed fetch, or an MDN page that the generator expects not to exist answering again, makes `yarn up:gen` exit non-zero after writing its output, and the workflow then fails its run, with or without a PR. The bot PR body lists the URLs under "Failed to fetch" / "Found although expected not to exist". A failed run with no PR change is still a signal: open the run's `Run up:gen` step for the URLs.
+
 Before merging one, diff the branch against `dev` directly:
 
 ```bash

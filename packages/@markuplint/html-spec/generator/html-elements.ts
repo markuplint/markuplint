@@ -11,7 +11,7 @@ import { getName, nameCompare, sortObjectByKey } from './utils.ts';
  *
  * @see https://html.spec.whatwg.org/multipage/obsolete.html#non-conforming-features
  */
-const obsoleteList = [
+export const obsoleteList: readonly string[] = [
 	'applet',
 	'acronym',
 	'bgsound',
@@ -42,6 +42,52 @@ const obsoleteList = [
 	'spacer',
 	'tt',
 ];
+
+/**
+ * Obsolete HTML elements in `obsoleteList` that MDN has no reference page
+ * for. Their page is still fetched, as a page expected to answer 404: a 404
+ * is not reported as a failure on every run, and a page that MDN adds back is
+ * read and reported, so that the element can be taken out of this list. While
+ * the page does not exist, the element has no MDN description, categories or
+ * attributes, only what `fetchObsoleteElements` gives every obsolete element.
+ */
+export const obsoleteWithoutMDNPage: ReadonlySet<string> = new Set([
+	'applet',
+	'basefont',
+	'bgsound',
+	'blink',
+	'isindex',
+	'keygen',
+	'listing',
+	'menuitem',
+	'multicol',
+	'nextid',
+	'spacer',
+]);
+
+/**
+ * Whether MDN is known to have no reference page for an element.
+ *
+ * @param localName - The local name of the element
+ * @param ml - The markup language of the element, as `getName` gives it
+ */
+export function isWithoutMDNPage(localName: string, ml: 'HTML' | 'SVG' | 'MathML') {
+	return ml === 'HTML' && obsoleteWithoutMDNPage.has(localName);
+}
+
+/**
+ * Returns the MDN reference page of an element.
+ *
+ * @param localName - The local name of the element
+ * @param ml - The markup language of the element, as `getName` gives it
+ */
+export function getMDNElementURL(localName: string, ml: 'HTML' | 'SVG' | 'MathML') {
+	const urlTagName = /^h[1-6]$/i.test(localName) ? 'Heading_Elements' : localName;
+	// https://developer.mozilla.org/en-US/docs/Web/HTML/Reference/Elements/a
+	// https://developer.mozilla.org/en-US/docs/Web/SVG/Reference/Element/a
+	// https://developer.mozilla.org/en-US/docs/Web/MathML/Reference/Element/math
+	return `https://developer.mozilla.org/en-US/docs/Web/${ml}/Reference/Element${ml === 'HTML' ? 's' : ''}/${urlTagName}`;
+}
 
 /**
  * Namespace sort order: HTML first, then MathML, then SVG.
@@ -83,12 +129,9 @@ export async function getElements(filePattern: string) {
 	specs = await Promise.all(
 		specs.map(async el => {
 			const { localName, namespace, ml } = getName(el.name);
-			const urlTagName = /^h[1-6]$/i.test(localName) ? 'Heading_Elements' : localName;
-			// https://developer.mozilla.org/en-US/docs/Web/HTML/Reference/Elements/a
-			// https://developer.mozilla.org/en-US/docs/Web/SVG/Reference/Element/a
-			// https://developer.mozilla.org/en-US/docs/Web/MathML/Reference/Element/math
-			const cite = `https://developer.mozilla.org/en-US/docs/Web/${ml}/Reference/Element${ml === 'HTML' ? 's' : ''}/${urlTagName}`;
-			const mdnData = await fetchHTMLElement(cite);
+			const mdnData = await fetchHTMLElement(getMDNElementURL(localName, ml), {
+				expectNotFound: isWithoutMDNPage(localName, ml),
+			});
 			// @ts-ignore
 			delete el.name;
 			// @ts-ignore
@@ -107,6 +150,9 @@ export async function getElements(filePattern: string) {
 				// @ts-ignore
 				name: qualifiedName,
 				namespace,
+				// An MDN page that answered 404 stays here although it leaves `cites`:
+				// `cite` is required and nothing else names the element. The 404 fails
+				// the run (`getFailedUrls`); the fix is a `cite` in the manual spec.
 				cite: el.cite ?? mdnData.cite,
 				description: mdnData.description,
 				categories: mdnData.categories,
@@ -115,54 +161,7 @@ export async function getElements(filePattern: string) {
 				omission: mdnData.omission,
 				...el,
 				globalAttrs: sortObjectByKey(el.globalAttrs ?? {}),
-				attributes: sortObjectByKey(
-					(() => {
-						const attrs = { ...el.attributes };
-
-						for (const mdnAttr of Object.values(mdnData.attributes ?? {})) {
-							if (!mdnAttr.name) {
-								continue;
-							}
-
-							const current = attrs[mdnAttr.name];
-
-							if (!current) {
-								attrs[mdnAttr.name] = {
-									description: mdnAttr.description,
-									experimental: mdnAttr.experimental,
-									obsolete: mdnAttr.obsolete,
-									deprecated: mdnAttr.deprecated,
-									nonStandard: mdnAttr.nonStandard,
-								};
-								continue;
-							}
-
-							if (typeof current === 'object') {
-								if ('name' in current) {
-									attrs[mdnAttr.name] = {
-										// @ts-ignore for key order that "name" is first
-										name: mdnAttr.name,
-										// @ts-ignore for key order that "description" is second
-										...mdnData.attributes,
-										// @ts-ignore
-										...current,
-									};
-								} else {
-									attrs[mdnAttr.name] = {
-										description: mdnAttr.description,
-										experimental: mdnAttr.experimental,
-										obsolete: mdnAttr.obsolete,
-										deprecated: mdnAttr.deprecated,
-										nonStandard: mdnAttr.nonStandard,
-										...current,
-									};
-								}
-							}
-						}
-
-						return attrs;
-					})(),
-				),
+				attributes: sortObjectByKey(mergeMDNAttributes(el.attributes, mdnData.attributes)),
 			};
 
 			return spec;
@@ -174,4 +173,48 @@ export async function getElements(filePattern: string) {
 		const orderB = namespaceSortOrder[b.namespace ?? ''] ?? 0;
 		return orderA - orderB;
 	});
+}
+
+/**
+ * Merges the attributes scraped from MDN into the manual ones of an element.
+ * A manual entry wins over the MDN fields it also has; an attribute only MDN
+ * has takes its description and status flags.
+ *
+ * @param manual - The attributes of the manual spec (`src/spec.*.jsonc`)
+ * @param mdn - The attributes scraped from the element's MDN page
+ */
+export function mergeMDNAttributes(manual: ExtendedElementSpec['attributes'], mdn: ExtendedElementSpec['attributes']) {
+	const attrs = { ...manual };
+
+	for (const mdnAttr of Object.values(mdn ?? {})) {
+		if (!mdnAttr.name) {
+			continue;
+		}
+
+		const current = attrs[mdnAttr.name];
+
+		if (!current) {
+			attrs[mdnAttr.name] = {
+				description: mdnAttr.description,
+				experimental: mdnAttr.experimental,
+				obsolete: mdnAttr.obsolete,
+				deprecated: mdnAttr.deprecated,
+				nonStandard: mdnAttr.nonStandard,
+			};
+			continue;
+		}
+
+		attrs[mdnAttr.name] = {
+			// A manual entry that has "name" keeps it as its first key
+			...('name' in current ? { name: mdnAttr.name } : {}),
+			description: mdnAttr.description,
+			experimental: mdnAttr.experimental,
+			obsolete: mdnAttr.obsolete,
+			deprecated: mdnAttr.deprecated,
+			nonStandard: mdnAttr.nonStandard,
+			...current,
+		};
+	}
+
+	return attrs;
 }
