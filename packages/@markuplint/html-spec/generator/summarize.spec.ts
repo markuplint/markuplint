@@ -5,7 +5,7 @@ import path from 'node:path';
 
 import { describe, test, expect } from 'vitest';
 
-import { summarizeChanges } from './summarize.ts';
+import { summarizeChanges, summarizeFetchProblems } from './summarize.ts';
 
 /** The committed, real generated spec — used to pin real-data-shape compatibility. */
 const realSpec = JSON.parse(
@@ -124,6 +124,14 @@ describe('summarizeChanges', () => {
 		expect(result).toContain('**Reference URLs**: 1 → 2 (+1)');
 	});
 
+	test('lists the reference URLs that were added and removed', () => {
+		const previous = spec(['div'], ['https://a/', 'https://b/']);
+		const next = spec(['div'], ['https://a/', 'https://c/']);
+		expect(summarizeChanges(previous, next)).toContain(
+			['**Reference URLs**: 2 (unchanged)', '- Added: https://c/', '- Removed: https://b/'].join('\n'),
+		);
+	});
+
 	test('reports no structural changes when only descriptions/attributes differ', () => {
 		const previous = spec(['div', 'span']);
 		const next: ExtendedSpec = {
@@ -140,5 +148,27 @@ describe('summarizeChanges', () => {
 	test('reports no structural changes for the committed index.json against itself', () => {
 		// Real-data shape check: identical input must not fabricate changes.
 		expect(summarizeChanges(realSpec, realSpec)).toContain('No structural changes');
+	});
+});
+
+describe('summarizeFetchProblems', () => {
+	test('returns null when every fetch went as expected', () => {
+		expect(summarizeFetchProblems([], [])).toBeNull();
+	});
+
+	test('lists the URLs that failed and the pages found although expected not to exist', () => {
+		expect(summarizeFetchProblems(['https://a/'], ['https://b/'])).toBe(
+			[
+				'### Failed to fetch (1)',
+				'',
+				'- https://a/',
+				'',
+				'### Found although expected not to exist (1)',
+				'',
+				'Take them out of `obsoleteWithoutMDNPage` in `generator/html-elements.ts`.',
+				'',
+				'- https://b/',
+			].join('\n'),
+		);
 	});
 });

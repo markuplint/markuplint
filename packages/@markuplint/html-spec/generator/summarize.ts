@@ -117,8 +117,18 @@ export function summarizeChanges(previous: ExtendedSpec | null | undefined, next
 	// Reference URLs.
 	const prevCites = previous.cites?.length ?? 0;
 	const nextCites = next.cites?.length ?? 0;
-	if (prevCites !== nextCites) {
-		sections.push(`**Reference URLs**: ${countDelta(prevCites, nextCites)}`);
+	// Listed by URL: a URL leaves `cites` when its page answers 404 as well as when
+	// its element is removed, and only the former needs a look at MDN
+	const { added: addedCites, removed: removedCites } = diffNames(previous.cites ?? [], next.cites ?? []);
+	if (addedCites.length > 0 || removedCites.length > 0) {
+		const lines = [`**Reference URLs**: ${countDelta(prevCites, nextCites)}`];
+		for (const url of addedCites) {
+			lines.push(`- Added: ${url}`);
+		}
+		for (const url of removedCites) {
+			lines.push(`- Removed: ${url}`);
+		}
+		sections.push(lines.join('\n'));
 	}
 
 	if (sections.length === 1 && !elementDiff) {
@@ -127,4 +137,31 @@ export function summarizeChanges(previous: ExtendedSpec | null | undefined, next
 	}
 
 	return sections.join('\n\n');
+}
+
+/**
+ * Renders what the fetches of a run report, for the summary: the generator
+ * prints it to the console too, but the auto-update workflow puts only the
+ * summary in the PR body. Returns `null` when there is nothing to report.
+ *
+ * @param failed - URLs that failed to fetch (`getFailedUrls`)
+ * @param unexpectedlyFound - URLs expected not to exist that answered (`getUnexpectedlyFoundUrls`)
+ */
+export function summarizeFetchProblems(failed: readonly string[], unexpectedlyFound: readonly string[]): string | null {
+	const sections: string[] = [];
+	if (failed.length > 0) {
+		sections.push([`### Failed to fetch (${failed.length})`, '', ...failed.map(url => `- ${url}`)].join('\n'));
+	}
+	if (unexpectedlyFound.length > 0) {
+		sections.push(
+			[
+				`### Found although expected not to exist (${unexpectedlyFound.length})`,
+				'',
+				'Take them out of `obsoleteWithoutMDNPage` in `generator/html-elements.ts`.',
+				'',
+				...unexpectedlyFound.map(url => `- ${url}`),
+			].join('\n'),
+		);
+	}
+	return sections.length > 0 ? sections.join('\n\n') : null;
 }

@@ -160,7 +160,7 @@ export function getName(origin: string) {
 	const [, rawNs, localName] = origin.match(/^(?:(svg|mml)_)?([\w-]+)/i) ?? [];
 	const ns = rawNs?.toLowerCase();
 	const name = localName ?? origin;
-	const ml = ns === 'svg' ? 'SVG' : ns === 'mml' ? 'MathML' : 'HTML';
+	const ml: 'HTML' | 'SVG' | 'MathML' = ns === 'svg' ? 'SVG' : ns === 'mml' ? 'MathML' : 'HTML';
 	const namespace: 'http://www.w3.org/2000/svg' | 'http://www.w3.org/1998/Math/MathML' | undefined =
 		ns === 'svg' ? 'http://www.w3.org/2000/svg' : ns === 'mml' ? 'http://www.w3.org/1998/Math/MathML' : undefined;
 

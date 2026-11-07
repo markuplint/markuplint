@@ -25,7 +25,7 @@
 		"access": "public"
 	},
 	"scripts": {
-		"gen": "npm-run-all gen:build gen:format",
+		"gen": "npm-run-all --continue-on-error gen:build gen:format",
 		"gen:build": "node build.ts",
 		"gen:format": "npx oxfmt --write index.json"
 	},

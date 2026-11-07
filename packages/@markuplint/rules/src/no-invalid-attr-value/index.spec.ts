@@ -2195,3 +2195,82 @@ test('[no-invalid-attr-value-issue-4309-005] JSX: allowAttrs keeps the name as w
 		},
 	]);
 });
+
+// https://html.spec.whatwg.org/multipage/embedded-content.html#attr-img-sizes
+// > If the srcset attribute is not specified, and the loading attribute is in the Lazy state, the
+// > sizes attribute may be specified with the value "auto" (ASCII case-insensitive).
+test('[no-invalid-attr-value-issue-4481-001] img: without srcset, sizes accepts "auto" in any case', async () => {
+	expect((await mlRuleTest(rule, '<img src="a.png" alt="" loading="lazy" sizes="auto">')).violations).toStrictEqual(
+		[],
+	);
+	expect((await mlRuleTest(rule, '<img src="a.png" alt="" loading="lazy" sizes="AUTO">')).violations).toStrictEqual(
+		[],
+	);
+});
+
+test('[no-invalid-attr-value-issue-4481-002] img: without srcset, sizes accepts no value but "auto"', async () => {
+	expect((await mlRuleTest(rule, '<img src="a.png" alt="" loading="lazy" sizes="100vw">')).violations).toStrictEqual([
+		{
+			severity: 'error',
+			line: 1,
+			col: 47,
+			message: 'The "sizes" attribute expects auto',
+			raw: '100vw',
+		},
+	]);
+	expect(
+		(await mlRuleTest(rule, '<img src="a.png" alt="" loading="lazy" sizes="auto, 100vw">')).violations,
+	).toStrictEqual([
+		{
+			severity: 'error',
+			line: 1,
+			col: 47,
+			message: 'The "sizes" attribute expects auto',
+			raw: 'auto, 100vw',
+		},
+	]);
+	expect((await mlRuleTest(rule, '<img src="a.png" alt="" loading="lazy" sizes="">')).violations).toStrictEqual([
+		{
+			severity: 'error',
+			line: 1,
+			col: 47,
+			message: 'The "sizes" attribute expects auto',
+			raw: '',
+		},
+	]);
+	expect((await mlRuleTest(rule, '<img src="a.png" alt="" loading="lazy" sizes>')).violations).toStrictEqual([
+		{
+			severity: 'error',
+			line: 1,
+			col: 45,
+			message: 'The "sizes" attribute expects auto',
+			raw: '',
+		},
+	]);
+});
+
+test('[no-invalid-attr-value-issue-4481-003] img: with srcset, sizes still takes a source size list', async () => {
+	expect(
+		(await mlRuleTest(rule, '<img src="a.png" srcset="a.png 100w" alt="" loading="lazy" sizes="auto, 100vw">'))
+			.violations,
+	).toStrictEqual([]);
+});
+
+test('[no-invalid-attr-value-issue-4481-004] JSX: without srcset, a sizes value but "auto" is reported even when loading is dynamic', async () => {
+	const parser = { '.*': '@markuplint/jsx-parser' };
+	expect(
+		(await mlRuleTest(rule, '<img src="a.png" alt="" loading={loading} sizes="100vw" />', { parser })).violations,
+	).toStrictEqual([
+		{
+			severity: 'error',
+			line: 1,
+			col: 50,
+			message: 'The "sizes" attribute expects auto',
+			raw: '100vw',
+		},
+	]);
+});
+
+test('[no-invalid-attr-value-issue-4481-005] img: a sizes that no-disallowed-attr reports is not reported again for its value', async () => {
+	expect((await mlRuleTest(rule, '<img src="a.png" alt="" sizes="100vw">')).violations).toStrictEqual([]);
+});

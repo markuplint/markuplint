@@ -1087,3 +1087,72 @@ test('[no-disallowed-attr-issue-4309-006] JSX: allowAttrs folds the name on an H
 		},
 	]);
 });
+
+// https://html.spec.whatwg.org/multipage/embedded-content.html#attr-img-sizes
+// > If the srcset attribute is not specified, and the loading attribute is in the Lazy state, the
+// > sizes attribute may be specified with the value "auto" (ASCII case-insensitive).
+test('[no-disallowed-attr-issue-4481-001] img: sizes="auto" without srcset is allowed on a lazily loaded image', async () => {
+	expect((await mlRuleTest(rule, '<img src="a.png" alt="" loading="lazy" sizes="auto">')).violations).toStrictEqual(
+		[],
+	);
+	expect((await mlRuleTest(rule, '<img src="a.png" alt="" loading="LAZY" sizes="AUTO">')).violations).toStrictEqual(
+		[],
+	);
+});
+
+test('[no-disallowed-attr-issue-4481-002] img: sizes="auto" without srcset is disallowed unless the image is lazily loaded', async () => {
+	expect((await mlRuleTest(rule, '<img src="a.png" alt="" sizes="auto">')).violations).toStrictEqual([
+		{
+			severity: 'error',
+			line: 1,
+			col: 25,
+			message: 'The "sizes" attribute is disallowed',
+			raw: 'sizes',
+		},
+	]);
+	expect((await mlRuleTest(rule, '<img src="a.png" alt="" loading="eager" sizes="auto">')).violations).toStrictEqual([
+		{
+			severity: 'error',
+			line: 1,
+			col: 41,
+			message: 'The "sizes" attribute is disallowed',
+			raw: 'sizes',
+		},
+	]);
+	// An invalid value of loading is in the Eager state
+	expect((await mlRuleTest(rule, '<img src="a.png" alt="" loading="foo" sizes="auto">')).violations).toStrictEqual([
+		{
+			severity: 'error',
+			line: 1,
+			col: 39,
+			message: 'The "sizes" attribute is disallowed',
+			raw: 'sizes',
+		},
+	]);
+});
+
+test('[no-disallowed-attr-issue-4481-003] JSX: a dynamic sizes without srcset is disallowed unless the image is lazily loaded', async () => {
+	const parser = { '.*': '@markuplint/jsx-parser' };
+	expect((await mlRuleTest(rule, '<img src="a.png" alt="" sizes={sizes} />', { parser })).violations).toStrictEqual([
+		{
+			severity: 'error',
+			line: 1,
+			col: 25,
+			message: 'The "sizes" attribute is disallowed',
+			raw: 'sizes',
+		},
+	]);
+});
+
+test('[no-disallowed-attr-issue-4481-004] JSX: sizes="auto" without srcset is not reported when loading is dynamic', async () => {
+	const parser = { '.*': '@markuplint/jsx-parser' };
+	expect(
+		(await mlRuleTest(rule, '<img src="a.png" alt="" loading={loading} sizes="auto" />', { parser })).violations,
+	).toStrictEqual([]);
+});
+
+test('[no-disallowed-attr-issue-4481-005] img: a sizes value other than "auto" on a lazily loaded image without srcset is left to no-invalid-attr-value', async () => {
+	expect((await mlRuleTest(rule, '<img src="a.png" alt="" loading="lazy" sizes="100vw">')).violations).toStrictEqual(
+		[],
+	);
+});

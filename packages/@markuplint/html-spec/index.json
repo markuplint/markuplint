@@ -5,19 +5,15 @@
 		"https://developer.mozilla.org/en-US/docs/Web/HTML/Reference/Elements/abbr",
 		"https://developer.mozilla.org/en-US/docs/Web/HTML/Reference/Elements/acronym",
 		"https://developer.mozilla.org/en-US/docs/Web/HTML/Reference/Elements/address",
-		"https://developer.mozilla.org/en-US/docs/Web/HTML/Reference/Elements/applet",
 		"https://developer.mozilla.org/en-US/docs/Web/HTML/Reference/Elements/area",
 		"https://developer.mozilla.org/en-US/docs/Web/HTML/Reference/Elements/article",
 		"https://developer.mozilla.org/en-US/docs/Web/HTML/Reference/Elements/aside",
 		"https://developer.mozilla.org/en-US/docs/Web/HTML/Reference/Elements/audio",
 		"https://developer.mozilla.org/en-US/docs/Web/HTML/Reference/Elements/b",
 		"https://developer.mozilla.org/en-US/docs/Web/HTML/Reference/Elements/base",
-		"https://developer.mozilla.org/en-US/docs/Web/HTML/Reference/Elements/basefont",
 		"https://developer.mozilla.org/en-US/docs/Web/HTML/Reference/Elements/bdi",
 		"https://developer.mozilla.org/en-US/docs/Web/HTML/Reference/Elements/bdo",
-		"https://developer.mozilla.org/en-US/docs/Web/HTML/Reference/Elements/bgsound",
 		"https://developer.mozilla.org/en-US/docs/Web/HTML/Reference/Elements/big",
-		"https://developer.mozilla.org/en-US/docs/Web/HTML/Reference/Elements/blink",
 		"https://developer.mozilla.org/en-US/docs/Web/HTML/Reference/Elements/blockquote",
 		"https://developer.mozilla.org/en-US/docs/Web/HTML/Reference/Elements/body",
 		"https://developer.mozilla.org/en-US/docs/Web/HTML/Reference/Elements/br",
@@ -60,25 +56,19 @@
 		"https://developer.mozilla.org/en-US/docs/Web/HTML/Reference/Elements/img",
 		"https://developer.mozilla.org/en-US/docs/Web/HTML/Reference/Elements/input",
 		"https://developer.mozilla.org/en-US/docs/Web/HTML/Reference/Elements/ins",
-		"https://developer.mozilla.org/en-US/docs/Web/HTML/Reference/Elements/isindex",
 		"https://developer.mozilla.org/en-US/docs/Web/HTML/Reference/Elements/kbd",
-		"https://developer.mozilla.org/en-US/docs/Web/HTML/Reference/Elements/keygen",
 		"https://developer.mozilla.org/en-US/docs/Web/HTML/Reference/Elements/label",
 		"https://developer.mozilla.org/en-US/docs/Web/HTML/Reference/Elements/legend",
 		"https://developer.mozilla.org/en-US/docs/Web/HTML/Reference/Elements/li",
 		"https://developer.mozilla.org/en-US/docs/Web/HTML/Reference/Elements/link",
-		"https://developer.mozilla.org/en-US/docs/Web/HTML/Reference/Elements/listing",
 		"https://developer.mozilla.org/en-US/docs/Web/HTML/Reference/Elements/main",
 		"https://developer.mozilla.org/en-US/docs/Web/HTML/Reference/Elements/map",
 		"https://developer.mozilla.org/en-US/docs/Web/HTML/Reference/Elements/mark",
 		"https://developer.mozilla.org/en-US/docs/Web/HTML/Reference/Elements/marquee",
 		"https://developer.mozilla.org/en-US/docs/Web/HTML/Reference/Elements/menu",
-		"https://developer.mozilla.org/en-US/docs/Web/HTML/Reference/Elements/menuitem",
 		"https://developer.mozilla.org/en-US/docs/Web/HTML/Reference/Elements/meta",
 		"https://developer.mozilla.org/en-US/docs/Web/HTML/Reference/Elements/meter",
-		"https://developer.mozilla.org/en-US/docs/Web/HTML/Reference/Elements/multicol",
 		"https://developer.mozilla.org/en-US/docs/Web/HTML/Reference/Elements/nav",
-		"https://developer.mozilla.org/en-US/docs/Web/HTML/Reference/Elements/nextid",
 		"https://developer.mozilla.org/en-US/docs/Web/HTML/Reference/Elements/nobr",
 		"https://developer.mozilla.org/en-US/docs/Web/HTML/Reference/Elements/noembed",
 		"https://developer.mozilla.org/en-US/docs/Web/HTML/Reference/Elements/noframes",
@@ -109,7 +99,6 @@
 		"https://developer.mozilla.org/en-US/docs/Web/HTML/Reference/Elements/slot",
 		"https://developer.mozilla.org/en-US/docs/Web/HTML/Reference/Elements/small",
 		"https://developer.mozilla.org/en-US/docs/Web/HTML/Reference/Elements/source",
-		"https://developer.mozilla.org/en-US/docs/Web/HTML/Reference/Elements/spacer",
 		"https://developer.mozilla.org/en-US/docs/Web/HTML/Reference/Elements/span",
 		"https://developer.mozilla.org/en-US/docs/Web/HTML/Reference/Elements/strike",
 		"https://developer.mozilla.org/en-US/docs/Web/HTML/Reference/Elements/strong",
@@ -51505,8 +51494,19 @@
 				},
 				"sizes": {
 					"description": "One or more values separated by commas, which can be source sizes or the auto keyword. The spec requires that the sizes attribute only be present when srcset uses width descriptors. source size A source size consists of: A media condition, omitted for the last item in the list. A source size value. For example, the following source size proposes using a 1000px-wide image source if the viewport width is 500px or less. css(width <= 500px) 1000px Media conditions describe properties of the viewport, not the image. Because a source size descriptor specifies the width to use for the image during layout, the media condition is typically (but not necessarily) based on the width. Source size values specify the intended display size of the image. User agents use the current source size to select one of the sources supplied by the srcset attribute, when those sources are described using width (w) descriptors. The w value defined in sizes determines the image's default layout width. In the absence of CSS, the browser will render the image at this size, regardless of the physical pixel dimensions of the downloaded file. A source size value can be any non-negative length. It must not use CSS functions other than the math functions. Units are interpreted in the same way as media queries, meaning that all relative length units are relative to the document root rather than the <img> element. For example, an em value is relative to the root font size, not the font size of the image. Percentage values are not allowed. If the sizes attribute is not provided, it has a default value of 100vw (the viewport width). auto The auto keyword indicates that the browser should use the expected layout width of the element to select the image to display. That is, it should use the concrete size of the image, calculated after layout from HTML and CSS has been applied. This is only valid when combined with loading=\"lazy\", as the page is expected to already have CSS and other layout information by the time the image loads. Using auto saves you having to specify your layout media conditions twice: once for layout, and once for selection of an appropriate image to fetch and display. If auto cannot resolve — either because the browser does not support it, or because the image has no layout size yet — the browser falls back to the source sizes in the list to determine the width, then to width/height attributes defined on the element, and finally to the default intrinsic size for <img> elements defined in the user agent stylesheet (300px by 150px). For better backward compatibility with browsers that do not support auto, you can include fallback sizes after auto in the sizes attribute. You should also set the element's width and height attributes to the intrinsic dimensions of the largest image in your srcset, so the browser can reserve space using the correct aspect ratio: html<img loading=\"lazy\" width=\"200\" height=\"200\" sizes=\"auto, (max-width: 30em) 100vw, (max-width: 50em) 50vw, calc(33vw - 100px)\" srcset=\" swing-200.jpg 200w, swing-400.jpg 400w, swing-800.jpg 800w, swing-1600.jpg 1600w \" src=\"swing-400.jpg\" alt=\"Kettlebell Swing\" />",
-					"type": "SourceSizeList",
-					"condition": "[srcset]"
+					"type": [
+						{
+							"condition": "[srcset]",
+							"type": "SourceSizeList"
+						},
+						{
+							"condition": ":not([srcset])",
+							"type": {
+								"enum": ["auto"]
+							}
+						}
+					],
+					"condition": "[srcset], [loading='lazy' i]"
 				},
 				"src": {
 					"description": "The image URL. At least one of src and srcset is required for an <img> element. If srcset is specified, src is used in one of two ways: as a fallback for browsers that don't support srcset. if srcset uses the \"x\" descriptor, then src is equivalent to a source with the density descriptor 1x; that is, the image specified by src is used on low-density screens (such as typical 72 DPI or 96 DPI displays).",

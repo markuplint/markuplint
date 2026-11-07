@@ -22,7 +22,7 @@ description: sizes="auto"を使用する箇所では loading="lazy" を必須と
 
 ## 動作
 
-- `<img>` と `<picture>` 内の `<source>` 要素のみ、かつ `srcset` 属性がある場合のみチェックします。
+- `<img>` と `<picture>` 内の `<source>` 要素のみ、かつ `srcset` 属性がある場合のみチェックします。`srcset` のない `<img>` では、`sizes` は `loading="lazy"` のときに値 `auto` としてだけ許可されます。`loading="lazy"` のない `sizes` は [`no-disallowed-attr`](/docs/rules/no-disallowed-attr) が、`auto` 以外の値は [`no-invalid-attr-value`](/docs/rules/no-invalid-attr-value) が報告します。`sizes` の値が動的でも、`loading` 属性がないか `lazy` 以外であれば `no-disallowed-attr` が報告します。`loading` の値が動的なときは、遅延読み込みかどうかを判定しません。
 - 動的な属性値（Vue の `:sizes="x"`、JSX の `sizes={x}` など）やスプレッド属性を持つ要素はスキップされます。コードとして書かれたリテラル（`sizes={"auto"}`）は、フレームワークが描画する値として評価されます。フレームワークが出力しないリテラル（`null`、`false`）や、描画結果が分からないリテラルは、動的な値と同じくスキップされます。
 - `sizes="auto"` は、属性値が `auto` であるか `auto,` で始まる場合に認識されます（大文字小文字不区別）。例えば `sizes="auto, 100vw"` は auto として扱われますが、`sizes="100vw, auto"` は auto として認識されません。
 
