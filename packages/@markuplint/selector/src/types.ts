@@ -44,6 +44,17 @@ export interface SelectorNode {
 	readonly nodeType: number;
 	readonly nodeName: string;
 	readonly parentNode: SelectorNode | null;
+	/**
+	 * The DOM `Node` property: the data of a text node. The engine uses it only
+	 * to find text before an element (`isContentModelFirstChild`).
+	 */
+	readonly nodeValue?: string | null;
+	/**
+	 * The DOM `Node` property: the preceding sibling node, a text node included.
+	 * Absent means the host does not give it, and text before an element is not
+	 * seen (`isContentModelFirstChild`).
+	 */
+	readonly previousSibling?: SelectorNode | null;
 }
 
 /**

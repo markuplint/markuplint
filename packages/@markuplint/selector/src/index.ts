@@ -1,4 +1,9 @@
 export { compareSpecificity } from './compare-specificity.js';
+export {
+	contentModelFirstChildBase,
+	isContentModelFirstChild,
+	isInterElementWhitespace,
+} from './content-model-first-child.js';
 export { matchSelector } from './match-selector.js';
 export type { SelectorMatches } from './match-selector.js';
 export { createSelector } from './create-selector.js';

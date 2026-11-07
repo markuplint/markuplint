@@ -1,6 +1,5 @@
-// https://html.spec.whatwg.org/multipage/tables.html#the-th-elemen
+// https://html.spec.whatwg.org/multipage/tables.html#the-th-element
 // https://www.w3.org/TR/html-aria/#el-th
-// https://w3c.github.io/html-aria/#el-th
 {
 	"contentModel": {
 		"contents": [
@@ -49,11 +48,11 @@
 			"table:is(:not([role]), [role=table], [role=grid], [role=treegrid]) > :is(tfoot, tbody) > tr > th:not([scope]), table:is(:not([role]), [role=table], [role=grid], [role=treegrid]) > tr > th:not([scope])": {
 				"implicitRole": "rowheader"
 			},
-			// https://www.w3.org/TR/wai-aria-1.1/#columnheader Base Concept: HTML th[scope="col"]
+			// https://w3c.github.io/aria/#columnheader Base Concept: HTML th[scope="col"]
 			"table:is(:not([role]), [role=table], [role=grid], [role=treegrid]) > :is(thead, tfoot, tbody) > tr > th[scope=col], table:is(:not([role]), [role=table], [role=grid], [role=treegrid]) > tr > th[scope=col]": {
 				"implicitRole": "columnheader"
 			},
-			// https://www.w3.org/TR/wai-aria-1.1/#rowheader Base Concept: HTML th[scope="row"]
+			// https://w3c.github.io/aria/#rowheader Base Concept: HTML th[scope="row"]
 			"table:is(:not([role]), [role=table], [role=grid], [role=treegrid]) > :is(thead, tfoot, tbody) > tr > th[scope=row], table:is(:not([role]), [role=table], [role=grid], [role=treegrid]) > tr > th[scope=row]": {
 				"implicitRole": "rowheader"
 			},

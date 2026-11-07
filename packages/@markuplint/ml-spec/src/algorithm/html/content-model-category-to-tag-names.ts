@@ -9,9 +9,13 @@ const cache = new Map<Category, ReadonlyArray<string>>();
  * Results are cached for repeated lookups.
  *
  * Note: entries are returned as stored in the spec's `#contentModels` map
- * without CSS selector parsing — they are expected to be bare tag names or
- * tag-with-attribute selectors (e.g. `a[href]`); complex selectors are not
- * decomposed into tag names.
+ * without CSS selector parsing. Besides bare tag names they include selectors
+ * (`a[href]`, `hgroup:has(h1,h2,h3,h4,h5,h6)`, `style:first-child`), which are
+ * not decomposed into tag names; `#custom` and `#text` stand for custom elements
+ * and text. An entry ending in `:first-child` holds as the first child as the HTML
+ * Standard counts it, text included, which markuplint's own paths match with
+ * `contentModelFirstChildBase` and `isContentModelFirstChild` of
+ * `@markuplint/selector`; matched as a plain selector, it counts elements only.
  *
  * @param contentModel - The content model category identifier
  * @param def - The specification definitions containing content model mappings

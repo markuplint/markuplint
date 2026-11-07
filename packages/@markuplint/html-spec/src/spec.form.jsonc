@@ -1,6 +1,5 @@
 // https://html.spec.whatwg.org/multipage/forms.html#the-form-element
 // https://www.w3.org/TR/html-aria/#el-form
-// https://w3c.github.io/html-aria/#el-form
 {
 	"contentModel": {
 		"contents": [
@@ -15,7 +14,7 @@
 		"#ARIAAttrs": true
 	},
 	"attributes": {
-		// https://html.spec.whatwg.org/multipage/forms.html#attr-form-accept
+		// https://html.spec.whatwg.org/multipage/obsolete.html#attr-form-accept
 		"accept": {
 			"deprecated": true
 		},
@@ -26,8 +25,8 @@
 				"caseInsensitive": true
 			}
 		},
-		// https://html.spec.whatwg.org/multipage/form-control-infrastructure.html#attr-fs-action
-		// Spec: "a valid non-empty URL potentially surrounded by spaces"
+		// @see https://html.spec.whatwg.org/multipage/form-control-infrastructure.html#attr-fs-action
+		// > a valid non-empty URL potentially surrounded by spaces
 		"action": {
 			"type": "NonEmptyURL"
 		},

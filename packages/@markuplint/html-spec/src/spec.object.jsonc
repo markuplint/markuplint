@@ -1,6 +1,5 @@
 // https://html.spec.whatwg.org/multipage/iframe-embed-object.html#the-object-element
 // https://www.w3.org/TR/html-aria/#el-object
-// https://w3c.github.io/html-aria/#el-object
 {
 	"contentModel": {
 		"contents": [
@@ -17,8 +16,8 @@
 		"#HTMLFormControlElementAttrs": ["form"]
 	},
 	"attributes": {
-		// https://html.spec.whatwg.org/multipage/iframe-embed-object.html#attr-object-data
-		// Spec: "a valid non-empty URL potentially surrounded by spaces"
+		// @see https://html.spec.whatwg.org/multipage/iframe-embed-object.html#attr-object-data
+		// > a valid non-empty URL potentially surrounded by spaces
 		"data": {
 			"type": "NonEmptyURL",
 			"requiredEither": ["type"]

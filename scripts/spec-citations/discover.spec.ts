@@ -40,6 +40,26 @@ describe('classify: the declarations of how a framework renders', () => {
 	});
 });
 
+describe('classify: the spec data and the selector engine', () => {
+	test('[discover-009] reads the spec data of html-spec and the sources of the selector engine as sources', () => {
+		expect(classify('packages/@markuplint/html-spec/src/spec-common.contents.jsonc')).toBe('source');
+		expect(classify('packages/@markuplint/html-spec/src/spec.style.jsonc')).toBe('source');
+		expect(classify('packages/@markuplint/selector/src/content-model-first-child.ts')).toBe('source');
+		expect(classify('packages/@markuplint/selector/src/extended-selector/content-model-pseudo-class.ts')).toBe(
+			'source',
+		);
+	});
+
+	test('[discover-010] does not read the other files of those packages', () => {
+		expect(classify('packages/@markuplint/html-spec/index.json')).toBeNull();
+		expect(classify('packages/@markuplint/html-spec/generator/scraping.ts')).toBeNull();
+		expect(classify('packages/@markuplint/selector/src/selector.spec.ts')).toBeNull();
+		expect(classify('packages/@markuplint/selector/src/types.d.ts')).toBeNull();
+		expect(classify('packages/@markuplint/html-spec/src/nested/spec.a.jsonc')).toBeNull();
+		expect(classify('packages/@markuplint/selector/README.md')).toBeNull();
+	});
+});
+
 describe('listCitingFiles', () => {
 	test('[discover-004] lists tracked files only, relative to the root with forward slashes', () => {
 		const root = fileURLToPath(new URL('../../', import.meta.url));
@@ -54,6 +74,17 @@ describe('listCitingFiles: the declarations of how a framework renders', () => {
 		const root = fileURLToPath(new URL('../../', import.meta.url));
 		const found = listCitingFiles(root).find(f => f.path === 'packages/@markuplint/react-spec/src/index.ts');
 		expect(found?.kind).toBe('source');
+	});
+});
+
+describe('listCitingFiles: the spec data and the selector engine', () => {
+	test('[discover-011] lists the spec data of html-spec and the sources of the selector engine', () => {
+		const root = fileURLToPath(new URL('../../', import.meta.url));
+		const files = listCitingFiles(root);
+		expect(files.find(f => f.path === 'packages/@markuplint/html-spec/src/spec-common.contents.jsonc')?.kind).toBe(
+			'source',
+		);
+		expect(files.find(f => f.path === 'packages/@markuplint/selector/src/selector.ts')?.kind).toBe('source');
 	});
 });
 

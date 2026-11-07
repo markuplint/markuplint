@@ -18,6 +18,12 @@ const DECLARATIONS = [
 	'packages/@markuplint/*-spec/src/index.ts',
 	'packages/@markuplint/*-parser/src/literal-values.ts',
 ];
+/**
+ * The HTML spec data (`html-spec/src/*.jsonc`) and the selector engine cite the passages behind the
+ * content models and the matching that `permitted-contents` and `:model()` rely on.
+ */
+const SPEC_DATA = 'packages/@markuplint/html-spec/src';
+const SELECTOR = 'packages/@markuplint/selector/src';
 
 /**
  * Which files hold citations, and how they are read.
@@ -42,6 +48,22 @@ export function classify(path: string): FileKind | null {
 	if (/^packages\/@markuplint\/[^/]+-parser\/src\/literal-values\.ts$/.test(path)) {
 		return 'source';
 	}
+	// The spec data sits directly in the directory; the selector engine has subdirectories.
+	if (
+		path.startsWith(`${SPEC_DATA}/`) &&
+		path.endsWith('.jsonc') &&
+		!path.slice(SPEC_DATA.length + 1).includes('/')
+	) {
+		return 'source';
+	}
+	if (
+		path.startsWith(`${SELECTOR}/`) &&
+		path.endsWith('.ts') &&
+		!path.endsWith('.spec.ts') &&
+		!path.endsWith('.d.ts')
+	) {
+		return 'source';
+	}
 	if (/^website\/(?:docs|i18n\/ja\/docusaurus-plugin-content-docs)\/.+\.mdx?$/.test(path)) {
 		return 'doc';
 	}
@@ -54,7 +76,7 @@ export function classify(path: string): FileKind | null {
  * READMEs into `website/docs`, and those must not be counted twice.
  */
 export function listCitingFiles(root: string): { path: string; kind: FileKind }[] {
-	const listed = execFileSync('git', ['ls-files', '-z', '--', RULES, ...DECLARATIONS, ...DOCS], {
+	const listed = execFileSync('git', ['ls-files', '-z', '--', RULES, ...DECLARATIONS, SPEC_DATA, SELECTOR, ...DOCS], {
 		cwd: root,
 		encoding: 'utf8',
 		maxBuffer: 64 * 1024 * 1024,

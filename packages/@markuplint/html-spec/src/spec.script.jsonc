@@ -1,6 +1,5 @@
 // https://html.spec.whatwg.org/multipage/scripting.html#the-script-element
 // https://www.w3.org/TR/html-aria/#el-script
-// https://w3c.github.io/html-aria/#el-script
 {
 	"contentModel": {
 		"contents": [
@@ -40,9 +39,9 @@
 	// JavaScript MIME type essence strings) because the "data block" kind (any
 	// other type value) is not expressible as a finite negative selector list.
 	"attributes": {
-		// https://html.spec.whatwg.org/multipage/scripting.html#attr-script-src
-		// "It must only be specified for classic scripts and JavaScript module
-		// scripts." — not for import maps, speculation rules, or data blocks.
+		// @see https://html.spec.whatwg.org/multipage/scripting.html#attr-script-src
+		// > It must only be specified for classic scripts and JavaScript module scripts
+		// Not for import maps, speculation rules, or data blocks.
 		"src": {
 			"type": "NonEmptyURL",
 			"condition": "#ClassicOrModuleScript"
@@ -82,13 +81,14 @@
 		"integrity": {
 			"condition": "#ClassicOrModuleScript[src]"
 		},
-		// https://html.spec.whatwg.org/multipage/scripting.html#attr-script-charset
+		// https://html.spec.whatwg.org/multipage/obsolete.html#attr-script-charset
 		// Must not be used without src
 		"charset": {
 			"condition": "[src]"
 		},
 		// https://html.spec.whatwg.org/multipage/urls-and-fetching.html#blocking-attributes
-		// §4.12.1 table: "Yes" only for external classic and external module scripts.
+		// §4.12.1 https://html.spec.whatwg.org/multipage/scripting.html#the-script-element
+		// table: "Yes" only for external classic and external module scripts.
 		"blocking": {
 			"type": {
 				"token": {
@@ -99,12 +99,15 @@
 			},
 			"condition": "#ClassicOrModuleScript[src]"
 		},
-		// https://html.spec.whatwg.org/multipage/scripting.html#attr-script-crossorigin
+		// @see https://html.spec.whatwg.org/multipage/scripting.html#attr-script-crossorigin
 		// §4.12.1 table: "Yes" for classic and module scripts, external or inline.
-		// Table footnote: "Although inline scripts have no initial fetches, the
-		// crossorigin and referrerpolicy attribute on inline scripts affects the
-		// credentials mode and referrer policy used by module imports, including
-		// dynamic import()."
+		// Table footnote:
+		//
+		// > Although inline scripts have no initial fetches, the
+		// > crossorigin and referrerpolicy attribute on inline scripts affects the
+		// > credentials mode and referrer policy used by module imports, including
+		// > dynamic import().
+		//
 		// The type (enum) definition is inherited from #HTMLLinkAndFetchingAttrs;
 		// the per-element merge in ml-spec getAttrSpecs preserves fields that
 		// this entry does not specify.
@@ -116,10 +119,12 @@
 		"referrerpolicy": {
 			"condition": "#ClassicOrModuleScript"
 		},
-		// https://html.spec.whatwg.org/multipage/scripting.html#attr-script-fetchpriority
+		// @see https://html.spec.whatwg.org/multipage/scripting.html#attr-script-fetchpriority
 		// §4.12.1 table: "Yes" only for external classic and external module
-		// scripts. Table footnote: "Unlike crossorigin and referrerpolicy,
-		// fetchpriority does not affect module imports."
+		// scripts. Table footnote:
+		//
+		// > Unlike crossorigin and referrerpolicy,
+		// > fetchpriority does not affect module imports.
 		"fetchpriority": {
 			"condition": "#ClassicOrModuleScript[src]"
 		}

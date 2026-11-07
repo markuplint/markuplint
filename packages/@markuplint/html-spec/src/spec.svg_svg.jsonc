@@ -1,5 +1,5 @@
 // https://svgwg.org/svg2-draft/struct.html#SVGElement
-// https://www.w3.org/TR/svg-aam-1.0/#details-id-66
+// https://www.w3.org/TR/svg-aam/#role-map-svg
 {
 	"contentModel": {
 		"contents": [

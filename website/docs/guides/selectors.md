@@ -51,7 +51,8 @@ Markuplint supports parts of [**W3C Selectors Level 4**](https://www.w3.org/TR/s
 | User-interaction pseudo-class                    | `:user-invalid`                                                                           | ❌      |
 | Root pseudo-class                                | `:root`                                                                                   | ✅      |
 | Empty pseudo-class                               | `:empty`                                                                                  | ❌      |
-| Nth-child pseudo-class                           | `:nth-child(2)` `:nth-last-child(2)` `:first-child` `:last-child` `:only-child`           | ❌      |
+| Nth-child pseudo-class                           | `:first-child`                                                                            | ✅      |
+| Nth-child pseudo-class                           | `:nth-child(2)` `:nth-last-child(2)` `:last-child` `:only-child`                          | ❌      |
 | Nth-child pseudo-class (`of El` Syntax)          | `:nth-child(2 of div)` `:nth-last-child(2 of div)`                                        | ❌      |
 | Nth-of-type pseudo-class                         | `:nth-of-type(2)` `:nth-last-of-type(2)` `:first-of-type` `:last-of-type` `:only-of-type` | ❌      |
 | Nth-col pseudo-class                             | `:nth-col(2)` `:nth-last-col(2)`                                                          | ❌      |
@@ -231,6 +232,8 @@ You can specify **version of WAI-ARIA** by separating the pipe like `:role(form|
 For example, `:model(interactive)` matches `<a>`(with `href` attr), `<button>`, and more.
 
 A category that lists custom elements in the HTML Standard, such as `flow`, `phrasing` and `palpable`, also matches custom elements (`<x-foo>`) and components (`<Foo />`). An element that a component pretends to be is judged by the name it pretends to be: it matches only when that name contains a hyphen.
+
+An element that the HTML Standard allows only as the first child of its parent matches only there: `:model(flow)` matches `<style>` only as the first child. The first child is counted as the HTML Standard counts it, so non-whitespace text before the element counts (comments and inter-element whitespace do not): the `<style>` in `<div>text<style>` does not match. A template expression before the element (`{{ msg }}`) does not count, as what it outputs is known only at run time; text and elements inside a conditional block count, as the content of the block is taken as present. `:first-child` written in a selector keeps the Selectors definition, which counts elements only.
 
 ## Regular expression selector
 

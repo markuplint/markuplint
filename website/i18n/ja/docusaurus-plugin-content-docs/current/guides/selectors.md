@@ -53,7 +53,8 @@
 | user-invalid擬似クラス             | `:user-invalid`                                                                           | ❌       |
 | root擬似クラス                     | `:root`                                                                                   | ✅       |
 | empty擬似クラス                    | `:empty`                                                                                  | ❌       |
-| Nth-child擬似クラス                | `:nth-child(2)` `:nth-last-child(2)` `:first-child` `:last-child` `:only-child`           | ❌       |
+| Nth-child擬似クラス                | `:first-child`                                                                            | ✅       |
+| Nth-child擬似クラス                | `:nth-child(2)` `:nth-last-child(2)` `:last-child` `:only-child`                          | ❌       |
 | Nth-child擬似クラス (`of El`構文)  | `:nth-child(2 of div)` `:nth-last-child(2 of div)`                                        | ❌       |
 | Nth-of-type擬似クラス              | `:nth-of-type(2)` `:nth-last-of-type(2)` `:first-of-type` `:last-of-type` `:only-of-type` | ❌       |
 | Nth-col擬似クラス                  | `:nth-col(2)` `:nth-last-col(2)`                                                          | ❌       |
@@ -242,6 +243,8 @@ WAI-ARIAのバージョンは`:role(form|1.1)`のようにパイプで区切っ�
 たとえば、`:model(interactive)`は`<a>`（`href`属性あり）や`<button>`などにマッチします。
 
 `flow`、`phrasing`、`palpable`のように、HTML Standardがカスタム要素を含むと定めているカテゴリは、カスタム要素（`<x-foo>`）やコンポーネント（`<Foo />`）にもマッチします。コンポーネントが別の要素になりすましている場合は、なりすまし先の名前で判定し、その名前にハイフンが含まれるときだけマッチします。
+
+HTML Standardが「親の最初の子」の場合に限って認めている要素は、その位置にあるときだけマッチします。`:model(flow)`は`<style>`にマッチしますが、それは親の最初の子のときだけです。このときの「最初の子」はHTML Standardの数え方に従い、前にある空白以外のテキストも数えます（コメントと要素間の空白は数えません）。そのため`<div>text<style>`の`<style>`はマッチしません。前にあるテンプレートの式（`{{ msg }}`）は、何を出力するかが実行時にしか分からないため数えません。条件ブロックの中のテキストや要素は、ブロックの中身があるものとして数えます。セレクタに直接書いた`:first-child`は、Selectorsの定義どおり要素だけを数えます。
 
 ## 正規表現セレクタ
 

@@ -1,12 +1,11 @@
 // https://html.spec.whatwg.org/multipage/media.html#the-track-element
 // https://www.w3.org/TR/html-aria/#el-track
-// https://w3c.github.io/html-aria/#el-track
 {
 	"contentModel": {
 		"contents": false,
-		// https://html.spec.whatwg.org/multipage/media.html#attr-track-default
-		// "There must not be more than one track element with the same parent node
-		//  with the default attribute specified."
+		// @see https://html.spec.whatwg.org/multipage/media.html#attr-track-default
+		// > Each media element must have no more than one track element child whose kind attribute
+		// > is in the subtitles or captions state and whose default attribute is specified.
 		"uniqueAttrs": ["default"]
 	},
 	"globalAttrs": {
