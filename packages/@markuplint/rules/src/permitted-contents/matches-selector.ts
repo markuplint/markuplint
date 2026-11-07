@@ -2,6 +2,7 @@ import type { ChildNode, Element, Mode, Result, Specs } from './types.js';
 import type { Category } from '@markuplint/ml-spec';
 
 import { contentModelCategoryToTagNames } from '@markuplint/ml-spec';
+import { contentModelFirstChildBase, isContentModelFirstChild, isInterElementWhitespace } from '@markuplint/selector';
 
 import { depthLog } from './debug.js';
 import { cleanObject, matches } from './utils.js';
@@ -20,6 +21,14 @@ export type SelectorResult = Result<'UNMATCHED_SELECTOR_BUT_MAY_EMPTY' | 'MISSIN
  */
 type Condition = {
 	selector: string;
+	/**
+	 * The selector tried, after `selector` fails, for an element that is the first
+	 * child of its parent as the HTML Standard counts it (`isContentModelFirstChild`):
+	 * the query with the category replaced by its entries such as `style:first-child`
+	 * as `style` only. `null` when the category has no such entry. See
+	 * `contentModelFirstChildBase`.
+	 */
+	selectorAsFirstChild: string | null;
 	hasCustom: boolean;
 	/** Whether the query allows any text node (including empty/whitespace-only). */
 	hasText: boolean;
@@ -57,7 +66,7 @@ export function matchesSelector(
 	const nodeLog = depthLog('node', depth);
 	const nodeEnabled = nodeLog.enabled;
 
-	const { selector, hasText, hasNonEmptyText, hasCustom } = optCondition(query, specs);
+	const { selector, selectorAsFirstChild, hasText, hasNonEmptyText, hasCustom } = optCondition(query, specs);
 
 	if (childNode == null) {
 		if (hasText) {
@@ -86,7 +95,7 @@ export function matchesSelector(
 
 	if (childNode.is(childNode.TEXT_NODE)) {
 		if (hasNonEmptyText) {
-			if (childNode.isWhitespace()) {
+			if (isInterElementWhitespace(childNode.raw)) {
 				if (nodeEnabled) {
 					nodeLog('<#nonEmptyText>.matches(%s) => WHITESPACE (rejected)', query);
 				}
@@ -126,7 +135,7 @@ export function matchesSelector(
 			};
 		}
 
-		if (childNode.isWhitespace()) {
+		if (isInterElementWhitespace(childNode.raw)) {
 			if (nodeEnabled) {
 				nodeLog('<#text>.matches(%s) => WHITESPACE', query);
 			}
@@ -180,7 +189,14 @@ export function matchesSelector(
 			};
 		}
 
-		const result = matches(selector, childNode, specs, mode);
+		let result = matches(selector, childNode, specs, mode);
+		// The siblings are looked at only for an element that the rest does not take.
+		// The first child is that of the element's own parent, also inside a transparent
+		// element, whose content model is derived from its parent's: `style` in
+		// `<div><p></p><noscript><style>` is the first child of the noscript.
+		if (!result.matched && selectorAsFirstChild != null && isContentModelFirstChild(childNode)) {
+			result = matches(selectorAsFirstChild, childNode, specs, mode);
+		}
 		if (nodeEnabled) {
 			nodeLog('%s.matches(%s) => %s', childNode.raw, query, result.matched);
 		}
@@ -273,18 +289,21 @@ function isTreatedAsCustom(
 const conditionWithoutSpecs: Record<string, Condition> = {
 	'#custom': {
 		selector: '#custom',
+		selectorAsFirstChild: null,
 		hasCustom: true,
 		hasText: false,
 		hasNonEmptyText: false,
 	},
 	'#text': {
 		selector: '#text',
+		selectorAsFirstChild: null,
 		hasCustom: false,
 		hasText: true,
 		hasNonEmptyText: false,
 	},
 	'#nonEmptyText': {
 		selector: '#nonEmptyText',
+		selectorAsFirstChild: null,
 		hasCustom: false,
 		hasText: false,
 		hasNonEmptyText: true,
@@ -328,8 +347,10 @@ function optCondition(query: string, specs: Specs): Readonly<Condition> {
 	let hasCustom = false;
 	let hasText = false;
 	let hasNonEmptyText = false;
+	let asFirstChild: string | null = null;
 
-	const selector = query.replace(/^:model\(([^)]+)\)|^#([a-z-]+)/, (_, $model, _model) => {
+	const categoryPattern = /^:model\(([^)]+)\)|^#([a-z-]+)/;
+	const selector = query.replace(categoryPattern, (_, $model, _model) => {
 		const tag = `#${$model ?? _model}`;
 		if (tag === '#nonEmptyText') {
 			hasNonEmptyText = true;
@@ -341,6 +362,7 @@ function optCondition(query: string, specs: Specs): Readonly<Condition> {
 		}
 
 		const selectors: string[] = [];
+		const firstChildBases: string[] = [];
 		for (const selector of _selectors) {
 			if (selector === '#custom') {
 				hasCustom = true;
@@ -350,14 +372,23 @@ function optCondition(query: string, specs: Specs): Readonly<Condition> {
 				hasText = true;
 				continue;
 			}
+			const firstChildBase = contentModelFirstChildBase(selector);
+			if (firstChildBase != null) {
+				firstChildBases.push(firstChildBase);
+				continue;
+			}
 			selectors.push(selector);
 		}
 
+		if (firstChildBases.length > 0) {
+			asFirstChild = `:is(${firstChildBases.join(',')})`;
+		}
 		return `:is(${selectors.join(',')})`;
 	});
 
 	const result: Condition = {
 		selector,
+		selectorAsFirstChild: asFirstChild == null ? null : query.replace(categoryPattern, () => asFirstChild ?? ''),
 		hasCustom,
 		hasText,
 		hasNonEmptyText,

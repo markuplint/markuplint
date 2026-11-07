@@ -1954,16 +1954,7 @@ describe('Issues', () => {
 				</noscript></div>`,
 				)
 			).violations,
-		).toStrictEqual([
-			{
-				severity: 'error',
-				line: 2,
-				col: 6,
-				message:
-					'The "style" element is not allowed in the "div" element through the transparent model in this context',
-				raw: '<style>',
-			},
-		]);
+		).toStrictEqual([]);
 		expect(
 			(
 				await mlRuleTest(
@@ -2811,5 +2802,392 @@ describe('a pretender whose target is a component name that could not be resolve
 				message: 'The "div" element is not allowed in the "p" element in this context',
 			},
 		]);
+	});
+});
+
+describe('the style element where flow content is expected', () => {
+	test('[permitted-contents-issue-4475-001] flow content accepts a style element as the first child of its parent', async () => {
+		const { violations } = await mlRuleTest(
+			rule,
+			`<div>
+	<!-- comment -->
+	<style>
+		p {
+			color: red;
+		}
+	</style>
+	<p>text</p>
+</div>`,
+		);
+		expect(violations).toStrictEqual([]);
+	});
+
+	test('[permitted-contents-issue-4475-002] flow content rejects a style element that follows an element', async () => {
+		const { violations } = await mlRuleTest(
+			rule,
+			`<main>
+	<p>text</p>
+	<style>
+		p {
+			color: blue;
+		}
+	</style>
+</main>`,
+		);
+		expect(violations).toStrictEqual([
+			{
+				severity: 'error',
+				line: 3,
+				col: 2,
+				raw: '<style>',
+				message: 'The "style" element is not allowed in the "main" element in this context',
+			},
+		]);
+	});
+
+	test('[permitted-contents-issue-4475-003] flow content rejects a style element that follows non-whitespace text', async () => {
+		const { violations } = await mlRuleTest(rule, '<div>text<style></style></div>');
+		expect(violations).toStrictEqual([
+			{
+				severity: 'error',
+				line: 1,
+				col: 10,
+				raw: '<style>',
+				message: 'The "style" element is not allowed in the "div" element in this context',
+			},
+		]);
+	});
+
+	test('[permitted-contents-issue-4475-004] the first-child condition does not reject other flow content that follows text', async () => {
+		const { violations } = await mlRuleTest(rule, '<div>text<p>text</p><span>text</span></div>');
+		expect(violations).toStrictEqual([]);
+	});
+
+	test('[permitted-contents-issue-4475-005] phrasing content still rejects a style element as the first child', async () => {
+		const { violations } = await mlRuleTest(rule, '<p><style></style>text</p>');
+		expect(violations).toStrictEqual([
+			{
+				severity: 'error',
+				line: 1,
+				col: 4,
+				raw: '<style>',
+				message: 'The "style" element is not allowed in the "p" element in this context',
+			},
+		]);
+	});
+
+	test('[permitted-contents-issue-4475-006] flow content rejects a style element that follows a no-break space, which is not inter-element whitespace', async () => {
+		const { violations } = await mlRuleTest(rule, '<div>\u00A0<style></style></div>');
+		expect(violations).toStrictEqual([
+			{
+				severity: 'error',
+				line: 1,
+				col: 7,
+				raw: '<style>',
+				message: 'The "style" element is not allowed in the "div" element in this context',
+			},
+		]);
+	});
+
+	test('[permitted-contents-issue-4475-007] the transparent model rejects a style element that is not the first child of its parent', async () => {
+		const { violations } = await mlRuleTest(rule, '<div><noscript><p></p><style></style></noscript></div>');
+		expect(violations).toStrictEqual([
+			{
+				severity: 'error',
+				line: 1,
+				col: 23,
+				raw: '<style>',
+				message:
+					'The "style" element is not allowed in the "div" element through the transparent model in this context',
+			},
+		]);
+	});
+
+	test('[permitted-contents-issue-4475-008] a Nunjucks expression before a style element does not count, as its output is known only at run time', async () => {
+		const { violations } = await mlRuleTest(rule, '<div>{{ a }}<style></style></div>', {
+			parser: { '.*': '@markuplint/nunjucks-parser' },
+		});
+		expect(violations).toStrictEqual([]);
+	});
+
+	test('[permitted-contents-issue-4475-009] a PHP echo before a style element does not count, as its output is known only at run time', async () => {
+		const { violations } = await mlRuleTest(rule, '<div><?php echo $a; ?><style></style></div>', {
+			parser: { '.*': '@markuplint/php-parser' },
+		});
+		expect(violations).toStrictEqual([]);
+	});
+
+	test('[permitted-contents-issue-4475-010] an element inside a conditional block before a style element precedes it, as the content of the block is taken as present', async () => {
+		const { violations } = await mlRuleTest(rule, '<div>{% if a %}<p></p>{% endif %}<style></style></div>', {
+			parser: { '.*': '@markuplint/nunjucks-parser' },
+		});
+		expect(violations).toStrictEqual([
+			{
+				severity: 'error',
+				line: 1,
+				col: 34,
+				raw: '<style>',
+				message: 'The "style" element is not allowed in the "div" element in this context',
+			},
+		]);
+	});
+
+	test('[permitted-contents-issue-4475-011] an EJS output tag before a style element does not count, as its output is known only at run time', async () => {
+		const { violations } = await mlRuleTest(rule, '<div><%= a %><style></style></div>', {
+			parser: { '.*': '@markuplint/ejs-parser' },
+		});
+		expect(violations).toStrictEqual([]);
+	});
+
+	test('[permitted-contents-issue-4475-012] CRLF before a style element is inter-element whitespace', async () => {
+		const { violations } = await mlRuleTest(rule, '<div>\r\n<style></style>\r\n<p>text</p>\r\n</div>');
+		expect(violations).toStrictEqual([]);
+	});
+
+	test('[permitted-contents-issue-4475-013] body accepts a style element as its first child', async () => {
+		const { violations } = await mlRuleTest(
+			rule,
+			'<html><head><title>t</title></head><body>\n<style></style>\n<h1>text</h1></body></html>',
+		);
+		expect(violations).toStrictEqual([]);
+	});
+
+	test('[permitted-contents-issue-4475-014] body rejects a style element that follows an element', async () => {
+		const { violations } = await mlRuleTest(
+			rule,
+			'<html><head><title>t</title></head><body><h1>text</h1><style></style></body></html>',
+		);
+		expect(violations).toStrictEqual([
+			{
+				severity: 'error',
+				line: 1,
+				col: 55,
+				raw: '<style>',
+				message: 'The "style" element is not allowed in the "body" element in this context',
+			},
+		]);
+	});
+
+	test('[permitted-contents-issue-4475-015] the transparent model accepts a style element that is the first child of the transparent element, whose content model is derived from its parent', async () => {
+		const { violations } = await mlRuleTest(rule, '<div><p></p><noscript><style></style></noscript></div>');
+		expect(violations).toStrictEqual([]);
+	});
+
+	test('[permitted-contents-issue-4475-016] :first-child written in a custom content model keeps the Selectors definition', async () => {
+		const { violations } = await mlRuleTest(rule, '<x-box>text<span></span></x-box>', {
+			rule: [
+				{
+					tag: 'x-box',
+					contents: [{ zeroOrMore: '#text' }, { optional: 'span:first-child' }],
+				},
+			],
+		});
+		expect(violations).toStrictEqual([]);
+		const { violations: afterElement } = await mlRuleTest(rule, '<x-box><b></b><span></span></x-box>', {
+			rule: [
+				{
+					tag: 'x-box',
+					contents: [{ zeroOrMore: 'b' }, { optional: 'span:first-child' }],
+				},
+			],
+		});
+		expect(afterElement).toStrictEqual([
+			{
+				severity: 'error',
+				line: 1,
+				col: 15,
+				raw: '<span>',
+				message: 'The "span" element is not allowed in the "x-box" element in this context',
+			},
+		]);
+	});
+
+	test('[permitted-contents-issue-4475-017] a hexadecimal character reference to a space before a style element is inter-element whitespace', async () => {
+		const { violations } = await mlRuleTest(rule, '<div>&#x20;<style></style></div>');
+		expect(violations).toStrictEqual([]);
+	});
+
+	test('[permitted-contents-issue-4475-018] a named character reference to a tab before a style element is inter-element whitespace', async () => {
+		const { violations } = await mlRuleTest(rule, '<div>&Tab;<style></style></div>');
+		expect(violations).toStrictEqual([]);
+	});
+
+	test('[permitted-contents-issue-4475-019] a decimal character reference to a line feed without a semicolon before a style element is inter-element whitespace', async () => {
+		const { violations } = await mlRuleTest(rule, '<div>&#10<style></style></div>');
+		expect(violations).toStrictEqual([]);
+	});
+
+	test('[permitted-contents-issue-4475-020] the transparent model rejects a style element after non-whitespace text in the transparent element', async () => {
+		const { violations } = await mlRuleTest(rule, '<div><noscript>\u00A0<style></style></noscript></div>');
+		expect(violations).toStrictEqual([
+			{
+				severity: 'error',
+				line: 1,
+				col: 17,
+				raw: '<style>',
+				message:
+					'The "style" element is not allowed in the "div" element through the transparent model in this context',
+			},
+		]);
+	});
+
+	test('[permitted-contents-issue-4475-021] an empty transparent element before a style element precedes it', async () => {
+		const { violations } = await mlRuleTest(rule, '<div><noscript></noscript><style></style></div>');
+		expect(violations).toStrictEqual([
+			{
+				severity: 'error',
+				line: 1,
+				col: 27,
+				raw: '<style>',
+				message: 'The "style" element is not allowed in the "div" element in this context',
+			},
+		]);
+	});
+
+	test('[permitted-contents-issue-4475-022] only the first of two style elements is accepted', async () => {
+		const { violations } = await mlRuleTest(rule, '<div><style></style><style></style></div>');
+		expect(violations).toStrictEqual([
+			{
+				severity: 'error',
+				line: 1,
+				col: 21,
+				raw: '<style>',
+				message: 'The "style" element is not allowed in the "div" element in this context',
+			},
+		]);
+	});
+
+	test('[permitted-contents-issue-4475-023] a style element after the summary of a details element is rejected', async () => {
+		const { violations } = await mlRuleTest(rule, '<details><summary>s</summary><style></style></details>');
+		expect(violations).toStrictEqual([
+			{
+				severity: 'error',
+				line: 1,
+				col: 30,
+				raw: '<style>',
+				message: 'The "style" element is not allowed in the "details" element in this context',
+			},
+		]);
+	});
+
+	test('[permitted-contents-issue-4475-024] a style element inside a conditional block after an element is rejected', async () => {
+		const { violations } = await mlRuleTest(rule, '<div><p></p>{% if a %}<style></style>{% endif %}</div>', {
+			parser: { '.*': '@markuplint/nunjucks-parser' },
+		});
+		expect(violations).toStrictEqual([
+			{
+				severity: 'error',
+				line: 1,
+				col: 23,
+				raw: '<style>',
+				message: 'The "style" element is not allowed in the "div" element in this context',
+			},
+		]);
+	});
+});
+
+describe('the address element', () => {
+	test('[permitted-contents-invalid-035] address rejects a footer descendant', async () => {
+		const { violations } = await mlRuleTest(rule, '<address><footer>text</footer></address>');
+		expect(violations).toStrictEqual([
+			{
+				severity: 'error',
+				line: 1,
+				col: 10,
+				raw: '<footer>',
+				message: 'The "footer" element is not allowed in the "address" element in this context',
+			},
+		]);
+	});
+});
+
+describe('nested transparent elements', () => {
+	test('[permitted-contents-invalid-036] the content of a transparent element inside another is checked against the outer parent', async () => {
+		const { violations } = await mlRuleTest(rule, '<span><ins><ins><div></div></ins></ins></span>');
+		expect(violations).toStrictEqual([
+			{
+				severity: 'error',
+				line: 1,
+				col: 17,
+				raw: '<div>',
+				message:
+					'The "div" element is not allowed in the "span" element through the transparent model in this context',
+			},
+		]);
+	});
+
+	test('[permitted-contents-invalid-037] a style element after an element inside nested transparent elements is rejected', async () => {
+		const { violations } = await mlRuleTest(
+			rule,
+			'<div><ins><noscript><p></p><style></style></noscript></ins></div>',
+		);
+		expect(violations).toStrictEqual([
+			{
+				severity: 'error',
+				line: 1,
+				col: 28,
+				raw: '<style>',
+				message:
+					'The "style" element is not allowed in the "div" element through the transparent model in this context',
+			},
+		]);
+	});
+
+	test('[permitted-contents-valid-004] phrasing content inside nested transparent elements is accepted in phrasing content', async () => {
+		const { violations } = await mlRuleTest(rule, '<span><ins><ins><b>text</b></ins></ins></span>');
+		expect(violations).toStrictEqual([]);
+	});
+
+	test('[permitted-contents-invalid-038] flow content inside a transparent element inside a link inside phrasing content is reported once', async () => {
+		const { violations } = await mlRuleTest(rule, '<span><a href="#"><ins><div></div></ins></a></span>');
+		expect(violations).toStrictEqual([
+			{
+				severity: 'error',
+				line: 1,
+				col: 24,
+				raw: '<div>',
+				message:
+					'The "div" element is not allowed in the "span" element through the transparent model in this context',
+			},
+		]);
+	});
+
+	test('[permitted-contents-invalid-039] a link rejects interactive content inside a transparent element inside it', async () => {
+		const { violations } = await mlRuleTest(rule, '<p><a href="#"><ins><button></button></ins></a></p>');
+		expect(violations).toStrictEqual([
+			{
+				severity: 'error',
+				line: 1,
+				col: 21,
+				raw: '<button>',
+				message:
+					'The "a" element is a transparent model but also disallows the "button" element in this context',
+			},
+		]);
+	});
+});
+
+describe('inter-element whitespace', () => {
+	test('[permitted-contents-valid-005] a character reference to ASCII whitespace is inter-element whitespace', async () => {
+		const { violations } = await mlRuleTest(rule, '<ul>&#x20;<li></li>&#10;</ul>');
+		expect(violations).toStrictEqual([]);
+	});
+
+	test('[permitted-contents-invalid-040] a no-break space is text, not inter-element whitespace', async () => {
+		const { violations } = await mlRuleTest(rule, '<ul>\u00A0<li></li></ul>');
+		expect(violations).toStrictEqual([
+			{
+				severity: 'error',
+				line: 1,
+				col: 5,
+				message: 'The text node is not allowed in the "ul" element in this context',
+				raw: '\u00A0',
+			},
+		]);
+	});
+
+	test('[permitted-contents-valid-006] a no-break space is text that the title element accepts', async () => {
+		const { violations } = await mlRuleTest(rule, '<html><head><title>\u00A0</title></head><body></body></html>');
+		expect(violations).toStrictEqual([]);
 	});
 });

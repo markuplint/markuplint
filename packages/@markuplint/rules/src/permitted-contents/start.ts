@@ -2,6 +2,8 @@ import type { ContentModelResult, Element, Mode, Options, Specs, TagRule } from 
 import type { ContentModel } from '@markuplint/ml-spec';
 import type { ReadonlyDeep } from 'type-fest';
 
+import { isInterElementWhitespace } from '@markuplint/selector';
+
 import { order } from './order.js';
 import { representTransparentNodes } from './represent-transparent-nodes.js';
 import { expandChildren } from './slot-content.js';
@@ -37,7 +39,7 @@ export function start(
 		const children = expandChildren(el, given, mode);
 		return options.evaluateConditionalChildNodes
 			? [...children]
-			: children.filter(child => !(child.is(child.TEXT_NODE) && child.isWhitespace()));
+			: children.filter(child => !(child.is(child.TEXT_NODE) && isInterElementWhitespace(child.raw)));
 	});
 
 	return childNodesPatterns.flatMap<ContentModelResult>(childNodes => {
