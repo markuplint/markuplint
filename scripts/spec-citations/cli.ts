@@ -6,7 +6,7 @@
  * nothing else reads the prose a rule quotes, so a rule can keep enforcing a
  * sentence the spec has since reworded or dropped. This script reads every
  * citation, fetches the page, and reports what no longer holds. A scheduled
- * workflow (`.github/workflows/spec-citation-watch.yml`) runs it monthly and
+ * workflow (`.github/workflows/spec-citation-watch.yml`) runs it weekly and
  * opens an Issue; a maintainer decides what follows. Nothing is fixed
  * automatically, and no model is involved: every verdict is a string
  * comparison against the fetched page.

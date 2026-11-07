@@ -8,7 +8,7 @@ import { collectFiles, listCitingFiles } from './discover.ts';
 
 /**
  * These tests hold the conventions the monitor relies on, on the real files and without the network. The monitor
- * itself runs monthly; a README that breaks a convention should fail in the pull request that breaks it.
+ * itself runs weekly; a README that breaks a convention should fail in the pull request that breaks it.
  */
 const root = fileURLToPath(new URL('../../', import.meta.url));
 const files = listCitingFiles(root);
