@@ -63,7 +63,11 @@ jobs:
             - name: Install dependencies
               run: yarn install --immutable
 
+            # A failed fetch exits non-zero after writing the output, so the PR
+            # steps still run; the last step fails the job afterwards.
             - name: Run up:gen
+              id: gen
+              continue-on-error: true
               run: yarn up:gen
 
             - name: Check for changes
@@ -139,3 +143,9 @@ jobs:
               env:
                   GH_TOKEN: ${{ steps.app-token.outputs.token }}
               run: gh pr edit "${{ steps.existing-pr.outputs.pr_number }}" --body-file pr-body.md
+
+            - name: Fail when up:gen failed
+              if: steps.gen.outcome == 'failure'
+              run: |
+                  echo "::error::yarn up:gen failed: a fetch failed, a page expected not to exist answered, or generation crashed. See the Run up:gen step."
+                  exit 1
