@@ -73,4 +73,10 @@ describe('which edition of a spec is cited', () => {
 		const offending = citations.filter(c => dated.test(c.url) || unrendered.test(c.url));
 		expect(offending.map(c => `${c.file}:${c.line} ${c.url}`)).toStrictEqual([]);
 	});
+
+	test('[citations-policy-007] the Accessibility API Mappings are cited at their edition-less URL, which serves the latest version', () => {
+		const dated = /^https:\/\/www\.w3\.org\/TR\/(?:html|svg)-aam-\d/;
+		const offending = citations.filter(c => dated.test(c.url));
+		expect(offending.map(c => `${c.file}:${c.line} ${c.url}`)).toStrictEqual([]);
+	});
 });

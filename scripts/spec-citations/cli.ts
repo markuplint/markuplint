@@ -26,7 +26,8 @@
  *
  * Citations are collected from the rules package (README, `*.ts` comments,
  * `schema.json`), from the declarations of how a framework renders a literal (a
- * spec package and a parser), and from the website's hand-written pages;
+ * spec package and a parser), from the HTML spec data and the selector engine,
+ * and from the website's hand-written pages;
  * `discover.ts` lists which files and how each is read.
  */
 import type { CollectResult, PageResult } from './types.ts';
