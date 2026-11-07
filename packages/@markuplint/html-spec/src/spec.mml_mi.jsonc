@@ -1,4 +1,4 @@
-// https://www.w3.org/TR/mathml-core/#identifier-mi
+// https://www.w3.org/TR/mathml-core/#the-mi-element
 {
 	"contentModel": {
 		"contents": [
@@ -19,7 +19,7 @@
 		"#MathMLGlobalAttrs": true
 	},
 	"attributes": {
-		// https://www.w3.org/TR/mathml-core/#identifier-mi
+		// https://www.w3.org/TR/mathml-core/#the-mi-element
 		"mathvariant": {
 			"type": {
 				"enum": ["normal"],

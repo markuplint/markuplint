@@ -1,6 +1,5 @@
 // https://html.spec.whatwg.org/multipage/form-elements.html#the-progress-element
 // https://www.w3.org/TR/html-aria/#el-progress
-// https://w3c.github.io/html-aria/#el-progress
 {
 	"contentModel": {
 		"contents": [
@@ -15,10 +14,9 @@
 		"#ARIAAttrs": true
 	},
 	"attributes": {
-		// https://html.spec.whatwg.org/multipage/form-elements.html#attr-progress-value
-		// HTML LS: "If specified, the value attribute must have a value equal to
-		// or greater than zero, and less than or equal to the value of the max
-		// attribute, if defined, or 1.0, otherwise."
+		// @see https://html.spec.whatwg.org/multipage/form-elements.html#attr-progress-value
+		// > The value attribute, if present, must have a value greater than or equal to zero, and
+		// > less than or equal to the value of the max attribute, if present, or 1.0, otherwise.
 		// The cross-attribute `<= max` constraint is not expressible in the type
 		// system; we only pin the lower bound here.
 		"value": {
@@ -27,8 +25,8 @@
 				"gte": 0
 			}
 		},
-		// https://html.spec.whatwg.org/multipage/form-elements.html#attr-progress-max
-		// HTML LS: "The max attribute, if present, must have a value greater than zero."
+		// @see https://html.spec.whatwg.org/multipage/form-elements.html#attr-progress-max
+		// > The max attribute, if present, must have a value greater than zero.
 		"max": {
 			"type": {
 				"type": "float",

@@ -1,5 +1,5 @@
 // https://drafts.fxtf.org/filter-effects/#feDisplacementMapElement
-// https://www.w3.org/TR/svg-aam-1.0/#details-id-19
+// https://www.w3.org/TR/svg-aam/#role-map-fedisplacementmap
 {
 	"contentModel": {
 		"contents": [

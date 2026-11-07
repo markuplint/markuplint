@@ -1,5 +1,5 @@
 // https://svgwg.org/svg2-draft/interact.html#ScriptElement
-// https://www.w3.org/TR/svg-aam-1.0/#details-id-60
+// https://www.w3.org/TR/svg-aam/#role-map-script
 {
 	"contentModel": {
 		"contents": [

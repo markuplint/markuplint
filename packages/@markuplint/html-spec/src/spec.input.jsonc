@@ -1,6 +1,5 @@
 // https://html.spec.whatwg.org/multipage/input.html#the-input-element
 // https://www.w3.org/TR/html-aria/#el-input-button
-// https://w3c.github.io/html-aria/#el-input-button
 {
 	"contentModel": {
 		"contents": false
@@ -43,9 +42,11 @@
 			"type": "Boolean",
 			"condition": "[type='color' i]"
 		},
-		// https://html.spec.whatwg.org/multipage/input.html#attr-input-alt
-		// Spec: "The alt attribute provides the textual label for the button [...]
-		// The alt attribute must be present, and must contain a non-empty string."
+		// @see https://html.spec.whatwg.org/multipage/input.html#attr-input-alt
+		// > The alt attribute provides the textual label for the button for users and user agents
+		// > who cannot use the image. The alt attribute must be present, and must contain a
+		// > non-empty string giving the label that would be appropriate for an equivalent button if
+		// > the image was unavailable.
 		"alt": {
 			"type": "Any",
 			"required": true,
@@ -215,11 +216,11 @@
 			"type": "Boolean",
 			"condition": ["[type='email' i]", "[type='file' i]"]
 		},
-		// https://html.spec.whatwg.org/multipage/forms.html#attr-fe-name
-		// Spec: "The name content attribute gives the name of the form control,
-		// as used in form submission and in the form element's elements
-		// object. If the attribute is specified, its value must not be the
-		// empty string or `isindex`."
+		// @see https://html.spec.whatwg.org/multipage/form-control-infrastructure.html#attr-fe-name
+		// > The name content attribute gives the name of the form control,
+		// > as used in form submission and in the form element's elements
+		// > object. If the attribute is specified, its value must not be the
+		// > empty string or isindex.
 		// The spec wording uses the literal value `isindex` without an
 		// ASCII case-insensitive qualifier, so the Pattern is case-sensitive.
 		// Pattern overrides the inherited NoEmptyAny so the non-empty constraint
@@ -271,7 +272,9 @@
 			},
 			"condition": ["[type='button' i]", "[type='image' i]", "[type='reset' i]", "[type='submit' i]"]
 		},
-		// https://html.spec.whatwg.org/multipage/input.html#the-input-element:attr-input-switch
+		// Not in the HTML Standard yet; proposed in https://github.com/whatwg/html/pull/9546.
+		// The citation check does not read a pull request, so cite the HTML Standard here once
+		// it lands.
 		"switch": {
 			"type": "Boolean",
 			"experimental": true,
@@ -388,17 +391,18 @@
 			},
 			"defaultValue": "text"
 		},
-		// https://html.spec.whatwg.org/multipage/input.html#attr-input-value
+		// @see https://html.spec.whatwg.org/multipage/input.html#attr-input-value
 		// The value type depends on the `type` attribute.
 		// Types not listed here (text, search, tel, password, hidden, checkbox, radio,
 		// file, submit, image, reset, button) have no value constraints and fall back to Any.
 		//
-		// The attribute is not allowed on three inputs, each of which the spec words as
-		// "The element's value attribute must be omitted":
+		// The attribute is not allowed on three inputs, each of which the spec words as:
+		//
+		// > The element's value attribute must be omitted
 		// - type=file: https://html.spec.whatwg.org/multipage/input.html#file-upload-state-(type=file)
 		// - type=image: https://html.spec.whatwg.org/multipage/input.html#image-button-state-(type=image)
 		// - type=hidden with a name that is an ASCII case-insensitive match for "_charset_":
-		//   https://html.spec.whatwg.org/multipage/input.html#hidden-state-(type=hidden)
+		//   @see https://html.spec.whatwg.org/multipage/input.html#hidden-state-(type=hidden)
 		"value": {
 			"condition": ":not([type='file' i]):not([type='image' i]):not([type='hidden' i][name='_charset_' i])",
 			"type": [
@@ -421,13 +425,13 @@
 	"aria": {
 		// No condition:
 		// > input type=text or with a missing or invalid type, with no list attribute
-		// @see https://w3c.github.io/html-aria/#el-input-text
+		// @see https://www.w3.org/TR/html-aria/#el-input-text
 		"implicitRole": "textbox",
 		"permittedRoles": ["combobox", "searchbox", "spinbutton"],
 		"conditions": {
 			"[type='button' i]": {
 				"implicitRole": "button",
-				// @see https://w3c.github.io/html-aria/#el-input-button
+				// @see https://www.w3.org/TR/html-aria/#el-input-button
 				"permittedRoles": [
 					"checkbox",
 					"combobox",
@@ -533,7 +537,7 @@
 			},
 			"[type='image' i]": {
 				"implicitRole": "button",
-				// @see https://w3c.github.io/html-aria/#el-input-image
+				// @see https://www.w3.org/TR/html-aria/#el-input-image
 				// Same as button element but WITHOUT combobox
 				"permittedRoles": [
 					"checkbox",
@@ -659,7 +663,7 @@
 			},
 			"[type='reset' i]": {
 				"implicitRole": "button",
-				// @see https://w3c.github.io/html-aria/#el-input-reset
+				// @see https://www.w3.org/TR/html-aria/#el-input-reset
 				// Same permitted roles as button element
 				"permittedRoles": [
 					"checkbox",
@@ -688,7 +692,7 @@
 			},
 			"[type='submit' i]": {
 				"implicitRole": "button",
-				// @see https://w3c.github.io/html-aria/#el-input-submit
+				// @see https://www.w3.org/TR/html-aria/#el-input-submit
 				// Same permitted roles as button element
 				"permittedRoles": [
 					"checkbox",
@@ -760,7 +764,7 @@
 			// Do NOT add roles that were introduced in ARIA 1.2 or later.
 			// No condition:
 			// > input type=text or with a missing or invalid type, with no list attribute
-			// https://www.w3.org/TR/html-aria/#el-input-text
+			// @see https://www.w3.org/TR/html-aria/#el-input-text
 			"implicitRole": "textbox",
 			"permittedRoles": ["combobox", "searchbox", "spinbutton"],
 			"conditions": {

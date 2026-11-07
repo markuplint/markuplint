@@ -1,6 +1,5 @@
 // https://html.spec.whatwg.org/multipage/text-level-semantics.html#the-bdo-element
 // https://www.w3.org/TR/html-aria/#el-bdo
-// https://w3c.github.io/html-aria/#el-bdo
 {
 	"contentModel": {
 		"contents": [
@@ -15,8 +14,8 @@
 		"#ARIAAttrs": true
 	},
 	"attributes": {
-		// https://html.spec.whatwg.org/multipage/text-level-semantics.html#the-bdo-element
-		// "The dir global content attribute is required on this element. The attribute's value must not be the keyword auto."
+		// @see https://html.spec.whatwg.org/multipage/text-level-semantics.html#the-bdo-element
+		// > Authors must specify the dir attribute on this element, with the value ltr to specify a left-to-right override and with the value rtl to specify a right-to-left override. The auto value must not be specified.
 		"dir": {
 			"required": true,
 			"type": {

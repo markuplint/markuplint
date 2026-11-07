@@ -1,5 +1,5 @@
 // https://drafts.fxtf.org/filter-effects/#feConvolveMatrixElement
-// https://www.w3.org/TR/svg-aam-1.0/#details-id-17
+// https://www.w3.org/TR/svg-aam/#role-map-feConvolveMatrix
 {
 	"contentModel": {
 		"contents": [

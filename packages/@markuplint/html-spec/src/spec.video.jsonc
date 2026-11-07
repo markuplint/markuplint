@@ -1,6 +1,5 @@
 // https://html.spec.whatwg.org/multipage/media.html#the-video-element
 // https://www.w3.org/TR/html-aria/#el-video
-// https://w3c.github.io/html-aria/#el-video
 {
 	"contentModel": {
 		"contents": [
@@ -50,8 +49,8 @@
 			// https://html.spec.whatwg.org/multipage/media.html#the-video-element
 			"experimental": false
 		},
-		// https://html.spec.whatwg.org/multipage/media.html#attr-video-poster
-		// Spec: "a valid non-empty URL potentially surrounded by spaces"
+		// @see https://html.spec.whatwg.org/multipage/media.html#attr-video-poster
+		// > a valid non-empty URL potentially surrounded by spaces
 		"poster": {
 			"type": "NonEmptyURL"
 		},

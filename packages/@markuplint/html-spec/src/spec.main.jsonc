@@ -1,6 +1,5 @@
 // https://html.spec.whatwg.org/multipage/grouping-content.html#the-main-element
 // https://www.w3.org/TR/html-aria/#el-main
-// https://w3c.github.io/html-aria/#el-main
 {
 	"contentModel": {
 		"contents": [
@@ -8,9 +7,13 @@
 				"oneOrMore": ":model(flow)"
 			}
 		],
-		// https://html.spec.whatwg.org/multipage/grouping-content.html#the-main-element
-		// "There must not be more than one visible main element in a document."
-		// "The main element must not appear as a descendant of:"
+		// @see https://html.spec.whatwg.org/multipage/grouping-content.html#the-main-element
+		// > A document must not have more than one main element that does not have the hidden
+		// > attribute specified.
+		//
+		// > A hierarchically correct main element is one whose ancestor elements are limited to
+		// > html, body, div, form without an accessible name, and autonomous custom elements.
+		// The data does not check this yet: it only forbids the ancestors below.
 		"forbiddenAncestors": ["article", "aside", "footer", "header", "nav"]
 	},
 	"globalAttrs": {
