@@ -3515,3 +3515,210 @@ describe('the style element and the frameworks that do not output it where it is
 		).toStrictEqual([]);
 	});
 });
+
+describe('the canvas element and the interactive content it allows', () => {
+	const message = (name: string) =>
+		`The "canvas" element is a transparent model but also disallows the "${name}" element in this context`;
+
+	test('[permitted-contents-issue-4491-001] a link, a button and a checkbox are accepted as the fallback content', async () => {
+		const { violations } = await mlRuleTest(
+			rule,
+			`<!DOCTYPE html>
+<html lang="en">
+<head><meta charset="utf-8"><title>t</title></head>
+<body>
+<canvas width="100" height="50">
+  <a href="/fallback">fallback link</a>
+  <button type="button">fallback button</button>
+  <input type="checkbox">
+</canvas>
+</body>
+</html>`,
+		);
+		expect(violations).toStrictEqual([]);
+	});
+
+	test('[permitted-contents-issue-4491-002] an input that is a checkbox, a radio button or a button is accepted', async () => {
+		const { violations } = await mlRuleTest(
+			rule,
+			'<canvas><input type="checkbox"><input type="radio"><input type="submit"><input type="reset"><input type="button"><input type="image" alt="x"></canvas>',
+		);
+		expect(violations).toStrictEqual([]);
+	});
+
+	test('[permitted-contents-issue-4491-003] the type of an input is compared as ASCII case-insensitive', async () => {
+		const { violations } = await mlRuleTest(rule, '<canvas><input type="CHECKBOX"><input type="Radio"></canvas>');
+		expect(violations).toStrictEqual([]);
+	});
+
+	test('[permitted-contents-issue-4491-004] an image with a usemap attribute is accepted', async () => {
+		const { violations } = await mlRuleTest(rule, '<canvas><img src="x" alt="" usemap="#m"></canvas>');
+		expect(violations).toStrictEqual([]);
+	});
+
+	test('[permitted-contents-issue-4491-005] a select whose display size is greater than 1 is accepted', async () => {
+		const { violations } = await mlRuleTest(
+			rule,
+			'<canvas><select multiple></select><select size="2"></select><select size=" 3"></select><select size="02"></select></canvas>',
+		);
+		expect(violations).toStrictEqual([]);
+	});
+
+	test('[permitted-contents-issue-4491-006] an allowed interactive element inside an element in the canvas is accepted', async () => {
+		const { violations } = await mlRuleTest(
+			rule,
+			'<canvas><div><a href="#">link</a><button>b</button><select multiple></select></div></canvas>',
+		);
+		expect(violations).toStrictEqual([]);
+	});
+
+	test('[permitted-contents-issue-4491-007] a text input is rejected', async () => {
+		const { violations } = await mlRuleTest(rule, '<canvas><input type="text"></canvas>');
+		expect(violations).toStrictEqual([
+			{
+				severity: 'error',
+				line: 1,
+				col: 9,
+				raw: '<input type="text">',
+				message: message('input'),
+			},
+		]);
+	});
+
+	test('[permitted-contents-issue-4491-008] an input without a type is rejected', async () => {
+		const { violations } = await mlRuleTest(rule, '<canvas><input></canvas>');
+		expect(violations).toStrictEqual([
+			{
+				severity: 'error',
+				line: 1,
+				col: 9,
+				raw: '<input>',
+				message: message('input'),
+			},
+		]);
+	});
+
+	test('[permitted-contents-issue-4491-009] a label is rejected', async () => {
+		const { violations } = await mlRuleTest(rule, '<canvas><label>x</label></canvas>');
+		expect(violations).toStrictEqual([
+			{
+				severity: 'error',
+				line: 1,
+				col: 9,
+				raw: '<label>',
+				message: message('label'),
+			},
+		]);
+	});
+
+	test('[permitted-contents-issue-4491-010] a textarea is rejected', async () => {
+		const { violations } = await mlRuleTest(rule, '<canvas><textarea></textarea></canvas>');
+		expect(violations).toStrictEqual([
+			{
+				severity: 'error',
+				line: 1,
+				col: 9,
+				raw: '<textarea>',
+				message: message('textarea'),
+			},
+		]);
+	});
+
+	test('[permitted-contents-issue-4491-011] a select whose display size is 1 is rejected', async () => {
+		const { violations } = await mlRuleTest(rule, '<canvas><select></select></canvas>');
+		expect(violations).toStrictEqual([
+			{
+				severity: 'error',
+				line: 1,
+				col: 9,
+				raw: '<select>',
+				message: message('select'),
+			},
+		]);
+	});
+
+	test('[permitted-contents-issue-4491-012] a select whose size is 1, or one that cannot be parsed as larger, is rejected', async () => {
+		const { violations } = await mlRuleTest(
+			rule,
+			'<canvas><select size="1"></select><select size="0"></select><select size="01"></select><select size="abc"></select></canvas>',
+		);
+		expect(violations.map(v => v.raw)).toStrictEqual([
+			'<select size="1">',
+			'<select size="0">',
+			'<select size="01">',
+			'<select size="abc">',
+		]);
+	});
+
+	test('[permitted-contents-issue-4491-013] an interactive element that is not allowed is rejected inside an element in the canvas', async () => {
+		const { violations } = await mlRuleTest(rule, '<canvas><div><input type="text"></div></canvas>');
+		expect(violations).toStrictEqual([
+			{
+				severity: 'error',
+				line: 1,
+				col: 14,
+				raw: '<input type="text">',
+				message: message('input'),
+			},
+		]);
+	});
+
+	test('[permitted-contents-issue-4491-014] every allowed interactive element is accepted inside an element in the canvas', async () => {
+		const { violations } = await mlRuleTest(
+			rule,
+			'<canvas><div><a href="#">l</a><button>b</button><input type="checkbox"><input type="radio"><input type="submit"><input type="reset"><input type="button"><input type="image" alt="x"><img src="x" alt="" usemap="#m"><select multiple></select><select size="2"></select></div></canvas>',
+		);
+		expect(violations).toStrictEqual([]);
+	});
+
+	test('[permitted-contents-issue-4491-015] what is not interactive content is accepted, as it was before', async () => {
+		const { violations } = await mlRuleTest(
+			rule,
+			'<canvas><input type="hidden"><a name="x">l</a><img src="x" alt=""><span>text</span></canvas>',
+		);
+		expect(violations).toStrictEqual([]);
+	});
+
+	test('[permitted-contents-issue-4491-016] a select with the multiple attribute is accepted whatever its size is', async () => {
+		const { violations } = await mlRuleTest(
+			rule,
+			'<canvas><select multiple size="1"></select><select multiple size="0"></select></canvas>',
+		);
+		expect(violations).toStrictEqual([]);
+	});
+
+	test('[permitted-contents-issue-4491-017] interactive content that the list of exceptions does not name is rejected', async () => {
+		const { violations } = await mlRuleTest(
+			rule,
+			'<canvas><details><summary>s</summary></details><audio controls></audio><video controls></video><iframe></iframe><embed src="x"></canvas>',
+		);
+		expect(violations.map(v => v.raw)).toStrictEqual([
+			'<details>',
+			'<audio controls>',
+			'<video controls>',
+			'<iframe>',
+			'<embed src="x">',
+		]);
+	});
+
+	test('[permitted-contents-issue-4491-018] an allowed element does not allow the interactive content it contains', async () => {
+		const { violations } = await mlRuleTest(rule, '<canvas><a href="#"><input type="text"></a></canvas>');
+		expect(violations).toStrictEqual([
+			{
+				severity: 'error',
+				line: 1,
+				col: 21,
+				raw: '<input type="text">',
+				message: message('input'),
+			},
+			{
+				severity: 'error',
+				line: 1,
+				col: 21,
+				raw: '<input type="text">',
+				message:
+					'The "a" element is a transparent model but also disallows the "input" element in this context',
+			},
+		]);
+	});
+});
