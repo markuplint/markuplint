@@ -313,7 +313,7 @@ class SelectorTarget {
 				const matchedNodes: SelectorElement[] = [];
 				const has: SelectorMatchedResult[] = [];
 				const not: SelectorMatchedResult[] = [];
-				let ancestor = el.parentElement;
+				let ancestor = getParentElement(el);
 				let specificity: Specificity | undefined = undefined;
 				while (ancestor) {
 					const res = target.match(ancestor, scope, count + 1, logEnabled);
@@ -332,7 +332,7 @@ class SelectorTarget {
 							not.push(...res.not);
 						}
 					}
-					ancestor = ancestor.parentElement;
+					ancestor = getParentElement(ancestor);
 				}
 				if (!specificity) {
 					const res = target.match(el, scope, count + 1, logEnabled);
@@ -364,7 +364,7 @@ class SelectorTarget {
 				const has: SelectorMatchedResult[] = [];
 				const not: SelectorMatchedResult[] = [];
 				const specificity: Writable<Specificity> = [...unitCheck.specificity];
-				const parentNode = el.parentElement;
+				const parentNode = getParentElement(el);
 
 				if (parentNode) {
 					const res = target.match(parentNode, scope, count + 1, logEnabled);
@@ -732,7 +732,7 @@ function pseudoMatch(
 		case ':closest': {
 			const ruleset = new Ruleset(pseudo.nodes, extended, depth + 1);
 			const specificity = getSpecificity(ruleset.match(el, scope));
-			let parent = el.parentElement;
+			let parent = getParentElement(el);
 			while (parent) {
 				const matched = ruleset.match(parent, scope).filter((r): r is SelectorMatchedResult => r.matched);
 				if (matched.length > 0) {
@@ -743,7 +743,7 @@ function pseudoMatch(
 						has: matched,
 					};
 				}
-				parent = parent.parentElement;
+				parent = getParentElement(parent);
 			}
 			return {
 				specificity,
@@ -963,6 +963,20 @@ function pseudoMatch(
 	}
 }
 
+/**
+ * The parent element in the tree of the element (`SelectorElement#treeParentElement`), or
+ * `parentElement` for a host that has no tree of its own to tell.
+ *
+ * @param el - An element
+ * @returns The parent element
+ */
+function getParentElement(
+	// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
+	el: SelectorElement,
+): SelectorElement | null {
+	return el.treeParentElement === undefined ? el.parentElement : el.treeParentElement;
+}
+
 function isScope(
 	// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
 	el: SelectorElement,
@@ -976,6 +990,9 @@ function getDescendants(
 	el: SelectorElement,
 	includeSelf = false,
 ): SelectorElement[] {
+	if (el.isHTMLTemplateElement) {
+		return includeSelf ? [el] : [];
+	}
 	return [...[...el.children].flatMap(child => getDescendants(child, true)), ...(includeSelf ? [el] : [])];
 }
 
@@ -983,6 +1000,8 @@ function getSiblings(
 	// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
 	el: SelectorElement,
 ): SelectorElement[] {
+	// Siblings share the parent of the syntax tree, and so the tree. What is in no tree (a `<template>` that a
+	// declarative shadow root is attached to) still has the siblings of its place in the markup.
 	return [...(el.parentElement?.children ?? [])];
 }
 
