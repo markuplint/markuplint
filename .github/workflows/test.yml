@@ -13,6 +13,7 @@ on:
             - 'tsconfig.spec.json'
             - 'vitest.config.ts'
             - 'vitest.cross-os.config.ts'
+            - 'nx.json'
             - 'package.json'
             - 'packages/**'
             - '!**/*.md'
@@ -42,6 +43,7 @@ on:
             - 'tsconfig.spec.json'
             - 'vitest.config.ts'
             - 'vitest.cross-os.config.ts'
+            - 'nx.json'
             - 'package.json'
             - 'packages/**'
             - '!**/*.md'
@@ -172,9 +174,29 @@ jobs:
             - name: Install dependencies
               run: yarn install --immutable
 
+            # Nx restores the output of every package whose inputs (`nx.json`) did not change, so a
+            # commit rebuilds only the packages it touched and their dependents. The key carries the
+            # commit so each run saves its own entry; `restore-keys` picks the newest one of the
+            # same lockfile, from this ref first and then from the base branch.
+            - name: Cache Restore Nx
+              if: steps.cache-restore-prod.outputs.cache-hit != 'true'
+              uses: actions/cache/restore@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6
+              with:
+                  path: .nx/cache
+                  key: nx-${{ matrix.os }}-node${{ env.NODE_BUILD_VERSION }}-${{ hashFiles('yarn.lock') }}-${{ github.sha }}
+                  restore-keys: |
+                      nx-${{ matrix.os }}-node${{ env.NODE_BUILD_VERSION }}-${{ hashFiles('yarn.lock') }}-
+
             - name: Build
               if: steps.cache-restore-prod.outputs.cache-hit != 'true'
               run: yarn run build
+
+            - name: Cache Save Nx
+              if: steps.cache-restore-prod.outputs.cache-hit != 'true'
+              uses: actions/cache/save@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6
+              with:
+                  path: .nx/cache
+                  key: nx-${{ matrix.os }}-node${{ env.NODE_BUILD_VERSION }}-${{ hashFiles('yarn.lock') }}-${{ github.sha }}
 
             - name: Cache Save Production
               if: steps.cache-restore-prod.outputs.cache-hit != 'true'
