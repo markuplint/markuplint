@@ -1,0 +1,26 @@
+{
+	"$schema": "./node_modules/nx/schemas/nx-schema.json",
+	"namedInputs": {
+		"production": [
+			"{projectRoot}/**/*",
+			"!{projectRoot}/**/*.spec.{ts,js,mjs}",
+			"!{projectRoot}/**/*.md",
+			"{projectRoot}/src/README.md",
+			"!{projectRoot}/CHANGELOG.md",
+			"!{projectRoot}/lib/**/*",
+			"!{projectRoot}/esm/**/*",
+			"!{projectRoot}/cjs/**/*",
+			"!{projectRoot}/**/*.tsbuildinfo",
+			"{workspaceRoot}/tsconfig.json",
+			"{workspaceRoot}/packages/@markuplint-dev/tsconfig/tsconfig.json"
+		]
+	},
+	"targetDefaults": {
+		"build": {
+			"cache": true,
+			"dependsOn": ["^build"],
+			"inputs": ["production", "^production"],
+			"outputs": ["{projectRoot}/lib", "{projectRoot}/esm", "{projectRoot}/cjs", "{projectRoot}/preset.*.json"]
+		}
+	}
+}
