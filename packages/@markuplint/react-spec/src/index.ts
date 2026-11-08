@@ -30,6 +30,14 @@ const spec: ExtendedSpec = {
 	 */
 	acceptedAttrNames: 'idl',
 	/**
+	 * `react-dom` creates the `template` element and appends each child to it (`appendInitialChild` and
+	 * `appendChild` of `react-dom-bindings` call `parentInstance.appendChild`, and nothing in it
+	 * treats a `template` apart), so the children are in the tree of the document, not in `content`.
+	 * Known limitation: the server output of React has them in `content`, and React reports a
+	 * hydration mismatch for the pair.
+	 */
+	templateContent: 'in-place',
+	/**
 	 * How React renders a literal in `{…}` (`pushAttribute` of `react-dom-server`, and
 	 * `setValueForAttribute` / `setValueForPropertyOnCustomComponent` of `react-dom-bindings`), where it
 	 * differs from the default of `@markuplint/ml-core`. Names are in lower case.
