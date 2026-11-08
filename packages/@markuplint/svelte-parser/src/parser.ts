@@ -57,6 +57,8 @@ export class SvelteParser extends Parser<SvelteNode> {
 				},
 			],
 			maskChar: '-',
+			// `svelte/compiler` strips a leading BOM and counts positions from the next character
+			leadingBom: 'mask',
 		});
 	}
 
