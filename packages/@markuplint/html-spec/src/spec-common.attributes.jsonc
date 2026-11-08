@@ -778,12 +778,24 @@
 		"src": {
 			"type": "NonEmptyURL"
 		},
-		// https://html.spec.whatwg.org/multipage/media.html#attr-media-preload
+		// @see https://html.spec.whatwg.org/multipage/media.html#attr-media-preload
+		// The attribute defines an empty value default:
+		//
+		// > The attribute's empty value default is the Automatic state.
+		//
+		// and the authoring conformance rule for enumerated attributes admits the empty string
+		// for an attribute that has one:
+		//
+		// > The empty string and the attribute must have an empty value default defined.
+		// @see https://html.spec.whatwg.org/multipage/common-microsyntaxes.html#keywords-and-enumerated-attributes
 		"preload": {
 			"type": {
-				"enum": ["none", "metadata", "auto"],
+				"enum": ["", "none", "metadata", "auto"],
 				"invalidValueDefault": "implementation-defined",
-				"missingValueDefault": "implementation-defined"
+				"missingValueDefault": "implementation-defined",
+				"sameStates": {
+					"auto": [""]
+				}
 			}
 		},
 		// https://html.spec.whatwg.org/multipage/media.html#attr-media-autoplay
