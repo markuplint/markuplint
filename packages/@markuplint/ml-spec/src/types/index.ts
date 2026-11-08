@@ -14,6 +14,20 @@ export interface MLMLSpec {
 	readonly specs: readonly ElementSpec[];
 	readonly directivePatterns?: readonly DirectivePattern[];
 	/**
+	 * Selectors of the elements that the framework moves to the `<head>` wherever they are written, so
+	 * the content model of the element that contains them does not apply to them. An element in the
+	 * `<head>` itself is not moved, and is judged as usual.
+	 *
+	 * React does so for `<title>`, `<meta>`, `<link>` and `<style>` under conditions the selectors
+	 * express (`@markuplint/react-spec`):
+	 *
+	 * > React will always place the DOM element corresponding to the `<title>` component within the
+	 * > document's `<head>`, regardless of where in the React tree it is rendered.
+	 *
+	 * @see https://react.dev/reference/react-dom/components/title
+	 */
+	readonly movedToHead?: readonly string[];
+	/**
 	 * Controls how `@markuplint/ml-core`'s `MLAttr` resolves attribute names.
 	 *
 	 * - `'idl'`: enables IDL-to-content attribute name resolution (e.g.
@@ -52,6 +66,10 @@ export type ExtendedSpec = {
 	readonly def?: Partial<SpecDefs>;
 	readonly specs?: readonly ExtendedElementSpec[];
 	readonly directivePatterns?: readonly DirectivePattern[];
+	/**
+	 * See {@link MLMLSpec.movedToHead}. Concatenated across merged specs, in the order of the specs.
+	 */
+	readonly movedToHead?: readonly string[];
 	/**
 	 * See {@link MLMLSpec.acceptedAttrNames}. Last-write-wins across merged
 	 * specs; omitting the property does not reset a previously set value.
