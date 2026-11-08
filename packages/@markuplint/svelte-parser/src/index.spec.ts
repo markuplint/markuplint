@@ -1355,3 +1355,122 @@ describe('Issues', () => {
 		]);
 	});
 });
+
+// The top-level `<style>` is the CSS of the component: Svelte compiles it, so it is not markup.
+// "There can only be one top-level <style> tag per component. However, it is possible to have a <style> tag
+// nested inside other elements or logic blocks. In that case, the <style> tag will be inserted as-is into the
+// DOM; no scoping or processing will be done on the <style> tag."
+// https://svelte.dev/docs/svelte/nested-style-elements
+describe('a <style> in the component', () => {
+	const names = (code: string) => parse(code).nodeList.map(node => node.nodeName);
+
+	test('the top-level one is a code block, whatever language the CSS is written in', () => {
+		const code = '<style lang="scss">// c\n$c: red;</style>\n<div></div>';
+		const { nodeList } = parse(code);
+		expect(nodeList.map(node => node.nodeName)).toStrictEqual(['#ps:Style', '#text', 'div', 'div']);
+		expect(nodeList[0].raw).toBe('<style lang="scss">// c\n$c: red;</style>');
+	});
+
+	test('the top-level one after an element is a code block too', () => {
+		expect(names('<div></div>\n<style>p{}</style>')).toStrictEqual(['div', 'div', '#text', '#ps:Style']);
+	});
+
+	// The body of a raw text element (`style`, `script`) is CSS or JavaScript, so it gets no text node
+	test('one nested in an element is an element, and the braces in its CSS are not a Svelte expression', () => {
+		const { nodeList } = parse('<div><style>p { color: red; }</style></div>');
+		expect(nodeList.map(node => node.nodeName)).toStrictEqual(['div', 'style', 'style', 'div']);
+		expect(nodeList[1].raw).toBe('<style>');
+		expect(nodeList[2].raw).toBe('</style>');
+	});
+
+	test('one nested in a block is an element', () => {
+		expect(names('{#if x}<style>p{}</style>{/if}')).toStrictEqual(['#ps:if', 'style', 'style', '#ps:/if']);
+	});
+
+	test('the top-level one is a code block and the nested one is an element in the same component', () => {
+		expect(names('<style>a{}</style>\n<div><style>b{}</style></div>')).toStrictEqual([
+			'#ps:Style',
+			'#text',
+			'div',
+			'style',
+			'style',
+			'div',
+		]);
+	});
+
+	test('the top-level one keeps its place when a nested one precedes it', () => {
+		const { nodeList } = parse('<div><style>b{}</style></div>\n<style>a{}</style>');
+		expect(nodeList.map(node => node.nodeName)).toStrictEqual([
+			'div',
+			'style',
+			'style',
+			'div',
+			'#text',
+			'#ps:Style',
+		]);
+		expect(nodeList.at(-1).raw).toBe('<style>a{}</style>');
+	});
+
+	test('a custom element whose name starts with "style" is not a style element', () => {
+		expect(names('<div><style-guide></style-guide></div>\n<style>a{}</style>')).toStrictEqual([
+			'div',
+			'style-guide',
+			'style-guide',
+			'div',
+			'#text',
+			'#ps:Style',
+		]);
+	});
+
+	test('the top-level one with CRLF line breaks is a code block', () => {
+		const { nodeList } = parse('<style>\r\na{}\r\n</style>\r\n<div></div>');
+		expect(nodeList.map(node => node.nodeName)).toStrictEqual(['#ps:Style', '#text', 'div', 'div']);
+		expect(nodeList[0].raw).toBe('<style>\r\na{}\r\n</style>');
+	});
+
+	test('one in <svelte:head> is nested, so it is an element', () => {
+		expect(names('<svelte:head><style>a{}</style></svelte:head>').slice(1, 3)).toStrictEqual(['style', 'style']);
+	});
+
+	test('a `<style` in a comment is not a style element', () => {
+		expect(names('<!-- <style -->\n<div></div>')).toStrictEqual(['#comment', '#text', 'div', 'div']);
+		expect(names('<!-- <style>a{}</style> -->\n<style>b{}</style>')).toStrictEqual([
+			'#comment',
+			'#text',
+			'#ps:Style',
+		]);
+	});
+
+	test('a `<style` in a script is not a style element', () => {
+		expect(names(`<script>const s = '<style>';</script>\n<div></div>`)).toStrictEqual([
+			'#ps:Script',
+			'#text',
+			'div',
+			'div',
+		]);
+	});
+
+	test('a `<script` in a comment is not a script, so the style after it is still found', () => {
+		expect(names('<!-- <script> -->\n<style>a{}</style>\n<div><style>b{}</style></div>')).toStrictEqual([
+			'#comment',
+			'#text',
+			'#ps:Style',
+			'#text',
+			'div',
+			'style',
+			'style',
+			'div',
+		]);
+	});
+
+	test('a `<style` that the source cuts off is a syntax error of the source, not of a mask', () => {
+		expect(() => parse('<div></div>\n<style')).toThrowError(
+			'Unexpected end of input\nhttps://svelte.dev/e/unexpected_eof\n1: <div></div>\n2: <style',
+		);
+	});
+
+	test('parsing again does not carry the top-level one of the previous source', () => {
+		parse('<style>a{}</style>\n<div></div>');
+		expect(names('<div><style>b{}</style></div>')).toStrictEqual(['div', 'style', 'style', 'div']);
+	});
+});
