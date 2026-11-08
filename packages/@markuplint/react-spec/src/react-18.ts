@@ -61,7 +61,10 @@ const spec: ExtendedSpec = {
 	 *   output in React, while this keeps it
 	 * - `scoped` and `seamless`, obsolete attributes that React renders as boolean, are not in the spec
 	 *
-	 * @see https://react.dev/reference/react-dom/components/common
+	 * @see https://react.dev/reference/react-dom/components/common#common-props
+	 * @see https://github.com/facebook/react/blob/main/packages/react-dom-bindings/src/server/ReactFizzConfigDOM.js#pushAttribute
+	 * @see https://github.com/facebook/react/blob/main/packages/react-dom-bindings/src/client/DOMPropertyOperations.js#setValueForAttribute
+	 * @see https://github.com/facebook/react/blob/main/packages/react-dom-bindings/src/client/DOMPropertyOperations.js#setValueForPropertyOnCustomComponent
 	 */
 	literalValues: {
 		booleanAttrs: { '""': null },
