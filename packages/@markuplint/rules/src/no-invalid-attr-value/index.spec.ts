@@ -877,21 +877,11 @@ test('[no-invalid-attr-value-issue-3631-002] fetchpriority enum value is still v
 test('[no-invalid-attr-value-issue-3631-003] empty type is a classic script: defer is allowed', async () => {
 	// HTML LS: "Omitting the attribute, setting it to the empty string, or
 	// setting it to a JavaScript MIME type essence match means that the script
-	// is a classic script" — so defer must NOT be flagged here. The single
-	// violation below is the pre-existing value validation of the type
-	// attribute itself (MIMEType | enum does not model the empty string),
-	// which is a separate concern from the applicability conditions.
+	// is a classic script" — so defer must NOT be flagged here, and neither
+	// is the empty type value itself: the type attribute's enum lists the
+	// empty string beside the keywords.
 	const { violations } = await mlRuleTest(rule, '<script type="" src="app.js" defer></script>');
-	expect(violations).toStrictEqual([
-		{
-			severity: 'error',
-			line: 1,
-			col: 15,
-			message:
-				'The "type" attribute must not be empty. It expects the MIME Type format (https://mimesniff.spec.whatwg.org/#valid-mime-type). Or, the "type" attribute expects either "module", "importmap", "speculationrules"',
-			raw: '',
-		},
-	]);
+	expect(violations).toStrictEqual([]);
 });
 
 test('[no-invalid-attr-value-issue-3599-001] srcset rejects zero width descriptor', async () => {
@@ -2321,4 +2311,270 @@ test('[no-invalid-attr-value-issue-4483-001] rel=modulepreload accepts as=text',
 
 test('[no-invalid-attr-value-issue-4483-002] rel=modulepreload accepts as=TEXT (ASCII case-insensitive)', async () => {
 	expect((await mlRuleTest(rule, '<link rel="modulepreload" href="a.txt" as="TEXT">')).violations).toStrictEqual([]);
+});
+
+// @see https://html.spec.whatwg.org/multipage/media.html#attr-media-preload
+// > The attribute's empty value default is the Automatic state.
+// @see https://html.spec.whatwg.org/multipage/common-microsyntaxes.html#keywords-and-enumerated-attributes
+// > The empty string and the attribute must have an empty value default defined.
+test('[no-invalid-attr-value-issue-4490-001] video[preload=""] is the Automatic state', async () => {
+	expect((await mlRuleTest(rule, '<video src="a.mp4" preload=""></video>')).violations).toStrictEqual([]);
+});
+
+test('[no-invalid-attr-value-issue-4490-002] audio[preload=""] is the Automatic state', async () => {
+	expect((await mlRuleTest(rule, '<audio src="a.mp3" preload=""></audio>')).violations).toStrictEqual([]);
+});
+
+// @see https://html.spec.whatwg.org/multipage/scripting.html#attr-script-type
+// > Omitting the attribute, setting it to the empty string, or setting it to a JavaScript MIME type
+// > essence match means that the script is a classic script
+test('[no-invalid-attr-value-issue-4490-003] script[type=""] is a classic script', async () => {
+	expect((await mlRuleTest(rule, '<script type=""></script>')).violations).toStrictEqual([]);
+});
+
+// @see https://html.spec.whatwg.org/multipage/input.html#email-state-(type=email)
+// > The value attribute, if specified, must have a value that is a valid email address list.
+// @see https://html.spec.whatwg.org/multipage/input.html#valid-e-mail-address-list
+// > A valid email address list is a set of comma-separated tokens, where each token is itself a valid email address.
+test('[no-invalid-attr-value-issue-4490-004] input[type=email][multiple] accepts comma-separated addresses', async () => {
+	expect(
+		(await mlRuleTest(rule, '<input type="email" multiple value="a@example.com,b@example.com">')).violations,
+	).toStrictEqual([]);
+});
+
+test('[no-invalid-attr-value-issue-4490-005] input[type=email][multiple] accepts spaces around the commas', async () => {
+	expect(
+		(await mlRuleTest(rule, '<input type="email" multiple value="a@example.com, b@example.com">')).violations,
+	).toStrictEqual([]);
+});
+
+test('[no-invalid-attr-value-issue-4490-006] input[type=email][multiple] accepts a single address', async () => {
+	expect((await mlRuleTest(rule, '<input type="email" multiple value="a@example.com">')).violations).toStrictEqual(
+		[],
+	);
+});
+
+// @see https://html.spec.whatwg.org/multipage/input.html#email-state-(type=email)
+// > The value attribute, if specified and not empty, must have a value that is a single valid email address.
+test('[no-invalid-attr-value-issue-4490-007] input[value=""] is valid for the types that qualify the value requirement with not empty', async () => {
+	expect((await mlRuleTest(rule, '<input type="email" value="">')).violations).toStrictEqual([]);
+	expect((await mlRuleTest(rule, '<input type="email" multiple value="">')).violations).toStrictEqual([]);
+	expect((await mlRuleTest(rule, '<input type="color" value="">')).violations).toStrictEqual([]);
+	expect((await mlRuleTest(rule, '<input type="url" value="">')).violations).toStrictEqual([]);
+	expect((await mlRuleTest(rule, '<input type="number" value="">')).violations).toStrictEqual([]);
+	expect((await mlRuleTest(rule, '<input type="date" value="">')).violations).toStrictEqual([]);
+	expect((await mlRuleTest(rule, '<input type="month" value="">')).violations).toStrictEqual([]);
+	expect((await mlRuleTest(rule, '<input type="week" value="">')).violations).toStrictEqual([]);
+	expect((await mlRuleTest(rule, '<input type="time" value="">')).violations).toStrictEqual([]);
+	expect((await mlRuleTest(rule, '<input type="datetime-local" value="">')).violations).toStrictEqual([]);
+});
+
+test('[no-invalid-attr-value-issue-4490-008] input[type=email][multiple] reports the address that is not valid', async () => {
+	expect(
+		(await mlRuleTest(rule, '<input type="email" multiple value="a@example.com,not-an-email">')).violations,
+	).toStrictEqual([
+		{
+			severity: 'error',
+			line: 1,
+			col: 51,
+			message:
+				'The "value" attribute expects comma-separated list. the content of the list expects the email address format (https://html.spec.whatwg.org/multipage/input.html#valid-e-mail-address)',
+			raw: 'not-an-email',
+		},
+	]);
+});
+
+test('[no-invalid-attr-value-issue-4490-009] input[type=email][multiple] reports a trailing comma', async () => {
+	expect((await mlRuleTest(rule, '<input type="email" multiple value="a@example.com,">')).violations).toStrictEqual([
+		{
+			severity: 'error',
+			line: 1,
+			col: 50,
+			message: 'The "value" attribute expects comma-separated list. Found extra token ","',
+			raw: ',',
+		},
+	]);
+});
+
+test('[no-invalid-attr-value-issue-4490-010] input[type=email][multiple] reports consecutive commas', async () => {
+	expect(
+		(await mlRuleTest(rule, '<input type="email" multiple value="a@example.com,,b@example.com">')).violations,
+	).toStrictEqual([
+		{
+			severity: 'error',
+			line: 1,
+			col: 51,
+			message: 'The "value" attribute expects comma-separated list. Found unexpected comma',
+			raw: ',',
+		},
+	]);
+});
+
+test('[no-invalid-attr-value-issue-4490-011] input[type=email] without multiple reports a comma-separated list', async () => {
+	expect(
+		(await mlRuleTest(rule, '<input type="email" value="a@example.com,b@example.com">')).violations,
+	).toStrictEqual([
+		{
+			severity: 'error',
+			line: 1,
+			col: 28,
+			message:
+				'The "value" attribute expects the email address format (https://html.spec.whatwg.org/multipage/input.html#valid-e-mail-address)',
+			raw: 'a@example.com,b@example.com',
+		},
+	]);
+});
+
+test('[no-invalid-attr-value-issue-4490-012] script[type] still reports a value that is not a MIME type', async () => {
+	expect((await mlRuleTest(rule, '<script type="not a mime"></script>')).violations).toStrictEqual([
+		{
+			severity: 'error',
+			line: 1,
+			col: 15,
+			message:
+				'The "type" attribute expects the MIME Type format (https://mimesniff.spec.whatwg.org/#valid-mime-type). Or, the "type" attribute expects either "", "module", "importmap", "speculationrules"',
+			raw: 'not a mime',
+		},
+	]);
+});
+
+test('[no-invalid-attr-value-issue-4490-013] video[preload] still reports an unknown keyword', async () => {
+	expect((await mlRuleTest(rule, '<video src="a.mp4" preload="foo"></video>')).violations).toStrictEqual([
+		{
+			severity: 'error',
+			line: 1,
+			col: 29,
+			message: 'The "preload" attribute expects either "", "none", "metadata", "auto"',
+			raw: 'foo',
+		},
+	]);
+});
+
+// @see https://html.spec.whatwg.org/multipage/input.html#number-state-(type=number)
+// > The value attribute, if specified and not empty, must have a value that is a valid floating-point number.
+test('[no-invalid-attr-value-issue-4490-014] input[type=number] still reports a whitespace-only value', async () => {
+	expect((await mlRuleTest(rule, '<input type="number" value=" ">')).violations).toStrictEqual([
+		{
+			severity: 'error',
+			line: 1,
+			col: 29,
+			message: 'It includes unexpected characters. the "value" attribute expects float',
+			raw: ' ',
+		},
+	]);
+});
+
+// @see https://html.spec.whatwg.org/multipage/common-microsyntaxes.html#comma-separated-tokens
+// > A set of comma-separated tokens is a string containing zero or more tokens each separated from the next by a single U+002C COMMA character (,) […]
+// > and optionally surrounded by ASCII whitespace.
+test('[no-invalid-attr-value-issue-4490-015] input[type=email][multiple] accepts whitespace around the whole list and each token', async () => {
+	expect(
+		(await mlRuleTest(rule, '<input type="email" multiple value=" a@example.com , b@example.com ">')).violations,
+	).toStrictEqual([]);
+});
+
+// @see https://html.spec.whatwg.org/multipage/common-microsyntaxes.html#keywords-and-enumerated-attributes
+// > An ASCII case-insensitive match for one of the conforming keywords for that attribute, with no leading or trailing whitespace.
+test('[no-invalid-attr-value-issue-4490-016] video[preload] still reports a whitespace-only value', async () => {
+	expect((await mlRuleTest(rule, '<video src="a.mp4" preload=" "></video>')).violations).toStrictEqual([
+		{
+			severity: 'error',
+			line: 1,
+			col: 29,
+			message: 'The "preload" attribute expects either "", "none", "metadata", "auto"',
+			raw: ' ',
+		},
+	]);
+});
+
+// @see https://html.spec.whatwg.org/multipage/common-microsyntaxes.html#keywords-and-enumerated-attributes
+// > The empty string and the attribute must have an empty value default defined.
+// The enumerated attributes that define an empty value default are preload, contenteditable, popover,
+// hidden, translate, the CORS settings attributes, spellcheck, writingsuggestions and autocorrect.
+test('[no-invalid-attr-value-issue-4490-017] the enumerated attributes that define an empty value default still accept the empty string', async () => {
+	expect(
+		(
+			await mlRuleTest(
+				rule,
+				'<div contenteditable="" popover="" hidden="" translate="" spellcheck="" writingsuggestions="" autocorrect=""></div>',
+			)
+		).violations,
+	).toStrictEqual([]);
+	expect((await mlRuleTest(rule, '<img src="a.png" alt="" crossorigin="">')).violations).toStrictEqual([]);
+});
+
+// @see https://html.spec.whatwg.org/multipage/input.html#range-state-(type=range)
+// > The value attribute, if specified, must have a value that is a valid floating-point number.
+test('[no-invalid-attr-value-issue-4490-018] input[type=range] still reports an empty value', async () => {
+	expect((await mlRuleTest(rule, '<input type="range" value="">')).violations).toStrictEqual([
+		{
+			severity: 'error',
+			line: 1,
+			col: 28,
+			message: 'The "value" attribute must not be empty. It expects float',
+			raw: '',
+		},
+	]);
+});
+
+// @see https://html.spec.whatwg.org/multipage/common-microsyntaxes.html#keywords-and-enumerated-attributes
+// > An ASCII case-insensitive match for one of the conforming keywords for that attribute, with no leading or trailing whitespace.
+test('[no-invalid-attr-value-issue-4490-019] input[type=RANGE] still reports an empty value (the type is matched ASCII case-insensitively)', async () => {
+	expect((await mlRuleTest(rule, '<input type="RANGE" value="">')).violations).toStrictEqual([
+		{
+			severity: 'error',
+			line: 1,
+			col: 28,
+			message: 'The "value" attribute must not be empty. It expects float',
+			raw: '',
+		},
+	]);
+});
+
+test('[no-invalid-attr-value-issue-4490-020] input[type=EMAIL][MULTIPLE] accepts comma-separated addresses', async () => {
+	expect(
+		(await mlRuleTest(rule, '<input type="EMAIL" MULTIPLE value="a@example.com,b@example.com">')).violations,
+	).toStrictEqual([]);
+});
+
+test('[no-invalid-attr-value-issue-4490-021] script[type] still reports a whitespace-only value', async () => {
+	expect((await mlRuleTest(rule, '<script type=" "></script>')).violations).toStrictEqual([
+		{
+			severity: 'error',
+			line: 1,
+			col: 15,
+			message:
+				'The "type" attribute expects the MIME Type format (https://mimesniff.spec.whatwg.org/#valid-mime-type). Or, the "type" attribute expects either "", "module", "importmap", "speculationrules"',
+			raw: ' ',
+		},
+	]);
+});
+
+test('[no-invalid-attr-value-issue-4490-022] input[type=email][multiple] reports a trailing comma after whitespace', async () => {
+	expect((await mlRuleTest(rule, '<input type="email" multiple value="a@example.com , ">')).violations).toStrictEqual(
+		[
+			{
+				severity: 'error',
+				line: 1,
+				col: 51,
+				message: 'The "value" attribute expects comma-separated list. Found extra token ","',
+				raw: ',',
+			},
+		],
+	);
+});
+
+test('[no-invalid-attr-value-issue-4490-023] input[type=email][multiple] reports an address with a display name', async () => {
+	expect(
+		(await mlRuleTest(rule, '<input type="email" multiple value="Foo <a@example.com>">')).violations,
+	).toStrictEqual([
+		{
+			severity: 'error',
+			line: 1,
+			col: 41,
+			message:
+				'The "value" attribute expects comma-separated list. Missing a comma. Did you mean ",<a@example.com>"?',
+			raw: '<a@example.com>',
+		},
+	]);
 });
