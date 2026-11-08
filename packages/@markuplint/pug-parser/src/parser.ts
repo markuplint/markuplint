@@ -49,6 +49,8 @@ class PugParser extends Parser<ASTNode> {
 			// A value of `=` is JavaScript ("their values are just regular JavaScript")
 			attrExpressionLanguage: 'javascript',
 			literalValues: PUG_LITERAL_VALUES,
+			// pug-lexer strips a leading BOM itself, and a space in its place would be indentation
+			leadingBom: 'strip',
 		});
 	}
 
