@@ -367,18 +367,21 @@ export interface MLASTSpreadAttr extends MLASTToken {
 }
 
 /**
- * Stable identifier for a non-fatal parser conformance error. The full set
- * mirrors parse5's `ERR` enum (HTML LS tokenizer / tree-construction parse
+ * Stable identifier for a non-fatal parse error that parse5 reports. The full
+ * set mirrors parse5's `ERR` enum (HTML LS tokenizer / tree-construction parse
  * errors) — each value is a kebab-case string that appears verbatim in the
  * `code` field of `MLASTParseError` and as the key in
  * `severity.parseError`'s `Record` form.
  *
- * Source of truth: `parse5/dist/common/error-codes.d.ts`. When parse5
- * adds a new code, append it here and update the migration guide.
+ * Source of truth: `parse5/dist/common/error-codes.d.ts`, which
+ * `@markuplint/html-parser`'s `parse-error-code-sync.spec.ts` holds this type to
+ * in both directions. When parse5 adds a new code, append it here and update the
+ * migration guide. A code that a framework parser reports is not parse5's: it
+ * is {@link MLASTFrameworkParseErrorCode}.
  *
  * @see https://html.spec.whatwg.org/multipage/parsing.html#parse-errors
  */
-export type MLASTParseErrorCode =
+export type MLASTHtmlParseErrorCode =
 	// Input stream
 	| 'control-character-in-input-stream'
 	| 'noncharacter-in-input-stream'
@@ -450,22 +453,46 @@ export type MLASTParseErrorCode =
 	| 'nested-noscript-in-head';
 
 /**
+ * Stable identifier for a non-fatal parse error that a framework parser reports
+ * for markup that the framework's compiler does not accept. It is not parse5's,
+ * so it is not in `parse-error-code-sync.spec.ts`'s comparison with parse5.
+ * A code added here is listed with its meaning in the `parse-error` page of the
+ * v4 to v5 migration guide (`website/docs/migration/v4-to-v5/rules/parse-error.md`
+ * and its translation).
+ *
+ * - `vue-ignored-side-effect-tag`: a `<style>` or a `<script>` in the template of a
+ *   Vue component, which the compiler removes (`X_IGNORED_SIDE_EFFECT_TAG`:
+ *   "Tags with side effect (<script> and <style>) are ignored in client component templates.")
+ *
+ * @see https://github.com/vuejs/core/blob/main/packages/compiler-dom/src/errors.ts
+ */
+export type MLASTFrameworkParseErrorCode = 'vue-ignored-side-effect-tag';
+
+/**
+ * Stable identifier for a non-fatal parse error: parse5's
+ * ({@link MLASTHtmlParseErrorCode}) or a framework parser's
+ * ({@link MLASTFrameworkParseErrorCode}). It appears verbatim in the `code`
+ * field of `MLASTParseError` and as the key in `severity.parseError`'s
+ * `Record` form.
+ */
+export type MLASTParseErrorCode = MLASTHtmlParseErrorCode | MLASTFrameworkParseErrorCode;
+
+/**
  * Non-fatal parser-level conformance error emitted by the underlying parser
- * during tokenisation (e.g., parse5's `onParseError` events). Unlike
- * `unknownParseError` these do not abort the parse — the document is still
- * usable — but they correspond to HTML LS tokenizer / tree-construction
- * conformance errors that the `parse-error` rule surfaces as lint
- * violations.
+ * during tokenisation: parse5's `onParseError` events (HTML LS tokenizer /
+ * tree-construction conformance errors), or an error of a framework parser
+ * for markup that its compiler does not accept. Unlike `unknownParseError`
+ * these do not abort the parse — the document is still usable — and the
+ * `parse-error` channel surfaces them as lint violations.
  *
  * @see https://html.spec.whatwg.org/multipage/parsing.html#parse-errors
  */
 export interface MLASTParseError {
 	/**
-	 * Stable kebab-case identifier from the underlying parser. The current
-	 * full enumeration mirrors parse5's `ERR` enum and is captured by
-	 * {@link MLASTParseErrorCode}; framework parsers that surface a code
-	 * outside that set should still use a kebab-case identifier so user
-	 * configuration (`severity.parseError`) can target it.
+	 * Stable kebab-case identifier from the underlying parser. parse5's
+	 * `ERR` enum is {@link MLASTHtmlParseErrorCode}; a framework parser's own
+	 * codes are {@link MLASTFrameworkParseErrorCode}. A new one is added to
+	 * the latter so that user configuration (`severity.parseError`) can target it.
 	 */
 	readonly code: MLASTParseErrorCode;
 	/** Zero-based offset into the source where the error starts. */

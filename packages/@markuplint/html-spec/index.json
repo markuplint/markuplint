@@ -845,9 +845,12 @@
 				},
 				"preload": {
 					"type": {
-						"enum": ["none", "metadata", "auto"],
+						"enum": ["", "none", "metadata", "auto"],
 						"invalidValueDefault": "implementation-defined",
-						"missingValueDefault": "implementation-defined"
+						"missingValueDefault": "implementation-defined",
+						"sameStates": {
+							"auto": [""]
+						}
 					}
 				},
 				"autoplay": {
@@ -52611,12 +52614,23 @@
 					"condition": ":not([type='file' i]):not([type='image' i]):not([type='hidden' i][name='_charset_' i])",
 					"type": [
 						{
+							"condition": "[value='']:not([type='range' i])",
+							"type": "Any"
+						},
+						{
 							"condition": "[type='color' i]",
 							"type": "SimpleColor"
 						},
 						{
 							"condition": "[type='url' i]",
 							"type": "AbsoluteURLOrEmpty"
+						},
+						{
+							"condition": "[type='email' i][multiple]",
+							"type": {
+								"token": "Email",
+								"separator": "comma"
+							}
 						},
 						{
 							"condition": "[type='email' i]",
@@ -54449,7 +54463,7 @@
 					"type": [
 						"MIMEType",
 						{
-							"enum": ["module", "importmap", "speculationrules"],
+							"enum": ["", "module", "importmap", "speculationrules"],
 							"caseInsensitive": true
 						}
 					]

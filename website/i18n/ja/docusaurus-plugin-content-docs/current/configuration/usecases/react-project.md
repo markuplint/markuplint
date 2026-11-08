@@ -30,6 +30,20 @@ npm install -D markuplint @markuplint/jsx-parser @markuplint/react-spec
 - `.jsx` と `.tsx` ファイルをJSXパーサーで解析
 - Reactスペックで React 固有の属性（`key`、`className`、`htmlFor`など）を認識
 
+## React が `<head>` へ移す要素
+
+React は [`<title>`](https://react.dev/reference/react-dom/components/title)、[`<meta>`](https://react.dev/reference/react-dom/components/meta)、[`<link>`](https://react.dev/reference/react-dom/components/link)、[`<style>`](https://react.dev/reference/react-dom/components/style)（それぞれのリファレンスが挙げる条件を満たすもの。`<style>` なら `precedence` と `href`）を、書かれた位置に関係なくドキュメントの `<head>` へ移します。そのため React スペックは、これらを含む要素のコンテンツモデルでは検査せず、移動を求める属性を定義しています。
+
+使っている React が各要素を書かれた位置にそのまま出力する場合（使っている React が移すかどうかは、上の各要素のリファレンスに書かれています）は、そのためのスペックを指定します。移動の扱いも属性の定義もありません。名前は、これらを移さない最後のメジャーバージョンの React に由来します:
+
+```json class=config title=".markuplintrc"
+{
+  "specs": {
+    "\\.[jt]sx$": "@markuplint/react-spec/react-18"
+  }
+}
+```
+
 ## プリテンダーと併用
 
 スキャンには`@markuplint/pretenders`が必要です。`markuplint`はこれをインストールしません:

@@ -329,7 +329,7 @@ Controls default severity levels for specific categories of diagnostics.
 
 #### `parseError`
 
-Controls the severity of parse errors. Set to `"off"` or `false` to suppress parse error reporting.
+Controls the severity of parse errors. Set to `"off"` or `false` to suppress parse error reporting. Non-fatal errors are off until you set this, and include the errors that a framework parser reports for markup its compiler does not accept (for example, a `<style>` in a Vue template); the codes are listed in [`parse-error`](/docs/migration/v4-to-v5/rules/parse-error).
 
 ```json class=config
 {

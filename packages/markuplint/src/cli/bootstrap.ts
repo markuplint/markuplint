@@ -23,7 +23,7 @@ Options
 	--show-config                          Output computed configuration of the target file. Supports "details" and empty. Default: empty.
 	--verbose                              Output with detailed information.
 	--include-node-modules                 Include files in node_modules directory. Default: false.
-	--severity-parse-error                 Severity for the built-in parse-error channel. Supports "error", "warning", and "off". Unset by default: fatal ParserErrors emit at "error" and non-fatal parse5 events are off (opt-in per code via config).
+	--severity-parse-error                 Severity for the built-in parse-error channel. Supports "error", "warning", and "off". Unset by default: fatal ParserErrors emit at "error" and non-fatal parse5 and framework parser events are off (opt-in per code via config).
 	--severity-deprecation                 Severity for the built-in rule-deprecation channel (deprecated rule names). Supports "error", "warning", and "off". Default: "warning".
 	--max-count                            Limit the number of violations shown. Default: 0 (no limit).
 	--max-warnings                         Number of warnings to trigger nonzero exit code. Default: -1 (no limit).

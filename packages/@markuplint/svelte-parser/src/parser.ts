@@ -10,7 +10,7 @@ import type { ChildToken, ParseOptions, Token } from '@markuplint/parser-utils';
 import { ParserError, Parser, AttrState, isBracedExpression } from '@markuplint/parser-utils';
 
 import { parseBlock } from './parse-block.js';
-import { svelteParse } from './svelte-parser/index.js';
+import { svelteParseComponent } from './svelte-parser/index.js';
 
 /**
  * The opening of an attachment (`{@attach expr}`), up to the keyword, with the braces and spaces as
@@ -45,26 +45,27 @@ export class SvelteParser extends Parser<SvelteNode> {
 			// A static attribute is in the HTML string that the compiler hands to the browser's parser,
 			// and a dynamic one is set by `set_attribute` under the name as written.
 			attrNameRoute: 'dom-api-when-dynamic',
-			ignoreTags: [
-				// Fixed(Resolved) #2505
-				// The script tag needs to be passed with the lang attribute to the parser,
-				// so instead of excluding it, we convert it to PSBlock in visitText.
-				// Keep the style tag as is for now.
-				{
-					type: 'Style',
-					start: '<style',
-					end: '</style>',
-				},
-			],
-			maskChar: '-',
+			// No `ignoreTags`:
+			// - The script tag needs to be passed with the lang attribute to the parser, so instead of
+			//   masking it, it is converted to PSBlock in visitText.
+			// - The style tag is masked in `svelteParseComponent`, which keeps the nested one as an element.
 			// `svelte/compiler` strips a leading BOM and counts positions from the next character
 			leadingBom: 'mask',
 		});
 	}
 
+	/**
+	 * A top-level `<style>` is masked as a comment before Svelte parses it (see `svelteParseComponent`),
+	 * so `nodeize` needs to know which comments stand for one. The parser object is reused, so this is
+	 * set again by every `tokenize`.
+	 */
+	#topLevelStyleStarts: ReadonlySet<number> = new Set();
+
 	tokenize() {
+		const { nodes, topLevelStyleStarts } = svelteParseComponent(this.rawCode);
+		this.#topLevelStyleStarts = topLevelStyleStarts;
 		return {
-			ast: svelteParse(this.rawCode),
+			ast: nodes,
 			isFragment: true,
 		};
 	}
@@ -103,6 +104,16 @@ export class SvelteParser extends Parser<SvelteNode> {
 				});
 			}
 			case 'Comment': {
+				// The mask of a top-level `<style>`, the CSS of the component (see `svelteParseComponent`)
+				if (this.#topLevelStyleStarts.has(originNode.start)) {
+					return this.visitPsBlock({
+						...token,
+						depth,
+						parentNode,
+						nodeName: 'Style',
+						isFragment: false,
+					});
+				}
 				return this.visitComment({
 					...token,
 					depth,

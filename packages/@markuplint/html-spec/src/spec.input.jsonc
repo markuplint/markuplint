@@ -405,9 +405,48 @@
 		//   @see https://html.spec.whatwg.org/multipage/input.html#hidden-state-(type=hidden)
 		"value": {
 			"condition": ":not([type='file' i]):not([type='image' i]):not([type='hidden' i][name='_charset_' i])",
+			// The first entry whose condition matches wins, so an empty value is resolved before the types.
+			// It changes the result only for the states checked below (color, url, email, number, range, date,
+			// month, week, time and datetime-local); every other state falls back to Any. All of them accept
+			// it except range. Url, number, the date and time states and email without the multiple attribute
+			// word the requirement for a value that is specified and not empty, for example
+			//
+			// > The value attribute, if specified and not empty, must have a value that is a single valid email address.
+			// @see https://html.spec.whatwg.org/multipage/input.html#email-state-(type=email)
+			//
+			// and color words it for a value that is specified and not the empty string:
+			//
+			// > The value attribute, if specified and not the empty string, must have a value that is a CSS color.
+			// @see https://html.spec.whatwg.org/multipage/input.html#color-state-(type=color)
+			//
+			// The url entry below stays: its type also accepts a whitespace-only value, which this entry does not.
+			//
+			// Range is the exception: its requirement has no such qualification, so the empty value stays
+			// subject to the number check.
+			//
+			// > The value attribute, if specified, must have a value that is a valid floating-point number.
+			// @see https://html.spec.whatwg.org/multipage/input.html#range-state-(type=range)
+			//
+			// With the multiple attribute, the email value is a list. Its wording is that of range, but the
+			// empty string is accepted all the same: a set of comma-separated tokens is made of zero or more
+			// tokens, so the empty string is a list that holds no invalid address.
+			//
+			// > The value attribute, if specified, must have a value that is a valid email address list.
+			// @see https://html.spec.whatwg.org/multipage/input.html#email-state-(type=email)
+			//
+			// > A valid email address list is a set of comma-separated tokens, where each token is itself a valid email address.
+			// @see https://html.spec.whatwg.org/multipage/input.html#valid-e-mail-address-list
+			//
+			// > A set of comma-separated tokens is a string containing zero or more tokens each separated from the next by a single U+002C COMMA character (,) […]
+			// @see https://html.spec.whatwg.org/multipage/common-microsyntaxes.html#comma-separated-tokens
 			"type": [
+				{ "condition": "[value='']:not([type='range' i])", "type": "Any" },
 				{ "condition": "[type='color' i]", "type": "SimpleColor" },
 				{ "condition": "[type='url' i]", "type": "AbsoluteURLOrEmpty" },
+				{
+					"condition": "[type='email' i][multiple]",
+					"type": { "token": "Email", "separator": "comma" }
+				},
 				{ "condition": "[type='email' i]", "type": "Email" },
 				{ "condition": ["[type='number' i]", "[type='range' i]"], "type": { "type": "float" } },
 				{ "condition": "[type='date' i]", "type": "DateString" },

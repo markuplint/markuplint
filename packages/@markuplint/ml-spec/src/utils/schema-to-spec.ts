@@ -100,6 +100,9 @@ export function schemaToSpec(schemas: readonly [MLMLSpec, ...ExtendedSpec[]]) {
 		if (extendedSpec.directivePatterns) {
 			result.directivePatterns = [...(result.directivePatterns ?? []), ...extendedSpec.directivePatterns];
 		}
+		if (extendedSpec.movedToHead) {
+			result.movedToHead = [...(result.movedToHead ?? []), ...extendedSpec.movedToHead];
+		}
 		if (extendedSpec.acceptedAttrNames != null) {
 			result.acceptedAttrNames = extendedSpec.acceptedAttrNames;
 		}

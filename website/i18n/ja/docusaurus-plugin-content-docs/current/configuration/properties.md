@@ -298,7 +298,7 @@ interface Config {
 
 #### `parseError`
 
-パースエラーの深刻度を制御します。`"off"` または `false` を設定するとパースエラーの報告を抑制できます。
+パースエラーの深刻度を制御します。`"off"` または `false` を設定するとパースエラーの報告を抑制できます。非致命のエラーは、これを設定するまで報告されません。フレームワークのパーサーがコンパイラの受け付けないマークアップに出すエラー（例: Vue の template 内の `<style>`）も含み、コードの一覧は [`parse-error`](/docs/migration/v4-to-v5/rules/parse-error) にあります。
 
 ```json class=config
 {
