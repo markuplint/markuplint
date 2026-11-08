@@ -1,5 +1,7 @@
 import { createRule } from '@markuplint/ml-core';
 
+import { getDOMValue, querySelectorAllInTree } from '../helpers.js';
+
 import meta from './meta.js';
 
 /**
@@ -27,13 +29,19 @@ export default createRule<boolean, null>({
 			if (!usemapAttr) return;
 			if (usemapAttr.isDynamicValue) return;
 
-			const value = usemapAttr.value;
+			// The character references are resolved on both sides, as the DOM has the strings
+			const value = getDOMValue(usemapAttr) ?? usemapAttr.value;
 			if (!value.startsWith('#') || value.length <= 1) return;
 
 			const targetName = value.slice(1);
-			const target = [...document.querySelectorAll('map')].find(
-				candidate => candidate.getAttribute('name') === targetName,
-			);
+			const target = querySelectorAllInTree(el, 'map').find(candidate => {
+				const name = candidate.getAttributeNode('name');
+				if (!name) {
+					return false;
+				}
+				// A name that is not known until it is rendered may be the one that the reference means
+				return name.isDynamicValue || getDOMValue(name) === targetName;
+			});
 
 			if (!target) {
 				report({

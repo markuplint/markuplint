@@ -20,7 +20,7 @@ export default createRule<boolean, Options>({
 		langs: undefined,
 	},
 	verify({ document, report, t }) {
-		for (const time of document.querySelectorAll('time:not([datetime])')) {
+		for (const time of document.deepQuerySelectorAll('time:not([datetime])')) {
 			if (time.hasMutableChildren()) {
 				continue;
 			}

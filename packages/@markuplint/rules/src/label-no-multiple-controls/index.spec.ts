@@ -121,3 +121,25 @@ test('[label-no-multiple-controls-parser-002] unresolved JSX pretender label is 
 	});
 	expect(violations).toStrictEqual([]);
 });
+
+test('[label-no-multiple-controls-issue-4489-001] an id in another tree is not the labeled control of a label', async () => {
+	const { violations } = await mlRuleTest(
+		rule,
+		'<input id="x"><template><label for="x"><input><input></label></template>',
+	);
+	expect(violations).toStrictEqual([
+		{
+			severity: 'error',
+			line: 1,
+			col: 47,
+			raw: '<input>',
+			message:
+				'The "label" element may contain at most one form-control descendant (button, input, meter, output, progress, select, or textarea)',
+		},
+	]);
+});
+
+test('[label-no-multiple-controls-issue-4489-002] a control in the content of a template under the label is not its descendant', async () => {
+	const { violations } = await mlRuleTest(rule, '<label><input><template><input></template></label>');
+	expect(violations).toStrictEqual([]);
+});

@@ -16,6 +16,27 @@ test('[require-h1-invalid-001] h1', async () => {
 	]);
 });
 
+test('[require-h1-issue-4489-001] an h1 in the content of a template does not satisfy the document', async () => {
+	const { violations } = await mlRuleTest(rule, '<html><body><template><h1>text</h1></template></body></html>');
+	expect(violations).toStrictEqual([
+		{
+			severity: 'warning',
+			message: 'Require the "h1" element',
+			line: 1,
+			col: 1,
+			raw: '<',
+		},
+	]);
+});
+
+test('[require-h1-issue-4489-002] an h1 in the document is enough when a template has none', async () => {
+	const { violations } = await mlRuleTest(
+		rule,
+		'<html><body><h1>text</h1><template><p>text</p></template></body></html>',
+	);
+	expect(violations).toStrictEqual([]);
+});
+
 test('[require-h1-valid-001] h1', async () => {
 	const { violations } = await mlRuleTest(rule, '<html><body><h1>text</h1></body></html>');
 	expect(violations.length).toBe(0);

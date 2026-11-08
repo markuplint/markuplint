@@ -486,13 +486,21 @@ describe('main must be a hierarchically correct main element', () => {
 			]);
 		});
 
-		test('[no-disallowed-ancestor-issue-4482-040] a Vue template without a directive is a boundary', async () => {
+		test('[no-disallowed-ancestor-issue-4482-040] a Vue template without a directive is an element of the document', async () => {
 			const { violations } = await mlRuleTest(
 				rule,
 				'<template><section><template><main>text</main></template></section></template>',
 				vue,
 			);
-			expect(violations).toStrictEqual([]);
+			expect(violations).toStrictEqual([
+				{
+					severity: 'error',
+					line: 1,
+					col: 30,
+					message: 'The "main" element must not appear as a descendant of the "template" element',
+					raw: '<main>',
+				},
+			]);
 		});
 
 		test('[no-disallowed-ancestor-issue-4482-041] main directly in the root template of a Vue file', async () => {

@@ -1,5 +1,6 @@
 /* global StylePropertyMap, StylePropertyMapReadOnly */
 
+import type { DeclarativeShadowRootAttachment } from '../helper/tree-scope.js';
 import type { MLDocument } from './document.js';
 import type { MLNamedNodeMap } from './named-node-map.js';
 import type { MLNode } from './node.js';
@@ -41,6 +42,12 @@ import {
 import { literalToExpression } from '../helper/literal-values.js';
 import { markPretendedAttr } from '../helper/pretended-attrs.js';
 import {
+	getDeclarativeShadowRootAttachment,
+	getDeclarativeShadowRootMode,
+	getShadowRootTemplate,
+	isHTMLTemplateElement,
+} from '../helper/tree-scope.js';
+import {
 	after,
 	before,
 	nextElementSibling,
@@ -49,11 +56,13 @@ import {
 	replaceWith,
 } from '../manipulations/child-node-methods.js';
 import { MLAttr } from './attr.js';
+import { MLDocumentFragment } from './document-fragment.js';
 import { MLDomTokenList } from './dom-token-list.js';
 import { MLElementCloseTag } from './element-close-tag.js';
 import { toNamedNodeMap } from './named-node-map.js';
 import { toHTMLCollection, toNodeList } from './node-list.js';
 import { MLParentNode } from './parent-node.js';
+import { MLShadowRoot } from './shadow-root.js';
 import { UnexpectedCallError, asciiLowerCase, vuePropKey } from '@markuplint/shared';
 
 const HTML_NAMESPACE = 'http://www.w3.org/1999/xhtml';
@@ -3337,15 +3346,114 @@ export class MLElement<T extends RuleConfigValue, O extends PlainData = undefine
 	}
 
 	/**
-	 * **IT THROWS AN ERROR WHEN CALLING THIS.**
+	 * The shadow root that a `template` element with `shadowrootmode="open"` declares on this element:
+	 * `null` for a `closed` one, which the DOM does not expose, and when there is none. See
+	 * {@link MLElement.declarativeShadowRoot} for one of either mode.
 	 *
-	 * @unsupported
 	 * @implements DOM API: `Element`
 	 * @see https://dom.spec.whatwg.org/#ref-for-dom-element-shadowroot%E2%91%A0
 	 */
-	get shadowRoot(): ShadowRoot | null {
-		throw new UnexpectedCallError('Not supported "shadowRoot" property');
+	get shadowRoot(): MLShadowRoot<T, O> | null {
+		const shadowRoot = this.declarativeShadowRoot;
+		return shadowRoot?.mode === 'open' ? shadowRoot : null;
 	}
+
+	/**
+	 * Whether this element is an HTML `template` element, which holds its children in {@link MLElement.content},
+	 * a tree of its own. A `template` of a framework that puts the children in the element itself
+	 * (`templateContent: 'in-place'` in the spec: React, Vue), a fragment, and a `template` with a
+	 * directive of a template engine are not.
+	 *
+	 * The getters about trees (this one, {@link MLElement.declarativeShadowRootAttachment},
+	 * {@link MLElement.content}, `getRootNode()` and the id lookups) keep what they first return: they
+	 * depend on the pretenders, the spec and the whole syntax tree, which are all in place once the
+	 * document is built, and the document does not change after that.
+	 *
+	 * @implements `@markuplint/ml-core` API: `MLElement`
+	 * @see https://html.spec.whatwg.org/multipage/scripting.html#the-template-element
+	 */
+	get isHTMLTemplateElement(): boolean {
+		this.#isHTMLTemplateElement ??= isHTMLTemplateElement(this);
+		return this.#isHTMLTemplateElement;
+	}
+	#isHTMLTemplateElement: boolean | undefined;
+
+	/**
+	 * Whether this element is in no tree: an HTML `template` element that a declarative shadow root is
+	 * attached to, or that may have one (see {@link DeclarativeShadowRootAttachment}). The parser inserts
+	 * such an element into no tree, so it has no parent in a tree, is its own root, and is found by no
+	 * query of a tree. Unknown is treated as in no tree, as markuplint does not count what it cannot tell.
+	 *
+	 * @implements `@markuplint/ml-core` API: `MLElement`
+	 */
+	get isInNoTree(): boolean {
+		return this.isHTMLTemplateElement && this.declarativeShadowRootAttachment !== 'not-attached';
+	}
+
+	/**
+	 * The mode that the `shadowrootmode` attribute of an HTML `template` element asks for. `null` when the
+	 * element is not one, the attribute is missing or invalid, or its value is dynamic.
+	 *
+	 * @implements `@markuplint/ml-core` API: `MLElement`
+	 */
+	get declarativeShadowRootMode(): 'open' | 'closed' | null {
+		return getDeclarativeShadowRootMode(this);
+	}
+
+	/**
+	 * Whether the HTML parser attaches a declarative shadow root to the parent of this `template`
+	 * element (see {@link DeclarativeShadowRootAttachment}).
+	 *
+	 * @implements `@markuplint/ml-core` API: `MLElement`
+	 */
+	get declarativeShadowRootAttachment(): DeclarativeShadowRootAttachment {
+		this.#declarativeShadowRootAttachment ??= getDeclarativeShadowRootAttachment(this);
+		return this.#declarativeShadowRootAttachment;
+	}
+	#declarativeShadowRootAttachment: DeclarativeShadowRootAttachment | undefined;
+
+	/**
+	 * The content of an HTML `template` element: a document fragment that is a tree of its own, holding
+	 * the same nodes as the children of the element. When a declarative shadow root is attached to the
+	 * parent of the `template`, it is the shadow root. `null` for an element that is not an HTML
+	 * `template` element.
+	 *
+	 * @implements DOM API: `HTMLTemplateElement`
+	 * @see https://html.spec.whatwg.org/multipage/scripting.html#dom-template-content
+	 */
+	get content(): MLDocumentFragment<T, O> | null {
+		if (this.#content !== undefined) {
+			return this.#content;
+		}
+		if (!this.isHTMLTemplateElement) {
+			this.#content = null;
+			return null;
+		}
+		const astNode = { ...this._astToken, uuid: `${this.uuid}:content` };
+		this.#content =
+			this.declarativeShadowRootAttachment === 'attached'
+				? new MLShadowRoot<T, O>(astNode, this.ownerMLDocument, this)
+				: new MLDocumentFragment<T, O>(astNode, this.ownerMLDocument);
+		return this.#content;
+	}
+	#content: MLDocumentFragment<T, O> | null | undefined;
+
+	/**
+	 * The shadow root that a `template` element declares on this element, whatever its mode.
+	 *
+	 * @implements `@markuplint/ml-core` API: `MLElement`
+	 * @returns The shadow root, or `null` when none is attached to this element
+	 */
+	get declarativeShadowRoot(): MLShadowRoot<T, O> | null {
+		if (this.#declarativeShadowRoot !== undefined) {
+			return this.#declarativeShadowRoot;
+		}
+		const template = getShadowRootTemplate(this);
+		const content = template?.content;
+		this.#declarativeShadowRoot = content instanceof MLShadowRoot ? content : null;
+		return this.#declarativeShadowRoot;
+	}
+	#declarativeShadowRoot: MLShadowRoot<T, O> | null | undefined;
 
 	/**
 	 * @implements DOM API: `Element`
@@ -3572,7 +3680,7 @@ export class MLElement<T extends RuleConfigValue, O extends PlainData = undefine
 			if (el.matches(selectors)) {
 				return el;
 			}
-			el = el.parentElement;
+			el = el.treeParentElement;
 		} while (el !== null && el.is(el.ELEMENT_NODE));
 
 		return null;

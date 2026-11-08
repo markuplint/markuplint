@@ -417,3 +417,62 @@ describe('Edge cases', () => {
 		expect(violations).toStrictEqual([]);
 	});
 });
+
+describe('the sources are looked for in the tree of the element', () => {
+	test('[no-redundant-accessible-name-issue-4489-001] aria-labelledby that refers to an element of the same template is a source', async () => {
+		const { violations } = await mlRuleTest(
+			rule,
+			'<template><input type="text" aria-label="X" aria-labelledby="y"><span id="y">Y</span></template>',
+		);
+		expect(violations).toStrictEqual([
+			{
+				severity: 'warning',
+				line: 1,
+				col: 11,
+				raw: '<input type="text" aria-label="X" aria-labelledby="y">',
+				message: 'The accessible name from "aria-labelledby" overrides "aria-label"',
+			},
+		]);
+	});
+
+	test('[no-redundant-accessible-name-issue-4489-002] aria-labelledby that refers to an element of another tree is not a source', async () => {
+		const { violations } = await mlRuleTest(
+			rule,
+			'<span id="y">Y</span><template><input type="text" aria-label="X" aria-labelledby="y"></template>',
+		);
+		expect(violations).toStrictEqual([]);
+	});
+
+	test('[no-redundant-accessible-name-issue-4489-003] a label of another tree is not a source', async () => {
+		const { violations } = await mlRuleTest(
+			rule,
+			'<label for="x">L</label><template><input id="x" type="text" aria-label="X"></template>',
+		);
+		expect(violations).toStrictEqual([]);
+	});
+
+	test('[no-redundant-accessible-name-issue-4489-004] a label of the same template is a source', async () => {
+		const { violations } = await mlRuleTest(
+			rule,
+			'<template><label for="x">L</label><input id="x" type="text" aria-label="X"></template>',
+		);
+		expect(violations).toStrictEqual([
+			{
+				severity: 'warning',
+				line: 1,
+				col: 35,
+				raw: '<input id="x" type="text" aria-label="X">',
+				message: 'The accessible name from "aria-label" overrides "label"',
+			},
+		]);
+	});
+
+	test('[no-redundant-accessible-name-issue-4489-005] a value written as code has no character reference to resolve', async () => {
+		const { violations } = await mlRuleTest(
+			rule,
+			'<><label htmlFor={"a&b"}>L</label><input id={"a&amp;b"} type="text" aria-label="X" /></>',
+			{ parser: { '.*': '@markuplint/jsx-parser' } },
+		);
+		expect(violations).toStrictEqual([]);
+	});
+});

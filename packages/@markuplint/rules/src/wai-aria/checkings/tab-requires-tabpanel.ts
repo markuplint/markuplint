@@ -3,6 +3,7 @@ import type { ElementChecker } from '@markuplint/ml-core';
 import type { ARIARole } from '@markuplint/ml-spec';
 
 import { ARIA_RECOMMENDED_VERSION, getComputedRole } from '@markuplint/ml-spec';
+import { getDOMValue, getElementByIdInTree, querySelectorAllInTree } from '../../helpers.js';
 
 /**
  * Checks that an active `tab` role element has a corresponding `tabpanel` role element.
@@ -49,7 +50,7 @@ export const checkingTabRequiresTabpanel: ElementChecker<
 				.split(/\s+/)
 				.filter(Boolean)
 				.some(id => {
-					const target = document.getElementById(id);
+					const target = getElementByIdInTree(el, id, controlsAttr.isExpressionValue);
 					return !!target && isTabpanel(target);
 				});
 			if (hasControlledTabpanel) {
@@ -57,13 +58,18 @@ export const checkingTabRequiresTabpanel: ElementChecker<
 			}
 		}
 
-		const idAttr = el.getAttributeNode('id');
-		if (idAttr && !idAttr.isDynamicValue) {
-			const tabId = idAttr.value;
-			const hasLabellingTabpanel = [...document.querySelectorAll('[aria-labelledby]')].some(candidate => {
+		// The tabpanel refers to the tab in the tree of the tab, and the ids are compared as the DOM has them
+		const tabId = getDOMValue(el.getAttributeNode('id'));
+		if (tabId != null) {
+			const hasLabellingTabpanel = querySelectorAllInTree(el, '[aria-labelledby]').some(candidate => {
 				const labelledbyAttr = candidate.getAttributeNode('aria-labelledby');
 				if (!labelledbyAttr || labelledbyAttr.isDynamicValue) return false;
-				return labelledbyAttr.value.split(/\s+/).includes(tabId) && isTabpanel(candidate);
+				return (
+					labelledbyAttr.value
+						.split(/\s+/)
+						.map(id => getDOMValue(labelledbyAttr, id))
+						.includes(tabId) && isTabpanel(candidate)
+				);
 			});
 			if (hasLabellingTabpanel) {
 				return;

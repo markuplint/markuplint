@@ -41,7 +41,7 @@ import { createNode } from '../helper/create-node.js';
 import { nodeListToDebugMaps } from '../helper/debug.js';
 import { sequentialWalker, syncWalk } from '../helper/walkers.js';
 
-import { nodeListToHTMLCollection } from './node-list.js';
+import { nodeListToHTMLCollection, toHTMLCollection } from './node-list.js';
 import { MLParentNode } from './parent-node.js';
 import { RuleMapper } from './rule-mapper.js';
 import { UnexpectedCallError } from '@markuplint/shared';
@@ -3228,20 +3228,32 @@ export class MLDocument<T extends RuleConfigValue, O extends PlainData = undefin
 	}
 
 	/**
+	 * The first element of the tree of the document whose id is `elementId`, with the character
+	 * references in the markup resolved: not in the content of an HTML `template` element, which is a
+	 * tree of its own.
+	 *
 	 * @implements DOM API: `Document`
+	 * @see https://dom.spec.whatwg.org/#dom-nonelementparentnode-getelementbyid
 	 */
 	getElementById(elementId: string) {
-		return this.querySelector(`#${elementId}`);
+		return this._getElementById(elementId);
 	}
 
 	/**
-	 * **IT THROWS AN ERROR WHEN CALLING THIS.**
-	 *
-	 * @unsupported
 	 * @implements DOM API: `Document`
+	 * @see https://dom.spec.whatwg.org/#concept-getelementsbyclassname
 	 */
 	getElementsByClassName(classNames: string): HTMLCollectionOf<MLElement<T, O>> {
-		return nodeListToHTMLCollection(this.querySelectorAll(classNames));
+		const names = classNames.split(/[\t\n\f\r ]+/).filter(Boolean);
+		return toHTMLCollection(
+			names.length === 0
+				? []
+				: this._descendantsToArray<MLElement<T, O>>(node => {
+						if (node.is(node.ELEMENT_NODE) && names.every(name => node.classList.contains(name))) {
+							return node;
+						}
+					}),
+		);
 	}
 
 	/**
@@ -3255,10 +3267,12 @@ export class MLDocument<T extends RuleConfigValue, O extends PlainData = undefin
 	}
 
 	/**
-	 * **IT THROWS AN ERROR WHEN CALLING THIS.**
+	 * The elements of the tree of the document that a type selector of that name matches, so that a
+	 * name is compared as a selector compares it in the language of the document (the case, and a
+	 * component that a pretender stands for), not as the DOM compares a tag name.
 	 *
-	 * @unsupported
 	 * @implements DOM API: `Document`
+	 * @see https://dom.spec.whatwg.org/#concept-getelementsbytagname
 	 */
 	getElementsByTagName(qualifiedName: string): HTMLCollectionOf<MLElement<T, O>> {
 		return nodeListToHTMLCollection(this.querySelectorAll(qualifiedName));

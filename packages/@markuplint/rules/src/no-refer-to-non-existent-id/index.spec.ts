@@ -205,3 +205,83 @@ test('[no-refer-to-non-existent-id-issue-4309-004] an HTML element in JSX folds 
 		},
 	]);
 });
+
+describe('an id is resolved in the tree of the reference', () => {
+	test('[no-refer-to-non-existent-id-issue-4489-001] a reference in a template reaches an id in the same template', async () => {
+		const { violations } = await mlRuleTest(rule, '<template><input id="a"><label for="a"></label></template>');
+		expect(violations).toStrictEqual([]);
+	});
+
+	test('[no-refer-to-non-existent-id-issue-4489-002] a reference in a template does not reach an id of the document', async () => {
+		const { violations } = await mlRuleTest(rule, '<input id="a"><template><label for="a"></label></template>');
+		expect(violations).toStrictEqual([
+			{
+				severity: 'error',
+				line: 1,
+				col: 37,
+				raw: 'a',
+				message: 'Missing "a" ID',
+			},
+		]);
+	});
+
+	test('[no-refer-to-non-existent-id-issue-4489-003] a reference of the document does not reach an id in a template', async () => {
+		const { violations } = await mlRuleTest(rule, '<label for="a"></label><template><input id="a"></template>');
+		expect(violations).toStrictEqual([
+			{
+				severity: 'error',
+				line: 1,
+				col: 13,
+				raw: 'a',
+				message: 'Missing "a" ID',
+			},
+		]);
+	});
+
+	test('[no-refer-to-non-existent-id-issue-4489-004] a reference in a declarative shadow root reaches an id in it', async () => {
+		const { violations } = await mlRuleTest(
+			rule,
+			'<div><template shadowrootmode="open"><input id="a"><label for="a"></label></template></div>',
+		);
+		expect(violations).toStrictEqual([]);
+	});
+
+	test('[no-refer-to-non-existent-id-issue-4489-005] the reference is compared after the character references are resolved', async () => {
+		const { violations } = await mlRuleTest(rule, '<input id="a"><label for="&#97;"></label>');
+		expect(violations).toStrictEqual([]);
+	});
+
+	test('[no-refer-to-non-existent-id-issue-4489-006] a dynamic id in another tree does not hide a missing id', async () => {
+		const { violations } = await mlRuleTest(
+			rule,
+			'<label for="a"></label><template><input id="{{x}}"></template>',
+			{ parser: { '.*': '@markuplint/mustache-parser' } },
+		);
+		expect(violations).toStrictEqual([
+			{
+				severity: 'error',
+				line: 1,
+				col: 13,
+				raw: 'a',
+				message: 'Missing "a" ID',
+			},
+		]);
+	});
+
+	test('[no-refer-to-non-existent-id-issue-4489-007] a reference on a template that is in no tree is not reported', async () => {
+		const { violations } = await mlRuleTest(
+			rule,
+			'<div><template shadowrootmode="open" aria-labelledby="a"></template></div>',
+		);
+		expect(violations).toStrictEqual([]);
+	});
+
+	test('[no-refer-to-non-existent-id-issue-4489-008] a dynamic id in the same tree may be what the reference means', async () => {
+		const { violations } = await mlRuleTest(
+			rule,
+			'<template><label for="a"></label><input id="{{x}}"></template>',
+			{ parser: { '.*': '@markuplint/mustache-parser' } },
+		);
+		expect(violations).toStrictEqual([]);
+	});
+});

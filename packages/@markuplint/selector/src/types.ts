@@ -101,6 +101,19 @@ export interface SelectorElement extends SelectorNode {
 	 */
 	readonly tagNameKind?: 'component' | 'native' | 'unknown-html';
 	readonly parentElement: SelectorElement | null;
+	/**
+	 * The parent element in the tree of the element, where `parentElement` is the one of the syntax tree.
+	 * They differ for an element at the top of the content of an `<template>`, which has none in the
+	 * tree (`null`) though its `parentElement` is the `<template>`: `section p` does not match a `p`
+	 * in the content of a `<template>` in a `<section>`. Absent means the host has no such tree (a plain
+	 * DOM, whose `parentElement` is already what the tree says), and `parentElement` is read.
+	 */
+	readonly treeParentElement?: SelectorElement | null;
+	/**
+	 * Whether the children of the element are in a tree of their own (the content of an HTML `<template>`),
+	 * so that `:has()` does not look into them. Absent means they are not.
+	 */
+	readonly isHTMLTemplateElement?: boolean;
 	readonly previousElementSibling: SelectorElement | null;
 	readonly nextElementSibling: SelectorElement | null;
 	readonly children: Iterable<SelectorElement>;

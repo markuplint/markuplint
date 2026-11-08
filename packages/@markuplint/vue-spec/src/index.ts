@@ -85,6 +85,15 @@ const spec: ExtendedSpec = {
 		},
 	],
 	/**
+	 * Only a `template` with `v-if`, `v-else-if`, `v-else`, `v-for` or `v-slot` is a fragment of Vue
+	 * (`isFragmentTemplate` of `@vue/compiler-core`). Any other one is an element, which the client
+	 * creates and appends each child to (`insert` of `nodeOps` in `@vue/runtime-dom` calls
+	 * `parent.insertBefore`), so the children are in the tree of the document, not in `content`.
+	 * Known limitations: Vue puts the children in `content` when it renders static markup as a
+	 * string, and when it hydrates server output it replaces the element with its content.
+	 */
+	templateContent: 'in-place',
+	/**
 	 * How Vue renders a literal in `:attr="…"` (`ssrRenderDynamicAttr` of `@vue/server-renderer`), where it
 	 * differs from the default of `@markuplint/ml-core`. The docs of Vue say of a boolean attribute:
 	 *

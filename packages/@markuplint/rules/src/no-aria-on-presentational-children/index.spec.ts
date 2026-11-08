@@ -409,6 +409,30 @@ test('[no-aria-on-presentational-children-issue-4408-018] aria-labelledby that r
 	]);
 });
 
+test('[no-aria-on-presentational-children-issue-4489-001] aria-labelledby that refers to an element of the same template is not reported', async () => {
+	const { violations } = await mlRuleTest(
+		rule,
+		'<template><div role="button"><span aria-labelledby="file">y</span></div><span id="file">report.pdf</span></template>',
+	);
+	expect(violations).toStrictEqual([]);
+});
+
+test('[no-aria-on-presentational-children-issue-4489-002] aria-labelledby that refers to an element of another tree is reported', async () => {
+	const { violations } = await mlRuleTest(
+		rule,
+		'<template><div role="button"><span aria-labelledby="file">y</span></div></template><span id="file">report.pdf</span>',
+	);
+	expect(violations).toStrictEqual([
+		{
+			severity: 'warning',
+			line: 1,
+			col: 36,
+			message: ineffective('button'),
+			raw: 'aria-labelledby="file"',
+		},
+	]);
+});
+
 test('[no-aria-on-presentational-children-issue-4408-019] aria-hidden="true" on an element hidden by the hidden attribute is reported', async () => {
 	const { violations } = await mlRuleTest(
 		rule,

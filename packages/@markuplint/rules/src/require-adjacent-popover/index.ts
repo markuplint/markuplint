@@ -1,6 +1,8 @@
 import { createRule } from '@markuplint/ml-core';
 import { ARIA_RECOMMENDED_VERSION, mayBeFocusable } from '@markuplint/ml-spec';
 
+import { getElementByIdInTree } from '../helpers.js';
+
 import meta from './meta.js';
 
 /**
@@ -15,7 +17,8 @@ export default createRule({
 	verify({ document, report, t }) {
 		const ariaVersion = document.ruleCommonSettings?.ariaVersion ?? ARIA_RECOMMENDED_VERSION;
 
-		const triggers = document.querySelectorAll('[popovertarget], [commandfor]');
+		// The target is looked for in the tree of the trigger, so the triggers of every tree are checked
+		const triggers = document.deepQuerySelectorAll('[popovertarget], [commandfor]');
 		Triggers: for (const trigger of triggers) {
 			let targetId: string | null = null;
 
@@ -32,7 +35,11 @@ export default createRule({
 			if (!targetId) {
 				continue;
 			}
-			const target = document.getElementById(targetId);
+			const target = getElementByIdInTree(
+				trigger,
+				targetId,
+				trigger.getAttributeNode(popovertarget ? 'popovertarget' : 'commandfor')?.isExpressionValue,
+			);
 			if (!target) {
 				continue;
 			}

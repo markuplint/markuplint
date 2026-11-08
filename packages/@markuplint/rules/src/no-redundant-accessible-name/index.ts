@@ -5,7 +5,7 @@ import type { ComputedRole } from '@markuplint/ml-spec';
 import { createRule, getComputedRole } from '@markuplint/ml-core';
 import { ARIA_RECOMMENDED_VERSION, isExposed } from '@markuplint/ml-spec';
 
-import { accnameMayBeMutable, getOwnedLabel } from '../helpers.js';
+import { accnameMayBeMutable, getElementByIdInTree, getOwnedLabel } from '../helpers.js';
 
 import meta from './meta.js';
 
@@ -25,7 +25,7 @@ export default createRule({
 			const ariaVersion = ARIA_RECOMMENDED_VERSION;
 
 			// Skip mutable elements (template expressions etc.)
-			if (accnameMayBeMutable(el, document)) {
+			if (accnameMayBeMutable(el)) {
 				return;
 			}
 
@@ -84,13 +84,16 @@ function collectNamingSources<V extends RuleConfigValue, O extends PlainData>(
 	//
 	// Known limitation: step 2C (Embedded Control) is not modeled, so a self-referencing
 	// textbox, combobox, listbox or range is treated like any other element.
-	const ariaLabelledby = el.getAttribute('aria-labelledby');
-	if (ariaLabelledby && ariaLabelledby.trim()) {
+	const ariaLabelledbyAttr = el.getAttributeNode('aria-labelledby');
+	const ariaLabelledby = ariaLabelledbyAttr?.value;
+	if (ariaLabelledbyAttr && ariaLabelledby && ariaLabelledby.trim()) {
 		const ids = ariaLabelledby.trim().split(/\s+/);
 		// An IDREF resolves to the first element with that id, so with duplicate ids a
 		// reference only counts as self-referencing when this element is that first match.
-		const isSelfReferencing = ids.some(id => id === el.id && document.querySelector(`[id="${id}"]`) === el);
-		const hasResolvableId = ids.some(id => document.querySelector(`[id="${id}"]`));
+		const isSelfReferencing = ids.some(
+			id => getElementByIdInTree(el, id, ariaLabelledbyAttr.isExpressionValue) === el,
+		);
+		const hasResolvableId = ids.some(id => getElementByIdInTree(el, id, ariaLabelledbyAttr.isExpressionValue));
 		if (hasResolvableId && !isSelfReferencing) {
 			sources.push({ label: 'aria-labelledby' });
 		}
@@ -103,7 +106,7 @@ function collectNamingSources<V extends RuleConfigValue, O extends PlainData>(
 	}
 
 	// 3. label (explicit or implicit) — only for labelable elements
-	const ownedLabel = getOwnedLabel(el, document);
+	const ownedLabel = getOwnedLabel(el);
 	if (ownedLabel) {
 		sources.push({ label: 'label' });
 	}
