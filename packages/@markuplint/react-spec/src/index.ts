@@ -30,10 +30,13 @@ const spec: ExtendedSpec = {
 	 * names that `MLAttr` resolves JSX props to (`itemProp` is `itemprop`, `onLoad` is `onload`).
 	 *
 	 * What decides it in React is `isHostHoistableType` of `react-dom-bindings`, which is stricter than
-	 * the references: "Global opt out of hoisting for anything in SVG Namespace or anything with an
-	 * itemProp" (a type selector without a namespace matches the SVG element as well, so `:not(svg|…)`
-	 * leaves it out), and a `<link>` needs `rel` and a non-empty `href` and a `<style>` a non-empty
-	 * `href` and `precedence`.
+	 * the references. A comment of it says:
+	 *
+	 * > Global opt out of hoisting for anything in SVG Namespace or anything with an itemProp inside an itemScope
+	 *
+	 * A type selector without a namespace matches the SVG element as well, so `:not(svg|…)` leaves it
+	 * out. A `<link>` needs `rel` and a non-empty `href`, and a `<style>` a non-empty `href` and
+	 * `precedence`.
 	 *
 	 * What it does not tell, which the selectors cannot express:
 	 *
@@ -42,30 +45,36 @@ const spec: ExtendedSpec = {
 	 * - An element whose attributes are all spread (`<link {...props} />`): the attributes are not known,
 	 *   so it is not taken as moved, and its position is checked
 	 *
-	 * @see https://github.com/facebook/react/blob/main/packages/react-dom-bindings/src/client/ReactFiberConfigDOM.js
-	 * @see https://react.dev/reference/react-dom/components/title
-	 * @see https://react.dev/reference/react-dom/components/meta
-	 * @see https://react.dev/reference/react-dom/components/link
-	 * @see https://react.dev/reference/react-dom/components/style
+	 * The reference of each element says when React moves it:
 	 *
-	 * - `<title>`:
-	 *   > React will always place the DOM element corresponding to the `<title>` component within the
-	 *   > document's `<head>`, regardless of where in the React tree it is rendered.
-	 *   (https://react.dev/reference/react-dom/components/title)
-	 * - `<meta>`:
-	 *   > if `<meta>` has an `itemProp` prop, there is no special behavior
-	 *   (https://react.dev/reference/react-dom/components/meta)
-	 * - `<link>`:
-	 *   > If the `<link>` has an `itemProp` prop, there is no special behavior […]
-	 *   > If the `<link>` has an `onLoad` or `onError` prop, because in that case you are managing the
-	 *   > loading of the linked resource manually within your React component.
-	 *   > If the `<link>` has a `rel="stylesheet"` prop, then it has to also have a `precedence` prop to
-	 *   > get this special behavior. […] If you supply any of the `onLoad`, `onError`, or `disabled`
-	 *   > props, there is no special behavior
-	 *   (https://react.dev/reference/react-dom/components/link)
-	 * - `<style>`:
-	 *   > To opt into this behavior, provide the `href` and `precedence` props.
-	 *   (https://react.dev/reference/react-dom/components/style)
+	 * `<title>`:
+	 *
+	 * > React will always place the DOM element corresponding to the `<title>` component within the
+	 * > document's `<head>`, regardless of where in the React tree it is rendered.
+	 *
+	 * `<meta>`:
+	 *
+	 * > if `<meta>` has an `itemProp` prop, there is no special behavior
+	 *
+	 * `<link>`:
+	 *
+	 * > If the `<link>` has a `rel="stylesheet"` prop, then it has to also have a `precedence` prop to
+	 * > get this special behavior. […] If the `<link>` has an `itemProp` prop, there is no special
+	 * > behavior […] If the `<link>` has an `onLoad` or `onError` prop, because in that case you are
+	 * > managing the loading of the linked resource manually within your React component.
+	 *
+	 * > If you supply any of the `onLoad`, `onError`, or `disabled` props, there is no special behavior
+	 *
+	 * `<style>`:
+	 *
+	 * > To opt into this behavior, provide the `href` and `precedence` props.
+	 *
+	 * @see https://github.com/facebook/react/blob/main/packages/react-dom-bindings/src/client/ReactFiberConfigDOM.js#isHostHoistableType
+	 * @see https://react.dev/reference/react-dom/components/title#special-rendering-behavior
+	 * @see https://react.dev/reference/react-dom/components/meta#special-rendering-behavior
+	 * @see https://react.dev/reference/react-dom/components/link#special-rendering-behavior
+	 * @see https://react.dev/reference/react-dom/components/link#special-behavior-for-stylesheets
+	 * @see https://react.dev/reference/react-dom/components/style#special-rendering-behavior
 	 */
 	movedToHead: [
 		'title:not(svg|title):not([itemprop])',

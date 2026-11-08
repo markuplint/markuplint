@@ -88,6 +88,21 @@ describe('listCitingFiles: the spec data and the selector engine', () => {
 	});
 });
 
+describe('the declarations that a spec package keeps beside its index', () => {
+	test('[discover-012] reads a source file that a spec package declares its table in, but not its specs', () => {
+		expect(classify('packages/@markuplint/react-spec/src/react-18.ts')).toBe('source');
+		expect(classify('packages/@markuplint/react-spec/src/nested/other.ts')).toBeNull();
+		expect(classify('packages/@markuplint/react-spec/src/react-18.spec.ts')).toBeNull();
+		expect(classify('packages/@markuplint/react-spec/src/types.d.ts')).toBeNull();
+	});
+
+	test('[discover-013] lists the declaration of React that holds its table', () => {
+		const root = fileURLToPath(new URL('../../', import.meta.url));
+		const found = listCitingFiles(root).find(f => f.path === 'packages/@markuplint/react-spec/src/react-18.ts');
+		expect(found?.kind).toBe('source');
+	});
+});
+
 describe('collectFiles', () => {
 	test('[discover-005] skips a tracked file that has been deleted from the working tree', () => {
 		const root = fileURLToPath(new URL('../../', import.meta.url));

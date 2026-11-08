@@ -1,6 +1,6 @@
 // https://html.spec.whatwg.org/multipage/sections.html#the-address-element
 // https://www.w3.org/TR/html-aria/#el-address
-// https://www.w3.org/TR/html-aam/#:~:text=abbr-,address,-area%20(represents%20a
+// https://www.w3.org/TR/html-aam/#el-address
 {
 	"contentModel": {
 		"contents": [

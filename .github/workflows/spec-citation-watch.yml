@@ -1,17 +1,23 @@
 name: Spec citation watch
 
-# Checks the specification passages that rule READMEs, rule sources and the
-# website cite against the live specifications, and opens an Issue when one
-# changed (see the module comment of `scripts/spec-citations/cli.ts`).
+# Checks the passages that rule READMEs, rule sources, the spec data, the
+# declarations of how a framework renders a literal and the website cite
+# against the live specifications, the documentation of the frameworks and
+# their source files, and opens an Issue when one changed (see the module
+# comment of `scripts/spec-citations/cli.ts`).
 # Nothing is fixed automatically: a maintainer decides whether the rule, its
-# README (both languages) or `@markuplint/html-spec` has to follow.
+# README (both languages), `@markuplint/html-spec` or the table of a framework
+# (`@markuplint/*-spec`, `*-parser`) has to follow. The one Issue is titled and
+# labelled for specifications, whatever the finding was cited from.
 #
 # The same run refreshes `spec-citations.lock.json` through a pull request.
 # Merging it is what accepts the changed passages, so that the next run
 # reports only what changed after it.
 #
 # A pull request that touches the script runs the check read-only, which
-# proves that the runner can install, run the script and reach the spec hosts.
+# proves that the runner can install, run the script and reach the hosts that
+# it fetches (the specifications, the documentation and the sources of the
+# frameworks).
 # Findings do not fail it: the specs move on their own.
 
 on:
@@ -74,7 +80,7 @@ jobs:
                   done
                   # 0: nothing to report, 1: findings. Neither is this pull request's fault.
                   # 2: a page still could not be fetched. This job exists to show that the runner can reach the
-                  #    spec hosts, so it fails.
+                  #    hosts that the script fetches, so it fails.
                   # No report file: the script crashed.
                   if [ ! -f report.md ] || [ "$status" -ge 2 ]; then
                       exit 1

@@ -2,6 +2,7 @@ import type { Page } from './extract.ts';
 import type { Citation, Lock, LockEntry, PageResult, Problem, ProblemKind, Quote } from './types.ts';
 
 import { splitSentences, unifiedDiff } from './diff.ts';
+import { extractDeclaration, isSourcePage } from './extract-source.ts';
 import { extractSection, pageText, parsePage } from './extract.ts';
 import { containsQuote, hashText, matchesDirective } from './normalize.ts';
 
@@ -41,13 +42,30 @@ const PRIORITY: readonly ProblemKind[] = [
 	'fetch-failed',
 ];
 
+/** What a fetched page is read as: the HTML of a specification or of documentation, or the text of a source file. */
+type Loaded = { readonly kind: 'page'; readonly page: Page } | { readonly kind: 'source'; readonly text: string };
+
+/** The problem of a text fragment (`:~:text=`) that the page no longer has, or `null` when it has it or there is none. */
+function missingDirective(citation: Citation, page: Page): Problem | null {
+	const directive = citation.textDirective;
+	if (directive === null || matchesDirective(pageText(page), directive)) {
+		return null;
+	}
+	return {
+		kind: 'directive-missing',
+		citation,
+		message: `The text fragment \`${directive.start}${directive.end === undefined ? '' : `…${directive.end}`}\` is no longer on the page`,
+	};
+}
+
 /** A cited number is right when it is the section's own number or one of its ancestors'. */
 function secnoMatches(cited: string, actual: string): boolean {
 	return actual === cited || actual.startsWith(`${cited}.`);
 }
 
 /**
- * Compares every citation with the current specification.
+ * Compares every citation with what it cites now: the specification, the documentation of a framework, or the
+ * declaration of a source file (`extract-source.ts`).
  *
  * Everything but `section-changed` is decided from the page alone, which is
  * why those checks come first and are reported first: they hold on a fresh
@@ -58,7 +76,7 @@ function secnoMatches(cited: string, actual: string): boolean {
 export function check(input: CheckInput): CheckResult {
 	const { citations, pages, lock, now } = input;
 	const problems: Problem[] = [];
-	const parsed = new Map<string, Page | null>();
+	const loaded = new Map<string, Loaded | null>();
 	for (const [url, result] of pages) {
 		if (result.status === 'failed') {
 			problems.push(
@@ -70,9 +88,14 @@ export function check(input: CheckInput): CheckResult {
 						}
 					: { kind: 'fetch-failed', citation: null, message: `${url}: ${result.message}` },
 			);
-			parsed.set(url, null);
+			loaded.set(url, null);
 		} else {
-			parsed.set(url, parsePage(result.html));
+			loaded.set(
+				url,
+				isSourcePage(url)
+					? { kind: 'source', text: result.html }
+					: { kind: 'page', page: parsePage(result.html) },
+			);
 		}
 	}
 
@@ -87,11 +110,12 @@ export function check(input: CheckInput): CheckResult {
 		if (key !== null) {
 			cited.add(key);
 		}
-		const page = parsed.get(citation.page);
-		if (page === undefined || page === null) {
+		const target = loaded.get(citation.page);
+		if (target === undefined || target === null) {
 			continue;
 		}
-		if (page.unprocessed) {
+		const page = target.kind === 'page' ? target.page : null;
+		if (page?.unprocessed === true) {
 			if (!reportedUnprocessed.has(citation.page)) {
 				reportedUnprocessed.add(citation.page);
 				problems.push({
@@ -110,15 +134,27 @@ export function check(input: CheckInput): CheckResult {
 					message: `${citation.url} has no fragment, so the section it quotes or numbers cannot be located`,
 				});
 			}
+			// A text fragment alone is the only way to point at a passage that no heading anchors (the introduction
+			// of a page), and it is searched in the whole page, which needs no section.
+			const missing = page === null ? null : missingDirective(citation, page);
+			if (missing !== null) {
+				problems.push(missing);
+			}
 			continue;
 		}
 
-		const section = extractSection(page, citation.fragment);
+		const section =
+			target.kind === 'page'
+				? extractSection(target.page, citation.fragment)
+				: extractDeclaration(target.text, citation.fragment);
 		if (section.status === 'missing') {
 			problems.push({
 				kind: 'anchor-missing',
 				citation,
-				message: `\`#${citation.fragment}\` is not on ${citation.page}`,
+				message:
+					target.kind === 'page'
+						? `\`#${citation.fragment}\` is not on ${citation.page}`
+						: `\`${citation.fragment}\` is not declared at the top level of ${citation.url.split('#')[0]}`,
 			});
 			continue;
 		}
@@ -142,13 +178,9 @@ export function check(input: CheckInput): CheckResult {
 			quoteGroups.set(quote.group, group);
 		}
 
-		const directive = citation.textDirective;
-		if (directive !== null && !matchesDirective(pageText(page), directive)) {
-			problems.push({
-				kind: 'directive-missing',
-				citation,
-				message: `The text fragment \`${directive.start}${directive.end === undefined ? '' : `…${directive.end}`}\` is no longer on the page`,
-			});
+		const missing = page === null ? null : missingDirective(citation, page);
+		if (missing !== null) {
+			problems.push(missing);
 		}
 
 		if (citation.secno !== null && section.secno !== null && !secnoMatches(citation.secno, section.secno)) {
@@ -203,12 +235,14 @@ export function check(input: CheckInput): CheckResult {
 			sections[key] = stored;
 			continue;
 		}
-		const text = splitSentences(unit);
+		// Spec prose is stored one sentence to a line so that the diff points at the changed sentence; the lines
+		// of a declaration are already the unit of its diff.
+		const text = isSourcePage(key) ? unit : splitSentences(unit);
 		if (stored !== undefined) {
 			problems.push({
 				kind: 'section-changed',
 				citation: firstCitation.get(key) ?? null,
-				message: `The cited section changed since ${stored.updatedAt.slice(0, 10)}`,
+				message: `The cited ${isSourcePage(key) ? 'declaration' : 'section'} changed since ${stored.updatedAt.slice(0, 10)}`,
 				diff: unifiedDiff(stored.text, text),
 			});
 		}

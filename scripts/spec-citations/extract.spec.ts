@@ -161,3 +161,33 @@ describe('text normalization', () => {
 		expect(text).not.toContain('not text');
 	});
 });
+
+/** The shape of docs.astro.build (Starlight): each heading is wrapped, with its anchor link, in `div.sl-heading-wrapper`. */
+const STARLIGHT = `<!doctype html><body>
+<div class="sl-heading-wrapper level-h3"><h3 id="dynamic-attributes">Dynamic Attributes</h3><a class="sl-anchor-link" href="#dynamic-attributes"><span aria-hidden="true">#</span><span class="sr-only">Section titled “Dynamic Attributes”</span></a></div>
+<p>Local variables can be used in curly braces.</p>
+<div class="sl-heading-wrapper level-h4"><h4 id="sub">Sub</h4><a class="sl-anchor-link" href="#sub"><span class="sr-only">Section titled “Sub”</span></a></div>
+<p>Sub text.</p>
+<div class="sl-heading-wrapper level-h3"><h3 id="dynamic-html">Dynamic HTML</h3><a class="sl-anchor-link" href="#dynamic-html"><span class="sr-only">Section titled “Dynamic HTML”</span></a></div>
+<p>Next text.</p>
+</body>`;
+
+describe('extractSection on a page whose headings are wrapped with their anchor links', () => {
+	test('[extract-017] takes the prose that follows the wrapper as the section, and the anchor link as no text', () => {
+		const section = extractSection(parsePage(STARLIGHT), 'dynamic-attributes');
+		expect(section).toMatchObject({
+			status: 'found',
+			unit: 'Dynamic Attributes Local variables can be used in curly braces.',
+		});
+		expect(section).toMatchObject({
+			scope: 'Dynamic Attributes Local variables can be used in curly braces. Sub Sub text.',
+		});
+	});
+
+	test('[extract-018] ends a section at the next wrapped heading of the same level, and not before a deeper one', () => {
+		expect(extractSection(parsePage(STARLIGHT), 'sub')).toMatchObject({ unit: 'Sub Sub text.' });
+		expect(extractSection(parsePage(STARLIGHT), 'dynamic-html')).toMatchObject({
+			unit: 'Dynamic HTML Next text.',
+		});
+	});
+});

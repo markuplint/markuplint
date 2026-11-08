@@ -289,7 +289,7 @@ export function plan(changes: readonly Change[], probe: Probe): Plan {
 			return { mode: 'full', reason: `${path} can change any spec` };
 		}
 
-		// The citation checks read rule READMEs, spec data, selector sources and the website docs.
+		// The citation checks read rule READMEs, spec data, selector sources, the declarations of the frameworks and the website docs.
 		if (classifyCitation(path) !== null) {
 			add(specsUnder(probe, 'scripts/spec-citations'));
 		}

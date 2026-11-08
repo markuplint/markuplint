@@ -11,13 +11,11 @@ export type FileKind = 'readme' | 'source' | 'data' | 'doc';
 const RULES = 'packages/@markuplint/rules/src';
 const DOCS = ['website/docs', 'website/i18n/ja/docusaurus-plugin-content-docs'];
 /**
- * Outside the rules package, a citation is in the declaration of a spec package (`*-spec/src/index.ts`), and
- * in the table of how a parser without a spec package renders a literal (`*-parser/src/literal-values.ts`).
+ * Outside the rules package, a citation is in the declaration of a spec package (`*-spec/src/*.ts`: the
+ * index, and the file that `react-spec` keeps its table in), and in the table of how a parser without a spec
+ * package renders a literal (`*-parser/src/literal-values.ts`).
  */
-const DECLARATIONS = [
-	'packages/@markuplint/*-spec/src/index.ts',
-	'packages/@markuplint/*-parser/src/literal-values.ts',
-];
+const DECLARATIONS = ['packages/@markuplint/*-spec/src/*.ts', 'packages/@markuplint/*-parser/src/literal-values.ts'];
 /**
  * The HTML spec data (`html-spec/src/*.jsonc`) and the selector engine cite the passages behind the
  * content models and the matching that `permitted-contents` and `:model()` rely on.
@@ -42,7 +40,11 @@ export function classify(path: string): FileKind | null {
 	if (path.startsWith(`${RULES}/`) && path.endsWith('.ts') && !path.endsWith('.spec.ts') && !path.endsWith('.d.ts')) {
 		return 'source';
 	}
-	if (/^packages\/@markuplint\/[^/]+-spec\/src\/index\.ts$/.test(path)) {
+	if (
+		/^packages\/@markuplint\/[^/]+-spec\/src\/[^/]+\.ts$/.test(path) &&
+		!path.endsWith('.spec.ts') &&
+		!path.endsWith('.d.ts')
+	) {
 		return 'source';
 	}
 	if (/^packages\/@markuplint\/[^/]+-parser\/src\/literal-values\.ts$/.test(path)) {

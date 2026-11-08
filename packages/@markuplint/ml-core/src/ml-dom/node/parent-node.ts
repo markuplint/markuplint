@@ -40,7 +40,7 @@ export abstract class MLParentNode<
 
 	/**
 	 * @implements DOM API: `Element`, `Document`, `DocumentFragment`
-	 * @see https://dom.spec.whatwg.org/#ref-for-dom-parentnode-children%E2%91%A0
+	 * @see https://dom.spec.whatwg.org/#dom-parentnode-children
 	 */
 	get children(): HTMLCollectionOf<MLElement<T, O>> {
 		if (this.#children) {
@@ -53,18 +53,18 @@ export abstract class MLParentNode<
 
 	/**
 	 * @implements DOM API: `Element`, `Document`, `DocumentFragment`
-	 * @see https://dom.spec.whatwg.org/#ref-for-dom-parentnode-firstelementchild%E2%91%A0
+	 * @see https://dom.spec.whatwg.org/#dom-parentnode-firstelementchild
 	 */
 	get firstElementChild() {
-		return this.children[0] ?? null;
+		return this.children.item(0);
 	}
 
 	/**
 	 * @implements DOM API: `Element`, `Document`, `DocumentFragment`
-	 * @see https://dom.spec.whatwg.org/#ref-for-dom-parentnode-lastelementchild%E2%91%A0
+	 * @see https://dom.spec.whatwg.org/#dom-parentnode-lastelementchild
 	 */
 	get lastElementChild() {
-		return this.children[0] ?? null;
+		return this.children.item(this.children.length - 1);
 	}
 
 	/**
@@ -72,7 +72,7 @@ export abstract class MLParentNode<
 	 *
 	 * @unsupported
 	 * @implements DOM API: `Element`, `Document`, `DocumentFragment`
-	 * @see https://dom.spec.whatwg.org/#ref-for-dom-parentnode-append%E2%91%A0
+	 * @see https://dom.spec.whatwg.org/#dom-parentnode-append
 	 */
 	append(
 		// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
@@ -86,7 +86,7 @@ export abstract class MLParentNode<
 	 *
 	 * @unsupported
 	 * @implements DOM API: `Element`, `Document`, `DocumentFragment`
-	 * @see https://dom.spec.whatwg.org/#ref-for-dom-parentnode-prepend%E2%91%A0
+	 * @see https://dom.spec.whatwg.org/#dom-parentnode-prepend
 	 */
 	prepend(
 		// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
@@ -97,7 +97,7 @@ export abstract class MLParentNode<
 
 	/**
 	 * @implements DOM API: `Element`, `Document`, `DocumentFragment`
-	 * @see https://dom.spec.whatwg.org/#ref-for-dom-parentnode-queryselector%E2%91%A0
+	 * @see https://dom.spec.whatwg.org/#dom-parentnode-queryselector
 	 */
 	querySelector(selectors: string): MLElement<T, O> | null {
 		const selected = this.querySelectorAll(selectors);
@@ -109,7 +109,7 @@ export abstract class MLParentNode<
 	 * the content of an HTML `template` element, which belong to a tree of their own.
 	 *
 	 * @implements DOM API: `Element`, `Document`, `DocumentFragment`
-	 * @see https://dom.spec.whatwg.org/#ref-for-dom-parentnode-queryselectorall%E2%91%A0
+	 * @see https://dom.spec.whatwg.org/#dom-parentnode-queryselectorall
 	 */
 	querySelectorAll(selectors: string): NodeListOf<MLElement<T, O>> {
 		const selected = this.#selectedElements.get(selectors);
@@ -195,7 +195,7 @@ export abstract class MLParentNode<
 	 *
 	 * @unsupported
 	 * @implements DOM API: `Element`, `Document`, `DocumentFragment`
-	 * @see https://dom.spec.whatwg.org/#ref-for-dom-parentnode-replacechildren%E2%91%A0
+	 * @see https://dom.spec.whatwg.org/#dom-parentnode-replacechildren
 	 */
 	replaceChildren(
 		// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types

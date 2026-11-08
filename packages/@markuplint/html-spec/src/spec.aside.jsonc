@@ -1,6 +1,6 @@
 // https://html.spec.whatwg.org/multipage/sections.html#the-aside-element
 // https://www.w3.org/TR/html-aria/#el-aside
-// https://www.w3.org/TR/html-aam/#:~:text=Comments-,aside%20(scoped%20to%20the%20body%20or%20main%20element),-aside%20(scoped%20to
+// https://www.w3.org/TR/html-aam/#el-aside-ancestorbodymain
 {
 	"contentModel": {
 		"contents": [

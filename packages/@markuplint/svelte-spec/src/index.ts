@@ -35,9 +35,13 @@ const spec: ExtendedSpec = {
 	 * and `DOM_BOOLEAN_ATTRIBUTES` of `svelte/utils.js`), where it differs from the default of
 	 * `@markuplint/ml-core`. Names are in lower case.
 	 *
-	 * - "Boolean attributes are included on the element if their value is truthy and excluded if it's falsy",
-	 *   and "All other attributes are included unless their value is nullish" (the docs of Svelte). The one
-	 *   exception is the empty string on a boolean attribute, which is present (`booleanAttrs`)
+	 * The docs of Svelte say which attributes are included:
+	 *
+	 * > Boolean attributes are included on the element if their value is truthy and excluded if it's falsy
+	 *
+	 * > All other attributes are included unless their value is nullish
+	 *
+	 * - The one exception is the empty string on a boolean attribute, which is present (`booleanAttrs`)
 	 * - `translate={true}` is `translate="yes"` and `translate={false}` is `translate="no"`
 	 *
 	 * What it does not tell, which does not affect a rule:
@@ -49,7 +53,9 @@ const spec: ExtendedSpec = {
 	 *   attribute names), so there is no `customElements` table; the client sets the properties that the
 	 *   element declares (`set_custom_element_data`), which are not attributes
 	 *
-	 * @see https://svelte.dev/docs/svelte/basic-markup#Attributes-and-props
+	 * @see https://svelte.dev/docs/svelte/basic-markup#Element-attributes
+	 * @see https://github.com/sveltejs/svelte/blob/main/packages/svelte/src/internal/shared/attributes.js#attr
+	 * @see https://github.com/sveltejs/svelte/blob/main/packages/svelte/src/utils.js#DOM_BOOLEAN_ATTRIBUTES
 	 */
 	literalValues: {
 		booleanAttrs: { '""': '' },

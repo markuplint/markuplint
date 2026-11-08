@@ -721,6 +721,11 @@ export type LiteralValueTable = LiteralValueKinds & {
  * `@markuplint/ml-core` that hold a table (`framework-literal-values.spec.ts`) and the names that the
  * spec types as `Boolean` and the framework does not (`literal-values-declarations.spec.ts`) fail
  * where a table no longer says what the framework renders.
+ *
+ * The JSDoc of a declaration cites the section of the framework's documentation and each declaration of its
+ * source that the table was read from, in the form that `yarn spec-citations` reads
+ * (`scripts/spec-citations/cli.ts`), so that a change in either is reported by the weekly run. A framework is
+ * monitored only once its documentation site and repository are listed in `scripts/spec-citations/collect.ts`.
  */
 export type LiteralValueDeclaration = LiteralValueTable & {
 	readonly customElements?: LiteralValueTable;
