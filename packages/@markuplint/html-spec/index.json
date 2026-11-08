@@ -52905,6 +52905,7 @@
 									"serviceworker",
 									"sharedworker",
 									"style",
+									"text",
 									"worker"
 								]
 							}
