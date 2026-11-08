@@ -243,7 +243,9 @@
 		 * No disallowed ancestor
 		 *
 		 * An element must not appear as a descendant of an ancestor its
-		 * content model forbids (e.g. `<address>` inside `<address>`).
+		 * content model forbids (e.g. `<address>` inside `<address>`), nor
+		 * have an ancestor outside those its content model limits it to
+		 * (e.g. `<main>` inside `<section>`).
 		 * Split off from `permitted-contents` — kept as its own named group
 		 * here so preset users keep this coverage.
 		 */
