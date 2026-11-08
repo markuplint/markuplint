@@ -16,7 +16,12 @@
 				},
 				"descendantOf": { "type": "string" },
 				"forbiddenAncestors": {
-					"description": "Elements that this element must NOT appear as a descendant of. Each entry is a CSS selector matching forbidden ancestor elements.",
+					"description": "Elements that this element must NOT appear as a descendant of. Each entry is a CSS selector matching forbidden ancestor elements. The walk up the tree stops at the content of a `template` element, which has no ancestors.",
+					"type": "array",
+					"items": { "type": "string" }
+				},
+				"permittedAncestors": {
+					"description": "Elements that this element's ancestors are limited to: every ancestor must match at least one entry. Each entry is a CSS selector, or `#custom` for a custom element (a component or an autonomous custom element). A selector can use `:aria(has no name)`, which is evaluated with the recommended ARIA version. The walk up the tree stops at the content of a `template` element, which has no ancestors.",
 					"type": "array",
 					"items": { "type": "string" }
 				},

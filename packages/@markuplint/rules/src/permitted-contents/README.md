@@ -14,7 +14,7 @@ This rule warns when:
 
 It is possible to make the structure robust by setting element relationships on template engines such as custom elements and Vue.
 
-A few related structural constraints are separate rules: an element appearing as a descendant of a forbidden ancestor is [`no-disallowed-ancestor`](/docs/rules/no-disallowed-ancestor)'s concern (e.g., `<address>` inside `<address>`), a missing required ancestor is [`require-ancestor`](/docs/rules/require-ancestor)'s (e.g., `<area>` outside `<map>`), and a sibling-unique attribute repeated on multiple elements of the same type is [`no-duplicate-sibling-attr`](/docs/rules/no-duplicate-sibling-attr)'s (e.g., multiple `<track default>`).
+A few related structural constraints are separate rules: an element appearing as a descendant of a forbidden ancestor, or with an ancestor outside those its content model limits it to, is [`no-disallowed-ancestor`](/docs/rules/no-disallowed-ancestor)'s concern (e.g., `<address>` inside `<address>`, `<main>` inside `<section>`), a missing required ancestor is [`require-ancestor`](/docs/rules/require-ancestor)'s (e.g., `<area>` outside `<map>`), and a sibling-unique attribute repeated on multiple elements of the same type is [`no-duplicate-sibling-attr`](/docs/rules/no-duplicate-sibling-attr)'s (e.g., multiple `<track default>`).
 
 ❌ Examples of **incorrect** code for this rule
 

@@ -13,8 +13,11 @@
 		//
 		// > A hierarchically correct main element is one whose ancestor elements are limited to
 		// > html, body, div, form without an accessible name, and autonomous custom elements.
-		// The data does not check this yet: it only forbids the ancestors below.
-		"forbiddenAncestors": ["article", "aside", "footer", "header", "nav"]
+		// > Each main element must be a hierarchically correct main element.
+		//
+		// `#custom` covers an autonomous custom element and a component alike.
+		// `form:aria(has no name)` is evaluated with the recommended ARIA version.
+		"permittedAncestors": ["html", "body", "div", "form:aria(has no name)", "#custom"]
 	},
 	"globalAttrs": {
 		"#HTMLGlobalAttrs": true,

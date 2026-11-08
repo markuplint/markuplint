@@ -23,7 +23,8 @@ const DUPLICATE_BODY_START_TAG = /<body(?=[\s/>])/i;
  * > A start tag whose tag name is "body": Parse error. If the stack of open
  * > elements has only one node on it, or if the second element on the stack
  * > of open elements is not a body element, or if there is a template
- * > element on the stack of open elements, then ignore the token. […]
+ * > element on the stack of open elements, or if the parser's fragment parser
+ * > abort requested is true, then ignore the token. […]
  * > Otherwise: Set the frameset-ok flag to "not ok" […]
  *
  * "in body" insertion mode, "Any other end tag":

@@ -13,7 +13,7 @@ description: HTML要素のコンテンツモデルと構造的な制約を検証
 
 オプションに独自のルールを設けることができます。カスタム要素やVueなどのテンプレートエンジン上での要素関係を設定することで、構造を堅牢にできます。
 
-関連するいくつかの構造的制約は別のルールに分かれています: 禁止された祖先要素の子孫として要素が出現するのは[`no-disallowed-ancestor`](/docs/rules/no-disallowed-ancestor)の担当（例: `<address>`内の`<address>`）、必須の祖先要素が存在しないのは[`require-ancestor`](/docs/rules/require-ancestor)の担当（例: `<map>`外の`<area>`）、兄弟要素間でユニークであるべき属性が重複しているのは[`no-duplicate-sibling-attr`](/docs/rules/no-duplicate-sibling-attr)の担当（例: 複数の`<track default>`）です。
+関連するいくつかの構造的制約は別のルールに分かれています: 禁止された祖先要素の子孫として要素が出現する、またはコンテンツモデルが限定する祖先要素以外を祖先に持つのは[`no-disallowed-ancestor`](/docs/rules/no-disallowed-ancestor)の担当（例: `<address>`内の`<address>`、`<section>`内の`<main>`）、必須の祖先要素が存在しないのは[`require-ancestor`](/docs/rules/require-ancestor)の担当（例: `<map>`外の`<area>`）、兄弟要素間でユニークであるべき属性が重複しているのは[`no-duplicate-sibling-attr`](/docs/rules/no-duplicate-sibling-attr)の担当（例: 複数の`<track default>`）です。
 
 <!-- textlint-disable ja-technical-writing/ja-no-mixed-period -->
 
