@@ -1,9 +1,12 @@
 /**
  * Chooses the specs that a pull request has to run, from the files it changed.
  *
- * The goal is a fast answer on a pull request. The merge queue runs the whole suite, so this
+ * The goal is a fast answer on a pull request. The whole suite runs in the merge queue and on `dev`
+ * (and only after the merge on `dev`, until the queue is enabled and `ci-ok` is required), so this
  * module is allowed to be an approximation, but never in the direction of running too little for
- * a file it cannot place: **a path that no rule below recognises makes the plan `full`.**
+ * a file it cannot place: **a path that no rule below recognises makes the plan `full`**, as does
+ * a deleted file and, on a branch that has `crates/` (the v6 line), anything under it: no rule here
+ * is written for the Rust workspace, and adding one is how that line gets a faster pull request.
  *
  * What the selection is built on, and where it stops:
  *
@@ -22,8 +25,13 @@
  */
 import { classify as classifyCitation } from '../spec-citations/discover.ts';
 
+/**
+ * How git reports a file against the merge base. A rename is a deletion and an addition (the diff
+ * is taken with `--no-renames`), and any other status is treated as `M`.
+ */
 export type ChangeStatus = 'A' | 'M' | 'D';
 
+/** A file that differs from the merge base. */
 export interface Change {
 	readonly status: ChangeStatus;
 	/** Repository-relative, with `/` separators. */
@@ -33,11 +41,19 @@ export interface Change {
 /** What the plan reads from the repository, so that a spec can supply a small one. */
 export interface Probe {
 	exists(path: string): boolean;
-	/** Every spec file that the default vitest config includes. */
+	/**
+	 * Every spec file that the default vitest config includes. A run with another config
+	 * (`vitest.cross-os.config.ts`) is given the same plan, and vitest keeps the specs that config
+	 * includes: that set is a subset of this one.
+	 */
 	readonly specs: readonly string[];
 	read(path: string): string;
 }
 
+/**
+ * What to run: `full` is the whole suite, with the reason, and `affected` is the paths to give
+ * `vitest related`: changed files, build outputs, and specs.
+ */
 export type Plan =
 	| { readonly mode: 'full'; readonly reason: string }
 	| { readonly mode: 'affected'; readonly targets: readonly string[] };
@@ -63,13 +79,19 @@ const FULL_TRIGGERS: readonly RegExp[] = [
 	/^packages\/@markuplint-test\//,
 	// Spec data and messages that nearly every rule spec reads at run time, by name.
 	/^packages\/@markuplint\/html-spec\/index\.(?:js|json|d\.ts)$/,
+	// The source of that data: `html-spec/CLAUDE.md` asks for the whole suite before a commit that
+	// touches it, as the data reaches the rule specs.
+	/^packages\/@markuplint\/html-spec\/src\//,
 	/^packages\/@markuplint\/i18n\/(?:locales\/|\$schema\.json$)/,
 ];
 
-/** Outside `packages/`, files that no spec reads. */
+/**
+ * Outside `packages/`, files that no spec reads, checked after `FULL_TRIGGERS` (which holds
+ * `test.yml`). The `changes` job of `test.yml` keeps a shorter list of its own, for isolated-env.
+ */
 const IGNORED: readonly RegExp[] = [
 	/^\.claude\//,
-	/^\.github\/(?!workflows\/test\.yml$)/,
+	/^\.github\//,
 	/^\.husky\//,
 	/^\.vscode\//,
 	/^website\//,
@@ -92,10 +114,11 @@ const DECLARATION_FILE = /\.d\.ts$/;
 /**
  * A spec that starts a process. The process loads built output, which no import links to the spec,
  * so a change to the code that the process runs has to select it by another way. Found by reading
- * the specs, so that a new one is picked up without an edit here.
+ * the specs, so that a new one is picked up without an edit here. The names are those of the
+ * modules and calls that start a process (`child_process`, `execa`, a worker) rather than of one
+ * call form, and a word in a comment selects the spec too, which only runs more.
  */
-const SPAWNING =
-	/\bexeca\(|\bexecaNode\(|\bspawn\(|\bspawnSync\(|\bexecFile\(|\bexecFileSync\(|\bexecSync\(|\bfork\(|bin\/markuplint/;
+export const SPAWNING = /child_process|\bexeca|\bnew Worker\(|\bspawn|\bexecFile|\bexecSync|\bfork\(|bin\/markuplint/;
 
 /**
  * The packages that every run of the `markuplint` command executes: its dependencies, less what a
@@ -137,24 +160,36 @@ function packageName(root: string): string {
 	return root.slice('packages/'.length);
 }
 
+/** How a spec comes to run with a package that no import links to it. */
+interface DynamicPackage {
+	/** What in the text of a spec shows that it runs with the package. */
+	readonly tokens: readonly string[];
+	/** Whether the CLI and the language server load it from a project's configuration. */
+	readonly loadedByConsumers: boolean;
+}
+
 /**
- * Packages that `generalImport()` loads by the name a configuration gives, so that no import
+ * The packages that `generalImport()` loads by the name a configuration gives, so that no import
  * links them to the specs that run with them. A spec that names the package runs with it.
- * The value is what else in a spec shows that it runs with the package without naming it.
+ *
+ * @param name - The package name without its scope
+ * @returns `null` for a package that is imported
  */
-function dynamicTokens(name: string): readonly string[] | null {
-	const spec = name.endsWith('-spec') && name !== 'ml-spec';
-	const parser = name.endsWith('-parser');
-	if (spec || parser) {
-		return [`@markuplint/${name}`];
+function dynamicPackage(name: string): DynamicPackage | null {
+	// `ml-spec` ends in `-spec` but is the library that the spec packages are written with: it is
+	// imported, never named by a configuration.
+	if ((name.endsWith('-spec') && name !== 'ml-spec') || name.endsWith('-parser')) {
+		return { tokens: [`@markuplint/${name}`], loadedByConsumers: false };
 	}
 	switch (name) {
 		case 'config-presets': {
-			return ['@markuplint/config-presets', 'markuplint:'];
+			// `markuplint:` is the prefix of a preset that a configuration extends (`markuplint:recommended`),
+			// which a spec writes without naming the package.
+			return { tokens: ['@markuplint/config-presets', 'markuplint:'], loadedByConsumers: true };
 		}
 		case 'rules':
 		case 'pretenders': {
-			return [`@markuplint/${name}`];
+			return { tokens: [`@markuplint/${name}`], loadedByConsumers: true };
 		}
 		default: {
 			return null;
@@ -166,14 +201,15 @@ function dynamicTokens(name: string): readonly string[] | null {
  * The packages whose specs load rules, presets and pretenders through the configuration rather
  * than by an import: the CLI and the language server read a project's configuration.
  */
-const CONFIGURATION_CONSUMERS = ['packages/markuplint/', 'packages/@markuplint/language-server/'];
+export const CONFIGURATION_CONSUMERS = ['packages/markuplint/', 'packages/@markuplint/language-server/'];
 
 /**
  * Root files that a spec reads by a path, and what runs for each of them.
  *
  * Each row comes from a spec that builds the path from `import.meta.dirname` or the root: the
- * pattern names the file, the specs read it. `completeness.spec.ts` fails when a spec reads
- * outside its own package and no row here accounts for it.
+ * pattern names the file, the specs read it. `completeness.spec.ts` fails when a spec names a file
+ * outside its own package by a relative path literal (`'../../x'`) and no row here accounts for it;
+ * a path that is built in pieces (`path.join(dir, '..', 'x')`) or from the root is not found there.
  */
 const ROOT_INPUTS: readonly {
 	readonly pattern: RegExp;
@@ -214,7 +250,7 @@ function specsUnder(probe: Probe, directory: string): readonly string[] {
  * the one rule it is given. The specs that do run the registry are named by `dynamicTokens()` and
  * `CONFIGURATION_CONSUMERS` instead.
  */
-const WITHOUT_OUTPUT = new Set(['packages/@markuplint/rules']);
+export const WITHOUT_OUTPUT = new Set(['packages/@markuplint/rules']);
 
 /**
  * Where tsc puts a source file of a package: `lib/` for most, `esm/` and `cjs/` for `i18n`.
@@ -273,7 +309,13 @@ export function plan(changes: readonly Change[], probe: Probe): Plan {
 				return { mode: 'full', reason: `${path} matches no rule of the selection` };
 			}
 			add(outside);
-			changedRoots.add(path.split('/').slice(0, 2).join('/'));
+			// A spec that changed runs by itself. Any other file is a change to the code that a spawned
+			// process may run, owned by its directory: two segments deep, or the one directory of a file
+			// that sits right under `scripts/`.
+			if (!SPEC_FILE.test(path)) {
+				const segments = path.split('/');
+				changedRoots.add(segments.slice(0, Math.min(2, segments.length - 1)).join('/'));
+			}
 			continue;
 		}
 
@@ -304,13 +346,21 @@ export function plan(changes: readonly Change[], probe: Probe): Plan {
 			continue;
 		}
 
+		// A deleted file leaves nothing for `vitest related` to follow: its importers changed with it,
+		// or reach it by a name or a path that no graph holds.
+		if (status === 'D') {
+			return { mode: 'full', reason: `${path} was deleted` };
+		}
+
 		const whole = specsUnder(probe, root);
 		const outputs = builtOutputs(probe, root, rel);
-		if (status === 'D') {
-			add(whole);
-		} else if (rel.startsWith('src/') && SOURCE_FILE.test(rel)) {
+		if (rel.startsWith('src/') && SOURCE_FILE.test(rel)) {
 			targets.add(path);
-			if (outputs.length > 0 || DECLARATION_FILE.test(rel) || WITHOUT_OUTPUT.has(root)) {
+			if (DECLARATION_FILE.test(rel)) {
+				// Nothing is emitted for a declaration, so no spec of another package reaches it, and what
+				// it types is checked by `yarn test:types`; the specs of the package run with it.
+				add(whole);
+			} else if (outputs.length > 0 || WITHOUT_OUTPUT.has(root)) {
 				add(outputs);
 			} else {
 				// Not built: nothing for another package to import, and nothing to tell which spec reads it.
@@ -323,10 +373,10 @@ export function plan(changes: readonly Change[], probe: Probe): Plan {
 
 		changedRoots.add(root);
 
-		const tokens = dynamicTokens(name);
-		if (tokens !== null) {
-			add(probe.specs.filter(spec => tokens.some(token => probe.read(spec).includes(token))));
-			if (name === 'rules' || name === 'pretenders' || name === 'config-presets') {
+		const dynamic = dynamicPackage(name);
+		if (dynamic !== null) {
+			add(probe.specs.filter(spec => dynamic.tokens.some(token => probe.read(spec).includes(token))));
+			if (dynamic.loadedByConsumers) {
 				// The spawning ones are left to the rule on `CLI_RUNTIME` at the end.
 				add(
 					probe.specs.filter(
@@ -366,7 +416,10 @@ function planOutsidePackages(status: ChangeStatus, path: string, probe: Probe): 
 		if (SPEC_FILE.test(path)) {
 			return status === 'D' ? [] : [path];
 		}
-		if (status !== 'D' && SOURCE_FILE.test(path)) {
+		if (status === 'D') {
+			return null;
+		}
+		if (SOURCE_FILE.test(path)) {
 			return [path];
 		}
 		return specs;

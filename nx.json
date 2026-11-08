@@ -9,7 +9,10 @@
 			"!{projectRoot}/CHANGELOG.md",
 			"!{projectRoot}/lib/**/*",
 			"!{projectRoot}/esm/**/*",
-			"!{projectRoot}/cjs/**/*"
+			"!{projectRoot}/cjs/**/*",
+			"!{projectRoot}/**/*.tsbuildinfo",
+			"{workspaceRoot}/tsconfig.json",
+			"{workspaceRoot}/packages/@markuplint-dev/tsconfig/tsconfig.json"
 		]
 	},
 	"targetDefaults": {

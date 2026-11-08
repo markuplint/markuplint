@@ -13,7 +13,7 @@
 		"test": "run-s test:types test:run",
 		"test:types": "tsc -p tsconfig.spec.json",
 		"test:run": "vitest run",
-		"test:affected": "node scripts/affected-tests/index.ts",
+		"test:affected": "node --experimental-strip-types scripts/affected-tests/index.ts",
 		"test:coverage": "vitest run --coverage",
 		"lint": "run-p lint:oxlint lint:format lint:github-actions",
 		"lint:oxlint": "oxlint --fix -c .oxlintrc.json packages vscode scripts",
