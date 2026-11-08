@@ -29,6 +29,8 @@ Add `parser` and `specs` options to your [configuration](https://markuplint.dev/
 }
 ```
 
+If your React outputs every element where it is written, see [`@markuplint/react-spec`](https://www.npmjs.com/package/@markuplint/react-spec) for the spec to specify instead.
+
 ## Features
 
 - **JSX elements**: Both self-closing (`<Badge />`) and container (`<Card>...</Card>`) components

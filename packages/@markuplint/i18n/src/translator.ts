@@ -10,9 +10,13 @@ const defaultListFormat: ListFormat = {
 /**
  * Creates a {@link Translator} function bound to the given locale set.
  *
- * The returned translator supports two call signatures:
+ * The returned translator supports three call signatures:
  * - **Message template**: `t("The {0} is {1}", keyword1, keyword2)` – interpolates keywords into
  *   a message template, looking up translations from the locale set's `sentences` and `keywords`.
+ * - **Single text**: `t("element")` – no arguments, so no placeholder to fill. The text is looked up
+ *   in `keywords` first, and in `sentences` only when it is not a keyword (a sentence without
+ *   a placeholder, such as `t("there is more content than it needs")`). A keyword wins even when
+ *   its translation is spelled like the text. Neither: the text is returned as it is.
  * - **List formatting**: `t(["apple", "banana", "cherry"], true)` – formats an array of strings
  *   into a human-readable list (e.g. `"apple", "banana" and "cherry"`).
  *
@@ -46,6 +50,13 @@ export function translator(localeSet?: LocaleSet): Translator {
 		const input = messageTmpl;
 
 		if (keywords.length === 0) {
+			// A sentence without a placeholder is looked up in `sentences` only when it is not a keyword
+			if (findKeyword(messageTmpl, '', localeSet) === undefined) {
+				const sentence = findSentence(messageTmpl, localeSet);
+				if (sentence !== undefined) {
+					return sentence;
+				}
+			}
 			return translateKeyword(messageTmpl, '', localeSet);
 		}
 
@@ -59,8 +70,7 @@ export function translator(localeSet?: LocaleSet): Translator {
 		);
 		const key = removeNoTranslateMark(messageTmpl).toLowerCase();
 
-		const sentences = Object.entries(localeSet?.sentences ?? {});
-		const sentence = sentences.find(([sentenceKey]) => sentenceKey.toLowerCase() === key)?.[1];
+		const sentence = findSentence(key, localeSet);
 
 		messageTmpl = sentence ?? key;
 		messageTmpl =
@@ -128,13 +138,31 @@ function translateKeyword(keyword: string, flag: string, localeSet?: LocaleSet) 
 	}
 	// "%" prefix and suffix escaped
 	keyword = keyword.replaceAll(/^%%|%%$/g, '%');
+	return findKeyword(keyword, flag, localeSet) || keyword;
+}
+
+/**
+ * The translation of a keyword in the locale set, or `undefined` when it has none.
+ * The `c:`-prefixed entry is tried first when `flag` is `c`.
+ */
+function findKeyword(keyword: string, flag: string, localeSet?: LocaleSet): string | undefined {
 	const key = flag ? `${flag}:${keyword}` : keyword;
-	const replacedWord =
+	return (
 		// finding with flag
 		localeSet?.keywords?.[key.toLowerCase()] ||
 		// finding without flag
-		localeSet?.keywords?.[keyword.toLowerCase()];
-	return replacedWord || keyword;
+		localeSet?.keywords?.[keyword.toLowerCase()] ||
+		undefined
+	);
+}
+
+/**
+ * The translation of a sentence template in the locale set (the keys are compared
+ * in lower case), or `undefined` when it has none.
+ */
+function findSentence(sentence: string, localeSet?: LocaleSet): string | undefined {
+	const key = sentence.toLowerCase();
+	return Object.entries(localeSet?.sentences ?? {}).find(([sentenceKey]) => sentenceKey.toLowerCase() === key)?.[1];
 }
 
 function toString(value: Primitive, locale = 'en') {

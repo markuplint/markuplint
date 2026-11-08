@@ -27,6 +27,12 @@ type MdastNode = RootContent;
 class MarkdownParser extends MarkdownAwareParser {
 	readonly #htmlParser = new HtmlParser();
 
+	constructor() {
+		// remark strips a leading BOM itself and counts from the next character, and a space
+		// in its place would keep a front matter from being one
+		super({ leadingBom: 'strip' });
+	}
+
 	/**
 	 * Tokenizes the raw Markdown source into an mdast tree.
 	 *

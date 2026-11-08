@@ -115,8 +115,7 @@ describe('parser', () => {
 		const map = nodeListToDebugMaps(doc.nodeList);
 		expect(map).toStrictEqual([
 			'[2:12]>[3:3](12,15)#text: ⏎→→',
-			'[3:3]>[3:11](15,23)script: <script>',
-			'[5:3]>[5:12](42,51)script: </script>',
+			'[3:3]>[5:12](15,51)#ps:script: <script>⏎→→→const␣i␣=␣0;⏎→→</script>',
 			'[5:12]>[6:3](51,54)#text: ⏎→→',
 			'[6:3]>[6:18](54,69)#comment(👿): <!comment-node>',
 			'[6:18]>[7:3](69,72)#text: ⏎→→',
@@ -221,8 +220,7 @@ describe('parser', () => {
 		const map = nodeListToDebugMaps(doc.nodeList);
 		expect(map).toStrictEqual([
 			'[2:12]>[3:3](12,15)#text: ⏎→→',
-			'[3:3]>[3:11](15,23)script: <script>',
-			'[5:3]>[5:12](42,51)script: </script>',
+			'[3:3]>[5:12](15,51)#ps:script: <script>⏎→→→const␣i␣=␣0;⏎→→</script>',
 			'[5:12]>[6:3](51,54)#text: ⏎→→',
 			'[6:3]>[6:18](54,69)#comment(👿): <!comment-node>',
 			'[6:18]>[7:3](69,72)#text: ⏎→→',
@@ -623,6 +621,83 @@ h3 {
 		expect(parse('<template><Div></Div></template>').nodeList[0].elementType).toBe('authored');
 	});
 
+	describe('a <style> and a <script> in the template', () => {
+		// The compiler removes them from a client template and, in development, reports an error:
+		// "Tags with side effect (<script> and <style>) are ignored in client component templates."
+		test('are code blocks, not elements, so nothing checks where they are written', () => {
+			const doc = parse('<template><div><style>p{}</style><script>1</script></div></template>');
+			expect(nodeListToDebugMaps(doc.nodeList)).toStrictEqual([
+				'[1:11]>[1:16](10,15)div: <div>',
+				'[1:16]>[1:34](15,33)#ps:style: <style>p{}</style>',
+				'[1:34]>[1:52](33,51)#ps:script: <script>1</script>',
+				'[1:52]>[1:58](51,57)div: </div>',
+			]);
+		});
+
+		test('are reported as non-fatal parse errors that cover the whole element', () => {
+			const doc = parse('<template><div><style>p{}</style><script>1</script></div></template>');
+			expect(doc.parseErrors).toStrictEqual([
+				{
+					code: 'vue-ignored-side-effect-tag',
+					startOffset: 15,
+					startLine: 1,
+					startCol: 16,
+					endOffset: 33,
+					endLine: 1,
+					endCol: 34,
+					raw: '<style>p{}</style>',
+				},
+				{
+					code: 'vue-ignored-side-effect-tag',
+					startOffset: 33,
+					startLine: 1,
+					startCol: 34,
+					endOffset: 51,
+					endLine: 1,
+					endCol: 52,
+					raw: '<script>1</script>',
+				},
+			]);
+		});
+
+		test('keep the line and column of a multi-line element', () => {
+			const doc = parse('<template>\n<style>\np{}\n</style>\n</template>');
+			expect(doc.parseErrors).toStrictEqual([
+				{
+					code: 'vue-ignored-side-effect-tag',
+					startOffset: 11,
+					startLine: 2,
+					startCol: 1,
+					endOffset: 31,
+					endLine: 4,
+					endCol: 9,
+					raw: '<style>\np{}\n</style>',
+				},
+			]);
+		});
+
+		test('hide a comment inside from the template', () => {
+			const doc = parse('<template><div><style><!-- c --></style></div></template>');
+			expect(doc.nodeList.map(n => n.nodeName)).toStrictEqual(['div', '#ps:style', 'div']);
+		});
+
+		test('are not reported when the name is a component (a capital letter)', () => {
+			const doc = parse('<template><div><Style></Style><Script /></div></template>');
+			expect(doc.parseErrors).toBeUndefined();
+			expect(doc.nodeList.map(n => n.nodeName)).toStrictEqual(['div', 'Style', 'Style', 'Script', 'div']);
+		});
+
+		test('are not reported when the name is in upper case either', () => {
+			const doc = parse('<template><div><STYLE></STYLE></div></template>');
+			expect(doc.parseErrors).toBeUndefined();
+			expect(doc.nodeList.map(n => n.nodeName)).toStrictEqual(['div', 'STYLE', 'STYLE', 'div']);
+		});
+
+		test('are not reported when there is none', () => {
+			expect(parse('<template><div></div></template>').parseErrors).toBeUndefined();
+		});
+	});
+
 	// Vue parser relies on the default `endOfUnquotedValueChars` from parser-utils,
 	// where `/` is not a terminator, so unquoted values in Vue templates follow
 	// the HTML-spec behavior: `/` is part of the value.
@@ -632,5 +707,20 @@ h3 {
 		const img = doc.nodeList.find(n => n.nodeName === 'img');
 		const srcAttr = img.attributes.find(a => a.name?.raw === 'src');
 		expect(srcAttr.value.raw).toBe('/a/b.png');
+	});
+});
+
+describe('a leading BOM', () => {
+	// The BOM is before the `<template>` block, so the tokenizer does not take it for content
+	test('does not move the positions beyond counting the BOM as one character', () => {
+		const doc = parse('\uFEFF<template><div><p>x</p></div></template>\n');
+
+		expect(nodeListToDebugMaps(doc.nodeList)).toStrictEqual([
+			'[1:12]>[1:17](11,16)div: <div>',
+			'[1:17]>[1:20](16,19)p: <p>',
+			'[1:20]>[1:21](19,20)#text: x',
+			'[1:21]>[1:25](20,24)p: </p>',
+			'[1:25]>[1:31](24,30)div: </div>',
+		]);
 	});
 });

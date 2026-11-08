@@ -1762,3 +1762,46 @@ describe('Embedded HTML — parseErrors propagation (#3844)', () => {
 		expect(codes).not.toContain('non-conforming-doctype');
 	});
 });
+
+describe('a leading BOM', () => {
+	// pug-lexer strips the BOM itself, and reads a leading space as indentation
+	test('a source with a leading BOM keeps its tree, also under an indented line', () => {
+		const names = (doc: ReturnType<typeof parse>) => doc.nodeList.map(n => n.nodeName);
+		const source = 'doctype html\nhtml(lang="en")\n  head\n    title t\n  body\n    p x\n';
+		expect(names(parse('\uFEFF' + source))).toStrictEqual(names(parse(source)));
+		expect(names(parse('\uFEFFdiv\n  p x\n'))).toStrictEqual(names(parse('div\n  p x\n')));
+	});
+
+	test('the positions count the BOM as one character', () => {
+		const doc = parse('\uFEFFdiv(class="a")\n  p x\n');
+
+		expect(doc.raw).toBe('\uFEFFdiv(class="a")\n  p x\n');
+		expect(nodeListToDebugMaps(doc.nodeList, true)).toStrictEqual([
+			'[1:2]>[1:16](1,15)div: div(class="a")',
+			'[1:6]>[1:15](5,14)class: class="a"',
+			'  [1:6]>[1:6](5,5)bN: ',
+			'  [1:6]>[1:11](5,10)name: class',
+			'  [1:11]>[1:11](10,10)bE: ',
+			'  [1:11]>[1:12](10,11)equal: =',
+			'  [1:12]>[1:12](11,11)aE: ',
+			'  [1:12]>[1:12](11,11)sQ: ',
+			'  [1:12]>[1:15](11,14)value: "a"',
+			'  [1:15]>[1:15](14,14)eQ: ',
+			'  isDirective: false',
+			'  isDynamicValue: true',
+			'  valueType: code',
+			'[2:3]>[2:4](18,19)p: p',
+			'[2:5]>[2:6](20,21)#text: x',
+		]);
+	});
+
+	test('a syntax error on the first line is reported at the column that counts the BOM', () => {
+		expect(() => parse('div(a="1"')).toThrow(expect.objectContaining({ line: 1, col: 10 }));
+		expect(() => parse('\uFEFFdiv(a="1"')).toThrow(expect.objectContaining({ line: 1, col: 11 }));
+	});
+
+	test('a syntax error on a later line is reported at the same column', () => {
+		expect(() => parse('div\n  p(a="1"')).toThrow(expect.objectContaining({ line: 2, col: 10 }));
+		expect(() => parse('\uFEFFdiv\n  p(a="1"')).toThrow(expect.objectContaining({ line: 2, col: 10 }));
+	});
+});

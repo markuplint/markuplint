@@ -3191,3 +3191,327 @@ describe('inter-element whitespace', () => {
 		expect(violations).toStrictEqual([]);
 	});
 });
+
+/**
+ * @see https://html.spec.whatwg.org/multipage/dom.html#content-models
+ * > Inter-element whitespace, comment nodes, and processing instruction nodes must be ignored when establishing whether an element's contents match the element's content model or not
+ */
+describe('comment nodes are ignored', () => {
+	const HEAD = '<head><title>t</title></head>';
+	const conditional = { rule: { options: { evaluateConditionalChildNodes: true } } };
+
+	test('[permitted-contents-issue-4488-001] a comment before the head element', async () => {
+		const { violations } = await mlRuleTest(rule, `<html><!-- c -->${HEAD}<body></body></html>`);
+		expect(violations).toStrictEqual([]);
+	});
+
+	test('[permitted-contents-issue-4488-002] a comment between the head and the body elements', async () => {
+		const { violations } = await mlRuleTest(rule, `<html>${HEAD}<!-- c --><body></body></html>`);
+		expect(violations).toStrictEqual([]);
+	});
+
+	test('[permitted-contents-issue-4488-003] a comment after the body element', async () => {
+		const { violations } = await mlRuleTest(rule, `<html>${HEAD}<body></body><!-- c --></html>`);
+		expect(violations).toStrictEqual([]);
+	});
+
+	test('[permitted-contents-issue-4488-004] a comment before the summary element', async () => {
+		const { violations } = await mlRuleTest(rule, '<details><!-- c --><summary>s</summary>x</details>');
+		expect(violations).toStrictEqual([]);
+	});
+
+	test('[permitted-contents-issue-4488-005] a comment before the figcaption element', async () => {
+		const { violations } = await mlRuleTest(
+			rule,
+			'<figure><!-- c --><img src="a" alt=""><figcaption>c</figcaption></figure>',
+		);
+		expect(violations).toStrictEqual([]);
+	});
+
+	test('[permitted-contents-issue-4488-006] comments with evaluateConditionalChildNodes', async () => {
+		const { violations } = await mlRuleTest(
+			rule,
+			`<html><!-- c -->${HEAD}<!-- c --><body></body><!-- c --></html>`,
+			conditional,
+		);
+		expect(violations).toStrictEqual([]);
+	});
+
+	test('[permitted-contents-issue-4488-007] a comment does not take the place of a required element', async () => {
+		const { violations } = await mlRuleTest(rule, '<hgroup><!-- c --></hgroup>');
+		expect(violations).toStrictEqual([
+			{
+				severity: 'error',
+				line: 1,
+				col: 1,
+				raw: '<hgroup>',
+				message: 'Require an element. (Need "h6")',
+			},
+		]);
+	});
+
+	test('[permitted-contents-issue-4488-008] a comment after the figcaption element inside a transparent element', async () => {
+		const { violations } = await mlRuleTest(rule, '<figure><a><figcaption></figcaption><!-- c --></a></figure>');
+		expect(violations).toStrictEqual([]);
+	});
+
+	test('[permitted-contents-issue-4488-009] a comment inside a transparent element with evaluateConditionalChildNodes', async () => {
+		const { violations } = await mlRuleTest(
+			rule,
+			'<figure><a><figcaption></figcaption><!-- c --></a></figure>',
+			conditional,
+		);
+		expect(violations).toStrictEqual([]);
+	});
+
+	test('[permitted-contents-issue-4488-010] a comment before the content of a transparent element', async () => {
+		const { violations } = await mlRuleTest(
+			rule,
+			'<figure><ins><!-- c --><img src="a" alt=""></ins><figcaption>c</figcaption></figure>',
+		);
+		expect(violations).toStrictEqual([]);
+	});
+
+	test('[permitted-contents-issue-4488-011] the message of a violation is translated into Japanese', async () => {
+		const { violations } = await mlRuleTest(
+			rule,
+			`<html>${HEAD}<body></body><body></body></html>`,
+			{ rule: true, parser: { '.*': '@markuplint/svelte-parser' } },
+			false,
+			'ja',
+		);
+		expect(violations.map(v => v.message)).toStrictEqual([
+			'必要以上のコンテンツがあります。必要な要素数の最大は1です',
+		]);
+	});
+});
+
+// A framework judges a `<style>` by what it outputs: Vue removes it from a template, Svelte outputs a nested
+// one as is, and React moves one that has `href` and `precedence` to the `<head>`.
+describe('the style element and the frameworks that do not output it where it is written', () => {
+	const vue = { parser: { '.*': '@markuplint/vue-parser' } };
+	const svelte = { parser: { '.*': '@markuplint/svelte-parser' } };
+	const jsx = { parser: { '.*': '@markuplint/jsx-parser' } };
+	const react = { ...jsx, specs: { '.*': '@markuplint/react-spec' } };
+	const react18 = { ...jsx, specs: { '.*': '@markuplint/react-spec/react-18' } };
+
+	const notAllowed = (name: string, parent: string, line: number, col: number, raw: string) => ({
+		severity: 'error',
+		line,
+		col,
+		message: `The "${name}" element is not allowed in the "${parent}" element in this context`,
+		raw,
+	});
+
+	test('[permitted-contents-issue-4484-001] Vue removes a style element of the template, so where it is written is not checked', async () => {
+		const { violations } = await mlRuleTest(rule, '<template><div><p></p><style></style></div></template>', vue);
+		expect(violations).toStrictEqual([]);
+	});
+
+	test('[permitted-contents-issue-4484-002] Vue: a style element in a list is not checked, and the other elements still are', async () => {
+		expect(
+			(await mlRuleTest(rule, '<template><ul><style></style><li></li></ul></template>', vue)).violations,
+		).toStrictEqual([]);
+		expect(
+			(await mlRuleTest(rule, '<template><ul><style></style><div></div></ul></template>', vue)).violations,
+		).toStrictEqual([notAllowed('div', 'ul', 1, 30, '<div>')]);
+	});
+
+	test('[permitted-contents-issue-4484-003] Vue removes a script element of the template as well', async () => {
+		const { violations } = await mlRuleTest(rule, '<template><p>text<script></script></p></template>', vue);
+		expect(violations).toStrictEqual([]);
+	});
+
+	test('[permitted-contents-issue-4484-004] Svelte outputs a nested style element as is, so it is checked like any element', async () => {
+		const { violations } = await mlRuleTest(rule, '<div><p></p><style></style></div>', svelte);
+		expect(violations).toStrictEqual([notAllowed('style', 'div', 1, 13, '<style>')]);
+	});
+
+	test('[permitted-contents-issue-4484-005] Svelte: a nested style element that comes first is accepted', async () => {
+		const { violations } = await mlRuleTest(rule, '<div><style></style><p></p></div>', svelte);
+		expect(violations).toStrictEqual([]);
+	});
+
+	test('[permitted-contents-issue-4484-006] Svelte: the top-level style element is the CSS of the component, so it is not checked', async () => {
+		const { violations } = await mlRuleTest(
+			rule,
+			'<div><p></p></div>\n<style lang="scss">// c\n$c: red;</style>',
+			svelte,
+		);
+		expect(violations).toStrictEqual([]);
+	});
+
+	test('[permitted-contents-issue-4484-007] React moves a style element that has href and precedence, so where it is written is not checked', async () => {
+		const { violations } = await mlRuleTest(
+			rule,
+			'<div><p></p><style href="a" precedence="b"></style></div>',
+			react,
+		);
+		expect(violations).toStrictEqual([]);
+	});
+
+	test('[permitted-contents-issue-4484-008] React does not move a style element without href and precedence', async () => {
+		expect((await mlRuleTest(rule, '<div><p></p><style></style></div>', react)).violations).toStrictEqual([
+			notAllowed('style', 'div', 1, 13, '<style>'),
+		]);
+		expect((await mlRuleTest(rule, '<div><p></p><style href="a"></style></div>', react)).violations).toStrictEqual([
+			notAllowed('style', 'div', 1, 13, '<style href="a">'),
+		]);
+	});
+
+	test('[permitted-contents-issue-4484-009] the parser alone does not decide it: without the spec of React the element is checked', async () => {
+		const { violations } = await mlRuleTest(rule, '<div><p></p><style href="a" precedence="b"></style></div>', jsx);
+		expect(violations).toStrictEqual([notAllowed('style', 'div', 1, 13, '<style href="a" precedence="b">')]);
+	});
+
+	test('[permitted-contents-issue-4484-010] React moves a title element', async () => {
+		expect((await mlRuleTest(rule, '<div><p></p><title>t</title></div>', react)).violations).toStrictEqual([]);
+		expect((await mlRuleTest(rule, '<div><p></p><title>t</title></div>', jsx)).violations).toStrictEqual([
+			notAllowed('title', 'div', 1, 13, '<title>'),
+		]);
+	});
+
+	test('[permitted-contents-issue-4484-011] React moves a meta element, except one that has itemProp', async () => {
+		expect((await mlRuleTest(rule, '<ul><meta name="a" content="b" /></ul>', react)).violations).toStrictEqual([]);
+		expect((await mlRuleTest(rule, '<ul><meta itemProp="a" content="b" /></ul>', react)).violations).toStrictEqual([
+			notAllowed('meta', 'ul', 1, 5, '<meta itemProp="a" content="b" />'),
+		]);
+	});
+
+	test('[permitted-contents-issue-4484-012] React moves a link element, except one that it does not manage', async () => {
+		expect((await mlRuleTest(rule, '<ul><link rel="icon" href="x" /></ul>', react)).violations).toStrictEqual([]);
+		expect(
+			(await mlRuleTest(rule, '<ul><link rel="stylesheet" href="x" precedence="d" /></ul>', react)).violations,
+		).toStrictEqual([]);
+		// A stylesheet without `precedence` is not moved
+		expect((await mlRuleTest(rule, '<ul><link rel="stylesheet" href="x" /></ul>', react)).violations).toStrictEqual(
+			[notAllowed('link', 'ul', 1, 5, '<link rel="stylesheet" href="x" />')],
+		);
+		// `onLoad`, `onError`, `itemProp` and (of a stylesheet) `disabled` mean that the component manages it
+		expect(
+			(await mlRuleTest(rule, '<ul><link rel="icon" href="x" onLoad={f} /></ul>', react)).violations,
+		).toStrictEqual([notAllowed('link', 'ul', 1, 5, '<link rel="icon" href="x" onLoad={f} />')]);
+		expect(
+			(await mlRuleTest(rule, '<ul><link rel="icon" href="x" onError={f} /></ul>', react)).violations,
+		).toStrictEqual([notAllowed('link', 'ul', 1, 5, '<link rel="icon" href="x" onError={f} />')]);
+		expect(
+			(await mlRuleTest(rule, '<ul><link itemProp="author" href="x" /></ul>', react)).violations,
+		).toStrictEqual([notAllowed('link', 'ul', 1, 5, '<link itemProp="author" href="x" />')]);
+		expect(
+			(await mlRuleTest(rule, '<ul><link rel="stylesheet" href="x" precedence="d" disabled /></ul>', react))
+				.violations,
+		).toStrictEqual([notAllowed('link', 'ul', 1, 5, '<link rel="stylesheet" href="x" precedence="d" disabled />')]);
+	});
+
+	test('[permitted-contents-issue-4484-013] the element that React moves is counted in the head, where it is placed', async () => {
+		expect(
+			(await mlRuleTest(rule, '<html><head><title>t</title></head><body></body></html>', react)).violations,
+		).toStrictEqual([]);
+		// `head` requires a title: without one it is still reported
+		expect(
+			(await mlRuleTest(rule, '<html><head><meta charSet="utf-8" /></head><body></body></html>', react))
+				.violations,
+		).toStrictEqual([
+			{
+				severity: 'error',
+				line: 1,
+				col: 7,
+				message: 'Require an element. (Need "title")',
+				raw: '<head>',
+			},
+		]);
+	});
+
+	test('[permitted-contents-issue-4484-014] the spec for a React that outputs elements where they are written checks them', async () => {
+		expect((await mlRuleTest(rule, '<div><p></p><title>t</title></div>', react18)).violations).toStrictEqual([
+			notAllowed('title', 'div', 1, 13, '<title>'),
+		]);
+		expect(
+			(await mlRuleTest(rule, '<div><p></p><style href="a" precedence="b"></style></div>', react18)).violations,
+		).toStrictEqual([notAllowed('style', 'div', 1, 13, '<style href="a" precedence="b">')]);
+	});
+
+	// `isHostHoistableType` of `react-dom-bindings`: "Global opt out of hoisting for anything in SVG
+	// Namespace or anything with an itemProp", and a `<link>` or a `<style>` needs a non-empty `href`
+	test('[permitted-contents-issue-4484-015] React does not move an element that has itemProp, a title and a style as well', async () => {
+		expect((await mlRuleTest(rule, '<div><title itemProp="x">t</title></div>', react)).violations).toStrictEqual([
+			notAllowed('title', 'div', 1, 6, '<title itemProp="x">'),
+		]);
+		expect(
+			(await mlRuleTest(rule, '<div><p></p><style href="a" precedence="b" itemProp="x"></style></div>', react))
+				.violations,
+		).toStrictEqual([notAllowed('style', 'div', 1, 13, '<style href="a" precedence="b" itemProp="x">')]);
+	});
+
+	test('[permitted-contents-issue-4484-016] React does not move a link element that has no href or an empty one', async () => {
+		expect((await mlRuleTest(rule, '<ul><link rel="icon" /></ul>', react)).violations).toStrictEqual([
+			notAllowed('link', 'ul', 1, 5, '<link rel="icon" />'),
+		]);
+		expect((await mlRuleTest(rule, '<ul><link rel="icon" href="" /></ul>', react)).violations).toStrictEqual([
+			notAllowed('link', 'ul', 1, 5, '<link rel="icon" href="" />'),
+		]);
+		expect((await mlRuleTest(rule, '<ul><link href="x" /></ul>', react)).violations).toStrictEqual([
+			notAllowed('link', 'ul', 1, 5, '<link href="x" />'),
+		]);
+		expect(
+			(await mlRuleTest(rule, '<ul><link rel="stylesheet" href="" precedence="d" /></ul>', react)).violations,
+		).toStrictEqual([notAllowed('link', 'ul', 1, 5, '<link rel="stylesheet" href="" precedence="d" />')]);
+	});
+
+	test('[permitted-contents-issue-4484-017] React does not move a stylesheet that has onLoad or onError either', async () => {
+		expect(
+			(await mlRuleTest(rule, '<ul><link rel="stylesheet" href="x" precedence="d" onLoad={f} /></ul>', react))
+				.violations,
+		).toStrictEqual([
+			notAllowed('link', 'ul', 1, 5, '<link rel="stylesheet" href="x" precedence="d" onLoad={f} />'),
+		]);
+		expect(
+			(await mlRuleTest(rule, '<ul><link rel="stylesheet" href="x" precedence="d" onError={f} /></ul>', react))
+				.violations,
+		).toStrictEqual([
+			notAllowed('link', 'ul', 1, 5, '<link rel="stylesheet" href="x" precedence="d" onError={f} />'),
+		]);
+	});
+
+	test('[permitted-contents-issue-4484-018] React moves an element whose attributes are expressions', async () => {
+		// An expression is a value that is not known, which the selector takes as present
+		expect((await mlRuleTest(rule, '<ul><link rel={r} href={u} /></ul>', react)).violations).toStrictEqual([]);
+		expect(
+			(await mlRuleTest(rule, '<ul><link rel="stylesheet" href={u} precedence={p} /></ul>', react)).violations,
+		).toStrictEqual([]);
+		expect(
+			(await mlRuleTest(rule, '<div><p></p><style href={u} precedence={p}></style></div>', react)).violations,
+		).toStrictEqual([]);
+	});
+
+	test('[permitted-contents-issue-4484-019] React does not move a style element that has an empty href', async () => {
+		const { violations } = await mlRuleTest(
+			rule,
+			'<div><p></p><style href="" precedence="b"></style></div>',
+			react,
+		);
+		expect(violations).toStrictEqual([notAllowed('style', 'div', 1, 13, '<style href="" precedence="b">')]);
+	});
+
+	test('[permitted-contents-issue-4484-020] an SVG title element is not what React moves', async () => {
+		// `switch` of SVG does not accept a title, and React moves only an element of the HTML namespace
+		const { violations } = await mlRuleTest(rule, '<svg><switch><title>a</title></switch></svg>', react);
+		expect(violations).toStrictEqual([notAllowed('title', 'switch', 1, 14, '<title>')]);
+	});
+
+	test('[permitted-contents-issue-4484-021] a fragment component in the head contributes its children to the head, where they are counted', async () => {
+		const wrap = {
+			selector: 'Wrap',
+			as: { element: '#fragment', slots: true, contents: [{ slot: true }] },
+		} as const;
+		const config = { ...react, pretenders: [wrap] };
+		expect(
+			(await mlRuleTest(rule, '<html><head><Wrap><title>t</title></Wrap></head><body></body></html>', config))
+				.violations,
+		).toStrictEqual([]);
+		// Elsewhere what the fragment contributes is moved as if it were written in the parent
+		expect(
+			(await mlRuleTest(rule, '<div><p></p><Wrap><title>t</title></Wrap></div>', config)).violations,
+		).toStrictEqual([]);
+	});
+});

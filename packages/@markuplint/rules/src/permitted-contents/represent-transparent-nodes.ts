@@ -6,7 +6,7 @@ import { resolveContentModel } from './content-model.js';
 import { cmLog } from './debug.js';
 import { order } from './order.js';
 import { expandChildren, getContentOwner, getSlotContent } from './slot-content.js';
-import { Collection, isTransparent, matches } from './utils.js';
+import { Collection, isComment, isTransparent, matches } from './utils.js';
 
 /**
  * A map tracking child nodes that are currently being evaluated through
@@ -241,10 +241,14 @@ function transparentBranchGroups(
 	}
 
 	const childNodesPatterns = options.evaluateConditionalChildNodes
-		? childNode.conditionalChildNodes().map(childNodes => [...expandChildren(childNode, [...childNodes], mode)])
+		? childNode
+				.conditionalChildNodes()
+				.map(childNodes =>
+					[...expandChildren(childNode, [...childNodes], mode)].filter(child => !isComment(child)),
+				)
 		: [
 				[...expandChildren(childNode, [...childNode.childNodes], mode)].filter(
-					child => !(child.is(child.TEXT_NODE) && isInterElementWhitespace(child.raw)),
+					child => !isComment(child) && !(child.is(child.TEXT_NODE) && isInterElementWhitespace(child.raw)),
 				),
 			];
 

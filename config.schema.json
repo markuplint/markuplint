@@ -310,7 +310,7 @@
 			"additionalProperties": false,
 			"properties": {
 				"parseError": {
-					"description": "Severity for the built-in `parse-error` channel. Off by default; supply a single severity to enable every parse5 ERR code uniformly, or supply a `Record<code, severity>` to opt in per code. See https://markuplint.dev/docs/migration/v4-to-v5/rules/parse-error",
+					"description": "Severity for the built-in `parse-error` channel. Off by default; supply a single severity to enable every code uniformly (parse5 ERR codes, and the codes that a framework parser reports such as `vue-ignored-side-effect-tag`), or supply a `Record<code, severity>` to opt in per code. See https://markuplint.dev/docs/migration/v4-to-v5/rules/parse-error",
 					"oneOf": [
 						{
 							"$ref": "https://raw.githubusercontent.com/markuplint/markuplint/main/packages/%40markuplint/ml-config/schema.json#/definitions/severity"
@@ -324,7 +324,7 @@
 						},
 						{
 							"type": "object",
-							"description": "Per-code severity. Keys are parse5 `ERR` enum values (kebab-case, e.g. `duplicate-attribute`, `nested-comment`, `missing-doctype`). Codes absent from the record default to `'off'`.",
+							"description": "Per-code severity. Keys are parse5 `ERR` enum values (kebab-case, e.g. `duplicate-attribute`, `nested-comment`, `missing-doctype`) or the codes that a framework parser reports (e.g. `vue-ignored-side-effect-tag`). Codes absent from the record default to `'off'`.",
 							"additionalProperties": {
 								"oneOf": [
 									{

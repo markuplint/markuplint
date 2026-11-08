@@ -994,3 +994,32 @@ test('[no-unknown-attr-issue-4309-012] the suggested name of a property is an at
 		},
 	]);
 });
+
+// React moves a `<style>` that has `href` and `precedence`, and a `<link rel="stylesheet">` that has
+// `precedence`, to the `<head>` (https://react.dev/reference/react-dom/components/style), so these are
+// the attributes of a React that does.
+test('[no-unknown-attr-issue-4484-001] React: href and precedence of a style element, and precedence of a link element', async () => {
+	const react = { parser: { '.*': '@markuplint/jsx-parser' }, specs: { '.*': '@markuplint/react-spec' } };
+	expect((await mlRuleTest(rule, '<style href="a" precedence="b"></style>', react)).violations).toStrictEqual([]);
+	expect(
+		(await mlRuleTest(rule, '<link rel="stylesheet" href="a" precedence="b" />', react)).violations,
+	).toStrictEqual([]);
+});
+
+test('[no-unknown-attr-issue-4484-002] the spec for a React that does not move elements does not have them', async () => {
+	const react18 = {
+		parser: { '.*': '@markuplint/jsx-parser' },
+		specs: { '.*': '@markuplint/react-spec/react-18' },
+	};
+	expect(
+		(await mlRuleTest(rule, '<link rel="stylesheet" href="a" precedence="b" />', react18)).violations,
+	).toStrictEqual([
+		{
+			severity: 'error',
+			line: 1,
+			col: 33,
+			message: 'The "precedence" attribute is disallowed',
+			raw: 'precedence',
+		},
+	]);
+});

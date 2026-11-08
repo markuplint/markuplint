@@ -1045,3 +1045,25 @@ describe('MDXParser', () => {
 		});
 	});
 });
+
+describe('a leading BOM', () => {
+	// remark strips the BOM itself and counts from the character after it
+	test('the BOM is skipped and the positions count it as one character', () => {
+		const doc = parse('\uFEFF# t\n\n<div><p>x</p></div>\n');
+
+		expect(nodeListToDebugMaps(doc.nodeList)).toStrictEqual([
+			'[1:2]>[1:5](1,4)h1: #␣t',
+			'[1:4]>[1:5](3,4)#text: t',
+			'[3:1]>[3:6](6,11)div: <div>',
+			'[3:6]>[3:9](11,14)p: <p>',
+			'[3:9]>[3:10](14,15)#text: x',
+			'[3:10]>[3:14](15,19)p: </p>',
+			'[3:14]>[3:20](19,25)div: </div>',
+		]);
+	});
+
+	test('a syntax error that has no position stays without one', () => {
+		expect(() => parse('<div>')).toThrow(expect.objectContaining({ line: 0, col: 0 }));
+		expect(() => parse('\uFEFF<div>')).toThrow(expect.objectContaining({ line: 0, col: 0, raw: '\uFEFF<div>' }));
+	});
+});
