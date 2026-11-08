@@ -42,8 +42,9 @@ jobs:
     # install the built packages with three package managers. It reads no dependency, so it needs
     # no install. Anything but a pull request runs them. A pull request skips them only when every
     # changed file is one that cannot reach what they install: documentation, specs, the website,
-    # the repository's own tooling. The list names what is left out, never what is kept, so a file
-    # that nobody thought of runs them. It is a shorter sibling of `IGNORED` in
+    # the repository's own tooling, the workflows other than this one (it defines the jobs). The list
+    # names what is left out, never what is kept, so a file that nobody thought of runs them. It is a
+    # shorter sibling of `IGNORED` in
     # `scripts/affected-tests/classify.ts`, which answers the same question for the specs; the two
     # differ on purpose (what isolated-env installs is not what the specs read), so a change to one
     # is a reason to look at the other.
@@ -69,8 +70,10 @@ jobs:
                       # alone, which exits 1 when it keeps no line. `grep -q` would end the pipe early,
                       # and `pipefail` would read the broken pipe as the same answer: read it all.
                       files=$(git diff --name-only "origin/$BASE_REF...HEAD")
-                      kept=$(printf '%s\n' "$files" | grep -Ev '\.md$|\.spec\.(ts|js|mjs)$|^(\.claude|\.husky|\.vscode|skills|vscode|website|scripts)/' || true)
-                      if [ -n "$kept" ]; then
+                      kept=$(printf '%s\n' "$files" | grep -Ev '\.md$|\.spec\.(ts|js|mjs)$|^(\.claude|\.github|\.husky|\.vscode|skills|vscode|website|scripts)/' || true)
+                      # `.github/` is left out above as a whole, and this is the one file of it that counts.
+                      workflow=$(printf '%s\n' "$files" | grep -Fx '.github/workflows/test.yml' || true)
+                      if [ -n "$kept$workflow" ]; then
                           run=true
                       else
                           run=false
