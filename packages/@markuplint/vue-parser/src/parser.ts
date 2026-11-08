@@ -1,5 +1,5 @@
-import type { ASTNode, ASTComment } from './vue-parser/index.js';
-import type { MLASTParentNode, MLASTNodeTreeItem } from '@markuplint/ml-ast';
+import type { ASTNode, ASTComment, VElement } from './vue-parser/index.js';
+import type { MLASTParentNode, MLASTNodeTreeItem, MLASTParseError } from '@markuplint/ml-ast';
 
 import { ParserError, Parser, isPotentialCustomElementName, isSVGElement } from '@markuplint/parser-utils';
 import { isHTMLTag, isMathMLTag, isSVGTag } from '@vue/shared';
@@ -28,6 +28,57 @@ const BUILT_IN_COMPONENTS: readonly string[] = [
 	'Suspense',
 	'suspense',
 ];
+
+/**
+ * Whether the element is a `<style>` or a `<script>` that Vue's compiler removes from a client template.
+ *
+ * > Tags with side effect (<script> and <style>) are ignored in client component templates.
+ *
+ * `ignoreSideEffectTags` of `@vue/compiler-dom` removes the element whose `tag` is `script` or `style`
+ * and whose `tagType` is `ELEMENT`: a name with a capital letter (`<Style>`) is a component
+ * (`isComponent` of `@vue/compiler-core`). The parser of `vue-eslint-parser` lower-cases `name` and
+ * keeps `rawName`, so `rawName` is what tells them apart.
+ *
+ * @see https://github.com/vuejs/core/blob/main/packages/compiler-dom/src/transforms/ignoreSideEffectTags.ts
+ * @see https://github.com/vuejs/core/blob/main/packages/compiler-dom/src/errors.ts
+ * @param element - The element of the template
+ * @returns `true` if the compiler removes the element
+ */
+function isIgnoredSideEffectTag(element: VElement): boolean {
+	return element.rawName === 'style' || element.rawName === 'script';
+}
+
+/**
+ * Collects the non-fatal parse errors for the elements that the compiler removes, in the order of the source.
+ * It does not look inside one: the compiler removes it with its content.
+ *
+ * @param nodes - The nodes of a level of the template
+ * @param rawCode - The source that the ranges of `nodes` are positions in
+ * @returns The parse errors, whose positions cover the whole element
+ */
+function collectIgnoredSideEffectTags(nodes: readonly ASTNode[], rawCode: string): readonly MLASTParseError[] {
+	const errors: MLASTParseError[] = [];
+	for (const node of nodes) {
+		if (node.type !== 'VElement') {
+			continue;
+		}
+		if (isIgnoredSideEffectTag(node)) {
+			errors.push({
+				code: 'vue-ignored-side-effect-tag',
+				startOffset: node.range[0],
+				startLine: node.loc.start.line,
+				startCol: node.loc.start.column + 1,
+				endOffset: node.range[1],
+				endLine: node.loc.end.line,
+				endCol: node.loc.end.column + 1,
+				raw: rawCode.slice(node.range[0], node.range[1]),
+			});
+			continue;
+		}
+		errors.push(...collectIgnoredSideEffectTags(node.children, rawCode));
+	}
+	return errors;
+}
 
 /**
  * Directive resolution is intentionally not performed by this parser:
@@ -69,14 +120,21 @@ class VueParser extends Parser<ASTNode, State> {
 		);
 	}
 
-	tokenize(): { readonly ast: ASTNode[]; readonly isFragment: boolean } {
+	tokenize(): {
+		readonly ast: ASTNode[];
+		readonly isFragment: boolean;
+		readonly parseErrors?: readonly MLASTParseError[];
+	} {
 		const ast = vueParse(this.rawCode);
 		if (ast.templateBody?.comments) {
 			this.state.comments = ast.templateBody.comments;
 		}
+		const children = ast.templateBody?.children ?? [];
+		const parseErrors = collectIgnoredSideEffectTags(children, this.rawCode);
 		return {
-			ast: ast.templateBody?.children ?? [],
+			ast: children,
 			isFragment: true,
+			...(parseErrors.length > 0 ? { parseErrors } : {}),
 		};
 	}
 
@@ -100,6 +158,18 @@ class VueParser extends Parser<ASTNode, State> {
 		depth: number,
 	) {
 		const token = this.sliceFragment(originNode.range[0], originNode.range[1]);
+
+		// The compiler removes it, so neither its content nor where it is written reaches the DOM:
+		// it is a block of code that no rule reads, and `tokenize` reports it as a parse error.
+		if (originNode.type === 'VElement' && isIgnoredSideEffectTag(originNode)) {
+			return this.visitPsBlock({
+				...token,
+				depth,
+				parentNode,
+				nodeName: originNode.rawName,
+				isFragment: false,
+			});
+		}
 
 		switch (originNode.type) {
 			case 'VText': {
