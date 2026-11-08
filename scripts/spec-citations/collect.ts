@@ -2,6 +2,7 @@ import type { Citation, CollectResult, Quote, TextDirective } from './types.ts';
 
 import ts from 'typescript';
 
+import { RAW_SOURCE_HOST } from './extract-source.ts';
 import { normalizeSpecText } from './normalize.ts';
 
 type ParsedUrl = Pick<Citation, 'fragment' | 'page' | 'textDirective' | 'url'>;
@@ -16,8 +17,72 @@ const SECTION_SIGN = /§\s*(\d+(?:\.\d+)*)/;
 /** A bare section number in the text of a link to the HTML Living Standard, e.g. `HTML Living Standard 13.1.2.3 Attributes`. */
 const BARE_SECNO = /(?:^|\s)(\d+(?:\.\d+)+)(?=\s|$)/;
 const INLINE_QUOTE_MIN_WORDS = 6;
+/** A code span of Markdown: between a run of backticks and the next run of the same length, which a longer run may hold a single backtick in. */
+const CODE_SPAN = /(`+)(?:(?!\1)[\s\S])*?\1/g;
+/** What GitHub makes of a line selection (`#L11`, `#L11-L52`, `#L11C3-L12C5`): a range of a file, not the name of a declaration. */
+const LINE_ANCHOR = /^L\d+(?:C\d+)?(?:-L\d+(?:C\d+)?)?$/;
 
+/**
+ * The repositories (`owner/repo`) whose source files the declarations of how a framework renders a literal
+ * cite. A list rather than every repository: `github.com` is also where markuplint's own files and the
+ * projects that a README only recommends (`rviscomi/capo.js`) are linked, and those say nothing that a table
+ * was read from. Names are in lower case, and a link is matched regardless of case.
+ *
+ * Add the repository of a framework here, and its documentation site to `FRAMEWORK_DOCS`, when a spec package
+ * or a parser starts to cite it: a framework that is not listed is not monitored, and nothing fails.
+ */
+const SOURCE_REPOS: ReadonlySet<string> = new Set([
+	'alpinejs/alpine',
+	'facebook/react',
+	'pugjs/pug',
+	'sveltejs/svelte',
+	'vuejs/core',
+	'withastro/astro',
+]);
+
+/** The documentation sites of the frameworks that the same declarations cite (see `SOURCE_REPOS` for adding one). */
+const FRAMEWORK_DOCS: ReadonlySet<string> = new Set([
+	'alpinejs.dev',
+	'docs.astro.build',
+	'htmx.org',
+	'pugjs.org',
+	'react.dev',
+	'svelte.dev',
+	'vuejs.org',
+]);
+
+/**
+ * The part after the host of the raw file that `https://github.com/<owner>/<repo>/blob/<ref>/<path>` shows
+ * (`<owner>/<repo>/<ref>/<path>`), or `null` when the URL is not a link to a file of a listed repository.
+ * The `<ref>` is one segment: the declarations cite the default branch of each repository.
+ */
+function rawPathOf(url: URL): string | null {
+	if (url.hostname !== 'github.com') {
+		return null;
+	}
+	const [, owner = '', repo = '', blob, ref = '', ...path] = url.pathname.split('/');
+	if (
+		blob !== 'blob' ||
+		!SOURCE_REPOS.has(`${owner}/${repo}`.toLowerCase()) ||
+		ref === '' ||
+		path.every(s => s === '')
+	) {
+		return null;
+	}
+	// The owner and the repository are in lower case, which is how the list has them, so that a link written in
+	// another case is the same file and the same entry of the lock.
+	return [owner.toLowerCase(), repo.toLowerCase(), ref, ...path].join('/');
+}
+
+/**
+ * Whether the monitor watches a URL: the specification hosts (a path of the translation at momdo.github.io and of
+ * `www.w3.org` is limited to the spec), the documentation sites of the frameworks, and a link to a file of a listed
+ * repository. Anything else is informative, and not worth a report when it changes.
+ */
 function isWatched(url: URL): boolean {
+	if (FRAMEWORK_DOCS.has(url.hostname)) {
+		return true;
+	}
 	switch (url.hostname) {
 		case 'html.spec.whatwg.org':
 		case 'w3c.github.io': {
@@ -30,7 +95,7 @@ function isWatched(url: URL): boolean {
 			return url.pathname.startsWith('/TR/');
 		}
 		default: {
-			return false;
+			return rawPathOf(url) !== null;
 		}
 	}
 }
@@ -78,6 +143,16 @@ function parseDirective(raw: string): TextDirective | null {
  * Parses a URL written in a document. Returns `null` for a host the monitor
  * does not watch (MDN, open-ui, translations on waic.jp, `www.w3.org/WAI`…),
  * which are informative and are not worth a report when they change.
+ *
+ * A link to a source file of a framework (`github.com/<owner>/<repo>/blob/…#<name>`) is parsed as the raw
+ * file, which is what is fetched, and its fragment is the name of a declaration in it, not an element id
+ * (`extractDeclaration`). A line range (`#L11-L52`) names no declaration and is read as a link to the whole file,
+ * which, like a whole-page link of a specification, is collected and not checked: it has no section to hash.
+ * A quote beside such a link is reported as `no-fragment`, as it is beside a whole-page link. The text fragment
+ * of a source link is dropped, as it names no passage of a file.
+ *
+ * Returns `null` too for a `github.com` URL that is not a link to a file of a listed repository (the root of
+ * a repository, an Issue, a directory, or an unlisted repository).
  */
 export function parseSpecUrl(raw: string): ParsedUrl | null {
 	let url: URL;
@@ -96,6 +171,16 @@ export function parseSpecUrl(raw: string): ParsedUrl | null {
 	const rest = hash === -1 ? '' : raw.slice(hash + 1);
 	const directiveAt = rest.indexOf(':~:');
 	const fragmentRaw = directiveAt === -1 ? rest : rest.slice(0, directiveAt);
+	const rawPath = rawPathOf(url);
+	if (rawPath !== null) {
+		const declaration = fragmentRaw === '' ? null : safeDecode(fragmentRaw);
+		return {
+			url: raw,
+			page: `https://${RAW_SOURCE_HOST}/${rawPath}`,
+			fragment: declaration !== null && LINE_ANCHOR.test(declaration) ? null : declaration,
+			textDirective: null,
+		};
+	}
 	return {
 		url: raw,
 		page,
@@ -434,8 +519,11 @@ function blocksOf(ranges: readonly ts.CommentRange[], text: string): CommentBloc
  * Comments are located through the TypeScript scanner rather than a regular
  * expression because `'https://…'` in a string literal contains `//`. Quotes
  * are read only from comments: `>` lines, in the same shape a README uses.
+ * A `>` is read only at the start of a comment line, so one that follows a list
+ * marker (`- > quote`) is not a quote: write the quote in a paragraph of its own.
  * A spec sentence written inline in double quotes is reported separately, so
- * that every quote has the one shape the monitor can check.
+ * that every quote has the one shape the monitor can check; a double quote in
+ * a code span is a value, not a quotation mark, and is not counted.
  */
 export function collectFromSource(text: string, file: string): CollectResult {
 	const starts = lineStartsOf(text);
@@ -486,7 +574,16 @@ export function collectFromSource(text: string, file: string): CollectResult {
 			const line = run[0]?.line ?? 1;
 			return { text: normalizeSpecText(run.map(r => r.text).join(' ')), file, line, group: `${file}:${line}` };
 		});
-		for (const match of prose.join(' ').matchAll(/["“]([^"”]+)["”]/g)) {
+		// A code span is not prose: `""` or `"false"` in one is a value, and counted as a quotation mark it pairs
+		// the marks of the wrong sentences, so that it reports a sentence that is not one and misses one that is.
+		// Only the marks in it are changed, so that its words still count in a sentence that holds it.
+		// A paragraph at a time: a backtick left unclosed must not run on into the next one.
+		const sentences = prose
+			.join('\n')
+			.split(/\n\s*\n/)
+			.map(paragraph => paragraph.replaceAll(CODE_SPAN, span => span.replaceAll(/["“”]/g, "'")))
+			.join(' ');
+		for (const match of sentences.matchAll(/["“]([^"”]+)["”]/g)) {
 			const sentence = normalizeSpecText(match[1] ?? '');
 			if (sentence.split(' ').length >= INLINE_QUOTE_MIN_WORDS) {
 				const line = lineOf(starts, block.pos);

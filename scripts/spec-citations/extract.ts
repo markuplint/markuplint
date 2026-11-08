@@ -27,8 +27,16 @@ export type Page = {
 	readonly unprocessed: boolean;
 };
 
-/** Annotations the spec sites inject and numbering that shifts when a section is inserted. */
-const NOISE = '.mdn-anno, .self-link, .secno, script, style, template';
+/**
+ * Annotations the spec sites inject and numbering that shifts when a section is inserted. `.sl-anchor-link` is the
+ * link that Starlight (docs.astro.build) draws beside a heading, with a text for screen readers.
+ */
+const NOISE = '.mdn-anno, .self-link, .secno, .sl-anchor-link, script, style, template';
+/**
+ * What Starlight wraps a heading in, with its anchor link: the heading has no sibling that is prose, and the prose
+ * that it titles follows the wrapper.
+ */
+const HEADING_WRAPPER = '.sl-heading-wrapper';
 const HEADING = /^h[1-6]$/;
 const BLOCK = 'p, li, dd, dt, tr, pre, table, blockquote, section';
 /** Elements that end a line of text; a space is put around them so words from adjacent blocks do not fuse. */
@@ -128,10 +136,20 @@ function extractHeading($: CheerioAPI, heading: El): { unit: string; scope: stri
 	const unit: El[] = [heading];
 	const scope: El[] = [heading];
 	let inUnit = true;
-	for (const sibling of $(heading).nextAll().toArray()) {
-		if (HEADING.test(sibling.tagName)) {
+	// The siblings to read are those of the wrapper, when there is one, and a wrapper among them stands for its heading.
+	const parent = $(heading).parent();
+	const origin = parent.is(HEADING_WRAPPER) ? (parent[0] ?? heading) : heading;
+	const headingOf = (el: El): El | null =>
+		HEADING.test((el as Tag).tagName)
+			? el
+			: $(el).is(HEADING_WRAPPER)
+				? ($(el).children('h1, h2, h3, h4, h5, h6')[0] ?? null)
+				: null;
+	for (const sibling of $(origin).nextAll().toArray()) {
+		const siblingHeading = headingOf(sibling);
+		if (siblingHeading !== null) {
 			inUnit = false;
-			if (levelOf(sibling) <= levelOf(heading)) {
+			if (levelOf(siblingHeading) <= levelOf(heading)) {
 				break;
 			}
 		}

@@ -31,7 +31,7 @@ const spec: ExtendedSpec = {
 	directivePatterns: [
 		/**
 		 * htmx event with explicit prefix: hx-on:htmx:event or hx-on-htmx-event
-		 * @see https://htmx.org/attributes/hx-on/
+		 * @see https://htmx.org/attributes/hx-on/#:~:text=hx-on-htmx-before-request
 		 */
 		{
 			pattern: '^hx-on([:-])htmx\\1(.+)$',
@@ -41,7 +41,7 @@ const spec: ExtendedSpec = {
 		},
 		/**
 		 * htmx event with shorthand double separator: hx-on::event
-		 * @see https://htmx.org/attributes/hx-on/
+		 * @see https://htmx.org/attributes/hx-on/#:~:text=hx-on::before-request
 		 */
 		{
 			pattern: '^hx-on[:-]{2}(.+)$',
@@ -51,7 +51,7 @@ const spec: ExtendedSpec = {
 		},
 		/**
 		 * Native DOM event: hx-on:click, hx-on-click
-		 * @see https://htmx.org/attributes/hx-on/
+		 * @see https://htmx.org/attributes/hx-on/#:~:text=hx-on:click
 		 */
 		{
 			pattern: '^hx-on[:-]([a-z]+)$',

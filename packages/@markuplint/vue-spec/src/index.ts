@@ -95,12 +95,14 @@ const spec: ExtendedSpec = {
 	templateContent: 'in-place',
 	/**
 	 * How Vue renders a literal in `:attr="…"` (`ssrRenderDynamicAttr` of `@vue/server-renderer`), where it
-	 * differs from the default of `@markuplint/ml-core`:
+	 * differs from the default of `@markuplint/ml-core`. The docs of Vue say of a boolean attribute:
+	 *
+	 * > It will also be included if the value is an empty string, maintaining consistency with `<button disabled="">`.
+	 *
+	 * So the table says:
 	 *
 	 * - A boolean attribute (`isBooleanAttr` of `@vue/shared`) is present for any truthy value and for the
-	 *   empty string (`includeBooleanAttr`): "It will also be included if the value is an empty string,
-	 *   maintaining consistency with `<button disabled="">`."
-	 *   (https://vuejs.org/guide/essentials/template-syntax.html#boolean-attributes)
+	 *   empty string (`includeBooleanAttr`)
 	 * - `class` and `style` are always output, and a value that is not a string, an array or an object
 	 *   is `""` (`ssrRenderClass`, `ssrRenderStyle`)
 	 *
@@ -114,6 +116,11 @@ const spec: ExtendedSpec = {
 	 * - The client renders `:disabled="false"` on an element that has no boolean attribute `disabled` as
 	 *   `disabled="false"`; the server does not output it, and the table follows the server
 	 * - A number other than `0` on `class` and `style` is `""` too, which a table cannot list: it is `"1"` here
+	 *
+	 * @see https://vuejs.org/guide/essentials/template-syntax.html#boolean-attributes
+	 * @see https://github.com/vuejs/core/blob/main/packages/server-renderer/src/helpers/ssrRenderAttrs.ts#ssrRenderDynamicAttr
+	 * @see https://github.com/vuejs/core/blob/main/packages/shared/src/domAttrConfig.ts#isBooleanAttr
+	 * @see https://github.com/vuejs/core/blob/main/packages/shared/src/domAttrConfig.ts#includeBooleanAttr
 	 */
 	literalValues: {
 		booleanAttrs: { '""': '' },

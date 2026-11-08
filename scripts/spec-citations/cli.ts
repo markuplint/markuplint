@@ -4,8 +4,10 @@
  * A rule's README, source comments and data files cite the specification
  * passage that justifies it. The HTML Living Standard changes every week and
  * nothing else reads the prose a rule quotes, so a rule can keep enforcing a
- * sentence the spec has since reworded or dropped. This script reads every
- * citation, fetches the page, and reports what no longer holds. A scheduled
+ * sentence the spec has since reworded or dropped. The tables of how a
+ * framework renders a literal (`literalValues`) are read from the framework's
+ * code and documentation, which change as often, so they cite both. This script
+ * reads every citation, fetches the page, and reports what no longer holds. A scheduled
  * workflow (`.github/workflows/spec-citation-watch.yml`) runs it weekly and
  * opens an Issue; a maintainer decides what follows. Nothing is fixed
  * automatically, and no model is involved: every verdict is a string
@@ -19,7 +21,11 @@
  *
  * - Against the page alone: the anchor exists, the quoted text is in the cited
  *   section, the `:~:text=` fragment matches, the cited `§` number is the
- *   section's. These hold on a fresh clone and say the citation is wrong.
+ *   section's. These hold on a fresh clone and say the citation is wrong. For a
+ *   source file of a framework the anchor is the name of a top-level
+ *   declaration, and the quoted text is looked up in that declaration. A text
+ *   fragment with no `#fragment` is searched in the whole page, which is how a
+ *   passage that no heading anchors is cited.
  * - Against the lock (`spec-citations.lock.json`): the cited passage is not
  *   the one a maintainer last accepted. The lock stores the text, not only a
  *   hash, so the report can show what changed without a second fetch.
@@ -33,7 +39,10 @@
  * `schema.json`), from the declarations of how a framework renders a literal
  * (a spec package and a parser), from the HTML spec data and the selector
  * engine, and from the website's hand-written pages; `discover.ts` lists which
- * files and how each is read.
+ * files and how each is read. Which hosts are watched is fixed in `collect.ts`:
+ * the specifications, the documentation sites of the frameworks, and the source
+ * files of the listed repositories. A framework that is not in those lists is
+ * not monitored, and no check says so.
  */
 import type { CollectResult, PageResult } from './types.ts';
 
@@ -68,7 +77,8 @@ export type CliDeps = {
 
 const USAGE = `Usage: yarn spec-citations [options]
 
-Checks the specification passages that rules cite against the live specifications.
+Checks the passages that rules and framework declarations cite against the live specifications,
+framework documentation and framework sources.
 
 Options:
   --update              Rewrite the lock file with the sections as they are now
@@ -108,7 +118,7 @@ export async function run(options: CliOptions, deps: CliDeps): Promise<number> {
 	const collected = deps.collect(options.root);
 	const needed = new Set(
 		collected.citations
-			.filter(c => c.fragment !== null || c.quotes.length > 0 || c.secno !== null)
+			.filter(c => c.fragment !== null || c.textDirective !== null || c.quotes.length > 0 || c.secno !== null)
 			.map(c => c.page),
 	);
 	const pages = await deps.fetchPages(needed);

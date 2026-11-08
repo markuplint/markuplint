@@ -29,7 +29,10 @@ const AS_BOOLEAN = { true: '', false: null, '0': null, '""': null } as const;
  * - `hidden` and `popover` take a string as it is (`hidden="until-found"`), which the default does too
  * - `scoped` and `seamless`, obsolete attributes that Astro renders as boolean, are not in the spec
  *
- * @see https://docs.astro.build/en/reference/astro-syntax/
+ * @see https://docs.astro.build/en/reference/astro-syntax/#dynamic-attributes
+ * @see https://github.com/withastro/astro/blob/main/packages/astro/src/runtime/server/render/util.ts#addAttribute
+ * @see https://github.com/withastro/astro/blob/main/packages/astro/src/runtime/server/render/util.ts#htmlBooleanAttributes
+ * @see https://github.com/withastro/astro/blob/main/packages/astro/src/runtime/server/render/util.ts#handleBooleanAttribute
  */
 export const ASTRO_LITERAL_VALUES: LiteralValueDeclaration = {
 	booleanAttrs: { '""': null },

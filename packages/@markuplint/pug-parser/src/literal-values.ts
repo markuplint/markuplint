@@ -22,8 +22,9 @@ import type { LiteralValueDeclaration } from '@markuplint/ml-ast';
  * - A quoted attribute name (`'data-x'="y"`) and an unescaped one (`data-x!="y"`) are read as code
  *   whose value is not known
  *
- * @see https://pugjs.org/language/attributes.html
- * @see https://pugjs.org/language/doctype.html
+ * @see https://pugjs.org/language/attributes.html#boolean-attributes
+ * @see https://pugjs.org/language/doctype.html#doctype-shortcuts
+ * @see https://github.com/pugjs/pug/blob/master/packages/pug-runtime/index.js#pug_attr
  */
 export const PUG_LITERAL_VALUES: LiteralValueDeclaration = {
 	booleanAttrs: { '""': '', '0': '0' },

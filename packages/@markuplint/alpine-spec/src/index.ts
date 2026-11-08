@@ -46,7 +46,8 @@ const spec: ExtendedSpec = {
 	 * - `:value` sets the property of an `input`, not the attribute (`option` is the one that sets the attribute)
 	 * - `x-bind="{…}"`, the object syntax, has no attribute name and is not read
 	 *
-	 * @see https://alpinejs.dev/directives/bind
+	 * @see https://alpinejs.dev/directives/bind#special-behavior
+	 * @see https://github.com/alpinejs/alpine/blob/main/packages/alpinejs/src/utils/bind.js#bindAttribute
 	 */
 	literalValues: {
 		booleanAttrs: { '""': '', '0': '' },

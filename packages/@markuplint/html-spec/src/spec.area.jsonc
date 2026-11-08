@@ -1,6 +1,6 @@
 // https://html.spec.whatwg.org/multipage/image-maps.html#the-area-element
 // https://www.w3.org/TR/html-aria/#el-area
-// https://www.w3.org/TR/html-aam/#:~:text=Comments-,area%20(represents%20a%20hyperlink),-area%20(no%20href
+// https://www.w3.org/TR/html-aam/#el-area
 {
 	"contentModel": {
 		"contents": false,

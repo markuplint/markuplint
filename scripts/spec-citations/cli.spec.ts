@@ -173,6 +173,35 @@ describe('run', () => {
 	});
 });
 
+describe('which pages are fetched', () => {
+	test('[cli-013] fetches the page of a link that points at a text fragment alone', async () => {
+		const other = 'https://html.spec.whatwg.org/multipage/other.html';
+		const withDirective = cite({ fragment: null, url: other, page: other, textDirective: { start: 'a passage' } });
+		const h = harness({ citations: [withDirective] }, { [other]: { status: 'ok', html: HTML } });
+		await run(options(), h.deps);
+		expect(h.fetched).toStrictEqual([[other]]);
+	});
+
+	test('[cli-014] fetches a source file only for a link that names a declaration, and a docs page only for one that points at a section', async () => {
+		const RAW = 'https://raw.githubusercontent.com/withastro/astro/main/packages/astro/src/util.ts';
+		const DOCS = 'https://docs.astro.build/en/reference/astro-syntax/';
+		const named = cite({ url: 'x', page: RAW, fragment: 'addAttribute' });
+		const lineRange = cite({
+			url: 'y',
+			page: 'https://raw.githubusercontent.com/withastro/astro/main/packages/astro/src/other.ts',
+			fragment: null,
+		});
+		const section = cite({ url: 'z', page: DOCS, fragment: 'dynamic-attributes' });
+		const whole = cite({ url: 'w', page: 'https://docs.astro.build/en/guides/other/', fragment: null });
+		const h = harness(
+			{ citations: [lineRange, named, section, whole] },
+			{ [RAW]: { status: 'ok', html: 'function addAttribute() {}' }, [DOCS]: { status: 'ok', html: HTML } },
+		);
+		await run(options(), h.deps);
+		expect(h.fetched).toStrictEqual([[RAW, DOCS]]);
+	});
+});
+
 describe('command line', () => {
 	test('[cli-011] starts under Node type stripping and prints its usage', () => {
 		const cli = fileURLToPath(new URL('cli.ts', import.meta.url));
