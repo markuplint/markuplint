@@ -76,7 +76,9 @@ function renderItem(problem: Problem, citations: readonly Citation[], maxDiffLin
 		body.push('```text', problem.quote.text.replaceAll('```', "'''"), '```');
 	}
 	if (problem.diff !== undefined) {
-		const diffLines = problem.diff.split('\n');
+		// The lines of a source file may hold a backtick fence, which would close this one: it is written as the
+		// quote above writes it.
+		const diffLines = problem.diff.replaceAll('```', "'''").split('\n');
 		const shown =
 			diffLines.length > maxDiffLines
 				? [...diffLines.slice(0, maxDiffLines), `… ${diffLines.length - maxDiffLines} more lines`]

@@ -3,6 +3,7 @@ import { describe, expect, test } from 'vitest';
 import type { Citation, Lock, PageResult, Quote } from './types.ts';
 
 import { check } from './check.ts';
+import { collectFromSource } from './collect.ts';
 import { splitSentences } from './diff.ts';
 import { EMPTY_LOCK } from './lockfile.ts';
 import { hashText, normalizeSpecText } from './normalize.ts';
@@ -248,5 +249,105 @@ describe('check', () => {
 			'secno-stale',
 			'section-changed',
 		]);
+	});
+});
+
+describe('check: a source file of a framework', () => {
+	const RAW = 'https://raw.githubusercontent.com/withastro/astro/main/packages/astro/src/util.ts';
+	const BLOB = 'https://github.com/withastro/astro/blob/main/packages/astro/src/util.ts';
+	const KEY = `${RAW}#addAttribute`;
+	const FILE = 'export function addAttribute(value, key) {\n\treturn value;\n}\n\nexport const other = 1;\n';
+	const UNIT = 'export function addAttribute(value, key) {\n\treturn value;\n}';
+
+	const cites = (overrides: Partial<Citation> = {}): Citation =>
+		cite({ url: `${BLOB}#addAttribute`, page: RAW, fragment: 'addAttribute', ...overrides });
+	const lockedAs = (text: string): Lock => ({
+		sections: { [KEY]: { hash: hashText(text), text, updatedAt: EARLIER } },
+	});
+
+	test('[check-021] stores the declaration as its lines, and reports nothing while it holds', () => {
+		const first = run([cites()], { [RAW]: ok(FILE) });
+		expect(first.problems).toStrictEqual([]);
+		expect(first.lock.sections[KEY]).toStrictEqual({ hash: hashText(UNIT), text: UNIT, updatedAt: NOW });
+		expect(run([cites()], { [RAW]: ok(FILE) }, lockedAs(UNIT)).problems).toStrictEqual([]);
+	});
+
+	test('[check-022] reports a changed declaration with the changed lines, and a change elsewhere in the file with nothing', () => {
+		const changed = FILE.replace('return value;', 'return String(value);');
+		const { problems } = run([cites()], { [RAW]: ok(changed) }, lockedAs(UNIT));
+		expect(problems.map(p => p.kind)).toStrictEqual(['section-changed']);
+		expect(problems[0]?.message).toBe('The cited declaration changed since 2026-09-01');
+		expect(problems[0]?.diff).toContain('-\treturn value;');
+		expect(problems[0]?.diff).toContain('+\treturn String(value);');
+
+		const elsewhere = `${FILE}\nexport const added = 2;\n`;
+		expect(run([cites()], { [RAW]: ok(elsewhere) }, lockedAs(UNIT)).problems).toStrictEqual([]);
+	});
+
+	test('[check-023] reports a declaration that the file no longer has, and keeps its entry in the lock', () => {
+		const renamed = FILE.replace('addAttribute', 'renderAttribute');
+		const { problems, lock } = run([cites()], { [RAW]: ok(renamed) }, lockedAs(UNIT));
+		expect(problems.map(p => p.kind)).toStrictEqual(['anchor-missing']);
+		expect(problems[0]?.message).toBe(`\`addAttribute\` is not declared at the top level of ${BLOB}`);
+		expect(lock.sections[KEY]?.hash).toBe(hashText(UNIT));
+	});
+
+	test('[check-024] reports a source file that is gone as a page that no longer exists', () => {
+		const { problems } = run([cites()], { [RAW]: { status: 'failed', message: 'HTTP 404', permanent: true } });
+		expect(problems.map(p => p.kind)).toStrictEqual(['page-missing']);
+		expect(problems[0]?.citation?.url).toBe(`${BLOB}#addAttribute`);
+	});
+
+	test('[check-025] looks a quote up in the declaration, and reports one that it does not hold', () => {
+		expect(run([cites({ quotes: [quote('return value;')] })], { [RAW]: ok(FILE) }).problems).toStrictEqual([]);
+		const { problems } = run([cites({ quotes: [quote('return String(value);')] })], { [RAW]: ok(FILE) });
+		expect(problems.map(p => p.kind)).toStrictEqual(['quote-mismatch']);
+	});
+
+	test('[check-026] needs the name of the declaration when it quotes the file', () => {
+		const { problems } = run([cites({ fragment: null, url: BLOB, quotes: [quote('return value;')] })], {
+			[RAW]: ok(FILE),
+		});
+		expect(problems.map(p => p.kind)).toStrictEqual(['no-fragment']);
+	});
+
+	test('[check-030] stores the lines of a declaration as they are, not split into sentences', () => {
+		const code = "function f(terse) {\n\treturn terse ? 'a' : 'b'; // end. Next\n}";
+		const { lock } = run([cites({ fragment: 'f', url: `${BLOB}#f` })], { [RAW]: ok(`${code}\n`) });
+		expect(lock.sections[`${RAW}#f`]?.text).toBe(code);
+	});
+
+	test('[check-031] reads the page that collecting a link to a source file names', () => {
+		const comment = `/**\n * @see ${BLOB}#addAttribute\n */\nexport const TABLE = {};\n`;
+		const [collected] = collectFromSource(comment, 'p/literal-values.ts').citations;
+		expect(collected).toBeDefined();
+		const { problems, lock } = run(collected === undefined ? [] : [collected], { [RAW]: ok(FILE) });
+		expect(problems).toStrictEqual([]);
+		expect(Object.keys(lock.sections)).toStrictEqual([KEY]);
+	});
+});
+
+describe('check: a text fragment without a fragment', () => {
+	const whole = (overrides: Partial<Citation> = {}) => cite({ fragment: null, url: PAGE, ...overrides });
+
+	test('[check-027] finds the text fragment of a link to a whole page in the text of the page', () => {
+		const { problems, lock } = run(
+			[whole({ textDirective: { start: "The element's value attribute", end: 'must be omitted' } })],
+			{ [PAGE]: ok() },
+		);
+		expect(problems).toStrictEqual([]);
+		expect(lock.sections).toStrictEqual({});
+	});
+
+	test('[check-028] reports the text fragment of a link to a whole page that is no longer on the page', () => {
+		const { problems } = run([whole({ textDirective: { start: 'a sentence that was reworded' } })], {
+			[PAGE]: ok(),
+		});
+		expect(problems.map(p => p.kind)).toStrictEqual(['directive-missing']);
+		expect(problems[0]?.message).toContain('a sentence that was reworded');
+	});
+
+	test('[check-029] reports nothing for a link to a whole page that quotes, numbers and points at nothing', () => {
+		expect(run([whole()], { [PAGE]: ok() }).problems).toStrictEqual([]);
 	});
 });
