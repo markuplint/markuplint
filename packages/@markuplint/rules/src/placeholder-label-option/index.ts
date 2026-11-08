@@ -1,6 +1,7 @@
 import type { Element } from '@markuplint/ml-core';
 
 import { createRule } from '@markuplint/ml-core';
+import { getSelectDisplaySize } from '@markuplint/ml-spec';
 import { decodeEntities } from '@markuplint/shared';
 
 import meta from './meta.js';
@@ -103,17 +104,10 @@ function hasPlaceholderLabelOption(
 }
 
 /**
- * The display size of a `<select>`.
- *
- * > The display size of a select element is the result of applying the rules for parsing non-negative integers to the
- * > value of the element's size attribute, if it has one and parsing it is successful. If applying those rules to the
- * > attribute's value is not successful, or if the size attribute is absent, then the element's display size is 4 if
- * > the element's multiple content attribute is present, and 1 otherwise.
+ * The display size of a `<select>`, as {@link getSelectDisplaySize} defines it.
  *
  * `null` when the size is given by an expression (`:size="n"`, `size={n}`): it
  * is not known until the template runs, so the rule must not assume it is 1.
- *
- * @see https://html.spec.whatwg.org/multipage/form-elements.html#concept-select-size
  */
 function displaySize(
 	// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
@@ -123,24 +117,7 @@ function displaySize(
 	if (size?.isDynamicValue) {
 		return null;
 	}
-	return parseNonNegativeInteger(size?.value ?? null) ?? (select.hasAttribute('multiple') ? 4 : 1);
-}
-
-/**
- * The rules for parsing non-negative integers: leading ASCII whitespace is
- * skipped, an optional `+` or `-` is read, then the leading run of ASCII
- * digits; whatever follows the digits is ignored (`"3abc"` is 3, `"01"` is 1).
- * No digits, or a negative number, is an error. `-0` is not less than zero.
- *
- * @see https://html.spec.whatwg.org/multipage/common-microsyntaxes.html#rules-for-parsing-non-negative-integers
- */
-function parseNonNegativeInteger(text: string | null): number | null {
-	const match = /^[\t\n\f\r ]*([+-]?)(\d+)/.exec(text ?? '');
-	if (!match) {
-		return null;
-	}
-	const value = Number(match[2]);
-	return match[1] === '-' && value !== 0 ? null : value;
+	return getSelectDisplaySize(size?.value ?? null, select.hasAttribute('multiple'));
 }
 
 /**

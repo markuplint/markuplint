@@ -647,4 +647,26 @@ describe('getPermittedRoles', () => {
 	// above to exercise the `true` branch and on the img[alt="foo"] test to exercise
 	// the array branch. No production element in html-spec currently leaves
 	// permittedRoles undefined on an aria spec that reaches getPermittedRoles.
+
+	describe('the select element', () => {
+		test('a select whose display size is 1 permits the combobox and menu roles', () => {
+			expect(c('<select></select>', '1.2')).toStrictEqual(['combobox', 'menu']);
+			expect(c('<select size="1"></select>', '1.2')).toStrictEqual(['combobox', 'menu']);
+			expect(c('<select size="0"></select>', '1.2')).toStrictEqual(['combobox', 'menu']);
+			expect(c('<select size="01"></select>', '1.2')).toStrictEqual(['combobox', 'menu']);
+			expect(c('<select size="abc"></select>', '1.2')).toStrictEqual(['combobox', 'menu']);
+		});
+
+		test('a select with the multiple attribute or a display size greater than 1 permits no role', () => {
+			expect(c('<select multiple></select>', '1.2')).toStrictEqual([]);
+			expect(c('<select size="2"></select>', '1.2')).toStrictEqual([]);
+			expect(c('<select size=" 2"></select>', '1.2')).toStrictEqual([]);
+		});
+
+		test('a select with the multiple attribute permits no role whatever its size is', () => {
+			expect(c('<select multiple size="0"></select>', '1.2')).toStrictEqual([]);
+			expect(c('<select multiple size="1"></select>', '1.2')).toStrictEqual([]);
+			expect(c('<select multiple size="abc"></select>', '1.2')).toStrictEqual([]);
+		});
+	});
 });

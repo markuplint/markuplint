@@ -88,4 +88,36 @@ describe('getImplicitRole', () => {
 		expect(c('<section></section>', '1.2')).toBe(false);
 		expect(c('<section aria-label="foo"></section>', '1.2')).toBe('region');
 	});
+
+	test('the select element is a combobox unless it has the multiple attribute or a display size greater than 1', () => {
+		expect(c('<select></select>', '1.2')).toBe('combobox');
+		expect(c('<select size="1"></select>', '1.2')).toBe('combobox');
+		expect(c('<select size="0"></select>', '1.2')).toBe('combobox');
+		expect(c('<select size="01"></select>', '1.2')).toBe('combobox');
+		expect(c('<select size="abc"></select>', '1.2')).toBe('combobox');
+		expect(c('<select size="-1"></select>', '1.2')).toBe('combobox');
+		expect(c('<select multiple></select>', '1.2')).toBe('listbox');
+		expect(c('<select size="2"></select>', '1.2')).toBe('listbox');
+		expect(c('<select size=" 2"></select>', '1.2')).toBe('listbox');
+		expect(c('<select size="02"></select>', '1.2')).toBe('listbox');
+		expect(c('<select size="2abc"></select>', '1.2')).toBe('listbox');
+	});
+
+	test('the select element is told by the native matches() as well, which cannot evaluate :display-size()', () => {
+		const native = (html: string) => {
+			const el = createJSDOMElement(html);
+			return getImplicitRole(specs, el.localName, el.namespaceURI, '1.2', selector => el.matches(selector));
+		};
+		expect(native('<select></select>')).toBe('combobox');
+		expect(native('<select size="1"></select>')).toBe('combobox');
+		expect(native('<select multiple></select>')).toBe('listbox');
+		expect(native('<select size="2"></select>')).toBe('listbox');
+	});
+
+	test('the select element with the multiple attribute is a listbox whatever its size is', () => {
+		expect(c('<select multiple size="0"></select>', '1.2')).toBe('listbox');
+		expect(c('<select multiple size="1"></select>', '1.2')).toBe('listbox');
+		expect(c('<select multiple size="abc"></select>', '1.2')).toBe('listbox');
+		expect(c('<select multiple size="3"></select>', '1.2')).toBe('listbox');
+	});
 });

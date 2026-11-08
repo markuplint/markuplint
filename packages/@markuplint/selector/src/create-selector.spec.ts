@@ -75,3 +75,89 @@ describe('Extended Selector', () => {
 		expect(c(contentModel, '<div><header></header></div>')).toBeFalsy();
 	});
 });
+
+describe(':display-size', () => {
+	function select(html: string, selector: string) {
+		return createSelector(selector, specs).match(createJSDOMElement(html, 'select')) !== false;
+	}
+
+	test.each([
+		['<select></select>', ':display-size(= 1)', true],
+		['<select></select>', ':display-size(> 1)', false],
+		['<select multiple></select>', ':display-size(= 4)', true],
+		['<select multiple></select>', ':display-size(> 1)', true],
+		['<select size="2"></select>', ':display-size(> 1)', true],
+		['<select size="2"></select>', ':display-size(>= 2)', true],
+		['<select size="2"></select>', ':display-size(< 2)', false],
+		['<select size="2"></select>', ':display-size(<= 2)', true],
+		['<select size="1"></select>', ':display-size(> 1)', false],
+		['<select size="0"></select>', ':display-size(= 0)', true],
+		['<select size="0"></select>', ':display-size(> 1)', false],
+		['<select size="01"></select>', ':display-size(= 1)', true],
+		['<select size="01"></select>', ':display-size(> 1)', false],
+		['<select size="02"></select>', ':display-size(> 1)', true],
+		['<select size=" 3"></select>', ':display-size(= 3)', true],
+		['<select size="+3"></select>', ':display-size(= 3)', true],
+		['<select size="3abc"></select>', ':display-size(= 3)', true],
+		['<select size="-1"></select>', ':display-size(= 1)', true],
+		['<select size="abc"></select>', ':display-size(> 1)', false],
+		['<select size="abc"></select>', ':display-size(= 1)', true],
+		['<select size="abc" multiple></select>', ':display-size(= 4)', true],
+		['<select size=""></select>', ':display-size(= 1)', true],
+	])('%s matches %s: %j', (html, selector, expected) => {
+		expect(select(html, selector)).toBe(expected);
+	});
+
+	test('no spaces are needed around the operator', () => {
+		expect(select('<select size="2"></select>', ':display-size(>1)')).toBe(true);
+		expect(select('<select size="2"></select>', ':display-size(>=3)')).toBe(false);
+	});
+
+	test('combined with other selectors', () => {
+		const selector = 'select:is([multiple], :display-size(> 1))';
+		expect(select('<select></select>', selector)).toBe(false);
+		expect(select('<select multiple></select>', selector)).toBe(true);
+		expect(select('<select size="2"></select>', selector)).toBe(true);
+		expect(select('<select size="1"></select>', selector)).toBe(false);
+		expect(select('<select size="0"></select>', selector)).toBe(false);
+	});
+
+	test('works without the specs', () => {
+		// The cache is keyed by the selector string: no other test uses `> 7`, so this is built without the specs
+		const el = createJSDOMElement('<select size="8"></select>', 'select');
+		expect(createSelector(':display-size(> 7)').match(el)).toBeTruthy();
+		expect(createSelector(':display-size(> 8)').match(el)).toBe(false);
+	});
+
+	test('a number may have leading zeros', () => {
+		expect(select('<select></select>', ':display-size(= 01)')).toBe(true);
+		expect(select('<select size="2"></select>', ':display-size(> 001)')).toBe(true);
+	});
+
+	test('an element other than a select never matches', () => {
+		const div = createJSDOMElement('<div size="2"></div>', 'div');
+		expect(createSelector(':display-size(> 1)', specs).match(div)).toBe(false);
+		expect(createSelector(':display-size(= 1)', specs).match(div)).toBe(false);
+		const input = createJSDOMElement('<input size="2">', 'input');
+		expect(createSelector(':display-size(> 1)', specs).match(input)).toBe(false);
+	});
+
+	test('a select in another namespace never matches', () => {
+		const el = createJSDOMElement('<svg><select size="2"></select></svg>', 'select');
+		expect(createSelector(':display-size(> 1)', specs).match(el)).toBe(false);
+	});
+
+	test.each([
+		[':display-size()'],
+		[':display-size(1)'],
+		[':display-size(> )'],
+		[':display-size(> a)'],
+		[':display-size(=> 1)'],
+		[':display-size(> -1)'],
+		[':display-size(> 1.5)'],
+	])('%s is a syntax error', selector => {
+		expect(() => createSelector(selector, specs).match(createJSDOMElement('<select></select>', 'select'))).toThrow(
+			SyntaxError,
+		);
+	});
+});
