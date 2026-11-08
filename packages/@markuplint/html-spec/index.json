@@ -53045,7 +53045,7 @@
 						"oneOrMore": ":model(flow)"
 					}
 				],
-				"forbiddenAncestors": ["article", "aside", "footer", "header", "nav"]
+				"permittedAncestors": ["html", "body", "div", "form:aria(has no name)", "#custom"]
 			},
 			"aria": {
 				"implicitRole": "main",

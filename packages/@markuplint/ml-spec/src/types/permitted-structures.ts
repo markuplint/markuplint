@@ -56,9 +56,13 @@ export interface ContentModel {
   contents: PermittedContentPattern[] | boolean;
   descendantOf?: string;
   /**
-   * Elements that this element must NOT appear as a descendant of. Each entry is a CSS selector matching forbidden ancestor elements.
+   * Elements that this element must NOT appear as a descendant of. Each entry is a CSS selector matching forbidden ancestor elements. The walk up the tree stops at the content of a `template` element, which has no ancestors.
    */
   forbiddenAncestors?: string[];
+  /**
+   * Elements that this element's ancestors are limited to: every ancestor must match at least one entry. Each entry is a CSS selector, or `#custom` for a custom element (a component or an autonomous custom element). A selector can use `:aria(has no name)`, which is evaluated with the recommended ARIA version. The walk up the tree stops at the content of a `template` element, which has no ancestors.
+   */
+  permittedAncestors?: string[];
   /**
    * Attributes that must be unique among sibling elements of the same type. If this element has one of these attributes, no other sibling element of the same type may also have it. Example: `["default"]` for `<track>` — only one `<track>` per parent may have `default`.
    */
