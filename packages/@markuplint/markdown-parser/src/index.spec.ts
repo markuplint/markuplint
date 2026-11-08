@@ -877,3 +877,40 @@ describe('getLineAndColumn', () => {
 		expect(getLineAndColumn('abc\n', 3)).toStrictEqual({ line: 1, col: 4 });
 	});
 });
+
+describe('a leading BOM', () => {
+	// remark strips the BOM itself and counts from the character after it
+	test('the BOM is skipped and the positions count it as one character', () => {
+		const doc = parse('\uFEFF# t\n\n<div><p>x</p></div>\n');
+
+		expect(nodeListToDebugMaps(doc.nodeList)).toStrictEqual([
+			'[1:2]>[1:5](1,4)h1: #␣t',
+			'[1:4]>[1:5](3,4)#text: t',
+			'[3:1]>[3:6](6,11)div: <div>',
+			'[3:6]>[3:9](11,14)p: <p>',
+			'[3:9]>[3:10](14,15)#text: x',
+			'[3:10]>[3:14](15,19)p: </p>',
+			'[3:14]>[3:20](19,25)div: </div>',
+		]);
+	});
+
+	test('a front matter after the BOM is still a front matter', () => {
+		const doc = parse('\uFEFF---\ntitle: t\n---\n# t\n');
+
+		expect(nodeListToDebugMaps(doc.nodeList)).toStrictEqual([
+			'[1:2]>[3:4](1,17)#ps:yaml: ---⏎title:␣t⏎---',
+			'[4:1]>[4:4](18,21)h1: #␣t',
+			'[4:3]>[4:4](20,21)#text: t',
+		]);
+	});
+
+	test('a parse error of an HTML region is reported at the offset that counts the BOM', () => {
+		const plain = parse('# a\n\n<div <p>\n');
+		const withBom = parse('\uFEFF# a\n\n<div <p>\n');
+		const position = (doc: ReturnType<typeof parse>) =>
+			(doc.parseErrors ?? []).map(e => [e.startOffset, e.startLine, e.startCol]);
+
+		expect(position(plain)).toStrictEqual([[10, 3, 6]]);
+		expect(position(withBom)).toStrictEqual([[11, 3, 6]]);
+	});
+});
