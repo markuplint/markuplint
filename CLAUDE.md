@@ -41,6 +41,7 @@ Two major lines are developed in parallel:
 
 - Full test: `yarn test` (no arguments), which type-checks the specs (`yarn test:types`) before running them. Vitest itself does not type-check a `*.spec.ts` (its `--typecheck` covers only `*.spec-d.ts`, of which there are none) and the package builds exclude specs, so `yarn test:types` is the only gate for a type error in a spec. It reads the built `lib/*.d.ts` of the packages the specs import: run `yarn build` first (without it `tsc` reports a wall of unrelated TS2307 "cannot find module" errors)
 - Single file/directory: `npx vitest run <path>` — this does not type-check; only `yarn test` / `yarn test:types` do, and `tsc` runs over every spec at once
+- Specs a change can affect: `yarn test:affected` (build first; `--base origin/dev` is the default). A pull request runs this in CI, and the merge queue and `dev` run the whole suite. A new rule for a file it cannot place belongs in `scripts/affected-tests/classify.ts`, whose module JSDoc gives the reasoning
 - Do not use `npx lerna run test`, `yarn test --scope @markuplint/*`, or other variants
 - Do not use `npx tsc --noEmit` against the root `tsconfig.json` — it does not work in this monorepo (no root `include`; `composite` conflicts with `--noEmit` in build mode). The spec check goes through `yarn test:types`, whose `tsconfig.spec.json` sets its own `include` and `noEmit`
 - `yarn test` covers the TypeScript workspace only; a branch with `crates/` has a separate gate in `crates/CLAUDE.md`
