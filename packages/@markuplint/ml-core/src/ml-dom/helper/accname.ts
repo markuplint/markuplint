@@ -1,3 +1,5 @@
+import type { MLDocumentFragment } from '../node/document-fragment.js';
+import type { MLDocument } from '../node/document.js';
 import type { MLElement } from '../node/element.js';
 import type {
 	AccnameElement,
@@ -12,14 +14,16 @@ import {
 	computeAccessibleName,
 	computeHostLanguageLabel,
 	computeReferencedTextAlternative,
-	escapeCSS,
 	getComputedRole,
 	EMBEDDED_CONTROL_ROLES,
 	isExposedAsPresentational,
 	isNativeEmbeddedControl,
 } from '@markuplint/ml-spec';
+import { decodeEntities } from '@markuplint/shared';
 
 import { log } from '../../debug.js';
+
+import { getDOMValue } from './tree-scope.js';
 
 const accnameLog = log.extend('accname');
 
@@ -145,14 +149,25 @@ function createMLCoreResolver(
 	version: ARIAVersion,
 ): AccnameResolver {
 	const doc = el.ownerMLDocument;
+	// An id is resolved in the tree of the element: not in the content of a `template` outside of it.
+	// An element that is in no tree (a `template` that a declarative shadow root is attached to) is its
+	// own root and resolves nothing.
+	const node = el.getRootNode();
+	const root: MLDocument<any, any> | MLDocumentFragment<any, any> | null =
+		node.is(node.DOCUMENT_NODE) || node.is(node.DOCUMENT_FRAGMENT_NODE) ? node : null;
+	// The ids the algorithm hands over are the ones written in the markup (`MLElement#id` and a token of
+	// `aria-labelledby`), so the character references are resolved on both sides, as the DOM has them
 	return {
 		getElementById(id: string): AccnameElement | null {
-			const found = doc.querySelector(`#${escapeCSS(id)}`);
-			return found ?? null;
+			return root?.getElementById(decodeEntities(id)) ?? null;
 		},
 		getLabelsForId(id: string): readonly AccnameElement[] {
-			const labels = doc.querySelectorAll(`label[for="${escapeCSS(id)}"]`);
-			return [...labels];
+			const domId = decodeEntities(id);
+			return root
+				? [...root.querySelectorAll('label[for]')].filter(
+						label => getDOMValue(label.getAttributeNode('for')) === domId,
+					)
+				: [];
 		},
 		// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
 		allowsNameFromContent(target: AccnameElement): boolean {
