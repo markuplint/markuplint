@@ -659,6 +659,9 @@ test('[no-invalid-attr-value-issue-1987] #1987', async () => {
 	expect(
 		(await mlRuleTest(rule, '<link rel="modulepreload" as="audioworklet" href="/audio.js" />')).violations,
 	).toStrictEqual([]);
+	expect(
+		(await mlRuleTest(rule, '<link rel="modulepreload" as="text" href="/data.txt" />')).violations,
+	).toStrictEqual([]);
 
 	// Invalid: values not valid for preload (condition-specific enum after #3189)
 	expect((await mlRuleTest(rule, '<link rel="preload" as="audio" href="/audio.mp3" />')).violations).toStrictEqual([
@@ -1031,33 +1034,50 @@ test('[no-invalid-attr-value-issue-3598-022] input[type=datetime-local] with inv
 
 test('[no-invalid-attr-value-issue-3189-001] rel=preload with valid as value', async () => {
 	const { violations } = await mlRuleTest(rule, '<link rel="preload" href="/a.js" as="script">');
-	expect(violations.some(v => v.raw === 'script')).toBe(false);
+	expect(violations).toStrictEqual([]);
 });
 
 test('[no-invalid-attr-value-issue-3189-002] rel=preload with invalid as value (json is modulepreload-only)', async () => {
 	const { violations } = await mlRuleTest(rule, '<link rel="preload" href="/a.json" as="json">');
-	expect(violations.some(v => v.raw === 'json')).toBe(true);
+	expect(violations).toStrictEqual([
+		{
+			severity: 'error',
+			line: 1,
+			col: 40,
+			message: 'The "as" attribute expects either "fetch", "font", "image", "script", "style", "track"',
+			raw: 'json',
+		},
+	]);
 });
 
 test('[no-invalid-attr-value-issue-3189-003] rel=modulepreload with valid as value', async () => {
 	const { violations } = await mlRuleTest(rule, '<link rel="modulepreload" href="/a.js" as="script">');
-	expect(violations.some(v => v.raw === 'script')).toBe(false);
+	expect(violations).toStrictEqual([]);
 });
 
 test('[no-invalid-attr-value-issue-3189-004] rel=modulepreload with valid as=json', async () => {
 	const { violations } = await mlRuleTest(rule, '<link rel="modulepreload" href="/a.json" as="json">');
-	expect(violations.some(v => v.raw === 'json')).toBe(false);
+	expect(violations).toStrictEqual([]);
 });
 
 test('[no-invalid-attr-value-issue-3189-005] rel=modulepreload with invalid as value (track is preload-only)', async () => {
 	const { violations } = await mlRuleTest(rule, '<link rel="modulepreload" href="/a.vtt" as="track">');
-	expect(violations.some(v => v.raw === 'track')).toBe(true);
+	expect(violations).toStrictEqual([
+		{
+			severity: 'error',
+			line: 1,
+			col: 45,
+			message:
+				'The "as" attribute expects either "audioworklet", "json", "paintworklet", "script", "serviceworker", "sharedworker", "style", "text", "worker"',
+			raw: 'track',
+		},
+	]);
 });
 
 test('[no-invalid-attr-value-issue-3189-006] rel=preload with all valid preload destinations', async () => {
 	for (const dest of ['fetch', 'font', 'image', 'script', 'style', 'track']) {
 		const { violations } = await mlRuleTest(rule, `<link rel="preload" href="/a" as="${dest}">`);
-		expect(violations.some(v => v.raw === dest)).toBe(false);
+		expect(violations).toStrictEqual([]);
 	}
 });
 
@@ -1065,6 +1085,7 @@ test('[no-invalid-attr-value-issue-3189-007] rel=modulepreload with all valid mo
 	for (const dest of [
 		'json',
 		'style',
+		'text',
 		'audioworklet',
 		'paintworklet',
 		'script',
@@ -1073,29 +1094,46 @@ test('[no-invalid-attr-value-issue-3189-007] rel=modulepreload with all valid mo
 		'worker',
 	]) {
 		const { violations } = await mlRuleTest(rule, `<link rel="modulepreload" href="/a" as="${dest}">`);
-		expect(violations.some(v => v.raw === dest)).toBe(false);
+		expect(violations).toStrictEqual([]);
 	}
 });
 
 test('[no-invalid-attr-value-issue-3189-008] rel=preload with completely bogus as value', async () => {
 	const { violations } = await mlRuleTest(rule, '<link rel="preload" href="/a" as="bogus">');
-	expect(violations.some(v => v.raw === 'bogus')).toBe(true);
+	expect(violations).toStrictEqual([
+		{
+			severity: 'error',
+			line: 1,
+			col: 35,
+			message: 'The "as" attribute expects either "fetch", "font", "image", "script", "style", "track"',
+			raw: 'bogus',
+		},
+	]);
 });
 
 test('[no-invalid-attr-value-issue-3189-010] rel with multiple tokens: preload + stylesheet', async () => {
 	// condition uses ~= (space-separated token match), so "preload stylesheet" must match
 	const { violations } = await mlRuleTest(rule, '<link rel="preload stylesheet" href="/a.css" as="style">');
-	expect(violations.some(v => v.raw === 'style')).toBe(false);
+	expect(violations).toStrictEqual([]);
 });
 
 test('[no-invalid-attr-value-issue-3189-011] rel=modulepreload as=fetch is invalid (fetch is preload-only)', async () => {
 	const { violations } = await mlRuleTest(rule, '<link rel="modulepreload" href="/a" as="fetch">');
-	expect(violations.some(v => v.raw === 'fetch')).toBe(true);
+	expect(violations).toStrictEqual([
+		{
+			severity: 'error',
+			line: 1,
+			col: 41,
+			message:
+				'The "as" attribute expects either "audioworklet", "json", "paintworklet", "script", "serviceworker", "sharedworker", "style", "text", "worker"',
+			raw: 'fetch',
+		},
+	]);
 });
 
 test('[no-invalid-attr-value-issue-3189-012] case-insensitive rel matching: rel=PRELOAD', async () => {
 	const { violations } = await mlRuleTest(rule, '<link rel="PRELOAD" href="/a.js" as="script">');
-	expect(violations.some(v => v.raw === 'script')).toBe(false);
+	expect(violations).toStrictEqual([]);
 });
 
 test('[no-invalid-attr-value-issue-3629-001] C1 control U+0080 in href', async () => {
@@ -2273,4 +2311,14 @@ test('[no-invalid-attr-value-issue-4481-004] JSX: without srcset, a sizes value 
 
 test('[no-invalid-attr-value-issue-4481-005] img: a sizes that no-disallowed-attr reports is not reported again for its value', async () => {
 	expect((await mlRuleTest(rule, '<img src="a.png" alt="" sizes="100vw">')).violations).toStrictEqual([]);
+});
+
+// @see https://html.spec.whatwg.org/multipage/links.html#link-type-modulepreload
+// > A module preload destination is "json", "style", "text", or a script-like destination.
+test('[no-invalid-attr-value-issue-4483-001] rel=modulepreload accepts as=text', async () => {
+	expect((await mlRuleTest(rule, '<link rel="modulepreload" href="a.txt" as="text">')).violations).toStrictEqual([]);
+});
+
+test('[no-invalid-attr-value-issue-4483-002] rel=modulepreload accepts as=TEXT (ASCII case-insensitive)', async () => {
+	expect((await mlRuleTest(rule, '<link rel="modulepreload" href="a.txt" as="TEXT">')).violations).toStrictEqual([]);
 });
