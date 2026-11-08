@@ -17,6 +17,10 @@
 		".": {
 			"types": "./lib/index.d.ts",
 			"default": "./lib/index.js"
+		},
+		"./react-18": {
+			"types": "./lib/react-18.d.ts",
+			"default": "./lib/react-18.js"
 		}
 	},
 	"publishConfig": {

@@ -60,6 +60,20 @@ describe('schemaToSpec', () => {
 		expect(mergedSpec.directivePatterns ?? []).toStrictEqual([]);
 	});
 
+	test('movedToHead', () => {
+		const mergedSpec = schemaToSpec([
+			htmlSpec,
+			{ movedToHead: ['title'] },
+			{ movedToHead: ['style[href][precedence]'] },
+		]);
+		expect(mergedSpec.movedToHead).toStrictEqual(['title', 'style[href][precedence]']);
+	});
+
+	test('movedToHead defaults to undefined', () => {
+		expect(schemaToSpec([htmlSpec]).movedToHead).toBeUndefined();
+		expect(schemaToSpec([htmlSpec, {}]).movedToHead).toBeUndefined();
+	});
+
 	test('acceptedAttrNames defaults to undefined', () => {
 		const mergedSpec = schemaToSpec([htmlSpec]);
 		expect(mergedSpec.acceptedAttrNames).toBeUndefined();

@@ -29,6 +29,8 @@ $ yarn add -D @markuplint/mdx-parser
 }
 ```
 
+使っている React が各要素を書かれた位置にそのまま出力する場合は、代わりに指定するスペックを [`@markuplint/react-spec`](https://www.npmjs.com/package/@markuplint/react-spec) で確認してください。
+
 ## 機能
 
 - **JSX 要素**: 自己閉じ（`<Badge />`）とコンテナ（`<Card>...</Card>`）の両方のコンポーネントに対応

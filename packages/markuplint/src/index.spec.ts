@@ -545,15 +545,57 @@ describe('Built-in parse-error channel (#3844)', () => {
 		expect(violations.filter(v => v.ruleId === 'no-duplicate-attr')).toHaveLength(0);
 	});
 
-	test('framework parsers (Vue) do not emit parse-error — parse5 is not invoked', async () => {
+	test('framework parsers (Vue) do not emit parse5 parse-error — parse5 is not invoked', async () => {
 		// Vue parser extends `Parser` base, not `HtmlParser`, so it never invokes
-		// parse5 and never populates `parseErrors`. The channel stays empty
-		// even when fully opted in.
+		// parse5 and reports no parse5 code. The channel stays empty for this
+		// input even when fully opted in (a `<style>` or a `<script>` in the
+		// template is a parse error of Vue's own, `vue-ignored-side-effect-tag`).
 		const { violations } = await mlTest('<template><div v-bind:attr v-bind:attr /></template>', {
 			parser: { '.*': '@markuplint/vue-parser' },
 			severity: { parseError: 'error' },
 		});
 		expect(violations.filter(v => v.ruleId === 'parse-error')).toStrictEqual([]);
+	});
+
+	// Vue removes a `<style>` and a `<script>` from a template and, in development, reports an error:
+	// "Tags with side effect (<script> and <style>) are ignored in client component templates."
+	// `@markuplint/vue-parser` passes it on as a non-fatal parse error of its own (not parse5's).
+	test('Vue: a <style> and a <script> in the template are parse errors, and only when the channel is enabled', async () => {
+		const source = '<template><div><style>p{}</style><script>1</script></div></template>';
+		const vue = { parser: { '.*': '@markuplint/vue-parser' } };
+		expect((await mlTest(source, vue)).violations.filter(v => v.ruleId === 'parse-error')).toStrictEqual([]);
+
+		const { violations } = await mlTest(source, { ...vue, severity: { parseError: 'error' } });
+		expect(violations.filter(v => v.ruleId === 'parse-error')).toStrictEqual([
+			{
+				ruleId: 'parse-error',
+				severity: 'error',
+				line: 1,
+				col: 16,
+				message: 'Parser conformance error: vue-ignored-side-effect-tag',
+				raw: '<style>p{}</style>',
+			},
+			{
+				ruleId: 'parse-error',
+				severity: 'error',
+				line: 1,
+				col: 34,
+				message: 'Parser conformance error: vue-ignored-side-effect-tag',
+				raw: '<script>1</script>',
+			},
+		]);
+	});
+
+	test('Vue: the Record form targets the code of the parse error of Vue', async () => {
+		const source = '<template><div><style>p{}</style></div></template>';
+		const vue = { parser: { '.*': '@markuplint/vue-parser' } };
+		const { violations } = await mlTest(source, {
+			...vue,
+			severity: { parseError: { 'vue-ignored-side-effect-tag': 'warning' } },
+		});
+		expect(violations.filter(v => v.ruleId === 'parse-error').map(v => v.severity)).toStrictEqual(['warning']);
+		const other = await mlTest(source, { ...vue, severity: { parseError: { 'duplicate-attribute': 'error' } } });
+		expect(other.violations.filter(v => v.ruleId === 'parse-error')).toStrictEqual([]);
 	});
 
 	test('parserOptions.documentMode "fragment" silences document-level parse errors', async () => {
