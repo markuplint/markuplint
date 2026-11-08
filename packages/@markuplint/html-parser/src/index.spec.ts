@@ -1320,3 +1320,74 @@ describe('Circular reference removal', () => {
 		expect(spanClose?.parentNodeUuid).toBe(div?.uuid);
 	});
 });
+
+describe('a leading BOM', () => {
+	test('the BOM is skipped, the offsets count it as one character, and the raw of the document keeps it', () => {
+		const code = '\uFEFF<!DOCTYPE html>\n<html lang="en"><head><title>t</title></head><body><p>x</p></body></html>';
+		const doc = parse(code);
+
+		expect(doc.raw).toBe(code);
+		expect(nodeListToDebugMaps(doc.nodeList, true)).toStrictEqual([
+			'[1:1]>[1:2](0,1)#text: ␣',
+			'[1:2]>[1:17](1,16)#doctype: <!DOCTYPE␣html>',
+			'[1:17]>[2:1](16,17)#text: ⏎',
+			'[2:1]>[2:17](17,33)html: <html␣lang="en">',
+			'[2:7]>[2:16](23,32)lang: lang="en"',
+			'  [2:6]>[2:7](22,23)bN: ␣',
+			'  [2:7]>[2:11](23,27)name: lang',
+			'  [2:11]>[2:11](27,27)bE: ',
+			'  [2:11]>[2:12](27,28)equal: =',
+			'  [2:12]>[2:12](28,28)aE: ',
+			'  [2:12]>[2:13](28,29)sQ: "',
+			'  [2:13]>[2:15](29,31)value: en',
+			'  [2:15]>[2:16](31,32)eQ: "',
+			'  isDirective: false',
+			'  isDynamicValue: false',
+			'[2:17]>[2:23](33,39)head: <head>',
+			'[2:23]>[2:30](39,46)title: <title>',
+			'[2:30]>[2:31](46,47)#text: t',
+			'[2:31]>[2:39](47,55)title: </title>',
+			'[2:39]>[2:46](55,62)head: </head>',
+			'[2:46]>[2:52](62,68)body: <body>',
+			'[2:52]>[2:55](68,71)p: <p>',
+			'[2:55]>[2:56](71,72)#text: x',
+			'[2:56]>[2:60](72,76)p: </p>',
+			'[2:60]>[2:67](76,83)body: </body>',
+			'[2:67]>[2:74](83,90)html: </html>',
+		]);
+	});
+
+	test('a fragment that starts with a BOM is parsed as a fragment', () => {
+		const doc = parse('\uFEFF<div><p>x</p></div>');
+
+		expect(doc.isFragment).toBe(true);
+		expect(nodeListToDebugMaps(doc.nodeList)).toStrictEqual([
+			'[1:1]>[1:2](0,1)#text: ␣',
+			'[1:2]>[1:7](1,6)div: <div>',
+			'[1:7]>[1:10](6,9)p: <p>',
+			'[1:10]>[1:11](9,10)#text: x',
+			'[1:11]>[1:15](10,14)p: </p>',
+			'[1:15]>[1:21](14,20)div: </div>',
+		]);
+	});
+
+	test('a BOM and a front matter are both skipped', () => {
+		const doc = parse('\uFEFF---\nkey: value\n---\n<!DOCTYPE html>\n<html></html>', { ignoreFrontMatter: true });
+
+		expect(nodeListToDebugMaps(doc.nodeList)).toStrictEqual([
+			'[1:1]>[4:1](0,20)#ps:front-matter: ␣---⏎key:␣value⏎---⏎',
+			'[4:1]>[4:16](20,35)#doctype: <!DOCTYPE␣html>',
+			'[4:16]>[5:1](35,36)#text: ⏎',
+			'[5:1]>[5:7](36,42)html: <html>',
+			'[5:7]>[5:7](42,42)head(👻): ',
+			'[5:7]>[5:7](42,42)body(👻): ',
+			'[5:7]>[5:14](42,49)html: </html>',
+		]);
+	});
+
+	test('a U+FEFF at an offset position is not a BOM', () => {
+		const doc = parse('\uFEFFtext', { offsetOffset: 15, offsetLine: 2, offsetColumn: 2 });
+
+		expect(doc.nodeList.map(n => n.raw)).toStrictEqual(['\uFEFFtext']);
+	});
+});

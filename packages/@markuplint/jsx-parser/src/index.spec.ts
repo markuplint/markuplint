@@ -869,3 +869,18 @@ const C = () => {
 		});
 	});
 });
+
+describe('a leading BOM', () => {
+	// The BOM is before the JavaScript, which ignores it
+	test('does not move the positions beyond counting the BOM as one character', () => {
+		const doc = parse('\uFEFFconst a = <div><p>x</p></div>;\n');
+
+		expect(nodeListToDebugMaps(doc.nodeList)).toStrictEqual([
+			'[1:12]>[1:17](11,16)div: <div>',
+			'[1:17]>[1:20](16,19)p: <p>',
+			'[1:20]>[1:21](19,20)#text: x',
+			'[1:21]>[1:25](20,24)p: </p>',
+			'[1:25]>[1:31](24,30)div: </div>',
+		]);
+	});
+});

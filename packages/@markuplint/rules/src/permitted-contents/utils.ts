@@ -19,6 +19,23 @@ import { bgGreen, green, bgRed, bgBlue, blue, bgMagenta, cyan } from './debug.js
 import { transparentMode } from './represent-transparent-nodes.js';
 
 /**
+ * Whether a child node is a comment, which a content model does not see.
+ * Without this, a comment is matched like an element and takes the place of
+ * one the model requires (`<html><!-- c --><head>` leaves `head` unmatched).
+ *
+ * @param node - The child node to test.
+ * @returns True if the node is a comment node.
+ * @see https://html.spec.whatwg.org/multipage/dom.html#content-models
+ * > Inter-element whitespace, comment nodes, and processing instruction nodes must be ignored when establishing whether an element's contents match the element's content model or not
+ */
+export function isComment(
+	// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
+	node: ChildNode,
+): boolean {
+	return node.is(node.COMMENT_NODE);
+}
+
+/**
  * Determines whether a given value is a terminal model (a selector string or an array
  * of selector strings) rather than a nested array of content model patterns.
  * Distinguishes between `Model` (leaf-level selectors) and `PermittedContentPattern[]`

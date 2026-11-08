@@ -3191,3 +3191,97 @@ describe('inter-element whitespace', () => {
 		expect(violations).toStrictEqual([]);
 	});
 });
+
+/**
+ * @see https://html.spec.whatwg.org/multipage/dom.html#content-models
+ * > Inter-element whitespace, comment nodes, and processing instruction nodes must be ignored when establishing whether an element's contents match the element's content model or not
+ */
+describe('comment nodes are ignored', () => {
+	const HEAD = '<head><title>t</title></head>';
+	const conditional = { rule: { options: { evaluateConditionalChildNodes: true } } };
+
+	test('[permitted-contents-issue-4488-001] a comment before the head element', async () => {
+		const { violations } = await mlRuleTest(rule, `<html><!-- c -->${HEAD}<body></body></html>`);
+		expect(violations).toStrictEqual([]);
+	});
+
+	test('[permitted-contents-issue-4488-002] a comment between the head and the body elements', async () => {
+		const { violations } = await mlRuleTest(rule, `<html>${HEAD}<!-- c --><body></body></html>`);
+		expect(violations).toStrictEqual([]);
+	});
+
+	test('[permitted-contents-issue-4488-003] a comment after the body element', async () => {
+		const { violations } = await mlRuleTest(rule, `<html>${HEAD}<body></body><!-- c --></html>`);
+		expect(violations).toStrictEqual([]);
+	});
+
+	test('[permitted-contents-issue-4488-004] a comment before the summary element', async () => {
+		const { violations } = await mlRuleTest(rule, '<details><!-- c --><summary>s</summary>x</details>');
+		expect(violations).toStrictEqual([]);
+	});
+
+	test('[permitted-contents-issue-4488-005] a comment before the figcaption element', async () => {
+		const { violations } = await mlRuleTest(
+			rule,
+			'<figure><!-- c --><img src="a" alt=""><figcaption>c</figcaption></figure>',
+		);
+		expect(violations).toStrictEqual([]);
+	});
+
+	test('[permitted-contents-issue-4488-006] comments with evaluateConditionalChildNodes', async () => {
+		const { violations } = await mlRuleTest(
+			rule,
+			`<html><!-- c -->${HEAD}<!-- c --><body></body><!-- c --></html>`,
+			conditional,
+		);
+		expect(violations).toStrictEqual([]);
+	});
+
+	test('[permitted-contents-issue-4488-007] a comment does not take the place of a required element', async () => {
+		const { violations } = await mlRuleTest(rule, '<hgroup><!-- c --></hgroup>');
+		expect(violations).toStrictEqual([
+			{
+				severity: 'error',
+				line: 1,
+				col: 1,
+				raw: '<hgroup>',
+				message: 'Require an element. (Need "h6")',
+			},
+		]);
+	});
+
+	test('[permitted-contents-issue-4488-008] a comment after the figcaption element inside a transparent element', async () => {
+		const { violations } = await mlRuleTest(rule, '<figure><a><figcaption></figcaption><!-- c --></a></figure>');
+		expect(violations).toStrictEqual([]);
+	});
+
+	test('[permitted-contents-issue-4488-009] a comment inside a transparent element with evaluateConditionalChildNodes', async () => {
+		const { violations } = await mlRuleTest(
+			rule,
+			'<figure><a><figcaption></figcaption><!-- c --></a></figure>',
+			conditional,
+		);
+		expect(violations).toStrictEqual([]);
+	});
+
+	test('[permitted-contents-issue-4488-010] a comment before the content of a transparent element', async () => {
+		const { violations } = await mlRuleTest(
+			rule,
+			'<figure><ins><!-- c --><img src="a" alt=""></ins><figcaption>c</figcaption></figure>',
+		);
+		expect(violations).toStrictEqual([]);
+	});
+
+	test('[permitted-contents-issue-4488-011] the message of a violation is translated into Japanese', async () => {
+		const { violations } = await mlRuleTest(
+			rule,
+			`<html>${HEAD}<body></body><body></body></html>`,
+			{ rule: true, parser: { '.*': '@markuplint/svelte-parser' } },
+			false,
+			'ja',
+		);
+		expect(violations.map(v => v.message)).toStrictEqual([
+			'必要以上のコンテンツがあります。必要な要素数の最大は1です',
+		]);
+	});
+});
