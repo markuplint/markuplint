@@ -25,6 +25,23 @@ export interface MLMLSpec {
 	 */
 	readonly acceptedAttrNames?: 'idl' | 'both';
 	/**
+	 * Where the browser holds the children of a `template` element that the author wrote without
+	 * a directive of the framework.
+	 *
+	 * - `'separate-tree'` (the default, as the HTML parser does it): in the `content` of the element, a
+	 *   `DocumentFragment` that is a tree of its own. An id in it is unique in that tree only, and an
+	 *   id reference in it is resolved in that tree only. A declarative shadow root (`shadowrootmode`)
+	 *   may be attached to the parent element.
+	 * - `'in-place'`: in the element itself, in the tree of the document. The framework creates the
+	 *   element and appends the children to it through the DOM API, which never fills `content` and
+	 *   never attaches a declarative shadow root: the `template` element is an ordinary element.
+	 *
+	 * Known limitations of `'in-place'`: React does not render the same tree when it hydrates server
+	 * output (the server output has the children in `content`), and Vue puts them in `content` when
+	 * it renders static markup as a string and replaces the element with its content when it hydrates.
+	 */
+	readonly templateContent?: 'separate-tree' | 'in-place';
+	/**
 	 * How the framework renders a literal in an attribute value that is written as code, where it
 	 * differs from the default of `@markuplint/ml-core`: by kind of attribute, and by attribute name
 	 * in `attrs`, in the form that a parser declares as well (see {@link LiteralValueDeclaration}).
@@ -57,6 +74,11 @@ export type ExtendedSpec = {
 	 * specs; omitting the property does not reset a previously set value.
 	 */
 	readonly acceptedAttrNames?: 'idl' | 'both';
+	/**
+	 * See {@link MLMLSpec.templateContent}. Last-write-wins across merged specs; omitting the
+	 * property does not reset a previously set value.
+	 */
+	readonly templateContent?: 'separate-tree' | 'in-place';
 	/**
 	 * See {@link MLMLSpec.literalValues}. Merged by kind of attribute, by attribute name and by key,
 	 * and the later spec wins on a key that two specs have.

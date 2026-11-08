@@ -103,6 +103,9 @@ export function schemaToSpec(schemas: readonly [MLMLSpec, ...ExtendedSpec[]]) {
 		if (extendedSpec.acceptedAttrNames != null) {
 			result.acceptedAttrNames = extendedSpec.acceptedAttrNames;
 		}
+		if (extendedSpec.templateContent != null) {
+			result.templateContent = extendedSpec.templateContent;
+		}
 		if (extendedSpec.literalValues) {
 			result.literalValues = mergeLiteralValues(result.literalValues, extendedSpec.literalValues);
 		}

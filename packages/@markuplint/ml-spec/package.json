@@ -37,6 +37,7 @@
 	},
 	"dependencies": {
 		"@markuplint/ml-ast": "5.3.0",
+		"@markuplint/shared": "5.4.0",
 		"@markuplint/types": "5.4.0",
 		"is-plain-object": "^5.1.0",
 		"type-fest": "^5.10.0"
