@@ -49,6 +49,8 @@ class MDXParser extends MarkdownAwareParser {
 			tagNameCaseSensitive: true,
 			attrNameCaseSensitive: true,
 			attrNameRoute: 'dom-api',
+			// remark strips a leading BOM itself and counts from the next character
+			leadingBom: 'strip',
 		});
 	}
 

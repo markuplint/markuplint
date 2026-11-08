@@ -51,3 +51,11 @@ test('[no-stray-head-or-body-tag-valid-002] tag-shaped text inside script/style/
 	const code = `<!doctype html><head><title><body></title><script>const s = '<body>';</script></head><body></body>`;
 	expect((await mlRuleTest(rule, code)).violations).toStrictEqual([]);
 });
+
+test('[no-stray-head-or-body-tag-invalid-002] the messages are translated into Japanese', async () => {
+	const { violations } = await mlRuleTest(rule, MATH_IN_HEAD, undefined, false, 'ja');
+	expect(violations.map(v => v.message)).toStrictEqual([
+		'迷子の「head」終了タグが検出されました',
+		'重複した「body」開始タグが検出されました',
+	]);
+});

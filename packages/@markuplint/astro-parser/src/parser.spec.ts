@@ -1196,3 +1196,36 @@ describe('Directives', () => {
 		expect(map).toContainEqual(expect.stringContaining('name: custom:attr'));
 	});
 });
+
+describe('a leading BOM', () => {
+	// The compiler of Astro keeps the BOM in the source and counts it, so nothing is moved;
+	// the first node is the one that contains it
+	test('a front matter starts at the BOM and every later node is at its position in the source', () => {
+		const doc = parse('\uFEFF---\nconst a = 1;\n---\n<div><p>x</p></div>\n');
+
+		expect(nodeListToDebugMaps(doc.nodeList)).toStrictEqual([
+			'[1:1]>[3:4](0,21)#ps:Frontmatter: ␣---⏎const␣a␣=␣1;⏎---',
+			'[3:4]>[4:1](21,22)#text: ⏎',
+			'[4:1]>[4:6](22,27)div: <div>',
+			'[4:6]>[4:9](27,30)p: <p>',
+			'[4:9]>[4:10](30,31)#text: x',
+			'[4:10]>[4:14](31,35)p: </p>',
+			'[4:14]>[4:20](35,41)div: </div>',
+			'[4:20]>[5:1](41,42)#text: ⏎',
+		]);
+	});
+
+	test('a template without a front matter has the BOM as a text node, and every later node is at its position in the source', () => {
+		const doc = parse('\uFEFF<div><p>x</p></div>\n');
+
+		expect(nodeListToDebugMaps(doc.nodeList)).toStrictEqual([
+			'[1:1]>[1:2](0,1)#text: ␣',
+			'[1:2]>[1:7](1,6)div: <div>',
+			'[1:7]>[1:10](6,9)p: <p>',
+			'[1:10]>[1:11](9,10)#text: x',
+			'[1:11]>[1:15](10,14)p: </p>',
+			'[1:15]>[1:21](14,20)div: </div>',
+			'[1:21]>[2:1](20,21)#text: ⏎',
+		]);
+	});
+});

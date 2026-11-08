@@ -7,6 +7,7 @@ import { isInterElementWhitespace } from '@markuplint/selector';
 import { order } from './order.js';
 import { representTransparentNodes } from './represent-transparent-nodes.js';
 import { expandChildren } from './slot-content.js';
+import { isComment } from './utils.js';
 
 /**
  * Entry point for validating an element's child nodes against a content model definition.
@@ -36,7 +37,7 @@ export function start(
 		? el.conditionalChildNodes().map(childNodes => [...childNodes])
 		: [[...el.childNodes]];
 	const childNodesPatterns = givenPatterns.map(given => {
-		const children = expandChildren(el, given, mode);
+		const children = expandChildren(el, given, mode).filter(child => !isComment(child));
 		return options.evaluateConditionalChildNodes
 			? [...children]
 			: children.filter(child => !(child.is(child.TEXT_NODE) && isInterElementWhitespace(child.raw)));

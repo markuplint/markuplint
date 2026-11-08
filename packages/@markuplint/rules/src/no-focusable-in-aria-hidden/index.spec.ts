@@ -22,3 +22,35 @@ test('[no-focusable-in-aria-hidden-invalid-001] focusable in hidden', async () =
 	expect(violations.length).toBe(1);
 	expect(violations[0]!.severity).toBe('warning');
 });
+
+test('[no-focusable-in-aria-hidden-invalid-002] the message for aria-hidden on the element itself is translated into Japanese', async () => {
+	const { violations } = await mlRuleTest(rule, '<button aria-hidden="true">click</button>', undefined, false, 'ja');
+	expect(violations).toStrictEqual([
+		{
+			severity: 'warning',
+			line: 1,
+			col: 1,
+			raw: '<button aria-hidden="true">',
+			message: 'aria-hidden=trueを持っていますが、フォーカスできてしまうかもしれません',
+		},
+	]);
+});
+
+test('[no-focusable-in-aria-hidden-invalid-003] the message for aria-hidden on an ancestor is translated into Japanese', async () => {
+	const { violations } = await mlRuleTest(
+		rule,
+		'<div aria-hidden="true"><button>click</button></div>',
+		undefined,
+		false,
+		'ja',
+	);
+	expect(violations).toStrictEqual([
+		{
+			severity: 'warning',
+			line: 1,
+			col: 25,
+			raw: '<button>',
+			message: '先祖がaria-hidden=trueを持っていますが、フォーカスできてしまうかもしれません',
+		},
+	]);
+});

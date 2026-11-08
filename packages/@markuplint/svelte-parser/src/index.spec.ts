@@ -1474,3 +1474,23 @@ describe('a <style> in the component', () => {
 		expect(names('<div><style>b{}</style></div>')).toStrictEqual(['div', 'style', 'style', 'div']);
 	});
 });
+
+describe('a leading BOM', () => {
+	test('the BOM is skipped and the offsets count it as one character', () => {
+		const doc = parse('\uFEFF<div><p>x</p></div>');
+
+		expect(nodeListToDebugMaps(doc.nodeList)).toStrictEqual([
+			'[1:1]>[1:2](0,1)#text: ␣',
+			'[1:2]>[1:7](1,6)div: <div>',
+			'[1:7]>[1:10](6,9)p: <p>',
+			'[1:10]>[1:11](9,10)#text: x',
+			'[1:11]>[1:15](10,14)p: </p>',
+			'[1:15]>[1:21](14,20)div: </div>',
+		]);
+	});
+
+	test('a syntax error on the first line is reported at the column that counts the BOM', () => {
+		expect(() => parse('<div>{#if}</div>')).toThrow(expect.objectContaining({ line: 1, col: 10 }));
+		expect(() => parse('\uFEFF<div>{#if}</div>')).toThrow(expect.objectContaining({ line: 1, col: 11 }));
+	});
+});
