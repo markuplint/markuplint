@@ -1,4 +1,11 @@
-import { isAriaAttr, labelable, memoizeByObject, namespaceKeyOf } from '../../helpers.js';
+import {
+	getDOMValue,
+	getElementByIdInTree,
+	isAriaAttr,
+	labelable,
+	memoizeByObject,
+	namespaceKeyOf,
+} from '../../helpers.js';
 import type { Options } from '../types.js';
 import type { Attr, AttrChecker, Document, Element } from '@markuplint/ml-core';
 import type { AccnameVisit, ARIAVersion, ARIARole, ComputedRole } from '@markuplint/ml-spec';
@@ -172,7 +179,13 @@ function getVisits(
 		if (current !== el) {
 			add(current);
 		}
-		if (current.id && referenced.has(current.id) && document.getElementById(current.id) === current) {
+		// An `aria-labelledby` refers to an element of its own tree
+		const idValue: string | null = getDOMValue(current.getAttributeNode('id'));
+		if (
+			idValue &&
+			referenced.get(current.getRootNode())?.has(idValue) &&
+			getElementByIdInTree(current, idValue, true) === current
+		) {
 			add(current, true);
 		}
 		for (const control of getLabeledControls(current)) {
@@ -196,29 +209,38 @@ const getLabeledControls = memoizeByObject(
 		if (el.localName !== 'label' || el.namespaceURI !== 'http://www.w3.org/1999/xhtml') {
 			return [];
 		}
-		const htmlFor = el.getAttribute('for');
-		const target = htmlFor == null ? null : el.ownerMLDocument.getElementById(htmlFor);
+		const forAttr = el.getAttributeNode('for');
+		const target = forAttr == null ? null : getElementByIdInTree(el, forAttr.value, forAttr.isExpressionValue);
 		return [...(target ? [target] : []), ...el.querySelectorAll(labelable.join(', '))];
 	},
 );
 
 /**
- * The IDs that an `aria-labelledby` or `aria-describedby` of the document refers to.
+ * The IDs that an `aria-labelledby` or `aria-describedby` refers to, by the tree of the referrer: an
+ * id is resolved in the tree of the element that refers to it.
  */
 const getReferencedIds = memoizeByObject(
 	// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
-	(document: Document<boolean, Options>): ReadonlySet<string> => {
-		const ids = new Set<string>();
-		for (const referrer of document.querySelectorAll('[aria-labelledby], [aria-describedby]')) {
+	(document: Document<boolean, Options>): ReadonlyMap<object, ReadonlySet<string>> => {
+		const idsOfTree = new Map<object, Set<string>>();
+		for (const referrer of document.deepQuerySelectorAll('[aria-labelledby], [aria-describedby]')) {
+			const root = referrer.getRootNode();
+			let ids = idsOfTree.get(root);
+			if (!ids) {
+				ids = new Set();
+				idsOfTree.set(root, ids);
+			}
 			for (const name of ['aria-labelledby', 'aria-describedby']) {
-				for (const id of referrer.getAttribute(name)?.split(/\s+/) ?? []) {
-					if (id !== '') {
-						ids.add(id);
+				const attr = referrer.getAttributeNode(name);
+				for (const id of attr?.value.split(/\s+/) ?? []) {
+					const domId = id === '' ? null : getDOMValue(attr, id);
+					if (domId != null) {
+						ids.add(domId);
 					}
 				}
 			}
 		}
-		return ids;
+		return idsOfTree;
 	},
 );
 
@@ -340,11 +362,12 @@ function labelledbyGivesText(
 	el: Element<boolean, Options>,
 	ariaVersion: ARIAVersion,
 ): boolean {
-	return (el.getAttribute('aria-labelledby')?.split(/\s+/) ?? []).some(id => {
+	const labelledbyAttr = el.getAttributeNode('aria-labelledby');
+	return (labelledbyAttr?.value.split(/\s+/) ?? []).some(id => {
 		if (id === '') {
 			return false;
 		}
-		const referenced = el.ownerMLDocument.getElementById(id);
+		const referenced = getElementByIdInTree(el, id, labelledbyAttr?.isExpressionValue);
 		return referenced != null && referenced.getReferencedTextAlternative(ariaVersion) !== '';
 	});
 }

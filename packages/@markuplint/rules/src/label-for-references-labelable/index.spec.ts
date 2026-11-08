@@ -191,3 +191,34 @@ test('[label-for-references-labelable-parser-002] unresolved JSX pretender label
 	);
 	expect(violations).toStrictEqual([]);
 });
+
+test('[label-for-references-labelable-issue-4489-001] the target is looked for in the tree of the label', async () => {
+	const { violations } = await mlRuleTest(rule, '<template><label for="a"></label><div id="a"></div></template>');
+	expect(violations).toStrictEqual([
+		{
+			severity: 'error',
+			line: 1,
+			col: 23,
+			raw: 'a',
+			message: 'The "for" attribute of the "label" element must reference a labelable element',
+		},
+	]);
+});
+
+test('[label-for-references-labelable-issue-4489-002] an id in another tree is not the target', async () => {
+	const { violations } = await mlRuleTest(rule, '<div id="a"></div><template><label for="a"></label></template>');
+	expect(violations).toStrictEqual([]);
+});
+
+test('[label-for-references-labelable-issue-4489-003] the id is compared after the character references are resolved', async () => {
+	const { violations } = await mlRuleTest(rule, '<div id="&#97;"></div><label for="a"></label>');
+	expect(violations).toStrictEqual([
+		{
+			severity: 'error',
+			line: 1,
+			col: 35,
+			raw: 'a',
+			message: 'The "for" attribute of the "label" element must reference a labelable element',
+		},
+	]);
+});

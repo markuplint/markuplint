@@ -1,6 +1,6 @@
 import { createRule } from '@markuplint/ml-core';
 
-import { computeLandmarkRoles, landmarkRoleElementUUIDList } from '../landmark-roles/roles.js';
+import { computeLandmarkRolesOfEachTree, landmarkRoleElementUUIDList } from '../landmark-roles/roles.js';
 import meta from './meta.js';
 
 import type { Roles, TopLevelRoles } from '../landmark-roles/roles.js';
@@ -43,25 +43,28 @@ export default createRule<boolean, Options>({
 			return;
 		}
 
-		const roles = computeLandmarkRoles<Options>(document);
-		const uuidList = landmarkRoleElementUUIDList(roles);
+		// Landmarks are nested in a landmark of their own tree: the content of a `template` element is
+		// a tree of its own, so a landmark outside of it does not make what is in it nested
+		for (const roles of computeLandmarkRolesOfEachTree<Options>(document)) {
+			const uuidList = landmarkRoleElementUUIDList(roles);
 
-		for (const role of topLevelRoles) {
-			const elements = roles[role];
-			for (const el of elements) {
-				if (el.rule.disabled) {
-					continue;
-				}
+			for (const role of topLevelRoles) {
+				const elements = roles[role];
+				for (const el of elements) {
+					if (el.rule.disabled) {
+						continue;
+					}
 
-				if (el.rule.options.ignoreRoles?.includes(role)) {
-					continue;
-				}
+					if (el.rule.options.ignoreRoles?.includes(role)) {
+						continue;
+					}
 
-				if (el.isDescendantByUUIDList(uuidList)) {
-					report({
-						scope: el,
-						message: t('{0} should be {1}', t('the "{0*}" {1}', role, 'role'), 'top level'),
-					});
+					if (el.isDescendantByUUIDList(uuidList)) {
+						report({
+							scope: el,
+							message: t('{0} should be {1}', t('the "{0*}" {1}', role, 'role'), 'top level'),
+						});
+					}
 				}
 			}
 		}

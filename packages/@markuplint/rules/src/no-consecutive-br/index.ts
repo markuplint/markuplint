@@ -6,7 +6,7 @@ export default createRule({
 	meta: meta,
 	defaultSeverity: 'warning',
 	verify({ document, report, t }) {
-		const brList = [...document.querySelectorAll('br')];
+		const brList = [...document.deepQuerySelectorAll('br')];
 
 		for (const br of brList) {
 			let next = br.nextSibling;

@@ -17,18 +17,23 @@ export default createRule<boolean, null>({
 	meta: meta,
 	defaultOptions: null,
 	verify({ document, report, t }) {
-		const headings = document.querySelectorAll('h1, h2, h3, h4, h5, h6');
-		let prevLevel: number | null = null;
+		// The content of a `template` element and a declarative shadow root are trees of their own, and
+		// where they are inserted is not known from the markup: the headings of each tree are the
+		// sequence that the heading lead is judged in, as the headings of the document are.
+		const headings = document.deepQuerySelectorAll('h1, h2, h3, h4, h5, h6');
+		const prevLevelOfTree = new Map<object, number>();
 		for (const heading of headings) {
 			const level = Number.parseInt(heading.nodeName.slice(1));
+			const root = heading.getRootNode();
+			const prevLevel = prevLevelOfTree.get(root);
 
-			if (prevLevel !== null && prevLevel + 1 < level) {
+			if (prevLevel !== undefined && prevLevel + 1 < level) {
 				report({
 					scope: heading,
 					message: t('{0} must not be skipped', t('Heading levels')),
 				});
 			}
-			prevLevel = level;
+			prevLevelOfTree.set(root, level);
 		}
 	},
 });

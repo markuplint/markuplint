@@ -29,7 +29,7 @@ Cite: [HTML Living Standard 4.3.11 Headings and outlines](https://html.spec.what
 <h3>Heading 3</h3>
 ```
 
-The constraint applies only to a heading that _follows another heading lead_. A document (or fragment) whose first heading is at any level has no lead, so it is correct.
+The constraint applies only to a heading that _follows another heading lead_. A document (or fragment) whose first heading is at any level has no lead, so it is correct. The content of a `template` element and a declarative shadow root are trees of their own, where it is not known from the markup where they are inserted, so the headings of each tree are a sequence of their own. In React and Vue, the children of a `template` element without a directive are in the tree of the document.
 
 ```html
 <!-- Article fragment whose first heading is h3 -->

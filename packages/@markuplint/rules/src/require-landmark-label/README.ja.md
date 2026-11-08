@@ -5,7 +5,9 @@ description: ページ内で複数回使用されるランドマークロール�
 
 # `require-landmark-label`
 
-[APG の Landmark Regions プラクティス](https://www.w3.org/WAI/ARIA/apg/practices/landmark-regions/) に基づき、ランドマークロール(`banner`、`main`、`complementary`、`contentinfo`、`form`、`navigation`、`region`)がドキュメント内で複数回出現し、いずれかに一意のアクセシブルネーム(`aria-label`または`aria-labelledby`)がない場合に警告します。
+[APG の Landmark Regions プラクティス](https://www.w3.org/WAI/ARIA/apg/practices/landmark-regions/) に基づき、ランドマークロール(`banner`、`main`、`complementary`、`contentinfo`、`form`、`navigation`、`region`)が1つのツリー内で複数回出現し、いずれかに一意のアクセシブルネーム(`aria-label`または`aria-labelledby`)がない場合に警告します。
+
+ドキュメントは1つのツリーで、`template`要素の内容と宣言的シャドウルートは独立したツリーです。どこに挿入されるかはマークアップからはわからないため、ランドマークはツリーごとに数えます。ReactとVueでは、ディレクティブのない`template`要素の子要素はドキュメントのツリーにあります。
 
 旧`landmark-roles`ルールから、[`no-nested-top-level-landmark`](/docs/rules/no-nested-top-level-landmark)とともに分割されました。
 

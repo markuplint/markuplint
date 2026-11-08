@@ -3,6 +3,39 @@ import { describe, test, expect } from 'vitest';
 
 import rule from './index.js';
 
+describe('trees', () => {
+	test('[no-broken-fragment-link-issue-4489-001] the target of a link is an id of the document, not one in the content of a template', async () => {
+		const { violations } = await mlRuleTest(rule, '<a href="#x"></a><template><div id="x"></div></template>');
+		expect(violations).toStrictEqual([
+			{
+				severity: 'warning',
+				line: 1,
+				col: 10,
+				raw: '#x',
+				message: 'Missing "x" ID',
+			},
+		]);
+	});
+
+	test('[no-broken-fragment-link-issue-4489-002] a link in the content of a template is checked against the ids of the document', async () => {
+		const { violations } = await mlRuleTest(rule, '<div id="x"></div><template><a href="#x"></a></template>');
+		expect(violations).toStrictEqual([]);
+	});
+
+	test('[no-broken-fragment-link-issue-4489-003] a link in the content of a template to a missing id is reported', async () => {
+		const { violations } = await mlRuleTest(rule, '<template><a href="#x"></a></template>');
+		expect(violations).toStrictEqual([
+			{
+				severity: 'warning',
+				line: 1,
+				col: 20,
+				raw: '#x',
+				message: 'Missing "x" ID',
+			},
+		]);
+	});
+});
+
 test('[no-broken-fragment-link-invalid-001] fragment', async () => {
 	expect((await mlRuleTest(rule, '<a href="#foo"></a>')).violations).toStrictEqual([
 		{

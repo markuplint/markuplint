@@ -44,6 +44,22 @@ test('[placeholder-label-option-invalid-001] Valid placeholder', async () => {
 	).toStrictEqual([]);
 });
 
+test('[placeholder-label-option-issue-4489-001] a select in the content of a template is checked', async () => {
+	const { violations } = await mlRuleTest(
+		rule,
+		'<template><select required><option value="x">Placeholder</option><option value="a">A</option></select></template>',
+	);
+	expect(violations).toStrictEqual([
+		{
+			severity: 'error',
+			line: 1,
+			col: 11,
+			raw: '<select required>',
+			message: 'Need the placeholder label option',
+		},
+	]);
+});
+
 test("[placeholder-label-option-invalid-002] Invalid: first option element's value is not empty", async () => {
 	expect(
 		(

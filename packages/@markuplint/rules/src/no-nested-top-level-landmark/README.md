@@ -7,6 +7,8 @@ description: Warns when banner, main, or contentinfo is nested inside another la
 
 Warns when a `banner`, `main`, or `contentinfo` landmark is nested inside another landmark, per [APG's Landmark Regions practice](https://www.w3.org/WAI/ARIA/apg/practices/landmark-regions/): these roles should be top-level landmarks.
 
+A landmark is nested in a landmark of its own tree: the content of a `template` element and a declarative shadow root are trees of their own, so a landmark outside of them does not make what is in them nested. In React and Vue, the children of a `template` element without a directive are in the tree of the document.
+
 Split out of the former `landmark-roles` rule, alongside [`require-landmark-label`](/docs/rules/require-landmark-label).
 
 APG also requires `complementary` to be top-level, but this rule deliberately does not check it: `<aside>`'s implicit role is conditional under ARIA 1.3 (nested inside certain sectioning ancestors it demotes to `generic`, not `complementary`), and this rule's selector-based detection has no way to tell the two apart — see the [ARIA migration guide](/docs/migration/v4-to-v5/aria#aside-conditional-role-mapping-aria-13) for the history of that decision.

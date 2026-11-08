@@ -21,7 +21,7 @@ import meta from './meta.js';
 export default createRule<boolean>({
 	meta: meta,
 	verify({ document, report, t }) {
-		for (const select of document.querySelectorAll('select')) {
+		for (const select of document.deepQuerySelectorAll('select')) {
 			if (!needPlaceholderLabelOption(select)) {
 				continue;
 			}

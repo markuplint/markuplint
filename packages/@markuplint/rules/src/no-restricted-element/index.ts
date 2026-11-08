@@ -6,8 +6,10 @@ export default createRule<string[]>({
 	meta: meta,
 	defaultValue: [],
 	async verify({ document, report, t }) {
+		// A restricted element is restricted wherever it is: the content of a `template` element and a
+		// declarative shadow root are searched as well
 		for (const query of document.rule.value) {
-			const elements = document.querySelectorAll(query);
+			const elements = document.deepQuerySelectorAll(query);
 			for (const el of elements) {
 				const message = t('{0} is disallowed', t('the "{0*}" {1}', query, 'element'));
 				report({
@@ -22,7 +24,7 @@ export default createRule<string[]>({
 				return;
 			}
 			for (const query of el.rule.value) {
-				const elements = el.querySelectorAll(query);
+				const elements = el.deepQuerySelectorAll(query);
 				for (const found of elements) {
 					const message = t('{0} is disallowed', t('the "{0*}" {1}', query, 'element'));
 					report({

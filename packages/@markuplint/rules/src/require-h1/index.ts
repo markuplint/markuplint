@@ -1,5 +1,3 @@
-import type { Element } from '@markuplint/ml-core';
-
 import { createRule } from '@markuplint/ml-core';
 
 import meta from './meta.js';
@@ -26,9 +24,7 @@ export default createRule<boolean, Options>({
 	defaultOptions: {
 		'in-document-fragment': false,
 	},
-	async verify({ document, report, t }) {
-		const h1Stack: Element<boolean, Options>[] = [];
-
+	verify({ document, report, t }) {
 		if (document.nodeList.length === 0) {
 			return;
 		}
@@ -37,12 +33,9 @@ export default createRule<boolean, Options>({
 			return;
 		}
 
-		await document.walkOn('Element', node => {
-			if (node.nodeName.toLowerCase() === 'h1') {
-				h1Stack.push(node);
-			}
-		});
-		if (h1Stack.length === 0) {
+		// The h1 of the document is required: what is in the content of a `template` element or in a
+		// declarative shadow root is a tree of its own, and where it is inserted is not known from the markup
+		if (!document.querySelector('h1')) {
 			const message = t('Require {0}', t('the "{0*}" {1}', 'h1', 'element'));
 			report({
 				message,

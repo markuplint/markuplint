@@ -57,3 +57,21 @@ test('[form-attr-references-form-invalid-002] applies to all form-associated ele
 		expect(violations.length, `${name}: should fire`).toBeGreaterThan(0);
 	}
 });
+
+test('[form-attr-references-form-issue-4489-001] the target is looked for in the tree of the element', async () => {
+	const { violations } = await mlRuleTest(rule, '<template><div id="x"></div><input form="x"></template>');
+	expect(violations).toStrictEqual([
+		{
+			severity: 'error',
+			line: 1,
+			col: 42,
+			raw: 'x',
+			message: 'The "form" attribute on a form-associated element must reference a "form" element',
+		},
+	]);
+});
+
+test('[form-attr-references-form-issue-4489-002] an id in another tree is not the target', async () => {
+	const { violations } = await mlRuleTest(rule, '<div id="x"></div><template><input form="x"></template>');
+	expect(violations).toStrictEqual([]);
+});

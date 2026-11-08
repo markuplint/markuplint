@@ -3,6 +3,40 @@ import { test, expect, describe } from 'vitest';
 
 import rule from './index.js';
 
+describe('Trees', () => {
+	test('[require-adjacent-popover-issue-4489-001] a trigger and a popover in the same template', async () => {
+		const { violations } = await mlRuleTest(
+			rule,
+			'<template><button popovertarget="foo">Trigger</button><p>Paragraph</p><div id="foo" popover>Popover</div></template>',
+		);
+		expect(violations).toStrictEqual([
+			{
+				severity: 'warning',
+				line: 1,
+				col: 58,
+				message: 'Detected perceptible nodes between the trigger and corresponding target',
+				raw: 'Paragraph',
+			},
+		]);
+	});
+
+	test('[require-adjacent-popover-issue-4489-002] what is in the content of a template is not between the trigger and the popover', async () => {
+		const { violations } = await mlRuleTest(
+			rule,
+			'<button popovertarget="foo">Trigger</button><template><p>Paragraph</p></template><div id="foo" popover>Popover</div>',
+		);
+		expect(violations).toStrictEqual([]);
+	});
+
+	test('[require-adjacent-popover-issue-4489-003] a popover in another tree is not the target', async () => {
+		const { violations } = await mlRuleTest(
+			rule,
+			'<button popovertarget="foo">Trigger</button><p>Paragraph</p><template><div id="foo" popover>Popover</div></template>',
+		);
+		expect(violations).toStrictEqual([]);
+	});
+});
+
 describe('Basic', () => {
 	test('[require-adjacent-popover-invalid-001] Correct', async () => {
 		expect(

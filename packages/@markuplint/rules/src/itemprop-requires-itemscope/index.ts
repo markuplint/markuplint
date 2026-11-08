@@ -1,5 +1,7 @@
 import { createRule } from '@markuplint/ml-core';
 
+import { getDOMValue } from '../helpers.js';
+
 import meta from './meta.js';
 
 /**
@@ -30,21 +32,37 @@ export default createRule<boolean, null>({
 		// once and then check each `[itemprop]` against the union set.
 		// `itemref="  "` (whitespace-only) yields zero tokens and contributes
 		// no entries to the set; orphans referencing such a host stay orphans.
-		const itemrefIds = new Set<string>();
-		const itemrefHosts = document.querySelectorAll('[itemscope][itemref]');
+		// The ids are collected by tree: the content of a `template` element and a declarative shadow
+		// root are trees of their own, which an `itemref` does not reach out of, and the elements of
+		// every tree are checked.
+		// An `itemref` that is not known until it is rendered may reach any element of its tree, so
+		// that tree is not checked.
+		const itemrefIdsOfTree = new Map<object, Set<string>>();
+		const treesWithDynamicItemref = new Set<object>();
+		const itemrefHosts = document.deepQuerySelectorAll('[itemscope][itemref]');
 		for (const host of itemrefHosts) {
-			const value = host.getAttribute('itemref') ?? '';
-			for (const token of value.split(/\s+/)) {
-				if (token) itemrefIds.add(token);
+			const root = host.getRootNode();
+			let itemrefIds = itemrefIdsOfTree.get(root);
+			if (!itemrefIds) {
+				itemrefIds = new Set();
+				itemrefIdsOfTree.set(root, itemrefIds);
+			}
+			const itemref = host.getAttributeNode('itemref');
+			if (itemref?.isDynamicValue) {
+				treesWithDynamicItemref.add(root);
+			}
+			for (const token of itemref?.value.split(/\s+/) ?? []) {
+				const id = token ? getDOMValue(itemref, token) : null;
+				if (id != null) itemrefIds.add(id);
 			}
 		}
 
-		const itempropEls = document.querySelectorAll('[itemprop]');
+		const itempropEls = document.deepQuerySelectorAll('[itemprop]');
 		for (const el of itempropEls) {
 			const hasAncestorScope = el.closest('[itemscope]') != null;
-			const id = el.getAttribute('id');
-			const isItemrefTarget = id != null && id !== '' && itemrefIds.has(id);
-			if (!hasAncestorScope && !isItemrefTarget) {
+			const id = getDOMValue(el.getAttributeNode('id'));
+			const isItemrefTarget = id != null && id !== '' && !!itemrefIdsOfTree.get(el.getRootNode())?.has(id);
+			if (!hasAncestorScope && !isItemrefTarget && !treesWithDynamicItemref.has(el.getRootNode())) {
 				report({
 					scope: el,
 					message: t(

@@ -7,7 +7,7 @@ description: Required elements
 
 Warns if specified elements didn't appear on a document or an element. Use the selector to specify.
 
-This is a generic rule for searching the required element.
+This is a generic rule for searching the required element. It searches the tree of the document or of the element: what is in the content of a `template` element or in a declarative shadow root does not satisfy it, as that is a tree of its own.
 
 :::info
 

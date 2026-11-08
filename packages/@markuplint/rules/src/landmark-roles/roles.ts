@@ -1,4 +1,4 @@
-import type { Element } from '@markuplint/ml-core';
+import type { Document, Element } from '@markuplint/ml-core';
 import type { PlainData } from '@markuplint/ml-config';
 
 /**
@@ -87,6 +87,30 @@ export function computeLandmarkRoles<O extends PlainData>(
 	roles.contentinfo.push(...footers);
 
 	return roles;
+}
+
+/**
+ * Collects the landmark-role elements of every tree of the document: the document itself, and the
+ * content of each `template` element and each declarative shadow root, which are trees of their own.
+ * Where the content of a `template` ends up in a document is not known from the markup, so its
+ * landmarks are not counted with the ones of the document, nor does an ancestor of the document make
+ * them nested.
+ *
+ * @template O - The rule options type
+ * @param document - The document to search.
+ * @returns The mapping from role to its matched elements, one for each tree.
+ */
+export function computeLandmarkRolesOfEachTree<O extends PlainData>(
+	// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
+	document: Document<boolean, O>,
+): RoleSet<O>[] {
+	const trees: { querySelectorAll(selector: string): Iterable<Element<boolean, O>> }[] = [document];
+	for (const template of document.deepQuerySelectorAll('template')) {
+		if (template.content) {
+			trees.push(template.content);
+		}
+	}
+	return trees.map(tree => computeLandmarkRoles(tree));
 }
 
 /**

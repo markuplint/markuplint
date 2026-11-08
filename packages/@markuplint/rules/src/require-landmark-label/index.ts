@@ -2,7 +2,7 @@ import type { Element } from '@markuplint/ml-core';
 
 import { createRule } from '@markuplint/ml-core';
 
-import { computeLandmarkRoles } from '../landmark-roles/roles.js';
+import { computeLandmarkRolesOfEachTree } from '../landmark-roles/roles.js';
 import meta from './meta.js';
 
 import type { Roles } from '../landmark-roles/roles.js';
@@ -24,25 +24,26 @@ export default createRule<boolean>({
 			return;
 		}
 
-		const roles = computeLandmarkRoles(document);
-
-		for (const role of Object.keys(roles) as Roles[]) {
-			const roleEls = roles[role];
-			const duplicated = 1 < roleEls.length;
-			if (!duplicated) {
-				continue;
-			}
-
-			for (const el of roleEls) {
-				if (el.rule.disabled) {
+		// Landmarks are counted by tree: the content of a `template` element is a tree of its own
+		for (const roles of computeLandmarkRolesOfEachTree(document)) {
+			for (const role of Object.keys(roles) as Roles[]) {
+				const roleEls = roles[role];
+				const duplicated = 1 < roleEls.length;
+				if (!duplicated) {
 					continue;
 				}
 
-				if (!hasLabel(el)) {
-					report({
-						scope: el,
-						message: t('Require {0}', t('unique {0}', 'accessible name')),
-					});
+				for (const el of roleEls) {
+					if (el.rule.disabled) {
+						continue;
+					}
+
+					if (!hasLabel(el)) {
+						report({
+							scope: el,
+							message: t('Require {0}', t('unique {0}', 'accessible name')),
+						});
+					}
 				}
 			}
 		}
