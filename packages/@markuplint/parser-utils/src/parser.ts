@@ -52,10 +52,23 @@ import { getEndCol, getEndLine, getOffsetsFromCode, getPosition } from './get-lo
 import { ignoreBlock, restoreNode } from './ignore-block.js';
 import { ignoreFrontMatter } from './ignore-front-matter.js';
 import { ParserError } from './parser-error.js';
+import { shiftPositions } from './shift-leading-bom.js';
 import { sortNodes } from './sort-nodes.js';
 import { getNamespace } from './get-namespace.js';
 
 const timer = new PerformanceTimer();
+
+/** U+FEFF as the first character of a source: a byte order mark, not content. */
+const BOM = '\uFEFF';
+
+/**
+ * Whether the code of a parse starts the source: no offset places it inside a
+ * larger one (an embedded block). `offsetLine` and `offsetColumn` are 1-based, so
+ * 1 is no offset.
+ */
+function startsAtDocumentHead(options?: ParseOptions): boolean {
+	return (options?.offsetOffset ?? 0) <= 0 && (options?.offsetLine ?? 1) <= 1 && (options?.offsetColumn ?? 1) <= 1;
+}
 
 /**
  * Abstract base class for all markuplint parsers. Provides the core parsing pipeline
@@ -88,6 +101,12 @@ const timer = new PerformanceTimer();
  * `vue-eslint-parser` covers both Vue 2 and Vue 3 template syntax) so the
  * parsers keep working across version ranges without frequent updates.
  *
+ * A direct subclass also decides what happens to a leading BOM (`leadingBom` of
+ * {@link ParserOptions}): `'mask'` when its tokenizer takes the BOM for content,
+ * `'strip'` when the library strips it itself or reads a leading space as
+ * meaning something, unset when it already ignores a BOM without moving any
+ * position. Check it with a BOM-prefixed source, positions included.
+ *
  * @template Node - The language-specific AST node type produced by the tokenizer
  * @template State - An optional parser state type that persists across tokenization
  */
@@ -106,6 +125,7 @@ export abstract class Parser<Node extends {} = {}, State extends unknown = null>
 	readonly #selfCloseType: SelfCloseType = 'html';
 	readonly #spaceChars: readonly string[] = defaultSpaces;
 	readonly #rawTextElements: readonly string[] = ['style', 'script'];
+	readonly #leadingBom?: ParserOptions['leadingBom'];
 
 	/**
 	 * Buffer for parse errors collected from **embedded** parse() calls
@@ -154,6 +174,7 @@ export abstract class Parser<Node extends {} = {}, State extends unknown = null>
 		this.#selfCloseType = options?.selfCloseType ?? this.#selfCloseType;
 		this.#spaceChars = options?.spaceChars ?? this.#spaceChars;
 		this.#rawTextElements = options?.rawTextElements ?? this.#rawTextElements;
+		this.#leadingBom = options?.leadingBom ?? this.#leadingBom;
 		this.#defaultState = defaultState ?? (null as State);
 		this.state = structuredClone(this.#defaultState);
 	}
@@ -277,6 +298,10 @@ export abstract class Parser<Node extends {} = {}, State extends unknown = null>
 	 * two hooks must stay symmetric or position reporting for embedded code
 	 * fragments (e.g., a `<template>` block inside a `.vue` file) breaks.
 	 *
+	 * A leading BOM is handled after this hook (`leadingBom` of {@link ParserOptions}),
+	 * and only if the returned code still starts with it: an override that moves or
+	 * drops it turns that handling off.
+	 *
 	 * @param rawCode - The raw source code about to be parsed
 	 * @param options - Parse options that may specify offset positioning
 	 * @returns The preprocessed source code to be used for tokenization
@@ -291,11 +316,26 @@ export abstract class Parser<Node extends {} = {}, State extends unknown = null>
 	 * traversal, flattening, ignore-block restoration, and post-processing.
 	 * Returns the complete markuplint AST document.
 	 *
+	 * A leading U+FEFF (BOM) is not part of the document: the HTML Standard skips it
+	 * before tokenization, so a parser that handed it on would see text before the
+	 * doctype (parse5 then opens `<html><head><body>` implicitly) and a Svelte
+	 * template would be counted from the character after it. A parser that sets
+	 * `leadingBom` (see {@link ParserOptions}) has it replaced with one space
+	 * (`'mask'`), or taken away while the positions are moved one character later
+	 * afterwards (`'strip'`), so that every offset still points into the source that
+	 * `fix` edits; the returned `raw` keeps it. Code that starts at an offset (an
+	 * embedded block) does not start a document, and its U+FEFF is a character like
+	 * any other. The BOM is handled after {@link Parser.beforeParse}, and only if that
+	 * hook left it first.
+	 *
 	 * @param rawCode - The raw source code to parse
 	 * @param options - Parse options controlling offsets, depth, front matter, and authored element names
 	 * @returns The parsed AST document containing the node list and fragment flag
+	 * @see https://html.spec.whatwg.org/multipage/parsing.html#the-input-byte-stream
+	 * > A leading Byte Order Mark (BOM) causes the character encoding argument to be ignored and will itself be skipped.
 	 */
 	parse(rawCode: string, options?: ParseOptions): MLASTDocument {
+		let strippedBom = false;
 		try {
 			// Initialize raw code
 			this.#setRawCode(rawCode, rawCode);
@@ -304,16 +344,23 @@ export abstract class Parser<Node extends {} = {}, State extends unknown = null>
 			const beforeParsedCode = this.beforeParse(this.rawCode, options);
 
 			// Override raw code
-			this.#setRawCode(beforeParsedCode);
+			const bom =
+				this.#leadingBom && startsAtDocumentHead(options) && beforeParsedCode.startsWith(BOM)
+					? this.#leadingBom
+					: null;
+			const masked = bom === 'mask';
+			strippedBom = bom === 'strip';
+			this.#setRawCode(bom ? (masked ? ' ' : '') + beforeParsedCode.slice(BOM.length) : beforeParsedCode);
 
 			this.#authoredElementName = options?.authoredElementName;
 
 			let frontMatter: string | null = null;
 			if (options?.ignoreFrontMatter) {
 				timer.push('ignoreFrontMatter');
-				const fm = ignoreFrontMatter(this.rawCode);
-				this.#setRawCode(fm.code);
-				frontMatter = fm.frontMatter;
+				// The masked BOM is part of the front matter's raw, not of what it is looked for in
+				const fm = ignoreFrontMatter(masked ? this.rawCode.slice(BOM.length) : this.rawCode);
+				this.#setRawCode(masked ? ' ' + fm.code : fm.code);
+				frontMatter = fm.frontMatter == null || !masked ? fm.frontMatter : BOM + fm.frontMatter;
 			}
 
 			timer.push('ignoreBlock');
@@ -392,6 +439,11 @@ export abstract class Parser<Node extends {} = {}, State extends unknown = null>
 
 			this.#reset();
 
+			if (strippedBom) {
+				// Everything above counted from the character after the BOM
+				shiftPositions([nodeList, mergedParseErrors], BOM.length);
+			}
+
 			return {
 				raw: rawCode,
 				nodeList,
@@ -399,7 +451,17 @@ export abstract class Parser<Node extends {} = {}, State extends unknown = null>
 				...(mergedParseErrors && mergedParseErrors.length > 0 ? { parseErrors: mergedParseErrors } : {}),
 			};
 		} catch (error) {
-			throw this.parseError(error);
+			const parserError = this.parseError(error);
+			if (strippedBom) {
+				// Only the fields are put back; the message that the library wrote is left as it is.
+				// A column of `0` is a position that is not known.
+				Object.assign(parserError, {
+					...(parserError.line === 1 && parserError.col > 0 ? { col: parserError.col + BOM.length } : {}),
+					// The source an error quotes by default is the one without the BOM
+					...(parserError.raw === this.rawCode ? { raw: rawCode } : {}),
+				});
+			}
+			throw parserError;
 		}
 	}
 
