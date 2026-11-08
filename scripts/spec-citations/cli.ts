@@ -11,6 +11,10 @@
  * automatically, and no model is involved: every verdict is a string
  * comparison against the fetched page.
  *
+ * The same workflow refreshes the lock (below) through a pull request that
+ * names the Issue; merging that pull request is what accepts the changed
+ * passages. A pull request that touches the script runs the check read-only.
+ *
  * Two kinds of check, which differ in what they need:
  *
  * - Against the page alone: the anchor exists, the quoted text is in the cited
@@ -22,13 +26,14 @@
  *
  * Exit codes: 0 nothing to report, 1 findings, 2 only fetch failures. A crash
  * also exits 1, so a caller tells it from findings by whether `--report`
- * produced a file: the report is written once every check has run, and before `--update` touches the lock.
+ * produced a file: the report is written once every check has run, and before
+ * `--update` touches the lock.
  *
  * Citations are collected from the rules package (README, `*.ts` comments,
- * `schema.json`), from the declarations of how a framework renders a literal (a
- * spec package and a parser), from the HTML spec data and the selector engine,
- * and from the website's hand-written pages;
- * `discover.ts` lists which files and how each is read.
+ * `schema.json`), from the declarations of how a framework renders a literal
+ * (a spec package and a parser), from the HTML spec data and the selector
+ * engine, and from the website's hand-written pages; `discover.ts` lists which
+ * files and how each is read.
  */
 import type { CollectResult, PageResult } from './types.ts';
 
