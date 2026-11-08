@@ -174,6 +174,7 @@ Markuplint独自の擬似クラスに似た拡張セレクタをつかうこと�
 - [`:aria`](./selectors#ex-selector-aria)
 - [`:role`](./selectors#ex-selector-role)
 - [`:model`](./selectors#ex-selector-model)
+- [`:display-size`](./selectors#ex-selector-display-size)
 
 | 構文                  | 機能                                                                                                                                        |
 | --------------------- | ------------------------------------------------------------------------------------------------------------------------------------------- |
@@ -181,6 +182,7 @@ Markuplint独自の擬似クラスに似た拡張セレクタをつかうこと�
 | `:aria(has name)`     | [ARIA擬似クラス](https://github.com/markuplint/markuplint/tree/main/packages/%40markuplint/selector#aria-pseudo-class)                      |
 | `:role(heading)`      | [ARIAロール擬似クラス](https://github.com/markuplint/markuplint/tree/main/packages/%40markuplint/selector#aria-pseudo-class)                |
 | `:model(interactive)` | [コンテンツモデル擬似クラス](https://github.com/markuplint/markuplint/tree/main/packages/%40markuplint/selector#content-model-pseudo-class) |
+| `:display-size(> 1)`  | [表示サイズ擬似クラス](https://github.com/markuplint/markuplint/tree/main/packages/%40markuplint/selector#display-size-pseudo-class)        |
 
 :::info
 
@@ -249,6 +251,20 @@ WAI-ARIAのバージョンは`:role(form|1.1)`のようにパイプで区切っ�
 `flow`、`phrasing`、`palpable`のように、HTML Standardがカスタム要素を含むと定めているカテゴリは、カスタム要素（`<x-foo>`）やコンポーネント（`<Foo />`）にもマッチします。コンポーネントが別の要素になりすましている場合は、なりすまし先の名前で判定し、その名前にハイフンが含まれるときだけマッチします。
 
 HTML Standardが「親の最初の子」の場合に限って認めている要素は、その位置にあるときだけマッチします。`:model(flow)`は`<style>`にマッチしますが、それは親の最初の子のときだけです。このときの「最初の子」はHTML Standardの数え方に従い、前にある空白以外のテキストも数えます（コメントと要素間の空白は数えません）。そのため`<div>text<style>`の`<style>`はマッチしません。前にあるテンプレートの式（`{{ msg }}`）は、何を出力するかが実行時にしか分からないため数えません。条件ブロックの中のテキストや要素は、ブロックの中身があるものとして数えます。セレクタに直接書いた`:first-child`は、Selectorsの定義どおり要素だけを数えます。
+
+### `:display-size` {#ex-selector-display-size}
+
+**表示サイズ擬似クラス**
+
+```
+:display-size(演算子 数値)
+```
+
+演算子は`=`、`>`、`>=`、`<`、`<=`のいずれか、数値は0以上の整数です。たとえば、`select:is([multiple], :display-size(> 1))`は、`multiple`属性をもつ、または表示サイズが1より大きい`<select>`にマッチします。
+
+HTML名前空間の`<select>`要素にだけマッチし、その[表示サイズ（display size）](https://momdo.github.io/html/form-elements.html#concept-select-size)を比較します。表示サイズは、`size`属性を「非負整数の解析規則」で解析した数です。属性がない、または解析できないときは、`multiple`属性があれば4、なければ1になります。先頭の空白、`+`符号、先頭のゼロ、末尾の余分な文字は許されるため、`size="01"`は1、`size="2abc"`は2、`size="0"`は0です。属性セレクタではこれらを区別できません。たとえば`[size]:not([size="1"])`は、`size="01"`を1以外とみなします。
+
+`size`は書かれたとおりの文字列として読むため、テンプレートの式（`:size="n"`）は数ではなく、解析できない属性としての表示サイズになります。
 
 ## 正規表現セレクタ
 
