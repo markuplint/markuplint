@@ -4,6 +4,30 @@ import { test, expect, describe } from 'vitest';
 import rule from './index.js';
 
 describe('Basic', () => {
+	test('[consistent-table-row-length-issue-4489-001] a table in the content of a template is checked', async () => {
+		const { violations } = await mlRuleTest(
+			rule,
+			'<template><table><tr><th></th></tr><tr><td></td><td class="extra"></td></tr></table></template>',
+		);
+		expect(violations).toStrictEqual([
+			{
+				severity: 'warning',
+				line: 1,
+				col: 49,
+				message: 'One extra column in a row',
+				raw: '<td class="extra">',
+			},
+		]);
+	});
+
+	test('[consistent-table-row-length-issue-4489-002] the rows in a template that is a child of the table are not rows of the table', async () => {
+		const { violations } = await mlRuleTest(
+			rule,
+			'<table><template><tr><td></td></tr></template><tr><td></td><td></td></tr></table>',
+		);
+		expect(violations).toStrictEqual([]);
+	});
+
 	test('[consistent-table-row-length-invalid-001] An extra column', async () => {
 		const { violations } = await mlRuleTest(
 			rule,

@@ -18,6 +18,95 @@ test('[no-restricted-element-invalid-001] specifies to global rule', async () =>
 	]);
 });
 
+test('[no-restricted-element-issue-4489-001] an element in the content of a template is restricted', async () => {
+	const { violations } = await mlRuleTest(rule, '<template><div><hgroup><h1>Heading</h1></hgroup></div></template>', {
+		rule: ['hgroup'],
+	});
+	expect(violations).toStrictEqual([
+		{
+			severity: 'error',
+			line: 1,
+			col: 16,
+			raw: '<hgroup>',
+			message: 'The "hgroup" element is disallowed',
+		},
+	]);
+});
+
+test('[no-restricted-element-issue-4489-002] an element in a declarative shadow root is restricted', async () => {
+	const { violations } = await mlRuleTest(
+		rule,
+		'<div><template shadowrootmode="open"><hgroup><h1>Heading</h1></hgroup></template></div>',
+		{
+			rule: ['hgroup'],
+		},
+	);
+	expect(violations).toStrictEqual([
+		{
+			severity: 'error',
+			line: 1,
+			col: 38,
+			raw: '<hgroup>',
+			message: 'The "hgroup" element is disallowed',
+		},
+	]);
+});
+
+test('[no-restricted-element-issue-4489-003] the template element that a declarative shadow root is attached to is restricted too', async () => {
+	const { violations } = await mlRuleTest(rule, '<div><template shadowrootmode="open"></template></div>', {
+		rule: ['template'],
+	});
+	expect(violations).toStrictEqual([
+		{
+			severity: 'error',
+			line: 1,
+			col: 6,
+			raw: '<template shadowrootmode="open">',
+			message: 'The "template" element is disallowed',
+		},
+	]);
+});
+
+test('[no-restricted-element-issue-4489-004] a node rule restricts what is in the content of a template in the element', async () => {
+	const { violations } = await mlRuleTest(rule, '<h1><template><small>Sub-title</small></template></h1>', {
+		nodeRule: [
+			{
+				selector: 'h1, h2, h3, h4, h5, h6',
+				rule: ['small'],
+			},
+		],
+	});
+	expect(violations).toStrictEqual([
+		{
+			severity: 'error',
+			line: 1,
+			col: 15,
+			raw: '<small>',
+			message: 'The "small" element is disallowed',
+		},
+	]);
+});
+
+test('[no-restricted-element-issue-4489-005] an element is reported once when elements that the node rule applies to are nested', async () => {
+	const { violations } = await mlRuleTest(rule, '<div><div><template><p></p></template></div></div>', {
+		nodeRule: [
+			{
+				selector: 'div',
+				rule: ['p'],
+			},
+		],
+	});
+	expect(violations).toStrictEqual([
+		{
+			severity: 'error',
+			line: 1,
+			col: 21,
+			raw: '<p>',
+			message: 'The "p" element is disallowed',
+		},
+	]);
+});
+
 test('[no-restricted-element-invalid-002] specifies to node rule', async () => {
 	const { violations } = await mlRuleTest(rule, '<h1><span>Title</span><small>Sub-title</small></h1>', {
 		nodeRule: [

@@ -96,6 +96,10 @@ A Vue template has its own rule, as Vue resolves a tag to a component by any spe
 
 An attribute selector compares the name as the browser's DOM does, so a selector follows what the page has and not how the source spells it. On an HTML element and on a custom element the case is ignored: `[role]` matches `<div ROLE>` and `[DATA-VALUE]` matches `<div data-value>`. On an SVG or MathML element the name the DOM gives the attribute is compared exactly, as CSS does. Where the HTML parser reads the name (HTML, Pug, Astro, and the static attributes of Svelte), the DOM has the spelling of the specification: `[viewBox]` matches `<svg VIEWBOX>`, and `[viewbox]` does not. Where code sets the name through the DOM API (JSX, MDX, Vue, and the dynamic attributes of Svelte), an SVG or MathML element keeps the name as written: `[ROLE]` matches `<svg ROLE>`, and `[role]` does not. The props of a component are compared as written; in Vue, `[my-label]` and `[myLabel]` are one prop. A [regular expression selector](#regular-expression-selector) for the name of an attribute is matched with the name the DOM gives it (a Vue prop, with either spelling), and ignores case where an attribute selector does.
 
+### Trees
+
+The content of a `<template>` element and a declarative shadow root (a `<template shadowrootmode>` that is attached to its parent element) are trees of their own, as they are in the DOM. A selector is matched within the tree of the element: `section p` does not match a `<p>` in the content of a `<template>` that is in a `<section>`, and `:has()` and `:closest()` do not cross the boundary either. In React and Vue, the children of a `<template>` without a directive are in the tree of the document, so they are matched as any other children are.
+
 ## Specificity
 
 Markuplint applies **specificity** the same way as **CSS Selectors**, allowing you to control the priority of rule application.

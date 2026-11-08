@@ -20,6 +20,18 @@ test('[require-datetime-invalid-001] Mutable', async () => {
 	).toStrictEqual([]);
 });
 
+test('[require-datetime-issue-4489-001] a time in the content of a template is checked', async () => {
+	expect((await mlRuleTest(rule, '<template><time>Content</time></template>')).violations).toStrictEqual([
+		{
+			severity: 'error',
+			line: 1,
+			col: 11,
+			raw: '<time>',
+			message: 'Need the "datetime" attribute',
+		},
+	]);
+});
+
 test('[require-datetime-invalid-002] Need', async () => {
 	expect((await mlRuleTest(rule, '<time>Content</time>')).violations).toStrictEqual([
 		{

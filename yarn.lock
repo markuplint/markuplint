@@ -1882,6 +1882,7 @@ __metadata:
   resolution: "@markuplint/ml-spec@workspace:packages/@markuplint/ml-spec"
   dependencies:
     "@markuplint/ml-ast": "npm:5.3.0"
+    "@markuplint/shared": "npm:5.4.0"
     "@markuplint/test-tools": "npm:5.4.0"
     "@markuplint/types": "npm:5.4.0"
     is-plain-object: "npm:^5.1.0"

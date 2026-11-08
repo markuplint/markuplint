@@ -7,6 +7,8 @@ description: banner、main、contentinfoが他のランドマーク内に入れ�
 
 [APG の Landmark Regions プラクティス](https://www.w3.org/WAI/ARIA/apg/practices/landmark-regions/) に基づき、`banner`、`main`、`contentinfo` ランドマークが他のランドマーク内に入れ子になっている場合に警告します。これらのロールはトップレベルのランドマークであるべきです。
 
+ランドマークは、同じツリー内のランドマークの中に入れ子になっているかどうかで判定します。`template`要素の内容と宣言的シャドウルートは独立したツリーなので、その外側のランドマークは、その中にあるランドマークを入れ子にしません。ReactとVueでは、ディレクティブのない`template`要素の子要素はドキュメントのツリーにあります。
+
 旧`landmark-roles`ルールから、[`require-landmark-label`](/docs/rules/require-landmark-label)とともに分割されました。
 
 APG は `complementary` もトップレベルであることを要求していますが、このルールは意図的にそれをチェックしません。`<aside>` の暗黙のロールは ARIA 1.3 では条件付きです(特定のセクショニング祖先の内側では `generic` に降格し、`complementary` にはなりません)。このルールのセレクタベースの検出では両者を区別できないため、[ARIA 移行ガイド](/docs/migration/v4-to-v5/aria#aside-conditional-role-mapping-aria-13)に記載の経緯によりチェック対象から外されています。

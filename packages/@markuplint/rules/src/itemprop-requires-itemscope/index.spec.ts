@@ -122,3 +122,81 @@ describe('verify', () => {
 		]);
 	});
 });
+
+describe('trees', () => {
+	test('[itemprop-requires-itemscope-issue-4489-001] an itemprop in the content of a template is checked in its tree', async () => {
+		const { violations } = await mlRuleTest(
+			rule,
+			'<div itemscope><template><span itemprop="name">x</span></template></div>',
+		);
+		expect(violations).toStrictEqual([
+			{
+				severity: 'error',
+				line: 1,
+				col: 26,
+				message:
+					'The element must belong to an item via an ancestor `itemscope` or be referenced by an `itemref`',
+				raw: '<span itemprop="name">',
+			},
+		]);
+	});
+
+	test('[itemprop-requires-itemscope-issue-4489-002] an itemscope in the same template makes the item', async () => {
+		const { violations } = await mlRuleTest(
+			rule,
+			'<template><div itemscope><span itemprop="name">x</span></div></template>',
+		);
+		expect(violations).toStrictEqual([]);
+	});
+
+	test('[itemprop-requires-itemscope-issue-4489-003] an itemref does not reach an element of another tree', async () => {
+		const { violations } = await mlRuleTest(
+			rule,
+			'<div itemscope itemref="n"></div><template><span id="n" itemprop="name">x</span></template>',
+		);
+		expect(violations).toStrictEqual([
+			{
+				severity: 'error',
+				line: 1,
+				col: 44,
+				message:
+					'The element must belong to an item via an ancestor `itemscope` or be referenced by an `itemref`',
+				raw: '<span id="n" itemprop="name">',
+			},
+		]);
+	});
+
+	test('[itemprop-requires-itemscope-issue-4489-004] an itemref reaches an element of the same template', async () => {
+		const { violations } = await mlRuleTest(
+			rule,
+			'<template><div itemscope itemref="n"></div><span id="n" itemprop="name">x</span></template>',
+		);
+		expect(violations).toStrictEqual([]);
+	});
+
+	test('[itemprop-requires-itemscope-issue-4489-006] an itemref that is not known until it is rendered may reach the element', async () => {
+		const { violations } = await mlRuleTest(
+			rule,
+			'<div itemscope itemref="{{x}}"></div><span id="foo" itemprop="name">x</span>',
+			{ parser: { '.*': '@markuplint/mustache-parser' } },
+		);
+		expect(violations).toStrictEqual([]);
+	});
+
+	test('[itemprop-requires-itemscope-issue-4489-007] an itemref that is not known does not reach into another tree', async () => {
+		const { violations } = await mlRuleTest(
+			rule,
+			'<div itemscope itemref="{{x}}"></div><template><span id="foo" itemprop="name">x</span></template>',
+			{ parser: { '.*': '@markuplint/mustache-parser' } },
+		);
+		expect(violations.map(violation => violation.raw)).toStrictEqual(['<span id="foo" itemprop="name">']);
+	});
+
+	test('[itemprop-requires-itemscope-issue-4489-005] an itemref reaches an id with the character references resolved', async () => {
+		const { violations } = await mlRuleTest(
+			rule,
+			'<div itemscope itemref="&#110;"></div><span id="n" itemprop="name">x</span>',
+		);
+		expect(violations).toStrictEqual([]);
+	});
+});

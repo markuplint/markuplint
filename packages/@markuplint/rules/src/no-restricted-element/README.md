@@ -33,7 +33,7 @@ Use [`permitted-contents`](../permitted-contents) rule if you expect to check co
 
 ## Configuration Example
 
-If specified to `rules`, It searches the element from a document.
+If specified to `rules`, It searches the element from a document, including the content of a `template` element and a declarative shadow root. In React and Vue, the children of a `template` element without a directive are in the document anyway.
 
 ```json class=config
 {
@@ -43,7 +43,7 @@ If specified to `rules`, It searches the element from a document.
 }
 ```
 
-If specified to `nodeRules` or `childNodeRules`, It searches the element from child elements of the target element.
+If specified to `nodeRules` or `childNodeRules`, It searches the element from child elements of the target element, including the content of a `template` element and a declarative shadow root under it.
 
 ```json class=config
 {

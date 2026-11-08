@@ -1,5 +1,7 @@
 import { createRule } from '@markuplint/ml-core';
 
+import { getElementByIdInTree } from '../helpers.js';
+
 import meta from './meta.js';
 
 /**
@@ -48,10 +50,7 @@ export default createRule<boolean, null>({
 			if (!formAttr) return;
 			if (formAttr.isDynamicValue) return;
 
-			const targetId = formAttr.value;
-			const target = [...document.querySelectorAll('[id]')].find(
-				candidate => candidate.getAttribute('id') === targetId,
-			);
+			const target = getElementByIdInTree(el, formAttr.value, formAttr.isExpressionValue);
 
 			// Existence is checked by `no-refer-to-non-existent-id`. If the ID does not resolve
 			// here, leave that diagnostic to the dedicated rule and stay silent.

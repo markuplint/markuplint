@@ -12,6 +12,8 @@ description: ドキュメント内にh1要素がなければ警告します。
 
 <!-- textlint-enable ja-technical-writing/sentence-length -->
 
+必要なのはドキュメントの`h1`要素です。`template`要素の内容と宣言的シャドウルートは独立したツリーで、どこに挿入されるかはマークアップからはわからないため、その中の`h1`では満たされません。ReactとVueでは、ディレクティブのない`template`要素の子要素はドキュメントのツリーにあります。
+
 旧`required-h1`ルールから、[`no-duplicate-h1`](/docs/rules/no-duplicate-h1)とともに分割されました。
 
 <!-- textlint-disable ja-technical-writing/ja-no-mixed-period -->

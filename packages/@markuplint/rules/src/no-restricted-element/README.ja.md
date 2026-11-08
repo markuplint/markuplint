@@ -38,7 +38,7 @@ HTML標準に準拠しているかどうかは[`permitted-contents`](../permitte
 
 ## 設定例
 
-`rules`に指定すると、ドキュメント全体から要素を検索します。
+`rules`に指定すると、ドキュメント全体から要素を検索します。`template`要素の内容と宣言的シャドウルートも対象です。ReactとVueでは、ディレクティブのない`template`要素の子要素はもともとドキュメントの中にあります。
 
 ```json class=config
 {
@@ -48,7 +48,7 @@ HTML標準に準拠しているかどうかは[`permitted-contents`](../permitte
 }
 ```
 
-`nodeRules`または` childNodeRules`に指定されている場合、ターゲット要素の子要素から要素を検索します。
+`nodeRules`または` childNodeRules`に指定されている場合、ターゲット要素の子要素から要素を検索します。その下にある`template`要素の内容や宣言的シャドウルートも対象です。
 
 ```json class=config
 {

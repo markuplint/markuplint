@@ -1,5 +1,7 @@
 import { createRule } from '@markuplint/ml-core';
 
+import { getElementByIdInTree } from '../helpers.js';
+
 import meta from './meta.js';
 
 /**
@@ -16,8 +18,9 @@ export default createRule({
 	defaultSeverity: 'warning',
 	meta: meta,
 	verify({ document, report, t }) {
-		const triggers = document.querySelectorAll('button[command][commandfor]');
-		const reportedDialogIds = new Set<string>();
+		// The dialog is looked for in the tree of the trigger, so the triggers of every tree are checked
+		const triggers = document.deepQuerySelectorAll('button[command][commandfor]');
+		const reportedDialogs = new Set<object>();
 
 		for (const trigger of triggers) {
 			const command = trigger.getAttribute('command');
@@ -30,12 +33,16 @@ export default createRule({
 				continue;
 			}
 
-			if (reportedDialogIds.has(targetId)) {
+			const target = getElementByIdInTree(
+				trigger,
+				targetId,
+				trigger.getAttributeNode('commandfor')?.isExpressionValue,
+			);
+			if (!target) {
 				continue;
 			}
 
-			const target = document.getElementById(targetId);
-			if (!target) {
+			if (reportedDialogs.has(target)) {
 				continue;
 			}
 
@@ -52,7 +59,7 @@ export default createRule({
 				continue;
 			}
 
-			reportedDialogIds.add(targetId);
+			reportedDialogs.add(target);
 			report({
 				scope: target,
 				message: t(

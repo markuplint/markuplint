@@ -27,9 +27,7 @@ export default createRule<boolean, Options>({
 	defaultOptions: {
 		'in-document-fragment': false,
 	},
-	async verify({ document, report, t }) {
-		const h1Stack: Element<boolean, Options>[] = [];
-
+	verify({ document, report, t }) {
 		if (document.nodeList.length === 0) {
 			return;
 		}
@@ -38,19 +36,24 @@ export default createRule<boolean, Options>({
 			return;
 		}
 
-		await document.walkOn('Element', node => {
-			if (node.nodeName.toLowerCase() === 'h1') {
-				h1Stack.push(node);
+		// The h1 elements are counted by tree: the content of a `template` element and a declarative
+		// shadow root are trees of their own, where it is not known from the markup where they are inserted
+		const h1sOfTree = new Map<object, Element<boolean, Options>[]>();
+		for (const h1 of document.deepQuerySelectorAll('h1')) {
+			const root = h1.getRootNode();
+			h1sOfTree.set(root, [...(h1sOfTree.get(root) ?? []), h1]);
+		}
+		for (const h1Stack of h1sOfTree.values()) {
+			const duplicated = h1Stack[1];
+			if (duplicated) {
+				const message = t('{0} is {1:c}', t('the "{0*}" {1}', 'h1', 'element'), 'duplicated');
+				report({
+					message,
+					line: duplicated.startLine,
+					col: duplicated.startCol,
+					raw: duplicated.raw,
+				});
 			}
-		});
-		if (h1Stack.length > 1 && h1Stack[1]) {
-			const message = t('{0} is {1:c}', t('the "{0*}" {1}', 'h1', 'element'), 'duplicated');
-			report({
-				message,
-				line: h1Stack[1].startLine,
-				col: h1Stack[1].startCol,
-				raw: h1Stack[1].raw,
-			});
 		}
 	},
 });

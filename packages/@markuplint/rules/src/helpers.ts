@@ -1,10 +1,62 @@
 import type { FixToken, IRuleFixer, PlainData, TextEdit } from '@markuplint/ml-config';
-import type { Attr, Element, RuleConfigValue, Document } from '@markuplint/ml-core';
+import type { Attr, Element, RuleConfigValue } from '@markuplint/ml-core';
 import type { Attribute } from '@markuplint/ml-spec';
 import type { WritableDeep } from 'type-fest';
 
-import { escapeCSS } from '@markuplint/ml-spec';
-import { asciiLowerCase } from '@markuplint/shared';
+import { getDOMValue } from '@markuplint/ml-core';
+import { asciiLowerCase, decodeEntities } from '@markuplint/shared';
+
+export { getDOMValue };
+
+/**
+ * The element that an id reference written in an attribute of `el` resolves to: the first element
+ * of the tree `el` is in whose id is the reference. The content of a `template` element and a
+ * declarative shadow root are trees of their own, so a reference there does not reach an id of the
+ * document, nor the other way around.
+ *
+ * The reference is compared with the character references in the markup resolved, as the id is.
+ *
+ * @template T - The rule configuration value type
+ * @template O - The rule options type
+ * @param el - The element that has the attribute
+ * @param reference - The value of the attribute, or one token of it, as written in the markup
+ * @param isExpression - Whether the value is written as code, which has no character reference in it
+ * @returns The element, or `null` when the tree has none, or `el` is in no tree
+ * @see https://html.spec.whatwg.org/multipage/dom.html#the-id-attribute
+ */
+export function getElementByIdInTree<T extends RuleConfigValue, O extends PlainData>(
+	// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
+	el: Element<T, O>,
+	reference: string,
+	isExpression = false,
+): Element<T, O> | null {
+	const root = el.getRootNode();
+	if (root.is(root.DOCUMENT_NODE) || root.is(root.DOCUMENT_FRAGMENT_NODE)) {
+		return root.getElementById(isExpression ? reference : decodeEntities(reference));
+	}
+	return null;
+}
+
+/**
+ * The elements that match the selector in the tree `el` is in (see {@link getElementByIdInTree}).
+ *
+ * @template T - The rule configuration value type
+ * @template O - The rule options type
+ * @param el - An element of the tree
+ * @param selectors - A selector
+ * @returns The elements in the order of the markup, none when `el` is in no tree
+ */
+export function querySelectorAllInTree<T extends RuleConfigValue, O extends PlainData>(
+	// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
+	el: Element<T, O>,
+	selectors: string,
+): readonly Element<T, O>[] {
+	const root = el.getRootNode();
+	if (root.is(root.DOCUMENT_NODE) || root.is(root.DOCUMENT_FRAGMENT_NODE)) {
+		return [...root.querySelectorAll(selectors)] as Element<T, O>[];
+	}
+	return [];
+}
 
 /** A `null`/`undefined` condition means the attribute applies unconditionally. */
 export function attrMatches<T extends RuleConfigValue, O extends PlainData>(
@@ -329,14 +381,12 @@ export function toNormalizedValue(value: string, spec: Attribute) {
 export function accnameMayBeMutable(
 	// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
 	el: Element<any, any>,
-	// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
-	document: Document<any, any>,
 ) {
 	if (el.hasMutableAttributes() || el.hasMutableChildren(true)) {
 		return true;
 	}
 
-	const ownedLabel = getOwnedLabel(el, document);
+	const ownedLabel = getOwnedLabel(el);
 	if (ownedLabel && (ownedLabel.hasMutableAttributes() || ownedLabel.hasMutableChildren(true))) {
 		return true;
 	}
@@ -358,25 +408,24 @@ export function accnameMayBeMutable(
 export function accnameMayComeFromUnknownContent(
 	// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
 	el: Element<any, any>,
-	// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
-	document: Document<any, any>,
 ) {
 	if (hasUnknownContent(el)) {
 		return true;
 	}
 
-	const labelledby = el.getAttribute('aria-labelledby');
+	const labelledbyAttr = el.getAttributeNode('aria-labelledby');
+	const labelledby = labelledbyAttr?.value;
 	if (labelledby) {
 		const referenced = labelledby
 			.trim()
 			.split(/\s+/)
-			.map(id => document.querySelector(`#${escapeCSS(id)}`));
+			.map(id => getElementByIdInTree(el, id, labelledbyAttr.isExpressionValue));
 		if (referenced.some(target => target && hasUnknownContent(target))) {
 			return true;
 		}
 	}
 
-	const ownedLabel = getOwnedLabel(el, document);
+	const ownedLabel = getOwnedLabel(el);
 	return !!ownedLabel && hasUnknownContent(ownedLabel);
 }
 
@@ -410,8 +459,6 @@ export const labelable = ['button', 'input:not([type=hidden])', 'meter', 'output
 export function getOwnedLabel<V extends RuleConfigValue, O extends PlainData>(
 	// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
 	el: Element<V, O>,
-	// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
-	document: Document<V, O>,
 ) {
 	if (!labelable.some(cond => el.matches(cond))) {
 		return null;
@@ -420,9 +467,13 @@ export function getOwnedLabel<V extends RuleConfigValue, O extends PlainData>(
 	let ownedLabel = el.closest('label');
 
 	if (!ownedLabel) {
-		const id = el.getAttribute('id');
+		const id = getDOMValue(el.getAttributeNode('id'));
 		if (id) {
-			ownedLabel = document.querySelector(`label[for="${id}"]`);
+			// The label is looked for in the tree of the element, and the two values are compared as the DOM has them
+			ownedLabel =
+				querySelectorAllInTree(el, 'label[for]').find(
+					label => getDOMValue(label.getAttributeNode('for')) === id,
+				) ?? null;
 		}
 	}
 

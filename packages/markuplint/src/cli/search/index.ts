@@ -24,7 +24,8 @@ export async function search(files: readonly string[], options: CLIOptions, sele
 					name,
 					...createRule({
 						verify({ document }) {
-							const nodes = document.querySelectorAll(selectors);
+							// Every tree is searched: what is in the content of a `template` element is found too
+							const nodes = document.deepQuerySelectorAll(selectors);
 							locations.push(
 								...[...nodes].map(node => {
 									return {

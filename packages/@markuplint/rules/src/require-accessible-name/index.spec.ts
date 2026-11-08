@@ -3,6 +3,37 @@ import { describe, test, expect } from 'vitest';
 
 import rule from './index.js';
 
+describe('the name is looked for in the tree of the element', () => {
+	test('[require-accessible-name-issue-4489-001] a label of another tree does not name the control', async () => {
+		const { violations } = await mlRuleTest(
+			rule,
+			'<label for="x">L</label><template><input id="x" type="text"></template>',
+		);
+		expect(violations).toStrictEqual([
+			{
+				severity: 'error',
+				line: 1,
+				col: 35,
+				message: 'Require accessible name',
+				raw: '<input id="x" type="text">',
+			},
+		]);
+	});
+
+	test('[require-accessible-name-issue-4489-002] a label of the same template names the control', async () => {
+		const { violations } = await mlRuleTest(
+			rule,
+			'<template><label for="x">L</label><input id="x" type="text"></template>',
+		);
+		expect(violations).toStrictEqual([]);
+	});
+
+	test('[require-accessible-name-issue-4489-003] a label names the control when the references are the same after the character references are resolved', async () => {
+		const { violations } = await mlRuleTest(rule, '<label for="&#120;">L</label><input id="x" type="text">');
+		expect(violations).toStrictEqual([]);
+	});
+});
+
 test('[require-accessible-name-valid-001] has accessible name', async () => {
 	const { violations } = await mlRuleTest(rule, '<button>Label</button>');
 	expect(violations.length).toBe(0);
