@@ -2,9 +2,9 @@
  * Chooses the specs that a pull request has to run, from the files it changed.
  *
  * The goal is a fast answer on a pull request, which runs on Linux and Node.js 26 only. The whole
- * suite runs in the merge queue (once it is enabled and `ci-ok` is required; until then nothing
- * runs it before a change reaches `dev`), and on every platform and runtime in the nightly tests
- * (`nightly.yml`), so this module is allowed to be an approximation, but never in the direction of
+ * suite runs in the merge queue, which every merge into `dev` goes through (a repository admin can
+ * bypass it), and on every platform and runtime in the nightly tests (`nightly.yml`), so this
+ * module is allowed to be an approximation, but never in the direction of
  * running too little for a file it cannot place: **a path that no rule below recognises makes the
  * plan `full`**, as does a deleted file and, on a branch that has `crates/` (the v6 line), anything
  * under it: no rule here is written for the Rust workspace, and adding one is how that line gets a
