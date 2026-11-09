@@ -1592,7 +1592,7 @@ __metadata:
   dependencies:
     "@markuplint/ml-ast": "npm:5.3.0"
     "@markuplint/parser-utils": "npm:5.4.0"
-    parse5: "npm:^8.0.1"
+    parse5: "npm:^8.1.0"
     type-fest: "npm:^5.10.0"
   languageName: unknown
   linkType: soft
@@ -11331,7 +11331,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"parse5@npm:^8.0.0, parse5@npm:^8.0.1":
+"parse5@npm:^8.0.0, parse5@npm:^8.0.1, parse5@npm:^8.1.0":
   version: 8.1.0
   resolution: "parse5@npm:8.1.0"
   dependencies:
