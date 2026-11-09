@@ -48,7 +48,7 @@ export class SvelteParser extends Parser<SvelteNode> {
 			// No `ignoreTags`:
 			// - The script tag needs to be passed with the lang attribute to the parser, so instead of
 			//   masking it, it is converted to PSBlock in visitText.
-			// - The style tag is masked in `svelteParseComponent`, which keeps the nested one as an element.
+			// - The top-level style is kept out of Svelte's CSS parse in `svelteParseComponent`; nested ones stay elements.
 			// `svelte/compiler` strips a leading BOM and counts positions from the next character
 			leadingBom: 'mask',
 		});
