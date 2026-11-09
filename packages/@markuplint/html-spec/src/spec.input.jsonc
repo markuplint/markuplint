@@ -61,8 +61,8 @@
 		// so the anchor variant only applies when `type='hidden'`.
 		//
 		// The second entry uses `:not([type='hidden' i])` explicitly
-		// instead of an unconditional fallback because helpers.ts
-		// (`resolveAttrTypeSpec`) resolves ConditionalAttributeType[]
+		// instead of an unconditional fallback because `resolveAttrEligibility`
+		// resolves ConditionalAttributeType[]
 		// to `'Any'` when no condition matches — which would silently
 		// drop the AutoComplete grammar for every non-hidden type.
 		"autocomplete": {
@@ -405,7 +405,8 @@
 		//   @see https://html.spec.whatwg.org/multipage/input.html#hidden-state-(type=hidden)
 		"value": {
 			"condition": ":not([type='file' i]):not([type='image' i]):not([type='hidden' i][name='_charset_' i])",
-			// The first entry whose condition matches wins, so an empty value is resolved before the types.
+			// These entries are ordered alternatives, not enums, so the first match is the type.
+			// An empty value is that first match, ahead of the type-specific entries.
 			// It changes the result only for the states checked below (color, url, email, number, range, date,
 			// month, week, time and datetime-local); every other state falls back to Any. All of them accept
 			// it except range. Url, number, the date and time states and email without the multiple attribute
