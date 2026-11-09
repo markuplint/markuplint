@@ -50,7 +50,7 @@ When you wrote code then:
 
 - Format and lint code through `yarn lint`.
 - Check to build successfully through `yarn build`.
-- Test your code through `yarn test` (this also runs TypeScript type-checking on spec files).
+- Test your code through `yarn test` (this also runs TypeScript type-checking on spec files). A pull request runs Linux and Node.js 26 only; macOS, Windows, Node.js 24, Bun, Deno and the package-manager sandboxes are tested by `.github/workflows/nightly.yml` on `dev` every day, so check those paths yourself when your change touches them.
 - Push to the topic branch and open a pull request against `dev` (against `v6` when the issue has only the `v6` label) with the body described in [What the pull request body must contain](#what-the-pull-request-body-must-contain). Reviewers are assigned automatically.
 
 ### nu-validator compatibility benchmark

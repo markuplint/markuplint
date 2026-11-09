@@ -7,11 +7,13 @@
  *
  * It diffs `<base>...<head>` (the merge base of the two), so it sees what is committed and not what
  * is in the working tree: commit first. `--base` is the branch the work goes to (`origin/v6` on the
- * v6 line, where the default would diff against the wrong tree). It asks {@link plan} which specs to run, and
- * hands them to `vitest related`. Build first: a spec reaches another package through its `lib/`,
- * and the selection passes the build output of a changed file to `vitest related`. When the plan is
- * `full`, it runs the whole suite, as the merge queue does. `--print` shows the plan and stops.
- * Arguments after `--` go to vitest, for a `--config` of another set of specs.
+ * v6 line, where the default would diff against the wrong tree). It asks {@link plan} which specs
+ * to run, and hands them to `vitest related`. Build first: a spec reaches another package through
+ * its `lib/`, and the selection passes the build output of a changed file to `vitest related`. When
+ * the plan is `full`, it runs the whole suite, as the merge queue and the nightly tests do.
+ * `--print` shows the plan and stops. Arguments after `--` go to vitest: `-- --config
+ * vitest.cross-os.config.ts` runs the specs of that config that the change can affect, which is
+ * what to run by hand for a change to a path-sensitive package.
  *
  * `vitest related` is given the files, not the specs, because a spec that was never named could
  * still import one of them; the specs the plan names are in the list as well and run themselves.

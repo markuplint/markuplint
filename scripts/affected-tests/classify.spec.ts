@@ -108,6 +108,7 @@ describe('a file that no spec reads', () => {
 	test.each([
 		'.claude/skills/git/SKILL.md',
 		'.github/workflows/website.yml',
+		'.github/workflows/nightly.yml',
 		'website/src/pages/index.tsx',
 		'CLAUDE.md',
 		'.oxlintrc.json',
@@ -246,6 +247,13 @@ describe('a file at the root that a spec reads', () => {
 		expect(targets).toContain('packages/markuplint/src/cli/index.spec.ts');
 		expect(targets).toContain('packages/markuplint/src/api/lint.spec.ts');
 		expect(targets).toContain('packages/@markuplint/test-tools/src/isolated-env-manifests.spec.ts');
+	});
+
+	// The manifest check is what a pull request has of the sandboxes now: they run in `nightly.yml`.
+	test('the pnpm workspace file of a sandbox runs the manifest check', () => {
+		expect(affected(modified('test/isolated-env/ts/pnpm-workspace.yaml'))).toContain(
+			'packages/@markuplint/test-tools/src/isolated-env-manifests.spec.ts',
+		);
 	});
 
 	test('the config schema runs its spec', () => {
