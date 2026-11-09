@@ -4,7 +4,9 @@
 	"contentModel": {
 		"contents": [
 			{
-				"zeroOrMore": "tr"
+				// > Zero or more tr and script-supporting elements.
+				// @see https://html.spec.whatwg.org/multipage/tables.html#the-tbody-element
+				"zeroOrMore": ["tr", ":model(script-supporting)"]
 			}
 		]
 	},

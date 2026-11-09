@@ -49929,7 +49929,7 @@
 			"contentModel": {
 				"contents": [
 					{
-						"zeroOrMore": "col"
+						"zeroOrMore": ["col", "template"]
 					}
 				],
 				"conditional": [
@@ -50278,13 +50278,13 @@
 								"oneOrMore": "dt"
 							},
 							{
-								"zeroOrMore": ":model(script-supporting)"
+								"zeroOrMore": ["dt", ":model(script-supporting)"]
 							},
 							{
 								"oneOrMore": "dd"
 							},
 							{
-								"zeroOrMore": ":model(script-supporting)"
+								"zeroOrMore": ["dd", ":model(script-supporting)"]
 							}
 						]
 					}
@@ -50323,21 +50323,21 @@
 						"choice": [
 							[
 								{
+									"zeroOrMore": ":model(script-supporting)"
+								},
+								{
 									"zeroOrMore": [
-										{
-											"zeroOrMore": ":model(script-supporting)"
-										},
 										{
 											"oneOrMore": "dt"
 										},
 										{
-											"zeroOrMore": ":model(script-supporting)"
+											"zeroOrMore": ["dt", ":model(script-supporting)"]
 										},
 										{
 											"oneOrMore": "dd"
 										},
 										{
-											"zeroOrMore": ":model(script-supporting)"
+											"zeroOrMore": ["dd", ":model(script-supporting)"]
 										}
 									]
 								}
@@ -50350,7 +50350,7 @@
 									"oneOrMore": "div"
 								},
 								{
-									"zeroOrMore": ":model(script-supporting)"
+									"zeroOrMore": ["div", ":model(script-supporting)"]
 								}
 							]
 						]
@@ -55150,7 +55150,7 @@
 			"contentModel": {
 				"contents": [
 					{
-						"zeroOrMore": "tr"
+						"zeroOrMore": ["tr", ":model(script-supporting)"]
 					}
 				]
 			},
@@ -55454,7 +55454,7 @@
 			"contentModel": {
 				"contents": [
 					{
-						"zeroOrMore": "tr"
+						"zeroOrMore": ["tr", ":model(script-supporting)"]
 					}
 				]
 			},
@@ -55602,7 +55602,7 @@
 			"contentModel": {
 				"contents": [
 					{
-						"zeroOrMore": "tr"
+						"zeroOrMore": ["tr", ":model(script-supporting)"]
 					}
 				]
 			},

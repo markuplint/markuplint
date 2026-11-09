@@ -1892,6 +1892,8 @@ describe('Issues', () => {
 	});
 
 	test('[permitted-contents-issue-606] #606', async () => {
+		// The dt and dd are the content of the template, not children of the dl, and a dl that has
+		// only script-supporting elements is valid.
 		expect(
 			(
 				await mlRuleTest(
@@ -1904,16 +1906,7 @@ describe('Issues', () => {
 				</dl>`,
 				)
 			).violations,
-		).toStrictEqual([
-			// https://github.com/markuplint/markuplint/issues/606#issuecomment-1345446732
-			{
-				severity: 'error',
-				line: 1,
-				col: 1,
-				message: 'Require one or more elements. (Need "dt")',
-				raw: '<dl>',
-			},
-		]);
+		).toStrictEqual([]);
 	});
 
 	test('[permitted-contents-issue-617] #617', async () => {
@@ -3718,6 +3711,261 @@ describe('the canvas element and the interactive content it allows', () => {
 				raw: '<input type="text">',
 				message:
 					'The "a" element is a transparent model but also disallows the "input" element in this context',
+			},
+		]);
+	});
+});
+
+describe('script-supporting elements in table sections, colgroup and dl (#4492)', () => {
+	test('[permitted-contents-issue-4492-001] script in thead and script/template around tr in tbody are valid', async () => {
+		const { violations } = await mlRuleTest(
+			rule,
+			'<table><thead><script></script></thead><tbody><script></script><tr><td>c</td></tr><template></template></tbody></table>',
+		);
+		expect(violations).toStrictEqual([]);
+	});
+
+	test('[permitted-contents-issue-4492-002] template in thead and script-supporting elements in tfoot are valid', async () => {
+		const { violations } = await mlRuleTest(
+			rule,
+			'<table><thead><template></template></thead><tbody><tr><td>c</td></tr></tbody><tfoot><template></template><tr><td>c</td></tr><script></script></tfoot></table>',
+		);
+		expect(violations).toStrictEqual([]);
+	});
+
+	test('[permitted-contents-issue-4492-003] template in colgroup without span is valid', async () => {
+		const { violations } = await mlRuleTest(
+			rule,
+			'<table><colgroup><template></template></colgroup><tr><td>c</td></tr></table>',
+		);
+		expect(violations).toStrictEqual([]);
+	});
+
+	test('[permitted-contents-issue-4492-004] template between col elements is valid', async () => {
+		const { violations } = await mlRuleTest(
+			rule,
+			'<table><colgroup><col><template></template><col></colgroup><tr><td>c</td></tr></table>',
+		);
+		expect(violations).toStrictEqual([]);
+	});
+
+	test('[permitted-contents-issue-4492-005] template in colgroup with span is invalid', async () => {
+		const { violations } = await mlRuleTest(
+			rule,
+			'<table><colgroup span="2"><template></template></colgroup><tr><td>c</td></tr></table>',
+		);
+		expect(violations).toStrictEqual([
+			{
+				severity: 'error',
+				line: 1,
+				col: 8,
+				message: 'The element disallows contents',
+				raw: '<colgroup span="2">',
+			},
+		]);
+	});
+
+	test('[permitted-contents-issue-4492-006] dl containing only script is valid', async () => {
+		expect((await mlRuleTest(rule, '<dl><script></script></dl>')).violations).toStrictEqual([]);
+	});
+
+	test('[permitted-contents-issue-4492-007] dl containing only template is valid', async () => {
+		expect((await mlRuleTest(rule, '<dl><template></template></dl>')).violations).toStrictEqual([]);
+	});
+
+	test('[permitted-contents-issue-4492-008] script before, between and after the dt and dd of dl is valid', async () => {
+		const { violations } = await mlRuleTest(
+			rule,
+			'<dl><script></script><dt>a</dt><script></script><dt>b</dt><script></script><dd>c</dd><script></script><dd>d</dd><script></script></dl>',
+		);
+		expect(violations).toStrictEqual([]);
+	});
+
+	test('[permitted-contents-issue-4492-009] script-supporting element between groups of dl is valid', async () => {
+		const { violations } = await mlRuleTest(
+			rule,
+			'<dl><dt>a</dt><dd>b</dd><template></template><dt>c</dt><dd>d</dd></dl>',
+		);
+		expect(violations).toStrictEqual([]);
+	});
+
+	test('[permitted-contents-issue-4492-010] script-supporting elements around and between div elements of dl are valid', async () => {
+		const { violations } = await mlRuleTest(
+			rule,
+			'<dl><script></script><div><dt>a</dt><dd>b</dd></div><script></script><div><dt>c</dt><dd>d</dd></div><template></template></dl>',
+		);
+		expect(violations).toStrictEqual([]);
+	});
+
+	test('[permitted-contents-issue-4492-011] script-supporting elements between dt and dd inside div of dl are valid', async () => {
+		const { violations } = await mlRuleTest(
+			rule,
+			'<dl><div><script></script><dt>a</dt><script></script><dt>b</dt><script></script><dd>c</dd><template></template><dd>d</dd><script></script></div></dl>',
+		);
+		expect(violations).toStrictEqual([]);
+	});
+
+	test('[permitted-contents-issue-4492-012] dl with dt and script but no dd is invalid', async () => {
+		const { violations } = await mlRuleTest(rule, '<dl><dt>a</dt><script></script></dl>');
+		expect(violations).toStrictEqual([
+			{
+				severity: 'error',
+				line: 1,
+				col: 1,
+				message: 'Require one or more elements. (Need "dd")',
+				raw: '<dl>',
+			},
+		]);
+	});
+
+	test('[permitted-contents-issue-4492-013] dl with script and dd but no dt is invalid', async () => {
+		const { violations } = await mlRuleTest(rule, '<dl><script></script><dd>a</dd></dl>');
+		expect(violations).toStrictEqual([
+			{
+				severity: 'error',
+				line: 1,
+				col: 1,
+				message: 'Require one or more elements. (Need "dt")',
+				raw: '<dl>',
+			},
+		]);
+	});
+
+	// A dt can match either the required `dt` or the optional `dt` / script-supporting alternation of the
+	// group, so a long run is the input where a regression in matching would show up as a timeout.
+	test('[permitted-contents-issue-4492-014] dl with 400 dt, dd and script elements in a row is valid', async () => {
+		const dts = '<dt>t</dt><script></script>'.repeat(100);
+		const dds = '<dd>d</dd><script></script>'.repeat(100);
+		const { violations } = await mlRuleTest(rule, `<dl>${dts}${dds}${dts}${dds}</dl>`);
+		expect(violations).toStrictEqual([]);
+	});
+
+	test('[permitted-contents-issue-4492-015] dl with 300 dt and script elements and no dd is invalid', async () => {
+		const { violations } = await mlRuleTest(rule, `<dl>${'<dt>t</dt><script></script>'.repeat(300)}</dl>`);
+		expect(violations).toStrictEqual([
+			{
+				severity: 'error',
+				line: 1,
+				col: 1,
+				message: 'Require one or more elements. (Need "dd")',
+				raw: '<dl>',
+			},
+		]);
+	});
+
+	test('[permitted-contents-issue-4492-016] a p after the groups of dl is reported', async () => {
+		const { violations } = await mlRuleTest(rule, '<dl><dt>a</dt><dd>b</dd><script></script><p></p></dl>');
+		expect(violations).toStrictEqual([
+			{
+				severity: 'error',
+				line: 1,
+				col: 42,
+				message: 'The "p" element is not allowed in the "dl" element in this context',
+				raw: '<p>',
+			},
+		]);
+	});
+
+	test('[permitted-contents-issue-4492-017] div before dt and dd in dl is reported', async () => {
+		const { violations } = await mlRuleTest(rule, '<dl><div><dt>a</dt><dd>b</dd></div><dt>c</dt><dd>d</dd></dl>');
+		expect(violations).toStrictEqual([
+			{
+				severity: 'error',
+				line: 1,
+				col: 36,
+				message: 'The "dt" element is not allowed in the "dl" element in this context',
+				raw: '<dt>',
+			},
+		]);
+	});
+
+	// The HTML parser moves a script out of a colgroup, so the tree is made by the JSX parser.
+	test('[permitted-contents-issue-4492-018] script in colgroup is invalid', async () => {
+		const { violations } = await mlRuleTest(rule, '<table><colgroup><script></script></colgroup></table>', {
+			parser: { '.*': '@markuplint/jsx-parser' },
+		});
+		expect(violations).toStrictEqual([
+			{
+				severity: 'error',
+				line: 1,
+				col: 18,
+				message: 'The "script" element is not allowed in the "colgroup" element in this context',
+				raw: '<script>',
+			},
+		]);
+	});
+
+	test('[permitted-contents-issue-4492-019] div of dl with two groups and a script between them is invalid', async () => {
+		const { violations } = await mlRuleTest(
+			rule,
+			'<dl><div><dt>a</dt><dd>b</dd><script></script><dt>c</dt><dd>d</dd></div></dl>',
+		);
+		expect(violations).toStrictEqual([
+			{
+				severity: 'error',
+				line: 1,
+				col: 47,
+				message: 'The "dt" element is not allowed in the "div" element in this context',
+				raw: '<dt>',
+			},
+		]);
+	});
+
+	test('[permitted-contents-issue-4492-020] div of dl with only a script is invalid', async () => {
+		const { violations } = await mlRuleTest(rule, '<dl><div><script></script></div></dl>');
+		expect(violations).toStrictEqual([
+			{
+				severity: 'error',
+				line: 1,
+				col: 5,
+				message: 'Require one or more elements. (Need "dt")',
+				raw: '<div>',
+			},
+		]);
+	});
+
+	// The HTML parser moves anything but tr out of a table section, so the tree is made by the JSX parser.
+	test('[permitted-contents-issue-4492-021] style in thead is invalid', async () => {
+		const { violations } = await mlRuleTest(rule, '<table><thead><style></style></thead></table>', {
+			parser: { '.*': '@markuplint/jsx-parser' },
+		});
+		expect(violations).toStrictEqual([
+			{
+				severity: 'error',
+				line: 1,
+				col: 15,
+				message: 'The "style" element is not allowed in the "thead" element in this context',
+				raw: '<style>',
+			},
+		]);
+	});
+
+	test('[permitted-contents-issue-4492-022] style in tbody is invalid', async () => {
+		const { violations } = await mlRuleTest(rule, '<table><tbody><style></style></tbody></table>', {
+			parser: { '.*': '@markuplint/jsx-parser' },
+		});
+		expect(violations).toStrictEqual([
+			{
+				severity: 'error',
+				line: 1,
+				col: 15,
+				message: 'The "style" element is not allowed in the "tbody" element in this context',
+				raw: '<style>',
+			},
+		]);
+	});
+
+	test('[permitted-contents-issue-4492-023] style in tfoot is invalid', async () => {
+		const { violations } = await mlRuleTest(rule, '<table><tfoot><style></style></tfoot></table>', {
+			parser: { '.*': '@markuplint/jsx-parser' },
+		});
+		expect(violations).toStrictEqual([
+			{
+				severity: 'error',
+				line: 1,
+				col: 15,
+				message: 'The "style" element is not allowed in the "tfoot" element in this context',
+				raw: '<style>',
 			},
 		]);
 	});
