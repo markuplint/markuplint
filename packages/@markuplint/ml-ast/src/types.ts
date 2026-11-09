@@ -204,10 +204,11 @@ export interface MLASTElementCloseTag extends MLASTAbstractNode {
  * from template engines and frameworks (e.g. `{#if}`, `{#each}` in Svelte,
  * `v-if` blocks in Vue, `<% if %>` in EJS/ERB).
  *
- * In `ml-core` this maps to `MLBlock` — a markuplint-specific extension with
- * the custom `nodeType` `101` (no DOM Standard equivalent) — which acts as a
- * transparent container: its children are treated as belonging to the parent
- * node for tree traversal purposes.
+ * In `ml-core` this maps to `MLBlock`. `parentNode` walks through every such
+ * block, so an element inside it keeps the element that contains the block
+ * as its parent. `childNodes` flattens only a fragment and a block whose
+ * `blockBehavior.type` is `each` or `end`. A conditional block stays in
+ * `childNodes`: branches that never render together must not become siblings.
  */
 export interface MLASTPreprocessorSpecificBlock extends MLASTAbstractNode {
 	readonly type: 'psblock';
