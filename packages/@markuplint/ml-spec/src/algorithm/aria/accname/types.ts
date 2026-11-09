@@ -23,6 +23,13 @@ export interface AccnameElement extends AccnameNode {
 	getAttribute(name: string): string | null;
 	hasAttribute(name: string): boolean;
 	readonly parentElement: AccnameElement | null;
+	/**
+	 * The root of the tree of the element. An element and its parent element are in the same tree,
+	 * unless the parent element is only the syntactical parent, as `MLElement#parentElement` is for the
+	 * top of the content of a `template` element: see `getTreeParentElement`. An implementation without
+	 * it has no tree boundary.
+	 */
+	getRootNode?(): unknown;
 	readonly children: Iterable<AccnameElement>;
 	readonly childNodes: Iterable<AccnameNode>;
 }

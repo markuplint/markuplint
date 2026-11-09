@@ -47,6 +47,9 @@ export * from './algorithm/aria/get-aria.js';
 export * from './algorithm/aria/get-role-spec.js';
 export * from './algorithm/aria/is-presentational.js';
 
+// DOM algorithms
+export * from './algorithm/dom/tree-boundary.js';
+
 // HTML algorithms
 export * from './algorithm/html/get-content-model.js';
 export * from './algorithm/html/may-be-focusable.js';
