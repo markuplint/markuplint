@@ -33,6 +33,19 @@ function firstTemplate(code: string) {
 	return { doc, template: must(doc.deepQuerySelectorAll('template')[0]) };
 }
 
+describe(':scope on a fragment document', () => {
+	test(':scope > p matches a top-level p, not a p under another top-level element', () => {
+		const doc = createTestDocument('<div><p id="a"></p></div><p id="b"></p>');
+		expect([...doc.querySelectorAll(':scope > p')].map(el => el.id)).toStrictEqual(['b']);
+	});
+
+	test(':scope does not match an element when the scope is the document', () => {
+		const doc = createTestDocument('<div id="root"></div>');
+		expect(doc.querySelector(':scope')).toBeNull();
+		expect(must(doc.querySelector('#root')).matches(':scope', doc)).toBe(false);
+	});
+});
+
 describe('queries do not enter the content of a template', () => {
 	test('the document does not find an element in the content', () => {
 		const doc = createTestDocument('<div><p id="a"></p></div><template><p id="b"></p></template>');

@@ -314,10 +314,11 @@ class SelectorTarget {
 				const matchedNodes: SelectorElement[] = [];
 				const has: SelectorMatchedResult[] = [];
 				const not: SelectorMatchedResult[] = [];
-				let ancestor = getParentElement(el);
+				let ancestor: SelectorNode | null = getCombinatorParent(el, scope);
 				let specificity: Specificity | undefined = undefined;
+				let combinatorMatched = false;
 				while (ancestor) {
-					const res = target.match(ancestor, scope, count + 1, logEnabled);
+					const res = matchCombinatorTarget(target, ancestor, scope, count + 1, logEnabled);
 					if (!specificity) {
 						specificity = [
 							unitCheck.specificity[0] + res.specificity[0],
@@ -326,24 +327,28 @@ class SelectorTarget {
 						];
 					}
 					if (res.matched) {
+						combinatorMatched = true;
 						matchedNodes.push(...res.nodes);
 						has.push(...res.has);
-					} else {
-						if (res.not) {
-							not.push(...res.not);
-						}
+						break;
 					}
-					ancestor = getParentElement(ancestor);
+					if (res.not) {
+						not.push(...res.not);
+					}
+					ancestor =
+						ancestor && isElement(ancestor)
+							? getCombinatorParent(ancestor, scope)
+							: (ancestor?.parentNode ?? null);
 				}
 				if (!specificity) {
-					const res = target.match(el, scope, count + 1, logEnabled);
+					const res = matchCombinatorTarget(target, el, scope, count + 1, logEnabled);
 					specificity = [
 						unitCheck.specificity[0] + res.specificity[0],
 						unitCheck.specificity[1] + res.specificity[1],
 						unitCheck.specificity[2] + res.specificity[2],
 					];
 				}
-				if (matchedNodes.length > 0) {
+				if (combinatorMatched || matchedNodes.length > 0) {
 					return {
 						combinator: '␣',
 						specificity,
@@ -365,28 +370,14 @@ class SelectorTarget {
 				const has: SelectorMatchedResult[] = [];
 				const not: SelectorMatchedResult[] = [];
 				const specificity: Writable<Specificity> = [...unitCheck.specificity];
-				const parentNode = getParentElement(el);
-
-				if (parentNode) {
-					const res = target.match(parentNode, scope, count + 1, logEnabled);
-					specificity[0] += res.specificity[0];
-					specificity[1] += res.specificity[1];
-					specificity[2] += res.specificity[2];
-					if (res.matched) {
-						matchedNodes.push(...res.nodes);
-						has.push(...res.has);
-					} else {
-						if (res.not) {
-							not.push(...res.not);
-						}
-					}
-				} else {
-					const res = target.match(el, scope, count + 1, logEnabled);
-					specificity[0] += res.specificity[0];
-					specificity[1] += res.specificity[1];
-					specificity[2] += res.specificity[2];
-				}
-				if (matchedNodes.length > 0) {
+				const parentNode = getCombinatorParent(el, scope);
+				const res = matchCombinatorTarget(target, parentNode, scope, count + 1, logEnabled);
+				specificity[0] += res.specificity[0];
+				specificity[1] += res.specificity[1];
+				specificity[2] += res.specificity[2];
+				if (res.matched) {
+					matchedNodes.push(...res.nodes);
+					has.push(...res.has);
 					return {
 						combinator: '>',
 						specificity,
@@ -394,6 +385,9 @@ class SelectorTarget {
 						nodes: matchedNodes,
 						has,
 					};
+				}
+				if (res.not) {
+					not.push(...res.not);
 				}
 				return {
 					combinator: '>',
@@ -983,12 +977,80 @@ function getParentElement(
 	return el.treeParentElement === undefined ? el.parentElement : el.treeParentElement;
 }
 
+/**
+ * Parent for combinator matching: the tree parent, or the scoping root when it is the
+ * {@link SelectorNode#parentNode} but not an element (a document or document fragment).
+ */
+function isTopLevelInScope(
+	// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
+	el: SelectorElement,
+	scope: SelectorNode,
+): boolean {
+	if ('children' in scope) {
+		for (const child of scope.children as Iterable<SelectorNode>) {
+			if (child === el) {
+				return true;
+			}
+		}
+	}
+	if ('childNodes' in scope) {
+		for (const child of scope.childNodes as Iterable<SelectorNode>) {
+			if (child === el) {
+				return true;
+			}
+		}
+	}
+	return false;
+}
+
+function getCombinatorParent(
+	// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
+	el: SelectorElement,
+	scope: SelectorNode | null,
+): SelectorNode | null {
+	const parent = getParentElement(el);
+	if (parent) {
+		return parent;
+	}
+	if (scope && el.parentNode === scope) {
+		return scope;
+	}
+	if (scope && el.parentNode === null && isTopLevelInScope(el, scope)) {
+		return scope;
+	}
+	return null;
+}
+
+function matchCombinatorTarget(
+	target: ReadonlyDeep<SelectorTarget>,
+	node: SelectorNode | null,
+	scope: SelectorNode | null,
+	count: number,
+	logEnabled: boolean,
+): SelectorResult {
+	if (node === scope && target.toString() === ':scope') {
+		return {
+			specificity: [0, 1, 0],
+			matched: true,
+			nodes: [],
+			has: [],
+		};
+	}
+	if (node && isElement(node)) {
+		return target.match(node, scope, count, logEnabled);
+	}
+	return {
+		specificity: [0, 0, 0],
+		matched: false,
+	};
+}
+
 function isScope(
 	// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
 	el: SelectorElement,
 	scope: SelectorNode | null,
 ) {
-	return el === scope || el.parentNode === null;
+	return el === scope;
 }
 
 function getDescendants(
