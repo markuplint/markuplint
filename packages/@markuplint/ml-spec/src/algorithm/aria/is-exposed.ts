@@ -1,6 +1,7 @@
 import type { ARIAVersion, MLMLSpec } from '../../types/index.js';
 
 import { ariaSpecs } from './aria-specs.js';
+import { getComposedParentElement } from '../dom/tree-boundary.js';
 import { getSpecByTagName } from '../../utils/get-spec-by-tag-name.js';
 import { isPresentational } from './is-presentational.js';
 import { resolveNamespace } from '../../utils/resolve-namespace.js';
@@ -17,6 +18,8 @@ type AttrOfMLDOM = Attr & { readonly isAbsent?: true };
  * Detects whether an element is included in (exposed to) the Accessibility Tree.
  * Applies WAI-ARIA exclusion/inclusion rules, SVG rendering rules, and
  * HTML metadata element filtering.
+ *
+ * The ancestors it reads are those of the accessibility tree ({@link getComposedParentElement}).
  *
  * @see https://www.w3.org/TR/wai-aria-1.2/#accessibility_tree
  *
@@ -91,7 +94,7 @@ function isExcluding(
 			if (hasDisplayNodeOrVisibilityHidden(currentEl) || currentEl.hasAttribute('hidden')) {
 				return true;
 			}
-			currentEl = currentEl.parentElement;
+			currentEl = getComposedParentElement(currentEl);
 		}
 	}
 
@@ -120,7 +123,7 @@ function isExcluding(
 			if (currentEl.getAttribute('aria-hidden') === 'true') {
 				return true;
 			}
-			currentEl = currentEl.parentElement;
+			currentEl = getComposedParentElement(currentEl);
 		}
 	}
 
@@ -133,13 +136,13 @@ function isExcluding(
 	 *   However, the text content of any excluded descendants is included.
 	 */
 	{
-		let currentEl = el.parentElement;
+		let currentEl = getComposedParentElement(el);
 		while (currentEl) {
 			const { role } = getComputedRole(specs, currentEl, version);
 			if (role?.childrenPresentational) {
 				return true;
 			}
-			currentEl = currentEl.parentElement;
+			currentEl = getComposedParentElement(currentEl);
 		}
 	}
 

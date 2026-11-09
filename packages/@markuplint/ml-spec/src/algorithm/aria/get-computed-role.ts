@@ -6,6 +6,7 @@ import { isPresentational } from './is-presentational.js';
 import { SVG_NAMESPACE } from '../../const/index.js';
 import { hasSvgAccessibleNameSource } from './accname/svg-helpers.js';
 import { getAttrSpecs } from '../../utils/get-attr-specs.js';
+import { getComposedParentElement } from '../dom/tree-boundary.js';
 import { getExplicitRole } from './get-explicit-role.js';
 import { getImplicitRole } from './get-implicit-role.js';
 import { getNonPresentationalAncestor } from './get-non-presentational-ancestor.js';
@@ -136,12 +137,14 @@ function computeRole(
 	) {
 		/**
 		 * An element fragment that serves as the root without a parent element
-		 * cannot satisfy the "Required Accessibility Parent Role" condition.
+		 * (or the top of the content of an ordinary `template` element, whose
+		 * placement is not known) cannot satisfy the "Required Accessibility
+		 * Parent Role" condition.
 		 * Therefore, under normal circumstances, the `role` will disappear.
 		 * However, in this specific case, it will fall back to both explicit
 		 * and implicit roles. Note that the explicit role takes precedence.
 		 */
-		if (el.parentElement === null) {
+		if (getComposedParentElement(el) === null) {
 			return {
 				...computedRole,
 				errorType: 'NO_OWNER',
@@ -324,6 +327,7 @@ function isEnabledAttr(
 
 /**
  * Determines whether some ancestors match the condition that the specified callback function.
+ * The ancestors are those of the accessibility tree: see {@link getComposedParentElement}.
  */
 function someAncestors(
 	// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
@@ -337,7 +341,7 @@ function someAncestors(
 	let current: Element | null = el;
 	while (current) {
 		list.push(current);
-		current = current.parentElement;
+		current = getComposedParentElement(current);
 	}
 	return list.some(predicate);
 }
@@ -367,7 +371,7 @@ function isNativeContextIntact(
 	if (!computedRole.role?.isImplicit) {
 		return false;
 	}
-	const parent = el.parentElement;
+	const parent = getComposedParentElement(el);
 	if (!parent) {
 		return false;
 	}

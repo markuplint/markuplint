@@ -3,6 +3,7 @@
 import type { AccnameComputeFn, AccnameElement, AccnameNode, AccnameResolver } from './types.js';
 
 import { ELEMENT_NODE, SVG_NAMESPACE, TEXT_NODE, TEXT_LIKE_INPUT_TYPES } from '../../../const/index.js';
+import { getTreeParentElement } from '../../dom/tree-boundary.js';
 import { resolveAriaLabelledby } from './aria-steps.js';
 
 export { EMBEDDED_CONTROL_ROLES } from '../../../const/index.js';
@@ -313,13 +314,24 @@ export function findChildByLocalName(
 	return null;
 }
 
+/**
+ * The closest `label` element among the ancestors of the element, which names the element when it is
+ * its labeled control. The ancestors are those of its own tree, as the HTML Standard defines the
+ * relation between a `label` and its labeled control by ancestors in the tree, so a `label` that
+ * wraps a `template` element does not label a control in its content.
+ *
+ * @see https://html.spec.whatwg.org/multipage/forms.html#labeled-control
+ *
+ * @param el - The element to start from
+ * @returns The closest `label` ancestor, or `null`
+ */
 export function findAncestorLabel(el: AccnameElement): AccnameElement | null {
-	let current = el.parentElement;
+	let current = getTreeParentElement(el);
 	while (current) {
 		if (current.localName === 'label') {
 			return current;
 		}
-		current = current.parentElement;
+		current = getTreeParentElement(current);
 	}
 	return null;
 }

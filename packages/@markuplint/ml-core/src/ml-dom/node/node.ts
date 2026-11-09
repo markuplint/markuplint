@@ -400,6 +400,10 @@ export abstract class MLNode<
 	 * content of a `template` in a `section`. {@link MLNode.parentElement} stays the syntactical one
 	 * because the content model of a `template` element is validated against what is in it.
 	 *
+	 * `getTreeParentElement` of `@markuplint/ml-spec`, which cannot use this getter, derives the same
+	 * answer from `getRootNode()` for the algorithms of that package: a change of the boundary here
+	 * belongs to it too.
+	 *
 	 * @implements `@markuplint/ml-core` API: `MLNode`
 	 */
 	get treeParentElement(): MLElement<T, O> | null {

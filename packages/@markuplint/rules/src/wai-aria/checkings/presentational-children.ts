@@ -13,6 +13,7 @@ import type { AccnameVisit, ARIAVersion, ARIARole, ComputedRole } from '@markupl
 import {
 	ARIA_RECOMMENDED_VERSION,
 	EMBEDDED_CONTROL_ROLES,
+	getComposedParentElement,
 	getComputedRole,
 	getImplicitRole,
 	isExposedAsPresentational,
@@ -119,6 +120,9 @@ const getContext = memoizeByObject(
  * Finds the closest ancestor whose computed role has the
  * `childrenArePresentational` characteristic.
  *
+ * The ancestors are those of the accessibility tree ({@link getComposedParentElement}): the search ends at the
+ * top of the content of an ordinary `template` element, and it goes on from a declarative shadow root to its host.
+ *
  * @param el - The element to start searching from (exclusive, starts from parent).
  * @param ariaVersion - The ARIA version to compute the roles with.
  * @returns The role of that ancestor, or `null` if none is found.
@@ -128,13 +132,13 @@ function getClosestPresentationalChildrenRole(
 	el: Element<boolean, Options>,
 	ariaVersion: ARIAVersion,
 ): ARIARole | null {
-	let current: Element<boolean, Options> | null = el.parentElement;
+	let current: Element<boolean, Options> | null = getComposedParentElement(el);
 	while (current) {
 		const role = getComputedRole(el.ownerMLDocument.specs, current, ariaVersion).role;
 		if (role?.childrenPresentational) {
 			return role;
 		}
-		current = current.parentElement;
+		current = getComposedParentElement(current);
 	}
 	return null;
 }
@@ -150,6 +154,10 @@ function getClosestPresentationalChildrenRole(
  *   `aria-labelledby` or `aria-describedby` refers to
  * - the accessible name of every control that a `label` ancestor can name: the
  *   element its `for` refers to, and its labelable descendants (HTML-AAM)
+ *
+ * The ancestors are those of the accessibility tree ({@link getComposedParentElement}): an ancestor
+ * outside of the content of an ordinary `template` element reads nothing in it, as the content is not
+ * rendered there.
  *
  * @see https://w3c.github.io/accname/#comp_name_from_content
  * @see https://w3c.github.io/accname/#comp_labelledby_traversal
@@ -191,7 +199,7 @@ function getVisits(
 		for (const control of getLabeledControls(current)) {
 			add(control);
 		}
-		current = current.parentElement;
+		current = getComposedParentElement(current);
 	}
 	return visits;
 }

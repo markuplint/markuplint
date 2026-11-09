@@ -476,3 +476,53 @@ describe('the sources are looked for in the tree of the element', () => {
 		expect(violations).toStrictEqual([]);
 	});
 });
+
+describe('the ancestors are those of the tree of the element', () => {
+	const violation = (col: number) => ({
+		severity: 'warning',
+		line: 1,
+		col,
+		raw: '<input type="text" aria-label="X">',
+		message: 'The accessible name from "aria-label" overrides "label"',
+	});
+
+	test('[no-redundant-accessible-name-issue-4506-001] a label that wraps a template is not a source of a control in its content', async () => {
+		const { violations } = await mlRuleTest(
+			rule,
+			'<label>L<template><input type="text" aria-label="X"></template></label>',
+		);
+		expect(violations).toStrictEqual([]);
+	});
+
+	test('[no-redundant-accessible-name-issue-4506-002] a label that wraps a control in the same template is a source', async () => {
+		const { violations } = await mlRuleTest(
+			rule,
+			'<template><label>L<input type="text" aria-label="X"></label></template>',
+		);
+		expect(violations).toStrictEqual([violation(19)]);
+	});
+
+	test('[no-redundant-accessible-name-issue-4506-003] aria-hidden outside of the content of a template does not hide the control in it', async () => {
+		const { violations } = await mlRuleTest(
+			rule,
+			'<div aria-hidden="true"><template><label>L<input type="text" aria-label="X"></label></template></div>',
+		);
+		expect(violations).toStrictEqual([violation(43)]);
+	});
+
+	test('[no-redundant-accessible-name-issue-4506-004] hidden outside of the content of a template does not hide the control in it', async () => {
+		const { violations } = await mlRuleTest(
+			rule,
+			'<div hidden><template><label>L<input type="text" aria-label="X"></label></template></div>',
+		);
+		expect(violations).toStrictEqual([violation(31)]);
+	});
+
+	test('[no-redundant-accessible-name-issue-4506-005] aria-hidden of the host hides the control in a declarative shadow root', async () => {
+		const { violations } = await mlRuleTest(
+			rule,
+			'<div aria-hidden="true"><template shadowrootmode="open"><label>L<input type="text" aria-label="X"></label></template></div>',
+		);
+		expect(violations).toStrictEqual([]);
+	});
+});
