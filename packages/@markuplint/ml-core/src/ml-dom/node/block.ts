@@ -14,10 +14,15 @@ import { MLNode } from './node.js';
  * loops (`each`), and other preprocessor directives that are not part of standard HTML.
  *
  * Serves as the bridge between template syntax and HTML content model
- * validation: transparency keeps the wrapper invisible to DOM traversal so
- * rules such as `permitted-contents` see the effective HTML children, while
- * `blockBehavior` lets `conditionalChildNodes()` enumerate every possible
- * rendering branch.
+ * validation. `isTransparent` is always true, so `parentNode` walks through
+ * every preprocessor block and an element inside a block keeps the element
+ * that contains the block as its parent.
+ *
+ * `childNodes` does not follow that. Only fragments and blocks whose
+ * `blockBehavior.type` is `each` or `end` are flattened into the parent.
+ * A conditional block stays in `childNodes` so `conditionalChildNodes()` can
+ * tell its branches apart. Flattening those branches would make elements
+ * that never render together into siblings.
  *
  * @template T - The rule configuration value type
  * @template O - The rule options type
@@ -33,8 +38,12 @@ export class MLBlock<T extends RuleConfigValue, O extends PlainData = undefined>
 	readonly blockBehavior: MLASTBlockBehavior | null;
 
 	/**
-	 * Whether this block is transparent, meaning its children are treated
-	 * as belonging to the parent node for tree traversal purposes.
+	 * Whether `parentNode` walks through this block. Always true, so an
+	 * element inside the block keeps the element that contains the block as
+	 * its parent. This flag does not decide `childNodes` flattening: only
+	 * fragments and blocks whose `blockBehavior.type` is `each` or `end` are
+	 * flattened, and a conditional block stays so its branches can be told
+	 * apart.
 	 */
 	readonly isTransparent: boolean;
 
@@ -50,8 +59,8 @@ export class MLBlock<T extends RuleConfigValue, O extends PlainData = undefined>
 		document: MLDocument<T, O>,
 	) {
 		super(astNode, document, astNode.isFragment);
-		// Always transparent: blockBehavior may restrict child treatment in the future,
-		// but currently all preprocessor blocks are transparent for tree traversal.
+		// `parentNode` walks through every block. `childNodes` flattens only
+		// `each` and `end`; see the class comment.
 		this.isTransparent = true;
 		this.blockBehavior = astNode.blockBehavior;
 	}
