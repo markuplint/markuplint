@@ -225,9 +225,14 @@ export abstract class MLNode<
 	}
 
 	/**
-	 * The list of child nodes that contains `Element`, `Text`, and `Comment`.
-	 * Fragment nodes and preprocessor blocks with `each` or `end` block behavior
-	 * are transparent — their child nodes are flattened into this list.
+	 * The list of child nodes. Fragment nodes and preprocessor blocks whose
+	 * `blockBehavior.type` is `each` or `end` are flattened into this list.
+	 * Conditional blocks (`if`, `switch`, `await`, and their clauses) and
+	 * `each:empty` stay in this list: flattening a conditional block would
+	 * present elements that never render together as siblings, and would
+	 * remove the block nodes `conditionalChildNodes()` uses to enumerate
+	 * each branch. A loop body is not an alternative branch, so `each` and
+	 * `end` are flattened.
 	 *
 	 * @readonly
 	 * @implements DOM API: `Node`
@@ -457,7 +462,7 @@ export abstract class MLNode<
 	 * div
 	 *   //- <div>
 	 *   if foo
-	 *     //- null
+	 *     //- <div>
 	 *     span
 	 * ```
 	 *

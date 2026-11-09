@@ -1168,6 +1168,34 @@ describe('ChildNode with blockBehavior', () => {
 		expect(dom.nodeList[0]?.nodeName).toEqual('DL');
 		expect(dom.nodeList[0]?.children[0]?.nodeName).toEqual('DT');
 	});
+
+	test('a conditional block stays in childNodes', async () => {
+		const dom = createTestDocument('<ul><li class="a"></li>{#if x}<li class="b"></li>{/if}</ul>', {
+			parser: await import('@markuplint/svelte-parser'),
+		});
+
+		const ul = dom.nodeList[0];
+		expect(ul?.nodeName).toEqual('UL');
+		expect(ul?.childElementCount).toBe(1);
+		expect(ul?.children[0]?.raw).toBe('<li class="a">');
+		expect([...ul.childNodes].map(node => node.nodeName)).toEqual(['LI', '#ml-block']);
+		const block = ul?.childNodes[1];
+		expect(block?.is(block.MARKUPLINT_PREPROCESSOR_BLOCK) && block.blockBehavior?.type).toBe('if');
+		expect([...block.childNodes].map(node => node.raw)).toEqual(['<li class="b">']);
+		expect(block.childNodes[0]?.parentNode?.nodeName).toBe('UL');
+	});
+
+	test('an element inside a Pug conditional keeps the element that contains the block as its parent', async () => {
+		const dom = createTestDocument(
+			`div
+  if foo
+    span
+`,
+			{ parser: await import('@markuplint/pug-parser') },
+		);
+		const span = dom.querySelector('span');
+		expect(span?.parentNode?.nodeName).toBe('DIV');
+	});
 });
 
 describe('Issues', () => {
