@@ -32,6 +32,100 @@ describe('the name is looked for in the tree of the element', () => {
 		const { violations } = await mlRuleTest(rule, '<label for="&#120;">L</label><input id="x" type="text">');
 		expect(violations).toStrictEqual([]);
 	});
+
+	test('[require-accessible-name-issue-4506-001] a label that wraps a template does not name the control in its content', async () => {
+		const { violations } = await mlRuleTest(rule, '<label>L<template><input type="text"></template></label>');
+		expect(violations).toStrictEqual([
+			{
+				severity: 'error',
+				line: 1,
+				col: 19,
+				message: 'Require accessible name',
+				raw: '<input type="text">',
+			},
+		]);
+	});
+
+	test('[require-accessible-name-issue-4506-002] a label in the content of a template names the control in the content', async () => {
+		const { violations } = await mlRuleTest(rule, '<template><label>L<input type="text"></label></template>');
+		expect(violations).toStrictEqual([]);
+	});
+});
+
+describe('the element is hidden by the ancestors in the tree of the element', () => {
+	test('[require-accessible-name-issue-4506-003] aria-hidden outside of the content of a template does not hide it', async () => {
+		const { violations } = await mlRuleTest(
+			rule,
+			'<div aria-hidden="true"><template><button></button></template></div>',
+		);
+		expect(violations).toStrictEqual([
+			{
+				severity: 'error',
+				line: 1,
+				col: 35,
+				message: 'Require accessible name',
+				raw: '<button>',
+			},
+		]);
+	});
+
+	test('[require-accessible-name-issue-4506-004] aria-hidden of the host hides the content of a declarative shadow root', async () => {
+		const { violations } = await mlRuleTest(
+			rule,
+			'<div aria-hidden="true"><template shadowrootmode="open"><button></button></template></div>',
+		);
+		expect(violations).toStrictEqual([]);
+	});
+
+	test('[require-accessible-name-issue-4506-005] aria-hidden in the content of a template hides the element in it', async () => {
+		const { violations } = await mlRuleTest(
+			rule,
+			'<template><div aria-hidden="true"><button></button></div></template>',
+		);
+		expect(violations).toStrictEqual([]);
+	});
+
+	test('[require-accessible-name-issue-4506-006] hidden outside of the content of a template does not hide it', async () => {
+		const { violations } = await mlRuleTest(rule, '<div hidden><template><button></button></template></div>');
+		expect(violations).toStrictEqual([
+			{
+				severity: 'error',
+				line: 1,
+				col: 23,
+				message: 'Require accessible name',
+				raw: '<button>',
+			},
+		]);
+	});
+
+	test('[require-accessible-name-issue-4506-007] hidden of the host hides the content of a declarative shadow root', async () => {
+		const { violations } = await mlRuleTest(
+			rule,
+			'<div hidden><template shadowrootmode="open"><button></button></template></div>',
+		);
+		expect(violations).toStrictEqual([]);
+	});
+
+	test('[require-accessible-name-issue-4506-008] an ancestor with presentational children outside of the content of a template does not exclude it', async () => {
+		const { violations } = await mlRuleTest(rule, '<button>x<template><a href="#"></a></template></button>');
+		expect(violations).toStrictEqual([
+			{
+				severity: 'error',
+				line: 1,
+				col: 20,
+				message: 'Require accessible name',
+				raw: '<a href="#">',
+			},
+		]);
+	});
+
+	test('[require-accessible-name-issue-4506-009] an ancestor with presentational children excludes the content of a declarative shadow root', async () => {
+		const { violations } = await mlRuleTest(
+			rule,
+			'<div role="img" aria-label="x"><template shadowrootmode="open"><a href="#"></a></template></div>',
+		);
+		expect(violations).toStrictEqual([]);
+	});
 });
 
 test('[require-accessible-name-valid-001] has accessible name', async () => {

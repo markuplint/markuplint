@@ -6,6 +6,8 @@ When multiple naming mechanisms are present on a single element, only the highes
 
 For example, if a `<label>` says "Name" but an `aria-labelledby` attribute references a different element, sighted users see "Name" while screen reader users hear something else — a discrepancy that violates [WCAG 2.5.3: Label in Name](https://www.w3.org/WAI/WCAG22/Understanding/label-in-name.html) and creates a confusing experience for assistive technology users.
 
+Whether an element is hidden is judged along the accessibility tree, and the `label` that wraps a control is looked for in the tree of the control. The content of a `template` element is not rendered where it is written, and where it is inserted is not known from the markup, so an `aria-hidden` or a `hidden` outside of the `template` element does not hide the elements in its content, and a `label` outside of it is not a name source of a control in it. The content of a declarative shadow root (`<template shadowrootmode>`) is rendered in its host, so what hides the host hides the elements in it.
+
 > [!WARNING]
 > Default severity is `warning`.
 

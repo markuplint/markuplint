@@ -37,7 +37,8 @@ export const checkingRequiredAccessibilityParentRole: ElementChecker<
 			(computed.errorType !== 'INVALID_REQUIRED_CONTEXT_ROLE' &&
 				// NO_OWNER with role: null means all ancestors were transparent
 				// and no valid context could be found. NO_OWNER with role kept
-				// (parentElement === null) is a root fragment — skip.
+				// (no parent in the accessibility tree) is a root fragment, or the top
+				// of the content of an ordinary `template` element — skip.
 				!(computed.errorType === 'NO_OWNER' && !computed.role))
 		) {
 			return;
