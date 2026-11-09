@@ -1,7 +1,13 @@
-import type { MLMLSpec } from '@markuplint/ml-spec';
+import type { ARIAVersion, MLMLSpec } from '@markuplint/ml-spec';
 
 import htmlSpec from '@markuplint/html-spec';
-import { ARIA_RECOMMENDED_VERSION, getComputedRole, schemaToSpec } from '@markuplint/ml-spec';
+import {
+	ARIA_RECOMMENDED_VERSION,
+	getComposedParentElement,
+	getComputedRole,
+	getTreeParentElement,
+	schemaToSpec,
+} from '@markuplint/ml-spec';
 import { describe, test, expect } from 'vitest';
 
 import { createTestDocument } from '../../test/index.js';
@@ -593,5 +599,108 @@ describe('deepQuerySelectorAll', () => {
 		const doc = createTestDocument('<div><template><p id="a"></p></template></div><p id="b"></p>');
 		const found = must(doc.querySelector('div')).deepQuerySelectorAll('p');
 		expect(found.map(el => el.id)).toStrictEqual(['a']);
+	});
+});
+
+describe('the parent elements that @markuplint/ml-spec derives', () => {
+	const code = [
+		'<div id="d">',
+		'<section id="s"><p id="p"></p></section>',
+		'<template id="t"><b id="top"><i id="deep"></i></b></template>',
+		'<template shadowrootmode="open"><u id="shadow-top"><s id="shadow-deep"></s></u></template>',
+		'<ul><template shadowrootmode="open"><li id="failed"></li></template></ul>',
+		'</div>',
+	].join('');
+
+	test('getTreeParentElement is the treeParentElement of every element', () => {
+		const doc = createTestDocument(code);
+		const elements = doc.deepQuerySelectorAll('*');
+		expect(elements.map(el => getTreeParentElement(el))).toStrictEqual(elements.map(el => el.treeParentElement));
+	});
+
+	test.each([
+		['top', null],
+		['deep', 'top'],
+		['shadow-top', null],
+		['shadow-deep', 'shadow-top'],
+		['failed', null],
+		['p', 's'],
+		['s', 'd'],
+	])('getTreeParentElement of #%s is #%s', (id, parentId) => {
+		const doc = createTestDocument(code);
+		const el = must(doc.deepQuerySelectorAll(`#${id}`)[0]);
+		expect(getTreeParentElement(el)?.id ?? null).toBe(parentId);
+	});
+
+	test.each([
+		['top', null],
+		['deep', 'top'],
+		['shadow-top', 'd'],
+		['shadow-deep', 'shadow-top'],
+		['failed', null],
+		['p', 's'],
+		['s', 'd'],
+	])('getComposedParentElement of #%s is #%s', (id, parentId) => {
+		const doc = createTestDocument(code);
+		const el = must(doc.deepQuerySelectorAll(`#${id}`)[0]);
+		expect(getComposedParentElement(el)?.id ?? null).toBe(parentId);
+	});
+});
+
+describe('the ancestors that the role computation reads', () => {
+	const computed = (code: string, selector: string, version: ARIAVersion = ARIA_RECOMMENDED_VERSION) => {
+		const doc = createTestDocument(code);
+		const { role, errorType } = getComputedRole(doc.specs, must(doc.deepQuerySelectorAll(selector)[0]), version);
+		return { role: role?.name, errorType };
+	};
+
+	test('a hidden ancestor outside of the content of a template does not make an interactive element hidden', () => {
+		expect(
+			computed('<div hidden><template><button role="none">x</button></template></div>', 'button'),
+		).toStrictEqual({
+			role: 'button',
+			errorType: 'INTERACTIVE_ELEMENT_MUST_NOT_BE_PRESENTATIONAL',
+		});
+	});
+
+	test('a hidden ancestor in the content of a template makes an interactive element hidden', () => {
+		expect(
+			computed('<template><div hidden><button role="none">x</button></div></template>', 'button'),
+		).toStrictEqual({
+			role: 'none',
+			errorType: 'NO_PERMITTED',
+		});
+	});
+
+	test.each<[ARIAVersion]>([['1.2'], ['1.3']])(
+		'an element at the top of the content of a template keeps its role without an owner (ARIA %s)',
+		version => {
+			expect(computed('<template><li>x</li></template>', 'li', version)).toStrictEqual({
+				role: 'listitem',
+				errorType: 'NO_OWNER',
+			});
+			expect(
+				computed(
+					'<div role="list"><template><div role="listitem">x</div></template></div>',
+					'[role=listitem]',
+					version,
+				),
+			).toStrictEqual({ role: 'listitem', errorType: 'NO_OWNER' });
+		},
+	);
+
+	test('the host of a declarative shadow root is the parent, and a presentational host is looked through', () => {
+		expect(
+			computed(
+				'<div role="list"><div role="none"><template shadowrootmode="open"><div role="listitem">x</div></template></div></div>',
+				'[role=listitem]',
+			),
+		).toStrictEqual({ role: 'listitem', errorType: undefined });
+		expect(
+			computed(
+				'<div><template shadowrootmode="open"><div role="listitem">x</div></template></div>',
+				'[role=listitem]',
+			),
+		).toStrictEqual({ role: undefined, errorType: 'NO_OWNER' });
 	});
 });

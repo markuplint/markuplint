@@ -18,7 +18,9 @@ import { decodeEntities } from '@markuplint/shared';
  * the tree: the queries of `MLParentNode`, `getRootNode()`, `treeParentElement`, the selector
  * engine and `contains()` stop at it. `parentNode` / `parentElement` do not: the content
  * model of a `template` element is validated against the elements that the syntax tree puts
- * in it, so they stay the syntactical ones.
+ * in it, so they stay the syntactical ones. The algorithms of `@markuplint/ml-spec` walk up
+ * with `getTreeParentElement` / `getComposedParentElement`, which read `getRootNode()`, so the
+ * boundary made here is the boundary they stop at.
  *
  * @see https://dom.spec.whatwg.org/#concept-tree
  * @see https://html.spec.whatwg.org/multipage/dom.html#the-id-attribute
