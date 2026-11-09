@@ -12,11 +12,12 @@ import { describe, test, expect } from 'vitest';
  * `config-error` instead of the expected output. pnpm reads that instruction
  * from `overrides` in `pnpm-workspace.yaml` and no longer from the `pnpm`
  * field of `package.json`, where it warns and moves on. CI runs the sandboxes
- * only in `.github/workflows/test.yml`, so a drift between the two files shows
- * up there first and in a shape that does not name its cause; this spec names
- * it: the override keys are exactly the local packages in `dependencies`,
- * every override value is the `$<name>` reference back to that `file:`
- * dependency, and no manifest carries a `pnpm` block that pnpm would ignore.
+ * only in `.github/workflows/nightly.yml`, so a drift between the two files
+ * shows up there first, a day late, and in a shape that does not name its
+ * cause; this spec names it, and a pull request runs it: the override keys are
+ * exactly the local packages in `dependencies`, every override value is the
+ * `$<name>` reference back to that `file:` dependency, and no manifest carries
+ * a `pnpm` block that pnpm would ignore.
  */
 
 const rootDir = path.resolve(import.meta.dirname, '../../../..');
