@@ -55,6 +55,7 @@ export * from './algorithm/html/get-selectors-by-content-model-category.js';
 export * from './algorithm/html/is-nothing-content-model.js';
 export * from './algorithm/html/is-palpable-elements.js';
 export * from './algorithm/html/is-void-element.js';
+export { getSelectDisplaySize } from './algorithm/html/select-display-size.js';
 
 // Shared utilities
 export * from './utils/get-attr-specs.js';

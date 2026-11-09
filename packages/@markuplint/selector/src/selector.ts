@@ -2,14 +2,15 @@ import type { SelectorElement, SelectorMatchedResult, SelectorNode, SelectorResu
 import type { ReadonlyDeep, Writable } from 'type-fest';
 
 import { resolveNamespace } from '@markuplint/ml-spec';
-import { asciiLowerCase, vuePropKey } from '@markuplint/shared';
+import { vuePropKey } from '@markuplint/shared';
 import debug from 'debug';
 import parser from 'postcss-selector-parser';
 
 import { compareSpecificity } from './compare-specificity.js';
 import { log as coreLog } from './debug.js';
+import { foldAttrName } from './fold-attr-name.js';
 import { InvalidSelectorError } from './invalid-selector-error.js';
-import { isElement, isNonDocumentTypeChildNode, isPureHTMLElement } from './is.js';
+import { isElement, isNonDocumentTypeChildNode } from './is.js';
 import { typeNameMatches } from './type-name.js';
 
 const selLog = coreLog.extend('selector');
@@ -630,17 +631,15 @@ function attrMatch(
 	// with each name says so on the attribute (`SelectorAttr#nameCaseInsensitive`, and
 	// `domName` for the name an SVG attribute has); otherwise the `isPureHTMLElement`
 	// guard mirrors the same convention used for tag-name matching in
-	// SelectorTarget#matchWithoutCombineChecking.
-	const isHTML = isPureHTMLElement(el);
+	// SelectorTarget#matchWithoutCombineChecking (see `foldAttrName`).
 	return [...el.attributes].some(attrOfEl => {
 		// An attribute that the framework does not output is not an attribute of the DOM
 		if (attrOfEl.absent) {
 			return false;
 		}
 		const elAttrName = attrOfEl.domName ?? attrOfEl.localName;
-		const isCaseInsensitive = attrOfEl.nameCaseInsensitive ?? isHTML;
 		const selectorName = attrOfEl.nameIsCamelized ? vuePropKey(attr.attribute) : attr.attribute;
-		const fold = (name: string) => (isCaseInsensitive ? asciiLowerCase(name) : name);
+		const fold = (name: string) => foldAttrName(attrOfEl, el, name);
 		// A prefixed attribute (`xlink:href`) is also named by its local name, which is what
 		// the namespace of a selector (`[xlink|href]`, `[*|href]`) qualifies
 		const named =

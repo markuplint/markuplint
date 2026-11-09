@@ -163,6 +163,7 @@ Markuplint provides extended pseudo-class-like selectors for HTML-specific match
 - [`:aria`](./selectors#ex-selector-aria)
 - [`:role`](./selectors#ex-selector-role)
 - [`:model`](./selectors#ex-selector-model)
+- [`:display-size`](./selectors#ex-selector-display-size)
 
 | Syntax                | Description                                                                                                                                 |
 | --------------------- | ------------------------------------------------------------------------------------------------------------------------------------------- |
@@ -170,6 +171,7 @@ Markuplint provides extended pseudo-class-like selectors for HTML-specific match
 | `:aria(has name)`     | [ARIA pseudo-class](https://github.com/markuplint/markuplint/tree/main/packages/%40markuplint/selector#aria-pseudo-class)                   |
 | `:role(heading)`      | [ARIA Role pseudo-class](https://github.com/markuplint/markuplint/tree/main/packages/%40markuplint/selector#aria-pseudo-class)              |
 | `:model(interactive)` | [Content Model pseudo-class](https://github.com/markuplint/markuplint/tree/main/packages/%40markuplint/selector#content-model-pseudo-class) |
+| `:display-size(> 1)`  | [Display Size pseudo-class](https://github.com/markuplint/markuplint/tree/main/packages/%40markuplint/selector#display-size-pseudo-class)   |
 
 :::info
 
@@ -238,6 +240,20 @@ For example, `:model(interactive)` matches `<a>`(with `href` attr), `<button>`, 
 A category that lists custom elements in the HTML Standard, such as `flow`, `phrasing` and `palpable`, also matches custom elements (`<x-foo>`) and components (`<Foo />`). An element that a component pretends to be is judged by the name it pretends to be: it matches only when that name contains a hyphen.
 
 An element that the HTML Standard allows only as the first child of its parent matches only there: `:model(flow)` matches `<style>` only as the first child. The first child is counted as the HTML Standard counts it, so non-whitespace text before the element counts (comments and inter-element whitespace do not): the `<style>` in `<div>text<style>` does not match. A template expression before the element (`{{ msg }}`) does not count, as what it outputs is known only at run time; text and elements inside a conditional block count, as the content of the block is taken as present. `:first-child` written in a selector keeps the Selectors definition, which counts elements only.
+
+### `:display-size` {#ex-selector-display-size}
+
+**Display Size pseudo-class**
+
+```
+:display-size(operator number)
+```
+
+The operator is one of `=`, `>`, `>=`, `<` and `<=`, and the number is a non-negative integer. For example, `select:is([multiple], :display-size(> 1))` matches a `<select>` that has the `multiple` attribute or whose display size is greater than 1.
+
+It matches only a `<select>` element of the HTML namespace, and compares its [display size](https://html.spec.whatwg.org/multipage/form-elements.html#concept-select-size). The display size is the number that the `size` attribute is parsed as by the rules for parsing non-negative integers, or, when the attribute is absent or cannot be parsed, 4 if the element has the `multiple` attribute and 1 if it has not. Leading whitespace, a `+` sign, leading zeros and trailing characters are allowed, so `size="01"` is 1, `size="2abc"` is 2, and `size="0"` is 0. An attribute selector cannot tell these apart, as `[size]:not([size="1"])` takes `size="01"` for something other than 1.
+
+The `size` is read as the text it is written in, so a template expression (`:size="n"`) is not a number: its display size is the one for an attribute that cannot be parsed.
 
 ## Regular expression selector
 
