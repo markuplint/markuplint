@@ -30,6 +30,12 @@ describe('Extended Selector', () => {
 		expect(c(':not(:model(interactive))', '<a href="path/to"></a>')).toBeFalsy();
 	});
 
+	test('extended pseudo-class names are ASCII case-insensitive', () => {
+		expect(c(':MODEL(interactive)', '<a href="path/to"></a>')).toBeTruthy();
+		expect(c(':NOT(:MODEL(interactive))', '<a href="path/to"></a>')).toBeFalsy();
+		expect(c(':MODEL(flow)', '<a></a>')).toBeTruthy();
+	});
+
 	test.each([
 		['<div>\n<!-- c --><style></style></div>', 'style', true],
 		['<div><p></p><style></style></div>', 'style', false],
