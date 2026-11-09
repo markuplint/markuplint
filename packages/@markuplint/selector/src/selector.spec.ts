@@ -218,6 +218,25 @@ describe('selector matching', () => {
 		expect(createSelector(':scope').match(el)).toBeTruthy();
 	});
 
+	test(':scope matches only the scoping root, not a top-level element without a parent', () => {
+		const dom = new JSDOM();
+		const { document } = dom.window;
+		const top = document.createElement('div');
+		expect(top.parentNode).toBeNull();
+		expect(createSelector(':scope').match(top, document)).toBe(false);
+		expect(createSelector(':scope').match(top, top)).toBeTruthy();
+	});
+
+	test('Child combinator with :scope on an element in a full document', () => {
+		const dom = new JSDOM('<!DOCTYPE html><html><body><div><p id="a"></p></div><p id="b"></p></body></html>');
+		const { document } = dom.window;
+		const body = document.body;
+		const a = document.getElementById('a');
+		const b = document.getElementById('b');
+		expect(createSelector(':scope > p').match(a, body)).toBe(false);
+		expect(createSelector(':scope > p').match(b, body)).toBeTruthy();
+	});
+
 	test(':root', () => {
 		const el = createTestElement('<html><div id="hoge" class="foo bar"></div></html>');
 		expect(createSelector(':root').match(el)).toBeTruthy();
