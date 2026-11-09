@@ -5,8 +5,10 @@ name: Test
 # in three shards. A push to `dev` only builds, to fill the caches that the pull requests restore.
 #
 # Everything else (macOS, Windows, Node.js 24, isolated-env, Bun, Deno) is in `nightly.yml`, which
-# runs once a day on `dev` and opens an Issue when it fails. Until the merge queue is enabled for
-# `dev` and `ci-ok` is a required check, nothing runs the whole suite before a change reaches `dev`.
+# runs once a day on `dev` and opens an Issue when it fails. The ruleset "Merge queue" of the
+# repository (Settings, Rules) sends every merge into `dev` through the queue and requires `ci-ok`,
+# so the whole suite on Linux / Node.js 26 is what a change has to pass before it reaches `dev`. A
+# repository admin can bypass the ruleset from the page of the pull request.
 #
 # There is no `paths:` filter: a workflow that a filter skips leaves its checks pending, which
 # blocks a required check, and `merge_group` does not take one. What a change touches is decided
@@ -274,7 +276,8 @@ jobs:
                   path: .nx/cache
                   key: nx-ubuntu-latest-node${{ env.NODE_BUILD_VERSION }}-${{ hashFiles('yarn.lock') }}-${{ github.sha }}
 
-    # The one check to require on `dev`. It fails when a job above failed or was cancelled and
+    # The check that the ruleset requires on `dev`, on a pull request and in the queue. It fails when
+    # a job above failed or was cancelled and
     # passes when one was skipped on purpose (`test` on a push, `build` elsewhere). `always()`
     # makes it run after a failure, which would otherwise skip it and leave the required check
     # pending.
