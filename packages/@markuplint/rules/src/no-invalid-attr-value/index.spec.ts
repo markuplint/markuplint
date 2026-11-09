@@ -1236,11 +1236,7 @@ test('[no-invalid-attr-value-issue-3734-010] x-ua-compatible: ASCII case-insensi
 
 test('[no-invalid-attr-value-issue-3734-011] x-ua-compatible: "IE=10" is invalid', async () => {
 	// Fixture: html/elements/meta/x-ua-compatible-not-ie-edge-novalid.html.
-	// `raw` is returned lower-cased because the enum matcher normalises the
-	// input for its case-insensitive comparison and reports the normalised
-	// token; this is the same behaviour observed in the sibling `-014` and
-	// `-015` case-insensitive tests. The full-object `toStrictEqual` pin
-	// documents that behaviour and catches any future normalisation drift.
+	// The comparison is ASCII case-insensitive. The reported raw is the authored text.
 	const { violations } = await mlRuleTest(rule, '<meta http-equiv="x-ua-compatible" content="IE=10">');
 	expect(violations).toStrictEqual([
 		{
@@ -1248,7 +1244,7 @@ test('[no-invalid-attr-value-issue-3734-011] x-ua-compatible: "IE=10" is invalid
 			message: 'The "content" attribute expects IE=edge',
 			line: 1,
 			col: 45,
-			raw: 'ie=10',
+			raw: 'IE=10',
 		},
 	]);
 });
@@ -1265,7 +1261,7 @@ test('[no-invalid-attr-value-issue-3734-012] x-ua-compatible: http-equiv attribu
 			message: 'The "content" attribute expects IE=edge',
 			line: 1,
 			col: 45,
-			raw: 'ie=10',
+			raw: 'IE=10',
 		},
 	]);
 });

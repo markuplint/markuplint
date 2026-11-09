@@ -4,7 +4,7 @@ import type { Attr, Element, RuleConfigValue } from '@markuplint/ml-core';
 import type { Attribute } from '@markuplint/ml-spec';
 
 import { isConditionalAttributeTypeArray } from '@markuplint/ml-spec';
-import { getCandidate } from '@markuplint/types';
+import { check, getCandidate } from '@markuplint/types';
 
 import { attrMatches, conditionDependsOnDynamicAttr, findAttrSpec, namespaceKeyOf } from './helpers.js';
 
@@ -77,14 +77,11 @@ export function resolveAttrEligibility<T extends RuleConfigValue, O extends Plai
 
 	// Resolve ConditionalAttributeType[] to a concrete type based on element matching (#3598).
 	if (isConditionalAttributeTypeArray(spec.type)) {
-		const matched = spec.type.find(entry => {
+		const matched = spec.type.filter(entry => {
 			const cond = typeof entry.condition === 'string' ? entry.condition : entry.condition.join(',');
 			return node.matches(cond);
 		});
-		// Fallback to 'Any' when no condition matches: input types without an explicit
-		// entry (text, search, tel, password, hidden, checkbox, radio, file, submit,
-		// image, reset, button) have no value constraints per the HTML spec.
-		spec = { ...spec, type: matched ? matched.type : 'Any' };
+		spec = { ...spec, type: combineMatchedConditionalTypes(matched) };
 	}
 
 	if (
@@ -97,6 +94,100 @@ export function resolveAttrEligibility<T extends RuleConfigValue, O extends Plai
 	}
 
 	return { status: 'ok', spec };
+}
+
+/**
+ * Enum entries that match together are simultaneous constraints: `link[as]`
+ * has to be a preload destination and a module preload destination when `rel`
+ * contains both keywords. The message names that intersection and does not
+ * offer a keyword another entry forbids. Token order follows the entries:
+ * a spelling is kept from the earliest entry whose own token satisfies every
+ * entry, which is the first entry's order when that spelling is valid there.
+ *
+ * A non-enum overlap stays on the first match. Those entries are ordered
+ * alternatives: an empty `input[value]` other than `type=range` is
+ * unconstrained even though a later type-specific entry also matches, and
+ * `email` with `multiple` matches both the address-list type and the
+ * single-address type, of which the list is the requirement.
+ */
+function combineMatchedConditionalTypes(matched: readonly { readonly type: Attribute['type'] }[]): Attribute['type'] {
+	const first = matched[0];
+	// No condition matched. Input types without an explicit entry (text, search,
+	// tel, password, hidden, checkbox, radio, file, submit, image, reset, button)
+	// have no value constraints per the HTML spec.
+	if (!first) {
+		return 'Any';
+	}
+	const enums: PlainEnum[] = [];
+	for (const entry of matched) {
+		if (!isPlainEnum(entry.type)) {
+			return first.type;
+		}
+		enums.push(entry.type);
+	}
+	if (enums.length === 1) {
+		return first.type;
+	}
+	return intersectEnums(enums);
+}
+
+type PlainEnum = {
+	readonly enum: readonly [string, ...string[]];
+	readonly caseInsensitive?: boolean;
+	readonly disallowToSurroundBySpaces?: boolean;
+	readonly invalidValueDefault?: string;
+};
+
+function isPlainEnum(type: Attribute['type']): type is PlainEnum {
+	if (typeof type === 'string' || Array.isArray(type)) {
+		return false;
+	}
+	return 'enum' in type && Array.isArray(type.enum) && type.enum.length > 0;
+}
+
+/**
+ * `invalidValueDefault` is not carried over: a fallback of one set may be a
+ * value another set forbids. A case-sensitive spelling is kept when an earlier
+ * entry only has another case. Case and surrounding spaces follow the stricter
+ * side, because the value has to satisfy every entry.
+ *
+ * An empty intersection cannot be an enum (`enum` has at least one token).
+ * A pattern that matches nothing keeps every value invalid. That pattern is
+ * not a keyword list an author is meant to satisfy.
+ *
+ * @param enums - The enum entries that matched, in spec order. At least two
+ * @returns The intersection, or a pattern that matches nothing when the sets are disjoint
+ */
+export function intersectEnums(enums: readonly PlainEnum[]): Attribute['type'] {
+	const caseInsensitive = enums.every(item => item.caseInsensitive !== false);
+	const tokens: string[] = [];
+	for (const item of enums) {
+		for (const token of item.enum) {
+			if (!enums.every(other => check(token, other).matched)) {
+				continue;
+			}
+			if (tokens.some(existing => sameToken(existing, token, caseInsensitive))) {
+				continue;
+			}
+			tokens.push(token);
+		}
+	}
+	const [head, ...rest] = tokens;
+	if (head === undefined) {
+		return { pattern: '/(?!)/' };
+	}
+	const result: PlainEnum = {
+		enum: [head, ...rest],
+		...(caseInsensitive ? {} : { caseInsensitive: false }),
+		...(enums.every(item => item.disallowToSurroundBySpaces === false)
+			? { disallowToSurroundBySpaces: false }
+			: {}),
+	};
+	return result;
+}
+
+function sameToken(a: string, b: string, caseInsensitive: boolean): boolean {
+	return caseInsensitive ? a.toLowerCase() === b.toLowerCase() : a === b;
 }
 
 /**
