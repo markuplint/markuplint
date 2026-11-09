@@ -1,0 +1,798 @@
+name: Nightly
+
+# The tests that a pull request does not run, on `dev`, once a day: the whole suite on Linux with
+# Node.js 24 and 26 (a pull request runs the specs that its change can affect, on Node.js 26 only),
+# the path-sensitive specs on macOS and Windows (`vitest.cross-os.config.ts`), the isolated-env
+# sandboxes with three package managers, and the whole suite on Bun and Deno. When it fails it
+# opens an Issue (or comments on the open one), because nobody reads the run of a schedule; the
+# next run that passes closes the Issue. The Issue is for a person to look at: Bun, Deno and pnpm
+# are `latest` here, so a failure can come from a release of theirs and not from a commit; see
+# `test/isolated-env/CLAUDE.md` for how to tell.
+#
+# A day on which `dev` has not moved since a run that passed is skipped: `prepare` finds that
+# commit in the history of this workflow's own runs, so no state is kept elsewhere. A skipped run
+# says so in its summary and ends green; a commit that failed is tested again the next night, and
+# `force` runs the same commit again at any time. So a green run on the head of `dev` always means
+# that the head passed.
+#
+# A change to this file is not exercised by the pull request (`scripts/affected-tests` takes
+# `.github/` as unread). Once this file is on `dev`, start the workflow on the branch with
+# `workflow_dispatch` instead (a workflow that is not on `dev` yet cannot be started): a run that
+# is not on `dev` runs every job and reports nothing, as an Issue about a branch would be wrong.
+#
+# The cache keys are those of `test.yml` (`website.yml` and `update-html-spec.yml` restore the
+# dependencies' key as well), so a change to one is a reason to look at the others.
+on:
+    schedule:
+        # 03:00 JST. The schedule runs on the default branch, which is `dev`.
+        - cron: '0 18 * * *'
+    workflow_dispatch:
+        inputs:
+            force:
+                description: Run even if dev has not moved since the last run
+                type: boolean
+                default: false
+
+permissions:
+    contents: read
+
+# One run at a time, and a run that is going is never cancelled by a newer one. GitHub keeps one
+# pending run per group, so a newer pending run replaces an older one; both are the same commit
+# unless `dev` moved, and the newer one covers it.
+concurrency:
+    group: ${{ github.workflow }}
+    cancel-in-progress: false
+
+env:
+    NODE_BUILD_VERSION: 26
+    NX_DISABLE_DB: true
+
+jobs:
+    prepare:
+        timeout-minutes: 5
+        runs-on: ubuntu-latest
+        permissions:
+            actions: read
+        outputs:
+            run: ${{ steps.decide.outputs.run }}
+            previous: ${{ steps.decide.outputs.previous }}
+        steps:
+            - name: Decide whether dev has moved
+              id: decide
+              env:
+                  GH_TOKEN: ${{ github.token }}
+                  GH_REPO: ${{ github.repository }}
+                  REF: ${{ github.ref }}
+                  SHA: ${{ github.sha }}
+                  FORCE: ${{ inputs.force }}
+              run: |
+                  set -eo pipefail
+
+                  # A run that is not on `dev` reports nothing (see `report`), and a red run of a branch is
+                  # easy to take for a night that was missed, so the summary says what it is.
+                  if [ "$REF" != refs/heads/dev ]; then
+                      echo "This run is on $REF, not on dev: it tests every job and reports nothing to the Issue." >> "$GITHUB_STEP_SUMMARY"
+                  fi
+
+                  # `github.sha` is the commit this run tests: the head of `dev` when the schedule or a
+                  # dispatch on `dev` starts it, a commit of a branch when a dispatch on one does (and
+                  # `report` is skipped for that, so a branch is tested and not reported as `dev`).
+                  #
+                  # The runs of this workflow on dev that finished with a result, newest first. A run that
+                  # is still going (this one) has none; a run that was cancelled tells nothing. 100 is the
+                  # depth that the commit of the last pass is looked for in: past it, the Issue lists no
+                  # commits.
+                  lookup=ok
+                  runs='[]'
+                  if ! runs=$(gh run list --workflow nightly.yml --branch dev --limit 100 --json headSha,conclusion,url \
+                      --jq 'map(select(.conclusion == "success" or .conclusion == "failure"))'); then
+                      lookup=failed
+                  fi
+
+                  # The newest of them says whether this commit has passed. A run that was skipped ended
+                  # green on a commit that an earlier run had passed, so it says the same. A commit that
+                  # failed is tested again the next night: a failure from the network or a runner
+                  # recovers by itself, and a failure that stays keeps the Issue current.
+                  latest_sha=$(printf '%s' "$runs" | jq -r '.[0].headSha // empty')
+                  latest_conclusion=$(printf '%s' "$runs" | jq -r '.[0].conclusion // empty')
+                  latest_url=$(printf '%s' "$runs" | jq -r '.[0].url // empty')
+
+                  # The commit of the newest run that passed: what the Issue counts the commits from.
+                  previous=$(printf '%s' "$runs" | jq -r 'map(select(.conclusion == "success")) | .[0].headSha // empty')
+
+                  # A lookup that fails does not stop the tests: a run that ended before it tested anything
+                  # would count as tested, and nothing would run until `dev` moved.
+                  if [ "$FORCE" = true ] || [ "$lookup" = failed ] || [ "$latest_sha" != "$SHA" ] || [ "$latest_conclusion" != success ]; then
+                      run=true
+                  else
+                      run=false
+                      echo "Skipped: dev is still at $SHA, which the run $latest_url passed." >> "$GITHUB_STEP_SUMMARY"
+                  fi
+
+                  echo "run=$run" >> "$GITHUB_OUTPUT"
+                  echo "previous=$previous" >> "$GITHUB_OUTPUT"
+
+    build:
+        needs: prepare
+        if: ${{ needs.prepare.outputs.run == 'true' }}
+        timeout-minutes: 30
+        runs-on: ubuntu-latest
+        steps:
+            - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
+              with:
+                  # SEE: https://github.com/lerna/lerna/issues/2542
+                  fetch-depth: '0'
+
+            - name: Use Node.js ${{ env.NODE_BUILD_VERSION }}
+              uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7
+              with:
+                  node-version: ${{ env.NODE_BUILD_VERSION }}
+
+            - name: Enable Corepack and setup Yarn v4
+              run: |
+                  corepack enable
+                  yarn --version
+
+            - name: Get yarn cache directory path
+              id: yarn-cache-dir-path
+              run: echo "dir=$(yarn config get cacheFolder)" >> "$GITHUB_OUTPUT"
+
+            - name: Cache Restore devDependencies
+              id: cache-restore-dev-depends
+              uses: actions/cache/restore@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6
+              with:
+                  path: |
+                      **/node_modules
+                      ${{ steps.yarn-cache-dir-path.outputs.dir }}
+                  key: dev-depends-modules-ubuntu-latest-node${{ env.NODE_BUILD_VERSION }}-${{ hashFiles('yarn.lock', '.yarnrc.yml') }}
+
+            # Only looked up here: a hit means the build of this commit is saved already (a run of it
+            # again, with `force`), and this job extracts nothing. The paths are anchored, as the
+            # packages are `packages/<name>` and `packages/@<scope>/<name>`: `packages/**/lib` also
+            # walked `node_modules` and the fixtures' `lib` directories. The jobs below restore the
+            # same paths, and a path that differs from this list is a build that is not restored.
+            - name: Cache Restore Production
+              id: cache-restore-prod
+              uses: actions/cache/restore@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6
+              with:
+                  lookup-only: true
+                  enableCrossOsArchive: true
+                  path: |
+                      packages/*/lib
+                      packages/@*/*/lib
+                      packages/*/cjs
+                      packages/@*/*/cjs
+                      packages/*/esm
+                      packages/@*/*/esm
+                      packages/@markuplint/config-presets/preset.*.json
+                      packages/@markuplint/html-spec/index.js
+                      packages/@markuplint/html-spec/index.json
+                  key: prod-node${{ env.NODE_BUILD_VERSION }}-${{ github.sha }}
+
+            - name: Install dependencies
+              run: yarn install --immutable
+
+            - name: Cache Save devDependencies
+              if: steps.cache-restore-dev-depends.outputs.cache-hit != 'true'
+              uses: actions/cache/save@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6
+              with:
+                  path: |
+                      **/node_modules
+                      ${{ steps.yarn-cache-dir-path.outputs.dir }}
+                  key: dev-depends-modules-ubuntu-latest-node${{ env.NODE_BUILD_VERSION }}-${{ hashFiles('yarn.lock', '.yarnrc.yml') }}
+
+            # The build is done once, and the jobs below restore it. A run of the same commit again
+            # (`force`) finds it in the cache and builds nothing. See `test.yml` for the Nx cache.
+            - name: Cache Restore Nx
+              id: cache-restore-nx
+              if: steps.cache-restore-prod.outputs.cache-hit != 'true'
+              uses: actions/cache/restore@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6
+              with:
+                  path: .nx/cache
+                  key: nx-ubuntu-latest-node${{ env.NODE_BUILD_VERSION }}-${{ hashFiles('yarn.lock') }}-${{ github.sha }}
+                  restore-keys: |
+                      nx-ubuntu-latest-node${{ env.NODE_BUILD_VERSION }}-${{ hashFiles('yarn.lock') }}-
+
+            - name: Reset the Nx cache when it has grown
+              if: steps.cache-restore-prod.outputs.cache-hit != 'true'
+              run: |
+                  if [ -d .nx/cache ]; then
+                      size=$(du -sm .nx/cache | cut -f1)
+                      echo "Nx cache: ${size} MB"
+                      if [ "$size" -gt 1000 ]; then
+                          rm -rf .nx/cache
+                      fi
+                  fi
+
+            - name: Build
+              if: steps.cache-restore-prod.outputs.cache-hit != 'true'
+              run: yarn run build
+
+            # Not saved on an exact hit: the push to `dev` of `test.yml` saves the entry of this commit.
+            - name: Cache Save Nx
+              if: steps.cache-restore-prod.outputs.cache-hit != 'true' && steps.cache-restore-nx.outputs.cache-hit != 'true'
+              uses: actions/cache/save@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6
+              with:
+                  path: .nx/cache
+                  key: nx-ubuntu-latest-node${{ env.NODE_BUILD_VERSION }}-${{ hashFiles('yarn.lock') }}-${{ github.sha }}
+
+            - name: Cache Save Production
+              if: steps.cache-restore-prod.outputs.cache-hit != 'true'
+              uses: actions/cache/save@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6
+              with:
+                  enableCrossOsArchive: true
+                  path: |
+                      packages/*/lib
+                      packages/@*/*/lib
+                      packages/*/cjs
+                      packages/@*/*/cjs
+                      packages/*/esm
+                      packages/@*/*/esm
+                      packages/@markuplint/config-presets/preset.*.json
+                      packages/@markuplint/html-spec/index.js
+                      packages/@markuplint/html-spec/index.json
+                  key: prod-node${{ env.NODE_BUILD_VERSION }}-${{ github.sha }}
+
+    # A job that hangs holds the `nightly` group, and `report` waits for it: every job below has a
+    # timeout, and a timeout is a result that `report` reads as a failure. 24 is `engines.node`.
+    test:
+        needs: [prepare, build]
+        if: ${{ needs.prepare.outputs.run == 'true' }}
+        timeout-minutes: 30
+        runs-on: ubuntu-latest
+        strategy:
+            fail-fast: false
+            matrix:
+                node: [24, 26]
+        steps:
+            - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
+              with:
+                  # SEE: https://github.com/lerna/lerna/issues/2542
+                  fetch-depth: '0'
+
+            - name: Use Node.js ${{ matrix.node }}
+              uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7
+              with:
+                  node-version: ${{ matrix.node }}
+
+            - name: Enable Corepack and setup Yarn v4
+              run: |
+                  corepack enable
+                  yarn --version
+
+            - name: Get yarn cache directory path
+              id: yarn-cache-dir-path
+              run: echo "dir=$(yarn config get cacheFolder)" >> "$GITHUB_OUTPUT"
+
+            # Nothing else saves the entry of Node.js 24, so this job does, on a miss.
+            - name: Cache Restore devDependencies
+              id: cache-restore-dev-depends
+              uses: actions/cache/restore@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6
+              with:
+                  path: |
+                      **/node_modules
+                      ${{ steps.yarn-cache-dir-path.outputs.dir }}
+                  key: dev-depends-modules-ubuntu-latest-node${{ matrix.node }}-${{ hashFiles('yarn.lock', '.yarnrc.yml') }}
+
+            - name: Cache Restore Production
+              id: cache-restore-prod
+              uses: actions/cache/restore@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6
+              with:
+                  enableCrossOsArchive: true
+                  path: |
+                      packages/*/lib
+                      packages/@*/*/lib
+                      packages/*/cjs
+                      packages/@*/*/cjs
+                      packages/*/esm
+                      packages/@*/*/esm
+                      packages/@markuplint/config-presets/preset.*.json
+                      packages/@markuplint/html-spec/index.js
+                      packages/@markuplint/html-spec/index.json
+                  key: prod-node${{ env.NODE_BUILD_VERSION }}-${{ github.sha }}
+
+            # Without the build, the specs fail by the hundred on a missing module, which reads as a
+            # regression and opens an Issue about the wrong thing.
+            - name: Stop when the build was not restored
+              if: steps.cache-restore-prod.outputs.cache-hit != 'true'
+              shell: bash
+              run: |
+                  echo '::error::The build of this commit is not in the cache. Start the Nightly workflow again with force on: running only the failed jobs again does not build.'
+                  exit 1
+
+            - name: Install dependencies
+              run: yarn install --immutable
+
+            - name: Cache Save devDependencies
+              if: steps.cache-restore-dev-depends.outputs.cache-hit != 'true'
+              uses: actions/cache/save@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6
+              with:
+                  path: |
+                      **/node_modules
+                      ${{ steps.yarn-cache-dir-path.outputs.dir }}
+                  key: dev-depends-modules-ubuntu-latest-node${{ matrix.node }}-${{ hashFiles('yarn.lock', '.yarnrc.yml') }}
+
+            # The result does not depend on the Node.js version, so one run is enough. It needs the
+            # built `lib/*.d.ts` the specs import. The matrix has to hold `NODE_BUILD_VERSION`, or no
+            # job passes the condition and the types are never checked.
+            - name: Type-check spec files
+              if: matrix.node == env.NODE_BUILD_VERSION
+              run: yarn test:types
+
+            - name: Test
+              uses: nick-fields/retry@ad984534de44a9489a53aefd81eb77f87c70dc60 # v4
+              with:
+                  timeout_minutes: 20
+                  max_attempts: 3
+                  shell: bash
+                  command: npx vitest run
+
+    test-cross-os:
+        needs: [prepare, build]
+        if: ${{ needs.prepare.outputs.run == 'true' }}
+        timeout-minutes: 30
+        runs-on: ${{ matrix.os }}
+        strategy:
+            fail-fast: false
+            matrix:
+                os:
+                    - macos-latest
+                    - windows-latest
+                node: [24]
+        steps:
+            - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
+              with:
+                  # SEE: https://github.com/lerna/lerna/issues/2542
+                  fetch-depth: '0'
+
+            - name: Use Node.js ${{ matrix.node }}
+              uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7
+              with:
+                  node-version: ${{ matrix.node }}
+
+            - name: Enable Corepack and setup Yarn v4
+              run: |
+                  corepack enable
+                  yarn --version
+
+            - name: Get yarn cache directory path
+              id: yarn-cache-dir-path
+              run: echo "dir=$(yarn config get cacheFolder)" >> "$GITHUB_OUTPUT"
+
+            - name: Cache Restore devDependencies
+              id: cache-restore-dev-depends
+              uses: actions/cache/restore@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6
+              with:
+                  path: |
+                      **/node_modules
+                      ${{ steps.yarn-cache-dir-path.outputs.dir }}
+                  key: dev-depends-modules-${{ matrix.os }}-node${{ matrix.node }}-${{ hashFiles('yarn.lock', '.yarnrc.yml') }}
+
+            - name: Cache Restore Production
+              id: cache-restore-prod
+              uses: actions/cache/restore@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6
+              with:
+                  enableCrossOsArchive: true
+                  path: |
+                      packages/*/lib
+                      packages/@*/*/lib
+                      packages/*/cjs
+                      packages/@*/*/cjs
+                      packages/*/esm
+                      packages/@*/*/esm
+                      packages/@markuplint/config-presets/preset.*.json
+                      packages/@markuplint/html-spec/index.js
+                      packages/@markuplint/html-spec/index.json
+                  key: prod-node${{ env.NODE_BUILD_VERSION }}-${{ github.sha }}
+
+            # Without the build, the specs fail by the hundred on a missing module, which reads as a
+            # regression and opens an Issue about the wrong thing.
+            - name: Stop when the build was not restored
+              if: steps.cache-restore-prod.outputs.cache-hit != 'true'
+              shell: bash
+              run: |
+                  echo '::error::The build of this commit is not in the cache. Start the Nightly workflow again with force on: running only the failed jobs again does not build.'
+                  exit 1
+
+            - name: Install dependencies
+              run: yarn install --immutable
+
+            - name: Cache Save devDependencies
+              if: steps.cache-restore-dev-depends.outputs.cache-hit != 'true'
+              uses: actions/cache/save@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6
+              with:
+                  path: |
+                      **/node_modules
+                      ${{ steps.yarn-cache-dir-path.outputs.dir }}
+                  key: dev-depends-modules-${{ matrix.os }}-node${{ matrix.node }}-${{ hashFiles('yarn.lock', '.yarnrc.yml') }}
+
+            - name: Test (cross-OS path-sensitive packages)
+              uses: nick-fields/retry@ad984534de44a9489a53aefd81eb77f87c70dc60 # v4
+              with:
+                  timeout_minutes: 10
+                  max_attempts: 2
+                  shell: bash
+                  command: npx vitest run --config vitest.cross-os.config.ts
+
+    isolated-env:
+        needs: [prepare, build]
+        if: ${{ needs.prepare.outputs.run == 'true' }}
+        timeout-minutes: 20
+        runs-on: ubuntu-latest
+        strategy:
+            fail-fast: false
+            matrix:
+                pm: [npm, yarn, pnpm]
+                env: [esm, ts, ts-config-ts]
+        steps:
+            - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
+              with:
+                  # SEE: https://github.com/lerna/lerna/issues/2542
+                  fetch-depth: '0'
+
+            - name: Use Node.js ${{ env.NODE_BUILD_VERSION }}
+              uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7
+              with:
+                  node-version: ${{ env.NODE_BUILD_VERSION }}
+
+            - name: Enable Corepack and setup Yarn v4
+              run: |
+                  corepack enable
+                  yarn --version
+
+            - name: Get yarn cache directory path
+              id: yarn-cache-dir-path
+              run: echo "dir=$(yarn config get cacheFolder)" >> "$GITHUB_OUTPUT"
+
+            - name: Cache Restore devDependencies
+              uses: actions/cache/restore@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6
+              with:
+                  path: |
+                      **/node_modules
+                      ${{ steps.yarn-cache-dir-path.outputs.dir }}
+                  key: dev-depends-modules-ubuntu-latest-node${{ env.NODE_BUILD_VERSION }}-${{ hashFiles('yarn.lock', '.yarnrc.yml') }}
+
+            - name: Cache Restore Production
+              id: cache-restore-prod
+              uses: actions/cache/restore@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6
+              with:
+                  enableCrossOsArchive: true
+                  path: |
+                      packages/*/lib
+                      packages/@*/*/lib
+                      packages/*/cjs
+                      packages/@*/*/cjs
+                      packages/*/esm
+                      packages/@*/*/esm
+                      packages/@markuplint/config-presets/preset.*.json
+                      packages/@markuplint/html-spec/index.js
+                      packages/@markuplint/html-spec/index.json
+                  key: prod-node${{ env.NODE_BUILD_VERSION }}-${{ github.sha }}
+
+            # Without the build, the specs fail by the hundred on a missing module, which reads as a
+            # regression and opens an Issue about the wrong thing.
+            - name: Stop when the build was not restored
+              if: steps.cache-restore-prod.outputs.cache-hit != 'true'
+              shell: bash
+              run: |
+                  echo '::error::The build of this commit is not in the cache. Start the Nightly workflow again with force on: running only the failed jobs again does not build.'
+                  exit 1
+
+            - name: Install dependencies
+              run: yarn install --immutable
+
+            - name: Create sandbox directory
+              run: |
+                  mkdir -p ${{ github.workspace }}/../sandbox
+                  cp -r ${{ github.workspace }}/test ${{ github.workspace }}/../sandbox
+                  find ${{ github.workspace }}/../sandbox/test -maxdepth 1 2>/dev/null || true
+
+            # Capture the root packageManager BEFORE the deletion step below,
+            # so the sandbox Setup step can reuse the same Yarn version
+            # without drifting from the repository's pin.
+            - name: Capture root packageManager
+              if: matrix.pm == 'yarn'
+              id: capture-package-manager
+              run: echo "value=$(jq -er '.packageManager' package.json)" >> "$GITHUB_OUTPUT"
+
+            - name: Delete package manager settings
+              run: jq 'del(.packageManager)' package.json > tmp.json && mv tmp.json package.json
+
+            - name: Install pnpm
+              if: matrix.pm == 'pnpm'
+              uses: pnpm/action-setup@0977fd99725f1db4007ccb2928dbb4e90d06cc86 # v6
+              with:
+                  version: latest # Use latest pnpm version
+                  run_install: false
+
+            - name: Setup Yarn v4 for sandbox
+              if: matrix.pm == 'yarn'
+              working-directory: ../sandbox/test/isolated-env/${{ matrix.env }}
+              env:
+                  PACKAGE_MANAGER: ${{ steps.capture-package-manager.outputs.value }}
+              run: |
+                  cp ${{ github.workspace }}/.yarnrc.yml .yarnrc.yml
+                  echo 'enableHardenedMode: false' >> .yarnrc.yml
+                  # Build resolutions from dependencies to force yarn to use file: versions
+                  # for transitive dependencies (prevents npm registry fallback).
+                  # PACKAGE_MANAGER is captured from the root package.json before the
+                  # "Delete package manager settings" step, so the sandbox stays in sync
+                  # with the repository's Yarn version on every bump.
+                  echo "Using packageManager from root: $PACKAGE_MANAGER"
+                  jq --arg pm "$PACKAGE_MANAGER" '. + {"packageManager": $pm} + {"resolutions": .dependencies}' package.json > tmp.json && mv tmp.json package.json
+
+            - name: Install dependencies
+              working-directory: ../sandbox/test/isolated-env/${{ matrix.env }}
+              env:
+                  YARN_ENABLE_IMMUTABLE_INSTALLS: 'false'
+              run: ${{ matrix.pm }} install
+
+            - name: Test
+              working-directory: ../sandbox/test/isolated-env/${{ matrix.env }}
+              env:
+                  DEBUG: ${{ matrix.env == 'ts-config-ts' && 'ml-*' || '' }}
+              run: ${{ matrix.pm }} test
+
+    # A failure of Bun or Deno fails the run, and so opens the Issue: it is how anybody hears of it.
+    test-bun:
+        needs: [prepare, build]
+        if: ${{ needs.prepare.outputs.run == 'true' }}
+        timeout-minutes: 30
+        runs-on: ubuntu-latest
+        steps:
+            - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
+              with:
+                  fetch-depth: '0'
+
+            - name: Use Node.js ${{ env.NODE_BUILD_VERSION }}
+              uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7
+              with:
+                  node-version: ${{ env.NODE_BUILD_VERSION }}
+
+            - name: Enable Corepack and setup Yarn v4
+              run: |
+                  corepack enable
+                  yarn --version
+
+            - name: Setup Bun
+              uses: oven-sh/setup-bun@0c5077e51419868618aeaa5fe8019c62421857d6 # v2
+              with:
+                  bun-version: latest
+
+            - name: Get yarn cache directory path
+              id: yarn-cache-dir-path
+              run: echo "dir=$(yarn config get cacheFolder)" >> "$GITHUB_OUTPUT"
+
+            - name: Cache Restore devDependencies
+              uses: actions/cache/restore@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6
+              with:
+                  path: |
+                      **/node_modules
+                      ${{ steps.yarn-cache-dir-path.outputs.dir }}
+                  key: dev-depends-modules-ubuntu-latest-node${{ env.NODE_BUILD_VERSION }}-${{ hashFiles('yarn.lock', '.yarnrc.yml') }}
+
+            - name: Cache Restore Production
+              id: cache-restore-prod
+              uses: actions/cache/restore@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6
+              with:
+                  enableCrossOsArchive: true
+                  path: |
+                      packages/*/lib
+                      packages/@*/*/lib
+                      packages/*/cjs
+                      packages/@*/*/cjs
+                      packages/*/esm
+                      packages/@*/*/esm
+                      packages/@markuplint/config-presets/preset.*.json
+                      packages/@markuplint/html-spec/index.js
+                      packages/@markuplint/html-spec/index.json
+                  key: prod-node${{ env.NODE_BUILD_VERSION }}-${{ github.sha }}
+
+            # Without the build, the specs fail by the hundred on a missing module, which reads as a
+            # regression and opens an Issue about the wrong thing.
+            - name: Stop when the build was not restored
+              if: steps.cache-restore-prod.outputs.cache-hit != 'true'
+              shell: bash
+              run: |
+                  echo '::error::The build of this commit is not in the cache. Start the Nightly workflow again with force on: running only the failed jobs again does not build.'
+                  exit 1
+
+            - name: Install dependencies
+              run: yarn install --immutable
+
+            - name: Test with Bun
+              run: bunx --bun vitest run
+              env:
+                  # JavaScriptCore's concurrent DFG/FTL compilation plans are GC roots for
+                  # every value they freeze (`DFG::Plan::checkLivenessAndVisitChildren`),
+                  # and `Bun.gc(true)` never completes them. A plan that froze a per-document
+                  # closure keeps a superseded document alive across `gc()`, which makes the
+                  # WeakRef-based collectability tests in `@markuplint/ml-core` flaky. With
+                  # synchronous compilation a plan is finalized before it can be scanned.
+                  BUN_JSC_useConcurrentJIT: '0'
+
+    test-deno:
+        needs: [prepare, build]
+        if: ${{ needs.prepare.outputs.run == 'true' }}
+        timeout-minutes: 30
+        runs-on: ubuntu-latest
+        steps:
+            - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
+              with:
+                  fetch-depth: '0'
+
+            - name: Use Node.js ${{ env.NODE_BUILD_VERSION }}
+              uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7
+              with:
+                  node-version: ${{ env.NODE_BUILD_VERSION }}
+
+            - name: Enable Corepack and setup Yarn v4
+              run: |
+                  corepack enable
+                  yarn --version
+
+            - name: Setup Deno
+              uses: denoland/setup-deno@e95548e56dfa95d4e1a28d6f422fafe75c4c26fb # v2
+              with:
+                  deno-version: latest
+
+            - name: Get yarn cache directory path
+              id: yarn-cache-dir-path
+              run: echo "dir=$(yarn config get cacheFolder)" >> "$GITHUB_OUTPUT"
+
+            - name: Cache Restore devDependencies
+              uses: actions/cache/restore@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6
+              with:
+                  path: |
+                      **/node_modules
+                      ${{ steps.yarn-cache-dir-path.outputs.dir }}
+                  key: dev-depends-modules-ubuntu-latest-node${{ env.NODE_BUILD_VERSION }}-${{ hashFiles('yarn.lock', '.yarnrc.yml') }}
+
+            - name: Cache Restore Production
+              id: cache-restore-prod
+              uses: actions/cache/restore@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6
+              with:
+                  enableCrossOsArchive: true
+                  path: |
+                      packages/*/lib
+                      packages/@*/*/lib
+                      packages/*/cjs
+                      packages/@*/*/cjs
+                      packages/*/esm
+                      packages/@*/*/esm
+                      packages/@markuplint/config-presets/preset.*.json
+                      packages/@markuplint/html-spec/index.js
+                      packages/@markuplint/html-spec/index.json
+                  key: prod-node${{ env.NODE_BUILD_VERSION }}-${{ github.sha }}
+
+            # Without the build, the specs fail by the hundred on a missing module, which reads as a
+            # regression and opens an Issue about the wrong thing.
+            - name: Stop when the build was not restored
+              if: steps.cache-restore-prod.outputs.cache-hit != 'true'
+              shell: bash
+              run: |
+                  echo '::error::The build of this commit is not in the cache. Start the Nightly workflow again with force on: running only the failed jobs again does not build.'
+                  exit 1
+
+            - name: Install dependencies
+              run: yarn install --immutable
+
+            - name: Test with Deno
+              run: deno run -A --unstable-detect-cjs node_modules/vitest/vitest.mjs run
+
+    # Opens an Issue when a job failed, comments on it while it is open, and closes it when the
+    # run passes. The Issue is found by the marker on the first line of its body, as in
+    # `spec-citation-watch.yml`; a search that fails stops the job, so that a second Issue is never
+    # opened. The verdict is the `result` of the jobs, not what `gh run view` lists: a job that
+    # timed out or lost its runner is `cancelled`, which a search for `failure` would read as a
+    # pass and close the Issue on.
+    report:
+        # Every job of this file is in this list: a job that is not does not count toward the verdict,
+        # and the Issue would be closed while it is red.
+        needs: [prepare, build, test, test-cross-os, isolated-env, test-bun, test-deno]
+        # Also when `prepare` itself failed: it has no output then, every job after it is skipped,
+        # and a run that is red with no Issue is a night that nobody hears of. Not when the run was
+        # cancelled by hand (`!cancelled()`, unlike `always()`), and not for a run that was started
+        # on another branch, which `prepare` refuses: it would report on `dev` the commit of that branch.
+        if: ${{ !cancelled() && github.ref == 'refs/heads/dev' && (needs.prepare.outputs.run == 'true' || needs.prepare.result != 'success') }}
+        timeout-minutes: 15
+        runs-on: ubuntu-latest
+        permissions:
+            contents: read
+            issues: write
+            actions: read
+        steps:
+            - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
+              with:
+                  fetch-depth: '0'
+
+            - name: Report
+              env:
+                  GH_TOKEN: ${{ github.token }}
+                  RESULTS: ${{ join(needs.*.result, ' ') }}
+                  PREVIOUS: ${{ needs.prepare.outputs.previous }}
+                  SHA: ${{ github.sha }}
+                  RUN_URL: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
+              run: |
+                  set -eo pipefail
+
+                  failed=false
+                  case " $RESULTS " in
+                      *" failure "* | *" cancelled "*) failed=true ;;
+                  esac
+
+                  # Which Issue is open. A search that fails stops the job here. 1000 is far past the open
+                  # Issues of the repository (a few dozen), which an Issue beyond the limit would be
+                  # missed in, and a second one opened.
+                  NUMBER=$(gh issue list --state open --limit 1000 --json number,body \
+                      --jq '[.[] | select(.body | startswith("<!-- nightly-tests -->"))] | .[0].number // empty')
+
+                  if [ "$failed" = true ]; then
+                      # The jobs that did not pass, with their links. The job of this step has no result yet.
+                      # `$c` is a variable of the jq program, which the shell must not expand.
+                      # shellcheck disable=SC2016
+                      jobs=$(gh run view "$GITHUB_RUN_ID" --json jobs \
+                          --jq '.jobs[] | (.conclusion // "") as $c | select($c != "success" and $c != "skipped" and $c != "") | "- \(.name): \(.url)"')
+
+                      # What came in since the last commit that passed, if this one follows it. At most 200
+                      # lines: an Issue or a comment holds 65,536 characters.
+                      if [ -n "$PREVIOUS" ] && git merge-base --is-ancestor "$PREVIOUS" HEAD; then
+                          log=$(git log --oneline -n 200 "$PREVIOUS..HEAD")
+                          if [ -z "$log" ]; then
+                              log='(the same commit as the last one that passed)'
+                          fi
+                      else
+                          log='(no earlier commit that passed is an ancestor of this one)'
+                      fi
+
+                      # The log is in a fence: its subjects hold "#1234", which would link every pull
+                      # request back to this Issue every night.
+                      {
+                          echo '<!-- nightly-tests -->'
+                          echo '## Nightly tests failed on dev'
+                          echo
+                          echo "Run: $RUN_URL"
+                          echo "Commit: $SHA"
+                          echo
+                          echo 'Jobs that did not pass:'
+                          echo
+                          echo "$jobs"
+                          echo
+                          echo 'Commits since the last one that passed:'
+                          echo
+                          echo '~~~'
+                          echo "$log"
+                          echo '~~~'
+                          echo
+                          echo 'The next run that passes closes this Issue. A commit that failed is tested again every night, and each run that fails adds a comment here. A failure of Bun, Deno or pnpm can come from a new release of theirs and not from a commit: see test/isolated-env/CLAUDE.md. To run the same commit again, start the Nightly workflow on dev with force on.'
+                      } > report.md
+
+                      if [ -n "$NUMBER" ]; then
+                          gh issue comment "$NUMBER" --body-file report.md
+                      else
+                          # The label is asked for first, and `gh issue create` is called once: a label that
+                          # no longer exists must not hide the Issue, and a call that failed after it half
+                          # succeeded must not be repeated into a second Issue.
+                          label=()
+                          labels=$(gh label list --limit 200 --json name --jq '.[].name')
+                          if [ -n "$(printf '%s\n' "$labels" | grep -xF Bug || true)" ]; then
+                              label=(--label Bug)
+                          fi
+                          URL=$(gh issue create --title 'Nightly tests failed on dev' "${label[@]}" --body-file report.md)
+                          echo "Opened $URL."
+                      fi
+                      echo "::error::Nightly tests failed: $RUN_URL"
+                      exit 1
+                  fi
+
+                  # Only the head of `dev` closes the Issue: a run of an older commit that is run again by
+                  # hand (all jobs, from the Actions page) and passes says nothing of the failure of the
+                  # commit that the Issue is about.
+                  if [ -n "$NUMBER" ]; then
+                      head=$(git ls-remote origin refs/heads/dev | cut -f1)
+                      if [ "$SHA" = "$head" ]; then
+                          gh issue close "$NUMBER" --comment "Passed on $SHA: $RUN_URL"
+                      else
+                          echo "Passed on $SHA, which is no longer the head of dev ($head): the Issue stays open."
+                      fi
+                  fi
