@@ -109,7 +109,7 @@ Every `test()` in rule spec files — `packages/@markuplint/rules/src/<rule-name
 
 ### 10. Cross-Platform and Cross-Runtime Compatibility
 
-Users run markuplint on Windows, varied CI OSes, and Deno/Bun. Review for environment assumptions:
+Users run markuplint on Windows, varied CI OSes, and Deno/Bun. A pull request runs Linux and Node.js 26 only, and `.github/workflows/nightly.yml` tests the rest the night after the merge, so this review is the check these paths get before it. Review for environment assumptions:
 
 - **Paths**: raw `/` separators or template-literal path concatenation instead of `path.join()` / `path.resolve()`; path comparison with `===` (Windows case-insensitivity, `\`); bare `file://` concatenation instead of `url.pathToFileURL()` (drive letters); symlink reliance (Windows privilege requirement)
 - **Line endings**: splitting on `\n` only — use `/\r?\n/`; off-by-one line/column risks in parsers; snapshots embedding `\n` against CRLF fixtures

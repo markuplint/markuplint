@@ -13,7 +13,6 @@ permissions:
     contents: read
 
 env:
-    # test.yml narrows its matrix for PRs from this branch; keep the name in sync there.
     BRANCH_NAME: auto/update-html-spec
     NODE_BUILD_VERSION: 26
     NX_DISABLE_DB: true

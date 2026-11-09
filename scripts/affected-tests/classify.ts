@@ -1,12 +1,14 @@
 /**
  * Chooses the specs that a pull request has to run, from the files it changed.
  *
- * The goal is a fast answer on a pull request. The whole suite runs in the merge queue and on `dev`
- * (and only after the merge on `dev`, until the queue is enabled and `ci-ok` is required), so this
- * module is allowed to be an approximation, but never in the direction of running too little for
- * a file it cannot place: **a path that no rule below recognises makes the plan `full`**, as does
- * a deleted file and, on a branch that has `crates/` (the v6 line), anything under it: no rule here
- * is written for the Rust workspace, and adding one is how that line gets a faster pull request.
+ * The goal is a fast answer on a pull request, which runs on Linux and Node.js 26 only. The whole
+ * suite runs in the merge queue (once it is enabled and `ci-ok` is required; until then nothing
+ * runs it before a change reaches `dev`), and on every platform and runtime in the nightly tests
+ * (`nightly.yml`), so this module is allowed to be an approximation, but never in the direction of
+ * running too little for a file it cannot place: **a path that no rule below recognises makes the
+ * plan `full`**, as does a deleted file and, on a branch that has `crates/` (the v6 line), anything
+ * under it: no rule here is written for the Rust workspace, and adding one is how that line gets a
+ * faster pull request.
  *
  * What the selection is built on, and where it stops:
  *
@@ -43,8 +45,8 @@ export interface Probe {
 	exists(path: string): boolean;
 	/**
 	 * Every spec file that the default vitest config includes. A run with another config
-	 * (`vitest.cross-os.config.ts`) is given the same plan, and vitest keeps the specs that config
-	 * includes: that set is a subset of this one.
+	 * (`--config vitest.cross-os.config.ts`, after `--`) is given the same plan, and vitest keeps the
+	 * specs that config includes: that set is a subset of this one.
 	 */
 	readonly specs: readonly string[];
 	read(path: string): string;
@@ -87,7 +89,11 @@ const FULL_TRIGGERS: readonly RegExp[] = [
 
 /**
  * Outside `packages/`, files that no spec reads, checked after `FULL_TRIGGERS` (which holds
- * `test.yml`). The `changes` job of `test.yml` keeps a shorter list of its own, for isolated-env.
+ * `test.yml`). `nightly.yml` is here with the other workflows: it runs on a schedule, and no pull
+ * request run of the selection depends on it. So a pull request that edits it, or
+ * `vitest.cross-os.config.ts` (which `nightly.yml` runs, and which the full trigger for
+ * `vitest*.config.ts` answers with the default suite, a run that does not use it), exercises none
+ * of that before the merge; the workflow can be started on the branch (`workflow_dispatch`).
  */
 const IGNORED: readonly RegExp[] = [
 	/^\.claude\//,
@@ -125,7 +131,7 @@ export const SPAWNING = /child_process|\bexeca|\bnew Worker\(|\bspawn|\bexecFile
  * configuration selects (`LOADED_BY_CONFIGURATION`). A change to one of them runs the specs that
  * spawn a process, wherever they are. A change to any other package runs only the spawning specs
  * of that package, as a rule or a parser changes what a spawned command reports only for the
- * inputs that use it; the merge queue runs the rest.
+ * inputs that use it; the merge queue and the nightly tests run the rest.
  *
  * `completeness.spec.ts` fails when a dependency of `markuplint` is in neither list.
  */
