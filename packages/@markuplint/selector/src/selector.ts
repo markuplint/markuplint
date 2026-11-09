@@ -347,9 +347,8 @@ class SelectorTarget {
 						unitCheck.specificity[1] + res.specificity[1],
 						unitCheck.specificity[2] + res.specificity[2],
 					];
-					combinatorMatched ||= res.matched;
 				}
-				if (combinatorMatched) {
+				if (combinatorMatched || matchedNodes.length > 0) {
 					return {
 						combinator: '␣',
 						specificity,
