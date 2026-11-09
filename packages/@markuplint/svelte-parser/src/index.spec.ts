@@ -1450,6 +1450,30 @@ describe('a <style> in the component', () => {
 		]);
 	});
 
+	test('a `<style` in an attribute value is text, not a style block', () => {
+		const code = '<div title="<style>"></div>\n<style>a{}</style>';
+		expect(() => parse(code)).not.toThrow();
+		expect(names(code)).toStrictEqual(['div', 'div', '#text', '#ps:Style']);
+	});
+
+	test('a `<style` in an attribute value with top-level scss still parses', () => {
+		const code = '<div title="<style>"></div>\n<style lang="scss">$c: red;</style>';
+		expect(() => parse(code)).not.toThrow();
+		expect(names(code)).toStrictEqual(['div', 'div', '#text', '#ps:Style']);
+	});
+
+	test('a `<style` in an expression is text, not a style block', () => {
+		const code = '<div>{"<style>"}</div>\n<style>a{}</style>';
+		expect(() => parse(code)).not.toThrow();
+		expect(names(code)).toStrictEqual(['div', '#ps:ExpressionTag', 'div', '#text', '#ps:Style']);
+	});
+
+	test('a `<style` in an expression with top-level scss still parses', () => {
+		const code = '<div>{"<style>"}</div>\n<style lang="scss">$c: red;</style>';
+		expect(() => parse(code)).not.toThrow();
+		expect(names(code)).toStrictEqual(['div', '#ps:ExpressionTag', 'div', '#text', '#ps:Style']);
+	});
+
 	test('a `<script` in a comment is not a script, so the style after it is still found', () => {
 		expect(names('<!-- <script> -->\n<style>a{}</style>\n<div><style>b{}</style></div>')).toStrictEqual([
 			'#comment',

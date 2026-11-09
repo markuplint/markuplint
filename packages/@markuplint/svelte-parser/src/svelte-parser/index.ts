@@ -1,5 +1,6 @@
 import type { AST } from 'svelte/compiler';
 
+import { isFatalError } from '@markuplint/shared';
 import { parse } from 'svelte/compiler';
 
 export type SvelteNode = AST.Text | AST.Comment | AST.Tag | AST.ElementLike | AST.Block;
@@ -27,7 +28,8 @@ export function svelteParse(template: string): SvelteNode[] {
  * is not closed; the name ends there (`<style-guide>` is a custom element).
  *
  * It does not read an attribute value or an expression (`{…}`), so a `<style` in one is still taken as
- * a block.
+ * a block. `svelteParseComponent` tries Svelte first so that case is handled without this mask; only the
+ * last fallback still uses `SOURCE_BLOCK`.
  */
 const SOURCE_BLOCK =
 	/<!--[\s\S]*?(?:-->|$)|<script(?=[\s/>])[\s\S]+?(?:<\/script>|$)|<style(?=[\s/>])[\s\S]+?(?:<\/style>|$)/g;
@@ -67,6 +69,138 @@ function maskStyleBlock(block: string): string {
 }
 
 /**
+ * `afterCssError` must not treat markup or script errors as a failed top-level style block: only Svelte's
+ * own CSS parse step (`css_*`) qualifies.
+ */
+function isSvelteCssParseError(error: unknown): boolean {
+	return (
+		typeof error === 'object' &&
+		error !== null &&
+		'code' in error &&
+		typeof (error as { readonly code?: unknown }).code === 'string' &&
+		((error as { readonly code: string }).code as string).startsWith('css_')
+	);
+}
+
+const STYLE_OPENER = /<style(?=[\s/>])/g;
+
+/**
+ * The `<style>` block that contains `index`. When a `<style` in an attribute value or an expression opens
+ * a spurious range to the next `</style>`, the real block is the one that starts last among the openers
+ * before `index`.
+ *
+ * @param template - The source of the component
+ * @param index - A character offset in `template`
+ * @returns The block span, if any
+ */
+function styleBlockAroundIndex(
+	template: string,
+	index: number,
+): { readonly start: number; readonly end: number } | null {
+	let best: { readonly start: number; readonly end: number } | null = null;
+	for (const match of template.matchAll(STYLE_OPENER)) {
+		if (match.index === undefined) {
+			continue;
+		}
+		const start = match.index;
+		const close = template.indexOf('</style>', start);
+		const end = close === -1 ? template.length : close + '</style>'.length;
+		if (index >= start && index < end && (best === null || start > best.start)) {
+			best = { start, end };
+		}
+	}
+	return best;
+}
+
+/**
+ * Masks the top-level `<style>` that made Svelte throw `css_*`, then parses again with
+ * {@link svelteParseComponentDirect}.
+ *
+ * @param template - The source of the component
+ * @param error - The error from the first `parse` of `template`
+ * @returns The nodes when masking one block is enough, otherwise `null`
+ */
+function svelteParseComponentAfterCssError(
+	template: string,
+	error: unknown,
+): {
+	readonly nodes: SvelteNode[];
+	readonly topLevelStyleStarts: ReadonlySet<number>;
+} | null {
+	if (!isSvelteCssParseError(error) || !('start' in (error as object))) {
+		return null;
+	}
+	const { character } = (error as { readonly start: { readonly character: number } }).start;
+	const block = styleBlockAroundIndex(template, character);
+	if (!block) {
+		return null;
+	}
+	const masked =
+		template.slice(0, block.start) +
+		maskStyleBlock(template.slice(block.start, block.end)) +
+		template.slice(block.end);
+	const parsed = svelteParseComponentDirect(masked);
+	if (!parsed) {
+		return null;
+	}
+	return {
+		nodes: parsed.nodes,
+		topLevelStyleStarts: new Set([...parsed.topLevelStyleStarts, block.start]),
+	};
+}
+
+/**
+ * Builds nodes from an already-parsed component. The top-level `<style>` is `ast.css`, not in
+ * `ast.fragment`, so a `Comment` at the same span stands in for `SvelteParser` `nodeize`.
+ *
+ * @param ast - The component root from `svelte/compiler` `parse`
+ * @returns The fragment nodes and top-level style offsets in the source
+ */
+function nodesFromParsedComponent(ast: ReturnType<typeof parse>): {
+	readonly nodes: SvelteNode[];
+	readonly topLevelStyleStarts: ReadonlySet<number>;
+} {
+	const topLevelStyleStarts = new Set<number>();
+	let nodes = ast.fragment.nodes ?? [];
+	if (ast.css) {
+		topLevelStyleStarts.add(ast.css.start);
+		const styleNode: AST.Comment = {
+			type: 'Comment',
+			start: ast.css.start,
+			end: ast.css.end,
+			data: '',
+		};
+		const index = nodes.findIndex((node: SvelteNode) => node.start > ast.css!.start);
+		if (index === -1) {
+			nodes = [...nodes, styleNode];
+		} else {
+			nodes = [...nodes.slice(0, index), styleNode, ...nodes.slice(index)];
+		}
+	}
+	return { nodes, topLevelStyleStarts };
+}
+
+/**
+ * Parses `template` with Svelte when the source is valid markup and CSS.
+ *
+ * @param template - The source of the component
+ * @returns The nodes and offsets, or `null` when `parse` fails and the failure is not fatal
+ */
+function svelteParseComponentDirect(template: string): {
+	readonly nodes: SvelteNode[];
+	readonly topLevelStyleStarts: ReadonlySet<number>;
+} | null {
+	try {
+		return nodesFromParsedComponent(parse(template, { modern: true }));
+	} catch (error) {
+		if (isFatalError(error)) {
+			throw error;
+		}
+		return null;
+	}
+}
+
+/**
  * Parses a component, keeping the top-level `<style>` out of Svelte's CSS parser and the nested one in
  * the markup.
  *
@@ -80,8 +214,9 @@ function maskStyleBlock(block: string): string {
  * The top-level one is the CSS of the component, and Svelte reads it as CSS (`lang="scss"` is not CSS and
  * fails: "Expected a valid CSS identifier"), so it is masked. The nested one is an element whose content
  * is text, which Svelte reads without parsing it. What is top-level cannot be told from the source by a
- * pattern, so the source is parsed with every `<style>` masked first, and the ones that are children of
- * the fragment are the top-level ones. Without a nested one that parse is the result.
+ * pattern. The source is tried with Svelte as-is first (`ast.css` for the top-level one). When CSS parsing
+ * fails (`css_*`), only that style block is masked and parsing is retried. When that is still not enough,
+ * every `<style>` is masked and the ones that are children of the fragment are the top-level ones.
  *
  * @see https://svelte.dev/docs/svelte/nested-style-elements
  * @param template - The source of the component
@@ -92,6 +227,21 @@ export function svelteParseComponent(template: string): {
 	readonly nodes: SvelteNode[];
 	readonly topLevelStyleStarts: ReadonlySet<number>;
 } {
+	let caught: unknown;
+	try {
+		return nodesFromParsedComponent(parse(template, { modern: true }));
+	} catch (error) {
+		if (isFatalError(error)) {
+			throw error;
+		}
+		caught = error;
+	}
+
+	const afterCssError = svelteParseComponentAfterCssError(template, caught);
+	if (afterCssError) {
+		return afterCssError;
+	}
+
 	const blocks: { readonly start: number; readonly end: number }[] = [];
 	const everyStyleMasked = replaceStyleBlocks(template, (block, offset) => {
 		blocks.push({ start: offset, end: offset + block.length });
