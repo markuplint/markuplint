@@ -6,30 +6,40 @@
 			{
 				"choice": [
 					[
+						// > Zero or more groups each consisting of
+						// > one or more dt elements followed by one or more dd elements,
+						// > optionally intermixed with script-supporting elements.
+						// @see https://html.spec.whatwg.org/multipage/grouping-content.html#the-dl-element
+						//
+						// "Intermixed" means a script-supporting element may stand anywhere among the
+						// dt and dd elements, so the run of dt (and of dd) after the required first one
+						// also accepts it, and the leading one lets a dl hold nothing but those. The
+						// required `oneOrMore` stays first so that a missing dt or dd is still reported
+						// as "Need dt" / "Need dd". `dl > div` in spec.div.jsonc has the same shape.
 						{
-							// > Zero or more groups each consisting of
-							// > one or more dt elements followed by one or more dd elements
-							// @see https://html.spec.whatwg.org/multipage/grouping-content.html#the-dl-element
+							"zeroOrMore": ":model(script-supporting)"
+						},
+						{
 							"zeroOrMore": [
-								{
-									"zeroOrMore": ":model(script-supporting)"
-								},
 								{
 									"oneOrMore": "dt"
 								},
 								{
-									"zeroOrMore": ":model(script-supporting)"
+									"zeroOrMore": ["dt", ":model(script-supporting)"]
 								},
 								{
 									"oneOrMore": "dd"
 								},
 								{
-									"zeroOrMore": ":model(script-supporting)"
+									"zeroOrMore": ["dd", ":model(script-supporting)"]
 								}
 							]
 						}
 					],
 					[
+						// > One or more div elements,
+						// > optionally intermixed with script-supporting elements.
+						// @see https://html.spec.whatwg.org/multipage/grouping-content.html#the-dl-element
 						{
 							"zeroOrMore": ":model(script-supporting)"
 						},
@@ -37,7 +47,7 @@
 							"oneOrMore": "div"
 						},
 						{
-							"zeroOrMore": ":model(script-supporting)"
+							"zeroOrMore": ["div", ":model(script-supporting)"]
 						}
 					]
 				]

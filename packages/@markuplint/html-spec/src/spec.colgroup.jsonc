@@ -4,7 +4,10 @@
 	"contentModel": {
 		"contents": [
 			{
-				"zeroOrMore": "col"
+				// > If the span attribute is absent:
+				// > Zero or more col and template elements.
+				// @see https://html.spec.whatwg.org/multipage/tables.html#the-colgroup-element
+				"zeroOrMore": ["col", "template"]
 			}
 		],
 		"conditional": [
