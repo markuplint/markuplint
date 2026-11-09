@@ -59,7 +59,8 @@ function checkValue(
  * These exercise the boundary where the spec-validating rules (`no-unknown-attr`,
  * `no-disallowed-attr`, `no-invalid-attr-value`) meet the attribute spec data.
  * `resolveAttrEligibility` resolves `ConditionalAttributeType[]` by matching the
- * element against each condition and validating against the matched type. If no
+ * element against each condition. Enum matches are validated against their
+ * intersection. Any other overlap is validated against the first match. If no
  * condition matches, it falls back to `Any`.
  */
 test('[helpers-issue-3685-001] falls back to Any when no condition matches', () => {
