@@ -71,6 +71,7 @@ according to the element's namespace:
 | Tag name        | ASCII case-insensitive (`DIV` matches `div`)                                                              | Case-sensitive                                  |
 | Attribute name  | ASCII case-insensitive (`[CHARSET]` matches `<meta CHARSET>` and `<meta charset>`)                        | Case-sensitive (e.g. SVG `viewBox` ≠ `viewbox`) |
 | Attribute value | Case-sensitive by default; use the `i` flag (e.g. `[lang="en" i]`) for case-insensitive value comparisons | Same                                            |
+| Pseudo-class    | ASCII case-insensitive (`:NOT(div)` matches like `:not(div)`)                                             | Same                                            |
 
 The `i` flag scopes to attribute **values** only — it does not affect
 attribute name matching, which is governed by the namespace rules above.

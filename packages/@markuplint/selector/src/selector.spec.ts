@@ -174,6 +174,29 @@ describe('selector matching', () => {
 		expect(createSelector(':not(#hoge)').match(el)).toBe(false);
 	});
 
+	test('issue #4514: pseudo-class names are ASCII case-insensitive', () => {
+		const anchor = createTestElement('<a href="x"></a>');
+		expect(() => createSelector('*:NOT(div)').match(anchor)).not.toThrow();
+		expect(createSelector('*:NOT(div)').match(anchor)).toBeTruthy();
+		expect(createSelector(':IS(a)').match(anchor)).toBeTruthy();
+
+		const el = createTestElement('<div id="hoge" class="foo bar"></div>');
+		expect(createSelector('*:NOT(div)').match(el)).toBe(false);
+		expect(createSelector('*:NOT(a)').match(el)).toBeTruthy();
+		expect(createSelector(':IS(a, div)').match(el)).toBeTruthy();
+		expect(createSelector(':IS(a, span)').match(el)).toBe(false);
+
+		const header = createTestElement('<header><div></div></header>');
+		expect(createSelector(':HAS(div, span)').match(header)).toBeTruthy();
+
+		const withSiblings = createTestElement('<div>text<!-- comment --><span></span><a></a></div>');
+		const span = withSiblings.children[0];
+		const a = withSiblings.children[1];
+		expect(createSelector(':FIRST-CHILD').match(span)).toBeTruthy();
+		expect(createSelector(':FIRST-CHILD').match(a)).toBe(false);
+		expect(createSelector(':NOT(:FIRST-CHILD)').match(a)).toBeTruthy();
+	});
+
 	test(':is', () => {
 		const el = createTestElement('<div id="hoge" class="foo bar"></div>');
 		expect(createSelector(':is(a, div)').match(el)).toBeTruthy();

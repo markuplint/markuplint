@@ -2,7 +2,7 @@ import type { SelectorElement, SelectorMatchedResult, SelectorNode, SelectorResu
 import type { ReadonlyDeep, Writable } from 'type-fest';
 
 import { resolveNamespace } from '@markuplint/ml-spec';
-import { vuePropKey } from '@markuplint/shared';
+import { asciiLowerCase, vuePropKey } from '@markuplint/shared';
 import debug from 'debug';
 import parser from 'postcss-selector-parser';
 
@@ -711,6 +711,12 @@ function attrMatch(
 	});
 }
 
+/**
+ * Selectors Level 4 treats pseudo-class names as ASCII case-insensitive keywords; fold once
+ * before dispatching so `:NOT(div)` and `:not(div)` share the same branch.
+ *
+ * @see https://www.w3.org/TR/selectors-4/#pseudo-classes
+ */
 function pseudoMatch(
 	pseudo: ReadonlyDeep<parser.Pseudo>,
 	// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
@@ -719,7 +725,8 @@ function pseudoMatch(
 	extended: ExtendedPseudoClass,
 	depth: number,
 ): SelectorResult {
-	switch (pseudo.value) {
+	const pseudoName = asciiLowerCase(pseudo.value);
+	switch (pseudoName) {
 		//
 
 		/**
@@ -943,7 +950,7 @@ function pseudoMatch(
 		case '::after':
 		default: {
 			for (const ext of Object.keys(extended)) {
-				if (pseudo.value !== `:${ext}`) {
+				if (pseudoName !== `:${asciiLowerCase(ext)}`) {
 					continue;
 				}
 
