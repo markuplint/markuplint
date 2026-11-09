@@ -84,7 +84,7 @@
 		"cheerio": "1.2.0",
 		"commitizen": "4.3.2",
 		"cz-conventional-changelog": "3.3.0",
-		"eslint-plugin-regexp": "3.3.2",
+		"eslint-plugin-regexp": "3.3.3",
 		"husky": "9.1.7",
 		"lerna": "10.1.1",
 		"lint-staged": "17.6.0",
