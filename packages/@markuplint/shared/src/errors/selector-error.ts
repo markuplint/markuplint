@@ -1,5 +1,6 @@
 /**
- * Error thrown when a CSS selector string cannot be parsed.
+ * Error thrown when a CSS selector string cannot be parsed, or uses syntax the selector
+ * engine does not support (for example a nesting selector).
  */
 export class InvalidSelectorError extends Error {
 	name = 'InvalidSelectorError';
