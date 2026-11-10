@@ -6,6 +6,7 @@ export const help = `
 Usage
 	$ markuplint <HTML file paths (glob format)>
 	$ <stdout> | markuplint
+	$ <stdout> | markuplint -              Read the source from the standard input. Not with file paths, --search or --fix.
 
 Options
 	--config,                -c FILE_PATH  A configuration file path.
@@ -43,10 +44,14 @@ Options
 Examples
 	$ markuplint verifyee.html --config path/to/.markuplintrc
 	$ cat verifyee.html | markuplint
+	$ cat verifyee.html | markuplint - --format JSON | jq
 `;
 
 export const cli = meow(help, {
 	importMeta: import.meta,
+	// `index.ts` prints them: meow ends the process with `process.exit()`, which drops a pending write.
+	autoHelp: false,
+	autoVersion: false,
 	flags: {
 		config: {
 			type: 'string',
