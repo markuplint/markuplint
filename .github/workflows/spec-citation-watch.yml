@@ -1,14 +1,14 @@
 name: Spec citation watch
 
-# Checks the passages that rule READMEs, rule sources, the spec data, the
-# declarations of how a framework renders a literal and the website cite
-# against the live specifications, the documentation of the frameworks and
-# their source files, and opens an Issue when one changed (see the module
-# comment of `scripts/spec-citations/cli.ts`).
-# Nothing is fixed automatically: a maintainer decides whether the rule, its
-# README (both languages), `@markuplint/html-spec` or the table of a framework
-# (`@markuplint/*-spec`, `*-parser`) has to follow. The one Issue is titled and
-# labelled for specifications, whatever the finding was cited from.
+# Checks the passages that the sources of the packages, the rule READMEs, the
+# spec data and the website cite against the live specifications, the
+# documentation of the frameworks and their source files, and opens an Issue
+# when one changed (see the module comment of `scripts/spec-citations/cli.ts`).
+# Nothing is fixed automatically: a maintainer decides whether the code that
+# cites the passage (a rule and its README in both languages,
+# `@markuplint/html-spec`, an algorithm, a value grammar, the table of a
+# framework) has to follow. The one Issue is titled and labelled for
+# specifications, whatever the finding was cited from.
 #
 # The same run refreshes `spec-citations.lock.json` through a pull request.
 # Merging it is what accepts the changed passages, so that the next run
@@ -80,7 +80,9 @@ jobs:
                   done
                   # 0: nothing to report, 1: findings. Neither is this pull request's fault.
                   # 2: a page still could not be fetched. This job exists to show that the runner can reach the
-                  #    hosts that the script fetches, so it fails.
+                  #    hosts that the script fetches, so it fails. The script fetches the pages that every
+                  #    package cites (the standards of WHATWG, W3C, IETF, ECMAScript and the others), so a slow
+                  #    or unreachable host is likelier to fail it than it was; the retries above are the allowance.
                   # No report file: the script crashed.
                   if [ ! -f report.md ] || [ "$status" -ge 2 ]; then
                       exit 1
@@ -272,12 +274,24 @@ jobs:
             # the reviewer to: this run had no findings, or only pages that could not be fetched (the
             # job summary lists them). A passage that changed is always a finding, so the lock change
             # then records sections that are newly cited or no longer cited.
+            #
+            # The sections that the lock gains and loses are listed in the body either way, the removed ones
+            # first and the ones that a file still cites named: merging drops those from the lock, and the
+            # monitor stops watching them (#4558). The lock to compare with is the one on `dev`, which this
+            # run started from; the file in the working tree is the new one.
             - name: Compose PR body
               if: steps.lock.outputs.has_changes == 'true'
               env:
                   ISSUE_NUMBER: ${{ steps.report.outputs.number || steps.open-issue.outputs.number }}
                   RUN_URL: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
               run: |
+                  # `dev` is fetched here rather than trusted to be in the checkout, and a failure is said in the
+                  # body: without the list nothing tells the reviewer that a section may be dropped.
+                  if ! git fetch --no-tags --depth=1 origin dev ||
+                      ! git show origin/dev:scripts/spec-citations/spec-citations.lock.json > "$RUNNER_TEMP/lock-before.json" ||
+                      ! CHANGES=$(node --experimental-strip-types scripts/spec-citations/lock-changes.ts "$RUNNER_TEMP/lock-before.json" scripts/spec-citations/spec-citations.lock.json); then
+                      CHANGES="**The sections that the lock gains and loses could not be listed.** Compare the lock with the one on \`dev\`, and check that no section that a file still cites is dropped, before merging."
+                  fi
                   {
                       echo "Automated refresh of \`scripts/spec-citations/spec-citations.lock.json\`."
                       echo ""
@@ -286,7 +300,11 @@ jobs:
                       if [ -n "$ISSUE_NUMBER" ]; then
                           echo "Merge it once the report in #$ISSUE_NUMBER has been dealt with. Merging it first hides the changed passages from the next run."
                       else
-                          echo "No Issue is open and this run reported no findings, so the lock change records sections that are newly cited or no longer cited. Merge it after review."
+                          echo "No Issue is open and this run reported no findings, so the lock change records sections that are newly cited or no longer cited. Read the removed ones first, and merge it after review."
+                      fi
+                      echo ""
+                      echo "$CHANGES"
+                      if [ -z "$ISSUE_NUMBER" ]; then
                           echo ""
                           echo "The job summary lists any page that could not be fetched: $RUN_URL"
                       fi
