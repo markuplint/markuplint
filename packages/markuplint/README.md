@@ -69,12 +69,13 @@ $ npx markuplint --help
 
 Usage
 	$ markuplint <HTML file paths (glob format)>
-	$ <stdout> | markuplint
-	$ <stdout> | markuplint -              Read the source from the standard input. Not with file paths, --search or --fix.
+	$ <stdout> | markuplint                Read the source from the standard input when the output is a terminal. Not with --search, --fix or the suppressions options.
+	$ <stdout> | markuplint -              Read the source from the standard input. Not with file paths, --search, --fix or the suppressions options.
 
 Options
 	--config,                -c FILE_PATH  A configuration file path.
 	--fix,                                 Fix HTML.
+	--fix-dry-run                          Show what --fix would change without writing files.
 	--format,                -f FORMAT     Output format. Support "JSON", "Simple", "GitHub" and "Standard". Default: "Standard".
 	--no-search-config                     No search a configure file automatically.
 	--ignore-ext                           Evaluate files that are received even though the type of extension.
@@ -87,11 +88,11 @@ Options
 	--show-config                          Output computed configuration of the target file. Supports "details" and empty. Default: empty.
 	--verbose                              Output with detailed information.
 	--include-node-modules                 Include files in node_modules directory. Default: false.
-	--severity-parse-error                 Specifies the severity level of parse errors. Supports "error", "warning", and "off". Default: "error".
-	--severity-deprecation                 Specifies the severity level of deprecated rule name notices. Supports "error", "warning", and "off". Default: "warning".
+	--severity-parse-error                 Severity for the built-in parse-error channel. Supports "error", "warning", and "off". Unset by default: fatal ParserErrors emit at "error" and non-fatal parse5 and framework parser events are off (opt-in per code via config).
+	--severity-deprecation                 Severity for the built-in rule-deprecation channel (deprecated rule names). Supports "error", "warning", and "off". Default: "warning".
 	--max-count                            Limit the number of violations shown, not the exit code. Default: 0 (no limit).
 	--max-warnings                         Number of warnings to trigger nonzero exit code. Default: -1 (no limit).
-	--progressive-output                   Output results immediately after processing each file. Default: false.
+	--no-progressive-output                Wait until every file is processed before outputting results. Default: false (output progressively).
 
 	--suppress                             [Experimental] Generate/update suppressions file for all current errors.
 	--suppress-rule RULE_ID                [Experimental] Suppress only the specified rule.
@@ -106,7 +107,6 @@ Options
 
 Examples
 	$ markuplint verifyee.html --config path/to/.markuplintrc
-	$ markuplint "**/*.html" --max-count=10
 	$ cat verifyee.html | markuplint
 	$ cat verifyee.html | markuplint - --format JSON | jq
 ```
