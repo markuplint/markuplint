@@ -138,6 +138,8 @@ $ markuplint --prune-suppressions "src/**/*.html"
 - `error`レベルの違反のみが抑制対象です。`warning`と`info`は常にパススルーされます
 - `--suppress`は常に終了コード0（成功）を返します
 - `--suppress`と`--prune-suppressions`は同時に使用できません
+- `--prune-suppressions`はチェックしたファイルのエントリだけを判定し、ほかのファイルのエントリはそのまま残します。通常の実行も、未使用のエントリはチェックしたファイルについてだけ報告します
+- 解析できないsuppressionsファイルや、適用できないエントリがあると、出力形式やオプションにかかわらず実行は失敗します
 - suppressionsファイルはリポジトリにコミットすることを推奨します
 
 ### CLIオプション

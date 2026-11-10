@@ -46,6 +46,8 @@ markuplint "src/**/*.html" --format JSON
 markuplint "src/**/*.html" --max-count=50
 ```
 
+制限されるのは表示だけです。終了コードはすべての違反を反映するため、CIを通すには以下の方法を使います。
+
 ### 警告のしきい値を設定
 
 ```shell

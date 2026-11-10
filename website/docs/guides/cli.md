@@ -42,7 +42,7 @@ With `--fix`, the exit code reflects the violations **remaining in the fixed out
 | `--verbose`                | none         | none                                     | false                          | Output with detailed information.                                            |
 | `--include-node-modules`   | none         | none                                     | false                          | Include files in node_modules directory.                                     |
 | `--severity-parse-error`   | none         | `error`, `warning` or `off`              | `error`                        | Specifies the severity level of parse errors.                                |
-| `--max-count`              | none         | Number                                   | `0`                            | Limit the number of violations shown. `0` means no limit.                    |
+| `--max-count`              | none         | Number                                   | `0`                            | Limit the number of violations shown, not the exit code. `0` means no limit. |
 | `--max-warnings`           | none         | Number                                   | `-1`                           | Number of warnings to trigger nonzero exit code. `-1` means no limit.        |
 | `--no-progressive-output`  | none         | none                                     | false                          | Wait until every file is processed before outputting results.                |
 | `--suppress`               | none         | none                                     | false                          | **[Experimental]** Generate/update suppressions file for all current errors. |
@@ -72,7 +72,7 @@ Answer the interactive questions and the required modules will be installed auto
 
 ### `--max-count`
 
-Limit the number of violations shown in the output. When the limit is reached, remaining files are skipped and marked as "skipped" in the output. This option is particularly useful when introducing Markuplint to existing projects with many violations, as it helps manage overwhelming output and improves performance.
+Limit the number of violations shown in the output. When the limit is reached, the violations of the remaining files are not shown, and those files are marked as "skipped" in the output. They are still checked, so their violations count toward the exit code. This option is particularly useful when introducing Markuplint to existing projects with many violations, as it helps manage overwhelming output.
 
 ```shell
 # Show only the first 10 violations
@@ -87,11 +87,12 @@ $ markuplint index.html --max-count=0
 
 **Key features:**
 
-- **Performance optimization**: Stops rule execution once the limit is reached, improving performance on large projects
 - **Gradual adoption**: Allows incremental improvement by focusing on a manageable number of issues
 - **Information display**: Shows an informational message when violations are truncated (in standard format only)
 - **Format compatibility**: Works seamlessly with all output formats (`--format=json`, `--format=simple`, etc.)
-- **Fix compatibility**: When used with `--fix`, the limit is ignored to ensure complete fixes
+- **Fix compatibility**: When used with `--fix` or `--fix-dry-run`, the limit is ignored to ensure complete fixes
+- **Exit code**: The limit decides what the report shows, not the exit code. Every file is still checked, and all its violations count, including the ones the limit hides and those of the files marked as "skipped"
+- **Suppressions compatibility**: Violations that a [suppressions](#suppress) file suppresses do not count toward the limit. `--suppress` and `--prune-suppressions` ignore the limit, so that the file records and prunes what the whole run found
 
 **Usage example for gradual improvement:**
 
@@ -100,7 +101,7 @@ $ markuplint index.html --max-count=0
 3. Fix violations gradually and reduce the limit over time
 4. Eventually remove the limit when all violations are fixed
 
-Note: Files that are skipped due to the limit will be marked as "skipped" in the output, making it clear which files were not processed.
+Note: Files whose violations are not shown due to the limit are marked as "skipped" in the output, making it clear which files were not reported. They are still checked and count toward the exit code, so the limit does not make a run with violations pass. To let CI pass with the existing violations, use [`--suppress`](#suppress) or [`--max-warnings`](#--max-warnings).
 
 ### `--max-warnings`
 
@@ -148,7 +149,6 @@ $ markuplint "**/*.html" --no-progressive-output
 - **Real-time feedback**: See results as soon as each file is processed
 - **Improved UX**: Prevents the appearance of CLI being frozen during large file processing
 - **JSON format exception**: JSON output always uses batch mode regardless of this setting
-- **Suppressions exception**: When an active [suppressions](#suppress) file has entries, the CLI falls back to batch mode for the whole run, since which violations are suppressed can only be determined after every file has been checked
 - **`--max-count` exception**: When `--max-count` is set, the CLI falls back to batch mode for the whole run, since the limit applies across the whole run rather than per file
 - **Performance**: No performance impact, only changes output timing
 

@@ -138,6 +138,8 @@ Each entry includes an optional **scope selector** that narrows the suppression 
 - Only `error`-severity violations are suppressed; `warning` and `info` always pass through
 - `--suppress` always exits with code 0 (success)
 - `--suppress` and `--prune-suppressions` cannot be used together
+- `--prune-suppressions` judges only the entries of the files it checked; the entries of other files are kept as they are. A normal run likewise reports unused entries only for the files it checked
+- A suppressions file that cannot be parsed, or an entry that cannot be applied, fails the run whatever the output format or options
 - The suppressions file should be committed to your repository
 
 ### CLI options

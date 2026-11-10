@@ -162,11 +162,51 @@ describe('Bulk Suppressions CLI', { timeout: 30_000 }, () => {
 		]);
 
 		// The suppressed rule must not appear in either mode, and both modes
-		// must agree, since progressive output falls back to batch mode
-		// whenever a non-empty suppressions file is active.
+		// must agree: progressive output applies a file's suppressions before
+		// it prints that file.
 		expect(withoutProgressive.stdout).not.toContain('no-duplicate-attr');
 		expect(withProgressive.stdout).not.toContain('no-duplicate-attr');
 		expect(withProgressive.stdout).toBe(withoutProgressive.stdout);
 		expect(withProgressive.exitCode).toBe(withoutProgressive.exitCode);
+	});
+
+	test('--max-count exits the same with a suppressions file that suppresses nothing as without one', async () => {
+		const maxCountDir = path.resolve(import.meta.dirname, '../../test/max-count');
+		const target = path.join(maxCountDir, 'a.html');
+		const args = [
+			'--no-color',
+			'--no-search-config',
+			'--format',
+			'simple',
+			'--max-count=1',
+			'-c',
+			path.join(maxCountDir, 'config.json'),
+			target,
+		];
+		const unrelatedSuppressions = path.join(tmpDir, 'markuplint-suppressions.json');
+		const relPath = path.relative(tmpDir, target).split(path.sep).join('/');
+		await fs.writeFile(unrelatedSuppressions, JSON.stringify({ [relPath]: { 'required-attr': { count: 1 } } }));
+
+		const [without, withFile] = await Promise.all([
+			execa(entryFilePath, [...args, '--suppressions-location', path.join(tmpDir, 'none.json')], {
+				reject: false,
+			}),
+			execa(entryFilePath, [...args, '--suppressions-location', unrelatedSuppressions], { reject: false }),
+		]);
+
+		// `--max-count` hides the `no-hardcoded-id` error from the report, not from the verdict.
+		expect(without.exitCode).toBe(1);
+		expect(withFile.exitCode).toBe(1);
+		expect(withFile.stderr).toContain('no-duplicate-attr');
+		expect(withFile.stderr).not.toContain('no-hardcoded-id');
+
+		// An entry that does cover the hidden error leaves only the warning, which does not fail the run.
+		const coveringSuppressions = path.join(tmpDir, 'covering-suppressions.json');
+		await fs.writeFile(coveringSuppressions, JSON.stringify({ [relPath]: { 'no-hardcoded-id': { count: 1 } } }));
+		const covering = await execa(entryFilePath, [...args, '--suppressions-location', coveringSuppressions], {
+			reject: false,
+		});
+		expect(covering.exitCode).toBe(0);
+		expect(covering.stderr).toContain('no-duplicate-attr');
 	});
 });
