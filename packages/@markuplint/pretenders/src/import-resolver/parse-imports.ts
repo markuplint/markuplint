@@ -19,7 +19,9 @@ import type { ImportBinding } from './types.js';
 
 import { isFatalError } from '@markuplint/shared';
 import { init, parse } from 'es-module-lexer';
-import ts from 'typescript';
+import * as ts from 'typescript/ast';
+import { hasSyntaxError, parseSource } from '../ts-api.js';
+import { forEachChild } from '../ts-ast.js';
 
 import { collectImportBindings } from './analyze-jsx-imports.js';
 import { dynamicBindings, dynamicImportNames } from './dynamic-import-name.js';
@@ -188,37 +190,13 @@ const EXTENSIONS: ReadonlyMap<ts.ScriptKind, string> = new Map([
 ]);
 
 /**
- * The source parsed by the TypeScript parser, or `null` when it finds a syntax error in it. The
- * syntactic diagnostics are asked of a program that holds that one file (no library, nothing
- * resolved), which is the public way to get them (`parseDiagnostics` of the source file is internal)
- * and parses the source once. It runs only for a source the lexer has rejected, which is the
- * exception except for MDX, whose markdown the lexer rejects whenever the file has any.
+ * The source parsed by the TypeScript parser, or `null` when it finds a syntax error in it. It runs
+ * only for a source the lexer has rejected, which is the exception except for MDX, whose markdown
+ * the lexer rejects whenever the file has any.
  */
 function parseWithoutSyntaxError(source: string, scriptKind: ts.ScriptKind): ts.SourceFile | null {
 	const fileName = `script${EXTENSIONS.get(scriptKind) ?? '.ts'}`;
-	const sourceFile = ts.createSourceFile(fileName, source, ts.ScriptTarget.Latest, true, scriptKind);
-	const program = ts.createProgram({
-		rootNames: [fileName],
-		options: {
-			noLib: true,
-			noResolve: true,
-			allowJs: true,
-			jsx: ts.JsxEmit.Preserve,
-			target: ts.ScriptTarget.Latest,
-		},
-		host: {
-			getSourceFile: name => (name === fileName ? sourceFile : undefined),
-			getDefaultLibFileName: () => 'lib.d.ts',
-			writeFile: () => {},
-			getCurrentDirectory: () => '',
-			getCanonicalFileName: name => name,
-			useCaseSensitiveFileNames: () => true,
-			getNewLine: () => '\n',
-			fileExists: name => name === fileName,
-			readFile: () => {},
-		},
-	});
-	return program.getSyntacticDiagnostics(sourceFile).length === 0 ? sourceFile : null;
+	return hasSyntaxError(fileName, source) ? null : parseSource(fileName, source, scriptKind);
 }
 
 /**
@@ -232,13 +210,13 @@ function namesOfDynamicImports(
 	scriptKind: ts.ScriptKind,
 ): ReadonlyMap<number, readonly DynamicImportName[]> {
 	const names = new Map<number, readonly DynamicImportName[]>();
-	const sourceFile = ts.createSourceFile('script', source, ts.ScriptTarget.Latest, true, scriptKind);
+	const sourceFile = parseSource('script', source, scriptKind);
 
 	const visit = (node: ts.Node) => {
 		if (ts.isCallExpression(node) && node.expression.kind === ts.SyntaxKind.ImportKeyword) {
 			names.set(node.getStart(sourceFile), dynamicImportNames(node));
 		}
-		ts.forEachChild(node, visit);
+		forEachChild(node, visit);
 	};
 	visit(sourceFile);
 

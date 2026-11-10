@@ -1,9 +1,9 @@
-import type { Expression, Node, SignatureDeclaration } from 'typescript';
+import type { Expression, Node, SignatureDeclaration } from 'typescript/ast';
 
-import ts from 'typescript';
+import * as ts from 'typescript/ast';
+import { forEachChild } from '../ts-ast.js';
 
 const {
-	forEachChild,
 	isAsExpression,
 	isBindingElement,
 	isClassDeclaration,
@@ -13,7 +13,7 @@ const {
 	isIdentifier,
 	isNonNullExpression,
 	isObjectBindingPattern,
-	isParameter,
+	isParameterDeclaration,
 	isParenthesizedExpression,
 	isPropertyAccessExpression,
 	isSatisfiesExpression,
@@ -72,7 +72,7 @@ export function createPropResolver(
 		propsName = props.name.text;
 	} else if (isObjectBindingPattern(props.name)) {
 		for (const element of props.name.elements) {
-			if (element.dotDotDotToken || element.initializer || !isIdentifier(element.name)) {
+			if (element.dotDotDotToken || element.initializer || !element.name || !isIdentifier(element.name)) {
 				continue;
 			}
 			const { propertyName } = element;
@@ -138,7 +138,7 @@ function collectDeclaredNames(
 	) => {
 		if (
 			(isVariableDeclaration(child) ||
-				isParameter(child) ||
+				isParameterDeclaration(child) ||
 				isBindingElement(child) ||
 				isFunctionDeclaration(child) ||
 				isFunctionExpression(child) ||

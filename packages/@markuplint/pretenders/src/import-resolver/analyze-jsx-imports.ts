@@ -20,11 +20,12 @@
  */
 
 import type { ImportBinding } from './types.js';
-import type { SourceFile } from 'typescript';
+import type { SourceFile } from 'typescript/ast';
 
 import path from 'node:path';
 
-import ts from 'typescript';
+import * as ts from 'typescript/ast';
+import { forEachChild, isTypeOnlyImportClause } from '../ts-ast.js';
 
 import { dynamicBindings, dynamicImportNames } from './dynamic-import-name.js';
 
@@ -80,7 +81,7 @@ function collectDynamicImports(
 			bindings.push(...dynamicBindings(dynamicImportNames(node), specifier.text));
 		}
 	}
-	ts.forEachChild(node, child => collectDynamicImports(child, bindings));
+	forEachChild(node, child => collectDynamicImports(child, bindings));
 }
 
 /**
@@ -93,7 +94,7 @@ function staticImportBindings(
 ): ImportBinding[] {
 	const bindings: ImportBinding[] = [];
 
-	if (node.importClause?.isTypeOnly || !ts.isStringLiteral(node.moduleSpecifier)) {
+	if (isTypeOnlyImportClause(node.importClause) || !ts.isStringLiteral(node.moduleSpecifier)) {
 		return bindings;
 	}
 	const importClause = node.importClause;

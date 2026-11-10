@@ -97,7 +97,7 @@ describe('parseImports error handling', () => {
 			lexer.parse.mockImplementation(() => {
 				throw Object.assign(new Error('Parse error @:1:3'), { idx: 2 });
 			});
-			const [parseImports, { default: ts }] = await Promise.all([loadParseImports(), import('typescript')]);
+			const [parseImports, ts] = await Promise.all([loadParseImports(), import('typescript/ast')]);
 
 			await expect(
 				parseImports(

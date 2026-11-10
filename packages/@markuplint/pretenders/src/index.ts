@@ -53,7 +53,9 @@
  *   resolution (module resolution, tsconfig parsing, export tables, parsed JSX
  *   `SourceFile`s, auto-scan results) and what was settled about the parsers: one that
  *   was not installed is looked for again, as the parsers are the user's to install while
- *   the host runs. A long-running host (watch mode, an editor
+ *   the host runs. It also stops the TypeScript compiler process (`ts-api.ts`), which the
+ *   next scan starts again: each call costs one start of it, so a host should not call this
+ *   more often than the contract below needs. A long-running host (watch mode, an editor
  *   extension) that re-resolves pretenders across file edits must call this after each
  *   edit. Some of these caches do notice a file's content changing on their own, but the
  *   ones keyed by path alone — module resolution, tsconfig parsing, disk-backed export
@@ -76,8 +78,9 @@
 import { clearAutoScanCache } from './auto-scan.js';
 import { clearExportTableCache } from './dependency-mapper.js';
 import { clearModuleResolutionCaches } from './import-resolver/resolve-module-file.js';
-import { clearSourceFileCache } from './jsx/compiler-host.js';
+import { clearSourceFileCache } from './jsx/scan-source-files.js';
 import { clearScannerLoaderCaches } from './scanner-loader.js';
+import { closeTsApi } from './ts-api.js';
 
 export type { AutoScanOptions } from './auto-scan.js';
 export { autoScan } from './auto-scan.js';
@@ -92,15 +95,21 @@ export type { ImportBinding, ImportAnalysisResult } from './import-resolver/type
 export type * from './types.js';
 
 /**
- * Clears the module-level caches that back import/export resolution (see the
- * module-level "Caching" section above for why a long-running host must call this).
+ * Clears the module-level caches that back import/export resolution, and stops the TypeScript
+ * compiler process (see the module-level "Caching" section above for why a long-running host
+ * must call this, and what it costs).
  */
 export function clearPretenderCaches() {
 	clearExportTableCache();
-	clearModuleResolutionCaches();
-	clearSourceFileCache();
 	clearAutoScanCache();
 	clearScannerLoaderCaches();
+	try {
+		// These ask the compiler process, which may have died: the process is stopped whatever happens.
+		clearModuleResolutionCaches();
+		clearSourceFileCache();
+	} finally {
+		closeTsApi();
+	}
 }
 
 // Companion Module pattern types

@@ -1,6 +1,6 @@
 import { describe, test, expect } from 'vitest';
 
-import ts from 'typescript';
+import * as ts from 'typescript/ast';
 
 import { parseImports } from './parse-imports.js';
 

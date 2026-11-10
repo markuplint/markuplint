@@ -3,18 +3,18 @@ import type { PropResolver } from './resolve-prop.js';
 import type { ContentEntry, SlotInfo } from '../contents.js';
 import type { NamespaceURI } from '@markuplint/ml-ast';
 import type { PretenderContent, Slot } from '@markuplint/ml-config';
-import type { JsxChild, JsxElement, JsxOpeningElement, JsxTagNameExpression, Node, SourceFile } from 'typescript';
+import type { JsxChild, JsxElement, JsxOpeningElement, JsxTagNameExpression, Node, SourceFile } from 'typescript/ast';
 
 import { uriToPretenderNamespace } from '@markuplint/ml-config';
 import { getNamespaceBelow } from '@markuplint/parser-utils';
-import ts from 'typescript';
+import * as ts from 'typescript/ast';
+import { forEachChild } from '../ts-ast.js';
 
 import { isTrivialContents, resolveTextEntries } from '../contents.js';
 
 import { getAttributes, toPretenderAttrs } from './get-attributes.js';
 
 const {
-	forEachChild,
 	isIdentifier,
 	isJsxAttributes,
 	isJsxElement,

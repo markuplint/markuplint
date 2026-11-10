@@ -29,6 +29,8 @@ Scanning a Vue, Svelte or Astro file needs the parser package of that language n
 | Svelte   | `@markuplint/svelte-parser` |
 | Astro    | `@markuplint/astro-parser`  |
 
+Reading JSX, TypeScript and `tsconfig.json` goes through the compiler API of the `typescript` package, which this package depends on. It runs the compiler as a child process, so the platform package that `typescript` installs for your machine (`@typescript/typescript-<platform>`, an optional dependency of `typescript`) must be installed: where it is not, scanning fails with an error that says so, and installing without optional dependencies leaves it out. The process starts with the first scan and stays until `clearPretenderCaches()`; it does not keep Node.js from exiting.
+
 The JSX scanner needs no parser. The parser of a language also decides what a component name is in it (and, for Vue, which tags are native), so `@markuplint/jsx-parser` and `@markuplint/mdx-parser` matter when you resolve components of JSX and MDX through `pretenders.auto`; without the parser of a language, the rule that most languages share is used.
 
 markuplint needs this package for the `pretenders.scan` and `pretenders.auto` options, and for a pretender that has a `filePath`: one written by hand, by a scan, or in the data of `pretenders.files` and `pretenders.imports` (the CLI below writes it). It fails with how to install this package when it is missing.
@@ -436,7 +438,7 @@ Not recorded: declaration files and anything under `node_modules`; files that do
 
 ### `clearPretenderCaches()`
 
-Clears the module-level caches that back import/export resolution (module resolution, export tables, parsed JSX source files, `autoScan` results). None of these caches expire on their own, so a long-running host (watch mode, an editor extension) that keeps resolving pretenders across file edits must call this after each edit to a file in the `dependencies` — otherwise a renamed export or a newly valid tsconfig `paths` alias keeps resolving as it did before the change for the rest of the process's lifetime.
+Clears the module-level caches that back import/export resolution (module resolution, export tables, parsed JSX source files, `autoScan` results), and stops the TypeScript compiler process (see [Installation](#installation)); the next scan starts it again, which is the cost of the first scan after each call. None of these caches expire on their own, so a long-running host (watch mode, an editor extension) that keeps resolving pretenders across file edits must call this after each edit to a file in the `dependencies` — otherwise a renamed export or a newly valid tsconfig `paths` alias keeps resolving as it did before the change for the rest of the process's lifetime.
 
 ```ts
 import { clearPretenderCaches } from '@markuplint/pretenders';

@@ -61,7 +61,8 @@ import path from 'node:path';
 
 import { isComponentName, isSVGElement } from '@markuplint/parser-utils';
 import { camelize, capitalize, isMultiWordName, vueTagNameMatches } from '@markuplint/shared';
-import ts from 'typescript';
+import * as ts from 'typescript/ast';
+import { parseSource } from '../ts-api.js';
 
 import { getExportTable, getReExportSources } from '../export-table.js';
 import {
@@ -138,7 +139,7 @@ function parseScript(
 	const scriptKind = scriptKindForJsxLang(block.lang);
 	return scriptKind === null
 		? parseImports(block.content)
-		: collectImportBindings(ts.createSourceFile('script', block.content, ts.ScriptTarget.Latest, true, scriptKind));
+		: collectImportBindings(parseSource('script', block.content, scriptKind));
 }
 
 /**
@@ -203,15 +204,7 @@ async function analyzeTemplateImports(filePath: string, source: string): Promise
 	const blocks = scanner?.extractTemplateImports?.(source) ?? [];
 	return blocks.flatMap(({ expression, value }) => {
 		const statement = value === undefined ? `await ${expression};` : `const ${value} = await ${expression};`;
-		return collectImportBindings(
-			ts.createSourceFile(
-				'template',
-				`(async () => { ${statement} });`,
-				ts.ScriptTarget.Latest,
-				true,
-				ts.ScriptKind.TS,
-			),
-		);
+		return collectImportBindings(parseSource('template', `(async () => { ${statement} });`, ts.ScriptKind.TS));
 	});
 }
 
@@ -271,7 +264,7 @@ function distinct(specifiers: readonly string[]): string[] {
 }
 
 function parseJsLike(filePath: string, source: string) {
-	return ts.createSourceFile(filePath, source, ts.ScriptTarget.Latest, true, scriptKindForPath(filePath));
+	return parseSource(filePath, source, scriptKindForPath(filePath));
 }
 
 async function analyzeVueOptionsApi(source: string): Promise<ImportAnalysisResult> {

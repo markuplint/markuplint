@@ -1,6 +1,6 @@
 import { describe, expect, test } from 'vitest';
 
-import ts from 'typescript';
+import * as ts from 'typescript/ast';
 
 import { analyzeScript, createTemplatePropResolver } from './analyze-script.js';
 
@@ -28,6 +28,27 @@ describe('analyzeScript: Vue <script setup>', () => {
 			['label', 'label'],
 			['title', 'title'],
 		]);
+	});
+
+	test('reads the props of a script that has a namespace import', () => {
+		expect(locals('vue', "import * as m from './m'\ndefineProps(['label'])")).toStrictEqual([['label', 'label']]);
+	});
+
+	test('reads the props of a script that has a named import next to a default one', () => {
+		expect(locals('vue', "import a, { b } from './m'\ndefineProps(['label'])")).toStrictEqual([['label', 'label']]);
+	});
+
+	test.each([
+		['an array pattern with a hole', 'const [a, , b] = list'],
+		['an object pattern with a rest', 'const { a, ...rest } = obj'],
+		['a nested pattern with a hole', 'const { a: [, b] } = obj'],
+		['a pattern in a function parameter', 'function f({ a }, [, b]) {}'],
+	])('reads the props of a script that declares %s', (_, declaration) => {
+		expect(locals('vue', `${declaration}\ndefineProps(['label'])`)).toStrictEqual([['label', 'label']]);
+	});
+
+	test('the object form of defineProps skips a spread', () => {
+		expect(locals('vue', 'defineProps({ ...base, label: String })')).toStrictEqual([['label', 'label']]);
 	});
 
 	test('the object form of defineProps; a prop with a default is not trusted', () => {

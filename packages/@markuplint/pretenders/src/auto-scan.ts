@@ -6,8 +6,8 @@
  * the transitively-referenced component files, then scans all of them in one
  * batch. This lets `pretenders: { auto: true }` work without any
  * pre-configured `files`/`scan` glob, at the cost of running a scan per lint
- * target instead of once per project (see `jsx/compiler-host.ts` for the
- * content-based caching that offsets this).
+ * target instead of once per project (see `jsx/scan-source-files.ts` for how the
+ * files of a scan are read).
  *
  * Traversal is extension-agnostic — a `.tsx` entry can import a `.vue` file
  * and vice versa, even though TypeScript's own module resolution can't
@@ -58,7 +58,7 @@ const SCANNABLE_EXTENSIONS = new Set([
 // was picked without a measured basis, which is why `pretenders.auto` lets
 // a config override it. The limit holds for every file type because the
 // final `scan()` is told not to follow imports (`followImports: false`):
-// otherwise jsxScanner's ts.Program would pull in whatever the collected
+// otherwise jsxScanner's TypeScript program would pull in whatever the collected
 // files import, past this depth.
 const DEFAULT_DEPTH = 8;
 

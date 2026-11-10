@@ -12,12 +12,23 @@ import type { Draft } from './create-identify.js';
 import type { PropResolver } from './resolve-prop.js';
 import type { PretenderScanJSXOptions } from './types.js';
 import type { Pretender } from '@markuplint/ml-config';
-import type { ExportAssignment, FunctionDeclaration, JSDoc, Node, SourceFile, VariableDeclaration } from 'typescript';
+import type {
+	ExportAssignment,
+	FunctionDeclaration,
+	JSDoc,
+	Node,
+	SourceFile,
+	VariableDeclaration,
+} from 'typescript/ast';
+import type { RawCompilerOptions } from 'typescript/proto';
 
 import path from 'node:path';
 
 import { getPosition } from '@markuplint/parser-utils/location';
-import ts from 'typescript';
+import * as ts from 'typescript/ast';
+import { JsxEmit } from 'typescript/sync';
+
+import { forEachChild } from '../ts-ast.js';
 
 import { createScanner } from '../create-scanner.js';
 import { DEFAULT_LOCAL_NAME, wrappedIdentifier } from '../export-table.js';
@@ -27,7 +38,7 @@ import { PretenderDirector } from '../pretender-director.js';
 import { componentNameOfFile } from '../template/derive-name.js';
 
 import { collectReturnExpressions, findComponentFunction, resolveRoots } from './collect-roots.js';
-import { createCachingCompilerHost } from './compiler-host.js';
+import { readScanSourceFiles } from './scan-source-files.js';
 import { createIdentity, mergeDrafts } from './create-identify.js';
 import { finder } from './finder.js';
 import { getAttributes, toPretenderAttrs } from './get-attributes.js';
@@ -35,19 +46,16 @@ import { getSlotInfo } from './get-contents.js';
 import { createPropResolver } from './resolve-prop.js';
 
 const {
-	createProgram,
-	forEachChild,
 	isCallExpression,
 	isExportAssignment,
 	isFunctionDeclaration,
 	isTaggedTemplateExpression,
 	isVariableDeclaration,
-	JsxEmit,
 } = ts;
 
 // `noLib`/`types: []` skip loading lib.d.ts and @types packages, which this
 // scanner never needs (it only walks JSX syntax, never type-checks).
-const COMPILER_OPTIONS: ts.CompilerOptions = {
+const COMPILER_OPTIONS: RawCompilerOptions = {
 	jsx: JsxEmit.ReactJSX,
 	allowJs: true,
 	noLib: true,
@@ -142,10 +150,8 @@ export const jsxScanner = createScanner<PretenderScanJSXOptions>(
 		});
 
 		const compilerOptions = followImports ? COMPILER_OPTIONS : { ...COMPILER_OPTIONS, noResolve: true };
-		const host = createCachingCompilerHost(compilerOptions, sources);
-		const program = createProgram(files, compilerOptions, host);
 
-		for (const sourceFile of program.getSourceFiles()) {
+		for (const sourceFile of readScanSourceFiles(files, compilerOptions, sources)) {
 			if (!sourceFile.isDeclarationFile) {
 				// The program reaches files beyond `files` through relative imports; a
 				// change to any of them can change what is scanned.
@@ -439,13 +445,16 @@ function optsOut(
 	// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
 	dec: Node,
 ) {
-	if (!('jsDoc' in dec) || !dec.jsDoc) {
+	if (!dec.jsDoc) {
 		return false;
 	}
 	const pretendsTag = (dec.jsDoc as JSDoc[])
 		.flatMap(doc => doc.tags ?? [])
 		.find(doc => doc.tagName.text.toLowerCase() === 'pretends');
-	return pretendsTag?.comment === 'null';
+	// The comment of a tag is a list of nodes (text and `{@link}`s), not a string. It opts out only when
+	// it is exactly one text node, `null`: `@pretends null for now` and `@pretends {@link X}` do not.
+	const comment = pretendsTag?.comment ?? [];
+	return comment.length === 1 && comment[0]?.kind === ts.SyntaxKind.JSDocText && comment[0].text === 'null';
 }
 
 function toRegexp(pattern: string) {

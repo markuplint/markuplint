@@ -6,12 +6,12 @@ import type {
 	Node,
 	SignatureDeclaration,
 	SourceFile,
-} from 'typescript';
+} from 'typescript/ast';
 
-import ts from 'typescript';
+import * as ts from 'typescript/ast';
+import { forEachChild, isClassLike, isFunctionLike } from '../ts-ast.js';
 
 const {
-	forEachChild,
 	isArrowFunction,
 	isAsExpression,
 	isBinaryExpression,
@@ -20,7 +20,6 @@ const {
 	isConditionalExpression,
 	isFunctionDeclaration,
 	isFunctionExpression,
-	isFunctionLike,
 	isJsxElement,
 	isJsxExpression,
 	isJsxFragment,
@@ -110,7 +109,7 @@ export function collectReturnExpressions(
 		// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
 		node: Node,
 	) => {
-		if (isFunctionLike(node) || ts.isClassLike(node)) {
+		if (isFunctionLike(node) || isClassLike(node)) {
 			return;
 		}
 		if (isReturnStatement(node)) {
