@@ -55,7 +55,7 @@ npx markuplint "src/**/*.html" --prune-suppressions
 # GitHub Actions annotations
 npx markuplint "src/**/*.html" --format GitHub
 
-# Limit output for large projects
+# Limit output for large projects (the exit code is unaffected)
 npx markuplint "src/**/*.html" --max-count=50
 ```
 
