@@ -554,6 +554,74 @@ describe('a name that an id reference gives is looked for in the tree of the ele
 	});
 });
 
+describe('a name from content reads the rendered children', () => {
+	const nameOf = (code: string, selector: string) => {
+		const doc = createTestDocument(code);
+		return must(doc.deepQuerySelectorAll(selector)[0]).getAccessibleName(ARIA_RECOMMENDED_VERSION);
+	};
+
+	test('an ordinary template contributes nothing, text or elements', () => {
+		expect(nameOf('<button><template>Save</template></button>', 'button')).toBe('');
+		expect(nameOf('<button><template><span>Save</span></template></button>', 'button')).toBe('');
+	});
+
+	test('a template that fails to attach a shadow root contributes nothing', () => {
+		expect(nameOf('<button><template shadowrootmode="open">Save</template></button>', 'button')).toBe('');
+	});
+
+	test('the content of a declarative shadow root is the name of the host', () => {
+		expect(nameOf('<div role="button"><template shadowrootmode="open">Save</template></div>', 'div')).toBe('Save');
+		expect(nameOf('<div role="button"><template shadowrootmode="closed">Save</template></div>', 'div')).toBe(
+			'Save',
+		);
+		expect(
+			nameOf('<div role="button"><template shadowrootmode="open"><span>Save</span></template></div>', 'div'),
+		).toBe('Save');
+	});
+
+	test('a button in a declarative shadow root keeps the name of its own content', () => {
+		expect(nameOf('<div><template shadowrootmode="open"><button>Save</button></template></div>', 'button')).toBe(
+			'Save',
+		);
+	});
+
+	test('a template whose shadow root is not known to be attached contributes nothing', async () => {
+		const { parser } = await import('@markuplint/svelte-parser');
+		const doc = createTestDocument('<Foo role="button"><template shadowrootmode="open">Save</template></Foo>', {
+			parser,
+		});
+		const template = must(doc.deepQuerySelectorAll('template')[0]);
+		expect(template.declarativeShadowRootAttachment).toBe('unknown');
+		expect(must(template.parentElement).getAccessibleName(ARIA_RECOMMENDED_VERSION)).toBe('');
+	});
+
+	test('an empty declarative shadow root hides the light DOM of the host', () => {
+		expect(nameOf('<div role="button"><template shadowrootmode="open"></template>Save</div>', 'div')).toBe('');
+	});
+
+	test('light DOM text stays when the shadow root is not known to be attached', async () => {
+		const { parser } = await import('@markuplint/svelte-parser');
+		const doc = createTestDocument('<Foo role="button">Save<template shadowrootmode="open"></template></Foo>', {
+			parser,
+		});
+		const template = must(doc.deepQuerySelectorAll('template')[0]);
+		expect(template.declarativeShadowRootAttachment).toBe('unknown');
+		expect(must(template.parentElement).getAccessibleName(ARIA_RECOMMENDED_VERSION)).toBe('Save');
+	});
+
+	test('what is written beside the template is not rendered in the host', () => {
+		expect(nameOf('<div role="button"><template shadowrootmode="open">Shadow</template>Light</div>', 'div')).toBe(
+			'Shadow',
+		);
+		expect(
+			nameOf(
+				'<div role="button"><template shadowrootmode="open">Shadow</template><template>Light</template></div>',
+				'div',
+			),
+		).toBe('Shadow');
+	});
+});
+
 describe('an element that is in no tree', () => {
 	test.each([
 		[
