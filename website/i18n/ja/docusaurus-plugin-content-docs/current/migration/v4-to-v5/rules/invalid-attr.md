@@ -70,7 +70,7 @@ v5 では、これまで `Any` として素通りしていた領域について�
 
 - **invalid-credentials** ([URL LS §1.1](https://url.spec.whatwg.org/#invalid-credentials)): `<a href="http://user:pass@example.com">`, `<a href="//user@example.com">`, さらに `<a href="http://@example.com">` (空の userinfo も authority に `@` を含む点で違反)。URL から userinfo を除いてください。
 - **special-scheme-missing-following-solidus** ([URL LS](https://url.spec.whatwg.org/#special-scheme-missing-following-solidus)): `<a href="http:foo">`, `<a href="https:/foo">`, `<a href="ftp:bar">`。スペシャルスキーム URL は `scheme://` を要求します。
-- **file-scheme-missing-following-solidus** ([URL LS](https://url.spec.whatwg.org/#file-scheme-missing-following-solidus)): `<a href="file:foo">`, `<a href="file:/foo">`, `<a href="file:">`。三本スラッシュ形式 `file:///path` を使用してください。
+- **file-scheme-missing-following-solidus** ([URL LS](https://url.spec.whatwg.org/#special-scheme-missing-following-solidus)): `<a href="file:foo">`, `<a href="file:/foo">`, `<a href="file:">`。三本スラッシュ形式 `file:///path` を使用してください。
 - **invalid-reverse-solidus** ([URL LS](https://url.spec.whatwg.org/#invalid-reverse-solidus)): `<a href="http://example.com\foo">`, `<a href="/foo\bar">`。URL LS はスペシャルスキーム URL の `\` を `/` に自動変換しますが validation error として報告します。非スペシャルスキーム (`data:`, `mailto:`) は opaque path の一部として扱うため引き続き受理されます。
 - **file-invalid-Windows-drive-letter** ([URL LS](https://url.spec.whatwg.org/#file-invalid-windows-drive-letter)): `<a href="file:///C|/foo">`。URL LS が `C|` を `C:` に自動補正します。コロン形式を使用してください。
 - **複数の `#`** ([URL LS — invalid-URL-unit](https://url.spec.whatwg.org/#invalid-url-unit) fragment state): `<a href="http://example.com/#a#b">`。2 つ目の `#` は自動 percent-encode されますが URL writing 文法では不正です。内側の `#` を `%23` に percent-encode するか除去してください。
