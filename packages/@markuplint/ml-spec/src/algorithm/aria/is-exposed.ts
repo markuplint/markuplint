@@ -21,7 +21,7 @@ type AttrOfMLDOM = Attr & { readonly isAbsent?: true };
  *
  * The ancestors it reads are those of the accessibility tree ({@link getComposedParentElement}).
  *
- * @see https://www.w3.org/TR/wai-aria-1.2/#accessibility_tree
+ * @see https://w3c.github.io/aria/#accessibility_tree
  *
  * @param el - The DOM element to check for accessibility tree exposure
  * @param specs - The full markup language specification
@@ -68,7 +68,7 @@ export function isExposed(
 /**
  * Excluding Elements from the Accessibility Tree
  *
- * @see https://www.w3.org/TR/wai-aria-1.2/#tree_exclusion
+ * @see https://w3c.github.io/aria/#tree_exclusion
  *
  * @param specs
  * @param el
@@ -157,7 +157,7 @@ function isExcluding(
  * user agents MUST provide an accessible object in the accessibility tree
  * for DOM elements that meet any of the following criteria:
  *
- * @see https://www.w3.org/TR/wai-aria-1.2/#tree_inclusion
+ * @see https://w3c.github.io/aria/#tree_inclusion
  *
  * @param specs
  * @param el

@@ -20,8 +20,8 @@ import { makeResult } from './result.js';
  * Returns null if no element-specific rule applies, letting the caller
  * fall through to name-from-content (Step 2F) or title fallback (Step 2I).
  *
- * @see https://www.w3.org/TR/accname-1.2/#computation-steps — AccName 1.2 §4.3.2 Step 2E
- * @see https://www.w3.org/TR/html-aam-1.0/#accessible-name-and-description-computation — HTML-AAM §4.1
+ * @see https://w3c.github.io/accname/#computation-steps — AccName 1.2 §4.3.2 Step 2E
+ * @see https://www.w3.org/TR/html-aam/#accessible-name-and-description-computation — HTML-AAM §4
  */
 export function getElementSpecificName(
 	el: AccnameElement,
@@ -86,9 +86,9 @@ export function getElementSpecificName(
 }
 
 /**
- * HTML-AAM §4.1 (input[text-like], textarea, select, meter, progress, output).
+ * HTML-AAM §3.5.76 (input[text-like], textarea, select, meter, progress, output).
  * Name sources: label → title → placeholder.
- * @see https://www.w3.org/TR/html-aam-1.0/#el-input-text
+ * @see https://www.w3.org/TR/html-aam/#el-input-text
  */
 function handleLabelableWithTitle(
 	el: AccnameElement,
@@ -116,13 +116,13 @@ function handleLabelableWithTitle(
 }
 
 /**
- * HTML-AAM §4.1 (input — dispatches by type).
+ * HTML-AAM §3.5.76 (input — dispatches by type).
  * Text-like types: label → title → placeholder.
  * Button/submit/reset: label → value → default label.
  * Image: label → alt → title → default label.
  * Hidden: always empty.
  * Checkbox/radio: label → title.
- * @see https://www.w3.org/TR/html-aam-1.0/#el-input-text
+ * @see https://www.w3.org/TR/html-aam/#el-input-text
  */
 function handleInput(
 	el: AccnameElement,
@@ -154,9 +154,9 @@ function handleInput(
 }
 
 /**
- * HTML-AAM §4.1 (input[type=button/submit/reset]).
+ * HTML-AAM §3.5.58 (input[type=button/submit/reset]).
  * Name sources: label → value → title → default label (submit="Submit", reset="Reset").
- * @see https://www.w3.org/TR/html-aam-1.0/#el-input-button
+ * @see https://www.w3.org/TR/html-aam/#el-input-button
  */
 function handleInputButton(
 	el: AccnameElement,
@@ -193,9 +193,9 @@ function handleInputButton(
 }
 
 /**
- * HTML-AAM §4.1 (input[type=image]).
+ * HTML-AAM §3.5.66 (input[type=image]).
  * Name sources: label → alt → title → default ("Submit Query").
- * @see https://www.w3.org/TR/html-aam-1.0/#el-input-image
+ * @see https://www.w3.org/TR/html-aam/#el-input-image
  */
 function handleInputImage(
 	el: AccnameElement,
@@ -223,9 +223,9 @@ function handleInputImage(
 }
 
 /**
- * HTML-AAM §4.1 (button).
+ * HTML-AAM §3.5.20 (button).
  * Name sources: label → content → title.
- * @see https://www.w3.org/TR/html-aam-1.0/#el-button
+ * @see https://www.w3.org/TR/html-aam/#el-button
  */
 function handleButton(
 	el: AccnameElement,
@@ -253,9 +253,9 @@ function handleButton(
 }
 
 /**
- * HTML-AAM §4.1 (fieldset).
+ * HTML-AAM §3.5.40 (fieldset).
  * Name sources: legend (content) → title.
- * @see https://www.w3.org/TR/html-aam-1.0/#el-fieldset
+ * @see https://www.w3.org/TR/html-aam/#el-fieldset
  */
 function handleFieldset(
 	el: AccnameElement,
@@ -281,9 +281,9 @@ function handleFieldset(
 }
 
 /**
- * HTML-AAM §4.1 (table).
+ * HTML-AAM §3.5.127 (table).
  * Name sources: caption (content) → title.
- * @see https://www.w3.org/TR/html-aam-1.0/#el-table
+ * @see https://www.w3.org/TR/html-aam/#el-table
  */
 function handleTable(
 	el: AccnameElement,
@@ -309,10 +309,10 @@ function handleTable(
 }
 
 /**
- * HTML-AAM §4.1 (img).
+ * HTML-AAM §3.5.56 (img).
  * Name sources: alt → title (only when alt is not specified).
  * When alt="" (empty), returns empty name with null source (decorative image).
- * @see https://www.w3.org/TR/html-aam-1.0/#el-img
+ * @see https://www.w3.org/TR/html-aam/#el-img
  */
 function handleImg(el: AccnameElement): AccnameResult | null {
 	if (el.hasAttribute('alt')) {
@@ -329,9 +329,9 @@ function handleImg(el: AccnameElement): AccnameResult | null {
 }
 
 /**
- * HTML-AAM §4.1 (area).
+ * HTML-AAM §3.5.6 (area).
  * Name sources: alt → title.
- * @see https://www.w3.org/TR/html-aam-1.0/#el-area
+ * @see https://www.w3.org/TR/html-aam/#el-area
  */
 function handleArea(el: AccnameElement): AccnameResult | null {
 	const alt = el.getAttribute('alt');
@@ -348,10 +348,10 @@ function handleArea(el: AccnameElement): AccnameResult | null {
 }
 
 /**
- * HTML-AAM §4.1 (figure).
+ * HTML-AAM §3.5.42 (figure).
  * Name sources: title only. Note: figcaption provides the accessible
  * *description*, not the name, per HTML-AAM.
- * @see https://www.w3.org/TR/html-aam-1.0/#el-figure
+ * @see https://www.w3.org/TR/html-aam/#el-figure
  */
 function handleFigure(el: AccnameElement): AccnameResult | null {
 	const title = el.getAttribute('title');
@@ -363,9 +363,9 @@ function handleFigure(el: AccnameElement): AccnameResult | null {
 }
 
 /**
- * HTML-AAM §4.1 (summary).
+ * HTML-AAM §3.5.124 (summary).
  * Name sources: content → title.
- * @see https://www.w3.org/TR/html-aam-1.0/#el-summary
+ * @see https://www.w3.org/TR/html-aam/#el-summary
  */
 function handleSummary(
 	el: AccnameElement,
@@ -388,9 +388,9 @@ function handleSummary(
 }
 
 /**
- * HTML-AAM §4.1 (a[href]).
+ * HTML-AAM §3.5.2 (a[href]).
  * Name sources: content → title.
- * @see https://www.w3.org/TR/html-aam-1.0/#el-a
+ * @see https://www.w3.org/TR/html-aam/#el-a
  */
 function handleAnchor(
 	el: AccnameElement,
@@ -413,8 +413,8 @@ function handleAnchor(
 }
 
 /**
- * HTML-AAM §4.1 (iframe) — name from title attribute only.
- * @see https://www.w3.org/TR/html-aam-1.0/#el-iframe
+ * HTML-AAM §3.5.55 (iframe) — name from title attribute only.
+ * @see https://www.w3.org/TR/html-aam/#el-iframe
  */
 function handleTitleOnly(el: AccnameElement): AccnameResult | null {
 	const title = el.getAttribute('title');
@@ -427,7 +427,7 @@ function handleTitleOnly(el: AccnameElement): AccnameResult | null {
 
 /**
  * SVG-AAM: SVG elements get name from `<title>` child element.
- * @see https://www.w3.org/TR/svg-aam-1.0/#mapping_additional_nd — SVG-AAM §8.1
+ * @see https://www.w3.org/TR/svg-aam/#mapping_additional_nd — SVG-AAM §7.1
  */
 function handleSvgElement(el: AccnameElement, resolver: AccnameResolver): AccnameResult | null {
 	const titleEl = findChildByLocalName(el, 'title', resolver);

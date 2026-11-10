@@ -36,7 +36,7 @@ const computingElements = new WeakSet<Element>();
  * @param specs - The ML specification data for role resolution
  * @param version - The ARIA version to use for role computation
  * @returns The computed accessible name string, or an empty string if none is found
- * @see https://www.w3.org/TR/accname-1.2/#computation-steps — AccName 1.2 §4.3.2
+ * @see https://w3c.github.io/accname/#computation-steps — AccName 1.2 §4.3.2
  */
 export function getAccname(
 	// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
