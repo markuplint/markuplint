@@ -430,12 +430,16 @@ export class SvelteParser extends Parser<SvelteNode> {
 			isDynamicValue = true;
 		}
 
-		// A single expression in quotes is the expression: `disabled="{false}"` is `disabled={false}`
-		// ("Quoting a singular expression does not affect how the value is parsed, but in Svelte 6 it
-		// will cause the value to be coerced to a string",
-		// https://svelte.dev/docs/svelte/basic-markup#Attributes-and-props). A value with text around
-		// the expression (`page/{p}`) or several expressions is a string. The tokens stay those of the
-		// source (the quotes are the quotes), and the expression is `potentialValue`.
+		// A single expression in quotes is the expression: `disabled="{false}"` is `disabled={false}`:
+		//
+		// > Quoting a singular expression does not affect how the value is parsed, but in Svelte 6 it
+		// > will cause the value to be coerced to a string:
+		//
+		// @see https://svelte.dev/docs/svelte/basic-markup#Element-attributes
+		//
+		// A value with text around the expression (`page/{p}`) or several expressions is a string. The
+		// tokens stay those of the source (the quotes are the quotes), and the expression is
+		// `potentialValue`.
 		if (
 			!isDynamicValue &&
 			attr.name.raw !== '' &&

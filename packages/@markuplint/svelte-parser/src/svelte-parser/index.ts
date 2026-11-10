@@ -218,7 +218,7 @@ function svelteParseComponentDirect(template: string): {
  * fails (`css_*`), only that style block is masked and parsing is retried. When that is still not enough,
  * every `<style>` is masked and the ones that are children of the fragment are the top-level ones.
  *
- * @see https://svelte.dev/docs/svelte/nested-style-elements
+ * @see https://svelte.dev/docs/svelte/nested-style-elements#main
  * @param template - The source of the component
  * @returns The nodes, and the offsets in `template` where a top-level `<style>` starts: the nodes have
  * a comment (`Comment`) there, and the positions of every node are positions in `template`
