@@ -10,6 +10,14 @@ $ markuplint "**/*.html"
 
 The CLI takes target HTML files as arguments. Glob patterns are also accepted.
 
+The `-` operand reads the source from standard input, so it works whether or not the output is piped. It cannot be combined with file paths, `--search` or `--fix` (there is no file to write the fixed source to). It waits for the end of the input (Ctrl-D in a terminal). An empty input is linted as an empty source. To lint a file that is named `-`, write `./-`.
+
+Without any argument, standard input is read only when the output is a terminal (for example `cat target.html | markuplint`). Use `-` when the output is piped too.
+
+```shell
+$ cat target.html | markuplint - --format JSON | jq
+```
+
 It returns exit code `1` when an error is found, or when warnings are found with `--no-allow-warnings` or exceed `--max-warnings`, and `0` otherwise. The exit code is the same whatever `--format` is, `JSON` included.
 
 With `--fix`, the exit code reflects the violations **remaining in the fixed output**: it returns `0` when every violation has been fixed. With `--fix-dry-run`, files are not modified, so the exit code reflects the file on disk.

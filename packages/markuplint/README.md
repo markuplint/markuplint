@@ -70,6 +70,7 @@ $ npx markuplint --help
 Usage
 	$ markuplint <HTML file paths (glob format)>
 	$ <stdout> | markuplint
+	$ <stdout> | markuplint -              Read the source from the standard input. Not with file paths, --search or --fix.
 
 Options
 	--config,                -c FILE_PATH  A configuration file path.
@@ -107,6 +108,7 @@ Examples
 	$ markuplint verifyee.html --config path/to/.markuplintrc
 	$ markuplint "**/*.html" --max-count=10
 	$ cat verifyee.html | markuplint
+	$ cat verifyee.html | markuplint - --format JSON | jq
 ```
 
 ### Bulk Suppressions (Experimental)
