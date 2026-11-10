@@ -46,6 +46,8 @@ export function output(results: MLResultInfo, options: CLIOptions) {
 	msg = options.color ? msg : stripAnsi(msg);
 
 	// If it has errors, Write to `stderr` and failure and exit.
+	// `index.ts` overwrites this `exitCode` with the verdict `command()` returns, which is the one
+	// that counts (warnings are written here too, yet only `--no-allow-warnings` fails on them).
 	if (results.violations.length > 0) {
 		process.stderr.write(msg);
 		process.exitCode = 1;
@@ -108,7 +110,7 @@ function createSummaryLines(summary: SummaryInfo) {
 
 	if (summary.skippedFileCount > 0) {
 		out.push(
-			`${font.yellow('⚠')} ${pluralize(summary.skippedFileCount, 'file')} skipped because --max-count was reached`,
+			`${font.yellow('⚠')} ${pluralize(summary.skippedFileCount, 'file')} not reported because --max-count was reached (violations in ${summary.skippedFileCount === 1 ? 'it' : 'them'} still count toward the exit code)`,
 		);
 	}
 

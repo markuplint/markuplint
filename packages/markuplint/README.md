@@ -70,6 +70,7 @@ $ npx markuplint --help
 Usage
 	$ markuplint <HTML file paths (glob format)>
 	$ <stdout> | markuplint
+	$ <stdout> | markuplint -              Read the source from the standard input. Not with file paths, --search or --fix.
 
 Options
 	--config,                -c FILE_PATH  A configuration file path.
@@ -88,7 +89,7 @@ Options
 	--include-node-modules                 Include files in node_modules directory. Default: false.
 	--severity-parse-error                 Specifies the severity level of parse errors. Supports "error", "warning", and "off". Default: "error".
 	--severity-deprecation                 Specifies the severity level of deprecated rule name notices. Supports "error", "warning", and "off". Default: "warning".
-	--max-count                            Limit the number of violations shown. Default: 0 (no limit).
+	--max-count                            Limit the number of violations shown, not the exit code. Default: 0 (no limit).
 	--max-warnings                         Number of warnings to trigger nonzero exit code. Default: -1 (no limit).
 	--progressive-output                   Output results immediately after processing each file. Default: false.
 
@@ -107,6 +108,7 @@ Examples
 	$ markuplint verifyee.html --config path/to/.markuplintrc
 	$ markuplint "**/*.html" --max-count=10
 	$ cat verifyee.html | markuplint
+	$ cat verifyee.html | markuplint - --format JSON | jq
 ```
 
 ### Bulk Suppressions (Experimental)
