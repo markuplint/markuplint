@@ -1592,7 +1592,7 @@ __metadata:
   dependencies:
     "@markuplint/ml-ast": "npm:5.3.0"
     "@markuplint/parser-utils": "npm:5.4.0"
-    parse5: "npm:^8.0.1"
+    parse5: "npm:^8.1.0"
     type-fest: "npm:^5.10.0"
   languageName: unknown
   linkType: soft
@@ -1651,7 +1651,7 @@ __metadata:
     "@types/semver": "npm:7.8.0"
     debug: "npm:^4.4.3"
     markuplint: "npm:5.4.0"
-    semver: "npm:^7.8.5"
+    semver: "npm:^7.8.6"
     vscode-jsonrpc: "npm:8.2.1"
     vscode-languageserver: "npm:^9.0.1"
     vscode-languageserver-textdocument: "npm:^1.0.16"
@@ -1868,7 +1868,7 @@ __metadata:
     "@markuplint/selector": "npm:5.4.0"
     "@markuplint/shared": "npm:5.4.0"
     "@markuplint/types": "npm:5.4.0"
-    "@mdn/browser-compat-data": "npm:^8.1.7"
+    "@mdn/browser-compat-data": "npm:^8.1.8"
     "@types/debug": "npm:^4.1.13"
     ansi-colors: "npm:^4.1.3"
     browserslist: "npm:^4.29.5"
@@ -1949,7 +1949,7 @@ __metadata:
   dependencies:
     "@esbuild/linux-x64": "npm:0.28.2"
     "@esbuild/win32-x64": "npm:0.28.2"
-    "@rollup/rollup-linux-x64-gnu": "npm:4.66.0"
+    "@rollup/rollup-linux-x64-gnu": "npm:4.67.4"
     "@vitest/coverage-v8": "npm:4.1.12"
     browser-resolve: "npm:2.0.0"
     execa: "npm:10.2.1"
@@ -2006,10 +2006,10 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@mdn/browser-compat-data@npm:^8.1.7":
-  version: 8.1.7
-  resolution: "@mdn/browser-compat-data@npm:8.1.7"
-  checksum: 10c0/de43ed28eabc250547e32558b6b4e01195dd7243714d05550c993a1609cb728549018d03e42d252548f49b236affc8c93db6055c5464c10d442d732fe856bef1
+"@mdn/browser-compat-data@npm:^8.1.8":
+  version: 8.1.8
+  resolution: "@mdn/browser-compat-data@npm:8.1.8"
+  checksum: 10c0/de989bf84aed905d312a3e892cd1b185a55622345c92ccaf655332c0f26d8654a6327a4ec738d507c8140f80674feba39a4b7d1dc236dc80cce668bbb5eaa88f
   languageName: node
   linkType: hard
 
@@ -2990,9 +2990,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@rollup/rollup-linux-x64-gnu@npm:4.66.0":
-  version: 4.66.0
-  resolution: "@rollup/rollup-linux-x64-gnu@npm:4.66.0"
+"@rollup/rollup-linux-x64-gnu@npm:4.67.4":
+  version: 4.67.4
+  resolution: "@rollup/rollup-linux-x64-gnu@npm:4.67.4"
   conditions: os=linux & cpu=x64 & libc=glibc
   languageName: node
   linkType: hard
@@ -11331,7 +11331,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"parse5@npm:^8.0.0, parse5@npm:^8.0.1":
+"parse5@npm:^8.0.0, parse5@npm:^8.0.1, parse5@npm:^8.1.0":
   version: 8.1.0
   resolution: "parse5@npm:8.1.0"
   dependencies:
@@ -12286,6 +12286,15 @@ __metadata:
   bin:
     semver: bin/semver.js
   checksum: 10c0/b1f3127a5be8125a94f37188b361c212466c292c6910adce3ec106cff5dc211ccaedc4739c11bb70fda59d6fc1f040a9bca289f4e093451521a2372e5231fe0c
+  languageName: node
+  linkType: hard
+
+"semver@npm:^7.8.6":
+  version: 7.8.6
+  resolution: "semver@npm:7.8.6"
+  bin:
+    semver: bin/semver.js
+  checksum: 10c0/bf0a4d16eb067e5391323649e46b4a268644d7f8ee88e37c7668d35e861ec145b6e7df576d898007fc0d9a2cedcbc33f71460aa3bbea18eedfa5af58c064d7fe
   languageName: node
   linkType: hard
 
