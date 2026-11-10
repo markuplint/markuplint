@@ -3,7 +3,7 @@ import type { Attr, Element, RuleConfigValue } from '@markuplint/ml-core';
 import type { Attribute } from '@markuplint/ml-spec';
 import type { WritableDeep } from 'type-fest';
 
-import { getDOMValue } from '@markuplint/ml-core';
+import { getDOMValue, getRenderedChildNodes } from '@markuplint/ml-core';
 import { asciiLowerCase, decodeEntities } from '@markuplint/shared';
 
 export { getDOMValue };
@@ -430,11 +430,14 @@ export function accnameMayComeFromUnknownContent(
 }
 
 /**
- * Walks the same children the accname resolver of `@markuplint/ml-core` does:
- * for a pretended element, the children the component renders (`as.childNodes`,
- * placed into `contents`), so that a nested component contributes its own
- * `contents`; otherwise the children as written. A hidden child is skipped
- * because the name computation never reads it (`isHidden` in that resolver).
+ * Walks the children {@link getRenderedChildNodes} returns. A hidden child is
+ * skipped because the name computation never reads it (`isHidden` in that resolver).
+ *
+ * A `template` whose shadow root is only maybe attached returns `true` before
+ * that walk. Its content is omitted from the computed name, so an ancestor
+ * whose computed name is empty is not reported: the rule calls this only after
+ * the computed name is empty. Light DOM text that remains in the computed name
+ * is still a name, and the rule does not reach this function.
  */
 function hasUnknownContent(
 	// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
@@ -444,8 +447,10 @@ function hasUnknownContent(
 	if (context?.type === 'pretender' && context.slotContent?.mutable) {
 		return true;
 	}
-	const given = context?.type === 'pretender' ? [...context.as.childNodes] : [...el.childNodes];
-	const children = context?.type === 'pretender' && context.slotContent ? context.slotContent.fill(given) : given;
+	if (context?.type !== 'pretender' && el.isHTMLTemplateElement && el.declarativeShadowRootAttachment === 'unknown') {
+		return true;
+	}
+	const children = [...getRenderedChildNodes(el)];
 	return children.some(
 		child =>
 			child.is(child.ELEMENT_NODE) &&

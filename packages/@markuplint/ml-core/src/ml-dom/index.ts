@@ -10,5 +10,6 @@ export type { MLChildNode as ChildNode } from './node/child-node.js';
 export type { MLShadowRoot as ShadowRoot } from './node/shadow-root.js';
 export type { DeclarativeShadowRootAttachment } from './helper/tree-scope.js';
 export { getDOMValue } from './helper/tree-scope.js';
+export { getRenderedChildNodes } from './helper/accname.js';
 
 export { MLDocument as Document } from './node/document.js';

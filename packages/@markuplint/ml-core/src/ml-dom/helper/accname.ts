@@ -1,6 +1,8 @@
 import type { MLDocumentFragment } from '../node/document-fragment.js';
 import type { MLDocument } from '../node/document.js';
 import type { MLElement } from '../node/element.js';
+import type { MLNode } from '../node/node.js';
+import type { PlainData, RuleConfigValue } from '@markuplint/ml-config';
 import type {
 	AccnameElement,
 	AccnameNode,
@@ -143,6 +145,54 @@ function logFailure(
 	}
 }
 
+/**
+ * The children the accessible-name computation renders for `el`.
+ *
+ * An ordinary `template` element contributes none: its content is another tree
+ * and is not rendered where the element is written. A host renders the child
+ * nodes of its declarative shadow root, of either mode. A `template` whose
+ * shadow root is only maybe attached contributes none too, because that root
+ * is not there to read. Assigned nodes are not computed
+ * (`MLElement#assignedNodes` returns none), so a slot contributes its own children.
+ *
+ * A pretended component is unchanged: `as.childNodes` is empty when it never
+ * renders its children (`slots: null`), so text written inside `<Img>Save</Img>`
+ * does not become its name. `contents` may wrap the children given at the usage site.
+ *
+ * > The template contents of a template element are not children of the element itself.
+ *
+ * > If the current node has an attached shadow root, set the rendered child nodes to be the child nodes of the shadow root.
+ *
+ * > Otherwise, if the current node is a slot with assigned nodes, set the rendered child nodes to be the assigned nodes of the current node.
+ *
+ * > Otherwise, set the rendered child nodes to be the child nodes of the current node.
+ *
+ * @template T - The rule configuration value type
+ * @template O - The rule options type
+ * @param el - The element whose rendered children are asked for
+ * @returns The nodes the computation walks
+ * @see https://html.spec.whatwg.org/multipage/scripting.html#the-template-element
+ * @see https://w3c.github.io/accname/#comp_name_from_content
+ */
+export function getRenderedChildNodes<T extends RuleConfigValue, O extends PlainData>(
+	// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
+	el: MLElement<T, O>,
+): Iterable<MLNode<T, O>> {
+	const context = el.pretenderContext;
+	if (context?.type === 'pretender') {
+		const given = [...context.as.childNodes];
+		return context.slotContent ? context.slotContent.fill(given) : given;
+	}
+	const shadowRoot = el.declarativeShadowRoot;
+	if (shadowRoot) {
+		return shadowRoot.childNodes;
+	}
+	if (el.isHTMLTemplateElement) {
+		return [];
+	}
+	return el.childNodes;
+}
+
 function createMLCoreResolver(
 	// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
 	el: MLElement<any, any>,
@@ -214,18 +264,7 @@ function createMLCoreResolver(
 		// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
 		getChildNodes(target: AccnameElement): Iterable<AccnameNode> {
 			// TODO: Remove cast when AccnameResolver is generic (#3178)
-			const targetEl = target as MLElement<any, any>;
-			const context = targetEl.pretenderContext;
-			if (context?.type !== 'pretender') {
-				return targetEl.childNodes;
-			}
-			// The children the component renders: `as.childNodes` is empty when it never
-			// renders its children (`slots: null`), so text written inside `<Img>Save</Img>`
-			// does not become its name.
-			const given = [...context.as.childNodes];
-			// A pretended component renders its own elements (`contents`) around the
-			// children given at the usage site; the name can come from either.
-			return context.slotContent ? context.slotContent.fill(given) : given;
+			return getRenderedChildNodes(target as MLElement<any, any>);
 		},
 	};
 }
