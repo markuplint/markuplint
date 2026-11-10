@@ -623,7 +623,7 @@ test('[no-invalid-attr-value-valid-005] Multiple Type', async () => {
 			col: 18,
 			line: 1,
 			message:
-				'The "command" attribute expects either "toggle-popover", "show-popover", "hide-popover", "close", "request-close", "show-modal". Or, the "command" attribute expects the custom command format. Did you mean "--invalid"? (https://html.spec.whatwg.org/multipage/form-elements.html#valid-custom-command)',
+				'The "command" attribute expects either "toggle-popover", "show-popover", "hide-popover", "close", "request-close", "show-modal". Or, the "command" attribute expects the custom command format. Did you mean "--invalid"? (https://html.spec.whatwg.org/multipage/form-elements.html#attr-button-command-custom)',
 			raw: 'invalid',
 		},
 	]);
@@ -735,7 +735,7 @@ test('[no-invalid-attr-value-invalid-018] command="invalid-value" is invalid', a
 			line: 1,
 			col: 33,
 			message:
-				'The "command" attribute expects either "toggle-popover", "show-popover", "hide-popover", "close", "request-close", "show-modal". Or, the "command" attribute expects the custom command format. Did you mean "--invalid-value"? (https://html.spec.whatwg.org/multipage/form-elements.html#valid-custom-command)',
+				'The "command" attribute expects either "toggle-popover", "show-popover", "hide-popover", "close", "request-close", "show-modal". Or, the "command" attribute expects the custom command format. Did you mean "--invalid-value"? (https://html.spec.whatwg.org/multipage/form-elements.html#attr-button-command-custom)',
 			raw: 'invalid-value',
 		},
 	]);
@@ -909,11 +909,10 @@ test('[no-invalid-attr-value-issue-3626-002] integrity accepts sha256 hash', asy
 	);
 });
 
-test('[no-invalid-attr-value-issue-3598-001] input[type=color] with invalid value', async () => {
+test('[no-invalid-attr-value-issue-3598-001] input[type=color] with a CSS color keyword', async () => {
 	const { violations } = await mlRuleTest(rule, '<input type="color" value="red">');
 	const valueViolation = violations.find(v => v.raw === 'red');
-	expect(valueViolation).toBeDefined();
-	expect(valueViolation!.message).toContain('simple color');
+	expect(valueViolation).toBeUndefined();
 });
 
 test('[no-invalid-attr-value-issue-3598-002] input[type=color] with valid value', async () => {
@@ -1020,6 +1019,13 @@ test('[no-invalid-attr-value-issue-3598-021] input[type=datetime-local] with val
 test('[no-invalid-attr-value-issue-3598-022] input[type=datetime-local] with invalid value', async () => {
 	const { violations } = await mlRuleTest(rule, '<input type="datetime-local" value="2024-01-15">');
 	expect(violations.some(v => v.message.includes('"value"'))).toBe(true);
+});
+
+test('[no-invalid-attr-value-issue-3598-023] input[type=color] with a value that is no CSS color', async () => {
+	const { violations } = await mlRuleTest(rule, '<input type="color" value="not-a-color">');
+	const valueViolation = violations.find(v => v.raw === 'not-a-color');
+	expect(valueViolation).toBeDefined();
+	expect(valueViolation!.message).toContain('CSS color');
 });
 
 test('[no-invalid-attr-value-issue-3189-001] rel=preload with valid as value', async () => {

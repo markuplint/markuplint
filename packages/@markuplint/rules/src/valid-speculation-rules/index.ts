@@ -268,7 +268,7 @@ function validateUrls(
  * Validate a document-rule `where` predicate. A predicate object must contain
  * exactly one of `and` / `or` / `not` / `href_matches` / `selector_matches`.
  *
- * @see https://wicg.github.io/nav-speculation/speculation-rules.html#document-rule-predicates
+ * @see https://html.spec.whatwg.org/multipage/speculative-loading.html#parse-a-document-rule-predicate
  */
 function validatePredicate(
 	predicate: unknown,

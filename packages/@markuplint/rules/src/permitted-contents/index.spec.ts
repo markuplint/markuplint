@@ -3183,6 +3183,11 @@ describe('inter-element whitespace', () => {
 		const { violations } = await mlRuleTest(rule, '<html><head><title>\u00A0</title></head><body></body></html>');
 		expect(violations).toStrictEqual([]);
 	});
+
+	test('[permitted-contents-valid-007] an svg discard element needs no child: its content is zero or more', async () => {
+		const { violations } = await mlRuleTest(rule, '<svg><discard begin="2s" href="#a"></discard></svg>');
+		expect(violations).toStrictEqual([]);
+	});
 });
 
 /**
