@@ -3,6 +3,20 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [5.5.0](https://github.com/markuplint/markuplint/compare/v5.4.0...v5.5.0) (2026-11-10)
+
+### Bug Fixes
+
+* **ml-core:** cite the DOM, CSSOM View and DOM Parsing members at their current anchors ([809f9f0](https://github.com/markuplint/markuplint/commit/809f9f0ae61adca02c9b51beaf7660706f1eaf02))
+* **ml-core:** omit unrendered template content from accessible names ([55688bc](https://github.com/markuplint/markuplint/commit/55688bc6a7b5860de775760fae1fdf9ba6bd94e6))
+* **ml-core:** return the last element child from lastElementChild ([f58cc9f](https://github.com/markuplint/markuplint/commit/f58cc9f2ae9d438ae2235ff6745c00d8a4be517f)), closes [#4503](https://github.com/markuplint/markuplint/issues/4503)
+
+### Features
+
+* **ml-core:** make the DOM tree-aware: template content and declarative shadow roots are trees ([651852d](https://github.com/markuplint/markuplint/commit/651852da83052f7a51aab5f2dd06a4f18d19d36a))
+* **ml-core:** render a literal in an attribute value as the framework renders it ([f6ff61d](https://github.com/markuplint/markuplint/commit/f6ff61d91d180937db972f908e81d796ca9a4774))
+
+
 # [5.4.0](https://github.com/markuplint/markuplint/compare/v5.3.0...v5.4.0) (2026-10-29)
 
 ### Features

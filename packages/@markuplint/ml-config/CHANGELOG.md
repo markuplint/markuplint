@@ -3,6 +3,13 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [5.5.0](https://github.com/markuplint/markuplint/compare/v5.4.0...v5.5.0) (2026-11-10)
+
+### Features
+
+* **ml-config:** add an expression to the value of a pretender attribute ([f66f14c](https://github.com/markuplint/markuplint/commit/f66f14c0ad737f2ce1c732dc675c1f8cee0623c1))
+
+
 # [5.4.0](https://github.com/markuplint/markuplint/compare/v5.3.0...v5.4.0) (2026-10-29)
 
 ### Bug Fixes

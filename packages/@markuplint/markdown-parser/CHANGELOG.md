@@ -3,6 +3,13 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [5.5.0](https://github.com/markuplint/markuplint/compare/v5.4.0...v5.5.0) (2026-11-10)
+
+### Bug Fixes
+
+* **markdown-parser:** count a leading BOM in the positions ([fec416d](https://github.com/markuplint/markuplint/commit/fec416d407504f78df194526b8b32f61205f8afc)), closes [#4488](https://github.com/markuplint/markuplint/issues/4488)
+
+
 # [5.4.0](https://github.com/markuplint/markuplint/compare/v5.3.0...v5.4.0) (2026-10-29)
 
 **Note:** Version bump only for package @markuplint/markdown-parser

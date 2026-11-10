@@ -3,6 +3,23 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [5.5.0](https://github.com/markuplint/markuplint/compare/v5.4.0...v5.5.0) (2026-11-10)
+
+### Bug Fixes
+
+* **markuplint:** exit with the lint verdict under --format json ([3c02102](https://github.com/markuplint/markuplint/commit/3c02102e939565e628447b7c25490e4346db0f20)), closes [#4551](https://github.com/markuplint/markuplint/issues/4551)
+* **markuplint:** keep the whole report on a pipe by not calling process.exit() ([6d98027](https://github.com/markuplint/markuplint/commit/6d98027684cdcd0a3f30d45bebac81813a5a9fc7)), closes [#4554](https://github.com/markuplint/markuplint/issues/4554)
+* **markuplint:** reject the options that act on a file when the source is stdin ([f980686](https://github.com/markuplint/markuplint/commit/f9806863a1e12c3a4d78ef30b739a65ce0318ee6)), closes [#4560](https://github.com/markuplint/markuplint/issues/4560)
+* **markuplint:** report a failure to resolve pretenders as a config-error of the file ([6178627](https://github.com/markuplint/markuplint/commit/61786271a4be989a91e8757c455dbeec9ffe4e9e))
+* **markuplint:** search every tree with --search ([a2e8955](https://github.com/markuplint/markuplint/commit/a2e89552b430e3473c6e7c00c273d05de9b9cdec))
+* **markuplint:** stop --max-count from changing the exit decision ([8dd1b8a](https://github.com/markuplint/markuplint/commit/8dd1b8a86e86c3b0e1410fc22d708baa0282e853)), closes [#4556](https://github.com/markuplint/markuplint/issues/4556)
+* **markuplint:** take configFile as a value of extends is ([789a487](https://github.com/markuplint/markuplint/commit/789a487d3efd257e9e13969674aed9f002b7ee93))
+
+### Features
+
+* **markuplint:** describe the parse errors of framework parsers in the parseError option ([095b21a](https://github.com/markuplint/markuplint/commit/095b21af53ec0cc03a7e87a9dd9a26669978b74d))
+
+
 # [5.4.0](https://github.com/markuplint/markuplint/compare/v5.3.0...v5.4.0) (2026-10-29)
 
 ### Bug Fixes

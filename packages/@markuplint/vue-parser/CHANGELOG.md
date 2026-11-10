@@ -3,6 +3,13 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [5.5.0](https://github.com/markuplint/markuplint/compare/v5.4.0...v5.5.0) (2026-11-10)
+
+### Bug Fixes
+
+* **vue-parser:** treat a style and a script of the template as code that the compiler removes ([44315f6](https://github.com/markuplint/markuplint/commit/44315f692b852ec85f282d2632cf71e09f830594))
+
+
 # [5.4.0](https://github.com/markuplint/markuplint/compare/v5.3.0...v5.4.0) (2026-10-29)
 
 **Note:** Version bump only for package @markuplint/vue-parser

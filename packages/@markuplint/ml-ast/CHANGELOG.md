@@ -3,6 +3,14 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [5.5.0](https://github.com/markuplint/markuplint/compare/v5.4.0...v5.5.0) (2026-11-10)
+
+### Features
+
+* **ml-ast:** declare the language of attribute code and how a framework renders a literal ([06961a5](https://github.com/markuplint/markuplint/commit/06961a541de7821d56dc12609bd2d28796707d48))
+* **ml-ast:** split the parse error code into parse5's and a framework parser's ([0bef7e8](https://github.com/markuplint/markuplint/commit/0bef7e890bb76e8500d59b5bbc4f868d76d2ef55))
+
+
 # [5.3.0](https://github.com/markuplint/markuplint/compare/v5.2.0...v5.3.0) (2026-10-21)
 
 ### Bug Fixes

@@ -3,6 +3,13 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [5.5.0](https://github.com/markuplint/markuplint/compare/v5.4.0...v5.5.0) (2026-11-10)
+
+### Bug Fixes
+
+* **i18n:** translate a sentence that has no placeholder ([6050d7b](https://github.com/markuplint/markuplint/commit/6050d7b2a2de345f186ef93f332aef271ad680f5)), closes [#4488](https://github.com/markuplint/markuplint/issues/4488)
+
+
 # [5.3.0](https://github.com/markuplint/markuplint/compare/v5.2.0...v5.3.0) (2026-10-21)
 
 ### Bug Fixes

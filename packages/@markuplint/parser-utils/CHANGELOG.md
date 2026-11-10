@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [5.5.0](https://github.com/markuplint/markuplint/compare/v5.4.0...v5.5.0) (2026-11-10)
+
+### Bug Fixes
+
+* **parser-utils:** skip a leading BOM before tokenization ([9fa8c85](https://github.com/markuplint/markuplint/commit/9fa8c8584b765667530e1d7224530ff7ce37474d)), closes [#4488](https://github.com/markuplint/markuplint/issues/4488)
+
+### Features
+
+* **parser-utils:** read a literal in the code of an attribute value ([d83b4a0](https://github.com/markuplint/markuplint/commit/d83b4a091b1e78975ab12b81be7096356a95e9c0))
+
+
 # [5.4.0](https://github.com/markuplint/markuplint/compare/v5.3.0...v5.4.0) (2026-10-29)
 
 **Note:** Version bump only for package @markuplint/parser-utils

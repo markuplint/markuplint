@@ -3,6 +3,23 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [5.5.0](https://github.com/markuplint/markuplint/compare/v5.4.0...v5.5.0) (2026-11-10)
+
+### Bug Fixes
+
+* **html-spec:** allow script-supporting elements in table sections, colgroup and dl ([197176a](https://github.com/markuplint/markuplint/commit/197176a7aae805e2949f9b96c6a27f39d478d261)), closes [#3591](https://github.com/markuplint/markuplint/issues/3591) [#4492](https://github.com/markuplint/markuplint/issues/4492)
+* **ml-spec:** skip aria-label on a slot element and cite the current accname and ARIA text ([57fe6a6](https://github.com/markuplint/markuplint/commit/57fe6a6f9ac2cdc7afda7595b67c4c9392a1c073))
+* **ml-spec:** stop the ancestor walks at the boundary of template content ([37d66d9](https://github.com/markuplint/markuplint/commit/37d66d99ac4b6b85f12df6a0cd32aa39cf27d901))
+* report a main element that is not hierarchically correct ([b44c936](https://github.com/markuplint/markuplint/commit/b44c936cf2e40c8142f88fe6b503af6f437cd341))
+
+### Features
+
+* **ml-spec:** add getSelectDisplaySize ([9788707](https://github.com/markuplint/markuplint/commit/9788707dbefa096d15be09e6baf0657e940400eb))
+* **ml-spec:** add movedToHead to the spec for elements a framework places in the head ([c78991c](https://github.com/markuplint/markuplint/commit/c78991c612ed038f6e597a3cc3c06e80d31c47f6))
+* **ml-spec:** declare where a template keeps its children, and resolve aria-labelledby per token ([5534b91](https://github.com/markuplint/markuplint/commit/5534b9149db8f7297e50bb4afadab0749c46ff33)), closes [#104](https://github.com/markuplint/markuplint/issues/104)
+* **ml-spec:** merge how a framework renders a literal, and skip attributes not output ([1f6b61c](https://github.com/markuplint/markuplint/commit/1f6b61cb5137f4409bd10522c44cd5bff7c6f688))
+
+
 # [5.4.0](https://github.com/markuplint/markuplint/compare/v5.3.0...v5.4.0) (2026-10-29)
 
 ### Bug Fixes

@@ -3,6 +3,15 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [5.5.0](https://github.com/markuplint/markuplint/compare/v5.4.0...v5.5.0) (2026-11-10)
+
+### Bug Fixes
+
+* **types:** follow the current Permissions Policy definition for iframe[allow] ([1af1d31](https://github.com/markuplint/markuplint/commit/1af1d318ea0c46086bb40a901f6e3249f71bffe8))
+* **types:** follow the current text of the HTML and Media Queries standards ([75f92d4](https://github.com/markuplint/markuplint/commit/75f92d4a3eda659c761439b2a386a7d44fadab35)), closes [#f00](https://github.com/markuplint/markuplint/issues/f00) [#ff000080](https://github.com/markuplint/markuplint/issues/ff000080)
+* **types:** report the authored text of an invalid enum ([6664b07](https://github.com/markuplint/markuplint/commit/6664b071dfe9627cae725c43932c1eb4ada1493f))
+
+
 # [5.4.0](https://github.com/markuplint/markuplint/compare/v5.3.0...v5.4.0) (2026-10-29)
 
 **Note:** Version bump only for package @markuplint/types

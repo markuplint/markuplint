@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [5.5.0](https://github.com/markuplint/markuplint/compare/v5.4.0...v5.5.0) (2026-11-10)
+
+### Bug Fixes
+
+* **html-parser:** mask a leading BOM ([0b7a829](https://github.com/markuplint/markuplint/commit/0b7a829d6eb31023fcdbda444b026c783d48a5f0)), closes [#4488](https://github.com/markuplint/markuplint/issues/4488)
+
+### Features
+
+* **ml-ast:** split the parse error code into parse5's and a framework parser's ([0bef7e8](https://github.com/markuplint/markuplint/commit/0bef7e890bb76e8500d59b5bbc4f868d76d2ef55))
+
+
 # [5.4.0](https://github.com/markuplint/markuplint/compare/v5.3.0...v5.4.0) (2026-10-29)
 
 **Note:** Version bump only for package @markuplint/html-parser

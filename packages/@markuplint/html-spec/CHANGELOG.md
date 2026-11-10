@@ -3,6 +3,22 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [5.5.0](https://github.com/markuplint/markuplint/compare/v5.4.0...v5.5.0) (2026-11-10)
+
+### Bug Fixes
+
+* **html-spec:** accept as="text" on a modulepreload link ([7bf13ab](https://github.com/markuplint/markuplint/commit/7bf13ab3770c9e8579d758ab105fbad090734c2d)), closes [#4495](https://github.com/markuplint/markuplint/issues/4495) [#4483](https://github.com/markuplint/markuplint/issues/4483)
+* **html-spec:** accept the empty string and a comma-separated email list as attribute values ([858c9a9](https://github.com/markuplint/markuplint/commit/858c9a9897ea7bb52af11a98e1735c4973674612)), closes [#4490](https://github.com/markuplint/markuplint/issues/4490)
+* **html-spec:** allow script-supporting elements in table sections, colgroup and dl ([197176a](https://github.com/markuplint/markuplint/commit/197176a7aae805e2949f9b96c6a27f39d478d261)), closes [#3591](https://github.com/markuplint/markuplint/issues/3591) [#4492](https://github.com/markuplint/markuplint/issues/4492)
+* **html-spec:** allow sizes="auto" on a lazily loaded img without srcset ([dd583ed](https://github.com/markuplint/markuplint/commit/dd583edf138b8940b6bcb059d48073355c636d78)), closes [#4481](https://github.com/markuplint/markuplint/issues/4481)
+* **html-spec:** allow style as the first child where flow content is expected ([7e89da2](https://github.com/markuplint/markuplint/commit/7e89da2ee4d29404c165323124fdcba767dc30f6)), closes [#4475](https://github.com/markuplint/markuplint/issues/4475)
+* **html-spec:** follow the canvas content model and the display size of select ([56c607a](https://github.com/markuplint/markuplint/commit/56c607aa3a87d7c6ba9d79347df4d1d005b83831))
+* **html-spec:** make the content of the svg discard element zero or more ([5c2d36b](https://github.com/markuplint/markuplint/commit/5c2d36be381f01c9bfa100667375fd8d4173cd95))
+* **html-spec:** scrape deprecated roles and properties regardless of the marker wording ([4d0acc2](https://github.com/markuplint/markuplint/commit/4d0acc2e233982db006c44deaad572724010dde8)), closes [#4385](https://github.com/markuplint/markuplint/issues/4385)
+* **html-spec:** stop citing MDN pages that do not exist and report fetch problems ([0b8298f](https://github.com/markuplint/markuplint/commit/0b8298f6a188afa0ea660ad2d0fba01e39248c02))
+* report a main element that is not hierarchically correct ([b44c936](https://github.com/markuplint/markuplint/commit/b44c936cf2e40c8142f88fe6b503af6f437cd341))
+
+
 # [5.4.0](https://github.com/markuplint/markuplint/compare/v5.3.0...v5.4.0) (2026-10-29)
 
 **Note:** Version bump only for package @markuplint/html-spec

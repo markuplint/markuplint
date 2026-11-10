@@ -3,6 +3,27 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [5.5.0](https://github.com/markuplint/markuplint/compare/v5.4.0...v5.5.0) (2026-11-10)
+
+### Bug Fixes
+
+* **html-spec:** allow script-supporting elements in table sections, colgroup and dl ([197176a](https://github.com/markuplint/markuplint/commit/197176a7aae805e2949f9b96c6a27f39d478d261)), closes [#3591](https://github.com/markuplint/markuplint/issues/3591) [#4492](https://github.com/markuplint/markuplint/issues/4492)
+* report a main element that is not hierarchically correct ([b44c936](https://github.com/markuplint/markuplint/commit/b44c936cf2e40c8142f88fe6b503af6f437cd341))
+* **rules:** accept style as the first child in permitted-contents ([0523872](https://github.com/markuplint/markuplint/commit/05238722e9501b7758035d55293a178ab766001a)), closes [#x20](https://github.com/markuplint/markuplint/issues/x20)
+* **rules:** accept the interactive content that canvas allows ([095eb3a](https://github.com/markuplint/markuplint/commit/095eb3aeb16186b0f5cb3f4a3bd342360dae1c2c)), closes [#4491](https://github.com/markuplint/markuplint/issues/4491)
+* **rules:** count an element inside a conditional block as a label's descendant ([6ca1da5](https://github.com/markuplint/markuplint/commit/6ca1da545a903bec024f4418c3595f16d72365bc))
+* **rules:** do not judge an element that the framework moves to the head by its parent ([db28a20](https://github.com/markuplint/markuplint/commit/db28a20bc562233f0c55594077a15276ec9c113a)), closes [#4484](https://github.com/markuplint/markuplint/issues/4484) [#4484](https://github.com/markuplint/markuplint/issues/4484)
+* **rules:** do not look for an ancestor across the boundary of template content ([b660c8b](https://github.com/markuplint/markuplint/commit/b660c8bc5d2b4cbcc16f592ad536db9a2b8bdaaa))
+* **rules:** do not treat template content as an accessible name ([0d004ef](https://github.com/markuplint/markuplint/commit/0d004efd84e6cd201cdcdc66163b89c4b0a714d2))
+* **rules:** ignore comment nodes in permitted-contents ([38881eb](https://github.com/markuplint/markuplint/commit/38881eb71e80bfef45832a8f2378d336e5bfbe09)), closes [#4488](https://github.com/markuplint/markuplint/issues/4488)
+* **rules:** judge an id and a structure in the tree that it is in ([#4489](https://github.com/markuplint/markuplint/issues/4489)) ([b17db6d](https://github.com/markuplint/markuplint/commit/b17db6d813012e127beb2c2b9e3fc21a393e2d4d))
+* **rules:** require as to satisfy every matched link destination ([b4dbea2](https://github.com/markuplint/markuplint/commit/b4dbea2a08d761c90c98098102d7af40cf485849))
+
+### Features
+
+* **rules:** judge an attribute by what the framework renders ([3beee5a](https://github.com/markuplint/markuplint/commit/3beee5ad51e96fc3033b7930fec2889ea5bf18e6))
+
+
 # [5.4.0](https://github.com/markuplint/markuplint/compare/v5.3.0...v5.4.0) (2026-10-29)
 
 ### Bug Fixes

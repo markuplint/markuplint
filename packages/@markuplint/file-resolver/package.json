@@ -1,6 +1,6 @@
 {
 	"name": "@markuplint/file-resolver",
-	"version": "5.4.0",
+	"version": "5.5.0",
 	"description": "The file resolver of markuplint",
 	"repository": {
 		"type": "git",
@@ -31,7 +31,7 @@
 		"clean": "tsc --build --clean"
 	},
 	"devDependencies": {
-		"@markuplint/pretenders": "5.4.0",
+		"@markuplint/pretenders": "5.5.0",
 		"@types/node": "24.19.2"
 	},
 	"peerDependencies": {
@@ -43,14 +43,14 @@
 		}
 	},
 	"dependencies": {
-		"@markuplint/html-parser": "5.4.0",
-		"@markuplint/ml-ast": "5.3.0",
-		"@markuplint/ml-config": "5.4.0",
-		"@markuplint/ml-core": "5.4.0",
-		"@markuplint/ml-spec": "5.4.0",
-		"@markuplint/parser-utils": "5.4.0",
-		"@markuplint/selector": "5.4.0",
-		"@markuplint/shared": "5.4.0",
+		"@markuplint/html-parser": "5.5.0",
+		"@markuplint/ml-ast": "5.5.0",
+		"@markuplint/ml-config": "5.5.0",
+		"@markuplint/ml-core": "5.5.0",
+		"@markuplint/ml-spec": "5.5.0",
+		"@markuplint/parser-utils": "5.5.0",
+		"@markuplint/selector": "5.5.0",
+		"@markuplint/shared": "5.5.0",
 		"cosmiconfig": "^10.0.1",
 		"debug": "^4.4.3",
 		"glob": "^14.0.3",

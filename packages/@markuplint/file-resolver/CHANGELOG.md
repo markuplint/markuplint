@@ -3,6 +3,18 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [5.5.0](https://github.com/markuplint/markuplint/compare/v5.4.0...v5.5.0) (2026-11-10)
+
+### Bug Fixes
+
+* **file-resolver:** do not report a config shared by two extends paths as circular ([8594a37](https://github.com/markuplint/markuplint/commit/8594a373feda1a2f869702b6b16d619d156814c4)), closes [#4552](https://github.com/markuplint/markuplint/issues/4552)
+* **file-resolver:** do not swallow errors other than InvalidSelectorError in validation ([821a661](https://github.com/markuplint/markuplint/commit/821a66170e84537c57d826133bdf486c6276f524))
+* **file-resolver:** load @markuplint/pretenders only when a configuration needs it ([32ee579](https://github.com/markuplint/markuplint/commit/32ee579e4b43cf18ba9787f173796c44966c3b40))
+* **file-resolver:** read the report of a JSON module before the code of a missing one ([95e4869](https://github.com/markuplint/markuplint/commit/95e4869c9be3bd53f853e5a99830514bfec5a51b))
+* **file-resolver:** resolve a value spelled as a path from the configuration's directory ([3fbfeca](https://github.com/markuplint/markuplint/commit/3fbfeca83b29ba852709c50667d60ca28f1dfce6)), closes [#4459](https://github.com/markuplint/markuplint/issues/4459)
+* **file-resolver:** take a JSON module through require() when import() refuses it ([15303ba](https://github.com/markuplint/markuplint/commit/15303baae4e56ac26d1e3eb4522230bae1d93efe))
+
+
 # [5.4.0](https://github.com/markuplint/markuplint/compare/v5.3.0...v5.4.0) (2026-10-29)
 
 ### Bug Fixes
