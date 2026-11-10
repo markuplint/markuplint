@@ -64,6 +64,7 @@
 | 後方隣接兄弟結合子                 | `div + span`                                                                              | ✅       |
 | 後方兄弟結合子                     | `div ~ span`                                                                              | ✅       |
 | 列結合子                           | <code>div \|\| span</code>                                                                | ❌       |
+| ネストセレクタ                     | `&` `& div`                                                                               | ❌       |
 | セレクタリスト                     | `div, span`                                                                               | ✅       |
 
 <!-- textlint-enable ja-technical-writing/max-kanji-continuous-len -->

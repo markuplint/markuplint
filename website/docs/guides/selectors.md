@@ -62,6 +62,7 @@ Markuplint supports parts of [**W3C Selectors Level 4**](https://www.w3.org/TR/s
 | Next-sibling combinator                          | `div + span`                                                                              | ✅      |
 | Subsequent-sibling combinator                    | `div ~ span`                                                                              | ✅      |
 | Column combinator                                | <code>div \|\| span</code>                                                                | ❌      |
+| Nesting selector                                 | `&` `& div`                                                                               | ❌      |
 | Multiple selectors                               | `div, span`                                                                               | ✅      |
 
 </details>
