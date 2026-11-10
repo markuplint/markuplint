@@ -1,0 +1,3 @@
+{
+	"extends": ["./cycle-diamond-a.json", "./cycle-diamond-b.json"]
+}
