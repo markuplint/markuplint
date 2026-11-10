@@ -2,7 +2,7 @@ import type { AccnameElement } from '../algorithm/aria/accname/types.js';
 
 /**
  * ARIA roles that are embedded controls per AccName Step 2C.
- * @see https://www.w3.org/TR/accname-1.2/#comp_embedded_control
+ * @see https://w3c.github.io/accname/#comp_embedded_control
  */
 export const EMBEDDED_CONTROL_ROLES: ReadonlySet<string> = new Set([
 	'textbox',

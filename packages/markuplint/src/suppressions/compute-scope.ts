@@ -74,7 +74,7 @@ const NON_ASCII_IDENT_CODE_POINT =
  * (the one `CSS.escape()` is specified by), in which a code point that is not an ident code point of CSS
  * Syntax is escaped, so the output is always one identifier. A NUL is written as U+FFFD, as the algorithm
  * has it, so it does not read back as NUL. A scope is a CSS selector, and CSS lets any code point be part
- * of an identifier by escaping it, "even ones that CSS uses in its syntax". So `Tabs.Root` (a member tag of JSX, MDX or Svelte) is `Tabs\.Root` and not the element
+ * of an identifier by escaping it, even one that CSS uses in its syntax. So `Tabs.Root` (a member tag of JSX, MDX or Svelte) is `Tabs\.Root` and not the element
  * `Tabs` with the class `Root`, `py-1.5` is `py-1\.5`, `hover:bg-x` is `hover\:bg-x`, `2xl:flex` is
  * `\32 xl\:flex`, and a class that ends with `:nth-of-type(2)` is no position. What this writes and what
  * {@link unescapeIdentifier} reads are one form, so a scope matches the element it was made for.
@@ -86,7 +86,12 @@ const NON_ASCII_IDENT_CODE_POINT =
  * with `:nth-of-type(n)` (`div.a:nth-of-type(2)`) never matched, and is still read as a position. A `\`
  * that such a file holds is read as CSS reads it: `\ba` is the hex escape U+00BA.
  *
+ * CSS Syntax says of an identifier:
+ *
+ * > You can include any code point at all, even ones that CSS uses in its syntax, by escaping it.
+ *
  * @see https://drafts.csswg.org/cssom/#serialize-an-identifier
+ * @see https://www.w3.org/TR/css-syntax-3/#syntax-description
  */
 export function serializeIdentifier(name: string): string {
 	let result = '';
@@ -229,7 +234,7 @@ export function splitScopeAttr(
  * class `a\` at the position 2, and `a\:nth-of-type(2)` is the class `a:nth-of-type(2)`. The escapes
  * are scanned from the start, as {@link splitScopeIdents} does.
  *
- * @see https://www.w3.org/TR/css-syntax-3/#escaping
+ * @see https://www.w3.org/TR/css-syntax-3/#syntax-description
  */
 export function splitScopeNth(segment: string): { readonly base: string; readonly nth: number | null } {
 	// Only an unescaped `:` is looked at: an escaped one is read with its `\` before it, as one character

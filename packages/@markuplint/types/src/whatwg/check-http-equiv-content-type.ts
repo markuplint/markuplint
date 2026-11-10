@@ -12,7 +12,7 @@ const CONTENT_TYPE_RE = /^text\/html;[\t\n\f\r ]*charset=utf-8$/i;
 
 /**
  * Validates the `content` attribute value of `<meta http-equiv="content-type">`
- * against the HTML Living Standard §4.2.5.2 "Encoding declaration" grammar:
+ * against the HTML Living Standard §4.2.5.3 "Encoding declaration" grammar:
  *
  *   ASCII case-insensitive "text/html;"
  *   , optionally ASCII whitespace

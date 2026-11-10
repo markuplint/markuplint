@@ -4,9 +4,10 @@
 // selector extensions.
 {
 	// The JavaScript MIME type essence strings.
-	// https://mimesniff.spec.whatwg.org/#javascript-mime-type
-	// "A string is a JavaScript MIME type essence match if it is an ASCII
-	// case-insensitive match for one of the JavaScript MIME type essence strings."
+	// > A string is a JavaScript MIME type essence match if it is an ASCII
+	// > case-insensitive match for one of the JavaScript MIME type essence strings.
+	//
+	// @see https://mimesniff.spec.whatwg.org/#javascript-mime-type
 	"#JSMIMETypes": "[type='application/ecmascript' i], [type='application/javascript' i], [type='application/x-ecmascript' i], [type='application/x-javascript' i], [type='text/ecmascript' i], [type='text/javascript' i], [type='text/javascript1.0' i], [type='text/javascript1.1' i], [type='text/javascript1.2' i], [type='text/javascript1.3' i], [type='text/javascript1.4' i], [type='text/javascript1.5' i], [type='text/jscript' i], [type='text/livescript' i], [type='text/x-ecmascript' i], [type='text/x-javascript' i]",
 
 	// @see https://html.spec.whatwg.org/multipage/scripting.html#attr-script-type

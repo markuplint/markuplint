@@ -159,3 +159,52 @@ describe('aria-labelledby and aria-label', () => {
 		});
 	});
 });
+
+describe('aria-label of a slot element', () => {
+	test('[aria-steps-slot-001] a slot element does not take its name from aria-label', () => {
+		const el = element('slot', {
+			attrs: { 'aria-label': 'Custom name' },
+		});
+		const result = computeAccessibleName(el, createTestResolver());
+		expect(result.name).toBe('');
+		expect(result.source).toBeNull();
+	});
+
+	test('[aria-steps-slot-002] a slot element goes on to name from content', () => {
+		const el = element('slot', {
+			attrs: { 'aria-label': 'Custom name' },
+			children: [textNode('Fallback content')],
+		});
+		const resolver = createTestResolver({ nameFromContent: new Set(['slot']) });
+		const result = computeAccessibleName(el, resolver);
+		expect(result.name).toBe('Fallback content');
+		expect(result.source).toBe('content');
+	});
+
+	test('[aria-steps-slot-003] a slot element still takes its name from aria-labelledby', () => {
+		const ref = element('span', {
+			attrs: { id: 'label1' },
+			children: [textNode('Label text')],
+		});
+		const el = element('slot', {
+			attrs: { 'aria-labelledby': 'label1', 'aria-label': 'Custom name' },
+		});
+		const resolver = createTestResolver({
+			elements: new Map([['label1', ref]]),
+			nameFromContent: new Set(['span']),
+		});
+		const result = computeAccessibleName(el, resolver);
+		expect(result.name).toBe('Label text');
+		expect(result.source).toBe('aria-labelledby');
+	});
+
+	test('[aria-steps-slot-004] a slot element of another namespace is not the HTML slot element', () => {
+		const el = element('slot', {
+			attrs: { 'aria-label': 'Custom name' },
+			namespaceURI: 'http://www.w3.org/2000/svg',
+		});
+		const result = computeAccessibleName(el, createTestResolver());
+		expect(result.name).toBe('Custom name');
+		expect(result.source).toBe('aria-label');
+	});
+});

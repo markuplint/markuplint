@@ -462,10 +462,13 @@ export type MLASTHtmlParseErrorCode =
  * and its translation).
  *
  * - `vue-ignored-side-effect-tag`: a `<style>` or a `<script>` in the template of a
- *   Vue component, which the compiler removes (`X_IGNORED_SIDE_EFFECT_TAG`:
- *   "Tags with side effect (<script> and <style>) are ignored in client component templates.")
+ *   Vue component, which the compiler removes (`X_IGNORED_SIDE_EFFECT_TAG`).
  *
- * @see https://github.com/vuejs/core/blob/main/packages/compiler-dom/src/errors.ts
+ * The compiler's message for `X_IGNORED_SIDE_EFFECT_TAG`:
+ *
+ * > Tags with side effect (<script> and <style>) are ignored in client component templates.
+ *
+ * @see https://github.com/vuejs/core/blob/main/packages/compiler-dom/src/errors.ts#DOMErrorMessages
  */
 export type MLASTFrameworkParseErrorCode = 'vue-ignored-side-effect-tag';
 

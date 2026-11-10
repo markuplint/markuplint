@@ -125,7 +125,7 @@ test('[helpers-issue-3598-001] resolves condition and validates: valid simple co
 	expect(result).toBe(false);
 });
 
-test('[helpers-issue-3598-002] resolves condition and validates: invalid simple color', () => {
+test('[helpers-issue-3598-002] resolves condition and validates: a CSS color keyword', () => {
 	const el = createTestElement('<input type="color" value="red">');
 	const attrSpecs: readonly Attribute[] = [
 		{
@@ -137,7 +137,7 @@ test('[helpers-issue-3598-002] resolves condition and validates: invalid simple 
 		},
 	];
 	const result = checkValue('value', 'red', false, el, attrSpecs);
-	expect(result).not.toBe(false);
+	expect(result).toBe(false);
 });
 
 test('[helpers-issue-3598-003] resolves second condition: valid URL', () => {
@@ -196,8 +196,8 @@ test('[helpers-issue-3598-006] case-insensitive condition matching', () => {
 		},
 	];
 	const result = checkValue('value', 'red', false, el, attrSpecs);
-	// type=COLOR matches [type='color' i] → validates as SimpleColor → "red" is invalid.
-	expect(result).not.toBe(false);
+	// type=COLOR matches [type='color' i] → validates as SimpleColor → "red" is a valid CSS color.
+	expect(result).toBe(false);
 });
 
 test('[helpers-issue-3598-007] array condition (OR logic)', () => {
@@ -225,9 +225,31 @@ test('[helpers-issue-3598-008] isDynamicValue suppresses invalid-value after con
 			type: [{ condition: "[type='color' i]", type: 'SimpleColor' }],
 		},
 	];
-	// "red" is invalid SimpleColor, but isDynamicValue=true should suppress invalid-value errors.
+	// "red" is a valid CSS color, so this no longer exercises the suppression: [helpers-issue-3598-010] does.
 	const result = checkValue('value', 'red', true, el, attrSpecs);
 	expect(result).toBe(false);
+});
+
+test('[helpers-issue-3598-009] a value that is no CSS color is invalid for type=color', () => {
+	const el = createTestElement('<input type="color" value="not-a-color">');
+	const attrSpecs: readonly Attribute[] = [
+		{
+			name: 'value',
+			type: [{ condition: "[type='color' i]", type: 'SimpleColor' }],
+		},
+	];
+	expect(checkValue('value', 'not-a-color', false, el, attrSpecs)).not.toBe(false);
+});
+
+test('[helpers-issue-3598-010] isDynamicValue suppresses invalid-value for a value that is no CSS color', () => {
+	const el = createTestElement('<input type="color" value="not-a-color">');
+	const attrSpecs: readonly Attribute[] = [
+		{
+			name: 'value',
+			type: [{ condition: "[type='color' i]", type: 'SimpleColor' }],
+		},
+	];
+	expect(checkValue('value', 'not-a-color', true, el, attrSpecs)).toBe(false);
 });
 
 const attrsOf = (code: string, jsx = false) => {

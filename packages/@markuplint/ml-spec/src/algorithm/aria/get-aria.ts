@@ -103,7 +103,7 @@ function optimizePermittedRoles(permittedRoles: ReadonlyDeep<PermittedRoles>, ve
 	}
 	const unique = new Set(permittedRoles);
 
-	// https://www.w3.org/TR/wai-aria-1.2/#note-regarding-the-aria-1-1-none-role
+	// https://w3c.github.io/aria/#none
 	if (unique.has('presentation')) {
 		unique.add('none');
 	}
@@ -111,7 +111,7 @@ function optimizePermittedRoles(permittedRoles: ReadonlyDeep<PermittedRoles>, ve
 		unique.add('presentation');
 	}
 
-	// https://w3c.github.io/aria/#ref-for-image
+	// https://w3c.github.io/aria/#image
 	// In ARIA 1.3, `image` is the primary role name and `img` is a synonym.
 	if (version === '1.3') {
 		if (unique.has('image')) {

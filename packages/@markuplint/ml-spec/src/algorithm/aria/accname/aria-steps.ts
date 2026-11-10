@@ -2,13 +2,16 @@
 
 import type { AccnameComputeFn, AccnameElement, AccnameResolver, AccnameResult } from './types.js';
 
+import { XHTML_NAMESPACE } from '../../../const/index.js';
+
 import { flattenText, makeResult } from './result.js';
 
 /**
  * Implements AccName 1.2 §4.3.2 Step 2B:
- * "If the current node has an `aria-labelledby` attribute that contains
- * at least one valid IDREF, and the current node is not already part of
- * an ongoing `aria-labelledby` traversal, process its IDREFs [...]"
+ *
+ * > Otherwise, if the current node has an aria-labelledby attribute that contains at least one valid IDREF,
+ * > and the current node is not already part of an ongoing aria-labelledby or aria-describedby traversal,
+ * > process its IDREFs in the order they occur:
  *
  * **Self-reference handling** (spec-defined, not a custom extension):
  * An element may reference its own ID in `aria-labelledby` to include its
@@ -19,7 +22,7 @@ import { flattenText, makeResult } from './result.js';
  * visited set — `computeFn` is called with `inLabelledbyTraversal=true`,
  * which causes `compute.ts` to skip Step 2B on the referenced element.
  *
- * @see https://www.w3.org/TR/accname-1.2/#comp_labelledby_traversal — AccName 1.2 §4.3.2 Step 2B
+ * @see https://w3c.github.io/accname/#comp_labelledby_traversal — AccName 1.2 §4.3.2 Step 2B
  */
 export function resolveAriaLabelledby(
 	el: AccnameElement,
@@ -108,12 +111,19 @@ export function computeReferenced(
 
 /**
  * Implements AccName 1.2 §4.3.2 Step 2D:
- * "If the current node has an `aria-label` attribute whose value is
- * not undefined, not the empty string, and not a string of whitespace [...]"
  *
- * @see https://www.w3.org/TR/accname-1.2/#computation-steps — AccName 1.2 §4.3.2 Step 2D
+ * > Otherwise, if the current node is not a slot element and has an aria-label attribute whose value is not undefined,
+ * > not the empty string, nor, when trimmed of whitespace, is not the empty string:
+ *
+ * The `slot` element is the HTML one (the XHTML namespace): the `aria-label` on it is skipped and the
+ * computation goes on to the following steps. A `slot` of another namespace is not the HTML `slot` element.
+ *
+ * @see https://w3c.github.io/accname/#computation-steps — AccName 1.2 §4.3.2 Step 2D
  */
 export function resolveAriaLabel(el: AccnameElement): AccnameResult | null {
+	if (el.localName === 'slot' && el.namespaceURI === XHTML_NAMESPACE) {
+		return null;
+	}
 	const label = el.getAttribute('aria-label');
 	if (label?.trim()) {
 		return makeResult(label, 'aria-label');

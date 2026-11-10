@@ -7,7 +7,7 @@ import type { AccnameElement } from './types.js';
  * the full name computation.
  *
  * Used by `get-computed-role.ts` for SVG accessibility tree inclusion decisions
- * per SVG-AAM §5.1.1. This is a lightweight check that avoids the full AccName
+ * per SVG-AAM §4.1.2. This is a lightweight check that avoids the full AccName
  * algorithm, breaking the circular dependency between role computation and
  * name computation.
  *
@@ -22,7 +22,7 @@ import type { AccnameElement } from './types.js';
  *
  * @param el - The SVG element to check for accessible name sources
  * @returns True if the element has aria-label, aria-labelledby, or a title/desc child
- * @see https://www.w3.org/TR/svg-aam-1.0/#include_elements — SVG-AAM §5.1.1
+ * @see https://www.w3.org/TR/svg-aam/#include_elements — SVG-AAM §4.1.2
  */
 export function hasSvgAccessibleNameSource(el: AccnameElement): boolean {
 	if (el.getAttribute('aria-label')?.trim()) {

@@ -1,9 +1,11 @@
-// https://svgwg.org/specs/animations/#DiscardElement
+// The `discard` element is defined only by SVG Tiny 1.2: SVG Animations Level 2 and SVG 2 no longer define it,
+// while browsers still implement it, so this data follows Tiny 1.2 with the SVG 2 names of its attributes.
+// https://www.w3.org/TR/SVGTiny12/struct.html#DiscardElement
 {
 	"contentModel": {
 		"contents": [
 			{
-				"require": [":model(SVGDescriptive)", "svg|script"]
+				"zeroOrMore": [":model(SVGDescriptive)", "svg|script"]
 			}
 		]
 	},
@@ -13,12 +15,12 @@
 		"#SVGCoreAttrs": ["id", "tabindex", "autofocus", "lang", "xml:space", "class", "style"]
 	},
 	"attributes": {
-		// https://svgwg.org/specs/animations/#DiscardElementBeginAttribute
+		// https://www.w3.org/TR/SVGTiny12/struct.html#DiscardElementBeginAttribute
 		"begin": {
 			"type": "<begin-value-list>",
 			"defaultValue": "0s"
 		},
-		// https://svgwg.org/specs/animations/#DiscardElementHrefAttribute
+		// https://www.w3.org/TR/SVGTiny12/struct.html#DiscardElementHrefAttribute
 		"href": {
 			"type": "URL"
 		}

@@ -467,3 +467,73 @@ describe('the documentation and the sources of the frameworks', () => {
 		expect(collectFromSource(source, 'p/literal-values.ts').inlineQuotes).toHaveLength(1);
 	});
 });
+
+describe('the other standards that markuplint cites', () => {
+	test('[collect-043] watches every WHATWG standard, whatever its subdomain', () => {
+		for (const url of [
+			'https://dom.spec.whatwg.org/#concept-tree-order',
+			'https://url.spec.whatwg.org/#concept-url-parser',
+			'https://infra.spec.whatwg.org/#ascii-whitespace',
+			'https://fetch.spec.whatwg.org/#request-destination-script-like',
+			'https://mimesniff.spec.whatwg.org/#javascript-mime-type',
+			'https://fullscreen.spec.whatwg.org/#fullscreen-element',
+		]) {
+			expect(parseSpecUrl(url), url).toMatchObject({ url, page: url.slice(0, url.indexOf('#')) });
+		}
+	});
+
+	test('[collect-044] watches the specification hosts that the packages cite besides WHATWG and W3C', () => {
+		for (const url of [
+			'https://svgwg.org/svg2-draft/struct.html#SVGElement',
+			'https://drafts.csswg.org/css-values-4/#lengths',
+			'https://microformats.org/wiki/existing-rel-values#HTML5_link_type_extensions',
+			'https://datatracker.ietf.org/doc/html/rfc3986#section-3.1',
+			'https://www.rfc-editor.org/rfc/rfc5646#section-2.1',
+			'https://tc39.es/ecma262/#sec-regexp-pattern-flags',
+			'https://wicg.github.io/webcomponents/spec/imports/#link-type-import',
+			'https://www.iana.org/assignments/media-types/media-types.xhtml',
+		]) {
+			expect(parseSpecUrl(url), url).not.toBeNull();
+		}
+	});
+
+	test('[collect-045] keeps reading a link to a guide, a wiki or a vendor page as informative', () => {
+		for (const url of [
+			'https://www.w3.org/WAI/ARIA/apg/practices/landmark-regions/',
+			'https://developer.mozilla.org/en-US/docs/Web/API/Element',
+			'https://en.wikipedia.org/wiki/Uniform_Resource_Identifier',
+			'https://markuplint.dev/docs/rules/no-duplicate-id',
+		]) {
+			expect(parseSpecUrl(url), url).toBeNull();
+		}
+	});
+});
+
+describe('which link a section number belongs to', () => {
+	test('[collect-046] a § after a URL on the same line belongs to that URL, and is not carried to the next one', () => {
+		const text = [
+			'/**',
+			' * @see https://w3c.github.io/accname/#computation-steps — AccName 1.2 §4.3.2',
+			' * @see https://www.w3.org/TR/html-aam/#el-input-text — HTML-AAM label association',
+			' */',
+			'export default {};',
+		].join('\n');
+		const { citations } = collectFromSource(text, 'm/index.ts');
+		expect(citations.map(c => [c.fragment, c.secno])).toStrictEqual([
+			['computation-steps', '4.3.2'],
+			['el-input-text', null],
+		]);
+	});
+
+	test('[collect-047] a § before the URL still belongs to the next URL, and the first § of a URL is the one that is checked', () => {
+		const text = [
+			'/**',
+			' * Per HTML LS §4.8.13',
+			` * @see ${WHATWG}/image-maps.html#the-map-element — see also §4.8.14`,
+			' */',
+			'export default {};',
+		].join('\n');
+		const { citations } = collectFromSource(text, 'm/index.ts');
+		expect(citations.map(c => [c.fragment, c.secno])).toStrictEqual([['the-map-element', '4.8.13']]);
+	});
+});

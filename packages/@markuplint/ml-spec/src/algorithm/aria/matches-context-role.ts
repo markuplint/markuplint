@@ -46,9 +46,9 @@ function matchesCondition(
 		const parentRole = getComputedRole(specs, parentEl, version, true).role;
 
 		/**
-		 * ARIA 1.3 ("Required Accessibility Parent Role"): "To determine
-		 * whether an element has a parent with the required role, user agents
-		 * MUST ignore any elements with the role `generic` or `none`."
+		 * ARIA 1.3 (Required Accessibility Parent Role): to determine whether an
+		 * element has a parent with the required role, the user agent ignores the
+		 * elements with the role `generic` or `none`.
 		 *
 		 * `presentation`/`none` are transparent in all ARIA versions to stay
 		 * consistent with `getNonPresentationalAncestor` (which already skips

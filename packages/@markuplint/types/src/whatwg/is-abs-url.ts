@@ -8,7 +8,8 @@ import type { FormattedPrimitiveTypeCreator } from '../types.js';
  * >   for a special scheme and not an ASCII case-insensitive match for "file",
  * >   followed by U+003A (:) and a scheme-relative-special-URL string
  * > - a URL-scheme string that is not an ASCII case-insensitive match
- * >   for a special scheme, followed by U+003A (:) and a relative-URL string
+ * >   for a special scheme, followed by U+003A (:) and one of: a scheme-relative-URL string,
+ * >   a path-absolute-non-authority-URL string, or an opaque-path-URL string
  * > - a URL-scheme string that is an ASCII case-insensitive match for "file",
  * >   followed by U+003A (:) and a scheme-relative-file-URL string
  *

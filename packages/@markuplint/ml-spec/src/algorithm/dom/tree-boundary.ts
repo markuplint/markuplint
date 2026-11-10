@@ -38,7 +38,7 @@
  * is, between the host and the nodes the host has as children. A walk goes from the top of the
  * shadow root to the host and does not model the position of the `slot`.
  *
- * @see https://dom.spec.whatwg.org/#concept-tree-parent-element
+ * @see https://dom.spec.whatwg.org/#parent-element
  * @see https://dom.spec.whatwg.org/#concept-shadow-including-ancestor
  * @see https://html.spec.whatwg.org/multipage/scripting.html#the-template-element
  */

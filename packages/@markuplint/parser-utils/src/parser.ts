@@ -1050,7 +1050,7 @@ export abstract class Parser<Node extends {} = {}, State extends unknown = null>
 	 * Re-parses a text token to discover embedded HTML/XML tags within it,
 	 * splitting the content into a sequence of tag and text AST nodes.
 	 * Handles self-closing detection, depth tracking, void element recognition,
-	 * and the raw-text element body short-circuit (HTML LS §13.2.5.1).
+	 * and the raw-text element body short-circuit (HTML LS §13.1.2.6).
 	 *
 	 * Raw-text element handling only covers the elements listed in
 	 * `rawTextElements` (default `['style', 'script']`). HTML LS *escapable* raw
@@ -1180,10 +1180,10 @@ export abstract class Parser<Node extends {} = {}, State extends unknown = null>
 			}
 
 			/**
-			 * Raw-text element body short-circuit (HTML Living Standard §13.2.5.1
-			 * — "Restrictions on the contents of raw text and escapable raw text
-			 * elements". The spec section anchor is `cdata-rcdata-restrictions`,
-			 * where RCDATA stands for "Raw text + Character REF data" — the broader
+			 * Raw-text element body short-circuit (HTML Living Standard §13.1.2.6,
+			 * Restrictions on the contents of raw text and escapable raw text
+			 * elements. The spec section anchor is `cdata-rcdata-restrictions`,
+			 * where RCDATA stands for 'Raw text + Character REF data' — the broader
 			 * class that covers escapable raw text such as `<title>` / `<textarea>`).
 			 *
 			 * Per spec, the contents of `<script>` / `<style>` (and any caller-supplied
@@ -1678,7 +1678,7 @@ export abstract class Parser<Node extends {} = {}, State extends unknown = null>
 
 	/**
 	 * The pattern matches `</tagName` followed by a tab/LF/FF/CR/space/`>`/`/`
-	 * (HTML LS §13.2.5.1) ASCII-case-insensitively. Caching avoids recompiling the
+	 * (HTML LS §13.1.2.6) ASCII-case-insensitively. Caching avoids recompiling the
 	 * `RegExp` for every `<script>` / `<style>` start tag in large documents.
 	 */
 	#getRawTextCloseTagPattern(tagName: string): RegExp {

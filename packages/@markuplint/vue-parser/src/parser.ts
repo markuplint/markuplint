@@ -14,7 +14,7 @@ type State = {
  * The built-in components, as written or in kebab-case: `isBuiltInType(tag, name)` of Vue is
  * `tag === name || tag === hyphenate(name)`.
  *
- * @see https://vuejs.org/api/built-in-components.html
+ * @see https://vuejs.org/api/built-in-components.html#built-in-components
  */
 const BUILT_IN_COMPONENTS: readonly string[] = [
 	'Transition',
@@ -39,8 +39,8 @@ const BUILT_IN_COMPONENTS: readonly string[] = [
  * (`isComponent` of `@vue/compiler-core`). The parser of `vue-eslint-parser` lower-cases `name` and
  * keeps `rawName`, so `rawName` is what tells them apart.
  *
- * @see https://github.com/vuejs/core/blob/main/packages/compiler-dom/src/transforms/ignoreSideEffectTags.ts
- * @see https://github.com/vuejs/core/blob/main/packages/compiler-dom/src/errors.ts
+ * @see https://github.com/vuejs/core/blob/main/packages/compiler-dom/src/transforms/ignoreSideEffectTags.ts#ignoreSideEffectTags
+ * @see https://github.com/vuejs/core/blob/main/packages/compiler-dom/src/errors.ts#DOMErrorMessages
  * @param element - The element of the template
  * @returns `true` if the compiler removes the element
  */
@@ -309,9 +309,9 @@ class VueParser extends Parser<ASTNode, State> {
 	 * The user's `authoredElementName` replaces all of this, as it replaces any default of a parser.
 	 *
 	 * @see https://vuejs.org/guide/essentials/component-basics#using-a-component
-	 * @see https://vuejs.org/api/built-in-components.html
+	 * @see https://vuejs.org/api/built-in-components.html#built-in-components
 	 * @see https://vuejs.org/api/built-in-special-elements.html#built-in-special-elements
-	 * @see https://github.com/vuejs/core/blob/main/packages/compiler-core/src/parser.ts (`isComponent`)
+	 * @see https://github.com/vuejs/core/blob/main/packages/compiler-core/src/parser.ts#isComponent
 	 */
 	detectElementType(nodeName: string) {
 		return super.detectElementType(nodeName, [

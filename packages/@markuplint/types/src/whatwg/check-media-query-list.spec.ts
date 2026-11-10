@@ -160,9 +160,9 @@ test.each([
 	['(color: 1.5)', false], // fractional rejected
 	['(color: 1px)', false],
 	['(color: 1e2)', false], // scientific notation is <number>, not <integer>
-	['(color: -1)', false], // MQL5 §4.4 — non-negative integer required
-	['(monochrome: -2)', false],
-	['(min-color-index: -1)', false],
+	['(color: -1)', true], // false in the negative range: negative values are valid
+	['(monochrome: -2)', true],
+	['(min-color-index: -1)', true],
 ])('<integer> feature value validation: %s -> matched %s', (value, expected) => {
 	expect(check(value).matched).toBe(expected);
 });
@@ -182,13 +182,13 @@ test.each([
 	['(aspect-ratio: 1.5)', true], // unitless number form
 	['(min-aspect-ratio: 1/1)', true],
 	['(aspect-ratio: 16em)', false], // dimension rejected
-	// MQL5 §4.5 — ratios must be positive
+	// <ratio> is <number [0,∞]>: negative numbers fail, zero (degenerate) is valid
 	['(aspect-ratio: -1/1)', false],
 	['(aspect-ratio: 1/-1)', false],
 	['(aspect-ratio: -1.5)', false],
-	['(aspect-ratio: 0)', false], // zero <number> not positive
-	['(aspect-ratio: 0/1)', false], // zero numerator
-	['(aspect-ratio: 1/0)', false], // zero denominator
+	['(aspect-ratio: 0)', true], // zero <number>
+	['(aspect-ratio: 0/1)', true], // zero numerator
+	['(aspect-ratio: 1/0)', true], // zero denominator
 ])('<ratio> feature value validation: %s -> matched %s', (value, expected) => {
 	expect(check(value).matched).toBe(expected);
 });
@@ -235,9 +235,7 @@ test('css-tree parse failures surface as `syntax-error` violations (not Tier-1 t
 
 test('negative <ratio> is rejected by Stage A (CSS Values <number [0,∞]>)', () => {
 	// css-tree's `<ratio>` grammar already excludes negatives, so the
-	// rejection partName comes from Stage A — *not* the MQL5 §4.5 guard.
-	// This test pins which stage owns the rejection so future refactors
-	// don't accidentally turn the §4.5 path into dead code for negatives.
+	// rejection partName comes from Stage A.
 	const result = check('(aspect-ratio: -1/1)');
 	expect(result.matched).toBe(false);
 	if (result.matched) return;
@@ -245,25 +243,39 @@ test('negative <ratio> is rejected by Stage A (CSS Values <number [0,∞]>)', ()
 	expect(result.partName).not.toMatch(/MQL5 §4\.5/);
 });
 
-test('zero <ratio> is rejected by Stage B (MQL5 §4.5 — Stage A allows 0 in [0,∞])', () => {
+test('zero <ratio> is accepted (Stage A allows 0 in [0,∞])', () => {
 	// Stage A's `<ratio>` accepts `0` because CSS Values §6.7 defines it
-	// as `<number [0,∞]>` (zero is in range). Stage B narrows further
-	// to `> 0` per Media Queries Level 5 §4.5.
+	// as `<number [0,∞]>` (zero is in range).
 	const result = check('(aspect-ratio: 0)');
-	expect(result.matched).toBe(false);
-	if (result.matched) return;
-	expect(result.partName).toMatch(/MQL5 §4\.5/);
+	expect(result.matched).toBe(true);
 });
 
-test('negative <integer> is rejected by Stage B (MQL5 §4.4 — Stage A allows negatives)', () => {
+test('negative <integer> is accepted (false in the negative range)', () => {
 	// CSS Values §6.2 `<integer>` grammar accepts signed integers,
-	// so Stage A passes `-1`. The non-negative constraint comes from
-	// MQL5 §4.4 and is enforced by Stage B.
+	// and Media Queries Level 5 §2.4.2 says negative values of a
+	// "false in the negative range" feature are valid.
 	const result = check('(color: -1)');
-	expect(result.matched).toBe(false);
-	if (result.matched) return;
-	expect(result.partName).toMatch(/MQL5 §4\.4/);
+	expect(result.matched).toBe(true);
 });
+
+test.each([
+	'(width: -1px)',
+	'(min-height: -100px)',
+	'(resolution: -300dpi)',
+	'(min-resolution: -1dppx)',
+	'(horizontal-viewport-segments: -1)',
+	'(max-color: -1)',
+	'(width < -100px)',
+])('negative value of a range feature is accepted: %s', value => {
+	expect(check(value).matched).toBe(true);
+});
+
+test.each(['(aspect-ratio: 0/0)', '(min-aspect-ratio: 0)', '(max-aspect-ratio: 1/0)'])(
+	'zero or degenerate <ratio> is accepted: %s',
+	value => {
+		expect(check(value).matched).toBe(true);
+	},
+);
 
 test('Stage A error message surfaces the offending value detail to the user', () => {
 	// `(min-width: 400uu)` should mention "uu" / dimension mismatch via

@@ -52,6 +52,24 @@ const FRAMEWORK_DOCS: ReadonlySet<string> = new Set([
 ]);
 
 /**
+ * The specification hosts, besides WHATWG's (`*.spec.whatwg.org`), W3C's (`www.w3.org/TR/`, `w3c.github.io`) and
+ * the HTML translation, that the packages cite: the SVG and CSS working groups, the Microformats wiki that
+ * keeps the registry of link types, the IETF and the RFC Editor, ECMAScript, the Web Incubator CG and the IANA
+ * registries. A section of such a page is addressed by an id when it has one; a page that has none (a registry, a
+ * wiki page) is cited whole.
+ */
+const SPEC_HOSTS: ReadonlySet<string> = new Set([
+	'datatracker.ietf.org',
+	'drafts.csswg.org',
+	'microformats.org',
+	'svgwg.org',
+	'tc39.es',
+	'wicg.github.io',
+	'www.iana.org',
+	'www.rfc-editor.org',
+]);
+
+/**
  * The part after the host of the raw file that `https://github.com/<owner>/<repo>/blob/<ref>/<path>` shows
  * (`<owner>/<repo>/<ref>/<path>`), or `null` when the URL is not a link to a file of a listed repository.
  * The `<ref>` is one segment: the declarations cite the default branch of each repository.
@@ -75,16 +93,19 @@ function rawPathOf(url: URL): string | null {
 }
 
 /**
- * Whether the monitor watches a URL: the specification hosts (a path of the translation at momdo.github.io and of
- * `www.w3.org` is limited to the spec), the documentation sites of the frameworks, and a link to a file of a listed
+ * Whether the monitor watches a URL: the specification hosts (the WHATWG standards, the W3C and IETF specifications and
+ * the others of `SPEC_HOSTS`; a path of the translation at momdo.github.io and of `www.w3.org` is limited to the spec), the documentation sites of the frameworks, and a link to a file of a listed
  * repository. Anything else is informative, and not worth a report when it changes.
  */
 function isWatched(url: URL): boolean {
-	if (FRAMEWORK_DOCS.has(url.hostname)) {
+	if (FRAMEWORK_DOCS.has(url.hostname) || SPEC_HOSTS.has(url.hostname)) {
+		return true;
+	}
+	// Every WHATWG standard has a host of its own under `spec.whatwg.org`: HTML, DOM, URL, Infra, Fetch, MIME Sniffing.
+	if (url.hostname.endsWith('.spec.whatwg.org')) {
 		return true;
 	}
 	switch (url.hostname) {
-		case 'html.spec.whatwg.org':
 		case 'w3c.github.io': {
 			return true;
 		}
@@ -521,6 +542,9 @@ function blocksOf(ranges: readonly ts.CommentRange[], text: string): CommentBloc
  * are read only from comments: `>` lines, in the same shape a README uses.
  * A `>` is read only at the start of a comment line, so one that follows a list
  * marker (`- > quote`) is not a quote: write the quote in a paragraph of its own.
+ * A `§` number belongs to the URL that follows it, except one that comes after a URL on the same line
+ * (`@see <url> — Name §4.3.2`), which is that URL's: without the exception the number of one `@see` line
+ * is compared with the section of the next.
  * A spec sentence written inline in double quotes is reported separately, so
  * that every quote has the one shape the monitor can check; a double quote in
  * a code span is a value, not a quotation mark, and is not counted.
@@ -534,12 +558,13 @@ export function collectFromSource(text: string, file: string): CollectResult {
 
 	for (const block of blocksOf(ranges, text)) {
 		const found: { parsed: ParsedUrl; offset: number }[] = [];
-		const secnos: { value: string; offset: number }[] = [];
+		const secnos: { value: string; offset: number; link?: number }[] = [];
 		const quoteLines: { text: string; line: number }[][] = [];
 		let quoteRun: { text: string; line: number }[] = [];
 		const prose: string[] = [];
 
 		for (const line of block.lines) {
+			const firstOfLine = found.length;
 			for (const match of line.text.matchAll(BARE_URL)) {
 				const parsed = parseSpecUrl(trimBareUrl(match[0]));
 				if (parsed !== null) {
@@ -548,7 +573,10 @@ export function collectFromSource(text: string, file: string): CollectResult {
 			}
 			const sign = SECTION_SIGN.exec(line.text);
 			if (sign?.[1] !== undefined) {
-				secnos.push({ value: sign[1], offset: line.offset + sign.index });
+				const offset = line.offset + sign.index;
+				// `@see <url> — Name §4.3.2`: a section sign that follows a URL on its own line is that URL's.
+				const link = found.findLastIndex((f, i) => i >= firstOfLine && f.offset < offset);
+				secnos.push({ value: sign[1], offset, ...(link === -1 ? {} : { link }) });
 			}
 			if (line.text.startsWith('>')) {
 				quoteRun.push({
@@ -594,7 +622,7 @@ export function collectFromSource(text: string, file: string): CollectResult {
 		const secnoOf = new Map<number, string>();
 		for (const secno of secnos) {
 			const following = found.findIndex(f => f.offset > secno.offset);
-			const target = following === -1 ? found.length - 1 : following;
+			const target = secno.link ?? (following === -1 ? found.length - 1 : following);
 			if (!secnoOf.has(target)) {
 				secnoOf.set(target, secno.value);
 			}

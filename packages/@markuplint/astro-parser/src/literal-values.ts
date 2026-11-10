@@ -22,7 +22,10 @@ const AS_BOOLEAN = { true: '', false: null, '0': null, '""': null } as const;
  * - `download` and `popover` are present for `true` and absent for `false`; `hidden` is present for `true`,
  *   absent for `false`, and a number is a string (`hidden={0}` is `hidden="0"`)
  * - A custom element takes every boolean as a string (`handleBooleanAttribute`): `disabled={false}` is
- *   `disabled="false"`
+ *   `disabled="false"`, except `popover`, which is rendered as on any element (present for `true`, absent for
+ *   `false`):
+ *
+ * > The Popover API only accepts "auto", "manual", or the attribute being absent.
  *
  * What it does not tell, which does not affect a rule:
  *
@@ -30,9 +33,9 @@ const AS_BOOLEAN = { true: '', false: null, '0': null, '""': null } as const;
  * - `scoped` and `seamless`, obsolete attributes that Astro renders as boolean, are not in the spec
  *
  * @see https://docs.astro.build/en/reference/astro-syntax/#dynamic-attributes
- * @see https://github.com/withastro/astro/blob/main/packages/astro/src/runtime/server/render/util.ts#addAttribute
- * @see https://github.com/withastro/astro/blob/main/packages/astro/src/runtime/server/render/util.ts#htmlBooleanAttributes
- * @see https://github.com/withastro/astro/blob/main/packages/astro/src/runtime/server/render/util.ts#handleBooleanAttribute
+ * @see https://github.com/withastro/astro/blob/main/packages/runtime/src/internal/server/render/util.ts#addAttribute
+ * @see https://github.com/withastro/astro/blob/main/packages/runtime/src/internal/server/render/util.ts#htmlBooleanAttributes
+ * @see https://github.com/withastro/astro/blob/main/packages/runtime/src/internal/server/render/util.ts#handleBooleanAttribute
  */
 export const ASTRO_LITERAL_VALUES: LiteralValueDeclaration = {
 	booleanAttrs: { '""': null },
@@ -59,7 +62,7 @@ export const ASTRO_LITERAL_VALUES: LiteralValueDeclaration = {
 		booleanAttrs: AS_STRING,
 		attrs: {
 			hidden: { true: 'true', false: 'false', '0': '0' },
-			popover: { true: 'true', false: 'false' },
+			popover: { true: '', false: null },
 			download: { true: 'true', false: 'false' },
 		},
 	},

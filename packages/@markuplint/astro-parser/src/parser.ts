@@ -363,7 +363,7 @@ class AstroParser extends Parser<Node> {
 	 * > Variable names must be capitalized. For example, use `Element`, not `element`.
 	 * > Otherwise, Astro will try to render your variable name as a literal HTML tag.
 	 *
-	 * @see https://docs.astro.build/en/basics/astro-syntax/#dynamic-html
+	 * @see https://docs.astro.build/en/reference/astro-syntax/#dynamic-tags
 	 * @param nodeName
 	 * @param defaultPattern
 	 */

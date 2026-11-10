@@ -20,7 +20,7 @@ import meta from './meta.js';
  * or the `template` of a framework whose spec puts the children in the element itself) is not an HTML
  * `template` element, and the climb goes through it as through any other element.
  *
- * @see https://dom.spec.whatwg.org/#concept-tree-parent-element
+ * @see https://dom.spec.whatwg.org/#parent-element
  * @see https://html.spec.whatwg.org/multipage/scripting.html#the-template-element
  */
 export default createRule({

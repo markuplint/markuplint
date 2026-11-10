@@ -125,18 +125,17 @@ function determineFieldCategory(value: string): { category: FieldCategory } | nu
  * Element/state-specific tightening applied on top of the shared
  * autocomplete grammar.
  *
- * - `noWebauthn`: reject the `webauthn` token. Applies to elements
- *   where webauthn is not valid per HTML LS
- *   §attr-fe-autocomplete-webauthn ("webauthn is only valid for input
- *   and textarea elements"). Wired for `<select>`.
- * - `anchorMantle`: reject the `on` / `off` keywords per HTML LS
- *   §autofill-anchor-mantle: "When wearing the autofill anchor
- *   mantle, the autocomplete attribute [...] must have a value that is
- *   an ordered set of space-separated tokens consisting of just
- *   autofill detail tokens (i.e. the 'on' and 'off' keywords are not
- *   allowed)." The anchor mantle applies to `<input type=hidden>`
- *   only; every other autocomplete-carrying control wears the
- *   expectation mantle where on/off are valid.
+ * `noWebauthn` rejects the `webauthn` token on the elements where it is not
+ * valid (HTML LS §attr-fe-autocomplete-webauthn). Wired for `<select>`.
+ *
+ * > webauthn is only valid for input and textarea elements.
+ *
+ * `anchorMantle` rejects the `on` / `off` keywords (HTML LS
+ * §autofill-anchor-mantle). The anchor mantle applies to `<input type=hidden>`
+ * only; every other autocomplete-carrying control wears the expectation mantle
+ * where on/off are valid.
+ *
+ * > When wearing the autofill anchor mantle, the autocomplete attribute, if specified, must have a value that is an ordered set of space-separated tokens consisting of just autofill detail tokens (i.e. the "on" and "off" keywords are not allowed).
  *
  * @see https://html.spec.whatwg.org/multipage/form-control-infrastructure.html#attr-fe-autocomplete-webauthn
  * @see https://html.spec.whatwg.org/multipage/form-control-infrastructure.html#autofill-anchor-mantle
@@ -350,8 +349,8 @@ export const checkAutoComplete: CustomSyntaxChecker<CheckAutoCompleteOptions> =
 					});
 				}
 			} else {
-				// Spec: "The webauthn token must not be the only token in the
-				// autocomplete attribute's value."
+				// A standalone webauthn token leaves the autofill field name that the
+				// grammar requires missing.
 				// https://html.spec.whatwg.org/multipage/form-control-infrastructure.html#attr-fe-autocomplete-webauthn
 				if (acLog.enabled) {
 					acLog('[Unmatched ("%s")] Standalone webauthn rejected', value);

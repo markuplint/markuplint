@@ -41,7 +41,7 @@
 | `Pattern`                          | `input[pattern]`                                       | [WHATWG](https://momdo.github.io/html/input.html#compiled-pattern-regular-expression)                    | ✅       |
 | `DateTime`                         | `time[datetime]`ほか                                   | [WHATWG](https://momdo.github.io/html/text-level-semantics.html#datetime-value)                          | ✅       |
 | `TabIndex`                         | `tabindex`属性                                         | [WHATWG](https://momdo.github.io/html/interaction.html#attr-tabindex)                                    | ✅       |
-| `BCP47`                            | `lang`属性ほか                                         | [RFC](https://tools.ietf.org/rfc/bcp/bcp47.html)                                                         | ✅       |
+| `BCP47`                            | `lang`属性ほか                                         | [RFC](https://www.rfc-editor.org/info/bcp47)                                                             | ✅       |
 | `URL`                              | いくつかの属性                                         | [WHATWG](https://momdo.github.io/html/urls-and-fetching.html#valid-url-potentially-surrounded-by-spaces) | ✅       |
 | `AbsoluteURL`                      | `itemtype`属性（リストとして）                         | [WHATWG](https://url.spec.whatwg.org/#syntax-url-absolute)                                               | ✅       |
 | `HashName`                         | `img[usemap]`                                          | [WHATWG](https://momdo.github.io/html/common-microsyntaxes.html#valid-hash-name-reference)               | ✅       |

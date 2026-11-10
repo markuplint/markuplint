@@ -58183,7 +58183,7 @@
 			"contentModel": {
 				"contents": [
 					{
-						"require": [":model(SVGDescriptive)", "svg|script"]
+						"zeroOrMore": [":model(SVGDescriptive)", "svg|script"]
 					}
 				]
 			},

@@ -10,8 +10,8 @@ import { flattenText, makeResult } from './result.js';
  * Part of AccName 1.2 §4.3.2 Step 2E — for labelable elements, the HTML label
  * association is checked before other element-specific rules.
  *
- * @see https://www.w3.org/TR/accname-1.2/#computation-steps — AccName 1.2 §4.3.2 Step 2E
- * @see https://www.w3.org/TR/html-aam-1.0/#el-input-text — HTML-AAM label association
+ * @see https://w3c.github.io/accname/#computation-steps — AccName 1.2 §4.3.2 Step 2E
+ * @see https://www.w3.org/TR/html-aam/#el-input-text — HTML-AAM label association
  */
 export function resolveLabelText(
 	el: AccnameElement,

@@ -393,8 +393,9 @@ class PugParser extends Parser<ASTNode> {
 		}
 
 		// An attribute without a value (`disabled`) is `true` and is not written as code, while any value after
-		// `=` is JavaScript ("their values are just regular JavaScript"): whether it is a literal, and what Pug
-		// renders it as, is up to `@markuplint/ml-core`, which reads it as it reads the code of any language.
+		// `=` is JavaScript (the introduction of the page below, which has no heading to cite, says that the
+		// values of the attributes are regular JavaScript): whether it is a literal, and what Pug renders it
+		// as, is up to `@markuplint/ml-core`, which reads it as it reads the code of any language.
 		// @see https://pugjs.org/language/attributes.html
 		if (attr.equal.raw === '') {
 			return attr;

@@ -78,13 +78,9 @@
 		// > A preload destination is "fetch", "font", "image", "script", "style", or "track".
 		// @see https://html.spec.whatwg.org/multipage/links.html#link-type-modulepreload
 		// > A module preload destination is "json", "style", "text", or a script-like destination.
-		/*
-		 * A separate comment, so that spec-citations (which does not watch the Fetch Standard) does not
-		 * look for this quote in the HTML sections cited above.
-		 * @see https://fetch.spec.whatwg.org/#request-destination-script-like
-		 * > A request's destination is script-like if it is "audioworklet", "paintworklet", "script",
-		 * > "serviceworker", "sharedworker", or "worker".
-		 */
+		// @see https://fetch.spec.whatwg.org/#request-destination-script-like
+		// > A request's destination is script-like if it is "audioworklet", "paintworklet", "script",
+		// > "serviceworker", "sharedworker", or "worker".
 		"as": {
 			"type": [
 				{

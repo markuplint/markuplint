@@ -295,7 +295,8 @@ export function plan(changes: readonly Change[], probe: Probe): Plan {
 			return { mode: 'full', reason: `${path} can change any spec` };
 		}
 
-		// The citation checks read rule READMEs, spec data, selector sources, the declarations of the frameworks and the website docs.
+		// The citation checks read the sources of every package, the rule READMEs, the spec data and the website docs
+		// (`scripts/spec-citations/discover.ts`), so a change to any of them can add or break a citation.
 		if (classifyCitation(path) !== null) {
 			add(specsUnder(probe, 'scripts/spec-citations'));
 		}

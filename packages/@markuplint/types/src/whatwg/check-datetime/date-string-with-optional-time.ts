@@ -8,8 +8,8 @@ import { checkGlobalDateAndTimeString } from './global-date-and-time-string.js';
 const checks = [checkDateString(), checkGlobalDateAndTimeString()];
 
 /**
- * Used by attributes whose spec defines the value as "a valid date string with
- * optional time" (for example `<del>`/`<ins>` `datetime`). The accepted
+ * Used by attributes whose spec defines the value as a valid date string with
+ * optional time (for example `<del>`/`<ins>` `datetime`). The accepted
  * production is strictly the union of those two formats — month-only, year-only,
  * week, yearless date, time-only, local datetime, and duration strings are all
  * rejected.

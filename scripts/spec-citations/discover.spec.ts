@@ -33,10 +33,10 @@ describe('classify: the declarations of how a framework renders', () => {
 		expect(classify('packages/@markuplint/pug-parser/src/literal-values.ts')).toBe('source');
 	});
 
-	test('[discover-007] does not read the other files of those packages', () => {
+	test('[discover-007] reads the other sources of those packages, but not their specs or READMEs', () => {
 		expect(classify('packages/@markuplint/react-spec/src/index.spec.ts')).toBeNull();
 		expect(classify('packages/@markuplint/react-spec/README.md')).toBeNull();
-		expect(classify('packages/@markuplint/astro-parser/src/parser.ts')).toBeNull();
+		expect(classify('packages/@markuplint/astro-parser/src/parser.ts')).toBe('source');
 	});
 });
 
@@ -89,9 +89,9 @@ describe('listCitingFiles: the spec data and the selector engine', () => {
 });
 
 describe('the declarations that a spec package keeps beside its index', () => {
-	test('[discover-012] reads a source file that a spec package declares its table in, but not its specs', () => {
+	test('[discover-012] reads a source file of a spec package at any depth, but not its specs', () => {
 		expect(classify('packages/@markuplint/react-spec/src/react-18.ts')).toBe('source');
-		expect(classify('packages/@markuplint/react-spec/src/nested/other.ts')).toBeNull();
+		expect(classify('packages/@markuplint/react-spec/src/nested/other.ts')).toBe('source');
 		expect(classify('packages/@markuplint/react-spec/src/react-18.spec.ts')).toBeNull();
 		expect(classify('packages/@markuplint/react-spec/src/types.d.ts')).toBeNull();
 	});
@@ -100,6 +100,36 @@ describe('the declarations that a spec package keeps beside its index', () => {
 		const root = fileURLToPath(new URL('../../', import.meta.url));
 		const found = listCitingFiles(root).find(f => f.path === 'packages/@markuplint/react-spec/src/react-18.ts');
 		expect(found?.kind).toBe('source');
+	});
+});
+
+describe('a citation that moves between packages stays watched', () => {
+	test('[discover-014] reads the sources of every package, under any depth of src', () => {
+		expect(classify('packages/@markuplint/ml-spec/src/algorithm/html/select-display-size.ts')).toBe('source');
+		expect(classify('packages/@markuplint/ml-spec/src/algorithm/aria/accname/compute.ts')).toBe('source');
+		expect(classify('packages/@markuplint/ml-spec/src/const/accname.ts')).toBe('source');
+		expect(classify('packages/@markuplint/types/src/defs.ts')).toBe('source');
+		expect(classify('packages/@markuplint/ml-core/src/ml-dom/node/element.ts')).toBe('source');
+		expect(classify('packages/@markuplint/parser-utils/src/get-location.ts')).toBe('source');
+	});
+
+	test('[discover-015] does not read specs, declaration files, generated output or what is outside src', () => {
+		expect(classify('packages/@markuplint/ml-spec/src/algorithm/html/select-display-size.spec.ts')).toBeNull();
+		expect(classify('packages/@markuplint/types/src/types.d.ts')).toBeNull();
+		expect(classify('packages/@markuplint/ml-spec/lib/index.js')).toBeNull();
+		expect(classify('packages/@markuplint/ml-spec/README.md')).toBeNull();
+		expect(classify('packages/@markuplint/types/package.json')).toBeNull();
+	});
+
+	test('[discover-016] lists a source of ml-spec and collects the citation that #4558 lost', () => {
+		const root = fileURLToPath(new URL('../../', import.meta.url));
+		const path = 'packages/@markuplint/ml-spec/src/algorithm/html/select-display-size.ts';
+		const found = listCitingFiles(root).find(f => f.path === path);
+		expect(found?.kind).toBe('source');
+		const { citations } = collectFiles(root, [{ path, kind: 'source' }]);
+		expect(citations.map(c => `${c.page}#${c.fragment}`)).toContain(
+			'https://html.spec.whatwg.org/multipage/common-microsyntaxes.html#rules-for-parsing-non-negative-integers',
+		);
 	});
 });
 

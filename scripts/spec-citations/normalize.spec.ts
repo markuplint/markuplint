@@ -32,6 +32,38 @@ describe('quoteParts', () => {
 	});
 });
 
+describe('an underscore or an asterisk in a quote', () => {
+	test('[normalize-019] keeps one that opens no emphasis, as the spec has it', () => {
+		expect(quoteParts('A name such as "_blank", "_self" or "_top", and (_) or "*" in a pattern')).toStrictEqual([
+			'A name such as "_blank", "_self" or "_top", and (_) or "*" in a pattern',
+		]);
+	});
+
+	test('[normalize-020] still strips the pair that Markdown reads as emphasis', () => {
+		expect(quoteParts('a *emphasized* word and _this_ one and __strong__ text')).toStrictEqual([
+			'a emphasized word and this one and strong text',
+		]);
+	});
+
+	test('[normalize-022] matches an identifier that is written between underscores, as the page has it', () => {
+		const scope = normalizeSpecText('The __proto__ accessor and the _private_ name are not keys.');
+		expect(containsQuote(scope, 'The __proto__ accessor and the _private_ name are not keys.')).toBe(true);
+		expect(containsQuote(scope, 'The `__proto__` accessor and the _private_ name')).toBe(true);
+	});
+
+	test('[normalize-023] matches an emphasis that the page does not mark', () => {
+		const scope = normalizeSpecText('The value must be strictly positive.');
+		expect(containsQuote(scope, 'The value must be *strictly* positive.')).toBe(true);
+	});
+
+	test('[normalize-021] matches a spec sentence that holds them, quoted verbatim', () => {
+		const scope = normalizeSpecText('The names "_blank", "_self" and the string (_) are keywords, "*" is not.');
+		expect(containsQuote(scope, 'The names "_blank", "_self" and the string (_) are keywords, "*" is not.')).toBe(
+			true,
+		);
+	});
+});
+
 describe('rendering differences', () => {
 	test('[normalize-012] treats [...] like an ellipsis', () => {
 		expect(quoteParts('Initialize node to be the current node […]. If node is not')).toStrictEqual([

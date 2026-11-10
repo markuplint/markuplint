@@ -41,8 +41,8 @@ const EMPTY_RESULT: AccnameResult = { name: '', source: null };
  * @param el - The element to compute the accessible name for
  * @param resolver - Environment-dependent resolver for DOM traversal and role queries
  * @returns The computed name and its source
- * @see https://www.w3.org/TR/accname-1.2/#computation-steps — AccName 1.2 §4.3.2
- * @see https://www.w3.org/TR/html-aam-1.0/#accessible-name-and-description-computation — HTML-AAM §4.1
+ * @see https://w3c.github.io/accname/#computation-steps — AccName 1.2 §4.3.2
+ * @see https://www.w3.org/TR/html-aam/#accessible-name-and-description-computation — HTML-AAM §4
  */
 export function computeAccessibleName(el: AccnameElement, resolver: AccnameResolver): AccnameResult {
 	return computeAccessibleNameInternal(el, resolver, false, new Set());
@@ -91,7 +91,7 @@ export function computeHostLanguageLabel(el: AccnameElement, resolver: AccnameRe
  * @param inLabelledbyTraversal - When true, Step 2B is skipped to prevent re-entry
  *   into `resolveAriaLabelledby`, and Step 2F name-from-content is enabled regardless
  *   of role. This is set by Step 2B when processing each IDREF.
- * @see https://www.w3.org/TR/accname-1.2/#computation-steps — AccName 1.2 §4.3.2
+ * @see https://w3c.github.io/accname/#computation-steps — AccName 1.2 §4.3.2
  */
 export function computeAccessibleNameInternal(
 	el: AccnameElement,

@@ -24,7 +24,7 @@ export interface MLMLSpec {
 	 * > React will always place the DOM element corresponding to the `<title>` component within the
 	 * > document's `<head>`, regardless of where in the React tree it is rendered.
 	 *
-	 * @see https://react.dev/reference/react-dom/components/title
+	 * @see https://react.dev/reference/react-dom/components/title#special-rendering-behavior
 	 */
 	readonly movedToHead?: readonly string[];
 	/**

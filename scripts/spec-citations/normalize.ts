@@ -32,20 +32,32 @@ function foldQuotes(text: string): string {
 		.replaceAll(/:(?=\s|$)/g, '');
 }
 
-function stripMarkdown(text: string): string {
+/**
+ * Strips what Markdown draws around a quote: a link's target, code ticks, and the pair of markers that opens and
+ * closes an emphasis (`*this*`, `_this_`, `__this__`). An asterisk or an underscore that closes nothing is the
+ * spec's own character and stays: `"_blank"`, `(_)` and `"*"` are in the page's text, and stripped from the quote
+ * they would never match it. A pair that is the spec's own (`__proto__`, `_private_`) cannot be told from an
+ * emphasis by its shape, so `containsQuote` also tries the quote with the pairs kept (`emphasis` false).
+ */
+function stripMarkdown(text: string, emphasis = true): string {
+	const alnum = String.raw`\p{L}\p{N}`;
+	const pair = new RegExp(
+		String.raw`(?<![${alnum}_*])([*_]+)([${alnum}](?:[\s\S]*?[${alnum}])?)\1(?![${alnum}_*])`,
+		'gu',
+	);
 	return text
 		.replaceAll(/\[([^\]]*)\]\([^)]*\)/g, '$1')
 		.replaceAll('`', '')
-		.replaceAll('**', '')
-		.replaceAll(/(?<![\w*])[*_]+(?=\S)|(?<=\S)[*_]+(?![\w*])/g, '');
+		.replaceAll('**', emphasis ? '' : '**')
+		.replaceAll(pair, emphasis ? '$2' : '$&');
 }
 
 /**
  * Splits a quote into the passages that must all appear, in order.
  * An ellipsis (`…`, `...`, or either in brackets) marks text the author left out of the quote.
  */
-export function quoteParts(quote: string): string[] {
-	return foldQuotes(normalizeSpecText(stripMarkdown(quote)))
+export function quoteParts(quote: string, emphasis = true): string[] {
+	return foldQuotes(normalizeSpecText(stripMarkdown(quote, emphasis)))
 		.replaceAll(/\[\s*(?:…|\.\.\.)\s*\]/g, '…')
 		.split(/…|\.\.\./)
 		.map(part => normalizeSpecText(part))
@@ -56,14 +68,18 @@ export function quoteParts(quote: string): string[] {
  * Whether every passage of `quote` occurs in `scope`, in order.
  *
  * The comparison ignores case, as a text fragment does: a quote that opens
- * mid-sentence is routinely capitalized, and that is not a change of the spec.
+ * mid-sentence is routinely capitalized, and that is not a change of the spec. A quote is tried with a pair of
+ * `_` or `*` read as Markdown emphasis, and as the spec's own characters (`__proto__`).
  */
 export function containsQuote(scope: string, quote: string): boolean {
-	const parts = quoteParts(quote);
+	const haystack = foldQuotes(normalizeSpecText(scope)).toLowerCase();
+	return [true, false].some(emphasis => containsParts(haystack, quoteParts(quote, emphasis)));
+}
+
+function containsParts(haystack: string, parts: readonly string[]): boolean {
 	if (parts.length === 0) {
 		return false;
 	}
-	const haystack = foldQuotes(normalizeSpecText(scope)).toLowerCase();
 	let from = 0;
 	for (const part of parts) {
 		const at = haystack.indexOf(part.toLowerCase(), from);

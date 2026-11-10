@@ -118,6 +118,7 @@ function computeRole(
 	 * "accessibility child" and "accessibility parent", and
 	 * `matchesContextRole` additionally skips `generic` elements.
 	 *
+	 * @see https://w3c.github.io/aria/#conflict_resolution_presentation_none
 	 * @see https://w3c.github.io/aria/#scope
 	 * @see https://github.com/w3c/aria/issues/1033
 	 * @see https://github.com/w3c/aria/pull/1454
@@ -171,8 +172,7 @@ function computeRole(
 	/**
 	 * SVG: Including Elements in the Accessibility Tree
 	 *
-	 * > Many SVG elements—although rendered to the screen—
-	 * > do not have an intrinsic semantic meaning. Instead,
+	 * > Many SVG elements—although rendered to the screen—do not have an intrinsic semantic meaning. Instead,
 	 * > they represent components of the visual presentation of the document.
 	 * > To simplify the accessible representation of the document,
 	 * > these purely presentational elements should normally be omitted
@@ -192,11 +192,10 @@ function computeRole(
 	 * > - the use element
 	 * > - the grouping (g) element
 	 * > - the image element
-	 * > - the mesh element
 	 * > - text formatting elements (textPath, tspan)
 	 * > - the foreignObject element
 	 *
-	 * @see https://www.w3.org/TR/svg-aam-1.0/#include_elements
+	 * @see https://www.w3.org/TR/svg-aam/#include_elements
 	 */
 	if (
 		// It doesn't been specified a valid explicit role.
@@ -219,9 +218,11 @@ function computeRole(
 
 	/**
 	 * > If an element is focusable,
-	 * > user agents MUST ignore the presentation/none role
+	 * > user agents MUST ignore the none/presentation role
 	 * > and expose the element with its implicit role,
 	 * > in order to ensure that the element is operable.
+	 *
+	 * @see https://w3c.github.io/aria/#conflict_resolution_presentation_none
 	 *
 	 * With the issue: What does focusable or otherwise interactive mean](https://github.com/w3c/aria/issues/1192)
 	 *
