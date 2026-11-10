@@ -41,6 +41,8 @@ Run Markuplint on the target to see current violations:
 npx markuplint "path/to/file.html" --format JSON
 ```
 
+The exit code is `1` when an error-severity violation is found, and the JSON array on stdout is still the result. Treat the run as failed only when stdout is not a JSON array.
+
 If no specific file, run on the project and summarize.
 
 ### 2. Identify What the User Wants

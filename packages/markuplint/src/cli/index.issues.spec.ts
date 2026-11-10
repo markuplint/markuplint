@@ -100,7 +100,6 @@ describe('config that cannot be loaded (#4113)', () => {
 		const filePath = path.resolve(import.meta.dirname, '../../test/issue4113/index.html');
 		const config = path.resolve(import.meta.dirname, '../../test/issue4113/config.json');
 
-		// Not `--format json`: that format always exits 0.
 		const { stderr, exitCode } = await execa(
 			entryFilePath,
 			[escape(filePath), '--config', escape(config), '--no-color', '--no-search-config'],

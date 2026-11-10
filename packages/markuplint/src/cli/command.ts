@@ -45,6 +45,20 @@ function parseSeverityFlag(value: string | undefined): Severity | 'off' | undefi
 	return undefined;
 }
 
+/**
+ * Runs the CLI over the given targets and writes the report in the format
+ * `--format` selects.
+ *
+ * @param files Files or source code to lint.
+ * @param options The parsed CLI flags.
+ * @param apiOptions Options passed through to every `MLEngine`.
+ * @returns `true` when the process must exit with `1`: an error, a warning
+ * with `--no-allow-warnings`, more warnings than `--max-warnings`, or a
+ * usage error such as no target files. The decision does not depend on
+ * `--format`: CI reads the exit code whatever format the report is in.
+ * `--show-config`, `--suppress` and `--prune-suppressions` do not lint for
+ * a verdict, so they return `false` whatever violations exist.
+ */
 export async function command(files: readonly Readonly<Target>[], options: CLIOptions, apiOptions?: APIOptions) {
 	const fixDryRun = options.fixDryRun;
 	if (options.fix && fixDryRun) {
@@ -366,22 +380,21 @@ export async function command(files: readonly Readonly<Target>[], options: CLIOp
 		// Suppressions file does not exist or is unreadable, proceed normally
 	}
 
-	// Output results
+	// Check if max-warnings limit is exceeded (ESLint compatible)
+	if (!hasError && options.maxWarnings >= 0 && totalWarningCount > options.maxWarnings) {
+		hasError = true;
+	}
+
+	// Output results. The JSON branch returns early but with the same
+	// `hasError` as the other formats; see the `@returns` of this function.
 	if (format === 'json') {
-		if (suppressionsApplied) {
-			// Build filtered array with filePath
-			const jsonOutput: (Violation & { filePath: string })[] = [];
-			for (const [filePath, violations] of outputViolationsByFile) {
-				for (const violation of violations) {
-					jsonOutput.push({ ...violation, filePath });
-				}
-			}
-			process.stdout.write(JSON.stringify(jsonOutput, null, 2) + '\n');
-		} else {
-			const jsonOutput = collector.toArray();
-			process.stdout.write(JSON.stringify(jsonOutput, null, 2) + '\n');
-		}
-		return false;
+		const jsonOutput: (Violation & { filePath: string })[] = suppressionsApplied
+			? [...outputViolationsByFile].flatMap(([filePath, violations]) =>
+					violations.map(violation => ({ ...violation, filePath })),
+				)
+			: collector.toArray();
+		process.stdout.write(JSON.stringify(jsonOutput, null, 2) + '\n');
+		return hasError;
 	}
 
 	// Progressive出力が無効の場合のみループ後に出力
@@ -470,11 +483,6 @@ export async function command(files: readonly Readonly<Target>[], options: CLIOp
 		},
 		options,
 	);
-
-	// Check if max-warnings limit is exceeded (ESLint compatible)
-	if (!hasError && options.maxWarnings >= 0 && totalWarningCount > options.maxWarnings) {
-		hasError = true;
-	}
 
 	return hasError;
 }
