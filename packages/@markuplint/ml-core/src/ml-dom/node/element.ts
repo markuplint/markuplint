@@ -1095,7 +1095,7 @@ export class MLElement<T extends RuleConfigValue, O extends PlainData = undefine
 	 *
 	 * @unsupported
 	 * @implements DOM API: `Element`
-	 * @see https://www.w3.org/TR/cssom-view-1/#ref-for-dom-element-clientheight-1
+	 * @see https://www.w3.org/TR/cssom-view-1/#dom-element-clientheight
 	 */
 	get clientHeight(): number {
 		throw new UnexpectedCallError('Not supported "clientHeight" property');
@@ -1106,7 +1106,7 @@ export class MLElement<T extends RuleConfigValue, O extends PlainData = undefine
 	 *
 	 * @unsupported
 	 * @implements DOM API: `Element`
-	 * @see https://www.w3.org/TR/cssom-view-1/#ref-for-dom-element-clientleft-1
+	 * @see https://www.w3.org/TR/cssom-view-1/#dom-element-clientleft
 	 */
 	get clientLeft(): number {
 		throw new UnexpectedCallError('Not supported "clientLeft" property');
@@ -1117,7 +1117,7 @@ export class MLElement<T extends RuleConfigValue, O extends PlainData = undefine
 	 *
 	 * @unsupported
 	 * @implements DOM API: `Element`
-	 * @see https://www.w3.org/TR/cssom-view-1/#ref-for-dom-element-clienttop-1
+	 * @see https://www.w3.org/TR/cssom-view-1/#dom-element-clienttop
 	 */
 	get clientTop(): number {
 		throw new UnexpectedCallError('Not supported "clientTop" property');
@@ -1128,7 +1128,7 @@ export class MLElement<T extends RuleConfigValue, O extends PlainData = undefine
 	 *
 	 * @unsupported
 	 * @implements DOM API: `Element`
-	 * @see https://www.w3.org/TR/cssom-view-1/#ref-for-dom-element-clientwidth-1
+	 * @see https://www.w3.org/TR/cssom-view-1/#dom-element-clientwidth
 	 */
 	get clientWidth(): number {
 		throw new UnexpectedCallError('Not supported "clientWidth" property');
@@ -1243,7 +1243,7 @@ export class MLElement<T extends RuleConfigValue, O extends PlainData = undefine
 	 * @deprecated
 	 * @unsupported
 	 * @implements DOM API: `Element`
-	 * @see https://html.spec.whatwg.org/multipage/interaction.html#dom-inert
+	 * @see https://html.spec.whatwg.org/multipage/dom.html#dom-inert
 	 */
 	get inert(): boolean {
 		throw new UnexpectedCallError('Not supported "inert" property');
@@ -1254,7 +1254,7 @@ export class MLElement<T extends RuleConfigValue, O extends PlainData = undefine
 	 *
 	 * @unsupported
 	 * @implements DOM API: `Element`
-	 * @see https://w3c.github.io/DOM-Parsing/#dom-innerhtml-innerhtml
+	 * @see https://w3c.github.io/DOM-Parsing/#dom-innerhtml
 	 */
 	get innerHTML(): string {
 		throw new UnexpectedCallError('Not supported "innerHTML" property');
@@ -3306,7 +3306,7 @@ export class MLElement<T extends RuleConfigValue, O extends PlainData = undefine
 	 *
 	 * @unsupported
 	 * @implements DOM API: `Element`
-	 * @see https://www.w3.org/TR/cssom-view-1/#ref-for-dom-element-scrollheight-1
+	 * @see https://www.w3.org/TR/cssom-view-1/#dom-element-scrollheight
 	 */
 	get scrollHeight(): number {
 		throw new UnexpectedCallError('Not supported "scrollHeight" property');
@@ -3317,7 +3317,7 @@ export class MLElement<T extends RuleConfigValue, O extends PlainData = undefine
 	 *
 	 * @unsupported
 	 * @implements DOM API: `Element`
-	 * @see https://www.w3.org/TR/cssom-view-1/#ref-for-dom-element-scrollleft-1
+	 * @see https://www.w3.org/TR/cssom-view-1/#dom-element-scrollleft
 	 */
 	get scrollLeft(): number {
 		throw new UnexpectedCallError('Not supported "scrollLeft" property');
@@ -3328,7 +3328,7 @@ export class MLElement<T extends RuleConfigValue, O extends PlainData = undefine
 	 *
 	 * @unsupported
 	 * @implements DOM API: `Element`
-	 * @see https://www.w3.org/TR/cssom-view-1/#ref-for-dom-element-scrolltop-1
+	 * @see https://www.w3.org/TR/cssom-view-1/#dom-element-scrolltop
 	 */
 	get scrollTop(): number {
 		throw new UnexpectedCallError('Not supported "scrollTop" property');
@@ -3339,7 +3339,7 @@ export class MLElement<T extends RuleConfigValue, O extends PlainData = undefine
 	 *
 	 * @unsupported
 	 * @implements DOM API: `Element`
-	 * @see https://www.w3.org/TR/cssom-view-1/#ref-for-dom-element-scrollwidth-1
+	 * @see https://www.w3.org/TR/cssom-view-1/#dom-element-scrollwidth
 	 */
 	get scrollWidth(): number {
 		throw new UnexpectedCallError('Not supported "scrollWidth" property');
@@ -3951,7 +3951,7 @@ export class MLElement<T extends RuleConfigValue, O extends PlainData = undefine
 	 *
 	 * @unsupported
 	 * @implements DOM API: `Element`
-	 * @see https://www.w3.org/TR/cssom-view-1/#ref-for-dom-element-getboundingclientrect-1
+	 * @see https://www.w3.org/TR/cssom-view-1/#dom-element-getboundingclientrect
 	 */
 	getBoundingClientRect(): DOMRect {
 		throw new UnexpectedCallError('Not supported "getBoundingClientRect" method');
@@ -3991,7 +3991,7 @@ export class MLElement<T extends RuleConfigValue, O extends PlainData = undefine
 	 *
 	 * @unsupported
 	 * @implements DOM API: `Element`
-	 * @see https://www.w3.org/TR/cssom-view-1/#ref-for-dom-element-getclientrects-1
+	 * @see https://www.w3.org/TR/cssom-view-1/#dom-element-getclientrects
 	 */
 	getClientRects(): DOMRectList {
 		throw new UnexpectedCallError('Not supported "getClientRects" method');
@@ -4198,7 +4198,7 @@ export class MLElement<T extends RuleConfigValue, O extends PlainData = undefine
 	 *
 	 * @unsupported
 	 * @implements DOM API: `Element`
-	 * @see https://w3c.github.io/DOM-Parsing/#widl-Element-insertAdjacentHTML-void-DOMString-position-DOMString-text
+	 * @see https://w3c.github.io/DOM-Parsing/#dom-element-insertadjacenthtml
 	 */
 	insertAdjacentHTML(position: InsertPosition, text: string): void {
 		throw new UnexpectedCallError('Does not implement "insertAdjacentHTML" method yet');
@@ -4841,7 +4841,7 @@ export class MLElement<T extends RuleConfigValue, O extends PlainData = undefine
 	 *
 	 * @unsupported
 	 * @implements DOM API: `Element`
-	 * @see https://w3c.github.io/pointerlock/#dom-element-requestpointerlock
+	 * @see https://www.w3.org/TR/pointerlock-2/#dom-element-requestpointerlock
 	 */
 	requestPointerLock(options?: any): Promise<void> {
 		throw new UnexpectedCallError('Not supported "requestPointerLock" method');

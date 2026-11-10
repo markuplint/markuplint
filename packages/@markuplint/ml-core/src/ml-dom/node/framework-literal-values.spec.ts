@@ -475,10 +475,18 @@ describeCases(
 		),
 		...rowsOf(
 			inCustomElement,
-			['popover', 'download'],
+			['download'],
 			[
 				['true', 'true'],
 				['false', 'false'],
+			],
+		),
+		...rowsOf(
+			inCustomElement,
+			['popover'],
+			[
+				['true', ''],
+				['false', null],
 			],
 		),
 	],
