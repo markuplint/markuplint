@@ -188,14 +188,16 @@ describe('Other outputs larger than the pipe buffer reach the end', () => {
 		expect(exitCode).toBe(0);
 	});
 
+	// A location is `<path>:<line>:<col>`, so its size depends on the length of the temporary
+	// directory (shorter on Linux than on macOS): three times the lines keep it above the buffer.
 	test('--search prints every location', async () => {
 		const { stdout, exitCode } = await execa(
 			entryFilePath,
-			[escape(targetFilePath), '--search', 'div', '--no-search-config'],
+			[escape(unquotedFilePath), '--search', 'div', '--no-search-config'],
 			{ reject: false, env: { LANG: 'en' } },
 		);
 		expect(stdout.length).toBeGreaterThan(64 * 1024);
-		expect(stdout.split('\n')).toHaveLength(LINES);
+		expect(stdout.trimEnd().split('\n')).toHaveLength(LINES * 3);
 		expect(exitCode).toBe(0);
 	});
 
