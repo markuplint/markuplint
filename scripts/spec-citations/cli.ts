@@ -35,24 +35,27 @@
  * produced a file: the report is written once every check has run, and before
  * `--update` touches the lock.
  *
- * Citations are collected from the rules package (README, `*.ts` comments,
- * `schema.json`), from the declarations of how a framework renders a literal
- * (a spec package and a parser), from the HTML spec data and the selector
- * engine, and from the website's hand-written pages; `discover.ts` lists which
- * files and how each is read. Which hosts are watched is fixed in `collect.ts`:
- * the specifications, the documentation sites of the frameworks, and the source
- * files of the listed repositories. A framework that is not in those lists is
- * not monitored, and no check says so.
+ * Citations are collected from the sources of every package (`src/**.ts`
+ * comments), from the rules' READMEs and `schema.json`, from the HTML spec data
+ * and from the website's hand-written pages; `discover.ts` lists which files and
+ * how each is read. Which hosts are watched is fixed in `collect.ts`: the
+ * specifications (WHATWG, W3C, IETF and the others it lists), the documentation
+ * sites of the frameworks, and the source files of the listed repositories. A
+ * framework that is not in those lists is not monitored, and no check says so.
+ *
+ * The lock PR's body lists what it adds to and removes from the lock
+ * (`lock-changes.ts`), and names the removed sections that a file still cites.
  */
 import type { CollectResult, PageResult } from './types.ts';
 
 import { existsSync, readFileSync, writeFileSync } from 'node:fs';
 import { join } from 'node:path';
-import { fileURLToPath, pathToFileURL } from 'node:url';
+import { fileURLToPath } from 'node:url';
 import { parseArgs } from 'node:util';
 
 import { check } from './check.ts';
 import { collectFiles, listCitingFiles } from './discover.ts';
+import { isCliEntry } from './entry.ts';
 import { fetchPages } from './fetch.ts';
 import { EMPTY_LOCK, parseLock, serializeLock } from './lockfile.ts';
 import { renderReport } from './report.ts';
@@ -165,12 +168,6 @@ const realDeps: CliDeps = {
 	write: line => process.stdout.write(`${line}\n`),
 	now: () => new Date().toISOString(),
 };
-
-/** Whether this module was started as `node <this-file>`; comparing URLs through `pathToFileURL` keeps it right on Windows. */
-function isCliEntry(importMetaUrl: string): boolean {
-	const entry = process.argv[1];
-	return entry !== undefined && importMetaUrl === pathToFileURL(entry).href;
-}
 
 if (isCliEntry(import.meta.url)) {
 	const options = parseCliArgs(process.argv.slice(2), fileURLToPath(new URL('../../', import.meta.url)));
