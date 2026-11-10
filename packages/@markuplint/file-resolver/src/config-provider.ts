@@ -48,7 +48,6 @@ const KEY_SEPARATOR = '__ML_CONFIG_MERGE__';
 export class ConfigProvider {
 	#cache = new Map<string, ConfigSet>();
 	#held = new Set<string>();
-	#recursiveLoadKeyAndDepth = new Map<string, number>();
 	#store = new Map<string, Config | ConfigLoadError>();
 	/**
 	 * Stabilizes {@link set}'s auto-generated key for an inline config object
@@ -130,30 +129,71 @@ export class ConfigProvider {
 	/**
 	 * Recursively loads a configuration and all its `extends` dependencies.
 	 *
+	 * A `CircularReferenceError` is reported only for a config that extends itself, directly or
+	 * indirectly. A config reached through more than one `extends` path is loaded once and is not
+	 * an error.
+	 *
 	 * @param key - The config file path or module name to load
 	 * @param cache - Whether to use cached results
 	 * @param referrer - The file path of the config that referenced this key
-	 * @param depth - Current recursion depth (for circular reference detection)
 	 * @returns A set of loaded config keys and any errors encountered
 	 */
+	recursiveLoad(key: string, cache: boolean, referrer: string): Promise<{ stack: Set<string>; errs: Error[] }>;
+	/**
+	 * @deprecated Remove the `depth` argument: it is ignored, and the overload will be removed in v6.
+	 * @param key - The config file path or module name to load
+	 * @param cache - Whether to use cached results
+	 * @param referrer - The file path of the config that referenced this key
+	 * @param depth - Ignored
+	 */
+	recursiveLoad(
+		key: string,
+		cache: boolean,
+		referrer: string,
+		depth: number,
+	): Promise<{ stack: Set<string>; errs: Error[] }>;
 	async recursiveLoad(
 		key: string,
 		cache: boolean,
 		referrer: string,
-		depth = 1,
+		depth?: number,
+	): Promise<{ stack: Set<string>; errs: Error[] }> {
+		return await this.#recursiveLoad(key, cache, referrer, new Set(), new Set());
+	}
+
+	/**
+	 * A config is circular only when it is its own ancestor on the current `extends` path
+	 * (`ancestors`). Reaching the same config through two different paths (a diamond, e.g. two
+	 * presets that extend the same sub-presets) is not a cycle, however deep each path is, so
+	 * comparing depths cannot tell the two apart (#4552).
+	 *
+	 * `visited` holds every key already walked in this top-level call. A key met again is skipped:
+	 * its keys are already in the result and its errors, circular ones included, were already
+	 * reported once. Without it the walk repeats once per path, which grows exponentially with
+	 * stacked diamonds, and reports the same error once per path. State lives in the arguments,
+	 * not on the instance, so concurrent calls do not see each other.
+	 */
+	async #recursiveLoad(
+		key: string,
+		cache: boolean,
+		referrer: string,
+		ancestors: Set<string>,
+		visited: Set<string>,
 	): Promise<{ stack: Set<string>; errs: Error[] }> {
 		const stack = new Set<string>();
 		const errs: Error[] = [];
 
-		const ancestorDepth = this.#recursiveLoadKeyAndDepth.get(key);
-		if (ancestorDepth != null && ancestorDepth < depth) {
+		if (ancestors.has(key)) {
 			return {
 				stack,
 				errs: [new CircularReferenceError(`Circular reference detected: ${key}`)],
 			};
 		}
 
-		this.#recursiveLoadKeyAndDepth.set(key, depth);
+		if (visited.has(key)) {
+			return { stack, errs };
+		}
+		visited.add(key);
 
 		let config = this.#store.get(key);
 
@@ -182,12 +222,17 @@ export class ConfigProvider {
 
 		const depKeys = config.extends === null ? null : toNoEmptyStringArrayFromStringOrArray(config.extends);
 		if (depKeys) {
-			for (const depKey of depKeys) {
-				const keys = await this.recursiveLoad(depKey, cache, key, depth + 1);
-				for (const key of keys.stack) {
-					stack.add(key);
+			ancestors.add(key);
+			try {
+				for (const depKey of depKeys) {
+					const keys = await this.#recursiveLoad(depKey, cache, key, ancestors, visited);
+					for (const loadedKey of keys.stack) {
+						stack.add(loadedKey);
+					}
+					errs.push(...keys.errs);
 				}
-				errs.push(...keys.errs);
+			} finally {
+				ancestors.delete(key);
 			}
 		}
 
@@ -471,7 +516,6 @@ export class ConfigProvider {
 		const resolvedKeys = new Set<string>();
 		const errs: Error[] = [];
 		for (const key of keys) {
-			this.#recursiveLoadKeyAndDepth.clear();
 			const keySet = await this.recursiveLoad(key, cache, referrer);
 			for (const k of keySet.stack) {
 				resolvedKeys.add(k);

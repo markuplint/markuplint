@@ -208,6 +208,94 @@ test('Deep target', async () => {
 	expect(configSet.errs[0]?.message).toBe(`Circular reference detected: ${key}`);
 });
 
+describe('A config reached through two different `extends` paths is not a circular reference (#4552)', () => {
+	const testDir = path.resolve(import.meta.dirname, '..', 'test', 'fixtures', '018');
+
+	test('A config shared at different depths is loaded without an error', async () => {
+		const provider = new ConfigProvider();
+		const file = getFile(path.resolve(testDir, 'target.html'));
+		const configSet = await provider.resolve(file, [path.resolve(testDir, 'main.json')]);
+		expect(configSet.errs).toStrictEqual([]);
+		expect(configSet.config).toStrictEqual({ shared: true, a: true, b: true });
+	});
+
+	test('Presets that share sub-presets, extended through different configs, resolve like direct extends', async () => {
+		const provider = new ConfigProvider();
+		const file = getFile(path.resolve(testDir, 'target.html'));
+		const configSet = await provider.resolve(file, [path.resolve(testDir, 'preset-main.json')]);
+		const direct = await new ConfigProvider().resolve(file, [
+			'markuplint:recommended-static-html',
+			'markuplint:recommended-react',
+		]);
+		expect(configSet.errs).toStrictEqual([]);
+		expect(direct.errs).toStrictEqual([]);
+		expect(Object.keys(configSet.config.rules ?? {}).length).toBeGreaterThan(0);
+		expect(configSet.config).toStrictEqual(direct.config);
+	});
+
+	test('A cycle reached through two paths is reported once', async () => {
+		const provider = new ConfigProvider();
+		const file = getFile(path.resolve(testDir, 'target.html'));
+		const configSet = await provider.resolve(file, [path.resolve(testDir, 'cycle-diamond-main.json')]);
+		expect(configSet.errs.map(e => e.message)).toStrictEqual([
+			`Circular reference detected: ${path.resolve(testDir, 'cycle-x.json')}`,
+		]);
+	});
+
+	test('A config that extends itself is reported', async () => {
+		const provider = new ConfigProvider();
+		const file = getFile(path.resolve(testDir, 'target.html'));
+		const configSet = await provider.resolve(file, [path.resolve(testDir, 'self.json')]);
+		expect(configSet.errs.map(e => e.message)).toStrictEqual([
+			`Circular reference detected: ${path.resolve(testDir, 'self.json')}`,
+		]);
+	});
+
+	test('A shared config that cannot be loaded is reported once, with the files that name it', async () => {
+		const provider = new ConfigProvider();
+		const start = path.resolve(testDir, 'broken-main.json');
+		const result = await provider.recursiveLoad(start, false, 'path/to/index.html');
+		expect(
+			result.errs.map(e => (e instanceof ConfigLoadError ? path.basename(e.referrer) : e.message)),
+		).toStrictEqual(['broken-a.json']);
+		expect([...result.stack].map(f => path.basename(f))).toStrictEqual([
+			'missing.json',
+			'broken-a.json',
+			'broken-b.json',
+			'broken-main.json',
+		]);
+	});
+
+	test('Successive calls on one provider do not share state', async () => {
+		const provider = new ConfigProvider();
+		const start = path.resolve(testDir, 'main.json');
+		const first = await provider.recursiveLoad(start, false, 'path/to/index.html');
+		const second = await provider.recursiveLoad(start, false, 'path/to/index.html');
+		expect(second.errs).toStrictEqual([]);
+		expect([...second.stack]).toStrictEqual([...first.stack]);
+	});
+
+	test('A cycle that does not pass through the start config is still reported', async () => {
+		const provider = new ConfigProvider();
+		const file = getFile(path.resolve(testDir, 'target.html'));
+		const configSet = await provider.resolve(file, [path.resolve(testDir, 'cycle-start.json')]);
+		expect(configSet.errs.map(e => e.message)).toStrictEqual([
+			`Circular reference detected: ${path.resolve(testDir, 'cycle-x.json')}`,
+		]);
+	});
+
+	test('The deprecated `depth` argument does not affect the result', async () => {
+		const provider = new ConfigProvider();
+		const start = path.resolve(testDir, 'main.json');
+		const expected = ['shared.json', 'a.json', 'b.json', 'via-b.json', 'main.json'];
+		for (const depth of [0, 1, 5]) {
+			const result = await provider.recursiveLoad(start, false, 'path/to/index.html', depth);
+			expect([...result.stack].map(f => path.basename(f))).toStrictEqual(expected);
+			expect(result.errs).toStrictEqual([]);
+		}
+	});
+});
+
 test('Import packaged config (Issue: #403)', async () => {
 	const testDir = path.resolve(import.meta.dirname, '..', 'test', 'fixtures');
 	const key = path.resolve(testDir, '005', '.markuplintrc');
