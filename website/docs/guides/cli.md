@@ -10,9 +10,9 @@ $ markuplint "**/*.html"
 
 The CLI takes target HTML files as arguments. Glob patterns are also accepted.
 
-The `-` operand reads the source from standard input, so it works whether or not the output is piped. It cannot be combined with file paths, `--search` or `--fix` (there is no file to write the fixed source to). It waits for the end of the input (Ctrl-D in a terminal). An empty input is linted as an empty source. To lint a file that is named `-`, write `./-`.
+The `-` operand reads the source from standard input, so it works whether or not the output is piped. It cannot be combined with file paths, `--search`, `--fix`, `--suppress`, `--suppress-rule` or `--prune-suppressions` (there is no file to write the fixed source to or to record suppressions for). It waits for the end of the input (Ctrl-D in a terminal). An empty input is linted as an empty source. To lint a file that is named `-`, write `./-`.
 
-Without any argument, standard input is read only when the output is a terminal (for example `cat target.html | markuplint`). Use `-` when the output is piped too.
+Without any argument, standard input is read only when the output is a terminal (for example `cat target.html | markuplint`). Use `-` when the output is piped too. The options that `-` rejects (above) are rejected here too.
 
 ```shell
 $ cat target.html | markuplint - --format JSON | jq
