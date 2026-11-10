@@ -125,6 +125,31 @@ describe('The `-` operand', () => {
 		expect(exitCode).toBe(1);
 	});
 
+	// The no-operand path (a pipe in, a terminal out) needs a TTY on stdout, which a spawned
+	// process here cannot have; `main.spec.ts` covers it in-process.
+	test.each([
+		['--fix', ['--fix']],
+		['--search', ['--search', 'div']],
+		['--suppress', ['--suppress']],
+		['--suppress-rule', ['--suppress-rule', 'attr-value-quotes']],
+		['--prune-suppressions', ['--prune-suppressions']],
+	])('cannot be combined with %s, and no file is written (#4560)', async (flag, flagArgs) => {
+		const cwd = await fs.mkdtemp(path.join(os.tmpdir(), 'markuplint-stdin-fix-test-'));
+		try {
+			const { stdout, stderr, exitCode } = await execa(
+				entryFilePath,
+				['-', ...flagArgs, '--config', escape(configFilePath), '--no-search-config'],
+				{ cwd, input: '<div id=x></div>\n', reject: false, env: { LANG: 'en' } },
+			);
+			expect(stdout).toBe('');
+			expect(stderr).toContain(flag);
+			expect(exitCode).toBe(1);
+			expect(await fs.readdir(cwd)).toStrictEqual([]);
+		} finally {
+			await fs.rm(cwd, { recursive: true, force: true });
+		}
+	});
+
 	test('cannot be repeated', async () => {
 		const { stdout, stderr, exitCode } = await execa(entryFilePath, ['-', '-', '--format', 'JSON'], {
 			input: html,

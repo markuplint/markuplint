@@ -336,6 +336,17 @@ export function plan(changes: readonly Change[], probe: Probe): Plan {
 			continue;
 		}
 
+		// The README of `markuplint` carries a copy of `--help`, which `readme-help.spec.ts` keeps equal to
+		// `help` in `bootstrap.ts` (#4560 found it drifted). It is the one spec that reads it: running the
+		// specs of the whole package for it would be the other reading of "a package-level document".
+		if (path === 'packages/markuplint/README.md') {
+			const readmeSpec = 'packages/markuplint/src/cli/readme-help.spec.ts';
+			if (probe.specs.includes(readmeSpec)) {
+				targets.add(readmeSpec);
+			}
+			continue;
+		}
+
 		// Package-level documents that no spec reads. The scaffold of `create-rule` and the
 		// source of the preset README are read, and fall through to the package's own specs.
 		if (

@@ -179,6 +179,19 @@ describe('a file of a package that is not source', () => {
 		expect(targets).toContain('packages/@markuplint/create-rule/src/transfer.spec.ts');
 	});
 
+	test('the README of markuplint runs the spec that keeps its `--help` copy, and nothing else', () => {
+		const readmeSpec = 'packages/markuplint/src/cli/readme-help.spec.ts';
+		const withReadmeSpec: Probe = {
+			...probe,
+			specs: [...probe.specs, readmeSpec],
+			read: path => (path === readmeSpec ? '' : probe.read(path)),
+		};
+		expect(plan([modified('packages/markuplint/README.md')], withReadmeSpec)).toStrictEqual({
+			mode: 'affected',
+			targets: [readmeSpec],
+		});
+	});
+
 	test('a Markdown file of another package selects nothing', () => {
 		expect(affected(modified('packages/@markuplint/ml-core/docs/notes.md'))).toStrictEqual([]);
 	});

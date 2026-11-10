@@ -5,11 +5,11 @@ import { afterEach, beforeEach, describe, test, expect, vi } from 'vitest';
 
 const textMock = vi.fn<() => Promise<string>>();
 const initializeMock = vi.fn<() => Promise<void>>();
-const commandMock = vi.fn<() => Promise<boolean>>();
+const commandMock = vi.fn<(...args: unknown[]) => Promise<boolean>>();
 
 vi.mock('node:stream/consumers', () => ({ text: () => textMock() }));
 vi.mock('./init/index.js', () => ({ initialize: () => initializeMock() }));
-vi.mock('./command.js', () => ({ command: () => commandMock() }));
+vi.mock('./command.js', () => ({ command: (...args: unknown[]) => commandMock(...args) }));
 
 const originalArgv = process.argv;
 
@@ -78,6 +78,133 @@ describe('main', () => {
 		await expect(run('-', '--fix')).resolves.toBe(1);
 		expect(stderr.join('')).toContain('--fix');
 		expect(textMock).not.toHaveBeenCalled();
+	});
+
+	// The options that `givenFileFlags()` in `main.ts` lists: they act on a file (write it, or
+	// record something for it), and the standard input has none. Keep the two in step.
+	const FILE_FLAGS: readonly (readonly [string, readonly string[]])[] = [
+		['--fix', ['--fix']],
+		['--search', ['--search', 'div']],
+		['--suppress', ['--suppress']],
+		['--suppress-rule', ['--suppress-rule', 'attr-value-quotes']],
+		['--prune-suppressions', ['--prune-suppressions']],
+	];
+
+	// `--fix` with the `-` operand is the test above.
+	test.each(FILE_FLAGS.filter(([flag]) => flag !== '--fix'))(
+		'the `-` operand with %s is rejected before the standard input is read',
+		async (flag, flagArgs) => {
+			await expect(run('-', ...flagArgs)).resolves.toBe(1);
+			expect(stderr.join('')).toBe(`The \`-\` operand (standard input) cannot be combined with ${flag}.\n`);
+			expect(textMock).not.toHaveBeenCalled();
+			expect(commandMock).not.toHaveBeenCalled();
+		},
+	);
+
+	test('the `-` operand names every file option and the file paths that it is combined with', async () => {
+		await expect(run('-', 'a.html', '--fix', '--suppress')).resolves.toBe(1);
+		expect(stderr.join('')).toBe(
+			'The `-` operand (standard input) cannot be combined with file paths, --fix, --suppress.\n',
+		);
+	});
+
+	test('the `-` operand with a second file path alone names only the file paths', async () => {
+		await expect(run('-', 'a.html')).resolves.toBe(1);
+		expect(stderr.join('')).toBe('The `-` operand (standard input) cannot be combined with file paths.\n');
+	});
+
+	test('the `-` operand with --fix-dry-run and --suppress names only --suppress', async () => {
+		await expect(run('-', '--fix-dry-run', '--suppress')).resolves.toBe(1);
+		expect(stderr.join('')).toBe('The `-` operand (standard input) cannot be combined with --suppress.\n');
+	});
+
+	test('the `-` operand with --fix-dry-run writes nothing, so it is linted', async () => {
+		textMock.mockResolvedValue('<div id=x></div>');
+		commandMock.mockResolvedValue(false);
+		await expect(run('-', '--fix-dry-run')).resolves.toBe(0);
+		expect(commandMock).toHaveBeenCalledOnce();
+		expect(commandMock.mock.calls[0]?.[1]).toMatchObject({ fixDryRun: true, fix: false });
+	});
+
+	test('the `-` operand with an empty --search is no search, as it is with a file path, so it is linted', async () => {
+		textMock.mockResolvedValue('<div id=x></div>');
+		commandMock.mockResolvedValue(false);
+		await expect(run('-', '--search', '')).resolves.toBe(0);
+		expect(commandMock).toHaveBeenCalledOnce();
+	});
+
+	test('the `-` operand with an empty --suppress-rule is rejected, as `command()` takes it for the suppressions mode', async () => {
+		await expect(run('-', '--suppress-rule', '')).resolves.toBe(1);
+		expect(stderr.join('')).toBe('The `-` operand (standard input) cannot be combined with --suppress-rule.\n');
+	});
+
+	describe('standard input with no operand (a pipe in, a terminal out)', () => {
+		const originalStdinIsTTY = Object.getOwnPropertyDescriptor(process.stdin, 'isTTY');
+		const originalStdoutIsTTY = Object.getOwnPropertyDescriptor(process.stdout, 'isTTY');
+
+		function setIsTTY(stream: NodeJS.ReadStream | NodeJS.WriteStream, value: boolean) {
+			Object.defineProperty(stream, 'isTTY', { value, configurable: true, writable: true });
+		}
+
+		function restoreIsTTY(stream: NodeJS.ReadStream | NodeJS.WriteStream, original?: PropertyDescriptor) {
+			if (original) {
+				Object.defineProperty(stream, 'isTTY', original);
+			} else {
+				// `isTTY` is absent on a stream that is not a TTY; put it back as it was.
+				Reflect.deleteProperty(stream, 'isTTY');
+			}
+		}
+
+		beforeEach(() => {
+			setIsTTY(process.stdin, false);
+			setIsTTY(process.stdout, true);
+		});
+
+		afterEach(() => {
+			restoreIsTTY(process.stdin, originalStdinIsTTY);
+			restoreIsTTY(process.stdout, originalStdoutIsTTY);
+		});
+
+		test('is linted as a source', async () => {
+			textMock.mockResolvedValue('<div></div>');
+			commandMock.mockResolvedValue(false);
+			await expect(run()).resolves.toBe(0);
+			expect(commandMock).toHaveBeenCalledOnce();
+		});
+
+		test.each(FILE_FLAGS)('with %s is rejected before the standard input is read', async (flag, flagArgs) => {
+			textMock.mockResolvedValue('<div id=x></div>');
+			await expect(run(...flagArgs)).resolves.toBe(1);
+			expect(stderr.join('')).toBe(`Standard input cannot be combined with ${flag}.\n`);
+			expect(textMock).not.toHaveBeenCalled();
+			expect(commandMock).not.toHaveBeenCalled();
+		});
+
+		test('an empty input with --fix is rejected, not answered with the help', async () => {
+			textMock.mockResolvedValue('');
+			await expect(run('--fix')).resolves.toBe(1);
+			expect(stderr.join('')).toBe('Standard input cannot be combined with --fix.\n');
+		});
+
+		test('several options are named in the order of the list', async () => {
+			await expect(run('--fix', '--search', 'div')).resolves.toBe(1);
+			expect(stderr.join('')).toBe('Standard input cannot be combined with --search, --fix.\n');
+		});
+
+		test('--fix-dry-run writes nothing, so it is linted', async () => {
+			textMock.mockResolvedValue('<div id=x></div>');
+			commandMock.mockResolvedValue(false);
+			await expect(run('--fix-dry-run')).resolves.toBe(0);
+			expect(commandMock).toHaveBeenCalledOnce();
+			expect(commandMock.mock.calls[0]?.[1]).toMatchObject({ fixDryRun: true, fix: false });
+		});
+
+		test('--suppressions-location only names a path, so it is linted', async () => {
+			textMock.mockResolvedValue('<div id=x></div>');
+			commandMock.mockResolvedValue(false);
+			await expect(run('--suppressions-location', 'x.json')).resolves.toBe(0);
+			expect(commandMock).toHaveBeenCalledOnce();
+		});
 	});
 
 	test.each([

@@ -5,8 +5,8 @@ import meow from 'meow';
 export const help = `
 Usage
 	$ markuplint <HTML file paths (glob format)>
-	$ <stdout> | markuplint
-	$ <stdout> | markuplint -              Read the source from the standard input. Not with file paths, --search or --fix.
+	$ <stdout> | markuplint                Read the source from the standard input when the output is a terminal. Not with --search, --fix or the suppressions options.
+	$ <stdout> | markuplint -              Read the source from the standard input. Not with file paths, --search, --fix or the suppressions options.
 
 Options
 	--config,                -c FILE_PATH  A configuration file path.
