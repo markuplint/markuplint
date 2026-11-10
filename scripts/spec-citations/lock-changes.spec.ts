@@ -147,7 +147,8 @@ describe('findCitations', () => {
 
 	test('[lock-changes-012] finds a URL that only a file the monitor does not read holds, and nothing for a URL nobody cites', () => {
 		const inReadme = 'https://html.spec.whatwg.org/multipage/input.html#color-state-(type=color)';
-		const nobody = 'https://example.test/nobody-cites-this#section';
+		// Built from parts: a literal would be a citation of the URL that this very file holds.
+		const nobody = ['https://example.test', 'nobody-cites-this#section'].join('/');
 		const found = findCitations(root, [inReadme, nobody]);
 		expect(found.get(inReadme)?.some(p => p.startsWith('packages/@markuplint/types/README.md:'))).toBe(true);
 		expect(found.get(nobody)).toStrictEqual([]);
