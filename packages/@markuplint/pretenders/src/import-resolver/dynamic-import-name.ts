@@ -42,7 +42,8 @@
 
 import type { ImportBinding } from './types.js';
 
-import ts from 'typescript';
+import * as ts from 'typescript/ast';
+import { forEachChild, isFunctionLike as isTsFunctionLike, isTypeOnlyImportClause } from '../ts-ast.js';
 
 /**
  * The name a dynamic import is bound under: what {@link ./types.js} `ImportBinding` carries as
@@ -355,7 +356,7 @@ function takenExport(
 		return null;
 	}
 	const [only] = pattern.elements;
-	if (pattern.elements.length !== 1 || !only || only.dotDotDotToken || !ts.isIdentifier(only.name)) {
+	if (pattern.elements.length !== 1 || !only || only.dotDotDotToken || !only.name || !ts.isIdentifier(only.name)) {
 		return null;
 	}
 	const importedName = only.propertyName ? propertyKey(only.propertyName) : only.name.text;
@@ -473,7 +474,7 @@ function wrapperCall(
 	if (
 		holder &&
 		((ts.isPropertyAssignment(holder) && propertyKey(holder.name) === 'loader') ||
-			(ts.isShorthandPropertyAssignment(holder) && holder.name.text === 'loader'))
+			(ts.isShorthandPropertyAssignment(holder) && ts.isIdentifier(holder.name) && holder.name.text === 'loader'))
 	) {
 		const options = holder.parent;
 		argument = options;
@@ -623,7 +624,7 @@ function referencesTo(held: Held): readonly ts.Identifier[] {
 		) {
 			found.push(node);
 		}
-		ts.forEachChild(node, visit);
+		forEachChild(node, visit);
 	};
 	visit(held.root);
 	referencesOfBinding.set(held.binding, found);
@@ -835,7 +836,7 @@ function bindingsOf(
 		for (const clause of node.clauses) {
 			declareStatements(clause.statements, bindings);
 		}
-	} else if (ts.isFunctionLike(node)) {
+	} else if (isTsFunctionLike(node)) {
 		for (const parameter of node.parameters) {
 			declareNames(parameter.name, bindings);
 		}
@@ -916,7 +917,7 @@ function declareImports(
 		return;
 	}
 	const clause = statement.importClause;
-	const typeOnly = clause.isTypeOnly;
+	const typeOnly = isTypeOnlyImportClause(clause);
 	if (clause.name) {
 		const module = statement.moduleSpecifier;
 		bindings.set(
@@ -955,7 +956,7 @@ function declareHoistedVariables(
 	bindings: Map<string, Binding>,
 ): void {
 	const visit = (node: ts.Node) => {
-		if (ts.isFunctionLike(node) || ts.isModuleBlock(node) || ts.isClassStaticBlockDeclaration(node)) {
+		if (isTsFunctionLike(node) || ts.isModuleBlock(node) || ts.isClassStaticBlockDeclaration(node)) {
 			return;
 		}
 		if (ts.isVariableDeclarationList(node) && !(node.flags & ts.NodeFlags.BlockScoped)) {
@@ -963,9 +964,9 @@ function declareHoistedVariables(
 				declareVariable(declaration, bindings);
 			}
 		}
-		ts.forEachChild(node, visit);
+		forEachChild(node, visit);
 	};
-	ts.forEachChild(root, visit);
+	forEachChild(root, visit);
 }
 
 /**
@@ -995,6 +996,9 @@ function declareVariable(
 	}
 	for (const element of name.elements) {
 		const key = element.propertyName ? propertyKey(element.propertyName) : null;
+		if (!element.name) {
+			continue;
+		}
 		if (ts.isIdentifier(element.name) && !element.dotDotDotToken && (element.propertyName ? key : true)) {
 			bindings.set(element.name.text, {
 				kind: 'variable',
@@ -1019,7 +1023,7 @@ function declareNames(
 		return;
 	}
 	for (const element of name.elements) {
-		if (!ts.isOmittedExpression(element)) {
+		if (!ts.isOmittedExpression(element) && element.name) {
 			declareNames(element.name, bindings);
 		}
 	}
@@ -1251,9 +1255,9 @@ function findLoadedModule(
 				return;
 			}
 		}
-		ts.forEachChild(node, visit);
+		forEachChild(node, visit);
 	};
-	ts.forEachChild(loaderCall, visit);
+	forEachChild(loaderCall, visit);
 	// The function may be held by a name the call takes (`lazy(load)`), written elsewhere in the file.
 	const held = heldFunction(loaderCall);
 	if (!found && held) {
@@ -1289,7 +1293,11 @@ function loaderArgument(
 		if (ts.isPropertyAssignment(property) && propertyKey(property.name) === 'loader') {
 			return skipParentheses(property.initializer);
 		}
-		if (ts.isShorthandPropertyAssignment(property) && property.name.text === 'loader') {
+		if (
+			ts.isShorthandPropertyAssignment(property) &&
+			ts.isIdentifier(property.name) &&
+			property.name.text === 'loader'
+		) {
 			return property.name;
 		}
 	}

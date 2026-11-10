@@ -32,11 +32,12 @@
  */
 
 import type { LoadedExport } from './import-resolver/dynamic-import-name.js';
-import type { SourceFile } from 'typescript';
+import type { SourceFile } from 'typescript/ast';
 
-import ts from 'typescript';
+import * as ts from 'typescript/ast';
 
 import { loadedExport } from './import-resolver/dynamic-import-name.js';
+import { isTypeOnlyImportClause } from './ts-ast.js';
 
 /**
  * Where a single exported name resolves to: a declaration in the same file,
@@ -307,7 +308,7 @@ function collectImports(
 			!ts.isImportDeclaration(node) ||
 			!ts.isStringLiteral(node.moduleSpecifier) ||
 			!node.importClause ||
-			node.importClause.isTypeOnly
+			isTypeOnlyImportClause(node.importClause)
 		) {
 			continue;
 		}

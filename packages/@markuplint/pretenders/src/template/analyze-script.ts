@@ -7,12 +7,14 @@ import type {
 	PropertyName,
 	Statement,
 	VariableStatement,
-} from 'typescript';
+} from 'typescript/ast';
 
-import ts from 'typescript';
+import * as ts from 'typescript/ast';
+import { parseSource } from '../ts-api.js';
 
 const {
-	createSourceFile,
+	isNamedImports,
+	isSpreadAssignment,
 	isArrayLiteralExpression,
 	isAsExpression,
 	isBindingElement,
@@ -28,13 +30,12 @@ const {
 	isParenthesizedExpression,
 	isPropertyAccessExpression,
 	isPropertyAssignment,
-	isPropertySignature,
+	isPropertySignatureDeclaration,
 	isSatisfiesExpression,
 	isStringLiteral,
 	isTypeLiteralNode,
 	isVariableStatement,
 	ScriptKind,
-	ScriptTarget,
 	SyntaxKind,
 } = ts;
 
@@ -100,7 +101,7 @@ export function analyzeScript(
 		return { locals, objects, rests };
 	}
 
-	const sourceFile = createSourceFile('component-script', source, ScriptTarget.Latest, false, scriptKind);
+	const sourceFile = parseSource('component-script', source, scriptKind);
 
 	for (const statement of sourceFile.statements) {
 		if (isExpressionStatement(statement)) {
@@ -244,7 +245,7 @@ function readDestructuring(
 	rests: Set<string>,
 ) {
 	for (const element of pattern.elements) {
-		if (!isIdentifier(element.name)) {
+		if (!element.name || !isIdentifier(element.name)) {
 			continue;
 		}
 		if (element.dotDotDotToken) {
@@ -367,7 +368,7 @@ function readDefineProps(
 	if (typeArgument && isTypeLiteralNode(typeArgument)) {
 		return {
 			names: typeArgument.members.flatMap(member => {
-				const name = isPropertySignature(member) ? getPropertyName(member.name) : undefined;
+				const name = isPropertySignatureDeclaration(member) ? getPropertyName(member.name) : undefined;
 				return name === undefined ? [] : [name];
 			}),
 			defaults: [],
@@ -382,7 +383,7 @@ function getKeys(
 	literal: ObjectLiteralExpression,
 ): string[] {
 	return literal.properties.flatMap(property => {
-		const name = getPropertyName('name' in property ? property.name : undefined);
+		const name = getPropertyName(isSpreadAssignment(property) ? undefined : property.name);
 		return name === undefined ? [] : [name];
 	});
 }
@@ -427,7 +428,7 @@ function getDeclaredNames(
 		return [
 			...(name ? [name.text] : []),
 			...(namedBindings
-				? 'elements' in namedBindings
+				? isNamedImports(namedBindings)
 					? namedBindings.elements.map(element => element.name.text)
 					: [namedBindings.name.text]
 				: []),
@@ -444,5 +445,7 @@ function getBindingNames(
 	if (isIdentifier(name)) {
 		return [name.text];
 	}
-	return name.elements.flatMap(element => (isBindingElement(element) ? getBindingNames(element.name) : []));
+	return name.elements.flatMap(element =>
+		isBindingElement(element) && element.name ? getBindingNames(element.name) : [],
+	);
 }

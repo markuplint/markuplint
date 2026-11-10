@@ -39,7 +39,7 @@
 		"es-module-lexer": "^3.0.4",
 		"glob": "^14.0.3",
 		"meow": "^14.1.0",
-		"typescript": "~6.0.3"
+		"typescript": "7.1.0-beta"
 	},
 	"devDependencies": {
 		"@markuplint/astro-parser": "5.4.0",

@@ -14,7 +14,9 @@
  * | `extractMdxEsm`                  | MDX top-level ESM (no parser package for MDX)        |
  */
 
-import ts from 'typescript';
+import * as ts from 'typescript/ast';
+import { parseSource } from '../ts-api.js';
+import { forEachChild } from '../ts-ast.js';
 
 export interface ScriptSourceBlock {
 	readonly content: string;
@@ -121,7 +123,7 @@ export function extractVueOptionsApiRegistrations(
 		return [];
 	}
 
-	const sourceFile = ts.createSourceFile('script', scriptContent, ts.ScriptTarget.Latest, true, scriptKind);
+	const sourceFile = parseSource('script', scriptContent, scriptKind);
 	const registry = findComponentsObject(sourceFile);
 	if (!registry) {
 		return [];
@@ -129,7 +131,7 @@ export function extractVueOptionsApiRegistrations(
 
 	const registrations: VueComponentRegistration[] = [];
 	for (const property of registry.properties) {
-		if (ts.isShorthandPropertyAssignment(property)) {
+		if (ts.isShorthandPropertyAssignment(property) && ts.isIdentifier(property.name)) {
 			// Shorthand: `Button` → use as-is
 			registrations.push({ key: property.name.text, name: property.name.text });
 		} else if (ts.isPropertyAssignment(property)) {
@@ -155,7 +157,7 @@ function containsDynamicImport(
 ): boolean {
 	return (
 		(ts.isCallExpression(node) && node.expression.kind === ts.SyntaxKind.ImportKeyword) ||
-		(ts.forEachChild(node, child => containsDynamicImport(child) || undefined) ?? false)
+		(forEachChild(node, child => containsDynamicImport(child) || undefined) ?? false)
 	);
 }
 
@@ -172,7 +174,7 @@ function findComponentsObject(
 	) {
 		return node.initializer;
 	}
-	return ts.forEachChild(node, findComponentsObject) ?? null;
+	return forEachChild(node, findComponentsObject) ?? null;
 }
 
 /**

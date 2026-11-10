@@ -1,11 +1,12 @@
 import { describe, test, expect } from 'vitest';
 
-import ts from 'typescript';
+import * as ts from 'typescript/ast';
 
 import { getExportTable, getReExportSources } from './export-table.js';
+import { parseSource } from './ts-api.js';
 
 function sourceFile(code: string) {
-	return ts.createSourceFile('test.tsx', code, ts.ScriptTarget.Latest, true, ts.ScriptKind.TSX);
+	return parseSource('test.tsx', code, ts.ScriptKind.TSX);
 }
 
 describe('getExportTable', () => {

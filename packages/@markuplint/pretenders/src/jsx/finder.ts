@@ -1,8 +1,6 @@
-import type { Node, SourceFile } from 'typescript';
+import type { Node, SourceFile } from 'typescript/ast';
 
-import ts from 'typescript';
-
-const { forEachChild } = ts;
+import { forEachChild } from '../ts-ast.js';
 
 export function finder(
 	// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types

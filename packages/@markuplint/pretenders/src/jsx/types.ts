@@ -15,7 +15,7 @@ export interface PretenderScanJSXOptions extends PretenderScanOptions {
 	 *
 	 * It does not change how a reference to a component in another file is
 	 * resolved: that reads the target file through the export table, not
-	 * through the `ts.Program`.
+	 * through the TypeScript program.
 	 */
 	followImports?: boolean;
 	/**

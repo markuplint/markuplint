@@ -5,6 +5,8 @@ import path from 'node:path';
 
 import { describe, test, expect, beforeEach, afterEach, vi } from 'vitest';
 
+import { closeTsApi, peekTsApi } from '../ts-api.js';
+
 import {
 	clearModuleResolutionCaches,
 	isPackageSpecifier,
@@ -205,6 +207,227 @@ describe('isPackageSpecifier', () => {
 		const dependencies = new Set<string>();
 		isPackageSpecifier(importer, 'ui-lib', dependencies);
 		expect([...dependencies]).toStrictEqual([normalizePath(path.join(tmpDir, 'tsconfig.json'))]);
+	});
+});
+
+describe('a tsconfig with a `baseUrl`', () => {
+	let tmpDir: string;
+	let importer: string;
+
+	const write = async (file: string, content: unknown) => {
+		await mkdir(path.dirname(path.join(tmpDir, file)), { recursive: true });
+		await writeFile(path.join(tmpDir, file), typeof content === 'string' ? content : JSON.stringify(content));
+	};
+	const abs = (file: string) => normalizePath(path.join(tmpDir, file));
+
+	beforeEach(async () => {
+		tmpDir = await mkdtemp(path.join(os.tmpdir(), 'resolve-module-file-baseurl-'));
+		importer = path.join(tmpDir, 'src', 'Page.tsx');
+		await write('src/Page.tsx', '');
+	});
+
+	afterEach(async () => {
+		await rm(tmpDir, { recursive: true, force: true });
+		clearModuleResolutionCaches();
+	});
+
+	test('resolves a bare specifier below the `baseUrl`', async () => {
+		await write('tsconfig.json', { compilerOptions: { baseUrl: '.' } });
+		await write('components/Button.tsx', '');
+		expect(resolveModuleFile(importer, 'components/Button')).toBe(abs('components/Button.tsx'));
+	});
+
+	test('resolves from the directory the `baseUrl` names, relative to the config', async () => {
+		await write('tsconfig.json', { compilerOptions: { baseUrl: 'src' } });
+		await write('src/components/Button.tsx', '');
+		expect(resolveModuleFile(importer, 'components/Button')).toBe(abs('src/components/Button.tsx'));
+	});
+
+	test('resolves with the `baseUrl` of an extended config, relative to the config that sets it', async () => {
+		await write('config/base.json', { compilerOptions: { baseUrl: '../lib' } });
+		await write('tsconfig.json', { extends: './config/base.json' });
+		await write('lib/Button.tsx', '');
+		expect(resolveModuleFile(importer, 'Button')).toBe(abs('lib/Button.tsx'));
+	});
+
+	test('does not resolve below a `baseUrl` that the config unsets with `null`', async () => {
+		await write('config/base.json', { compilerOptions: { baseUrl: '../lib' } });
+		await write('tsconfig.json', { extends: './config/base.json', compilerOptions: { baseUrl: null } });
+		await write('lib/Button.tsx', '');
+		expect(resolveModuleFile(importer, 'Button')).toBeNull();
+	});
+
+	test('prefers a file below the `baseUrl` to a package of the same name, as the compiler did', async () => {
+		await write('tsconfig.json', { compilerOptions: { baseUrl: '.' } });
+		await write('lib/index.tsx', '');
+		await write('node_modules/lib/index.d.ts', 'export {};');
+		await write('node_modules/lib/package.json', { name: 'lib', types: 'index.d.ts' });
+		expect(resolveModuleFile(importer, 'lib')).toBe(abs('lib/index.tsx'));
+	});
+
+	test('still resolves a package when nothing below the `baseUrl` matches', async () => {
+		await write('tsconfig.json', { compilerOptions: { baseUrl: '.' } });
+		await write('node_modules/other/index.d.ts', 'export {};');
+		await write('node_modules/other/package.json', { name: 'other', types: 'index.d.ts' });
+		// A package is resolved to its real path, as the compiler does.
+		expect(resolveModuleFile(importer, 'other')).toBe(
+			normalizePath(fs.realpathSync(path.join(tmpDir, 'node_modules', 'other', 'index.d.ts'))),
+		);
+	});
+
+	test('prefers a `paths` alias to the `baseUrl`', async () => {
+		await write('tsconfig.json', { compilerOptions: { baseUrl: '.', paths: { '@/*': ['src/*'] } } });
+		await write('src/Button.tsx', '');
+		await write('@/Button.tsx', '');
+		expect(resolveModuleFile(importer, '@/Button')).toBe(abs('src/Button.tsx'));
+	});
+
+	test('does not try the `baseUrl` for a relative specifier', async () => {
+		await write('tsconfig.json', { compilerOptions: { baseUrl: '.' } });
+		await write('Button.tsx', '');
+		expect(resolveModuleFile(importer, './Button')).toBeNull();
+	});
+});
+
+describe('the `extends` chain of a tsconfig', () => {
+	let tmpDir: string;
+	let importer: string;
+
+	const write = (file: string, content: unknown) =>
+		writeFile(path.join(tmpDir, file), typeof content === 'string' ? content : JSON.stringify(content));
+	const dependenciesOf = () => {
+		const dependencies = new Set<string>();
+		isPackageSpecifier(importer, 'ui-lib', dependencies);
+		return [...dependencies].toSorted();
+	};
+	const abs = (...files: string[]) => files.map(file => normalizePath(path.join(tmpDir, file))).toSorted();
+
+	beforeEach(async () => {
+		tmpDir = await mkdtemp(path.join(os.tmpdir(), 'resolve-module-file-chain-'));
+		importer = path.join(tmpDir, 'src', 'Page.tsx');
+	});
+
+	afterEach(async () => {
+		await rm(tmpDir, { recursive: true, force: true });
+		clearModuleResolutionCaches();
+	});
+
+	test('records every config of an `extends` array, and the configs they extend', async () => {
+		await write('a.json', { extends: './c.json' });
+		await write('b.json', {});
+		await write('c.json', {});
+		await write('tsconfig.json', { extends: ['./a.json', './b.json'] });
+		expect(dependenciesOf()).toStrictEqual(abs('a.json', 'b.json', 'c.json', 'tsconfig.json'));
+	});
+
+	test('finds a relative `extends` that has no `.json`', async () => {
+		await write('base.json', { compilerOptions: { baseUrl: '.' } });
+		await write('tsconfig.json', { extends: './base' });
+		expect(dependenciesOf()).toStrictEqual(abs('base.json', 'tsconfig.json'));
+		expect(isPackageSpecifier(importer, 'ui-lib')).toBe(false);
+	});
+
+	test('ends a cycle of `extends`', async () => {
+		await write('a.json', { extends: './tsconfig.json' });
+		await write('tsconfig.json', { extends: './a.json' });
+		expect(dependenciesOf()).toStrictEqual(abs('a.json', 'tsconfig.json'));
+	});
+
+	test('goes on without a target that does not exist', async () => {
+		await write('tsconfig.json', { extends: './missing.json' });
+		expect(dependenciesOf()).toStrictEqual(abs('tsconfig.json'));
+		expect(isPackageSpecifier(importer, 'ui-lib')).toBe(true);
+	});
+
+	test('records an extended config that cannot be parsed, and goes on', async () => {
+		await write('base.json', '{ not json');
+		await write('tsconfig.json', { extends: './base.json' });
+		expect(dependenciesOf()).toStrictEqual(abs('base.json', 'tsconfig.json'));
+		expect(isPackageSpecifier(importer, 'ui-lib')).toBe(true);
+	});
+
+	test('takes a `baseUrl` of a config that is extended through another', async () => {
+		await write('root.json', { compilerOptions: { baseUrl: '.' } });
+		await write('mid.json', { extends: './root.json' });
+		await write('tsconfig.json', { extends: './mid.json' });
+		expect(isPackageSpecifier(importer, 'ui-lib')).toBe(false);
+	});
+
+	test('does not take `"baseUrl": null` for a `baseUrl`', async () => {
+		await write('tsconfig.json', { compilerOptions: { baseUrl: null } });
+		expect(isPackageSpecifier(importer, 'ui-lib')).toBe(true);
+	});
+
+	test('lets the config unset the `baseUrl` that it extends with `null`', async () => {
+		await write('base.json', { compilerOptions: { baseUrl: '.' } });
+		await write('tsconfig.json', { extends: './base.json', compilerOptions: { baseUrl: null } });
+		expect(isPackageSpecifier(importer, 'ui-lib')).toBe(true);
+	});
+
+	test('lets a later `extends` override an earlier one, and keeps a `baseUrl` that the later one is silent on', async () => {
+		await write('with.json', { compilerOptions: { baseUrl: '.' } });
+		await write('without.json', { compilerOptions: { baseUrl: null } });
+		await write('silent.json', {});
+		await write('tsconfig.json', { extends: ['./with.json', './without.json'] });
+		expect(isPackageSpecifier(importer, 'ui-lib')).toBe(true);
+
+		clearModuleResolutionCaches();
+		await write('tsconfig.json', { extends: ['./with.json', './silent.json'] });
+		expect(isPackageSpecifier(importer, 'ui-lib')).toBe(false);
+	});
+});
+
+describe('a tsconfig that extends a package', () => {
+	let tmpDir: string;
+	let importer: string;
+
+	beforeEach(async () => {
+		tmpDir = await mkdtemp(path.join(os.tmpdir(), 'resolve-module-file-extends-'));
+		importer = path.join(tmpDir, 'src', 'Page.tsx');
+		await mkdir(path.join(tmpDir, 'node_modules', '@scope', 'base'), { recursive: true });
+		await writeFile(
+			path.join(tmpDir, 'node_modules', '@scope', 'base', 'tsconfig.json'),
+			JSON.stringify({ compilerOptions: { baseUrl: '.' } }),
+		);
+		await writeFile(path.join(tmpDir, 'tsconfig.json'), JSON.stringify({ extends: '@scope/base/tsconfig.json' }));
+	});
+
+	afterEach(async () => {
+		await rm(tmpDir, { recursive: true, force: true });
+		clearModuleResolutionCaches();
+	});
+
+	test('does not take a bare specifier for a package when the extended package config has a `baseUrl`', () => {
+		expect(isPackageSpecifier(importer, 'ui-lib')).toBe(false);
+	});
+
+	test('does not take a bare specifier for a package when the package config is named by its directory', async () => {
+		await writeFile(path.join(tmpDir, 'tsconfig.json'), JSON.stringify({ extends: '@scope/base' }));
+		expect(isPackageSpecifier(importer, 'ui-lib')).toBe(false);
+	});
+
+	test('does not record the extended package config as a dependency', () => {
+		const dependencies = new Set<string>();
+		isPackageSpecifier(importer, 'ui-lib', dependencies);
+		expect([...dependencies]).toStrictEqual([normalizePath(path.join(tmpDir, 'tsconfig.json'))]);
+	});
+});
+
+describe('module resolution after the TypeScript API was closed', () => {
+	test('resolves again with a resolver of the new API', () => {
+		const importer = path.resolve(fixtureDir, 'relative', 'importer.tsx');
+		const expected = normalizePath(path.resolve(fixtureDir, 'relative', 'a.tsx'));
+		expect(resolveModuleFile(importer, './a')).toBe(expected);
+
+		closeTsApi();
+
+		expect(resolveModuleFile(importer, './a')).toBe(expected);
+	});
+
+	test('clears the caches without starting an API', () => {
+		closeTsApi();
+		clearModuleResolutionCaches();
+		expect(peekTsApi()).toBeNull();
 	});
 });
 

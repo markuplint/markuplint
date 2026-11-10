@@ -1,9 +1,9 @@
 import type { Attr } from '../types.js';
 import type { PropResolver } from './resolve-prop.js';
 import type { PretenderAttr } from '@markuplint/ml-config';
-import type { JsxOpeningElement, JsxSelfClosingElement, SourceFile } from 'typescript';
+import type { JsxOpeningElement, JsxSelfClosingElement, SourceFile } from 'typescript/ast';
 
-import ts from 'typescript';
+import * as ts from 'typescript/ast';
 
 const { isJsxAttribute, isJsxExpression, isJsxSpreadAttribute, isStringLiteral } = ts;
 

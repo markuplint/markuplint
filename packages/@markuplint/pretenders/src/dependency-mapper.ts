@@ -7,7 +7,7 @@ import fs from 'node:fs';
 import path from 'node:path';
 
 import { isFatalError } from '@markuplint/shared';
-import ts from 'typescript';
+import { parseSource, TsApiError } from './ts-api.js';
 
 import { composeIdentity } from './compose-identity.js';
 import { DEFAULT_LOCAL_NAME, getExportTable } from './export-table.js';
@@ -1119,12 +1119,12 @@ export function clearExportTableCache() {
  * file, which on a project where many components import from one shared barrel
  * turns a single read into hundreds per `getPretenders()` call.
  *
- * That call frequency is also why this is NOT shared with the structurally
- * similar cached reader in `jsx/compiler-host.ts`, tempting as that looks. That
- * one is called once per file per `ts.Program`, so it can afford to read first
- * and compare content, which buys it automatic freshness. Forcing either policy
- * on both would mean giving up freshness there or paying per-reference I/O here.
- * The two look alike but answer different questions; keep them separate.
+ * That call frequency is also why this is NOT shared with the reader of the
+ * JSX scanner (`jsx/scan-source-files.ts`), tempting as that looks. That one reads
+ * every file again for each scan, so it needs no cache of its own and is always
+ * fresh. Forcing either policy on both would mean giving up freshness there or
+ * paying per-reference I/O here. The two answer different questions; keep them
+ * separate.
  */
 function getExportTableForFile(fileAbs: string, env: DeclarationEnv) {
 	const key = normalizePath(fileAbs);
@@ -1163,18 +1163,20 @@ function getExportTableForFile(fileAbs: string, env: DeclarationEnv) {
 }
 
 /**
- * A parse-stage failure must degrade to "no export table" rather than abort the
- * caller: resolution then falls back to the name index, and the file being
- * linted still gets its real violations reported. TypeScript's parser can raise
- * a plain `Error` (an internal assertion on pathological or generated input),
- * which would otherwise propagate all the way out of the lint run.
+ * A failure of reading this one file's source must degrade to "no export table"
+ * rather than abort the caller: resolution then falls back to the name index, and
+ * the file being linted still gets its real violations reported. A plain `Error`
+ * raised while walking a pathological or generated input is such a failure. A
+ * {@link TsApiError} is not: the compiler could not be used at all, which is the
+ * same for every file, so it is raised instead of making every file quietly fall
+ * back to the name index.
  */
 function buildExportTable(fileAbs: string, text: string) {
 	try {
-		const sourceFile = ts.createSourceFile(fileAbs, text, ts.ScriptTarget.Latest, true, scriptKindForPath(fileAbs));
+		const sourceFile = parseSource(fileAbs, text, scriptKindForPath(fileAbs));
 		return getExportTable(sourceFile);
 	} catch (error) {
-		if (isFatalError(error)) {
+		if (isFatalError(error) || error instanceof TsApiError) {
 			throw error;
 		}
 		return null;
