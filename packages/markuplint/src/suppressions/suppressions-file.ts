@@ -26,13 +26,22 @@ export function resolveSuppressionsPath(customPath?: string): string {
  * Reads and parses a suppressions JSON file.
  * Returns an empty object if the file does not exist.
  *
+ * Only the top level is checked: valid JSON that is not an object (`null`, an
+ * array, a string, a number) is not suppressions data and fails like
+ * unparsable JSON does, so that every caller gets the same readable error
+ * instead of a `TypeError` from the first `Object.keys` on it.
+ *
  * @param filePath - Absolute path to the suppressions file.
  * @returns The parsed suppressions data, or an empty object if the file does not exist.
  */
 export async function readSuppressionsFile(filePath: string): Promise<SuppressionsData> {
 	try {
 		const content = await fs.readFile(filePath, 'utf8');
-		return JSON.parse(content) as SuppressionsData;
+		const parsed: unknown = JSON.parse(content);
+		if (typeof parsed !== 'object' || parsed === null || Array.isArray(parsed)) {
+			throw new Error(`Failed to parse suppressions file "${filePath}": the top level must be a JSON object`);
+		}
+		return parsed as SuppressionsData;
 	} catch (error) {
 		if (error instanceof Error && 'code' in error && (error as NodeJS.ErrnoException).code === 'ENOENT') {
 			return {};

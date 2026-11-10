@@ -47,6 +47,16 @@ describe('suppressions-file', () => {
 
 			await expect(readSuppressionsFile(filePath)).rejects.toThrow('Failed to parse suppressions file');
 		});
+
+		it.each(['null', '[]', '"text"', '1'])(
+			'throws a descriptive error when the JSON is not an object (%s)',
+			async content => {
+				const filePath = path.join(tmpDir, 'not-an-object.json');
+				await fs.writeFile(filePath, content, 'utf8');
+
+				await expect(readSuppressionsFile(filePath)).rejects.toThrow('Failed to parse suppressions file');
+			},
+		);
 	});
 
 	describe('writeSuppressionsFile', () => {

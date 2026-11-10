@@ -108,7 +108,7 @@ function createSummaryLines(summary: SummaryInfo) {
 
 	if (summary.skippedFileCount > 0) {
 		out.push(
-			`${font.yellow('⚠')} ${pluralize(summary.skippedFileCount, 'file')} skipped because --max-count was reached`,
+			`${font.yellow('⚠')} ${pluralize(summary.skippedFileCount, 'file')} not reported because --max-count was reached (violations in ${summary.skippedFileCount === 1 ? 'it' : 'them'} still count toward the exit code)`,
 		);
 	}
 
