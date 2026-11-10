@@ -62,10 +62,11 @@ export async function main(): Promise<number> {
 	const files = cli.input;
 
 	if (files.includes(STDIN_OPERAND)) {
-		if (files.length > 1 || cli.flags.search || cli.flags.fix) {
-			// `--fix` writes the fixed source to the file, and the standard input has none.
+		const fileFlags = givenFileFlags();
+		if (files.length > 1 || fileFlags.length > 0) {
+			const conflicts = files.length > 1 ? ['file paths', ...fileFlags] : fileFlags;
 			process.stderr.write(
-				`The \`${STDIN_OPERAND}\` operand (standard input) cannot be combined with file paths, --search or --fix.\n`,
+				`The \`${STDIN_OPERAND}\` operand (standard input) cannot be combined with ${conflicts.join(', ')}.\n`,
 			);
 			return 1;
 		}
@@ -95,6 +96,11 @@ export async function main(): Promise<number> {
 	}
 
 	if (usePipe()) {
+		const fileFlags = givenFileFlags();
+		if (fileFlags.length > 0) {
+			process.stderr.write(`Standard input cannot be combined with ${fileFlags.join(', ')}.\n`);
+			return 1;
+		}
 		const stdin = await readStdin();
 		if (stdin === null) {
 			return 1;
@@ -108,6 +114,29 @@ export async function main(): Promise<number> {
 
 	// No arguments
 	return showHelp(1);
+}
+
+/**
+ * The options that act on a file that are given, by their names: `--fix` writes the fixed source
+ * to it (with nothing to write to, it created a file named `<AnonymousFile>`, #4560), `--search`
+ * and the suppressions options report or record by file. The standard input has none, so both
+ * ways of reading it (the `-` operand and the no-operand pipe) reject them, and name them in the
+ * message, from this one list: an option that acts on a file is added here, and nowhere else.
+ * `--fix-dry-run` is not one: it writes nothing and prints the diff.
+ */
+function givenFileFlags(): string[] {
+	const { search, fix, suppress, suppressRule, pruneSuppressions } = cli.flags;
+	// Each is given by the condition of the code that consumes it, not by one shared test:
+	// `--search` is a search when it is not empty (the file branch below tests it so), and
+	// `--suppress-rule` turns the suppressions mode on when it is set at all (`command.ts`).
+	const given: readonly (readonly [name: string, isGiven: boolean])[] = [
+		['--search', Boolean(search)],
+		['--fix', Boolean(fix)],
+		['--suppress', Boolean(suppress)],
+		['--suppress-rule', suppressRule != null],
+		['--prune-suppressions', Boolean(pruneSuppressions)],
+	];
+	return given.filter(([, isGiven]) => isGiven).map(([name]) => name);
 }
 
 function usePipe() {

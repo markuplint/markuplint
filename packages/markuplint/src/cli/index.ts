@@ -30,6 +30,11 @@
  * stdin (a child process spawned with an inherited, never-closed stdin) would
  * wait for it forever. An empty stdin is answered with the help and exit code
  * 1 in that case, and linted as an empty source with the `-` operand.
+ * Neither way takes the options that act on a file (`--fix`, `--search` and the
+ * suppressions options): there is no file to write or record for, and `--fix`
+ * once created one named `<AnonymousFile>` (#4560). Both reject them before the
+ * standard input is read, so an empty input gets that error, not the help.
+ * `--fix-dry-run` is not among them: it writes nothing and only prints the diff.
  *
  * The flags that end the run early (`--help`, `--version`, `--init`,
  * `--create-rule`) are evaluated before the operands, so `-` next to them is
