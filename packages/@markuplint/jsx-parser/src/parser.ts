@@ -12,7 +12,7 @@ type State = {
 };
 
 /**
- * ECMAScript `IdentifierStart`, as `JSXIdentifier` starts (https://facebook.github.io/jsx/#prod-JSXIdentifier).
+ * ECMAScript `IdentifierStart`, as `JSXIdentifier` starts (https://react.github.io/jsx/#prod-JSXIdentifier).
  * `@markuplint/mdx-parser` has the same constant: keep the two in step.
  */
 const JSX_IDENTIFIER_START = /^[\p{ID_Start}$_]/u;
@@ -340,7 +340,7 @@ class JSXParser extends Parser<JSXNode, State> {
 	 * script, not only an ASCII letter. The tag scanner of `@markuplint/parser-utils` reads a tag
 	 * only after this says so, so `<$Ui>`, `<_Ui>` and `<Éa>` are elements named as written.
 	 *
-	 * @see https://facebook.github.io/jsx/#prod-JSXIdentifier
+	 * @see https://react.github.io/jsx/#prod-JSXIdentifier
 	 */
 	isTagNameStart(char: string): boolean {
 		return JSX_IDENTIFIER_START.test(char);
@@ -358,7 +358,7 @@ class JSXParser extends Parser<JSXNode, State> {
 	 * Kept in step with `@markuplint/mdx-parser`, which has the same rule.
 	 *
 	 * @see https://www.typescriptlang.org/docs/handbook/jsx.html#intrinsic-elements
-	 * @see https://facebook.github.io/jsx/#prod-JSXIdentifier
+	 * @see https://react.github.io/jsx/#prod-JSXIdentifier
 	 */
 	isComponentName(name: string): boolean {
 		if (isPotentialCustomElementName(name)) {
