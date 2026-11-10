@@ -54,7 +54,7 @@
 		"@markuplint/rules": "5.4.0",
 		"@markuplint/shared": "5.4.0",
 		"@types/debug": "^4.1.13",
-		"chokidar": "^5.0.0",
+		"chokidar": "^6.0.0",
 		"debug": "^4.4.3",
 		"meow": "^14.1.0",
 		"os-locale": "^8.0.0",
