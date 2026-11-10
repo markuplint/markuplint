@@ -93,9 +93,11 @@ function rawPathOf(url: URL): string | null {
 }
 
 /**
- * Whether the monitor watches a URL: the specification hosts (the WHATWG standards, the W3C and IETF specifications and
- * the others of `SPEC_HOSTS`; a path of the translation at momdo.github.io and of `www.w3.org` is limited to the spec), the documentation sites of the frameworks, and a link to a file of a listed
- * repository. Anything else is informative, and not worth a report when it changes.
+ * Whether the monitor watches a URL: the specification hosts (the WHATWG standards, the W3C and IETF
+ * specifications and the others of `SPEC_HOSTS`), the documentation sites of the frameworks, and a link to a
+ * file of a listed repository. A host that serves more than a specification is limited to the path of the
+ * specification: the translation at `momdo.github.io/html`, `www.w3.org/TR` and the JSX specification at
+ * `react.github.io/jsx`. Anything else is informative, and not worth a report when it changes.
  */
 function isWatched(url: URL): boolean {
 	if (FRAMEWORK_DOCS.has(url.hostname) || SPEC_HOSTS.has(url.hostname)) {
@@ -108,6 +110,11 @@ function isWatched(url: URL): boolean {
 	switch (url.hostname) {
 		case 'w3c.github.io': {
 			return true;
+		}
+		// The JSX specification is published at `react.github.io/jsx/`. The host also serves other projects of the
+		// organization, so only that path is watched.
+		case 'react.github.io': {
+			return url.pathname === '/jsx' || url.pathname.startsWith('/jsx/');
 		}
 		case 'momdo.github.io': {
 			return url.pathname === '/html' || url.pathname.startsWith('/html/');

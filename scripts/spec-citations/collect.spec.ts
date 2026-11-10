@@ -537,3 +537,24 @@ describe('which link a section number belongs to', () => {
 		expect(citations.map(c => [c.fragment, c.secno])).toStrictEqual([['the-map-element', '4.8.13']]);
 	});
 });
+
+describe('the JSX specification', () => {
+	test('[collect-048] watches only the /jsx path of react.github.io, not its other projects or the former facebook.github.io host', () => {
+		const url = 'https://react.github.io/jsx/#prod-JSXIdentifier';
+		expect(parseSpecUrl(url), url).toMatchObject({
+			page: 'https://react.github.io/jsx/',
+			fragment: 'prod-JSXIdentifier',
+		});
+		expect(parseSpecUrl('https://react.github.io/jsx'), 'without the slash').toMatchObject({
+			page: 'https://react.github.io/jsx',
+		});
+		expect(parseSpecUrl('https://react.github.io/jsx/'), 'the page alone').toMatchObject({
+			page: 'https://react.github.io/jsx/',
+			fragment: null,
+		});
+		expect(parseSpecUrl('https://react.github.io/jsx-other/'), 'a path that only starts like it').toBeNull();
+		expect(parseSpecUrl('https://react.github.io/react-native/'), 'another project').toBeNull();
+		expect(parseSpecUrl('https://react.github.io/'), 'the root').toBeNull();
+		expect(parseSpecUrl('https://facebook.github.io/jsx/#prod-JSXIdentifier'), 'the former host').toBeNull();
+	});
+});
