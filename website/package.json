@@ -26,7 +26,7 @@
 		"prism-react-renderer": "2.4.1",
 		"react": "19.3.1",
 		"react-dom": "19.3.1",
-		"unist-util-visit": "5.1.0"
+		"unist-util-visit": "5.2.0"
 	},
 	"devDependencies": {
 		"@docusaurus/module-type-aliases": "3.10.2",
@@ -39,7 +39,7 @@
 		"glob": "14.0.3",
 		"oxfmt": "0.75.0",
 		"stylelint": "17.16.0",
-		"stylelint-config-recess-order": "7.8.0",
+		"stylelint-config-recess-order": "7.10.0",
 		"stylelint-config-standard": "40.0.0",
 		"stylelint-order": "8.1.2",
 		"tsx": "4.23.15",

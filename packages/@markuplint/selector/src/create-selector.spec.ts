@@ -3,6 +3,7 @@ import { createJSDOMElement } from '@markuplint/test-tools';
 import { describe, test, expect } from 'vitest';
 
 import { createSelector } from './create-selector.js';
+import { InvalidSelectorError } from './invalid-selector-error.js';
 
 function c(selector: string, html: string) {
 	return createSelector(selector, specs).match(createJSDOMElement(html));
@@ -164,6 +165,67 @@ describe(':display-size', () => {
 	])('%s is a syntax error', selector => {
 		expect(() => createSelector(selector, specs).match(createJSDOMElement('<select></select>', 'select'))).toThrow(
 			SyntaxError,
+		);
+	});
+});
+
+describe('syntax the engine does not support', () => {
+	test('a nesting selector is an invalid selector', () => {
+		expect(() => createSelector('& div')).toThrow(InvalidSelectorError);
+		expect(() => createSelector('& div', specs)).toThrow(InvalidSelectorError);
+	});
+
+	test.each(['div/* c */', '/* c */div'])('a comment in %s is an invalid selector', selector => {
+		expect(() => createSelector(selector)).toThrow(InvalidSelectorError);
+		expect(() => createSelector(selector, specs)).toThrow(InvalidSelectorError);
+	});
+
+	test('an unknown namespace is an invalid selector when it is matched, and the error holds the selector and its own message', () => {
+		const el = createJSDOMElement('<div></div>');
+		expect.assertions(3);
+		try {
+			createSelector('foo|div', specs).match(el);
+		} catch (error: unknown) {
+			expect(error).toBeInstanceOf(InvalidSelectorError);
+			expect((error as InvalidSelectorError).message).toBe('The foo namespace is not supported');
+			expect((error as InvalidSelectorError).selector).toBe('foo|div');
+		}
+	});
+
+	test('a nesting selector inside a pseudo-class is an invalid selector when it is matched, not when it is created', () => {
+		const el = createJSDOMElement('<div></div>');
+		expect(() => createSelector(':is(&)', specs).match(el)).toThrow(InvalidSelectorError);
+	});
+});
+
+// The cache outlives a test, so each test uses a selector no other test builds. Otherwise it would get an
+// instance made by an earlier test and the identity checks below would pass without exercising the cache key.
+describe('cache', () => {
+	test('an instance created without specs is not returned to a later call with specs', () => {
+		const el = createJSDOMElement('<a href="path/to"></a>');
+		const withoutSpecs = createSelector(':model(interactive):not(.cache-order)');
+		const withSpecs = createSelector(':model(interactive):not(.cache-order)', specs);
+		expect(withSpecs).not.toBe(withoutSpecs);
+		expect(withSpecs.match(el)).toBeTruthy();
+	});
+
+	test('an instance created with specs is not returned to a later call without specs', () => {
+		const el = createJSDOMElement('<a href="path/to"></a>');
+		const withSpecs = createSelector(':model(interactive):not(.cache-reverse-order)', specs);
+		const withoutSpecs = createSelector(':model(interactive):not(.cache-reverse-order)');
+		expect(withoutSpecs).not.toBe(withSpecs);
+		expect(() => withoutSpecs.match(el)).toThrow('Unsupported pseudo');
+	});
+
+	test('calls with the same selector and the same specs share one instance', () => {
+		expect(createSelector('a.cache-same', specs)).toBe(createSelector('a.cache-same', specs));
+		expect(createSelector('a.cache-same')).toBe(createSelector('a.cache-same'));
+	});
+
+	test('calls with different specs objects do not share an instance', () => {
+		const otherSpecs = { ...specs };
+		expect(createSelector('a.cache-other-specs', otherSpecs)).not.toBe(
+			createSelector('a.cache-other-specs', specs),
 		);
 	});
 });

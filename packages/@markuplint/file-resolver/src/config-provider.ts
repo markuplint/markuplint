@@ -8,7 +8,12 @@ import path from 'node:path';
 import { mergeConfig, rebaseHandWrittenPretenderFilePath } from '@markuplint/ml-config';
 import { ConfigParserError } from '@markuplint/parser-utils';
 import { InvalidSelectorError, createSelector } from '@markuplint/selector';
-import { nonNullableFilter, toNoEmptyStringArrayFromStringOrArray, ConfigLoadError } from '@markuplint/shared';
+import {
+	nonNullableFilter,
+	toNoEmptyStringArrayFromStringOrArray,
+	ConfigLoadError,
+	isFatalError,
+} from '@markuplint/shared';
 
 import { clearAutoLoadRulesCache } from './auto-load-rules.js';
 import { load as loadConfig, search, clearExplorerCache, configLoadErrorFiles } from './cosmiconfig.js';
@@ -519,14 +524,18 @@ export class ConfigProvider {
 					try {
 						createSelector(rule.selector);
 					} catch (error: unknown) {
-						if (error instanceof InvalidSelectorError) {
-							errors.push(
-								new ConfigParserError(error.message, {
-									filePath,
-									raw: rule.selector,
-								}),
-							);
+						// Anything but an `InvalidSelectorError` is not a fault of the selector string the user wrote
+						// (a bug, or an argument that only an extended pseudo-class reads), so it must propagate
+						// instead of being reported as a configuration error.
+						if (isFatalError(error) || !(error instanceof InvalidSelectorError)) {
+							throw error;
 						}
+						errors.push(
+							new ConfigParserError(error.message, {
+								filePath,
+								raw: rule.selector,
+							}),
+						);
 					}
 				}
 			}

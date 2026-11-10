@@ -179,13 +179,19 @@ class StructuredSelector {
 				}
 				case 'root':
 				case 'string': {
-					throw new Error(`Unsupported selector: ${selector.toString()}`);
+					throw new InvalidSelectorError(selector.toString(), `Unsupported selector: ${selector.toString()}`);
 				}
 				case 'nesting': {
-					throw new Error(`Unsupported nested selector: ${selector.toString()}`);
+					throw new InvalidSelectorError(
+						selector.toString(),
+						`Unsupported nested selector: ${selector.toString()}`,
+					);
 				}
 				case 'comment': {
-					throw new Error(`Unsupported comment in selector: ${selector.toString()}`);
+					throw new InvalidSelectorError(
+						selector.toString(),
+						`Unsupported comment in selector: ${selector.toString()}`,
+					);
 				}
 				default: {
 					this.#edge.add(node);
@@ -546,7 +552,10 @@ class SelectorTarget {
 					break;
 				}
 				default: {
-					throw new InvalidSelectorError(`The ${namespace} namespace is not supported`);
+					throw new InvalidSelectorError(
+						this.tag.toString().trim(),
+						`The ${namespace} namespace is not supported`,
+					);
 				}
 			}
 		}
