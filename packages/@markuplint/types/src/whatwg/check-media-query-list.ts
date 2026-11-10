@@ -62,7 +62,7 @@ const DEPRECATED_MEDIA_FEATURES = new Set([
 ]);
 
 /**
- * Maps each MQL5 §4 range/discrete-numeric feature to the CSS value
+ * Maps each MQL5 range/discrete-numeric feature (§2.4) to the CSS value
  * type its argument must satisfy. The actual unit / sign / dimension
  * checking is delegated to `csstree.lexer.match()` below — only the
  * feature-to-type association needs to live in markuplint because
@@ -72,21 +72,18 @@ const DEPRECATED_MEDIA_FEATURES = new Set([
  * (e.g., a future Level 6 may add a new resolution or ratio feature):
  *
  * 1. Find the feature definition in
- *    {@link https://www.w3.org/TR/mediaqueries-5/#mq-features Media Queries §4}
+ *    {@link https://www.w3.org/TR/mediaqueries-5/#mq-features Media Queries §2.4}
  *    (or its successor) and read its `Value:` line — that's the CSS
  *    type, expressed as `<length>` / `<integer>` / `<resolution>` /
  *    `<ratio>` (or a discrete keyword set, which is *not* handled here).
  * 2. Add an entry to this map. The value must be one of the four
  *    string literals — keep this list narrow because each new type
  *    string also needs to be a valid `csstree.lexer.match()` syntax.
- * 3. If the new feature carries an MQL-side semantic constraint that
- *    goes beyond CSS Values §6 (e.g., "must be non-negative" beyond
- *    `<integer>`'s signed grammar, "must be strictly positive" beyond
- *    `<ratio>`'s `[0,∞]` range), encode it in Stage B of
- *    `validateFeatureValue()`.
+ * 3. A range feature that is "false in the negative range" accepts a
+ *    negative value, so the CSS Values grammar of the type is the only
+ *    constraint on the value.
  * 4. Add table-driven cases in `check-media-query-list.spec.ts` —
- *    cover at least one valid and one invalid value, plus one case
- *    that exercises Stage B if applicable.
+ *    cover at least one valid and one invalid value.
  * 5. Discrete keyword features (e.g., `prefers-color-scheme: dark`)
  *    intentionally fall through this map; they are validated by the
  *    enum-driven attribute checking elsewhere.
@@ -101,8 +98,7 @@ const FEATURE_VALUE_TYPE: Record<string, '<length>' | '<integer>' | '<resolution
 	'max-width': '<length>',
 	'min-height': '<length>',
 	'max-height': '<length>',
-	// <integer> — MQL5 §4.4 imposes a non-negative additional constraint
-	// enforced separately below
+	// <integer>
 	color: '<integer>',
 	'min-color': '<integer>',
 	'max-color': '<integer>',
@@ -122,8 +118,7 @@ const FEATURE_VALUE_TYPE: Record<string, '<length>' | '<integer>' | '<resolution
 	resolution: '<resolution>',
 	'min-resolution': '<resolution>',
 	'max-resolution': '<resolution>',
-	// <ratio> — MQL5 §4.5 imposes a positive additional constraint
-	// enforced separately below
+	// <ratio>
 	'aspect-ratio': '<ratio>',
 	'min-aspect-ratio': '<ratio>',
 	'max-aspect-ratio': '<ratio>',
@@ -154,11 +149,11 @@ type CSSTreeNode = ReturnType<typeof csstree.parse>;
  *    non-zero number for a `<length>` feature), `(min-width: 400dpi)`
  *    (resolution unit on a length feature), `(color: 1em)` (length
  *    on an integer feature). The matrix covers length / integer /
- *    resolution / ratio features per Media Queries Level 5 §4. Unknown
+ *    resolution / ratio features per Media Queries Level 5 §2.4. Unknown
  *    features are passed through unchanged so forward-compat additions
  *    do not regress to errors.
  *
- * @see https://www.w3.org/TR/mediaqueries-5/
+ * @see https://www.w3.org/TR/mediaqueries-5/#mq-features
  */
 export const checkMediaQueryList: CustomSyntaxChecker = () => value => {
 	if (!value) {
@@ -262,8 +257,8 @@ function walkCondition(node: csstree.CssNode, source: string): ReturnType<typeof
 		// css-tree's mediaQueryList parser but not exposed by
 		// `@types/css-tree`. Compare via cast to keep the narrow typing.
 		const childType = (child as { type: string }).type;
-		// Reject <general-enclosed> fallback matches. Media Queries Level 5 §3
-		// (the <general-enclosed> Production) states: "Authors must not use
+		// Reject <general-enclosed> fallback matches. Media Queries Level 5 §3.1
+		// (Evaluating Media Queries) states: "Authors must not use
 		// <general-enclosed> in their stylesheets. It exists only for
 		// future-compatibility, so that new syntax additions do not invalidate
 		// too much of a <media-condition> in older user agents." css-tree only
@@ -280,7 +275,7 @@ function walkCondition(node: csstree.CssNode, source: string): ReturnType<typeof
 			result = new Token(raw, offset, source).unmatched({
 				reason: 'syntax-error',
 				expects,
-				partName: `unknown or malformed media condition ${JSON.stringify(raw)} (Media Queries Level 5 §3 forbids <general-enclosed> in author stylesheets)`,
+				partName: `unknown or malformed media condition ${JSON.stringify(raw)} (Media Queries Level 5 §3.1 forbids <general-enclosed> in author stylesheets)`,
 			});
 			return;
 		}
@@ -310,7 +305,7 @@ function walkCondition(node: csstree.CssNode, source: string): ReturnType<typeof
 
 /**
  * Cross-checks a media feature's parsed value against the expected
- * type per Media Queries Level 5 §4. Returns an `unmatched` result
+ * type per Media Queries Level 5 §2.4. Returns an `unmatched` result
  * when the value type does not satisfy the feature's grammar (e.g.,
  * `<integer>` features given a `<dimension>`, or `<length>` features
  * given a unitless non-zero number).
@@ -334,7 +329,7 @@ function validateFeatureValue(
 	if (value.type === 'Function' || value.type === 'Parentheses') return null;
 	const offset = value.loc?.start.offset ?? 0;
 	const raw = source.slice(offset, value.loc?.end.offset ?? offset);
-	// Stage A: CSS-syntax conformance — delegate the dimension / unit /
+	// CSS-syntax conformance — delegate the dimension / unit /
 	// fractional / scientific-notation matrix to `csstree.lexer.match()`
 	// rather than maintain a parallel hardcoded table. css-tree's
 	// `<length>` / `<integer>` / `<resolution>` / `<ratio>` definitions
@@ -358,46 +353,15 @@ function validateFeatureValue(
 				: `${expectedType} required for "${feature}"`,
 		});
 	}
-	// Stage B: MQL5 semantic constraints that go beyond CSS Values §6.
-	// Stage A already rejects negative numbers for `<ratio>` (the type's
-	// `<number [0,∞]>` range constraint excludes them), but accepts `0`
-	// as in-range — Stage B adds the strictly-positive constraint from
-	// MQL5 §4.5. Stage A also accepts negative `<integer>` per CSS Values
-	// §6.2 grammar, so MQL5 §4.4's non-negative requirement for
-	// `color` / `monochrome` / `*-viewport-segments` is enforced here.
-	if (
-		expectedType === '<integer>' &&
-		value.type === 'Number' &&
-		Number.parseInt((value as csstree.NumberNode).value, 10) < 0
-	) {
-		return new Token(raw, offset, source).unmatched({
-			reason: 'syntax-error',
-			expects,
-			partName: `<integer> for "${feature}" must be non-negative (MQL5 §4.4)`,
-		});
-	}
-	if (expectedType === '<ratio>') {
-		// `@types/css-tree` declares `Ratio.left/.right` as `string`, but the
-		// runtime mediaQueryList parser emits `NumberNode` children — cast
-		// through `unknown` to consume the actual runtime shape.
-		const ratio =
-			value.type === 'Ratio'
-				? (value as unknown as { left: csstree.NumberNode; right: csstree.NumberNode })
-				: null;
-		const numerator = ratio
-			? Number.parseFloat(ratio.left.value)
-			: value.type === 'Number'
-				? Number.parseFloat((value as csstree.NumberNode).value)
-				: undefined;
-		const denominator = ratio ? Number.parseFloat(ratio.right.value) : 1;
-		if (numerator !== undefined && (!(numerator > 0) || !(denominator > 0))) {
-			return new Token(raw, offset, source).unmatched({
-				reason: 'syntax-error',
-				expects,
-				partName: `<ratio> for "${feature}" must be positive (MQL5 §4.5)`,
-			});
-		}
-	}
+	// No further constraint: a range feature that is "false in the negative
+	// range" accepts a negative value (it parses; the query just never
+	// matches), so a negative `<integer>`, `<length>` or `<resolution>` is
+	// valid. A zero or degenerate `<ratio>` is valid too. A negative `<ratio>`
+	// fails this match because `<ratio>` is `<number [0,∞]>`.
+	//
+	// > Some media features with a "range" type are said to be false in the negative range. This means that negative values are valid and must be parsed, and that querying whether the media feature is equal to, less than, or less or equal than any such negative value must evaluate to false.
+	//
+	// @see https://www.w3.org/TR/mediaqueries-5/#mq-range-context
 	return null;
 }
 
@@ -455,10 +419,9 @@ function findSemicolonInsideParens(input: string): number | null {
  * (`<source-size-list>` in `<sizes>`) can enforce the same forbidden-in-authoring
  * rule that {@link checkMediaQueryList} applies to `<media-query-list>` values.
  *
- * @see https://www.w3.org/TR/mediaqueries-5/#general-enclosed — "Authors must
- * not use `<general-enclosed>` in their stylesheets. It exists only for
- * future-compatibility, so that new syntax additions do not invalidate too
- * much of a `<media-condition>` in older user agents."
+ * > Authors must not use <general-enclosed> in their stylesheets. It exists only for future-compatibility, so that new syntax additions do not invalidate too much of a <media-condition> in older user agents.
+ *
+ * @see https://www.w3.org/TR/mediaqueries-5/#evaluating
  *
  * Contract:
  *

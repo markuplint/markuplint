@@ -18,7 +18,7 @@ const NON_ASCII_WHITESPACES = /[^\t\n\f\r ]*/;
 /**
  * Checks the value of `iframe[allow]`.
  *
- * @see https://w3c.github.io/webappsec-permissions-policy/#serialized-permissions-policy
+ * @see https://w3c.github.io/webappsec-permissions-policy/#serialization
  *
  * > A serialized permissions policy is a string made of entries separated by U+003B (;).
  * > After stripping leading and trailing ASCII whitespace, each entry must be one of:

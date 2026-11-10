@@ -15,11 +15,10 @@ import variantIndex from 'language-subtag-registry/data/json/variant.json' with 
  * The index files key every registered subtag in lowercase. Private-use
  * allocations are recorded as ranged keys (`qaa..qtz` for languages,
  * `qaaa..qabx` for scripts, `qm..qz` / `xa..xz` for regions) and are
- * expanded here by lexicographic comparison — a subtag inside a range is
- * registered per RFC 5646 §3.1.2 ("Private use subtags ... 'qaa..qtz'"
- * range notation).
+ * expanded here by lexicographic comparison. RFC 5646 §2.2.1 reserves the
+ * language subtags `qaa` through `qtz` for private use.
  *
- * @see https://www.iana.org/assignments/language-subtag-registry/language-subtag-registry
+ * @see https://www.rfc-editor.org/rfc/rfc5646.html#section-2.2.1
  */
 function createSubtagLookup(index: Readonly<Record<string, number>>): (subtag: string) => boolean {
 	const ranges = Object.keys(index)
@@ -42,11 +41,14 @@ const isRegisteredVariant = createSubtagLookup(variantIndex);
 
 /**
  * Checks **validity**, not just well-formedness, per RFC 5646 §2.2.9:
- * "Either the tag is in the list of grandfathered tags or all of its
- * primary language, extended language, script, region, and variant subtags
- * appear in the IANA Language Subtag Registry as of the particular registry
- * date", "There are no duplicate variant subtags", and "There are no
- * duplicate singleton (extension) subtags". Extension subtags themselves
+ *
+ * > Either the tag is in the list of grandfathered tags or all of its primary language, extended language, script, region, and variant subtags appear in the IANA Language Subtag Registry as of the particular registry date.
+ *
+ * > There are no duplicate variant subtags.
+ *
+ * > There are no duplicate singleton (extension) subtags.
+ *
+ * Extension subtags themselves
  * are not registry-checked — §2.2.9 defines that as validity *for a given
  * extension* (governed by the extension's own RFC), a stricter class than
  * plain validity.
@@ -65,8 +67,8 @@ const isRegisteredVariant = createSubtagLookup(variantIndex);
  * production is `langtag / privateuse / grandfathered` — a tag with no
  * `language` subtag is still valid when it is entirely private use.
  *
- * @see https://tools.ietf.org/rfc/bcp/bcp47.html
  * @see https://www.rfc-editor.org/rfc/rfc5646.html#section-2.2.9
+ * @see https://www.rfc-editor.org/rfc/rfc5646.html#page-20
  */
 export const isBCP47: FormattedPrimitiveTypeCreator = () => {
 	return value => {

@@ -1,40 +1,42 @@
 import type { FormattedPrimitiveTypeCreator } from '../types.js';
 
 /**
- * PCENChar
+ * Characters that make a name fail "valid element local name" when its first
+ * code point is an ASCII alpha (the only case here: a custom element name
+ * starts with an ASCII lower alpha, so the branch for `:`, `_` and U+0080 and
+ * above is never reached).
  *
- * > PCENChar ::=
- * >   "-" | "." | [0-9] | "_" | [a-z] | #xB7 | [#xC0-#xD6] | [#xD8-#xF6] | [#xF8-#x37D] |
- * >   [#x37F-#x1FFF] | [#x200C-#x200D] | [#x203F-#x2040] | [#x2070-#x218F] | [#x2C00-#x2FEF] | [#x3001-#xD7FF] | [#xF900-#xFDCF] | [#xFDF0-#xFFFD] | [#x10000-#xEFFFF]
- * @see https://html.spec.whatwg.org/multipage/custom-elements.html#prod-potentialcustomelementname
+ * > If name's 0th code point is an ASCII alpha:
+ * >
+ * > If name contains ASCII whitespace, U+0000 NULL, U+002F (/), or U+003E (>), then return false.
+ * >
+ * > Return true.
  *
+ * ASCII whitespace is U+0009 TAB, U+000A LF, U+000C FF, U+000D CR or U+0020 SPACE.
+ *
+ * @see https://dom.spec.whatwg.org/#valid-element-local-name
  */
-const onlyPCENChar =
-	// eslint-disable-next-line no-misleading-character-class
-	/^[-.\d_a-z\u00B7\u00C0-\u00D6[\u00D8-\u00F6\u00F8-\u037D\u037F-\u1FFF\u200C\u200D\u203F\u2040\u2070-\u218F\u2C00-\u2FEF\u3001-\uD7FF\uF900-\uFDCF\uFDF0-\uFFFD\u{10000}-\u{EFFFF}]*$/u;
+// eslint-disable-next-line no-control-regex
+const FORBIDDEN_IN_LOCAL_NAME = /[\t\n\f\r \0/>]/;
 
 /**
  * Checks whether a string is a valid custom element name.
  *
- * > PotentialCustomElementName ::=
- * >   [a-z] (PCENChar)* '-' (PCENChar)*
- * > PCENChar ::=
- * >   "-" | "." | [0-9] | "_" | [a-z] | #xB7 | [#xC0-#xD6] | [#xD8-#xF6] | [#xF8-#x37D] |
- * >   [#x37F-#x1FFF] | [#x200C-#x200D] | [#x203F-#x2040] | [#x2070-#x218F] | [#x2C00-#x2FEF] | [#x3001-#xD7FF] | [#xF900-#xFDCF] | [#xFDF0-#xFFFD] | [#x10000-#xEFFFF]
- * > This uses the EBNF notation from the XML specification. [XML]
+ * > A string name is a valid custom element name if all of the following are true:
  *
- * > They start with an ASCII lower alpha, ensuring that the HTML parser will treat them as tags instead of as text.
+ * > name is a valid element local name;
  *
- * > - name must match the [PotentialCustomElementName](https://html.spec.whatwg.org/multipage/custom-elements.html#prod-potentialcustomelementname) production
- * > - name must not be any of the following:
- * >   - `<annotation-xml>`
- * >   - `<color-profile>`
- * >   - `<font-face>`
- * >   - `<font-face-src>`
- * >   - `<font-face-uri>`
- * >   - `<font-face-format>`
- * >   - `<font-face-name>`
- * >   - `<missing-glyph>`
+ * > name's 0th code point is an ASCII lower alpha;
+ *
+ * > name does not contain any ASCII upper alphas;
+ *
+ * > name contains a U+002D (-); and
+ *
+ * > name is not one of the following: […]
+ *
+ * The excluded names are `annotation-xml`, `color-profile`, `font-face`,
+ * `font-face-src`, `font-face-uri`, `font-face-format`, `font-face-name` and
+ * `missing-glyph`.
  *
  * @see https://html.spec.whatwg.org/multipage/custom-elements.html#valid-custom-element-name
  */
@@ -58,10 +60,14 @@ export const isCustomElementName: FormattedPrimitiveTypeCreator = () => {
 			return false;
 		}
 
+		if (/[A-Z]/.test(tagName)) {
+			return false;
+		}
+
 		if (!tagName.includes('-')) {
 			return false;
 		}
 
-		return onlyPCENChar.test(tagName);
+		return !FORBIDDEN_IN_LOCAL_NAME.test(tagName);
 	};
 };

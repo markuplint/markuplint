@@ -1,11 +1,24 @@
 import type { FormattedPrimitiveTypeCreator } from '../types.js';
 
+import { cssSyntaxMatch } from '../css-syntax.js';
+
 /**
- * Not the same as the CSS `<color>` type — named colors, `rgb()`, `hsl()`,
- * etc. are all invalid here. Used for `input[type=color]` value validation.
+ * Checks the `value` attribute of `input[type=color]`.
  *
- * @see https://html.spec.whatwg.org/multipage/common-microsyntaxes.html#valid-simple-colour
+ * > The value attribute, if specified and not the empty string, must have a value that is a CSS color.
+ *
+ * So the value is any CSS `<color>`: `#rrggbb`, `#rgb`, `#rrggbbaa`, named colors,
+ * `rgb()`, `hsl()`, `oklch()`, `color()` and so on. The sentence makes no exception, so
+ * `currentcolor`, `transparent` and the system colors are accepted too. The `alpha` and `colorspace`
+ * attributes only decide how the control serializes the color, so they do not
+ * restrict the value here. The empty string is not accepted (an empty
+ * attribute is "not specified" for the author, and the type check does not run
+ * on it).
+ *
+ * The name `SimpleColor` is kept from the former "valid simple colour" definition.
+ *
+ * @see https://html.spec.whatwg.org/multipage/input.html#color-state-(type=color)
  */
 export const isSimpleColor: FormattedPrimitiveTypeCreator = () => {
-	return value => /^#[\dA-F]{6}$/i.test(value);
+	return value => value !== '' && cssSyntaxMatch(value, '<color>').matched;
 };

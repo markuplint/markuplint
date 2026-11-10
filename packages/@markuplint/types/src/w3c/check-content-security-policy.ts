@@ -29,9 +29,11 @@ const FETCH_DIRECTIVES = new Set([
 ]);
 
 /**
- * Directives whose value is also a `serialized-source-list`, per
- * CSP3 §6.7.2 ("This section defines the syntax common to all fetch
- * directives, as well as `base-uri`, `form-action`, and `frame-ancestors`").
+ * Directives whose value is also a `serialized-source-list`: the fetch
+ * directives, `base-uri`, `form-action`, and `frame-ancestors`. CSP3 §2.3.1
+ * defines the grammar, and each directive's own section names it as its value:
+ *
+ * > A serialized source list is an ASCII string, consisting of a whitespace-delimited series of source expressions, adhering to the following ABNF grammar [RFC5234]:
  *
  * @see https://www.w3.org/TR/CSP3/#framework-directive-source-list
  */
@@ -60,7 +62,7 @@ const UNVALIDATED_VALUE_DIRECTIVES = new Set(['report-uri', 'report-to', 'webrtc
  * mechanism and widely deployed: `require-trusted-types-for` / `trusted-types`
  * (Trusted Types) and `upgrade-insecure-requests` (Upgrade Insecure Requests).
  *
- * @see https://www.w3.org/TR/CSP3/#directives
+ * @see https://www.w3.org/TR/CSP3/#directives-fetch
  * @see https://www.w3.org/TR/trusted-types/#require-trusted-types-for-csp-directive
  * @see https://www.w3.org/TR/trusted-types/#trusted-types-csp-directive
  * @see https://www.w3.org/TR/upgrade-insecure-requests/#delivery
@@ -147,7 +149,7 @@ const DIRECTIVE_NAME = /^[A-Z0-9-]+$/i;
 /**
  * `trusted-types-policy-name` charset.
  *
- * @see https://www.w3.org/TR/trusted-types/#framework-directive-trusted-types
+ * @see https://www.w3.org/TR/trusted-types/#tt-policy-name
  */
 const TRUSTED_TYPES_POLICY_NAME = /^[\w\-#=/@.%]+$/;
 const TRUSTED_TYPES_KEYWORDS = new Set(["'allow-duplicates'", "'none'"]);
