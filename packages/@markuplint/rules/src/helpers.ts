@@ -75,6 +75,24 @@ export function isRenderedAway<T extends RuleConfigValue, O extends PlainData>(
 }
 
 /**
+ * Whether the element is a component whose output is not known, so that it may render an element that
+ * a rule looks for among the ancestors (`MLElement#isUnresolvedComponent`). What the parser sees as a
+ * component but renders its children in place is not one: what {@link isRenderedAway} says (a
+ * fragment such as `React.Fragment` or Astro's `Fragment`, a `template` with a directive).
+ *
+ * @template T - The rule configuration value type
+ * @template O - The rule options type
+ * @param el - An ancestor of the element
+ * @returns `true` if the element may render what is not known
+ */
+export function isUnknownOutput<T extends RuleConfigValue, O extends PlainData>(
+	// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
+	el: Element<T, O>,
+): boolean {
+	return !isRenderedAway(el) && el.isUnresolvedComponent();
+}
+
+/**
  * The elements that match the selector in the tree `el` is in (see {@link getElementByIdInTree}).
  *
  * @template T - The rule configuration value type

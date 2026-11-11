@@ -428,3 +428,174 @@ describe('the ancestor is looked for in the tree of the element', () => {
 		]);
 	});
 });
+
+describe('a component whose output is not known may render the ancestor', () => {
+	const jsx = { parser: { '.*': '@markuplint/jsx-parser' }, specs: { '.*': '@markuplint/react-spec' } };
+	const vue = { parser: { '.*': '@markuplint/vue-parser' }, specs: { '.*': '@markuplint/vue-spec' } };
+	const svelte = { parser: { '.*': '@markuplint/svelte-parser' }, specs: { '.*': '@markuplint/svelte-spec' } };
+	const astro = { parser: { '.*': '@markuplint/astro-parser' } };
+	const message = 'The "area" element must appear as a descendant of the "map" element';
+
+	test('[require-ancestor-issue-4575-001] JSX: area directly under a component is not reported', async () => {
+		const { violations } = await mlRuleTest(rule, '<Foo><area alt="x" href="#" /></Foo>', jsx);
+		expect(violations).toStrictEqual([]);
+	});
+
+	test('[require-ancestor-issue-4575-002] Vue: area directly under a component is not reported', async () => {
+		const { violations } = await mlRuleTest(rule, '<template><Foo><area alt="x" href="#" /></Foo></template>', vue);
+		expect(violations).toStrictEqual([]);
+	});
+
+	test('[require-ancestor-issue-4575-003] JSX: area under a component that a pretender says is a map is not reported', async () => {
+		const { violations } = await mlRuleTest(rule, '<Foo><area alt="x" href="#" /></Foo>', {
+			...jsx,
+			pretenders: [{ selector: 'Foo', as: 'map' }],
+		});
+		expect(violations).toStrictEqual([]);
+	});
+
+	test('[require-ancestor-issue-4575-004] JSX: area under a component that a pretender says is a div is reported', async () => {
+		const { violations } = await mlRuleTest(rule, '<Foo><area alt="x" href="#" /></Foo>', {
+			...jsx,
+			pretenders: [{ selector: 'Foo', as: 'div' }],
+		});
+		expect(violations).toStrictEqual([
+			{
+				severity: 'error',
+				line: 1,
+				col: 6,
+				message,
+				raw: '<area alt="x" href="#" />',
+			},
+		]);
+	});
+
+	test('[require-ancestor-issue-4575-005] JSX: area under known elements below a component is not reported', async () => {
+		const { violations } = await mlRuleTest(rule, '<div><Foo><p><area alt="x" href="#" /></p></Foo></div>', jsx);
+		expect(violations).toStrictEqual([]);
+	});
+
+	test('[require-ancestor-issue-4575-006] JSX: area in an attribute of a component is not reported', async () => {
+		const { violations } = await mlRuleTest(rule, '<div><Foo render={<area alt="x" href="#" />} /></div>', jsx);
+		expect(violations).toStrictEqual([]);
+	});
+
+	test('[require-ancestor-issue-4575-007] JSX: area under known elements only is reported', async () => {
+		const { violations } = await mlRuleTest(rule, '<div><p><area alt="x" href="#" /></p></div>', jsx);
+		expect(violations).toStrictEqual([
+			{
+				severity: 'error',
+				line: 1,
+				col: 9,
+				message,
+				raw: '<area alt="x" href="#" />',
+			},
+		]);
+	});
+
+	test('[require-ancestor-issue-4575-008] JSX: area under a component in a map is valid', async () => {
+		const { violations } = await mlRuleTest(rule, '<map name="m"><Foo><area alt="x" href="#" /></Foo></map>', jsx);
+		expect(violations).toStrictEqual([]);
+	});
+
+	test('[require-ancestor-issue-4575-009] Vue: area under the component element is not reported', async () => {
+		const { violations } = await mlRuleTest(
+			rule,
+			'<template><div><component :is="x"><area alt="x" href="#" /></component></div></template>',
+			vue,
+		);
+		expect(violations).toStrictEqual([]);
+	});
+
+	test('[require-ancestor-issue-4575-010] Vue: area under a slot in an element is still reported', async () => {
+		const { violations } = await mlRuleTest(
+			rule,
+			'<template><div><slot><area alt="x" href="#" /></slot></div></template>',
+			vue,
+		);
+		expect(violations).toStrictEqual([
+			{
+				severity: 'error',
+				line: 1,
+				col: 22,
+				message,
+				raw: '<area alt="x" href="#" />',
+			},
+		]);
+	});
+
+	test('[require-ancestor-issue-4575-011] Svelte: area under a component is not reported', async () => {
+		const { violations } = await mlRuleTest(rule, '<div><Foo><area alt="x" href="#" /></Foo></div>', svelte);
+		expect(violations).toStrictEqual([]);
+	});
+
+	test('[require-ancestor-issue-4575-012] Astro: area under a component is not reported', async () => {
+		const { violations } = await mlRuleTest(rule, '<div><Foo><area alt="x" href="#" /></Foo></div>', astro);
+		expect(violations).toStrictEqual([]);
+	});
+
+	test('[require-ancestor-issue-4575-013] JSX: area in a fragment under a component is not reported', async () => {
+		const { violations } = await mlRuleTest(
+			rule,
+			'<Foo><React.Fragment><area alt="x" href="#" /></React.Fragment></Foo>',
+			jsx,
+		);
+		expect(violations).toStrictEqual([]);
+	});
+
+	test('[require-ancestor-issue-4575-014] Vue: area in a template with a directive under a component is not reported', async () => {
+		const { violations } = await mlRuleTest(
+			rule,
+			'<template><Foo><template v-if="a"><area alt="x" href="#" /></template></Foo></template>',
+			vue,
+		);
+		expect(violations).toStrictEqual([]);
+	});
+
+	test('[require-ancestor-issue-4575-015] Vue: area under a built-in component is not reported', async () => {
+		const { violations } = await mlRuleTest(
+			rule,
+			'<template><div><Transition><area alt="x" href="#" /></Transition></div></template>',
+			vue,
+		);
+		expect(violations).toStrictEqual([]);
+	});
+
+	test('[require-ancestor-issue-4575-016] JSX: area under a component that a pretender says is another component is not reported', async () => {
+		const { violations } = await mlRuleTest(rule, '<div><Foo><area alt="x" href="#" /></Foo></div>', {
+			...jsx,
+			pretenders: [{ selector: 'Foo', as: 'Bar' }],
+		});
+		expect(violations).toStrictEqual([]);
+	});
+
+	test('[require-ancestor-issue-4575-017] Svelte: a component outside a declarative shadow root does not count', async () => {
+		const { violations } = await mlRuleTest(
+			rule,
+			'<Foo><div><template shadowrootmode="open"><area alt="x" href="#" /></template></div></Foo>',
+			svelte,
+		);
+		expect(violations).toStrictEqual([
+			{
+				severity: 'error',
+				line: 1,
+				col: 43,
+				message,
+				raw: '<area alt="x" href="#" />',
+			},
+		]);
+	});
+
+	test('[require-ancestor-issue-4575-018] a web component is the element that it is written as', async () => {
+		const { violations } = await mlRuleTest(rule, '<div><my-el><area alt="x" href="#"></my-el></div>');
+		expect(violations).toStrictEqual([
+			{
+				severity: 'error',
+				line: 1,
+				col: 13,
+				message,
+				raw: '<area alt="x" href="#">',
+			},
+		]);
+	});
+});
