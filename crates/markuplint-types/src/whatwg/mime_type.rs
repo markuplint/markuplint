@@ -13,3 +13,32 @@ pub fn is_valid_mime_type(value: &str, without_parameters: bool) -> bool {
     }
     true
 }
+
+/// TS `checkMIMEType({ withoutParameters })` (`whatwg/check-mime-type.ts`).
+#[must_use]
+pub fn check_mime_type(value: &str, without_parameters: bool) -> crate::check::types::CheckResult {
+    use crate::check::types::{Expect, ExpectType, Reason, UnmatchedOpts, matched, unmatched_with};
+    if is_valid_mime_type(value, without_parameters) {
+        return matched();
+    }
+    let reason = if value.is_empty() {
+        Reason::EmptyToken
+    } else {
+        Reason::SyntaxError
+    };
+    unmatched_with(
+        value,
+        reason,
+        UnmatchedOpts {
+            expects: Some(vec![Expect {
+                type_: ExpectType::Format,
+                value: if without_parameters {
+                    "MIME Type with no parameters".to_owned()
+                } else {
+                    "MIME Type".to_owned()
+                },
+            }]),
+            ..Default::default()
+        },
+    )
+}

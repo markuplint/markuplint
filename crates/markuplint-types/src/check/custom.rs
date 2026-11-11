@@ -1,10 +1,91 @@
-//! Keyword types that require custom logic beyond simple boolean predicate checks.
+//! The checkers of TS `defs` (`defs.ts`) that need more than a predicate.
+
+use std::sync::LazyLock;
 
 use regex::Regex;
 
-use super::types::{CheckResult, Reason, matched, unmatched};
+use super::candidate::get_candidate;
+use super::types::{CheckResult, Expect, ExpectType, Reason, UnmatchedOpts, matched, unmatched, unmatched_with};
 use crate::primitive::{is_float, is_uint, split_unit};
+use crate::token::{TokenCollection, TokenCollectionOptions, TokenKind};
 use crate::whatwg::abs_url::is_abs_url;
+
+#[allow(clippy::unnecessary_wraps)] // the shape `UnmatchedOpts::expects` takes
+fn expects(list: &[(ExpectType, &str)]) -> Option<Vec<Expect>> {
+    Some(
+        list.iter()
+            .map(|(type_, value)| Expect {
+                type_: type_.clone(),
+                value: (*value).to_owned(),
+            })
+            .collect(),
+    )
+}
+
+/// TS `checkMultiTypes`: the first check that matches, or the unmatched result that got furthest
+/// (the most passes, then the latest offset).
+#[must_use]
+pub fn check_multi_types(value: &str, checks: &[&dyn Fn(&str) -> CheckResult]) -> CheckResult {
+    let mut best: Option<super::types::UnmatchedResult> = None;
+    for check in checks {
+        let res = check(value);
+        let CheckResult::Unmatched(res) = res else {
+            return res;
+        };
+        let passed_a = best.as_ref().and_then(|u| u.pass_count).unwrap_or(0);
+        let passed_b = res.pass_count.unwrap_or(0);
+        let offset_a = best.as_ref().map_or(0, |u| u.offset);
+        if passed_a < passed_b || (passed_a == passed_b && offset_a <= res.offset) {
+            best = Some(res);
+        }
+    }
+    best.map_or_else(matched, CheckResult::Unmatched)
+}
+
+/// JS `value.replaceAll(/^[\t\n\f\r ]+|[\t\n\f\r ]+$/g, '')`.
+#[must_use]
+pub fn trim_ascii_ws(value: &str) -> &str {
+    value.trim_matches(['\t', '\n', '\u{000C}', '\r', ' '])
+}
+
+/// TS `OneLineAny`.
+#[must_use]
+pub fn check_one_line_any(value: &str) -> CheckResult {
+    let tokens = TokenCollection::new(value, TokenCollectionOptions::default());
+    if let Some(token) = tokens.search(|t| t.value.contains(['\u{000A}', '\u{000D}'])) {
+        return token.unmatched_result(Some(Reason::UnexpectedNewline), UnmatchedOpts::default());
+    }
+    matched()
+}
+
+/// TS `XMLName`: the pattern is tested unanchored, as TS does.
+#[must_use]
+pub fn check_xml_name(value: &str) -> CheckResult {
+    static NAME: LazyLock<Regex> = LazyLock::new(|| {
+        Regex::new(
+            r"[:A-Z_a-z\u{00C0}-\u{00D6}\u{00D8}-\u{00F6}\u{00F8}-\u{02FF}\u{0370}-\u{037D}\u{037F}-\u{1FFF}\u{200C}\u{200D}\u{2070}-\u{218F}\u{2C00}-\u{2FEF}\u{3001}-\u{D7FF}\u{F900}-\u{FDCF}\u{FDF0}-\u{FFFD}\u{10000}-\u{EFFFF}][0-9.\u{00B7}\u{0300}-\u{036F}\u{203F}\u{2040}-]*",
+        )
+        .unwrap()
+    });
+    if NAME.is_match(value) {
+        matched()
+    } else {
+        unmatched(value, Reason::UnexpectedToken)
+    }
+}
+
+/// TS `DOMID`.
+#[must_use]
+pub fn check_dom_id(value: &str) -> CheckResult {
+    let tokens = TokenCollection::new(value, TokenCollectionOptions::default());
+    if let Some(ws) = tokens.search(|t| t.kind == TokenKind::WhiteSpace) {
+        return ws.unmatched_result(Some(Reason::UnexpectedSpace), UnmatchedOpts::default());
+    }
+    if tokens.is_empty() {
+        return unmatched(value, Reason::EmptyToken);
+    }
+    matched()
+}
 
 #[must_use]
 pub fn check_pattern_keyword(value: &str) -> CheckResult {
@@ -23,203 +104,434 @@ pub fn check_json(value: &str) -> CheckResult {
     }
 }
 
-/// Must be either an absolute URL or a valid property name
-/// (non-empty, no ASCII whitespace).
+/// TS `isEmail` (`whatwg/check-email.ts`): the pattern the HTML Standard gives.
 #[must_use]
-pub fn check_item_prop(value: &str) -> CheckResult {
-    if value.is_empty() {
-        return unmatched(value, Reason::UnexpectedToken);
-    }
-    if is_abs_url(value) {
-        return matched();
-    }
-    if !value.chars().any(|c| c.is_ascii_whitespace()) {
-        return matched();
-    }
-    unmatched(value, Reason::UnexpectedToken)
+pub fn is_email(value: &str) -> bool {
+    static EMAIL: LazyLock<Regex> = LazyLock::new(|| {
+        Regex::new(
+            r"(?i)^[a-z0-9.!#$%&'*+/=?^_`{|}~-]+@[a-z0-9](?:[a-z0-9-]{0,61}[a-z0-9])?(?:\.[a-z0-9](?:[a-z0-9-]{0,61}[a-z0-9])?)*$",
+        )
+        .unwrap()
+    });
+    EMAIL.is_match(value)
 }
 
-/// Comma-separated image candidate strings, each with an optional
-/// width (`w`) or density (`x`) descriptor. Cannot mix descriptor types.
+/// TS `checkURL()`: the URL Living Standard validation of a URL.
 #[must_use]
+pub fn check_url(value: &str) -> CheckResult {
+    crate::whatwg::url::check_url(value)
+}
+
+/// TS `BaseURL`.
+#[must_use]
+pub fn check_base_url(value: &str) -> CheckResult {
+    let normalised = value.to_lowercase();
+    let normalised = normalised.trim();
+    if normalised.starts_with("data:") || normalised.starts_with("javascript:") {
+        return unmatched(value, Reason::UnexpectedToken);
+    }
+    check_url(value)
+}
+
+/// TS `ItemProp`.
+#[must_use]
+pub fn check_item_prop(value: &str) -> CheckResult {
+    let abs = |v: &str| {
+        if is_abs_url(v) {
+            matched()
+        } else {
+            unmatched(value, Reason::UnexpectedToken)
+        }
+    };
+    let name = |v: &str| {
+        if v.contains([':', '.', ' ']) {
+            unmatched(value, Reason::UnexpectedToken)
+        } else {
+            matched()
+        }
+    };
+    check_multi_types(value, &[&abs, &name])
+}
+
+/// TS `Srcset`.
+#[must_use]
+#[allow(clippy::too_many_lines, clippy::missing_panics_doc)] // the base URL is a constant
 pub fn check_srcset(value: &str) -> CheckResult {
-    let images: Vec<&str> = value.split(',').collect();
     let mut has_width = false;
     let mut has_density = false;
+    let mut used_widths: Vec<f64> = Vec::new();
+    let mut used_densities: Vec<f64> = Vec::new();
 
-    for image in &images {
-        let trimmed = image.trim();
-        if trimmed.is_empty() {
-            return unmatched(value, Reason::UnexpectedToken);
+    for image in value.split(',') {
+        let tokens = TokenCollection::new(
+            image.trim(),
+            TokenCollectionOptions {
+                disallow_to_surround_by_spaces: true,
+                ..TokenCollectionOptions::default()
+            },
+        );
+        let url = tokens.first();
+        let descriptor = tokens.get(2);
+        let tail = tokens.get(3);
+
+        let Some(url) = url else {
+            return unmatched_with(
+                value,
+                Reason::UnexpectedToken,
+                UnmatchedOpts {
+                    expects: expects(&[(ExpectType::Format, "valid non-empty URL")]),
+                    ..Default::default()
+                },
+            );
+        };
+
+        let base = url::Url::parse("https://example.com/").expect("a valid base URL");
+        if url::Url::options().base_url(Some(&base)).parse(&url.value).is_err() {
+            return url.unmatched_result(
+                Some(Reason::UnexpectedToken),
+                UnmatchedOpts {
+                    expects: expects(&[(ExpectType::Format, "valid non-empty URL")]),
+                    ..Default::default()
+                },
+            );
         }
 
-        let parts: Vec<&str> = trimmed.split_ascii_whitespace().collect();
-        if parts.is_empty() {
-            return unmatched(value, Reason::UnexpectedToken);
-        }
-
-        match parts.len() {
-            1 => {
-                // No descriptor implies 1x (density).
-                has_density = true;
-            }
-            2 => {
-                let descriptor = parts[1];
-                let result = split_unit(descriptor);
-                match result.unit.as_str() {
-                    "w" => {
-                        if !is_uint(&result.num, None) || result.num == "0" {
-                            return unmatched(value, Reason::UnexpectedToken);
-                        }
-                        has_width = true;
+        if let Some(descriptor) = descriptor {
+            let split = split_unit(&descriptor.value);
+            match split.unit.as_str() {
+                "w" => {
+                    let w = js_number(&split.num);
+                    if !is_uint(&split.num, None) || w.is_none_or(|w| w <= 0.0) {
+                        return unmatched_with(
+                            value,
+                            Reason::UnexpectedToken,
+                            UnmatchedOpts {
+                                expects: expects(&[(ExpectType::Format, "width descriptor")]),
+                                ..Default::default()
+                            },
+                        );
                     }
-                    "x" => {
-                        if !is_float(&result.num) {
-                            return unmatched(value, Reason::UnexpectedToken);
-                        }
-                        // Zero density is not valid per WHATWG spec
-                        if result.num.parse::<f64>().is_ok_and(|n| n == 0.0) {
-                            return unmatched(value, Reason::UnexpectedToken);
-                        }
-                        has_density = true;
+                    let w = w.unwrap_or_default();
+                    if used_widths.contains(&w) {
+                        return unmatched_with(
+                            value,
+                            Reason::Duplicated,
+                            UnmatchedOpts {
+                                expects: expects(&[(ExpectType::Format, "unique width descriptor")]),
+                                ..Default::default()
+                            },
+                        );
                     }
-                    _ => {
-                        return unmatched(value, Reason::UnexpectedToken);
+                    used_widths.push(w);
+                    has_width = true;
+                }
+                "x" => {
+                    let d = js_number(&split.num);
+                    if !is_float(&split.num) || d.is_none_or(|d| d <= 0.0) {
+                        return unmatched_with(
+                            value,
+                            Reason::UnexpectedToken,
+                            UnmatchedOpts {
+                                expects: expects(&[(ExpectType::Format, "pixel density descriptor")]),
+                                ..Default::default()
+                            },
+                        );
                     }
+                    let d = d.unwrap_or_default();
+                    if used_densities.contains(&d) {
+                        return unmatched_with(
+                            value,
+                            Reason::Duplicated,
+                            UnmatchedOpts {
+                                expects: expects(&[(ExpectType::Format, "unique pixel density descriptor")]),
+                                ..Default::default()
+                            },
+                        );
+                    }
+                    used_densities.push(d);
+                    has_density = true;
+                }
+                _ => {
+                    return unmatched_with(
+                        value,
+                        Reason::UnexpectedToken,
+                        UnmatchedOpts {
+                            expects: expects(&[
+                                (ExpectType::Format, "width descriptor"),
+                                (ExpectType::Format, "pixel density descriptor"),
+                            ]),
+                            ..Default::default()
+                        },
+                    );
                 }
             }
-            _ => {
-                return unmatched(value, Reason::UnexpectedToken);
+        } else {
+            if used_densities.contains(&1.0) {
+                return unmatched_with(
+                    value,
+                    Reason::Duplicated,
+                    UnmatchedOpts {
+                        expects: expects(&[(ExpectType::Format, "unique pixel density descriptor")]),
+                        ..Default::default()
+                    },
+                );
             }
+            used_densities.push(1.0);
+            has_density = true;
+        }
+
+        if tail.is_some() {
+            return unmatched_with(
+                value,
+                Reason::UnexpectedToken,
+                UnmatchedOpts {
+                    expects: expects(&[(ExpectType::Syntax, "image candidate string")]),
+                    ..Default::default()
+                },
+            );
         }
     }
 
     if has_width && has_density {
-        return unmatched(value, Reason::UnexpectedToken);
+        return unmatched_with(
+            value,
+            Reason::UnexpectedToken,
+            UnmatchedOpts {
+                expects: expects(&[(
+                    ExpectType::Format,
+                    "consistent descriptors (all width or all density, not mixed)",
+                )]),
+                ..Default::default()
+            },
+        );
     }
 
     matched()
 }
 
-/// Space-separated `hash-algo-base64` tokens where algo is sha256, sha384, or sha512.
-/// @see <https://w3c.github.io/webappsec-subresource-integrity/#integrity-metadata-description>
+/// JS `Number(value)` for the decimal strings `splitUnit` yields; `None` for `NaN`.
+fn js_number(value: &str) -> Option<f64> {
+    let trimmed = value.trim();
+    if trimmed.is_empty() {
+        return Some(0.0);
+    }
+    trimmed.parse::<f64>().ok()
+}
+
+/// TS `SRIHash`.
 #[must_use]
 pub fn check_sri_hash(value: &str) -> CheckResult {
-    if value.is_empty() {
+    static TOKEN: LazyLock<Regex> = LazyLock::new(|| Regex::new(r"^sha(?:256|384|512)-[A-Za-z0-9_+/]+=*$").unwrap());
+    let tokens: Vec<&str> = value
+        .trim()
+        .split(char::is_whitespace)
+        .filter(|t| !t.is_empty())
+        .collect();
+    if tokens.is_empty() {
         return unmatched(value, Reason::EmptyToken);
     }
-
-    for token in value.split_ascii_whitespace() {
-        let Some((algo, _hash)) = token.split_once('-') else {
-            return unmatched(value, Reason::SyntaxError);
-        };
-        match algo {
-            "sha256" | "sha384" | "sha512" => {}
-            _ => return unmatched(value, Reason::UnexpectedToken),
+    for token in tokens {
+        if !TOKEN.is_match(token) {
+            return unmatched(value, Reason::UnexpectedToken);
         }
     }
-
     matched()
 }
 
-/// Must be `"any"` (case-insensitive) or `WIDTHxHEIGHT` where both are
-/// non-zero unsigned integers.
+/// TS `IconSize`.
 #[must_use]
 pub fn check_icon_size(value: &str) -> CheckResult {
-    let lower = value.to_lowercase();
-    if lower == "any" {
+    let value = value.to_lowercase();
+    if value == "any" {
         return matched();
     }
-
-    let Some(x_pos) = lower.find('x') else {
-        return unmatched(value, Reason::UnexpectedToken);
+    let tokens = TokenCollection::new(
+        &value,
+        TokenCollectionOptions {
+            specific_separator: vec!['x'],
+            ..TokenCollectionOptions::default()
+        },
+    );
+    let none = UnmatchedOpts::default;
+    let Some(width) = tokens.first() else {
+        return unmatched(&value, Reason::UnexpectedToken);
     };
-
-    let width_str = &value[..x_pos];
-    let height_str = &value[x_pos + 1..];
-
-    if width_str.is_empty() || height_str.is_empty() {
-        return unmatched(value, Reason::UnexpectedToken);
+    let Some(sep) = tokens.get(1) else {
+        return width.unmatched_result(Some(Reason::UnexpectedToken), none());
+    };
+    let Some(height) = tokens.get(2) else {
+        return sep.unmatched_result(Some(Reason::UnexpectedToken), none());
+    };
+    if let Some(extra) = tokens.get(3) {
+        return extra.unmatched_result(Some(Reason::ExtraToken), none());
     }
-
-    if !is_uint(width_str, None) || width_str == "0" {
-        return unmatched(value, Reason::UnexpectedToken);
+    if !is_uint(&width.value, None) {
+        return width.unmatched_result(Some(Reason::UnexpectedToken), none());
     }
-    if !is_uint(height_str, None) || height_str == "0" {
-        return unmatched(value, Reason::UnexpectedToken);
+    if width.value == "0" {
+        return width.unmatched_result(Some(Reason::OutOfRange), none());
     }
-
+    if sep.value != "x" {
+        return sep.unmatched_result(Some(Reason::OutOfRange), none());
+    }
+    if !is_uint(&height.value, None) {
+        return height.unmatched_result(Some(Reason::UnexpectedToken), none());
+    }
+    if height.value == "0" {
+        return height.unmatched_result(Some(Reason::OutOfRange), none());
+    }
     matched()
 }
 
-/// Accepts: `audio/*`, `video/*`, `image/*`, a valid MIME type
-/// (without parameters), or a file extension starting with `.`.
+/// TS `Accept`.
 #[must_use]
 pub fn check_accept(value: &str) -> CheckResult {
-    let wildcard_types = ["audio/*", "video/*", "image/*"];
-    if wildcard_types.iter().any(|&w| value.eq_ignore_ascii_case(w)) {
+    if ["audio/*", "video/*", "image/*"].contains(&value) {
         return matched();
     }
-    if crate::whatwg::mime_type::is_valid_mime_type(value, true) {
+    let mime = check_mime_type(value, true);
+    if mime.is_matched() {
         return matched();
     }
-    if value.starts_with('.') && value.len() >= 2 {
+    let mut chars = value.chars();
+    if chars.next() == Some('.') && chars.next().is_some() {
         return matched();
     }
-    unmatched(value, Reason::UnexpectedToken)
+    mime
 }
 
-/// Rejects `data:` and `javascript:` schemes.
+/// TS `checkMIMEType({ withoutParameters })`.
 #[must_use]
-pub fn check_base_url(value: &str) -> CheckResult {
-    let lower = value.trim().to_lowercase();
-    if lower.starts_with("data:") || lower.starts_with("javascript:") {
-        return unmatched(value, Reason::UnexpectedToken);
-    }
-    matched()
+pub fn check_mime_type(value: &str, without_parameters: bool) -> CheckResult {
+    crate::whatwg::mime_type::check_mime_type(value, without_parameters)
 }
 
-/// Rejects absolute URLs; accepts a relative URL whose value starts with `http:`/`https:`.
+/// TS `ValidCustomCommand`.
+#[must_use]
+pub fn check_valid_custom_command(value: &str) -> CheckResult {
+    let mut chars = value.chars();
+    let valid = value.starts_with("--") && {
+        chars.next();
+        chars.next();
+        // JS `.` does not match a line terminator
+        chars
+            .next()
+            .is_some_and(|c| !matches!(c, '\n' | '\r' | '\u{2028}' | '\u{2029}'))
+    };
+    if valid {
+        return matched();
+    }
+    unmatched_with(
+        value,
+        Reason::Typo,
+        UnmatchedOpts {
+            candidate: Some(format!("--{value}")),
+            expects: expects(&[(ExpectType::Format, "custom command")]),
+            ..Default::default()
+        },
+    )
+}
+
+/// TS `HTTPSchemaURL`.
 #[must_use]
 pub fn check_http_schema_url(value: &str) -> CheckResult {
     if is_abs_url(value) {
         return unmatched(value, Reason::UnexpectedToken);
     }
     let lower = value.to_lowercase();
-    if lower.starts_with("http:") || lower.starts_with("https:") {
+    if lower.starts_with("http") {
         return matched();
     }
-    unmatched(value, Reason::UnexpectedToken)
+    unmatched_with(
+        value,
+        Reason::UnexpectedToken,
+        UnmatchedOpts {
+            expects: expects(&[(ExpectType::Format, "HTTP(S) schema")]),
+            ..Default::default()
+        },
+    )
 }
 
+const KEYWORDS: [&str; 4] = ["_blank", "_self", "_parent", "_top"];
+
+/// TS `hasTabOrNewlineAndLessThan`.
+fn has_tab_or_newline_and_less_than(value: &str) -> bool {
+    value.contains(['\t', '\n', '\r']) && value.contains('<')
+}
+
+/// TS `isNavigableTargetName()`.
+#[must_use]
+pub fn is_navigable_target_name(value: &str) -> bool {
+    !value.is_empty() && !has_tab_or_newline_and_less_than(value) && !value.starts_with('_')
+}
+
+/// TS `NavigableTargetNameOrKeyword`.
 #[must_use]
 pub fn check_navigable_target_name_or_keyword(value: &str) -> CheckResult {
     let lower = value.to_lowercase();
-    let keywords = ["_blank", "_self", "_parent", "_top"];
-    if keywords.contains(&lower.as_str()) {
+    if KEYWORDS.contains(&lower.as_str()) {
         return matched();
     }
-    if lower.starts_with('_') {
-        let candidate_refs: Vec<&str> = keywords.to_vec();
-        let candidate = super::candidate::get_candidate(&lower, &candidate_refs);
-        return super::types::unmatched_with(
+    if value.starts_with('_') {
+        return unmatched_with(
             value,
             Reason::UnexpectedToken,
-            super::types::UnmatchedOpts {
-                candidate,
+            UnmatchedOpts {
+                candidate: get_candidate(&lower, &KEYWORDS),
                 ..Default::default()
             },
         );
     }
-    if crate::whatwg::navigable_target_name::is_navigable_target_name(value) {
+    if is_navigable_target_name(value) {
         return matched();
     }
-    super::types::unmatched_with(
+    unmatched_with(
         value,
         Reason::UnexpectedToken,
-        super::types::UnmatchedOpts {
-            fallback_to: Some("_blank".to_owned()),
+        UnmatchedOpts {
+            fallback_to: has_tab_or_newline_and_less_than(value).then(|| "_blank".to_owned()),
             ..Default::default()
         },
     )
+}
+
+/// TS `BrowsingContextNameOrKeyword`.
+#[must_use]
+pub fn check_browsing_context_name_or_keyword(value: &str) -> CheckResult {
+    let lower = value.to_lowercase();
+    if KEYWORDS.contains(&lower.as_str()) {
+        return matched();
+    }
+    if value.starts_with('_') {
+        return unmatched_with(
+            value,
+            Reason::UnexpectedToken,
+            UnmatchedOpts {
+                candidate: get_candidate(&lower, &KEYWORDS),
+                ..Default::default()
+            },
+        );
+    }
+    super::keyword_type::matches(value, is_navigable_target_name(value), None)
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+    use crate::primitive::parse_float_prefix;
+
+    #[test]
+    fn parse_float_prefix_is_js_parse_float() {
+        assert_eq!(parse_float_prefix("1abc"), Some(1.0));
+        assert_eq!(parse_float_prefix("abc"), None);
+        assert_eq!(parse_float_prefix(" -.5e1x"), Some(-5.0));
+    }
+
+    #[test]
+    fn srcset_duplicates() {
+        assert!(!check_srcset("a.png, b.png 1x").is_matched());
+        assert!(!check_srcset("a.png 1x, b.png 1.0x").is_matched());
+        assert!(!check_srcset("a.png 100w, b.png 100w").is_matched());
+        assert!(check_srcset("a.png 1x, b.png 2x").is_matched());
+    }
 }

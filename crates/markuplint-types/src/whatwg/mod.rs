@@ -5,3 +5,4 @@ pub mod datetime;
 pub mod link_type;
 pub mod mime_type;
 pub mod navigable_target_name;
+pub mod url;

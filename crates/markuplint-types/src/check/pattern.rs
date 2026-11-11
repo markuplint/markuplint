@@ -1,88 +1,40 @@
+//! Port of `packages/@markuplint/types/src/pattern.ts`.
+
+use std::sync::LazyLock;
+
 use regex::Regex;
 
+use super::directive::js_regex;
 use super::types::{CheckResult, Expect, ExpectType, PatternType, Reason, UnmatchedOpts, matched, unmatched_with};
 
+/// TS `checkPattern`: `/.../flags` is a regular expression the value is tested against, and any
+/// other pattern is the value itself.
 #[must_use]
 pub fn check_pattern(value: &str, type_def: &PatternType) -> CheckResult {
+    // TS `/^\/(.*)\/([gim])*$/`: the capture keeps the last flag only
+    static LITERAL: LazyLock<Regex> = LazyLock::new(|| Regex::new(r"^/(.*)/([gim]*)$").unwrap());
     let pattern = &type_def.pattern;
-
-    if let Some((regex_body, flags)) = parse_regex_literal(pattern) {
-        let case_insensitive = flags.contains('i');
-        let multiline = flags.contains('m');
-
-        let mut regex_str = String::new();
-        if case_insensitive || multiline {
-            regex_str.push_str("(?");
-            if case_insensitive {
-                regex_str.push('i');
-            }
-            if multiline {
-                regex_str.push('m');
-            }
-            regex_str.push(')');
-        }
-        regex_str.push_str(regex_body);
-
-        match Regex::new(&regex_str) {
-            Ok(re) => {
-                if re.is_match(value) {
-                    matched()
-                } else {
-                    unmatched_with(
-                        value,
-                        Reason::SyntaxError,
-                        UnmatchedOpts {
-                            expects: Some(vec![Expect {
-                                type_: ExpectType::Regexp,
-                                value: pattern.clone(),
-                            }]),
-                            ..Default::default()
-                        },
-                    )
-                }
-            }
-            Err(_) => unmatched_with(
-                value,
-                Reason::SyntaxError,
-                UnmatchedOpts {
-                    expects: Some(vec![Expect {
-                        type_: ExpectType::Regexp,
-                        value: pattern.clone(),
-                    }]),
-                    ..Default::default()
-                },
-            ),
+    if let Some(caps) = LITERAL.captures(pattern)
+        && let Some(body) = caps.get(1).map(|m| m.as_str()).filter(|b| !b.is_empty())
+    {
+        let flags = caps.get(2).map_or("", |m| m.as_str());
+        let last_flag: String = flags.chars().last().map(String::from).unwrap_or_default();
+        if js_regex(body, &last_flag).is_some_and(|re| re.is_match(value)) {
+            return matched();
         }
     } else if value == pattern.as_str() {
-        matched()
-    } else {
-        unmatched_with(
-            value,
-            Reason::SyntaxError,
-            UnmatchedOpts {
-                expects: Some(vec![Expect {
-                    type_: ExpectType::Const,
-                    value: pattern.clone(),
-                }]),
-                ..Default::default()
-            },
-        )
-    }
-}
-
-fn parse_regex_literal(s: &str) -> Option<(&str, &str)> {
-    if !s.starts_with('/') {
-        return None;
+        return matched();
     }
 
-    let rest = &s[1..];
-    let last_slash = rest.rfind('/')?;
-    let body = &rest[..last_slash];
-    let flags = &rest[last_slash + 1..];
-
-    if flags.chars().all(|c| matches!(c, 'g' | 'i' | 'm')) {
-        Some((body, flags))
-    } else {
-        None
-    }
+    unmatched_with(
+        value,
+        Reason::SyntaxError,
+        UnmatchedOpts {
+            expects: Some(vec![Expect {
+                type_: ExpectType::Regexp,
+                value: pattern.clone(),
+            }]),
+            ..Default::default()
+        },
+    )
 }

@@ -86,7 +86,8 @@ fn srcset() {
     // Descriptor consistency
     assert!(check("a.jpg 480w, b.jpg 1024w", &kw, None).is_matched());
     assert!(check("a.jpg 1x, b.jpg 2x", &kw, None).is_matched());
-    assert!(check("a.jpg, b.jpg", &kw, None).is_matched());
+    // Two candidates without a descriptor are both 1x
+    assert!(!check("a.jpg, b.jpg", &kw, None).is_matched());
     assert!(check("a.jpg, b.jpg 2x", &kw, None).is_matched());
     assert!(!check("a.jpg 480w, b.jpg", &kw, None).is_matched());
     assert!(!check("a.jpg 480w, b.jpg 2x", &kw, None).is_matched());
