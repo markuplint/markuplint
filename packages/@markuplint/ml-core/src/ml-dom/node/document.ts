@@ -29,6 +29,7 @@ import {
 	mayBeFocusable,
 	getComputedAriaProps,
 	isExposed,
+	isShadowRoot,
 	getSpecByTagName,
 	ARIA_RECOMMENDED_VERSION,
 } from '@markuplint/ml-spec';
@@ -90,6 +91,12 @@ export class MLDocument<T extends RuleConfigValue, O extends PlainData = undefin
 	 * this.
 	 */
 	readonly literalValues?: LiteralValueDeclaration;
+
+	/**
+	 * What the `slot` element is in the language of the document (`MLParser#slotElement`): the HTML
+	 * element, or the placeholder of a framework's component, whose slot assignment is not computed.
+	 */
+	readonly slotElement: 'html' | 'framework';
 
 	/**
 	 * The rule currently being evaluated during a lint pass.
@@ -256,6 +263,7 @@ export class MLDocument<T extends RuleConfigValue, O extends PlainData = undefin
 			readonly booleanish?: boolean;
 			readonly attrExpressionLanguage?: ExpressionLanguage;
 			readonly literalValues?: LiteralValueDeclaration;
+			readonly slotElement?: 'html' | 'framework';
 			readonly tagNameCaseSensitive?: boolean;
 			readonly componentNameVariants?: boolean;
 			readonly isComponentName?: (name: string) => boolean;
@@ -273,6 +281,7 @@ export class MLDocument<T extends RuleConfigValue, O extends PlainData = undefin
 		this.booleanish = options?.booleanish ?? false;
 		this.attrExpressionLanguage = options?.attrExpressionLanguage;
 		this.literalValues = options?.literalValues;
+		this.slotElement = options?.slotElement ?? 'html';
 		this.endTag = options?.endTag ?? 'omittable';
 		this.#filename = options?.filename;
 		this.tagNameCaseSensitive = options?.tagNameCaseSensitive ?? false;
@@ -3187,7 +3196,16 @@ export class MLDocument<T extends RuleConfigValue, O extends PlainData = undefin
 		const nameRequired = role.role?.accessibleNameRequired ?? false;
 		const nameProhibited = role.role?.accessibleNameProhibited ?? false;
 
-		const hasSlot = !!node.querySelector('slot');
+		// A slot whose assignment is known is read by `getAccessibleName` above. The slot of a shadow root is in
+		// a tree of its own, so every tree is searched, except the content of an ordinary `template` element,
+		// which is not rendered where it is written.
+		const hasSlot = node.deepQuerySelectorAll('slot').some(slot => {
+			if (slot.getAssignedNodes() !== null) {
+				return false;
+			}
+			const root = slot.getRootNode();
+			return isShadowRoot(root) || !root.is(root.DOCUMENT_FRAGMENT_NODE);
+		});
 
 		aria.role = role.role?.name;
 		aria.nameRequired = nameRequired;

@@ -1,6 +1,7 @@
 /* global StylePropertyMap, StylePropertyMapReadOnly */
 
 import type { DeclarativeShadowRootAttachment } from '../helper/tree-scope.js';
+import type { MLChildNode } from './child-node.js';
 import type { MLDocument } from './document.js';
 import type { MLNamedNodeMap } from './named-node-map.js';
 import type { MLNode } from './node.js';
@@ -41,6 +42,12 @@ import {
 } from '../helper/accname.js';
 import { literalToExpression } from '../helper/literal-values.js';
 import { markPretendedAttr } from '../helper/pretended-attrs.js';
+import {
+	getAssignedNodes,
+	getAssignedSlot,
+	getFlatTreeSlot,
+	getFlattenedSlottables,
+} from '../helper/slot-assignment.js';
 import {
 	getDeclarativeShadowRootAttachment,
 	getDeclarativeShadowRootMode,
@@ -996,14 +1003,15 @@ export class MLElement<T extends RuleConfigValue, O extends PlainData = undefine
 	}
 
 	/**
-	 * **IT THROWS AN ERROR WHEN CALLING THIS.**
+	 * The slot of an open declarative shadow root that this element is assigned to, or `null` when no
+	 * slot takes it, the root is closed (the DOM does not expose it), or the assignment is not known
+	 * (see {@link MLElement.getFlatTreeSlot}).
 	 *
-	 * @unsupported
 	 * @implements DOM API: `Element`
 	 * @see https://dom.spec.whatwg.org/#dom-slotable-assignedslot
 	 */
 	get assignedSlot(): HTMLSlotElement | null {
-		throw new UnexpectedCallError('Not supported "assignedSlot" property');
+		return getAssignedSlot(this) as HTMLSlotElement | null;
 	}
 
 	/**
@@ -3587,14 +3595,46 @@ export class MLElement<T extends RuleConfigValue, O extends PlainData = undefine
 	}
 
 	/**
+	 * The nodes this `slot` places, in tree order, or with `flatten` what it renders in the flat tree. It
+	 * is empty when the assignment is not known; use {@link MLElement.getAssignedNodes} to tell the two apart.
+	 *
+	 * @implements DOM API: `HTMLSlotElement`
 	 * @see https://html.spec.whatwg.org/multipage/scripting.html#dom-slot-assignednodes
 	 */
-	assignedNodes() {
+	assignedNodes(options?: AssignedNodesOptions): MLChildNode<T, O>[] {
 		if (this.localName !== 'slot') {
 			throw new TypeError('assignedNodes is not a function');
 		}
 
-		return [];
+		return [...(options?.flatten ? getFlattenedSlottables(this) : (this.getAssignedNodes() ?? []))];
+	}
+
+	/**
+	 * The nodes this `slot` places, by the named slot assignment of the declarative shadow root it is in.
+	 * A slot that takes none has `[]`, and renders its own children. `null` when the assignment is not
+	 * known; what makes it so is in the module comment of `helper/slot-assignment.ts`.
+	 *
+	 * @implements `@markuplint/ml-core` API: `MLElement`
+	 * @see https://dom.spec.whatwg.org/#find-slotables
+	 */
+	getAssignedNodes(): readonly MLChildNode<T, O>[] | null {
+		return getAssignedNodes(this);
+	}
+
+	/**
+	 * The slot that places this element in the flat tree: the slot of the shadow root of its parent that
+	 * takes it. `null` when its parent is a shadow host and no slot takes it, so that it is not rendered;
+	 * `undefined` when its parent is not a shadow host, or the assignment is not known
+	 * (see {@link MLElement.getAssignedNodes}).
+	 *
+	 * `getComposedParentElement` of `@markuplint/ml-spec` reads it as the parent that the accessibility
+	 * tree has for the element.
+	 *
+	 * @implements `@markuplint/ml-core` API: `MLElement`
+	 * @see https://dom.spec.whatwg.org/#find-a-slot
+	 */
+	getFlatTreeSlot(): MLElement<T, O> | null | undefined {
+		return getFlatTreeSlot(this);
 	}
 
 	/**
@@ -4150,12 +4190,19 @@ export class MLElement<T extends RuleConfigValue, O extends PlainData = undefine
 	 * satisfy a query) does not pass `attr`: an attribute that cannot be known does not decide whether
 	 * a child exists. It looks for the unresolved components among the children itself.
 	 *
+	 * Every `slot` is mutable by default, as a `slot` that is not in a declarative shadow root renders what
+	 * is given to it, and a rule that reads the children as they are written (`require-datetime`) cannot
+	 * know it. A rule that reads what a slot of a shadow root renders by `MLElement#getAssignedNodes` says
+	 * which slots are with `isMutableSlot`.
+	 *
+	 *
 	 * @implements `@markuplint/ml-core` API: `MLElement`
 	 * @param attr - When true, also considers children with mutable attributes, and components that no
 	 * pretender resolved, as mutable
+	 * @param isMutableSlot - Whether a `slot` among the descendants may render what is not known
 	 * @returns True if this element has potentially mutable children
 	 */
-	hasMutableChildren(attr = false) {
+	hasMutableChildren(attr = false, isMutableSlot: (slot: MLElement<T, O>) => boolean = () => true) {
 		for (const child of this.getPureChildNodes()) {
 			if (child.is(child.MARKUPLINT_PREPROCESSOR_BLOCK)) {
 				if (child.blockBehavior) {
@@ -4170,10 +4217,10 @@ export class MLElement<T extends RuleConfigValue, O extends PlainData = undefine
 				if (attr && child.isUnresolvedComponent()) {
 					return true;
 				}
-				if (child.hasMutableChildren(attr)) {
+				if (child.hasMutableChildren(attr, isMutableSlot)) {
 					return true;
 				}
-				if (child.localName === 'slot') {
+				if (child.localName === 'slot' && isMutableSlot(child)) {
 					return true;
 				}
 			}
