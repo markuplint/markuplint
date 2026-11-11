@@ -1,6 +1,8 @@
 import type { ARIAVersion, ComputedRole, MLMLSpec, RoleComputationError } from '../../types/index.js';
 import type { ReadonlyDeep } from 'type-fest';
 
+import { decodeEntities } from '@markuplint/shared';
+
 import { XHTML_NAMESPACE } from '../../const/index.js';
 import { getRoleSpec } from './get-role-spec.js';
 import { resolveNamespace } from '../../utils/resolve-namespace.js';
@@ -12,11 +14,11 @@ import { getPermittedRoles } from './get-permitted-roles.js';
  *
  * The roles that ARIA in HTML does not permit on the element are authoring
  * errors that the user agent does not correct: such a role is returned with
- * `errorType: 'NO_PERMITTED'` (Core-AAM §3.2), except on an element that is
+ * `errorType: 'NO_PERMITTED'` (Core-AAM, the conflicts between the mappings), except on an element that is
  * never rendered.
  *
  * @see https://w3c.github.io/aria/#document-handling_author-errors
- * @see https://w3c.github.io/core-aam/#mapping_conflicts
+ * @see https://w3c.github.io/core-aam/#mapping_conflicts — Core-AAM §3.2
  */
 export function getExplicitRole(
 	specs: MLMLSpec,
@@ -186,8 +188,18 @@ function isValidLandmarkRole(
 		if (el.getAttribute('aria-label')) {
 			return true;
 		}
-		const id = el.getAttribute('aria-labelledby');
-		if (id && el.ownerDocument.getElementById(id)) {
+		// `aria-labelledby` is a list of ids, and each is resolved in the tree of the element: the
+		// content of a `template` element and a shadow root are trees of their own. A DOM has resolved the
+		// character references of a token already, but the markuplint DOM gives it as written in the markup,
+		// so the token is looked for as it is, and then with its character references resolved.
+		const ids = el.getAttribute('aria-labelledby')?.split(/\s+/).filter(Boolean) ?? [];
+		const root = el.getRootNode();
+		if (
+			(root.nodeType === 9 || root.nodeType === 11) &&
+			ids.some(
+				id => (root as Document).getElementById(id) ?? (root as Document).getElementById(decodeEntities(id)),
+			)
+		) {
 			return true;
 		}
 	}

@@ -225,9 +225,14 @@ export abstract class MLNode<
 	}
 
 	/**
-	 * The list of child nodes that contains `Element`, `Text`, and `Comment`.
-	 * Fragment nodes and preprocessor blocks with `each` or `end` block behavior
-	 * are transparent — their child nodes are flattened into this list.
+	 * The list of child nodes. Fragment nodes and preprocessor blocks whose
+	 * `blockBehavior.type` is `each` or `end` are flattened into this list.
+	 * Conditional blocks (`if`, `switch`, `await`, and their clauses) and
+	 * `each:empty` stay in this list: flattening a conditional block would
+	 * present elements that never render together as siblings, and would
+	 * remove the block nodes `conditionalChildNodes()` uses to enumerate
+	 * each branch. A loop body is not an alternative branch, so `each` and
+	 * `end` are flattened.
 	 *
 	 * @readonly
 	 * @implements DOM API: `Node`
@@ -391,7 +396,38 @@ export abstract class MLNode<
 	}
 
 	/**
+	 * The parent element in the tree of this node, which is what the DOM calls `parentElement`: `null`
+	 * for what is at the top of the content of an HTML `template` element or of a declarative shadow
+	 * root, whose {@link MLNode.parentElement} is the `template` element, as the syntax tree has it.
+	 * A `template` element that is in no tree has none either.
+	 *
+	 * The selector engine and `closest()` read it, so that `section p` does not match a `p` in the
+	 * content of a `template` in a `section`. {@link MLNode.parentElement} does not stop at that
+	 * boundary because the content model of a `template` element is validated against what is in it.
+	 *
+	 * `getTreeParentElement` of `@markuplint/ml-spec`, which cannot use this getter, derives the same
+	 * answer from `getRootNode()` for the algorithms of that package: a change of the boundary here
+	 * belongs to it too.
+	 *
+	 * @implements `@markuplint/ml-core` API: `MLNode`
+	 */
+	get treeParentElement(): MLElement<T, O> | null {
+		const parent = this.parentElement;
+		if (!parent || parent.isHTMLTemplateElement) {
+			return null;
+		}
+		if (this.is(this.ELEMENT_NODE) && this.isInNoTree) {
+			return null;
+		}
+		return parent;
+	}
+
+	/**
 	 * The parent node that may be `Element`, `Document`, `DocumentFragment`, and `null`.
+	 *
+	 * A block of a template language is walked through (`MLBlock#isTransparent`): a node in a block
+	 * has the node that contains the block as its parent. A node at the top of a fragment document
+	 * has none.
 	 *
 	 * ## HTML:
 	 *
@@ -413,10 +449,10 @@ export abstract class MLNode<
 	 *
 	 * ```jsx
 	 * <> // => null
-	 *   <div> // => #document-fragment
+	 *   <div> // => <>
 	 *     {items.map(item => {
 	 *       return (
-	 *         <span /> // => null
+	 *         <span /> // => <div>
 	 *       )
 	 *     })}
 	 *   </div>
@@ -430,7 +466,7 @@ export abstract class MLNode<
 	 * div
 	 *   //- <div>
 	 *   if foo
-	 *     //- null
+	 *     //- <div>
 	 *     span
 	 * ```
 	 *
@@ -566,7 +602,7 @@ export abstract class MLNode<
 	 *
 	 * ```jsx
 	 * <> // => #document
-	 *   <div> // => #document-fragment
+	 *   <div> // => <>
 	 *     {items.map(item => {
 	 *       return (
 	 *         <span /> // => #ml-block
@@ -773,6 +809,13 @@ export abstract class MLNode<
 	/**
 	 * Returns true if other is an inclusive descendant of node; otherwise false.
 	 *
+	 * What an HTML `template` element holds is its `content`, a tree of its own, so the element does
+	 * not contain it, and an element does not contain the content of a `template` under it, so
+	 * `contains()` asked of what is outside a template about what is inside it is `false` as well.
+	 * That differs from {@link MLNode.parentElement}, which stays the one of the syntax
+	 * tree (the `template` element) because the content model of a `template` element is validated
+	 * against what the syntax tree puts in it.
+	 *
 	 * @implements DOM API: `Node`
 	 * @see https://dom.spec.whatwg.org/#ref-for-dom-node-contains%E2%91%A0
 	 */
@@ -780,6 +823,9 @@ export abstract class MLNode<
 		// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
 		other: MLNode<T, O> | null,
 	) {
+		if (this.is(this.ELEMENT_NODE) && this.isHTMLTemplateElement) {
+			return false;
+		}
 		for (const childNode of this.childNodes) {
 			if (other?.uuid === childNode.uuid || childNode.contains(other)) {
 				return true;
@@ -803,7 +849,9 @@ export abstract class MLNode<
 	}
 
 	/**
-	 * Finds subsequent nodes that match the given selector.
+	 * Finds subsequent nodes that match the given selector, in the tree of this node: what follows in
+	 * the markup but is in another tree (the content of an HTML `template` element) is not subsequent
+	 * to it.
 	 *
 	 * @implements `@markuplint/ml-core` API: `MLNode`
 	 * @param selector - Optional selector to filter the nodes.
@@ -811,12 +859,17 @@ export abstract class MLNode<
 	 */
 	findSubsequentNodes(selector?: string): MLChildNode<T, O>[] {
 		const matched: MLChildNode<T, O>[] = [];
+		const root = this.getRootNode();
 		for (const node of this.ownerMLDocument.nodeList) {
 			if (node.endOffset <= this.endOffset) {
 				continue;
 			}
 
 			if (this.contains(node)) {
+				continue;
+			}
+
+			if (node.getRootNode() !== root) {
 				continue;
 			}
 
@@ -881,9 +934,16 @@ export abstract class MLNode<
 	}
 
 	/**
-	 * **IT THROWS AN ERROR WHEN CALLING THIS.**
+	 * The root of the tree of this node: the document, the content of the nearest HTML `template`
+	 * element above it (a declarative shadow root when one is attached to the parent of the `template`),
+	 * or this node itself for a document fragment, and for a `template` element that is in no tree.
+	 * The syntax tree is followed through what a template engine renders away, so a block of a
+	 * template language between the `template` element and this node does not hide the `template`.
 	 *
-	 * @unsupported
+	 * With `composed`, a shadow root is followed to its host.
+	 *
+	 * @param options - `composed` follows a shadow root to its host
+	 * @returns The root of the tree
 	 * @implements DOM API: `Node`
 	 * @see https://dom.spec.whatwg.org/#ref-for-dom-node-getrootnode%E2%91%A0
 	 */
@@ -891,10 +951,37 @@ export abstract class MLNode<
 		// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
 		options?: GetRootNodeOptions,
 	): MLNode<T, O> {
-		if (options) {
-			throw new UnexpectedCallError('Not supported options');
+		const root = this.#getTreeRoot();
+		if (options?.composed && root.is(root.DOCUMENT_FRAGMENT_NODE) && 'host' in root) {
+			return (root.host as MLNode<T, O>).getRootNode(options);
 		}
-		// The original DOM API returns a document fragment if the element is a fragment.
+		return root;
+	}
+
+	#treeRoot: MLNode<T, O> | undefined;
+
+	#getTreeRoot(): MLNode<T, O> {
+		if (this.#treeRoot) {
+			return this.#treeRoot;
+		}
+		this.#treeRoot = this.#findTreeRoot();
+		return this.#treeRoot;
+	}
+
+	#findTreeRoot(): MLNode<T, O> {
+		if (this.is(this.DOCUMENT_NODE) || this.is(this.DOCUMENT_FRAGMENT_NODE)) {
+			return this;
+		}
+		if (this.is(this.ELEMENT_NODE) && this.isInNoTree) {
+			return this;
+		}
+		let ancestor = this.syntacticalParentNode;
+		while (ancestor && !ancestor.is(ancestor.DOCUMENT_NODE)) {
+			if (ancestor.is(ancestor.ELEMENT_NODE) && ancestor.isHTMLTemplateElement) {
+				return ancestor.content ?? this.#ownerDocument;
+			}
+			ancestor = ancestor.syntacticalParentNode;
+		}
 		return this.#ownerDocument;
 	}
 
@@ -972,6 +1059,9 @@ export abstract class MLNode<
 	}
 
 	/**
+	 * Whether the document of this node is a fragment of a document (a partial, a component) and
+	 * not a whole one. The parser of the document decides it (`MLDocument#isFragment`).
+	 *
 	 * @implements `@markuplint/ml-core` API: `MLNode`
 	 */
 	isInFragmentDocument(): boolean {

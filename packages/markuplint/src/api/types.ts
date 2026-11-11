@@ -7,6 +7,11 @@ import type { AnyMLRule, FixSummary, MLSchema, Ruleset } from '@markuplint/ml-co
  * Options for the markuplint API, controlling configuration, locale, rules, and behavior.
  */
 export type APIOptions = {
+	/**
+	 * The configuration file to use; the search for one is skipped. Resolved as a value of
+	 * `extends` is: a module name is loaded as such, and a relative path is based on the working
+	 * directory, as a relative path in `config` and `defaultConfig` is.
+	 */
 	readonly configFile?: string;
 	readonly config?: Config;
 	readonly defaultConfig?: Config;

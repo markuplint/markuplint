@@ -1,6 +1,5 @@
 // https://html.spec.whatwg.org/multipage/embedded-content.html#the-img-element
 // https://www.w3.org/TR/html-aria/#el-img
-// https://w3c.github.io/html-aria/#el-img
 {
 	"contentModel": {
 		"contents": false
@@ -27,12 +26,22 @@
 			"type": "Srcset",
 			"requiredEither": ["src"]
 		},
-		// https://html.spec.whatwg.org/multipage/embedded-content.html#attr-img-sizes
-		// Spec: "The sizes attribute must only be specified if the srcset
-		// attribute is also specified."
+		// @see https://html.spec.whatwg.org/multipage/embedded-content.html#attr-img-sizes
+		// > If the srcset attribute is present and has any image candidate strings using a width
+		// > descriptor, the sizes attribute must also be present. If the srcset attribute is not
+		// > specified, and the loading attribute is in the Lazy state, the sizes attribute may be
+		// > specified with the value "auto" (ASCII case-insensitive).
+		// Without srcset, sizes is allowed only on a lazily loaded image, and only as the
+		// value "auto". The value is checked by the type, not by the condition: a condition
+		// that names an attribute with a dynamic value is not evaluated at all, so naming
+		// sizes in it would stop a dynamic sizes from being reported on an image that is not
+		// lazily loaded.
 		"sizes": {
-			"type": "SourceSizeList",
-			"condition": "[srcset]"
+			"type": [
+				{ "condition": "[srcset]", "type": "SourceSizeList" },
+				{ "condition": ":not([srcset])", "type": { "enum": ["auto"] } }
+			],
+			"condition": "[srcset], [loading='lazy' i]"
 		},
 		// https://html.spec.whatwg.org/multipage/image-maps.html#attr-hyperlink-usemap
 		"usemap": {

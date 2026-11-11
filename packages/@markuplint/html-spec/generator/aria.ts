@@ -12,7 +12,13 @@ import type {
 import type { WritableDeep } from 'type-fest';
 
 import { fetch } from './fetch.ts';
-import { arrayUnique, nameCompare } from './utils.ts';
+import {
+	arrayUnique,
+	inheritDeprecatedProperties,
+	isDeprecatedOwnedProperty,
+	isDeprecatedRole,
+	nameCompare,
+} from './utils.ts';
 
 /**
  * Version stability: WAI-ARIA 1.1 and 1.2 are finalized W3C Recommendations —
@@ -33,19 +39,19 @@ export async function getAria() {
 			roles: roles13,
 			props: await getProps('1.3', roles13),
 			graphicsRoles: await getRoles('1.3', true),
-			dpubRoles,
+			dpubRoles: inheritDeprecatedProperties(dpubRoles, roles13),
 		},
 		'1.2': {
 			roles: roles12,
 			props: await getProps('1.2', roles12),
 			graphicsRoles: await getRoles('1.2', true),
-			dpubRoles,
+			dpubRoles: inheritDeprecatedProperties(dpubRoles, roles12),
 		},
 		'1.1': {
 			roles: roles11,
 			props: await getProps('1.1', roles11),
 			graphicsRoles: await getRoles('1.1', true),
-			dpubRoles,
+			dpubRoles: inheritDeprecatedProperties(dpubRoles, roles11),
 		},
 	};
 }
@@ -73,6 +79,7 @@ async function getDpubRoles() {
 			.toArray()
 			.map(p => $(p).text().trim().replaceAll(/\s+/g, ' ').replaceAll(/\t+/g, ''))
 			.join('\n\n');
+		const deprecated = isDeprecatedRole(description) || undefined;
 		const generalization = $el
 			.find('table.def .role-parent a')
 			.toArray()
@@ -80,22 +87,9 @@ async function getDpubRoles() {
 		const ownedInheritedProps = $el
 			.find('table.def .role-inherited li')
 			.toArray()
-			.map(li => {
-				const $li = $(li);
-				const $a = $li.find('a');
-				const text = $li.text();
-				const propName =
-					$a.length > 0
-						? $a
-								.text()
-								.replace(/\s*\(\s*state\s*\)\s*/i, '')
-								.trim()
-						: text.trim();
-				return {
-					name: propName,
-					inherited: true as const,
-				};
-			});
+			// The per-role `deprecated` flag comes from the superclass in each WAI-ARIA
+			// version, not from the note on the entry (see `inheritDeprecatedProperties`).
+			.map(li => ({ name: getOwnedProperty($, li).name, inherited: true as const }));
 		const accessibleNameRequired = !!/true/i.test($el.find('table.def .role-namerequired').text());
 		const accessibleNameFromAuthor = !!/author/i.test($el.find('table.def .role-namefrom').text());
 		const accessibleNameFromContent = !!/content/i.test($el.find('table.def .role-namefrom').text());
@@ -109,8 +103,10 @@ async function getDpubRoles() {
 		roles.push({
 			name,
 			description,
+			deprecated,
 			generalization,
-			ownedProperties: ownedInheritedProps.toSorted(nameCompare),
+			// `doc-pagebreak` lists some inherited properties more than once.
+			ownedProperties: arrayUnique(ownedInheritedProps.toSorted(nameCompare)),
 			accessibleNameRequired,
 			accessibleNameFromAuthor,
 			accessibleNameFromContent,
@@ -120,6 +116,32 @@ async function getDpubRoles() {
 	});
 
 	return roles.toSorted(nameCompare);
+}
+
+/**
+ * Reads one entry of a role's property lists, with the per-role deprecation note
+ * (see `isDeprecatedOwnedProperty`). DPUB-ARIA uses the same markup, but its
+ * notes do not mean a per-role deprecation, so `getDpubRoles` keeps only the name.
+ */
+function getOwnedProperty(
+	$: cheerio.CheerioAPI,
+	// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
+	li: Element,
+): ARIARoleOwnedProperties {
+	const $li = $(li);
+	const text = $li.text().replaceAll(/\s+/g, ' ').trim();
+	const $a = $li.find('a');
+	const name =
+		$a.length > 0
+			? $a
+					.text()
+					.replace(/\s*\(\s*state\s*\)\s*/i, '')
+					.trim()
+			: text;
+	return {
+		name,
+		deprecated: isDeprecatedOwnedProperty(text) || undefined,
+	};
 }
 
 function getARIASpecURLByVersion(version: ARIAVersion, graphicsAria = false) {
@@ -152,23 +174,7 @@ async function getRoles(version: ARIAVersion, graphicsAria = false) {
 	const getAttr = (
 		// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
 		li: Element,
-	): ARIARoleOwnedProperties => {
-		const $li = $(li);
-		const text = $li.text();
-		const isDeprecated = /deprecated/i.test(text) || undefined;
-		const $a = $li.find('a');
-		const name =
-			$a.length > 0
-				? $a
-						.text()
-						.replace(/\s*\(\s*state\s*\)\s*/i, '')
-						.trim()
-				: text.trim();
-		return {
-			name,
-			deprecated: isDeprecated,
-		};
-	};
+	) => getOwnedProperty($, li);
 
 	$roleList.each((_, el) => {
 		const $el = $(el);
@@ -182,13 +188,7 @@ async function getRoles(version: ARIAVersion, graphicsAria = false) {
 			.toArray()
 			.map(p => $(p).text().trim().replaceAll(/\s+/g, ' ').replaceAll(/\t+/g, ''))
 			.join('\n\n');
-		const deprecated =
-			description.toLowerCase().search(
-				// eslint-disable-next-line regexp/strict
-				/\[deprecated in aria 1\.\d]/i,
-			) === -1
-				? undefined
-				: true;
+		const deprecated = isDeprecatedRole(description) || undefined;
 		const $features = $el.find('.role-features tr, table.def');
 		const generalization = $features
 			.find('.role-parent a')

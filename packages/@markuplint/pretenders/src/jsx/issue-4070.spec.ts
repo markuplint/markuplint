@@ -54,10 +54,10 @@ describe('an attribute that forwards a prop of the component', () => {
 		});
 	});
 
-	test('a prop with a default value is dynamic, as the usage site may omit it', () => {
+	test('a prop with a default value is an expression, as the usage site may omit it', () => {
 		expect(asOf('WithDefault')).toStrictEqual({
 			element: 'button',
-			attrs: [{ name: 'type', value: { dynamic: true } }],
+			attrs: [{ name: 'type', value: { expression: 'type' } }],
 			slots: true,
 		});
 	});
@@ -74,23 +74,23 @@ describe('an attribute that forwards a prop of the component', () => {
 	test('a name that the component declares again inside is not trusted to be the prop', () => {
 		expect(asOf('Shadowed')).toStrictEqual({
 			element: 'button',
-			attrs: [{ name: 'aria-label', value: { dynamic: true } }],
+			attrs: [{ name: 'aria-label', value: { expression: 'label' } }],
 			slots: true,
 		});
 	});
 
-	test('an expression that does more than name the prop is dynamic', () => {
+	test('an expression that does more than name the prop is an expression', () => {
 		expect(asOf('Expression')).toStrictEqual({
 			element: 'button',
-			attrs: [{ name: 'aria-label', value: { dynamic: true } }],
+			attrs: [{ name: 'aria-label', value: { expression: "label ?? 'Save'" } }],
 			slots: true,
 		});
 	});
 
-	test('a name that is not a prop is dynamic', () => {
+	test('a name that is not a prop is an expression', () => {
 		expect(asOf('Other')).toStrictEqual({
 			element: 'button',
-			attrs: [{ name: 'aria-label', value: { dynamic: true } }],
+			attrs: [{ name: 'aria-label', value: { expression: 'outside' } }],
 			slots: true,
 		});
 	});
@@ -98,7 +98,7 @@ describe('an attribute that forwards a prop of the component', () => {
 	test('the first parameter of the function wrapped by forwardRef is the props, not the ref', () => {
 		expect(asOf('ForwardRef')).toStrictEqual({
 			element: 'button',
-			attrs: [{ name: 'ref', value: { dynamic: true } }, forward('aria-label', 'label')],
+			attrs: [{ name: 'ref', value: { expression: 'ref' } }, forward('aria-label', 'label')],
 			slots: true,
 		});
 	});
@@ -145,7 +145,7 @@ describe('an attribute that forwards a prop of the component', () => {
 	test('the name of the props object that the component declares again inside is not trusted', () => {
 		expect(asOf('ShadowedProps')).toStrictEqual({
 			element: 'button',
-			attrs: [{ name: 'aria-label', value: { dynamic: true } }],
+			attrs: [{ name: 'aria-label', value: { expression: 'props.label' } }],
 			slots: true,
 		});
 	});
@@ -153,7 +153,7 @@ describe('an attribute that forwards a prop of the component', () => {
 	test('a property read by an index is not a prop that is named', () => {
 		expect(asOf('ElementAccess')).toStrictEqual({
 			element: 'button',
-			attrs: [{ name: 'aria-label', value: { dynamic: true } }],
+			attrs: [{ name: 'aria-label', value: { expression: "props['label']" } }],
 			slots: true,
 		});
 	});
@@ -161,7 +161,7 @@ describe('an attribute that forwards a prop of the component', () => {
 	test('the children under another name are still not an attribute', () => {
 		expect(asOf('ChildrenAlias')).toStrictEqual({
 			element: 'button',
-			attrs: [{ name: 'data-content', value: { dynamic: true } }],
+			attrs: [{ name: 'data-content', value: { expression: 'kids' } }],
 			slots: null,
 			contents: [{ dynamic: true }],
 		});
@@ -170,7 +170,7 @@ describe('an attribute that forwards a prop of the component', () => {
 	test('a property of the rest of the props is not a prop that is named', () => {
 		expect(asOf('RestMember')).toStrictEqual({
 			element: 'button',
-			attrs: [{ name: 'aria-label', value: { dynamic: true } }],
+			attrs: [{ name: 'aria-label', value: { expression: 'rest.label' } }],
 			slots: true,
 		});
 	});
@@ -178,7 +178,7 @@ describe('an attribute that forwards a prop of the component', () => {
 	test('the children are not an attribute of the usage site', () => {
 		expect(asOf('ChildrenAsAttribute')).toStrictEqual({
 			element: 'button',
-			attrs: [{ name: 'data-content', value: { dynamic: true } }],
+			attrs: [{ name: 'data-content', value: { expression: 'children' } }],
 			slots: null,
 		});
 	});

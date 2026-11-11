@@ -1,6 +1,5 @@
 // https://html.spec.whatwg.org/multipage/sections.html#the-footer-element
 // https://www.w3.org/TR/html-aria/#el-footer
-// https://w3c.github.io/html-aria/#el-footer
 {
 	"contentModel": {
 		"contents": [
@@ -8,8 +7,10 @@
 				"oneOrMore": ":model(flow):not(header, footer, :has(header, footer))"
 			}
 		],
-		// https://html.spec.whatwg.org/multipage/sections.html#the-footer-element
-		// "A footer element must not appear as a descendant of a header or footer element."
+		// @see https://html.spec.whatwg.org/multipage/sections.html#the-footer-element
+		// > Flow content, but with no header or footer element descendants.
+		// The header element has the same content model, so a footer inside a header is
+		// non-conforming as well.
 		"forbiddenAncestors": ["header", "footer"]
 	},
 	"globalAttrs": {

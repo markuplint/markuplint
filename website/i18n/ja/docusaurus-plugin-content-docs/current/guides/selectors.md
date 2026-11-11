@@ -53,7 +53,8 @@
 | user-invalid擬似クラス             | `:user-invalid`                                                                           | ❌       |
 | root擬似クラス                     | `:root`                                                                                   | ✅       |
 | empty擬似クラス                    | `:empty`                                                                                  | ❌       |
-| Nth-child擬似クラス                | `:nth-child(2)` `:nth-last-child(2)` `:first-child` `:last-child` `:only-child`           | ❌       |
+| Nth-child擬似クラス                | `:first-child`                                                                            | ✅       |
+| Nth-child擬似クラス                | `:nth-child(2)` `:nth-last-child(2)` `:last-child` `:only-child`                          | ❌       |
 | Nth-child擬似クラス (`of El`構文)  | `:nth-child(2 of div)` `:nth-last-child(2 of div)`                                        | ❌       |
 | Nth-of-type擬似クラス              | `:nth-of-type(2)` `:nth-last-of-type(2)` `:first-of-type` `:last-of-type` `:only-of-type` | ❌       |
 | Nth-col擬似クラス                  | `:nth-col(2)` `:nth-last-col(2)`                                                          | ❌       |
@@ -63,11 +64,14 @@
 | 後方隣接兄弟結合子                 | `div + span`                                                                              | ✅       |
 | 後方兄弟結合子                     | `div ~ span`                                                                              | ✅       |
 | 列結合子                           | <code>div \|\| span</code>                                                                | ❌       |
+| ネストセレクタ                     | `&` `& div`                                                                               | ❌       |
 | セレクタリスト                     | `div, span`                                                                               | ✅       |
 
 <!-- textlint-enable ja-technical-writing/max-kanji-continuous-len -->
 
 </details>
+
+❌の構文を使ったセレクタや、拡張擬似クラスに受け付けない引数（例: `:aria(foo)`、`:model(foo)`）を与えたセレクタは、構文を解釈できないセレクタと同じく、設定のエラーとして報告されます。`nodeRules`、`childNodeRules`、`pretenders`、`overrides`のどこに書いたセレクタでも同じで、マッチする要素が文書にあるかどうかは関係ありません。
 
 :::tip
 
@@ -102,6 +106,10 @@ Vueのテンプレートには独自の規則があります。Vueはタグを�
 ### 属性名の大文字小文字
 
 属性セレクタは、ブラウザのDOMと同じ名前で比較します。ソースの綴りではなく、ページが持つ属性に対してセレクタが働くということです。HTML要素とカスタム要素では大文字小文字を区別しません。`[role]`は`<div ROLE>`に、`[DATA-VALUE]`は`<div data-value>`に一致します。SVG・MathML要素では、DOMが属性に与える名前を、CSSと同じく完全一致で比較します。ブラウザのHTMLパーサーが名前を読む場合（HTML・Pug・Astro・Svelteの静的な属性）、DOMは仕様の綴りを持つので、`[viewBox]`は`<svg VIEWBOX>`に一致し、`[viewbox]`は一致しません。コードがDOM APIで名前を設定する場合（JSX・MDX・Vue・Svelteの動的な属性）、SVG・MathML要素は書かれたとおりの名前のままなので、`[ROLE]`は`<svg ROLE>`に一致し、`[role]`は一致しません。コンポーネントのpropsは書かれたとおりに比較します。Vueでは`[my-label]`と`[myLabel]`は同じpropです。属性名に対する[正規表現セレクタ](#正規表現セレクタ)は、DOMが属性に与える名前（Vueのpropは、どちらの綴りでも）に照合し、属性セレクタが大文字小文字を区別しない場合は区別しません。
+
+### ツリー
+
+`<template>`要素の内容と宣言的シャドウルート（親要素に付与される`<template shadowrootmode>`）は、DOMと同じく独立したツリーです。セレクタは要素のツリーの中で照合します。`section p`は、`<section>`の中にある`<template>`の内容の`<p>`には一致せず、`:has()`と`:closest()`も境界をまたぎません。ReactとVueでは、ディレクティブのない`<template>`の子要素はドキュメントのツリーにあるため、他の子要素と同じように照合します。
 
 ## 詳細度
 
@@ -169,6 +177,7 @@ Markuplint独自の擬似クラスに似た拡張セレクタをつかうこと�
 - [`:aria`](./selectors#ex-selector-aria)
 - [`:role`](./selectors#ex-selector-role)
 - [`:model`](./selectors#ex-selector-model)
+- [`:display-size`](./selectors#ex-selector-display-size)
 
 | 構文                  | 機能                                                                                                                                        |
 | --------------------- | ------------------------------------------------------------------------------------------------------------------------------------------- |
@@ -176,6 +185,7 @@ Markuplint独自の擬似クラスに似た拡張セレクタをつかうこと�
 | `:aria(has name)`     | [ARIA擬似クラス](https://github.com/markuplint/markuplint/tree/main/packages/%40markuplint/selector#aria-pseudo-class)                      |
 | `:role(heading)`      | [ARIAロール擬似クラス](https://github.com/markuplint/markuplint/tree/main/packages/%40markuplint/selector#aria-pseudo-class)                |
 | `:model(interactive)` | [コンテンツモデル擬似クラス](https://github.com/markuplint/markuplint/tree/main/packages/%40markuplint/selector#content-model-pseudo-class) |
+| `:display-size(> 1)`  | [表示サイズ擬似クラス](https://github.com/markuplint/markuplint/tree/main/packages/%40markuplint/selector#display-size-pseudo-class)        |
 
 :::info
 
@@ -242,6 +252,22 @@ WAI-ARIAのバージョンは`:role(form|1.1)`のようにパイプで区切っ�
 たとえば、`:model(interactive)`は`<a>`（`href`属性あり）や`<button>`などにマッチします。
 
 `flow`、`phrasing`、`palpable`のように、HTML Standardがカスタム要素を含むと定めているカテゴリは、カスタム要素（`<x-foo>`）やコンポーネント（`<Foo />`）にもマッチします。コンポーネントが別の要素になりすましている場合は、なりすまし先の名前で判定し、その名前にハイフンが含まれるときだけマッチします。
+
+HTML Standardが「親の最初の子」の場合に限って認めている要素は、その位置にあるときだけマッチします。`:model(flow)`は`<style>`にマッチしますが、それは親の最初の子のときだけです。このときの「最初の子」はHTML Standardの数え方に従い、前にある空白以外のテキストも数えます（コメントと要素間の空白は数えません）。そのため`<div>text<style>`の`<style>`はマッチしません。前にあるテンプレートの式（`{{ msg }}`）は、何を出力するかが実行時にしか分からないため数えません。条件ブロックの中のテキストや要素は、ブロックの中身があるものとして数えます。セレクタに直接書いた`:first-child`は、Selectorsの定義どおり要素だけを数えます。
+
+### `:display-size` {#ex-selector-display-size}
+
+**表示サイズ擬似クラス**
+
+```
+:display-size(演算子 数値)
+```
+
+演算子は`=`、`>`、`>=`、`<`、`<=`のいずれか、数値は0以上の整数です。たとえば、`select:is([multiple], :display-size(> 1))`は、`multiple`属性をもつ、または表示サイズが1より大きい`<select>`にマッチします。
+
+HTML名前空間の`<select>`要素にだけマッチし、その[表示サイズ（display size）](https://momdo.github.io/html/form-elements.html#concept-select-size)を比較します。表示サイズは、`size`属性を「非負整数の解析規則」で解析した数です。属性がない、または解析できないときは、`multiple`属性があれば4、なければ1になります。先頭の空白、`+`符号、先頭のゼロ、末尾の余分な文字は許されるため、`size="01"`は1、`size="2abc"`は2、`size="0"`は0です。属性セレクタではこれらを区別できません。たとえば`[size]:not([size="1"])`は、`size="01"`を1以外とみなします。
+
+`size`は書かれたとおりの文字列として読むため、テンプレートの式（`:size="n"`）は数ではなく、解析できない属性としての表示サイズになります。
 
 ## 正規表現セレクタ
 

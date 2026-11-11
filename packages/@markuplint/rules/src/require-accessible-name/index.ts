@@ -17,7 +17,7 @@ export default createRule({
 			const ariaVersion =
 				el.rule.options?.ariaVersion ?? document.ruleCommonSettings?.ariaVersion ?? ARIA_RECOMMENDED_VERSION;
 
-			if (accnameMayBeMutable(el, document)) {
+			if (accnameMayBeMutable(el)) {
 				return;
 			}
 
@@ -40,7 +40,7 @@ export default createRule({
 			}
 
 			// The static scan cannot decide whether the unknown content is the name.
-			if (accnameMayComeFromUnknownContent(el, document)) {
+			if (accnameMayComeFromUnknownContent(el)) {
 				return;
 			}
 

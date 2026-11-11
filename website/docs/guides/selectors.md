@@ -51,7 +51,8 @@ Markuplint supports parts of [**W3C Selectors Level 4**](https://www.w3.org/TR/s
 | User-interaction pseudo-class                    | `:user-invalid`                                                                           | ❌      |
 | Root pseudo-class                                | `:root`                                                                                   | ✅      |
 | Empty pseudo-class                               | `:empty`                                                                                  | ❌      |
-| Nth-child pseudo-class                           | `:nth-child(2)` `:nth-last-child(2)` `:first-child` `:last-child` `:only-child`           | ❌      |
+| Nth-child pseudo-class                           | `:first-child`                                                                            | ✅      |
+| Nth-child pseudo-class                           | `:nth-child(2)` `:nth-last-child(2)` `:last-child` `:only-child`                          | ❌      |
 | Nth-child pseudo-class (`of El` Syntax)          | `:nth-child(2 of div)` `:nth-last-child(2 of div)`                                        | ❌      |
 | Nth-of-type pseudo-class                         | `:nth-of-type(2)` `:nth-last-of-type(2)` `:first-of-type` `:last-of-type` `:only-of-type` | ❌      |
 | Nth-col pseudo-class                             | `:nth-col(2)` `:nth-last-col(2)`                                                          | ❌      |
@@ -61,9 +62,12 @@ Markuplint supports parts of [**W3C Selectors Level 4**](https://www.w3.org/TR/s
 | Next-sibling combinator                          | `div + span`                                                                              | ✅      |
 | Subsequent-sibling combinator                    | `div ~ span`                                                                              | ✅      |
 | Column combinator                                | <code>div \|\| span</code>                                                                | ❌      |
+| Nesting selector                                 | `&` `& div`                                                                               | ❌      |
 | Multiple selectors                               | `div, span`                                                                               | ✅      |
 
 </details>
+
+A selector that uses a syntax marked ❌, or gives an extended pseudo-class an argument it does not accept (for example `:aria(foo)` or `:model(foo)`), is reported as an error of the configuration, the same as a selector that cannot be parsed. This applies to every selector the configuration holds, whether in `nodeRules`, `childNodeRules`, `pretenders` or `overrides`, and whether or not the document has an element it would be matched against.
 
 :::tip
 
@@ -94,6 +98,10 @@ A Vue template has its own rule, as Vue resolves a tag to a component by any spe
 ### Case of attribute names
 
 An attribute selector compares the name as the browser's DOM does, so a selector follows what the page has and not how the source spells it. On an HTML element and on a custom element the case is ignored: `[role]` matches `<div ROLE>` and `[DATA-VALUE]` matches `<div data-value>`. On an SVG or MathML element the name the DOM gives the attribute is compared exactly, as CSS does. Where the HTML parser reads the name (HTML, Pug, Astro, and the static attributes of Svelte), the DOM has the spelling of the specification: `[viewBox]` matches `<svg VIEWBOX>`, and `[viewbox]` does not. Where code sets the name through the DOM API (JSX, MDX, Vue, and the dynamic attributes of Svelte), an SVG or MathML element keeps the name as written: `[ROLE]` matches `<svg ROLE>`, and `[role]` does not. The props of a component are compared as written; in Vue, `[my-label]` and `[myLabel]` are one prop. A [regular expression selector](#regular-expression-selector) for the name of an attribute is matched with the name the DOM gives it (a Vue prop, with either spelling), and ignores case where an attribute selector does.
+
+### Trees
+
+The content of a `<template>` element and a declarative shadow root (a `<template shadowrootmode>` that is attached to its parent element) are trees of their own, as they are in the DOM. A selector is matched within the tree of the element: `section p` does not match a `<p>` in the content of a `<template>` that is in a `<section>`, and `:has()` and `:closest()` do not cross the boundary either. In React and Vue, the children of a `<template>` without a directive are in the tree of the document, so they are matched as any other children are.
 
 ## Specificity
 
@@ -158,6 +166,7 @@ Markuplint provides extended pseudo-class-like selectors for HTML-specific match
 - [`:aria`](./selectors#ex-selector-aria)
 - [`:role`](./selectors#ex-selector-role)
 - [`:model`](./selectors#ex-selector-model)
+- [`:display-size`](./selectors#ex-selector-display-size)
 
 | Syntax                | Description                                                                                                                                 |
 | --------------------- | ------------------------------------------------------------------------------------------------------------------------------------------- |
@@ -165,6 +174,7 @@ Markuplint provides extended pseudo-class-like selectors for HTML-specific match
 | `:aria(has name)`     | [ARIA pseudo-class](https://github.com/markuplint/markuplint/tree/main/packages/%40markuplint/selector#aria-pseudo-class)                   |
 | `:role(heading)`      | [ARIA Role pseudo-class](https://github.com/markuplint/markuplint/tree/main/packages/%40markuplint/selector#aria-pseudo-class)              |
 | `:model(interactive)` | [Content Model pseudo-class](https://github.com/markuplint/markuplint/tree/main/packages/%40markuplint/selector#content-model-pseudo-class) |
+| `:display-size(> 1)`  | [Display Size pseudo-class](https://github.com/markuplint/markuplint/tree/main/packages/%40markuplint/selector#display-size-pseudo-class)   |
 
 :::info
 
@@ -231,6 +241,22 @@ You can specify **version of WAI-ARIA** by separating the pipe like `:role(form|
 For example, `:model(interactive)` matches `<a>`(with `href` attr), `<button>`, and more.
 
 A category that lists custom elements in the HTML Standard, such as `flow`, `phrasing` and `palpable`, also matches custom elements (`<x-foo>`) and components (`<Foo />`). An element that a component pretends to be is judged by the name it pretends to be: it matches only when that name contains a hyphen.
+
+An element that the HTML Standard allows only as the first child of its parent matches only there: `:model(flow)` matches `<style>` only as the first child. The first child is counted as the HTML Standard counts it, so non-whitespace text before the element counts (comments and inter-element whitespace do not): the `<style>` in `<div>text<style>` does not match. A template expression before the element (`{{ msg }}`) does not count, as what it outputs is known only at run time; text and elements inside a conditional block count, as the content of the block is taken as present. `:first-child` written in a selector keeps the Selectors definition, which counts elements only.
+
+### `:display-size` {#ex-selector-display-size}
+
+**Display Size pseudo-class**
+
+```
+:display-size(operator number)
+```
+
+The operator is one of `=`, `>`, `>=`, `<` and `<=`, and the number is a non-negative integer. For example, `select:is([multiple], :display-size(> 1))` matches a `<select>` that has the `multiple` attribute or whose display size is greater than 1.
+
+It matches only a `<select>` element of the HTML namespace, and compares its [display size](https://html.spec.whatwg.org/multipage/form-elements.html#concept-select-size). The display size is the number that the `size` attribute is parsed as by the rules for parsing non-negative integers, or, when the attribute is absent or cannot be parsed, 4 if the element has the `multiple` attribute and 1 if it has not. Leading whitespace, a `+` sign, leading zeros and trailing characters are allowed, so `size="01"` is 1, `size="2abc"` is 2, and `size="0"` is 0. An attribute selector cannot tell these apart, as `[size]:not([size="1"])` takes `size="01"` for something other than 1.
+
+The `size` is read as the text it is written in, so a template expression (`:size="n"`) is not a number: its display size is the one for an attribute that cannot be parsed.
 
 ## Regular expression selector
 

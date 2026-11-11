@@ -70,6 +70,47 @@ test('[tab-requires-tabpanel-invalid-002] aria-controls points to a non-tabpanel
 	]);
 });
 
+test('[tab-requires-tabpanel-issue-4489-001] a tabpanel in the same template as the tab', async () => {
+	const { violations } = await mlRuleTest(
+		rule,
+		'<template><div role="tablist"><button role="tab" aria-selected="true" aria-controls="panel">Tab</button></div><div id="panel" role="tabpanel">Content</div></template>',
+	);
+	expect(violations).toStrictEqual([]);
+});
+
+test('[tab-requires-tabpanel-issue-4489-002] a tabpanel in another tree does not correspond to the tab', async () => {
+	const { violations } = await mlRuleTest(
+		rule,
+		'<div role="tablist"><button role="tab" aria-selected="true" aria-controls="panel">Tab</button></div><template><div id="panel" role="tabpanel">Content</div></template>',
+	);
+	expect(violations).toStrictEqual([
+		{
+			severity: 'error',
+			line: 1,
+			col: 21,
+			raw: '<button role="tab" aria-selected="true" aria-controls="panel">',
+			message: 'An active "tab" role requires a corresponding "tabpanel" role',
+		},
+	]);
+});
+
+test('[tab-requires-tabpanel-issue-4489-003] the id of the tab is compared after the character references are resolved', async () => {
+	const { violations } = await mlRuleTest(
+		rule,
+		'<div role="tablist"><button id="&#116;ab1" role="tab" aria-selected="true">Tab</button></div><div role="tabpanel" aria-labelledby="tab1">Content</div>',
+	);
+	expect(violations).toStrictEqual([]);
+});
+
+test('[tab-requires-tabpanel-issue-4489-004] aria-controls written as a string in code resolves as it is', async () => {
+	const { violations } = await mlRuleTest(
+		rule,
+		'<><div role="tablist"><button role="tab" aria-selected="true" aria-controls={"p&amp;1"}>Tab</button></div><div id="p&amp;amp;1" role="tabpanel">Content</div></>',
+		{ parser: { '.*': '@markuplint/jsx-parser' } },
+	);
+	expect(violations).toStrictEqual([]);
+});
+
 test('[tab-requires-tabpanel-invalid-003] tabpanel aria-labelledby references a different tab', async () => {
 	const { violations } = await mlRuleTest(
 		rule,

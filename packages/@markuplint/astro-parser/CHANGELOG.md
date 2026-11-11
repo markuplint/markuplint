@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [5.5.0](https://github.com/markuplint/markuplint/compare/v5.4.0...v5.5.0) (2026-11-10)
+
+### Bug Fixes
+
+* **astro-parser:** render popover on a custom element as a boolean attribute ([7c0ba29](https://github.com/markuplint/markuplint/commit/7c0ba29da70a7e90fff84164867317d28e9ff3ea))
+
+### Features
+
+* **astro-parser:** declare how Astro renders a literal written as code ([8989d17](https://github.com/markuplint/markuplint/commit/8989d179527a8d94e29ff4ed8bece36aafaa6315))
+
+
 # [5.4.0](https://github.com/markuplint/markuplint/compare/v5.3.0...v5.4.0) (2026-10-29)
 
 **Note:** Version bump only for package @markuplint/astro-parser

@@ -50,6 +50,8 @@ export function createTestDocument<T extends RuleConfigValue = any, O extends Pl
 			// The settings of the language are what the parser says, as `MLCore` hands them to the document
 			endTag: usedParser.endTag,
 			booleanish: usedParser.booleanish,
+			attrExpressionLanguage: usedParser.attrExpressionLanguage,
+			literalValues: usedParser.literalValues,
 			tagNameCaseSensitive: usedParser.tagNameCaseSensitive,
 			componentNameVariants: usedParser.componentNameVariants,
 			isComponentName: usedParser.isComponentName?.bind(usedParser),

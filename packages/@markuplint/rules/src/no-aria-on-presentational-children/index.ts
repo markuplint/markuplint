@@ -16,6 +16,10 @@ export default createRule<boolean, Options>({
 			if (!elSpec) return;
 			if (!elSpec.globalAttrs['#ARIAAttrs']) return;
 			for (const attr of el.attributes) {
+				// An attribute that the framework does not output is not an attribute of the element
+				if (attr.isAbsent) {
+					continue;
+				}
 				report(checkingPresentationalChildren({ attr, el }));
 			}
 		});

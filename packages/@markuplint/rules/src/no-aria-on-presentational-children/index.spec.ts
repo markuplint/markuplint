@@ -1,5 +1,5 @@
 import { mlRuleTest } from 'markuplint';
-import { test, expect } from 'vitest';
+import { describe, test, expect } from 'vitest';
 
 import rule from './index.js';
 
@@ -409,6 +409,30 @@ test('[no-aria-on-presentational-children-issue-4408-018] aria-labelledby that r
 	]);
 });
 
+test('[no-aria-on-presentational-children-issue-4489-001] aria-labelledby that refers to an element of the same template is not reported', async () => {
+	const { violations } = await mlRuleTest(
+		rule,
+		'<template><div role="button"><span aria-labelledby="file">y</span></div><span id="file">report.pdf</span></template>',
+	);
+	expect(violations).toStrictEqual([]);
+});
+
+test('[no-aria-on-presentational-children-issue-4489-002] aria-labelledby that refers to an element of another tree is reported', async () => {
+	const { violations } = await mlRuleTest(
+		rule,
+		'<template><div role="button"><span aria-labelledby="file">y</span></div></template><span id="file">report.pdf</span>',
+	);
+	expect(violations).toStrictEqual([
+		{
+			severity: 'warning',
+			line: 1,
+			col: 36,
+			message: ineffective('button'),
+			raw: 'aria-labelledby="file"',
+		},
+	]);
+});
+
 test('[no-aria-on-presentational-children-issue-4408-019] aria-hidden="true" on an element hidden by the hidden attribute is reported', async () => {
 	const { violations } = await mlRuleTest(
 		rule,
@@ -599,4 +623,70 @@ test('[no-aria-on-presentational-children-issue-4408-035] aria-hidden="true" tha
 			)
 		).violations,
 	).toStrictEqual([]);
+});
+
+describe('the ancestor is looked for in the tree of the element', () => {
+	test('[no-aria-on-presentational-children-issue-4506-001] a presentational ancestor outside of the content of a template is not an ancestor', async () => {
+		const { violations } = await mlRuleTest(
+			rule,
+			'<div role="button"><template><span aria-describedby="d"></span></template></div><p id="d">d</p>',
+		);
+		expect(violations).toStrictEqual([]);
+	});
+
+	test('[no-aria-on-presentational-children-issue-4506-002] a presentational ancestor in the content of a template is an ancestor', async () => {
+		const { violations } = await mlRuleTest(
+			rule,
+			'<template><div role="button"><span aria-describedby="d"></span></div><p id="d">d</p></template>',
+		);
+		expect(violations).toStrictEqual([
+			{
+				severity: 'warning',
+				line: 1,
+				col: 36,
+				message: ineffective('button'),
+				raw: 'aria-describedby="d"',
+			},
+		]);
+	});
+
+	test('[no-aria-on-presentational-children-issue-4506-003] the host of a declarative shadow root is an ancestor', async () => {
+		const { violations } = await mlRuleTest(
+			rule,
+			'<div role="button"><template shadowrootmode="open"><span aria-describedby="d"></span></template></div>',
+		);
+		expect(violations).toStrictEqual([
+			{
+				severity: 'warning',
+				line: 1,
+				col: 58,
+				message: ineffective('button'),
+				raw: 'aria-describedby="d"',
+			},
+		]);
+	});
+
+	test('[no-aria-on-presentational-children-issue-4506-004] a name reader outside of the content of a template does not read it', async () => {
+		const { violations } = await mlRuleTest(
+			rule,
+			'<a href="#"><template><div role="img"><span aria-label="x">y</span></div></template></a>',
+		);
+		expect(violations).toStrictEqual([
+			{
+				severity: 'warning',
+				line: 1,
+				col: 45,
+				message: ineffective('img'),
+				raw: 'aria-label="x"',
+			},
+		]);
+	});
+
+	test('[no-aria-on-presentational-children-issue-4506-005] a name reader in the content of a template reads it', async () => {
+		const { violations } = await mlRuleTest(
+			rule,
+			'<template><a href="#"><div role="img"><span aria-label="x">y</span></div></a></template>',
+		);
+		expect(violations).toStrictEqual([]);
+	});
 });

@@ -1,5 +1,7 @@
 import { createRule } from '@markuplint/ml-core';
 
+import { getElementByIdInTree } from '../helpers.js';
+
 import meta from './meta.js';
 
 /**
@@ -52,11 +54,10 @@ const LABELABLE_SELECTOR = [
  * `label-for-references-labelable`. This rule only inspects the label
  * subtree once the target's category has been classified.
  *
- * The `for` target lookup uses `document.querySelectorAll('[id]')` per
- * matching label, not a cached id map. Kept in sync with
- * `label-for-references-labelable` on purpose — the number of `<label>`
- * elements per document is typically small, so a shared id-index would
- * amortize poorly and split rule ownership across a helper module.
+ * The `for` target is resolved as `label-for-references-labelable` does it: in the tree of the
+ * label, so an id in the content of a `template` element is not the target of a label outside of
+ * it. The controls under the label are the ones of its own tree as well: what is in the content of
+ * a `template` element under the label is not a descendant of it.
  */
 export default createRule<boolean, null>({
 	meta: meta,
@@ -75,9 +76,7 @@ export default createRule<boolean, null>({
 			const forAttr = el.getAttributeNode('for');
 			const hasExternalLabeledControl = (() => {
 				if (!forAttr || forAttr.isDynamicValue) return false;
-				const target = [...document.querySelectorAll('[id]')].find(
-					candidate => candidate.getAttribute('id') === forAttr.value,
-				);
+				const target = getElementByIdInTree(el, forAttr.value, forAttr.isExpressionValue);
 				if (!target) return false;
 				// A descendant with a matching id is still the label's labeled control
 				// per the same-tree resolution rule; treat only truly external targets

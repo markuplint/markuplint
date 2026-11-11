@@ -1,11 +1,12 @@
 // https://html.spec.whatwg.org/multipage/tables.html#the-tfoot-element
 // https://www.w3.org/TR/html-aria/#el-tfoot
-// https://w3c.github.io/html-aria/#el-tfoot
 {
 	"contentModel": {
 		"contents": [
 			{
-				"zeroOrMore": "tr"
+				// > Zero or more tr and script-supporting elements.
+				// @see https://html.spec.whatwg.org/multipage/tables.html#the-tfoot-element
+				"zeroOrMore": ["tr", ":model(script-supporting)"]
 			}
 		]
 	},

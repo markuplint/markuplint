@@ -3,6 +3,319 @@ import { describe, test, expect } from 'vitest';
 
 import rule from './index.js';
 
+describe('the name is looked for in the tree of the element', () => {
+	test('[require-accessible-name-issue-4489-001] a label of another tree does not name the control', async () => {
+		const { violations } = await mlRuleTest(
+			rule,
+			'<label for="x">L</label><template><input id="x" type="text"></template>',
+		);
+		expect(violations).toStrictEqual([
+			{
+				severity: 'error',
+				line: 1,
+				col: 35,
+				message: 'Require accessible name',
+				raw: '<input id="x" type="text">',
+			},
+		]);
+	});
+
+	test('[require-accessible-name-issue-4489-002] a label of the same template names the control', async () => {
+		const { violations } = await mlRuleTest(
+			rule,
+			'<template><label for="x">L</label><input id="x" type="text"></template>',
+		);
+		expect(violations).toStrictEqual([]);
+	});
+
+	test('[require-accessible-name-issue-4489-003] a label names the control when the references are the same after the character references are resolved', async () => {
+		const { violations } = await mlRuleTest(rule, '<label for="&#120;">L</label><input id="x" type="text">');
+		expect(violations).toStrictEqual([]);
+	});
+
+	test('[require-accessible-name-issue-4506-001] a label that wraps a template does not name the control in its content', async () => {
+		const { violations } = await mlRuleTest(rule, '<label>L<template><input type="text"></template></label>');
+		expect(violations).toStrictEqual([
+			{
+				severity: 'error',
+				line: 1,
+				col: 19,
+				message: 'Require accessible name',
+				raw: '<input type="text">',
+			},
+		]);
+	});
+
+	test('[require-accessible-name-issue-4506-002] a label in the content of a template names the control in the content', async () => {
+		const { violations } = await mlRuleTest(rule, '<template><label>L<input type="text"></label></template>');
+		expect(violations).toStrictEqual([]);
+	});
+});
+
+describe('the element is hidden by the ancestors in the tree of the element', () => {
+	test('[require-accessible-name-issue-4506-003] aria-hidden outside of the content of a template does not hide it', async () => {
+		const { violations } = await mlRuleTest(
+			rule,
+			'<div aria-hidden="true"><template><button></button></template></div>',
+		);
+		expect(violations).toStrictEqual([
+			{
+				severity: 'error',
+				line: 1,
+				col: 35,
+				message: 'Require accessible name',
+				raw: '<button>',
+			},
+		]);
+	});
+
+	test('[require-accessible-name-issue-4506-004] aria-hidden of the host hides the content of a declarative shadow root', async () => {
+		const { violations } = await mlRuleTest(
+			rule,
+			'<div aria-hidden="true"><template shadowrootmode="open"><button></button></template></div>',
+		);
+		expect(violations).toStrictEqual([]);
+	});
+
+	test('[require-accessible-name-issue-4506-005] aria-hidden in the content of a template hides the element in it', async () => {
+		const { violations } = await mlRuleTest(
+			rule,
+			'<template><div aria-hidden="true"><button></button></div></template>',
+		);
+		expect(violations).toStrictEqual([]);
+	});
+
+	test('[require-accessible-name-issue-4506-006] hidden outside of the content of a template does not hide it', async () => {
+		const { violations } = await mlRuleTest(rule, '<div hidden><template><button></button></template></div>');
+		expect(violations).toStrictEqual([
+			{
+				severity: 'error',
+				line: 1,
+				col: 23,
+				message: 'Require accessible name',
+				raw: '<button>',
+			},
+		]);
+	});
+
+	test('[require-accessible-name-issue-4506-007] hidden of the host hides the content of a declarative shadow root', async () => {
+		const { violations } = await mlRuleTest(
+			rule,
+			'<div hidden><template shadowrootmode="open"><button></button></template></div>',
+		);
+		expect(violations).toStrictEqual([]);
+	});
+
+	test('[require-accessible-name-issue-4506-008] an ancestor with presentational children outside of the content of a template does not exclude it', async () => {
+		const { violations } = await mlRuleTest(rule, '<button>x<template><a href="#"></a></template></button>');
+		expect(violations).toStrictEqual([
+			{
+				severity: 'error',
+				line: 1,
+				col: 20,
+				message: 'Require accessible name',
+				raw: '<a href="#">',
+			},
+		]);
+	});
+
+	test('[require-accessible-name-issue-4506-009] an ancestor with presentational children excludes the content of a declarative shadow root', async () => {
+		const { violations } = await mlRuleTest(
+			rule,
+			'<div role="img" aria-label="x"><template shadowrootmode="open"><a href="#"></a></template></div>',
+		);
+		expect(violations).toStrictEqual([]);
+	});
+});
+
+describe('the content of a template is not the name of the element that holds it', () => {
+	test('[require-accessible-name-issue-4524-001] an ordinary template contributes nothing, and a declarative shadow root keeps the name of the control in it', async () => {
+		const { violations } = await mlRuleTest(
+			rule,
+			[
+				'<button><template>Save</template></button>',
+				'<button><template><span>Save</span></template></button>',
+				'<div><template shadowrootmode="open"><button>Save</button></template></div>',
+				'<button>Save</button>',
+				'<button></button>',
+			].join('\n'),
+		);
+		expect(violations).toStrictEqual([
+			{
+				severity: 'error',
+				line: 1,
+				col: 1,
+				message: 'Require accessible name',
+				raw: '<button>',
+			},
+			{
+				severity: 'error',
+				line: 2,
+				col: 1,
+				message: 'Require accessible name',
+				raw: '<button>',
+			},
+			{
+				severity: 'error',
+				line: 5,
+				col: 1,
+				message: 'Require accessible name',
+				raw: '<button>',
+			},
+		]);
+	});
+
+	test('[require-accessible-name-issue-4524-002] the content of a declarative shadow root names the host', async () => {
+		expect(
+			(await mlRuleTest(rule, '<div role="button"><template shadowrootmode="open">Save</template></div>'))
+				.violations,
+		).toStrictEqual([]);
+		expect(
+			(await mlRuleTest(rule, '<div role="button"><template shadowrootmode="closed">Save</template></div>'))
+				.violations,
+		).toStrictEqual([]);
+	});
+
+	test('[require-accessible-name-issue-4524-003] an ordinary template does not name the host', async () => {
+		const { violations } = await mlRuleTest(rule, '<div role="button"><template>Save</template></div>');
+		expect(violations).toStrictEqual([
+			{
+				severity: 'error',
+				line: 1,
+				col: 1,
+				message: 'Require accessible name',
+				raw: '<div role="button">',
+			},
+		]);
+	});
+
+	test('[require-accessible-name-issue-4524-004] unknown content inside an ordinary template is not the name', async () => {
+		const { violations } = await mlRuleTest(rule, '<button><template><Icon /></template></button>', {
+			parser: { '.*': '@markuplint/jsx-parser' },
+			pretenders: [
+				{
+					selector: 'Icon',
+					as: { element: 'span', contents: [{ dynamic: true }] },
+				},
+			],
+		});
+		expect(violations).toStrictEqual([
+			{
+				severity: 'error',
+				line: 1,
+				col: 1,
+				message: 'Require accessible name',
+				raw: '<button>',
+			},
+		]);
+	});
+
+	test('[require-accessible-name-issue-4524-005] unknown content of a declarative shadow root may be the name of the host', async () => {
+		const { violations } = await mlRuleTest(
+			rule,
+			'<div role="button"><template shadowrootmode="open"><Icon /></template></div>',
+			{
+				parser: { '.*': '@markuplint/jsx-parser' },
+				pretenders: [
+					{
+						selector: 'Icon',
+						as: { element: 'span', contents: [{ dynamic: true }] },
+					},
+				],
+			},
+		);
+		expect(violations).toStrictEqual([]);
+	});
+
+	test('[require-accessible-name-issue-4524-006] a component whose shadow root is not known to be attached is not reported', async () => {
+		const parser = { '.*': '@markuplint/jsx-parser' };
+		const bare = await mlRuleTest(rule, '<Foo role="button"></Foo>', { parser });
+		expect(bare.violations).toStrictEqual([
+			{
+				severity: 'error',
+				line: 1,
+				col: 1,
+				message: 'Require accessible name',
+				raw: '<Foo role="button">',
+			},
+		]);
+		const unknown = await mlRuleTest(rule, '<Foo role="button"><template shadowrootmode="open"></template></Foo>', {
+			parser,
+		});
+		expect(unknown.violations).toStrictEqual([]);
+	});
+
+	test('[require-accessible-name-issue-4524-007] a template that cannot attach a shadow root does not name the button', async () => {
+		const { violations } = await mlRuleTest(
+			rule,
+			'<button><template shadowrootmode="open">Save</template></button>',
+		);
+		expect(violations).toStrictEqual([
+			{
+				severity: 'error',
+				line: 1,
+				col: 1,
+				message: 'Require accessible name',
+				raw: '<button>',
+			},
+		]);
+	});
+
+	test('[require-accessible-name-issue-4524-008] an empty declarative shadow root hides the light DOM', async () => {
+		const { violations } = await mlRuleTest(
+			rule,
+			'<div role="button"><template shadowrootmode="open"></template>Save</div>',
+		);
+		expect(violations).toStrictEqual([
+			{
+				severity: 'error',
+				line: 1,
+				col: 1,
+				message: 'Require accessible name',
+				raw: '<div role="button">',
+			},
+		]);
+	});
+
+	test('[require-accessible-name-issue-4524-009] unknown content in the light DOM of a shadow host is not its name', async () => {
+		const { violations } = await mlRuleTest(
+			rule,
+			'<div role="button"><template shadowrootmode="open"></template><Icon /></div>',
+			{
+				parser: { '.*': '@markuplint/jsx-parser' },
+				pretenders: [
+					{
+						selector: 'Icon',
+						as: { element: 'span', contents: [{ dynamic: true }] },
+					},
+				],
+			},
+		);
+		expect(violations).toStrictEqual([
+			{
+				severity: 'error',
+				line: 1,
+				col: 1,
+				message: 'Require accessible name',
+				raw: '<div role="button">',
+			},
+		]);
+	});
+
+	test('[require-accessible-name-issue-4524-010] the content of a template does not name the control of its label', async () => {
+		const { violations } = await mlRuleTest(rule, '<label><template>Save</template><input type="text"></label>');
+		expect(violations).toStrictEqual([
+			{
+				severity: 'error',
+				line: 1,
+				col: 33,
+				message: 'Require accessible name',
+				raw: '<input type="text">',
+			},
+		]);
+	});
+});
+
 test('[require-accessible-name-valid-001] has accessible name', async () => {
 	const { violations } = await mlRuleTest(rule, '<button>Label</button>');
 	expect(violations.length).toBe(0);

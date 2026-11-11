@@ -3,6 +3,7 @@
 import type { AccnameComputeFn, AccnameElement, AccnameNode, AccnameResolver } from './types.js';
 
 import { ELEMENT_NODE, SVG_NAMESPACE, TEXT_NODE, TEXT_LIKE_INPUT_TYPES } from '../../../const/index.js';
+import { getTreeParentElement } from '../../dom/tree-boundary.js';
 import { resolveAriaLabelledby } from './aria-steps.js';
 
 export { EMBEDDED_CONTROL_ROLES } from '../../../const/index.js';
@@ -10,12 +11,22 @@ export { EMBEDDED_CONTROL_ROLES } from '../../../const/index.js';
 /**
  * Implements AccName 1.2 §4.3.2 Steps 2F and 2C:
  *
- * - **Step 2F**: "If the current node's role allows name from content [...],
- *   return the accumulated text of the current node's descendant nodes."
- * - **Step 2C (Embedded Controls)**: "If the current node is a descendant of
- *   an `aria-labelledby` or `aria-label` reference AND the current node is
- *   an embedded control, return the embedded control's value." Per spec,
- *   `aria-label` is ignored for embedded controls during this traversal.
+ * **Step 2F**, the name from content:
+ *
+ * > Otherwise, if the current node's role allows name from content, or if the current node is referenced by
+ * > aria-labelledby, aria-describedby, or is a native host language text alternative element (e.g. label in HTML),
+ * > or is a descendant of a native host language text alternative element:
+ *
+ * **Step 2C**, the embedded controls:
+ *
+ * > Otherwise, if the current node is a control embedded within the label (e.g. any element directly referenced by
+ * > aria-labelledby) for another widget, where the user can adjust the embedded control's value, then return the
+ * > embedded control as part of the text alternative in the following manner:
+ *
+ * `aria-label` is ignored for an embedded control during this traversal:
+ *
+ * > If traversal of the current node is due to Name From Content descendant node recursion and the current node is an
+ * > embedded control, ignore aria-label and skip to rule Embedded Control.
  *
  * **Limitation:** CSS-generated content (`::before`/`::after` with the `content`
  * property) is not included. AccName 1.2 §4.3.2 Step 2G specifies that CSS
@@ -23,8 +34,8 @@ export { EMBEDDED_CONTROL_ROLES } from '../../../const/index.js';
  * performs static HTML analysis without CSS processing, so this content is
  * unavailable at lint time.
  *
- * @see https://www.w3.org/TR/accname-1.2/#computation-steps — AccName 1.2 §4.3.2 Step 2F
- * @see https://www.w3.org/TR/accname-1.2/#comp_embedded_control — AccName 1.2 §4.3.2 Step 2C
+ * @see https://w3c.github.io/accname/#computation-steps — AccName 1.2 §4.3.2 Step 2F
+ * @see https://w3c.github.io/accname/#comp_embedded_control — AccName 1.2 §4.3.2 Step 2C
  */
 export function resolveNameFromContent(
 	el: AccnameElement,
@@ -150,7 +161,7 @@ export function embeddedControlText(
  *   value attr → textContent
  * - **Listbox** (select): selected option text (static analysis approximation)
  *
- * @see https://www.w3.org/TR/accname-1.2/#comp_embedded_control — AccName 1.2 §4.3.2 Step 2C
+ * @see https://w3c.github.io/accname/#comp_embedded_control — AccName 1.2 §4.3.2 Step 2C
  */
 function getEmbeddedControlValue(el: AccnameElement, resolver: AccnameResolver): string {
 	const role = el.getAttribute('role')?.trim().split(/\s+/)[0];
@@ -313,13 +324,24 @@ export function findChildByLocalName(
 	return null;
 }
 
+/**
+ * The closest `label` element among the ancestors of the element, which names the element when it is
+ * its labeled control. The ancestors are those of its own tree, as the HTML Standard defines the
+ * relation between a `label` and its labeled control by ancestors in the tree, so a `label` that
+ * wraps a `template` element does not label a control in its content.
+ *
+ * @see https://html.spec.whatwg.org/multipage/forms.html#labeled-control
+ *
+ * @param el - The element to start from
+ * @returns The closest `label` ancestor, or `null`
+ */
 export function findAncestorLabel(el: AccnameElement): AccnameElement | null {
-	let current = el.parentElement;
+	let current = getTreeParentElement(el);
 	while (current) {
 		if (current.localName === 'label') {
 			return current;
 		}
-		current = current.parentElement;
+		current = getTreeParentElement(current);
 	}
 	return null;
 }
@@ -356,7 +378,7 @@ export function isSvgElement(el: AccnameElement): boolean {
  * through Step 2E of its parent (`handleSvgElement`), which an element exposed
  * as presentational skips.
  *
- * @see https://w3c.github.io/svgwg/svg2-draft/struct.html#TermNeverRenderedElement
+ * @see https://svgwg.org/svg2-draft/render.html#TermNeverRenderedElement
  */
 export function isSvgDescriptiveElement(el: AccnameElement): boolean {
 	return isSvgElement(el) && (el.localName === 'title' || el.localName === 'desc');

@@ -1,5 +1,6 @@
 import type { ARIAVersion, MLMLSpec } from '../../types/index.js';
 
+import { getComposedParentElement } from '../dom/tree-boundary.js';
 import { isTransparentForOwnership } from './is-presentational.js';
 
 import { getComputedRole } from './get-computed-role.js';
@@ -9,12 +10,14 @@ import { getComputedRole } from './get-computed-role.js';
  * Context Role" in ARIA 1.2). Each condition string describes a chain of
  * ancestor roles separated by ` > ` (e.g., `"list > group"`).
  *
- * TODO: This function only walks the DOM `parentElement` chain and does not
+ * TODO: This function only walks the composed parent chain and does not
  * consider `aria-owns` relationships. An element referenced by `aria-owns` on
  * a remote ancestor should be treated as if it were an accessibility child of
  * that ancestor. Implementing this requires a document-wide reverse lookup of
  * `aria-owns` attributes, which is a separate architectural concern.
  * See also: `has-required-owned-elements.ts` has a similar limitation.
+ *
+ * The chain is the one the accessibility tree is built from ({@link getComposedParentElement}).
  */
 export function matchesContextRole(
 	conditions: readonly string[],
@@ -23,7 +26,7 @@ export function matchesContextRole(
 	specs: MLMLSpec,
 	version: ARIAVersion,
 ) {
-	return conditions.some(condition => matchesCondition(condition, ownedEl.parentElement, specs, version));
+	return conditions.some(condition => matchesCondition(condition, getComposedParentElement(ownedEl), specs, version));
 }
 
 function matchesCondition(
@@ -43,9 +46,9 @@ function matchesCondition(
 		const parentRole = getComputedRole(specs, parentEl, version, true).role;
 
 		/**
-		 * ARIA 1.3 ("Required Accessibility Parent Role"): "To determine
-		 * whether an element has a parent with the required role, user agents
-		 * MUST ignore any elements with the role `generic` or `none`."
+		 * ARIA 1.3 (Required Accessibility Parent Role): to determine whether an
+		 * element has a parent with the required role, the user agent ignores the
+		 * elements with the role `generic` or `none`.
 		 *
 		 * `presentation`/`none` are transparent in all ARIA versions to stay
 		 * consistent with `getNonPresentationalAncestor` (which already skips
@@ -63,7 +66,7 @@ function matchesCondition(
 		 * @see https://w3c.github.io/aria/#scope
 		 */
 		if (isTransparentForOwnership(parentRole?.name, version)) {
-			parentEl = parentEl.parentElement;
+			parentEl = getComposedParentElement(parentEl);
 			continue;
 		}
 
@@ -73,7 +76,7 @@ function matchesCondition(
 			return false;
 		}
 
-		parentEl = parentEl.parentElement;
+		parentEl = getComposedParentElement(parentEl);
 	}
 
 	return true;

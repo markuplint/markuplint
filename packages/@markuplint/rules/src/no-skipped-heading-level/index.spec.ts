@@ -46,6 +46,40 @@ test('[no-skipped-heading-level-valid-003] First heading at h6 (no preceding hea
 	expect(violations.length).toBe(0);
 });
 
+test('[no-skipped-heading-level-issue-4489-001] a heading in the content of a template is not in the sequence of the document', async () => {
+	const { violations } = await mlRuleTest(rule, '<h1>a</h1><template><h3>b</h3></template><h2>c</h2>');
+	expect(violations).toStrictEqual([]);
+});
+
+test('[no-skipped-heading-level-issue-4489-002] the headings in the content of a template are a sequence of their own', async () => {
+	const { violations } = await mlRuleTest(rule, '<h1>a</h1><template><h1>b</h1><h3>c</h3></template>');
+	expect(violations).toStrictEqual([
+		{
+			severity: 'error',
+			line: 1,
+			col: 31,
+			message: 'Heading levels must not be skipped',
+			raw: '<h3>',
+		},
+	]);
+});
+
+test('[no-skipped-heading-level-issue-4489-003] the headings of a declarative shadow root are a sequence of their own', async () => {
+	const { violations } = await mlRuleTest(
+		rule,
+		'<h1>a</h1><div><template shadowrootmode="open"><h2>b</h2><h4>c</h4></template></div>',
+	);
+	expect(violations).toStrictEqual([
+		{
+			severity: 'error',
+			line: 1,
+			col: 58,
+			message: 'Heading levels must not be skipped',
+			raw: '<h4>',
+		},
+	]);
+});
+
 test('[no-skipped-heading-level-invalid-001] Skipped', async () => {
 	const { violations } = await mlRuleTest(
 		rule,

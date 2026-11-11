@@ -54,11 +54,22 @@ export interface ContentModelsSchema {
 }
 export interface ContentModel {
   contents: PermittedContentPattern[] | boolean;
+  /**
+   * A CSS selector of the ancestor that this element must have. The ancestor is looked for in the tree of the element: the walk up the tree stops at the content of a `template` element.
+   */
   descendantOf?: string;
   /**
-   * Elements that this element must NOT appear as a descendant of. Each entry is a CSS selector matching forbidden ancestor elements.
+   * Whether `descendantOf` is required only of an element that has a parent node, as the HTML Standard says of the `area` element ("An area element with a parent node must have a map element ancestor"). The top of a partial or of a component has none in the file, so the element there is not reported.
+   */
+  descendantOfWithParentNode?: boolean;
+  /**
+   * Elements that this element must NOT appear as a descendant of. Each entry is a CSS selector matching forbidden ancestor elements. The walk up the tree stops at the content of a `template` element, which has no ancestors.
    */
   forbiddenAncestors?: string[];
+  /**
+   * Elements that this element's ancestors are limited to: every ancestor must match at least one entry. Each entry is a CSS selector, or `#custom` for a custom element (a component or an autonomous custom element). A selector can use `:aria(has no name)`, which is evaluated with the recommended ARIA version. The walk up the tree stops at the content of a `template` element, which has no ancestors.
+   */
+  permittedAncestors?: string[];
   /**
    * Attributes that must be unique among sibling elements of the same type. If this element has one of these attributes, no other sibling element of the same type may also have it. Example: `["default"]` for `<track>` — only one `<track>` per parent may have `default`.
    */

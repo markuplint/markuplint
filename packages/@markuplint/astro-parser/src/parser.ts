@@ -6,6 +6,7 @@ import { AttrState, Parser, ParserError, isPotentialCustomElementName } from '@m
 
 import { astroParse } from './astro-parser.js';
 import { detectBlockBehavior } from './detect-block-behavior.js';
+import { ASTRO_LITERAL_VALUES } from './literal-values.js';
 import { extractSpreadAttribute } from './spread-attr.js';
 import { toNodes } from './to-nodes.js';
 
@@ -29,6 +30,9 @@ class AstroParser extends Parser<Node> {
 			selfCloseType: 'html+xml',
 			// Distinguishes components (`<MyComp>`) from HTML elements (`<div>`).
 			tagNameCaseSensitive: true,
+			// A value in `{…}` is JavaScript
+			attrExpressionLanguage: 'javascript',
+			literalValues: ASTRO_LITERAL_VALUES,
 		});
 	}
 
@@ -219,6 +223,10 @@ class AstroParser extends Parser<Node> {
 		return super.visitElement({ ...startTagNode, parentNode: startTagNode.parentNode ?? null }, childNodes, {
 			// https://docs.astro.build/en/basics/astro-syntax/#fragments
 			namelessFragment: true,
+			// Astro renders no element for `<Fragment>`, and `<slot>` is replaced with what is passed to it
+			// @see https://docs.astro.build/en/basics/astro-syntax/#fragments
+			// @see https://docs.astro.build/en/basics/astro-components/#slots
+			overwriteProps: /^(?:Fragment|slot)$/.test(startTagNode.nodeName) ? { isFragment: true } : undefined,
 			createEndTagToken: () => {
 				if (startTagNode.tagCloseChar.startsWith('/')) {
 					return null;
@@ -359,7 +367,7 @@ class AstroParser extends Parser<Node> {
 	 * > Variable names must be capitalized. For example, use `Element`, not `element`.
 	 * > Otherwise, Astro will try to render your variable name as a literal HTML tag.
 	 *
-	 * @see https://docs.astro.build/en/basics/astro-syntax/#dynamic-html
+	 * @see https://docs.astro.build/en/reference/astro-syntax/#dynamic-tags
 	 * @param nodeName
 	 * @param defaultPattern
 	 */

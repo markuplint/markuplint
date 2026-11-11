@@ -3,6 +3,13 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [5.5.0](https://github.com/markuplint/markuplint/compare/v5.4.0...v5.5.0) (2026-11-10)
+
+### Features
+
+* **svelte-spec:** declare how Svelte renders a literal written as code ([0211b07](https://github.com/markuplint/markuplint/commit/0211b07f55e1bd80d4614f97274ab9632b5c1088))
+
+
 # [5.4.0](https://github.com/markuplint/markuplint/compare/v5.3.0...v5.4.0) (2026-10-29)
 
 **Note:** Version bump only for package @markuplint/svelte-spec

@@ -3,6 +3,77 @@ import { describe, expect, test } from 'vitest';
 
 import rule from './index.js';
 
+describe('Trees', () => {
+	test('[require-dialog-autofocus-issue-4489-001] a trigger and a dialog in the same template', async () => {
+		const { violations } = await mlRuleTest(
+			rule,
+			'<template><button command="show-modal" commandfor="d">Open</button><dialog id="d"><p>Content</p></dialog></template>',
+		);
+		expect(violations).toStrictEqual([
+			{
+				severity: 'warning',
+				line: 1,
+				col: 68,
+				message:
+					'The "dialog" element referenced by a "show-modal" command requires an element with the "autofocus" attribute',
+				raw: '<dialog id="d">',
+			},
+		]);
+	});
+
+	test('[require-dialog-autofocus-issue-4489-002] a dialog in another tree is not the target', async () => {
+		const { violations } = await mlRuleTest(
+			rule,
+			'<button command="show-modal" commandfor="d">Open</button><template><dialog id="d"><p>Content</p></dialog></template>',
+		);
+		expect(violations).toStrictEqual([]);
+	});
+
+	test('[require-dialog-autofocus-issue-4489-003] an autofocus in the content of a template in the dialog does not count', async () => {
+		const { violations } = await mlRuleTest(
+			rule,
+			'<button command="show-modal" commandfor="d">Open</button><dialog id="d"><template><button autofocus>x</button></template></dialog>',
+		);
+		expect(violations).toStrictEqual([
+			{
+				severity: 'warning',
+				line: 1,
+				col: 58,
+				message:
+					'The "dialog" element referenced by a "show-modal" command requires an element with the "autofocus" attribute',
+				raw: '<dialog id="d">',
+			},
+		]);
+	});
+});
+
+describe('Dialogs of one id', () => {
+	test('[require-dialog-autofocus-issue-4489-004] a dialog is reported for each tree that has its id', async () => {
+		const { violations } = await mlRuleTest(
+			rule,
+			'<button command="show-modal" commandfor="d">O</button><dialog id="d"></dialog><template><button command="show-modal" commandfor="d">O</button><dialog id="d"></dialog></template>',
+		);
+		expect(violations).toStrictEqual([
+			{
+				severity: 'warning',
+				line: 1,
+				col: 55,
+				message:
+					'The "dialog" element referenced by a "show-modal" command requires an element with the "autofocus" attribute',
+				raw: '<dialog id="d">',
+			},
+			{
+				severity: 'warning',
+				line: 1,
+				col: 143,
+				message:
+					'The "dialog" element referenced by a "show-modal" command requires an element with the "autofocus" attribute',
+				raw: '<dialog id="d">',
+			},
+		]);
+	});
+});
+
 describe('Violations', () => {
 	test('[require-dialog-autofocus-invalid-001] dialog without autofocus descendant', async () => {
 		expect(

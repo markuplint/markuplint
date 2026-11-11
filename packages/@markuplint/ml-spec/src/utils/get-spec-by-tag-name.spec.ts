@@ -15,13 +15,13 @@ const divSpec = {
 					oneOrMore: 'dt',
 				},
 				{
-					zeroOrMore: ':model(script-supporting)',
+					zeroOrMore: ['dt', ':model(script-supporting)'],
 				},
 				{
 					oneOrMore: 'dd',
 				},
 				{
-					zeroOrMore: ':model(script-supporting)',
+					zeroOrMore: ['dd', ':model(script-supporting)'],
 				},
 			],
 		},

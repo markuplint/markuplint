@@ -1,4 +1,5 @@
 import type { ElementSpec, ExtendedSpec, MLMLSpec, Attribute } from '../types/index.js';
+import type { LiteralValueDeclaration, LiteralValues, LiteralValueTable } from '@markuplint/ml-ast';
 
 import { mergeArray } from './merge-array.js';
 
@@ -99,8 +100,17 @@ export function schemaToSpec(schemas: readonly [MLMLSpec, ...ExtendedSpec[]]) {
 		if (extendedSpec.directivePatterns) {
 			result.directivePatterns = [...(result.directivePatterns ?? []), ...extendedSpec.directivePatterns];
 		}
+		if (extendedSpec.movedToHead) {
+			result.movedToHead = [...(result.movedToHead ?? []), ...extendedSpec.movedToHead];
+		}
 		if (extendedSpec.acceptedAttrNames != null) {
 			result.acceptedAttrNames = extendedSpec.acceptedAttrNames;
+		}
+		if (extendedSpec.templateContent != null) {
+			result.templateContent = extendedSpec.templateContent;
+		}
+		if (extendedSpec.literalValues) {
+			result.literalValues = mergeLiteralValues(result.literalValues, extendedSpec.literalValues);
 		}
 		if (extendedSpec.specs) {
 			const exSpecs = [...extendedSpec.specs];
@@ -145,6 +155,47 @@ function mergeAttrSpec(
 			..._std,
 			..._ex,
 		};
+	}
+	return result;
+}
+
+/**
+ * Merges the `literalValues` of two specs by kind of attribute, by attribute name and by key; the
+ * later spec wins on a key that both have. `customElements` is merged the same way.
+ */
+function mergeLiteralValues(
+	base: LiteralValueDeclaration | undefined,
+	ex: LiteralValueDeclaration,
+): LiteralValueDeclaration {
+	const { customElements: baseCustomElements, ...baseTable } = base ?? {};
+	const { customElements: exCustomElements, ...exTable } = ex;
+	return {
+		...mergeLiteralValueTable(baseTable, exTable),
+		...(baseCustomElements || exCustomElements
+			? { customElements: mergeLiteralValueTable(baseCustomElements, exCustomElements) }
+			: {}),
+	};
+}
+
+function mergeLiteralValueTable(base: LiteralValueTable = {}, ex: LiteralValueTable = {}): LiteralValueTable {
+	const { attrs: baseAttrs, ...baseKinds } = base;
+	const { attrs: exAttrs, ...exKinds } = ex;
+	const attrs: Record<string, LiteralValues> = { ...baseAttrs };
+	for (const [name, values] of Object.entries(exAttrs ?? {})) {
+		attrs[name] = { ...baseAttrs?.[name], ...values };
+	}
+	return {
+		...mergeLiteralValueKinds(baseKinds, exKinds),
+		...(baseAttrs || exAttrs ? { attrs } : {}),
+	};
+}
+
+type LiteralValueKinds = Omit<LiteralValueTable, 'attrs'>;
+
+function mergeLiteralValueKinds(base: LiteralValueKinds, ex: LiteralValueKinds): LiteralValueKinds {
+	const result: Record<string, LiteralValues> = { ...base };
+	for (const [kind, values] of Object.entries(ex)) {
+		result[kind] = { ...result[kind], ...values };
 	}
 	return result;
 }

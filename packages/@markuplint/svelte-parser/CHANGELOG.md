@@ -3,6 +3,19 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [5.5.0](https://github.com/markuplint/markuplint/compare/v5.4.0...v5.5.0) (2026-11-10)
+
+### Bug Fixes
+
+* **svelte-parser:** keep only the top-level style out of the markup ([26a2761](https://github.com/markuplint/markuplint/commit/26a276177f659f70cc9d585cbede21b60a390cd9))
+* **svelte-parser:** mask a leading BOM ([0e712ab](https://github.com/markuplint/markuplint/commit/0e712abecdc27b89fa1206e98f91a1baf7dd070f)), closes [#4488](https://github.com/markuplint/markuplint/issues/4488)
+* **svelte-parser:** parse `<style` in attributes and expressions as text ([285bed7](https://github.com/markuplint/markuplint/commit/285bed7fd8a501a20c9b76746ed46421ec97d562)), closes [#4498](https://github.com/markuplint/markuplint/issues/4498)
+
+### Features
+
+* **svelte-parser:** read a quoted expression and an attachment as Svelte does ([c274bef](https://github.com/markuplint/markuplint/commit/c274bef110ebf2df85efe58c18274503821a9fdb))
+
+
 # [5.4.0](https://github.com/markuplint/markuplint/compare/v5.3.0...v5.4.0) (2026-10-29)
 
 **Note:** Version bump only for package @markuplint/svelte-parser

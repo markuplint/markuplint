@@ -22,7 +22,7 @@ Split out of the former `srcset-sizes-constraint` rule, alongside [`no-mixed-src
 ## How It Works
 
 - Only `<img>` and `<source>` elements inside `<picture>` are checked.
-- Dynamic attribute values (e.g., Vue `:srcset`, JSX `srcset={...}`) and elements with spread attributes are skipped.
+- Dynamic attribute values (e.g., Vue `:srcset="x"`, JSX `srcset={x}`) and elements with spread attributes are skipped. A literal written as code (`srcset={"a.png 1x"}`) is evaluated as the value that the framework renders it to; a literal that the framework does not output (`null`, `false`) or renders in a way that is not known is skipped, as a dynamic value is.
 - A descriptor-less image candidate (e.g., `image.png` without `480w` or `2x`) does not count as a width descriptor.
 - The `sizes` of the following `<img>` is `auto` only when its value is `auto` or starts with `auto,` (case-insensitive, not trimmed). `auto 100vw` is not `auto`.
 

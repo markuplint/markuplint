@@ -20,8 +20,9 @@ export default createRule<boolean, Options>({
 		langs: undefined,
 	},
 	verify({ document, report, t }) {
-		for (const time of document.querySelectorAll('time:not([datetime])')) {
-			if (time.hasMutableChildren()) {
+		for (const time of document.deepQuerySelectorAll('time:not([datetime])')) {
+			// The text of the element is the text of its descendants, which a component may render
+			if (time.hasMutableChildren() || [...time.querySelectorAll('*')].some(el => el.isUnresolvedComponent())) {
 				continue;
 			}
 

@@ -45,7 +45,7 @@ export const globalAttrs: Record<
 			/**
 			 * Experimental
 			 */
-			'elementtiming', // @see https://wicg.github.io/element-timing/#sec-elements-exposed https://developer.mozilla.org/en-US/docs/Web/HTML/Attributes/elementtiming
+			'elementtiming', // @see https://w3c.github.io/element-timing/#sec-elements-exposed https://developer.mozilla.org/en-US/docs/Web/HTML/Attributes/elementtiming
 		],
 	},
 	'#GlobalEventAttrs': {

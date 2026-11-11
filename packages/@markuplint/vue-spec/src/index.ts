@@ -50,6 +50,10 @@ const spec: ExtendedSpec = {
 			pattern: '^(?:v-bind:|:)([^.]+)$',
 			potentialName: '$1',
 			isDynamicValue: true,
+			// The value is a JavaScript expression that becomes the attribute value, so a literal in it
+			// is rendered as Vue renders it (`literalValues` below). The same-name shorthand `:attr`
+			// has no value, which `MLAttr` does not read as a literal.
+			expressionLanguage: 'javascript',
 			// Vue merges static `class`/`style` with their bound equivalents,
 			// so these attributes may legitimately appear alongside `:class`/`:style`
 			isDuplicatable: ['class', 'style'],
@@ -80,6 +84,51 @@ const spec: ExtendedSpec = {
 			isDynamicValue: true,
 		},
 	],
+	/**
+	 * Only a `template` with `v-if`, `v-else-if`, `v-else`, `v-for` or `v-slot` is a fragment of Vue
+	 * (`isFragmentTemplate` of `@vue/compiler-core`). Any other one is an element, which the client
+	 * creates and appends each child to (`insert` of `nodeOps` in `@vue/runtime-dom` calls
+	 * `parent.insertBefore`), so the children are in the tree of the document, not in `content`.
+	 * Known limitations: Vue puts the children in `content` when it renders static markup as a
+	 * string, and when it hydrates server output it replaces the element with its content.
+	 */
+	templateContent: 'in-place',
+	/**
+	 * How Vue renders a literal in `:attr="…"` (`ssrRenderDynamicAttr` of `@vue/server-renderer`), where it
+	 * differs from the default of `@markuplint/ml-core`. The docs of Vue say of a boolean attribute:
+	 *
+	 * > It will also be included if the value is an empty string, maintaining consistency with `<button disabled="">`.
+	 *
+	 * So the table says:
+	 *
+	 * - A boolean attribute (`isBooleanAttr` of `@vue/shared`) is present for any truthy value and for the
+	 *   empty string (`includeBooleanAttr`)
+	 * - `class` and `style` are always output, and a value that is not a string, an array or an object
+	 *   is `""` (`ssrRenderClass`, `ssrRenderStyle`)
+	 *
+	 * What it does not tell, which is not expressed by a table (the rendering does not affect a rule, or
+	 * the markup is invalid and `invalid-attr` reports it):
+	 *
+	 * - `:value` of `<input>` and `<option>` sets the DOM property, not the attribute (`textarea` is not
+	 *   output by the server): a literal in it is rendered as the default does
+	 * - `key` and `ref` are not output by the server, as they are not attributes of the DOM, but a static
+	 *   `key="x"` is seen as an attribute too
+	 * - The client renders `:disabled="false"` on an element that has no boolean attribute `disabled` as
+	 *   `disabled="false"`; the server does not output it, and the table follows the server
+	 * - A number other than `0` on `class` and `style` is `""` too, which a table cannot list: it is `"1"` here
+	 *
+	 * @see https://vuejs.org/guide/essentials/template-syntax.html#boolean-attributes
+	 * @see https://github.com/vuejs/core/blob/main/packages/server-renderer/src/helpers/ssrRenderAttrs.ts#ssrRenderDynamicAttr
+	 * @see https://github.com/vuejs/core/blob/main/packages/shared/src/domAttrConfig.ts#isBooleanAttr
+	 * @see https://github.com/vuejs/core/blob/main/packages/shared/src/domAttrConfig.ts#includeBooleanAttr
+	 */
+	literalValues: {
+		booleanAttrs: { '""': '' },
+		attrs: {
+			class: { true: '', false: '', null: '', undefined: '', '0': '' },
+			style: { true: '', false: '', null: '', undefined: '', '0': '' },
+		},
+	},
 	def: {
 		'#globalAttrs': {
 			'#extends': {

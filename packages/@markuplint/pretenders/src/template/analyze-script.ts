@@ -79,7 +79,7 @@ export type ScriptProps = {
  * Nothing nested is read, so it is a limited reading of the script, not scope analysis.
  *
  * A script that is missing or cannot be read says nothing: its template attributes
- * stay `{ dynamic: true }`.
+ * stay `{ expression }`, the code as it is written, which is dynamic unless it is a literal.
  *
  * @param framework - The language of the component file
  * @param source - The source of its script block

@@ -7,10 +7,26 @@ import type {
 } from '@markuplint/ml-ast';
 import type { ChildToken, ParseOptions, Token } from '@markuplint/parser-utils';
 
-import { ParserError, Parser, AttrState } from '@markuplint/parser-utils';
+import { ParserError, Parser, AttrState, isBracedExpression } from '@markuplint/parser-utils';
 
 import { parseBlock } from './parse-block.js';
-import { svelteParse } from './svelte-parser/index.js';
+import { svelteParseComponent } from './svelte-parser/index.js';
+
+/**
+ * The opening of an attachment (`{@attach expr}`), up to the keyword, with the braces and spaces as
+ * Svelte allows. A shorthand (`{attach}`) is not one: the keyword is followed by a space.
+ */
+const ATTACHMENT = /^(\s*\{\s*)@attach(?=\s)/;
+
+/**
+ * Replaces the keyword of an attachment with spaces of the same length.
+ *
+ * @param raw - The source that starts with an attachment
+ * @returns The source whose keyword is spaces
+ */
+function maskAttachKeyword(raw: string): string {
+	return raw.replace(ATTACHMENT, (_match, opening: string) => opening + ' '.repeat('@attach'.length));
+}
 
 /**
  * Parser implementation for Svelte component templates.
@@ -24,27 +40,32 @@ export class SvelteParser extends Parser<SvelteNode> {
 		super({
 			endTagType: 'xml',
 			tagNameCaseSensitive: true,
+			// A value in `{…}` is JavaScript
+			attrExpressionLanguage: 'javascript',
 			// A static attribute is in the HTML string that the compiler hands to the browser's parser,
 			// and a dynamic one is set by `set_attribute` under the name as written.
 			attrNameRoute: 'dom-api-when-dynamic',
-			ignoreTags: [
-				// Fixed(Resolved) #2505
-				// The script tag needs to be passed with the lang attribute to the parser,
-				// so instead of excluding it, we convert it to PSBlock in visitText.
-				// Keep the style tag as is for now.
-				{
-					type: 'Style',
-					start: '<style',
-					end: '</style>',
-				},
-			],
-			maskChar: '-',
+			// No `ignoreTags`:
+			// - The script tag needs to be passed with the lang attribute to the parser, so instead of
+			//   masking it, it is converted to PSBlock in visitText.
+			// - The top-level style is kept out of Svelte's CSS parse in `svelteParseComponent`; nested ones stay elements.
+			// `svelte/compiler` strips a leading BOM and counts positions from the next character
+			leadingBom: 'mask',
 		});
 	}
 
+	/**
+	 * A top-level `<style>` is masked as a comment before Svelte parses it (see `svelteParseComponent`),
+	 * so `nodeize` needs to know which comments stand for one. The parser object is reused, so this is
+	 * set again by every `tokenize`.
+	 */
+	#topLevelStyleStarts: ReadonlySet<number> = new Set();
+
 	tokenize() {
+		const { nodes, topLevelStyleStarts } = svelteParseComponent(this.rawCode);
+		this.#topLevelStyleStarts = topLevelStyleStarts;
 		return {
-			ast: svelteParse(this.rawCode),
+			ast: nodes,
 			isFragment: true,
 		};
 	}
@@ -83,6 +104,16 @@ export class SvelteParser extends Parser<SvelteNode> {
 				});
 			}
 			case 'Comment': {
+				// The mask of a top-level `<style>`, the CSS of the component (see `svelteParseComponent`)
+				if (this.#topLevelStyleStarts.has(originNode.start)) {
+					return this.visitPsBlock({
+						...token,
+						depth,
+						parentNode,
+						nodeName: 'Style',
+						isFragment: false,
+					});
+				}
 				return this.visitComment({
 					...token,
 					depth,
@@ -349,7 +380,11 @@ export class SvelteParser extends Parser<SvelteNode> {
 	 * @returns The parsed attribute node with Svelte-specific metadata
 	 */
 	visitAttr(token: Token) {
-		const attr = super.visitAttr(token, {
+		// `@attach` is not JavaScript, so the tokenizer, which finds the end of `{…}` by reading it as
+		// JavaScript, cannot read it. Spaces of the same length stand for it, which makes the attachment
+		// a shorthand (`{expr}`) whose end the tokenizer finds, and every offset stays the source's.
+		const isAttachment = ATTACHMENT.test(token.raw);
+		const attr = super.visitAttr(isAttachment ? { ...token, raw: maskAttachKeyword(token.raw) } : token, {
 			quoteSet: [
 				{ start: '"', end: '"', type: 'string' },
 				{ start: "'", end: "'", type: 'string' },
@@ -364,8 +399,26 @@ export class SvelteParser extends Parser<SvelteNode> {
 			return attr;
 		}
 
+		// `{@attach expr}`: "Attachments are functions that run in an effect when an
+		// element is mounted". The function gets the element and can do anything to it, its attributes
+		// included, so it is read as a spread.
+		if (isAttachment) {
+			// The token of the attribute starts at its `{`: the spaces before it are not in `attr.raw`, nor in
+			// `source`, so the length of the attribute is the length of the text of `source` that it takes
+			const source = token.raw.trimStart();
+			const attachmentLength = attr.raw.length;
+			const rightText = source.slice(attachmentLength);
+			return {
+				...this.createToken(source.slice(0, attachmentLength), attr.offset, attr.line, attr.col),
+				type: 'spread' as const,
+				nodeName: '#spread' as const,
+				...(rightText === '' ? {} : { __rightText: rightText }),
+			};
+		}
+
 		let isDynamicValue = attr.startQuote.raw === '{' || undefined;
 		let potentialName: string | undefined;
+		let potentialValue: string | undefined;
 
 		// Shorthand {name} → potentialName = value
 		if (isDynamicValue && attr.name.raw === '') {
@@ -377,10 +430,32 @@ export class SvelteParser extends Parser<SvelteNode> {
 			isDynamicValue = true;
 		}
 
+		// A single expression in quotes is the expression: `disabled="{false}"` is `disabled={false}`:
+		//
+		// > Quoting a singular expression does not affect how the value is parsed, but in Svelte 6 it
+		// > will cause the value to be coerced to a string:
+		//
+		// @see https://svelte.dev/docs/svelte/basic-markup#Element-attributes
+		//
+		// A value with text around the expression (`page/{p}`) or several expressions is a string. The
+		// tokens stay those of the source (the quotes are the quotes), and the expression is
+		// `potentialValue`.
+		if (
+			!isDynamicValue &&
+			attr.name.raw !== '' &&
+			(attr.startQuote.raw === '"' || attr.startQuote.raw === "'") &&
+			attr.endQuote.raw === attr.startQuote.raw &&
+			isBracedExpression(attr.value.raw)
+		) {
+			isDynamicValue = true;
+			potentialValue = attr.value.raw.slice(1, -1);
+		}
+
 		return {
 			...attr,
 			isDynamicValue,
 			potentialName,
+			...(potentialValue == null ? {} : { potentialValue }),
 		};
 	}
 

@@ -20,8 +20,8 @@ Split out of the former `srcset-sizes-constraint` rule, alongside [`no-unpaired-
 
 ## How It Works
 
-- Only `<img>` and `<source>` elements inside `<picture>` are checked, and only when the element has a `srcset` attribute.
-- Dynamic attribute values (e.g., Vue `:sizes`, JSX `sizes={...}`) and elements with spread attributes are skipped.
+- Only `<img>` and `<source>` elements inside `<picture>` are checked, and only when the element has a `srcset` attribute. On an `<img>` without `srcset`, `sizes` is allowed only as the value `auto` with `loading="lazy"`: [`no-disallowed-attr`](/docs/rules/no-disallowed-attr) reports a `sizes` without `loading="lazy"`, and [`no-invalid-attr-value`](/docs/rules/no-invalid-attr-value) reports a value other than `auto`. A dynamic `sizes` is still reported by `no-disallowed-attr` when the image has no `loading` attribute or a `loading` other than `lazy`; when `loading` is dynamic, whether the image is lazily loaded is not judged.
+- Dynamic attribute values (e.g., Vue `:sizes="x"`, JSX `sizes={x}`) and elements with spread attributes are skipped. A literal written as code (`sizes={"auto"}`) is evaluated as the value that the framework renders it to; a literal that the framework does not output (`null`, `false`) or renders in a way that is not known is skipped, as a dynamic value is.
 - `sizes="auto"` is recognized when the attribute value is `auto` or starts with `auto,` (case-insensitive). For example, `sizes="auto, 100vw"` is treated as auto, but `sizes="100vw, auto"` is not.
 
 ❌ Examples of **incorrect** code for this rule

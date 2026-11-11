@@ -112,6 +112,8 @@ Run Markuplint and capture the results:
 npx markuplint "$ARGUMENTS" --format JSON
 ```
 
+The exit code is `1` when an error-severity violation is found, and the JSON array on stdout is still the result. Treat the run as failed only when stdout is not a JSON array.
+
 If `$ARGUMENTS` is empty, ask the user for the target glob (e.g., `"src/**/*.html"`).
 
 Summarize:

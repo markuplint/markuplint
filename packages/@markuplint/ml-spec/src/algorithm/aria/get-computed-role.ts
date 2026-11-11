@@ -6,6 +6,7 @@ import { isPresentational } from './is-presentational.js';
 import { SVG_NAMESPACE } from '../../const/index.js';
 import { hasSvgAccessibleNameSource } from './accname/svg-helpers.js';
 import { getAttrSpecs } from '../../utils/get-attr-specs.js';
+import { getComposedParentElement } from '../dom/tree-boundary.js';
 import { getExplicitRole } from './get-explicit-role.js';
 import { getImplicitRole } from './get-implicit-role.js';
 import { getNonPresentationalAncestor } from './get-non-presentational-ancestor.js';
@@ -117,6 +118,7 @@ function computeRole(
 	 * "accessibility child" and "accessibility parent", and
 	 * `matchesContextRole` additionally skips `generic` elements.
 	 *
+	 * @see https://w3c.github.io/aria/#conflict_resolution_presentation_none
 	 * @see https://w3c.github.io/aria/#scope
 	 * @see https://github.com/w3c/aria/issues/1033
 	 * @see https://github.com/w3c/aria/pull/1454
@@ -136,12 +138,14 @@ function computeRole(
 	) {
 		/**
 		 * An element fragment that serves as the root without a parent element
-		 * cannot satisfy the "Required Accessibility Parent Role" condition.
+		 * (or the top of the content of an ordinary `template` element, whose
+		 * placement is not known) cannot satisfy the "Required Accessibility
+		 * Parent Role" condition.
 		 * Therefore, under normal circumstances, the `role` will disappear.
 		 * However, in this specific case, it will fall back to both explicit
 		 * and implicit roles. Note that the explicit role takes precedence.
 		 */
-		if (el.parentElement === null) {
+		if (getComposedParentElement(el) === null) {
 			return {
 				...computedRole,
 				errorType: 'NO_OWNER',
@@ -168,8 +172,7 @@ function computeRole(
 	/**
 	 * SVG: Including Elements in the Accessibility Tree
 	 *
-	 * > Many SVG elements—although rendered to the screen—
-	 * > do not have an intrinsic semantic meaning. Instead,
+	 * > Many SVG elements—although rendered to the screen—do not have an intrinsic semantic meaning. Instead,
 	 * > they represent components of the visual presentation of the document.
 	 * > To simplify the accessible representation of the document,
 	 * > these purely presentational elements should normally be omitted
@@ -189,11 +192,10 @@ function computeRole(
 	 * > - the use element
 	 * > - the grouping (g) element
 	 * > - the image element
-	 * > - the mesh element
 	 * > - text formatting elements (textPath, tspan)
 	 * > - the foreignObject element
 	 *
-	 * @see https://www.w3.org/TR/svg-aam-1.0/#include_elements
+	 * @see https://www.w3.org/TR/svg-aam/#include_elements
 	 */
 	if (
 		// It doesn't been specified a valid explicit role.
@@ -216,9 +218,11 @@ function computeRole(
 
 	/**
 	 * > If an element is focusable,
-	 * > user agents MUST ignore the presentation/none role
+	 * > user agents MUST ignore the none/presentation role
 	 * > and expose the element with its implicit role,
 	 * > in order to ensure that the element is operable.
+	 *
+	 * @see https://w3c.github.io/aria/#conflict_resolution_presentation_none
 	 *
 	 * With the issue: What does focusable or otherwise interactive mean](https://github.com/w3c/aria/issues/1192)
 	 *
@@ -324,6 +328,7 @@ function isEnabledAttr(
 
 /**
  * Determines whether some ancestors match the condition that the specified callback function.
+ * The ancestors are those of the accessibility tree: see {@link getComposedParentElement}.
  */
 function someAncestors(
 	// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
@@ -337,7 +342,7 @@ function someAncestors(
 	let current: Element | null = el;
 	while (current) {
 		list.push(current);
-		current = current.parentElement;
+		current = getComposedParentElement(current);
 	}
 	return list.some(predicate);
 }
@@ -367,7 +372,7 @@ function isNativeContextIntact(
 	if (!computedRole.role?.isImplicit) {
 		return false;
 	}
-	const parent = el.parentElement;
+	const parent = getComposedParentElement(el);
 	if (!parent) {
 		return false;
 	}

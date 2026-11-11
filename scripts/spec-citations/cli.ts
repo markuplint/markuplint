@@ -4,39 +4,58 @@
  * A rule's README, source comments and data files cite the specification
  * passage that justifies it. The HTML Living Standard changes every week and
  * nothing else reads the prose a rule quotes, so a rule can keep enforcing a
- * sentence the spec has since reworded or dropped. This script reads every
- * citation, fetches the page, and reports what no longer holds. A scheduled
- * workflow (`.github/workflows/spec-citation-watch.yml`) runs it monthly and
+ * sentence the spec has since reworded or dropped. The tables of how a
+ * framework renders a literal (`literalValues`) are read from the framework's
+ * code and documentation, which change as often, so they cite both. This script
+ * reads every citation, fetches the page, and reports what no longer holds. A scheduled
+ * workflow (`.github/workflows/spec-citation-watch.yml`) runs it weekly and
  * opens an Issue; a maintainer decides what follows. Nothing is fixed
  * automatically, and no model is involved: every verdict is a string
  * comparison against the fetched page.
+ *
+ * The same workflow refreshes the lock (below) through a pull request that
+ * names the Issue; merging that pull request is what accepts the changed
+ * passages. A pull request that touches the script runs the check read-only.
  *
  * Two kinds of check, which differ in what they need:
  *
  * - Against the page alone: the anchor exists, the quoted text is in the cited
  *   section, the `:~:text=` fragment matches, the cited `§` number is the
- *   section's. These hold on a fresh clone and say the citation is wrong.
+ *   section's. These hold on a fresh clone and say the citation is wrong. For a
+ *   source file of a framework the anchor is the name of a top-level
+ *   declaration, and the quoted text is looked up in that declaration. A text
+ *   fragment with no `#fragment` is searched in the whole page, which is how a
+ *   passage that no heading anchors is cited.
  * - Against the lock (`spec-citations.lock.json`): the cited passage is not
  *   the one a maintainer last accepted. The lock stores the text, not only a
  *   hash, so the report can show what changed without a second fetch.
  *
  * Exit codes: 0 nothing to report, 1 findings, 2 only fetch failures. A crash
  * also exits 1, so a caller tells it from findings by whether `--report`
- * produced a file: the report is written once every check has run, and before `--update` touches the lock.
+ * produced a file: the report is written once every check has run, and before
+ * `--update` touches the lock.
  *
- * Citations are collected from the rules package (README, `*.ts` comments,
- * `schema.json`) and from the website's hand-written pages; `discover.ts` lists
- * which files and how each is read.
+ * Citations are collected from the sources of every package (`src/**.ts`
+ * comments), from the rules' READMEs and `schema.json`, from the HTML spec data
+ * and from the website's hand-written pages; `discover.ts` lists which files and
+ * how each is read. Which hosts are watched is fixed in `collect.ts`: the
+ * specifications (WHATWG, W3C, IETF and the others it lists), the documentation
+ * sites of the frameworks, and the source files of the listed repositories. A
+ * framework that is not in those lists is not monitored, and no check says so.
+ *
+ * The lock PR's body lists what it adds to and removes from the lock
+ * (`lock-changes.ts`), and names the removed sections that a file still cites.
  */
 import type { CollectResult, PageResult } from './types.ts';
 
 import { existsSync, readFileSync, writeFileSync } from 'node:fs';
 import { join } from 'node:path';
-import { fileURLToPath, pathToFileURL } from 'node:url';
+import { fileURLToPath } from 'node:url';
 import { parseArgs } from 'node:util';
 
 import { check } from './check.ts';
 import { collectFiles, listCitingFiles } from './discover.ts';
+import { isCliEntry } from './entry.ts';
 import { fetchPages } from './fetch.ts';
 import { EMPTY_LOCK, parseLock, serializeLock } from './lockfile.ts';
 import { renderReport } from './report.ts';
@@ -61,7 +80,8 @@ export type CliDeps = {
 
 const USAGE = `Usage: yarn spec-citations [options]
 
-Checks the specification passages that rules cite against the live specifications.
+Checks the passages that rules and framework declarations cite against the live specifications,
+framework documentation and framework sources.
 
 Options:
   --update              Rewrite the lock file with the sections as they are now
@@ -101,7 +121,7 @@ export async function run(options: CliOptions, deps: CliDeps): Promise<number> {
 	const collected = deps.collect(options.root);
 	const needed = new Set(
 		collected.citations
-			.filter(c => c.fragment !== null || c.quotes.length > 0 || c.secno !== null)
+			.filter(c => c.fragment !== null || c.textDirective !== null || c.quotes.length > 0 || c.secno !== null)
 			.map(c => c.page),
 	);
 	const pages = await deps.fetchPages(needed);
@@ -148,12 +168,6 @@ const realDeps: CliDeps = {
 	write: line => process.stdout.write(`${line}\n`),
 	now: () => new Date().toISOString(),
 };
-
-/** Whether this module was started as `node <this-file>`; comparing URLs through `pathToFileURL` keeps it right on Windows. */
-function isCliEntry(importMetaUrl: string): boolean {
-	const entry = process.argv[1];
-	return entry !== undefined && importMetaUrl === pathToFileURL(entry).href;
-}
 
 if (isCliEntry(import.meta.url)) {
 	const options = parseCliArgs(process.argv.slice(2), fileURLToPath(new URL('../../', import.meta.url)));

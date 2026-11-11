@@ -29,6 +29,47 @@ import type { ExtendedSpec } from '@markuplint/ml-spec';
  */
 const spec: ExtendedSpec = {
 	cites: ['https://alpinejs.dev/'],
+	/**
+	 * How Alpine.js renders a literal in `:attr="…"` (`bindAttribute` of `alpinejs/src/utils/bind.js`),
+	 * where it differs from the default of `@markuplint/ml-core`. Names are in lower case.
+	 *
+	 * - `null`, `undefined` and `false` remove the attribute, except on `aria-pressed`, `aria-checked`,
+	 *   `aria-expanded` and `aria-selected`, which keep them as the strings `"null"`, `"undefined"` and `"false"`
+	 * - A boolean attribute (its list is in `bind.js`) is present with its name as the value for anything but
+	 *   those three, `0` and the empty string included
+	 * - `class` adds to the classes that the element has, and what is added is none for these literals
+	 * - `hidden` is not in the list of boolean attributes, so `true` is `hidden="true"`
+	 *
+	 * What it does not tell, which does not affect a rule:
+	 *
+	 * - A boolean attribute has its name as the value (`disabled="disabled"`), not `""`
+	 * - `:value` sets the property of an `input`, not the attribute (`option` is the one that sets the attribute)
+	 * - `x-bind="{…}"`, the object syntax, has no attribute name and is not read
+	 *
+	 * @see https://alpinejs.dev/directives/bind#special-behavior
+	 * @see https://github.com/alpinejs/alpine/blob/main/packages/alpinejs/src/utils/bind.js#bindAttribute
+	 */
+	literalValues: {
+		booleanAttrs: { '""': '', '0': '' },
+		ariaAttrs: { false: null },
+		dataAttrs: { false: null },
+		otherAttrs: { false: null },
+		attrs: {
+			'aria-pressed': { false: 'false', null: 'null', undefined: 'undefined' },
+			'aria-checked': { false: 'false', null: 'null', undefined: 'undefined' },
+			'aria-expanded': { false: 'false', null: 'null', undefined: 'undefined' },
+			'aria-selected': { false: 'false', null: 'null', undefined: 'undefined' },
+			style: { false: 'false', null: 'null', undefined: 'undefined' },
+			class: { true: null, false: null, null: null, undefined: null, '0': null, '""': null },
+			hidden: { true: 'true', '0': '0' },
+			// Boolean attributes of the spec that Alpine does not know as boolean
+			alpha: { true: 'true', '0': '0', '""': '' },
+			focusgroupstart: { true: 'true', '0': '0', '""': '' },
+			headingreset: { true: 'true', '0': '0', '""': '' },
+			shadowrootcustomelementregistry: { true: 'true', '0': '0', '""': '' },
+			switch: { true: 'true', '0': '0', '""': '' },
+		},
+	},
 	directivePatterns: [
 		/**
 		 * Static directives: x-data, x-init, x-show, x-text, x-html,
@@ -56,15 +97,30 @@ const spec: ExtendedSpec = {
 			isDynamicValue: true,
 		},
 		/**
-		 * x-bind:attr or :attr shorthand => potentialName = attr
+		 * x-bind:attr.modifier or :attr.modifier => potentialName = attr. A modifier (`.camel`) changes
+		 * the name that is bound, so the value is not read as the value of `attr`.
 		 * @see https://alpinejs.dev/directives/bind
 		 */
 		{
-			pattern: '^(?:x-bind:|:)([^.]+)(?:\\.[^.]+)?$',
+			pattern: '^(?:x-bind:|:)([^.]+)\\.[^.]+$',
 			potentialName: '$1',
 			isDynamicValue: true,
 			valueType: 'code',
 			isDuplicatable: ['class', 'style'],
+		},
+		/**
+		 * x-bind:attr or :attr shorthand => potentialName = attr
+		 * @see https://alpinejs.dev/directives/bind
+		 */
+		{
+			pattern: '^(?:x-bind:|:)([^.]+)$',
+			potentialName: '$1',
+			isDynamicValue: true,
+			valueType: 'code',
+			isDuplicatable: ['class', 'style'],
+			// The value is a JavaScript expression that is bound to the attribute, so a literal in it is
+			// rendered as Alpine renders it (`literalValues` below)
+			expressionLanguage: 'javascript',
 		},
 		/**
 		 * x-on:event or @event shorthand => potentialName = onevent

@@ -6,7 +6,7 @@ description: 指定された要素がドキュメントまたは要素に表示�
 
 指定された要素がドキュメントまたは要素に表示されなかった場合、警告します。セレクターを使用して指定します。
 
-これは必要な要素を検索するための汎用的なルールです。
+これは必要な要素を検索するための汎用的なルールです。ドキュメントまたは要素のツリーを検索します。`template`要素の内容や宣言的シャドウルートの中は独立したツリーなので、そこにあるだけでは必要な要素を満たしません。
 
 :::info
 
@@ -63,6 +63,22 @@ h1要素が必要な場合は[`require-h1`](../require-h1/)ルールを使用し
   ]
 }
 ```
+
+### `ignoreHasMutableContents`オプションの設定 {#setting-ignore-has-mutable-contents}
+
+- 型: `boolean`
+- 初期値: `true`
+
+必須の要素を何が描画するのかがわからない場合は、検査を行いません。要素に対する指定では、わからない子を表す子（*Pug*の`include`のようなプリプロセッサ言語のブロック、`<slot>`、JSXの`<Meta />`のように[pretender](/docs/guides/beyond-html#pretenders)が解決しなかったコンポーネント）が対象です。ドキュメント全体に対する指定では、これらや式がどこかにあれば対象です。pretenderが解決したコンポーネントは、それが表す要素として検査します。子の子孫が描画するものは、その要素の子ではないので、検査は省略されません。
+
+```html
+<!-- "require-element": ["meta[charset=\"UTF-8\"]"] -->
+<head>
+  <meta />
+</head>
+```
+
+書かれたとおりに検査したい場合は、`ignoreHasMutableContents`を`false`に設定してください。
 
 ### `ignoreOmittedElements`オプションの設定 {#setting-ignore-omitted-elements}
 

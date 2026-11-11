@@ -136,6 +136,10 @@ report({
 });
 ```
 
+### Trees
+
+The content of a `<template>` element and a declarative shadow root are trees of their own, as they are in the DOM. `querySelector()`, `querySelectorAll()` and `getElementById()` search the tree of the node they are called on, and `closest()` and the selectors stop at its boundary. To look at every tree, use `deepQuerySelectorAll()` or `walkOn()`, which visits every node. `el.getRootNode()` is the tree an element is in, and `el.treeParentElement` is its parent in that tree. `el.content` is the content of a `<template>` element, and `el.shadowRoot` is a declarative shadow root that is attached to an element with `shadowrootmode="open"`. `parentNode` and `parentElement` do not stop at that boundary, so that of the first element in a `<template>` is the `<template>` element.
+
 ## Messages <abbr title="internationalization">i18n</abbr>
 
 The `translate` function (aliased as `t`) translates messages:

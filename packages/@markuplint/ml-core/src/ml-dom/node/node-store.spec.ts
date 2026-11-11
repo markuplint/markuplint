@@ -31,8 +31,8 @@ import { MLDocument } from './document.js';
  * On JavaScriptCore (Bun) this is only deterministic with concurrent JIT
  * compilation disabled: an in-flight DFG/FTL plan is a GC root for every value
  * it froze, including the `astNode => createNode(astNode, this)` closure of a
- * superseded `MLDocument`, and `gc()` cannot complete plans. CI's `test-bun`
- * job therefore sets `BUN_JSC_useConcurrentJIT=0`.
+ * superseded `MLDocument`, and `gc()` cannot complete plans. The `test-bun`
+ * job of the nightly tests therefore sets `BUN_JSC_useConcurrentJIT=0`.
  *
  * @see https://tc39.es/ecma262/#sec-weak-ref-objects
  */

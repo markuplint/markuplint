@@ -1,5 +1,5 @@
 // https://drafts.fxtf.org/filter-effects/#feOffsetElement
-// https://www.w3.org/TR/svg-aam-1.0/#details-id-32
+// https://www.w3.org/TR/svg-aam/#role-map-feoffset
 {
 	"contentModel": {
 		"contents": [

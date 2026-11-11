@@ -17,7 +17,7 @@ import rules from './index.js';
  *   tokenizer-level event still surfaces alongside the rule violation.
  *   (Stricter static check belongs in `@markuplint/html-parser`'s
  *   `parse-error-code-sync.spec.ts`, which already pins parse5's ERR
- *   enum against `MLASTParseErrorCode`.)
+ *   enum against `MLASTHtmlParseErrorCode`.)
  */
 describe('mirrorsParseErrorCodes registry contract', () => {
 	test('no two rules declare the same parse5 code', () => {

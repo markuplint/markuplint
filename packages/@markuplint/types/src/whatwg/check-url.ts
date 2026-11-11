@@ -13,7 +13,7 @@ const DUMMY_BASE = 'http://example.org/foo/bar';
 /**
  * Pattern: a URL whose scheme is one of the special schemes (case-insensitive).
  *
- * Special schemes per URL Living Standard §3.5: `ftp`, `file`, `http`,
+ * Special schemes per URL Living Standard §4.2: `ftp`, `file`, `http`,
  * `https`, `ws`, `wss`.
  *
  * @see https://url.spec.whatwg.org/#special-scheme
@@ -24,12 +24,11 @@ const SPECIAL_SCHEME_PREFIX = /^(?:ftp|file|https?|wss?):/i;
  * Pattern: a special-scheme URL that is **not** followed by `//`.
  *
  * Triggers `special-scheme-missing-following-solidus` for `ftp`/`http`/`https`/`ws`/`wss`
- * (and the file-scheme variant for `file:`).
+ * (and for `file:`, which the URL LS reports with the same error).
  *
  * Examples that match: `http:foo`, `https:/foo`, `file:foo`, `file:/foo`.
  *
  * @see https://url.spec.whatwg.org/#special-scheme-missing-following-solidus
- * @see https://url.spec.whatwg.org/#file-scheme-missing-following-solidus
  */
 const SPECIAL_SCHEME_MISSING_SOLIDUS = /^(?:ftp|file|https?|wss?):(?!\/\/)/i;
 
@@ -45,7 +44,7 @@ const SPECIAL_SCHEME_MISSING_SOLIDUS = /^(?:ftp|file|https?|wss?):(?!\/\/)/i;
  * reports it as a validation error against the strict "valid URL string"
  * production).
  *
- * @see https://url.spec.whatwg.org/#file-scheme-missing-following-solidus
+ * @see https://url.spec.whatwg.org/#special-scheme-missing-following-solidus
  */
 const SPECIAL_SCHEME_SINGLE_SLASH = /^(?:ftp|file|https?|wss?):\/(?!\/)/i;
 
@@ -131,7 +130,7 @@ const DATA_URL_MISSING_COMMA = /^data:[^,]*$/i;
 /**
  * Pattern: file-scheme URL with a Windows drive letter that uses `|` instead of `:`.
  *
- * URL LS §6 says `C|` is auto-corrected to `C:` and triggers a
+ * URL LS §1.1 says `C|` is auto-corrected to `C:` and triggers a
  * `file-invalid-Windows-drive-letter` validation error. nu-validator surfaces
  * this and so do we.
  *
@@ -292,7 +291,7 @@ function hasIPv4NonDecimalPart(trimmed: string): boolean {
  * Used to gate validations that are only meaningful for special schemes
  * (e.g., backslash → invalid-reverse-solidus).
  *
- * @see https://url.spec.whatwg.org/#special-url
+ * @see https://url.spec.whatwg.org/#special-scheme
  */
 function isSpecialOrSchemeless(value: string): boolean {
 	if (SPECIAL_SCHEME_PREFIX.test(value)) {
@@ -318,7 +317,7 @@ function isSpecialOrSchemeless(value: string): boolean {
  *   unencoded space, tab/CR/LF)
  * - **invalid-reverse-solidus** (`\` in a special-scheme URL)
  * - **special-scheme-missing-following-solidus** (`http:foo`, `file:bar`)
- *   and `file-scheme-missing-following-solidus` / single-slash variants
+ *   and its single-slash variants
  * - **file-invalid-Windows-drive-letter** (`file:///C|/foo`)
  * - **invalid-credentials** (`http://user:pass@example.com`)
  * - **IPv4-non-decimal-part** (`http://192.0x00A80001`, hex/octal host labels)
@@ -364,7 +363,7 @@ export const checkURL: CustomSyntaxChecker = () =>
 
 		// URL LS validation errors that `new URL()` silently auto-corrects:
 
-		// special-scheme-missing-following-solidus / file-scheme-missing-following-solidus
+		// special-scheme-missing-following-solidus (the URL LS reports `file:` with it too)
 		// (e.g., `http:foo`, `file:bar`, `file:` alone)
 		if (SPECIAL_SCHEME_MISSING_SOLIDUS.test(trimmed)) {
 			return unmatched(trimmed, 'unexpected-token');

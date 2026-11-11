@@ -46,6 +46,8 @@ When introducing Markuplint to an existing project with many violations, use the
 markuplint "src/**/*.html" --max-count=50
 ```
 
+This limits only what is shown. The exit code still reflects every violation, so use the strategies below to let CI pass.
+
 ### Set warning thresholds
 
 ```shell

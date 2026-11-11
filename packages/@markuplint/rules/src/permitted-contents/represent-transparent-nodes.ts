@@ -1,10 +1,12 @@
-import type { ChildNode, Mode, Options, Result, Specs, TagRule } from './types.js';
+import type { ChildNode, Element, Mode, Options, Result, Specs, TagRule } from './types.js';
+
+import { isInterElementWhitespace } from '@markuplint/selector';
 
 import { resolveContentModel } from './content-model.js';
 import { cmLog } from './debug.js';
 import { order } from './order.js';
 import { expandChildren, getContentOwner, getSlotContent } from './slot-content.js';
-import { Collection, isTransparent, matches } from './utils.js';
+import { Collection, isComment, isTransparent, matches } from './utils.js';
 
 /**
  * A map tracking child nodes that are currently being evaluated through
@@ -120,105 +122,13 @@ export function representTransparentNodes(
 			continue;
 		}
 
-		// A component whose children sit inside an inner wrapper element (or one of
-		// several) cannot be looked through as transparent content: the children
-		// belong to the wrapper, not to the outermost element that is being matched.
-		const childSlot = getSlotContent(childNode, mode);
-		if (childSlot && (!childSlot.wrapper || getContentOwner(childNode, mode) !== childNode)) {
+		const branchGroups = transparentBranchGroups(childNode, rules, specs, options, mode);
+
+		if (branchGroups == null) {
 			for (const p of patterns) {
 				p.push(childNode);
 			}
 			continue;
-		}
-
-		const models = resolveContentModel(childNode, rules, specs, mode);
-
-		if (models == null || typeof models === 'boolean') {
-			for (const p of patterns) {
-				p.push(childNode);
-			}
-			continue;
-		}
-
-		const noTransparentModels = models.filter(m => !isTransparent(m));
-
-		if (noTransparentModels.length === models.length) {
-			for (const p of patterns) {
-				p.push(childNode);
-			}
-			continue;
-		}
-
-		const childNodesPatterns = options.evaluateConditionalChildNodes
-			? childNode.conditionalChildNodes().map(childNodes => [...expandChildren(childNode, [...childNodes], mode)])
-			: [
-					[...expandChildren(childNode, [...childNode.childNodes], mode)].filter(
-						child => !(child.is(child.TEXT_NODE) && child.isWhitespace()),
-					),
-				];
-
-		const branchGroups: (ChildNode | Result)[][] = [];
-
-		for (const branchChildNodes of childNodesPatterns) {
-			const collection = new Collection([...branchChildNodes]);
-
-			let unmatched: ChildNode[];
-
-			if (noTransparentModels.length > 0) {
-				const result = order(
-					noTransparentModels,
-					collection.unmatched,
-					rules,
-					specs,
-					options,
-					Number.POSITIVE_INFINITY,
-					mode,
-				);
-				unmatched = result.unmatched;
-			} else {
-				unmatched = collection.unmatched;
-			}
-
-			const transparent = models.find(m => isTransparent(m));
-
-			if (!transparent || !isTransparent(transparent)) {
-				throw new Error('Unreachable code');
-			}
-
-			const branchChildren: (ChildNode | Result)[] = [];
-
-			for (const _child of unmatched) {
-				const child: ChildNode = _child;
-
-				if (transparentMode.has(child)) {
-					continue;
-				}
-
-				transparentMode.set(child, true);
-
-				if (child.is(child.ELEMENT_NODE)) {
-					const transparentCondMatched = matches(transparent.transparent, child, specs, mode);
-
-					if (!transparentCondMatched.matched) {
-						branchChildren.push({
-							type: 'TRANSPARENT_MODEL_DISALLOWS',
-							matched: [],
-							unmatched: [childNode],
-							zeroMatch: false,
-							query: transparent.transparent,
-							hint: {
-								not: transparentCondMatched.not,
-								transparent: childNode,
-							},
-						});
-						continue;
-					}
-				}
-
-				branchChildren.push(child);
-			}
-
-			branchGroups.push(branchChildren);
 		}
 
 		// The transparent element itself is still a child of the current parent
@@ -280,4 +190,138 @@ export function representTransparentNodes(
 	});
 
 	return result;
+}
+
+/**
+ * The children that a transparent element stands for in its parent, one group per
+ * conditional branch, or `null` when the element is not looked through (its content
+ * model has no transparent part, or it is a component whose children belong to an
+ * inner wrapper).
+ *
+ * A child that is itself a transparent element is followed by the children it
+ * stands for, so that `<span><ins><ins><div>` puts the `<div>` in the `<span>`: the
+ * HTML Standard derives the content model of a transparent element from its parent
+ * again for each transparent element in which the content finds itself.
+ *
+ * > In some cases, where transparent elements are nested in each other, the process
+ * > has to be applied iteratively.
+ *
+ * @see https://html.spec.whatwg.org/multipage/dom.html#transparent-content-models
+ *
+ * The branches of a nested transparent element are merged into each branch of the
+ * outer one, the same over-approximation as the fallback documented on
+ * {@link MAX_PATTERNS}.
+ */
+function transparentBranchGroups(
+	// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
+	childNode: Element,
+	rules: readonly TagRule[],
+	specs: Specs,
+	options: Options,
+	mode: Mode,
+): (ChildNode | Result)[][] | null {
+	// A component whose children sit inside an inner wrapper element (or one of
+	// several) cannot be looked through as transparent content: the children
+	// belong to the wrapper, not to the outermost element that is being matched.
+	const childSlot = getSlotContent(childNode, mode);
+	if (childSlot && (!childSlot.wrapper || getContentOwner(childNode, mode) !== childNode)) {
+		return null;
+	}
+
+	const models = resolveContentModel(childNode, rules, specs, mode);
+
+	if (models == null || typeof models === 'boolean') {
+		return null;
+	}
+
+	const noTransparentModels = models.filter(m => !isTransparent(m));
+
+	if (noTransparentModels.length === models.length) {
+		return null;
+	}
+
+	const childNodesPatterns = options.evaluateConditionalChildNodes
+		? childNode
+				.conditionalChildNodes()
+				.map(childNodes =>
+					[...expandChildren(childNode, [...childNodes], mode)].filter(child => !isComment(child)),
+				)
+		: [
+				[...expandChildren(childNode, [...childNode.childNodes], mode)].filter(
+					child => !isComment(child) && !(child.is(child.TEXT_NODE) && isInterElementWhitespace(child.raw)),
+				),
+			];
+
+	const branchGroups: (ChildNode | Result)[][] = [];
+
+	for (const branchChildNodes of childNodesPatterns) {
+		const collection = new Collection([...branchChildNodes]);
+
+		let unmatched: ChildNode[];
+
+		if (noTransparentModels.length > 0) {
+			const result = order(
+				noTransparentModels,
+				collection.unmatched,
+				rules,
+				specs,
+				options,
+				Number.POSITIVE_INFINITY,
+				mode,
+			);
+			unmatched = result.unmatched;
+		} else {
+			unmatched = collection.unmatched;
+		}
+
+		const transparent = models.find(m => isTransparent(m));
+
+		if (!transparent || !isTransparent(transparent)) {
+			throw new Error('Unreachable code');
+		}
+
+		const branchChildren: (ChildNode | Result)[] = [];
+
+		for (const _child of unmatched) {
+			const child: ChildNode = _child;
+
+			if (transparentMode.has(child)) {
+				continue;
+			}
+
+			transparentMode.set(child, true);
+
+			if (child.is(child.ELEMENT_NODE)) {
+				const transparentCondMatched = matches(transparent.transparent, child, specs, mode);
+
+				if (!transparentCondMatched.matched) {
+					branchChildren.push({
+						type: 'TRANSPARENT_MODEL_DISALLOWS',
+						matched: [],
+						unmatched: [childNode],
+						zeroMatch: false,
+						query: transparent.transparent,
+						hint: {
+							not: transparentCondMatched.not,
+							transparent: childNode,
+						},
+					});
+					continue;
+				}
+
+				branchChildren.push(child);
+				const nested = transparentBranchGroups(child, rules, specs, options, mode);
+				if (nested != null) {
+					branchChildren.push(...nested.flat());
+				}
+				continue;
+			}
+
+			branchChildren.push(child);
+		}
+
+		branchGroups.push(branchChildren);
+	}
+
+	return branchGroups;
 }

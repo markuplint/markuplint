@@ -1,11 +1,12 @@
 // https://html.spec.whatwg.org/multipage/tables.html#the-thead-element
 // https://www.w3.org/TR/html-aria/#el-thead
-// https://w3c.github.io/html-aria/#el-thead
 {
 	"contentModel": {
 		"contents": [
 			{
-				"zeroOrMore": "tr"
+				// > Zero or more tr and script-supporting elements.
+				// @see https://html.spec.whatwg.org/multipage/tables.html#the-thead-element
+				"zeroOrMore": ["tr", ":model(script-supporting)"]
 			}
 		]
 	},

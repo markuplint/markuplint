@@ -6,7 +6,7 @@ import { createRule } from '@markuplint/ml-core';
 import { contentModel, hasTagRule } from './content-model.js';
 import meta from './meta.js';
 import { transparentMode } from './represent-transparent-nodes.js';
-import { getContentOwner, getReportScope, isContentMutable } from './slot-content.js';
+import { getContentOwner, getReportScope, hasMutableChildNodes, isContentMutable } from './slot-content.js';
 
 export default createRule<TagRule[], Options>({
 	meta: meta,
@@ -48,7 +48,7 @@ export default createRule<TagRule[], Options>({
 							if (
 								scope.rule.options.ignoreHasMutableChildren &&
 								(!scope.is(scope.ELEMENT_NODE) ||
-									scope.hasMutableChildren() ||
+									hasMutableChildNodes(scope, mode) ||
 									isContentMutable(el, mode))
 							) {
 								break;
@@ -72,7 +72,7 @@ export default createRule<TagRule[], Options>({
 							if (
 								scope.rule.options.ignoreHasMutableChildren &&
 								(!scope.is(scope.ELEMENT_NODE) ||
-									scope.hasMutableChildren() ||
+									hasMutableChildNodes(scope, mode) ||
 									isContentMutable(el, mode))
 							) {
 								break;
@@ -155,7 +155,8 @@ export default createRule<TagRule[], Options>({
 /**
  * Generates a localized, human-readable name for a child node based on its type.
  * Used in error messages to describe the offending node (e.g., 'the "div" element',
- * 'the text node', 'the comment', 'the doctype', 'the code block').
+ * 'the text node', 'the doctype', 'the code block'). A comment is not named: it is
+ * ignored when a content model is evaluated.
  *
  * In `'origin'` mode, uses {@link MLElement.rawName} so that the diagnostic refers
  * to the original AST identity (e.g. the component name `"Breadcrumbs"`) rather
@@ -179,9 +180,6 @@ function name(
 	}
 	if (scope.is(scope.TEXT_NODE)) {
 		return t('the {0}', 'text node');
-	}
-	if (scope.is(scope.CDATA_SECTION_NODE)) {
-		return t('the {0}', 'comment');
 	}
 	if (scope.is(scope.DOCUMENT_TYPE_NODE)) {
 		return t('the {0}', 'doctype');

@@ -3,7 +3,7 @@ import type { CssSyntaxTokenizer } from './types.js';
 
 export const cssTokenizers: Record<string, CssSyntaxTokenizer> = {
 	// RFC
-	// https://tools.ietf.org/rfc/bcp/bcp47.html
+	// https://www.rfc-editor.org/info/bcp47
 	'bcp-47'(token) {
 		if (!token) {
 			return 0;

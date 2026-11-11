@@ -3,6 +3,8 @@ import type { Element } from 'domhandler';
 
 import type { ElementSpec, ExtendedElementSpec, Category, Attribute } from '@markuplint/ml-spec';
 
+import type { FetchOptions } from './fetch.ts';
+
 import { fetch } from './fetch.ts';
 import { sortObjectByKey } from './utils.ts';
 
@@ -38,8 +40,8 @@ export function fetchObsoleteElements(
 		.filter((e): e is ElementSpec => !!e);
 }
 
-export async function fetchHTMLElement(link: string) {
-	const $ = await fetch(link);
+export async function fetchHTMLElement(link: string, options?: FetchOptions) {
+	const $ = await fetch(link, options);
 	const name = link.replace(/.+\/([\w-]+)$/, '$1').toLowerCase();
 	const $article = $(MAIN_ARTICLE_SELECTOR);
 	const description = $article

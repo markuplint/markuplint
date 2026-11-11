@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [5.5.0](https://github.com/markuplint/markuplint/compare/v5.4.0...v5.5.0) (2026-11-10)
+
+### Bug Fixes
+
+* **mdx-parser:** count a leading BOM in the positions ([f80c08d](https://github.com/markuplint/markuplint/commit/f80c08d470c5a4c49435279f5f1847349ee6a91d)), closes [#4488](https://github.com/markuplint/markuplint/issues/4488)
+
+### Features
+
+* **mdx-parser:** say that an attribute value in braces is JavaScript ([0617ced](https://github.com/markuplint/markuplint/commit/0617ced5ef17d6a7b3fe012cb4ea4d5ca954fb90))
+
+
 # [5.4.0](https://github.com/markuplint/markuplint/compare/v5.3.0...v5.4.0) (2026-10-29)
 
 **Note:** Version bump only for package @markuplint/mdx-parser

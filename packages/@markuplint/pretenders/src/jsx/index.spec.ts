@@ -25,7 +25,7 @@ describe('jsxScanner', () => {
 						},
 						{
 							name: 'aria-xxx',
-							value: { dynamic: true },
+							value: { expression: 'xxx' },
 						},
 						{
 							name: 'aria-yyy',
@@ -187,7 +187,7 @@ describe('jsxScanner', () => {
 				selector: 'AttrOnlyChildren',
 				as: {
 					element: 'div',
-					attrs: [{ name: 'data-ref', value: { dynamic: true } }],
+					attrs: [{ name: 'data-ref', value: { expression: 'children' } }],
 					slots: null,
 				},
 				filePath: _('packages/@markuplint/pretenders/test/fixtures/005.tsx:32:6'),

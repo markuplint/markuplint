@@ -2,6 +2,8 @@ import type { Mode } from './types.js';
 import type { PlainData } from '@markuplint/ml-config';
 import type { ChildNode, Element, PretenderSlotContent, RuleConfigValue } from '@markuplint/ml-core';
 
+import { mayRenderUnknownChildren } from '../helpers.js';
+
 /**
  * Returns the slot-content description of a pretended component, which exists
  * only in `'pretended'` mode: the `'origin'` mode evaluates user tag rules keyed
@@ -45,12 +47,44 @@ export function getContentOwner<T extends RuleConfigValue, O extends PlainData>(
 }
 
 /**
+ * Whether the framework moves `child` out of `parent`: the spec of the framework lists the elements
+ * it places in the `<head>` wherever they are written (`movedToHead`), so what `parent` contains in
+ * the DOM does not include them. The `<head>` itself keeps them: that is where they are placed.
+ *
+ * @see MLMLSpec.movedToHead in `@markuplint/ml-spec`
+ */
+function isMovedToHead<T extends RuleConfigValue, O extends PlainData>(
+	// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
+	parent: Element<T, O>,
+	// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
+	child: ChildNode<T, O>,
+): boolean {
+	const selectors = parent.ownerMLDocument.specs.movedToHead;
+	if (!selectors || !child.is(child.ELEMENT_NODE) || parent.localName === 'head') {
+		return false;
+	}
+	return selectors.some(selector => child.matches(selector));
+}
+
+/**
  * The children of `el` to validate: the nodes given at the usage site, passed
  * through the pretender's `contents` when it declares any, with the children of
  * fragment pretenders (`element: '#fragment'`) expanded in place because such a
- * component contributes its contents directly to its parent.
+ * component contributes its contents directly to its parent. What the framework
+ * moves to the `<head>` (`movedToHead` of the spec) is not a child of `el` in the DOM.
  */
 export function expandChildren<T extends RuleConfigValue, O extends PlainData>(
+	// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
+	el: Element<T, O>,
+	given: readonly ChildNode<T, O>[],
+	mode: Mode,
+): readonly ChildNode<T, O>[] {
+	// Only here, not in the expansion of a fragment: what a fragment contributes belongs to `el`, so
+	// it is `el` that decides whether it is moved (the `<head>` keeps it), not the fragment.
+	return fillAndExpand(el, given, mode).filter(child => !isMovedToHead(el, child));
+}
+
+function fillAndExpand<T extends RuleConfigValue, O extends PlainData>(
 	// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
 	el: Element<T, O>,
 	given: readonly ChildNode<T, O>[],
@@ -77,6 +111,29 @@ export function isContentMutable<T extends RuleConfigValue, O extends PlainData>
 	return [...el.childNodes].some(child => isFragmentPretender(child, mode) && isContentMutable(child, mode));
 }
 
+/**
+ * Whether a child of `el` that the content model reads is a block of a preprocessor or a `slot`
+ * (`mayRenderUnknownChildren`): a required child that is missing may be what it renders.
+ * Only the children are looked at (the children of a fragment pretender included, as the content
+ * model reads them): what a descendant renders is not a child of `el`.
+ *
+ * A component that no pretender resolved is not looked at here: `start` leaves it out of each
+ * conditional branch that has one, and drops the missing children of that branch only.
+ *
+ * @template T - The rule configuration value type
+ * @template O - The rule options type
+ * @param el - The element whose children are looked at
+ * @param mode - Which identity of `el` the content model is read for
+ * @returns True if a child may stand for children that are not known
+ */
+export function hasMutableChildNodes<T extends RuleConfigValue, O extends PlainData>(
+	// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
+	el: Element<T, O>,
+	mode: Mode,
+): boolean {
+	return expandChildren(el, [...el.getPureChildNodes()], mode).some(child => mayRenderUnknownChildren(child, false));
+}
+
 function isFragmentPretender<T extends RuleConfigValue, O extends PlainData>(
 	// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
 	node: ChildNode<T, O>,
@@ -95,7 +152,7 @@ function expandFragment<T extends RuleConfigValue, O extends PlainData>(
 	node: ChildNode<T, O>,
 	mode: Mode,
 ): readonly ChildNode<T, O>[] {
-	return isFragmentPretender(node, mode) ? expandChildren(node, [...node.childNodes], mode) : [node];
+	return isFragmentPretender(node, mode) ? fillAndExpand(node, [...node.childNodes], mode) : [node];
 }
 
 /**

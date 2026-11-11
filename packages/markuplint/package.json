@@ -1,6 +1,6 @@
 {
 	"name": "markuplint",
-	"version": "5.4.0",
+	"version": "5.5.0",
 	"description": "An HTML linter for all markup developers",
 	"author": "Yusuke Hirao",
 	"license": "MIT",
@@ -24,36 +24,69 @@
 		},
 		"./package.json": "./package.json"
 	},
-	"typedoc": {
-		"entryPoint": "./src/index.ts"
-	},
 	"bin": "./bin/markuplint.mjs",
 	"scripts": {
 		"build": "npx tsc --project tsconfig.build.json",
 		"dev": "npx tsc --watch --project tsconfig.build.json",
 		"clean": "npx tsc --build --clean tsconfig.build.json"
 	},
+	"devDependencies": {
+		"@markuplint/astro-parser": "5.5.0",
+		"@markuplint/jsx-parser": "5.5.0",
+		"@markuplint/mdx-parser": "5.5.0",
+		"@markuplint/pretenders": "5.5.0",
+		"@markuplint/svelte-parser": "5.5.0",
+		"@markuplint/vue-parser": "5.5.0"
+	},
 	"dependencies": {
 		"@markuplint/cli-utils": "5.3.0",
 		"@markuplint/core": "5.0.0-rc.4",
-		"@markuplint/file-resolver": "5.4.0",
-		"@markuplint/html-parser": "5.4.0",
-		"@markuplint/html-spec": "5.4.0",
-		"@markuplint/i18n": "5.3.0",
-		"@markuplint/ml-ast": "5.3.0",
-		"@markuplint/ml-config": "5.4.0",
-		"@markuplint/ml-core": "5.4.0",
-		"@markuplint/ml-spec": "5.4.0",
-		"@markuplint/parser-utils": "5.4.0",
-		"@markuplint/rules": "5.4.0",
-		"@markuplint/shared": "5.4.0",
+		"@markuplint/file-resolver": "5.5.0",
+		"@markuplint/html-parser": "5.5.0",
+		"@markuplint/html-spec": "5.5.0",
+		"@markuplint/i18n": "5.5.0",
+		"@markuplint/ml-ast": "5.5.0",
+		"@markuplint/ml-config": "5.5.0",
+		"@markuplint/ml-core": "5.5.0",
+		"@markuplint/ml-spec": "5.5.0",
+		"@markuplint/parser-utils": "5.5.0",
+		"@markuplint/rules": "5.5.0",
+		"@markuplint/shared": "5.5.0",
 		"@types/debug": "^4.1.13",
-		"chokidar": "^5.0.0",
+		"chokidar": "^6.0.0",
 		"debug": "^4.4.3",
 		"meow": "^14.1.0",
 		"os-locale": "^8.0.0",
 		"strict-event-emitter": "^0.5.1",
 		"strip-ansi": "^7.2.0",
 		"type-fest": "^5.10.0"
+	},
+	"peerDependencies": {
+		"@markuplint/astro-parser": "^5.4.0",
+		"@markuplint/jsx-parser": "^5.4.0",
+		"@markuplint/mdx-parser": "^5.4.0",
+		"@markuplint/pretenders": "^5.4.0",
+		"@markuplint/svelte-parser": "^5.4.0",
+		"@markuplint/vue-parser": "^5.4.0"
+	},
+	"peerDependenciesMeta": {
+		"@markuplint/astro-parser": {
+			"optional": true
+		},
+		"@markuplint/jsx-parser": {
+			"optional": true
+		},
+		"@markuplint/mdx-parser": {
+			"optional": true
+		},
+		"@markuplint/pretenders": {
+			"optional": true
+		},
+		"@markuplint/svelte-parser": {
+			"optional": true
+		},
+		"@markuplint/vue-parser": {
+			"optional": true
+		}
 	}
 }

@@ -50,8 +50,21 @@ export function mlastForRust(ast: MLASTDocument, { spec, parser }: MLASTForRustO
 		if (cached) {
 			return cached;
 		}
-		const { valueType, ...resolved } = resolveAttrNames(attr, spec);
-		const result = { ...attr, ...resolved, ...(valueType && { valueType }) };
+		// The fields of the AST only: `expressionLanguage` is for reading a literal in `MLAttr`, which
+		// the Rust DOM does not do
+		const { potentialName, candidate, isDynamicValue, isDirective, isDuplicatable, valueType } = resolveAttrNames(
+			attr,
+			spec,
+		);
+		const result = {
+			...attr,
+			potentialName,
+			candidate,
+			isDynamicValue,
+			isDirective,
+			isDuplicatable,
+			...(valueType && { valueType }),
+		};
 		resolvedAttrs.set(attr, result);
 		return result;
 	};

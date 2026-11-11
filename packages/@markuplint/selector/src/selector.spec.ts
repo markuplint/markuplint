@@ -174,6 +174,29 @@ describe('selector matching', () => {
 		expect(createSelector(':not(#hoge)').match(el)).toBe(false);
 	});
 
+	test('issue #4514: pseudo-class names are ASCII case-insensitive', () => {
+		const anchor = createTestElement('<a href="x"></a>');
+		expect(() => createSelector('*:NOT(div)').match(anchor)).not.toThrow();
+		expect(createSelector('*:NOT(div)').match(anchor)).toBeTruthy();
+		expect(createSelector(':IS(a)').match(anchor)).toBeTruthy();
+
+		const el = createTestElement('<div id="hoge" class="foo bar"></div>');
+		expect(createSelector('*:NOT(div)').match(el)).toBe(false);
+		expect(createSelector('*:NOT(a)').match(el)).toBeTruthy();
+		expect(createSelector(':IS(a, div)').match(el)).toBeTruthy();
+		expect(createSelector(':IS(a, span)').match(el)).toBe(false);
+
+		const header = createTestElement('<header><div></div></header>');
+		expect(createSelector(':HAS(div, span)').match(header)).toBeTruthy();
+
+		const withSiblings = createTestElement('<div>text<!-- comment --><span></span><a></a></div>');
+		const span = withSiblings.children[0];
+		const a = withSiblings.children[1];
+		expect(createSelector(':FIRST-CHILD').match(span)).toBeTruthy();
+		expect(createSelector(':FIRST-CHILD').match(a)).toBe(false);
+		expect(createSelector(':NOT(:FIRST-CHILD)').match(a)).toBeTruthy();
+	});
+
 	test(':is', () => {
 		const el = createTestElement('<div id="hoge" class="foo bar"></div>');
 		expect(createSelector(':is(a, div)').match(el)).toBeTruthy();
@@ -195,11 +218,60 @@ describe('selector matching', () => {
 		expect(createSelector(':scope').match(el)).toBeTruthy();
 	});
 
+	test(':scope matches only the scoping root, not a top-level element without a parent', () => {
+		const dom = new JSDOM();
+		const { document } = dom.window;
+		const top = document.createElement('div');
+		expect(top.parentNode).toBeNull();
+		expect(createSelector(':scope').match(top, document)).toBe(false);
+		expect(createSelector(':scope').match(top, top)).toBeTruthy();
+	});
+
+	test('Child combinator with :scope on an element in a full document', () => {
+		const dom = new JSDOM('<!DOCTYPE html><html><body><div><p id="a"></p></div><p id="b"></p></body></html>');
+		const { document } = dom.window;
+		const body = document.body;
+		const a = document.getElementById('a');
+		const b = document.getElementById('b');
+		expect(createSelector(':scope > p').match(a, body)).toBe(false);
+		expect(createSelector(':scope > p').match(b, body)).toBeTruthy();
+	});
+
 	test(':root', () => {
 		const el = createTestElement('<html><div id="hoge" class="foo bar"></div></html>');
 		expect(createSelector(':root').match(el)).toBeTruthy();
 		const el2 = createTestElement('<div id="hoge" class="foo bar"></div>');
 		expect(createSelector(':root').match(el2)).toBe(false);
+	});
+
+	test(':first-child', () => {
+		const el = createTestElement('<div>text<!-- comment --><span></span><a></a></div>');
+		const span = el.children[0];
+		const a = el.children[1];
+		expect(createSelector(':first-child').match(span)).toBeTruthy();
+		expect(createSelector('span:first-child').match(span)).toBeTruthy();
+		expect(createSelector('div > :first-child').match(span)).toBeTruthy();
+		expect(createSelector(':first-child').match(a)).toBe(false);
+		expect(createSelector('a:first-child').match(a)).toBe(false);
+		expect(createSelector(':not(:first-child)').match(a)).toBeTruthy();
+		expect(createSelector(':first-child').match(el)).toBeTruthy();
+	});
+
+	test(':first-child matches an element without a parent', () => {
+		const el = new JSDOM().window.document.createElement('div');
+		expect(el.parentNode).toBeNull();
+		expect(createSelector(':first-child').match(el)).toBeTruthy();
+	});
+
+	test(':first-child counts the siblings that previousElementSibling gives, as the sibling combinators do', () => {
+		const prev = createTestElement('<li></li>');
+		const host = Object.defineProperty(createTestElement('<li></li>'), 'previousElementSibling', { value: null });
+		const sibling = Object.defineProperty(createTestElement('<li></li>'), 'previousElementSibling', {
+			value: prev,
+		});
+		expect(createSelector('li:first-child').match(host)).toBeTruthy();
+		expect(createSelector('li + li').match(host)).toBe(false);
+		expect(createSelector('li:first-child').match(sibling)).toBe(false);
 	});
 
 	test('Descendant combinator', () => {
@@ -337,6 +409,13 @@ describe('selector matching', () => {
 });
 
 describe('specificity', () => {
+	test(':first-child', () => {
+		const el = createTestElement('<div><span></span></div>');
+		const span = el.children[0];
+		expect(createSelector(':first-child').match(span)).toStrictEqual([0, 1, 0]);
+		expect(createSelector('span:first-child').match(span)).toStrictEqual([0, 1, 1]);
+	});
+
 	test(':not', () => {
 		const el = createTestElement('<div></div>');
 		expect(createSelector('div').match(el)).toStrictEqual([0, 0, 1]);

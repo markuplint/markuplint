@@ -279,6 +279,9 @@ function serializeValue(value: PretenderAttr['value']) {
 	if ('dynamic' in value) {
 		return 'dynamic';
 	}
+	if ('expression' in value) {
+		return `expression:${value.expression}`;
+	}
 	return `fromAttr:${value.fromAttr.toLowerCase()}:${value.omitIfMissing === true}`;
 }
 

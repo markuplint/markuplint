@@ -30,6 +30,53 @@ const spec: ExtendedSpec = {
 	 * `@markuplint/ml-core`, not by the parser.
 	 */
 	acceptedAttrNames: 'both',
+	/**
+	 * How Svelte renders a literal in `{…}` on the server (`attr` of `svelte/internal/shared/attributes.js`
+	 * and `DOM_BOOLEAN_ATTRIBUTES` of `svelte/utils.js`), where it differs from the default of
+	 * `@markuplint/ml-core`. Names are in lower case.
+	 *
+	 * The docs of Svelte say which attributes are included:
+	 *
+	 * > Boolean attributes are included on the element if their value is truthy and excluded if it's falsy
+	 *
+	 * > All other attributes are included unless their value is nullish
+	 *
+	 * - The one exception is the empty string on a boolean attribute, which is present (`booleanAttrs`)
+	 * - `translate={true}` is `translate="yes"` and `translate={false}` is `translate="no"`
+	 *
+	 * What it does not tell, which does not affect a rule:
+	 *
+	 * - A non-empty string literal on a boolean attribute (`disabled={"x"}`) is `""` here, which is how the
+	 *   client and the other frameworks render it; the server renders `disabled="x"`
+	 * - The client sets a boolean attribute as the property, so `""` is absent there
+	 * - A custom element is rendered as any element on the server (the compiler only keeps the case of its
+	 *   attribute names), so there is no `customElements` table; the client sets the properties that the
+	 *   element declares (`set_custom_element_data`), which are not attributes
+	 *
+	 * @see https://svelte.dev/docs/svelte/basic-markup#Element-attributes
+	 * @see https://github.com/sveltejs/svelte/blob/main/packages/svelte/src/internal/shared/attributes.js#attr
+	 * @see https://github.com/sveltejs/svelte/blob/main/packages/svelte/src/utils.js#DOM_BOOLEAN_ATTRIBUTES
+	 */
+	literalValues: {
+		booleanAttrs: { '""': '' },
+		attrs: {
+			translate: { true: 'yes', false: 'no' },
+			// Booleans of Svelte that the spec does not know as boolean
+			disablepictureinpicture: { true: '', false: null, '0': null },
+			disableremoteplayback: { true: '', false: null, '0': null },
+			indeterminate: { true: '', false: null, '0': null },
+			webkitdirectory: { true: '', false: null, '0': null },
+			// Boolean attributes of the spec that Svelte does not render as boolean
+			alpha: { true: 'true', false: 'false', '0': '0', '""': '' },
+			focusgroupstart: { true: 'true', false: 'false', '0': '0', '""': '' },
+			headingreset: { true: 'true', false: 'false', '0': '0', '""': '' },
+			shadowrootclonable: { true: 'true', false: 'false', '0': '0', '""': '' },
+			shadowrootcustomelementregistry: { true: 'true', false: 'false', '0': '0', '""': '' },
+			shadowrootdelegatesfocus: { true: 'true', false: 'false', '0': '0', '""': '' },
+			shadowrootserializable: { true: 'true', false: 'false', '0': '0', '""': '' },
+			switch: { true: 'true', false: 'false', '0': '0', '""': '' },
+		},
+	},
 	def: {
 		'#globalAttrs': {
 			'#extends': {

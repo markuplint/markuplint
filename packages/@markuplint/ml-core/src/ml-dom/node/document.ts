@@ -10,7 +10,15 @@ import type { Ruleset } from '../../ruleset/index.js';
 import type { MLSchema } from '../../types.js';
 import type { Walker } from '../helper/walkers.js';
 import type { MLToken } from '../token/token.js';
-import type { AttrNameRoute, EndTagType, MLASTDocument, MLASTNodeTreeItem, MLASTParseError } from '@markuplint/ml-ast';
+import type {
+	AttrNameRoute,
+	EndTagType,
+	ExpressionLanguage,
+	LiteralValueDeclaration,
+	MLASTDocument,
+	MLASTNodeTreeItem,
+	MLASTParseError,
+} from '@markuplint/ml-ast';
 import type { PlainData, Pretender, RuleCommonSettings, RuleConfigValue } from '@markuplint/ml-config';
 import type { ARIAVersion, MLMLSpec } from '@markuplint/ml-spec';
 
@@ -33,7 +41,7 @@ import { createNode } from '../helper/create-node.js';
 import { nodeListToDebugMaps } from '../helper/debug.js';
 import { sequentialWalker, syncWalk } from '../helper/walkers.js';
 
-import { nodeListToHTMLCollection } from './node-list.js';
+import { nodeListToHTMLCollection, toHTMLCollection } from './node-list.js';
 import { MLParentNode } from './parent-node.js';
 import { RuleMapper } from './rule-mapper.js';
 import { UnexpectedCallError } from '@markuplint/shared';
@@ -68,6 +76,20 @@ export class MLDocument<T extends RuleConfigValue, O extends PlainData = undefin
 	 * @default false
 	 */
 	readonly booleanish: boolean;
+
+	/**
+	 * The language of the code that an attribute value is written in when it is written as code
+	 * (`MLParser#attrExpressionLanguage`). Absent when the parser does not say; then no attribute
+	 * value of the document is read as a literal (a pretender's attribute is, whatever it says).
+	 */
+	readonly attrExpressionLanguage?: ExpressionLanguage;
+
+	/**
+	 * How the framework of the parser renders a literal in an attribute value, where it differs from
+	 * the default (`MLParser#literalValues`). What the spec says (`MLMLSpec#literalValues`) wins over
+	 * this.
+	 */
+	readonly literalValues?: LiteralValueDeclaration;
 
 	/**
 	 * The rule currently being evaluated during a lint pass.
@@ -232,6 +254,8 @@ export class MLDocument<T extends RuleConfigValue, O extends PlainData = undefin
 			readonly filename?: string;
 			readonly endTag?: 'xml' | 'omittable' | 'never';
 			readonly booleanish?: boolean;
+			readonly attrExpressionLanguage?: ExpressionLanguage;
+			readonly literalValues?: LiteralValueDeclaration;
 			readonly tagNameCaseSensitive?: boolean;
 			readonly componentNameVariants?: boolean;
 			readonly isComponentName?: (name: string) => boolean;
@@ -247,6 +271,8 @@ export class MLDocument<T extends RuleConfigValue, O extends PlainData = undefin
 		this.isFragment = ast.isFragment;
 		this.specs = schemaToSpec(schemas);
 		this.booleanish = options?.booleanish ?? false;
+		this.attrExpressionLanguage = options?.attrExpressionLanguage;
+		this.literalValues = options?.literalValues;
 		this.endTag = options?.endTag ?? 'omittable';
 		this.#filename = options?.filename;
 		this.tagNameCaseSensitive = options?.tagNameCaseSensitive ?? false;
@@ -272,9 +298,10 @@ export class MLDocument<T extends RuleConfigValue, O extends PlainData = undefin
 				.filter((n): n is MLNode<T, O> => !!n),
 		);
 
-		this.#pretending(options?.pretenders);
-
+		// A selector of the configuration is matched here, by a pretender and by a rule, so an
+		// invalid one is the fault of the configuration in both.
 		try {
+			this.#pretending(options?.pretenders);
 			this.#ruleMapping(ruleset);
 		} catch (error: unknown) {
 			if (error instanceof InvalidSelectorError) {
@@ -3202,20 +3229,32 @@ export class MLDocument<T extends RuleConfigValue, O extends PlainData = undefin
 	}
 
 	/**
+	 * The first element of the tree of the document whose id is `elementId`, with the character
+	 * references in the markup resolved: not in the content of an HTML `template` element, which is a
+	 * tree of its own.
+	 *
 	 * @implements DOM API: `Document`
+	 * @see https://dom.spec.whatwg.org/#dom-nonelementparentnode-getelementbyid
 	 */
 	getElementById(elementId: string) {
-		return this.querySelector(`#${elementId}`);
+		return this._getElementById(elementId);
 	}
 
 	/**
-	 * **IT THROWS AN ERROR WHEN CALLING THIS.**
-	 *
-	 * @unsupported
 	 * @implements DOM API: `Document`
+	 * @see https://dom.spec.whatwg.org/#concept-getelementsbyclassname
 	 */
 	getElementsByClassName(classNames: string): HTMLCollectionOf<MLElement<T, O>> {
-		return nodeListToHTMLCollection(this.querySelectorAll(classNames));
+		const names = classNames.split(/[\t\n\f\r ]+/).filter(Boolean);
+		return toHTMLCollection(
+			names.length === 0
+				? []
+				: this._descendantsToArray<MLElement<T, O>>(node => {
+						if (node.is(node.ELEMENT_NODE) && names.every(name => node.classList.contains(name))) {
+							return node;
+						}
+					}),
+		);
 	}
 
 	/**
@@ -3229,10 +3268,12 @@ export class MLDocument<T extends RuleConfigValue, O extends PlainData = undefin
 	}
 
 	/**
-	 * **IT THROWS AN ERROR WHEN CALLING THIS.**
+	 * The elements of the tree of the document that a type selector of that name matches, so that a
+	 * name is compared as a selector compares it in the language of the document (the case, and a
+	 * component that a pretender stands for), not as the DOM compares a tag name.
 	 *
-	 * @unsupported
 	 * @implements DOM API: `Document`
+	 * @see https://dom.spec.whatwg.org/#concept-getelementsbytagname
 	 */
 	getElementsByTagName(qualifiedName: string): HTMLCollectionOf<MLElement<T, O>> {
 		return nodeListToHTMLCollection(this.querySelectorAll(qualifiedName));

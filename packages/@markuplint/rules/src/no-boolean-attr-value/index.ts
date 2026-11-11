@@ -14,7 +14,8 @@ export default createRule({
 				return;
 			}
 
-			if (attr.isDynamicValue) {
+			// The value of an expression is not written as the value of an HTML attribute
+			if (attr.isExpressionValue) {
 				return;
 			}
 

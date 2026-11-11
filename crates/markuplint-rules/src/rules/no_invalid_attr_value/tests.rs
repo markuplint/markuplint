@@ -52,7 +52,7 @@
 //!   no-invalid-attr-value-invalid-012  → no_invalid_attr_value_invalid_012  (was invalid-attr-invalid-017)
 //!   no-invalid-attr-value-invalid-015  → no_invalid_attr_value_invalid_015  (was invalid-attr-invalid-024)
 //!   no-invalid-attr-value-invalid-016  → no_invalid_attr_value_invalid_016  (was invalid-attr-invalid-025)
-//!   no-invalid-attr-value-issue-3626-001  — SKIP: Spec sync (#3675). SRIHash checker ready, awaiting dev merge (Rust test commented out at ~line 2064) (was invalid-attr-issue-3626-001)
+//!   no-invalid-attr-value-issue-3626-001  → no_invalid_attr_value_issue_3626_001  (was invalid-attr-issue-3626-001)
 //!   no-invalid-attr-value-parser-001  — SKIP: Framework parser tests (Pug, Vue, React, Svelte, MDX) (was invalid-attr-parser-014)
 //!   no-invalid-attr-value-parser-002  — SKIP: Framework parser tests (Pug, Vue, React, Svelte, MDX) (was invalid-attr-parser-015)
 //!   no-invalid-attr-value-parser-003  — SKIP: Framework parser tests (Pug, Vue, React, Svelte, MDX) (was invalid-attr-parser-016)
@@ -1480,18 +1480,19 @@ fn no_invalid_attr_value_invalid_016() {
     assert_eq!(result.violations[1].raw, "logo-2x.png 2x");
 }
 
-// no-invalid-attr-value-issue-3626-001 — SKIP: Blocked by spec sync (#3675).
-// Worktree spec has integrity type="Any" (stale). Dev has type="SRIHash".
-// SRIHash checker is implemented (custom.rs + keyword_type.rs).
-// After merging dev, remove this comment and enable the test below.
-//
-// #[test]
-// fn no_invalid_attr_value_issue_3626_001() {
-//     const _ID: &str = "no-invalid-attr-value-issue-3626-001";
-//     let spec = spec();
-//     let config: LintConfig = serde_json::from_value(serde_json::json!({
-//         "rules": { "no-invalid-attr-value": true }
-//     })).unwrap();
-//     let result = lint(&html_arena(r#"<script src="x" integrity="md5-abc123"></script>"#), &spec, &config);
-//     assert!(result.violations.len() > 0, "md5 integrity should be invalid");
-// }
+/// TS: `[no-invalid-attr-value-issue-3626-001]` integrity rejects md5 hash
+#[test]
+fn no_invalid_attr_value_issue_3626_001() {
+    const _ID: &str = "no-invalid-attr-value-issue-3626-001";
+    let spec = spec();
+    let config: LintConfig = serde_json::from_value(serde_json::json!({
+        "rules": { "no-invalid-attr-value": true }
+    }))
+    .unwrap();
+    let result = lint(
+        &html_arena(r#"<script src="x" integrity="md5-abc123"></script>"#),
+        &spec,
+        &config,
+    );
+    assert!(!result.violations.is_empty(), "md5 integrity should be invalid");
+}

@@ -1,0 +1,6 @@
+{
+	"rules": {
+		"no-hardcoded-id": { "severity": "error" },
+		"no-duplicate-attr": { "severity": "warning" }
+	}
+}

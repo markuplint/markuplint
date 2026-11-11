@@ -37,6 +37,39 @@ describe('label association', () => {
 		expect(result.source).toBe('label');
 	});
 
+	test('implicit label (ancestor) in the same tree', () => {
+		const root = {};
+		const input = element('input', {
+			attrs: { type: 'text' },
+		});
+		const label = element('label', {
+			children: [textNode('Email: '), input],
+		});
+		Object.defineProperty(input, 'parentElement', { value: label });
+		Object.defineProperty(input, 'getRootNode', { value: () => root });
+		Object.defineProperty(label, 'getRootNode', { value: () => root });
+
+		const result = computeAccessibleName(input, createTestResolver());
+		expect(result.name).toBe('Email:');
+		expect(result.source).toBe('label');
+	});
+
+	test('implicit label (ancestor) in another tree is not the label', () => {
+		const input = element('input', {
+			attrs: { type: 'text' },
+		});
+		const label = element('label', {
+			children: [textNode('Email: '), input],
+		});
+		Object.defineProperty(input, 'parentElement', { value: label });
+		Object.defineProperty(input, 'getRootNode', { value: () => ({ content: true }) });
+		Object.defineProperty(label, 'getRootNode', { value: () => ({ document: true }) });
+
+		const result = computeAccessibleName(input, createTestResolver());
+		expect(result.name).toBe('');
+		expect(result.source).toBeNull();
+	});
+
 	test('multiple explicit labels', () => {
 		const input = element('input', {
 			attrs: { id: 'multi', type: 'text' },

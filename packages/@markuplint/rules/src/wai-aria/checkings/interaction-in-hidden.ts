@@ -1,7 +1,7 @@
 import type { Options } from '../types.js';
 import type { Attr, Element, ElementChecker } from '@markuplint/ml-core';
 
-import { mayBeFocusable } from '@markuplint/ml-spec';
+import { getComposedParentElement, mayBeFocusable } from '@markuplint/ml-spec';
 
 /**
  * Checks whether a focusable interactive element is inside an `aria-hidden=true` subtree.
@@ -45,6 +45,10 @@ export const checkingInteractionInHidden: ElementChecker<boolean, Options> =
 /**
  * Traverses the element's ancestor chain to find the closest element with `aria-hidden="true"`.
  *
+ * The chain is the one the accessibility tree is built from ({@link getComposedParentElement}): it ends at the
+ * top of the content of an ordinary `template` element, which is not rendered and whose placement is not known,
+ * and it goes on from a declarative shadow root to its host.
+ *
  * @param el - The element to start searching from (inclusive).
  * @returns The `aria-hidden` attribute node if found, or `null` if no ancestor is hidden.
  */
@@ -58,7 +62,7 @@ function getClosestAriaHidden(
 		if (ariaHidden?.value === 'true') {
 			return ariaHidden;
 		}
-		current = current.parentElement;
+		current = getComposedParentElement(current);
 	}
 	return null;
 }

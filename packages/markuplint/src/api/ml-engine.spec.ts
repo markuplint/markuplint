@@ -429,6 +429,44 @@ describe('#1862 configFile skips default config search', () => {
 	});
 });
 
+describe('configFile is resolved as a value of extends is', () => {
+	it('a module name is loaded as such', async () => {
+		const filePath = path.resolve(import.meta.dirname, '../../test/issue1862/index.html');
+		const file = await MLEngine.toMLFile(filePath);
+		const engine = new MLEngine(file!, { configFile: 'markuplint:recommended' });
+
+		let configSet: ConfigSet | null = null;
+		engine.once('config', (_, _configSet) => {
+			configSet = _configSet;
+		});
+		await engine.exec();
+
+		expect([...configSet!.files]).toContain('markuplint:recommended');
+		// @ts-ignore
+		expect(configSet?.config.rules?.['__test-rule']).toBe(undefined);
+	});
+
+	it('a relative path is based on the working directory', async () => {
+		const filePath = path.resolve(import.meta.dirname, '../../test/issue1862/index.html');
+		const configFilePath = path.resolve(import.meta.dirname, '../../test/issue1862/config.json');
+		const configFile = path.relative(process.cwd(), configFilePath);
+		expect(path.isAbsolute(configFile)).toBe(false);
+
+		const file = await MLEngine.toMLFile(filePath);
+		const engine = new MLEngine(file!, { configFile });
+
+		let configSet: ConfigSet | null = null;
+		engine.once('config', (_, _configSet) => {
+			configSet = _configSet;
+		});
+		await engine.exec();
+
+		expect([...configSet!.files]).toStrictEqual([configFilePath]);
+		// @ts-ignore
+		expect(configSet?.config.rules?.['__test-rule']).toBe(true);
+	});
+});
+
 describe('#4412 a source whose directory does not exist yet', () => {
 	let tmpDir: string;
 
@@ -521,8 +559,8 @@ describe('#3900 config-error does not accumulate across setCode', () => {
 
 describe('#4064 setCode re-resolves the pretenders that depend on the source', () => {
 	// Each page renders a component directly inside <ul>, so permitted-contents
-	// names the element the component resolves to — or the component itself
-	// when it is unresolved. That name is what tells the states apart.
+	// names the element the component resolves to, and says nothing of a component
+	// that is unresolved. Whether that name is there is what tells the states apart.
 	const disallowedIn = (violations: readonly Violation[] | undefined, name: string) =>
 		(violations ?? []).some(v => v.ruleId === 'permitted-contents' && v.message.includes(name));
 
@@ -561,7 +599,7 @@ describe('#4064 setCode re-resolves the pretenders that depend on the source', (
 		const { engine } = await createEngine(tmpDir, withoutImport, { auto: true });
 
 		const unresolved = await engine.exec();
-		expect(disallowedIn(unresolved?.violations, 'Child')).toBe(true);
+		expect(disallowedIn(unresolved?.violations, 'Child')).toBe(false);
 		expect(disallowedIn(unresolved?.violations, 'button')).toBe(false);
 
 		await engine.setCode(withImport);
@@ -571,7 +609,7 @@ describe('#4064 setCode re-resolves the pretenders that depend on the source', (
 
 		await engine.setCode(withoutImport);
 		const unresolvedAgain = await engine.exec();
-		expect(disallowedIn(unresolvedAgain?.violations, 'Child')).toBe(true);
+		expect(disallowedIn(unresolvedAgain?.violations, 'Child')).toBe(false);
 		expect(disallowedIn(unresolvedAgain?.violations, 'button')).toBe(false);
 	});
 
@@ -2001,7 +2039,80 @@ describe('a relative filePath of an inline pretender is resolved from the config
 		const violations = await lint(path.join(tmpDir, 'app', 'list.tsx'), {
 			configFile: path.join(tmpDir, 'app', 'other.config.json'),
 		});
-		expect(violations.map(v => v.ruleId)).toStrictEqual(['require-owned-elements']);
+		expect(violations).toStrictEqual([]);
+	});
+
+	// A component that no pretender resolved is not known to render the owned element, so `require-owned-elements`
+	// reports nothing whether the pretender is kept or dropped. What tells them apart is the element that the rules
+	// judge: `li` for the pretender, and the component for none.
+	describe('what the rules judge', () => {
+		const restricted = (filePath: string) => ({
+			...createConfig(filePath),
+			rules: { 'no-restricted-element': ['li'] },
+		});
+
+		it('is the element that the component stands for when the pretender is kept', async () => {
+			await fs.writeFile(
+				path.join(tmpDir, 'app', 'restricted.config.json'),
+				JSON.stringify(restricted('./Item.tsx:1:17')),
+			);
+
+			const violations = await lint(path.join(tmpDir, 'app', 'list.tsx'), {
+				configFile: path.join(tmpDir, 'app', 'restricted.config.json'),
+			});
+			expect(violations.map(v => v.ruleId)).toStrictEqual(['no-restricted-element']);
+		});
+
+		it('is the component when the pretender is dropped', async () => {
+			await fs.writeFile(
+				path.join(tmpDir, 'app', 'restricted-other.config.json'),
+				JSON.stringify(restricted('./Other.tsx:1:17')),
+			);
+
+			const violations = await lint(path.join(tmpDir, 'app', 'list.tsx'), {
+				configFile: path.join(tmpDir, 'app', 'restricted-other.config.json'),
+			});
+			expect(violations).toStrictEqual([]);
+		});
+
+		it('is the element that the component stands for when the configuration file is extended from another directory', async () => {
+			await fs.writeFile(
+				path.join(tmpDir, 'app', 'restricted.config.json'),
+				JSON.stringify(restricted('./Item.tsx:1:17')),
+			);
+			await fs.mkdir(path.join(tmpDir, 'extending'));
+			await fs.writeFile(
+				path.join(tmpDir, 'extending', 'markuplint.config.json'),
+				JSON.stringify({ extends: ['../app/restricted.config.json'] }),
+			);
+
+			const violations = await lint(path.join(tmpDir, 'app', 'list.tsx'), {
+				configFile: path.join(tmpDir, 'extending', 'markuplint.config.json'),
+			});
+			expect(violations.map(v => v.ruleId)).toStrictEqual(['no-restricted-element']);
+		});
+
+		it('is the element that the component stands for when the pretender is in the value of an override', async () => {
+			const { pretenders, ...rest } = restricted('./Item.tsx:1:17');
+			await fs.writeFile(
+				path.join(tmpDir, 'app', 'restricted-overridden.config.json'),
+				JSON.stringify({ ...rest, overrideMode: 'merge', overrides: { './list.tsx': { pretenders } } }),
+			);
+
+			const violations = await lint(path.join(tmpDir, 'app', 'list.tsx'), {
+				configFile: path.join(tmpDir, 'app', 'restricted-overridden.config.json'),
+			});
+			expect(violations.map(v => v.ruleId)).toStrictEqual(['no-restricted-element']);
+		});
+
+		it('is the element that the component stands for when the configuration has no file behind it', async () => {
+			vi.spyOn(process, 'cwd').mockReturnValue(path.join(tmpDir, 'app'));
+
+			const violations = await lint(path.join(tmpDir, 'app', 'list.tsx'), {
+				config: restricted('./Item.tsx:1:17'),
+			});
+			expect(violations.map(v => v.ruleId)).toStrictEqual(['no-restricted-element']);
+		});
 	});
 
 	it('reads the filePath of a configuration with no file behind it from the working directory', async () => {

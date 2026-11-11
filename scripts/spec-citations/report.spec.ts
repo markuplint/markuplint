@@ -113,4 +113,13 @@ describe('renderReport', () => {
 		expect(result).toMatchObject({ findings: 0, failures: 0 });
 		expect(result.summary).toContain('No findings');
 	});
+
+	test('[report-010] keeps a diff of source code that holds a backtick fence inside its own fence', () => {
+		const diff = ['-const doc = "```js";', '+const doc = "```ts";', ' return doc;'].join('\n');
+		const p = problem({ kind: 'section-changed', message: 'The cited section changed since 2026-09-01', diff });
+		const { summary } = renderReport([p], [], { date: DATE });
+		expect(summary.match(/```/g)).toHaveLength(2);
+		expect(summary).toContain("-const doc = \"'''js\";");
+		expect(summary).toContain("+const doc = \"'''ts\";");
+	});
 });

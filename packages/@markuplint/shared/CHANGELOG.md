@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [5.5.0](https://github.com/markuplint/markuplint/compare/v5.4.0...v5.5.0) (2026-11-10)
+
+### Bug Fixes
+
+* **shared:** read the message that Deno raises for a package that is not a dependency ([9ec5386](https://github.com/markuplint/markuplint/commit/9ec538678076bfd6bbf9b74bf716071798b08107))
+
+### Features
+
+* **shared:** add missingPackageOf to tell a missing package from a missing dependency ([f1fa430](https://github.com/markuplint/markuplint/commit/f1fa430fbfd2e099a8668879c83d6a334447e653))
+
+
 # [5.4.0](https://github.com/markuplint/markuplint/compare/v5.3.0...v5.4.0) (2026-10-29)
 
 ### Features

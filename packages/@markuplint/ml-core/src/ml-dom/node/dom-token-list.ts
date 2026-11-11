@@ -144,15 +144,43 @@ export class MLDomTokenList extends Array<string> implements DOMTokenList {
 			if (startOffset === -1) {
 				continue;
 			}
+
+			// The value is what code results in (`{"a b"}`), not the text of the source: an offset in it is the offset in
+			// the source only for a string of the same characters in quotes, where the quote is one character before the
+			// value. For an escape, a wrapper or another notation, the token is reported at the start of the value.
+			const base = ownerAttr.valueNode;
+			let shift = 0;
+			if (ownerAttr.isExpressionValue && ownerAttr.valueNode) {
+				const raw = ownerAttr.valueNode.raw;
+				const quote = raw[0];
+				const isPlainString =
+					raw.length >= 2 &&
+					(quote === '"' || quote === "'" || quote === '`') &&
+					raw.endsWith(quote) &&
+					raw.slice(1, -1) === this.#origin;
+				if (!isPlainString) {
+					return {
+						raw: token,
+						startOffset: ownerAttr.valueNode.startOffset,
+						startLine: ownerAttr.valueNode.startLine,
+						startCol: ownerAttr.valueNode.startCol,
+						rule: ownerAttr.rule,
+						_searchedIndex: startOffset,
+					};
+				}
+				shift = 1;
+			}
+
 			const position = getPosition(this.#origin, startOffset);
 			const startLine = position.line;
 			const startCol = position.column;
 
 			return {
 				raw: token,
-				startOffset: (ownerAttr.valueNode?.startOffset ?? 0) + startOffset,
-				startLine: (ownerAttr.valueNode?.startLine ?? 0) + (startLine - 1),
-				startCol: (ownerAttr.valueNode?.startCol ?? 0) + (startCol - 1),
+				startOffset: (base?.startOffset ?? 0) + shift + startOffset,
+				startLine: (base?.startLine ?? 0) + (startLine - 1),
+				// What starts the value (the quote) is before a token on the first line only: the column on a later line is the column in the line
+				startCol: startLine > 1 ? startCol : (base?.startCol ?? 0) + shift + (startCol - 1),
 				rule: ownerAttr.rule,
 				_searchedIndex: startOffset,
 			};

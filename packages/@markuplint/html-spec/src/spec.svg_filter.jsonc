@@ -1,5 +1,5 @@
 // https://drafts.fxtf.org/filter-effects/#FilterElement
-// https://www.w3.org/TR/svg-aam-1.0/#details-id-38
+// https://www.w3.org/TR/svg-aam/#role-map-filter
 {
 	"contentModel": {
 		"contents": [

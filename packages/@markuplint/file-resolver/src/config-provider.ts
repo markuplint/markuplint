@@ -1,6 +1,6 @@
 import type { MLFile } from './ml-file/index.js';
 import type { ConfigSet } from './types.js';
-import type { Config, OptimizedConfig, OptimizedOverrideConfig } from '@markuplint/ml-config';
+import type { Config, OptimizedConfig, OptimizedOverrideConfig, Pretender } from '@markuplint/ml-config';
 import type { Nullable } from '@markuplint/shared';
 
 import path from 'node:path';
@@ -8,7 +8,12 @@ import path from 'node:path';
 import { mergeConfig, rebaseHandWrittenPretenderFilePath } from '@markuplint/ml-config';
 import { ConfigParserError } from '@markuplint/parser-utils';
 import { InvalidSelectorError, createSelector } from '@markuplint/selector';
-import { nonNullableFilter, toNoEmptyStringArrayFromStringOrArray, ConfigLoadError } from '@markuplint/shared';
+import {
+	nonNullableFilter,
+	toNoEmptyStringArrayFromStringOrArray,
+	ConfigLoadError,
+	isFatalError,
+} from '@markuplint/shared';
 
 import { clearAutoLoadRulesCache } from './auto-load-rules.js';
 import { load as loadConfig, search, clearExplorerCache, configLoadErrorFiles } from './cosmiconfig.js';
@@ -19,12 +24,24 @@ import { isPluginModuleName } from './is-plugin-module-name.js';
 import { isPresetModuleName } from './is-preset-module-name.js';
 import { moduleExists } from './module-exists.js';
 import { relPathToNameOrAbsPath } from './path-to-abs-or-name.js';
+import { resolveNameOrAbsPath } from './resolve-name-or-abs-path.js';
 import { cacheClear, resolvePlugins } from './resolve-plugins.js';
 import { fileExists, uuid } from './utils.js';
 
 const cpLog = log.extend('config-provider');
 
 const KEY_SEPARATOR = '__ML_CONFIG_MERGE__';
+
+/**
+ * What a configuration, or the value of one of its `overrides`, holds that a selector matches. `Config`
+ * and `OptimizedConfig` (the merged form, whose `pretenders` is always `{ data }`) hold these properties, so
+ * a property that gets a selector later is added here once.
+ */
+type SelectorHolder = Pick<Config, 'nodeRules' | 'childNodeRules' | 'pretenders'>;
+
+function isPretenderList(pretenders: SelectorHolder['pretenders']): pretenders is readonly Pretender[] {
+	return Array.isArray(pretenders);
+}
 
 /**
  * Manages loading, caching, and resolving markuplint configuration files.
@@ -42,7 +59,6 @@ const KEY_SEPARATOR = '__ML_CONFIG_MERGE__';
 export class ConfigProvider {
 	#cache = new Map<string, ConfigSet>();
 	#held = new Set<string>();
-	#recursiveLoadKeyAndDepth = new Map<string, number>();
 	#store = new Map<string, Config | ConfigLoadError>();
 	/**
 	 * Stabilizes {@link set}'s auto-generated key for an inline config object
@@ -124,30 +140,71 @@ export class ConfigProvider {
 	/**
 	 * Recursively loads a configuration and all its `extends` dependencies.
 	 *
+	 * A `CircularReferenceError` is reported only for a config that extends itself, directly or
+	 * indirectly. A config reached through more than one `extends` path is loaded once and is not
+	 * an error.
+	 *
 	 * @param key - The config file path or module name to load
 	 * @param cache - Whether to use cached results
 	 * @param referrer - The file path of the config that referenced this key
-	 * @param depth - Current recursion depth (for circular reference detection)
 	 * @returns A set of loaded config keys and any errors encountered
 	 */
+	recursiveLoad(key: string, cache: boolean, referrer: string): Promise<{ stack: Set<string>; errs: Error[] }>;
+	/**
+	 * @deprecated Remove the `depth` argument: it is ignored, and the overload will be removed in v6.
+	 * @param key - The config file path or module name to load
+	 * @param cache - Whether to use cached results
+	 * @param referrer - The file path of the config that referenced this key
+	 * @param depth - Ignored
+	 */
+	recursiveLoad(
+		key: string,
+		cache: boolean,
+		referrer: string,
+		depth: number,
+	): Promise<{ stack: Set<string>; errs: Error[] }>;
 	async recursiveLoad(
 		key: string,
 		cache: boolean,
 		referrer: string,
-		depth = 1,
+		depth?: number,
+	): Promise<{ stack: Set<string>; errs: Error[] }> {
+		return await this.#recursiveLoad(key, cache, referrer, new Set(), new Set());
+	}
+
+	/**
+	 * A config is circular only when it is its own ancestor on the current `extends` path
+	 * (`ancestors`). Reaching the same config through two different paths (a diamond, e.g. two
+	 * presets that extend the same sub-presets) is not a cycle, however deep each path is, so
+	 * comparing depths cannot tell the two apart (#4552).
+	 *
+	 * `visited` holds every key already walked in this top-level call. A key met again is skipped:
+	 * its keys are already in the result and its errors, circular ones included, were already
+	 * reported once. Without it the walk repeats once per path, which grows exponentially with
+	 * stacked diamonds, and reports the same error once per path. State lives in the arguments,
+	 * not on the instance, so concurrent calls do not see each other.
+	 */
+	async #recursiveLoad(
+		key: string,
+		cache: boolean,
+		referrer: string,
+		ancestors: Set<string>,
+		visited: Set<string>,
 	): Promise<{ stack: Set<string>; errs: Error[] }> {
 		const stack = new Set<string>();
 		const errs: Error[] = [];
 
-		const ancestorDepth = this.#recursiveLoadKeyAndDepth.get(key);
-		if (ancestorDepth != null && ancestorDepth < depth) {
+		if (ancestors.has(key)) {
 			return {
 				stack,
 				errs: [new CircularReferenceError(`Circular reference detected: ${key}`)],
 			};
 		}
 
-		this.#recursiveLoadKeyAndDepth.set(key, depth);
+		if (visited.has(key)) {
+			return { stack, errs };
+		}
+		visited.add(key);
 
 		let config = this.#store.get(key);
 
@@ -176,12 +233,17 @@ export class ConfigProvider {
 
 		const depKeys = config.extends === null ? null : toNoEmptyStringArrayFromStringOrArray(config.extends);
 		if (depKeys) {
-			for (const depKey of depKeys) {
-				const keys = await this.recursiveLoad(depKey, cache, key, depth + 1);
-				for (const key of keys.stack) {
-					stack.add(key);
+			ancestors.add(key);
+			try {
+				for (const depKey of depKeys) {
+					const keys = await this.#recursiveLoad(depKey, cache, key, ancestors, visited);
+					for (const loadedKey of keys.stack) {
+						stack.add(loadedKey);
+					}
+					errs.push(...keys.errs);
 				}
-				errs.push(...keys.errs);
+			} finally {
+				ancestors.delete(key);
 			}
 		}
 
@@ -212,12 +274,19 @@ export class ConfigProvider {
 	 * right before calling this) — see #4015.
 	 *
 	 * @param targetFile - The file being linted
-	 * @param names - Config file paths or module names to merge
+	 * @param names - Config file paths or module names to merge. A key of a configuration already
+	 * stored (by {@link set} or {@link search}) is taken as it is; any other name is resolved as a
+	 * value of `extends` is, from the working directory: a module name stays, a path becomes
+	 * absolute
 	 * @param cache - Whether to reuse already-loaded/cached entries
 	 * @returns The fully resolved configuration set including plugins and errors
 	 */
 	async resolve(targetFile: Readonly<MLFile>, names: readonly Nullable<string>[], cache = true): Promise<ConfigSet> {
-		const keys = names.filter(nonNullableFilter);
+		const keys = await Promise.all(
+			names
+				.filter(nonNullableFilter)
+				.map(name => (this.#store.has(name) ? name : resolveNameOrAbsPath(process.cwd(), name))),
+		);
 		const key = keys.join(KEY_SEPARATOR);
 
 		let baseConfigSet = this.#cache.get(key);
@@ -243,11 +312,7 @@ export class ConfigProvider {
 				filePath: referrer,
 			});
 		}
-		const errors = this.#validateConfig(configSet.config, filePath);
-		configSet.errs.push(...errors);
-
 		const { plugins, errors: pluginErrors } = await resolvePlugins(configSet.config.plugins);
-		configSet.errs.push(...pluginErrors);
 
 		if (this.#held.size > 0) {
 			const extendHelds = [...this.#held.values()];
@@ -270,6 +335,10 @@ export class ConfigProvider {
 
 			this.#held.clear();
 		}
+
+		// After the plugins' configurations are merged in: that merge makes a new `errs`, which would lose
+		// these.
+		configSet.errs.push(...pluginErrors);
 
 		return {
 			...configSet,
@@ -458,21 +527,26 @@ export class ConfigProvider {
 		const resolvedKeys = new Set<string>();
 		const errs: Error[] = [];
 		for (const key of keys) {
-			this.#recursiveLoadKeyAndDepth.clear();
 			const keySet = await this.recursiveLoad(key, cache, referrer);
 			for (const k of keySet.stack) {
 				resolvedKeys.add(k);
 			}
 			errs.push(...keySet.errs);
 		}
-		const configs = [...resolvedKeys].map(name => this.#store.get(name)).filter(nonNullableFilter);
 		let resultConfig: OptimizedConfig = {};
-		for (const config of configs) {
+		for (const name of resolvedKeys) {
+			const config = this.#store.get(name);
+			if (!config) {
+				continue;
+			}
 			if (config instanceof ConfigLoadError) {
 				errs.push(config);
 				continue;
 			}
 
+			// Each configuration is validated as it is, before the merge loses which one holds a selector,
+			// so that an error names the file (or the plugin configuration) that the user has to fix.
+			errs.push(...this.#validateConfig(config, name));
 			resultConfig = mergeConfig(resultConfig, config);
 		}
 		return {
@@ -503,25 +577,57 @@ export class ConfigProvider {
 		};
 	}
 
-	#validateConfig(config: Config, filePath: string) {
+	/**
+	 * Creates every selector that one configuration holds, so that an invalid one is in
+	 * {@link ConfigSet.errs} wherever it is written: the top level, and the value of each `overrides` entry
+	 * (whether or not its glob matches the target file, as the result is cached for every file of `names`).
+	 * It runs on each configuration before they are merged, because the merge loses which one holds a selector.
+	 * The selectors are those of `nodeRules`, `childNodeRules`, and the pretenders written in the
+	 * configuration itself (`pretenders.data`; the merge has turned an array into it), including those
+	 * that a plugin provides. Those that a pretender scan or a file produces are not known here;
+	 * `MLDocument` reports them when it meets them. An error names the file of the pretender
+	 * (`Pretender#filePath`) when it has one, and `filePath`, the key of the configuration (its file, or
+	 * `plugin:<name>/<config>`), otherwise.
+	 */
+	#validateConfig(config: Config | OptimizedConfig, filePath: string) {
 		const errors: ConfigParserError[] = [];
-		if (config.nodeRules)
-			for (const rule of config.nodeRules) {
-				if (rule.selector) {
-					try {
-						createSelector(rule.selector);
-					} catch (error: unknown) {
-						if (error instanceof InvalidSelectorError) {
-							errors.push(
-								new ConfigParserError(error.message, {
-									filePath,
-									raw: rule.selector,
-								}),
-							);
-						}
-					}
-				}
+		const check = (selector: string | undefined, from = filePath) => {
+			if (!selector) {
+				return;
 			}
+			try {
+				createSelector(selector);
+			} catch (error: unknown) {
+				// Anything but an `InvalidSelectorError` is not a fault of the selector string the user wrote
+				// (a bug), so it must propagate instead of being reported as a configuration error.
+				if (isFatalError(error) || !(error instanceof InvalidSelectorError)) {
+					throw error;
+				}
+				errors.push(
+					new ConfigParserError(error.message, {
+						filePath: from,
+						raw: selector,
+					}),
+				);
+			}
+		};
+		const checkSelectors = (holder: SelectorHolder) => {
+			for (const rule of holder.nodeRules ?? []) {
+				check(rule.selector);
+			}
+			for (const rule of holder.childNodeRules ?? []) {
+				check(rule.selector);
+			}
+			const pretenders = holder.pretenders;
+			for (const pretender of isPretenderList(pretenders) ? pretenders : (pretenders?.data ?? [])) {
+				// The file that declares the component is where the user fixes the entry
+				check(pretender.selector, pretender.filePath ?? filePath);
+			}
+		};
+		checkSelectors(config);
+		for (const override of Object.values(config.overrides ?? {})) {
+			checkSelectors(override);
+		}
 		return errors;
 	}
 }

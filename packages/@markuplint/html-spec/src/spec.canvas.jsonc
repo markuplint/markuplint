@@ -1,11 +1,19 @@
 // https://html.spec.whatwg.org/multipage/canvas.html#the-canvas-element
 // https://www.w3.org/TR/html-aria/#el-canvas
-// https://w3c.github.io/html-aria/#el-canvas
 {
 	"contentModel": {
 		"contents": [
 			{
-				"transparent": ":not(:model(interactive), :has(:model(interactive)))"
+				// @see https://html.spec.whatwg.org/multipage/canvas.html#the-canvas-element
+				// > Transparent, but with no interactive content descendants except for a elements, img elements with usemap attributes, button elements, input elements whose type attribute are in the Checkbox or Radio Button states, input elements that are buttons, and select elements with a multiple attribute or a display size greater than 1.
+				// The interactive content that is not in the list of exceptions is disallowed as the element itself and
+				// as a descendant of an element (`:has()`). JSONC cannot share the selector, so the list of exceptions
+				// is written twice and the two copies must be edited together.
+				// `a` (only with `href`, which the spec text does not say) and `img[usemap]` are interactive content
+				// already, so listing them changes nothing but mirrors the spec; the types of an input that is a button
+				// are Submit Button, Reset Button, Button and Image Button. The display size is told by `:display-size()`,
+				// as an attribute selector cannot parse `size` as the HTML Standard does.
+				"transparent": ":not(:model(interactive):not(a, img[usemap], button, input:is([type='checkbox' i], [type='radio' i], [type='submit' i], [type='reset' i], [type='button' i], [type='image' i]), select:is([multiple], :display-size(> 1))), :has(:model(interactive):not(a, img[usemap], button, input:is([type='checkbox' i], [type='radio' i], [type='submit' i], [type='reset' i], [type='button' i], [type='image' i]), select:is([multiple], :display-size(> 1)))))"
 			}
 		]
 	},

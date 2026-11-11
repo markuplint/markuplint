@@ -6,7 +6,7 @@
 const idlContentMap = {
 	// HTML
 	accept: 'accept',
-	acceptCharset: 'acceptcharset',
+	acceptCharset: 'accept-charset',
 	accessKey: 'accesskey',
 	action: 'action',
 	allowFullScreen: 'allowfullscreen',
@@ -404,8 +404,8 @@ const idlContentMap = {
 	 * PerformanceElementTiming API
 	 *
 	 * @experimental
-	 * @see https://wicg.github.io/element-timing/#sec-modifications-DOM
-	 * @see https://wicg.github.io/element-timing/#sec-elements-exposed
+	 * @see https://w3c.github.io/element-timing/#sec-modifications-DOM
+	 * @see https://w3c.github.io/element-timing/#sec-elements-exposed
 	 */
 	elementTiming: 'elementtiming',
 

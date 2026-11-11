@@ -204,10 +204,11 @@ export interface MLASTElementCloseTag extends MLASTAbstractNode {
  * from template engines and frameworks (e.g. `{#if}`, `{#each}` in Svelte,
  * `v-if` blocks in Vue, `<% if %>` in EJS/ERB).
  *
- * In `ml-core` this maps to `MLBlock` — a markuplint-specific extension with
- * the custom `nodeType` `101` (no DOM Standard equivalent) — which acts as a
- * transparent container: its children are treated as belonging to the parent
- * node for tree traversal purposes.
+ * In `ml-core` this maps to `MLBlock`. `parentNode` walks through every such
+ * block, so an element inside it keeps the element that contains the block
+ * as its parent. `childNodes` flattens only a fragment and a block whose
+ * `blockBehavior.type` is `each` or `end`. A conditional block stays in
+ * `childNodes`: branches that never render together must not become siblings.
  */
 export interface MLASTPreprocessorSpecificBlock extends MLASTAbstractNode {
 	readonly type: 'psblock';
@@ -335,7 +336,11 @@ export interface MLASTHTMLAttr extends MLASTToken {
 	readonly value: MLASTToken;
 	/** The closing quote token */
 	readonly endQuote: MLASTToken;
-	/** Whether the value is a dynamic expression (e.g. a binding in a framework) */
+	/**
+	 * Whether the value is written as code (e.g. a binding in a framework). It is the source of
+	 * `MLAttr#isExpressionValue`; whether the value is known is up to `MLAttr#isDynamicValue`, which
+	 * reads the code.
+	 */
 	readonly isDynamicValue?: true;
 	/** Whether the attribute is a framework directive (e.g. `v-if`, `@click`) */
 	readonly isDirective?: true;
@@ -363,18 +368,21 @@ export interface MLASTSpreadAttr extends MLASTToken {
 }
 
 /**
- * Stable identifier for a non-fatal parser conformance error. The full set
- * mirrors parse5's `ERR` enum (HTML LS tokenizer / tree-construction parse
+ * Stable identifier for a non-fatal parse error that parse5 reports. The full
+ * set mirrors parse5's `ERR` enum (HTML LS tokenizer / tree-construction parse
  * errors) — each value is a kebab-case string that appears verbatim in the
  * `code` field of `MLASTParseError` and as the key in
  * `severity.parseError`'s `Record` form.
  *
- * Source of truth: `parse5/dist/common/error-codes.d.ts`. When parse5
- * adds a new code, append it here and update the migration guide.
+ * Source of truth: `parse5/dist/common/error-codes.d.ts`, which
+ * `@markuplint/html-parser`'s `parse-error-code-sync.spec.ts` holds this type to
+ * in both directions. When parse5 adds a new code, append it here and update the
+ * migration guide. A code that a framework parser reports is not parse5's: it
+ * is {@link MLASTFrameworkParseErrorCode}.
  *
  * @see https://html.spec.whatwg.org/multipage/parsing.html#parse-errors
  */
-export type MLASTParseErrorCode =
+export type MLASTHtmlParseErrorCode =
 	// Input stream
 	| 'control-character-in-input-stream'
 	| 'noncharacter-in-input-stream'
@@ -446,22 +454,49 @@ export type MLASTParseErrorCode =
 	| 'nested-noscript-in-head';
 
 /**
+ * Stable identifier for a non-fatal parse error that a framework parser reports
+ * for markup that the framework's compiler does not accept. It is not parse5's,
+ * so it is not in `parse-error-code-sync.spec.ts`'s comparison with parse5.
+ * A code added here is listed with its meaning in the `parse-error` page of the
+ * v4 to v5 migration guide (`website/docs/migration/v4-to-v5/rules/parse-error.md`
+ * and its translation).
+ *
+ * - `vue-ignored-side-effect-tag`: a `<style>` or a `<script>` in the template of a
+ *   Vue component, which the compiler removes (`X_IGNORED_SIDE_EFFECT_TAG`).
+ *
+ * The compiler's message for `X_IGNORED_SIDE_EFFECT_TAG`:
+ *
+ * > Tags with side effect (<script> and <style>) are ignored in client component templates.
+ *
+ * @see https://github.com/vuejs/core/blob/main/packages/compiler-dom/src/errors.ts#DOMErrorMessages
+ */
+export type MLASTFrameworkParseErrorCode = 'vue-ignored-side-effect-tag';
+
+/**
+ * Stable identifier for a non-fatal parse error: parse5's
+ * ({@link MLASTHtmlParseErrorCode}) or a framework parser's
+ * ({@link MLASTFrameworkParseErrorCode}). It appears verbatim in the `code`
+ * field of `MLASTParseError` and as the key in `severity.parseError`'s
+ * `Record` form.
+ */
+export type MLASTParseErrorCode = MLASTHtmlParseErrorCode | MLASTFrameworkParseErrorCode;
+
+/**
  * Non-fatal parser-level conformance error emitted by the underlying parser
- * during tokenisation (e.g., parse5's `onParseError` events). Unlike
- * `unknownParseError` these do not abort the parse — the document is still
- * usable — but they correspond to HTML LS tokenizer / tree-construction
- * conformance errors that the `parse-error` rule surfaces as lint
- * violations.
+ * during tokenisation: parse5's `onParseError` events (HTML LS tokenizer /
+ * tree-construction conformance errors), or an error of a framework parser
+ * for markup that its compiler does not accept. Unlike `unknownParseError`
+ * these do not abort the parse — the document is still usable — and the
+ * `parse-error` channel surfaces them as lint violations.
  *
  * @see https://html.spec.whatwg.org/multipage/parsing.html#parse-errors
  */
 export interface MLASTParseError {
 	/**
-	 * Stable kebab-case identifier from the underlying parser. The current
-	 * full enumeration mirrors parse5's `ERR` enum and is captured by
-	 * {@link MLASTParseErrorCode}; framework parsers that surface a code
-	 * outside that set should still use a kebab-case identifier so user
-	 * configuration (`severity.parseError`) can target it.
+	 * Stable kebab-case identifier from the underlying parser. parse5's
+	 * `ERR` enum is {@link MLASTHtmlParseErrorCode}; a framework parser's own
+	 * codes are {@link MLASTFrameworkParseErrorCode}. A new one is added to
+	 * the latter so that user configuration (`severity.parseError`) can target it.
 	 */
 	readonly code: MLASTParseErrorCode;
 	/** Zero-based offset into the source where the error starts. */
@@ -548,6 +583,22 @@ export interface MLParser {
 	 */
 	booleanish?: boolean;
 
+	/**
+	 * The language of the code that an attribute value is written in when it is written as code
+	 * (`{…}` of JSX, Svelte and Astro, `:x="…"` of Vue, a value of `=` in Pug). Absent means that the
+	 * parser does not say, and no value is read as a literal. A value that is written in it and is
+	 * nothing but a literal is rendered as the framework renders it; see {@link LiteralValues}.
+	 */
+	attrExpressionLanguage?: ExpressionLanguage;
+
+	/**
+	 * How the framework renders a literal in an attribute value, where it differs from the default of
+	 * `@markuplint/ml-core`. A parser that has a spec package (`@markuplint/vue-spec`) leaves it to the
+	 * spec; one that has none (Astro, Pug) declares it here. What the spec says wins over this.
+	 * Both say it in the same form ({@link LiteralValueDeclaration}).
+	 */
+	literalValues?: LiteralValueDeclaration;
+
 	/** Whether tag names should be treated as case-sensitive (e.g. for XHTML or JSX) */
 	tagNameCaseSensitive?: boolean;
 
@@ -619,6 +670,70 @@ export interface MLParser {
  * @see https://dom.spec.whatwg.org/#dom-element-setattribute
  */
 export type AttrNameRoute = 'html-parser' | 'dom-api' | 'dom-api-when-dynamic';
+
+/**
+ * The language of the code in an attribute value that is written as code (`{…}` of JSX, `:x="…"` of
+ * Vue). Only JavaScript is known: a value in it that is nothing but a literal is rendered as the
+ * framework renders it (see {@link LiteralValues}).
+ */
+export type ExpressionLanguage = 'javascript';
+
+/**
+ * How a literal in an attribute value written as code is rendered when it differs from the default of
+ * `@markuplint/ml-core`: the key is the normal form of the literal (`"true"` is the boolean, `"\"true\""`
+ * is the string, `"0"` is the number, `"null"`, `"undefined"`, `"\"\""` is the empty string; `'x'`, `"x"` and
+ * `` `x` `` are one key), and the value is the attribute value that results, or `null` when the
+ * framework does not output the attribute (as `getAttribute()` returns `null`).
+ *
+ * Only a literal that is rendered other than the default is written. A string or a number that
+ * is not listed is rendered by the default (the string, `String(n)`).
+ *
+ * @example { "true": "", "false": null } — `disabled={true}` is `disabled=""`, `disabled={false}` is no attribute
+ */
+export type LiteralValues = Readonly<Record<string, string | null>>;
+
+/**
+ * The tables of {@link LiteralValues} by kind of attribute: a name that starts with `aria-`, one that
+ * starts with `data-`, a boolean attribute (a name whose type is `Boolean` in the spec), and the
+ * others. The kinds are independent: an attribute is of one kind and does not fall back to another.
+ */
+export type LiteralValueKinds = {
+	readonly booleanAttrs?: LiteralValues;
+	readonly ariaAttrs?: LiteralValues;
+	readonly dataAttrs?: LiteralValues;
+	readonly otherAttrs?: LiteralValues;
+};
+
+/**
+ * The tables of {@link LiteralValues} by kind of attribute, and `attrs` by attribute name, in lower case,
+ * for an attribute that is rendered differently from the kind it is of. A framework decides how to
+ * render an attribute by its name and not by the element it is on, so a table is written once for
+ * a name (`value`, `download`) whatever elements have it.
+ */
+export type LiteralValueTable = LiteralValueKinds & {
+	readonly attrs?: Readonly<Record<string, LiteralValues>>;
+};
+
+/**
+ * How a framework renders a literal in an attribute value, where it differs from the default of
+ * `@markuplint/ml-core`. A spec (`MLMLSpec#literalValues`) and a parser (`MLParser#literalValues`) say it
+ * in this form. `customElements` overrides the tables on a custom element (`elementType: "web-component"`),
+ * which some frameworks render differently (React sets `true` as `""` on any attribute of it).
+ *
+ * A declaration is a reading of the source of the framework, which the JSDoc of each one cites. When the
+ * framework changes how it renders, read the cited source again and correct the table; the specs of
+ * `@markuplint/ml-core` that hold a table (`framework-literal-values.spec.ts`) and the names that the
+ * spec types as `Boolean` and the framework does not (`literal-values-declarations.spec.ts`) fail
+ * where a table no longer says what the framework renders.
+ *
+ * The JSDoc of a declaration cites the section of the framework's documentation and each declaration of its
+ * source that the table was read from, in the form that `yarn spec-citations` reads
+ * (`scripts/spec-citations/cli.ts`), so that a change in either is reported by the weekly run. A framework is
+ * monitored only once its documentation site and repository are listed in `scripts/spec-citations/collect.ts`.
+ */
+export type LiteralValueDeclaration = LiteralValueTable & {
+	readonly customElements?: LiteralValueTable;
+};
 
 /**
  * A module that exports a parser. Used for dynamic parser resolution.

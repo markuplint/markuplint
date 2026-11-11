@@ -60,6 +60,20 @@ describe('schemaToSpec', () => {
 		expect(mergedSpec.directivePatterns ?? []).toStrictEqual([]);
 	});
 
+	test('movedToHead', () => {
+		const mergedSpec = schemaToSpec([
+			htmlSpec,
+			{ movedToHead: ['title'] },
+			{ movedToHead: ['style[href][precedence]'] },
+		]);
+		expect(mergedSpec.movedToHead).toStrictEqual(['title', 'style[href][precedence]']);
+	});
+
+	test('movedToHead defaults to undefined', () => {
+		expect(schemaToSpec([htmlSpec]).movedToHead).toBeUndefined();
+		expect(schemaToSpec([htmlSpec, {}]).movedToHead).toBeUndefined();
+	});
+
 	test('acceptedAttrNames defaults to undefined', () => {
 		const mergedSpec = schemaToSpec([htmlSpec]);
 		expect(mergedSpec.acceptedAttrNames).toBeUndefined();
@@ -105,5 +119,106 @@ describe('schemaToSpec', () => {
 		]);
 		const key = mergedSpec.def['#globalAttrs']['#HTMLGlobalAttrs']['key'];
 		expect(key).toStrictEqual(keyAttr);
+	});
+
+	describe('literalValues', () => {
+		test('is absent when no spec has it', () => {
+			expect(schemaToSpec([htmlSpec, { specs: [] }]).literalValues).toBeUndefined();
+		});
+
+		test('is taken from a spec', () => {
+			const mergedSpec = schemaToSpec([htmlSpec, { literalValues: { booleanAttrs: { '""': null } } }]);
+			expect(mergedSpec.literalValues).toStrictEqual({ booleanAttrs: { '""': null } });
+		});
+
+		test('is merged by kind of attribute, and a later spec wins on a key', () => {
+			const mergedSpec = schemaToSpec([
+				htmlSpec,
+				{
+					literalValues: {
+						booleanAttrs: { '""': null, '0': null },
+						otherAttrs: { true: null },
+					},
+				},
+				{
+					literalValues: {
+						booleanAttrs: { '""': '' },
+						ariaAttrs: { true: '' },
+					},
+				},
+			]);
+			expect(mergedSpec.literalValues).toStrictEqual({
+				booleanAttrs: { '""': '', '0': null },
+				otherAttrs: { true: null },
+				ariaAttrs: { true: '' },
+			});
+		});
+
+		test('a null value is a value, not an omission', () => {
+			const mergedSpec = schemaToSpec([
+				htmlSpec,
+				{ literalValues: { otherAttrs: { false: 'false' } } },
+				{ literalValues: { otherAttrs: { false: null } } },
+			]);
+			expect(mergedSpec.literalValues?.otherAttrs).toStrictEqual({ false: null });
+		});
+
+		test('attrs is merged by attribute name and by key', () => {
+			const mergedSpec = schemaToSpec([
+				htmlSpec,
+				{ literalValues: { attrs: { value: { true: 'true' }, download: { true: '' } } } },
+				{ literalValues: { attrs: { value: { false: 'false', true: 'later' }, size: { '0': null } } } },
+			]);
+			expect(mergedSpec.literalValues?.attrs).toStrictEqual({
+				value: { true: 'later', false: 'false' },
+				download: { true: '' },
+				size: { '0': null },
+			});
+		});
+
+		test('customElements is merged by kind of attribute, by name and by key', () => {
+			const mergedSpec = schemaToSpec([
+				htmlSpec,
+				{
+					literalValues: {
+						customElements: {
+							booleanAttrs: { '0': '0' },
+							attrs: { hidden: { true: '' } },
+						},
+					},
+				},
+				{
+					literalValues: {
+						customElements: {
+							booleanAttrs: { '""': '' },
+							attrs: { hidden: { false: 'false' }, popover: { true: '' } },
+						},
+					},
+				},
+			]);
+			expect(mergedSpec.literalValues?.customElements).toStrictEqual({
+				booleanAttrs: { '0': '0', '""': '' },
+				attrs: { hidden: { true: '', false: 'false' }, popover: { true: '' } },
+			});
+		});
+
+		test('the kinds, attrs and customElements are independent of one another', () => {
+			const mergedSpec = schemaToSpec([
+				htmlSpec,
+				{ literalValues: { otherAttrs: { true: null }, attrs: { value: { true: 'true' } } } },
+				{ literalValues: { customElements: { otherAttrs: { true: '' } } } },
+			]);
+			expect(mergedSpec.literalValues).toStrictEqual({
+				otherAttrs: { true: null },
+				attrs: { value: { true: 'true' } },
+				customElements: { otherAttrs: { true: '' } },
+			});
+		});
+
+		test('does not change the spec that it merges', () => {
+			const first = { literalValues: { booleanAttrs: { '""': null } } };
+			schemaToSpec([htmlSpec, first, { literalValues: { booleanAttrs: { '0': null } } }]);
+			expect(first).toStrictEqual({ literalValues: { booleanAttrs: { '""': null } } });
+		});
 	});
 });

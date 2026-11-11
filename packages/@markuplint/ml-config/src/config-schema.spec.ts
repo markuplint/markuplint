@@ -31,6 +31,24 @@ describe('config.schema.json', () => {
 		expect(fromAttrVariant?.properties?.omitIfMissing).toStrictEqual({ const: true });
 	});
 
+	test('pretenderAttr accepts an expression that the attribute is written as', () => {
+		const expressionVariant = schema.definitions.pretenderAttr.properties.value.oneOf.find(variant =>
+			variant.required?.includes('expression'),
+		);
+
+		expect(expressionVariant?.additionalProperties).toBe(false);
+		expect(expressionVariant?.required).toStrictEqual(['expression']);
+		expect(expressionVariant?.properties).toStrictEqual({ expression: { type: 'string' } });
+	});
+
+	test('pretenderAttr still accepts a string, fromAttr and dynamic', () => {
+		const variants = schema.definitions.pretenderAttr.properties.value.oneOf;
+
+		expect(variants.some(variant => (variant as { type?: string }).type === 'string')).toBe(true);
+		expect(variants.some(variant => variant.required?.includes('fromAttr'))).toBe(true);
+		expect(variants.some(variant => variant.required?.includes('dynamic'))).toBe(true);
+	});
+
 	test('pretender accepts every property of `Pretender`, the ones the scanner writes included (issue #4289)', () => {
 		const pretender = schema.definitions.pretender;
 

@@ -34,7 +34,7 @@ describe('parseSpecUrl', () => {
 		expect(parseSpecUrl('https://html.spec.whatwg.org/')?.fragment).toBeNull();
 	});
 
-	test('[collect-005] watches the four spec hosts and nothing else', () => {
+	test('[collect-005] watches the four spec hosts, the documentation of the frameworks and the listed framework repositories, and nothing else', () => {
 		expect(parseSpecUrl('https://momdo.github.io/html/syntax.html#a')).not.toBeNull();
 		expect(parseSpecUrl('https://www.w3.org/TR/wai-aria-1.2/#tab')).not.toBeNull();
 		expect(parseSpecUrl('https://w3c.github.io/aria/#tab')).not.toBeNull();
@@ -316,5 +316,245 @@ describe('collectFromText', () => {
 			[2, 'f'],
 			[2, 'g'],
 		]);
+	});
+});
+
+describe('the documentation and the sources of the frameworks', () => {
+	const ASTRO_UTIL = 'packages/astro/src/runtime/server/render/util.ts';
+
+	test('[collect-031] watches the documentation hosts of the frameworks', () => {
+		for (const url of [
+			'https://react.dev/reference/react-dom/components/common#common-props',
+			'https://svelte.dev/docs/svelte/basic-markup#Attributes-and-props',
+			'https://vuejs.org/guide/essentials/template-syntax.html#boolean-attributes',
+			'https://docs.astro.build/en/reference/astro-syntax/#dynamic-attributes',
+			'https://pugjs.org/language/attributes.html#boolean-attributes',
+			'https://alpinejs.dev/directives/bind#bind-class-object',
+			'https://htmx.org/attributes/hx-on/#event-names-and-dashes',
+		]) {
+			expect(parseSpecUrl(url), url).toMatchObject({ url, page: url.slice(0, url.indexOf('#')) });
+		}
+	});
+
+	test('[collect-032] reads the link to a source file as the raw file, and the fragment as the declaration', () => {
+		const url = `https://github.com/withastro/astro/blob/main/${ASTRO_UTIL}#addAttribute`;
+		expect(parseSpecUrl(url)).toStrictEqual({
+			url,
+			page: `https://raw.githubusercontent.com/withastro/astro/main/${ASTRO_UTIL}`,
+			fragment: 'addAttribute',
+			textDirective: null,
+		});
+	});
+
+	test('[collect-033] watches only the source files of the listed repositories', () => {
+		expect(parseSpecUrl('https://github.com/facebook/react/blob/main/packages/shared/x.js#f')).not.toBeNull();
+		expect(parseSpecUrl('https://github.com/vuejs/core/blob/main/packages/shared/src/x.ts#f')).not.toBeNull();
+		expect(parseSpecUrl('https://github.com/pugjs/pug/blob/master/packages/pug-runtime/index.js#f')).not.toBeNull();
+		expect(parseSpecUrl('https://github.com/rviscomi/capo.js/blob/main/src/x.js#f')).toBeNull();
+		expect(parseSpecUrl('https://github.com/markuplint/markuplint/blob/main/packages/x.ts#f')).toBeNull();
+		expect(parseSpecUrl('https://github.com/withastro/astro/issues/1')).toBeNull();
+		expect(parseSpecUrl('https://github.com/withastro/astro/tree/main/packages')).toBeNull();
+		expect(parseSpecUrl('https://github.com/withastro/astro')).toBeNull();
+	});
+
+	test('[collect-034] reads a line range of a source file as a link to the whole file', () => {
+		const parsed = parseSpecUrl(`https://github.com/withastro/astro/blob/main/${ASTRO_UTIL}#L11-L52`);
+		expect(parsed?.fragment).toBeNull();
+		expect(parseSpecUrl(`https://github.com/withastro/astro/blob/main/${ASTRO_UTIL}`)?.fragment).toBeNull();
+	});
+
+	test('[collect-035] collects the citation of a source file from the comment of a declaration file', () => {
+		const source = [
+			'/**',
+			' * How Astro renders a literal.',
+			` * @see https://github.com/withastro/astro/blob/main/${ASTRO_UTIL}#addAttribute`,
+			' */',
+			'export const TABLE = {};',
+			'',
+		].join('\n');
+		expect(collectFromSource(source, 'p/literal-values.ts').citations).toMatchObject([
+			{
+				file: 'p/literal-values.ts',
+				line: 3,
+				page: `https://raw.githubusercontent.com/withastro/astro/main/${ASTRO_UTIL}`,
+				fragment: 'addAttribute',
+			},
+		]);
+	});
+
+	test('[collect-036] collects the quote under a link to the documentation of a framework', () => {
+		const markdown = [
+			'> It will also be included if the value is an empty string.',
+			'',
+			'Cite: [Vue](https://vuejs.org/guide/essentials/template-syntax.html#boolean-attributes)',
+			'',
+		].join('\n');
+		const { citations } = collectFromMarkdown(markdown, 'r/README.md');
+		expect(citations).toHaveLength(1);
+		expect(citations[0]).toMatchObject({
+			page: 'https://vuejs.org/guide/essentials/template-syntax.html',
+			fragment: 'boolean-attributes',
+		});
+		expect(citations[0]?.quotes.map(q => q.text)).toStrictEqual([
+			'It will also be included if the value is an empty string.',
+		]);
+	});
+
+	test('[collect-037] does not read double quotes inside code spans as a quoted sentence', () => {
+		const inCodeSpans = [
+			'/**',
+			' * It is written as `a"b` in a table that lists six words in between and `c"d` here.',
+			' * @see https://pugjs.org/language/attributes.html#boolean-attributes',
+			' */',
+			'export const TABLE = {};',
+			'',
+		].join('\n');
+		expect(collectFromSource(inCodeSpans, 'p/literal-values.ts').inlineQuotes).toStrictEqual([]);
+
+		const quoted = inCodeSpans.replace(
+			'It is',
+			'The docs say "Boolean attributes are mirrored by Pug as they are" and it is',
+		);
+		expect(collectFromSource(quoted, 'p/literal-values.ts').inlineQuotes).toHaveLength(1);
+	});
+
+	test('[collect-040] counts the words of a code span inside a quoted sentence', () => {
+		const source = [
+			'/**',
+			' * The docs say "the `foo` attribute is always output" in a table.',
+			' * @see https://pugjs.org/language/attributes.html#boolean-attributes',
+			' */',
+			'export const TABLE = {};',
+			'',
+		].join('\n');
+		expect(collectFromSource(source, 'p/literal-values.ts').inlineQuotes).toHaveLength(1);
+	});
+
+	test('[collect-041] reads the repository of a source link regardless of case, and needs a file in it', () => {
+		const file = 'packages/shared/src/domAttrConfig.ts';
+		const page = `https://raw.githubusercontent.com/vuejs/core/main/${file}`;
+		expect(parseSpecUrl(`https://github.com/Vuejs/Core/blob/main/${file}#isBooleanAttr`)?.page).toBe(page);
+		expect(parseSpecUrl(`https://github.com/vuejs/core/blob/main/${file}#isBooleanAttr`)?.page).toBe(page);
+		expect(parseSpecUrl('https://github.com/vuejs/core/blob/main')).toBeNull();
+		expect(parseSpecUrl('https://github.com/vuejs/core/blob/main/')).toBeNull();
+	});
+
+	test('[collect-042] does not read a text fragment of a source link, which names no passage of a file', () => {
+		const url = `https://github.com/withastro/astro/blob/main/${ASTRO_UTIL}#addAttribute:~:text=anything`;
+		expect(parseSpecUrl(url)).toMatchObject({ fragment: 'addAttribute', textDirective: null });
+	});
+
+	test('[collect-038] reads only a line anchor of GitHub as a line range, and a name like it as a declaration', () => {
+		const base = `https://github.com/withastro/astro/blob/main/${ASTRO_UTIL}`;
+		for (const anchor of ['L11', 'L11-L52', 'L11C3-L12C5']) {
+			expect(parseSpecUrl(`${base}#${anchor}`)?.fragment, anchor).toBeNull();
+		}
+		expect(parseSpecUrl(`${base}#L10n`)?.fragment).toBe('L10n');
+		expect(parseSpecUrl(`${base}#Lines`)?.fragment).toBe('Lines');
+	});
+
+	test('[collect-039] does not let a stray backtick hide a quoted sentence in another paragraph', () => {
+		const source = [
+			'/**',
+			' * A stray backtick opens a code span that is never closed: `value.',
+			' *',
+			' * The docs say "Boolean attributes are mirrored by Pug as they are" and `checked` is one.',
+			' * @see https://pugjs.org/language/attributes.html#boolean-attributes',
+			' */',
+			'export const TABLE = {};',
+			'',
+		].join('\n');
+		expect(collectFromSource(source, 'p/literal-values.ts').inlineQuotes).toHaveLength(1);
+	});
+});
+
+describe('the other standards that markuplint cites', () => {
+	test('[collect-043] watches every WHATWG standard, whatever its subdomain', () => {
+		for (const url of [
+			'https://dom.spec.whatwg.org/#concept-tree-order',
+			'https://url.spec.whatwg.org/#concept-url-parser',
+			'https://infra.spec.whatwg.org/#ascii-whitespace',
+			'https://fetch.spec.whatwg.org/#request-destination-script-like',
+			'https://mimesniff.spec.whatwg.org/#javascript-mime-type',
+			'https://fullscreen.spec.whatwg.org/#fullscreen-element',
+		]) {
+			expect(parseSpecUrl(url), url).toMatchObject({ url, page: url.slice(0, url.indexOf('#')) });
+		}
+	});
+
+	test('[collect-044] watches the specification hosts that the packages cite besides WHATWG and W3C', () => {
+		for (const url of [
+			'https://svgwg.org/svg2-draft/struct.html#SVGElement',
+			'https://drafts.csswg.org/css-values-4/#lengths',
+			'https://microformats.org/wiki/existing-rel-values#HTML5_link_type_extensions',
+			'https://datatracker.ietf.org/doc/html/rfc3986#section-3.1',
+			'https://www.rfc-editor.org/rfc/rfc5646#section-2.1',
+			'https://tc39.es/ecma262/#sec-regexp-pattern-flags',
+			'https://wicg.github.io/webcomponents/spec/imports/#link-type-import',
+			'https://www.iana.org/assignments/media-types/media-types.xhtml',
+		]) {
+			expect(parseSpecUrl(url), url).not.toBeNull();
+		}
+	});
+
+	test('[collect-045] keeps reading a link to a guide, a wiki or a vendor page as informative', () => {
+		for (const url of [
+			'https://www.w3.org/WAI/ARIA/apg/practices/landmark-regions/',
+			'https://developer.mozilla.org/en-US/docs/Web/API/Element',
+			'https://en.wikipedia.org/wiki/Uniform_Resource_Identifier',
+			'https://markuplint.dev/docs/rules/no-duplicate-id',
+		]) {
+			expect(parseSpecUrl(url), url).toBeNull();
+		}
+	});
+});
+
+describe('which link a section number belongs to', () => {
+	test('[collect-046] a § after a URL on the same line belongs to that URL, and is not carried to the next one', () => {
+		const text = [
+			'/**',
+			' * @see https://w3c.github.io/accname/#computation-steps — AccName 1.2 §4.3.2',
+			' * @see https://www.w3.org/TR/html-aam/#el-input-text — HTML-AAM label association',
+			' */',
+			'export default {};',
+		].join('\n');
+		const { citations } = collectFromSource(text, 'm/index.ts');
+		expect(citations.map(c => [c.fragment, c.secno])).toStrictEqual([
+			['computation-steps', '4.3.2'],
+			['el-input-text', null],
+		]);
+	});
+
+	test('[collect-047] a § before the URL still belongs to the next URL, and the first § of a URL is the one that is checked', () => {
+		const text = [
+			'/**',
+			' * Per HTML LS §4.8.13',
+			` * @see ${WHATWG}/image-maps.html#the-map-element — see also §4.8.14`,
+			' */',
+			'export default {};',
+		].join('\n');
+		const { citations } = collectFromSource(text, 'm/index.ts');
+		expect(citations.map(c => [c.fragment, c.secno])).toStrictEqual([['the-map-element', '4.8.13']]);
+	});
+});
+
+describe('the JSX specification', () => {
+	test('[collect-048] watches only the /jsx path of react.github.io, not its other projects or the former facebook.github.io host', () => {
+		const url = 'https://react.github.io/jsx/#prod-JSXIdentifier';
+		expect(parseSpecUrl(url), url).toMatchObject({
+			page: 'https://react.github.io/jsx/',
+			fragment: 'prod-JSXIdentifier',
+		});
+		expect(parseSpecUrl('https://react.github.io/jsx'), 'without the slash').toMatchObject({
+			page: 'https://react.github.io/jsx',
+		});
+		expect(parseSpecUrl('https://react.github.io/jsx/'), 'the page alone').toMatchObject({
+			page: 'https://react.github.io/jsx/',
+			fragment: null,
+		});
+		expect(parseSpecUrl('https://react.github.io/jsx-other/'), 'a path that only starts like it').toBeNull();
+		expect(parseSpecUrl('https://react.github.io/react-native/'), 'another project').toBeNull();
+		expect(parseSpecUrl('https://react.github.io/'), 'the root').toBeNull();
+		expect(parseSpecUrl('https://facebook.github.io/jsx/#prod-JSXIdentifier'), 'the former host').toBeNull();
 	});
 });

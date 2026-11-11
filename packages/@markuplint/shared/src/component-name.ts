@@ -2,14 +2,18 @@
  * The names of a component in a Vue template.
  *
  * Vue resolves a tag `T` to a component registered (or imported under `<script setup>`) as `N`
- * when `N` is `T`, `camelize(T)` or `capitalize(camelize(T))`: a component named `MyComponent`
- * "can be referenced inside a Vue template (or inside an HTML element rendered by Vue) via both
- * `<MyComponent>` and `<my-component>`", and under `<script setup>` "the kebab-case equivalent
- * `<my-component>` also works in the template". Nothing makes `<mycomponent>` a reference to it.
+ * when `N` is `T`, `camelize(T)` or `capitalize(camelize(T))`. Nothing makes `<mycomponent>` a
+ * reference to a component named `MyComponent`. The documentation says of one registered in PascalCase:
+ *
+ * > a component registered as MyComponent can be referenced inside a Vue template (or inside an HTML element rendered by Vue) via both <MyComponent> and <my-component>.
+ *
+ * and of one under `<script setup>`:
+ *
+ * > The kebab-case equivalent <my-component> also works in the template
  *
  * @see https://vuejs.org/guide/components/registration.html#component-name-casing
  * @see https://vuejs.org/api/sfc-script-setup.html#using-components
- * @see https://github.com/vuejs/core/blob/main/packages/compiler-core/src/transforms/transformElement.ts (`resolveSetupReference`)
+ * @see https://github.com/vuejs/core/blob/main/packages/compiler-core/src/transforms/transformElement.ts#resolveSetupReference
  * @module
  */
 

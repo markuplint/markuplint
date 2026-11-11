@@ -36,7 +36,7 @@ const computingElements = new WeakSet<Element>();
  * @param specs - The ML specification data for role resolution
  * @param version - The ARIA version to use for role computation
  * @returns The computed accessible name string, or an empty string if none is found
- * @see https://www.w3.org/TR/accname-1.2/#computation-steps — AccName 1.2 §4.3.2
+ * @see https://w3c.github.io/accname/#computation-steps — AccName 1.2 §4.3.2
  */
 export function getAccname(
 	// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
@@ -141,16 +141,16 @@ function createDomResolver(
 }
 
 /**
- * Walks up the DOM tree to find the root node (Document or DocumentFragment).
+ * Finds the root node (Document or DocumentFragment) of the tree the element is in: for an
+ * element in the content of a `template` element or a shadow root, that content, not the
+ * document. A host that holds the content in the syntax tree under the `template` element (the
+ * markuplint DOM) answers it in `getRootNode()`, as the DOM does.
  */
 function getRootNode(
 	// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
 	el: Element,
 ): Document | DocumentFragment {
-	let root: Node = el;
-	while (root.parentNode) {
-		root = root.parentNode;
-	}
+	const root = el.getRootNode();
 	if (root.nodeType === 9 || root.nodeType === 11) {
 		return root as Document | DocumentFragment;
 	}

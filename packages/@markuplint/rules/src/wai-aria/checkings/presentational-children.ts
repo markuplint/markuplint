@@ -1,4 +1,11 @@
-import { isAriaAttr, labelable, memoizeByObject, namespaceKeyOf } from '../../helpers.js';
+import {
+	getDOMValue,
+	getElementByIdInTree,
+	isAriaAttr,
+	labelable,
+	memoizeByObject,
+	namespaceKeyOf,
+} from '../../helpers.js';
 import type { Options } from '../types.js';
 import type { Attr, AttrChecker, Document, Element } from '@markuplint/ml-core';
 import type { AccnameVisit, ARIAVersion, ARIARole, ComputedRole } from '@markuplint/ml-spec';
@@ -6,6 +13,7 @@ import type { AccnameVisit, ARIAVersion, ARIARole, ComputedRole } from '@markupl
 import {
 	ARIA_RECOMMENDED_VERSION,
 	EMBEDDED_CONTROL_ROLES,
+	getComposedParentElement,
 	getComputedRole,
 	getImplicitRole,
 	isExposedAsPresentational,
@@ -112,6 +120,9 @@ const getContext = memoizeByObject(
  * Finds the closest ancestor whose computed role has the
  * `childrenArePresentational` characteristic.
  *
+ * The ancestors are those of the accessibility tree ({@link getComposedParentElement}): the search ends at the
+ * top of the content of an ordinary `template` element, and it goes on from a declarative shadow root to its host.
+ *
  * @param el - The element to start searching from (exclusive, starts from parent).
  * @param ariaVersion - The ARIA version to compute the roles with.
  * @returns The role of that ancestor, or `null` if none is found.
@@ -121,13 +132,13 @@ function getClosestPresentationalChildrenRole(
 	el: Element<boolean, Options>,
 	ariaVersion: ARIAVersion,
 ): ARIARole | null {
-	let current: Element<boolean, Options> | null = el.parentElement;
+	let current: Element<boolean, Options> | null = getComposedParentElement(el);
 	while (current) {
 		const role = getComputedRole(el.ownerMLDocument.specs, current, ariaVersion).role;
 		if (role?.childrenPresentational) {
 			return role;
 		}
-		current = current.parentElement;
+		current = getComposedParentElement(current);
 	}
 	return null;
 }
@@ -143,6 +154,10 @@ function getClosestPresentationalChildrenRole(
  *   `aria-labelledby` or `aria-describedby` refers to
  * - the accessible name of every control that a `label` ancestor can name: the
  *   element its `for` refers to, and its labelable descendants (HTML-AAM)
+ *
+ * The ancestors are those of the accessibility tree ({@link getComposedParentElement}): an ancestor
+ * outside of the content of an ordinary `template` element reads nothing in it, as the content is not
+ * rendered there.
  *
  * @see https://w3c.github.io/accname/#comp_name_from_content
  * @see https://w3c.github.io/accname/#comp_labelledby_traversal
@@ -172,13 +187,19 @@ function getVisits(
 		if (current !== el) {
 			add(current);
 		}
-		if (current.id && referenced.has(current.id) && document.getElementById(current.id) === current) {
+		// An `aria-labelledby` refers to an element of its own tree
+		const idValue: string | null = getDOMValue(current.getAttributeNode('id'));
+		if (
+			idValue &&
+			referenced.get(current.getRootNode())?.has(idValue) &&
+			getElementByIdInTree(current, idValue, true) === current
+		) {
 			add(current, true);
 		}
 		for (const control of getLabeledControls(current)) {
 			add(control);
 		}
-		current = current.parentElement;
+		current = getComposedParentElement(current);
 	}
 	return visits;
 }
@@ -196,29 +217,38 @@ const getLabeledControls = memoizeByObject(
 		if (el.localName !== 'label' || el.namespaceURI !== 'http://www.w3.org/1999/xhtml') {
 			return [];
 		}
-		const htmlFor = el.getAttribute('for');
-		const target = htmlFor == null ? null : el.ownerMLDocument.getElementById(htmlFor);
+		const forAttr = el.getAttributeNode('for');
+		const target = forAttr == null ? null : getElementByIdInTree(el, forAttr.value, forAttr.isExpressionValue);
 		return [...(target ? [target] : []), ...el.querySelectorAll(labelable.join(', '))];
 	},
 );
 
 /**
- * The IDs that an `aria-labelledby` or `aria-describedby` of the document refers to.
+ * The IDs that an `aria-labelledby` or `aria-describedby` refers to, by the tree of the referrer: an
+ * id is resolved in the tree of the element that refers to it.
  */
 const getReferencedIds = memoizeByObject(
 	// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
-	(document: Document<boolean, Options>): ReadonlySet<string> => {
-		const ids = new Set<string>();
-		for (const referrer of document.querySelectorAll('[aria-labelledby], [aria-describedby]')) {
+	(document: Document<boolean, Options>): ReadonlyMap<object, ReadonlySet<string>> => {
+		const idsOfTree = new Map<object, Set<string>>();
+		for (const referrer of document.deepQuerySelectorAll('[aria-labelledby], [aria-describedby]')) {
+			const root = referrer.getRootNode();
+			let ids = idsOfTree.get(root);
+			if (!ids) {
+				ids = new Set();
+				idsOfTree.set(root, ids);
+			}
 			for (const name of ['aria-labelledby', 'aria-describedby']) {
-				for (const id of referrer.getAttribute(name)?.split(/\s+/) ?? []) {
-					if (id !== '') {
-						ids.add(id);
+				const attr = referrer.getAttributeNode(name);
+				for (const id of attr?.value.split(/\s+/) ?? []) {
+					const domId = id === '' ? null : getDOMValue(attr, id);
+					if (domId != null) {
+						ids.add(domId);
 					}
 				}
 			}
 		}
-		return ids;
+		return idsOfTree;
 	},
 );
 
@@ -340,11 +370,12 @@ function labelledbyGivesText(
 	el: Element<boolean, Options>,
 	ariaVersion: ARIAVersion,
 ): boolean {
-	return (el.getAttribute('aria-labelledby')?.split(/\s+/) ?? []).some(id => {
+	const labelledbyAttr = el.getAttributeNode('aria-labelledby');
+	return (labelledbyAttr?.value.split(/\s+/) ?? []).some(id => {
 		if (id === '') {
 			return false;
 		}
-		const referenced = el.ownerMLDocument.getElementById(id);
+		const referenced = getElementByIdInTree(el, id, labelledbyAttr?.isExpressionValue);
 		return referenced != null && referenced.getReferencedTextAlternative(ariaVersion) !== '';
 	});
 }

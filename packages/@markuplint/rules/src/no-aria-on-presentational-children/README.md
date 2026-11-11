@@ -24,6 +24,8 @@ That text is used where a name or a description is computed from the content: th
 
 It reports them when the computation does not reach the descendant: the ancestor is hidden or is named by `aria-label` or another source before its content, or an element in between is hidden or named that way.
 
+The ancestors are those of the accessibility tree. The content of a `template` element is not rendered where it is written, and where it is inserted is not known from the markup, so an ancestor outside of the `template` element is not an ancestor of the elements in its content: its role does not leave them out, and it is not looked up as a reader of their text. The content of a declarative shadow root (`<template shadowrootmode>`) is rendered in its host, so the host and its ancestors are ancestors of the elements in it.
+
 ❌ Examples of **incorrect** code for this rule
 
 The button is named by its `aria-label`, so its content, and the `aria-hidden` on the icon, take no part in the name.

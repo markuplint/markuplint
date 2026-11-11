@@ -1168,6 +1168,50 @@ describe('ChildNode with blockBehavior', () => {
 		expect(dom.nodeList[0]?.nodeName).toEqual('DL');
 		expect(dom.nodeList[0]?.children[0]?.nodeName).toEqual('DT');
 	});
+
+	test('a conditional block stays in childNodes', async () => {
+		const dom = createTestDocument('<ul><li class="a"></li>{#if x}<li class="b"></li>{/if}</ul>', {
+			parser: await import('@markuplint/svelte-parser'),
+		});
+
+		const ul = dom.nodeList[0];
+		expect(ul?.nodeName).toEqual('UL');
+		expect(ul?.childElementCount).toBe(1);
+		expect(ul?.children[0]?.raw).toBe('<li class="a">');
+		expect([...ul.childNodes].map(node => node.nodeName)).toEqual(['LI', '#ml-block']);
+		const block = ul?.childNodes[1];
+		expect(block?.is(block.MARKUPLINT_PREPROCESSOR_BLOCK) && block.blockBehavior?.type).toBe('if');
+		expect([...block.childNodes].map(node => node.raw)).toEqual(['<li class="b">']);
+		expect(block.childNodes[0]?.parentNode?.nodeName).toBe('UL');
+	});
+
+	test('an element inside a Pug conditional keeps the element that contains the block as its parent', async () => {
+		const dom = createTestDocument(
+			`div
+  if foo
+    span
+`,
+			{ parser: await import('@markuplint/pug-parser') },
+		);
+		const span = dom.querySelector('span');
+		expect(span?.parentNode?.nodeName).toBe('DIV');
+	});
+
+	test('the parents of a JSX fragment, of an element in it, and of an element in an expression', async () => {
+		const dom = createTestDocument('<><div>{items.map(item => <span />)}</div></>', {
+			parser: await import('@markuplint/jsx-parser'),
+		});
+		const fragment = dom.nodeList[0];
+		const div = dom.querySelector('div');
+		const span = dom.querySelector('span');
+		expect(fragment?.nodeName).toBe('#JSX-FRAGMENT');
+		expect(fragment?.parentNode).toBeNull();
+		expect(div?.parentNode).toBe(fragment);
+		expect(fragment?.syntacticalParentNode?.nodeName).toBe('#document');
+		expect(div?.syntacticalParentNode).toBe(fragment);
+		expect(span?.syntacticalParentNode?.nodeName).toBe('#ml-block');
+		expect(span?.parentNode?.nodeName).toBe('DIV');
+	});
 });
 
 describe('Issues', () => {
@@ -1278,7 +1322,9 @@ describe('Issues', () => {
 			'    [3:18]>[3:24](29,35)value: cheese',
 			'    [3:24]>[3:25](35,36)eQ: "',
 			'    isDirective: false',
+			'    isExpressionValue: false',
 			'    isDynamicValue: false',
+			'    isAbsent: false',
 			'[3:26]>[3:45](37,56)#text: Do␣you␣like␣cheese?',
 			'[3:53]>[4:6](64,70)#text: ⏎→→→→→',
 			'[4:6]>[4:41](70,105)INPUT: <input␣type="checkbox"␣id="cheese">',
@@ -1296,7 +1342,9 @@ describe('Issues', () => {
 			'    [4:19]>[4:27](83,91)value: checkbox',
 			'    [4:27]>[4:28](91,92)eQ: "',
 			'    isDirective: false',
+			'    isExpressionValue: false',
 			'    isDynamicValue: false',
+			'    isAbsent: false',
 			'  [4:29]>[4:40](93,104)id: id="cheese"',
 			'    [4:28]>[4:29](92,93)bN: ␣',
 			'    [4:29]>[4:31](93,95)name: id',
@@ -1307,7 +1355,9 @@ describe('Issues', () => {
 			'    [4:33]>[4:39](97,103)value: cheese',
 			'    [4:39]>[4:40](103,104)eQ: "',
 			'    isDirective: false',
+			'    isExpressionValue: false',
 			'    isDynamicValue: false',
+			'    isAbsent: false',
 			'[4:41]>[5:6](105,111)#text: ⏎→→→→→',
 			'[5:6]>[5:25](111,130)#ml-block: <%␣pp␣"anything"␣%>',
 			'[5:25]>[6:5](130,135)#text: ⏎→→→→',

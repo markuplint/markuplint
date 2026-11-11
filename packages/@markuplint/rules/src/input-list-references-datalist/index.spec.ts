@@ -135,3 +135,21 @@ test('[input-list-references-datalist-parser-001] Vue dynamic :list binding is s
 	});
 	expect(violations).toStrictEqual([]);
 });
+
+test('[input-list-references-datalist-issue-4489-001] the target is looked for in the tree of the input', async () => {
+	const { violations } = await mlRuleTest(rule, '<template><div id="x"></div><input list="x"></template>');
+	expect(violations).toStrictEqual([
+		{
+			severity: 'error',
+			line: 1,
+			col: 42,
+			raw: 'x',
+			message: 'The "list" attribute of the "input" element must reference a "datalist" element',
+		},
+	]);
+});
+
+test('[input-list-references-datalist-issue-4489-002] an id in another tree is not the target', async () => {
+	const { violations } = await mlRuleTest(rule, '<div id="x"></div><template><input list="x"></template>');
+	expect(violations).toStrictEqual([]);
+});

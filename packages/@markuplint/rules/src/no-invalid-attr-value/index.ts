@@ -95,6 +95,18 @@ export default createRule<boolean, Option>({
 				if (one === false || one.invalidType !== 'invalid-value') {
 					continue;
 				}
+				// The value of an expression is what the code results in, so a position in it is not a position
+				// in the source (an escape, a quote): the whole value that is written is reported
+				if (attr.isExpressionValue && valueNode) {
+					report({
+						scope: attr,
+						message: one.message,
+						line: valueNode.startLine,
+						col: valueNode.startCol,
+						raw: valueNode.raw,
+					});
+					continue;
+				}
 				report({
 					scope: attr,
 					message: one.message,

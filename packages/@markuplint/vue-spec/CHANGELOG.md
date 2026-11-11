@@ -3,6 +3,14 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [5.5.0](https://github.com/markuplint/markuplint/compare/v5.4.0...v5.5.0) (2026-11-10)
+
+### Features
+
+* **vue-spec:** declare how Vue renders a literal written as code ([aaff283](https://github.com/markuplint/markuplint/commit/aaff283dceed86bd9e8fde1ffe8d3b37055a826c))
+* **vue-spec:** declare that Vue appends the children of a template without a directive to it ([370f2d5](https://github.com/markuplint/markuplint/commit/370f2d5848d693ef8f01c7d3bacaad02a123dfc8))
+
+
 # [5.4.0](https://github.com/markuplint/markuplint/compare/v5.3.0...v5.4.0) (2026-10-29)
 
 **Note:** Version bump only for package @markuplint/vue-spec

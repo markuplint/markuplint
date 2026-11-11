@@ -477,6 +477,8 @@ export class MLCore {
 				filename: this.#filename,
 				endTag: this.#parser.endTag,
 				booleanish: this.#parser.booleanish,
+				attrExpressionLanguage: this.#parser.attrExpressionLanguage,
+				literalValues: this.#parser.literalValues,
 				tagNameCaseSensitive: this.#parser.tagNameCaseSensitive,
 				componentNameVariants: this.#parser.componentNameVariants,
 				// The parser's own rule, called on the parser: a method of a class that reads its own state

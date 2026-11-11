@@ -5,7 +5,9 @@ description: Warns when a landmark role used multiple times on a page lacks a un
 
 # `require-landmark-label`
 
-Warns when a landmark role (`banner`, `main`, `complementary`, `contentinfo`, `form`, `navigation`, or `region`) appears more than once in a document and an occurrence lacks a unique accessible name (`aria-label` or `aria-labelledby`), per [APG's Landmark Regions practice](https://www.w3.org/WAI/ARIA/apg/practices/landmark-regions/).
+Warns when a landmark role (`banner`, `main`, `complementary`, `contentinfo`, `form`, `navigation`, or `region`) appears more than once in a tree and an occurrence lacks a unique accessible name (`aria-label` or `aria-labelledby`), per [APG's Landmark Regions practice](https://www.w3.org/WAI/ARIA/apg/practices/landmark-regions/).
+
+The document is one tree, and the content of a `template` element and a declarative shadow root are trees of their own, where it is not known from the markup where they are inserted: the landmarks of each tree are counted by themselves. In React and Vue, the children of a `template` element without a directive are in the tree of the document.
 
 Split out of the former `landmark-roles` rule, alongside [`no-nested-top-level-landmark`](/docs/rules/no-nested-top-level-landmark).
 

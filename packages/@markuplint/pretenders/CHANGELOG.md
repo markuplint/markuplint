@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [5.5.0](https://github.com/markuplint/markuplint/compare/v5.4.0...v5.5.0) (2026-11-10)
+
+### Bug Fixes
+
+* **pretenders:** take the parsers as optional peers instead of optional dependencies ([f151a89](https://github.com/markuplint/markuplint/commit/f151a89a6677d0a1bad14288df7f5d3bfb1f6fc4))
+
+### Features
+
+* **pretenders:** report an attribute written as code as the code ([d4ac594](https://github.com/markuplint/markuplint/commit/d4ac59457e3d992cc32906bfd359c4d4ec8a58ed))
+
+
 # [5.4.0](https://github.com/markuplint/markuplint/compare/v5.3.0...v5.4.0) (2026-10-29)
 
 **Note:** Version bump only for package @markuplint/pretenders

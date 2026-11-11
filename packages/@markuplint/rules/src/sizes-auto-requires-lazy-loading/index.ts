@@ -16,8 +16,10 @@ import meta from './meta.js';
  * `auto` (`allowsAutoSizes`), not `loading="lazy"` alone.
  *
  * Gated on `srcset` being present, matching the source rule this was split
- * from: `sizes="auto"` has nothing to auto-size without candidates to choose
- * from.
+ * from. An `<img>` without `srcset` is left to the `@markuplint/html-spec`
+ * data of its `sizes`: the condition allows it only on a lazily loaded image
+ * (`no-disallowed-attr`) and the type only as the value `auto`
+ * (`no-invalid-attr-value`).
  */
 export default createRule<boolean>({
 	meta,

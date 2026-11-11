@@ -69,6 +69,33 @@ describe('Basic', () => {
 	});
 });
 
+describe('Trees', () => {
+	test('[no-table-span-overflow-issue-4489-001] a table in the content of a template is checked', async () => {
+		const { violations } = await mlRuleTest(
+			rule,
+			`
+<template>
+<table>
+  <tbody>
+    <tr><td rowspan="3">Spanning cell</td></tr>
+    <tr><td>Cell</td></tr>
+  </tbody>
+</table>
+</template>
+`,
+		);
+		expect(violations).toStrictEqual([
+			{
+				severity: 'error',
+				line: 5,
+				col: 13,
+				message: 'Exceeds the number of available rows',
+				raw: 'rowspan="3"',
+			},
+		]);
+	});
+});
+
 describe('Valid', () => {
 	test('[no-table-span-overflow-valid-001] Empty table', async () => {
 		const { violations } = await mlRuleTest(

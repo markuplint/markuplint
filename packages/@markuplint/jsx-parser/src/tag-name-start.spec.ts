@@ -10,7 +10,7 @@ function firstStartTag(source: string) {
 	return node;
 }
 
-// A JSX element name starts with an ECMAScript `IdentifierStart` (https://facebook.github.io/jsx/#prod-JSXIdentifier)
+// A JSX element name starts with an ECMAScript `IdentifierStart` (https://react.github.io/jsx/#prod-JSXIdentifier)
 describe('a tag whose name starts with `$`, `_` or a non-ASCII letter', () => {
 	test.each([
 		['<Ui$><span>c</span></Ui$>', 'Ui$'],

@@ -73,7 +73,7 @@ No **content after body**| |✅|✅|✅|✅|✅|❌|❌|❌|✅|❌|❌|❌|
 No **unclosed element at EOF**| |✅|✅|✅|✅|✅|❌|❌|❌|✅|❌|❌|❌|
 **Meta charset** position within the first 1024 bytes| |✅|✅|✅|✅|✅|❌|❌|❌|✅|❌|❌|❌|
 Allow only **permitted contents**| |✅|✅|✅|✅|✅|❌|❌|❌|✅|❌|❌|❌|
-No disallowed ancestor|An element must not appear as a descendant of an ancestor its content model forbids (e.g. `<address>` inside `<address>`). Split off from `permitted-contents` — kept as its own named group here so preset users keep this coverage.|✅|✅|✅|✅|✅|❌|❌|❌|✅|❌|❌|❌|
+No disallowed ancestor|An element must not appear as a descendant of an ancestor its content model forbids (e.g. `<address>` inside `<address>`), nor have an ancestor outside those its content model limits it to (e.g. `<main>` inside `<section>`). Split off from `permitted-contents` — kept as its own named group here so preset users keep this coverage.|✅|✅|✅|✅|✅|❌|❌|❌|✅|❌|❌|❌|
 Require ancestor|An element must appear as a descendant of a required ancestor (e.g. `<area>` outside `<map>`). Split off from `permitted-contents` — kept as its own named group here so preset users keep this coverage.|✅|✅|✅|✅|✅|❌|❌|❌|✅|❌|❌|❌|
 No duplicate sibling attr|An attribute the content model marks as sibling-unique must not appear on more than one element of the same type within the same parent (e.g. multiple `<track default>`). Split off from `permitted-contents` — kept as its own named group here so preset users keep this coverage.|✅|✅|✅|✅|✅|❌|❌|❌|✅|❌|❌|❌|
 Need **placeholder label option**| |✅|✅|✅|✅|✅|❌|❌|❌|✅|❌|❌|❌|

@@ -101,7 +101,7 @@
 			"type": "Boolean",
 			"experimental": true
 		},
-		// https://html.spec.whatwg.org/multipage/sections.html#attr-heading-offset
+		// https://html.spec.whatwg.org/multipage/sections.html#attr-headingoffset
 		"headingoffset": {
 			"type": {
 				"type": "integer",
@@ -109,7 +109,7 @@
 				"lte": 8
 			}
 		},
-		// https://html.spec.whatwg.org/multipage/sections.html#attr-heading-reset
+		// https://html.spec.whatwg.org/multipage/sections.html#attr-headingreset
 		"headingreset": {
 			"type": "Boolean"
 		},
@@ -280,7 +280,7 @@
 			"defaultValue": "default",
 			"deprecated": true
 		},
-		// https://wicg.github.io/element-timing/#sec-elements-exposed
+		// https://w3c.github.io/element-timing/#sec-elements-exposed
 		"elementtiming": {
 			"type": "NoEmptyAny",
 			"experimental": true
@@ -651,19 +651,23 @@
 			"type": "FunctionBody",
 			"deprecated": true
 		},
-		// https://w3c.github.io/touch-events/#extensions-to-the-globaleventhandlers-mixin
+		// The touch event types are in the Recommendation; the GlobalEventHandlers extension that
+		// defines these handlers is only in the editor's draft of Touch Events Level 2
+		// (w3c.github.io/touch-events), which is unrendered ReSpec source whose anchors the
+		// citation check cannot read, so the Recommendation is cited instead.
+		// https://www.w3.org/TR/touch-events/
 		"ontouchstart": {
 			"type": "FunctionBody"
 		},
-		// https://w3c.github.io/touch-events/#extensions-to-the-globaleventhandlers-mixin
+		// https://www.w3.org/TR/touch-events/
 		"ontouchend": {
 			"type": "FunctionBody"
 		},
-		// https://w3c.github.io/touch-events/#extensions-to-the-globaleventhandlers-mixin
+		// https://www.w3.org/TR/touch-events/
 		"ontouchmove": {
 			"type": "FunctionBody"
 		},
-		// https://w3c.github.io/touch-events/#extensions-to-the-globaleventhandlers-mixin
+		// https://www.w3.org/TR/touch-events/
 		"ontouchcancel": {
 			"type": "FunctionBody"
 		}
@@ -767,19 +771,31 @@
 		}
 	},
 	"#HTMLEmbededAndMediaContentAttrs": {
-		// https://html.spec.whatwg.org/multipage/media.html#attr-media-src
-		// "valid non-empty URL potentially surrounded by spaces" — non-empty
-		// is mandated by the per-element src attribute definitions in
+		// @see https://html.spec.whatwg.org/multipage/media.html#attr-media-src
+		// > valid non-empty URL potentially surrounded by spaces
+		// Non-empty is mandated by the per-element src attribute definitions in
 		// HTML LS §4.8 (audio/embed/iframe/img/input[type=image]/source/track/video).
 		"src": {
 			"type": "NonEmptyURL"
 		},
-		// https://html.spec.whatwg.org/multipage/media.html#attr-media-preload
+		// @see https://html.spec.whatwg.org/multipage/media.html#attr-media-preload
+		// The attribute defines an empty value default:
+		//
+		// > The attribute's empty value default is the Automatic state.
+		//
+		// and the authoring conformance rule for enumerated attributes admits the empty string
+		// for an attribute that has one:
+		//
+		// > The empty string and the attribute must have an empty value default defined.
+		// @see https://html.spec.whatwg.org/multipage/common-microsyntaxes.html#keywords-and-enumerated-attributes
 		"preload": {
 			"type": {
-				"enum": ["none", "metadata", "auto"],
+				"enum": ["", "none", "metadata", "auto"],
 				"invalidValueDefault": "implementation-defined",
-				"missingValueDefault": "implementation-defined"
+				"missingValueDefault": "implementation-defined",
+				"sameStates": {
+					"auto": [""]
+				}
 			}
 		},
 		// https://html.spec.whatwg.org/multipage/media.html#attr-media-autoplay
@@ -832,8 +848,8 @@
 		"form": {
 			"type": "DOMID"
 		},
-		// https://html.spec.whatwg.org/multipage/form-control-infrastructure.html#attr-fs-formaction
-		// Spec: "a valid non-empty URL potentially surrounded by spaces"
+		// @see https://html.spec.whatwg.org/multipage/form-control-infrastructure.html#attr-fs-formaction
+		// > a valid non-empty URL potentially surrounded by spaces
 		"formaction": {
 			"type": "NonEmptyURL"
 		},
@@ -1757,7 +1773,7 @@
 		"class": {
 			"type": "Any"
 		},
-		// https://www.w3.org/TR/mathml-core/#dom-mathmlelement-dataset
+		// https://www.w3.org/TR/mathml-core/#global-attributes
 		"data-*": {
 			"type": "Any"
 		},

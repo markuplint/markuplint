@@ -1,6 +1,6 @@
 {
 	"name": "@markuplint/pretenders",
-	"version": "5.4.0",
+	"version": "5.5.0",
 	"description": "It loads components and then creates the pretenders data from them.",
 	"repository": {
 		"type": "git",
@@ -23,29 +23,50 @@
 	"publishConfig": {
 		"access": "public"
 	},
-	"typedoc": {
-		"entryPoint": "./src/index.ts"
-	},
 	"scripts": {
 		"build": "npx tsc --project tsconfig.build.json",
 		"dev": "npx tsc --watch --project tsconfig.build.json",
 		"clean": "npx tsc --build --clean tsconfig.build.json"
 	},
 	"dependencies": {
-		"@markuplint/ml-ast": "5.3.0",
-		"@markuplint/ml-config": "5.4.0",
-		"@markuplint/parser-utils": "5.4.0",
-		"@markuplint/shared": "5.4.0",
+		"@markuplint/ml-ast": "5.5.0",
+		"@markuplint/ml-config": "5.5.0",
+		"@markuplint/parser-utils": "5.5.0",
+		"@markuplint/shared": "5.5.0",
 		"es-module-lexer": "^3.0.4",
-		"glob": "^14.0.0",
+		"glob": "^14.0.3",
 		"meow": "^14.1.0",
 		"typescript": "~6.0.3"
 	},
-	"optionalDependencies": {
-		"@markuplint/astro-parser": "5.4.0",
-		"@markuplint/jsx-parser": "5.4.0",
-		"@markuplint/mdx-parser": "5.4.0",
-		"@markuplint/svelte-parser": "5.4.0",
-		"@markuplint/vue-parser": "5.4.0"
+	"devDependencies": {
+		"@markuplint/astro-parser": "5.5.0",
+		"@markuplint/jsx-parser": "5.5.0",
+		"@markuplint/mdx-parser": "5.5.0",
+		"@markuplint/svelte-parser": "5.5.0",
+		"@markuplint/vue-parser": "5.5.0"
+	},
+	"peerDependencies": {
+		"@markuplint/astro-parser": "^5.4.0",
+		"@markuplint/jsx-parser": "^5.4.0",
+		"@markuplint/mdx-parser": "^5.4.0",
+		"@markuplint/svelte-parser": "^5.4.0",
+		"@markuplint/vue-parser": "^5.4.0"
+	},
+	"peerDependenciesMeta": {
+		"@markuplint/astro-parser": {
+			"optional": true
+		},
+		"@markuplint/jsx-parser": {
+			"optional": true
+		},
+		"@markuplint/mdx-parser": {
+			"optional": true
+		},
+		"@markuplint/svelte-parser": {
+			"optional": true
+		},
+		"@markuplint/vue-parser": {
+			"optional": true
+		}
 	}
 }

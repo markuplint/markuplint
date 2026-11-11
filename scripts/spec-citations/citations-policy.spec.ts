@@ -8,7 +8,7 @@ import { collectFiles, listCitingFiles } from './discover.ts';
 
 /**
  * These tests hold the conventions the monitor relies on, on the real files and without the network. The monitor
- * itself runs monthly; a README that breaks a convention should fail in the pull request that breaks it.
+ * itself runs weekly; a README that breaks a convention should fail in the pull request that breaks it.
  */
 const root = fileURLToPath(new URL('../../', import.meta.url));
 const files = listCitingFiles(root);
@@ -71,6 +71,12 @@ describe('which edition of a spec is cited', () => {
 		const dated = /^https:\/\/www\.w3\.org\/TR\/(?:wai-aria-1\.\d|accname-1\.\d|WCAG2\d)\//;
 		const unrendered = /^https:\/\/w3c\.github\.io\/html-aria\//;
 		const offending = citations.filter(c => dated.test(c.url) || unrendered.test(c.url));
+		expect(offending.map(c => `${c.file}:${c.line} ${c.url}`)).toStrictEqual([]);
+	});
+
+	test('[citations-policy-007] the Accessibility API Mappings are cited at their edition-less URL, which serves the latest version', () => {
+		const dated = /^https:\/\/www\.w3\.org\/TR\/(?:html|svg)-aam-\d/;
+		const offending = citations.filter(c => dated.test(c.url));
 		expect(offending.map(c => `${c.file}:${c.line} ${c.url}`)).toStrictEqual([]);
 	});
 });

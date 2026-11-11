@@ -1,6 +1,7 @@
 import type { ARIAVersion, MLMLSpec } from '../../types/index.js';
 
 import { ariaSpecs } from './aria-specs.js';
+import { getComposedParentElement } from '../dom/tree-boundary.js';
 import { getSpecByTagName } from '../../utils/get-spec-by-tag-name.js';
 import { isPresentational } from './is-presentational.js';
 import { resolveNamespace } from '../../utils/resolve-namespace.js';
@@ -8,11 +9,19 @@ import { resolveNamespace } from '../../utils/resolve-namespace.js';
 import { getComputedRole } from './get-computed-role.js';
 
 /**
+ * The attribute of the element that `@markuplint/ml-core` hands over (`MLAttr`): the DOM `Attr` does not
+ * have `isAbsent`, which is `true` for an attribute that the host does not output.
+ */
+type AttrOfMLDOM = Attr & { readonly isAbsent?: true };
+
+/**
  * Detects whether an element is included in (exposed to) the Accessibility Tree.
  * Applies WAI-ARIA exclusion/inclusion rules, SVG rendering rules, and
  * HTML metadata element filtering.
  *
- * @see https://www.w3.org/TR/wai-aria-1.2/#accessibility_tree
+ * The ancestors it reads are those of the accessibility tree ({@link getComposedParentElement}).
+ *
+ * @see https://w3c.github.io/aria/#accessibility_tree
  *
  * @param el - The DOM element to check for accessibility tree exposure
  * @param specs - The full markup language specification
@@ -59,7 +68,7 @@ export function isExposed(
 /**
  * Excluding Elements from the Accessibility Tree
  *
- * @see https://www.w3.org/TR/wai-aria-1.2/#tree_exclusion
+ * @see https://w3c.github.io/aria/#tree_exclusion
  *
  * @param specs
  * @param el
@@ -85,7 +94,7 @@ function isExcluding(
 			if (hasDisplayNodeOrVisibilityHidden(currentEl) || currentEl.hasAttribute('hidden')) {
 				return true;
 			}
-			currentEl = currentEl.parentElement;
+			currentEl = getComposedParentElement(currentEl);
 		}
 	}
 
@@ -114,7 +123,7 @@ function isExcluding(
 			if (currentEl.getAttribute('aria-hidden') === 'true') {
 				return true;
 			}
-			currentEl = currentEl.parentElement;
+			currentEl = getComposedParentElement(currentEl);
 		}
 	}
 
@@ -127,13 +136,13 @@ function isExcluding(
 	 *   However, the text content of any excluded descendants is included.
 	 */
 	{
-		let currentEl = el.parentElement;
+		let currentEl = getComposedParentElement(el);
 		while (currentEl) {
 			const { role } = getComputedRole(specs, currentEl, version);
 			if (role?.childrenPresentational) {
 				return true;
 			}
-			currentEl = currentEl.parentElement;
+			currentEl = getComposedParentElement(currentEl);
 		}
 	}
 
@@ -148,7 +157,7 @@ function isExcluding(
  * user agents MUST provide an accessible object in the accessibility tree
  * for DOM elements that meet any of the following criteria:
  *
- * @see https://www.w3.org/TR/wai-aria-1.2/#tree_inclusion
+ * @see https://w3c.github.io/aria/#tree_inclusion
  *
  * @param specs
  * @param el
@@ -198,6 +207,11 @@ function isIncluding(
 		}
 		// Has a global WAI-ARIA attribute
 		for (const attr of el.attributes) {
+			// An attribute that the host does not output (`MLAttr#isAbsent`, e.g. `aria-label={null}`)
+			// is not an attribute of the DOM
+			if ((attr as AttrOfMLDOM).isAbsent) {
+				continue;
+			}
 			if (globalAria.some(aria => aria.name === attr.localName)) {
 				results.push(true);
 				break;

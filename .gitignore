@@ -4,6 +4,9 @@
 # Dist *.js sources
 lib
 
+# Nx cache and workspace data
+.nx
+
 # Logs
 logs
 *.log
@@ -68,9 +71,6 @@ typings/
 
 # Secret Test
 test/fixture/.__*
-
-# API Document
-apidoc
 
 # Heapdump test
 *.heapsnapshot

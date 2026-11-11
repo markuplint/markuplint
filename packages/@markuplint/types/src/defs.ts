@@ -26,7 +26,7 @@ import { isAbsURL } from './whatwg/is-abs-url.js';
 import { isBrowserContextName } from './whatwg/is-browser-context-name.js';
 import { isCustomElementName } from './whatwg/is-custom-element-name.js';
 import { isItempropName } from './whatwg/is-itemprop-name.js';
-import { isNavigableTargetName } from './whatwg/is-navigable-target-name.js';
+import { hasTabOrNewlineAndLessThan, isNavigableTargetName } from './whatwg/is-navigable-target-name.js';
 import { checkLinkType } from './whatwg/check-link-type.js';
 import { isEmail } from './whatwg/check-email.js';
 import { isSimpleColor } from './whatwg/check-simple-color.js';
@@ -230,11 +230,11 @@ export const defs: Defs = {
 	},
 
 	SimpleColor: {
-		ref: 'https://html.spec.whatwg.org/multipage/common-microsyntaxes.html#valid-simple-colour',
+		ref: 'https://html.spec.whatwg.org/multipage/input.html#color-state-(type=color)',
 		expects: [
 			{
 				type: 'format',
-				value: 'simple color',
+				value: 'CSS color',
 			},
 		],
 		is: matches(isSimpleColor()),
@@ -348,8 +348,8 @@ export const defs: Defs = {
 				value: 'BCP47',
 			},
 		],
-		ref: 'https://tools.ietf.org/rfc/bcp/bcp47.html',
-		// Empty string is valid per HTML LS: "the language is set to unknown"
+		ref: 'https://www.rfc-editor.org/info/bcp47',
+		// Empty string is valid per HTML LS: it sets the language to unknown
 		// https://html.spec.whatwg.org/multipage/dom.html#the-lang-and-xml:lang-attributes
 		is: value => (value === '' ? matched() : matches(isBCP47(), { reason: 'unexpected-token' })(value)),
 	},
@@ -370,7 +370,7 @@ export const defs: Defs = {
 	},
 
 	/**
-	 * Validates a "valid non-empty URL potentially surrounded by spaces". HTML
+	 * Validates a valid non-empty URL potentially surrounded by spaces. HTML
 	 * LS uses this stricter production for `src` attributes on
 	 * `<audio>`/`<embed>`/`<iframe>`/`<img>`/`<input type=image>`/`<script>`/
 	 * `<source>`/`<track>`/`<video>` — the URL token MUST contain at least one
@@ -433,11 +433,13 @@ export const defs: Defs = {
 	},
 
 	/**
-	 * Validates `<input type="url" value="...">` per HTML LS §4.10.5.1.7:
-	 * "if specified and not empty, must have a value that is a valid absolute
-	 * URL potentially surrounded by ASCII whitespace." Accepts empty values
-	 * (no default URL) and absolute URLs that pass URL Living Standard
-	 * validation; rejects relative URLs and URL LS validation errors.
+	 * Validates `<input type="url" value="...">` per HTML LS §4.10.5.1.4:
+	 *
+	 * > The value attribute, if specified and not empty, must have a value that is a valid URL potentially surrounded by spaces that is also an absolute URL.
+	 *
+	 * Accepts empty values (no default URL) and absolute URLs that pass URL
+	 * Living Standard validation; rejects relative URLs and URL LS validation
+	 * errors.
 	 *
 	 * @see https://html.spec.whatwg.org/multipage/input.html#url-state-(type=url)
 	 */
@@ -540,7 +542,7 @@ export const defs: Defs = {
 	 * @deprecated Use {@link types.NavigableTargetName} instead.
 	 */
 	BrowsingContextName: {
-		ref: 'https://html.spec.whatwg.org/multipage/browsers.html#browsing-context-names',
+		ref: 'https://html.spec.whatwg.org/multipage/document-sequences.html#navigable-target-names',
 		expects: [
 			{
 				type: 'common',
@@ -564,20 +566,26 @@ export const defs: Defs = {
 		],
 		// <a target="[HERE]">
 		is(value) {
-			value = value.toLowerCase();
+			// The keywords are ASCII case-insensitive, a name is not: only the keyword is compared in lower case,
+			// and the value that the message shows is the one that was written.
 			const keywords = ['_blank', '_self', '_parent', '_top'];
-			if (keywords.includes(value)) {
+			if (keywords.includes(value.toLowerCase())) {
 				return matched();
 			}
 			if (value[0] === '_') {
-				const candidate = getCandidate(value, keywords);
+				const candidate = getCandidate(value.toLowerCase(), keywords);
 				return unmatched(value, 'unexpected-token', { candidate });
 			}
 			const res = matches(isNavigableTargetName())(value);
 			if (!res.matched) {
-				// @see https://html.spec.whatwg.org/multipage/semantics.html#get-an-element's-target
+				// @see https://html.spec.whatwg.org/multipage/semantics.html#the-base-element
 				// > If target is not null, and contains an ASCII tab or newline and a U+003C (<), then set target to "_blank".
-				return unmatched(value, 'unexpected-token', { fallbackTo: '_blank' });
+				// An empty name is invalid too, but the `base` element's fallback does not apply to it.
+				return unmatched(
+					value,
+					'unexpected-token',
+					hasTabOrNewlineAndLessThan(value) ? { fallbackTo: '_blank' } : {},
+				);
 			}
 			return res;
 		},
@@ -587,7 +595,7 @@ export const defs: Defs = {
 	 * @deprecated Use {@link types.NavigableTargetNameOrKeyword} instead.
 	 */
 	BrowsingContextNameOrKeyword: {
-		ref: 'https://html.spec.whatwg.org/multipage/browsers.html#valid-browsing-context-name-or-keyword',
+		ref: 'https://html.spec.whatwg.org/multipage/document-sequences.html#valid-browsing-context-name-or-keyword',
 		expects: [
 			{ type: 'const', value: '_blank' },
 			{ type: 'const', value: '_self' },
@@ -599,13 +607,12 @@ export const defs: Defs = {
 			},
 		],
 		is(value) {
-			value = value.toLowerCase();
 			const keywords = ['_blank', '_self', '_parent', '_top'];
-			if (keywords.includes(value)) {
+			if (keywords.includes(value.toLowerCase())) {
 				return matched();
 			}
 			if (value[0] === '_') {
-				const candidate = getCandidate(value, keywords);
+				const candidate = getCandidate(value.toLowerCase(), keywords);
 				return unmatched(value, 'unexpected-token', { candidate });
 			}
 			return matches(isBrowserContextName())(value);
@@ -1020,9 +1027,9 @@ export const defs: Defs = {
 
 	/**
 	 * `autocomplete` variant for elements where the `webauthn` token is not
-	 * valid. Per HTML LS §attr-fe-autocomplete-webauthn: "webauthn is only
-	 * valid for input and textarea elements." Applied to `button`,
-	 * `fieldset`, `object`, `output`, and `select`.
+	 * valid. Applied to `button`, `fieldset`, `object`, `output`, and `select`.
+	 *
+	 * > webauthn is only valid for input and textarea elements.
 	 *
 	 * @see https://html.spec.whatwg.org/multipage/form-control-infrastructure.html#attr-fe-autocomplete-webauthn
 	 */
@@ -1085,7 +1092,7 @@ export const defs: Defs = {
 	},
 
 	ValidCustomCommand: {
-		ref: 'https://html.spec.whatwg.org/multipage/form-elements.html#valid-custom-command',
+		ref: 'https://html.spec.whatwg.org/multipage/form-elements.html#attr-button-command-custom',
 		is(value) {
 			const isValid = /^--.+/.test(value);
 			return isValid

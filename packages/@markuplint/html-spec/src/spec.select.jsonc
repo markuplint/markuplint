@@ -1,6 +1,5 @@
 // https://html.spec.whatwg.org/multipage/form-elements.html#the-select-element
 // https://www.w3.org/TR/html-aria/#el-select
-// https://w3c.github.io/html-aria/#el-select
 {
 	"contentModel": {
 		"contents": [
@@ -56,13 +55,49 @@
 			]
 		},
 		"conditions": {
-			"[multiple], [size]:not([size=1])": {
+			// The value is quoted because an unquoted number is not valid CSS, which the native `Element.matches()`
+			// rejects with a SyntaxError (and `get-aria.ts` then skips the condition).
+			"[multiple], [size]:not([size='1'])": {
 				"implicitRole": "listbox",
 				"permittedRoles": false,
 				"properties": {
 					// Otherwise, any global aria-* attributes and any other aria-* attributes applicable to the listbox role.
 					"global": true,
 					"role": "listbox",
+					// Authors SHOULD NOT use the aria-multiselectable attribute on a select element.
+					"without": [
+						{
+							"type": "should-not",
+							"name": "aria-multiselectable",
+							"alt": {
+								"method": "set-attr",
+								"target": "multiple"
+							}
+						}
+					]
+				}
+			},
+			// @see https://html.spec.whatwg.org/multipage/rendering.html#the-select-element-2
+			// > A select element whose multiple attribute is absent is expected to render as a single-select drop-down box if its display size is 1, or as a single-select list box if its display size is greater than 1.
+			// @see https://www.w3.org/TR/html-aria/#el-select
+			// HTML-ARIA maps a select that is rendered as a drop-down box to combobox, and one rendered as a list box to listbox.
+			// `[size]:not([size='1'])` above takes `size="01"` and `size="abc"` (display size 1) and `size="0"` (display
+			// size 0, which is not greater than 1) for a list box. This condition makes a select without `multiple`
+			// whose display size is 1 or less a drop-down box, the combobox. It must stay below the condition above:
+			// `get-aria.ts` applies every matching condition in key order, and the later one overrides the earlier.
+			// It is a separate key because `:display-size()` is a markuplint extension that the native
+			// `Element.matches()` cannot evaluate: `get-aria.ts` skips a condition for which it throws a SyntaxError,
+			// so for a native DOM element the condition above alone decides.
+			// @see https://html.spec.whatwg.org/multipage/rendering.html#the-select-element-2
+			// > A select element whose multiple attribute is present is expected to render as a multi-select list box if its display size is greater than 1. If the select element has the multiple attribute and a display size of 1, then it may render as a multi-select drop-down box if the platform supports it; otherwise as a multi-select list box.
+			// A select with the `multiple` attribute therefore stays a list box, the listbox.
+			":not([multiple]):display-size(<= 1)": {
+				"implicitRole": "combobox",
+				"permittedRoles": ["menu"],
+				"properties": {
+					// Otherwise, any Global aria-* attributes and any other aria-* attributes applicable to the combobox or menu role.
+					"global": true,
+					"role": ["combobox", "menu"],
 					// Authors SHOULD NOT use the aria-multiselectable attribute on a select element.
 					"without": [
 						{

@@ -10,7 +10,8 @@ export type TextDirective = {
 };
 
 /**
- * A passage a rule quotes from a specification.
+ * A passage a rule quotes from a specification, from a page of the documentation of a framework, or from a
+ * declaration of its source.
  *
  * `group` ties together the quotes that may be satisfied by any one of several
  * cited sections: a JSDoc block that cites two URLs does not say which URL a
@@ -23,7 +24,10 @@ export type Quote = {
 	readonly group: string;
 };
 
-/** One specification URL written in a README, a source comment or a data file. */
+/**
+ * One URL of a specification, of the documentation of a framework, or of a source file of a framework, written in
+ * a README, a source comment or a data file.
+ */
 export type Citation = {
 	/** Repository-relative path, with `/` separators on every platform. */
 	readonly file: string;
@@ -31,9 +35,15 @@ export type Citation = {
 	readonly line: number;
 	/** The URL as written, without the Markdown or comment wrapping around it. */
 	readonly url: string;
-	/** The URL without its fragment and text directive. */
+	/**
+	 * The URL that is fetched: `url` without its fragment and text directive. For a link to a source file of a
+	 * framework it is the URL of the raw file (`raw.githubusercontent.com`), which `url` is not.
+	 */
 	readonly page: string;
-	/** Decoded fragment without the text directive; `null` for a whole-page link. */
+	/**
+	 * Decoded fragment without the text directive; `null` for a whole-page link. For a source file it is the name
+	 * of a declaration in it, and `null` for a line range (`#L11-L52`).
+	 */
 	readonly fragment: string | null;
 	readonly textDirective: TextDirective | null;
 	/** Section number written beside the URL (`4.10.5.1.17`), or `null`. */
@@ -49,11 +59,11 @@ export type CollectResult = {
 	readonly inlineQuotes: readonly Quote[];
 };
 
-/** What extracting one fragment from a page yields. */
+/** What extracting one fragment from a page, or one declaration from a source file, yields. */
 export type Section =
 	| {
 			readonly status: 'found';
-			/** The smallest unit that is hashed: a paragraph, an algorithm, a heading's own prose. */
+			/** The smallest unit that is hashed: a paragraph, an algorithm, a heading's own prose, a declaration. */
 			readonly unit: string;
 			/** The unit plus its subsections; quotes are looked up here. */
 			readonly scope: string;
@@ -73,6 +83,7 @@ export type Lock = {
 };
 
 export type PageResult =
+	/** `html` is the text that was fetched: the HTML of a page, or the text of a source file. */
 	| { readonly status: 'ok'; readonly html: string }
 	| {
 			readonly status: 'failed';

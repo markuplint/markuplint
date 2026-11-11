@@ -52,6 +52,10 @@ Generated TypeScript types (do not edit directly):
 - Interactive Content classification
 - Content Model validation (`src/algorithm/html/get-content-model.ts`)
 
+**DOM Tree Algorithms**:
+
+- Parent element in a tree and in the accessibility tree (`getTreeParentElement`, `getComposedParentElement`, `isShadowRoot` in `src/algorithm/dom/tree-boundary.ts`)
+
 **WAI-ARIA Specification Algorithms**:
 
 - **Accessible Name Computation** - W3C AccName 1.2 / HTML-AAM §4.1 compliant (`src/algorithm/aria/accname/`)

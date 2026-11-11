@@ -51,6 +51,22 @@ describe('Basic', () => {
 		]);
 	});
 
+	test('[no-table-cell-overlap-issue-4489-001] a table in the content of a template is checked', async () => {
+		const { violations } = await mlRuleTest(
+			rule,
+			'<template><table><tr><td></td><td rowspan="2"></td></tr><tr><td colspan="2"></td></tr></table></template>',
+		);
+		expect(violations).toStrictEqual([
+			{
+				severity: 'error',
+				line: 1,
+				col: 11,
+				message: '"rowspan" and "colspan" are causing cell overlap',
+				raw: '<table>',
+			},
+		]);
+	});
+
 	test('[no-table-cell-overlap-invalid-002] Overlap suppresses the other checks of the same table', async () => {
 		const { violations } = await mlRuleTest(
 			rule,

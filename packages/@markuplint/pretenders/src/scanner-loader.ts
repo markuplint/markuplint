@@ -1,6 +1,6 @@
 import type { ComponentScanner } from './component-scanner.js';
 
-import { isFatalError } from '@markuplint/shared';
+import { isFatalError, missingPackageOf } from '@markuplint/shared';
 
 const SCANNER_PACKAGES: Record<string, string> = {
 	'.vue': '@markuplint/vue-parser/component-scanner',
@@ -13,10 +13,11 @@ const scannerCache = new Map<string, ComponentScanner | null>();
 /**
  * The package of the parser of the language of a file, by its extension. Unlike {@link SCANNER_PACKAGES}
  * it holds the languages that have no scanner (JSX, MDX), as the name of a component is the rule of the
- * parser (`Parser#isComponentName` of `@markuplint/parser-utils`). The parser packages are
- * `optionalDependencies` of this package and are loaded dynamically, as the scanners are: this package
- * must not import them statically, so that one that is not installed only leaves its language to the
- * default rule.
+ * parser (`Parser#isComponentName` of `@markuplint/parser-utils`). The parser packages are optional
+ * `peerDependencies` of this package (`peerDependenciesMeta`), so that installing markuplint does not
+ * install them and the frameworks they depend on, and are loaded dynamically, as the scanners are: this
+ * package must not import them statically, so that one that is not installed only leaves its language
+ * to the default rule.
  */
 const PARSER_PACKAGES: Record<string, string> = {
 	'.vue': '@markuplint/vue-parser',
@@ -77,7 +78,7 @@ async function importParser(ext: string): Promise<LoadedParser | null> {
 		// A parser that is not installed is for the caller to do without: the scanner of the same package
 		// has said so (`getScanner`), and a language with no scanner has no parser the user meant to use.
 		// Only the parser package itself missing is that: a module the parser needs that is missing is a fault.
-		if (isModuleNotFoundError(error) && error instanceof Error && missingPackageOf(error) === pkg) {
+		if (missingPackageOf(error) === pkg) {
 			return null;
 		}
 		// A fault may pass (a build that was not done yet), so it is not kept: the next call tries again, and
@@ -138,23 +139,32 @@ export function getLoadedNativeTagRule(ext: string): NameRule | undefined {
 }
 
 /**
- * The package that an `ERR_MODULE_NOT_FOUND` of Node names as missing: `Cannot find package '<name>'
- * imported from <path>`. The path is that of the module that imports it, which is inside the parser's own
- * package when a dependency of the parser is missing, so the message as a whole names the parser either way.
+ * Forgets what the loads of the scanners and the parsers settled to, so that the next call looks again.
  *
- * @param error - The error of the import
- * @returns The name of the missing package, or `undefined` for another message (a missing file of a package)
+ * The parsers are the user's to install, so one can be installed while a long-running host (watch mode, an
+ * editor) runs, and what was settled as "not installed" would otherwise be kept until the process ends. A
+ * module that loaded stays in the module cache of the runtime, so what is loaded again is only what had failed.
+ * A load in flight when this is called settles to what it found, and the next call looks again: loads that
+ * overlap a clear may import the same module twice, which costs nothing, and never keep a stale answer.
+ * Called by `clearPretenderCaches`.
  */
-function missingPackageOf(error: Error): string | undefined {
-	return /^Cannot find package '([^']+)'/.exec(error.message)?.[1];
+export function clearScannerLoaderCaches(): void {
+	scannerCache.clear();
+	parserLoads.clear();
+	loadedParsers.clear();
+	warnedFaults.clear();
 }
 
-function isModuleNotFoundError(error: unknown): boolean {
-	return (
-		error instanceof Error && 'code' in error && (error as NodeJS.ErrnoException).code === 'ERR_MODULE_NOT_FOUND'
-	);
-}
-
+/**
+ * Loads the component scanner of the parser that reads the files of an extension (`.vue`, `.svelte`,
+ * `.astro`), once per extension: the result, `null` included, is kept for the life of the process.
+ *
+ * The parser package is an optional peer of this package, so it may not be installed. Without it, or when
+ * its scanner fails to load, the language is skipped with a warning and the result is `null`.
+ *
+ * @param ext - The extension of the file, with the dot
+ * @returns The scanner, or `null` for an extension that has none, or whose parser is not installed or fails to load
+ */
 export async function getScanner(ext: string): Promise<ComponentScanner | null> {
 	const cached = scannerCache.get(ext);
 	if (cached !== undefined) {
@@ -172,8 +182,15 @@ export async function getScanner(ext: string): Promise<ComponentScanner | null> 
 		scannerCache.set(ext, mod.componentScanner);
 		return mod.componentScanner;
 	} catch (error: unknown) {
-		if (isModuleNotFoundError(error)) {
-			const parserPkg = pkg.replace('/component-scanner', '');
+		// Deliberately guard-less (see the module JSDoc of `errors/index.ts` in `@markuplint/shared`): the parser
+		// is installed by the user, and importing its scanner runs the code of its libraries, so a
+		// Tier-1-shaped error here may come from a broken installation and not from markuplint. The
+		// language is skipped with a warning rather than ending the run.
+		//
+		// Only the parser package itself missing is "not installed": a module the scanner needs that is
+		// missing is a fault, as in `importParser`.
+		const parserPkg = pkg.replace('/component-scanner', '');
+		if (missingPackageOf(error) === parserPkg) {
 			// eslint-disable-next-line no-console
 			console.warn(`Parser package "${parserPkg}" is not installed. Skipping ${ext} files.`);
 		} else {

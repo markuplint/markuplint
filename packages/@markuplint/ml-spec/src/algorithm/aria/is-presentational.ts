@@ -37,9 +37,8 @@ export function isExposedAsPresentational(computed: ComputedRole): boolean {
  * - **ARIA 1.1/1.2:** Only `presentation`/`none` are transparent.
  *   This matches the pre-existing behavior of `getClosestNonPresentationalDescendants`
  *   and `getNonPresentationalAncestor`.
- * - **ARIA 1.3:** `generic` is additionally transparent per the spec:
- *   "user agents MUST ignore any intervening elements with the role
- *   `generic` or `none`."
+ * - **ARIA 1.3:** `generic` is additionally transparent per the spec, which has
+ *   the user agent ignore the intervening elements with the role `generic` or `none`.
  *
  * **Note:** `matchesContextRole` calls this function unconditionally
  * (without a version gate) so that `presentation`/`none` are always

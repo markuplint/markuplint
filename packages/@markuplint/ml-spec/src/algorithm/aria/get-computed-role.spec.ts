@@ -229,6 +229,14 @@ describe('1.3', () => {
 		);
 	});
 
+	test('a landmark named by the id that a DOM has, whose characters look like a character reference', () => {
+		// The DOM has resolved the character references, so `a&amp;b` is the id as it is: the attribute
+		// value `a&amp;amp;b` in the markup
+		expect(
+			c('<div role="region" aria-labelledby="a&amp;amp;b"></div><h2 id="a&amp;amp;b">x</h2>', '1.3').role?.name,
+		).toBe('region');
+	});
+
 	test('landmark', () => {
 		expect(c('<div role="region"></div>', '1.3').role?.name).toBe('generic');
 		expect(c('<div role="region" aria-label="foo"></div>', '1.3').role?.name).toBe('region');

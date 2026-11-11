@@ -7,6 +7,11 @@ export type { MLElement as Element } from './node/element.js';
 export type { MLText as Text } from './node/text.js';
 export type { MLChildNode as ChildNode } from './node/child-node.js';
 
+export type { MLShadowRoot as ShadowRoot } from './node/shadow-root.js';
+export type { DeclarativeShadowRootAttachment } from './helper/tree-scope.js';
+export { getDOMValue } from './helper/tree-scope.js';
+export { getRenderedChildNodes } from './helper/accname.js';
+
 export { MLDocument as Document } from './node/document.js';
 export { resolveAttrNames } from './helper/resolve-attr-names.js';
 export type { ResolvedAttr } from './helper/resolve-attr-names.js';

@@ -99,6 +99,11 @@
 			"small",
 			"span",
 			"strong",
+			// > Contexts in which this element can be used: […] Where flow content is expected, as the first child of its parent.
+			// @see https://html.spec.whatwg.org/multipage/semantics.html#the-style-element
+			// The first child is counted as the HTML Standard counts it, text included, unlike
+			// Selectors: `contentModelFirstChildBase` in `@markuplint/selector`
+			"style:first-child",
 			"sub",
 			"sup",
 			"svg|svg",

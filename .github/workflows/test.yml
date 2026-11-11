@@ -1,5 +1,24 @@
 name: Test
 
+# A pull request runs one Linux / Node.js 26 job: build, type-check, and the specs that its change
+# can affect (`scripts/affected-tests`). The merge queue (`merge_group`) runs the whole suite there,
+# in three shards. A push to `dev` only builds, to fill the caches that the pull requests restore.
+#
+# Everything else (macOS, Windows, Node.js 24, isolated-env, Bun, Deno) is in `nightly.yml`, which
+# runs once a day on `dev` and opens an Issue when it fails. The ruleset "Merge queue" of the
+# repository (Settings, Rules) sends every merge into `dev` through the queue and requires `ci-ok`,
+# so the whole suite on Linux / Node.js 26 is what a change has to pass before it reaches `dev`. A
+# repository admin can bypass the ruleset from the page of the pull request.
+#
+# `v6` has no merge queue and no nightly run, so a pull request into `v6` runs the whole suite in
+# the three shards of the queue instead of the selection: it is the only gate before the change
+# reaches `v6`. The Rust addon (`@markuplint/core`) is built before the TypeScript packages in
+# every job that builds, as `markuplint` loads it; `crates/CLAUDE.md` says why the Cargo.lock
+# checks are around the napi build. `rust.yml` runs the Rust gate itself.
+#
+# There is no `paths:` filter: a workflow that a filter skips leaves its checks pending, which
+# blocks a required check, and `merge_group` does not take one. What a change touches is decided
+# inside the job, and `ci-ok` is the one check to require.
 permissions:
     contents: read
 
@@ -11,229 +30,25 @@ on:
             - v4
             - v6
             - next
-        paths:
-            - '.github/workflows/test.yml'
-            - 'tsconfig.json'
-            - 'tsconfig.spec.json'
-            - 'vitest.config.ts'
-            - 'vitest.cross-os.config.ts'
-            - 'vitest.e2e.config.ts'
-            - 'package.json'
-            - 'packages/**'
-            - 'crates/**'
-            - '!**/*.md'
-            - 'packages/@markuplint/config-presets/src/README.md'
-            - 'packages/@markuplint/rules/src/*/README*.md'
-            - 'website/docs/**/*.md*'
-            - 'website/i18n/ja/docusaurus-plugin-content-docs/**/*.md*'
-            - 'scripts/**'
-            - 'test/**'
-            - 'tests/external/bench/**'
-            - 'yarn.lock'
-            - '.yarnrc.yml'
-            - '.oxfmtrc.json'
-            - '.oxlintrc.json'
-            - 'vscode/**'
     push:
         branches:
             - dev
-        paths:
-            - '.github/workflows/test.yml'
-            - 'tsconfig.json'
-            - 'tsconfig.spec.json'
-            - 'vitest.config.ts'
-            - 'vitest.cross-os.config.ts'
-            - 'vitest.e2e.config.ts'
-            - 'package.json'
-            - 'packages/**'
-            - 'crates/**'
-            - '!**/*.md'
-            - 'packages/@markuplint/config-presets/src/README.md'
-            - 'packages/@markuplint/rules/src/*/README*.md'
-            - 'website/docs/**/*.md*'
-            - 'website/i18n/ja/docusaurus-plugin-content-docs/**/*.md*'
-            - 'scripts/**'
-            - 'test/**'
-            - 'tests/external/bench/**'
-            - 'yarn.lock'
-            - '.yarnrc.yml'
-            - '.oxfmtrc.json'
-            - '.oxlintrc.json'
-            - 'vscode/**'
+            - v6
+    merge_group:
+
+# A new push to a pull request replaces the run of the last one. A run on `dev` or in the merge
+# queue is the gate for its commit, so it is never cancelled, and its group holds the commit: with
+# one group for all pushes, GitHub drops a run that is still pending when a newer one arrives,
+# even with `cancel-in-progress: false`, and a commit would end up with no run.
+concurrency:
+    group: ${{ github.workflow }}-${{ github.event_name }}-${{ github.event_name == 'pull_request' && github.ref || github.sha }}
+    cancel-in-progress: ${{ github.event_name == 'pull_request' }}
 
 env:
     NODE_BUILD_VERSION: 26
     NX_DISABLE_DB: true
 
 jobs:
-    dev-setup:
-        runs-on: ${{ matrix.os }}
-        strategy:
-            fail-fast: false
-            matrix:
-                os: [ubuntu-latest]
-                node: [24, 26]
-        steps:
-            - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
-              with:
-                  # SEE: https://github.com/lerna/lerna/issues/2542
-                  fetch-depth: '0'
-
-            - name: Use Node.js ${{ matrix.node }}
-              uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7
-              with:
-                  node-version: ${{ matrix.node }}
-
-            - name: Enable Corepack and setup Yarn v4
-              run: |
-                  corepack enable
-                  yarn --version
-
-            - name: Get yarn cache directory path
-              id: yarn-cache-dir-path
-              run: echo "dir=$(yarn config get cacheFolder)" >> "$GITHUB_OUTPUT"
-
-            - name: Cache Restore devDependencies
-              id: cache-restore-dev-depends
-              uses: actions/cache/restore@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6
-              with:
-                  path: |
-                      '**/node_modules'
-                      ${{ steps.yarn-cache-dir-path.outputs.dir }}
-                  key: dev-depends-${{ matrix.os }}-node${{ matrix.node }}-${{ hashFiles('yarn.lock', '.yarnrc.yml') }}
-
-            - name: Install dependencies
-              if: steps.cache-restore-dev-depends.outputs.cache-hit != 'true'
-              run: yarn install --immutable
-
-            - name: Cache Save devDependencies
-              if: steps.cache-restore-dev-depends.outputs.cache-hit != 'true'
-              id: cache-save-dev-depends
-              uses: actions/cache/save@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6
-              with:
-                  path: |
-                      '**/node_modules'
-                      ${{ steps.yarn-cache-dir-path.outputs.dir }}
-                  key: dev-depends-${{ matrix.os }}-node${{ matrix.node }}-${{ hashFiles('yarn.lock', '.yarnrc.yml') }}
-
-    build:
-        needs: dev-setup
-        runs-on: ${{ matrix.os }}
-        strategy:
-            fail-fast: false
-            matrix:
-                os: [ubuntu-latest]
-        steps:
-            - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
-              with:
-                  # SEE: https://github.com/lerna/lerna/issues/2542
-                  fetch-depth: '0'
-
-            - name: Use Node.js ${{ env.NODE_BUILD_VERSION }}
-              uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7
-              with:
-                  node-version: ${{ env.NODE_BUILD_VERSION }}
-
-            - name: Enable Corepack and setup Yarn v4
-              run: |
-                  corepack enable
-                  yarn --version
-
-            - name: Get yarn cache directory path
-              id: yarn-cache-dir-path
-              run: echo "dir=$(yarn config get cacheFolder)" >> "$GITHUB_OUTPUT"
-
-            - name: Cache Restore devDependencies
-              id: cache-restore-dev-depends
-              uses: actions/cache/restore@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6
-              with:
-                  path: |
-                      '**/node_modules'
-                      ${{ steps.yarn-cache-dir-path.outputs.dir }}
-                  key: dev-depends-${{ matrix.os }}-node${{ env.NODE_BUILD_VERSION }}-${{ hashFiles('yarn.lock', '.yarnrc.yml') }}
-
-            - name: Cache Restore Production
-              id: cache-restore-prod
-              uses: actions/cache/restore@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6
-              with:
-                  path: |
-                      packages/**/lib
-                      packages/**/cjs
-                      packages/**/esm
-                      packages/@markuplint/config-presets/preset.*.json
-                      packages/@markuplint/html-spec/index.js
-                      packages/@markuplint/html-spec/index.json
-                      packages/@markuplint/core/index.cjs
-                      packages/@markuplint/core/index.d.ts
-                      packages/@markuplint/core/*.node
-                  key: prod-node${{ env.NODE_BUILD_VERSION }}-${{ github.sha }}
-
-            - name: Install dependencies
-              run: yarn install --immutable
-
-            - name: Setup Rust toolchain
-              if: steps.cache-restore-prod.outputs.cache-hit != 'true'
-              # See rust.yml for why this is pinned by commit SHA with an
-              # explicit `toolchain` input rather than the mutable `@stable`
-              # branch ref.
-              uses: dtolnay/rust-toolchain@6c977a6ca4077a0ceb28ffbe03f59d46e9ac8772 # master (2026-08-05)
-              with:
-                  toolchain: stable
-
-            - name: Cache Restore Cargo
-              if: steps.cache-restore-prod.outputs.cache-hit != 'true'
-              uses: actions/cache/restore@27d5ce7f107fe9357f9df03efb73ab90386fccae # v5
-              with:
-                  path: |
-                      ~/.cargo/registry
-                      ~/.cargo/git
-                      crates/target
-                  key: ${{ runner.os }}-cargo-napi-${{ hashFiles('crates/Cargo.lock') }}
-                  restore-keys: ${{ runner.os }}-cargo-napi-
-
-            # napi runs `cargo metadata` (no --locked) before invoking
-            # `cargo build`; see rust.yml's napi-smoke job for why that
-            # alone can rewrite Cargo.lock and make a plain `-- --locked` on
-            # the build insufficient on its own.
-            - name: Verify Cargo.lock
-              if: steps.cache-restore-prod.outputs.cache-hit != 'true'
-              working-directory: crates
-              run: cargo metadata --locked --format-version 1 > /dev/null
-
-            # @napi-rs/cli is already in node_modules from the `yarn install`
-            # above (packages/@markuplint/core devDependency), pinned via
-            # yarn.lock — not a bare `npm install -g @napi-rs/cli`, which
-            # would pull an unpinned CLI from the registry on every run.
-            - name: Build napi (generates index.cjs and index.d.ts)
-              if: steps.cache-restore-prod.outputs.cache-hit != 'true'
-              working-directory: packages/@markuplint/core
-              run: yarn build:napi:debug
-
-            - name: Assert Cargo.lock unchanged
-              if: steps.cache-restore-prod.outputs.cache-hit != 'true'
-              run: git diff --exit-code -- crates/Cargo.lock
-
-            - name: Build
-              if: steps.cache-restore-prod.outputs.cache-hit != 'true'
-              run: yarn run build
-
-            - name: Cache Save Production
-              if: steps.cache-restore-prod.outputs.cache-hit != 'true'
-              uses: actions/cache/save@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6
-              with:
-                  enableCrossOsArchive: true
-                  path: |
-                      packages/**/lib
-                      packages/**/cjs
-                      packages/**/esm
-                      packages/@markuplint/config-presets/preset.*.json
-                      packages/@markuplint/html-spec/index.js
-                      packages/@markuplint/html-spec/index.json
-                      packages/@markuplint/core/index.cjs
-                      packages/@markuplint/core/index.d.ts
-                      packages/@markuplint/core/*.node
-                  key: prod-node${{ env.NODE_BUILD_VERSION }}-${{ github.sha }}
-
     lint:
         runs-on: ubuntu-latest
         steps:
@@ -257,9 +72,9 @@ jobs:
               uses: actions/cache/restore@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6
               with:
                   path: |
-                      '**/node_modules'
+                      **/node_modules
                       ${{ steps.yarn-cache-dir-path.outputs.dir }}
-                  key: dev-depends-ubuntu-latest-node${{ env.NODE_BUILD_VERSION }}-${{ hashFiles('yarn.lock', '.yarnrc.yml') }}
+                  key: dev-depends-modules-ubuntu-latest-node${{ env.NODE_BUILD_VERSION }}-${{ hashFiles('yarn.lock', '.yarnrc.yml') }}
 
             - name: Install dependencies
               run: yarn install --immutable
@@ -270,33 +85,36 @@ jobs:
             - name: Format (oxfmt)
               run: yarn lint-check:format
 
-    cross-os-setup:
-        runs-on: ${{ matrix.os }}
-
-        # For PRs from Renovate, update production dependencies only and then run tests.
-        # For PRs not from Renovate, proceed with the usual setup and tests.
-        if: |
-            !contains(github.event.pull_request.labels.*.name, 'Renovate')
-            ||
-            contains(github.event.pull_request.labels.*.name, 'Dependencies: Production')
-
+    # A pull request and the merge queue. One job does it all (restore the caches, build, check the
+    # types, run the specs), so that nothing waits for a job of its own.
+    #
+    # The caches: the dependencies are saved on a miss, and are the entry that `website.yml` and
+    # `update-html-spec.yml` restore. Nx restores the output of every package whose inputs
+    # (`nx.json`) did not change, so a commit rebuilds only the packages it touched and their
+    # dependents; the key carries the commit, so each run saves its own entry, and `restore-keys`
+    # picks the newest one of the same lockfile, from this ref first and then from `dev`. The three
+    # shards of the merge queue only restore: they would save the same keys.
+    test:
+        if: ${{ github.event_name != 'push' }}
+        runs-on: ubuntu-latest
         strategy:
             fail-fast: false
             matrix:
-                os:
-                    - macos-latest
-                    - windows-latest
-                node: [24]
+                # The whole suite (merge queue) is split in three, as it is bound by the CPU time of
+                # its specs and not by one long spec. Each value is the whole argument of `--shard`,
+                # so the count is written once. A pull request runs the selection once.
+                # A pull request into `v6` runs the whole suite (see the top of this file).
+                shard: ${{ fromJSON(github.event_name == 'pull_request' && github.base_ref != 'v6' && '["1/1"]' || '["1/3", "2/3", "3/3"]') }}
         steps:
             - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
               with:
                   # SEE: https://github.com/lerna/lerna/issues/2542
                   fetch-depth: '0'
 
-            - name: Use Node.js ${{ matrix.node }}
+            - name: Use Node.js ${{ env.NODE_BUILD_VERSION }}
               uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7
               with:
-                  node-version: ${{ matrix.node }}
+                  node-version: ${{ env.NODE_BUILD_VERSION }}
 
             - name: Enable Corepack and setup Yarn v4
               run: |
@@ -312,12 +130,165 @@ jobs:
               uses: actions/cache/restore@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6
               with:
                   path: |
-                      '**/node_modules'
+                      **/node_modules
                       ${{ steps.yarn-cache-dir-path.outputs.dir }}
-                  key: dev-depends-${{ matrix.os }}-node${{ matrix.node }}-${{ hashFiles('yarn.lock', '.yarnrc.yml') }}
+                  key: dev-depends-modules-ubuntu-latest-node${{ env.NODE_BUILD_VERSION }}-${{ hashFiles('yarn.lock', '.yarnrc.yml') }}
 
             - name: Install dependencies
-              if: steps.cache-restore-dev-depends.outputs.cache-hit != 'true'
+              run: yarn install --immutable
+
+            - name: Cache Save devDependencies
+              if: github.event_name != 'merge_group' && steps.cache-restore-dev-depends.outputs.cache-hit != 'true'
+              uses: actions/cache/save@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6
+              with:
+                  path: |
+                      **/node_modules
+                      ${{ steps.yarn-cache-dir-path.outputs.dir }}
+                  key: dev-depends-modules-ubuntu-latest-node${{ env.NODE_BUILD_VERSION }}-${{ hashFiles('yarn.lock', '.yarnrc.yml') }}
+
+            # Why `nx.json` is what it is, as JSON cannot say: the inputs of a package are its files
+            # but not its specs and Markdown (no build reads them), except `src/README.md`, which the
+            # build of `config-presets` reads; the root `tsconfig.json` and the shared tsconfig
+            # package are inputs of every package; the outputs are `lib`, `esm` and `cjs`, and the
+            # generated `preset.*.json`. The `index.*` files of `html-spec` are committed, not built,
+            # so they are no output. The lockfile hash in the key covers the dependency versions
+            # (TypeScript among them). To build without the cache on a machine: `NX_SKIP_NX_CACHE=true`.
+            - name: Cache Restore Nx
+              uses: actions/cache/restore@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6
+              with:
+                  path: .nx/cache
+                  key: nx-ubuntu-latest-node${{ env.NODE_BUILD_VERSION }}-${{ hashFiles('yarn.lock') }}-${{ github.sha }}
+                  restore-keys: |
+                      nx-ubuntu-latest-node${{ env.NODE_BUILD_VERSION }}-${{ hashFiles('yarn.lock') }}-
+
+            # Each saved entry holds what the restored one held and nothing prunes it (Nx 23 has no
+            # size limit), so it grows with every commit until `yarn.lock` changes and the key
+            # starts over. Past 1 GB, this run builds from scratch and saves a small entry.
+            - name: Reset the Nx cache when it has grown
+              run: |
+                  if [ -d .nx/cache ]; then
+                      size=$(du -sm .nx/cache | cut -f1)
+                      echo "Nx cache: ${size} MB"
+                      if [ "$size" -gt 1000 ]; then
+                          rm -rf .nx/cache
+                      fi
+                  fi
+
+            - name: Setup Rust toolchain
+              # See rust.yml for why this is pinned by commit SHA with an explicit `toolchain` input
+              # rather than the mutable `@stable` branch ref.
+              uses: dtolnay/rust-toolchain@6c977a6ca4077a0ceb28ffbe03f59d46e9ac8772 # master (2026-08-05)
+              with:
+                  toolchain: stable
+
+            # `rust.yml` saves this entry.
+            - name: Cache Restore Cargo
+              uses: actions/cache/restore@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6
+              with:
+                  path: |
+                      ~/.cargo/registry
+                      ~/.cargo/git
+                      crates/target
+                  key: ${{ runner.os }}-cargo-napi-${{ hashFiles('crates/Cargo.lock') }}
+                  restore-keys: ${{ runner.os }}-cargo-napi-
+
+            - name: Verify Cargo.lock
+              working-directory: crates
+              run: cargo metadata --locked --format-version 1 > /dev/null
+
+            # @napi-rs/cli is in node_modules from `yarn install` (a devDependency of
+            # `@markuplint/core`), pinned via yarn.lock. `@markuplint/core` has no `build` script, so
+            # Nx neither builds nor caches the addon.
+            - name: Build napi (generates index.cjs and index.d.ts)
+              working-directory: packages/@markuplint/core
+              run: yarn build:napi:debug
+
+            - name: Assert Cargo.lock unchanged
+              run: git diff --exit-code -- crates/Cargo.lock
+
+            - name: Build
+              run: yarn run build
+
+            - name: Cache Save Nx
+              if: github.event_name != 'merge_group'
+              uses: actions/cache/save@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6
+              with:
+                  path: .nx/cache
+                  key: nx-ubuntu-latest-node${{ env.NODE_BUILD_VERSION }}-${{ hashFiles('yarn.lock') }}-${{ github.sha }}
+
+            # It needs the built `lib/*.d.ts` the specs import. `startsWith(…, '1/')` picks the first
+            # shard, or the only one of a pull request, and relies on the `i/n` form of the `shard`
+            # values in the matrix above.
+            - name: Type-check spec files
+              if: startsWith(matrix.shard, '1/')
+              run: yarn test:types
+
+            # `--base` is the branch the pull request targets; `fetch-depth: 0` has fetched it.
+            - name: Test (specs that the change can affect)
+              if: github.event_name == 'pull_request' && github.base_ref != 'v6'
+              uses: nick-fields/retry@ad984534de44a9489a53aefd81eb77f87c70dc60 # v4
+              env:
+                  BASE_REF: ${{ github.base_ref }}
+              with:
+                  timeout_minutes: 20
+                  max_attempts: 3
+                  shell: bash
+                  command: node --experimental-strip-types scripts/affected-tests/index.ts --base "origin/$BASE_REF"
+
+            - name: Test (shard ${{ matrix.shard }})
+              if: github.event_name == 'merge_group' || github.base_ref == 'v6'
+              uses: nick-fields/retry@ad984534de44a9489a53aefd81eb77f87c70dc60 # v4
+              with:
+                  timeout_minutes: 20
+                  max_attempts: 3
+                  shell: bash
+                  command: npx vitest run --shard=${{ matrix.shard }}
+
+            # Every time, whatever the change: it drives `lint()` through the addon against the TS
+            # build, which no selection of `vitest related` reaches. Only on Linux: whether macOS,
+            # Windows, Bun and Deno load the addon is not what it takes on (module JSDoc of
+            # `e2e.spec.ts`).
+            - name: Test (napi end-to-end)
+              if: startsWith(matrix.shard, '1/')
+              run: npx vitest run --config vitest.e2e.config.ts
+
+    # A push to `dev` or `v6`: build, and save the caches. Nothing is tested here; the pull request and the
+    # merge queue did it, and `nightly.yml` runs the rest. The caches are what is worth a run: a
+    # pull request restores the dependencies and the Nx output that `dev` saved, as a cache that a
+    # pull request saved is visible to that pull request only.
+    build:
+        if: ${{ github.event_name == 'push' }}
+        runs-on: ubuntu-latest
+        steps:
+            - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
+              with:
+                  # SEE: https://github.com/lerna/lerna/issues/2542
+                  fetch-depth: '0'
+
+            - name: Use Node.js ${{ env.NODE_BUILD_VERSION }}
+              uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7
+              with:
+                  node-version: ${{ env.NODE_BUILD_VERSION }}
+
+            - name: Enable Corepack and setup Yarn v4
+              run: |
+                  corepack enable
+                  yarn --version
+
+            - name: Get yarn cache directory path
+              id: yarn-cache-dir-path
+              run: echo "dir=$(yarn config get cacheFolder)" >> "$GITHUB_OUTPUT"
+
+            - name: Cache Restore devDependencies
+              id: cache-restore-dev-depends
+              uses: actions/cache/restore@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6
+              with:
+                  path: |
+                      **/node_modules
+                      ${{ steps.yarn-cache-dir-path.outputs.dir }}
+                  key: dev-depends-modules-ubuntu-latest-node${{ env.NODE_BUILD_VERSION }}-${{ hashFiles('yarn.lock', '.yarnrc.yml') }}
+
+            - name: Install dependencies
               run: yarn install --immutable
 
             - name: Cache Save devDependencies
@@ -325,379 +296,99 @@ jobs:
               uses: actions/cache/save@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6
               with:
                   path: |
-                      '**/node_modules'
+                      **/node_modules
                       ${{ steps.yarn-cache-dir-path.outputs.dir }}
-                  key: dev-depends-${{ matrix.os }}-node${{ matrix.node }}-${{ hashFiles('yarn.lock', '.yarnrc.yml') }}
+                  key: dev-depends-modules-ubuntu-latest-node${{ env.NODE_BUILD_VERSION }}-${{ hashFiles('yarn.lock', '.yarnrc.yml') }}
 
-    test:
-        needs: [dev-setup, build]
+            - name: Cache Restore Nx
+              uses: actions/cache/restore@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6
+              with:
+                  path: .nx/cache
+                  key: nx-ubuntu-latest-node${{ env.NODE_BUILD_VERSION }}-${{ hashFiles('yarn.lock') }}-${{ github.sha }}
+                  restore-keys: |
+                      nx-ubuntu-latest-node${{ env.NODE_BUILD_VERSION }}-${{ hashFiles('yarn.lock') }}-
+
+            # See the same step of `test`.
+            - name: Reset the Nx cache when it has grown
+              run: |
+                  if [ -d .nx/cache ]; then
+                      size=$(du -sm .nx/cache | cut -f1)
+                      echo "Nx cache: ${size} MB"
+                      if [ "$size" -gt 1000 ]; then
+                          rm -rf .nx/cache
+                      fi
+                  fi
+
+            - name: Setup Rust toolchain
+              # See rust.yml for why this is pinned by commit SHA with an explicit `toolchain` input
+              # rather than the mutable `@stable` branch ref.
+              uses: dtolnay/rust-toolchain@6c977a6ca4077a0ceb28ffbe03f59d46e9ac8772 # master (2026-08-05)
+              with:
+                  toolchain: stable
+
+            # `rust.yml` saves this entry.
+            - name: Cache Restore Cargo
+              uses: actions/cache/restore@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6
+              with:
+                  path: |
+                      ~/.cargo/registry
+                      ~/.cargo/git
+                      crates/target
+                  key: ${{ runner.os }}-cargo-napi-${{ hashFiles('crates/Cargo.lock') }}
+                  restore-keys: ${{ runner.os }}-cargo-napi-
+
+            - name: Verify Cargo.lock
+              working-directory: crates
+              run: cargo metadata --locked --format-version 1 > /dev/null
+
+            # @napi-rs/cli is in node_modules from `yarn install` (a devDependency of
+            # `@markuplint/core`), pinned via yarn.lock. `@markuplint/core` has no `build` script, so
+            # Nx neither builds nor caches the addon.
+            - name: Build napi (generates index.cjs and index.d.ts)
+              working-directory: packages/@markuplint/core
+              run: yarn build:napi:debug
+
+            - name: Assert Cargo.lock unchanged
+              run: git diff --exit-code -- crates/Cargo.lock
+
+            - name: Build
+              run: yarn run build
+
+            - name: Cache Save Nx
+              uses: actions/cache/save@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6
+              with:
+                  path: .nx/cache
+                  key: nx-ubuntu-latest-node${{ env.NODE_BUILD_VERSION }}-${{ hashFiles('yarn.lock') }}-${{ github.sha }}
+
+    # The check that the ruleset requires on `dev`, on a pull request and in the queue. It fails when
+    # a job above failed or was cancelled and
+    # passes when one was skipped on purpose (`test` on a push, `build` elsewhere). `always()`
+    # makes it run after a failure, which would otherwise skip it and leave the required check
+    # pending.
+    ci-ok:
+        if: ${{ always() }}
+        needs:
+            - lint
+            - test
+            - build
         runs-on: ubuntu-latest
-        strategy:
-            fail-fast: false
-            matrix:
-                node: [24, 26]
         steps:
-            - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
-              with:
-                  # SEE: https://github.com/lerna/lerna/issues/2542
-                  fetch-depth: '0'
-
-            - name: Use Node.js ${{ matrix.node }}
-              uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7
-              with:
-                  node-version: ${{ matrix.node }}
-
-            - name: Enable Corepack and setup Yarn v4
-              run: |
-                  corepack enable
-                  yarn --version
-
-            - name: Get yarn cache directory path
-              id: yarn-cache-dir-path
-              run: echo "dir=$(yarn config get cacheFolder)" >> "$GITHUB_OUTPUT"
-
-            - name: Cache Restore devDependencies
-              uses: actions/cache/restore@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6
-              with:
-                  path: |
-                      '**/node_modules'
-                      ${{ steps.yarn-cache-dir-path.outputs.dir }}
-                  key: dev-depends-ubuntu-latest-node${{ matrix.node }}-${{ hashFiles('yarn.lock', '.yarnrc.yml') }}
-
-            - name: Cache Restore Production
-              uses: actions/cache/restore@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6
-              with:
-                  enableCrossOsArchive: true
-                  path: |
-                      packages/**/lib
-                      packages/**/cjs
-                      packages/**/esm
-                      packages/@markuplint/config-presets/preset.*.json
-                      packages/@markuplint/html-spec/index.js
-                      packages/@markuplint/html-spec/index.json
-                      packages/@markuplint/core/index.cjs
-                      packages/@markuplint/core/index.d.ts
-                      packages/@markuplint/core/*.node
-                  key: prod-node${{ env.NODE_BUILD_VERSION }}-${{ github.sha }}
-
-            - name: Install dependencies
-              run: yarn install --immutable
-
-            # The result does not depend on the Node.js version or the OS, so one
-            # run is enough. It needs the built `lib/*.d.ts` the specs import.
-            - name: Type-check spec files
-              if: matrix.node == env.NODE_BUILD_VERSION
-              run: yarn test:types
-
-            - name: Test
-              uses: nick-fields/retry@ad984534de44a9489a53aefd81eb77f87c70dc60 # v4
-              with:
-                  timeout_minutes: 20
-                  max_attempts: 3
-                  shell: bash
-                  command: npx vitest run
-
-            # Only in this job: test-cross-os would load the Linux addon from the
-            # production cache on macOS / Windows, and whether bun and deno load a
-            # Node-API addon through createRequire is a question this step does
-            # not take on. See the module JSDoc of e2e.spec.ts.
-            - name: Test (napi end-to-end)
-              run: npx vitest run --config vitest.e2e.config.ts
-
-    test-cross-os:
-        # Implicitly skipped when cross-os-setup is skipped (Renovate devDeps PRs).
-        needs: [cross-os-setup, build]
-        runs-on: ${{ matrix.os }}
-        strategy:
-            fail-fast: false
-            matrix:
-                os:
-                    - macos-latest
-                    - windows-latest
-                node: [24]
-        steps:
-            - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
-              with:
-                  # SEE: https://github.com/lerna/lerna/issues/2542
-                  fetch-depth: '0'
-
-            - name: Use Node.js ${{ matrix.node }}
-              uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7
-              with:
-                  node-version: ${{ matrix.node }}
-
-            - name: Enable Corepack and setup Yarn v4
-              run: |
-                  corepack enable
-                  yarn --version
-
-            - name: Get yarn cache directory path
-              id: yarn-cache-dir-path
-              run: echo "dir=$(yarn config get cacheFolder)" >> "$GITHUB_OUTPUT"
-
-            - name: Cache Restore devDependencies
-              uses: actions/cache/restore@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6
-              with:
-                  path: |
-                      '**/node_modules'
-                      ${{ steps.yarn-cache-dir-path.outputs.dir }}
-                  key: dev-depends-${{ matrix.os }}-node${{ matrix.node }}-${{ hashFiles('yarn.lock', '.yarnrc.yml') }}
-
-            - name: Cache Restore Production
-              uses: actions/cache/restore@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6
-              with:
-                  enableCrossOsArchive: true
-                  path: |
-                      packages/**/lib
-                      packages/**/cjs
-                      packages/**/esm
-                      packages/@markuplint/config-presets/preset.*.json
-                      packages/@markuplint/html-spec/index.js
-                      packages/@markuplint/html-spec/index.json
-                      packages/@markuplint/core/index.cjs
-                      packages/@markuplint/core/index.d.ts
-                      packages/@markuplint/core/*.node
-                  key: prod-node${{ env.NODE_BUILD_VERSION }}-${{ github.sha }}
-
-            - name: Install dependencies
-              run: yarn install --immutable
-
-            - name: Test (cross-OS path-sensitive packages)
-              uses: nick-fields/retry@ad984534de44a9489a53aefd81eb77f87c70dc60 # v4
-              with:
-                  timeout_minutes: 10
-                  max_attempts: 2
-                  shell: bash
-                  command: npx vitest run --config vitest.cross-os.config.ts
-
-    isolated-env:
-        needs: [dev-setup, build]
-        runs-on: ${{ matrix.os }}
-        strategy:
-            fail-fast: false
-            matrix:
-                os: [ubuntu-latest]
-                pm: [npm, yarn, pnpm]
-                env: [esm, ts, ts-config-ts]
-        steps:
-            - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
-              with:
-                  # SEE: https://github.com/lerna/lerna/issues/2542
-                  fetch-depth: '0'
-
-            - name: Use Node.js ${{ env.NODE_BUILD_VERSION }}
-              uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7
-              with:
-                  node-version: ${{ env.NODE_BUILD_VERSION }}
-
-            - name: Enable Corepack and setup Yarn v4
-              run: |
-                  corepack enable
-                  yarn --version
-
-            - name: Get yarn cache directory path
-              id: yarn-cache-dir-path
-              run: echo "dir=$(yarn config get cacheFolder)" >> "$GITHUB_OUTPUT"
-
-            - name: Cache Restore devDependencies
-              uses: actions/cache/restore@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6
-              with:
-                  path: |
-                      '**/node_modules'
-                      ${{ steps.yarn-cache-dir-path.outputs.dir }}
-                  key: dev-depends-${{ matrix.os }}-node${{ env.NODE_BUILD_VERSION }}-${{ hashFiles('yarn.lock', '.yarnrc.yml') }}
-
-            - name: Cache Restore Production
-              uses: actions/cache/restore@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6
-              with:
-                  enableCrossOsArchive: true
-                  path: |
-                      packages/**/lib
-                      packages/**/cjs
-                      packages/**/esm
-                      packages/@markuplint/config-presets/preset.*.json
-                      packages/@markuplint/html-spec/index.js
-                      packages/@markuplint/html-spec/index.json
-                      packages/@markuplint/core/index.cjs
-                      packages/@markuplint/core/index.d.ts
-                      packages/@markuplint/core/*.node
-                  key: prod-node${{ env.NODE_BUILD_VERSION }}-${{ github.sha }}
-
-            - name: Install dependencies
-              run: yarn install --immutable
-
-            - name: Create sandbox directory
-              run: |
-                  mkdir -p ${{ github.workspace }}/../sandbox
-                  cp -r ${{ github.workspace }}/test ${{ github.workspace }}/../sandbox
-                  find ${{ github.workspace }}/../sandbox/test -maxdepth 1 2>/dev/null || true
-
-            # Capture the root packageManager BEFORE the deletion step below,
-            # so the sandbox Setup step can reuse the same Yarn version
-            # without drifting from the repository's pin.
-            - name: Capture root packageManager
-              if: matrix.pm == 'yarn'
-              id: capture-package-manager
-              run: echo "value=$(jq -er '.packageManager' package.json)" >> "$GITHUB_OUTPUT"
-
-            - name: Delete package manager settings
-              run: jq 'del(.packageManager)' package.json > tmp.json && mv tmp.json package.json
-
-            - name: Install pnpm
-              if: matrix.pm == 'pnpm'
-              uses: pnpm/action-setup@0977fd99725f1db4007ccb2928dbb4e90d06cc86 # v6
-              with:
-                  version: latest # Use latest pnpm version
-                  run_install: false
-
-            - name: Setup Yarn v4 for sandbox
-              if: matrix.pm == 'yarn'
-              working-directory: ../sandbox/test/isolated-env/${{ matrix.env }}
+            - name: Check the results of the jobs
               env:
-                  PACKAGE_MANAGER: ${{ steps.capture-package-manager.outputs.value }}
+                  RESULTS: ${{ join(needs.*.result, ' ') }}
+                  EVENT_NAME: ${{ github.event_name }}
+                  BASE_REF: ${{ github.base_ref }}
               run: |
-                  cp ${{ github.workspace }}/.yarnrc.yml .yarnrc.yml
-                  echo 'enableHardenedMode: false' >> .yarnrc.yml
-                  # Build resolutions from dependencies to force yarn to use file: versions
-                  # for transitive dependencies (prevents npm registry fallback).
-                  # PACKAGE_MANAGER is captured from the root package.json before the
-                  # "Delete package manager settings" step, so the sandbox stays in sync
-                  # with the repository's Yarn version on every bump.
-                  echo "Using packageManager from root: $PACKAGE_MANAGER"
-                  jq --arg pm "$PACKAGE_MANAGER" '. + {"packageManager": $pm} + {"resolutions": .dependencies}' package.json > tmp.json && mv tmp.json package.json
-
-            - name: Install dependencies
-              working-directory: ../sandbox/test/isolated-env/${{ matrix.env }}
-              env:
-                  YARN_ENABLE_IMMUTABLE_INSTALLS: 'false'
-              run: ${{ matrix.pm }} install
-
-            - name: Test
-              working-directory: ../sandbox/test/isolated-env/${{ matrix.env }}
-              env:
-                  DEBUG: ${{ matrix.env == 'ts-config-ts' && 'ml-*' || '' }}
-              run: ${{ matrix.pm }} test
-
-    test-bun:
-        needs: build
-        runs-on: ubuntu-latest
-        continue-on-error: true
-        steps:
-            - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
-              with:
-                  fetch-depth: '0'
-
-            - name: Use Node.js ${{ env.NODE_BUILD_VERSION }}
-              uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7
-              with:
-                  node-version: ${{ env.NODE_BUILD_VERSION }}
-
-            - name: Enable Corepack and setup Yarn v4
-              run: |
-                  corepack enable
-                  yarn --version
-
-            - name: Setup Bun
-              uses: oven-sh/setup-bun@0c5077e51419868618aeaa5fe8019c62421857d6 # v2
-              with:
-                  bun-version: latest
-
-            - name: Get yarn cache directory path
-              id: yarn-cache-dir-path
-              run: echo "dir=$(yarn config get cacheFolder)" >> "$GITHUB_OUTPUT"
-
-            - name: Cache Restore devDependencies
-              uses: actions/cache/restore@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6
-              with:
-                  path: |
-                      '**/node_modules'
-                      ${{ steps.yarn-cache-dir-path.outputs.dir }}
-                  key: dev-depends-ubuntu-latest-node${{ env.NODE_BUILD_VERSION }}-${{ hashFiles('yarn.lock', '.yarnrc.yml') }}
-
-            - name: Cache Restore Production
-              uses: actions/cache/restore@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6
-              with:
-                  enableCrossOsArchive: true
-                  path: |
-                      packages/**/lib
-                      packages/**/cjs
-                      packages/**/esm
-                      packages/@markuplint/config-presets/preset.*.json
-                      packages/@markuplint/html-spec/index.js
-                      packages/@markuplint/html-spec/index.json
-                      packages/@markuplint/core/index.cjs
-                      packages/@markuplint/core/index.d.ts
-                      packages/@markuplint/core/*.node
-                  key: prod-node${{ env.NODE_BUILD_VERSION }}-${{ github.sha }}
-
-            - name: Install dependencies
-              run: yarn install --immutable
-
-            - name: Test with Bun
-              run: bunx --bun vitest run
-              env:
-                  # JavaScriptCore's concurrent DFG/FTL compilation plans are GC roots for
-                  # every value they freeze (`DFG::Plan::checkLivenessAndVisitChildren`),
-                  # and `Bun.gc(true)` never completes them. A plan that froze a per-document
-                  # closure keeps a superseded document alive across `gc()`, which makes the
-                  # WeakRef-based collectability tests in `@markuplint/ml-core` flaky. With
-                  # synchronous compilation a plan is finalized before it can be scanned.
-                  BUN_JSC_useConcurrentJIT: '0'
-
-    test-deno:
-        needs: build
-        runs-on: ubuntu-latest
-        continue-on-error: true
-        steps:
-            - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
-              with:
-                  fetch-depth: '0'
-
-            - name: Use Node.js ${{ env.NODE_BUILD_VERSION }}
-              uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7
-              with:
-                  node-version: ${{ env.NODE_BUILD_VERSION }}
-
-            - name: Enable Corepack and setup Yarn v4
-              run: |
-                  corepack enable
-                  yarn --version
-
-            - name: Setup Deno
-              uses: denoland/setup-deno@e95548e56dfa95d4e1a28d6f422fafe75c4c26fb # v2
-              with:
-                  deno-version: latest
-
-            - name: Get yarn cache directory path
-              id: yarn-cache-dir-path
-              run: echo "dir=$(yarn config get cacheFolder)" >> "$GITHUB_OUTPUT"
-
-            - name: Cache Restore devDependencies
-              uses: actions/cache/restore@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6
-              with:
-                  path: |
-                      '**/node_modules'
-                      ${{ steps.yarn-cache-dir-path.outputs.dir }}
-                  key: dev-depends-ubuntu-latest-node${{ env.NODE_BUILD_VERSION }}-${{ hashFiles('yarn.lock', '.yarnrc.yml') }}
-
-            - name: Cache Restore Production
-              uses: actions/cache/restore@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6
-              with:
-                  enableCrossOsArchive: true
-                  path: |
-                      packages/**/lib
-                      packages/**/cjs
-                      packages/**/esm
-                      packages/@markuplint/config-presets/preset.*.json
-                      packages/@markuplint/html-spec/index.js
-                      packages/@markuplint/html-spec/index.json
-                      packages/@markuplint/core/index.cjs
-                      packages/@markuplint/core/index.d.ts
-                      packages/@markuplint/core/*.node
-                  key: prod-node${{ env.NODE_BUILD_VERSION }}-${{ github.sha }}
-
-            - name: Install dependencies
-              run: yarn install --immutable
-
-            - name: Test with Deno
-              run: deno run -A --unstable-detect-cjs node_modules/vitest/vitest.mjs run
+                  echo "$RESULTS"
+                  # A run shows nothing of what it left out, and a green push reads as "tested", so the
+                  # summary says it. The list is that of `nightly.yml`: keep them together.
+                  if [ "$EVENT_NAME" = pull_request ] && [ "$BASE_REF" = v6 ]; then
+                      echo 'Other OSes, Node.js 24, isolated-env, Bun and Deno do not run for v6: the nightly tests run on dev only.' >> "$GITHUB_STEP_SUMMARY"
+                  elif [ "$EVENT_NAME" = pull_request ]; then
+                      echo 'The specs this change cannot reach, other OSes, Node.js 24, isolated-env, Bun and Deno run in the nightly tests on dev, not on a pull request.' >> "$GITHUB_STEP_SUMMARY"
+                  elif [ "$EVENT_NAME" = push ]; then
+                      echo 'A push to dev only builds, to fill the caches. The specs ran on the pull request, and the nightly tests run the rest.' >> "$GITHUB_STEP_SUMMARY"
+                  fi
+                  case " $RESULTS " in
+                      *" failure "* | *" cancelled "*) exit 1 ;;
+                  esac

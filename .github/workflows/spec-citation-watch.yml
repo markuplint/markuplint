@@ -1,18 +1,28 @@
 name: Spec citation watch
 
-# Checks the specification passages that rule READMEs, rule sources and the
-# website cite against the live specifications, and opens an Issue when one
-# changed (see the module comment of `scripts/spec-citations/cli.ts`).
-# Nothing is fixed automatically: a maintainer decides whether the rule, its
-# README (both languages) or `@markuplint/html-spec` has to follow.
+# Checks the passages that the sources of the packages, the rule READMEs, the
+# spec data and the website cite against the live specifications, the
+# documentation of the frameworks and their source files, and opens an Issue
+# when one changed (see the module comment of `scripts/spec-citations/cli.ts`).
+# Nothing is fixed automatically: a maintainer decides whether the code that
+# cites the passage (a rule and its README in both languages,
+# `@markuplint/html-spec`, an algorithm, a value grammar, the table of a
+# framework) has to follow. The one Issue is titled and labelled for
+# specifications, whatever the finding was cited from.
+#
+# The same run refreshes `spec-citations.lock.json` through a pull request.
+# Merging it is what accepts the changed passages, so that the next run
+# reports only what changed after it.
 #
 # A pull request that touches the script runs the check read-only, which
-# proves that the runner can install, run the script and reach the spec hosts.
+# proves that the runner can install, run the script and reach the hosts that
+# it fetches (the specifications, the documentation and the sources of the
+# frameworks).
 # Findings do not fail it: the specs move on their own.
 
 on:
     schedule:
-        - cron: '0 3 1 * *' # Monthly on the 1st at 12:00 JST
+        - cron: '0 3 * * 1' # Weekly on Monday at 12:00 JST
     workflow_dispatch:
     pull_request:
         branches:
@@ -70,7 +80,9 @@ jobs:
                   done
                   # 0: nothing to report, 1: findings. Neither is this pull request's fault.
                   # 2: a page still could not be fetched. This job exists to show that the runner can reach the
-                  #    spec hosts, so it fails.
+                  #    hosts that the script fetches, so it fails. The script fetches the pages that every
+                  #    package cites (the standards of WHATWG, W3C, IETF, ECMAScript and the others), so a slow
+                  #    or unreachable host is likelier to fail it than it was; the retries above are the allowance.
                   # No report file: the script crashed.
                   if [ ! -f report.md ] || [ "$status" -ge 2 ]; then
                       exit 1
@@ -81,14 +93,29 @@ jobs:
         if: github.event_name != 'pull_request'
         runs-on: ubuntu-latest
         timeout-minutes: 60
+        # The lock branch is pushed, and its PR listed, opened and edited, with a GitHub App token, not
+        # GITHUB_TOKEN: a `pull_request` run caused by GITHUB_TOKEN stops at `action_required` until
+        # someone approves it by hand, and `permissions` below has no `pull-requests` on purpose.
+        # The Issue steps keep GITHUB_TOKEN, since an Issue triggers no workflow here.
         permissions:
-            contents: write
+            contents: read
             issues: write
-            pull-requests: write
         steps:
+            # Same App as update-html-spec.yml (Contents and Pull requests, read and write).
+            - name: Create GitHub App token
+              id: app-token
+              uses: actions/create-github-app-token@64ab729a6294000f5aa4a4bc0b73d1f32bc45510 # v3.3.0
+              with:
+                  client-id: ${{ vars.BOT_APP_CLIENT_ID }}
+                  private-key: ${{ secrets.BOT_APP_PRIVATE_KEY }}
+                  permission-contents: write
+                  permission-pull-requests: write
+
             - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
               with:
                   ref: dev
+                  # `git push` below authenticates with the credentials checkout persists.
+                  token: ${{ steps.app-token.outputs.token }}
 
             - name: Use Node.js ${{ env.NODE_BUILD_VERSION }}
               uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7
@@ -111,7 +138,7 @@ jobs:
               run: |
                   set +e
                   # Same as the pull request job: a page that could not be fetched (status 2) is tried again, up to
-                  # three more times, five minutes apart, so that one outage does not skip the month for that page.
+                  # three more times, five minutes apart, so that one outage does not skip the week for that page.
                   for attempt in 1 2 3 4; do
                       rm -f report.md report-full.md
                       yarn spec-citations --update --report report.md --report-full report-full.md
@@ -142,7 +169,7 @@ jobs:
                       echo "<!-- spec-citation-watch -->"
                       echo "## Specification citations: the check crashed"
                       echo ""
-                      echo "The monthly check stopped before it could report. See the log: $RUN_URL"
+                      echo "The weekly check stopped before it could report. See the log: $RUN_URL"
                   } > report.md
 
             # One open Issue collects the reports: the first run opens it, and a
@@ -150,26 +177,64 @@ jobs:
             # not overwritten. The Issue is found by the marker on its first line
             # rather than by a text search, which is fuzzy and lags the index, and
             # without a label filter, so an Issue opened without labels is found too.
-            # Status 2 (only fetch failures) is left to the job summary: a page that
-            # was throttled once is not worth an Issue.
-            - name: Report in an Issue
-              if: steps.check.outputs.status == '1'
+            #
+            # The lookup is a step of its own because every run needs it: the lock PR names the open
+            # Issue even when this run reported nothing, so that a PR that outlives the run that found
+            # its findings keeps pointing at them (a run with only fetch failures, status 2, has none
+            # of its own).
+            - name: Find the open Issue
+              id: open-issue
               env:
                   GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
               run: |
                   # The open Issues number far fewer than this limit; past it a duplicate could be opened.
-                  NUMBER=$(gh issue list --state open --limit 200 --json number,body \
-                      --jq '[.[] | select(.body | startswith("<!-- spec-citation-watch -->"))] | .[0].number // empty')
+                  # A failed lookup must not stop a run that has nothing to report, which only names the Issue
+                  # in the PR; `Report in an Issue` stops on `searched` instead, so that it never opens a second one.
+                  if NUMBER=$(gh issue list --state open --limit 200 --json number,body \
+                      --jq '[.[] | select(.body | startswith("<!-- spec-citation-watch -->"))] | .[0].number // empty'); then
+                      echo "searched=true" >> "$GITHUB_OUTPUT"
+                      echo "number=$NUMBER" >> "$GITHUB_OUTPUT"
+                  else
+                      echo "::warning::Could not list the open Issues"
+                  fi
+
+            # Status 2 (only fetch failures) is left to the job summary: a page that
+            # was throttled once is not worth an Issue.
+            #
+            # The number of the Issue reported to is the step's output, for `Compose PR body`.
+            - name: Report in an Issue
+              id: report
+              if: steps.check.outputs.status == '1'
+              env:
+                  GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+                  NUMBER: ${{ steps.open-issue.outputs.number }}
+                  SEARCHED: ${{ steps.open-issue.outputs.searched }}
+              run: |
+                  if [ "$SEARCHED" != "true" ]; then
+                      echo "::error::The open Issues could not be listed, so a report would risk a second Issue"
+                      exit 1
+                  fi
                   if [ -n "$NUMBER" ]; then
                       gh issue comment "$NUMBER" --body-file report.md
-                  elif ! gh issue create \
-                      --title "Specification citations need a look" \
-                      --label "Specs" \
-                      --label "Documentation" \
-                      --body-file report.md; then
-                      # A label that no longer exists must not lose the report.
-                      gh issue create --title "Specification citations need a look" --body-file report.md
+                  else
+                      # `gh issue create` prints the URL of the new Issue, which ends with its number.
+                      if ! URL=$(gh issue create \
+                          --title "Specification citations need a look" \
+                          --label "Specs" \
+                          --label "Documentation" \
+                          --body-file report.md); then
+                          # A label that no longer exists must not lose the report.
+                          URL=$(gh issue create --title "Specification citations need a look" --body-file report.md)
+                      fi
+                      NUMBER="${URL##*/}"
                   fi
+                  # A value that is not a number would end up in the lock PR as a dead link, so the step
+                  # fails instead. The lock PR is skipped then, and the next run reports again.
+                  if ! [[ "$NUMBER" =~ ^[0-9]+$ ]]; then
+                      echo "::error::Could not read the number of the Issue from '${URL:-$NUMBER}'"
+                      exit 1
+                  fi
+                  echo "number=$NUMBER" >> "$GITHUB_OUTPUT"
 
             - name: Check for lock changes
               id: lock
@@ -184,7 +249,7 @@ jobs:
               if: steps.lock.outputs.has_changes == 'true'
               id: existing-pr
               env:
-                  GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+                  GH_TOKEN: ${{ steps.app-token.outputs.token }}
               run: |
                   PR_NUMBER=$(gh pr list --head "$BRANCH_NAME" --state open --json number --jq '.[0].number // empty')
                   if [ -n "$PR_NUMBER" ]; then
@@ -204,21 +269,51 @@ jobs:
                   git commit -m "chore: refresh the spec citation lock"
                   git push --force origin "$BRANCH_NAME"
 
+            # `#<number>` is what GitHub cross-links; a title is not. It is the Issue this run reported
+            # to, or else the one still open from an earlier run. With neither, there is nothing to send
+            # the reviewer to: this run had no findings, or only pages that could not be fetched (the
+            # job summary lists them). A passage that changed is always a finding, so the lock change
+            # then records sections that are newly cited or no longer cited.
+            #
+            # The sections that the lock gains and loses are listed in the body either way, the removed ones
+            # first and the ones that a file still cites named: merging drops those from the lock, and the
+            # monitor stops watching them (#4558). The lock to compare with is the one on `dev`, which this
+            # run started from; the file in the working tree is the new one.
             - name: Compose PR body
               if: steps.lock.outputs.has_changes == 'true'
+              env:
+                  ISSUE_NUMBER: ${{ steps.report.outputs.number || steps.open-issue.outputs.number }}
+                  RUN_URL: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
               run: |
+                  # `dev` is fetched here rather than trusted to be in the checkout, and a failure is said in the
+                  # body: without the list nothing tells the reviewer that a section may be dropped.
+                  if ! git fetch --no-tags --depth=1 origin dev ||
+                      ! git show origin/dev:scripts/spec-citations/spec-citations.lock.json > "$RUNNER_TEMP/lock-before.json" ||
+                      ! CHANGES=$(node --experimental-strip-types scripts/spec-citations/lock-changes.ts "$RUNNER_TEMP/lock-before.json" scripts/spec-citations/spec-citations.lock.json); then
+                      CHANGES="**The sections that the lock gains and loses could not be listed.** Compare the lock with the one on \`dev\`, and check that no section that a file still cites is dropped, before merging."
+                  fi
                   {
                       echo "Automated refresh of \`scripts/spec-citations/spec-citations.lock.json\`."
                       echo ""
                       echo "This PR was created by the **Spec citation watch** workflow. It records the cited passages as they are now, so that the next run reports only what changed after this one."
                       echo ""
-                      echo "Merge it once the findings in the open **Specification citations need a look** Issue have been dealt with. Merging it first hides them."
+                      if [ -n "$ISSUE_NUMBER" ]; then
+                          echo "Merge it once the report in #$ISSUE_NUMBER has been dealt with. Merging it first hides the changed passages from the next run."
+                      else
+                          echo "No Issue is open and this run reported no findings, so the lock change records sections that are newly cited or no longer cited. Read the removed ones first, and merge it after review."
+                      fi
+                      echo ""
+                      echo "$CHANGES"
+                      if [ -z "$ISSUE_NUMBER" ]; then
+                          echo ""
+                          echo "The job summary lists any page that could not be fetched: $RUN_URL"
+                      fi
                   } > pr-body.md
 
             - name: Create PR
               if: steps.lock.outputs.has_changes == 'true' && steps.existing-pr.outputs.pr_exists == 'false'
               env:
-                  GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+                  GH_TOKEN: ${{ steps.app-token.outputs.token }}
               run: |
                   gh pr create \
                       --base dev \
@@ -230,6 +325,6 @@ jobs:
             - name: Update existing PR body
               if: steps.lock.outputs.has_changes == 'true' && steps.existing-pr.outputs.pr_exists == 'true'
               env:
-                  GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+                  GH_TOKEN: ${{ steps.app-token.outputs.token }}
                   PR_NUMBER: ${{ steps.existing-pr.outputs.pr_number }}
               run: gh pr edit "$PR_NUMBER" --body-file pr-body.md

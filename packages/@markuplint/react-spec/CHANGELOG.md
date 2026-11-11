@@ -3,6 +3,15 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [5.5.0](https://github.com/markuplint/markuplint/compare/v5.4.0...v5.5.0) (2026-11-10)
+
+### Features
+
+* **react-spec:** declare how React renders a literal written as code ([03e3c45](https://github.com/markuplint/markuplint/commit/03e3c45e6a1a372834afe3e52245a749fd87444a))
+* **react-spec:** declare that react-dom appends the children of a template to the element ([f439f54](https://github.com/markuplint/markuplint/commit/f439f549dab4a952e43f4838f1bb59bad1524fee))
+* **react-spec:** declare the elements that React moves to the head, and add the react-18 spec ([c317c08](https://github.com/markuplint/markuplint/commit/c317c089e3cb202670181ac538acec95b47ae109))
+
+
 # [5.4.0](https://github.com/markuplint/markuplint/compare/v5.3.0...v5.4.0) (2026-10-29)
 
 **Note:** Version bump only for package @markuplint/react-spec

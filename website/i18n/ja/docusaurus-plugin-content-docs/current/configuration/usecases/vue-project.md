@@ -32,6 +32,12 @@ npm install -D markuplint @markuplint/vue-parser @markuplint/vue-spec
 
 ## プリテンダーと併用
 
+スキャンには`@markuplint/pretenders`が必要です。`markuplint`はこれをインストールしません:
+
+```shell npm2yarn
+npm install -D @markuplint/pretenders
+```
+
 カスタムコンポーネントをネイティブのHTML要素として検証したい場合は、[プリテンダー](/docs/guides/beyond-html#pretenders)を追加します。**自動スキャン**の利用を推奨します — ソースファイルからコンポーネントと要素の対応を自動で検出するため、手動で管理する必要がありません:
 
 ```json class=config title=".markuplintrc"

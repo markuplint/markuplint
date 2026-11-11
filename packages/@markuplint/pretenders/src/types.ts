@@ -55,13 +55,17 @@ export interface PretenderScanEntry {
  */
 export type Attr = {
 	/**
-	 * The kind of attribute: static string, boolean, dynamic expression, a prop of the
-	 * component passed as it is (`aria-label={label}`), or spread
+	 * The kind of attribute: static string, boolean, an expression (reported as the code it is
+	 * written as, whether or not it is a literal), a prop of the component passed as it is
+	 * (`aria-label={label}`), an expression whose code is not known (`dynamic`), or spread
 	 */
-	readonly nodeType: 'static' | 'boolean' | 'dynamic' | 'prop' | 'spread';
+	readonly nodeType: 'static' | 'boolean' | 'expression' | 'dynamic' | 'prop' | 'spread';
 	/** The attribute name */
 	readonly name: string;
-	/** The attribute value (empty string for boolean, the name of the prop for `prop`, 'N/A' for spread) */
+	/**
+	 * The attribute value (empty string for boolean, the code for `expression`, the name of the prop
+	 * for `prop`, 'N/A' for spread)
+	 */
 	readonly value: string;
 	/** Optional type annotation for the attribute */
 	readonly type?: string;

@@ -21,12 +21,12 @@
 		"@docusaurus/remark-plugin-npm2yarn": "3.10.2",
 		"@octokit/rest": "22.0.1",
 		"clsx": "2.1.1",
-		"dotenv": "18.0.8",
+		"dotenv": "18.0.9",
 		"gray-matter": "4.0.3",
 		"prism-react-renderer": "2.4.1",
 		"react": "19.3.1",
 		"react-dom": "19.3.1",
-		"unist-util-visit": "5.1.0"
+		"unist-util-visit": "5.2.0"
 	},
 	"devDependencies": {
 		"@docusaurus/module-type-aliases": "3.10.2",
@@ -36,10 +36,10 @@
 		"@tsconfig/strictest": "2.0.8",
 		"eslint-plugin-react": "7.37.5",
 		"eslint-plugin-react-hooks": "7.1.1",
-		"glob": "14.0.2",
-		"oxfmt": "0.73.0",
+		"glob": "14.0.3",
+		"oxfmt": "0.75.0",
 		"stylelint": "17.16.0",
-		"stylelint-config-recess-order": "7.8.0",
+		"stylelint-config-recess-order": "7.10.0",
 		"stylelint-config-standard": "40.0.0",
 		"stylelint-order": "8.1.2",
 		"tsx": "4.23.15",

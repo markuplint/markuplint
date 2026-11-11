@@ -42,7 +42,8 @@ export class HtmlParser extends Parser<Node, State> {
 	 */
 	constructor(options?: ExtendsOptions) {
 		super(
-			{ ...options, rawTextElements: ['style', 'script', 'xmp'] },
+			// parse5 takes a leading BOM for text (so `<html><head><body>` open implicitly)
+			{ ...options, rawTextElements: ['style', 'script', 'xmp'], leadingBom: 'mask' },
 			{
 				startsHeadTagOrBodyTag: null,
 				afterPosition: {

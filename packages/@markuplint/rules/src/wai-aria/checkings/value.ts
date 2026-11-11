@@ -13,7 +13,6 @@ import type { ARIAProperty, ARIARole } from '@markuplint/ml-spec';
  * @param attr - The ARIA attribute node to inspect.
  * @param role - The computed ARIA role, used to resolve conditional value types.
  * @param propSpecs - The list of ARIA property specifications for value type lookup.
- * @param booleanish - Whether the document supports booleanish attribute values (e.g., JSX).
  * @returns A violation if the attribute value does not match the expected type.
  */
 export const checkingValue: AttrChecker<
@@ -22,17 +21,16 @@ export const checkingValue: AttrChecker<
 	{
 		role?: ARIARole | null;
 		propSpecs: readonly ARIAProperty[];
-		booleanish?: boolean;
 	}
 > =
-	({ attr, role, propSpecs, booleanish }) =>
+	({ attr, role, propSpecs }) =>
 	t => {
 		if (attr.isDynamicValue) {
 			return;
 		}
 		const propSpec = propSpecs.find(p => p.name === attr.nameKey);
 
-		const result = checkAria(propSpec, attr.value, role?.name, booleanish);
+		const result = checkAria(propSpec, attr.value, role?.name);
 		if (result.isValid) {
 			return;
 		}
@@ -56,10 +54,9 @@ export const checkingValue: AttrChecker<
  * @param propSpec - The ARIA property specification, or `undefined` if the property is unknown.
  * @param currentValue - The current attribute value to validate.
  * @param role - The name of the computed role, used to resolve conditional value types.
- * @param booleanish - Whether booleanish values (empty string as `true`) are accepted.
  * @returns An object containing the validation result and, for enum types, the allowed values.
  */
-function checkAria(propSpec: ARIAProperty | undefined, currentValue: string, role?: string, booleanish?: boolean) {
+function checkAria(propSpec: ARIAProperty | undefined, currentValue: string, role?: string) {
 	if (!propSpec) {
 		return {
 			currentValue,
@@ -77,7 +74,7 @@ function checkAria(propSpec: ARIAProperty | undefined, currentValue: string, rol
 			}
 		}
 	}
-	const isValid = checkAriaValue(valueType, currentValue, propSpec.enum, booleanish);
+	const isValid = checkAriaValue(valueType, currentValue, propSpec.enum);
 	return {
 		...propSpec,
 		currentValue,
@@ -95,10 +92,9 @@ function checkAria(propSpec: ARIAProperty | undefined, currentValue: string, rol
  * @param type - The ARIA value type (e.g., `"token"`, `"true/false"`, `"integer"`).
  * @param value - The raw attribute value to validate.
  * @param tokenEnum - The list of allowed token values for token-based types.
- * @param booleanish - Whether empty string is accepted as a boolean `true` value.
  * @returns `true` if the value is valid for the given type, `false` otherwise.
  */
-export function checkAriaValue(type: string, value: string, tokenEnum: readonly string[], booleanish?: boolean) {
+export function checkAriaValue(type: string, value: string, tokenEnum: readonly string[]) {
 	switch (type) {
 		case 'token': {
 			return tokenEnum.includes(value);
@@ -113,21 +109,12 @@ export function checkAriaValue(type: string, value: string, tokenEnum: readonly 
 			return true;
 		}
 		case 'true/false': {
-			if (booleanish && value === '') {
-				return true;
-			}
 			return ['true', 'false'].includes(value);
 		}
 		case 'tristate': {
-			if (booleanish && value === '') {
-				return true;
-			}
 			return ['mixed', 'true', 'false', 'undefined'].includes(value);
 		}
 		case 'true/false/undefined': {
-			if (booleanish && value === '') {
-				return true;
-			}
 			return ['true', 'false', 'undefined'].includes(value);
 		}
 		case 'integer': {

@@ -26,10 +26,9 @@ class MLNodeList<T extends RuleConfigValue, O extends PlainData, N extends MLChi
 			 *
 			 * It throws an error because it should return null but the `item` method of `NodeListOf` doesn't return null in the type definition of TypeScript.
 			 *
-			 * @see https://www.w3.org/TR/DOM-Level-2-Core/core.html#ID-844377136
+			 * @see https://dom.spec.whatwg.org/#dom-nodelist-item
 			 *
-			 * > item
-			 * > Returns the index-th item in the collection. If index is greater than or equal to the number of nodes in the list, this returns null.
+			 * > The item(index) method must return the indexth node in the collection. If there is no indexth node in the collection, then the method must return null.
 			 */
 			throw new ReferenceError('Invalid index');
 		}

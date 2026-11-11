@@ -8,8 +8,23 @@ import { collectFromMarkdown, collectFromSource, collectFromText } from './colle
 
 export type FileKind = 'readme' | 'source' | 'data' | 'doc';
 
-const RULES = 'packages/@markuplint/rules/src';
 const DOCS = ['website/docs', 'website/i18n/ja/docusaurus-plugin-content-docs'];
+/**
+ * The packages whose sources are read. A citation travels with the code it justifies: an algorithm that moves
+ * from a rule into `@markuplint/ml-spec` (`select-display-size.ts`, #4558) still depends on the same passage,
+ * and a monitor that read only some packages would drop the section from the lock, without a report, the day
+ * the citation crosses the boundary. So the whole of every package's `src` is read, not a list of the places
+ * that cite today: the declarations of how a framework renders a literal (`*-spec`, `*-parser`), the
+ * algorithms and the value grammars (`ml-spec`, `types`), the DOM (`ml-core`), the selector engine and the
+ * rules.
+ */
+const PACKAGES = ['packages/@markuplint', 'packages/markuplint'];
+/**
+ * The HTML spec data (`html-spec/src/*.jsonc`) cites the passages behind the content models and the attributes
+ * that `permitted-contents` and `invalid-attr` rely on. Only the `.jsonc` files directly in the directory are
+ * spec data.
+ */
+const SPEC_DATA = 'packages/@markuplint/html-spec/src';
 
 /**
  * Which files hold citations, and how they are read.
@@ -25,7 +40,19 @@ export function classify(path: string): FileKind | null {
 	if (/^packages\/@markuplint\/rules\/src\/[^/]+\/schema\.json$/.test(path)) {
 		return 'data';
 	}
-	if (path.startsWith(`${RULES}/`) && path.endsWith('.ts') && !path.endsWith('.spec.ts') && !path.endsWith('.d.ts')) {
+	if (
+		/^packages\/(?:@markuplint\/[^/]+|markuplint)\/src\/.+\.ts$/.test(path) &&
+		!path.endsWith('.spec.ts') &&
+		!path.endsWith('.d.ts')
+	) {
+		return 'source';
+	}
+	// The spec data sits directly in the directory.
+	if (
+		path.startsWith(`${SPEC_DATA}/`) &&
+		path.endsWith('.jsonc') &&
+		!path.slice(SPEC_DATA.length + 1).includes('/')
+	) {
 		return 'source';
 	}
 	if (/^website\/(?:docs|i18n\/ja\/docusaurus-plugin-content-docs)\/.+\.mdx?$/.test(path)) {
@@ -40,7 +67,7 @@ export function classify(path: string): FileKind | null {
  * READMEs into `website/docs`, and those must not be counted twice.
  */
 export function listCitingFiles(root: string): { path: string; kind: FileKind }[] {
-	const listed = execFileSync('git', ['ls-files', '-z', '--', RULES, ...DOCS], {
+	const listed = execFileSync('git', ['ls-files', '-z', '--', ...PACKAGES, ...DOCS], {
 		cwd: root,
 		encoding: 'utf8',
 		maxBuffer: 64 * 1024 * 1024,

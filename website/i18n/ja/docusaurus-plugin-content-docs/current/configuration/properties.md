@@ -58,7 +58,7 @@
 
 <!-- textlint-enable  ja-technical-writing/max-comma -->
 
-まず、パッケージとしてインポートします。パッケージが存在しない、文字列がパッケージでないなど、失敗した場合は、**文字列を単なるパスとして解決します**。相対パスは、設定ファイルのあるディレクトリが基準となります。
+`.`または`..`のセグメントで始まる相対パスと絶対パスは、常にパスとして解決し、パッケージとしてのインポートは試みません。一致するものを除外する`!`で始まる値も同様です。それ以外の値は、まずパッケージとしてインポートします。パッケージが存在しないなど、失敗した場合は、**文字列を単なるパスとして解決します**。相対パスは、設定ファイルのあるディレクトリが基準となります。
 
 [`overrides`](#overrides)の値の中にあるこれらのプロパティ、[`pretenders`](#pretenders)の`files`と[`scan`の`files`](#pretenders/scan)、[`pretenders.data`](#pretenders/data)の各要素の`filePath`も同じです。基準は、それらを宣言した設定ファイルのあるディレクトリで、ほかの設定ファイルが`extends`で読み込む場合も変わりません。ファイルを持たない設定（APIの`config`オプションと`defaultConfig`オプション）には基準となるディレクトリがないため、作業ディレクトリが基準となります。
 
@@ -298,7 +298,7 @@ interface Config {
 
 #### `parseError`
 
-パースエラーの深刻度を制御します。`"off"` または `false` を設定するとパースエラーの報告を抑制できます。
+パースエラーの深刻度を制御します。`"off"` または `false` を設定するとパースエラーの報告を抑制できます。非致命のエラーは、これを設定するまで報告されません。フレームワークのパーサーがコンパイラの受け付けないマークアップに出すエラー（例: Vue の template 内の `<style>`）も含み、コードの一覧は [`parse-error`](/docs/migration/v4-to-v5/rules/parse-error) にあります。
 
 ```json class=config
 {
@@ -996,9 +996,10 @@ const MyPicture = () => {
 属性値を受け取ります。省略可能です。省略した場合、その属性は真偽値属性になります。
 
 - **文字列**: 静的な値です。
-- **`{ "fromAttr": "name" }`**: コンポーネントが持つ属性の値です。その属性が式（`<MyButton kind={kind} />`）であれば、値も動的になります。コンポーネントがその属性を持たない場合、要素はその属性を空の値で持ちます。
+- **`{ "fromAttr": "name" }`**: コンポーネントが持つ属性の値です。その属性がリテラル（`<MyButton kind={false} />`）であれば、コンポーネントが渡す先の要素の属性名で、フレームワークの描画結果として扱われます。その属性がそれ以外の式（`<MyButton kind={kind} />`）であれば、値も動的になります。コンポーネントがその属性を持たない場合、要素はその属性を空の値で持ちます。
 - **`{ "fromAttr": "name", "omitIfMissing": true }`**: 同上ですが、コンポーネントがその属性を持たない場合、要素もその属性を持ちません。省略可能なpropをそのまま渡すコンポーネントが描画する結果です（`<button type={kind}>`は`kind`が`undefined`のとき`type`を持ちません）。
-- **`{ "dynamic": true }`**: 属性は存在しますが、値はコンポーネントがレンダリングされるまで分からない場合（例：`tabIndex={selected ? 0 : -1}`）に指定します。ルールは動的な値として扱い、検証しません。
+- **`{ "expression": "code" }`**: コンポーネントのソースで、その属性が書かれているコードです。`aria-busy={true}`なら`{ "expression": "true" }`、`tabIndex={selected ? 0 : -1}`なら`{ "expression": "selected ? 0 : -1" }`です。コードの中のリテラル（`true`、`false`、`null`、`undefined`、文字列、数値）は、要素に直接書いた場合と同じく、フレームワークの描画結果として扱われます。`aria-busy={true}`は`aria-busy="true"`、`disabled={false}`は属性なしで、`aria-busy`の`{ "expression": "\"true\"" }`は`{ "expression": "true" }`と同じです。それ以外のコードは動的な値です。スキャナーが書くので、手で書くことはあまりありません。
+- **`{ "dynamic": true }`**: 属性は存在しますが、値はコンポーネントがレンダリングされるまで分からず、コードも分からない場合に指定します。ルールは動的な値として扱い、検証しません。
 
 `fromAttr`は、使用箇所の属性を、それを描画するフレームワークの規則で探します。Vueでは`my-label`と`myLabel`は同じpropですが、`mylabel`は別のpropです。JSXではpropを完全一致で照合するため、`Label`と`label`は別のpropです。HTMLベースの構文では、DOMが属性名を比較するのと同じく、ASCIIの大文字・小文字を区別せずに比較します。`fromAttr`には、コンポーネントがpropを宣言している綴りのとおりに名前を書いてください。
 
@@ -1174,7 +1175,7 @@ const Details = ({ children }) => <details>{children}</details>;
 
 `<Picture />`は、コンポーネント自身が`img`要素をレンダリングするため、`img`要素の欠如は報告されません。`<Details></Details>`は、`summary`要素を用意できるのは使用側だけなので、`summary`要素の欠如が報告されます。
 
-現在、`contents`を利用するのは`permitted-contents`、`require-owned-elements`と、アクセシブルな名前の算出（`require-accessible-name`などが利用）だけです。名前の算出では、`{ "dynamic": true }`は名前の出どころになりません（ただし、それ以外に名前の出どころがないコンポーネントは、その内容が名前かもしれないため`require-accessible-name`は報告しません）。また`slots`が`null`のコンポーネントに渡された子要素は使われません。要素の子を参照するほかのルールには、コンポーネントに渡された子要素だけが見えます。
+現在、`contents`を利用するのは`permitted-contents`、`require-owned-elements`と、アクセシブルな名前の算出（`require-accessible-name`などが利用）だけです。名前の算出では、`{ "dynamic": true }`は名前の出どころになりません（ただし、それ以外に名前の出どころがないコンポーネントは、その内容が名前かもしれないため`require-accessible-name`は報告しません）。属性が`{ "expression": "code" }`のとき、コードがフレームワークの描画するリテラル（`aria-label={'x'}`）ならその値が名前になり、それ以外のコードは動的な値です。また`slots`が`null`のコンポーネントに渡された子要素は使われません。要素の子を参照するほかのルールには、コンポーネントに渡された子要素だけが見えます。
 
 コンポーネントがルートに複数の要素をレンダリングする場合は、`element`に`"#fragment"`を指定します。コンポーネント自身は要素ではなく、その`contents`が親の中でコンポーネントの位置に置かれます。
 
@@ -1190,6 +1191,8 @@ const Details = ({ children }) => <details>{children}</details>;
 
 スキャン（`scan`、`auto`）は、この値を自動で書き込みます。手で書く相対パスの基準は、[パスの解決](#resolving-specified-paths)を参照してください。
 
+`filePath`のあるエントリ（手で書いたもの、スキャンが書いたもの、`files`や`imports`のデータにあるもの。`npx @markuplint/pretenders`が書き出すデータも含みます）は、`@markuplint/pretenders`が、リントするファイルがインポートしているファイルと照合します。`markuplint`はこれをインストールしません。[`scan`](#pretenders/scan)の手順でインストールしてください。ない場合、markuplintはその旨のメッセージで失敗します。
+
 #### `scan` {#pretenders/scan}
 
 :::caution[実験的機能]
@@ -1197,6 +1200,12 @@ const Details = ({ children }) => <details>{children}</details>;
 :::
 
 `pretenders`の**オブジェクト形式**を使用する場合、`scan`フィールドで**動的コンポーネントスキャン**を有効にできます。すべてのコンポーネントを手動でリストアップする代わりに、markuplintがコンポーネントファイルをスキャンしてプリテンダーマッピングを自動的に発見します。
+
+`markuplint`がインストールしない`@markuplint/pretenders`が必要です。プロジェクトに追加してください。Vue、Svelte、Astroのファイルをスキャンするには、その言語のパーサーパッケージ（`@markuplint/vue-parser`、`@markuplint/svelte-parser`、`@markuplint/astro-parser`）も必要です。`@markuplint/pretenders`がない場合、markuplintはインストール方法を示すメッセージで失敗します。
+
+```shell npm2yarn
+npm install -D @markuplint/pretenders
+```
 
 ファイルの拡張子によってスキャナーが決定されます:
 
@@ -1258,7 +1267,7 @@ const Details = ({ children }) => <details>{children}</details>;
 このプロパティは**実験的機能**であり、将来のリリースで変更される可能性があります。
 :::
 
-オブジェクト形式を使用する場合、`auto: true`を指定すると、`data`/`scan`をあらかじめ設定しなくても、リント対象ファイル自身のimportグラフをスキャンしてプリテンダーを解決します:
+オブジェクト形式を使用する場合、`auto: true`を指定すると、`data`/`scan`をあらかじめ設定しなくても、リント対象ファイル自身のimportグラフをスキャンしてプリテンダーを解決します。[`scan`](#pretenders/scan)と同じく、`@markuplint/pretenders`が必要です:
 
 ```json class=config
 {
@@ -1322,6 +1331,9 @@ type OriginalNode = {
       | {
           fromAttr: string;
           omitIfMissing?: true;
+        }
+      | {
+          expression: string;
         }
       | {
           dynamic: true;

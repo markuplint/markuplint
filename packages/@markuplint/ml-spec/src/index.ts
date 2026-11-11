@@ -47,6 +47,9 @@ export * from './algorithm/aria/get-aria.js';
 export * from './algorithm/aria/get-role-spec.js';
 export * from './algorithm/aria/is-presentational.js';
 
+// DOM algorithms
+export * from './algorithm/dom/tree-boundary.js';
+
 // HTML algorithms
 export * from './algorithm/html/get-content-model.js';
 export * from './algorithm/html/may-be-focusable.js';
@@ -55,6 +58,7 @@ export * from './algorithm/html/get-selectors-by-content-model-category.js';
 export * from './algorithm/html/is-nothing-content-model.js';
 export * from './algorithm/html/is-palpable-elements.js';
 export * from './algorithm/html/is-void-element.js';
+export { getSelectDisplaySize } from './algorithm/html/select-display-size.js';
 
 // Shared utilities
 export * from './utils/get-attr-specs.js';

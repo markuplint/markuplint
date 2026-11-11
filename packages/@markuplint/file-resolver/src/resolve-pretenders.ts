@@ -1,14 +1,52 @@
 import type { OptimizedConfig, Pretender, PretenderAutoOptions, PretenderFileData } from '@markuplint/ml-config';
+import type * as Pretenders from '@markuplint/pretenders';
 
 import path from 'node:path';
 
 import { rebaseHandWrittenPretenderFilePath, rebasePretenderFilePath } from '@markuplint/ml-config';
+import { isFatalError, missingPackageOf } from '@markuplint/shared';
 import { glob } from 'glob';
 
+import { log } from './debug.js';
 import { generalImport } from './general-import.js';
 import { normalizeForGlob } from './path-utils.js';
 
 type PretendersConfig = OptimizedConfig['pretenders'];
+
+const PRETENDERS_PACKAGE = '@markuplint/pretenders';
+
+/**
+ * `@markuplint/pretenders` is an optional peer of this package (`peerDependenciesMeta`): installing markuplint
+ * does not install it, nor the parsers and the frameworks behind them, so it is loaded only for a
+ * configuration that needs it, and one that does is told how to install it rather than given the bare
+ * `ERR_MODULE_NOT_FOUND` of Node.
+ *
+ * Only the package itself missing gets that message. A module that an installed `@markuplint/pretenders`
+ * needs being missing is a fault of the installation, and is thrown as it is (see `missingPackageOf` in
+ * `@markuplint/shared`).
+ *
+ * @param name - The export to load
+ * @param needs - What needs it, as the start of the sentence of the error: an option of the configuration
+ * @returns The export
+ * @throws An `Error` that says how to install the package, with the error of the import as its `cause`
+ */
+async function importFromPretenders<K extends keyof typeof Pretenders>(
+	name: K,
+	needs: string,
+): Promise<(typeof Pretenders)[K]> {
+	try {
+		const mod = await import('@markuplint/pretenders');
+		return mod[name];
+	} catch (error: unknown) {
+		if (isFatalError(error) || missingPackageOf(error) !== PRETENDERS_PACKAGE) {
+			throw error;
+		}
+		throw new Error(
+			`${needs} needs ${PRETENDERS_PACKAGE}, which is not installed. Add it to your project as a development dependency (for example, npm install --save-dev ${PRETENDERS_PACKAGE}), together with the parser package of each language you scan: @markuplint/vue-parser for .vue, @markuplint/svelte-parser for .svelte, @markuplint/astro-parser for .astro (and @markuplint/jsx-parser, @markuplint/mdx-parser for JSX and MDX).`,
+			{ cause: error },
+		);
+	}
+}
 
 /**
  * `Pretender.filePath` is written by scanners (and by hand, in `data`) relative to
@@ -85,6 +123,8 @@ export type PretenderResolver = {
 	 *   only on the call that read them.
 	 * @returns All resolved pretender definitions — a new array on every call,
 	 *   so the retained target-independent entries are never exposed to mutation
+	 * @throws An `Error` that says how to install `@markuplint/pretenders` when `config.scan`
+	 *   or `config.auto` needs it and it is not installed, with the error of the import as its `cause`
 	 */
 	resolve(context?: ResolvePretendersContext, options?: ResolvePretendersOptions): Promise<Pretender[]>;
 };
@@ -104,7 +144,8 @@ type TargetIndependentResult = {
  * kept as well — the host's next config resolution creates a new resolver).
  *
  * @param config - The pretenders configuration section from the optimized config
- * @returns The resolver; its `resolve()` yields `[]` when `config` is absent
+ * @returns The resolver; its `resolve()` yields `[]` when `config` is absent, and rejects as
+ *   {@link resolvePretenders} does when `@markuplint/pretenders` is needed and not installed
  */
 export function createPretenderResolver(config: PretendersConfig): PretenderResolver {
 	// The promise is retained, not its result, so that overlapping first calls
@@ -158,6 +199,10 @@ export function createPretenderResolver(config: PretendersConfig): PretenderReso
  * @param context - The lint target's path/source, required only for `config.auto`
  * @param options - Where to report the files the result depends on
  * @returns An array of all resolved pretender definitions
+ * @throws An `Error` that says how to install `@markuplint/pretenders` when `config.scan` or
+ *   `config.auto` needs it and it is not installed (an optional peer of this package), with the
+ *   error of the import as its `cause`. A module that an installed `@markuplint/pretenders`
+ *   needs being missing is thrown as it is.
  */
 export function resolvePretenders(
 	config: PretendersConfig,
@@ -218,7 +263,7 @@ async function resolveTargetIndependentPretenders(
 	}
 
 	if (config.scan) {
-		const { scan } = await import('@markuplint/pretenders');
+		const scan = await importFromPretenders('scan', 'The "pretenders.scan" option');
 		for (const entry of config.scan) {
 			const patterns = typeof entry.files === 'string' ? [entry.files] : [...entry.files];
 			// The patterns are absolute paths of the platform (`#pathResolve`), which Windows writes
@@ -252,7 +297,7 @@ async function appendAutoPretenders(
 	auto: true | PretenderAutoOptions,
 	dependencies: Set<string> | undefined,
 ): Promise<void> {
-	const { autoScan } = await import('@markuplint/pretenders');
+	const autoScan = await importFromPretenders('autoScan', 'The "pretenders.auto" option');
 	const scanned = await autoScan(context.filePath, context.sourceCode, {
 		depth: auto === true ? undefined : auto.depth,
 		dependencies,
@@ -299,6 +344,8 @@ async function appendAutoPretenders(
  * @param options - Where to report the files the result depends on
  * @returns The disambiguated pretender list, or `pretenders` itself (same
  *   reference) when there was nothing to resolve
+ * @throws An `Error` that says how to install `@markuplint/pretenders` when an entry has a
+ *   `filePath` and it is not installed, with the error of the import as its `cause`
  */
 export async function disambiguatePretendersForFile(
 	filePath: string,
@@ -310,7 +357,10 @@ export async function disambiguatePretendersForFile(
 		return pretenders;
 	}
 
-	const { disambiguatePretenders } = await import('@markuplint/pretenders');
+	const disambiguatePretenders = await importFromPretenders(
+		'disambiguatePretenders',
+		'A pretender that has a `filePath`',
+	);
 	// The same base the scanned pretenders' paths were made absolute from (see `rebasePretenderFilePaths`).
 	return disambiguatePretenders(pretenders, {
 		filePath,
@@ -351,11 +401,23 @@ export function hasResolvableCollision(pretenders: readonly Pretender[]): boolea
  * newly valid tsconfig `paths` alias keeps resolving as it did before the
  * change for the rest of the process's lifetime. A no-op (not an error) when
  * `@markuplint/pretenders` isn't installed, since nothing has populated its
- * caches in that case either.
+ * caches in that case either, and when it is installed but fails to load, which
+ * is logged under the `ml-fr` debug namespace: what needs it fails on its own, with the reason.
  *
  * @returns A promise that resolves once the caches have been cleared
  */
 export async function invalidatePretenderResolutionCaches(): Promise<void> {
-	const pretendersMod = await import('@markuplint/pretenders').catch(() => null);
-	pretendersMod?.clearPretenderCaches();
+	let clearPretenderCaches: typeof Pretenders.clearPretenderCaches;
+	try {
+		({ clearPretenderCaches } = await import('@markuplint/pretenders'));
+	} catch (error: unknown) {
+		// Clearing is best-effort, and what needs the package fails on its own with the reason when it is
+		// loaded, so a package that fails to load is logged and left to that. Tier-1-shaped errors are not
+		// told apart here either: a module the package needs runs as it loads, as in `generalImport`.
+		if (missingPackageOf(error) !== PRETENDERS_PACKAGE) {
+			log('Failed to load %s to clear its caches: %O', PRETENDERS_PACKAGE, error);
+		}
+		return;
+	}
+	clearPretenderCaches();
 }

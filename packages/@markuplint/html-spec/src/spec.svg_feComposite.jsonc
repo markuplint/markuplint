@@ -1,5 +1,5 @@
 // https://drafts.fxtf.org/filter-effects/#feCompositeElement
-// https://www.w3.org/TR/svg-aam-1.0/#details-id-16
+// https://www.w3.org/TR/svg-aam/#role-map-feComposite
 {
 	"contentModel": {
 		"contents": [

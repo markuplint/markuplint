@@ -147,7 +147,8 @@ function extractAttrs(el: MLASTElement): ComponentScanAttr[] {
 		}
 		const value = attr.value.raw;
 		if (attr.isDynamicValue) {
-			const expression = value.trim();
+			// An expression that the parser kept apart from its quotes is `potentialValue`
+			const expression = (attr.potentialValue ?? value).trim();
 			addAttr(attrs, { name: attr.nodeName, dynamic: true, ...(expression === '' ? {} : { expression }) });
 		} else if (/^`.*`$/s.test(value)) {
 			addAttr(attrs, { name: attr.nodeName, dynamic: true });

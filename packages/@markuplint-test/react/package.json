@@ -1,15 +1,17 @@
 {
 	"name": "@markuplint-test/react",
-	"version": "5.4.0",
+	"version": "5.5.0",
 	"private": true,
 	"type": "module",
 	"exports": {
-		".": "./index.js"
+		".": "./index.js",
+		"./config.json": "./config.js",
+		"./preset": "./pretenders.json"
 	},
 	"scripts": {
 		"pretenders": "npx --yes @markuplint/pretenders \"*.jsx\" --out \"./pretenders.json\""
 	},
 	"devDependencies": {
-		"@markuplint/pretenders": "5.4.0"
+		"@markuplint/pretenders": "5.5.0"
 	}
 }

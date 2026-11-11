@@ -94,10 +94,12 @@ export async function initialize() {
 
 		const modules = selectModules(selectedLangs);
 
-		const result = await installModule(modules, true).catch(error_ => new Error(error_));
+		const result = await installModule(modules, true).catch(error_ =>
+			error_ instanceof Error ? error_ : new Error(String(error_)),
+		);
 		if (result instanceof Error) {
-			// eslint-disable-next-line unicorn/no-process-exit
-			process.exit(1);
+			// `index.ts` reports it on stderr and returns exit code 1; see its module JSDoc.
+			throw result;
 		}
 		if (result.alreadyExists) {
 			process.stdout.write('Modules are installed already.\n');

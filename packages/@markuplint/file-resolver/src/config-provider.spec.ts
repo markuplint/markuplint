@@ -3,6 +3,7 @@ import os from 'node:os';
 import path from 'node:path';
 
 import { Ruleset } from '@markuplint/ml-core';
+import { ConfigParserError } from '@markuplint/parser-utils';
 import { ConfigLoadError } from '@markuplint/shared';
 
 import { jsonc } from 'jsonc';
@@ -206,6 +207,94 @@ test('Deep target', async () => {
 	expect(configSet.errs.length).toBe(1);
 	expect(configSet.errs[0] instanceof ReferenceError).toBe(true);
 	expect(configSet.errs[0]?.message).toBe(`Circular reference detected: ${key}`);
+});
+
+describe('A config reached through two different `extends` paths is not a circular reference (#4552)', () => {
+	const testDir = path.resolve(import.meta.dirname, '..', 'test', 'fixtures', '018');
+
+	test('A config shared at different depths is loaded without an error', async () => {
+		const provider = new ConfigProvider();
+		const file = getFile(path.resolve(testDir, 'target.html'));
+		const configSet = await provider.resolve(file, [path.resolve(testDir, 'main.json')]);
+		expect(configSet.errs).toStrictEqual([]);
+		expect(configSet.config).toStrictEqual({ shared: true, a: true, b: true });
+	});
+
+	test('Presets that share sub-presets, extended through different configs, resolve like direct extends', async () => {
+		const provider = new ConfigProvider();
+		const file = getFile(path.resolve(testDir, 'target.html'));
+		const configSet = await provider.resolve(file, [path.resolve(testDir, 'preset-main.json')]);
+		const direct = await new ConfigProvider().resolve(file, [
+			'markuplint:recommended-static-html',
+			'markuplint:recommended-react',
+		]);
+		expect(configSet.errs).toStrictEqual([]);
+		expect(direct.errs).toStrictEqual([]);
+		expect(Object.keys(configSet.config.rules ?? {}).length).toBeGreaterThan(0);
+		expect(configSet.config).toStrictEqual(direct.config);
+	});
+
+	test('A cycle reached through two paths is reported once', async () => {
+		const provider = new ConfigProvider();
+		const file = getFile(path.resolve(testDir, 'target.html'));
+		const configSet = await provider.resolve(file, [path.resolve(testDir, 'cycle-diamond-main.json')]);
+		expect(configSet.errs.map(e => e.message)).toStrictEqual([
+			`Circular reference detected: ${path.resolve(testDir, 'cycle-x.json')}`,
+		]);
+	});
+
+	test('A config that extends itself is reported', async () => {
+		const provider = new ConfigProvider();
+		const file = getFile(path.resolve(testDir, 'target.html'));
+		const configSet = await provider.resolve(file, [path.resolve(testDir, 'self.json')]);
+		expect(configSet.errs.map(e => e.message)).toStrictEqual([
+			`Circular reference detected: ${path.resolve(testDir, 'self.json')}`,
+		]);
+	});
+
+	test('A shared config that cannot be loaded is reported once, with the files that name it', async () => {
+		const provider = new ConfigProvider();
+		const start = path.resolve(testDir, 'broken-main.json');
+		const result = await provider.recursiveLoad(start, false, 'path/to/index.html');
+		expect(
+			result.errs.map(e => (e instanceof ConfigLoadError ? path.basename(e.referrer) : e.message)),
+		).toStrictEqual(['broken-a.json']);
+		expect([...result.stack].map(f => path.basename(f))).toStrictEqual([
+			'missing.json',
+			'broken-a.json',
+			'broken-b.json',
+			'broken-main.json',
+		]);
+	});
+
+	test('Successive calls on one provider do not share state', async () => {
+		const provider = new ConfigProvider();
+		const start = path.resolve(testDir, 'main.json');
+		const first = await provider.recursiveLoad(start, false, 'path/to/index.html');
+		const second = await provider.recursiveLoad(start, false, 'path/to/index.html');
+		expect(second.errs).toStrictEqual([]);
+		expect([...second.stack]).toStrictEqual([...first.stack]);
+	});
+
+	test('A cycle that does not pass through the start config is still reported', async () => {
+		const provider = new ConfigProvider();
+		const file = getFile(path.resolve(testDir, 'target.html'));
+		const configSet = await provider.resolve(file, [path.resolve(testDir, 'cycle-start.json')]);
+		expect(configSet.errs.map(e => e.message)).toStrictEqual([
+			`Circular reference detected: ${path.resolve(testDir, 'cycle-x.json')}`,
+		]);
+	});
+
+	test('The deprecated `depth` argument does not affect the result', async () => {
+		const provider = new ConfigProvider();
+		const start = path.resolve(testDir, 'main.json');
+		const expected = ['shared.json', 'a.json', 'b.json', 'via-b.json', 'main.json'];
+		for (const depth of [0, 1, 5]) {
+			const result = await provider.recursiveLoad(start, false, 'path/to/index.html', depth);
+			expect([...result.stack].map(f => path.basename(f))).toStrictEqual(expected);
+			expect(result.errs).toStrictEqual([]);
+		}
+	});
 });
 
 test('Import packaged config (Issue: #403)', async () => {
@@ -453,9 +542,13 @@ test('invalidate() clears entries registered via set() (#4015)', async () => {
 	const key = provider.set({ rules: { foo: true } });
 	provider.invalidate();
 
-	// The key only ever lived in the store; once cleared, resolving it falls
-	// through to `#load()`, which treats it as a file path/module name.
-	await expect(provider.resolve(file, [key], false)).rejects.toThrow(/is not an absolute path/);
+	// The key only ever lived in the store; once cleared, it is resolved as a name that is not
+	// stored: a path from the working directory, where no such file exists.
+	const configSet = await provider.resolve(file, [key], false);
+	expect(configSet.config).toStrictEqual({});
+	expect(configSet.errs).toHaveLength(1);
+	expect(configSet.errs[0]).toBeInstanceOf(ConfigLoadError);
+	expect((configSet.errs[0] as ConfigLoadError).filePath).toBe(path.resolve(key));
 });
 
 test('runExclusive() serializes overlapping calls, deferring a later call until an earlier one settles (#4015)', async () => {
@@ -984,5 +1077,156 @@ describe('Plugins in the value of an override are loaded for the file it applies
 			`Plugin not found: ${path.resolve(pluginsDir, 'not-found.js')}`,
 		]);
 		expect(unmatched.errs).toStrictEqual([]);
+	});
+});
+
+describe('A relative extends that also names a file next to the resolver itself', () => {
+	const testDir = path.resolve(import.meta.dirname, '..', 'test', 'fixtures', '017');
+
+	// `../package.json` from `sub/` is the fixture's own; from the resolver's directory it is the
+	// `package.json` of this package, which is what `resolveNameOrAbsPath` must not take it for.
+	test('the target is read from the directory of the configuration that declares it', async () => {
+		const file = getFile(path.resolve(testDir, 'sub', 'target.html'));
+		const configSet = await new ConfigProvider().resolve(file, [path.resolve(testDir, 'sub', '.markuplintrc')]);
+		expect(configSet.errs).toStrictEqual([]);
+		expect([...configSet.files]).toStrictEqual([
+			path.resolve(testDir, 'package.json'),
+			path.resolve(testDir, 'sub', '.markuplintrc'),
+		]);
+		expect(configSet.config.rules).toStrictEqual({ 'no-duplicate-attr': true });
+	});
+});
+
+describe('A name given to resolve() that is not a stored key is resolved as a value of extends is', () => {
+	const testDir = path.resolve(import.meta.dirname, '..', 'test', 'fixtures', '017');
+	const file = getFile(path.resolve(testDir, 'sub', 'target.html'));
+
+	test('a relative path, from the working directory', async () => {
+		const configFile = path.resolve(testDir, 'package.json');
+		const relative = path.relative(process.cwd(), configFile);
+		expect(path.isAbsolute(relative)).toBe(false);
+
+		const configSet = await new ConfigProvider().resolve(file, [relative]);
+		expect([...configSet.files]).toStrictEqual([configFile]);
+		expect(configSet.config.rules).toStrictEqual({ 'no-duplicate-attr': true });
+	});
+
+	test('a module name, as it is', async () => {
+		const name = '@markuplint/config-presets/preset.recommended.json';
+		const configSet = await new ConfigProvider().resolve(file, [name]);
+		expect(configSet.errs).toStrictEqual([]);
+		expect([...configSet.files]).toContain(name);
+		expect([...configSet.files]).toContain('markuplint:html-standard');
+	});
+});
+
+describe('the selectors of a configuration are validated wherever the configuration holds them', () => {
+	async function errsOf(config: Parameters<ConfigProvider['set']>[0]) {
+		const provider = new ConfigProvider();
+		const key = provider.set(config);
+		const testDir = path.resolve(import.meta.dirname, '..', 'test', 'fixtures');
+		const file = getFile(path.resolve(testDir, '001', 'target.html'));
+		const configSet = await provider.resolve(file, [key]);
+		return configSet.errs.map(error => error.message);
+	}
+
+	const nodeRules = [{ selector: 'div[', rules: { 'require-attr': 'title' } }];
+
+	test('nodeRules at the top level', async () => {
+		expect(await errsOf({ nodeRules })).toStrictEqual([expect.stringContaining('Invalid selector: "div["')]);
+	});
+
+	test('nodeRules in overrides', async () => {
+		expect(await errsOf({ overrides: { '**/*.html': { nodeRules } } })).toStrictEqual([
+			expect.stringContaining('Invalid selector: "div["'),
+		]);
+	});
+
+	test('nodeRules in overrides of a glob that does not match the target file', async () => {
+		expect(await errsOf({ overrides: { '**/*.vue': { nodeRules } } })).toStrictEqual([
+			expect.stringContaining('Invalid selector: "div["'),
+		]);
+	});
+
+	test('childNodeRules at the top level', async () => {
+		expect(
+			await errsOf({
+				childNodeRules: [{ selector: 'div[', inheritance: true, rules: { 'require-attr': 'title' } }],
+			}),
+		).toStrictEqual([expect.stringContaining('Invalid selector: "div["')]);
+	});
+
+	test('childNodeRules in overrides', async () => {
+		expect(
+			await errsOf({
+				overrides: {
+					'**/*.html': {
+						childNodeRules: [{ selector: 'div[', inheritance: true, rules: { 'require-attr': 'title' } }],
+					},
+				},
+			}),
+		).toStrictEqual([expect.stringContaining('Invalid selector: "div["')]);
+	});
+
+	test('pretenders in the configuration', async () => {
+		expect(await errsOf({ pretenders: { data: [{ selector: 'div[', as: 'div' }] } })).toStrictEqual([
+			expect.stringContaining('Invalid selector: "div["'),
+		]);
+	});
+
+	test('pretenders in overrides', async () => {
+		expect(
+			await errsOf({ overrides: { '**/*.html': { pretenders: { data: [{ selector: 'div[', as: 'div' }] } } } }),
+		).toStrictEqual([expect.stringContaining('Invalid selector: "div["')]);
+	});
+
+	test.each([
+		['div || span'],
+		['div:hover'],
+		['div:nth-child(2)'],
+		[':display-size(> a)'],
+		[':aria(foo)'],
+		[':role(button|9.9)'],
+	])('%s is an invalid selector', async selector => {
+		expect(await errsOf({ nodeRules: [{ selector, rules: { 'require-attr': 'title' } }] })).toHaveLength(1);
+	});
+
+	test.each([
+		[':model(interactive)'],
+		[':aria(has name)'],
+		[':role(button)'],
+		[':display-size(> 1)'],
+		['div > span'],
+	])('%s is not reported', async selector => {
+		expect(await errsOf({ nodeRules: [{ selector, rules: { 'require-attr': 'title' } }] })).toStrictEqual([]);
+	});
+});
+
+describe('the selectors of a configuration that a plugin provides (extends)', () => {
+	const testDir = path.resolve(import.meta.dirname, '..', 'test', 'fixtures', '019');
+
+	test('the invalid selectors of the configuration and of the plugin are both reported', async () => {
+		const provider = new ConfigProvider();
+		const file = getFile(path.resolve(testDir, 'target.html'));
+		const configSet = await provider.resolve(file, [path.resolve(testDir, '.markuplintrc.json')]);
+		expect(
+			configSet.errs.map(error => [error.message, error instanceof ConfigParserError && error.filePath]),
+		).toStrictEqual([
+			[expect.stringContaining('Invalid selector: "span["'), 'plugin:invalid-selector/node-rules'],
+			[expect.stringContaining('Invalid selector: "div["'), path.resolve(testDir, '.markuplintrc.json')],
+		]);
+	});
+});
+
+describe('the file of a pretender that holds an invalid selector', () => {
+	test('is the file of the error when the pretender has one', async () => {
+		const provider = new ConfigProvider();
+		const key = provider.set({
+			pretenders: { data: [{ selector: 'div[', as: 'div', filePath: 'src/Component.tsx:3:1' }] },
+		});
+		const file = getFile(path.resolve(import.meta.dirname, '..', 'test', 'fixtures', '001', 'target.html'));
+		const configSet = await provider.resolve(file, [key]);
+		expect(configSet.errs).toHaveLength(1);
+		expect(configSet.errs[0]).toMatchObject({ filePath: 'src/Component.tsx:3:1', raw: 'div[' });
 	});
 });

@@ -39,7 +39,22 @@
  * Known intentional exceptions to rule 1, documented at their call sites:
  * accessible-name computation (`accname.ts` in `@markuplint/ml-core`),
  * dynamic module import (`general-import.ts` in `@markuplint/file-resolver`),
+ * the JSON-aware `import()` (`import-module.ts` there, whose `catch` wraps one `import()` alone
+ * and turns to `require()` when the runtime reports a JSON module without the import attribute,
+ * a `TypeError`, re-throwing any other failure as it is),
+ * the module probe (`module-exists.ts` there, whose `catch` turns to `require.resolve()` after
+ * `import()` fails),
  * configuration file loading (`cosmiconfig.ts` in `@markuplint/file-resolver`),
+ * the import of the component scanner of a parser (`getScanner` in `scanner-loader.ts` of
+ * `@markuplint/pretenders`, whose `catch` wraps that `import()` alone and skips the language with a
+ * warning, as the parser is the user's to install and runs its libraries as it loads),
+ * the import of `@markuplint/pretenders` to clear its caches (`invalidatePretenderResolutionCaches`
+ * in `@markuplint/file-resolver`, whose `catch` wraps that `import()` alone and goes on, logging a
+ * failure other than the package being absent, as a module the package needs runs as it loads),
+ * the literal reader of an expression and the check of a braced expression
+ * (`parse-literal-expression.ts` and `is-braced-expression.ts` in `@markuplint/parser-utils`,
+ * whose `catch` wraps espree's reading of the author's own code alone, and takes its
+ * `SyntaxError` for "not a literal" and "not one expression"),
  * and the spec citation monitor (`fetch.ts` and `collect.ts` under
  * `scripts/spec-citations`, whose `catch` wraps the runtime's `fetch`,
  * `new URL` or `decodeURIComponent` call alone), where Tier-1-shaped errors
@@ -61,6 +76,7 @@
 
 export { ConfigLoadError } from './config-error.js';
 export { isFatalError } from './guards.js';
+export { isModuleNotFoundError, missingPackageOf } from './module-not-found.js';
 export { ConfigParserError, ParserError, TargetParserError } from './parser-error.js';
 export type { ParserErrorInfo } from './parser-error.js';
 export { InvalidSelectorError } from './selector-error.js';

@@ -7,6 +7,11 @@ import meta from './meta.js';
 const HYPERLINK_SELECTOR = 'a[href], area[href]';
 
 /**
+ * The target of a fragment link is an element of the document tree: the content of a `template`
+ * element and a shadow root are not where the navigation scrolls to. So the ids and names are the ones
+ * of the document (`document.querySelectorAll`, not the other trees), and a link in any tree is checked
+ * against them. A dynamic id in the document, not in another tree, stops the check.
+ *
  * Split out of the former `no-refer-to-non-existent-id` rule. Unlike the
  * `DOMID`-typed attributes and ARIA ID references that rule covers, HTML LS
  * does not treat a broken hyperlink fragment as a conformance violation —
@@ -44,7 +49,8 @@ export default createRule({
 				hasDynamicId = true;
 			}
 			if (attr.valueType !== 'code') {
-				idList.add(decodeEntities(attr.value));
+				// An expression is code, not markup: its string has no character reference to decode
+				idList.add(attr.isExpressionValue ? attr.value : decodeEntities(attr.value));
 			}
 		}
 
@@ -61,7 +67,7 @@ export default createRule({
 				hasDynamicName = true;
 			}
 			if (attr.valueType !== 'code') {
-				nameList.add(decodeEntities(attr.value));
+				nameList.add(attr.isExpressionValue ? attr.value : decodeEntities(attr.value));
 			}
 		}
 

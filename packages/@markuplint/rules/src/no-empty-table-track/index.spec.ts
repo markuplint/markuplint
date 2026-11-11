@@ -34,6 +34,22 @@ describe('Basic', () => {
 		]);
 	});
 
+	test('[no-empty-table-track-issue-4489-001] a table in the content of a template is checked', async () => {
+		const { violations } = await mlRuleTest(
+			rule,
+			'<template><table><tr><th></th><th colspan="3"></th><th></th></tr><tr class="missing"><td></td></tr></table></template>',
+		);
+		expect(violations).toStrictEqual([
+			{
+				severity: 'error',
+				line: 1,
+				col: 35,
+				message: 'Two columns have no cells beginning in them',
+				raw: 'colspan="3"',
+			},
+		]);
+	});
+
 	test('[no-empty-table-track-invalid-002] Overflow', async () => {
 		const { violations } = await mlRuleTest(
 			rule,

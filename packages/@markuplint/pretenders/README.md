@@ -13,7 +13,29 @@ This module features both an API and a CLI that generate **[Pretenders](https://
 | Svelte      | `.svelte`                    | `templateScanner` | MLAST via `@markuplint/svelte-parser` |
 | Astro       | `.astro`                     | `templateScanner` | MLAST via `@markuplint/astro-parser`  |
 
+## Installation
+
+Installing `markuplint` does not install this package or the parsers behind it. Install it where you use it (the parsers are optional peer dependencies of this package):
+
+```sh
+npm install --save-dev @markuplint/pretenders
+```
+
+Scanning a Vue, Svelte or Astro file needs the parser package of that language next to it. Without it, the file is skipped with a warning:
+
+| Language | Parser package              |
+| -------- | --------------------------- |
+| Vue      | `@markuplint/vue-parser`    |
+| Svelte   | `@markuplint/svelte-parser` |
+| Astro    | `@markuplint/astro-parser`  |
+
+The JSX scanner needs no parser. The parser of a language also decides what a component name is in it (and, for Vue, which tags are native), so `@markuplint/jsx-parser` and `@markuplint/mdx-parser` matter when you resolve components of JSX and MDX through `pretenders.auto`; without the parser of a language, the rule that most languages share is used.
+
+markuplint needs this package for the `pretenders.scan` and `pretenders.auto` options, and for a pretender that has a `filePath`: one written by hand, by a scan, or in the data of `pretenders.files` and `pretenders.imports` (the CLI below writes it). It fails with how to install this package when it is missing.
+
 ## CLI Usage
+
+Install this package in the project first, so that `npx` runs it from there and the parsers are found next to it.
 
 ```sh
 $ npx @markuplint/pretenders "./src/**/*.{jsx,tsx,vue,svelte,astro}" --out "./pretenders.json"
@@ -129,18 +151,18 @@ Which element a component is decided by what its own `return` statements can pro
 - Branches that render the same element keep only the attributes they share, and the slot they agree on.
 - `null`, `undefined`, `false`, and a result that cannot be determined statically (`return children`) are ignored.
 - A fragment with several roots (`<><label /><input /></>`) is `element: "#fragment"`.
-- An attribute whose value is an expression is `{ "dynamic": true }`; a literal such as `{0}` or `{'x'}` is a static value.
-- An attribute whose value is just a prop of the component (`aria-label={label}`, or `aria-label={props.label}`) is `{ "fromAttr": "label", "omitIfMissing": true }`: it takes the value the usage site writes, and is omitted when the usage site does not write it. A prop with a default value (`({ type = 'button' })`), the rest of the props, and an expression that does more than name the prop (`label ?? 'x'`) stay dynamic. It is decided by syntax alone, so a name that the component declares again inside is not trusted to be the prop.
+- An attribute whose value is an expression is `{ "expression": "code" }`, the code as it is written (`aria-busy={true}` is `{ "expression": "true" }`, `title={'x'}` is `{ "expression": "'x'" }`, `tabIndex={selected ? 0 : -1}` is `{ "expression": "selected ? 0 : -1" }`). The scanner does not tell whether it is a literal: `@markuplint/ml-core` reads the code as it reads an element written directly, so a literal is rendered as the framework renders it (`aria-busy={true}` is `aria-busy="true"` and `disabled={false}` is no attribute) and any other code is a dynamic value. A string literal attribute (`title="x"`) is a static value.
+- An attribute whose value is just a prop of the component (`aria-label={label}`, or `aria-label={props.label}`) is `{ "fromAttr": "label", "omitIfMissing": true }`: it takes the value the usage site writes, and is omitted when the usage site does not write it. A prop with a default value (`({ type = 'button' })`), the rest of the props, and an expression that does more than name the prop (`label ?? 'x'`) are `{ "expression": "code" }`, which is dynamic. It is decided by syntax alone, so a name that the component declares again inside is not trusted to be the prop.
 - The scanners write `aria-label` and the like as attributes, never `aria`: `aria.name` would take precedence over `aria-labelledby`, which no component source says, while the accessible name algorithm computes the name from the attributes.
 
 Known limitations:
 
 - When a component renders another component (`<Base><span /></Base>`), it takes the mapping of `Base`. Its own `slots` and `contents` are composed into it (the `span` above is placed where `Base` renders its children). The attributes it writes on `Base` (`<Base type="submit">`) are added only when `Base` spreads its props (`inheritAttrs`), because they reach the element only through them; a name both write is kept when the values agree and is dynamic otherwise. The result spreads its props only when both do. An attribute of `Base` that takes a prop of `Base` (`{ "fromAttr" }`) takes what the outer component writes for it instead, and is omitted when the outer component does not pass the prop on. ARIA properties are not merged.
-- Only `permitted-contents` and the accessible name computation (for example `require-accessible-name`) read `contents`. In the name computation, `{ "dynamic": true }` is not a source of a name (a component whose only possible name is such an entry is not reported by `require-accessible-name`, because the entry may be the name), and children given to a component with `slots: null` are not used. Other rules that look at the children of the element see only the children given at the usage site.
+- Only `permitted-contents` and the accessible name computation (for example `require-accessible-name`) read `contents`. In the name computation, `{ "dynamic": true }` is not a source of a name (a component whose only possible name is such an entry is not reported by `require-accessible-name`, because the entry may be the name), an attribute that is `{ "expression": "code" }` is a name when the code is a literal that the framework renders (`aria-label={'x'}`) and is dynamic, so that the name may be there, for any other code, and children given to a component with `slots: null` are not used. Other rules that look at the children of the element see only the children given at the usage site.
 
 ### Template Scanner
 
-The template scanner delegates to each parser package's `component-scanner` subpath export (e.g., `@markuplint/vue-parser/component-scanner`). Each parser's component-scanner uses its own MLAST parser to extract the root element at depth=0, detect attributes (an attribute whose value is an expression, such as `:type` in Vue or `type={kind}` in Svelte and Astro, is recorded as `{ "dynamic": true }` under its own name; event handlers and other directives are not attributes), slot/children usage, and extract script source blocks. This keeps framework-specific scanning logic co-located with the parser that understands the framework best.
+The template scanner delegates to each parser package's `component-scanner` subpath export (e.g., `@markuplint/vue-parser/component-scanner`). Each parser's component-scanner uses its own MLAST parser to extract the root element at depth=0, detect attributes (an attribute whose value is an expression, such as `:type` in Vue or `type={kind}` in Svelte and Astro, is recorded as `{ "expression": "code" }` under its own name, the code as it is written; one whose code is not known (`data-id="id-{kind}"`) is `{ "dynamic": true }`; event handlers and other directives are not attributes), slot/children usage, and extract script source blocks. This keeps framework-specific scanning logic co-located with the parser that understands the framework best.
 
 A template component is named after its file in PascalCase (`button-group.vue` is `ButtonGroup`; an `index` file takes the name of its directory). A file whose name does not make a JavaScript identifier (`[id].vue`, `+page.svelte`, `Button.client.vue`) gives no name, so it gets no pretender.
 

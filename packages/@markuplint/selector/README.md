@@ -48,7 +48,8 @@ Supported selectors and operators:
 | User-interaction pseudo-class                    | `:user-invalid`                                                                           | ❌      |
 | Root pseudo-class                                | `:root`                                                                                   | ✅      |
 | Empty pseudo-class                               | `:empty`                                                                                  | ❌      |
-| Nth-child pseudo-class                           | `:nth-child(2)` `:nth-last-child(2)` `:first-child` `:last-child` `:only-child`           | ❌      |
+| Nth-child pseudo-class                           | `:first-child`                                                                            | ✅      |
+| Nth-child pseudo-class                           | `:nth-child(2)` `:nth-last-child(2)` `:last-child` `:only-child`                          | ❌      |
 | Nth-child pseudo-class (`of El` Syntax)          | `:nth-child(2 of div)` `:nth-last-child(2 of div)`                                        | ❌      |
 | Nth-of-type pseudo-class                         | `:nth-of-type(2)` `:nth-last-of-type(2)` `:first-of-type` `:last-of-type` `:only-of-type` | ❌      |
 | Nth-col pseudo-class                             | `:nth-col(2)` `:nth-last-col(2)`                                                          | ❌      |
@@ -70,6 +71,7 @@ according to the element's namespace:
 | Tag name        | ASCII case-insensitive (`DIV` matches `div`)                                                              | Case-sensitive                                  |
 | Attribute name  | ASCII case-insensitive (`[CHARSET]` matches `<meta CHARSET>` and `<meta charset>`)                        | Case-sensitive (e.g. SVG `viewBox` ≠ `viewbox`) |
 | Attribute value | Case-sensitive by default; use the `i` flag (e.g. `[lang="en" i]`) for case-insensitive value comparisons | Same                                            |
+| Pseudo-class    | ASCII case-insensitive (`:NOT(div)` matches like `:not(div)`)                                             | Same                                            |
 
 The `i` flag scopes to attribute **values** only — it does not affect
 attribute name matching, which is governed by the namespace rules above.
@@ -78,11 +80,14 @@ attribute name matching, which is governed by the namespace rules above.
 
 The below is selectors that are extended by markuplint:
 
+An argument that the pseudo-class does not accept (`:aria(foo)`, `:role(button|9.9)`, `:display-size(> a)`, or a `:model()` category the specification does not define) throws `InvalidSelectorError` when the selector is created, not when it meets an element. Created without `specs`, a selector checks the arguments that need none, and throws `InvalidSelectorError` when it is matched.
+
 | Selector Type              | Code Example          |
 | -------------------------- | --------------------- |
 | ARIA pseudo-class          | `:aria(has name)`     |
 | ARIA Role pseudo-class     | `:role(heading)`      |
 | Content Model pseudo-class | `:model(interactive)` |
+| Display Size pseudo-class  | `:display-size(> 1)`  |
 
 ### ARIA pseudo-class
 
@@ -116,6 +121,20 @@ You can specify the version of WAI-ARIA by separating the pipe like `:role(form|
 For example, `:model(interactive)` matches `<a>`(with `href` attr), `<button>`, and so on.
 
 A category that lists custom elements in the HTML Standard, such as `flow`, `phrasing` and `palpable`, also matches custom elements (`<x-foo>`) and components (`<Foo />`). An element that a component pretends to be is judged by the name it pretends to be: it matches only when that name contains a hyphen.
+
+An element that the HTML Standard allows only as the first child of its parent matches only there: `:model(flow)` matches `<style>` only as the first child. The first child is counted as the HTML Standard counts it, so non-whitespace text before the element counts (comments and inter-element whitespace do not): the `<style>` in `<div>text<style>` does not match. A template expression before the element (`{{ msg }}`) does not count, as what it outputs is known only at run time; text and elements inside a conditional block count, as the content of the block is taken as present. `:first-child` written in a selector keeps the Selectors definition, which counts elements only.
+
+### Display Size pseudo-class
+
+```
+:display-size(operator number)
+```
+
+The operator is one of `=`, `>`, `>=`, `<` and `<=`, and the number is a non-negative integer. For example, `select:is([multiple], :display-size(> 1))` matches a `<select>` that has the `multiple` attribute or whose display size is greater than 1.
+
+It matches only a `<select>` element of the HTML namespace, and compares its [display size](https://html.spec.whatwg.org/multipage/form-elements.html#concept-select-size). The display size is the number that the `size` attribute is parsed as by the rules for parsing non-negative integers, or, when the attribute is absent or cannot be parsed, 4 if the element has the `multiple` attribute and 1 if it has not. Leading whitespace, a `+` sign, leading zeros and trailing characters are allowed, so `size="01"` is 1, `size="2abc"` is 2, and `size="0"` is 0. An attribute selector cannot tell these apart, as `[size]:not([size="1"])` takes `size="01"` for something other than 1.
+
+The `size` is read as the text it is written in, so a template expression (`:size="n"`) is not a number: its display size is the one for an attribute that cannot be parsed.
 
 ## Regex Selector
 

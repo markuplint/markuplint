@@ -1,6 +1,8 @@
 import type {
 	AttrNameRoute,
 	EndTagType,
+	ExpressionLanguage,
+	LiteralValueDeclaration,
 	MLASTParentNode,
 	MLASTParseError,
 	ParserOptions as ConfigParserOptions,
@@ -12,6 +14,8 @@ import type {
  */
 export type ParserOptions = {
 	readonly booleanish?: boolean;
+	readonly attrExpressionLanguage?: ExpressionLanguage;
+	readonly literalValues?: LiteralValueDeclaration;
 	readonly endTagType?: EndTagType;
 	readonly ignoreTags?: readonly IgnoreTag[];
 	readonly maskChar?: string;
@@ -22,6 +26,22 @@ export type ParserOptions = {
 	readonly selfCloseType?: SelfCloseType;
 	readonly spaceChars?: readonly string[];
 	readonly rawTextElements?: readonly string[];
+	/**
+	 * What {@link Parser.parse} does with a leading U+FEFF (BOM) before tokenization.
+	 * The HTML Standard skips it, so it is not content.
+	 *
+	 * - `'mask'`: it becomes one space. For a tokenizer that takes the BOM for text
+	 *   (parse5) or counts from the character after it (`svelte/compiler`) and that
+	 *   does not read a leading space as meaning anything.
+	 * - `'strip'`: the tokenizer is given the source without it, and the positions
+	 *   are moved one character later afterwards. For a tokenizer that strips the
+	 *   BOM itself (`pug-lexer`, `remark`) or reads a leading space as meaning
+	 *   something (Pug's indentation, a Markdown front matter), where `'mask'`
+	 *   would change the tree.
+	 *
+	 * Leave it unset when the tokenizer already handles a BOM correctly.
+	 */
+	readonly leadingBom?: 'mask' | 'strip';
 };
 
 /**

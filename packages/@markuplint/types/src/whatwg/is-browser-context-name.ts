@@ -1,16 +1,13 @@
 import type { FormattedPrimitiveTypeCreator } from '../types.js';
 
+import { isNavigableTargetName } from './is-navigable-target-name.js';
+
 /**
- * @see https://html.spec.whatwg.org/multipage/browsers.html#valid-browsing-context-name
+ * Deprecated alias of {@link isNavigableTargetName}: the HTML Standard replaced
+ * the valid browsing context name with the valid navigable target name.
  *
- * > A valid browsing context name is any string with at least one character
- * > that does not start with a U+005F LOW LINE character.
- * > (Names starting with an underscore are reserved for special keywords.)
+ * @see https://html.spec.whatwg.org/multipage/document-sequences.html#navigable-target-names
  *
  * @deprecated Use {@link isNavigableTargetName} instead.
  */
-export const isBrowserContextName: FormattedPrimitiveTypeCreator = () => {
-	return value => {
-		return !!value && value[0] !== '_';
-	};
-};
+export const isBrowserContextName: FormattedPrimitiveTypeCreator = isNavigableTargetName;

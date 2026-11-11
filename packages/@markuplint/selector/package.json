@@ -1,6 +1,6 @@
 {
 	"name": "@markuplint/selector",
-	"version": "5.4.0",
+	"version": "5.5.0",
 	"description": "Extended W3C Selectors matcher",
 	"repository": {
 		"type": "git",
@@ -22,20 +22,17 @@
 	"publishConfig": {
 		"access": "public"
 	},
-	"typedoc": {
-		"entryPoint": "./src/index.ts"
-	},
 	"scripts": {
 		"build": "npx tsc --project tsconfig.build.json",
 		"dev": "npx tsc --watch --project tsconfig.build.json",
 		"clean": "npx tsc --build --clean tsconfig.build.json"
 	},
 	"dependencies": {
-		"@markuplint/ml-spec": "5.4.0",
-		"@markuplint/shared": "5.4.0",
+		"@markuplint/ml-spec": "5.5.0",
+		"@markuplint/shared": "5.5.0",
 		"@types/debug": "^4.1.13",
 		"debug": "^4.4.3",
-		"postcss-selector-parser": "^7.1.6",
+		"postcss-selector-parser": "^7.1.7",
 		"type-fest": "^5.10.0"
 	},
 	"devDependencies": {

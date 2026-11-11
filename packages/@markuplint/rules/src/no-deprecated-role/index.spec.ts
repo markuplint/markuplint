@@ -18,3 +18,15 @@ test('[no-deprecated-role-invalid-001] deprecated role', async () => {
 		},
 	]);
 });
+
+test('[no-deprecated-role-invalid-002] deprecated DPUB-ARIA role', async () => {
+	expect((await mlRuleTest(rule, '<div role="doc-biblioentry"></div>')).violations).toStrictEqual([
+		{
+			severity: 'warning',
+			line: 1,
+			col: 6,
+			message: 'The "doc-biblioentry" role is deprecated',
+			raw: 'role="doc-biblioentry"',
+		},
+	]);
+});

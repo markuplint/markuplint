@@ -51,7 +51,8 @@ export function contentModel(
 			},
 		];
 	}
-	const result = start(model, el, rules, specs, options, mode);
+	const ignoreUnresolvedComponents = options.ignoreHasMutableChildren && !hasUserTagRule(el, rules, mode);
+	const result = start(model, el, rules, specs, options, mode, ignoreUnresolvedComponents);
 
 	return result;
 }
@@ -149,6 +150,29 @@ export function hasTagRule(
 	rule: TagRule,
 ): boolean {
 	return rule.tag === el.rawName || el.matchesTagNameVariant(rule.tag);
+}
+
+/**
+ * Whether the user's tag rules include one written for the element whose content model governs
+ * the children of `el` (see {@link getContentOwner}).
+ *
+ * Such a rule lists the components that the element takes by the name that they are written with,
+ * and the components are evaluated by it. Without one, a component that no pretender resolved renders
+ * something that is not known, and what holds whatever it renders is the only thing to report.
+ *
+ * @param el - The element whose children are validated
+ * @param rules - The user's tag rules
+ * @param mode - Which identity to resolve against
+ * @returns Whether a tag rule is written for the element
+ */
+export function hasUserTagRule(
+	// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
+	el: Element,
+	rules: readonly TagRule[],
+	mode: Mode,
+): boolean {
+	const owner = getContentOwner(el, mode);
+	return rules.some(rule => hasTagRule(owner, rule));
 }
 
 /**

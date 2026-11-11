@@ -3,6 +3,23 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [5.5.0](https://github.com/markuplint/markuplint/compare/v5.4.0...v5.5.0) (2026-11-10)
+
+### Bug Fixes
+
+* **selector:** do not treat descendant specificity fallback as a match ([0d28a0d](https://github.com/markuplint/markuplint/commit/0d28a0de58c3c524201071249547e5987e2778ea))
+* **selector:** key the createSelector cache by specs ([c3c75ca](https://github.com/markuplint/markuplint/commit/c3c75caf0dd8cd827751672a7ee14a2c507d4181)), closes [#4513](https://github.com/markuplint/markuplint/issues/4513)
+* **selector:** match :scope to the scoping root only ([fc54167](https://github.com/markuplint/markuplint/commit/fc54167f41d6558c575e8b4a47b2e7bd48ee4ba0)), closes [#4504](https://github.com/markuplint/markuplint/issues/4504)
+* **selector:** match pseudo-class names ASCII case-insensitively ([a50d084](https://github.com/markuplint/markuplint/commit/a50d084171bd74c61762ea0759a8fc5165081ac5)), closes [#4514](https://github.com/markuplint/markuplint/issues/4514)
+
+### Features
+
+* **selector:** add the :display-size() pseudo-class ([896349c](https://github.com/markuplint/markuplint/commit/896349c70c7e4c5dc287ff1515b524bcc6921fba))
+* **selector:** do not match an attribute that the host does not output ([6f75265](https://github.com/markuplint/markuplint/commit/6f75265fa320ff755015fdc9361c64c89586d076))
+* **selector:** stop the combinators, :has() and :closest at the boundary of a tree ([bf459b3](https://github.com/markuplint/markuplint/commit/bf459b3cac8c3681ef5d5ecbcf1e43ad8e53319e))
+* **selector:** support :first-child and the first child of a content model category ([2cd992a](https://github.com/markuplint/markuplint/commit/2cd992abe4c0e8895173abb2b62090d766343193))
+
+
 # [5.4.0](https://github.com/markuplint/markuplint/compare/v5.3.0...v5.4.0) (2026-10-29)
 
 **Note:** Version bump only for package @markuplint/selector

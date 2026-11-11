@@ -14,7 +14,7 @@ import { unified } from 'unified';
 type MdastNode = RootContent;
 
 /**
- * ECMAScript `IdentifierStart`, as `JSXIdentifier` starts (https://facebook.github.io/jsx/#prod-JSXIdentifier).
+ * ECMAScript `IdentifierStart`, as `JSXIdentifier` starts (https://react.github.io/jsx/#prod-JSXIdentifier).
  * `@markuplint/jsx-parser` has the same constant: keep the two in step.
  */
 const JSX_IDENTIFIER_START = /^[\p{ID_Start}$_]/u;
@@ -44,9 +44,13 @@ class MDXParser extends MarkdownAwareParser {
 		super({
 			endTagType: 'xml',
 			booleanish: true,
+			// A value in `{…}` is JavaScript
+			attrExpressionLanguage: 'javascript',
 			tagNameCaseSensitive: true,
 			attrNameCaseSensitive: true,
 			attrNameRoute: 'dom-api',
+			// remark strips a leading BOM itself and counts from the next character
+			leadingBom: 'strip',
 		});
 	}
 

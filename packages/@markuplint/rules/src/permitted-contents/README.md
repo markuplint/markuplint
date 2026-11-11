@@ -14,7 +14,7 @@ This rule warns when:
 
 It is possible to make the structure robust by setting element relationships on template engines such as custom elements and Vue.
 
-A few related structural constraints are separate rules: an element appearing as a descendant of a forbidden ancestor is [`no-disallowed-ancestor`](/docs/rules/no-disallowed-ancestor)'s concern (e.g., `<address>` inside `<address>`), a missing required ancestor is [`require-ancestor`](/docs/rules/require-ancestor)'s (e.g., `<area>` outside `<map>`), and a sibling-unique attribute repeated on multiple elements of the same type is [`no-duplicate-sibling-attr`](/docs/rules/no-duplicate-sibling-attr)'s (e.g., multiple `<track default>`).
+A few related structural constraints are separate rules: an element appearing as a descendant of a forbidden ancestor, or with an ancestor outside those its content model limits it to, is [`no-disallowed-ancestor`](/docs/rules/no-disallowed-ancestor)'s concern (e.g., `<address>` inside `<address>`, `<main>` inside `<section>`), a missing required ancestor is [`require-ancestor`](/docs/rules/require-ancestor)'s (e.g., `<area>` outside `<map>`), and a sibling-unique attribute repeated on multiple elements of the same type is [`no-duplicate-sibling-attr`](/docs/rules/no-duplicate-sibling-attr)'s (e.g., multiple `<track default>`).
 
 ❌ Examples of **incorrect** code for this rule
 
@@ -229,6 +229,12 @@ html
 	body
 		p lorem...
 ```
+
+A component that no [pretender](/docs/guides/beyond-html#pretenders) resolved, such as `<Meta />` in JSX, renders something that is not known, which may be the required element. A component that a pretender resolved is the element it stands for, so it is checked as that element.
+
+The rule does not skip an element that has an unresolved component as a child. It leaves the component out and evaluates the rest, and does not report what the component may render: a missing child, and the order of the elements. It still reports what no component can put right: an element that no entry of the content model takes (`<div>` in `<ul><Item /><div></div></ul>`) and more elements than the content model takes.
+
+When a tag rule is written for the element, the components are checked by the name they are written with. What a descendant of a child renders is not a child of the element, so it does not make the element mutable.
 
 ### Detection limit for conditional transparent elements
 

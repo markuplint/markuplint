@@ -1,5 +1,5 @@
 // https://svgwg.org/specs/animations/#AnimateTransformElement
-// https://www.w3.org/TR/svg-aam-1.0/#details-id-3
+// https://www.w3.org/TR/svg-aam/#role-map-animatetransform
 {
 	"contentModel": {
 		"contents": [

@@ -212,6 +212,9 @@ export type PretenderDetails = {
 	 * `.js/.jsx/.ts/.tsx` use the JSX scanner, `.vue/.svelte/.astro` use
 	 * the template scanner.
 	 *
+	 * Needs `@markuplint/pretenders`, which `markuplint` does not install, and
+	 * the parser package of the language for `.vue/.svelte/.astro`.
+	 *
 	 * @experimental
 	 */
 	readonly scan?: readonly PretenderScanConfig[];
@@ -226,6 +229,8 @@ export type PretenderDetails = {
 	 * The object form tunes the walk ({@link PretenderAutoOptions}); `true`
 	 * and `{}` use the defaults. When configs are merged, the right side
 	 * replaces this value as a whole (the two forms are never combined).
+	 *
+	 * Needs `@markuplint/pretenders`, which `markuplint` does not install.
 	 *
 	 * @experimental
 	 */
@@ -314,6 +319,9 @@ export type Pretender = {
 	 * configuration with no file behind it (`MLEngine`'s `config` / `defaultConfig` option, one
 	 * a plugin provides), it is read from the working directory. An entry of an npm package
 	 * listed in `pretenders.imports` is not rebased.
+	 *
+	 * An entry that has it is matched to the file that the linted file imports by
+	 * `@markuplint/pretenders`, which `markuplint` does not install.
 	 *
 	 * @experimental
 	 */
@@ -508,13 +516,23 @@ export type PretenderAttr = {
 	/**
 	 * If it omits this property, the attribute is resolved as a boolean.
 	 *
+	 * `{ expression }` is the code that the attribute is written as in the source of the component
+	 * (`aria-busy={true}`, `tabIndex={0}`, `title={"x"}`): the text of the expression, as the language of
+	 * the document that uses the component reads it (JavaScript). A literal in it is rendered as the
+	 * framework renders it, as a literal written on an element is (`aria-busy={true}` is
+	 * `aria-busy="true"` and `disabled={false}` is no attribute); any other code is dynamic.
+	 *
 	 * `{ dynamic: true }` means the attribute is present but its value is
-	 * unknown at scan time (e.g. `tabIndex={selected ? 0 : -1}`);
-	 * rules treat it as a dynamic value and do not validate it.
+	 * unknown at scan time and the code is not available (a template literal of a framework
+	 * that the scanner does not read); rules treat it as a dynamic value and do not validate it.
+	 * Code that is available (`tabIndex={selected ? 0 : -1}`) is `{ expression }`, which is
+	 * dynamic as well when it is not a literal.
 	 *
 	 * `{ fromAttr }` takes the value of the attribute the component has at the usage site.
-	 * If that attribute is an expression (`<Button kind={kind} />`), the result is dynamic
-	 * too. With `omitIfMissing`, the element has no such attribute when the usage site does
+	 * If that attribute is an expression (`<Button kind={kind} />`), the code is read again
+	 * under the name of the attribute that is rendered, so that a literal in it
+	 * (`<Button kind={false} />` that renders `disabled={props.kind}`) is rendered
+	 * as that attribute is, and any other code is dynamic. With `omitIfMissing`, the element has no such attribute when the usage site does
 	 * not write it, which is what a component that forwards an optional prop renders
 	 * (`<button type={kind}>` omits `type` when `kind` is `undefined`); without it, the
 	 * attribute is present and empty.
@@ -525,13 +543,16 @@ export type PretenderAttr = {
 	 * name is compared as the DOM compares attribute names (ASCII case-insensitive). Write
 	 * the name the way the component declares its prop.
 	 *
-	 * @experimental How `fromAttr` finds the attribute may change in future releases.
+	 * @experimental How `fromAttr` finds the attribute, and which code `expression` reads as a literal, may change in future releases.
 	 */
 	readonly value?:
 		| string
 		| {
 				readonly fromAttr: string;
 				readonly omitIfMissing?: true;
+		  }
+		| {
+				readonly expression: string;
 		  }
 		| {
 				readonly dynamic: true;

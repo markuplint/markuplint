@@ -17,6 +17,7 @@ import { getFilePath } from '../utils/get-file-path.js';
 import { createQuickFixActions, createFixAllAction } from './code-actions.js';
 import { convertDiagnostics } from './convert-diagnostics.js';
 import { getAccessibilityByLocation } from './get-accessibility-by-location.js';
+import { isPretendersNotInstalled } from './parser-load-failure.js';
 import { applySuppressionsToViolations, loadSuppressions } from './suppression-support.js';
 
 /**
@@ -120,8 +121,19 @@ export async function onDidOpen(
 		log(`[${phase}]: ${message}`, 'trace');
 	});
 
+	// The lint fails again on every edit of the document, with the same cause until the package is installed
+	// and the server restarted (which the popup says), so the popup is shown once per document.
+	let pretendersPopupShown = false;
+
 	engine.on('lint-error', (_filePath, _sourceCode, error) => {
 		diagnosticsLog(error.message, 'error');
+		// A configuration that needs `@markuplint/pretenders` is a `config-error` diagnostic, not a rejection of
+		// `exec()`, so the popup that a missing parser gets has to be asked for here: the diagnostic tells to
+		// install it in the project, which does not fix it for the markuplint bundled with the language server.
+		if (!pretendersPopupShown && isPretendersNotInstalled(error)) {
+			pretendersPopupShown = true;
+			notFoundParserError(error);
+		}
 	});
 
 	engine.on('config-errors', (_filePath, errors) => {

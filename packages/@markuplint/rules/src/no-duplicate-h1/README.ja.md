@@ -12,6 +12,8 @@ description: ドキュメント内にh1要素が複数あれば警告します�
 
 <!-- textlint-enable ja-technical-writing/sentence-length -->
 
+`h1`要素はツリーごとに数えます。`template`要素の内容と宣言的シャドウルートは独立したツリーで、どこに挿入されるかはマークアップからはわからないため、その中の`h1`は、ドキュメントの`h1`の重複にはなりません。ReactとVueでは、ディレクティブのない`template`要素の子要素はドキュメントのツリーにあります。
+
 旧`required-h1`ルールから、[`require-h1`](/docs/rules/require-h1)とともに分割されました。
 
 <!-- textlint-disable ja-technical-writing/ja-no-mixed-period -->

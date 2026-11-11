@@ -8,8 +8,9 @@ import parser from 'postcss-selector-parser';
 
 import { compareSpecificity } from './compare-specificity.js';
 import { log as coreLog } from './debug.js';
+import { foldAttrName } from './fold-attr-name.js';
 import { InvalidSelectorError } from './invalid-selector-error.js';
-import { isElement, isNonDocumentTypeChildNode, isPureHTMLElement } from './is.js';
+import { isElement, isNonDocumentTypeChildNode } from './is.js';
 import { typeNameMatches } from './type-name.js';
 
 const selLog = coreLog.extend('selector');
@@ -108,8 +109,14 @@ class Ruleset {
 				selectors.push(...root.nodes);
 			}).processSync(selector);
 		} catch (error: unknown) {
+			// What the parser says about the selector is shown when it is a diagnostic. A `TypeError`,
+			// a `ReferenceError` or a `RangeError` is a defect of the parser (`:is(` reads a missing node),
+			// whose text says nothing about the selector.
 			if (error instanceof Error) {
-				throw new InvalidSelectorError(selector);
+				if (error instanceof TypeError || error instanceof ReferenceError || error instanceof RangeError) {
+					throw new InvalidSelectorError(selector);
+				}
+				throw new InvalidSelectorError(selector, `Invalid selector: "${selector}" (${error.message})`);
 			}
 			throw error;
 		}
@@ -171,6 +178,7 @@ class StructuredSelector {
 		for (const node of nodes) {
 			switch (node.type) {
 				case 'combinator': {
+					assertSupportedCombinator(node.value, selector.toString());
 					const combinedTarget = new SelectorTarget(extended, depth);
 					combinedTarget.from(this.#edge, node);
 					this.#edge = combinedTarget;
@@ -178,15 +186,24 @@ class StructuredSelector {
 				}
 				case 'root':
 				case 'string': {
-					throw new Error(`Unsupported selector: ${selector.toString()}`);
+					throw new InvalidSelectorError(selector.toString(), `Unsupported selector: ${selector.toString()}`);
 				}
 				case 'nesting': {
-					throw new Error(`Unsupported nested selector: ${selector.toString()}`);
+					throw new InvalidSelectorError(
+						selector.toString(),
+						`Unsupported nested selector: ${selector.toString()}`,
+					);
 				}
 				case 'comment': {
-					throw new Error(`Unsupported comment in selector: ${selector.toString()}`);
+					throw new InvalidSelectorError(
+						selector.toString(),
+						`Unsupported comment in selector: ${selector.toString()}`,
+					);
 				}
 				default: {
+					if (node.type === 'pseudo') {
+						assertSupportedPseudo(node, selector.toString(), extended, depth);
+					}
 					this.#edge.add(node);
 				}
 			}
@@ -313,10 +330,11 @@ class SelectorTarget {
 				const matchedNodes: SelectorElement[] = [];
 				const has: SelectorMatchedResult[] = [];
 				const not: SelectorMatchedResult[] = [];
-				let ancestor = el.parentElement;
+				let ancestor: SelectorNode | null = getCombinatorParent(el, scope);
 				let specificity: Specificity | undefined = undefined;
+				let combinatorMatched = false;
 				while (ancestor) {
-					const res = target.match(ancestor, scope, count + 1, logEnabled);
+					const res = matchCombinatorTarget(target, ancestor, scope, count + 1, logEnabled);
 					if (!specificity) {
 						specificity = [
 							unitCheck.specificity[0] + res.specificity[0],
@@ -325,24 +343,28 @@ class SelectorTarget {
 						];
 					}
 					if (res.matched) {
+						combinatorMatched = true;
 						matchedNodes.push(...res.nodes);
 						has.push(...res.has);
-					} else {
-						if (res.not) {
-							not.push(...res.not);
-						}
+						break;
 					}
-					ancestor = ancestor.parentElement;
+					if (res.not) {
+						not.push(...res.not);
+					}
+					ancestor =
+						ancestor && isElement(ancestor)
+							? getCombinatorParent(ancestor, scope)
+							: (ancestor?.parentNode ?? null);
 				}
 				if (!specificity) {
-					const res = target.match(el, scope, count + 1, logEnabled);
+					const res = matchCombinatorTarget(target, el, scope, count + 1, logEnabled);
 					specificity = [
 						unitCheck.specificity[0] + res.specificity[0],
 						unitCheck.specificity[1] + res.specificity[1],
 						unitCheck.specificity[2] + res.specificity[2],
 					];
 				}
-				if (matchedNodes.length > 0) {
+				if (combinatorMatched || matchedNodes.length > 0) {
 					return {
 						combinator: '␣',
 						specificity,
@@ -364,28 +386,14 @@ class SelectorTarget {
 				const has: SelectorMatchedResult[] = [];
 				const not: SelectorMatchedResult[] = [];
 				const specificity: Writable<Specificity> = [...unitCheck.specificity];
-				const parentNode = el.parentElement;
-
-				if (parentNode) {
-					const res = target.match(parentNode, scope, count + 1, logEnabled);
-					specificity[0] += res.specificity[0];
-					specificity[1] += res.specificity[1];
-					specificity[2] += res.specificity[2];
-					if (res.matched) {
-						matchedNodes.push(...res.nodes);
-						has.push(...res.has);
-					} else {
-						if (res.not) {
-							not.push(...res.not);
-						}
-					}
-				} else {
-					const res = target.match(el, scope, count + 1, logEnabled);
-					specificity[0] += res.specificity[0];
-					specificity[1] += res.specificity[1];
-					specificity[2] += res.specificity[2];
-				}
-				if (matchedNodes.length > 0) {
+				const parentNode = getCombinatorParent(el, scope);
+				const res = matchCombinatorTarget(target, parentNode, scope, count + 1, logEnabled);
+				specificity[0] += res.specificity[0];
+				specificity[1] += res.specificity[1];
+				specificity[2] += res.specificity[2];
+				if (res.matched) {
+					matchedNodes.push(...res.nodes);
+					has.push(...res.has);
 					return {
 						combinator: '>',
 						specificity,
@@ -393,6 +401,9 @@ class SelectorTarget {
 						nodes: matchedNodes,
 						has,
 					};
+				}
+				if (res.not) {
+					not.push(...res.not);
 				}
 				return {
 					combinator: '>',
@@ -493,14 +504,9 @@ class SelectorTarget {
 					not,
 				};
 			}
-			// Column combinator
-			case '||': {
-				throw new Error(
-					'Unsupported column combinator yet. If you want it, please request it as the issue (https://github.com/markuplint/markuplint/issues/new).',
-				);
-			}
+			// `assertSupportedCombinator` rejects any other combinator when the selector is created
 			default: {
-				throw new Error(`Unsupported ${this.#combinedFrom.combinator.value} combinator in selector`);
+				throw new InvalidSelectorError(this.toString(), unsupportedCombinatorMessage(combinator.value));
 			}
 		}
 	}
@@ -551,7 +557,10 @@ class SelectorTarget {
 					break;
 				}
 				default: {
-					throw new InvalidSelectorError(`The ${namespace} namespace is not supported`);
+					throw new InvalidSelectorError(
+						this.tag.toString().trim(),
+						`The ${namespace} namespace is not supported`,
+					);
 				}
 			}
 		}
@@ -630,13 +639,15 @@ function attrMatch(
 	// with each name says so on the attribute (`SelectorAttr#nameCaseInsensitive`, and
 	// `domName` for the name an SVG attribute has); otherwise the `isPureHTMLElement`
 	// guard mirrors the same convention used for tag-name matching in
-	// SelectorTarget#matchWithoutCombineChecking.
-	const isHTML = isPureHTMLElement(el);
+	// SelectorTarget#matchWithoutCombineChecking (see `foldAttrName`).
 	return [...el.attributes].some(attrOfEl => {
+		// An attribute that the framework does not output is not an attribute of the DOM
+		if (attrOfEl.absent) {
+			return false;
+		}
 		const elAttrName = attrOfEl.domName ?? attrOfEl.localName;
-		const isCaseInsensitive = attrOfEl.nameCaseInsensitive ?? isHTML;
 		const selectorName = attrOfEl.nameIsCamelized ? vuePropKey(attr.attribute) : attr.attribute;
-		const fold = (name: string) => (isCaseInsensitive ? asciiLowerCase(name) : name);
+		const fold = (name: string) => foldAttrName(attrOfEl, el, name);
 		// A prefixed attribute (`xlink:href`) is also named by its local name, which is what
 		// the namespace of a selector (`[xlink|href]`, `[*|href]`) qualifies
 		const named =
@@ -708,6 +719,139 @@ function attrMatch(
 	});
 }
 
+const REQUEST = 'If you want it, please request it as the issue (https://github.com/markuplint/markuplint/issues/new).';
+
+function unsupportedCombinatorMessage(combinator: string) {
+	return combinator.trim() === '||'
+		? `Unsupported column combinator yet. ${REQUEST}`
+		: `Unsupported ${combinator} combinator in selector`;
+}
+
+function unsupportedYetMessage(pseudo: ReadonlyDeep<parser.Pseudo>) {
+	return `Unsupported pseudo ${pseudo.toString()} selector yet. ${REQUEST}`;
+}
+
+/**
+ * The pseudo-classes of Selectors Level 4 that the engine does not match yet. Both the creation of
+ * a selector ({@link assertSupportedPseudo}) and its matching ({@link pseudoMatch}) read this one
+ * list, so supporting one is an edit of one place.
+ */
+const UNSUPPORTED_YET_PSEUDOS: ReadonlySet<string> = new Set([
+	':enable',
+	':disable',
+	':read-write',
+	':read-only',
+	':placeholder-shown',
+	':default',
+	':checked',
+	':indeterminate',
+	':valid',
+	':invalid',
+	':in-range',
+	':out-of-range',
+	':required',
+	':optional',
+	':blank',
+	':user-invalid',
+	':empty',
+	':nth-child',
+	':nth-last-child',
+	':last-child',
+	':only-child',
+	':nth-of-type',
+	':nth-last-of-type',
+	':first-of-type',
+	':last-of-type',
+	':only-of-type',
+	':nth-last-col',
+	':nth-col',
+]);
+
+/**
+ * The combinators that the engine matches. Anything else the parser accepts (the column combinator
+ * `||`) is the fault of the selector, and it is found when the selector is created, not when
+ * it meets an element: a configuration holds the selector, and the check of the configuration
+ * only creates it.
+ *
+ * @param combinator - The value of the combinator node
+ * @param selector - The selector the combinator belongs to
+ * @throws {InvalidSelectorError} When the engine does not match the combinator
+ */
+function assertSupportedCombinator(combinator: string, selector: string) {
+	switch (combinator.trim()) {
+		case '':
+		case '>':
+		case '+':
+		case '~': {
+			return;
+		}
+		// The parser accepts no other combinator than `||` besides the four above, so the `||` message is
+		// the one a user reads; the shared message also covers what a future version of the parser accepts.
+		default: {
+			throw new InvalidSelectorError(selector, unsupportedCombinatorMessage(combinator));
+		}
+	}
+}
+
+/**
+ * Finds what the engine does not support in a pseudo-class when the selector is created, so that
+ * a selector in a configuration is rejected as the fault of the configuration for every
+ * document, not only for one that has an element it is matched against. It mirrors the branches
+ * of {@link pseudoMatch}: the pseudo-classes that hold a selector are created as the match
+ * does, and an extended pseudo-class reads its argument once.
+ *
+ * @param pseudo - The pseudo-class node
+ * @param selector - The selector the pseudo-class belongs to
+ * @param extended - The registry of the extended pseudo-classes
+ * @param depth - The nesting depth of the selector
+ * @throws {InvalidSelectorError} When the engine does not support the pseudo-class or its argument
+ */
+function assertSupportedPseudo(
+	pseudo: ReadonlyDeep<parser.Pseudo>,
+	selector: string,
+	extended: ExtendedPseudoClass,
+	depth: number,
+) {
+	const name = asciiLowerCase(pseudo.value);
+	if (UNSUPPORTED_YET_PSEUDOS.has(name)) {
+		throw new InvalidSelectorError(selector, unsupportedYetMessage(pseudo));
+	}
+	switch (name) {
+		case ':closest':
+		case ':not':
+		case ':is':
+		case ':has':
+		case ':where': {
+			new Ruleset(pseudo.nodes, extended, depth + 1);
+			return;
+		}
+		case ':scope':
+		case ':root':
+		case ':first-child': {
+			return;
+		}
+		default: {
+			for (const ext of Object.keys(extended)) {
+				if (name !== `:${asciiLowerCase(ext)}`) {
+					continue;
+				}
+				const hook = extended[ext];
+				if (hook) {
+					hook(pseudo.nodes.map(node => node.toString()).join(''));
+					return;
+				}
+			}
+			throw new InvalidSelectorError(selector, `Unsupported pseudo ${pseudo.toString()} selector.`);
+		}
+	}
+}
+
+/**
+ * Selectors Level 4 treats pseudo-class names as ASCII case-insensitive keywords; fold once
+ * before dispatching so `:NOT(div)` and `:not(div)` share the same branch.
+ *
+ * @see https://www.w3.org/TR/selectors-4/#pseudo-classes
+ */
 function pseudoMatch(
 	pseudo: ReadonlyDeep<parser.Pseudo>,
 	// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
@@ -716,7 +860,11 @@ function pseudoMatch(
 	extended: ExtendedPseudoClass,
 	depth: number,
 ): SelectorResult {
-	switch (pseudo.value) {
+	const pseudoName = asciiLowerCase(pseudo.value);
+	if (UNSUPPORTED_YET_PSEUDOS.has(pseudoName)) {
+		throw new InvalidSelectorError(pseudo.toString(), unsupportedYetMessage(pseudo));
+	}
+	switch (pseudoName) {
 		//
 
 		/**
@@ -728,7 +876,7 @@ function pseudoMatch(
 		case ':closest': {
 			const ruleset = new Ruleset(pseudo.nodes, extended, depth + 1);
 			const specificity = getSpecificity(ruleset.match(el, scope));
-			let parent = el.parentElement;
+			let parent = getParentElement(el);
 			while (parent) {
 				const matched = ruleset.match(parent, scope).filter((r): r is SelectorMatchedResult => r.matched);
 				if (matched.length > 0) {
@@ -739,7 +887,7 @@ function pseudoMatch(
 						has: matched,
 					};
 				}
-				parent = parent.parentElement;
+				parent = getParentElement(parent);
 			}
 			return {
 				specificity,
@@ -861,38 +1009,31 @@ function pseudoMatch(
 				matched: false,
 			};
 		}
-		case ':enable':
-		case ':disable':
-		case ':read-write':
-		case ':read-only':
-		case ':placeholder-shown':
-		case ':default':
-		case ':checked':
-		case ':indeterminate':
-		case ':valid':
-		case ':invalid':
-		case ':in-range':
-		case ':out-of-range':
-		case ':required':
-		case ':optional':
-		case ':blank':
-		case ':user-invalid':
-		case ':empty':
-		case ':nth-child':
-		case ':nth-last-child':
-		case ':first-child':
-		case ':last-child':
-		case ':only-child':
-		case ':nth-of-type':
-		case ':nth-last-of-type':
-		case ':first-of-type':
-		case ':last-of-type':
-		case ':only-of-type':
-		case ':nth-last-col':
-		case ':nth-col': {
-			throw new Error(
-				`Unsupported pseudo ${pseudo.toString()} selector yet. If you want it, please request it as the issue (https://github.com/markuplint/markuplint/issues/new).`,
-			);
+		/**
+		 * Selectors Level 4 counts only sibling elements: a text node or a comment before the
+		 * element does not stop it from being the first child. An element without a parent
+		 * matches as well, as the Level 4 definition no longer requires one.
+		 *
+		 * Siblings are those `previousElementSibling` gives, as for the sibling combinators,
+		 * so whether an element inside a template block before it is one depends on how the
+		 * parser places the content of the block. A content model category counts text as
+		 * well (`isContentModelFirstChild`).
+		 *
+		 * @see https://drafts.csswg.org/selectors/#the-first-child-pseudo
+		 */
+		case ':first-child': {
+			if (el.previousElementSibling == null) {
+				return {
+					specificity: [0, 1, 0],
+					matched: true,
+					nodes: [el],
+					has: [],
+				};
+			}
+			return {
+				specificity: [0, 1, 0],
+				matched: false,
+			};
 		}
 		/* eslint-disable unicorn/no-useless-switch-case */
 		case ':dir':
@@ -915,7 +1056,7 @@ function pseudoMatch(
 		case '::after':
 		default: {
 			for (const ext of Object.keys(extended)) {
-				if (pseudo.value !== `:${ext}`) {
+				if (pseudoName !== `:${asciiLowerCase(ext)}`) {
 					continue;
 				}
 
@@ -928,10 +1069,92 @@ function pseudoMatch(
 				const matcher = hook(content);
 				return matcher(el);
 			}
-			throw new Error(`Unsupported pseudo ${pseudo.toString()} selector.`);
+			throw new InvalidSelectorError(pseudo.toString(), `Unsupported pseudo ${pseudo.toString()} selector.`);
 		}
 		/* eslint-enable unicorn/no-useless-switch-case */
 	}
+}
+
+/**
+ * The parent element in the tree of the element (`SelectorElement#treeParentElement`), or
+ * `parentElement` for a host that has no tree of its own to tell.
+ *
+ * @param el - An element
+ * @returns The parent element
+ */
+function getParentElement(
+	// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
+	el: SelectorElement,
+): SelectorElement | null {
+	return el.treeParentElement === undefined ? el.parentElement : el.treeParentElement;
+}
+
+/**
+ * Parent for combinator matching: the tree parent, or the scoping root when it is the
+ * {@link SelectorNode#parentNode} but not an element (a document or document fragment).
+ */
+function isTopLevelInScope(
+	// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
+	el: SelectorElement,
+	scope: SelectorNode,
+): boolean {
+	if ('children' in scope) {
+		for (const child of scope.children as Iterable<SelectorNode>) {
+			if (child === el) {
+				return true;
+			}
+		}
+	}
+	if ('childNodes' in scope) {
+		for (const child of scope.childNodes as Iterable<SelectorNode>) {
+			if (child === el) {
+				return true;
+			}
+		}
+	}
+	return false;
+}
+
+function getCombinatorParent(
+	// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
+	el: SelectorElement,
+	scope: SelectorNode | null,
+): SelectorNode | null {
+	const parent = getParentElement(el);
+	if (parent) {
+		return parent;
+	}
+	if (scope && el.parentNode === scope) {
+		return scope;
+	}
+	if (scope && el.parentNode === null && isTopLevelInScope(el, scope)) {
+		return scope;
+	}
+	return null;
+}
+
+function matchCombinatorTarget(
+	target: ReadonlyDeep<SelectorTarget>,
+	node: SelectorNode | null,
+	scope: SelectorNode | null,
+	count: number,
+	logEnabled: boolean,
+): SelectorResult {
+	if (node === scope && target.toString() === ':scope') {
+		return {
+			specificity: [0, 1, 0],
+			matched: true,
+			nodes: [],
+			has: [],
+		};
+	}
+	if (node && isElement(node)) {
+		return target.match(node, scope, count, logEnabled);
+	}
+	return {
+		specificity: [0, 0, 0],
+		matched: false,
+	};
 }
 
 function isScope(
@@ -939,7 +1162,7 @@ function isScope(
 	el: SelectorElement,
 	scope: SelectorNode | null,
 ) {
-	return el === scope || el.parentNode === null;
+	return el === scope;
 }
 
 function getDescendants(
@@ -947,6 +1170,9 @@ function getDescendants(
 	el: SelectorElement,
 	includeSelf = false,
 ): SelectorElement[] {
+	if (el.isHTMLTemplateElement) {
+		return includeSelf ? [el] : [];
+	}
 	return [...[...el.children].flatMap(child => getDescendants(child, true)), ...(includeSelf ? [el] : [])];
 }
 
@@ -954,6 +1180,8 @@ function getSiblings(
 	// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
 	el: SelectorElement,
 ): SelectorElement[] {
+	// Siblings share the parent of the syntax tree, and so the tree. What is in no tree (a `<template>` that a
+	// declarative shadow root is attached to) still has the siblings of its place in the markup.
 	return [...(el.parentElement?.children ?? [])];
 }
 

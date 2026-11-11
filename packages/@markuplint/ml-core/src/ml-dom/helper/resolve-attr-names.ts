@@ -1,4 +1,4 @@
-import type { MLASTHTMLAttr } from '@markuplint/ml-ast';
+import type { ExpressionLanguage, MLASTHTMLAttr } from '@markuplint/ml-ast';
 import type { ExtendedSpec, MLMLSpec } from '@markuplint/ml-spec';
 
 import { compileDirectivePatterns, resolveDirective } from '@markuplint/ml-spec';
@@ -15,6 +15,16 @@ export type ResolvedAttr = {
 	readonly isDuplicatable: boolean;
 	/** Only a matching directive pattern sets it; otherwise the attribute is a `string`. */
 	readonly valueType?: 'string' | 'number' | 'boolean' | 'code';
+	/**
+	 * The language the value is written in, when it is code that can be read as a literal.
+	 *
+	 * - A matching directive pattern says it (`expressionLanguage` of the pattern).
+	 * - `inherit` when the parser did not resolve the name and no pattern matched: the value is in the
+	 *   language of the attributes of the document (`MLDocument#attrExpressionLanguage`).
+	 * - Absent when the parser resolved the name: its value is not the value of the attribute (a
+	 *   condition of `class:list`, a variable of a shorthand), so it is not read as a literal.
+	 */
+	readonly expressionLanguage?: ExpressionLanguage | 'inherit';
 };
 
 /**
@@ -79,5 +89,6 @@ export function resolveAttrNames(
 		isDirective,
 		isDuplicatable: (resolution ? resolution.isDuplicatable : undefined) ?? ast.isDuplicatable,
 		valueType: resolution?.valueType,
+		expressionLanguage: resolution ? resolution.expressionLanguage : 'inherit',
 	};
 }

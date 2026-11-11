@@ -108,6 +108,30 @@ test('[no-nested-top-level-landmark-valid-004] Top level landmarks: ignoreRoles 
 	expect(violations).toStrictEqual([]);
 });
 
+test('[no-nested-top-level-landmark-issue-4489-001] a landmark outside of a template does not make what is in its content nested', async () => {
+	const { violations } = await mlRuleTest(
+		rule,
+		'<html><body><main><template><main></main></template></main></body></html>',
+	);
+	expect(violations).toStrictEqual([]);
+});
+
+test('[no-nested-top-level-landmark-issue-4489-002] a landmark in the content of a template makes what is in the same content nested', async () => {
+	const { violations } = await mlRuleTest(
+		rule,
+		'<html><body><template><main><main></main></main></template></body></html>',
+	);
+	expect(violations).toStrictEqual([
+		{
+			severity: 'warning',
+			line: 1,
+			col: 29,
+			message: 'The "main" role should be top level',
+			raw: '<main>',
+		},
+	]);
+});
+
 test('[no-nested-top-level-landmark-invalid-001] nested main is flagged', async () => {
 	const { violations } = await mlRuleTest(
 		rule,

@@ -1,6 +1,5 @@
 // https://html.spec.whatwg.org/multipage/grouping-content.html#the-div-element
 // https://www.w3.org/TR/html-aria/#el-div
-// https://w3c.github.io/html-aria/#el-div
 {
 	"contentModel": {
 		"contents": [
@@ -10,11 +9,14 @@
 		],
 		"conditional": [
 			{
-				// HTML LS §4.4.9 The dl element: "If the parent is a dl element:
-				// One or more dt elements followed by one or more dd elements,
-				// optionally intermixed with script-supporting elements." One group
-				// per `<div>`, not repeatable — the group repetition lives at the
-				// `<dl>` level, not inside each `<div>`.
+				// > If the element is a child of a dl element:
+				// > One or more dt elements followed by one or more dd elements,
+				// > optionally intermixed with script-supporting elements.
+				// @see https://html.spec.whatwg.org/multipage/grouping-content.html#the-div-element
+				//
+				// One group per `<div>`, not repeatable — the group repetition lives at the
+				// `<dl>` level, not inside each `<div>`. Why the script-supporting elements are
+				// written this way: see spec.dl.jsonc.
 				"condition": "dl > div",
 				"contents": [
 					{
@@ -24,13 +26,13 @@
 						"oneOrMore": "dt"
 					},
 					{
-						"zeroOrMore": ":model(script-supporting)"
+						"zeroOrMore": ["dt", ":model(script-supporting)"]
 					},
 					{
 						"oneOrMore": "dd"
 					},
 					{
-						"zeroOrMore": ":model(script-supporting)"
+						"zeroOrMore": ["dd", ":model(script-supporting)"]
 					}
 				]
 			}

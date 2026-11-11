@@ -10,6 +10,11 @@ export default createRule({
 	defaultSeverity: 'warning',
 	async verify({ document, report, t }) {
 		await document.walkOn('Attr', attr => {
+			// An attribute that the framework does not output (`defer={false}`) is not an attribute of the element
+			if (attr.isAbsent) {
+				return;
+			}
+
 			const attrSpec = getAttrSpecs(attr.ownerElement, document.specs);
 			if (!attrSpec) {
 				return;

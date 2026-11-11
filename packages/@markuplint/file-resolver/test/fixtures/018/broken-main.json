@@ -1,0 +1,3 @@
+{
+	"extends": ["./broken-a.json", "./broken-b.json"]
+}

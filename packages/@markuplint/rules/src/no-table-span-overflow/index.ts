@@ -17,7 +17,7 @@ import meta from './meta.js';
 export default createRule<boolean>({
 	meta,
 	verify({ document, report, t }) {
-		const tables = document.querySelectorAll('table');
+		const tables = document.deepQuerySelectorAll('table');
 
 		for (const table of tables) {
 			const grid = new Grid(table);

@@ -78,13 +78,6 @@
 			]
 		},
 		{
-			"path": "html-aria/misc/aria-controls-broken-idref-novalid.html",
-			"category": "aria",
-			"ruleIds": [
-				"no-refer-to-non-existent-id"
-			]
-		},
-		{
 			"path": "html-aria/misc/aria-describedby-broken-idref-isvalid.html",
 			"category": "aria",
 			"ruleIds": [
@@ -93,22 +86,7 @@
 			]
 		},
 		{
-			"path": "html-aria/misc/aria-describedby-broken-idref-novalid.html",
-			"category": "aria",
-			"ruleIds": [
-				"no-refer-to-non-existent-id",
-				"require-accessible-name"
-			]
-		},
-		{
 			"path": "html-aria/misc/aria-flowto-broken-idref-isvalid.html",
-			"category": "aria",
-			"ruleIds": [
-				"no-refer-to-non-existent-id"
-			]
-		},
-		{
-			"path": "html-aria/misc/aria-flowto-broken-idref-novalid.html",
 			"category": "aria",
 			"ruleIds": [
 				"no-refer-to-non-existent-id"
@@ -131,11 +109,13 @@
 			]
 		},
 		{
-			"path": "html-aria/misc/aria-labelledby-broken-idref-novalid.html",
+			"path": "html-aria/misc/aria-owns-broken-idref-isvalid.html",
 			"category": "aria",
 			"ruleIds": [
 				"no-refer-to-non-existent-id",
-				"role-supports-aria-prop"
+				"require-accessible-name",
+				"require-owned-elements",
+				"require-parent-role"
 			]
 		},
 		{
@@ -217,7 +197,6 @@
 			"path": "html-aria/misc/label-unassociated-with-labelable-element-with-role-and-aria-expanded-isvalid.html",
 			"category": "aria",
 			"ruleIds": [
-				"aria-prop-requires-role",
 				"permitted-roles"
 			]
 		},
@@ -462,22 +441,7 @@
 			]
 		},
 		{
-			"path": "html-aria/presentational-children/testcase-839.html",
-			"category": "aria",
-			"ruleIds": [
-				"no-aria-on-presentational-children"
-			]
-		},
-		{
 			"path": "html-aria/presentational-children/testcase-840-haswarn.html",
-			"category": "aria",
-			"ruleIds": [
-				"no-aria-on-presentational-children",
-				"require-accessible-name"
-			]
-		},
-		{
-			"path": "html-aria/presentational-children/testcase-840.html",
 			"category": "aria",
 			"ruleIds": [
 				"no-aria-on-presentational-children",
@@ -492,22 +456,7 @@
 			]
 		},
 		{
-			"path": "html-aria/presentational-children/testcase-842.html",
-			"category": "aria",
-			"ruleIds": [
-				"no-aria-on-presentational-children"
-			]
-		},
-		{
 			"path": "html-aria/presentational-children/testcase-843-haswarn.html",
-			"category": "aria",
-			"ruleIds": [
-				"no-aria-on-presentational-children",
-				"require-accessible-name"
-			]
-		},
-		{
-			"path": "html-aria/presentational-children/testcase-843.html",
 			"category": "aria",
 			"ruleIds": [
 				"no-aria-on-presentational-children",
@@ -1990,13 +1939,6 @@
 		},
 		{
 			"path": "html-aria/setsize-posinset-level/testcase-769-isvalid.html",
-			"category": "aria",
-			"ruleIds": [
-				"require-parent-role"
-			]
-		},
-		{
-			"path": "html-aria/setsize-posinset-level/testcase-769.html",
 			"category": "aria",
 			"ruleIds": [
 				"require-parent-role"
@@ -8772,13 +8714,6 @@
 			"category": "attribute-errors",
 			"ruleIds": [
 				"no-unknown-attr"
-			]
-		},
-		{
-			"path": "html/elements/img/srcset-width-descriptor-loading-lazy-no-sizes-isvalid.html",
-			"category": "attribute-errors",
-			"ruleIds": [
-				"no-unpaired-srcset-sizes"
 			]
 		},
 		{

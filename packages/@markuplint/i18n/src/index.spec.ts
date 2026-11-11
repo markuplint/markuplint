@@ -11,6 +11,20 @@ const ja = {
 	...require('../locales/ja.json'),
 };
 
+const en = {
+	locale: 'en',
+	...require('../locales/en.json'),
+};
+
+test('A sentence that follows another one starts with a capital in English, and falls back to its own key without the locale', () => {
+	expect(translator(en)('the max number of elements required is {0}', '2')).toBe(
+		'The max number of elements required is two',
+	);
+	expect(translator()('the max number of elements required is {0}', '5')).toBe(
+		'the max number of elements required is 5',
+	);
+});
+
 test('Listup', () => {
 	const t1 = translator();
 	expect(t1(['1'])).toBe('"1"');
@@ -283,4 +297,56 @@ test('ja', () => {
 	).toBe('ARIAプロパティ「foo」は暗黙の属性「bar」と矛盾しています');
 	expect(t('It is {0}', 'default value')).toBe('デフォルト値です');
 	expect(t('{0}. Or, {1}', 'A', 'B')).toBe('A。または、B');
+});
+
+test('A sentence without a keyword is translated', () => {
+	const t = translator(ja);
+	expect(t('there is more content than it needs')).toBe('必要以上のコンテンツがあります');
+	expect(t('There is more content than it needs')).toBe('必要以上のコンテンツがあります');
+	expect(translator()('there is more content than it needs')).toBe('there is more content than it needs');
+});
+
+test('A keyword takes precedence over a sentence of the same text', () => {
+	const t = translator({
+		locale: 'xx',
+		keywords: { foo: 'keyword' },
+		sentences: { foo: 'sentence' },
+	});
+	expect(t('foo')).toBe('keyword');
+});
+
+test('A keyword translated to its own spelling still takes precedence over a sentence', () => {
+	const t = translator({
+		locale: 'xx',
+		keywords: { foo: 'foo' },
+		sentences: { foo: 'sentence' },
+	});
+	expect(t('foo')).toBe('foo');
+});
+
+test('A no-translate mark on a single text is removed and the text is not looked up', () => {
+	const t = translator({
+		locale: 'xx',
+		keywords: { foo: 'keyword' },
+		sentences: { foo: 'sentence' },
+	});
+	expect(t('%foo%')).toBe('foo');
+});
+
+test('A keyword translated to an empty string is not a keyword', () => {
+	const t = translator({
+		locale: 'xx',
+		keywords: { foo: '' },
+		sentences: { foo: 'sentence' },
+	});
+	expect(t('foo')).toBe('sentence');
+});
+
+test('A text that is neither a keyword nor a sentence is returned as it is', () => {
+	const t = translator({
+		locale: 'xx',
+		keywords: { foo: 'keyword' },
+		sentences: { bar: 'sentence' },
+	});
+	expect(t('baz')).toBe('baz');
 });

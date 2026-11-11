@@ -1,10 +1,99 @@
 import type { FixToken, IRuleFixer, PlainData, TextEdit } from '@markuplint/ml-config';
-import type { Attr, Element, RuleConfigValue, Document } from '@markuplint/ml-core';
+import type { Attr, ChildNode, Element, RuleConfigValue } from '@markuplint/ml-core';
 import type { Attribute } from '@markuplint/ml-spec';
 import type { WritableDeep } from 'type-fest';
 
-import { escapeCSS } from '@markuplint/ml-spec';
-import { asciiLowerCase } from '@markuplint/shared';
+import { getDOMValue, getRenderedChildNodes } from '@markuplint/ml-core';
+import { asciiLowerCase, decodeEntities } from '@markuplint/shared';
+
+export { getDOMValue };
+
+/**
+ * The element that an id reference written in an attribute of `el` resolves to: the first element
+ * of the tree `el` is in whose id is the reference. The content of a `template` element and a
+ * declarative shadow root are trees of their own, so a reference there does not reach an id of the
+ * document, nor the other way around.
+ *
+ * The reference is compared with the character references in the markup resolved, as the id is.
+ *
+ * @template T - The rule configuration value type
+ * @template O - The rule options type
+ * @param el - The element that has the attribute
+ * @param reference - The value of the attribute, or one token of it, as written in the markup
+ * @param isExpression - Whether the value is written as code, which has no character reference in it
+ * @returns The element, or `null` when the tree has none, or `el` is in no tree
+ * @see https://html.spec.whatwg.org/multipage/dom.html#the-id-attribute
+ */
+export function getElementByIdInTree<T extends RuleConfigValue, O extends PlainData>(
+	// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
+	el: Element<T, O>,
+	reference: string,
+	isExpression = false,
+): Element<T, O> | null {
+	const root = el.getRootNode();
+	if (root.is(root.DOCUMENT_NODE) || root.is(root.DOCUMENT_FRAGMENT_NODE)) {
+		return root.getElementById(isExpression ? reference : decodeEntities(reference));
+	}
+	return null;
+}
+
+/**
+ * Whether the element is not an element of the output, so that what is written in it is rendered in
+ * place of it:
+ *
+ * - a fragment (`<>` of JSX), which `childNodes` already flattens;
+ * - a `template` element with a directive attribute (Vue's `<template v-if>`, `v-for`, `v-slot`).
+ *   It is not an HTML `template` element: the template engine renders its children in place of it
+ *   and drops it. A spread attribute (`{...props}`) is not such a directive: it sets attributes of
+ *   the element, which stays.
+ *
+ * `isTransparent` of `@markuplint/ml-core` (`src/ml-dom/helper/tree-scope.ts`), which is not exported,
+ * decides the same of an element for the tree boundaries (`getRootNode()`, the shadow host): a kind
+ * added here belongs to it too.
+ *
+ * @template T - The rule configuration value type
+ * @template O - The rule options type
+ * @param el - An element
+ * @returns `true` if the output has no element for it
+ */
+export function isRenderedAway<T extends RuleConfigValue, O extends PlainData>(
+	// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
+	el: Element<T, O>,
+): boolean {
+	if (el.isFragment) {
+		return true;
+	}
+	if (el.localName !== 'template') {
+		return false;
+	}
+	for (const attr of el.attributes) {
+		if (attr.isDirective && attr.localName !== '#spread') {
+			return true;
+		}
+	}
+	return false;
+}
+
+/**
+ * The elements that match the selector in the tree `el` is in (see {@link getElementByIdInTree}).
+ *
+ * @template T - The rule configuration value type
+ * @template O - The rule options type
+ * @param el - An element of the tree
+ * @param selectors - A selector
+ * @returns The elements in the order of the markup, none when `el` is in no tree
+ */
+export function querySelectorAllInTree<T extends RuleConfigValue, O extends PlainData>(
+	// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
+	el: Element<T, O>,
+	selectors: string,
+): readonly Element<T, O>[] {
+	const root = el.getRootNode();
+	if (root.is(root.DOCUMENT_NODE) || root.is(root.DOCUMENT_FRAGMENT_NODE)) {
+		return [...root.querySelectorAll(selectors)] as Element<T, O>[];
+	}
+	return [];
+}
 
 /** A `null`/`undefined` condition means the attribute applies unconditionally. */
 export function attrMatches<T extends RuleConfigValue, O extends PlainData>(
@@ -43,9 +132,13 @@ export function conditionDependsOnDynamicAttr<T extends RuleConfigValue, O exten
 			}
 		}
 	}
-	// Whether the attribute is the one that the selector names is up to the attribute (`isNamedBy`)
+	// Whether the attribute is the one that the selector names is up to the attribute (`isNamedBy`).
+	// An attribute that the framework does not output (`type={null}`) is known not to be there, so the
+	// condition is decided: it is not met.
 	const names = [...referencedNames];
-	return node.attributes.some(attr => attr.isDynamicValue && names.some(name => attr.isNamedBy(name)));
+	return node.attributes.some(
+		attr => attr.isDynamicValue && !attr.isAbsent && names.some(name => attr.isNamedBy(name)),
+	);
 }
 
 /**
@@ -140,6 +233,22 @@ export function namespaceKeyOf(
 	},
 ): string {
 	return attr.ownerElement.elementType === 'authored' ? asciiLowerCase(attr.name) : attr.nameKey;
+}
+
+/**
+ * The `aria-*` attributes that the element has. An attribute that the framework does not output
+ * (`aria-label={null}`, `MLAttr#isAbsent`) is not one of them: the DOM does not have it, so what a rule
+ * says of an attribute of the element (it is unsupported, deprecated, redundant, or its value is
+ * invalid) is not said of it.
+ *
+ * @param el - The element
+ * @returns The `aria-*` attributes that are output
+ */
+export function getAriaAttrs<T extends RuleConfigValue, O extends PlainData>(
+	// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
+	el: Element<T, O>,
+): Attr<T, O>[] {
+	return el.attributes.filter(attr => !attr.isAbsent && isAriaAttr(attr));
 }
 
 /**
@@ -306,17 +415,46 @@ export function toNormalizedValue(value: string, spec: Attribute) {
 	return normalized;
 }
 
+/**
+ * Whether a child of an element may stand for children that are not known: a block of a preprocessor
+ * that has no `blockBehavior` (an output such as `{value}` or an `include`), a `slot`, or a component
+ * whose output is not known (`MLElement#isUnresolvedComponent`).
+ *
+ * It is for a rule that asks which children an element has (the required children, the elements that
+ * satisfy a query). It looks at the child alone: a descendant of the child is not a child of the
+ * element, so what it renders cannot become the child that the rule asks for, and the attributes of
+ * a child do not decide whether the child exists. `MLElement#hasMutableChildren` looks at every
+ * descendant, which is the question for a rule that asks what the descendants are or have.
+ * `require-datetime` asks about the text, which any descendant may change, and looks at every
+ * descendant for an unresolved component itself.
+ *
+ * @template T - The rule configuration value type
+ * @template O - The rule options type
+ * @param node - A child node of the element
+ * @param components - Whether a component whose output is not known counts. It does not when the
+ * rule evaluates the components by the name that they are written with
+ * @returns True if the node may stand for children that are not known
+ */
+export function mayRenderUnknownChildren<T extends RuleConfigValue, O extends PlainData>(
+	// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
+	node: ChildNode<T, O>,
+	components = true,
+): boolean {
+	if (node.is(node.MARKUPLINT_PREPROCESSOR_BLOCK)) {
+		return !node.blockBehavior;
+	}
+	return node.is(node.ELEMENT_NODE) && (node.localName === 'slot' || (components && node.isUnresolvedComponent()));
+}
+
 export function accnameMayBeMutable(
 	// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
 	el: Element<any, any>,
-	// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
-	document: Document<any, any>,
 ) {
 	if (el.hasMutableAttributes() || el.hasMutableChildren(true)) {
 		return true;
 	}
 
-	const ownedLabel = getOwnedLabel(el, document);
+	const ownedLabel = getOwnedLabel(el);
 	if (ownedLabel && (ownedLabel.hasMutableAttributes() || ownedLabel.hasMutableChildren(true))) {
 		return true;
 	}
@@ -338,45 +476,52 @@ export function accnameMayBeMutable(
 export function accnameMayComeFromUnknownContent(
 	// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
 	el: Element<any, any>,
-	// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
-	document: Document<any, any>,
 ) {
 	if (hasUnknownContent(el)) {
 		return true;
 	}
 
-	const labelledby = el.getAttribute('aria-labelledby');
+	const labelledbyAttr = el.getAttributeNode('aria-labelledby');
+	const labelledby = labelledbyAttr?.value;
 	if (labelledby) {
 		const referenced = labelledby
 			.trim()
 			.split(/\s+/)
-			.map(id => document.querySelector(`#${escapeCSS(id)}`));
+			.map(id => getElementByIdInTree(el, id, labelledbyAttr.isExpressionValue));
 		if (referenced.some(target => target && hasUnknownContent(target))) {
 			return true;
 		}
 	}
 
-	const ownedLabel = getOwnedLabel(el, document);
+	const ownedLabel = getOwnedLabel(el);
 	return !!ownedLabel && hasUnknownContent(ownedLabel);
 }
 
 /**
- * Walks the same children the accname resolver of `@markuplint/ml-core` does:
- * for a pretended element, the children the component renders (`as.childNodes`,
- * placed into `contents`), so that a nested component contributes its own
- * `contents`; otherwise the children as written. A hidden child is skipped
- * because the name computation never reads it (`isHidden` in that resolver).
+ * Walks the children {@link getRenderedChildNodes} returns. A hidden child is
+ * skipped because the name computation never reads it (`isHidden` in that resolver).
+ *
+ * A `template` whose shadow root is only maybe attached returns `true` before
+ * that walk. Its content is omitted from the computed name, so an ancestor
+ * whose computed name is empty is not reported: the rule calls this only after
+ * the computed name is empty. Light DOM text that remains in the computed name
+ * is still a name, and the rule does not reach this function.
+ *
+ * Unknown `contents` of a pretended component count only when no declarative
+ * shadow root is attached to it: the shadow root is rendered in their place.
  */
 function hasUnknownContent(
 	// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
 	el: Element<any, any>,
 ): boolean {
 	const context = el.pretenderContext;
-	if (context?.type === 'pretender' && context.slotContent?.mutable) {
+	if (context?.type === 'pretender' && context.slotContent?.mutable && !el.declarativeShadowRoot) {
 		return true;
 	}
-	const given = context?.type === 'pretender' ? [...context.as.childNodes] : [...el.childNodes];
-	const children = context?.type === 'pretender' && context.slotContent ? context.slotContent.fill(given) : given;
+	if (context?.type !== 'pretender' && el.isHTMLTemplateElement && el.declarativeShadowRootAttachment === 'unknown') {
+		return true;
+	}
+	const children = [...getRenderedChildNodes(el)];
 	return children.some(
 		child =>
 			child.is(child.ELEMENT_NODE) &&
@@ -390,8 +535,6 @@ export const labelable = ['button', 'input:not([type=hidden])', 'meter', 'output
 export function getOwnedLabel<V extends RuleConfigValue, O extends PlainData>(
 	// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
 	el: Element<V, O>,
-	// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
-	document: Document<V, O>,
 ) {
 	if (!labelable.some(cond => el.matches(cond))) {
 		return null;
@@ -400,9 +543,13 @@ export function getOwnedLabel<V extends RuleConfigValue, O extends PlainData>(
 	let ownedLabel = el.closest('label');
 
 	if (!ownedLabel) {
-		const id = el.getAttribute('id');
+		const id = getDOMValue(el.getAttributeNode('id'));
 		if (id) {
-			ownedLabel = document.querySelector(`label[for="${id}"]`);
+			// The label is looked for in the tree of the element, and the two values are compared as the DOM has them
+			ownedLabel =
+				querySelectorAllInTree(el, 'label[for]').find(
+					label => getDOMValue(label.getAttributeNode('for')) === id,
+				) ?? null;
 		}
 	}
 

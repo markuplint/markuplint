@@ -520,6 +520,20 @@ fn element_parent(arena: &DomArena, node_id: NodeId) -> Option<NodeId> {
     }
 }
 
+/// TS `MLElement#isCustomElement` read outside a selector: whether `node_id` is a custom element
+/// (an authored component or an autonomous custom element), following its pretender. A content
+/// model entry that is `#custom` rather than a selector (`permittedAncestors`) reads it.
+pub fn is_custom_element_node(arena: &DomArena, node_id: NodeId) -> bool {
+    let ctx = Ctx {
+        arena,
+        scope: node_id,
+        spec: None,
+        aria: None,
+        original_of: None,
+    };
+    is_custom_element(node_id, &ctx)
+}
+
 /// Whether the `#custom` entry of a content-model category covers the element. Port of
 /// `MLElement.isCustomElement`: anything that is not a native HTML element, an authored component
 /// as well as an autonomous custom element.

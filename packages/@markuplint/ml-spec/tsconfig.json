@@ -8,6 +8,9 @@
 			"path": "../ml-ast"
 		},
 		{
+			"path": "../shared"
+		},
+		{
 			"path": "../test-tools"
 		},
 		{

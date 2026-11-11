@@ -6,7 +6,7 @@ export default createRule({
 	meta: meta,
 	defaultSeverity: 'warning',
 	verify({ document, report, t }) {
-		const dlList = [...document.querySelectorAll('dl')];
+		const dlList = [...document.deepQuerySelectorAll('dl')];
 		for (const dl of dlList) {
 			const dtList = [...dl.querySelectorAll(':scope > dt, :scope > div > dt')];
 

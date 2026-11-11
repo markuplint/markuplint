@@ -1,5 +1,6 @@
 import type { ARIAVersion, MLMLSpec } from '../../types/index.js';
 
+import { getComposedParentElement } from '../dom/tree-boundary.js';
 import { isTransparentForOwnership } from './is-presentational.js';
 
 import { getComputedRole } from './get-computed-role.js';
@@ -7,6 +8,8 @@ import { getComputedRole } from './get-computed-role.js';
 /**
  * In ARIA 1.3, `generic` role elements are additionally transparent for
  * ownership traversal.
+ *
+ * The ancestors are those of the accessibility tree: see {@link getComposedParentElement}.
  */
 export function getNonPresentationalAncestor(
 	// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
@@ -14,7 +17,7 @@ export function getNonPresentationalAncestor(
 	specs: MLMLSpec,
 	version: ARIAVersion,
 ) {
-	let ancestor: Element | null = el.parentElement;
+	let ancestor: Element | null = getComposedParentElement(el);
 
 	/**
 	 * In ARIA 1.1 and 1.2, the role of an element is not affected by the role of its ancestor elements.
@@ -28,7 +31,7 @@ export function getNonPresentationalAncestor(
 		if (!isTransparentForOwnership(ancestorRole.role?.name, version)) {
 			return ancestorRole;
 		}
-		ancestor = ancestor.parentElement;
+		ancestor = getComposedParentElement(ancestor);
 	}
 	return {
 		el: ancestor,

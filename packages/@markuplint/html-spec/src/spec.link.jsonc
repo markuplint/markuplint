@@ -1,6 +1,5 @@
 // https://html.spec.whatwg.org/multipage/semantics.html#the-link-element
 // https://www.w3.org/TR/html-aria/#el-link
-// https://w3c.github.io/html-aria/#el-link
 {
 	"contentModel": {
 		"contents": false
@@ -21,9 +20,10 @@
 		]
 	},
 	"attributes": {
-		// https://html.spec.whatwg.org/multipage/semantics.html#the-link-element
-		// > One or both of the href or imagesrcset attributes must be present.
-		// Spec: "a valid non-empty URL potentially surrounded by spaces"
+		// @see https://html.spec.whatwg.org/multipage/semantics.html#the-link-element
+		// > If the href attribute is present, then its value must be a valid non-empty URL
+		// > potentially surrounded by spaces. One or both of the href or imagesrcset attributes must
+		// > be present.
 		// Note: requiredEither is NOT added to imagesrcset because it already has
 		// condition/required for imagesizes interaction, and requiredEither would
 		// take precedence (index.ts:88), bypassing that logic.
@@ -67,18 +67,20 @@
 			"condition": "[imagesrcset][rel~='preload' i][as='image' i]",
 			"required": "[imagesrcset]"
 		},
-		// https://html.spec.whatwg.org/multipage/semantics.html#attr-link-as
-		// https://html.spec.whatwg.org/multipage/links.html#link-type-preload
-		// https://html.spec.whatwg.org/multipage/links.html#link-type-modulepreload
-		// The valid values differ per link type:
-		// - Preload destinations: fetch, font, image, script, style, track
-		// - Module preload destinations: json, style, and script-like destinations
-		//   (audioworklet, paintworklet, script, serviceworker, sharedworker, worker)
-		// HTML LS link-type-preload §4.6.7.13.1:
-		// > The as attribute must be specified.
-		// HTML LS link-type-modulepreload §4.6.7.13.2:
-		// > Optionally, the as attribute can be specified ...
-		// → required only for rel=preload, not modulepreload.
+		// @see https://html.spec.whatwg.org/multipage/semantics.html#attr-link-as
+		// > The attribute must be specified on link elements that have a rel attribute that contains
+		// > the preload keyword; in such cases it must have a value which is a preload destination.
+		// > It may be specified on link elements that have a rel attribute that contains the
+		// > modulepreload keyword; in such cases it must have a value which is a module preload
+		// > destination.
+		// → required only for rel=preload, not modulepreload. The valid values differ per link type:
+		// @see https://html.spec.whatwg.org/multipage/links.html#link-type-preload
+		// > A preload destination is "fetch", "font", "image", "script", "style", or "track".
+		// @see https://html.spec.whatwg.org/multipage/links.html#link-type-modulepreload
+		// > A module preload destination is "json", "style", "text", or a script-like destination.
+		// @see https://fetch.spec.whatwg.org/#request-destination-script-like
+		// > A request's destination is script-like if it is "audioworklet", "paintworklet", "script",
+		// > "serviceworker", "sharedworker", or "worker".
 		"as": {
 			"type": [
 				{
@@ -90,7 +92,7 @@
 				{
 					"condition": "[rel~='modulepreload' i]",
 					"type": {
-						"enum": ["audioworklet", "json", "paintworklet", "script", "serviceworker", "sharedworker", "style", "worker"]
+						"enum": ["audioworklet", "json", "paintworklet", "script", "serviceworker", "sharedworker", "style", "text", "worker"]
 					}
 				}
 			],
@@ -114,10 +116,9 @@
 			"type": "<color>",
 			"condition": "[rel~='mask-icon' i]"
 		},
-		// https://html.spec.whatwg.org/multipage/semantics.html#attr-link-disabled
-		// Spec: "The content attribute, if present, must only be specified on
-		// link elements that have a rel attribute that contains the stylesheet
-		// keyword."
+		// @see https://html.spec.whatwg.org/multipage/semantics.html#attr-link-disabled
+		// > The attribute must only be specified on link elements that have a rel attribute that
+		// > contains the stylesheet keyword.
 		"disabled": {
 			"type": "Boolean",
 			"condition": "[rel~='stylesheet' i]"
@@ -136,7 +137,7 @@
 			],
 			"required": "[rel~='alternate' i][rel~='stylesheet' i]"
 		},
-		// https://html.spec.whatwg.org/multipage/semantics.html#attr-link-target
+		// https://html.spec.whatwg.org/multipage/obsolete.html#attr-link-target
 		"target": {
 			"deprecated": true
 		}

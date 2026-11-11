@@ -1,5 +1,6 @@
 /* global StylePropertyMap, StylePropertyMapReadOnly */
 
+import type { DeclarativeShadowRootAttachment } from '../helper/tree-scope.js';
 import type { MLDocument } from './document.js';
 import type { MLNamedNodeMap } from './named-node-map.js';
 import type { MLNode } from './node.js';
@@ -28,9 +29,9 @@ import type { AccnameSource, AccnameVisit, ARIAVersion } from '@markuplint/ml-sp
 
 import { getSpecByTagName, resolveNamespace } from '@markuplint/ml-spec';
 import { pretenderNamespaceToURI } from '@markuplint/ml-config';
-import { getChildNamespace } from '@markuplint/parser-utils';
+import { ConfigParserError, getChildNamespace } from '@markuplint/parser-utils';
 import type { SelectorMatches } from '@markuplint/selector';
-import { matchSelector, typeNameMatches } from '@markuplint/selector';
+import { InvalidSelectorError, matchSelector, typeNameMatches } from '@markuplint/selector';
 
 import {
 	getAccname,
@@ -38,6 +39,14 @@ import {
 	getHostLanguageLabelSource,
 	getReferencedTextAlternative,
 } from '../helper/accname.js';
+import { literalToExpression } from '../helper/literal-values.js';
+import { markPretendedAttr } from '../helper/pretended-attrs.js';
+import {
+	getDeclarativeShadowRootAttachment,
+	getDeclarativeShadowRootMode,
+	getShadowRootTemplate,
+	isHTMLTemplateElement,
+} from '../helper/tree-scope.js';
 import {
 	after,
 	before,
@@ -47,12 +56,14 @@ import {
 	replaceWith,
 } from '../manipulations/child-node-methods.js';
 import { MLAttr } from './attr.js';
+import { MLDocumentFragment } from './document-fragment.js';
 import { MLDomTokenList } from './dom-token-list.js';
 import { MLElementCloseTag } from './element-close-tag.js';
 import { toNamedNodeMap } from './named-node-map.js';
 import { toHTMLCollection, toNodeList } from './node-list.js';
 import { MLParentNode } from './parent-node.js';
-import { UnexpectedCallError, asciiLowerCase, vuePropKey } from '@markuplint/shared';
+import { MLShadowRoot } from './shadow-root.js';
+import { UnexpectedCallError, asciiLowerCase, isFatalError, vuePropKey } from '@markuplint/shared';
 
 const HTML_NAMESPACE = 'http://www.w3.org/1999/xhtml';
 
@@ -1084,7 +1095,7 @@ export class MLElement<T extends RuleConfigValue, O extends PlainData = undefine
 	 *
 	 * @unsupported
 	 * @implements DOM API: `Element`
-	 * @see https://www.w3.org/TR/cssom-view-1/#ref-for-dom-element-clientheight-1
+	 * @see https://www.w3.org/TR/cssom-view-1/#dom-element-clientheight
 	 */
 	get clientHeight(): number {
 		throw new UnexpectedCallError('Not supported "clientHeight" property');
@@ -1095,7 +1106,7 @@ export class MLElement<T extends RuleConfigValue, O extends PlainData = undefine
 	 *
 	 * @unsupported
 	 * @implements DOM API: `Element`
-	 * @see https://www.w3.org/TR/cssom-view-1/#ref-for-dom-element-clientleft-1
+	 * @see https://www.w3.org/TR/cssom-view-1/#dom-element-clientleft
 	 */
 	get clientLeft(): number {
 		throw new UnexpectedCallError('Not supported "clientLeft" property');
@@ -1106,7 +1117,7 @@ export class MLElement<T extends RuleConfigValue, O extends PlainData = undefine
 	 *
 	 * @unsupported
 	 * @implements DOM API: `Element`
-	 * @see https://www.w3.org/TR/cssom-view-1/#ref-for-dom-element-clienttop-1
+	 * @see https://www.w3.org/TR/cssom-view-1/#dom-element-clienttop
 	 */
 	get clientTop(): number {
 		throw new UnexpectedCallError('Not supported "clientTop" property');
@@ -1117,7 +1128,7 @@ export class MLElement<T extends RuleConfigValue, O extends PlainData = undefine
 	 *
 	 * @unsupported
 	 * @implements DOM API: `Element`
-	 * @see https://www.w3.org/TR/cssom-view-1/#ref-for-dom-element-clientwidth-1
+	 * @see https://www.w3.org/TR/cssom-view-1/#dom-element-clientwidth
 	 */
 	get clientWidth(): number {
 		throw new UnexpectedCallError('Not supported "clientWidth" property');
@@ -1232,7 +1243,7 @@ export class MLElement<T extends RuleConfigValue, O extends PlainData = undefine
 	 * @deprecated
 	 * @unsupported
 	 * @implements DOM API: `Element`
-	 * @see https://html.spec.whatwg.org/multipage/interaction.html#dom-inert
+	 * @see https://html.spec.whatwg.org/multipage/dom.html#dom-inert
 	 */
 	get inert(): boolean {
 		throw new UnexpectedCallError('Not supported "inert" property');
@@ -1243,7 +1254,7 @@ export class MLElement<T extends RuleConfigValue, O extends PlainData = undefine
 	 *
 	 * @unsupported
 	 * @implements DOM API: `Element`
-	 * @see https://w3c.github.io/DOM-Parsing/#dom-innerhtml-innerhtml
+	 * @see https://w3c.github.io/DOM-Parsing/#dom-innerhtml
 	 */
 	get innerHTML(): string {
 		throw new UnexpectedCallError('Not supported "innerHTML" property');
@@ -3295,7 +3306,7 @@ export class MLElement<T extends RuleConfigValue, O extends PlainData = undefine
 	 *
 	 * @unsupported
 	 * @implements DOM API: `Element`
-	 * @see https://www.w3.org/TR/cssom-view-1/#ref-for-dom-element-scrollheight-1
+	 * @see https://www.w3.org/TR/cssom-view-1/#dom-element-scrollheight
 	 */
 	get scrollHeight(): number {
 		throw new UnexpectedCallError('Not supported "scrollHeight" property');
@@ -3306,7 +3317,7 @@ export class MLElement<T extends RuleConfigValue, O extends PlainData = undefine
 	 *
 	 * @unsupported
 	 * @implements DOM API: `Element`
-	 * @see https://www.w3.org/TR/cssom-view-1/#ref-for-dom-element-scrollleft-1
+	 * @see https://www.w3.org/TR/cssom-view-1/#dom-element-scrollleft
 	 */
 	get scrollLeft(): number {
 		throw new UnexpectedCallError('Not supported "scrollLeft" property');
@@ -3317,7 +3328,7 @@ export class MLElement<T extends RuleConfigValue, O extends PlainData = undefine
 	 *
 	 * @unsupported
 	 * @implements DOM API: `Element`
-	 * @see https://www.w3.org/TR/cssom-view-1/#ref-for-dom-element-scrolltop-1
+	 * @see https://www.w3.org/TR/cssom-view-1/#dom-element-scrolltop
 	 */
 	get scrollTop(): number {
 		throw new UnexpectedCallError('Not supported "scrollTop" property');
@@ -3328,22 +3339,121 @@ export class MLElement<T extends RuleConfigValue, O extends PlainData = undefine
 	 *
 	 * @unsupported
 	 * @implements DOM API: `Element`
-	 * @see https://www.w3.org/TR/cssom-view-1/#ref-for-dom-element-scrollwidth-1
+	 * @see https://www.w3.org/TR/cssom-view-1/#dom-element-scrollwidth
 	 */
 	get scrollWidth(): number {
 		throw new UnexpectedCallError('Not supported "scrollWidth" property');
 	}
 
 	/**
-	 * **IT THROWS AN ERROR WHEN CALLING THIS.**
+	 * The shadow root that a `template` element with `shadowrootmode="open"` declares on this element:
+	 * `null` for a `closed` one, which the DOM does not expose, and when there is none. See
+	 * {@link MLElement.declarativeShadowRoot} for one of either mode.
 	 *
-	 * @unsupported
 	 * @implements DOM API: `Element`
 	 * @see https://dom.spec.whatwg.org/#ref-for-dom-element-shadowroot%E2%91%A0
 	 */
-	get shadowRoot(): ShadowRoot | null {
-		throw new UnexpectedCallError('Not supported "shadowRoot" property');
+	get shadowRoot(): MLShadowRoot<T, O> | null {
+		const shadowRoot = this.declarativeShadowRoot;
+		return shadowRoot?.mode === 'open' ? shadowRoot : null;
 	}
+
+	/**
+	 * Whether this element is an HTML `template` element, which holds its children in {@link MLElement.content},
+	 * a tree of its own. A `template` of a framework that puts the children in the element itself
+	 * (`templateContent: 'in-place'` in the spec: React, Vue), a fragment, and a `template` with a
+	 * directive of a template engine are not.
+	 *
+	 * The getters about trees (this one, {@link MLElement.declarativeShadowRootAttachment},
+	 * {@link MLElement.content}, `getRootNode()` and the id lookups) keep what they first return: they
+	 * depend on the pretenders, the spec and the whole syntax tree, which are all in place once the
+	 * document is built, and the document does not change after that.
+	 *
+	 * @implements `@markuplint/ml-core` API: `MLElement`
+	 * @see https://html.spec.whatwg.org/multipage/scripting.html#the-template-element
+	 */
+	get isHTMLTemplateElement(): boolean {
+		this.#isHTMLTemplateElement ??= isHTMLTemplateElement(this);
+		return this.#isHTMLTemplateElement;
+	}
+	#isHTMLTemplateElement: boolean | undefined;
+
+	/**
+	 * Whether this element is in no tree: an HTML `template` element that a declarative shadow root is
+	 * attached to, or that may have one (see {@link DeclarativeShadowRootAttachment}). The parser inserts
+	 * such an element into no tree, so it has no parent in a tree, is its own root, and is found by no
+	 * query of a tree. Unknown is treated as in no tree, as markuplint does not count what it cannot tell.
+	 *
+	 * @implements `@markuplint/ml-core` API: `MLElement`
+	 */
+	get isInNoTree(): boolean {
+		return this.isHTMLTemplateElement && this.declarativeShadowRootAttachment !== 'not-attached';
+	}
+
+	/**
+	 * The mode that the `shadowrootmode` attribute of an HTML `template` element asks for. `null` when the
+	 * element is not one, the attribute is missing or invalid, or its value is dynamic.
+	 *
+	 * @implements `@markuplint/ml-core` API: `MLElement`
+	 */
+	get declarativeShadowRootMode(): 'open' | 'closed' | null {
+		return getDeclarativeShadowRootMode(this);
+	}
+
+	/**
+	 * Whether the HTML parser attaches a declarative shadow root to the parent of this `template`
+	 * element (see {@link DeclarativeShadowRootAttachment}).
+	 *
+	 * @implements `@markuplint/ml-core` API: `MLElement`
+	 */
+	get declarativeShadowRootAttachment(): DeclarativeShadowRootAttachment {
+		this.#declarativeShadowRootAttachment ??= getDeclarativeShadowRootAttachment(this);
+		return this.#declarativeShadowRootAttachment;
+	}
+	#declarativeShadowRootAttachment: DeclarativeShadowRootAttachment | undefined;
+
+	/**
+	 * The content of an HTML `template` element: a document fragment that is a tree of its own, holding
+	 * the same nodes as the children of the element. When a declarative shadow root is attached to the
+	 * parent of the `template`, it is the shadow root. `null` for an element that is not an HTML
+	 * `template` element.
+	 *
+	 * @implements DOM API: `HTMLTemplateElement`
+	 * @see https://html.spec.whatwg.org/multipage/scripting.html#dom-template-content
+	 */
+	get content(): MLDocumentFragment<T, O> | null {
+		if (this.#content !== undefined) {
+			return this.#content;
+		}
+		if (!this.isHTMLTemplateElement) {
+			this.#content = null;
+			return null;
+		}
+		const astNode = { ...this._astToken, uuid: `${this.uuid}:content` };
+		this.#content =
+			this.declarativeShadowRootAttachment === 'attached'
+				? new MLShadowRoot<T, O>(astNode, this.ownerMLDocument, this)
+				: new MLDocumentFragment<T, O>(astNode, this.ownerMLDocument);
+		return this.#content;
+	}
+	#content: MLDocumentFragment<T, O> | null | undefined;
+
+	/**
+	 * The shadow root that a `template` element declares on this element, whatever its mode.
+	 *
+	 * @implements `@markuplint/ml-core` API: `MLElement`
+	 * @returns The shadow root, or `null` when none is attached to this element
+	 */
+	get declarativeShadowRoot(): MLShadowRoot<T, O> | null {
+		if (this.#declarativeShadowRoot !== undefined) {
+			return this.#declarativeShadowRoot;
+		}
+		const template = getShadowRootTemplate(this);
+		const content = template?.content;
+		this.#declarativeShadowRoot = content instanceof MLShadowRoot ? content : null;
+		return this.#declarativeShadowRoot;
+	}
+	#declarativeShadowRoot: MLShadowRoot<T, O> | null | undefined;
 
 	/**
 	 * @implements DOM API: `Element`
@@ -3570,7 +3680,7 @@ export class MLElement<T extends RuleConfigValue, O extends PlainData = undefine
 			if (el.matches(selectors)) {
 				return el;
 			}
-			el = el.parentElement;
+			el = el.treeParentElement;
 		} while (el !== null && el.is(el.ELEMENT_NODE));
 
 		return null;
@@ -3725,7 +3835,8 @@ export class MLElement<T extends RuleConfigValue, O extends PlainData = undefine
 		let first: MLAttr<T, O> | null = null;
 		let lastSetByCode: MLAttr<T, O> | null = null;
 		for (const attr of this.attributes) {
-			if (!attr.isNamedBy(attrName)) {
+			// An attribute that the framework does not output (`disabled={false}`) is not an attribute of the element
+			if (attr.isAbsent || !attr.isNamedBy(attrName)) {
 				continue;
 			}
 			first ??= attr;
@@ -3757,7 +3868,7 @@ export class MLElement<T extends RuleConfigValue, O extends PlainData = undefine
 	 * @see https://dom.spec.whatwg.org/#ref-for-dom-element-getattributenames%E2%91%A0
 	 */
 	getAttributeNames(): string[] {
-		return [...this.attributes].map(attr => attr.name);
+		return [...this.attributes].filter(attr => !attr.isAbsent).map(attr => attr.name);
 	}
 
 	/**
@@ -3793,7 +3904,7 @@ export class MLElement<T extends RuleConfigValue, O extends PlainData = undefine
 	 */
 	getAttributePretended(attrName: string) {
 		for (const attr of this.#attributes) {
-			if (attr.isNamedBy(attrName)) {
+			if (!attr.isAbsent && attr.isNamedBy(attrName)) {
 				return attr.value;
 			}
 		}
@@ -3802,7 +3913,8 @@ export class MLElement<T extends RuleConfigValue, O extends PlainData = undefine
 
 	/**
 	 * Returns all attribute tokens matching the given name, including duplicates.
-	 * Unlike `getAttribute`, this returns the full `MLAttr` token objects.
+	 * Unlike `getAttribute`, this returns the full `MLAttr` token objects. An attribute that the
+	 * framework does not output (`MLAttr#isAbsent`) is not one of them, as it is not for `getAttribute`.
 	 *
 	 * @implements `@markuplint/ml-core` API: `MLElement`
 	 * @param attrName - The attribute name to look up (see {@link MLAttr.isNamedBy} for how its case is compared)
@@ -3811,7 +3923,7 @@ export class MLElement<T extends RuleConfigValue, O extends PlainData = undefine
 	getAttributeToken(attrName: string) {
 		const attrs: MLAttr<T, O>[] = [];
 		for (const attr of this.getAttributeTokens()) {
-			if (attr.isNamedBy(attrName)) {
+			if (!attr.isAbsent && attr.isNamedBy(attrName)) {
 				attrs.push(attr);
 			}
 		}
@@ -3821,6 +3933,9 @@ export class MLElement<T extends RuleConfigValue, O extends PlainData = undefine
 	/**
 	 * Returns all attribute tokens for this element, respecting the pretender context.
 	 * If the element is pretending to be another, returns the pretender's attributes.
+	 * It lists every attribute that is written, those that the framework does not output
+	 * (`MLAttr#isAbsent`) too, as a name that is misspelled is so whatever its value is; what is asked
+	 * of the DOM by name (`getAttributeToken`, `getAttribute`) does not find them.
 	 *
 	 * @implements `@markuplint/ml-core` API: `MLElement`
 	 * @returns A frozen array of all attribute tokens
@@ -3836,7 +3951,7 @@ export class MLElement<T extends RuleConfigValue, O extends PlainData = undefine
 	 *
 	 * @unsupported
 	 * @implements DOM API: `Element`
-	 * @see https://www.w3.org/TR/cssom-view-1/#ref-for-dom-element-getboundingclientrect-1
+	 * @see https://www.w3.org/TR/cssom-view-1/#dom-element-getboundingclientrect
 	 */
 	getBoundingClientRect(): DOMRect {
 		throw new UnexpectedCallError('Not supported "getBoundingClientRect" method');
@@ -3876,7 +3991,7 @@ export class MLElement<T extends RuleConfigValue, O extends PlainData = undefine
 	 *
 	 * @unsupported
 	 * @implements DOM API: `Element`
-	 * @see https://www.w3.org/TR/cssom-view-1/#ref-for-dom-element-getclientrects-1
+	 * @see https://www.w3.org/TR/cssom-view-1/#dom-element-getclientrects
 	 */
 	getClientRects(): DOMRectList {
 		throw new UnexpectedCallError('Not supported "getClientRects" method');
@@ -3970,7 +4085,7 @@ export class MLElement<T extends RuleConfigValue, O extends PlainData = undefine
 	 * @see https://dom.spec.whatwg.org/#dom-element-hasattributes
 	 */
 	hasAttributes() {
-		return this.attributes.length > 0;
+		return this.attributes.some(attr => !attr.isAbsent);
 	}
 
 	/**
@@ -3985,7 +4100,8 @@ export class MLElement<T extends RuleConfigValue, O extends PlainData = undefine
 			if (!attr.nameNode) {
 				return true;
 			}
-			if (attr.isDynamicValue) {
+			// An attribute that is known not to be output does not change
+			if (attr.isDynamicValue && !attr.isAbsent) {
 				return true;
 			}
 		}
@@ -3993,9 +4109,30 @@ export class MLElement<T extends RuleConfigValue, O extends PlainData = undefine
 	}
 
 	/**
+	 * Checks whether this element is a component whose rendered output is not known: the
+	 * parser sees it as a component (`elementType` is `'authored'`) and no pretender stands
+	 * for an element of HTML, which includes a pretender whose own target is a component
+	 * (the chain of `pretenders.auto` stopped at `Tabs.Root`).
+	 *
+	 * A web component is not one: it is the element that it is written as. The criterion of
+	 * `isTreatedAsCustom` in `@markuplint/rules` (`permitted-contents`) includes it, because
+	 * a content model accepts a custom element wherever it accepts flow content; change them
+	 * together.
+	 *
+	 * @implements `@markuplint/ml-core` API: `MLElement`
+	 * @returns True if what this element renders is not known
+	 */
+	isUnresolvedComponent(): boolean {
+		if (this.pretenderContext?.type === 'pretender') {
+			return this.pretenderContext.as.elementType === 'authored';
+		}
+		return this.elementType === 'authored';
+	}
+
+	/**
 	 * Checks whether this element has children that are potentially mutable,
 	 * such as preprocessor-specific blocks, slot elements, or (optionally) elements
-	 * with dynamic attributes.
+	 * with dynamic attributes and components that no pretender resolved.
 	 *
 	 * Blocks that carry a `blockBehavior` are not treated as mutable because
 	 * their branches are deterministically enumerable via
@@ -4003,8 +4140,19 @@ export class MLElement<T extends RuleConfigValue, O extends PlainData = undefine
 	 * like `{value}`) can produce arbitrary content, so the children are
 	 * considered mutable.
 	 *
+	 * A component that no pretender resolved renders something that is not known, however its
+	 * attributes are written (`size={size}`, `size={16}` and `size="16"` tell the same): a rule that
+	 * asks about what the descendants are or have (the accessible name, the owned elements) cannot decide
+	 * on it, so it is mutable when `attr` is true ({@link MLElement.isUnresolvedComponent}). A component
+	 * that a pretender resolved is the element that it renders, which the rules read themselves.
+	 *
+	 * A rule that asks which children an element has (the required children, the elements that
+	 * satisfy a query) does not pass `attr`: an attribute that cannot be known does not decide whether
+	 * a child exists. It looks for the unresolved components among the children itself.
+	 *
 	 * @implements `@markuplint/ml-core` API: `MLElement`
-	 * @param attr - When true, also considers children with mutable attributes as mutable
+	 * @param attr - When true, also considers children with mutable attributes, and components that no
+	 * pretender resolved, as mutable
 	 * @returns True if this element has potentially mutable children
 	 */
 	hasMutableChildren(attr = false) {
@@ -4017,6 +4165,9 @@ export class MLElement<T extends RuleConfigValue, O extends PlainData = undefine
 			}
 			if (child.is(child.ELEMENT_NODE)) {
 				if (attr && child.hasMutableAttributes()) {
+					return true;
+				}
+				if (attr && child.isUnresolvedComponent()) {
 					return true;
 				}
 				if (child.hasMutableChildren(attr)) {
@@ -4072,7 +4223,7 @@ export class MLElement<T extends RuleConfigValue, O extends PlainData = undefine
 	 *
 	 * @unsupported
 	 * @implements DOM API: `Element`
-	 * @see https://w3c.github.io/DOM-Parsing/#widl-Element-insertAdjacentHTML-void-DOMString-position-DOMString-text
+	 * @see https://w3c.github.io/DOM-Parsing/#dom-element-insertadjacenthtml
 	 */
 	insertAdjacentHTML(position: InsertPosition, text: string): void {
 		throw new UnexpectedCallError('Does not implement "insertAdjacentHTML" method yet');
@@ -4323,7 +4474,18 @@ export class MLElement<T extends RuleConfigValue, O extends PlainData = undefine
 		if (this.elementType === 'html' && this.ownerMLDocument.isNativeTag(this.localName, this.namespaceURI)) {
 			return;
 		}
-		const pretenderConfig = pretenders?.find(option => this.matches(option.selector));
+		const pretenderConfig = pretenders?.find(option => {
+			try {
+				return this.matches(option.selector);
+			} catch (error: unknown) {
+				// An entry that a scan or a file made names the file that declares its component, which is
+				// where the user fixes it. `MLDocument` names the configuration for any other.
+				if (!isFatalError(error) && error instanceof InvalidSelectorError && option.filePath) {
+					throw new ConfigParserError(error.message, { filePath: option.filePath, raw: option.selector });
+				}
+				throw error;
+			}
+		});
 		const asAttrValue = this.getAttribute('as');
 		const pretenderElement: Pretender['as'] | null =
 			pretenderConfig?.as ??
@@ -4401,9 +4563,19 @@ export class MLElement<T extends RuleConfigValue, O extends PlainData = undefine
 	}
 
 	/**
-	 * Converts pretender attributes to AST attributes for a virtual element.
+	 * Converts pretender attributes to AST attributes for a virtual element. They are marked as made by
+	 * a pretender (`MLAttr#isPretended`): the position of their tokens is the element's, not the source's.
 	 *
-	 * `{ fromAttr }` reads this (the origin) element's attribute. When that attribute is an
+	 * `{ expression }` is the code that the attribute is written as in the component. It becomes an
+	 * attribute written as code (`{` and `}` are its quotes), which `MLAttr` reads as JavaScript
+	 * whatever the language of the document is: a literal in it is rendered as the framework renders
+	 * it, and any other code is dynamic.
+	 *
+	 * `{ fromAttr }` reads this (the origin) element's attribute. When that attribute is a literal
+	 * (`kind={false}`, `kind`), the literal is rendered under the name of the attribute that the
+	 * virtual element gets, which is what the component does with the prop it forwards
+	 * (`<Button disabled={false}>` forwarded to `<button disabled={props.disabled}>` has no `disabled`,
+	 * and forwarded to `aria-label={props.disabled}` it has `aria-label="false"`). When it is any other
 	 * expression (`kind={kind}`), the result is dynamic as well: the value the component
 	 * receives is unknown, and the source text of the expression is not a value to validate.
 	 * When the attribute is not written and `omitIfMissing` is set, the virtual element gets
@@ -4417,8 +4589,12 @@ export class MLElement<T extends RuleConfigValue, O extends PlainData = undefine
 		return attrs.flatMap(({ name, value }, i): MLASTAttr[] => {
 			let isDynamic = value != null && typeof value === 'object' && 'dynamic' in value;
 			let _value = '';
+			// The code that the attribute is written as, when it is known
+			let expression: string | undefined;
 			if (typeof value === 'string') {
 				_value = value;
+			} else if (value != null && 'expression' in value) {
+				expression = value.expression;
 			} else if (value != null && 'fromAttr' in value) {
 				// The attribute of the usage site that the prop is. Vue gives a prop the attribute by the camelCase
 				// of its name (`my-label` and `myLabel` are the prop `myLabel`, and `mylabel` is another),
@@ -4432,14 +4608,19 @@ export class MLElement<T extends RuleConfigValue, O extends PlainData = undefine
 				if (!origin && value.omitIfMissing) {
 					return [];
 				}
-				if (origin?.isDynamicValue) {
+				if (origin?.literal) {
+					// The key of a literal is the code that it is written as (`true`, `"x"`, `0`), except for a number that
+					// is not finite (`Infinity` is a name, which is not a literal)
+					expression = literalToExpression(origin.literal);
+				} else if (origin?.isDynamicValue) {
 					isDynamic = true;
 				} else {
 					_value = origin?.value ?? '';
 				}
 			}
+			const isExpression = expression !== undefined;
 			return [
-				{
+				markPretendedAttr({
 					...this._astToken,
 					uuid: `${uuidBase}_attr_${i}`,
 					type: 'attr',
@@ -4466,24 +4647,24 @@ export class MLElement<T extends RuleConfigValue, O extends PlainData = undefine
 					},
 					startQuote: {
 						...this._astToken,
-						raw: '',
+						raw: isExpression ? '{' : '',
 					},
 					value: {
 						...this._astToken,
-						raw: _value,
+						raw: expression ?? _value,
 					},
 					endQuote: {
 						...this._astToken,
-						raw: '',
+						raw: isExpression ? '}' : '',
 					},
 					isDuplicatable: true,
-					...(isDynamic ? { isDynamicValue: true } : {}),
+					...(isDynamic || isExpression ? { isDynamicValue: true } : {}),
 					parentNode: null,
 					nextNode: null,
 					prevNode: null,
 					isFragment: false,
 					isGhost: false,
-				} as MLASTAttr,
+				} as MLASTAttr),
 			];
 		});
 	}
@@ -4696,7 +4877,7 @@ export class MLElement<T extends RuleConfigValue, O extends PlainData = undefine
 	 *
 	 * @unsupported
 	 * @implements DOM API: `Element`
-	 * @see https://w3c.github.io/pointerlock/#dom-element-requestpointerlock
+	 * @see https://www.w3.org/TR/pointerlock-2/#dom-element-requestpointerlock
 	 */
 	requestPointerLock(options?: any): Promise<void> {
 		throw new UnexpectedCallError('Not supported "requestPointerLock" method');

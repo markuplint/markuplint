@@ -2,7 +2,7 @@ import type { ARIA } from './aria.js';
 import type { AttributeJSON, AttributeType, ConditionalAttributeType, GlobalAttributes } from './attributes.js';
 import type { ContentModel, Category } from './permitted-structures.js';
 import type { ariaVersions } from '../utils/aria-version.js';
-import type { NamespaceURI } from '@markuplint/ml-ast';
+import type { ExpressionLanguage, LiteralValueDeclaration, NamespaceURI } from '@markuplint/ml-ast';
 import type { ReadonlyDeep } from 'type-fest';
 
 /**
@@ -14,6 +14,20 @@ export interface MLMLSpec {
 	readonly specs: readonly ElementSpec[];
 	readonly directivePatterns?: readonly DirectivePattern[];
 	/**
+	 * Selectors of the elements that the framework moves to the `<head>` wherever they are written, so
+	 * the content model of the element that contains them does not apply to them. An element in the
+	 * `<head>` itself is not moved, and is judged as usual.
+	 *
+	 * React does so for `<title>`, `<meta>`, `<link>` and `<style>` under conditions the selectors
+	 * express (`@markuplint/react-spec`):
+	 *
+	 * > React will always place the DOM element corresponding to the `<title>` component within the
+	 * > document's `<head>`, regardless of where in the React tree it is rendered.
+	 *
+	 * @see https://react.dev/reference/react-dom/components/title#special-rendering-behavior
+	 */
+	readonly movedToHead?: readonly string[];
+	/**
 	 * Controls how `@markuplint/ml-core`'s `MLAttr` resolves attribute names.
 	 *
 	 * - `'idl'`: enables IDL-to-content attribute name resolution (e.g.
@@ -24,6 +38,30 @@ export interface MLMLSpec {
 	 *   names and IDL property names without suggesting either. Used by Svelte.
 	 */
 	readonly acceptedAttrNames?: 'idl' | 'both';
+	/**
+	 * Where the browser holds the children of a `template` element that the author wrote without
+	 * a directive of the framework.
+	 *
+	 * - `'separate-tree'` (the default, as the HTML parser does it): in the `content` of the element, a
+	 *   `DocumentFragment` that is a tree of its own. An id in it is unique in that tree only, and an
+	 *   id reference in it is resolved in that tree only. A declarative shadow root (`shadowrootmode`)
+	 *   may be attached to the parent element.
+	 * - `'in-place'`: in the element itself, in the tree of the document. The framework creates the
+	 *   element and appends the children to it through the DOM API, which never fills `content` and
+	 *   never attaches a declarative shadow root: the `template` element is an ordinary element.
+	 *
+	 * Known limitations of `'in-place'`: React does not render the same tree when it hydrates server
+	 * output (the server output has the children in `content`), and Vue puts them in `content` when
+	 * it renders static markup as a string and replaces the element with its content when it hydrates.
+	 */
+	readonly templateContent?: 'separate-tree' | 'in-place';
+	/**
+	 * How the framework renders a literal in an attribute value that is written as code, where it
+	 * differs from the default of `@markuplint/ml-core`: by kind of attribute, and by attribute name
+	 * in `attrs`, in the form that a parser declares as well (see {@link LiteralValueDeclaration}).
+	 * What differs on a custom element is in `customElements`.
+	 */
+	readonly literalValues?: LiteralValueDeclaration;
 }
 
 /**
@@ -46,10 +84,24 @@ export type ExtendedSpec = {
 	readonly specs?: readonly ExtendedElementSpec[];
 	readonly directivePatterns?: readonly DirectivePattern[];
 	/**
+	 * See {@link MLMLSpec.movedToHead}. Concatenated across merged specs, in the order of the specs.
+	 */
+	readonly movedToHead?: readonly string[];
+	/**
 	 * See {@link MLMLSpec.acceptedAttrNames}. Last-write-wins across merged
 	 * specs; omitting the property does not reset a previously set value.
 	 */
 	readonly acceptedAttrNames?: 'idl' | 'both';
+	/**
+	 * See {@link MLMLSpec.templateContent}. Last-write-wins across merged specs; omitting the
+	 * property does not reset a previously set value.
+	 */
+	readonly templateContent?: 'separate-tree' | 'in-place';
+	/**
+	 * See {@link MLMLSpec.literalValues}. Merged by kind of attribute, by attribute name and by key,
+	 * and the later spec wins on a key that two specs have.
+	 */
+	readonly literalValues?: LiteralValueDeclaration;
 };
 
 /**
@@ -94,9 +146,19 @@ export type DirectivePattern = {
 	readonly isDirective?: true;
 
 	/**
-	 * Whether this attribute has a dynamic value.
+	 * Whether the value of this attribute is written as code (a binding). It is the source of
+	 * `MLAttr#isExpressionValue`; whether the value is known is up to `MLAttr#isDynamicValue`, which
+	 * reads the code.
 	 */
 	readonly isDynamicValue?: true;
+
+	/**
+	 * The language of the code that the value is written in. A value that is nothing but a literal is
+	 * rendered as the framework renders it (see {@link MLMLSpec.literalValues}), which needs the
+	 * attribute to be the one the pattern names (`potentialName`) and the value to be what the attribute
+	 * becomes, not a condition or a binding target. A pattern without it is not read as a literal.
+	 */
+	readonly expressionLanguage?: ExpressionLanguage;
 
 	/**
 	 * The semantic value type for matched attributes.

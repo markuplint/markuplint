@@ -1,4 +1,5 @@
 import type { DirectivePattern } from '../types/index.js';
+import type { ExpressionLanguage } from '@markuplint/ml-ast';
 
 type CompiledDirectivePattern = {
 	readonly regex: RegExp;
@@ -26,7 +27,14 @@ export function compileDirectivePatterns(patterns: readonly DirectivePattern[]):
 export type DirectiveResolution = {
 	readonly potentialName?: string;
 	readonly isDirective?: true;
+	/**
+	 * Whether the value is written as code (a binding). Whether its value is known is up to `MLAttr`.
+	 */
 	readonly isDynamicValue?: true;
+	/**
+	 * Present only when the matched pattern declares it.
+	 */
+	readonly expressionLanguage?: ExpressionLanguage;
 	readonly valueType?: 'string' | 'number' | 'boolean' | 'code';
 	readonly isDuplicatable?: boolean;
 };
@@ -65,6 +73,7 @@ export function resolveDirective(
 			isDynamicValue: pattern.isDynamicValue,
 			valueType: pattern.valueType,
 			isDuplicatable,
+			...(pattern.expressionLanguage ? { expressionLanguage: pattern.expressionLanguage } : {}),
 		};
 	}
 	return null;

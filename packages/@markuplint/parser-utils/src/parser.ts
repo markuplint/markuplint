@@ -12,6 +12,7 @@ import type {
 import type {
 	AttrNameRoute,
 	EndTagType,
+	ExpressionLanguage,
 	MLASTDocument,
 	MLASTParentNode,
 	MLParser,
@@ -35,6 +36,7 @@ import type {
 	MLASTBlockBehavior,
 	MLASTParseError,
 	NamespaceURI,
+	LiteralValueDeclaration,
 } from '@markuplint/ml-ast';
 
 import { randomUUID } from 'node:crypto';
@@ -50,10 +52,23 @@ import { getEndCol, getEndLine, getOffsetsFromCode, getPosition } from './get-lo
 import { ignoreBlock, restoreNode } from './ignore-block.js';
 import { ignoreFrontMatter } from './ignore-front-matter.js';
 import { ParserError } from './parser-error.js';
+import { shiftPositions } from './shift-leading-bom.js';
 import { sortNodes } from './sort-nodes.js';
 import { getNamespace } from './get-namespace.js';
 
 const timer = new PerformanceTimer();
+
+/** U+FEFF as the first character of a source: a byte order mark, not content. */
+const BOM = '\uFEFF';
+
+/**
+ * Whether the code of a parse starts the source: no offset places it inside a
+ * larger one (an embedded block). `offsetLine` and `offsetColumn` are 1-based, so
+ * 1 is no offset.
+ */
+function startsAtDocumentHead(options?: ParseOptions): boolean {
+	return (options?.offsetOffset ?? 0) <= 0 && (options?.offsetLine ?? 1) <= 1 && (options?.offsetColumn ?? 1) <= 1;
+}
 
 /**
  * Abstract base class for all markuplint parsers. Provides the core parsing pipeline
@@ -73,17 +88,32 @@ const timer = new PerformanceTimer();
  * - **Direct `Parser` subclass** only when the document structure itself
  *   diverges from HTML (JSX, Vue SFC, Svelte, Pug, Astro).
  *
+ * A framework whose attribute values are code (`{…}`, `:x="…"`) says so for `@markuplint/ml-core`, which
+ * reads a value that is nothing but a literal and renders it as the framework does (`aria-busy={true}`
+ * is `aria-busy="true"`; `disabled={false}` is no attribute). The parser only records what is written
+ * (`isDynamicValue`) and declares the language of that code (`attrExpressionLanguage`); a template language
+ * that an HTML parser reads says it in a `DirectivePattern` of its spec (`expressionLanguage`). How the
+ * framework renders is `literalValues` of its spec, or of its parser when it has no spec package.
+ *
  * Direct subclasses should delegate tokenization to the framework's
  * established parser library rather than hand-rolling one, and those
  * libraries are chosen to span multiple major framework versions (e.g.
  * `vue-eslint-parser` covers both Vue 2 and Vue 3 template syntax) so the
  * parsers keep working across version ranges without frequent updates.
  *
+ * A direct subclass also decides what happens to a leading BOM (`leadingBom` of
+ * {@link ParserOptions}): `'mask'` when its tokenizer takes the BOM for content,
+ * `'strip'` when the library strips it itself or reads a leading space as
+ * meaning something, unset when it already ignores a BOM without moving any
+ * position. Check it with a BOM-prefixed source, positions included.
+ *
  * @template Node - The language-specific AST node type produced by the tokenizer
  * @template State - An optional parser state type that persists across tokenization
  */
 export abstract class Parser<Node extends {} = {}, State extends unknown = null> implements MLParser {
 	readonly #booleanish: boolean = false;
+	readonly #attrExpressionLanguage?: ExpressionLanguage;
+	readonly #literalValues?: LiteralValueDeclaration;
 	readonly #defaultState: State;
 	readonly #endTagType: EndTagType = 'omittable';
 	readonly #ignoreTags: readonly IgnoreTag[] = [];
@@ -95,6 +125,7 @@ export abstract class Parser<Node extends {} = {}, State extends unknown = null>
 	readonly #selfCloseType: SelfCloseType = 'html';
 	readonly #spaceChars: readonly string[] = defaultSpaces;
 	readonly #rawTextElements: readonly string[] = ['style', 'script'];
+	readonly #leadingBom?: ParserOptions['leadingBom'];
 
 	/**
 	 * Buffer for parse errors collected from **embedded** parse() calls
@@ -131,6 +162,8 @@ export abstract class Parser<Node extends {} = {}, State extends unknown = null>
 	 */
 	constructor(options?: ParserOptions, defaultState?: State) {
 		this.#booleanish = options?.booleanish ?? this.#booleanish;
+		this.#attrExpressionLanguage = options?.attrExpressionLanguage ?? this.#attrExpressionLanguage;
+		this.#literalValues = options?.literalValues ?? this.#literalValues;
 		this.#endTagType = options?.endTagType ?? this.#endTagType;
 		this.#ignoreTags = options?.ignoreTags ?? this.#ignoreTags;
 		this.#maskChar = options?.maskChar ?? this.#maskChar;
@@ -141,6 +174,7 @@ export abstract class Parser<Node extends {} = {}, State extends unknown = null>
 		this.#selfCloseType = options?.selfCloseType ?? this.#selfCloseType;
 		this.#spaceChars = options?.spaceChars ?? this.#spaceChars;
 		this.#rawTextElements = options?.rawTextElements ?? this.#rawTextElements;
+		this.#leadingBom = options?.leadingBom ?? this.#leadingBom;
 		this.#defaultState = defaultState ?? (null as State);
 		this.state = structuredClone(this.#defaultState);
 	}
@@ -165,6 +199,22 @@ export abstract class Parser<Node extends {} = {}, State extends unknown = null>
 	 */
 	get booleanish(): boolean {
 		return this.#booleanish;
+	}
+
+	/**
+	 * The language of the code that an attribute value is written in when it is written as code.
+	 * See {@link MLParser.attrExpressionLanguage}.
+	 */
+	get attrExpressionLanguage(): ExpressionLanguage | undefined {
+		return this.#attrExpressionLanguage;
+	}
+
+	/**
+	 * How the framework renders a literal in an attribute value, where it differs from the default
+	 * of `@markuplint/ml-core`. See {@link MLParser.literalValues}.
+	 */
+	get literalValues(): LiteralValueDeclaration | undefined {
+		return this.#literalValues;
 	}
 
 	/**
@@ -248,6 +298,10 @@ export abstract class Parser<Node extends {} = {}, State extends unknown = null>
 	 * two hooks must stay symmetric or position reporting for embedded code
 	 * fragments (e.g., a `<template>` block inside a `.vue` file) breaks.
 	 *
+	 * A leading BOM is handled after this hook (`leadingBom` of {@link ParserOptions}),
+	 * and only if the returned code still starts with it: an override that moves or
+	 * drops it turns that handling off.
+	 *
 	 * @param rawCode - The raw source code about to be parsed
 	 * @param options - Parse options that may specify offset positioning
 	 * @returns The preprocessed source code to be used for tokenization
@@ -262,11 +316,26 @@ export abstract class Parser<Node extends {} = {}, State extends unknown = null>
 	 * traversal, flattening, ignore-block restoration, and post-processing.
 	 * Returns the complete markuplint AST document.
 	 *
+	 * A leading U+FEFF (BOM) is not part of the document: the HTML Standard skips it
+	 * before tokenization, so a parser that handed it on would see text before the
+	 * doctype (parse5 then opens `<html><head><body>` implicitly) and a Svelte
+	 * template would be counted from the character after it. A parser that sets
+	 * `leadingBom` (see {@link ParserOptions}) has it replaced with one space
+	 * (`'mask'`), or taken away while the positions are moved one character later
+	 * afterwards (`'strip'`), so that every offset still points into the source that
+	 * `fix` edits; the returned `raw` keeps it. Code that starts at an offset (an
+	 * embedded block) does not start a document, and its U+FEFF is a character like
+	 * any other. The BOM is handled after {@link Parser.beforeParse}, and only if that
+	 * hook left it first.
+	 *
 	 * @param rawCode - The raw source code to parse
 	 * @param options - Parse options controlling offsets, depth, front matter, and authored element names
 	 * @returns The parsed AST document containing the node list and fragment flag
+	 * @see https://html.spec.whatwg.org/multipage/parsing.html#the-input-byte-stream
+	 * > A leading Byte Order Mark (BOM) causes the character encoding argument to be ignored and will itself be skipped.
 	 */
 	parse(rawCode: string, options?: ParseOptions): MLASTDocument {
+		let strippedBom = false;
 		try {
 			// Initialize raw code
 			this.#setRawCode(rawCode, rawCode);
@@ -275,16 +344,23 @@ export abstract class Parser<Node extends {} = {}, State extends unknown = null>
 			const beforeParsedCode = this.beforeParse(this.rawCode, options);
 
 			// Override raw code
-			this.#setRawCode(beforeParsedCode);
+			const bom =
+				this.#leadingBom && startsAtDocumentHead(options) && beforeParsedCode.startsWith(BOM)
+					? this.#leadingBom
+					: null;
+			const masked = bom === 'mask';
+			strippedBom = bom === 'strip';
+			this.#setRawCode(bom ? (masked ? ' ' : '') + beforeParsedCode.slice(BOM.length) : beforeParsedCode);
 
 			this.#authoredElementName = options?.authoredElementName;
 
 			let frontMatter: string | null = null;
 			if (options?.ignoreFrontMatter) {
 				timer.push('ignoreFrontMatter');
-				const fm = ignoreFrontMatter(this.rawCode);
-				this.#setRawCode(fm.code);
-				frontMatter = fm.frontMatter;
+				// The masked BOM is part of the front matter's raw, not of what it is looked for in
+				const fm = ignoreFrontMatter(masked ? this.rawCode.slice(BOM.length) : this.rawCode);
+				this.#setRawCode(masked ? ' ' + fm.code : fm.code);
+				frontMatter = fm.frontMatter == null || !masked ? fm.frontMatter : BOM + fm.frontMatter;
 			}
 
 			timer.push('ignoreBlock');
@@ -363,6 +439,11 @@ export abstract class Parser<Node extends {} = {}, State extends unknown = null>
 
 			this.#reset();
 
+			if (strippedBom) {
+				// Everything above counted from the character after the BOM
+				shiftPositions([nodeList, mergedParseErrors], BOM.length);
+			}
+
 			return {
 				raw: rawCode,
 				nodeList,
@@ -370,7 +451,17 @@ export abstract class Parser<Node extends {} = {}, State extends unknown = null>
 				...(mergedParseErrors && mergedParseErrors.length > 0 ? { parseErrors: mergedParseErrors } : {}),
 			};
 		} catch (error) {
-			throw this.parseError(error);
+			const parserError = this.parseError(error);
+			if (strippedBom) {
+				// Only the fields are put back; the message that the library wrote is left as it is.
+				// A column of `0` is a position that is not known.
+				Object.assign(parserError, {
+					...(parserError.line === 1 && parserError.col > 0 ? { col: parserError.col + BOM.length } : {}),
+					// The source an error quotes by default is the one without the BOM
+					...(parserError.raw === this.rawCode ? { raw: rawCode } : {}),
+				});
+			}
+			throw parserError;
 		}
 	}
 
@@ -959,7 +1050,7 @@ export abstract class Parser<Node extends {} = {}, State extends unknown = null>
 	 * Re-parses a text token to discover embedded HTML/XML tags within it,
 	 * splitting the content into a sequence of tag and text AST nodes.
 	 * Handles self-closing detection, depth tracking, void element recognition,
-	 * and the raw-text element body short-circuit (HTML LS §13.2.5.1).
+	 * and the raw-text element body short-circuit (HTML LS §13.1.2.6).
 	 *
 	 * Raw-text element handling only covers the elements listed in
 	 * `rawTextElements` (default `['style', 'script']`). HTML LS *escapable* raw
@@ -1089,10 +1180,10 @@ export abstract class Parser<Node extends {} = {}, State extends unknown = null>
 			}
 
 			/**
-			 * Raw-text element body short-circuit (HTML Living Standard §13.2.5.1
-			 * — "Restrictions on the contents of raw text and escapable raw text
-			 * elements". The spec section anchor is `cdata-rcdata-restrictions`,
-			 * where RCDATA stands for "Raw text + Character REF data" — the broader
+			 * Raw-text element body short-circuit (HTML Living Standard §13.1.2.6,
+			 * Restrictions on the contents of raw text and escapable raw text
+			 * elements. The spec section anchor is `cdata-rcdata-restrictions`,
+			 * where RCDATA stands for 'Raw text + Character REF data' — the broader
 			 * class that covers escapable raw text such as `<title>` / `<textarea>`).
 			 *
 			 * Per spec, the contents of `<script>` / `<style>` (and any caller-supplied
@@ -1587,7 +1678,7 @@ export abstract class Parser<Node extends {} = {}, State extends unknown = null>
 
 	/**
 	 * The pattern matches `</tagName` followed by a tab/LF/FF/CR/space/`>`/`/`
-	 * (HTML LS §13.2.5.1) ASCII-case-insensitively. Caching avoids recompiling the
+	 * (HTML LS §13.1.2.6) ASCII-case-insensitively. Caching avoids recompiling the
 	 * `RegExp` for every `<script>` / `<style>` start tag in large documents.
 	 */
 	#getRawTextCloseTagPattern(tagName: string): RegExp {
