@@ -114,6 +114,7 @@ export abstract class Parser<Node extends {} = {}, State extends unknown = null>
 	readonly #booleanish: boolean = false;
 	readonly #attrExpressionLanguage?: ExpressionLanguage;
 	readonly #literalValues?: LiteralValueDeclaration;
+	readonly #slotElement: 'html' | 'framework' = 'html';
 	readonly #defaultState: State;
 	readonly #endTagType: EndTagType = 'omittable';
 	readonly #ignoreTags: readonly IgnoreTag[] = [];
@@ -164,6 +165,7 @@ export abstract class Parser<Node extends {} = {}, State extends unknown = null>
 		this.#booleanish = options?.booleanish ?? this.#booleanish;
 		this.#attrExpressionLanguage = options?.attrExpressionLanguage ?? this.#attrExpressionLanguage;
 		this.#literalValues = options?.literalValues ?? this.#literalValues;
+		this.#slotElement = options?.slotElement ?? this.#slotElement;
 		this.#endTagType = options?.endTagType ?? this.#endTagType;
 		this.#ignoreTags = options?.ignoreTags ?? this.#ignoreTags;
 		this.#maskChar = options?.maskChar ?? this.#maskChar;
@@ -215,6 +217,13 @@ export abstract class Parser<Node extends {} = {}, State extends unknown = null>
 	 */
 	get literalValues(): LiteralValueDeclaration | undefined {
 		return this.#literalValues;
+	}
+
+	/**
+	 * What the `slot` element is in the language of the parser. See {@link MLParser.slotElement}.
+	 */
+	get slotElement(): 'html' | 'framework' {
+		return this.#slotElement;
 	}
 
 	/**

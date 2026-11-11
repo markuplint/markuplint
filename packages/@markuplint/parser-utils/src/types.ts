@@ -16,6 +16,7 @@ export type ParserOptions = {
 	readonly booleanish?: boolean;
 	readonly attrExpressionLanguage?: ExpressionLanguage;
 	readonly literalValues?: LiteralValueDeclaration;
+	readonly slotElement?: 'html' | 'framework';
 	readonly endTagType?: EndTagType;
 	readonly ignoreTags?: readonly IgnoreTag[];
 	readonly maskChar?: string;
