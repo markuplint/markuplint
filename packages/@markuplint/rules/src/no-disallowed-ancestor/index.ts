@@ -4,6 +4,8 @@ import type { Element, RuleConfigValue } from '@markuplint/ml-core';
 import { createRule } from '@markuplint/ml-core';
 import { getSpecByTagName } from '@markuplint/ml-spec';
 
+import { isRenderedAway } from '../helpers.js';
+
 import meta from './meta.js';
 
 /**
@@ -70,12 +72,8 @@ export default createRule({
  *   markuplint holds the content as children of the `template` element, so the walk stops here.
  *   A `template` of a framework that puts the children in the element itself (React, Vue: the
  *   `templateContent` of its spec) is an `element` below: the children are in the document.
- * - `transparent`: a node that is not an element of the document, which the walk skips as if it
- *   were not there and does not judge:
- *   - a fragment (`<>` of JSX), which `childNodes` already flattens;
- *   - a `template` element with a directive attribute (Vue's `<template v-if>`, `v-for`, `v-slot`).
- *     It is not an HTML `template` element: the template engine renders its children in place of
- *     it and drops it.
+ * - `transparent`: a node that is not an element of the document ({@link isRenderedAway}), which
+ *   the walk skips as if it were not there and does not judge.
  * - `element`: any other element.
  *
  * @see https://html.spec.whatwg.org/multipage/scripting.html#the-template-element
@@ -84,16 +82,8 @@ function getAncestorKind<T extends RuleConfigValue, O extends PlainData>(
 	// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
 	ancestor: Element<T, O>,
 ): 'template-content' | 'transparent' | 'element' {
-	if (ancestor.isFragment) {
+	if (isRenderedAway(ancestor)) {
 		return 'transparent';
-	}
-	if (ancestor.localName !== 'template') {
-		return 'element';
-	}
-	for (const attr of ancestor.attributes) {
-		if (attr.isDirective) {
-			return 'transparent';
-		}
 	}
 	return ancestor.isHTMLTemplateElement ? 'template-content' : 'element';
 }

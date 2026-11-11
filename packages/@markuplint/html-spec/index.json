@@ -48914,7 +48914,8 @@
 			"categories": ["#flow", "#phrasing"],
 			"contentModel": {
 				"contents": false,
-				"descendantOf": "map"
+				"descendantOf": "map",
+				"descendantOfWithParentNode": true
 			},
 			"aria": {
 				"implicitRole": "link",
