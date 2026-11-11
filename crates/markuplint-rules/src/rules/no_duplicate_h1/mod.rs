@@ -6,11 +6,14 @@
 //! to opt out. Based on WCAG Technique H42, which is non-normative, so the default severity is
 //! `warning`.
 
+use std::collections::HashMap;
+
 use markuplint_dom::arena::DomArena;
 use markuplint_types::spec::types::MLMLSpec;
 
 use crate::h1_check::collect_h1s;
 use crate::rule::{Rule, RuleConfigSet};
+use crate::tree_scope::{TreeRoot, Trees};
 use crate::violation::{Severity, Violation};
 
 #[cfg(test)]
@@ -27,24 +30,35 @@ impl Rule for NoDuplicateH1 {
         Severity::Warning
     }
 
-    fn verify(&self, arena: &DomArena, _spec: &MLMLSpec, config: &RuleConfigSet) -> Vec<Violation> {
+    fn verify(&self, arena: &DomArena, spec: &MLMLSpec, config: &RuleConfigSet) -> Vec<Violation> {
         let config = config.global();
-        let Some(h1s) = collect_h1s(arena, config) else {
+        let trees = Trees::new(arena, spec);
+        let Some(h1s) = collect_h1s(arena, &trees, config) else {
             return vec![];
         };
-        let Some(second) = h1s.get(1) else {
-            return vec![];
-        };
-        vec![Violation {
-            rule_id: self.id().to_string(),
-            name: None,
-            severity: config.severity,
-            message: "The \"h1\" element is duplicated".to_string(),
-            line: second.base.line,
-            col: second.base.col,
-            raw: second.base.raw.clone(),
-            reason: None,
-            fix: None,
-        }]
+        // The h1 elements are counted by tree: each tree reports its own second h1
+        let mut count_of_tree: HashMap<TreeRoot, usize> = HashMap::new();
+        let mut seconds = Vec::new();
+        for (root, h1) in h1s {
+            let count = count_of_tree.entry(root).or_default();
+            *count += 1;
+            if *count == 2 {
+                seconds.push(h1);
+            }
+        }
+        seconds
+            .into_iter()
+            .map(|second| Violation {
+                rule_id: self.id().to_string(),
+                name: None,
+                severity: config.severity,
+                message: "The \"h1\" element is duplicated".to_string(),
+                line: second.base.line,
+                col: second.base.col,
+                raw: second.base.raw.clone(),
+                reason: None,
+                fix: None,
+            })
+            .collect()
     }
 }

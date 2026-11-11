@@ -10,8 +10,9 @@ use serde_json::Value;
 use crate::aria::accname::helpers::{collect_text_content, find_child_by_local_name};
 use crate::aria::computed_role::get_computed_role;
 use crate::aria::is_exposed::is_exposed;
-use crate::helpers::accname_may_be_mutable;
+use crate::helpers::{accname_may_be_mutable, get_owned_label};
 use crate::rule::{Rule, RuleConfigSet};
+use crate::tree_scope::{decode_or_keep, element_by_id_of, is_expression, root_of};
 use crate::violation::Violation;
 
 pub struct NoRedundantAccessibleName;
@@ -36,7 +37,7 @@ impl Rule for NoRedundantAccessibleName {
             }
 
             // Mutable elements (template expressions etc.): the name is not known statically.
-            if accname_may_be_mutable(arena, node_id) {
+            if accname_may_be_mutable(arena, spec, node_id) {
                 continue;
             }
 
@@ -111,15 +112,27 @@ fn collect_naming_sources(
     };
 
     // 1. aria-labelledby
-    if let Some(val) = helpers::get_attr_value_from_el(el, "aria-labelledby") {
-        let trimmed = val.trim();
+    if let Some(attr) = helpers::get_attr_node_from_el(el, "aria-labelledby") {
+        let trimmed = helpers::attr_value(attr).trim();
         if !trimmed.is_empty() {
-            let has_resolvable = trimmed.split_whitespace().any(|id| {
-                arena
-                    .elements()
-                    .any(|(_, el2)| helpers::get_attr_value_from_el(el2, "id").is_some_and(|v| v == id))
-            });
-            if has_resolvable {
+            // The ids are resolved in the tree of the element. An IDREF resolves to the first element
+            // with that id, so with duplicate ids a reference only counts as self-referencing when
+            // this element is that first match.
+            let root = root_of(arena, spec, node_id);
+            let targets: Vec<Option<NodeId>> = trimmed
+                .split_whitespace()
+                .map(|id| {
+                    let id = if is_expression(attr) {
+                        id.to_owned()
+                    } else {
+                        decode_or_keep(id)
+                    };
+                    element_by_id_of(arena, spec, root, &id)
+                })
+                .collect();
+            let is_self_referencing = targets.contains(&Some(node_id));
+            let has_resolvable = targets.iter().any(Option::is_some);
+            if has_resolvable && !is_self_referencing {
                 sources.push("aria-labelledby");
             }
         }
@@ -133,7 +146,7 @@ fn collect_naming_sources(
     }
 
     // 3. label (explicit or implicit) — only for labelable elements
-    if is_labelable(tag, el) && has_owned_label(arena, node_id, tag) {
+    if is_labelable(tag, el) && get_owned_label(arena, spec, node_id).is_some() {
         sources.push("label");
     }
 
@@ -219,44 +232,6 @@ fn is_labelable(tag: &str, el: &markuplint_dom::node::ElementData) -> bool {
 fn is_input_type(el: &markuplint_dom::node::ElementData, type_val: &str) -> bool {
     el.base.node_name == "input"
         && helpers::get_attr_value_from_el(el, "type").is_some_and(|t| t.eq_ignore_ascii_case(type_val))
-}
-
-fn has_owned_label(arena: &DomArena, node_id: NodeId, _tag: &str) -> bool {
-    let Some(el) = arena.get(node_id).and_then(|n| n.as_element()) else {
-        return false;
-    };
-
-    // Explicit association: a `<label for>` pointing at this element's id.
-    if let Some(id) = helpers::get_attr_value_from_el(el, "id")
-        && !id.is_empty()
-    {
-        for (_, label_el) in arena.elements() {
-            if label_el.base.node_name == "label"
-                && helpers::get_attr_value_from_el(label_el, "for").is_some_and(|v| v == id)
-            {
-                return true;
-            }
-        }
-    }
-
-    // Implicit association: an ancestor `<label>` wrapping this element.
-    let mut current = node_id;
-    while let Some(node) = arena.get(current) {
-        let Some(base) = node.base() else {
-            break;
-        };
-        let Some(parent_id) = base.parent else {
-            break;
-        };
-        if let Some(parent_el) = arena.get(parent_id).and_then(|n| n.as_element())
-            && parent_el.base.node_name == "label"
-        {
-            return true;
-        }
-        current = parent_id;
-    }
-
-    false
 }
 
 #[cfg(test)]

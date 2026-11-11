@@ -5,37 +5,54 @@ use markuplint_types::spec::aria::ARIAVersion;
 use markuplint_types::spec::types::MLMLSpec;
 
 use super::AccnameResolver;
+use crate::tree_scope::{TreeRoot, decode_or_keep, dom_value, element_by_id_of, root_of};
 
 /// The name TS `@markuplint/ml-core` gives a pretended element whose pretender
 /// says it has a name (`aria: { name: true }`) without saying which.
 pub const PRETENDER_NAME_SENTINEL: &str = "some-name(Pretender Options)";
 
+/// An id is resolved in the tree of the element whose name is computed (TS `createMLCoreResolver`):
+/// not in the content of a `template` outside of it, and an element that is in no tree (a `template`
+/// that a declarative shadow root is attached to) resolves nothing. The ids the algorithm hands over
+/// are the ones written in the markup, so the character references are resolved on both sides, as
+/// the DOM has them.
 pub struct SpecAccnameResolver<'a> {
     spec: &'a MLMLSpec,
     arena: &'a DomArena,
     version: ARIAVersion,
+    root: TreeRoot,
 }
 
 impl<'a> SpecAccnameResolver<'a> {
-    pub fn new(spec: &'a MLMLSpec, arena: &'a DomArena, version: ARIAVersion) -> Self {
-        Self { spec, arena, version }
+    /// `node_id` is the element whose name is computed, in whose tree the ids are resolved.
+    pub fn new(spec: &'a MLMLSpec, arena: &'a DomArena, version: ARIAVersion, node_id: NodeId) -> Self {
+        Self {
+            spec,
+            arena,
+            version,
+            root: root_of(arena, spec, node_id),
+        }
     }
 }
 
 impl AccnameResolver for SpecAccnameResolver<'_> {
     fn get_element_by_id(&self, id: &str) -> Option<NodeId> {
-        for (node_id, el) in self.arena.elements() {
-            if dom::get_attr_value_from_el(el, "id") == Some(id) {
-                return Some(node_id);
-            }
-        }
-        None
+        element_by_id_of(self.arena, self.spec, self.root, &decode_or_keep(id))
     }
 
     fn get_labels_for_id(&self, id: &str) -> Vec<NodeId> {
+        if matches!(self.root, TreeRoot::NoTree(_)) {
+            return Vec::new();
+        }
+        let dom_id = decode_or_keep(id);
         let mut labels = Vec::new();
         for (node_id, el) in self.arena.elements() {
-            if el.base.node_name.eq_ignore_ascii_case("label") && dom::get_attr_value_from_el(el, "for") == Some(id) {
+            if el.base.node_name.eq_ignore_ascii_case("label")
+                && dom::get_attr_node_from_el(el, "for")
+                    .and_then(dom_value)
+                    .is_some_and(|value| value == dom_id)
+                && root_of(self.arena, self.spec, node_id) == self.root
+            {
                 labels.push(node_id);
             }
         }

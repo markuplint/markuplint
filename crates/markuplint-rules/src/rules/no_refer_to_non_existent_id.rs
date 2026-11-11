@@ -1,6 +1,14 @@
 //! `no-refer-to-non-existent-id` rule: report ID references that point to non-existent IDs.
+//!
+//! An id is resolved in the tree of the reference ([`Trees`]): the document, the content of a
+//! `template` element and a declarative shadow root are trees of their own. The reference and the
+//! id are compared with the character references in the markup resolved. An id that is not known
+//! until it is rendered (a dynamic value) suppresses the report in its tree only, and a `template`
+//! that is in no tree refers to nothing.
+//!
+//! @see <https://html.spec.whatwg.org/multipage/dom.html#the-id-attribute>
 
-use std::collections::HashSet;
+use std::collections::{HashMap, HashSet};
 
 use markuplint_core::mlast::MLASTAttr;
 use markuplint_dom::arena::DomArena;
@@ -8,6 +16,7 @@ use markuplint_types::spec::aria::{self, ARIAVersion};
 use markuplint_types::spec::types::{ARIAAttributeValue, MLMLSpec};
 
 use crate::rule::{Rule, RuleConfig, RuleConfigSet};
+use crate::tree_scope::{TreeRoot, Trees, dom_value, dom_value_of};
 use crate::violation::Violation;
 
 pub struct NoReferToNonExistentId;
@@ -44,12 +53,9 @@ impl Rule for NoReferToNonExistentId {
             .map(|p| p.name.clone())
             .collect();
 
-        let (id_set, has_dynamic_id) = collect_ids(arena, config);
-
-        // A dynamic ID can't be verified statically, so skip the whole document.
-        if has_dynamic_id {
-            return violations;
-        }
+        let trees = Trees::new(arena, spec);
+        let (ids_of_tree, trees_with_dynamic_id) = collect_ids(arena, config, &trees);
+        let no_ids = HashSet::new();
 
         for (node_id, el) in arena.elements() {
             let rule_config = config.get(node_id);
@@ -75,8 +81,17 @@ impl Rule for NoReferToNonExistentId {
                     continue;
                 }
 
+                // An element in no tree (a `template` that a declarative shadow root is attached to)
+                // refers to nothing, and an id that is not known until it is rendered may be what the
+                // reference means
+                let root = trees.root_of(node_id);
+                if matches!(root, TreeRoot::NoTree(_)) || trees_with_dynamic_id.contains(&root) {
+                    continue;
+                }
+                let id_set = ids_of_tree.get(&root).unwrap_or(&no_ids);
+
                 if aria_id_attrs.contains(&attr_name_lower) {
-                    check_space_separated_ids(value, &id_set, html_attr, self.id(), rule_config, &mut violations);
+                    check_space_separated_ids(value, id_set, html_attr, self.id(), rule_config, &mut violations);
                     continue;
                 }
 
@@ -86,7 +101,8 @@ impl Rule for NoReferToNonExistentId {
                 let id_ref_type = get_domid_type(&attr_specs, &attr_name_lower, spec, &el.base.node_name);
                 match id_ref_type {
                     DomIdType::Single => {
-                        if !id_set.contains(value) {
+                        let value = dom_value_of(html_attr, value).unwrap_or_else(|| value.to_owned());
+                        if !id_set.contains(&value) {
                             violations.push(Violation {
                                 rule_id: self.id().to_string(),
                                 name: None,
@@ -101,7 +117,7 @@ impl Rule for NoReferToNonExistentId {
                         }
                     }
                     DomIdType::SpaceList => {
-                        check_space_separated_ids(value, &id_set, html_attr, self.id(), rule_config, &mut violations);
+                        check_space_separated_ids(value, id_set, html_attr, self.id(), rule_config, &mut violations);
                     }
                     DomIdType::None => {}
                 }
@@ -167,10 +183,14 @@ fn classify_domid_type(type_val: &serde_json::Value) -> DomIdType {
     DomIdType::None
 }
 
-/// Returns `(id_set, has_dynamic_id)`.
-fn collect_ids(arena: &DomArena, config: &RuleConfigSet) -> (HashSet<String>, bool) {
-    let mut id_set = HashSet::new();
-    let mut has_dynamic_id = false;
+/// The ids of each tree, and the trees that have an id that is not known until it is rendered.
+fn collect_ids(
+    arena: &DomArena,
+    config: &RuleConfigSet,
+    trees: &Trees<'_>,
+) -> (HashMap<TreeRoot, HashSet<String>>, HashSet<TreeRoot>) {
+    let mut ids_of_tree: HashMap<TreeRoot, HashSet<String>> = HashMap::new();
+    let mut trees_with_dynamic_id = HashSet::new();
 
     for (node_id, el) in arena.elements() {
         let rule_config = config.get(node_id);
@@ -186,19 +206,23 @@ fn collect_ids(arena: &DomArena, config: &RuleConfigSet) -> (HashSet<String>, bo
                 continue;
             }
 
-            if html_attr.is_dynamic_value == Some(true) || html_attr.is_directive == Some(true) {
-                has_dynamic_id = true;
-                continue;
+            let root = trees.root_of(node_id);
+            if html_attr.is_dynamic_value == Some(true) {
+                trees_with_dynamic_id.insert(root);
             }
 
-            let value = markuplint_dom::helpers::attr_value(html_attr).to_owned();
-            if !value.is_empty() {
-                id_set.insert(value);
+            if html_attr.value_type.as_deref() == Some("code") {
+                continue;
+            }
+            if let Some(value) = dom_value(html_attr)
+                && !value.is_empty()
+            {
+                ids_of_tree.entry(root).or_default().insert(value);
             }
         }
     }
 
-    (id_set, has_dynamic_id)
+    (ids_of_tree, trees_with_dynamic_id)
 }
 
 fn check_space_separated_ids(
@@ -209,9 +233,14 @@ fn check_space_separated_ids(
     config: &RuleConfig,
     violations: &mut Vec<Violation>,
 ) {
-    let refs: Vec<&str> = value.split_whitespace().filter(|s| !s.is_empty()).collect();
+    // The value is split before the character references are resolved: `&#32;` is not a separator
+    let refs: Vec<String> = value
+        .split_whitespace()
+        .filter(|s| !s.is_empty())
+        .map(|id| dom_value_of(html_attr, id).unwrap_or_else(|| id.to_owned()))
+        .collect();
     for id_ref in refs {
-        if !id_set.contains(id_ref) {
+        if !id_set.contains(&id_ref) {
             violations.push(Violation {
                 rule_id: rule_id.to_string(),
                 name: None,

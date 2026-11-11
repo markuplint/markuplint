@@ -9,11 +9,12 @@
 //! `ignoreRoles` option are read from each element's own (per-node) config. Fragments are
 //! skipped. The default severity is `warning`.
 
-use markuplint_dom::arena::DomArena;
+use markuplint_dom::arena::{DomArena, NodeId};
 use markuplint_types::spec::types::MLMLSpec;
 
-use crate::landmark_check::{compute_landmark_roles, is_descendant_of_any};
+use crate::landmark_check::{compute_landmark_roles_of_each_tree, is_descendant_of_any};
 use crate::rule::{Rule, RuleConfigSet};
+use crate::tree_scope::Trees;
 use crate::violation::{Severity, Violation};
 
 #[cfg(test)]
@@ -37,10 +38,26 @@ impl Rule for NoNestedTopLevelLandmark {
         if arena.is_fragment() {
             return vec![];
         }
-        let roles = compute_landmark_roles(arena, spec);
-        let all_landmarks: Vec<_> = roles.iter().flat_map(|(_, ids)| ids.iter().copied()).collect();
-
+        let trees = Trees::new(arena, spec);
         let mut violations = Vec::new();
+        // Landmarks are nested in a landmark of their own tree: the content of a `template` element
+        // is a tree of its own, so a landmark outside of it does not make what is in it nested
+        for roles in compute_landmark_roles_of_each_tree(arena, spec, &trees) {
+            self.check_tree(arena, config, &roles, &mut violations);
+        }
+        violations
+    }
+}
+
+impl NoNestedTopLevelLandmark {
+    fn check_tree(
+        &self,
+        arena: &DomArena,
+        config: &RuleConfigSet,
+        roles: &[(&'static str, Vec<NodeId>)],
+        violations: &mut Vec<Violation>,
+    ) {
+        let all_landmarks: Vec<_> = roles.iter().flat_map(|(_, ids)| ids.iter().copied()).collect();
         for role in TOP_LEVEL_ROLES {
             let Some((_, ids)) = roles.iter().find(|(r, _)| *r == role) else {
                 continue;
@@ -77,6 +94,5 @@ impl Rule for NoNestedTopLevelLandmark {
                 });
             }
         }
-        violations
     }
 }

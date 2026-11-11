@@ -2,11 +2,13 @@ use std::sync::LazyLock;
 
 use markuplint_core::mlast::MLASTAttr;
 use markuplint_dom::arena::{DomArena, NodeId};
-use markuplint_dom::helpers::{find_element_by_id, get_attr_value, get_attr_value_from_el, has_attr};
+use markuplint_dom::helpers::{get_attr_node_from_el, get_attr_value, get_attr_value_from_el, has_attr};
 use markuplint_dom::node::{DomNode, ElementData};
+use markuplint_types::spec::types::MLMLSpec;
 
 use crate::aria_check::element_local_name;
 use crate::slot_content::slot_content;
+use crate::tree_scope::{TreeRoot, decode_or_keep, dom_value, element_by_id_of, is_expression, root_of};
 
 static REGEX_LITERAL_RE: LazyLock<regex::Regex> = LazyLock::new(|| regex::Regex::new(r"^/(.+)/([gim]*)$").unwrap());
 
@@ -85,7 +87,7 @@ pub fn has_mutable_children(arena: &DomArena, node_id: NodeId, attr: bool) -> bo
 
 /// TS `accnameMayBeMutable()`: the element, or the label it owns, has an attribute or a child
 /// that may change what the accessible name is at runtime, so a static scan cannot judge it.
-pub fn accname_may_be_mutable(arena: &DomArena, node_id: NodeId) -> bool {
+pub fn accname_may_be_mutable(arena: &DomArena, spec: &MLMLSpec, node_id: NodeId) -> bool {
     let is_mutable = |id: NodeId| {
         arena
             .get(id)
@@ -93,7 +95,7 @@ pub fn accname_may_be_mutable(arena: &DomArena, node_id: NodeId) -> bool {
             .is_some_and(has_mutable_attributes)
             || has_mutable_children(arena, id, true)
     };
-    is_mutable(node_id) || get_owned_label(arena, node_id).is_some_and(is_mutable)
+    is_mutable(node_id) || get_owned_label(arena, spec, node_id).is_some_and(is_mutable)
 }
 
 /// TS `accnameMayComeFromUnknownContent()`: whether the accessible name of `node_id` may be
@@ -103,21 +105,35 @@ pub fn accname_may_be_mutable(arena: &DomArena, node_id: NodeId) -> bool {
 ///
 /// A component with an unknown entry and a static name (`aria-label`, static text) is still
 /// decidable, so call this only once the static name has been computed and found empty.
-pub fn accname_may_come_from_unknown_content(arena: &DomArena, node_id: NodeId) -> bool {
+pub fn accname_may_come_from_unknown_content(arena: &DomArena, spec: &MLMLSpec, node_id: NodeId) -> bool {
     if has_unknown_content(arena, node_id) {
         return true;
     }
 
-    if let Some(labelledby) = get_attr_value(arena, node_id, "aria-labelledby")
-        && labelledby
-            .split_whitespace()
-            .filter_map(|id| find_element_by_id(arena, id))
-            .any(|target| has_unknown_content(arena, target))
+    // The ids are resolved in the tree of the element
+    if let Some(labelledby) = arena
+        .get(node_id)
+        .and_then(DomNode::as_element)
+        .and_then(|el| get_attr_node_from_el(el, "aria-labelledby"))
     {
-        return true;
+        let root = root_of(arena, spec, node_id);
+        let found = markuplint_dom::helpers::attr_value(labelledby)
+            .split_whitespace()
+            .filter_map(|id| {
+                let id = if is_expression(labelledby) {
+                    id.to_owned()
+                } else {
+                    decode_or_keep(id)
+                };
+                element_by_id_of(arena, spec, root, &id)
+            })
+            .any(|target| has_unknown_content(arena, target));
+        if found {
+            return true;
+        }
     }
 
-    get_owned_label(arena, node_id).is_some_and(|label| has_unknown_content(arena, label))
+    get_owned_label(arena, spec, node_id).is_some_and(|label| has_unknown_content(arena, label))
 }
 
 /// TS `hasUnknownContent()`: walks the same children the accname resolver does — for a
@@ -149,25 +165,37 @@ fn is_labelable(el: &ElementData) -> bool {
 }
 
 /// TS `getOwnedLabel()`: the `label` around a labelable element, else the first one whose `for`
-/// names its `id`.
-pub fn get_owned_label(arena: &DomArena, node_id: NodeId) -> Option<NodeId> {
+/// names its `id`. Both are looked for in the tree of the element, and the two values are compared
+/// as the DOM has them.
+pub fn get_owned_label(arena: &DomArena, spec: &MLMLSpec, node_id: NodeId) -> Option<NodeId> {
     let el = arena.get(node_id)?.as_element()?;
     if !is_labelable(el) {
         return None;
     }
-    let ancestor = arena.ancestors(node_id).find_map(|node| {
-        node.as_element()
-            .filter(|a| a.base.node_name.eq_ignore_ascii_case("label"))
-            .map(|a| a.base.id)
-    });
-    if ancestor.is_some() {
-        return ancestor;
+    let root = root_of(arena, spec, node_id);
+    if matches!(root, TreeRoot::NoTree(_)) {
+        return None;
     }
-    let id = get_attr_value_from_el(el, "id").filter(|id| !id.is_empty())?;
+    // TS `el.closest('label')`: the ancestors in the tree of the element
+    for ancestor in arena.ancestors(node_id) {
+        if let DomNode::Element(a) = ancestor {
+            if is_html_template_element(a, spec) {
+                break;
+            }
+            if a.base.node_name.eq_ignore_ascii_case("label") {
+                return Some(a.base.id);
+            }
+        }
+    }
+    let id = get_attr_node_from_el(el, "id").and_then(dom_value)?;
     arena
         .elements()
-        .find(|(_, label)| {
-            label.base.node_name.eq_ignore_ascii_case("label") && get_attr_value_from_el(label, "for") == Some(id)
+        .find(|&(label_id, label)| {
+            label.base.node_name.eq_ignore_ascii_case("label")
+                && get_attr_node_from_el(label, "for")
+                    .and_then(dom_value)
+                    .is_some_and(|value| value == id)
+                && root_of(arena, spec, label_id) == root
         })
         .map(|(label_id, _)| label_id)
 }
