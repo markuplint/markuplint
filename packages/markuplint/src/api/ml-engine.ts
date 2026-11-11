@@ -1329,7 +1329,8 @@ function toViolations(napiViolations: readonly NapiViolation[], withFix: boolean
 		.filter(v => v.severity !== SUPPRESSED_SEVERITY)
 		.map(v => ({
 			ruleId: v.ruleId,
-			name: v.name ?? undefined,
+			// The TS engine has no `name` key on a violation of a rule outside a named group.
+			...(v.name ? { name: v.name } : {}),
 			severity: v.severity as Violation['severity'],
 			message: v.message,
 			line: v.line,
