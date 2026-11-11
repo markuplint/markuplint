@@ -3,6 +3,7 @@ import os from 'node:os';
 import path from 'node:path';
 
 import { Ruleset } from '@markuplint/ml-core';
+import { ConfigParserError } from '@markuplint/parser-utils';
 import { ConfigLoadError } from '@markuplint/shared';
 
 import { jsonc } from 'jsonc';
@@ -1116,5 +1117,116 @@ describe('A name given to resolve() that is not a stored key is resolved as a va
 		expect(configSet.errs).toStrictEqual([]);
 		expect([...configSet.files]).toContain(name);
 		expect([...configSet.files]).toContain('markuplint:html-standard');
+	});
+});
+
+describe('the selectors of a configuration are validated wherever the configuration holds them', () => {
+	async function errsOf(config: Parameters<ConfigProvider['set']>[0]) {
+		const provider = new ConfigProvider();
+		const key = provider.set(config);
+		const testDir = path.resolve(import.meta.dirname, '..', 'test', 'fixtures');
+		const file = getFile(path.resolve(testDir, '001', 'target.html'));
+		const configSet = await provider.resolve(file, [key]);
+		return configSet.errs.map(error => error.message);
+	}
+
+	const nodeRules = [{ selector: 'div[', rules: { 'require-attr': 'title' } }];
+
+	test('nodeRules at the top level', async () => {
+		expect(await errsOf({ nodeRules })).toStrictEqual([expect.stringContaining('Invalid selector: "div["')]);
+	});
+
+	test('nodeRules in overrides', async () => {
+		expect(await errsOf({ overrides: { '**/*.html': { nodeRules } } })).toStrictEqual([
+			expect.stringContaining('Invalid selector: "div["'),
+		]);
+	});
+
+	test('nodeRules in overrides of a glob that does not match the target file', async () => {
+		expect(await errsOf({ overrides: { '**/*.vue': { nodeRules } } })).toStrictEqual([
+			expect.stringContaining('Invalid selector: "div["'),
+		]);
+	});
+
+	test('childNodeRules at the top level', async () => {
+		expect(
+			await errsOf({
+				childNodeRules: [{ selector: 'div[', inheritance: true, rules: { 'require-attr': 'title' } }],
+			}),
+		).toStrictEqual([expect.stringContaining('Invalid selector: "div["')]);
+	});
+
+	test('childNodeRules in overrides', async () => {
+		expect(
+			await errsOf({
+				overrides: {
+					'**/*.html': {
+						childNodeRules: [{ selector: 'div[', inheritance: true, rules: { 'require-attr': 'title' } }],
+					},
+				},
+			}),
+		).toStrictEqual([expect.stringContaining('Invalid selector: "div["')]);
+	});
+
+	test('pretenders in the configuration', async () => {
+		expect(await errsOf({ pretenders: { data: [{ selector: 'div[', as: 'div' }] } })).toStrictEqual([
+			expect.stringContaining('Invalid selector: "div["'),
+		]);
+	});
+
+	test('pretenders in overrides', async () => {
+		expect(
+			await errsOf({ overrides: { '**/*.html': { pretenders: { data: [{ selector: 'div[', as: 'div' }] } } } }),
+		).toStrictEqual([expect.stringContaining('Invalid selector: "div["')]);
+	});
+
+	test.each([
+		['div || span'],
+		['div:hover'],
+		['div:nth-child(2)'],
+		[':display-size(> a)'],
+		[':aria(foo)'],
+		[':role(button|9.9)'],
+	])('%s is an invalid selector', async selector => {
+		expect(await errsOf({ nodeRules: [{ selector, rules: { 'require-attr': 'title' } }] })).toHaveLength(1);
+	});
+
+	test.each([
+		[':model(interactive)'],
+		[':aria(has name)'],
+		[':role(button)'],
+		[':display-size(> 1)'],
+		['div > span'],
+	])('%s is not reported', async selector => {
+		expect(await errsOf({ nodeRules: [{ selector, rules: { 'require-attr': 'title' } }] })).toStrictEqual([]);
+	});
+});
+
+describe('the selectors of a configuration that a plugin provides (extends)', () => {
+	const testDir = path.resolve(import.meta.dirname, '..', 'test', 'fixtures', '019');
+
+	test('the invalid selectors of the configuration and of the plugin are both reported', async () => {
+		const provider = new ConfigProvider();
+		const file = getFile(path.resolve(testDir, 'target.html'));
+		const configSet = await provider.resolve(file, [path.resolve(testDir, '.markuplintrc.json')]);
+		expect(
+			configSet.errs.map(error => [error.message, error instanceof ConfigParserError && error.filePath]),
+		).toStrictEqual([
+			[expect.stringContaining('Invalid selector: "span["'), 'plugin:invalid-selector/node-rules'],
+			[expect.stringContaining('Invalid selector: "div["'), path.resolve(testDir, '.markuplintrc.json')],
+		]);
+	});
+});
+
+describe('the file of a pretender that holds an invalid selector', () => {
+	test('is the file of the error when the pretender has one', async () => {
+		const provider = new ConfigProvider();
+		const key = provider.set({
+			pretenders: { data: [{ selector: 'div[', as: 'div', filePath: 'src/Component.tsx:3:1' }] },
+		});
+		const file = getFile(path.resolve(import.meta.dirname, '..', 'test', 'fixtures', '001', 'target.html'));
+		const configSet = await provider.resolve(file, [key]);
+		expect(configSet.errs).toHaveLength(1);
+		expect(configSet.errs[0]).toMatchObject({ filePath: 'src/Component.tsx:3:1', raw: 'div[' });
 	});
 });

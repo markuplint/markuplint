@@ -1,6 +1,6 @@
 import type { MLFile } from './ml-file/index.js';
 import type { ConfigSet } from './types.js';
-import type { Config, OptimizedConfig, OptimizedOverrideConfig } from '@markuplint/ml-config';
+import type { Config, OptimizedConfig, OptimizedOverrideConfig, Pretender } from '@markuplint/ml-config';
 import type { Nullable } from '@markuplint/shared';
 
 import path from 'node:path';
@@ -31,6 +31,17 @@ import { fileExists, uuid } from './utils.js';
 const cpLog = log.extend('config-provider');
 
 const KEY_SEPARATOR = '__ML_CONFIG_MERGE__';
+
+/**
+ * What a configuration, or the value of one of its `overrides`, holds that a selector matches. `Config`
+ * and `OptimizedConfig` (the merged form, whose `pretenders` is always `{ data }`) hold these properties, so
+ * a property that gets a selector later is added here once.
+ */
+type SelectorHolder = Pick<Config, 'nodeRules' | 'childNodeRules' | 'pretenders'>;
+
+function isPretenderList(pretenders: SelectorHolder['pretenders']): pretenders is readonly Pretender[] {
+	return Array.isArray(pretenders);
+}
 
 /**
  * Manages loading, caching, and resolving markuplint configuration files.
@@ -301,11 +312,7 @@ export class ConfigProvider {
 				filePath: referrer,
 			});
 		}
-		const errors = this.#validateConfig(configSet.config, filePath);
-		configSet.errs.push(...errors);
-
 		const { plugins, errors: pluginErrors } = await resolvePlugins(configSet.config.plugins);
-		configSet.errs.push(...pluginErrors);
 
 		if (this.#held.size > 0) {
 			const extendHelds = [...this.#held.values()];
@@ -328,6 +335,10 @@ export class ConfigProvider {
 
 			this.#held.clear();
 		}
+
+		// After the plugins' configurations are merged in: that merge makes a new `errs`, which would lose
+		// these.
+		configSet.errs.push(...pluginErrors);
 
 		return {
 			...configSet,
@@ -522,14 +533,20 @@ export class ConfigProvider {
 			}
 			errs.push(...keySet.errs);
 		}
-		const configs = [...resolvedKeys].map(name => this.#store.get(name)).filter(nonNullableFilter);
 		let resultConfig: OptimizedConfig = {};
-		for (const config of configs) {
+		for (const name of resolvedKeys) {
+			const config = this.#store.get(name);
+			if (!config) {
+				continue;
+			}
 			if (config instanceof ConfigLoadError) {
 				errs.push(config);
 				continue;
 			}
 
+			// Each configuration is validated as it is, before the merge loses which one holds a selector,
+			// so that an error names the file (or the plugin configuration) that the user has to fix.
+			errs.push(...this.#validateConfig(config, name));
 			resultConfig = mergeConfig(resultConfig, config);
 		}
 		return {
@@ -560,29 +577,57 @@ export class ConfigProvider {
 		};
 	}
 
-	#validateConfig(config: Config, filePath: string) {
+	/**
+	 * Creates every selector that one configuration holds, so that an invalid one is in
+	 * {@link ConfigSet.errs} wherever it is written: the top level, and the value of each `overrides` entry
+	 * (whether or not its glob matches the target file, as the result is cached for every file of `names`).
+	 * It runs on each configuration before they are merged, because the merge loses which one holds a selector.
+	 * The selectors are those of `nodeRules`, `childNodeRules`, and the pretenders written in the
+	 * configuration itself (`pretenders.data`; the merge has turned an array into it), including those
+	 * that a plugin provides. Those that a pretender scan or a file produces are not known here;
+	 * `MLDocument` reports them when it meets them. An error names the file of the pretender
+	 * (`Pretender#filePath`) when it has one, and `filePath`, the key of the configuration (its file, or
+	 * `plugin:<name>/<config>`), otherwise.
+	 */
+	#validateConfig(config: Config | OptimizedConfig, filePath: string) {
 		const errors: ConfigParserError[] = [];
-		if (config.nodeRules)
-			for (const rule of config.nodeRules) {
-				if (rule.selector) {
-					try {
-						createSelector(rule.selector);
-					} catch (error: unknown) {
-						// Anything but an `InvalidSelectorError` is not a fault of the selector string the user wrote
-						// (a bug, or an argument that only an extended pseudo-class reads), so it must propagate
-						// instead of being reported as a configuration error.
-						if (isFatalError(error) || !(error instanceof InvalidSelectorError)) {
-							throw error;
-						}
-						errors.push(
-							new ConfigParserError(error.message, {
-								filePath,
-								raw: rule.selector,
-							}),
-						);
-					}
-				}
+		const check = (selector: string | undefined, from = filePath) => {
+			if (!selector) {
+				return;
 			}
+			try {
+				createSelector(selector);
+			} catch (error: unknown) {
+				// Anything but an `InvalidSelectorError` is not a fault of the selector string the user wrote
+				// (a bug), so it must propagate instead of being reported as a configuration error.
+				if (isFatalError(error) || !(error instanceof InvalidSelectorError)) {
+					throw error;
+				}
+				errors.push(
+					new ConfigParserError(error.message, {
+						filePath: from,
+						raw: selector,
+					}),
+				);
+			}
+		};
+		const checkSelectors = (holder: SelectorHolder) => {
+			for (const rule of holder.nodeRules ?? []) {
+				check(rule.selector);
+			}
+			for (const rule of holder.childNodeRules ?? []) {
+				check(rule.selector);
+			}
+			const pretenders = holder.pretenders;
+			for (const pretender of isPretenderList(pretenders) ? pretenders : (pretenders?.data ?? [])) {
+				// The file that declares the component is where the user fixes the entry
+				check(pretender.selector, pretender.filePath ?? filePath);
+			}
+		};
+		checkSelectors(config);
+		for (const override of Object.values(config.overrides ?? {})) {
+			checkSelectors(override);
+		}
 		return errors;
 	}
 }
