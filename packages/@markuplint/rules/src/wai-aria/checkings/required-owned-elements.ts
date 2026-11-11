@@ -4,6 +4,7 @@ import type { ARIARole, ARIAVersion } from '@markuplint/ml-spec';
 
 import {
 	ARIA_RECOMMENDED_VERSION,
+	getComposedParentElement,
 	getComputedRole,
 	isRequiredOwnedElement,
 	isTransparentForOwnership,
@@ -36,6 +37,8 @@ type OwnedElement =
  * preprocessor blocks, and mutable children from template engines.
  * For a pretended component, the owned elements are the ones the component renders
  * itself (`contents`) together with the children given to it, not the usage site alone.
+ * For a shadow host, they are the elements of its declarative shadow root, which is
+ * rendered in place of its light children (see `getOwnedChildNodes`).
  *
  * @see https://w3c.github.io/aria/#mustContain
  * @param el - The element node to inspect for allowed accessibility child roles.
@@ -72,12 +75,14 @@ export const checkingRequiredOwnedElements: ElementChecker<
 		}
 
 		// TODO: Needs to resolve `aria-owns` references to include virtually owned elements.
-		// Currently, only DOM-tree children are checked. Elements referenced via `aria-owns`
-		// should also be considered as owned elements per the ARIA specification.
+		// Currently, only the child nodes (those of the shadow root for a shadow host) are checked.
+		// Elements referenced via `aria-owns` should also be considered as owned elements per the
+		// ARIA specification.
 
 		const ariaVersion =
 			el.rule.options?.version ?? el.ownerMLDocument.ruleCommonSettings?.ariaVersion ?? ARIA_RECOMMENDED_VERSION;
-		const children: OwnedElement[] = classifyChildren(el, role, ariaVersion);
+		const ownedChildNodes = getOwnedChildNodes(el);
+		const children: OwnedElement[] = classifyChildren(el, ownedChildNodes, role, ariaVersion);
 
 		if (children.some(([, type]) => type === 'BUSY' || type === 'UNKNOWN')) {
 			return;
@@ -112,11 +117,11 @@ export const checkingRequiredOwnedElements: ElementChecker<
 		 */
 		// A virtual slot wrapper stands for the component, whose nodes are the ones given to it.
 		const component = el.pretenderContext?.type === 'origin' ? el.pretenderContext.origin : el;
-		if (component.hasMutableChildren(true) || isContentMutable(component, 'pretended')) {
+		if (isOwnedContentMutable(component)) {
 			return;
 		}
 
-		if (mayBeBeforeCreated(getOwnedChildNodes(el) ?? [])) {
+		if (mayBeBeforeCreated(ownedChildNodes ?? [])) {
 			return {
 				scope: component,
 				message: t(
@@ -146,11 +151,11 @@ export const checkingRequiredOwnedElements: ElementChecker<
 	};
 
 /**
- * Determines whether the element's children may not yet exist (e.g., empty or
+ * Determines whether the owned child nodes may not yet exist (e.g., empty or
  * containing only `<script>` / `<template>` elements that could dynamically create content).
  *
- * @param el - The element to inspect.
- * @returns `true` if the element is empty or only contains script/template children.
+ * @param childNodes - The child nodes the element owns (see `getOwnedChildNodes`).
+ * @returns `true` if the nodes are empty or only contain script/template elements.
  */
 function mayBeBeforeCreated(childNodes: readonly ChildNode<boolean, Options>[]) {
 	if (childNodes.every(child => child.is(child.TEXT_NODE) && child.textContent?.trim() === '')) {
@@ -170,6 +175,7 @@ function mayBeBeforeCreated(childNodes: readonly ChildNode<boolean, Options>[]) 
  * are evaluated as if they were direct children of the owning element.
  *
  * @param el - The parent element whose children to classify.
+ * @param childNodes - The child nodes `el` owns, from `getOwnedChildNodes`.
  * @param role - The ARIA role of the parent, which defines allowed child roles.
  * @param version - The WAI-ARIA version for version-gated transparency behavior.
  * @returns An array of classified child nodes.
@@ -177,10 +183,10 @@ function mayBeBeforeCreated(childNodes: readonly ChildNode<boolean, Options>[]) 
 function classifyChildren(
 	// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
 	el: Element<boolean, Options>,
+	childNodes: readonly ChildNode<boolean, Options>[] | null,
 	role: ARIARole,
 	version: ARIAVersion,
 ): OwnedElement[] {
-	const childNodes = getOwnedChildNodes(el);
 	if (!childNodes) {
 		return [[el, 'UNKNOWN']];
 	}
@@ -192,17 +198,18 @@ function classifyChildren(
 				continue;
 			}
 			/**
-			 * The role of a child is resolved against its DOM parent. A child that a pretender
-			 * places somewhere other than under its DOM parent (a node given at the usage site
-			 * that the component renders inside its slot wrapper, or an element a fragment
-			 * component renders in place) would be judged against the wrong parent and lose
-			 * its role, so it is resolved on its own.
+			 * The role of a child is resolved against its parent in the accessibility tree,
+			 * which is the host for a child at the top of a declarative shadow root. A child
+			 * that a pretender places somewhere other than under that parent (a node given at
+			 * the usage site that the component renders inside its slot wrapper, or an element
+			 * a fragment component renders in place) would be judged against the wrong parent
+			 * and lose its role, so it is resolved on its own.
 			 */
 			const computedChild = getComputedRole(
 				child.ownerMLDocument.specs,
 				child,
 				version,
-				child.parentElement !== el,
+				getComposedParentElement(child) !== el,
 			);
 			if (
 				role.allowedAccessibilityChildRoles.some(ownedRole =>
@@ -219,11 +226,12 @@ function classifyChildren(
 				continue;
 			}
 			if (isTransparentForOwnership(computedChild.role?.name, version)) {
-				if (isContentMutable(child, 'pretended')) {
+				const shadowRootTemplate = getShadowRootTemplate(child);
+				if (shadowRootTemplate !== 'unknown' && isContentMutable(shadowRootTemplate ?? child, 'pretended')) {
 					result.push([child, 'UNKNOWN']);
 					continue;
 				}
-				result.push(...classifyChildren(child, role, version));
+				result.push(...classifyChildren(child, getOwnedChildNodes(child), role, version));
 				continue;
 			}
 			result.push([child, 'OTHER']);
@@ -249,6 +257,23 @@ function classifyChildren(
  * - Several slot wrappers leave the owner of each node unknown, so `null` is returned
  *   and nothing is claimed about the element.
  *
+ * A shadow host owns the child nodes of its declarative shadow root, of either mode, and
+ * nothing else: the shadow root is rendered in place of the light children, which include
+ * the `template` that declares it and what a pretended component renders itself. This
+ * comes first, as ml-core attaches the root to a pretended host that renders the children
+ * written in it in itself. A `template` written in a block or a `template` with a directive
+ * may not be rendered, so `null` is returned for it (`getShadowRootTemplate`). The light children
+ * are rendered only where a `slot` in the shadow root places them, and assigned nodes are
+ * not computed: a `slot` makes the content mutable (`isOwnedContentMutable`), so such a
+ * host is not reported.
+ *
+ * `getRenderedChildNodes` of `@markuplint/ml-core` (the accessible name computation)
+ * resolves the rendered children in the same order, but does not expand fragment
+ * components.
+ *
+ * > […] the flat tree is the top-level DOM tree, but shadow hosts are filled with their shadow tree children instead of their light tree children […]
+ *
+ * @see https://drafts.csswg.org/css-shadow-1/#flattening
  * @param el - The element, or the virtual slot wrapper of a pretended component.
  * @returns The child nodes, or `null` when they cannot be known.
  */
@@ -256,6 +281,15 @@ function getOwnedChildNodes(
 	// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
 	el: Element<boolean, Options>,
 ): readonly ChildNode<boolean, Options>[] | null {
+	// The content of the `template` is the shadow root, and holds the same nodes as its children.
+	const shadowRootTemplate = getShadowRootTemplate(el);
+	if (shadowRootTemplate === 'unknown') {
+		return null;
+	}
+	if (shadowRootTemplate) {
+		return expandChildren(shadowRootTemplate, [...shadowRootTemplate.childNodes], 'pretended');
+	}
+
 	const context = el.pretenderContext;
 
 	if (context?.type === 'pretender') {
@@ -279,4 +313,69 @@ function getOwnedChildNodes(
 	}
 
 	return expandChildren(el, [...el.childNodes], 'pretended');
+}
+
+/**
+ * Whether the nodes `el` owns may be rendered by something the markup does not show:
+ * template syntax, a mutable attribute, a custom element or a `slot` among them
+ * (`hasMutableChildren`), or a pretender whose `contents` are unknown (`isContentMutable`).
+ * For a shadow host they are read in the shadow root, as that is what it owns: a light
+ * child that no `slot` places is not rendered, mutable or not.
+ *
+ * @param el - The element, or the component a virtual slot wrapper stands for.
+ * @returns `true` when the owned nodes may differ from the markup.
+ */
+function isOwnedContentMutable(
+	// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
+	el: Element<boolean, Options>,
+): boolean {
+	const template = getShadowRootTemplate(el);
+	if (template === 'unknown') {
+		return true;
+	}
+	const scope = template ?? el;
+	return scope.hasMutableChildren(true) || isContentMutable(scope, 'pretended');
+}
+
+/**
+ * The `template` element whose content is the declarative shadow root of `host`, which ml-core
+ * exposes without the element.
+ *
+ * ml-core finds the `template` through what a template engine renders away (a block, a
+ * `template` with a directive such as `v-if`), as the id lookups need a tree either way. Such
+ * a wrapper, or a conditional branch that leaves the `template` out, may render it or not,
+ * and the host owns the shadow root or its light children accordingly. So what the host owns
+ * is unknown unless the `template` is written right in the host and in every branch of its
+ * children (`conditionalChildNodes`), and no block among them has a range that the syntax
+ * tree does not give.
+ *
+ * @param host - An element.
+ * @returns The `template` element; `'unknown'` when it is written in such a wrapper; `null`
+ *   when no shadow root is attached to `host`.
+ */
+function getShadowRootTemplate(
+	// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
+	host: Element<boolean, Options>,
+): Element<boolean, Options> | 'unknown' | null {
+	const shadowRoot = host.declarativeShadowRoot;
+	if (!shadowRoot) {
+		return null;
+	}
+	// A block without a behavior may be a marker of a language whose blocks the syntax tree does
+	// not nest (`{% if %}` … `{% endif %}`), so whether it encloses the `template` is not known.
+	for (const child of host.getPureChildNodes()) {
+		if (child.is(child.MARKUPLINT_PREPROCESSOR_BLOCK) && !child.blockBehavior) {
+			return 'unknown';
+		}
+	}
+	for (const child of host.childNodes) {
+		if (child.is(child.ELEMENT_NODE) && child.content === shadowRoot) {
+			if (child.syntacticalParentNode !== host) {
+				return 'unknown';
+			}
+			const branches = host.conditionalChildNodes();
+			return branches.every(branch => [...branch].includes(child)) ? child : 'unknown';
+		}
+	}
+	return 'unknown';
 }

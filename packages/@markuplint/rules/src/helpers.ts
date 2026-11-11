@@ -438,13 +438,16 @@ export function accnameMayComeFromUnknownContent(
  * whose computed name is empty is not reported: the rule calls this only after
  * the computed name is empty. Light DOM text that remains in the computed name
  * is still a name, and the rule does not reach this function.
+ *
+ * Unknown `contents` of a pretended component count only when no declarative
+ * shadow root is attached to it: the shadow root is rendered in their place.
  */
 function hasUnknownContent(
 	// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
 	el: Element<any, any>,
 ): boolean {
 	const context = el.pretenderContext;
-	if (context?.type === 'pretender' && context.slotContent?.mutable) {
+	if (context?.type === 'pretender' && context.slotContent?.mutable && !el.declarativeShadowRoot) {
 		return true;
 	}
 	if (context?.type !== 'pretender' && el.isHTMLTemplateElement && el.declarativeShadowRootAttachment === 'unknown') {
