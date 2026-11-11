@@ -94,12 +94,12 @@ test('[require-owned-elements-issue-4527-010] the content of an ordinary templat
 	expect(violations).toStrictEqual([reportedAt(1, EXPECTS_LISTITEM)]);
 });
 
-test('[require-owned-elements-issue-4527-011] a slot in the shadow root may place the light children, so the host is not reported', async () => {
+test('[require-owned-elements-issue-4527-011] a slot in the shadow root places the light children, so the host is reported when none of them is owned', async () => {
 	const { violations } = await mlRuleTest(
 		rule,
 		'<div role="list"><template shadowrootmode="open"><slot></slot></template><p>y</p></div>',
 	);
-	expect(violations).toStrictEqual([]);
+	expect(violations).toStrictEqual([reportedAt(1, EXPECTS_LISTITEM)]);
 });
 
 test('[require-owned-elements-issue-4527-012] a mutable light child that no slot places does not keep the host from being reported', async () => {

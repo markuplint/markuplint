@@ -7,6 +7,7 @@ import {
 	getComposedParentElement,
 	getComputedRole,
 	isRequiredOwnedElement,
+	isSlotElement,
 	isTransparentForOwnership,
 } from '@markuplint/ml-spec';
 
@@ -197,6 +198,10 @@ function classifyChildren(
 				result.push([child, 'BUSY']);
 				continue;
 			}
+			if (isSlotElement(child)) {
+				result.push(...classifySlot(child, role, version));
+				continue;
+			}
 			/**
 			 * The role of a child is resolved against its parent in the accessibility tree,
 			 * which is the host for a child at the top of a declarative shadow root. A child
@@ -245,6 +250,52 @@ function classifyChildren(
 }
 
 /**
+ * Classifies what a `slot` that the owned elements are looked for through renders: the nodes assigned to
+ * it, or its own children when none is, in its place. A slot is not an element of the accessibility tree.
+ *
+ * The slot is reached only through the elements that are transparent for ownership, so what it renders
+ * is owned by the element as if it were written in place of the slot. A slot that is not reached (one
+ * in a `p`, or in the content of a nested `template`) places nothing as an owned element, and is not
+ * looked at. Where the assignment is not known (a slot that is not in a shadow root, a framework's, manual
+ * assignment, template syntax among the light children), what it renders is not known: `UNKNOWN`.
+ *
+ * The light children assigned to the slot are not in the shadow root that the mutability gate reads
+ * (`isOwnedContentMutable`), so the template syntax and the mutable attributes in them are looked at
+ * here: a node that may not be what it is written as keeps the rule from deciding.
+ *
+ * > If slottables is the empty list, then append each slottable child of slot, in tree order, to slottables.
+ *
+ * @see https://dom.spec.whatwg.org/#find-flattened-slotables
+ * @param slot - The `slot` element
+ * @param role - The ARIA role of the owner, which defines allowed child roles.
+ * @param version - The WAI-ARIA version for version-gated transparency behavior.
+ * @returns The classified nodes the slot renders.
+ */
+function classifySlot(
+	// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
+	slot: Element<boolean, Options>,
+	role: ARIARole,
+	version: ARIAVersion,
+): OwnedElement[] {
+	const assigned = slot.getAssignedNodes();
+	if (!assigned) {
+		return [[slot, 'UNKNOWN']];
+	}
+	if (assigned.length === 0) {
+		return classifyChildren(slot, getOwnedChildNodes(slot), role, version);
+	}
+	const mutable = assigned.some(
+		node =>
+			node.is(node.ELEMENT_NODE) &&
+			(node.hasMutableAttributes() || node.hasMutableChildren(true, isFlattenedSlot)),
+	);
+	if (mutable) {
+		return [[slot, 'UNKNOWN']];
+	}
+	return classifyChildren(slot, assigned, role, version);
+}
+
+/**
  * The child nodes that `el` owns as the page renders them.
  *
  * For a pretended component this is what the component renders, not what is written
@@ -263,9 +314,9 @@ function classifyChildren(
  * comes first, as ml-core attaches the root to a pretended host that renders the children
  * written in it in itself. A `template` written in a block or a `template` with a directive
  * may not be rendered, so `null` is returned for it (`getShadowRootTemplate`). The light children
- * are rendered only where a `slot` in the shadow root places them, and assigned nodes are
- * not computed: a `slot` makes the content mutable (`isOwnedContentMutable`), so such a
- * host is not reported.
+ * are rendered only where a `slot` in the shadow root places them: the nodes assigned to it
+ * (`MLElement#getAssignedNodes`) are classified in its place, and the light children that
+ * no slot takes are not owned (`classifySlot`).
  *
  * `getRenderedChildNodes` of `@markuplint/ml-core` (the accessible name computation)
  * resolves the rendered children in the same order, but does not expand fragment
@@ -316,11 +367,31 @@ function getOwnedChildNodes(
 }
 
 /**
+ * Whether a `slot` is one that `classifyChildren` cannot see: a parser that makes the `slot` of its
+ * framework a fragment (Vue, Astro) has it flattened out of the child nodes, and what it renders is
+ * not known. Any other `slot` is classified where the owned elements reach it (`classifySlot`), and
+ * one that is not reached places nothing as an owned element.
+ *
+ * @param slot - A `slot` element
+ * @returns `true` if the slot is flattened out of the child nodes
+ */
+function isFlattenedSlot(
+	// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
+	slot: Element<boolean, Options>,
+): boolean {
+	return slot.isFragment;
+}
+
+/**
  * Whether the nodes `el` owns may be rendered by something the markup does not show:
- * template syntax, a mutable attribute, a custom element or a `slot` among them
+ * template syntax, a mutable attribute or a component that no pretender resolved among them
  * (`hasMutableChildren`), or a pretender whose `contents` are unknown (`isContentMutable`).
  * For a shadow host they are read in the shadow root, as that is what it owns: a light
  * child that no `slot` places is not rendered, mutable or not.
+ *
+ * A `slot` is not counted here unless it is flattened out of the child nodes (`isFlattenedSlot`):
+ * `classifySlot` reads what it renders where the owned elements are looked for through it, and a slot
+ * that is not reached places nothing as an owned element.
  *
  * @param el - The element, or the component a virtual slot wrapper stands for.
  * @returns `true` when the owned nodes may differ from the markup.
@@ -334,7 +405,7 @@ function isOwnedContentMutable(
 		return true;
 	}
 	const scope = template ?? el;
-	return scope.hasMutableChildren(true) || isContentMutable(scope, 'pretended');
+	return scope.hasMutableChildren(true, isFlattenedSlot) || isContentMutable(scope, 'pretended');
 }
 
 /**
