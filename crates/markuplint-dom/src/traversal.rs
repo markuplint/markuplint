@@ -73,6 +73,92 @@ impl DomArena {
         nodes
     }
 
+    /// TS `node.conditionalChildNodes()`: the child nodes of each way the conditional blocks among
+    /// [`Self::child_nodes`] can render, one list per combination. A block of the `if` or
+    /// `switch:case` kind may render none of its branches, so a combination without any of them
+    /// is one as well; the branches of the other kinds (`if:else`, `each`, `await`, …) stand for
+    /// themselves. A block contributes the combinations of its own child nodes, and a whitespace
+    /// text outside the blocks is left out.
+    #[must_use]
+    pub fn conditional_child_nodes(&self, id: NodeId) -> Vec<Vec<NodeId>> {
+        // One entry per sibling: a node, or the alternatives of a run of blocks (`None` for none).
+        enum Branch {
+            Node(NodeId),
+            Alternatives(Vec<Option<NodeId>>),
+        }
+        let mut branches = Vec::new();
+        let mut may_render_none = false;
+        let mut open = false;
+        let mut sub_branches: Vec<Option<NodeId>> = Vec::new();
+
+        for child in self.child_nodes(id) {
+            if let Some(DomNode::PSBlock(block)) = self.get(child) {
+                let Some(behavior) = block.block_behavior.as_ref() else {
+                    continue;
+                };
+                match behavior.behavior_type {
+                    MLASTBlockBehaviorType::If
+                    | MLASTBlockBehaviorType::IfElseIf
+                    | MLASTBlockBehaviorType::SwitchCase => may_render_none = true,
+                    MLASTBlockBehaviorType::End => continue,
+                    _ => {}
+                }
+                sub_branches.extend(self.conditional_child_nodes(child).into_iter().flatten().map(Some));
+                open = true;
+                continue;
+            }
+            if open {
+                if may_render_none {
+                    sub_branches.push(None);
+                }
+                branches.push(Branch::Alternatives(std::mem::take(&mut sub_branches)));
+                may_render_none = false;
+                open = false;
+            }
+            if let Some(DomNode::Text(text)) = self.get(child)
+                && !text.base.raw.is_empty()
+                && text.base.raw.chars().all(char::is_whitespace)
+            {
+                continue;
+            }
+            branches.push(Branch::Node(child));
+        }
+        if !sub_branches.is_empty() {
+            if may_render_none {
+                sub_branches.push(None);
+            }
+            branches.push(Branch::Alternatives(sub_branches));
+        }
+
+        // TS `branchesToPatterns`
+        let mut patterns: Vec<Vec<NodeId>> = vec![Vec::new()];
+        for branch in branches {
+            match branch {
+                Branch::Node(node) => {
+                    for pattern in &mut patterns {
+                        pattern.push(node);
+                    }
+                }
+                Branch::Alternatives(items) => {
+                    if items.is_empty() {
+                        continue;
+                    }
+                    patterns = items
+                        .iter()
+                        .flat_map(|item| {
+                            patterns.iter().map(move |pattern| {
+                                let mut next = pattern.clone();
+                                next.extend(*item);
+                                next
+                            })
+                        })
+                        .collect();
+                }
+            }
+        }
+        patterns
+    }
+
     #[must_use]
     pub fn next_sibling(&self, id: NodeId) -> Option<&DomNode> {
         self.get(id)
