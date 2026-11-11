@@ -6,7 +6,7 @@
 const idlContentMap = {
 	// HTML
 	accept: 'accept',
-	acceptCharset: 'acceptcharset',
+	acceptCharset: 'accept-charset',
 	accessKey: 'accesskey',
 	action: 'action',
 	allowFullScreen: 'allowfullscreen',
