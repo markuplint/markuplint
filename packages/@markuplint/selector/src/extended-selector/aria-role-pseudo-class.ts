@@ -3,14 +3,15 @@ import type { ARIAVersion, MLMLSpec } from '@markuplint/ml-spec';
 
 import { validateAriaVersion, ARIA_RECOMMENDED_VERSION, getComputedRole } from '@markuplint/ml-spec';
 
+import { InvalidSelectorError } from '../invalid-selector-error.js';
+
 export function ariaRolePseudoClass(specs: MLMLSpec) {
-	return (content: string) =>
-		(
+	return (content: string) => {
+		const aria = ariaRolePseudoClassParser(content);
+		return (
 			// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
 			el: SelectorElement,
 		): SelectorResult => {
-			const aria = ariaPseudoClassParser(content);
-
 			const computed = getComputedRole(specs, el as Element, aria.version ?? ARIA_RECOMMENDED_VERSION);
 
 			if (computed.role?.name === aria.role) {
@@ -27,9 +28,18 @@ export function ariaRolePseudoClass(specs: MLMLSpec) {
 				matched: false,
 			};
 		};
+	};
 }
 
-function ariaPseudoClassParser(syntax: string): {
+/**
+ * Reads the argument of `:role()`. The registry calls it when the selector is created, so a
+ * wrong ARIA version is the fault of the selector, not of an element it meets.
+ *
+ * @param syntax - What is written in the parentheses
+ * @returns The role name and the ARIA version
+ * @throws {InvalidSelectorError} When the ARIA version is not supported
+ */
+export function ariaRolePseudoClassParser(syntax: string): {
 	role: string;
 	version?: ARIAVersion;
 } {
@@ -37,7 +47,7 @@ function ariaPseudoClassParser(syntax: string): {
 	const version = _version ?? ARIA_RECOMMENDED_VERSION;
 
 	if (!validateAriaVersion(version)) {
-		throw new SyntaxError(`Unsupported ARIA version: ${version}`);
+		throw new InvalidSelectorError(`:role(${syntax})`, `Unsupported ARIA version: ${version}`);
 	}
 
 	return {

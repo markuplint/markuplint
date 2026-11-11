@@ -109,8 +109,14 @@ class Ruleset {
 				selectors.push(...root.nodes);
 			}).processSync(selector);
 		} catch (error: unknown) {
+			// What the parser says about the selector is shown when it is a diagnostic. A `TypeError`,
+			// a `ReferenceError` or a `RangeError` is a defect of the parser (`:is(` reads a missing node),
+			// whose text says nothing about the selector.
 			if (error instanceof Error) {
-				throw new InvalidSelectorError(selector);
+				if (error instanceof TypeError || error instanceof ReferenceError || error instanceof RangeError) {
+					throw new InvalidSelectorError(selector);
+				}
+				throw new InvalidSelectorError(selector, `Invalid selector: "${selector}" (${error.message})`);
 			}
 			throw error;
 		}
@@ -172,6 +178,7 @@ class StructuredSelector {
 		for (const node of nodes) {
 			switch (node.type) {
 				case 'combinator': {
+					assertSupportedCombinator(node.value, selector.toString());
 					const combinedTarget = new SelectorTarget(extended, depth);
 					combinedTarget.from(this.#edge, node);
 					this.#edge = combinedTarget;
@@ -194,6 +201,9 @@ class StructuredSelector {
 					);
 				}
 				default: {
+					if (node.type === 'pseudo') {
+						assertSupportedPseudo(node, selector.toString(), extended, depth);
+					}
 					this.#edge.add(node);
 				}
 			}
@@ -494,14 +504,9 @@ class SelectorTarget {
 					not,
 				};
 			}
-			// Column combinator
-			case '||': {
-				throw new Error(
-					'Unsupported column combinator yet. If you want it, please request it as the issue (https://github.com/markuplint/markuplint/issues/new).',
-				);
-			}
+			// `assertSupportedCombinator` rejects any other combinator when the selector is created
 			default: {
-				throw new Error(`Unsupported ${this.#combinedFrom.combinator.value} combinator in selector`);
+				throw new InvalidSelectorError(this.toString(), unsupportedCombinatorMessage(combinator.value));
 			}
 		}
 	}
@@ -714,6 +719,133 @@ function attrMatch(
 	});
 }
 
+const REQUEST = 'If you want it, please request it as the issue (https://github.com/markuplint/markuplint/issues/new).';
+
+function unsupportedCombinatorMessage(combinator: string) {
+	return combinator.trim() === '||'
+		? `Unsupported column combinator yet. ${REQUEST}`
+		: `Unsupported ${combinator} combinator in selector`;
+}
+
+function unsupportedYetMessage(pseudo: ReadonlyDeep<parser.Pseudo>) {
+	return `Unsupported pseudo ${pseudo.toString()} selector yet. ${REQUEST}`;
+}
+
+/**
+ * The pseudo-classes of Selectors Level 4 that the engine does not match yet. Both the creation of
+ * a selector ({@link assertSupportedPseudo}) and its matching ({@link pseudoMatch}) read this one
+ * list, so supporting one is an edit of one place.
+ */
+const UNSUPPORTED_YET_PSEUDOS: ReadonlySet<string> = new Set([
+	':enable',
+	':disable',
+	':read-write',
+	':read-only',
+	':placeholder-shown',
+	':default',
+	':checked',
+	':indeterminate',
+	':valid',
+	':invalid',
+	':in-range',
+	':out-of-range',
+	':required',
+	':optional',
+	':blank',
+	':user-invalid',
+	':empty',
+	':nth-child',
+	':nth-last-child',
+	':last-child',
+	':only-child',
+	':nth-of-type',
+	':nth-last-of-type',
+	':first-of-type',
+	':last-of-type',
+	':only-of-type',
+	':nth-last-col',
+	':nth-col',
+]);
+
+/**
+ * The combinators that the engine matches. Anything else the parser accepts (the column combinator
+ * `||`) is the fault of the selector, and it is found when the selector is created, not when
+ * it meets an element: a configuration holds the selector, and the check of the configuration
+ * only creates it.
+ *
+ * @param combinator - The value of the combinator node
+ * @param selector - The selector the combinator belongs to
+ * @throws {InvalidSelectorError} When the engine does not match the combinator
+ */
+function assertSupportedCombinator(combinator: string, selector: string) {
+	switch (combinator.trim()) {
+		case '':
+		case '>':
+		case '+':
+		case '~': {
+			return;
+		}
+		// The parser accepts no other combinator than `||` besides the four above, so the `||` message is
+		// the one a user reads; the shared message also covers what a future version of the parser accepts.
+		default: {
+			throw new InvalidSelectorError(selector, unsupportedCombinatorMessage(combinator));
+		}
+	}
+}
+
+/**
+ * Finds what the engine does not support in a pseudo-class when the selector is created, so that
+ * a selector in a configuration is rejected as the fault of the configuration for every
+ * document, not only for one that has an element it is matched against. It mirrors the branches
+ * of {@link pseudoMatch}: the pseudo-classes that hold a selector are created as the match
+ * does, and an extended pseudo-class reads its argument once.
+ *
+ * @param pseudo - The pseudo-class node
+ * @param selector - The selector the pseudo-class belongs to
+ * @param extended - The registry of the extended pseudo-classes
+ * @param depth - The nesting depth of the selector
+ * @throws {InvalidSelectorError} When the engine does not support the pseudo-class or its argument
+ */
+function assertSupportedPseudo(
+	pseudo: ReadonlyDeep<parser.Pseudo>,
+	selector: string,
+	extended: ExtendedPseudoClass,
+	depth: number,
+) {
+	const name = asciiLowerCase(pseudo.value);
+	if (UNSUPPORTED_YET_PSEUDOS.has(name)) {
+		throw new InvalidSelectorError(selector, unsupportedYetMessage(pseudo));
+	}
+	switch (name) {
+		case ':closest':
+		case ':not':
+		case ':is':
+		case ':has':
+		case ':where': {
+			new Ruleset(pseudo.nodes, extended, depth + 1);
+			return;
+		}
+		case ':scope':
+		case ':root':
+		case ':first-child': {
+			return;
+		}
+		default: {
+			for (const ext of Object.keys(extended)) {
+				if (name !== `:${asciiLowerCase(ext)}`) {
+					continue;
+				}
+				const hook = extended[ext];
+				if (hook) {
+					hook(pseudo.nodes.map(node => node.toString()).join(''));
+					return;
+				}
+			}
+			throw new InvalidSelectorError(selector, `Unsupported pseudo ${pseudo.toString()} selector.`);
+		}
+	}
+}
+
 /**
  * Selectors Level 4 treats pseudo-class names as ASCII case-insensitive keywords; fold once
  * before dispatching so `:NOT(div)` and `:not(div)` share the same branch.
@@ -729,6 +861,9 @@ function pseudoMatch(
 	depth: number,
 ): SelectorResult {
 	const pseudoName = asciiLowerCase(pseudo.value);
+	if (UNSUPPORTED_YET_PSEUDOS.has(pseudoName)) {
+		throw new InvalidSelectorError(pseudo.toString(), unsupportedYetMessage(pseudo));
+	}
 	switch (pseudoName) {
 		//
 
@@ -900,38 +1035,6 @@ function pseudoMatch(
 				matched: false,
 			};
 		}
-		case ':enable':
-		case ':disable':
-		case ':read-write':
-		case ':read-only':
-		case ':placeholder-shown':
-		case ':default':
-		case ':checked':
-		case ':indeterminate':
-		case ':valid':
-		case ':invalid':
-		case ':in-range':
-		case ':out-of-range':
-		case ':required':
-		case ':optional':
-		case ':blank':
-		case ':user-invalid':
-		case ':empty':
-		case ':nth-child':
-		case ':nth-last-child':
-		case ':last-child':
-		case ':only-child':
-		case ':nth-of-type':
-		case ':nth-last-of-type':
-		case ':first-of-type':
-		case ':last-of-type':
-		case ':only-of-type':
-		case ':nth-last-col':
-		case ':nth-col': {
-			throw new Error(
-				`Unsupported pseudo ${pseudo.toString()} selector yet. If you want it, please request it as the issue (https://github.com/markuplint/markuplint/issues/new).`,
-			);
-		}
 		/* eslint-disable unicorn/no-useless-switch-case */
 		case ':dir':
 		case ':lang':
@@ -966,7 +1069,7 @@ function pseudoMatch(
 				const matcher = hook(content);
 				return matcher(el);
 			}
-			throw new Error(`Unsupported pseudo ${pseudo.toString()} selector.`);
+			throw new InvalidSelectorError(pseudo.toString(), `Unsupported pseudo ${pseudo.toString()} selector.`);
 		}
 		/* eslint-enable unicorn/no-useless-switch-case */
 	}

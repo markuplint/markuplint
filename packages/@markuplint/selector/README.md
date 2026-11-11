@@ -80,6 +80,8 @@ attribute name matching, which is governed by the namespace rules above.
 
 The below is selectors that are extended by markuplint:
 
+An argument that the pseudo-class does not accept (`:aria(foo)`, `:role(button|9.9)`, `:display-size(> a)`, or a `:model()` category the specification does not define) throws `InvalidSelectorError` when the selector is created, not when it meets an element. Created without `specs`, a selector checks the arguments that need none, and throws `InvalidSelectorError` when it is matched.
+
 | Selector Type              | Code Example          |
 | -------------------------- | --------------------- |
 | ARIA pseudo-class          | `:aria(has name)`     |

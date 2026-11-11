@@ -3,6 +3,8 @@ import type { ARIAVersion, MLMLSpec } from '@markuplint/ml-spec';
 
 import { validateAriaVersion, ARIA_RECOMMENDED_VERSION, getAccname } from '@markuplint/ml-spec';
 
+import { InvalidSelectorError } from '../invalid-selector-error.js';
+
 /**
  * Version syntax is parsed but not yet used for filtering.
  *
@@ -22,12 +24,12 @@ import { validateAriaVersion, ARIA_RECOMMENDED_VERSION, getAccname } from '@mark
  * `getAccname()` from `@markuplint/ml-spec`.
  */
 export function ariaPseudoClass(specs: MLMLSpec) {
-	return (content: string) =>
-		(
+	return (content: string) => {
+		const aria = ariaPseudoClassParser(content);
+		return (
 			// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
 			el: SelectorElement,
 		): SelectorResult => {
-			const aria = ariaPseudoClassParser(content);
 			const version = aria.version ?? ARIA_RECOMMENDED_VERSION;
 
 			// Prefer MLElement.getAccessibleName() (cached) over ml-spec's
@@ -69,9 +71,18 @@ export function ariaPseudoClass(specs: MLMLSpec) {
 				}
 			}
 		};
+	};
 }
 
-function ariaPseudoClassParser(syntax: string): {
+/**
+ * Reads the argument of `:aria()`. The registry calls it when the selector is created, so a
+ * wrong argument is the fault of the selector, not of an element it meets.
+ *
+ * @param syntax - What is written in the parentheses
+ * @returns What the argument asks for
+ * @throws {InvalidSelectorError} When the query or the ARIA version is not supported
+ */
+export function ariaPseudoClassParser(syntax: string): {
 	type: 'hasName' | 'hasNoName';
 	version?: ARIAVersion;
 } {
@@ -80,7 +91,7 @@ function ariaPseudoClassParser(syntax: string): {
 	const version = _version ?? ARIA_RECOMMENDED_VERSION;
 
 	if (!validateAriaVersion(version)) {
-		throw new SyntaxError(`Unsupported ARIA version: ${version}`);
+		throw new InvalidSelectorError(`:aria(${syntax})`, `Unsupported ARIA version: ${version}`);
 	}
 
 	switch (query) {
@@ -98,5 +109,5 @@ function ariaPseudoClassParser(syntax: string): {
 		}
 	}
 
-	throw new SyntaxError(`Unsupported syntax: ${syntax}`);
+	throw new InvalidSelectorError(`:aria(${syntax})`, `Unsupported syntax: ${syntax}`);
 }
