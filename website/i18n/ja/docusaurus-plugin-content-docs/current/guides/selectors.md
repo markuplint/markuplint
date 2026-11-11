@@ -71,6 +71,8 @@
 
 </details>
 
+❌の構文を使ったセレクタや、拡張擬似クラスに受け付けない引数（例: `:aria(foo)`、`:model(foo)`）を与えたセレクタは、構文を解釈できないセレクタと同じく、設定のエラーとして報告されます。`nodeRules`、`childNodeRules`、`pretenders`、`overrides`のどこに書いたセレクタでも同じで、マッチする要素が文書にあるかどうかは関係ありません。
+
 :::tip
 
 <!-- textlint-disable ja-technical-writing/max-kanji-continuous-len -->
