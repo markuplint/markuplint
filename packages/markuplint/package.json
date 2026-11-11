@@ -24,9 +24,6 @@
 		},
 		"./package.json": "./package.json"
 	},
-	"typedoc": {
-		"entryPoint": "./src/index.ts"
-	},
 	"bin": "./bin/markuplint.mjs",
 	"scripts": {
 		"build": "tsc --project tsconfig.build.json",
