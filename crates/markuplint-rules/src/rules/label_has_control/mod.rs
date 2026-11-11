@@ -1,7 +1,13 @@
-//! `label-has-control` rule: `<label>` elements must be associated with form controls.
+//! `label-has-control` rule: a `<label>` without `for` and without an element to label. Port of
+//! `packages/@markuplint/rules/src/label-has-control/`.
+//!
+//! A label with `for` is left to `label-for-references-labelable`, and one with more than one
+//! control to `label-no-multiple-controls`. An element in any branch of a conditional block of a
+//! preprocessor is enough (TS `conditionalChildNodes()`): the label has it whenever that branch
+//! renders.
 
-use markuplint_core::mlast::MLASTAttr;
-use markuplint_dom::arena::DomArena;
+use markuplint_dom::arena::{DomArena, NodeId};
+use markuplint_dom::helpers::get_attr_value_from_el;
 use markuplint_dom::node::DomNode;
 use markuplint_types::spec::types::MLMLSpec;
 
@@ -12,9 +18,6 @@ use crate::violation::Violation;
 mod tests;
 
 pub struct LabelHasControl;
-
-/// Form control element names that can be associated with a label.
-const FORM_CONTROLS: &[&str] = &["input", "select", "textarea", "button", "output", "meter", "progress"];
 
 impl Rule for LabelHasControl {
     fn id(&self) -> &'static str {
@@ -34,67 +37,23 @@ impl Rule for LabelHasControl {
             if rule_config.disabled {
                 continue;
             }
+            // TS `el.localName !== 'label'`
             if !el.base.node_name.eq_ignore_ascii_case("label") {
                 continue;
             }
             // A pretended label's descendants are unknown, unless the `as` attribute says
             // what it is: then the descendants are the ones written (TS reads the attribute
             // through the pretender, which inherits it).
-            if el.pretended().is_some() && markuplint_dom::helpers::get_attr_value_from_el(el, "as").is_none() {
+            if el.pretended().is_some() && get_attr_value_from_el(el, "as").is_none() {
                 continue;
             }
-
-            let for_value = el.attributes.iter().find_map(|attr| {
-                if let MLASTAttr::HTMLAttr(html_attr) = attr
-                    && html_attr.node_name.eq_ignore_ascii_case("for")
-                {
-                    return Some(markuplint_dom::helpers::attr_value(html_attr).to_owned());
-                }
-                None
-            });
-
-            if let Some(for_id) = for_value {
-                if !for_id.is_empty() && id_exists_in_document(arena, &for_id) {
-                    continue;
-                }
-            } else {
-                // Without `for`, a label is associated through a contained control instead.
-                let controls = find_form_controls(arena, el.base.id);
-                if controls.len() == 1 {
-                    continue; // Exactly one contained control is the valid case.
-                }
-                if controls.is_empty() {
-                    violations.push(Violation {
-                        rule_id: self.id().to_string(),
-                        name: None,
-                        severity: rule_config.severity,
-                        message: "The \"label\" element should associate with a control".to_string(),
-                        line: el.base.line,
-                        col: el.base.col,
-                        raw: el.base.raw.clone(),
-                        reason: None,
-                        fix: None,
-                    });
-                    continue;
-                }
-                // A label associates only its first control; the rest are reported.
-                for &(line, col, ref raw) in &controls[1..] {
-                    violations.push(Violation {
-                        rule_id: self.id().to_string(),
-                        name: None,
-                        severity: rule_config.severity,
-                        message: "The \"label\" element associates only first control".to_string(),
-                        line,
-                        col,
-                        raw: raw.clone(),
-                        reason: None,
-                        fix: None,
-                    });
-                }
+            // TS `el.hasAttribute('for')`
+            if get_attr_value_from_el(el, "for").is_some() {
                 continue;
             }
-
-            // for="" or for with no matching id
+            if has_element_in_some_branch(arena, node_id) {
+                continue;
+            }
             violations.push(Violation {
                 rule_id: self.id().to_string(),
                 name: None,
@@ -103,7 +62,7 @@ impl Rule for LabelHasControl {
                 line: el.base.line,
                 col: el.base.col,
                 raw: el.base.raw.clone(),
-                reason: None,
+                reason: rule_config.reason.clone(),
                 fix: None,
             });
         }
@@ -112,37 +71,19 @@ impl Rule for LabelHasControl {
     }
 }
 
-fn id_exists_in_document(arena: &DomArena, target_id: &str) -> bool {
-    arena.elements().any(|(_node_id, el)| {
-        el.attributes.iter().any(|attr| {
-            if let MLASTAttr::HTMLAttr(html_attr) = attr {
-                html_attr.node_name.eq_ignore_ascii_case("id")
-                    && markuplint_dom::helpers::attr_value(html_attr) == target_id
-            } else {
-                false
+/// TS `el.children.length > 0 || el.conditionalChildNodes().some(branch => branch has an element)`:
+/// an element among the child nodes, looking into a fragment and into a block of a preprocessor
+/// that has a behavior (`if`, `each`, `await`, ...). A block without one (the output of an
+/// expression) is not a branch, and what it holds is not known.
+fn has_element_in_some_branch(arena: &DomArena, node_id: NodeId) -> bool {
+    arena
+        .child_nodes(node_id)
+        .into_iter()
+        .any(|child_id| match arena.get(child_id) {
+            Some(DomNode::Element(_)) => true,
+            Some(DomNode::PSBlock(block)) if block.is_fragment || block.block_behavior.is_some() => {
+                has_element_in_some_branch(arena, child_id)
             }
+            _ => false,
         })
-    })
-}
-
-fn find_form_controls(arena: &DomArena, node_id: usize) -> Vec<(u32, u32, String)> {
-    let mut result = Vec::new();
-    find_form_controls_recursive(arena, node_id, &mut result);
-    result
-}
-
-fn find_form_controls_recursive(arena: &DomArena, node_id: usize, result: &mut Vec<(u32, u32, String)>) {
-    if let Some(children) = arena.children_of(node_id) {
-        for &child_id in children {
-            if let Some(DomNode::Element(child_el)) = arena.get(child_id) {
-                if FORM_CONTROLS
-                    .iter()
-                    .any(|c| child_el.base.node_name.eq_ignore_ascii_case(c))
-                {
-                    result.push((child_el.base.line, child_el.base.col, child_el.base.raw.clone()));
-                }
-                find_form_controls_recursive(arena, child_id, result);
-            }
-        }
-    }
 }

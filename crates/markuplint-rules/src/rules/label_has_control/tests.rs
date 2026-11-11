@@ -2,7 +2,8 @@
 //!
 //! Test ID mapping (TS → Rust):
 //!   label-has-control-invalid-001  → label_has_control_invalid_001
-//!   label-has-control-invalid-002  → label_has_control_invalid_002
+//!   label-has-control-valid-002    → label_has_control_valid_002
+//!   label-has-control-valid-003    → label_has_control_valid_003
 //!   label-has-control-valid-004    → label_has_control_valid_004
 //!   v6_label_has_control_001       — Rust-only: label-has-control-issue-2392 (JSX) with custom elements
 //!   v6_label_has_control_002       — Rust-only: an empty label with the `as` attribute is reported
@@ -51,26 +52,32 @@ fn label_has_control_invalid_001() {
     );
 }
 
-/// TS: `[label-has-control-invalid-002]` — Not single control
+/// TS: `[label-has-control-valid-002]` — Multiple controls are still associated (excess controls
+/// are `label-no-multiple-controls`'s responsibility)
 #[test]
-fn label_has_control_invalid_002() {
-    const _ID: &str = "label-has-control-invalid-002";
+fn label_has_control_valid_002() {
+    const _ID: &str = "label-has-control-valid-002";
     let arena = html_arena("<label><input><select></select></label>");
     let spec = spec();
     let config: LintConfig = serde_json::from_value(serde_json::json!({
         "rules": { "label-has-control": true }
     }))
     .unwrap();
-    let result = lint(&arena, &spec, &config);
-    assert_eq!(result.violations.len(), 1);
-    assert_eq!(result.violations[0].severity, Severity::Warning);
-    assert_eq!(result.violations[0].line, 1);
-    assert_eq!(result.violations[0].col, 15);
-    assert_eq!(result.violations[0].raw, "<select>");
-    assert_eq!(
-        result.violations[0].message,
-        "The \"label\" element associates only first control"
-    );
+    assert!(lint(&arena, &spec, &config).violations.is_empty());
+}
+
+/// TS: `[label-has-control-valid-003]` — The `for` attribute counts as an association even
+/// without descendants
+#[test]
+fn label_has_control_valid_003() {
+    const _ID: &str = "label-has-control-valid-003";
+    let arena = html_arena(r#"<label for="x">foo</label><input id="x">"#);
+    let spec = spec();
+    let config: LintConfig = serde_json::from_value(serde_json::json!({
+        "rules": { "label-has-control": true }
+    }))
+    .unwrap();
+    assert!(lint(&arena, &spec, &config).violations.is_empty());
 }
 
 fn run_pretended(html: &str, pretenders: serde_json::Value) -> Vec<crate::test_util::Brief> {
