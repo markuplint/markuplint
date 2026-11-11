@@ -379,6 +379,34 @@ describe('a declarative shadow root', () => {
 		expect(must(doc.deepQuerySelectorAll('template')[0]).declarativeShadowRootAttachment).toBe('unknown');
 	});
 
+	describe('a pretended component', () => {
+		const code = '<Foo><template shadowrootmode="open"><p></p></template></Foo>';
+		const attachment = async (as: Record<string, unknown>) => {
+			const { parser } = await import('@markuplint/svelte-parser');
+			const doc = createTestDocument(code, {
+				parser,
+				pretenders: [{ selector: 'Foo', as: { element: 'div', ...as } }],
+			});
+			return must(doc.deepQuerySelectorAll('template')[0]).declarativeShadowRootAttachment;
+		};
+
+		test('that renders the children in itself takes one', async () => {
+			expect(await attachment({})).toBe('attached');
+		});
+
+		test('that renders the children beside contents of its own still takes one', async () => {
+			expect(await attachment({ contents: [{ element: 'span' }, { slot: true }] })).toBe('attached');
+		});
+
+		test('that drops the children is not known to take one', async () => {
+			expect(await attachment({ slots: null })).toBe('unknown');
+		});
+
+		test('that puts the children in a slot wrapper is not known to take one', async () => {
+			expect(await attachment({ slots: [{ element: 'span' }] })).toBe('unknown');
+		});
+	});
+
 	test('the host is looked for through what the template engine renders away', async () => {
 		const { parser } = await import('@markuplint/ejs-parser');
 		const doc = createTestDocument(

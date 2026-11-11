@@ -155,7 +155,10 @@ function logFailure(
  * is not there to read. Assigned nodes are not computed
  * (`MLElement#assignedNodes` returns none), so a slot contributes its own children.
  *
- * A pretended component is unchanged: `as.childNodes` is empty when it never
+ * The shadow root comes first, for a pretended component too: it is attached to a
+ * pretended host only when the component renders the children written in it in
+ * itself, and then it is rendered in place of what the component renders.
+ * Otherwise a pretended component is unchanged: `as.childNodes` is empty when it never
  * renders its children (`slots: null`), so text written inside `<Img>Save</Img>`
  * does not become its name. `contents` may wrap the children given at the usage site.
  *
@@ -178,14 +181,14 @@ export function getRenderedChildNodes<T extends RuleConfigValue, O extends Plain
 	// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
 	el: MLElement<T, O>,
 ): Iterable<MLNode<T, O>> {
+	const shadowRoot = el.declarativeShadowRoot;
+	if (shadowRoot) {
+		return shadowRoot.childNodes;
+	}
 	const context = el.pretenderContext;
 	if (context?.type === 'pretender') {
 		const given = [...context.as.childNodes];
 		return context.slotContent ? context.slotContent.fill(given) : given;
-	}
-	const shadowRoot = el.declarativeShadowRoot;
-	if (shadowRoot) {
-		return shadowRoot.childNodes;
 	}
 	if (el.isHTMLTemplateElement) {
 		return [];

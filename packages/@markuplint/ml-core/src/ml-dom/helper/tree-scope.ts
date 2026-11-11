@@ -35,7 +35,8 @@ const HTML_NAMESPACE = 'http://www.w3.org/1999/xhtml';
  * - `attached`: it is. The `template` element is in no tree, and its content is the shadow root.
  * - `not-attached`: it is not. The `template` element is an ordinary one of the tree it is in.
  * - `unknown`: the markup alone does not tell. The parent element is not in the file (the template is at
- *   the top of a partial), is a component, or `shadowrootmode` is a dynamic value. markuplint does not
+ *   the top of a partial), is a component, is a pretended component that drops its children or puts
+ *   them in a slot wrapper, or `shadowrootmode` is a dynamic value. markuplint does not
  *   decide what it cannot decide, as it does with a dynamic value elsewhere: the element is treated as
  *   in no tree, so its own id is not counted and the references of it are not reported.
  */
@@ -230,6 +231,30 @@ function canBeShadowHost<T extends RuleConfigValue, O extends PlainData>(
 }
 
 /**
+ * Whether the children written in `host` are its children in the output, so that a `template`
+ * among them is parsed in it. A pretended component renders them in the element it pretends to
+ * be only when it neither drops them (`slots: null`) nor puts them in a slot wrapper; a custom
+ * element keeps them in its light DOM. This is the same placement as the rendered parent
+ * `MLElement` gives a child for its namespace.
+ *
+ * @param host - The parent element of a `template` element
+ * @returns `false` when the component places the children elsewhere or not at all
+ */
+function rendersChildrenInItself<T extends RuleConfigValue, O extends PlainData>(
+	// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
+	host: MLElement<T, O>,
+): boolean {
+	const context = host.pretenderContext;
+	if (context?.type !== 'pretender' || host.elementType === 'web-component') {
+		return true;
+	}
+	if (context.as.childNodes.length === 0) {
+		return false;
+	}
+	return !context.slotContent || context.slotContent.wrapper === context.as;
+}
+
+/**
  * The `template` elements that sit in the output under the host, in the order of the markup,
  * seen through what the engine renders away.
  *
@@ -286,7 +311,7 @@ export function getDeclarativeShadowRootAttachment<T extends RuleConfigValue, O 
 		return 'not-attached';
 	}
 	const host = getShadowHost(template);
-	if (!host) {
+	if (!host || !rendersChildrenInItself(host)) {
 		return 'unknown';
 	}
 	const hostCheck = canBeShadowHost(host);
