@@ -175,7 +175,7 @@ pub fn get_def(keyword: &str) -> Option<Def> {
         "DateTime" => def(
             "https://html.spec.whatwg.org/multipage/text-level-semantics.html#datetime-value",
             &[(Format, "date time")],
-            |v| matches(v, crate::whatwg::datetime::is_datetime(v), None),
+            crate::whatwg::datetime::check_datetime,
         ),
         "SimpleColor" => def(
             "https://html.spec.whatwg.org/multipage/input.html#color-state-(type=color)",
@@ -193,36 +193,32 @@ pub fn get_def(keyword: &str) -> Option<Def> {
         "DateString" => def(
             "https://html.spec.whatwg.org/multipage/common-microsyntaxes.html#dates",
             &[(Format, "date string")],
-            |v| matches(v, crate::whatwg::datetime::is_date_string(v), None),
+            crate::whatwg::datetime::check_date_string,
         ),
         "DateStringWithOptionalTime" => def(
             "https://html.spec.whatwg.org/multipage/edits.html#attr-mod-datetime",
             &[(Format, "date string with optional time")],
-            |v| {
-                let valid = crate::whatwg::datetime::is_date_string(v)
-                    || crate::whatwg::datetime::is_global_date_and_time_string(v);
-                matches(v, valid, None)
-            },
+            crate::whatwg::datetime::check_date_string_with_optional_time,
         ),
         "TimeString" => def(
             "https://html.spec.whatwg.org/multipage/common-microsyntaxes.html#times",
             &[(Format, "time string")],
-            |v| matches(v, crate::whatwg::datetime::is_time_string(v), None),
+            crate::whatwg::datetime::check_time_string,
         ),
         "MonthString" => def(
             "https://html.spec.whatwg.org/multipage/common-microsyntaxes.html#months",
             &[(Format, "month string")],
-            |v| matches(v, crate::whatwg::datetime::is_month_string(v), None),
+            crate::whatwg::datetime::check_month_string,
         ),
         "WeekString" => def(
             "https://html.spec.whatwg.org/multipage/common-microsyntaxes.html#weeks",
             &[(Format, "week string")],
-            |v| matches(v, crate::whatwg::datetime::is_week_string(v), None),
+            crate::whatwg::datetime::check_week_string,
         ),
         "LocalDateTimeString" => def(
             "https://html.spec.whatwg.org/multipage/common-microsyntaxes.html#local-dates-and-times",
             &[(Format, "local date and time string")],
-            |v| matches(v, crate::whatwg::datetime::is_local_date_and_time_string(v), None),
+            crate::whatwg::datetime::check_local_date_and_time_string,
         ),
         "TabIndex" => def(
             "https://html.spec.whatwg.org/multipage/interaction.html#attr-tabindex",
