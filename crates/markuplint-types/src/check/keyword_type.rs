@@ -369,12 +369,12 @@ pub fn get_def(keyword: &str) -> Option<Def> {
                 Format,
                 "refresh directive (a non-negative integer, optionally followed by a URL)",
             )],
-            |_| matched(),
+            crate::whatwg::http_equiv_refresh::check_http_equiv_refresh,
         ),
         "HTTPEquivContentType" => def(
             "https://html.spec.whatwg.org/multipage/semantics.html#attr-meta-http-equiv-content-type",
             &[(Format, "content-type directive (text/html; charset=<encoding>)")],
-            |_| matched(),
+            crate::whatwg::http_equiv_content_type::check_http_equiv_content_type,
         ),
         "ContentSecurityPolicy" => def(
             "https://www.w3.org/TR/CSP3/#framework-policy",
@@ -382,7 +382,7 @@ pub fn get_def(keyword: &str) -> Option<Def> {
                 Format,
                 "Content Security Policy (a semicolon-separated list of directives)",
             )],
-            |_| matched(),
+            crate::w3c::content_security_policy::check_content_security_policy,
         ),
         "ItemProp" => def(
             "https://html.spec.whatwg.org/multipage/microdata.html#names:-the-itemprop-attribute",
@@ -433,13 +433,7 @@ pub fn get_def(keyword: &str) -> Option<Def> {
         "SerializedPermissionsPolicy" => def(
             "https://w3c.github.io/webappsec-permissions-policy/#serialized-permissions-policy",
             &[],
-            |v| {
-                matches(
-                    v,
-                    crate::w3c::permissions_policy::is_serialized_permissions_policy(v),
-                    None,
-                )
-            },
+            crate::w3c::permissions_policy::check_serialized_permissions_policy,
         ),
         "ValidCustomCommand" => def(
             "https://html.spec.whatwg.org/multipage/form-elements.html#attr-button-command-custom",

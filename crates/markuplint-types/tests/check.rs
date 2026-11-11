@@ -414,7 +414,8 @@ fn serialized_permissions_policy() {
     let kw = Type::Keyword("SerializedPermissionsPolicy".into());
     assert!(check("autoplay", &kw, None).is_matched());
     assert!(check("fullscreen", &kw, None).is_matched());
-    assert!(!check("", &kw, None).is_matched());
+    // TS: an empty value is a policy of one empty entry, which is valid.
+    assert!(check("", &kw, None).is_matched());
 }
 
 // --- SRIHash ---
