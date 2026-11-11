@@ -18,7 +18,7 @@
 //!   v6_meter_value_bounds_001       — Rust-only: values are read with JS `Number()` semantics
 //!   v6_meter_value_bounds_002       — Rust-only: every inequality reported, at the lower attribute
 //!   v6_meter_value_bounds_003       — Rust-only: an implied value is reported at the element
-//!   v6_meter_value_bounds_004       — Rust-only: attribute names are matched as written
+//!   v6_meter_value_bounds_004       — Rust-only: attribute names are matched as the DOM names them
 //!   v6_meter_value_bounds_005       — Rust-only: a pretender meter is skipped unless `as` pins it
 //!
 //! Expected values of the `v6_*` tests come from running the TS rule. TS lists violations in
@@ -317,7 +317,10 @@ fn v6_meter_value_bounds_003() {
 /// found), while the element name is case-insensitive.
 #[test]
 fn v6_meter_value_bounds_004() {
-    assert_eq!(run(r#"<meter VALUE="2">x</meter>"#), []);
+    assert_eq!(
+        run(r#"<meter VALUE="2">x</meter>"#),
+        [brief(Severity::Error, 1, 15, VALUE_LE_ONE, "2")]
+    );
     assert_eq!(
         run(r#"<METER value="2">x</METER>"#),
         [brief(Severity::Error, 1, 15, VALUE_LE_ONE, "2")]

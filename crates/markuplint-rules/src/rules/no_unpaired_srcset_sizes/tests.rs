@@ -26,10 +26,11 @@
 //!   no-unpaired-srcset-sizes-parser-001   — SKIP: Vue parser not available in Rust
 //!   no-unpaired-srcset-sizes-parser-002   — SKIP: Vue parser not available in Rust
 //!   no-unpaired-srcset-sizes-parser-003   — SKIP: JSX parser not available in Rust
-//!   v6_no_unpaired_srcset_sizes_001  — Rust-only: the lazy `<img>` exempting a `<source>` need not be its next sibling
+//!   v6_no_unpaired_srcset_sizes_001  — Rust-only: the `<img>` a `<source>` depends on need not be its next sibling, and `loading="lazy"` alone does not exempt it
 //!   v6_no_unpaired_srcset_sizes_002  — Rust-only: the `sizes`-without-width report is at the `srcset` value, multi-line
 //!   v6_no_unpaired_srcset_sizes_003  — Rust-only: a `<source>` with no following `<img>` has no exemption
 //!   v6_no_unpaired_srcset_sizes_004  — Rust-only: `loading="lazy"` does not exempt an `<img>` itself
+//!   v6_no_unpaired_srcset_sizes_005  — Rust-only: `SRCSET` is the `srcset` attribute of an HTML element
 
 use crate::lint::{LintConfig, lint};
 use crate::violation::{Severity, Violation};
@@ -38,6 +39,7 @@ use markuplint_types::spec::load_spec;
 use markuplint_types::spec::types::MLMLSpec;
 
 const RULE: &str = "no-unpaired-srcset-sizes";
+const SIZES_REQUIRED_UNLESS_AUTO: &str = "The \"sizes\" attribute is required when the \"srcset\" attribute uses width descriptors, unless the following sibling \"img\" element has loading=\"lazy\" and sizes=\"auto\"";
 const SIZES_REQUIRED: &str = "The \"sizes\" attribute is required when the \"srcset\" attribute uses width descriptors";
 const WIDTH_REQUIRED: &str =
     "The \"srcset\" attribute requires width descriptors when the \"sizes\" attribute is present";
@@ -230,7 +232,13 @@ fn no_unpaired_srcset_sizes_valid_009() {
         &run(
             r#"<picture><source srcset="s.webp 480w, l.webp 1024w"><img src="l.jpg" alt="p" loading="lazy"></picture>"#,
         ),
-        &[],
+        &[(
+            Severity::Error,
+            1,
+            10,
+            SIZES_REQUIRED_UNLESS_AUTO,
+            r#"<source srcset="s.webp 480w, l.webp 1024w">"#,
+        )],
     );
 }
 
@@ -300,7 +308,13 @@ fn v6_no_unpaired_srcset_sizes_001() {
         &run(
             r#"<picture><source srcset="a.webp 480w"><source srcset="b.jpg 1x"><img src="b.jpg" loading="lazy" alt=""></picture>"#,
         ),
-        &[],
+        &[(
+            Severity::Error,
+            1,
+            10,
+            SIZES_REQUIRED_UNLESS_AUTO,
+            r#"<source srcset="a.webp 480w">"#,
+        )],
     );
 }
 
@@ -330,7 +344,17 @@ fn v6_no_unpaired_srcset_sizes_003() {
 /// `SRCSET` is not found and nothing is reported. Expected value (`[]`) is the TS output.
 #[test]
 fn v6_no_unpaired_srcset_sizes_005() {
-    assert_eq!(run(r#"<img SRCSET="a.png 480w" alt="">"#).len(), 0);
+    // `SRCSET` is the `srcset` attribute of an HTML element, as the DOM names it
+    assert_violations(
+        &run(r#"<img SRCSET="a.png 480w" alt="">"#),
+        &[(
+            Severity::Error,
+            1,
+            1,
+            SIZES_REQUIRED,
+            r#"<img SRCSET="a.png 480w" alt="">"#,
+        )],
+    );
 }
 
 #[test]

@@ -17,7 +17,7 @@
 //!   progress-value-bounds-parser-002   — SKIPPED: needs `@markuplint/jsx-parser` (`<MyProgress as>`);
 //!                                        the same `as` case runs on HTML in v6_..._003
 //!   v6_progress_value_bounds_001       — Rust-only: values are read with JS `Number()` semantics
-//!   v6_progress_value_bounds_002       — Rust-only: attribute names are matched as written
+//!   v6_progress_value_bounds_002       — Rust-only: attribute names are matched as the DOM names them
 //!   v6_progress_value_bounds_003       — Rust-only: a pretender progress is skipped unless `as` pins it
 //!
 //! Expected values of the `v6_*` tests come from running the TS rule.
@@ -144,11 +144,11 @@ fn v6_progress_value_bounds_001() {
 /// found, and an upper-case `MAX` counts as absent.
 #[test]
 fn v6_progress_value_bounds_002() {
-    assert_eq!(run(r#"<progress VALUE="5">x</progress>"#), []);
     assert_eq!(
-        run(r#"<progress value="5" MAX="10">x</progress>"#),
+        run(r#"<progress VALUE="5">x</progress>"#),
         [brief(Severity::Error, 1, 18, VALUE_LE_ONE, "5")]
     );
+    assert_eq!(run(r#"<progress value="5" MAX="10">x</progress>"#), []);
 }
 
 /// TS `[progress-value-bounds-parser-001]` / `[progress-value-bounds-parser-002]` on HTML: a
