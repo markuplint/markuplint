@@ -7,7 +7,7 @@
 //!   v6_no_invalid_aria_prop_value_002  — Rust-only: token list
 //!   v6_no_invalid_aria_prop_value_003  — Rust-only: empty values
 //!   v6_no_invalid_aria_prop_value_004  — Rust-only: `conditionalValue` by the computed role
-//!   v6_no_invalid_aria_prop_value_005  — Rust-only: property names are matched case-sensitively; unknown properties; positions over lines
+//!   v6_no_invalid_aria_prop_value_005  — Rust-only: a property name in upper case is the property; unknown properties; positions over lines
 //!   v6_no_invalid_aria_prop_value_006  — Rust-only: dynamic value is skipped (the HTML parser has none, so the check function is called directly)
 //!   v6_no_invalid_aria_prop_value_007  — Rust-only: `version` option, `rules: false`
 //!   v6_no_invalid_aria_prop_value_008  — Rust-only: integer and number values through the pipeline
@@ -210,10 +210,15 @@ fn v6_no_invalid_aria_prop_value_005() {
             ),
         ]
     );
-    // Unknown `aria-*` and upper-case names are not looked up.
+    // An unknown `aria-*` is not looked up; `ARIA-LIVE` is `aria-live` as the DOM names it (#4309).
     assert_eq!(
         run(r#"<div aria-foo="x" ARIA-LIVE="hoge"></div>"#, serde_json::json!(true)),
-        vec![]
+        vec![violation(
+            1,
+            19,
+            "The \"hoge\" is disallowed on the \"ARIA-LIVE\" ARIA property. Allowed values are: \"assertive\", \"off\", \"polite\"",
+            "ARIA-LIVE=\"hoge\""
+        )]
     );
 }
 
@@ -226,11 +231,11 @@ fn v6_no_invalid_aria_prop_value_006() {
     let mut attr = html_attrs(el).next().unwrap().clone();
 
     assert_eq!(
-        invalid_value_message(&attr, props, None).as_deref(),
+        invalid_value_message(el, &attr, props, None).as_deref(),
         Some("The \"hoge\" is disallowed on the \"aria-pressed\" ARIA state")
     );
     attr.is_dynamic_value = Some(true);
-    assert_eq!(invalid_value_message(&attr, props, None), None);
+    assert_eq!(invalid_value_message(el, &attr, props, None), None);
 }
 
 #[test]

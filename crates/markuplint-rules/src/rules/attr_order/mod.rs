@@ -170,7 +170,7 @@ impl Rule for AttrOrder {
             let entries: &[Value] = rule_config.value.as_array().map_or(&[], Vec::as_slice);
             let compiled = compile_entries(entries, &global_attrs, &event_attrs);
 
-            let names = AttrNames::new(el, arena.settings());
+            let names = AttrNames::new(el);
             let infos: Vec<AttrInfo<'_>> = el
                 .attributes
                 .iter()

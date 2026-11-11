@@ -782,6 +782,7 @@ fn make_el_with_attr(tag: &str, attr: &str) -> markuplint_dom::node::ElementData
             value_type: None,
             candidate: None,
             is_duplicatable: false,
+            name_fold: None,
         }))],
         has_spread_attr: false,
         block_behavior: None,
@@ -870,6 +871,7 @@ fn make_el_with_attrs(tag: &str, attrs: &[&str]) -> markuplint_dom::node::Elemen
                 value_type: None,
                 candidate: None,
                 is_duplicatable: false,
+                name_fold: None,
             }))
         })
         .collect();

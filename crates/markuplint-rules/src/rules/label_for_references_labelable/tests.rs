@@ -232,11 +232,14 @@ fn v6_label_for_references_labelable_002() {
     );
 }
 
-/// TS `getAttributeNode('for')` compares the source name as is, so an upper-case `FOR`
-/// is not found.
+/// `FOR` is the `for` attribute of an HTML element, as the DOM names it (TS
+/// `getAttributeNode()` asks `MLAttr#isNamedBy`, #4309).
 #[test]
 fn v6_label_for_references_labelable_003() {
-    assert_eq!(run(r#"<label FOR="t"></label><div id="t"></div>"#), []);
+    assert_eq!(
+        run(r#"<label FOR="t"></label><div id="t"></div>"#),
+        [brief(Severity::Error, 1, 13, MESSAGE, "t")]
+    );
 }
 
 /// `fieldset` and `object` are form-associated but not labelable; a custom element is

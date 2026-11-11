@@ -134,6 +134,7 @@ mod tests {
                     value_type: None,
                     candidate: None,
                     is_duplicatable: false,
+                    name_fold: None,
                 }))
             })
             .collect();
@@ -283,6 +284,7 @@ mod tests {
                 value_type: None,
                 candidate: None,
                 is_duplicatable: false,
+                name_fold: None,
             }))],
             has_spread_attr: false,
             block_behavior: None,

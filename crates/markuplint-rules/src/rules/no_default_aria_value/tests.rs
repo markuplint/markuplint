@@ -94,7 +94,11 @@ fn v6_no_default_aria_value_002() {
 
 #[test]
 fn v6_no_default_aria_value_003() {
-    assert_eq!(run(r#"<div ARIA-LIVE="off"></div>"#, serde_json::json!(true)), vec![]);
+    // `ARIA-LIVE` is `aria-live` as the DOM names it (#4309).
+    assert_eq!(
+        run(r#"<div ARIA-LIVE="off"></div>"#, serde_json::json!(true)),
+        vec![violation(Severity::Warning, 1, 6, "ARIA-LIVE=\"off\"")]
+    );
 }
 
 #[test]
@@ -105,9 +109,9 @@ fn v6_no_default_aria_value_004() {
     let (_, el) = arena.elements().next().unwrap();
     let mut attr = html_attrs(el).next().unwrap().clone();
 
-    assert!(is_default_value(&attr, props));
+    assert!(is_default_value(el, &attr, props));
     attr.is_dynamic_value = Some(true);
-    assert!(!is_default_value(&attr, props));
+    assert!(!is_default_value(el, &attr, props));
 }
 
 #[test]

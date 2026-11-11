@@ -86,12 +86,18 @@ fn v6_map_id_name_match_001() {
     );
 }
 
-/// TS `getAttributeNode()` compares the source name as is, so upper-case `ID` or `NAME`
-/// is not found and the map is not checked.
+/// `ID` and `NAME` are the `id` and `name` attributes of an HTML element, as the DOM names
+/// them (TS `getAttributeNode()` asks `MLAttr#isNamedBy`, #4309).
 #[test]
 fn v6_map_id_name_match_002() {
-    assert_eq!(run(r#"<map ID="a" name="b"></map>"#), []);
-    assert_eq!(run(r#"<map id="a" NAME="b"></map>"#), []);
+    assert_eq!(
+        run(r#"<map ID="a" name="b"></map>"#),
+        [brief(Severity::Error, 1, 10, MESSAGE, "a")]
+    );
+    assert_eq!(
+        run(r#"<map id="a" NAME="b"></map>"#),
+        [brief(Severity::Error, 1, 10, MESSAGE, "a")]
+    );
 }
 
 /// An empty `id` is compared like any value; only `map` is checked.

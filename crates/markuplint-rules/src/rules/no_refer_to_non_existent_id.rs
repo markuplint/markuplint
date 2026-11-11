@@ -309,6 +309,7 @@ mod tests {
                         value_type: None,
                         candidate: None,
                         is_duplicatable: false,
+                        name_fold: None,
                     }))
                 })
                 .collect();
@@ -454,6 +455,7 @@ mod tests {
             value_type: None,
             candidate: None,
             is_duplicatable: false,
+            name_fold: None,
         }));
 
         let el1_id = builder.push(DomNode::Element(ElementData {
@@ -532,6 +534,7 @@ mod tests {
             value_type: None,
             candidate: None,
             is_duplicatable: false,
+            name_fold: None,
         }));
 
         let el2_id = builder.push(DomNode::Element(ElementData {

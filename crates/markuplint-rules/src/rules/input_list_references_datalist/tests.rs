@@ -144,11 +144,14 @@ fn v6_input_list_references_datalist_001() {
     );
 }
 
-/// TS `getAttributeNode('list')` compares the source name as is, so an upper-case
-/// `LIST` is not found.
+/// `LIST` is the `list` attribute of an HTML element, as the DOM names it (TS
+/// `getAttributeNode()` asks `MLAttr#isNamedBy`, #4309).
 #[test]
 fn v6_input_list_references_datalist_002() {
-    assert_eq!(run(r#"<div id="x"></div><input LIST="x">"#), []);
+    assert_eq!(
+        run(r#"<div id="x"></div><input LIST="x">"#),
+        [brief(Severity::Error, 1, 32, MESSAGE, "x")]
+    );
 }
 
 /// Only `input` is checked.

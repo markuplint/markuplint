@@ -25,7 +25,7 @@
 //!   v6_element_supports_aria_prop_003  — Rust-only: native attribute present or absent changes the hint
 //!   v6_element_supports_aria_prop_004  — Rust-only: `properties: false` stops at an explicit role
 //!   v6_element_supports_aria_prop_005  — Rust-only: the element name is reported in lower case
-//!   v6_element_supports_aria_prop_006  — Rust-only: an attribute name written in upper case is not in the whitelist
+//!   v6_element_supports_aria_prop_006  — Rust-only: an attribute name written in upper case is checked against the whitelist
 //!   v6_element_supports_aria_prop_007  — Rust-only: an element without a spec is skipped
 //!   v6_element_supports_aria_prop_008  — Rust-only: severity and `rules: false`
 //!
@@ -523,7 +523,7 @@ fn v6_element_supports_aria_prop_005() {
 
 #[test]
 fn v6_element_supports_aria_prop_006() {
-    // The whitelist is matched on the name as written, so even `ARIA-HIDDEN` is outside it.
+    // `ARIA-ATOMIC` is `aria-atomic` as the DOM names it, which the whitelist of `br` leaves out.
     let violations = run_rule(r#"<br ARIA-ATOMIC="true">"#, serde_json::json!(true));
     assert_violations(
         &violations,

@@ -8,7 +8,7 @@
 //!   no-aria-hidden-on-hidden-until-found-invalid-002  → no_aria_hidden_on_hidden_until_found_invalid_002
 //!   no-aria-hidden-on-hidden-until-found-parser-001   — SKIP: Vue parser (dynamic `:aria-hidden`) not available in Rust
 //!   v6_no_aria_hidden_on_hidden_until_found_001  — Rust-only: the report is on the attribute, across lines, with tab/newline padding
-//!   v6_no_aria_hidden_on_hidden_until_found_002  — Rust-only: `aria-hidden` is looked up by the name as written, `hidden` case-insensitively
+//!   v6_no_aria_hidden_on_hidden_until_found_002  — Rust-only: `aria-hidden` and `hidden` are looked up as the DOM names them
 //!   v6_no_aria_hidden_on_hidden_until_found_003  — Rust-only: the first of duplicate `aria-hidden` attributes counts
 
 use crate::test_util::{Brief, brief, lint_brief};
@@ -79,7 +79,10 @@ fn v6_no_aria_hidden_on_hidden_until_found_001() {
 /// so `ARIA-HIDDEN` is not found, while `getAttribute('hidden')` lower-cases both sides.
 #[test]
 fn v6_no_aria_hidden_on_hidden_until_found_002() {
-    assert_eq!(run(r#"<div ARIA-HIDDEN="true" hidden="until-found">x</div>"#), []);
+    assert_eq!(
+        run(r#"<div ARIA-HIDDEN="true" hidden="until-found">x</div>"#),
+        [brief(Severity::Error, 1, 6, MESSAGE, r#"ARIA-HIDDEN="true""#)]
+    );
     assert_eq!(
         run(r#"<div aria-hidden="true" HIDDEN="until-found">x</div>"#),
         [brief(Severity::Error, 1, 6, MESSAGE, r#"aria-hidden="true""#)]

@@ -18,12 +18,13 @@
 
 use markuplint_core::mlast::MLASTHTMLAttr;
 use markuplint_dom::arena::DomArena;
+use markuplint_dom::node::ElementData;
 use markuplint_types::spec::aria;
 use markuplint_types::spec::types::{ARIAAttributeValue, ARIAProperty, MLMLSpec};
 
 use crate::aria::computed_role::get_computed_role;
 use crate::aria_check::{
-    ElementContext, ElementGate, aria_prop_attrs, attr_name, is_js_whitespace, prop_type_label, walk_elements,
+    ElementContext, ElementGate, aria_prop_attrs, attr_name, is_js_whitespace, name_key, prop_type_label, walk_elements,
 };
 use crate::rule::{Rule, RuleConfigSet};
 use crate::violation::Violation;
@@ -63,7 +64,7 @@ fn check(ctx: &ElementContext<'_>, violations: &mut Vec<Violation>) {
     let props = &aria::get_aria_spec(ctx.spec, ctx.version).props;
 
     for attr in attrs {
-        if let Some(message) = invalid_value_message(attr, props, role_name.as_deref()) {
+        if let Some(message) = invalid_value_message(ctx.el, attr, props, role_name.as_deref()) {
             violations.push(ctx.attr_violation(attr, message));
         }
     }
@@ -73,12 +74,13 @@ fn check(ctx: &ElementContext<'_>, violations: &mut Vec<Violation>) {
 /// or the `conditionalValue` entry for the computed role when there is one. `None` for an
 /// unknown property.
 fn resolve_value_type<'a>(
+    el: &ElementData,
     attr: &MLASTHTMLAttr,
     props: &'a [ARIAProperty],
     role_name: Option<&str>,
 ) -> Option<(&'a ARIAProperty, &'a ARIAAttributeValue)> {
-    let name = attr_name(attr);
-    let prop = props.iter().find(|p| p.name == name)?;
+    let key = name_key(el, attr);
+    let prop = props.iter().find(|p| p.name == key)?;
 
     let mut value_type = &prop.value;
     if let (Some(role_name), Some(conditions)) = (role_name, &prop.conditional_value)
@@ -91,12 +93,17 @@ fn resolve_value_type<'a>(
 
 /// The message for `attr` when its value does not fit the property, `None` when it does, when the
 /// property is unknown, or when the value is dynamic.
-fn invalid_value_message(attr: &MLASTHTMLAttr, props: &[ARIAProperty], role_name: Option<&str>) -> Option<String> {
+fn invalid_value_message(
+    el: &ElementData,
+    attr: &MLASTHTMLAttr,
+    props: &[ARIAProperty],
+    role_name: Option<&str>,
+) -> Option<String> {
     if attr.is_dynamic_value == Some(true) {
         return None;
     }
     let name = attr_name(attr);
-    let (prop, value_type) = resolve_value_type(attr, props, role_name)?;
+    let (prop, value_type) = resolve_value_type(el, attr, props, role_name)?;
 
     let value = markuplint_dom::helpers::attr_value(attr);
     if check_aria_value(value_type, value, &prop.enum_values) {

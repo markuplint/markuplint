@@ -3,6 +3,7 @@
 //! Deserializes the compiled spec JSON (e.g., `@markuplint/html-spec/index.json`).
 
 pub mod aria;
+pub mod attr_specs;
 pub mod content_model;
 pub mod lookup;
 pub mod types;

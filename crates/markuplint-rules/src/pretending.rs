@@ -252,6 +252,7 @@ fn create_pretender_attrs(origin: &ElementData, attrs: &[PretenderAttr], uuid_ba
                 value_type: None,
                 candidate: None,
                 is_duplicatable: true,
+                name_fold: None,
             })))
         })
         .collect()

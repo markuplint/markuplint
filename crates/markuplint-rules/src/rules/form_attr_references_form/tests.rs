@@ -124,11 +124,14 @@ fn v6_form_attr_references_form_003() {
     );
 }
 
-/// TS `getAttributeNode('form')` compares the source name as is, so an upper-case
-/// `FORM` is not found.
+/// `FORM` is the `form` attribute of an HTML element, as the DOM names it (TS
+/// `getAttributeNode()` asks `MLAttr#isNamedBy`, #4309).
 #[test]
 fn v6_form_attr_references_form_004() {
-    assert_eq!(run(r#"<div id="x"></div><input FORM="x">"#), []);
+    assert_eq!(
+        run(r#"<div id="x"></div><input FORM="x">"#),
+        [brief(Severity::Error, 1, 32, MESSAGE, "x")]
+    );
 }
 
 /// A pretended element without the `as` attribute is skipped; with it, it is checked.

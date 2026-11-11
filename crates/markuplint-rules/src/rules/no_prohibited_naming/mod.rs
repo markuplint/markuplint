@@ -18,7 +18,9 @@ use markuplint_core::mlast::ElementType;
 use markuplint_dom::arena::DomArena;
 use markuplint_types::spec::types::MLMLSpec;
 
-use crate::aria_check::{ElementContext, ElementGate, aria_prop_attrs, attr_name, find_attr, role_attr, walk_elements};
+use crate::aria_check::{
+    ElementContext, ElementGate, aria_prop_attrs, attr_name, find_attr, name_key, role_attr, walk_elements,
+};
 use crate::attr_check::get_clean_value;
 use crate::rule::{Rule, RuleConfigSet};
 use crate::violation::Violation;
@@ -51,7 +53,7 @@ impl Rule for NoProhibitedNaming {
 fn check(ctx: &ElementContext<'_>, violations: &mut Vec<Violation>) {
     let naming_attrs: Vec<_> = aria_prop_attrs(ctx.el)
         .into_iter()
-        .filter(|attr| NAMING_ATTRS.contains(&attr_name(attr)))
+        .filter(|attr| NAMING_ATTRS.contains(&name_key(ctx.el, attr).as_str()))
         .collect();
     if naming_attrs.is_empty() || ctx.computed_role().is_some() {
         return;
@@ -72,11 +74,12 @@ fn check(ctx: &ElementContext<'_>, violations: &mut Vec<Violation>) {
 
     for attr in naming_attrs {
         let name = attr_name(attr);
+        let key = name_key(ctx.el, attr);
         violations.push(ctx.attr_violation(
             attr,
             format!(
                 "The \"{name}\" ARIA {} is prohibited on the \"{}\" element",
-                ctx.prop_type_of(name),
+                ctx.prop_type_of(&key),
                 ctx.el_name
             ),
         ));

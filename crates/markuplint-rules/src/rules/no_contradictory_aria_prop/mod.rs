@@ -20,7 +20,7 @@ use markuplint_dom::arena::DomArena;
 use markuplint_types::spec::aria;
 use markuplint_types::spec::types::MLMLSpec;
 
-use crate::aria_check::{ElementContext, ElementGate, aria_prop_attrs, attr_name, find_attr, walk_elements};
+use crate::aria_check::{ElementContext, ElementGate, aria_prop_attrs, attr_name, find_attr, name_key, walk_elements};
 use crate::attr_check::{
     AttrEligibility, attr_spec_is_boolean, get_clean_value, resolve_attr_eligibility, with_element_attr_context,
 };
@@ -64,7 +64,8 @@ fn check(ctx: &ElementContext<'_>, violations: &mut Vec<Violation>) {
                 continue;
             }
             let name = attr_name(attr);
-            let Some(prop) = props.iter().find(|prop| prop.name == name) else {
+            let key = name_key(ctx.el, attr);
+            let Some(prop) = props.iter().find(|prop| prop.name == key) else {
                 continue;
             };
             let Some(equivalents) = &prop.equivalent_html_attrs else {
@@ -105,7 +106,7 @@ fn check(ctx: &ElementContext<'_>, violations: &mut Vec<Violation>) {
                     attr,
                     format!(
                         "The \"{name}\" ARIA {} contradicts the {contradicts_with} \"{native_name}\" attribute",
-                        ctx.prop_type_of(name),
+                        ctx.prop_type_of(&key),
                     ),
                 ));
                 break;

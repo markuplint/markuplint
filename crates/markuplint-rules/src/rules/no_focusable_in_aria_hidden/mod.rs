@@ -16,7 +16,7 @@ use markuplint_dom::node::ElementData;
 use markuplint_types::spec::types::MLMLSpec;
 
 use crate::aria::may_be_focusable::may_be_focusable;
-use crate::aria_check::{ElementContext, ElementGate, attr_name, html_attrs, walk_elements};
+use crate::aria_check::{ElementContext, ElementGate, find_attr, walk_elements};
 use crate::rule::{Rule, RuleConfigSet};
 use crate::violation::{Severity, Violation};
 
@@ -75,7 +75,5 @@ fn closest_aria_hidden(arena: &DomArena, node_id: NodeId, el: &ElementData) -> O
 
 /// TS `el.getAttributeNode('aria-hidden')?.value === 'true'`.
 fn is_aria_hidden(el: &ElementData) -> bool {
-    html_attrs(el)
-        .find(|attr| attr_name(attr) == "aria-hidden")
-        .is_some_and(|attr| markuplint_dom::helpers::attr_value(attr) == "true")
+    find_attr(el, "aria-hidden").is_some_and(|attr| markuplint_dom::helpers::attr_value(attr) == "true")
 }

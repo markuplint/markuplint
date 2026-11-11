@@ -208,6 +208,7 @@ mod tests {
             value_type: None,
             candidate: None,
             is_duplicatable: false,
+            name_fold: None,
         }))
     }
 

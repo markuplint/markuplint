@@ -219,6 +219,7 @@ pub(crate) fn make_element_with_attrs(tag: &str, attrs: &[(&str, &str)]) -> DomA
                 value_type: None,
                 candidate: None,
                 is_duplicatable: false,
+                name_fold: None,
             }))
         })
         .collect();

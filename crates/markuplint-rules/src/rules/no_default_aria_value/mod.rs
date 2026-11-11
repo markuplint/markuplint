@@ -9,10 +9,11 @@
 
 use markuplint_core::mlast::MLASTHTMLAttr;
 use markuplint_dom::arena::DomArena;
+use markuplint_dom::node::ElementData;
 use markuplint_types::spec::aria;
 use markuplint_types::spec::types::{ARIAProperty, MLMLSpec};
 
-use crate::aria_check::{ElementContext, ElementGate, aria_prop_attrs, attr_name, is_js_whitespace, walk_elements};
+use crate::aria_check::{ElementContext, ElementGate, aria_prop_attrs, is_js_whitespace, name_key, walk_elements};
 use crate::rule::{Rule, RuleConfigSet};
 use crate::violation::{Severity, Violation};
 
@@ -52,21 +53,21 @@ fn check(ctx: &ElementContext<'_>, violations: &mut Vec<Violation>) {
     let props = &aria::get_aria_spec(ctx.spec, ctx.version).props;
 
     for attr in attrs {
-        if is_default_value(attr, props) {
+        if is_default_value(ctx.el, attr, props) {
             violations.push(ctx.attr_violation(attr, "It is default value"));
         }
     }
 }
 
 /// Whether `attr` carries the default value of its property. A dynamic value never does.
-fn is_default_value(attr: &MLASTHTMLAttr, props: &[ARIAProperty]) -> bool {
+fn is_default_value(el: &ElementData, attr: &MLASTHTMLAttr, props: &[ARIAProperty]) -> bool {
     if attr.is_dynamic_value == Some(true) {
         return false;
     }
-    let name = attr_name(attr);
+    let key = name_key(el, attr);
     let Some(default_value) = props
         .iter()
-        .find(|p| p.name == name)
+        .find(|p| p.name == key)
         .and_then(|p| p.default_value.as_deref())
     else {
         return false;

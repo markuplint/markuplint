@@ -80,6 +80,7 @@ fn make_attrs(attrs: &[(&str, &str)]) -> Vec<MLASTAttr> {
                 value_type: None,
                 candidate: None,
                 is_duplicatable: false,
+                name_fold: None,
             }))
         })
         .collect()
@@ -3431,6 +3432,7 @@ mod algorithm_tests {
                     value_type: None,
                     candidate: None,
                     is_duplicatable: false,
+                    name_fold: None,
                 },
             ))],
             has_spread_attr: false,

@@ -116,6 +116,7 @@ fn build_children(
                         value_type: None,
                         candidate: None,
                         is_duplicatable: false,
+                        name_fold: None,
                     }))
                 })
                 .collect();
