@@ -197,28 +197,24 @@ fn collect_ids(
         if rule_config.disabled {
             continue;
         }
-        for attr in &el.attributes {
-            let MLASTAttr::HTMLAttr(html_attr) = attr else {
-                continue;
-            };
+        // TS `getAttributeNode('id')`: an attribute that the framework does not output is not one
+        let Some(html_attr) = markuplint_dom::helpers::get_attr_node_from_el(el, "id") else {
+            continue;
+        };
 
-            if !html_attr.node_name.eq_ignore_ascii_case("id") {
-                continue;
-            }
+        let root = trees.root_of(node_id);
+        if html_attr.is_dynamic_value == Some(true) {
+            trees_with_dynamic_id.insert(root);
+        }
 
-            let root = trees.root_of(node_id);
-            if html_attr.is_dynamic_value == Some(true) {
-                trees_with_dynamic_id.insert(root);
-            }
-
-            if html_attr.value_type.as_deref() == Some("code") {
-                continue;
-            }
-            if let Some(value) = dom_value(html_attr)
-                && !value.is_empty()
-            {
-                ids_of_tree.entry(root).or_default().insert(value);
-            }
+        // TS `attr.valueType === 'code'`, which a value the framework resolves is not
+        if html_attr.value_type.as_deref() == Some("code") && html_attr.potential_value.is_none() {
+            continue;
+        }
+        if let Some(value) = dom_value(html_attr)
+            && !value.is_empty()
+        {
+            ids_of_tree.entry(root).or_default().insert(value);
         }
     }
 
