@@ -2,19 +2,23 @@
 //! the three rules `no-unsupported-features` was split into.
 //!
 //! Both TS rules walk every element in the HTML namespace whose element type is `html` (custom
-//! and authored elements reach them only through pretenders, which the Rust DOM does not
-//! resolve), and report the element when its spec carries the flag and every non-directive
-//! attribute whose merged attribute spec carries it. The element name is the lower-cased local
-//! name; the attribute name is matched as written against the spec's names, so `CREDENTIALLESS`
-//! is not `credentialless`. `ignoreFeatures` is read from each element's own config and holds
-//! element names and `element[attribute]` keys, compared as-is.
+//! and authored elements reach them only through pretenders), and report the element when its
+//! spec carries the flag and every non-directive attribute whose merged attribute spec (TS
+//! `getAttrSpecs`), looked up by the name the DOM gives the attribute (TS `findAttrSpec`),
+//! carries it.
+//!
+//! `ignoreFeatures` holds element names and `element[attribute]` keys (TS
+//! `createIgnoreFeaturesLookup`). The element part is compared as the document compares tag names
+//! (`tagNameCaseSensitive`), and the attribute part by the attribute that is checked
+//! (`MLAttr#isNamedBy`). The option of an element replaces that of the rule for it.
 
 use markuplint_core::mlast::{ElementType, MLASTAttr, NamespaceURI};
 use markuplint_dom::arena::DomArena;
-use markuplint_dom::helpers::get_raw_attr_name;
+use markuplint_dom::helpers::{attr_name, is_named_by};
 use markuplint_types::spec::types::{ElementSpec, MLMLSpec};
 use serde_json::Value;
 
+use crate::attr_name_key::{attr_specs_of, find_attr_spec};
 use crate::rule::RuleConfigSet;
 use crate::violation::Violation;
 
@@ -39,12 +43,37 @@ impl Flag {
             Self::NonStandard => spec.non_standard == Some(true),
         }
     }
+}
 
-    fn json_key(self) -> &'static str {
-        match self {
-            Self::Experimental => "experimental",
-            Self::NonStandard => "nonStandard",
+/// The parts of the keys of `ignoreFeatures` (TS `parseIgnoreFeatures`): the element keys, and the
+/// element part and the attribute part of the attribute keys.
+struct IgnoreFeatures<'a> {
+    elements: Vec<&'a str>,
+    attrs: Vec<(&'a str, &'a str)>,
+}
+
+impl<'a> IgnoreFeatures<'a> {
+    fn parse(option: &'a Value) -> Self {
+        let mut elements = Vec::new();
+        let mut attrs = Vec::new();
+        for feature in option.as_array().into_iter().flatten().filter_map(Value::as_str) {
+            match feature.find('[') {
+                Some(open) if feature.ends_with(']') => {
+                    attrs.push((&feature[..open], &feature[open + 1..feature.len() - 1]));
+                }
+                _ => elements.push(feature),
+            }
         }
+        Self { elements, attrs }
+    }
+}
+
+/// The element part of a key names `el_name`, compared as the document compares tag names.
+fn element_part_matches(part: &str, el_name: &str, tag_name_case_sensitive: bool) -> bool {
+    if tag_name_case_sensitive {
+        part == el_name
+    } else {
+        part.eq_ignore_ascii_case(el_name)
     }
 }
 
@@ -55,30 +84,34 @@ pub(crate) fn check_features(
     spec: &MLMLSpec,
     config: &RuleConfigSet,
 ) -> Vec<Violation> {
+    let tag_name_case_sensitive = arena.settings().tag_name_case_sensitive;
     let mut violations = Vec::new();
     for (node_id, el) in arena.elements() {
         let rule_config = config.get(node_id);
         if rule_config.disabled || el.is_ghost {
             continue;
         }
-        // TS gates on the namespace of the element as written (`el.namespaceURI` is not
-        // delegated to a pretender), and lets a non-HTML element through when it pretends.
-        if *el.identity(true).namespace != NamespaceURI::XHTML
-            || (el.element_type != ElementType::Html && el.pretended().is_none())
-        {
+        // TS gates on `el.namespaceURI`, which follows a pretender as `localName` does, and lets
+        // a non-HTML element through when it pretends.
+        if el.namespace != NamespaceURI::XHTML || (el.element_type != ElementType::Html && el.pretended().is_none()) {
             continue;
         }
-        let el_name = el.base.node_name.to_ascii_lowercase();
-        let ignore: Vec<&str> = rule_config
-            .options
-            .get("ignoreFeatures")
-            .and_then(Value::as_array)
-            .map(|list| list.iter().filter_map(Value::as_str).collect())
-            .unwrap_or_default();
-        // TS `getSpec()` / `getAttrSpecs()` look the HTML element up by its exact local name.
+        // TS `el.localName`
+        let el_name = if tag_name_case_sensitive {
+            el.base.node_name.clone()
+        } else {
+            el.base.node_name.to_ascii_lowercase()
+        };
+        let empty = Value::Null;
+        let ignore = IgnoreFeatures::parse(rule_config.options.get("ignoreFeatures").unwrap_or(&empty));
+        // TS `getSpec()` looks the HTML element up by its exact local name.
         let el_spec = spec.specs.iter().find(|s| s.name == el_name);
 
-        if !ignore.contains(&el_name.as_str())
+        let element_ignored = ignore
+            .elements
+            .iter()
+            .any(|part| element_part_matches(part, &el_name, tag_name_case_sensitive));
+        if !element_ignored
             && let Some(el_spec) = el_spec
             && flag.of_element(el_spec)
         {
@@ -90,12 +123,12 @@ pub(crate) fn check_features(
                 line: el.base.line,
                 col: el.base.col,
                 raw: el.base.raw.clone(),
-                reason: None,
+                reason: rule_config.reason.clone(),
                 fix: None,
             });
         }
 
-        let Some(el_spec) = el_spec else {
+        let Some(attr_specs) = attr_specs_of(spec, el) else {
             continue;
         };
         for attr in &el.attributes {
@@ -105,63 +138,34 @@ pub(crate) fn check_features(
             if html_attr.is_directive == Some(true) {
                 continue;
             }
-            let attr_name = get_raw_attr_name(html_attr);
-            let ignore_key = format!("{el_name}[{attr_name}]");
-            if ignore.contains(&ignore_key.as_str()) {
+            let attr_ignored = ignore.attrs.iter().any(|(element, name)| {
+                element_part_matches(element, &el_name, tag_name_case_sensitive) && is_named_by(el, html_attr, name)
+            });
+            if attr_ignored {
                 continue;
             }
-            if !attr_has_flag(spec, el_spec, attr_name, flag) {
+            let Some(attr_spec) = find_attr_spec(&attr_specs, el, html_attr) else {
+                continue;
+            };
+            let flagged = match flag {
+                Flag::Experimental => attr_spec.experimental,
+                Flag::NonStandard => attr_spec.non_standard,
+            };
+            if flagged != Some(true) {
                 continue;
             }
             violations.push(Violation {
                 rule_id: rule_id.to_string(),
                 name: None,
                 severity: rule_config.severity,
-                message: format!("The \"{attr_name}\" attribute is {}", flag.word()),
+                message: format!("The \"{}\" attribute is {}", attr_name(html_attr), flag.word()),
                 line: html_attr.name.line,
                 col: html_attr.name.col,
                 raw: html_attr.name.raw.clone(),
-                reason: None,
+                reason: rule_config.reason.clone(),
                 fix: None,
             });
         }
     }
     violations
-}
-
-/// The flag on the attribute spec TS `getAttrSpecs()` builds: the global attributes of every
-/// enabled category (all of a category enabled with `true`, the listed names of one enabled
-/// with an array), with the element's own definition spread over them property by property, so
-/// an element-level definition that leaves the flag out keeps the global one.
-fn attr_has_flag(spec: &MLMLSpec, el_spec: &ElementSpec, attr_name: &str, flag: Flag) -> bool {
-    if let Some(own) = el_spec.attributes.get(attr_name) {
-        let own_flag = match flag {
-            Flag::Experimental => own.experimental,
-            Flag::NonStandard => own.non_standard,
-        };
-        if let Some(value) = own_flag {
-            return value;
-        }
-    }
-    let mut global_flag = false;
-    for (category, enabled) in &el_spec.global_attrs {
-        let selected = match enabled {
-            Value::Bool(true) => true,
-            Value::Array(names) => names.iter().any(|n| n.as_str() == Some(attr_name)),
-            _ => false,
-        };
-        if !selected {
-            continue;
-        }
-        if let Some(def) = spec
-            .def
-            .global_attrs
-            .get(category)
-            .and_then(|attrs| attrs.get(attr_name))
-            && let Some(value) = def.get(flag.json_key()).and_then(Value::as_bool)
-        {
-            global_flag = value;
-        }
-    }
-    global_flag
 }

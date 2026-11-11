@@ -7,11 +7,11 @@
 //!   no-experimental-features-issue-3740-001      → no_experimental_features_issue_3740_001
 //!   v6_no_experimental_features_001  — Rust-only: message, position and `raw` of an attribute report
 //!   v6_no_experimental_features_002  — Rust-only: global attributes and element attributes merged over them
-//!   v6_no_experimental_features_003  — Rust-only: the attribute name is matched as written, the element name lower-cased
+//!   v6_no_experimental_features_003  — Rust-only: the attribute name is matched as the DOM names it, the element name lower-cased
 //!   v6_no_experimental_features_004  — Rust-only: `ignoreFeatures` keys
 //!   v6_no_experimental_features_005  — Rust-only: per-node `ignoreFeatures` and `rules: false`
 //!   v6_no_experimental_features_006  — Rust-only: what is not checked
-//!   v6_no_experimental_features_007  — Rust-only: a pretender is gated by the namespace of the element written
+//!   v6_no_experimental_features_007  — Rust-only: a pretender is gated by the namespace of the element it pretends to be
 
 use crate::lint::{LintConfig, lint};
 use crate::violation::{Severity, Violation};
@@ -131,10 +131,10 @@ fn v6_no_experimental_features_002() {
 /// name is the lower-cased local name. Expected values are the TS output.
 #[test]
 fn v6_no_experimental_features_003() {
-    assert!(run("<IFRAME CREDENTIALLESS></IFRAME>").is_empty());
+    assert_experimental(&run("<IFRAME CREDENTIALLESS></IFRAME>"), &[(1, 9, "CREDENTIALLESS")]);
     assert_experimental(
         &run("<iframe privateToken=\"x\"></iframe><iframe privatetoken=\"x\"></iframe>"),
-        &[(1, 9, "privateToken")],
+        &[(1, 9, "privateToken"), (1, 43, "privatetoken")],
     );
     assert_experimental(&run("<IFRAME credentialless></IFRAME>"), &[(1, 9, "credentialless")]);
 }
@@ -148,10 +148,7 @@ fn v6_no_experimental_features_004() {
         &ignoring("<iframe credentialless></iframe>", &["credentialless", "iframe"]),
         &[(1, 9, "credentialless")],
     );
-    assert_experimental(
-        &ignoring("<iframe credentialless></iframe>", &["IFRAME[credentialless]"]),
-        &[(1, 9, "credentialless")],
-    );
+    assert!(ignoring("<iframe credentialless></iframe>", &["IFRAME[credentialless]"]).is_empty());
     assert!(ignoring("<IFRAME credentialless></IFRAME>", &["iframe[credentialless]"]).is_empty());
 }
 
@@ -244,6 +241,13 @@ fn v6_no_experimental_features_007() {
         run_pretended(
             "<x-iframe credentialless></x-iframe>",
             serde_json::json!([{ "selector": "x-iframe", "as": { "element": "iframe", "inheritAttrs": true, "namespace": "svg" } }])
+        ),
+        []
+    );
+    assert_eq!(
+        run_pretended(
+            "<x-iframe credentialless></x-iframe>",
+            serde_json::json!([{ "selector": "x-iframe", "as": { "element": "iframe", "inheritAttrs": true } }])
         ),
         credentialless(11)
     );
