@@ -7,6 +7,8 @@
 
 use super::custom;
 use super::types::{CheckResult, Expect, ExpectType, Reason, UnmatchedOpts, matched, unmatched, unmatched_with};
+use crate::whatwg::autocomplete::{CheckAutoCompleteOptions, check_autocomplete};
+use crate::whatwg::link_type::{LinkTypeContext, check_link_type};
 
 /// One entry of TS `defs`: a `CustomSyntax`.
 pub struct Def {
@@ -321,7 +323,7 @@ pub fn get_def(keyword: &str) -> Option<Def> {
             |v| {
                 matches(
                     v,
-                    crate::whatwg::navigable_target_name::is_navigable_target_name(v),
+                    crate::whatwg::navigable_target_name::is_browser_context_name(v),
                     None,
                 )
             },
@@ -407,17 +409,17 @@ pub fn get_def(keyword: &str) -> Option<Def> {
         "AutoComplete" => def(
             "https://html.spec.whatwg.org/multipage/form-control-infrastructure.html#attr-fe-autocomplete",
             &[],
-            check_autocomplete,
+            |v| autocomplete(v, false, false),
         ),
         "AutoCompleteNoWebauthn" => def(
             "https://html.spec.whatwg.org/multipage/form-control-infrastructure.html#attr-fe-autocomplete-webauthn",
             &[],
-            check_autocomplete,
+            |v| autocomplete(v, true, false),
         ),
         "AutoCompleteAnchorMantle" => def(
             "https://html.spec.whatwg.org/multipage/form-control-infrastructure.html#autofill-anchor-mantle",
             &[],
-            check_autocomplete,
+            |v| autocomplete(v, false, true),
         ),
         "Accept" => def(
             "https://html.spec.whatwg.org/multipage/input.html#attr-input-accept",
@@ -446,7 +448,7 @@ pub fn get_def(keyword: &str) -> Option<Def> {
                 Const,
                 "Link types allowed in the `link` element when used in the `body` element",
             )],
-            check_link_type,
+            |v| check_link_type(v, LinkTypeContext::Link),
         ),
         "LinkTypeForLinkElementInBody" => def(
             "https://html.spec.whatwg.org/multipage/links.html#body-ok",
@@ -454,58 +456,28 @@ pub fn get_def(keyword: &str) -> Option<Def> {
                 Const,
                 "Link types allowed in the `link` element when used in the `body` element",
             )],
-            check_link_type,
+            |v| check_link_type(v, LinkTypeContext::BodyLink),
         ),
         "LinkTypeForAnchorAndAreaElement" => def(
             "https://html.spec.whatwg.org/multipage/links.html#linkTypes",
             &[(Const, "Link types allowed in `a` and `area` elements")],
-            check_link_type,
+            |v| check_link_type(v, LinkTypeContext::AnchorAndArea),
         ),
         "LinkTypeForFormElement" => def(
             "https://html.spec.whatwg.org/multipage/links.html#linkTypes",
             &[(Const, "Link types allowed in the `form` element")],
-            check_link_type,
+            |v| check_link_type(v, LinkTypeContext::Form),
         ),
         _ => return None,
     })
 }
 
-fn check_link_type(v: &str) -> CheckResult {
-    matches(
+fn autocomplete(v: &str, no_webauthn: bool, anchor_mantle: bool) -> CheckResult {
+    check_autocomplete(
         v,
-        crate::whatwg::link_type::is_link_type(v),
-        Some(Reason::UnexpectedToken),
+        CheckAutoCompleteOptions {
+            no_webauthn,
+            anchor_mantle,
+        },
     )
-}
-
-fn check_autocomplete(v: &str) -> CheckResult {
-    let result = crate::whatwg::autocomplete::check_autocomplete_with_position(v);
-    if result.valid {
-        return matched();
-    }
-    let expects = Some(vec![Expect {
-        type_: ExpectType::Syntax,
-        value: "autofill field name (https://html.spec.whatwg.org/multipage/form-control-infrastructure.html#autofill-field)".to_owned(),
-    }]);
-    if let (Some(offset), Some(token)) = (result.invalid_token_offset, result.invalid_token) {
-        unmatched_with(
-            &token,
-            Reason::SyntaxError,
-            UnmatchedOpts {
-                offset: Some(offset),
-                column: Some(offset + 1),
-                expects,
-                ..Default::default()
-            },
-        )
-    } else {
-        unmatched_with(
-            v,
-            Reason::SyntaxError,
-            UnmatchedOpts {
-                expects,
-                ..Default::default()
-            },
-        )
-    }
 }

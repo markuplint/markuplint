@@ -105,11 +105,15 @@ pub fn check_json(value: &str) -> CheckResult {
 }
 
 /// TS `isEmail` (`whatwg/check-email.ts`): the pattern the HTML Standard gives.
+///
+/// TS writes it `[a-z0-9]` with the `i` flag. A JS case-insensitive pattern without the `u` flag
+/// folds no non-ASCII character onto an ASCII one, whereas the `regex` crate's Unicode `(?i)`
+/// matches U+017F (ſ) for `s` and U+212A (K) for `k`; the ranges are spelled out instead.
 #[must_use]
 pub fn is_email(value: &str) -> bool {
     static EMAIL: LazyLock<Regex> = LazyLock::new(|| {
         Regex::new(
-            r"(?i)^[a-z0-9.!#$%&'*+/=?^_`{|}~-]+@[a-z0-9](?:[a-z0-9-]{0,61}[a-z0-9])?(?:\.[a-z0-9](?:[a-z0-9-]{0,61}[a-z0-9])?)*$",
+            r"^[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?(?:\.[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?)*$",
         )
         .unwrap()
     });
@@ -454,16 +458,7 @@ pub fn check_http_schema_url(value: &str) -> CheckResult {
 
 const KEYWORDS: [&str; 4] = ["_blank", "_self", "_parent", "_top"];
 
-/// TS `hasTabOrNewlineAndLessThan`.
-fn has_tab_or_newline_and_less_than(value: &str) -> bool {
-    value.contains(['\t', '\n', '\r']) && value.contains('<')
-}
-
-/// TS `isNavigableTargetName()`.
-#[must_use]
-pub fn is_navigable_target_name(value: &str) -> bool {
-    !value.is_empty() && !has_tab_or_newline_and_less_than(value) && !value.starts_with('_')
-}
+use crate::whatwg::navigable_target_name::{has_tab_or_newline_and_less_than, is_navigable_target_name};
 
 /// TS `NavigableTargetNameOrKeyword`.
 #[must_use]

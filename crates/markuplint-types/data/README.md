@@ -37,3 +37,22 @@ console.log(JSON.stringify(result, null, 2));
 ```
 
 Then run `cargo test -p markuplint-types` to verify nothing is broken.
+
+# Language Subtag Data
+
+`language-subtags.json` holds the subtag keys of the IANA Language Subtag Registry, one list per subtag type (`language`, `extlang`, `script`, `region`, `variant`), taken from the [language-subtag-registry](https://www.npmjs.com/package/language-subtag-registry) package that `@markuplint/types` reads for `BCP47`. Ranged keys (`qaa..qtz`) are kept as they are.
+
+## How to Update
+
+When `language-subtag-registry` is updated in the project's npm dependencies, regenerate the file:
+
+```bash
+# From the repository root
+node -e "
+const result = {};
+for (const type of ['language', 'extlang', 'script', 'region', 'variant']) {
+  result[type] = Object.keys(require('language-subtag-registry/data/json/' + type + '.json'));
+}
+console.log(JSON.stringify(result));
+" > crates/markuplint-types/data/language-subtags.json
+```
