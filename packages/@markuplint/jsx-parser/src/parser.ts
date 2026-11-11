@@ -204,6 +204,9 @@ class JSXParser extends Parser<JSXNode, State> {
 					originNode.children,
 					{
 						namelessFragment: true,
+						// `<React.Fragment>` and `<Fragment>` are the long forms of `<>`: React renders no element for them
+						// @see https://react.dev/reference/react/Fragment
+						overwriteProps: /^(?:React\.)?Fragment$/.test(nodeName) ? { isFragment: true } : undefined,
 						createEndTagToken: () => {
 							const closeTag = isFragment ? originNode.closingFragment : originNode.closingElement;
 
