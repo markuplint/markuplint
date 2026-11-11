@@ -402,8 +402,8 @@ export abstract class MLNode<
 	 * A `template` element that is in no tree has none either.
 	 *
 	 * The selector engine and `closest()` read it, so that `section p` does not match a `p` in the
-	 * content of a `template` in a `section`. {@link MLNode.parentElement} stays the syntactical one
-	 * because the content model of a `template` element is validated against what is in it.
+	 * content of a `template` in a `section`. {@link MLNode.parentElement} does not stop at that
+	 * boundary because the content model of a `template` element is validated against what is in it.
 	 *
 	 * `getTreeParentElement` of `@markuplint/ml-spec`, which cannot use this getter, derives the same
 	 * answer from `getRootNode()` for the algorithms of that package: a change of the boundary here
@@ -425,6 +425,10 @@ export abstract class MLNode<
 	/**
 	 * The parent node that may be `Element`, `Document`, `DocumentFragment`, and `null`.
 	 *
+	 * A block of a template language is walked through (`MLBlock#isTransparent`): a node in a block
+	 * has the node that contains the block as its parent. A node at the top of a fragment document
+	 * has none.
+	 *
 	 * ## HTML:
 	 *
 	 * ```html
@@ -445,10 +449,10 @@ export abstract class MLNode<
 	 *
 	 * ```jsx
 	 * <> // => null
-	 *   <div> // => #document-fragment
+	 *   <div> // => <>
 	 *     {items.map(item => {
 	 *       return (
-	 *         <span /> // => null
+	 *         <span /> // => <div>
 	 *       )
 	 *     })}
 	 *   </div>
@@ -598,7 +602,7 @@ export abstract class MLNode<
 	 *
 	 * ```jsx
 	 * <> // => #document
-	 *   <div> // => #document-fragment
+	 *   <div> // => <>
 	 *     {items.map(item => {
 	 *       return (
 	 *         <span /> // => #ml-block
@@ -1055,6 +1059,9 @@ export abstract class MLNode<
 	}
 
 	/**
+	 * Whether the document of this node is a fragment of a document (a partial, a component) and
+	 * not a whole one. The parser of the document decides it (`MLDocument#isFragment`).
+	 *
 	 * @implements `@markuplint/ml-core` API: `MLNode`
 	 */
 	isInFragmentDocument(): boolean {

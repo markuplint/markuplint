@@ -18,7 +18,7 @@ import { decodeEntities } from '@markuplint/shared';
  * the tree: the queries of `MLParentNode`, `getRootNode()`, `treeParentElement`, the selector
  * engine and `contains()` stop at it. `parentNode` / `parentElement` do not: the content
  * model of a `template` element is validated against the elements that the syntax tree puts
- * in it, so they stay the syntactical ones. The algorithms of `@markuplint/ml-spec` walk up
+ * in it, so they go on to the `template` element. The algorithms of `@markuplint/ml-spec` walk up
  * with `getTreeParentElement` / `getComposedParentElement`, which read `getRootNode()`, so the
  * boundary made here is the boundary they stop at.
  *
@@ -74,6 +74,9 @@ const SHADOW_HOST_NAMES: ReadonlySet<string> = new Set([
  * JSX, a `template` with a directive such as `v-if`) leaves its children to the next element
  * above.
  *
+ * `isRenderedAway` of `@markuplint/rules` (`src/helpers.ts`) decides the same of an element for the
+ * rules that walk up the ancestors: a kind added here belongs to it too.
+ *
  * @param node - A node of the syntax tree
  * @returns `true` if the node is not an element of the output
  */
@@ -106,7 +109,8 @@ function hasDirectiveTemplate<T extends RuleConfigValue, O extends PlainData>(
 		return false;
 	}
 	for (const attr of el.attributes) {
-		if (attr.isDirective) {
+		// A spread attribute (`{...props}`) sets attributes of the element, which stays
+		if (attr.isDirective && attr.localName !== '#spread') {
 			return true;
 		}
 	}

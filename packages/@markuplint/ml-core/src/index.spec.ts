@@ -1196,6 +1196,22 @@ describe('ChildNode with blockBehavior', () => {
 		const span = dom.querySelector('span');
 		expect(span?.parentNode?.nodeName).toBe('DIV');
 	});
+
+	test('the parents of a JSX fragment, of an element in it, and of an element in an expression', async () => {
+		const dom = createTestDocument('<><div>{items.map(item => <span />)}</div></>', {
+			parser: await import('@markuplint/jsx-parser'),
+		});
+		const fragment = dom.nodeList[0];
+		const div = dom.querySelector('div');
+		const span = dom.querySelector('span');
+		expect(fragment?.nodeName).toBe('#JSX-FRAGMENT');
+		expect(fragment?.parentNode).toBeNull();
+		expect(div?.parentNode).toBe(fragment);
+		expect(fragment?.syntacticalParentNode?.nodeName).toBe('#document');
+		expect(div?.syntacticalParentNode).toBe(fragment);
+		expect(span?.syntacticalParentNode?.nodeName).toBe('#ml-block');
+		expect(span?.parentNode?.nodeName).toBe('DIV');
+	});
 });
 
 describe('Issues', () => {
