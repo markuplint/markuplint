@@ -59,7 +59,9 @@ impl Rule for LinkTypes {
 
             let allow_microformats = parse_allow_microformats(&rule_config.options);
 
-            for keyword in trimmed.split_whitespace() {
+            // TS `relAttr.tokenList.allTokens()`: each keyword where it is written in the value
+            for token in crate::aria_check::role_tokens(rel_attr) {
+                let keyword = token.value.as_str();
                 let kw_lower = keyword.to_ascii_lowercase();
 
                 if let Some(msg) = validate_keyword(&kw_lower, keyword, context, &allow_microformats) {
@@ -68,8 +70,8 @@ impl Rule for LinkTypes {
                         name: None,
                         severity: rule_config.severity,
                         message: msg,
-                        line: el.base.line,
-                        col: el.base.col,
+                        line: token.line,
+                        col: token.col,
                         raw: keyword.to_string(),
                         reason: rule_config.reason.clone(),
                         fix: None,
@@ -99,7 +101,6 @@ enum AllowMicroformats {
 fn parse_allow_microformats(options: &Value) -> AllowMicroformats {
     match options {
         Value::Object(obj) => match obj.get("allowMicroformats") {
-            Some(Value::Bool(true)) => AllowMicroformats::All,
             Some(Value::Array(arr)) => {
                 let list: Vec<String> = arr
                     .iter()
@@ -108,9 +109,11 @@ fn parse_allow_microformats(options: &Value) -> AllowMicroformats {
                     .collect();
                 AllowMicroformats::List(list)
             }
-            _ => AllowMicroformats::Disabled,
+            Some(Value::Bool(false)) => AllowMicroformats::Disabled,
+            // TS `defaultOptions: { allowMicroformats: true }`
+            _ => AllowMicroformats::All,
         },
-        _ => AllowMicroformats::Disabled,
+        _ => AllowMicroformats::All,
     }
 }
 
@@ -680,8 +683,13 @@ pub mod tests {
     // --- Microformats control ---
 
     #[test]
-    fn default_apple_touch_icon_not_allowed() {
-        let v = run(r#"<link rel="apple-touch-icon">"#);
+    fn default_apple_touch_icon_allowed() {
+        // TS `defaultOptions: { allowMicroformats: true }` (`link-types-valid-018`)
+        assert!(run(r#"<link rel="apple-touch-icon">"#).is_empty());
+        let v = run_with_options(
+            r#"<link rel="apple-touch-icon">"#,
+            serde_json::json!({ "allowMicroformats": false }),
+        );
         assert_eq!(v.len(), 1);
         assert!(v[0].message.contains("not allowed"));
     }
