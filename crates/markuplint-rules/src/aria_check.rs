@@ -246,11 +246,14 @@ fn namespace_uri(namespace: &NamespaceURI) -> &'static str {
 // Attributes
 // ============================================================
 
-/// The HTML attributes of `el` (spread attributes carry no name to check).
+/// The HTML attributes of `el` that are output (spread attributes carry no name to check). An
+/// attribute that the framework does not output (`aria-label={null}`, TS `MLAttr#isAbsent`) is not
+/// an attribute of the element for the ARIA checks, as TS `getAriaAttrs` and `getAttributeNode`
+/// skip it.
 pub(crate) fn html_attrs(el: &ElementData) -> impl Iterator<Item = &MLASTHTMLAttr> {
     el.attributes.iter().filter_map(|attr| match attr {
-        MLASTAttr::HTMLAttr(html_attr) => Some(&**html_attr),
-        MLASTAttr::Spread(_) => None,
+        MLASTAttr::HTMLAttr(html_attr) if !markuplint_dom::helpers::is_absent(html_attr) => Some(&**html_attr),
+        MLASTAttr::HTMLAttr(_) | MLASTAttr::Spread(_) => None,
     })
 }
 
@@ -346,7 +349,7 @@ pub(crate) fn role_tokens(attr: &MLASTHTMLAttr) -> Vec<RoleToken> {
     let mut line = attr.value.line;
     let mut col = attr.value.col;
 
-    let mut chars = attr.value.raw.chars().peekable();
+    let mut chars = markuplint_dom::helpers::attr_value(attr).chars().peekable();
     while let Some(ch) = chars.next() {
         if is_js_whitespace(ch) {
             tokens.extend(current.take());

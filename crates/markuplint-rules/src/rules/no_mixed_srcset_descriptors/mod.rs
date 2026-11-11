@@ -35,7 +35,7 @@ impl Rule for NoMixedSrcsetDescriptors {
                 let Some(srcset) = attr_node(ctx.el, "srcset").filter(|srcset| !is_dynamic(srcset)) else {
                     return;
                 };
-                let descriptors = parse_srcset(&srcset.value.raw);
+                let descriptors = parse_srcset(markuplint_dom::helpers::attr_value(srcset));
                 if descriptors.has_width && (descriptors.has_density || descriptors.has_implied) {
                     violations.push(ctx.value_violation(
                         srcset,

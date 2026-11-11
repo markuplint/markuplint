@@ -26,7 +26,7 @@ impl Rule for NoRestrictedElement {
     fn verify(&self, arena: &DomArena, spec: &MLMLSpec, config: &RuleConfigSet) -> Vec<Violation> {
         let mut violations = Vec::new();
 
-        let global_selectors = parse_selectors(&config.global().value);
+        let global_selectors = parse_selectors(&config.global().value, spec);
         for (node_id, el) in arena.elements() {
             for (selector_str, sel) in &global_selectors {
                 if matcher::matches(sel, arena, node_id, Some(node_id), Some(spec), None) {
@@ -58,7 +58,7 @@ impl Rule for NoRestrictedElement {
                 continue;
             }
 
-            let override_selectors = parse_selectors(&rule_config.value);
+            let override_selectors = parse_selectors(&rule_config.value, spec);
             if override_selectors.is_empty() {
                 continue;
             }
@@ -93,13 +93,18 @@ impl Rule for NoRestrictedElement {
     }
 }
 
-fn parse_selectors(value: &serde_json::Value) -> Vec<(String, markuplint_selector::ast::SelectorList)> {
+fn parse_selectors(
+    value: &serde_json::Value,
+    spec: &MLMLSpec,
+) -> Vec<(String, markuplint_selector::ast::SelectorList)> {
     let strs: Vec<String> = match value {
         serde_json::Value::Array(arr) => arr.iter().filter_map(|v| v.as_str().map(String::from)).collect(),
         serde_json::Value::String(s) => vec![s.clone()],
         _ => return vec![],
     };
     strs.into_iter()
-        .filter_map(|s| diagnostic::parse_selector("config no-restricted-element selector", &s).map(|sel| (s, sel)))
+        .filter_map(|s| {
+            diagnostic::parse_option_selector("config no-restricted-element selector", &s, spec).map(|sel| (s, sel))
+        })
         .collect()
 }

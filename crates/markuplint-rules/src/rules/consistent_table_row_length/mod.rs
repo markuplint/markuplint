@@ -91,7 +91,7 @@ impl ConsistentTableRowLength {
             // The overshoot starts inside a spanned cell, so the `colspan` is the culprit.
             let (span_start, colspan) = cells.iter().rev().find_map(|&cell| {
                 let colspan = table_grid::attr_node(table_grid::element(arena, cell)?, "colspan")?;
-                js_parse_int(&colspan.value.raw)
+                js_parse_int(markuplint_dom::helpers::attr_value(colspan))
                     .is_some_and(|n| n > 1)
                     .then_some((cell, colspan))
             })?;

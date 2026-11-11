@@ -52,7 +52,7 @@ fn check(ctx: &CandidateContext<'_>) -> Vec<Violation> {
         return violations;
     }
     let sizes = attr_node(ctx.el, "sizes");
-    let descriptors = parse_srcset(&srcset.value.raw);
+    let descriptors = parse_srcset(markuplint_dom::helpers::attr_value(srcset));
 
     if sizes.is_some_and(|sizes| !is_dynamic(sizes)) && !descriptors.has_width {
         violations.push(ctx.value_violation(

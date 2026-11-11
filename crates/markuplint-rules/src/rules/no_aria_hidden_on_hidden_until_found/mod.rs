@@ -46,12 +46,14 @@ impl Rule for NoAriaHiddenOnHiddenUntilFound {
             let Some(aria_hidden) = html_attrs(el).find(|attr| attr_name(attr) == "aria-hidden") else {
                 continue;
             };
-            if aria_hidden.is_dynamic_value == Some(true) || !is_value(&aria_hidden.value.raw, "true") {
+            if aria_hidden.is_dynamic_value == Some(true)
+                || !is_value(markuplint_dom::helpers::attr_value(aria_hidden), "true")
+            {
                 continue;
             }
             // TS `el.getAttribute('hidden')`.
             let hidden = html_attrs(el).find(|attr| attr_name(attr).to_lowercase() == "hidden");
-            if !hidden.is_some_and(|attr| is_value(&attr.value.raw, "until-found")) {
+            if !hidden.is_some_and(|attr| is_value(markuplint_dom::helpers::attr_value(attr), "until-found")) {
                 continue;
             }
             let rule_config = config.get(node_id);

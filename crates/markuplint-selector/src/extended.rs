@@ -188,3 +188,46 @@ mod tests {
         assert_eq!(selector_count(&model_entries(&html_spec(), "flow").unwrap()), before);
     }
 }
+
+/// TS `readContentModelCategory`, which `createSelector` runs when it is given the spec: every
+/// `:model()` of `selector`, nested ones too, names a category of `#contentModels` (compared ASCII
+/// case-insensitively). A category the spec does not define is a typo that matches no element, so
+/// it is the fault of the selector, as it is in TS.
+///
+/// # Errors
+///
+/// The message of TS's `InvalidSelectorError` for the first category that is empty or unknown.
+pub fn validate_model_categories(selector: &SelectorList, spec: &MLMLSpec) -> Result<(), String> {
+    use crate::ast::{PseudoClassSelector, SimpleSelector};
+
+    for complex in &selector.selectors {
+        let compounds = std::iter::once(&complex.subject).chain(complex.chain.iter().map(|(_, c)| c));
+        for part in compounds.flat_map(|c| &c.parts) {
+            let SimpleSelector::PseudoClass(pseudo) = part else {
+                continue;
+            };
+            match pseudo {
+                PseudoClassSelector::Model(category) => {
+                    let name = category.trim();
+                    if name.is_empty() {
+                        return Err("The content model category is empty".to_string());
+                    }
+                    let key = format!("#{}", name.to_ascii_lowercase());
+                    if !spec.def.content_models.keys().any(|k| k.eq_ignore_ascii_case(&key)) {
+                        return Err(format!("Unknown content model category: {name}"));
+                    }
+                }
+                PseudoClassSelector::Not(list)
+                | PseudoClassSelector::Is(list)
+                | PseudoClassSelector::Has(list)
+                | PseudoClassSelector::Where(list)
+                | PseudoClassSelector::Closest(list) => validate_model_categories(list, spec)?,
+                PseudoClassSelector::Scope
+                | PseudoClassSelector::Root
+                | PseudoClassSelector::Role(_)
+                | PseudoClassSelector::Aria(_) => {}
+            }
+        }
+    }
+    Ok(())
+}

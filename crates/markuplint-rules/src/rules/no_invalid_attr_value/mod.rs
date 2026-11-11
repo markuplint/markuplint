@@ -55,6 +55,11 @@ fn check(
     html_attr: &markuplint_core::mlast::MLASTHTMLAttr,
     ctx: &AttrCheckContext<'_>,
 ) -> Option<Violation> {
+    // TS `attr.isDynamicValue`: a value that is not known is not judged
+    if html_attr.is_dynamic_value == Some(true) {
+        return None;
+    }
+
     // Use the raw (original-case) attribute name, matching TS behavior.
     let name = markuplint_dom::helpers::get_raw_attr_name(html_attr);
 

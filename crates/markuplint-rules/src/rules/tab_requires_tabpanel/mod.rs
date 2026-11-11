@@ -87,7 +87,7 @@ fn has_role(spec: &MLMLSpec, arena: &DomArena, node_id: NodeId, version: ARIAVer
 /// The attribute's value, unless the attribute is absent or its value is dynamic.
 fn static_value(attr: Option<&MLASTHTMLAttr>) -> Option<&str> {
     attr.filter(|attr| attr.is_dynamic_value != Some(true))
-        .map(|attr| attr.value.raw.as_str())
+        .map(markuplint_dom::helpers::attr_value)
 }
 
 /// JS `value.split(/\s+/)`: like it, a leading or trailing run of whitespace yields an empty

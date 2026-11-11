@@ -58,6 +58,10 @@ fn check(
     let name = markuplint_dom::helpers::get_raw_attr_name(html_attr);
 
     let entry = options.disallowed.iter().find(|e| e.name.eq_ignore_ascii_case(name))?;
+    // TS checks the name first: a value that is not known (`attr.isDynamicValue`) is not judged
+    if html_attr.is_dynamic_value == Some(true) && !matches!(entry.constraint, ValueConstraint::Any) {
+        return None;
+    }
     let value = get_clean_value(html_attr);
 
     match &entry.constraint {

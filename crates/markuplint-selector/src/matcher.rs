@@ -486,12 +486,16 @@ fn match_attribute(attributes: &[MLASTAttr], sel: &AttributeSelector) -> bool {
     }
 }
 
+/// The value an attribute selector compares: the rendered value (`attr_value`), and no value for an
+/// attribute that the framework does not output, which a selector does not match (TS
+/// `MLElement#getAttribute`).
 fn get_attr<'a>(attributes: &'a [MLASTAttr], name: &str) -> Option<&'a str> {
     for attr in attributes {
         if let MLASTAttr::HTMLAttr(html_attr) = attr
+            && !markuplint_dom::helpers::is_absent(html_attr)
             && html_attr.node_name.eq_ignore_ascii_case(name)
         {
-            return Some(&html_attr.value.raw);
+            return Some(markuplint_dom::helpers::attr_value(html_attr));
         }
     }
     None
@@ -1042,6 +1046,8 @@ mod tests {
                         ..empty_token()
                     },
                     is_dynamic_value: None,
+                    is_expression_value: None,
+                    is_absent: None,
                     is_directive: None,
                     potential_name: None,
                     potential_value: None,

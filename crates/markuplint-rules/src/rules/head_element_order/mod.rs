@@ -177,7 +177,7 @@ impl Rule for HeadElementOrder {
         let entries = entries_from(&head_config.value);
         let selectors: Vec<_> = entries
             .iter()
-            .map(|e| diagnostic::parse_selector("config head-element-order selector", &e.selector))
+            .map(|e| diagnostic::parse_option_selector("config head-element-order selector", &e.selector, spec))
             .collect();
 
         let blocks: Vec<Block<'_>> = children

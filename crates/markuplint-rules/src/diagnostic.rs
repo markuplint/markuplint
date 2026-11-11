@@ -28,6 +28,11 @@ pub struct Diagnostic {
     pub selector: String,
     /// The parser's error.
     pub reason: String,
+    /// The selector is an option of a rule that the user wrote: the TS rule fails on it when it
+    /// creates the selector (`InvalidSelectorError`), which fails the whole file, so the engine
+    /// fails as well ([`crate::lint::LintResult::fatal_error`]).
+    #[serde(skip_serializing_if = "std::ops::Not::not")]
+    pub fatal: bool,
 }
 
 thread_local! {
@@ -86,6 +91,10 @@ pub(crate) fn in_rule<T>(rule_id: &str, f: impl FnOnce() -> T) -> T {
 /// Reports a selector the parser rejected. The same selector from the same origin in
 /// the same rule is reported once, however many elements it was tried against.
 pub(crate) fn report_unreadable_selector(origin: &str, selector: &str, reason: &str) {
+    report(origin, selector, reason, false);
+}
+
+fn report(origin: &str, selector: &str, reason: &str, fatal: bool) {
     SINK.with(|s| {
         let mut sink = s.borrow_mut();
         let Some(items) = sink.as_mut() else {
@@ -102,6 +111,7 @@ pub(crate) fn report_unreadable_selector(origin: &str, selector: &str, reason: &
                     origin: origin.to_string(),
                     selector: selector.to_string(),
                     reason: reason.to_string(),
+                    fatal,
                 });
             }
         });
@@ -114,6 +124,25 @@ pub(crate) fn parse_selector(origin: &str, selector: &str) -> Option<markuplint_
         Ok(list) => Some(list),
         Err(reason) => {
             report_unreadable_selector(origin, selector, &reason);
+            None
+        }
+    }
+}
+
+/// A selector of a rule's options, which TS `createSelector` reads with the spec: it is parsed,
+/// and every `:model()` in it must name a category of the spec. A rejection is reported as
+/// [`Diagnostic::fatal`] before returning `None`.
+pub(crate) fn parse_option_selector(
+    origin: &str,
+    selector: &str,
+    spec: &markuplint_types::spec::types::MLMLSpec,
+) -> Option<markuplint_selector::ast::SelectorList> {
+    let checked = markuplint_selector::parser::parse(selector)
+        .and_then(|list| markuplint_selector::extended::validate_model_categories(&list, spec).map(|()| list));
+    match checked {
+        Ok(list) => Some(list),
+        Err(reason) => {
+            report(origin, selector, &reason, true);
             None
         }
     }

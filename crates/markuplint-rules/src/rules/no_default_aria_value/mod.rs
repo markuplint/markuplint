@@ -71,5 +71,8 @@ fn is_default_value(attr: &MLASTHTMLAttr, props: &[ARIAProperty]) -> bool {
     else {
         return false;
     };
-    attr.value.raw.trim_matches(is_js_whitespace).to_lowercase() == default_value
+    markuplint_dom::helpers::attr_value(attr)
+        .trim_matches(is_js_whitespace)
+        .to_lowercase()
+        == default_value
 }

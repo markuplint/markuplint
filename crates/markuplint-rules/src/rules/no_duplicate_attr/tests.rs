@@ -211,6 +211,8 @@ pub(crate) fn make_element_with_attrs(tag: &str, attrs: &[(&str, &str)]) -> DomA
                     ..empty_token()
                 },
                 is_dynamic_value: None,
+                is_expression_value: None,
+                is_absent: None,
                 is_directive: None,
                 potential_name: None,
                 potential_value: None,

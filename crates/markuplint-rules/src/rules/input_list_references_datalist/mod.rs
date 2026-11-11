@@ -48,7 +48,7 @@ impl Rule for InputListReferencesDatalist {
             }
 
             // An unresolved ID is left to `no-refer-to-non-existent-id`.
-            let Some(target) = find_element_by_id(arena, &list_attr.value.raw)
+            let Some(target) = find_element_by_id(arena, markuplint_dom::helpers::attr_value(list_attr))
                 .and_then(|id| arena.get(id))
                 .and_then(|n| n.as_element())
             else {

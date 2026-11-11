@@ -42,7 +42,8 @@ impl Rule for SizesAutoRequiresLazyLoading {
 
 fn check(ctx: &CandidateContext<'_>) -> Option<Violation> {
     attr_node(ctx.el, "srcset")?;
-    let sizes = attr_node(ctx.el, "sizes").filter(|sizes| !is_dynamic(sizes) && has_sizes_auto(&sizes.value.raw))?;
+    let sizes = attr_node(ctx.el, "sizes")
+        .filter(|sizes| !is_dynamic(sizes) && has_sizes_auto(markuplint_dom::helpers::attr_value(sizes)))?;
     let is_lazy = |el| helpers::get_attr_value_from_el(el, "loading") == Some("lazy");
 
     if ctx.local_name == "img" {

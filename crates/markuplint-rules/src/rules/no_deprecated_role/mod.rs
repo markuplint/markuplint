@@ -48,6 +48,12 @@ fn check(ctx: &ElementContext<'_>, violations: &mut Vec<Violation>) {
     };
     let computed = get_computed_role(ctx.spec, ctx.arena, ctx.node_id, ctx.version, false);
     if computed.role.is_some_and(|role| role.deprecated) {
-        violations.push(ctx.attr_violation(attr, format!("The \"{}\" role is deprecated", attr.value.raw)));
+        violations.push(ctx.attr_violation(
+            attr,
+            format!(
+                "The \"{}\" role is deprecated",
+                markuplint_dom::helpers::attr_value(attr)
+            ),
+        ));
     }
 }

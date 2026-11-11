@@ -76,8 +76,10 @@ impl AccnameResolver for SpecAccnameResolver<'_> {
             PretenderAriaName::Bool(_) => Some(PRETENDER_NAME_SENTINEL.to_owned()),
             PretenderAriaName::FromAttr { from_attr } => {
                 let value = pretended.original.attributes.iter().find_map(|attr| match attr {
-                    markuplint_core::mlast::MLASTAttr::HTMLAttr(a) if a.node_name.eq_ignore_ascii_case(from_attr) => {
-                        Some(a.value.raw.as_str())
+                    markuplint_core::mlast::MLASTAttr::HTMLAttr(a)
+                        if !markuplint_dom::helpers::is_absent(a) && a.node_name.eq_ignore_ascii_case(from_attr) =>
+                    {
+                        Some(markuplint_dom::helpers::attr_value(a))
                     }
                     _ => None,
                 })?;

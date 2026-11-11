@@ -120,7 +120,9 @@ impl Rule for NoEmptyPalpableContent {
             if ignore_if_aria_busy {
                 let has_aria_busy = el.attributes.iter().any(|attr| {
                     if let MLASTAttr::HTMLAttr(html_attr) = attr {
-                        html_attr.node_name.eq_ignore_ascii_case("aria-busy") && html_attr.value.raw == "true"
+                        html_attr.node_name.eq_ignore_ascii_case("aria-busy")
+                            && !markuplint_dom::helpers::is_absent(html_attr)
+                            && markuplint_dom::helpers::attr_value(html_attr) == "true"
                     } else {
                         false
                     }

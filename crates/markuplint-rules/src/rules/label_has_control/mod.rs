@@ -48,7 +48,7 @@ impl Rule for LabelHasControl {
                 if let MLASTAttr::HTMLAttr(html_attr) = attr
                     && html_attr.node_name.eq_ignore_ascii_case("for")
                 {
-                    return Some(html_attr.value.raw.clone());
+                    return Some(markuplint_dom::helpers::attr_value(html_attr).to_owned());
                 }
                 None
             });
@@ -116,7 +116,8 @@ fn id_exists_in_document(arena: &DomArena, target_id: &str) -> bool {
     arena.elements().any(|(_node_id, el)| {
         el.attributes.iter().any(|attr| {
             if let MLASTAttr::HTMLAttr(html_attr) = attr {
-                html_attr.node_name.eq_ignore_ascii_case("id") && html_attr.value.raw == target_id
+                html_attr.node_name.eq_ignore_ascii_case("id")
+                    && markuplint_dom::helpers::attr_value(html_attr) == target_id
             } else {
                 false
             }

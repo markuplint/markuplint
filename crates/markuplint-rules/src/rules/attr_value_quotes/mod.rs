@@ -44,7 +44,7 @@ impl Rule for AttrValueQuotes {
                 }
 
                 // A value the framework evaluates, or a directive, is not a quoted string.
-                if html_attr.is_dynamic_value == Some(true) || html_attr.is_directive == Some(true) {
+                if html_attr.is_expression_value == Some(true) || html_attr.is_directive == Some(true) {
                     continue;
                 }
 

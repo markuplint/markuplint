@@ -122,6 +122,8 @@ mod tests {
                         ..empty_token()
                     },
                     is_dynamic_value: None,
+                    is_expression_value: None,
+                    is_absent: None,
                     is_directive: None,
                     potential_name: None,
                     potential_value: None,
@@ -269,6 +271,8 @@ mod tests {
                     ..empty_token()
                 },
                 is_dynamic_value: Some(true),
+                is_expression_value: Some(true),
+                is_absent: None,
                 is_directive: None,
                 potential_name: None,
                 potential_value: None,

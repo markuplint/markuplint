@@ -45,7 +45,7 @@ impl Rule for MapIdNameMatch {
             if id_attr.is_dynamic_value == Some(true) || name_attr.is_dynamic_value == Some(true) {
                 continue;
             }
-            if id_attr.value.raw == name_attr.value.raw {
+            if markuplint_dom::helpers::attr_value(id_attr) == markuplint_dom::helpers::attr_value(name_attr) {
                 continue;
             }
 

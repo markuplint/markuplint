@@ -36,6 +36,10 @@ impl Rule for NoAmbiguousNavigableTargetNames {
                 let MLASTAttr::HTMLAttr(html_attr) = attr else {
                     continue;
                 };
+                // TS `attr.isDynamicValue`: a value that is not known names no target
+                if html_attr.is_dynamic_value == Some(true) {
+                    continue;
+                }
 
                 let attr_name = html_attr.node_name.to_ascii_lowercase();
 
@@ -43,7 +47,7 @@ impl Rule for NoAmbiguousNavigableTargetNames {
                     continue;
                 }
 
-                let value = html_attr.value.raw.trim();
+                let value = markuplint_dom::helpers::attr_value(html_attr).trim();
 
                 if value.starts_with('_') || value.is_empty() {
                     continue;

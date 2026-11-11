@@ -51,8 +51,9 @@ impl Rule for NoAlwaysMatchingSource {
 /// assumed to qualify rather than risk a false positive.
 fn is_always_matching_source(ctx: &CandidateContext<'_>) -> bool {
     let has_usable_type = attr_node(ctx.el, "type").is_some();
-    let has_usable_media = attr_node(ctx.el, "media")
-        .is_some_and(|media| is_dynamic(media) || !is_always_matching_media(&media.value.raw));
+    let has_usable_media = attr_node(ctx.el, "media").is_some_and(|media| {
+        is_dynamic(media) || !is_always_matching_media(markuplint_dom::helpers::attr_value(media))
+    });
     !has_usable_type
         && !has_usable_media
         && following_element_siblings(ctx.arena, ctx.node_id).any(|sibling| {

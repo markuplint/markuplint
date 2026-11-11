@@ -12,6 +12,7 @@ use markuplint_core::pretender::{
     Slots,
 };
 use markuplint_dom::arena::{DomArena, NodeId};
+use markuplint_dom::helpers::{attr_value, is_absent};
 use markuplint_dom::node::{ElementData, NodeBase};
 use markuplint_dom::pretender::{OriginalIdentity, Pretended, PretenderContext, SlotContent, SlotEntry};
 use markuplint_selector::ast::SelectorList;
@@ -172,7 +173,7 @@ fn local_name(name: String, element_type: &ElementType, namespace: &NamespaceURI
 
 fn get_attr<'a>(attributes: &'a [MLASTAttr], name: &str) -> Option<&'a str> {
     attributes.iter().find_map(|attr| match attr {
-        MLASTAttr::HTMLAttr(a) if a.node_name.eq_ignore_ascii_case(name) => Some(a.value.raw.as_str()),
+        MLASTAttr::HTMLAttr(a) if !is_absent(a) && a.node_name.eq_ignore_ascii_case(name) => Some(attr_value(a)),
         _ => None,
     })
 }
@@ -190,6 +191,9 @@ fn create_pretender_attrs(origin: &ElementData, attrs: &[PretenderAttr], uuid_ba
         .enumerate()
         .filter_map(|(i, PretenderAttr { name, value })| {
             let mut is_dynamic = matches!(value, Some(PretenderAttrValue::Dynamic { .. }));
+            // A literal of the origin (`label={"x"}`) makes an expression, as TS writes it as one
+            let mut is_expression = false;
+            let mut is_absent = false;
             let mut text = String::new();
             match value {
                 Some(PretenderAttrValue::Literal(v)) => text.clone_from(v),
@@ -205,7 +209,13 @@ fn create_pretender_attrs(origin: &ElementData, attrs: &[PretenderAttr], uuid_ba
                         None if omit_if_missing.is_some() => return None,
                         None => {}
                         Some(a) if a.is_dynamic_value == Some(true) => is_dynamic = true,
-                        Some(a) => text.clone_from(&a.value.raw),
+                        Some(a) => {
+                            // A literal of the origin is rendered for the origin, not again for the
+                            // element it pretends to be as TS does (`literalToExpression`)
+                            is_expression = a.is_expression_value == Some(true);
+                            is_absent = a.is_absent == Some(true);
+                            attr_value(a).clone_into(&mut text);
+                        }
                     }
                 }
                 Some(PretenderAttrValue::Dynamic { .. }) | None => {}
@@ -232,7 +242,10 @@ fn create_pretender_attrs(origin: &ElementData, attrs: &[PretenderAttr], uuid_ba
                 start_quote: token(""),
                 value: token(&text),
                 end_quote: token(""),
-                is_dynamic_value: is_dynamic.then_some(true),
+                // An absent attribute is one whose value is not known as well (TS `MLAttr#isDynamicValue`)
+                is_dynamic_value: (is_dynamic || is_absent).then_some(true),
+                is_expression_value: (is_dynamic || is_expression).then_some(true),
+                is_absent: is_absent.then_some(true),
                 is_directive: None,
                 potential_name: None,
                 potential_value: None,

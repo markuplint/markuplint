@@ -117,6 +117,19 @@ pub struct MLMLSpec {
     pub directive_patterns: Vec<DirectivePattern>,
     #[serde(default, rename = "acceptedAttrNames")]
     pub accepted_attr_names: Option<AcceptedAttrNames>,
+    /// TS `MLMLSpec.templateContent`: where the `template` element of a framework puts its
+    /// children. `in-place` (React, Vue) keeps them in the element itself, so such a `template` is
+    /// not an HTML `template` element; absent or `separate-tree` is the HTML behavior.
+    #[serde(default, rename = "templateContent")]
+    pub template_content: Option<TemplateContent>,
+}
+
+/// See [`MLMLSpec::template_content`].
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Deserialize)]
+#[serde(rename_all = "kebab-case")]
+pub enum TemplateContent {
+    SeparateTree,
+    InPlace,
 }
 
 #[derive(Debug, Deserialize)]

@@ -156,6 +156,19 @@ pub struct LintResult {
     pub diagnostics: Vec<Diagnostic>,
 }
 
+impl LintResult {
+    /// The first selector of a rule's options that the engine could not read
+    /// ([`Diagnostic::fatal`]), as the message of TS's `InvalidSelectorError`. TS fails the whole
+    /// file on it, so the caller does too.
+    #[must_use]
+    pub fn fatal_error(&self) -> Option<String> {
+        self.diagnostics
+            .iter()
+            .find(|d| d.fatal)
+            .map(|d| format!("InvalidSelectorError: {} ({})", d.reason, d.selector))
+    }
+}
+
 pub fn lint(arena: &DomArena, spec: &MLMLSpec, config: &LintConfig) -> LintResult {
     lint_with_rules(arena, spec, config, &get_all_rules())
 }
@@ -850,6 +863,7 @@ mod tests {
                 origin: "spec content model #palpable".to_string(),
                 selector: "x-foo:not-a-supported-pseudo".to_string(),
                 reason: result.diagnostics[0].reason.clone(),
+                fatal: false,
             }]
         );
         assert!(!result.diagnostics[0].reason.is_empty());

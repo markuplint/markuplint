@@ -43,7 +43,9 @@ impl Rule for NoInputFileValue {
             if is_dynamic(type_attr) || is_dynamic(value_attr) {
                 continue;
             }
-            if type_attr.value.raw.to_lowercase() != "file" || value_attr.value.raw.is_empty() {
+            if markuplint_dom::helpers::attr_value(type_attr).to_lowercase() != "file"
+                || markuplint_dom::helpers::attr_value(value_attr).is_empty()
+            {
                 continue;
             }
 

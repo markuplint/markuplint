@@ -443,8 +443,12 @@ fn global_attr_condition(def: &serde_json::Value) -> Option<AttributeCondition> 
 }
 
 /// Get the clean attribute value, stripping trailing `>` and whitespace
-/// that the parser may include in unquoted attribute values.
+/// that the parser may include in unquoted attribute values. A value that the framework renders
+/// (`potentialValue`, TS `MLAttr#value`) is the value.
 pub(crate) fn get_clean_value(html_attr: &markuplint_core::mlast::MLASTHTMLAttr) -> &str {
+    if let Some(rendered) = html_attr.potential_value.as_deref() {
+        return rendered;
+    }
     let raw = &html_attr.value.raw;
     // A quoted value is already clean; only unquoted values pick up trailing `>`/whitespace.
     if !html_attr.start_quote.raw.is_empty() {
@@ -532,6 +536,12 @@ pub(crate) fn check_attr_value_type(
     }
 
     let message = generate_type_error_message(name, &all_failures, value, &types);
+
+    // The value of an expression is what the code results in, so a position in it is not a
+    // position in the source (an escape, a quote): TS reports the whole value as written.
+    if html_attr.is_expression_value == Some(true) {
+        return Some(attr_value_violation(ctx, html_attr, message));
+    }
 
     // Use partial match position from first failure if available
     // (matching TS: valueNode.startLine + matches.line, valueNode.startCol + matches.column)

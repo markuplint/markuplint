@@ -72,7 +72,7 @@ fn check(el: &ElementData, report: &Reporter<'_>, violations: &mut Vec<Violation
     }
     let bounds = attrs.map(|attr| Bound {
         attr,
-        num: finite_number_attr(attr.map(|a| a.value.raw.as_str())),
+        num: finite_number_attr(attr.map(markuplint_dom::helpers::attr_value)),
     });
     if bounds.iter().any(|b| b.attr.is_some() && b.num.is_none()) {
         return;

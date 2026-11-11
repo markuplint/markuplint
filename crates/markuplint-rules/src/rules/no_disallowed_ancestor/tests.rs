@@ -29,6 +29,9 @@
 //!   no-disallowed-ancestor-issue-4482-021  → no_disallowed_ancestor_issue_4482_021
 //!   no-disallowed-ancestor-issue-4482-022  → no_disallowed_ancestor_issue_4482_022
 //!   no-disallowed-ancestor-issue-4482-043  → no_disallowed_ancestor_issue_4482_043
+//!   no-disallowed-ancestor-issue-4482-023  → no_disallowed_ancestor_issue_4482_023
+//!   no-disallowed-ancestor-issue-4482-024  → no_disallowed_ancestor_issue_4482_024
+//!   no-disallowed-ancestor-issue-4482-025  → no_disallowed_ancestor_issue_4482_025
 //!   v6_no_disallowed_ancestor_001  — Rust-only: each element names its nearest forbidden ancestor
 //!   v6_no_disallowed_ancestor_002  — Rust-only: HTML inside `foreignObject` is checked too
 //!   v6_no_disallowed_ancestor_003  — Rust-only: a pretender is checked as the element it pretends to be
@@ -432,4 +435,31 @@ fn no_disallowed_ancestor_issue_4482_022() {
 fn no_disallowed_ancestor_issue_4482_043() {
     const _ID: &str = "no-disallowed-ancestor-issue-4482-043";
     assert_eq!(run("<svg><footer><footer></footer></footer></svg>"), []);
+}
+
+/// TS: `[no-disallowed-ancestor-issue-4482-023]` main in the content of a template has no ancestor
+#[test]
+fn no_disallowed_ancestor_issue_4482_023() {
+    const _ID: &str = "no-disallowed-ancestor-issue-4482-023";
+    assert_eq!(run("<section><template><main>text</main></template></section>"), []);
+}
+
+/// TS: `[no-disallowed-ancestor-issue-4482-024]` a template nested in a template is a boundary too
+#[test]
+fn no_disallowed_ancestor_issue_4482_024() {
+    const _ID: &str = "no-disallowed-ancestor-issue-4482-024";
+    assert_eq!(
+        run("<section><template><template><main>text</main></template></template></section>"),
+        []
+    );
+}
+
+/// TS: `[no-disallowed-ancestor-issue-4482-025]` a forbidden ancestor beyond a template does not count
+#[test]
+fn no_disallowed_ancestor_issue_4482_025() {
+    const _ID: &str = "no-disallowed-ancestor-issue-4482-025";
+    assert_eq!(
+        run("<address><template><address>text</address></template></address>"),
+        []
+    );
 }

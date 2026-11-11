@@ -308,8 +308,23 @@ pub struct MLASTHTMLAttr {
     pub start_quote: MLASTToken,
     pub value: MLASTToken,
     pub end_quote: MLASTToken,
+    /// TS `MLAttr#isDynamicValue`: the value is not known (code that is not a literal, a literal
+    /// the framework renders in a way that is not known, or an attribute that is not output). The
+    /// TS side of the MLAST path renders the value of a framework attribute before it hands the AST
+    /// over; the HTML parser never sets it.
     #[serde(default)]
     pub is_dynamic_value: Option<bool>,
+    /// TS `MLAttr#isExpressionValue`: the value is written as code. A literal written as code
+    /// (`aria-busy={true}`) is an expression whose value is known, so this is not
+    /// [`Self::is_dynamic_value`]: a rule that asks how a value is written (its quotes, its escapes)
+    /// reads this one.
+    #[serde(default)]
+    pub is_expression_value: Option<bool>,
+    /// TS `MLAttr#isAbsent`: the framework does not output the attribute, as its value is a
+    /// literal it drops (`disabled={false}`). It is still among the attributes of the element, so a
+    /// rule that judges the name sees it, but a lookup by name does not find it, as the DOM does not.
+    #[serde(default)]
+    pub is_absent: Option<bool>,
     #[serde(default)]
     pub is_directive: Option<bool>,
     #[serde(default)]

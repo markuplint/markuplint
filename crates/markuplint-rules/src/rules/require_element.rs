@@ -80,7 +80,7 @@ fn check_required_elements(
         .unwrap_or(true);
 
     for selector_str in &selectors {
-        let Some(sel) = diagnostic::parse_selector("config require-element selector", selector_str) else {
+        let Some(sel) = diagnostic::parse_option_selector("config require-element selector", selector_str, spec) else {
             continue;
         };
 

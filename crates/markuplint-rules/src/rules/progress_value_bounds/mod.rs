@@ -50,10 +50,10 @@ impl Rule for ProgressValueBounds {
                 continue;
             }
 
-            let Some(value) = finite_number_attr(Some(&value_attr.value.raw)) else {
+            let Some(value) = finite_number_attr(Some(markuplint_dom::helpers::attr_value(value_attr))) else {
                 continue;
             };
-            let max = finite_number_attr(max_attr.map(|a| a.value.raw.as_str()));
+            let max = finite_number_attr(max_attr.map(markuplint_dom::helpers::attr_value));
             if max_attr.is_some() && max.is_none() {
                 continue;
             }

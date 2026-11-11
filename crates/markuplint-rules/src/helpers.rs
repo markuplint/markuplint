@@ -55,12 +55,13 @@ pub fn is_pretender_without_as_attr(el: &ElementData) -> bool {
     el.pretended().is_some() && get_attr_value_from_el(el, "as").is_none()
 }
 
-/// TS `el.hasMutableAttributes()`: an attribute is a spread or has a dynamic value (a template
-/// expression), so what the element renders may differ from what is written.
+/// TS `el.hasMutableAttributes()`: an attribute is a spread or has a value that is not known, so
+/// what the element renders may differ from what is written. An attribute that is known not to be
+/// output (`is_absent`) does not change.
 pub fn has_mutable_attributes(el: &ElementData) -> bool {
     el.attributes.iter().any(|attr| match attr {
         MLASTAttr::Spread(_) => true,
-        MLASTAttr::HTMLAttr(attr) => attr.is_dynamic_value == Some(true),
+        MLASTAttr::HTMLAttr(attr) => attr.is_dynamic_value == Some(true) && attr.is_absent != Some(true),
     })
 }
 
@@ -250,6 +251,35 @@ pub fn content_model_field<'a>(
         .iter()
         .find(|s| s.name == local_name)
         .and_then(|s| s.content_model.get(key))
+}
+
+/// TS `isRenderedAway` (`packages/@markuplint/rules/src/helpers.ts`): the element is not an
+/// element of the output, so what is written in it is rendered in place of it. A fragment (`<>` of
+/// JSX), or a `template` element with a directive of a template engine (Vue's `<template v-if>`);
+/// a spread attribute is not such a directive.
+pub fn is_rendered_away(el: &ElementData) -> bool {
+    el.is_fragment || (element_local_name(el) == "template" && has_directive(el))
+}
+
+fn has_directive(el: &ElementData) -> bool {
+    el.attributes
+        .iter()
+        .any(|attr| matches!(attr, MLASTAttr::HTMLAttr(a) if a.is_directive == Some(true)))
+}
+
+/// TS `MLElement#isHTMLTemplateElement` (`isHTMLTemplateElement` of `ml-core`'s `tree-scope.ts`):
+/// an HTML `template` element, whose children are the content of the template, a tree of its own
+/// with no ancestors in the document. A fragment, a `template` of a framework that keeps the
+/// children in the element itself (`templateContent: "in-place"`: React, Vue) and a `template`
+/// with a directive of a template engine are not.
+///
+/// @see <https://html.spec.whatwg.org/multipage/scripting.html#the-template-element>
+pub fn is_html_template_element(el: &ElementData, spec: &markuplint_types::spec::types::MLMLSpec) -> bool {
+    !el.is_fragment
+        && el.namespace == markuplint_core::mlast::NamespaceURI::XHTML
+        && element_local_name(el) == "template"
+        && spec.template_content != Some(markuplint_types::spec::types::TemplateContent::InPlace)
+        && !has_directive(el)
 }
 
 /// TS `el.parentElement`, followed up while it is an element: the ancestors of `node_id`,

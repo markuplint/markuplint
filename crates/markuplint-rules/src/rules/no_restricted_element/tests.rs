@@ -10,6 +10,7 @@
 //!   v6_no_restricted_element_004       — Rust-only: `:model(custom)` selects nothing
 //!   v6_no_restricted_element_005       — Rust-only: a category is found case-insensitively
 //!   v6_no_restricted_element_006       — Rust-only: `#custom` and `#text` are not id selectors
+//!   v6_no_restricted_element_007       — Rust-only: a category the spec does not define fails the file
 
 use crate::lint::{LintConfig, lint};
 use crate::violation::Severity;
@@ -219,4 +220,30 @@ fn v6_no_restricted_element_006() {
     for category in ["flow", "phrasing", "palpable"] {
         assert!(selected(html, &format!(":model({category})")).is_empty(), "{category}");
     }
+}
+
+/// A `:model()` category that the spec does not define is the fault of the selector, as TS
+/// `createSelector` throws `InvalidSelectorError` on it, and the TS engine then fails the whole
+/// file. A nested one counts too.
+#[test]
+fn v6_no_restricted_element_007() {
+    let fatal = |selector: &str| {
+        let config: LintConfig = serde_json::from_value(serde_json::json!({
+            "rules": { "no-restricted-element": { "value": [selector] } }
+        }))
+        .unwrap();
+        lint(&html_arena("<x-foo></x-foo>"), &spec(), &config).fatal_error()
+    };
+    assert_eq!(
+        fatal(":model(custom)"),
+        Some("InvalidSelectorError: Unknown content model category: custom (:model(custom))".to_string())
+    );
+    assert_eq!(
+        fatal("div:not(:model( nonexistent ))"),
+        Some(
+            "InvalidSelectorError: Unknown content model category: nonexistent (div:not(:model( nonexistent )))"
+                .to_string()
+        )
+    );
+    assert_eq!(fatal(":model(Flow)"), None);
 }

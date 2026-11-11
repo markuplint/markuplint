@@ -69,7 +69,7 @@ impl Rule for NoReferToNonExistentId {
                 }
 
                 let attr_name_lower = html_attr.node_name.to_ascii_lowercase();
-                let value = &html_attr.value.raw;
+                let value = markuplint_dom::helpers::attr_value(html_attr);
 
                 if value.is_empty() || attr_name_lower == "id" {
                     continue;
@@ -86,7 +86,7 @@ impl Rule for NoReferToNonExistentId {
                 let id_ref_type = get_domid_type(&attr_specs, &attr_name_lower, spec, &el.base.node_name);
                 match id_ref_type {
                     DomIdType::Single => {
-                        if !id_set.contains(value.as_str()) {
+                        if !id_set.contains(value) {
                             violations.push(Violation {
                                 rule_id: self.id().to_string(),
                                 name: None,
@@ -191,7 +191,7 @@ fn collect_ids(arena: &DomArena, config: &RuleConfigSet) -> (HashSet<String>, bo
                 continue;
             }
 
-            let value = html_attr.value.raw.clone();
+            let value = markuplint_dom::helpers::attr_value(html_attr).to_owned();
             if !value.is_empty() {
                 id_set.insert(value);
             }
@@ -301,6 +301,8 @@ mod tests {
                             ..empty_token()
                         },
                         is_dynamic_value: None,
+                        is_expression_value: None,
+                        is_absent: None,
                         is_directive: None,
                         potential_name: None,
                         potential_value: None,
@@ -444,6 +446,8 @@ mod tests {
                 ..empty_token()
             },
             is_dynamic_value: Some(true),
+            is_expression_value: Some(true),
+            is_absent: None,
             is_directive: None,
             potential_name: None,
             potential_value: None,
@@ -520,6 +524,8 @@ mod tests {
                 ..empty_token()
             },
             is_dynamic_value: None,
+            is_expression_value: None,
+            is_absent: None,
             is_directive: None,
             potential_name: None,
             potential_value: None,

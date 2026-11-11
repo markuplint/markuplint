@@ -30,9 +30,14 @@ impl Rule for LinkTypes {
                 continue;
             }
 
-            let Some(rel_value) = helpers::get_attr_value_from_el(el, "rel") else {
+            let Some(rel_attr) = helpers::get_html_attr_from_el(el, "rel") else {
                 continue;
             };
+            // TS `relAttr.isDynamicValue`: the link types of a value that is not known are not known
+            if rel_attr.is_dynamic_value == Some(true) {
+                continue;
+            }
+            let rel_value = helpers::attr_value(rel_attr);
 
             let trimmed = rel_value.trim();
             if trimmed.is_empty() {

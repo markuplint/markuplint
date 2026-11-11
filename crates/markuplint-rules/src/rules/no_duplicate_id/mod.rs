@@ -38,7 +38,7 @@ impl Rule for NoDuplicateId {
                 }
 
                 if html_attr.node_name.eq_ignore_ascii_case("id") {
-                    let value = html_attr.value.raw.clone();
+                    let value = markuplint_dom::helpers::attr_value(html_attr).to_owned();
                     if value.is_empty() {
                         continue;
                     }

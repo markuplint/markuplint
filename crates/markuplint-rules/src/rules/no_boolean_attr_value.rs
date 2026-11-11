@@ -31,7 +31,7 @@ impl Rule for NoBooleanAttrValue {
                     continue;
                 };
 
-                if html_attr.is_dynamic_value == Some(true) {
+                if html_attr.is_expression_value == Some(true) {
                     continue;
                 }
 

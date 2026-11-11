@@ -77,5 +77,5 @@ fn closest_aria_hidden(arena: &DomArena, node_id: NodeId, el: &ElementData) -> O
 fn is_aria_hidden(el: &ElementData) -> bool {
     html_attrs(el)
         .find(|attr| attr_name(attr) == "aria-hidden")
-        .is_some_and(|attr| attr.value.raw == "true")
+        .is_some_and(|attr| markuplint_dom::helpers::attr_value(attr) == "true")
 }

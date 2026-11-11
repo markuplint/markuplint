@@ -14,7 +14,8 @@
 //!   v6_attr_value_quotes_002       — Rust-only: no-quote attr reported
 //!   v6_attr_value_quotes_003       — Rust-only: non-ASCII text before the fixed quotes
 //!   v6_attr_value_quotes_004       — Rust-only: whitespace between the equal sign and an unquoted value
-//!   v6_attr_value_quotes_005       — Rust-only: a dynamic value and a directive are not quoted strings
+//!   v6_attr_value_quotes_005       — Rust-only: a directive is not a quoted string
+//!   v6_attr_value_quotes_006       — Rust-only: a value written as code is not a quoted string
 
 use crate::lint::{LintConfig, lint};
 use crate::test_util::fixed_code;
@@ -225,10 +226,9 @@ fn v6_attr_value_quotes_002() {
     );
 }
 
-/// Rust-only: a value the framework evaluates (`href={url}` in JSX, `:href` in Vue) is not a
-/// quoted string whatever it is written with, and neither is a directive; an attribute with an
-/// equal sign and no quotes is otherwise reported. TS skips `isDynamicValue`, `isDirective` and
-/// an attribute without an equal sign.
+/// Rust-only: a directive is not a quoted string; an attribute with an equal sign and no quotes
+/// is otherwise reported, a value that is only not known (`isDynamicValue`) as well. TS skips
+/// `isExpressionValue`, `isDirective` and an attribute without an equal sign.
 #[test]
 fn v6_attr_value_quotes_005() {
     let unquoted = |resolved: serde_json::Value| {
@@ -244,7 +244,29 @@ fn v6_attr_value_quotes_005() {
             serde_json::json!({ "rules": { "attr-value-quotes": true } }),
         )
     };
-    assert_eq!(unquoted(serde_json::json!({ "isDynamicValue": true })), []);
+    assert_eq!(unquoted(serde_json::json!({ "isDynamicValue": true })).len(), 1);
     assert_eq!(unquoted(serde_json::json!({ "isDirective": true })), []);
     assert_eq!(unquoted(serde_json::json!({})).len(), 1);
+}
+
+/// Rust-only: a value written as code (`href={url}` in JSX, `:href` in Vue) is not a quoted
+/// string whatever it is written with. TS skips `isExpressionValue`.
+#[test]
+fn v6_attr_value_quotes_006() {
+    let token = |offset: usize| serde_json::json!({ "uuid": format!("q{offset}"), "raw": "", "offset": offset, "line": 1, "col": offset + 1 });
+    let attr = serde_json::json!({
+        "startQuote": token(8),
+        "endQuote": token(11),
+        "isDynamicValue": true,
+        "isExpressionValue": true,
+    });
+    let json = crate::test_util::mlast_element("a", &[("href", "url", attr)], &serde_json::json!({}));
+    assert_eq!(
+        crate::test_util::lint_mlast_brief(
+            "attr-value-quotes",
+            &json,
+            serde_json::json!({ "rules": { "attr-value-quotes": true } }),
+        ),
+        []
+    );
 }

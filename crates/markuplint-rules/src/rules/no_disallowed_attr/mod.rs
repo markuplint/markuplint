@@ -54,6 +54,12 @@ fn check(
     html_attr: &markuplint_core::mlast::MLASTHTMLAttr,
     ctx: &AttrCheckContext<'_>,
 ) -> Option<Violation> {
+    // TS `attr.isAbsent`: an attribute that the framework does not output is not an attribute of
+    // the element
+    if markuplint_dom::helpers::is_absent(html_attr) {
+        return None;
+    }
+
     let name = markuplint_dom::helpers::get_raw_attr_name(html_attr);
 
     // https://html.spec.whatwg.org/multipage/custom-elements.html#attr-is

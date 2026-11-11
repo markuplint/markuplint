@@ -72,7 +72,7 @@ impl Rule for ClassNaming {
                     continue;
                 }
 
-                let value = &html_attr.value.raw;
+                let value = markuplint_dom::helpers::attr_value(html_attr);
 
                 for class_name in value.split_whitespace() {
                     let matches_any = regexes.iter().any(|(_, re)| re.is_match(class_name));
@@ -88,7 +88,7 @@ impl Rule for ClassNaming {
                             ),
                             line: html_attr.value.line,
                             col: html_attr.value.col,
-                            raw: value.clone(),
+                            raw: html_attr.value.raw.clone(),
                             reason: rule_config.reason.clone(),
                             fix: None,
                         });

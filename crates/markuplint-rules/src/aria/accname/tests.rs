@@ -72,6 +72,8 @@ fn make_attrs(attrs: &[(&str, &str)]) -> Vec<MLASTAttr> {
                     ..empty_token()
                 },
                 is_dynamic_value: None,
+                is_expression_value: None,
+                is_absent: None,
                 is_directive: None,
                 potential_name: None,
                 potential_value: None,
@@ -3421,6 +3423,8 @@ mod algorithm_tests {
                         ..empty_token()
                     },
                     is_dynamic_value: None,
+                    is_expression_value: None,
+                    is_absent: None,
                     is_directive: None,
                     potential_name: None,
                     potential_value: None,

@@ -62,7 +62,7 @@ impl Rule for LabelForReferencesLabelable {
             }
 
             // An unresolved ID is left to `no-refer-to-non-existent-id`.
-            let Some(target) = find_element_by_id(arena, &for_attr.value.raw) else {
+            let Some(target) = find_element_by_id(arena, markuplint_dom::helpers::attr_value(for_attr)) else {
                 continue;
             };
             if matcher::matches(&labelable, arena, target, None, Some(spec), None) {

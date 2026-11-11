@@ -11,9 +11,11 @@
 //! The spec is looked up for an element of the HTML namespace only, as TS looks it up with the
 //! namespace and no element of another namespace has these fields: an SVG `main` is not judged.
 //!
-//! Known differences from TS, which has since become tree-aware: the walk does not stop at the
-//! content of a `template` element and does not skip a node that the framework renders away (a
-//! fragment, a `template` with a template-engine directive).
+//! The walk stops at an HTML `template` element: the elements in its content belong to a separate
+//! `DocumentFragment` and have no ancestors in the document. It skips, without judging, a node that
+//! is not an element of the output (a fragment, a `template` that a template engine drops).
+//!
+//! @see <https://html.spec.whatwg.org/multipage/scripting.html#the-template-element>
 
 use markuplint_core::mlast::NamespaceURI;
 use markuplint_dom::arena::{DomArena, NodeId};
@@ -24,7 +26,7 @@ use markuplint_types::spec::types::MLMLSpec;
 
 use crate::aria_resolver_impl::SpecAriaResolver;
 use crate::diagnostic;
-use crate::helpers::{ancestor_elements, content_model_field};
+use crate::helpers::{ancestor_elements, content_model_field, is_html_template_element, is_rendered_away};
 use crate::rule::{Rule, RuleConfigSet};
 use crate::violation::Violation;
 
@@ -97,7 +99,12 @@ impl Rule for NoDisallowedAncestor {
                         })
                     })
             };
-            let Some(ancestor) = ancestor_elements(arena, node_id).find(|&ancestor| violates(ancestor)) else {
+            let ancestor_data = |id: NodeId| arena.get(id).and_then(DomNode::as_element);
+            let Some(ancestor) = ancestor_elements(arena, node_id)
+                .take_while(|&id| !ancestor_data(id).is_some_and(|a| is_html_template_element(a, spec)))
+                .filter(|&id| !ancestor_data(id).is_some_and(is_rendered_away))
+                .find(|&ancestor| violates(ancestor))
+            else {
                 continue;
             };
             let rule_config = config.get(node_id);

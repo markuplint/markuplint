@@ -53,7 +53,8 @@ impl Rule for PlaceholderLabelOption {
                     .is_some_and(|first_option| {
                         first_option.attributes.iter().any(|attr| {
                             if let MLASTAttr::HTMLAttr(html_attr) = attr {
-                                html_attr.node_name.eq_ignore_ascii_case("value") && html_attr.value.raw.is_empty()
+                                html_attr.node_name.eq_ignore_ascii_case("value")
+                                    && markuplint_dom::helpers::attr_value(html_attr).is_empty()
                             } else {
                                 false
                             }
@@ -144,6 +145,8 @@ mod tests {
                 ..empty_token()
             },
             is_dynamic_value: None,
+            is_expression_value: None,
+            is_absent: None,
             is_directive: None,
             potential_name: None,
             potential_value: None,

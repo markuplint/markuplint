@@ -50,7 +50,10 @@ impl Rule for UsemapReferencesMap {
             if usemap_attr.is_dynamic_value == Some(true) {
                 continue;
             }
-            let Some(target_name) = usemap_attr.value.raw.strip_prefix('#').filter(|name| !name.is_empty()) else {
+            let Some(target_name) = markuplint_dom::helpers::attr_value(usemap_attr)
+                .strip_prefix('#')
+                .filter(|name| !name.is_empty())
+            else {
                 continue;
             };
 

@@ -11,10 +11,10 @@
 //! `Number.parseFloat(v).toString() === v`, so what counts as valid is what JS prints back: `1e-7`
 //! and `NaN` are valid numbers, `1e21` (`1e+21`), `+1`, `-0`, ` 1` and `1.0` are not.
 //!
-//! With `booleanish` (a parser option for JSX, where an omitted value means `true`; the document
-//! carries it as [`DomArena::settings`]) an empty value is accepted for `true/false`, `tristate` and
-//! `true/false/undefined`, as TS `checkAriaValue` does. [`check_aria_value`] is the non-booleanish
-//! check; the exemption is made before it, in [`accepts_omitted_value`].
+//! The value is the one the framework renders ([`markuplint_dom::helpers::attr_value`]): the JSX
+//! shorthand `<div aria-hidden />` is the literal `true`, which the TS side of the MLAST path
+//! renders to `"true"`, while `aria-hidden=""` is the empty string and is judged as one, as TS does
+//! since it reads the rendered attribute.
 
 use markuplint_core::mlast::MLASTHTMLAttr;
 use markuplint_dom::arena::DomArena;
@@ -62,11 +62,7 @@ fn check(ctx: &ElementContext<'_>, violations: &mut Vec<Violation>) {
         .map(|role| role.name);
     let props = &aria::get_aria_spec(ctx.spec, ctx.version).props;
 
-    let booleanish = ctx.arena.settings().booleanish;
     for attr in attrs {
-        if booleanish && accepts_omitted_value(attr, props, role_name.as_deref()) {
-            continue;
-        }
         if let Some(message) = invalid_value_message(attr, props, role_name.as_deref()) {
             violations.push(ctx.attr_violation(attr, message));
         }
@@ -93,18 +89,6 @@ fn resolve_value_type<'a>(
     Some((prop, value_type))
 }
 
-/// TS `checkAriaValue` with `booleanish`: an empty value stands for `true` and is valid for the
-/// boolean-like types only.
-fn accepts_omitted_value(attr: &MLASTHTMLAttr, props: &[ARIAProperty], role_name: Option<&str>) -> bool {
-    attr.value.raw.is_empty()
-        && resolve_value_type(attr, props, role_name).is_some_and(|(_, value_type)| {
-            matches!(
-                value_type,
-                ARIAAttributeValue::TrueFalse | ARIAAttributeValue::Tristate | ARIAAttributeValue::TrueFalseUndefined
-            )
-        })
-}
-
 /// The message for `attr` when its value does not fit the property, `None` when it does, when the
 /// property is unknown, or when the value is dynamic.
 fn invalid_value_message(attr: &MLASTHTMLAttr, props: &[ARIAProperty], role_name: Option<&str>) -> Option<String> {
@@ -114,7 +98,7 @@ fn invalid_value_message(attr: &MLASTHTMLAttr, props: &[ARIAProperty], role_name
     let name = attr_name(attr);
     let (prop, value_type) = resolve_value_type(attr, props, role_name)?;
 
-    let value = attr.value.raw.as_str();
+    let value = markuplint_dom::helpers::attr_value(attr);
     if check_aria_value(value_type, value, &prop.enum_values) {
         return None;
     }
@@ -131,8 +115,8 @@ fn invalid_value_message(attr: &MLASTHTMLAttr, props: &[ARIAProperty], role_name
     Some(message)
 }
 
-/// Port of `checkAriaValue` (`wai-aria/checkings/value.ts`) for the non-booleanish case, see the
-/// module docs ([`accepts_omitted_value`] is the other case). `URI`, which TS has no case for, is always valid.
+/// Port of `checkAriaValue` (`wai-aria/checkings/value.ts`). `URI`, which TS has no case for, is
+/// always valid.
 fn check_aria_value(value_type: &ARIAAttributeValue, value: &str, enum_values: &[String]) -> bool {
     match value_type {
         ARIAAttributeValue::Token => enum_values.iter().any(|e| e == value),

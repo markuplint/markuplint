@@ -41,6 +41,11 @@ impl Rule for NoIneffectiveAttr {
                 let MLASTAttr::HTMLAttr(html_attr) = attr else {
                     continue;
                 };
+                // TS `attr.isAbsent`: an attribute that the framework does not output (`defer={false}`)
+                // is not an attribute of the element
+                if markuplint_dom::helpers::is_absent(html_attr) {
+                    continue;
+                }
 
                 let attr_name_lower = html_attr.node_name.to_ascii_lowercase();
                 let Some(attr_spec) = attr_specs.get(attr_name_lower.as_str()) else {

@@ -15,7 +15,7 @@
 //!   v6_no_invalid_aria_prop_value_010  — Rust-only: valid token, true/false and integer values
 //!   v6_check_aria_value_*  — Rust-only: unit tests of `check_aria_value`; expectations are the results of the TS
 //!                            `checkAriaValue` for the same inputs
-//!   v6_no_invalid_aria_prop_value_011  — Rust-only: the `booleanish` setting of the document (JSX parser) accepts an empty `true/false` value
+//!   v6_no_invalid_aria_prop_value_011  — Rust-only: an empty value is invalid with the `booleanish` setting of the document (JSX parser) too
 
 use super::*;
 use crate::aria_check::html_attrs;
@@ -507,9 +507,9 @@ fn v6_no_invalid_aria_prop_value_010() {
     }
 }
 
-/// With `booleanish` (the JSX parser: `<Component aria-hidden />` is `true`), an omitted value
-/// is accepted for `true/false`, `tristate` and `true/false/undefined`, and for no other type.
-/// Expected values from the TS `checkAriaValue` with `booleanish`.
+/// An empty value is invalid with `booleanish` too (the JSX parser): the shorthand
+/// `<Component aria-hidden />` is `true`, which the TS side renders into `potentialValue`, and a
+/// value written empty is the empty string. Expected values from the TS `checkAriaValue`.
 #[test]
 fn v6_no_invalid_aria_prop_value_011() {
     let run_with = |html: &str, booleanish| {
@@ -526,7 +526,7 @@ fn v6_no_invalid_aria_prop_value_011() {
         r#"<div role="checkbox" aria-checked=""></div>"#,
         r#"<div aria-atomic=""></div>"#,
     ] {
-        assert_eq!(run_with(html, true), 0, "{html}");
+        assert_eq!(run_with(html, true), 1, "{html}");
         assert_eq!(run_with(html, false), 1, "{html}");
     }
     // `aria-level`: integer, `aria-live`: token — an empty value is invalid whatever the parser.

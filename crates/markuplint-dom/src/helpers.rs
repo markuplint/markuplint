@@ -10,28 +10,54 @@ pub fn get_attr_value<'a>(arena: &'a DomArena, node_id: NodeId, attr_name: &str)
     get_attr_value_from_el(el, attr_name)
 }
 
+/// TS `MLAttr#value`: the value a rule judges. It is the value the parser or the framework
+/// resolved (`potentialValue`: a literal that a framework renders, `aria-busy={true}` is `"true"`),
+/// else the one as written. A rule that reports the source, or asks how the value is written (its
+/// quotes, its escapes), reads the `value` token instead.
+#[must_use]
+pub fn attr_value(attr: &MLASTHTMLAttr) -> &str {
+    attr.potential_value.as_deref().unwrap_or(&attr.value.raw)
+}
+
+/// TS `MLAttr#isAbsent`: the framework does not output the attribute (`disabled={false}`), so a
+/// lookup by name does not find it, as the DOM does not. It is still among the attributes of the
+/// element, which a rule that judges the name reads.
+#[must_use]
+pub fn is_absent(attr: &MLASTHTMLAttr) -> bool {
+    attr.is_absent == Some(true)
+}
+
+/// The attribute that [`get_attr_value_from_el`] reads the value of (TS `getAttributeNode()` as
+/// `getAttribute()` matches the name): for a rule that asks more of it than its value.
+#[must_use]
+pub fn get_html_attr_from_el<'a>(el: &'a ElementData, attr_name: &str) -> Option<&'a MLASTHTMLAttr> {
+    el.attributes.iter().find_map(|attr| match attr {
+        MLASTAttr::HTMLAttr(html_attr)
+            if !is_absent(html_attr)
+                && html_attr
+                    .potential_name
+                    .as_deref()
+                    .unwrap_or(&html_attr.node_name)
+                    .eq_ignore_ascii_case(attr_name) =>
+        {
+            Some(&**html_attr)
+        }
+        _ => None,
+    })
+}
+
 /// TS `getAttribute()`: `attr_name` is matched case-insensitively against the name the parser
-/// resolved (`potentialName`: JSX's `htmlFor` is `for`), and the answer is the value it resolved
-/// (`potentialValue`), else the one as written. Only `HTMLAttr` variants match (spread attrs
-/// are skipped).
+/// resolved (`potentialName`: JSX's `htmlFor` is `for`), and the answer is [`attr_value`]. Only
+/// `HTMLAttr` variants match (spread attrs are skipped), and an attribute the framework does not
+/// output ([`is_absent`]) is not one of the element's.
 #[must_use]
 pub fn get_attr_value_from_el<'a>(el: &'a ElementData, attr_name: &str) -> Option<&'a str> {
-    for attr in &el.attributes {
-        if let MLASTAttr::HTMLAttr(html_attr) = attr
-            && html_attr
-                .potential_name
-                .as_deref()
-                .unwrap_or(&html_attr.node_name)
-                .eq_ignore_ascii_case(attr_name)
-        {
-            return Some(html_attr.potential_value.as_deref().unwrap_or(&html_attr.value.raw));
-        }
-    }
-    None
+    get_html_attr_from_el(el, attr_name).map(attr_value)
 }
 
 /// TS `MLElement#getAttributeNode()`: the first HTML attribute whose name, as written in
-/// the source, equals `attr_name` lower-cased.
+/// the source, equals `attr_name` lower-cased. An attribute the framework does not output
+/// ([`is_absent`]) is not one of them, as TS `getAttributeToken` skips it.
 ///
 /// Unlike [`get_attr_value_from_el`] (TS `getAttribute()`, which compares both sides
 /// lower-cased), TS compares the attribute's source name as is, so `<input FORM="x">`
@@ -41,7 +67,9 @@ pub fn get_attr_value_from_el<'a>(el: &'a ElementData, attr_name: &str) -> Optio
 pub fn get_attr_node_from_el<'a>(el: &'a ElementData, attr_name: &str) -> Option<&'a MLASTHTMLAttr> {
     let attr_name = attr_name.to_ascii_lowercase();
     el.attributes.iter().find_map(|attr| match attr {
-        MLASTAttr::HTMLAttr(html_attr) if get_raw_attr_name(html_attr) == attr_name => Some(&**html_attr),
+        MLASTAttr::HTMLAttr(html_attr) if !is_absent(html_attr) && get_raw_attr_name(html_attr) == attr_name => {
+            Some(&**html_attr)
+        }
         _ => None,
     })
 }

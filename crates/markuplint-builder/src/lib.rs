@@ -360,8 +360,13 @@ fn to_napi_fix(fix: markuplint_rules::fix::Fix) -> NapiFixData {
     }
 }
 
-fn to_napi_violations(result: markuplint_rules::lint::LintResult) -> Vec<NapiViolation> {
-    result
+/// The violations of `result`, or an error when a selector of a rule's options could not be read,
+/// which fails the whole file as the TS engine does.
+fn to_napi_violations(result: markuplint_rules::lint::LintResult) -> napi::Result<Vec<NapiViolation>> {
+    if let Some(message) = result.fatal_error() {
+        return Err(napi::Error::from_reason(message));
+    }
+    Ok(result
         .violations
         .into_iter()
         .map(|v| NapiViolation {
@@ -378,7 +383,7 @@ fn to_napi_violations(result: markuplint_rules::lint::LintResult) -> Vec<NapiVio
             raw: v.raw,
             fix: v.fix.map(to_napi_fix),
         })
-        .collect()
+        .collect())
 }
 
 fn parse_config(
@@ -397,7 +402,8 @@ fn parse_config(
 
 /// # Errors
 ///
-/// Throws a napi error if MLAST, spec, or config JSON fails to parse.
+/// Throws a napi error if MLAST, spec, or config JSON fails to parse, or a selector of a rule's
+/// options cannot be read.
 #[napi]
 #[allow(clippy::needless_pass_by_value)]
 pub fn lint(mlast_json: String, config_json: String, spec_json: String) -> napi::Result<Vec<NapiViolation>> {
@@ -405,12 +411,13 @@ pub fn lint(mlast_json: String, config_json: String, spec_json: String) -> napi:
         .map_err(|e| napi::Error::from_reason(format!("MLAST parse error: {e}")))?;
     let (spec, config) = parse_config(&config_json, &spec_json)?;
     let result = markuplint_rules::lint::lint(&arena, &spec, &config);
-    Ok(to_napi_violations(result))
+    to_napi_violations(result)
 }
 
 /// # Errors
 ///
-/// Throws a napi error if spec or config JSON fails to parse.
+/// Throws a napi error if spec or config JSON fails to parse, or a selector of a rule's options
+/// cannot be read.
 #[napi]
 #[allow(clippy::needless_pass_by_value)]
 pub fn lint_html(html: String, config_json: String, spec_json: String) -> napi::Result<Vec<NapiViolation>> {
@@ -426,5 +433,5 @@ pub fn lint_html(html: String, config_json: String, spec_json: String) -> napi::
     let arena = html_builder::build_from_html_arena(&html, &parser_arena, is_fragment);
     let (spec, config) = parse_config(&config_json, &spec_json)?;
     let result = markuplint_rules::lint::lint(&arena, &spec, &config);
-    Ok(to_napi_violations(result))
+    to_napi_violations(result)
 }

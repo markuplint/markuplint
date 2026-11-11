@@ -88,7 +88,7 @@ impl Rule for NoUnescapedChar {
                 let MLASTAttr::HTMLAttr(html_attr) = attr else {
                     continue;
                 };
-                if html_attr.is_dynamic_value == Some(true) || html_attr.is_directive == Some(true) {
+                if html_attr.is_expression_value == Some(true) || html_attr.is_directive == Some(true) {
                     continue;
                 }
                 if html_attr.value.raw.is_empty() {

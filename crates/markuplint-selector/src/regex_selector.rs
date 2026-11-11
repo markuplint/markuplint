@@ -411,7 +411,7 @@ fn next_element_sibling(arena: &DomArena, node_id: NodeId) -> Option<NodeId> {
 
 fn get_attr_name_value(attr: &MLASTAttr) -> (String, String) {
     match attr {
-        MLASTAttr::HTMLAttr(a) => (a.node_name.clone(), a.value.raw.clone()),
+        MLASTAttr::HTMLAttr(a) => (a.node_name.clone(), markuplint_dom::helpers::attr_value(a).to_owned()),
         MLASTAttr::Spread(_) => (String::new(), String::new()),
     }
 }
@@ -492,6 +492,8 @@ mod tests {
                 ..empty_token()
             },
             is_dynamic_value: None,
+            is_expression_value: None,
+            is_absent: None,
             is_directive: None,
             potential_name: None,
             potential_value: None,

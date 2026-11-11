@@ -35,6 +35,10 @@ impl Rule for NoDefaultValue {
                 let MLASTAttr::HTMLAttr(html_attr) = attr else {
                     continue;
                 };
+                // TS `attr.isDynamicValue`: a value that is not known is not the default one
+                if html_attr.is_dynamic_value == Some(true) {
+                    continue;
+                }
 
                 let attr_name_lower = html_attr.node_name.to_ascii_lowercase();
 
@@ -47,7 +51,7 @@ impl Rule for NoDefaultValue {
                     continue;
                 };
 
-                if html_attr.value.raw.eq_ignore_ascii_case(default_value) {
+                if markuplint_dom::helpers::attr_value(html_attr).eq_ignore_ascii_case(default_value) {
                     // TS points at the value, not at the attribute. A valueless attribute never gets
                     // here: no default value in the spec is the empty string.
                     violations.push(Violation {

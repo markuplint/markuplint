@@ -116,7 +116,7 @@ fn has_external_labeled_control(arena: &DomArena, spec: &MLMLSpec, label_id: Nod
     if for_attr.is_dynamic_value == Some(true) {
         return false;
     }
-    let Some(target) = find_element_by_id(arena, &for_attr.value.raw) else {
+    let Some(target) = find_element_by_id(arena, markuplint_dom::helpers::attr_value(for_attr)) else {
         return false;
     };
     let contained = target == label_id || arena.ancestors(target).any(|a| a.id() == label_id);
