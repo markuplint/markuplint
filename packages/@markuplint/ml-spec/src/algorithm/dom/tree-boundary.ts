@@ -1,3 +1,5 @@
+import { XHTML_NAMESPACE } from '../../const/dom.js';
+
 /**
  * @module
  *
@@ -34,10 +36,22 @@
  * or that fails to attach one, is treated as an ordinary `template` element: a walk ends at the
  * top of its content.
  *
- * Known limitation: the flat tree places the content of a shadow root where the `slot` element
- * is, between the host and the nodes the host has as children. A walk goes from the top of the
- * shadow root to the host and does not model the position of the `slot`.
+ * The flat tree renders a light child of a shadow host where the `slot` element that takes it is,
+ * so the parent of the child is that `slot`: `getFlatTreeSlot()` of `@markuplint/ml-core` tells it
+ * (the named slot assignment of the shadow root). A child that no slot takes is not rendered, so a
+ * walk ends there as it does at the top of the content of an ordinary `template` element. Where the
+ * assignment is not known (`undefined`: manual assignment, a name written as code, a slot of a
+ * framework), the walk goes to the host as it does for any other child. The `slot` element itself
+ * is an element that is not mapped to the accessibility tree, which the algorithms of this package
+ * pass through (`isSlotElement`).
  *
+ * Known limitation: a walk from the top of the shadow root goes to the host and does not model where
+ * the `slot` sits in the shadow root, so the elements of the shadow root that are above the `slot` are
+ * not between the host and a light child the `slot` takes. The fallback content of a slot that takes
+ * nodes is not rendered either, and a walk from it still goes through the `slot`.
+ *
+ * @see https://dom.spec.whatwg.org/#find-a-slot
+ * @see https://dom.spec.whatwg.org/#find-flattened-slotables
  * @see https://dom.spec.whatwg.org/#parent-element
  * @see https://dom.spec.whatwg.org/#concept-shadow-including-ancestor
  * @see https://html.spec.whatwg.org/multipage/scripting.html#the-template-element
@@ -54,6 +68,19 @@ const DOCUMENT_FRAGMENT_NODE = 11;
 type TreeElement = {
 	readonly parentElement: unknown;
 	getRootNode?(): unknown;
+};
+
+/**
+ * What {@link getComposedParentElement} reads besides {@link TreeElement}: the slot that places the
+ * element in the flat tree. `null` is an element of a shadow host that no slot takes (not rendered),
+ * `undefined` an element that is not one or whose assignment is not known.
+ *
+ * @template P - The type of the parent element the element reads
+ */
+type FlatTreeElement<P extends TreeElement> = {
+	readonly parentElement: P | null;
+	getRootNode?(): unknown;
+	getFlatTreeSlot?(): P | null | undefined;
 };
 
 /**
@@ -84,16 +111,17 @@ export function getTreeParentElement<P extends TreeElement>(el: {
  * The parent element of an element as the accessibility tree is built: the parent element in its own
  * tree, or, at the top of a shadow root, the host of the shadow root. `null` at the top of the content
  * of an ordinary `template` element, and at the top of a document or of any other root that is not a
- * shadow root.
+ * shadow root. For a light child of a shadow host, the slot that takes it, or `null` when none does.
  *
  * @template P - The type of the parent element the element reads
  * @param el - The element to start from
  * @returns The parent element or the shadow host, or `null` when the walk ends
  */
-export function getComposedParentElement<P extends TreeElement>(el: {
-	readonly parentElement: P | null;
-	getRootNode?(): unknown;
-}): P | null {
+export function getComposedParentElement<P extends TreeElement>(el: FlatTreeElement<P>): P | null {
+	const slot = el.getFlatTreeSlot?.();
+	if (slot !== undefined) {
+		return slot;
+	}
 	const parent = getTreeParentElement(el);
 	if (parent) {
 		return parent;
@@ -122,4 +150,67 @@ export function isShadowRoot<P = unknown>(root: unknown): root is { readonly hos
 		root.nodeType === DOCUMENT_FRAGMENT_NODE &&
 		'host' in root
 	);
+}
+
+/**
+ * Whether an element is a `slot` element of the HTML namespace, which the accessibility tree does not
+ * map: it has no role of its own, and what it renders (the nodes assigned to it, or its children)
+ * belongs to the parent of the `slot`. A walk up the ancestors of the accessibility tree that reads
+ * roles passes through it. The walks that read an attribute of the ancestors (`hidden`, `aria-hidden`)
+ * do not skip it: what a `slot` that has them renders is hidden as well.
+ *
+ * It does not look at `MLParser#slotElement` on purpose: the `slot` of a framework (Vue, Svelte, Astro)
+ * is replaced with what it is given, so it is no element of the accessibility tree either, and the
+ * pass-through is right for it too. Which `slot` has an assignment is `MLElement#getAssignedNodes` of
+ * `@markuplint/ml-core`, which does look at it.
+ *
+ * > No corresponding role
+ *
+ * @param el - An element
+ * @returns `true` for the `slot` element of the HTML namespace
+ * @see https://w3c.github.io/html-aam/#el-slot
+ * @see https://dom.spec.whatwg.org/#find-flattened-slotables
+ */
+export function isSlotElement(el: { readonly localName: string; readonly namespaceURI?: string | null }): boolean {
+	return el.localName === 'slot' && el.namespaceURI === XHTML_NAMESPACE;
+}
+
+/**
+ * Whether an element is not rendered: it is a light child of a shadow host, and no slot of the shadow
+ * root takes it (`getFlatTreeSlot()` is `null`). The flat tree has no place for it, so it is not in the
+ * accessibility tree either, whatever its host is.
+ *
+ * @param el - An element
+ * @returns `true` for an element that is known not to be rendered
+ * @see https://dom.spec.whatwg.org/#find-flattened-slotables
+ */
+export function isNotRendered(el: object): boolean {
+	// The DOM `Element` has no `getFlatTreeSlot`: only the element of `@markuplint/ml-core` knows it
+	return (el as { getFlatTreeSlot?(): unknown }).getFlatTreeSlot?.() === null;
+}
+
+/**
+ * The parent element of an element in the accessibility tree: the composed parent element
+ * ({@link getComposedParentElement}) with the `slot` elements passed through ({@link isSlotElement}). The walks
+ * that read the roles of the ancestors take it; the walks that read an attribute of the ancestors take
+ * {@link getComposedParentElement}, as what a `slot` that has `hidden` renders is hidden.
+ *
+ * @template E - The type of the element
+ * @param el - The element to start from
+ * @returns The parent element, or `null` when the walk ends
+ */
+export function getAccessibilityParentElement<
+	E extends {
+		readonly parentElement: E | null;
+		readonly localName: string;
+		readonly namespaceURI?: string | null;
+		getRootNode?(): unknown;
+		getFlatTreeSlot?(): E | null | undefined;
+	},
+>(el: E): E | null {
+	let parent = getComposedParentElement(el);
+	while (parent && isSlotElement(parent)) {
+		parent = getComposedParentElement(parent);
+	}
+	return parent;
 }

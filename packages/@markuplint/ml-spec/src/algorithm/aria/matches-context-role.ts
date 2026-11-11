@@ -1,6 +1,6 @@
 import type { ARIAVersion, MLMLSpec } from '../../types/index.js';
 
-import { getComposedParentElement } from '../dom/tree-boundary.js';
+import { getAccessibilityParentElement } from '../dom/tree-boundary.js';
 import { isTransparentForOwnership } from './is-presentational.js';
 
 import { getComputedRole } from './get-computed-role.js';
@@ -17,7 +17,8 @@ import { getComputedRole } from './get-computed-role.js';
  * `aria-owns` attributes, which is a separate architectural concern.
  * See also: `has-required-owned-elements.ts` has a similar limitation.
  *
- * The chain is the one the accessibility tree is built from ({@link getComposedParentElement}).
+ * The chain is the one the accessibility tree is built from ({@link getAccessibilityParentElement}), which
+ * does not have a `slot`.
  */
 export function matchesContextRole(
 	conditions: readonly string[],
@@ -26,7 +27,9 @@ export function matchesContextRole(
 	specs: MLMLSpec,
 	version: ARIAVersion,
 ) {
-	return conditions.some(condition => matchesCondition(condition, getComposedParentElement(ownedEl), specs, version));
+	return conditions.some(condition =>
+		matchesCondition(condition, getAccessibilityParentElement(ownedEl), specs, version),
+	);
 }
 
 function matchesCondition(
@@ -66,7 +69,7 @@ function matchesCondition(
 		 * @see https://w3c.github.io/aria/#scope
 		 */
 		if (isTransparentForOwnership(parentRole?.name, version)) {
-			parentEl = getComposedParentElement(parentEl);
+			parentEl = getAccessibilityParentElement(parentEl);
 			continue;
 		}
 
@@ -76,7 +79,7 @@ function matchesCondition(
 			return false;
 		}
 
-		parentEl = getComposedParentElement(parentEl);
+		parentEl = getAccessibilityParentElement(parentEl);
 	}
 
 	return true;
