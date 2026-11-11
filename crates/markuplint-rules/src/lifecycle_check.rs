@@ -8,10 +8,11 @@
 
 use markuplint_core::mlast::{ElementType, MLASTAttr, NamespaceURI};
 use markuplint_dom::arena::DomArena;
-use markuplint_dom::helpers::get_raw_attr_name;
+use markuplint_dom::helpers::attr_name;
 use markuplint_types::spec::lookup::get_spec;
 use markuplint_types::spec::types::MLMLSpec;
 
+use crate::attr_name_key::{attr_specs_of, find_attr_spec};
 use crate::rule::RuleConfigSet;
 use crate::violation::Violation;
 
@@ -33,11 +34,12 @@ impl Lifecycle {
 }
 
 /// Reports every attribute whose merged spec (TS `getAttrSpecs()`) carries the
-/// `lifecycle` flag.
+/// `lifecycle` flag. The spec is the one the attribute names as the DOM names it (TS
+/// `findAttrSpec`): `ALIGN` on a `<div>` is `align`, and `ID` on an `<svg>` whose attributes
+/// code sets is not `id`.
 ///
-/// Like TS `attrSpecs.find(item => item.name === attr.name)`, the name is matched
-/// exactly as written in the source: an HTML attribute written in another case
-/// (`ALIGN`) is not matched, and a camelCase SVG attribute (`baseProfile`) is.
+/// The message names the attribute as written for `deprecated` (TS `attr.name`) and as the spec
+/// spells it for `obsolete` (TS `attrSpec.name`).
 pub(crate) fn verify_attr_lifecycle(
     rule_id: &str,
     lifecycle: Lifecycle,
@@ -52,23 +54,28 @@ pub(crate) fn verify_attr_lifecycle(
         if rule_config.disabled {
             continue;
         }
-        // The namespace-qualified name finds the SVG/MathML spec (`svg:a`) instead
-        // of the HTML element of the same local name. The spec prefixes MathML
-        // elements with `mml:` (TS `resolveNamespace()`).
-        let qualified_name = match el.namespace {
-            NamespaceURI::SVG => format!("svg:{}", el.base.node_name),
-            NamespaceURI::MathML => format!("mml:{}", el.base.node_name),
-            _ => el.base.node_name.clone(),
+        let Some(attr_specs) = attr_specs_of(spec, el) else {
+            continue;
         };
 
         for attr in &el.attributes {
             let MLASTAttr::HTMLAttr(html_attr) = attr else {
                 continue;
             };
-            let name = get_raw_attr_name(html_attr);
-            if !attr_has_flag(spec, &qualified_name, name, lifecycle) {
+            let Some(attr_spec) = find_attr_spec(&attr_specs, el, html_attr) else {
+                continue;
+            };
+            let flagged = match lifecycle {
+                Lifecycle::Obsolete => attr_spec.obsolete,
+                Lifecycle::Deprecated => attr_spec.deprecated,
+            };
+            if flagged != Some(true) {
                 continue;
             }
+            let name = match lifecycle {
+                Lifecycle::Obsolete => attr_spec.name.as_deref().unwrap_or_default(),
+                Lifecycle::Deprecated => attr_name(html_attr),
+            };
             violations.push(Violation {
                 rule_id: rule_id.to_string(),
                 name: None,
@@ -77,7 +84,7 @@ pub(crate) fn verify_attr_lifecycle(
                 line: html_attr.name.line,
                 col: html_attr.name.col,
                 raw: html_attr.name.raw.clone(),
-                reason: None,
+                reason: rule_config.reason.clone(),
                 fix: None,
             });
         }
@@ -144,40 +151,4 @@ pub(crate) fn verify_element_lifecycle(
     }
 
     violations
-}
-
-/// Whether the attribute `attr_name` of element `element_name` has the `lifecycle`
-/// flag in the merged spec TS `getAttrSpecs()` builds: the global attribute
-/// categories the element enables (a category set to `false` is off, one set to an
-/// array enables only the names it lists), overlaid field by field with the
-/// element's own definition of the attribute.
-fn attr_has_flag(spec: &MLMLSpec, element_name: &str, attr_name: &str, lifecycle: Lifecycle) -> bool {
-    let Some(el) = get_spec(spec, element_name) else {
-        return false;
-    };
-
-    let own = el.attributes.get(attr_name).and_then(|attr| match lifecycle {
-        Lifecycle::Obsolete => attr.obsolete,
-        Lifecycle::Deprecated => attr.deprecated,
-    });
-    if let Some(flag) = own {
-        return flag;
-    }
-
-    el.global_attrs.iter().any(|(category, enabled)| {
-        let included = match enabled {
-            serde_json::Value::Bool(b) => *b,
-            serde_json::Value::Array(names) => names.iter().any(|n| n.as_str() == Some(attr_name)),
-            _ => false,
-        };
-        included
-            && spec
-                .def
-                .global_attrs
-                .get(category)
-                .and_then(|attrs| attrs.get(attr_name))
-                .and_then(|def| def.get(lifecycle.key()))
-                .and_then(serde_json::Value::as_bool)
-                .unwrap_or(false)
-    })
 }

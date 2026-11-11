@@ -40,11 +40,15 @@ impl Rule for NoHardcodedId {
                     continue;
                 };
 
-                if html_attr.is_dynamic_value == Some(true) {
+                // TS `!attr.isDynamicValue && attr.valueType !== 'code'`
+                if html_attr.is_dynamic_value == Some(true)
+                    || (html_attr.value_type.as_deref() == Some("code") && html_attr.potential_value.is_none())
+                {
                     continue;
                 }
 
-                if html_attr.node_name.eq_ignore_ascii_case("id") {
+                // TS `attr.nameKey === 'id'`
+                if markuplint_dom::helpers::name_key(el, html_attr) == "id" {
                     violations.push(Violation {
                         rule_id: self.id().to_string(),
                         name: None,
@@ -53,7 +57,7 @@ impl Rule for NoHardcodedId {
                         line: html_attr.name.line,
                         col: html_attr.name.col,
                         raw: html_attr.raw.clone(),
-                        reason: None,
+                        reason: rule_config.reason.clone(),
                         fix: None,
                     });
                 }

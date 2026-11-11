@@ -1,16 +1,19 @@
-//! `no-ambiguous-navigable-target-names` rule: navigable target names should not be ambiguous keywords.
+//! `no-ambiguous-navigable-target-names` rule: a navigable target name that is a keyword without
+//! its leading underscore (`blank` for `_blank`) is likely a typo. Port of
+//! `packages/@markuplint/rules/src/no-ambiguous-navigable-target-names/`.
 //!
-//! Values like "self", "blank", "parent", "top" without a leading underscore are likely
-//! typos for "_self", "_blank", "_parent", "_top".
+//! An attribute is checked when its spec, global ones merged (TS `getAttrSpecs`) and looked up by
+//! the name the DOM gives it (TS `findAttrSpec`), has the type `NavigableTargetNameOrKeyword` or
+//! `NavigableTargetName`. The keywords are ASCII case-insensitive; the message shows the value as
+//! written.
 //!
-//! Uses spec-based attribute type lookup (`NavigableTargetNameOrKeyword` or
-//! `NavigableTargetName`) instead of hardcoding attribute names.
+//! <https://html.spec.whatwg.org/multipage/document-sequences.html#valid-navigable-target-name-or-keyword>
 
 use markuplint_core::mlast::MLASTAttr;
 use markuplint_dom::arena::DomArena;
-use markuplint_types::spec::lookup::{get_attr_specs, get_spec};
 use markuplint_types::spec::types::MLMLSpec;
 
+use crate::attr_name_key::{attr_specs_of, find_attr_spec};
 use crate::rule::{Rule, RuleConfigSet};
 use crate::violation::Violation;
 
@@ -33,46 +36,56 @@ impl Rule for NoAmbiguousNavigableTargetNames {
             if rule_config.disabled {
                 continue;
             }
-
-            let attr_specs = get_attr_specs(spec, &el.base.node_name);
+            let Some(attr_specs) = attr_specs_of(spec, el) else {
+                continue;
+            };
 
             for attr in &el.attributes {
                 let MLASTAttr::HTMLAttr(html_attr) = attr else {
                     continue;
                 };
+                // TS `attr.valueNode`: an attribute written without a value names no target
+                if html_attr.value.raw.is_empty() && html_attr.equal.raw.is_empty() {
+                    continue;
+                }
                 // TS `attr.isDynamicValue`: a value that is not known names no target
                 if html_attr.is_dynamic_value == Some(true) {
                     continue;
                 }
-
-                let attr_name = html_attr.node_name.to_ascii_lowercase();
-
-                if !is_navigable_target_type(&attr_specs, &attr_name, spec, &el.base.node_name) {
+                let Some(attr_spec) = find_attr_spec(&attr_specs, el, html_attr) else {
                     continue;
-                }
+                };
+                let with_keyword = match attr_spec.attr_type.as_str() {
+                    Some("NavigableTargetNameOrKeyword") => true,
+                    Some("NavigableTargetName") => false,
+                    _ => continue,
+                };
 
                 let value = markuplint_dom::helpers::attr_value(html_attr).trim();
-
-                if value.starts_with('_') || value.is_empty() {
+                if value.starts_with('_') {
                     continue;
                 }
-
-                let with_underscore = format!("_{}", value.to_ascii_lowercase());
-                if is_navigable_keyword(&with_underscore) {
-                    violations.push(Violation {
-                        rule_id: self.id().to_string(),
-                        name: None,
-                        severity: rule_config.severity,
-                        message: format!(
-                            "Don't use an ambiguous navigable target name. Did you mean \"{with_underscore}\"?"
-                        ),
-                        line: html_attr.name.line,
-                        col: html_attr.name.col,
-                        raw: html_attr.raw.clone(),
-                        reason: None,
-                        fix: None,
-                    });
+                let with_underscore = format!("_{value}");
+                if !is_navigable_keyword(&with_underscore) {
+                    continue;
                 }
+                // As TS `t("a {0}", ...)` writes it (no "an").
+                let message = if with_keyword {
+                    format!("Don't use a ambiguous navigable target name. Did you mean \"{with_underscore}\"?")
+                } else {
+                    "Don't use a ambiguous navigable target name".to_string()
+                };
+                violations.push(Violation {
+                    rule_id: self.id().to_string(),
+                    name: None,
+                    severity: rule_config.severity,
+                    message,
+                    line: html_attr.value.line,
+                    col: html_attr.value.col,
+                    raw: html_attr.value.raw.clone(),
+                    reason: rule_config.reason.clone(),
+                    fix: None,
+                });
             }
         }
 
@@ -80,41 +93,11 @@ impl Rule for NoAmbiguousNavigableTargetNames {
     }
 }
 
-fn is_navigable_target_type(
-    attr_specs: &std::collections::HashMap<&str, &markuplint_types::spec::types::Attribute>,
-    attr_name: &str,
-    spec: &MLMLSpec,
-    el_name: &str,
-) -> bool {
-    if let Some(attr_spec) = attr_specs.get(attr_name)
-        && is_navigable_type_value(&attr_spec.attr_type)
-    {
-        return true;
-    }
-    if let Some(el) = get_spec(spec, el_name) {
-        for category in el.global_attrs.keys() {
-            if let Some(attrs_map) = spec.def.global_attrs.get(category)
-                && let Some(attr_val) = attrs_map.get(attr_name)
-                && let Some(type_val) = attr_val.get("type")
-                && is_navigable_type_value(type_val)
-            {
-                return true;
-            }
-        }
-    }
-    false
-}
-
-fn is_navigable_type_value(type_val: &serde_json::Value) -> bool {
-    match type_val {
-        serde_json::Value::String(s) => s == "NavigableTargetNameOrKeyword" || s == "NavigableTargetName",
-        serde_json::Value::Array(arr) => arr.iter().any(is_navigable_type_value),
-        _ => false,
-    }
-}
-
+/// The keywords of a valid navigable target name or keyword, which are ASCII case-insensitive.
 fn is_navigable_keyword(value: &str) -> bool {
-    matches!(value, "_self" | "_blank" | "_parent" | "_top")
+    ["_self", "_blank", "_parent", "_top"]
+        .iter()
+        .any(|keyword| keyword.eq_ignore_ascii_case(value))
 }
 
 #[cfg(test)]
@@ -137,7 +120,7 @@ mod tests {
         assert_eq!(violations.len(), 1);
         assert_eq!(
             violations[0].message,
-            "Don't use an ambiguous navigable target name. Did you mean \"_blank\"?"
+            "Don't use a ambiguous navigable target name. Did you mean \"_blank\"?"
         );
     }
 
@@ -159,7 +142,7 @@ mod tests {
         assert_eq!(violations.len(), 1);
         assert_eq!(
             violations[0].message,
-            "Don't use an ambiguous navigable target name. Did you mean \"_self\"?"
+            "Don't use a ambiguous navigable target name. Did you mean \"_self\"?"
         );
     }
 
@@ -181,7 +164,7 @@ mod tests {
         assert_eq!(violations.len(), 1);
         assert_eq!(
             violations[0].message,
-            "Don't use an ambiguous navigable target name. Did you mean \"_parent\"?"
+            "Don't use a ambiguous navigable target name. Did you mean \"_parent\"?"
         );
     }
 
@@ -203,7 +186,7 @@ mod tests {
         assert_eq!(violations.len(), 1);
         assert_eq!(
             violations[0].message,
-            "Don't use an ambiguous navigable target name. Did you mean \"_top\"?"
+            "Don't use a ambiguous navigable target name. Did you mean \"_top\"?"
         );
     }
 }

@@ -2,11 +2,11 @@
 
 use markuplint_core::mlast::MLASTAttr;
 use markuplint_dom::arena::DomArena;
-use markuplint_dom::helpers::get_raw_attr_name;
+use markuplint_dom::helpers::attr_name;
 use markuplint_selector::matcher;
-use markuplint_types::spec::lookup::get_attr_specs;
 use markuplint_types::spec::types::{AttributeCondition, MLMLSpec};
 
+use crate::attr_name_key::{attr_specs_of, find_attr_spec};
 use crate::diagnostic;
 use crate::fix::Fix;
 use crate::rule::{Rule, RuleConfigSet};
@@ -35,7 +35,9 @@ impl Rule for NoIneffectiveAttr {
             if rule_config.disabled {
                 continue;
             }
-            let attr_specs = get_attr_specs(spec, &el.base.node_name);
+            let Some(attr_specs) = attr_specs_of(spec, el) else {
+                continue;
+            };
 
             for attr in &el.attributes {
                 let MLASTAttr::HTMLAttr(html_attr) = attr else {
@@ -47,8 +49,8 @@ impl Rule for NoIneffectiveAttr {
                     continue;
                 }
 
-                let attr_name_lower = html_attr.node_name.to_ascii_lowercase();
-                let Some(attr_spec) = attr_specs.get(attr_name_lower.as_str()) else {
+                // TS `findAttrSpec`: the spec the attribute names as the DOM names it
+                let Some(attr_spec) = find_attr_spec(&attr_specs, el, html_attr) else {
                     continue;
                 };
 
@@ -69,17 +71,17 @@ impl Rule for NoIneffectiveAttr {
                 });
 
                 if is_ineffective {
-                    let raw_name = get_raw_attr_name(html_attr);
+                    let raw_name = attr_name(html_attr);
                     // TS: The "name" attribute is ineffective. It doesn't need the attribute
                     violations.push(Violation {
                         rule_id: self.id().to_string(),
                         name: None,
                         severity: rule_config.severity,
                         message: format!("The \"{raw_name}\" attribute is ineffective. It doesn't need the attribute"),
-                        line: html_attr.name.line,
-                        col: html_attr.name.col,
-                        raw: html_attr.name.raw.clone(),
-                        reason: None,
+                        line: html_attr.line,
+                        col: html_attr.col,
+                        raw: html_attr.raw.clone(),
+                        reason: rule_config.reason.clone(),
                         fix: Fix::remove_attr(html_attr),
                     });
                 }

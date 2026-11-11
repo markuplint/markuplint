@@ -78,3 +78,59 @@ pub(crate) fn find_attr_spec<'s>(
             })
         })
 }
+
+/// JS `/\s+/g` replaced with `with`.
+fn collapse_whitespace(value: &str, with: &str) -> String {
+    let mut out = String::with_capacity(value.len());
+    let mut in_space = false;
+    for c in value.chars() {
+        if c.is_whitespace() {
+            if !in_space {
+                out.push_str(with);
+            }
+            in_space = true;
+        } else {
+            out.push(c);
+            in_space = false;
+        }
+    }
+    out
+}
+
+/// TS `toNormalizedValue`: `value` as the spec of the attribute compares it. The case folds unless
+/// the spec is `caseSensitive`; a CSS-like type (`<...>`) is trimmed and its spaces collapsed; a
+/// list type follows its own `caseInsensitive`, `disallowToSurroundBySpaces` and `separator`.
+pub(crate) fn to_normalized_value(value: &str, spec: &Attribute) -> String {
+    let mut normalized = value.to_owned();
+    if spec.case_sensitive != Some(true) {
+        normalized = normalized.to_lowercase();
+    }
+    match &spec.attr_type {
+        serde_json::Value::String(type_name) => {
+            if type_name.starts_with('<') {
+                normalized = collapse_whitespace(normalized.to_lowercase().trim(), " ");
+            }
+        }
+        serde_json::Value::Object(list) if list.contains_key("separator") => {
+            if list.get("caseInsensitive").and_then(serde_json::Value::as_bool) == Some(true) {
+                normalized = normalized.to_lowercase();
+            }
+            if list
+                .get("disallowToSurroundBySpaces")
+                .and_then(serde_json::Value::as_bool)
+                != Some(true)
+            {
+                normalized = normalized.trim().to_owned();
+            }
+            match list.get("separator").and_then(serde_json::Value::as_str) {
+                Some("space") => normalized = collapse_whitespace(&normalized, " "),
+                Some("comma") => {
+                    normalized = normalized.split(',').map(str::trim).collect::<Vec<_>>().join(",");
+                }
+                _ => {}
+            }
+        }
+        _ => {}
+    }
+    normalized
+}
