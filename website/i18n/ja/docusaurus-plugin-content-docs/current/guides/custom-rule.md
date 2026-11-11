@@ -148,7 +148,7 @@ report({
 
 ### ツリー
 
-`<template>`要素の内容と宣言的シャドウルートは、DOMと同じく独立したツリーです。`querySelector()`、`querySelectorAll()`、`getElementById()`は、呼び出したノードのツリーの中だけを検索し、`closest()`とセレクタはその境界で止まります。すべてのツリーを対象にするときは、`deepQuerySelectorAll()`か、すべてのノードを訪れる`walkOn()`を使います。`el.getRootNode()`は要素が属するツリー、`el.treeParentElement`はそのツリーでの親要素です。`el.content`は`<template>`要素の内容、`el.shadowRoot`は`shadowrootmode="open"`で要素に付与された宣言的シャドウルートです。`parentNode`と`parentElement`は構文木上のままなので、`<template>`の中の最初の要素のものは`<template>`要素です。
+`<template>`要素の内容と宣言的シャドウルートは、DOMと同じく独立したツリーです。`querySelector()`、`querySelectorAll()`、`getElementById()`は、呼び出したノードのツリーの中だけを検索し、`closest()`とセレクタはその境界で止まります。すべてのツリーを対象にするときは、`deepQuerySelectorAll()`か、すべてのノードを訪れる`walkOn()`を使います。`el.getRootNode()`は要素が属するツリー、`el.treeParentElement`はそのツリーでの親要素です。`el.content`は`<template>`要素の内容、`el.shadowRoot`は`shadowrootmode="open"`で要素に付与された宣言的シャドウルートです。`parentNode`と`parentElement`はその境界で止まらないので、`<template>`の中の最初の要素のものは`<template>`要素です。
 
 ## メッセージの多言語化
 
