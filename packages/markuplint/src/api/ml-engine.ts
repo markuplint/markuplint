@@ -21,6 +21,7 @@ import path from 'node:path';
 import { applyRuleAliasesToConfig, mergeConfig } from '@markuplint/ml-config';
 import {
 	CONFIG_ERROR_RULE_ID,
+	Document as MLDocument,
 	MLCore,
 	convertRuleset,
 	createRuleDeprecationViolations,
@@ -35,7 +36,7 @@ import { Emitter } from 'strict-event-emitter';
 import { log as coreLog, verbosely } from '../debug.js';
 import { i18n } from '../i18n.js';
 
-import { mlastForRust } from './rust-mlast.js';
+import { mlastForRust, renderAttrs } from './rust-mlast.js';
 import { subscribe as subscribeToWatcher, toWatchKey } from './shared-watcher.js';
 
 const log = coreLog.extend('ml-engine');
@@ -444,6 +445,10 @@ export class MLEngine extends Emitter<MLEngineEventMap> {
 			parserOptions: fabric.parserOptions,
 			severity: fabric.severity,
 			spec,
+			schemas: fabric.schemas,
+			ruleCommonSettings: fabric.ruleCommonSettings,
+			pretenders: fabric.pretenders,
+			filename: this.#file.path,
 		};
 		const lintHtml =
 			this.#parserModName === '@markuplint/html-parser'
@@ -1385,11 +1390,19 @@ function lintWithTsParser(
 		parserOptions,
 		severity,
 		spec,
+		schemas,
+		ruleCommonSettings,
+		pretenders,
+		filename,
 	}: {
 		readonly parser: MLFabric['parser'];
 		readonly parserOptions: MLFabric['parserOptions'];
 		readonly severity: MLFabric['severity'];
 		readonly spec: Parameters<typeof mlastForRust>[1]['spec'];
+		readonly schemas: MLFabric['schemas'];
+		readonly ruleCommonSettings: MLFabric['ruleCommonSettings'];
+		readonly pretenders: MLFabric['pretenders'];
+		readonly filename: string;
 	},
 	code: string,
 	configJson: string,
@@ -1407,7 +1420,23 @@ function lintWithTsParser(
 		}
 		throw error;
 	}
-	return napi.lint(mlastForRust(ast, { spec, parser }), configJson, specJson);
+	// The values that the framework renders, read from a TS `Document` built as `MLCore` builds it.
+	// Rendering does not depend on the rules, so the ruleset is empty.
+	const document = new MLDocument(ast, convertRuleset(), schemas, ruleCommonSettings, {
+		filename,
+		endTag: parser.endTag,
+		booleanish: parser.booleanish,
+		attrExpressionLanguage: parser.attrExpressionLanguage,
+		literalValues: parser.literalValues,
+		tagNameCaseSensitive: parser.tagNameCaseSensitive,
+		componentNameVariants: parser.componentNameVariants,
+		isComponentName: parser.isComponentName?.bind(parser),
+		isNativeTag: parser.isNativeTag?.bind(parser),
+		attrNameCaseSensitive: parser.attrNameCaseSensitive,
+		attrNameRoute: parser.attrNameRoute,
+		pretenders,
+	});
+	return napi.lint(mlastForRust(ast, { spec, parser, renderings: renderAttrs(document) }), configJson, specJson);
 }
 
 type NapiBinding = {

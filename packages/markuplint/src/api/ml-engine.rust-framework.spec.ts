@@ -425,7 +425,7 @@ describe.skipIf(!nativeAddonIsBuilt)('experimentalRustCore fixes the files of fr
 			parser: '@markuplint/pug-parser',
 			rules: quotes,
 			code: "div(class='foo')",
-			fixed: 'div(class="foo")',
+			fixed: "div(class='foo')",
 		},
 		{
 			name: 'Vue single quotes',
@@ -601,7 +601,7 @@ describe.skipIf(!nativeAddonIsBuilt)(
 			{ code: '<x-foo></x-foo>', selector: ':model(flow)', selects: 1 },
 			{ code: '<x-foo></x-foo>', selector: ':model(phrasing)', selects: 1 },
 			{ code: '<x-foo></x-foo>', selector: ':model(interactive)', selects: 0 },
-			{ code: '<x-foo></x-foo>', selector: ':model(custom)', selects: 0 },
+			{ code: '<x-foo></x-foo>', selector: ':model(custom)', selects: 1 },
 			{ code: '<annotation-xml></annotation-xml>', selector: ':model(flow)', selects: 0 },
 			{ code: '<svg><rect></rect></svg>', selector: ':model(SVGRenderable)', selects: 2 },
 			{ code: '<div></div><span></span>', selector: ':model( Flow )', selects: 2 },

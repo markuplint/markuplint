@@ -2,9 +2,12 @@ import type { MLASTElement, MLASTHTMLAttr } from '@markuplint/ml-ast';
 import type { ExtendedSpec } from '@markuplint/ml-spec';
 
 import { parser } from '@markuplint/html-parser';
+import htmlSpec from '@markuplint/html-spec';
+import { parser as jsxParser } from '@markuplint/jsx-parser';
+import { Document, convertRuleset } from '@markuplint/ml-core';
 import { describe, expect, test } from 'vitest';
 
-import { mlastForRust } from './rust-mlast.js';
+import { mlastForRust, renderAttrs } from './rust-mlast.js';
 
 const html = (code: string) => parser.parse(code);
 
@@ -127,5 +130,79 @@ describe('mlastForRust', () => {
 		const json = JSON.parse(mlastForRust(html('<div></div>'), { spec: {}, parser: {} })) as Record<string, unknown>;
 
 		expect(json).not.toHaveProperty('attrNameCaseSensitive');
+	});
+
+	test('[rust-mlast-render-001] sends what the framework renders an attribute as', () => {
+		const ast = jsxParser.parse(
+			'<button disabled={false} aria-busy={true} title={x} aria-hidden="" aria-pressed hidden />',
+		);
+		const document = new Document(
+			ast,
+			convertRuleset(),
+			[htmlSpec],
+			{},
+			{
+				booleanish: jsxParser.booleanish,
+				attrExpressionLanguage: jsxParser.attrExpressionLanguage,
+				literalValues: jsxParser.literalValues,
+			},
+		);
+		const attrs = attrsOf(mlastForRust(ast, { spec: {}, parser: jsxParser, renderings: renderAttrs(document) }));
+		const pick = (attr: MLASTHTMLAttr & { isExpressionValue?: true; isAbsent?: true }) => ({
+			potentialValue: attr.potentialValue,
+			isDynamicValue: attr.isDynamicValue,
+			isExpressionValue: attr.isExpressionValue,
+			isAbsent: attr.isAbsent,
+		});
+
+		// Not output, so its value is not known either
+		expect(pick(attrs.disabled!)).toStrictEqual({
+			potentialValue: undefined,
+			isDynamicValue: true,
+			isExpressionValue: true,
+			isAbsent: true,
+		});
+		// A literal written as code is rendered to a value, which is the one written
+		expect(pick(attrs['aria-busy']!)).toStrictEqual({
+			potentialValue: undefined,
+			isDynamicValue: undefined,
+			isExpressionValue: true,
+			isAbsent: undefined,
+		});
+		expect(pick(attrs.title!)).toStrictEqual({
+			potentialValue: undefined,
+			isDynamicValue: true,
+			isExpressionValue: true,
+			isAbsent: undefined,
+		});
+		expect(pick(attrs['aria-hidden']!)).toStrictEqual({
+			potentialValue: undefined,
+			isDynamicValue: undefined,
+			isExpressionValue: undefined,
+			isAbsent: undefined,
+		});
+		// The shorthand is `true`, which is not the empty value written
+		expect(pick(attrs['aria-pressed']!)).toStrictEqual({
+			potentialValue: 'true',
+			isDynamicValue: undefined,
+			isExpressionValue: undefined,
+			isAbsent: undefined,
+		});
+		// A boolean attribute that is `true` is output with the empty value
+		expect(pick(attrs.hidden!)).toStrictEqual({
+			potentialValue: undefined,
+			isDynamicValue: undefined,
+			isExpressionValue: undefined,
+			isAbsent: undefined,
+		});
+	});
+
+	test('[rust-mlast-render-002] takes a value written as code as unknown without the renderings', () => {
+		const attrs = attrsOf(
+			mlastForRust(jsxParser.parse('<button aria-busy={true} />'), { spec: {}, parser: jsxParser }),
+		);
+
+		expect(attrs['aria-busy']).toMatchObject({ isDynamicValue: true, isExpressionValue: true });
+		expect(attrs['aria-busy']).not.toHaveProperty('isAbsent', true);
 	});
 });
