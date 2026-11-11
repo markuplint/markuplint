@@ -20,6 +20,10 @@ impl Rule for CaseSensitiveAttrName {
         "case-sensitive-attr-name"
     }
 
+    fn default_severity(&self) -> crate::violation::Severity {
+        crate::violation::Severity::Warning
+    }
+
     fn verify(&self, arena: &DomArena, spec: &MLMLSpec, config: &RuleConfigSet) -> Vec<Violation> {
         let case = config.global().value.as_str().unwrap_or("lower");
         let mut violations = Vec::new();

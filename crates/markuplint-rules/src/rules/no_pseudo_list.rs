@@ -44,6 +44,10 @@ impl Rule for NoPseudoList {
         "no-pseudo-list"
     }
 
+    fn default_severity(&self) -> crate::violation::Severity {
+        crate::violation::Severity::Warning
+    }
+
     fn verify(&self, arena: &DomArena, _spec: &MLMLSpec, config: &RuleConfigSet) -> Vec<Violation> {
         let global = config.global();
         let mut bullets: Vec<&str> = DEFAULT_BULLETS.to_vec();

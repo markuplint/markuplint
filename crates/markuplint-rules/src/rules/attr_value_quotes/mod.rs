@@ -18,6 +18,10 @@ impl Rule for AttrValueQuotes {
         "attr-value-quotes"
     }
 
+    fn default_severity(&self) -> crate::violation::Severity {
+        crate::violation::Severity::Warning
+    }
+
     fn verify(&self, arena: &DomArena, _spec: &MLMLSpec, config: &RuleConfigSet) -> Vec<Violation> {
         let quote_style = config.global().value.as_str().unwrap_or("double");
 

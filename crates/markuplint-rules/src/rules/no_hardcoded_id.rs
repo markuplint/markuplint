@@ -15,6 +15,10 @@ impl Rule for NoHardcodedId {
         "no-hardcoded-id"
     }
 
+    fn default_severity(&self) -> crate::violation::Severity {
+        crate::violation::Severity::Warning
+    }
+
     fn verify(&self, arena: &DomArena, _spec: &MLMLSpec, config: &RuleConfigSet) -> Vec<Violation> {
         let is_fragment = match arena.document() {
             Some(DomNode::Document(doc)) => doc.is_fragment,

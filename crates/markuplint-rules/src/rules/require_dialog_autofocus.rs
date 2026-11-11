@@ -17,6 +17,10 @@ impl Rule for RequireDialogAutofocus {
         "require-dialog-autofocus"
     }
 
+    fn default_severity(&self) -> crate::violation::Severity {
+        crate::violation::Severity::Warning
+    }
+
     fn verify(&self, arena: &DomArena, _spec: &MLMLSpec, config: &RuleConfigSet) -> Vec<Violation> {
         let mut violations = Vec::new();
         let mut reported_dialog_ids: HashSet<String> = HashSet::new();
