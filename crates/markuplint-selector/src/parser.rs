@@ -1,8 +1,8 @@
 //! CSS selector parser.
 
 use crate::ast::{
-    AttrOperator, AttributeSelector, Combinator, ComplexSelector, CompoundSelector, PseudoClassSelector, SelectorList,
-    SimpleSelector,
+    AttrOperator, AttributeSelector, Combinator, ComplexSelector, CompoundSelector, DisplaySizeOperator,
+    PseudoClassSelector, SelectorList, SimpleSelector,
 };
 
 /// # Errors
@@ -394,6 +394,10 @@ impl<'a> Parser<'a> {
                     validate_aria_content(&content)?;
                     Ok(PseudoClassSelector::Aria(content))
                 }
+                "display-size" => {
+                    let content = self.parse_paren_content()?;
+                    parse_display_size(&content)
+                }
                 _ => Err(format!("Unsupported pseudo-class :{name}()")),
             }
         } else {
@@ -401,6 +405,7 @@ impl<'a> Parser<'a> {
             match lower.as_str() {
                 "scope" => Ok(PseudoClassSelector::Scope),
                 "root" => Ok(PseudoClassSelector::Root),
+                "first-child" => Ok(PseudoClassSelector::FirstChild),
                 _ => Err(format!("Unsupported pseudo-class :{name}")),
             }
         }
@@ -447,6 +452,29 @@ fn is_ident_start(c: char) -> bool {
 
 fn is_selector_start(c: char) -> bool {
     is_ident_start(c) || matches!(c, '*' | '#' | '.' | '[' | ':')
+}
+
+/// The content of `:display-size()`: an operator (`=`, `>`, `>=`, `<`, `<=`) and a number of
+/// digits, with whitespace around either (TS `parse` of `display-size-pseudo-class.ts`).
+fn parse_display_size(content: &str) -> Result<PseudoClassSelector, String> {
+    let unsupported = || format!("Unsupported syntax: {content}");
+    let rest = content.trim_start();
+    let (operator, rest) = [
+        (">=", DisplaySizeOperator::GreaterOrEqual),
+        ("<=", DisplaySizeOperator::LessOrEqual),
+        ("=", DisplaySizeOperator::Equal),
+        (">", DisplaySizeOperator::Greater),
+        ("<", DisplaySizeOperator::Less),
+    ]
+    .into_iter()
+    .find_map(|(token, operator)| rest.strip_prefix(token).map(|rest| (operator, rest)))
+    .ok_or_else(unsupported)?;
+    let digits = rest.trim();
+    if digits.is_empty() || !digits.bytes().all(|b| b.is_ascii_digit()) {
+        return Err(unsupported());
+    }
+    let value = digits.parse::<f64>().map_err(|_| unsupported())?;
+    Ok(PseudoClassSelector::DisplaySize(operator, value))
 }
 
 /// Accepted syntax: `hasName`, `has name`, `hasNoName`, `has no name`,
@@ -767,5 +795,31 @@ mod tests {
     #[test]
     fn error_invalid_attribute_operator() {
         assert!(parse("[href!=val]").is_err());
+    }
+
+    #[test]
+    fn first_child() {
+        let list = parse("span:first-child").unwrap();
+        assert!(matches!(
+            list.selectors[0].subject.parts[1],
+            SimpleSelector::PseudoClass(PseudoClassSelector::FirstChild)
+        ));
+    }
+
+    #[test]
+    fn display_size() {
+        let list = parse("select:display-size( >= 2 )").unwrap();
+        assert!(matches!(
+            list.selectors[0].subject.parts[1],
+            SimpleSelector::PseudoClass(PseudoClassSelector::DisplaySize(
+                DisplaySizeOperator::GreaterOrEqual,
+                v
+            )) if (v - 2.0).abs() < f64::EPSILON
+        ));
+        assert!(parse(":display-size(> 1)").is_ok());
+        assert!(parse(":display-size(=1)").is_ok());
+        assert!(parse(":display-size(1)").is_err());
+        assert!(parse(":display-size(> -1)").is_err());
+        assert!(parse(":display-size(> 1.5)").is_err());
     }
 }

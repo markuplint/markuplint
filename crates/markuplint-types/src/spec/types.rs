@@ -122,6 +122,10 @@ pub struct MLMLSpec {
     /// not an HTML `template` element; absent or `separate-tree` is the HTML behavior.
     #[serde(default, rename = "templateContent")]
     pub template_content: Option<TemplateContent>,
+    /// TS `MLMLSpec.movedToHead`: selectors of the elements that the framework places in the
+    /// `<head>` wherever they are written, so the parent they are written in does not contain them.
+    #[serde(default, rename = "movedToHead")]
+    pub moved_to_head: Option<Vec<String>>,
     /// What [`super::attr_specs::get_attr_specs_list`] built for each element.
     #[serde(skip)]
     pub attr_specs_cache: super::attr_specs::AttrSpecsCache,
