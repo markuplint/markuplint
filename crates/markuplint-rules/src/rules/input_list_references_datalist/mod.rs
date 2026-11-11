@@ -9,11 +9,12 @@
 //! <https://html.spec.whatwg.org/multipage/input.html#the-list-attribute>
 
 use markuplint_dom::arena::DomArena;
-use markuplint_dom::helpers::{find_element_by_id, get_attr_node_from_el};
+use markuplint_dom::helpers::get_attr_node_from_el;
 use markuplint_types::spec::types::MLMLSpec;
 
 use crate::helpers::is_pretender_without_as_attr;
 use crate::rule::{Rule, RuleConfigSet};
+use crate::tree_scope::{Trees, is_expression};
 use crate::violation::Violation;
 
 #[cfg(test)]
@@ -26,7 +27,8 @@ impl Rule for InputListReferencesDatalist {
         "input-list-references-datalist"
     }
 
-    fn verify(&self, arena: &DomArena, _spec: &MLMLSpec, config: &RuleConfigSet) -> Vec<Violation> {
+    fn verify(&self, arena: &DomArena, spec: &MLMLSpec, config: &RuleConfigSet) -> Vec<Violation> {
+        let trees = Trees::new(arena, spec);
         let mut violations = Vec::new();
 
         for (node_id, el) in arena.elements() {
@@ -48,7 +50,12 @@ impl Rule for InputListReferencesDatalist {
             }
 
             // An unresolved ID is left to `no-refer-to-non-existent-id`.
-            let Some(target) = find_element_by_id(arena, markuplint_dom::helpers::attr_value(list_attr))
+            let Some(target) = trees
+                .element_by_id_in_tree(
+                    node_id,
+                    markuplint_dom::helpers::attr_value(list_attr),
+                    is_expression(list_attr),
+                )
                 .and_then(|id| arena.get(id))
                 .and_then(|n| n.as_element())
             else {

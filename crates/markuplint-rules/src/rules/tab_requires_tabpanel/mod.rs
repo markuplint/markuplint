@@ -7,18 +7,21 @@
 //! element whose computed role is `tabpanel` lists the tab's `id` in its `aria-labelledby`. An
 //! attribute with a dynamic value is not read.
 //!
+//! The ids are resolved in the tree of the tab (the content of a `template` element is a tree of
+//! its own), and compared as the DOM has them, with the character references resolved.
+//!
 //! WAI-ARIA 1.3 `tab`: "Authors MUST ensure that if a tab is active, a corresponding tabpanel that
 //! represents the active tab is rendered."
 
 use markuplint_core::mlast::MLASTHTMLAttr;
 use markuplint_dom::arena::{DomArena, NodeId};
-use markuplint_dom::helpers::find_element_by_id;
 use markuplint_types::spec::aria::ARIAVersion;
 use markuplint_types::spec::types::MLMLSpec;
 
 use crate::aria::computed_role::get_computed_role;
 use crate::aria_check::{ElementContext, ElementGate, find_attr, is_js_whitespace, walk_elements};
 use crate::rule::{Rule, RuleConfigSet};
+use crate::tree_scope::{decode_or_keep, dom_value, dom_value_of, element_by_id_of, is_expression, root_of};
 use crate::violation::Violation;
 
 #[cfg(test)]
@@ -56,18 +59,30 @@ fn check(ctx: &ElementContext<'_>) -> Option<Violation> {
 
     let is_tabpanel = |node_id: NodeId| has_role(ctx.spec, ctx.arena, node_id, ctx.version, "tabpanel");
 
-    if let Some(controls) = static_value(find_attr(ctx.el, "aria-controls"))
-        && split_js_whitespace(controls)
-            .filter(|id| !id.is_empty())
-            .any(|id| find_element_by_id(ctx.arena, id).is_some_and(is_tabpanel))
+    let root = root_of(ctx.arena, ctx.spec, ctx.node_id);
+
+    if let Some(controls_attr) = find_attr(ctx.el, "aria-controls")
+        && let Some(controls) = static_value(Some(controls_attr))
+        && split_js_whitespace(controls).filter(|id| !id.is_empty()).any(|id| {
+            let id = if is_expression(controls_attr) {
+                id.to_owned()
+            } else {
+                decode_or_keep(id)
+            };
+            element_by_id_of(ctx.arena, ctx.spec, root, &id).is_some_and(is_tabpanel)
+        })
     {
         return None;
     }
 
-    if let Some(tab_id) = static_value(find_attr(ctx.el, "id")) {
+    // The tabpanel refers to the tab in the tree of the tab
+    if let Some(tab_id) = find_attr(ctx.el, "id").and_then(dom_value) {
         let labelled = ctx.arena.elements().any(|(node_id, el)| {
-            static_value(find_attr(el, "aria-labelledby"))
-                .is_some_and(|labelledby| split_js_whitespace(labelledby).any(|id| id == tab_id))
+            find_attr(el, "aria-labelledby").is_some_and(|labelledby| {
+                static_value(Some(labelledby)).is_some_and(|value| {
+                    split_js_whitespace(value).any(|id| dom_value_of(labelledby, id).is_some_and(|id| id == tab_id))
+                })
+            }) && root_of(ctx.arena, ctx.spec, node_id) == root
                 && is_tabpanel(node_id)
         });
         if labelled {

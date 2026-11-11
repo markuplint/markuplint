@@ -14,6 +14,9 @@ use markuplint_selector::ast::SelectorList;
 use markuplint_selector::{matcher, parser};
 use markuplint_types::spec::types::MLMLSpec;
 
+use crate::helpers::is_html_template_element;
+use crate::tree_scope::{TreeRoot, Trees};
+
 /// The landmark roles in the order TS builds its `RoleSet`.
 pub(crate) const ROLES: [(&str, &str); 7] = [
     ("complementary", "[role=\"complementary\"], aside"),
@@ -34,12 +37,36 @@ pub(crate) const ROLES: [(&str, &str); 7] = [
 const SECTIONING: &str = "article, aside, main, nav, section";
 
 /// Each landmark role with its elements in document order, in [`ROLES`] order.
-pub(crate) fn compute_landmark_roles(arena: &DomArena, spec: &MLMLSpec) -> Vec<(&'static str, Vec<NodeId>)> {
-    let elements: Vec<NodeId> = arena
-        .descendants(0)
-        .filter_map(DomNode::as_element)
-        .map(|el| el.base.id)
-        .collect();
+/// TS `computeLandmarkRolesOfEachTree`: the landmark-role elements of every tree of the document,
+/// the document itself first, then the content of each `template` element (and declarative shadow
+/// root) in the order of the markup. Where the content of a `template` ends up in a document is
+/// not known from the markup, so its landmarks are not counted with the ones of the document, nor
+/// does an ancestor of the document make them nested.
+pub(crate) fn compute_landmark_roles_of_each_tree(
+    arena: &DomArena,
+    spec: &MLMLSpec,
+    trees: &Trees<'_>,
+) -> Vec<Vec<(&'static str, Vec<NodeId>)>> {
+    let mut roots = vec![TreeRoot::Document];
+    roots.extend(
+        arena
+            .elements()
+            .filter(|(_, el)| is_html_template_element(el, spec))
+            .map(|(id, _)| TreeRoot::Content(id)),
+    );
+    roots
+        .into_iter()
+        .map(|root| compute_landmark_roles(arena, spec, trees, trees.elements_of(root)))
+        .collect()
+}
+
+/// TS `computeLandmarkRoles` of one tree, whose elements are `elements`.
+fn compute_landmark_roles(
+    arena: &DomArena,
+    spec: &MLMLSpec,
+    trees: &Trees<'_>,
+    elements: &[NodeId],
+) -> Vec<(&'static str, Vec<NodeId>)> {
     let sectioning = parse(SECTIONING);
     let top_level = |name: &str| -> Vec<NodeId> {
         let selector = parse(name);
@@ -48,10 +75,9 @@ pub(crate) fn compute_landmark_roles(arena: &DomArena, spec: &MLMLSpec) -> Vec<(
             .copied()
             .filter(|&id| matches(&selector, arena, spec, id))
             .filter(|&id| {
-                !arena
-                    .ancestors(id)
-                    .filter_map(DomNode::as_element)
-                    .any(|a| matches(&sectioning, arena, spec, a.base.id))
+                !trees
+                    .tree_ancestor_elements(id)
+                    .any(|a| matches(&sectioning, arena, spec, a))
             })
             .collect()
     };

@@ -259,11 +259,9 @@ fn v6_label_for_references_labelable_004() {
     );
 }
 
-/// An empty `for` resolves to an element with an empty `id`.
+/// An empty `for` resolves to no element: an empty `id` is no id of the tree. Expected value is
+/// the TS output.
 #[test]
 fn v6_label_for_references_labelable_005() {
-    assert_eq!(
-        run(r#"<label for=""></label><div id=""></div>"#),
-        [brief(Severity::Error, 1, 13, MESSAGE, "")]
-    );
+    assert_eq!(run(r#"<label for=""></label><div id=""></div>"#), []);
 }

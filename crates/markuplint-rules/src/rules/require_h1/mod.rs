@@ -12,6 +12,7 @@ use markuplint_types::spec::types::MLMLSpec;
 
 use crate::h1_check::collect_h1s;
 use crate::rule::{Rule, RuleConfigSet};
+use crate::tree_scope::{TreeRoot, Trees};
 use crate::violation::{Severity, Violation};
 
 #[cfg(test)]
@@ -28,12 +29,15 @@ impl Rule for RequireH1 {
         Severity::Warning
     }
 
-    fn verify(&self, arena: &DomArena, _spec: &MLMLSpec, config: &RuleConfigSet) -> Vec<Violation> {
+    fn verify(&self, arena: &DomArena, spec: &MLMLSpec, config: &RuleConfigSet) -> Vec<Violation> {
         let config = config.global();
-        let Some(h1s) = collect_h1s(arena, config) else {
+        let trees = Trees::new(arena, spec);
+        let Some(h1s) = collect_h1s(arena, &trees, config) else {
             return vec![];
         };
-        if !h1s.is_empty() {
+        // The h1 of the document is required: what is in the content of a `template` element or in
+        // a declarative shadow root is a tree of its own, and where it is inserted is not known
+        if h1s.iter().any(|&(root, _)| root == TreeRoot::Document) {
             return vec![];
         }
         // TS `nodeList` covers the source from offset 0, so `nodeList[0].raw` starts with the

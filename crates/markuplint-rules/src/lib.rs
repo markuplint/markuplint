@@ -44,4 +44,5 @@ pub(crate) mod srcset_check;
 pub(crate) mod table_grid;
 #[cfg(test)]
 pub(crate) mod test_util;
+pub mod tree_scope;
 pub mod violation;

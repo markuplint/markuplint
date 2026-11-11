@@ -4,16 +4,23 @@
 //! Both TS rules run the same preamble before their one check: an empty document
 //! (`document.nodeList.length === 0`) is never reported, a fragment is skipped unless the
 //! `in-document-fragment` option is set, and every element whose lower-cased `nodeName` is
-//! `h1` is collected in document order, whatever its namespace.
+//! `h1` is collected in document order, whatever its namespace, with the tree it is in
+//! ([`Trees::root_of`]): the content of a `template` element and a declarative shadow root are
+//! trees of their own, where it is not known from the markup where they are inserted.
 
 use markuplint_dom::arena::DomArena;
 use markuplint_dom::node::{DomNode, ElementData};
 
 use crate::rule::RuleConfig;
+use crate::tree_scope::{TreeRoot, Trees};
 
 /// The `<h1>` elements in document order, or `None` when the rule does not
 /// apply to this document (it is empty, or it is a fragment and `in-document-fragment` is off).
-pub(crate) fn collect_h1s<'a>(arena: &'a DomArena, config: &RuleConfig) -> Option<Vec<&'a ElementData>> {
+pub(crate) fn collect_h1s<'a>(
+    arena: &'a DomArena,
+    trees: &Trees<'_>,
+    config: &RuleConfig,
+) -> Option<Vec<(TreeRoot, &'a ElementData)>> {
     let Some(DomNode::Document(doc)) = arena.document() else {
         return None;
     };
@@ -32,6 +39,7 @@ pub(crate) fn collect_h1s<'a>(arena: &'a DomArena, config: &RuleConfig) -> Optio
         .descendants(0)
         .filter_map(DomNode::as_element)
         .filter(|el| el.base.node_name.eq_ignore_ascii_case("h1"))
+        .map(|el| (trees.root_of(el.base.id), el))
         .collect();
     Some(h1s)
 }

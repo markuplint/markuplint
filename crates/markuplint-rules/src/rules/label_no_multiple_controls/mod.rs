@@ -16,7 +16,7 @@
 //! <https://html.spec.whatwg.org/multipage/forms.html#the-label-element>
 
 use markuplint_dom::arena::{DomArena, NodeId};
-use markuplint_dom::helpers::{find_element_by_id, get_attr_node_from_el};
+use markuplint_dom::helpers::get_attr_node_from_el;
 use markuplint_dom::node::DomNode;
 use markuplint_selector::ast::SelectorList;
 use markuplint_selector::{matcher, parser};
@@ -25,6 +25,7 @@ use markuplint_types::spec::types::MLMLSpec;
 use crate::helpers::is_pretender_without_as_attr;
 use crate::rule::{Rule, RuleConfigSet};
 use crate::rules::label_for_references_labelable::LABELABLE_SELECTOR;
+use crate::tree_scope::{Trees, is_expression};
 use crate::violation::Violation;
 
 #[cfg(test)]
@@ -45,6 +46,7 @@ impl Rule for LabelNoMultipleControls {
         let form_control = parser::parse(FORM_CONTROL_SELECTOR).expect("a valid built-in selector");
         let labelable = parser::parse(LABELABLE_SELECTOR).expect("a valid built-in selector");
         let mut violations = Vec::new();
+        let trees = Trees::new(arena, spec);
 
         for (node_id, el) in arena.elements() {
             if config.get(node_id).disabled {
@@ -58,17 +60,18 @@ impl Rule for LabelNoMultipleControls {
                 continue;
             }
 
-            let controls: Vec<NodeId> = arena
-                .descendants(node_id)
-                .filter(|n| matches!(n, DomNode::Element(_)))
-                .map(DomNode::id)
+            // The controls under the label are the ones of its own tree: what is in the content of a
+            // `template` element under the label is not a descendant of it
+            let controls: Vec<NodeId> = trees
+                .descendant_elements_in_tree(node_id)
+                .into_iter()
                 .filter(|&id| matcher::matches(&form_control, arena, id, None, Some(spec), None))
                 .collect();
             if controls.is_empty() {
                 continue;
             }
 
-            let (reported, message) = if has_external_labeled_control(arena, spec, node_id, &labelable) {
+            let (reported, message) = if has_external_labeled_control(arena, spec, &trees, node_id, &labelable) {
                 (
                     &controls[..],
                     "The \"label\" element must not contain a form-control descendant when the \"for\" attribute references an external labelable element",
@@ -106,7 +109,13 @@ impl Rule for LabelNoMultipleControls {
 /// Whether the `for` attribute of `label_id` resolves to a labelable element outside the
 /// label. A target inside the label (or the label itself, as DOM `contains()` includes the
 /// node) is still found by the same-tree lookup, so it is not external.
-fn has_external_labeled_control(arena: &DomArena, spec: &MLMLSpec, label_id: NodeId, labelable: &SelectorList) -> bool {
+fn has_external_labeled_control(
+    arena: &DomArena,
+    spec: &MLMLSpec,
+    trees: &Trees<'_>,
+    label_id: NodeId,
+    labelable: &SelectorList,
+) -> bool {
     let Some(label) = arena.get(label_id).and_then(DomNode::as_element) else {
         return false;
     };
@@ -116,11 +125,15 @@ fn has_external_labeled_control(arena: &DomArena, spec: &MLMLSpec, label_id: Nod
     if for_attr.is_dynamic_value == Some(true) {
         return false;
     }
-    let Some(target) = find_element_by_id(arena, markuplint_dom::helpers::attr_value(for_attr)) else {
+    // The target is resolved in the tree of the label
+    let Some(target) = trees.element_by_id_in_tree(
+        label_id,
+        markuplint_dom::helpers::attr_value(for_attr),
+        is_expression(for_attr),
+    ) else {
         return false;
     };
-    let contained = target == label_id || arena.ancestors(target).any(|a| a.id() == label_id);
-    if contained {
+    if trees.contains(label_id, target) {
         return false;
     }
     matcher::matches(labelable, arena, target, None, Some(spec), None)

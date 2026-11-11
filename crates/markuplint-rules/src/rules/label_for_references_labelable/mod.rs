@@ -9,12 +9,13 @@
 //! <https://html.spec.whatwg.org/multipage/forms.html#attr-label-for>
 
 use markuplint_dom::arena::DomArena;
-use markuplint_dom::helpers::{find_element_by_id, get_attr_node_from_el};
+use markuplint_dom::helpers::get_attr_node_from_el;
 use markuplint_selector::{matcher, parser};
 use markuplint_types::spec::types::MLMLSpec;
 
 use crate::helpers::is_pretender_without_as_attr;
 use crate::rule::{Rule, RuleConfigSet};
+use crate::tree_scope::{Trees, is_expression};
 use crate::violation::Violation;
 
 #[cfg(test)]
@@ -40,6 +41,7 @@ impl Rule for LabelForReferencesLabelable {
     }
 
     fn verify(&self, arena: &DomArena, spec: &MLMLSpec, config: &RuleConfigSet) -> Vec<Violation> {
+        let trees = Trees::new(arena, spec);
         let labelable = parser::parse(LABELABLE_SELECTOR).expect("a valid built-in selector");
         let mut violations = Vec::new();
 
@@ -62,7 +64,11 @@ impl Rule for LabelForReferencesLabelable {
             }
 
             // An unresolved ID is left to `no-refer-to-non-existent-id`.
-            let Some(target) = find_element_by_id(arena, markuplint_dom::helpers::attr_value(for_attr)) else {
+            let Some(target) = trees.element_by_id_in_tree(
+                node_id,
+                markuplint_dom::helpers::attr_value(for_attr),
+                is_expression(for_attr),
+            ) else {
                 continue;
             };
             if matcher::matches(&labelable, arena, target, None, Some(spec), None) {

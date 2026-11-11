@@ -1,13 +1,25 @@
-//! `require-adjacent-popover` rule: no focusable or perceptible content between popover trigger and target.
+//! `require-adjacent-popover` rule: no perceptible node between a popover trigger and its target.
+//!
+//! The target is looked for in the tree of the trigger ([`Trees`]), so the triggers of every tree
+//! are checked, and what is in another tree (the content of a `template` element) is not between
+//! the trigger and the target (TS `findSubsequentNodes`).
 
 use markuplint_dom::arena::{DomArena, NodeId};
 use markuplint_dom::helpers;
 use markuplint_dom::node::DomNode;
+use markuplint_types::spec::aria::ARIAVersion;
 use markuplint_types::spec::types::MLMLSpec;
 
+use crate::aria::accname::get_accname;
 use crate::aria::may_be_focusable::may_be_focusable;
+use crate::aria_check::{is_js_whitespace, resolve_aria_version};
 use crate::rule::{Rule, RuleConfigSet};
+use crate::tree_scope::{Trees, is_expression};
 use crate::violation::Violation;
+
+/// Command values from the Invoker Commands API that relate to popover behavior. Comparison is
+/// case-insensitive per the HTML spec.
+const POPOVER_COMMANDS: [&str; 3] = ["toggle-popover", "show-popover", "hide-popover"];
 
 pub struct RequireAdjacentPopover;
 
@@ -22,66 +34,74 @@ impl Rule for RequireAdjacentPopover {
 
     fn verify(&self, arena: &DomArena, spec: &MLMLSpec, config: &RuleConfigSet) -> Vec<Violation> {
         let mut violations = Vec::new();
+        let version = resolve_aria_version(&serde_json::Value::Null, config.common_settings());
+        let trees = Trees::new(arena, spec);
+        let mut document_order = Vec::new();
+        dfs_collect(arena, 0, &mut document_order);
 
         for (node_id, el) in arena.elements() {
-            let rule_config = config.get(node_id);
-            if rule_config.disabled {
-                continue;
-            }
             if el.is_ghost {
                 continue;
             }
 
-            let target_id_str = helpers::get_attr_value(arena, node_id, "popovertarget").or_else(|| {
-                let cmd = helpers::get_attr_value(arena, node_id, "command")?;
-                let cmd_lower = cmd.to_ascii_lowercase();
-                if matches!(cmd_lower.as_str(), "toggle-popover" | "show-popover" | "hide-popover") {
-                    helpers::get_attr_value(arena, node_id, "commandfor")
+            let popovertarget = helpers::get_attr_node_from_el(el, "popovertarget")
+                .filter(|attr| !helpers::attr_value(attr).is_empty());
+            let target_attr = popovertarget.or_else(|| {
+                let command = helpers::get_attr_value_from_el(el, "command")?;
+                if POPOVER_COMMANDS.contains(&command.to_ascii_lowercase().as_str()) {
+                    helpers::get_attr_node_from_el(el, "commandfor")
                 } else {
                     None
                 }
             });
-
-            let Some(target_id_str) = target_id_str else {
+            let Some(target_attr) = target_attr else {
                 continue;
             };
-
-            if target_id_str.is_empty() {
+            let target_id = helpers::attr_value(target_attr);
+            if target_id.is_empty() {
+                continue;
+            }
+            let Some(target) = trees.element_by_id_in_tree(node_id, target_id, is_expression(target_attr)) else {
+                continue;
+            };
+            if !helpers::has_attr(arena, target, "popover") {
                 continue;
             }
 
-            let target_node_id = find_element_by_id(arena, target_id_str);
-            let Some(target_node_id) = target_node_id else {
+            // TS `trigger.findSubsequentNodes()`: what follows the trigger in the markup, in its
+            // tree, and is not in it
+            let Some(index) = document_order.iter().position(|&id| id == node_id) else {
                 continue;
             };
-
-            let doc_order = build_document_order(arena);
-            let trigger_idx = doc_order.iter().position(|&id| id == node_id);
-            let target_idx = doc_order.iter().position(|&id| id == target_node_id);
-
-            let (Some(t_idx), Some(tgt_idx)) = (trigger_idx, target_idx) else {
-                continue;
-            };
-
-            if t_idx >= tgt_idx {
-                continue;
-            }
-
-            for &sub_id in &doc_order[t_idx + 1..tgt_idx] {
-                if has_perceptible_content(arena, spec, sub_id) {
+            let root = trees.root_of(node_id);
+            for &sub_id in &document_order[index + 1..] {
+                if trees.root_of(sub_id) != root || trees.contains(node_id, sub_id) {
+                    continue;
+                }
+                if sub_id == target {
+                    break;
+                }
+                if !is_perceptible(arena, spec, sub_id, version) {
+                    continue;
+                }
+                let Some(base) = arena.get(sub_id).and_then(DomNode::base) else {
+                    break;
+                };
+                let rule_config = config.get(sub_id);
+                if !rule_config.disabled {
                     violations.push(Violation {
                         rule_id: self.id().to_string(),
                         name: None,
                         severity: rule_config.severity,
-                        message: "Detected perceptible content between trigger and target".to_string(),
-                        line: el.base.line,
-                        col: el.base.col,
-                        raw: el.base.raw.clone(),
+                        message: "Detected perceptible nodes between the trigger and corresponding target".to_string(),
+                        line: base.line,
+                        col: base.col,
+                        raw: base.raw.clone(),
                         reason: rule_config.reason.clone(),
                         fix: None,
                     });
-                    break; // One violation per trigger
                 }
+                break;
             }
         }
 
@@ -89,18 +109,7 @@ impl Rule for RequireAdjacentPopover {
     }
 }
 
-fn build_document_order(arena: &DomArena) -> Vec<NodeId> {
-    let mut order = Vec::new();
-    if let Some(doc) = arena.document() {
-        let doc_id = match doc {
-            DomNode::Document(d) => d.id,
-            _ => return order,
-        };
-        dfs_collect(arena, doc_id, &mut order);
-    }
-    order
-}
-
+/// The nodes under `node_id` in the order of the markup, `node_id` first.
 fn dfs_collect(arena: &DomArena, node_id: NodeId, order: &mut Vec<NodeId>) {
     order.push(node_id);
     if let Some(children) = arena.children_of(node_id) {
@@ -110,37 +119,14 @@ fn dfs_collect(arena: &DomArena, node_id: NodeId, order: &mut Vec<NodeId>) {
     }
 }
 
-fn find_element_by_id(arena: &DomArena, id: &str) -> Option<NodeId> {
-    arena.elements().find_map(|(node_id, el)| {
-        if helpers::get_attr_value_from_el(el, "id").is_some_and(|v| v == id) {
-            Some(node_id)
-        } else {
-            None
+/// An element that has an accessible name or may be focusable, or a text node that has a character
+/// other than whitespace.
+fn is_perceptible(arena: &DomArena, spec: &MLMLSpec, node_id: NodeId, version: ARIAVersion) -> bool {
+    match arena.get(node_id) {
+        Some(DomNode::Element(_)) => {
+            !get_accname(spec, arena, node_id, version).name.is_empty() || may_be_focusable(spec, arena, node_id)
         }
-    })
-}
-
-fn has_perceptible_content(arena: &DomArena, spec: &MLMLSpec, node_id: NodeId) -> bool {
-    let Some(node) = arena.get(node_id) else {
-        return false;
-    };
-
-    match node {
-        DomNode::Text(text) => !text.base.raw.trim().is_empty(),
-        DomNode::Element(el) => {
-            if may_be_focusable(spec, arena, node_id) {
-                return true;
-            }
-            if let Some(children) = arena.children_of(node_id) {
-                for &child_id in children {
-                    if has_perceptible_content(arena, spec, child_id) {
-                        return true;
-                    }
-                }
-            }
-            let tag = el.base.node_name.to_ascii_lowercase();
-            matches!(tag.as_str(), "img" | "svg" | "video" | "audio" | "canvas" | "iframe")
-        }
+        Some(DomNode::Text(text)) => !text.base.raw.trim_matches(is_js_whitespace).is_empty(),
         _ => false,
     }
 }
@@ -348,7 +334,7 @@ mod tests {
         assert_eq!(violations.len(), 1);
         assert_eq!(
             violations[0].message,
-            "Detected perceptible content between trigger and target"
+            "Detected perceptible nodes between the trigger and corresponding target"
         );
     }
 
@@ -403,7 +389,7 @@ mod tests {
         assert_eq!(violations.len(), 1);
         assert_eq!(
             violations[0].message,
-            "Detected perceptible content between trigger and target"
+            "Detected perceptible nodes between the trigger and corresponding target"
         );
     }
 
