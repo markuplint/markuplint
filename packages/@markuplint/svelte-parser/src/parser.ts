@@ -45,6 +45,10 @@ export class SvelteParser extends Parser<SvelteNode> {
 			// A static attribute is in the HTML string that the compiler hands to the browser's parser,
 			// and a dynamic one is set by `set_attribute` under the name as written.
 			attrNameRoute: 'dom-api-when-dynamic',
+			// `<slot>` is replaced with what the parent component passes to it, not the HTML `slot` element
+			// of a shadow tree
+			// @see https://svelte.dev/docs/svelte/legacy-slots
+			slotElement: 'framework',
 			// No `ignoreTags`:
 			// - The script tag needs to be passed with the lang attribute to the parser, so instead of
 			//   masking it, it is converted to PSBlock in visitText.
