@@ -77,9 +77,7 @@ fn check(ctx: &ElementContext<'_>, violations: &mut Vec<Violation>) {
                 let eligibility = resolve_attr_eligibility(native_name, attr_ctx);
                 if matches!(
                     eligibility,
-                    AttrEligibility::Unknown { .. }
-                        | AttrEligibility::CaseMismatch { .. }
-                        | AttrEligibility::ConditionNotMet
+                    AttrEligibility::Unknown { .. } | AttrEligibility::ConditionNotMet
                 ) {
                     continue;
                 }

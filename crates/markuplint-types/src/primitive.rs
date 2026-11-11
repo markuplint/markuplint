@@ -3,8 +3,8 @@
 use regex::Regex;
 use std::sync::LazyLock;
 
-static RE_INT: LazyLock<Regex> = LazyLock::new(|| Regex::new(r"^-?\d+$").unwrap());
-static RE_UINT: LazyLock<Regex> = LazyLock::new(|| Regex::new(r"^\d+$").unwrap());
+static RE_INT: LazyLock<Regex> = LazyLock::new(|| Regex::new(r"^-?[0-9]+$").unwrap());
+static RE_UINT: LazyLock<Regex> = LazyLock::new(|| Regex::new(r"^[0-9]+$").unwrap());
 static RE_ALL_ZEROS: LazyLock<Regex> = LazyLock::new(|| Regex::new(r"^0+$").unwrap());
 static RE_SPLIT_UNIT: LazyLock<Regex> =
     LazyLock::new(|| Regex::new(r"(?i)(^-?\.\d+|^-?\d+(?:\.\d+(?:e[+-]\d+)?)?)([a-z]+$)").unwrap());
@@ -87,10 +87,27 @@ pub fn range(value: &str, from: f64, to: f64) -> bool {
     (from..=to).contains(&num)
 }
 
-/// JS `parseFloat` parses the leading numeric portion of a string,
-/// but for our use case the entire string must be a valid number
-/// (after trim, which callers handle).
+/// JS `Number.isFinite(Number.parseFloat(value))` as a value: `None` for `NaN` and the infinities.
 fn parse_float(value: &str) -> Option<f64> {
-    let n: f64 = value.parse().ok()?;
-    if n.is_finite() { Some(n) } else { None }
+    parse_float_prefix(value).filter(|n| n.is_finite())
+}
+
+/// JS `Number.parseFloat`: the number the longest prefix of `value` (after leading white space)
+/// spells, `None` for `NaN`. `"1abc"` is `1`, `"Infinity"` is infinite.
+#[must_use]
+pub fn parse_float_prefix(value: &str) -> Option<f64> {
+    static RE_FLOAT_PREFIX: LazyLock<Regex> = LazyLock::new(|| {
+        Regex::new(r"^[+-]?(?:Infinity|(?:[0-9]+(?:\.[0-9]*)?|\.[0-9]+)(?:[eE][+-]?[0-9]+)?)").unwrap()
+    });
+    let trimmed = value.trim_start();
+    let m = RE_FLOAT_PREFIX.find(trimmed)?;
+    let text = m.as_str();
+    if text.ends_with("Infinity") {
+        return Some(if text.starts_with('-') {
+            f64::NEG_INFINITY
+        } else {
+            f64::INFINITY
+        });
+    }
+    text.parse().ok()
 }

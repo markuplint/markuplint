@@ -10,39 +10,28 @@ use crate::aria_check::element_local_name;
 use crate::slot_content::slot_content;
 use crate::tree_scope::{TreeRoot, decode_or_keep, dom_value, element_by_id_of, is_expression, root_of};
 
-static REGEX_LITERAL_RE: LazyLock<regex::Regex> = LazyLock::new(|| regex::Regex::new(r"^/(.+)/([gim]*)$").unwrap());
+static REGEX_LITERAL_RE: LazyLock<regex::Regex> = LazyLock::new(|| regex::Regex::new(r"^/(.*)/([gim]*)$").unwrap());
 
 /// If the pattern is wrapped in `/` (e.g. `/^[a-z]+$/i`), it is treated
 /// as a regular expression (with optional flags `g`, `i`, `m`).
 /// Otherwise, the pattern is compared as an exact string match.
 ///
-/// Uses `fancy-regex` to support lookahead/lookbehind assertions
-/// (e.g., `/^(?!c-).+$/`), matching JavaScript regex behavior.
+/// The expression is read as JavaScript reads it ([`JsRegex`]: lookaround, a lookbehind of any
+/// length), and of the flags only the last counts, as the capture of TS `/^\/(.*)\/([gim])*$/` keeps.
 ///
 /// Mirrors the TS `match()` helper in `@markuplint/rules/src/helpers.ts`.
+///
+/// [`JsRegex`]: markuplint_types::check::js_regex::JsRegex
 pub fn pattern_match(needle: &str, pattern: &str) -> bool {
-    if let Some(re) = parse_regex_literal(pattern) {
-        re.is_match(needle).unwrap_or(false)
-    } else {
-        needle == pattern
+    if let Some(caps) = REGEX_LITERAL_RE.captures(pattern)
+        && let Some(body) = caps.get(1).map(|m| m.as_str()).filter(|b| !b.is_empty())
+    {
+        let flags = caps.get(2).map_or("", |m| m.as_str());
+        let last_flag: String = flags.chars().last().map(String::from).unwrap_or_default();
+        // TS `new RegExp` throws for a pattern it cannot read
+        return markuplint_types::check::js_regex::JsRegex::new(body, &last_flag).is_some_and(|re| re.is_match(needle));
     }
-}
-
-fn parse_regex_literal(pattern: &str) -> Option<fancy_regex::Regex> {
-    let caps = REGEX_LITERAL_RE.captures(pattern)?;
-    let body = caps.get(1)?.as_str();
-    let flags = caps.get(2).map_or("", |m| m.as_str());
-
-    let mut regex_str = String::new();
-    if flags.contains('i') {
-        regex_str.push_str("(?i)");
-    }
-    if flags.contains('m') {
-        regex_str.push_str("(?m)");
-    }
-    regex_str.push_str(body);
-
-    fancy_regex::Regex::new(&regex_str).ok()
+    needle == pattern
 }
 
 /// TS `el.pretenderContext?.type === 'pretender' && !el.hasAttribute('as')`: an element

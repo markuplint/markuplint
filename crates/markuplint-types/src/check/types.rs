@@ -24,6 +24,9 @@ pub struct UnmatchedResult {
     pub pass_count: Option<usize>,
     pub part_name: Option<String>,
     pub expects: Vec<Expect>,
+    /// TS tells `expects: []` from no `expects`: a keyword type fills in the `expects` of its
+    /// definition only when its checker gave none.
+    pub expects_given: bool,
     pub extra: Option<Expect>,
     pub candidate: Option<String>,
     pub fallback_to: Option<String>,
@@ -196,6 +199,7 @@ pub fn unmatched(raw: &str, reason: Reason) -> CheckResult {
         pass_count: None,
         part_name: None,
         expects: Vec::new(),
+        expects_given: false,
         extra: None,
         candidate: None,
         fallback_to: None,
@@ -214,6 +218,7 @@ pub fn unmatched_with(raw: &str, reason: Reason, opts: UnmatchedOpts) -> CheckRe
         reason,
         pass_count: opts.pass_count,
         part_name: opts.part_name,
+        expects_given: opts.expects.is_some(),
         expects: opts.expects.unwrap_or_default(),
         extra: opts.extra,
         candidate: opts.candidate,
@@ -258,76 +263,77 @@ pub fn value_to_type(value: &serde_json::Value) -> Option<Type> {
 }
 
 fn parse_object_type(obj: &serde_json::Map<String, serde_json::Value>) -> Option<Type> {
-    // Enum: { enum: [...] }
-    if let Some(enum_arr) = obj.get("enum").and_then(serde_json::Value::as_array) {
-        let enum_values: Vec<String> = enum_arr.iter().filter_map(|v| v.as_str().map(String::from)).collect();
-        let case_insensitive = obj
-            .get("caseInsensitive")
-            .and_then(serde_json::Value::as_bool)
-            .unwrap_or(true);
-        return Some(Type::Enum(EnumType {
-            enum_values,
-            case_insensitive,
-            ..Default::default()
-        }));
-    }
-    // Pattern: { pattern: "..." }
-    if let Some(pattern) = obj.get("pattern").and_then(serde_json::Value::as_str) {
-        return Some(Type::Pattern(PatternType {
-            pattern: pattern.to_string(),
-        }));
-    }
-    // List: { token: ..., separator: "space"|"comma" }
-    if let Some(token_val) = obj.get("token")
-        && let Some(token_type) = value_to_type(token_val)
-    {
+    let flag = |key: &str| obj.get(key).and_then(serde_json::Value::as_bool);
+    // The order of TS `checkBase`: list, enum, number, directive, pattern
+    if obj.contains_key("separator") {
+        let token_type = obj.get("token").and_then(value_to_type)?;
         let separator = match obj.get("separator").and_then(serde_json::Value::as_str) {
             Some("comma") => Separator::Comma,
             _ => Separator::Space,
         };
-        let allow_empty = obj
-            .get("allowEmpty")
-            .and_then(serde_json::Value::as_bool)
-            .unwrap_or(true);
-        let unique = obj.get("unique").and_then(serde_json::Value::as_bool).unwrap_or(false);
-        let ordered = obj.get("ordered").and_then(serde_json::Value::as_bool).unwrap_or(false);
+        let number = match obj.get("number") {
+            Some(serde_json::Value::String(s)) if s == "zeroOrMore" => Some(ListNumber::ZeroOrMore),
+            Some(serde_json::Value::String(s)) if s == "oneOrMore" => Some(ListNumber::OneOrMore),
+            Some(serde_json::Value::Object(range)) => Some(ListNumber::Range {
+                min: range
+                    .get("min")
+                    .and_then(serde_json::Value::as_u64)
+                    .and_then(|n| usize::try_from(n).ok()),
+                max: range
+                    .get("max")
+                    .and_then(serde_json::Value::as_u64)
+                    .and_then(|n| usize::try_from(n).ok()),
+            }),
+            _ => None,
+        };
         return Some(Type::List(ListType {
             token: Box::new(token_type),
             separator,
-            allow_empty,
-            unique,
-            ordered,
-            ..Default::default()
+            allow_empty: flag("allowEmpty").unwrap_or(true),
+            disallow_to_surround_by_spaces: flag("disallowToSurroundBySpaces").unwrap_or(false),
+            ordered: flag("ordered").unwrap_or(false),
+            unique: flag("unique").unwrap_or(false),
+            case_insensitive: flag("caseInsensitive").unwrap_or(true),
+            number,
         }));
     }
-    // Number: { type: "integer"|"float", gt?, gte?, lt?, lte? }
-    if let Some(num_type) = obj.get("type").and_then(serde_json::Value::as_str) {
-        let kind = match num_type {
-            "float" => NumericKind::Float,
-            _ => NumericKind::Integer,
-        };
+    if let Some(enum_arr) = obj.get("enum").and_then(serde_json::Value::as_array) {
+        return Some(Type::Enum(EnumType {
+            enum_values: enum_arr.iter().filter_map(|v| v.as_str().map(String::from)).collect(),
+            case_insensitive: flag("caseInsensitive").unwrap_or(true),
+            disallow_to_surround_by_spaces: flag("disallowToSurroundBySpaces").unwrap_or(true),
+        }));
+    }
+    if let Some(num_type @ ("float" | "integer")) = obj.get("type").and_then(serde_json::Value::as_str) {
         return Some(Type::Number(NumberType {
-            number_type: kind,
+            number_type: if num_type == "float" {
+                NumericKind::Float
+            } else {
+                NumericKind::Integer
+            },
             gt: obj.get("gt").and_then(serde_json::Value::as_f64),
             gte: obj.get("gte").and_then(serde_json::Value::as_f64),
             lt: obj.get("lt").and_then(serde_json::Value::as_f64),
             lte: obj.get("lte").and_then(serde_json::Value::as_f64),
-            clampable: obj
-                .get("clampable")
-                .and_then(serde_json::Value::as_bool)
-                .unwrap_or(false),
+            clampable: flag("clampable").unwrap_or(false),
         }));
     }
-    // Directive: { directive: [...], token: ... }
     if let Some(dirs) = obj.get("directive").and_then(serde_json::Value::as_array) {
         let directive: Vec<String> = dirs.iter().filter_map(|v| v.as_str().map(String::from)).collect();
-        let token_val = obj.get("token");
-        let token = token_val.and_then(value_to_type).unwrap_or(Type::Keyword("Any".into()));
+        let token = obj
+            .get("token")
+            .and_then(value_to_type)
+            .unwrap_or(Type::Keyword("Any".into()));
         let ref_ = obj.get("ref").and_then(serde_json::Value::as_str).map(String::from);
         return Some(Type::Directive(DirectiveType {
             directive,
             token: Box::new(token),
             ref_,
+        }));
+    }
+    if let Some(pattern) = obj.get("pattern").and_then(serde_json::Value::as_str) {
+        return Some(Type::Pattern(PatternType {
+            pattern: pattern.to_string(),
         }));
     }
     None

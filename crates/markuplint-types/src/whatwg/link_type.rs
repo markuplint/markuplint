@@ -1,226 +1,274 @@
-//! This boolean validator accepts keywords valid in any element context.
+//! Port of `packages/@markuplint/types/src/whatwg/check-link-type.ts`.
 //!
 //! <https://html.spec.whatwg.org/multipage/links.html#linkTypes>
 
-/// <https://html.spec.whatwg.org/multipage/links.html#linkTypes>
-const WHATWG_KEYWORDS: &[&str] = &[
-    "alternate",
-    "canonical",
-    "author",
-    "bookmark",
-    "dns-prefetch",
-    "expect",
-    "external",
-    "help",
-    "icon",
-    "manifest",
-    "modulepreload",
-    "license",
-    "next",
-    "nofollow",
-    "noopener",
-    "noreferrer",
-    "opener",
-    "pingback",
-    "preconnect",
-    "prefetch",
-    "preload",
-    "prev",
-    "privacy-policy",
-    "search",
-    "stylesheet",
-    "tag",
-    "terms-of-service",
+use crate::check::list::check_list;
+use crate::check::types::{
+    CheckResult, EnumType, Expect, ExpectType, ListNumber, ListType, Reason, Separator, Type, UnmatchedOpts,
+};
+use crate::token::{TokenCollection, TokenCollectionOptions};
+
+/// The element context a link type is checked in (TS `checkLinkType({ el })`).
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+pub enum LinkTypeContext {
+    /// `{ el: 'link' }`
+    Link,
+    /// `{ el: 'body link' }`: a `link` element in the `body` element (body-ok keywords only)
+    BodyLink,
+    /// `{ el: 'a, area' }`
+    AnchorAndArea,
+    /// `{ el: 'form' }`
+    Form,
+}
+
+/// A row of the WHATWG link type table (TS `DEF_LINK_TYPE_WHATWG`): whether the keyword is allowed
+/// (anything but "not allowed") on `link`, on `a` / `area` and on `form`, and whether it is
+/// body-ok ("Yes").
+#[allow(clippy::struct_excessive_bools)]
+struct WhatwgLinkType {
+    keyword: &'static str,
+    link: bool,
+    a: bool,
+    form: bool,
+    body_ok: bool,
+}
+
+/// A Microformats-registered keyword with its per-element context flags.
+struct MicroformatsLinkType {
+    keyword: &'static str,
+    link: bool,
+    a: bool,
+}
+
+// The tables below are generated from the TS module: `DEF_LINK_TYPE_WHATWG`,
+// `ALLOWED_LINK_TYPE_MICROFORMATS` and, concatenated in this order,
+// `DEF_LINK_TYPE_MICROFORMATS_NON_HTML_REL_VALUES`, `_DROPPED`, `_DROPPED_WITHOUT_PREJUDICE` and
+// `_REJECTED`. Their order and their duplicates are kept: the expected keywords of a result are
+// listed in the order of these tables.
+//
+// <https://html.spec.whatwg.org/multipage/links.html#linkTypes>
+// <https://microformats.org/wiki/existing-rel-values>
+
+#[rustfmt::skip]
+const WHATWG: &[WhatwgLinkType] = &[
+    WhatwgLinkType { keyword: "alternate", link: true, a: true, form: false, body_ok: false },
+    WhatwgLinkType { keyword: "canonical", link: true, a: false, form: false, body_ok: false },
+    WhatwgLinkType { keyword: "author", link: true, a: true, form: false, body_ok: false },
+    WhatwgLinkType { keyword: "bookmark", link: false, a: true, form: false, body_ok: false },
+    WhatwgLinkType { keyword: "dns-prefetch", link: true, a: false, form: false, body_ok: true },
+    WhatwgLinkType { keyword: "expect", link: true, a: false, form: false, body_ok: false },
+    WhatwgLinkType { keyword: "external", link: false, a: true, form: true, body_ok: false },
+    WhatwgLinkType { keyword: "help", link: true, a: true, form: true, body_ok: false },
+    WhatwgLinkType { keyword: "icon", link: true, a: false, form: false, body_ok: false },
+    WhatwgLinkType { keyword: "manifest", link: true, a: false, form: false, body_ok: false },
+    WhatwgLinkType { keyword: "modulepreload", link: true, a: false, form: false, body_ok: true },
+    WhatwgLinkType { keyword: "license", link: true, a: true, form: true, body_ok: false },
+    WhatwgLinkType { keyword: "next", link: true, a: true, form: true, body_ok: false },
+    WhatwgLinkType { keyword: "nofollow", link: false, a: true, form: true, body_ok: false },
+    WhatwgLinkType { keyword: "noopener", link: false, a: true, form: true, body_ok: false },
+    WhatwgLinkType { keyword: "noreferrer", link: false, a: true, form: true, body_ok: false },
+    WhatwgLinkType { keyword: "opener", link: false, a: true, form: true, body_ok: false },
+    WhatwgLinkType { keyword: "pingback", link: true, a: false, form: false, body_ok: true },
+    WhatwgLinkType { keyword: "preconnect", link: true, a: false, form: false, body_ok: true },
+    WhatwgLinkType { keyword: "prefetch", link: true, a: false, form: false, body_ok: true },
+    WhatwgLinkType { keyword: "preload", link: true, a: false, form: false, body_ok: true },
+    WhatwgLinkType { keyword: "prev", link: true, a: true, form: true, body_ok: false },
+    WhatwgLinkType { keyword: "privacy-policy", link: true, a: true, form: false, body_ok: false },
+    WhatwgLinkType { keyword: "search", link: true, a: true, form: true, body_ok: false },
+    WhatwgLinkType { keyword: "stylesheet", link: true, a: false, form: false, body_ok: true },
+    WhatwgLinkType { keyword: "tag", link: false, a: true, form: false, body_ok: false },
+    WhatwgLinkType { keyword: "terms-of-service", link: true, a: true, form: false, body_ok: false },
 ];
 
-/// Microformats allowed keywords (all categories combined, excluding WHATWG overlaps).
-///
-/// Sources: formats, proposals, HTML5 link type extensions, brainstorming,
-/// POSH usage, Dublin Core.
-///
-/// <https://microformats.org/wiki/existing-rel-values>
-#[allow(clippy::doc_markdown)]
-const MICROFORMATS_KEYWORDS: &[&str] = &[
-    // formats
-    "acquaintance",
-    "appendix",
-    "chapter",
-    "child",
-    "colleague",
-    "contact",
-    "contents",
-    "copyright",
-    "co-resident",
-    "co-worker",
-    "crush",
-    "date",
-    "friend",
-    "glossary",
-    "its-rules",
-    "kin",
-    "me",
-    "met",
-    "muse",
-    "neighbor",
-    "parent",
-    "previous",
-    "section",
-    "sibling",
-    "spouse",
-    "start",
-    "subsection",
-    "sweetheart",
-    "toc",
-    "transformation",
-    // proposals
-    "pronunciation",
-    "directory",
-    "enclosure",
-    "home",
-    "payment",
-    "vcs-*",
-    // HTML5 link type extensions
-    "about",
-    "amphtml",
-    "apple-touch-icon",
-    "apple-touch-icon-precomposed",
-    "apple-touch-startup-image",
-    "archived",
-    "attachment",
-    "authorization_endpoint",
-    "category",
-    "code-repository",
-    "code-license",
-    "component",
-    "chrome-webstore-item",
-    "content-repository",
-    "content-license",
-    "DCTERMS.conformsTo",
-    "DCTERMS.contributor",
-    "DCTERMS.creator",
-    "DCTERMS.description",
-    "DCTERMS.hasFormat",
-    "DCTERMS.hasPart",
-    "DCTERMS.hasVersion",
-    "DCTERMS.isFormatOf",
-    "DCTERMS.isPartOf",
-    "DCTERMS.isReferencedBy",
-    "DCTERMS.isReplacedBy",
-    "DCTERMS.isRequiredBy",
-    "DCTERMS.isVersionOf",
-    "DCTERMS.license",
-    "DCTERMS.mediator",
-    "DCTERMS.publisher",
-    "DCTERMS.references",
-    "DCTERMS.relation",
-    "DCTERMS.replaces",
-    "DCTERMS.requires",
-    "DCTERMS.rightsHolder",
-    "DCTERMS.source",
-    "DCTERMS.subject",
-    "disclosure",
-    "discussion",
-    "donation",
-    "edit",
-    "EditURI",
-    "entry-content",
-    "first",
-    "gbfs",
-    "gtfs-static",
-    "gtfs-realtime",
-    "hub",
-    "import",
-    "in-reply-to",
-    "root",
-    "index",
-    "issues",
-    "jslicense",
-    "last",
-    "lightbox",
-    "lightvideo",
-    "main",
-    "mask-icon",
-    "meta",
-    "micropub",
-    "openid.delegate",
-    "openid.server",
-    "openid2.local_id",
-    "openid2.provider",
-    "p3pv1",
-    "pgpkey",
-    "prerender",
-    "profile",
-    "publisher",
-    "radioepg",
-    "rendition",
-    "reply-to",
-    "schema.DCTERMS",
-    "service",
-    "shortlink",
-    "sidebar",
-    "sitemap",
-    "subresource",
-    "sword",
-    "syndication",
-    "timesheet",
-    "token_endpoint",
-    "webmention",
-    "widget",
-    "wlwmanifest",
-    "image_src",
-    "http://docs.oasis-open.org/ns/cmis/link/200908/acl",
-    "stylesheet/less",
-    "yandex-tableau-widget",
-    // brainstorming
-    "accessibility",
-    "bibliography",
-    "cite",
-    "embed",
-    "group",
-    "longdesc",
-    "map",
-    "member",
-    "m_PageScroll2id",
-    "source",
-    "vcalendar-parent",
-    "vcalendar-child",
-    "vcalendar-sibling",
-    "status",
-    "https://api.w.org/",
-    // POSH usage (minus overlaps with above)
-    "archive",
-    "archives",
-    "comment",
-    "contribution",
-    "endorsed",
-    "fan",
-    "feed",
-    "footnote",
-    "kinetic-stylesheet",
-    "made",
-    "microsummary",
-    "permalink",
-    "popover",
-    "privacy",
-    "publickey",
-    "referral",
-    "related",
-    "replies",
-    "respond-proxy",
-    "respond-redirect",
-    "resource",
-    "sponsor",
-    "tooltip",
-    "trackback",
-    "unendorsed",
-    "user",
-    // Dublin Core
-    "schema.DC",
+#[rustfmt::skip]
+const ALLOWED_MICROFORMATS: &[MicroformatsLinkType] = &[
+    MicroformatsLinkType { keyword: "acquaintance", link: false, a: true },
+    MicroformatsLinkType { keyword: "appendix", link: true, a: true },
+    MicroformatsLinkType { keyword: "chapter", link: true, a: true },
+    MicroformatsLinkType { keyword: "child", link: true, a: true },
+    MicroformatsLinkType { keyword: "colleague", link: false, a: true },
+    MicroformatsLinkType { keyword: "contact", link: false, a: true },
+    MicroformatsLinkType { keyword: "contents", link: true, a: true },
+    MicroformatsLinkType { keyword: "copyright", link: true, a: true },
+    MicroformatsLinkType { keyword: "co-resident", link: false, a: true },
+    MicroformatsLinkType { keyword: "co-worker", link: false, a: true },
+    MicroformatsLinkType { keyword: "crush", link: false, a: true },
+    MicroformatsLinkType { keyword: "date", link: false, a: true },
+    MicroformatsLinkType { keyword: "friend", link: false, a: true },
+    MicroformatsLinkType { keyword: "glossary", link: true, a: true },
+    MicroformatsLinkType { keyword: "its-rules", link: true, a: false },
+    MicroformatsLinkType { keyword: "kin", link: false, a: true },
+    MicroformatsLinkType { keyword: "me", link: true, a: true },
+    MicroformatsLinkType { keyword: "met", link: false, a: true },
+    MicroformatsLinkType { keyword: "muse", link: false, a: true },
+    MicroformatsLinkType { keyword: "neighbor", link: false, a: true },
+    MicroformatsLinkType { keyword: "parent", link: true, a: true },
+    MicroformatsLinkType { keyword: "previous", link: true, a: true },
+    MicroformatsLinkType { keyword: "section", link: true, a: true },
+    MicroformatsLinkType { keyword: "sibling", link: false, a: true },
+    MicroformatsLinkType { keyword: "spouse", link: false, a: true },
+    MicroformatsLinkType { keyword: "start", link: true, a: true },
+    MicroformatsLinkType { keyword: "subsection", link: true, a: true },
+    MicroformatsLinkType { keyword: "sweetheart", link: false, a: true },
+    MicroformatsLinkType { keyword: "toc", link: true, a: true },
+    MicroformatsLinkType { keyword: "transformation", link: true, a: true },
+    MicroformatsLinkType { keyword: "pronunciation", link: true, a: true },
+    MicroformatsLinkType { keyword: "directory", link: true, a: true },
+    MicroformatsLinkType { keyword: "enclosure", link: true, a: true },
+    MicroformatsLinkType { keyword: "home", link: true, a: true },
+    MicroformatsLinkType { keyword: "payment", link: true, a: true },
+    MicroformatsLinkType { keyword: "vcs-*", link: true, a: true },
+    MicroformatsLinkType { keyword: "about", link: true, a: true },
+    MicroformatsLinkType { keyword: "amphtml", link: true, a: true },
+    MicroformatsLinkType { keyword: "apple-touch-icon", link: true, a: false },
+    MicroformatsLinkType { keyword: "apple-touch-icon-precomposed", link: true, a: false },
+    MicroformatsLinkType { keyword: "apple-touch-startup-image", link: true, a: false },
+    MicroformatsLinkType { keyword: "archived", link: true, a: true },
+    MicroformatsLinkType { keyword: "attachment", link: true, a: true },
+    MicroformatsLinkType { keyword: "authorization_endpoint", link: true, a: false },
+    MicroformatsLinkType { keyword: "category", link: true, a: true },
+    MicroformatsLinkType { keyword: "code-repository", link: true, a: true },
+    MicroformatsLinkType { keyword: "code-license", link: true, a: true },
+    MicroformatsLinkType { keyword: "component", link: true, a: false },
+    MicroformatsLinkType { keyword: "chrome-webstore-item", link: true, a: false },
+    MicroformatsLinkType { keyword: "content-repository", link: true, a: true },
+    MicroformatsLinkType { keyword: "content-license", link: true, a: true },
+    MicroformatsLinkType { keyword: "DCTERMS.conformsTo", link: true, a: false },
+    MicroformatsLinkType { keyword: "DCTERMS.contributor", link: true, a: false },
+    MicroformatsLinkType { keyword: "DCTERMS.creator", link: true, a: false },
+    MicroformatsLinkType { keyword: "DCTERMS.description", link: true, a: false },
+    MicroformatsLinkType { keyword: "DCTERMS.hasFormat", link: true, a: false },
+    MicroformatsLinkType { keyword: "DCTERMS.hasPart", link: true, a: false },
+    MicroformatsLinkType { keyword: "DCTERMS.hasVersion", link: true, a: false },
+    MicroformatsLinkType { keyword: "DCTERMS.isFormatOf", link: true, a: false },
+    MicroformatsLinkType { keyword: "DCTERMS.isPartOf", link: true, a: false },
+    MicroformatsLinkType { keyword: "DCTERMS.isReferencedBy", link: true, a: false },
+    MicroformatsLinkType { keyword: "DCTERMS.isReplacedBy", link: true, a: false },
+    MicroformatsLinkType { keyword: "DCTERMS.isRequiredBy", link: true, a: false },
+    MicroformatsLinkType { keyword: "DCTERMS.isVersionOf", link: true, a: false },
+    MicroformatsLinkType { keyword: "DCTERMS.license", link: true, a: false },
+    MicroformatsLinkType { keyword: "DCTERMS.mediator", link: true, a: false },
+    MicroformatsLinkType { keyword: "DCTERMS.publisher", link: true, a: false },
+    MicroformatsLinkType { keyword: "DCTERMS.references", link: true, a: false },
+    MicroformatsLinkType { keyword: "DCTERMS.relation", link: true, a: false },
+    MicroformatsLinkType { keyword: "DCTERMS.replaces", link: true, a: false },
+    MicroformatsLinkType { keyword: "DCTERMS.requires", link: true, a: false },
+    MicroformatsLinkType { keyword: "DCTERMS.rightsHolder", link: true, a: false },
+    MicroformatsLinkType { keyword: "DCTERMS.source", link: true, a: false },
+    MicroformatsLinkType { keyword: "DCTERMS.subject", link: true, a: false },
+    MicroformatsLinkType { keyword: "disclosure", link: false, a: true },
+    MicroformatsLinkType { keyword: "discussion", link: true, a: true },
+    MicroformatsLinkType { keyword: "donation", link: true, a: true },
+    MicroformatsLinkType { keyword: "edit", link: true, a: true },
+    MicroformatsLinkType { keyword: "EditURI", link: true, a: false },
+    MicroformatsLinkType { keyword: "enclosure", link: true, a: true },
+    MicroformatsLinkType { keyword: "entry-content", link: false, a: true },
+    MicroformatsLinkType { keyword: "first", link: true, a: true },
+    MicroformatsLinkType { keyword: "gbfs", link: true, a: false },
+    MicroformatsLinkType { keyword: "gtfs-static", link: true, a: false },
+    MicroformatsLinkType { keyword: "gtfs-realtime", link: true, a: false },
+    MicroformatsLinkType { keyword: "home", link: true, a: true },
+    MicroformatsLinkType { keyword: "hub", link: true, a: true },
+    MicroformatsLinkType { keyword: "import", link: true, a: false },
+    MicroformatsLinkType { keyword: "in-reply-to", link: true, a: true },
+    MicroformatsLinkType { keyword: "root", link: true, a: true },
+    MicroformatsLinkType { keyword: "index", link: true, a: true },
+    MicroformatsLinkType { keyword: "issues", link: true, a: true },
+    MicroformatsLinkType { keyword: "jslicense", link: true, a: true },
+    MicroformatsLinkType { keyword: "last", link: true, a: true },
+    MicroformatsLinkType { keyword: "lightbox", link: false, a: true },
+    MicroformatsLinkType { keyword: "lightvideo", link: false, a: true },
+    MicroformatsLinkType { keyword: "main", link: true, a: true },
+    MicroformatsLinkType { keyword: "mask-icon", link: true, a: false },
+    MicroformatsLinkType { keyword: "meta", link: true, a: false },
+    MicroformatsLinkType { keyword: "micropub", link: true, a: false },
+    MicroformatsLinkType { keyword: "openid.delegate", link: true, a: false },
+    MicroformatsLinkType { keyword: "openid.server", link: true, a: false },
+    MicroformatsLinkType { keyword: "openid2.local_id", link: true, a: false },
+    MicroformatsLinkType { keyword: "openid2.provider", link: true, a: false },
+    MicroformatsLinkType { keyword: "p3pv1", link: true, a: false },
+    MicroformatsLinkType { keyword: "pgpkey", link: true, a: false },
+    MicroformatsLinkType { keyword: "prerender", link: true, a: true },
+    MicroformatsLinkType { keyword: "profile", link: true, a: true },
+    MicroformatsLinkType { keyword: "publisher", link: true, a: true },
+    MicroformatsLinkType { keyword: "radioepg", link: true, a: true },
+    MicroformatsLinkType { keyword: "rendition", link: true, a: true },
+    MicroformatsLinkType { keyword: "reply-to", link: true, a: true },
+    MicroformatsLinkType { keyword: "schema.DCTERMS", link: true, a: false },
+    MicroformatsLinkType { keyword: "service", link: true, a: false },
+    MicroformatsLinkType { keyword: "shortlink", link: true, a: false },
+    MicroformatsLinkType { keyword: "sidebar", link: true, a: true },
+    MicroformatsLinkType { keyword: "sitemap", link: true, a: false },
+    MicroformatsLinkType { keyword: "subresource", link: true, a: false },
+    MicroformatsLinkType { keyword: "sword", link: true, a: false },
+    MicroformatsLinkType { keyword: "syndication", link: true, a: true },
+    MicroformatsLinkType { keyword: "timesheet", link: true, a: false },
+    MicroformatsLinkType { keyword: "token_endpoint", link: true, a: false },
+    MicroformatsLinkType { keyword: "webmention", link: true, a: true },
+    MicroformatsLinkType { keyword: "widget", link: true, a: true },
+    MicroformatsLinkType { keyword: "wlwmanifest", link: true, a: false },
+    MicroformatsLinkType { keyword: "image_src", link: true, a: false },
+    MicroformatsLinkType { keyword: "http://docs.oasis-open.org/ns/cmis/link/200908/acl", link: true, a: true },
+    MicroformatsLinkType { keyword: "stylesheet/less", link: true, a: false },
+    MicroformatsLinkType { keyword: "yandex-tableau-widget", link: true, a: false },
+    MicroformatsLinkType { keyword: "accessibility", link: true, a: true },
+    MicroformatsLinkType { keyword: "bibliography", link: true, a: true },
+    MicroformatsLinkType { keyword: "cite", link: true, a: true },
+    MicroformatsLinkType { keyword: "embed", link: true, a: true },
+    MicroformatsLinkType { keyword: "group", link: true, a: true },
+    MicroformatsLinkType { keyword: "longdesc", link: true, a: true },
+    MicroformatsLinkType { keyword: "map", link: true, a: true },
+    MicroformatsLinkType { keyword: "member", link: true, a: true },
+    MicroformatsLinkType { keyword: "m_PageScroll2id", link: true, a: true },
+    MicroformatsLinkType { keyword: "prerender", link: true, a: true },
+    MicroformatsLinkType { keyword: "profile", link: true, a: true },
+    MicroformatsLinkType { keyword: "shortlink", link: true, a: true },
+    MicroformatsLinkType { keyword: "source", link: true, a: true },
+    MicroformatsLinkType { keyword: "vcalendar-parent", link: true, a: true },
+    MicroformatsLinkType { keyword: "vcalendar-child", link: true, a: true },
+    MicroformatsLinkType { keyword: "vcalendar-sibling", link: true, a: true },
+    MicroformatsLinkType { keyword: "status", link: true, a: true },
+    MicroformatsLinkType { keyword: "https://api.w.org/", link: true, a: true },
+    MicroformatsLinkType { keyword: "archive", link: true, a: true },
+    MicroformatsLinkType { keyword: "archives", link: true, a: true },
+    MicroformatsLinkType { keyword: "comment", link: true, a: true },
+    MicroformatsLinkType { keyword: "contribution", link: true, a: true },
+    MicroformatsLinkType { keyword: "EditURI", link: true, a: true },
+    MicroformatsLinkType { keyword: "endorsed", link: true, a: true },
+    MicroformatsLinkType { keyword: "fan", link: true, a: true },
+    MicroformatsLinkType { keyword: "feed", link: true, a: true },
+    MicroformatsLinkType { keyword: "footnote", link: true, a: true },
+    MicroformatsLinkType { keyword: "kinetic-stylesheet", link: true, a: true },
+    MicroformatsLinkType { keyword: "lightbox", link: true, a: true },
+    MicroformatsLinkType { keyword: "made", link: true, a: true },
+    MicroformatsLinkType { keyword: "meta", link: true, a: true },
+    MicroformatsLinkType { keyword: "microsummary", link: true, a: true },
+    MicroformatsLinkType { keyword: "openid.delegate", link: true, a: true },
+    MicroformatsLinkType { keyword: "openid.server", link: true, a: true },
+    MicroformatsLinkType { keyword: "permalink", link: true, a: true },
+    MicroformatsLinkType { keyword: "pgpkey", link: true, a: true },
+    MicroformatsLinkType { keyword: "popover", link: true, a: true },
+    MicroformatsLinkType { keyword: "privacy", link: true, a: true },
+    MicroformatsLinkType { keyword: "publickey", link: true, a: true },
+    MicroformatsLinkType { keyword: "referral", link: true, a: true },
+    MicroformatsLinkType { keyword: "related", link: true, a: true },
+    MicroformatsLinkType { keyword: "replies", link: true, a: true },
+    MicroformatsLinkType { keyword: "respond-proxy", link: true, a: true },
+    MicroformatsLinkType { keyword: "respond-redirect", link: true, a: true },
+    MicroformatsLinkType { keyword: "resource", link: true, a: true },
+    MicroformatsLinkType { keyword: "sitemap", link: true, a: true },
+    MicroformatsLinkType { keyword: "sponsor", link: true, a: true },
+    MicroformatsLinkType { keyword: "tooltip", link: true, a: true },
+    MicroformatsLinkType { keyword: "trackback", link: true, a: true },
+    MicroformatsLinkType { keyword: "unendorsed", link: true, a: true },
+    MicroformatsLinkType { keyword: "user", link: true, a: true },
+    MicroformatsLinkType { keyword: "wlwmanifest", link: true, a: true },
+    MicroformatsLinkType { keyword: "schema.DC", link: true, a: false },
+    MicroformatsLinkType { keyword: "schema.DCTERMS", link: true, a: false },
 ];
 
-/// Excluded keywords: non-HTML, dropped, dropped-without-prejudice, rejected.
-const EXCLUDED_KEYWORDS: &[&str] = &[
-    // non-HTML rel values
+/// Dropped, rejected and non-HTML keywords of the Microformats registry.
+const DISALLOWED: &[&str] = &[
     "self",
     "http://gdata.youtube.com/schemas/2007#in-reply-to",
     "collection",
@@ -249,13 +297,13 @@ const EXCLUDED_KEYWORDS: &[&str] = &[
     "working-copy-of",
     "predecessor-version",
     "successor-version",
-    // dropped
     "banner",
     "begin",
     "biblioentry",
     "bibliography",
     "child",
     "citation",
+    "collection",
     "definition",
     "disclaimer",
     "editor",
@@ -271,57 +319,93 @@ const EXCLUDED_KEYWORDS: &[&str] = &[
     "trademark",
     "translation",
     "urc",
-    // dropped without prejudice
     "first",
     "index",
     "last",
     "up",
-    // rejected
     "logo",
     "pavatar",
 ];
 
-fn matches_keyword(token: &str, list: &[&str]) -> bool {
-    list.iter().any(|keyword| token.eq_ignore_ascii_case(keyword))
-}
+const REF: &str = "https://html.spec.whatwg.org/multipage/links.html#linkTypes";
 
-/// This is an element-agnostic boolean check. Element-specific context
-/// filtering (link vs a/area vs form) is deferred to error-reporting validators.
+/// TS `checkLinkType({ el })(value)`.
+///
+/// A keyword of the dropped, rejected and non-HTML lists is searched as TS `tokens.search(keyword)`
+/// searches it: as a case-sensitive substring of any token, so `subsection` is reported because it
+/// contains `sub`.
 ///
 /// # Examples
 ///
 /// ```
-/// use markuplint_types::whatwg::link_type::is_link_type;
+/// use markuplint_types::whatwg::link_type::{LinkTypeContext, check_link_type};
 ///
-/// assert!(is_link_type("stylesheet"));
-/// assert!(is_link_type("nofollow noopener"));
-/// assert!(!is_link_type("invalid-keyword"));
+/// assert!(check_link_type("stylesheet", LinkTypeContext::Link).is_matched());
+/// assert!(!check_link_type("stylesheet", LinkTypeContext::AnchorAndArea).is_matched());
 /// ```
 #[must_use]
-pub fn is_link_type(value: &str) -> bool {
-    let tokens: Vec<&str> = value.split_ascii_whitespace().collect();
+pub fn check_link_type(value: &str, context: LinkTypeContext) -> CheckResult {
+    let tokens = TokenCollection::new(
+        value,
+        TokenCollectionOptions {
+            separator: Separator::Space,
+            case_insensitive: true,
+            unique: true,
+            ..TokenCollectionOptions::default()
+        },
+    );
 
-    if tokens.is_empty() {
-        return false;
-    }
-
-    for i in 0..tokens.len() {
-        for j in (i + 1)..tokens.len() {
-            if tokens[i].eq_ignore_ascii_case(tokens[j]) {
-                return false;
-            }
+    for keyword in DISALLOWED {
+        if let Some(searched) = tokens.search(|t| t.value.contains(keyword)) {
+            return searched.unmatched_result(
+                Some(Reason::UnexpectedToken),
+                UnmatchedOpts {
+                    expects: Some(vec![Expect {
+                        type_: ExpectType::Common,
+                        value: "valid Link Type".to_owned(),
+                    }]),
+                    ..Default::default()
+                },
+            );
         }
     }
 
-    for token in &tokens {
-        if matches_keyword(token, EXCLUDED_KEYWORDS) {
-            return false;
+    let mut enum_values: Vec<String> = Vec::new();
+    for def in WHATWG {
+        let allowed = match context {
+            LinkTypeContext::Link => def.link,
+            LinkTypeContext::BodyLink => def.link && def.body_ok,
+            LinkTypeContext::AnchorAndArea => def.a,
+            LinkTypeContext::Form => def.form,
+        };
+        if allowed {
+            enum_values.push(def.keyword.to_owned());
         }
-
-        if !matches_keyword(token, WHATWG_KEYWORDS) && !matches_keyword(token, MICROFORMATS_KEYWORDS) {
-            return false;
+    }
+    for def in ALLOWED_MICROFORMATS {
+        let allowed = match context {
+            LinkTypeContext::Link => def.link,
+            LinkTypeContext::AnchorAndArea => def.a,
+            LinkTypeContext::BodyLink | LinkTypeContext::Form => false,
+        };
+        if allowed {
+            enum_values.push(def.keyword.to_owned());
         }
     }
 
-    true
+    let token = Type::Enum(EnumType {
+        enum_values,
+        case_insensitive: true,
+        // TS `disallowToSurroundBySpaces ?? true`
+        disallow_to_surround_by_spaces: true,
+    });
+    let list = ListType {
+        token: Box::new(token.clone()),
+        separator: Separator::Space,
+        case_insensitive: true,
+        unique: true,
+        number: Some(ListNumber::OneOrMore),
+        ..ListType::default()
+    };
+    check_list(value, &list, Some(REF), |v| crate::check::check(v, &token, Some(REF)))
 }

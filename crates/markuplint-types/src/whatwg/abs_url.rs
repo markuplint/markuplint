@@ -1,5 +1,7 @@
 //! @see <https://url.spec.whatwg.org/#syntax-url-absolute>
 
+/// TS `isAbsURL`: `new URL(value)` succeeds without a base.
+#[must_use]
 pub fn is_abs_url(value: &str) -> bool {
-    url::Url::parse(value).is_ok()
+    super::js_url::can_parse(value, None)
 }

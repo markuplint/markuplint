@@ -5,14 +5,16 @@
 //! (`referrerpolicy` on an `<a>` without `href`), and `is` on an autonomous custom
 //! element.
 
-use markuplint_core::mlast::ElementType;
+use markuplint_core::mlast::{ElementType, MLASTHTMLAttr};
 use markuplint_dom::arena::DomArena;
+use markuplint_dom::helpers;
 use markuplint_types::spec::types::MLMLSpec;
 
 use crate::attr_check::{
     AttrCheckContext, AttrEligibility, attr_full_violation, attr_violation, element_allows_additional_properties,
-    parse_allow_attrs, parse_ignore_prefixes, resolve_attr_eligibility, walk_attrs,
+    has_ignored_prefix, lookup_name_option, resolve_attr_eligibility_of, walk_attrs,
 };
+use crate::create_message::{Kw, capitalize, t};
 use crate::rule::{Rule, RuleConfigSet};
 use crate::violation::Violation;
 
@@ -21,75 +23,69 @@ mod tests;
 
 pub struct NoDisallowedAttr;
 
-struct Options {
-    /// Attribute names to treat as allowed (`allowAttrs`).
-    allowed_names: Vec<String>,
-    ignore_prefixes: Vec<String>,
-}
-
-impl Options {
-    fn from_config(options: &serde_json::Value) -> Self {
-        let (simple, entries) = parse_allow_attrs(options);
-        let mut allowed_names = simple;
-        allowed_names.extend(entries.into_iter().map(|e| e.name));
-        Self {
-            allowed_names,
-            ignore_prefixes: parse_ignore_prefixes(options),
-        }
-    }
-}
-
 impl Rule for NoDisallowedAttr {
     fn id(&self) -> &'static str {
         "no-disallowed-attr"
     }
 
     fn verify(&self, arena: &DomArena, spec: &MLMLSpec, config: &RuleConfigSet) -> Vec<Violation> {
-        walk_attrs(self.id(), arena, spec, config, Options::from_config, check)
+        walk_attrs(self.id(), arena, spec, config, Clone::clone, |o, a, c| {
+            check(o, a, c).into_iter().collect()
+        })
     }
 }
 
-fn check(
-    options: &Options,
-    html_attr: &markuplint_core::mlast::MLASTHTMLAttr,
-    ctx: &AttrCheckContext<'_>,
-) -> Option<Violation> {
+fn check(options: &serde_json::Value, html_attr: &MLASTHTMLAttr, ctx: &AttrCheckContext<'_>) -> Option<Violation> {
     // TS `attr.isAbsent`: an attribute that the framework does not output is not an attribute of
     // the element
-    if markuplint_dom::helpers::is_absent(html_attr) {
+    if helpers::is_absent(html_attr) {
         return None;
     }
 
-    let name = markuplint_dom::helpers::get_raw_attr_name(html_attr);
+    let name = helpers::attr_name(html_attr);
 
     // https://html.spec.whatwg.org/multipage/custom-elements.html#attr-is
     // "The is attribute must not be specified on an autonomous custom element"
-    if name == "is" && ctx.element_type == ElementType::WebComponent {
+    if helpers::name_key(ctx.el, html_attr) == "is" && ctx.element_type == ElementType::WebComponent {
         return Some(attr_violation(
             ctx,
             html_attr,
-            "The \"is\" attribute must not be specified on an autonomous custom element".to_string(),
+            t(
+                "The \"{0}\" attribute must not be specified on an autonomous custom element",
+                &[Kw::S("is")],
+            ),
         ));
     }
 
-    let name_lower = name.to_ascii_lowercase();
-    if options.ignore_prefixes.iter().any(|p| name_lower.starts_with(p)) {
+    if has_ignored_prefix(options, ctx.el, html_attr) {
         return None;
     }
-    if options.allowed_names.iter().any(|a| a.eq_ignore_ascii_case(name)) {
+
+    // A name listed in `allowAttrs` is allowed whatever its value
+    let any = serde_json::Value::String("Any".to_owned());
+    if lookup_name_option(options.get("allowAttrs"), ctx.el, html_attr, &any).is_some() {
         return None;
     }
+
     if !ctx.is_html() {
         return None;
     }
 
-    let message = format!("The \"{name}\" attribute is disallowed");
-    match resolve_attr_eligibility(name, ctx) {
+    let specs = ctx.attr_specs.as_ref()?;
+
+    let base = t("the \"{0*}\" {1}", &[Kw::S(name), Kw::S("attribute")]);
+    match resolve_attr_eligibility_of(html_attr, specs, ctx) {
         // Reported with the whole attribute as `raw`, as TS reports the attribute node.
-        AttrEligibility::NoUse => Some(attr_full_violation(ctx, html_attr, message)),
-        AttrEligibility::ConditionNotMet if !element_allows_additional_properties(ctx) => {
-            Some(attr_violation(ctx, html_attr, message))
-        }
+        AttrEligibility::NoUse => Some(attr_full_violation(
+            ctx,
+            html_attr,
+            capitalize(&t("{0} is {1:c}", &[Kw::S(&base), Kw::S("disallowed")])),
+        )),
+        AttrEligibility::ConditionNotMet if !element_allows_additional_properties(ctx) => Some(attr_violation(
+            ctx,
+            html_attr,
+            capitalize(&t("{0} is {1}", &[Kw::S(&base), Kw::S("disallowed")])),
+        )),
         _ => None,
     }
 }
