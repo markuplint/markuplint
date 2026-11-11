@@ -15,6 +15,7 @@
 		"test:run": "vitest run",
 		"test:affected": "node --experimental-strip-types scripts/affected-tests/index.ts",
 		"test:coverage": "vitest run --coverage",
+		"test:rust-rules": "vitest run --config vitest.rust-rule-parity.config.ts",
 		"lint": "run-p lint:oxlint lint:format lint:github-actions",
 		"lint:oxlint": "oxlint --fix -c .oxlintrc.json packages vscode scripts",
 		"lint:format": "oxfmt --write \"./{packages,vscode,website,scripts}/**/*.{ts,tsx,mts,js,cjs,mjs,json,rc,md,mdx,css}\"",
