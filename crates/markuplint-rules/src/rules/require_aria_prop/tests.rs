@@ -17,7 +17,7 @@
 //!   v6_require_aria_prop_002  — Rust-only: the attribute name is matched case-insensitively
 //!   v6_require_aria_prop_003  — Rust-only: the computed role decides (first valid token, unknown role)
 //!   v6_require_aria_prop_004  — Rust-only: an element without a spec, and an implicit role, are not checked
-//!   v6_require_aria_prop_005  — Rust-only: a native attribute that carries the value satisfies the requirement
+//!   v6_require_aria_prop_005  — Rust-only: an explicit role on a native control requires its props
 //!   v6_require_aria_prop_006  — Rust-only: severity and `rules: false`
 
 use crate::lint::{LintConfig, lint};
@@ -281,7 +281,13 @@ fn v6_require_aria_prop_004() {
 fn v6_require_aria_prop_005() {
     assert_violations(
         &run_rule(r#"<input type="range" role="slider">"#, serde_json::json!(true)),
-        &[],
+        &[(
+            Severity::Error,
+            1,
+            1,
+            "Require the \"aria-valuenow\" ARIA property on the \"slider\" role",
+            "<input type=\"range\" role=\"slider\">",
+        )],
     );
     assert_violations(
         &run_rule(r#"<input type="checkbox" role="switch">"#, serde_json::json!(true)),

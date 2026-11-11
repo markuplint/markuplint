@@ -527,6 +527,20 @@ pub(crate) fn get_element_aria(
     el_name: &str,
     version: ARIAVersion,
 ) -> Option<ResolvedElementARIA> {
+    get_element_aria_with(spec, arena, node_id, el_name, version, Some(&SpecAriaResolver { spec }))
+}
+
+/// [`get_element_aria`] with the conditions matched through `resolver` (`None` matches without
+/// the ARIA pseudo-classes). The role computation passes `None` when it is already computing the
+/// same element, which a condition's `:aria(has name)` would ask again.
+pub(crate) fn get_element_aria_with(
+    spec: &MLMLSpec,
+    arena: &DomArena,
+    node_id: NodeId,
+    el_name: &str,
+    version: ARIAVersion,
+    resolver: Option<&dyn markuplint_selector::aria_resolver::AriaResolver>,
+) -> Option<ResolvedElementARIA> {
     let el = arena.get(node_id)?.as_element()?;
     let el_spec = get_spec_by_tag_name(spec, el_name, Some(namespace_uri(&el.namespace)))?;
     let aria = &el_spec.aria;
@@ -539,12 +553,11 @@ pub(crate) fn get_element_aria(
     let (mut layer, conditions) = resolve_version(aria, version);
 
     if let Some(conditions) = conditions {
-        let resolver = SpecAriaResolver { spec };
         for (selector, override_value) in conditions {
             let Some(selector) = crate::diagnostic::parse_selector("spec ARIA condition", selector) else {
                 continue;
             };
-            if !markuplint_selector::matcher::matches(&selector, arena, node_id, None, Some(spec), Some(&resolver)) {
+            if !markuplint_selector::matcher::matches(&selector, arena, node_id, None, Some(spec), resolver) {
                 continue;
             }
             layer.overlay(Layer::from_value(override_value));
