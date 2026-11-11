@@ -69,7 +69,7 @@ pub fn has_mutable_attributes(el: &ElementData) -> bool {
 
 /// TS `el.hasMutableChildren(attr)`: below the element there is a preprocessor block without a
 /// behavior (its branches cannot be enumerated), a `<slot>`, or — with `attr` — an element with a
-/// mutable attribute.
+/// mutable attribute or a component whose output is not known.
 pub fn has_mutable_children(arena: &DomArena, node_id: NodeId, attr: bool) -> bool {
     arena
         .pure_children_of(node_id)
@@ -77,12 +77,29 @@ pub fn has_mutable_children(arena: &DomArena, node_id: NodeId, attr: bool) -> bo
         .any(|child_id| match arena.get(child_id) {
             Some(DomNode::PSBlock(block)) => block.block_behavior.is_none(),
             Some(DomNode::Element(el)) => {
-                (attr && has_mutable_attributes(el))
+                (attr && (has_mutable_attributes(el) || is_unresolved_component(el)))
                     || has_mutable_children(arena, child_id, attr)
                     || element_local_name(el) == "slot"
             }
             _ => false,
         })
+}
+
+/// TS `MLElement#isUnresolvedComponent()`: a component whose output is not known, one that no
+/// pretender resolved to an element (or that a pretender resolved to another component).
+pub fn is_unresolved_component(el: &ElementData) -> bool {
+    el.element_type == markuplint_core::mlast::ElementType::Authored
+}
+
+/// TS `mayRenderUnknownChildren`: a child node that may stand for children that are not known —
+/// a preprocessor block without a behavior (`{value}`, an `include`), a `slot`, or, with
+/// `components`, a component whose output is not known.
+pub fn may_render_unknown_children(arena: &DomArena, node_id: NodeId, components: bool) -> bool {
+    match arena.get(node_id) {
+        Some(DomNode::PSBlock(block)) => block.block_behavior.is_none(),
+        Some(DomNode::Element(el)) => element_local_name(el) == "slot" || (components && is_unresolved_component(el)),
+        _ => false,
+    }
 }
 
 /// TS `accnameMayBeMutable()`: the element, or the label it owns, has an attribute or a child

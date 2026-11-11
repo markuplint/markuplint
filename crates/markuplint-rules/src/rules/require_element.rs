@@ -2,11 +2,15 @@
 
 use markuplint_dom::arena::DomArena;
 use markuplint_dom::node::DomNode;
+use markuplint_selector::ast::SelectorList;
 use markuplint_selector::matcher;
 use markuplint_types::spec::types::MLMLSpec;
 
 use crate::diagnostic;
+use crate::helpers::{has_mutable_children, is_unresolved_component, may_render_unknown_children};
+use crate::rule::RuleConfig;
 use crate::rule::{Rule, RuleConfigSet};
+use crate::tree_scope::{TreeRoot, Trees};
 use crate::violation::Violation;
 
 pub struct RequireElement;
@@ -20,30 +24,87 @@ impl Rule for RequireElement {
         let mut violations = Vec::new();
         let global = config.global();
 
-        // Document-level check: global config requires elements to exist anywhere
+        // The document: a required element anywhere in its tree, unless something may render
+        // what is not known
         if !global.disabled {
-            check_required_elements(self.id(), arena, spec, global, None, &mut violations);
+            let has_mutable_content = option(global, "ignoreHasMutableContents")
+                && arena
+                    .elements()
+                    .any(|(id, el)| has_mutable_children(arena, id, false) || is_unresolved_component(el));
+            if !has_mutable_content {
+                let trees = Trees::new(arena, spec);
+                let document_elements = trees.elements_of(TreeRoot::Document);
+                for (query, sel) in selectors(global, spec) {
+                    let exists = document_elements.iter().any(|&id| {
+                        arena.get(id).and_then(DomNode::as_element).is_some_and(|el| {
+                            !(option(global, "ignoreOmittedElements") && el.is_ghost)
+                                && matcher::matches(&sel, arena, id, Some(id), Some(spec), None)
+                        })
+                    });
+                    if exists {
+                        continue;
+                    }
+                    // TS `document.nodeList[0]?.raw.slice(0, 1)`
+                    let raw = arena
+                        .children_of(0)
+                        .and_then(|children| children.first())
+                        .and_then(|&first| arena.get(first))
+                        .and_then(DomNode::base)
+                        .and_then(|base| base.raw.chars().next())
+                        .map(String::from)
+                        .unwrap_or_default();
+                    violations.push(Violation {
+                        rule_id: self.id().to_string(),
+                        name: None,
+                        severity: global.severity,
+                        message: format!("Require the \"{query}\" element"),
+                        line: 1,
+                        col: 1,
+                        raw,
+                        reason: global.reason.clone(),
+                        fix: None,
+                    });
+                }
+            }
         }
 
-        // Per-node check: nodeRule config requires elements among children
+        // An element a node rule configures: a required element among its children
         if config.has_overrides() {
             for (node_id, el) in arena.elements() {
                 let node_config = config.get(node_id);
-                if node_config.disabled {
+                if node_config.disabled || std::ptr::eq(node_config, global) || node_config.value == global.value {
                     continue;
                 }
-                // Same config object as the global check above; skip to avoid double-reporting.
-                if std::ptr::eq(node_config, global) {
+                if option(node_config, "ignoreHasMutableContents")
+                    && arena
+                        .pure_children_of(node_id)
+                        .into_iter()
+                        .any(|child| may_render_unknown_children(arena, child, true))
+                {
                     continue;
                 }
-                check_required_elements(
-                    self.id(),
-                    arena,
-                    spec,
-                    node_config,
-                    Some((node_id, el)),
-                    &mut violations,
-                );
+                for (query, sel) in selectors(node_config, spec) {
+                    let exists = arena.child_nodes(node_id).into_iter().any(|child_id| {
+                        arena.get(child_id).and_then(DomNode::as_element).is_some_and(|child| {
+                            !(option(node_config, "ignoreOmittedElements") && child.is_ghost)
+                                && matcher::matches(&sel, arena, child_id, Some(child_id), Some(spec), None)
+                        })
+                    });
+                    if exists {
+                        continue;
+                    }
+                    violations.push(Violation {
+                        rule_id: self.id().to_string(),
+                        name: None,
+                        severity: node_config.severity,
+                        message: format!("Require the \"{query}\" element"),
+                        line: el.base.line,
+                        col: el.base.col,
+                        raw: el.base.raw.clone(),
+                        reason: node_config.reason.clone(),
+                        fix: None,
+                    });
+                }
             }
         }
 
@@ -51,85 +112,28 @@ impl Rule for RequireElement {
     }
 }
 
-use crate::rule::RuleConfig;
-use markuplint_dom::arena::NodeId;
-use markuplint_dom::node::ElementData;
+/// A boolean option of the rule, `true` by default (TS `defaultOptions`).
+fn option(config: &RuleConfig, name: &str) -> bool {
+    config
+        .options
+        .get(name)
+        .and_then(serde_json::Value::as_bool)
+        .unwrap_or(true)
+}
 
-fn check_required_elements(
-    rule_id: &str,
-    arena: &DomArena,
-    spec: &MLMLSpec,
-    config: &RuleConfig,
-    scope: Option<(NodeId, &ElementData)>,
-    violations: &mut Vec<Violation>,
-) {
-    let selectors: Vec<String> = match &config.value {
+/// The selectors of the rule value, with what they parse to.
+fn selectors(config: &RuleConfig, spec: &MLMLSpec) -> Vec<(String, SelectorList)> {
+    let queries: Vec<String> = match &config.value {
         serde_json::Value::Array(arr) => arr.iter().filter_map(|v| v.as_str().map(String::from)).collect(),
         serde_json::Value::String(s) => vec![s.clone()],
-        _ => return,
+        _ => return Vec::new(),
     };
-
-    if selectors.is_empty() {
-        return;
-    }
-
-    let ignore_omitted = config
-        .options
-        .get("ignoreOmittedElements")
-        .and_then(serde_json::Value::as_bool)
-        .unwrap_or(true);
-
-    for selector_str in &selectors {
-        let Some(sel) = diagnostic::parse_option_selector("config require-element selector", selector_str, spec) else {
-            continue;
-        };
-
-        let found = if let Some((parent_id, _)) = scope {
-            // Scoped check: only the parent element's children qualify.
-            arena.children_of(parent_id).is_some_and(|children| {
-                children.iter().any(|&child_id| {
-                    let Some(child_el) = arena.get(child_id).and_then(|n| n.as_element()) else {
-                        return false;
-                    };
-                    if ignore_omitted && child_el.is_ghost {
-                        return false;
-                    }
-                    matcher::matches(&sel, arena, child_id, Some(child_id), Some(spec), None)
-                })
-            })
-        } else {
-            // Document-level check: any element in the document qualifies.
-            arena.elements().any(|(node_id, el)| {
-                if ignore_omitted && el.is_ghost {
-                    return false;
-                }
-                matcher::matches(&sel, arena, node_id, Some(node_id), Some(spec), None)
-            })
-        };
-
-        if !found {
-            let (line, col, raw) = if let Some((_, el)) = scope {
-                (el.base.line, el.base.col, el.base.raw.clone())
-            } else {
-                match arena.document() {
-                    Some(DomNode::Document(doc)) => (1u32, 1u32, doc.raw.clone()),
-                    _ => (1, 1, String::new()),
-                }
-            };
-
-            violations.push(Violation {
-                rule_id: rule_id.to_string(),
-                name: None,
-                severity: config.severity,
-                message: format!("Require the \"{selector_str}\" element"),
-                line,
-                col,
-                raw,
-                reason: None,
-                fix: None,
-            });
-        }
-    }
+    queries
+        .into_iter()
+        .filter_map(|query| {
+            diagnostic::parse_option_selector("config require-element selector", &query, spec).map(|sel| (query, sel))
+        })
+        .collect()
 }
 
 #[cfg(test)]
