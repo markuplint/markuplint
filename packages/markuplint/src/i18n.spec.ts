@@ -15,7 +15,7 @@ test('en', () => {
 
 	expect(locale.locale).toBe('en');
 	expect(locale.keywords).toBeTruthy();
-	expect(locale.sentences).toBeFalsy();
+	expect(locale.sentences).toBeTruthy();
 });
 
 test('fallback', () => {
@@ -23,5 +23,5 @@ test('fallback', () => {
 
 	expect(locale.locale).toBe('en');
 	expect(locale.keywords).toBeTruthy();
-	expect(locale.sentences).toBeFalsy();
+	expect(locale.sentences).toBeTruthy();
 });

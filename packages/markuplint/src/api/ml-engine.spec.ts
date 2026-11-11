@@ -559,8 +559,8 @@ describe('#3900 config-error does not accumulate across setCode', () => {
 
 describe('#4064 setCode re-resolves the pretenders that depend on the source', () => {
 	// Each page renders a component directly inside <ul>, so permitted-contents
-	// names the element the component resolves to — or the component itself
-	// when it is unresolved. That name is what tells the states apart.
+	// names the element the component resolves to, and says nothing of a component
+	// that is unresolved. Whether that name is there is what tells the states apart.
 	const disallowedIn = (violations: readonly Violation[] | undefined, name: string) =>
 		(violations ?? []).some(v => v.ruleId === 'permitted-contents' && v.message.includes(name));
 
@@ -599,7 +599,7 @@ describe('#4064 setCode re-resolves the pretenders that depend on the source', (
 		const { engine } = await createEngine(tmpDir, withoutImport, { auto: true });
 
 		const unresolved = await engine.exec();
-		expect(disallowedIn(unresolved?.violations, 'Child')).toBe(true);
+		expect(disallowedIn(unresolved?.violations, 'Child')).toBe(false);
 		expect(disallowedIn(unresolved?.violations, 'button')).toBe(false);
 
 		await engine.setCode(withImport);
@@ -609,7 +609,7 @@ describe('#4064 setCode re-resolves the pretenders that depend on the source', (
 
 		await engine.setCode(withoutImport);
 		const unresolvedAgain = await engine.exec();
-		expect(disallowedIn(unresolvedAgain?.violations, 'Child')).toBe(true);
+		expect(disallowedIn(unresolvedAgain?.violations, 'Child')).toBe(false);
 		expect(disallowedIn(unresolvedAgain?.violations, 'button')).toBe(false);
 	});
 
