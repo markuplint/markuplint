@@ -4,7 +4,7 @@ import type { Element, RuleConfigValue } from '@markuplint/ml-core';
 import { createRule } from '@markuplint/ml-core';
 import { getSpecByTagName, isShadowRoot } from '@markuplint/ml-spec';
 
-import { isRenderedAway } from '../helpers.js';
+import { isRenderedAway, isUnknownOutput } from '../helpers.js';
 
 import meta from './meta.js';
 
@@ -24,6 +24,14 @@ import meta from './meta.js';
  * A `template` of a template engine that renders its children in place of it (Vue's `<template v-if>`,
  * or the `template` of a framework whose spec puts the children in the element itself) is not an HTML
  * `template` element, and the climb goes through it as through any other element.
+ *
+ * A component whose output is not known (`MLElement#isUnresolvedComponent`: no pretender stands for
+ * it) may render the ancestor, so an element with such a component above it, up to the top of its
+ * tree, is not reported: the rule does not decide what the file does not tell. A pretender that
+ * says what the component renders is read as that element, and a web component is the element
+ * that it is written as. What renders its children in place is not one even where the parser sees it
+ * as a component: a fragment (Vue's `slot` is one to its parser) and a `template` with a directive
+ * ({@link isUnknownOutput}).
  *
  * When the content model says the ancestor is required only of an element with a parent node
  * (`descendantOfWithParentNode`, as the `area` element's is), an element that has no parent node in
@@ -50,6 +58,12 @@ export default createRule({
 				if (ancestor.matches(descendantOf)) {
 					found = true;
 					break;
+				}
+				// What the component renders is not known, so the ancestor may be among it. The climb does not
+				// leave the tree of the element (`treeParentElement`), so a component outside a declarative shadow
+				// root is not reached
+				if (isUnknownOutput(ancestor)) {
+					return;
 				}
 				ancestor = ancestor.treeParentElement;
 			}
