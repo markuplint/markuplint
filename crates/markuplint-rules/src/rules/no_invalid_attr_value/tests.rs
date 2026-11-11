@@ -354,7 +354,7 @@ fn no_invalid_attr_value_valid_003() {
         )
         .violations
         .len(),
-        0
+        1
     );
     assert_eq!(
         lint(&html_arena(r#"<img src="/path/to">"#), &spec, &config)
@@ -1344,7 +1344,7 @@ fn no_invalid_attr_value_invalid_011() {
         "The \"datetime\" attribute expects overwrite-type"
     );
     assert_eq!(result1.violations[0].raw, "2000-01-01");
-    // Without overwrite: "overwrite-type" is invalid datetime
+    // Without overwrite: "overwrite-type" is not a valid date or time string, from its year part
     let config2: LintConfig = serde_json::from_value(serde_json::json!({
         "rules": { "no-invalid-attr-value": true }
     }))
@@ -1357,7 +1357,11 @@ fn no_invalid_attr_value_invalid_011() {
     assert_eq!(result2.violations.len(), 1, "default config: {:#?}", result2.violations);
     assert_eq!(result2.violations[0].line, 1);
     assert_eq!(result2.violations[0].col, 17);
-    assert_eq!(result2.violations[0].raw, "overwrite-type");
+    assert_eq!(
+        result2.violations[0].message,
+        "The year part includes unexpected characters (https://html.spec.whatwg.org/multipage/text-level-semantics.html#datetime-value)"
+    );
+    assert_eq!(result2.violations[0].raw, "overwrite");
 }
 
 /// TS: `[no-invalid-attr-value-invalid-012]` — Overwrite type (array form allowAttrs)
@@ -1397,7 +1401,11 @@ fn no_invalid_attr_value_invalid_012() {
     );
     assert_eq!(result2.violations.len(), 1, "default config: {:#?}", result2.violations);
     assert_eq!(result2.violations[0].col, 17);
-    assert_eq!(result2.violations[0].raw, "overwrite-type");
+    assert_eq!(
+        result2.violations[0].message,
+        "The year part includes unexpected characters (https://html.spec.whatwg.org/multipage/text-level-semantics.html#datetime-value)"
+    );
+    assert_eq!(result2.violations[0].raw, "overwrite");
 }
 
 /// TS: `[no-invalid-attr-value-invalid-015]` — regexSelector

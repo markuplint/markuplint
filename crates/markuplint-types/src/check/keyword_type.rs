@@ -28,7 +28,8 @@ pub fn check_keyword_type(value: &str, keyword: &str) -> CheckResult {
                 if info.ref_.is_none() {
                     info.ref_ = Some(def.ref_.to_owned());
                 }
-                if info.expects.is_empty() {
+                if !info.expects_given {
+                    info.expects_given = true;
                     info.expects = def
                         .expects
                         .iter()

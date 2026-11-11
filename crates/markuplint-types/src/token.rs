@@ -142,6 +142,7 @@ impl Token {
             reason: reason.unwrap_or(Reason::SyntaxError),
             pass_count: opts.pass_count,
             part_name: opts.part_name,
+            expects_given: opts.expects.is_some(),
             expects: opts.expects.unwrap_or_default(),
             extra: opts.extra,
             candidate: opts.candidate,
@@ -489,6 +490,7 @@ impl TokenCollection {
                         first_unmatched = Some(UnmatchedResult {
                             reason: Reason::EmptyToken,
                             expects: Vec::new(),
+                            expects_given: false,
                             ..result.clone()
                         });
                     }

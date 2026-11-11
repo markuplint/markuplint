@@ -24,6 +24,9 @@ pub struct UnmatchedResult {
     pub pass_count: Option<usize>,
     pub part_name: Option<String>,
     pub expects: Vec<Expect>,
+    /// TS tells `expects: []` from no `expects`: a keyword type fills in the `expects` of its
+    /// definition only when its checker gave none.
+    pub expects_given: bool,
     pub extra: Option<Expect>,
     pub candidate: Option<String>,
     pub fallback_to: Option<String>,
@@ -196,6 +199,7 @@ pub fn unmatched(raw: &str, reason: Reason) -> CheckResult {
         pass_count: None,
         part_name: None,
         expects: Vec::new(),
+        expects_given: false,
         extra: None,
         candidate: None,
         fallback_to: None,
@@ -214,6 +218,7 @@ pub fn unmatched_with(raw: &str, reason: Reason, opts: UnmatchedOpts) -> CheckRe
         reason,
         pass_count: opts.pass_count,
         part_name: opts.part_name,
+        expects_given: opts.expects.is_some(),
         expects: opts.expects.unwrap_or_default(),
         extra: opts.extra,
         candidate: opts.candidate,
