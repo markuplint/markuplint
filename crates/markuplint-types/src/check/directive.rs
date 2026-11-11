@@ -2,10 +2,10 @@
 
 use super::types::{CheckResult, DirectiveType, Reason, UnmatchedOpts, UnmatchedResult, matched, unmatched_with};
 
-/// TS `regexParser` of `@markuplint/shared`: `/pattern/flags` as a regular expression. A flag the
-/// `regex` crate has no counterpart of (`g`, `y`, `d`, `u`, `v`) does not change what matches.
+/// TS `regexParser` of `@markuplint/shared`: `/pattern/flags` as a regular expression. A flag that
+/// has no counterpart here (`g`, `y`, `d`, `u`, `v`) does not change what matches.
 #[must_use]
-pub fn regex_parser(regexp_like: &str) -> Option<regex::Regex> {
+pub fn regex_parser(regexp_like: &str) -> Option<fancy_regex::Regex> {
     let rest = regexp_like.strip_prefix('/')?;
     let last_slash = rest.rfind('/')?;
     let pattern = &rest[..last_slash];
@@ -16,9 +16,10 @@ pub fn regex_parser(regexp_like: &str) -> Option<regex::Regex> {
     js_regex(pattern, flags)
 }
 
-/// A JS regular expression with its flags, as the `regex` crate reads it.
+/// A JS regular expression with its flags. `fancy-regex` reads the lookaround and backreferences
+/// that a JS pattern may have.
 #[must_use]
-pub fn js_regex(pattern: &str, flags: &str) -> Option<regex::Regex> {
+pub fn js_regex(pattern: &str, flags: &str) -> Option<fancy_regex::Regex> {
     let mut inline = String::new();
     for (flag, inner) in [('i', 'i'), ('m', 'm'), ('s', 's')] {
         if flags.contains(flag) {
@@ -30,7 +31,7 @@ pub fn js_regex(pattern: &str, flags: &str) -> Option<regex::Regex> {
     } else {
         format!("(?{inline}){pattern}")
     };
-    regex::Regex::new(&source).ok()
+    fancy_regex::Regex::new(&source).ok()
 }
 
 /// TS `checkDirective`.
@@ -57,7 +58,7 @@ where
     for directive in &type_def.directive {
         // TS `regexParser` returns `null` for a string it cannot read, and the directive is a prefix then
         let token_part: String = if let Some(matcher) = regex_parser(directive) {
-            let Some(caps) = matcher.captures(value) else {
+            let Ok(Some(caps)) = matcher.captures(value) else {
                 unmatches.push(missing());
                 continue;
             };

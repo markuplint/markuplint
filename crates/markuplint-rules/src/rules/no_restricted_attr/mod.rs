@@ -45,7 +45,9 @@ impl Rule for NoRestrictedAttr {
     }
 
     fn verify(&self, arena: &DomArena, spec: &MLMLSpec, config: &RuleConfigSet) -> Vec<Violation> {
-        walk_attrs(self.id(), arena, spec, config, Options::from_config, check)
+        walk_attrs(self.id(), arena, spec, config, Options::from_config, |o, a, c| {
+            check(o, a, c).into_iter().collect()
+        })
     }
 }
 

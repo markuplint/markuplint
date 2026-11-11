@@ -616,7 +616,7 @@ fn no_invalid_attr_value_valid_005() {
     assert_eq!(result.violations[0].raw, "invalid");
     assert_eq!(
         result.violations[0].message,
-        "The \"command\" attribute expects either \"toggle-popover\", \"show-popover\", \"hide-popover\", \"close\", \"request-close\", \"show-modal\". Or, the \"command\" attribute expects the custom command format. Did you mean \"--invalid\"? (https://html.spec.whatwg.org/multipage/form-elements.html#valid-custom-command)"
+        "The \"command\" attribute expects either \"toggle-popover\", \"show-popover\", \"hide-popover\", \"close\", \"request-close\", \"show-modal\". Or, the \"command\" attribute expects the custom command format. Did you mean \"--invalid\"? (https://html.spec.whatwg.org/multipage/form-elements.html#attr-button-command-custom)"
     );
 }
 
@@ -683,7 +683,7 @@ fn no_invalid_attr_value_invalid_018() {
     assert_eq!(result.violations[0].raw, "invalid-value");
     assert_eq!(
         result.violations[0].message,
-        "The \"command\" attribute expects either \"toggle-popover\", \"show-popover\", \"hide-popover\", \"close\", \"request-close\", \"show-modal\". Or, the \"command\" attribute expects the custom command format. Did you mean \"--invalid-value\"? (https://html.spec.whatwg.org/multipage/form-elements.html#valid-custom-command)"
+        "The \"command\" attribute expects either \"toggle-popover\", \"show-popover\", \"hide-popover\", \"close\", \"request-close\", \"show-modal\". Or, the \"command\" attribute expects the custom command format. Did you mean \"--invalid-value\"? (https://html.spec.whatwg.org/multipage/form-elements.html#attr-button-command-custom)"
     );
 }
 

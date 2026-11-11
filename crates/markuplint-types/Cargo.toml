@@ -5,6 +5,7 @@ edition = "2024"
 publish = false
 
 [dependencies]
+fancy-regex = "0.14"
 language-tags = "0.3"
 mime = "0.3"
 regex = { workspace = true }

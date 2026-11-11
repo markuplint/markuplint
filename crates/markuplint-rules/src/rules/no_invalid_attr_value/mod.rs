@@ -5,13 +5,16 @@
 //! checked against its spec type, but only when the spec says the attribute applies
 //! (a name `no-unknown-attr` or `no-disallowed-attr` reports is not checked here).
 
+use markuplint_core::mlast::MLASTHTMLAttr;
 use markuplint_dom::arena::DomArena;
+use markuplint_dom::helpers;
 use markuplint_types::spec::types::MLMLSpec;
 
 use crate::attr_check::{
-    AttrCheckContext, AttrEligibility, AttrEntry, ValueConstraint, attr_value_violation, check_attr_value_type,
-    check_type_constraint, get_clean_value, parse_allow_attrs, resolve_attr_eligibility, walk_attrs,
+    AttrCheckContext, AttrEligibility, attr_check_value, get_clean_value, lookup_name_option,
+    resolve_attr_eligibility_of, walk_attrs,
 };
+use crate::create_message::capitalize;
 use crate::rule::{Rule, RuleConfigSet};
 use crate::violation::Violation;
 
@@ -20,111 +23,75 @@ mod tests;
 
 pub struct NoInvalidAttrValue;
 
-struct Options {
-    /// `allowAttrs`: a bare name allows any value.
-    allowed: Vec<AttrEntry>,
-}
-
-impl Options {
-    fn from_config(options: &serde_json::Value) -> Self {
-        let (simple, entries) = parse_allow_attrs(options);
-        let mut allowed: Vec<AttrEntry> = simple
-            .into_iter()
-            .map(|name| AttrEntry {
-                name,
-                constraint: ValueConstraint::Any,
-            })
-            .collect();
-        allowed.extend(entries);
-        Self { allowed }
-    }
-}
-
 impl Rule for NoInvalidAttrValue {
     fn id(&self) -> &'static str {
         "no-invalid-attr-value"
     }
 
     fn verify(&self, arena: &DomArena, spec: &MLMLSpec, config: &RuleConfigSet) -> Vec<Violation> {
-        walk_attrs(self.id(), arena, spec, config, Options::from_config, check)
+        walk_attrs(self.id(), arena, spec, config, Clone::clone, check)
     }
 }
 
-fn check(
-    options: &Options,
-    html_attr: &markuplint_core::mlast::MLASTHTMLAttr,
-    ctx: &AttrCheckContext<'_>,
-) -> Option<Violation> {
+fn check(options: &serde_json::Value, html_attr: &MLASTHTMLAttr, ctx: &AttrCheckContext<'_>) -> Vec<Violation> {
+    let name = helpers::attr_name(html_attr);
+    let value = get_clean_value(html_attr);
+
+    // Whether an entry of `allowAttrs` is the attribute is up to the attribute: the DOM decides
+    // whether two spellings are one name (`MLAttr#isNamedBy`).
+    let any = serde_json::Value::String("Any".to_owned());
+    let allow_type = lookup_name_option(options.get("allowAttrs"), ctx.el, html_attr, &any);
+
+    let invalid = if let Some(allow_type) = allow_type {
+        attr_check_value(name, value, true, &allow_type)
+    } else {
+        if !ctx.is_html() {
+            return vec![];
+        }
+        let Some(specs) = ctx.attr_specs.as_ref() else {
+            return vec![];
+        };
+        let AttrEligibility::Ok { spec } = resolve_attr_eligibility_of(html_attr, specs, ctx) else {
+            return vec![];
+        };
+        attr_check_value(name, value, false, &spec.attr_type)
+    };
+
     // TS `attr.isDynamicValue`: a value that is not known is not judged
     if html_attr.is_dynamic_value == Some(true) {
-        return None;
+        return vec![];
     }
 
-    // Use the raw (original-case) attribute name, matching TS behavior.
-    let name = markuplint_dom::helpers::get_raw_attr_name(html_attr);
-
-    if let Some(entry) = options.allowed.iter().find(|e| e.name.eq_ignore_ascii_case(name)) {
-        return check_allowed_entry(name, entry, html_attr, ctx);
-    }
-
-    if !ctx.is_html() {
-        return None;
-    }
-
-    match resolve_attr_eligibility(name, ctx) {
-        AttrEligibility::Ok { attr_type } => check_attr_value_type(name, html_attr, &attr_type, ctx),
-        _ => None,
-    }
-}
-
-/// Checks the value of an `allowAttrs` entry against the constraint the option gives it.
-fn check_allowed_entry(
-    name: &str,
-    entry: &AttrEntry,
-    html_attr: &markuplint_core::mlast::MLASTHTMLAttr,
-    ctx: &AttrCheckContext<'_>,
-) -> Option<Violation> {
-    let value = get_clean_value(html_attr);
-    match &entry.constraint {
-        ValueConstraint::Any => None,
-        ValueConstraint::Enum(values) => {
-            if values.iter().any(|v| v == value) {
-                None
+    let value_node = &html_attr.value;
+    invalid
+        .unwrap_or_default()
+        .into_iter()
+        .map(|one| {
+            // The value of an expression is what the code results in, so a position in it is not a
+            // position in the source (an escape, a quote): the whole value that is written is reported
+            let (line, col, raw) = if html_attr.is_expression_value == Some(true) {
+                (value_node.line, value_node.col, value_node.raw.clone())
             } else {
-                let message = if values.len() == 1 {
-                    format!("The \"{name}\" attribute expects {}", values[0])
+                let loc_line = u32::try_from(one.loc.line).unwrap_or(u32::MAX);
+                let loc_col = u32::try_from(one.loc.col).unwrap_or(u32::MAX);
+                let col = if one.loc.line > 0 {
+                    loc_col + 1
                 } else {
-                    let list = values.iter().map(|v| format!("\"{v}\"")).collect::<Vec<_>>().join(", ");
-                    format!("The \"{name}\" attribute expects either {list}")
+                    value_node.col + loc_col
                 };
-                Some(attr_value_violation(ctx, html_attr, message))
+                (value_node.line + loc_line, col, one.loc.raw)
+            };
+            Violation {
+                rule_id: ctx.rule_id.to_string(),
+                name: None,
+                severity: *ctx.severity,
+                message: capitalize(&one.message),
+                line,
+                col,
+                raw,
+                reason: None,
+                fix: None,
             }
-        }
-        ValueConstraint::Pattern(re, original) => {
-            if re.is_match(value) {
-                None
-            } else {
-                Some(attr_value_violation(
-                    ctx,
-                    html_attr,
-                    format!("The \"{name}\" attribute expects regular expression ({original})"),
-                ))
-            }
-        }
-        ValueConstraint::Type(type_name) => {
-            if check_type_constraint(value, type_name) {
-                None
-            } else {
-                // Run full type validation to get TS-compatible error message
-                let type_json = serde_json::Value::String(type_name.clone());
-                check_attr_value_type(name, html_attr, &type_json, ctx).or_else(|| {
-                    Some(attr_value_violation(
-                        ctx,
-                        html_attr,
-                        format!("The \"{name}\" attribute value is invalid"),
-                    ))
-                })
-            }
-        }
-    }
+        })
+        .collect()
 }

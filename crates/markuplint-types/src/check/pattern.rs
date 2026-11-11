@@ -4,7 +4,7 @@ use std::sync::LazyLock;
 
 use regex::Regex;
 
-use super::directive::js_regex;
+use super::js_regex::JsRegex;
 use super::types::{CheckResult, Expect, ExpectType, PatternType, Reason, UnmatchedOpts, matched, unmatched_with};
 
 /// TS `checkPattern`: `/.../flags` is a regular expression the value is tested against, and any
@@ -19,7 +19,7 @@ pub fn check_pattern(value: &str, type_def: &PatternType) -> CheckResult {
     {
         let flags = caps.get(2).map_or("", |m| m.as_str());
         let last_flag: String = flags.chars().last().map(String::from).unwrap_or_default();
-        if js_regex(body, &last_flag).is_some_and(|re| re.is_match(value)) {
+        if JsRegex::new(body, &last_flag).is_some_and(|re| re.is_match(value)) {
             return matched();
         }
     } else if value == pattern.as_str() {

@@ -70,17 +70,20 @@ pub fn css_syntax_match(value: &str, keyword: &str) -> CheckResult {
             } else {
                 value
             };
+            // TS `cssSyntaxMatch`: the part of the value css-tree stopped at
+            let (line, column) = crate::token::get_position(value, info.offset);
             unmatched_with(
                 raw,
                 Reason::SyntaxError,
                 UnmatchedOpts {
+                    ref_: Some(format!("https://csstree.github.io/docs/syntax/#Property:{syntax_name}")),
                     offset: Some(info.offset),
-                    column: Some(info.offset + 1),
+                    line: Some(line),
+                    column: Some(column),
+                    part_name: Some("value".to_owned()),
                     expects: Some(vec![Expect {
                         type_: ExpectType::Syntax,
-                        value: format!(
-                            "the CSS Syntax \"{keyword}\" (https://csstree.github.io/docs/syntax/#Property:{syntax_name})"
-                        ),
+                        value: keyword.to_owned(),
                     }]),
                     ..Default::default()
                 },

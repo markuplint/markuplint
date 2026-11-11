@@ -191,7 +191,12 @@ fn convert_element(el: &mlast::MLASTElement, arena: &mut DomArena) -> NodeId {
         element_type: el.element_type.clone(),
         is_fragment: el.is_fragment,
         attributes: el.attributes.iter().map(with_resolved_node_name).collect(),
-        has_spread_attr: el.has_spread_attr.unwrap_or(false),
+        // TS `Element#hasSpreadAttr` reads the attributes (`{...props}` is a `#spread` one)
+        has_spread_attr: el.has_spread_attr.unwrap_or(false)
+            || el
+                .attributes
+                .iter()
+                .any(|attr| matches!(attr, mlast::MLASTAttr::Spread(_))),
         block_behavior: el.block_behavior.clone(),
         pair_node_id: None,
         tag_open_char: el.tag_open_char.clone(),

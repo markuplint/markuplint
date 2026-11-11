@@ -2,6 +2,7 @@ pub mod candidate;
 pub mod custom;
 pub mod directive;
 pub mod enum_check;
+pub mod js_regex;
 pub mod keyword_type;
 pub mod list;
 pub mod number;
