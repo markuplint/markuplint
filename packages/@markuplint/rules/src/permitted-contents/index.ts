@@ -6,7 +6,7 @@ import { createRule } from '@markuplint/ml-core';
 import { contentModel, hasTagRule } from './content-model.js';
 import meta from './meta.js';
 import { transparentMode } from './represent-transparent-nodes.js';
-import { getContentOwner, getReportScope, isContentMutable } from './slot-content.js';
+import { getContentOwner, getReportScope, hasMutableChildNodes, isContentMutable } from './slot-content.js';
 
 export default createRule<TagRule[], Options>({
 	meta: meta,
@@ -48,7 +48,7 @@ export default createRule<TagRule[], Options>({
 							if (
 								scope.rule.options.ignoreHasMutableChildren &&
 								(!scope.is(scope.ELEMENT_NODE) ||
-									scope.hasMutableChildren() ||
+									hasMutableChildNodes(scope, mode) ||
 									isContentMutable(el, mode))
 							) {
 								break;
@@ -72,7 +72,7 @@ export default createRule<TagRule[], Options>({
 							if (
 								scope.rule.options.ignoreHasMutableChildren &&
 								(!scope.is(scope.ELEMENT_NODE) ||
-									scope.hasMutableChildren() ||
+									hasMutableChildNodes(scope, mode) ||
 									isContentMutable(el, mode))
 							) {
 								break;

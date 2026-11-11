@@ -35,4 +35,8 @@ description: time要素に無効なコンテンツが含まれている場合、
 
 <!-- prettier-ignore-end -->
 
+## 詳細
+
+`<time>`要素のテキストがわからない場合は、検査を行いません。式（`{value}`）のようなプリプロセッサ言語のブロックや、JSXの`<FormattedDate />`のように[pretender](/docs/guides/beyond-html#pretenders)が解決しなかったコンポーネントを含むときです。pretenderが解決したコンポーネントは、それが表す要素として内容を検査します。
+
 <!-- textlint-enable ja-technical-writing/ja-no-mixed-period -->

@@ -1,5 +1,5 @@
 import type { FixToken, IRuleFixer, PlainData, TextEdit } from '@markuplint/ml-config';
-import type { Attr, Element, RuleConfigValue } from '@markuplint/ml-core';
+import type { Attr, ChildNode, Element, RuleConfigValue } from '@markuplint/ml-core';
 import type { Attribute } from '@markuplint/ml-spec';
 import type { WritableDeep } from 'type-fest';
 
@@ -413,6 +413,37 @@ export function toNormalizedValue(value: string, spec: Attribute) {
 	}
 
 	return normalized;
+}
+
+/**
+ * Whether a child of an element may stand for children that are not known: a block of a preprocessor
+ * that has no `blockBehavior` (an output such as `{value}` or an `include`), a `slot`, or a component
+ * whose output is not known (`MLElement#isUnresolvedComponent`).
+ *
+ * It is for a rule that asks which children an element has (the required children, the elements that
+ * satisfy a query). It looks at the child alone: a descendant of the child is not a child of the
+ * element, so what it renders cannot become the child that the rule asks for, and the attributes of
+ * a child do not decide whether the child exists. `MLElement#hasMutableChildren` looks at every
+ * descendant, which is the question for a rule that asks what the descendants are or have.
+ * `require-datetime` asks about the text, which any descendant may change, and looks at every
+ * descendant for an unresolved component itself.
+ *
+ * @template T - The rule configuration value type
+ * @template O - The rule options type
+ * @param node - A child node of the element
+ * @param components - Whether a component whose output is not known counts. It does not when the
+ * rule evaluates the components by the name that they are written with
+ * @returns True if the node may stand for children that are not known
+ */
+export function mayRenderUnknownChildren<T extends RuleConfigValue, O extends PlainData>(
+	// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
+	node: ChildNode<T, O>,
+	components = true,
+): boolean {
+	if (node.is(node.MARKUPLINT_PREPROCESSOR_BLOCK)) {
+		return !node.blockBehavior;
+	}
+	return node.is(node.ELEMENT_NODE) && (node.localName === 'slot' || (components && node.isUnresolvedComponent()));
 }
 
 export function accnameMayBeMutable(

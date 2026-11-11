@@ -2,6 +2,8 @@ import type { Mode } from './types.js';
 import type { PlainData } from '@markuplint/ml-config';
 import type { ChildNode, Element, PretenderSlotContent, RuleConfigValue } from '@markuplint/ml-core';
 
+import { mayRenderUnknownChildren } from '../helpers.js';
+
 /**
  * Returns the slot-content description of a pretended component, which exists
  * only in `'pretended'` mode: the `'origin'` mode evaluates user tag rules keyed
@@ -107,6 +109,29 @@ export function isContentMutable<T extends RuleConfigValue, O extends PlainData>
 		return true;
 	}
 	return [...el.childNodes].some(child => isFragmentPretender(child, mode) && isContentMutable(child, mode));
+}
+
+/**
+ * Whether a child of `el` that the content model reads is a block of a preprocessor or a `slot`
+ * (`mayRenderUnknownChildren`): a required child that is missing may be what it renders.
+ * Only the children are looked at (the children of a fragment pretender included, as the content
+ * model reads them): what a descendant renders is not a child of `el`.
+ *
+ * A component that no pretender resolved is not looked at here: `start` leaves it out of each
+ * conditional branch that has one, and drops the missing children of that branch only.
+ *
+ * @template T - The rule configuration value type
+ * @template O - The rule options type
+ * @param el - The element whose children are looked at
+ * @param mode - Which identity of `el` the content model is read for
+ * @returns True if a child may stand for children that are not known
+ */
+export function hasMutableChildNodes<T extends RuleConfigValue, O extends PlainData>(
+	// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
+	el: Element<T, O>,
+	mode: Mode,
+): boolean {
+	return expandChildren(el, [...el.getPureChildNodes()], mode).some(child => mayRenderUnknownChildren(child, false));
 }
 
 function isFragmentPretender<T extends RuleConfigValue, O extends PlainData>(

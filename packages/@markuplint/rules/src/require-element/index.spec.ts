@@ -209,15 +209,7 @@ describe('Pretenders Option', () => {
 					},
 				})
 			).violations,
-		).toStrictEqual([
-			{
-				severity: 'error',
-				line: 1,
-				col: 7,
-				message: 'Require the "meta[charset="UTF-8"]" element',
-				raw: '<head>',
-			},
-		]);
+		).toStrictEqual([]);
 		expect(
 			(
 				await mlRuleTest(rule, '<html><head><title>Title</title><Charset /></head></html>', {

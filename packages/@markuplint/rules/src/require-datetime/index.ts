@@ -21,7 +21,8 @@ export default createRule<boolean, Options>({
 	},
 	verify({ document, report, t }) {
 		for (const time of document.deepQuerySelectorAll('time:not([datetime])')) {
-			if (time.hasMutableChildren()) {
+			// The text of the element is the text of its descendants, which a component may render
+			if (time.hasMutableChildren() || [...time.querySelectorAll('*')].some(el => el.isUnresolvedComponent())) {
 				continue;
 			}
 

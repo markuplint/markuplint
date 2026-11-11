@@ -4109,6 +4109,27 @@ export class MLElement<T extends RuleConfigValue, O extends PlainData = undefine
 	}
 
 	/**
+	 * Checks whether this element is a component whose rendered output is not known: the
+	 * parser sees it as a component (`elementType` is `'authored'`) and no pretender stands
+	 * for an element of HTML, which includes a pretender whose own target is a component
+	 * (the chain of `pretenders.auto` stopped at `Tabs.Root`).
+	 *
+	 * A web component is not one: it is the element that it is written as. The criterion of
+	 * `isTreatedAsCustom` in `@markuplint/rules` (`permitted-contents`) includes it, because
+	 * a content model accepts a custom element wherever it accepts flow content; change them
+	 * together.
+	 *
+	 * @implements `@markuplint/ml-core` API: `MLElement`
+	 * @returns True if what this element renders is not known
+	 */
+	isUnresolvedComponent(): boolean {
+		if (this.pretenderContext?.type === 'pretender') {
+			return this.pretenderContext.as.elementType === 'authored';
+		}
+		return this.elementType === 'authored';
+	}
+
+	/**
 	 * Checks whether this element has children that are potentially mutable,
 	 * such as preprocessor-specific blocks, slot elements, or (optionally) elements
 	 * with dynamic attributes and components that no pretender resolved.
@@ -4122,8 +4143,12 @@ export class MLElement<T extends RuleConfigValue, O extends PlainData = undefine
 	 * A component that no pretender resolved renders something that is not known, however its
 	 * attributes are written (`size={size}`, `size={16}` and `size="16"` tell the same): a rule that
 	 * asks about what the descendants are or have (the accessible name, the owned elements) cannot decide
-	 * on it, so it is mutable when `attr` is true. A component that a pretender resolved is the element
-	 * that it renders, which the rules read themselves.
+	 * on it, so it is mutable when `attr` is true ({@link MLElement.isUnresolvedComponent}). A component
+	 * that a pretender resolved is the element that it renders, which the rules read themselves.
+	 *
+	 * A rule that asks which children an element has (the required children, the elements that
+	 * satisfy a query) does not pass `attr`: an attribute that cannot be known does not decide whether
+	 * a child exists. It looks for the unresolved components among the children itself.
 	 *
 	 * @implements `@markuplint/ml-core` API: `MLElement`
 	 * @param attr - When true, also considers children with mutable attributes, and components that no
@@ -4142,7 +4167,7 @@ export class MLElement<T extends RuleConfigValue, O extends PlainData = undefine
 				if (attr && child.hasMutableAttributes()) {
 					return true;
 				}
-				if (attr && child.elementType === 'authored' && child.pretenderContext?.type !== 'pretender') {
+				if (attr && child.isUnresolvedComponent()) {
 					return true;
 				}
 				if (child.hasMutableChildren(attr)) {

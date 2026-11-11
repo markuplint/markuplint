@@ -64,6 +64,22 @@ h1要素が必要な場合は[`require-h1`](../require-h1/)ルールを使用し
 }
 ```
 
+### `ignoreHasMutableContents`オプションの設定 {#setting-ignore-has-mutable-contents}
+
+- 型: `boolean`
+- 初期値: `true`
+
+必須の要素を何が描画するのかがわからない場合は、検査を行いません。要素に対する指定では、わからない子を表す子（*Pug*の`include`のようなプリプロセッサ言語のブロック、`<slot>`、JSXの`<Meta />`のように[pretender](/docs/guides/beyond-html#pretenders)が解決しなかったコンポーネント）が対象です。ドキュメント全体に対する指定では、これらや式がどこかにあれば対象です。pretenderが解決したコンポーネントは、それが表す要素として検査します。子の子孫が描画するものは、その要素の子ではないので、検査は省略されません。
+
+```html
+<!-- "require-element": ["meta[charset=\"UTF-8\"]"] -->
+<head>
+  <meta />
+</head>
+```
+
+書かれたとおりに検査したい場合は、`ignoreHasMutableContents`を`false`に設定してください。
+
 ### `ignoreOmittedElements`オプションの設定 {#setting-ignore-omitted-elements}
 
 HTMLでは特定のタグを省略できます（例：`<tbody>`）。HTMLパーサーはこれらの省略された要素をゴーストノードとして暗黙的に生成します。デフォルトでは、これらのゴースト要素は**無視**されます。つまり、ソースコードに明示的に記述された要素のみが要件を満たします。ゴースト要素も要件を満たすものとして扱いたい場合は、`ignoreOmittedElements`を`false`に設定してください。

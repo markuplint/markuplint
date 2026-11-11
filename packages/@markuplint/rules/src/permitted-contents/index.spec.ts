@@ -814,7 +814,7 @@ describe('verify', () => {
 				severity: 'error',
 				line: 1,
 				col: 34,
-				message: 'There is more content than it needs. the max number of elements required is two',
+				message: 'There is more content than it needs. The max number of elements required is two',
 				raw: '<mi>',
 			},
 		]);
@@ -932,7 +932,7 @@ describe('verify', () => {
 				severity: 'error',
 				line: 1,
 				col: 46,
-				message: 'There is more content than it needs. the max number of elements required is three',
+				message: 'There is more content than it needs. The max number of elements required is three',
 				raw: '<mn>',
 			},
 		]);
@@ -967,7 +967,7 @@ describe('verify', () => {
 				severity: 'error',
 				line: 1,
 				col: 34,
-				message: 'There is more content than it needs. the max number of elements required is two',
+				message: 'There is more content than it needs. The max number of elements required is two',
 				raw: '<mi>',
 			},
 		]);
@@ -1070,7 +1070,7 @@ describe('verify', () => {
 				severity: 'error',
 				line: 7,
 				col: 6,
-				message: 'There is more content than it needs. the max number of elements required is 5',
+				message: 'There is more content than it needs. The max number of elements required is 5',
 				raw: '<x-item>',
 			},
 		]);
@@ -1220,24 +1220,8 @@ describe('React', () => {
 
 	test('[permitted-contents-parser-004] Element has only custom components', async () => {
 		expect((await mlRuleTest(rule, '<div><Component/></div>', jsxRuleOn)).violations).toStrictEqual([]);
-		expect((await mlRuleTest(rule, '<ul><Component/></ul>', jsxRuleOn)).violations).toStrictEqual([
-			{
-				severity: 'error',
-				line: 1,
-				col: 5,
-				message: 'The "Component" element is not allowed in the "ul" element in this context',
-				raw: '<Component/>',
-			},
-		]);
-		expect((await mlRuleTest(rule, '<svg><Component/></svg>', jsxRuleOn)).violations).toStrictEqual([
-			{
-				severity: 'error',
-				line: 1,
-				col: 6,
-				message: 'The "Component" element is not allowed in the "svg" element in this context',
-				raw: '<Component/>',
-			},
-		]);
+		expect((await mlRuleTest(rule, '<ul><Component/></ul>', jsxRuleOn)).violations).toStrictEqual([]);
+		expect((await mlRuleTest(rule, '<svg><Component/></svg>', jsxRuleOn)).violations).toStrictEqual([]);
 	});
 });
 
