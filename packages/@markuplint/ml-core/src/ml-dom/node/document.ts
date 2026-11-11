@@ -298,9 +298,10 @@ export class MLDocument<T extends RuleConfigValue, O extends PlainData = undefin
 				.filter((n): n is MLNode<T, O> => !!n),
 		);
 
-		this.#pretending(options?.pretenders);
-
+		// A selector of the configuration is matched here, by a pretender and by a rule, so an
+		// invalid one is the fault of the configuration in both.
 		try {
+			this.#pretending(options?.pretenders);
 			this.#ruleMapping(ruleset);
 		} catch (error: unknown) {
 			if (error instanceof InvalidSelectorError) {

@@ -162,14 +162,134 @@ describe(':display-size', () => {
 		[':display-size(=> 1)'],
 		[':display-size(> -1)'],
 		[':display-size(> 1.5)'],
-	])('%s is a syntax error', selector => {
+	])('%s is an invalid selector', selector => {
 		expect(() => createSelector(selector, specs).match(createJSDOMElement('<select></select>', 'select'))).toThrow(
-			SyntaxError,
+			InvalidSelectorError,
 		);
+	});
+
+	test.each([
+		[':display-size()'],
+		[':display-size(> a)'],
+		[':display-size(> -1)'],
+		['select:not(:display-size(> a))'],
+	])('%s is an invalid selector when it is created', selector => {
+		expect(() => createSelector(selector)).toThrow(InvalidSelectorError);
+		expect(() => createSelector(selector, specs)).toThrow(InvalidSelectorError);
+	});
+});
+
+describe('the argument of :aria() and :role()', () => {
+	test.each([[':aria(foo)'], [':aria(has name|9.9)'], [':role(button|9.9)'], [':not(:aria(foo))']])(
+		'%s is an invalid selector when it is created',
+		selector => {
+			expect(() => createSelector(selector)).toThrow(InvalidSelectorError);
+			expect(() => createSelector(selector, specs)).toThrow(InvalidSelectorError);
+		},
+	);
+
+	test.each([
+		[':aria(has name)'],
+		[':aria(has no name|1.2)'],
+		[':role(button)'],
+		[':role(button|1.2)'],
+		[':model(flow)'],
+	])('%s is created without specs', selector => {
+		expect(() => createSelector(selector)).not.toThrow();
+	});
+});
+
+describe(':model()', () => {
+	test.each([[':model(foo)'], [':model(#flow)'], [':not(:model(foo))']])(
+		'%s is an invalid selector when it is created with specs',
+		selector => {
+			expect(() => createSelector(selector, specs)).toThrow(InvalidSelectorError);
+		},
+	);
+
+	test.each([[':model()'], [':model( )']])('%s is an invalid selector when it is created', selector => {
+		expect(() => createSelector(selector)).toThrow(InvalidSelectorError);
+		expect(() => createSelector(selector, specs)).toThrow(InvalidSelectorError);
+	});
+
+	test.each([[':model(flow)'], [':model(Flow)'], [':model( phrasing )'], [':model(SVGShape)'], [':model(svgshape)']])(
+		'%s is created with specs',
+		selector => {
+			expect(() => createSelector(selector, specs)).not.toThrow();
+		},
+	);
+});
+
+describe('what the engine does not support is found for any spelling and position', () => {
+	test.each([
+		['div:NTH-CHILD(2)'],
+		['div::before'],
+		[':is(div, span:hover)'],
+		[':closest(div:hover)'],
+		[':where(div || span)'],
+		[':ARIA(foo)'],
+	])('%s is an invalid selector when it is created', selector => {
+		expect(() => createSelector(selector)).toThrow(InvalidSelectorError);
+		expect(() => createSelector(selector, specs)).toThrow(InvalidSelectorError);
+	});
+});
+
+describe('what the engine supports is accepted when it is created and when it is matched', () => {
+	const el = createJSDOMElement('<div><span></span></div>', 'span');
+
+	test.each([
+		['span:first-child'],
+		['span:scope'],
+		['span:not(div)'],
+		['span:is(span, div)'],
+		['span:where(span)'],
+		['span:has(> a)'],
+		['span:closest(div)'],
+		[':root'],
+		['span:display-size(= 1)'],
+	])('%s', selector => {
+		expect(() => createSelector(selector, specs)).not.toThrow();
+		expect(() => createSelector(selector, specs).match(el)).not.toThrow();
+	});
+});
+
+describe('the message of the parser', () => {
+	test.each([
+		['div[', 'Invalid selector: "div[" (Expected a closing square bracket.)'],
+		['div:', 'Invalid selector: "div:" (Expected a pseudo-class or pseudo-element.)'],
+	])('%s says what is wrong', (selector, message) => {
+		expect(() => createSelector(selector)).toThrow(message);
+	});
+
+	test('the text of an internal error of the parser (`:is(` reads a missing node) is not shown as a diagnostic', () => {
+		expect(() => createSelector(':is(')).toThrow(/^Invalid selector: ":is\("$/);
 	});
 });
 
 describe('syntax the engine does not support', () => {
+	test.each([
+		['div || span'],
+		['div:hover'],
+		['div:lang(en)'],
+		['div:nth-child(2)'],
+		['div:nth-last-child(2)'],
+		[':not(div:hover)'],
+		[':is(div || span)'],
+		[':has(> div:hover)'],
+	])('%s is an invalid selector when it is created', selector => {
+		expect(() => createSelector(selector)).toThrow(InvalidSelectorError);
+		expect(() => createSelector(selector, specs)).toThrow(InvalidSelectorError);
+	});
+
+	test.each([
+		['div || span', 'Unsupported column combinator yet.'],
+		['div:hover', 'Unsupported pseudo :hover selector.'],
+		['div:lang(en)', 'Unsupported pseudo :lang(en) selector.'],
+		['div:nth-child(2)', 'Unsupported pseudo :nth-child(2) selector yet.'],
+	])('the message of %s is the one of the engine', (selector, message) => {
+		expect(() => createSelector(selector)).toThrow(message);
+	});
+
 	test('a nesting selector is an invalid selector', () => {
 		expect(() => createSelector('& div')).toThrow(InvalidSelectorError);
 		expect(() => createSelector('& div', specs)).toThrow(InvalidSelectorError);
@@ -192,7 +312,7 @@ describe('syntax the engine does not support', () => {
 		}
 	});
 
-	test('a nesting selector inside a pseudo-class is an invalid selector when it is matched, not when it is created', () => {
+	test('a nesting selector inside a pseudo-class is an invalid selector when it is created', () => {
 		const el = createJSDOMElement('<div></div>');
 		expect(() => createSelector(':is(&)', specs).match(el)).toThrow(InvalidSelectorError);
 	});

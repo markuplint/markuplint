@@ -67,6 +67,8 @@ Markuplint supports parts of [**W3C Selectors Level 4**](https://www.w3.org/TR/s
 
 </details>
 
+A selector that uses a syntax marked ❌, or gives an extended pseudo-class an argument it does not accept (for example `:aria(foo)` or `:model(foo)`), is reported as an error of the configuration, the same as a selector that cannot be parsed. This applies to every selector the configuration holds, whether in `nodeRules`, `childNodeRules`, `pretenders` or `overrides`, and whether or not the document has an element it would be matched against.
+
 :::tip
 
 Markuplint supports the **`:has` selector**. Combined with combinator operators, it allows very flexible element selection.

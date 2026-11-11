@@ -29,9 +29,9 @@ import type { AccnameSource, AccnameVisit, ARIAVersion } from '@markuplint/ml-sp
 
 import { getSpecByTagName, resolveNamespace } from '@markuplint/ml-spec';
 import { pretenderNamespaceToURI } from '@markuplint/ml-config';
-import { getChildNamespace } from '@markuplint/parser-utils';
+import { ConfigParserError, getChildNamespace } from '@markuplint/parser-utils';
 import type { SelectorMatches } from '@markuplint/selector';
-import { matchSelector, typeNameMatches } from '@markuplint/selector';
+import { InvalidSelectorError, matchSelector, typeNameMatches } from '@markuplint/selector';
 
 import {
 	getAccname,
@@ -63,7 +63,7 @@ import { toNamedNodeMap } from './named-node-map.js';
 import { toHTMLCollection, toNodeList } from './node-list.js';
 import { MLParentNode } from './parent-node.js';
 import { MLShadowRoot } from './shadow-root.js';
-import { UnexpectedCallError, asciiLowerCase, vuePropKey } from '@markuplint/shared';
+import { UnexpectedCallError, asciiLowerCase, isFatalError, vuePropKey } from '@markuplint/shared';
 
 const HTML_NAMESPACE = 'http://www.w3.org/1999/xhtml';
 
@@ -4449,7 +4449,18 @@ export class MLElement<T extends RuleConfigValue, O extends PlainData = undefine
 		if (this.elementType === 'html' && this.ownerMLDocument.isNativeTag(this.localName, this.namespaceURI)) {
 			return;
 		}
-		const pretenderConfig = pretenders?.find(option => this.matches(option.selector));
+		const pretenderConfig = pretenders?.find(option => {
+			try {
+				return this.matches(option.selector);
+			} catch (error: unknown) {
+				// An entry that a scan or a file made names the file that declares its component, which is
+				// where the user fixes it. `MLDocument` names the configuration for any other.
+				if (!isFatalError(error) && error instanceof InvalidSelectorError && option.filePath) {
+					throw new ConfigParserError(error.message, { filePath: option.filePath, raw: option.selector });
+				}
+				throw error;
+			}
+		});
 		const asAttrValue = this.getAttribute('as');
 		const pretenderElement: Pretender['as'] | null =
 			pretenderConfig?.as ??

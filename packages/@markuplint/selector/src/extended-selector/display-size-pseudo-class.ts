@@ -3,6 +3,7 @@ import type { SelectorElement, SelectorResult } from '../types.js';
 import { getSelectDisplaySize, resolveNamespace } from '@markuplint/ml-spec';
 
 import { foldAttrName } from '../fold-attr-name.js';
+import { InvalidSelectorError } from '../invalid-selector-error.js';
 import { typeNameMatches } from '../type-name.js';
 
 type Operator = '=' | '>' | '>=' | '<' | '<=';
@@ -21,7 +22,8 @@ type Operator = '=' | '>' | '>=' | '<' | '<=';
  *
  * @param content - What is written in the parentheses
  * @returns The matcher of the pseudo-class
- * @throws {SyntaxError} When `content` is not an operator followed by a number
+ * @throws {InvalidSelectorError} When `content` is not an operator followed by a number. It is read when the
+ * selector is created, so a configuration that holds it is reported as the fault of the configuration
  * @see https://html.spec.whatwg.org/multipage/form-elements.html#concept-select-size
  */
 export function displaySizePseudoClass() {
@@ -51,7 +53,7 @@ export function displaySizePseudoClass() {
 function parse(content: string): { readonly operator: Operator; readonly value: number } {
 	const matched = /^\s*(>=|<=|[=><])\s*(\d+)\s*$/.exec(content);
 	if (!matched) {
-		throw new SyntaxError(`Unsupported syntax: ${content}`);
+		throw new InvalidSelectorError(`:display-size(${content})`, `Unsupported syntax: ${content}`);
 	}
 	return {
 		operator: matched[1] as Operator,

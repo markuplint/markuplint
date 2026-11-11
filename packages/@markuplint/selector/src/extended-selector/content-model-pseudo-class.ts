@@ -5,15 +5,43 @@ import { contentModelCategoryToTagNames } from '@markuplint/ml-spec';
 
 import { contentModelFirstChildBase, isContentModelFirstChild } from '../content-model-first-child.js';
 import { createSelector } from '../create-selector.js';
+import { InvalidSelectorError } from '../invalid-selector-error.js';
+
+/**
+ * Reads the category of `:model()` when the selector is created, so that a category the
+ * specification does not define (a typo, which matches no element at all) is the fault of the
+ * selector. The names of the categories are those of `#contentModels` of the specification,
+ * compared as ASCII case-insensitive text, as {@link contentModelCategoryToTagNames} does.
+ *
+ * @param specs - The specification that defines the categories, or `null` when the selector is created
+ * without one (the check of a configuration): only an empty category is found then
+ * @param category - What is written in the parentheses
+ * @returns The category as the matcher reads it
+ * @throws {InvalidSelectorError} When the category is empty, or `specs` does not define it
+ */
+export function readContentModelCategory(specs: MLMLSpec | null, category: string) {
+	const name = category.trim().toLowerCase();
+	const selector = `:model(${category})`;
+	if (!name) {
+		throw new InvalidSelectorError(selector, 'The content model category is empty');
+	}
+	if (specs) {
+		const categories = specs.def['#contentModels'];
+		// The exact key answers for the lower-case categories; the scan is for the mixed-case ones (`#SVGShape`)
+		if (!(`#${name}` in categories) && !Object.keys(categories).some(key => key.toLowerCase() === `#${name}`)) {
+			throw new InvalidSelectorError(selector, `Unknown content model category: ${category.trim()}`);
+		}
+	}
+	return name;
+}
 
 export function contentModelPseudoClass(specs: MLMLSpec) {
-	return (category: string) =>
-		(
+	return (rawCategory: string) => {
+		const category = readContentModelCategory(specs, rawCategory);
+		return (
 			// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
 			el: SelectorElement,
 		): SelectorResult => {
-			category = category.trim().toLowerCase();
-
 			const selectors = contentModelCategoryToTagNames(`#${category}` as Category, specs.def);
 			const matched = selectors
 				.flatMap<SelectorResult>(selector => {
@@ -82,4 +110,5 @@ export function contentModelPseudoClass(specs: MLMLSpec) {
 				matched: false,
 			};
 		};
+	};
 }
