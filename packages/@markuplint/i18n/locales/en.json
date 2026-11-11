@@ -9,5 +9,8 @@
 		"the svg specification": "the SVG specification",
 		"the wai-aria specification": "the WAI-ARIA specification",
 		"aria in html specification": "ARIA in HTML specification"
+	},
+	"sentences": {
+		"the max number of elements required is {0}": "The max number of elements required is {0}"
 	}
 }

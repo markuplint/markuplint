@@ -11,6 +11,20 @@ const ja = {
 	...require('../locales/ja.json'),
 };
 
+const en = {
+	locale: 'en',
+	...require('../locales/en.json'),
+};
+
+test('A sentence that follows another one starts with a capital in English, and falls back to its own key without the locale', () => {
+	expect(translator(en)('the max number of elements required is {0}', '2')).toBe(
+		'The max number of elements required is two',
+	);
+	expect(translator()('the max number of elements required is {0}', '5')).toBe(
+		'the max number of elements required is 5',
+	);
+});
+
 test('Listup', () => {
 	const t1 = translator();
 	expect(t1(['1'])).toBe('"1"');
