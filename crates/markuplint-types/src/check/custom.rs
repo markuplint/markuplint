@@ -130,7 +130,9 @@ pub fn check_url(value: &str) -> CheckResult {
 #[must_use]
 pub fn check_base_url(value: &str) -> CheckResult {
     let normalised = value.to_lowercase();
-    let normalised = normalised.trim();
+    // JS `String.prototype.trim()`: its white space includes U+FEFF and excludes U+0085, which
+    // `char::is_whitespace` does the other way round.
+    let normalised = normalised.trim_matches(|c: char| (c.is_whitespace() && c != '\u{85}') || c == '\u{FEFF}');
     if normalised.starts_with("data:") || normalised.starts_with("javascript:") {
         return unmatched(value, Reason::UnexpectedToken);
     }
@@ -190,7 +192,7 @@ pub fn check_srcset(value: &str) -> CheckResult {
         };
 
         let base = url::Url::parse("https://example.com/").expect("a valid base URL");
-        if url::Url::options().base_url(Some(&base)).parse(&url.value).is_err() {
+        if !crate::whatwg::js_url::can_parse(&url.value, Some(&base)) {
             return url.unmatched_result(
                 Some(Reason::UnexpectedToken),
                 UnmatchedOpts {
