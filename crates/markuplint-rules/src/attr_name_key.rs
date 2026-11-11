@@ -47,6 +47,9 @@ pub(crate) fn namespace_key_of(el: &ElementData, attr: &MLASTHTMLAttr) -> String
 /// TS `getAttrSpecs(el, specs)`: the attributes the spec gives the element, global ones merged,
 /// looked up by the local name with the prefix of its namespace (`svg:a` for an `<a>` of SVG).
 /// `None` for an element the spec does not know (a custom element, a component).
+///
+/// A pretender is looked up as the element it pretends to be: TS `el.localName` and
+/// `el.namespaceURI` follow the pretender.
 pub(crate) fn attr_specs_of(spec: &MLMLSpec, el: &ElementData) -> Option<Arc<Vec<Attribute>>> {
     let spec_name = match el.namespace {
         NamespaceURI::SVG => format!("svg:{}", el.base.node_name),

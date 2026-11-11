@@ -57,6 +57,12 @@ pub struct Pretended {
     /// `false` for `slots: null`: the component renders none of the children given
     /// at the usage site (TS resets the children of the `as` element to empty).
     pub renders_children: bool,
+    /// The element the children given at the usage site are rendered in (TS
+    /// `#getRenderedParent` of a child): its namespace and its name, which decide the
+    /// namespace of a child. The element pretended to, its slot wrapper, or, for several
+    /// slots, a wrapper that gives every child the namespace the others do. `None` when the
+    /// slots give the children different namespaces.
+    pub children_in: Option<(NamespaceURI, String)>,
 }
 
 /// The identity a pretended element had in the source.
@@ -260,6 +266,7 @@ mod tests {
             aria: None,
             slot_content: None,
             renders_children: true,
+            children_in: Some((NamespaceURI::XHTML, "button".to_owned())),
         })));
     }
 

@@ -51,9 +51,135 @@ pub fn apply_pretenders(arena: &mut DomArena, pretenders: &[Pretender], spec: &M
         .map(|p| crate::diagnostic::parse_selector("config pretenders selector", &p.selector))
         .collect();
     let ids: Vec<NodeId> = arena.elements().map(|(id, _)| id).collect();
+    let mut reresolved = std::collections::HashSet::new();
     for id in ids {
-        pretend(arena, id, pretenders, &selectors, spec);
+        let rendered = rendered_parent(arena, id);
+        resolve_namespace(arena, id, &rendered, &mut reresolved);
+        pretend(arena, id, pretenders, &selectors, spec, &rendered.parent);
     }
+}
+
+/// TS `getChildNamespace` (`@markuplint/parser-utils`): the namespace of an element named
+/// `name` (none for what is not an element) rendered as a child of an element of
+/// `parent_namespace` named `parent_name`. `svg` and `math` enter their namespace from HTML,
+/// and a child of an SVG `foreignObject` is HTML.
+fn get_child_namespace(name: Option<&str>, parent_namespace: &NamespaceURI, parent_name: Option<&str>) -> NamespaceURI {
+    let name = name.map(str::to_ascii_lowercase);
+    match parent_namespace {
+        NamespaceURI::XHTML if name.as_deref() == Some("svg") => NamespaceURI::SVG,
+        NamespaceURI::SVG if parent_name == Some("foreignObject") => NamespaceURI::XHTML,
+        NamespaceURI::XHTML if name.as_deref() == Some("math") => NamespaceURI::MathML,
+        _ => parent_namespace.clone(),
+    }
+}
+
+/// The namespace and the name of `el` as it is written (TS `#namespaceURI`, possibly
+/// re-resolved, and `_astToken.nodeName`), not of what it pretends to be.
+fn own_identity(el: &ElementData) -> (NamespaceURI, String) {
+    match el.pretended() {
+        Some(p) => (p.original.namespace.clone(), p.original.node_name.clone()),
+        None => (el.namespace.clone(), el.base.node_name.clone()),
+    }
+}
+
+/// Where an element is rendered (TS `#getRenderedParent`).
+enum RenderedIn {
+    /// At the top level.
+    TopLevel,
+    /// In an element of this namespace and name.
+    Element(NamespaceURI, String),
+    /// In one of the slots of a component that give the children different namespaces.
+    Unknown,
+}
+
+struct RenderedParent {
+    parent: RenderedIn,
+    /// The parent element itself, not what a component renders the children in.
+    is_parent: bool,
+    parent_id: Option<NodeId>,
+}
+
+/// TS `#getRenderedParent`: when the parent is a component, the element the component
+/// renders its children in; otherwise the parent. A custom element puts its children in its
+/// light DOM, where they keep the namespace they are parsed in, so it is the parent. The
+/// parent has pretended already, as the elements are visited in document order.
+fn rendered_parent(arena: &DomArena, id: NodeId) -> RenderedParent {
+    let parent_id = arena.get(id).and_then(|n| n.base()).and_then(|b| b.parent);
+    let Some((parent_id, parent)) =
+        parent_id.and_then(|pid| arena.get(pid).and_then(|n| n.as_element()).map(|el| (pid, el)))
+    else {
+        return RenderedParent {
+            parent: RenderedIn::TopLevel,
+            is_parent: true,
+            parent_id: None,
+        };
+    };
+    if let Some(p) = parent.pretended()
+        && p.original.element_type != ElementType::WebComponent
+    {
+        return RenderedParent {
+            parent: p
+                .children_in
+                .clone()
+                .map_or(RenderedIn::Unknown, |(ns, name)| RenderedIn::Element(ns, name)),
+            is_parent: false,
+            parent_id: Some(parent_id),
+        };
+    }
+    let (ns, name) = own_identity(parent);
+    RenderedParent {
+        parent: RenderedIn::Element(ns, name),
+        is_parent: true,
+        parent_id: Some(parent_id),
+    }
+}
+
+/// TS `#resolveNamespace`: the parser gives the children written inside a component the
+/// namespace of where the component is written, as it does not know what the component
+/// renders (in `<Icon><path /></Icon>`, where `Icon` renders `<svg>`, `path` is HTML to it).
+/// An element is re-resolved for the element it is rendered in, unless its parent is where
+/// the parser put it. A component is given no name, as its own name is not an element's.
+///
+/// `get_child_namespace` leaves foreign content only at `foreignObject`, so an element
+/// re-resolved here does not follow the other integration points (`<mi>`, `<desc>`).
+fn resolve_namespace(
+    arena: &mut DomArena,
+    id: NodeId,
+    rendered: &RenderedParent,
+    reresolved: &mut std::collections::HashSet<NodeId>,
+) {
+    let RenderedIn::Element(parent_ns, parent_name) = &rendered.parent else {
+        return;
+    };
+    let Some(parent_id) = rendered.parent_id else {
+        return;
+    };
+    if rendered.is_parent && !reresolved.contains(&parent_id) {
+        return;
+    }
+    let Some(el) = arena.element_mut(id) else {
+        return;
+    };
+    let name = (el.element_type != ElementType::Authored).then_some(el.base.node_name.as_str());
+    let namespace = get_child_namespace(name, parent_ns, Some(parent_name));
+    if namespace != el.namespace {
+        el.namespace = namespace;
+        reresolved.insert(id);
+    }
+}
+
+/// TS `#getNamespaceInPlace`: the namespace of an element named `name` rendered where `el` is,
+/// for the element `el` pretends to be. For a component it is taken from where the component
+/// is rendered, as a parser may have taken the name of the component for an element.
+fn namespace_in_place(el: &ElementData, name: Option<&str>, rendered: &RenderedIn) -> NamespaceURI {
+    let here = match (&el.element_type, rendered) {
+        (ElementType::Authored, RenderedIn::Element(ns, parent_name)) => {
+            get_child_namespace(None, ns, Some(parent_name))
+        }
+        (ElementType::Authored, RenderedIn::TopLevel) => NamespaceURI::XHTML,
+        _ => el.namespace.clone(),
+    };
+    get_child_namespace(name, &here, None)
 }
 
 /// TS `MLElement#pretending()`.
@@ -63,6 +189,7 @@ fn pretend(
     pretenders: &[Pretender],
     selectors: &[Option<SelectorList>],
     spec: &MLMLSpec,
+    rendered: &RenderedIn,
 ) {
     let Some(el) = arena.get(id).and_then(|n| n.as_element()) else {
         return;
@@ -102,7 +229,7 @@ fn pretend(
     };
 
     let origin = el.clone();
-    let mut namespace = NamespaceURI::XHTML;
+    let mut stated_namespace = None;
     let mut attributes = Vec::new();
     let mut aria = None;
     let node_name = match as_ {
@@ -110,9 +237,7 @@ fn pretend(
         // attribute list, whatever the matched element has.
         PretenderAs::Name(name) => name.clone(),
         PretenderAs::Node(node) => {
-            if node.namespace == Some(PretenderNamespace::Svg) {
-                namespace = NamespaceURI::SVG;
-            }
+            stated_namespace = node.namespace.map(PretenderNamespace::uri);
             if node.inherit_attrs == Some(true) {
                 attributes.extend(origin.attributes.iter().cloned());
             }
@@ -123,14 +248,16 @@ fn pretend(
             node.element.clone()
         }
     };
+    // A stated namespace, or the one an element of the name gets where the element is
+    let namespace = stated_namespace.unwrap_or_else(|| namespace_in_place(&origin, Some(&node_name), rendered));
     let node_name = local_name(node_name, &ElementType::Html, &namespace);
 
-    let (slot_content, renders_children) = match as_ {
-        PretenderAs::Name(_) => (None, true),
-        PretenderAs::Node(node) => (
-            create_slot_content(arena, &origin, id, node, &namespace),
-            node.slots != Slots::Null,
-        ),
+    let (slot_content, renders_children, children_in) = match as_ {
+        PretenderAs::Name(_) => (None, true, Some((namespace.clone(), node_name.clone()))),
+        PretenderAs::Node(node) => {
+            let (slot_content, children_in) = create_slot_content(arena, &origin, id, node, &namespace, &node_name);
+            (slot_content, node.slots != Slots::Null, children_in)
+        }
     };
 
     let Some(el) = arena.element_mut(id) else {
@@ -147,6 +274,7 @@ fn pretend(
         aria,
         slot_content,
         renders_children,
+        children_in,
     })));
 }
 
@@ -275,7 +403,7 @@ fn push_virtual_element(
     spec: &VirtualSpec<'_>,
     uuid: String,
     parent: NodeId,
-    fallback_namespace: &NamespaceURI,
+    rendered_in: &(NamespaceURI, String),
 ) -> NodeId {
     let mut attributes = Vec::new();
     if spec.inherit_attrs {
@@ -284,7 +412,7 @@ fn push_virtual_element(
     if let Some(attrs) = spec.attrs {
         attributes.extend(create_pretender_attrs(origin, attrs, &uuid));
     }
-    let namespace = virtual_namespace(spec, fallback_namespace);
+    let namespace = virtual_namespace(spec, rendered_in);
     let element_type = if spec.element.contains('-') {
         ElementType::WebComponent
     } else {
@@ -322,26 +450,30 @@ fn push_virtual_element(
 }
 
 /// TS `getVirtualNamespace`.
-fn virtual_namespace(spec: &VirtualSpec<'_>, fallback: &NamespaceURI) -> NamespaceURI {
-    if spec.namespace == Some(PretenderNamespace::Svg) || spec.element == "svg" {
-        NamespaceURI::SVG
-    } else if spec.element == "math" {
-        NamespaceURI::MathML
-    } else {
-        fallback.clone()
-    }
+/// The namespace of a virtual element: the one its definition states, or the one an element
+/// of its name gets in the element it is rendered in (TS `#createVirtualElement`). A name with a
+/// hyphen is a custom element and enters no namespace by its name.
+fn virtual_namespace(spec: &VirtualSpec<'_>, (in_namespace, in_name): &(NamespaceURI, String)) -> NamespaceURI {
+    spec.namespace.map_or_else(
+        || get_child_namespace(Some(spec.element), in_namespace, Some(in_name)),
+        PretenderNamespace::uri,
+    )
 }
 
 /// TS `#createSlotContent`. `None` when the pretender says nothing about what
-/// surrounds the children.
+/// surrounds the children. With it, the element the children are rendered in
+/// ([`Pretended::children_in`]).
 fn create_slot_content(
     arena: &mut DomArena,
     origin: &ElementData,
     origin_id: NodeId,
     node: &OriginalNode,
     namespace: &NamespaceURI,
-) -> Option<SlotContent> {
+    node_name: &str,
+) -> (Option<SlotContent>, Option<(NamespaceURI, String)>) {
+    let as_element = (namespace.clone(), node_name.to_owned());
     let mut wrapper = origin_id;
+    let mut wrapper_element = as_element.clone();
     let mut contents = node.contents.clone();
 
     if let Slots::List(slots) = &node.slots
@@ -351,14 +483,26 @@ fn create_slot_content(
             // The wrapper of each child is unknown, so the children are not
             // validated, but a slot may still render unknown content (which may
             // be a name).
-            return Some(SlotContent {
-                wrapper: None,
-                mutable: slots
-                    .iter()
-                    .any(|s| s.contents.as_ref().is_some_and(|c| c.iter().any(is_dynamic))),
-                entries: Vec::new(),
-            });
+            return (
+                Some(SlotContent {
+                    wrapper: None,
+                    mutable: slots
+                        .iter()
+                        .any(|s| s.contents.as_ref().is_some_and(|c| c.iter().any(is_dynamic))),
+                    entries: Vec::new(),
+                }),
+                shared_wrapper(slots, &as_element),
+            );
         }
+        // The elements between the root and the wrapper are not known, so the wrapper is
+        // taken to be a child of the root unless the definition states its namespace.
+        let slot_spec = VirtualSpec {
+            element: &slot.element,
+            namespace: slot.namespace,
+            attrs: slot.attrs.as_deref(),
+            inherit_attrs: slot.inherit_attrs == Some(true),
+        };
+        wrapper_element = (virtual_namespace(&slot_spec, &as_element), slot.element.clone());
         wrapper = push_virtual_element(
             arena,
             origin,
@@ -371,7 +515,7 @@ fn create_slot_content(
             },
             format!("{}_pretender_slot", origin.base.uuid),
             origin_id,
-            namespace,
+            &as_element,
         );
         contents = Some(slot.contents.clone().unwrap_or_else(|| {
             vec![PretenderContent::Slot {
@@ -380,7 +524,9 @@ fn create_slot_content(
         }));
     }
 
-    let contents = contents?;
+    let Some(contents) = contents else {
+        return (None, Some(wrapper_element));
+    };
     let entries: Vec<SlotEntry> = contents
         .iter()
         .enumerate()
@@ -397,18 +543,50 @@ fn create_slot_content(
                 },
                 format!("{}_pretender_content_{i}", origin.base.uuid),
                 wrapper,
-                namespace,
+                &wrapper_element,
             )),
             PretenderContent::Slot { .. } => SlotEntry::Slot,
             PretenderContent::Dynamic { .. } => SlotEntry::Dynamic,
         })
         .collect();
 
-    Some(SlotContent {
-        wrapper: Some(wrapper),
-        mutable: entries.contains(&SlotEntry::Dynamic),
-        entries,
-    })
+    (
+        Some(SlotContent {
+            wrapper: Some(wrapper),
+            mutable: entries.contains(&SlotEntry::Dynamic),
+            entries,
+        }),
+        Some(wrapper_element),
+    )
+}
+
+/// TS `#findSharedWrapper`: for a component with more than one slot, whose wrapper of each
+/// child is unknown, the first wrapper when every wrapper gives a child the namespace the
+/// others do, so that the children can still be resolved. `None` when they differ (`<svg>`
+/// and the `<div>` inside its `foreignObject`).
+fn shared_wrapper(
+    slots: &[markuplint_core::pretender::Slot],
+    as_element: &(NamespaceURI, String),
+) -> Option<(NamespaceURI, String)> {
+    let wrappers: Vec<(NamespaceURI, String)> = slots
+        .iter()
+        .map(|slot| {
+            let spec = VirtualSpec {
+                element: &slot.element,
+                namespace: slot.namespace,
+                attrs: None,
+                inherit_attrs: false,
+            };
+            (virtual_namespace(&spec, as_element), slot.element.clone())
+        })
+        .collect();
+    let first = wrappers.first()?;
+    let child_namespace = |(ns, name): &(NamespaceURI, String)| get_child_namespace(None, ns, Some(name));
+    let namespace = child_namespace(first);
+    wrappers
+        .iter()
+        .all(|wrapper| child_namespace(wrapper) == namespace)
+        .then(|| first.clone())
 }
 
 fn is_dynamic(entry: &PretenderContent) -> bool {

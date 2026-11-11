@@ -13,7 +13,7 @@
 //!   v6_no_obsolete_element_002           — Rust-only: an upper-case tag reports the lower-case local name
 //!   v6_no_obsolete_element_003           — Rust-only: an SVG element is looked up in the SVG spec, not the HTML one
 //!   v6_no_obsolete_element_004           — Rust-only: a custom element with no pretender is not looked up
-//!   v6_no_obsolete_element_005           — Rust-only: a pretender is looked up in the namespace of the element written
+//!   v6_no_obsolete_element_005           — Rust-only: a pretender is looked up in the namespace of the element it pretends to be
 
 use crate::lint::{LintConfig, lint};
 use crate::violation::Severity;
@@ -185,6 +185,13 @@ fn v6_no_obsolete_element_005() {
         run_pretended(
             "<x-marquee>x</x-marquee>",
             serde_json::json!([{ "selector": "x-marquee", "as": { "element": "marquee", "namespace": "svg" } }])
+        ),
+        []
+    );
+    assert_eq!(
+        run_pretended(
+            "<x-marquee>x</x-marquee>",
+            serde_json::json!([{ "selector": "x-marquee", "as": "marquee" }])
         ),
         [crate::test_util::brief(
             Severity::Error,

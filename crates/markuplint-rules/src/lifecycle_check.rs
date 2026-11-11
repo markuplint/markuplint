@@ -100,9 +100,8 @@ pub(crate) fn verify_attr_lifecycle(
 /// scope (the spec's deprecated `mml:mfenced` and `mml:maction` are not reported),
 /// and so are custom and authored elements, unless they pretend to be an element.
 ///
-/// TS gates on, and looks the pretender name up in, the namespace of the element as
-/// written (`el.namespaceURI` is not delegated to the pretender), so this reads the
-/// original namespace of a pretended element.
+/// TS gates on, and looks the pretender name up in, `el.namespaceURI`, which follows
+/// the pretender as `localName` does.
 pub(crate) fn verify_element_lifecycle(
     rule_id: &str,
     lifecycle: Lifecycle,
@@ -119,7 +118,7 @@ pub(crate) fn verify_element_lifecycle(
         }
         // TS `el.localName`: lower-case for HTML, as written (case-adjusted by the
         // parser) for SVG.
-        let (local_name, qualified_name) = match el.identity(true).namespace {
+        let (local_name, qualified_name) = match el.namespace {
             NamespaceURI::XHTML => {
                 let name = el.base.node_name.to_ascii_lowercase();
                 (name.clone(), name)

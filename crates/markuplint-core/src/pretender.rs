@@ -125,11 +125,25 @@ fn deserialize_slots<'de, D: Deserializer<'de>>(deserializer: D) -> Result<Slots
     })
 }
 
-/// TS `namespace?: 'svg'`.
+/// TS `namespace?: 'html' | 'svg' | 'math'`: the namespace a definition states for an element.
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Deserialize)]
 #[serde(rename_all = "lowercase")]
 pub enum PretenderNamespace {
+    Html,
     Svg,
+    Math,
+}
+
+impl PretenderNamespace {
+    /// TS `pretenderNamespaceToURI`.
+    #[must_use]
+    pub fn uri(self) -> crate::mlast::NamespaceURI {
+        match self {
+            Self::Html => crate::mlast::NamespaceURI::XHTML,
+            Self::Svg => crate::mlast::NamespaceURI::SVG,
+            Self::Math => crate::mlast::NamespaceURI::MathML,
+        }
+    }
 }
 
 /// TS `PretenderContent`.
@@ -398,9 +412,13 @@ mod tests {
     fn v6_pretender_namespace_svg() {
         let p = pretender(json!({ "selector": "Icon", "as": { "element": "circle", "namespace": "svg" } }));
         assert_eq!(node(&p).namespace, Some(PretenderNamespace::Svg));
+        let m = pretender(json!({ "selector": "a", "as": { "element": "x", "namespace": "math" } }));
+        assert_eq!(node(&m).namespace, Some(PretenderNamespace::Math));
+        let h = pretender(json!({ "selector": "a", "as": { "element": "x", "namespace": "html" } }));
+        assert_eq!(node(&h).namespace, Some(PretenderNamespace::Html));
         assert!(
             serde_json::from_value::<Pretender>(
-                json!({ "selector": "a", "as": { "element": "x", "namespace": "math" } })
+                json!({ "selector": "a", "as": { "element": "x", "namespace": "xlink" } })
             )
             .is_err()
         );
