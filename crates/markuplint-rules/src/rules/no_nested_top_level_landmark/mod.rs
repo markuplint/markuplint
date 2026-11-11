@@ -72,7 +72,7 @@ impl Rule for NoNestedTopLevelLandmark {
                     line: el.base.line,
                     col: el.base.col,
                     raw: el.base.raw.clone(),
-                    reason: None,
+                    reason: rule_config.reason.clone(),
                     fix: None,
                 });
             }

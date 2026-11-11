@@ -28,17 +28,23 @@ impl Rule for NoRestrictedElement {
 
         let global_selectors = parse_selectors(&config.global().value, spec);
         for (node_id, el) in arena.elements() {
+            // TS `report({ scope: el })`: the config of the element found, which a node rule may
+            // give its own severity and reason
+            let rule_config = config.get(node_id);
+            if rule_config.disabled {
+                continue;
+            }
             for (selector_str, sel) in &global_selectors {
                 if matcher::matches(sel, arena, node_id, Some(node_id), Some(spec), None) {
                     violations.push(Violation {
                         rule_id: self.id().to_string(),
                         name: None,
-                        severity: config.global().severity,
+                        severity: rule_config.severity,
                         message: format!("The \"{selector_str}\" element is disallowed"),
                         line: el.base.line,
                         col: el.base.col,
                         raw: el.base.raw.clone(),
-                        reason: None,
+                        reason: rule_config.reason.clone(),
                         fix: None,
                     });
                 }
@@ -81,7 +87,7 @@ impl Rule for NoRestrictedElement {
                             line: desc_el.base.line,
                             col: desc_el.base.col,
                             raw: desc_el.base.raw.clone(),
-                            reason: None,
+                            reason: rule_config.reason.clone(),
                             fix: None,
                         });
                     }

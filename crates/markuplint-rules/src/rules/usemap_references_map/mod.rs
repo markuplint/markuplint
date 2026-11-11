@@ -73,7 +73,7 @@ impl Rule for UsemapReferencesMap {
                 line: usemap_attr.value.line,
                 col: usemap_attr.value.col,
                 raw: usemap_attr.value.raw.clone(),
-                reason: None,
+                reason: rule_config.reason.clone(),
                 fix: None,
             });
         }

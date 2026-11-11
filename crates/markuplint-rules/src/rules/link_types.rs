@@ -71,7 +71,7 @@ impl Rule for LinkTypes {
                         line: el.base.line,
                         col: el.base.col,
                         raw: keyword.to_string(),
-                        reason: None,
+                        reason: rule_config.reason.clone(),
                         fix: None,
                     });
                 }

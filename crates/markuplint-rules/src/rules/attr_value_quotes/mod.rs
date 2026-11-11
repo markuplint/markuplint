@@ -61,7 +61,7 @@ impl Rule for AttrValueQuotes {
                         line: html_attr.name.line,
                         col: html_attr.name.col,
                         raw: html_attr.raw.clone(),
-                        reason: None,
+                        reason: rule_config.reason.clone(),
                         // An unquoted value has quote tokens of no width, which the edits
                         // turn into insertions on either side of the value.
                         fix: Some(Fix::new(

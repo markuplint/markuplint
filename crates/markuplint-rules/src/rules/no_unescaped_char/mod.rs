@@ -149,7 +149,7 @@ fn check_chars(
                 line,
                 col,
                 raw: ch.to_string(),
-                reason: None,
+                reason: rule_config.reason.clone(),
                 fix: None,
             });
         }

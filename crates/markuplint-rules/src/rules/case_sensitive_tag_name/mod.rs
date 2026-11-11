@@ -74,7 +74,7 @@ impl Rule for CaseSensitiveTagName {
                     line: el.base.line,
                     col: name_col,
                     raw: raw_name.to_string(),
-                    reason: None,
+                    reason: rule_config.reason.clone(),
                     fix: Some(Fix::replace_range(
                         name_start,
                         name_start + raw_name.len(),
@@ -102,7 +102,7 @@ impl Rule for CaseSensitiveTagName {
                         line: ct.line,
                         col: ct.col,
                         raw: ct.raw.clone(),
-                        reason: None,
+                        reason: rule_config.reason.clone(),
                         fix: Some(Fix::replace_range(
                             close_name_start,
                             close_name_start + close_raw_name.len(),

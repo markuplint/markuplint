@@ -58,7 +58,7 @@ impl Rule for MapIdNameMatch {
                 line: id_attr.value.line,
                 col: id_attr.value.col,
                 raw: id_attr.value.raw.clone(),
-                reason: None,
+                reason: rule_config.reason.clone(),
                 fix: None,
             });
         }

@@ -27,6 +27,8 @@ pub struct RuleConfig {
     pub options: Value,
     pub disabled: bool,
     pub reason: Option<String>,
+    /// `reasonOnly`: the `reason` replaces the message of a violation instead of going with it.
+    pub reason_only: Option<bool>,
 }
 
 impl Default for RuleConfig {
@@ -37,6 +39,7 @@ impl Default for RuleConfig {
             options: Value::Null,
             disabled: false,
             reason: None,
+            reason_only: None,
         }
     }
 }
@@ -100,5 +103,13 @@ impl RuleConfigSet {
 
     pub fn has_overrides(&self) -> bool {
         !self.overrides.is_empty()
+    }
+
+    /// Whether the config that gave a violation its `reason` says `reasonOnly`. A rule copies the
+    /// `reason` of the config of the node it reports on, so the text tells the config apart.
+    pub fn is_reason_only(&self, reason: &str) -> bool {
+        std::iter::once(&self.global)
+            .chain(self.overrides.values())
+            .any(|config| config.reason.as_deref() == Some(reason) && config.reason_only == Some(true))
     }
 }

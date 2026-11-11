@@ -273,12 +273,14 @@ fn parse_node_rule_value(value: &Value, default_severity: Severity) -> RuleConfi
             let rule_value = obj.get("value").cloned();
             let options = obj.get("options").cloned();
             let reason = obj.get("reason").and_then(|v| v.as_str()).map(String::from);
+            let reason_only = obj.get("reasonOnly").and_then(Value::as_bool);
             RuleConfig {
                 severity: severity.unwrap_or(default_severity),
                 value: rule_value.unwrap_or(Value::Bool(true)),
                 options: options.unwrap_or(Value::Null),
                 disabled: false,
                 reason,
+                reason_only,
             }
         }
         // Arrays and other JSON values are treated as the rule value
@@ -355,6 +357,7 @@ fn merge_rule(global: &RuleConfig, node: &RuleConfig) -> RuleConfig {
         },
         disabled: false,
         reason: node.reason.clone().or_else(|| global.reason.clone()),
+        reason_only: node.reason_only.or(global.reason_only),
     }
 }
 

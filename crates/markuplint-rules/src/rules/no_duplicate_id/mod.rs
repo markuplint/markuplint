@@ -63,7 +63,7 @@ impl Rule for NoDuplicateId {
                         line,
                         col,
                         raw: raw.clone(),
-                        reason: None,
+                        reason: config.global().reason.clone(),
                         fix: None,
                     });
                 }

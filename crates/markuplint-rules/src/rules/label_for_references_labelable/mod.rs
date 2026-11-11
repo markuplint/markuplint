@@ -78,7 +78,7 @@ impl Rule for LabelForReferencesLabelable {
                 line: for_attr.value.line,
                 col: for_attr.value.col,
                 raw: for_attr.value.raw.clone(),
-                reason: None,
+                reason: rule_config.reason.clone(),
                 fix: None,
             });
         }

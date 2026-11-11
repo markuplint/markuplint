@@ -74,7 +74,7 @@ impl Rule for FormAttrReferencesForm {
                 line: form_attr.value.line,
                 col: form_attr.value.col,
                 raw: form_attr.value.raw.clone(),
-                reason: None,
+                reason: rule_config.reason.clone(),
                 fix: None,
             });
         }

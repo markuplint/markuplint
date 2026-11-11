@@ -67,7 +67,7 @@ impl Rule for InputListReferencesDatalist {
                 line: list_attr.value.line,
                 col: list_attr.value.col,
                 raw: list_attr.value.raw.clone(),
-                reason: None,
+                reason: rule_config.reason.clone(),
                 fix: None,
             });
         }

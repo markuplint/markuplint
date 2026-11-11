@@ -101,7 +101,7 @@ impl Rule for CaseSensitiveAttrName {
                         line: html_attr.name.line,
                         col: html_attr.name.col,
                         raw: html_attr.name.raw.clone(),
-                        reason: None,
+                        reason: rule_config.reason.clone(),
                         fix: Some(Fix::replace_range(
                             name_start,
                             name_start + html_attr.name.raw.len(),

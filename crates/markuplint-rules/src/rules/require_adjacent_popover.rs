@@ -77,7 +77,7 @@ impl Rule for RequireAdjacentPopover {
                         line: el.base.line,
                         col: el.base.col,
                         raw: el.base.raw.clone(),
-                        reason: None,
+                        reason: rule_config.reason.clone(),
                         fix: None,
                     });
                     break; // One violation per trigger
