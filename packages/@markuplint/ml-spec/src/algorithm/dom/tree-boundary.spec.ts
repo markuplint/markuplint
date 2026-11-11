@@ -1,7 +1,13 @@
 import { createJSDOMElement } from '@markuplint/test-tools';
 import { describe, test, expect } from 'vitest';
 
-import { getComposedParentElement, getTreeParentElement, isShadowRoot } from './tree-boundary.js';
+import {
+	getComposedParentElement,
+	getTreeParentElement,
+	isNotRendered,
+	isShadowRoot,
+	isSlotElement,
+} from './tree-boundary.js';
 
 function must<T>(value: T | null | undefined): T {
 	if (value == null) {
@@ -109,6 +115,34 @@ describe('an element whose parent element is only the syntactical parent', () =>
 	});
 });
 
+describe('an element of the light DOM of a shadow host', () => {
+	const documentRoot = { nodeType: 9 };
+	const shadowRoot = { nodeType: 11, host: {} };
+	const host = { parentElement: null, getRootNode: () => documentRoot };
+	const slot = { parentElement: null, getRootNode: () => shadowRoot };
+
+	test('has the slot that takes it as the composed parent, and the host as the tree parent', () => {
+		const child = { parentElement: host, getRootNode: () => documentRoot, getFlatTreeSlot: () => slot };
+		expect(getComposedParentElement(child)).toBe(slot);
+		expect(getTreeParentElement(child)).toBe(host);
+	});
+
+	test('has no composed parent where no slot takes it: it is not rendered', () => {
+		const child = { parentElement: host, getRootNode: () => documentRoot, getFlatTreeSlot: () => null };
+		expect(getComposedParentElement(child)).toBeNull();
+	});
+
+	test('has the parent element where the assignment is not known', () => {
+		const assignment = new Map<string, typeof slot>();
+		const child = {
+			parentElement: host,
+			getRootNode: () => documentRoot,
+			getFlatTreeSlot: () => assignment.get('the slot of an assignment that is not known'),
+		};
+		expect(getComposedParentElement(child)).toBe(host);
+	});
+});
+
 describe('isShadowRoot', () => {
 	test.each([
 		['a shadow root of a DOM', createJSDOMElement('<div></div>').attachShadow({ mode: 'open' }), true],
@@ -141,5 +175,22 @@ describe('an element without getRootNode', () => {
 		expect(getTreeParentElement(el)).toBe(parent);
 		expect(getComposedParentElement(el)).toBe(parent);
 		expect(getComposedParentElement(parent)).toBeNull();
+	});
+});
+
+describe('isNotRendered', () => {
+	test('is true only for an element that no slot of its shadow host takes', () => {
+		expect(isNotRendered({ getFlatTreeSlot: () => null })).toBe(true);
+		expect(isNotRendered({ getFlatTreeSlot: () => ({}) })).toBe(false);
+		expect(isNotRendered({ getFlatTreeSlot: () => {} })).toBe(false);
+		expect(isNotRendered({})).toBe(false);
+	});
+});
+
+describe('isSlotElement', () => {
+	test('is true for the slot element of the HTML namespace only', () => {
+		expect(isSlotElement({ localName: 'slot', namespaceURI: 'http://www.w3.org/1999/xhtml' })).toBe(true);
+		expect(isSlotElement({ localName: 'slot', namespaceURI: 'http://www.w3.org/2000/svg' })).toBe(false);
+		expect(isSlotElement({ localName: 'div', namespaceURI: 'http://www.w3.org/1999/xhtml' })).toBe(false);
 	});
 });

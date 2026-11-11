@@ -27,7 +27,7 @@ import { decodeEntities } from '@markuplint/shared';
  * @see https://html.spec.whatwg.org/multipage/scripting.html#the-template-element
  */
 
-const HTML_NAMESPACE = 'http://www.w3.org/1999/xhtml';
+export const HTML_NAMESPACE = 'http://www.w3.org/1999/xhtml';
 
 /**
  * Whether a declarative shadow root is attached to the parent element of a `template` element.
@@ -80,7 +80,7 @@ const SHADOW_HOST_NAMES: ReadonlySet<string> = new Set([
  * @param node - A node of the syntax tree
  * @returns `true` if the node is not an element of the output
  */
-function isTransparent<T extends RuleConfigValue, O extends PlainData>(
+export function isTransparent<T extends RuleConfigValue, O extends PlainData>(
 	// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
 	node: MLNode<T, O>,
 ): boolean {
@@ -188,16 +188,17 @@ export function getDeclarativeShadowRootMode<T extends RuleConfigValue, O extend
 
 /**
  * The element that the HTML parser makes the shadow host of a `template` element: its parent in
- * the output, where what the engine renders away (see {@link isTransparent}) is skipped.
+ * the output, where what the engine renders away (see {@link isTransparent}) is skipped. It is the
+ * parent in the output of any node, so it is the host a light child is a child of.
  *
  * @template T - The rule configuration value type
  * @template O - The rule options type
- * @param template - A `template` element
- * @returns The element, or `null` when the file has none above the template
+ * @param template - A `template` element, or any node whose parent in the output is wanted
+ * @returns The element, or `null` when the file has none above the node
  */
 export function getShadowHost<T extends RuleConfigValue, O extends PlainData>(
 	// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
-	template: MLElement<T, O>,
+	template: MLNode<T, O>,
 ): MLElement<T, O> | null {
 	let node = template.syntacticalParentNode;
 	while (node) {

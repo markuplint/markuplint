@@ -1,7 +1,7 @@
 import type { ARIAVersion, MLMLSpec } from '../../types/index.js';
 
 import { ariaSpecs } from './aria-specs.js';
-import { getComposedParentElement } from '../dom/tree-boundary.js';
+import { getComposedParentElement, isNotRendered } from '../dom/tree-boundary.js';
 import { getSpecByTagName } from '../../utils/get-spec-by-tag-name.js';
 import { isPresentational } from './is-presentational.js';
 import { resolveNamespace } from '../../utils/resolve-namespace.js';
@@ -87,11 +87,18 @@ function isExcluding(
 	 *   that have host language semantics specifying
 	 *   that the element is not displayed, such as CSS display:none,
 	 *   visibility:hidden, or the HTML hidden attribute.
+	 *
+	 * An element that is not in the flat tree is not displayed either: a light child of a shadow host
+	 * that no slot takes.
 	 */
 	{
 		let currentEl: Element | null = el;
 		while (currentEl) {
-			if (hasDisplayNodeOrVisibilityHidden(currentEl) || currentEl.hasAttribute('hidden')) {
+			if (
+				isNotRendered(currentEl) ||
+				hasDisplayNodeOrVisibilityHidden(currentEl) ||
+				currentEl.hasAttribute('hidden')
+			) {
 				return true;
 			}
 			currentEl = getComposedParentElement(currentEl);

@@ -112,3 +112,17 @@ describe('MLElement#isUnresolvedComponent', () => {
 		expect(document.querySelector('div')?.firstElementChild?.isUnresolvedComponent()).toBe(true);
 	});
 });
+
+describe('MLElement#hasMutableChildren and a slot', () => {
+	test('counts every slot by default', () => {
+		const doc = createTestDocument('<div><span><slot></slot></span></div>');
+		expect(doc.querySelector('div')?.hasMutableChildren()).toBe(true);
+	});
+
+	test('counts only the slots that the predicate says', () => {
+		const doc = createTestDocument('<div><span><slot></slot></span></div>');
+		const div = doc.querySelector('div');
+		expect(div?.hasMutableChildren(true, () => false)).toBe(false);
+		expect(div?.hasMutableChildren(true, slot => slot.localName === 'slot')).toBe(true);
+	});
+});

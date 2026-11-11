@@ -33,6 +33,10 @@ class AstroParser extends Parser<Node> {
 			// A value in `{…}` is JavaScript
 			attrExpressionLanguage: 'javascript',
 			literalValues: ASTRO_LITERAL_VALUES,
+			// `<slot />` is replaced with the children that the page or the layout passes to the component,
+			// not the HTML `slot` element of a shadow tree
+			// @see https://docs.astro.build/en/basics/astro-components/#slots
+			slotElement: 'framework',
 		});
 	}
 

@@ -735,7 +735,7 @@ describe('the parent elements that @markuplint/ml-spec derives', () => {
 		['shadow-deep', 'shadow-top'],
 		['failed', null],
 		['p', 's'],
-		['s', 'd'],
+		['s', null],
 	])('getComposedParentElement of #%s is #%s', (id, parentId) => {
 		const doc = createTestDocument(code);
 		const el = must(doc.deepQuerySelectorAll(`#${id}`)[0]);

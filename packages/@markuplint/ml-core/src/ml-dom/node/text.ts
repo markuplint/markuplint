@@ -1,6 +1,9 @@
+import type { MLElement } from './element.js';
 import type { TextNodeType } from './types.js';
 import type { MLASTText } from '@markuplint/ml-ast';
 import type { PlainData, RuleConfigValue } from '@markuplint/ml-config';
+
+import { getAssignedSlot, getFlatTreeSlot } from '../helper/slot-assignment.js';
 
 import { MLCharacterData } from './character-data.js';
 import { UnexpectedCallError } from '@markuplint/shared';
@@ -25,13 +28,24 @@ export class MLText<T extends RuleConfigValue, O extends PlainData = undefined>
 	implements Text
 {
 	/**
-	 * **IT THROWS AN ERROR WHEN CALLING THIS.**
+	 * The slot of an open declarative shadow root that this text is assigned to, or `null` when no
+	 * slot takes it, the root is closed (the DOM does not expose it), or the assignment is not known.
 	 *
-	 * @unsupported
 	 * @implements DOM API: `Text`
+	 * @see https://dom.spec.whatwg.org/#dom-slotable-assignedslot
 	 */
-	get assignedSlot(): HTMLSlotElement {
-		throw new UnexpectedCallError('Not supported  "assignedSlot" property');
+	get assignedSlot(): HTMLSlotElement | null {
+		return getAssignedSlot(this) as HTMLSlotElement | null;
+	}
+
+	/**
+	 * The slot that places this text in the flat tree. See {@link MLElement.getFlatTreeSlot}.
+	 *
+	 * @implements `@markuplint/ml-core` API: `MLText`
+	 * @see https://dom.spec.whatwg.org/#find-a-slot
+	 */
+	getFlatTreeSlot(): MLElement<T, O> | null | undefined {
+		return getFlatTreeSlot(this);
 	}
 
 	/**

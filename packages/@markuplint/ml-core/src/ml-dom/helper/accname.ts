@@ -152,8 +152,8 @@ function logFailure(
  * and is not rendered where the element is written. A host renders the child
  * nodes of its declarative shadow root, of either mode. A `template` whose
  * shadow root is only maybe attached contributes none too, because that root
- * is not there to read. Assigned nodes are not computed
- * (`MLElement#assignedNodes` returns none), so a slot contributes its own children.
+ * is not there to read. A slot whose assignment is not known contributes its own children, so a rule that
+ * must not report on what it cannot know asks `MLElement#getAssignedNodes` itself.
  *
  * The shadow root comes first, for a pretended component too: it is attached to a
  * pretended host only when the component renders the children written in it in
@@ -184,6 +184,10 @@ export function getRenderedChildNodes<T extends RuleConfigValue, O extends Plain
 	const shadowRoot = el.declarativeShadowRoot;
 	if (shadowRoot) {
 		return shadowRoot.childNodes;
+	}
+	const assigned = el.getAssignedNodes();
+	if (assigned && assigned.length > 0) {
+		return assigned;
 	}
 	const context = el.pretenderContext;
 	if (context?.type === 'pretender') {
