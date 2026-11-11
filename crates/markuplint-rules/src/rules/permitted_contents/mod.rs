@@ -88,7 +88,7 @@ impl Rule for PermittedContents {
                             line,
                             col,
                             raw,
-                            reason: None,
+                            reason: rule_config.reason.clone(),
                             fix: None,
                         });
                     }
