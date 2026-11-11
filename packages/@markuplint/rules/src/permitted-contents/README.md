@@ -230,6 +230,12 @@ html
 		p lorem...
 ```
 
+A component that no [pretender](/docs/guides/beyond-html#pretenders) resolved, such as `<Meta />` in JSX, renders something that is not known, which may be the required element. A component that a pretender resolved is the element it stands for, so it is checked as that element.
+
+The rule does not skip an element that has an unresolved component as a child. It leaves the component out and evaluates the rest, and does not report what the component may render: a missing child, and the order of the elements. It still reports what no component can put right: an element that no entry of the content model takes (`<div>` in `<ul><Item /><div></div></ul>`) and more elements than the content model takes.
+
+When a tag rule is written for the element, the components are checked by the name they are written with. What a descendant of a child renders is not a child of the element, so it does not make the element mutable.
+
 ### Detection limit for conditional transparent elements
 
 When many transparent elements (e.g. `<a>`, `<ins>`, `<del>`) with conditional branches such as `v-if`/`v-else` or `{#if}` are siblings, the rule evaluates the cross-product of their branches. To keep this from growing exponentially, the cross-product is capped (currently `2^10 = 1024` patterns). Beyond the cap — roughly **11 or more conditional transparent siblings** — the rule falls back to a conservative over-approximation that merges all branches together. This never produces false positives, but it may **under-report** real violations (false negatives) in that one structure.

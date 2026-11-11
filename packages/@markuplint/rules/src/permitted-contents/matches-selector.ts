@@ -269,6 +269,10 @@ export function matchesSelector(
  *
  * The `'pretended'` criterion is the one `MLElement.isCustomElement` gives a
  * `:model()` selector; change them together.
+ *
+ * What a component renders is not known only when no pretender resolved it, and
+ * a web component renders as itself: `MLElement#isUnresolvedComponent` is the narrower
+ * criterion, which `start` uses to leave the components out of the evaluation.
  */
 function isTreatedAsCustom(
 	// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types

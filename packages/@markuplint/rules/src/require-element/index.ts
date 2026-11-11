@@ -1,5 +1,7 @@
 import { createRule } from '@markuplint/ml-core';
 
+import { mayRenderUnknownChildren } from '../helpers.js';
+
 import meta from './meta.js';
 
 /**
@@ -20,7 +22,11 @@ export default createRule<string[], Options>({
 		ignoreOmittedElements: true,
 	},
 	async verify({ document, report, t }) {
-		const hasMutableContent = document.nodeList.some(n => n.is(n.ELEMENT_NODE) && n.hasMutableChildren());
+		// The element that a global rule asks for may be anywhere, so what any component, block or
+		// descendant renders may be it
+		const hasMutableContent =
+			document.rule.options.ignoreHasMutableContents &&
+			document.nodeList.some(n => n.is(n.ELEMENT_NODE) && (n.hasMutableChildren() || n.isUnresolvedComponent()));
 		if (!hasMutableContent) {
 			for (const query of document.rule.value) {
 				const matched = document.querySelectorAll(query);
@@ -43,7 +49,11 @@ export default createRule<string[], Options>({
 			if (el.rule.value === document.rule.value) {
 				return;
 			}
-			if (el.rule.options.ignoreHasMutableContents && el.hasMutableChildren()) {
+			// What a descendant renders is not a child of the element that has to have the required one
+			if (
+				el.rule.options.ignoreHasMutableContents &&
+				[...el.getPureChildNodes()].some(child => mayRenderUnknownChildren(child))
+			) {
 				return;
 			}
 			for (const query of el.rule.value) {

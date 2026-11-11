@@ -33,3 +33,7 @@ Cite: [HTML Living Standard 4.5.14 The time element](https://html.spec.whatwg.or
 ```
 
 <!-- prettier-ignore-end -->
+
+## Details
+
+The rule does not check a `<time>` element when what its text is cannot be known: it contains a block of a preprocessor language such as an expression (`{value}`), or a component that no [pretender](/docs/guides/beyond-html#pretenders) resolved, such as `<FormattedDate />` in JSX. A component that a pretender resolved is the element it stands for, so its content is checked.
