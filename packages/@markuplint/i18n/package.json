@@ -34,9 +34,6 @@
 	"publishConfig": {
 		"access": "public"
 	},
-	"typedoc": {
-		"entryPoint": "./src/index.ts"
-	},
 	"scripts": {
 		"build": "yarn build:esm && yarn build:cjs && node ./esm.mjs",
 		"build:esm": "tsc --project tsconfig.build.json",

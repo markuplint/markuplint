@@ -72,9 +72,6 @@ typings/
 # Secret Test
 test/fixture/.__*
 
-# API Document
-apidoc
-
 # Heapdump test
 *.heapsnapshot
 

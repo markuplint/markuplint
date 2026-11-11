@@ -16,9 +16,6 @@
 	"publishConfig": {
 		"access": "public"
 	},
-	"typedoc": {
-		"entryPoint": "./src/index.ts"
-	},
 	"scripts": {
 		"build": "tsc --project tsconfig.build.json",
 		"dev": "tsc --watch --project tsconfig.build.json",
