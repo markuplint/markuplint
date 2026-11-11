@@ -202,6 +202,9 @@ class VueParser extends Parser<ASTNode, State> {
 					},
 					originNode.children,
 					{
+						// `<slot>` is replaced with what is passed to it: Vue renders no element for it
+						// @see https://vuejs.org/guide/components/slots.html
+						overwriteProps: originNode.name === 'slot' ? { isFragment: true } : undefined,
 						createEndTagToken: () => {
 							if (!originNode.endTag) {
 								return null;
