@@ -1,5 +1,10 @@
+import type { PlainData } from '@markuplint/ml-config';
+import type { Element, RuleConfigValue } from '@markuplint/ml-core';
+
 import { createRule } from '@markuplint/ml-core';
-import { isShadowRoot } from '@markuplint/ml-spec';
+import { getSpecByTagName, isShadowRoot } from '@markuplint/ml-spec';
+
+import { isRenderedAway } from '../helpers.js';
 
 import meta from './meta.js';
 
@@ -20,15 +25,22 @@ import meta from './meta.js';
  * or the `template` of a framework whose spec puts the children in the element itself) is not an HTML
  * `template` element, and the climb goes through it as through any other element.
  *
+ * When the content model says the ancestor is required only of an element with a parent node
+ * (`descendantOfWithParentNode`, as the `area` element's is), an element that has no parent node in
+ * the file ({@link hasParentNode}) is not reported:
+ *
+ * > An area element with a parent node must have a map element ancestor.
+ *
  * @see https://dom.spec.whatwg.org/#parent-element
  * @see https://html.spec.whatwg.org/multipage/scripting.html#the-template-element
+ * @see https://html.spec.whatwg.org/multipage/image-maps.html#the-area-element
  */
 export default createRule({
 	meta: meta,
 	async verify({ document, report, t }) {
 		await document.walkOn('Element', el => {
-			const elSpec = document.specs.specs.find(s => s.name === el.localName);
-			const descendantOf = elSpec?.contentModel?.descendantOf;
+			const contentModel = getSpecByTagName(document.specs.specs, el.localName, el.namespaceURI)?.contentModel;
+			const descendantOf = contentModel?.descendantOf;
 			if (!descendantOf) {
 				return;
 			}
@@ -41,7 +53,7 @@ export default createRule({
 				}
 				ancestor = ancestor.treeParentElement;
 			}
-			if (found) {
+			if (found || (contentModel.descendantOfWithParentNode && !hasParentNode(el))) {
 				return;
 			}
 			const root = el.getRootNode();
@@ -59,3 +71,30 @@ export default createRule({
 		});
 	},
 });
+
+/**
+ * Whether the element has a parent node, as far as the file tells. In a whole document every element
+ * has one. An element at the top of a file that is a fragment of a document (a partial, a component)
+ * has none: where it is inserted is not known from the markup. What is rendered away between the
+ * element and the top of the file is not a parent node: a block of a template language, which
+ * `parentNode` (and so `parentElement`) walks through, and a fragment of JSX or a `template` with
+ * a directive ({@link isRenderedAway}).
+ *
+ * @template T - The rule configuration value type
+ * @template O - The rule options type
+ * @param el - An element
+ * @returns `false` if the element is at the top of a fragment document
+ */
+function hasParentNode<T extends RuleConfigValue, O extends PlainData>(
+	// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
+	el: Element<T, O>,
+): boolean {
+	if (!el.isInFragmentDocument()) {
+		return true;
+	}
+	let parent = el.parentElement;
+	while (parent && isRenderedAway(parent)) {
+		parent = parent.parentElement;
+	}
+	return parent !== null;
+}

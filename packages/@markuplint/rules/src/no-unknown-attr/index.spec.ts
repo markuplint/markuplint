@@ -1023,3 +1023,70 @@ test('[no-unknown-attr-issue-4484-002] the spec for a React that does not move e
 		},
 	]);
 });
+
+// The IDL attribute `acceptCharset` reflects the `accept-charset` content attribute
+// (https://html.spec.whatwg.org/multipage/forms.html#htmlformelement), as `httpEquiv` reflects `http-equiv`.
+test('[no-unknown-attr-issue-4571-001] React: acceptCharset is the accept-charset attribute of a form element', async () => {
+	const react = { parser: { '.*': '@markuplint/jsx-parser' }, specs: { '.*': '@markuplint/react-spec' } };
+	expect(
+		(await mlRuleTest(rule, '<form action="/submit" acceptCharset="utf-8"></form>', react)).violations,
+	).toStrictEqual([]);
+});
+
+test('[no-unknown-attr-issue-4571-002] React: accept-charset suggests the property', async () => {
+	const react = { parser: { '.*': '@markuplint/jsx-parser' }, specs: { '.*': '@markuplint/react-spec' } };
+	expect(
+		(await mlRuleTest(rule, '<form action="/submit" accept-charset="utf-8"></form>', react)).violations,
+	).toStrictEqual([
+		{
+			severity: 'error',
+			line: 1,
+			col: 24,
+			message: 'The "accept-charset" attribute is disallowed. Did you mean "acceptCharset"?',
+			raw: 'accept-charset',
+		},
+	]);
+});
+
+test('[no-unknown-attr-issue-4571-003] React: httpEquiv is the http-equiv attribute of a meta element, and the content spelling suggests it', async () => {
+	const react = { parser: { '.*': '@markuplint/jsx-parser' }, specs: { '.*': '@markuplint/react-spec' } };
+	expect(
+		(await mlRuleTest(rule, '<meta httpEquiv="X-UA-Compatible" content="ie=edge" />', react)).violations,
+	).toStrictEqual([]);
+	expect(
+		(await mlRuleTest(rule, '<meta http-equiv="X-UA-Compatible" content="ie=edge" />', react)).violations,
+	).toStrictEqual([
+		{
+			severity: 'error',
+			line: 1,
+			col: 7,
+			message: 'The "http-equiv" attribute is disallowed. Did you mean "httpEquiv"?',
+			raw: 'http-equiv',
+		},
+	]);
+});
+
+test('[no-unknown-attr-issue-4571-004] HTML: accept-charset of a form element is allowed, and acceptcharset is not', async () => {
+	expect((await mlRuleTest(rule, '<form action="/submit" accept-charset="utf-8"></form>')).violations).toStrictEqual(
+		[],
+	);
+	expect((await mlRuleTest(rule, '<form action="/submit" acceptcharset="utf-8"></form>')).violations).toStrictEqual([
+		{
+			severity: 'error',
+			line: 1,
+			col: 24,
+			message: 'The "acceptcharset" attribute is disallowed. Did you mean "accept-charset"?',
+			raw: 'acceptcharset',
+		},
+	]);
+});
+
+test('[no-unknown-attr-issue-4571-005] Svelte: acceptCharset and accept-charset are both the attribute of a form element', async () => {
+	const svelte = { parser: { '.*': '@markuplint/svelte-parser' }, specs: { '.*': '@markuplint/svelte-spec' } };
+	expect(
+		(await mlRuleTest(rule, '<form action="/submit" acceptCharset="utf-8"></form>', svelte)).violations,
+	).toStrictEqual([]);
+	expect(
+		(await mlRuleTest(rule, '<form action="/submit" accept-charset="utf-8"></form>', svelte)).violations,
+	).toStrictEqual([]);
+});

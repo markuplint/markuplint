@@ -2580,3 +2580,32 @@ test('[no-invalid-attr-value-issue-4490-023] input[type=email][multiple] reports
 		},
 	]);
 });
+
+test('[no-invalid-attr-value-issue-4571-001] React: the value of acceptCharset is checked as that of the accept-charset attribute', async () => {
+	const react = { parser: { '.*': '@markuplint/jsx-parser' }, specs: { '.*': '@markuplint/react-spec' } };
+	expect(
+		(await mlRuleTest(rule, '<form action="/submit" acceptCharset="UTF-8"></form>', react)).violations,
+	).toStrictEqual([]);
+	expect(
+		(await mlRuleTest(rule, '<form action="/submit" acceptCharset="shift_jis"></form>', react)).violations,
+	).toStrictEqual([
+		{
+			severity: 'error',
+			line: 1,
+			col: 39,
+			message: 'The "accept-charset" attribute expects utf-8',
+			raw: 'shift_jis',
+		},
+	]);
+	expect(
+		(await mlRuleTest(rule, '<form action="/submit" accept-charset="shift_jis"></form>')).violations,
+	).toStrictEqual([
+		{
+			severity: 'error',
+			line: 1,
+			col: 40,
+			message: 'The "accept-charset" attribute expects utf-8',
+			raw: 'shift_jis',
+		},
+	]);
+});

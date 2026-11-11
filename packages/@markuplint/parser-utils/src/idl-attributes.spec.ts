@@ -87,3 +87,21 @@ test('a name is mapped by its exact spelling, in the case it is written', () => 
 	expect(searchIDLAttribute('onclick')).toStrictEqual({ idlPropName: 'onclick', contentAttrName: 'onclick' });
 	expect(searchIDLAttribute('onClick')).toStrictEqual(none);
 });
+
+test('a content attribute of HTML that has a hyphen is mapped with its hyphen', () => {
+	const acceptCharset = { idlPropName: 'acceptCharset', contentAttrName: 'accept-charset' };
+	expect(searchIDLAttribute('acceptCharset')).toStrictEqual(acceptCharset);
+	expect(searchIDLAttribute('accept-charset')).toStrictEqual(acceptCharset);
+	const httpEquiv = { idlPropName: 'httpEquiv', contentAttrName: 'http-equiv' };
+	expect(searchIDLAttribute('httpEquiv')).toStrictEqual(httpEquiv);
+	expect(searchIDLAttribute('http-equiv')).toStrictEqual(httpEquiv);
+	// The spelling without the hyphen is neither name
+	const none = { idlPropName: undefined, contentAttrName: undefined };
+	expect(searchIDLAttribute('acceptcharset')).toStrictEqual(none);
+	expect(searchIDLAttribute('httpequiv')).toStrictEqual(none);
+	// Either spelling of the content name suggests the property
+	expect(suggestIDLAttribute('acceptcharset')).toBe('acceptCharset');
+	expect(suggestIDLAttribute('accept-charset')).toBe('acceptCharset');
+	expect(suggestIDLAttribute('httpequiv')).toBe('httpEquiv');
+	expect(suggestIDLAttribute('http-equiv')).toBe('httpEquiv');
+});

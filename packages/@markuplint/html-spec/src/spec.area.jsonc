@@ -4,7 +4,8 @@
 {
 	"contentModel": {
 		"contents": false,
-		"descendantOf": "map"
+		"descendantOf": "map",
+		"descendantOfWithParentNode": true
 	},
 	"globalAttrs": {
 		"#HTMLGlobalAttrs": true,

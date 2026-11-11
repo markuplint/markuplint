@@ -223,6 +223,10 @@ class AstroParser extends Parser<Node> {
 		return super.visitElement({ ...startTagNode, parentNode: startTagNode.parentNode ?? null }, childNodes, {
 			// https://docs.astro.build/en/basics/astro-syntax/#fragments
 			namelessFragment: true,
+			// Astro renders no element for `<Fragment>`, and `<slot>` is replaced with what is passed to it
+			// @see https://docs.astro.build/en/basics/astro-syntax/#fragments
+			// @see https://docs.astro.build/en/basics/astro-components/#slots
+			overwriteProps: /^(?:Fragment|slot)$/.test(startTagNode.nodeName) ? { isFragment: true } : undefined,
 			createEndTagToken: () => {
 				if (startTagNode.tagCloseChar.startsWith('/')) {
 					return null;

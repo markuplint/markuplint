@@ -38,6 +38,43 @@ export function getElementByIdInTree<T extends RuleConfigValue, O extends PlainD
 }
 
 /**
+ * Whether the element is not an element of the output, so that what is written in it is rendered in
+ * place of it:
+ *
+ * - a fragment (`<>` of JSX), which `childNodes` already flattens;
+ * - a `template` element with a directive attribute (Vue's `<template v-if>`, `v-for`, `v-slot`).
+ *   It is not an HTML `template` element: the template engine renders its children in place of it
+ *   and drops it. A spread attribute (`{...props}`) is not such a directive: it sets attributes of
+ *   the element, which stays.
+ *
+ * `isTransparent` of `@markuplint/ml-core` (`src/ml-dom/helper/tree-scope.ts`), which is not exported,
+ * decides the same of an element for the tree boundaries (`getRootNode()`, the shadow host): a kind
+ * added here belongs to it too.
+ *
+ * @template T - The rule configuration value type
+ * @template O - The rule options type
+ * @param el - An element
+ * @returns `true` if the output has no element for it
+ */
+export function isRenderedAway<T extends RuleConfigValue, O extends PlainData>(
+	// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
+	el: Element<T, O>,
+): boolean {
+	if (el.isFragment) {
+		return true;
+	}
+	if (el.localName !== 'template') {
+		return false;
+	}
+	for (const attr of el.attributes) {
+		if (attr.isDirective && attr.localName !== '#spread') {
+			return true;
+		}
+	}
+	return false;
+}
+
+/**
  * The elements that match the selector in the tree `el` is in (see {@link getElementByIdInTree}).
  *
  * @template T - The rule configuration value type
