@@ -3,12 +3,44 @@ import type { Config, RuleConfigValue, Rule, RegexSelector, PlainData } from '@m
 import type { AnyMLRule, RuleSeed } from '@markuplint/ml-core';
 
 import { MLRule } from '@markuplint/ml-core';
+import presetRules from '@markuplint/rules';
 
 import { lint } from '../api/index.js';
 import { getGlobal } from '../global-settings.js';
 
 /**
+ * The environment variable that makes the testing API lint with the Rust engine
+ * (`experimentalRustCore`) when it is exactly `1` or `true`. It is read at every call, so that a
+ * spec can switch it, and not once when the module is loaded.
+ */
+const RUST_CORE_ENV = 'MARKUPLINT_EXPERIMENTAL_RUST_CORE';
+
+function isRustCoreEnabled() {
+	const value = process.env[RUST_CORE_ENV];
+	return value === '1' || value === 'true';
+}
+
+/**
+ * The registered name of a rule, when it is one of the built-in rules: the object of the registry of
+ * `@markuplint/rules` itself. The name or the shape of a rule says nothing, as a custom rule may have
+ * either; the Rust engine runs the built-in rules only, and by their registered names. The registry
+ * of another module instance of `@markuplint/rules` (another installed copy, or the built and the
+ * source files of the same package) holds other objects: a rule of it is a custom rule here, and the
+ * warning of the fallback says so.
+ *
+ * @param rule - The rule seed given to the testing API
+ * @returns The registered name, or `undefined` for any other rule
+ */
+function builtinRuleName(rule: Readonly<object>) {
+	return Object.entries(presetRules).find(([, seed]) => Object.is(seed, rule))?.[0];
+}
+
+/**
  * Lints inline source code with a given configuration. Convenience function for testing.
+ *
+ * While the environment variable `MARKUPLINT_EXPERIMENTAL_RUST_CORE` is exactly `1` or `true`, it
+ * lints with the Rust engine (`experimentalRustCore`). The rules given in `rules` are run by the
+ * TypeScript engine only, so the lint falls back to it, with a warning on stderr.
  *
  * @param sourceCode - The markup source code to lint
  * @param config - The markuplint configuration to apply
@@ -32,6 +64,7 @@ export async function mlTest(
 		fix,
 		ignoreExt: true,
 		importPresetRules: !rules,
+		experimentalRustCore: isRustCoreEnabled(),
 	});
 	const result = results[0];
 
@@ -44,6 +77,10 @@ export async function mlTest(
 
 /**
  * Tests a single rule against inline source code. Designed for rule unit testing.
+ *
+ * While the environment variable `MARKUPLINT_EXPERIMENTAL_RUST_CORE` is exactly `1` or `true`, a built-in
+ * rule (the seed the registry of `@markuplint/rules` has) runs on the Rust engine by its registered
+ * name; any other rule is a custom rule, which runs on the TypeScript engine.
  *
  * @template T - The rule's configuration value type
  * @template O - The rule's options type
@@ -70,17 +107,19 @@ export async function mlRuleTest<T extends RuleConfigValue, O extends PlainData>
 	if (config.rule === undefined && (config.nodeRule || config.childNodeRule)) {
 		config.rule = true;
 	}
+	const registeredName = isRustCoreEnabled() ? builtinRuleName(rule) : undefined;
+	const ruleName = registeredName ?? '<current-rule>';
 	const _config: Config = {
 		...config,
 		rules:
 			config.rule === undefined
 				? config.rule === undefined && config.nodeRule === undefined && config.childNodeRule === undefined
 					? {
-							'<current-rule>': true,
+							[ruleName]: true,
 						}
 					: undefined
 				: {
-						'<current-rule>': config.rule,
+						[ruleName]: config.rule,
 					},
 		nodeRules:
 			config.nodeRule === undefined
@@ -91,7 +130,7 @@ export async function mlRuleTest<T extends RuleConfigValue, O extends PlainData>
 							nodeConfig.rule === undefined
 								? undefined
 								: {
-										'<current-rule>': nodeConfig.rule,
+										[ruleName]: nodeConfig.rule,
 									},
 					})),
 		childNodeRules:
@@ -103,26 +142,30 @@ export async function mlRuleTest<T extends RuleConfigValue, O extends PlainData>
 							childNodeConfig.rule === undefined
 								? undefined
 								: {
-										'<current-rule>': childNodeConfig.rule,
+										[ruleName]: childNodeConfig.rule,
 									},
 					})),
 	};
 
+	// A built-in rule is enabled by its registered name and is not given to the API: it is the engine's
+	// own rule, and a rule given to the API is a custom rule.
 	const res = await mlTest(
 		sourceCode,
 		_config,
-		[
-			new MLRule<any, any>({
-				name: '<current-rule>',
-				...rule,
-			}),
-		],
+		registeredName
+			? undefined
+			: [
+					new MLRule<any, any>({
+						name: ruleName,
+						...rule,
+					}),
+				],
 		locale,
 		fix,
 	);
 
-	// The rule under test runs under the temporary name `<current-rule>`,
-	// so `ruleId` is removed to keep test assertions independent of the
+	// The rule under test runs under the temporary name `<current-rule>` (or its registered name on
+	// the Rust engine), so `ruleId` is removed to keep test assertions independent of the
 	// rule's actual registered name.
 	res.violations.map(v => {
 		// @ts-ignore
@@ -134,6 +177,8 @@ export async function mlRuleTest<T extends RuleConfigValue, O extends PlainData>
 
 /**
  * Lints a file target with a given configuration. Convenience function for integration testing.
+ * It lints with the Rust engine while `MARKUPLINT_EXPERIMENTAL_RUST_CORE` is exactly `1` or `true`, as
+ * {@link mlTest} does.
  *
  * @param target - A file path or inline source code target
  * @param config - The markuplint configuration to apply
@@ -158,6 +203,7 @@ export async function mlTestFile(
 		ignoreExt: true,
 		noSearchConfig: !!config,
 		importPresetRules: !rules,
+		experimentalRustCore: isRustCoreEnabled(),
 	});
 	const result = results[0];
 

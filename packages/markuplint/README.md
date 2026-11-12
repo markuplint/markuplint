@@ -167,10 +167,11 @@ $ markuplint "src/**/*.html" --experimental-rust-core
 **Known limitations:**
 
 - **Framework parsers still run in TypeScript** — a file of a framework parser (Vue, JSX, Svelte, etc.) is parsed by that parser as before, and the Rust engine evaluates the result, so only the rules get faster for it.
-- **No custom rules** — projects with plugin rules fall back to the TypeScript engine. The Rust engine runs the built-in rules only, so a rule given through the `rules` option of the API is ignored by it.
-- **The testing API** (`mlTest`, `mlRuleTest`) lints with the TypeScript engine.
+- **No custom rules** — projects with plugin rules, and a lint that is given rules through the `rules` option of the API, fall back to the TypeScript engine. The Rust engine runs the built-in rules only.
 
-Fallback is automatic and per-file: eligible files use Rust, ineligible files use TypeScript, and a warning is printed for a fallback (a missing native addon, or plugin rules). An engine that lints the same file again (`--watch`, the language server) prints it once, and emits it every time as a `log` event of the phase `experimental-rust-core:fallback` for a caller that does not read stderr. Tracking issue: [#3566](https://github.com/markuplint/markuplint/issues/3566).
+Fallback is automatic and per-file: eligible files use Rust, ineligible files use TypeScript, and a warning is printed for a fallback (a missing native addon, plugin rules, or rules given through the `rules` option of the API). An engine that lints the same file again (`--watch`, the language server) prints it once, and emits it every time as a `log` event of the phase `experimental-rust-core:fallback` for a caller that does not read stderr. Tracking issue: [#3566](https://github.com/markuplint/markuplint/issues/3566).
+
+**The testing API:** `mlTest`, `mlRuleTest` and `mlTestFile` lint with the Rust engine while the environment variable `MARKUPLINT_EXPERIMENTAL_RUST_CORE` is exactly `1` or `true` (set it in the shell or in the configuration of the test runner; any other value is off). `mlRuleTest` runs a rule that is one of the built-in ones on the Rust engine by its registered name. A rule is a built-in one when it is the same object as the one in the registry of `@markuplint/rules` that `markuplint` loads: a copy from another module instance (another installed copy of the package, or its built and source files side by side), a spread copy, or a rule that only has the same name is a custom rule. A custom rule runs on the TypeScript engine, and each call prints the warning of a fallback to stderr.
 
 **Language server:** it lints with the Rust engine when the client sets the `experimentalRustCore` option (the VS Code extension's `markuplint.experimentalRustCore` setting), and answers the hover from the Rust engine too. It logs a fallback once while the document is open.
 
