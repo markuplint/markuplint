@@ -2,7 +2,15 @@ import type { APIOptions, MLEngineEventMap } from './types.js';
 import type { MLResultInfo } from '../types.js';
 import type { WatchSubscription } from './shared-watcher.js';
 import type { ConfigSet, MLFile, PretenderResolver, Target } from '@markuplint/file-resolver';
-import type { PlainData, Pretender, RuleAliasWarning, RuleCommonSettings, Violation } from '@markuplint/ml-config';
+import type {
+	OriginalNode,
+	PlainData,
+	Pretender,
+	PretenderContent,
+	RuleAliasWarning,
+	RuleCommonSettings,
+	Violation,
+} from '@markuplint/ml-config';
 import type { Ruleset, Plugin, Document, RuleConfigValue, MLFabric, FixSummary } from '@markuplint/ml-core';
 
 import {
@@ -24,11 +32,12 @@ import {
 	Document as MLDocument,
 	MLCore,
 	convertRuleset,
+	getBooleanAttrNames,
 	createRuleDeprecationViolations,
 	multiPassFix,
 } from '@markuplint/ml-core';
 import { schemaToSpec } from '@markuplint/ml-spec';
-import { ParserError } from '@markuplint/parser-utils';
+import { ParserError, isComponentName as isComponentNameByDefault } from '@markuplint/parser-utils';
 import { resolveBrowserSupportForRust, ruleAliasTable } from '@markuplint/rules';
 import { ConfigLoadError, isFatalError } from '@markuplint/shared';
 import { Emitter } from 'strict-event-emitter';
@@ -423,6 +432,8 @@ export class MLEngine extends Emitter<MLEngineEventMap> {
 
 		const sourceCode = await this.#file.getCode();
 
+		// The extended specs of a framework are merged here, as the TS document does with them.
+		const spec = schemaToSpec(fabric.schemas);
 		// Build config JSON for Rust
 		const browserSupport = await resolveBrowserSupport(fabric.ruleset, this.#file.path);
 		const configJson = buildRustConfigJson(
@@ -431,9 +442,12 @@ export class MLEngine extends Emitter<MLEngineEventMap> {
 			fabric.pretenders,
 			browserSupport,
 			this.#file.path,
+			{
+				isComponentName: fabric.parser.isComponentName?.bind(fabric.parser) ?? isComponentNameByDefault,
+				spec,
+				literalValues: fabric.parser.literalValues,
+			},
 		);
-		// The extended specs of a framework are merged here, as the TS document does with them.
-		const spec = schemaToSpec(fabric.schemas);
 		const specJson = JSON.stringify(spec);
 
 		// The HTML parser is the Rust one; every other parser runs in TS, and its MLAST goes over.
@@ -1096,7 +1110,11 @@ export class MLEngine extends Emitter<MLEngineEventMap> {
 		const configSet: ResolvedConfigSet =
 			ruleAliasWarnings.length === 0
 				? { ...resolvedConfigSet, ruleDeprecations: [] }
-				: { ...resolvedConfigSet, config: aliasedConfig, ruleDeprecations: ruleAliasWarnings };
+				: {
+						...resolvedConfigSet,
+						config: aliasedConfig,
+						ruleDeprecations: ruleAliasWarnings,
+					};
 
 		this.emit('config', this.#file.path, configSet);
 
@@ -1490,7 +1508,10 @@ function enablesRule(ruleset: Partial<Readonly<Ruleset>>, ruleId: string): boole
 			return false;
 		}
 		if (typeof config === 'object' && config !== null) {
-			const { value, disabled } = config as { value?: unknown; disabled?: unknown };
+			const { value, disabled } = config as {
+				value?: unknown;
+				disabled?: unknown;
+			};
 			return value !== false && disabled !== true;
 		}
 		return true;
@@ -1528,6 +1549,18 @@ function buildRustConfigJson(
 	pretenders: readonly Pretender[],
 	browserSupport: Awaited<ReturnType<typeof resolveBrowserSupport>> | undefined,
 	filename: string,
+	{
+		isComponentName,
+		spec,
+		literalValues,
+	}: {
+		/** The rule of the parser of the document (`MLParser#isComponentName`). */
+		readonly isComponentName: (name: string) => boolean;
+		/** The merged spec of the document. */
+		readonly spec: Parameters<typeof getBooleanAttrNames>[0];
+		/** `MLParser#literalValues`. */
+		readonly literalValues: MLFabric['parser']['literalValues'];
+	},
 ): string {
 	return JSON.stringify({
 		rules: ruleset.rules ?? {},
@@ -1538,6 +1571,47 @@ function buildRustConfigJson(
 		// `filename` is the document's path, which `no-mismatched-aspect-ratio` resolves a relative
 		// `src` against; it is not a setting the user can give.
 		rule_common_settings: { ...ruleCommonSettings, ...(browserSupport ? { browserSupport } : {}), filename },
-		pretenders,
+		pretenders: pretenders.map(pretender => withComponentFlags(pretender, isComponentName)),
+		// What renders a literal that a pretender writes as code (`{ expression }`), as `MLAttr` does
+		...(pretenders.length > 0 && {
+			literalRendering: {
+				specLiteralValues: spec.literalValues,
+				parserLiteralValues: literalValues,
+				booleanAttrNames: [...getBooleanAttrNames(spec)],
+			},
+		}),
 	});
+}
+
+/**
+ * Tells the Rust engine which name that a pretender gives is a component's. The rule is the parser's
+ * (`MLParser#isComponentName`: a function, so it cannot go over JSON), and decides the type of the
+ * element that the pretender makes (`authored` or `html`) and the namespace it is in. The answer goes
+ * next to each name: `asIsComponent` for a string `as`, and `isComponent` on an `OriginalNode`, a slot
+ * and an element of `contents`.
+ */
+function withComponentFlags(pretender: Pretender, isComponentName: (name: string) => boolean) {
+	const { as } = pretender;
+	if (typeof as === 'string') {
+		return { ...pretender, asIsComponent: isComponentName(as) };
+	}
+	const flagContents = (contents: readonly PretenderContent[] | undefined) =>
+		contents?.map(entry =>
+			'element' in entry ? { ...entry, isComponent: isComponentName(entry.element) } : entry,
+		);
+	const flagNode = (node: Omit<OriginalNode, 'slots'>) => ({
+		...node,
+		isComponent: isComponentName(node.element),
+		...(node.contents && { contents: flagContents(node.contents) }),
+	});
+	const { slots } = as;
+	return {
+		...pretender,
+		as: {
+			...flagNode(as),
+			...(Array.isArray(slots) && {
+				slots: slots.map(slot => flagNode(slot)),
+			}),
+		},
+	};
 }
