@@ -628,3 +628,26 @@ fn document_settings_read_the_attr_name_route_and_the_component_name_variants_fr
     );
     assert!(read(None, Some(true)).component_name_variants);
 }
+
+#[test]
+fn document_settings_read_the_slot_element_from_the_json() {
+    use markuplint_core::mlast::SlotElement;
+
+    let read = |slot_element: Option<&str>| {
+        let mut value: serde_json::Value = serde_json::from_str(&load_fixture("simple")).unwrap();
+        if let Some(slot_element) = slot_element {
+            value
+                .as_object_mut()
+                .unwrap()
+                .insert("slotElement".into(), slot_element.into());
+        }
+        builder::build_from_json(&value.to_string())
+            .unwrap()
+            .settings()
+            .slot_element
+    };
+
+    assert_eq!(read(None), SlotElement::Html);
+    assert_eq!(read(Some("html")), SlotElement::Html);
+    assert_eq!(read(Some("framework")), SlotElement::Framework);
+}

@@ -6,9 +6,14 @@ use markuplint_dom::helpers::{get_attr_node_from_el, get_attr_value, get_attr_va
 use markuplint_dom::node::{DomNode, ElementData};
 use markuplint_types::spec::types::MLMLSpec;
 
+use crate::aria::accname::resolver::rendered_child_nodes;
 use crate::aria_check::element_local_name;
+use crate::slot_assignment::{get_assigned_nodes, shadow_root_template};
 use crate::slot_content::slot_content;
-use crate::tree_scope::{TreeRoot, decode_or_keep, dom_value, element_by_id_of, is_expression, root_of};
+use crate::tree_scope::{
+    ShadowRootAttachment, TreeRoot, declarative_shadow_root_attachment, decode_or_keep, dom_value, element_by_id_of,
+    is_expression, root_of,
+};
 
 static REGEX_LITERAL_RE: LazyLock<regex::Regex> = LazyLock::new(|| regex::Regex::new(r"^/(.*)/([gim]*)$").unwrap());
 
@@ -60,6 +65,19 @@ pub fn has_mutable_attributes(el: &ElementData) -> bool {
 /// behavior (its branches cannot be enumerated), a `<slot>`, or — with `attr` — an element with a
 /// mutable attribute or a component whose output is not known.
 pub fn has_mutable_children(arena: &DomArena, node_id: NodeId, attr: bool) -> bool {
+    has_mutable_children_with(arena, node_id, attr, &|_| true)
+}
+
+/// [`has_mutable_children`] that asks `is_mutable_slot` which `slot` among the descendants may render
+/// what is not known (TS `hasMutableChildren(attr, isMutableSlot)`). Every `slot` is mutable by default,
+/// as a `slot` that is not in a declarative shadow root renders what is given to it; a rule that reads
+/// what a slot of a shadow root renders by [`get_assigned_nodes`] says which slots are.
+pub fn has_mutable_children_with(
+    arena: &DomArena,
+    node_id: NodeId,
+    attr: bool,
+    is_mutable_slot: &dyn Fn(NodeId) -> bool,
+) -> bool {
     arena
         .pure_children_of(node_id)
         .into_iter()
@@ -67,11 +85,18 @@ pub fn has_mutable_children(arena: &DomArena, node_id: NodeId, attr: bool) -> bo
             Some(DomNode::PSBlock(block)) => block.block_behavior.is_none(),
             Some(DomNode::Element(el)) => {
                 (attr && (has_mutable_attributes(el) || is_unresolved_component(el)))
-                    || has_mutable_children(arena, child_id, attr)
-                    || element_local_name(el) == "slot"
+                    || has_mutable_children_with(arena, child_id, attr, is_mutable_slot)
+                    || (element_local_name(el) == "slot" && is_mutable_slot(child_id))
             }
             _ => false,
         })
+}
+
+/// TS `isSlotOfUnknownAssignment`: whether a `slot` renders what the markup does not tell: the nodes
+/// assigned to it, or its children, are not known ([`get_assigned_nodes`] is `None`). A slot whose
+/// assignment is known renders them, which the rule reads itself.
+pub fn is_slot_of_unknown_assignment(arena: &DomArena, spec: &MLMLSpec, slot: NodeId) -> bool {
+    get_assigned_nodes(arena, spec, slot).is_none()
 }
 
 /// TS `MLElement#isUnresolvedComponent()`: a component whose output is not known, one that no
@@ -99,7 +124,9 @@ pub fn accname_may_be_mutable(arena: &DomArena, spec: &MLMLSpec, node_id: NodeId
             .get(id)
             .and_then(DomNode::as_element)
             .is_some_and(has_mutable_attributes)
-            || has_mutable_children(arena, id, true)
+            || has_mutable_children_with(arena, id, true, &|slot| {
+                is_slot_of_unknown_assignment(arena, spec, slot)
+            })
     };
     is_mutable(node_id) || get_owned_label(arena, spec, node_id).is_some_and(is_mutable)
 }
@@ -112,7 +139,7 @@ pub fn accname_may_be_mutable(arena: &DomArena, spec: &MLMLSpec, node_id: NodeId
 /// A component with an unknown entry and a static name (`aria-label`, static text) is still
 /// decidable, so call this only once the static name has been computed and found empty.
 pub fn accname_may_come_from_unknown_content(arena: &DomArena, spec: &MLMLSpec, node_id: NodeId) -> bool {
-    if has_unknown_content(arena, node_id) {
+    if has_unknown_content(arena, spec, node_id) {
         return true;
     }
 
@@ -133,31 +160,49 @@ pub fn accname_may_come_from_unknown_content(arena: &DomArena, spec: &MLMLSpec, 
                 };
                 element_by_id_of(arena, spec, root, &id)
             })
-            .any(|target| has_unknown_content(arena, target));
+            .any(|target| has_unknown_content(arena, spec, target));
         if found {
             return true;
         }
     }
 
-    get_owned_label(arena, spec, node_id).is_some_and(|label| has_unknown_content(arena, label))
+    get_owned_label(arena, spec, node_id).is_some_and(|label| has_unknown_content(arena, spec, label))
 }
 
-/// TS `hasUnknownContent()`: walks the same children the accname resolver does — for a
-/// pretended element, the children the component renders, so that a nested component
-/// contributes its own `contents`; otherwise the children as written. A hidden child is skipped
-/// because the name computation never reads it.
-fn has_unknown_content(arena: &DomArena, node_id: NodeId) -> bool {
-    if slot_content(arena, node_id).is_some_and(|content| content.mutable) {
+/// TS `hasUnknownContent()`: walks the same children the accname resolver does
+/// ([`rendered_child_nodes`]) — for a pretended element, the children the component renders, so
+/// that a nested component contributes its own `contents`; the child nodes of a declarative shadow
+/// root; otherwise the children as written. A hidden child is skipped because the name computation
+/// never reads it.
+///
+/// A `template` whose shadow root is only maybe attached returns `true` before that walk. Its
+/// content is omitted from the computed name, so an ancestor whose computed name is empty is not
+/// reported: the rule calls this only after the computed name is empty.
+///
+/// Unknown `contents` of a pretended component count only when no declarative shadow root is
+/// attached to it: the shadow root is rendered in their place.
+fn has_unknown_content(arena: &DomArena, spec: &MLMLSpec, node_id: NodeId) -> bool {
+    let el = arena.get(node_id).and_then(DomNode::as_element);
+    let pretended = el.is_some_and(|el| el.pretended().is_some());
+    if pretended
+        && slot_content(arena, node_id).is_some_and(|content| content.mutable)
+        && shadow_root_template(arena, spec, node_id).is_none()
+    {
         return true;
     }
-    let children = arena
-        .pretender_rendered_children(node_id)
+    if !pretended
+        && el.is_some_and(|el| is_html_template_element(el, spec))
+        && declarative_shadow_root_attachment(arena, spec, node_id) == ShadowRootAttachment::Unknown
+    {
+        return true;
+    }
+    let children = rendered_child_nodes(spec, arena, node_id)
         .unwrap_or_else(|| arena.children_of(node_id).map(<[NodeId]>::to_vec).unwrap_or_default());
     children.into_iter().any(|child| {
         arena.get(child).and_then(DomNode::as_element).is_some()
             && get_attr_value(arena, child, "aria-hidden") != Some("true")
             && !has_attr(arena, child, "hidden")
-            && has_unknown_content(arena, child)
+            && has_unknown_content(arena, spec, child)
     })
 }
 

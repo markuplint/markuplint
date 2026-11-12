@@ -7,6 +7,8 @@ use markuplint_types::spec::aria::{self, ARIAVersion};
 use markuplint_types::spec::lookup;
 use markuplint_types::spec::types::MLMLSpec;
 
+use crate::slot_assignment::{composed_ancestors_inclusive, composed_parent_element, is_not_rendered};
+
 pub fn is_exposed(spec: &MLMLSpec, arena: &DomArena, node_id: NodeId, version: ARIAVersion) -> bool {
     if is_excluding(spec, arena, node_id, version) {
         return false;
@@ -42,16 +44,18 @@ pub fn is_exposed(spec: &MLMLSpec, arena: &DomArena, node_id: NodeId, version: A
 
 /// WAI-ARIA exclusion rules (§6.4.1).
 fn is_excluding(spec: &MLMLSpec, arena: &DomArena, node_id: NodeId, version: ARIAVersion) -> bool {
-    // 1. Elements with display:none, visibility:hidden, or hidden attribute
-    //    (including ancestors)
-    {
-        let mut current = Some(node_id);
-        while let Some(cid) = current {
-            if has_display_none_or_visibility_hidden(arena, cid) || helpers::has_attr(arena, cid, "hidden") {
-                return true;
-            }
-            current = arena.get(cid).and_then(markuplint_dom::node::DomNode::parent_id);
-        }
+    // The ancestors are those of the accessibility tree (`getComposedParentElement`): the flat
+    // tree, where the content of a shadow root is in its host and the content of an ordinary
+    // `template` is in no place.
+    //
+    // 1. Elements with display:none, visibility:hidden, or hidden attribute (including ancestors),
+    //    and an element that no slot of the shadow root of its host takes (not rendered)
+    if composed_ancestors_inclusive(arena, spec, node_id).any(|cid| {
+        is_not_rendered(arena, spec, cid)
+            || has_display_none_or_visibility_hidden(arena, cid)
+            || helpers::has_attr(arena, cid, "hidden")
+    }) {
+        return true;
     }
 
     // 2. Elements with presentation/none as first role
@@ -63,14 +67,10 @@ fn is_excluding(spec: &MLMLSpec, arena: &DomArena, node_id: NodeId, version: ARI
     }
 
     // 3. Elements with aria-hidden="true" (including ancestors)
+    if composed_ancestors_inclusive(arena, spec, node_id)
+        .any(|cid| helpers::get_attr_value(arena, cid, "aria-hidden") == Some("true"))
     {
-        let mut current = Some(node_id);
-        while let Some(cid) = current {
-            if helpers::get_attr_value(arena, cid, "aria-hidden") == Some("true") {
-                return true;
-            }
-            current = arena.get(cid).and_then(markuplint_dom::node::DomNode::parent_id);
-        }
+        return true;
     }
 
     // 4. Descendants of elements with childrenPresentational: true
@@ -80,18 +80,16 @@ fn is_excluding(spec: &MLMLSpec, arena: &DomArena, node_id: NodeId, version: ARI
     //    childrenPresentational implicit role).
     {
         use crate::aria::computed_role::get_computed_role;
-        let mut current = arena.get(node_id).and_then(markuplint_dom::node::DomNode::parent_id);
+        let mut current = composed_parent_element(arena, spec, node_id);
         while let Some(pid) = current {
-            if arena.get(pid).and_then(|n| n.as_element()).is_some() {
-                let parent_computed = get_computed_role(spec, arena, pid, version, false);
-                if let Some(ref role) = parent_computed.role
-                    && let Some(role_spec) = aria::get_role_spec(spec, &role.name, version)
-                    && role_spec.children_presentational == Some(true)
-                {
-                    return true;
-                }
+            let parent_computed = get_computed_role(spec, arena, pid, version, false);
+            if let Some(ref role) = parent_computed.role
+                && let Some(role_spec) = aria::get_role_spec(spec, &role.name, version)
+                && role_spec.children_presentational == Some(true)
+            {
+                return true;
             }
-            current = arena.get(pid).and_then(markuplint_dom::node::DomNode::parent_id);
+            current = composed_parent_element(arena, spec, pid);
         }
     }
 

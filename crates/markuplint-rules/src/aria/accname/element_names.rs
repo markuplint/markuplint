@@ -212,11 +212,11 @@ fn handle_table(
 
 fn handle_img(arena: &DomArena, node_id: NodeId) -> Option<AccnameResult> {
     if dom::has_attr(arena, node_id, "alt") {
+        // A blank `alt` is an empty name that ends the step, with no source
         let alt = dom::get_attr_value(arena, node_id, "alt").unwrap_or("");
-        return Some(AccnameResult {
-            name: super::helpers::flatten_text(alt),
-            source: Some(AccnameSource::Alt),
-        });
+        let name = super::helpers::flatten_text(alt);
+        let source = (!name.is_empty()).then_some(AccnameSource::Alt);
+        return Some(AccnameResult { name, source });
     }
     title_attr(arena, node_id)
 }

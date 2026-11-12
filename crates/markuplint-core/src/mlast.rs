@@ -33,9 +33,23 @@ pub enum AttrNameRoute {
     DomApiWhenDynamic,
 }
 
+/// TS `MLParser#slotElement`: what the `slot` element is in the language of the document.
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Default, Deserialize)]
+pub enum SlotElement {
+    /// The HTML `slot` element, which has a slot assignment when it is in a shadow root. Absent
+    /// means this.
+    #[default]
+    #[serde(rename = "html")]
+    Html,
+    /// The placeholder of a framework's component (Vue, Svelte, Astro): replaced with what it is
+    /// given, so no slot assignment is computed.
+    #[serde(rename = "framework")]
+    Framework,
+}
+
 /// What the TS `Document` takes from the parser besides its nodes (`MLParser.endTag`,
 /// `booleanish`, `tagNameCaseSensitive`, `attrNameCaseSensitive`, `attrNameRoute`,
-/// `componentNameVariants`). The TS engine sends them next to the `MLASTDocument` fields in the
+/// `componentNameVariants`, `slotElement`). The TS engine sends them next to the `MLASTDocument` fields in the
 /// same JSON, and every field may be absent, as it is for the HTML parser.
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Default, Deserialize)]
 #[serde(rename_all = "camelCase")]
@@ -58,6 +72,9 @@ pub struct DocumentSettings {
     /// site is a prop that Vue camelizes (TS `MLParser.componentNameVariants`).
     #[serde(default)]
     pub component_name_variants: bool,
+    /// What the `slot` element is (TS `MLParser.slotElement`).
+    #[serde(default)]
+    pub slot_element: SlotElement,
 }
 
 /// Corresponds to `MLASTDocument` in TS.

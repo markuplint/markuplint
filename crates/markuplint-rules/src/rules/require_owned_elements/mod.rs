@@ -19,6 +19,14 @@
 //!
 //! An element that is empty, or holds nothing but whitespace, comments, `<script>` and
 //! `<template>`, may have its children created later, so the message suggests `aria-busy="true"`.
+//!
+//! The owned nodes are the ones the page renders. A host owns the child nodes of its declarative
+//! shadow root, of either mode, and not its light children, which only a `slot` of the shadow root
+//! places ([`crate::slot_assignment`]): the nodes a `slot` takes are owned as if they were its
+//! children (the fallback children when it takes none), and a `slot` whose assignment is not known,
+//! or one that takes a node that may be something else at runtime, leaves the ownership unknown.
+//! A `template` that may declare a shadow root without the markup telling it, or a block of a
+//! template language that may enclose it, leaves the owned nodes unknown as well.
 
 use markuplint_dom::arena::{DomArena, NodeId};
 use markuplint_dom::helpers::get_attr_value;
@@ -31,8 +39,9 @@ use crate::aria::computed_role::{ResolvedRole, get_computed_role};
 use crate::aria_check::{
     ElementContext, ElementGate, element_local_name, is_js_whitespace, quoted_list, walk_elements,
 };
-use crate::helpers::has_mutable_children;
+use crate::helpers::{has_mutable_attributes, has_mutable_children_with};
 use crate::rule::{Rule, RuleConfigSet};
+use crate::slot_assignment::{composed_parent_element, get_assigned_nodes, is_slot_element, shadow_root_template};
 use crate::slot_content::{content_owner, expand_children, is_content_mutable, slot_content};
 use crate::violation::Violation;
 
@@ -99,7 +108,8 @@ fn check(ctx: &ElementContext<'_>, node_id: NodeId, role: Option<&ResolvedRole>)
         return None;
     }
 
-    let owned = classify_children(ctx.spec, ctx.arena, node_id, role, ctx.version);
+    let owned_children = owned_child_nodes(ctx.spec, ctx.arena, node_id);
+    let owned = classify_children(ctx.spec, ctx.arena, node_id, owned_children.clone(), role, ctx.version);
     if owned
         .iter()
         .any(|o| matches!(o, Owned::Busy | Owned::Unknown | Owned::Required | Owned::Block))
@@ -114,7 +124,7 @@ fn check(ctx: &ElementContext<'_>, node_id: NodeId, role: Option<&ResolvedRole>)
         },
         None => node_id,
     };
-    if has_mutable_children(ctx.arena, component, true) || is_content_mutable(ctx.arena, component) {
+    if is_owned_content_mutable(ctx.spec, ctx.arena, component) {
         return None;
     }
 
@@ -122,7 +132,7 @@ fn check(ctx: &ElementContext<'_>, node_id: NodeId, role: Option<&ResolvedRole>)
         [single] => format!("the \"{single}\" role"),
         several => format!("the roles: {}", quoted_list(several)),
     };
-    let message = if may_be_before_created(ctx.arena, &owned_child_nodes(ctx.arena, node_id).unwrap_or_default()) {
+    let message = if may_be_before_created(ctx.arena, &owned_children.unwrap_or_default()) {
         format!("The child element requires {required}. Or, require aria-busy=\"true\"")
     } else {
         format!("The \"{}\" role expects {required}", role.name)
@@ -135,31 +145,37 @@ fn is_busy(arena: &DomArena, node_id: NodeId) -> bool {
     get_attr_value(arena, node_id, "aria-busy").is_some_and(|value| value.eq_ignore_ascii_case("true"))
 }
 
-/// TS `classifyChildren()`.
+/// TS `classifyChildren()`: how each of `children`, the nodes `node_id` owns (`None` when they are not
+/// known), bears on the requirement.
 fn classify_children(
     spec: &MLMLSpec,
     arena: &DomArena,
     node_id: NodeId,
+    children: Option<Vec<NodeId>>,
     role: &ResolvedRole,
     version: ARIAVersion,
 ) -> Vec<Owned> {
-    let Some(children) = owned_child_nodes(arena, node_id) else {
+    let Some(children) = children else {
         return vec![Owned::Unknown];
     };
     let mut result = Vec::new();
     for child_id in children {
         match arena.get(child_id) {
-            Some(DomNode::Element(child)) => {
+            Some(DomNode::Element(_)) => {
                 if is_busy(arena, child_id) {
                     result.push(Owned::Busy);
                     continue;
                 }
-                // The role of a child is resolved against its DOM parent. A child that a
-                // pretender places somewhere other than under its DOM parent (a node given at
-                // the usage site that the component renders inside its slot wrapper, or an
+                if is_slot_element(arena, child_id) {
+                    result.extend(classify_slot(spec, arena, child_id, role, version));
+                    continue;
+                }
+                // The role of a child is resolved against its parent in the accessibility tree. A
+                // child that a pretender places somewhere other than under its parent (a node given
+                // at the usage site that the component renders inside its slot wrapper, or an
                 // element a fragment component renders in place) would be judged against the
                 // wrong parent and lose its role, so it is resolved on its own.
-                let assume_single_node = child.base.parent != Some(node_id);
+                let assume_single_node = composed_parent_element(arena, spec, child_id) != Some(node_id);
                 let child_role = get_computed_role(spec, arena, child_id, version, assume_single_node).role;
                 let child_role_name = child_role.as_ref().map(|r| r.name.as_str());
                 if role
@@ -171,11 +187,25 @@ fn classify_children(
                     continue;
                 }
                 if is_transparent_for_ownership(child_role_name, version) {
-                    if is_content_mutable(arena, child_id) {
+                    let scope = match shadow_root_template_of(spec, arena, child_id) {
+                        ShadowTemplate::Unknown => None,
+                        ShadowTemplate::Template(template) => Some(template),
+                        ShadowTemplate::None => Some(child_id),
+                    };
+                    if let Some(scope) = scope
+                        && is_content_mutable(arena, scope)
+                    {
                         result.push(Owned::Unknown);
                         continue;
                     }
-                    result.extend(classify_children(spec, arena, child_id, role, version));
+                    result.extend(classify_children(
+                        spec,
+                        arena,
+                        child_id,
+                        owned_child_nodes(spec, arena, child_id),
+                        role,
+                        version,
+                    ));
                     continue;
                 }
                 result.push(Owned::Other);
@@ -185,6 +215,95 @@ fn classify_children(
         }
     }
     result
+}
+
+/// TS `classifySlot()`: what a `slot` among the owned nodes places. A slot of unknown assignment, and
+/// one that takes a node that may be something else at runtime, leave the ownership unknown; one that
+/// takes none stands for its own children.
+fn classify_slot(
+    spec: &MLMLSpec,
+    arena: &DomArena,
+    slot: NodeId,
+    role: &ResolvedRole,
+    version: ARIAVersion,
+) -> Vec<Owned> {
+    let Some(assigned) = get_assigned_nodes(arena, spec, slot) else {
+        return vec![Owned::Unknown];
+    };
+    if assigned.is_empty() {
+        return classify_children(spec, arena, slot, owned_child_nodes(spec, arena, slot), role, version);
+    }
+    let mutable = assigned.iter().any(|&node| {
+        arena.get(node).and_then(DomNode::as_element).is_some_and(|el| {
+            has_mutable_attributes(el)
+                || has_mutable_children_with(arena, node, true, &|slot| is_flattened_slot(arena, slot))
+        })
+    });
+    if mutable {
+        return vec![Owned::Unknown];
+    }
+    classify_children(spec, arena, slot, Some(assigned), role, version)
+}
+
+/// TS `isFlattenedSlot`: a `slot` that is flattened out of the child nodes (a fragment) is the only one
+/// counted as mutable among the descendants: the rest are read through the assignment.
+fn is_flattened_slot(arena: &DomArena, slot: NodeId) -> bool {
+    arena
+        .get(slot)
+        .and_then(DomNode::as_element)
+        .is_some_and(|el| el.is_fragment)
+}
+
+/// TS `isOwnedContentMutable()`: whether what `el` owns may be rendered by something that is not known:
+/// a shadow root that may or may not be declared, a block without a behavior, an element with a mutable
+/// attribute, a component, or a pretender whose `contents` are unknown, in the shadow root or in the
+/// children.
+fn is_owned_content_mutable(spec: &MLMLSpec, arena: &DomArena, el: NodeId) -> bool {
+    let scope = match shadow_root_template_of(spec, arena, el) {
+        ShadowTemplate::Unknown => return true,
+        ShadowTemplate::Template(template) => template,
+        ShadowTemplate::None => el,
+    };
+    has_mutable_children_with(arena, scope, true, &|slot| is_flattened_slot(arena, slot))
+        || is_content_mutable(arena, scope)
+}
+
+/// TS `getShadowRootTemplate()` of the checker: the `template` element that declares the shadow root of
+/// a host, as far as the markup tells.
+enum ShadowTemplate {
+    /// The host has no shadow root.
+    None,
+    /// The host has one, but where it is declared is not known.
+    Unknown,
+    Template(NodeId),
+}
+
+fn shadow_root_template_of(spec: &MLMLSpec, arena: &DomArena, host: NodeId) -> ShadowTemplate {
+    let Some(template) = shadow_root_template(arena, spec, host) else {
+        return ShadowTemplate::None;
+    };
+    // A block without a behavior may be a marker of a language whose blocks the syntax tree does
+    // not nest (`{% if %}` ... `{% endif %}`), so whether it encloses the `template` is not known.
+    if arena
+        .pure_children_of(host)
+        .into_iter()
+        .any(|child| matches!(arena.get(child), Some(DomNode::PSBlock(block)) if block.block_behavior.is_none()))
+    {
+        return ShadowTemplate::Unknown;
+    }
+    if arena.child_nodes(host).contains(&template) {
+        if arena.get(template).and_then(DomNode::parent_id) != Some(host) {
+            return ShadowTemplate::Unknown;
+        }
+        if arena
+            .conditional_child_nodes(host)
+            .iter()
+            .all(|branch| branch.contains(&template))
+        {
+            return ShadowTemplate::Template(template);
+        }
+    }
+    ShadowTemplate::Unknown
 }
 
 /// TS `isRequiredOwnedElement()`: `query` is a role, or `"base > owning"`, a role whose closest
@@ -252,7 +371,15 @@ fn is_transparent_for_ownership(role_name: Option<&str>, version: ARIAVersion) -
 /// wrapper that differs from the component sits between them: the component owns the wrapper,
 /// and the wrapper owns the filled nodes. Several slot wrappers leave the owner of each node
 /// unknown (`None`).
-fn owned_child_nodes(arena: &DomArena, node_id: NodeId) -> Option<Vec<NodeId>> {
+fn owned_child_nodes(spec: &MLMLSpec, arena: &DomArena, node_id: NodeId) -> Option<Vec<NodeId>> {
+    // The content of the `template` is the shadow root, and holds the same nodes as its children.
+    match shadow_root_template_of(spec, arena, node_id) {
+        ShadowTemplate::Unknown => return None,
+        ShadowTemplate::Template(template) => {
+            return Some(expand_children(arena, template, arena.child_nodes(template)));
+        }
+        ShadowTemplate::None => {}
+    }
     let el = arena.get(node_id).and_then(DomNode::as_element);
     if let Some(pretended) = el.and_then(|el| el.pretended()) {
         if let Some(content) = &pretended.slot_content {

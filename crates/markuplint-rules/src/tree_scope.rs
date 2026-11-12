@@ -360,7 +360,7 @@ const SHADOW_HOST_NAMES: &[&str] = &[
 /// TS `isTransparent`: what the template engine or the framework renders away (a block of a
 /// template language, a fragment of JSX, a `template` with a directive), leaving its children to
 /// the next element above.
-fn is_transparent(node: &DomNode) -> bool {
+pub(crate) fn is_transparent(node: &DomNode) -> bool {
     match node {
         DomNode::PSBlock(_) => true,
         DomNode::Element(el) => is_rendered_away(el),
@@ -395,7 +395,7 @@ fn shadow_root_mode_state(el: &ElementData) -> ShadowRootModeState {
 
 /// TS `getShadowHost`: the parent of the `template` element in the output, where what the engine
 /// renders away is skipped.
-fn shadow_host(arena: &DomArena, template: NodeId) -> Option<NodeId> {
+pub(crate) fn shadow_host(arena: &DomArena, template: NodeId) -> Option<NodeId> {
     let mut current = arena.get(template)?.parent_id();
     while let Some(id) = current {
         let node = arena.get(id)?;
@@ -450,7 +450,7 @@ fn renders_children_in_itself(host_id: NodeId, host: &ElementData) -> bool {
 
 /// TS `getTemplatesOfHost`: the HTML `template` elements that sit in the output under the host, in
 /// the order of the markup, seen through what the engine renders away.
-fn templates_of_host(arena: &DomArena, spec: &MLMLSpec, host: NodeId, out: &mut Vec<NodeId>) {
+pub(crate) fn templates_of_host(arena: &DomArena, spec: &MLMLSpec, host: NodeId, out: &mut Vec<NodeId>) {
     for child in arena.pure_children_of(host) {
         let Some(node) = arena.get(child) else {
             continue;
@@ -479,6 +479,16 @@ fn templates_of_host(arena: &DomArena, spec: &MLMLSpec, host: NodeId, out: &mut 
 /// @see <https://dom.spec.whatwg.org/#concept-attach-a-shadow-root>
 #[must_use]
 pub fn declarative_shadow_root_attachment(arena: &DomArena, spec: &MLMLSpec, template: NodeId) -> ShadowRootAttachment {
+    *arena.memoize("shadow-root-attachment", template, || {
+        compute_declarative_shadow_root_attachment(arena, spec, template)
+    })
+}
+
+fn compute_declarative_shadow_root_attachment(
+    arena: &DomArena,
+    spec: &MLMLSpec,
+    template: NodeId,
+) -> ShadowRootAttachment {
     let Some(el) = arena.get(template).and_then(DomNode::as_element) else {
         return ShadowRootAttachment::NotAttached;
     };
