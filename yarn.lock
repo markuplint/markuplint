@@ -1633,6 +1633,7 @@ __metadata:
     "@markuplint/file-resolver": "npm:5.5.0"
     "@markuplint/i18n": "npm:5.5.0"
     "@markuplint/ml-config": "npm:5.5.0"
+    "@markuplint/ml-core": "npm:5.5.0"
     "@markuplint/ml-spec": "npm:5.5.0"
     "@types/debug": "npm:4.1.13"
     "@types/semver": "npm:7.8.0"

@@ -44,6 +44,7 @@
 		"@markuplint/file-resolver": "5.5.0",
 		"@markuplint/i18n": "5.5.0",
 		"@markuplint/ml-config": "5.5.0",
+		"@markuplint/ml-core": "5.5.0",
 		"@markuplint/ml-spec": "5.5.0",
 		"debug": "^4.4.3",
 		"markuplint": "5.5.0",

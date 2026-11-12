@@ -8,6 +8,8 @@ import type { TextDocument } from 'vscode-languageserver-textdocument';
 
 import path from 'node:path';
 
+import { searchNodeAtLocation } from '@markuplint/ml-core';
+
 import { getFilePath } from '../utils/get-file-path.js';
 
 import { convertDiagnostics } from './convert-diagnostics.js';
@@ -213,7 +215,10 @@ export function getNodeWithAccessibilityProps(
 		return null;
 	}
 
-	const node = engine.document.searchNodeByLocation(position.line + 1, position.character);
+	// LSP counts the character from 0, the node list the column from 1. The engine is the user's
+	// markuplint v3, whose `searchNodeByLocation` takes the end of a range in and compares the line
+	// and the column apart, so the node list is searched by the rule of this version.
+	const node = searchNodeAtLocation(engine.document.nodeList, position.line + 1, position.character + 1);
 
 	if (!node || !node.is(node.ELEMENT_NODE)) {
 		return null;

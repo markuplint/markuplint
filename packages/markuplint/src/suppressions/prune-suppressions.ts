@@ -15,8 +15,9 @@ import { toRelativePath } from './suppressions-file.js';
  *
  * **Note:** Pruning counts all file-level violations, not scope-filtered ones.
  * This is because `pruneSuppressions` does not receive document node lists
- * (required for scope-based violation filtering). For scope-accurate counts,
- * re-run `--suppress` which recomputes both scope and count from the DOM tree.
+ * (required for scope-based violation filtering). `--suppress` recomputes the scope
+ * from the DOM tree, and takes the new count when the scope changes; under an
+ * unchanged scope it keeps the higher count (see `mergeSuppressions`).
  *
  * @param currentViolations - Map of absolute file paths to current violations.
  * @param existing - The current suppressions data.

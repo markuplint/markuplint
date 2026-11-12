@@ -569,6 +569,71 @@ describe('compute-scope', () => {
 			const result = findNodeAtPosition([div, attr], 2, 5);
 			expect(result?.localName).toBe('div');
 		});
+
+		describe('a position inside the range of a node', () => {
+			// `<div id="a"><p class="x" class="y">a\n b</p></div>`: the range of an element is its start tag.
+			const div = { ...pNode('div', 1, 1), endLine: 1, endCol: 13 };
+			const p = { ...pNode('p', 1, 13, div), endLine: 1, endCol: 36 };
+			const text: PositionedNode = { ...pNode('#text', 1, 36, p), nodeType: 3, endLine: 2, endCol: 3 };
+			const nodeList = [div, p, text];
+
+			it('an attribute of the start tag is the element', () => {
+				expect(findNodeAtPosition(nodeList, 1, 26)).toBe(p);
+			});
+
+			it('the end of a range belongs to the next node', () => {
+				expect(findNodeAtPosition(nodeList, 1, 12)).toBe(div);
+				expect(findNodeAtPosition(nodeList, 1, 13)).toBe(p);
+			});
+
+			it('a position inside a text that spans lines is its parent element', () => {
+				expect(findNodeAtPosition(nodeList, 2, 2)).toBe(p);
+			});
+
+			it('a position after every range is no node', () => {
+				expect(findNodeAtPosition(nodeList, 2, 3)).toBeNull();
+			});
+
+			it('a node without an end matches only its start', () => {
+				const bare = pNode('div', 1, 1);
+				expect(findNodeAtPosition([bare], 1, 5)).toBeNull();
+			});
+
+			it('an element nested in a block is the element, not the block parent', () => {
+				// `<div id="r">{x && <p class="a" class="b">t</p>}</div>`
+				const r = { ...pNode('div', 1, 1), endLine: 1, endCol: 13 };
+				const block: PositionedNode = {
+					...pNode('#ml-block', 1, 13, r),
+					nodeType: 101,
+					endLine: 1,
+					endCol: 48,
+				};
+				const nested = { ...pNode('p', 1, 19, r), endLine: 1, endCol: 42 };
+				expect(findNodeAtPosition([r, block, nested], 1, 32)).toBe(nested);
+			});
+
+			it('a position in the end tag is its element', () => {
+				// `<div id="a"><P>x</P></div>`
+				const a = { ...pNode('div', 1, 1), endLine: 1, endCol: 13 };
+				const upper = {
+					...pNode('P', 1, 13, a),
+					endLine: 1,
+					endCol: 16,
+					closeTag: { startLine: 1, startCol: 17, endLine: 1, endCol: 21 },
+				};
+				expect(findNodeAtPosition([a, upper], 1, 17)).toBe(upper);
+				expect(findNodeAtPosition([a, upper], 1, 20)).toBe(upper);
+				expect(findNodeAtPosition([a, upper], 1, 21)).toBeNull();
+			});
+
+			it('an omitted element with an empty source does not hide the element at its start', () => {
+				// `<table><tr>`: the omitted `<tbody>` starts where `<tr>` does
+				const table = { ...pNode('table', 1, 1), endLine: 1, endCol: 8 };
+				const tbody = { ...pNode('tbody', 1, 8, table), endLine: 1, endCol: 8 };
+				const tr = { ...pNode('tr', 1, 8, tbody), endLine: 1, endCol: 12 };
+				expect(findNodeAtPosition([table, tbody, tr], 1, 8)).toBe(tr);
+			});
+		});
 	});
 
 	describe('computeScopeForViolations', () => {
@@ -618,6 +683,14 @@ describe('compute-scope', () => {
 		it('returns undefined when no nodes found', () => {
 			const html = pNode('html', 1, 1);
 			expect(computeScopeForViolations([html], [vio(99, 99)])).toBeUndefined();
+		});
+
+		it('returns undefined when one of the violations is at no node, as the scope could not hold it', () => {
+			const html = pNode('html', 1, 1);
+			const body = pNode('body', 1, 7, html);
+			const nav = pNode('nav', 2, 1, body, { id: 'main' });
+			const li = pNode('li', 3, 1, nav);
+			expect(computeScopeForViolations([html, body, nav, li], [vio(3, 1), vio(99, 99)])).toBeUndefined();
 		});
 	});
 
