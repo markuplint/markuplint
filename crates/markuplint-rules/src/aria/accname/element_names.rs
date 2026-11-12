@@ -13,7 +13,24 @@ use super::helpers::{
 use super::label_steps::resolve_label_text;
 use super::{AccnameResolver, AccnameResult, AccnameSource};
 
-const TEXT_INPUT_TYPES: &[&str] = &["text", "search", "tel", "url", "email", "password", "number"];
+/// TS `TEXT_INPUT_TYPES`: the types of an `input` named by its label, its title and its placeholder.
+const TEXT_INPUT_TYPES: &[&str] = &[
+    "text",
+    "password",
+    "search",
+    "tel",
+    "url",
+    "email",
+    "number",
+    "date",
+    "month",
+    "week",
+    "time",
+    "datetime-local",
+    "color",
+    "range",
+    "file",
+];
 
 /// Step 2E: Get element-specific accessible name.
 pub fn get_element_specific_name(

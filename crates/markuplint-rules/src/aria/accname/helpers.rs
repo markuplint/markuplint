@@ -9,6 +9,28 @@ use markuplint_dom::node::DomNode;
 
 use super::AccnameResolver;
 
+/// TS `EMBEDDED_CONTROL_ROLES`: the roles of the controls whose value is used in name-from-content
+/// computation (Step 2C).
+pub const EMBEDDED_CONTROL_ROLES: [&str; 6] = ["textbox", "combobox", "listbox", "spinbutton", "slider", "searchbox"];
+
+/// TS `isNativeEmbeddedControl`: whether the element is an embedded control by what it is, without a
+/// role: a `textarea`, a `select`, or an `input` whose type is not a button, an image, a checkbox, a radio
+/// or hidden.
+pub fn is_native_embedded_control(el: &markuplint_dom::node::ElementData) -> bool {
+    match crate::aria_check::element_local_name(el).as_str() {
+        "textarea" | "select" => true,
+        "input" => {
+            let input_type =
+                dom::get_attr_value_from_el(el, "type").map_or_else(|| "text".to_owned(), str::to_lowercase);
+            !matches!(
+                input_type.as_str(),
+                "hidden" | "button" | "submit" | "reset" | "image" | "checkbox" | "radio"
+            )
+        }
+        _ => false,
+    }
+}
+
 pub fn flatten_text(text: &str) -> String {
     text.split_whitespace().collect::<Vec<_>>().join(" ")
 }

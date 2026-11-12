@@ -517,7 +517,7 @@ impl Drop for ConditionGuard {
 /// TS `getImplicitRole()`: the `implicitRole` of `getARIA()`, looked up among the roles of the
 /// element's namespace (the graphics roles for SVG). An implicit role the namespace does not
 /// have is `ImplicitRoleNamespaceError`.
-fn get_implicit_role(
+pub(crate) fn get_implicit_role(
     spec: &MLMLSpec,
     arena: &DomArena,
     node_id: NodeId,

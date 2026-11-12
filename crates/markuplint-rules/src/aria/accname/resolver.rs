@@ -7,6 +7,7 @@ use markuplint_dom::helpers as dom;
 use markuplint_types::spec::aria::ARIAVersion;
 use markuplint_types::spec::types::MLMLSpec;
 
+use super::helpers::{EMBEDDED_CONTROL_ROLES, is_native_embedded_control};
 use super::{AccnameResolver, AccnameVisit};
 use crate::helpers::is_html_template_element;
 use crate::slot_assignment::{get_assigned_nodes, shadow_root_template, tree_parent_element};
@@ -112,12 +113,15 @@ impl AccnameResolver for SpecAccnameResolver<'_> {
     fn is_embedded_control(&self, node_id: NodeId) -> bool {
         use crate::aria::computed_role;
         let cr = computed_role::get_computed_role(self.spec, self.arena, node_id, self.version, true);
-        cr.role.as_ref().is_some_and(|r| {
-            matches!(
-                r.name.as_str(),
-                "textbox" | "combobox" | "listbox" | "slider" | "spinbutton" | "searchbox"
-            )
-        })
+        match cr.role {
+            Some(role) => EMBEDDED_CONTROL_ROLES.contains(&role.name.as_str()),
+            // TS `isNativeEmbeddedControl`: a native control that has no role
+            None => self
+                .arena
+                .get(node_id)
+                .and_then(|node| node.as_element())
+                .is_some_and(is_native_embedded_control),
+        }
     }
 
     /// TS `getPrecomputedName` of `@markuplint/ml-core`: the `aria.name` of the

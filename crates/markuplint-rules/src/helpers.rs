@@ -207,7 +207,7 @@ fn has_unknown_content(arena: &DomArena, spec: &MLMLSpec, node_id: NodeId) -> bo
 }
 
 /// TS `labelable`: the selectors of the elements a `label` can be associated with.
-fn is_labelable(el: &ElementData) -> bool {
+pub(crate) fn is_labelable(el: &ElementData) -> bool {
     match el.base.node_name.to_ascii_lowercase().as_str() {
         "button" | "meter" | "output" | "progress" | "select" | "textarea" => true,
         "input" => !get_attr_value_from_el(el, "type").is_some_and(|t| t.eq_ignore_ascii_case("hidden")),
