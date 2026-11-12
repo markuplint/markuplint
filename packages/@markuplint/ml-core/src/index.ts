@@ -17,6 +17,9 @@ export { applyFixes } from './fix-applier.js';
 export type { FixResult } from './fix-applier.js';
 export { multiPassFix } from './multi-pass-fix.js';
 export type { MultiPassFixHost } from './multi-pass-fix.js';
+export { createConfigViolationsOf } from './config-violations.js';
+// The Rust path of `markuplint` asks it for what the TS selector parser says of a selector the Rust one rejected.
+export { createSelector } from '@markuplint/selector';
 export * from './convert-ruleset.js';
 export * from './ml-core.js';
 export * from './ml-dom/index.js';

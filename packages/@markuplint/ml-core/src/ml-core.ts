@@ -22,25 +22,18 @@ import { log, enableDebug } from './debug.js';
 import { Document } from './ml-dom/index.js';
 import { multiPassFix } from './multi-pass-fix.js';
 import type { FixSummary } from './multi-pass-fix.js';
+import {
+	CONFIG_ERROR_RULE_ID,
+	createConfigErrorViolations,
+	createRuleNotFoundViolations,
+} from './config-violations.js';
 import { expandNamedNodeRules, expandNamedRules } from './virtual-rule.js';
 
 export type { FixSummary } from './multi-pass-fix.js';
 
 const resultLog = log.extend('result');
 
-/**
- * `ruleId` of a genuinely broken config (unresolved rule reference, plugin
- * resolution failure, ...). Exported so consumers that need to recognize
- * config-level violations (e.g. the CLI's per-run dedupe and failed-file
- * counting in `packages/markuplint/src/cli/command.ts`) reference the same
- * literal `MLCore.verify()` emits, instead of duplicating the string.
- *
- * Two severities share it. `MLCore.verify()` emits `warning`: the rest of the
- * config is still usable, so the file is linted. `MLEngine` emits `error`,
- * as the file's only violation, when the config cannot be loaded at all
- * (`ConfigLoadError`): no rule has looked at the file, so it must not pass.
- */
-export const CONFIG_ERROR_RULE_ID = 'config-error';
+export { CONFIG_ERROR_RULE_ID };
 
 /**
  * `ruleId` of a deprecated-but-working rule name notice — see
@@ -343,56 +336,14 @@ export class MLCore {
 
 		this.#pushNonFatalParseErrors(violations);
 
-		const definedRuleName = new Set(this.#rules.map(rule => rule.name));
-
-		const setRuleNames = new Set([
-			...Object.keys(this.#ruleset.rules),
-			...this.#ruleset.nodeRules.flatMap(nodeRule => Object.keys(nodeRule.rules ?? {})),
-			...this.#ruleset.childNodeRules.flatMap(childNodeRule => Object.keys(childNodeRule.rules ?? {})),
-		]);
-
 		// Config-level violations are independent of the source code, so they are
 		// collected separately to also be included in `finalPassViolations`.
-		const configViolations: Violation[] = [];
+		const configViolations: Violation[] = createRuleNotFoundViolations(this.#ruleset, this.#rules);
 
-		for (const setRuleName of setRuleNames) {
-			// Skip wildcard patterns (e.g., "a11y/*") — they are namespace disable entries, not rule references
-			if (setRuleName.endsWith('/*')) {
-				continue;
-			}
-			// Skip a named rule group disabled via top-level `rules` (e.g. "html-standard/foo": false).
-			// `expandNamedRules` intentionally doesn't instantiate a virtual rule when the merged value
-			// already resolved to `false` (there's nothing to run), so it never appears in `definedRuleName`.
-			// `knownNamedRuleGroupKeys` (threaded from config merge — see its JSDoc) tells a genuine
-			// named-group disable apart from a typo'd/nonexistent rule name that also happens to be
-			// set to `false` with a `/` in its key; only the former is exempt from this check.
-			if (this.#ruleset.rules[setRuleName] === false && this.#ruleset.knownNamedRuleGroupKeys.has(setRuleName)) {
-				continue;
-			}
-			if (!definedRuleName.has(setRuleName)) {
-				configViolations.push({
-					ruleId: CONFIG_ERROR_RULE_ID,
-					severity: 'warning',
-					message: `Rule not found: ${setRuleName}`,
-					col: 1,
-					line: 1,
-					raw: '',
-				});
-			}
-		}
-
-		for (const error of [...this.#configErrors, ...this.#mappingErrors]) {
-			configViolations.push({
-				ruleId: CONFIG_ERROR_RULE_ID,
-				severity: 'warning',
-				message: error.message,
-				col: 1,
-				line: 1,
-				raw: '',
-			});
-		}
-
-		configViolations.push(...createRuleDeprecationViolations(this.#ruleDeprecations, this.#severity));
+		configViolations.push(
+			...createConfigErrorViolations([...this.#configErrors, ...this.#mappingErrors]),
+			...createRuleDeprecationViolations(this.#ruleDeprecations, this.#severity),
+		);
 
 		violations.push(...configViolations);
 
