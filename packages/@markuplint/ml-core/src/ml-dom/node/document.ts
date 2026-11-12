@@ -38,6 +38,7 @@ import { ConfigParserError, isComponentName } from '@markuplint/parser-utils';
 import { InvalidSelectorError } from '@markuplint/selector';
 
 import { log as coreLog } from '../../debug.js';
+import { searchNodeAtLocation } from '../../utils/search-node-at-location.js';
 import { createNode } from '../helper/create-node.js';
 import { nodeListToDebugMaps } from '../helper/debug.js';
 import { sequentialWalker, syncWalk } from '../helper/walkers.js';
@@ -3436,18 +3437,17 @@ export class MLDocument<T extends RuleConfigValue, O extends PlainData = undefin
 	/**
 	 * Searches for a node at the given source location (line and column).
 	 *
+	 * The node is the innermost one whose source range, from its start, included,
+	 * to its end, excluded, holds the position; a position in an end tag is its
+	 * element. The rule is `searchNodeAtLocation`'s.
+	 *
 	 * @implements `@markuplint/ml-core` API: `MLDocument`
 	 * @param line - The 1-based line number to search at
 	 * @param col - The 1-based column number to search at
 	 * @returns The node at the given location, or null if not found
 	 */
-	searchNodeByLocation(line: number, col: number) {
-		for (const node of this.nodeList) {
-			if (node.startLine <= line && line <= node.endLine && node.startCol <= col && col <= node.endCol) {
-				return node;
-			}
-		}
-		return null;
+	searchNodeByLocation(line: number, col: number): MLNode<T, O> | null {
+		return searchNodeAtLocation(this.nodeList, line, col);
 	}
 
 	/**
