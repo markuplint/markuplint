@@ -26,6 +26,7 @@ use markuplint_selector::{matcher, parser};
 use markuplint_types::spec::types::MLMLSpec;
 
 use crate::aria_check::is_js_whitespace;
+use crate::create_message::Kw;
 use crate::rule::{Rule, RuleConfigSet};
 use crate::tree_scope::{TreeRoot, Trees, dom_value, dom_value_of};
 use crate::violation::Violation;
@@ -41,6 +42,7 @@ impl Rule for ItempropRequiresItemscope {
     }
 
     fn verify(&self, arena: &DomArena, spec: &MLMLSpec, config: &RuleConfigSet) -> Vec<Violation> {
+        let tr = config.translator();
         let parse = |selector| parser::parse(selector).expect("a valid built-in selector");
         let itemref_host = parse("[itemscope][itemref]");
         let itemprop = parse("[itemprop]");
@@ -104,9 +106,13 @@ impl Rule for ItempropRequiresItemscope {
                 rule_id: self.id().to_string(),
                 name: None,
                 severity: rule_config.severity,
-                message:
-                    "The element must belong to an item via an ancestor `itemscope` or be referenced by an `itemref`"
-                        .to_string(),
+                message: tr.finish(&tr.t(
+                    "{0} must {1}",
+                    &[
+                        Kw::S(&tr.t("the {0}", &[Kw::S("element")])),
+                        Kw::S("belong to an item via an ancestor `itemscope` or be referenced by an `itemref`"),
+                    ],
+                )),
                 line: el.base.line,
                 col: el.base.col,
                 raw: el.base.raw.clone(),

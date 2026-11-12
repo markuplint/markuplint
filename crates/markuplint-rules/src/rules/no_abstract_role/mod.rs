@@ -10,6 +10,7 @@ use markuplint_types::spec::aria::get_aria_spec;
 use markuplint_types::spec::types::MLMLSpec;
 
 use crate::aria_check::{ElementContext, ElementGate, role_attr, role_tokens, walk_elements};
+use crate::create_message::Kw;
 use crate::rule::{Rule, RuleConfigSet};
 use crate::violation::Violation;
 
@@ -50,6 +51,14 @@ fn check(ctx: &ElementContext<'_>, violations: &mut Vec<Violation>) {
             .any(|role| role.name == token.value && role.is_abstract == Some(true))
     });
     if let Some(token) = abstract_token {
-        violations.push(ctx.token_violation(&token, format!("The \"{}\" role is the abstract role", token.value)));
+        let tr = ctx.tr;
+        let message = tr.t(
+            "{0} is {1}",
+            &[
+                Kw::S(&tr.t("the \"{0*}\" {1}", &[Kw::S(&token.value), Kw::S("role")])),
+                Kw::S("the abstract role"),
+            ],
+        );
+        violations.push(ctx.token_violation(&token, tr.finish(&message)));
     }
 }

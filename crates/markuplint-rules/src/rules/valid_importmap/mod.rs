@@ -8,6 +8,9 @@ use markuplint_dom::arena::DomArena;
 use markuplint_types::spec::types::MLMLSpec;
 use markuplint_types::whatwg::abs_url::is_abs_url;
 
+use markuplint_core::i18n::Translator;
+
+use crate::create_message::Kw;
 use crate::inline_script::{ScriptJson, script_json};
 use crate::js::{JsonObject, JsonValue};
 use crate::rule::{Rule, RuleConfigSet};
@@ -34,6 +37,7 @@ impl Rule for ValidImportmap {
     }
 
     fn verify(&self, arena: &DomArena, _spec: &MLMLSpec, config: &RuleConfigSet) -> Vec<Violation> {
+        let tr = config.translator();
         let mut violations = Vec::new();
 
         for (node_id, el) in arena.elements() {
@@ -56,7 +60,7 @@ impl Rule for ValidImportmap {
                     rule_id: self.id().to_string(),
                     name: None,
                     severity: rule_config.severity,
-                    message,
+                    message: tr.finish(&message),
                     line: el.base.line,
                     col: el.base.col,
                     raw: el.base.raw.clone(),
@@ -66,10 +70,10 @@ impl Rule for ValidImportmap {
             };
 
             match body {
-                ScriptJson::Empty => report("Import map must contain a JSON object".to_owned()),
-                ScriptJson::Invalid => report("Import map must be valid JSON".to_owned()),
-                ScriptJson::NotObject => report("Import map must be a JSON object".to_owned()),
-                ScriptJson::Object(parsed) => verify_import_map(&parsed, &mut report),
+                ScriptJson::Empty => report(tr.t("{0} must contain a JSON object", &[Kw::S("Import map")])),
+                ScriptJson::Invalid => report(tr.t("{0} must be valid JSON", &[Kw::S("Import map")])),
+                ScriptJson::NotObject => report(tr.t("{0} must be a JSON object", &[Kw::S("Import map")])),
+                ScriptJson::Object(parsed) => verify_import_map(tr, &parsed, &mut report),
             }
         }
 
@@ -77,20 +81,32 @@ impl Rule for ValidImportmap {
     }
 }
 
-fn verify_import_map(parsed: &JsonObject, report: &mut impl FnMut(String)) {
+fn verify_import_map(tr: Translator<'_>, parsed: &JsonObject, report: &mut impl FnMut(String)) {
     for key in parsed.keys() {
         if !ALLOWED_TOP_LEVEL_KEYS.contains(&key) {
-            report(format!(
-                "The import map top-level key \"{key}\" is not allowed (use \"imports\", \"scopes\", or \"integrity\")"
+            report(tr.t(
+                "{0} is {1:c}",
+                &[
+                    Kw::S(&tr.t("the import map top-level key \"{0*}\"", &[Kw::S(key)])),
+                    Kw::S("not allowed (use \"imports\", \"scopes\", or \"integrity\")"),
+                ],
             ));
         }
     }
 
-    let not_object = |key: &str| format!("The \"{key}\" top-level key of an import map must be a JSON object");
+    let not_object = |key: &str| {
+        tr.t(
+            "{0} must be {1}",
+            &[
+                Kw::S(&tr.t("the \"{0*}\" top-level key of an import map", &[Kw::S(key)])),
+                Kw::S("a JSON object"),
+            ],
+        )
+    };
 
     if let Some(imports) = parsed.get("imports") {
         match imports {
-            JsonValue::Object(map) => validate_specifier_map(map, "imports", report),
+            JsonValue::Object(map) => validate_specifier_map(tr, map, "imports", report),
             _ => report(not_object("imports")),
         }
     }
@@ -101,9 +117,15 @@ fn verify_import_map(parsed: &JsonObject, report: &mut impl FnMut(String)) {
                 for (scope_key, scope_value) in scopes.iter() {
                     match scope_value {
                         JsonValue::Object(map) => {
-                            validate_specifier_map(map, &format!("scopes[\"{scope_key}\"]"), report);
+                            validate_specifier_map(tr, map, &format!("scopes[\"{scope_key}\"]"), report);
                         }
-                        _ => report(format!("The value of the scope \"{scope_key}\" must be a JSON object")),
+                        _ => report(tr.t(
+                            "{0} must be {1}",
+                            &[
+                                Kw::S(&tr.t("the value of the scope \"{0*}\"", &[Kw::S(scope_key)])),
+                                Kw::S("a JSON object"),
+                            ],
+                        )),
                     }
                 }
             }
@@ -113,7 +135,7 @@ fn verify_import_map(parsed: &JsonObject, report: &mut impl FnMut(String)) {
 
     if let Some(integrity) = parsed.get("integrity") {
         match integrity {
-            JsonValue::Object(map) => validate_integrity_map(map, report),
+            JsonValue::Object(map) => validate_integrity_map(tr, map, report),
             _ => report(not_object("integrity")),
         }
     }
@@ -133,37 +155,75 @@ fn resolves_as_url_like_specifier(specifier: &str) -> bool {
 /// trailing-slash invariant: the values are SRI hashes, not URLs.
 ///
 /// @see <https://html.spec.whatwg.org/multipage/webappapis.html#normalizing-a-module-integrity-map>
-fn validate_integrity_map(map: &JsonObject, report: &mut impl FnMut(String)) {
+fn validate_integrity_map(tr: Translator<'_>, map: &JsonObject, report: &mut impl FnMut(String)) {
     for (key, value) in map.iter() {
         if !resolves_as_url_like_specifier(key) {
-            report(format!("The integrity key \"{key}\" must be {URL_LIKE}"));
+            report(tr.t(
+                "{0} must be {1}",
+                &[
+                    Kw::S(&tr.t("the integrity key \"{0*}\"", &[Kw::S(key)])),
+                    Kw::S(URL_LIKE),
+                ],
+            ));
             continue;
         }
         if !matches!(value, JsonValue::String(_)) {
-            report(format!("The value of \"{key}\" in \"integrity\" must be a string"));
+            report(tr.t(
+                "{0} must be {1}",
+                &[
+                    Kw::S(&tr.t("the value of \"{0*}\" in \"integrity\"", &[Kw::S(key)])),
+                    Kw::S("a string"),
+                ],
+            ));
         }
     }
 }
 
-fn validate_specifier_map(map: &JsonObject, map_label: &str, report: &mut impl FnMut(String)) {
+fn validate_specifier_map(tr: Translator<'_>, map: &JsonObject, map_label: &str, report: &mut impl FnMut(String)) {
     for (key, value) in map.iter() {
         if key.is_empty() {
-            report(format!("The specifier key in \"{map_label}\" must not be empty"));
+            report(tr.t(
+                "{0} must not be {1}",
+                &[
+                    Kw::S(&tr.t("the specifier key in \"{0*}\"", &[Kw::S(map_label)])),
+                    Kw::S("empty"),
+                ],
+            ));
             continue;
         }
         let JsonValue::String(value) = value else {
-            report(format!("The value of \"{key}\" in \"{map_label}\" must be a string"));
+            report(tr.t(
+                "{0} must be {1}",
+                &[
+                    Kw::S(&tr.t("the value of \"{0*}\" in \"{1*}\"", &[Kw::S(key), Kw::S(map_label)])),
+                    Kw::S("a string"),
+                ],
+            ));
             continue;
         };
         if !resolves_as_url_like_specifier(value) {
-            report(format!(
-                "The address \"{value}\" of \"{key}\" in \"{map_label}\" must be {URL_LIKE}"
+            report(tr.t(
+                "{0} must be {1}",
+                &[
+                    Kw::S(&tr.t(
+                        "the address \"{0*}\" of \"{1*}\" in \"{2*}\"",
+                        &[Kw::S(value), Kw::S(key), Kw::S(map_label)],
+                    )),
+                    Kw::S(URL_LIKE),
+                ],
             ));
             continue;
         }
         if key.ends_with('/') && !value.ends_with('/') {
-            report(format!(
-                "The specifier key \"{key}\" in \"{map_label}\" ends with \"/\" so the address \"{value}\" must end with \"/\" as well"
+            report(tr.t(
+                "{0} ends with \"/\" so {1} must end with \"/\" as well",
+                &[
+                    Kw::S(&tr.t(
+                        "the specifier key \"{0*}\" in \"{1*}\"",
+                        &[Kw::S(key), Kw::S(map_label)],
+                    )),
+                    Kw::S(&tr.t("the address \"{0*}\"", &[Kw::S(value)])),
+                ],
             ));
         }
     }

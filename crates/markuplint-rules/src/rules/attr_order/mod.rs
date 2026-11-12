@@ -12,6 +12,7 @@ use serde_json::Value;
 
 use crate::aria_check::attr_name;
 use crate::attr_name_key::AttrNames;
+use crate::create_message::Kw;
 use crate::fix::Fix;
 use crate::rule::{Rule, RuleConfigSet};
 use crate::violation::{Severity, Violation};
@@ -147,6 +148,7 @@ impl Rule for AttrOrder {
     fn verify(&self, arena: &DomArena, spec: &MLMLSpec, config: &RuleConfigSet) -> Vec<Violation> {
         let global_attrs = spec_attr_names(spec, "#HTMLGlobalAttrs");
         let event_attrs = spec_attr_names(spec, "#GlobalEventAttrs");
+        let tr = config.translator();
         let mut violations = Vec::new();
 
         for (node_id, el) in arena.elements() {
@@ -233,11 +235,13 @@ impl Rule for AttrOrder {
                     rule_id: self.id().to_string(),
                     name: None,
                     severity: rule_config.severity,
-                    message: format!(
-                        "\"{}\" {ms} be before \"{}\"",
-                        display_name(expected.name),
-                        display_name(actual.name)
-                    ),
+                    message: tr.finish(&tr.t(
+                        &format!("{{0}} {ms} be before {{1}}"),
+                        &[
+                            Kw::S(&format!("\"{}\"", display_name(expected.name))),
+                            Kw::S(&format!("\"{}\"", display_name(actual.name))),
+                        ],
+                    )),
                     line,
                     col,
                     raw: raw.to_owned(),

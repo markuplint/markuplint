@@ -5,6 +5,7 @@ use std::collections::HashMap;
 use markuplint_dom::arena::DomArena;
 use markuplint_types::spec::types::MLMLSpec;
 
+use crate::create_message::Kw;
 use crate::rule::{Rule, RuleConfigSet};
 use crate::tree_scope::{TreeRoot, Trees};
 use crate::violation::Violation;
@@ -33,6 +34,7 @@ impl Rule for NoSkippedHeadingLevel {
     }
 
     fn verify(&self, arena: &DomArena, spec: &MLMLSpec, config: &RuleConfigSet) -> Vec<Violation> {
+        let tr = config.translator();
         let config = config.global();
         let mut violations = Vec::new();
 
@@ -64,7 +66,7 @@ impl Rule for NoSkippedHeadingLevel {
                     rule_id: self.id().to_string(),
                     name: None,
                     severity: config.severity,
-                    message: "Heading levels must not be skipped".to_string(),
+                    message: tr.finish(&tr.t("{0} must not be skipped", &[Kw::S(&tr.t("Heading levels", &[]))])),
                     line,
                     col,
                     raw: raw.clone(),

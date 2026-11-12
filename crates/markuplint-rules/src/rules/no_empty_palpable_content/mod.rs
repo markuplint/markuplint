@@ -14,6 +14,7 @@ use markuplint_selector::matcher;
 use markuplint_types::spec::lookup::{get_content_model_tags, is_nothing_content_model_name};
 use markuplint_types::spec::types::MLMLSpec;
 
+use crate::create_message::Kw;
 use crate::diagnostic;
 use crate::rule::{Rule, RuleConfigSet};
 use crate::violation::Violation;
@@ -70,6 +71,7 @@ impl Rule for NoEmptyPalpableContent {
     }
 
     fn verify(&self, arena: &DomArena, spec: &MLMLSpec, config: &RuleConfigSet) -> Vec<Violation> {
+        let tr = config.translator();
         let global = config.global();
         let ignore_if_aria_busy = global
             .options
@@ -144,7 +146,10 @@ impl Rule for NoEmptyPalpableContent {
                     rule_id: self.id().to_string(),
                     name: None,
                     severity: rule_config.severity,
-                    message: "The element should not empty".to_string(),
+                    message: tr.finish(&tr.t(
+                        "{0} should not {1}",
+                        &[Kw::S(&tr.t("the {0}", &[Kw::S("element")])), Kw::S("empty")],
+                    )),
                     line: el.base.line,
                     col: el.base.col,
                     raw: el.base.raw.clone(),
