@@ -6,6 +6,8 @@ pub mod http_equiv_content_type;
 pub mod http_equiv_refresh;
 pub mod js_url;
 pub mod link_type;
+pub mod media_query_list;
 pub mod mime_type;
 pub mod navigable_target_name;
+pub mod source_size_list;
 pub mod url;

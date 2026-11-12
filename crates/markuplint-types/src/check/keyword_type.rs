@@ -2,11 +2,12 @@
 //!
 //! A keyword type that `defs` names is checked by its own checker; when the checker reports a
 //! mismatch, the `ref` and `expects` of the definition fill in what the result does not carry, as
-//! TS `_checkKeywordType` does. Any other keyword is a CSS syntax (`<color>`, `<'mask'>`), and a
-//! name neither knows matches any value.
+//! TS `_checkKeywordType` does. A keyword that `cssDefs` names is a syntax markuplint defines,
+//! and any other keyword is a CSS syntax of css-tree (`<color>`, `<'mask'>`); a name css-tree
+//! does not know matches any value.
 
 use super::custom;
-use super::types::{CheckResult, Expect, ExpectType, Reason, UnmatchedOpts, matched, unmatched, unmatched_with};
+use super::types::{CheckResult, Expect, ExpectType, Reason, matched, unmatched};
 use crate::whatwg::autocomplete::{CheckAutoCompleteOptions, check_autocomplete};
 use crate::whatwg::link_type::{LinkTypeContext, check_link_type};
 
@@ -44,55 +45,22 @@ pub fn check_keyword_type(value: &str, keyword: &str) -> CheckResult {
         };
     }
 
-    css_syntax_match(value, keyword)
-}
-
-/// TS `cssSyntaxMatch(value, type)` for a CSS syntax keyword.
-#[must_use]
-pub fn css_syntax_match(value: &str, keyword: &str) -> CheckResult {
-    if !(keyword.starts_with('<') && keyword.ends_with('>')) {
-        return matched();
+    if let Some(css_def) = super::css_defs::css_def(keyword) {
+        let Some((apply, def)) = css_def.syntax else {
+            // an entry whose `is` always matches
+            return matched();
+        };
+        let syntax = super::css_syntax::CustomCssSyntax {
+            ref_: css_def.ref_,
+            apply,
+            def,
+        };
+        // TS lets this throw for a definition that names no type; none does
+        return super::css_syntax::css_syntax_match(value, &super::css_syntax::CssSyntax::Custom(&syntax))
+            .unwrap_or_else(matched);
     }
-    let inner = &keyword[1..keyword.len() - 1];
-    let syntax_name = if inner.starts_with('\'') && inner.ends_with('\'') {
-        &inner[1..inner.len() - 1]
-    } else {
-        inner
-    };
 
-    let Some(syntax) = crate::css::value_match::registry::lookup_property(syntax_name) else {
-        // Only property syntax (<'mask'>, <'transform'>) is validated by the CSS engine; type
-        // references are resolved internally when a property is matched.
-        return matched();
-    };
-    match crate::css::value_match::match_property(syntax, value) {
-        Ok(()) => matched(),
-        Err(info) => {
-            let raw = if info.length > 0 && info.offset + info.length <= value.len() {
-                &value[info.offset..info.offset + info.length]
-            } else {
-                value
-            };
-            // TS `cssSyntaxMatch`: the part of the value css-tree stopped at
-            let (line, column) = crate::token::get_position(value, info.offset);
-            unmatched_with(
-                raw,
-                Reason::SyntaxError,
-                UnmatchedOpts {
-                    ref_: Some(format!("https://csstree.github.io/docs/syntax/#Property:{syntax_name}")),
-                    offset: Some(info.offset),
-                    line: Some(line),
-                    column: Some(column),
-                    part_name: Some("value".to_owned()),
-                    expects: Some(vec![Expect {
-                        type_: ExpectType::Syntax,
-                        value: keyword.to_owned(),
-                    }]),
-                    ..Default::default()
-                },
-            )
-        }
-    }
+    super::css_syntax::css_syntax_match_name(value, keyword)
 }
 
 const fn def(ref_: &'static str, expects: &'static [(ExpectType, &'static str)], is: fn(&str) -> CheckResult) -> Def {
@@ -182,7 +150,7 @@ pub fn get_def(keyword: &str) -> Option<Def> {
             "https://html.spec.whatwg.org/multipage/input.html#color-state-(type=color)",
             &[(Format, "CSS color")],
             |v| {
-                let valid = !v.is_empty() && crate::css::value_match::match_syntax("<color>", v).is_ok();
+                let valid = !v.is_empty() && super::css_syntax::css_syntax_match_name(v, "<color>").is_matched();
                 matches(v, valid, None)
             },
         ),
@@ -360,7 +328,7 @@ pub fn get_def(keyword: &str) -> Option<Def> {
         "MediaQueryList" => def(
             "https://www.w3.org/TR/mediaqueries-5/",
             &[(Format, "media query list")],
-            |_| matched(),
+            crate::whatwg::media_query_list::check_media_query_list,
         ),
         "HTTPEquivRefresh" => def(
             "https://html.spec.whatwg.org/multipage/semantics.html#attr-meta-http-equiv-refresh",
@@ -396,7 +364,7 @@ pub fn get_def(keyword: &str) -> Option<Def> {
         "SourceSizeList" => def(
             "https://html.spec.whatwg.org/multipage/images.html#sizes-attributes",
             &[(Syntax, "<source-size-list>")],
-            |_| matched(),
+            crate::whatwg::source_size_list::check_source_size_list,
         ),
         "IconSize" => def(
             "https://html.spec.whatwg.org/multipage/semantics.html#attr-link-sizes",

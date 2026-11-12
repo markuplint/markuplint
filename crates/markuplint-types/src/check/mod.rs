@@ -1,4 +1,6 @@
 pub mod candidate;
+pub mod css_defs;
+pub mod css_syntax;
 pub mod custom;
 pub mod directive;
 pub mod enum_check;

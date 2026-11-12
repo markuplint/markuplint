@@ -56,3 +56,18 @@ for (const type of ['language', 'extlang', 'script', 'region', 'variant']) {
 console.log(JSON.stringify(result));
 " > crates/markuplint-types/data/language-subtags.json
 ```
+
+# css-tree Lexer Data
+
+`csstree-lexer.json` is the syntax dictionary of [css-tree](https://www.npmjs.com/package/css-tree)'s default lexer, which `@markuplint/types` matches CSS values with (`cssSyntaxMatch`) and the Rust port in `src/css/csstree/` reproduces: every type and property that has a syntax, and the names of the generic types, which css-tree implements as functions and the port implements in code. markuplint's own syntaxes (`css-overrides.ts`, `css-defs.ts`) are not in the file; the port adds them as TS does.
+
+## How to Update
+
+When `css-tree` is updated in the project's npm dependencies, regenerate the file:
+
+```bash
+# From the repository root
+node scripts/csstree-lexer-data/dump.mjs
+```
+
+Then run `cargo test -p markuplint-types`: `tests/csstree_lexer_data.rs` fails when the new data names a generic type the port does not implement or a syntax it cannot parse.
