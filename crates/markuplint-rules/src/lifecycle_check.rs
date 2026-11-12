@@ -48,7 +48,6 @@ pub(crate) fn verify_attr_lifecycle(
     spec: &MLMLSpec,
     config: &RuleConfigSet,
 ) -> Vec<Violation> {
-    let tr = config.translator();
     let mut violations = Vec::new();
     let tr = config.translator();
 
@@ -118,7 +117,6 @@ pub(crate) fn verify_element_lifecycle(
     spec: &MLMLSpec,
     config: &RuleConfigSet,
 ) -> Vec<Violation> {
-    let tr = config.translator();
     let mut violations = Vec::new();
     let tr = config.translator();
 
