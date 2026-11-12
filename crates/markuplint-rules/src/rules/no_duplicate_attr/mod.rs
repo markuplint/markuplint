@@ -4,6 +4,7 @@
 
 use std::collections::HashMap;
 
+use markuplint_core::i18n::Primitive as Kw;
 use markuplint_core::mlast::MLASTAttr;
 use markuplint_dom::arena::DomArena;
 use markuplint_types::spec::types::MLMLSpec;
@@ -25,6 +26,11 @@ impl Rule for NoDuplicateAttr {
 
     fn verify(&self, arena: &DomArena, _spec: &MLMLSpec, config: &RuleConfigSet) -> Vec<Violation> {
         let mut violations = Vec::new();
+        let tr = config.translator();
+        let message = tr.finish(&tr.t(
+            "{0} is {1:c}",
+            &[Kw::S(&tr.t("the {0}", &[Kw::S("attribute name")])), Kw::S("duplicated")],
+        ));
 
         for (node_id, el) in arena.elements() {
             let rule_config = config.get(node_id);
@@ -53,7 +59,7 @@ impl Rule for NoDuplicateAttr {
                         rule_id: self.id().to_string(),
                         name: None,
                         severity: rule_config.severity,
-                        message: "The attribute name is duplicated".to_string(),
+                        message: message.clone(),
                         line: html_attr.name.line,
                         col: html_attr.name.col,
                         raw: html_attr.name.raw.clone(),

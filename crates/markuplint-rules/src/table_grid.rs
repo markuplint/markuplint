@@ -335,27 +335,6 @@ pub(crate) fn attr_violation(
     }
 }
 
-/// A count as the English message catalogue words it: `one` to `four` are spelled out
-/// (`packages/@markuplint/i18n/locales/en.json` `keywords`), anything else stays a numeral.
-pub(crate) fn count_word(count: usize) -> String {
-    match count {
-        1 => "one".to_string(),
-        2 => "two".to_string(),
-        3 => "three".to_string(),
-        4 => "four".to_string(),
-        n => n.to_string(),
-    }
-}
-
-/// Upper-cases the first character, as the TS translator does to every message.
-pub(crate) fn capitalize(message: &str) -> String {
-    let mut chars = message.chars();
-    match chars.next() {
-        Some(first) => first.to_uppercase().chain(chars).collect(),
-        None => String::new(),
-    }
-}
-
 /// Collects the column ranges that `<col>` and `<colgroup>` establish.
 ///
 /// A `<colgroup>` contributes its own `span` only when it has no `<col>` children, mirroring

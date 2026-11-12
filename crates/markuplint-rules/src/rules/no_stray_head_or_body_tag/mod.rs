@@ -11,6 +11,7 @@
 //!
 //! <https://html.spec.whatwg.org/multipage/parsing.html#parsing-main-inbody>
 
+use markuplint_core::i18n::Primitive as Kw;
 use markuplint_dom::arena::DomArena;
 use markuplint_dom::node::DomNode;
 use markuplint_types::spec::types::MLMLSpec;
@@ -53,6 +54,23 @@ impl Rule for NoStrayHeadOrBodyTag {
 
     fn verify(&self, arena: &DomArena, _spec: &MLMLSpec, config: &RuleConfigSet) -> Vec<Violation> {
         let mut violations = Vec::new();
+        let tr = config.translator();
+        let stray = [
+            (
+                "</head",
+                tr.finish(&tr.t(
+                    "{0} detected",
+                    &[Kw::S(&tr.t("a stray \"{0}\" end tag", &[Kw::S("head")]))],
+                )),
+            ),
+            (
+                "<body",
+                tr.finish(&tr.t(
+                    "{0} detected",
+                    &[Kw::S(&tr.t("a duplicate \"{0}\" start tag", &[Kw::S("body")]))],
+                )),
+            ),
+        ];
         for node_id in 0..arena.len() {
             let Some(DomNode::Text(text)) = arena.get(node_id) else {
                 continue;
@@ -68,16 +86,13 @@ impl Rule for NoStrayHeadOrBodyTag {
             if rule_config.disabled {
                 continue;
             }
-            for (prefix, message) in [
-                ("</head", "A stray \"head\" end tag detected"),
-                ("<body", "A duplicate \"body\" start tag detected"),
-            ] {
+            for (prefix, message) in &stray {
                 if contains_tag(&text.base.raw, prefix) {
                     violations.push(Violation {
                         rule_id: self.id().to_string(),
                         name: None,
                         severity: rule_config.severity,
-                        message: message.to_string(),
+                        message: message.clone(),
                         line: text.base.line,
                         col: text.base.col,
                         raw: text.base.raw.clone(),
