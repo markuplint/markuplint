@@ -1,6 +1,6 @@
 import { createRequire } from 'node:module';
 
-import { test, expect } from 'vitest';
+import { describe, test, expect } from 'vitest';
 
 import { taggedTemplateTranslator, translator } from './translator.js';
 
@@ -354,4 +354,47 @@ test('A text that is neither a keyword nor a sentence is returned as it is', () 
 test('The week part of a value is translated', () => {
 	expect(translator(ja)('{0} part of {1}', 'week', 'value')).toBe('値の週の部分');
 	expect(translator(en)('{0} part of {1}', 'week', 'value')).toBe('week part of value');
+});
+
+test('A name behind a no-translate placeholder is shown as written, while a keyword of the same spelling is translated', () => {
+	const t = translator(ja);
+	expect(
+		t('The "{0*}" attribute of the "{1*}" element must reference a "{2*}" element', 'list', 'input', 'datalist'),
+	).toBe('「input」要素の「list」属性は、「datalist」要素を参照するべきです');
+	expect(t('{0} is {1}', 'list', 'element')).toBe('リストは要素です');
+});
+
+describe('locale files', () => {
+	const schema = require('../$schema.json') as {
+		properties: Record<'keywords' | 'sentences', { properties: Record<string, unknown> }>;
+	};
+
+	test.each([
+		['ja', ja],
+		['en', en],
+	])('every keyword and sentence of %s.json is in $schema.json, which allows no other', (_, locale) => {
+		for (const section of ['keywords', 'sentences'] as const) {
+			const keys = Object.keys(locale[section] ?? {});
+			const allowed = Object.keys(schema.properties[section].properties);
+			expect(keys.filter(key => !allowed.includes(key))).toStrictEqual([]);
+		}
+	});
+
+	test.each([
+		['ja', ja],
+		['en', en],
+	])('no keyword of %s.json has a percent sign, which `noTranslate()` of the rules relies on', (_, locale) => {
+		// A value with a `%` inside is left as written without the marks, because no keyword can match it
+		const keywords = Object.keys(locale.keywords ?? {}).filter(key => key.includes('%'));
+		expect(keywords).toStrictEqual([]);
+	});
+
+	test('no sentence of ja.json has a no-translate mark (`{0*}`) in its key or its text', () => {
+		// The translator removes the marks of a template before it looks the sentence up, and replaces
+		// only `{0}` and `{0:c}` in the text, so a mark in either place is never matched or shown as `{0*}`
+		const marked = Object.entries(ja.sentences as Record<string, string>)
+			.filter(([key, text]) => /\{\d+\*\}/.test(key) || /\{\d+\*\}/.test(text))
+			.map(([key]) => key);
+		expect(marked).toStrictEqual([]);
+	});
 });

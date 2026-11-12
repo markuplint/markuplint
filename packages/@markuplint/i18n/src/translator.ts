@@ -24,6 +24,9 @@ const defaultListFormat: ListFormat = {
  * - `{0:c}` resolves through a `c:`-prefixed keyword (complement form); see `translateKeyword` below.
  * - `{0*}` inserts the argument verbatim, for dynamic values such as attribute names or
  *   user input that must not go through keyword translation.
+ * - `%value%` around a whole argument, or around an item of a list, inserts it verbatim too. It is
+ *   the only form a list item has, as a list has no placeholder to mark. A `%` at either end of a
+ *   value is written `%%` to be shown as one `%`. `noTranslate()` of `@markuplint/rules` writes both.
  *
  * @param localeSet - The locale configuration providing translations and formatting rules
  * @returns A translator function for producing localized messages
@@ -130,6 +133,9 @@ export function taggedTemplateTranslator(localeSet?: LocaleSet) {
  * preceding subject (e.g. `c:deprecated` → 「は非推奨です」, yielding 「〇〇は非推奨です」),
  * which cannot be produced from the plain keyword translation. The plain keyword
  * (without `c:`) may still exist as a separate dictionary entry for non-complement use.
+ *
+ * A keyword of the form `%value%` is returned without the marks, and `%%` at either end is
+ * unescaped to one `%`: the counterpart of `noTranslate()` of `@markuplint/rules`.
  */
 function translateKeyword(keyword: string, flag: string, localeSet?: LocaleSet) {
 	// No translate
