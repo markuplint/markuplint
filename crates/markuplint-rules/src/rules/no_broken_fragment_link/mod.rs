@@ -5,6 +5,7 @@
 //! fragment a conformance error — scrolling to a missing fragment does nothing
 //! (§ Scrolling to a fragment) — hence the `warning` default.
 
+use markuplint_core::i18n::Primitive as Kw;
 use std::collections::HashSet;
 
 use markuplint_core::mlast::MLASTHTMLAttr;
@@ -36,6 +37,7 @@ impl Rule for NoBrokenFragmentLink {
 
     fn verify(&self, arena: &DomArena, spec: &MLMLSpec, config: &RuleConfigSet) -> Vec<Violation> {
         let mut violations = Vec::new();
+        let tr = config.translator();
 
         // A preprocessor block may generate any ID, so the document cannot be judged.
         let is_mutable = (0..arena.len()).any(|id| matches!(arena.get(id), Some(DomNode::PSBlock(_))));
@@ -94,7 +96,7 @@ impl Rule for NoBrokenFragmentLink {
                     rule_id: self.id().to_string(),
                     name: None,
                     severity: rule_config.severity,
-                    message: format!("Missing \"{decoded}\" ID"),
+                    message: tr.finish(&tr.t("Missing {0}", &[Kw::S(&tr.t("\"{0*}\" ID", &[Kw::S(&decoded)]))])),
                     line: href.value.line,
                     col: href.value.col,
                     raw: href.value.raw.clone(),

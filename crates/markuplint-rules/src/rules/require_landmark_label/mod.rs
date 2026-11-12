@@ -10,6 +10,7 @@
 //! `labelEachArea` option is gone: disabling this rule is how to opt out. Fragments are skipped.
 //! The default severity is `warning`.
 
+use markuplint_core::i18n::Primitive as Kw;
 use markuplint_dom::arena::{DomArena, NodeId};
 use markuplint_types::spec::types::MLMLSpec;
 
@@ -37,6 +38,7 @@ impl Rule for RequireLandmarkLabel {
             return vec![];
         }
         let mut violations = Vec::new();
+        let tr = config.translator();
         let trees = Trees::new(arena, spec);
         // Landmarks are counted by tree: the content of a `template` element is a tree of its own
         let roles_of_trees = compute_landmark_roles_of_each_tree(arena, spec, &trees);
@@ -56,7 +58,10 @@ impl Rule for RequireLandmarkLabel {
                     rule_id: self.id().to_string(),
                     name: None,
                     severity: rule_config.severity,
-                    message: "Require unique accessible name".to_string(),
+                    message: tr.finish(&tr.t(
+                        "Require {0}",
+                        &[Kw::S(&tr.t("unique {0}", &[Kw::S("accessible name")]))],
+                    )),
                     line: el.base.line,
                     col: el.base.col,
                     raw: el.base.raw.clone(),
