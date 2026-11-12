@@ -84,9 +84,8 @@ describe.skipIf(!nativeAddonIsBuilt)('command: scoped suppressions on the Rust e
 		expect(nodeListHtml.calls).toBe(1);
 	});
 
-	// `mergeSuppressions` keeps only the count of an entry, so the scope that `generateSuppressions`
-	// computes from the nodes is not what reaches the file; what the engines are compared on is the
-	// file that results.
+	// `mergeSuppressions` carries the scope that `generateSuppressions` computes from the nodes, so
+	// the scope reaches the file; what the engines are compared on is the file that results.
 	test('[command-rust-003] --suppress writes the file that the TypeScript engine writes', async () => {
 		const file = path.join(tmpDir, 'scoped.html');
 		await fs.writeFile(
@@ -101,7 +100,9 @@ describe.skipIf(!nativeAddonIsBuilt)('command: scoped suppressions on the Rust e
 		await fs.rm(suppressionsFile, { force: true });
 		const rust = await runWith([file], { suppress: true, config }, true);
 
-		expect(typescript.suppressions).toStrictEqual({ 'scoped.html': { 'no-obsolete-element': { count: 2 } } });
+		expect(typescript.suppressions).toStrictEqual({
+			'scoped.html': { 'no-obsolete-element': { count: 2, scope: '#s' } },
+		});
 		expect(rust.suppressions).toStrictEqual(typescript.suppressions);
 	});
 

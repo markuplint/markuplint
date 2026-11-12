@@ -104,12 +104,12 @@ describe.skipIf(!nativeAddonIsBuilt)('the accessibility properties at a position
 		['the column of an element on the second line', '<div>\n  <button>b</button>\n</div>', 2, 3, 'button'],
 		['a position in a start tag that spans lines', '<button\n  aria-pressed="true">b</button>', 2, 5, 'button'],
 		[
-			// The column is tried apart from the line, so the `div` (columns up to 10 on its last line) is found first
-			'a position that is in the range of an element before it, by TypeScript',
+			// The end of a range is not in it: the start tag of the `div` ends where the `button` starts
+			'a position that is in the range of an element before it',
 			'<div\n  id="a"><button>b</button></div>',
 			2,
 			10,
-			'generic',
+			'button',
 		],
 	])('is the same on both engines for %s', async (_name, sourceCode, line, col, role) => {
 		const expected = await accessibilityAt(sourceCode, line, col, false);
