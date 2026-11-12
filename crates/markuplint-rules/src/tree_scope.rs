@@ -19,16 +19,19 @@
 
 use std::collections::HashMap;
 
-use markuplint_core::mlast::{ElementType, MLASTHTMLAttr, NamespaceURI};
+use markuplint_core::mlast::MLASTHTMLAttr;
 use markuplint_dom::arena::{DomArena, NodeId};
 use markuplint_dom::helpers::{attr_value, get_attr_node_from_el};
-use markuplint_dom::node::{DomNode, ElementData};
-use markuplint_dom::pretender::PretenderContext;
+use markuplint_dom::node::DomNode;
 use markuplint_types::spec::types::MLMLSpec;
 
-use crate::aria_check::element_local_name;
 use crate::decode::decode_entities;
-use crate::helpers::{is_html_template_element, is_rendered_away};
+use crate::helpers::is_html_template_element;
+
+pub use markuplint_dom::tree::{
+    ShadowRootAttachment, declarative_shadow_root_attachment, is_in_no_tree, is_transparent, shadow_host,
+    templates_of_host,
+};
 
 /// The root of a tree (TS `getRootNode()`).
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash)]
@@ -40,21 +43,6 @@ pub enum TreeRoot {
     Content(NodeId),
     /// A `template` element that is in no tree ([`Trees::is_in_no_tree`]): it is its own root.
     NoTree(NodeId),
-}
-
-/// TS `DeclarativeShadowRootAttachment`: whether a declarative shadow root is attached to the
-/// parent element of a `template` element.
-///
-/// - `Attached`: it is. The `template` element is in no tree, and its content is the shadow root.
-/// - `NotAttached`: it is not. The `template` element is an ordinary one of the tree it is in.
-/// - `Unknown`: the markup alone does not tell (the parent is not in the file, is a component whose
-///   output is not known, or `shadowrootmode` is a dynamic value). It is treated as in no tree, as
-///   markuplint does not count what it cannot tell.
-#[derive(Debug, Clone, Copy, PartialEq, Eq)]
-pub enum ShadowRootAttachment {
-    Attached,
-    NotAttached,
-    Unknown,
 }
 
 /// The tree of every node of an arena, computed once per rule run.
@@ -92,7 +80,7 @@ impl<'a> Trees<'a> {
             };
             let mut children_root = root;
             if let DomNode::Element(el) = node {
-                let own_root = if self.is_in_no_tree_uncached(child, el) {
+                let own_root = if is_in_no_tree(self.arena, self.spec, child) {
                     TreeRoot::NoTree(child)
                 } else {
                     root
@@ -115,11 +103,6 @@ impl<'a> Trees<'a> {
             let grand_children = node.children().to_vec();
             self.walk(&grand_children, children_root);
         }
-    }
-
-    fn is_in_no_tree_uncached(&self, id: NodeId, el: &ElementData) -> bool {
-        is_html_template_element(el, self.spec)
-            && declarative_shadow_root_attachment(self.arena, self.spec, id) != ShadowRootAttachment::NotAttached
     }
 
     /// TS `getRootNode()`. A node that is not in the document (a virtual element) is taken as in
@@ -179,24 +162,7 @@ impl<'a> Trees<'a> {
     /// a `template` element that is in no tree, and at the top of the document.
     #[must_use]
     pub fn tree_parent_element(&self, id: NodeId) -> Option<NodeId> {
-        if self.is_in_no_tree(id) {
-            return None;
-        }
-        // A block of a template language is walked through, as TS `parentElement` does
-        let mut current = self.arena.get(id)?.parent_id();
-        let parent = loop {
-            let node_id = current?;
-            match self.arena.get(node_id)? {
-                DomNode::Element(_) => break node_id,
-                DomNode::PSBlock(block) => current = block.base.parent,
-                _ => return None,
-            }
-        };
-        let parent_el = self.arena.get(parent)?.as_element()?;
-        if is_html_template_element(parent_el, self.spec) {
-            return None;
-        }
-        Some(parent)
+        markuplint_dom::tree::tree_parent_element(self.arena, Some(self.spec), id)
     }
 
     /// The ancestors of the node in its tree, nearest first (what TS `closest()` walks, without the
@@ -260,12 +226,7 @@ impl<'a> Trees<'a> {
 /// that asks about a few nodes and does not build [`Trees`]. It agrees with [`Trees::root_of`].
 #[must_use]
 pub fn root_of(arena: &DomArena, spec: &MLMLSpec, node_id: NodeId) -> TreeRoot {
-    if arena
-        .get(node_id)
-        .and_then(DomNode::as_element)
-        .is_some_and(|el| is_html_template_element(el, spec))
-        && declarative_shadow_root_attachment(arena, spec, node_id) != ShadowRootAttachment::NotAttached
-    {
+    if is_in_no_tree(arena, spec, node_id) {
         return TreeRoot::NoTree(node_id);
     }
     let mut current = arena.get(node_id).and_then(DomNode::parent_id);
@@ -333,208 +294,5 @@ pub fn decode_or_keep(written: &str) -> String {
     decode_entities(written).unwrap_or_else(|| written.to_owned())
 }
 
-/// The names that the DOM accepts as a shadow host, besides a valid custom element name.
-///
-/// @see <https://dom.spec.whatwg.org/#valid-shadow-host-name>
-const SHADOW_HOST_NAMES: &[&str] = &[
-    "article",
-    "aside",
-    "blockquote",
-    "body",
-    "div",
-    "footer",
-    "h1",
-    "h2",
-    "h3",
-    "h4",
-    "h5",
-    "h6",
-    "header",
-    "main",
-    "nav",
-    "p",
-    "section",
-    "span",
-];
-
-/// TS `isTransparent`: what the template engine or the framework renders away (a block of a
-/// template language, a fragment of JSX, a `template` with a directive), leaving its children to
-/// the next element above.
-pub(crate) fn is_transparent(node: &DomNode) -> bool {
-    match node {
-        DomNode::PSBlock(_) => true,
-        DomNode::Element(el) => is_rendered_away(el),
-        _ => false,
-    }
-}
-
-#[derive(Debug, Clone, Copy, PartialEq, Eq)]
-enum ShadowRootModeState {
-    Open,
-    Closed,
-    None,
-    Dynamic,
-}
-
-/// TS `getShadowRootModeState`: the state of the `shadowrootmode` attribute.
-///
-/// @see <https://html.spec.whatwg.org/multipage/scripting.html#attr-template-shadowrootmode>
-fn shadow_root_mode_state(el: &ElementData) -> ShadowRootModeState {
-    let Some(attr) = get_attr_node_from_el(el, "shadowrootmode") else {
-        return ShadowRootModeState::None;
-    };
-    if attr.is_dynamic_value == Some(true) {
-        return ShadowRootModeState::Dynamic;
-    }
-    match attr_value(attr).to_lowercase().as_str() {
-        "open" => ShadowRootModeState::Open,
-        "closed" => ShadowRootModeState::Closed,
-        _ => ShadowRootModeState::None,
-    }
-}
-
-/// TS `getShadowHost`: the parent of the `template` element in the output, where what the engine
-/// renders away is skipped.
-pub(crate) fn shadow_host(arena: &DomArena, template: NodeId) -> Option<NodeId> {
-    let mut current = arena.get(template)?.parent_id();
-    while let Some(id) = current {
-        let node = arena.get(id)?;
-        if let DomNode::Document(_) = node {
-            return None;
-        }
-        if !is_transparent(node) && node.as_element().is_some() {
-            return Some(id);
-        }
-        current = node.parent_id();
-    }
-    None
-}
-
-/// TS `canBeShadowHost`: `None` for an element that is not what it is written as (a component whose
-/// output is not known).
-///
-/// @see <https://dom.spec.whatwg.org/#concept-attach-a-shadow-root>
-fn can_be_shadow_host(host: &ElementData) -> Option<bool> {
-    let is_pretender = matches!(host.pretender_context, Some(PretenderContext::Pretender(_)));
-    if host.element_type == ElementType::Authored && !is_pretender {
-        return None;
-    }
-    if host.namespace != NamespaceURI::XHTML {
-        return Some(false);
-    }
-    let name = element_local_name(host);
-    Some(
-        SHADOW_HOST_NAMES.contains(&name.as_str())
-            || markuplint_types::whatwg::custom_element_name::is_custom_element_name(&name),
-    )
-}
-
-/// TS `rendersChildrenInItself`: whether the children written in `host` are its children in the
-/// output. A pretended component renders them in the element it pretends to be only when it
-/// neither drops them nor puts them in a slot wrapper; a custom element keeps them in its light DOM.
-fn renders_children_in_itself(host_id: NodeId, host: &ElementData) -> bool {
-    let Some(PretenderContext::Pretender(pretended)) = &host.pretender_context else {
-        return true;
-    };
-    if pretended.original.element_type == ElementType::WebComponent {
-        return true;
-    }
-    if !pretended.renders_children {
-        return false;
-    }
-    pretended
-        .slot_content
-        .as_ref()
-        .is_none_or(|slot| slot.wrapper == Some(host_id))
-}
-
-/// TS `getTemplatesOfHost`: the HTML `template` elements that sit in the output under the host, in
-/// the order of the markup, seen through what the engine renders away.
-pub(crate) fn templates_of_host(arena: &DomArena, spec: &MLMLSpec, host: NodeId, out: &mut Vec<NodeId>) {
-    for child in arena.pure_children_of(host) {
-        let Some(node) = arena.get(child) else {
-            continue;
-        };
-        if is_transparent(node) {
-            templates_of_host(arena, spec, child, out);
-            continue;
-        }
-        if let DomNode::Element(el) = node
-            && is_html_template_element(el, spec)
-        {
-            out.push(child);
-        }
-    }
-}
-
-/// TS `getDeclarativeShadowRootAttachment`: whether a declarative shadow root is attached to the
-/// parent of a `template` element, by what the HTML parser does with the start tag of `template`
-/// and what the DOM does to attach a shadow root. An element that is not an HTML `template`
-/// element is `NotAttached`.
-///
-/// Known limitation (as TS): a custom element definition may disable the shadow root, which only
-/// the script that defines the element tells. It is taken as not disabled.
-///
-/// @see <https://html.spec.whatwg.org/multipage/parsing.html#parsing-main-inhead>
-/// @see <https://dom.spec.whatwg.org/#concept-attach-a-shadow-root>
-#[must_use]
-pub fn declarative_shadow_root_attachment(arena: &DomArena, spec: &MLMLSpec, template: NodeId) -> ShadowRootAttachment {
-    *arena.memoize("shadow-root-attachment", template, || {
-        compute_declarative_shadow_root_attachment(arena, spec, template)
-    })
-}
-
-fn compute_declarative_shadow_root_attachment(
-    arena: &DomArena,
-    spec: &MLMLSpec,
-    template: NodeId,
-) -> ShadowRootAttachment {
-    let Some(el) = arena.get(template).and_then(DomNode::as_element) else {
-        return ShadowRootAttachment::NotAttached;
-    };
-    if !is_html_template_element(el, spec) {
-        return ShadowRootAttachment::NotAttached;
-    }
-    let mode = shadow_root_mode_state(el);
-    if mode == ShadowRootModeState::None {
-        return ShadowRootAttachment::NotAttached;
-    }
-    let Some(host_id) = shadow_host(arena, template) else {
-        return ShadowRootAttachment::Unknown;
-    };
-    let Some(host) = arena.get(host_id).and_then(DomNode::as_element) else {
-        return ShadowRootAttachment::Unknown;
-    };
-    if !renders_children_in_itself(host_id, host) {
-        return ShadowRootAttachment::Unknown;
-    }
-    match can_be_shadow_host(host) {
-        Some(false) => return ShadowRootAttachment::NotAttached,
-        None => return ShadowRootAttachment::Unknown,
-        Some(true) if mode == ShadowRootModeState::Dynamic => return ShadowRootAttachment::Unknown,
-        Some(true) => {}
-    }
-
-    // The first `template` that asks for a shadow root and can have one takes the host.
-    let mut templates = Vec::new();
-    templates_of_host(arena, spec, host_id, &mut templates);
-    let mut undecided = false;
-    for earlier in templates {
-        if earlier == template {
-            break;
-        }
-        let Some(earlier_el) = arena.get(earlier).and_then(DomNode::as_element) else {
-            continue;
-        };
-        match shadow_root_mode_state(earlier_el) {
-            ShadowRootModeState::None => {}
-            ShadowRootModeState::Dynamic => undecided = true,
-            ShadowRootModeState::Open | ShadowRootModeState::Closed => return ShadowRootAttachment::NotAttached,
-        }
-    }
-    if undecided {
-        ShadowRootAttachment::Unknown
-    } else {
-        ShadowRootAttachment::Attached
-    }
-}
+#[cfg(test)]
+mod tests;

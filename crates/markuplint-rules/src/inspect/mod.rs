@@ -14,9 +14,11 @@
 
 mod debug_map;
 mod node_list;
+mod search;
 
 pub use debug_map::debug_map;
 pub use node_list::{InspectedAttr, InspectedNode, node_list};
+pub use search::{SearchHit, search};
 
 use markuplint_dom::arena::{DomArena, NodeId};
 use markuplint_dom::node::DomNode;

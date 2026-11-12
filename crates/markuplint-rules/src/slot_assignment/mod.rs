@@ -348,23 +348,7 @@ pub fn get_flattened_slottables(arena: &DomArena, spec: &MLMLSpec, slot: NodeId)
 /// a template language is walked through, as TS `parentElement` does.
 #[must_use]
 pub fn tree_parent_element(arena: &DomArena, spec: &MLMLSpec, id: NodeId) -> Option<NodeId> {
-    if matches!(root_of(arena, spec, id), TreeRoot::NoTree(_)) {
-        return None;
-    }
-    let mut current = arena.get(id)?.parent_id();
-    let parent = loop {
-        let node_id = current?;
-        match arena.get(node_id)? {
-            DomNode::Element(_) => break node_id,
-            DomNode::PSBlock(block) => current = block.base.parent,
-            _ => return None,
-        }
-    };
-    let parent_el = arena.get(parent)?.as_element()?;
-    if is_html_template_element(parent_el, spec) {
-        return None;
-    }
-    Some(parent)
+    markuplint_dom::tree::tree_parent_element(arena, Some(spec), id)
 }
 
 /// TS `getComposedParentElement`: the parent element of an element as the accessibility tree is built:

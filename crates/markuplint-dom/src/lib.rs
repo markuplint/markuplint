@@ -40,3 +40,4 @@ pub mod html_builder;
 pub mod node;
 pub mod pretender;
 pub mod traversal;
+pub mod tree;
