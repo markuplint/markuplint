@@ -8,6 +8,7 @@
 //! reuse the existing TS framework parsers (JSX/Vue/Svelte/etc.) for sources the
 //! Rust HTML parser cannot handle, by accepting their MLAST output verbatim.
 
+pub mod image_dimensions;
 pub mod mlast;
 pub mod pretender;
 pub mod violation;

@@ -18,7 +18,8 @@ Incorrect `width`/`height` attributes can cause layout shifts (CLS) because the 
 - Dynamic attribute values (e.g., Vue `:src="x"`, JSX `src={x}`) and elements with spread attributes are skipped. A literal written as code (`src={"a.png"}`) is evaluated as the value that the framework renders it to; a literal that the framework does not output (`null`, `false`) or renders in a way that is not known is skipped, as a dynamic value is.
 - Query strings (`?v=123`) and fragments (`#section`) in `src` are stripped when resolving the file path, but preserved in the cache key. This mirrors browser cache-busting behavior: the same file with different query strings is treated as a separate cache entry.
 - The comparison allows a ±0.5 pixel tolerance: `width`/`height` attributes are integers, so an image whose intrinsic ratio doesn't divide evenly can never have an exact integer match. The tolerance is computed via cross-multiplication (`|attrWidth * actualHeight - attrHeight * actualWidth| / actualWidth`) to avoid floating-point errors while still expressing the mismatch in pixel-equivalent units.
-- Image dimensions are cached in a temporary directory to avoid redundant file reads.
+- Image dimensions are cached to avoid redundant file reads.
+- Only the following image formats are checked: PNG, GIF, BMP, WebP, JPEG, AVIF (and the rest of the HEIF family) and SVG. The format is detected from the file's leading bytes, not from its extension, and only the dimensions written in the file header are read (for SVG, the `width`/`height`/`viewBox` of the root `<svg>` element). A file in any other format, a file that is not a regular file, an unusually large header, or a malformed image is skipped without a report. This is deliberately narrower than what earlier versions checked, in exchange for not depending on an image-decoding library and for reading untrusted files safely: some mismatches in other formats (TIFF, ICO, ...) are no longer reported.
 
 ## Options
 

@@ -57,6 +57,7 @@ pub mod no_input_file_value;
 pub mod no_invalid_aria_prop_value;
 pub mod no_invalid_attr_value;
 pub mod no_malformed_character_reference;
+pub mod no_mismatched_aspect_ratio;
 pub mod no_mixed_srcset_descriptors;
 pub mod no_nested_top_level_landmark;
 pub mod no_nonstandard_features;

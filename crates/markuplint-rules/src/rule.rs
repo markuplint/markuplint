@@ -54,6 +54,12 @@ impl Default for RuleConfig {
 pub struct RuleCommonSettings {
     #[serde(default, alias = "aria_version")]
     pub aria_version: Option<String>,
+
+    /// The file name of the document being linted (TS `document.filename`), for a rule that
+    /// resolves a path relative to it (`no-mismatched-aspect-ratio`). It is not a user setting:
+    /// the engine adds it beside the user's `ruleCommonSettings` in the config JSON.
+    #[serde(default)]
+    pub filename: Option<String>,
 }
 
 #[derive(Debug, Clone)]

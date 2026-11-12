@@ -71,6 +71,7 @@ use crate::rules::no_input_file_value::NoInputFileValue;
 use crate::rules::no_invalid_aria_prop_value::NoInvalidAriaPropValue;
 use crate::rules::no_invalid_attr_value::NoInvalidAttrValue;
 use crate::rules::no_malformed_character_reference::NoMalformedCharacterReference;
+use crate::rules::no_mismatched_aspect_ratio::NoMismatchedAspectRatio;
 use crate::rules::no_mixed_srcset_descriptors::NoMixedSrcsetDescriptors;
 use crate::rules::no_nested_top_level_landmark::NoNestedTopLevelLandmark;
 use crate::rules::no_nonstandard_features::NoNonstandardFeatures;
@@ -732,6 +733,7 @@ fn get_all_rules() -> Vec<Box<dyn Rule>> {
         Box::new(RequireDialogAutofocus),
         Box::new(NoUnpairedSrcsetSizes),
         Box::new(NoMixedSrcsetDescriptors),
+        Box::new(NoMismatchedAspectRatio),
         Box::new(SizesAutoRequiresLazyLoading),
         Box::new(NoAlwaysMatchingSource),
         Box::new(RequireAttr),
