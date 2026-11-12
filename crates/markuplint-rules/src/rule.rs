@@ -54,6 +54,10 @@ impl Default for RuleConfig {
 pub struct RuleCommonSettings {
     #[serde(default, alias = "aria_version")]
     pub aria_version: Option<String>,
+    /// The browserslist targets and the BCD data of the file that is linted, for
+    /// `no-unsupported-browser-features` (resolved by the caller; see that rule).
+    #[serde(default, alias = "browser_support")]
+    pub browser_support: Option<crate::rules::no_unsupported_browser_features::BrowserSupport>,
 }
 
 #[derive(Debug, Clone)]

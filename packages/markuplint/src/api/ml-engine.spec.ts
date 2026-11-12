@@ -1171,31 +1171,13 @@ describe('resolveConfig(false) with inline config (#4015)', () => {
 	});
 });
 
-describe('experimentalRustCore falls back to the TypeScript engine for browser support checks', () => {
-	// The Rust engine has neither browserslist resolution nor browser-compat-data, so
-	// `no-unsupported-browser-features` never reports there.
+describe('experimentalRustCore falls back to the TypeScript engine for rules that read files', () => {
 	afterEach(() => {
 		vi.restoreAllMocks();
 	});
 
 	const stderrOf = (write: { readonly mock: { readonly calls: readonly unknown[][] } }) =>
 		write.mock.calls.map(args => String(args[0])).join('');
-
-	it('says why it left the Rust engine when the rule is enabled', async () => {
-		const write = vi.spyOn(process.stderr, 'write').mockImplementation(() => true);
-		const file = await MLEngine.toMLFile({ sourceCode: '<p>a</p>', name: 'page.html' });
-		const engine = new MLEngine(file!, {
-			noSearchConfig: true,
-			locale: 'en',
-			experimentalRustCore: true,
-			config: { rules: { 'no-unsupported-browser-features': true } },
-		});
-
-		await engine.exec();
-
-		expect(stderrOf(write)).toContain('no-unsupported-browser-features');
-		expect(stderrOf(write)).toContain('falling back to TypeScript engine');
-	});
 
 	it('says why it left the Rust engine when no-mismatched-aspect-ratio is enabled', async () => {
 		// The rule reads the image files from disk, which only the TS engine does.
@@ -1221,12 +1203,12 @@ describe('experimentalRustCore falls back to the TypeScript engine for browser s
 			noSearchConfig: true,
 			locale: 'en',
 			experimentalRustCore: true,
-			config: { nodeRules: [{ selector: 'p', rules: { 'no-unsupported-browser-features': true } }] },
+			config: { nodeRules: [{ selector: 'p', rules: { 'no-mismatched-aspect-ratio': true } }] },
 		});
 
 		await engine.exec();
 
-		expect(stderrOf(write)).toContain('no-unsupported-browser-features');
+		expect(stderrOf(write)).toContain('no-mismatched-aspect-ratio');
 	});
 
 	it('does not leave the Rust engine for it when the rule is disabled', async () => {
@@ -1236,12 +1218,12 @@ describe('experimentalRustCore falls back to the TypeScript engine for browser s
 			noSearchConfig: true,
 			locale: 'en',
 			experimentalRustCore: true,
-			config: { rules: { 'no-unsupported-browser-features': false } },
+			config: { rules: { 'no-mismatched-aspect-ratio': false } },
 		});
 
 		await engine.exec();
 
-		expect(stderrOf(write)).not.toContain('no-unsupported-browser-features');
+		expect(stderrOf(write)).not.toContain('no-mismatched-aspect-ratio');
 	});
 });
 
