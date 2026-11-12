@@ -12,5 +12,11 @@ regex = { workspace = true }
 serde = { workspace = true, features = ["derive"] }
 serde_json = { workspace = true }
 
+# The matcher is tested on the documents the HTML parser builds: a tree boundary is not something
+# a hand-built arena shows.
+[dev-dependencies]
+markuplint-dom = { path = "../markuplint-dom", features = ["html-parser"] }
+markuplint-html-parser = { path = "../markuplint-html-parser" }
+
 [lints]
 workspace = true

@@ -246,13 +246,15 @@ fn run_rules(arena: &DomArena, spec: &MLMLSpec, config: &LintConfig, rules: &[Bo
             if let Value::Object(obj) = value {
                 expand_named_rule_group(key, obj, &mut expanded_entries);
             }
+        } else if key.contains('/') {
+            // TS reads a key with a namespace whose value is not a named rule group as the name of a
+            // rule, and the only such rules are the virtual ones a group makes. So this runs no rule:
+            // the config says it is not found.
         } else {
-            let base_id = if let Some(pos) = key.rfind('/') {
-                &key[pos + 1..]
-            } else {
-                key.as_str()
-            };
-            config_index.entry(base_id).or_default().push((key.as_str(), value));
+            config_index
+                .entry(key.as_str())
+                .or_default()
+                .push((key.as_str(), value));
         }
     }
 
@@ -296,6 +298,7 @@ fn run_rules(arena: &DomArena, spec: &MLMLSpec, config: &LintConfig, rules: &[Bo
             let config_set = if in_node_rules {
                 rule_mapper::build_rule_config_set(
                     base_id,
+                    None,
                     &global_config,
                     &config.node_rules,
                     &config.child_node_rules,
@@ -325,6 +328,7 @@ fn run_rules(arena: &DomArena, spec: &MLMLSpec, config: &LintConfig, rules: &[Bo
             };
             let config_set = rule_mapper::build_rule_config_set(
                 base_id,
+                None,
                 &disabled_global,
                 &config.node_rules,
                 &config.child_node_rules,
@@ -353,9 +357,12 @@ fn run_rules(arena: &DomArena, spec: &MLMLSpec, config: &LintConfig, rules: &[Bo
                 global_config.severity = rule.default_severity();
             }
 
-            let config_set = if has_node_rules && in_node_rules {
+            let maps_node_rules = in_node_rules
+                || rule_mapper::has_wildcard_for(&config.node_rules, &config.child_node_rules, config_key);
+            let config_set = if has_node_rules && maps_node_rules {
                 rule_mapper::build_rule_config_set(
                     base_id,
+                    Some(config_key),
                     &global_config,
                     &config.node_rules,
                     &config.child_node_rules,
@@ -408,6 +415,24 @@ fn run_rules(arena: &DomArena, spec: &MLMLSpec, config: &LintConfig, rules: &[Bo
 
     dedup_keeping_order(&mut violations);
     convert_fixes_to_utf16(arena, &mut violations);
+
+    // The errors of mapping the node rules, which TS reports once for each element and puts ahead of
+    // the rule violations: so they are not among the violations that are deduplicated.
+    let mapping_errors =
+        rule_mapper::namespace_wildcard_messages(&config.node_rules, &config.child_node_rules, arena, spec)
+            .into_iter()
+            .map(|message| Violation {
+                rule_id: "config-error".to_string(),
+                name: None,
+                severity: crate::violation::Severity::Warning,
+                message,
+                line: 1,
+                col: 1,
+                raw: String::new(),
+                reason: None,
+                fix: None,
+            });
+    violations.splice(0..0, mapping_errors);
     violations
 }
 
@@ -2053,7 +2078,7 @@ mod tests {
     // --- Namespaced rule ID tests ---
 
     #[test]
-    fn namespaced_rule_uses_base_id_and_name_field() {
+    fn namespaced_key_that_is_not_a_group_runs_no_rule() {
         use crate::rules::no_duplicate_attr::tests::make_element_with_attrs;
 
         let arena = make_element_with_attrs("div", &[("class", "a"), ("class", "b")]);
@@ -2070,20 +2095,12 @@ mod tests {
         };
 
         let result = lint(&arena, &spec, &config);
-        assert_eq!(result.violations.len(), 1);
-        assert_eq!(
-            result.violations[0].rule_id, "no-duplicate-attr",
-            "ruleId must be the base rule name (matching TS behavior)"
-        );
-        assert_eq!(
-            result.violations[0].name.as_deref(),
-            Some("html-standard/no-duplicate-attr"),
-            "name field must carry the namespace alias"
-        );
+        // TS reads the key as the name of a rule, and only a named rule group makes one: not found.
+        assert_eq!(result.violations.len(), 0);
     }
 
     #[test]
-    fn multiple_namespaces_same_base_rule_run_independently() {
+    fn multiple_namespaced_keys_that_are_not_groups_run_no_rule() {
         use crate::rules::no_duplicate_attr::tests::make_element_with_attrs;
 
         let arena = make_element_with_attrs("div", &[("id", "a"), ("id", "b")]);
@@ -2107,23 +2124,13 @@ mod tests {
         };
 
         let result = lint(&arena, &spec, &config);
-        // TS does not deduplicate violations — each VirtualRule (namespace) produces
-        // its own violations independently. Name is included in the dedup key, so
-        // violations with different names are preserved.
+        // TS reads each key as the name of a rule, and only a named rule group makes one: not found.
         let all_dup: Vec<_> = result
             .violations
             .iter()
             .filter(|v| v.rule_id == "no-duplicate-attr")
             .collect();
-        assert_eq!(
-            all_dup.len(),
-            2,
-            "Violations from different namespaces should be preserved (matching TS VirtualRule behavior)"
-        );
-        // Verify both namespaces are present
-        let names: Vec<_> = all_dup.iter().map(|v| v.name.as_deref()).collect();
-        assert!(names.contains(&Some("html-standard/no-duplicate-attr")));
-        assert!(names.contains(&Some("a11y/no-duplicate-attr")));
+        assert_eq!(all_dup.len(), 0);
     }
 
     // --- NamedRuleGroup expansion tests ---

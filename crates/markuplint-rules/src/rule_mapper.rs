@@ -46,10 +46,57 @@ fn compare_specificity(a: &Specificity, b: &Specificity) -> std::cmp::Ordering {
     a[0].cmp(&b[0]).then(a[1].cmp(&b[1])).then(a[2].cmp(&b[2]))
 }
 
+static FALSE: Value = Value::Bool(false);
+
+/// Whether a namespace wildcard that is `false` (`"a11y/*": false`) covers the rule that the config
+/// sets as `config_key`: its namespace is the start of the key.
+fn wildcard_disables(rules: &HashMap<String, Value>, config_key: &str) -> bool {
+    rules.iter().any(|(name, value)| {
+        *value == FALSE
+            && name
+                .strip_suffix('*')
+                .is_some_and(|prefix| prefix.ends_with('/') && config_key.starts_with(prefix))
+    })
+}
+
+/// What the entry says of the rule: the value it gives `rule_id`, or `false` when a namespace
+/// wildcard of it covers the rule that the config sets as `config_key`. TS `Document#ruleMapping()`
+/// disables every rule of the config whose name starts with the namespace.
+fn entry_rule_value<'a>(
+    rules: &'a HashMap<String, Value>,
+    rule_id: &str,
+    config_key: Option<&str>,
+) -> Option<&'a Value> {
+    rules
+        .get(rule_id)
+        .or_else(|| config_key.filter(|key| wildcard_disables(rules, key)).map(|_| &FALSE))
+}
+
+/// Whether a node rule has a namespace wildcard that is `false` covering the rule the config sets
+/// as `config_key`, so the rule is mapped though no entry names it.
+#[must_use]
+pub fn has_wildcard_for(node_rules: &[NodeRuleEntry], child_node_rules: &[NodeRuleEntry], config_key: &str) -> bool {
+    node_rules
+        .iter()
+        .chain(child_node_rules)
+        .filter(|entry| entry.name.is_none())
+        .any(|entry| {
+            entry
+                .rules
+                .as_ref()
+                .is_some_and(|rules| wildcard_disables(rules, config_key))
+        })
+}
+
 /// Called once per rule in the lint loop. The resulting `RuleConfigSet`
 /// contains per-node overrides that the rule can query by `NodeId`.
+///
+/// `config_key` is the name the config sets the rule under (a named rule group's alias, say), which
+/// a namespace wildcard of a node rule is read against.
+#[allow(clippy::too_many_arguments)]
 pub fn build_rule_config_set(
     rule_id: &str,
+    config_key: Option<&str>,
     global_config: &RuleConfig,
     node_rules: &[NodeRuleEntry],
     child_node_rules: &[NodeRuleEntry],
@@ -68,7 +115,7 @@ pub fn build_rule_config_set(
         let Some(rules) = &entry.rules else {
             continue;
         };
-        let Some(rule_value) = rules.get(rule_id) else {
+        let Some(rule_value) = entry_rule_value(rules, rule_id, config_key) else {
             continue;
         };
 
@@ -88,7 +135,7 @@ pub fn build_rule_config_set(
         let Some(rules) = &entry.rules else {
             continue;
         };
-        let Some(rule_value) = rules.get(rule_id) else {
+        let Some(rule_value) = entry_rule_value(rules, rule_id, config_key) else {
             continue;
         };
 
@@ -394,4 +441,43 @@ fn collect_descendants(arena: &DomArena, parent_id: NodeId) -> Vec<NodeId> {
             DomNode::Document(d) => d.id,
         })
         .collect()
+}
+
+/// The messages of the namespace wildcards of `nodeRules` and `childNodeRules` that are not `false`,
+/// one for each element the entry matches and each such wildcard: TS `Document#ruleMapping()` puts
+/// `mappingErrors` there while it maps the rules onto the document, and `MLCore.verify()` reports
+/// them as `config-error` warnings. A wildcard (`"a11y/*"`) only accepts `false`.
+///
+/// The wildcards of an entry are in the order of their names, as the entry holds them in a map.
+/// A named entry is not read: its rules are those of the virtual rule it makes.
+pub fn namespace_wildcard_messages(
+    node_rules: &[NodeRuleEntry],
+    child_node_rules: &[NodeRuleEntry],
+    arena: &DomArena,
+    spec: &MLMLSpec,
+) -> Vec<String> {
+    let aria_resolver = SpecAriaResolver { spec };
+    let mut messages = Vec::new();
+    for entry in node_rules.iter().chain(child_node_rules) {
+        let Some(rules) = entry.rules.as_ref().filter(|_| entry.name.is_none()) else {
+            continue;
+        };
+        let mut names: Vec<&String> = rules
+            .iter()
+            .filter(|(name, value)| name.ends_with("/*") && !matches!(value, Value::Bool(false)))
+            .map(|(name, _)| name)
+            .collect();
+        if names.is_empty() {
+            continue;
+        }
+        names.sort();
+        for (node_id, _el) in arena.elements() {
+            if match_entry(entry, arena, node_id, spec, &aria_resolver).is_some() {
+                messages.extend(names.iter().map(|name| {
+                    format!("Namespace wildcard \"{name}\" only accepts false; use a specific rule name for options")
+                }));
+            }
+        }
+    }
+    messages
 }

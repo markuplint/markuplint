@@ -187,3 +187,50 @@ fn v6_lint_diagnostics_017() {
     );
     assert_eq!(got, vec![entry(None, "config pretenders selector", "x-foo:bad(")]);
 }
+
+#[test]
+fn v6_lint_reports_a_namespace_wildcard_that_is_not_false_once_for_each_element() {
+    let violations = crate::test_util::lint_html(
+        "<div></div><div></div><p></p>",
+        serde_json::json!({ "nodeRules": [{ "selector": "div", "rules": { "a11y/*": true } }] }),
+    );
+    let messages: Vec<(&str, u32, u32, &str)> = violations
+        .iter()
+        .map(|v| (v.rule_id.as_str(), v.line, v.col, v.message.as_str()))
+        .collect();
+    let message = "Namespace wildcard \"a11y/*\" only accepts false; use a specific rule name for options";
+    assert_eq!(
+        messages,
+        [("config-error", 1, 1, message), ("config-error", 1, 1, message)]
+    );
+}
+
+#[test]
+fn v6_lint_reports_no_namespace_wildcard_that_is_false() {
+    let violations = crate::test_util::lint_html(
+        "<div></div>",
+        serde_json::json!({ "nodeRules": [{ "selector": "div", "rules": { "a11y/*": false } }] }),
+    );
+    assert!(violations.is_empty());
+}
+
+#[test]
+fn v6_lint_disables_the_rules_of_a_namespace_where_a_wildcard_that_is_false_matches() {
+    let html = "<div id=\"a\"></div><div id=\"a\"></div>";
+    let rules = serde_json::json!({ "x/dup": { "rules": { "no-duplicate-id": true } } });
+    let with_wildcard = |namespace: &str| {
+        crate::test_util::lint_html(
+            html,
+            serde_json::json!({
+                "rules": rules,
+                "nodeRules": [{ "selector": "div", "rules": { namespace: false } }],
+            }),
+        )
+    };
+
+    assert!(with_wildcard("x/*").is_empty());
+    let kept = with_wildcard("y/*");
+    assert_eq!(kept.len(), 1);
+    assert_eq!(kept[0].rule_id, "no-duplicate-id");
+    assert_eq!(kept[0].name.as_deref(), Some("x/dup"));
+}

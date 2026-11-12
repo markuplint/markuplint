@@ -97,6 +97,9 @@ function applyFileSuppressions(
  * @param files Files or source code to lint.
  * @param options The parsed CLI flags.
  * @param apiOptions Options passed through to every `MLEngine`.
+ * @param onLinted Called with the engine and the path of each file that was linted, once `exec()` returned and
+ * before the next file; the engine is on the document it linted. `--search` reads that document
+ * through it. A file that is ignored is not passed.
  * @returns `true` when the process must exit with `1`: an error, a warning
  * with `--no-allow-warnings`, more warnings than `--max-warnings`, or a
  * usage error such as no target files. The decision does not depend on
@@ -108,7 +111,12 @@ function applyFileSuppressions(
  * `--show-config`, `--suppress` and `--prune-suppressions` do not lint for
  * a verdict, so they return `false` whatever violations exist.
  */
-export async function command(files: readonly Readonly<Target>[], options: CLIOptions, apiOptions?: APIOptions) {
+export async function command(
+	files: readonly Readonly<Target>[],
+	options: CLIOptions,
+	apiOptions?: APIOptions,
+	onLinted?: (engine: MLEngine, filePath: string) => void,
+) {
 	const fixDryRun = options.fixDryRun;
 	if (options.fix && fixDryRun) {
 		log('Both --fix and --fix-dry-run specified; --fix-dry-run takes precedence');
@@ -280,6 +288,8 @@ export async function command(files: readonly Readonly<Target>[], options: CLIOp
 			ignoredFiles.push(file.path);
 			continue;
 		}
+
+		onLinted?.(engine, result.filePath);
 
 		if (!skipped) {
 			processedFiles.push(result.filePath);

@@ -264,13 +264,7 @@ pub(crate) fn attr_name(attr: &MLASTHTMLAttr) -> &str {
 
 /// TS `el.localName`: an HTML element's name is lower-cased, a foreign (SVG, `MathML`) or
 /// authored/web-component element keeps the case it was written in.
-pub(crate) fn element_local_name(el: &ElementData) -> String {
-    if el.element_type == ElementType::Html && el.namespace == NamespaceURI::XHTML {
-        el.base.node_name.to_ascii_lowercase()
-    } else {
-        el.base.node_name.clone()
-    }
-}
+pub(crate) use markuplint_dom::tree::element_local_name;
 
 /// TS `MLAttr#nameKey`: the name that the DOM gives the attribute, which the ARIA checks look a
 /// property of the spec up by. The message names the attribute by [`attr_name`].

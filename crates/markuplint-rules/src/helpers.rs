@@ -332,33 +332,15 @@ pub fn content_model_field<'a>(
         .and_then(|s| s.content_model.get(key))
 }
 
-/// TS `isRenderedAway` (`packages/@markuplint/rules/src/helpers.ts`): the element is not an
-/// element of the output, so what is written in it is rendered in place of it. A fragment (`<>` of
-/// JSX), or a `template` element with a directive of a template engine (Vue's `<template v-if>`);
-/// a spread attribute is not such a directive.
-pub fn is_rendered_away(el: &ElementData) -> bool {
-    el.is_fragment || (element_local_name(el) == "template" && has_directive(el))
-}
+/// TS `isRenderedAway`: see [`markuplint_dom::tree::is_rendered_away`], which lives beside the
+/// boundary of a tree it shares its element checks with.
+pub use markuplint_dom::tree::is_rendered_away;
 
-fn has_directive(el: &ElementData) -> bool {
-    el.attributes
-        .iter()
-        .any(|attr| matches!(attr, MLASTAttr::HTMLAttr(a) if a.is_directive == Some(true)))
-}
-
-/// TS `MLElement#isHTMLTemplateElement` (`isHTMLTemplateElement` of `ml-core`'s `tree-scope.ts`):
-/// an HTML `template` element, whose children are the content of the template, a tree of its own
-/// with no ancestors in the document. A fragment, a `template` of a framework that keeps the
-/// children in the element itself (`templateContent: "in-place"`: React, Vue) and a `template`
-/// with a directive of a template engine are not.
-///
-/// @see <https://html.spec.whatwg.org/multipage/scripting.html#the-template-element>
+/// TS `MLElement#isHTMLTemplateElement`: see [`markuplint_dom::tree::is_html_template_element`], which
+/// the selector engine reads the boundary of a tree through. The spec is always at hand here.
+#[must_use]
 pub fn is_html_template_element(el: &ElementData, spec: &markuplint_types::spec::types::MLMLSpec) -> bool {
-    !el.is_fragment
-        && el.namespace == markuplint_core::mlast::NamespaceURI::XHTML
-        && element_local_name(el) == "template"
-        && spec.template_content != Some(markuplint_types::spec::types::TemplateContent::InPlace)
-        && !has_directive(el)
+    markuplint_dom::tree::is_html_template_element(el, Some(spec))
 }
 
 /// TS `el.parentElement`, followed up while it is an element: the ancestors of `node_id`,

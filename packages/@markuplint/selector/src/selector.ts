@@ -278,6 +278,11 @@ class SelectorTarget {
 		this.#combinedFrom = { target, combinator };
 	}
 
+	/** Whether a compound stands to the left of this one, joined to it by a combinator. */
+	get isCombined() {
+		return this.#combinedFrom !== null;
+	}
+
 	/**
 	 * @param logEnabled - `selLog.enabled`, read once by `Ruleset.match` and threaded through the recursion
 	 * so that each combinator step and ancestor does not pay the `enabled` getter again.
@@ -1140,7 +1145,9 @@ function matchCombinatorTarget(
 	count: number,
 	logEnabled: boolean,
 ): SelectorResult {
-	if (node === scope && target.toString() === ':scope') {
+	// A compound to the left of `:scope` (`div :scope > p`) has to match as well: a scope that is an
+	// element is matched with it below, and a scope that is the document has nothing above it.
+	if (node === scope && target.toString() === ':scope' && !target.isCombined) {
 		return {
 			specificity: [0, 1, 0],
 			matched: true,

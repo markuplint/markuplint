@@ -137,3 +137,181 @@ fn v6_inspect_debug_map_marks_an_omitted_element() {
         "{map:#?}"
     );
 }
+
+fn found(html: &str, selector: &str, config_value: serde_json::Value) -> Result<Vec<(u32, u32)>, String> {
+    super::search(&html_arena(html), &spec(), &config(config_value), selector)
+        .map(|hits| hits.into_iter().map(|hit| (hit.line, hit.col)).collect())
+}
+
+/// Rust-only: the input of the CLI test `[search-tree-001]` of `packages/markuplint/src/cli/search.spec.ts`.
+#[test]
+fn v6_search_finds_an_element_in_every_tree_in_the_order_of_the_markup() {
+    let html =
+        "<p>a</p>\n<template><p>b</p></template>\n<div><template shadowrootmode=\"open\"><p>c</p></template></div>\n";
+    assert_eq!(found(html, "p", json!({})), Ok(vec![(1, 1), (2, 11), (3, 38)]));
+}
+
+#[test]
+fn v6_search_matches_a_selector_in_the_tree_of_the_element() {
+    // Descendant combinator: the `p` in the content of the `template` is not in the `section`.
+    assert_eq!(
+        found(
+            "<section><p></p><template><p></p></template></section>",
+            "section p",
+            json!({})
+        ),
+        Ok(vec![(1, 10)])
+    );
+    // Child combinator
+    assert_eq!(
+        found("<template><p></p></template>", "template > p", json!({})),
+        Ok(vec![])
+    );
+    // `:has()` does not look into the content of a `template`.
+    assert_eq!(
+        found(
+            "<section><template><p></p></template></section>",
+            "section:has(p)",
+            json!({})
+        ),
+        Ok(vec![])
+    );
+    // Siblings share the tree.
+    assert_eq!(
+        found("<template><b></b><p></p></template>", "b + p", json!({})),
+        Ok(vec![(1, 18)])
+    );
+}
+
+#[test]
+fn v6_search_takes_the_document_as_the_scope() {
+    // `:scope` is the document: no element is it, and an element at the top of it is its child.
+    assert_eq!(
+        found("<p></p><div><p></p></div>", ":scope > p", json!({})),
+        Ok(vec![(1, 1)])
+    );
+    assert_eq!(found("<p></p>", ":scope", json!({})), Ok(vec![]));
+}
+
+#[test]
+fn v6_search_follows_the_pretender() {
+    assert_eq!(
+        found(
+            "<MyButton>x</MyButton><p></p>",
+            "button",
+            json!({ "pretenders": [{ "selector": "MyButton", "as": { "element": "button" } }] })
+        ),
+        Ok(vec![(1, 1)])
+    );
+}
+
+#[test]
+fn v6_search_reads_the_role_and_the_content_model() {
+    assert_eq!(
+        found(
+            "<div role=\"button\"></div><button></button><a href=\"/\"></a>",
+            ":role(button)",
+            json!({})
+        ),
+        Ok(vec![(1, 1), (1, 26)])
+    );
+    assert_eq!(
+        found(
+            "<button></button><p></p><a href=\"/\"></a>",
+            ":model(interactive)",
+            json!({})
+        ),
+        Ok(vec![(1, 1), (1, 25)])
+    );
+}
+
+#[test]
+fn v6_search_is_empty_for_a_document_that_did_not_parse() {
+    use markuplint_dom::arena::DomArenaBuilder;
+    use markuplint_dom::node::{DocumentData, DomNode};
+
+    let mut builder = DomArenaBuilder::new();
+    builder.push(DomNode::Document(DocumentData {
+        id: 0,
+        raw: String::new(),
+        is_fragment: true,
+        unknown_parse_error: Some("The b is invalid element (2:5): Broke mapping nodes.".to_owned()),
+        children: vec![],
+    }));
+    let arena = builder.finish();
+    assert_eq!(super::search(&arena, &spec(), &config(json!({})), "p"), Ok(vec![]));
+}
+
+#[test]
+fn v6_search_rejects_a_selector_it_cannot_read() {
+    assert!(found("<p></p>", "p[", json!({})).is_err());
+    assert!(found("<p></p>", ":model(no-such-category)", json!({})).is_err());
+}
+
+#[test]
+fn v6_search_takes_the_html_element_as_the_root() {
+    // An element at the top of a fragment is no root; the `html` element of a document is.
+    assert_eq!(found("<p></p>", ":root", json!({})), Ok(vec![]));
+    assert_eq!(
+        found(
+            "<!DOCTYPE html><html lang=\"en\"><head><title>t</title></head><body></body></html>",
+            ":root",
+            json!({})
+        ),
+        Ok(vec![(1, 16)])
+    );
+}
+
+#[test]
+fn v6_search_reads_the_children_of_an_element_in_its_tree() {
+    // The content of a `template` is not its children.
+    assert_eq!(
+        found("<template><p></p></template>", "template:has(> p)", json!({})),
+        Ok(vec![])
+    );
+    assert_eq!(
+        found(
+            "<section><template><p></p></template></section>",
+            "section > template:has(> p)",
+            json!({})
+        ),
+        Ok(vec![])
+    );
+    assert_eq!(
+        found("<section><p></p></section>", "section:has(> p)", json!({})),
+        Ok(vec![(1, 1)])
+    );
+}
+
+#[test]
+fn v6_search_closest_does_not_reach_out_of_a_template() {
+    assert_eq!(
+        found(
+            "<section><template><p></p></template></section>",
+            "p:closest(section)",
+            json!({})
+        ),
+        Ok(vec![])
+    );
+    assert_eq!(
+        found("<section><div><p></p></div></section>", "p:closest(section)", json!({})),
+        Ok(vec![(1, 15)])
+    );
+    assert_eq!(
+        found(
+            "<section><template><p></p></template></section>",
+            "p:not(:closest(section))",
+            json!({})
+        ),
+        Ok(vec![(1, 20)])
+    );
+}
+
+#[test]
+fn v6_search_scope_has_no_element_above_it() {
+    // Nothing stands above the document, so no `div` is an ancestor of `:scope`.
+    assert_eq!(
+        found("<p></p><div><p></p></div>", "div :scope > p", json!({})),
+        Ok(vec![])
+    );
+}

@@ -216,6 +216,12 @@ impl DomArena {
         self.get(0)
     }
 
+    /// The id of [`Self::document`]: the node a query of the whole document is scoped to.
+    #[must_use]
+    pub fn document_id(&self) -> Option<NodeId> {
+        self.document().map(|_| 0)
+    }
+
     /// A missing or non-`Document` root at index 0 is treated as a fragment.
     #[must_use]
     pub fn is_fragment(&self) -> bool {

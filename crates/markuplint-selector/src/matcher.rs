@@ -158,7 +158,8 @@ fn match_complex(selector: &ComplexSelector, node_id: NodeId, ctx: &Ctx<'_>) -> 
         match combinator {
             Combinator::Descendant => {
                 let mut found = false;
-                let mut ancestor_id = element_parent(arena, current_id);
+                let mut top = current_id;
+                let mut ancestor_id = tree_parent(ctx, current_id);
                 while let Some(aid) = ancestor_id {
                     let r = match_compound(compound, aid, ctx);
                     if r.matched {
@@ -167,15 +168,25 @@ fn match_complex(selector: &ComplexSelector, node_id: NodeId, ctx: &Ctx<'_>) -> 
                         found = true;
                         break;
                     }
-                    ancestor_id = element_parent(arena, aid);
+                    top = aid;
+                    ancestor_id = tree_parent(ctx, aid);
                 }
                 if !found {
-                    return MatchResult::unmatched();
+                    let Some(r) = scope_as_parent(compound, top, ctx) else {
+                        return MatchResult::unmatched();
+                    };
+                    add_specificity(&mut specificity, &r.specificity);
+                    current_id = ctx.scope;
                 }
             }
             Combinator::Child => {
-                let Some(parent_id) = element_parent(arena, current_id) else {
-                    return MatchResult::unmatched();
+                let Some(parent_id) = tree_parent(ctx, current_id) else {
+                    let Some(r) = scope_as_parent(compound, current_id, ctx) else {
+                        return MatchResult::unmatched();
+                    };
+                    add_specificity(&mut specificity, &r.specificity);
+                    current_id = ctx.scope;
+                    continue;
                 };
                 let r = match_compound(compound, parent_id, ctx);
                 if !r.matched {
@@ -500,8 +511,13 @@ fn match_pseudo_class(pseudo: &PseudoClassSelector, node_id: NodeId, ctx: &Ctx<'
             }
         }
         PseudoClassSelector::Root => {
-            // :root matches the html element (no parent element)
-            if element_parent(arena, node_id).is_none() {
+            // :root matches the html element, as TS does (`el.localName === 'html'`): not an element
+            // that merely has no parent, such as one at the top of a fragment.
+            let is_html = arena
+                .get(node_id)
+                .and_then(DomNode::as_element)
+                .is_some_and(|el| type_name_matches("html", &ctx.identity(el, node_id), ctx));
+            if is_html {
                 MatchResult::matched([0, 1, 0])
             } else {
                 MatchResult::unmatched()
@@ -523,12 +539,12 @@ fn match_pseudo_class(pseudo: &PseudoClassSelector, node_id: NodeId, ctx: &Ctx<'
         }
         PseudoClassSelector::Closest(inner) => {
             // :closest() — markuplint-specific: matches if any ancestor matches
-            let mut ancestor_id = element_parent(arena, node_id);
+            let mut ancestor_id = tree_parent(ctx, node_id);
             while let Some(aid) = ancestor_id {
                 if matches_inner(inner, aid, ctx) {
                     return MatchResult::matched([0, 1, 0]);
                 }
-                ancestor_id = element_parent(arena, aid);
+                ancestor_id = tree_parent(ctx, aid);
             }
             MatchResult::unmatched()
         }
@@ -700,15 +716,30 @@ fn has_class(attributes: &[MLASTAttr], class_name: &str) -> bool {
 // Tree navigation helpers
 // ============================================================
 
-fn element_parent(arena: &DomArena, node_id: NodeId) -> Option<NodeId> {
-    let node = arena.get(node_id)?;
-    let parent_id = node.parent_id()?;
-    let parent = arena.get(parent_id)?;
-    if parent.as_element().is_some() {
-        Some(parent_id)
-    } else {
-        None
-    }
+/// TS `getParentElement` of the selector engine: the parent element in the tree of the element
+/// (`treeParentElement`), so that a combinator does not reach out of the content of an HTML
+/// `template` element. Siblings are not bounded by the tree, as in TS (`getSiblings`).
+fn tree_parent(ctx: &Ctx<'_>, node_id: NodeId) -> Option<NodeId> {
+    markuplint_dom::tree::tree_parent_element(ctx.arena, ctx.spec, node_id)
+}
+
+/// TS `getCombinatorParent` and `matchCombinatorTarget`: at the top of a tree whose parent node is
+/// the scope but not an element (the document `querySelectorAll` of a document asks), the scope
+/// stands where the parent element would, and only `:scope` itself matches it. So `:scope > p`
+/// matches a `p` at the top of the document.
+fn scope_as_parent(compound: &CompoundSelector, top: NodeId, ctx: &Ctx<'_>) -> Option<MatchResult> {
+    let is_scope = matches!(
+        compound.parts.as_slice(),
+        [SimpleSelector::PseudoClass(PseudoClassSelector::Scope)]
+    );
+    let scope_is_parent = ctx.arena.get(top).and_then(DomNode::parent_id) == Some(ctx.scope);
+    let scope_is_element = ctx.arena.get(ctx.scope).is_some_and(|node| node.as_element().is_some());
+    (is_scope && scope_is_parent && !scope_is_element).then(|| MatchResult::matched([0, 1, 0]))
+}
+
+/// TS `getDescendants` of the selector engine: the elements a `:has()` is tried against.
+fn tree_descendants(ctx: &Ctx<'_>, node_id: NodeId) -> Vec<NodeId> {
+    markuplint_dom::tree::descendant_elements(ctx.arena, ctx.spec, node_id)
 }
 
 /// Whether the selector matches the element with one identity only, as TS
@@ -826,10 +857,10 @@ fn compound_has(compound: &CompoundSelector, node_id: NodeId, ctx: &Ctx<'_>) -> 
         };
         match pseudo {
             PseudoClassSelector::Has(inner) => {
-                for subject in has_candidates(ctx.arena, node_id) {
+                for subject in has_candidates(ctx, node_id) {
                     for sel in &inner.selectors {
                         let head = sel.head_combinator.unwrap_or(Combinator::Descendant);
-                        if relative_subjects(ctx.arena, node_id, head, sel.chain.is_empty()).contains(&subject)
+                        if relative_subjects(ctx, node_id, head, sel.chain.is_empty()).contains(&subject)
                             && relative_subject_matches(sel, node_id, subject, ctx)
                         {
                             has.push(Matched {
@@ -863,7 +894,7 @@ fn compound_has(compound: &CompoundSelector, node_id: NodeId, ctx: &Ctx<'_>) -> 
                 }
             }
             PseudoClassSelector::Closest(inner) => {
-                let mut ancestor_id = element_parent(ctx.arena, node_id);
+                let mut ancestor_id = tree_parent(ctx, node_id);
                 while let Some(aid) = ancestor_id {
                     let matched: Vec<_> = inner
                         .selectors
@@ -878,7 +909,7 @@ fn compound_has(compound: &CompoundSelector, node_id: NodeId, ctx: &Ctx<'_>) -> 
                         has.extend(matched);
                         break;
                     }
-                    ancestor_id = element_parent(ctx.arena, aid);
+                    ancestor_id = tree_parent(ctx, aid);
                 }
             }
             _ => {}
@@ -889,13 +920,9 @@ fn compound_has(compound: &CompoundSelector, node_id: NodeId, ctx: &Ctx<'_>) -> 
 
 /// The elements a `:has()` of `anchor` is tried against, in the order TS tries them: the
 /// descendants in document order, then the following siblings with their descendants.
-fn has_candidates(arena: &DomArena, anchor: NodeId) -> Vec<NodeId> {
-    let descendant_elements = |id: NodeId| -> Vec<NodeId> {
-        arena
-            .descendants(id)
-            .filter_map(|n| n.as_element().map(|e| e.base.id))
-            .collect()
-    };
+fn has_candidates(ctx: &Ctx<'_>, anchor: NodeId) -> Vec<NodeId> {
+    let arena = ctx.arena;
+    let descendant_elements = |id: NodeId| -> Vec<NodeId> { tree_descendants(ctx, id) };
     let mut candidates = descendant_elements(anchor);
     for sibling in following_element_siblings(arena, anchor) {
         candidates.push(sibling);
@@ -989,9 +1016,8 @@ fn is_custom_element(node_id: NodeId, ctx: &Ctx<'_>) -> bool {
 /// (a descendant when none is given) to the anchor. The chain is walked with backtracking, so a
 /// nearer element that fits a compound but not the relation does not hide a farther one that does.
 fn matches_relative(selector: &ComplexSelector, anchor: NodeId, ctx: &Ctx<'_>) -> bool {
-    let arena = ctx.arena;
     let head = selector.head_combinator.unwrap_or(Combinator::Descendant);
-    let subjects = relative_subjects(arena, anchor, head, selector.chain.is_empty());
+    let subjects = relative_subjects(ctx, anchor, head, selector.chain.is_empty());
     if selector.chain.is_empty() {
         // The subject is the leftmost compound, and `relative_subjects` returned only what the
         // head combinator relates to the anchor.
@@ -1009,18 +1035,17 @@ fn matches_relative(selector: &ComplexSelector, anchor: NodeId, ctx: &Ctx<'_>) -
 /// Whether a relative selector of `:has()` of `anchor` matches with `subject`, one of its
 /// [`relative_subjects`], as its subject.
 fn relative_subject_matches(selector: &ComplexSelector, anchor: NodeId, subject: NodeId, ctx: &Ctx<'_>) -> bool {
-    let arena = ctx.arena;
     let head = selector.head_combinator.unwrap_or(Combinator::Descendant);
     if selector.chain.is_empty() {
         return match_compound(&selector.subject, subject, ctx).matched;
     }
     // No compound of the chain can lie on or above the anchor (or, for a sibling head, its parent),
     // so the leftward walks end there.
-    let anchor_parent = element_parent(arena, anchor);
+    let anchor_parent = tree_parent(ctx, anchor);
     let stop = |id: NodeId| id == anchor || Some(id) == anchor_parent;
     match_compound(&selector.subject, subject, ctx).matched
         && chain_reaches(&selector.chain, subject, ctx, &stop, &|leftmost| {
-            is_related(arena, anchor, leftmost, head)
+            is_related(ctx, anchor, leftmost, head)
         })
 }
 
@@ -1038,7 +1063,7 @@ fn chain_reaches(
     let Some(((combinator, compound), rest)) = chain.split_first() else {
         return accept(current);
     };
-    leftward_candidates(ctx.arena, current, *combinator, stop)
+    leftward_candidates(ctx, current, *combinator, stop)
         .into_iter()
         .any(|candidate| {
             match_compound(compound, candidate, ctx).matched && chain_reaches(rest, candidate, ctx, stop, accept)
@@ -1048,19 +1073,20 @@ fn chain_reaches(
 /// The elements a compound to the left of `from` can be, by the combinator between them, nearest
 /// first, up to (not including) the first `stop` element.
 fn leftward_candidates(
-    arena: &DomArena,
+    ctx: &Ctx<'_>,
     from: NodeId,
     combinator: Combinator,
     stop: &dyn Fn(NodeId) -> bool,
 ) -> Vec<NodeId> {
+    let arena = ctx.arena;
     let walk = |first: Option<NodeId>, next: &dyn Fn(NodeId) -> Option<NodeId>| -> Vec<NodeId> {
         std::iter::successors(first, |&id| next(id))
             .take_while(|&id| !stop(id))
             .collect()
     };
     match combinator {
-        Combinator::Descendant => walk(element_parent(arena, from), &|id| element_parent(arena, id)),
-        Combinator::Child => walk(element_parent(arena, from), &|_| None),
+        Combinator::Descendant => walk(tree_parent(ctx, from), &|id| tree_parent(ctx, id)),
+        Combinator::Child => walk(tree_parent(ctx, from), &|_| None),
         Combinator::NextSibling => walk(prev_element_sibling(arena, from), &|_| None),
         Combinator::SubsequentSibling => walk(prev_element_sibling(arena, from), &|id| prev_element_sibling(arena, id)),
     }
@@ -1069,15 +1095,16 @@ fn leftward_candidates(
 /// The elements a relative selector is tried against as its subject. Without a chain the subject
 /// is the leftmost compound, so only where the head combinator points can match; with one, the
 /// subject can lie deeper.
-fn relative_subjects(arena: &DomArena, anchor: NodeId, head: Combinator, chain_is_empty: bool) -> Vec<NodeId> {
-    let descendant_elements = |id: NodeId| -> Vec<NodeId> {
-        arena
-            .descendants(id)
-            .filter_map(|n| n.as_element().map(|e| e.base.id))
-            .collect()
-    };
+fn relative_subjects(ctx: &Ctx<'_>, anchor: NodeId, head: Combinator, chain_is_empty: bool) -> Vec<NodeId> {
+    let arena = ctx.arena;
+    let descendant_elements = |id: NodeId| -> Vec<NodeId> { tree_descendants(ctx, id) };
     match head {
-        Combinator::Child if chain_is_empty => child_elements(arena, anchor),
+        // The children in the tree of the anchor: an HTML `template` element has none, what it holds
+        // is the content of a tree of its own.
+        Combinator::Child if chain_is_empty => descendant_elements(anchor)
+            .into_iter()
+            .filter(|&id| tree_parent(ctx, id) == Some(anchor))
+            .collect(),
         Combinator::Descendant | Combinator::Child => descendant_elements(anchor),
         Combinator::NextSibling if chain_is_empty => {
             following_element_siblings(arena, anchor).into_iter().take(1).collect()
@@ -1092,34 +1119,22 @@ fn relative_subjects(arena: &DomArena, anchor: NodeId, head: Combinator, chain_i
 
 /// Whether `leftmost`, where a relative selector's leftmost compound matched, is in the relation
 /// to `anchor` that `head` names.
-fn is_related(arena: &DomArena, anchor: NodeId, leftmost: NodeId, head: Combinator) -> bool {
+fn is_related(ctx: &Ctx<'_>, anchor: NodeId, leftmost: NodeId, head: Combinator) -> bool {
+    let arena = ctx.arena;
     match head {
         Combinator::Descendant => {
-            leftward_candidates(arena, leftmost, Combinator::Descendant, &|_| false).contains(&anchor)
+            leftward_candidates(ctx, leftmost, Combinator::Descendant, &|_| false).contains(&anchor)
         }
-        Combinator::Child => element_parent(arena, leftmost) == Some(anchor),
+        Combinator::Child => tree_parent(ctx, leftmost) == Some(anchor),
         Combinator::NextSibling => prev_element_sibling(arena, leftmost) == Some(anchor),
         Combinator::SubsequentSibling => {
-            leftward_candidates(arena, leftmost, Combinator::SubsequentSibling, &|_| false).contains(&anchor)
+            leftward_candidates(ctx, leftmost, Combinator::SubsequentSibling, &|_| false).contains(&anchor)
         }
     }
 }
 
 fn is_element(arena: &DomArena, id: NodeId) -> bool {
     arena.get(id).is_some_and(|n| n.as_element().is_some())
-}
-
-fn child_elements(arena: &DomArena, node_id: NodeId) -> Vec<NodeId> {
-    arena
-        .get(node_id)
-        .map(|n| {
-            n.children()
-                .iter()
-                .copied()
-                .filter(|&id| is_element(arena, id))
-                .collect()
-        })
-        .unwrap_or_default()
 }
 
 /// The element siblings after `node_id`, in document order, from one pass over the parent's children.
@@ -1637,3 +1652,6 @@ mod tests {
         assert!((select_display_size(Some("abc"), false) - 1.0).abs() < f64::EPSILON);
     }
 }
+
+#[cfg(test)]
+mod boundary_tests;

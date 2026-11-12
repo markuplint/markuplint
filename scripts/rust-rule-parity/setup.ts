@@ -2,7 +2,8 @@
  * Runs the rule specs of `@markuplint/rules` against the Rust engine.
  *
  * `mlRuleTest` hands the rule under test to the TypeScript engine as a custom rule, which the
- * Rust engine never evaluates (a custom rule makes it fall back). Here it is replaced: the rule
+ * Rust engine never evaluates (it runs the built-in rules only, and ignores a rule given to the
+ * API). Here it is replaced: the rule
  * is enabled by its registered name, the one the spec file's directory carries, and the file is
  * linted with `experimentalRustCore`. A fallback to the TypeScript engine fails the test, so a
  * pass is the Rust engine's own result.

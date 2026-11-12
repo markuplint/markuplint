@@ -167,11 +167,10 @@ $ markuplint "src/**/*.html" --experimental-rust-core
 **Known limitations:**
 
 - **Framework parsers still run in TypeScript** — a file of a framework parser (Vue, JSX, Svelte, etc.) is parsed by that parser as before, and the Rust engine evaluates the result, so only the rules get faster for it.
-- **No custom rules** — projects with plugin rules fall back to the TypeScript engine.
-- **NamedRuleGroup expansion** — preset virtual rules (e.g., `a11y/no-accesskey`) are not yet expanded for the Rust path.
-- **Missing rules** — `redundant-accessible-name`, `require-dialog-autofocus`, `srcset-sizes-constraint`, `link-types`, `no-unsupported-features` are not yet implemented in Rust.
+- **No custom rules** — projects with plugin rules fall back to the TypeScript engine. The Rust engine runs the built-in rules only, so a rule given through the `rules` option of the API is ignored by it.
+- **The language server and the testing API** (`mlTest`, `mlRuleTest`) lint with the TypeScript engine.
 
-Fallback is automatic and per-file: eligible files use Rust, ineligible files use TypeScript, and a warning is printed for each fallback. Tracking issue: [#3566](https://github.com/markuplint/markuplint/issues/3566).
+Fallback is automatic and per-file: eligible files use Rust, ineligible files use TypeScript, and a warning is printed for each fallback (a missing native addon, or plugin rules). Tracking issue: [#3566](https://github.com/markuplint/markuplint/issues/3566).
 
 ## Documentation
 

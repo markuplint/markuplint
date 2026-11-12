@@ -473,3 +473,39 @@ pub fn debug_map_html(html: String, config_json: String, spec_json: String) -> n
     let (spec, config) = parse_config(&config_json, &spec_json)?;
     Ok(markuplint_rules::inspect::debug_map(&arena, &spec, &config))
 }
+
+/// Where an element starts (TS `MLElement#startLine` / `startCol`).
+#[napi(object)]
+pub struct NapiPosition {
+    pub line: u32,
+    pub col: u32,
+}
+
+/// The elements of the document `lint_html` lints that a selector matches, in every tree of it and
+/// in the order of the markup (TS `Document#deepQuerySelectorAll`, which `markuplint --search`
+/// reads). None when the document did not parse.
+///
+/// # Errors
+///
+/// Throws a napi error if spec or config JSON fails to parse, or the selector cannot be read.
+#[napi]
+#[allow(clippy::needless_pass_by_value)]
+pub fn search_html(
+    html: String,
+    selector: String,
+    config_json: String,
+    spec_json: String,
+) -> napi::Result<Vec<NapiPosition>> {
+    let arena = arena_from_html(&html);
+    let (spec, config) = parse_config(&config_json, &spec_json)?;
+    markuplint_rules::inspect::search(&arena, &spec, &config, &selector)
+        .map(|hits| {
+            hits.into_iter()
+                .map(|hit| NapiPosition {
+                    line: hit.line,
+                    col: hit.col,
+                })
+                .collect()
+        })
+        .map_err(napi::Error::from_reason)
+}
