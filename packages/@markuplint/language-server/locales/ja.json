@@ -1,5 +1,6 @@
 {
 	"keywords": {
+		". ": "。",
 		"computed accessibility properties": "計算済みアクセシビリティプロパティ",
 		"hidden element": "非表示要素",
 		"no corresponding role": "対応するロールなし",
