@@ -118,6 +118,13 @@ const SOURCE_FILE = /\.(?:ts|tsx|mts|js|mjs|cjs)$/;
 const DECLARATION_FILE = /\.d\.ts$/;
 
 /**
+ * The spec that a package keeps beside its source to check every message of it against its Japanese
+ * locale. It parses the source files of the package, so a change to one of them is a change to its
+ * input that no import shows.
+ */
+const LOCALE_GUARD = 'ja-locale-coverage.spec.ts';
+
+/**
  * A spec that starts a process. The process loads built output, which no import links to the spec,
  * so a change to the code that the process runs has to select it by another way. Found by reading
  * the specs, so that a new one is picked up without an edit here. The names are those of the
@@ -374,6 +381,8 @@ export function plan(changes: readonly Change[], probe: Probe): Plan {
 		const outputs = builtOutputs(probe, root, rel);
 		if (rel.startsWith('src/') && SOURCE_FILE.test(rel)) {
 			targets.add(path);
+			// The guard reads the sources of its package with `fs`, so no import reaches it
+			add(probe.specs.filter(spec => spec === `${root}/src/${LOCALE_GUARD}`));
 			if (DECLARATION_FILE.test(rel)) {
 				// Nothing is emitted for a declaration, so no spec of another package reaches it, and what
 				// it types is checked by `yarn test:types`; the specs of the package run with it.
