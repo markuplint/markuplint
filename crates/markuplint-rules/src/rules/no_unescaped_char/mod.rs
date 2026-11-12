@@ -151,6 +151,7 @@ fn check_chars(
     for ch in text.chars() {
         if chars.contains(&ch) {
             violations.push(Violation {
+                spec_conformance: None,
                 rule_id: rule_id.to_string(),
                 name: None,
                 severity: rule_config.severity,

@@ -50,18 +50,9 @@ pub(crate) fn resolve_aria_version(options: &Value, common_settings: &RuleCommon
     options
         .get("version")
         .and_then(Value::as_str)
-        .and_then(parse_aria_version)
-        .or_else(|| common_settings.aria_version.as_deref().and_then(parse_aria_version))
+        .and_then(ARIAVersion::parse)
+        .or_else(|| common_settings.aria_version.as_deref().and_then(ARIAVersion::parse))
         .unwrap_or(ARIAVersion::RECOMMENDED)
-}
-
-fn parse_aria_version(version: &str) -> Option<ARIAVersion> {
-    match version {
-        "1.1" => Some(ARIAVersion::V1_1),
-        "1.2" => Some(ARIAVersion::V1_2),
-        "1.3" => Some(ARIAVersion::V1_3),
-        _ => None,
-    }
 }
 
 // ============================================================
@@ -171,6 +162,7 @@ impl ElementContext<'_> {
 
     fn violation(&self, line: u32, col: u32, raw: String, message: String) -> Violation {
         Violation {
+            spec_conformance: None,
             rule_id: self.rule_id.to_string(),
             name: None,
             severity: self.severity,

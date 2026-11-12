@@ -29,6 +29,11 @@ pub struct Violation {
     /// Populated from the `reason` field in rule config (nodeRules/childNodeRules).
     #[serde(skip_serializing_if = "Option::is_none")]
     pub reason: Option<String>,
+    /// TS `Violation#specConformance`: what the named rule group or named node rule the violation came
+    /// from declares (`"specConformance": "non-normative"`). A violation of a rule that is not named has
+    /// none.
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub spec_conformance: Option<String>,
     /// The edits that resolve this violation (TS `Violation.fix`). A rule builds it in
     /// byte offsets; `lint()` converts it to UTF-16 code units, see [`crate::fix`].
     #[serde(skip_serializing_if = "Option::is_none")]

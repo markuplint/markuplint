@@ -129,7 +129,7 @@ use crate::violation::{Severity, Violation};
 pub struct LintConfig {
     /// Rule configurations: `{ "rule-id": true | "error" | { severity, value, options } }`.
     #[serde(default)]
-    pub rules: std::collections::HashMap<String, Value>,
+    pub rules: serde_json::Map<String, Value>,
 
     /// Overrides applied to elements matching a selector.
     #[serde(default, alias = "node_rules")]
@@ -233,7 +233,7 @@ fn run_rules(arena: &DomArena, spec: &MLMLSpec, config: &LintConfig, rules: &[Bo
     // NamedRuleGroups are expanded inline: the inner rules are indexed by their
     // base rule ID, with the alias name preserved for violation ruleIds.
 
-    let mut expanded_entries: Vec<(String, String, Value)> = Vec::new();
+    let mut expanded_entries: Vec<ExpandedEntry> = Vec::new();
     let mut config_index: std::collections::HashMap<&str, Vec<(&str, &Value)>> = std::collections::HashMap::new();
 
     for (key, value) in &config.rules {
@@ -259,7 +259,13 @@ fn run_rules(arena: &DomArena, spec: &MLMLSpec, config: &LintConfig, rules: &[Bo
     }
 
     // Separate loop: the expanded_entries borrows must outlive the index inserts.
-    for (alias_name, base_rule_name, config_value) in &expanded_entries {
+    for ExpandedEntry {
+        alias: alias_name,
+        base_rule: base_rule_name,
+        config: config_value,
+        ..
+    } in &expanded_entries
+    {
         if matches!(config_value, Value::Bool(false)) {
             continue;
         }
@@ -268,6 +274,12 @@ fn run_rules(arena: &DomArena, spec: &MLMLSpec, config: &LintConfig, rules: &[Bo
             .or_default()
             .push((alias_name.as_str(), config_value));
     }
+
+    // What each named rule group declares, by the name of its rule: the violations of the rule carry it.
+    let conformance_of: std::collections::HashMap<&str, &str> = expanded_entries
+        .iter()
+        .filter_map(|entry| Some((entry.alias.as_str(), entry.spec_conformance.as_deref()?)))
+        .collect();
 
     for rule in rules {
         let base_id = rule.id();
@@ -382,6 +394,9 @@ fn run_rules(arena: &DomArena, spec: &MLMLSpec, config: &LintConfig, rules: &[Bo
             if config_key.contains('/') {
                 for v in &mut rule_violations {
                     v.name = Some((*config_key).to_string());
+                    if let Some(level) = conformance_of.get(config_key) {
+                        v.spec_conformance = Some((*level).to_owned());
+                    }
                 }
             }
 
@@ -422,6 +437,7 @@ fn run_rules(arena: &DomArena, spec: &MLMLSpec, config: &LintConfig, rules: &[Bo
         rule_mapper::namespace_wildcard_messages(&config.node_rules, &config.child_node_rules, arena, spec)
             .into_iter()
             .map(|message| Violation {
+                spec_conformance: None,
                 rule_id: "config-error".to_string(),
                 name: None,
                 severity: crate::violation::Severity::Warning,
@@ -469,6 +485,7 @@ pub(crate) fn get_parse_error(arena: &DomArena) -> Option<Violation> {
         let (line, col, raw) = parse_error_position(error_msg, arena);
 
         return Some(Violation {
+            spec_conformance: None,
             rule_id: "parse-error".to_string(),
             name: None,
             severity: crate::violation::Severity::Error,
@@ -537,6 +554,7 @@ fn run_named_entries(
 
         let non_false: Vec<(&String, &Value)> =
             rules.iter().filter(|(_, v)| !matches!(v, Value::Bool(false))).collect();
+
         let use_derived = non_false.len() > 1;
 
         for (base_rule_id, _) in &non_false {
@@ -565,6 +583,7 @@ fn run_named_entries(
             let mut rule_violations = verify_rule(rule, base_rule_id, arena, spec, &config_set);
             for v in &mut rule_violations {
                 v.name = Some(alias_name.clone());
+                v.spec_conformance.clone_from(&entry.spec_conformance);
             }
             violations.extend(rule_violations);
         }
@@ -610,6 +629,17 @@ fn is_named_rule_group(value: &Value) -> bool {
     }
 }
 
+/// A rule that a named rule group expands to.
+struct ExpandedEntry {
+    /// The name its violations carry (`a11y/no-accesskey`).
+    alias: String,
+    /// The rule that runs.
+    base_rule: String,
+    config: Value,
+    /// The `specConformance` of the group.
+    spec_conformance: Option<String>,
+}
+
 /// For a `NamedRuleGroup` entry like `"a11y/no-accesskey": { rules: { "no-restricted-attr": { options: ... } } }`:
 /// - Single non-false inner rule: alias = outer key (`a11y/no-accesskey`), base = inner key (`no-restricted-attr`)
 /// - Multiple non-false inner rules: alias = `outer_key/inner_key`, base = inner key
@@ -618,13 +648,14 @@ fn is_named_rule_group(value: &Value) -> bool {
 fn expand_named_rule_group<'a>(
     outer_key: &'a str,
     group: &'a serde_json::Map<String, Value>,
-    expanded: &mut Vec<(String, String, Value)>,
+    expanded: &mut Vec<ExpandedEntry>,
 ) {
     let Some(Value::Object(inner_rules)) = group.get("rules") else {
         return;
     };
 
     let group_severity = group.get("severity").and_then(|v| v.as_str());
+    let group_conformance = group.get("specConformance").and_then(|v| v.as_str());
 
     let non_false_entries: Vec<(&String, &Value)> = inner_rules
         .iter()
@@ -650,7 +681,12 @@ fn expand_named_rule_group<'a>(
             rule_config.clone()
         };
 
-        expanded.push((alias_name, base_rule_name.clone(), effective_config));
+        expanded.push(ExpandedEntry {
+            alias: alias_name,
+            base_rule: base_rule_name.clone(),
+            config: effective_config,
+            spec_conformance: group_conformance.map(str::to_owned),
+        });
     }
 }
 
@@ -2664,6 +2700,7 @@ mod engine_tests {
                 .elements()
                 .filter(|(node_id, _)| !config.get(*node_id).disabled)
                 .map(|(node_id, el)| Violation {
+                    spec_conformance: None,
                     rule_id: self.id().to_string(),
                     name: None,
                     severity: config.get(node_id).severity,
@@ -2691,6 +2728,7 @@ mod engine_tests {
                 .elements()
                 .filter(|(_, el)| el.base.node_name == "b")
                 .map(|(_, el)| Violation {
+                    spec_conformance: None,
                     rule_id: self.id().to_string(),
                     name: None,
                     severity: Severity::Error,

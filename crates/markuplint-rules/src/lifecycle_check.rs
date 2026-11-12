@@ -79,6 +79,7 @@ pub(crate) fn verify_attr_lifecycle(
                 Lifecycle::Deprecated => attr_name(html_attr),
             };
             violations.push(Violation {
+                spec_conformance: None,
                 rule_id: rule_id.to_string(),
                 name: None,
                 severity: rule_config.severity,
@@ -146,6 +147,7 @@ pub(crate) fn verify_element_lifecycle(
             continue;
         }
         violations.push(Violation {
+            spec_conformance: None,
             rule_id: rule_id.to_string(),
             name: None,
             severity: rule_config.severity,

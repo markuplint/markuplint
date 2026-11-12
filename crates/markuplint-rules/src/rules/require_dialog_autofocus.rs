@@ -94,6 +94,7 @@ impl Rule for RequireDialogAutofocus {
 
             // Report on the dialog element, not the trigger
             violations.push(Violation {
+                spec_conformance: None,
                 rule_id: self.id().to_string(),
                     name: None,
                 severity: rule_config.severity,

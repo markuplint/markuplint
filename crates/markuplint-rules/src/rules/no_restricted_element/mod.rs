@@ -47,6 +47,7 @@ impl Rule for NoRestrictedElement {
             for (selector_str, sel) in &global_selectors {
                 if matcher::matches(sel, arena, node_id, Some(node_id), Some(spec), None) {
                     violations.push(Violation {
+                        spec_conformance: None,
                         rule_id: self.id().to_string(),
                         name: None,
                         severity: rule_config.severity,
@@ -90,6 +91,7 @@ impl Rule for NoRestrictedElement {
                 for (selector_str, sel) in &override_selectors {
                     if matcher::matches(sel, arena, desc_id, Some(desc_id), Some(spec), None) {
                         violations.push(Violation {
+                            spec_conformance: None,
                             rule_id: self.id().to_string(),
                             name: None,
                             severity: rule_config.severity,

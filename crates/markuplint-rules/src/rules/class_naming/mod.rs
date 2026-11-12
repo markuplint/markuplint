@@ -82,6 +82,7 @@ impl Rule for ClassNaming {
                         // As TS: every class of the attribute is reported at the start of the
                         // attribute value, with the whole value as `raw` (#4248).
                         violations.push(Violation {
+                            spec_conformance: None,
                             rule_id: self.id().to_string(),
                             name: None,
                             severity: rule_config.severity,

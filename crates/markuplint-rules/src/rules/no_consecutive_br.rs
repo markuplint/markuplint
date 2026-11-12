@@ -49,6 +49,7 @@ impl Rule for NoConsecutiveBr {
                 && next_el.base.node_name.eq_ignore_ascii_case("br")
             {
                 violations.push(Violation {
+                    spec_conformance: None,
                     rule_id: self.id().to_string(),
                     name: None,
                     severity: rule_config.severity,

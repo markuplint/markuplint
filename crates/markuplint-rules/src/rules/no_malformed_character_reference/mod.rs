@@ -44,6 +44,7 @@ impl Rule for NoMalformedCharacterReference {
             .iter()
             .filter(|e| CHARACTER_REFERENCE_CODES.contains(&e.code.as_str()))
             .map(|e| Violation {
+                spec_conformance: None,
                 rule_id: self.id().to_string(),
                 name: None,
                 severity: config.severity,

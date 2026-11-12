@@ -43,6 +43,7 @@ impl Rule for NoDuplicateAutofocus {
                 continue;
             }
             violations.push(Violation {
+                spec_conformance: None,
                 rule_id: self.id().to_owned(),
                 name: None,
                 severity: rule_config.severity,

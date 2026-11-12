@@ -56,6 +56,7 @@ impl Rule for RequireElement {
                         .map(String::from)
                         .unwrap_or_default();
                     violations.push(Violation {
+                        spec_conformance: None,
                         rule_id: self.id().to_string(),
                         name: None,
                         severity: global.severity,
@@ -99,6 +100,7 @@ impl Rule for RequireElement {
                         continue;
                     }
                     violations.push(Violation {
+                        spec_conformance: None,
                         rule_id: self.id().to_string(),
                         name: None,
                         severity: node_config.severity,

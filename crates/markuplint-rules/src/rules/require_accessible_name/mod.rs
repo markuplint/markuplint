@@ -53,6 +53,7 @@ impl Rule for RequireAccessibleName {
                 // The static scan cannot decide whether the unknown content is the name.
                 if accname.name.is_empty() && !accname_may_come_from_unknown_content(arena, spec, node_id) {
                     violations.push(Violation {
+                        spec_conformance: None,
                         rule_id: self.id().to_string(),
                         name: None,
                         severity: rule_config.severity,

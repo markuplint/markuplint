@@ -326,6 +326,7 @@ impl Rule for NoUnsupportedBrowserFeatures {
                 let unsupported = check_all(element.and_then(|e| e.compat.as_ref()), &support.targets);
                 if !unsupported.is_empty() {
                     violations.push(Violation {
+                        spec_conformance: None,
                         rule_id: self.id().to_string(),
                         name: None,
                         severity: rule_config.severity,
@@ -360,6 +361,7 @@ impl Rule for NoUnsupportedBrowserFeatures {
                     continue;
                 }
                 violations.push(Violation {
+                    spec_conformance: None,
                     rule_id: self.id().to_string(),
                     name: None,
                     severity: rule_config.severity,

@@ -36,6 +36,8 @@ pub(crate) mod lifecycle_check;
 pub mod lint;
 #[cfg(test)]
 mod lint_diagnostics_tests;
+#[cfg(test)]
+mod lint_spec_conformance_tests;
 pub mod pretending;
 pub mod rule;
 pub mod rule_mapper;

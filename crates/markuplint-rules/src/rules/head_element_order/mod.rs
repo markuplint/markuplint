@@ -240,6 +240,7 @@ impl Rule for HeadElementOrder {
             .filter_map(|(current, expected)| {
                 let el = arena.get(current.node_id)?.as_element()?;
                 Some(Violation {
+                    spec_conformance: None,
                     rule_id: self.id().to_string(),
                     name: None,
                     severity: head_config.severity,

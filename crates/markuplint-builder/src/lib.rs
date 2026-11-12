@@ -333,6 +333,8 @@ pub struct NapiViolation {
     pub raw: String,
     /// The `reason` of the rule config, unless `reasonOnly` made it the message.
     pub reason: Option<String>,
+    /// TS `Violation#specConformance`: what the named rule the violation came from declares.
+    pub spec_conformance: Option<String>,
     /// TS `FixData`; the ranges are UTF-16 code unit offsets.
     pub fix: Option<NapiFixData>,
 }
@@ -384,6 +386,7 @@ fn to_napi_violations(result: markuplint_rules::lint::LintResult) -> napi::Resul
             col: v.col,
             raw: v.raw,
             reason: v.reason,
+            spec_conformance: v.spec_conformance,
             fix: v.fix.map(to_napi_fix),
         })
         .collect())
@@ -508,4 +511,33 @@ pub fn search_html(
                 .collect()
         })
         .map_err(napi::Error::from_reason)
+}
+
+/// The element of the document `lint_html` lints at a position, with the accessibility properties
+/// the hover of the language server shows (TS `Document#searchNodeByLocation` and
+/// `Document#getAccessibilityProp`), as JSON. None where TS returns `null` (no node there, the node is
+/// not an element, or the document did not parse).
+///
+/// `aria_version` is `"1.1"`, `"1.2"` or `"1.3"`.
+///
+/// # Errors
+///
+/// Throws a napi error if spec or config JSON fails to parse, or `aria_version` is not a version.
+#[napi]
+#[allow(clippy::needless_pass_by_value)]
+pub fn accessibility_html(
+    html: String,
+    line: u32,
+    col: u32,
+    aria_version: String,
+    config_json: String,
+    spec_json: String,
+) -> napi::Result<Option<String>> {
+    let version = markuplint_types::spec::aria::ARIAVersion::parse(&aria_version)
+        .ok_or_else(|| napi::Error::from_reason(format!("Unknown ARIA version: {aria_version}")))?;
+    let arena = arena_from_html(&html);
+    let (spec, config) = parse_config(&config_json, &spec_json)?;
+    markuplint_rules::inspect::accessibility_at(&arena, &spec, &config, line, col, version)
+        .map(|found| serde_json::to_string(&found).map_err(|e| napi::Error::from_reason(e.to_string())))
+        .transpose()
 }

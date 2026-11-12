@@ -160,6 +160,7 @@ impl Reporter<'_> {
             None => (self.el.base.line, self.el.base.col, self.el.base.raw.clone()),
         };
         Violation {
+            spec_conformance: None,
             rule_id: self.rule_id.to_owned(),
             name: None,
             severity: self.rule_config.severity,

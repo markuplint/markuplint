@@ -275,6 +275,7 @@ pub(crate) fn element_allows_additional_properties(ctx: &AttrCheckContext<'_>) -
 /// Reports with `raw` set to the attribute name only.
 pub(crate) fn attr_violation(ctx: &AttrCheckContext<'_>, html_attr: &MLASTHTMLAttr, message: String) -> Violation {
     Violation {
+        spec_conformance: None,
         rule_id: ctx.rule_id.to_string(),
         name: None,
         severity: *ctx.severity,
@@ -291,6 +292,7 @@ pub(crate) fn attr_violation(ctx: &AttrCheckContext<'_>, html_attr: &MLASTHTMLAt
 /// where TS reports the entire attribute.
 pub(crate) fn attr_full_violation(ctx: &AttrCheckContext<'_>, html_attr: &MLASTHTMLAttr, message: String) -> Violation {
     Violation {
+        spec_conformance: None,
         rule_id: ctx.rule_id.to_string(),
         name: None,
         severity: *ctx.severity,
@@ -312,6 +314,7 @@ pub(crate) fn attr_value_violation(
     message: String,
 ) -> Violation {
     Violation {
+        spec_conformance: None,
         rule_id: ctx.rule_id.to_string(),
         name: None,
         severity: *ctx.severity,

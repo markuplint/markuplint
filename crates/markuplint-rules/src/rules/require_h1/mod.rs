@@ -54,6 +54,7 @@ impl Rule for RequireH1 {
             &[Kw::S(&tr.t("the \"{0*}\" {1}", &[Kw::S("h1"), Kw::S("element")]))],
         ));
         vec![Violation {
+            spec_conformance: None,
             rule_id: self.id().to_string(),
             name: None,
             severity: config.severity,
