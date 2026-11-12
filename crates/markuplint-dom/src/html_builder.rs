@@ -247,13 +247,27 @@ fn convert_parser_node(
                         node_name: restore_foreign_attr_colon(&attr.name),
                         spaces_before_name: make_token(source, attr.spaces_before_span),
                         name: make_token(source, attr.name_span),
-                        spaces_before_equal: make_token(source, attr.spaces_before_eq_span),
+                        spaces_before_equal: make_token(
+                            source,
+                            if attr.equal_span.is_some() {
+                                attr.spaces_before_eq_span
+                            } else {
+                                valueless_token_span(attr.name_span)
+                            },
+                        ),
                         equal: make_token(
                             source,
                             attr.equal_span
                                 .unwrap_or(markuplint_html_parser::input::Span::empty(attr.name_span.end)),
                         ),
-                        spaces_after_equal: make_token(source, attr.spaces_after_eq_span),
+                        spaces_after_equal: make_token(
+                            source,
+                            if attr.equal_span.is_some() {
+                                attr.spaces_after_eq_span
+                            } else {
+                                valueless_token_span(attr.name_span)
+                            },
+                        ),
                         // Without a quote the token has no width; it sits where the value starts,
                         // after any whitespace that follows the equal sign.
                         start_quote: make_token(
@@ -393,6 +407,12 @@ fn make_base(
         prev_sibling: None,
         depth,
     }
+}
+
+/// Where the tokens around the equal sign of an attribute that has no equal sign sit, as the TS
+/// parser puts them: empty, at the end of the name.
+fn valueless_token_span(name: markuplint_html_parser::input::Span) -> markuplint_html_parser::input::Span {
+    markuplint_html_parser::input::Span::empty(name.end)
 }
 
 fn make_token(source: &str, span: markuplint_html_parser::input::Span) -> markuplint_core::mlast::MLASTToken {
@@ -713,6 +733,28 @@ mod tests {
     #[test]
     fn restore_foreign_attr_colon_regular_attr_unchanged() {
         assert_eq!(restore_foreign_attr_colon("class"), "class");
+    }
+
+    /// TS puts the tokens around the equal sign of an attribute that has none (empty) at the end of
+    /// its name, which is where the debug map of a document shows them.
+    #[test]
+    fn v6_the_empty_tokens_of_a_valueless_attribute_sit_at_the_end_of_its_name() {
+        let dom = build("<input  disabled >");
+        let (_, input) = dom.elements().find(|(_, el)| el.base.node_name == "input").unwrap();
+        let Some(MLASTAttr::HTMLAttr(attr)) = input.attributes.first() else {
+            panic!("the attribute should exist");
+        };
+        let name_end = attr.name.offset + attr.name.raw.len();
+        for token in [
+            &attr.spaces_before_equal,
+            &attr.equal,
+            &attr.spaces_after_equal,
+            &attr.start_quote,
+            &attr.value,
+            &attr.end_quote,
+        ] {
+            assert_eq!((token.raw.as_str(), token.offset), ("", name_end));
+        }
     }
 
     #[test]

@@ -19,7 +19,9 @@ describe('command: DOM retention for suppressions scope', { timeout: 30_000 }, (
 	beforeEach(async () => {
 		tmpDir = await fs.mkdtemp(path.join(os.tmpdir(), 'markuplint-command-test-'));
 		suppressionsFile = path.join(tmpDir, 'markuplint-suppressions.json');
-		documentGetter = vi.spyOn(MLEngine.prototype, 'document', 'get');
+		// What the CLI reads of the document is its nodes, whichever engine linted it
+		// (the Rust engine has no `document`).
+		documentGetter = vi.spyOn(MLEngine.prototype, 'positionedNodes');
 		vi.spyOn(process.stdout, 'write').mockImplementation(() => true);
 		vi.spyOn(process.stderr, 'write').mockImplementation(() => true);
 	});

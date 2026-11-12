@@ -302,13 +302,11 @@ export async function command(files: readonly Readonly<Target>[], options: CLIOp
 				scopeEngine = new MLEngine(fixedFile!, { ...engineOptions, fix: false });
 				await scopeEngine.exec();
 			}
-			const doc = scopeEngine.document;
-			if (doc) {
-				// MLNode structurally satisfies PositionedNode (startLine, startCol, localName,
-				// id, classList, parentElement, children are all present). The double cast is
-				// needed because TypeScript can't verify structural compatibility between the
-				// generic MLNode<T,O> and the plain PositionedNode interface at compile time.
-				nodeList = doc.nodeList as unknown as PositionedNode[];
+			// The nodes of the document the engine linted, whichever engine that was: the Rust
+			// engine has no `document` to read them off.
+			const nodes = scopeEngine.positionedNodes();
+			if (nodes) {
+				nodeList = nodes;
 				if (isSuppressMode) {
 					nodeLists.set(result.filePath, nodeList);
 				}

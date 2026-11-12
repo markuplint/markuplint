@@ -424,17 +424,52 @@ pub fn lint(mlast_json: String, config_json: String, spec_json: String) -> napi:
 #[napi]
 #[allow(clippy::needless_pass_by_value)]
 pub fn lint_html(html: String, config_json: String, spec_json: String) -> napi::Result<Vec<NapiViolation>> {
-    // Use the lint-aware heuristic: <body>/<head> are also treated as documents
-    // to preserve parent context for rules like permitted-contents.
-    let as_document = markuplint_html_parser::should_parse_as_document(&html);
-    let is_fragment = !as_document;
-    let parser_arena = if is_fragment {
-        markuplint_html_parser::parse_fragment(&html)
-    } else {
-        markuplint_html_parser::parse_document(&html)
-    };
-    let arena = html_builder::build_from_html_arena(&html, &parser_arena, is_fragment);
+    let arena = arena_from_html(&html);
     let (spec, config) = parse_config(&config_json, &spec_json)?;
     let result = markuplint_rules::lint::lint(&arena, &spec, &config);
     to_napi_violations(result)
+}
+
+/// The arena `lint_html` lints, and the ones below describe.
+fn arena_from_html(html: &str) -> DomArena {
+    // Use the lint-aware heuristic: <body>/<head> are also treated as documents
+    // to preserve parent context for rules like permitted-contents.
+    let as_document = markuplint_html_parser::should_parse_as_document(html);
+    let is_fragment = !as_document;
+    let parser_arena = if is_fragment {
+        markuplint_html_parser::parse_fragment(html)
+    } else {
+        markuplint_html_parser::parse_document(html)
+    };
+    html_builder::build_from_html_arena(html, &parser_arena, is_fragment)
+}
+
+/// The nodes of the document `lint_html` lints, as the scope of a suppression reads them (the TS
+/// `nodeList`; see `markuplint_rules::inspect`), as a JSON array. `None` when the document did
+/// not parse.
+///
+/// # Errors
+///
+/// Throws a napi error if spec or config JSON fails to parse.
+#[napi]
+#[allow(clippy::needless_pass_by_value)]
+pub fn node_list_html(html: String, config_json: String, spec_json: String) -> napi::Result<Option<String>> {
+    let arena = arena_from_html(&html);
+    let (spec, config) = parse_config(&config_json, &spec_json)?;
+    markuplint_rules::inspect::node_list(&arena, &spec, &config)
+        .map(|nodes| serde_json::to_string(&nodes).map_err(|e| napi::Error::from_reason(e.to_string())))
+        .transpose()
+}
+
+/// The TS `debugMap()` of the document `lint_html` lints. `None` when the document did not parse.
+///
+/// # Errors
+///
+/// Throws a napi error if spec or config JSON fails to parse.
+#[napi]
+#[allow(clippy::needless_pass_by_value)]
+pub fn debug_map_html(html: String, config_json: String, spec_json: String) -> napi::Result<Option<Vec<String>>> {
+    let arena = arena_from_html(&html);
+    let (spec, config) = parse_config(&config_json, &spec_json)?;
+    Ok(markuplint_rules::inspect::debug_map(&arena, &spec, &config))
 }

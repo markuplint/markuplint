@@ -190,6 +190,26 @@ fn lint_with_rules(arena: &DomArena, spec: &MLMLSpec, config: &LintConfig, rules
     }
 }
 
+/// The document the rules run on, and the one [`crate::inspect`] describes: the arena with the
+/// pretenders applied.
+///
+/// TS applies pretenders while building the document, before rule mapping, so that `nodeRules`
+/// selectors see the pretender identity. The caller's arena is left as built; only a document
+/// with pretenders pays for the copy.
+pub(crate) fn pretended_document<'a>(
+    arena: &'a DomArena,
+    spec: &MLMLSpec,
+    config: &LintConfig,
+) -> std::borrow::Cow<'a, DomArena> {
+    if pretending::may_pretend(arena, &config.pretenders) {
+        let mut copy = arena.clone();
+        pretending::apply_pretenders(&mut copy, &config.pretenders, &config.literal_rendering, spec);
+        std::borrow::Cow::Owned(copy)
+    } else {
+        std::borrow::Cow::Borrowed(arena)
+    }
+}
+
 #[allow(clippy::too_many_lines)]
 fn run_rules(arena: &DomArena, spec: &MLMLSpec, config: &LintConfig, rules: &[Box<dyn Rule>]) -> Vec<Violation> {
     // TS: if (this.#document instanceof ParserError) { return parse-error only }
@@ -200,18 +220,7 @@ fn run_rules(arena: &DomArena, spec: &MLMLSpec, config: &LintConfig, rules: &[Bo
         return vec![parse_error];
     }
 
-    // TS applies pretenders while building the document, before rule mapping, so
-    // that `nodeRules` selectors see the pretender identity. The caller's arena is
-    // left as built; only a document with pretenders pays for the copy.
-    let pretended;
-    let arena = if pretending::may_pretend(arena, &config.pretenders) {
-        let mut copy = arena.clone();
-        pretending::apply_pretenders(&mut copy, &config.pretenders, &config.literal_rendering, spec);
-        pretended = copy;
-        &pretended
-    } else {
-        arena
-    };
+    let arena = &*pretended_document(arena, spec, config);
 
     let mut violations = Vec::new();
 
@@ -428,7 +437,7 @@ fn convert_fixes_to_utf16(arena: &DomArena, violations: &mut [Violation]) {
 /// The error message format from `tree_construction/mod.rs` is:
 /// `"The {tag} is invalid element ({line}:{col}): Broke mapping nodes."`;
 /// the `({line}:{col})` is parsed out for the violation position.
-fn get_parse_error(arena: &DomArena) -> Option<Violation> {
+pub(crate) fn get_parse_error(arena: &DomArena) -> Option<Violation> {
     if let Some(DomNode::Document(doc)) = arena.get(0)
         && let Some(error_msg) = &doc.unknown_parse_error
     {
