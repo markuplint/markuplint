@@ -10,8 +10,9 @@
 //!   require-ancestor-issue-4506-002  → require_ancestor_issue_4506_002
 //!   require-ancestor-issue-4506-006  → require_ancestor_issue_4506_006
 //!   require-ancestor-issue-4506-008  → require_ancestor_issue_4506_008
-//!   v6_require_ancestor_001  — Rust-only: position and raw of the report; only the `area` outside `map` is reported
+//!   v6_require_ancestor_001  — Rust-only: an `area` at the top of a partial is not reported
 //!   v6_require_ancestor_002  — Rust-only: a pretender is checked as the element it pretends to be
+//!   v6_require_ancestor_003  — Rust-only: position and raw of the report; an `area` below an ordinary element of a partial is reported
 
 use crate::test_util::{Brief, brief, lint_brief, lint_html};
 use crate::violation::Severity;
@@ -58,6 +59,13 @@ fn require_ancestor_issue_3670_003() {
 #[test]
 fn v6_require_ancestor_001() {
     assert_eq!(run("<area alt=x href=#>"), []);
+    assert_eq!(run("<map name=a><div><area alt=x href=#></div></map><area>"), []);
+}
+
+/// Expected values from the TS rule (`mlRuleTest`) on the same inputs. An `area` below an ordinary
+/// element has a parent node, so it is reported with its position and raw.
+#[test]
+fn v6_require_ancestor_003() {
     assert_eq!(
         run("<map name=a><div><area alt=x href=#></div></map><p><area></p>"),
         [brief(Severity::Error, 1, 52, MESSAGE, "<area>")]

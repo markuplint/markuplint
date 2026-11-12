@@ -407,16 +407,6 @@ export class MLEngine extends Emitter<MLEngineEventMap> {
 			return null;
 		}
 
-		// Fallback: rules whose input is outside the document. Without the Rust side
-		// having it they would silently report nothing there.
-		const unsupportedRule = RULES_ONLY_THE_TS_ENGINE_EVALUATES.find(id => enablesRule(fabric.ruleset, id));
-		if (unsupportedRule) {
-			process.stderr.write(
-				`⚠ [experimental-rust-core] "${this.#file.path}" enables ${unsupportedRule}, which the Rust engine cannot evaluate — falling back to TypeScript engine.\n`,
-			);
-			return null;
-		}
-
 		// Load NAPI binding
 		let napi: NapiBinding;
 		try {
@@ -440,6 +430,7 @@ export class MLEngine extends Emitter<MLEngineEventMap> {
 			fabric.ruleCommonSettings,
 			fabric.pretenders,
 			browserSupport,
+			this.#file.path,
 		);
 		// The extended specs of a framework are merged here, as the TS document does with them.
 		const spec = schemaToSpec(fabric.schemas);
@@ -1465,12 +1456,6 @@ async function loadNapiBinding(): Promise<NapiBinding> {
 	return cachedNapi;
 }
 
-/**
- * Rules whose input lives outside the document, which only the TS engine can read:
- * `no-mismatched-aspect-ratio` reads the image files from disk.
- */
-const RULES_ONLY_THE_TS_ENGINE_EVALUATES = ['no-mismatched-aspect-ratio'] as const;
-
 const BROWSER_FEATURES_RULE = 'no-unsupported-browser-features';
 
 /**
@@ -1541,7 +1526,8 @@ function buildRustConfigJson(
 	ruleset: Partial<Readonly<Ruleset>>,
 	ruleCommonSettings: Readonly<RuleCommonSettings>,
 	pretenders: readonly Pretender[],
-	browserSupport?: Awaited<ReturnType<typeof resolveBrowserSupport>>,
+	browserSupport: Awaited<ReturnType<typeof resolveBrowserSupport>> | undefined,
+	filename: string,
 ): string {
 	return JSON.stringify({
 		rules: ruleset.rules ?? {},
@@ -1549,7 +1535,9 @@ function buildRustConfigJson(
 		child_node_rules: ruleset.childNodeRules ?? [],
 		// `browserSupport` belongs to no rule's own options (a node rule replaces them) and is
 		// resolved per file, so it travels with the settings that every rule of the run shares.
-		rule_common_settings: browserSupport ? { ...ruleCommonSettings, browserSupport } : ruleCommonSettings,
+		// `filename` is the document's path, which `no-mismatched-aspect-ratio` resolves a relative
+		// `src` against; it is not a setting the user can give.
+		rule_common_settings: { ...ruleCommonSettings, ...(browserSupport ? { browserSupport } : {}), filename },
 		pretenders,
 	});
 }

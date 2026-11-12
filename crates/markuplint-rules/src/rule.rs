@@ -58,6 +58,12 @@ pub struct RuleCommonSettings {
     /// `no-unsupported-browser-features` (resolved by the caller; see that rule).
     #[serde(default, alias = "browser_support")]
     pub browser_support: Option<crate::rules::no_unsupported_browser_features::BrowserSupport>,
+
+    /// The file name of the document being linted (TS `document.filename`), for a rule that
+    /// resolves a path relative to it (`no-mismatched-aspect-ratio`). It is not a user setting:
+    /// the engine adds it beside the user's `ruleCommonSettings` in the config JSON.
+    #[serde(default)]
+    pub filename: Option<String>,
 }
 
 #[derive(Debug, Clone)]

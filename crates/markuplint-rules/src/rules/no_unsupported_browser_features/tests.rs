@@ -17,8 +17,38 @@
 //!     the message, the targets and the gate of the element
 
 use super::{CompatStatement, TargetBrowser, VersionAdded, check_support, is_version_satisfied, parse_version};
+use crate::lint::{LintConfig, lint};
 use crate::test_util::{Brief, brief, lint_brief};
 use crate::violation::Severity;
+use crate::violation::Violation;
+use markuplint_dom::html_builder;
+use markuplint_types::spec::load_spec;
+use markuplint_types::spec::types::MLMLSpec;
+
+fn html_arena(html: &str) -> markuplint_dom::arena::DomArena {
+    let as_doc = markuplint_html_parser::should_parse_as_document(html);
+    let is_fragment = !as_doc;
+    let parser_arena = if is_fragment {
+        markuplint_html_parser::parse_fragment(html)
+    } else {
+        markuplint_html_parser::parse_document(html)
+    };
+    html_builder::build_from_html_arena(html, &parser_arena, is_fragment)
+}
+
+fn spec() -> MLMLSpec {
+    load_spec(include_str!("../../../../../packages/@markuplint/html-spec/index.json")).unwrap()
+}
+
+fn run_rule(html: &str, rule: serde_json::Value) -> Vec<Violation> {
+    let arena = html_arena(html);
+    let spec = spec();
+    let config: LintConfig = serde_json::from_value(serde_json::json!({
+        "rules": { "no-unsupported-browser-features": rule }
+    }))
+    .unwrap();
+    lint(&arena, &spec, &config).violations
+}
 
 fn target(browser: &str, version: &str, display_name: &str) -> serde_json::Value {
     serde_json::json!({ "browser": browser, "version": version, "displayName": display_name })
@@ -183,11 +213,7 @@ fn no_unsupported_browser_features_invalid_004() {
 #[test]
 fn no_unsupported_browser_features_valid_003() {
     const _ID: &str = "no-unsupported-browser-features-valid-003";
-    // No resolved targets are sent when no browserslist configuration applies.
-    let violations = crate::test_util::lint_html(
-        "<dialog></dialog>",
-        serde_json::json!({ "rules": { "no-unsupported-browser-features": true } }),
-    );
+    let violations = run_rule("<dialog></dialog>", serde_json::json!(true));
     assert!(violations.is_empty(), "{violations:?}");
 }
 
@@ -195,10 +221,7 @@ fn no_unsupported_browser_features_valid_003() {
 #[test]
 fn no_unsupported_browser_features_valid_004() {
     const _ID: &str = "no-unsupported-browser-features-valid-004";
-    let violations = crate::test_util::lint_html(
-        "<dialog></dialog>",
-        serde_json::json!({ "rules": { "no-unsupported-browser-features": { "options": {} } } }),
-    );
+    let violations = run_rule("<dialog></dialog>", serde_json::json!({ "options": {} }));
     assert!(violations.is_empty(), "{violations:?}");
 }
 

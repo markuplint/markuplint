@@ -1171,7 +1171,9 @@ describe('resolveConfig(false) with inline config (#4015)', () => {
 	});
 });
 
-describe('experimentalRustCore falls back to the TypeScript engine for rules that read files', () => {
+describe('experimentalRustCore keeps the Rust engine for rules that read the browser support and image files', () => {
+	// The caller resolves browserslist and browser-compat-data for `no-unsupported-browser-features`,
+	// and the Rust engine reads the image files of `no-mismatched-aspect-ratio`.
 	afterEach(() => {
 		vi.restoreAllMocks();
 	});
@@ -1179,8 +1181,24 @@ describe('experimentalRustCore falls back to the TypeScript engine for rules tha
 	const stderrOf = (write: { readonly mock: { readonly calls: readonly unknown[][] } }) =>
 		write.mock.calls.map(args => String(args[0])).join('');
 
-	it('says why it left the Rust engine when no-mismatched-aspect-ratio is enabled', async () => {
-		// The rule reads the image files from disk, which only the TS engine does.
+	it('does not leave the Rust engine when the rule is enabled', async () => {
+		const write = vi.spyOn(process.stderr, 'write').mockImplementation(() => true);
+		const file = await MLEngine.toMLFile({ sourceCode: '<p>a</p>', name: 'page.html' });
+		const engine = new MLEngine(file!, {
+			noSearchConfig: true,
+			locale: 'en',
+			experimentalRustCore: true,
+			config: { rules: { 'no-unsupported-browser-features': true } },
+		});
+
+		await engine.exec();
+
+		expect(stderrOf(write)).not.toContain('no-unsupported-browser-features');
+		expect(stderrOf(write)).not.toContain('falling back to TypeScript engine');
+	});
+
+	it('does not leave the Rust engine when no-mismatched-aspect-ratio is enabled', async () => {
+		// The rule reads the image files from disk, which the Rust engine does.
 		const write = vi.spyOn(process.stderr, 'write').mockImplementation(() => true);
 		const file = await MLEngine.toMLFile({ sourceCode: '<p>a</p>', name: 'page.html' });
 		const engine = new MLEngine(file!, {
@@ -1192,23 +1210,23 @@ describe('experimentalRustCore falls back to the TypeScript engine for rules tha
 
 		await engine.exec();
 
-		expect(stderrOf(write)).toContain('no-mismatched-aspect-ratio');
-		expect(stderrOf(write)).toContain('falling back to TypeScript engine');
+		expect(stderrOf(write)).not.toContain('no-mismatched-aspect-ratio');
+		expect(stderrOf(write)).not.toContain('falling back to TypeScript engine');
 	});
 
-	it('says why it left the Rust engine when only a node rule enables it', async () => {
+	it('does not leave the Rust engine when only a node rule enables it', async () => {
 		const write = vi.spyOn(process.stderr, 'write').mockImplementation(() => true);
 		const file = await MLEngine.toMLFile({ sourceCode: '<p>a</p>', name: 'page.html' });
 		const engine = new MLEngine(file!, {
 			noSearchConfig: true,
 			locale: 'en',
 			experimentalRustCore: true,
-			config: { nodeRules: [{ selector: 'p', rules: { 'no-mismatched-aspect-ratio': true } }] },
+			config: { nodeRules: [{ selector: 'p', rules: { 'no-unsupported-browser-features': true } }] },
 		});
 
 		await engine.exec();
 
-		expect(stderrOf(write)).toContain('no-mismatched-aspect-ratio');
+		expect(stderrOf(write)).not.toContain('no-unsupported-browser-features');
 	});
 
 	it('does not leave the Rust engine for it when the rule is disabled', async () => {
@@ -1218,12 +1236,12 @@ describe('experimentalRustCore falls back to the TypeScript engine for rules tha
 			noSearchConfig: true,
 			locale: 'en',
 			experimentalRustCore: true,
-			config: { rules: { 'no-mismatched-aspect-ratio': false } },
+			config: { rules: { 'no-unsupported-browser-features': false } },
 		});
 
 		await engine.exec();
 
-		expect(stderrOf(write)).not.toContain('no-mismatched-aspect-ratio');
+		expect(stderrOf(write)).not.toContain('no-unsupported-browser-features');
 	});
 });
 
