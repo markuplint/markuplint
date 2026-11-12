@@ -51,6 +51,7 @@ impl Rule for NoDuplicateH1 {
         seconds
             .into_iter()
             .map(|second| Violation {
+                spec_conformance: None,
                 rule_id: self.id().to_string(),
                 name: None,
                 severity: config.severity,

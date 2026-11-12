@@ -59,6 +59,7 @@ impl Rule for NoContentAfterBody {
                     return None;
                 }
                 Some(Violation {
+                    spec_conformance: None,
                     rule_id: self.id().to_string(),
                     name: None,
                     severity: rule_config.severity,

@@ -9,6 +9,7 @@
 - `markuplint.defaultConfig`: It's the configuration specified if configuration files do not exist
 - `markuplint.targetLanguages`: Specify the target languages
 - `markuplint.workingDirectories`: Specify working directories for config resolution (see [Working Directories](#working-directories))
+- `markuplint.experimentalRustCore`: **Experimental.** Lint with the Rust engine of markuplint (v6). It needs the native addon of markuplint, and falls back to the TypeScript engine when the addon is missing or for plugin rules, and says so in the output channel; a markuplint older than v6 lints as before. Restart the language server after changing it
 - `markuplint.hover.accessibility.enable`: Enable the feature that **popup Accessibility Object**
 - `markuplint.hover.accessibility.ariaVersion`: Set `1.1`, `1.2`, or `1.3` WAI-ARIA version. If not set, uses markuplint's default version.
 

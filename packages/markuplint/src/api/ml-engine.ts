@@ -1,7 +1,7 @@
 import type { APIOptions, MLEngineEventMap } from './types.js';
 import type { PositionedNode } from '../suppressions/compute-scope.js';
 import type { MLResultInfo } from '../types.js';
-import type { RustDocumentView, RustInspectBinding, SearchedPosition } from './rust-document.js';
+import type { AccessibilityAt, RustDocumentView, RustInspectBinding, SearchedPosition } from './rust-document.js';
 import type { WatchSubscription } from './shared-watcher.js';
 import type { ConfigSet, MLFile, PretenderResolver, Target } from '@markuplint/file-resolver';
 import type {
@@ -14,6 +14,7 @@ import type {
 	Violation,
 } from '@markuplint/ml-config';
 import type { Ruleset, Plugin, Document, RuleConfigValue, MLFabric, FixSummary } from '@markuplint/ml-core';
+import type { ARIAVersion } from '@markuplint/ml-spec';
 
 import {
 	ConfigProvider,
@@ -214,6 +215,10 @@ export class MLEngine extends Emitter<MLEngineEventMap> {
 	 * lint ran on the TS engine, where {@link document} is the document.
 	 */
 	#rustView: RustDocumentView | null = null;
+	/** Whether a lint went through, whatever it found in the file ({@link linted}). */
+	#linted = false;
+	/** What {@link #tellFallback} wrote to stderr. */
+	readonly #toldFallbacks = new Set<string>();
 	/**
 	 * Counts `setCode()` calls so that, when they overlap, only the latest one
 	 * reaches the file and the core — `setCode()` awaits the pretender
@@ -325,6 +330,36 @@ export class MLEngine extends Emitter<MLEngineEventMap> {
 	}
 
 	/**
+	 * The element of the document the latest {@link exec} linted at a position, and what the
+	 * accessibility tree has of it (TS `Document#searchNodeByLocation` and
+	 * `Document#getAccessibilityProp`): the hover of the language server. `null` when there is no
+	 * element there, or no document (it did not parse, or nothing was linted yet).
+	 *
+	 * @param line - The 1-based line
+	 * @param col - The column as `Document#searchNodeByLocation` reads it (the one of the start tag is 1)
+	 * @param ariaVersion - The ARIA specification version
+	 * @internal Read by the language server.
+	 */
+	accessibilityAt(line: number, col: number, ariaVersion: ARIAVersion): AccessibilityAt | null {
+		if (this.#rustView) {
+			return this.#rustView.accessibility(line, col, ariaVersion);
+		}
+		return accessibilityOfDocument(this.document, line, col, ariaVersion);
+	}
+
+	/**
+	 * Whether a lint went through, so that {@link positionedNodes}, {@link searchNodes} and
+	 * {@link accessibilityAt} answer for the file: `false` before the first {@link exec} through, and
+	 * after a config that no longer loads dropped the core. A file that did not parse is linted: it
+	 * has no document to read, and another lint would find the same.
+	 *
+	 * @internal Read by the language server, which lints before it answers a hover that comes first.
+	 */
+	get linted(): boolean {
+		return this.#linted;
+	}
+
+	/**
 	 * Closes the engine, removing all event listeners and leaving the file
 	 * watcher (the files no other engine watches are released with it).
 	 */
@@ -357,6 +392,7 @@ export class MLEngine extends Emitter<MLEngineEventMap> {
 			const fabric = await this.#provideFabric();
 			if (!fabric) {
 				this.#rustView = null;
+				this.#linted = false;
 				// A config that cannot be loaded fails the file, as it does on the TS path below.
 				if (this.#configFailure) {
 					log('exec: config cannot be loaded');
@@ -408,6 +444,7 @@ export class MLEngine extends Emitter<MLEngineEventMap> {
 		});
 
 		const sourceCode = await this.#file.getCode();
+		this.#linted = true;
 
 		if (verifyResult instanceof Error) {
 			this.emit('lint-error', this.#file.path, sourceCode, verifyResult);
@@ -459,6 +496,23 @@ export class MLEngine extends Emitter<MLEngineEventMap> {
 	}
 
 	/**
+	 * Tells that a lint left the Rust engine: on stderr, for the CLI, and as a `log` event of the
+	 * phase `experimental-rust-core:fallback`, for a consumer that has no stderr to read (the language
+	 * server). The phase is a contract of that consumer, which matches it as a string because it also
+	 * loads versions of this package that do not export it.
+	 */
+	#tellFallback(message: string) {
+		// An engine that lints again (a watched file, the language server at every edit) has the same
+		// reason every time: stderr hears it once, and the `log` event every time, for a consumer to keep
+		// or drop as it needs.
+		if (!this.#toldFallbacks.has(message)) {
+			this.#toldFallbacks.add(message);
+			process.stderr.write(message);
+		}
+		this.emit('log', 'experimental-rust-core:fallback', message.trim());
+	}
+
+	/**
 	 * Attempts to execute linting via the Rust NAPI engine.
 	 * Returns `null` if the file is not eligible (plugin rules, or no native addon),
 	 * in which case the caller should fall back to the TS engine.
@@ -471,7 +525,7 @@ export class MLEngine extends Emitter<MLEngineEventMap> {
 
 		// Fallback: custom rules from plugins
 		if (this.#hasPluginRules) {
-			process.stderr.write(
+			this.#tellFallback(
 				`⚠ [experimental-rust-core] "${this.#file.path}" has custom plugin rules — falling back to TypeScript engine.\n`,
 			);
 			return null;
@@ -485,7 +539,7 @@ export class MLEngine extends Emitter<MLEngineEventMap> {
 			if (isFatalError(error)) {
 				throw error;
 			}
-			process.stderr.write(
+			this.#tellFallback(
 				'⚠ [experimental-rust-core] NAPI binary not found — falling back to TypeScript engine.\n',
 			);
 			return null;
@@ -571,6 +625,10 @@ export class MLEngine extends Emitter<MLEngineEventMap> {
 			// NAPI errors (config/spec parse failures) — report as lint error
 			const message = error instanceof Error ? error.message : String(error);
 			this.emit('lint-error', this.#file.path, sourceCode, new Error(message));
+			// It went through, with no document to read, as the TS engine's lint that fails does: not the
+			// document of a lint before it either.
+			this.#rustView = NO_DOCUMENT_VIEW;
+			this.#linted = true;
 			return {
 				violations: [
 					{
@@ -591,7 +649,9 @@ export class MLEngine extends Emitter<MLEngineEventMap> {
 
 		// The document that was linted, for whoever asks for its nodes afterward. It is the code before
 		// a fix, as the TS engine's document is.
-		this.#rustView = view;
+		// A selector of the config that cannot be read fails the document in TS: there is none to read.
+		this.#rustView = configSelectorError ? NO_DOCUMENT_VIEW : view;
+		this.#linted = true;
 
 		// What `MLCore.verify()` puts ahead of the rule violations; it does not run on this path.
 		const configViolations = createConfigViolationsOf(fabric.ruleset, fabric.rules, fabric.configErrors ?? []);
@@ -893,6 +953,8 @@ export class MLEngine extends Emitter<MLEngineEventMap> {
 				// The core holds the config that no longer loads. Dropping it makes the
 				// next `exec()` / `setCode()` resolve again instead of linting on it.
 				this.#core = null;
+				this.#rustView = null;
+				this.#linted = false;
 				if (this.#options?.watch) {
 					await this.#reportConfigFailure(this.#configFailure);
 				}
@@ -1455,6 +1517,8 @@ type NapiViolation = {
 	raw: string;
 	/** The `reason` of the rule config, unless `reasonOnly` made it the message. */
 	reason?: string;
+	/** What the named rule group or named node rule the violation came from declares. */
+	specConformance?: Violation['specConformance'];
 	/** UTF-16 offsets, like `FixData` (napi objects have no tuple type, so a range is `[start, end]` as an array). */
 	fix?: { edits: { range: number[]; text: string }[] };
 };
@@ -1479,6 +1543,8 @@ function toViolations(napiViolations: readonly NapiViolation[], withFix: boolean
 			col: v.col,
 			raw: v.raw,
 			...(v.reason ? { reason: v.reason } : {}),
+			// The TS engine has no `specConformance` key on a violation of a rule that declares none.
+			...(v.specConformance ? { specConformance: v.specConformance } : {}),
 			...(withFix &&
 				v.fix && {
 					fix: {
@@ -1622,6 +1688,14 @@ function createRenderingDocument(
 	});
 }
 
+/** What a consumer reads of a document that could not be built: TS has `document === null` then. */
+const NO_DOCUMENT_VIEW: RustDocumentView = {
+	nodes: () => null,
+	debugMap: () => null,
+	search: () => [],
+	accessibility: () => null,
+};
+
 /**
  * The view of a document that a parser running in TS built. The Rust engine evaluates its AST and
  * has no document of its own to describe, so it is the TS `Document` itself, built again from the
@@ -1648,6 +1722,7 @@ function createTsDocumentView(tsParser: TsParserInput, code: string): RustDocume
 		nodes: () => (read()?.nodeList ?? null) as readonly PositionedNode[] | null,
 		debugMap: () => read()?.debugMap() ?? null,
 		search: selector => searchDocument(read(), selector),
+		accessibility: (line, col, ariaVersion) => accessibilityOfDocument(read(), line, col, ariaVersion),
 	};
 }
 
@@ -1668,6 +1743,25 @@ function searchDocument(
 		line: node.startLine,
 		col: node.startCol,
 	}));
+}
+
+/**
+ * TS `Document#searchNodeByLocation` and `Document#getAccessibilityProp`: what the hover of the
+ * language server reads. A document that is `null` did not parse and has none.
+ */
+function accessibilityOfDocument<O extends PlainData = undefined>(
+	// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
+	document: Document<RuleConfigValue, O> | null,
+	line: number,
+	col: number,
+	ariaVersion: ARIAVersion,
+): AccessibilityAt | null {
+	const node = document?.searchNodeByLocation(line, col);
+	if (!document || !node?.is(node.ELEMENT_NODE)) {
+		return null;
+	}
+	const aria = document.getAccessibilityProp(node, ariaVersion);
+	return aria ? { node: node.localName, aria } : null;
 }
 
 type NapiBinding = RustInspectBinding & {

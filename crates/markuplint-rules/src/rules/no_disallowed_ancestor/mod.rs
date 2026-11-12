@@ -118,6 +118,7 @@ impl Rule for NoDisallowedAncestor {
                 .and_then(DomNode::as_element)
                 .map_or("", |a| a.base.node_name.as_str());
             violations.push(Violation {
+                spec_conformance: None,
                 rule_id: self.id().to_string(),
                 name: None,
                 severity: rule_config.severity,

@@ -2,6 +2,7 @@
 //! `packages/@markuplint/ml-spec/src/algorithm/aria/`.
 
 pub mod accname;
+pub mod computed_props;
 pub mod computed_role;
 pub mod is_exposed;
 pub mod may_be_focusable;

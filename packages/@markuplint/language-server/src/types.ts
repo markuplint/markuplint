@@ -80,6 +80,12 @@ export type InitializationOptions = {
 	 * severities to their user (OpenCode hands only errors to the model).
 	 */
 	readonly severityMap?: SeverityMap;
+	/**
+	 * Lints with the Rust engine of markuplint (`experimentalRustCore`), which falls back to the
+	 * TypeScript engine for what it does not take over. It reaches only a markuplint that has the
+	 * Rust engine (v6); the older ones lint as before, and the log says so.
+	 */
+	readonly experimentalRustCore?: boolean;
 };
 
 /**

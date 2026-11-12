@@ -300,6 +300,7 @@ pub(crate) fn element_violation(
 ) -> Violation {
     let rule_config = config.get(node_id);
     Violation {
+        spec_conformance: None,
         rule_id: rule_id.to_string(),
         name: None,
         severity: rule_config.severity,
@@ -323,6 +324,7 @@ pub(crate) fn attr_violation(
 ) -> Violation {
     let rule_config = config.get(node_id);
     Violation {
+        spec_conformance: None,
         rule_id: rule_id.to_string(),
         name: None,
         severity: rule_config.severity,

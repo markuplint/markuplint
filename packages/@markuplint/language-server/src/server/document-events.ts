@@ -59,6 +59,8 @@ export type EventHandlerOptions = {
 	workingDirectories?: readonly WorkingDirectoryEntry[];
 	/** Absolute paths of the workspace folders */
 	workspaceFolders: readonly string[];
+	/** Lint with the Rust engine of the markuplint that has it (v6); the older ones lint as before */
+	experimentalRustCore?: boolean;
 	log: Log;
 	diagnosticsLog: Log;
 	errorLog: Log;
@@ -230,6 +232,7 @@ export function createEventHandlers(
 			options.sendDiagnostics,
 			onError,
 			workspace,
+			options.experimentalRustCore,
 		);
 	}
 

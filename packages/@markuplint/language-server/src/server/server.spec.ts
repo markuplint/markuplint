@@ -304,3 +304,120 @@ describe('hover and code actions for a client that sends no settings', () => {
 		expect(Object.keys(actions[0]!.edit.changes)).toStrictEqual([uri]);
 	});
 });
+
+/**
+ * Whether the markuplint that the server falls back to has its native addon built: the addon is a
+ * dependency of that markuplint, not of the server, so it is found from there.
+ */
+const nativeAddonIsBuilt = await import('node:module').then(async ({ createRequire }) => {
+	try {
+		const fromMarkuplint = createRequire(createRequire(import.meta.url).resolve('markuplint/package.json'));
+		const addon = (await import(pathToFileURL(fromMarkuplint.resolve('@markuplint/core')).href)) as Record<
+			string,
+			unknown
+		>;
+		return typeof addon.lintHtml === 'function' && typeof addon.accessibilityHtml === 'function';
+	} catch {
+		return false;
+	}
+});
+
+/**
+ * `experimentalRustCore` of the initialization options lints with the Rust engine of the markuplint that has it:
+ * the diagnostics, the hover and the code actions are what the TypeScript engine gives for the same document.
+ */
+describe.skipIf(!nativeAddonIsBuilt)('experimentalRustCore', () => {
+	// `<button>` is the 52nd character of the second line; the hover reads the position as the column, so 53 is in it.
+	const BUTTON_MARKUP =
+		'<!doctype html>\n<html lang="en"><head><title>t</title></head><body><button aria-pressed="true">Go</button></body></html>\n';
+
+	const sessions = async (experimentalRustCore: boolean, files: Record<string, string> = {}, text?: string) => {
+		const root = createWorkspace(files);
+		const session = await openDocument(
+			{ initializationOptions: { experimentalRustCore }, ...(text === undefined ? {} : { text }) },
+			root,
+		);
+		const diagnostics = await waitForDiagnostics(session.received, session.uri);
+		return { ...session, diagnostics, root };
+	};
+
+	const logMessages = (received: readonly Received[]) =>
+		received.filter(m => m.method === 'window/logMessage').map(m => String(m.params.message));
+
+	test('publishes the diagnostics that the TypeScript engine publishes', async () => {
+		const expected = await sessions(false);
+		const actual = await sessions(true);
+
+		expect(expected.diagnostics.length).toBeGreaterThan(0);
+		expect(actual.diagnostics).toStrictEqual(expected.diagnostics);
+	});
+
+	test('answers the hover that the TypeScript engine answers', async () => {
+		const hoverOf = async (experimentalRustCore: boolean) => {
+			const { client, uri } = await sessions(experimentalRustCore, {}, BUTTON_MARKUP);
+			return client.sendRequest<{ contents: { value: string } } | null>('textDocument/hover', {
+				textDocument: { uri },
+				position: { line: 1, character: 53 },
+			});
+		};
+
+		const expected = await hoverOf(false);
+		const actual = await hoverOf(true);
+
+		expect(expected?.contents.value).toContain('`<button>`');
+		expect(expected?.contents.value).toContain('pressed');
+		expect(actual).toStrictEqual(expected);
+	});
+
+	test('offers the fixes that the TypeScript engine offers', async () => {
+		const codeActionsOf = async (experimentalRustCore: boolean) => {
+			const { client, uri, diagnostics } = await sessions(experimentalRustCore, {
+				'.markuplintrc': JSON.stringify({ rules: { 'attr-value-quotes': true } }),
+			});
+			return client.sendRequest<{ title: string; kind: string }[]>('textDocument/codeAction', {
+				textDocument: { uri },
+				range: diagnostics[0]!.range,
+				context: { diagnostics },
+			});
+		};
+
+		const expected = await codeActionsOf(false);
+		const actual = await codeActionsOf(true);
+
+		expect(expected.map(action => action.kind)).toStrictEqual(['quickfix', 'source.fixAll.markuplint']);
+		expect(actual.map(action => [action.title, action.kind])).toStrictEqual(
+			expected.map(action => [action.title, action.kind]),
+		);
+	});
+
+	test('logs that a lint left for the TypeScript engine once for the document, not at every edit', async () => {
+		const { client, received, uri } = await sessions(true, {
+			// A plugin is a rule the Rust engine does not run, so the lint leaves for the TypeScript engine
+			'plugin.cjs': `module.exports = {
+	name: 'foo',
+	create: () => ({
+		rules: { bar: { defaultValue: 'bar-value', defaultOptions: null, verify: ({ report }) => report({ message: 'x', line: 1, col: 1, raw: '' }) } },
+	}),
+};`,
+			'.markuplintrc': JSON.stringify({ plugins: ['./plugin.cjs'], rules: { 'foo/bar': true } }),
+		});
+		const fell = () => logMessages(received).filter(message => message.includes('falling back to TypeScript'));
+		expect(fell()).toHaveLength(1);
+
+		const published = () => received.filter(m => m.method === 'textDocument/publishDiagnostics').length;
+		const before = published();
+		void client.sendNotification('textDocument/didChange', {
+			textDocument: { uri, version: 2 },
+			contentChanges: [{ text: '<p id=b>x</p>\n' }],
+		});
+		await waitFor(() => (published() > before ? true : undefined), 'the diagnostics of the edit');
+
+		expect(fell()).toHaveLength(1);
+	});
+
+	test('logs nothing about a fallback while the Rust engine lints', async () => {
+		const { received } = await sessions(true);
+
+		expect(logMessages(received).filter(message => message.includes('falling back'))).toStrictEqual([]);
+	});
+});

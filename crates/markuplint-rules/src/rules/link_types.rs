@@ -68,6 +68,7 @@ impl Rule for LinkTypes {
 
                 if let Some(msg) = validate_keyword(&kw_lower, context, &allow_microformats, tr) {
                     violations.push(Violation {
+                        spec_conformance: None,
                         rule_id: self.id().to_string(),
                         name: None,
                         severity: rule_config.severity,

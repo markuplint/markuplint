@@ -89,6 +89,7 @@ impl Rule for NoStrayHeadOrBodyTag {
             for (prefix, message) in &stray {
                 if contains_tag(&text.base.raw, prefix) {
                     violations.push(Violation {
+                        spec_conformance: None,
                         rule_id: self.id().to_string(),
                         name: None,
                         severity: rule_config.severity,

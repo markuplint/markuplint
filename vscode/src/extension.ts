@@ -135,6 +135,7 @@ export function activate(
 		workspaceFolders,
 		gitPath,
 		extendedProtocol: true,
+		experimentalRustCore: config.get<boolean>('experimentalRustCore') ?? false,
 	};
 
 	const clientOptions: LanguageClientOptions = {

@@ -16,6 +16,17 @@ pub enum ARIAVersion {
 
 impl ARIAVersion {
     pub const RECOMMENDED: Self = Self::V1_3;
+
+    /// The version a config names it by (`"1.1"`, `"1.2"`, `"1.3"`).
+    #[must_use]
+    pub fn parse(version: &str) -> Option<Self> {
+        match version {
+            "1.1" => Some(Self::V1_1),
+            "1.2" => Some(Self::V1_2),
+            "1.3" => Some(Self::V1_3),
+            _ => None,
+        }
+    }
 }
 
 pub fn get_aria_spec(spec: &MLMLSpec, version: ARIAVersion) -> &ARIASpec {

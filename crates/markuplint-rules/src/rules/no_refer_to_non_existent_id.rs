@@ -113,6 +113,7 @@ impl Rule for NoReferToNonExistentId {
                         let value = dom_value_of(html_attr, value).unwrap_or_else(|| value.to_owned());
                         if !id_set.contains(&value) {
                             violations.push(Violation {
+                                spec_conformance: None,
                                 rule_id: self.id().to_string(),
                                 name: None,
                                 severity: rule_config.severity,
@@ -239,6 +240,7 @@ fn check_space_separated_ids(
     for id_ref in refs {
         if !id_set.contains(&id_ref) {
             violations.push(Violation {
+                spec_conformance: None,
                 rule_id: rule_id.to_string(),
                 name: None,
                 severity: config.severity,

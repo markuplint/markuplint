@@ -92,6 +92,7 @@ impl Rule for RequireAdjacentPopover {
                 let rule_config = config.get(sub_id);
                 if !rule_config.disabled {
                     violations.push(Violation {
+                        spec_conformance: None,
                         rule_id: self.id().to_string(),
                         name: None,
                         severity: rule_config.severity,

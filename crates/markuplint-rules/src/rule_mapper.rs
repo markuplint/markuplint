@@ -24,12 +24,15 @@ pub struct NodeRuleEntry {
     /// this entry use this name instead of the base rule ID.
     #[serde(default)]
     pub name: Option<String>,
+    /// TS `NodeRule#specConformance` of a named entry: what its violations report.
+    #[serde(default)]
+    pub spec_conformance: Option<String>,
     #[serde(default)]
     pub selector: Option<String>,
     #[serde(default)]
     pub regex_selector: Option<RegexSelector>,
     #[serde(default)]
-    pub rules: Option<HashMap<String, Value>>,
+    pub rules: Option<serde_json::Map<String, Value>>,
     /// (`childNodeRules` only) Whether to apply to all descendants, not just direct children.
     #[serde(default)]
     pub inheritance: Option<bool>,
@@ -50,7 +53,7 @@ static FALSE: Value = Value::Bool(false);
 
 /// Whether a namespace wildcard that is `false` (`"a11y/*": false`) covers the rule that the config
 /// sets as `config_key`: its namespace is the start of the key.
-fn wildcard_disables(rules: &HashMap<String, Value>, config_key: &str) -> bool {
+fn wildcard_disables(rules: &serde_json::Map<String, Value>, config_key: &str) -> bool {
     rules.iter().any(|(name, value)| {
         *value == FALSE
             && name
@@ -63,7 +66,7 @@ fn wildcard_disables(rules: &HashMap<String, Value>, config_key: &str) -> bool {
 /// wildcard of it covers the rule that the config sets as `config_key`. TS `Document#ruleMapping()`
 /// disables every rule of the config whose name starts with the namespace.
 fn entry_rule_value<'a>(
-    rules: &'a HashMap<String, Value>,
+    rules: &'a serde_json::Map<String, Value>,
     rule_id: &str,
     config_key: Option<&str>,
 ) -> Option<&'a Value> {

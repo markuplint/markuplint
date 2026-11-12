@@ -93,6 +93,7 @@ impl Rule for NoBrokenFragmentLink {
 
             if !ids.contains(&decoded) && (!refers_name || !names.contains(&decoded)) {
                 violations.push(Violation {
+                    spec_conformance: None,
                     rule_id: self.id().to_string(),
                     name: None,
                     severity: rule_config.severity,

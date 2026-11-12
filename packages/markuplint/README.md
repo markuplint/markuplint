@@ -168,9 +168,11 @@ $ markuplint "src/**/*.html" --experimental-rust-core
 
 - **Framework parsers still run in TypeScript** — a file of a framework parser (Vue, JSX, Svelte, etc.) is parsed by that parser as before, and the Rust engine evaluates the result, so only the rules get faster for it.
 - **No custom rules** — projects with plugin rules fall back to the TypeScript engine. The Rust engine runs the built-in rules only, so a rule given through the `rules` option of the API is ignored by it.
-- **The language server and the testing API** (`mlTest`, `mlRuleTest`) lint with the TypeScript engine.
+- **The testing API** (`mlTest`, `mlRuleTest`) lints with the TypeScript engine.
 
-Fallback is automatic and per-file: eligible files use Rust, ineligible files use TypeScript, and a warning is printed for each fallback (a missing native addon, or plugin rules). Tracking issue: [#3566](https://github.com/markuplint/markuplint/issues/3566).
+Fallback is automatic and per-file: eligible files use Rust, ineligible files use TypeScript, and a warning is printed for a fallback (a missing native addon, or plugin rules). An engine that lints the same file again (`--watch`, the language server) prints it once, and emits it every time as a `log` event of the phase `experimental-rust-core:fallback` for a caller that does not read stderr. Tracking issue: [#3566](https://github.com/markuplint/markuplint/issues/3566).
+
+**Language server:** it lints with the Rust engine when the client sets the `experimentalRustCore` option (the VS Code extension's `markuplint.experimentalRustCore` setting), and answers the hover from the Rust engine too. It logs a fallback once while the document is open.
 
 ## Documentation
 

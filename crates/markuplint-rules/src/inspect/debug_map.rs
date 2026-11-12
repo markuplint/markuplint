@@ -214,12 +214,12 @@ fn to_u32(value: usize) -> u32 {
 }
 
 /// `getEndLine` of `@markuplint/parser-utils`.
-fn end_line(raw: &str, start_line: u32) -> u32 {
+pub(super) fn end_line(raw: &str, start_line: u32) -> u32 {
     start_line.saturating_add(to_u32(raw.matches('\n').count()))
 }
 
 /// `getEndCol` of `@markuplint/parser-utils`.
-fn end_col(raw: &str, start_col: u32) -> u32 {
+pub(super) fn end_col(raw: &str, start_col: u32) -> u32 {
     match raw.rfind('\n') {
         Some(last_break) => to_u32(utf16_len(&raw[last_break + 1..])).saturating_add(1),
         None => start_col.saturating_add(to_u32(utf16_len(raw))),

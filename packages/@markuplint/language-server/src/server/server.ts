@@ -59,7 +59,7 @@ export function bootServer(connection: Connection) {
 
 		log('onInitialize');
 
-		const { langConfigs, workingDirectories, gitPath, severityMap } = options;
+		const { langConfigs, workingDirectories, gitPath, severityMap, experimentalRustCore } = options;
 
 		configureGitPath(gitPath);
 
@@ -94,6 +94,7 @@ export function bootServer(connection: Connection) {
 				langConfigs,
 				workingDirectories,
 				workspaceFolders,
+				experimentalRustCore: experimentalRustCore === true,
 				log,
 				diagnosticsLog: channel.diagnosticsLog,
 				errorLog: channel.errorLog,

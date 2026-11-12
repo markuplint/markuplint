@@ -75,6 +75,7 @@ impl Rule for CaseSensitiveTagName {
                 let name_col = el.base.col + el.tag_open_char.len() as u32;
                 let name_start = el.base.offset + el.tag_open_char.len();
                 violations.push(Violation {
+                    spec_conformance: None,
                     rule_id: self.id().to_string(),
                     name: None,
                     severity: rule_config.severity,
@@ -103,6 +104,7 @@ impl Rule for CaseSensitiveTagName {
                     // `</` precedes the name; the open tag's `<` is the same width as the `tag_open_char`.
                     let close_name_start = ct.offset + el.tag_open_char.len() + '/'.len_utf8();
                     violations.push(Violation {
+                        spec_conformance: None,
                         rule_id: self.id().to_string(),
                         name: None,
                         severity: rule_config.severity,

@@ -39,7 +39,8 @@ export type APIOptions = {
 	 * The files of framework parsers are parsed in TypeScript and the result is handed to the Rust
 	 * engine. Falls back to the TypeScript engine for the rules of plugins, and when the native addon is
 	 * missing. The Rust engine runs the built-in rules only:
-	 * a rule given in `rules` is ignored by it.
+	 * a rule given in `rules` is ignored by it. A fallback is written to stderr once for an
+	 * engine, and emitted every time as a `log` event of the phase `experimental-rust-core:fallback`.
 	 */
 	readonly experimentalRustCore?: boolean;
 	/**

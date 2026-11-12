@@ -79,6 +79,7 @@ impl Rule for NoRedundantAccessibleName {
                 let winner = &sources[0];
                 for loser in &sources[1..] {
                     violations.push(Violation {
+                        spec_conformance: None,
                         rule_id: self.id().to_string(),
                         name: None,
                         severity: rule_config.severity,

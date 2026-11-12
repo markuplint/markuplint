@@ -81,6 +81,7 @@ fn check(options: &serde_json::Value, html_attr: &MLASTHTMLAttr, ctx: &AttrCheck
                 (value_node.line + loc_line, col, one.loc.raw)
             };
             Violation {
+                spec_conformance: None,
                 rule_id: ctx.rule_id.to_string(),
                 name: None,
                 severity: *ctx.severity,

@@ -89,6 +89,7 @@ impl Rule for LabelNoMultipleControls {
                 };
                 // TS reports with the control as the scope, so the control's settings apply.
                 violations.push(Violation {
+                    spec_conformance: None,
                     rule_id: self.id().to_string(),
                     name: None,
                     severity: config.get(control_id).severity,

@@ -64,6 +64,7 @@ impl Rule for AttrValueQuotes {
 
                 if html_attr.start_quote.raw != expected_quote {
                     violations.push(Violation {
+                        spec_conformance: None,
                         rule_id: self.id().to_string(),
                         name: None,
                         severity: rule_config.severity,

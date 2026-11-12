@@ -55,6 +55,7 @@ impl Rule for NoExtraSelectedOptions {
 
             for opt in selected.iter().skip(1) {
                 violations.push(Violation {
+                    spec_conformance: None,
                     rule_id: self.id().to_owned(),
                     name: None,
                     severity: rule_config.severity,

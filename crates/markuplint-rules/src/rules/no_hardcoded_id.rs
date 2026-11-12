@@ -53,6 +53,7 @@ impl Rule for NoHardcodedId {
                 // TS `attr.nameKey === 'id'`
                 if markuplint_dom::helpers::name_key(el, html_attr) == "id" {
                     violations.push(Violation {
+                        spec_conformance: None,
                         rule_id: self.id().to_string(),
                         name: None,
                         severity: rule_config.severity,

@@ -140,6 +140,12 @@
 						]
 					}
 				},
+				"markuplint.experimentalRustCore": {
+					"type": "boolean",
+					"markdownDescription": "**Experimental.** Lint with the Rust engine of markuplint. It needs the native addon of markuplint, and falls back to the TypeScript engine when the addon is missing or for what the Rust engine does not take over (plugin rules), and says so in the output channel. It takes effect only when the markuplint the extension loads has the Rust engine (v6); with an older one it lints as before. Restart the language server after changing it.",
+					"scope": "window",
+					"default": false
+				},
 				"markuplint.hover.accessibility.enable": {
 					"type": "boolean",
 					"markdownDescription": "Enable the feature that **popup Accessibility Object**",

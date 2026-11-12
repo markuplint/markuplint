@@ -16,7 +16,7 @@ import { getFilePath } from '../utils/get-file-path.js';
 
 import { createQuickFixActions, createFixAllAction } from './code-actions.js';
 import { convertDiagnostics } from './convert-diagnostics.js';
-import { getAccessibilityByLocation } from './get-accessibility-by-location.js';
+import { getAccessibilityByLocation, hasAccessibilityAt } from './get-accessibility-by-location.js';
 import { isPretendersNotInstalled } from './parser-load-failure.js';
 import { applySuppressionsToViolations, loadSuppressions } from './suppression-support.js';
 
@@ -59,6 +59,7 @@ export function getFixState(uri: string): FixState | undefined {
  * @param sendDiagnostics - Callback to publish diagnostics to the client
  * @param notFoundParserError - Callback invoked when a parser is not found
  * @param workspace - The working directory the document belongs to; the base for config discovery
+ * @param experimentalRustCore - Lint with the Rust engine, if the markuplint of the document has it
  */
 export async function onDidOpen(
 	// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
@@ -73,6 +74,7 @@ export async function onDidOpen(
 	sendDiagnostics: SendDiagnostics,
 	notFoundParserError: (e: unknown) => void,
 	workspace: string,
+	experimentalRustCore = false,
 ) {
 	moduleLog = log;
 	const key = document.uri;
@@ -100,12 +102,25 @@ export async function onDidOpen(
 		return;
 	}
 
+	// The option is passed to the markuplint that has what the hover reads of the Rust engine
+	// (`accessibilityAt`), whatever its version number says: the Rust engine builds no `Document`, so a
+	// markuplint that has the engine without the method would lose the hover, and one that has neither
+	// ignores the option without a word.
+	const rustCore = experimentalRustCore && hasAccessibilityAt(MLEngine.prototype);
+	if (experimentalRustCore && !rustCore) {
+		log(
+			`experimentalRustCore is on, but the markuplint of ${key} has no Rust engine for the language server: it lints with the TypeScript engine`,
+			'info',
+		);
+	}
+
 	const engine = new MLEngine(file, {
 		locale,
 		debug: config.debug,
 		defaultConfig: config.defaultConfig,
 		watch: true,
 		fix: true,
+		...(rustCore ? { experimentalRustCore: true } : {}),
 	});
 	log(`Engine created: ${key}`);
 
@@ -117,7 +132,15 @@ export async function onDidOpen(
 		configSet = _configSet;
 	});
 
+	// The Rust engine lints the document again on every edit, and tells every time that it left for the
+	// TypeScript engine, for the same reason: once for a document is enough.
+	let fallbackWarned = false;
+
 	engine.on('log', (phase, message) => {
+		if (phase === 'experimental-rust-core:fallback' && !fallbackWarned) {
+			fallbackWarned = true;
+			log(message, 'warn');
+		}
 		log(`[${phase}]: ${message}`, 'trace');
 	});
 

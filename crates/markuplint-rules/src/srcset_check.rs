@@ -160,6 +160,7 @@ impl CandidateContext<'_> {
 
     fn violation(&self, line: u32, col: u32, raw: String, message: &str) -> Violation {
         Violation {
+            spec_conformance: None,
             rule_id: self.rule_id.to_string(),
             name: None,
             severity: self.rule_config.severity,
