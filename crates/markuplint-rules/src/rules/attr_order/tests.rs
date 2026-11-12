@@ -58,6 +58,8 @@
 //!   v6_attr_order_010  — Rust-only: `source-order` group with `alphabetical: false`
 //!   v6_attr_order_011  — Rust-only: unlisted names of a fixed order follow the listed ones
 //!   v6_attr_order_012  — Rust-only: a pattern may use lookbehind, as JavaScript allows
+//!   attr-order-issue-4435-001   → attr_order_issue_4435_001 (the JSX parser is stood in for by a custom element)
+//!   attr-order-issue-4435-002   → attr_order_issue_4435_002
 //!   v6_attr_order_013  — Rust-only: a pretended element is checked by the attributes of what it pretends to be
 //!   v6_attr_order_014  — Rust-only: `info` severity says "should"
 //!   v6_attr_order_015  — Rust-only: each position keeps its whitespace; non-ASCII text before the fix
@@ -856,4 +858,46 @@ fn v6_attr_order_020() {
     );
     assert_eq!(run_dom_api("<svg ROLE role></svg>"), []);
     assert_eq!(run_dom_api("<div role ROLE></div>"), []);
+}
+
+/// TS: `[attr-order-issue-4435-001]` attributes that a pretender made are not in the source, so
+/// their order is not checked
+#[test]
+fn attr_order_issue_4435_001() {
+    const _ID: &str = "attr-order-issue-4435-001";
+    assert_eq!(
+        lint_brief(
+            "attr-order",
+            "<x-btn></x-btn>",
+            serde_json::json!({
+                "rules": { "attr-order": { "value": ["id", "class", "type"], "severity": "warning" } },
+                "pretenders": [{
+                    "selector": "x-btn",
+                    "as": { "element": "button", "attrs": [
+                        { "name": "type", "value": "button" },
+                        { "name": "id", "value": "a" },
+                    ] },
+                }],
+            }),
+        ),
+        []
+    );
+}
+
+/// TS: `[attr-order-issue-4435-002]` attributes that a pretender takes over from the source are
+/// still checked
+#[test]
+fn attr_order_issue_4435_002() {
+    const _ID: &str = "attr-order-issue-4435-002";
+    assert_eq!(
+        lint_brief(
+            "attr-order",
+            r#"<x-btn type="button" id="b"></x-btn>"#,
+            serde_json::json!({
+                "rules": { "attr-order": { "value": ["id", "class", "type"], "severity": "warning" } },
+                "pretenders": [{ "selector": "x-btn", "as": { "element": "button", "inheritAttrs": true } }],
+            }),
+        ),
+        [warning(1, 22, r#""id" should be before "type""#, "id")]
+    );
 }

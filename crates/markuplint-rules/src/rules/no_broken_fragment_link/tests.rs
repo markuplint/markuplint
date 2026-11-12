@@ -7,6 +7,7 @@
 //!   no-broken-fragment-link-issue-748      — SKIP: PHP parser (preprocessor block) not available in Rust
 //!   no-broken-fragment-link-issue-776      — SKIP: PHP parser not available in Rust; the same
 //!                                             markup through the HTML parser is v6_no_broken_fragment_link_002
+//!   no-broken-fragment-link-issue-4435-001 → no_broken_fragment_link_issue_4435_001 (the MLAST of the JSX parser)
 //!   v6_no_broken_fragment_link_001  — Rust-only: the `href` is not entity-decoded, the ID is
 //!   v6_no_broken_fragment_link_002  — Rust-only: percent-decoded fragments against entity-decoded IDs
 //!   v6_no_broken_fragment_link_003  — Rust-only: a fragment that does not percent-decode is compared as written
@@ -171,4 +172,39 @@ fn v6_no_broken_fragment_link_010() {
         run(r##"<a href="#x"></a><div ID="x"></div><div id="y" id="z"></div><a href="#z"></a>"##),
         [missing(1, 10, "x", "#x"), missing(1, 70, "z", "#z")]
     );
+}
+
+/// TS: `[no-broken-fragment-link-issue-4435-001]` the id that is a literal is the id the element
+/// has, a character reference of it is not decoded. The MLAST is what the JSX parser sends for
+/// `<><div id={"a&amp;b"}></div><a href={"#a&amp;b"}></a></>`: an expression value.
+#[test]
+fn no_broken_fragment_link_issue_4435_001() {
+    const _ID: &str = "no-broken-fragment-link-issue-4435-001";
+    let violations_of = |href: &str| {
+        let expression = serde_json::json!({ "isExpressionValue": true });
+        let document = serde_json::json!({});
+        let mut mlast: serde_json::Value = serde_json::from_str(&crate::test_util::mlast_element(
+            "div",
+            &[("id", "a&amp;b", expression.clone())],
+            &document,
+        ))
+        .unwrap();
+        let second: serde_json::Value = serde_json::from_str(&crate::test_util::mlast_element(
+            "a",
+            &[("href", href, expression)],
+            &document,
+        ))
+        .unwrap();
+        let mut a = second["nodeList"][0].clone();
+        a["uuid"] = serde_json::json!("el2");
+        mlast["nodeList"].as_array_mut().unwrap().push(a);
+        crate::test_util::lint_mlast_brief(
+            "no-broken-fragment-link",
+            &mlast.to_string(),
+            serde_json::json!({ "rules": { "no-broken-fragment-link": true } }),
+        )
+    };
+    assert_eq!(violations_of("#a&amp;b"), []);
+    // The id is not decoded, so the decoded spelling is not it
+    assert_eq!(violations_of("#a&b").len(), 1);
 }

@@ -452,6 +452,16 @@ fn read_attr_value(
     })
 }
 
+/// What [`create_pretender_attrs`] puts between the uuid of the element and the index of an attribute
+/// it makes, which is how [`is_pretended_attr`] tells it.
+const PRETENDED_ATTR_UUID_INFIX: &str = "_attr_";
+
+/// TS `MLAttr#isPretended`: whether the attribute was made by a pretender and is not in the source.
+/// An attribute that a pretender takes over from the origin (`inheritAttrs`) is the origin's own.
+pub(crate) fn is_pretended_attr(attr: &MLASTAttr) -> bool {
+    matches!(attr, MLASTAttr::HTMLAttr(a) if a.uuid.contains(PRETENDED_ATTR_UUID_INFIX))
+}
+
 /// TS `#createPretenderAttrs`. The attributes sit at the position of the origin's
 /// start tag, as TS spreads the origin token into them.
 ///
@@ -489,7 +499,7 @@ fn create_pretender_attrs(
                 col: origin.base.col,
             };
             Some(MLASTAttr::HTMLAttr(Box::new(MLASTHTMLAttr {
-                uuid: format!("{uuid_base}_attr_{i}"),
+                uuid: format!("{uuid_base}{PRETENDED_ATTR_UUID_INFIX}{i}"),
                 raw: origin.base.raw.clone(),
                 offset: origin.base.offset,
                 line: origin.base.line,

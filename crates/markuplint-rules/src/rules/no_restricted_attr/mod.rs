@@ -56,10 +56,17 @@ fn check(
     html_attr: &markuplint_core::mlast::MLASTHTMLAttr,
     ctx: &AttrCheckContext<'_>,
 ) -> Option<Violation> {
-    // Use the raw (original-case) attribute name, matching TS behavior.
-    let name = markuplint_dom::helpers::get_raw_attr_name(html_attr);
+    let name = markuplint_dom::helpers::attr_name(html_attr);
 
-    let entry = options.disallowed.iter().find(|e| e.name.eq_ignore_ascii_case(name))?;
+    // TS `createNameOptionLookup`: the exact spelling first (the later of two entries of one
+    // spelling), else the last entry that the attribute says it is (`MLAttr#isNamedBy`), so the
+    // case of a name is decided by the attribute: an SVG element keeps it as written.
+    let entry = options.disallowed.iter().rfind(|e| e.name == name).or_else(|| {
+        options
+            .disallowed
+            .iter()
+            .rfind(|e| markuplint_dom::helpers::is_named_by(ctx.el, html_attr, &e.name))
+    })?;
     // TS checks the name first: a value that is not known (`attr.isDynamicValue`) is not judged
     if html_attr.is_dynamic_value == Some(true) && !matches!(entry.constraint, ValueConstraint::Any) {
         return None;

@@ -9,6 +9,8 @@
 //!   permitted-contents-issue-3635-003/002/006 — v6_permitted_contents_024..026 (`#nonEmptyText`)
 //!   permitted-contents-issue-3635-001/004/005 — v6_permitted_contents_027..029
 //!   v6_permitted_contents_030               — Rust-only: U+3000 is text for `#nonEmptyText`
+//!   permitted-contents-valid-001            — permitted_contents_valid_001 (the DOM keeps `<image>` as written)
+//!   permitted-contents-issue-4475-019       — permitted_contents_issue_4475_019
 
 use super::*;
 use crate::rule::{RuleConfig, RuleConfigSet};
@@ -1698,4 +1700,40 @@ mod engine_steps {
             assert_eq!(r.unmatched.len(), 1);
         }
     }
+}
+
+fn permitted_contents_brief(html: &str) -> Vec<crate::test_util::Brief> {
+    crate::test_util::lint_brief(
+        "permitted-contents",
+        html,
+        serde_json::json!({ "rules": { "permitted-contents": true } }),
+    )
+}
+
+/// TS: `[permitted-contents-valid-001]` The SVG <image> element and the HTML obsolete <image> element
+#[test]
+fn permitted_contents_valid_001() {
+    const _ID: &str = "permitted-contents-valid-001";
+    assert_eq!(
+        permitted_contents_brief(r#"<svg><g><image width="100" height="100" xlink:href="path/to"/></g></svg>"#),
+        []
+    );
+    assert_eq!(
+        permitted_contents_brief(r#"<div><span><image width="100" height="100" xlink:href="path/to"/></span></div>"#),
+        [crate::test_util::brief(
+            crate::violation::Severity::Error,
+            1,
+            12,
+            "The \"image\" element is not allowed in the \"span\" element in this context",
+            r#"<image width="100" height="100" xlink:href="path/to"/>"#
+        )]
+    );
+}
+
+/// TS: `[permitted-contents-issue-4475-019]` a decimal character reference to a line feed without a
+/// semicolon before a style element is inter-element whitespace
+#[test]
+fn permitted_contents_issue_4475_019() {
+    const _ID: &str = "permitted-contents-issue-4475-019";
+    assert_eq!(permitted_contents_brief("<div>&#10<style></style></div>"), []);
 }

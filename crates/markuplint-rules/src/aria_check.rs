@@ -197,10 +197,6 @@ pub(crate) fn walk_elements<O>(
     parse_options: impl Fn(&Value) -> O,
     mut check: impl FnMut(&O, &ElementContext<'_>, &mut Vec<Violation>),
 ) -> Vec<Violation> {
-    if config.global().value == Value::Bool(false) {
-        return vec![];
-    }
-
     let mut violations = Vec::new();
 
     for (node_id, el) in arena.elements() {

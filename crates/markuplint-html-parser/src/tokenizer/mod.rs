@@ -2641,9 +2641,18 @@ impl<'a> Tokenizer<'a> {
                 self.current_attr_value.push(ch);
             }
         } else {
-            let pos = self.input.prev_position();
+            // The tree builder ends the text node at `pos.offset + ch.len_utf8()`, so `pos` is
+            // where the reference ends, less the character. The end is the current position, not
+            // `prev_position()`: a reference with no semicolon (`&#10<`) reconsumes the character
+            // that follows it, which must not be part of the text node.
+            let end = self.input.position();
             let source_pos = self.char_ref_start;
             for ch in buf {
+                let pos = Position {
+                    offset: end.offset.saturating_sub(ch.len_utf8()),
+                    line: end.line,
+                    col: end.col.saturating_sub(1),
+                };
                 self.emit_char_with_source_pos(ch, pos, source_pos);
             }
         }

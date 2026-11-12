@@ -3,12 +3,15 @@
 //! Test ID mapping (TS → Rust):
 //!   require-landmark-label-valid-001    → require_landmark_label_valid_001
 //!   require-landmark-label-invalid-001  → require_landmark_label_invalid_001
-//!   v6_require_landmark_label_001  — Rust-only: an element counted twice for one role is reported once
+//!   require-landmark-label-issue-4180-001  → require_landmark_label_issue_4180_001
+//!   require-landmark-label-issue-4180-002  → require_landmark_label_issue_4180_002
+//!   v6_require_landmark_label_001  — Rust-only: a header with an explicit banner role is one banner
 //!   v6_require_landmark_label_002  — Rust-only: what counts as a label
 //!   v6_require_landmark_label_003  — Rust-only: which elements are landmarks of each role
 //!   v6_require_landmark_label_004  — Rust-only: per-node `rules: false`; `ignoreRoles` is not this rule's option
 //!   v6_require_landmark_label_005  — Rust-only: the `role` value is case-sensitive, the tag name is not
 //!   v6_require_landmark_label_006  — Rust-only: fragments, single landmarks and `rules: false`
+//!   v6_require_landmark_label_007  — Rust-only: an explicit banner and a top-level header are two banners
 //!
 //! Violations are asserted in the engine's line/column order; TS `mlRuleTest` reports them in
 //! role-then-match order, which can differ for the Rust-only inputs.
@@ -78,15 +81,30 @@ fn require_landmark_label_invalid_001() {
     assert_unlabelled(&violations, &[(5, 2, "<nav>"), (8, 3, "<nav>")]);
 }
 
+/// TS: `[require-landmark-label-issue-4180-001]` a single banner with an explicit role is not duplicated
+#[test]
+fn require_landmark_label_issue_4180_001() {
+    const _ID: &str = "require-landmark-label-issue-4180-001";
+    let violations = run("<html><body><header role=\"banner\"></header></body></html>");
+    assert!(violations.is_empty(), "{violations:?}");
+}
+
+/// TS: `[require-landmark-label-issue-4180-002]` a single contentinfo with an explicit role is not duplicated
+#[test]
+fn require_landmark_label_issue_4180_002() {
+    const _ID: &str = "require-landmark-label-issue-4180-002";
+    let violations = run("<html><body><footer role=\"contentinfo\"></footer></body></html>");
+    assert!(violations.is_empty(), "{violations:?}");
+}
+
 /// Rust-only: `<header role="banner">` matches `[role="banner"]` and is also added as a top-level
-/// `<header>`, so the banner list holds it twice and counts as duplicated; the two identical
-/// reports collapse into one. Expected values are the TS output.
+/// `<header>`; it is one banner, not two, so it is not duplicated and needs no label (#4180).
+/// Expected values are the TS output.
 #[test]
 fn v6_require_landmark_label_001() {
     let violations = run("<html><body><header role=\"banner\"></header></body></html>");
-    assert_unlabelled(&violations, &[(1, 13, "<header role=\"banner\">")]);
+    assert!(violations.is_empty(), "{violations:?}");
 }
-
 /// Rust-only: `aria-labelledby` counts only when the landmark contains a heading, while
 /// `aria-label` counts whenever present, even empty or upper-cased. Expected values are the TS
 /// output.
@@ -167,4 +185,11 @@ fn v6_require_landmark_label_006() {
         serde_json::json!({ "rules": { "require-landmark-label": false } }),
     );
     assert!(violations.is_empty(), "{violations:?}");
+}
+
+/// Rust-only: an explicit `role="banner"` header and another top-level `<header>` are two banners.
+#[test]
+fn v6_require_landmark_label_007() {
+    let violations = run("<html><body><header role=\"banner\"></header><header></header></body></html>");
+    assert_unlabelled(&violations, &[(1, 13, "<header role=\"banner\">"), (1, 44, "<header>")]);
 }

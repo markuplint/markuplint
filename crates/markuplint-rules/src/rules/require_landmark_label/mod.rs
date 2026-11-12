@@ -3,8 +3,8 @@
 //!
 //! Ports `packages/@markuplint/rules/src/require-landmark-label/`, the labelling half of the
 //! former `landmark-roles` rule. Landmarks come from the selector-based set in
-//! [`crate::landmark_check`], so an element listed twice for one role (a top-level
-//! `<header role="banner">`) makes that role count as duplicated. TS `hasLabel()` accepts an
+//! [`crate::landmark_check`], so an element is counted once for a role even when it is both
+//! selected and a top-level `<header role="banner">` (#4180). TS `hasLabel()` accepts an
 //! `aria-label` attribute whenever present, even empty, and an `aria-labelledby` attribute only
 //! when the landmark contains an `h1`–`h6`; neither value is resolved. The former
 //! `labelEachArea` option is gone: disabling this rule is how to opt out. Fragments are skipped.

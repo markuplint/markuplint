@@ -6,7 +6,7 @@
 //! second `<body>` in the source is such a token. The tree builder discards it, and the text
 //! node around it keeps it in its raw (see `markuplint_dom::html_builder`); an orphaned end
 //! tag outside such a text is its own bogus text node. The rule looks for that residue in
-//! every text node, except the content of raw text and RCDATA elements, where tag-shaped text
+//! every text node, except the content of raw text and RCDATA elements (`iframe` included), where tag-shaped text
 //! is never a tag.
 //!
 //! <https://html.spec.whatwg.org/multipage/parsing.html#parsing-main-inbody>
@@ -24,8 +24,12 @@ mod tests;
 
 pub struct NoStrayHeadOrBodyTag;
 
-/// TS `RAW_TEXT_CONTAINERS`: elements whose content the tokenizer never reads as tags.
-const RAW_TEXT_CONTAINERS: [&str; 5] = ["script", "style", "title", "textarea", "xmp"];
+/// TS `RAW_TEXT_CONTAINERS`: elements whose content the tokenizer never reads as tags. `iframe`,
+/// `noembed` and `noframes` are RAWTEXT too; the TS parser still tokenizes their content as markup,
+/// and the rule skips them instead (#4180).
+const RAW_TEXT_CONTAINERS: [&str; 8] = [
+    "script", "style", "title", "textarea", "xmp", "iframe", "noembed", "noframes",
+];
 
 /// TS `/<\/head(?=[\s/>])/i` and `/<body(?=[\s/>])/i`: `prefix` (ASCII, matched
 /// case-insensitively) followed by whitespace, `/` or `>`.

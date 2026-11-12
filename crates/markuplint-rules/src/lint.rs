@@ -228,6 +228,11 @@ fn run_rules(arena: &DomArena, spec: &MLMLSpec, config: &LintConfig, rules: &[Bo
     let mut config_index: std::collections::HashMap<&str, Vec<(&str, &Value)>> = std::collections::HashMap::new();
 
     for (key, value) in &config.rules {
+        // A rule that is `false` globally is not configured globally: it runs only where a
+        // `nodeRules` entry enables it (#4173), as a rule with no entry does below.
+        if matches!(value, Value::Bool(false)) {
+            continue;
+        }
         if is_named_rule_group(value) {
             if let Value::Object(obj) = value {
                 expand_named_rule_group(key, obj, &mut expanded_entries);
@@ -244,6 +249,9 @@ fn run_rules(arena: &DomArena, spec: &MLMLSpec, config: &LintConfig, rules: &[Bo
 
     // Separate loop: the expanded_entries borrows must outlive the index inserts.
     for (alias_name, base_rule_name, config_value) in &expanded_entries {
+        if matches!(config_value, Value::Bool(false)) {
+            continue;
+        }
         config_index
             .entry(base_rule_name.as_str())
             .or_default()
@@ -1030,6 +1038,61 @@ mod tests {
         // Only <div> should have a violation, <main> is disabled
         assert_eq!(result.violations.len(), 1);
         assert_eq!(result.violations[0].raw, "INVALID");
+    }
+
+    /// #4173: a rule that is `false` globally runs where a `nodeRules` entry enables it, for a rule
+    /// of every walker (attributes, ARIA elements, the whole document) and a rule of a plain list.
+    #[test]
+    fn v6_node_rules_enable_a_rule_that_is_false_globally() {
+        let spec = html_spec();
+        let raws = |html: &str, rules: serde_json::Value, node_rule: serde_json::Value| -> Vec<String> {
+            let config: LintConfig = serde_json::from_value(serde_json::json!({
+                "rules": rules,
+                "nodeRules": [{ "selector": "main", "rules": node_rule }],
+            }))
+            .unwrap();
+            lint(&html_arena(html), &spec, &config)
+                .violations
+                .into_iter()
+                .map(|v| v.raw)
+                .collect()
+        };
+
+        // `walk_attrs`
+        assert_eq!(
+            raws(
+                r#"<div id="a" id="b"><main id="c" id="d"></main></div>"#,
+                serde_json::json!({ "no-duplicate-attr": false }),
+                serde_json::json!({ "no-duplicate-attr": true }),
+            ),
+            ["id"]
+        );
+        assert_eq!(
+            raws(
+                r#"<div id="a" id="b"></div>"#,
+                serde_json::json!({ "no-duplicate-attr": false }),
+                serde_json::json!({ "no-duplicate-attr": true }),
+            ),
+            Vec::<String>::new()
+        );
+        // `walk_elements` of the ARIA rules
+        assert_eq!(
+            raws(
+                r#"<div role="widget"><main role="widget"></main></div>"#,
+                serde_json::json!({ "no-abstract-role": false }),
+                serde_json::json!({ "no-abstract-role": true }),
+            ),
+            ["widget"]
+        );
+        // The element walk of a rule that is not an attribute rule
+        assert_eq!(
+            raws(
+                r#"<div></div><main></main>"#,
+                serde_json::json!({ "no-empty-palpable-content": false }),
+                serde_json::json!({ "no-empty-palpable-content": true }),
+            ),
+            ["<main>"]
+        );
     }
 
     #[test]
