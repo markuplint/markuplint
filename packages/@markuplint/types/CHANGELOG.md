@@ -3,6 +3,13 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [5.6.0](https://github.com/markuplint/markuplint/compare/v5.5.0...v5.6.0) (2026-11-12)
+
+### Bug Fixes
+
+* **types:** count the weeks of a week-year by the spec, in any time zone ([c07d7f5](https://github.com/markuplint/markuplint/commit/c07d7f52c70641244c4a7c9b1c1dac08354649f6)), closes [#4586](https://github.com/markuplint/markuplint/issues/4586)
+
+
 # [5.5.0](https://github.com/markuplint/markuplint/compare/v5.4.0...v5.5.0) (2026-11-10)
 
 ### Bug Fixes

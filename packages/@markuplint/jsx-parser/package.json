@@ -1,6 +1,6 @@
 {
 	"name": "@markuplint/jsx-parser",
-	"version": "5.5.0",
+	"version": "5.6.0",
 	"description": "JSX parser for markuplint",
 	"repository": {
 		"type": "git",
@@ -28,9 +28,9 @@
 		"clean": "tsc --build --clean tsconfig.build.json"
 	},
 	"dependencies": {
-		"@markuplint/html-parser": "5.5.0",
-		"@markuplint/ml-ast": "5.5.0",
-		"@markuplint/parser-utils": "5.5.0",
+		"@markuplint/html-parser": "5.6.0",
+		"@markuplint/ml-ast": "5.6.0",
+		"@markuplint/parser-utils": "5.6.0",
 		"@typescript-eslint/types": "8.72.1",
 		"@typescript-eslint/typescript-estree": "8.72.1"
 	}

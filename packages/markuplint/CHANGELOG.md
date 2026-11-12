@@ -3,6 +3,13 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [5.6.0](https://github.com/markuplint/markuplint/compare/v5.5.0...v5.6.0) (2026-11-12)
+
+### Bug Fixes
+
+* **markuplint:** keep the scope of the suppressions ([4f2409d](https://github.com/markuplint/markuplint/commit/4f2409d1d9c98cefbbe91f7c0f084f5855fafeb5)), closes [#4592](https://github.com/markuplint/markuplint/issues/4592)
+
+
 # [5.5.0](https://github.com/markuplint/markuplint/compare/v5.4.0...v5.5.0) (2026-11-10)
 
 ### Bug Fixes

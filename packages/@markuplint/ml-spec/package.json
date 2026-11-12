@@ -1,6 +1,6 @@
 {
 	"name": "@markuplint/ml-spec",
-	"version": "5.5.0",
+	"version": "5.6.0",
 	"description": "Types and schema that specs of the Markup languages for markuplint",
 	"repository": {
 		"type": "git",
@@ -33,14 +33,14 @@
 		"schema:aria": "npx json2ts ./schemas/aria.schema.json --cwd ./schemas > ./src/types/aria.ts"
 	},
 	"dependencies": {
-		"@markuplint/ml-ast": "5.5.0",
-		"@markuplint/shared": "5.5.0",
-		"@markuplint/types": "5.5.0",
+		"@markuplint/ml-ast": "5.6.0",
+		"@markuplint/shared": "5.6.0",
+		"@markuplint/types": "5.6.0",
 		"is-plain-object": "^5.1.0",
 		"type-fest": "^5.10.0"
 	},
 	"devDependencies": {
-		"@markuplint/test-tools": "5.5.0",
+		"@markuplint/test-tools": "5.6.0",
 		"json-schema-to-typescript": "16.0.0"
 	}
 }

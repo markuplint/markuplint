@@ -3,6 +3,13 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [5.6.0](https://github.com/markuplint/markuplint/compare/v5.5.0...v5.6.0) (2026-11-12)
+
+### Bug Fixes
+
+* **jsx-parser:** treat Fragment and React.Fragment as fragments ([05383b2](https://github.com/markuplint/markuplint/commit/05383b2da1801453260fe864d14394d38b8e0c0e))
+
+
 # [5.5.0](https://github.com/markuplint/markuplint/compare/v5.4.0...v5.5.0) (2026-11-10)
 
 ### Features

@@ -3,6 +3,14 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [5.6.0](https://github.com/markuplint/markuplint/compare/v5.5.0...v5.6.0) (2026-11-12)
+
+### Bug Fixes
+
+* **language-server:** hover the element under the cursor ([91ebb1a](https://github.com/markuplint/markuplint/commit/91ebb1ae4e35a1484793267d74dcca9bcea3bc5d))
+* **language-server:** join the sentences of a notice with the Japanese full stop ([95bc29f](https://github.com/markuplint/markuplint/commit/95bc29f2bd3d0ad4ee7929161e5c66b99d7cb854))
+
+
 # [5.5.0](https://github.com/markuplint/markuplint/compare/v5.4.0...v5.5.0) (2026-11-10)
 
 ### Bug Fixes

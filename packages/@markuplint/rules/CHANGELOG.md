@@ -3,6 +3,19 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [5.6.0](https://github.com/markuplint/markuplint/compare/v5.5.0...v5.6.0) (2026-11-12)
+
+### Bug Fixes
+
+* do not report an area element that has no parent node in the file ([916a166](https://github.com/markuplint/markuplint/commit/916a166916e4efd5292402abcd293927605ff799)), closes [#4528](https://github.com/markuplint/markuplint/issues/4528)
+* **rules:** do not report an area that a component of unknown output may enclose in a map ([91f796a](https://github.com/markuplint/markuplint/commit/91f796acd865c4815c66bf733a80c838b6f43be3)), closes [#4575](https://github.com/markuplint/markuplint/issues/4575)
+* **rules:** do not report what a component that no pretender resolved may render ([ecf810c](https://github.com/markuplint/markuplint/commit/ecf810c021b8fde9a6053b43293c5261f3911a46)), closes [#4572](https://github.com/markuplint/markuplint/issues/4572) [#4064](https://github.com/markuplint/markuplint/issues/4064)
+* **rules:** read the declarative shadow root as owned by its host ([2324117](https://github.com/markuplint/markuplint/commit/2324117dc83627db98f1f2f2b2f6d26d6886708f)), closes [#4527](https://github.com/markuplint/markuplint/issues/4527)
+* **rules:** read what a slot of a shadow root renders ([d3a5c76](https://github.com/markuplint/markuplint/commit/d3a5c76f5293322986ad0a122f13884f971735c5))
+* **rules:** show every message in Japanese and the names in it as written ([9145904](https://github.com/markuplint/markuplint/commit/9145904e5b43fbeb51b5d5efa6e4735eddef7921))
+* **rules:** write "an ambiguous" in the message of no-ambiguous-navigable-target-names ([9be22b3](https://github.com/markuplint/markuplint/commit/9be22b3949e114f08308d068c238666206384a45)), closes [#4585](https://github.com/markuplint/markuplint/issues/4585)
+
+
 # [5.5.0](https://github.com/markuplint/markuplint/compare/v5.4.0...v5.5.0) (2026-11-10)
 
 ### Bug Fixes
