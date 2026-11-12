@@ -53,7 +53,7 @@ export default createRule<boolean>({
 				raw: attr.valueNode.raw,
 				message:
 					//
-					t("don't use {0}", t('a {0}', t('ambiguous {0}', 'navigable target name'))) +
+					t("don't use {0}", t('an {0}', t('ambiguous {0}', 'navigable target name'))) +
 					(attrSpec.type === 'NavigableTargetNameOrKeyword'
 						? t('. ') + t('Did you mean "{0}"?', valueWithUnderscore)
 						: ''),
