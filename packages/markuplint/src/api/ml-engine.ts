@@ -1,5 +1,7 @@
 import type { APIOptions, MLEngineEventMap } from './types.js';
+import type { PositionedNode } from '../suppressions/compute-scope.js';
 import type { MLResultInfo } from '../types.js';
+import type { RustDocumentView, RustInspectBinding } from './rust-document.js';
 import type { WatchSubscription } from './shared-watcher.js';
 import type { ConfigSet, MLFile, PretenderResolver, Target } from '@markuplint/file-resolver';
 import type {
@@ -45,6 +47,7 @@ import { Emitter } from 'strict-event-emitter';
 import { log as coreLog, verbosely } from '../debug.js';
 import { i18n } from '../i18n.js';
 
+import { createHtmlDocumentView } from './rust-document.js';
 import { mlastForRust, renderAttrs } from './rust-mlast.js';
 import { subscribe as subscribeToWatcher, toWatchKey } from './shared-watcher.js';
 
@@ -205,6 +208,12 @@ export class MLEngine extends Emitter<MLEngineEventMap> {
 	 */
 	#pretenderResolver: PretenderResolver | null = null;
 	/**
+	 * What the latest lint of the Rust path can show of the document it linted, without a TS
+	 * `MLCore` (see {@link RustDocumentView}). `null` before the first lint, and when the latest
+	 * lint ran on the TS engine, where {@link document} is the document.
+	 */
+	#rustView: RustDocumentView | null = null;
+	/**
 	 * Counts `setCode()` calls so that, when they overlap, only the latest one
 	 * reaches the file and the core — `setCode()` awaits the pretender
 	 * re-resolution, and an earlier call finishing later must not put its
@@ -263,12 +272,40 @@ export class MLEngine extends Emitter<MLEngineEventMap> {
 
 	/**
 	 * The parsed document, or `null` if not yet set up or if parsing failed.
+	 *
+	 * It is the document of the TS engine, so it is `null` while the Rust engine
+	 * (`experimentalRustCore`) lints: that one never builds it. What a consumer reads of the
+	 * document goes through {@link positionedNodes} and the `debug` payload of the `lint` event,
+	 * which both engines answer.
 	 */
 	get document(): Document<RuleConfigValue, PlainData> | null {
 		if (this.#core?.document instanceof Error) {
 			return null;
 		}
 		return this.#core?.document ?? null;
+	}
+
+	/**
+	 * The nodes of the document the latest {@link exec} linted, in document order, with what the
+	 * scope of a suppression reads of each (`PositionedNode`); `null` when there is none (it did
+	 * not parse, or nothing was linted yet). It is the code that was linted: `exec()` with `fix`
+	 * leaves it on the document before the fix.
+	 *
+	 * The Rust engine has no `Document`, so the nodes are described on request, not by every
+	 * lint: a run that reads none pays nothing for them.
+	 *
+	 * @internal Read by the CLI for scoped suppressions.
+	 */
+	positionedNodes(): readonly PositionedNode[] | null {
+		if (this.#rustView) {
+			return this.#rustView.nodes();
+		}
+		const document = this.document;
+		// `MLNode` structurally satisfies `PositionedNode` (startLine, startCol, localName, id,
+		// classList, parentElement, children are all present). The double cast is needed because
+		// TypeScript can't verify structural compatibility between the generic `MLNode<T, O>` and
+		// the plain interface at compile time.
+		return document ? (document.nodeList as unknown as readonly PositionedNode[]) : null;
 	}
 
 	/**
@@ -303,6 +340,12 @@ export class MLEngine extends Emitter<MLEngineEventMap> {
 		if (this.#options?.experimentalRustCore) {
 			const fabric = await this.#provideFabric();
 			if (!fabric) {
+				this.#rustView = null;
+				// A config that cannot be loaded fails the file, as it does on the TS path below.
+				if (this.#configFailure) {
+					log('exec: config cannot be loaded');
+					return this.#reportConfigFailure(this.#configFailure);
+				}
 				log('exec: cancel (unsetuped yet)');
 				return null;
 			}
@@ -407,6 +450,9 @@ export class MLEngine extends Emitter<MLEngineEventMap> {
 	 */
 	async #tryExecRustPath(fabric: MLFabric): Promise<MLResultInfo | null> {
 		const fix = this.#options?.fix ?? false;
+		// Until this lint is through, there is no document of the Rust path to show: a fallback to
+		// the TS engine below leaves the document to `MLCore`.
+		this.#rustView = null;
 
 		// Fallback: custom rules from plugins
 		if (this.#hasPluginRules) {
@@ -462,11 +508,14 @@ export class MLEngine extends Emitter<MLEngineEventMap> {
 			pretenders: fabric.pretenders,
 			filename: this.#file.path,
 		};
-		const lintHtml =
-			this.#parserModName === '@markuplint/html-parser'
-				? napi.lintHtml
-				: (code: string, config: string, specJson: string) =>
-						lintWithTsParser(napi, tsParser, code, config, specJson);
+		const isHtmlParser = this.#parserModName === '@markuplint/html-parser';
+		const lintHtml = isHtmlParser
+			? napi.lintHtml
+			: (code: string, config: string, specJson: string) =>
+					lintWithTsParser(napi, tsParser, code, config, specJson);
+		const view = isHtmlParser
+			? createHtmlDocumentView(napi, sourceCode, configJson, specJson)
+			: createTsDocumentView(tsParser, sourceCode);
 
 		log('exec: rust path lint');
 
@@ -505,6 +554,10 @@ export class MLEngine extends Emitter<MLEngineEventMap> {
 				status: 'processed',
 			};
 		}
+
+		// The document that was linted, for whoever asks for its nodes afterward. It is the code before
+		// a fix, as the TS engine's document is.
+		this.#rustView = view;
 
 		// What `MLCore.verify()` puts ahead of the rule violations; it does not run on this path.
 		const deprecations = createRuleDeprecationViolations(fabric.ruleDeprecations ?? [], fabric.severity);
@@ -553,7 +606,9 @@ export class MLEngine extends Emitter<MLEngineEventMap> {
 			}
 		}
 
-		this.emit('lint', this.#file.path, sourceCode, violations, fixedCode, null, fixSummary ?? null);
+		// Built only when the dump is read: `debug` is on and a listener is there to read it.
+		const debugMap = this.#options?.debug && this.listenerCount('lint') > 0 ? view.debugMap() : null;
+		this.emit('lint', this.#file.path, sourceCode, violations, fixedCode, debugMap, fixSummary ?? null);
 		return {
 			violations,
 			filePath: this.#file.path,
@@ -621,6 +676,15 @@ export class MLEngine extends Emitter<MLEngineEventMap> {
 	 * resolving from overwriting the newer result.
 	 */
 	async #applyCode(code: string, seq: number) {
+		// The Rust path has no core to move onto the new code. The next `exec()` lints what the file
+		// holds, and resolves the pretenders that depend on it (`#provide()` does, on every call).
+		if (this.#options?.experimentalRustCore) {
+			if (seq === this.#setCodeSeq) {
+				this.#file.setCode(code);
+			}
+			return;
+		}
+
 		const core = await this.#setup();
 
 		if (!core || seq !== this.#setCodeSeq) {
@@ -790,13 +854,17 @@ export class MLEngine extends Emitter<MLEngineEventMap> {
 			this.emit('config-errors', this.#file.path, fabric.configErrors);
 		}
 
-		this.emit('log', 'update:core', this.#file.path);
-		if (this.#core) {
-			this.#core.update(fabric);
-		} else {
-			// No core yet — the config did not load until now. `#exec()` would
-			// resolve once more through `#setup()`, for the fabric just resolved.
-			await this.#createCore(fabric);
+		// The Rust path builds no core: `#exec()` resolves the config again (it is cached by now), and
+		// a fallback to the TS engine builds the core it needs from what the file holds.
+		if (!this.#options?.experimentalRustCore) {
+			this.emit('log', 'update:core', this.#file.path);
+			if (this.#core) {
+				this.#core.update(fabric);
+			} else {
+				// No core yet — the config did not load until now. `#exec()` would
+				// resolve once more through `#setup()`, for the fabric just resolved.
+				await this.#createCore(fabric);
+			}
 		}
 		await this.#exec();
 	}
@@ -1405,29 +1473,12 @@ const SUPPRESSED_SEVERITY = 'off';
  */
 function lintWithTsParser(
 	napi: NapiBinding,
-	{
-		parser,
-		parserOptions,
-		severity,
-		spec,
-		schemas,
-		ruleCommonSettings,
-		pretenders,
-		filename,
-	}: {
-		readonly parser: MLFabric['parser'];
-		readonly parserOptions: MLFabric['parserOptions'];
-		readonly severity: MLFabric['severity'];
-		readonly spec: Parameters<typeof mlastForRust>[1]['spec'];
-		readonly schemas: MLFabric['schemas'];
-		readonly ruleCommonSettings: MLFabric['ruleCommonSettings'];
-		readonly pretenders: MLFabric['pretenders'];
-		readonly filename: string;
-	},
+	tsParser: TsParserInput,
 	code: string,
 	configJson: string,
 	specJson: string,
 ): NapiViolation[] {
+	const { parser, parserOptions, severity, spec } = tsParser;
 	let ast;
 	try {
 		ast = parser.parse(code, parserOptions);
@@ -1440,9 +1491,32 @@ function lintWithTsParser(
 		}
 		throw error;
 	}
-	// The values that the framework renders, read from a TS `Document` built as `MLCore` builds it.
-	// Rendering does not depend on the rules, so the ruleset is empty.
-	const document = new MLDocument(ast, convertRuleset(), schemas, ruleCommonSettings, {
+	// The values that the framework renders are read from the TS `Document`.
+	const document = createRenderingDocument(ast, tsParser);
+	return napi.lint(mlastForRust(ast, { spec, parser, renderings: renderAttrs(document) }), configJson, specJson);
+}
+
+/** What the Rust engine needs of a parser that runs in TS, to lint a file of it and to describe the document. */
+type TsParserInput = {
+	readonly parser: MLFabric['parser'];
+	readonly parserOptions: MLFabric['parserOptions'];
+	readonly severity: MLFabric['severity'];
+	readonly spec: Parameters<typeof mlastForRust>[1]['spec'];
+	readonly schemas: MLFabric['schemas'];
+	readonly ruleCommonSettings: MLFabric['ruleCommonSettings'];
+	readonly pretenders: MLFabric['pretenders'];
+	readonly filename: string;
+};
+
+/**
+ * A TS `Document` built as `MLCore` builds it, for the values that the framework renders and for
+ * the nodes of the file. Neither depends on the rules, so the ruleset is empty.
+ */
+function createRenderingDocument(
+	ast: ReturnType<TsParserInput['parser']['parse']>,
+	{ parser, schemas, ruleCommonSettings, pretenders, filename }: TsParserInput,
+) {
+	return new MLDocument(ast, convertRuleset(), schemas, ruleCommonSettings, {
 		filename,
 		endTag: parser.endTag,
 		booleanish: parser.booleanish,
@@ -1456,10 +1530,37 @@ function lintWithTsParser(
 		attrNameRoute: parser.attrNameRoute,
 		pretenders,
 	});
-	return napi.lint(mlastForRust(ast, { spec, parser, renderings: renderAttrs(document) }), configJson, specJson);
 }
 
-type NapiBinding = {
+/**
+ * The view of a document that a parser running in TS built. The Rust engine evaluates its AST and
+ * has no document of its own to describe, so it is the TS `Document` itself, built again from the
+ * code when a consumer asks, exactly as the TS engine would have built it.
+ */
+function createTsDocumentView(tsParser: TsParserInput, code: string): RustDocumentView {
+	let document: ReturnType<typeof createRenderingDocument> | null | undefined;
+	const read = () => {
+		if (document === undefined) {
+			try {
+				document = createRenderingDocument(tsParser.parser.parse(code, tsParser.parserOptions), tsParser);
+			} catch (error) {
+				// A file the parser cannot build has no document, as `MLCore#document` is an error then.
+				if (isFatalError(error) || !(error instanceof ParserError)) {
+					throw error;
+				}
+				document = null;
+			}
+		}
+		return document;
+	};
+	return {
+		// `MLNode` satisfies `PositionedNode` structurally; see `MLEngine#positionedNodes`.
+		nodes: () => (read()?.nodeList ?? null) as readonly PositionedNode[] | null,
+		debugMap: () => read()?.debugMap() ?? null,
+	};
+}
+
+type NapiBinding = RustInspectBinding & {
 	lintHtml: (html: string, configJson: string, specJson: string) => NapiViolation[];
 	lint: (mlastJson: string, configJson: string, specJson: string) => NapiViolation[];
 };
