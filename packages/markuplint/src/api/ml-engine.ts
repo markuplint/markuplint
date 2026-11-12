@@ -514,8 +514,8 @@ export class MLEngine extends Emitter<MLEngineEventMap> {
 
 	/**
 	 * Attempts to execute linting via the Rust NAPI engine.
-	 * Returns `null` if the file is not eligible (plugin rules, or no native addon),
-	 * in which case the caller should fall back to the TS engine.
+	 * Returns `null` if the file is not eligible (plugin rules, rules given through the `rules`
+	 * option, or no native addon), in which case the caller should fall back to the TS engine.
 	 */
 	async #tryExecRustPath(fabric: MLFabric): Promise<MLResultInfo | null> {
 		const fix = this.#options?.fix ?? false;
@@ -527,6 +527,17 @@ export class MLEngine extends Emitter<MLEngineEventMap> {
 		if (this.#hasPluginRules) {
 			this.#tellFallback(
 				`⚠ [experimental-rust-core] "${this.#file.path}" has custom plugin rules — falling back to TypeScript engine.\n`,
+			);
+			return null;
+		}
+
+		// Fallback: a rule given to the API is run by the TypeScript engine only, and the Rust engine
+		// cannot tell a built-in rule from a custom one there: it would leave the violations of the rule
+		// out without a word. `noRules` evaluates no rule on either engine, and an empty list gives it
+		// none.
+		if (!this.#options?.noRules && (this.#options?.rules?.length ?? 0) > 0) {
+			this.#tellFallback(
+				`⚠ [experimental-rust-core] "${this.#file.path}" has rules given through the "rules" option, which only the TypeScript engine runs — falling back to TypeScript engine.\n`,
 			);
 			return null;
 		}

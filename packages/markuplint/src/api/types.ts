@@ -37,9 +37,9 @@ export type APIOptions = {
 	/**
 	 * [Experimental] Use the Rust linting engine for built-in rules.
 	 * The files of framework parsers are parsed in TypeScript and the result is handed to the Rust
-	 * engine. Falls back to the TypeScript engine for the rules of plugins, and when the native addon is
-	 * missing. The Rust engine runs the built-in rules only:
-	 * a rule given in `rules` is ignored by it. A fallback is written to stderr once for an
+	 * engine. Falls back to the TypeScript engine for the rules of plugins, for the rules given in
+	 * `rules` (which only the TypeScript engine runs), and when the native addon is
+	 * missing. The Rust engine runs the built-in rules only. A fallback is written to stderr once for an
 	 * engine, and emitted every time as a `log` event of the phase `experimental-rust-core:fallback`.
 	 */
 	readonly experimentalRustCore?: boolean;
