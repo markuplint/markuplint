@@ -6,6 +6,8 @@
 //! see `markuplint_dom::pretender` for why the identity is rewritten rather than
 //! delegated as in TS, and what that changes.
 
+use std::sync::Arc;
+
 use markuplint_core::literal::{LiteralRendering, RenderedLiteral, parse_literal_expression};
 use markuplint_core::mlast::{ElementType, MLASTAttr, MLASTHTMLAttr, MLASTToken, NamespaceURI};
 use markuplint_core::pretender::{
@@ -80,7 +82,7 @@ pub fn apply_pretenders(arena: &mut DomArena, pretenders: &[Pretender], literals
         literals,
         component_name_variants: arena.settings().component_name_variants,
     };
-    let selectors: Vec<Option<SelectorList>> = pretenders
+    let selectors: Vec<Option<Arc<SelectorList>>> = pretenders
         .iter()
         .map(|p| crate::diagnostic::parse_selector("config pretenders selector", &p.selector))
         .collect();
@@ -221,7 +223,7 @@ fn pretend(
     arena: &mut DomArena,
     id: NodeId,
     pretenders: &[Pretender],
-    selectors: &[Option<SelectorList>],
+    selectors: &[Option<Arc<SelectorList>>],
     spec: &MLMLSpec,
     env: &AttrEnv<'_>,
     rendered: &RenderedIn,

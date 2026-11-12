@@ -3,7 +3,7 @@
 //! Corresponds to `@markuplint/selector/src/match-selector.ts` (regex path).
 
 use std::collections::HashMap;
-use std::sync::LazyLock;
+use std::sync::{LazyLock, Mutex, PoisonError};
 
 use markuplint_core::mlast::{MLASTAttr, NamespaceURI};
 use markuplint_dom::arena::{DomArena, NodeId};
@@ -342,7 +342,29 @@ fn regex_match(pattern: &str, raw: &str, ignore_case: bool) -> Option<HashMap<St
     Some(result)
 }
 
+/// The compiled regex of each pattern a config has given, by [`to_regex`]'s arguments. A
+/// `regexSelector` of `nodeRules` / `childNodeRules` is matched against every element, and
+/// compiling the pattern took most of the time of a lint; a config names few patterns, so the cache
+/// stays small. A `Regex` is cheap to clone (its matcher is shared).
+static COMPILED: LazyLock<Mutex<RegexCache>> = LazyLock::new(Mutex::default);
+
+type RegexCache = HashMap<(String, bool), Option<Regex>>;
+
 fn to_regex(pattern: &str, ignore_case: bool) -> Option<Regex> {
+    let key = (pattern.to_owned(), ignore_case);
+    // A poisoned lock only means another thread panicked while it held it; the entries are whole.
+    if let Some(found) = COMPILED.lock().unwrap_or_else(PoisonError::into_inner).get(&key) {
+        return found.clone();
+    }
+    let compiled = compile_regex(pattern, ignore_case);
+    COMPILED
+        .lock()
+        .unwrap_or_else(PoisonError::into_inner)
+        .insert(key, compiled.clone());
+    compiled
+}
+
+fn compile_regex(pattern: &str, ignore_case: bool) -> Option<Regex> {
     if let Some(caps) = REGEX_LITERAL_PATTERN.captures(pattern) {
         let inner = caps.get(1)?.as_str();
         let flags = caps.get(2).map_or("", |m| m.as_str());

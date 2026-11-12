@@ -1,5 +1,6 @@
 use std::cell::RefCell;
 use std::collections::HashMap;
+use std::sync::Arc;
 
 use markuplint_core::pretender::PretenderAriaName;
 use markuplint_dom::arena::{DomArena, NodeId};
@@ -12,6 +13,28 @@ use super::{AccnameResolver, AccnameVisit};
 use crate::helpers::is_html_template_element;
 use crate::slot_assignment::{get_assigned_nodes, shadow_root_template, tree_parent_element};
 use crate::tree_scope::{TreeRoot, decode_or_keep, dom_value, element_by_id_of, root_of};
+
+/// The key of an answer of [`DomArena::memoize`] that is about the whole arena and not one node.
+const WHOLE_ARENA: NodeId = 0;
+
+/// The `label` elements of the arena for each value of their `for`, as the DOM has it, in the
+/// order of [`DomArena::elements`], whatever tree they are in. The name of every labelable element
+/// looks its labels up, so a scan of the arena per lookup makes a rule quadratic in the size of the
+/// document; this is computed once per arena.
+fn labels_by_for(arena: &DomArena) -> Arc<HashMap<String, Vec<NodeId>>> {
+    arena.memoize("labels-by-for", WHOLE_ARENA, || {
+        let mut labels: HashMap<String, Vec<NodeId>> = HashMap::new();
+        for (node_id, el) in arena.elements() {
+            if !el.base.node_name.eq_ignore_ascii_case("label") {
+                continue;
+            }
+            if let Some(value) = dom::get_attr_node_from_el(el, "for").and_then(dom_value) {
+                labels.entry(value).or_default().push(node_id);
+            }
+        }
+        labels
+    })
+}
 
 /// The name TS `@markuplint/ml-core` gives a pretended element whose pretender
 /// says it has a name (`aria: { name: true }`) without saying which.
@@ -82,18 +105,13 @@ impl AccnameResolver for SpecAccnameResolver<'_> {
             return Vec::new();
         }
         let dom_id = decode_or_keep(id);
-        let mut labels = Vec::new();
-        for (node_id, el) in self.arena.elements() {
-            if el.base.node_name.eq_ignore_ascii_case("label")
-                && dom::get_attr_node_from_el(el, "for")
-                    .and_then(dom_value)
-                    .is_some_and(|value| value == dom_id)
-                && root_of(self.arena, self.spec, node_id) == self.root
-            {
-                labels.push(node_id);
-            }
-        }
-        labels
+        labels_by_for(self.arena).get(&dom_id).map_or_else(Vec::new, |labels| {
+            labels
+                .iter()
+                .copied()
+                .filter(|&node_id| root_of(self.arena, self.spec, node_id) == self.root)
+                .collect()
+        })
     }
 
     fn allows_name_from_content(&self, node_id: NodeId) -> bool {

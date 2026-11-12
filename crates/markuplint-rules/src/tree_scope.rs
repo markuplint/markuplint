@@ -244,20 +244,37 @@ pub fn root_of(arena: &DomArena, spec: &MLMLSpec, node_id: NodeId) -> TreeRoot {
 
 /// TS `getElementById` of the tree `root`, for a caller without [`Trees`]: the first element of the
 /// tree whose id, as the DOM has it, is `id`. `None` for [`TreeRoot::NoTree`].
+///
+/// The accessible name of every element may resolve `aria-labelledby` through here, so a scan of
+/// the arena per call makes a rule quadratic in the size of the document. The elements are indexed
+/// by id once per arena ([`ids_of`]); only the few that share an id are walked up to their root.
 #[must_use]
 pub fn element_by_id_of(arena: &DomArena, spec: &MLMLSpec, root: TreeRoot, id: &str) -> Option<NodeId> {
     if matches!(root, TreeRoot::NoTree(_)) {
         return None;
     }
-    arena
-        .elements()
-        .filter(|(_, el)| {
-            get_attr_node_from_el(el, "id")
-                .and_then(dom_value)
-                .is_some_and(|value| value == id)
-        })
-        .map(|(node_id, _)| node_id)
+    ids_of(arena)
+        .get(id)?
+        .iter()
+        .copied()
         .find(|&node_id| root_of(arena, spec, node_id) == root)
+}
+
+/// The key of an answer of [`DomArena::memoize`] that is about the whole arena and not one node.
+const WHOLE_ARENA: NodeId = 0;
+
+/// The elements of the arena for each id, as the DOM has it, in the order of
+/// [`DomArena::elements`], whatever tree they are in. Computed once per arena.
+fn ids_of(arena: &DomArena) -> std::sync::Arc<HashMap<String, Vec<NodeId>>> {
+    arena.memoize("element-ids", WHOLE_ARENA, || {
+        let mut ids: HashMap<String, Vec<NodeId>> = HashMap::new();
+        for (node_id, el) in arena.elements() {
+            if let Some(id) = get_attr_node_from_el(el, "id").and_then(dom_value) {
+                ids.entry(id).or_default().push(node_id);
+            }
+        }
+        ids
+    })
 }
 
 /// TS `MLAttr#isExpressionValue`: the value is written as code, a string with no character reference

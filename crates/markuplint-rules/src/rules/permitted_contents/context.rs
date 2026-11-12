@@ -4,6 +4,7 @@
 use std::cell::RefCell;
 use std::collections::{HashMap, HashSet};
 use std::rc::Rc;
+use std::sync::Arc;
 
 use markuplint_core::mlast::{ElementType, NamespaceURI};
 use markuplint_dom::arena::{DomArena, NodeId};
@@ -253,7 +254,7 @@ impl Collection {
 #[derive(Default)]
 pub(super) struct Caches {
     spec_models: RefCell<HashMap<String, Option<Rc<ContentModel>>>>,
-    selectors: RefCell<HashMap<String, Option<Rc<SelectorList>>>>,
+    selectors: RefCell<HashMap<String, Option<Arc<SelectorList>>>>,
     pub conditions: RefCell<HashMap<String, Rc<super::engine::Condition>>>,
 }
 
@@ -308,11 +309,11 @@ impl<'a> Ctx<'a> {
     }
 
     /// The parsed selector, `None` when the parser rejects it (reported once, as a diagnostic).
-    pub fn selector(&self, selector: &str) -> Option<Rc<SelectorList>> {
+    pub fn selector(&self, selector: &str) -> Option<Arc<SelectorList>> {
         if let Some(cached) = self.caches.selectors.borrow().get(selector) {
             return cached.clone();
         }
-        let parsed = crate::diagnostic::parse_selector("spec content model", selector).map(Rc::new);
+        let parsed = crate::diagnostic::parse_selector("spec content model", selector);
         self.caches
             .selectors
             .borrow_mut()

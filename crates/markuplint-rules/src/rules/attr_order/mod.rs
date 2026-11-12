@@ -36,7 +36,7 @@ enum SortOrder {
 /// TS `CompiledEntry.match`.
 enum Matcher<'s> {
     Name(String),
-    Pattern(fancy_regex::Regex),
+    Pattern(std::sync::Arc<fancy_regex::Regex>),
     /// The `global` and `event` groups: membership in a set of names from the spec.
     InSet(&'s HashSet<String>),
     Aria,
@@ -319,7 +319,7 @@ fn compile_entries<'s>(
                 // TS skips an entry whose pattern is not a valid regular expression.
                 let matcher = pattern
                     .as_str()
-                    .and_then(|p| fancy_regex::Regex::new(p).ok())
+                    .and_then(crate::regex_cache::fancy_regex)
                     .map_or(Matcher::Never, Matcher::Pattern);
                 return CompiledEntry { order, matcher };
             }

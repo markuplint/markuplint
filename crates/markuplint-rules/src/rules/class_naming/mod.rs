@@ -51,7 +51,7 @@ impl Rule for ClassNaming {
                 .iter()
                 .filter_map(|ps| {
                     let regex_str = strip_regex_delimiters(ps);
-                    Regex::new(&regex_str).ok().map(|re| (ps.clone(), re))
+                    crate::regex_cache::regex(&regex_str).map(|re| (ps.clone(), re))
                 })
                 .collect();
 

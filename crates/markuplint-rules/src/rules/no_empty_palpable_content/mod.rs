@@ -96,7 +96,7 @@ impl Rule for NoEmptyPalpableContent {
                 .map(String::as_str)
                 .chain(exposable.iter().copied())
                 .filter_map(|entry| diagnostic::parse_selector("spec content model #palpable", entry))
-                .flat_map(|list| list.selectors)
+                .flat_map(|list| list.selectors.clone())
                 .collect(),
         };
 
