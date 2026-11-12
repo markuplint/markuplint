@@ -5,10 +5,16 @@
 //! [`markuplint_core::i18n`], so the locale of the run (`RuleConfigSet::translator`) decides the language.
 
 pub(crate) use markuplint_core::i18n::Primitive as Kw;
-use markuplint_core::i18n::Translator;
+use markuplint_core::i18n::{Translator, no_translate};
 use markuplint_types::check::types::{
     Expect, ExpectType, NumberType, NumericKind, Reason, Separator, Type, UnmatchedResult,
 };
+
+/// TS `items.map(noTranslate)`: the items of a list that are data (a role name, an attribute value, a
+/// token the author wrote), shown as written.
+pub(crate) fn no_translate_all<S: AsRef<str>>(items: &[S]) -> Vec<String> {
+    items.iter().map(|item| no_translate(item.as_ref())).collect()
+}
 
 /// TS `createMessageValueExpected`.
 pub(crate) fn create_message_value_expected(
@@ -87,7 +93,7 @@ fn create_message_value_expected_inner(
             reason_part = Some(format!(
                 "{} {}",
                 tr.t("Found {0}", &[Kw::S(&tr.t("extra {0}", &[Kw::S(token)]))]),
-                tr.t_list(std::slice::from_ref(&matches.raw), false)
+                tr.t_list(&[no_translate(&matches.raw)], false)
             ));
             if let Some(extra) = &matches.extra {
                 let extra = expect_value_to_word(tr, extra, &Type::Keyword("Any".to_owned()));
@@ -229,9 +235,9 @@ fn create_expected_object(tr: Translator<'_>, type_def: &Type, matches: &Unmatch
     if matches.expects.is_empty() {
         match type_def {
             Type::Keyword(k) if k.starts_with('<') => {
-                expected_object.push(tr.t("the CSS Syntax \"{0}\"", &[Kw::S(k)]));
+                expected_object.push(tr.t("the CSS Syntax \"{0*}\"", &[Kw::S(k)]));
             }
-            Type::Enum(e) => expected_object.extend(e.enum_values.iter().cloned()),
+            Type::Enum(e) => expected_object.extend(no_translate_all(&e.enum_values)),
             Type::Number(n) => expected_object.push(create_expected_number(tr, n)),
             Type::Directive(_) => expected_object.push(tr.t("a {0}", &[Kw::S("directive")])),
             Type::Pattern(p) => {
@@ -253,18 +259,12 @@ fn create_expected_object(tr: Translator<'_>, type_def: &Type, matches: &Unmatch
 fn expect_value_to_word(tr: Translator<'_>, expect: &Expect, type_def: &Type) -> String {
     match expect.type_ {
         ExpectType::Common => expect.value.clone(),
-        ExpectType::Const => {
-            if expect.value.is_empty() {
-                String::new()
-            } else {
-                format!("%{}%", expect.value)
-            }
-        }
+        ExpectType::Const => no_translate(&expect.value),
         ExpectType::Format => tr.t("the {0} format", &[Kw::S(&expect.value)]),
         ExpectType::Regexp => tr.t("{0} ({1})", &[Kw::S("regular expression"), Kw::S(&expect.value)]),
         ExpectType::Syntax => {
             if matches!(type_def, Type::Keyword(k) if k.starts_with('<')) {
-                tr.t("the CSS Syntax \"{0}\"", &[Kw::S(&expect.value)])
+                tr.t("the CSS Syntax \"{0*}\"", &[Kw::S(&expect.value)])
             } else {
                 tr.t("{0} syntax", &[Kw::S(&expect.value)])
             }

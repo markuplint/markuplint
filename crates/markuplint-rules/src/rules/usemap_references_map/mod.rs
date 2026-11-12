@@ -9,6 +9,7 @@
 //! <https://html.spec.whatwg.org/multipage/image-maps.html#attr-hyperlink-usemap>
 //! <https://html.spec.whatwg.org/multipage/common-microsyntaxes.html#valid-hash-name-reference>
 
+use markuplint_core::i18n::Primitive as Kw;
 use markuplint_dom::arena::DomArena;
 use markuplint_dom::helpers::get_attr_node_from_el;
 use markuplint_dom::node::DomNode;
@@ -35,6 +36,7 @@ impl Rule for UsemapReferencesMap {
         let map_selector = parser::parse("map").expect("a valid built-in selector");
         let mut violations = Vec::new();
         let trees = Trees::new(arena, spec);
+        let tr = config.translator();
 
         for (node_id, el) in arena.elements() {
             let rule_config = config.get(node_id);
@@ -83,7 +85,10 @@ impl Rule for UsemapReferencesMap {
                 rule_id: self.id().to_string(),
                 name: None,
                 severity: rule_config.severity,
-                message: "The \"usemap\" attribute of the \"img\" element must be a valid hash-name reference to a \"map\" element".to_string(),
+                message: tr.finish(&tr.t(
+                    "The \"{0*}\" attribute of the \"{1*}\" element must be a valid hash-name reference to a \"{2*}\" element",
+                    &[Kw::S("usemap"), Kw::S("img"), Kw::S("map")],
+                )),
                 line: usemap_attr.value.line,
                 col: usemap_attr.value.col,
                 raw: usemap_attr.value.raw.clone(),

@@ -7,6 +7,7 @@
 
 use std::collections::HashSet;
 
+use markuplint_core::i18n::Primitive as Kw;
 use markuplint_dom::arena::{DomArena, NodeId};
 use markuplint_dom::helpers;
 use markuplint_types::spec::types::MLMLSpec;
@@ -28,6 +29,7 @@ impl Rule for RequireDialogAutofocus {
 
     fn verify(&self, arena: &DomArena, spec: &MLMLSpec, config: &RuleConfigSet) -> Vec<Violation> {
         let mut violations = Vec::new();
+        let tr = config.translator();
         let trees = Trees::new(arena, spec);
         let mut reported_dialogs: HashSet<NodeId> = HashSet::new();
 
@@ -98,7 +100,10 @@ impl Rule for RequireDialogAutofocus {
                 rule_id: self.id().to_string(),
                     name: None,
                 severity: rule_config.severity,
-                message: "The \"dialog\" element referenced by a \"show-modal\" command requires an element with the \"autofocus\" attribute".to_string(),
+                message: tr.finish(&tr.t(
+                    "The \"{0*}\" element referenced by a \"{1*}\" command requires an element with the \"{2*}\" attribute",
+                    &[Kw::S("dialog"), Kw::S("show-modal"), Kw::S("autofocus")],
+                )),
                 line: target_el.base.line,
                 col: target_el.base.col,
                 raw: target_el.base.raw.clone(),

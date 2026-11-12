@@ -9,6 +9,7 @@
 //!
 //! <https://html.spec.whatwg.org/multipage/parsing.html#parsing-main-afterbody>
 
+use markuplint_core::i18n::Primitive as Kw;
 use markuplint_dom::arena::DomArena;
 use markuplint_dom::node::DomNode;
 use markuplint_types::spec::types::MLMLSpec;
@@ -39,6 +40,7 @@ impl Rule for NoContentAfterBody {
             return vec![];
         };
         let body_close_end = close_tag.offset + close_tag.raw.len();
+        let tr = config.translator();
 
         arena
             .children_of(body_id)
@@ -63,7 +65,10 @@ impl Rule for NoContentAfterBody {
                     rule_id: self.id().to_string(),
                     name: None,
                     severity: rule_config.severity,
-                    message: "Content after the end tag of the \"body\" element is not allowed".to_string(),
+                    message: tr.finish(&tr.t(
+                        "Content after the end tag of the \"{0*}\" element is not allowed",
+                        &[Kw::S("body")],
+                    )),
                     line: base.line,
                     col: base.col,
                     raw: base.raw.clone(),

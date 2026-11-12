@@ -95,9 +95,10 @@ impl Rule for NoUnclosedElementAtEof {
                     severity: rule_config.severity,
                     message: tr.finish(&tr.t(
                         "{0} is not closed at the end of the file",
-                        &[Kw::S(
-                            &tr.t("the \"{0}\" {1}", &[Kw::S(&el.base.node_name), Kw::S("element")]),
-                        )],
+                        &[Kw::S(&tr.t(
+                            "the \"{0*}\" {1}",
+                            &[Kw::S(&el.base.node_name), Kw::S("element")],
+                        ))],
                     )),
                     line: el.base.line,
                     col: el.base.col,

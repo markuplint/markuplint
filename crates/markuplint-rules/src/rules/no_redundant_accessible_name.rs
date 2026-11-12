@@ -1,6 +1,7 @@
 //! `no-redundant-accessible-name` rule: detects elements with multiple accessible name sources
 //! where a higher-priority source overrides a lower-priority one.
 
+use markuplint_core::i18n::{Primitive as Kw, Translator};
 use markuplint_dom::arena::{DomArena, NodeId};
 use markuplint_dom::helpers;
 use markuplint_types::spec::aria::ARIAVersion;
@@ -29,6 +30,7 @@ impl Rule for NoRedundantAccessibleName {
     fn verify(&self, arena: &DomArena, spec: &MLMLSpec, config: &RuleConfigSet) -> Vec<Violation> {
         let mut violations = Vec::new();
         let version = ARIAVersion::V1_2;
+        let tr = config.translator();
 
         for (node_id, el) in arena.elements() {
             let rule_config = config.get(node_id);
@@ -83,7 +85,10 @@ impl Rule for NoRedundantAccessibleName {
                         rule_id: self.id().to_string(),
                         name: None,
                         severity: rule_config.severity,
-                        message: format!("The accessible name from \"{winner}\" overrides \"{loser}\""),
+                        message: tr.finish(&tr.t(
+                            "The accessible name from \"{0*}\" overrides \"{1*}\"",
+                            &[Kw::S(&show_label(tr, winner)), Kw::S(&show_label(tr, loser))],
+                        )),
                         line: el.base.line,
                         col: el.base.col,
                         raw: el.base.raw.clone(),
@@ -95,6 +100,15 @@ impl Rule for NoRedundantAccessibleName {
         }
 
         violations
+    }
+}
+
+/// Labels are names (shown as written, `{n*}`) except `content`, which is a word and is translated.
+fn show_label(tr: Translator<'_>, label: &str) -> String {
+    if label == "content" {
+        tr.t("content", &[])
+    } else {
+        label.to_owned()
     }
 }
 

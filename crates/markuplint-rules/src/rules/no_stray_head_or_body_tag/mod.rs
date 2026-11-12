@@ -60,14 +60,14 @@ impl Rule for NoStrayHeadOrBodyTag {
                 "</head",
                 tr.finish(&tr.t(
                     "{0} detected",
-                    &[Kw::S(&tr.t("a stray \"{0}\" end tag", &[Kw::S("head")]))],
+                    &[Kw::S(&tr.t("a stray \"{0*}\" end tag", &[Kw::S("head")]))],
                 )),
             ),
             (
                 "<body",
                 tr.finish(&tr.t(
                     "{0} detected",
-                    &[Kw::S(&tr.t("a duplicate \"{0}\" start tag", &[Kw::S("body")]))],
+                    &[Kw::S(&tr.t("a duplicate \"{0*}\" start tag", &[Kw::S("body")]))],
                 )),
             ),
         ];

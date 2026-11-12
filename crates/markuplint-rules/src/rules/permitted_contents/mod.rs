@@ -201,7 +201,7 @@ fn name(ctx: &Ctx<'_>, tr: Translator<'_>, node: NodeId) -> String {
             } else {
                 ctx.local_name(el)
             };
-            tr.t("the \"{0}\" {1}", &[Kw::S(&display), Kw::S("element")])
+            tr.t("the \"{0*}\" {1}", &[Kw::S(&display), Kw::S("element")])
         }
         Some(DomNode::Text(_)) => tr.t("the {0}", &[Kw::S("text node")]),
         Some(DomNode::Doctype(_)) => tr.t("the {0}", &[Kw::S("doctype")]),

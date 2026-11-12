@@ -81,7 +81,7 @@ fn check(ctx: &ElementContext<'_>) -> Option<Violation> {
             several => format!(
                 "{}: {}",
                 tr.t("an accessibility parent with one of the {0}", &[Kw::S("roles")]),
-                tr.t_list(several, false)
+                tr.t_list(&crate::create_message::no_translate_all(several), false)
             ),
         };
         return Some(ctx.token_violation(

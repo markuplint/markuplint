@@ -101,7 +101,7 @@ fn attr_value_quotes_invalid_001() {
     assert_eq!(result.violations[0].severity, Severity::Warning);
     assert_eq!(
         result.violations[0].message,
-        "Attribute value is must quote on double quotation mark"
+        "Attribute value must be quoted with double quotation marks"
     );
     assert_eq!(result.violations[0].line, 2);
     assert_eq!(result.violations[0].col, 26);
@@ -109,7 +109,7 @@ fn attr_value_quotes_invalid_001() {
     assert_eq!(result.violations[1].severity, Severity::Warning);
     assert_eq!(
         result.violations[1].message,
-        "Attribute value is must quote on double quotation mark"
+        "Attribute value must be quoted with double quotation marks"
     );
     assert_eq!(result.violations[1].line, 2);
     assert_eq!(result.violations[1].col, 41);
@@ -138,7 +138,7 @@ fn attr_value_quotes_invalid_002() {
     assert_eq!(result.violations[0].severity, Severity::Error);
     assert_eq!(
         result.violations[0].message,
-        "Attribute value is must quote on double quotation mark"
+        "Attribute value must be quoted with double quotation marks"
     );
     assert_eq!(result.violations[0].line, 2);
     assert_eq!(result.violations[0].col, 26);
@@ -171,7 +171,7 @@ fn attr_value_quotes_invalid_003() {
     assert_eq!(result.violations[0].severity, Severity::Error);
     assert_eq!(
         result.violations[0].message,
-        "Attribute value is must quote on single quotation mark"
+        "Attribute value must be quoted with single quotation marks"
     );
     assert_eq!(result.violations[0].line, 2);
     assert_eq!(result.violations[0].col, 8);
@@ -222,7 +222,7 @@ fn v6_attr_value_quotes_002() {
     assert_eq!(result.violations.len(), 1);
     assert_eq!(
         result.violations[0].message,
-        "Attribute value is must quote on double quotation mark"
+        "Attribute value must be quoted with double quotation marks"
     );
 }
 

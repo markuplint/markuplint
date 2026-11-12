@@ -71,11 +71,10 @@ impl Rule for NoAmbiguousNavigableTargetNames {
                 if !is_navigable_keyword(&with_underscore) {
                     continue;
                 }
-                // As TS `t("a {0}", ...)` writes it (no "an").
                 let mut message = tr.t(
                     "don't use {0}",
                     &[Kw::S(&tr.t(
-                        "a {0}",
+                        "an {0}",
                         &[Kw::S(&tr.t("ambiguous {0}", &[Kw::S("navigable target name")]))],
                     ))],
                 );
@@ -130,7 +129,7 @@ mod tests {
         assert_eq!(violations.len(), 1);
         assert_eq!(
             violations[0].message,
-            "Don't use a ambiguous navigable target name. Did you mean \"_blank\"?"
+            "Don't use an ambiguous navigable target name. Did you mean \"_blank\"?"
         );
     }
 
@@ -152,7 +151,7 @@ mod tests {
         assert_eq!(violations.len(), 1);
         assert_eq!(
             violations[0].message,
-            "Don't use a ambiguous navigable target name. Did you mean \"_self\"?"
+            "Don't use an ambiguous navigable target name. Did you mean \"_self\"?"
         );
     }
 
@@ -174,7 +173,7 @@ mod tests {
         assert_eq!(violations.len(), 1);
         assert_eq!(
             violations[0].message,
-            "Don't use a ambiguous navigable target name. Did you mean \"_parent\"?"
+            "Don't use an ambiguous navigable target name. Did you mean \"_parent\"?"
         );
     }
 
@@ -196,7 +195,7 @@ mod tests {
         assert_eq!(violations.len(), 1);
         assert_eq!(
             violations[0].message,
-            "Don't use a ambiguous navigable target name. Did you mean \"_top\"?"
+            "Don't use an ambiguous navigable target name. Did you mean \"_top\"?"
         );
     }
 }

@@ -51,7 +51,7 @@ fn check(options: &serde_json::Value, html_attr: &MLASTHTMLAttr, ctx: &AttrCheck
             ctx,
             html_attr,
             ctx.tr.t(
-                "The \"{0}\" attribute must not be specified on an autonomous custom element",
+                "The \"{0*}\" attribute must not be specified on an autonomous custom element",
                 &[Kw::S("is")],
             ),
         ));

@@ -57,7 +57,7 @@ impl Rule for MapIdNameMatch {
                 name: None,
                 severity: rule_config.severity,
                 message: tr.finish(&tr.t(
-                    "The \"{0}\" attribute on a \"{1}\" element must have the same value as the \"{2}\" attribute",
+                    "The \"{0*}\" attribute on a \"{1*}\" element must have the same value as the \"{2*}\" attribute",
                     &[Kw::S("id"), Kw::S("map"), Kw::S("name")],
                 )),
                 line: id_attr.value.line,

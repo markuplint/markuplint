@@ -64,10 +64,10 @@ impl Rule for ProgressValueBounds {
             }
 
             let upper_desc = if max_attr.is_some() {
-                tr.t("the value of the \"{0}\" attribute", &[Kw::S("max")])
+                tr.t("the value of the \"{0*}\" attribute", &[Kw::S("max")])
             } else {
                 tr.t(
-                    "{0} when the \"{1}\" attribute is absent",
+                    "{0} when the \"{1*}\" attribute is absent",
                     &[Kw::S("one"), Kw::S("max")],
                 )
             };
@@ -77,7 +77,7 @@ impl Rule for ProgressValueBounds {
                 name: None,
                 severity: rule_config.severity,
                 message: tr.finish(&tr.t(
-                    "The value of the \"{0}\" attribute must be less than or equal to {1}",
+                    "The value of the \"{0*}\" attribute must be less than or equal to {1}",
                     &[Kw::S("value"), Kw::S(&upper_desc)],
                 )),
                 line: value_attr.value.line,

@@ -49,7 +49,7 @@ impl Rule for NoMalformedCharacterReference {
                 name: None,
                 severity: config.severity,
                 message: tr.finish(&tr.t(
-                    "{0} is {1:c}",
+                    "{0} is {1*}",
                     &[Kw::S(&tr.t("the {0}", &[Kw::S("character reference")])), Kw::S(&e.code)],
                 )),
                 line: e.start_line,

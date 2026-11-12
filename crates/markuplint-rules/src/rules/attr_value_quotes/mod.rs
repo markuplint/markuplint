@@ -32,11 +32,14 @@ impl Rule for AttrValueQuotes {
         };
         let tr = config.translator();
         let message = tr.finish(&tr.t(
-            "{0} is must {1} on {2}",
+            "{0} must be quoted with {1}",
             &[
                 Kw::S("Attribute value"),
-                Kw::S("quote"),
-                Kw::S(&format!("{kind} quotation mark")),
+                Kw::S(if kind == "double" {
+                    "double quotation marks"
+                } else {
+                    "single quotation marks"
+                }),
             ],
         ));
 

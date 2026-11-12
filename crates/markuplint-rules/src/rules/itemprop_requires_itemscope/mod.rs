@@ -108,11 +108,8 @@ impl Rule for ItempropRequiresItemscope {
                 name: None,
                 severity: rule_config.severity,
                 message: tr.finish(&tr.t(
-                    "{0} must {1}",
-                    &[
-                        Kw::S(&tr.t("the {0}", &[Kw::S("element")])),
-                        Kw::S("belong to an item via an ancestor `itemscope` or be referenced by an `itemref`"),
-                    ],
+                    "{0} must belong to an item via an ancestor `itemscope` or be referenced by an `itemref`",
+                    &[Kw::S(&tr.t("the {0}", &[Kw::S("element")]))],
                 )),
                 line: el.base.line,
                 col: el.base.col,

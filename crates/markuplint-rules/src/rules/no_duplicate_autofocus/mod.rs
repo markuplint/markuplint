@@ -8,6 +8,7 @@
 
 use std::collections::HashSet;
 
+use markuplint_core::i18n::Primitive as Kw;
 use markuplint_dom::arena::{DomArena, NodeId};
 use markuplint_dom::helpers::get_attr_value_from_el;
 use markuplint_dom::node::{DomNode, ElementData};
@@ -29,6 +30,7 @@ impl Rule for NoDuplicateAutofocus {
 
     fn verify(&self, arena: &DomArena, _spec: &MLMLSpec, config: &RuleConfigSet) -> Vec<Violation> {
         let mut violations = Vec::new();
+        let tr = config.translator();
         // `None` is the document.
         let mut seen_roots: HashSet<Option<NodeId>> = HashSet::new();
 
@@ -47,7 +49,10 @@ impl Rule for NoDuplicateAutofocus {
                 rule_id: self.id().to_owned(),
                 name: None,
                 severity: rule_config.severity,
-                message: "The \"autofocus\" attribute must be unique in the document".to_owned(),
+                message: tr.finish(&tr.t(
+                    "The \"{0*}\" attribute must be unique in the document",
+                    &[Kw::S("autofocus")],
+                )),
                 line: el.base.line,
                 col: el.base.col,
                 raw: el.base.raw.clone(),

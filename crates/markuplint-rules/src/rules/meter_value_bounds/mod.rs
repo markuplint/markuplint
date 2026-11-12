@@ -138,7 +138,7 @@ impl Reporter<'_> {
     ) -> Violation {
         let tr = self.tr;
         let upper_desc = if upper.is_some() {
-            tr.t("the value of the \"{0}\" attribute", &[Kw::S(upper_name)])
+            tr.t("the value of the \"{0*}\" attribute", &[Kw::S(upper_name)])
         } else {
             // TS `upperDefault === 1 ? 'one' : String(upperDefault)`; the defaults are 0 and 1.
             let default = if (upper_default - 1.0).abs() < f64::EPSILON {
@@ -147,12 +147,12 @@ impl Reporter<'_> {
                 format!("{upper_default}")
             };
             tr.t(
-                "{0} when the \"{1}\" attribute is absent",
+                "{0} when the \"{1*}\" attribute is absent",
                 &[Kw::S(&default), Kw::S(upper_name)],
             )
         };
         let message = tr.finish(&tr.t(
-            "The value of the \"{0}\" attribute must be less than or equal to {1}",
+            "The value of the \"{0*}\" attribute must be less than or equal to {1}",
             &[Kw::S(lower_name), Kw::S(&upper_desc)],
         ));
         let (line, col, raw) = match lower.or(upper) {

@@ -248,10 +248,11 @@ impl Rule for RequireAttr {
                 if requirement.values.iter().any(|pattern| pattern_match(value, pattern)) {
                     continue;
                 }
-                let expects = if requirement.values.len() == 1 {
-                    tr.t_list(&requirement.values, false)
+                let values = crate::create_message::no_translate_all(&requirement.values);
+                let expects = if values.len() == 1 {
+                    tr.t_list(&values, false)
                 } else {
-                    tr.t("either {0}", &[Kw::S(&tr.t_list(&requirement.values, false))])
+                    tr.t("either {0}", &[Kw::S(&tr.t_list(&values, false))])
                 };
                 let message = tr.finish(&tr.t(
                     "{0} expects {1}",

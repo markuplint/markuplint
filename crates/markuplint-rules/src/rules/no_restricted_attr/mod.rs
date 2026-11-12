@@ -88,7 +88,10 @@ fn check(
                 html_attr,
                 tr.finish(&tr.t(
                     "{0} is disallowed to accept the following values: {1}",
-                    &[Kw::S(&the_attr()), Kw::S(&tr.t_list(values, false))],
+                    &[
+                        Kw::S(&the_attr()),
+                        Kw::S(&tr.t_list(&crate::create_message::no_translate_all(values), false)),
+                    ],
                 )),
             )
         }),

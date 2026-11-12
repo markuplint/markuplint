@@ -57,7 +57,7 @@ impl Rule for NoInputFileValue {
                 name: None,
                 severity: rule_config.severity,
                 message: tr.finish(&tr.t(
-                    "The \"{0}\" attribute on a \"{1}\" element with \"{2}={3}\" must be the empty string",
+                    "The \"{0*}\" attribute on a \"{1*}\" element with \"{2*}={3*}\" must be the empty string",
                     &[Kw::S("value"), Kw::S("input"), Kw::S("type"), Kw::S("file")],
                 )),
                 line: value_attr.value.line,

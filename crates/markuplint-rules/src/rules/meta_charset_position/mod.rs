@@ -9,6 +9,7 @@
 //!
 //! <https://html.spec.whatwg.org/multipage/semantics.html#charset>
 
+use markuplint_core::i18n::Primitive as Kw;
 use markuplint_dom::arena::DomArena;
 use markuplint_selector::{matcher, parser};
 use markuplint_types::spec::types::MLMLSpec;
@@ -33,6 +34,7 @@ impl Rule for MetaCharsetPosition {
 
     fn verify(&self, arena: &DomArena, spec: &MLMLSpec, config: &RuleConfigSet) -> Vec<Violation> {
         let selector = parser::parse(DECLARATIONS).expect("a valid built-in selector");
+        let tr = config.translator();
         arena
             .elements()
             .filter(|&(node_id, el)| {
@@ -48,9 +50,10 @@ impl Rule for MetaCharsetPosition {
                     rule_id: self.id().to_string(),
                     name: None,
                     severity: rule_config.severity,
-                    message: format!(
-                        "The character encoding declaration must be within the first {BYTE_LIMIT} bytes of the document"
-                    ),
+                    message: tr.finish(&tr.t(
+                        "The character encoding declaration must be within the first {0} bytes of the document",
+                        &[Kw::S(&BYTE_LIMIT.to_string())],
+                    )),
                     line: el.base.line,
                     col: el.base.col,
                     raw: el.base.raw.clone(),

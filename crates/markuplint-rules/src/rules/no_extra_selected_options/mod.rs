@@ -7,6 +7,7 @@
 //! children of its `<optgroup>` children (TS `:scope > option[selected], :scope > optgroup >
 //! option[selected]`), in document order. Every selected option after the first is reported.
 
+use markuplint_core::i18n::Primitive as Kw;
 use markuplint_dom::arena::{DomArena, NodeId};
 use markuplint_dom::helpers::get_attr_value_from_el;
 use markuplint_dom::node::{DomNode, ElementData};
@@ -28,6 +29,7 @@ impl Rule for NoExtraSelectedOptions {
 
     fn verify(&self, arena: &DomArena, _spec: &MLMLSpec, config: &RuleConfigSet) -> Vec<Violation> {
         let mut violations = Vec::new();
+        let tr = config.translator();
 
         for (node_id, el) in arena.elements() {
             let rule_config = config.get(node_id);
@@ -59,7 +61,10 @@ impl Rule for NoExtraSelectedOptions {
                     rule_id: self.id().to_owned(),
                     name: None,
                     severity: rule_config.severity,
-                    message: "The \"select\" element cannot have more than one selected \"option\" descendant unless the \"multiple\" attribute is specified".to_owned(),
+                    message: tr.finish(&tr.t(
+                        "The \"{0*}\" element cannot have more than one selected \"{1*}\" descendant unless the \"{2*}\" attribute is specified",
+                        &[Kw::S("select"), Kw::S("option"), Kw::S("multiple")],
+                    )),
                     line: opt.base.line,
                     col: opt.base.col,
                     raw: opt.base.raw.clone(),

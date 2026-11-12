@@ -111,9 +111,9 @@ fn check(ctx: &ElementContext<'_>, violations: &mut Vec<Violation>) {
                         )),
                         Kw::S(&tr.t(
                             if contradicts_with == "current" {
-                                "the current \"{0}\" {1}"
+                                "the current \"{0*}\" {1}"
                             } else {
-                                "the implicit \"{0}\" {1}"
+                                "the implicit \"{0*}\" {1}"
                             },
                             &[Kw::S(native_name), Kw::S("attribute")],
                         )),

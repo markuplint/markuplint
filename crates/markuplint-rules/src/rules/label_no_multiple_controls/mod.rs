@@ -15,6 +15,7 @@
 //!
 //! <https://html.spec.whatwg.org/multipage/forms.html#the-label-element>
 
+use markuplint_core::i18n::Primitive as Kw;
 use markuplint_dom::arena::{DomArena, NodeId};
 use markuplint_dom::helpers::get_attr_node_from_el;
 use markuplint_dom::node::DomNode;
@@ -47,6 +48,7 @@ impl Rule for LabelNoMultipleControls {
         let labelable = parser::parse(LABELABLE_SELECTOR).expect("a valid built-in selector");
         let mut violations = Vec::new();
         let trees = Trees::new(arena, spec);
+        let tr = config.translator();
 
         for (node_id, el) in arena.elements() {
             if config.get(node_id).disabled {
@@ -74,12 +76,21 @@ impl Rule for LabelNoMultipleControls {
             let (reported, message) = if has_external_labeled_control(arena, spec, &trees, node_id, &labelable) {
                 (
                     &controls[..],
-                    "The \"label\" element must not contain a form-control descendant when the \"for\" attribute references an external labelable element",
+                    tr.finish(&tr.t(
+                        "The \"{0*}\" element must not contain a form-control descendant when the \"{1*}\" attribute references an external labelable element",
+                        &[Kw::S("label"), Kw::S("for")],
+                    )),
                 )
             } else {
                 (
                     &controls[1..],
-                    "The \"label\" element may contain at most one form-control descendant (button, input, meter, output, progress, select, or textarea)",
+                    tr.finish(&tr.t(
+                        "The \"{0*}\" element may contain at most one form-control descendant ({1})",
+                        &[
+                            Kw::S("label"),
+                            Kw::S("button, input, meter, output, progress, select, or textarea"),
+                        ],
+                    )),
                 )
             };
 
@@ -93,7 +104,7 @@ impl Rule for LabelNoMultipleControls {
                     rule_id: self.id().to_string(),
                     name: None,
                     severity: config.get(control_id).severity,
-                    message: message.to_string(),
+                    message: message.clone(),
                     line: control.base.line,
                     col: control.base.col,
                     raw: control.base.raw.clone(),

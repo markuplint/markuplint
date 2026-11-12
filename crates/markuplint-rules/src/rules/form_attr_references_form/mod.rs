@@ -7,6 +7,7 @@
 //!
 //! <https://html.spec.whatwg.org/multipage/form-control-infrastructure.html#attr-fae-form>
 
+use markuplint_core::i18n::Primitive as Kw;
 use markuplint_dom::arena::DomArena;
 use markuplint_dom::helpers::get_attr_node_from_el;
 use markuplint_selector::{matcher, parser};
@@ -37,6 +38,7 @@ impl Rule for FormAttrReferencesForm {
         let trees = Trees::new(arena, spec);
         let selector = parser::parse(FORM_ASSOCIATED_SELECTOR).expect("a valid built-in selector");
         let mut violations = Vec::new();
+        let tr = config.translator();
 
         for (node_id, el) in arena.elements() {
             let rule_config = config.get(node_id);
@@ -77,8 +79,10 @@ impl Rule for FormAttrReferencesForm {
                 rule_id: self.id().to_string(),
                 name: None,
                 severity: rule_config.severity,
-                message: "The \"form\" attribute on a form-associated element must reference a \"form\" element"
-                    .to_string(),
+                message: tr.finish(&tr.t(
+                    "The \"{0*}\" attribute on a form-associated element must reference a \"{1*}\" element",
+                    &[Kw::S("form"), Kw::S("form")],
+                )),
                 line: form_attr.value.line,
                 col: form_attr.value.col,
                 raw: form_attr.value.raw.clone(),

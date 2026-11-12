@@ -68,7 +68,7 @@ impl Rule for NoAriaHiddenOnHiddenUntilFound {
                 name: None,
                 severity: rule_config.severity,
                 message: tr.finish(&tr.t(
-                    "\"aria-hidden\" must not be \"{0}\" on an element with \"hidden\" value \"{1}\"",
+                    "\"aria-hidden\" must not be \"{0*}\" on an element with \"hidden\" value \"{1*}\"",
                     &[Kw::S("true"), Kw::S("until-found")],
                 )),
                 line: aria_hidden.line,

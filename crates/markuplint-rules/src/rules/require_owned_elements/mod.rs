@@ -130,7 +130,11 @@ fn check(ctx: &ElementContext<'_>, node_id: NodeId, role: Option<&ResolvedRole>)
     let tr = ctx.tr;
     let required = match child_roles.as_slice() {
         [single] => tr.t("the \"{0*}\" {1}", &[Kw::S(single), Kw::S("role")]),
-        several => format!("{}: {}", tr.t("the {0}", &[Kw::S("roles")]), tr.t_list(several, false)),
+        several => format!(
+            "{}: {}",
+            tr.t("the {0}", &[Kw::S("roles")]),
+            tr.t_list(&crate::create_message::no_translate_all(several), false)
+        ),
     };
     let message = if may_be_before_created(ctx.arena, &owned_children.unwrap_or_default()) {
         tr.t(
@@ -140,7 +144,7 @@ fn check(ctx: &ElementContext<'_>, node_id: NodeId, role: Option<&ResolvedRole>)
                     "{0} requires {1}",
                     &[Kw::S(&tr.t("the {0}", &[Kw::S("child element")])), Kw::S(&required)],
                 )),
-                Kw::S(&tr.t("require {0}", &[Kw::S("aria-busy=\"true\"")])),
+                Kw::S(&tr.t("require {0*}", &[Kw::S("aria-busy=\"true\"")])),
             ],
         )
     } else {

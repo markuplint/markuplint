@@ -28,7 +28,10 @@ impl Rule for NoTableCellOverlap {
         let tr = config.translator();
         let message = tr.finish(&tr.t(
             "{0} are causing {1}",
-            &[Kw::S(&tr.t_list(&["rowspan", "colspan"], true)), Kw::S("cell overlap")],
+            &[
+                Kw::S(&tr.t_list(&crate::create_message::no_translate_all(&["rowspan", "colspan"]), true)),
+                Kw::S("cell overlap"),
+            ],
         ));
         table_grid::tables(arena, config)
             .filter(|(_, grid)| grid.has_overlapped())

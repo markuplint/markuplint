@@ -180,16 +180,17 @@ fn not_allowed_keyword(keyword: &str, tr: Translator<'_>) -> String {
     )
 }
 
-/// TS `t('The "{0*}" {1} is not allowed on the {2}', keyword, 'keyword', '"<element>" element')`.
+/// TS `t('The "{0*}" {1} is not allowed on {2}', keyword, 'keyword', t('the "{0*}" {1}', element, 'element'))`.
 fn not_allowed_on(keyword: &str, element: &str, tr: Translator<'_>) -> String {
     tr.t(
-        "The \"{0*}\" {1} is not allowed on the {2}",
-        &[
-            Kw::S(keyword),
-            Kw::S("keyword"),
-            Kw::S(&format!("\"{element}\" element")),
-        ],
+        "The \"{0*}\" {1} is not allowed on {2}",
+        &[Kw::S(keyword), Kw::S("keyword"), Kw::S(&the_element(element, tr))],
     )
+}
+
+/// TS `t('the "{0*}" {1}', element, 'element')`.
+fn the_element(element: &str, tr: Translator<'_>) -> String {
+    tr.t("the \"{0*}\" {1}", &[Kw::S(element), Kw::S("element")])
 }
 
 fn validate_whatwg(def: &WhatwgKeyword, context: ElementContext, tr: Translator<'_>) -> Option<String> {
@@ -200,12 +201,12 @@ fn validate_whatwg(def: &WhatwgKeyword, context: ElementContext, tr: Translator<
                 Some(not_allowed_on(def.keyword, "link", tr))
             } else if !def.body_ok {
                 Some(tr.t(
-                    "The \"{0*}\" {1} is not allowed on the {2} inside the {3}",
+                    "The \"{0*}\" {1} is not allowed on {2} inside {3}",
                     &[
                         Kw::S(def.keyword),
                         Kw::S("keyword"),
-                        Kw::S("\"link\" element"),
-                        Kw::S("\"body\" element"),
+                        Kw::S(&the_element("link", tr)),
+                        Kw::S(&the_element("body", tr)),
                     ],
                 ))
             } else {

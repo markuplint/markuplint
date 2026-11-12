@@ -7,6 +7,7 @@
 //!
 //! <https://html.spec.whatwg.org/multipage/grouping-content.html#the-main-element>
 
+use markuplint_core::i18n::Primitive as Kw;
 use markuplint_dom::arena::DomArena;
 use markuplint_dom::helpers::has_attr;
 use markuplint_types::spec::types::MLMLSpec;
@@ -25,6 +26,7 @@ impl Rule for NoDuplicateVisibleMain {
     }
 
     fn verify(&self, arena: &DomArena, _spec: &MLMLSpec, config: &RuleConfigSet) -> Vec<Violation> {
+        let tr = config.translator();
         arena
             .elements()
             .filter(|(node_id, el)| el.base.node_name == "main" && !has_attr(arena, *node_id, "hidden"))
@@ -39,7 +41,10 @@ impl Rule for NoDuplicateVisibleMain {
                     rule_id: self.id().to_string(),
                     name: None,
                     severity: rule_config.severity,
-                    message: "There must not be more than one visible \"main\" element in a document".to_string(),
+                    message: tr.finish(&tr.t(
+                        "There must not be more than one visible \"{0*}\" element in a document",
+                        &[Kw::S("main")],
+                    )),
                     line: el.base.line,
                     col: el.base.col,
                     raw: el.base.raw.clone(),

@@ -226,14 +226,19 @@ fn format_message(
     let details = unsupported
         .iter()
         .map(|u| match (u.added_version, u.removed_version) {
-            (None, Some(removed)) if !removed.is_empty() => format!("{} (removed in {removed})", u.display_name),
-            (None, _) => format!("{} (not supported)", u.display_name),
-            (Some(added), _) => format!("{} (added in {added}, target: {})", u.display_name, u.target_version),
+            (None, Some(removed)) if !removed.is_empty() => {
+                tr.t("{0*} (removed in {1*})", &[Kw::S(u.display_name), Kw::S(removed)])
+            }
+            (None, _) => tr.t("{0*} (not supported)", &[Kw::S(u.display_name)]),
+            (Some(added), _) => tr.t(
+                "{0*} (added in {1*}, target: {2*})",
+                &[Kw::S(u.display_name), Kw::S(added), Kw::S(u.target_version)],
+            ),
         })
         .collect::<Vec<_>>()
         .join(", ");
     tr.finish(&tr.t(
-        "{0} is not supported in {1}",
+        "{0} is not supported in {1*}",
         &[
             Kw::S(&tr.t("the \"{0*}\" {1}", &[Kw::S(feature_name), Kw::S(feature_type)])),
             Kw::S(&details),

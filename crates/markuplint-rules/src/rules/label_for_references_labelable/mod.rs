@@ -8,6 +8,7 @@
 //!
 //! <https://html.spec.whatwg.org/multipage/forms.html#attr-label-for>
 
+use markuplint_core::i18n::Primitive as Kw;
 use markuplint_dom::arena::DomArena;
 use markuplint_dom::helpers::get_attr_node_from_el;
 use markuplint_selector::{matcher, parser};
@@ -44,6 +45,7 @@ impl Rule for LabelForReferencesLabelable {
         let trees = Trees::new(arena, spec);
         let labelable = parser::parse(LABELABLE_SELECTOR).expect("a valid built-in selector");
         let mut violations = Vec::new();
+        let tr = config.translator();
 
         for (node_id, el) in arena.elements() {
             let rule_config = config.get(node_id);
@@ -80,8 +82,10 @@ impl Rule for LabelForReferencesLabelable {
                 rule_id: self.id().to_string(),
                 name: None,
                 severity: rule_config.severity,
-                message: "The \"for\" attribute of the \"label\" element must reference a labelable element"
-                    .to_string(),
+                message: tr.finish(&tr.t(
+                    "The \"{0*}\" attribute of the \"{1*}\" element must reference a labelable element",
+                    &[Kw::S("for"), Kw::S("label")],
+                )),
                 line: for_attr.value.line,
                 col: for_attr.value.col,
                 raw: for_attr.value.raw.clone(),

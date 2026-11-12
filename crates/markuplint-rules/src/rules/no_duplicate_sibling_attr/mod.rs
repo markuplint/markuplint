@@ -8,6 +8,7 @@
 //! the same parent element has the same local name and the attribute. An element whose parent is
 //! not an element (the top of a fragment) is not checked.
 
+use markuplint_core::i18n::Primitive as Kw;
 use markuplint_dom::arena::{DomArena, NodeId};
 use markuplint_dom::helpers::get_attr_value_from_el;
 use markuplint_dom::node::DomNode;
@@ -29,6 +30,7 @@ impl Rule for NoDuplicateSiblingAttr {
 
     fn verify(&self, arena: &DomArena, spec: &MLMLSpec, config: &RuleConfigSet) -> Vec<Violation> {
         let mut violations = Vec::new();
+        let tr = config.translator();
 
         for (node_id, el) in arena.elements() {
             let rule_config = config.get(node_id);
@@ -67,9 +69,10 @@ impl Rule for NoDuplicateSiblingAttr {
                         rule_id: self.id().to_owned(),
                         name: None,
                         severity: rule_config.severity,
-                        message: format!(
-                            "The \"{attr_name}\" attribute must not appear on more than one \"{local_name}\" element within the same parent"
-                        ),
+                        message: tr.finish(&tr.t(
+                            "The \"{0*}\" attribute must not appear on more than one \"{1*}\" element within the same parent",
+                            &[Kw::S(attr_name), Kw::S(&local_name)],
+                        )),
                         line: el.base.line,
                         col: el.base.col,
                         raw: el.base.raw.clone(),

@@ -129,7 +129,7 @@ fn invalid_value_message_in(
         &[
             Kw::S(&tr.t(
                 "{0} is {1:c}",
-                &[Kw::S(&tr.t("the \"{0}\"", &[Kw::S(value)])), Kw::S("disallowed")],
+                &[Kw::S(&tr.t("the \"{0*}\"", &[Kw::S(value)])), Kw::S("disallowed")],
             )),
             Kw::S(&tr.t(
                 "the \"{0*}\" {1}",
@@ -144,7 +144,10 @@ fn invalid_value_message_in(
         message.push_str(&tr.t(". ", &[]));
         message.push_str(&tr.t(
             "Allowed values are: {0}",
-            &[Kw::S(&tr.t_list(&prop.enum_values, false))],
+            &[Kw::S(&tr.t_list(
+                &crate::create_message::no_translate_all(&prop.enum_values),
+                false,
+            ))],
         ));
     }
     Some(tr.finish(&message))

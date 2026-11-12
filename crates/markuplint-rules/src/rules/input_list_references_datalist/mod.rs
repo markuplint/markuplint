@@ -73,7 +73,7 @@ impl Rule for InputListReferencesDatalist {
                 name: None,
                 severity: rule_config.severity,
                 message: tr.finish(&tr.t(
-                    "The \"{0}\" attribute of the \"{1}\" element must reference a \"{2}\" element",
+                    "The \"{0*}\" attribute of the \"{1*}\" element must reference a \"{2*}\" element",
                     &[Kw::S("list"), Kw::S("input"), Kw::S("datalist")],
                 )),
                 line: list_attr.value.line,

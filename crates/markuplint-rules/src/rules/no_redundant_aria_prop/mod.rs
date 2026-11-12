@@ -105,11 +105,11 @@ fn check(ctx: &ElementContext<'_>, violations: &mut Vec<Violation>) {
                                         "{0} or {1}",
                                         &[
                                             Kw::S(&tr.t(
-                                                "the current \"{0}\" {1}",
+                                                "the current \"{0*}\" {1}",
                                                 &[Kw::S(native_name), Kw::S("attribute")],
                                             )),
                                             Kw::S(&tr.t(
-                                                "the implicit \"{0}\" {1}",
+                                                "the implicit \"{0*}\" {1}",
                                                 &[Kw::S(native_name), Kw::S("attribute")],
                                             )),
                                         ],
