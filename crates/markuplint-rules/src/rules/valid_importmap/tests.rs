@@ -430,7 +430,7 @@ fn v6_valid_importmap_002() {
     );
 }
 
-/// Expected values from the TS rule (`new URL()` of Node.js 24, which takes `http://xn--a.com`: it
+/// Expected values from the TS rule (`new URL()` of Node.js 26, which takes `http://xn--a.com`: it
 /// does not decode an `xn--` label of an ASCII host) on the same input.
 #[test]
 fn v6_valid_importmap_003() {
