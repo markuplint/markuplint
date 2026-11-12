@@ -117,28 +117,26 @@ const DAYS_OF_MONTH: [f64; 13] = [
     0.0, 31.0, 28.0, 31.0, 30.0, 31.0, 30.0, 31.0, 31.0, 30.0, 31.0, 30.0, 31.0,
 ];
 
-/// TS `getMaxWeekNum`: the number of ISO weeks of `year`, `NaN` past the JS date range.
+/// TS `getMaxWeekNum`: the number of weeks of the week-year `year`.
 ///
-/// TS builds the date with `Date.UTC` and reads it back in the local time zone, so its result
-/// depends on the time zone of the process (east of UTC it is one too large for some years, such
-/// as 53 for 2021). This is what TS computes with `TZ=UTC`, which is also the ISO week count: a
-/// year that `Date.UTC` maps from `0`–`99` to `1900`–`1999` is counted as that year.
+/// > A week-year with a number year has 53 weeks if it corresponds to either a year year in the
+/// > proleptic Gregorian calendar that has a Thursday as its first day (January 1st), or a year
+/// > year in the proleptic Gregorian calendar that has a Wednesday as its first day (January 1st)
+/// > and where year is a number divisible by 400, or a number divisible by 4 but not by 100. All
+/// > other week-years have 52 weeks.
+///
+/// The weekday is computed arithmetically, as TS does, so the result does not depend on the time
+/// zone of the process nor on the range of a date. Only `year` mod 400 matters, since the Gregorian
+/// calendar repeats every 400 years. Any integer is accepted (0 and below too).
+///
+/// @see <https://html.spec.whatwg.org/multipage/common-microsyntaxes.html#weeks>
 #[must_use]
+#[allow(clippy::float_cmp)] // the weekday is a small integer held in a float, as in JS
 pub fn get_max_week_num(year: f64) -> f64 {
-    // The last day JS dates reach is 275760-09-13, so December 31 of 275760 is out of range.
-    if !year.is_finite() || !(0.0..275_760.0).contains(&year) {
-        return f64::NAN;
-    }
-    #[allow(clippy::cast_possible_truncation)]
-    let mut y = year.trunc() as i64;
-    if y < 100 {
-        y += 1900;
-    }
-    let is_leap = |y: i64| (y % 4 == 0 && y % 100 != 0) || y % 400 == 0;
-    // Tomohiko Sakamoto's algorithm for January 1 (0 = Sunday); `y - 1` because January < March.
-    let p = y - 1;
-    let jan1 = (p + p / 4 - p / 100 + p / 400 + 1).rem_euclid(7);
-    if jan1 == 4 || (jan1 == 3 && is_leap(y)) {
+    const THURSDAY: f64 = 4.0;
+    const WEDNESDAY: f64 = 3.0;
+    let first_day = weekday_of_january_first(year);
+    if first_day == THURSDAY || (first_day == WEDNESDAY && is_leap_year(year)) {
         53.0
     } else {
         52.0
@@ -148,27 +146,48 @@ pub fn get_max_week_num(year: f64) -> f64 {
 /// [`get_max_week_num`] for a year as an integer.
 #[must_use]
 pub fn max_week_number(year: u32) -> u32 {
-    let n = get_max_week_num(f64::from(year));
-    if n.is_nan() {
-        0
-    } else {
-        #[allow(clippy::cast_possible_truncation, clippy::cast_sign_loss)]
-        let n = n as u32;
-        n
-    }
+    #[allow(clippy::cast_possible_truncation, clippy::cast_sign_loss)]
+    let n = get_max_week_num(f64::from(year)) as u32;
+    n
 }
 
-/// TS `datetimeTokenCheck`, with its `_year` / `_month` state.
+/// TS `isLeapYear`.
+fn is_leap_year(year: f64) -> bool {
+    (year % 4.0 == 0.0 && year % 100.0 != 0.0) || year % 400.0 == 0.0
+}
+
+/// TS `getWeekdayOfJanuaryFirst`: Gauss's algorithm for the weekday of January 1st in the proleptic
+/// Gregorian calendar (0 = Sunday … 6 = Saturday).
+fn weekday_of_january_first(year: f64) -> f64 {
+    let y = year - 1.0;
+    modulo(
+        1.0 + 5.0 * modulo(y, 4.0) + 4.0 * modulo(y, 100.0) + 6.0 * modulo(y, 400.0),
+        7.0,
+    )
+}
+
+/// TS `mod`: the remainder with the sign of the divisor, so that the year 0 and below stay in `0..m`.
+fn modulo(n: f64, m: f64) -> f64 {
+    ((n % m) + m) % m
+}
+
+/// TS `datetimeTokenCheck`, with its `_yearMod400` / `_month` state.
 #[derive(Default)]
 struct DatetimeTokenCheck {
-    year: Cell<Option<f64>>,
+    /// The year as the remainder of the year divided by 400.
+    ///
+    /// The Gregorian calendar repeats every 400 years, so the remainder decides the leap year and
+    /// the weekday. It is taken from the last four digits (10000 is a multiple of 400), not from the
+    /// whole year as a number: the grammar allows any number of digits, and a number rounds a year
+    /// past 2^53. It stays `None` while the year is invalid.
+    year_mod400: Cell<Option<u32>>,
     month: Cell<Option<f64>>,
 }
 
 impl DatetimeTokenCheck {
     /// > Four or more ASCII digits, representing year, where year > 0
     fn year(&self, token: Option<&Token>) -> Option<CheckResult> {
-        self.year.set(None);
+        self.year_mod400.set(None);
         let Some(t) = non_empty(token) else {
             return missing(&[(Common, "year")], Some("year"));
         };
@@ -178,11 +197,12 @@ impl DatetimeTokenCheck {
         if t.value.len() < 4 {
             return token_unmatched(t, length_digit(4, None), Some(vec![]), Some("year"));
         }
-        let year = t.to_number();
-        self.year.set(Some(year));
-        if year <= 0.0 {
+        if t.to_number() <= 0.0 {
             return token_unmatched(t, out_of_range(Some(0.0), None, None), Some(vec![]), Some("year"));
         }
+        // The digits are ASCII and there are at least four of them.
+        let last_four = &t.value[t.value.len() - 4..];
+        self.year_mod400.set(last_four.parse::<u32>().ok().map(|n| n % 400));
         None
     }
 
@@ -203,7 +223,7 @@ impl DatetimeTokenCheck {
     /// > Two ASCII digits, representing day, in the range 1 ≤ day ≤ maxday where maxday is the
     /// > number of days in the month month and year year
     ///
-    /// A yearless date has no year, and is checked against a leap year.
+    /// A date without a valid year (a yearless date) is checked against a leap year.
     #[allow(clippy::float_cmp)] // JS `===` on a month parsed from two digits
     fn date(&self, token: Option<&Token>) -> Option<CheckResult> {
         let Some(t) = non_empty(token) else {
@@ -212,8 +232,8 @@ impl DatetimeTokenCheck {
         if let Some(res) = two_digits(t, "date") {
             return Some(res);
         }
-        let year = self.year.get().unwrap_or(2000.0);
-        let is_leap = (year % 4.0 == 0.0 && year % 100.0 != 0.0) || year % 400.0 == 0.0;
+        let year_mod400 = f64::from(self.year_mod400.get().unwrap_or(0));
+        let is_leap = is_leap_year(year_mod400);
         let month = self.month.get().unwrap_or(1.0);
         #[allow(clippy::cast_possible_truncation, clippy::cast_sign_loss)]
         let days = if month.fract() == 0.0 && (0.0..=12.0).contains(&month) {
@@ -233,9 +253,13 @@ impl DatetimeTokenCheck {
         if let Some(res) = two_digits(t, "week") {
             return Some(res);
         }
-        let max_week = get_max_week_num(self.year.get().unwrap_or(0.0));
-        // TS names the part `date` here.
-        range(t, t.to_number(), 1.0, max_week, "date")
+        // An invalid year is reported by its own check, and no week count can be derived from it:
+        // the week is then held to the most any week-year has, 53.
+        let max_week = self
+            .year_mod400
+            .get()
+            .map_or(53.0, |year_mod400| get_max_week_num(f64::from(year_mod400)));
+        range(t, t.to_number(), 1.0, max_week, "week")
     }
 }
 
@@ -353,8 +377,7 @@ fn normalized_local_date_time_separator(token: Option<&Token>) -> Option<CheckRe
 
 /// > A U+0057 LATIN CAPITAL LETTER W character (W)
 fn week_sign(token: Option<&Token>) -> Option<CheckResult> {
-    // TS names the part `time-zone` here.
-    separator(token, &["W"], &[(Const, "W")], Some("time-zone"), false)
+    separator(token, &["W"], &[(Const, "W")], Some("week"), false)
 }
 
 /// What is left after the last part.

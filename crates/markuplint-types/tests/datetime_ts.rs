@@ -2,7 +2,7 @@
 //!
 //! The cases are the inputs of `check-datetime/*.spec.ts` and `check-datetime-subtypes.spec.ts`,
 //! plus inputs the rule specs check and edge cases; every expectation is the result of TS `check()`
-//! (or of the TS checker function) for that input, run with `TZ=UTC` (see `get_max_week_num`).
+//! (or of the TS checker function) for that input.
 //! Offsets are byte offsets; columns are UTF-16 code units as in TS.
 
 use markuplint_types::check::check;
@@ -92,9 +92,141 @@ fn max_week() {
     assert!((get_max_week_num(1981.0) - 53.0).abs() < f64::EPSILON);
     assert!((get_max_week_num(2021.0) - 52.0).abs() < f64::EPSILON);
     assert!((get_max_week_num(2026.0) - 53.0).abs() < f64::EPSILON);
-    // `Date.UTC` maps 0–99 to 1900–1999: 1903 has 53 weeks.
-    assert!((get_max_week_num(3.0) - 53.0).abs() < f64::EPSILON);
-    assert!(get_max_week_num(275_760.0).is_nan());
+    // The weekday is computed by arithmetic, so a year of two digits is that year, and a year past
+    // the range of a date is counted too.
+    assert!((get_max_week_num(3.0) - 52.0).abs() < f64::EPSILON);
+    assert!((get_max_week_num(275_760.0) - 52.0).abs() < f64::EPSILON);
+}
+
+fn unmatched(result: CheckResult) -> markuplint_types::check::types::UnmatchedResult {
+    match result {
+        CheckResult::Unmatched(u) => u,
+        CheckResult::Matched => panic!("matched"),
+    }
+}
+
+fn is_matched(result: &CheckResult) -> bool {
+    matches!(result, CheckResult::Matched)
+}
+
+/// TS (`index.spec.ts`): max-week of years outside the range of two-digit and Date years
+#[test]
+fn max_week_of_years_outside_the_range_of_two_digit_and_date_years() {
+    // January 1st of the year 99 is a Thursday (not of 1999, a Friday)
+    assert!((get_max_week_num(99.0) - 53.0).abs() < f64::EPSILON);
+    assert!(is_matched(&check_week_string("0099-W53")));
+    // January 1st of the year 81 is a Wednesday in a common year (not of 1981, a Thursday)
+    assert!((get_max_week_num(81.0) - 52.0).abs() < f64::EPSILON);
+    let u = unmatched(check_week_string("0081-W53"));
+    assert_eq!(
+        u.reason,
+        Reason::OutOfRangeWithBounds {
+            gt: None,
+            gte: Some(1.0),
+            lt: None,
+            lte: Some(52.0)
+        }
+    );
+    assert_eq!(u.part_name.as_deref(), Some("week"));
+    // The Gregorian calendar repeats every 400 years: 300099 is 99, 300000 is 2000 (a Saturday)
+    assert!((get_max_week_num(300_099.0) - 53.0).abs() < f64::EPSILON);
+    assert!((get_max_week_num(300_000.0) - 52.0).abs() < f64::EPSILON);
+    assert!(is_matched(&check_week_string("300099-W53")));
+}
+
+/// TS (`index.spec.ts`): max-week of a year starting on a Wednesday depends on the leap year
+#[test]
+fn max_week_of_a_year_starting_on_a_wednesday_depends_on_the_leap_year() {
+    // 2025 is a common year, 2020 a leap year
+    assert!((get_max_week_num(2025.0) - 52.0).abs() < f64::EPSILON);
+    assert!((get_max_week_num(2020.0) - 53.0).abs() < f64::EPSILON);
+    // 2200 is not a leap year (divisible by 100, not by 400)
+    assert!((get_max_week_num(2200.0) - 52.0).abs() < f64::EPSILON);
+}
+
+/// TS (`index.spec.ts`): a year with more digits than a number holds exactly
+#[test]
+fn a_year_with_more_digits_than_a_number_holds_exactly() {
+    // 9007199254740995 mod 400 is 195 (January 1st is a Thursday); as a number it rounds to …996
+    assert!(is_matched(&check_week_string("9007199254740995-W53")));
+    // 9007199254740993 is not a leap year; as a number it rounds to …992, which is a leap year
+    let u = unmatched(check_date_string("9007199254740993-02-29"));
+    assert_eq!(
+        u.reason,
+        Reason::OutOfRangeWithBounds {
+            gt: None,
+            gte: Some(1.0),
+            lt: None,
+            lte: Some(28.0)
+        }
+    );
+    assert_eq!(u.part_name.as_deref(), Some("date"));
+    assert!(is_matched(&check_date_string("9007199254740992-02-29")));
+}
+
+/// TS (`index.spec.ts`): date-string takes the leap year from the year
+#[test]
+fn date_string_takes_the_leap_year_from_the_year() {
+    assert!(is_matched(&check_date_string("0400-02-29")));
+    let u = unmatched(check_date_string("0100-02-29"));
+    assert_eq!(
+        u.reason,
+        Reason::OutOfRangeWithBounds {
+            gt: None,
+            gte: Some(1.0),
+            lt: None,
+            lte: Some(28.0)
+        }
+    );
+    assert_eq!(u.part_name.as_deref(), Some("date"));
+    // A yearless date after a common year still allows February 29th
+    assert!(!is_matched(&check_date_string("2001-02-29")));
+    assert!(is_matched(&check_yearless_date_string("02-29")));
+}
+
+/// TS (`index.spec.ts`): week-string names the week as the part
+#[test]
+fn week_string_names_the_week_as_the_part() {
+    let u = unmatched(check_week_string("2000-W53"));
+    assert_eq!(
+        u.reason,
+        Reason::OutOfRangeWithBounds {
+            gt: None,
+            gte: Some(1.0),
+            lt: None,
+            lte: Some(52.0)
+        }
+    );
+    assert_eq!(u.part_name.as_deref(), Some("week"));
+    let u = unmatched(check_week_string("2000-"));
+    assert_eq!(u.reason, Reason::MissingToken);
+    assert_eq!(u.part_name.as_deref(), Some("week"));
+    let u = unmatched(check_week_string("2000-X01"));
+    assert_eq!(u.reason, Reason::UnexpectedToken);
+    assert_eq!(u.part_name.as_deref(), Some("week"));
+}
+
+/// TS (`index.spec.ts`): week-string reports an invalid year, not the week
+#[test]
+fn week_string_reports_an_invalid_year_not_the_week() {
+    let u = unmatched(check_week_string("0000-W99"));
+    assert_eq!(
+        u.reason,
+        Reason::OutOfRangeWithBounds {
+            gt: Some(0.0),
+            gte: None,
+            lt: None,
+            lte: None
+        }
+    );
+    assert_eq!(u.part_name.as_deref(), Some("year"));
+    let u = unmatched(check_week_string("abcd-W99"));
+    assert_eq!(u.reason, Reason::UnexpectedToken);
+    assert_eq!(u.part_name.as_deref(), Some("year"));
+    // The week is still held to the most any week-year has, which ranks this syntax among the others
+    let pass_53 = unmatched(check_week_string("abcd-W53")).pass_count;
+    let pass_54 = unmatched(check_week_string("abcd-W54")).pass_count;
+    assert!(pass_53 > pass_54);
 }
 
 #[test]
@@ -299,17 +431,17 @@ static CASES: &[(Kind, &str, &str, Option<E>)] = &[
     (Fn, "checkWeekString", " ", Some(E { reason: Reason::UnexpectedToken, raw: " ", offset: 0, line: 1, column: 1, part_name: Some("year"), expects: Some(&[]), ref_: None, pass_count: Some(0) })),
     (Fn, "checkWeekString", "a", Some(E { reason: Reason::UnexpectedToken, raw: "a", offset: 0, line: 1, column: 1, part_name: Some("year"), expects: Some(&[]), ref_: None, pass_count: Some(0) })),
     (Fn, "checkWeekString", "2000", Some(E { reason: Reason::MissingToken, raw: "", offset: 4, line: 1, column: 5, part_name: Some("datetime"), expects: Some(&[("common", "hyphen")]), ref_: None, pass_count: Some(76) })),
-    (Fn, "checkWeekString", "2000-", Some(E { reason: Reason::MissingToken, raw: "", offset: 5, line: 1, column: 6, part_name: Some("time-zone"), expects: Some(&[("const", "W")]), ref_: None, pass_count: Some(148) })),
-    (Fn, "checkWeekString", "2000-a", Some(E { reason: Reason::UnexpectedToken, raw: "a", offset: 5, line: 1, column: 6, part_name: Some("time-zone"), expects: Some(&[("const", "W")]), ref_: None, pass_count: Some(148) })),
+    (Fn, "checkWeekString", "2000-", Some(E { reason: Reason::MissingToken, raw: "", offset: 5, line: 1, column: 6, part_name: Some("week"), expects: Some(&[("const", "W")]), ref_: None, pass_count: Some(148) })),
+    (Fn, "checkWeekString", "2000-a", Some(E { reason: Reason::UnexpectedToken, raw: "a", offset: 5, line: 1, column: 6, part_name: Some("week"), expects: Some(&[("const", "W")]), ref_: None, pass_count: Some(148) })),
     (Fn, "checkWeekString", "2000-W", Some(E { reason: Reason::MissingToken, raw: "", offset: 6, line: 1, column: 7, part_name: Some("week"), expects: Some(&[("common", "week")]), ref_: None, pass_count: Some(216) })),
     (Fn, "checkWeekString", "2000-Wa", Some(E { reason: Reason::UnexpectedToken, raw: "a", offset: 6, line: 1, column: 7, part_name: Some("week"), expects: Some(&[]), ref_: None, pass_count: Some(216) })),
     (Fn, "checkWeekString", "2000-W0", Some(E { reason: Reason::OutOfRangeLengthDigit { gte: 2, lte: Some(2) }, raw: "0", offset: 6, line: 1, column: 7, part_name: Some("week"), expects: Some(&[]), ref_: None, pass_count: Some(248) })),
-    (Fn, "checkWeekString", "2000-W00", Some(E { reason: Reason::OutOfRangeWithBounds { gt: None, gte: Some(1.0), lt: None, lte: Some(52.0) }, raw: "00", offset: 6, line: 1, column: 7, part_name: Some("date"), expects: Some(&[]), ref_: None, pass_count: Some(248) })),
-    (Fn, "checkWeekString", "2000-W53", Some(E { reason: Reason::OutOfRangeWithBounds { gt: None, gte: Some(1.0), lt: None, lte: Some(52.0) }, raw: "53", offset: 6, line: 1, column: 7, part_name: Some("date"), expects: Some(&[]), ref_: None, pass_count: Some(248) })),
+    (Fn, "checkWeekString", "2000-W00", Some(E { reason: Reason::OutOfRangeWithBounds { gt: None, gte: Some(1.0), lt: None, lte: Some(52.0) }, raw: "00", offset: 6, line: 1, column: 7, part_name: Some("week"), expects: Some(&[]), ref_: None, pass_count: Some(248) })),
+    (Fn, "checkWeekString", "2000-W53", Some(E { reason: Reason::OutOfRangeWithBounds { gt: None, gte: Some(1.0), lt: None, lte: Some(52.0) }, raw: "53", offset: 6, line: 1, column: 7, part_name: Some("week"), expects: Some(&[]), ref_: None, pass_count: Some(248) })),
     (Fn, "checkWeekString", "2000-W01", None),
     (Fn, "checkWeekString", "2000-W52", None),
-    (Fn, "checkWeekString", "2004-W00", Some(E { reason: Reason::OutOfRangeWithBounds { gt: None, gte: Some(1.0), lt: None, lte: Some(53.0) }, raw: "00", offset: 6, line: 1, column: 7, part_name: Some("date"), expects: Some(&[]), ref_: None, pass_count: Some(248) })),
-    (Fn, "checkWeekString", "2004-W54", Some(E { reason: Reason::OutOfRangeWithBounds { gt: None, gte: Some(1.0), lt: None, lte: Some(53.0) }, raw: "54", offset: 6, line: 1, column: 7, part_name: Some("date"), expects: Some(&[]), ref_: None, pass_count: Some(248) })),
+    (Fn, "checkWeekString", "2004-W00", Some(E { reason: Reason::OutOfRangeWithBounds { gt: None, gte: Some(1.0), lt: None, lte: Some(53.0) }, raw: "00", offset: 6, line: 1, column: 7, part_name: Some("week"), expects: Some(&[]), ref_: None, pass_count: Some(248) })),
+    (Fn, "checkWeekString", "2004-W54", Some(E { reason: Reason::OutOfRangeWithBounds { gt: None, gte: Some(1.0), lt: None, lte: Some(53.0) }, raw: "54", offset: 6, line: 1, column: 7, part_name: Some("week"), expects: Some(&[]), ref_: None, pass_count: Some(248) })),
     (Fn, "checkWeekString", "2004-W01", None),
     (Fn, "checkWeekString", "2004-W53", None),
     (Fn, "checkWeekString", "2000-W01a", Some(E { reason: Reason::ExtraToken, raw: "a", offset: 8, line: 1, column: 9, part_name: None, expects: None, ref_: None, pass_count: Some(281) })),
@@ -421,7 +553,7 @@ static CASES: &[(Kind, &str, &str, Option<E>)] = &[
     (Kw, "MonthString", "2024-01-15", Some(E { reason: Reason::ExtraToken, raw: "-15", offset: 7, line: 1, column: 8, part_name: None, expects: Some(&[("format", "month string")]), ref_: Some("https://html.spec.whatwg.org/multipage/common-microsyntaxes.html#months"), pass_count: Some(217) })),
     (Kw, "MonthString", "", Some(E { reason: Reason::EmptyToken, raw: "", offset: 0, line: 1, column: 1, part_name: Some("year"), expects: Some(&[("format", "month string")]), ref_: Some("https://html.spec.whatwg.org/multipage/common-microsyntaxes.html#months"), pass_count: Some(0) })),
     (Kw, "WeekString", "2024-W03", None),
-    (Kw, "WeekString", "2024-01-15", Some(E { reason: Reason::MissingToken, raw: "", offset: 5, line: 1, column: 6, part_name: Some("time-zone"), expects: Some(&[("const", "W")]), ref_: Some("https://html.spec.whatwg.org/multipage/common-microsyntaxes.html#weeks"), pass_count: Some(213) })),
+    (Kw, "WeekString", "2024-01-15", Some(E { reason: Reason::MissingToken, raw: "", offset: 5, line: 1, column: 6, part_name: Some("week"), expects: Some(&[("const", "W")]), ref_: Some("https://html.spec.whatwg.org/multipage/common-microsyntaxes.html#weeks"), pass_count: Some(213) })),
     (Kw, "WeekString", "", Some(E { reason: Reason::EmptyToken, raw: "", offset: 0, line: 1, column: 1, part_name: Some("year"), expects: Some(&[("format", "week string")]), ref_: Some("https://html.spec.whatwg.org/multipage/common-microsyntaxes.html#weeks"), pass_count: Some(0) })),
     (Kw, "LocalDateTimeString", "2024-01-15T12:30", None),
     (Kw, "LocalDateTimeString", "2024-01-15 12:30", None),
@@ -487,9 +619,9 @@ static CASES: &[(Kind, &str, &str, Option<E>)] = &[
     (Kw, "DateTime", "1.5m", Some(E { reason: Reason::UnexpectedToken, raw: "m", offset: 3, line: 1, column: 4, part_name: Some("unit"), expects: Some(&[("const", "s")]), ref_: Some("https://html.spec.whatwg.org/multipage/text-level-semantics.html#datetime-value"), pass_count: Some(140) })),
     (Kw, "DateTime", "1W", Some(E { reason: Reason::UnexpectedToken, raw: "W", offset: 1, line: 1, column: 2, part_name: Some("unit"), expects: Some(&[("const", "w"), ("const", "d"), ("const", "h"), ("const", "m"), ("const", "s")]), ref_: Some("https://html.spec.whatwg.org/multipage/text-level-semantics.html#datetime-value"), pass_count: Some(72) })),
     (Kw, "DateTime", "2020-W53", None),
-    (Kw, "DateTime", "2021-W53", Some(E { reason: Reason::OutOfRangeWithBounds { gt: None, gte: Some(1.0), lt: None, lte: Some(52.0) }, raw: "53", offset: 6, line: 1, column: 7, part_name: Some("date"), expects: Some(&[]), ref_: Some("https://html.spec.whatwg.org/multipage/text-level-semantics.html#datetime-value"), pass_count: Some(248) })),
-    (Kw, "DateTime", "275760-W01", Some(E { reason: Reason::OutOfRangeWithBounds { gt: None, gte: Some(1.0), lt: None, lte: Some(f64::NAN) }, raw: "01", offset: 8, line: 1, column: 9, part_name: Some("date"), expects: Some(&[]), ref_: Some("https://html.spec.whatwg.org/multipage/text-level-semantics.html#datetime-value"), pass_count: Some(248) })),
-    (Kw, "DateTime", "0099-W53", Some(E { reason: Reason::OutOfRangeWithBounds { gt: None, gte: Some(1.0), lt: None, lte: Some(52.0) }, raw: "53", offset: 6, line: 1, column: 7, part_name: Some("date"), expects: Some(&[]), ref_: Some("https://html.spec.whatwg.org/multipage/text-level-semantics.html#datetime-value"), pass_count: Some(248) })),
+    (Kw, "DateTime", "2021-W53", Some(E { reason: Reason::OutOfRangeWithBounds { gt: None, gte: Some(1.0), lt: None, lte: Some(52.0) }, raw: "53", offset: 6, line: 1, column: 7, part_name: Some("week"), expects: Some(&[]), ref_: Some("https://html.spec.whatwg.org/multipage/text-level-semantics.html#datetime-value"), pass_count: Some(248) })),
+    (Kw, "DateTime", "275760-W01", None),
+    (Kw, "DateTime", "0099-W53", None),
     (Kw, "DateString", "2020-02-30", Some(E { reason: Reason::OutOfRangeWithBounds { gt: None, gte: Some(1.0), lt: None, lte: Some(29.0) }, raw: "30", offset: 8, line: 1, column: 9, part_name: Some("date"), expects: Some(&[]), ref_: Some("https://html.spec.whatwg.org/multipage/common-microsyntaxes.html#dates"), pass_count: Some(310) })),
     (Kw, "DateString", "2020-1-01", Some(E { reason: Reason::OutOfRangeLengthDigit { gte: 2, lte: Some(2) }, raw: "1", offset: 5, line: 1, column: 6, part_name: Some("month"), expects: Some(&[]), ref_: Some("https://html.spec.whatwg.org/multipage/common-microsyntaxes.html#dates"), pass_count: Some(306) })),
     (Kw, "DateString", "2020-01-01T00:00", Some(E { reason: Reason::ExtraToken, raw: "T00:00", offset: 10, line: 1, column: 11, part_name: None, expects: Some(&[("format", "date string")]), ref_: Some("https://html.spec.whatwg.org/multipage/common-microsyntaxes.html#dates"), pass_count: Some(341) })),
@@ -513,11 +645,11 @@ static CASES: &[(Kind, &str, &str, Option<E>)] = &[
     (Kw, "MonthString", "2024", Some(E { reason: Reason::MissingToken, raw: "", offset: 4, line: 1, column: 5, part_name: Some("datetime"), expects: Some(&[("common", "hyphen")]), ref_: Some("https://html.spec.whatwg.org/multipage/common-microsyntaxes.html#months"), pass_count: Some(76) })),
     (Kw, "MonthString", "2024-1", Some(E { reason: Reason::OutOfRangeLengthDigit { gte: 2, lte: Some(2) }, raw: "1", offset: 5, line: 1, column: 6, part_name: Some("month"), expects: Some(&[]), ref_: Some("https://html.spec.whatwg.org/multipage/common-microsyntaxes.html#months"), pass_count: Some(182) })),
     (Kw, "MonthString", "24-01", Some(E { reason: Reason::OutOfRangeLengthDigit { gte: 4, lte: None }, raw: "24", offset: 0, line: 1, column: 1, part_name: Some("year"), expects: Some(&[]), ref_: Some("https://html.spec.whatwg.org/multipage/common-microsyntaxes.html#months"), pass_count: Some(178) })),
-    (Kw, "WeekString", "2024-W54", Some(E { reason: Reason::OutOfRangeWithBounds { gt: None, gte: Some(1.0), lt: None, lte: Some(52.0) }, raw: "54", offset: 6, line: 1, column: 7, part_name: Some("date"), expects: Some(&[]), ref_: Some("https://html.spec.whatwg.org/multipage/common-microsyntaxes.html#weeks"), pass_count: Some(248) })),
+    (Kw, "WeekString", "2024-W54", Some(E { reason: Reason::OutOfRangeWithBounds { gt: None, gte: Some(1.0), lt: None, lte: Some(52.0) }, raw: "54", offset: 6, line: 1, column: 7, part_name: Some("week"), expects: Some(&[]), ref_: Some("https://html.spec.whatwg.org/multipage/common-microsyntaxes.html#weeks"), pass_count: Some(248) })),
     (Kw, "WeekString", "2020-W53", None),
-    (Kw, "WeekString", "2021-W53", Some(E { reason: Reason::OutOfRangeWithBounds { gt: None, gte: Some(1.0), lt: None, lte: Some(52.0) }, raw: "53", offset: 6, line: 1, column: 7, part_name: Some("date"), expects: Some(&[]), ref_: Some("https://html.spec.whatwg.org/multipage/common-microsyntaxes.html#weeks"), pass_count: Some(248) })),
+    (Kw, "WeekString", "2021-W53", Some(E { reason: Reason::OutOfRangeWithBounds { gt: None, gte: Some(1.0), lt: None, lte: Some(52.0) }, raw: "53", offset: 6, line: 1, column: 7, part_name: Some("week"), expects: Some(&[]), ref_: Some("https://html.spec.whatwg.org/multipage/common-microsyntaxes.html#weeks"), pass_count: Some(248) })),
     (Kw, "WeekString", "2024W01", Some(E { reason: Reason::UnexpectedToken, raw: "2024W01", offset: 0, line: 1, column: 1, part_name: Some("year"), expects: Some(&[]), ref_: Some("https://html.spec.whatwg.org/multipage/common-microsyntaxes.html#weeks"), pass_count: Some(0) })),
-    (Kw, "WeekString", "2024-w01", Some(E { reason: Reason::UnexpectedToken, raw: "w", offset: 5, line: 1, column: 6, part_name: Some("time-zone"), expects: Some(&[("const", "W")]), ref_: Some("https://html.spec.whatwg.org/multipage/common-microsyntaxes.html#weeks"), pass_count: Some(212) })),
+    (Kw, "WeekString", "2024-w01", Some(E { reason: Reason::UnexpectedToken, raw: "w", offset: 5, line: 1, column: 6, part_name: Some("week"), expects: Some(&[("const", "W")]), ref_: Some("https://html.spec.whatwg.org/multipage/common-microsyntaxes.html#weeks"), pass_count: Some(212) })),
     (Kw, "WeekString", "2024-W1", Some(E { reason: Reason::OutOfRangeLengthDigit { gte: 2, lte: Some(2) }, raw: "1", offset: 6, line: 1, column: 7, part_name: Some("week"), expects: Some(&[]), ref_: Some("https://html.spec.whatwg.org/multipage/common-microsyntaxes.html#weeks"), pass_count: Some(248) })),
     (Kw, "WeekString", "2024-W01x", Some(E { reason: Reason::ExtraToken, raw: "x", offset: 8, line: 1, column: 9, part_name: None, expects: Some(&[("format", "week string")]), ref_: Some("https://html.spec.whatwg.org/multipage/common-microsyntaxes.html#weeks"), pass_count: Some(281) })),
     (Kw, "LocalDateTimeString", "2024-01-15T24:00", Some(E { reason: Reason::OutOfRangeWithBounds { gt: None, gte: Some(0.0), lt: None, lte: Some(23.0) }, raw: "24", offset: 11, line: 1, column: 12, part_name: Some("hour"), expects: Some(&[]), ref_: Some("https://html.spec.whatwg.org/multipage/common-microsyntaxes.html#local-dates-and-times"), pass_count: Some(514) })),
