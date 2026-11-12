@@ -29,7 +29,7 @@ import {
 } from '@markuplint/ml-core';
 import { schemaToSpec } from '@markuplint/ml-spec';
 import { ParserError } from '@markuplint/parser-utils';
-import { ruleAliasTable } from '@markuplint/rules';
+import { resolveBrowserSupportForRust, ruleAliasTable } from '@markuplint/rules';
 import { ConfigLoadError, isFatalError } from '@markuplint/shared';
 import { Emitter } from 'strict-event-emitter';
 
@@ -434,7 +434,13 @@ export class MLEngine extends Emitter<MLEngineEventMap> {
 		const sourceCode = await this.#file.getCode();
 
 		// Build config JSON for Rust
-		const configJson = buildRustConfigJson(fabric.ruleset, fabric.ruleCommonSettings, fabric.pretenders);
+		const browserSupport = await resolveBrowserSupport(fabric.ruleset, this.#file.path);
+		const configJson = buildRustConfigJson(
+			fabric.ruleset,
+			fabric.ruleCommonSettings,
+			fabric.pretenders,
+			browserSupport,
+		);
 		// The extended specs of a framework are merged here, as the TS document does with them.
 		const spec = schemaToSpec(fabric.schemas);
 		const specJson = JSON.stringify(spec);
@@ -1461,10 +1467,31 @@ async function loadNapiBinding(): Promise<NapiBinding> {
 
 /**
  * Rules whose input lives outside the document, which only the TS engine can read:
- * `no-unsupported-browser-features` needs browserslist and browser-compat-data,
  * `no-mismatched-aspect-ratio` reads the image files from disk.
  */
-const RULES_ONLY_THE_TS_ENGINE_EVALUATES = ['no-unsupported-browser-features', 'no-mismatched-aspect-ratio'] as const;
+const RULES_ONLY_THE_TS_ENGINE_EVALUATES = ['no-mismatched-aspect-ratio'] as const;
+
+const BROWSER_FEATURES_RULE = 'no-unsupported-browser-features';
+
+/**
+ * The browser support input of `no-unsupported-browser-features`, which the Rust engine cannot
+ * resolve itself (browserslist) or read (the user's installed browser-compat-data). The targets
+ * come from the global options of the rule and the file name, as in the TS rule, so they are
+ * resolved once per file; nothing is resolved when the rule is not enabled.
+ */
+function resolveBrowserSupport(ruleset: Partial<Readonly<Ruleset>>, filename: string) {
+	if (!enablesRule(ruleset, BROWSER_FEATURES_RULE)) {
+		return;
+	}
+	const entry = Object.entries(ruleset.rules ?? {}).find(
+		([id]) => id.split('/').pop() === BROWSER_FEATURES_RULE,
+	)?.[1];
+	const options =
+		typeof entry === 'object' && entry !== null && 'options' in entry && typeof entry.options === 'object'
+			? (entry.options as Parameters<typeof resolveBrowserSupportForRust>[1])
+			: {};
+	return resolveBrowserSupportForRust(filename, options ?? {});
+}
 
 /**
  * Whether `ruleset` turns the rule `ruleId` on, globally or for some nodes.
@@ -1514,12 +1541,15 @@ function buildRustConfigJson(
 	ruleset: Partial<Readonly<Ruleset>>,
 	ruleCommonSettings: Readonly<RuleCommonSettings>,
 	pretenders: readonly Pretender[],
+	browserSupport?: Awaited<ReturnType<typeof resolveBrowserSupport>>,
 ): string {
 	return JSON.stringify({
 		rules: ruleset.rules ?? {},
 		node_rules: ruleset.nodeRules ?? [],
 		child_node_rules: ruleset.childNodeRules ?? [],
-		rule_common_settings: ruleCommonSettings,
+		// `browserSupport` belongs to no rule's own options (a node rule replaces them) and is
+		// resolved per file, so it travels with the settings that every rule of the run shares.
+		rule_common_settings: browserSupport ? { ...ruleCommonSettings, browserSupport } : ruleCommonSettings,
 		pretenders,
 	});
 }

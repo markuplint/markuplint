@@ -74,7 +74,7 @@ let bcdPromise: Promise<CompatData> | undefined;
  * concurrent calls trigger the import simultaneously.
  */
 
-function loadBcd(): Promise<CompatData> {
+export function loadBcd(): Promise<CompatData> {
 	if (!bcdPromise) {
 		// `?? mod` is a defensive fallback for CJS interop environments
 		// where `default` may not be set on the module namespace object.
