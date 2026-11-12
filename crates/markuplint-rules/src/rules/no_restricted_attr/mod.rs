@@ -4,6 +4,7 @@
 //! denylisting, independent of what the spec says: it applies to every element, not
 //! only HTML ones.
 
+use markuplint_core::i18n::Primitive as Kw;
 use markuplint_dom::arena::DomArena;
 use markuplint_types::spec::types::MLMLSpec;
 
@@ -72,35 +73,46 @@ fn check(
         return None;
     }
     let value = get_clean_value(html_attr);
+    let tr = ctx.tr;
+    let the_attr = || tr.t("the \"{0*}\" {1}", &[Kw::S(name), Kw::S("attribute")]);
 
     match &entry.constraint {
         ValueConstraint::Any => Some(attr_violation(
             ctx,
             html_attr,
-            format!("The \"{name}\" attribute is disallowed"),
+            tr.finish(&tr.t("{0} is disallowed", &[Kw::S(&the_attr())])),
         )),
         ValueConstraint::Enum(values) => values.iter().any(|v| v == value).then(|| {
             attr_value_violation(
                 ctx,
                 html_attr,
-                format!(
-                    "The \"{name}\" attribute is disallowed to accept the following values: {}",
-                    values.iter().map(|v| format!("\"{v}\"")).collect::<Vec<_>>().join(", ")
-                ),
+                tr.finish(&tr.t(
+                    "{0} is disallowed to accept the following values: {1}",
+                    &[Kw::S(&the_attr()), Kw::S(&tr.t_list(values, false))],
+                )),
             )
         }),
         ValueConstraint::Pattern(re, original) => re.is_match(value).then(|| {
             attr_value_violation(
                 ctx,
                 html_attr,
-                format!("The \"{name}\" attribute is matched with the below disallowed patterns: {original}"),
+                tr.finish(&tr.t(
+                    "{0} is matched with the below disallowed patterns: {1}",
+                    &[Kw::S(&the_attr()), Kw::S(original)],
+                )),
             )
         }),
         ValueConstraint::Type(type_name) => check_type_constraint(value, type_name).then(|| {
             attr_value_violation(
                 ctx,
                 html_attr,
-                format!("The type of the \"{name}\" attribute is disallowed"),
+                tr.finish(&tr.t(
+                    "{0} is disallowed",
+                    &[Kw::S(&tr.t(
+                        "{0} of {1}",
+                        &[Kw::S(&tr.t("the {0}", &[Kw::S("type")])), Kw::S(&the_attr())],
+                    ))],
+                )),
             )
         }),
     }

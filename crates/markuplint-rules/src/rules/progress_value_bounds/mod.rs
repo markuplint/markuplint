@@ -7,6 +7,7 @@
 //! skips the element (`no-invalid-attr-value` reports it), and so does a dynamic one. A
 //! non-positive `max` is still compared, as in TS, although the TS doc comment says it is deferred.
 
+use markuplint_core::i18n::Primitive as Kw;
 use markuplint_dom::arena::DomArena;
 use markuplint_dom::helpers::get_attr_value_from_el;
 use markuplint_types::spec::types::MLMLSpec;
@@ -30,6 +31,7 @@ impl Rule for ProgressValueBounds {
     }
 
     fn verify(&self, arena: &DomArena, _spec: &MLMLSpec, config: &RuleConfigSet) -> Vec<Violation> {
+        let tr = config.translator();
         let mut violations = Vec::new();
 
         for (node_id, el) in arena.elements() {
@@ -62,15 +64,21 @@ impl Rule for ProgressValueBounds {
             }
 
             let upper_desc = if max_attr.is_some() {
-                "the value of the \"max\" attribute"
+                tr.t("the value of the \"{0}\" attribute", &[Kw::S("max")])
             } else {
-                "one when the \"max\" attribute is absent"
+                tr.t(
+                    "{0} when the \"{1}\" attribute is absent",
+                    &[Kw::S("one"), Kw::S("max")],
+                )
             };
             violations.push(Violation {
                 rule_id: self.id().to_owned(),
                 name: None,
                 severity: rule_config.severity,
-                message: format!("The value of the \"value\" attribute must be less than or equal to {upper_desc}"),
+                message: tr.finish(&tr.t(
+                    "The value of the \"{0}\" attribute must be less than or equal to {1}",
+                    &[Kw::S("value"), Kw::S(&upper_desc)],
+                )),
                 line: value_attr.value.line,
                 col: value_attr.value.col,
                 raw: value_attr.value.raw.clone(),

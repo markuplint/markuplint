@@ -13,12 +13,13 @@
 //! `ariaSpecs().roles.find(r => r.name === token.raw)` does, so a DPUB or graphics role is not
 //! reported here.
 
+use markuplint_core::i18n::Primitive as Kw;
 use markuplint_dom::arena::DomArena;
 use markuplint_types::spec::aria;
 use markuplint_types::spec::types::MLMLSpec;
 
 use crate::aria::computed_role::{RoleComputationError, get_computed_role};
-use crate::aria_check::{ElementContext, ElementGate, quoted_list, role_attr, role_tokens, walk_elements};
+use crate::aria_check::{ElementContext, ElementGate, role_attr, role_tokens, walk_elements};
 use crate::rule::{Rule, RuleConfigSet};
 use crate::violation::Violation;
 
@@ -70,17 +71,28 @@ fn check(ctx: &ElementContext<'_>) -> Option<Violation> {
         } else {
             &role_spec.required_context_role
         };
+        let tr = ctx.tr;
         let requirement = match parent_roles.as_slice() {
             [] => continue,
-            [single] => format!("an accessibility parent with the \"{single}\" role"),
+            [single] => tr.t(
+                "an accessibility parent with the \"{0*}\" {1}",
+                &[Kw::S(single), Kw::S("role")],
+            ),
             several => format!(
-                "an accessibility parent with one of the roles: {}",
-                quoted_list(several)
+                "{}: {}",
+                tr.t("an accessibility parent with one of the {0}", &[Kw::S("roles")]),
+                tr.t_list(several, false)
             ),
         };
         return Some(ctx.token_violation(
             &token,
-            format!("The \"{}\" role requires {requirement}", role_spec.name),
+            tr.finish(&tr.t(
+                "{0} requires {1}",
+                &[
+                    Kw::S(&tr.t("the \"{0*}\" {1}", &[Kw::S(&role_spec.name), Kw::S("role")])),
+                    Kw::S(&requirement),
+                ],
+            )),
         ));
     }
 

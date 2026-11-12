@@ -14,6 +14,7 @@
 //! validating it: `role="presentation"` lifts the prohibition too. That is permissive on purpose
 //! (pinned by the TS test `no-prohibited-naming-issue-3630-013`).
 
+use markuplint_core::i18n::Primitive as Kw;
 use markuplint_core::mlast::ElementType;
 use markuplint_dom::arena::DomArena;
 use markuplint_types::spec::types::MLMLSpec;
@@ -75,13 +76,23 @@ fn check(ctx: &ElementContext<'_>, violations: &mut Vec<Violation>) {
     for attr in naming_attrs {
         let name = attr_name(attr);
         let key = name_key(ctx.el, attr);
-        violations.push(ctx.attr_violation(
-            attr,
-            format!(
-                "The \"{name}\" ARIA {} is prohibited on the \"{}\" element",
-                ctx.prop_type_of(&key),
-                ctx.el_name
-            ),
-        ));
+        let tr = ctx.tr;
+        let message = tr.t(
+            "{0:c} on {1}",
+            &[
+                Kw::S(&tr.t(
+                    "{0} is {1:c}",
+                    &[
+                        Kw::S(&tr.t(
+                            "the \"{0*}\" {1}",
+                            &[Kw::S(name), Kw::S(&format!("ARIA {}", ctx.prop_type_of(&key)))],
+                        )),
+                        Kw::S("prohibited"),
+                    ],
+                )),
+                Kw::S(&tr.t("the \"{0*}\" {1}", &[Kw::S(ctx.el_name), Kw::S("element")])),
+            ],
+        );
+        violations.push(ctx.attr_violation(attr, tr.finish(&message)));
     }
 }

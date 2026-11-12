@@ -11,6 +11,7 @@
 //! attribute is skipped when it does not apply to the element (unknown name, case mismatch, unmet
 //! condition); `noUse` still counts, since a forbidden native attribute can be implicit.
 
+use markuplint_core::i18n::Primitive as Kw;
 use markuplint_dom::arena::DomArena;
 use markuplint_types::spec::aria;
 use markuplint_types::spec::types::MLMLSpec;
@@ -87,14 +88,37 @@ fn check(ctx: &ElementContext<'_>, violations: &mut Vec<Violation>) {
                     Some(expected) => *expected == value,
                 };
                 if is_same {
-                    violations.push(ctx.attr_violation(
-                        attr,
-                        format!(
-                            "The \"{name}\" ARIA {} has the same semantics as the current \"{native_name}\" attribute or the implicit \"{native_name}\" attribute",
-                            ctx.prop_type_of(&key),
-                            native_name = equivalent.html_attr_name,
-                        ),
-                    ));
+                    let tr = ctx.tr;
+                    let native_name = equivalent.html_attr_name.as_str();
+                    let message = tr.t(
+                        "{0} has {1}",
+                        &[
+                            Kw::S(&tr.t(
+                                "the \"{0*}\" {1}",
+                                &[Kw::S(name), Kw::S(&format!("ARIA {}", ctx.prop_type_of(&key)))],
+                            )),
+                            Kw::S(&tr.t(
+                                "the same {0} as {1}",
+                                &[
+                                    Kw::S("semantics"),
+                                    Kw::S(&tr.t(
+                                        "{0} or {1}",
+                                        &[
+                                            Kw::S(&tr.t(
+                                                "the current \"{0}\" {1}",
+                                                &[Kw::S(native_name), Kw::S("attribute")],
+                                            )),
+                                            Kw::S(&tr.t(
+                                                "the implicit \"{0}\" {1}",
+                                                &[Kw::S(native_name), Kw::S("attribute")],
+                                            )),
+                                        ],
+                                    )),
+                                ],
+                            )),
+                        ],
+                    );
+                    violations.push(ctx.attr_violation(attr, tr.finish(&message)));
                     break;
                 }
             }

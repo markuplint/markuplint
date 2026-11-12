@@ -6,6 +6,7 @@
 //! a pair differ only in which flag (`obsolete` or `deprecated`) they report. A node
 //! carrying both flags is reported by both rules.
 
+use markuplint_core::i18n::Primitive as Kw;
 use markuplint_core::mlast::{ElementType, MLASTAttr, NamespaceURI};
 use markuplint_dom::arena::DomArena;
 use markuplint_dom::helpers::attr_name;
@@ -13,7 +14,6 @@ use markuplint_types::spec::lookup::get_spec;
 use markuplint_types::spec::types::MLMLSpec;
 
 use crate::attr_name_key::{attr_specs_of, find_attr_spec};
-use crate::create_message::Kw;
 use crate::rule::RuleConfigSet;
 use crate::violation::Violation;
 
@@ -117,6 +117,7 @@ pub(crate) fn verify_element_lifecycle(
     spec: &MLMLSpec,
     config: &RuleConfigSet,
 ) -> Vec<Violation> {
+    let tr = config.translator();
     let mut violations = Vec::new();
 
     for (node_id, el) in arena.elements() {
@@ -148,7 +149,13 @@ pub(crate) fn verify_element_lifecycle(
             rule_id: rule_id.to_string(),
             name: None,
             severity: rule_config.severity,
-            message: format!("The \"{local_name}\" element is {}", lifecycle.key()),
+            message: tr.finish(&tr.t(
+                "{0} is {1:c}",
+                &[
+                    Kw::S(&tr.t("the \"{0*}\" {1}", &[Kw::S(&local_name), Kw::S("element")])),
+                    Kw::S(lifecycle.key()),
+                ],
+            )),
             line: el.base.line,
             col: el.base.col,
             raw: el.base.raw.clone(),
