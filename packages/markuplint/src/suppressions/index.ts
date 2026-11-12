@@ -19,7 +19,7 @@
 export type { SuppressionsData, SuppressionEntry } from './types.js';
 export type { ApplySuppressionsResult, ApplySuppressionsOptions } from './apply-suppressions.js';
 export type { GenerateSuppressionsOptions } from './generate-suppressions.js';
-export type { ScopedNode, PositionedNode } from './compute-scope.js';
+export type { ScopedNode, PositionedNode, SourceRange } from './compute-scope.js';
 export { computeScopeForViolations, computeLCA, generateUniqueSelector } from './compute-scope.js';
 export { applySuppressions } from './apply-suppressions.js';
 export { generateSuppressions } from './generate-suppressions.js';

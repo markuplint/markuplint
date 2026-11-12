@@ -23,6 +23,8 @@
 
 import type { Violation } from '@markuplint/ml-config';
 
+import { searchNodeAtLocation } from '@markuplint/ml-core';
+
 /**
  * @experimental
  * Minimal node interface for scope computation.
@@ -48,6 +50,30 @@ export interface ScopedNode {
 export interface PositionedNode extends ScopedNode {
 	readonly startLine: number;
 	readonly startCol: number;
+	/**
+	 * Where the node's source ends, excluded. For an element, the end of its start tag.
+	 * A violation inside this range belongs to the node (see `findNodeAtPosition`);
+	 * without it, only a violation at the node's start does.
+	 */
+	readonly endLine?: number;
+	/** The column of `endLine`, excluded. */
+	readonly endCol?: number;
+	/**
+	 * The end tag of an element. A document's node list has no end tags, so a
+	 * violation reported at one (`</P>`) is found through its element.
+	 */
+	readonly closeTag?: SourceRange | null;
+}
+
+/**
+ * @experimental
+ * A source range: from its start, included, to its end, excluded.
+ */
+export interface SourceRange {
+	readonly startLine: number;
+	readonly startCol: number;
+	readonly endLine?: number;
+	readonly endCol?: number;
 }
 
 const BODY_HTML_TAGS = new Set(['body', 'html']);
@@ -437,6 +463,15 @@ function buildSegmentWithNth(node: ScopedNode): string {
 
 /**
  * @experimental
+ * Finds the element a violation at `line`:`col` belongs to.
+ *
+ * The node is the one `searchNodeAtLocation` of `@markuplint/ml-core` finds,
+ * the rule `MLDocument.searchNodeByLocation` and the hover of the language
+ * server share: a violation reported at an attribute (`no-duplicate-attr`),
+ * inside its value or at an end tag is the element that has it, and of several
+ * nodes that hold the position the innermost is taken. A non-element is
+ * resolved to its nearest element ancestor. `nodeList` is in document order.
+ *
  * The O(n) linear search per violation is deliberate — acceptable for
  * typical document sizes; build a position index only if very large
  * documents make this a measured bottleneck.
@@ -447,27 +482,27 @@ export function findNodeAtPosition(
 	line: number,
 	col: number,
 ): ScopedNode | null {
-	for (const node of nodeList) {
-		if (node.startLine === line && node.startCol === col) {
-			if (node.nodeType === 1) {
-				return node;
-			}
-			// Non-element (e.g., attribute) — walk up to parent element
-			let parent = node.parentElement;
-			while (parent && parent.nodeType !== 1) {
-				parent = parent.parentElement;
-			}
-			return parent;
-		}
+	const found = searchNodeAtLocation(nodeList, line, col);
+	if (!found) {
+		return null;
 	}
-	return null;
+	if (found.nodeType === 1) {
+		return found;
+	}
+	let parent = found.parentElement;
+	while (parent && parent.nodeType !== 1) {
+		parent = parent.parentElement;
+	}
+	return parent;
 }
 
 /**
  * @experimental
  * Computes the scope selector for a set of violations within a document.
  * Only considers error-severity violations. Returns `undefined` when
- * the LCA falls back to file-level (body/html) or when nodes cannot be found.
+ * the LCA falls back to file-level (body/html) or when a violation is at no
+ * element: the entry counts every violation, and applying a scope counts only
+ * those found inside it, so a scope that left one out would not suppress it.
  *
  * @param nodeList - Flat list of all nodes in the document.
  * @param violations - The violations to compute scope for.
@@ -486,9 +521,10 @@ export function computeScopeForViolations(
 			continue;
 		}
 		const node = findNodeAtPosition(nodeList, v.line, v.col);
-		if (node) {
-			nodes.push(node);
+		if (!node) {
+			return undefined;
 		}
+		nodes.push(node);
 	}
 
 	if (nodes.length === 0) {
