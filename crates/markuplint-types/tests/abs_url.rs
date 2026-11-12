@@ -16,7 +16,7 @@ fn valid_urls() {
     assert!(is_abs_url("data:text/html,<h1>Hello</h1>"));
     assert!(is_abs_url("javascript:void(0)"));
     // Node.js (ada) does not decode an `xn--` label of an ASCII host.
-    assert!(is_abs_url("http://xn--zz.com"));
+    assert!(is_abs_url("http://xn--zz.test"));
 }
 
 #[test]

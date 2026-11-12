@@ -4,7 +4,7 @@
 //! crate is the WHATWG URL parser here. The two agree except in one place this module corrects:
 //! ada takes a host that is ASCII after percent-decoding through a fast path that only
 //! lower-cases it and rejects the forbidden domain code points, so it never decodes an `xn--`
-//! label and accepts one that is not valid Punycode (`http://xn--zz.com`). The `url` crate runs
+//! label and accepts one that is not valid Punycode (`http://xn--zz.test`). The `url` crate runs
 //! every host through UTS #46, which decodes the label and fails. A host with a non-ASCII code
 //! point goes through UTS #46 in both, and both reject the label.
 //!

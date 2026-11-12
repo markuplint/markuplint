@@ -331,11 +331,11 @@ fn ipv4_non_decimal_part() {
 fn punycode_label_of_an_ascii_host_is_not_decoded() {
     // Node.js (ada) does not decode an `xn--` label of an ASCII host; it does when the host has
     // a non-ASCII code point.
-    assert!(url("http://xn--zz.com"));
+    assert!(url("http://xn--zz.test"));
     assert!(url("http://xn--/"));
     assert!(url("http://a.xn--b"));
     assert!(url("http://%78n--zz.com/"));
-    assert!(url("//xn--zz.com"));
+    assert!(url("//xn--zz.test"));
     assert!(!url("http://xn--zz.\u{00FC}.com/"));
     assert!(!url("http://xn--u-ccb.\u{00FC}/"));
     assert!(!url("http://xn--zz<.com"));
@@ -451,7 +451,7 @@ fn srcset_url_step() {
     assert!(kw("http://example.com/a 1x", "Srcset").is_matched());
     assert!(kw("/foo 1x", "Srcset").is_matched());
     assert!(kw("./foo 1x", "Srcset").is_matched());
-    assert!(kw("http://xn--zz.com 1x", "Srcset").is_matched());
+    assert!(kw("http://xn--zz.test 1x", "Srcset").is_matched());
     assert!(!kw("http://xn--zz.\u{00FC}.com 1x", "Srcset").is_matched());
 }
 
@@ -461,8 +461,8 @@ fn srcset_url_step() {
 fn rule_spec_values() {
     // [no-invalid-attr-value-valid-003]
     for v in [
-        "https://sample.com/path/to",
-        "//sample.com/path/to",
+        "https://example.com/path/to",
+        "//example.com/path/to",
         "/path/to",
         "/path/to?param=value",
         "/?param=value",
@@ -475,7 +475,7 @@ fn rule_spec_values() {
     ] {
         assert!(kw(v, "NonEmptyURL").is_matched(), "{v}");
     }
-    assert!(!kw("//user:pass@sample.com/path/to", "NonEmptyURL").is_matched());
+    assert!(!kw("//user:pass@example.com/path/to", "NonEmptyURL").is_matched());
     // [no-invalid-attr-value-invalid-009]
     for v in [
         "http://@example.com",
