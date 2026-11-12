@@ -175,10 +175,18 @@ fn v6_no_focusable_in_aria_hidden_003() {
         r#"<div aria-hidden="false"><button></button></div>"#,
         r#"<div aria-hidden="TRUE"><button></button></div>"#,
         r#"<div aria-hidden=" true"><button></button></div>"#,
-        r#"<div ARIA-HIDDEN="true"><button></button></div>"#,
     ] {
         assert_violations(&run_rule(html, serde_json::json!(true)), &[]);
     }
+    // `ARIA-HIDDEN` is `aria-hidden` as the DOM names it (#4309).
+    assert_eq!(
+        run_rule(
+            r#"<div ARIA-HIDDEN="true"><button></button></div>"#,
+            serde_json::json!(true)
+        )
+        .len(),
+        1
+    );
 }
 
 #[test]

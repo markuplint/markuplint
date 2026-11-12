@@ -5,6 +5,7 @@ use std::collections::HashSet;
 use markuplint_core::mlast::NamespaceURI;
 use markuplint_dom::arena::{DomArena, NodeId};
 use markuplint_dom::helpers;
+use markuplint_dom::node::ElementData;
 use markuplint_types::spec::aria::{self, ARIAVersion};
 use markuplint_types::spec::types::{ARIARoleInSchema, MLMLSpec};
 
@@ -89,55 +90,53 @@ fn compute_role(
         };
     };
 
-    let tag_name: &str = &el.base.node_name.to_ascii_lowercase();
-
-    // Step 1: Get explicit role
-    let explicit = get_explicit_role(spec, arena, node_id, tag_name, version);
-
-    // Step 2: Get implicit role (lazy — only if explicit fails)
+    // Step 1: the explicit role, else the implicit one
+    let explicit = get_explicit_role(spec, arena, node_id, el, version);
+    let mut lazy_implicit: Option<ComputedRole> = None;
     let (computed_role, error_type) = if explicit.role.is_some() {
         (explicit.role.clone(), explicit.error_type.clone())
     } else {
-        let implicit = get_implicit_role(spec, arena, node_id, tag_name, version);
+        let implicit = get_implicit_role(spec, arena, node_id, el, version);
         let error_type = if explicit.error_type == Some(RoleComputationError::NoExplicit) {
             None
         } else {
             explicit.error_type.clone()
         };
-        (implicit.role, error_type)
+        let role = implicit.role.clone();
+        lazy_implicit = Some(implicit);
+        (role, error_type)
     };
 
-    // Step 3: Early return for single node assumption
+    // Step 2: for a single node, no context is checked
     if assume_single_node {
         return ComputedRole {
             role: computed_role,
-            error_type: Some(error_type.unwrap_or(RoleComputationError::NoOwner)),
+            error_type: Some(RoleComputationError::NoOwner),
         };
     }
 
-    let Some(ref role) = computed_role else {
-        return ComputedRole { role: None, error_type };
-    };
-
-    // Step 4: Required context role validation
-    if !role.required_accessibility_parent_role.is_empty()
+    // Step 3: the required context role
+    if let Some(ref role) = computed_role
+        && !role.required_accessibility_parent_role.is_empty()
         && !is_native_context_intact(spec, arena, node_id, role, version)
     {
         // TS `el.parentElement === null`: an element at the root (of a fragment, or under the
         // document) cannot satisfy the requirement, and keeps its role, reported as `NoOwner`.
-        let parent_element_id = node.parent_id().filter(|&parent_id| {
-            arena
-                .get(parent_id)
-                .and_then(markuplint_dom::node::DomNode::as_element)
-                .is_some()
-        });
-        let Some(parent_id) = parent_element_id else {
+        let Some(parent_id) = parent_element(arena, node_id) else {
             return ComputedRole {
-                role: computed_role.clone(),
+                role: computed_role,
                 error_type: Some(RoleComputationError::NoOwner),
             };
         };
-        let ancestor_role = get_non_presentational_ancestor(spec, arena, parent_id, version, visited);
+        if get_non_presentational_ancestor(spec, arena, parent_id, version, visited)
+            .role
+            .is_none()
+        {
+            return ComputedRole {
+                role: None,
+                error_type: Some(RoleComputationError::NoOwner),
+            };
+        }
         if !matches_context_role(
             &role.required_accessibility_parent_role,
             spec,
@@ -151,98 +150,343 @@ fn compute_role(
                 error_type: Some(RoleComputationError::InvalidRequiredContextRole),
             };
         }
-        let _ = ancestor_role;
     }
 
-    // Step 5: SVG accessibility tree inclusion
-    if el.namespace == NamespaceURI::SVG && explicit.role.is_none() && !has_svg_accessible_name_source(arena, node_id) {
-        return ComputedRole { role: None, error_type };
+    // Step 4: an SVG element without a role of its own or a source of a name is not in the tree
+    if explicit.role.is_none() && el.namespace == NamespaceURI::SVG && !has_svg_accessible_name_source(arena, node_id) {
+        return ComputedRole {
+            role: None,
+            error_type: None,
+        };
     }
 
-    // Step 6: Presentational Roles Conflict Resolution
-    if is_presentational(&role.name) {
-        let implicit = get_implicit_role(spec, arena, node_id, tag_name, version);
-
-        // 6a: Interactive element override
-        if may_be_focusable::may_be_focusable(spec, arena, node_id) && !is_disabled_or_hidden(arena, node_id) {
-            return ComputedRole {
-                role: implicit.role,
-                error_type: Some(RoleComputationError::InteractiveElementMustNotBePresentational),
-            };
-        }
-
-        // 6b: Global ARIA property override
-        if has_global_aria_property(spec, arena, node_id, version) {
-            return ComputedRole {
-                role: implicit.role,
-                error_type: Some(RoleComputationError::GlobalPropMustNotBePresentational),
-            };
-        }
+    // Step 5: Presentational Roles Conflict Resolution
+    if computed_role
+        .as_ref()
+        .is_some_and(|role| !is_presentational(&role.name))
+    {
+        return ComputedRole {
+            role: computed_role,
+            error_type,
+        };
     }
-
-    ComputedRole {
+    let implicit = lazy_implicit.unwrap_or_else(|| get_implicit_role(spec, arena, node_id, el, version));
+    resolve_presentational_conflict(
+        spec,
+        arena,
+        node_id,
+        explicit.role.is_some(),
+        implicit,
+        version,
+        visited,
+    )
+    .unwrap_or(ComputedRole {
         role: computed_role,
         error_type,
+    })
+}
+
+/// The Presentational Roles Conflict Resolution of an element without a role or with a
+/// presentational one: the implicit role with the reason the role is ignored, or `None` when
+/// none of the exceptions applies.
+///
+/// <https://w3c.github.io/aria/#conflict_resolution_presentation_none>
+fn resolve_presentational_conflict(
+    spec: &MLMLSpec,
+    arena: &DomArena,
+    node_id: NodeId,
+    has_explicit_role: bool,
+    implicit: ComputedRole,
+    version: ARIAVersion,
+    visited: &mut HashSet<NodeId>,
+) -> Option<ComputedRole> {
+    // 5a. A focusable element is exposed with its implicit role, unless it or an ancestor is
+    // disabled, inert or hidden (WAI-ARIA, conflict resolution of none/presentation).
+    if may_be_focusable::may_be_focusable(spec, arena, node_id)
+        && !some_ancestors(arena, node_id, |id| is_enabled_attr(spec, arena, id, "disabled"))
+        && !some_ancestors(arena, node_id, |id| is_enabled_attr(spec, arena, id, "inert"))
+        && !some_ancestors(arena, node_id, |id| is_enabled_attr(spec, arena, id, "hidden"))
+    {
+        return Some(ComputedRole {
+            role: implicit.role,
+            error_type: Some(RoleComputationError::InteractiveElementMustNotBePresentational),
+        });
     }
+
+    // 5b. A required owned element of the non-presentational ancestor ignores an explicit
+    // presentational role.
+    if has_explicit_role && let Some(parent_id) = parent_element(arena, node_id) {
+        let ancestor = get_non_presentational_ancestor(spec, arena, parent_id, version, visited);
+        if let Some(ancestor_role) = ancestor.role
+            && ancestor_role.allowed_accessibility_child_roles.iter().any(|expected| {
+                is_required_owned_element(spec, arena, node_id, implicit.role.as_ref(), expected, version)
+            })
+        {
+            return Some(ComputedRole {
+                role: implicit.role,
+                error_type: Some(RoleComputationError::RequiredOwnedElementMustNotBePresentational),
+            });
+        }
+    }
+
+    // 5c. A global ARIA property makes the element exposed with its implicit role.
+    if has_global_aria_property(spec, arena, node_id, version) {
+        return Some(ComputedRole {
+            role: implicit.role,
+            error_type: Some(RoleComputationError::GlobalPropMustNotBePresentational),
+        });
+    }
+
+    None
+}
+
+/// TS `parentElement` / `getComposedParentElement`: the parent node when it is an element.
+fn parent_element(arena: &DomArena, node_id: NodeId) -> Option<NodeId> {
+    arena
+        .get(node_id)
+        .and_then(markuplint_dom::node::DomNode::parent_id)
+        .filter(|&parent_id| {
+            arena
+                .get(parent_id)
+                .and_then(markuplint_dom::node::DomNode::as_element)
+                .is_some()
+        })
+}
+
+/// TS `someAncestors`: the element or one of its ancestor elements.
+fn some_ancestors(arena: &DomArena, node_id: NodeId, mut predicate: impl FnMut(NodeId) -> bool) -> bool {
+    let mut current = Some(node_id);
+    while let Some(id) = current {
+        if predicate(id) {
+            return true;
+        }
+        current = parent_element(arena, id);
+    }
+    false
+}
+
+/// TS `isEnabledAttr`: the element has the attribute, and its spec defines it.
+fn is_enabled_attr(spec: &MLMLSpec, arena: &DomArena, node_id: NodeId, attr_name: &str) -> bool {
+    let Some(el) = arena.get(node_id).and_then(|n| n.as_element()) else {
+        return false;
+    };
+    crate::attr_name_key::attr_specs_of(spec, el)
+        .is_some_and(|specs| specs.iter().any(|attr| attr.name.as_deref() == Some(attr_name)))
+        && helpers::has_attr(arena, node_id, attr_name)
+}
+
+/// TS `isRequiredOwnedElement`: whether an element of `role` is the required owned element
+/// `query` (`row`, or `group > row` for a `group` that owns a `row`).
+pub(crate) fn is_required_owned_element(
+    spec: &MLMLSpec,
+    arena: &DomArena,
+    node_id: NodeId,
+    role: Option<&ResolvedRole>,
+    query: &str,
+    version: ARIAVersion,
+) -> bool {
+    let mut parts = query.split(" > ");
+    let base_role = parts.next().unwrap_or_default();
+    if role.map(|r| r.name.as_str()) != Some(base_role) {
+        return false;
+    }
+    let Some(owning_role) = parts.next() else {
+        return true;
+    };
+    closest_non_presentational_descendants(spec, arena, node_id, version)
+        .iter()
+        .any(|name| name.as_deref() == Some(owning_role))
+}
+
+/// TS `getClosestNonPresentationalDescendants()`: the role names (explicit, else implicit, with
+/// no context check) of the child elements, looking through the transparent ones.
+pub(crate) fn closest_non_presentational_descendants(
+    spec: &MLMLSpec,
+    arena: &DomArena,
+    node_id: NodeId,
+    version: ARIAVersion,
+) -> Vec<Option<String>> {
+    let mut owned = Vec::new();
+    for child_id in arena.child_nodes(node_id) {
+        if arena
+            .get(child_id)
+            .and_then(markuplint_dom::node::DomNode::as_element)
+            .is_none()
+        {
+            continue;
+        }
+        let name = get_computed_role(spec, arena, child_id, version, true)
+            .role
+            .map(|r| r.name);
+        if name
+            .as_deref()
+            .is_some_and(|name| is_transparent_for_ownership(name, version))
+        {
+            owned.extend(closest_non_presentational_descendants(spec, arena, child_id, version));
+            continue;
+        }
+        owned.push(name);
+    }
+    owned
 }
 
 // ============================================================
 // Explicit role
 // ============================================================
 
+/// TS `el.localName`: lower-cased for an element of the HTML namespace, as written (as the
+/// parser restored its case) for SVG and `MathML`.
+fn local_name(el: &ElementData) -> String {
+    if el.namespace == NamespaceURI::XHTML {
+        el.base.node_name.to_ascii_lowercase()
+    } else {
+        el.base.node_name.clone()
+    }
+}
+
+/// TS `getARIA()` for the element, with its conditions matched through the ARIA resolver as
+/// `el.matches` does (`:aria(has name)` on `<section>`). Computing a name asks for the role of the
+/// same element again; that nested evaluation matches without the resolver, so it terminates.
+fn element_aria(
+    spec: &MLMLSpec,
+    arena: &DomArena,
+    node_id: NodeId,
+    el: &ElementData,
+    version: ARIAVersion,
+) -> Option<crate::aria_check::ResolvedElementARIA> {
+    let spec_resolver = crate::aria_resolver_impl::SpecAriaResolver { spec };
+    let guard = ConditionGuard::enter(node_id);
+    let resolver: Option<&dyn markuplint_selector::aria_resolver::AriaResolver> =
+        if guard.nested { None } else { Some(&spec_resolver) };
+    crate::aria_check::get_element_aria_with(spec, arena, node_id, &local_name(el), version, resolver)
+}
+
+/// TS `getPermittedRoles()`: the roles the element may take explicitly. `true` is every
+/// non-abstract core and DPUB role, an AAM object the non-abstract roles of the mappings it
+/// names, and the implicit role is added (with its synonym) unless the spec says `false`.
+fn permitted_role_names(
+    spec: &MLMLSpec,
+    arena: &DomArena,
+    node_id: NodeId,
+    el: &ElementData,
+    version: ARIAVersion,
+) -> Vec<String> {
+    use crate::aria_check::PermittedRoles;
+
+    let Some(element_aria) = element_aria(spec, arena, node_id, el, version) else {
+        return Vec::new();
+    };
+    let specs = aria::get_aria_spec(spec, version);
+    let non_abstract = |roles: &[ARIARoleInSchema]| -> Vec<String> {
+        roles
+            .iter()
+            .filter(|r| r.is_abstract != Some(true))
+            .map(|r| r.name.clone())
+            .collect()
+    };
+    let mut names: Vec<String> = match &element_aria.permitted_roles {
+        PermittedRoles::Any => {
+            let mut all = non_abstract(&specs.roles);
+            all.extend(non_abstract(&specs.dpub_roles));
+            all
+        }
+        PermittedRoles::Aam { core_aam, graphics_aam } => {
+            let mut all = Vec::new();
+            if *core_aam {
+                all.extend(non_abstract(&specs.roles));
+            }
+            if *graphics_aam {
+                all.extend(non_abstract(&specs.graphics_roles));
+            }
+            all
+        }
+        PermittedRoles::Roles(roles) => roles.iter().map(|r| r.name.clone()).collect(),
+        PermittedRoles::Nothing => return Vec::new(),
+    };
+    if let Some(implicit) = element_aria.implicit_role.as_deref() {
+        let implicit_roles: &[&str] = match implicit {
+            "presentation" | "none" => &["none", "presentation"],
+            "img" | "image" if version == ARIAVersion::V1_3 => &["image", "img"],
+            other => &[other],
+        };
+        names.extend(implicit_roles.iter().map(|r| (*r).to_owned()));
+    }
+    names
+}
+
+/// HTML elements that the user agent style sheet never renders (`display: none`), and
+/// `input[type=hidden]`. `area` is rendered through its image map; the state-dependent rules
+/// (`[hidden]`, `noscript` with scripting) are left out, as TS `isNeverRendered` leaves them.
+///
+/// <https://html.spec.whatwg.org/multipage/rendering.html#hidden-elements>
+const NEVER_RENDERED_HTML_ELEMENTS: &[&str] = &[
+    "base", "basefont", "datalist", "head", "link", "meta", "noembed", "noframes", "param", "rp", "script", "style",
+    "template", "title",
+];
+
+/// TS `isNeverRendered`: an element of the HTML namespace that is never in the accessibility tree.
+fn is_never_rendered(arena: &DomArena, node_id: NodeId, el: &ElementData) -> bool {
+    if el.namespace != NamespaceURI::XHTML {
+        return false;
+    }
+    let name = local_name(el);
+    if NEVER_RENDERED_HTML_ELEMENTS.contains(&name.as_str()) {
+        return true;
+    }
+    name == "input"
+        && helpers::get_attr_value(arena, node_id, "type").is_some_and(|t| t.trim().eq_ignore_ascii_case("hidden"))
+}
+
+/// TS `getExplicitRole()`: the WAI-ARIA "Handling Author Errors" algorithm. The first token of
+/// `role` that names a non-abstract role, a landmark with the name it requires, is the role. A
+/// role that ARIA in HTML does not permit on the element is kept with `NoPermitted`, as user
+/// agents still expose it, except on an element that is never rendered.
+///
+/// - <https://w3c.github.io/aria/#document-handling_author-errors>
+/// - <https://w3c.github.io/core-aam/#mapping_conflicts>
 fn get_explicit_role(
     spec: &MLMLSpec,
     arena: &DomArena,
     node_id: NodeId,
-    tag_name: &str,
+    el: &ElementData,
     version: ARIAVersion,
 ) -> ComputedRole {
-    let Some(role_attr) = helpers::get_attr_value(arena, node_id, "role") else {
+    let Some(role_value) = helpers::get_attr_value(arena, node_id, "role") else {
         return ComputedRole {
             role: None,
             error_type: Some(RoleComputationError::NoExplicit),
         };
     };
+    let role_value = role_value.to_lowercase();
+    let permitted = permitted_role_names(spec, arena, node_id, el, version);
+    let is_svg = el.namespace == NamespaceURI::SVG;
+    let mut error = RoleComputationError::NoExplicit;
 
-    // TS getExplicitRole checks: exists → not abstract → permitted → valid landmark
-    let mut last_error = RoleComputationError::NoExplicit;
-
-    let (permitted, any_permitted) = resolve_permitted_roles(spec, arena, node_id, tag_name);
-
-    for token in role_attr.split_whitespace() {
-        let role_name = token.to_ascii_lowercase();
-
-        let Some(role_spec) = aria::get_role_spec(spec, &role_name, version) else {
-            last_error = RoleComputationError::RoleNoExists;
+    for role_name in role_value.split_whitespace() {
+        let Some(role_spec) = aria::get_role_spec_for_element(spec, role_name, version, is_svg) else {
+            error = RoleComputationError::RoleNoExists;
             continue;
         };
-
         if role_spec.is_abstract.unwrap_or(false) {
-            last_error = RoleComputationError::Abstract;
+            error = RoleComputationError::Abstract;
             continue;
         }
-
-        // Check permitted roles (TS: if (!permittedRoles.some(r => r.name === roleName)))
-        // Note: presentation/none are handled in Presentational Roles Conflict
-        // Resolution (later in computeRole), not rejected here.
-        let is_presentational = role_name == "presentation" || role_name == "none";
-        if !is_presentational
-            && !any_permitted
-            && !permitted
-                .as_ref()
-                .is_some_and(|roles| roles.iter().any(|r| r.eq_ignore_ascii_case(&role_name)))
+        if is_landmark_role(spec, role_name, version)
+            && !is_valid_landmark_role(arena, node_id, role_name, spec, version)
         {
-            last_error = RoleComputationError::NoPermitted;
+            error = RoleComputationError::InvalidLandmark;
             continue;
         }
-
-        if is_landmark_role(spec, &role_name, version)
-            && !is_valid_landmark_role(arena, node_id, &role_name, spec, version)
-        {
-            last_error = RoleComputationError::InvalidLandmark;
-            continue;
+        if !permitted.iter().any(|name| name == role_name) {
+            if is_never_rendered(arena, node_id, el) {
+                error = RoleComputationError::NoPermitted;
+                continue;
+            }
+            return ComputedRole {
+                role: Some(resolved_from_spec(role_spec, false)),
+                error_type: Some(RoleComputationError::NoPermitted),
+            };
         }
-
         return ComputedRole {
             role: Some(resolved_from_spec(role_spec, false)),
             error_type: None,
@@ -251,60 +495,8 @@ fn get_explicit_role(
 
     ComputedRole {
         role: None,
-        error_type: Some(last_error),
+        error_type: Some(error),
     }
-}
-
-/// Mirrors TS `getARIA()` condition evaluation for `permittedRoles`.
-/// Returns (condition-resolved permitted roles, any-role-permitted flag).
-pub fn resolve_permitted_roles(
-    spec: &MLMLSpec,
-    arena: &DomArena,
-    node_id: NodeId,
-    tag_name: &str,
-) -> (Option<Vec<String>>, bool) {
-    let base_permitted = aria::get_base_permitted_roles(spec, tag_name);
-    let base_any = aria::is_any_role_permitted(spec, tag_name);
-
-    let Some(el_spec) = markuplint_types::spec::lookup::get_spec(spec, tag_name) else {
-        return (base_permitted, base_any);
-    };
-
-    let mut permitted = base_permitted;
-    let mut any_permitted = base_any;
-
-    if let Some(ref conditions) = el_spec.aria.conditions {
-        for (selector_str, override_value) in conditions {
-            let Some(selector) = crate::diagnostic::parse_selector("spec ARIA condition", selector_str) else {
-                continue;
-            };
-            if !markuplint_selector::matcher::matches(&selector, arena, node_id, None, Some(spec), None) {
-                continue;
-            }
-            if let Some(obj) = override_value.as_object()
-                && let Some(cond_roles) = obj.get("permittedRoles")
-            {
-                if cond_roles.as_bool() == Some(true) {
-                    any_permitted = true;
-                } else if let Some(arr) = cond_roles.as_array() {
-                    permitted = Some(arr.iter().filter_map(|v| v.as_str().map(ToString::to_string)).collect());
-                    any_permitted = false;
-                }
-            }
-        }
-    }
-
-    // TS getPermittedRoles adds the implicit role to the permitted list.
-    // This ensures setting the implicit role explicitly is always allowed
-    // (e.g., <h1 role="heading"> — "heading" is permitted because it's the implicit role).
-    if !any_permitted && let Some(implicit) = aria::get_base_implicit_role(spec, tag_name).map(str::to_string) {
-        let roles = permitted.get_or_insert_with(Vec::new);
-        if !roles.iter().any(|r| r.eq_ignore_ascii_case(&implicit)) {
-            roles.push(implicit);
-        }
-    }
-
-    (permitted, any_permitted)
 }
 
 // ============================================================
@@ -339,65 +531,29 @@ impl Drop for ConditionGuard {
     }
 }
 
+/// TS `getImplicitRole()`: the `implicitRole` of `getARIA()`, looked up among the roles of the
+/// element's namespace (the graphics roles for SVG). An implicit role the namespace does not
+/// have is `ImplicitRoleNamespaceError`.
 fn get_implicit_role(
     spec: &MLMLSpec,
     arena: &DomArena,
     node_id: NodeId,
-    tag_name: &str,
+    el: &ElementData,
     version: ARIAVersion,
 ) -> ComputedRole {
-    // Check conditions in ElementARIA.conditions FIRST (before base implicit role).
-    // Elements like <td>/<th> have implicitRole:false but condition-based overrides
-    // that set the implicit role based on context (e.g., cell when inside table).
-    // Conditions must be checked even when base implicit role is None/false.
-    // The resolver lets `:aria(has name)` conditions (named `<section>` / `<form>`) evaluate, as
-    // TS `getImplicitRole` does through `matchSelector`. Computing the name asks for the role of
-    // the same element again; that nested evaluation runs without the resolver so it terminates.
-    if let Some(el_spec) = markuplint_types::spec::lookup::get_spec(spec, tag_name)
-        && let Some(ref conditions) = el_spec.aria.conditions
-    {
-        let spec_resolver = crate::aria_resolver_impl::SpecAriaResolver { spec };
-        let guard = ConditionGuard::enter(node_id);
-        let resolver: Option<&dyn markuplint_selector::aria_resolver::AriaResolver> =
-            if guard.nested { None } else { Some(&spec_resolver) };
-        for (selector_str, override_value) in conditions {
-            if let Some(selector) = crate::diagnostic::parse_selector("spec ARIA condition", selector_str)
-                && markuplint_selector::matcher::matches(&selector, arena, node_id, None, Some(spec), resolver)
-                && let Some(override_obj) = override_value.as_object()
-                && let Some(override_role) = override_obj.get("implicitRole")
-            {
-                if let Some(false) = override_role.as_bool() {
-                    return ComputedRole {
-                        role: None,
-                        error_type: None,
-                    };
-                }
-                if let Some(newrole_name) = override_role.as_str()
-                    && let Some(new_spec) = aria::get_role_spec(spec, newrole_name, version)
-                {
-                    return ComputedRole {
-                        role: Some(resolved_from_spec(new_spec, true)),
-                        error_type: None,
-                    };
-                }
-            }
-        }
-    }
-
-    let Some(role_name) = aria::get_base_implicit_role(spec, tag_name) else {
+    let Some(role_name) = element_aria(spec, arena, node_id, el, version).and_then(|aria| aria.implicit_role) else {
         return ComputedRole {
             role: None,
             error_type: None,
         };
     };
-
-    let Some(role_spec) = aria::get_role_spec(spec, role_name, version) else {
+    let is_svg = el.namespace == NamespaceURI::SVG;
+    let Some(role_spec) = aria::get_role_spec_for_element(spec, &role_name, version, is_svg) else {
         return ComputedRole {
             role: None,
             error_type: Some(RoleComputationError::ImplicitRoleNamespaceError),
         };
     };
-
     ComputedRole {
         role: Some(resolved_from_spec(role_spec, true)),
         error_type: None,
@@ -408,6 +564,9 @@ fn get_implicit_role(
 // Context role validation
 // ============================================================
 
+/// TS `getNonPresentationalAncestor()`: the computed role of the closest ancestor, from
+/// `start_id` up, whose role is not transparent for ownership. From ARIA 1.3 the role of an
+/// ancestor is computed as for a single node.
 fn get_non_presentational_ancestor(
     spec: &MLMLSpec,
     arena: &DomArena,
@@ -415,20 +574,22 @@ fn get_non_presentational_ancestor(
     version: ARIAVersion,
     visited: &mut HashSet<NodeId>,
 ) -> ComputedRole {
+    let assume_single_node = version == ARIAVersion::V1_3;
     let mut current = Some(start_id);
     while let Some(id) = current {
         if !visited.insert(id) {
             break; // Cycle detection
         }
-        let cr = compute_role(spec, arena, id, version, false, visited);
-        if let Some(ref role) = cr.role {
-            if !is_transparent_for_ownership(&role.name, version) {
-                return cr;
-            }
-        } else {
+        let cr = compute_role(spec, arena, id, version, assume_single_node, visited);
+        visited.remove(&id);
+        if !cr
+            .role
+            .as_ref()
+            .is_some_and(|role| is_transparent_for_ownership(&role.name, version))
+        {
             return cr;
         }
-        current = arena.get(id).and_then(markuplint_dom::node::DomNode::parent_id);
+        current = parent_element(arena, id);
     }
     ComputedRole {
         role: None,
@@ -485,6 +646,8 @@ fn matches_context_role(
     false
 }
 
+/// TS `isNativeContextIntact()`: an implicit role whose parent has no explicit role and has a
+/// role is in the context its element gives it.
 fn is_native_context_intact(
     spec: &MLMLSpec,
     arena: &DomArena,
@@ -495,14 +658,19 @@ fn is_native_context_intact(
     if !role.is_implicit {
         return false;
     }
-    let Some(parent_id) = arena.get(node_id).and_then(markuplint_dom::node::DomNode::parent_id) else {
+    let Some(parent_id) = parent_element(arena, node_id) else {
         return false;
     };
-    if helpers::get_attr_value(arena, parent_id, "role").is_some() {
+    let Some(parent) = arena.get(parent_id).and_then(|n| n.as_element()) else {
+        return false;
+    };
+    if get_explicit_role(spec, arena, parent_id, parent, version)
+        .role
+        .is_some()
+    {
         return false;
     }
-    let parent_cr = get_computed_role(spec, arena, parent_id, version, true);
-    parent_cr.role.is_some()
+    get_computed_role(spec, arena, parent_id, version, false).role.is_some()
 }
 
 // ============================================================
@@ -553,6 +721,9 @@ fn is_landmark_role(spec: &MLMLSpec, role_name: &str, version: ARIAVersion) -> b
     supers.iter().any(|r| r.name == "landmark")
 }
 
+/// TS `isValidLandmarkRole()`: a landmark that requires a name has one from its author, a
+/// non-empty `aria-label` or an `aria-labelledby` whose id (as written, or with its character
+/// references resolved) is in the document.
 fn is_valid_landmark_role(
     arena: &DomArena,
     node_id: NodeId,
@@ -563,11 +734,23 @@ fn is_valid_landmark_role(
     let Some(role_spec) = aria::get_role_spec(spec, role_name, version) else {
         return true;
     };
-    // Landmark requires accessible name if accessibleNameRequired && accessibleNameFromAuthor
-    if role_spec.accessible_name_required != Some(true) || role_spec.accessible_name_from_author != Some(true) {
+    if role_spec.accessible_name_required != Some(true) {
         return true;
     }
-    helpers::has_attr(arena, node_id, "aria-label") || helpers::has_attr(arena, node_id, "aria-labelledby")
+    if role_spec.accessible_name_from_author == Some(true) {
+        if helpers::get_attr_value(arena, node_id, "aria-label").is_some_and(|label| !label.is_empty()) {
+            return true;
+        }
+        let ids = helpers::get_attr_value(arena, node_id, "aria-labelledby").unwrap_or_default();
+        if ids.split_whitespace().any(|id| {
+            helpers::find_element_by_id(arena, id).is_some()
+                || crate::decode::decode_entities(id)
+                    .is_some_and(|decoded| helpers::find_element_by_id(arena, &decoded).is_some())
+        }) {
+            return true;
+        }
+    }
+    false
 }
 
 fn has_svg_accessible_name_source(arena: &DomArena, node_id: NodeId) -> bool {
@@ -586,36 +769,12 @@ fn has_child_element(arena: &DomArena, node_id: NodeId, child_tag: &str) -> bool
     })
 }
 
+/// TS `props.some(p => p.isGlobal && el.hasAttribute(p.name))`.
 fn has_global_aria_property(spec: &MLMLSpec, arena: &DomArena, node_id: NodeId, version: ARIAVersion) -> bool {
-    let Some(el) = arena.get(node_id).and_then(|n| n.as_element()) else {
-        return false;
-    };
-    let aria_spec = aria::get_aria_spec(spec, version);
-    for attr in &el.attributes {
-        if let markuplint_core::mlast::MLASTAttr::HTMLAttr(html_attr) = attr
-            && aria_spec
-                .props
-                .iter()
-                .any(|p| p.is_global == Some(true) && p.name == html_attr.node_name)
-        {
-            return true;
-        }
-    }
-    false
-}
-
-fn is_disabled_or_hidden(arena: &DomArena, node_id: NodeId) -> bool {
-    let mut current = Some(node_id);
-    while let Some(id) = current {
-        if helpers::has_attr(arena, id, "disabled")
-            || helpers::has_attr(arena, id, "inert")
-            || helpers::has_attr(arena, id, "hidden")
-        {
-            return true;
-        }
-        current = arena.get(id).and_then(markuplint_dom::node::DomNode::parent_id);
-    }
-    false
+    aria::get_aria_spec(spec, version)
+        .props
+        .iter()
+        .any(|p| p.is_global == Some(true) && helpers::has_attr(arena, node_id, &p.name))
 }
 
 // ============================================================
@@ -857,15 +1016,15 @@ mod tests {
     }
 
     #[test]
-    fn not_permitted_role_falls_back_to_implicit() {
+    fn not_permitted_role_is_kept() {
         let s = spec();
-        // TS getExplicitRole checks permitted roles. "heading" is NOT permitted
-        // on <a href>, so it falls back to the implicit role "link".
+        // "heading" is not permitted on <a href>, but user agents still expose it (Core-AAM), so
+        // it is the role, with `NoPermitted`.
         let (arena, id) = make_arena("a", &[("role", "heading"), ("href", "#")]);
         let cr = get_computed_role(&s, &arena, id, ARIAVersion::V1_3, false);
-        // Should fall back to implicit "link" because "heading" is not permitted
-        assert_eq!(cr.role.as_ref().map(|r| r.name.as_str()), Some("link"));
-        assert!(cr.role.as_ref().unwrap().is_implicit);
+        assert_eq!(cr.role.as_ref().map(|r| r.name.as_str()), Some("heading"));
+        assert!(!cr.role.as_ref().unwrap().is_implicit);
+        assert_eq!(cr.error_type, Some(RoleComputationError::NoPermitted));
     }
 
     #[test]

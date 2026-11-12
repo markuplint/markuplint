@@ -16,7 +16,7 @@
 use markuplint_dom::arena::DomArena;
 use markuplint_types::spec::types::MLMLSpec;
 
-use crate::aria_check::{attr_name, html_attrs, is_js_whitespace};
+use crate::aria_check::{find_attr, is_js_whitespace};
 use crate::rule::{Rule, RuleConfigSet};
 use crate::violation::{Severity, Violation};
 
@@ -43,7 +43,7 @@ impl Rule for NoAriaHiddenOnHiddenUntilFound {
         let mut violations = Vec::new();
         for (node_id, el) in arena.elements() {
             // TS `el.getAttributeNode('aria-hidden')`.
-            let Some(aria_hidden) = html_attrs(el).find(|attr| attr_name(attr) == "aria-hidden") else {
+            let Some(aria_hidden) = find_attr(el, "aria-hidden") else {
                 continue;
             };
             if aria_hidden.is_dynamic_value == Some(true)
@@ -52,7 +52,7 @@ impl Rule for NoAriaHiddenOnHiddenUntilFound {
                 continue;
             }
             // TS `el.getAttribute('hidden')`.
-            let hidden = html_attrs(el).find(|attr| attr_name(attr).to_lowercase() == "hidden");
+            let hidden = find_attr(el, "hidden");
             if !hidden.is_some_and(|attr| is_value(markuplint_dom::helpers::attr_value(attr), "until-found")) {
                 continue;
             }

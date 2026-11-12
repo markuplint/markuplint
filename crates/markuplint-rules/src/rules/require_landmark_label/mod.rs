@@ -11,11 +11,11 @@
 //! The default severity is `warning`.
 
 use markuplint_dom::arena::{DomArena, NodeId};
-use markuplint_dom::node::DomNode;
 use markuplint_types::spec::types::MLMLSpec;
 
-use crate::landmark_check::{compute_landmark_roles, matches, parse};
+use crate::landmark_check::{compute_landmark_roles_of_each_tree, matches, parse};
 use crate::rule::{Rule, RuleConfigSet};
+use crate::tree_scope::Trees;
 use crate::violation::{Severity, Violation};
 
 #[cfg(test)]
@@ -37,13 +37,16 @@ impl Rule for RequireLandmarkLabel {
             return vec![];
         }
         let mut violations = Vec::new();
-        for (_, ids) in compute_landmark_roles(arena, spec) {
+        let trees = Trees::new(arena, spec);
+        // Landmarks are counted by tree: the content of a `template` element is a tree of its own
+        let roles_of_trees = compute_landmark_roles_of_each_tree(arena, spec, &trees);
+        for (_, ids) in roles_of_trees.into_iter().flatten() {
             if ids.len() < 2 {
                 continue;
             }
             for node_id in ids {
                 let rule_config = config.get(node_id);
-                if rule_config.disabled || has_label(arena, spec, node_id) {
+                if rule_config.disabled || has_label(arena, spec, &trees, node_id) {
                     continue;
                 }
                 let Some(el) = arena.get(node_id).and_then(|n| n.as_element()) else {
@@ -57,7 +60,7 @@ impl Rule for RequireLandmarkLabel {
                     line: el.base.line,
                     col: el.base.col,
                     raw: el.base.raw.clone(),
-                    reason: None,
+                    reason: rule_config.reason.clone(),
                     fix: None,
                 });
             }
@@ -67,12 +70,12 @@ impl Rule for RequireLandmarkLabel {
 }
 
 /// TS `hasLabel()`.
-fn has_label(arena: &DomArena, spec: &MLMLSpec, node_id: NodeId) -> bool {
+fn has_label(arena: &DomArena, spec: &MLMLSpec, trees: &Trees<'_>, node_id: NodeId) -> bool {
     let heading = parse("h1, h2, h3, h4, h5, h6");
-    let has_heading = arena
-        .descendants(node_id)
-        .filter_map(DomNode::as_element)
-        .any(|el| matches(&heading, arena, spec, el.base.id));
+    let has_heading = trees
+        .descendant_elements_in_tree(node_id)
+        .into_iter()
+        .any(|id| matches(&heading, arena, spec, id));
     if has_heading && matches(&parse("[aria-labelledby]"), arena, spec, node_id) {
         return true;
     }

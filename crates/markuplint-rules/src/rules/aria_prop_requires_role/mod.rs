@@ -11,7 +11,9 @@ use markuplint_types::spec::aria;
 use markuplint_types::spec::types::MLMLSpec;
 
 use crate::aria::computed_role::get_computed_role;
-use crate::aria_check::{ElementContext, ElementGate, aria_prop_attrs, attr_name, prop_type_label, walk_elements};
+use crate::aria_check::{
+    ElementContext, ElementGate, aria_prop_attrs, attr_name, name_key, prop_type_label, walk_elements,
+};
 use crate::rule::{Rule, RuleConfigSet};
 use crate::violation::Violation;
 
@@ -55,7 +57,8 @@ fn check(ctx: &ElementContext<'_>, violations: &mut Vec<Violation>) {
 
     for attr in attrs {
         let name = attr_name(attr);
-        let Some(prop) = props.iter().find(|p| p.name == name) else {
+        let key = name_key(ctx.el, attr);
+        let Some(prop) = props.iter().find(|p| p.name == key) else {
             continue;
         };
         if prop.is_global == Some(true) {

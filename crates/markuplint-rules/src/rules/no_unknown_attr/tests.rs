@@ -40,7 +40,6 @@
 //!    `ml-engine.rust-framework.spec.ts` compares whole files of each parser)
 
 use super::*;
-use crate::attr_check::find_closest_match;
 use crate::lint::{LintConfig, lint};
 use crate::rule::RuleConfig;
 use crate::rules::no_duplicate_attr::tests::make_element_with_attrs;
@@ -180,11 +179,9 @@ fn custom_element_allows_any_attrs() {
     let s = spec();
     let rule = NoUnknownAttr;
     let violations = rule.verify(&arena, &s, &RuleConfigSet::global_only(RuleConfig::default()));
-    assert!(
-        !violations.is_empty(),
-        "Custom elements currently do not get special treatment in Rust impl; \
-         unknown attrs are flagged. Got: {violations:?}"
-    );
+    // The spec does not know the element, so it cannot say an attribute of it is unknown (TS
+    // `getAttrSpecs()` is null)
+    assert!(violations.is_empty(), "Got: {violations:?}");
 }
 
 #[test]
@@ -230,14 +227,6 @@ fn allow_to_add_properties_for_pretender_option_parsed() {
     };
     let violations_true = rule.verify(&arena, &s, &RuleConfigSet::global_only(config_explicit_true));
     assert_eq!(violations_true.len(), 1);
-}
-
-#[test]
-fn find_closest_match_works() {
-    let candidates = &["class", "id", "style", "title"];
-    assert_eq!(find_closest_match("classs", candidates), Some("class"));
-    assert_eq!(find_closest_match("styl", candidates), Some("style"));
-    assert_eq!(find_closest_match("completely_wrong", candidates), None);
 }
 
 #[test]
@@ -365,8 +354,10 @@ fn no_unknown_attr_invalid_002() {
     );
     assert_eq!(result.violations[1].raw, ":class");
     assert_eq!(result.violations[2].col, 44);
-    // TS suggests "onclick" via parser candidate, but Levenshtein distance too large
-    assert_eq!(result.violations[2].message, "The \"@click\" attribute is disallowed");
+    assert_eq!(
+        result.violations[2].message,
+        "The \"@click\" attribute is disallowed. Did you mean \"onclick\"?"
+    );
     assert_eq!(result.violations[2].raw, "@click");
 }
 
@@ -597,8 +588,8 @@ fn no_unknown_attr_invalid_005() {
     assert_eq!(result.violations[0].raw, "invalid-attr");
 }
 
-/// The spec name of an attribute is the key of the element's `attributes`; the entry has no
-/// `name` of its own, so the case-sensitive name check has to read the key.
+/// The HTML parser restores the case of an SVG attribute name, so `viewbox` on an `<svg>` it
+/// reads is `viewBox` (as in TS `[no-unknown-attr-issue-4309-002]`).
 #[test]
 fn v6_no_unknown_attr_001() {
     let arena = html_arena(r#"<svg viewbox="0 0 1 1"></svg>"#);
@@ -608,14 +599,7 @@ fn v6_no_unknown_attr_001() {
     }))
     .unwrap();
     let result = lint(&arena, &spec, &config);
-    assert_eq!(result.violations.len(), 1, "violations: {:#?}", result.violations);
-    assert_eq!(result.violations[0].line, 1);
-    assert_eq!(result.violations[0].col, 6);
-    assert_eq!(
-        result.violations[0].message,
-        "The \"viewbox\" attribute is disallowed. Did you mean \"viewBox\"?"
-    );
-    assert_eq!(result.violations[0].raw, "viewbox");
+    assert!(result.violations.is_empty(), "violations: {:#?}", result.violations);
 }
 
 fn run_pretended(html: &str, rule: serde_json::Value, pretenders: serde_json::Value) -> Vec<crate::test_util::Brief> {

@@ -167,12 +167,22 @@ fn v6_aria_prop_requires_role_006() {
             r#"<section aria-checked="true" aria-nothing="true" ARIA-EXPANDED="true"></section>"#,
             serde_json::json!(true)
         ),
-        vec![violation(
-            1,
-            10,
-            "The \"aria-checked\" ARIA state is not global state",
-            "aria-checked=\"true\""
-        )]
+        vec![
+            violation(
+                1,
+                10,
+                "The \"aria-checked\" ARIA state is not global state",
+                "aria-checked=\"true\""
+            ),
+            // `ARIA-EXPANDED` is `aria-expanded` as the DOM names it (#4309); the message keeps the
+            // spelling of the source.
+            violation(
+                1,
+                50,
+                "The \"ARIA-EXPANDED\" ARIA state is not global state",
+                "ARIA-EXPANDED=\"true\""
+            ),
+        ]
     );
     assert_eq!(
         run(r#"<section aria-checked="true"></section>"#, serde_json::json!(false)),

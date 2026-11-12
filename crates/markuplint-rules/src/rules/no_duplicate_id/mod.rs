@@ -1,4 +1,12 @@
-//! `no-duplicate-id` rule: reports duplicate `id` attribute values across all elements.
+//! `no-duplicate-id` rule: reports an `id` whose value another element of the same tree has.
+//!
+//! An id is unique in its tree, not in the file: the content of a `template` element and a
+//! declarative shadow root are trees of their own, where an id may repeat one of another tree. The
+//! ids are grouped by [`Trees::root_of`], and compared after the character references are resolved
+//! (`a&#x62;` is `ab`), as the DOM has them.
+//!
+//! @see <https://html.spec.whatwg.org/multipage/dom.html#the-id-attribute>
+//! @see <https://dom.spec.whatwg.org/#concept-tree>
 
 use std::collections::HashMap;
 
@@ -7,6 +15,7 @@ use markuplint_dom::arena::DomArena;
 use markuplint_types::spec::types::MLMLSpec;
 
 use crate::rule::{Rule, RuleConfigSet};
+use crate::tree_scope::{TreeRoot, Trees, dom_value};
 use crate::violation::Violation;
 
 #[cfg(test)]
@@ -14,14 +23,18 @@ mod tests;
 
 pub struct NoDuplicateId;
 
+/// The line, the column and the raw of an `id` attribute.
+type Location = (u32, u32, String);
+
 impl Rule for NoDuplicateId {
     fn id(&self) -> &'static str {
         "no-duplicate-id"
     }
 
-    fn verify(&self, arena: &DomArena, _spec: &MLMLSpec, config: &RuleConfigSet) -> Vec<Violation> {
+    fn verify(&self, arena: &DomArena, spec: &MLMLSpec, config: &RuleConfigSet) -> Vec<Violation> {
         let mut violations = Vec::new();
-        let mut seen: HashMap<String, Vec<(u32, u32, String)>> = HashMap::new();
+        let trees = Trees::new(arena, spec);
+        let mut seen: HashMap<(TreeRoot, String), Vec<Location>> = HashMap::new();
 
         for (node_id, el) in arena.elements() {
             let rule_config = config.get(node_id);
@@ -38,11 +51,13 @@ impl Rule for NoDuplicateId {
                 }
 
                 if html_attr.node_name.eq_ignore_ascii_case("id") {
-                    let value = markuplint_dom::helpers::attr_value(html_attr).to_owned();
+                    let Some(value) = dom_value(html_attr) else {
+                        continue;
+                    };
                     if value.is_empty() {
                         continue;
                     }
-                    seen.entry(value).or_default().push((
+                    seen.entry((trees.root_of(node_id), value)).or_default().push((
                         html_attr.name.line,
                         html_attr.name.col,
                         html_attr.raw.clone(),
@@ -63,7 +78,7 @@ impl Rule for NoDuplicateId {
                         line,
                         col,
                         raw: raw.clone(),
-                        reason: None,
+                        reason: config.global().reason.clone(),
                         fix: None,
                     });
                 }

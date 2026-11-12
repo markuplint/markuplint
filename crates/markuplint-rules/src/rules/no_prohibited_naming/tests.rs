@@ -19,7 +19,7 @@
 //!   no-prohibited-naming-issue-3630-015     → no_prohibited_naming_issue_3630_015
 //!   v6_no_prohibited_naming_001  — Rust-only: every naming attribute on one element is reported
 //!   v6_no_prohibited_naming_002  — Rust-only: the element name is reported in lower case
-//!   v6_no_prohibited_naming_003  — Rust-only: a naming attribute written in upper case is not checked
+//!   v6_no_prohibited_naming_003  — Rust-only: a naming attribute written in upper case is checked
 //!   v6_no_prohibited_naming_004  — Rust-only: a blank `role` does not lift the prohibition
 //!   v6_no_prohibited_naming_005  — Rust-only: a computed role lifts it, and elements without a naming prohibition
 //!   v6_no_prohibited_naming_006  — Rust-only: severity and `rules: false`
@@ -374,9 +374,18 @@ fn v6_no_prohibited_naming_002() {
 
 #[test]
 fn v6_no_prohibited_naming_003() {
-    // `NAMING_ATTRS` is matched on the name as written, so `ARIA-LABEL` is not a naming attribute.
+    // `ARIA-LABEL` is `aria-label` as the DOM names it (#4309), a naming attribute.
     let violations = run_rule(r#"<cite ARIA-LABEL="x">y</cite>"#, serde_json::json!(true));
-    assert_violations(&violations, &[]);
+    assert_violations(
+        &violations,
+        &[(
+            Severity::Error,
+            1,
+            7,
+            "The \"ARIA-LABEL\" ARIA property is prohibited on the \"cite\" element",
+            "ARIA-LABEL=\"x\"",
+        )],
+    );
 }
 
 #[test]

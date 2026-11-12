@@ -20,8 +20,29 @@ pub enum ModelEntry {
     Custom,
     /// `#text`: never matches, the selector engine only evaluates elements.
     Text,
+    /// An entry `<compound>:first-child` (`style:first-child`): the element the compound selects,
+    /// when it is the first child of its parent as the HTML Standard counts it, where text that is
+    /// not inter-element whitespace also comes before it (TS `contentModelFirstChildBase` and
+    /// `isContentModelFirstChild`). The list is the compound.
+    FirstChild(SelectorList),
     /// Any other entry, a selector (`audio[controls]`, `ul:has(>li)`, `sup `, `mml|math`).
     Selector(SelectorList),
+}
+
+/// The compound of a content model entry `<compound>:first-child` (`style` of `style:first-child`),
+/// or `None` for any other entry. Port of TS `contentModelFirstChildBase`: the compound is a run of
+/// characters without whitespace, a combinator, a parenthesis, a comma or a colon.
+#[must_use]
+pub fn content_model_first_child_base(entry: &str) -> Option<&str> {
+    let base = entry.strip_suffix(":first-child")?;
+    if base.is_empty()
+        || base
+            .chars()
+            .any(|c| c.is_whitespace() || matches!(c, '>' | '+' | '~' | '(' | ')' | ',' | ':'))
+    {
+        return None;
+    }
+    Some(base)
 }
 
 /// The entries of a category, by the name `:model()` was given (`flow`, `SVGRenderable`).
@@ -58,7 +79,10 @@ pub fn model_entries(spec: &MLMLSpec, category: &str) -> Option<Rc<Vec<ModelEntr
                 .filter_map(|entry| match entry.as_str() {
                     "#custom" => Some(ModelEntry::Custom),
                     "#text" => Some(ModelEntry::Text),
-                    _ => parser::parse(entry).ok().map(ModelEntry::Selector),
+                    _ => match content_model_first_child_base(entry) {
+                        Some(base) => parser::parse(base).ok().map(ModelEntry::FirstChild),
+                        None => parser::parse(entry).ok().map(ModelEntry::Selector),
+                    },
                 })
                 .collect::<Vec<_>>(),
         );
@@ -143,6 +167,19 @@ mod tests {
     }
 
     #[test]
+    fn first_child_base_of_an_entry() {
+        assert_eq!(content_model_first_child_base("style:first-child"), Some("style"));
+        assert_eq!(
+            content_model_first_child_base("svg|style:first-child"),
+            Some("svg|style")
+        );
+        assert_eq!(content_model_first_child_base("style"), None);
+        assert_eq!(content_model_first_child_base(":first-child"), None);
+        assert_eq!(content_model_first_child_base("div > style:first-child"), None);
+        assert_eq!(content_model_first_child_base("style:not(a):first-child"), None);
+    }
+
+    #[test]
     fn model_entries_find_a_category_case_insensitively() {
         let spec = html_spec();
         let exact = model_entries(&spec, "SVGRenderable").unwrap().len();
@@ -224,6 +261,8 @@ pub fn validate_model_categories(selector: &SelectorList, spec: &MLMLSpec) -> Re
                 | PseudoClassSelector::Closest(list) => validate_model_categories(list, spec)?,
                 PseudoClassSelector::Scope
                 | PseudoClassSelector::Root
+                | PseudoClassSelector::FirstChild
+                | PseudoClassSelector::DisplaySize(..)
                 | PseudoClassSelector::Role(_)
                 | PseudoClassSelector::Aria(_) => {}
             }

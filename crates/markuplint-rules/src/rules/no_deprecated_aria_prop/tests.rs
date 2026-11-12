@@ -7,7 +7,7 @@
 //!   v6_no_deprecated_aria_prop_002  — Rust-only: a property deprecated on the implicit role (`article`)
 //!   v6_no_deprecated_aria_prop_003  — Rust-only: the computed role of `div` is `generic`
 //!   v6_no_deprecated_aria_prop_004  — Rust-only: `version` option (1.1 does not deprecate them)
-//!   v6_no_deprecated_aria_prop_005  — Rust-only: property names are matched case-sensitively; positions over lines
+//!   v6_no_deprecated_aria_prop_005  — Rust-only: a property name in upper case is the property; positions over lines
 //!   v6_no_deprecated_aria_prop_006  — Rust-only: `rules: false`, `severity` override
 
 use crate::lint::{LintConfig, lint};
@@ -143,6 +143,14 @@ fn v6_no_deprecated_aria_prop_005() {
                 19,
                 "The \"aria-invalid\" ARIA state is deprecated on the \"alert\" role",
                 "aria-invalid=\"true\""
+            ),
+            // `ARIA-HASPOPUP` is `aria-haspopup` as the DOM names it (#4309).
+            violation(
+                Severity::Warning,
+                1,
+                39,
+                "The \"ARIA-HASPOPUP\" ARIA property is deprecated on the \"alert\" role",
+                "ARIA-HASPOPUP=\"true\""
             ),
             violation(
                 Severity::Warning,

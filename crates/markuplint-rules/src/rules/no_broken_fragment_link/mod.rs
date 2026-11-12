@@ -8,7 +8,7 @@
 use std::collections::HashSet;
 
 use markuplint_core::mlast::MLASTHTMLAttr;
-use markuplint_dom::arena::DomArena;
+use markuplint_dom::arena::{DomArena, NodeId};
 use markuplint_dom::node::{DomNode, ElementData};
 use markuplint_types::spec::types::MLMLSpec;
 use serde_json::Value;
@@ -16,6 +16,7 @@ use serde_json::Value;
 use crate::aria_check::{attr_name, element_local_name, html_attrs};
 use crate::decode::{decode_entities, decode_href};
 use crate::rule::{Rule, RuleConfigSet};
+use crate::tree_scope::{TreeRoot, Trees};
 use crate::violation::{Severity, Violation};
 
 #[cfg(test)]
@@ -33,7 +34,7 @@ impl Rule for NoBrokenFragmentLink {
         Severity::Warning
     }
 
-    fn verify(&self, arena: &DomArena, _spec: &MLMLSpec, config: &RuleConfigSet) -> Vec<Violation> {
+    fn verify(&self, arena: &DomArena, spec: &MLMLSpec, config: &RuleConfigSet) -> Vec<Violation> {
         let mut violations = Vec::new();
 
         // A preprocessor block may generate any ID, so the document cannot be judged.
@@ -42,12 +43,17 @@ impl Rule for NoBrokenFragmentLink {
             return violations;
         }
 
-        let (ids, has_dynamic_id) = collect_values(arena, "id");
+        // The target of a fragment link is an element of the document tree: the content of a
+        // `template` element and a shadow root are not where the navigation scrolls to. So the ids
+        // and names are the ones of the document, and a link in any tree is checked against them.
+        let trees = Trees::new(arena, spec);
+        let document_elements = trees.elements_of(TreeRoot::Document);
+        let (ids, has_dynamic_id) = collect_values(arena, document_elements, "id");
         // A dynamic ID may be any fragment.
         if has_dynamic_id {
             return violations;
         }
-        let (names, has_dynamic_name) = collect_values(arena, "name");
+        let (names, has_dynamic_name) = collect_values(arena, document_elements, "name");
 
         for (node_id, el) in arena.elements() {
             let rule_config = config.get(node_id);
@@ -122,10 +128,13 @@ fn attr_value(attr: &MLASTHTMLAttr) -> &str {
 /// patterns set that type, which the Rust engine does not model, so every value is
 /// kept. A decoded value holding an unpaired surrogate is left out: no decoded
 /// fragment can equal it (`decodeURIComponent` never yields one).
-fn collect_values(arena: &DomArena, attr_name: &str) -> (HashSet<String>, bool) {
+fn collect_values(arena: &DomArena, elements: &[NodeId], attr_name: &str) -> (HashSet<String>, bool) {
     let mut values = HashSet::new();
     let mut has_dynamic = false;
-    for (_, el) in arena.elements() {
+    for el in elements
+        .iter()
+        .filter_map(|&id| arena.get(id).and_then(DomNode::as_element))
+    {
         let Some(attr) = attr_node(el, attr_name) else {
             continue;
         };

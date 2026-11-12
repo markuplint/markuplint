@@ -1,40 +1,32 @@
 use strsim::levenshtein;
 
-/// Returns a candidate only when the similarity ratio is >= 50% and the candidate
-/// differs from the input value.
+/// TS `getCandidate`: the candidate most similar to `value` (a Levenshtein ratio of at least 0.5,
+/// compared trimmed and in lower case), unless it is `value` itself.
 #[must_use]
 pub fn get_candidate(value: &str, candidates: &[&str]) -> Option<String> {
-    let value_lower = value.trim().to_lowercase();
-    if value_lower.is_empty() {
+    if value.is_empty() {
         return None;
     }
-
-    let mut best: Option<(String, f64)> = None;
-
-    for &candidate in candidates {
-        let cand_lower = candidate.to_lowercase();
-        if value_lower == cand_lower {
-            // Exact match — no suggestion needed
-            return None;
+    let value_lower = value.trim().to_lowercase();
+    let mut candidate: Option<&str> = None;
+    let mut max_ratio = 0.0_f64;
+    for &word in candidates {
+        if word.is_empty() {
+            continue;
         }
-
-        let dist = levenshtein(&value_lower, &cand_lower);
-        let len = cand_lower.len().max(1);
+        let word_lower = word.trim().to_lowercase();
+        let dist = levenshtein(&value_lower, &word_lower);
         #[allow(clippy::cast_precision_loss)]
-        let ratio = 1.0 - (dist as f64 / len as f64);
-
-        if ratio >= 0.5 {
-            if let Some((_, best_ratio)) = &best {
-                if ratio > *best_ratio {
-                    best = Some((candidate.to_owned(), ratio));
-                }
-            } else {
-                best = Some((candidate.to_owned(), ratio));
-            }
+        let ratio = 1.0 - (dist as f64 / word.encode_utf16().count() as f64);
+        if 0.5 <= ratio && max_ratio < ratio {
+            candidate = Some(word);
         }
+        max_ratio = max_ratio.max(ratio);
     }
-
-    best.map(|(c, _)| c)
+    if candidate == Some(value) {
+        return None;
+    }
+    candidate.map(str::to_owned)
 }
 
 #[cfg(test)]
@@ -58,6 +50,6 @@ mod tests {
 
     #[test]
     fn case_insensitive() {
-        assert_eq!(get_candidate("HELLO", &["hello", "world"]), None);
+        assert_eq!(get_candidate("HELLO", &["hello", "world"]), Some("hello".to_owned()));
     }
 }

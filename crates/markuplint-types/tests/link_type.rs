@@ -1,138 +1,1760 @@
-use markuplint_types::whatwg::link_type::is_link_type;
+//! Port of `whatwg/check-link-type.spec.ts`, through the four link type keywords.
+//!
+//! The expected results are TS `check(value, type)` of `@markuplint/types`, serialised by
+//! `JSON.stringify`.
 
-// --- Valid: WHATWG keywords ---
+mod ts_json;
 
-#[test]
-fn whatwg_keywords() {
-    assert!(is_link_type("alternate"));
-    assert!(is_link_type("canonical"));
-    assert!(is_link_type("author"));
-    assert!(is_link_type("bookmark"));
-    assert!(is_link_type("dns-prefetch"));
-    assert!(is_link_type("external"));
-    assert!(is_link_type("help"));
-    assert!(is_link_type("icon"));
-    assert!(is_link_type("manifest"));
-    assert!(is_link_type("modulepreload"));
-    assert!(is_link_type("license"));
-    assert!(is_link_type("next"));
-    assert!(is_link_type("nofollow"));
-    assert!(is_link_type("noopener"));
-    assert!(is_link_type("noreferrer"));
-    assert!(is_link_type("opener"));
-    assert!(is_link_type("pingback"));
-    assert!(is_link_type("preconnect"));
-    assert!(is_link_type("prefetch"));
-    assert!(is_link_type("preload"));
-    assert!(is_link_type("prev"));
-    assert!(is_link_type("privacy-policy"));
-    assert!(is_link_type("search"));
-    assert!(is_link_type("stylesheet"));
-    assert!(is_link_type("tag"));
-    assert!(is_link_type("terms-of-service"));
-}
+use ts_json::assert_ts_results;
 
-// --- Valid: Microformats keywords ---
+use markuplint_types::check::check;
+use markuplint_types::check::types::Type;
 
 #[test]
-fn microformats_keywords() {
-    assert!(is_link_type("acquaintance"));
-    assert!(is_link_type("me"));
-    assert!(is_link_type("home"));
-    assert!(is_link_type("amphtml"));
-    assert!(is_link_type("sitemap"));
-    assert!(is_link_type("webmention"));
-    assert!(is_link_type("schema.DC"));
-    // Case-sensitive Microformats keyword (matched case-insensitively)
-    assert!(is_link_type("DCTERMS.conformsTo"));
+fn link_type_keywords() {
+    assert_ts_results(CASES, |value, type_| check(value, &Type::Keyword(type_.into()), None));
 }
 
-// --- Valid: Multiple tokens ---
-
-#[test]
-fn multiple_valid_tokens() {
-    assert!(is_link_type("nofollow noopener"));
-    assert!(is_link_type("nofollow noopener noreferrer"));
-    assert!(is_link_type("stylesheet alternate"));
-}
-
-// --- Valid: Case insensitivity ---
-
-#[test]
-fn case_insensitive() {
-    assert!(is_link_type("STYLESHEET"));
-    assert!(is_link_type("Nofollow"));
-    assert!(is_link_type("ALTERNATE"));
-    assert!(is_link_type("Nofollow Noopener"));
-}
-
-// --- Invalid: Excluded keywords ---
-
-#[test]
-fn excluded_non_html() {
-    assert!(!is_link_type("self"));
-    assert!(!is_link_type("collection"));
-    assert!(!is_link_type("youtube"));
-    assert!(!is_link_type("shadowbox"));
-}
-
-#[test]
-fn excluded_dropped() {
-    assert!(!is_link_type("banner"));
-    assert!(!is_link_type("begin"));
-    assert!(!is_link_type("editor"));
-    assert!(!is_link_type("top"));
-    // Keywords that overlap with Microformats allowed lists
-    assert!(!is_link_type("bibliography"));
-    assert!(!is_link_type("child"));
-    assert!(!is_link_type("footnote"));
-    assert!(!is_link_type("parent"));
-    assert!(!is_link_type("publisher"));
-    assert!(!is_link_type("sibling"));
-}
-
-#[test]
-fn excluded_dropped_without_prejudice() {
-    assert!(!is_link_type("first"));
-    assert!(!is_link_type("index"));
-    assert!(!is_link_type("last"));
-    assert!(!is_link_type("up"));
-}
-
-#[test]
-fn excluded_rejected() {
-    assert!(!is_link_type("logo"));
-    assert!(!is_link_type("pavatar"));
-}
-
-// --- Invalid: Unknown keywords ---
-
-#[test]
-fn unknown_keywords() {
-    assert!(!is_link_type("xxx"));
-    assert!(!is_link_type("invalid-keyword"));
-}
-
-// --- Invalid: Duplicates ---
-
-#[test]
-fn duplicates() {
-    assert!(!is_link_type("nofollow nofollow"));
-    assert!(!is_link_type("NOFOLLOW nofollow"));
-}
-
-// --- Invalid: Empty ---
-
-#[test]
-fn empty() {
-    assert!(!is_link_type(""));
-    assert!(!is_link_type("   "));
-}
-
-// --- Invalid: Mix valid and excluded ---
-
-#[test]
-fn valid_mixed_with_excluded() {
-    assert!(!is_link_type("stylesheet self"));
-    assert!(!is_link_type("nofollow logo"));
-}
+#[rustfmt::skip]
+const CASES: &[(&str, &str, &str)] = &[
+    (
+        "LinkTypeForLinkElement",
+        "alternate",
+        r#"{"matched":true}"#,
+    ),
+    (
+        "LinkTypeForLinkElement",
+        "canonical",
+        r#"{"matched":true}"#,
+    ),
+    (
+        "LinkTypeForLinkElement",
+        "author",
+        r#"{"matched":true}"#,
+    ),
+    (
+        "LinkTypeForLinkElement",
+        "bookmark",
+        r#"{"ref":"https://html.spec.whatwg.org/multipage/links.html#linkTypes","expects":[{"type":"const","value":"alternate"},{"type":"const","value":"canonical"},{"type":"const","value":"author"},{"type":"const","value":"dns-prefetch"},{"type":"const","value":"expect"},{"type":"const","value":"help"},{"type":"const","value":"icon"},{"type":"const","value":"manifest"},{"type":"const","value":"modulepreload"},{"type":"const","value":"license"},{"type":"const","value":"next"},{"type":"const","value":"pingback"},{"type":"const","value":"preconnect"},{"type":"const","value":"prefetch"},{"type":"const","value":"preload"},{"type":"const","value":"prev"},{"type":"const","value":"privacy-policy"},{"type":"const","value":"search"},{"type":"const","value":"stylesheet"},{"type":"const","value":"terms-of-service"},{"type":"const","value":"appendix"},{"type":"const","value":"chapter"},{"type":"const","value":"child"},{"type":"const","value":"contents"},{"type":"const","value":"copyright"},{"type":"const","value":"glossary"},{"type":"const","value":"its-rules"},{"type":"const","value":"me"},{"type":"const","value":"parent"},{"type":"const","value":"previous"},{"type":"const","value":"section"},{"type":"const","value":"start"},{"type":"const","value":"subsection"},{"type":"const","value":"toc"},{"type":"const","value":"transformation"},{"type":"const","value":"pronunciation"},{"type":"const","value":"directory"},{"type":"const","value":"enclosure"},{"type":"const","value":"home"},{"type":"const","value":"payment"},{"type":"const","value":"vcs-*"},{"type":"const","value":"about"},{"type":"const","value":"amphtml"},{"type":"const","value":"apple-touch-icon"},{"type":"const","value":"apple-touch-icon-precomposed"},{"type":"const","value":"apple-touch-startup-image"},{"type":"const","value":"archived"},{"type":"const","value":"attachment"},{"type":"const","value":"authorization_endpoint"},{"type":"const","value":"category"},{"type":"const","value":"code-repository"},{"type":"const","value":"code-license"},{"type":"const","value":"component"},{"type":"const","value":"chrome-webstore-item"},{"type":"const","value":"content-repository"},{"type":"const","value":"content-license"},{"type":"const","value":"DCTERMS.conformsTo"},{"type":"const","value":"DCTERMS.contributor"},{"type":"const","value":"DCTERMS.creator"},{"type":"const","value":"DCTERMS.description"},{"type":"const","value":"DCTERMS.hasFormat"},{"type":"const","value":"DCTERMS.hasPart"},{"type":"const","value":"DCTERMS.hasVersion"},{"type":"const","value":"DCTERMS.isFormatOf"},{"type":"const","value":"DCTERMS.isPartOf"},{"type":"const","value":"DCTERMS.isReferencedBy"},{"type":"const","value":"DCTERMS.isReplacedBy"},{"type":"const","value":"DCTERMS.isRequiredBy"},{"type":"const","value":"DCTERMS.isVersionOf"},{"type":"const","value":"DCTERMS.license"},{"type":"const","value":"DCTERMS.mediator"},{"type":"const","value":"DCTERMS.publisher"},{"type":"const","value":"DCTERMS.references"},{"type":"const","value":"DCTERMS.relation"},{"type":"const","value":"DCTERMS.replaces"},{"type":"const","value":"DCTERMS.requires"},{"type":"const","value":"DCTERMS.rightsHolder"},{"type":"const","value":"DCTERMS.source"},{"type":"const","value":"DCTERMS.subject"},{"type":"const","value":"discussion"},{"type":"const","value":"donation"},{"type":"const","value":"edit"},{"type":"const","value":"EditURI"},{"type":"const","value":"enclosure"},{"type":"const","value":"first"},{"type":"const","value":"gbfs"},{"type":"const","value":"gtfs-static"},{"type":"const","value":"gtfs-realtime"},{"type":"const","value":"home"},{"type":"const","value":"hub"},{"type":"const","value":"import"},{"type":"const","value":"in-reply-to"},{"type":"const","value":"root"},{"type":"const","value":"index"},{"type":"const","value":"issues"},{"type":"const","value":"jslicense"},{"type":"const","value":"last"},{"type":"const","value":"main"},{"type":"const","value":"mask-icon"},{"type":"const","value":"meta"},{"type":"const","value":"micropub"},{"type":"const","value":"openid.delegate"},{"type":"const","value":"openid.server"},{"type":"const","value":"openid2.local_id"},{"type":"const","value":"openid2.provider"},{"type":"const","value":"p3pv1"},{"type":"const","value":"pgpkey"},{"type":"const","value":"prerender"},{"type":"const","value":"profile"},{"type":"const","value":"publisher"},{"type":"const","value":"radioepg"},{"type":"const","value":"rendition"},{"type":"const","value":"reply-to"},{"type":"const","value":"schema.DCTERMS"},{"type":"const","value":"service"},{"type":"const","value":"shortlink"},{"type":"const","value":"sidebar"},{"type":"const","value":"sitemap"},{"type":"const","value":"subresource"},{"type":"const","value":"sword"},{"type":"const","value":"syndication"},{"type":"const","value":"timesheet"},{"type":"const","value":"token_endpoint"},{"type":"const","value":"webmention"},{"type":"const","value":"widget"},{"type":"const","value":"wlwmanifest"},{"type":"const","value":"image_src"},{"type":"const","value":"http://docs.oasis-open.org/ns/cmis/link/200908/acl"},{"type":"const","value":"stylesheet/less"},{"type":"const","value":"yandex-tableau-widget"},{"type":"const","value":"accessibility"},{"type":"const","value":"bibliography"},{"type":"const","value":"cite"},{"type":"const","value":"embed"},{"type":"const","value":"group"},{"type":"const","value":"longdesc"},{"type":"const","value":"map"},{"type":"const","value":"member"},{"type":"const","value":"m_PageScroll2id"},{"type":"const","value":"prerender"},{"type":"const","value":"profile"},{"type":"const","value":"shortlink"},{"type":"const","value":"source"},{"type":"const","value":"vcalendar-parent"},{"type":"const","value":"vcalendar-child"},{"type":"const","value":"vcalendar-sibling"},{"type":"const","value":"status"},{"type":"const","value":"https://api.w.org/"},{"type":"const","value":"archive"},{"type":"const","value":"archives"},{"type":"const","value":"comment"},{"type":"const","value":"contribution"},{"type":"const","value":"EditURI"},{"type":"const","value":"endorsed"},{"type":"const","value":"fan"},{"type":"const","value":"feed"},{"type":"const","value":"footnote"},{"type":"const","value":"kinetic-stylesheet"},{"type":"const","value":"lightbox"},{"type":"const","value":"made"},{"type":"const","value":"meta"},{"type":"const","value":"microsummary"},{"type":"const","value":"openid.delegate"},{"type":"const","value":"openid.server"},{"type":"const","value":"permalink"},{"type":"const","value":"pgpkey"},{"type":"const","value":"popover"},{"type":"const","value":"privacy"},{"type":"const","value":"publickey"},{"type":"const","value":"referral"},{"type":"const","value":"related"},{"type":"const","value":"replies"},{"type":"const","value":"respond-proxy"},{"type":"const","value":"respond-redirect"},{"type":"const","value":"resource"},{"type":"const","value":"sitemap"},{"type":"const","value":"sponsor"},{"type":"const","value":"tooltip"},{"type":"const","value":"trackback"},{"type":"const","value":"unendorsed"},{"type":"const","value":"user"},{"type":"const","value":"wlwmanifest"},{"type":"const","value":"schema.DC"},{"type":"const","value":"schema.DCTERMS"}],"matched":false,"raw":"bookmark","offset":0,"length":8,"line":1,"column":1,"reason":"doesnt-exist-in-enum","partName":"the content of the list"}"#,
+    ),
+    (
+        "LinkTypeForLinkElement",
+        "dns-prefetch",
+        r#"{"matched":true}"#,
+    ),
+    (
+        "LinkTypeForLinkElement",
+        "expect",
+        r#"{"matched":true}"#,
+    ),
+    (
+        "LinkTypeForLinkElement",
+        "help",
+        r#"{"matched":true}"#,
+    ),
+    (
+        "LinkTypeForLinkElement",
+        "service",
+        r#"{"matched":true}"#,
+    ),
+    (
+        "LinkTypeForLinkElement",
+        "alternate canonical author",
+        r#"{"matched":true}"#,
+    ),
+    (
+        "LinkTypeForLinkElement",
+        "alternate canonical author dns-prefetch",
+        r#"{"matched":true}"#,
+    ),
+    (
+        "LinkTypeForLinkElement",
+        "alternate canonical author dns-prefetch expect",
+        r#"{"matched":true}"#,
+    ),
+    (
+        "LinkTypeForLinkElement",
+        "alternate canonical author dns-prefetch expect help",
+        r#"{"matched":true}"#,
+    ),
+    (
+        "LinkTypeForLinkElement",
+        "modulepreload",
+        r#"{"matched":true}"#,
+    ),
+    (
+        "LinkTypeForLinkElement",
+        "pingback",
+        r#"{"matched":true}"#,
+    ),
+    (
+        "LinkTypeForLinkElement",
+        "bookmark dns-prefetch",
+        r#"{"ref":"https://html.spec.whatwg.org/multipage/links.html#linkTypes","expects":[{"type":"const","value":"alternate"},{"type":"const","value":"canonical"},{"type":"const","value":"author"},{"type":"const","value":"dns-prefetch"},{"type":"const","value":"expect"},{"type":"const","value":"help"},{"type":"const","value":"icon"},{"type":"const","value":"manifest"},{"type":"const","value":"modulepreload"},{"type":"const","value":"license"},{"type":"const","value":"next"},{"type":"const","value":"pingback"},{"type":"const","value":"preconnect"},{"type":"const","value":"prefetch"},{"type":"const","value":"preload"},{"type":"const","value":"prev"},{"type":"const","value":"privacy-policy"},{"type":"const","value":"search"},{"type":"const","value":"stylesheet"},{"type":"const","value":"terms-of-service"},{"type":"const","value":"appendix"},{"type":"const","value":"chapter"},{"type":"const","value":"child"},{"type":"const","value":"contents"},{"type":"const","value":"copyright"},{"type":"const","value":"glossary"},{"type":"const","value":"its-rules"},{"type":"const","value":"me"},{"type":"const","value":"parent"},{"type":"const","value":"previous"},{"type":"const","value":"section"},{"type":"const","value":"start"},{"type":"const","value":"subsection"},{"type":"const","value":"toc"},{"type":"const","value":"transformation"},{"type":"const","value":"pronunciation"},{"type":"const","value":"directory"},{"type":"const","value":"enclosure"},{"type":"const","value":"home"},{"type":"const","value":"payment"},{"type":"const","value":"vcs-*"},{"type":"const","value":"about"},{"type":"const","value":"amphtml"},{"type":"const","value":"apple-touch-icon"},{"type":"const","value":"apple-touch-icon-precomposed"},{"type":"const","value":"apple-touch-startup-image"},{"type":"const","value":"archived"},{"type":"const","value":"attachment"},{"type":"const","value":"authorization_endpoint"},{"type":"const","value":"category"},{"type":"const","value":"code-repository"},{"type":"const","value":"code-license"},{"type":"const","value":"component"},{"type":"const","value":"chrome-webstore-item"},{"type":"const","value":"content-repository"},{"type":"const","value":"content-license"},{"type":"const","value":"DCTERMS.conformsTo"},{"type":"const","value":"DCTERMS.contributor"},{"type":"const","value":"DCTERMS.creator"},{"type":"const","value":"DCTERMS.description"},{"type":"const","value":"DCTERMS.hasFormat"},{"type":"const","value":"DCTERMS.hasPart"},{"type":"const","value":"DCTERMS.hasVersion"},{"type":"const","value":"DCTERMS.isFormatOf"},{"type":"const","value":"DCTERMS.isPartOf"},{"type":"const","value":"DCTERMS.isReferencedBy"},{"type":"const","value":"DCTERMS.isReplacedBy"},{"type":"const","value":"DCTERMS.isRequiredBy"},{"type":"const","value":"DCTERMS.isVersionOf"},{"type":"const","value":"DCTERMS.license"},{"type":"const","value":"DCTERMS.mediator"},{"type":"const","value":"DCTERMS.publisher"},{"type":"const","value":"DCTERMS.references"},{"type":"const","value":"DCTERMS.relation"},{"type":"const","value":"DCTERMS.replaces"},{"type":"const","value":"DCTERMS.requires"},{"type":"const","value":"DCTERMS.rightsHolder"},{"type":"const","value":"DCTERMS.source"},{"type":"const","value":"DCTERMS.subject"},{"type":"const","value":"discussion"},{"type":"const","value":"donation"},{"type":"const","value":"edit"},{"type":"const","value":"EditURI"},{"type":"const","value":"enclosure"},{"type":"const","value":"first"},{"type":"const","value":"gbfs"},{"type":"const","value":"gtfs-static"},{"type":"const","value":"gtfs-realtime"},{"type":"const","value":"home"},{"type":"const","value":"hub"},{"type":"const","value":"import"},{"type":"const","value":"in-reply-to"},{"type":"const","value":"root"},{"type":"const","value":"index"},{"type":"const","value":"issues"},{"type":"const","value":"jslicense"},{"type":"const","value":"last"},{"type":"const","value":"main"},{"type":"const","value":"mask-icon"},{"type":"const","value":"meta"},{"type":"const","value":"micropub"},{"type":"const","value":"openid.delegate"},{"type":"const","value":"openid.server"},{"type":"const","value":"openid2.local_id"},{"type":"const","value":"openid2.provider"},{"type":"const","value":"p3pv1"},{"type":"const","value":"pgpkey"},{"type":"const","value":"prerender"},{"type":"const","value":"profile"},{"type":"const","value":"publisher"},{"type":"const","value":"radioepg"},{"type":"const","value":"rendition"},{"type":"const","value":"reply-to"},{"type":"const","value":"schema.DCTERMS"},{"type":"const","value":"service"},{"type":"const","value":"shortlink"},{"type":"const","value":"sidebar"},{"type":"const","value":"sitemap"},{"type":"const","value":"subresource"},{"type":"const","value":"sword"},{"type":"const","value":"syndication"},{"type":"const","value":"timesheet"},{"type":"const","value":"token_endpoint"},{"type":"const","value":"webmention"},{"type":"const","value":"widget"},{"type":"const","value":"wlwmanifest"},{"type":"const","value":"image_src"},{"type":"const","value":"http://docs.oasis-open.org/ns/cmis/link/200908/acl"},{"type":"const","value":"stylesheet/less"},{"type":"const","value":"yandex-tableau-widget"},{"type":"const","value":"accessibility"},{"type":"const","value":"bibliography"},{"type":"const","value":"cite"},{"type":"const","value":"embed"},{"type":"const","value":"group"},{"type":"const","value":"longdesc"},{"type":"const","value":"map"},{"type":"const","value":"member"},{"type":"const","value":"m_PageScroll2id"},{"type":"const","value":"prerender"},{"type":"const","value":"profile"},{"type":"const","value":"shortlink"},{"type":"const","value":"source"},{"type":"const","value":"vcalendar-parent"},{"type":"const","value":"vcalendar-child"},{"type":"const","value":"vcalendar-sibling"},{"type":"const","value":"status"},{"type":"const","value":"https://api.w.org/"},{"type":"const","value":"archive"},{"type":"const","value":"archives"},{"type":"const","value":"comment"},{"type":"const","value":"contribution"},{"type":"const","value":"EditURI"},{"type":"const","value":"endorsed"},{"type":"const","value":"fan"},{"type":"const","value":"feed"},{"type":"const","value":"footnote"},{"type":"const","value":"kinetic-stylesheet"},{"type":"const","value":"lightbox"},{"type":"const","value":"made"},{"type":"const","value":"meta"},{"type":"const","value":"microsummary"},{"type":"const","value":"openid.delegate"},{"type":"const","value":"openid.server"},{"type":"const","value":"permalink"},{"type":"const","value":"pgpkey"},{"type":"const","value":"popover"},{"type":"const","value":"privacy"},{"type":"const","value":"publickey"},{"type":"const","value":"referral"},{"type":"const","value":"related"},{"type":"const","value":"replies"},{"type":"const","value":"respond-proxy"},{"type":"const","value":"respond-redirect"},{"type":"const","value":"resource"},{"type":"const","value":"sitemap"},{"type":"const","value":"sponsor"},{"type":"const","value":"tooltip"},{"type":"const","value":"trackback"},{"type":"const","value":"unendorsed"},{"type":"const","value":"user"},{"type":"const","value":"wlwmanifest"},{"type":"const","value":"schema.DC"},{"type":"const","value":"schema.DCTERMS"}],"matched":false,"raw":"bookmark","offset":0,"length":8,"line":1,"column":1,"reason":"doesnt-exist-in-enum","partName":"the content of the list"}"#,
+    ),
+    (
+        "LinkTypeForLinkElement",
+        "disclosure",
+        r#"{"ref":"https://html.spec.whatwg.org/multipage/links.html#linkTypes","expects":[{"type":"const","value":"alternate"},{"type":"const","value":"canonical"},{"type":"const","value":"author"},{"type":"const","value":"dns-prefetch"},{"type":"const","value":"expect"},{"type":"const","value":"help"},{"type":"const","value":"icon"},{"type":"const","value":"manifest"},{"type":"const","value":"modulepreload"},{"type":"const","value":"license"},{"type":"const","value":"next"},{"type":"const","value":"pingback"},{"type":"const","value":"preconnect"},{"type":"const","value":"prefetch"},{"type":"const","value":"preload"},{"type":"const","value":"prev"},{"type":"const","value":"privacy-policy"},{"type":"const","value":"search"},{"type":"const","value":"stylesheet"},{"type":"const","value":"terms-of-service"},{"type":"const","value":"appendix"},{"type":"const","value":"chapter"},{"type":"const","value":"child"},{"type":"const","value":"contents"},{"type":"const","value":"copyright"},{"type":"const","value":"glossary"},{"type":"const","value":"its-rules"},{"type":"const","value":"me"},{"type":"const","value":"parent"},{"type":"const","value":"previous"},{"type":"const","value":"section"},{"type":"const","value":"start"},{"type":"const","value":"subsection"},{"type":"const","value":"toc"},{"type":"const","value":"transformation"},{"type":"const","value":"pronunciation"},{"type":"const","value":"directory"},{"type":"const","value":"enclosure"},{"type":"const","value":"home"},{"type":"const","value":"payment"},{"type":"const","value":"vcs-*"},{"type":"const","value":"about"},{"type":"const","value":"amphtml"},{"type":"const","value":"apple-touch-icon"},{"type":"const","value":"apple-touch-icon-precomposed"},{"type":"const","value":"apple-touch-startup-image"},{"type":"const","value":"archived"},{"type":"const","value":"attachment"},{"type":"const","value":"authorization_endpoint"},{"type":"const","value":"category"},{"type":"const","value":"code-repository"},{"type":"const","value":"code-license"},{"type":"const","value":"component"},{"type":"const","value":"chrome-webstore-item"},{"type":"const","value":"content-repository"},{"type":"const","value":"content-license"},{"type":"const","value":"DCTERMS.conformsTo"},{"type":"const","value":"DCTERMS.contributor"},{"type":"const","value":"DCTERMS.creator"},{"type":"const","value":"DCTERMS.description"},{"type":"const","value":"DCTERMS.hasFormat"},{"type":"const","value":"DCTERMS.hasPart"},{"type":"const","value":"DCTERMS.hasVersion"},{"type":"const","value":"DCTERMS.isFormatOf"},{"type":"const","value":"DCTERMS.isPartOf"},{"type":"const","value":"DCTERMS.isReferencedBy"},{"type":"const","value":"DCTERMS.isReplacedBy"},{"type":"const","value":"DCTERMS.isRequiredBy"},{"type":"const","value":"DCTERMS.isVersionOf"},{"type":"const","value":"DCTERMS.license"},{"type":"const","value":"DCTERMS.mediator"},{"type":"const","value":"DCTERMS.publisher"},{"type":"const","value":"DCTERMS.references"},{"type":"const","value":"DCTERMS.relation"},{"type":"const","value":"DCTERMS.replaces"},{"type":"const","value":"DCTERMS.requires"},{"type":"const","value":"DCTERMS.rightsHolder"},{"type":"const","value":"DCTERMS.source"},{"type":"const","value":"DCTERMS.subject"},{"type":"const","value":"discussion"},{"type":"const","value":"donation"},{"type":"const","value":"edit"},{"type":"const","value":"EditURI"},{"type":"const","value":"enclosure"},{"type":"const","value":"first"},{"type":"const","value":"gbfs"},{"type":"const","value":"gtfs-static"},{"type":"const","value":"gtfs-realtime"},{"type":"const","value":"home"},{"type":"const","value":"hub"},{"type":"const","value":"import"},{"type":"const","value":"in-reply-to"},{"type":"const","value":"root"},{"type":"const","value":"index"},{"type":"const","value":"issues"},{"type":"const","value":"jslicense"},{"type":"const","value":"last"},{"type":"const","value":"main"},{"type":"const","value":"mask-icon"},{"type":"const","value":"meta"},{"type":"const","value":"micropub"},{"type":"const","value":"openid.delegate"},{"type":"const","value":"openid.server"},{"type":"const","value":"openid2.local_id"},{"type":"const","value":"openid2.provider"},{"type":"const","value":"p3pv1"},{"type":"const","value":"pgpkey"},{"type":"const","value":"prerender"},{"type":"const","value":"profile"},{"type":"const","value":"publisher"},{"type":"const","value":"radioepg"},{"type":"const","value":"rendition"},{"type":"const","value":"reply-to"},{"type":"const","value":"schema.DCTERMS"},{"type":"const","value":"service"},{"type":"const","value":"shortlink"},{"type":"const","value":"sidebar"},{"type":"const","value":"sitemap"},{"type":"const","value":"subresource"},{"type":"const","value":"sword"},{"type":"const","value":"syndication"},{"type":"const","value":"timesheet"},{"type":"const","value":"token_endpoint"},{"type":"const","value":"webmention"},{"type":"const","value":"widget"},{"type":"const","value":"wlwmanifest"},{"type":"const","value":"image_src"},{"type":"const","value":"http://docs.oasis-open.org/ns/cmis/link/200908/acl"},{"type":"const","value":"stylesheet/less"},{"type":"const","value":"yandex-tableau-widget"},{"type":"const","value":"accessibility"},{"type":"const","value":"bibliography"},{"type":"const","value":"cite"},{"type":"const","value":"embed"},{"type":"const","value":"group"},{"type":"const","value":"longdesc"},{"type":"const","value":"map"},{"type":"const","value":"member"},{"type":"const","value":"m_PageScroll2id"},{"type":"const","value":"prerender"},{"type":"const","value":"profile"},{"type":"const","value":"shortlink"},{"type":"const","value":"source"},{"type":"const","value":"vcalendar-parent"},{"type":"const","value":"vcalendar-child"},{"type":"const","value":"vcalendar-sibling"},{"type":"const","value":"status"},{"type":"const","value":"https://api.w.org/"},{"type":"const","value":"archive"},{"type":"const","value":"archives"},{"type":"const","value":"comment"},{"type":"const","value":"contribution"},{"type":"const","value":"EditURI"},{"type":"const","value":"endorsed"},{"type":"const","value":"fan"},{"type":"const","value":"feed"},{"type":"const","value":"footnote"},{"type":"const","value":"kinetic-stylesheet"},{"type":"const","value":"lightbox"},{"type":"const","value":"made"},{"type":"const","value":"meta"},{"type":"const","value":"microsummary"},{"type":"const","value":"openid.delegate"},{"type":"const","value":"openid.server"},{"type":"const","value":"permalink"},{"type":"const","value":"pgpkey"},{"type":"const","value":"popover"},{"type":"const","value":"privacy"},{"type":"const","value":"publickey"},{"type":"const","value":"referral"},{"type":"const","value":"related"},{"type":"const","value":"replies"},{"type":"const","value":"respond-proxy"},{"type":"const","value":"respond-redirect"},{"type":"const","value":"resource"},{"type":"const","value":"sitemap"},{"type":"const","value":"sponsor"},{"type":"const","value":"tooltip"},{"type":"const","value":"trackback"},{"type":"const","value":"unendorsed"},{"type":"const","value":"user"},{"type":"const","value":"wlwmanifest"},{"type":"const","value":"schema.DC"},{"type":"const","value":"schema.DCTERMS"}],"matched":false,"raw":"disclosure","offset":0,"length":10,"line":1,"column":1,"reason":"doesnt-exist-in-enum","partName":"the content of the list"}"#,
+    ),
+    (
+        "LinkTypeForLinkElement",
+        "license",
+        r#"{"matched":true}"#,
+    ),
+    (
+        "LinkTypeForLinkElement",
+        "self",
+        r#"{"reason":"unexpected-token","expects":[{"type":"common","value":"valid Link Type"}],"matched":false,"ref":"https://html.spec.whatwg.org/multipage/links.html#linkTypes","raw":"self","offset":0,"length":4,"line":1,"column":1}"#,
+    ),
+    (
+        "LinkTypeForLinkElement",
+        "sub",
+        r#"{"reason":"unexpected-token","expects":[{"type":"common","value":"valid Link Type"}],"matched":false,"ref":"https://html.spec.whatwg.org/multipage/links.html#linkTypes","raw":"sub","offset":0,"length":3,"line":1,"column":1}"#,
+    ),
+    (
+        "LinkTypeForLinkElement",
+        "version-history",
+        r#"{"reason":"unexpected-token","expects":[{"type":"common","value":"valid Link Type"}],"matched":false,"ref":"https://html.spec.whatwg.org/multipage/links.html#linkTypes","raw":"version-history","offset":0,"length":15,"line":1,"column":1}"#,
+    ),
+    (
+        "LinkTypeForLinkElement",
+        "latest-version",
+        r#"{"reason":"unexpected-token","expects":[{"type":"common","value":"valid Link Type"}],"matched":false,"ref":"https://html.spec.whatwg.org/multipage/links.html#linkTypes","raw":"latest-version","offset":0,"length":14,"line":1,"column":1}"#,
+    ),
+    (
+        "LinkTypeForLinkElement",
+        "banner",
+        r#"{"reason":"unexpected-token","expects":[{"type":"common","value":"valid Link Type"}],"matched":false,"ref":"https://html.spec.whatwg.org/multipage/links.html#linkTypes","raw":"banner","offset":0,"length":6,"line":1,"column":1}"#,
+    ),
+    (
+        "LinkTypeForLinkElement",
+        "footnote",
+        r#"{"reason":"unexpected-token","expects":[{"type":"common","value":"valid Link Type"}],"matched":false,"ref":"https://html.spec.whatwg.org/multipage/links.html#linkTypes","raw":"footnote","offset":0,"length":8,"line":1,"column":1}"#,
+    ),
+    (
+        "LinkTypeForLinkElement",
+        "first",
+        r#"{"reason":"unexpected-token","expects":[{"type":"common","value":"valid Link Type"}],"matched":false,"ref":"https://html.spec.whatwg.org/multipage/links.html#linkTypes","raw":"first","offset":0,"length":5,"line":1,"column":1}"#,
+    ),
+    (
+        "LinkTypeForLinkElement",
+        "alternate logo",
+        r#"{"reason":"unexpected-token","expects":[{"type":"common","value":"valid Link Type"}],"matched":false,"ref":"https://html.spec.whatwg.org/multipage/links.html#linkTypes","raw":"logo","offset":10,"length":4,"line":1,"column":11}"#,
+    ),
+    (
+        "LinkTypeForLinkElement",
+        "",
+        r#"{"matched":true}"#,
+    ),
+    (
+        "LinkTypeForLinkElement",
+        "   ",
+        r#"{"matched":true}"#,
+    ),
+    (
+        "LinkTypeForLinkElement",
+        "acquaintance",
+        r#"{"ref":"https://html.spec.whatwg.org/multipage/links.html#linkTypes","expects":[{"type":"const","value":"alternate"},{"type":"const","value":"canonical"},{"type":"const","value":"author"},{"type":"const","value":"dns-prefetch"},{"type":"const","value":"expect"},{"type":"const","value":"help"},{"type":"const","value":"icon"},{"type":"const","value":"manifest"},{"type":"const","value":"modulepreload"},{"type":"const","value":"license"},{"type":"const","value":"next"},{"type":"const","value":"pingback"},{"type":"const","value":"preconnect"},{"type":"const","value":"prefetch"},{"type":"const","value":"preload"},{"type":"const","value":"prev"},{"type":"const","value":"privacy-policy"},{"type":"const","value":"search"},{"type":"const","value":"stylesheet"},{"type":"const","value":"terms-of-service"},{"type":"const","value":"appendix"},{"type":"const","value":"chapter"},{"type":"const","value":"child"},{"type":"const","value":"contents"},{"type":"const","value":"copyright"},{"type":"const","value":"glossary"},{"type":"const","value":"its-rules"},{"type":"const","value":"me"},{"type":"const","value":"parent"},{"type":"const","value":"previous"},{"type":"const","value":"section"},{"type":"const","value":"start"},{"type":"const","value":"subsection"},{"type":"const","value":"toc"},{"type":"const","value":"transformation"},{"type":"const","value":"pronunciation"},{"type":"const","value":"directory"},{"type":"const","value":"enclosure"},{"type":"const","value":"home"},{"type":"const","value":"payment"},{"type":"const","value":"vcs-*"},{"type":"const","value":"about"},{"type":"const","value":"amphtml"},{"type":"const","value":"apple-touch-icon"},{"type":"const","value":"apple-touch-icon-precomposed"},{"type":"const","value":"apple-touch-startup-image"},{"type":"const","value":"archived"},{"type":"const","value":"attachment"},{"type":"const","value":"authorization_endpoint"},{"type":"const","value":"category"},{"type":"const","value":"code-repository"},{"type":"const","value":"code-license"},{"type":"const","value":"component"},{"type":"const","value":"chrome-webstore-item"},{"type":"const","value":"content-repository"},{"type":"const","value":"content-license"},{"type":"const","value":"DCTERMS.conformsTo"},{"type":"const","value":"DCTERMS.contributor"},{"type":"const","value":"DCTERMS.creator"},{"type":"const","value":"DCTERMS.description"},{"type":"const","value":"DCTERMS.hasFormat"},{"type":"const","value":"DCTERMS.hasPart"},{"type":"const","value":"DCTERMS.hasVersion"},{"type":"const","value":"DCTERMS.isFormatOf"},{"type":"const","value":"DCTERMS.isPartOf"},{"type":"const","value":"DCTERMS.isReferencedBy"},{"type":"const","value":"DCTERMS.isReplacedBy"},{"type":"const","value":"DCTERMS.isRequiredBy"},{"type":"const","value":"DCTERMS.isVersionOf"},{"type":"const","value":"DCTERMS.license"},{"type":"const","value":"DCTERMS.mediator"},{"type":"const","value":"DCTERMS.publisher"},{"type":"const","value":"DCTERMS.references"},{"type":"const","value":"DCTERMS.relation"},{"type":"const","value":"DCTERMS.replaces"},{"type":"const","value":"DCTERMS.requires"},{"type":"const","value":"DCTERMS.rightsHolder"},{"type":"const","value":"DCTERMS.source"},{"type":"const","value":"DCTERMS.subject"},{"type":"const","value":"discussion"},{"type":"const","value":"donation"},{"type":"const","value":"edit"},{"type":"const","value":"EditURI"},{"type":"const","value":"enclosure"},{"type":"const","value":"first"},{"type":"const","value":"gbfs"},{"type":"const","value":"gtfs-static"},{"type":"const","value":"gtfs-realtime"},{"type":"const","value":"home"},{"type":"const","value":"hub"},{"type":"const","value":"import"},{"type":"const","value":"in-reply-to"},{"type":"const","value":"root"},{"type":"const","value":"index"},{"type":"const","value":"issues"},{"type":"const","value":"jslicense"},{"type":"const","value":"last"},{"type":"const","value":"main"},{"type":"const","value":"mask-icon"},{"type":"const","value":"meta"},{"type":"const","value":"micropub"},{"type":"const","value":"openid.delegate"},{"type":"const","value":"openid.server"},{"type":"const","value":"openid2.local_id"},{"type":"const","value":"openid2.provider"},{"type":"const","value":"p3pv1"},{"type":"const","value":"pgpkey"},{"type":"const","value":"prerender"},{"type":"const","value":"profile"},{"type":"const","value":"publisher"},{"type":"const","value":"radioepg"},{"type":"const","value":"rendition"},{"type":"const","value":"reply-to"},{"type":"const","value":"schema.DCTERMS"},{"type":"const","value":"service"},{"type":"const","value":"shortlink"},{"type":"const","value":"sidebar"},{"type":"const","value":"sitemap"},{"type":"const","value":"subresource"},{"type":"const","value":"sword"},{"type":"const","value":"syndication"},{"type":"const","value":"timesheet"},{"type":"const","value":"token_endpoint"},{"type":"const","value":"webmention"},{"type":"const","value":"widget"},{"type":"const","value":"wlwmanifest"},{"type":"const","value":"image_src"},{"type":"const","value":"http://docs.oasis-open.org/ns/cmis/link/200908/acl"},{"type":"const","value":"stylesheet/less"},{"type":"const","value":"yandex-tableau-widget"},{"type":"const","value":"accessibility"},{"type":"const","value":"bibliography"},{"type":"const","value":"cite"},{"type":"const","value":"embed"},{"type":"const","value":"group"},{"type":"const","value":"longdesc"},{"type":"const","value":"map"},{"type":"const","value":"member"},{"type":"const","value":"m_PageScroll2id"},{"type":"const","value":"prerender"},{"type":"const","value":"profile"},{"type":"const","value":"shortlink"},{"type":"const","value":"source"},{"type":"const","value":"vcalendar-parent"},{"type":"const","value":"vcalendar-child"},{"type":"const","value":"vcalendar-sibling"},{"type":"const","value":"status"},{"type":"const","value":"https://api.w.org/"},{"type":"const","value":"archive"},{"type":"const","value":"archives"},{"type":"const","value":"comment"},{"type":"const","value":"contribution"},{"type":"const","value":"EditURI"},{"type":"const","value":"endorsed"},{"type":"const","value":"fan"},{"type":"const","value":"feed"},{"type":"const","value":"footnote"},{"type":"const","value":"kinetic-stylesheet"},{"type":"const","value":"lightbox"},{"type":"const","value":"made"},{"type":"const","value":"meta"},{"type":"const","value":"microsummary"},{"type":"const","value":"openid.delegate"},{"type":"const","value":"openid.server"},{"type":"const","value":"permalink"},{"type":"const","value":"pgpkey"},{"type":"const","value":"popover"},{"type":"const","value":"privacy"},{"type":"const","value":"publickey"},{"type":"const","value":"referral"},{"type":"const","value":"related"},{"type":"const","value":"replies"},{"type":"const","value":"respond-proxy"},{"type":"const","value":"respond-redirect"},{"type":"const","value":"resource"},{"type":"const","value":"sitemap"},{"type":"const","value":"sponsor"},{"type":"const","value":"tooltip"},{"type":"const","value":"trackback"},{"type":"const","value":"unendorsed"},{"type":"const","value":"user"},{"type":"const","value":"wlwmanifest"},{"type":"const","value":"schema.DC"},{"type":"const","value":"schema.DCTERMS"}],"matched":false,"raw":"acquaintance","offset":0,"length":12,"line":1,"column":1,"reason":"doesnt-exist-in-enum","partName":"the content of the list"}"#,
+    ),
+    (
+        "LinkTypeForLinkElement",
+        "ALTERNATE",
+        r#"{"matched":true}"#,
+    ),
+    (
+        "LinkTypeForLinkElement",
+        "amphtml",
+        r#"{"matched":true}"#,
+    ),
+    (
+        "LinkTypeForLinkElement",
+        "begin",
+        r#"{"reason":"unexpected-token","expects":[{"type":"common","value":"valid Link Type"}],"matched":false,"ref":"https://html.spec.whatwg.org/multipage/links.html#linkTypes","raw":"begin","offset":0,"length":5,"line":1,"column":1}"#,
+    ),
+    (
+        "LinkTypeForLinkElement",
+        "bibliography",
+        r#"{"reason":"unexpected-token","expects":[{"type":"common","value":"valid Link Type"}],"matched":false,"ref":"https://html.spec.whatwg.org/multipage/links.html#linkTypes","raw":"bibliography","offset":0,"length":12,"line":1,"column":1}"#,
+    ),
+    (
+        "LinkTypeForLinkElement",
+        "child",
+        r#"{"reason":"unexpected-token","expects":[{"type":"common","value":"valid Link Type"}],"matched":false,"ref":"https://html.spec.whatwg.org/multipage/links.html#linkTypes","raw":"child","offset":0,"length":5,"line":1,"column":1}"#,
+    ),
+    (
+        "LinkTypeForLinkElement",
+        "collection",
+        r#"{"reason":"unexpected-token","expects":[{"type":"common","value":"valid Link Type"}],"matched":false,"ref":"https://html.spec.whatwg.org/multipage/links.html#linkTypes","raw":"collection","offset":0,"length":10,"line":1,"column":1}"#,
+    ),
+    (
+        "LinkTypeForLinkElement",
+        "DCTERMS.conformsTo",
+        r#"{"matched":true}"#,
+    ),
+    (
+        "LinkTypeForLinkElement",
+        "editor",
+        r#"{"reason":"unexpected-token","expects":[{"type":"common","value":"valid Link Type"}],"matched":false,"ref":"https://html.spec.whatwg.org/multipage/links.html#linkTypes","raw":"editor","offset":0,"length":6,"line":1,"column":1}"#,
+    ),
+    (
+        "LinkTypeForLinkElement",
+        "external",
+        r#"{"ref":"https://html.spec.whatwg.org/multipage/links.html#linkTypes","expects":[{"type":"const","value":"alternate"},{"type":"const","value":"canonical"},{"type":"const","value":"author"},{"type":"const","value":"dns-prefetch"},{"type":"const","value":"expect"},{"type":"const","value":"help"},{"type":"const","value":"icon"},{"type":"const","value":"manifest"},{"type":"const","value":"modulepreload"},{"type":"const","value":"license"},{"type":"const","value":"next"},{"type":"const","value":"pingback"},{"type":"const","value":"preconnect"},{"type":"const","value":"prefetch"},{"type":"const","value":"preload"},{"type":"const","value":"prev"},{"type":"const","value":"privacy-policy"},{"type":"const","value":"search"},{"type":"const","value":"stylesheet"},{"type":"const","value":"terms-of-service"},{"type":"const","value":"appendix"},{"type":"const","value":"chapter"},{"type":"const","value":"child"},{"type":"const","value":"contents"},{"type":"const","value":"copyright"},{"type":"const","value":"glossary"},{"type":"const","value":"its-rules"},{"type":"const","value":"me"},{"type":"const","value":"parent"},{"type":"const","value":"previous"},{"type":"const","value":"section"},{"type":"const","value":"start"},{"type":"const","value":"subsection"},{"type":"const","value":"toc"},{"type":"const","value":"transformation"},{"type":"const","value":"pronunciation"},{"type":"const","value":"directory"},{"type":"const","value":"enclosure"},{"type":"const","value":"home"},{"type":"const","value":"payment"},{"type":"const","value":"vcs-*"},{"type":"const","value":"about"},{"type":"const","value":"amphtml"},{"type":"const","value":"apple-touch-icon"},{"type":"const","value":"apple-touch-icon-precomposed"},{"type":"const","value":"apple-touch-startup-image"},{"type":"const","value":"archived"},{"type":"const","value":"attachment"},{"type":"const","value":"authorization_endpoint"},{"type":"const","value":"category"},{"type":"const","value":"code-repository"},{"type":"const","value":"code-license"},{"type":"const","value":"component"},{"type":"const","value":"chrome-webstore-item"},{"type":"const","value":"content-repository"},{"type":"const","value":"content-license"},{"type":"const","value":"DCTERMS.conformsTo"},{"type":"const","value":"DCTERMS.contributor"},{"type":"const","value":"DCTERMS.creator"},{"type":"const","value":"DCTERMS.description"},{"type":"const","value":"DCTERMS.hasFormat"},{"type":"const","value":"DCTERMS.hasPart"},{"type":"const","value":"DCTERMS.hasVersion"},{"type":"const","value":"DCTERMS.isFormatOf"},{"type":"const","value":"DCTERMS.isPartOf"},{"type":"const","value":"DCTERMS.isReferencedBy"},{"type":"const","value":"DCTERMS.isReplacedBy"},{"type":"const","value":"DCTERMS.isRequiredBy"},{"type":"const","value":"DCTERMS.isVersionOf"},{"type":"const","value":"DCTERMS.license"},{"type":"const","value":"DCTERMS.mediator"},{"type":"const","value":"DCTERMS.publisher"},{"type":"const","value":"DCTERMS.references"},{"type":"const","value":"DCTERMS.relation"},{"type":"const","value":"DCTERMS.replaces"},{"type":"const","value":"DCTERMS.requires"},{"type":"const","value":"DCTERMS.rightsHolder"},{"type":"const","value":"DCTERMS.source"},{"type":"const","value":"DCTERMS.subject"},{"type":"const","value":"discussion"},{"type":"const","value":"donation"},{"type":"const","value":"edit"},{"type":"const","value":"EditURI"},{"type":"const","value":"enclosure"},{"type":"const","value":"first"},{"type":"const","value":"gbfs"},{"type":"const","value":"gtfs-static"},{"type":"const","value":"gtfs-realtime"},{"type":"const","value":"home"},{"type":"const","value":"hub"},{"type":"const","value":"import"},{"type":"const","value":"in-reply-to"},{"type":"const","value":"root"},{"type":"const","value":"index"},{"type":"const","value":"issues"},{"type":"const","value":"jslicense"},{"type":"const","value":"last"},{"type":"const","value":"main"},{"type":"const","value":"mask-icon"},{"type":"const","value":"meta"},{"type":"const","value":"micropub"},{"type":"const","value":"openid.delegate"},{"type":"const","value":"openid.server"},{"type":"const","value":"openid2.local_id"},{"type":"const","value":"openid2.provider"},{"type":"const","value":"p3pv1"},{"type":"const","value":"pgpkey"},{"type":"const","value":"prerender"},{"type":"const","value":"profile"},{"type":"const","value":"publisher"},{"type":"const","value":"radioepg"},{"type":"const","value":"rendition"},{"type":"const","value":"reply-to"},{"type":"const","value":"schema.DCTERMS"},{"type":"const","value":"service"},{"type":"const","value":"shortlink"},{"type":"const","value":"sidebar"},{"type":"const","value":"sitemap"},{"type":"const","value":"subresource"},{"type":"const","value":"sword"},{"type":"const","value":"syndication"},{"type":"const","value":"timesheet"},{"type":"const","value":"token_endpoint"},{"type":"const","value":"webmention"},{"type":"const","value":"widget"},{"type":"const","value":"wlwmanifest"},{"type":"const","value":"image_src"},{"type":"const","value":"http://docs.oasis-open.org/ns/cmis/link/200908/acl"},{"type":"const","value":"stylesheet/less"},{"type":"const","value":"yandex-tableau-widget"},{"type":"const","value":"accessibility"},{"type":"const","value":"bibliography"},{"type":"const","value":"cite"},{"type":"const","value":"embed"},{"type":"const","value":"group"},{"type":"const","value":"longdesc"},{"type":"const","value":"map"},{"type":"const","value":"member"},{"type":"const","value":"m_PageScroll2id"},{"type":"const","value":"prerender"},{"type":"const","value":"profile"},{"type":"const","value":"shortlink"},{"type":"const","value":"source"},{"type":"const","value":"vcalendar-parent"},{"type":"const","value":"vcalendar-child"},{"type":"const","value":"vcalendar-sibling"},{"type":"const","value":"status"},{"type":"const","value":"https://api.w.org/"},{"type":"const","value":"archive"},{"type":"const","value":"archives"},{"type":"const","value":"comment"},{"type":"const","value":"contribution"},{"type":"const","value":"EditURI"},{"type":"const","value":"endorsed"},{"type":"const","value":"fan"},{"type":"const","value":"feed"},{"type":"const","value":"footnote"},{"type":"const","value":"kinetic-stylesheet"},{"type":"const","value":"lightbox"},{"type":"const","value":"made"},{"type":"const","value":"meta"},{"type":"const","value":"microsummary"},{"type":"const","value":"openid.delegate"},{"type":"const","value":"openid.server"},{"type":"const","value":"permalink"},{"type":"const","value":"pgpkey"},{"type":"const","value":"popover"},{"type":"const","value":"privacy"},{"type":"const","value":"publickey"},{"type":"const","value":"referral"},{"type":"const","value":"related"},{"type":"const","value":"replies"},{"type":"const","value":"respond-proxy"},{"type":"const","value":"respond-redirect"},{"type":"const","value":"resource"},{"type":"const","value":"sitemap"},{"type":"const","value":"sponsor"},{"type":"const","value":"tooltip"},{"type":"const","value":"trackback"},{"type":"const","value":"unendorsed"},{"type":"const","value":"user"},{"type":"const","value":"wlwmanifest"},{"type":"const","value":"schema.DC"},{"type":"const","value":"schema.DCTERMS"}],"matched":false,"raw":"external","offset":0,"length":8,"line":1,"column":1,"reason":"doesnt-exist-in-enum","partName":"the content of the list"}"#,
+    ),
+    (
+        "LinkTypeForLinkElement",
+        "icon",
+        r#"{"matched":true}"#,
+    ),
+    (
+        "LinkTypeForLinkElement",
+        "index",
+        r#"{"reason":"unexpected-token","expects":[{"type":"common","value":"valid Link Type"}],"matched":false,"ref":"https://html.spec.whatwg.org/multipage/links.html#linkTypes","raw":"index","offset":0,"length":5,"line":1,"column":1}"#,
+    ),
+    (
+        "LinkTypeForLinkElement",
+        "invalid-keyword",
+        r#"{"ref":"https://html.spec.whatwg.org/multipage/links.html#linkTypes","expects":[{"type":"const","value":"alternate"},{"type":"const","value":"canonical"},{"type":"const","value":"author"},{"type":"const","value":"dns-prefetch"},{"type":"const","value":"expect"},{"type":"const","value":"help"},{"type":"const","value":"icon"},{"type":"const","value":"manifest"},{"type":"const","value":"modulepreload"},{"type":"const","value":"license"},{"type":"const","value":"next"},{"type":"const","value":"pingback"},{"type":"const","value":"preconnect"},{"type":"const","value":"prefetch"},{"type":"const","value":"preload"},{"type":"const","value":"prev"},{"type":"const","value":"privacy-policy"},{"type":"const","value":"search"},{"type":"const","value":"stylesheet"},{"type":"const","value":"terms-of-service"},{"type":"const","value":"appendix"},{"type":"const","value":"chapter"},{"type":"const","value":"child"},{"type":"const","value":"contents"},{"type":"const","value":"copyright"},{"type":"const","value":"glossary"},{"type":"const","value":"its-rules"},{"type":"const","value":"me"},{"type":"const","value":"parent"},{"type":"const","value":"previous"},{"type":"const","value":"section"},{"type":"const","value":"start"},{"type":"const","value":"subsection"},{"type":"const","value":"toc"},{"type":"const","value":"transformation"},{"type":"const","value":"pronunciation"},{"type":"const","value":"directory"},{"type":"const","value":"enclosure"},{"type":"const","value":"home"},{"type":"const","value":"payment"},{"type":"const","value":"vcs-*"},{"type":"const","value":"about"},{"type":"const","value":"amphtml"},{"type":"const","value":"apple-touch-icon"},{"type":"const","value":"apple-touch-icon-precomposed"},{"type":"const","value":"apple-touch-startup-image"},{"type":"const","value":"archived"},{"type":"const","value":"attachment"},{"type":"const","value":"authorization_endpoint"},{"type":"const","value":"category"},{"type":"const","value":"code-repository"},{"type":"const","value":"code-license"},{"type":"const","value":"component"},{"type":"const","value":"chrome-webstore-item"},{"type":"const","value":"content-repository"},{"type":"const","value":"content-license"},{"type":"const","value":"DCTERMS.conformsTo"},{"type":"const","value":"DCTERMS.contributor"},{"type":"const","value":"DCTERMS.creator"},{"type":"const","value":"DCTERMS.description"},{"type":"const","value":"DCTERMS.hasFormat"},{"type":"const","value":"DCTERMS.hasPart"},{"type":"const","value":"DCTERMS.hasVersion"},{"type":"const","value":"DCTERMS.isFormatOf"},{"type":"const","value":"DCTERMS.isPartOf"},{"type":"const","value":"DCTERMS.isReferencedBy"},{"type":"const","value":"DCTERMS.isReplacedBy"},{"type":"const","value":"DCTERMS.isRequiredBy"},{"type":"const","value":"DCTERMS.isVersionOf"},{"type":"const","value":"DCTERMS.license"},{"type":"const","value":"DCTERMS.mediator"},{"type":"const","value":"DCTERMS.publisher"},{"type":"const","value":"DCTERMS.references"},{"type":"const","value":"DCTERMS.relation"},{"type":"const","value":"DCTERMS.replaces"},{"type":"const","value":"DCTERMS.requires"},{"type":"const","value":"DCTERMS.rightsHolder"},{"type":"const","value":"DCTERMS.source"},{"type":"const","value":"DCTERMS.subject"},{"type":"const","value":"discussion"},{"type":"const","value":"donation"},{"type":"const","value":"edit"},{"type":"const","value":"EditURI"},{"type":"const","value":"enclosure"},{"type":"const","value":"first"},{"type":"const","value":"gbfs"},{"type":"const","value":"gtfs-static"},{"type":"const","value":"gtfs-realtime"},{"type":"const","value":"home"},{"type":"const","value":"hub"},{"type":"const","value":"import"},{"type":"const","value":"in-reply-to"},{"type":"const","value":"root"},{"type":"const","value":"index"},{"type":"const","value":"issues"},{"type":"const","value":"jslicense"},{"type":"const","value":"last"},{"type":"const","value":"main"},{"type":"const","value":"mask-icon"},{"type":"const","value":"meta"},{"type":"const","value":"micropub"},{"type":"const","value":"openid.delegate"},{"type":"const","value":"openid.server"},{"type":"const","value":"openid2.local_id"},{"type":"const","value":"openid2.provider"},{"type":"const","value":"p3pv1"},{"type":"const","value":"pgpkey"},{"type":"const","value":"prerender"},{"type":"const","value":"profile"},{"type":"const","value":"publisher"},{"type":"const","value":"radioepg"},{"type":"const","value":"rendition"},{"type":"const","value":"reply-to"},{"type":"const","value":"schema.DCTERMS"},{"type":"const","value":"service"},{"type":"const","value":"shortlink"},{"type":"const","value":"sidebar"},{"type":"const","value":"sitemap"},{"type":"const","value":"subresource"},{"type":"const","value":"sword"},{"type":"const","value":"syndication"},{"type":"const","value":"timesheet"},{"type":"const","value":"token_endpoint"},{"type":"const","value":"webmention"},{"type":"const","value":"widget"},{"type":"const","value":"wlwmanifest"},{"type":"const","value":"image_src"},{"type":"const","value":"http://docs.oasis-open.org/ns/cmis/link/200908/acl"},{"type":"const","value":"stylesheet/less"},{"type":"const","value":"yandex-tableau-widget"},{"type":"const","value":"accessibility"},{"type":"const","value":"bibliography"},{"type":"const","value":"cite"},{"type":"const","value":"embed"},{"type":"const","value":"group"},{"type":"const","value":"longdesc"},{"type":"const","value":"map"},{"type":"const","value":"member"},{"type":"const","value":"m_PageScroll2id"},{"type":"const","value":"prerender"},{"type":"const","value":"profile"},{"type":"const","value":"shortlink"},{"type":"const","value":"source"},{"type":"const","value":"vcalendar-parent"},{"type":"const","value":"vcalendar-child"},{"type":"const","value":"vcalendar-sibling"},{"type":"const","value":"status"},{"type":"const","value":"https://api.w.org/"},{"type":"const","value":"archive"},{"type":"const","value":"archives"},{"type":"const","value":"comment"},{"type":"const","value":"contribution"},{"type":"const","value":"EditURI"},{"type":"const","value":"endorsed"},{"type":"const","value":"fan"},{"type":"const","value":"feed"},{"type":"const","value":"footnote"},{"type":"const","value":"kinetic-stylesheet"},{"type":"const","value":"lightbox"},{"type":"const","value":"made"},{"type":"const","value":"meta"},{"type":"const","value":"microsummary"},{"type":"const","value":"openid.delegate"},{"type":"const","value":"openid.server"},{"type":"const","value":"permalink"},{"type":"const","value":"pgpkey"},{"type":"const","value":"popover"},{"type":"const","value":"privacy"},{"type":"const","value":"publickey"},{"type":"const","value":"referral"},{"type":"const","value":"related"},{"type":"const","value":"replies"},{"type":"const","value":"respond-proxy"},{"type":"const","value":"respond-redirect"},{"type":"const","value":"resource"},{"type":"const","value":"sitemap"},{"type":"const","value":"sponsor"},{"type":"const","value":"tooltip"},{"type":"const","value":"trackback"},{"type":"const","value":"unendorsed"},{"type":"const","value":"user"},{"type":"const","value":"wlwmanifest"},{"type":"const","value":"schema.DC"},{"type":"const","value":"schema.DCTERMS"}],"matched":false,"raw":"invalid-keyword","offset":0,"length":15,"line":1,"column":1,"reason":"doesnt-exist-in-enum","partName":"the content of the list"}"#,
+    ),
+    (
+        "LinkTypeForLinkElement",
+        "last",
+        r#"{"reason":"unexpected-token","expects":[{"type":"common","value":"valid Link Type"}],"matched":false,"ref":"https://html.spec.whatwg.org/multipage/links.html#linkTypes","raw":"last","offset":0,"length":4,"line":1,"column":1}"#,
+    ),
+    (
+        "LinkTypeForLinkElement",
+        "logo",
+        r#"{"reason":"unexpected-token","expects":[{"type":"common","value":"valid Link Type"}],"matched":false,"ref":"https://html.spec.whatwg.org/multipage/links.html#linkTypes","raw":"logo","offset":0,"length":4,"line":1,"column":1}"#,
+    ),
+    (
+        "LinkTypeForLinkElement",
+        "manifest",
+        r#"{"matched":true}"#,
+    ),
+    (
+        "LinkTypeForLinkElement",
+        "me",
+        r#"{"matched":true}"#,
+    ),
+    (
+        "LinkTypeForLinkElement",
+        "next",
+        r#"{"matched":true}"#,
+    ),
+    (
+        "LinkTypeForLinkElement",
+        "nofollow logo",
+        r#"{"reason":"unexpected-token","expects":[{"type":"common","value":"valid Link Type"}],"matched":false,"ref":"https://html.spec.whatwg.org/multipage/links.html#linkTypes","raw":"logo","offset":9,"length":4,"line":1,"column":10}"#,
+    ),
+    (
+        "LinkTypeForLinkElement",
+        "nofollow nofollow",
+        r#"{"partName":"the content of the list","reason":"duplicated","ref":"https://html.spec.whatwg.org/multipage/links.html#linkTypes","expects":[{"type":"const","value":"Link types allowed in the `link` element when used in the `body` element"}],"matched":false,"raw":"nofollow","offset":9,"length":8,"line":1,"column":10}"#,
+    ),
+    (
+        "LinkTypeForLinkElement",
+        "NOFOLLOW nofollow",
+        r#"{"partName":"the content of the list","reason":"duplicated","ref":"https://html.spec.whatwg.org/multipage/links.html#linkTypes","expects":[{"type":"const","value":"Link types allowed in the `link` element when used in the `body` element"}],"matched":false,"raw":"nofollow","offset":9,"length":8,"line":1,"column":10}"#,
+    ),
+    (
+        "LinkTypeForLinkElement",
+        "nofollow noopener noreferrer",
+        r#"{"ref":"https://html.spec.whatwg.org/multipage/links.html#linkTypes","expects":[{"type":"const","value":"alternate"},{"type":"const","value":"canonical"},{"type":"const","value":"author"},{"type":"const","value":"dns-prefetch"},{"type":"const","value":"expect"},{"type":"const","value":"help"},{"type":"const","value":"icon"},{"type":"const","value":"manifest"},{"type":"const","value":"modulepreload"},{"type":"const","value":"license"},{"type":"const","value":"next"},{"type":"const","value":"pingback"},{"type":"const","value":"preconnect"},{"type":"const","value":"prefetch"},{"type":"const","value":"preload"},{"type":"const","value":"prev"},{"type":"const","value":"privacy-policy"},{"type":"const","value":"search"},{"type":"const","value":"stylesheet"},{"type":"const","value":"terms-of-service"},{"type":"const","value":"appendix"},{"type":"const","value":"chapter"},{"type":"const","value":"child"},{"type":"const","value":"contents"},{"type":"const","value":"copyright"},{"type":"const","value":"glossary"},{"type":"const","value":"its-rules"},{"type":"const","value":"me"},{"type":"const","value":"parent"},{"type":"const","value":"previous"},{"type":"const","value":"section"},{"type":"const","value":"start"},{"type":"const","value":"subsection"},{"type":"const","value":"toc"},{"type":"const","value":"transformation"},{"type":"const","value":"pronunciation"},{"type":"const","value":"directory"},{"type":"const","value":"enclosure"},{"type":"const","value":"home"},{"type":"const","value":"payment"},{"type":"const","value":"vcs-*"},{"type":"const","value":"about"},{"type":"const","value":"amphtml"},{"type":"const","value":"apple-touch-icon"},{"type":"const","value":"apple-touch-icon-precomposed"},{"type":"const","value":"apple-touch-startup-image"},{"type":"const","value":"archived"},{"type":"const","value":"attachment"},{"type":"const","value":"authorization_endpoint"},{"type":"const","value":"category"},{"type":"const","value":"code-repository"},{"type":"const","value":"code-license"},{"type":"const","value":"component"},{"type":"const","value":"chrome-webstore-item"},{"type":"const","value":"content-repository"},{"type":"const","value":"content-license"},{"type":"const","value":"DCTERMS.conformsTo"},{"type":"const","value":"DCTERMS.contributor"},{"type":"const","value":"DCTERMS.creator"},{"type":"const","value":"DCTERMS.description"},{"type":"const","value":"DCTERMS.hasFormat"},{"type":"const","value":"DCTERMS.hasPart"},{"type":"const","value":"DCTERMS.hasVersion"},{"type":"const","value":"DCTERMS.isFormatOf"},{"type":"const","value":"DCTERMS.isPartOf"},{"type":"const","value":"DCTERMS.isReferencedBy"},{"type":"const","value":"DCTERMS.isReplacedBy"},{"type":"const","value":"DCTERMS.isRequiredBy"},{"type":"const","value":"DCTERMS.isVersionOf"},{"type":"const","value":"DCTERMS.license"},{"type":"const","value":"DCTERMS.mediator"},{"type":"const","value":"DCTERMS.publisher"},{"type":"const","value":"DCTERMS.references"},{"type":"const","value":"DCTERMS.relation"},{"type":"const","value":"DCTERMS.replaces"},{"type":"const","value":"DCTERMS.requires"},{"type":"const","value":"DCTERMS.rightsHolder"},{"type":"const","value":"DCTERMS.source"},{"type":"const","value":"DCTERMS.subject"},{"type":"const","value":"discussion"},{"type":"const","value":"donation"},{"type":"const","value":"edit"},{"type":"const","value":"EditURI"},{"type":"const","value":"enclosure"},{"type":"const","value":"first"},{"type":"const","value":"gbfs"},{"type":"const","value":"gtfs-static"},{"type":"const","value":"gtfs-realtime"},{"type":"const","value":"home"},{"type":"const","value":"hub"},{"type":"const","value":"import"},{"type":"const","value":"in-reply-to"},{"type":"const","value":"root"},{"type":"const","value":"index"},{"type":"const","value":"issues"},{"type":"const","value":"jslicense"},{"type":"const","value":"last"},{"type":"const","value":"main"},{"type":"const","value":"mask-icon"},{"type":"const","value":"meta"},{"type":"const","value":"micropub"},{"type":"const","value":"openid.delegate"},{"type":"const","value":"openid.server"},{"type":"const","value":"openid2.local_id"},{"type":"const","value":"openid2.provider"},{"type":"const","value":"p3pv1"},{"type":"const","value":"pgpkey"},{"type":"const","value":"prerender"},{"type":"const","value":"profile"},{"type":"const","value":"publisher"},{"type":"const","value":"radioepg"},{"type":"const","value":"rendition"},{"type":"const","value":"reply-to"},{"type":"const","value":"schema.DCTERMS"},{"type":"const","value":"service"},{"type":"const","value":"shortlink"},{"type":"const","value":"sidebar"},{"type":"const","value":"sitemap"},{"type":"const","value":"subresource"},{"type":"const","value":"sword"},{"type":"const","value":"syndication"},{"type":"const","value":"timesheet"},{"type":"const","value":"token_endpoint"},{"type":"const","value":"webmention"},{"type":"const","value":"widget"},{"type":"const","value":"wlwmanifest"},{"type":"const","value":"image_src"},{"type":"const","value":"http://docs.oasis-open.org/ns/cmis/link/200908/acl"},{"type":"const","value":"stylesheet/less"},{"type":"const","value":"yandex-tableau-widget"},{"type":"const","value":"accessibility"},{"type":"const","value":"bibliography"},{"type":"const","value":"cite"},{"type":"const","value":"embed"},{"type":"const","value":"group"},{"type":"const","value":"longdesc"},{"type":"const","value":"map"},{"type":"const","value":"member"},{"type":"const","value":"m_PageScroll2id"},{"type":"const","value":"prerender"},{"type":"const","value":"profile"},{"type":"const","value":"shortlink"},{"type":"const","value":"source"},{"type":"const","value":"vcalendar-parent"},{"type":"const","value":"vcalendar-child"},{"type":"const","value":"vcalendar-sibling"},{"type":"const","value":"status"},{"type":"const","value":"https://api.w.org/"},{"type":"const","value":"archive"},{"type":"const","value":"archives"},{"type":"const","value":"comment"},{"type":"const","value":"contribution"},{"type":"const","value":"EditURI"},{"type":"const","value":"endorsed"},{"type":"const","value":"fan"},{"type":"const","value":"feed"},{"type":"const","value":"footnote"},{"type":"const","value":"kinetic-stylesheet"},{"type":"const","value":"lightbox"},{"type":"const","value":"made"},{"type":"const","value":"meta"},{"type":"const","value":"microsummary"},{"type":"const","value":"openid.delegate"},{"type":"const","value":"openid.server"},{"type":"const","value":"permalink"},{"type":"const","value":"pgpkey"},{"type":"const","value":"popover"},{"type":"const","value":"privacy"},{"type":"const","value":"publickey"},{"type":"const","value":"referral"},{"type":"const","value":"related"},{"type":"const","value":"replies"},{"type":"const","value":"respond-proxy"},{"type":"const","value":"respond-redirect"},{"type":"const","value":"resource"},{"type":"const","value":"sitemap"},{"type":"const","value":"sponsor"},{"type":"const","value":"tooltip"},{"type":"const","value":"trackback"},{"type":"const","value":"unendorsed"},{"type":"const","value":"user"},{"type":"const","value":"wlwmanifest"},{"type":"const","value":"schema.DC"},{"type":"const","value":"schema.DCTERMS"}],"matched":false,"raw":"nofollow","offset":0,"length":8,"line":1,"column":1,"reason":"doesnt-exist-in-enum","partName":"the content of the list"}"#,
+    ),
+    (
+        "LinkTypeForLinkElement",
+        "nofollow noopener",
+        r#"{"ref":"https://html.spec.whatwg.org/multipage/links.html#linkTypes","expects":[{"type":"const","value":"alternate"},{"type":"const","value":"canonical"},{"type":"const","value":"author"},{"type":"const","value":"dns-prefetch"},{"type":"const","value":"expect"},{"type":"const","value":"help"},{"type":"const","value":"icon"},{"type":"const","value":"manifest"},{"type":"const","value":"modulepreload"},{"type":"const","value":"license"},{"type":"const","value":"next"},{"type":"const","value":"pingback"},{"type":"const","value":"preconnect"},{"type":"const","value":"prefetch"},{"type":"const","value":"preload"},{"type":"const","value":"prev"},{"type":"const","value":"privacy-policy"},{"type":"const","value":"search"},{"type":"const","value":"stylesheet"},{"type":"const","value":"terms-of-service"},{"type":"const","value":"appendix"},{"type":"const","value":"chapter"},{"type":"const","value":"child"},{"type":"const","value":"contents"},{"type":"const","value":"copyright"},{"type":"const","value":"glossary"},{"type":"const","value":"its-rules"},{"type":"const","value":"me"},{"type":"const","value":"parent"},{"type":"const","value":"previous"},{"type":"const","value":"section"},{"type":"const","value":"start"},{"type":"const","value":"subsection"},{"type":"const","value":"toc"},{"type":"const","value":"transformation"},{"type":"const","value":"pronunciation"},{"type":"const","value":"directory"},{"type":"const","value":"enclosure"},{"type":"const","value":"home"},{"type":"const","value":"payment"},{"type":"const","value":"vcs-*"},{"type":"const","value":"about"},{"type":"const","value":"amphtml"},{"type":"const","value":"apple-touch-icon"},{"type":"const","value":"apple-touch-icon-precomposed"},{"type":"const","value":"apple-touch-startup-image"},{"type":"const","value":"archived"},{"type":"const","value":"attachment"},{"type":"const","value":"authorization_endpoint"},{"type":"const","value":"category"},{"type":"const","value":"code-repository"},{"type":"const","value":"code-license"},{"type":"const","value":"component"},{"type":"const","value":"chrome-webstore-item"},{"type":"const","value":"content-repository"},{"type":"const","value":"content-license"},{"type":"const","value":"DCTERMS.conformsTo"},{"type":"const","value":"DCTERMS.contributor"},{"type":"const","value":"DCTERMS.creator"},{"type":"const","value":"DCTERMS.description"},{"type":"const","value":"DCTERMS.hasFormat"},{"type":"const","value":"DCTERMS.hasPart"},{"type":"const","value":"DCTERMS.hasVersion"},{"type":"const","value":"DCTERMS.isFormatOf"},{"type":"const","value":"DCTERMS.isPartOf"},{"type":"const","value":"DCTERMS.isReferencedBy"},{"type":"const","value":"DCTERMS.isReplacedBy"},{"type":"const","value":"DCTERMS.isRequiredBy"},{"type":"const","value":"DCTERMS.isVersionOf"},{"type":"const","value":"DCTERMS.license"},{"type":"const","value":"DCTERMS.mediator"},{"type":"const","value":"DCTERMS.publisher"},{"type":"const","value":"DCTERMS.references"},{"type":"const","value":"DCTERMS.relation"},{"type":"const","value":"DCTERMS.replaces"},{"type":"const","value":"DCTERMS.requires"},{"type":"const","value":"DCTERMS.rightsHolder"},{"type":"const","value":"DCTERMS.source"},{"type":"const","value":"DCTERMS.subject"},{"type":"const","value":"discussion"},{"type":"const","value":"donation"},{"type":"const","value":"edit"},{"type":"const","value":"EditURI"},{"type":"const","value":"enclosure"},{"type":"const","value":"first"},{"type":"const","value":"gbfs"},{"type":"const","value":"gtfs-static"},{"type":"const","value":"gtfs-realtime"},{"type":"const","value":"home"},{"type":"const","value":"hub"},{"type":"const","value":"import"},{"type":"const","value":"in-reply-to"},{"type":"const","value":"root"},{"type":"const","value":"index"},{"type":"const","value":"issues"},{"type":"const","value":"jslicense"},{"type":"const","value":"last"},{"type":"const","value":"main"},{"type":"const","value":"mask-icon"},{"type":"const","value":"meta"},{"type":"const","value":"micropub"},{"type":"const","value":"openid.delegate"},{"type":"const","value":"openid.server"},{"type":"const","value":"openid2.local_id"},{"type":"const","value":"openid2.provider"},{"type":"const","value":"p3pv1"},{"type":"const","value":"pgpkey"},{"type":"const","value":"prerender"},{"type":"const","value":"profile"},{"type":"const","value":"publisher"},{"type":"const","value":"radioepg"},{"type":"const","value":"rendition"},{"type":"const","value":"reply-to"},{"type":"const","value":"schema.DCTERMS"},{"type":"const","value":"service"},{"type":"const","value":"shortlink"},{"type":"const","value":"sidebar"},{"type":"const","value":"sitemap"},{"type":"const","value":"subresource"},{"type":"const","value":"sword"},{"type":"const","value":"syndication"},{"type":"const","value":"timesheet"},{"type":"const","value":"token_endpoint"},{"type":"const","value":"webmention"},{"type":"const","value":"widget"},{"type":"const","value":"wlwmanifest"},{"type":"const","value":"image_src"},{"type":"const","value":"http://docs.oasis-open.org/ns/cmis/link/200908/acl"},{"type":"const","value":"stylesheet/less"},{"type":"const","value":"yandex-tableau-widget"},{"type":"const","value":"accessibility"},{"type":"const","value":"bibliography"},{"type":"const","value":"cite"},{"type":"const","value":"embed"},{"type":"const","value":"group"},{"type":"const","value":"longdesc"},{"type":"const","value":"map"},{"type":"const","value":"member"},{"type":"const","value":"m_PageScroll2id"},{"type":"const","value":"prerender"},{"type":"const","value":"profile"},{"type":"const","value":"shortlink"},{"type":"const","value":"source"},{"type":"const","value":"vcalendar-parent"},{"type":"const","value":"vcalendar-child"},{"type":"const","value":"vcalendar-sibling"},{"type":"const","value":"status"},{"type":"const","value":"https://api.w.org/"},{"type":"const","value":"archive"},{"type":"const","value":"archives"},{"type":"const","value":"comment"},{"type":"const","value":"contribution"},{"type":"const","value":"EditURI"},{"type":"const","value":"endorsed"},{"type":"const","value":"fan"},{"type":"const","value":"feed"},{"type":"const","value":"footnote"},{"type":"const","value":"kinetic-stylesheet"},{"type":"const","value":"lightbox"},{"type":"const","value":"made"},{"type":"const","value":"meta"},{"type":"const","value":"microsummary"},{"type":"const","value":"openid.delegate"},{"type":"const","value":"openid.server"},{"type":"const","value":"permalink"},{"type":"const","value":"pgpkey"},{"type":"const","value":"popover"},{"type":"const","value":"privacy"},{"type":"const","value":"publickey"},{"type":"const","value":"referral"},{"type":"const","value":"related"},{"type":"const","value":"replies"},{"type":"const","value":"respond-proxy"},{"type":"const","value":"respond-redirect"},{"type":"const","value":"resource"},{"type":"const","value":"sitemap"},{"type":"const","value":"sponsor"},{"type":"const","value":"tooltip"},{"type":"const","value":"trackback"},{"type":"const","value":"unendorsed"},{"type":"const","value":"user"},{"type":"const","value":"wlwmanifest"},{"type":"const","value":"schema.DC"},{"type":"const","value":"schema.DCTERMS"}],"matched":false,"raw":"nofollow","offset":0,"length":8,"line":1,"column":1,"reason":"doesnt-exist-in-enum","partName":"the content of the list"}"#,
+    ),
+    (
+        "LinkTypeForLinkElement",
+        "Nofollow Noopener",
+        r#"{"ref":"https://html.spec.whatwg.org/multipage/links.html#linkTypes","expects":[{"type":"const","value":"alternate"},{"type":"const","value":"canonical"},{"type":"const","value":"author"},{"type":"const","value":"dns-prefetch"},{"type":"const","value":"expect"},{"type":"const","value":"help"},{"type":"const","value":"icon"},{"type":"const","value":"manifest"},{"type":"const","value":"modulepreload"},{"type":"const","value":"license"},{"type":"const","value":"next"},{"type":"const","value":"pingback"},{"type":"const","value":"preconnect"},{"type":"const","value":"prefetch"},{"type":"const","value":"preload"},{"type":"const","value":"prev"},{"type":"const","value":"privacy-policy"},{"type":"const","value":"search"},{"type":"const","value":"stylesheet"},{"type":"const","value":"terms-of-service"},{"type":"const","value":"appendix"},{"type":"const","value":"chapter"},{"type":"const","value":"child"},{"type":"const","value":"contents"},{"type":"const","value":"copyright"},{"type":"const","value":"glossary"},{"type":"const","value":"its-rules"},{"type":"const","value":"me"},{"type":"const","value":"parent"},{"type":"const","value":"previous"},{"type":"const","value":"section"},{"type":"const","value":"start"},{"type":"const","value":"subsection"},{"type":"const","value":"toc"},{"type":"const","value":"transformation"},{"type":"const","value":"pronunciation"},{"type":"const","value":"directory"},{"type":"const","value":"enclosure"},{"type":"const","value":"home"},{"type":"const","value":"payment"},{"type":"const","value":"vcs-*"},{"type":"const","value":"about"},{"type":"const","value":"amphtml"},{"type":"const","value":"apple-touch-icon"},{"type":"const","value":"apple-touch-icon-precomposed"},{"type":"const","value":"apple-touch-startup-image"},{"type":"const","value":"archived"},{"type":"const","value":"attachment"},{"type":"const","value":"authorization_endpoint"},{"type":"const","value":"category"},{"type":"const","value":"code-repository"},{"type":"const","value":"code-license"},{"type":"const","value":"component"},{"type":"const","value":"chrome-webstore-item"},{"type":"const","value":"content-repository"},{"type":"const","value":"content-license"},{"type":"const","value":"DCTERMS.conformsTo"},{"type":"const","value":"DCTERMS.contributor"},{"type":"const","value":"DCTERMS.creator"},{"type":"const","value":"DCTERMS.description"},{"type":"const","value":"DCTERMS.hasFormat"},{"type":"const","value":"DCTERMS.hasPart"},{"type":"const","value":"DCTERMS.hasVersion"},{"type":"const","value":"DCTERMS.isFormatOf"},{"type":"const","value":"DCTERMS.isPartOf"},{"type":"const","value":"DCTERMS.isReferencedBy"},{"type":"const","value":"DCTERMS.isReplacedBy"},{"type":"const","value":"DCTERMS.isRequiredBy"},{"type":"const","value":"DCTERMS.isVersionOf"},{"type":"const","value":"DCTERMS.license"},{"type":"const","value":"DCTERMS.mediator"},{"type":"const","value":"DCTERMS.publisher"},{"type":"const","value":"DCTERMS.references"},{"type":"const","value":"DCTERMS.relation"},{"type":"const","value":"DCTERMS.replaces"},{"type":"const","value":"DCTERMS.requires"},{"type":"const","value":"DCTERMS.rightsHolder"},{"type":"const","value":"DCTERMS.source"},{"type":"const","value":"DCTERMS.subject"},{"type":"const","value":"discussion"},{"type":"const","value":"donation"},{"type":"const","value":"edit"},{"type":"const","value":"EditURI"},{"type":"const","value":"enclosure"},{"type":"const","value":"first"},{"type":"const","value":"gbfs"},{"type":"const","value":"gtfs-static"},{"type":"const","value":"gtfs-realtime"},{"type":"const","value":"home"},{"type":"const","value":"hub"},{"type":"const","value":"import"},{"type":"const","value":"in-reply-to"},{"type":"const","value":"root"},{"type":"const","value":"index"},{"type":"const","value":"issues"},{"type":"const","value":"jslicense"},{"type":"const","value":"last"},{"type":"const","value":"main"},{"type":"const","value":"mask-icon"},{"type":"const","value":"meta"},{"type":"const","value":"micropub"},{"type":"const","value":"openid.delegate"},{"type":"const","value":"openid.server"},{"type":"const","value":"openid2.local_id"},{"type":"const","value":"openid2.provider"},{"type":"const","value":"p3pv1"},{"type":"const","value":"pgpkey"},{"type":"const","value":"prerender"},{"type":"const","value":"profile"},{"type":"const","value":"publisher"},{"type":"const","value":"radioepg"},{"type":"const","value":"rendition"},{"type":"const","value":"reply-to"},{"type":"const","value":"schema.DCTERMS"},{"type":"const","value":"service"},{"type":"const","value":"shortlink"},{"type":"const","value":"sidebar"},{"type":"const","value":"sitemap"},{"type":"const","value":"subresource"},{"type":"const","value":"sword"},{"type":"const","value":"syndication"},{"type":"const","value":"timesheet"},{"type":"const","value":"token_endpoint"},{"type":"const","value":"webmention"},{"type":"const","value":"widget"},{"type":"const","value":"wlwmanifest"},{"type":"const","value":"image_src"},{"type":"const","value":"http://docs.oasis-open.org/ns/cmis/link/200908/acl"},{"type":"const","value":"stylesheet/less"},{"type":"const","value":"yandex-tableau-widget"},{"type":"const","value":"accessibility"},{"type":"const","value":"bibliography"},{"type":"const","value":"cite"},{"type":"const","value":"embed"},{"type":"const","value":"group"},{"type":"const","value":"longdesc"},{"type":"const","value":"map"},{"type":"const","value":"member"},{"type":"const","value":"m_PageScroll2id"},{"type":"const","value":"prerender"},{"type":"const","value":"profile"},{"type":"const","value":"shortlink"},{"type":"const","value":"source"},{"type":"const","value":"vcalendar-parent"},{"type":"const","value":"vcalendar-child"},{"type":"const","value":"vcalendar-sibling"},{"type":"const","value":"status"},{"type":"const","value":"https://api.w.org/"},{"type":"const","value":"archive"},{"type":"const","value":"archives"},{"type":"const","value":"comment"},{"type":"const","value":"contribution"},{"type":"const","value":"EditURI"},{"type":"const","value":"endorsed"},{"type":"const","value":"fan"},{"type":"const","value":"feed"},{"type":"const","value":"footnote"},{"type":"const","value":"kinetic-stylesheet"},{"type":"const","value":"lightbox"},{"type":"const","value":"made"},{"type":"const","value":"meta"},{"type":"const","value":"microsummary"},{"type":"const","value":"openid.delegate"},{"type":"const","value":"openid.server"},{"type":"const","value":"permalink"},{"type":"const","value":"pgpkey"},{"type":"const","value":"popover"},{"type":"const","value":"privacy"},{"type":"const","value":"publickey"},{"type":"const","value":"referral"},{"type":"const","value":"related"},{"type":"const","value":"replies"},{"type":"const","value":"respond-proxy"},{"type":"const","value":"respond-redirect"},{"type":"const","value":"resource"},{"type":"const","value":"sitemap"},{"type":"const","value":"sponsor"},{"type":"const","value":"tooltip"},{"type":"const","value":"trackback"},{"type":"const","value":"unendorsed"},{"type":"const","value":"user"},{"type":"const","value":"wlwmanifest"},{"type":"const","value":"schema.DC"},{"type":"const","value":"schema.DCTERMS"}],"matched":false,"raw":"Nofollow","offset":0,"length":8,"line":1,"column":1,"reason":"doesnt-exist-in-enum","partName":"the content of the list"}"#,
+    ),
+    (
+        "LinkTypeForLinkElement",
+        "nofollow",
+        r#"{"ref":"https://html.spec.whatwg.org/multipage/links.html#linkTypes","expects":[{"type":"const","value":"alternate"},{"type":"const","value":"canonical"},{"type":"const","value":"author"},{"type":"const","value":"dns-prefetch"},{"type":"const","value":"expect"},{"type":"const","value":"help"},{"type":"const","value":"icon"},{"type":"const","value":"manifest"},{"type":"const","value":"modulepreload"},{"type":"const","value":"license"},{"type":"const","value":"next"},{"type":"const","value":"pingback"},{"type":"const","value":"preconnect"},{"type":"const","value":"prefetch"},{"type":"const","value":"preload"},{"type":"const","value":"prev"},{"type":"const","value":"privacy-policy"},{"type":"const","value":"search"},{"type":"const","value":"stylesheet"},{"type":"const","value":"terms-of-service"},{"type":"const","value":"appendix"},{"type":"const","value":"chapter"},{"type":"const","value":"child"},{"type":"const","value":"contents"},{"type":"const","value":"copyright"},{"type":"const","value":"glossary"},{"type":"const","value":"its-rules"},{"type":"const","value":"me"},{"type":"const","value":"parent"},{"type":"const","value":"previous"},{"type":"const","value":"section"},{"type":"const","value":"start"},{"type":"const","value":"subsection"},{"type":"const","value":"toc"},{"type":"const","value":"transformation"},{"type":"const","value":"pronunciation"},{"type":"const","value":"directory"},{"type":"const","value":"enclosure"},{"type":"const","value":"home"},{"type":"const","value":"payment"},{"type":"const","value":"vcs-*"},{"type":"const","value":"about"},{"type":"const","value":"amphtml"},{"type":"const","value":"apple-touch-icon"},{"type":"const","value":"apple-touch-icon-precomposed"},{"type":"const","value":"apple-touch-startup-image"},{"type":"const","value":"archived"},{"type":"const","value":"attachment"},{"type":"const","value":"authorization_endpoint"},{"type":"const","value":"category"},{"type":"const","value":"code-repository"},{"type":"const","value":"code-license"},{"type":"const","value":"component"},{"type":"const","value":"chrome-webstore-item"},{"type":"const","value":"content-repository"},{"type":"const","value":"content-license"},{"type":"const","value":"DCTERMS.conformsTo"},{"type":"const","value":"DCTERMS.contributor"},{"type":"const","value":"DCTERMS.creator"},{"type":"const","value":"DCTERMS.description"},{"type":"const","value":"DCTERMS.hasFormat"},{"type":"const","value":"DCTERMS.hasPart"},{"type":"const","value":"DCTERMS.hasVersion"},{"type":"const","value":"DCTERMS.isFormatOf"},{"type":"const","value":"DCTERMS.isPartOf"},{"type":"const","value":"DCTERMS.isReferencedBy"},{"type":"const","value":"DCTERMS.isReplacedBy"},{"type":"const","value":"DCTERMS.isRequiredBy"},{"type":"const","value":"DCTERMS.isVersionOf"},{"type":"const","value":"DCTERMS.license"},{"type":"const","value":"DCTERMS.mediator"},{"type":"const","value":"DCTERMS.publisher"},{"type":"const","value":"DCTERMS.references"},{"type":"const","value":"DCTERMS.relation"},{"type":"const","value":"DCTERMS.replaces"},{"type":"const","value":"DCTERMS.requires"},{"type":"const","value":"DCTERMS.rightsHolder"},{"type":"const","value":"DCTERMS.source"},{"type":"const","value":"DCTERMS.subject"},{"type":"const","value":"discussion"},{"type":"const","value":"donation"},{"type":"const","value":"edit"},{"type":"const","value":"EditURI"},{"type":"const","value":"enclosure"},{"type":"const","value":"first"},{"type":"const","value":"gbfs"},{"type":"const","value":"gtfs-static"},{"type":"const","value":"gtfs-realtime"},{"type":"const","value":"home"},{"type":"const","value":"hub"},{"type":"const","value":"import"},{"type":"const","value":"in-reply-to"},{"type":"const","value":"root"},{"type":"const","value":"index"},{"type":"const","value":"issues"},{"type":"const","value":"jslicense"},{"type":"const","value":"last"},{"type":"const","value":"main"},{"type":"const","value":"mask-icon"},{"type":"const","value":"meta"},{"type":"const","value":"micropub"},{"type":"const","value":"openid.delegate"},{"type":"const","value":"openid.server"},{"type":"const","value":"openid2.local_id"},{"type":"const","value":"openid2.provider"},{"type":"const","value":"p3pv1"},{"type":"const","value":"pgpkey"},{"type":"const","value":"prerender"},{"type":"const","value":"profile"},{"type":"const","value":"publisher"},{"type":"const","value":"radioepg"},{"type":"const","value":"rendition"},{"type":"const","value":"reply-to"},{"type":"const","value":"schema.DCTERMS"},{"type":"const","value":"service"},{"type":"const","value":"shortlink"},{"type":"const","value":"sidebar"},{"type":"const","value":"sitemap"},{"type":"const","value":"subresource"},{"type":"const","value":"sword"},{"type":"const","value":"syndication"},{"type":"const","value":"timesheet"},{"type":"const","value":"token_endpoint"},{"type":"const","value":"webmention"},{"type":"const","value":"widget"},{"type":"const","value":"wlwmanifest"},{"type":"const","value":"image_src"},{"type":"const","value":"http://docs.oasis-open.org/ns/cmis/link/200908/acl"},{"type":"const","value":"stylesheet/less"},{"type":"const","value":"yandex-tableau-widget"},{"type":"const","value":"accessibility"},{"type":"const","value":"bibliography"},{"type":"const","value":"cite"},{"type":"const","value":"embed"},{"type":"const","value":"group"},{"type":"const","value":"longdesc"},{"type":"const","value":"map"},{"type":"const","value":"member"},{"type":"const","value":"m_PageScroll2id"},{"type":"const","value":"prerender"},{"type":"const","value":"profile"},{"type":"const","value":"shortlink"},{"type":"const","value":"source"},{"type":"const","value":"vcalendar-parent"},{"type":"const","value":"vcalendar-child"},{"type":"const","value":"vcalendar-sibling"},{"type":"const","value":"status"},{"type":"const","value":"https://api.w.org/"},{"type":"const","value":"archive"},{"type":"const","value":"archives"},{"type":"const","value":"comment"},{"type":"const","value":"contribution"},{"type":"const","value":"EditURI"},{"type":"const","value":"endorsed"},{"type":"const","value":"fan"},{"type":"const","value":"feed"},{"type":"const","value":"footnote"},{"type":"const","value":"kinetic-stylesheet"},{"type":"const","value":"lightbox"},{"type":"const","value":"made"},{"type":"const","value":"meta"},{"type":"const","value":"microsummary"},{"type":"const","value":"openid.delegate"},{"type":"const","value":"openid.server"},{"type":"const","value":"permalink"},{"type":"const","value":"pgpkey"},{"type":"const","value":"popover"},{"type":"const","value":"privacy"},{"type":"const","value":"publickey"},{"type":"const","value":"referral"},{"type":"const","value":"related"},{"type":"const","value":"replies"},{"type":"const","value":"respond-proxy"},{"type":"const","value":"respond-redirect"},{"type":"const","value":"resource"},{"type":"const","value":"sitemap"},{"type":"const","value":"sponsor"},{"type":"const","value":"tooltip"},{"type":"const","value":"trackback"},{"type":"const","value":"unendorsed"},{"type":"const","value":"user"},{"type":"const","value":"wlwmanifest"},{"type":"const","value":"schema.DC"},{"type":"const","value":"schema.DCTERMS"}],"matched":false,"raw":"nofollow","offset":0,"length":8,"line":1,"column":1,"reason":"doesnt-exist-in-enum","partName":"the content of the list"}"#,
+    ),
+    (
+        "LinkTypeForLinkElement",
+        "Nofollow",
+        r#"{"ref":"https://html.spec.whatwg.org/multipage/links.html#linkTypes","expects":[{"type":"const","value":"alternate"},{"type":"const","value":"canonical"},{"type":"const","value":"author"},{"type":"const","value":"dns-prefetch"},{"type":"const","value":"expect"},{"type":"const","value":"help"},{"type":"const","value":"icon"},{"type":"const","value":"manifest"},{"type":"const","value":"modulepreload"},{"type":"const","value":"license"},{"type":"const","value":"next"},{"type":"const","value":"pingback"},{"type":"const","value":"preconnect"},{"type":"const","value":"prefetch"},{"type":"const","value":"preload"},{"type":"const","value":"prev"},{"type":"const","value":"privacy-policy"},{"type":"const","value":"search"},{"type":"const","value":"stylesheet"},{"type":"const","value":"terms-of-service"},{"type":"const","value":"appendix"},{"type":"const","value":"chapter"},{"type":"const","value":"child"},{"type":"const","value":"contents"},{"type":"const","value":"copyright"},{"type":"const","value":"glossary"},{"type":"const","value":"its-rules"},{"type":"const","value":"me"},{"type":"const","value":"parent"},{"type":"const","value":"previous"},{"type":"const","value":"section"},{"type":"const","value":"start"},{"type":"const","value":"subsection"},{"type":"const","value":"toc"},{"type":"const","value":"transformation"},{"type":"const","value":"pronunciation"},{"type":"const","value":"directory"},{"type":"const","value":"enclosure"},{"type":"const","value":"home"},{"type":"const","value":"payment"},{"type":"const","value":"vcs-*"},{"type":"const","value":"about"},{"type":"const","value":"amphtml"},{"type":"const","value":"apple-touch-icon"},{"type":"const","value":"apple-touch-icon-precomposed"},{"type":"const","value":"apple-touch-startup-image"},{"type":"const","value":"archived"},{"type":"const","value":"attachment"},{"type":"const","value":"authorization_endpoint"},{"type":"const","value":"category"},{"type":"const","value":"code-repository"},{"type":"const","value":"code-license"},{"type":"const","value":"component"},{"type":"const","value":"chrome-webstore-item"},{"type":"const","value":"content-repository"},{"type":"const","value":"content-license"},{"type":"const","value":"DCTERMS.conformsTo"},{"type":"const","value":"DCTERMS.contributor"},{"type":"const","value":"DCTERMS.creator"},{"type":"const","value":"DCTERMS.description"},{"type":"const","value":"DCTERMS.hasFormat"},{"type":"const","value":"DCTERMS.hasPart"},{"type":"const","value":"DCTERMS.hasVersion"},{"type":"const","value":"DCTERMS.isFormatOf"},{"type":"const","value":"DCTERMS.isPartOf"},{"type":"const","value":"DCTERMS.isReferencedBy"},{"type":"const","value":"DCTERMS.isReplacedBy"},{"type":"const","value":"DCTERMS.isRequiredBy"},{"type":"const","value":"DCTERMS.isVersionOf"},{"type":"const","value":"DCTERMS.license"},{"type":"const","value":"DCTERMS.mediator"},{"type":"const","value":"DCTERMS.publisher"},{"type":"const","value":"DCTERMS.references"},{"type":"const","value":"DCTERMS.relation"},{"type":"const","value":"DCTERMS.replaces"},{"type":"const","value":"DCTERMS.requires"},{"type":"const","value":"DCTERMS.rightsHolder"},{"type":"const","value":"DCTERMS.source"},{"type":"const","value":"DCTERMS.subject"},{"type":"const","value":"discussion"},{"type":"const","value":"donation"},{"type":"const","value":"edit"},{"type":"const","value":"EditURI"},{"type":"const","value":"enclosure"},{"type":"const","value":"first"},{"type":"const","value":"gbfs"},{"type":"const","value":"gtfs-static"},{"type":"const","value":"gtfs-realtime"},{"type":"const","value":"home"},{"type":"const","value":"hub"},{"type":"const","value":"import"},{"type":"const","value":"in-reply-to"},{"type":"const","value":"root"},{"type":"const","value":"index"},{"type":"const","value":"issues"},{"type":"const","value":"jslicense"},{"type":"const","value":"last"},{"type":"const","value":"main"},{"type":"const","value":"mask-icon"},{"type":"const","value":"meta"},{"type":"const","value":"micropub"},{"type":"const","value":"openid.delegate"},{"type":"const","value":"openid.server"},{"type":"const","value":"openid2.local_id"},{"type":"const","value":"openid2.provider"},{"type":"const","value":"p3pv1"},{"type":"const","value":"pgpkey"},{"type":"const","value":"prerender"},{"type":"const","value":"profile"},{"type":"const","value":"publisher"},{"type":"const","value":"radioepg"},{"type":"const","value":"rendition"},{"type":"const","value":"reply-to"},{"type":"const","value":"schema.DCTERMS"},{"type":"const","value":"service"},{"type":"const","value":"shortlink"},{"type":"const","value":"sidebar"},{"type":"const","value":"sitemap"},{"type":"const","value":"subresource"},{"type":"const","value":"sword"},{"type":"const","value":"syndication"},{"type":"const","value":"timesheet"},{"type":"const","value":"token_endpoint"},{"type":"const","value":"webmention"},{"type":"const","value":"widget"},{"type":"const","value":"wlwmanifest"},{"type":"const","value":"image_src"},{"type":"const","value":"http://docs.oasis-open.org/ns/cmis/link/200908/acl"},{"type":"const","value":"stylesheet/less"},{"type":"const","value":"yandex-tableau-widget"},{"type":"const","value":"accessibility"},{"type":"const","value":"bibliography"},{"type":"const","value":"cite"},{"type":"const","value":"embed"},{"type":"const","value":"group"},{"type":"const","value":"longdesc"},{"type":"const","value":"map"},{"type":"const","value":"member"},{"type":"const","value":"m_PageScroll2id"},{"type":"const","value":"prerender"},{"type":"const","value":"profile"},{"type":"const","value":"shortlink"},{"type":"const","value":"source"},{"type":"const","value":"vcalendar-parent"},{"type":"const","value":"vcalendar-child"},{"type":"const","value":"vcalendar-sibling"},{"type":"const","value":"status"},{"type":"const","value":"https://api.w.org/"},{"type":"const","value":"archive"},{"type":"const","value":"archives"},{"type":"const","value":"comment"},{"type":"const","value":"contribution"},{"type":"const","value":"EditURI"},{"type":"const","value":"endorsed"},{"type":"const","value":"fan"},{"type":"const","value":"feed"},{"type":"const","value":"footnote"},{"type":"const","value":"kinetic-stylesheet"},{"type":"const","value":"lightbox"},{"type":"const","value":"made"},{"type":"const","value":"meta"},{"type":"const","value":"microsummary"},{"type":"const","value":"openid.delegate"},{"type":"const","value":"openid.server"},{"type":"const","value":"permalink"},{"type":"const","value":"pgpkey"},{"type":"const","value":"popover"},{"type":"const","value":"privacy"},{"type":"const","value":"publickey"},{"type":"const","value":"referral"},{"type":"const","value":"related"},{"type":"const","value":"replies"},{"type":"const","value":"respond-proxy"},{"type":"const","value":"respond-redirect"},{"type":"const","value":"resource"},{"type":"const","value":"sitemap"},{"type":"const","value":"sponsor"},{"type":"const","value":"tooltip"},{"type":"const","value":"trackback"},{"type":"const","value":"unendorsed"},{"type":"const","value":"user"},{"type":"const","value":"wlwmanifest"},{"type":"const","value":"schema.DC"},{"type":"const","value":"schema.DCTERMS"}],"matched":false,"raw":"Nofollow","offset":0,"length":8,"line":1,"column":1,"reason":"doesnt-exist-in-enum","partName":"the content of the list"}"#,
+    ),
+    (
+        "LinkTypeForLinkElement",
+        "noopener",
+        r#"{"ref":"https://html.spec.whatwg.org/multipage/links.html#linkTypes","expects":[{"type":"const","value":"alternate"},{"type":"const","value":"canonical"},{"type":"const","value":"author"},{"type":"const","value":"dns-prefetch"},{"type":"const","value":"expect"},{"type":"const","value":"help"},{"type":"const","value":"icon"},{"type":"const","value":"manifest"},{"type":"const","value":"modulepreload"},{"type":"const","value":"license"},{"type":"const","value":"next"},{"type":"const","value":"pingback"},{"type":"const","value":"preconnect"},{"type":"const","value":"prefetch"},{"type":"const","value":"preload"},{"type":"const","value":"prev"},{"type":"const","value":"privacy-policy"},{"type":"const","value":"search"},{"type":"const","value":"stylesheet"},{"type":"const","value":"terms-of-service"},{"type":"const","value":"appendix"},{"type":"const","value":"chapter"},{"type":"const","value":"child"},{"type":"const","value":"contents"},{"type":"const","value":"copyright"},{"type":"const","value":"glossary"},{"type":"const","value":"its-rules"},{"type":"const","value":"me"},{"type":"const","value":"parent"},{"type":"const","value":"previous"},{"type":"const","value":"section"},{"type":"const","value":"start"},{"type":"const","value":"subsection"},{"type":"const","value":"toc"},{"type":"const","value":"transformation"},{"type":"const","value":"pronunciation"},{"type":"const","value":"directory"},{"type":"const","value":"enclosure"},{"type":"const","value":"home"},{"type":"const","value":"payment"},{"type":"const","value":"vcs-*"},{"type":"const","value":"about"},{"type":"const","value":"amphtml"},{"type":"const","value":"apple-touch-icon"},{"type":"const","value":"apple-touch-icon-precomposed"},{"type":"const","value":"apple-touch-startup-image"},{"type":"const","value":"archived"},{"type":"const","value":"attachment"},{"type":"const","value":"authorization_endpoint"},{"type":"const","value":"category"},{"type":"const","value":"code-repository"},{"type":"const","value":"code-license"},{"type":"const","value":"component"},{"type":"const","value":"chrome-webstore-item"},{"type":"const","value":"content-repository"},{"type":"const","value":"content-license"},{"type":"const","value":"DCTERMS.conformsTo"},{"type":"const","value":"DCTERMS.contributor"},{"type":"const","value":"DCTERMS.creator"},{"type":"const","value":"DCTERMS.description"},{"type":"const","value":"DCTERMS.hasFormat"},{"type":"const","value":"DCTERMS.hasPart"},{"type":"const","value":"DCTERMS.hasVersion"},{"type":"const","value":"DCTERMS.isFormatOf"},{"type":"const","value":"DCTERMS.isPartOf"},{"type":"const","value":"DCTERMS.isReferencedBy"},{"type":"const","value":"DCTERMS.isReplacedBy"},{"type":"const","value":"DCTERMS.isRequiredBy"},{"type":"const","value":"DCTERMS.isVersionOf"},{"type":"const","value":"DCTERMS.license"},{"type":"const","value":"DCTERMS.mediator"},{"type":"const","value":"DCTERMS.publisher"},{"type":"const","value":"DCTERMS.references"},{"type":"const","value":"DCTERMS.relation"},{"type":"const","value":"DCTERMS.replaces"},{"type":"const","value":"DCTERMS.requires"},{"type":"const","value":"DCTERMS.rightsHolder"},{"type":"const","value":"DCTERMS.source"},{"type":"const","value":"DCTERMS.subject"},{"type":"const","value":"discussion"},{"type":"const","value":"donation"},{"type":"const","value":"edit"},{"type":"const","value":"EditURI"},{"type":"const","value":"enclosure"},{"type":"const","value":"first"},{"type":"const","value":"gbfs"},{"type":"const","value":"gtfs-static"},{"type":"const","value":"gtfs-realtime"},{"type":"const","value":"home"},{"type":"const","value":"hub"},{"type":"const","value":"import"},{"type":"const","value":"in-reply-to"},{"type":"const","value":"root"},{"type":"const","value":"index"},{"type":"const","value":"issues"},{"type":"const","value":"jslicense"},{"type":"const","value":"last"},{"type":"const","value":"main"},{"type":"const","value":"mask-icon"},{"type":"const","value":"meta"},{"type":"const","value":"micropub"},{"type":"const","value":"openid.delegate"},{"type":"const","value":"openid.server"},{"type":"const","value":"openid2.local_id"},{"type":"const","value":"openid2.provider"},{"type":"const","value":"p3pv1"},{"type":"const","value":"pgpkey"},{"type":"const","value":"prerender"},{"type":"const","value":"profile"},{"type":"const","value":"publisher"},{"type":"const","value":"radioepg"},{"type":"const","value":"rendition"},{"type":"const","value":"reply-to"},{"type":"const","value":"schema.DCTERMS"},{"type":"const","value":"service"},{"type":"const","value":"shortlink"},{"type":"const","value":"sidebar"},{"type":"const","value":"sitemap"},{"type":"const","value":"subresource"},{"type":"const","value":"sword"},{"type":"const","value":"syndication"},{"type":"const","value":"timesheet"},{"type":"const","value":"token_endpoint"},{"type":"const","value":"webmention"},{"type":"const","value":"widget"},{"type":"const","value":"wlwmanifest"},{"type":"const","value":"image_src"},{"type":"const","value":"http://docs.oasis-open.org/ns/cmis/link/200908/acl"},{"type":"const","value":"stylesheet/less"},{"type":"const","value":"yandex-tableau-widget"},{"type":"const","value":"accessibility"},{"type":"const","value":"bibliography"},{"type":"const","value":"cite"},{"type":"const","value":"embed"},{"type":"const","value":"group"},{"type":"const","value":"longdesc"},{"type":"const","value":"map"},{"type":"const","value":"member"},{"type":"const","value":"m_PageScroll2id"},{"type":"const","value":"prerender"},{"type":"const","value":"profile"},{"type":"const","value":"shortlink"},{"type":"const","value":"source"},{"type":"const","value":"vcalendar-parent"},{"type":"const","value":"vcalendar-child"},{"type":"const","value":"vcalendar-sibling"},{"type":"const","value":"status"},{"type":"const","value":"https://api.w.org/"},{"type":"const","value":"archive"},{"type":"const","value":"archives"},{"type":"const","value":"comment"},{"type":"const","value":"contribution"},{"type":"const","value":"EditURI"},{"type":"const","value":"endorsed"},{"type":"const","value":"fan"},{"type":"const","value":"feed"},{"type":"const","value":"footnote"},{"type":"const","value":"kinetic-stylesheet"},{"type":"const","value":"lightbox"},{"type":"const","value":"made"},{"type":"const","value":"meta"},{"type":"const","value":"microsummary"},{"type":"const","value":"openid.delegate"},{"type":"const","value":"openid.server"},{"type":"const","value":"permalink"},{"type":"const","value":"pgpkey"},{"type":"const","value":"popover"},{"type":"const","value":"privacy"},{"type":"const","value":"publickey"},{"type":"const","value":"referral"},{"type":"const","value":"related"},{"type":"const","value":"replies"},{"type":"const","value":"respond-proxy"},{"type":"const","value":"respond-redirect"},{"type":"const","value":"resource"},{"type":"const","value":"sitemap"},{"type":"const","value":"sponsor"},{"type":"const","value":"tooltip"},{"type":"const","value":"trackback"},{"type":"const","value":"unendorsed"},{"type":"const","value":"user"},{"type":"const","value":"wlwmanifest"},{"type":"const","value":"schema.DC"},{"type":"const","value":"schema.DCTERMS"}],"matched":false,"raw":"noopener","offset":0,"length":8,"line":1,"column":1,"reason":"doesnt-exist-in-enum","partName":"the content of the list"}"#,
+    ),
+    (
+        "LinkTypeForLinkElement",
+        "noreferrer",
+        r#"{"ref":"https://html.spec.whatwg.org/multipage/links.html#linkTypes","expects":[{"type":"const","value":"alternate"},{"type":"const","value":"canonical"},{"type":"const","value":"author"},{"type":"const","value":"dns-prefetch"},{"type":"const","value":"expect"},{"type":"const","value":"help"},{"type":"const","value":"icon"},{"type":"const","value":"manifest"},{"type":"const","value":"modulepreload"},{"type":"const","value":"license"},{"type":"const","value":"next"},{"type":"const","value":"pingback"},{"type":"const","value":"preconnect"},{"type":"const","value":"prefetch"},{"type":"const","value":"preload"},{"type":"const","value":"prev"},{"type":"const","value":"privacy-policy"},{"type":"const","value":"search"},{"type":"const","value":"stylesheet"},{"type":"const","value":"terms-of-service"},{"type":"const","value":"appendix"},{"type":"const","value":"chapter"},{"type":"const","value":"child"},{"type":"const","value":"contents"},{"type":"const","value":"copyright"},{"type":"const","value":"glossary"},{"type":"const","value":"its-rules"},{"type":"const","value":"me"},{"type":"const","value":"parent"},{"type":"const","value":"previous"},{"type":"const","value":"section"},{"type":"const","value":"start"},{"type":"const","value":"subsection"},{"type":"const","value":"toc"},{"type":"const","value":"transformation"},{"type":"const","value":"pronunciation"},{"type":"const","value":"directory"},{"type":"const","value":"enclosure"},{"type":"const","value":"home"},{"type":"const","value":"payment"},{"type":"const","value":"vcs-*"},{"type":"const","value":"about"},{"type":"const","value":"amphtml"},{"type":"const","value":"apple-touch-icon"},{"type":"const","value":"apple-touch-icon-precomposed"},{"type":"const","value":"apple-touch-startup-image"},{"type":"const","value":"archived"},{"type":"const","value":"attachment"},{"type":"const","value":"authorization_endpoint"},{"type":"const","value":"category"},{"type":"const","value":"code-repository"},{"type":"const","value":"code-license"},{"type":"const","value":"component"},{"type":"const","value":"chrome-webstore-item"},{"type":"const","value":"content-repository"},{"type":"const","value":"content-license"},{"type":"const","value":"DCTERMS.conformsTo"},{"type":"const","value":"DCTERMS.contributor"},{"type":"const","value":"DCTERMS.creator"},{"type":"const","value":"DCTERMS.description"},{"type":"const","value":"DCTERMS.hasFormat"},{"type":"const","value":"DCTERMS.hasPart"},{"type":"const","value":"DCTERMS.hasVersion"},{"type":"const","value":"DCTERMS.isFormatOf"},{"type":"const","value":"DCTERMS.isPartOf"},{"type":"const","value":"DCTERMS.isReferencedBy"},{"type":"const","value":"DCTERMS.isReplacedBy"},{"type":"const","value":"DCTERMS.isRequiredBy"},{"type":"const","value":"DCTERMS.isVersionOf"},{"type":"const","value":"DCTERMS.license"},{"type":"const","value":"DCTERMS.mediator"},{"type":"const","value":"DCTERMS.publisher"},{"type":"const","value":"DCTERMS.references"},{"type":"const","value":"DCTERMS.relation"},{"type":"const","value":"DCTERMS.replaces"},{"type":"const","value":"DCTERMS.requires"},{"type":"const","value":"DCTERMS.rightsHolder"},{"type":"const","value":"DCTERMS.source"},{"type":"const","value":"DCTERMS.subject"},{"type":"const","value":"discussion"},{"type":"const","value":"donation"},{"type":"const","value":"edit"},{"type":"const","value":"EditURI"},{"type":"const","value":"enclosure"},{"type":"const","value":"first"},{"type":"const","value":"gbfs"},{"type":"const","value":"gtfs-static"},{"type":"const","value":"gtfs-realtime"},{"type":"const","value":"home"},{"type":"const","value":"hub"},{"type":"const","value":"import"},{"type":"const","value":"in-reply-to"},{"type":"const","value":"root"},{"type":"const","value":"index"},{"type":"const","value":"issues"},{"type":"const","value":"jslicense"},{"type":"const","value":"last"},{"type":"const","value":"main"},{"type":"const","value":"mask-icon"},{"type":"const","value":"meta"},{"type":"const","value":"micropub"},{"type":"const","value":"openid.delegate"},{"type":"const","value":"openid.server"},{"type":"const","value":"openid2.local_id"},{"type":"const","value":"openid2.provider"},{"type":"const","value":"p3pv1"},{"type":"const","value":"pgpkey"},{"type":"const","value":"prerender"},{"type":"const","value":"profile"},{"type":"const","value":"publisher"},{"type":"const","value":"radioepg"},{"type":"const","value":"rendition"},{"type":"const","value":"reply-to"},{"type":"const","value":"schema.DCTERMS"},{"type":"const","value":"service"},{"type":"const","value":"shortlink"},{"type":"const","value":"sidebar"},{"type":"const","value":"sitemap"},{"type":"const","value":"subresource"},{"type":"const","value":"sword"},{"type":"const","value":"syndication"},{"type":"const","value":"timesheet"},{"type":"const","value":"token_endpoint"},{"type":"const","value":"webmention"},{"type":"const","value":"widget"},{"type":"const","value":"wlwmanifest"},{"type":"const","value":"image_src"},{"type":"const","value":"http://docs.oasis-open.org/ns/cmis/link/200908/acl"},{"type":"const","value":"stylesheet/less"},{"type":"const","value":"yandex-tableau-widget"},{"type":"const","value":"accessibility"},{"type":"const","value":"bibliography"},{"type":"const","value":"cite"},{"type":"const","value":"embed"},{"type":"const","value":"group"},{"type":"const","value":"longdesc"},{"type":"const","value":"map"},{"type":"const","value":"member"},{"type":"const","value":"m_PageScroll2id"},{"type":"const","value":"prerender"},{"type":"const","value":"profile"},{"type":"const","value":"shortlink"},{"type":"const","value":"source"},{"type":"const","value":"vcalendar-parent"},{"type":"const","value":"vcalendar-child"},{"type":"const","value":"vcalendar-sibling"},{"type":"const","value":"status"},{"type":"const","value":"https://api.w.org/"},{"type":"const","value":"archive"},{"type":"const","value":"archives"},{"type":"const","value":"comment"},{"type":"const","value":"contribution"},{"type":"const","value":"EditURI"},{"type":"const","value":"endorsed"},{"type":"const","value":"fan"},{"type":"const","value":"feed"},{"type":"const","value":"footnote"},{"type":"const","value":"kinetic-stylesheet"},{"type":"const","value":"lightbox"},{"type":"const","value":"made"},{"type":"const","value":"meta"},{"type":"const","value":"microsummary"},{"type":"const","value":"openid.delegate"},{"type":"const","value":"openid.server"},{"type":"const","value":"permalink"},{"type":"const","value":"pgpkey"},{"type":"const","value":"popover"},{"type":"const","value":"privacy"},{"type":"const","value":"publickey"},{"type":"const","value":"referral"},{"type":"const","value":"related"},{"type":"const","value":"replies"},{"type":"const","value":"respond-proxy"},{"type":"const","value":"respond-redirect"},{"type":"const","value":"resource"},{"type":"const","value":"sitemap"},{"type":"const","value":"sponsor"},{"type":"const","value":"tooltip"},{"type":"const","value":"trackback"},{"type":"const","value":"unendorsed"},{"type":"const","value":"user"},{"type":"const","value":"wlwmanifest"},{"type":"const","value":"schema.DC"},{"type":"const","value":"schema.DCTERMS"}],"matched":false,"raw":"noreferrer","offset":0,"length":10,"line":1,"column":1,"reason":"doesnt-exist-in-enum","partName":"the content of the list"}"#,
+    ),
+    (
+        "LinkTypeForLinkElement",
+        "opener",
+        r#"{"ref":"https://html.spec.whatwg.org/multipage/links.html#linkTypes","expects":[{"type":"const","value":"alternate"},{"type":"const","value":"canonical"},{"type":"const","value":"author"},{"type":"const","value":"dns-prefetch"},{"type":"const","value":"expect"},{"type":"const","value":"help"},{"type":"const","value":"icon"},{"type":"const","value":"manifest"},{"type":"const","value":"modulepreload"},{"type":"const","value":"license"},{"type":"const","value":"next"},{"type":"const","value":"pingback"},{"type":"const","value":"preconnect"},{"type":"const","value":"prefetch"},{"type":"const","value":"preload"},{"type":"const","value":"prev"},{"type":"const","value":"privacy-policy"},{"type":"const","value":"search"},{"type":"const","value":"stylesheet"},{"type":"const","value":"terms-of-service"},{"type":"const","value":"appendix"},{"type":"const","value":"chapter"},{"type":"const","value":"child"},{"type":"const","value":"contents"},{"type":"const","value":"copyright"},{"type":"const","value":"glossary"},{"type":"const","value":"its-rules"},{"type":"const","value":"me"},{"type":"const","value":"parent"},{"type":"const","value":"previous"},{"type":"const","value":"section"},{"type":"const","value":"start"},{"type":"const","value":"subsection"},{"type":"const","value":"toc"},{"type":"const","value":"transformation"},{"type":"const","value":"pronunciation"},{"type":"const","value":"directory"},{"type":"const","value":"enclosure"},{"type":"const","value":"home"},{"type":"const","value":"payment"},{"type":"const","value":"vcs-*"},{"type":"const","value":"about"},{"type":"const","value":"amphtml"},{"type":"const","value":"apple-touch-icon"},{"type":"const","value":"apple-touch-icon-precomposed"},{"type":"const","value":"apple-touch-startup-image"},{"type":"const","value":"archived"},{"type":"const","value":"attachment"},{"type":"const","value":"authorization_endpoint"},{"type":"const","value":"category"},{"type":"const","value":"code-repository"},{"type":"const","value":"code-license"},{"type":"const","value":"component"},{"type":"const","value":"chrome-webstore-item"},{"type":"const","value":"content-repository"},{"type":"const","value":"content-license"},{"type":"const","value":"DCTERMS.conformsTo"},{"type":"const","value":"DCTERMS.contributor"},{"type":"const","value":"DCTERMS.creator"},{"type":"const","value":"DCTERMS.description"},{"type":"const","value":"DCTERMS.hasFormat"},{"type":"const","value":"DCTERMS.hasPart"},{"type":"const","value":"DCTERMS.hasVersion"},{"type":"const","value":"DCTERMS.isFormatOf"},{"type":"const","value":"DCTERMS.isPartOf"},{"type":"const","value":"DCTERMS.isReferencedBy"},{"type":"const","value":"DCTERMS.isReplacedBy"},{"type":"const","value":"DCTERMS.isRequiredBy"},{"type":"const","value":"DCTERMS.isVersionOf"},{"type":"const","value":"DCTERMS.license"},{"type":"const","value":"DCTERMS.mediator"},{"type":"const","value":"DCTERMS.publisher"},{"type":"const","value":"DCTERMS.references"},{"type":"const","value":"DCTERMS.relation"},{"type":"const","value":"DCTERMS.replaces"},{"type":"const","value":"DCTERMS.requires"},{"type":"const","value":"DCTERMS.rightsHolder"},{"type":"const","value":"DCTERMS.source"},{"type":"const","value":"DCTERMS.subject"},{"type":"const","value":"discussion"},{"type":"const","value":"donation"},{"type":"const","value":"edit"},{"type":"const","value":"EditURI"},{"type":"const","value":"enclosure"},{"type":"const","value":"first"},{"type":"const","value":"gbfs"},{"type":"const","value":"gtfs-static"},{"type":"const","value":"gtfs-realtime"},{"type":"const","value":"home"},{"type":"const","value":"hub"},{"type":"const","value":"import"},{"type":"const","value":"in-reply-to"},{"type":"const","value":"root"},{"type":"const","value":"index"},{"type":"const","value":"issues"},{"type":"const","value":"jslicense"},{"type":"const","value":"last"},{"type":"const","value":"main"},{"type":"const","value":"mask-icon"},{"type":"const","value":"meta"},{"type":"const","value":"micropub"},{"type":"const","value":"openid.delegate"},{"type":"const","value":"openid.server"},{"type":"const","value":"openid2.local_id"},{"type":"const","value":"openid2.provider"},{"type":"const","value":"p3pv1"},{"type":"const","value":"pgpkey"},{"type":"const","value":"prerender"},{"type":"const","value":"profile"},{"type":"const","value":"publisher"},{"type":"const","value":"radioepg"},{"type":"const","value":"rendition"},{"type":"const","value":"reply-to"},{"type":"const","value":"schema.DCTERMS"},{"type":"const","value":"service"},{"type":"const","value":"shortlink"},{"type":"const","value":"sidebar"},{"type":"const","value":"sitemap"},{"type":"const","value":"subresource"},{"type":"const","value":"sword"},{"type":"const","value":"syndication"},{"type":"const","value":"timesheet"},{"type":"const","value":"token_endpoint"},{"type":"const","value":"webmention"},{"type":"const","value":"widget"},{"type":"const","value":"wlwmanifest"},{"type":"const","value":"image_src"},{"type":"const","value":"http://docs.oasis-open.org/ns/cmis/link/200908/acl"},{"type":"const","value":"stylesheet/less"},{"type":"const","value":"yandex-tableau-widget"},{"type":"const","value":"accessibility"},{"type":"const","value":"bibliography"},{"type":"const","value":"cite"},{"type":"const","value":"embed"},{"type":"const","value":"group"},{"type":"const","value":"longdesc"},{"type":"const","value":"map"},{"type":"const","value":"member"},{"type":"const","value":"m_PageScroll2id"},{"type":"const","value":"prerender"},{"type":"const","value":"profile"},{"type":"const","value":"shortlink"},{"type":"const","value":"source"},{"type":"const","value":"vcalendar-parent"},{"type":"const","value":"vcalendar-child"},{"type":"const","value":"vcalendar-sibling"},{"type":"const","value":"status"},{"type":"const","value":"https://api.w.org/"},{"type":"const","value":"archive"},{"type":"const","value":"archives"},{"type":"const","value":"comment"},{"type":"const","value":"contribution"},{"type":"const","value":"EditURI"},{"type":"const","value":"endorsed"},{"type":"const","value":"fan"},{"type":"const","value":"feed"},{"type":"const","value":"footnote"},{"type":"const","value":"kinetic-stylesheet"},{"type":"const","value":"lightbox"},{"type":"const","value":"made"},{"type":"const","value":"meta"},{"type":"const","value":"microsummary"},{"type":"const","value":"openid.delegate"},{"type":"const","value":"openid.server"},{"type":"const","value":"permalink"},{"type":"const","value":"pgpkey"},{"type":"const","value":"popover"},{"type":"const","value":"privacy"},{"type":"const","value":"publickey"},{"type":"const","value":"referral"},{"type":"const","value":"related"},{"type":"const","value":"replies"},{"type":"const","value":"respond-proxy"},{"type":"const","value":"respond-redirect"},{"type":"const","value":"resource"},{"type":"const","value":"sitemap"},{"type":"const","value":"sponsor"},{"type":"const","value":"tooltip"},{"type":"const","value":"trackback"},{"type":"const","value":"unendorsed"},{"type":"const","value":"user"},{"type":"const","value":"wlwmanifest"},{"type":"const","value":"schema.DC"},{"type":"const","value":"schema.DCTERMS"}],"matched":false,"raw":"opener","offset":0,"length":6,"line":1,"column":1,"reason":"doesnt-exist-in-enum","partName":"the content of the list"}"#,
+    ),
+    (
+        "LinkTypeForLinkElement",
+        "parent",
+        r#"{"reason":"unexpected-token","expects":[{"type":"common","value":"valid Link Type"}],"matched":false,"ref":"https://html.spec.whatwg.org/multipage/links.html#linkTypes","raw":"parent","offset":0,"length":6,"line":1,"column":1}"#,
+    ),
+    (
+        "LinkTypeForLinkElement",
+        "pavatar",
+        r#"{"reason":"unexpected-token","expects":[{"type":"common","value":"valid Link Type"}],"matched":false,"ref":"https://html.spec.whatwg.org/multipage/links.html#linkTypes","raw":"pavatar","offset":0,"length":7,"line":1,"column":1}"#,
+    ),
+    (
+        "LinkTypeForLinkElement",
+        "preconnect",
+        r#"{"matched":true}"#,
+    ),
+    (
+        "LinkTypeForLinkElement",
+        "prefetch",
+        r#"{"matched":true}"#,
+    ),
+    (
+        "LinkTypeForLinkElement",
+        "preload",
+        r#"{"matched":true}"#,
+    ),
+    (
+        "LinkTypeForLinkElement",
+        "prev",
+        r#"{"matched":true}"#,
+    ),
+    (
+        "LinkTypeForLinkElement",
+        "privacy-policy",
+        r#"{"matched":true}"#,
+    ),
+    (
+        "LinkTypeForLinkElement",
+        "publisher",
+        r#"{"reason":"unexpected-token","expects":[{"type":"common","value":"valid Link Type"}],"matched":false,"ref":"https://html.spec.whatwg.org/multipage/links.html#linkTypes","raw":"publisher","offset":0,"length":9,"line":1,"column":1}"#,
+    ),
+    (
+        "LinkTypeForLinkElement",
+        "schema.DC",
+        r#"{"matched":true}"#,
+    ),
+    (
+        "LinkTypeForLinkElement",
+        "search",
+        r#"{"matched":true}"#,
+    ),
+    (
+        "LinkTypeForLinkElement",
+        "shadowbox",
+        r#"{"reason":"unexpected-token","expects":[{"type":"common","value":"valid Link Type"}],"matched":false,"ref":"https://html.spec.whatwg.org/multipage/links.html#linkTypes","raw":"shadowbox","offset":0,"length":9,"line":1,"column":1}"#,
+    ),
+    (
+        "LinkTypeForLinkElement",
+        "sibling",
+        r#"{"reason":"unexpected-token","expects":[{"type":"common","value":"valid Link Type"}],"matched":false,"ref":"https://html.spec.whatwg.org/multipage/links.html#linkTypes","raw":"sibling","offset":0,"length":7,"line":1,"column":1}"#,
+    ),
+    (
+        "LinkTypeForLinkElement",
+        "sitemap",
+        r#"{"reason":"unexpected-token","expects":[{"type":"common","value":"valid Link Type"}],"matched":false,"ref":"https://html.spec.whatwg.org/multipage/links.html#linkTypes","raw":"sitemap","offset":0,"length":7,"line":1,"column":1}"#,
+    ),
+    (
+        "LinkTypeForLinkElement",
+        "stylesheet alternate",
+        r#"{"matched":true}"#,
+    ),
+    (
+        "LinkTypeForLinkElement",
+        "stylesheet self",
+        r#"{"reason":"unexpected-token","expects":[{"type":"common","value":"valid Link Type"}],"matched":false,"ref":"https://html.spec.whatwg.org/multipage/links.html#linkTypes","raw":"self","offset":11,"length":4,"line":1,"column":12}"#,
+    ),
+    (
+        "LinkTypeForLinkElement",
+        "stylesheet",
+        r#"{"matched":true}"#,
+    ),
+    (
+        "LinkTypeForLinkElement",
+        "STYLESHEET",
+        r#"{"matched":true}"#,
+    ),
+    (
+        "LinkTypeForLinkElement",
+        "tag",
+        r#"{"ref":"https://html.spec.whatwg.org/multipage/links.html#linkTypes","expects":[{"type":"const","value":"alternate"},{"type":"const","value":"canonical"},{"type":"const","value":"author"},{"type":"const","value":"dns-prefetch"},{"type":"const","value":"expect"},{"type":"const","value":"help"},{"type":"const","value":"icon"},{"type":"const","value":"manifest"},{"type":"const","value":"modulepreload"},{"type":"const","value":"license"},{"type":"const","value":"next"},{"type":"const","value":"pingback"},{"type":"const","value":"preconnect"},{"type":"const","value":"prefetch"},{"type":"const","value":"preload"},{"type":"const","value":"prev"},{"type":"const","value":"privacy-policy"},{"type":"const","value":"search"},{"type":"const","value":"stylesheet"},{"type":"const","value":"terms-of-service"},{"type":"const","value":"appendix"},{"type":"const","value":"chapter"},{"type":"const","value":"child"},{"type":"const","value":"contents"},{"type":"const","value":"copyright"},{"type":"const","value":"glossary"},{"type":"const","value":"its-rules"},{"type":"const","value":"me"},{"type":"const","value":"parent"},{"type":"const","value":"previous"},{"type":"const","value":"section"},{"type":"const","value":"start"},{"type":"const","value":"subsection"},{"type":"const","value":"toc"},{"type":"const","value":"transformation"},{"type":"const","value":"pronunciation"},{"type":"const","value":"directory"},{"type":"const","value":"enclosure"},{"type":"const","value":"home"},{"type":"const","value":"payment"},{"type":"const","value":"vcs-*"},{"type":"const","value":"about"},{"type":"const","value":"amphtml"},{"type":"const","value":"apple-touch-icon"},{"type":"const","value":"apple-touch-icon-precomposed"},{"type":"const","value":"apple-touch-startup-image"},{"type":"const","value":"archived"},{"type":"const","value":"attachment"},{"type":"const","value":"authorization_endpoint"},{"type":"const","value":"category"},{"type":"const","value":"code-repository"},{"type":"const","value":"code-license"},{"type":"const","value":"component"},{"type":"const","value":"chrome-webstore-item"},{"type":"const","value":"content-repository"},{"type":"const","value":"content-license"},{"type":"const","value":"DCTERMS.conformsTo"},{"type":"const","value":"DCTERMS.contributor"},{"type":"const","value":"DCTERMS.creator"},{"type":"const","value":"DCTERMS.description"},{"type":"const","value":"DCTERMS.hasFormat"},{"type":"const","value":"DCTERMS.hasPart"},{"type":"const","value":"DCTERMS.hasVersion"},{"type":"const","value":"DCTERMS.isFormatOf"},{"type":"const","value":"DCTERMS.isPartOf"},{"type":"const","value":"DCTERMS.isReferencedBy"},{"type":"const","value":"DCTERMS.isReplacedBy"},{"type":"const","value":"DCTERMS.isRequiredBy"},{"type":"const","value":"DCTERMS.isVersionOf"},{"type":"const","value":"DCTERMS.license"},{"type":"const","value":"DCTERMS.mediator"},{"type":"const","value":"DCTERMS.publisher"},{"type":"const","value":"DCTERMS.references"},{"type":"const","value":"DCTERMS.relation"},{"type":"const","value":"DCTERMS.replaces"},{"type":"const","value":"DCTERMS.requires"},{"type":"const","value":"DCTERMS.rightsHolder"},{"type":"const","value":"DCTERMS.source"},{"type":"const","value":"DCTERMS.subject"},{"type":"const","value":"discussion"},{"type":"const","value":"donation"},{"type":"const","value":"edit"},{"type":"const","value":"EditURI"},{"type":"const","value":"enclosure"},{"type":"const","value":"first"},{"type":"const","value":"gbfs"},{"type":"const","value":"gtfs-static"},{"type":"const","value":"gtfs-realtime"},{"type":"const","value":"home"},{"type":"const","value":"hub"},{"type":"const","value":"import"},{"type":"const","value":"in-reply-to"},{"type":"const","value":"root"},{"type":"const","value":"index"},{"type":"const","value":"issues"},{"type":"const","value":"jslicense"},{"type":"const","value":"last"},{"type":"const","value":"main"},{"type":"const","value":"mask-icon"},{"type":"const","value":"meta"},{"type":"const","value":"micropub"},{"type":"const","value":"openid.delegate"},{"type":"const","value":"openid.server"},{"type":"const","value":"openid2.local_id"},{"type":"const","value":"openid2.provider"},{"type":"const","value":"p3pv1"},{"type":"const","value":"pgpkey"},{"type":"const","value":"prerender"},{"type":"const","value":"profile"},{"type":"const","value":"publisher"},{"type":"const","value":"radioepg"},{"type":"const","value":"rendition"},{"type":"const","value":"reply-to"},{"type":"const","value":"schema.DCTERMS"},{"type":"const","value":"service"},{"type":"const","value":"shortlink"},{"type":"const","value":"sidebar"},{"type":"const","value":"sitemap"},{"type":"const","value":"subresource"},{"type":"const","value":"sword"},{"type":"const","value":"syndication"},{"type":"const","value":"timesheet"},{"type":"const","value":"token_endpoint"},{"type":"const","value":"webmention"},{"type":"const","value":"widget"},{"type":"const","value":"wlwmanifest"},{"type":"const","value":"image_src"},{"type":"const","value":"http://docs.oasis-open.org/ns/cmis/link/200908/acl"},{"type":"const","value":"stylesheet/less"},{"type":"const","value":"yandex-tableau-widget"},{"type":"const","value":"accessibility"},{"type":"const","value":"bibliography"},{"type":"const","value":"cite"},{"type":"const","value":"embed"},{"type":"const","value":"group"},{"type":"const","value":"longdesc"},{"type":"const","value":"map"},{"type":"const","value":"member"},{"type":"const","value":"m_PageScroll2id"},{"type":"const","value":"prerender"},{"type":"const","value":"profile"},{"type":"const","value":"shortlink"},{"type":"const","value":"source"},{"type":"const","value":"vcalendar-parent"},{"type":"const","value":"vcalendar-child"},{"type":"const","value":"vcalendar-sibling"},{"type":"const","value":"status"},{"type":"const","value":"https://api.w.org/"},{"type":"const","value":"archive"},{"type":"const","value":"archives"},{"type":"const","value":"comment"},{"type":"const","value":"contribution"},{"type":"const","value":"EditURI"},{"type":"const","value":"endorsed"},{"type":"const","value":"fan"},{"type":"const","value":"feed"},{"type":"const","value":"footnote"},{"type":"const","value":"kinetic-stylesheet"},{"type":"const","value":"lightbox"},{"type":"const","value":"made"},{"type":"const","value":"meta"},{"type":"const","value":"microsummary"},{"type":"const","value":"openid.delegate"},{"type":"const","value":"openid.server"},{"type":"const","value":"permalink"},{"type":"const","value":"pgpkey"},{"type":"const","value":"popover"},{"type":"const","value":"privacy"},{"type":"const","value":"publickey"},{"type":"const","value":"referral"},{"type":"const","value":"related"},{"type":"const","value":"replies"},{"type":"const","value":"respond-proxy"},{"type":"const","value":"respond-redirect"},{"type":"const","value":"resource"},{"type":"const","value":"sitemap"},{"type":"const","value":"sponsor"},{"type":"const","value":"tooltip"},{"type":"const","value":"trackback"},{"type":"const","value":"unendorsed"},{"type":"const","value":"user"},{"type":"const","value":"wlwmanifest"},{"type":"const","value":"schema.DC"},{"type":"const","value":"schema.DCTERMS"}],"matched":false,"raw":"tag","offset":0,"length":3,"line":1,"column":1,"reason":"doesnt-exist-in-enum","partName":"the content of the list"}"#,
+    ),
+    (
+        "LinkTypeForLinkElement",
+        "terms-of-service",
+        r#"{"matched":true}"#,
+    ),
+    (
+        "LinkTypeForLinkElement",
+        "top",
+        r#"{"reason":"unexpected-token","expects":[{"type":"common","value":"valid Link Type"}],"matched":false,"ref":"https://html.spec.whatwg.org/multipage/links.html#linkTypes","raw":"top","offset":0,"length":3,"line":1,"column":1}"#,
+    ),
+    (
+        "LinkTypeForLinkElement",
+        "up",
+        r#"{"reason":"unexpected-token","expects":[{"type":"common","value":"valid Link Type"}],"matched":false,"ref":"https://html.spec.whatwg.org/multipage/links.html#linkTypes","raw":"up","offset":0,"length":2,"line":1,"column":1}"#,
+    ),
+    (
+        "LinkTypeForLinkElement",
+        "webmention",
+        r#"{"matched":true}"#,
+    ),
+    (
+        "LinkTypeForLinkElement",
+        "youtube",
+        r#"{"reason":"unexpected-token","expects":[{"type":"common","value":"valid Link Type"}],"matched":false,"ref":"https://html.spec.whatwg.org/multipage/links.html#linkTypes","raw":"youtube","offset":0,"length":7,"line":1,"column":1}"#,
+    ),
+    (
+        "LinkTypeForLinkElement",
+        "subsection",
+        r#"{"reason":"unexpected-token","expects":[{"type":"common","value":"valid Link Type"}],"matched":false,"ref":"https://html.spec.whatwg.org/multipage/links.html#linkTypes","raw":"subsection","offset":0,"length":10,"line":1,"column":1}"#,
+    ),
+    (
+        "LinkTypeForLinkElement",
+        "Self",
+        r#"{"ref":"https://html.spec.whatwg.org/multipage/links.html#linkTypes","expects":[{"type":"const","value":"alternate"},{"type":"const","value":"canonical"},{"type":"const","value":"author"},{"type":"const","value":"dns-prefetch"},{"type":"const","value":"expect"},{"type":"const","value":"help"},{"type":"const","value":"icon"},{"type":"const","value":"manifest"},{"type":"const","value":"modulepreload"},{"type":"const","value":"license"},{"type":"const","value":"next"},{"type":"const","value":"pingback"},{"type":"const","value":"preconnect"},{"type":"const","value":"prefetch"},{"type":"const","value":"preload"},{"type":"const","value":"prev"},{"type":"const","value":"privacy-policy"},{"type":"const","value":"search"},{"type":"const","value":"stylesheet"},{"type":"const","value":"terms-of-service"},{"type":"const","value":"appendix"},{"type":"const","value":"chapter"},{"type":"const","value":"child"},{"type":"const","value":"contents"},{"type":"const","value":"copyright"},{"type":"const","value":"glossary"},{"type":"const","value":"its-rules"},{"type":"const","value":"me"},{"type":"const","value":"parent"},{"type":"const","value":"previous"},{"type":"const","value":"section"},{"type":"const","value":"start"},{"type":"const","value":"subsection"},{"type":"const","value":"toc"},{"type":"const","value":"transformation"},{"type":"const","value":"pronunciation"},{"type":"const","value":"directory"},{"type":"const","value":"enclosure"},{"type":"const","value":"home"},{"type":"const","value":"payment"},{"type":"const","value":"vcs-*"},{"type":"const","value":"about"},{"type":"const","value":"amphtml"},{"type":"const","value":"apple-touch-icon"},{"type":"const","value":"apple-touch-icon-precomposed"},{"type":"const","value":"apple-touch-startup-image"},{"type":"const","value":"archived"},{"type":"const","value":"attachment"},{"type":"const","value":"authorization_endpoint"},{"type":"const","value":"category"},{"type":"const","value":"code-repository"},{"type":"const","value":"code-license"},{"type":"const","value":"component"},{"type":"const","value":"chrome-webstore-item"},{"type":"const","value":"content-repository"},{"type":"const","value":"content-license"},{"type":"const","value":"DCTERMS.conformsTo"},{"type":"const","value":"DCTERMS.contributor"},{"type":"const","value":"DCTERMS.creator"},{"type":"const","value":"DCTERMS.description"},{"type":"const","value":"DCTERMS.hasFormat"},{"type":"const","value":"DCTERMS.hasPart"},{"type":"const","value":"DCTERMS.hasVersion"},{"type":"const","value":"DCTERMS.isFormatOf"},{"type":"const","value":"DCTERMS.isPartOf"},{"type":"const","value":"DCTERMS.isReferencedBy"},{"type":"const","value":"DCTERMS.isReplacedBy"},{"type":"const","value":"DCTERMS.isRequiredBy"},{"type":"const","value":"DCTERMS.isVersionOf"},{"type":"const","value":"DCTERMS.license"},{"type":"const","value":"DCTERMS.mediator"},{"type":"const","value":"DCTERMS.publisher"},{"type":"const","value":"DCTERMS.references"},{"type":"const","value":"DCTERMS.relation"},{"type":"const","value":"DCTERMS.replaces"},{"type":"const","value":"DCTERMS.requires"},{"type":"const","value":"DCTERMS.rightsHolder"},{"type":"const","value":"DCTERMS.source"},{"type":"const","value":"DCTERMS.subject"},{"type":"const","value":"discussion"},{"type":"const","value":"donation"},{"type":"const","value":"edit"},{"type":"const","value":"EditURI"},{"type":"const","value":"enclosure"},{"type":"const","value":"first"},{"type":"const","value":"gbfs"},{"type":"const","value":"gtfs-static"},{"type":"const","value":"gtfs-realtime"},{"type":"const","value":"home"},{"type":"const","value":"hub"},{"type":"const","value":"import"},{"type":"const","value":"in-reply-to"},{"type":"const","value":"root"},{"type":"const","value":"index"},{"type":"const","value":"issues"},{"type":"const","value":"jslicense"},{"type":"const","value":"last"},{"type":"const","value":"main"},{"type":"const","value":"mask-icon"},{"type":"const","value":"meta"},{"type":"const","value":"micropub"},{"type":"const","value":"openid.delegate"},{"type":"const","value":"openid.server"},{"type":"const","value":"openid2.local_id"},{"type":"const","value":"openid2.provider"},{"type":"const","value":"p3pv1"},{"type":"const","value":"pgpkey"},{"type":"const","value":"prerender"},{"type":"const","value":"profile"},{"type":"const","value":"publisher"},{"type":"const","value":"radioepg"},{"type":"const","value":"rendition"},{"type":"const","value":"reply-to"},{"type":"const","value":"schema.DCTERMS"},{"type":"const","value":"service"},{"type":"const","value":"shortlink"},{"type":"const","value":"sidebar"},{"type":"const","value":"sitemap"},{"type":"const","value":"subresource"},{"type":"const","value":"sword"},{"type":"const","value":"syndication"},{"type":"const","value":"timesheet"},{"type":"const","value":"token_endpoint"},{"type":"const","value":"webmention"},{"type":"const","value":"widget"},{"type":"const","value":"wlwmanifest"},{"type":"const","value":"image_src"},{"type":"const","value":"http://docs.oasis-open.org/ns/cmis/link/200908/acl"},{"type":"const","value":"stylesheet/less"},{"type":"const","value":"yandex-tableau-widget"},{"type":"const","value":"accessibility"},{"type":"const","value":"bibliography"},{"type":"const","value":"cite"},{"type":"const","value":"embed"},{"type":"const","value":"group"},{"type":"const","value":"longdesc"},{"type":"const","value":"map"},{"type":"const","value":"member"},{"type":"const","value":"m_PageScroll2id"},{"type":"const","value":"prerender"},{"type":"const","value":"profile"},{"type":"const","value":"shortlink"},{"type":"const","value":"source"},{"type":"const","value":"vcalendar-parent"},{"type":"const","value":"vcalendar-child"},{"type":"const","value":"vcalendar-sibling"},{"type":"const","value":"status"},{"type":"const","value":"https://api.w.org/"},{"type":"const","value":"archive"},{"type":"const","value":"archives"},{"type":"const","value":"comment"},{"type":"const","value":"contribution"},{"type":"const","value":"EditURI"},{"type":"const","value":"endorsed"},{"type":"const","value":"fan"},{"type":"const","value":"feed"},{"type":"const","value":"footnote"},{"type":"const","value":"kinetic-stylesheet"},{"type":"const","value":"lightbox"},{"type":"const","value":"made"},{"type":"const","value":"meta"},{"type":"const","value":"microsummary"},{"type":"const","value":"openid.delegate"},{"type":"const","value":"openid.server"},{"type":"const","value":"permalink"},{"type":"const","value":"pgpkey"},{"type":"const","value":"popover"},{"type":"const","value":"privacy"},{"type":"const","value":"publickey"},{"type":"const","value":"referral"},{"type":"const","value":"related"},{"type":"const","value":"replies"},{"type":"const","value":"respond-proxy"},{"type":"const","value":"respond-redirect"},{"type":"const","value":"resource"},{"type":"const","value":"sitemap"},{"type":"const","value":"sponsor"},{"type":"const","value":"tooltip"},{"type":"const","value":"trackback"},{"type":"const","value":"unendorsed"},{"type":"const","value":"user"},{"type":"const","value":"wlwmanifest"},{"type":"const","value":"schema.DC"},{"type":"const","value":"schema.DCTERMS"}],"matched":false,"raw":"Self","offset":0,"length":4,"line":1,"column":1,"reason":"doesnt-exist-in-enum","partName":"the content of the list"}"#,
+    ),
+    (
+        "LinkTypeForLinkElement",
+        "friend",
+        r#"{"reason":"unexpected-token","expects":[{"type":"common","value":"valid Link Type"}],"matched":false,"ref":"https://html.spec.whatwg.org/multipage/links.html#linkTypes","raw":"friend","offset":0,"length":6,"line":1,"column":1}"#,
+    ),
+    (
+        "LinkTypeForLinkElement",
+        "enclosure",
+        r#"{"matched":true}"#,
+    ),
+    (
+        "LinkTypeForLinkElement",
+        "vcs-*",
+        r#"{"matched":true}"#,
+    ),
+    (
+        "LinkTypeForLinkElement",
+        " stylesheet ",
+        r#"{"matched":true}"#,
+    ),
+    (
+        "LinkTypeForLinkElement",
+        "stylesheet\nicon",
+        r#"{"matched":true}"#,
+    ),
+    (
+        "LinkTypeForLinkElement",
+        "Stylesheet stylesheet",
+        r#"{"partName":"the content of the list","reason":"duplicated","ref":"https://html.spec.whatwg.org/multipage/links.html#linkTypes","expects":[{"type":"const","value":"Link types allowed in the `link` element when used in the `body` element"}],"matched":false,"raw":"stylesheet","offset":11,"length":10,"line":1,"column":12}"#,
+    ),
+    (
+        "LinkTypeForLinkElementInBody",
+        "alternate",
+        r#"{"ref":"https://html.spec.whatwg.org/multipage/links.html#linkTypes","expects":[{"type":"const","value":"dns-prefetch"},{"type":"const","value":"modulepreload"},{"type":"const","value":"pingback"},{"type":"const","value":"preconnect"},{"type":"const","value":"prefetch"},{"type":"const","value":"preload"},{"type":"const","value":"stylesheet"}],"matched":false,"raw":"alternate","offset":0,"length":9,"line":1,"column":1,"reason":"doesnt-exist-in-enum","partName":"the content of the list"}"#,
+    ),
+    (
+        "LinkTypeForLinkElementInBody",
+        "canonical",
+        r#"{"ref":"https://html.spec.whatwg.org/multipage/links.html#linkTypes","expects":[{"type":"const","value":"dns-prefetch"},{"type":"const","value":"modulepreload"},{"type":"const","value":"pingback"},{"type":"const","value":"preconnect"},{"type":"const","value":"prefetch"},{"type":"const","value":"preload"},{"type":"const","value":"stylesheet"}],"matched":false,"raw":"canonical","offset":0,"length":9,"line":1,"column":1,"reason":"doesnt-exist-in-enum","partName":"the content of the list"}"#,
+    ),
+    (
+        "LinkTypeForLinkElementInBody",
+        "author",
+        r#"{"ref":"https://html.spec.whatwg.org/multipage/links.html#linkTypes","expects":[{"type":"const","value":"dns-prefetch"},{"type":"const","value":"modulepreload"},{"type":"const","value":"pingback"},{"type":"const","value":"preconnect"},{"type":"const","value":"prefetch"},{"type":"const","value":"preload"},{"type":"const","value":"stylesheet"}],"matched":false,"raw":"author","offset":0,"length":6,"line":1,"column":1,"reason":"doesnt-exist-in-enum","partName":"the content of the list"}"#,
+    ),
+    (
+        "LinkTypeForLinkElementInBody",
+        "bookmark",
+        r#"{"ref":"https://html.spec.whatwg.org/multipage/links.html#linkTypes","expects":[{"type":"const","value":"dns-prefetch"},{"type":"const","value":"modulepreload"},{"type":"const","value":"pingback"},{"type":"const","value":"preconnect"},{"type":"const","value":"prefetch"},{"type":"const","value":"preload"},{"type":"const","value":"stylesheet"}],"matched":false,"raw":"bookmark","offset":0,"length":8,"line":1,"column":1,"reason":"doesnt-exist-in-enum","partName":"the content of the list"}"#,
+    ),
+    (
+        "LinkTypeForLinkElementInBody",
+        "dns-prefetch",
+        r#"{"matched":true}"#,
+    ),
+    (
+        "LinkTypeForLinkElementInBody",
+        "expect",
+        r#"{"ref":"https://html.spec.whatwg.org/multipage/links.html#linkTypes","expects":[{"type":"const","value":"dns-prefetch"},{"type":"const","value":"modulepreload"},{"type":"const","value":"pingback"},{"type":"const","value":"preconnect"},{"type":"const","value":"prefetch"},{"type":"const","value":"preload"},{"type":"const","value":"stylesheet"}],"matched":false,"raw":"expect","offset":0,"length":6,"line":1,"column":1,"reason":"doesnt-exist-in-enum","partName":"the content of the list"}"#,
+    ),
+    (
+        "LinkTypeForLinkElementInBody",
+        "help",
+        r#"{"ref":"https://html.spec.whatwg.org/multipage/links.html#linkTypes","expects":[{"type":"const","value":"dns-prefetch"},{"type":"const","value":"modulepreload"},{"type":"const","value":"pingback"},{"type":"const","value":"preconnect"},{"type":"const","value":"prefetch"},{"type":"const","value":"preload"},{"type":"const","value":"stylesheet"}],"matched":false,"raw":"help","offset":0,"length":4,"line":1,"column":1,"reason":"doesnt-exist-in-enum","partName":"the content of the list"}"#,
+    ),
+    (
+        "LinkTypeForLinkElementInBody",
+        "service",
+        r#"{"ref":"https://html.spec.whatwg.org/multipage/links.html#linkTypes","expects":[{"type":"const","value":"dns-prefetch"},{"type":"const","value":"modulepreload"},{"type":"const","value":"pingback"},{"type":"const","value":"preconnect"},{"type":"const","value":"prefetch"},{"type":"const","value":"preload"},{"type":"const","value":"stylesheet"}],"matched":false,"raw":"service","offset":0,"length":7,"line":1,"column":1,"reason":"doesnt-exist-in-enum","partName":"the content of the list"}"#,
+    ),
+    (
+        "LinkTypeForLinkElementInBody",
+        "alternate canonical author",
+        r#"{"ref":"https://html.spec.whatwg.org/multipage/links.html#linkTypes","expects":[{"type":"const","value":"dns-prefetch"},{"type":"const","value":"modulepreload"},{"type":"const","value":"pingback"},{"type":"const","value":"preconnect"},{"type":"const","value":"prefetch"},{"type":"const","value":"preload"},{"type":"const","value":"stylesheet"}],"matched":false,"raw":"alternate","offset":0,"length":9,"line":1,"column":1,"reason":"doesnt-exist-in-enum","partName":"the content of the list"}"#,
+    ),
+    (
+        "LinkTypeForLinkElementInBody",
+        "alternate canonical author dns-prefetch",
+        r#"{"ref":"https://html.spec.whatwg.org/multipage/links.html#linkTypes","expects":[{"type":"const","value":"dns-prefetch"},{"type":"const","value":"modulepreload"},{"type":"const","value":"pingback"},{"type":"const","value":"preconnect"},{"type":"const","value":"prefetch"},{"type":"const","value":"preload"},{"type":"const","value":"stylesheet"}],"matched":false,"raw":"alternate","offset":0,"length":9,"line":1,"column":1,"reason":"doesnt-exist-in-enum","partName":"the content of the list"}"#,
+    ),
+    (
+        "LinkTypeForLinkElementInBody",
+        "alternate canonical author dns-prefetch expect",
+        r#"{"ref":"https://html.spec.whatwg.org/multipage/links.html#linkTypes","expects":[{"type":"const","value":"dns-prefetch"},{"type":"const","value":"modulepreload"},{"type":"const","value":"pingback"},{"type":"const","value":"preconnect"},{"type":"const","value":"prefetch"},{"type":"const","value":"preload"},{"type":"const","value":"stylesheet"}],"matched":false,"raw":"alternate","offset":0,"length":9,"line":1,"column":1,"reason":"doesnt-exist-in-enum","partName":"the content of the list"}"#,
+    ),
+    (
+        "LinkTypeForLinkElementInBody",
+        "alternate canonical author dns-prefetch expect help",
+        r#"{"ref":"https://html.spec.whatwg.org/multipage/links.html#linkTypes","expects":[{"type":"const","value":"dns-prefetch"},{"type":"const","value":"modulepreload"},{"type":"const","value":"pingback"},{"type":"const","value":"preconnect"},{"type":"const","value":"prefetch"},{"type":"const","value":"preload"},{"type":"const","value":"stylesheet"}],"matched":false,"raw":"alternate","offset":0,"length":9,"line":1,"column":1,"reason":"doesnt-exist-in-enum","partName":"the content of the list"}"#,
+    ),
+    (
+        "LinkTypeForLinkElementInBody",
+        "modulepreload",
+        r#"{"matched":true}"#,
+    ),
+    (
+        "LinkTypeForLinkElementInBody",
+        "pingback",
+        r#"{"matched":true}"#,
+    ),
+    (
+        "LinkTypeForLinkElementInBody",
+        "bookmark dns-prefetch",
+        r#"{"ref":"https://html.spec.whatwg.org/multipage/links.html#linkTypes","expects":[{"type":"const","value":"dns-prefetch"},{"type":"const","value":"modulepreload"},{"type":"const","value":"pingback"},{"type":"const","value":"preconnect"},{"type":"const","value":"prefetch"},{"type":"const","value":"preload"},{"type":"const","value":"stylesheet"}],"matched":false,"raw":"bookmark","offset":0,"length":8,"line":1,"column":1,"reason":"doesnt-exist-in-enum","partName":"the content of the list"}"#,
+    ),
+    (
+        "LinkTypeForLinkElementInBody",
+        "disclosure",
+        r#"{"ref":"https://html.spec.whatwg.org/multipage/links.html#linkTypes","expects":[{"type":"const","value":"dns-prefetch"},{"type":"const","value":"modulepreload"},{"type":"const","value":"pingback"},{"type":"const","value":"preconnect"},{"type":"const","value":"prefetch"},{"type":"const","value":"preload"},{"type":"const","value":"stylesheet"}],"matched":false,"raw":"disclosure","offset":0,"length":10,"line":1,"column":1,"reason":"doesnt-exist-in-enum","partName":"the content of the list"}"#,
+    ),
+    (
+        "LinkTypeForLinkElementInBody",
+        "license",
+        r#"{"ref":"https://html.spec.whatwg.org/multipage/links.html#linkTypes","expects":[{"type":"const","value":"dns-prefetch"},{"type":"const","value":"modulepreload"},{"type":"const","value":"pingback"},{"type":"const","value":"preconnect"},{"type":"const","value":"prefetch"},{"type":"const","value":"preload"},{"type":"const","value":"stylesheet"}],"matched":false,"raw":"license","offset":0,"length":7,"line":1,"column":1,"reason":"doesnt-exist-in-enum","partName":"the content of the list"}"#,
+    ),
+    (
+        "LinkTypeForLinkElementInBody",
+        "self",
+        r#"{"reason":"unexpected-token","expects":[{"type":"common","value":"valid Link Type"}],"matched":false,"ref":"https://html.spec.whatwg.org/multipage/links.html#body-ok","raw":"self","offset":0,"length":4,"line":1,"column":1}"#,
+    ),
+    (
+        "LinkTypeForLinkElementInBody",
+        "sub",
+        r#"{"reason":"unexpected-token","expects":[{"type":"common","value":"valid Link Type"}],"matched":false,"ref":"https://html.spec.whatwg.org/multipage/links.html#body-ok","raw":"sub","offset":0,"length":3,"line":1,"column":1}"#,
+    ),
+    (
+        "LinkTypeForLinkElementInBody",
+        "version-history",
+        r#"{"reason":"unexpected-token","expects":[{"type":"common","value":"valid Link Type"}],"matched":false,"ref":"https://html.spec.whatwg.org/multipage/links.html#body-ok","raw":"version-history","offset":0,"length":15,"line":1,"column":1}"#,
+    ),
+    (
+        "LinkTypeForLinkElementInBody",
+        "latest-version",
+        r#"{"reason":"unexpected-token","expects":[{"type":"common","value":"valid Link Type"}],"matched":false,"ref":"https://html.spec.whatwg.org/multipage/links.html#body-ok","raw":"latest-version","offset":0,"length":14,"line":1,"column":1}"#,
+    ),
+    (
+        "LinkTypeForLinkElementInBody",
+        "banner",
+        r#"{"reason":"unexpected-token","expects":[{"type":"common","value":"valid Link Type"}],"matched":false,"ref":"https://html.spec.whatwg.org/multipage/links.html#body-ok","raw":"banner","offset":0,"length":6,"line":1,"column":1}"#,
+    ),
+    (
+        "LinkTypeForLinkElementInBody",
+        "footnote",
+        r#"{"reason":"unexpected-token","expects":[{"type":"common","value":"valid Link Type"}],"matched":false,"ref":"https://html.spec.whatwg.org/multipage/links.html#body-ok","raw":"footnote","offset":0,"length":8,"line":1,"column":1}"#,
+    ),
+    (
+        "LinkTypeForLinkElementInBody",
+        "first",
+        r#"{"reason":"unexpected-token","expects":[{"type":"common","value":"valid Link Type"}],"matched":false,"ref":"https://html.spec.whatwg.org/multipage/links.html#body-ok","raw":"first","offset":0,"length":5,"line":1,"column":1}"#,
+    ),
+    (
+        "LinkTypeForLinkElementInBody",
+        "alternate logo",
+        r#"{"reason":"unexpected-token","expects":[{"type":"common","value":"valid Link Type"}],"matched":false,"ref":"https://html.spec.whatwg.org/multipage/links.html#body-ok","raw":"logo","offset":10,"length":4,"line":1,"column":11}"#,
+    ),
+    (
+        "LinkTypeForLinkElementInBody",
+        "",
+        r#"{"matched":true}"#,
+    ),
+    (
+        "LinkTypeForLinkElementInBody",
+        "   ",
+        r#"{"matched":true}"#,
+    ),
+    (
+        "LinkTypeForLinkElementInBody",
+        "acquaintance",
+        r#"{"ref":"https://html.spec.whatwg.org/multipage/links.html#linkTypes","expects":[{"type":"const","value":"dns-prefetch"},{"type":"const","value":"modulepreload"},{"type":"const","value":"pingback"},{"type":"const","value":"preconnect"},{"type":"const","value":"prefetch"},{"type":"const","value":"preload"},{"type":"const","value":"stylesheet"}],"matched":false,"raw":"acquaintance","offset":0,"length":12,"line":1,"column":1,"reason":"doesnt-exist-in-enum","partName":"the content of the list"}"#,
+    ),
+    (
+        "LinkTypeForLinkElementInBody",
+        "ALTERNATE",
+        r#"{"ref":"https://html.spec.whatwg.org/multipage/links.html#linkTypes","expects":[{"type":"const","value":"dns-prefetch"},{"type":"const","value":"modulepreload"},{"type":"const","value":"pingback"},{"type":"const","value":"preconnect"},{"type":"const","value":"prefetch"},{"type":"const","value":"preload"},{"type":"const","value":"stylesheet"}],"matched":false,"raw":"ALTERNATE","offset":0,"length":9,"line":1,"column":1,"reason":"doesnt-exist-in-enum","partName":"the content of the list"}"#,
+    ),
+    (
+        "LinkTypeForLinkElementInBody",
+        "amphtml",
+        r#"{"ref":"https://html.spec.whatwg.org/multipage/links.html#linkTypes","expects":[{"type":"const","value":"dns-prefetch"},{"type":"const","value":"modulepreload"},{"type":"const","value":"pingback"},{"type":"const","value":"preconnect"},{"type":"const","value":"prefetch"},{"type":"const","value":"preload"},{"type":"const","value":"stylesheet"}],"matched":false,"raw":"amphtml","offset":0,"length":7,"line":1,"column":1,"reason":"doesnt-exist-in-enum","partName":"the content of the list"}"#,
+    ),
+    (
+        "LinkTypeForLinkElementInBody",
+        "begin",
+        r#"{"reason":"unexpected-token","expects":[{"type":"common","value":"valid Link Type"}],"matched":false,"ref":"https://html.spec.whatwg.org/multipage/links.html#body-ok","raw":"begin","offset":0,"length":5,"line":1,"column":1}"#,
+    ),
+    (
+        "LinkTypeForLinkElementInBody",
+        "bibliography",
+        r#"{"reason":"unexpected-token","expects":[{"type":"common","value":"valid Link Type"}],"matched":false,"ref":"https://html.spec.whatwg.org/multipage/links.html#body-ok","raw":"bibliography","offset":0,"length":12,"line":1,"column":1}"#,
+    ),
+    (
+        "LinkTypeForLinkElementInBody",
+        "child",
+        r#"{"reason":"unexpected-token","expects":[{"type":"common","value":"valid Link Type"}],"matched":false,"ref":"https://html.spec.whatwg.org/multipage/links.html#body-ok","raw":"child","offset":0,"length":5,"line":1,"column":1}"#,
+    ),
+    (
+        "LinkTypeForLinkElementInBody",
+        "collection",
+        r#"{"reason":"unexpected-token","expects":[{"type":"common","value":"valid Link Type"}],"matched":false,"ref":"https://html.spec.whatwg.org/multipage/links.html#body-ok","raw":"collection","offset":0,"length":10,"line":1,"column":1}"#,
+    ),
+    (
+        "LinkTypeForLinkElementInBody",
+        "DCTERMS.conformsTo",
+        r#"{"ref":"https://html.spec.whatwg.org/multipage/links.html#linkTypes","expects":[{"type":"const","value":"dns-prefetch"},{"type":"const","value":"modulepreload"},{"type":"const","value":"pingback"},{"type":"const","value":"preconnect"},{"type":"const","value":"prefetch"},{"type":"const","value":"preload"},{"type":"const","value":"stylesheet"}],"matched":false,"raw":"DCTERMS.conformsTo","offset":0,"length":18,"line":1,"column":1,"reason":"doesnt-exist-in-enum","partName":"the content of the list"}"#,
+    ),
+    (
+        "LinkTypeForLinkElementInBody",
+        "editor",
+        r#"{"reason":"unexpected-token","expects":[{"type":"common","value":"valid Link Type"}],"matched":false,"ref":"https://html.spec.whatwg.org/multipage/links.html#body-ok","raw":"editor","offset":0,"length":6,"line":1,"column":1}"#,
+    ),
+    (
+        "LinkTypeForLinkElementInBody",
+        "external",
+        r#"{"ref":"https://html.spec.whatwg.org/multipage/links.html#linkTypes","expects":[{"type":"const","value":"dns-prefetch"},{"type":"const","value":"modulepreload"},{"type":"const","value":"pingback"},{"type":"const","value":"preconnect"},{"type":"const","value":"prefetch"},{"type":"const","value":"preload"},{"type":"const","value":"stylesheet"}],"matched":false,"raw":"external","offset":0,"length":8,"line":1,"column":1,"reason":"doesnt-exist-in-enum","partName":"the content of the list"}"#,
+    ),
+    (
+        "LinkTypeForLinkElementInBody",
+        "icon",
+        r#"{"ref":"https://html.spec.whatwg.org/multipage/links.html#linkTypes","expects":[{"type":"const","value":"dns-prefetch"},{"type":"const","value":"modulepreload"},{"type":"const","value":"pingback"},{"type":"const","value":"preconnect"},{"type":"const","value":"prefetch"},{"type":"const","value":"preload"},{"type":"const","value":"stylesheet"}],"matched":false,"raw":"icon","offset":0,"length":4,"line":1,"column":1,"reason":"doesnt-exist-in-enum","partName":"the content of the list"}"#,
+    ),
+    (
+        "LinkTypeForLinkElementInBody",
+        "index",
+        r#"{"reason":"unexpected-token","expects":[{"type":"common","value":"valid Link Type"}],"matched":false,"ref":"https://html.spec.whatwg.org/multipage/links.html#body-ok","raw":"index","offset":0,"length":5,"line":1,"column":1}"#,
+    ),
+    (
+        "LinkTypeForLinkElementInBody",
+        "invalid-keyword",
+        r#"{"ref":"https://html.spec.whatwg.org/multipage/links.html#linkTypes","expects":[{"type":"const","value":"dns-prefetch"},{"type":"const","value":"modulepreload"},{"type":"const","value":"pingback"},{"type":"const","value":"preconnect"},{"type":"const","value":"prefetch"},{"type":"const","value":"preload"},{"type":"const","value":"stylesheet"}],"matched":false,"raw":"invalid-keyword","offset":0,"length":15,"line":1,"column":1,"reason":"doesnt-exist-in-enum","partName":"the content of the list"}"#,
+    ),
+    (
+        "LinkTypeForLinkElementInBody",
+        "last",
+        r#"{"reason":"unexpected-token","expects":[{"type":"common","value":"valid Link Type"}],"matched":false,"ref":"https://html.spec.whatwg.org/multipage/links.html#body-ok","raw":"last","offset":0,"length":4,"line":1,"column":1}"#,
+    ),
+    (
+        "LinkTypeForLinkElementInBody",
+        "logo",
+        r#"{"reason":"unexpected-token","expects":[{"type":"common","value":"valid Link Type"}],"matched":false,"ref":"https://html.spec.whatwg.org/multipage/links.html#body-ok","raw":"logo","offset":0,"length":4,"line":1,"column":1}"#,
+    ),
+    (
+        "LinkTypeForLinkElementInBody",
+        "manifest",
+        r#"{"ref":"https://html.spec.whatwg.org/multipage/links.html#linkTypes","expects":[{"type":"const","value":"dns-prefetch"},{"type":"const","value":"modulepreload"},{"type":"const","value":"pingback"},{"type":"const","value":"preconnect"},{"type":"const","value":"prefetch"},{"type":"const","value":"preload"},{"type":"const","value":"stylesheet"}],"matched":false,"raw":"manifest","offset":0,"length":8,"line":1,"column":1,"reason":"doesnt-exist-in-enum","partName":"the content of the list"}"#,
+    ),
+    (
+        "LinkTypeForLinkElementInBody",
+        "me",
+        r#"{"ref":"https://html.spec.whatwg.org/multipage/links.html#linkTypes","expects":[{"type":"const","value":"dns-prefetch"},{"type":"const","value":"modulepreload"},{"type":"const","value":"pingback"},{"type":"const","value":"preconnect"},{"type":"const","value":"prefetch"},{"type":"const","value":"preload"},{"type":"const","value":"stylesheet"}],"matched":false,"raw":"me","offset":0,"length":2,"line":1,"column":1,"reason":"doesnt-exist-in-enum","partName":"the content of the list"}"#,
+    ),
+    (
+        "LinkTypeForLinkElementInBody",
+        "next",
+        r#"{"ref":"https://html.spec.whatwg.org/multipage/links.html#linkTypes","expects":[{"type":"const","value":"dns-prefetch"},{"type":"const","value":"modulepreload"},{"type":"const","value":"pingback"},{"type":"const","value":"preconnect"},{"type":"const","value":"prefetch"},{"type":"const","value":"preload"},{"type":"const","value":"stylesheet"}],"matched":false,"raw":"next","offset":0,"length":4,"line":1,"column":1,"reason":"doesnt-exist-in-enum","partName":"the content of the list"}"#,
+    ),
+    (
+        "LinkTypeForLinkElementInBody",
+        "nofollow logo",
+        r#"{"reason":"unexpected-token","expects":[{"type":"common","value":"valid Link Type"}],"matched":false,"ref":"https://html.spec.whatwg.org/multipage/links.html#body-ok","raw":"logo","offset":9,"length":4,"line":1,"column":10}"#,
+    ),
+    (
+        "LinkTypeForLinkElementInBody",
+        "nofollow nofollow",
+        r#"{"partName":"the content of the list","reason":"duplicated","ref":"https://html.spec.whatwg.org/multipage/links.html#linkTypes","expects":[{"type":"const","value":"Link types allowed in the `link` element when used in the `body` element"}],"matched":false,"raw":"nofollow","offset":9,"length":8,"line":1,"column":10}"#,
+    ),
+    (
+        "LinkTypeForLinkElementInBody",
+        "NOFOLLOW nofollow",
+        r#"{"partName":"the content of the list","reason":"duplicated","ref":"https://html.spec.whatwg.org/multipage/links.html#linkTypes","expects":[{"type":"const","value":"Link types allowed in the `link` element when used in the `body` element"}],"matched":false,"raw":"nofollow","offset":9,"length":8,"line":1,"column":10}"#,
+    ),
+    (
+        "LinkTypeForLinkElementInBody",
+        "nofollow noopener noreferrer",
+        r#"{"ref":"https://html.spec.whatwg.org/multipage/links.html#linkTypes","expects":[{"type":"const","value":"dns-prefetch"},{"type":"const","value":"modulepreload"},{"type":"const","value":"pingback"},{"type":"const","value":"preconnect"},{"type":"const","value":"prefetch"},{"type":"const","value":"preload"},{"type":"const","value":"stylesheet"}],"matched":false,"raw":"nofollow","offset":0,"length":8,"line":1,"column":1,"reason":"doesnt-exist-in-enum","partName":"the content of the list"}"#,
+    ),
+    (
+        "LinkTypeForLinkElementInBody",
+        "nofollow noopener",
+        r#"{"ref":"https://html.spec.whatwg.org/multipage/links.html#linkTypes","expects":[{"type":"const","value":"dns-prefetch"},{"type":"const","value":"modulepreload"},{"type":"const","value":"pingback"},{"type":"const","value":"preconnect"},{"type":"const","value":"prefetch"},{"type":"const","value":"preload"},{"type":"const","value":"stylesheet"}],"matched":false,"raw":"nofollow","offset":0,"length":8,"line":1,"column":1,"reason":"doesnt-exist-in-enum","partName":"the content of the list"}"#,
+    ),
+    (
+        "LinkTypeForLinkElementInBody",
+        "Nofollow Noopener",
+        r#"{"ref":"https://html.spec.whatwg.org/multipage/links.html#linkTypes","expects":[{"type":"const","value":"dns-prefetch"},{"type":"const","value":"modulepreload"},{"type":"const","value":"pingback"},{"type":"const","value":"preconnect"},{"type":"const","value":"prefetch"},{"type":"const","value":"preload"},{"type":"const","value":"stylesheet"}],"matched":false,"raw":"Nofollow","offset":0,"length":8,"line":1,"column":1,"reason":"doesnt-exist-in-enum","partName":"the content of the list"}"#,
+    ),
+    (
+        "LinkTypeForLinkElementInBody",
+        "nofollow",
+        r#"{"ref":"https://html.spec.whatwg.org/multipage/links.html#linkTypes","expects":[{"type":"const","value":"dns-prefetch"},{"type":"const","value":"modulepreload"},{"type":"const","value":"pingback"},{"type":"const","value":"preconnect"},{"type":"const","value":"prefetch"},{"type":"const","value":"preload"},{"type":"const","value":"stylesheet"}],"matched":false,"raw":"nofollow","offset":0,"length":8,"line":1,"column":1,"reason":"doesnt-exist-in-enum","partName":"the content of the list"}"#,
+    ),
+    (
+        "LinkTypeForLinkElementInBody",
+        "Nofollow",
+        r#"{"ref":"https://html.spec.whatwg.org/multipage/links.html#linkTypes","expects":[{"type":"const","value":"dns-prefetch"},{"type":"const","value":"modulepreload"},{"type":"const","value":"pingback"},{"type":"const","value":"preconnect"},{"type":"const","value":"prefetch"},{"type":"const","value":"preload"},{"type":"const","value":"stylesheet"}],"matched":false,"raw":"Nofollow","offset":0,"length":8,"line":1,"column":1,"reason":"doesnt-exist-in-enum","partName":"the content of the list"}"#,
+    ),
+    (
+        "LinkTypeForLinkElementInBody",
+        "noopener",
+        r#"{"ref":"https://html.spec.whatwg.org/multipage/links.html#linkTypes","expects":[{"type":"const","value":"dns-prefetch"},{"type":"const","value":"modulepreload"},{"type":"const","value":"pingback"},{"type":"const","value":"preconnect"},{"type":"const","value":"prefetch"},{"type":"const","value":"preload"},{"type":"const","value":"stylesheet"}],"matched":false,"raw":"noopener","offset":0,"length":8,"line":1,"column":1,"reason":"doesnt-exist-in-enum","partName":"the content of the list"}"#,
+    ),
+    (
+        "LinkTypeForLinkElementInBody",
+        "noreferrer",
+        r#"{"ref":"https://html.spec.whatwg.org/multipage/links.html#linkTypes","expects":[{"type":"const","value":"dns-prefetch"},{"type":"const","value":"modulepreload"},{"type":"const","value":"pingback"},{"type":"const","value":"preconnect"},{"type":"const","value":"prefetch"},{"type":"const","value":"preload"},{"type":"const","value":"stylesheet"}],"matched":false,"raw":"noreferrer","offset":0,"length":10,"line":1,"column":1,"reason":"doesnt-exist-in-enum","partName":"the content of the list"}"#,
+    ),
+    (
+        "LinkTypeForLinkElementInBody",
+        "opener",
+        r#"{"ref":"https://html.spec.whatwg.org/multipage/links.html#linkTypes","expects":[{"type":"const","value":"dns-prefetch"},{"type":"const","value":"modulepreload"},{"type":"const","value":"pingback"},{"type":"const","value":"preconnect"},{"type":"const","value":"prefetch"},{"type":"const","value":"preload"},{"type":"const","value":"stylesheet"}],"matched":false,"raw":"opener","offset":0,"length":6,"line":1,"column":1,"reason":"doesnt-exist-in-enum","partName":"the content of the list"}"#,
+    ),
+    (
+        "LinkTypeForLinkElementInBody",
+        "parent",
+        r#"{"reason":"unexpected-token","expects":[{"type":"common","value":"valid Link Type"}],"matched":false,"ref":"https://html.spec.whatwg.org/multipage/links.html#body-ok","raw":"parent","offset":0,"length":6,"line":1,"column":1}"#,
+    ),
+    (
+        "LinkTypeForLinkElementInBody",
+        "pavatar",
+        r#"{"reason":"unexpected-token","expects":[{"type":"common","value":"valid Link Type"}],"matched":false,"ref":"https://html.spec.whatwg.org/multipage/links.html#body-ok","raw":"pavatar","offset":0,"length":7,"line":1,"column":1}"#,
+    ),
+    (
+        "LinkTypeForLinkElementInBody",
+        "preconnect",
+        r#"{"matched":true}"#,
+    ),
+    (
+        "LinkTypeForLinkElementInBody",
+        "prefetch",
+        r#"{"matched":true}"#,
+    ),
+    (
+        "LinkTypeForLinkElementInBody",
+        "preload",
+        r#"{"matched":true}"#,
+    ),
+    (
+        "LinkTypeForLinkElementInBody",
+        "prev",
+        r#"{"ref":"https://html.spec.whatwg.org/multipage/links.html#linkTypes","expects":[{"type":"const","value":"dns-prefetch"},{"type":"const","value":"modulepreload"},{"type":"const","value":"pingback"},{"type":"const","value":"preconnect"},{"type":"const","value":"prefetch"},{"type":"const","value":"preload"},{"type":"const","value":"stylesheet"}],"matched":false,"raw":"prev","offset":0,"length":4,"line":1,"column":1,"reason":"doesnt-exist-in-enum","partName":"the content of the list"}"#,
+    ),
+    (
+        "LinkTypeForLinkElementInBody",
+        "privacy-policy",
+        r#"{"ref":"https://html.spec.whatwg.org/multipage/links.html#linkTypes","expects":[{"type":"const","value":"dns-prefetch"},{"type":"const","value":"modulepreload"},{"type":"const","value":"pingback"},{"type":"const","value":"preconnect"},{"type":"const","value":"prefetch"},{"type":"const","value":"preload"},{"type":"const","value":"stylesheet"}],"matched":false,"raw":"privacy-policy","offset":0,"length":14,"line":1,"column":1,"reason":"doesnt-exist-in-enum","partName":"the content of the list"}"#,
+    ),
+    (
+        "LinkTypeForLinkElementInBody",
+        "publisher",
+        r#"{"reason":"unexpected-token","expects":[{"type":"common","value":"valid Link Type"}],"matched":false,"ref":"https://html.spec.whatwg.org/multipage/links.html#body-ok","raw":"publisher","offset":0,"length":9,"line":1,"column":1}"#,
+    ),
+    (
+        "LinkTypeForLinkElementInBody",
+        "schema.DC",
+        r#"{"ref":"https://html.spec.whatwg.org/multipage/links.html#linkTypes","expects":[{"type":"const","value":"dns-prefetch"},{"type":"const","value":"modulepreload"},{"type":"const","value":"pingback"},{"type":"const","value":"preconnect"},{"type":"const","value":"prefetch"},{"type":"const","value":"preload"},{"type":"const","value":"stylesheet"}],"matched":false,"raw":"schema.DC","offset":0,"length":9,"line":1,"column":1,"reason":"doesnt-exist-in-enum","partName":"the content of the list"}"#,
+    ),
+    (
+        "LinkTypeForLinkElementInBody",
+        "search",
+        r#"{"ref":"https://html.spec.whatwg.org/multipage/links.html#linkTypes","expects":[{"type":"const","value":"dns-prefetch"},{"type":"const","value":"modulepreload"},{"type":"const","value":"pingback"},{"type":"const","value":"preconnect"},{"type":"const","value":"prefetch"},{"type":"const","value":"preload"},{"type":"const","value":"stylesheet"}],"matched":false,"raw":"search","offset":0,"length":6,"line":1,"column":1,"reason":"doesnt-exist-in-enum","partName":"the content of the list"}"#,
+    ),
+    (
+        "LinkTypeForLinkElementInBody",
+        "shadowbox",
+        r#"{"reason":"unexpected-token","expects":[{"type":"common","value":"valid Link Type"}],"matched":false,"ref":"https://html.spec.whatwg.org/multipage/links.html#body-ok","raw":"shadowbox","offset":0,"length":9,"line":1,"column":1}"#,
+    ),
+    (
+        "LinkTypeForLinkElementInBody",
+        "sibling",
+        r#"{"reason":"unexpected-token","expects":[{"type":"common","value":"valid Link Type"}],"matched":false,"ref":"https://html.spec.whatwg.org/multipage/links.html#body-ok","raw":"sibling","offset":0,"length":7,"line":1,"column":1}"#,
+    ),
+    (
+        "LinkTypeForLinkElementInBody",
+        "sitemap",
+        r#"{"reason":"unexpected-token","expects":[{"type":"common","value":"valid Link Type"}],"matched":false,"ref":"https://html.spec.whatwg.org/multipage/links.html#body-ok","raw":"sitemap","offset":0,"length":7,"line":1,"column":1}"#,
+    ),
+    (
+        "LinkTypeForLinkElementInBody",
+        "stylesheet alternate",
+        r#"{"ref":"https://html.spec.whatwg.org/multipage/links.html#linkTypes","expects":[{"type":"const","value":"dns-prefetch"},{"type":"const","value":"modulepreload"},{"type":"const","value":"pingback"},{"type":"const","value":"preconnect"},{"type":"const","value":"prefetch"},{"type":"const","value":"preload"},{"type":"const","value":"stylesheet"}],"matched":false,"raw":"alternate","offset":11,"length":9,"line":1,"column":12,"reason":"doesnt-exist-in-enum","partName":"the content of the list"}"#,
+    ),
+    (
+        "LinkTypeForLinkElementInBody",
+        "stylesheet self",
+        r#"{"reason":"unexpected-token","expects":[{"type":"common","value":"valid Link Type"}],"matched":false,"ref":"https://html.spec.whatwg.org/multipage/links.html#body-ok","raw":"self","offset":11,"length":4,"line":1,"column":12}"#,
+    ),
+    (
+        "LinkTypeForLinkElementInBody",
+        "stylesheet",
+        r#"{"matched":true}"#,
+    ),
+    (
+        "LinkTypeForLinkElementInBody",
+        "STYLESHEET",
+        r#"{"matched":true}"#,
+    ),
+    (
+        "LinkTypeForLinkElementInBody",
+        "tag",
+        r#"{"ref":"https://html.spec.whatwg.org/multipage/links.html#linkTypes","expects":[{"type":"const","value":"dns-prefetch"},{"type":"const","value":"modulepreload"},{"type":"const","value":"pingback"},{"type":"const","value":"preconnect"},{"type":"const","value":"prefetch"},{"type":"const","value":"preload"},{"type":"const","value":"stylesheet"}],"matched":false,"raw":"tag","offset":0,"length":3,"line":1,"column":1,"reason":"doesnt-exist-in-enum","partName":"the content of the list"}"#,
+    ),
+    (
+        "LinkTypeForLinkElementInBody",
+        "terms-of-service",
+        r#"{"ref":"https://html.spec.whatwg.org/multipage/links.html#linkTypes","expects":[{"type":"const","value":"dns-prefetch"},{"type":"const","value":"modulepreload"},{"type":"const","value":"pingback"},{"type":"const","value":"preconnect"},{"type":"const","value":"prefetch"},{"type":"const","value":"preload"},{"type":"const","value":"stylesheet"}],"matched":false,"raw":"terms-of-service","offset":0,"length":16,"line":1,"column":1,"reason":"doesnt-exist-in-enum","partName":"the content of the list"}"#,
+    ),
+    (
+        "LinkTypeForLinkElementInBody",
+        "top",
+        r#"{"reason":"unexpected-token","expects":[{"type":"common","value":"valid Link Type"}],"matched":false,"ref":"https://html.spec.whatwg.org/multipage/links.html#body-ok","raw":"top","offset":0,"length":3,"line":1,"column":1}"#,
+    ),
+    (
+        "LinkTypeForLinkElementInBody",
+        "up",
+        r#"{"reason":"unexpected-token","expects":[{"type":"common","value":"valid Link Type"}],"matched":false,"ref":"https://html.spec.whatwg.org/multipage/links.html#body-ok","raw":"up","offset":0,"length":2,"line":1,"column":1}"#,
+    ),
+    (
+        "LinkTypeForLinkElementInBody",
+        "webmention",
+        r#"{"ref":"https://html.spec.whatwg.org/multipage/links.html#linkTypes","expects":[{"type":"const","value":"dns-prefetch"},{"type":"const","value":"modulepreload"},{"type":"const","value":"pingback"},{"type":"const","value":"preconnect"},{"type":"const","value":"prefetch"},{"type":"const","value":"preload"},{"type":"const","value":"stylesheet"}],"matched":false,"raw":"webmention","offset":0,"length":10,"line":1,"column":1,"reason":"doesnt-exist-in-enum","partName":"the content of the list"}"#,
+    ),
+    (
+        "LinkTypeForLinkElementInBody",
+        "youtube",
+        r#"{"reason":"unexpected-token","expects":[{"type":"common","value":"valid Link Type"}],"matched":false,"ref":"https://html.spec.whatwg.org/multipage/links.html#body-ok","raw":"youtube","offset":0,"length":7,"line":1,"column":1}"#,
+    ),
+    (
+        "LinkTypeForLinkElementInBody",
+        "subsection",
+        r#"{"reason":"unexpected-token","expects":[{"type":"common","value":"valid Link Type"}],"matched":false,"ref":"https://html.spec.whatwg.org/multipage/links.html#body-ok","raw":"subsection","offset":0,"length":10,"line":1,"column":1}"#,
+    ),
+    (
+        "LinkTypeForLinkElementInBody",
+        "Self",
+        r#"{"ref":"https://html.spec.whatwg.org/multipage/links.html#linkTypes","expects":[{"type":"const","value":"dns-prefetch"},{"type":"const","value":"modulepreload"},{"type":"const","value":"pingback"},{"type":"const","value":"preconnect"},{"type":"const","value":"prefetch"},{"type":"const","value":"preload"},{"type":"const","value":"stylesheet"}],"matched":false,"raw":"Self","offset":0,"length":4,"line":1,"column":1,"reason":"doesnt-exist-in-enum","partName":"the content of the list"}"#,
+    ),
+    (
+        "LinkTypeForLinkElementInBody",
+        "friend",
+        r#"{"reason":"unexpected-token","expects":[{"type":"common","value":"valid Link Type"}],"matched":false,"ref":"https://html.spec.whatwg.org/multipage/links.html#body-ok","raw":"friend","offset":0,"length":6,"line":1,"column":1}"#,
+    ),
+    (
+        "LinkTypeForLinkElementInBody",
+        "enclosure",
+        r#"{"ref":"https://html.spec.whatwg.org/multipage/links.html#linkTypes","expects":[{"type":"const","value":"dns-prefetch"},{"type":"const","value":"modulepreload"},{"type":"const","value":"pingback"},{"type":"const","value":"preconnect"},{"type":"const","value":"prefetch"},{"type":"const","value":"preload"},{"type":"const","value":"stylesheet"}],"matched":false,"raw":"enclosure","offset":0,"length":9,"line":1,"column":1,"reason":"doesnt-exist-in-enum","partName":"the content of the list"}"#,
+    ),
+    (
+        "LinkTypeForLinkElementInBody",
+        "vcs-*",
+        r#"{"ref":"https://html.spec.whatwg.org/multipage/links.html#linkTypes","expects":[{"type":"const","value":"dns-prefetch"},{"type":"const","value":"modulepreload"},{"type":"const","value":"pingback"},{"type":"const","value":"preconnect"},{"type":"const","value":"prefetch"},{"type":"const","value":"preload"},{"type":"const","value":"stylesheet"}],"matched":false,"raw":"vcs-*","offset":0,"length":5,"line":1,"column":1,"reason":"doesnt-exist-in-enum","partName":"the content of the list"}"#,
+    ),
+    (
+        "LinkTypeForLinkElementInBody",
+        " stylesheet ",
+        r#"{"matched":true}"#,
+    ),
+    (
+        "LinkTypeForLinkElementInBody",
+        "stylesheet\nicon",
+        r#"{"ref":"https://html.spec.whatwg.org/multipage/links.html#linkTypes","expects":[{"type":"const","value":"dns-prefetch"},{"type":"const","value":"modulepreload"},{"type":"const","value":"pingback"},{"type":"const","value":"preconnect"},{"type":"const","value":"prefetch"},{"type":"const","value":"preload"},{"type":"const","value":"stylesheet"}],"matched":false,"raw":"icon","offset":11,"length":4,"line":2,"column":1,"reason":"doesnt-exist-in-enum","partName":"the content of the list"}"#,
+    ),
+    (
+        "LinkTypeForLinkElementInBody",
+        "Stylesheet stylesheet",
+        r#"{"partName":"the content of the list","reason":"duplicated","ref":"https://html.spec.whatwg.org/multipage/links.html#linkTypes","expects":[{"type":"const","value":"Link types allowed in the `link` element when used in the `body` element"}],"matched":false,"raw":"stylesheet","offset":11,"length":10,"line":1,"column":12}"#,
+    ),
+    (
+        "LinkTypeForAnchorAndAreaElement",
+        "alternate",
+        r#"{"matched":true}"#,
+    ),
+    (
+        "LinkTypeForAnchorAndAreaElement",
+        "canonical",
+        r#"{"ref":"https://html.spec.whatwg.org/multipage/links.html#linkTypes","expects":[{"type":"const","value":"alternate"},{"type":"const","value":"author"},{"type":"const","value":"bookmark"},{"type":"const","value":"external"},{"type":"const","value":"help"},{"type":"const","value":"license"},{"type":"const","value":"next"},{"type":"const","value":"nofollow"},{"type":"const","value":"noopener"},{"type":"const","value":"noreferrer"},{"type":"const","value":"opener"},{"type":"const","value":"prev"},{"type":"const","value":"privacy-policy"},{"type":"const","value":"search"},{"type":"const","value":"tag"},{"type":"const","value":"terms-of-service"},{"type":"const","value":"acquaintance"},{"type":"const","value":"appendix"},{"type":"const","value":"chapter"},{"type":"const","value":"child"},{"type":"const","value":"colleague"},{"type":"const","value":"contact"},{"type":"const","value":"contents"},{"type":"const","value":"copyright"},{"type":"const","value":"co-resident"},{"type":"const","value":"co-worker"},{"type":"const","value":"crush"},{"type":"const","value":"date"},{"type":"const","value":"friend"},{"type":"const","value":"glossary"},{"type":"const","value":"kin"},{"type":"const","value":"me"},{"type":"const","value":"met"},{"type":"const","value":"muse"},{"type":"const","value":"neighbor"},{"type":"const","value":"parent"},{"type":"const","value":"previous"},{"type":"const","value":"section"},{"type":"const","value":"sibling"},{"type":"const","value":"spouse"},{"type":"const","value":"start"},{"type":"const","value":"subsection"},{"type":"const","value":"sweetheart"},{"type":"const","value":"toc"},{"type":"const","value":"transformation"},{"type":"const","value":"pronunciation"},{"type":"const","value":"directory"},{"type":"const","value":"enclosure"},{"type":"const","value":"home"},{"type":"const","value":"payment"},{"type":"const","value":"vcs-*"},{"type":"const","value":"about"},{"type":"const","value":"amphtml"},{"type":"const","value":"archived"},{"type":"const","value":"attachment"},{"type":"const","value":"category"},{"type":"const","value":"code-repository"},{"type":"const","value":"code-license"},{"type":"const","value":"content-repository"},{"type":"const","value":"content-license"},{"type":"const","value":"disclosure"},{"type":"const","value":"discussion"},{"type":"const","value":"donation"},{"type":"const","value":"edit"},{"type":"const","value":"enclosure"},{"type":"const","value":"entry-content"},{"type":"const","value":"first"},{"type":"const","value":"home"},{"type":"const","value":"hub"},{"type":"const","value":"in-reply-to"},{"type":"const","value":"root"},{"type":"const","value":"index"},{"type":"const","value":"issues"},{"type":"const","value":"jslicense"},{"type":"const","value":"last"},{"type":"const","value":"lightbox"},{"type":"const","value":"lightvideo"},{"type":"const","value":"main"},{"type":"const","value":"prerender"},{"type":"const","value":"profile"},{"type":"const","value":"publisher"},{"type":"const","value":"radioepg"},{"type":"const","value":"rendition"},{"type":"const","value":"reply-to"},{"type":"const","value":"sidebar"},{"type":"const","value":"syndication"},{"type":"const","value":"webmention"},{"type":"const","value":"widget"},{"type":"const","value":"http://docs.oasis-open.org/ns/cmis/link/200908/acl"},{"type":"const","value":"accessibility"},{"type":"const","value":"bibliography"},{"type":"const","value":"cite"},{"type":"const","value":"embed"},{"type":"const","value":"group"},{"type":"const","value":"longdesc"},{"type":"const","value":"map"},{"type":"const","value":"member"},{"type":"const","value":"m_PageScroll2id"},{"type":"const","value":"prerender"},{"type":"const","value":"profile"},{"type":"const","value":"shortlink"},{"type":"const","value":"source"},{"type":"const","value":"vcalendar-parent"},{"type":"const","value":"vcalendar-child"},{"type":"const","value":"vcalendar-sibling"},{"type":"const","value":"status"},{"type":"const","value":"https://api.w.org/"},{"type":"const","value":"archive"},{"type":"const","value":"archives"},{"type":"const","value":"comment"},{"type":"const","value":"contribution"},{"type":"const","value":"EditURI"},{"type":"const","value":"endorsed"},{"type":"const","value":"fan"},{"type":"const","value":"feed"},{"type":"const","value":"footnote"},{"type":"const","value":"kinetic-stylesheet"},{"type":"const","value":"lightbox"},{"type":"const","value":"made"},{"type":"const","value":"meta"},{"type":"const","value":"microsummary"},{"type":"const","value":"openid.delegate"},{"type":"const","value":"openid.server"},{"type":"const","value":"permalink"},{"type":"const","value":"pgpkey"},{"type":"const","value":"popover"},{"type":"const","value":"privacy"},{"type":"const","value":"publickey"},{"type":"const","value":"referral"},{"type":"const","value":"related"},{"type":"const","value":"replies"},{"type":"const","value":"respond-proxy"},{"type":"const","value":"respond-redirect"},{"type":"const","value":"resource"},{"type":"const","value":"sitemap"},{"type":"const","value":"sponsor"},{"type":"const","value":"tooltip"},{"type":"const","value":"trackback"},{"type":"const","value":"unendorsed"},{"type":"const","value":"user"},{"type":"const","value":"wlwmanifest"}],"matched":false,"raw":"canonical","offset":0,"length":9,"line":1,"column":1,"reason":"doesnt-exist-in-enum","partName":"the content of the list"}"#,
+    ),
+    (
+        "LinkTypeForAnchorAndAreaElement",
+        "author",
+        r#"{"matched":true}"#,
+    ),
+    (
+        "LinkTypeForAnchorAndAreaElement",
+        "bookmark",
+        r#"{"matched":true}"#,
+    ),
+    (
+        "LinkTypeForAnchorAndAreaElement",
+        "dns-prefetch",
+        r#"{"ref":"https://html.spec.whatwg.org/multipage/links.html#linkTypes","expects":[{"type":"const","value":"alternate"},{"type":"const","value":"author"},{"type":"const","value":"bookmark"},{"type":"const","value":"external"},{"type":"const","value":"help"},{"type":"const","value":"license"},{"type":"const","value":"next"},{"type":"const","value":"nofollow"},{"type":"const","value":"noopener"},{"type":"const","value":"noreferrer"},{"type":"const","value":"opener"},{"type":"const","value":"prev"},{"type":"const","value":"privacy-policy"},{"type":"const","value":"search"},{"type":"const","value":"tag"},{"type":"const","value":"terms-of-service"},{"type":"const","value":"acquaintance"},{"type":"const","value":"appendix"},{"type":"const","value":"chapter"},{"type":"const","value":"child"},{"type":"const","value":"colleague"},{"type":"const","value":"contact"},{"type":"const","value":"contents"},{"type":"const","value":"copyright"},{"type":"const","value":"co-resident"},{"type":"const","value":"co-worker"},{"type":"const","value":"crush"},{"type":"const","value":"date"},{"type":"const","value":"friend"},{"type":"const","value":"glossary"},{"type":"const","value":"kin"},{"type":"const","value":"me"},{"type":"const","value":"met"},{"type":"const","value":"muse"},{"type":"const","value":"neighbor"},{"type":"const","value":"parent"},{"type":"const","value":"previous"},{"type":"const","value":"section"},{"type":"const","value":"sibling"},{"type":"const","value":"spouse"},{"type":"const","value":"start"},{"type":"const","value":"subsection"},{"type":"const","value":"sweetheart"},{"type":"const","value":"toc"},{"type":"const","value":"transformation"},{"type":"const","value":"pronunciation"},{"type":"const","value":"directory"},{"type":"const","value":"enclosure"},{"type":"const","value":"home"},{"type":"const","value":"payment"},{"type":"const","value":"vcs-*"},{"type":"const","value":"about"},{"type":"const","value":"amphtml"},{"type":"const","value":"archived"},{"type":"const","value":"attachment"},{"type":"const","value":"category"},{"type":"const","value":"code-repository"},{"type":"const","value":"code-license"},{"type":"const","value":"content-repository"},{"type":"const","value":"content-license"},{"type":"const","value":"disclosure"},{"type":"const","value":"discussion"},{"type":"const","value":"donation"},{"type":"const","value":"edit"},{"type":"const","value":"enclosure"},{"type":"const","value":"entry-content"},{"type":"const","value":"first"},{"type":"const","value":"home"},{"type":"const","value":"hub"},{"type":"const","value":"in-reply-to"},{"type":"const","value":"root"},{"type":"const","value":"index"},{"type":"const","value":"issues"},{"type":"const","value":"jslicense"},{"type":"const","value":"last"},{"type":"const","value":"lightbox"},{"type":"const","value":"lightvideo"},{"type":"const","value":"main"},{"type":"const","value":"prerender"},{"type":"const","value":"profile"},{"type":"const","value":"publisher"},{"type":"const","value":"radioepg"},{"type":"const","value":"rendition"},{"type":"const","value":"reply-to"},{"type":"const","value":"sidebar"},{"type":"const","value":"syndication"},{"type":"const","value":"webmention"},{"type":"const","value":"widget"},{"type":"const","value":"http://docs.oasis-open.org/ns/cmis/link/200908/acl"},{"type":"const","value":"accessibility"},{"type":"const","value":"bibliography"},{"type":"const","value":"cite"},{"type":"const","value":"embed"},{"type":"const","value":"group"},{"type":"const","value":"longdesc"},{"type":"const","value":"map"},{"type":"const","value":"member"},{"type":"const","value":"m_PageScroll2id"},{"type":"const","value":"prerender"},{"type":"const","value":"profile"},{"type":"const","value":"shortlink"},{"type":"const","value":"source"},{"type":"const","value":"vcalendar-parent"},{"type":"const","value":"vcalendar-child"},{"type":"const","value":"vcalendar-sibling"},{"type":"const","value":"status"},{"type":"const","value":"https://api.w.org/"},{"type":"const","value":"archive"},{"type":"const","value":"archives"},{"type":"const","value":"comment"},{"type":"const","value":"contribution"},{"type":"const","value":"EditURI"},{"type":"const","value":"endorsed"},{"type":"const","value":"fan"},{"type":"const","value":"feed"},{"type":"const","value":"footnote"},{"type":"const","value":"kinetic-stylesheet"},{"type":"const","value":"lightbox"},{"type":"const","value":"made"},{"type":"const","value":"meta"},{"type":"const","value":"microsummary"},{"type":"const","value":"openid.delegate"},{"type":"const","value":"openid.server"},{"type":"const","value":"permalink"},{"type":"const","value":"pgpkey"},{"type":"const","value":"popover"},{"type":"const","value":"privacy"},{"type":"const","value":"publickey"},{"type":"const","value":"referral"},{"type":"const","value":"related"},{"type":"const","value":"replies"},{"type":"const","value":"respond-proxy"},{"type":"const","value":"respond-redirect"},{"type":"const","value":"resource"},{"type":"const","value":"sitemap"},{"type":"const","value":"sponsor"},{"type":"const","value":"tooltip"},{"type":"const","value":"trackback"},{"type":"const","value":"unendorsed"},{"type":"const","value":"user"},{"type":"const","value":"wlwmanifest"}],"matched":false,"raw":"dns-prefetch","offset":0,"length":12,"line":1,"column":1,"reason":"doesnt-exist-in-enum","partName":"the content of the list"}"#,
+    ),
+    (
+        "LinkTypeForAnchorAndAreaElement",
+        "expect",
+        r#"{"ref":"https://html.spec.whatwg.org/multipage/links.html#linkTypes","expects":[{"type":"const","value":"alternate"},{"type":"const","value":"author"},{"type":"const","value":"bookmark"},{"type":"const","value":"external"},{"type":"const","value":"help"},{"type":"const","value":"license"},{"type":"const","value":"next"},{"type":"const","value":"nofollow"},{"type":"const","value":"noopener"},{"type":"const","value":"noreferrer"},{"type":"const","value":"opener"},{"type":"const","value":"prev"},{"type":"const","value":"privacy-policy"},{"type":"const","value":"search"},{"type":"const","value":"tag"},{"type":"const","value":"terms-of-service"},{"type":"const","value":"acquaintance"},{"type":"const","value":"appendix"},{"type":"const","value":"chapter"},{"type":"const","value":"child"},{"type":"const","value":"colleague"},{"type":"const","value":"contact"},{"type":"const","value":"contents"},{"type":"const","value":"copyright"},{"type":"const","value":"co-resident"},{"type":"const","value":"co-worker"},{"type":"const","value":"crush"},{"type":"const","value":"date"},{"type":"const","value":"friend"},{"type":"const","value":"glossary"},{"type":"const","value":"kin"},{"type":"const","value":"me"},{"type":"const","value":"met"},{"type":"const","value":"muse"},{"type":"const","value":"neighbor"},{"type":"const","value":"parent"},{"type":"const","value":"previous"},{"type":"const","value":"section"},{"type":"const","value":"sibling"},{"type":"const","value":"spouse"},{"type":"const","value":"start"},{"type":"const","value":"subsection"},{"type":"const","value":"sweetheart"},{"type":"const","value":"toc"},{"type":"const","value":"transformation"},{"type":"const","value":"pronunciation"},{"type":"const","value":"directory"},{"type":"const","value":"enclosure"},{"type":"const","value":"home"},{"type":"const","value":"payment"},{"type":"const","value":"vcs-*"},{"type":"const","value":"about"},{"type":"const","value":"amphtml"},{"type":"const","value":"archived"},{"type":"const","value":"attachment"},{"type":"const","value":"category"},{"type":"const","value":"code-repository"},{"type":"const","value":"code-license"},{"type":"const","value":"content-repository"},{"type":"const","value":"content-license"},{"type":"const","value":"disclosure"},{"type":"const","value":"discussion"},{"type":"const","value":"donation"},{"type":"const","value":"edit"},{"type":"const","value":"enclosure"},{"type":"const","value":"entry-content"},{"type":"const","value":"first"},{"type":"const","value":"home"},{"type":"const","value":"hub"},{"type":"const","value":"in-reply-to"},{"type":"const","value":"root"},{"type":"const","value":"index"},{"type":"const","value":"issues"},{"type":"const","value":"jslicense"},{"type":"const","value":"last"},{"type":"const","value":"lightbox"},{"type":"const","value":"lightvideo"},{"type":"const","value":"main"},{"type":"const","value":"prerender"},{"type":"const","value":"profile"},{"type":"const","value":"publisher"},{"type":"const","value":"radioepg"},{"type":"const","value":"rendition"},{"type":"const","value":"reply-to"},{"type":"const","value":"sidebar"},{"type":"const","value":"syndication"},{"type":"const","value":"webmention"},{"type":"const","value":"widget"},{"type":"const","value":"http://docs.oasis-open.org/ns/cmis/link/200908/acl"},{"type":"const","value":"accessibility"},{"type":"const","value":"bibliography"},{"type":"const","value":"cite"},{"type":"const","value":"embed"},{"type":"const","value":"group"},{"type":"const","value":"longdesc"},{"type":"const","value":"map"},{"type":"const","value":"member"},{"type":"const","value":"m_PageScroll2id"},{"type":"const","value":"prerender"},{"type":"const","value":"profile"},{"type":"const","value":"shortlink"},{"type":"const","value":"source"},{"type":"const","value":"vcalendar-parent"},{"type":"const","value":"vcalendar-child"},{"type":"const","value":"vcalendar-sibling"},{"type":"const","value":"status"},{"type":"const","value":"https://api.w.org/"},{"type":"const","value":"archive"},{"type":"const","value":"archives"},{"type":"const","value":"comment"},{"type":"const","value":"contribution"},{"type":"const","value":"EditURI"},{"type":"const","value":"endorsed"},{"type":"const","value":"fan"},{"type":"const","value":"feed"},{"type":"const","value":"footnote"},{"type":"const","value":"kinetic-stylesheet"},{"type":"const","value":"lightbox"},{"type":"const","value":"made"},{"type":"const","value":"meta"},{"type":"const","value":"microsummary"},{"type":"const","value":"openid.delegate"},{"type":"const","value":"openid.server"},{"type":"const","value":"permalink"},{"type":"const","value":"pgpkey"},{"type":"const","value":"popover"},{"type":"const","value":"privacy"},{"type":"const","value":"publickey"},{"type":"const","value":"referral"},{"type":"const","value":"related"},{"type":"const","value":"replies"},{"type":"const","value":"respond-proxy"},{"type":"const","value":"respond-redirect"},{"type":"const","value":"resource"},{"type":"const","value":"sitemap"},{"type":"const","value":"sponsor"},{"type":"const","value":"tooltip"},{"type":"const","value":"trackback"},{"type":"const","value":"unendorsed"},{"type":"const","value":"user"},{"type":"const","value":"wlwmanifest"}],"matched":false,"raw":"expect","offset":0,"length":6,"line":1,"column":1,"reason":"doesnt-exist-in-enum","partName":"the content of the list"}"#,
+    ),
+    (
+        "LinkTypeForAnchorAndAreaElement",
+        "help",
+        r#"{"matched":true}"#,
+    ),
+    (
+        "LinkTypeForAnchorAndAreaElement",
+        "service",
+        r#"{"ref":"https://html.spec.whatwg.org/multipage/links.html#linkTypes","expects":[{"type":"const","value":"alternate"},{"type":"const","value":"author"},{"type":"const","value":"bookmark"},{"type":"const","value":"external"},{"type":"const","value":"help"},{"type":"const","value":"license"},{"type":"const","value":"next"},{"type":"const","value":"nofollow"},{"type":"const","value":"noopener"},{"type":"const","value":"noreferrer"},{"type":"const","value":"opener"},{"type":"const","value":"prev"},{"type":"const","value":"privacy-policy"},{"type":"const","value":"search"},{"type":"const","value":"tag"},{"type":"const","value":"terms-of-service"},{"type":"const","value":"acquaintance"},{"type":"const","value":"appendix"},{"type":"const","value":"chapter"},{"type":"const","value":"child"},{"type":"const","value":"colleague"},{"type":"const","value":"contact"},{"type":"const","value":"contents"},{"type":"const","value":"copyright"},{"type":"const","value":"co-resident"},{"type":"const","value":"co-worker"},{"type":"const","value":"crush"},{"type":"const","value":"date"},{"type":"const","value":"friend"},{"type":"const","value":"glossary"},{"type":"const","value":"kin"},{"type":"const","value":"me"},{"type":"const","value":"met"},{"type":"const","value":"muse"},{"type":"const","value":"neighbor"},{"type":"const","value":"parent"},{"type":"const","value":"previous"},{"type":"const","value":"section"},{"type":"const","value":"sibling"},{"type":"const","value":"spouse"},{"type":"const","value":"start"},{"type":"const","value":"subsection"},{"type":"const","value":"sweetheart"},{"type":"const","value":"toc"},{"type":"const","value":"transformation"},{"type":"const","value":"pronunciation"},{"type":"const","value":"directory"},{"type":"const","value":"enclosure"},{"type":"const","value":"home"},{"type":"const","value":"payment"},{"type":"const","value":"vcs-*"},{"type":"const","value":"about"},{"type":"const","value":"amphtml"},{"type":"const","value":"archived"},{"type":"const","value":"attachment"},{"type":"const","value":"category"},{"type":"const","value":"code-repository"},{"type":"const","value":"code-license"},{"type":"const","value":"content-repository"},{"type":"const","value":"content-license"},{"type":"const","value":"disclosure"},{"type":"const","value":"discussion"},{"type":"const","value":"donation"},{"type":"const","value":"edit"},{"type":"const","value":"enclosure"},{"type":"const","value":"entry-content"},{"type":"const","value":"first"},{"type":"const","value":"home"},{"type":"const","value":"hub"},{"type":"const","value":"in-reply-to"},{"type":"const","value":"root"},{"type":"const","value":"index"},{"type":"const","value":"issues"},{"type":"const","value":"jslicense"},{"type":"const","value":"last"},{"type":"const","value":"lightbox"},{"type":"const","value":"lightvideo"},{"type":"const","value":"main"},{"type":"const","value":"prerender"},{"type":"const","value":"profile"},{"type":"const","value":"publisher"},{"type":"const","value":"radioepg"},{"type":"const","value":"rendition"},{"type":"const","value":"reply-to"},{"type":"const","value":"sidebar"},{"type":"const","value":"syndication"},{"type":"const","value":"webmention"},{"type":"const","value":"widget"},{"type":"const","value":"http://docs.oasis-open.org/ns/cmis/link/200908/acl"},{"type":"const","value":"accessibility"},{"type":"const","value":"bibliography"},{"type":"const","value":"cite"},{"type":"const","value":"embed"},{"type":"const","value":"group"},{"type":"const","value":"longdesc"},{"type":"const","value":"map"},{"type":"const","value":"member"},{"type":"const","value":"m_PageScroll2id"},{"type":"const","value":"prerender"},{"type":"const","value":"profile"},{"type":"const","value":"shortlink"},{"type":"const","value":"source"},{"type":"const","value":"vcalendar-parent"},{"type":"const","value":"vcalendar-child"},{"type":"const","value":"vcalendar-sibling"},{"type":"const","value":"status"},{"type":"const","value":"https://api.w.org/"},{"type":"const","value":"archive"},{"type":"const","value":"archives"},{"type":"const","value":"comment"},{"type":"const","value":"contribution"},{"type":"const","value":"EditURI"},{"type":"const","value":"endorsed"},{"type":"const","value":"fan"},{"type":"const","value":"feed"},{"type":"const","value":"footnote"},{"type":"const","value":"kinetic-stylesheet"},{"type":"const","value":"lightbox"},{"type":"const","value":"made"},{"type":"const","value":"meta"},{"type":"const","value":"microsummary"},{"type":"const","value":"openid.delegate"},{"type":"const","value":"openid.server"},{"type":"const","value":"permalink"},{"type":"const","value":"pgpkey"},{"type":"const","value":"popover"},{"type":"const","value":"privacy"},{"type":"const","value":"publickey"},{"type":"const","value":"referral"},{"type":"const","value":"related"},{"type":"const","value":"replies"},{"type":"const","value":"respond-proxy"},{"type":"const","value":"respond-redirect"},{"type":"const","value":"resource"},{"type":"const","value":"sitemap"},{"type":"const","value":"sponsor"},{"type":"const","value":"tooltip"},{"type":"const","value":"trackback"},{"type":"const","value":"unendorsed"},{"type":"const","value":"user"},{"type":"const","value":"wlwmanifest"}],"matched":false,"raw":"service","offset":0,"length":7,"line":1,"column":1,"reason":"doesnt-exist-in-enum","partName":"the content of the list"}"#,
+    ),
+    (
+        "LinkTypeForAnchorAndAreaElement",
+        "alternate canonical author",
+        r#"{"ref":"https://html.spec.whatwg.org/multipage/links.html#linkTypes","expects":[{"type":"const","value":"alternate"},{"type":"const","value":"author"},{"type":"const","value":"bookmark"},{"type":"const","value":"external"},{"type":"const","value":"help"},{"type":"const","value":"license"},{"type":"const","value":"next"},{"type":"const","value":"nofollow"},{"type":"const","value":"noopener"},{"type":"const","value":"noreferrer"},{"type":"const","value":"opener"},{"type":"const","value":"prev"},{"type":"const","value":"privacy-policy"},{"type":"const","value":"search"},{"type":"const","value":"tag"},{"type":"const","value":"terms-of-service"},{"type":"const","value":"acquaintance"},{"type":"const","value":"appendix"},{"type":"const","value":"chapter"},{"type":"const","value":"child"},{"type":"const","value":"colleague"},{"type":"const","value":"contact"},{"type":"const","value":"contents"},{"type":"const","value":"copyright"},{"type":"const","value":"co-resident"},{"type":"const","value":"co-worker"},{"type":"const","value":"crush"},{"type":"const","value":"date"},{"type":"const","value":"friend"},{"type":"const","value":"glossary"},{"type":"const","value":"kin"},{"type":"const","value":"me"},{"type":"const","value":"met"},{"type":"const","value":"muse"},{"type":"const","value":"neighbor"},{"type":"const","value":"parent"},{"type":"const","value":"previous"},{"type":"const","value":"section"},{"type":"const","value":"sibling"},{"type":"const","value":"spouse"},{"type":"const","value":"start"},{"type":"const","value":"subsection"},{"type":"const","value":"sweetheart"},{"type":"const","value":"toc"},{"type":"const","value":"transformation"},{"type":"const","value":"pronunciation"},{"type":"const","value":"directory"},{"type":"const","value":"enclosure"},{"type":"const","value":"home"},{"type":"const","value":"payment"},{"type":"const","value":"vcs-*"},{"type":"const","value":"about"},{"type":"const","value":"amphtml"},{"type":"const","value":"archived"},{"type":"const","value":"attachment"},{"type":"const","value":"category"},{"type":"const","value":"code-repository"},{"type":"const","value":"code-license"},{"type":"const","value":"content-repository"},{"type":"const","value":"content-license"},{"type":"const","value":"disclosure"},{"type":"const","value":"discussion"},{"type":"const","value":"donation"},{"type":"const","value":"edit"},{"type":"const","value":"enclosure"},{"type":"const","value":"entry-content"},{"type":"const","value":"first"},{"type":"const","value":"home"},{"type":"const","value":"hub"},{"type":"const","value":"in-reply-to"},{"type":"const","value":"root"},{"type":"const","value":"index"},{"type":"const","value":"issues"},{"type":"const","value":"jslicense"},{"type":"const","value":"last"},{"type":"const","value":"lightbox"},{"type":"const","value":"lightvideo"},{"type":"const","value":"main"},{"type":"const","value":"prerender"},{"type":"const","value":"profile"},{"type":"const","value":"publisher"},{"type":"const","value":"radioepg"},{"type":"const","value":"rendition"},{"type":"const","value":"reply-to"},{"type":"const","value":"sidebar"},{"type":"const","value":"syndication"},{"type":"const","value":"webmention"},{"type":"const","value":"widget"},{"type":"const","value":"http://docs.oasis-open.org/ns/cmis/link/200908/acl"},{"type":"const","value":"accessibility"},{"type":"const","value":"bibliography"},{"type":"const","value":"cite"},{"type":"const","value":"embed"},{"type":"const","value":"group"},{"type":"const","value":"longdesc"},{"type":"const","value":"map"},{"type":"const","value":"member"},{"type":"const","value":"m_PageScroll2id"},{"type":"const","value":"prerender"},{"type":"const","value":"profile"},{"type":"const","value":"shortlink"},{"type":"const","value":"source"},{"type":"const","value":"vcalendar-parent"},{"type":"const","value":"vcalendar-child"},{"type":"const","value":"vcalendar-sibling"},{"type":"const","value":"status"},{"type":"const","value":"https://api.w.org/"},{"type":"const","value":"archive"},{"type":"const","value":"archives"},{"type":"const","value":"comment"},{"type":"const","value":"contribution"},{"type":"const","value":"EditURI"},{"type":"const","value":"endorsed"},{"type":"const","value":"fan"},{"type":"const","value":"feed"},{"type":"const","value":"footnote"},{"type":"const","value":"kinetic-stylesheet"},{"type":"const","value":"lightbox"},{"type":"const","value":"made"},{"type":"const","value":"meta"},{"type":"const","value":"microsummary"},{"type":"const","value":"openid.delegate"},{"type":"const","value":"openid.server"},{"type":"const","value":"permalink"},{"type":"const","value":"pgpkey"},{"type":"const","value":"popover"},{"type":"const","value":"privacy"},{"type":"const","value":"publickey"},{"type":"const","value":"referral"},{"type":"const","value":"related"},{"type":"const","value":"replies"},{"type":"const","value":"respond-proxy"},{"type":"const","value":"respond-redirect"},{"type":"const","value":"resource"},{"type":"const","value":"sitemap"},{"type":"const","value":"sponsor"},{"type":"const","value":"tooltip"},{"type":"const","value":"trackback"},{"type":"const","value":"unendorsed"},{"type":"const","value":"user"},{"type":"const","value":"wlwmanifest"}],"matched":false,"raw":"canonical","offset":10,"length":9,"line":1,"column":11,"reason":"doesnt-exist-in-enum","partName":"the content of the list"}"#,
+    ),
+    (
+        "LinkTypeForAnchorAndAreaElement",
+        "alternate canonical author dns-prefetch",
+        r#"{"ref":"https://html.spec.whatwg.org/multipage/links.html#linkTypes","expects":[{"type":"const","value":"alternate"},{"type":"const","value":"author"},{"type":"const","value":"bookmark"},{"type":"const","value":"external"},{"type":"const","value":"help"},{"type":"const","value":"license"},{"type":"const","value":"next"},{"type":"const","value":"nofollow"},{"type":"const","value":"noopener"},{"type":"const","value":"noreferrer"},{"type":"const","value":"opener"},{"type":"const","value":"prev"},{"type":"const","value":"privacy-policy"},{"type":"const","value":"search"},{"type":"const","value":"tag"},{"type":"const","value":"terms-of-service"},{"type":"const","value":"acquaintance"},{"type":"const","value":"appendix"},{"type":"const","value":"chapter"},{"type":"const","value":"child"},{"type":"const","value":"colleague"},{"type":"const","value":"contact"},{"type":"const","value":"contents"},{"type":"const","value":"copyright"},{"type":"const","value":"co-resident"},{"type":"const","value":"co-worker"},{"type":"const","value":"crush"},{"type":"const","value":"date"},{"type":"const","value":"friend"},{"type":"const","value":"glossary"},{"type":"const","value":"kin"},{"type":"const","value":"me"},{"type":"const","value":"met"},{"type":"const","value":"muse"},{"type":"const","value":"neighbor"},{"type":"const","value":"parent"},{"type":"const","value":"previous"},{"type":"const","value":"section"},{"type":"const","value":"sibling"},{"type":"const","value":"spouse"},{"type":"const","value":"start"},{"type":"const","value":"subsection"},{"type":"const","value":"sweetheart"},{"type":"const","value":"toc"},{"type":"const","value":"transformation"},{"type":"const","value":"pronunciation"},{"type":"const","value":"directory"},{"type":"const","value":"enclosure"},{"type":"const","value":"home"},{"type":"const","value":"payment"},{"type":"const","value":"vcs-*"},{"type":"const","value":"about"},{"type":"const","value":"amphtml"},{"type":"const","value":"archived"},{"type":"const","value":"attachment"},{"type":"const","value":"category"},{"type":"const","value":"code-repository"},{"type":"const","value":"code-license"},{"type":"const","value":"content-repository"},{"type":"const","value":"content-license"},{"type":"const","value":"disclosure"},{"type":"const","value":"discussion"},{"type":"const","value":"donation"},{"type":"const","value":"edit"},{"type":"const","value":"enclosure"},{"type":"const","value":"entry-content"},{"type":"const","value":"first"},{"type":"const","value":"home"},{"type":"const","value":"hub"},{"type":"const","value":"in-reply-to"},{"type":"const","value":"root"},{"type":"const","value":"index"},{"type":"const","value":"issues"},{"type":"const","value":"jslicense"},{"type":"const","value":"last"},{"type":"const","value":"lightbox"},{"type":"const","value":"lightvideo"},{"type":"const","value":"main"},{"type":"const","value":"prerender"},{"type":"const","value":"profile"},{"type":"const","value":"publisher"},{"type":"const","value":"radioepg"},{"type":"const","value":"rendition"},{"type":"const","value":"reply-to"},{"type":"const","value":"sidebar"},{"type":"const","value":"syndication"},{"type":"const","value":"webmention"},{"type":"const","value":"widget"},{"type":"const","value":"http://docs.oasis-open.org/ns/cmis/link/200908/acl"},{"type":"const","value":"accessibility"},{"type":"const","value":"bibliography"},{"type":"const","value":"cite"},{"type":"const","value":"embed"},{"type":"const","value":"group"},{"type":"const","value":"longdesc"},{"type":"const","value":"map"},{"type":"const","value":"member"},{"type":"const","value":"m_PageScroll2id"},{"type":"const","value":"prerender"},{"type":"const","value":"profile"},{"type":"const","value":"shortlink"},{"type":"const","value":"source"},{"type":"const","value":"vcalendar-parent"},{"type":"const","value":"vcalendar-child"},{"type":"const","value":"vcalendar-sibling"},{"type":"const","value":"status"},{"type":"const","value":"https://api.w.org/"},{"type":"const","value":"archive"},{"type":"const","value":"archives"},{"type":"const","value":"comment"},{"type":"const","value":"contribution"},{"type":"const","value":"EditURI"},{"type":"const","value":"endorsed"},{"type":"const","value":"fan"},{"type":"const","value":"feed"},{"type":"const","value":"footnote"},{"type":"const","value":"kinetic-stylesheet"},{"type":"const","value":"lightbox"},{"type":"const","value":"made"},{"type":"const","value":"meta"},{"type":"const","value":"microsummary"},{"type":"const","value":"openid.delegate"},{"type":"const","value":"openid.server"},{"type":"const","value":"permalink"},{"type":"const","value":"pgpkey"},{"type":"const","value":"popover"},{"type":"const","value":"privacy"},{"type":"const","value":"publickey"},{"type":"const","value":"referral"},{"type":"const","value":"related"},{"type":"const","value":"replies"},{"type":"const","value":"respond-proxy"},{"type":"const","value":"respond-redirect"},{"type":"const","value":"resource"},{"type":"const","value":"sitemap"},{"type":"const","value":"sponsor"},{"type":"const","value":"tooltip"},{"type":"const","value":"trackback"},{"type":"const","value":"unendorsed"},{"type":"const","value":"user"},{"type":"const","value":"wlwmanifest"}],"matched":false,"raw":"canonical","offset":10,"length":9,"line":1,"column":11,"reason":"doesnt-exist-in-enum","partName":"the content of the list"}"#,
+    ),
+    (
+        "LinkTypeForAnchorAndAreaElement",
+        "alternate canonical author dns-prefetch expect",
+        r#"{"ref":"https://html.spec.whatwg.org/multipage/links.html#linkTypes","expects":[{"type":"const","value":"alternate"},{"type":"const","value":"author"},{"type":"const","value":"bookmark"},{"type":"const","value":"external"},{"type":"const","value":"help"},{"type":"const","value":"license"},{"type":"const","value":"next"},{"type":"const","value":"nofollow"},{"type":"const","value":"noopener"},{"type":"const","value":"noreferrer"},{"type":"const","value":"opener"},{"type":"const","value":"prev"},{"type":"const","value":"privacy-policy"},{"type":"const","value":"search"},{"type":"const","value":"tag"},{"type":"const","value":"terms-of-service"},{"type":"const","value":"acquaintance"},{"type":"const","value":"appendix"},{"type":"const","value":"chapter"},{"type":"const","value":"child"},{"type":"const","value":"colleague"},{"type":"const","value":"contact"},{"type":"const","value":"contents"},{"type":"const","value":"copyright"},{"type":"const","value":"co-resident"},{"type":"const","value":"co-worker"},{"type":"const","value":"crush"},{"type":"const","value":"date"},{"type":"const","value":"friend"},{"type":"const","value":"glossary"},{"type":"const","value":"kin"},{"type":"const","value":"me"},{"type":"const","value":"met"},{"type":"const","value":"muse"},{"type":"const","value":"neighbor"},{"type":"const","value":"parent"},{"type":"const","value":"previous"},{"type":"const","value":"section"},{"type":"const","value":"sibling"},{"type":"const","value":"spouse"},{"type":"const","value":"start"},{"type":"const","value":"subsection"},{"type":"const","value":"sweetheart"},{"type":"const","value":"toc"},{"type":"const","value":"transformation"},{"type":"const","value":"pronunciation"},{"type":"const","value":"directory"},{"type":"const","value":"enclosure"},{"type":"const","value":"home"},{"type":"const","value":"payment"},{"type":"const","value":"vcs-*"},{"type":"const","value":"about"},{"type":"const","value":"amphtml"},{"type":"const","value":"archived"},{"type":"const","value":"attachment"},{"type":"const","value":"category"},{"type":"const","value":"code-repository"},{"type":"const","value":"code-license"},{"type":"const","value":"content-repository"},{"type":"const","value":"content-license"},{"type":"const","value":"disclosure"},{"type":"const","value":"discussion"},{"type":"const","value":"donation"},{"type":"const","value":"edit"},{"type":"const","value":"enclosure"},{"type":"const","value":"entry-content"},{"type":"const","value":"first"},{"type":"const","value":"home"},{"type":"const","value":"hub"},{"type":"const","value":"in-reply-to"},{"type":"const","value":"root"},{"type":"const","value":"index"},{"type":"const","value":"issues"},{"type":"const","value":"jslicense"},{"type":"const","value":"last"},{"type":"const","value":"lightbox"},{"type":"const","value":"lightvideo"},{"type":"const","value":"main"},{"type":"const","value":"prerender"},{"type":"const","value":"profile"},{"type":"const","value":"publisher"},{"type":"const","value":"radioepg"},{"type":"const","value":"rendition"},{"type":"const","value":"reply-to"},{"type":"const","value":"sidebar"},{"type":"const","value":"syndication"},{"type":"const","value":"webmention"},{"type":"const","value":"widget"},{"type":"const","value":"http://docs.oasis-open.org/ns/cmis/link/200908/acl"},{"type":"const","value":"accessibility"},{"type":"const","value":"bibliography"},{"type":"const","value":"cite"},{"type":"const","value":"embed"},{"type":"const","value":"group"},{"type":"const","value":"longdesc"},{"type":"const","value":"map"},{"type":"const","value":"member"},{"type":"const","value":"m_PageScroll2id"},{"type":"const","value":"prerender"},{"type":"const","value":"profile"},{"type":"const","value":"shortlink"},{"type":"const","value":"source"},{"type":"const","value":"vcalendar-parent"},{"type":"const","value":"vcalendar-child"},{"type":"const","value":"vcalendar-sibling"},{"type":"const","value":"status"},{"type":"const","value":"https://api.w.org/"},{"type":"const","value":"archive"},{"type":"const","value":"archives"},{"type":"const","value":"comment"},{"type":"const","value":"contribution"},{"type":"const","value":"EditURI"},{"type":"const","value":"endorsed"},{"type":"const","value":"fan"},{"type":"const","value":"feed"},{"type":"const","value":"footnote"},{"type":"const","value":"kinetic-stylesheet"},{"type":"const","value":"lightbox"},{"type":"const","value":"made"},{"type":"const","value":"meta"},{"type":"const","value":"microsummary"},{"type":"const","value":"openid.delegate"},{"type":"const","value":"openid.server"},{"type":"const","value":"permalink"},{"type":"const","value":"pgpkey"},{"type":"const","value":"popover"},{"type":"const","value":"privacy"},{"type":"const","value":"publickey"},{"type":"const","value":"referral"},{"type":"const","value":"related"},{"type":"const","value":"replies"},{"type":"const","value":"respond-proxy"},{"type":"const","value":"respond-redirect"},{"type":"const","value":"resource"},{"type":"const","value":"sitemap"},{"type":"const","value":"sponsor"},{"type":"const","value":"tooltip"},{"type":"const","value":"trackback"},{"type":"const","value":"unendorsed"},{"type":"const","value":"user"},{"type":"const","value":"wlwmanifest"}],"matched":false,"raw":"canonical","offset":10,"length":9,"line":1,"column":11,"reason":"doesnt-exist-in-enum","partName":"the content of the list"}"#,
+    ),
+    (
+        "LinkTypeForAnchorAndAreaElement",
+        "alternate canonical author dns-prefetch expect help",
+        r#"{"ref":"https://html.spec.whatwg.org/multipage/links.html#linkTypes","expects":[{"type":"const","value":"alternate"},{"type":"const","value":"author"},{"type":"const","value":"bookmark"},{"type":"const","value":"external"},{"type":"const","value":"help"},{"type":"const","value":"license"},{"type":"const","value":"next"},{"type":"const","value":"nofollow"},{"type":"const","value":"noopener"},{"type":"const","value":"noreferrer"},{"type":"const","value":"opener"},{"type":"const","value":"prev"},{"type":"const","value":"privacy-policy"},{"type":"const","value":"search"},{"type":"const","value":"tag"},{"type":"const","value":"terms-of-service"},{"type":"const","value":"acquaintance"},{"type":"const","value":"appendix"},{"type":"const","value":"chapter"},{"type":"const","value":"child"},{"type":"const","value":"colleague"},{"type":"const","value":"contact"},{"type":"const","value":"contents"},{"type":"const","value":"copyright"},{"type":"const","value":"co-resident"},{"type":"const","value":"co-worker"},{"type":"const","value":"crush"},{"type":"const","value":"date"},{"type":"const","value":"friend"},{"type":"const","value":"glossary"},{"type":"const","value":"kin"},{"type":"const","value":"me"},{"type":"const","value":"met"},{"type":"const","value":"muse"},{"type":"const","value":"neighbor"},{"type":"const","value":"parent"},{"type":"const","value":"previous"},{"type":"const","value":"section"},{"type":"const","value":"sibling"},{"type":"const","value":"spouse"},{"type":"const","value":"start"},{"type":"const","value":"subsection"},{"type":"const","value":"sweetheart"},{"type":"const","value":"toc"},{"type":"const","value":"transformation"},{"type":"const","value":"pronunciation"},{"type":"const","value":"directory"},{"type":"const","value":"enclosure"},{"type":"const","value":"home"},{"type":"const","value":"payment"},{"type":"const","value":"vcs-*"},{"type":"const","value":"about"},{"type":"const","value":"amphtml"},{"type":"const","value":"archived"},{"type":"const","value":"attachment"},{"type":"const","value":"category"},{"type":"const","value":"code-repository"},{"type":"const","value":"code-license"},{"type":"const","value":"content-repository"},{"type":"const","value":"content-license"},{"type":"const","value":"disclosure"},{"type":"const","value":"discussion"},{"type":"const","value":"donation"},{"type":"const","value":"edit"},{"type":"const","value":"enclosure"},{"type":"const","value":"entry-content"},{"type":"const","value":"first"},{"type":"const","value":"home"},{"type":"const","value":"hub"},{"type":"const","value":"in-reply-to"},{"type":"const","value":"root"},{"type":"const","value":"index"},{"type":"const","value":"issues"},{"type":"const","value":"jslicense"},{"type":"const","value":"last"},{"type":"const","value":"lightbox"},{"type":"const","value":"lightvideo"},{"type":"const","value":"main"},{"type":"const","value":"prerender"},{"type":"const","value":"profile"},{"type":"const","value":"publisher"},{"type":"const","value":"radioepg"},{"type":"const","value":"rendition"},{"type":"const","value":"reply-to"},{"type":"const","value":"sidebar"},{"type":"const","value":"syndication"},{"type":"const","value":"webmention"},{"type":"const","value":"widget"},{"type":"const","value":"http://docs.oasis-open.org/ns/cmis/link/200908/acl"},{"type":"const","value":"accessibility"},{"type":"const","value":"bibliography"},{"type":"const","value":"cite"},{"type":"const","value":"embed"},{"type":"const","value":"group"},{"type":"const","value":"longdesc"},{"type":"const","value":"map"},{"type":"const","value":"member"},{"type":"const","value":"m_PageScroll2id"},{"type":"const","value":"prerender"},{"type":"const","value":"profile"},{"type":"const","value":"shortlink"},{"type":"const","value":"source"},{"type":"const","value":"vcalendar-parent"},{"type":"const","value":"vcalendar-child"},{"type":"const","value":"vcalendar-sibling"},{"type":"const","value":"status"},{"type":"const","value":"https://api.w.org/"},{"type":"const","value":"archive"},{"type":"const","value":"archives"},{"type":"const","value":"comment"},{"type":"const","value":"contribution"},{"type":"const","value":"EditURI"},{"type":"const","value":"endorsed"},{"type":"const","value":"fan"},{"type":"const","value":"feed"},{"type":"const","value":"footnote"},{"type":"const","value":"kinetic-stylesheet"},{"type":"const","value":"lightbox"},{"type":"const","value":"made"},{"type":"const","value":"meta"},{"type":"const","value":"microsummary"},{"type":"const","value":"openid.delegate"},{"type":"const","value":"openid.server"},{"type":"const","value":"permalink"},{"type":"const","value":"pgpkey"},{"type":"const","value":"popover"},{"type":"const","value":"privacy"},{"type":"const","value":"publickey"},{"type":"const","value":"referral"},{"type":"const","value":"related"},{"type":"const","value":"replies"},{"type":"const","value":"respond-proxy"},{"type":"const","value":"respond-redirect"},{"type":"const","value":"resource"},{"type":"const","value":"sitemap"},{"type":"const","value":"sponsor"},{"type":"const","value":"tooltip"},{"type":"const","value":"trackback"},{"type":"const","value":"unendorsed"},{"type":"const","value":"user"},{"type":"const","value":"wlwmanifest"}],"matched":false,"raw":"canonical","offset":10,"length":9,"line":1,"column":11,"reason":"doesnt-exist-in-enum","partName":"the content of the list"}"#,
+    ),
+    (
+        "LinkTypeForAnchorAndAreaElement",
+        "modulepreload",
+        r#"{"ref":"https://html.spec.whatwg.org/multipage/links.html#linkTypes","expects":[{"type":"const","value":"alternate"},{"type":"const","value":"author"},{"type":"const","value":"bookmark"},{"type":"const","value":"external"},{"type":"const","value":"help"},{"type":"const","value":"license"},{"type":"const","value":"next"},{"type":"const","value":"nofollow"},{"type":"const","value":"noopener"},{"type":"const","value":"noreferrer"},{"type":"const","value":"opener"},{"type":"const","value":"prev"},{"type":"const","value":"privacy-policy"},{"type":"const","value":"search"},{"type":"const","value":"tag"},{"type":"const","value":"terms-of-service"},{"type":"const","value":"acquaintance"},{"type":"const","value":"appendix"},{"type":"const","value":"chapter"},{"type":"const","value":"child"},{"type":"const","value":"colleague"},{"type":"const","value":"contact"},{"type":"const","value":"contents"},{"type":"const","value":"copyright"},{"type":"const","value":"co-resident"},{"type":"const","value":"co-worker"},{"type":"const","value":"crush"},{"type":"const","value":"date"},{"type":"const","value":"friend"},{"type":"const","value":"glossary"},{"type":"const","value":"kin"},{"type":"const","value":"me"},{"type":"const","value":"met"},{"type":"const","value":"muse"},{"type":"const","value":"neighbor"},{"type":"const","value":"parent"},{"type":"const","value":"previous"},{"type":"const","value":"section"},{"type":"const","value":"sibling"},{"type":"const","value":"spouse"},{"type":"const","value":"start"},{"type":"const","value":"subsection"},{"type":"const","value":"sweetheart"},{"type":"const","value":"toc"},{"type":"const","value":"transformation"},{"type":"const","value":"pronunciation"},{"type":"const","value":"directory"},{"type":"const","value":"enclosure"},{"type":"const","value":"home"},{"type":"const","value":"payment"},{"type":"const","value":"vcs-*"},{"type":"const","value":"about"},{"type":"const","value":"amphtml"},{"type":"const","value":"archived"},{"type":"const","value":"attachment"},{"type":"const","value":"category"},{"type":"const","value":"code-repository"},{"type":"const","value":"code-license"},{"type":"const","value":"content-repository"},{"type":"const","value":"content-license"},{"type":"const","value":"disclosure"},{"type":"const","value":"discussion"},{"type":"const","value":"donation"},{"type":"const","value":"edit"},{"type":"const","value":"enclosure"},{"type":"const","value":"entry-content"},{"type":"const","value":"first"},{"type":"const","value":"home"},{"type":"const","value":"hub"},{"type":"const","value":"in-reply-to"},{"type":"const","value":"root"},{"type":"const","value":"index"},{"type":"const","value":"issues"},{"type":"const","value":"jslicense"},{"type":"const","value":"last"},{"type":"const","value":"lightbox"},{"type":"const","value":"lightvideo"},{"type":"const","value":"main"},{"type":"const","value":"prerender"},{"type":"const","value":"profile"},{"type":"const","value":"publisher"},{"type":"const","value":"radioepg"},{"type":"const","value":"rendition"},{"type":"const","value":"reply-to"},{"type":"const","value":"sidebar"},{"type":"const","value":"syndication"},{"type":"const","value":"webmention"},{"type":"const","value":"widget"},{"type":"const","value":"http://docs.oasis-open.org/ns/cmis/link/200908/acl"},{"type":"const","value":"accessibility"},{"type":"const","value":"bibliography"},{"type":"const","value":"cite"},{"type":"const","value":"embed"},{"type":"const","value":"group"},{"type":"const","value":"longdesc"},{"type":"const","value":"map"},{"type":"const","value":"member"},{"type":"const","value":"m_PageScroll2id"},{"type":"const","value":"prerender"},{"type":"const","value":"profile"},{"type":"const","value":"shortlink"},{"type":"const","value":"source"},{"type":"const","value":"vcalendar-parent"},{"type":"const","value":"vcalendar-child"},{"type":"const","value":"vcalendar-sibling"},{"type":"const","value":"status"},{"type":"const","value":"https://api.w.org/"},{"type":"const","value":"archive"},{"type":"const","value":"archives"},{"type":"const","value":"comment"},{"type":"const","value":"contribution"},{"type":"const","value":"EditURI"},{"type":"const","value":"endorsed"},{"type":"const","value":"fan"},{"type":"const","value":"feed"},{"type":"const","value":"footnote"},{"type":"const","value":"kinetic-stylesheet"},{"type":"const","value":"lightbox"},{"type":"const","value":"made"},{"type":"const","value":"meta"},{"type":"const","value":"microsummary"},{"type":"const","value":"openid.delegate"},{"type":"const","value":"openid.server"},{"type":"const","value":"permalink"},{"type":"const","value":"pgpkey"},{"type":"const","value":"popover"},{"type":"const","value":"privacy"},{"type":"const","value":"publickey"},{"type":"const","value":"referral"},{"type":"const","value":"related"},{"type":"const","value":"replies"},{"type":"const","value":"respond-proxy"},{"type":"const","value":"respond-redirect"},{"type":"const","value":"resource"},{"type":"const","value":"sitemap"},{"type":"const","value":"sponsor"},{"type":"const","value":"tooltip"},{"type":"const","value":"trackback"},{"type":"const","value":"unendorsed"},{"type":"const","value":"user"},{"type":"const","value":"wlwmanifest"}],"matched":false,"raw":"modulepreload","offset":0,"length":13,"line":1,"column":1,"reason":"doesnt-exist-in-enum","partName":"the content of the list"}"#,
+    ),
+    (
+        "LinkTypeForAnchorAndAreaElement",
+        "pingback",
+        r#"{"ref":"https://html.spec.whatwg.org/multipage/links.html#linkTypes","expects":[{"type":"const","value":"alternate"},{"type":"const","value":"author"},{"type":"const","value":"bookmark"},{"type":"const","value":"external"},{"type":"const","value":"help"},{"type":"const","value":"license"},{"type":"const","value":"next"},{"type":"const","value":"nofollow"},{"type":"const","value":"noopener"},{"type":"const","value":"noreferrer"},{"type":"const","value":"opener"},{"type":"const","value":"prev"},{"type":"const","value":"privacy-policy"},{"type":"const","value":"search"},{"type":"const","value":"tag"},{"type":"const","value":"terms-of-service"},{"type":"const","value":"acquaintance"},{"type":"const","value":"appendix"},{"type":"const","value":"chapter"},{"type":"const","value":"child"},{"type":"const","value":"colleague"},{"type":"const","value":"contact"},{"type":"const","value":"contents"},{"type":"const","value":"copyright"},{"type":"const","value":"co-resident"},{"type":"const","value":"co-worker"},{"type":"const","value":"crush"},{"type":"const","value":"date"},{"type":"const","value":"friend"},{"type":"const","value":"glossary"},{"type":"const","value":"kin"},{"type":"const","value":"me"},{"type":"const","value":"met"},{"type":"const","value":"muse"},{"type":"const","value":"neighbor"},{"type":"const","value":"parent"},{"type":"const","value":"previous"},{"type":"const","value":"section"},{"type":"const","value":"sibling"},{"type":"const","value":"spouse"},{"type":"const","value":"start"},{"type":"const","value":"subsection"},{"type":"const","value":"sweetheart"},{"type":"const","value":"toc"},{"type":"const","value":"transformation"},{"type":"const","value":"pronunciation"},{"type":"const","value":"directory"},{"type":"const","value":"enclosure"},{"type":"const","value":"home"},{"type":"const","value":"payment"},{"type":"const","value":"vcs-*"},{"type":"const","value":"about"},{"type":"const","value":"amphtml"},{"type":"const","value":"archived"},{"type":"const","value":"attachment"},{"type":"const","value":"category"},{"type":"const","value":"code-repository"},{"type":"const","value":"code-license"},{"type":"const","value":"content-repository"},{"type":"const","value":"content-license"},{"type":"const","value":"disclosure"},{"type":"const","value":"discussion"},{"type":"const","value":"donation"},{"type":"const","value":"edit"},{"type":"const","value":"enclosure"},{"type":"const","value":"entry-content"},{"type":"const","value":"first"},{"type":"const","value":"home"},{"type":"const","value":"hub"},{"type":"const","value":"in-reply-to"},{"type":"const","value":"root"},{"type":"const","value":"index"},{"type":"const","value":"issues"},{"type":"const","value":"jslicense"},{"type":"const","value":"last"},{"type":"const","value":"lightbox"},{"type":"const","value":"lightvideo"},{"type":"const","value":"main"},{"type":"const","value":"prerender"},{"type":"const","value":"profile"},{"type":"const","value":"publisher"},{"type":"const","value":"radioepg"},{"type":"const","value":"rendition"},{"type":"const","value":"reply-to"},{"type":"const","value":"sidebar"},{"type":"const","value":"syndication"},{"type":"const","value":"webmention"},{"type":"const","value":"widget"},{"type":"const","value":"http://docs.oasis-open.org/ns/cmis/link/200908/acl"},{"type":"const","value":"accessibility"},{"type":"const","value":"bibliography"},{"type":"const","value":"cite"},{"type":"const","value":"embed"},{"type":"const","value":"group"},{"type":"const","value":"longdesc"},{"type":"const","value":"map"},{"type":"const","value":"member"},{"type":"const","value":"m_PageScroll2id"},{"type":"const","value":"prerender"},{"type":"const","value":"profile"},{"type":"const","value":"shortlink"},{"type":"const","value":"source"},{"type":"const","value":"vcalendar-parent"},{"type":"const","value":"vcalendar-child"},{"type":"const","value":"vcalendar-sibling"},{"type":"const","value":"status"},{"type":"const","value":"https://api.w.org/"},{"type":"const","value":"archive"},{"type":"const","value":"archives"},{"type":"const","value":"comment"},{"type":"const","value":"contribution"},{"type":"const","value":"EditURI"},{"type":"const","value":"endorsed"},{"type":"const","value":"fan"},{"type":"const","value":"feed"},{"type":"const","value":"footnote"},{"type":"const","value":"kinetic-stylesheet"},{"type":"const","value":"lightbox"},{"type":"const","value":"made"},{"type":"const","value":"meta"},{"type":"const","value":"microsummary"},{"type":"const","value":"openid.delegate"},{"type":"const","value":"openid.server"},{"type":"const","value":"permalink"},{"type":"const","value":"pgpkey"},{"type":"const","value":"popover"},{"type":"const","value":"privacy"},{"type":"const","value":"publickey"},{"type":"const","value":"referral"},{"type":"const","value":"related"},{"type":"const","value":"replies"},{"type":"const","value":"respond-proxy"},{"type":"const","value":"respond-redirect"},{"type":"const","value":"resource"},{"type":"const","value":"sitemap"},{"type":"const","value":"sponsor"},{"type":"const","value":"tooltip"},{"type":"const","value":"trackback"},{"type":"const","value":"unendorsed"},{"type":"const","value":"user"},{"type":"const","value":"wlwmanifest"}],"matched":false,"raw":"pingback","offset":0,"length":8,"line":1,"column":1,"reason":"doesnt-exist-in-enum","partName":"the content of the list"}"#,
+    ),
+    (
+        "LinkTypeForAnchorAndAreaElement",
+        "bookmark dns-prefetch",
+        r#"{"ref":"https://html.spec.whatwg.org/multipage/links.html#linkTypes","expects":[{"type":"const","value":"alternate"},{"type":"const","value":"author"},{"type":"const","value":"bookmark"},{"type":"const","value":"external"},{"type":"const","value":"help"},{"type":"const","value":"license"},{"type":"const","value":"next"},{"type":"const","value":"nofollow"},{"type":"const","value":"noopener"},{"type":"const","value":"noreferrer"},{"type":"const","value":"opener"},{"type":"const","value":"prev"},{"type":"const","value":"privacy-policy"},{"type":"const","value":"search"},{"type":"const","value":"tag"},{"type":"const","value":"terms-of-service"},{"type":"const","value":"acquaintance"},{"type":"const","value":"appendix"},{"type":"const","value":"chapter"},{"type":"const","value":"child"},{"type":"const","value":"colleague"},{"type":"const","value":"contact"},{"type":"const","value":"contents"},{"type":"const","value":"copyright"},{"type":"const","value":"co-resident"},{"type":"const","value":"co-worker"},{"type":"const","value":"crush"},{"type":"const","value":"date"},{"type":"const","value":"friend"},{"type":"const","value":"glossary"},{"type":"const","value":"kin"},{"type":"const","value":"me"},{"type":"const","value":"met"},{"type":"const","value":"muse"},{"type":"const","value":"neighbor"},{"type":"const","value":"parent"},{"type":"const","value":"previous"},{"type":"const","value":"section"},{"type":"const","value":"sibling"},{"type":"const","value":"spouse"},{"type":"const","value":"start"},{"type":"const","value":"subsection"},{"type":"const","value":"sweetheart"},{"type":"const","value":"toc"},{"type":"const","value":"transformation"},{"type":"const","value":"pronunciation"},{"type":"const","value":"directory"},{"type":"const","value":"enclosure"},{"type":"const","value":"home"},{"type":"const","value":"payment"},{"type":"const","value":"vcs-*"},{"type":"const","value":"about"},{"type":"const","value":"amphtml"},{"type":"const","value":"archived"},{"type":"const","value":"attachment"},{"type":"const","value":"category"},{"type":"const","value":"code-repository"},{"type":"const","value":"code-license"},{"type":"const","value":"content-repository"},{"type":"const","value":"content-license"},{"type":"const","value":"disclosure"},{"type":"const","value":"discussion"},{"type":"const","value":"donation"},{"type":"const","value":"edit"},{"type":"const","value":"enclosure"},{"type":"const","value":"entry-content"},{"type":"const","value":"first"},{"type":"const","value":"home"},{"type":"const","value":"hub"},{"type":"const","value":"in-reply-to"},{"type":"const","value":"root"},{"type":"const","value":"index"},{"type":"const","value":"issues"},{"type":"const","value":"jslicense"},{"type":"const","value":"last"},{"type":"const","value":"lightbox"},{"type":"const","value":"lightvideo"},{"type":"const","value":"main"},{"type":"const","value":"prerender"},{"type":"const","value":"profile"},{"type":"const","value":"publisher"},{"type":"const","value":"radioepg"},{"type":"const","value":"rendition"},{"type":"const","value":"reply-to"},{"type":"const","value":"sidebar"},{"type":"const","value":"syndication"},{"type":"const","value":"webmention"},{"type":"const","value":"widget"},{"type":"const","value":"http://docs.oasis-open.org/ns/cmis/link/200908/acl"},{"type":"const","value":"accessibility"},{"type":"const","value":"bibliography"},{"type":"const","value":"cite"},{"type":"const","value":"embed"},{"type":"const","value":"group"},{"type":"const","value":"longdesc"},{"type":"const","value":"map"},{"type":"const","value":"member"},{"type":"const","value":"m_PageScroll2id"},{"type":"const","value":"prerender"},{"type":"const","value":"profile"},{"type":"const","value":"shortlink"},{"type":"const","value":"source"},{"type":"const","value":"vcalendar-parent"},{"type":"const","value":"vcalendar-child"},{"type":"const","value":"vcalendar-sibling"},{"type":"const","value":"status"},{"type":"const","value":"https://api.w.org/"},{"type":"const","value":"archive"},{"type":"const","value":"archives"},{"type":"const","value":"comment"},{"type":"const","value":"contribution"},{"type":"const","value":"EditURI"},{"type":"const","value":"endorsed"},{"type":"const","value":"fan"},{"type":"const","value":"feed"},{"type":"const","value":"footnote"},{"type":"const","value":"kinetic-stylesheet"},{"type":"const","value":"lightbox"},{"type":"const","value":"made"},{"type":"const","value":"meta"},{"type":"const","value":"microsummary"},{"type":"const","value":"openid.delegate"},{"type":"const","value":"openid.server"},{"type":"const","value":"permalink"},{"type":"const","value":"pgpkey"},{"type":"const","value":"popover"},{"type":"const","value":"privacy"},{"type":"const","value":"publickey"},{"type":"const","value":"referral"},{"type":"const","value":"related"},{"type":"const","value":"replies"},{"type":"const","value":"respond-proxy"},{"type":"const","value":"respond-redirect"},{"type":"const","value":"resource"},{"type":"const","value":"sitemap"},{"type":"const","value":"sponsor"},{"type":"const","value":"tooltip"},{"type":"const","value":"trackback"},{"type":"const","value":"unendorsed"},{"type":"const","value":"user"},{"type":"const","value":"wlwmanifest"}],"matched":false,"raw":"dns-prefetch","offset":9,"length":12,"line":1,"column":10,"reason":"doesnt-exist-in-enum","partName":"the content of the list"}"#,
+    ),
+    (
+        "LinkTypeForAnchorAndAreaElement",
+        "disclosure",
+        r#"{"matched":true}"#,
+    ),
+    (
+        "LinkTypeForAnchorAndAreaElement",
+        "license",
+        r#"{"matched":true}"#,
+    ),
+    (
+        "LinkTypeForAnchorAndAreaElement",
+        "self",
+        r#"{"reason":"unexpected-token","expects":[{"type":"common","value":"valid Link Type"}],"matched":false,"ref":"https://html.spec.whatwg.org/multipage/links.html#linkTypes","raw":"self","offset":0,"length":4,"line":1,"column":1}"#,
+    ),
+    (
+        "LinkTypeForAnchorAndAreaElement",
+        "sub",
+        r#"{"reason":"unexpected-token","expects":[{"type":"common","value":"valid Link Type"}],"matched":false,"ref":"https://html.spec.whatwg.org/multipage/links.html#linkTypes","raw":"sub","offset":0,"length":3,"line":1,"column":1}"#,
+    ),
+    (
+        "LinkTypeForAnchorAndAreaElement",
+        "version-history",
+        r#"{"reason":"unexpected-token","expects":[{"type":"common","value":"valid Link Type"}],"matched":false,"ref":"https://html.spec.whatwg.org/multipage/links.html#linkTypes","raw":"version-history","offset":0,"length":15,"line":1,"column":1}"#,
+    ),
+    (
+        "LinkTypeForAnchorAndAreaElement",
+        "latest-version",
+        r#"{"reason":"unexpected-token","expects":[{"type":"common","value":"valid Link Type"}],"matched":false,"ref":"https://html.spec.whatwg.org/multipage/links.html#linkTypes","raw":"latest-version","offset":0,"length":14,"line":1,"column":1}"#,
+    ),
+    (
+        "LinkTypeForAnchorAndAreaElement",
+        "banner",
+        r#"{"reason":"unexpected-token","expects":[{"type":"common","value":"valid Link Type"}],"matched":false,"ref":"https://html.spec.whatwg.org/multipage/links.html#linkTypes","raw":"banner","offset":0,"length":6,"line":1,"column":1}"#,
+    ),
+    (
+        "LinkTypeForAnchorAndAreaElement",
+        "footnote",
+        r#"{"reason":"unexpected-token","expects":[{"type":"common","value":"valid Link Type"}],"matched":false,"ref":"https://html.spec.whatwg.org/multipage/links.html#linkTypes","raw":"footnote","offset":0,"length":8,"line":1,"column":1}"#,
+    ),
+    (
+        "LinkTypeForAnchorAndAreaElement",
+        "first",
+        r#"{"reason":"unexpected-token","expects":[{"type":"common","value":"valid Link Type"}],"matched":false,"ref":"https://html.spec.whatwg.org/multipage/links.html#linkTypes","raw":"first","offset":0,"length":5,"line":1,"column":1}"#,
+    ),
+    (
+        "LinkTypeForAnchorAndAreaElement",
+        "alternate logo",
+        r#"{"reason":"unexpected-token","expects":[{"type":"common","value":"valid Link Type"}],"matched":false,"ref":"https://html.spec.whatwg.org/multipage/links.html#linkTypes","raw":"logo","offset":10,"length":4,"line":1,"column":11}"#,
+    ),
+    (
+        "LinkTypeForAnchorAndAreaElement",
+        "",
+        r#"{"matched":true}"#,
+    ),
+    (
+        "LinkTypeForAnchorAndAreaElement",
+        "   ",
+        r#"{"matched":true}"#,
+    ),
+    (
+        "LinkTypeForAnchorAndAreaElement",
+        "acquaintance",
+        r#"{"matched":true}"#,
+    ),
+    (
+        "LinkTypeForAnchorAndAreaElement",
+        "ALTERNATE",
+        r#"{"matched":true}"#,
+    ),
+    (
+        "LinkTypeForAnchorAndAreaElement",
+        "amphtml",
+        r#"{"matched":true}"#,
+    ),
+    (
+        "LinkTypeForAnchorAndAreaElement",
+        "begin",
+        r#"{"reason":"unexpected-token","expects":[{"type":"common","value":"valid Link Type"}],"matched":false,"ref":"https://html.spec.whatwg.org/multipage/links.html#linkTypes","raw":"begin","offset":0,"length":5,"line":1,"column":1}"#,
+    ),
+    (
+        "LinkTypeForAnchorAndAreaElement",
+        "bibliography",
+        r#"{"reason":"unexpected-token","expects":[{"type":"common","value":"valid Link Type"}],"matched":false,"ref":"https://html.spec.whatwg.org/multipage/links.html#linkTypes","raw":"bibliography","offset":0,"length":12,"line":1,"column":1}"#,
+    ),
+    (
+        "LinkTypeForAnchorAndAreaElement",
+        "child",
+        r#"{"reason":"unexpected-token","expects":[{"type":"common","value":"valid Link Type"}],"matched":false,"ref":"https://html.spec.whatwg.org/multipage/links.html#linkTypes","raw":"child","offset":0,"length":5,"line":1,"column":1}"#,
+    ),
+    (
+        "LinkTypeForAnchorAndAreaElement",
+        "collection",
+        r#"{"reason":"unexpected-token","expects":[{"type":"common","value":"valid Link Type"}],"matched":false,"ref":"https://html.spec.whatwg.org/multipage/links.html#linkTypes","raw":"collection","offset":0,"length":10,"line":1,"column":1}"#,
+    ),
+    (
+        "LinkTypeForAnchorAndAreaElement",
+        "DCTERMS.conformsTo",
+        r#"{"ref":"https://html.spec.whatwg.org/multipage/links.html#linkTypes","expects":[{"type":"const","value":"alternate"},{"type":"const","value":"author"},{"type":"const","value":"bookmark"},{"type":"const","value":"external"},{"type":"const","value":"help"},{"type":"const","value":"license"},{"type":"const","value":"next"},{"type":"const","value":"nofollow"},{"type":"const","value":"noopener"},{"type":"const","value":"noreferrer"},{"type":"const","value":"opener"},{"type":"const","value":"prev"},{"type":"const","value":"privacy-policy"},{"type":"const","value":"search"},{"type":"const","value":"tag"},{"type":"const","value":"terms-of-service"},{"type":"const","value":"acquaintance"},{"type":"const","value":"appendix"},{"type":"const","value":"chapter"},{"type":"const","value":"child"},{"type":"const","value":"colleague"},{"type":"const","value":"contact"},{"type":"const","value":"contents"},{"type":"const","value":"copyright"},{"type":"const","value":"co-resident"},{"type":"const","value":"co-worker"},{"type":"const","value":"crush"},{"type":"const","value":"date"},{"type":"const","value":"friend"},{"type":"const","value":"glossary"},{"type":"const","value":"kin"},{"type":"const","value":"me"},{"type":"const","value":"met"},{"type":"const","value":"muse"},{"type":"const","value":"neighbor"},{"type":"const","value":"parent"},{"type":"const","value":"previous"},{"type":"const","value":"section"},{"type":"const","value":"sibling"},{"type":"const","value":"spouse"},{"type":"const","value":"start"},{"type":"const","value":"subsection"},{"type":"const","value":"sweetheart"},{"type":"const","value":"toc"},{"type":"const","value":"transformation"},{"type":"const","value":"pronunciation"},{"type":"const","value":"directory"},{"type":"const","value":"enclosure"},{"type":"const","value":"home"},{"type":"const","value":"payment"},{"type":"const","value":"vcs-*"},{"type":"const","value":"about"},{"type":"const","value":"amphtml"},{"type":"const","value":"archived"},{"type":"const","value":"attachment"},{"type":"const","value":"category"},{"type":"const","value":"code-repository"},{"type":"const","value":"code-license"},{"type":"const","value":"content-repository"},{"type":"const","value":"content-license"},{"type":"const","value":"disclosure"},{"type":"const","value":"discussion"},{"type":"const","value":"donation"},{"type":"const","value":"edit"},{"type":"const","value":"enclosure"},{"type":"const","value":"entry-content"},{"type":"const","value":"first"},{"type":"const","value":"home"},{"type":"const","value":"hub"},{"type":"const","value":"in-reply-to"},{"type":"const","value":"root"},{"type":"const","value":"index"},{"type":"const","value":"issues"},{"type":"const","value":"jslicense"},{"type":"const","value":"last"},{"type":"const","value":"lightbox"},{"type":"const","value":"lightvideo"},{"type":"const","value":"main"},{"type":"const","value":"prerender"},{"type":"const","value":"profile"},{"type":"const","value":"publisher"},{"type":"const","value":"radioepg"},{"type":"const","value":"rendition"},{"type":"const","value":"reply-to"},{"type":"const","value":"sidebar"},{"type":"const","value":"syndication"},{"type":"const","value":"webmention"},{"type":"const","value":"widget"},{"type":"const","value":"http://docs.oasis-open.org/ns/cmis/link/200908/acl"},{"type":"const","value":"accessibility"},{"type":"const","value":"bibliography"},{"type":"const","value":"cite"},{"type":"const","value":"embed"},{"type":"const","value":"group"},{"type":"const","value":"longdesc"},{"type":"const","value":"map"},{"type":"const","value":"member"},{"type":"const","value":"m_PageScroll2id"},{"type":"const","value":"prerender"},{"type":"const","value":"profile"},{"type":"const","value":"shortlink"},{"type":"const","value":"source"},{"type":"const","value":"vcalendar-parent"},{"type":"const","value":"vcalendar-child"},{"type":"const","value":"vcalendar-sibling"},{"type":"const","value":"status"},{"type":"const","value":"https://api.w.org/"},{"type":"const","value":"archive"},{"type":"const","value":"archives"},{"type":"const","value":"comment"},{"type":"const","value":"contribution"},{"type":"const","value":"EditURI"},{"type":"const","value":"endorsed"},{"type":"const","value":"fan"},{"type":"const","value":"feed"},{"type":"const","value":"footnote"},{"type":"const","value":"kinetic-stylesheet"},{"type":"const","value":"lightbox"},{"type":"const","value":"made"},{"type":"const","value":"meta"},{"type":"const","value":"microsummary"},{"type":"const","value":"openid.delegate"},{"type":"const","value":"openid.server"},{"type":"const","value":"permalink"},{"type":"const","value":"pgpkey"},{"type":"const","value":"popover"},{"type":"const","value":"privacy"},{"type":"const","value":"publickey"},{"type":"const","value":"referral"},{"type":"const","value":"related"},{"type":"const","value":"replies"},{"type":"const","value":"respond-proxy"},{"type":"const","value":"respond-redirect"},{"type":"const","value":"resource"},{"type":"const","value":"sitemap"},{"type":"const","value":"sponsor"},{"type":"const","value":"tooltip"},{"type":"const","value":"trackback"},{"type":"const","value":"unendorsed"},{"type":"const","value":"user"},{"type":"const","value":"wlwmanifest"}],"matched":false,"raw":"DCTERMS.conformsTo","offset":0,"length":18,"line":1,"column":1,"reason":"doesnt-exist-in-enum","partName":"the content of the list"}"#,
+    ),
+    (
+        "LinkTypeForAnchorAndAreaElement",
+        "editor",
+        r#"{"reason":"unexpected-token","expects":[{"type":"common","value":"valid Link Type"}],"matched":false,"ref":"https://html.spec.whatwg.org/multipage/links.html#linkTypes","raw":"editor","offset":0,"length":6,"line":1,"column":1}"#,
+    ),
+    (
+        "LinkTypeForAnchorAndAreaElement",
+        "external",
+        r#"{"matched":true}"#,
+    ),
+    (
+        "LinkTypeForAnchorAndAreaElement",
+        "icon",
+        r#"{"ref":"https://html.spec.whatwg.org/multipage/links.html#linkTypes","expects":[{"type":"const","value":"alternate"},{"type":"const","value":"author"},{"type":"const","value":"bookmark"},{"type":"const","value":"external"},{"type":"const","value":"help"},{"type":"const","value":"license"},{"type":"const","value":"next"},{"type":"const","value":"nofollow"},{"type":"const","value":"noopener"},{"type":"const","value":"noreferrer"},{"type":"const","value":"opener"},{"type":"const","value":"prev"},{"type":"const","value":"privacy-policy"},{"type":"const","value":"search"},{"type":"const","value":"tag"},{"type":"const","value":"terms-of-service"},{"type":"const","value":"acquaintance"},{"type":"const","value":"appendix"},{"type":"const","value":"chapter"},{"type":"const","value":"child"},{"type":"const","value":"colleague"},{"type":"const","value":"contact"},{"type":"const","value":"contents"},{"type":"const","value":"copyright"},{"type":"const","value":"co-resident"},{"type":"const","value":"co-worker"},{"type":"const","value":"crush"},{"type":"const","value":"date"},{"type":"const","value":"friend"},{"type":"const","value":"glossary"},{"type":"const","value":"kin"},{"type":"const","value":"me"},{"type":"const","value":"met"},{"type":"const","value":"muse"},{"type":"const","value":"neighbor"},{"type":"const","value":"parent"},{"type":"const","value":"previous"},{"type":"const","value":"section"},{"type":"const","value":"sibling"},{"type":"const","value":"spouse"},{"type":"const","value":"start"},{"type":"const","value":"subsection"},{"type":"const","value":"sweetheart"},{"type":"const","value":"toc"},{"type":"const","value":"transformation"},{"type":"const","value":"pronunciation"},{"type":"const","value":"directory"},{"type":"const","value":"enclosure"},{"type":"const","value":"home"},{"type":"const","value":"payment"},{"type":"const","value":"vcs-*"},{"type":"const","value":"about"},{"type":"const","value":"amphtml"},{"type":"const","value":"archived"},{"type":"const","value":"attachment"},{"type":"const","value":"category"},{"type":"const","value":"code-repository"},{"type":"const","value":"code-license"},{"type":"const","value":"content-repository"},{"type":"const","value":"content-license"},{"type":"const","value":"disclosure"},{"type":"const","value":"discussion"},{"type":"const","value":"donation"},{"type":"const","value":"edit"},{"type":"const","value":"enclosure"},{"type":"const","value":"entry-content"},{"type":"const","value":"first"},{"type":"const","value":"home"},{"type":"const","value":"hub"},{"type":"const","value":"in-reply-to"},{"type":"const","value":"root"},{"type":"const","value":"index"},{"type":"const","value":"issues"},{"type":"const","value":"jslicense"},{"type":"const","value":"last"},{"type":"const","value":"lightbox"},{"type":"const","value":"lightvideo"},{"type":"const","value":"main"},{"type":"const","value":"prerender"},{"type":"const","value":"profile"},{"type":"const","value":"publisher"},{"type":"const","value":"radioepg"},{"type":"const","value":"rendition"},{"type":"const","value":"reply-to"},{"type":"const","value":"sidebar"},{"type":"const","value":"syndication"},{"type":"const","value":"webmention"},{"type":"const","value":"widget"},{"type":"const","value":"http://docs.oasis-open.org/ns/cmis/link/200908/acl"},{"type":"const","value":"accessibility"},{"type":"const","value":"bibliography"},{"type":"const","value":"cite"},{"type":"const","value":"embed"},{"type":"const","value":"group"},{"type":"const","value":"longdesc"},{"type":"const","value":"map"},{"type":"const","value":"member"},{"type":"const","value":"m_PageScroll2id"},{"type":"const","value":"prerender"},{"type":"const","value":"profile"},{"type":"const","value":"shortlink"},{"type":"const","value":"source"},{"type":"const","value":"vcalendar-parent"},{"type":"const","value":"vcalendar-child"},{"type":"const","value":"vcalendar-sibling"},{"type":"const","value":"status"},{"type":"const","value":"https://api.w.org/"},{"type":"const","value":"archive"},{"type":"const","value":"archives"},{"type":"const","value":"comment"},{"type":"const","value":"contribution"},{"type":"const","value":"EditURI"},{"type":"const","value":"endorsed"},{"type":"const","value":"fan"},{"type":"const","value":"feed"},{"type":"const","value":"footnote"},{"type":"const","value":"kinetic-stylesheet"},{"type":"const","value":"lightbox"},{"type":"const","value":"made"},{"type":"const","value":"meta"},{"type":"const","value":"microsummary"},{"type":"const","value":"openid.delegate"},{"type":"const","value":"openid.server"},{"type":"const","value":"permalink"},{"type":"const","value":"pgpkey"},{"type":"const","value":"popover"},{"type":"const","value":"privacy"},{"type":"const","value":"publickey"},{"type":"const","value":"referral"},{"type":"const","value":"related"},{"type":"const","value":"replies"},{"type":"const","value":"respond-proxy"},{"type":"const","value":"respond-redirect"},{"type":"const","value":"resource"},{"type":"const","value":"sitemap"},{"type":"const","value":"sponsor"},{"type":"const","value":"tooltip"},{"type":"const","value":"trackback"},{"type":"const","value":"unendorsed"},{"type":"const","value":"user"},{"type":"const","value":"wlwmanifest"}],"matched":false,"raw":"icon","offset":0,"length":4,"line":1,"column":1,"reason":"doesnt-exist-in-enum","partName":"the content of the list"}"#,
+    ),
+    (
+        "LinkTypeForAnchorAndAreaElement",
+        "index",
+        r#"{"reason":"unexpected-token","expects":[{"type":"common","value":"valid Link Type"}],"matched":false,"ref":"https://html.spec.whatwg.org/multipage/links.html#linkTypes","raw":"index","offset":0,"length":5,"line":1,"column":1}"#,
+    ),
+    (
+        "LinkTypeForAnchorAndAreaElement",
+        "invalid-keyword",
+        r#"{"ref":"https://html.spec.whatwg.org/multipage/links.html#linkTypes","expects":[{"type":"const","value":"alternate"},{"type":"const","value":"author"},{"type":"const","value":"bookmark"},{"type":"const","value":"external"},{"type":"const","value":"help"},{"type":"const","value":"license"},{"type":"const","value":"next"},{"type":"const","value":"nofollow"},{"type":"const","value":"noopener"},{"type":"const","value":"noreferrer"},{"type":"const","value":"opener"},{"type":"const","value":"prev"},{"type":"const","value":"privacy-policy"},{"type":"const","value":"search"},{"type":"const","value":"tag"},{"type":"const","value":"terms-of-service"},{"type":"const","value":"acquaintance"},{"type":"const","value":"appendix"},{"type":"const","value":"chapter"},{"type":"const","value":"child"},{"type":"const","value":"colleague"},{"type":"const","value":"contact"},{"type":"const","value":"contents"},{"type":"const","value":"copyright"},{"type":"const","value":"co-resident"},{"type":"const","value":"co-worker"},{"type":"const","value":"crush"},{"type":"const","value":"date"},{"type":"const","value":"friend"},{"type":"const","value":"glossary"},{"type":"const","value":"kin"},{"type":"const","value":"me"},{"type":"const","value":"met"},{"type":"const","value":"muse"},{"type":"const","value":"neighbor"},{"type":"const","value":"parent"},{"type":"const","value":"previous"},{"type":"const","value":"section"},{"type":"const","value":"sibling"},{"type":"const","value":"spouse"},{"type":"const","value":"start"},{"type":"const","value":"subsection"},{"type":"const","value":"sweetheart"},{"type":"const","value":"toc"},{"type":"const","value":"transformation"},{"type":"const","value":"pronunciation"},{"type":"const","value":"directory"},{"type":"const","value":"enclosure"},{"type":"const","value":"home"},{"type":"const","value":"payment"},{"type":"const","value":"vcs-*"},{"type":"const","value":"about"},{"type":"const","value":"amphtml"},{"type":"const","value":"archived"},{"type":"const","value":"attachment"},{"type":"const","value":"category"},{"type":"const","value":"code-repository"},{"type":"const","value":"code-license"},{"type":"const","value":"content-repository"},{"type":"const","value":"content-license"},{"type":"const","value":"disclosure"},{"type":"const","value":"discussion"},{"type":"const","value":"donation"},{"type":"const","value":"edit"},{"type":"const","value":"enclosure"},{"type":"const","value":"entry-content"},{"type":"const","value":"first"},{"type":"const","value":"home"},{"type":"const","value":"hub"},{"type":"const","value":"in-reply-to"},{"type":"const","value":"root"},{"type":"const","value":"index"},{"type":"const","value":"issues"},{"type":"const","value":"jslicense"},{"type":"const","value":"last"},{"type":"const","value":"lightbox"},{"type":"const","value":"lightvideo"},{"type":"const","value":"main"},{"type":"const","value":"prerender"},{"type":"const","value":"profile"},{"type":"const","value":"publisher"},{"type":"const","value":"radioepg"},{"type":"const","value":"rendition"},{"type":"const","value":"reply-to"},{"type":"const","value":"sidebar"},{"type":"const","value":"syndication"},{"type":"const","value":"webmention"},{"type":"const","value":"widget"},{"type":"const","value":"http://docs.oasis-open.org/ns/cmis/link/200908/acl"},{"type":"const","value":"accessibility"},{"type":"const","value":"bibliography"},{"type":"const","value":"cite"},{"type":"const","value":"embed"},{"type":"const","value":"group"},{"type":"const","value":"longdesc"},{"type":"const","value":"map"},{"type":"const","value":"member"},{"type":"const","value":"m_PageScroll2id"},{"type":"const","value":"prerender"},{"type":"const","value":"profile"},{"type":"const","value":"shortlink"},{"type":"const","value":"source"},{"type":"const","value":"vcalendar-parent"},{"type":"const","value":"vcalendar-child"},{"type":"const","value":"vcalendar-sibling"},{"type":"const","value":"status"},{"type":"const","value":"https://api.w.org/"},{"type":"const","value":"archive"},{"type":"const","value":"archives"},{"type":"const","value":"comment"},{"type":"const","value":"contribution"},{"type":"const","value":"EditURI"},{"type":"const","value":"endorsed"},{"type":"const","value":"fan"},{"type":"const","value":"feed"},{"type":"const","value":"footnote"},{"type":"const","value":"kinetic-stylesheet"},{"type":"const","value":"lightbox"},{"type":"const","value":"made"},{"type":"const","value":"meta"},{"type":"const","value":"microsummary"},{"type":"const","value":"openid.delegate"},{"type":"const","value":"openid.server"},{"type":"const","value":"permalink"},{"type":"const","value":"pgpkey"},{"type":"const","value":"popover"},{"type":"const","value":"privacy"},{"type":"const","value":"publickey"},{"type":"const","value":"referral"},{"type":"const","value":"related"},{"type":"const","value":"replies"},{"type":"const","value":"respond-proxy"},{"type":"const","value":"respond-redirect"},{"type":"const","value":"resource"},{"type":"const","value":"sitemap"},{"type":"const","value":"sponsor"},{"type":"const","value":"tooltip"},{"type":"const","value":"trackback"},{"type":"const","value":"unendorsed"},{"type":"const","value":"user"},{"type":"const","value":"wlwmanifest"}],"matched":false,"raw":"invalid-keyword","offset":0,"length":15,"line":1,"column":1,"reason":"doesnt-exist-in-enum","partName":"the content of the list"}"#,
+    ),
+    (
+        "LinkTypeForAnchorAndAreaElement",
+        "last",
+        r#"{"reason":"unexpected-token","expects":[{"type":"common","value":"valid Link Type"}],"matched":false,"ref":"https://html.spec.whatwg.org/multipage/links.html#linkTypes","raw":"last","offset":0,"length":4,"line":1,"column":1}"#,
+    ),
+    (
+        "LinkTypeForAnchorAndAreaElement",
+        "logo",
+        r#"{"reason":"unexpected-token","expects":[{"type":"common","value":"valid Link Type"}],"matched":false,"ref":"https://html.spec.whatwg.org/multipage/links.html#linkTypes","raw":"logo","offset":0,"length":4,"line":1,"column":1}"#,
+    ),
+    (
+        "LinkTypeForAnchorAndAreaElement",
+        "manifest",
+        r#"{"ref":"https://html.spec.whatwg.org/multipage/links.html#linkTypes","expects":[{"type":"const","value":"alternate"},{"type":"const","value":"author"},{"type":"const","value":"bookmark"},{"type":"const","value":"external"},{"type":"const","value":"help"},{"type":"const","value":"license"},{"type":"const","value":"next"},{"type":"const","value":"nofollow"},{"type":"const","value":"noopener"},{"type":"const","value":"noreferrer"},{"type":"const","value":"opener"},{"type":"const","value":"prev"},{"type":"const","value":"privacy-policy"},{"type":"const","value":"search"},{"type":"const","value":"tag"},{"type":"const","value":"terms-of-service"},{"type":"const","value":"acquaintance"},{"type":"const","value":"appendix"},{"type":"const","value":"chapter"},{"type":"const","value":"child"},{"type":"const","value":"colleague"},{"type":"const","value":"contact"},{"type":"const","value":"contents"},{"type":"const","value":"copyright"},{"type":"const","value":"co-resident"},{"type":"const","value":"co-worker"},{"type":"const","value":"crush"},{"type":"const","value":"date"},{"type":"const","value":"friend"},{"type":"const","value":"glossary"},{"type":"const","value":"kin"},{"type":"const","value":"me"},{"type":"const","value":"met"},{"type":"const","value":"muse"},{"type":"const","value":"neighbor"},{"type":"const","value":"parent"},{"type":"const","value":"previous"},{"type":"const","value":"section"},{"type":"const","value":"sibling"},{"type":"const","value":"spouse"},{"type":"const","value":"start"},{"type":"const","value":"subsection"},{"type":"const","value":"sweetheart"},{"type":"const","value":"toc"},{"type":"const","value":"transformation"},{"type":"const","value":"pronunciation"},{"type":"const","value":"directory"},{"type":"const","value":"enclosure"},{"type":"const","value":"home"},{"type":"const","value":"payment"},{"type":"const","value":"vcs-*"},{"type":"const","value":"about"},{"type":"const","value":"amphtml"},{"type":"const","value":"archived"},{"type":"const","value":"attachment"},{"type":"const","value":"category"},{"type":"const","value":"code-repository"},{"type":"const","value":"code-license"},{"type":"const","value":"content-repository"},{"type":"const","value":"content-license"},{"type":"const","value":"disclosure"},{"type":"const","value":"discussion"},{"type":"const","value":"donation"},{"type":"const","value":"edit"},{"type":"const","value":"enclosure"},{"type":"const","value":"entry-content"},{"type":"const","value":"first"},{"type":"const","value":"home"},{"type":"const","value":"hub"},{"type":"const","value":"in-reply-to"},{"type":"const","value":"root"},{"type":"const","value":"index"},{"type":"const","value":"issues"},{"type":"const","value":"jslicense"},{"type":"const","value":"last"},{"type":"const","value":"lightbox"},{"type":"const","value":"lightvideo"},{"type":"const","value":"main"},{"type":"const","value":"prerender"},{"type":"const","value":"profile"},{"type":"const","value":"publisher"},{"type":"const","value":"radioepg"},{"type":"const","value":"rendition"},{"type":"const","value":"reply-to"},{"type":"const","value":"sidebar"},{"type":"const","value":"syndication"},{"type":"const","value":"webmention"},{"type":"const","value":"widget"},{"type":"const","value":"http://docs.oasis-open.org/ns/cmis/link/200908/acl"},{"type":"const","value":"accessibility"},{"type":"const","value":"bibliography"},{"type":"const","value":"cite"},{"type":"const","value":"embed"},{"type":"const","value":"group"},{"type":"const","value":"longdesc"},{"type":"const","value":"map"},{"type":"const","value":"member"},{"type":"const","value":"m_PageScroll2id"},{"type":"const","value":"prerender"},{"type":"const","value":"profile"},{"type":"const","value":"shortlink"},{"type":"const","value":"source"},{"type":"const","value":"vcalendar-parent"},{"type":"const","value":"vcalendar-child"},{"type":"const","value":"vcalendar-sibling"},{"type":"const","value":"status"},{"type":"const","value":"https://api.w.org/"},{"type":"const","value":"archive"},{"type":"const","value":"archives"},{"type":"const","value":"comment"},{"type":"const","value":"contribution"},{"type":"const","value":"EditURI"},{"type":"const","value":"endorsed"},{"type":"const","value":"fan"},{"type":"const","value":"feed"},{"type":"const","value":"footnote"},{"type":"const","value":"kinetic-stylesheet"},{"type":"const","value":"lightbox"},{"type":"const","value":"made"},{"type":"const","value":"meta"},{"type":"const","value":"microsummary"},{"type":"const","value":"openid.delegate"},{"type":"const","value":"openid.server"},{"type":"const","value":"permalink"},{"type":"const","value":"pgpkey"},{"type":"const","value":"popover"},{"type":"const","value":"privacy"},{"type":"const","value":"publickey"},{"type":"const","value":"referral"},{"type":"const","value":"related"},{"type":"const","value":"replies"},{"type":"const","value":"respond-proxy"},{"type":"const","value":"respond-redirect"},{"type":"const","value":"resource"},{"type":"const","value":"sitemap"},{"type":"const","value":"sponsor"},{"type":"const","value":"tooltip"},{"type":"const","value":"trackback"},{"type":"const","value":"unendorsed"},{"type":"const","value":"user"},{"type":"const","value":"wlwmanifest"}],"matched":false,"raw":"manifest","offset":0,"length":8,"line":1,"column":1,"reason":"doesnt-exist-in-enum","partName":"the content of the list"}"#,
+    ),
+    (
+        "LinkTypeForAnchorAndAreaElement",
+        "me",
+        r#"{"matched":true}"#,
+    ),
+    (
+        "LinkTypeForAnchorAndAreaElement",
+        "next",
+        r#"{"matched":true}"#,
+    ),
+    (
+        "LinkTypeForAnchorAndAreaElement",
+        "nofollow logo",
+        r#"{"reason":"unexpected-token","expects":[{"type":"common","value":"valid Link Type"}],"matched":false,"ref":"https://html.spec.whatwg.org/multipage/links.html#linkTypes","raw":"logo","offset":9,"length":4,"line":1,"column":10}"#,
+    ),
+    (
+        "LinkTypeForAnchorAndAreaElement",
+        "nofollow nofollow",
+        r#"{"partName":"the content of the list","reason":"duplicated","ref":"https://html.spec.whatwg.org/multipage/links.html#linkTypes","expects":[{"type":"const","value":"Link types allowed in `a` and `area` elements"}],"matched":false,"raw":"nofollow","offset":9,"length":8,"line":1,"column":10}"#,
+    ),
+    (
+        "LinkTypeForAnchorAndAreaElement",
+        "NOFOLLOW nofollow",
+        r#"{"partName":"the content of the list","reason":"duplicated","ref":"https://html.spec.whatwg.org/multipage/links.html#linkTypes","expects":[{"type":"const","value":"Link types allowed in `a` and `area` elements"}],"matched":false,"raw":"nofollow","offset":9,"length":8,"line":1,"column":10}"#,
+    ),
+    (
+        "LinkTypeForAnchorAndAreaElement",
+        "nofollow noopener noreferrer",
+        r#"{"matched":true}"#,
+    ),
+    (
+        "LinkTypeForAnchorAndAreaElement",
+        "nofollow noopener",
+        r#"{"matched":true}"#,
+    ),
+    (
+        "LinkTypeForAnchorAndAreaElement",
+        "Nofollow Noopener",
+        r#"{"matched":true}"#,
+    ),
+    (
+        "LinkTypeForAnchorAndAreaElement",
+        "nofollow",
+        r#"{"matched":true}"#,
+    ),
+    (
+        "LinkTypeForAnchorAndAreaElement",
+        "Nofollow",
+        r#"{"matched":true}"#,
+    ),
+    (
+        "LinkTypeForAnchorAndAreaElement",
+        "noopener",
+        r#"{"matched":true}"#,
+    ),
+    (
+        "LinkTypeForAnchorAndAreaElement",
+        "noreferrer",
+        r#"{"matched":true}"#,
+    ),
+    (
+        "LinkTypeForAnchorAndAreaElement",
+        "opener",
+        r#"{"matched":true}"#,
+    ),
+    (
+        "LinkTypeForAnchorAndAreaElement",
+        "parent",
+        r#"{"reason":"unexpected-token","expects":[{"type":"common","value":"valid Link Type"}],"matched":false,"ref":"https://html.spec.whatwg.org/multipage/links.html#linkTypes","raw":"parent","offset":0,"length":6,"line":1,"column":1}"#,
+    ),
+    (
+        "LinkTypeForAnchorAndAreaElement",
+        "pavatar",
+        r#"{"reason":"unexpected-token","expects":[{"type":"common","value":"valid Link Type"}],"matched":false,"ref":"https://html.spec.whatwg.org/multipage/links.html#linkTypes","raw":"pavatar","offset":0,"length":7,"line":1,"column":1}"#,
+    ),
+    (
+        "LinkTypeForAnchorAndAreaElement",
+        "preconnect",
+        r#"{"ref":"https://html.spec.whatwg.org/multipage/links.html#linkTypes","expects":[{"type":"const","value":"alternate"},{"type":"const","value":"author"},{"type":"const","value":"bookmark"},{"type":"const","value":"external"},{"type":"const","value":"help"},{"type":"const","value":"license"},{"type":"const","value":"next"},{"type":"const","value":"nofollow"},{"type":"const","value":"noopener"},{"type":"const","value":"noreferrer"},{"type":"const","value":"opener"},{"type":"const","value":"prev"},{"type":"const","value":"privacy-policy"},{"type":"const","value":"search"},{"type":"const","value":"tag"},{"type":"const","value":"terms-of-service"},{"type":"const","value":"acquaintance"},{"type":"const","value":"appendix"},{"type":"const","value":"chapter"},{"type":"const","value":"child"},{"type":"const","value":"colleague"},{"type":"const","value":"contact"},{"type":"const","value":"contents"},{"type":"const","value":"copyright"},{"type":"const","value":"co-resident"},{"type":"const","value":"co-worker"},{"type":"const","value":"crush"},{"type":"const","value":"date"},{"type":"const","value":"friend"},{"type":"const","value":"glossary"},{"type":"const","value":"kin"},{"type":"const","value":"me"},{"type":"const","value":"met"},{"type":"const","value":"muse"},{"type":"const","value":"neighbor"},{"type":"const","value":"parent"},{"type":"const","value":"previous"},{"type":"const","value":"section"},{"type":"const","value":"sibling"},{"type":"const","value":"spouse"},{"type":"const","value":"start"},{"type":"const","value":"subsection"},{"type":"const","value":"sweetheart"},{"type":"const","value":"toc"},{"type":"const","value":"transformation"},{"type":"const","value":"pronunciation"},{"type":"const","value":"directory"},{"type":"const","value":"enclosure"},{"type":"const","value":"home"},{"type":"const","value":"payment"},{"type":"const","value":"vcs-*"},{"type":"const","value":"about"},{"type":"const","value":"amphtml"},{"type":"const","value":"archived"},{"type":"const","value":"attachment"},{"type":"const","value":"category"},{"type":"const","value":"code-repository"},{"type":"const","value":"code-license"},{"type":"const","value":"content-repository"},{"type":"const","value":"content-license"},{"type":"const","value":"disclosure"},{"type":"const","value":"discussion"},{"type":"const","value":"donation"},{"type":"const","value":"edit"},{"type":"const","value":"enclosure"},{"type":"const","value":"entry-content"},{"type":"const","value":"first"},{"type":"const","value":"home"},{"type":"const","value":"hub"},{"type":"const","value":"in-reply-to"},{"type":"const","value":"root"},{"type":"const","value":"index"},{"type":"const","value":"issues"},{"type":"const","value":"jslicense"},{"type":"const","value":"last"},{"type":"const","value":"lightbox"},{"type":"const","value":"lightvideo"},{"type":"const","value":"main"},{"type":"const","value":"prerender"},{"type":"const","value":"profile"},{"type":"const","value":"publisher"},{"type":"const","value":"radioepg"},{"type":"const","value":"rendition"},{"type":"const","value":"reply-to"},{"type":"const","value":"sidebar"},{"type":"const","value":"syndication"},{"type":"const","value":"webmention"},{"type":"const","value":"widget"},{"type":"const","value":"http://docs.oasis-open.org/ns/cmis/link/200908/acl"},{"type":"const","value":"accessibility"},{"type":"const","value":"bibliography"},{"type":"const","value":"cite"},{"type":"const","value":"embed"},{"type":"const","value":"group"},{"type":"const","value":"longdesc"},{"type":"const","value":"map"},{"type":"const","value":"member"},{"type":"const","value":"m_PageScroll2id"},{"type":"const","value":"prerender"},{"type":"const","value":"profile"},{"type":"const","value":"shortlink"},{"type":"const","value":"source"},{"type":"const","value":"vcalendar-parent"},{"type":"const","value":"vcalendar-child"},{"type":"const","value":"vcalendar-sibling"},{"type":"const","value":"status"},{"type":"const","value":"https://api.w.org/"},{"type":"const","value":"archive"},{"type":"const","value":"archives"},{"type":"const","value":"comment"},{"type":"const","value":"contribution"},{"type":"const","value":"EditURI"},{"type":"const","value":"endorsed"},{"type":"const","value":"fan"},{"type":"const","value":"feed"},{"type":"const","value":"footnote"},{"type":"const","value":"kinetic-stylesheet"},{"type":"const","value":"lightbox"},{"type":"const","value":"made"},{"type":"const","value":"meta"},{"type":"const","value":"microsummary"},{"type":"const","value":"openid.delegate"},{"type":"const","value":"openid.server"},{"type":"const","value":"permalink"},{"type":"const","value":"pgpkey"},{"type":"const","value":"popover"},{"type":"const","value":"privacy"},{"type":"const","value":"publickey"},{"type":"const","value":"referral"},{"type":"const","value":"related"},{"type":"const","value":"replies"},{"type":"const","value":"respond-proxy"},{"type":"const","value":"respond-redirect"},{"type":"const","value":"resource"},{"type":"const","value":"sitemap"},{"type":"const","value":"sponsor"},{"type":"const","value":"tooltip"},{"type":"const","value":"trackback"},{"type":"const","value":"unendorsed"},{"type":"const","value":"user"},{"type":"const","value":"wlwmanifest"}],"matched":false,"raw":"preconnect","offset":0,"length":10,"line":1,"column":1,"reason":"doesnt-exist-in-enum","partName":"the content of the list"}"#,
+    ),
+    (
+        "LinkTypeForAnchorAndAreaElement",
+        "prefetch",
+        r#"{"ref":"https://html.spec.whatwg.org/multipage/links.html#linkTypes","expects":[{"type":"const","value":"alternate"},{"type":"const","value":"author"},{"type":"const","value":"bookmark"},{"type":"const","value":"external"},{"type":"const","value":"help"},{"type":"const","value":"license"},{"type":"const","value":"next"},{"type":"const","value":"nofollow"},{"type":"const","value":"noopener"},{"type":"const","value":"noreferrer"},{"type":"const","value":"opener"},{"type":"const","value":"prev"},{"type":"const","value":"privacy-policy"},{"type":"const","value":"search"},{"type":"const","value":"tag"},{"type":"const","value":"terms-of-service"},{"type":"const","value":"acquaintance"},{"type":"const","value":"appendix"},{"type":"const","value":"chapter"},{"type":"const","value":"child"},{"type":"const","value":"colleague"},{"type":"const","value":"contact"},{"type":"const","value":"contents"},{"type":"const","value":"copyright"},{"type":"const","value":"co-resident"},{"type":"const","value":"co-worker"},{"type":"const","value":"crush"},{"type":"const","value":"date"},{"type":"const","value":"friend"},{"type":"const","value":"glossary"},{"type":"const","value":"kin"},{"type":"const","value":"me"},{"type":"const","value":"met"},{"type":"const","value":"muse"},{"type":"const","value":"neighbor"},{"type":"const","value":"parent"},{"type":"const","value":"previous"},{"type":"const","value":"section"},{"type":"const","value":"sibling"},{"type":"const","value":"spouse"},{"type":"const","value":"start"},{"type":"const","value":"subsection"},{"type":"const","value":"sweetheart"},{"type":"const","value":"toc"},{"type":"const","value":"transformation"},{"type":"const","value":"pronunciation"},{"type":"const","value":"directory"},{"type":"const","value":"enclosure"},{"type":"const","value":"home"},{"type":"const","value":"payment"},{"type":"const","value":"vcs-*"},{"type":"const","value":"about"},{"type":"const","value":"amphtml"},{"type":"const","value":"archived"},{"type":"const","value":"attachment"},{"type":"const","value":"category"},{"type":"const","value":"code-repository"},{"type":"const","value":"code-license"},{"type":"const","value":"content-repository"},{"type":"const","value":"content-license"},{"type":"const","value":"disclosure"},{"type":"const","value":"discussion"},{"type":"const","value":"donation"},{"type":"const","value":"edit"},{"type":"const","value":"enclosure"},{"type":"const","value":"entry-content"},{"type":"const","value":"first"},{"type":"const","value":"home"},{"type":"const","value":"hub"},{"type":"const","value":"in-reply-to"},{"type":"const","value":"root"},{"type":"const","value":"index"},{"type":"const","value":"issues"},{"type":"const","value":"jslicense"},{"type":"const","value":"last"},{"type":"const","value":"lightbox"},{"type":"const","value":"lightvideo"},{"type":"const","value":"main"},{"type":"const","value":"prerender"},{"type":"const","value":"profile"},{"type":"const","value":"publisher"},{"type":"const","value":"radioepg"},{"type":"const","value":"rendition"},{"type":"const","value":"reply-to"},{"type":"const","value":"sidebar"},{"type":"const","value":"syndication"},{"type":"const","value":"webmention"},{"type":"const","value":"widget"},{"type":"const","value":"http://docs.oasis-open.org/ns/cmis/link/200908/acl"},{"type":"const","value":"accessibility"},{"type":"const","value":"bibliography"},{"type":"const","value":"cite"},{"type":"const","value":"embed"},{"type":"const","value":"group"},{"type":"const","value":"longdesc"},{"type":"const","value":"map"},{"type":"const","value":"member"},{"type":"const","value":"m_PageScroll2id"},{"type":"const","value":"prerender"},{"type":"const","value":"profile"},{"type":"const","value":"shortlink"},{"type":"const","value":"source"},{"type":"const","value":"vcalendar-parent"},{"type":"const","value":"vcalendar-child"},{"type":"const","value":"vcalendar-sibling"},{"type":"const","value":"status"},{"type":"const","value":"https://api.w.org/"},{"type":"const","value":"archive"},{"type":"const","value":"archives"},{"type":"const","value":"comment"},{"type":"const","value":"contribution"},{"type":"const","value":"EditURI"},{"type":"const","value":"endorsed"},{"type":"const","value":"fan"},{"type":"const","value":"feed"},{"type":"const","value":"footnote"},{"type":"const","value":"kinetic-stylesheet"},{"type":"const","value":"lightbox"},{"type":"const","value":"made"},{"type":"const","value":"meta"},{"type":"const","value":"microsummary"},{"type":"const","value":"openid.delegate"},{"type":"const","value":"openid.server"},{"type":"const","value":"permalink"},{"type":"const","value":"pgpkey"},{"type":"const","value":"popover"},{"type":"const","value":"privacy"},{"type":"const","value":"publickey"},{"type":"const","value":"referral"},{"type":"const","value":"related"},{"type":"const","value":"replies"},{"type":"const","value":"respond-proxy"},{"type":"const","value":"respond-redirect"},{"type":"const","value":"resource"},{"type":"const","value":"sitemap"},{"type":"const","value":"sponsor"},{"type":"const","value":"tooltip"},{"type":"const","value":"trackback"},{"type":"const","value":"unendorsed"},{"type":"const","value":"user"},{"type":"const","value":"wlwmanifest"}],"matched":false,"raw":"prefetch","offset":0,"length":8,"line":1,"column":1,"reason":"doesnt-exist-in-enum","partName":"the content of the list"}"#,
+    ),
+    (
+        "LinkTypeForAnchorAndAreaElement",
+        "preload",
+        r#"{"ref":"https://html.spec.whatwg.org/multipage/links.html#linkTypes","expects":[{"type":"const","value":"alternate"},{"type":"const","value":"author"},{"type":"const","value":"bookmark"},{"type":"const","value":"external"},{"type":"const","value":"help"},{"type":"const","value":"license"},{"type":"const","value":"next"},{"type":"const","value":"nofollow"},{"type":"const","value":"noopener"},{"type":"const","value":"noreferrer"},{"type":"const","value":"opener"},{"type":"const","value":"prev"},{"type":"const","value":"privacy-policy"},{"type":"const","value":"search"},{"type":"const","value":"tag"},{"type":"const","value":"terms-of-service"},{"type":"const","value":"acquaintance"},{"type":"const","value":"appendix"},{"type":"const","value":"chapter"},{"type":"const","value":"child"},{"type":"const","value":"colleague"},{"type":"const","value":"contact"},{"type":"const","value":"contents"},{"type":"const","value":"copyright"},{"type":"const","value":"co-resident"},{"type":"const","value":"co-worker"},{"type":"const","value":"crush"},{"type":"const","value":"date"},{"type":"const","value":"friend"},{"type":"const","value":"glossary"},{"type":"const","value":"kin"},{"type":"const","value":"me"},{"type":"const","value":"met"},{"type":"const","value":"muse"},{"type":"const","value":"neighbor"},{"type":"const","value":"parent"},{"type":"const","value":"previous"},{"type":"const","value":"section"},{"type":"const","value":"sibling"},{"type":"const","value":"spouse"},{"type":"const","value":"start"},{"type":"const","value":"subsection"},{"type":"const","value":"sweetheart"},{"type":"const","value":"toc"},{"type":"const","value":"transformation"},{"type":"const","value":"pronunciation"},{"type":"const","value":"directory"},{"type":"const","value":"enclosure"},{"type":"const","value":"home"},{"type":"const","value":"payment"},{"type":"const","value":"vcs-*"},{"type":"const","value":"about"},{"type":"const","value":"amphtml"},{"type":"const","value":"archived"},{"type":"const","value":"attachment"},{"type":"const","value":"category"},{"type":"const","value":"code-repository"},{"type":"const","value":"code-license"},{"type":"const","value":"content-repository"},{"type":"const","value":"content-license"},{"type":"const","value":"disclosure"},{"type":"const","value":"discussion"},{"type":"const","value":"donation"},{"type":"const","value":"edit"},{"type":"const","value":"enclosure"},{"type":"const","value":"entry-content"},{"type":"const","value":"first"},{"type":"const","value":"home"},{"type":"const","value":"hub"},{"type":"const","value":"in-reply-to"},{"type":"const","value":"root"},{"type":"const","value":"index"},{"type":"const","value":"issues"},{"type":"const","value":"jslicense"},{"type":"const","value":"last"},{"type":"const","value":"lightbox"},{"type":"const","value":"lightvideo"},{"type":"const","value":"main"},{"type":"const","value":"prerender"},{"type":"const","value":"profile"},{"type":"const","value":"publisher"},{"type":"const","value":"radioepg"},{"type":"const","value":"rendition"},{"type":"const","value":"reply-to"},{"type":"const","value":"sidebar"},{"type":"const","value":"syndication"},{"type":"const","value":"webmention"},{"type":"const","value":"widget"},{"type":"const","value":"http://docs.oasis-open.org/ns/cmis/link/200908/acl"},{"type":"const","value":"accessibility"},{"type":"const","value":"bibliography"},{"type":"const","value":"cite"},{"type":"const","value":"embed"},{"type":"const","value":"group"},{"type":"const","value":"longdesc"},{"type":"const","value":"map"},{"type":"const","value":"member"},{"type":"const","value":"m_PageScroll2id"},{"type":"const","value":"prerender"},{"type":"const","value":"profile"},{"type":"const","value":"shortlink"},{"type":"const","value":"source"},{"type":"const","value":"vcalendar-parent"},{"type":"const","value":"vcalendar-child"},{"type":"const","value":"vcalendar-sibling"},{"type":"const","value":"status"},{"type":"const","value":"https://api.w.org/"},{"type":"const","value":"archive"},{"type":"const","value":"archives"},{"type":"const","value":"comment"},{"type":"const","value":"contribution"},{"type":"const","value":"EditURI"},{"type":"const","value":"endorsed"},{"type":"const","value":"fan"},{"type":"const","value":"feed"},{"type":"const","value":"footnote"},{"type":"const","value":"kinetic-stylesheet"},{"type":"const","value":"lightbox"},{"type":"const","value":"made"},{"type":"const","value":"meta"},{"type":"const","value":"microsummary"},{"type":"const","value":"openid.delegate"},{"type":"const","value":"openid.server"},{"type":"const","value":"permalink"},{"type":"const","value":"pgpkey"},{"type":"const","value":"popover"},{"type":"const","value":"privacy"},{"type":"const","value":"publickey"},{"type":"const","value":"referral"},{"type":"const","value":"related"},{"type":"const","value":"replies"},{"type":"const","value":"respond-proxy"},{"type":"const","value":"respond-redirect"},{"type":"const","value":"resource"},{"type":"const","value":"sitemap"},{"type":"const","value":"sponsor"},{"type":"const","value":"tooltip"},{"type":"const","value":"trackback"},{"type":"const","value":"unendorsed"},{"type":"const","value":"user"},{"type":"const","value":"wlwmanifest"}],"matched":false,"raw":"preload","offset":0,"length":7,"line":1,"column":1,"reason":"doesnt-exist-in-enum","partName":"the content of the list"}"#,
+    ),
+    (
+        "LinkTypeForAnchorAndAreaElement",
+        "prev",
+        r#"{"matched":true}"#,
+    ),
+    (
+        "LinkTypeForAnchorAndAreaElement",
+        "privacy-policy",
+        r#"{"matched":true}"#,
+    ),
+    (
+        "LinkTypeForAnchorAndAreaElement",
+        "publisher",
+        r#"{"reason":"unexpected-token","expects":[{"type":"common","value":"valid Link Type"}],"matched":false,"ref":"https://html.spec.whatwg.org/multipage/links.html#linkTypes","raw":"publisher","offset":0,"length":9,"line":1,"column":1}"#,
+    ),
+    (
+        "LinkTypeForAnchorAndAreaElement",
+        "schema.DC",
+        r#"{"ref":"https://html.spec.whatwg.org/multipage/links.html#linkTypes","expects":[{"type":"const","value":"alternate"},{"type":"const","value":"author"},{"type":"const","value":"bookmark"},{"type":"const","value":"external"},{"type":"const","value":"help"},{"type":"const","value":"license"},{"type":"const","value":"next"},{"type":"const","value":"nofollow"},{"type":"const","value":"noopener"},{"type":"const","value":"noreferrer"},{"type":"const","value":"opener"},{"type":"const","value":"prev"},{"type":"const","value":"privacy-policy"},{"type":"const","value":"search"},{"type":"const","value":"tag"},{"type":"const","value":"terms-of-service"},{"type":"const","value":"acquaintance"},{"type":"const","value":"appendix"},{"type":"const","value":"chapter"},{"type":"const","value":"child"},{"type":"const","value":"colleague"},{"type":"const","value":"contact"},{"type":"const","value":"contents"},{"type":"const","value":"copyright"},{"type":"const","value":"co-resident"},{"type":"const","value":"co-worker"},{"type":"const","value":"crush"},{"type":"const","value":"date"},{"type":"const","value":"friend"},{"type":"const","value":"glossary"},{"type":"const","value":"kin"},{"type":"const","value":"me"},{"type":"const","value":"met"},{"type":"const","value":"muse"},{"type":"const","value":"neighbor"},{"type":"const","value":"parent"},{"type":"const","value":"previous"},{"type":"const","value":"section"},{"type":"const","value":"sibling"},{"type":"const","value":"spouse"},{"type":"const","value":"start"},{"type":"const","value":"subsection"},{"type":"const","value":"sweetheart"},{"type":"const","value":"toc"},{"type":"const","value":"transformation"},{"type":"const","value":"pronunciation"},{"type":"const","value":"directory"},{"type":"const","value":"enclosure"},{"type":"const","value":"home"},{"type":"const","value":"payment"},{"type":"const","value":"vcs-*"},{"type":"const","value":"about"},{"type":"const","value":"amphtml"},{"type":"const","value":"archived"},{"type":"const","value":"attachment"},{"type":"const","value":"category"},{"type":"const","value":"code-repository"},{"type":"const","value":"code-license"},{"type":"const","value":"content-repository"},{"type":"const","value":"content-license"},{"type":"const","value":"disclosure"},{"type":"const","value":"discussion"},{"type":"const","value":"donation"},{"type":"const","value":"edit"},{"type":"const","value":"enclosure"},{"type":"const","value":"entry-content"},{"type":"const","value":"first"},{"type":"const","value":"home"},{"type":"const","value":"hub"},{"type":"const","value":"in-reply-to"},{"type":"const","value":"root"},{"type":"const","value":"index"},{"type":"const","value":"issues"},{"type":"const","value":"jslicense"},{"type":"const","value":"last"},{"type":"const","value":"lightbox"},{"type":"const","value":"lightvideo"},{"type":"const","value":"main"},{"type":"const","value":"prerender"},{"type":"const","value":"profile"},{"type":"const","value":"publisher"},{"type":"const","value":"radioepg"},{"type":"const","value":"rendition"},{"type":"const","value":"reply-to"},{"type":"const","value":"sidebar"},{"type":"const","value":"syndication"},{"type":"const","value":"webmention"},{"type":"const","value":"widget"},{"type":"const","value":"http://docs.oasis-open.org/ns/cmis/link/200908/acl"},{"type":"const","value":"accessibility"},{"type":"const","value":"bibliography"},{"type":"const","value":"cite"},{"type":"const","value":"embed"},{"type":"const","value":"group"},{"type":"const","value":"longdesc"},{"type":"const","value":"map"},{"type":"const","value":"member"},{"type":"const","value":"m_PageScroll2id"},{"type":"const","value":"prerender"},{"type":"const","value":"profile"},{"type":"const","value":"shortlink"},{"type":"const","value":"source"},{"type":"const","value":"vcalendar-parent"},{"type":"const","value":"vcalendar-child"},{"type":"const","value":"vcalendar-sibling"},{"type":"const","value":"status"},{"type":"const","value":"https://api.w.org/"},{"type":"const","value":"archive"},{"type":"const","value":"archives"},{"type":"const","value":"comment"},{"type":"const","value":"contribution"},{"type":"const","value":"EditURI"},{"type":"const","value":"endorsed"},{"type":"const","value":"fan"},{"type":"const","value":"feed"},{"type":"const","value":"footnote"},{"type":"const","value":"kinetic-stylesheet"},{"type":"const","value":"lightbox"},{"type":"const","value":"made"},{"type":"const","value":"meta"},{"type":"const","value":"microsummary"},{"type":"const","value":"openid.delegate"},{"type":"const","value":"openid.server"},{"type":"const","value":"permalink"},{"type":"const","value":"pgpkey"},{"type":"const","value":"popover"},{"type":"const","value":"privacy"},{"type":"const","value":"publickey"},{"type":"const","value":"referral"},{"type":"const","value":"related"},{"type":"const","value":"replies"},{"type":"const","value":"respond-proxy"},{"type":"const","value":"respond-redirect"},{"type":"const","value":"resource"},{"type":"const","value":"sitemap"},{"type":"const","value":"sponsor"},{"type":"const","value":"tooltip"},{"type":"const","value":"trackback"},{"type":"const","value":"unendorsed"},{"type":"const","value":"user"},{"type":"const","value":"wlwmanifest"}],"matched":false,"raw":"schema.DC","offset":0,"length":9,"line":1,"column":1,"reason":"doesnt-exist-in-enum","partName":"the content of the list"}"#,
+    ),
+    (
+        "LinkTypeForAnchorAndAreaElement",
+        "search",
+        r#"{"matched":true}"#,
+    ),
+    (
+        "LinkTypeForAnchorAndAreaElement",
+        "shadowbox",
+        r#"{"reason":"unexpected-token","expects":[{"type":"common","value":"valid Link Type"}],"matched":false,"ref":"https://html.spec.whatwg.org/multipage/links.html#linkTypes","raw":"shadowbox","offset":0,"length":9,"line":1,"column":1}"#,
+    ),
+    (
+        "LinkTypeForAnchorAndAreaElement",
+        "sibling",
+        r#"{"reason":"unexpected-token","expects":[{"type":"common","value":"valid Link Type"}],"matched":false,"ref":"https://html.spec.whatwg.org/multipage/links.html#linkTypes","raw":"sibling","offset":0,"length":7,"line":1,"column":1}"#,
+    ),
+    (
+        "LinkTypeForAnchorAndAreaElement",
+        "sitemap",
+        r#"{"reason":"unexpected-token","expects":[{"type":"common","value":"valid Link Type"}],"matched":false,"ref":"https://html.spec.whatwg.org/multipage/links.html#linkTypes","raw":"sitemap","offset":0,"length":7,"line":1,"column":1}"#,
+    ),
+    (
+        "LinkTypeForAnchorAndAreaElement",
+        "stylesheet alternate",
+        r#"{"ref":"https://html.spec.whatwg.org/multipage/links.html#linkTypes","expects":[{"type":"const","value":"alternate"},{"type":"const","value":"author"},{"type":"const","value":"bookmark"},{"type":"const","value":"external"},{"type":"const","value":"help"},{"type":"const","value":"license"},{"type":"const","value":"next"},{"type":"const","value":"nofollow"},{"type":"const","value":"noopener"},{"type":"const","value":"noreferrer"},{"type":"const","value":"opener"},{"type":"const","value":"prev"},{"type":"const","value":"privacy-policy"},{"type":"const","value":"search"},{"type":"const","value":"tag"},{"type":"const","value":"terms-of-service"},{"type":"const","value":"acquaintance"},{"type":"const","value":"appendix"},{"type":"const","value":"chapter"},{"type":"const","value":"child"},{"type":"const","value":"colleague"},{"type":"const","value":"contact"},{"type":"const","value":"contents"},{"type":"const","value":"copyright"},{"type":"const","value":"co-resident"},{"type":"const","value":"co-worker"},{"type":"const","value":"crush"},{"type":"const","value":"date"},{"type":"const","value":"friend"},{"type":"const","value":"glossary"},{"type":"const","value":"kin"},{"type":"const","value":"me"},{"type":"const","value":"met"},{"type":"const","value":"muse"},{"type":"const","value":"neighbor"},{"type":"const","value":"parent"},{"type":"const","value":"previous"},{"type":"const","value":"section"},{"type":"const","value":"sibling"},{"type":"const","value":"spouse"},{"type":"const","value":"start"},{"type":"const","value":"subsection"},{"type":"const","value":"sweetheart"},{"type":"const","value":"toc"},{"type":"const","value":"transformation"},{"type":"const","value":"pronunciation"},{"type":"const","value":"directory"},{"type":"const","value":"enclosure"},{"type":"const","value":"home"},{"type":"const","value":"payment"},{"type":"const","value":"vcs-*"},{"type":"const","value":"about"},{"type":"const","value":"amphtml"},{"type":"const","value":"archived"},{"type":"const","value":"attachment"},{"type":"const","value":"category"},{"type":"const","value":"code-repository"},{"type":"const","value":"code-license"},{"type":"const","value":"content-repository"},{"type":"const","value":"content-license"},{"type":"const","value":"disclosure"},{"type":"const","value":"discussion"},{"type":"const","value":"donation"},{"type":"const","value":"edit"},{"type":"const","value":"enclosure"},{"type":"const","value":"entry-content"},{"type":"const","value":"first"},{"type":"const","value":"home"},{"type":"const","value":"hub"},{"type":"const","value":"in-reply-to"},{"type":"const","value":"root"},{"type":"const","value":"index"},{"type":"const","value":"issues"},{"type":"const","value":"jslicense"},{"type":"const","value":"last"},{"type":"const","value":"lightbox"},{"type":"const","value":"lightvideo"},{"type":"const","value":"main"},{"type":"const","value":"prerender"},{"type":"const","value":"profile"},{"type":"const","value":"publisher"},{"type":"const","value":"radioepg"},{"type":"const","value":"rendition"},{"type":"const","value":"reply-to"},{"type":"const","value":"sidebar"},{"type":"const","value":"syndication"},{"type":"const","value":"webmention"},{"type":"const","value":"widget"},{"type":"const","value":"http://docs.oasis-open.org/ns/cmis/link/200908/acl"},{"type":"const","value":"accessibility"},{"type":"const","value":"bibliography"},{"type":"const","value":"cite"},{"type":"const","value":"embed"},{"type":"const","value":"group"},{"type":"const","value":"longdesc"},{"type":"const","value":"map"},{"type":"const","value":"member"},{"type":"const","value":"m_PageScroll2id"},{"type":"const","value":"prerender"},{"type":"const","value":"profile"},{"type":"const","value":"shortlink"},{"type":"const","value":"source"},{"type":"const","value":"vcalendar-parent"},{"type":"const","value":"vcalendar-child"},{"type":"const","value":"vcalendar-sibling"},{"type":"const","value":"status"},{"type":"const","value":"https://api.w.org/"},{"type":"const","value":"archive"},{"type":"const","value":"archives"},{"type":"const","value":"comment"},{"type":"const","value":"contribution"},{"type":"const","value":"EditURI"},{"type":"const","value":"endorsed"},{"type":"const","value":"fan"},{"type":"const","value":"feed"},{"type":"const","value":"footnote"},{"type":"const","value":"kinetic-stylesheet"},{"type":"const","value":"lightbox"},{"type":"const","value":"made"},{"type":"const","value":"meta"},{"type":"const","value":"microsummary"},{"type":"const","value":"openid.delegate"},{"type":"const","value":"openid.server"},{"type":"const","value":"permalink"},{"type":"const","value":"pgpkey"},{"type":"const","value":"popover"},{"type":"const","value":"privacy"},{"type":"const","value":"publickey"},{"type":"const","value":"referral"},{"type":"const","value":"related"},{"type":"const","value":"replies"},{"type":"const","value":"respond-proxy"},{"type":"const","value":"respond-redirect"},{"type":"const","value":"resource"},{"type":"const","value":"sitemap"},{"type":"const","value":"sponsor"},{"type":"const","value":"tooltip"},{"type":"const","value":"trackback"},{"type":"const","value":"unendorsed"},{"type":"const","value":"user"},{"type":"const","value":"wlwmanifest"}],"matched":false,"raw":"stylesheet","offset":0,"length":10,"line":1,"column":1,"reason":"doesnt-exist-in-enum","partName":"the content of the list"}"#,
+    ),
+    (
+        "LinkTypeForAnchorAndAreaElement",
+        "stylesheet self",
+        r#"{"reason":"unexpected-token","expects":[{"type":"common","value":"valid Link Type"}],"matched":false,"ref":"https://html.spec.whatwg.org/multipage/links.html#linkTypes","raw":"self","offset":11,"length":4,"line":1,"column":12}"#,
+    ),
+    (
+        "LinkTypeForAnchorAndAreaElement",
+        "stylesheet",
+        r#"{"ref":"https://html.spec.whatwg.org/multipage/links.html#linkTypes","expects":[{"type":"const","value":"alternate"},{"type":"const","value":"author"},{"type":"const","value":"bookmark"},{"type":"const","value":"external"},{"type":"const","value":"help"},{"type":"const","value":"license"},{"type":"const","value":"next"},{"type":"const","value":"nofollow"},{"type":"const","value":"noopener"},{"type":"const","value":"noreferrer"},{"type":"const","value":"opener"},{"type":"const","value":"prev"},{"type":"const","value":"privacy-policy"},{"type":"const","value":"search"},{"type":"const","value":"tag"},{"type":"const","value":"terms-of-service"},{"type":"const","value":"acquaintance"},{"type":"const","value":"appendix"},{"type":"const","value":"chapter"},{"type":"const","value":"child"},{"type":"const","value":"colleague"},{"type":"const","value":"contact"},{"type":"const","value":"contents"},{"type":"const","value":"copyright"},{"type":"const","value":"co-resident"},{"type":"const","value":"co-worker"},{"type":"const","value":"crush"},{"type":"const","value":"date"},{"type":"const","value":"friend"},{"type":"const","value":"glossary"},{"type":"const","value":"kin"},{"type":"const","value":"me"},{"type":"const","value":"met"},{"type":"const","value":"muse"},{"type":"const","value":"neighbor"},{"type":"const","value":"parent"},{"type":"const","value":"previous"},{"type":"const","value":"section"},{"type":"const","value":"sibling"},{"type":"const","value":"spouse"},{"type":"const","value":"start"},{"type":"const","value":"subsection"},{"type":"const","value":"sweetheart"},{"type":"const","value":"toc"},{"type":"const","value":"transformation"},{"type":"const","value":"pronunciation"},{"type":"const","value":"directory"},{"type":"const","value":"enclosure"},{"type":"const","value":"home"},{"type":"const","value":"payment"},{"type":"const","value":"vcs-*"},{"type":"const","value":"about"},{"type":"const","value":"amphtml"},{"type":"const","value":"archived"},{"type":"const","value":"attachment"},{"type":"const","value":"category"},{"type":"const","value":"code-repository"},{"type":"const","value":"code-license"},{"type":"const","value":"content-repository"},{"type":"const","value":"content-license"},{"type":"const","value":"disclosure"},{"type":"const","value":"discussion"},{"type":"const","value":"donation"},{"type":"const","value":"edit"},{"type":"const","value":"enclosure"},{"type":"const","value":"entry-content"},{"type":"const","value":"first"},{"type":"const","value":"home"},{"type":"const","value":"hub"},{"type":"const","value":"in-reply-to"},{"type":"const","value":"root"},{"type":"const","value":"index"},{"type":"const","value":"issues"},{"type":"const","value":"jslicense"},{"type":"const","value":"last"},{"type":"const","value":"lightbox"},{"type":"const","value":"lightvideo"},{"type":"const","value":"main"},{"type":"const","value":"prerender"},{"type":"const","value":"profile"},{"type":"const","value":"publisher"},{"type":"const","value":"radioepg"},{"type":"const","value":"rendition"},{"type":"const","value":"reply-to"},{"type":"const","value":"sidebar"},{"type":"const","value":"syndication"},{"type":"const","value":"webmention"},{"type":"const","value":"widget"},{"type":"const","value":"http://docs.oasis-open.org/ns/cmis/link/200908/acl"},{"type":"const","value":"accessibility"},{"type":"const","value":"bibliography"},{"type":"const","value":"cite"},{"type":"const","value":"embed"},{"type":"const","value":"group"},{"type":"const","value":"longdesc"},{"type":"const","value":"map"},{"type":"const","value":"member"},{"type":"const","value":"m_PageScroll2id"},{"type":"const","value":"prerender"},{"type":"const","value":"profile"},{"type":"const","value":"shortlink"},{"type":"const","value":"source"},{"type":"const","value":"vcalendar-parent"},{"type":"const","value":"vcalendar-child"},{"type":"const","value":"vcalendar-sibling"},{"type":"const","value":"status"},{"type":"const","value":"https://api.w.org/"},{"type":"const","value":"archive"},{"type":"const","value":"archives"},{"type":"const","value":"comment"},{"type":"const","value":"contribution"},{"type":"const","value":"EditURI"},{"type":"const","value":"endorsed"},{"type":"const","value":"fan"},{"type":"const","value":"feed"},{"type":"const","value":"footnote"},{"type":"const","value":"kinetic-stylesheet"},{"type":"const","value":"lightbox"},{"type":"const","value":"made"},{"type":"const","value":"meta"},{"type":"const","value":"microsummary"},{"type":"const","value":"openid.delegate"},{"type":"const","value":"openid.server"},{"type":"const","value":"permalink"},{"type":"const","value":"pgpkey"},{"type":"const","value":"popover"},{"type":"const","value":"privacy"},{"type":"const","value":"publickey"},{"type":"const","value":"referral"},{"type":"const","value":"related"},{"type":"const","value":"replies"},{"type":"const","value":"respond-proxy"},{"type":"const","value":"respond-redirect"},{"type":"const","value":"resource"},{"type":"const","value":"sitemap"},{"type":"const","value":"sponsor"},{"type":"const","value":"tooltip"},{"type":"const","value":"trackback"},{"type":"const","value":"unendorsed"},{"type":"const","value":"user"},{"type":"const","value":"wlwmanifest"}],"matched":false,"raw":"stylesheet","offset":0,"length":10,"line":1,"column":1,"reason":"doesnt-exist-in-enum","partName":"the content of the list"}"#,
+    ),
+    (
+        "LinkTypeForAnchorAndAreaElement",
+        "STYLESHEET",
+        r#"{"ref":"https://html.spec.whatwg.org/multipage/links.html#linkTypes","expects":[{"type":"const","value":"alternate"},{"type":"const","value":"author"},{"type":"const","value":"bookmark"},{"type":"const","value":"external"},{"type":"const","value":"help"},{"type":"const","value":"license"},{"type":"const","value":"next"},{"type":"const","value":"nofollow"},{"type":"const","value":"noopener"},{"type":"const","value":"noreferrer"},{"type":"const","value":"opener"},{"type":"const","value":"prev"},{"type":"const","value":"privacy-policy"},{"type":"const","value":"search"},{"type":"const","value":"tag"},{"type":"const","value":"terms-of-service"},{"type":"const","value":"acquaintance"},{"type":"const","value":"appendix"},{"type":"const","value":"chapter"},{"type":"const","value":"child"},{"type":"const","value":"colleague"},{"type":"const","value":"contact"},{"type":"const","value":"contents"},{"type":"const","value":"copyright"},{"type":"const","value":"co-resident"},{"type":"const","value":"co-worker"},{"type":"const","value":"crush"},{"type":"const","value":"date"},{"type":"const","value":"friend"},{"type":"const","value":"glossary"},{"type":"const","value":"kin"},{"type":"const","value":"me"},{"type":"const","value":"met"},{"type":"const","value":"muse"},{"type":"const","value":"neighbor"},{"type":"const","value":"parent"},{"type":"const","value":"previous"},{"type":"const","value":"section"},{"type":"const","value":"sibling"},{"type":"const","value":"spouse"},{"type":"const","value":"start"},{"type":"const","value":"subsection"},{"type":"const","value":"sweetheart"},{"type":"const","value":"toc"},{"type":"const","value":"transformation"},{"type":"const","value":"pronunciation"},{"type":"const","value":"directory"},{"type":"const","value":"enclosure"},{"type":"const","value":"home"},{"type":"const","value":"payment"},{"type":"const","value":"vcs-*"},{"type":"const","value":"about"},{"type":"const","value":"amphtml"},{"type":"const","value":"archived"},{"type":"const","value":"attachment"},{"type":"const","value":"category"},{"type":"const","value":"code-repository"},{"type":"const","value":"code-license"},{"type":"const","value":"content-repository"},{"type":"const","value":"content-license"},{"type":"const","value":"disclosure"},{"type":"const","value":"discussion"},{"type":"const","value":"donation"},{"type":"const","value":"edit"},{"type":"const","value":"enclosure"},{"type":"const","value":"entry-content"},{"type":"const","value":"first"},{"type":"const","value":"home"},{"type":"const","value":"hub"},{"type":"const","value":"in-reply-to"},{"type":"const","value":"root"},{"type":"const","value":"index"},{"type":"const","value":"issues"},{"type":"const","value":"jslicense"},{"type":"const","value":"last"},{"type":"const","value":"lightbox"},{"type":"const","value":"lightvideo"},{"type":"const","value":"main"},{"type":"const","value":"prerender"},{"type":"const","value":"profile"},{"type":"const","value":"publisher"},{"type":"const","value":"radioepg"},{"type":"const","value":"rendition"},{"type":"const","value":"reply-to"},{"type":"const","value":"sidebar"},{"type":"const","value":"syndication"},{"type":"const","value":"webmention"},{"type":"const","value":"widget"},{"type":"const","value":"http://docs.oasis-open.org/ns/cmis/link/200908/acl"},{"type":"const","value":"accessibility"},{"type":"const","value":"bibliography"},{"type":"const","value":"cite"},{"type":"const","value":"embed"},{"type":"const","value":"group"},{"type":"const","value":"longdesc"},{"type":"const","value":"map"},{"type":"const","value":"member"},{"type":"const","value":"m_PageScroll2id"},{"type":"const","value":"prerender"},{"type":"const","value":"profile"},{"type":"const","value":"shortlink"},{"type":"const","value":"source"},{"type":"const","value":"vcalendar-parent"},{"type":"const","value":"vcalendar-child"},{"type":"const","value":"vcalendar-sibling"},{"type":"const","value":"status"},{"type":"const","value":"https://api.w.org/"},{"type":"const","value":"archive"},{"type":"const","value":"archives"},{"type":"const","value":"comment"},{"type":"const","value":"contribution"},{"type":"const","value":"EditURI"},{"type":"const","value":"endorsed"},{"type":"const","value":"fan"},{"type":"const","value":"feed"},{"type":"const","value":"footnote"},{"type":"const","value":"kinetic-stylesheet"},{"type":"const","value":"lightbox"},{"type":"const","value":"made"},{"type":"const","value":"meta"},{"type":"const","value":"microsummary"},{"type":"const","value":"openid.delegate"},{"type":"const","value":"openid.server"},{"type":"const","value":"permalink"},{"type":"const","value":"pgpkey"},{"type":"const","value":"popover"},{"type":"const","value":"privacy"},{"type":"const","value":"publickey"},{"type":"const","value":"referral"},{"type":"const","value":"related"},{"type":"const","value":"replies"},{"type":"const","value":"respond-proxy"},{"type":"const","value":"respond-redirect"},{"type":"const","value":"resource"},{"type":"const","value":"sitemap"},{"type":"const","value":"sponsor"},{"type":"const","value":"tooltip"},{"type":"const","value":"trackback"},{"type":"const","value":"unendorsed"},{"type":"const","value":"user"},{"type":"const","value":"wlwmanifest"}],"matched":false,"raw":"STYLESHEET","offset":0,"length":10,"line":1,"column":1,"reason":"doesnt-exist-in-enum","partName":"the content of the list"}"#,
+    ),
+    (
+        "LinkTypeForAnchorAndAreaElement",
+        "tag",
+        r#"{"matched":true}"#,
+    ),
+    (
+        "LinkTypeForAnchorAndAreaElement",
+        "terms-of-service",
+        r#"{"matched":true}"#,
+    ),
+    (
+        "LinkTypeForAnchorAndAreaElement",
+        "top",
+        r#"{"reason":"unexpected-token","expects":[{"type":"common","value":"valid Link Type"}],"matched":false,"ref":"https://html.spec.whatwg.org/multipage/links.html#linkTypes","raw":"top","offset":0,"length":3,"line":1,"column":1}"#,
+    ),
+    (
+        "LinkTypeForAnchorAndAreaElement",
+        "up",
+        r#"{"reason":"unexpected-token","expects":[{"type":"common","value":"valid Link Type"}],"matched":false,"ref":"https://html.spec.whatwg.org/multipage/links.html#linkTypes","raw":"up","offset":0,"length":2,"line":1,"column":1}"#,
+    ),
+    (
+        "LinkTypeForAnchorAndAreaElement",
+        "webmention",
+        r#"{"matched":true}"#,
+    ),
+    (
+        "LinkTypeForAnchorAndAreaElement",
+        "youtube",
+        r#"{"reason":"unexpected-token","expects":[{"type":"common","value":"valid Link Type"}],"matched":false,"ref":"https://html.spec.whatwg.org/multipage/links.html#linkTypes","raw":"youtube","offset":0,"length":7,"line":1,"column":1}"#,
+    ),
+    (
+        "LinkTypeForAnchorAndAreaElement",
+        "subsection",
+        r#"{"reason":"unexpected-token","expects":[{"type":"common","value":"valid Link Type"}],"matched":false,"ref":"https://html.spec.whatwg.org/multipage/links.html#linkTypes","raw":"subsection","offset":0,"length":10,"line":1,"column":1}"#,
+    ),
+    (
+        "LinkTypeForAnchorAndAreaElement",
+        "Self",
+        r#"{"ref":"https://html.spec.whatwg.org/multipage/links.html#linkTypes","expects":[{"type":"const","value":"alternate"},{"type":"const","value":"author"},{"type":"const","value":"bookmark"},{"type":"const","value":"external"},{"type":"const","value":"help"},{"type":"const","value":"license"},{"type":"const","value":"next"},{"type":"const","value":"nofollow"},{"type":"const","value":"noopener"},{"type":"const","value":"noreferrer"},{"type":"const","value":"opener"},{"type":"const","value":"prev"},{"type":"const","value":"privacy-policy"},{"type":"const","value":"search"},{"type":"const","value":"tag"},{"type":"const","value":"terms-of-service"},{"type":"const","value":"acquaintance"},{"type":"const","value":"appendix"},{"type":"const","value":"chapter"},{"type":"const","value":"child"},{"type":"const","value":"colleague"},{"type":"const","value":"contact"},{"type":"const","value":"contents"},{"type":"const","value":"copyright"},{"type":"const","value":"co-resident"},{"type":"const","value":"co-worker"},{"type":"const","value":"crush"},{"type":"const","value":"date"},{"type":"const","value":"friend"},{"type":"const","value":"glossary"},{"type":"const","value":"kin"},{"type":"const","value":"me"},{"type":"const","value":"met"},{"type":"const","value":"muse"},{"type":"const","value":"neighbor"},{"type":"const","value":"parent"},{"type":"const","value":"previous"},{"type":"const","value":"section"},{"type":"const","value":"sibling"},{"type":"const","value":"spouse"},{"type":"const","value":"start"},{"type":"const","value":"subsection"},{"type":"const","value":"sweetheart"},{"type":"const","value":"toc"},{"type":"const","value":"transformation"},{"type":"const","value":"pronunciation"},{"type":"const","value":"directory"},{"type":"const","value":"enclosure"},{"type":"const","value":"home"},{"type":"const","value":"payment"},{"type":"const","value":"vcs-*"},{"type":"const","value":"about"},{"type":"const","value":"amphtml"},{"type":"const","value":"archived"},{"type":"const","value":"attachment"},{"type":"const","value":"category"},{"type":"const","value":"code-repository"},{"type":"const","value":"code-license"},{"type":"const","value":"content-repository"},{"type":"const","value":"content-license"},{"type":"const","value":"disclosure"},{"type":"const","value":"discussion"},{"type":"const","value":"donation"},{"type":"const","value":"edit"},{"type":"const","value":"enclosure"},{"type":"const","value":"entry-content"},{"type":"const","value":"first"},{"type":"const","value":"home"},{"type":"const","value":"hub"},{"type":"const","value":"in-reply-to"},{"type":"const","value":"root"},{"type":"const","value":"index"},{"type":"const","value":"issues"},{"type":"const","value":"jslicense"},{"type":"const","value":"last"},{"type":"const","value":"lightbox"},{"type":"const","value":"lightvideo"},{"type":"const","value":"main"},{"type":"const","value":"prerender"},{"type":"const","value":"profile"},{"type":"const","value":"publisher"},{"type":"const","value":"radioepg"},{"type":"const","value":"rendition"},{"type":"const","value":"reply-to"},{"type":"const","value":"sidebar"},{"type":"const","value":"syndication"},{"type":"const","value":"webmention"},{"type":"const","value":"widget"},{"type":"const","value":"http://docs.oasis-open.org/ns/cmis/link/200908/acl"},{"type":"const","value":"accessibility"},{"type":"const","value":"bibliography"},{"type":"const","value":"cite"},{"type":"const","value":"embed"},{"type":"const","value":"group"},{"type":"const","value":"longdesc"},{"type":"const","value":"map"},{"type":"const","value":"member"},{"type":"const","value":"m_PageScroll2id"},{"type":"const","value":"prerender"},{"type":"const","value":"profile"},{"type":"const","value":"shortlink"},{"type":"const","value":"source"},{"type":"const","value":"vcalendar-parent"},{"type":"const","value":"vcalendar-child"},{"type":"const","value":"vcalendar-sibling"},{"type":"const","value":"status"},{"type":"const","value":"https://api.w.org/"},{"type":"const","value":"archive"},{"type":"const","value":"archives"},{"type":"const","value":"comment"},{"type":"const","value":"contribution"},{"type":"const","value":"EditURI"},{"type":"const","value":"endorsed"},{"type":"const","value":"fan"},{"type":"const","value":"feed"},{"type":"const","value":"footnote"},{"type":"const","value":"kinetic-stylesheet"},{"type":"const","value":"lightbox"},{"type":"const","value":"made"},{"type":"const","value":"meta"},{"type":"const","value":"microsummary"},{"type":"const","value":"openid.delegate"},{"type":"const","value":"openid.server"},{"type":"const","value":"permalink"},{"type":"const","value":"pgpkey"},{"type":"const","value":"popover"},{"type":"const","value":"privacy"},{"type":"const","value":"publickey"},{"type":"const","value":"referral"},{"type":"const","value":"related"},{"type":"const","value":"replies"},{"type":"const","value":"respond-proxy"},{"type":"const","value":"respond-redirect"},{"type":"const","value":"resource"},{"type":"const","value":"sitemap"},{"type":"const","value":"sponsor"},{"type":"const","value":"tooltip"},{"type":"const","value":"trackback"},{"type":"const","value":"unendorsed"},{"type":"const","value":"user"},{"type":"const","value":"wlwmanifest"}],"matched":false,"raw":"Self","offset":0,"length":4,"line":1,"column":1,"reason":"doesnt-exist-in-enum","partName":"the content of the list"}"#,
+    ),
+    (
+        "LinkTypeForAnchorAndAreaElement",
+        "friend",
+        r#"{"reason":"unexpected-token","expects":[{"type":"common","value":"valid Link Type"}],"matched":false,"ref":"https://html.spec.whatwg.org/multipage/links.html#linkTypes","raw":"friend","offset":0,"length":6,"line":1,"column":1}"#,
+    ),
+    (
+        "LinkTypeForAnchorAndAreaElement",
+        "enclosure",
+        r#"{"matched":true}"#,
+    ),
+    (
+        "LinkTypeForAnchorAndAreaElement",
+        "vcs-*",
+        r#"{"matched":true}"#,
+    ),
+    (
+        "LinkTypeForAnchorAndAreaElement",
+        " stylesheet ",
+        r#"{"ref":"https://html.spec.whatwg.org/multipage/links.html#linkTypes","expects":[{"type":"const","value":"alternate"},{"type":"const","value":"author"},{"type":"const","value":"bookmark"},{"type":"const","value":"external"},{"type":"const","value":"help"},{"type":"const","value":"license"},{"type":"const","value":"next"},{"type":"const","value":"nofollow"},{"type":"const","value":"noopener"},{"type":"const","value":"noreferrer"},{"type":"const","value":"opener"},{"type":"const","value":"prev"},{"type":"const","value":"privacy-policy"},{"type":"const","value":"search"},{"type":"const","value":"tag"},{"type":"const","value":"terms-of-service"},{"type":"const","value":"acquaintance"},{"type":"const","value":"appendix"},{"type":"const","value":"chapter"},{"type":"const","value":"child"},{"type":"const","value":"colleague"},{"type":"const","value":"contact"},{"type":"const","value":"contents"},{"type":"const","value":"copyright"},{"type":"const","value":"co-resident"},{"type":"const","value":"co-worker"},{"type":"const","value":"crush"},{"type":"const","value":"date"},{"type":"const","value":"friend"},{"type":"const","value":"glossary"},{"type":"const","value":"kin"},{"type":"const","value":"me"},{"type":"const","value":"met"},{"type":"const","value":"muse"},{"type":"const","value":"neighbor"},{"type":"const","value":"parent"},{"type":"const","value":"previous"},{"type":"const","value":"section"},{"type":"const","value":"sibling"},{"type":"const","value":"spouse"},{"type":"const","value":"start"},{"type":"const","value":"subsection"},{"type":"const","value":"sweetheart"},{"type":"const","value":"toc"},{"type":"const","value":"transformation"},{"type":"const","value":"pronunciation"},{"type":"const","value":"directory"},{"type":"const","value":"enclosure"},{"type":"const","value":"home"},{"type":"const","value":"payment"},{"type":"const","value":"vcs-*"},{"type":"const","value":"about"},{"type":"const","value":"amphtml"},{"type":"const","value":"archived"},{"type":"const","value":"attachment"},{"type":"const","value":"category"},{"type":"const","value":"code-repository"},{"type":"const","value":"code-license"},{"type":"const","value":"content-repository"},{"type":"const","value":"content-license"},{"type":"const","value":"disclosure"},{"type":"const","value":"discussion"},{"type":"const","value":"donation"},{"type":"const","value":"edit"},{"type":"const","value":"enclosure"},{"type":"const","value":"entry-content"},{"type":"const","value":"first"},{"type":"const","value":"home"},{"type":"const","value":"hub"},{"type":"const","value":"in-reply-to"},{"type":"const","value":"root"},{"type":"const","value":"index"},{"type":"const","value":"issues"},{"type":"const","value":"jslicense"},{"type":"const","value":"last"},{"type":"const","value":"lightbox"},{"type":"const","value":"lightvideo"},{"type":"const","value":"main"},{"type":"const","value":"prerender"},{"type":"const","value":"profile"},{"type":"const","value":"publisher"},{"type":"const","value":"radioepg"},{"type":"const","value":"rendition"},{"type":"const","value":"reply-to"},{"type":"const","value":"sidebar"},{"type":"const","value":"syndication"},{"type":"const","value":"webmention"},{"type":"const","value":"widget"},{"type":"const","value":"http://docs.oasis-open.org/ns/cmis/link/200908/acl"},{"type":"const","value":"accessibility"},{"type":"const","value":"bibliography"},{"type":"const","value":"cite"},{"type":"const","value":"embed"},{"type":"const","value":"group"},{"type":"const","value":"longdesc"},{"type":"const","value":"map"},{"type":"const","value":"member"},{"type":"const","value":"m_PageScroll2id"},{"type":"const","value":"prerender"},{"type":"const","value":"profile"},{"type":"const","value":"shortlink"},{"type":"const","value":"source"},{"type":"const","value":"vcalendar-parent"},{"type":"const","value":"vcalendar-child"},{"type":"const","value":"vcalendar-sibling"},{"type":"const","value":"status"},{"type":"const","value":"https://api.w.org/"},{"type":"const","value":"archive"},{"type":"const","value":"archives"},{"type":"const","value":"comment"},{"type":"const","value":"contribution"},{"type":"const","value":"EditURI"},{"type":"const","value":"endorsed"},{"type":"const","value":"fan"},{"type":"const","value":"feed"},{"type":"const","value":"footnote"},{"type":"const","value":"kinetic-stylesheet"},{"type":"const","value":"lightbox"},{"type":"const","value":"made"},{"type":"const","value":"meta"},{"type":"const","value":"microsummary"},{"type":"const","value":"openid.delegate"},{"type":"const","value":"openid.server"},{"type":"const","value":"permalink"},{"type":"const","value":"pgpkey"},{"type":"const","value":"popover"},{"type":"const","value":"privacy"},{"type":"const","value":"publickey"},{"type":"const","value":"referral"},{"type":"const","value":"related"},{"type":"const","value":"replies"},{"type":"const","value":"respond-proxy"},{"type":"const","value":"respond-redirect"},{"type":"const","value":"resource"},{"type":"const","value":"sitemap"},{"type":"const","value":"sponsor"},{"type":"const","value":"tooltip"},{"type":"const","value":"trackback"},{"type":"const","value":"unendorsed"},{"type":"const","value":"user"},{"type":"const","value":"wlwmanifest"}],"matched":false,"raw":"stylesheet","offset":1,"length":10,"line":1,"column":2,"reason":"doesnt-exist-in-enum","partName":"the content of the list"}"#,
+    ),
+    (
+        "LinkTypeForAnchorAndAreaElement",
+        "stylesheet\nicon",
+        r#"{"ref":"https://html.spec.whatwg.org/multipage/links.html#linkTypes","expects":[{"type":"const","value":"alternate"},{"type":"const","value":"author"},{"type":"const","value":"bookmark"},{"type":"const","value":"external"},{"type":"const","value":"help"},{"type":"const","value":"license"},{"type":"const","value":"next"},{"type":"const","value":"nofollow"},{"type":"const","value":"noopener"},{"type":"const","value":"noreferrer"},{"type":"const","value":"opener"},{"type":"const","value":"prev"},{"type":"const","value":"privacy-policy"},{"type":"const","value":"search"},{"type":"const","value":"tag"},{"type":"const","value":"terms-of-service"},{"type":"const","value":"acquaintance"},{"type":"const","value":"appendix"},{"type":"const","value":"chapter"},{"type":"const","value":"child"},{"type":"const","value":"colleague"},{"type":"const","value":"contact"},{"type":"const","value":"contents"},{"type":"const","value":"copyright"},{"type":"const","value":"co-resident"},{"type":"const","value":"co-worker"},{"type":"const","value":"crush"},{"type":"const","value":"date"},{"type":"const","value":"friend"},{"type":"const","value":"glossary"},{"type":"const","value":"kin"},{"type":"const","value":"me"},{"type":"const","value":"met"},{"type":"const","value":"muse"},{"type":"const","value":"neighbor"},{"type":"const","value":"parent"},{"type":"const","value":"previous"},{"type":"const","value":"section"},{"type":"const","value":"sibling"},{"type":"const","value":"spouse"},{"type":"const","value":"start"},{"type":"const","value":"subsection"},{"type":"const","value":"sweetheart"},{"type":"const","value":"toc"},{"type":"const","value":"transformation"},{"type":"const","value":"pronunciation"},{"type":"const","value":"directory"},{"type":"const","value":"enclosure"},{"type":"const","value":"home"},{"type":"const","value":"payment"},{"type":"const","value":"vcs-*"},{"type":"const","value":"about"},{"type":"const","value":"amphtml"},{"type":"const","value":"archived"},{"type":"const","value":"attachment"},{"type":"const","value":"category"},{"type":"const","value":"code-repository"},{"type":"const","value":"code-license"},{"type":"const","value":"content-repository"},{"type":"const","value":"content-license"},{"type":"const","value":"disclosure"},{"type":"const","value":"discussion"},{"type":"const","value":"donation"},{"type":"const","value":"edit"},{"type":"const","value":"enclosure"},{"type":"const","value":"entry-content"},{"type":"const","value":"first"},{"type":"const","value":"home"},{"type":"const","value":"hub"},{"type":"const","value":"in-reply-to"},{"type":"const","value":"root"},{"type":"const","value":"index"},{"type":"const","value":"issues"},{"type":"const","value":"jslicense"},{"type":"const","value":"last"},{"type":"const","value":"lightbox"},{"type":"const","value":"lightvideo"},{"type":"const","value":"main"},{"type":"const","value":"prerender"},{"type":"const","value":"profile"},{"type":"const","value":"publisher"},{"type":"const","value":"radioepg"},{"type":"const","value":"rendition"},{"type":"const","value":"reply-to"},{"type":"const","value":"sidebar"},{"type":"const","value":"syndication"},{"type":"const","value":"webmention"},{"type":"const","value":"widget"},{"type":"const","value":"http://docs.oasis-open.org/ns/cmis/link/200908/acl"},{"type":"const","value":"accessibility"},{"type":"const","value":"bibliography"},{"type":"const","value":"cite"},{"type":"const","value":"embed"},{"type":"const","value":"group"},{"type":"const","value":"longdesc"},{"type":"const","value":"map"},{"type":"const","value":"member"},{"type":"const","value":"m_PageScroll2id"},{"type":"const","value":"prerender"},{"type":"const","value":"profile"},{"type":"const","value":"shortlink"},{"type":"const","value":"source"},{"type":"const","value":"vcalendar-parent"},{"type":"const","value":"vcalendar-child"},{"type":"const","value":"vcalendar-sibling"},{"type":"const","value":"status"},{"type":"const","value":"https://api.w.org/"},{"type":"const","value":"archive"},{"type":"const","value":"archives"},{"type":"const","value":"comment"},{"type":"const","value":"contribution"},{"type":"const","value":"EditURI"},{"type":"const","value":"endorsed"},{"type":"const","value":"fan"},{"type":"const","value":"feed"},{"type":"const","value":"footnote"},{"type":"const","value":"kinetic-stylesheet"},{"type":"const","value":"lightbox"},{"type":"const","value":"made"},{"type":"const","value":"meta"},{"type":"const","value":"microsummary"},{"type":"const","value":"openid.delegate"},{"type":"const","value":"openid.server"},{"type":"const","value":"permalink"},{"type":"const","value":"pgpkey"},{"type":"const","value":"popover"},{"type":"const","value":"privacy"},{"type":"const","value":"publickey"},{"type":"const","value":"referral"},{"type":"const","value":"related"},{"type":"const","value":"replies"},{"type":"const","value":"respond-proxy"},{"type":"const","value":"respond-redirect"},{"type":"const","value":"resource"},{"type":"const","value":"sitemap"},{"type":"const","value":"sponsor"},{"type":"const","value":"tooltip"},{"type":"const","value":"trackback"},{"type":"const","value":"unendorsed"},{"type":"const","value":"user"},{"type":"const","value":"wlwmanifest"}],"matched":false,"raw":"stylesheet","offset":0,"length":10,"line":1,"column":1,"reason":"doesnt-exist-in-enum","partName":"the content of the list"}"#,
+    ),
+    (
+        "LinkTypeForAnchorAndAreaElement",
+        "Stylesheet stylesheet",
+        r#"{"partName":"the content of the list","reason":"duplicated","ref":"https://html.spec.whatwg.org/multipage/links.html#linkTypes","expects":[{"type":"const","value":"Link types allowed in `a` and `area` elements"}],"matched":false,"raw":"stylesheet","offset":11,"length":10,"line":1,"column":12}"#,
+    ),
+    (
+        "LinkTypeForFormElement",
+        "alternate",
+        r#"{"ref":"https://html.spec.whatwg.org/multipage/links.html#linkTypes","expects":[{"type":"const","value":"external"},{"type":"const","value":"help"},{"type":"const","value":"license"},{"type":"const","value":"next"},{"type":"const","value":"nofollow"},{"type":"const","value":"noopener"},{"type":"const","value":"noreferrer"},{"type":"const","value":"opener"},{"type":"const","value":"prev"},{"type":"const","value":"search"}],"matched":false,"raw":"alternate","offset":0,"length":9,"line":1,"column":1,"reason":"doesnt-exist-in-enum","partName":"the content of the list"}"#,
+    ),
+    (
+        "LinkTypeForFormElement",
+        "canonical",
+        r#"{"ref":"https://html.spec.whatwg.org/multipage/links.html#linkTypes","expects":[{"type":"const","value":"external"},{"type":"const","value":"help"},{"type":"const","value":"license"},{"type":"const","value":"next"},{"type":"const","value":"nofollow"},{"type":"const","value":"noopener"},{"type":"const","value":"noreferrer"},{"type":"const","value":"opener"},{"type":"const","value":"prev"},{"type":"const","value":"search"}],"matched":false,"raw":"canonical","offset":0,"length":9,"line":1,"column":1,"reason":"doesnt-exist-in-enum","partName":"the content of the list"}"#,
+    ),
+    (
+        "LinkTypeForFormElement",
+        "author",
+        r#"{"ref":"https://html.spec.whatwg.org/multipage/links.html#linkTypes","expects":[{"type":"const","value":"external"},{"type":"const","value":"help"},{"type":"const","value":"license"},{"type":"const","value":"next"},{"type":"const","value":"nofollow"},{"type":"const","value":"noopener"},{"type":"const","value":"noreferrer"},{"type":"const","value":"opener"},{"type":"const","value":"prev"},{"type":"const","value":"search"}],"matched":false,"raw":"author","offset":0,"length":6,"line":1,"column":1,"reason":"doesnt-exist-in-enum","partName":"the content of the list"}"#,
+    ),
+    (
+        "LinkTypeForFormElement",
+        "bookmark",
+        r#"{"ref":"https://html.spec.whatwg.org/multipage/links.html#linkTypes","expects":[{"type":"const","value":"external"},{"type":"const","value":"help"},{"type":"const","value":"license"},{"type":"const","value":"next"},{"type":"const","value":"nofollow"},{"type":"const","value":"noopener"},{"type":"const","value":"noreferrer"},{"type":"const","value":"opener"},{"type":"const","value":"prev"},{"type":"const","value":"search"}],"matched":false,"raw":"bookmark","offset":0,"length":8,"line":1,"column":1,"reason":"doesnt-exist-in-enum","partName":"the content of the list"}"#,
+    ),
+    (
+        "LinkTypeForFormElement",
+        "dns-prefetch",
+        r#"{"ref":"https://html.spec.whatwg.org/multipage/links.html#linkTypes","expects":[{"type":"const","value":"external"},{"type":"const","value":"help"},{"type":"const","value":"license"},{"type":"const","value":"next"},{"type":"const","value":"nofollow"},{"type":"const","value":"noopener"},{"type":"const","value":"noreferrer"},{"type":"const","value":"opener"},{"type":"const","value":"prev"},{"type":"const","value":"search"}],"matched":false,"raw":"dns-prefetch","offset":0,"length":12,"line":1,"column":1,"reason":"doesnt-exist-in-enum","partName":"the content of the list"}"#,
+    ),
+    (
+        "LinkTypeForFormElement",
+        "expect",
+        r#"{"ref":"https://html.spec.whatwg.org/multipage/links.html#linkTypes","expects":[{"type":"const","value":"external"},{"type":"const","value":"help"},{"type":"const","value":"license"},{"type":"const","value":"next"},{"type":"const","value":"nofollow"},{"type":"const","value":"noopener"},{"type":"const","value":"noreferrer"},{"type":"const","value":"opener"},{"type":"const","value":"prev"},{"type":"const","value":"search"}],"matched":false,"raw":"expect","offset":0,"length":6,"line":1,"column":1,"reason":"doesnt-exist-in-enum","partName":"the content of the list"}"#,
+    ),
+    (
+        "LinkTypeForFormElement",
+        "help",
+        r#"{"matched":true}"#,
+    ),
+    (
+        "LinkTypeForFormElement",
+        "service",
+        r#"{"ref":"https://html.spec.whatwg.org/multipage/links.html#linkTypes","expects":[{"type":"const","value":"external"},{"type":"const","value":"help"},{"type":"const","value":"license"},{"type":"const","value":"next"},{"type":"const","value":"nofollow"},{"type":"const","value":"noopener"},{"type":"const","value":"noreferrer"},{"type":"const","value":"opener"},{"type":"const","value":"prev"},{"type":"const","value":"search"}],"matched":false,"raw":"service","offset":0,"length":7,"line":1,"column":1,"reason":"doesnt-exist-in-enum","partName":"the content of the list"}"#,
+    ),
+    (
+        "LinkTypeForFormElement",
+        "alternate canonical author",
+        r#"{"ref":"https://html.spec.whatwg.org/multipage/links.html#linkTypes","expects":[{"type":"const","value":"external"},{"type":"const","value":"help"},{"type":"const","value":"license"},{"type":"const","value":"next"},{"type":"const","value":"nofollow"},{"type":"const","value":"noopener"},{"type":"const","value":"noreferrer"},{"type":"const","value":"opener"},{"type":"const","value":"prev"},{"type":"const","value":"search"}],"matched":false,"raw":"alternate","offset":0,"length":9,"line":1,"column":1,"reason":"doesnt-exist-in-enum","partName":"the content of the list"}"#,
+    ),
+    (
+        "LinkTypeForFormElement",
+        "alternate canonical author dns-prefetch",
+        r#"{"ref":"https://html.spec.whatwg.org/multipage/links.html#linkTypes","expects":[{"type":"const","value":"external"},{"type":"const","value":"help"},{"type":"const","value":"license"},{"type":"const","value":"next"},{"type":"const","value":"nofollow"},{"type":"const","value":"noopener"},{"type":"const","value":"noreferrer"},{"type":"const","value":"opener"},{"type":"const","value":"prev"},{"type":"const","value":"search"}],"matched":false,"raw":"alternate","offset":0,"length":9,"line":1,"column":1,"reason":"doesnt-exist-in-enum","partName":"the content of the list"}"#,
+    ),
+    (
+        "LinkTypeForFormElement",
+        "alternate canonical author dns-prefetch expect",
+        r#"{"ref":"https://html.spec.whatwg.org/multipage/links.html#linkTypes","expects":[{"type":"const","value":"external"},{"type":"const","value":"help"},{"type":"const","value":"license"},{"type":"const","value":"next"},{"type":"const","value":"nofollow"},{"type":"const","value":"noopener"},{"type":"const","value":"noreferrer"},{"type":"const","value":"opener"},{"type":"const","value":"prev"},{"type":"const","value":"search"}],"matched":false,"raw":"alternate","offset":0,"length":9,"line":1,"column":1,"reason":"doesnt-exist-in-enum","partName":"the content of the list"}"#,
+    ),
+    (
+        "LinkTypeForFormElement",
+        "alternate canonical author dns-prefetch expect help",
+        r#"{"ref":"https://html.spec.whatwg.org/multipage/links.html#linkTypes","expects":[{"type":"const","value":"external"},{"type":"const","value":"help"},{"type":"const","value":"license"},{"type":"const","value":"next"},{"type":"const","value":"nofollow"},{"type":"const","value":"noopener"},{"type":"const","value":"noreferrer"},{"type":"const","value":"opener"},{"type":"const","value":"prev"},{"type":"const","value":"search"}],"matched":false,"raw":"alternate","offset":0,"length":9,"line":1,"column":1,"reason":"doesnt-exist-in-enum","partName":"the content of the list"}"#,
+    ),
+    (
+        "LinkTypeForFormElement",
+        "modulepreload",
+        r#"{"ref":"https://html.spec.whatwg.org/multipage/links.html#linkTypes","expects":[{"type":"const","value":"external"},{"type":"const","value":"help"},{"type":"const","value":"license"},{"type":"const","value":"next"},{"type":"const","value":"nofollow"},{"type":"const","value":"noopener"},{"type":"const","value":"noreferrer"},{"type":"const","value":"opener"},{"type":"const","value":"prev"},{"type":"const","value":"search"}],"matched":false,"raw":"modulepreload","offset":0,"length":13,"line":1,"column":1,"reason":"doesnt-exist-in-enum","partName":"the content of the list"}"#,
+    ),
+    (
+        "LinkTypeForFormElement",
+        "pingback",
+        r#"{"ref":"https://html.spec.whatwg.org/multipage/links.html#linkTypes","expects":[{"type":"const","value":"external"},{"type":"const","value":"help"},{"type":"const","value":"license"},{"type":"const","value":"next"},{"type":"const","value":"nofollow"},{"type":"const","value":"noopener"},{"type":"const","value":"noreferrer"},{"type":"const","value":"opener"},{"type":"const","value":"prev"},{"type":"const","value":"search"}],"matched":false,"raw":"pingback","offset":0,"length":8,"line":1,"column":1,"reason":"doesnt-exist-in-enum","partName":"the content of the list"}"#,
+    ),
+    (
+        "LinkTypeForFormElement",
+        "bookmark dns-prefetch",
+        r#"{"ref":"https://html.spec.whatwg.org/multipage/links.html#linkTypes","expects":[{"type":"const","value":"external"},{"type":"const","value":"help"},{"type":"const","value":"license"},{"type":"const","value":"next"},{"type":"const","value":"nofollow"},{"type":"const","value":"noopener"},{"type":"const","value":"noreferrer"},{"type":"const","value":"opener"},{"type":"const","value":"prev"},{"type":"const","value":"search"}],"matched":false,"raw":"bookmark","offset":0,"length":8,"line":1,"column":1,"reason":"doesnt-exist-in-enum","partName":"the content of the list"}"#,
+    ),
+    (
+        "LinkTypeForFormElement",
+        "disclosure",
+        r#"{"ref":"https://html.spec.whatwg.org/multipage/links.html#linkTypes","expects":[{"type":"const","value":"external"},{"type":"const","value":"help"},{"type":"const","value":"license"},{"type":"const","value":"next"},{"type":"const","value":"nofollow"},{"type":"const","value":"noopener"},{"type":"const","value":"noreferrer"},{"type":"const","value":"opener"},{"type":"const","value":"prev"},{"type":"const","value":"search"}],"matched":false,"raw":"disclosure","offset":0,"length":10,"line":1,"column":1,"reason":"doesnt-exist-in-enum","partName":"the content of the list"}"#,
+    ),
+    (
+        "LinkTypeForFormElement",
+        "license",
+        r#"{"matched":true}"#,
+    ),
+    (
+        "LinkTypeForFormElement",
+        "self",
+        r#"{"reason":"unexpected-token","expects":[{"type":"common","value":"valid Link Type"}],"matched":false,"ref":"https://html.spec.whatwg.org/multipage/links.html#linkTypes","raw":"self","offset":0,"length":4,"line":1,"column":1}"#,
+    ),
+    (
+        "LinkTypeForFormElement",
+        "sub",
+        r#"{"reason":"unexpected-token","expects":[{"type":"common","value":"valid Link Type"}],"matched":false,"ref":"https://html.spec.whatwg.org/multipage/links.html#linkTypes","raw":"sub","offset":0,"length":3,"line":1,"column":1}"#,
+    ),
+    (
+        "LinkTypeForFormElement",
+        "version-history",
+        r#"{"reason":"unexpected-token","expects":[{"type":"common","value":"valid Link Type"}],"matched":false,"ref":"https://html.spec.whatwg.org/multipage/links.html#linkTypes","raw":"version-history","offset":0,"length":15,"line":1,"column":1}"#,
+    ),
+    (
+        "LinkTypeForFormElement",
+        "latest-version",
+        r#"{"reason":"unexpected-token","expects":[{"type":"common","value":"valid Link Type"}],"matched":false,"ref":"https://html.spec.whatwg.org/multipage/links.html#linkTypes","raw":"latest-version","offset":0,"length":14,"line":1,"column":1}"#,
+    ),
+    (
+        "LinkTypeForFormElement",
+        "banner",
+        r#"{"reason":"unexpected-token","expects":[{"type":"common","value":"valid Link Type"}],"matched":false,"ref":"https://html.spec.whatwg.org/multipage/links.html#linkTypes","raw":"banner","offset":0,"length":6,"line":1,"column":1}"#,
+    ),
+    (
+        "LinkTypeForFormElement",
+        "footnote",
+        r#"{"reason":"unexpected-token","expects":[{"type":"common","value":"valid Link Type"}],"matched":false,"ref":"https://html.spec.whatwg.org/multipage/links.html#linkTypes","raw":"footnote","offset":0,"length":8,"line":1,"column":1}"#,
+    ),
+    (
+        "LinkTypeForFormElement",
+        "first",
+        r#"{"reason":"unexpected-token","expects":[{"type":"common","value":"valid Link Type"}],"matched":false,"ref":"https://html.spec.whatwg.org/multipage/links.html#linkTypes","raw":"first","offset":0,"length":5,"line":1,"column":1}"#,
+    ),
+    (
+        "LinkTypeForFormElement",
+        "alternate logo",
+        r#"{"reason":"unexpected-token","expects":[{"type":"common","value":"valid Link Type"}],"matched":false,"ref":"https://html.spec.whatwg.org/multipage/links.html#linkTypes","raw":"logo","offset":10,"length":4,"line":1,"column":11}"#,
+    ),
+    (
+        "LinkTypeForFormElement",
+        "",
+        r#"{"matched":true}"#,
+    ),
+    (
+        "LinkTypeForFormElement",
+        "   ",
+        r#"{"matched":true}"#,
+    ),
+    (
+        "LinkTypeForFormElement",
+        "acquaintance",
+        r#"{"ref":"https://html.spec.whatwg.org/multipage/links.html#linkTypes","expects":[{"type":"const","value":"external"},{"type":"const","value":"help"},{"type":"const","value":"license"},{"type":"const","value":"next"},{"type":"const","value":"nofollow"},{"type":"const","value":"noopener"},{"type":"const","value":"noreferrer"},{"type":"const","value":"opener"},{"type":"const","value":"prev"},{"type":"const","value":"search"}],"matched":false,"raw":"acquaintance","offset":0,"length":12,"line":1,"column":1,"reason":"doesnt-exist-in-enum","partName":"the content of the list"}"#,
+    ),
+    (
+        "LinkTypeForFormElement",
+        "ALTERNATE",
+        r#"{"ref":"https://html.spec.whatwg.org/multipage/links.html#linkTypes","expects":[{"type":"const","value":"external"},{"type":"const","value":"help"},{"type":"const","value":"license"},{"type":"const","value":"next"},{"type":"const","value":"nofollow"},{"type":"const","value":"noopener"},{"type":"const","value":"noreferrer"},{"type":"const","value":"opener"},{"type":"const","value":"prev"},{"type":"const","value":"search"}],"matched":false,"raw":"ALTERNATE","offset":0,"length":9,"line":1,"column":1,"reason":"doesnt-exist-in-enum","partName":"the content of the list"}"#,
+    ),
+    (
+        "LinkTypeForFormElement",
+        "amphtml",
+        r#"{"ref":"https://html.spec.whatwg.org/multipage/links.html#linkTypes","expects":[{"type":"const","value":"external"},{"type":"const","value":"help"},{"type":"const","value":"license"},{"type":"const","value":"next"},{"type":"const","value":"nofollow"},{"type":"const","value":"noopener"},{"type":"const","value":"noreferrer"},{"type":"const","value":"opener"},{"type":"const","value":"prev"},{"type":"const","value":"search"}],"matched":false,"raw":"amphtml","offset":0,"length":7,"line":1,"column":1,"reason":"doesnt-exist-in-enum","partName":"the content of the list"}"#,
+    ),
+    (
+        "LinkTypeForFormElement",
+        "begin",
+        r#"{"reason":"unexpected-token","expects":[{"type":"common","value":"valid Link Type"}],"matched":false,"ref":"https://html.spec.whatwg.org/multipage/links.html#linkTypes","raw":"begin","offset":0,"length":5,"line":1,"column":1}"#,
+    ),
+    (
+        "LinkTypeForFormElement",
+        "bibliography",
+        r#"{"reason":"unexpected-token","expects":[{"type":"common","value":"valid Link Type"}],"matched":false,"ref":"https://html.spec.whatwg.org/multipage/links.html#linkTypes","raw":"bibliography","offset":0,"length":12,"line":1,"column":1}"#,
+    ),
+    (
+        "LinkTypeForFormElement",
+        "child",
+        r#"{"reason":"unexpected-token","expects":[{"type":"common","value":"valid Link Type"}],"matched":false,"ref":"https://html.spec.whatwg.org/multipage/links.html#linkTypes","raw":"child","offset":0,"length":5,"line":1,"column":1}"#,
+    ),
+    (
+        "LinkTypeForFormElement",
+        "collection",
+        r#"{"reason":"unexpected-token","expects":[{"type":"common","value":"valid Link Type"}],"matched":false,"ref":"https://html.spec.whatwg.org/multipage/links.html#linkTypes","raw":"collection","offset":0,"length":10,"line":1,"column":1}"#,
+    ),
+    (
+        "LinkTypeForFormElement",
+        "DCTERMS.conformsTo",
+        r#"{"ref":"https://html.spec.whatwg.org/multipage/links.html#linkTypes","expects":[{"type":"const","value":"external"},{"type":"const","value":"help"},{"type":"const","value":"license"},{"type":"const","value":"next"},{"type":"const","value":"nofollow"},{"type":"const","value":"noopener"},{"type":"const","value":"noreferrer"},{"type":"const","value":"opener"},{"type":"const","value":"prev"},{"type":"const","value":"search"}],"matched":false,"raw":"DCTERMS.conformsTo","offset":0,"length":18,"line":1,"column":1,"reason":"doesnt-exist-in-enum","partName":"the content of the list"}"#,
+    ),
+    (
+        "LinkTypeForFormElement",
+        "editor",
+        r#"{"reason":"unexpected-token","expects":[{"type":"common","value":"valid Link Type"}],"matched":false,"ref":"https://html.spec.whatwg.org/multipage/links.html#linkTypes","raw":"editor","offset":0,"length":6,"line":1,"column":1}"#,
+    ),
+    (
+        "LinkTypeForFormElement",
+        "external",
+        r#"{"matched":true}"#,
+    ),
+    (
+        "LinkTypeForFormElement",
+        "icon",
+        r#"{"ref":"https://html.spec.whatwg.org/multipage/links.html#linkTypes","expects":[{"type":"const","value":"external"},{"type":"const","value":"help"},{"type":"const","value":"license"},{"type":"const","value":"next"},{"type":"const","value":"nofollow"},{"type":"const","value":"noopener"},{"type":"const","value":"noreferrer"},{"type":"const","value":"opener"},{"type":"const","value":"prev"},{"type":"const","value":"search"}],"matched":false,"raw":"icon","offset":0,"length":4,"line":1,"column":1,"reason":"doesnt-exist-in-enum","partName":"the content of the list"}"#,
+    ),
+    (
+        "LinkTypeForFormElement",
+        "index",
+        r#"{"reason":"unexpected-token","expects":[{"type":"common","value":"valid Link Type"}],"matched":false,"ref":"https://html.spec.whatwg.org/multipage/links.html#linkTypes","raw":"index","offset":0,"length":5,"line":1,"column":1}"#,
+    ),
+    (
+        "LinkTypeForFormElement",
+        "invalid-keyword",
+        r#"{"ref":"https://html.spec.whatwg.org/multipage/links.html#linkTypes","expects":[{"type":"const","value":"external"},{"type":"const","value":"help"},{"type":"const","value":"license"},{"type":"const","value":"next"},{"type":"const","value":"nofollow"},{"type":"const","value":"noopener"},{"type":"const","value":"noreferrer"},{"type":"const","value":"opener"},{"type":"const","value":"prev"},{"type":"const","value":"search"}],"matched":false,"raw":"invalid-keyword","offset":0,"length":15,"line":1,"column":1,"reason":"doesnt-exist-in-enum","partName":"the content of the list"}"#,
+    ),
+    (
+        "LinkTypeForFormElement",
+        "last",
+        r#"{"reason":"unexpected-token","expects":[{"type":"common","value":"valid Link Type"}],"matched":false,"ref":"https://html.spec.whatwg.org/multipage/links.html#linkTypes","raw":"last","offset":0,"length":4,"line":1,"column":1}"#,
+    ),
+    (
+        "LinkTypeForFormElement",
+        "logo",
+        r#"{"reason":"unexpected-token","expects":[{"type":"common","value":"valid Link Type"}],"matched":false,"ref":"https://html.spec.whatwg.org/multipage/links.html#linkTypes","raw":"logo","offset":0,"length":4,"line":1,"column":1}"#,
+    ),
+    (
+        "LinkTypeForFormElement",
+        "manifest",
+        r#"{"ref":"https://html.spec.whatwg.org/multipage/links.html#linkTypes","expects":[{"type":"const","value":"external"},{"type":"const","value":"help"},{"type":"const","value":"license"},{"type":"const","value":"next"},{"type":"const","value":"nofollow"},{"type":"const","value":"noopener"},{"type":"const","value":"noreferrer"},{"type":"const","value":"opener"},{"type":"const","value":"prev"},{"type":"const","value":"search"}],"matched":false,"raw":"manifest","offset":0,"length":8,"line":1,"column":1,"reason":"doesnt-exist-in-enum","partName":"the content of the list"}"#,
+    ),
+    (
+        "LinkTypeForFormElement",
+        "me",
+        r#"{"ref":"https://html.spec.whatwg.org/multipage/links.html#linkTypes","expects":[{"type":"const","value":"external"},{"type":"const","value":"help"},{"type":"const","value":"license"},{"type":"const","value":"next"},{"type":"const","value":"nofollow"},{"type":"const","value":"noopener"},{"type":"const","value":"noreferrer"},{"type":"const","value":"opener"},{"type":"const","value":"prev"},{"type":"const","value":"search"}],"matched":false,"raw":"me","offset":0,"length":2,"line":1,"column":1,"reason":"doesnt-exist-in-enum","partName":"the content of the list"}"#,
+    ),
+    (
+        "LinkTypeForFormElement",
+        "next",
+        r#"{"matched":true}"#,
+    ),
+    (
+        "LinkTypeForFormElement",
+        "nofollow logo",
+        r#"{"reason":"unexpected-token","expects":[{"type":"common","value":"valid Link Type"}],"matched":false,"ref":"https://html.spec.whatwg.org/multipage/links.html#linkTypes","raw":"logo","offset":9,"length":4,"line":1,"column":10}"#,
+    ),
+    (
+        "LinkTypeForFormElement",
+        "nofollow nofollow",
+        r#"{"partName":"the content of the list","reason":"duplicated","ref":"https://html.spec.whatwg.org/multipage/links.html#linkTypes","expects":[{"type":"const","value":"Link types allowed in the `form` element"}],"matched":false,"raw":"nofollow","offset":9,"length":8,"line":1,"column":10}"#,
+    ),
+    (
+        "LinkTypeForFormElement",
+        "NOFOLLOW nofollow",
+        r#"{"partName":"the content of the list","reason":"duplicated","ref":"https://html.spec.whatwg.org/multipage/links.html#linkTypes","expects":[{"type":"const","value":"Link types allowed in the `form` element"}],"matched":false,"raw":"nofollow","offset":9,"length":8,"line":1,"column":10}"#,
+    ),
+    (
+        "LinkTypeForFormElement",
+        "nofollow noopener noreferrer",
+        r#"{"matched":true}"#,
+    ),
+    (
+        "LinkTypeForFormElement",
+        "nofollow noopener",
+        r#"{"matched":true}"#,
+    ),
+    (
+        "LinkTypeForFormElement",
+        "Nofollow Noopener",
+        r#"{"matched":true}"#,
+    ),
+    (
+        "LinkTypeForFormElement",
+        "nofollow",
+        r#"{"matched":true}"#,
+    ),
+    (
+        "LinkTypeForFormElement",
+        "Nofollow",
+        r#"{"matched":true}"#,
+    ),
+    (
+        "LinkTypeForFormElement",
+        "noopener",
+        r#"{"matched":true}"#,
+    ),
+    (
+        "LinkTypeForFormElement",
+        "noreferrer",
+        r#"{"matched":true}"#,
+    ),
+    (
+        "LinkTypeForFormElement",
+        "opener",
+        r#"{"matched":true}"#,
+    ),
+    (
+        "LinkTypeForFormElement",
+        "parent",
+        r#"{"reason":"unexpected-token","expects":[{"type":"common","value":"valid Link Type"}],"matched":false,"ref":"https://html.spec.whatwg.org/multipage/links.html#linkTypes","raw":"parent","offset":0,"length":6,"line":1,"column":1}"#,
+    ),
+    (
+        "LinkTypeForFormElement",
+        "pavatar",
+        r#"{"reason":"unexpected-token","expects":[{"type":"common","value":"valid Link Type"}],"matched":false,"ref":"https://html.spec.whatwg.org/multipage/links.html#linkTypes","raw":"pavatar","offset":0,"length":7,"line":1,"column":1}"#,
+    ),
+    (
+        "LinkTypeForFormElement",
+        "preconnect",
+        r#"{"ref":"https://html.spec.whatwg.org/multipage/links.html#linkTypes","expects":[{"type":"const","value":"external"},{"type":"const","value":"help"},{"type":"const","value":"license"},{"type":"const","value":"next"},{"type":"const","value":"nofollow"},{"type":"const","value":"noopener"},{"type":"const","value":"noreferrer"},{"type":"const","value":"opener"},{"type":"const","value":"prev"},{"type":"const","value":"search"}],"matched":false,"raw":"preconnect","offset":0,"length":10,"line":1,"column":1,"reason":"doesnt-exist-in-enum","partName":"the content of the list"}"#,
+    ),
+    (
+        "LinkTypeForFormElement",
+        "prefetch",
+        r#"{"ref":"https://html.spec.whatwg.org/multipage/links.html#linkTypes","expects":[{"type":"const","value":"external"},{"type":"const","value":"help"},{"type":"const","value":"license"},{"type":"const","value":"next"},{"type":"const","value":"nofollow"},{"type":"const","value":"noopener"},{"type":"const","value":"noreferrer"},{"type":"const","value":"opener"},{"type":"const","value":"prev"},{"type":"const","value":"search"}],"matched":false,"raw":"prefetch","offset":0,"length":8,"line":1,"column":1,"reason":"doesnt-exist-in-enum","partName":"the content of the list"}"#,
+    ),
+    (
+        "LinkTypeForFormElement",
+        "preload",
+        r#"{"ref":"https://html.spec.whatwg.org/multipage/links.html#linkTypes","expects":[{"type":"const","value":"external"},{"type":"const","value":"help"},{"type":"const","value":"license"},{"type":"const","value":"next"},{"type":"const","value":"nofollow"},{"type":"const","value":"noopener"},{"type":"const","value":"noreferrer"},{"type":"const","value":"opener"},{"type":"const","value":"prev"},{"type":"const","value":"search"}],"matched":false,"raw":"preload","offset":0,"length":7,"line":1,"column":1,"reason":"doesnt-exist-in-enum","partName":"the content of the list"}"#,
+    ),
+    (
+        "LinkTypeForFormElement",
+        "prev",
+        r#"{"matched":true}"#,
+    ),
+    (
+        "LinkTypeForFormElement",
+        "privacy-policy",
+        r#"{"ref":"https://html.spec.whatwg.org/multipage/links.html#linkTypes","expects":[{"type":"const","value":"external"},{"type":"const","value":"help"},{"type":"const","value":"license"},{"type":"const","value":"next"},{"type":"const","value":"nofollow"},{"type":"const","value":"noopener"},{"type":"const","value":"noreferrer"},{"type":"const","value":"opener"},{"type":"const","value":"prev"},{"type":"const","value":"search"}],"matched":false,"raw":"privacy-policy","offset":0,"length":14,"line":1,"column":1,"reason":"doesnt-exist-in-enum","partName":"the content of the list"}"#,
+    ),
+    (
+        "LinkTypeForFormElement",
+        "publisher",
+        r#"{"reason":"unexpected-token","expects":[{"type":"common","value":"valid Link Type"}],"matched":false,"ref":"https://html.spec.whatwg.org/multipage/links.html#linkTypes","raw":"publisher","offset":0,"length":9,"line":1,"column":1}"#,
+    ),
+    (
+        "LinkTypeForFormElement",
+        "schema.DC",
+        r#"{"ref":"https://html.spec.whatwg.org/multipage/links.html#linkTypes","expects":[{"type":"const","value":"external"},{"type":"const","value":"help"},{"type":"const","value":"license"},{"type":"const","value":"next"},{"type":"const","value":"nofollow"},{"type":"const","value":"noopener"},{"type":"const","value":"noreferrer"},{"type":"const","value":"opener"},{"type":"const","value":"prev"},{"type":"const","value":"search"}],"matched":false,"raw":"schema.DC","offset":0,"length":9,"line":1,"column":1,"reason":"doesnt-exist-in-enum","partName":"the content of the list"}"#,
+    ),
+    (
+        "LinkTypeForFormElement",
+        "search",
+        r#"{"matched":true}"#,
+    ),
+    (
+        "LinkTypeForFormElement",
+        "shadowbox",
+        r#"{"reason":"unexpected-token","expects":[{"type":"common","value":"valid Link Type"}],"matched":false,"ref":"https://html.spec.whatwg.org/multipage/links.html#linkTypes","raw":"shadowbox","offset":0,"length":9,"line":1,"column":1}"#,
+    ),
+    (
+        "LinkTypeForFormElement",
+        "sibling",
+        r#"{"reason":"unexpected-token","expects":[{"type":"common","value":"valid Link Type"}],"matched":false,"ref":"https://html.spec.whatwg.org/multipage/links.html#linkTypes","raw":"sibling","offset":0,"length":7,"line":1,"column":1}"#,
+    ),
+    (
+        "LinkTypeForFormElement",
+        "sitemap",
+        r#"{"reason":"unexpected-token","expects":[{"type":"common","value":"valid Link Type"}],"matched":false,"ref":"https://html.spec.whatwg.org/multipage/links.html#linkTypes","raw":"sitemap","offset":0,"length":7,"line":1,"column":1}"#,
+    ),
+    (
+        "LinkTypeForFormElement",
+        "stylesheet alternate",
+        r#"{"ref":"https://html.spec.whatwg.org/multipage/links.html#linkTypes","expects":[{"type":"const","value":"external"},{"type":"const","value":"help"},{"type":"const","value":"license"},{"type":"const","value":"next"},{"type":"const","value":"nofollow"},{"type":"const","value":"noopener"},{"type":"const","value":"noreferrer"},{"type":"const","value":"opener"},{"type":"const","value":"prev"},{"type":"const","value":"search"}],"matched":false,"raw":"stylesheet","offset":0,"length":10,"line":1,"column":1,"reason":"doesnt-exist-in-enum","partName":"the content of the list"}"#,
+    ),
+    (
+        "LinkTypeForFormElement",
+        "stylesheet self",
+        r#"{"reason":"unexpected-token","expects":[{"type":"common","value":"valid Link Type"}],"matched":false,"ref":"https://html.spec.whatwg.org/multipage/links.html#linkTypes","raw":"self","offset":11,"length":4,"line":1,"column":12}"#,
+    ),
+    (
+        "LinkTypeForFormElement",
+        "stylesheet",
+        r#"{"ref":"https://html.spec.whatwg.org/multipage/links.html#linkTypes","expects":[{"type":"const","value":"external"},{"type":"const","value":"help"},{"type":"const","value":"license"},{"type":"const","value":"next"},{"type":"const","value":"nofollow"},{"type":"const","value":"noopener"},{"type":"const","value":"noreferrer"},{"type":"const","value":"opener"},{"type":"const","value":"prev"},{"type":"const","value":"search"}],"matched":false,"raw":"stylesheet","offset":0,"length":10,"line":1,"column":1,"reason":"doesnt-exist-in-enum","partName":"the content of the list"}"#,
+    ),
+    (
+        "LinkTypeForFormElement",
+        "STYLESHEET",
+        r#"{"ref":"https://html.spec.whatwg.org/multipage/links.html#linkTypes","expects":[{"type":"const","value":"external"},{"type":"const","value":"help"},{"type":"const","value":"license"},{"type":"const","value":"next"},{"type":"const","value":"nofollow"},{"type":"const","value":"noopener"},{"type":"const","value":"noreferrer"},{"type":"const","value":"opener"},{"type":"const","value":"prev"},{"type":"const","value":"search"}],"matched":false,"raw":"STYLESHEET","offset":0,"length":10,"line":1,"column":1,"reason":"doesnt-exist-in-enum","partName":"the content of the list"}"#,
+    ),
+    (
+        "LinkTypeForFormElement",
+        "tag",
+        r#"{"ref":"https://html.spec.whatwg.org/multipage/links.html#linkTypes","expects":[{"type":"const","value":"external"},{"type":"const","value":"help"},{"type":"const","value":"license"},{"type":"const","value":"next"},{"type":"const","value":"nofollow"},{"type":"const","value":"noopener"},{"type":"const","value":"noreferrer"},{"type":"const","value":"opener"},{"type":"const","value":"prev"},{"type":"const","value":"search"}],"matched":false,"raw":"tag","offset":0,"length":3,"line":1,"column":1,"reason":"doesnt-exist-in-enum","partName":"the content of the list"}"#,
+    ),
+    (
+        "LinkTypeForFormElement",
+        "terms-of-service",
+        r#"{"ref":"https://html.spec.whatwg.org/multipage/links.html#linkTypes","expects":[{"type":"const","value":"external"},{"type":"const","value":"help"},{"type":"const","value":"license"},{"type":"const","value":"next"},{"type":"const","value":"nofollow"},{"type":"const","value":"noopener"},{"type":"const","value":"noreferrer"},{"type":"const","value":"opener"},{"type":"const","value":"prev"},{"type":"const","value":"search"}],"matched":false,"raw":"terms-of-service","offset":0,"length":16,"line":1,"column":1,"reason":"doesnt-exist-in-enum","partName":"the content of the list"}"#,
+    ),
+    (
+        "LinkTypeForFormElement",
+        "top",
+        r#"{"reason":"unexpected-token","expects":[{"type":"common","value":"valid Link Type"}],"matched":false,"ref":"https://html.spec.whatwg.org/multipage/links.html#linkTypes","raw":"top","offset":0,"length":3,"line":1,"column":1}"#,
+    ),
+    (
+        "LinkTypeForFormElement",
+        "up",
+        r#"{"reason":"unexpected-token","expects":[{"type":"common","value":"valid Link Type"}],"matched":false,"ref":"https://html.spec.whatwg.org/multipage/links.html#linkTypes","raw":"up","offset":0,"length":2,"line":1,"column":1}"#,
+    ),
+    (
+        "LinkTypeForFormElement",
+        "webmention",
+        r#"{"ref":"https://html.spec.whatwg.org/multipage/links.html#linkTypes","expects":[{"type":"const","value":"external"},{"type":"const","value":"help"},{"type":"const","value":"license"},{"type":"const","value":"next"},{"type":"const","value":"nofollow"},{"type":"const","value":"noopener"},{"type":"const","value":"noreferrer"},{"type":"const","value":"opener"},{"type":"const","value":"prev"},{"type":"const","value":"search"}],"matched":false,"raw":"webmention","offset":0,"length":10,"line":1,"column":1,"reason":"doesnt-exist-in-enum","partName":"the content of the list"}"#,
+    ),
+    (
+        "LinkTypeForFormElement",
+        "youtube",
+        r#"{"reason":"unexpected-token","expects":[{"type":"common","value":"valid Link Type"}],"matched":false,"ref":"https://html.spec.whatwg.org/multipage/links.html#linkTypes","raw":"youtube","offset":0,"length":7,"line":1,"column":1}"#,
+    ),
+    (
+        "LinkTypeForFormElement",
+        "subsection",
+        r#"{"reason":"unexpected-token","expects":[{"type":"common","value":"valid Link Type"}],"matched":false,"ref":"https://html.spec.whatwg.org/multipage/links.html#linkTypes","raw":"subsection","offset":0,"length":10,"line":1,"column":1}"#,
+    ),
+    (
+        "LinkTypeForFormElement",
+        "Self",
+        r#"{"ref":"https://html.spec.whatwg.org/multipage/links.html#linkTypes","expects":[{"type":"const","value":"external"},{"type":"const","value":"help"},{"type":"const","value":"license"},{"type":"const","value":"next"},{"type":"const","value":"nofollow"},{"type":"const","value":"noopener"},{"type":"const","value":"noreferrer"},{"type":"const","value":"opener"},{"type":"const","value":"prev"},{"type":"const","value":"search"}],"matched":false,"raw":"Self","offset":0,"length":4,"line":1,"column":1,"reason":"doesnt-exist-in-enum","partName":"the content of the list"}"#,
+    ),
+    (
+        "LinkTypeForFormElement",
+        "friend",
+        r#"{"reason":"unexpected-token","expects":[{"type":"common","value":"valid Link Type"}],"matched":false,"ref":"https://html.spec.whatwg.org/multipage/links.html#linkTypes","raw":"friend","offset":0,"length":6,"line":1,"column":1}"#,
+    ),
+    (
+        "LinkTypeForFormElement",
+        "enclosure",
+        r#"{"ref":"https://html.spec.whatwg.org/multipage/links.html#linkTypes","expects":[{"type":"const","value":"external"},{"type":"const","value":"help"},{"type":"const","value":"license"},{"type":"const","value":"next"},{"type":"const","value":"nofollow"},{"type":"const","value":"noopener"},{"type":"const","value":"noreferrer"},{"type":"const","value":"opener"},{"type":"const","value":"prev"},{"type":"const","value":"search"}],"matched":false,"raw":"enclosure","offset":0,"length":9,"line":1,"column":1,"reason":"doesnt-exist-in-enum","partName":"the content of the list"}"#,
+    ),
+    (
+        "LinkTypeForFormElement",
+        "vcs-*",
+        r#"{"ref":"https://html.spec.whatwg.org/multipage/links.html#linkTypes","expects":[{"type":"const","value":"external"},{"type":"const","value":"help"},{"type":"const","value":"license"},{"type":"const","value":"next"},{"type":"const","value":"nofollow"},{"type":"const","value":"noopener"},{"type":"const","value":"noreferrer"},{"type":"const","value":"opener"},{"type":"const","value":"prev"},{"type":"const","value":"search"}],"matched":false,"raw":"vcs-*","offset":0,"length":5,"line":1,"column":1,"reason":"doesnt-exist-in-enum","partName":"the content of the list"}"#,
+    ),
+    (
+        "LinkTypeForFormElement",
+        " stylesheet ",
+        r#"{"ref":"https://html.spec.whatwg.org/multipage/links.html#linkTypes","expects":[{"type":"const","value":"external"},{"type":"const","value":"help"},{"type":"const","value":"license"},{"type":"const","value":"next"},{"type":"const","value":"nofollow"},{"type":"const","value":"noopener"},{"type":"const","value":"noreferrer"},{"type":"const","value":"opener"},{"type":"const","value":"prev"},{"type":"const","value":"search"}],"matched":false,"raw":"stylesheet","offset":1,"length":10,"line":1,"column":2,"reason":"doesnt-exist-in-enum","partName":"the content of the list"}"#,
+    ),
+    (
+        "LinkTypeForFormElement",
+        "stylesheet\nicon",
+        r#"{"ref":"https://html.spec.whatwg.org/multipage/links.html#linkTypes","expects":[{"type":"const","value":"external"},{"type":"const","value":"help"},{"type":"const","value":"license"},{"type":"const","value":"next"},{"type":"const","value":"nofollow"},{"type":"const","value":"noopener"},{"type":"const","value":"noreferrer"},{"type":"const","value":"opener"},{"type":"const","value":"prev"},{"type":"const","value":"search"}],"matched":false,"raw":"stylesheet","offset":0,"length":10,"line":1,"column":1,"reason":"doesnt-exist-in-enum","partName":"the content of the list"}"#,
+    ),
+    (
+        "LinkTypeForFormElement",
+        "Stylesheet stylesheet",
+        r#"{"partName":"the content of the list","reason":"duplicated","ref":"https://html.spec.whatwg.org/multipage/links.html#linkTypes","expects":[{"type":"const","value":"Link types allowed in the `form` element"}],"matched":false,"raw":"stylesheet","offset":11,"length":10,"line":1,"column":12}"#,
+    ),
+];

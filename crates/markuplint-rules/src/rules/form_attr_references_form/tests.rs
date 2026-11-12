@@ -115,20 +115,21 @@ fn v6_form_attr_references_form_002() {
     );
 }
 
-/// An empty `form` resolves to an element with an empty `id`.
+/// An empty `form` resolves to no element: an empty `id` is no id of the tree. Expected value is
+/// the TS output.
 #[test]
 fn v6_form_attr_references_form_003() {
-    assert_eq!(
-        run(r#"<div id=""></div><input form="">"#),
-        [brief(Severity::Error, 1, 31, MESSAGE, "")]
-    );
+    assert_eq!(run(r#"<div id=""></div><input form="">"#), []);
 }
 
-/// TS `getAttributeNode('form')` compares the source name as is, so an upper-case
-/// `FORM` is not found.
+/// `FORM` is the `form` attribute of an HTML element, as the DOM names it (TS
+/// `getAttributeNode()` asks `MLAttr#isNamedBy`, #4309).
 #[test]
 fn v6_form_attr_references_form_004() {
-    assert_eq!(run(r#"<div id="x"></div><input FORM="x">"#), []);
+    assert_eq!(
+        run(r#"<div id="x"></div><input FORM="x">"#),
+        [brief(Severity::Error, 1, 32, MESSAGE, "x")]
+    );
 }
 
 /// A pretended element without the `as` attribute is skipped; with it, it is checked.

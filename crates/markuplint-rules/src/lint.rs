@@ -284,7 +284,7 @@ fn run_rules(arena: &DomArena, spec: &MLMLSpec, config: &LintConfig, rules: &[Bo
                 RuleConfigSet::global_only(global_config)
             }
             .with_common_settings(common_settings.clone());
-            let rule_violations = diagnostic::in_rule(base_id, || rule.verify(arena, spec, &config_set));
+            let rule_violations = verify_rule(rule.as_ref(), base_id, arena, spec, &config_set);
             violations.extend(rule_violations);
             continue;
         };
@@ -310,7 +310,7 @@ fn run_rules(arena: &DomArena, spec: &MLMLSpec, config: &LintConfig, rules: &[Bo
                 rule.default_severity(),
             )
             .with_common_settings(common_settings.clone());
-            let rule_violations = diagnostic::in_rule(base_id, || rule.verify(arena, spec, &config_set));
+            let rule_violations = verify_rule(rule.as_ref(), base_id, arena, spec, &config_set);
             violations.extend(rule_violations);
         }
 
@@ -345,7 +345,7 @@ fn run_rules(arena: &DomArena, spec: &MLMLSpec, config: &LintConfig, rules: &[Bo
             }
             .with_common_settings(common_settings.clone());
 
-            let mut rule_violations = diagnostic::in_rule(base_id, || rule.verify(arena, spec, &config_set));
+            let mut rule_violations = verify_rule(rule.as_ref(), base_id, arena, spec, &config_set);
 
             // If the config key has a namespace prefix, set the alias name
             // (TS keeps ruleId as the base rule name, alias goes in the `name` field)
@@ -520,13 +520,31 @@ fn run_named_entries(
             };
             let config_set = config_set.with_common_settings(common_settings.clone());
 
-            let mut rule_violations = diagnostic::in_rule(base_rule_id, || rule.verify(arena, spec, &config_set));
+            let mut rule_violations = verify_rule(rule, base_rule_id, arena, spec, &config_set);
             for v in &mut rule_violations {
                 v.name = Some(alias_name.clone());
             }
             violations.extend(rule_violations);
         }
     }
+}
+
+/// Runs `rule` and resolves the `reason` of each violation as TS `resolveMessageAndReason` does:
+/// with `reasonOnly`, the reason is the message and does not go with it.
+fn verify_rule(
+    rule: &dyn Rule,
+    rule_id: &str,
+    arena: &DomArena,
+    spec: &MLMLSpec,
+    config_set: &RuleConfigSet,
+) -> Vec<Violation> {
+    let mut violations = diagnostic::in_rule(rule_id, || rule.verify(arena, spec, config_set));
+    for violation in &mut violations {
+        if let Some(reason) = violation.reason.take_if(|reason| config_set.is_reason_only(reason)) {
+            violation.message = reason;
+        }
+    }
+    violations
 }
 
 /// # Errors
@@ -648,12 +666,14 @@ pub fn parse_rule_config(value: &Value) -> Option<RuleConfig> {
             let rule_value = obj.get("value").cloned().unwrap_or(Value::Bool(true));
             let options = obj.get("options").cloned().unwrap_or(Value::Null);
             let reason = obj.get("reason").and_then(|v| v.as_str()).map(String::from);
+            let reason_only = obj.get("reasonOnly").and_then(Value::as_bool);
             Some(RuleConfig {
                 severity,
                 value: rule_value,
                 options,
                 disabled: false,
                 reason,
+                reason_only,
             })
         }
         // Arrays and other JSON values are treated as the rule value

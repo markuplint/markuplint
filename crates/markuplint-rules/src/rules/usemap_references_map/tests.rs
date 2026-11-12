@@ -10,7 +10,7 @@
 //!   v6_usemap_references_map_001  — Rust-only: a value that is not a hash-name reference is not checked
 //!   v6_usemap_references_map_002  — Rust-only: an img pretended by a pretender is skipped, one with the `as` attribute is checked
 //!   v6_usemap_references_map_003  — Rust-only: a pretended map is found by the `name` it carries
-//!   v6_usemap_references_map_004  — Rust-only: `usemap` is looked up by its source name, `name` case-insensitively
+//!   v6_usemap_references_map_004  — Rust-only: `usemap` and `name` are looked up as the DOM names them
 //!   v6_usemap_references_map_005  — Rust-only: the name comparison is case-sensitive, and any map with the name resolves
 
 use crate::test_util::{Brief, brief, lint_brief};
@@ -121,11 +121,14 @@ fn v6_usemap_references_map_003() {
     );
 }
 
-/// TS `getAttributeNode('usemap')` compares the source name as is, so `USEMAP` is not
-/// found; `getAttribute('name')` matches case-insensitively, so `NAME` is.
+/// `USEMAP` and `NAME` are the `usemap` and `name` attributes of an HTML element, as the DOM
+/// names them (TS `getAttributeNode()` asks `MLAttr#isNamedBy`, #4309).
 #[test]
 fn v6_usemap_references_map_004() {
-    assert_eq!(run(r##"<img USEMAP="#a">"##), []);
+    assert_eq!(
+        run(r##"<img USEMAP="#a">"##),
+        [brief(Severity::Error, 1, 14, MESSAGE, "#a")]
+    );
     assert_eq!(run(r##"<img usemap="#a"><map NAME="a"></map>"##), []);
 }
 

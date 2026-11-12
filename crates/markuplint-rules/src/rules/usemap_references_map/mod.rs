@@ -10,12 +10,14 @@
 //! <https://html.spec.whatwg.org/multipage/common-microsyntaxes.html#valid-hash-name-reference>
 
 use markuplint_dom::arena::DomArena;
-use markuplint_dom::helpers::{get_attr_node_from_el, get_attr_value_from_el};
+use markuplint_dom::helpers::get_attr_node_from_el;
+use markuplint_dom::node::DomNode;
 use markuplint_selector::{matcher, parser};
 use markuplint_types::spec::types::MLMLSpec;
 
 use crate::helpers::is_pretender_without_as_attr;
 use crate::rule::{Rule, RuleConfigSet};
+use crate::tree_scope::{Trees, dom_value};
 use crate::violation::Violation;
 
 #[cfg(test)]
@@ -32,6 +34,7 @@ impl Rule for UsemapReferencesMap {
         // TS `document.querySelectorAll('map')`.
         let map_selector = parser::parse("map").expect("a valid built-in selector");
         let mut violations = Vec::new();
+        let trees = Trees::new(arena, spec);
 
         for (node_id, el) in arena.elements() {
             let rule_config = config.get(node_id);
@@ -50,16 +53,26 @@ impl Rule for UsemapReferencesMap {
             if usemap_attr.is_dynamic_value == Some(true) {
                 continue;
             }
-            let Some(target_name) = markuplint_dom::helpers::attr_value(usemap_attr)
-                .strip_prefix('#')
-                .filter(|name| !name.is_empty())
-            else {
+            // The character references are resolved on both sides, as the DOM has the strings
+            let value =
+                dom_value(usemap_attr).unwrap_or_else(|| markuplint_dom::helpers::attr_value(usemap_attr).to_owned());
+            let Some(target_name) = value.strip_prefix('#').filter(|name| !name.is_empty()) else {
                 continue;
             };
 
-            let resolved = arena.elements().any(|(map_id, map)| {
-                matcher::matches(&map_selector, arena, map_id, None, Some(spec), None)
-                    && get_attr_value_from_el(map, "name") == Some(target_name)
+            // The map is looked for in the tree of the image
+            let resolved = trees.elements_in_tree_of(node_id).iter().any(|&map_id| {
+                let Some(map) = arena.get(map_id).and_then(DomNode::as_element) else {
+                    return false;
+                };
+                if !matcher::matches(&map_selector, arena, map_id, None, Some(spec), None) {
+                    return false;
+                }
+                let Some(name) = get_attr_node_from_el(map, "name") else {
+                    return false;
+                };
+                // A name that is not known until it is rendered may be the one that the reference means
+                name.is_dynamic_value == Some(true) || dom_value(name).as_deref() == Some(target_name)
             });
             if resolved {
                 continue;
@@ -73,7 +86,7 @@ impl Rule for UsemapReferencesMap {
                 line: usemap_attr.value.line,
                 col: usemap_attr.value.col,
                 raw: usemap_attr.value.raw.clone(),
-                reason: None,
+                reason: rule_config.reason.clone(),
                 fix: None,
             });
         }

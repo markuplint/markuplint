@@ -8,12 +8,13 @@
 //! <https://html.spec.whatwg.org/multipage/form-control-infrastructure.html#attr-fae-form>
 
 use markuplint_dom::arena::DomArena;
-use markuplint_dom::helpers::{find_element_by_id, get_attr_node_from_el};
+use markuplint_dom::helpers::get_attr_node_from_el;
 use markuplint_selector::{matcher, parser};
 use markuplint_types::spec::types::MLMLSpec;
 
 use crate::helpers::is_pretender_without_as_attr;
 use crate::rule::{Rule, RuleConfigSet};
+use crate::tree_scope::{Trees, is_expression};
 use crate::violation::Violation;
 
 #[cfg(test)]
@@ -33,6 +34,7 @@ impl Rule for FormAttrReferencesForm {
     }
 
     fn verify(&self, arena: &DomArena, spec: &MLMLSpec, config: &RuleConfigSet) -> Vec<Violation> {
+        let trees = Trees::new(arena, spec);
         let selector = parser::parse(FORM_ASSOCIATED_SELECTOR).expect("a valid built-in selector");
         let mut violations = Vec::new();
 
@@ -55,7 +57,12 @@ impl Rule for FormAttrReferencesForm {
             }
 
             // An unresolved ID is left to `no-refer-to-non-existent-id`.
-            let Some(target) = find_element_by_id(arena, markuplint_dom::helpers::attr_value(form_attr))
+            let Some(target) = trees
+                .element_by_id_in_tree(
+                    node_id,
+                    markuplint_dom::helpers::attr_value(form_attr),
+                    is_expression(form_attr),
+                )
                 .and_then(|id| arena.get(id))
                 .and_then(|n| n.as_element())
             else {
@@ -74,7 +81,7 @@ impl Rule for FormAttrReferencesForm {
                 line: form_attr.value.line,
                 col: form_attr.value.col,
                 raw: form_attr.value.raw.clone(),
-                reason: None,
+                reason: rule_config.reason.clone(),
                 fix: None,
             });
         }

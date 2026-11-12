@@ -7,7 +7,7 @@
 //!   no-input-file-value-invalid-001  → no_input_file_value_invalid_001
 //!   no-input-file-value-invalid-002  → no_input_file_value_invalid_002
 //!   v6_no_input_file_value_001       — Rust-only: only an exact empty string passes; position follows the value
-//!   v6_no_input_file_value_002       — Rust-only: attribute names are matched as written, the type value is not trimmed
+//!   v6_no_input_file_value_002       — Rust-only: attribute names are matched as the DOM names them, the type value is not trimmed
 //!   v6_no_input_file_value_003       — Rust-only: a pretender input is skipped unless `as` pins it
 //!
 //! Expected values of the `v6_*` tests come from running the TS rule.
@@ -92,8 +92,9 @@ fn v6_no_input_file_value_001() {
 /// found), and the `type` value is compared without trimming.
 #[test]
 fn v6_no_input_file_value_002() {
-    assert_eq!(run(r#"<input TYPE="file" value="x">"#), []);
-    assert_eq!(run(r#"<input type="file" VALUE="x">"#), []);
+    let file_value = [brief(Severity::Error, 1, 27, MESSAGE, "x")];
+    assert_eq!(run(r#"<input TYPE="file" value="x">"#), file_value);
+    assert_eq!(run(r#"<input type="file" VALUE="x">"#), file_value);
     assert_eq!(run(r#"<input type=" file" value="x">"#), []);
 }
 

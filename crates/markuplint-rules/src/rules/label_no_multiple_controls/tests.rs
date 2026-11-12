@@ -216,9 +216,13 @@ fn v6_label_no_multiple_controls_005() {
     );
 }
 
-/// TS `getAttributeNode('for')` compares the source name as is, so an upper-case `FOR`
-/// is not found and the label falls back to its descendants.
+/// `FOR` is the `for` attribute of an HTML element, as the DOM names it (TS
+/// `getAttributeNode()` asks `MLAttr#isNamedBy`, #4309), so the label references the external
+/// control.
 #[test]
 fn v6_label_no_multiple_controls_006() {
-    assert_eq!(run(r#"<input id="x"><label FOR="x"><input></label>"#), []);
+    assert_eq!(
+        run(r#"<input id="x"><label FOR="x"><input></label>"#),
+        [brief(Severity::Error, 1, 30, EXTERNAL, "<input>")]
+    );
 }

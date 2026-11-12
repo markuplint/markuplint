@@ -5,16 +5,15 @@
 //!   permitted-contents-invalid-024          — v6_permitted_contents_020
 //!   permitted-contents-invalid-025          — v6_permitted_contents_021
 //!   permitted-contents-issue-1848           — v6_permitted_contents_022
-//!   permitted-contents-issue-3739-*         — SKIP: user tag rules (`rule: [{ tag }]`) are not accepted by the Rust rule
 //!   v6_permitted_contents_023               — Rust-only: the children are the TS `childNodes` (`{#each}` blocks read through)
 //!   permitted-contents-issue-3635-003/002/006 — v6_permitted_contents_024..026 (`#nonEmptyText`)
 //!   permitted-contents-issue-3635-001/004/005 — v6_permitted_contents_027..029
-//!   v6_permitted_contents_030               — Rust-only: U+3000 is whitespace for `#nonEmptyText`
+//!   v6_permitted_contents_030               — Rust-only: U+3000 is text for `#nonEmptyText`
 
 use super::*;
 use crate::rule::{RuleConfig, RuleConfigSet};
 use crate::rules::no_duplicate_attr::tests::make_element_with_attrs;
-use markuplint_core::mlast::{ElementType, MLASTHTMLAttr, MLASTToken, NamespaceURI};
+use markuplint_core::mlast::{ElementType, NamespaceURI};
 use markuplint_dom::arena::DomArenaBuilder;
 use markuplint_dom::node::{DocumentData, ElementData, NodeBase, TextData};
 use markuplint_types::spec::load_spec;
@@ -352,21 +351,13 @@ fn empty_details_requires_summary_fails() {
     assert!(!v.is_empty(), "empty details should fail (summary required)");
 }
 
-/// SVG elements in #flow use namespace prefix "svg|svg" in spec data.
-/// matches_model_ref now handles namespace prefixes, so svg is recognized.
+/// The `svg` element is flow content by the entry `svg|svg` of the spec, which names it with its
+/// namespace.
 #[test]
 fn svg_namespace_resolved() {
-    let s = spec();
-    let (arena, _) = make_parent_children("div", &[("svg", &[])]);
-    let rule = PermittedContents;
-    let violations = rule.verify(&arena, &s, &RuleConfigSet::global_only(RuleConfig::default()));
-    let v: Vec<_> = violations
-        .iter()
-        .filter(|v| v.rule_id == "permitted-contents" && v.message.contains("div"))
-        .collect();
-    assert!(
-        v.is_empty(),
-        "svg should be recognized as flow content via namespace prefix"
+    assert_eq!(
+        lint_pretended("<div><svg></svg></div>", serde_json::json!(true), serde_json::json!([])),
+        []
     );
 }
 
@@ -375,7 +366,7 @@ fn svg_namespace_resolved() {
 fn svg_prefixed_name_has_content_model() {
     let s = spec();
     // Spec registers SVG as "svg:svg", not "svg"
-    let cm = content_model::get_content_model(&s, "svg:svg");
+    let cm = markuplint_types::spec::content_model::get_content_model(&s, "svg:svg");
     assert!(cm.is_some(), "svg:svg should have content model in spec");
 }
 
@@ -454,453 +445,6 @@ fn void_element_whitespace_only_valid() {
     let violations = rule.verify(&arena, &s, &RuleConfigSet::global_only(RuleConfig::default()));
     let br_v: Vec<_> = violations.iter().filter(|v| v.raw == "<br>").collect();
     assert!(br_v.is_empty(), "br with whitespace-only text should be valid");
-}
-
-/// Void element with real text content: should fail.
-#[test]
-fn void_element_with_text_is_non_empty() {
-    let children = vec![ChildNodeInfo::text("hello")];
-    let non_empty = children
-        .iter()
-        .any(|c| !matches!(c.kind, ChildNodeKind::Text { is_whitespace: true }));
-    assert!(non_empty, "non-whitespace text should count as content");
-}
-
-/// Debug: transparent constraint matching for button against :not(:model(interactive), ...)
-#[test]
-fn transparent_constraint_rejects_interactive() {
-    let s = spec();
-    let constraint = ":not(:model(interactive), a, [tabindex], :has(:model(interactive), a, [tabindex]))";
-
-    let expanded = crate::content_model::matching::expand_model_refs(constraint, &s);
-    let selector = markuplint_selector::parser::parse(&expanded).unwrap();
-
-    let child = ChildNodeInfo::element("button");
-    let bridge = crate::content_model::arena_bridge::build_arena("div", std::slice::from_ref(&child));
-    let node_id = bridge.child_ids[0];
-
-    let result = markuplint_selector::matcher::matches(&selector, &bridge.arena, node_id, None, None, None);
-    // button is interactive → :not(interactive) should be false
-    assert!(!result, "button should NOT match :not(:model(interactive), ...)");
-}
-
-// --- strip_has_from_constraint ---
-
-#[test]
-fn strip_has_basic() {
-    assert_eq!(
-        strip_has_from_constraint(":not(:model(interactive), a, [tabindex], :has(:model(interactive), a, [tabindex]))"),
-        ":not(:model(interactive), a, [tabindex])"
-    );
-}
-
-#[test]
-fn strip_has_no_has() {
-    assert_eq!(
-        strip_has_from_constraint(":not(:model(interactive), a)"),
-        ":not(:model(interactive), a)"
-    );
-}
-
-#[test]
-fn strip_has_wildcard() {
-    assert_eq!(strip_has_from_constraint("*"), "*");
-}
-
-// --- spec_lookup_name ---
-
-#[test]
-fn spec_lookup_html() {
-    assert_eq!(spec_lookup_name(&NamespaceURI::XHTML, "div"), "div");
-}
-
-#[test]
-fn spec_lookup_svg() {
-    assert_eq!(spec_lookup_name(&NamespaceURI::SVG, "a"), "svg:a");
-}
-
-#[test]
-fn spec_lookup_mathml() {
-    assert_eq!(
-        spec_lookup_name(&markuplint_core::mlast::NamespaceURI::MathML, "mfrac"),
-        "mml:mfrac"
-    );
-}
-
-// --- all_optional with transparent ---
-
-#[test]
-fn all_optional_transparent_is_optional() {
-    let patterns = vec![PermittedContentPattern::Transparent(TransparentPattern {
-        transparent: "*".to_string(),
-    })];
-    assert!(all_optional(&patterns));
-}
-
-// --- matches_model_ref_with_attrs (via E2E for meta) ---
-
-#[test]
-fn meta_without_itemprop_not_flow() {
-    let s = spec();
-    let meta = ChildNodeInfo {
-        kind: ChildNodeKind::HtmlElement,
-        node_name: "meta".to_string(),
-        raw: "<meta>".to_string(),
-        line: 0,
-        col: 0,
-        child_nodes: vec![],
-        attribute_names: vec!["content".to_string()],
-        transparent_ancestor: None,
-    };
-    // meta without itemprop should NOT match :model(flow)
-    let matched = crate::content_model::matching::matches_selector(":model(flow)", Some(&meta), 1, &s);
-    assert!(
-        !matched.result_type.is_matched(),
-        "meta without itemprop should not match #flow"
-    );
-}
-
-#[test]
-fn meta_with_itemprop_is_flow() {
-    let s = spec();
-    let meta = ChildNodeInfo {
-        kind: ChildNodeKind::HtmlElement,
-        node_name: "meta".to_string(),
-        raw: "<meta>".to_string(),
-        line: 0,
-        col: 0,
-        child_nodes: vec![],
-        attribute_names: vec!["itemprop".to_string(), "content".to_string()],
-        transparent_ancestor: None,
-    };
-    let matched = crate::content_model::matching::matches_selector(":model(flow)", Some(&meta), 1, &s);
-    assert!(
-        matched.result_type.is_matched(),
-        "meta with itemprop should match #flow"
-    );
-}
-
-// --- evaluate_condition ---
-
-#[test]
-fn evaluate_condition_attribute_presence() {
-    assert_eq!(check_attr_condition("[src]", &make_el_with_attr("audio", "src")), true);
-    assert_eq!(
-        check_attr_condition("[src]", &make_el_with_attr("audio", "controls")),
-        false
-    );
-}
-
-#[test]
-fn evaluate_condition_multiple_attrs() {
-    // [label][value] — both must be present
-    let el = make_el_with_attrs("option", &["label", "value"]);
-    assert!(check_attr_condition("[label][value]", &el));
-    let el2 = make_el_with_attr("option", "label");
-    assert!(!check_attr_condition("[label][value]", &el2));
-}
-
-#[test]
-fn evaluate_condition_structural_namespace() {
-    // "svg|switch > svg|a" — parent must be "switch"
-    let s = spec();
-    let mut builder = DomArenaBuilder::new();
-    let doc_id = builder.push(DomNode::Document(DocumentData {
-        id: 0,
-        raw: String::new(),
-        is_fragment: true,
-        unknown_parse_error: None,
-        children: vec![],
-    }));
-    let switch_id = builder.push(DomNode::Element(ElementData {
-        pretender_context: None,
-        base: NodeBase {
-            id: 0,
-            uuid: "sw".to_string(),
-            raw: "<switch>".to_string(),
-            offset: 0,
-            line: 1,
-            col: 1,
-            node_name: "switch".to_string(),
-            parent: Some(doc_id),
-            children: vec![],
-            next_sibling: None,
-            prev_sibling: None,
-            depth: 1,
-        },
-        namespace: NamespaceURI::SVG,
-        element_type: ElementType::Html,
-        is_fragment: false,
-        attributes: vec![],
-        has_spread_attr: false,
-        block_behavior: None,
-        pair_node_id: None,
-        tag_open_char: "<".to_string(),
-        tag_close_char: ">".to_string(),
-        is_ghost: false,
-        close_tag: None,
-    }));
-    if let Some(DomNode::Element(e)) = builder.get_mut(switch_id) {
-        e.base.id = switch_id;
-    }
-    let a_id = builder.push(DomNode::Element(ElementData {
-        pretender_context: None,
-        base: NodeBase {
-            id: 0,
-            uuid: "a".to_string(),
-            raw: "<a>".to_string(),
-            offset: 0,
-            line: 1,
-            col: 9,
-            node_name: "a".to_string(),
-            parent: Some(switch_id),
-            children: vec![],
-            next_sibling: None,
-            prev_sibling: None,
-            depth: 2,
-        },
-        namespace: NamespaceURI::SVG,
-        element_type: ElementType::Html,
-        is_fragment: false,
-        attributes: vec![],
-        has_spread_attr: false,
-        block_behavior: None,
-        pair_node_id: None,
-        tag_open_char: "<".to_string(),
-        tag_close_char: ">".to_string(),
-        is_ghost: false,
-        close_tag: None,
-    }));
-    if let Some(DomNode::Element(e)) = builder.get_mut(a_id) {
-        e.base.id = a_id;
-    }
-    if let Some(DomNode::Element(e)) = builder.get_mut(switch_id) {
-        e.base.children = vec![a_id];
-    }
-    if let Some(DomNode::Document(d)) = builder.get_mut(doc_id) {
-        d.children = vec![switch_id];
-    }
-    let arena = builder.finish();
-
-    let a_el = arena.get(a_id).unwrap().as_element().unwrap();
-    assert!(
-        evaluate_condition("svg|switch > svg|a", a_el, &arena),
-        "svg|switch > svg|a should match when parent is switch"
-    );
-}
-
-fn make_el_with_attr(tag: &str, attr: &str) -> markuplint_dom::node::ElementData {
-    use markuplint_core::mlast::{MLASTAttr, MLASTHTMLAttr, MLASTToken};
-    ElementData {
-        pretender_context: None,
-        base: NodeBase {
-            id: 0,
-            uuid: String::new(),
-            raw: format!("<{tag}>"),
-            offset: 0,
-            line: 1,
-            col: 1,
-            node_name: tag.to_string(),
-            parent: None,
-            children: vec![],
-            next_sibling: None,
-            prev_sibling: None,
-            depth: 0,
-        },
-        namespace: NamespaceURI::XHTML,
-        element_type: ElementType::Html,
-        is_fragment: false,
-        attributes: vec![MLASTAttr::HTMLAttr(Box::new(MLASTHTMLAttr {
-            uuid: String::new(),
-            raw: attr.to_string(),
-            offset: 0,
-            line: 1,
-            col: 1,
-            node_name: attr.to_string(),
-            spaces_before_name: MLASTToken {
-                uuid: String::new(),
-                raw: String::new(),
-                offset: 0,
-                line: 1,
-                col: 1,
-            },
-            name: MLASTToken {
-                uuid: String::new(),
-                raw: attr.to_string(),
-                offset: 0,
-                line: 1,
-                col: 1,
-            },
-            spaces_before_equal: MLASTToken {
-                uuid: String::new(),
-                raw: String::new(),
-                offset: 0,
-                line: 1,
-                col: 1,
-            },
-            equal: MLASTToken {
-                uuid: String::new(),
-                raw: String::new(),
-                offset: 0,
-                line: 1,
-                col: 1,
-            },
-            spaces_after_equal: MLASTToken {
-                uuid: String::new(),
-                raw: String::new(),
-                offset: 0,
-                line: 1,
-                col: 1,
-            },
-            start_quote: MLASTToken {
-                uuid: String::new(),
-                raw: String::new(),
-                offset: 0,
-                line: 1,
-                col: 1,
-            },
-            value: MLASTToken {
-                uuid: String::new(),
-                raw: String::new(),
-                offset: 0,
-                line: 1,
-                col: 1,
-            },
-            end_quote: MLASTToken {
-                uuid: String::new(),
-                raw: String::new(),
-                offset: 0,
-                line: 1,
-                col: 1,
-            },
-            is_dynamic_value: None,
-            is_expression_value: None,
-            is_absent: None,
-            is_directive: None,
-            potential_name: None,
-            potential_value: None,
-            value_type: None,
-            candidate: None,
-            is_duplicatable: false,
-        }))],
-        has_spread_attr: false,
-        block_behavior: None,
-        pair_node_id: None,
-        tag_open_char: "<".to_string(),
-        tag_close_char: ">".to_string(),
-        is_ghost: false,
-        close_tag: None,
-    }
-}
-
-fn make_el_with_attrs(tag: &str, attrs: &[&str]) -> markuplint_dom::node::ElementData {
-    use markuplint_core::mlast::{MLASTAttr, MLASTHTMLAttr, MLASTToken};
-    let attributes = attrs
-        .iter()
-        .map(|attr| {
-            MLASTAttr::HTMLAttr(Box::new(MLASTHTMLAttr {
-                uuid: String::new(),
-                raw: attr.to_string(),
-                offset: 0,
-                line: 1,
-                col: 1,
-                node_name: attr.to_string(),
-                spaces_before_name: MLASTToken {
-                    uuid: String::new(),
-                    raw: String::new(),
-                    offset: 0,
-                    line: 1,
-                    col: 1,
-                },
-                name: MLASTToken {
-                    uuid: String::new(),
-                    raw: attr.to_string(),
-                    offset: 0,
-                    line: 1,
-                    col: 1,
-                },
-                spaces_before_equal: MLASTToken {
-                    uuid: String::new(),
-                    raw: String::new(),
-                    offset: 0,
-                    line: 1,
-                    col: 1,
-                },
-                equal: MLASTToken {
-                    uuid: String::new(),
-                    raw: String::new(),
-                    offset: 0,
-                    line: 1,
-                    col: 1,
-                },
-                spaces_after_equal: MLASTToken {
-                    uuid: String::new(),
-                    raw: String::new(),
-                    offset: 0,
-                    line: 1,
-                    col: 1,
-                },
-                start_quote: MLASTToken {
-                    uuid: String::new(),
-                    raw: String::new(),
-                    offset: 0,
-                    line: 1,
-                    col: 1,
-                },
-                value: MLASTToken {
-                    uuid: String::new(),
-                    raw: String::new(),
-                    offset: 0,
-                    line: 1,
-                    col: 1,
-                },
-                end_quote: MLASTToken {
-                    uuid: String::new(),
-                    raw: String::new(),
-                    offset: 0,
-                    line: 1,
-                    col: 1,
-                },
-                is_dynamic_value: None,
-                is_expression_value: None,
-                is_absent: None,
-                is_directive: None,
-                potential_name: None,
-                potential_value: None,
-                value_type: None,
-                candidate: None,
-                is_duplicatable: false,
-            }))
-        })
-        .collect();
-    ElementData {
-        pretender_context: None,
-        base: NodeBase {
-            id: 0,
-            uuid: String::new(),
-            raw: format!("<{tag}>"),
-            offset: 0,
-            line: 1,
-            col: 1,
-            node_name: tag.to_string(),
-            parent: None,
-            children: vec![],
-            next_sibling: None,
-            prev_sibling: None,
-            depth: 0,
-        },
-        namespace: NamespaceURI::XHTML,
-        element_type: ElementType::Html,
-        is_fragment: false,
-        attributes,
-        has_spread_attr: false,
-        block_behavior: None,
-        pair_node_id: None,
-        tag_open_char: "<".to_string(),
-        tag_close_char: ">".to_string(),
-        is_ghost: false,
-        close_tag: None,
-    }
 }
 
 #[test]
@@ -1415,8 +959,8 @@ fn v6_permitted_contents_029() {
     );
 }
 
-/// A `title` whose only text is U+3000 is whitespace for `#nonEmptyText`, as in the TS
-/// `/^\s+$/`.
+/// A `title` whose only text is U+3000 has text for `#nonEmptyText`: inter-element whitespace is
+/// ASCII whitespace only.
 #[test]
 fn v6_permitted_contents_030() {
     assert_eq!(
@@ -1425,7 +969,7 @@ fn v6_permitted_contents_030() {
             serde_json::json!(true),
             serde_json::json!([])
         ),
-        [v(1, 13, "<title>", r##"Require an element. (Need "#nonEmptyText")"##)]
+        []
     );
 }
 
@@ -1440,4 +984,718 @@ fn v6_permitted_contents_026() {
         ),
         []
     );
+}
+
+// ============================================================
+// The steps of the evaluation, as the TS unit specs of `recursive-branch.ts`, `count-pattern.ts`,
+// `choice.ts` and `order.ts` run them: on the children of a `<div>` written as the tags given.
+// ============================================================
+mod engine_steps {
+    use super::super::context::{Caches, Ctx, MatchResult, Mode, Options, ResultType};
+    use super::super::engine;
+    use super::{html_arena, spec};
+    use markuplint_dom::arena::NodeId;
+    use markuplint_types::spec::content_model::{ChoicePattern, ModelOrPatterns, PermittedContentPattern};
+
+    /// Runs `f` on the children of a `<div>` holding `tags`: `#text` is text, any other an element.
+    fn with_children(tags: &[&str], f: impl FnOnce(&Ctx<'_>, &[NodeId]) -> MatchResult) -> MatchResult {
+        let inner: String = tags
+            .iter()
+            .map(|&tag| {
+                if tag == "#text" {
+                    "text".to_string()
+                } else {
+                    format!("<{tag}></{tag}>")
+                }
+            })
+            .collect();
+        let arena = html_arena(&format!("<div>{inner}</div>"));
+        let spec = spec();
+        let caches = Caches::default();
+        let ctx = Ctx {
+            arena: &arena,
+            spec: &spec,
+            rules: &[],
+            options: Options {
+                ignore_has_mutable_children: true,
+                evaluate_conditional_child_nodes: false,
+            },
+            mode: Mode::Pretended,
+            caches: &caches,
+            transparent_mode: std::cell::RefCell::default(),
+        };
+        let div = arena
+            .elements()
+            .find(|(_, el)| el.base.node_name == "div")
+            .map(|(id, _)| id)
+            .unwrap();
+        f(&ctx, &arena.child_nodes(div))
+    }
+
+    // recursive-branch.spec.ts
+    // ================================================================
+    mod recursive_branch {
+        use super::*;
+
+        fn run(model_json: &str, tags: &[&str]) -> MatchResult {
+            let model: ModelOrPatterns = serde_json::from_str(model_json).unwrap();
+            with_children(tags, |ctx, children| engine::recursive_branch(ctx, &model, children))
+        }
+
+        #[test]
+        fn single_tag_a() {
+            assert_eq!(run(r##""a""##, &["a"]).ty, ResultType::Matched);
+            assert_eq!(run(r##""a""##, &["b"]).ty, ResultType::UnmatchedSelectors);
+            assert_eq!(run(r##""a""##, &["c"]).ty, ResultType::UnmatchedSelectors);
+            assert_eq!(run(r##""a""##, &["#text"]).ty, ResultType::UnexpectedExtraNode);
+            assert_eq!(run(r##""a""##, &[]).ty, ResultType::MissingNode);
+        }
+
+        #[test]
+        fn flow_category() {
+            assert_eq!(run(r##""#flow""##, &["a"]).ty, ResultType::Matched);
+            assert_eq!(run(r##""#flow""##, &["b"]).ty, ResultType::Matched);
+            assert_eq!(run(r##""#flow""##, &["c"]).ty, ResultType::UnmatchedSelectorButMayEmpty);
+            assert_eq!(run(r##""#flow""##, &["#text"]).ty, ResultType::Matched);
+            assert_eq!(run(r##""#flow""##, &[]).ty, ResultType::MatchedZero);
+        }
+
+        #[test]
+        fn array_a_flow() {
+            assert_eq!(run(r##"["a", "#flow"]"##, &["a"]).ty, ResultType::Matched);
+            assert_eq!(run(r##"["a", "#flow"]"##, &["b"]).ty, ResultType::Matched);
+            assert_eq!(
+                run(r##"["a", "#flow"]"##, &["c"]).ty,
+                ResultType::UnmatchedSelectorButMayEmpty
+            );
+            assert_eq!(run(r##"["a", "#flow"]"##, &["#text"]).ty, ResultType::Matched);
+            assert_eq!(run(r##"["a", "#flow"]"##, &[]).ty, ResultType::MatchedZero);
+        }
+
+        #[test]
+        fn array_c_flow() {
+            assert_eq!(run(r##"["c", "#flow"]"##, &["a"]).ty, ResultType::Matched);
+            assert_eq!(run(r##"["c", "#flow"]"##, &["b"]).ty, ResultType::Matched);
+            assert_eq!(run(r##"["c", "#flow"]"##, &["c"]).ty, ResultType::Matched);
+            assert_eq!(run(r##"["c", "#flow"]"##, &["#text"]).ty, ResultType::Matched);
+            assert_eq!(run(r##"["c", "#flow"]"##, &[]).ty, ResultType::MatchedZero);
+        }
+    }
+
+    // ================================================================
+    // count-pattern.spec.ts — all 166 TS assertions ported 1:1
+    // ================================================================
+    mod count_pattern {
+        use super::*;
+
+        fn run(pattern_json: &str, tags: &[&str]) -> MatchResult {
+            let pattern: PermittedContentPattern = serde_json::from_str(pattern_json).unwrap();
+            with_children(tags, |ctx, children| engine::count_pattern(ctx, &pattern, children))
+        }
+
+        #[test]
+        fn require_a() {
+            let p = r##"{"require": "a"}"##;
+            assert_eq!(run(p, &["a"]).ty, ResultType::Matched);
+            assert_eq!(run(p, &["b"]).ty, ResultType::MissingNodeRequired);
+            assert_eq!(run(p, &["c"]).ty, ResultType::MissingNodeRequired);
+            assert_eq!(run(p, &["#text"]).ty, ResultType::MissingNodeRequired);
+            assert_eq!(run(p, &[]).ty, ResultType::MissingNodeRequired);
+
+            assert_eq!(run(p, &["a"]).matched.len(), 1);
+            assert_eq!(run(p, &["b"]).matched.len(), 0);
+            assert_eq!(run(p, &["c"]).matched.len(), 0);
+            assert_eq!(run(p, &["#text"]).matched.len(), 0);
+            assert_eq!(run(p, &[]).matched.len(), 0);
+        }
+
+        #[test]
+        fn optional_a() {
+            let p = r##"{"optional": "a"}"##;
+            assert_eq!(run(p, &["a"]).ty, ResultType::Matched);
+            assert_eq!(run(p, &["a", "a"]).ty, ResultType::UnexpectedExtraNode);
+            assert_eq!(run(p, &["b"]).ty, ResultType::MatchedZero);
+            assert_eq!(run(p, &["c"]).ty, ResultType::MatchedZero);
+            assert_eq!(run(p, &["#text"]).ty, ResultType::MatchedZero);
+            assert_eq!(run(p, &[]).ty, ResultType::MatchedZero);
+
+            assert_eq!(run(p, &["a"]).matched.len(), 1);
+            assert_eq!(run(p, &["a", "a"]).matched.len(), 1);
+            assert_eq!(run(p, &["b"]).matched.len(), 0);
+            assert_eq!(run(p, &["c"]).matched.len(), 0);
+            assert_eq!(run(p, &["#text"]).matched.len(), 0);
+            assert_eq!(run(p, &[]).matched.len(), 0);
+        }
+
+        #[test]
+        fn one_or_more_a() {
+            let p = r##"{"oneOrMore": "a"}"##;
+            assert_eq!(run(p, &["a"]).ty, ResultType::Matched);
+            assert_eq!(run(p, &["b"]).ty, ResultType::MissingNodeOneOrMore);
+            assert_eq!(run(p, &["c"]).ty, ResultType::MissingNodeOneOrMore);
+            assert_eq!(run(p, &["#text"]).ty, ResultType::MissingNodeOneOrMore);
+            assert_eq!(run(p, &[]).ty, ResultType::MissingNodeOneOrMore);
+
+            assert_eq!(run(p, &["a"]).matched.len(), 1);
+            assert_eq!(run(p, &["b"]).matched.len(), 0);
+            assert_eq!(run(p, &["c"]).matched.len(), 0);
+            assert_eq!(run(p, &["#text"]).matched.len(), 0);
+            assert_eq!(run(p, &[]).matched.len(), 0);
+
+            assert_eq!(run(p, &["a", "a", "a"]).matched.len(), 3);
+            assert_eq!(run(p, &["a", "a", "b"]).matched.len(), 2);
+            assert_eq!(run(p, &["a", "c", "c"]).matched.len(), 1);
+        }
+
+        #[test]
+        fn zero_or_more_a() {
+            let p = r##"{"zeroOrMore": "a"}"##;
+            assert_eq!(run(p, &["a"]).ty, ResultType::Matched);
+            assert_eq!(run(p, &["b"]).ty, ResultType::MatchedZero);
+            assert_eq!(run(p, &["c"]).ty, ResultType::MatchedZero);
+            assert_eq!(run(p, &["#text"]).ty, ResultType::MatchedZero);
+            assert_eq!(run(p, &[]).ty, ResultType::MatchedZero);
+
+            assert_eq!(run(p, &["a"]).matched.len(), 1);
+            assert_eq!(run(p, &["b"]).matched.len(), 0);
+            assert_eq!(run(p, &["c"]).matched.len(), 0);
+            assert_eq!(run(p, &["#text"]).matched.len(), 0);
+            assert_eq!(run(p, &[]).matched.len(), 0);
+
+            assert_eq!(run(p, &["a", "a", "a"]).matched.len(), 3);
+            assert_eq!(run(p, &["a", "a", "b"]).matched.len(), 2);
+            assert_eq!(run(p, &["a", "c", "c"]).matched.len(), 1);
+        }
+
+        #[test]
+        fn require_flow() {
+            let p = r##"{"require": "#flow"}"##;
+            assert_eq!(run(p, &["a"]).ty, ResultType::Matched);
+            assert_eq!(run(p, &["b"]).ty, ResultType::Matched);
+            assert_eq!(run(p, &["c"]).ty, ResultType::MatchedZero);
+            assert_eq!(run(p, &["#text"]).ty, ResultType::Matched);
+            assert_eq!(run(p, &[]).ty, ResultType::MatchedZero);
+
+            assert_eq!(run(p, &["a"]).matched.len(), 1);
+            assert_eq!(run(p, &["b"]).matched.len(), 1);
+            assert_eq!(run(p, &["c"]).matched.len(), 0);
+            assert_eq!(run(p, &["#text"]).matched.len(), 1);
+            assert_eq!(run(p, &[]).matched.len(), 0);
+
+            assert_eq!(run(p, &["a", "a", "a"]).matched.len(), 1);
+            assert_eq!(run(p, &["b", "a"]).matched.len(), 1);
+            assert_eq!(run(p, &["c", "a"]).matched.len(), 0);
+            assert_eq!(run(p, &["#text", "a"]).matched.len(), 1);
+            assert_eq!(run(p, &["a"]).matched.len(), 1);
+        }
+
+        #[test]
+        fn optional_flow() {
+            let p = r##"{"optional": "#flow"}"##;
+            assert_eq!(run(p, &["a"]).ty, ResultType::Matched);
+            assert_eq!(run(p, &["b"]).ty, ResultType::Matched);
+            assert_eq!(run(p, &["c"]).ty, ResultType::MatchedZero);
+            assert_eq!(run(p, &["#text"]).ty, ResultType::Matched);
+            assert_eq!(run(p, &[]).ty, ResultType::MatchedZero);
+
+            assert_eq!(run(p, &["a"]).matched.len(), 1);
+            assert_eq!(run(p, &["b"]).matched.len(), 1);
+            assert_eq!(run(p, &["c"]).matched.len(), 0);
+            assert_eq!(run(p, &["#text"]).matched.len(), 1);
+            assert_eq!(run(p, &[]).matched.len(), 0);
+        }
+
+        #[test]
+        fn one_or_more_flow() {
+            let p = r##"{"oneOrMore": "#flow"}"##;
+            assert_eq!(run(p, &["a"]).ty, ResultType::Matched);
+            assert_eq!(run(p, &["b"]).ty, ResultType::Matched);
+            assert_eq!(run(p, &["c"]).ty, ResultType::MatchedZero);
+            assert_eq!(run(p, &["#text"]).ty, ResultType::Matched);
+            assert_eq!(run(p, &[]).ty, ResultType::MatchedZero);
+
+            assert_eq!(run(p, &["a"]).matched.len(), 1);
+            assert_eq!(run(p, &["b"]).matched.len(), 1);
+            assert_eq!(run(p, &["c"]).matched.len(), 0);
+            assert_eq!(run(p, &["#text"]).matched.len(), 1);
+            assert_eq!(run(p, &[]).matched.len(), 0);
+
+            assert_eq!(run(p, &["a", "a", "a"]).matched.len(), 3);
+            assert_eq!(run(p, &["a", "a", "b"]).matched.len(), 3);
+            assert_eq!(run(p, &["a", "c", "c"]).matched.len(), 1);
+        }
+
+        #[test]
+        fn zero_or_more_flow() {
+            let p = r##"{"zeroOrMore": "#flow"}"##;
+            assert_eq!(run(p, &["a"]).ty, ResultType::Matched);
+            assert_eq!(run(p, &["b"]).ty, ResultType::Matched);
+            assert_eq!(run(p, &["c"]).ty, ResultType::MatchedZero);
+            assert_eq!(run(p, &["#text"]).ty, ResultType::Matched);
+            assert_eq!(run(p, &[]).ty, ResultType::MatchedZero);
+
+            assert_eq!(run(p, &["a"]).matched.len(), 1);
+            assert_eq!(run(p, &["b"]).matched.len(), 1);
+            assert_eq!(run(p, &["c"]).matched.len(), 0);
+            assert_eq!(run(p, &["#text"]).matched.len(), 1);
+            assert_eq!(run(p, &[]).matched.len(), 0);
+
+            assert_eq!(run(p, &["a", "a", "a"]).matched.len(), 3);
+            assert_eq!(run(p, &["a", "a", "b"]).matched.len(), 3);
+            assert_eq!(run(p, &["a", "c", "c"]).matched.len(), 1);
+        }
+
+        #[test]
+        fn zero_or_more_script_supporting() {
+            let p = r##"{"zeroOrMore": ":model(script-supporting)"}"##;
+            assert_eq!(run(p, &["a"]).ty, ResultType::MatchedZero);
+            assert_eq!(run(p, &["b"]).ty, ResultType::MatchedZero);
+            assert_eq!(run(p, &["c"]).ty, ResultType::MatchedZero);
+            assert_eq!(run(p, &["#text"]).ty, ResultType::MatchedZero);
+            assert_eq!(run(p, &[]).ty, ResultType::MatchedZero);
+            assert_eq!(run(p, &["script"]).ty, ResultType::Matched);
+            assert_eq!(run(p, &["template"]).ty, ResultType::Matched);
+
+            assert_eq!(run(p, &["a"]).matched.len(), 0);
+            assert_eq!(run(p, &["b"]).matched.len(), 0);
+            assert_eq!(run(p, &["c"]).matched.len(), 0);
+            assert_eq!(run(p, &["#text"]).matched.len(), 0);
+            assert_eq!(run(p, &[]).matched.len(), 0);
+            assert_eq!(run(p, &["script"]).matched.len(), 1);
+            assert_eq!(run(p, &["template"]).matched.len(), 1);
+        }
+
+        #[test]
+        fn min_max() {
+            assert_eq!(
+                run(r##"{"require": "c", "min": 2}"##, &[]).ty,
+                ResultType::MissingNodeRequired
+            );
+            assert_eq!(
+                run(r##"{"require": "c", "min": 2}"##, &["c"]).ty,
+                ResultType::MissingNodeRequired
+            );
+            assert_eq!(
+                run(r##"{"require": "c", "min": 2}"##, &["c", "c"]).ty,
+                ResultType::Matched
+            );
+            assert_eq!(
+                run(r##"{"require": "c", "max": 1}"##, &["c", "c"]).ty,
+                ResultType::UnexpectedExtraNode
+            );
+            assert_eq!(run(r##"{"require": "c", "max": 1}"##, &["c", "c"]).hint.max, Some(1));
+        }
+
+        #[test]
+        fn dl_element_one_or_more_pattern() {
+            let p = r##"{"oneOrMore": [
+                {"zeroOrMore": ":model(script-supporting)"},
+                {"oneOrMore": "dt"},
+                {"zeroOrMore": ":model(script-supporting)"},
+                {"oneOrMore": "dd"},
+                {"zeroOrMore": ":model(script-supporting)"}
+            ]}"##;
+            assert_eq!(run(p, &["dt"]).ty, ResultType::MissingNodeOneOrMore);
+            assert_eq!(run(p, &["dd"]).ty, ResultType::MissingNodeOneOrMore);
+            assert_eq!(run(p, &["dt", "dd"]).ty, ResultType::Matched);
+            assert_eq!(run(p, &["dt", "dt", "dd"]).ty, ResultType::Matched);
+            assert_eq!(run(p, &["dt", "dd", "dd"]).ty, ResultType::Matched);
+            assert_eq!(run(p, &["dt", "dd", "dd", "dt"]).ty, ResultType::MissingNodeOneOrMore);
+        }
+
+        // --- ruby element part #1 (TS: oneOrMore with model array selectors) ---
+        #[test]
+        fn ruby_part1_phrasing_model_array() {
+            let p = r##"{"oneOrMore": [
+                ":model(phrasing):not(ruby, :has(ruby))",
+                "ruby:not(:has(ruby))"
+            ]}"##;
+            assert_eq!(run(p, &["span"]).ty, ResultType::Matched);
+            assert_eq!(run(p, &["#text"]).ty, ResultType::Matched);
+            assert_eq!(run(p, &["#text", "span"]).ty, ResultType::Matched);
+            assert_eq!(run(p, &["ruby"]).ty, ResultType::Matched);
+            assert_eq!(run(p, &["ruby", "span"]).ty, ResultType::Matched);
+        }
+
+        // --- ruby element part #2 (TS: complex nested with choice) ---
+        #[test]
+        fn ruby_part2_complex_nested() {
+            let p = r##"{"oneOrMore": [
+                {"oneOrMore": [
+                    ":model(phrasing):not(ruby, :has(ruby))",
+                    "ruby:not(:has(rt, rp))"
+                ]},
+                {"choice": [
+                    [{"oneOrMore": "rt"}],
+                    [{"require": "rp"}, {"oneOrMore": [{"require": "rt"}, {"require": "rp"}]}]
+                ]}
+            ]}"##;
+            assert_eq!(run(p, &["span"]).ty, ResultType::MissingNodeOneOrMore);
+            assert_eq!(run(p, &["span"]).query, "rt");
+            assert_eq!(run(p, &["span", "rp", "rt", "rp"]).ty, ResultType::Matched);
+            assert_eq!(run(p, &["span", "rp", "rt"]).ty, ResultType::MissingNodeRequired);
+            assert_eq!(run(p, &["span", "rp", "rt"]).query, "rp");
+            assert_eq!(run(p, &["span", "rp", "rt", "rp"]).ty, ResultType::Matched);
+            assert_eq!(run(p, &["span", "rt"]).ty, ResultType::Matched);
+            assert_eq!(run(p, &["span", "rt", "span", "rt"]).ty, ResultType::Matched);
+            assert_eq!(run(p, &["#text", "rt", "#text", "rt"]).ty, ResultType::Matched);
+            assert_eq!(
+                run(p, &["#text", "rt", "rt", "#text", "rt", "rt"]).ty,
+                ResultType::Matched
+            );
+            assert_eq!(
+                run(p, &["#text", "rp", "rt", "rp", "#text", "rt"]).ty,
+                ResultType::Matched
+            );
+        }
+
+        // --- ruby element part #3 (TS: oneOrMore rt/rp) ---
+        #[test]
+        fn ruby_part3_one_or_more_rt_rp() {
+            let p = r##"{"oneOrMore": [{"require": "rt"}, {"require": "rp"}]}"##;
+            assert_eq!(run(p, &["rt"]).ty, ResultType::MissingNodeRequired);
+            assert_eq!(run(p, &["rt"]).query, "rp");
+            assert_eq!(run(p, &["rt", "rp"]).ty, ResultType::Matched);
+            assert_eq!(run(p, &["rt", "rp", "rt"]).ty, ResultType::MissingNodeRequired);
+            assert_eq!(run(p, &["rt", "rp", "rt"]).query, "rp");
+            assert_eq!(run(p, &["rt", "rp", "rt", "rp"]).ty, ResultType::Matched);
+        }
+
+        // --- Issue #1146 1/2 (TS: oneOrMore with single-branch choice) ---
+        #[test]
+        fn issue_1146_one_or_more_choice() {
+            let p = r##"{"oneOrMore": [{"choice": [[{"require": "b"}]]}]}"##;
+            assert_eq!(run(p, &["b"]).ty, ResultType::Matched);
+            assert_eq!(run(p, &["b", "b"]).ty, ResultType::Matched);
+        }
+
+        // --- Issue #1146 2/2 (TS: oneOrMore with optional + choice) ---
+        #[test]
+        fn issue_1146_one_or_more_optional_choice() {
+            let p = r##"{"oneOrMore": [
+                {"optional": "a"},
+                {"choice": [
+                    [{"optional": "b"}],
+                    [{"require": "c"}]
+                ]}
+            ]}"##;
+            assert_eq!(run(p, &["a"]).ty, ResultType::Matched);
+            assert_eq!(run(p, &["a", "a", "a"]).ty, ResultType::Matched);
+            assert_eq!(run(p, &["a", "b"]).ty, ResultType::Matched);
+            assert_eq!(run(p, &["a", "c"]).ty, ResultType::Matched);
+            assert_eq!(run(p, &["b"]).ty, ResultType::Matched);
+            assert_eq!(run(p, &["b", "b"]).ty, ResultType::Matched);
+            assert_eq!(run(p, &["b", "c"]).ty, ResultType::Matched);
+            assert_eq!(run(p, &["c", "c"]).ty, ResultType::Matched);
+            assert_eq!(run(p, &["a", "b", "c"]).ty, ResultType::Matched);
+            assert_eq!(run(p, &["a", "c", "c"]).ty, ResultType::Matched);
+            assert_eq!(run(p, &["c", "b", "a"]).ty, ResultType::Matched);
+        }
+    }
+
+    // ================================================================
+    // choice.spec.ts
+    // ================================================================
+    mod choice {
+        use super::*;
+
+        fn run(pattern_json: &str, tags: &[&str]) -> MatchResult {
+            let pattern: ChoicePattern = serde_json::from_str(pattern_json).unwrap();
+            with_children(tags, |ctx, children| engine::choice(ctx, &pattern, children))
+        }
+
+        #[test]
+        fn ordered_requires() {
+            let p = r##"{"choice": [[{"require": "a"}], [{"require": "b"}], [{"require": "c"}]]}"##;
+            assert_eq!(run(p, &[]).ty, ResultType::MissingNodeRequired);
+            assert_eq!(run(p, &["a"]).ty, ResultType::Matched);
+            assert_eq!(run(p, &["a", "a"]).ty, ResultType::UnexpectedExtraNode);
+            assert_eq!(run(p, &["b"]).ty, ResultType::Matched);
+            assert_eq!(run(p, &["b", "c"]).ty, ResultType::UnexpectedExtraNode);
+            assert_eq!(run(p, &["c"]).ty, ResultType::Matched);
+            assert_eq!(run(p, &["d"]).ty, ResultType::MissingNodeRequired);
+        }
+
+        #[test]
+        fn optional() {
+            let p = r##"{"choice": [[{"require": "a"}], [{"require": "b"}], [{"optional": "c"}]]}"##;
+            assert_eq!(run(p, &[]).ty, ResultType::MatchedZero);
+            assert_eq!(run(p, &["a"]).ty, ResultType::Matched);
+            assert_eq!(run(p, &["b"]).ty, ResultType::Matched);
+            assert_eq!(run(p, &["c"]).ty, ResultType::Matched);
+            assert_eq!(run(p, &["d"]).ty, ResultType::UnexpectedExtraNode);
+        }
+
+        #[test]
+        fn interleave() {
+            let p = r##"{"choice": [[{"require": "a"}, {"require": "b"}], [{"require": "b"}, {"require": "a"}]]}"##;
+            assert_eq!(run(p, &["a"]).ty, ResultType::MissingNodeRequired);
+            assert_eq!(run(p, &["b"]).ty, ResultType::MissingNodeRequired);
+            assert_eq!(run(p, &["a", "b"]).ty, ResultType::Matched);
+            assert_eq!(run(p, &["b", "a"]).ty, ResultType::Matched);
+            assert_eq!(run(p, &["b", "a", "c"]).ty, ResultType::UnexpectedExtraNode);
+            assert_eq!(run(p, &["b", "a", "a"]).ty, ResultType::UnexpectedExtraNode);
+        }
+
+        #[test]
+        fn dl_element() {
+            let p = r##"{"choice": [
+                [{"oneOrMore": [
+                    {"zeroOrMore": ":model(script-supporting)"},
+                    {"oneOrMore": "dt"},
+                    {"zeroOrMore": ":model(script-supporting)"},
+                    {"oneOrMore": "dd"},
+                    {"zeroOrMore": ":model(script-supporting)"}
+                ]}],
+                [
+                    {"zeroOrMore": ":model(script-supporting)"},
+                    {"oneOrMore": "div"},
+                    {"zeroOrMore": ":model(script-supporting)"}
+                ]
+            ]}"##;
+            assert_eq!(run(p, &["dt", "dd"]).ty, ResultType::Matched);
+            assert_eq!(run(p, &[]).ty, ResultType::MissingNodeOneOrMore);
+            assert_eq!(run(p, &[]).query, "dt");
+            assert_eq!(run(p, &["dt"]).ty, ResultType::MissingNodeOneOrMore);
+            assert_eq!(run(p, &["div"]).ty, ResultType::Matched);
+            assert_eq!(run(p, &["div", "div"]).ty, ResultType::Matched);
+            assert_eq!(run(p, &["dt", "dd", "dt"]).ty, ResultType::MissingNodeOneOrMore);
+        }
+
+        #[test]
+        fn ruby_part() {
+            let p = r##"{"choice": [
+                [{"oneOrMore": "rt"}],
+                [{"require": "rp"}, {"oneOrMore": [{"require": "rt"}, {"require": "rp"}]}]
+            ]}"##;
+            assert_eq!(run(p, &["rt"]).ty, ResultType::Matched);
+            assert_eq!(run(p, &["rp"]).ty, ResultType::MissingNodeRequired);
+            assert_eq!(run(p, &["rp"]).query, "rt");
+            assert_eq!(run(p, &["rt", "rt"]).ty, ResultType::Matched);
+            assert_eq!(run(p, &["rp", "rt", "rp"]).ty, ResultType::Matched);
+            assert_eq!(run(p, &["rp", "rt"]).ty, ResultType::MissingNodeRequired);
+            assert_eq!(run(p, &["rp", "rt"]).query, "rp");
+            assert_eq!(run(p, &["rt", "rp"]).ty, ResultType::UnexpectedExtraNode);
+            assert_eq!(run(p, &["rt", "rp"]).query, "rt");
+        }
+
+        #[test]
+        fn issue_1146() {
+            let p = r##"{"choice": [[{"optional": "b"}], [{"require": "c"}]]}"##;
+            assert_eq!(run(p, &["b"]).ty, ResultType::Matched);
+            assert_eq!(run(p, &["b", "b"]).ty, ResultType::UnexpectedExtraNode);
+            assert_eq!(run(p, &["c"]).ty, ResultType::Matched);
+            assert_eq!(run(p, &["c", "c"]).ty, ResultType::UnexpectedExtraNode);
+        }
+    }
+
+    // ================================================================
+    // order.spec.ts
+    // ================================================================
+    mod order {
+        use super::*;
+
+        fn run(patterns_json: &str, tags: &[&str]) -> MatchResult {
+            let patterns: Vec<PermittedContentPattern> = serde_json::from_str(patterns_json).unwrap();
+            with_children(tags, |ctx, children| engine::order(ctx, &patterns, children))
+        }
+
+        #[test]
+        fn ordered_requires() {
+            let p = r##"[{"require": "a"}, {"require": "b"}, {"require": "c"}]"##;
+            assert_eq!(run(p, &["a"]).ty, ResultType::MissingNodeRequired);
+            assert_eq!(run(p, &["a", "b"]).ty, ResultType::MissingNodeRequired);
+            assert_eq!(run(p, &["a", "b", "c"]).ty, ResultType::Matched);
+            assert_eq!(run(p, &["a", "b", "c", "d"]).ty, ResultType::UnexpectedExtraNode);
+        }
+
+        #[test]
+        fn ordered_requires_with_flow() {
+            let p = r##"[{"require": "#flow"}, {"require": "a"}, {"require": "#flow"}, {"require": "b"}]"##;
+            assert_eq!(run(p, &[]).ty, ResultType::MissingNodeRequired);
+            assert_eq!(run(p, &["a"]).ty, ResultType::MissingNodeRequired);
+            assert_eq!(run(p, &["a", "b"]).ty, ResultType::Matched);
+            assert_eq!(run(p, &["a", "b", "c"]).ty, ResultType::UnexpectedExtraNode);
+        }
+
+        #[test]
+        fn ordered_requires_and_optionals() {
+            let p = r##"[{"require": "a"}, {"optional": "b"}, {"require": "c"}]"##;
+            assert_eq!(run(p, &["a", "b", "c"]).ty, ResultType::Matched);
+            assert_eq!(run(p, &["a", "b", "b", "c"]).ty, ResultType::MissingNodeRequired);
+            assert_eq!(run(p, &["a"]).ty, ResultType::MissingNodeRequired);
+            assert_eq!(run(p, &["b", "a"]).ty, ResultType::MissingNodeRequired);
+            assert_eq!(run(p, &["a", "c"]).ty, ResultType::Matched);
+            assert_eq!(run(p, &["a", "c", "b"]).ty, ResultType::UnexpectedExtraNode);
+        }
+
+        #[test]
+        fn ordered_requires_and_optionals_with_flow() {
+            let p = r##"[{"require": "a"}, {"optional": "b"}, {"optional": "c"}, {"require": "#flow"}]"##;
+            assert_eq!(run(p, &["a", "b", "c"]).ty, ResultType::Matched);
+            assert_eq!(run(p, &["a", "b", "b", "c"]).ty, ResultType::UnexpectedExtraNode);
+            assert_eq!(run(p, &["a"]).ty, ResultType::Matched);
+            assert_eq!(run(p, &["b", "a"]).ty, ResultType::MissingNodeRequired);
+            assert_eq!(run(p, &["a", "c"]).ty, ResultType::Matched);
+            assert_eq!(run(p, &["a", "c", "b"]).ty, ResultType::Matched);
+        }
+
+        #[test]
+        fn ordered_zero_or_more_combination() {
+            let p = r##"[{"zeroOrMore": "a"}, {"zeroOrMore": "b"}, {"zeroOrMore": "c"}]"##;
+            assert_eq!(run(p, &["b"]).ty, ResultType::Matched);
+            assert_eq!(run(p, &["c"]).ty, ResultType::Matched);
+            assert_eq!(run(p, &[]).ty, ResultType::MatchedZero);
+            assert_eq!(run(p, &["b", "c"]).ty, ResultType::Matched);
+        }
+
+        #[test]
+        fn dl_element_flat() {
+            let p = r##"[
+                {"zeroOrMore": ":model(script-supporting)"},
+                {"oneOrMore": "dt"},
+                {"zeroOrMore": ":model(script-supporting)"},
+                {"oneOrMore": "dd"},
+                {"zeroOrMore": ":model(script-supporting)"}
+            ]"##;
+            assert_eq!(run(p, &["dt"]).ty, ResultType::MissingNodeOneOrMore);
+            assert_eq!(run(p, &["dt", "dt"]).ty, ResultType::MissingNodeOneOrMore);
+            assert_eq!(run(p, &["dt", "dd"]).ty, ResultType::Matched);
+            assert_eq!(run(p, &["dt", "dd", "dd"]).ty, ResultType::Matched);
+            assert_eq!(run(p, &["dt", "dd", "dt"]).ty, ResultType::UnexpectedExtraNode);
+        }
+
+        #[test]
+        fn dl_element_nested() {
+            let p = r##"[{"oneOrMore": [
+                {"zeroOrMore": ":model(script-supporting)"},
+                {"oneOrMore": "dt"},
+                {"zeroOrMore": ":model(script-supporting)"},
+                {"oneOrMore": "dd"},
+                {"zeroOrMore": ":model(script-supporting)"}
+            ]}]"##;
+            assert_eq!(run(p, &["dt"]).ty, ResultType::MissingNodeOneOrMore);
+            assert_eq!(run(p, &["dt", "dt"]).ty, ResultType::MissingNodeOneOrMore);
+            assert_eq!(run(p, &["dt", "dd"]).ty, ResultType::Matched);
+            assert_eq!(run(p, &["dt", "dd", "dd"]).ty, ResultType::Matched);
+            assert_eq!(run(p, &["dt", "dd", "dt"]).ty, ResultType::MissingNodeOneOrMore);
+            assert_eq!(run(p, &["dt", "dd", "dt", "dd"]).ty, ResultType::Matched);
+            assert_eq!(
+                run(p, &["dt", "dd", "dt", "dd", "dd", "dt"]).ty,
+                ResultType::MissingNodeOneOrMore
+            );
+        }
+
+        #[test]
+        fn dl_element_full_choice() {
+            let p = r##"[{"choice": [
+                [{"oneOrMore": [
+                    {"zeroOrMore": ":model(script-supporting)"},
+                    {"oneOrMore": "dt"},
+                    {"zeroOrMore": ":model(script-supporting)"},
+                    {"oneOrMore": "dd"},
+                    {"zeroOrMore": ":model(script-supporting)"}
+                ]}],
+                [
+                    {"zeroOrMore": ":model(script-supporting)"},
+                    {"oneOrMore": "div"},
+                    {"zeroOrMore": ":model(script-supporting)"}
+                ]
+            ]}]"##;
+            assert_eq!(run(p, &["dt"]).ty, ResultType::MissingNodeOneOrMore);
+            assert_eq!(run(p, &["dt"]).query, "dd");
+            assert_eq!(run(p, &["dt", "dt"]).ty, ResultType::MissingNodeOneOrMore);
+            assert_eq!(run(p, &["dt", "dd"]).ty, ResultType::Matched);
+            assert_eq!(run(p, &["dt", "dd", "dd"]).ty, ResultType::Matched);
+            assert_eq!(run(p, &["dt", "dd", "dt"]).ty, ResultType::MissingNodeOneOrMore);
+            assert_eq!(run(p, &["dt", "dd", "dt", "dd"]).ty, ResultType::Matched);
+            assert_eq!(
+                run(p, &["dt", "dd", "dt", "dd", "dd", "dt"]).ty,
+                ResultType::MissingNodeOneOrMore
+            );
+            assert_eq!(run(p, &["div"]).ty, ResultType::Matched);
+            assert_eq!(run(p, &["div", "div"]).ty, ResultType::Matched);
+        }
+
+        #[test]
+        fn ruby_element() {
+            let p = r##"[{"oneOrMore": [
+                {"require": ":model(phrasing):not(ruby, :has(ruby))"},
+                {"choice": [
+                    [{"oneOrMore": "rt"}],
+                    [{"oneOrMore": [
+                        {"require": "rp"},
+                        {"oneOrMore": [{"require": "rt"}, {"require": "rp"}]}
+                    ]}]
+                ]}
+            ]}]"##;
+            assert_eq!(run(p, &["span"]).ty, ResultType::MissingNodeOneOrMore);
+            assert_eq!(run(p, &["span"]).query, "rt");
+            assert_eq!(run(p, &["span", "rt"]).ty, ResultType::Matched);
+            assert_eq!(run(p, &["span", "rp", "rt"]).ty, ResultType::MissingNodeRequired);
+            assert_eq!(run(p, &["span", "rp", "rt"]).query, "rp");
+        }
+
+        #[test]
+        fn ruby_part_order() {
+            let p = r##"[
+                {"require": ":model(phrasing):not(ruby, :has(ruby))"},
+                {"choice": [
+                    [{"oneOrMore": "rt"}],
+                    [{"oneOrMore": [{"require": "rp"}, {"oneOrMore": [{"require": "rt"}, {"require": "rp"}]}]}]
+                ]}
+            ]"##;
+            assert_eq!(run(p, &["span"]).ty, ResultType::MissingNodeOneOrMore);
+            assert_eq!(run(p, &["span"]).query, "rt");
+            assert_eq!(run(p, &["span", "rt"]).ty, ResultType::Matched);
+            assert_eq!(run(p, &["span", "rp", "rt"]).ty, ResultType::MissingNodeRequired);
+            assert_eq!(run(p, &["span", "rp", "rt"]).query, "rp");
+        }
+
+        #[test]
+        fn ruby_rp_rt_rp_nested() {
+            let p = r##"[{"oneOrMore": [
+                {"require": "rp"},
+                {"oneOrMore": [{"require": "rt"}, {"require": "rp"}]}
+            ]}]"##;
+            assert_eq!(run(p, &["span"]).ty, ResultType::MissingNodeRequired);
+            assert_eq!(run(p, &["span"]).query, "rp");
+            assert_eq!(run(p, &["rp"]).ty, ResultType::MissingNodeRequired);
+            assert_eq!(run(p, &["rp"]).query, "rt");
+            assert_eq!(run(p, &["rp", "rt", "rp"]).ty, ResultType::Matched);
+            assert_eq!(run(p, &["rp", "rt", "rp", "rt"]).ty, ResultType::MissingNodeRequired);
+            assert_eq!(run(p, &["rp", "rt", "rp", "rt"]).query, "rp");
+            assert_eq!(run(p, &["rp", "rt", "rp", "rt", "rp"]).ty, ResultType::Matched);
+        }
+
+        #[test]
+        fn ruby_rt_rp_pattern() {
+            let p = r##"[{"oneOrMore": [{"require": "rt"}, {"require": "rp"}]}]"##;
+            assert_eq!(run(p, &["rt"]).ty, ResultType::MissingNodeRequired);
+            assert_eq!(run(p, &["rt"]).query, "rp");
+            assert_eq!(run(p, &["rt", "rp"]).ty, ResultType::Matched);
+            assert_eq!(run(p, &["rt", "rp", "rt"]).ty, ResultType::MissingNodeRequired);
+            assert_eq!(run(p, &["rt", "rp", "rt"]).query, "rp");
+            assert_eq!(run(p, &["rt", "rp", "rt", "rp"]).ty, ResultType::Matched);
+        }
+
+        #[test]
+        fn simple_rt_rp() {
+            let p = r##"[{"require": "rt"}, {"require": "rp"}]"##;
+            assert_eq!(run(p, &["rt"]).ty, ResultType::MissingNodeRequired);
+            assert_eq!(run(p, &["rt"]).query, "rp");
+            assert_eq!(run(p, &["rt", "rp"]).ty, ResultType::Matched);
+        }
+
+        #[test]
+        fn issue_1146() {
+            let p = r##"[{"choice": [[{"require": "b"}]]}]"##;
+            let r = run(p, &["b", "b"]);
+            assert_eq!(r.ty, ResultType::UnexpectedExtraNode);
+            assert_eq!(r.query, "b");
+            assert_eq!(r.hint.max, Some(1));
+            assert_eq!(r.matched.len(), 1);
+            assert_eq!(r.unmatched.len(), 1);
+        }
+    }
 }

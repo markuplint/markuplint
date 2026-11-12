@@ -18,6 +18,10 @@ impl Rule for AttrValueQuotes {
         "attr-value-quotes"
     }
 
+    fn default_severity(&self) -> crate::violation::Severity {
+        crate::violation::Severity::Warning
+    }
+
     fn verify(&self, arena: &DomArena, _spec: &MLMLSpec, config: &RuleConfigSet) -> Vec<Violation> {
         let quote_style = config.global().value.as_str().unwrap_or("double");
 
@@ -57,7 +61,7 @@ impl Rule for AttrValueQuotes {
                         line: html_attr.name.line,
                         col: html_attr.name.col,
                         raw: html_attr.raw.clone(),
-                        reason: None,
+                        reason: rule_config.reason.clone(),
                         // An unquoted value has quote tokens of no width, which the edits
                         // turn into insertions on either side of the value.
                         fix: Some(Fix::new(

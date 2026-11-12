@@ -57,6 +57,16 @@ pub enum AttrOperator {
     SubstringMatch,
 }
 
+/// The operator of `:display-size()`.
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+pub enum DisplaySizeOperator {
+    Equal,
+    Greater,
+    GreaterOrEqual,
+    Less,
+    LessOrEqual,
+}
+
 #[derive(Debug, Clone)]
 pub enum PseudoClassSelector {
     Not(SelectorList),
@@ -66,6 +76,15 @@ pub enum PseudoClassSelector {
     Where(SelectorList),
     Scope,
     Root,
+    /// `:first-child` as Selectors Level 4 defines it: no element sibling comes before the element
+    /// (text does not count). A content model category counts text as well; see
+    /// [`crate::matcher::is_content_model_first_child`].
+    FirstChild,
+    /// markuplint extension: a `<select>` in the HTML namespace whose display size compares to the
+    /// number as the operator says (TS `displaySizePseudoClass`). An attribute selector cannot tell
+    /// the display size, which is the `size` parsed as a non-negative integer, else 4 with
+    /// `multiple` and 1 without.
+    DisplaySize(DisplaySizeOperator, f64),
     /// markuplint extension: matches if any ancestor matches the argument.
     Closest(SelectorList),
     /// markuplint extension: matches an element's content-model category.

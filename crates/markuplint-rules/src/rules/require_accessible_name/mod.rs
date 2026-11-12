@@ -38,7 +38,7 @@ impl Rule for RequireAccessibleName {
 
             // A framework binding (a dynamic attribute, a spread, a block whose output is not
             // known) may resolve to a name at runtime, so skip it. TS `accnameMayBeMutable`.
-            if accname_may_be_mutable(arena, node_id) {
+            if accname_may_be_mutable(arena, spec, node_id) {
                 continue;
             }
 
@@ -49,7 +49,7 @@ impl Rule for RequireAccessibleName {
             {
                 let accname = get_accname(spec, arena, node_id, version);
                 // The static scan cannot decide whether the unknown content is the name.
-                if accname.name.is_empty() && !accname_may_come_from_unknown_content(arena, node_id) {
+                if accname.name.is_empty() && !accname_may_come_from_unknown_content(arena, spec, node_id) {
                     violations.push(Violation {
                         rule_id: self.id().to_string(),
                         name: None,
@@ -58,7 +58,7 @@ impl Rule for RequireAccessibleName {
                         line: el.base.line,
                         col: el.base.col,
                         raw: el.base.raw.clone(),
-                        reason: None,
+                        reason: rule_config.reason.clone(),
                         fix: None,
                     });
                 }

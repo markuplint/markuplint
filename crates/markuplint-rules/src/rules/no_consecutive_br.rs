@@ -15,6 +15,10 @@ impl Rule for NoConsecutiveBr {
         "no-consecutive-br"
     }
 
+    fn default_severity(&self) -> crate::violation::Severity {
+        crate::violation::Severity::Warning
+    }
+
     fn verify(&self, arena: &DomArena, _spec: &MLMLSpec, config: &RuleConfigSet) -> Vec<Violation> {
         let mut violations = Vec::new();
 
@@ -46,11 +50,11 @@ impl Rule for NoConsecutiveBr {
                     rule_id: self.id().to_string(),
                     name: None,
                     severity: rule_config.severity,
-                    message: "Consecutive br elements detected".to_string(),
+                    message: "Consecutive \"br\" elements detected".to_string(),
                     line: next_el.base.line,
                     col: next_el.base.col,
                     raw: next_el.base.raw.clone(),
-                    reason: None,
+                    reason: rule_config.reason.clone(),
                     fix: Some(Fix::remove(
                         next_el.base.offset,
                         next_el.base.offset + next_el.base.raw.len(),
@@ -241,7 +245,7 @@ mod tests {
         let rule = NoConsecutiveBr;
         let violations = rule.verify(&arena, &s, &RuleConfigSet::global_only(RuleConfig::default()));
         assert_eq!(violations.len(), 1);
-        assert_eq!(violations[0].message, "Consecutive br elements detected");
+        assert_eq!(violations[0].message, "Consecutive \"br\" elements detected");
     }
 
     #[test]
@@ -299,7 +303,7 @@ mod tests {
         let rule = NoConsecutiveBr;
         let violations = rule.verify(&arena, &s, &RuleConfigSet::global_only(RuleConfig::default()));
         assert_eq!(violations.len(), 1);
-        assert_eq!(violations[0].message, "Consecutive br elements detected");
+        assert_eq!(violations[0].message, "Consecutive \"br\" elements detected");
     }
 
     #[test]

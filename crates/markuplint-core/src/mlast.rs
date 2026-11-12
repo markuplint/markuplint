@@ -333,9 +333,79 @@ pub struct MLASTHTMLAttr {
     pub potential_value: Option<String>,
     #[serde(default)]
     pub value_type: Option<String>,
+    /// How the DOM keys the name of this attribute (TS `MLAttr#keyOf`). `DomArena::set_settings`
+    /// decides it from the settings of the parser and the element; `None` is what the HTML parser
+    /// does ([`AttrNameFold::of_parser`]).
+    #[serde(skip)]
+    pub name_fold: Option<AttrNameFold>,
     #[serde(default)]
     pub candidate: Option<String>,
     pub is_duplicatable: bool,
+}
+
+/// How two spellings of an attribute name are one attribute: the key that TS `MLAttr#keyOf`
+/// gives a name. It is up to how the name gets into the DOM and to the element.
+///
+/// - <https://html.spec.whatwg.org/multipage/parsing.html#attribute-name-state>
+/// - <https://html.spec.whatwg.org/multipage/parsing.html#adjust-svg-attributes>
+/// - <https://dom.spec.whatwg.org/#dom-element-setattribute>
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+pub enum AttrNameFold {
+    /// An element of the HTML namespace that the HTML parser reads: the ASCII letters fold.
+    Ascii,
+    /// An element of the HTML namespace whose attributes code sets (`setAttribute`): the ASCII
+    /// letters fold, but a name with a capital letter is a prop of the framework (`defaultValue` of
+    /// React), which only its exact spelling names (TS `MLAttr#isFrameworkPropName`).
+    DomApi,
+    /// An element of SVG or `MathML` that the HTML parser reads: the ASCII letters fold, and the
+    /// parser restores the case of the names of the specifications (`viewbox` is `viewBox`).
+    Foreign,
+    /// The name as written: an element of SVG or `MathML` whose attributes code sets, or the prop
+    /// of a component.
+    Exact,
+    /// The prop of a Vue component: the camelCase of the name (`my-label` is `myLabel`).
+    VueProp,
+}
+
+impl AttrNameFold {
+    /// What the HTML parser does with the name of an attribute of an element in `namespace`.
+    #[must_use]
+    pub fn of_parser(namespace: &NamespaceURI) -> Self {
+        match namespace {
+            NamespaceURI::XHTML => Self::Ascii,
+            _ => Self::Foreign,
+        }
+    }
+
+    /// TS `MLAttr#keyOf`: how an attribute is keyed, by the settings of the parser, the element
+    /// and whether the value of the attribute is written as code.
+    #[must_use]
+    pub fn of(
+        settings: &DocumentSettings,
+        element_type: &ElementType,
+        namespace: &NamespaceURI,
+        is_expression_value: bool,
+    ) -> Self {
+        if *element_type == ElementType::Authored {
+            return if settings.component_name_variants {
+                Self::VueProp
+            } else {
+                Self::Exact
+            };
+        }
+        // TS `MLAttr#isSetThroughDOMAPI`
+        let through_dom_api = match settings.attr_name_route {
+            AttrNameRoute::HtmlParser => false,
+            AttrNameRoute::DomApi => true,
+            AttrNameRoute::DomApiWhenDynamic => is_expression_value,
+        };
+        match (namespace, through_dom_api) {
+            (NamespaceURI::XHTML, false) => Self::Ascii,
+            (NamespaceURI::XHTML, true) => Self::DomApi,
+            (_, false) => Self::Foreign,
+            (_, true) => Self::Exact,
+        }
+    }
 }
 
 /// Corresponds to `MLASTSpreadAttr` in TS.

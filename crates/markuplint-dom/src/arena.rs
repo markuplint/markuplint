@@ -2,7 +2,7 @@
 
 use std::collections::HashMap;
 
-use markuplint_core::mlast::{DocumentSettings, MLASTParseError};
+use markuplint_core::mlast::{AttrNameFold, DocumentSettings, MLASTAttr, MLASTParseError};
 
 use crate::node::{DomNode, ElementData};
 
@@ -43,8 +43,25 @@ impl DomArena {
         self.settings
     }
 
+    /// Also keys the name of every attribute as the DOM does under these settings
+    /// (`MLASTHTMLAttr::name_fold`, TS `MLAttr#keyOf`), which the lookups by name read.
     pub fn set_settings(&mut self, settings: DocumentSettings) {
         self.settings = settings;
+        for node in &mut self.nodes {
+            let DomNode::Element(el) = node else {
+                continue;
+            };
+            for attr in &mut el.attributes {
+                if let MLASTAttr::HTMLAttr(attr) = attr {
+                    attr.name_fold = Some(AttrNameFold::of(
+                        &settings,
+                        &el.element_type,
+                        &el.namespace,
+                        attr.is_expression_value == Some(true),
+                    ));
+                }
+            }
+        }
     }
 
     #[must_use]

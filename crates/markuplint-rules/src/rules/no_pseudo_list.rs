@@ -44,6 +44,10 @@ impl Rule for NoPseudoList {
         "no-pseudo-list"
     }
 
+    fn default_severity(&self) -> crate::violation::Severity {
+        crate::violation::Severity::Warning
+    }
+
     fn verify(&self, arena: &DomArena, _spec: &MLMLSpec, config: &RuleConfigSet) -> Vec<Violation> {
         let global = config.global();
         let mut bullets: Vec<&str> = DEFAULT_BULLETS.to_vec();
@@ -95,7 +99,10 @@ impl Rule for NoPseudoList {
                 continue;
             };
 
-            let trimmed = text.base.raw.trim();
+            // TS `decodeEntities(textNode.raw.trim())`: a bullet written as a character reference
+            // (`&bullet;`) is the bullet
+            let decoded = crate::decode::decode_entities(text.base.raw.trim());
+            let trimmed = decoded.as_deref().unwrap_or_else(|| text.base.raw.trim());
             if trimmed.is_empty() {
                 continue;
             }

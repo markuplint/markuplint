@@ -12,7 +12,9 @@ use markuplint_types::spec::aria;
 use markuplint_types::spec::types::MLMLSpec;
 
 use crate::aria::computed_role::get_computed_role;
-use crate::aria_check::{ElementContext, ElementGate, aria_prop_attrs, attr_name, prop_type_label, walk_elements};
+use crate::aria_check::{
+    ElementContext, ElementGate, aria_prop_attrs, attr_name, name_key, prop_type_label, walk_elements,
+};
 use crate::rule::{Rule, RuleConfigSet};
 use crate::violation::{Severity, Violation};
 
@@ -60,17 +62,18 @@ fn check(ctx: &ElementContext<'_>, violations: &mut Vec<Violation>) {
 
     for attr in attrs {
         let name = attr_name(attr);
+        let key = name_key(ctx.el, attr);
         let deprecated = role_spec
             .owned_properties
             .iter()
-            .find(|p| p.name == name)
+            .find(|p| p.name == key)
             .is_some_and(|p| p.deprecated == Some(true));
         if !deprecated {
             continue;
         }
         let prop_type = props
             .iter()
-            .find(|p| p.name == name)
+            .find(|p| p.name == key)
             .map_or("property", |p| prop_type_label(&p.prop_type));
         violations.push(ctx.attr_violation(
             attr,

@@ -13,7 +13,7 @@
 use markuplint_dom::arena::DomArena;
 use markuplint_types::spec::types::MLMLSpec;
 
-use crate::aria_check::{ElementContext, ElementGate, aria_prop_attrs, attr_name, walk_elements};
+use crate::aria_check::{ElementContext, ElementGate, aria_prop_attrs, attr_name, name_key, walk_elements};
 use crate::rule::{Rule, RuleConfigSet};
 use crate::violation::Violation;
 
@@ -51,14 +51,15 @@ fn check(ctx: &ElementContext<'_>, violations: &mut Vec<Violation>) {
 
     for attr in attrs {
         let name = attr_name(attr);
-        if role.owned_properties.iter().any(|owned| owned.name == name) {
+        let key = name_key(ctx.el, attr);
+        if role.owned_properties.iter().any(|owned| owned.name == key) {
             continue;
         }
         violations.push(ctx.attr_violation(
             attr,
             format!(
                 "The \"{name}\" ARIA {} is disallowed on the \"{}\" role",
-                ctx.prop_type_of(name),
+                ctx.prop_type_of(&key),
                 role.name
             ),
         ));

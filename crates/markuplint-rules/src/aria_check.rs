@@ -260,9 +260,7 @@ pub(crate) fn html_attrs(el: &ElementData) -> impl Iterator<Item = &MLASTHTMLAtt
 /// The attribute's name as TS `attr.name` gives it: the name the parser resolved (`potentialName`)
 /// when there is one, otherwise the name as written.
 pub(crate) fn attr_name(attr: &MLASTHTMLAttr) -> &str {
-    attr.potential_name
-        .as_deref()
-        .unwrap_or_else(|| markuplint_dom::helpers::get_raw_attr_name(attr))
+    markuplint_dom::helpers::attr_name(attr)
 }
 
 /// TS `el.localName`: an HTML element's name is lower-cased, a foreign (SVG, `MathML`) or
@@ -275,21 +273,26 @@ pub(crate) fn element_local_name(el: &ElementData) -> String {
     }
 }
 
-/// TS `/^aria-/i.test(attr.name)`.
-pub(crate) fn is_aria_prop_attr(attr: &MLASTHTMLAttr) -> bool {
-    attr_name(attr)
-        .get(..5)
-        .is_some_and(|prefix| prefix.eq_ignore_ascii_case("aria-"))
+/// TS `MLAttr#nameKey`: the name that the DOM gives the attribute, which the ARIA checks look a
+/// property of the spec up by. The message names the attribute by [`attr_name`].
+pub(crate) fn name_key(el: &ElementData, attr: &MLASTHTMLAttr) -> String {
+    markuplint_dom::helpers::name_key(el, attr)
 }
 
-/// TS `el.getAttributeNode('role')`: the first `role` attribute, matched case-insensitively.
+/// TS `isAriaAttr`: the name is in the `aria-*` namespace as the DOM names it, so `ARIA-LABEL` on
+/// a `<div>` is one, and on an `<svg>` whose attributes code sets is not.
+pub(crate) fn is_aria_prop_attr(el: &ElementData, attr: &MLASTHTMLAttr) -> bool {
+    crate::attr_name_key::namespace_key_of(el, attr).starts_with("aria-")
+}
+
+/// TS `el.getAttributeNode('role')`.
 pub(crate) fn role_attr(el: &ElementData) -> Option<&MLASTHTMLAttr> {
-    html_attrs(el).find(|attr| attr_name(attr).eq_ignore_ascii_case("role"))
+    find_attr(el, "role")
 }
 
-/// TS `el.attributes.filter(attr => /^aria-/i.test(attr.name))`.
+/// TS `el.attributes.filter(isAriaAttr)`.
 pub(crate) fn aria_prop_attrs(el: &ElementData) -> Vec<&MLASTHTMLAttr> {
-    html_attrs(el).filter(|attr| is_aria_prop_attr(attr)).collect()
+    html_attrs(el).filter(|attr| is_aria_prop_attr(el, attr)).collect()
 }
 
 /// A list of names as TS `t(list)` writes it without the last-separator flag: `"a", "b", "c"`.
@@ -524,6 +527,20 @@ pub(crate) fn get_element_aria(
     el_name: &str,
     version: ARIAVersion,
 ) -> Option<ResolvedElementARIA> {
+    get_element_aria_with(spec, arena, node_id, el_name, version, Some(&SpecAriaResolver { spec }))
+}
+
+/// [`get_element_aria`] with the conditions matched through `resolver` (`None` matches without
+/// the ARIA pseudo-classes). The role computation passes `None` when it is already computing the
+/// same element, which a condition's `:aria(has name)` would ask again.
+pub(crate) fn get_element_aria_with(
+    spec: &MLMLSpec,
+    arena: &DomArena,
+    node_id: NodeId,
+    el_name: &str,
+    version: ARIAVersion,
+    resolver: Option<&dyn markuplint_selector::aria_resolver::AriaResolver>,
+) -> Option<ResolvedElementARIA> {
     let el = arena.get(node_id)?.as_element()?;
     let el_spec = get_spec_by_tag_name(spec, el_name, Some(namespace_uri(&el.namespace)))?;
     let aria = &el_spec.aria;
@@ -536,12 +553,11 @@ pub(crate) fn get_element_aria(
     let (mut layer, conditions) = resolve_version(aria, version);
 
     if let Some(conditions) = conditions {
-        let resolver = SpecAriaResolver { spec };
         for (selector, override_value) in conditions {
             let Some(selector) = crate::diagnostic::parse_selector("spec ARIA condition", selector) else {
                 continue;
             };
-            if !markuplint_selector::matcher::matches(&selector, arena, node_id, None, Some(spec), Some(&resolver)) {
+            if !markuplint_selector::matcher::matches(&selector, arena, node_id, None, Some(spec), resolver) {
                 continue;
             }
             layer.overlay(Layer::from_value(override_value));
@@ -857,10 +873,10 @@ impl<'a> ElementContext<'a> {
     }
 }
 
-/// TS `el.getAttributeNode(name)` for an HTML attribute: the first attribute of that name,
-/// matched case-insensitively.
+/// TS `el.getAttributeNode(name)` for an HTML attribute: the first attribute that `name` names as
+/// the DOM names it (`MLAttr#isNamedBy`).
 pub(crate) fn find_attr<'e>(el: &'e ElementData, name: &str) -> Option<&'e MLASTHTMLAttr> {
-    html_attrs(el).find(|attr| attr_name(attr).eq_ignore_ascii_case(name))
+    html_attrs(el).find(|attr| markuplint_dom::helpers::is_named_by(el, attr, name))
 }
 
 #[cfg(test)]

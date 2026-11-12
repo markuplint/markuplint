@@ -28,7 +28,7 @@ pub enum ImplicitRole {
 }
 
 /// TS: `AttributeCondition = string | [string, ...string[]]`
-#[derive(Debug, Deserialize)]
+#[derive(Debug, Clone, Deserialize)]
 #[serde(untagged)]
 pub enum AttributeCondition {
     Single(String),
@@ -36,7 +36,7 @@ pub enum AttributeCondition {
 }
 
 /// TS: `bool | AttributeCondition`
-#[derive(Debug, Deserialize)]
+#[derive(Debug, Clone, Deserialize)]
 #[serde(untagged)]
 pub enum AttributeRequired {
     Flag(bool),
@@ -122,6 +122,13 @@ pub struct MLMLSpec {
     /// not an HTML `template` element; absent or `separate-tree` is the HTML behavior.
     #[serde(default, rename = "templateContent")]
     pub template_content: Option<TemplateContent>,
+    /// TS `MLMLSpec.movedToHead`: selectors of the elements that the framework places in the
+    /// `<head>` wherever they are written, so the parent they are written in does not contain them.
+    #[serde(default, rename = "movedToHead")]
+    pub moved_to_head: Option<Vec<String>>,
+    /// What [`super::attr_specs::get_attr_specs_list`] built for each element.
+    #[serde(skip)]
+    pub attr_specs_cache: super::attr_specs::AttrSpecsCache,
 }
 
 /// See [`MLMLSpec::template_content`].
@@ -211,7 +218,7 @@ pub struct ElementSpec {
 // Attribute
 // ============================================================
 
-#[derive(Debug, Deserialize)]
+#[derive(Debug, Clone, Deserialize)]
 pub struct Attribute {
     /// Populated during resolution, not always present in the source JSON.
     #[serde(default)]
@@ -254,6 +261,39 @@ pub struct Attribute {
     pub animation_type: Option<String>,
     #[serde(default, rename = "noUse")]
     pub no_use: Option<bool>,
+}
+
+impl Attribute {
+    /// `{ ...self, ...own }`: the fields `own` has replace those of `self` (TS spreads the
+    /// attribute an element defines over the global one).
+    pub fn overlay(&mut self, own: &Attribute) {
+        if !own.attr_type.is_null() {
+            self.attr_type = own.attr_type.clone();
+        }
+        macro_rules! take {
+            ($($field:ident),*) => {
+                $(if own.$field.is_some() {
+                    self.$field = own.$field.clone();
+                })*
+            };
+        }
+        take!(
+            description,
+            case_sensitive,
+            experimental,
+            obsolete,
+            deprecated,
+            non_standard,
+            default_value,
+            required,
+            required_either,
+            condition,
+            same_states,
+            ineffective,
+            animation_type,
+            no_use
+        );
+    }
 }
 
 // ============================================================

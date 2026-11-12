@@ -4,7 +4,7 @@
 //!   role-supports-aria-prop-valid-001    → role_supports_aria_prop_valid_001
 //!   role-supports-aria-prop-invalid-001  → role_supports_aria_prop_invalid_001
 //!   v6_role_supports_aria_prop_001  — Rust-only: every unsupported attribute is reported, with its type
-//!   v6_role_supports_aria_prop_002  — Rust-only: an attribute name written in upper case is not an owned property
+//!   v6_role_supports_aria_prop_002  — Rust-only: an attribute name written in upper case is the owned property it names
 //!   v6_role_supports_aria_prop_003  — Rust-only: implicit roles, including `generic`, and an invalid `role`
 //!   v6_role_supports_aria_prop_004  — Rust-only: no computed role, no check
 //!   v6_role_supports_aria_prop_005  — Rust-only: severity and `rules: false`
@@ -112,19 +112,9 @@ fn v6_role_supports_aria_prop_001() {
 
 #[test]
 fn v6_role_supports_aria_prop_002() {
-    // Matched on the name as written, as TS does: `ARIA-LEVEL` is not found among the owned
-    // properties, and being unknown by that spelling it is typed "property".
+    // `ARIA-LEVEL` is `aria-level` as the DOM names it (#4309), which the role owns.
     let violations = run_rule(r#"<div role="heading" ARIA-LEVEL="2"></div>"#, serde_json::json!(true));
-    assert_violations(
-        &violations,
-        &[(
-            Severity::Error,
-            1,
-            21,
-            "The \"ARIA-LEVEL\" ARIA property is disallowed on the \"heading\" role",
-            "ARIA-LEVEL=\"2\"",
-        )],
-    );
+    assert_violations(&violations, &[]);
 }
 
 #[test]

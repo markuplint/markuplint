@@ -13,7 +13,7 @@ use markuplint_dom::arena::DomArena;
 use markuplint_types::spec::types::MLMLSpec;
 
 use crate::aria::computed_role::get_computed_role;
-use crate::aria_check::{ElementContext, ElementGate, attr_name, html_attrs, is_aria_prop_attr, walk_elements};
+use crate::aria_check::{ElementContext, ElementGate, html_attrs, is_aria_prop_attr, name_key, walk_elements};
 use crate::rule::{Rule, RuleConfigSet};
 use crate::violation::{Severity, Violation};
 
@@ -46,7 +46,7 @@ impl Rule for NoAriaOnPresentationalChildren {
 
 fn check(ctx: &ElementContext<'_>) -> Option<Violation> {
     let has_aria_attr =
-        html_attrs(ctx.el).any(|attr| is_aria_prop_attr(attr) || attr_name(attr).eq_ignore_ascii_case("role"));
+        html_attrs(ctx.el).any(|attr| is_aria_prop_attr(ctx.el, attr) || name_key(ctx.el, attr) == "role");
     if !has_aria_attr {
         return None;
     }

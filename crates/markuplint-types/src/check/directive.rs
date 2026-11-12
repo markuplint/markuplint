@@ -1,58 +1,85 @@
-use regex::Regex;
+//! Port of `packages/@markuplint/types/src/directive.ts`.
 
-use super::types::{CheckResult, DirectiveType, Reason, matched, unmatched};
+use super::types::{CheckResult, DirectiveType, Reason, UnmatchedOpts, UnmatchedResult, matched, unmatched_with};
 
+/// TS `regexParser` of `@markuplint/shared`: `/pattern/flags` as a regular expression. A flag that
+/// has no counterpart here (`g`, `y`, `d`, `u`, `v`) does not change what matches.
 #[must_use]
-pub fn check_directive<F>(value: &str, type_def: &DirectiveType, check_token: F) -> CheckResult
+pub fn regex_parser(regexp_like: &str) -> Option<fancy_regex::Regex> {
+    let rest = regexp_like.strip_prefix('/')?;
+    let last_slash = rest.rfind('/')?;
+    let pattern = &rest[..last_slash];
+    let flags = &rest[last_slash + 1..];
+    if pattern.is_empty() || !flags.chars().all(|c| "dgimsuvy".contains(c)) {
+        return None;
+    }
+    js_regex(pattern, flags)
+}
+
+/// A JS regular expression with its flags. `fancy-regex` reads the lookaround and backreferences
+/// that a JS pattern may have.
+#[must_use]
+pub fn js_regex(pattern: &str, flags: &str) -> Option<fancy_regex::Regex> {
+    let mut inline = String::new();
+    for (flag, inner) in [('i', 'i'), ('m', 'm'), ('s', 's')] {
+        if flags.contains(flag) {
+            inline.push(inner);
+        }
+    }
+    let source = if inline.is_empty() {
+        pattern.to_owned()
+    } else {
+        format!("(?{inline}){pattern}")
+    };
+    fancy_regex::Regex::new(&source).ok()
+}
+
+/// TS `checkDirective`.
+#[must_use]
+pub fn check_directive<F>(value: &str, type_def: &DirectiveType, ref_: Option<&str>, check_token: F) -> CheckResult
 where
     F: Fn(&str) -> CheckResult,
 {
-    let mut first_unmatched: Option<CheckResult> = None;
+    let mut unmatches: Vec<UnmatchedResult> = Vec::new();
+    let missing = || {
+        let CheckResult::Unmatched(u) = unmatched_with(
+            value,
+            Reason::MissingToken,
+            UnmatchedOpts {
+                ref_: ref_.map(str::to_owned).or_else(|| type_def.ref_.clone()),
+                ..Default::default()
+            },
+        ) else {
+            unreachable!()
+        };
+        u
+    };
 
-    for pattern in &type_def.directive {
-        if let Some((regex_body, _flags)) = parse_regex_literal(pattern) {
-            if let Ok(re) = Regex::new(regex_body)
-                && let Some(caps) = re.captures(value)
-            {
-                let token_part = caps.name("token").or_else(|| caps.get(1)).map(|m| m.as_str());
+    for directive in &type_def.directive {
+        // TS `regexParser` returns `null` for a string it cannot read, and the directive is a prefix then
+        let token_part: String = if let Some(matcher) = regex_parser(directive) {
+            let Ok(Some(caps)) = matcher.captures(value) else {
+                unmatches.push(missing());
+                continue;
+            };
+            caps.name("token")
+                .or_else(|| caps.get(1))
+                .map_or_else(String::new, |m| m.as_str().to_owned())
+        } else if let Some(rest) = value.strip_prefix(directive.as_str()) {
+            rest.to_owned()
+        } else {
+            unmatches.push(missing());
+            continue;
+        };
 
-                if let Some(token_value) = token_part {
-                    let result = check_token(token_value);
-                    if result.is_matched() {
-                        return matched();
-                    }
-                    if first_unmatched.is_none() {
-                        first_unmatched = Some(result);
-                    }
-                } else {
-                    // Regex matched but no token capture group
-                    return matched();
-                }
-            }
-            // Regex didn't match or was invalid — try next directive
-        } else if value.starts_with(pattern.as_str()) {
-            let token_value = &value[pattern.len()..];
-            let result = check_token(token_value);
-            if result.is_matched() {
-                return matched();
-            }
-            if first_unmatched.is_none() {
-                first_unmatched = Some(result);
-            }
+        match check_token(&token_part) {
+            CheckResult::Matched => return CheckResult::Matched,
+            CheckResult::Unmatched(u) => unmatches.push(u),
         }
     }
 
-    first_unmatched.unwrap_or_else(|| unmatched(value, Reason::UnexpectedToken))
-}
-
-fn parse_regex_literal(s: &str) -> Option<(&str, &str)> {
-    let rest = s.strip_prefix('/')?;
-    let last_slash = rest.rfind('/')?;
-    let body = &rest[..last_slash];
-    let flags = &rest[last_slash + 1..];
-    if flags.chars().all(|c| matches!(c, 'g' | 'i' | 'm')) {
-        Some((body, flags))
-    } else {
-        None
-    }
+    unmatches
+        .into_iter()
+        .next()
+        .map_or_else(matched, CheckResult::Unmatched)
 }

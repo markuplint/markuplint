@@ -1,10 +1,15 @@
-//! `no-default-value` rule: attributes should not be explicitly set to their default value.
+//! `no-default-value` rule: an attribute set to its default value. Port of
+//! `packages/@markuplint/rules/src/no-default-value/`.
+//!
+//! The attribute is looked up in the specs of the element, global ones merged (TS
+//! `getAttrSpecs`), by the name the DOM gives it (TS `findAttrSpec`), and the value and the
+//! default value are compared as the spec normalizes them (TS `toNormalizedValue`).
 
 use markuplint_core::mlast::MLASTAttr;
 use markuplint_dom::arena::DomArena;
-use markuplint_types::spec::lookup::{get_attr_specs, get_spec};
 use markuplint_types::spec::types::MLMLSpec;
 
+use crate::attr_name_key::{attr_specs_of, find_attr_spec, to_normalized_value};
 use crate::fix::Fix;
 use crate::rule::{Rule, RuleConfigSet};
 use crate::violation::{Severity, Violation};
@@ -29,63 +34,46 @@ impl Rule for NoDefaultValue {
             if rule_config.disabled {
                 continue;
             }
-            let attr_specs = get_attr_specs(spec, &el.base.node_name);
+            let Some(attr_specs) = attr_specs_of(spec, el) else {
+                continue;
+            };
 
             for attr in &el.attributes {
                 let MLASTAttr::HTMLAttr(html_attr) = attr else {
                     continue;
                 };
-                // TS `attr.isDynamicValue`: a value that is not known is not the default one
-                if html_attr.is_dynamic_value == Some(true) {
+                // The value of an attribute that is not known, or that is not output, is not the
+                // default value
+                if html_attr.is_dynamic_value == Some(true) || markuplint_dom::helpers::is_absent(html_attr) {
                     continue;
                 }
-
-                let attr_name_lower = html_attr.node_name.to_ascii_lowercase();
-
-                // Element-specific attrs may have the name but no defaultValue — fall back to global.
-                let default_value = match attr_specs.get(attr_name_lower.as_str()) {
-                    Some(attr_spec) if attr_spec.default_value.is_some() => attr_spec.default_value.as_deref(),
-                    _ => get_global_attr_default(spec, &el.base.node_name, &attr_name_lower),
+                let Some(attr_spec) = find_attr_spec(&attr_specs, el, html_attr) else {
+                    continue;
                 };
-                let Some(default_value) = default_value else {
+                let Some(default_value) = attr_spec.default_value.as_deref().filter(|v| !v.is_empty()) else {
                     continue;
                 };
 
-                if markuplint_dom::helpers::attr_value(html_attr).eq_ignore_ascii_case(default_value) {
-                    // TS points at the value, not at the attribute. A valueless attribute never gets
-                    // here: no default value in the spec is the empty string.
-                    violations.push(Violation {
-                        rule_id: self.id().to_string(),
-                        name: None,
-                        severity: rule_config.severity,
-                        message: "It is the default value".to_string(),
-                        line: html_attr.value.line,
-                        col: html_attr.value.col,
-                        raw: html_attr.value.raw.clone(),
-                        reason: None,
-                        fix: Fix::remove_attr(html_attr),
-                    });
+                let value = to_normalized_value(markuplint_dom::helpers::attr_value(html_attr), attr_spec);
+                if value != to_normalized_value(default_value, attr_spec) {
+                    continue;
                 }
+                violations.push(Violation {
+                    rule_id: self.id().to_string(),
+                    name: None,
+                    severity: rule_config.severity,
+                    message: "It is the default value".to_string(),
+                    line: html_attr.value.line,
+                    col: html_attr.value.col,
+                    raw: html_attr.value.raw.clone(),
+                    reason: rule_config.reason.clone(),
+                    fix: Fix::remove_attr(html_attr),
+                });
             }
         }
 
         violations
     }
-}
-
-fn get_global_attr_default<'a>(spec: &'a MLMLSpec, element_name: &str, attr_name: &str) -> Option<&'a str> {
-    let el = get_spec(spec, element_name)?;
-    for category in el.global_attrs.keys() {
-        if category == "#ARIAAttrs" || category == "#GlobalEventAttrs" {
-            continue;
-        }
-        if let Some(attrs_map) = spec.def.global_attrs.get(category)
-            && let Some(attr_val) = attrs_map.get(attr_name)
-        {
-            return attr_val.get("defaultValue").and_then(serde_json::Value::as_str);
-        }
-    }
-    None
 }
 
 #[cfg(test)]

@@ -1,10 +1,16 @@
-//! `no-boolean-attr-value` rule: boolean attributes should not have explicit values.
+//! `no-boolean-attr-value` rule: a boolean attribute needs no value. Port of
+//! `packages/@markuplint/rules/src/no-boolean-attr-value/`.
+//!
+//! The attribute is looked up in the specs of the element, global ones merged (TS
+//! `getAttrSpecs`), by the name the DOM gives it (TS `findAttrSpec`), so `REQUIRED` on an
+//! `<input>` is the boolean `required`. What follows the name, from the spaces before `=` to the
+//! closing quote, is what is reported and removed.
 
 use markuplint_core::mlast::MLASTAttr;
 use markuplint_dom::arena::DomArena;
-use markuplint_types::spec::lookup::{get_attr_specs, get_spec};
 use markuplint_types::spec::types::MLMLSpec;
 
+use crate::attr_name_key::{attr_specs_of, find_attr_spec};
 use crate::fix::Fix;
 use crate::rule::{Rule, RuleConfigSet};
 use crate::violation::Violation;
@@ -16,6 +22,10 @@ impl Rule for NoBooleanAttrValue {
         "no-boolean-attr-value"
     }
 
+    fn default_severity(&self) -> crate::violation::Severity {
+        crate::violation::Severity::Warning
+    }
+
     fn verify(&self, arena: &DomArena, spec: &MLMLSpec, config: &RuleConfigSet) -> Vec<Violation> {
         let mut violations = Vec::new();
 
@@ -24,73 +34,61 @@ impl Rule for NoBooleanAttrValue {
             if rule_config.disabled {
                 continue;
             }
-            let attr_specs = get_attr_specs(spec, &el.base.node_name);
+            let Some(attr_specs) = attr_specs_of(spec, el) else {
+                continue;
+            };
 
             for attr in &el.attributes {
                 let MLASTAttr::HTMLAttr(html_attr) = attr else {
                     continue;
                 };
 
+                // The value of an expression is not written as the value of an HTML attribute
                 if html_attr.is_expression_value == Some(true) {
                     continue;
                 }
 
-                let attr_name_lower = html_attr.node_name.to_ascii_lowercase();
-
-                // Element-specific attrs may have the name but no type — fall back to global.
-                let is_boolean = match attr_specs.get(attr_name_lower.as_str()) {
-                    Some(attr_spec) if attr_spec.attr_type.as_str() == Some("Boolean") => true,
-                    Some(attr_spec)
-                        if attr_spec.attr_type.is_null() || attr_spec.attr_type == serde_json::Value::default() =>
-                    {
-                        is_global_boolean_attr(spec, &el.base.node_name, &attr_name_lower)
-                    }
-                    Some(_) => false,
-                    None => is_global_boolean_attr(spec, &el.base.node_name, &attr_name_lower),
+                let Some(attr_spec) = find_attr_spec(&attr_specs, el, html_attr) else {
+                    continue;
                 };
-                if !is_boolean {
+                if attr_spec.attr_type.as_str() != Some("Boolean") {
                     continue;
                 }
 
-                // An equal sign is reported even with an empty value like `disabled=""`.
-                if !html_attr.equal.raw.is_empty() {
-                    violations.push(Violation {
-                        rule_id: self.id().to_string(),
-                        name: None,
-                        severity: rule_config.severity,
-                        message: format!(
-                            "\"{}\" is a boolean attribute. It doesn't need the value",
-                            html_attr.node_name
-                        ),
-                        line: html_attr.name.line,
-                        col: html_attr.name.col,
-                        raw: html_attr.raw.clone(),
-                        reason: None,
-                        fix: Fix::remove_attr_value(html_attr),
-                    });
+                let extra_raw: String = [
+                    &html_attr.spaces_before_equal,
+                    &html_attr.equal,
+                    &html_attr.spaces_after_equal,
+                    &html_attr.start_quote,
+                    &html_attr.value,
+                    &html_attr.end_quote,
+                ]
+                .iter()
+                .map(|token| token.raw.as_str())
+                .collect();
+                if extra_raw.is_empty() {
+                    continue;
                 }
+
+                violations.push(Violation {
+                    rule_id: self.id().to_string(),
+                    name: None,
+                    severity: rule_config.severity,
+                    message: format!(
+                        "The \"{}\" attribute is a boolean attribute. It doesn't need the value",
+                        markuplint_dom::helpers::attr_name(html_attr)
+                    ),
+                    line: html_attr.spaces_before_equal.line,
+                    col: html_attr.spaces_before_equal.col,
+                    raw: extra_raw,
+                    reason: rule_config.reason.clone(),
+                    fix: Fix::remove_attr_value(html_attr),
+                });
             }
         }
 
         violations
     }
-}
-
-fn is_global_boolean_attr(spec: &MLMLSpec, element_name: &str, attr_name: &str) -> bool {
-    let Some(el) = get_spec(spec, element_name) else {
-        return false;
-    };
-    for category in el.global_attrs.keys() {
-        if category == "#ARIAAttrs" || category == "#GlobalEventAttrs" {
-            continue;
-        }
-        if let Some(attrs_map) = spec.def.global_attrs.get(category)
-            && let Some(attr_val) = attrs_map.get(attr_name)
-        {
-            return attr_val.get("type").and_then(serde_json::Value::as_str) == Some("Boolean");
-        }
-    }
-    false
 }
 
 #[cfg(test)]
@@ -169,7 +167,7 @@ mod tests {
         assert_eq!(violations.len(), 1);
         assert_eq!(
             violations[0].message,
-            "\"checked\" is a boolean attribute. It doesn't need the value"
+            "The \"checked\" attribute is a boolean attribute. It doesn't need the value"
         );
     }
 

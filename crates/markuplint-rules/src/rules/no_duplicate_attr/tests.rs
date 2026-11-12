@@ -17,7 +17,7 @@
 //!   v6_attr_duplication_003       — Rust-only: triple duplicate
 //!   v6_attr_duplication_004       — Rust-only: no attrs, no violation
 //!   v6_attr_duplication_005       — Rust-only: severity from config
-//!   v6_attr_duplication_006       — Rust-only: pretender attributes, and names compared as written on a non-HTML element
+//!   v6_attr_duplication_006       — Rust-only: pretender attributes, and names compared as the DOM names them on a custom element
 //!   v6_attr_duplication_007       — Rust-only: whitespace around the equal sign, non-ASCII text before the fix
 //!   v6_attr_duplication_008       — Rust-only: names are the ones the parser resolved (`:href` is `href`), `isDuplicatable`
 
@@ -219,6 +219,7 @@ pub(crate) fn make_element_with_attrs(tag: &str, attrs: &[(&str, &str)]) -> DomA
                 value_type: None,
                 candidate: None,
                 is_duplicatable: false,
+                name_fold: None,
             }))
         })
         .collect();
@@ -352,8 +353,15 @@ fn v6_attr_duplication_006() {
         { "name": "aria-label", "value": "b" }, { "name": "aria-label", "value": "c" }
     ] } }]);
     assert_eq!(run(r#"<x-btn aria-label="a"></x-btn>"#, button.clone()), []);
-    assert_eq!(run(r#"<x-btn a="1" A="2"></x-btn>"#, button), []);
-    assert_eq!(run(r#"<x-btn a="1" A="2"></x-btn>"#, serde_json::json!([])), []);
+    let folded = [crate::test_util::brief(
+        crate::violation::Severity::Error,
+        1,
+        14,
+        "The attribute name is duplicated",
+        "A",
+    )];
+    assert_eq!(run(r#"<x-btn a="1" A="2"></x-btn>"#, button), folded);
+    assert_eq!(run(r#"<x-btn a="1" A="2"></x-btn>"#, serde_json::json!([])), folded);
     assert_eq!(
         run(r#"<div a="1" A="2"></div>"#, serde_json::json!([])),
         [crate::test_util::brief(

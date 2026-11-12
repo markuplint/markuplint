@@ -5,7 +5,7 @@
 //!   no-obsolete-attr-invalid-002  → no_obsolete_attr_invalid_002
 //!   no-obsolete-attr-valid-001    → no_obsolete_attr_valid_001
 //!   no-obsolete-attr-valid-002    → no_obsolete_attr_valid_002
-//!   v6_no_obsolete_attr_001       — Rust-only: an obsolete attribute written in another case is not matched
+//!   v6_no_obsolete_attr_001       — Rust-only: an obsolete attribute written in another case is the attribute, named as the spec spells it
 
 use crate::lint::{LintConfig, lint};
 use crate::violation::Severity;
@@ -86,5 +86,9 @@ fn no_obsolete_attr_valid_002() {
 #[test]
 fn v6_no_obsolete_attr_001() {
     let violations = run(r#"<link rel="alternate" href="/feed" CHARSET="utf-8">"#);
-    assert_eq!(violations.len(), 0);
+    assert_eq!(violations.len(), 1);
+    assert_eq!(violations[0].line, 1);
+    assert_eq!(violations[0].col, 36);
+    assert_eq!(violations[0].raw, "CHARSET");
+    assert_eq!(violations[0].message, "The \"charset\" attribute is obsolete");
 }

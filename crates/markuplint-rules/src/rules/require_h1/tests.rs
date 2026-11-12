@@ -139,7 +139,8 @@ fn v6_require_h1_003() {
     assert_eq!(run("<title>x</title><p>a</p>", serde_json::json!(true)).len(), 0);
 }
 
-/// Rust-only: TS counts an `<h1>` inside `<template>` content. Expected value is the TS output.
+/// Rust-only: an `<h1>` in the content of a `<template>` is in a tree of its own, so the document
+/// has none. Expected value is the TS output.
 #[test]
 fn v6_require_h1_004() {
     assert_eq!(
@@ -148,7 +149,7 @@ fn v6_require_h1_004() {
             serde_json::json!(true)
         )
         .len(),
-        0
+        1
     );
 }
 

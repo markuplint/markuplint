@@ -111,7 +111,7 @@ pub fn compute_accname(arena: &DomArena, node_id: NodeId, resolver: &dyn Accname
 }
 
 pub fn get_accname(spec: &MLMLSpec, arena: &DomArena, node_id: NodeId, version: ARIAVersion) -> AccnameResult {
-    let resolver = resolver::SpecAccnameResolver::new(spec, arena, version);
+    let resolver = resolver::SpecAccnameResolver::new(spec, arena, version, node_id);
     compute_accname(arena, node_id, &resolver)
 }
 

@@ -331,6 +331,8 @@ pub struct NapiViolation {
     pub line: u32,
     pub col: u32,
     pub raw: String,
+    /// The `reason` of the rule config, unless `reasonOnly` made it the message.
+    pub reason: Option<String>,
     /// TS `FixData`; the ranges are UTF-16 code unit offsets.
     pub fix: Option<NapiFixData>,
 }
@@ -381,6 +383,7 @@ fn to_napi_violations(result: markuplint_rules::lint::LintResult) -> napi::Resul
             line: v.line,
             col: v.col,
             raw: v.raw,
+            reason: v.reason,
             fix: v.fix.map(to_napi_fix),
         })
         .collect())

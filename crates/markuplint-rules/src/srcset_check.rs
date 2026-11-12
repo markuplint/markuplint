@@ -7,7 +7,7 @@
 //! `<img>` / `<source>`-in-`<picture>` gate, the spread-attribute skip, the ghost-element skip and
 //! the per-node `nodeRules` handling behave identically in every one of the four rules.
 
-use markuplint_core::mlast::{MLASTAttr, MLASTHTMLAttr};
+use markuplint_core::mlast::MLASTHTMLAttr;
 use markuplint_dom::arena::{DomArena, NodeId};
 use markuplint_dom::node::{DomNode, ElementData};
 use regex::Regex;
@@ -56,24 +56,54 @@ pub(crate) fn parse_srcset(value: &str) -> SrcsetDescriptors {
     descriptors
 }
 
-/// Whether a `sizes` value starts with `auto`, ASCII case-insensitively.
+/// TS `hasSizesAuto`: a `sizes` value that is `auto`, or a list whose first entry is (`"auto,
+/// 100vw"`), ASCII case-insensitively. The value is not trimmed and no space may follow `auto`:
+/// `" auto "` and `"auto 100vw"` are not auto.
 ///
-/// Per the spec, `auto` is only valid as the first entry in a sizes list (`"auto"`,
-/// `"auto, 100vw"`). See <https://html.spec.whatwg.org/multipage/embedded-content.html#the-img-element>.
+/// <https://html.spec.whatwg.org/multipage/images.html#sizes-attributes>
 pub(crate) fn has_sizes_auto(value: &str) -> bool {
-    let value = value.trim().to_lowercase();
-    value
-        .strip_prefix("auto")
-        .is_some_and(|rest| rest.is_empty() || rest.starts_with(|c: char| c == ',' || c.is_whitespace()))
+    let value = value.to_lowercase();
+    value == "auto" || value.starts_with("auto,")
 }
 
-/// The HTML attribute `name` of `el` (TS `getAttributeNode`), matched against the name as TS
-/// `attr.name` gives it: an upper-case `SRCSET` is not found.
+/// The HTML attribute `name` of `el` (TS `getAttributeNode`), named as the DOM names it, so
+/// `SRCSET` on an `<img>` is its `srcset`.
 pub(crate) fn attr_node<'a>(el: &'a ElementData, name: &str) -> Option<&'a MLASTHTMLAttr> {
-    el.attributes.iter().find_map(|attr| match attr {
-        MLASTAttr::HTMLAttr(html_attr) if crate::aria_check::attr_name(html_attr) == name => Some(&**html_attr),
-        _ => None,
-    })
+    markuplint_dom::helpers::get_html_attr_from_el(el, name)
+}
+
+/// TS `isLazyLoading`: whether the `loading` of `img` is `lazy` (ASCII case-insensitively);
+/// `None` when it is not known (a dynamic value, or no `loading` beside spread props).
+pub(crate) fn is_lazy_loading(img: &ElementData) -> Option<bool> {
+    let loading = attr_node(img, "loading");
+    if loading.is_some_and(is_dynamic) || (loading.is_none() && img.has_spread_attr) {
+        return None;
+    }
+    Some(loading.is_some_and(|loading| markuplint_dom::helpers::attr_value(loading).to_lowercase() == "lazy"))
+}
+
+/// TS `isAutoSizes`: whether the `sizes` of `img` is auto ([`has_sizes_auto`]); `None` when it
+/// is not known.
+pub(crate) fn is_auto_sizes(img: &ElementData) -> Option<bool> {
+    let sizes = attr_node(img, "sizes");
+    if sizes.is_some_and(is_dynamic) || (sizes.is_none() && img.has_spread_attr) {
+        return None;
+    }
+    Some(sizes.is_some_and(|sizes| has_sizes_auto(markuplint_dom::helpers::attr_value(sizes))))
+}
+
+/// TS `allowsAutoSizes`: whether `img` lets a preceding `<source>` take `sizes="auto"`, which needs
+/// both `loading="lazy"` and `sizes="auto"` on it. `None` when that is not known.
+pub(crate) fn allows_auto_sizes(img: &ElementData) -> Option<bool> {
+    let lazy = is_lazy_loading(img);
+    let auto = is_auto_sizes(img);
+    if lazy == Some(false) || auto == Some(false) {
+        return Some(false);
+    }
+    if lazy.is_none() || auto.is_none() {
+        return None;
+    }
+    Some(true)
 }
 
 /// TS `attr.isDynamicValue`: a framework expression whose value is unknown at lint time.

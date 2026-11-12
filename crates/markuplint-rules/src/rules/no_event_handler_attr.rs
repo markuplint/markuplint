@@ -15,6 +15,10 @@ impl Rule for NoEventHandlerAttr {
         "no-event-handler-attr"
     }
 
+    fn default_severity(&self) -> crate::violation::Severity {
+        crate::violation::Severity::Warning
+    }
+
     fn verify(&self, arena: &DomArena, _spec: &MLMLSpec, config: &RuleConfigSet) -> Vec<Violation> {
         let global = config.global();
 
@@ -92,7 +96,7 @@ impl Rule for NoEventHandlerAttr {
                     line: html_attr.name.line,
                     col: html_attr.name.col,
                     raw: html_attr.raw.clone(),
-                    reason: None,
+                    reason: rule_config.reason.clone(),
                     fix: None,
                 });
             }
@@ -155,6 +159,7 @@ mod tests {
             options: serde_json::Value::Null,
             disabled: false,
             reason: None,
+            reason_only: None,
         };
         let violations = rule.verify(&arena, &s, &RuleConfigSet::global_only(config));
         assert!(violations.is_empty());

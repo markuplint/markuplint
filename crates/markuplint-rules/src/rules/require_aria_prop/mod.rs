@@ -20,7 +20,7 @@ use markuplint_types::spec::types::MLMLSpec;
 use crate::aria::computed_role::get_computed_role;
 use crate::aria::may_be_focusable::may_be_focusable;
 use crate::aria_check::{
-    AltMethod, ElementContext, ElementGate, ElementProperties, attr_name, find_attr, html_attrs, role_attr,
+    AltMethod, ElementContext, ElementGate, ElementProperties, find_attr, html_attrs, name_key, role_attr,
     walk_elements,
 };
 use crate::rule::{Rule, RuleConfigSet};
@@ -72,8 +72,8 @@ fn check(ctx: &ElementContext<'_>) -> Option<Violation> {
         }
 
         let required = owned.name.as_str();
-        // TS `attr.name.toLowerCase() === requiredProp`.
-        if html_attrs(ctx.el).any(|attr| attr_name(attr).to_ascii_lowercase() == required) {
+        // TS `attr.nameKey === requiredProp`.
+        if html_attrs(ctx.el).any(|attr| name_key(ctx.el, attr) == required) {
             continue;
         }
 

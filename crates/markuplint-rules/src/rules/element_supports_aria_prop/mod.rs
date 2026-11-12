@@ -20,7 +20,7 @@ use markuplint_types::spec::types::MLMLSpec;
 
 use crate::aria_check::{
     AltMethod, ElementContext, ElementGate, ElementProperties, Restriction, aria_prop_attrs, attr_name, find_attr,
-    walk_elements,
+    name_key, walk_elements,
 };
 use crate::rule::{Rule, RuleConfigSet};
 use crate::violation::Violation;
@@ -59,7 +59,8 @@ fn check(ctx: &ElementContext<'_>, violations: &mut Vec<Violation>) {
 
     for attr in attrs {
         let name = attr_name(attr);
-        let prop_type = ctx.prop_type_of(name);
+        let key = name_key(ctx.el, attr);
+        let prop_type = ctx.prop_type_of(&key);
         let disallowed = || {
             ctx.attr_violation(
                 attr,
@@ -82,7 +83,7 @@ fn check(ctx: &ElementContext<'_>, violations: &mut Vec<Violation>) {
         };
 
         if let Some(only) = &constraint.only
-            && !only.iter().any(|entry| entry.name == name)
+            && !only.iter().any(|entry| entry.name == key)
         {
             violations.push(disallowed());
             continue;
@@ -91,7 +92,7 @@ fn check(ctx: &ElementContext<'_>, violations: &mut Vec<Violation>) {
         let Some(entry) = constraint
             .without
             .as_ref()
-            .and_then(|without| without.iter().find(|entry| entry.name == name))
+            .and_then(|without| without.iter().find(|entry| entry.name == key))
         else {
             continue;
         };

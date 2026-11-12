@@ -4,14 +4,14 @@
 
 use std::collections::HashMap;
 
-use markuplint_core::mlast::{ElementType, MLASTAttr};
+use markuplint_core::mlast::MLASTAttr;
 use markuplint_dom::arena::DomArena;
 use markuplint_types::spec::types::MLMLSpec;
 
-use crate::aria_check::attr_name;
 use crate::fix::Fix;
 use crate::rule::{Rule, RuleConfigSet};
 use crate::violation::Violation;
+use markuplint_dom::helpers::name_key;
 
 #[cfg(test)]
 pub(crate) mod tests;
@@ -32,9 +32,6 @@ impl Rule for NoDuplicateAttr {
                 continue;
             }
             let mut seen: HashMap<String, usize> = HashMap::new();
-            // TS compares names case-insensitively on an element written as an HTML element
-            // only (`node.elementType`, which a pretender does not change).
-            let case_insensitive = *el.identity(true).element_type == ElementType::Html;
 
             for attr in &el.attributes {
                 let MLASTAttr::HTMLAttr(html_attr) = attr else {
@@ -45,14 +42,10 @@ impl Rule for NoDuplicateAttr {
                     continue;
                 }
 
-                // TS `attr.name`: the name the parser resolved (`:href` is `href`), else as written.
-                let name = attr_name(html_attr);
-                let name = if case_insensitive {
-                    name.to_ascii_lowercase()
-                } else {
-                    name.to_owned()
-                };
-                let count = seen.entry(name).or_insert(0);
+                // TS `attr.nameKey`: the name the DOM gives the attribute, so `ID` and `id` are one
+                // on an element of the HTML namespace, a custom one included, and not on an SVG
+                // element whose attributes code sets, nor for the props of a component.
+                let count = seen.entry(name_key(el, html_attr)).or_insert(0);
                 *count += 1;
 
                 if *count > 1 {
@@ -64,7 +57,7 @@ impl Rule for NoDuplicateAttr {
                         line: html_attr.name.line,
                         col: html_attr.name.col,
                         raw: html_attr.name.raw.clone(),
-                        reason: None,
+                        reason: rule_config.reason.clone(),
                         fix: Fix::remove_attr(html_attr),
                     });
                 }

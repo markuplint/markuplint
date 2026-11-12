@@ -21,10 +21,10 @@
 //!   sizes-auto-requires-lazy-loading-valid-011    → sizes_auto_requires_lazy_loading_valid_011
 //!   sizes-auto-requires-lazy-loading-invalid-008  → sizes_auto_requires_lazy_loading_invalid_008
 //!   sizes-auto-requires-lazy-loading-invalid-009  → sizes_auto_requires_lazy_loading_invalid_009
-//!   v6_sizes_auto_requires_lazy_loading_001  — Rust-only: `auto` followed by a tab still starts the list
+//!   v6_sizes_auto_requires_lazy_loading_001  — Rust-only: `auto` followed by a tab is not auto
 //!   v6_sizes_auto_requires_lazy_loading_002  — Rust-only: without `srcset` there is nothing to check
 //!   v6_sizes_auto_requires_lazy_loading_003  — Rust-only: `autox` is not `auto`
-//!   v6_sizes_auto_requires_lazy_loading_004  — Rust-only: `loading` is compared case-sensitively; multi-line position
+//!   v6_sizes_auto_requires_lazy_loading_004  — Rust-only: `loading` is compared case-insensitively; multi-line position
 
 use crate::lint::{LintConfig, lint};
 use crate::violation::{Severity, Violation};
@@ -33,6 +33,8 @@ use markuplint_types::spec::load_spec;
 use markuplint_types::spec::types::MLMLSpec;
 
 const RULE: &str = "sizes-auto-requires-lazy-loading";
+const SOURCE_SIZES_AUTO: &str =
+    "The \"source\" element with sizes=\"auto\" requires the following sibling \"img\" element to have sizes=\"auto\"";
 const IMG_MESSAGE: &str = "The \"sizes\" attribute with \"auto\" requires the \"loading\" attribute to be \"lazy\"";
 
 fn spec() -> MLMLSpec {
@@ -120,7 +122,7 @@ fn sizes_auto_requires_lazy_loading_valid_005() {
         &run(
             r#"<picture><source srcset="s.webp 480w, l.webp 1024w" sizes="auto"><img src="l.jpg" loading="lazy" alt="photo"></picture>"#,
         ),
-        &[],
+        &[(Severity::Error, 1, 60, SOURCE_SIZES_AUTO, "auto")],
     );
 }
 
@@ -132,7 +134,7 @@ fn sizes_auto_requires_lazy_loading_valid_006() {
         &run(
             r#"<picture><source srcset="a.webp 480w" sizes="auto" type="image/webp"><source srcset="a.jpg 480w" sizes="100vw"><img src="a.jpg" loading="lazy" alt="p"></picture>"#,
         ),
-        &[],
+        &[(Severity::Error, 1, 46, SOURCE_SIZES_AUTO, "auto")],
     );
 }
 
@@ -226,7 +228,7 @@ fn sizes_auto_requires_lazy_loading_valid_010() {
         &run(
             r#"<picture><source srcset="s.webp 480w" sizes="auto"><img src="s.jpg" loading="lazy" alt="p"></picture>"#,
         ),
-        &[],
+        &[(Severity::Error, 1, 46, SOURCE_SIZES_AUTO, "auto")],
     );
 }
 
@@ -246,7 +248,7 @@ fn sizes_auto_requires_lazy_loading_valid_011() {
         &run(
             r#"<picture><source srcset="a.webp 480w" sizes="auto" media="(min-width: 600px)"><source srcset="b.jpg 480w"><img src="b.jpg" loading="lazy" alt="p"></picture>"#,
         ),
-        &[],
+        &[(Severity::Error, 1, 46, SOURCE_SIZES_AUTO, "auto")],
     );
 }
 
@@ -273,9 +275,10 @@ fn sizes_auto_requires_lazy_loading_invalid_009() {
 
 #[test]
 fn v6_sizes_auto_requires_lazy_loading_001() {
+    // `auto` followed by a space is not auto (TS `hasSizesAuto`), so nothing is required
     assert_violations(
         &run("<img srcset=\"s.png 480w\" sizes=\"auto\t100vw\" src=\"s.png\" alt=\"p\">"),
-        &[(Severity::Error, 1, 33, IMG_MESSAGE, "auto\t100vw")],
+        &[],
     );
 }
 
@@ -294,8 +297,13 @@ fn v6_sizes_auto_requires_lazy_loading_003() {
 
 #[test]
 fn v6_sizes_auto_requires_lazy_loading_004() {
+    // `loading` is compared ASCII case-insensitively
     assert_violations(
         &run("<img\n  srcset=\"s.png 480w\"\n  sizes=\"auto\" loading=\"LAZY\" alt=\"p\">"),
+        &[],
+    );
+    assert_violations(
+        &run("<img\n  srcset=\"s.png 480w\"\n  sizes=\"auto\" loading=\"eager\" alt=\"p\">"),
         &[(Severity::Error, 3, 10, IMG_MESSAGE, "auto")],
     );
 }

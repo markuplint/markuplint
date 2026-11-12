@@ -11,8 +11,8 @@ use markuplint_types::spec::types::MLMLSpec;
 
 use crate::aria_resolver::AriaResolver;
 use crate::ast::{
-    AttrOperator, AttributeSelector, Combinator, ComplexSelector, CompoundSelector, PseudoClassSelector, SelectorList,
-    SimpleSelector, Specificity,
+    AttrOperator, AttributeSelector, Combinator, ComplexSelector, CompoundSelector, DisplaySizeOperator,
+    PseudoClassSelector, SelectorList, SimpleSelector, Specificity,
 };
 use crate::extended::{self, ModelEntry};
 
@@ -235,7 +235,7 @@ fn match_compound(compound: &CompoundSelector, node_id: NodeId, ctx: &Ctx<'_>) -
                 // Universal matches everything — no specificity contribution
             }
             SimpleSelector::Type(name) => {
-                if !identity.node_name.eq_ignore_ascii_case(name) {
+                if !type_name_matches(name, &identity, ctx) {
                     return MatchResult::unmatched();
                 }
                 specificity[2] += 1;
@@ -281,6 +281,176 @@ fn match_compound(compound: &CompoundSelector, node_id: NodeId, ctx: &Ctx<'_>) -
     }
 
     MatchResult::matched(specificity)
+}
+
+/// Whether the type name of a selector stands for the element. Port of TS `typeNameMatches`.
+///
+/// HTML names its elements case-insensitively, but a document that tells the case of a tag name
+/// apart (JSX) has `<foobar>` and `<FooBar>` as two names, and a foreign element or a component
+/// keeps the case it is written in. A document that resolves a component by any spelling of its
+/// name (Vue) compares a component's name as Vue does ([`vue_tag_name_matches`]), a native element
+/// only by its name in lower case, and an HTML element it does not know by any case of a name of one
+/// word.
+///
+/// Known difference: Vue's own list of native tags (TS `MLDocument#isNativeTag`) is not known here,
+/// so a tag is taken for native when the spec has it.
+/// `:display-size()`: whether the element is a `<select>` of HTML (not a component named so) whose
+/// display size compares to `value` as `operator` says. The attributes are read as written; one the
+/// framework does not output is not there.
+fn display_size_matches(node_id: NodeId, ctx: &Ctx<'_>, operator: DisplaySizeOperator, value: f64) -> bool {
+    let Some(el) = ctx.arena.get(node_id).and_then(DomNode::as_element) else {
+        return false;
+    };
+    let identity = ctx.identity(el, node_id);
+    let component = ctx.arena.settings().component_name_variants
+        && matches!(identity.namespace, NamespaceURI::XHTML)
+        && !matches!(identity.element_type, ElementType::Html);
+    if component || !matches!(identity.namespace, NamespaceURI::XHTML) || !type_name_matches("select", &identity, ctx) {
+        return false;
+    }
+    let mut size: Option<&str> = None;
+    let mut has_multiple = false;
+    for attr in identity.attributes {
+        let MLASTAttr::HTMLAttr(attr) = attr else {
+            continue;
+        };
+        if markuplint_dom::helpers::is_absent(attr) {
+            continue;
+        }
+        if markuplint_dom::helpers::is_named_by(el, attr, "size") {
+            size = size.or(Some(markuplint_dom::helpers::attr_value(attr)));
+        } else if markuplint_dom::helpers::is_named_by(el, attr, "multiple") {
+            has_multiple = true;
+        }
+    }
+    let display_size = select_display_size(size, has_multiple);
+    match operator {
+        DisplaySizeOperator::Equal => (display_size - value).abs() < f64::EPSILON,
+        DisplaySizeOperator::Greater => display_size > value,
+        DisplaySizeOperator::GreaterOrEqual => display_size >= value,
+        DisplaySizeOperator::Less => display_size < value,
+        DisplaySizeOperator::LessOrEqual => display_size <= value,
+    }
+}
+
+/// TS `getSelectDisplaySize` of `@markuplint/ml-spec`: the `size` of a `<select>` parsed by the
+/// rules for parsing non-negative integers, else 4 with `multiple` and 1 without.
+///
+/// See <https://html.spec.whatwg.org/multipage/form-elements.html#concept-select-size>.
+#[must_use]
+pub fn select_display_size(size: Option<&str>, has_multiple: bool) -> f64 {
+    parse_non_negative_integer(size.unwrap_or("")).unwrap_or(if has_multiple { 4.0 } else { 1.0 })
+}
+
+/// TS `parseNonNegativeInteger`: leading ASCII whitespace, an optional sign and the digits that
+/// follow; anything after them is ignored, and a negative value other than zero is none.
+fn parse_non_negative_integer(text: &str) -> Option<f64> {
+    let rest = text.trim_start_matches(['\t', '\n', '\x0C', '\r', ' ']);
+    let (negative, rest) = match rest.as_bytes().first() {
+        Some(b'-') => (true, &rest[1..]),
+        Some(b'+') => (false, &rest[1..]),
+        _ => (false, rest),
+    };
+    let digits: &str = &rest[..rest.bytes().take_while(u8::is_ascii_digit).count()];
+    if digits.is_empty() {
+        return None;
+    }
+    let value = digits.parse::<f64>().ok()?;
+    if negative && value != 0.0 {
+        return None;
+    }
+    Some(value)
+}
+
+/// Whether the type name of a selector, or a name a user writes for an element, stands for the
+/// element (see [`type_name_matches`]), read with its effective identity or with `original` the one
+/// it had before it pretended.
+#[must_use]
+pub fn type_name_matches_node(
+    name: &str,
+    arena: &DomArena,
+    node_id: NodeId,
+    spec: Option<&MLMLSpec>,
+    original: bool,
+) -> bool {
+    let Some(el) = arena.get(node_id).and_then(DomNode::as_element) else {
+        return false;
+    };
+    let ctx = Ctx {
+        arena,
+        scope: node_id,
+        spec,
+        aria: None,
+        original_of: original.then_some(node_id),
+    };
+    type_name_matches(name, &ctx.identity(el, node_id), &ctx)
+}
+
+fn type_name_matches(name: &str, identity: &ElementIdentity<'_>, ctx: &Ctx<'_>) -> bool {
+    let settings = ctx.arena.settings();
+    let html_namespace = matches!(identity.namespace, NamespaceURI::XHTML);
+    let html_element = html_namespace && matches!(identity.element_type, ElementType::Html);
+    if settings.component_name_variants && html_namespace {
+        if !html_element {
+            return vue_tag_name_matches(name, identity.node_name);
+        }
+        let local_name = identity.node_name.to_ascii_lowercase();
+        let native = ctx
+            .spec
+            .is_some_and(|spec| spec.specs.iter().any(|s| s.name == local_name));
+        if native {
+            return name == local_name;
+        }
+        return !has_camel_hump(name) && name.eq_ignore_ascii_case(&local_name);
+    }
+    if html_element && !settings.tag_name_case_sensitive {
+        return identity.node_name.eq_ignore_ascii_case(name);
+    }
+    identity.node_name == name
+}
+
+/// TS `/[a-z\d][A-Z]/`: a lower-case letter or a digit followed by an upper-case letter.
+fn has_camel_hump(name: &str) -> bool {
+    name.as_bytes()
+        .windows(2)
+        .any(|pair| (pair[0].is_ascii_lowercase() || pair[0].is_ascii_digit()) && pair[1].is_ascii_uppercase())
+}
+
+/// TS `vueTagNameMatches` of `@markuplint/shared`: whether a name written for a component (a
+/// selector, the `tag` of a rule) stands for a tag of a Vue template. A name of more than one word
+/// stands for every spelling Vue resolves to it (`FooBar`, `fooBar`, `foo-bar`); a name of one word
+/// for itself and its capitalized form. A member tag (`Tabs.Root`) compares the part after the dot
+/// as it is.
+#[must_use]
+pub fn vue_tag_name_matches(selector_name: &str, tag_name: &str) -> bool {
+    let split = |tag: &str| -> (String, Option<String>) {
+        match tag.find('.') {
+            Some(dot) => (tag[..dot].to_string(), Some(tag[dot + 1..].to_string())),
+            None => (tag.to_string(), None),
+        }
+    };
+    let (selector_head, selector_rest) = split(selector_name);
+    let (tag_head, tag_rest) = split(tag_name);
+    if selector_rest != tag_rest {
+        return false;
+    }
+    let multi_word = |name: &str| name.contains('-') || has_camel_hump(name);
+    if multi_word(&selector_head) || multi_word(&tag_head) {
+        return pascalize(&selector_head) == pascalize(&tag_head);
+    }
+    selector_head == tag_head || selector_head == capitalize(&tag_head)
+}
+
+fn capitalize(name: &str) -> String {
+    let mut chars = name.chars();
+    match chars.next() {
+        Some(first) => first.to_uppercase().chain(chars).collect(),
+        None => String::new(),
+    }
+}
+
+fn pascalize(name: &str) -> String {
+    capitalize(&markuplint_dom::helpers::camelize(name))
 }
 
 fn match_pseudo_class(pseudo: &PseudoClassSelector, node_id: NodeId, ctx: &Ctx<'_>) -> MatchResult {
@@ -337,6 +507,20 @@ fn match_pseudo_class(pseudo: &PseudoClassSelector, node_id: NodeId, ctx: &Ctx<'
                 MatchResult::unmatched()
             }
         }
+        PseudoClassSelector::FirstChild => {
+            if prev_element_sibling(arena, node_id).is_none() {
+                MatchResult::matched([0, 1, 0])
+            } else {
+                MatchResult::unmatched()
+            }
+        }
+        PseudoClassSelector::DisplaySize(operator, value) => {
+            if display_size_matches(node_id, ctx, *operator, *value) {
+                MatchResult::matched([0, 1, 0])
+            } else {
+                MatchResult::unmatched()
+            }
+        }
         PseudoClassSelector::Closest(inner) => {
             // :closest() — markuplint-specific: matches if any ancestor matches
             let mut ancestor_id = element_parent(arena, node_id);
@@ -355,6 +539,9 @@ fn match_pseudo_class(pseudo: &PseudoClassSelector, node_id: NodeId, ctx: &Ctx<'
             let matched = entries.iter().any(|entry| match entry {
                 ModelEntry::Custom => is_custom_element(node_id, ctx),
                 ModelEntry::Text => false,
+                ModelEntry::FirstChild(base) => {
+                    matches_inner(base, node_id, ctx) && is_content_model_first_child(arena, node_id)
+                }
                 ModelEntry::Selector(list) => matches_inner(list, node_id, ctx),
             });
             if matched {
@@ -524,6 +711,244 @@ fn element_parent(arena: &DomArena, node_id: NodeId) -> Option<NodeId> {
     }
 }
 
+/// Whether the selector matches the element with one identity only, as TS
+/// `createSelector(selector).search(el)` does: the effective one, or with `original` the one the
+/// element had before it pretended (TS hides the pretender of the element for the call). Unlike
+/// [`matches`], a pretended element is not tried with the other identity.
+#[must_use]
+pub fn matches_identity(
+    selector: &SelectorList,
+    arena: &DomArena,
+    node_id: NodeId,
+    spec: Option<&MLMLSpec>,
+    original: bool,
+) -> bool {
+    let ctx = Ctx {
+        arena,
+        scope: node_id,
+        spec,
+        aria: None,
+        original_of: original.then_some(node_id),
+    };
+    best_specificity(selector, node_id, &ctx).is_some()
+}
+
+/// What makes the element fail the selector, read off a `:not()` of its subject whose argument
+/// matched: the element the argument matched, or, through a `:has()` in it, the descendant that
+/// the `:has()` found. `None` when the element matches, or when nothing but a `:not()` can name it.
+/// The identity is read as [`matches_identity`] reads it.
+///
+/// Port of the `not` of the TS `SelectorResult` as `permitted-contents` reads it (`matches` and
+/// `descendants` in its `utils.ts`): of each result in `not`, the nodes of the last entry of its
+/// `has` that has no `has` of its own, or else its own nodes; the first such node.
+///
+/// Known limitation: the `not` of a compound to the left of a combinator is not followed (TS
+/// follows it), so a `:not()` names an element only in the subject.
+#[must_use]
+pub fn unmatched_not_node(
+    selector: &SelectorList,
+    arena: &DomArena,
+    node_id: NodeId,
+    spec: Option<&MLMLSpec>,
+    original: bool,
+) -> Option<NodeId> {
+    let ctx = Ctx {
+        arena,
+        scope: node_id,
+        spec,
+        aria: None,
+        original_of: original.then_some(node_id),
+    };
+    if best_specificity(selector, node_id, &ctx).is_some() {
+        return None;
+    }
+    selector
+        .selectors
+        .iter()
+        .flat_map(|sel| compound_not(&sel.subject, node_id, &ctx))
+        .flat_map(|result| {
+            let mut nodes = result.nodes;
+            for dep in result.has {
+                if dep.has.is_empty() {
+                    nodes = dep.nodes;
+                }
+            }
+            nodes
+        })
+        .next()
+}
+
+/// A matched result as TS keeps it for `not` and `has`: the matched elements and what the
+/// `:has()` (and the selectors that pass it on) inside the match found.
+struct Matched {
+    nodes: Vec<NodeId>,
+    has: Vec<Matched>,
+}
+
+/// The `not` of a compound the element fails: the matches of the argument of each `:not()` that
+/// fails. A part other than a pseudo-class that fails leaves the pseudo-classes unevaluated, as
+/// in TS.
+fn compound_not(compound: &CompoundSelector, node_id: NodeId, ctx: &Ctx<'_>) -> Vec<Matched> {
+    let without_pseudo = CompoundSelector {
+        parts: compound
+            .parts
+            .iter()
+            .filter(|part| !matches!(part, SimpleSelector::PseudoClass(_)))
+            .cloned()
+            .collect(),
+    };
+    if !match_compound(&without_pseudo, node_id, ctx).matched {
+        return Vec::new();
+    }
+    let mut not = Vec::new();
+    for part in &compound.parts {
+        let SimpleSelector::PseudoClass(PseudoClassSelector::Not(inner)) = part else {
+            continue;
+        };
+        for sel in &inner.selectors {
+            if match_complex(sel, node_id, ctx).matched {
+                not.push(Matched {
+                    nodes: vec![node_id],
+                    has: compound_has(&sel.subject, node_id, ctx),
+                });
+            }
+        }
+    }
+    not
+}
+
+/// The `has` of a compound that matched the element.
+fn compound_has(compound: &CompoundSelector, node_id: NodeId, ctx: &Ctx<'_>) -> Vec<Matched> {
+    let mut has = Vec::new();
+    for part in &compound.parts {
+        let SimpleSelector::PseudoClass(pseudo) = part else {
+            continue;
+        };
+        match pseudo {
+            PseudoClassSelector::Has(inner) => {
+                for subject in has_candidates(ctx.arena, node_id) {
+                    for sel in &inner.selectors {
+                        let head = sel.head_combinator.unwrap_or(Combinator::Descendant);
+                        if relative_subjects(ctx.arena, node_id, head, sel.chain.is_empty()).contains(&subject)
+                            && relative_subject_matches(sel, node_id, subject, ctx)
+                        {
+                            has.push(Matched {
+                                nodes: vec![subject],
+                                has: compound_has(&sel.subject, subject, ctx),
+                            });
+                        }
+                    }
+                }
+            }
+            PseudoClassSelector::Is(inner) | PseudoClassSelector::Where(inner) => {
+                for sel in &inner.selectors {
+                    if match_complex(sel, node_id, ctx).matched {
+                        has.extend(compound_has(&sel.subject, node_id, ctx));
+                    }
+                }
+            }
+            PseudoClassSelector::Model(category) => {
+                let Some(entries) = ctx.spec.and_then(|spec| extended::model_entries(spec, category)) else {
+                    continue;
+                };
+                for entry in entries.iter() {
+                    let (ModelEntry::Selector(list) | ModelEntry::FirstChild(list)) = entry else {
+                        continue;
+                    };
+                    for sel in &list.selectors {
+                        if match_complex(sel, node_id, ctx).matched {
+                            has.extend(compound_has(&sel.subject, node_id, ctx));
+                        }
+                    }
+                }
+            }
+            PseudoClassSelector::Closest(inner) => {
+                let mut ancestor_id = element_parent(ctx.arena, node_id);
+                while let Some(aid) = ancestor_id {
+                    let matched: Vec<_> = inner
+                        .selectors
+                        .iter()
+                        .filter(|sel| match_complex(sel, aid, ctx).matched)
+                        .map(|sel| Matched {
+                            nodes: vec![aid],
+                            has: compound_has(&sel.subject, aid, ctx),
+                        })
+                        .collect();
+                    if !matched.is_empty() {
+                        has.extend(matched);
+                        break;
+                    }
+                    ancestor_id = element_parent(ctx.arena, aid);
+                }
+            }
+            _ => {}
+        }
+    }
+    has
+}
+
+/// The elements a `:has()` of `anchor` is tried against, in the order TS tries them: the
+/// descendants in document order, then the following siblings with their descendants.
+fn has_candidates(arena: &DomArena, anchor: NodeId) -> Vec<NodeId> {
+    let descendant_elements = |id: NodeId| -> Vec<NodeId> {
+        arena
+            .descendants(id)
+            .filter_map(|n| n.as_element().map(|e| e.base.id))
+            .collect()
+    };
+    let mut candidates = descendant_elements(anchor);
+    for sibling in following_element_siblings(arena, anchor) {
+        candidates.push(sibling);
+        candidates.extend(descendant_elements(sibling));
+    }
+    candidates
+}
+
+/// TS `isInterElementWhitespace` of `@markuplint/selector`: whether text consists of ASCII
+/// whitespace only, with a character reference to such a character counted as the character.
+#[must_use]
+pub fn is_inter_element_whitespace(data: &str) -> bool {
+    static WHITESPACE_REFERENCE: std::sync::LazyLock<regex::Regex> = std::sync::LazyLock::new(|| {
+        regex::Regex::new(r"&(?:#[xX]0*(?:[9aAcCdD]|20);?|#0*(?:9|10|12|13|32);?|Tab;|NewLine;)").expect("valid regex")
+    });
+    WHITESPACE_REFERENCE
+        .replace_all(data, " ")
+        .chars()
+        .all(|c| matches!(c, '\t' | '\n' | '\x0C' | '\r' | ' '))
+}
+
+/// TS `isContentModelFirstChild` of `@markuplint/selector`: whether the element is the first child
+/// of its parent as the HTML Standard counts it for a content model, where text that is not
+/// inter-element whitespace comes before an element as well as another element does (a comment
+/// does not).
+///
+/// See <https://html.spec.whatwg.org/multipage/dom.html#concept-content-model-first-child>.
+#[must_use]
+pub fn is_content_model_first_child(arena: &DomArena, node_id: NodeId) -> bool {
+    let Some(parent_id) = arena.get(node_id).and_then(DomNode::parent_id) else {
+        return true;
+    };
+    // The siblings TS reads are the parent's `childNodes`, where a loop block is replaced by its
+    // children.
+    let flat = arena.child_nodes(parent_id);
+    let siblings = if flat.contains(&node_id) {
+        flat
+    } else {
+        arena
+            .get(parent_id)
+            .map(|parent| parent.children().to_vec())
+            .unwrap_or_default()
+    };
+    let Some(pos) = siblings.iter().position(|&id| id == node_id) else {
+        return true;
+    };
+    !siblings[..pos].iter().any(|&prev| match arena.get(prev) {
+        Some(DomNode::Element(_)) => true,
+        Some(DomNode::Text(text)) => !is_inter_element_whitespace(&text.base.raw),
+        _ => false,
+    })
+}
+
 /// TS `MLElement#isCustomElement` read outside a selector: whether `node_id` is a custom element
 /// (an authored component or an autonomous custom element), following its pretender. A content
 /// model entry that is `#custom` rather than a selector (`permittedAncestors`) reads it.
@@ -576,14 +1001,27 @@ fn matches_relative(selector: &ComplexSelector, anchor: NodeId, ctx: &Ctx<'_>) -
     }
     // No compound of the chain can lie on or above the anchor (or, for a sibling head, its parent),
     // so the leftward walks end there.
+    subjects
+        .into_iter()
+        .any(|subject| relative_subject_matches(selector, anchor, subject, ctx))
+}
+
+/// Whether a relative selector of `:has()` of `anchor` matches with `subject`, one of its
+/// [`relative_subjects`], as its subject.
+fn relative_subject_matches(selector: &ComplexSelector, anchor: NodeId, subject: NodeId, ctx: &Ctx<'_>) -> bool {
+    let arena = ctx.arena;
+    let head = selector.head_combinator.unwrap_or(Combinator::Descendant);
+    if selector.chain.is_empty() {
+        return match_compound(&selector.subject, subject, ctx).matched;
+    }
+    // No compound of the chain can lie on or above the anchor (or, for a sibling head, its parent),
+    // so the leftward walks end there.
     let anchor_parent = element_parent(arena, anchor);
     let stop = |id: NodeId| id == anchor || Some(id) == anchor_parent;
-    subjects.into_iter().any(|subject| {
-        match_compound(&selector.subject, subject, ctx).matched
-            && chain_reaches(&selector.chain, subject, ctx, &stop, &|leftmost| {
-                is_related(arena, anchor, leftmost, head)
-            })
-    })
+    match_compound(&selector.subject, subject, ctx).matched
+        && chain_reaches(&selector.chain, subject, ctx, &stop, &|leftmost| {
+            is_related(arena, anchor, leftmost, head)
+        })
 }
 
 /// Whether the chain, walked from `current` leftward without passing a `stop` element, can end at
@@ -1054,6 +1492,7 @@ mod tests {
                     value_type: None,
                     candidate: None,
                     is_duplicatable: false,
+                    name_fold: None,
                 }))
             })
             .collect();
@@ -1162,5 +1601,38 @@ mod tests {
         assert_eq!(spec_of(":where(div, #foo, .bar)", "div", &[]), Some([0, 0, 0]));
         // TS: createSelector(':where(div, #foo.bar)').match(el) => [0, 0, 0]
         assert_eq!(spec_of(":where(div, #foo.bar)", "div", &[]), Some([0, 0, 0]));
+    }
+
+    #[test]
+    fn inter_element_whitespace() {
+        assert!(is_inter_element_whitespace(""));
+        assert!(is_inter_element_whitespace(" \t\r\n\x0C"));
+        assert!(is_inter_element_whitespace("&#x20;&Tab;&NewLine;&#10&#0013;"));
+        assert!(!is_inter_element_whitespace("\u{A0}"));
+        assert!(!is_inter_element_whitespace("\u{3000}"));
+        assert!(!is_inter_element_whitespace("&nbsp;"));
+        assert!(!is_inter_element_whitespace("&#11;"));
+    }
+
+    #[test]
+    fn vue_tag_names() {
+        assert!(vue_tag_name_matches("FooBar", "foo-bar"));
+        assert!(vue_tag_name_matches("FooBar", "fooBar"));
+        assert!(vue_tag_name_matches("foo-bar", "FooBar"));
+        assert!(!vue_tag_name_matches("FooBar", "foobar"));
+        assert!(vue_tag_name_matches("Tabs", "tabs"));
+        assert!(!vue_tag_name_matches("tabs", "Tabs"));
+        assert!(vue_tag_name_matches("Tabs.Root", "tabs.Root"));
+        assert!(!vue_tag_name_matches("Tabs.Root", "Tabs.root"));
+    }
+
+    #[test]
+    fn select_display_sizes() {
+        assert!((select_display_size(None, false) - 1.0).abs() < f64::EPSILON);
+        assert!((select_display_size(None, true) - 4.0).abs() < f64::EPSILON);
+        assert!((select_display_size(Some(" +03px"), false) - 3.0).abs() < f64::EPSILON);
+        assert!((select_display_size(Some("-0"), true) - 0.0).abs() < f64::EPSILON);
+        assert!((select_display_size(Some("-2"), true) - 4.0).abs() < f64::EPSILON);
+        assert!((select_display_size(Some("abc"), false) - 1.0).abs() < f64::EPSILON);
     }
 }

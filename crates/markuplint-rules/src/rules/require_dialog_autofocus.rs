@@ -1,5 +1,9 @@
 //! `require-dialog-autofocus` rule: requires that `<dialog>` elements referenced
 //! by a `show-modal` command have an `autofocus` attribute on themselves or a descendant.
+//!
+//! The dialog is looked for in the tree of the trigger ([`Trees`]), so the triggers of every tree
+//! are checked, and a descendant in the content of a `template` element in the dialog is not one of
+//! its descendants.
 
 use std::collections::HashSet;
 
@@ -8,6 +12,7 @@ use markuplint_dom::helpers;
 use markuplint_types::spec::types::MLMLSpec;
 
 use crate::rule::{Rule, RuleConfigSet};
+use crate::tree_scope::{Trees, is_expression};
 use crate::violation::Violation;
 
 pub struct RequireDialogAutofocus;
@@ -17,9 +22,14 @@ impl Rule for RequireDialogAutofocus {
         "require-dialog-autofocus"
     }
 
-    fn verify(&self, arena: &DomArena, _spec: &MLMLSpec, config: &RuleConfigSet) -> Vec<Violation> {
+    fn default_severity(&self) -> crate::violation::Severity {
+        crate::violation::Severity::Warning
+    }
+
+    fn verify(&self, arena: &DomArena, spec: &MLMLSpec, config: &RuleConfigSet) -> Vec<Violation> {
         let mut violations = Vec::new();
-        let mut reported_dialog_ids: HashSet<String> = HashSet::new();
+        let trees = Trees::new(arena, spec);
+        let mut reported_dialogs: HashSet<NodeId> = HashSet::new();
 
         for (node_id, el) in arena.elements() {
             let rule_config = config.get(node_id);
@@ -42,21 +52,23 @@ impl Rule for RequireDialogAutofocus {
                 continue;
             }
 
-            let Some(target_id) = helpers::get_attr_value_from_el(el, "commandfor") else {
+            let Some(commandfor) = helpers::get_attr_node_from_el(el, "commandfor") else {
                 continue;
             };
+            let target_id = helpers::attr_value(commandfor);
 
             if target_id.is_empty() {
                 continue;
             }
 
-            if reported_dialog_ids.contains(target_id) {
-                continue;
-            }
-
-            let Some(target_node_id) = find_element_by_id(arena, target_id) else {
+            let Some(target_node_id) = trees.element_by_id_in_tree(node_id, target_id, is_expression(commandfor))
+            else {
                 continue;
             };
+
+            if reported_dialogs.contains(&target_node_id) {
+                continue;
+            }
 
             let Some(target_el) = arena.get(target_node_id).and_then(|n| n.as_element()) else {
                 continue;
@@ -70,11 +82,15 @@ impl Rule for RequireDialogAutofocus {
                 continue;
             }
 
-            if has_autofocus_descendant(arena, target_node_id) {
+            if trees
+                .descendant_elements_in_tree(target_node_id)
+                .into_iter()
+                .any(|id| helpers::has_attr(arena, id, "autofocus"))
+            {
                 continue;
             }
 
-            reported_dialog_ids.insert(target_id.to_string());
+            reported_dialogs.insert(target_node_id);
 
             // Report on the dialog element, not the trigger
             violations.push(Violation {
@@ -85,38 +101,13 @@ impl Rule for RequireDialogAutofocus {
                 line: target_el.base.line,
                 col: target_el.base.col,
                 raw: target_el.base.raw.clone(),
-            reason: None,
+            reason: rule_config.reason.clone(),
             fix: None,
         });
         }
 
         violations
     }
-}
-
-fn find_element_by_id(arena: &DomArena, id: &str) -> Option<NodeId> {
-    arena.elements().find_map(|(node_id, el)| {
-        if helpers::get_attr_value_from_el(el, "id").is_some_and(|v| v == id) {
-            Some(node_id)
-        } else {
-            None
-        }
-    })
-}
-
-fn has_autofocus_descendant(arena: &DomArena, node_id: NodeId) -> bool {
-    let Some(children) = arena.children_of(node_id) else {
-        return false;
-    };
-    for &child_id in children {
-        if helpers::has_attr(arena, child_id, "autofocus") {
-            return true;
-        }
-        if has_autofocus_descendant(arena, child_id) {
-            return true;
-        }
-    }
-    false
 }
 
 #[cfg(test)]

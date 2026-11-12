@@ -37,3 +37,37 @@ console.log(JSON.stringify(result, null, 2));
 ```
 
 Then run `cargo test -p markuplint-types` to verify nothing is broken.
+
+# Language Subtag Data
+
+`language-subtags.json` holds the subtag keys of the IANA Language Subtag Registry, one list per subtag type (`language`, `extlang`, `script`, `region`, `variant`), taken from the [language-subtag-registry](https://www.npmjs.com/package/language-subtag-registry) package that `@markuplint/types` reads for `BCP47`. Ranged keys (`qaa..qtz`) are kept as they are.
+
+## How to Update
+
+When `language-subtag-registry` is updated in the project's npm dependencies, regenerate the file:
+
+```bash
+# From the repository root
+node -e "
+const result = {};
+for (const type of ['language', 'extlang', 'script', 'region', 'variant']) {
+  result[type] = Object.keys(require('language-subtag-registry/data/json/' + type + '.json'));
+}
+console.log(JSON.stringify(result));
+" > crates/markuplint-types/data/language-subtags.json
+```
+
+# css-tree Lexer Data
+
+`csstree-lexer.json` is the syntax dictionary of [css-tree](https://www.npmjs.com/package/css-tree)'s default lexer, which `@markuplint/types` matches CSS values with (`cssSyntaxMatch`) and the Rust port in `src/css/csstree/` reproduces: every type and property that has a syntax, and the names of the generic types, which css-tree implements as functions and the port implements in code. markuplint's own syntaxes (`css-overrides.ts`, `css-defs.ts`) are not in the file; the port adds them as TS does.
+
+## How to Update
+
+When `css-tree` is updated in the project's npm dependencies, regenerate the file:
+
+```bash
+# From the repository root
+node scripts/csstree-lexer-data/dump.mjs
+```
+
+Then run `cargo test -p markuplint-types`: `tests/csstree_lexer_data.rs` fails when the new data names a generic type the port does not implement or a syntax it cannot parse.

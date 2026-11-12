@@ -13,12 +13,12 @@
 //! A dynamic `srcset` (or `sizes`, for the first direction) is unknown at lint time and not judged.
 
 use markuplint_dom::arena::DomArena;
-use markuplint_dom::helpers;
 use markuplint_types::spec::types::MLMLSpec;
 
 use crate::rule::{Rule, RuleConfigSet};
 use crate::srcset_check::{
-    CandidateContext, CandidateGate, attr_node, find_following_img, is_dynamic, parse_srcset, walk_image_candidates,
+    CandidateContext, CandidateGate, allows_auto_sizes, attr_node, find_following_img, is_dynamic, is_lazy_loading,
+    parse_srcset, walk_image_candidates,
 };
 use crate::violation::Violation;
 
@@ -62,13 +62,20 @@ fn check(ctx: &CandidateContext<'_>) -> Vec<Violation> {
     }
 
     if descriptors.has_width && sizes.is_none() {
-        let sibling_img_lazy = ctx.local_name == "source"
-            && find_following_img(ctx.arena, ctx.node_id)
-                .is_some_and(|img| helpers::get_attr_value_from_el(img, "loading") == Some("lazy"));
-        if !sibling_img_lazy {
-            violations.push(ctx.element_violation(
-                "The \"sizes\" attribute is required when the \"srcset\" attribute uses width descriptors",
-            ));
+        // A `<source>` may leave `sizes` out when the following `img` has `loading="lazy"` and
+        // `sizes="auto"`, which it then takes (TS `allowsAutoSizes`)
+        let img = if ctx.local_name == "source" {
+            find_following_img(ctx.arena, ctx.node_id)
+        } else {
+            None
+        };
+        if img.is_none_or(|img| allows_auto_sizes(img) == Some(false)) {
+            let message = if img.is_some_and(|img| is_lazy_loading(img) == Some(true)) {
+                "The \"sizes\" attribute is required when the \"srcset\" attribute uses width descriptors, unless the following sibling \"img\" element has loading=\"lazy\" and sizes=\"auto\""
+            } else {
+                "The \"sizes\" attribute is required when the \"srcset\" attribute uses width descriptors"
+            };
+            violations.push(ctx.element_violation(message));
         }
     }
 

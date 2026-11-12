@@ -1313,6 +1313,8 @@ type NapiViolation = {
 	line: number;
 	col: number;
 	raw: string;
+	/** The `reason` of the rule config, unless `reasonOnly` made it the message. */
+	reason?: string;
 	/** UTF-16 offsets, like `FixData` (napi objects have no tuple type, so a range is `[start, end]` as an array). */
 	fix?: { edits: { range: number[]; text: string }[] };
 };
@@ -1329,12 +1331,14 @@ function toViolations(napiViolations: readonly NapiViolation[], withFix: boolean
 		.filter(v => v.severity !== SUPPRESSED_SEVERITY)
 		.map(v => ({
 			ruleId: v.ruleId,
-			name: v.name ?? undefined,
+			// The TS engine has no `name` key on a violation of a rule outside a named group.
+			...(v.name ? { name: v.name } : {}),
 			severity: v.severity as Violation['severity'],
 			message: v.message,
 			line: v.line,
 			col: v.col,
 			raw: v.raw,
+			...(v.reason ? { reason: v.reason } : {}),
 			...(withFix &&
 				v.fix && {
 					fix: {
