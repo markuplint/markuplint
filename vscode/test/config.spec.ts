@@ -74,4 +74,10 @@ suite('Config Tests', () => {
 			);
 		}
 	});
+
+	test('experimentalRustCore is off by default', () => {
+		const config = vscode.workspace.getConfiguration('markuplint');
+
+		assert.strictEqual(config.get('experimentalRustCore'), false);
+	});
 });
