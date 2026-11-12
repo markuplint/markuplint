@@ -14,7 +14,10 @@ name: Test
 # the three shards of the queue instead of the selection: it is the only gate before the change
 # reaches `v6`. The Rust addon (`@markuplint/core`) is built before the TypeScript packages in
 # every job that builds, as `markuplint` loads it; `crates/CLAUDE.md` says why the Cargo.lock
-# checks are around the napi build. `rust.yml` runs the Rust gate itself.
+# checks are around the napi build. `rust.yml` runs the Rust gate itself. The first shard of a pull
+# request into `v6` also runs the rule specs of `@markuplint/rules` on the Rust engine
+# (`yarn test:rust-rules`, about 30 s), whatever the change: `v6` is the only line that has the Rust
+# engine, and nothing else reaches what a change to `crates/` does to a rule spec.
 #
 # There is no `paths:` filter: a workflow that a filter skips leaves its checks pending, which
 # blocks a required check, and `merge_group` does not take one. What a change touches is decided
@@ -251,6 +254,20 @@ jobs:
             - name: Test (napi end-to-end)
               if: startsWith(matrix.shard, '1/')
               run: npx vitest run --config vitest.e2e.config.ts
+
+            # Every pull request into `v6`, whatever the change: the rule specs of `@markuplint/rules`
+            # through the testing API on the Rust engine (`scripts/rust-rule-parity/setup.ts`). A
+            # fallback to the TypeScript engine fails a spec, so a pass is the Rust engine's own.
+            # Retried as the other test steps are: the 10 s `testTimeout` of a loaded machine is not
+            # a verdict.
+            - name: Test (rule specs on the Rust engine)
+              if: github.base_ref == 'v6' && startsWith(matrix.shard, '1/')
+              uses: nick-fields/retry@ad984534de44a9489a53aefd81eb77f87c70dc60 # v4
+              with:
+                  timeout_minutes: 20
+                  max_attempts: 3
+                  shell: bash
+                  command: yarn test:rust-rules
 
     # A push to `dev` or `v6`: build, and save the caches. Nothing is tested here; the pull request and the
     # merge queue did it, and `nightly.yml` runs the rest. The caches are what is worth a run: a

@@ -1,8 +1,9 @@
 /**
  * Setup file of `vitest.rust-rule-ja-parity.config.ts`; see `ja-messages.ts` for the purpose and how to run it.
  *
- * `mlRuleTest` is replaced by a function that returns the TypeScript engine's result for the spec's
- * own arguments, so every spec runs its own expectations to the end and reaches all of its inputs.
+ * `mlRuleTest` is replaced by a function that returns the TypeScript engine's result (the testing
+ * API with `MARKUPLINT_EXPERIMENTAL_RUST_CORE` off) for the spec's own arguments, so every spec runs
+ * its own expectations to the end and reaches all of its inputs.
  * Beside that, for each call, it lints the same input and config in Japanese with both engines and
  * appends a line to the file `ML_JA_PARITY_OUT` names when the messages differ.
  */
@@ -48,7 +49,8 @@ export type JaParityRecord =
 vi.mock('markuplint', async importOriginal => {
 	const original = await importOriginal<MarkuplintModule>();
 	const { default: presetRules } = await import('@markuplint/rules');
-	const { lintWithRust } = await import('./rust-engine.ts');
+	const { assertRustCoreSwitch, lintWithRust, withRustCore } = await import('./rust-engine.ts');
+	await assertRustCoreSwitch(original);
 	const out = process.env.ML_JA_PARITY_OUT;
 
 	function ruleUnderTest(): string | undefined {
@@ -69,8 +71,9 @@ vi.mock('markuplint', async importOriginal => {
 		// A config object is read by both engines; `mlRuleTest` fills `rule` into it, so each gets a copy
 		const copy = (): RuleTestArgs => [args[0], args[1], args[2] && { ...args[2] }, false, 'ja'];
 		try {
-			const ts = await original.mlRuleTest(...copy());
-			const rust = await lintWithRust(original, name, copy(), 'ja');
+			// Off explicitly: a variable that the developer's shell has exported must not move the TypeScript side.
+			const ts = await withRustCore(false, () => original.mlRuleTest(...copy()));
+			const rust = await lintWithRust(original, copy());
 			if (ts.violations.length !== rust.violations.length) {
 				record({
 					kind: 'count',
@@ -105,7 +108,7 @@ vi.mock('markuplint', async importOriginal => {
 		if (name) {
 			await compare(name, args);
 		}
-		return original.mlRuleTest(...args);
+		return withRustCore(false, () => original.mlRuleTest(...args));
 	}
 
 	return { ...original, mlRuleTest };

@@ -1,22 +1,20 @@
 /**
  * Runs the rule specs of `@markuplint/rules` against the Rust engine.
  *
- * `mlRuleTest` hands the rule under test to the TypeScript engine as a custom rule, which the
- * Rust engine never evaluates (it runs the built-in rules only, and ignores a rule given to the
- * API). Here it is replaced: the rule
- * is enabled by its registered name, the one the spec file's directory carries, and the file is
- * linted with `experimentalRustCore`. A fallback to the TypeScript engine fails the test, so a
- * pass is the Rust engine's own result.
+ * `vitest.rust-rule-parity.config.ts` sets `MARKUPLINT_EXPERIMENTAL_RUST_CORE`, so the testing API
+ * (`mlRuleTest`, `mlTest`, `mlTestFile`) lints with `experimentalRustCore`, and a rule that is
+ * one of the built-in ones runs by its registered name. The config also points `@markuplint/rules`
+ * at its source, so the rule a spec imports is the object of the registry that the testing API
+ * looks up. A fallback to the TypeScript engine would pass on the TypeScript engine's own result,
+ * so it fails the test: a pass is the Rust engine's own result.
  */
-
-import type * as Markuplint from 'markuplint';
 
 import path from 'node:path';
 
-import { beforeEach, expect, vi } from 'vitest';
+import presetRules from '@markuplint/rules';
+import { afterEach, beforeAll, beforeEach, expect } from 'vitest';
 
-type MarkuplintModule = typeof Markuplint;
-type RuleTestArgs = Parameters<MarkuplintModule['mlRuleTest']>;
+import { assertRustCoreSwitch, watchFallbacks } from './rust-engine.ts';
 
 const RULES_SRC = path.resolve('packages', '@markuplint', 'rules', 'src');
 
@@ -34,7 +32,7 @@ const RULES_SRC = path.resolve('packages', '@markuplint', 'rules', 'src');
  * the `select` and `option` start tags), and the html5lib-tests conformance suite that
  * `markuplint-html-parser` runs says the same (`tree-construction/webkit02.dat`). Matching parse5
  * would take a parser mode that contradicts that suite. The expectation of the TS spec flips when
- * the TS engine is removed (RFC #3178 Phase 8-5).
+ * the TS engine is removed.
  */
 const KNOWN_DIVERGENCES: ReadonlyMap<string, string> = new Map([
 	[
@@ -42,6 +40,42 @@ const KNOWN_DIVERGENCES: ReadonlyMap<string, string> = new Map([
 		'the Rust HTML parser keeps a div inside a select; parse5 drops it',
 	],
 ]);
+
+/**
+ * Whether the specs of the directory test a built-in rule. The ones of a directory that is not
+ * registered (`srcset-sizes-constraint`, whose spec lints a custom probe rule, `landmark-roles`,
+ * `table-row-column-alignment` and `wai-aria`, which hold helpers) are not checked for a fallback.
+ */
+function isRegisteredRuleDirectory(filepath: string) {
+	const name = path.relative(RULES_SRC, path.dirname(filepath)).split(path.sep)[0];
+	return !!name && name in presetRules;
+}
+
+// One watcher for the whole file, never stopped: the file is the unit that a worker runs, so there is
+// nothing to put back, and no two watchers nest.
+const watch = watchFallbacks();
+
+/**
+ * The testing API must be on the Rust engine at all: if the environment variable of the config were
+ * not the one `markuplint` reads, every spec would run on the TypeScript engine, with no warning to
+ * watch for, and pass. A custom rule has to fall back to the TypeScript engine, with a warning, when
+ * it is on; and a built-in rule has to run on the Rust engine, which needs the native addon, the
+ * environment variable and the redirect of `@markuplint/rules` (the registry identity that
+ * `mlRuleTest` looks up) all together.
+ */
+beforeAll(async () => {
+	const original = await import('markuplint');
+	await assertRustCoreSwitch(original);
+
+	watch.fallbacks.length = 0;
+	const { violations } = await original.mlRuleTest(presetRules['no-duplicate-id']!, '<p id="a"></p><p id="a"></p>');
+	expect(
+		watch.fallbacks,
+		'a built-in rule did not run on the Rust engine (is the native addon built, and `@markuplint/rules` redirected to its source? see registry-alias.ts)',
+	).toStrictEqual([]);
+	expect(violations).toHaveLength(1);
+	watch.fallbacks.length = 0;
+});
 
 beforeEach(context => {
 	const id = /\[[a-z0-9-]+\]/.exec(context.task.name)?.[0];
@@ -52,24 +86,10 @@ beforeEach(context => {
 	}
 });
 
-vi.mock('markuplint', async importOriginal => {
-	const original = await importOriginal<MarkuplintModule>();
-	const { default: presetRules } = await import('@markuplint/rules');
-	const { lintWithRust } = await import('./rust-engine.ts');
-
-	function ruleUnderTest(): string | undefined {
-		const testPath = expect.getState().testPath ?? '';
-		const name = path.relative(RULES_SRC, path.dirname(testPath)).split(path.sep)[0];
-		return name && name in presetRules ? name : undefined;
+afterEach(context => {
+	const told = [...watch.fallbacks];
+	watch.fallbacks.length = 0;
+	if (isRegisteredRuleDirectory(context.task.file.filepath)) {
+		expect(told, 'the Rust engine did not lint this').toStrictEqual([]);
 	}
-
-	function mlRuleTest(...args: RuleTestArgs) {
-		const name = ruleUnderTest();
-		if (!name) {
-			return original.mlRuleTest(...args);
-		}
-		return lintWithRust(original, name, args);
-	}
-
-	return { ...original, mlRuleTest };
 });
