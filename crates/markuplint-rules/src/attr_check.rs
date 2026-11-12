@@ -25,9 +25,10 @@ use markuplint_types::spec::types::{Attribute, AttributeCondition, MLMLSpec};
 use regex::Regex;
 
 use crate::attr_name_key::{attr_specs_of, find_attr_spec, namespace_key_of};
-use crate::create_message::{Kw, create_message_value_expected, t};
+use crate::create_message::{Kw, create_message_value_expected};
 use crate::rule::RuleConfigSet;
 use crate::violation::Violation;
+use markuplint_core::i18n::Translator;
 
 /// Value constraint for `disallowAttrs` entries.
 #[derive(Debug)]
@@ -77,6 +78,8 @@ pub(crate) struct AttrCheckContext<'a> {
     pub(crate) severity: &'a crate::violation::Severity,
     /// The `reason` of the config of the element.
     pub(crate) reason: Option<&'a str>,
+    /// TS `t()` for the locale of the run.
+    pub(crate) tr: markuplint_core::i18n::Translator<'static>,
 }
 
 impl AttrCheckContext<'_> {
@@ -130,6 +133,7 @@ pub(crate) fn walk_attrs<O>(
                 rule_id,
                 severity: &rule_config.severity,
                 reason: rule_config.reason.as_deref(),
+                tr: config.translator(),
             };
             violations.extend(check(&options, html_attr, &ctx));
         }
@@ -156,6 +160,7 @@ pub(crate) fn with_element_attr_context<R>(
         rule_id: element.rule_id,
         severity: &element.severity,
         reason: element.reason,
+        tr: element.tr,
     })
 }
 
@@ -511,6 +516,7 @@ pub(crate) struct InvalidValue {
 /// (or not judged), else one entry per position, the messages of the alternatives that fail at one
 /// position joined with `. Or, `.
 pub(crate) fn attr_check_value(
+    tr: Translator<'_>,
     name: &str,
     value: &str,
     is_custom_rule: bool,
@@ -534,10 +540,11 @@ pub(crate) fn attr_check_value(
 
     let mut invalid: Vec<(String, InvalidValue)> = Vec::new();
     for type_val in types {
-        let (message, loc) = value_check(name, value, type_val)?;
+        let (message, loc) = value_check(tr, name, value, type_val)?;
         let key = format!("{}:{}", loc.line, loc.col);
         if let Some((_, current)) = invalid.iter_mut().find(|(k, _)| *k == key) {
-            current.message = format!("{}. Or, {message}", current.message);
+            current.message =
+                [current.message.as_str(), message.as_str()].join(&(tr.t(". ", &[]) + &tr.t("Or, ", &[])));
             current.loc = loc;
         } else {
             invalid.push((key, InvalidValue { message, loc }));
@@ -552,7 +559,12 @@ fn is_namespaced(name: &str, prefix: &str) -> bool {
 }
 
 /// TS `valueCheck`: `None` when the value matches the type.
-fn value_check(name: &str, value: &str, type_val: &serde_json::Value) -> Option<(String, ValueLoc)> {
+fn value_check(
+    tr: Translator<'_>,
+    name: &str,
+    value: &str,
+    type_val: &serde_json::Value,
+) -> Option<(String, ValueLoc)> {
     if type_val.as_str() == Some("Boolean") {
         return None;
     }
@@ -561,8 +573,8 @@ fn value_check(name: &str, value: &str, type_val: &serde_json::Value) -> Option<
     let CheckResult::Unmatched(matches) = markuplint_types::check::check(value, &type_def, None) else {
         return None;
     };
-    let base = t("the \"{0*}\" {1}", &[Kw::S(name), Kw::S("attribute")]);
-    let message = create_message_value_expected(&base, &type_def, &matches);
+    let base = tr.t("the \"{0*}\" {1}", &[Kw::S(name), Kw::S("attribute")]);
+    let message = create_message_value_expected(tr, &base, &type_def, &matches);
     Some((
         message,
         ValueLoc {

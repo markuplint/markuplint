@@ -442,6 +442,7 @@ export class MLEngine extends Emitter<MLEngineEventMap> {
 			fabric.pretenders,
 			browserSupport,
 			this.#file.path,
+			fabric.locale.locale,
 			{
 				isComponentName: fabric.parser.isComponentName?.bind(fabric.parser) ?? isComponentNameByDefault,
 				spec,
@@ -1549,6 +1550,7 @@ function buildRustConfigJson(
 	pretenders: readonly Pretender[],
 	browserSupport: Awaited<ReturnType<typeof resolveBrowserSupport>> | undefined,
 	filename: string,
+	locale: string,
 	{
 		isComponentName,
 		spec,
@@ -1569,8 +1571,15 @@ function buildRustConfigJson(
 		// `browserSupport` belongs to no rule's own options (a node rule replaces them) and is
 		// resolved per file, so it travels with the settings that every rule of the run shares.
 		// `filename` is the document's path, which `no-mismatched-aspect-ratio` resolves a relative
-		// `src` against; it is not a setting the user can give.
-		rule_common_settings: { ...ruleCommonSettings, ...(browserSupport ? { browserSupport } : {}), filename },
+		// `src` against; it is not a setting the user can give. Neither is `locale`: the name that
+		// `i18n()` resolved (`en` or `ja`, `en` when there is no dictionary), which the Rust `t()`
+		// reads its embedded copy of `@markuplint/i18n/locales/<locale>.json` by.
+		rule_common_settings: {
+			...ruleCommonSettings,
+			...(browserSupport ? { browserSupport } : {}),
+			filename,
+			locale,
+		},
 		pretenders: pretenders.map(pretender => withComponentFlags(pretender, isComponentName)),
 		// What renders a literal that a pretender writes as code (`{ expression }`), as `MLAttr` does
 		...(pretenders.length > 0 && {

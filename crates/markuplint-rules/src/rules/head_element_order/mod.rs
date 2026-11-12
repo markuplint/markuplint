@@ -10,6 +10,7 @@
 
 use std::cmp::Ordering;
 
+use markuplint_core::i18n::Primitive as Kw;
 use markuplint_dom::arena::{DomArena, NodeId};
 use markuplint_dom::helpers::get_attr_value;
 use markuplint_dom::node::{DomNode, ElementData};
@@ -225,6 +226,7 @@ impl Rule for HeadElementOrder {
         } else {
             "should"
         };
+        let tr = config.translator();
         // Only the first violation carries a fix: it replaces the whole content of `<head>`, so
         // every other one would conflict with it.
         let mut fix = arena
@@ -241,10 +243,13 @@ impl Rule for HeadElementOrder {
                     rule_id: self.id().to_string(),
                     name: None,
                     severity: head_config.severity,
-                    message: format!(
-                        "The \"{}\" element {ms} be before the \"{}\" element",
-                        expected.local_name, current.local_name
-                    ),
+                    message: tr.finish(&tr.t(
+                        &format!("{{0}} {ms} be before {{1}}"),
+                        &[
+                            Kw::S(&tr.t("the \"{0*}\" {1}", &[Kw::S(expected.local_name), Kw::S("element")])),
+                            Kw::S(&tr.t("the \"{0*}\" {1}", &[Kw::S(current.local_name), Kw::S("element")])),
+                        ],
+                    )),
                     line: el.base.line,
                     col: el.base.col,
                     raw: el.base.raw.clone(),

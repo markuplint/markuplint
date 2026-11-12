@@ -15,9 +15,10 @@ use crate::attr_check::{
     AttrCheckContext, AttrEligibility, attr_violation, element_allows_additional_properties, has_ignored_prefix,
     lookup_name_option, resolve_attr_eligibility_of, walk_attrs,
 };
-use crate::create_message::{Kw, capitalize, t};
+use crate::create_message::Kw;
 use crate::rule::{Rule, RuleConfigSet};
 use crate::violation::Violation;
+use markuplint_core::i18n::Translator;
 
 #[cfg(test)]
 mod tests;
@@ -37,19 +38,23 @@ impl Rule for NoUnknownAttr {
 }
 
 /// `the "{name}" attribute is disallowed`, with the suggestion when there is one.
-fn disallowed(name: &str, candidate: Option<&str>) -> String {
-    let base = t(
+fn disallowed(tr: Translator<'_>, name: &str, candidate: Option<&str>) -> String {
+    let base = tr.t(
         "{0} is {1:c}",
         &[
-            Kw::S(&t("the \"{0*}\" {1}", &[Kw::S(name), Kw::S("attribute")])),
+            Kw::S(&tr.t("the \"{0*}\" {1}", &[Kw::S(name), Kw::S("attribute")])),
             Kw::S("disallowed"),
         ],
     );
     let message = match candidate {
-        Some(candidate) => format!("{base}. {}", t("Did you mean \"{0*}\"?", &[Kw::S(candidate)])),
+        Some(candidate) => format!(
+            "{base}{}{}",
+            tr.t(". ", &[]),
+            tr.t("Did you mean \"{0*}\"?", &[Kw::S(candidate)])
+        ),
         None => base,
     };
-    capitalize(&message)
+    tr.finish(&message)
 }
 
 fn check(options: &serde_json::Value, html_attr: &MLASTHTMLAttr, ctx: &AttrCheckContext<'_>) -> Option<Violation> {
@@ -60,7 +65,11 @@ fn check(options: &serde_json::Value, html_attr: &MLASTHTMLAttr, ctx: &AttrCheck
     if ctx.is_html()
         && let Some(candidate) = &html_attr.candidate
     {
-        return Some(attr_violation(ctx, html_attr, disallowed(name, Some(candidate))));
+        return Some(attr_violation(
+            ctx,
+            html_attr,
+            disallowed(ctx.tr, name, Some(candidate)),
+        ));
     }
 
     if has_ignored_prefix(options, ctx.el, html_attr) {
@@ -82,7 +91,7 @@ fn check(options: &serde_json::Value, html_attr: &MLASTHTMLAttr, ctx: &AttrCheck
     let AttrEligibility::Unknown { candidate } = resolve_attr_eligibility_of(html_attr, specs, ctx) else {
         return None;
     };
-    let message = disallowed(name, candidate.as_deref());
+    let message = disallowed(ctx.tr, name, candidate.as_deref());
 
     // TS: the attribute's owner element is the pretender's `as` element, whose context is
     // `origin`, i.e. the element pretends.

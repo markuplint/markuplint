@@ -57,11 +57,14 @@ fn check(ctx: &ElementContext<'_>) -> Option<Violation> {
 
     let hidden_by = closest_aria_hidden(ctx.arena, ctx.spec, ctx.node_id)?;
     let message = if hidden_by == ctx.node_id {
-        "It may be focusable in spite of it has aria-hidden=true"
+        ctx.tr.t("It may be focusable in spite of it has aria-hidden=true", &[])
     } else {
-        "It may be focusable in spite of it has the ancestor that has aria-hidden=true"
+        ctx.tr.t(
+            "It may be focusable in spite of it has the ancestor that has aria-hidden=true",
+            &[],
+        )
     };
-    Some(ctx.element_violation(message))
+    Some(ctx.element_violation(ctx.tr.finish(&message)))
 }
 
 /// The element itself or its closest ancestor element in the accessibility tree whose `aria-hidden`

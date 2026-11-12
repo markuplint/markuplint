@@ -8,7 +8,7 @@
 //! | `content-model.ts`, `slot-content.ts`, `utils.ts` (`Collection`, `mergeHints`) | `context.rs` |
 //! | `start.ts`, `order.ts`, `choice.ts`, `count-pattern.ts`, `recursive-branch.ts`, `transparent.ts`, `represent-transparent-nodes.ts`, `matches-selector.ts` | `engine.rs` |
 //!
-//! Known difference: the messages are in English only (the Rust engine has no translations).
+//! The messages are built with `t()` as the TS rule builds them, in the locale of the run.
 
 mod context;
 mod engine;
@@ -16,6 +16,8 @@ mod engine;
 use markuplint_dom::arena::{DomArena, NodeId};
 use markuplint_dom::node::DomNode;
 use markuplint_types::spec::types::MLMLSpec;
+
+use markuplint_core::i18n::{Primitive as Kw, Translator};
 
 use crate::rule::{Rule, RuleConfigSet};
 use crate::violation::Violation;
@@ -32,6 +34,7 @@ impl Rule for PermittedContents {
     fn verify(&self, arena: &DomArena, spec: &MLMLSpec, config: &RuleConfigSet) -> Vec<Violation> {
         let mut violations = Vec::new();
         let caches = Caches::default();
+        let tr = config.translator();
         let mut reported = std::collections::HashSet::new();
 
         for (node_id, el) in arena.elements() {
@@ -72,7 +75,7 @@ impl Rule for PermittedContents {
                     transparent_mode: std::cell::RefCell::default(),
                 };
                 for result in engine::content_model(&ctx, node_id) {
-                    if let Some((scope, message)) = report(&ctx, node_id, &result) {
+                    if let Some((scope, message)) = report(&ctx, tr, node_id, &result) {
                         let (line, col, raw) = position(arena, scope);
                         // A transparent element is looked through from each element it is in, so
                         // the same violation is found more than once; TS keeps the first
@@ -102,12 +105,13 @@ impl Rule for PermittedContents {
 
 /// The node to report a result on and the message (TS `verify` of `index.ts`), or `None` for a
 /// result that is not reported.
-fn report(ctx: &Ctx<'_>, el: NodeId, result: &ContentModelResult) -> Option<(NodeId, String)> {
+fn report(ctx: &Ctx<'_>, tr: Translator<'_>, el: NodeId, result: &ContentModelResult) -> Option<(NodeId, String)> {
     let ContentModelResult { ty, scope, query, hint } = result;
     let max_message = hint.max.map(|max| {
-        format!(
-            "There is more content than it needs. The max number of elements required is {}",
-            number_word(max)
+        tr.finish(
+            &(tr.t("there is more content than it needs", &[])
+                + &tr.t(". ", &[])
+                + &tr.t("the max number of elements required is {0}", &[Kw::S(&max.to_string())])),
         )
     });
     // A required child may be what a block, a slot or the pretender's dynamic content renders
@@ -121,28 +125,43 @@ fn report(ctx: &Ctx<'_>, el: NodeId, result: &ContentModelResult) -> Option<(Nod
             if skips_missing() {
                 return None;
             }
-            let message = max_message.unwrap_or_else(|| format!("Require one or more elements. (Need \"{query}\")"));
+            let message = max_message.unwrap_or_else(|| {
+                tr.finish(
+                    &(tr.t("Require {0}", &[Kw::S(&tr.t("one or more elements", &[]))])
+                        + &tr.t(". ", &[])
+                        + "("
+                        + &tr.t("Need \"{0*}\"", &[Kw::S(query)])
+                        + ")"),
+                )
+            });
             Some((*scope, message))
         }
         ResultType::MissingNodeRequired => {
             if skips_missing() {
                 return None;
             }
-            let message = max_message.unwrap_or_else(|| format!("Require an element. (Need \"{query}\")"));
+            let message = max_message.unwrap_or_else(|| {
+                tr.finish(
+                    &(tr.t("Require {0}", &[Kw::S(&tr.t("an {0}", &[Kw::S("element")]))])
+                        + &tr.t(". ", &[])
+                        + "("
+                        + &tr.t("Need \"{0*}\"", &[Kw::S(query)])
+                        + ")"),
+                )
+            });
             Some((*scope, message))
         }
         ResultType::UnexpectedExtraNode => {
             let not = hint.not.unwrap_or(*scope);
             let message = max_message.unwrap_or_else(|| {
-                let through = if ctx.transparent_mode.borrow().contains(scope) {
-                    " through the transparent model"
+                let template = if ctx.transparent_mode.borrow().contains(scope) {
+                    "{0} is not allowed in {1} through the transparent model in this context"
                 } else {
-                    ""
+                    "{0} is not allowed in {1} in this context"
                 };
-                capitalize(&format!(
-                    "{} is not allowed in {}{through} in this context",
-                    name(ctx, not),
-                    name(ctx, ctx.content_owner(el)),
+                tr.finish(&tr.t(
+                    template,
+                    &[Kw::S(&name(ctx, tr, not)), Kw::S(&name(ctx, tr, ctx.content_owner(el)))],
                 ))
             });
             Some((ctx.report_scope(not), message))
@@ -150,21 +169,30 @@ fn report(ctx: &Ctx<'_>, el: NodeId, result: &ContentModelResult) -> Option<(Nod
         ResultType::TransparentModelDisallows => {
             let not = hint.not.unwrap_or(*scope);
             let transparent = hint.transparent.unwrap_or(el);
-            let message = capitalize(&format!(
-                "{} is a transparent model but also disallows {} in this context",
-                name(ctx, transparent),
-                name(ctx, not),
+            let message = tr.finish(&tr.t(
+                "{0} is {1} but {2}",
+                &[
+                    Kw::S(&name(ctx, tr, transparent)),
+                    Kw::S(&tr.t("a {0}", &[Kw::S("transparent model")])),
+                    Kw::S(&tr.t("also disallows {0} in this context", &[Kw::S(&name(ctx, tr, not))])),
+                ],
             ));
             Some((ctx.report_scope(not), message))
         }
-        ResultType::Nothing => Some((el, "The element disallows contents".to_string())),
+        ResultType::Nothing => Some((
+            el,
+            tr.finish(&tr.t(
+                "{0} disallows {1}",
+                &[Kw::S(&tr.t("the {0}", &[Kw::S("element")])), Kw::S("contents")],
+            )),
+        )),
         _ => None,
     }
 }
 
 /// TS `name`: how a node is named in a message. In `Origin` mode an element is named as it is
 /// written (the component's name), else by the name it pretends to.
-fn name(ctx: &Ctx<'_>, node: NodeId) -> String {
+fn name(ctx: &Ctx<'_>, tr: Translator<'_>, node: NodeId) -> String {
     match ctx.arena.get(node) {
         Some(DomNode::Element(el)) => {
             let display = if ctx.mode == Mode::Origin {
@@ -172,32 +200,12 @@ fn name(ctx: &Ctx<'_>, node: NodeId) -> String {
             } else {
                 ctx.local_name(el)
             };
-            format!("the \"{display}\" element")
+            tr.t("the \"{0}\" {1}", &[Kw::S(&display), Kw::S("element")])
         }
-        Some(DomNode::Text(_)) => "the text node".to_string(),
-        Some(DomNode::Doctype(_)) => "the doctype".to_string(),
-        Some(DomNode::PSBlock(_)) => "the code block".to_string(),
-        _ => "the node".to_string(),
-    }
-}
-
-/// The words the English locale of `@markuplint/i18n` gives a number.
-fn number_word(n: usize) -> String {
-    match n {
-        1 => "one".to_string(),
-        2 => "two".to_string(),
-        3 => "three".to_string(),
-        4 => "four".to_string(),
-        _ => n.to_string(),
-    }
-}
-
-/// TS `finish` of `MLRuleContext` for `en`: the message starts with a capital letter.
-fn capitalize(message: &str) -> String {
-    let mut chars = message.chars();
-    match chars.next() {
-        Some(first) if first.is_ascii_lowercase() => first.to_ascii_uppercase().to_string() + chars.as_str(),
-        _ => message.to_string(),
+        Some(DomNode::Text(_)) => tr.t("the {0}", &[Kw::S("text node")]),
+        Some(DomNode::Doctype(_)) => tr.t("the {0}", &[Kw::S("doctype")]),
+        Some(DomNode::PSBlock(_)) => tr.t("the {0}", &[Kw::S("code block")]),
+        _ => tr.t("the {0}", &[Kw::S("node")]),
     }
 }
 

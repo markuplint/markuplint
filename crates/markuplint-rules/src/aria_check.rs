@@ -123,6 +123,8 @@ pub(crate) struct ElementContext<'a> {
     pub(crate) rule_id: &'a str,
     pub(crate) severity: Severity,
     pub(crate) reason: Option<&'a str>,
+    /// TS `t()` for the locale of the run.
+    pub(crate) tr: markuplint_core::i18n::Translator<'static>,
     /// Resolved on first use: a rule asks for it once per attribute, and it matches selectors.
     aria: OnceCell<Option<ResolvedElementARIA>>,
 }
@@ -221,6 +223,7 @@ pub(crate) fn walk_elements<O>(
             rule_id,
             severity: rule_config.severity,
             reason: rule_config.reason.as_deref(),
+            tr: config.translator(),
             aria: OnceCell::new(),
         };
         check(&options, &ctx, &mut violations);

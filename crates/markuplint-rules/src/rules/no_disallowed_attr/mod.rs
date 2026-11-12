@@ -14,7 +14,7 @@ use crate::attr_check::{
     AttrCheckContext, AttrEligibility, attr_full_violation, attr_violation, element_allows_additional_properties,
     has_ignored_prefix, lookup_name_option, resolve_attr_eligibility_of, walk_attrs,
 };
-use crate::create_message::{Kw, capitalize, t};
+use crate::create_message::Kw;
 use crate::rule::{Rule, RuleConfigSet};
 use crate::violation::Violation;
 
@@ -50,7 +50,7 @@ fn check(options: &serde_json::Value, html_attr: &MLASTHTMLAttr, ctx: &AttrCheck
         return Some(attr_violation(
             ctx,
             html_attr,
-            t(
+            ctx.tr.t(
                 "The \"{0}\" attribute must not be specified on an autonomous custom element",
                 &[Kw::S("is")],
             ),
@@ -73,18 +73,20 @@ fn check(options: &serde_json::Value, html_attr: &MLASTHTMLAttr, ctx: &AttrCheck
 
     let specs = ctx.attr_specs.as_ref()?;
 
-    let base = t("the \"{0*}\" {1}", &[Kw::S(name), Kw::S("attribute")]);
+    let base = ctx.tr.t("the \"{0*}\" {1}", &[Kw::S(name), Kw::S("attribute")]);
     match resolve_attr_eligibility_of(html_attr, specs, ctx) {
         // Reported with the whole attribute as `raw`, as TS reports the attribute node.
         AttrEligibility::NoUse => Some(attr_full_violation(
             ctx,
             html_attr,
-            capitalize(&t("{0} is {1:c}", &[Kw::S(&base), Kw::S("disallowed")])),
+            ctx.tr
+                .finish(&ctx.tr.t("{0} is {1:c}", &[Kw::S(&base), Kw::S("disallowed")])),
         )),
         AttrEligibility::ConditionNotMet if !element_allows_additional_properties(ctx) => Some(attr_violation(
             ctx,
             html_attr,
-            capitalize(&t("{0} is {1}", &[Kw::S(&base), Kw::S("disallowed")])),
+            ctx.tr
+                .finish(&ctx.tr.t("{0} is {1}", &[Kw::S(&base), Kw::S("disallowed")])),
         )),
         _ => None,
     }
