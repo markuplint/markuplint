@@ -29,6 +29,7 @@ pub mod fix;
 pub(crate) mod h1_check;
 pub mod helpers;
 pub(crate) mod inline_script;
+pub mod inspect;
 pub(crate) mod js;
 pub(crate) mod landmark_check;
 pub(crate) mod lifecycle_check;
