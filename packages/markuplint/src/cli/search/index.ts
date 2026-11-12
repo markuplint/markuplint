@@ -1,11 +1,8 @@
 import type { CLIOptions } from '../bootstrap.js';
 
-import { createRule, MLRule } from '@markuplint/ml-core';
-
 import { command } from '../command.js';
 
 export async function search(files: readonly string[], options: CLIOptions, selectors: string) {
-	const name = '__CLI_SEARCH__';
 	const locations: {
 		file: string;
 		line: number;
@@ -16,34 +13,15 @@ export async function search(files: readonly string[], options: CLIOptions, sele
 		{
 			...options,
 			problemOnly: true,
-			importPresetRules: false,
 		},
-		{
-			rules: [
-				new MLRule({
-					name,
-					...createRule({
-						verify({ document }) {
-							// Every tree is searched: what is in the content of a `template` element is found too
-							const nodes = document.deepQuerySelectorAll(selectors);
-							locations.push(
-								...[...nodes].map(node => {
-									return {
-										file: document.filename ?? '_NO_FILE_',
-										line: node.startLine,
-										col: node.startCol,
-									};
-								}),
-							);
-						},
-					}),
-				}),
-			],
-			config: {
-				rules: {
-					[name]: true,
-				},
-			},
+		// No rule is wanted here: the document is what is read, and the rules of the config are neither
+		// run nor reported as not found.
+		{ noRules: true },
+		(engine, file) => {
+			// Asked of the engine, which answers for whichever one linted the file: the Rust one has no `Document`.
+			for (const { line, col } of engine.searchNodes(selectors)) {
+				locations.push({ file, line, col });
+			}
 		},
 	);
 	for (const loc of locations) {

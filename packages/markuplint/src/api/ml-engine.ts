@@ -1,7 +1,7 @@
 import type { APIOptions, MLEngineEventMap } from './types.js';
 import type { PositionedNode } from '../suppressions/compute-scope.js';
 import type { MLResultInfo } from '../types.js';
-import type { RustDocumentView, RustInspectBinding } from './rust-document.js';
+import type { RustDocumentView, RustInspectBinding, SearchedPosition } from './rust-document.js';
 import type { WatchSubscription } from './shared-watcher.js';
 import type { ConfigSet, MLFile, PretenderResolver, Target } from '@markuplint/file-resolver';
 import type {
@@ -36,12 +36,13 @@ import {
 	convertRuleset,
 	getBooleanAttrNames,
 	createRuleDeprecationViolations,
+	createConfigViolationsOf,
 	multiPassFix,
 } from '@markuplint/ml-core';
 import { schemaToSpec } from '@markuplint/ml-spec';
 import { ParserError, isComponentName as isComponentNameByDefault } from '@markuplint/parser-utils';
 import { resolveBrowserSupportForRust, ruleAliasTable } from '@markuplint/rules';
-import { ConfigLoadError, isFatalError } from '@markuplint/shared';
+import { ConfigLoadError, ConfigParserError, isFatalError } from '@markuplint/shared';
 import { Emitter } from 'strict-event-emitter';
 
 import { log as coreLog, verbosely } from '../debug.js';
@@ -275,8 +276,8 @@ export class MLEngine extends Emitter<MLEngineEventMap> {
 	 *
 	 * It is the document of the TS engine, so it is `null` while the Rust engine
 	 * (`experimentalRustCore`) lints: that one never builds it. What a consumer reads of the
-	 * document goes through {@link positionedNodes} and the `debug` payload of the `lint` event,
-	 * which both engines answer.
+	 * document goes through {@link positionedNodes}, {@link searchNodes} and the `debug` payload of
+	 * the `lint` event, which both engines answer.
 	 */
 	get document(): Document<RuleConfigValue, PlainData> | null {
 		if (this.#core?.document instanceof Error) {
@@ -306,6 +307,21 @@ export class MLEngine extends Emitter<MLEngineEventMap> {
 		// TypeScript can't verify structural compatibility between the generic `MLNode<T, O>` and
 		// the plain interface at compile time.
 		return document ? (document.nodeList as unknown as readonly PositionedNode[]) : null;
+	}
+
+	/**
+	 * Where the elements of the document the latest {@link exec} linted that `selector` matches
+	 * start, in every tree of the document (the content of a `template` element too) and in the
+	 * order of the markup (TS `Document#deepQuerySelectorAll`); none when there is no document (it
+	 * did not parse, or nothing was linted yet). It throws for a selector that cannot be read.
+	 *
+	 * @internal Read by `markuplint --search`.
+	 */
+	searchNodes(selector: string): readonly SearchedPosition[] {
+		if (this.#rustView) {
+			return this.#rustView.search(selector);
+		}
+		return searchDocument(this.document, selector);
 	}
 
 	/**
@@ -444,8 +460,7 @@ export class MLEngine extends Emitter<MLEngineEventMap> {
 
 	/**
 	 * Attempts to execute linting via the Rust NAPI engine.
-	 * Returns `null` if the file is not eligible (custom rules,
-	 * or a rule the Rust engine cannot evaluate),
+	 * Returns `null` if the file is not eligible (plugin rules, or no native addon),
 	 * in which case the caller should fall back to the TS engine.
 	 */
 	async #tryExecRustPath(fabric: MLFabric): Promise<MLResultInfo | null> {
@@ -480,10 +495,32 @@ export class MLEngine extends Emitter<MLEngineEventMap> {
 
 		// The extended specs of a framework are merged here, as the TS document does with them.
 		const spec = schemaToSpec(fabric.schemas);
+		// The Rust engine runs the rules the config sets and knows no other: without the built-in
+		// rules (`importPresetRules: false`) it is given none to run, and what the config sets is
+		// reported as not found below, as `MLCore.verify()` reports it. A node rule keeps its namespace
+		// wildcards that are not `false`: TS reports them while it maps the node rules onto the document,
+		// whether or not a rule runs.
+		const wildcardsOnly = <T extends { readonly rules?: Readonly<Record<string, unknown>> }>(rule: T): T => ({
+			...rule,
+			rules: Object.fromEntries(
+				Object.entries(rule.rules ?? {}).filter(([name, value]) => name.endsWith('/*') && value !== false),
+			),
+		});
+		const rustRuleset: typeof fabric.ruleset =
+			(this.#options?.importPresetRules ?? true)
+				? fabric.ruleset
+				: {
+						...fabric.ruleset,
+						rules: {},
+						nodeRules: (fabric.ruleset.nodeRules ?? []).filter(rule => !rule.name).map(wildcardsOnly),
+						childNodeRules: (fabric.ruleset.childNodeRules ?? [])
+							.filter(rule => !rule.name)
+							.map(wildcardsOnly),
+					};
 		// Build config JSON for Rust
-		const browserSupport = await resolveBrowserSupport(fabric.ruleset, this.#file.path);
+		const browserSupport = await resolveBrowserSupport(rustRuleset, this.#file.path);
 		const configJson = buildRustConfigJson(
-			fabric.ruleset,
+			rustRuleset,
 			fabric.ruleCommonSettings,
 			fabric.pretenders,
 			browserSupport,
@@ -509,13 +546,18 @@ export class MLEngine extends Emitter<MLEngineEventMap> {
 			filename: this.#file.path,
 		};
 		const isHtmlParser = this.#parserModName === '@markuplint/html-parser';
-		const lintHtml = isHtmlParser
-			? napi.lintHtml
-			: (code: string, config: string, specJson: string) =>
-					lintWithTsParser(napi, tsParser, code, config, specJson);
 		const view = isHtmlParser
 			? createHtmlDocumentView(napi, sourceCode, configJson, specJson)
 			: createTsDocumentView(tsParser, sourceCode);
+		// A selector of the config that cannot be read fails the document, as it does in TS: there is
+		// the one `parse-error`, and no rule runs.
+		const configSelectorError = findConfigSelectorError(fabric, view);
+		const lintHtml = configSelectorError
+			? () => fatalParseErrorViolations(configSelectorError, fabric.severity)
+			: isHtmlParser
+				? napi.lintHtml
+				: (code: string, config: string, specJson: string) =>
+						lintWithTsParser(napi, tsParser, code, config, specJson);
 
 		log('exec: rust path lint');
 
@@ -552,8 +594,28 @@ export class MLEngine extends Emitter<MLEngineEventMap> {
 		this.#rustView = view;
 
 		// What `MLCore.verify()` puts ahead of the rule violations; it does not run on this path.
+		const configViolations = createConfigViolationsOf(fabric.ruleset, fabric.rules, fabric.configErrors ?? []);
 		const deprecations = createRuleDeprecationViolations(fabric.ruleDeprecations ?? [], fabric.severity);
-		const violations = [...deprecations, ...toViolations(napiViolations, fix)];
+		// `MLCore.verify()` returns a document that did not parse as the one `parse-error`, without them.
+		// The Rust engine reports the errors of mapping the node rules onto the document itself, as
+		// `config-error`; they come after the errors of the config and before the deprecations.
+		const reported = (raw: readonly NapiViolation[], withFix: boolean) => [
+			...(raw.length === 1 && raw[0]?.ruleId === PARSE_ERROR_RULE_ID
+				? []
+				: [
+						...configViolations,
+						...toViolations(
+							raw.filter(v => v.ruleId === CONFIG_ERROR_RULE_ID),
+							false,
+						),
+						...deprecations,
+					]),
+			...toViolations(
+				raw.filter(v => v.ruleId !== CONFIG_ERROR_RULE_ID),
+				withFix,
+			),
+		];
+		const violations = reported(napiViolations, fix);
 
 		let fixedCode = sourceCode;
 		let fixSummary: FixSummary | undefined;
@@ -567,7 +629,7 @@ export class MLEngine extends Emitter<MLEngineEventMap> {
 						let parsed: boolean;
 						try {
 							const raw = lintHtml(code, configJson, specJson);
-							latest = [...deprecations, ...toViolations(raw, true)];
+							latest = reported(raw, true);
 							// Read off what the engine returned, not off `latest`: a `parse-error` the
 							// config turns off is not reported but is still a document that did not parse.
 							parsed = !raw.some(v => v.ruleId === PARSE_ERROR_RULE_ID);
@@ -1039,8 +1101,9 @@ export class MLEngine extends Emitter<MLEngineEventMap> {
 			}
 		}
 
-		const rules = await this.#resolveRules(configSet.plugins, ruleset);
-		this.#hasPluginRules = configSet.plugins.some(p => p.rules && Object.keys(p.rules).length > 0);
+		const noRules = this.#options?.noRules ?? false;
+		const rules = noRules ? [] : await this.#resolveRules(configSet.plugins, ruleset);
+		this.#hasPluginRules = !noRules && configSet.plugins.some(p => p.rules && Object.keys(p.rules).length > 0);
 		fileLog('Resolved rules: %O', rules);
 
 		const locale = i18n(this.#options?.locale);
@@ -1066,7 +1129,7 @@ export class MLEngine extends Emitter<MLEngineEventMap> {
 			locale,
 			ruleCommonSettings,
 			configErrors: configSet.errs,
-			ruleDeprecations: configSet.ruleDeprecations,
+			ruleDeprecations: noRules ? [] : configSet.ruleDeprecations,
 		};
 	}
 
@@ -1290,7 +1353,8 @@ export class MLEngine extends Emitter<MLEngineEventMap> {
 		// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
 		configSet: ConfigSet,
 	) {
-		const ruleset = convertRuleset(configSet.config);
+		// With no rule to evaluate, the rules the config sets are not read: none is reported as not found.
+		const ruleset = convertRuleset(this.#options?.noRules ? {} : configSet.config);
 		this.emit('ruleset', this.#file.path, ruleset);
 		return ruleset;
 	}
@@ -1455,6 +1519,40 @@ function fatalParseErrorViolations(error: ParserError, { parseError }: MLFabric[
 	];
 }
 
+/** `Node.ELEMENT_NODE`, the `nodeType` of an element of {@link PositionedNode}. */
+const ELEMENT_NODE_TYPE = 1;
+
+/**
+ * The error that fails the document in TS for a selector of `nodeRules` or `childNodeRules` that
+ * cannot be read: `MLDocument` matches them against the elements while it is built, and the
+ * `InvalidSelectorError` becomes a `ConfigParserError` that names the configuration. The config
+ * already holds that error with the text of the TS selector parser (`ConfigProvider` creates every
+ * selector, so it is in `configErrors` wherever it is written), so it is not made again here.
+ *
+ * It fails the document only when there is an element to match against. The selectors of the
+ * pretenders are not read: TS matches them against the elements that can pretend, and a warning
+ * about one is all there is when none does.
+ */
+function findConfigSelectorError(fabric: MLFabric, view: RustDocumentView): ConfigParserError | null {
+	const selectors = new Set(
+		[...(fabric.ruleset.nodeRules ?? []), ...(fabric.ruleset.childNodeRules ?? [])].flatMap(rule =>
+			rule.selector ? [rule.selector] : [],
+		),
+	);
+	const error = fabric.configErrors?.find(
+		(candidate): candidate is ConfigParserError =>
+			candidate instanceof ConfigParserError && selectors.has(candidate.raw),
+	);
+	if (!error || !view.nodes()?.some(node => node.nodeType === ELEMENT_NODE_TYPE)) {
+		return null;
+	}
+	// The message of the config's error ends with the file it was found in, and with its position when
+	// it has one: what the selector parser said is what comes before.
+	const at = error.message.lastIndexOf(` in ${error.filePath}`);
+	const message = at === -1 ? error.message : error.message.slice(0, at);
+	return new ConfigParserError(message, { filePath: 'the configuration' });
+}
+
 /** What a violation that is kept but not reported is given for a severity. */
 const SUPPRESSED_SEVERITY = 'off';
 
@@ -1549,7 +1647,27 @@ function createTsDocumentView(tsParser: TsParserInput, code: string): RustDocume
 		// `MLNode` satisfies `PositionedNode` structurally; see `MLEngine#positionedNodes`.
 		nodes: () => (read()?.nodeList ?? null) as readonly PositionedNode[] | null,
 		debugMap: () => read()?.debugMap() ?? null,
+		search: selector => searchDocument(read(), selector),
 	};
+}
+
+/**
+ * TS `Document#deepQuerySelectorAll` as the position of each element it finds: the search of
+ * `markuplint --search`. A document that is `null` did not parse and has none.
+ */
+function searchDocument(
+	// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
+	document: {
+		readonly deepQuerySelectorAll: (
+			selectors: string,
+		) => readonly { readonly startLine: number; readonly startCol: number }[];
+	} | null,
+	selector: string,
+): readonly SearchedPosition[] {
+	return (document?.deepQuerySelectorAll(selector) ?? []).map(node => ({
+		line: node.startLine,
+		col: node.startCol,
+	}));
 }
 
 type NapiBinding = RustInspectBinding & {

@@ -23,12 +23,23 @@ export type APIOptions = {
 	readonly ignoreExt?: boolean;
 	readonly rules?: readonly Readonly<AnyMLRule>[];
 	readonly importPresetRules?: boolean;
+	/**
+	 * Evaluates no rule, on either engine. The rules the config sets are not read, so none is
+	 * reported as not found or as deprecated; what is not about a rule (a parse error, a config
+	 * that cannot be loaded) is reported as usual. For a caller that reads the document and not the
+	 * verdict (`markuplint --search`), which `importPresetRules: false` does not serve: it leaves
+	 * the rules the config sets without a rule, and each is reported as not found.
+	 *
+	 * @internal
+	 */
+	readonly noRules?: boolean;
 	readonly severity?: SeverityOptions;
 	/**
 	 * [Experimental] Use the Rust linting engine for built-in rules.
 	 * The files of framework parsers are parsed in TypeScript and the result is handed to the Rust
-	 * engine. Falls back to the TypeScript engine for custom rules and for the rules that read
-	 * what is outside the document.
+	 * engine. Falls back to the TypeScript engine for the rules of plugins, and when the native addon is
+	 * missing. The Rust engine runs the built-in rules only:
+	 * a rule given in `rules` is ignored by it.
 	 */
 	readonly experimentalRustCore?: boolean;
 	/**
