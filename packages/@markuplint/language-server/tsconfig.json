@@ -15,6 +15,9 @@
 			"path": "../ml-config"
 		},
 		{
+			"path": "../ml-core"
+		},
+		{
 			"path": "../ml-spec"
 		},
 		{
