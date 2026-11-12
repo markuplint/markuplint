@@ -28,6 +28,13 @@ pub struct Pretender {
     /// nothing in linting reads it.
     #[serde(default)]
     pub file_path: Option<String>,
+
+    /// Whether the name in a string `as` is a component's, as the parser of the document
+    /// decides it (TS `MLDocument#isComponentName`). A function of the parser cannot go
+    /// over JSON, so the TS side computes it for each name and sends the answer. An
+    /// `OriginalNode`, a slot and an element of `contents` carry their own `isComponent`.
+    #[serde(default)]
+    pub as_is_component: bool,
 }
 
 /// TS `string | OriginalNode`.
@@ -46,6 +53,10 @@ pub enum PretenderAs {
 pub struct OriginalNode {
     /// Element name.
     pub element: String,
+
+    /// Whether `element` is a component's name (see [`Pretender::as_is_component`]).
+    #[serde(default)]
+    pub is_component: bool,
 
     /// Where the component places the children given at the usage site.
     #[serde(default, deserialize_with = "deserialize_slots")]
@@ -75,6 +86,10 @@ pub struct OriginalNode {
 #[serde(rename_all = "camelCase")]
 pub struct Slot {
     pub element: String,
+
+    /// Whether `element` is a component's name (see [`Pretender::as_is_component`]).
+    #[serde(default)]
+    pub is_component: bool,
 
     #[serde(default)]
     pub contents: Option<Vec<PretenderContent>>,
@@ -153,6 +168,9 @@ pub enum PretenderContent {
     /// A native element that the component always renders there.
     Element {
         element: String,
+        /// Whether `element` is a component's name (see [`Pretender::as_is_component`]).
+        #[serde(default, rename = "isComponent")]
+        is_component: bool,
         #[serde(default)]
         attrs: Option<Vec<PretenderAttr>>,
     },
@@ -179,6 +197,11 @@ pub struct PretenderAttr {
 #[serde(untagged)]
 pub enum PretenderAttrValue {
     Literal(String),
+    /// The code the attribute is written as in the component (`aria-busy={true}`): a literal in
+    /// it is rendered as the framework renders it, any other code is dynamic.
+    Expression {
+        expression: String,
+    },
     /// Takes the value of the attribute the component has at the usage site.
     FromAttr {
         #[serde(rename = "fromAttr")]
@@ -347,6 +370,7 @@ mod tests {
             Some(vec![
                 PretenderContent::Element {
                     element: "img".into(),
+                    is_component: false,
                     attrs: Some(vec![PretenderAttr {
                         name: "alt".into(),
                         value: Some(PretenderAttrValue::Literal("x".into())),
@@ -354,6 +378,7 @@ mod tests {
                 },
                 PretenderContent::Element {
                     element: "source".into(),
+                    is_component: false,
                     attrs: None,
                 },
                 PretenderContent::Slot { slot: True },
@@ -406,6 +431,48 @@ mod tests {
             ]
         );
         assert_eq!(n.attrs.as_ref().unwrap()[1].name, "tabIndex");
+    }
+
+    #[test]
+    fn v6_pretender_component_flags_and_expression_values() {
+        let named = pretender(json!({ "selector": "Btn", "as": "Tabs.Root", "asIsComponent": true }));
+        assert!(named.as_is_component);
+        assert!(!pretender(json!({ "selector": "Btn", "as": "div" })).as_is_component);
+
+        let p = pretender(json!({
+            "selector": "Btn",
+            "as": {
+                "element": "Wrapper",
+                "isComponent": true,
+                "slots": [{ "element": "Inner", "isComponent": true }],
+                "contents": [{ "element": "Item", "isComponent": true }, { "element": "li" }],
+                "attrs": [{ "name": "aria-busy", "value": { "expression": "true" } }]
+            }
+        }));
+        let n = node(&p);
+        assert!(n.is_component);
+        let Slots::List(slots) = &n.slots else {
+            panic!("expected a slot list");
+        };
+        assert!(slots[0].is_component);
+        let contents = n.contents.as_ref().unwrap();
+        assert!(matches!(
+            &contents[0],
+            PretenderContent::Element { is_component: true, .. }
+        ));
+        assert!(matches!(
+            &contents[1],
+            PretenderContent::Element {
+                is_component: false,
+                ..
+            }
+        ));
+        assert_eq!(
+            n.attrs.as_ref().unwrap()[0].value,
+            Some(PretenderAttrValue::Expression {
+                expression: "true".into()
+            })
+        );
     }
 
     #[test]

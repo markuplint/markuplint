@@ -10,18 +10,18 @@
 
 use std::collections::{HashMap, HashSet};
 
+use markuplint_core::i18n::{Primitive as Kw, Translator};
 use markuplint_core::mlast::MLASTAttr;
 use markuplint_dom::arena::DomArena;
 use markuplint_types::spec::aria::{self, ARIAVersion};
 use markuplint_types::spec::types::{ARIAAttributeValue, MLMLSpec};
 
+use crate::attr_name_key::{attr_specs_of, find_attr_spec};
 use crate::rule::{Rule, RuleConfig, RuleConfigSet};
 use crate::tree_scope::{TreeRoot, Trees, dom_value, dom_value_of};
 use crate::violation::Violation;
 
 pub struct NoReferToNonExistentId;
-
-use markuplint_types::spec::lookup::{get_attr_specs, get_spec};
 
 impl Rule for NoReferToNonExistentId {
     fn id(&self) -> &'static str {
@@ -53,6 +53,7 @@ impl Rule for NoReferToNonExistentId {
             .map(|p| p.name.clone())
             .collect();
 
+        let tr = config.translator();
         let trees = Trees::new(arena, spec);
         let (ids_of_tree, trees_with_dynamic_id) = collect_ids(arena, config, &trees);
         let no_ids = HashSet::new();
@@ -62,8 +63,11 @@ impl Rule for NoReferToNonExistentId {
             if rule_config.disabled {
                 continue;
             }
-            let el_name_lower = el.base.node_name.to_ascii_lowercase();
-            let attr_specs = get_attr_specs(spec, &el_name_lower);
+            // TS `getAttrSpecs`: the attributes the element takes, global ones merged. An element
+            // the spec does not know (a custom element, a component) is not checked.
+            let Some(attr_specs) = attr_specs_of(spec, el) else {
+                continue;
+            };
 
             for attr in &el.attributes {
                 let MLASTAttr::HTMLAttr(html_attr) = attr else {
@@ -91,14 +95,19 @@ impl Rule for NoReferToNonExistentId {
                 let id_set = ids_of_tree.get(&root).unwrap_or(&no_ids);
 
                 if aria_id_attrs.contains(&attr_name_lower) {
-                    check_space_separated_ids(value, id_set, html_attr, self.id(), rule_config, &mut violations);
+                    check_space_separated_ids(value, id_set, html_attr, self.id(), rule_config, tr, &mut violations);
                     continue;
                 }
 
                 // Spec attribute types that denote an ID reference:
                 // - `type === "DOMID"` → single ID reference
                 // - `type.token === "DOMID"` with a separator → ID reference list
-                let id_ref_type = get_domid_type(&attr_specs, &attr_name_lower, spec, &el.base.node_name);
+                let id_ref_type = match find_attr_spec(&attr_specs, el, html_attr) {
+                    // TS: DOMID and DOMID list do not become the array type
+                    Some(attr_spec) if attr_spec.attr_type.is_array() => continue,
+                    Some(attr_spec) => classify_domid_type(&attr_spec.attr_type),
+                    None => DomIdType::None,
+                };
                 match id_ref_type {
                     DomIdType::Single => {
                         let value = dom_value_of(html_attr, value).unwrap_or_else(|| value.to_owned());
@@ -107,7 +116,7 @@ impl Rule for NoReferToNonExistentId {
                                 rule_id: self.id().to_string(),
                                 name: None,
                                 severity: rule_config.severity,
-                                message: format!("Missing \"{value}\" ID"),
+                                message: missing_id(tr, &value),
                                 line: html_attr.value.line,
                                 col: html_attr.value.col,
                                 raw: html_attr.value.raw.clone(),
@@ -117,7 +126,15 @@ impl Rule for NoReferToNonExistentId {
                         }
                     }
                     DomIdType::SpaceList => {
-                        check_space_separated_ids(value, id_set, html_attr, self.id(), rule_config, &mut violations);
+                        check_space_separated_ids(
+                            value,
+                            id_set,
+                            html_attr,
+                            self.id(),
+                            rule_config,
+                            tr,
+                            &mut violations,
+                        );
                     }
                     DomIdType::None => {}
                 }
@@ -134,28 +151,6 @@ enum DomIdType {
     Single,
     /// Space-separated DOMID list, e.g. `headers`.
     SpaceList,
-}
-
-fn get_domid_type(
-    attr_specs: &std::collections::HashMap<&str, &markuplint_types::spec::types::Attribute>,
-    attr_name: &str,
-    spec: &MLMLSpec,
-    el_name: &str,
-) -> DomIdType {
-    if let Some(attr_spec) = attr_specs.get(attr_name) {
-        return classify_domid_type(&attr_spec.attr_type);
-    }
-    if let Some(el) = get_spec(spec, el_name) {
-        for category in el.global_attrs.keys() {
-            if let Some(attrs_map) = spec.def.global_attrs.get(category)
-                && let Some(attr_val) = attrs_map.get(attr_name)
-                && let Some(type_val) = attr_val.get("type")
-            {
-                return classify_domid_type(type_val);
-            }
-        }
-    }
-    DomIdType::None
 }
 
 fn classify_domid_type(type_val: &serde_json::Value) -> DomIdType {
@@ -221,12 +216,18 @@ fn collect_ids(
     (ids_of_tree, trees_with_dynamic_id)
 }
 
+/// TS `t('Missing {0}', t('"{0*}" ID', id))`, through `finish`.
+fn missing_id(tr: Translator<'static>, id: &str) -> String {
+    tr.finish(&tr.t("Missing {0}", &[Kw::S(&tr.t("\"{0*}\" ID", &[Kw::S(id)]))]))
+}
+
 fn check_space_separated_ids(
     value: &str,
     id_set: &HashSet<String>,
     html_attr: &markuplint_core::mlast::MLASTHTMLAttr,
     rule_id: &str,
     config: &RuleConfig,
+    tr: Translator<'static>,
     violations: &mut Vec<Violation>,
 ) {
     // The value is split before the character references are resolved: `&#32;` is not a separator
@@ -241,7 +242,7 @@ fn check_space_separated_ids(
                 rule_id: rule_id.to_string(),
                 name: None,
                 severity: config.severity,
-                message: format!("Missing \"{id_ref}\" ID"),
+                message: missing_id(tr, &id_ref),
                 line: html_attr.value.line,
                 col: html_attr.value.col,
                 raw: html_attr.value.raw.clone(),
@@ -255,6 +256,29 @@ fn check_space_separated_ids(
 #[cfg(test)]
 mod tests {
     use super::*;
+
+    /// TS: `[no-refer-to-non-existent-id-invalid-002]` td[headers]. TS runs it with the JSX parser;
+    /// the markup is the same for the HTML parser, as it is no component.
+    #[test]
+    fn no_refer_to_non_existent_id_invalid_002() {
+        const _ID: &str = "no-refer-to-non-existent-id-invalid-002";
+        let violations = crate::test_util::lint_brief(
+            "no-refer-to-non-existent-id",
+            "<table>\n  <tr>\n    <th id=\"a\"></th>\n    <th id=\"b\"></th>\n    <td headers=\"a c\"></td>\n  </tr>\n</table>",
+            serde_json::json!({ "rules": { "no-refer-to-non-existent-id": true } }),
+        );
+        assert_eq!(
+            violations,
+            [crate::test_util::brief(
+                crate::violation::Severity::Error,
+                5,
+                18,
+                "Missing \"c\" ID",
+                "a c"
+            )]
+        );
+    }
+
     use crate::rule::{RuleConfig, RuleConfigSet};
     use markuplint_core::mlast::{ElementType, MLASTHTMLAttr, MLASTToken, NamespaceURI};
     use markuplint_dom::arena::DomArenaBuilder;
@@ -328,6 +352,7 @@ mod tests {
                         is_dynamic_value: None,
                         is_expression_value: None,
                         is_absent: None,
+                        literal_expression: None,
                         is_directive: None,
                         potential_name: None,
                         potential_value: None,
@@ -474,6 +499,7 @@ mod tests {
             is_dynamic_value: Some(true),
             is_expression_value: Some(true),
             is_absent: None,
+            literal_expression: None,
             is_directive: None,
             potential_name: None,
             potential_value: None,
@@ -553,6 +579,7 @@ mod tests {
             is_dynamic_value: None,
             is_expression_value: None,
             is_absent: None,
+            literal_expression: None,
             is_directive: None,
             potential_name: None,
             potential_value: None,

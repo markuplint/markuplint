@@ -4,6 +4,7 @@
 //! are checked, and what is in another tree (the content of a `template` element) is not between
 //! the trigger and the target (TS `findSubsequentNodes`).
 
+use markuplint_core::i18n::Primitive as Kw;
 use markuplint_dom::arena::{DomArena, NodeId};
 use markuplint_dom::helpers;
 use markuplint_dom::node::DomNode;
@@ -34,6 +35,7 @@ impl Rule for RequireAdjacentPopover {
 
     fn verify(&self, arena: &DomArena, spec: &MLMLSpec, config: &RuleConfigSet) -> Vec<Violation> {
         let mut violations = Vec::new();
+        let tr = config.translator();
         let version = resolve_aria_version(&serde_json::Value::Null, config.common_settings());
         let trees = Trees::new(arena, spec);
         let mut document_order = Vec::new();
@@ -93,7 +95,14 @@ impl Rule for RequireAdjacentPopover {
                         rule_id: self.id().to_string(),
                         name: None,
                         severity: rule_config.severity,
-                        message: "Detected perceptible nodes between the trigger and corresponding target".to_string(),
+                        message: tr.finish(&tr.t(
+                            "Detected {0} between {1} and {2}",
+                            &[
+                                Kw::S(&tr.t("perceptible nodes", &[])),
+                                Kw::S(&tr.t("the {0}", &[Kw::S("trigger")])),
+                                Kw::S(&tr.t("corresponding {0}", &[Kw::S("target")])),
+                            ],
+                        )),
                         line: base.line,
                         col: base.col,
                         raw: base.raw.clone(),
@@ -188,6 +197,7 @@ mod tests {
             is_dynamic_value: None,
             is_expression_value: None,
             is_absent: None,
+            literal_expression: None,
             is_directive: None,
             potential_name: None,
             potential_value: None,

@@ -5,6 +5,7 @@
 //! fragment a conformance error — scrolling to a missing fragment does nothing
 //! (§ Scrolling to a fragment) — hence the `warning` default.
 
+use markuplint_core::i18n::Primitive as Kw;
 use std::collections::HashSet;
 
 use markuplint_core::mlast::MLASTHTMLAttr;
@@ -36,6 +37,7 @@ impl Rule for NoBrokenFragmentLink {
 
     fn verify(&self, arena: &DomArena, spec: &MLMLSpec, config: &RuleConfigSet) -> Vec<Violation> {
         let mut violations = Vec::new();
+        let tr = config.translator();
 
         // A preprocessor block may generate any ID, so the document cannot be judged.
         let is_mutable = (0..arena.len()).any(|id| matches!(arena.get(id), Some(DomNode::PSBlock(_))));
@@ -94,7 +96,7 @@ impl Rule for NoBrokenFragmentLink {
                     rule_id: self.id().to_string(),
                     name: None,
                     severity: rule_config.severity,
-                    message: format!("Missing \"{decoded}\" ID"),
+                    message: tr.finish(&tr.t("Missing {0}", &[Kw::S(&tr.t("\"{0*}\" ID", &[Kw::S(&decoded)]))])),
                     line: href.value.line,
                     col: href.value.col,
                     raw: href.value.raw.clone(),
@@ -124,9 +126,8 @@ fn attr_value(attr: &MLASTHTMLAttr) -> &str {
 /// The entity-decoded values of the `attr_name` attribute of every element (TS
 /// `querySelectorAll('[id]')` / `'[name]'`), and whether any of them is dynamic.
 ///
-/// TS leaves out values whose `valueType` is `code`; only a framework's directive
-/// patterns set that type, which the Rust engine does not model, so every value is
-/// kept. A decoded value holding an unpaired surrogate is left out: no decoded
+/// TS leaves out values whose `valueType` is `code` (a value the framework resolves is kept) and
+/// does not decode an expression (`id={"a&amp;b"}`). A decoded value holding an unpaired surrogate is left out: no decoded
 /// fragment can equal it (`decodeURIComponent` never yields one).
 fn collect_values(arena: &DomArena, elements: &[NodeId], attr_name: &str) -> (HashSet<String>, bool) {
     let mut values = HashSet::new();
@@ -141,7 +142,14 @@ fn collect_values(arena: &DomArena, elements: &[NodeId], attr_name: &str) -> (Ha
         if attr.is_dynamic_value == Some(true) {
             has_dynamic = true;
         }
-        if let Some(decoded) = decode_entities(attr_value(attr)) {
+        // TS `attr.valueType !== 'code'`, which a value the framework resolves is not
+        if attr.value_type.as_deref() == Some("code") && attr.potential_value.is_none() {
+            continue;
+        }
+        // An expression is code, not markup: its string has no character reference to decode
+        if attr.is_expression_value == Some(true) {
+            values.insert(attr_value(attr).to_owned());
+        } else if let Some(decoded) = decode_entities(attr_value(attr)) {
             values.insert(decoded);
         }
     }

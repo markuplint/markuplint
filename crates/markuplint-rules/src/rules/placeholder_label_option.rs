@@ -13,6 +13,7 @@ use markuplint_dom::helpers::{attr_value, get_html_attr_from_el};
 use markuplint_dom::node::{DomNode, ElementData};
 use markuplint_types::spec::types::MLMLSpec;
 
+use crate::create_message::Kw;
 use crate::rule::{Rule, RuleConfigSet};
 use crate::violation::Violation;
 
@@ -22,8 +23,8 @@ impl Rule for PlaceholderLabelOption {
     fn id(&self) -> &'static str {
         "placeholder-label-option"
     }
-
     fn verify(&self, arena: &DomArena, _spec: &MLMLSpec, config: &RuleConfigSet) -> Vec<Violation> {
+        let tr = config.translator();
         let mut violations = Vec::new();
         for (node_id, el) in arena.elements() {
             if local_name(el) != "select" {
@@ -40,7 +41,10 @@ impl Rule for PlaceholderLabelOption {
                 rule_id: self.id().to_string(),
                 name: None,
                 severity: rule_config.severity,
-                message: "Need the placeholder label option".to_string(),
+                message: tr.finish(&tr.t(
+                    "need {0}",
+                    &[Kw::S(&tr.t("the {0}", &[Kw::S("placeholder label option")]))],
+                )),
                 line: el.base.line,
                 col: el.base.col,
                 raw: el.base.raw.clone(),
@@ -253,6 +257,7 @@ mod tests {
             is_dynamic_value: None,
             is_expression_value: None,
             is_absent: None,
+            literal_expression: None,
             is_directive: None,
             potential_name: None,
             potential_value: None,

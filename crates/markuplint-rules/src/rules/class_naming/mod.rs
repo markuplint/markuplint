@@ -1,5 +1,6 @@
 //! `class-naming` rule: validate class names against configured regex patterns.
 
+use markuplint_core::i18n::Primitive as Kw;
 use markuplint_core::mlast::MLASTAttr;
 use markuplint_dom::arena::DomArena;
 use markuplint_types::spec::types::MLMLSpec;
@@ -26,6 +27,7 @@ impl Rule for ClassNaming {
 
     fn verify(&self, arena: &DomArena, _spec: &MLMLSpec, config: &RuleConfigSet) -> Vec<Violation> {
         let mut violations = Vec::new();
+        let tr = config.translator();
 
         for (node_id, el) in arena.elements() {
             let rule_config = config.get(node_id);
@@ -83,9 +85,13 @@ impl Rule for ClassNaming {
                             rule_id: self.id().to_string(),
                             name: None,
                             severity: rule_config.severity,
-                            message: format!(
-                                "The \"{class_name}\" class name is unmatched with the below patterns: {display_pattern}"
-                            ),
+                            message: tr.finish(&tr.t(
+                                "{0} is unmatched with the below patterns: {1}",
+                                &[
+                                    Kw::S(&tr.t("the \"{0*}\" {1}", &[Kw::S(class_name), Kw::S("class name")])),
+                                    Kw::S(&display_pattern),
+                                ],
+                            )),
                             line: html_attr.value.line,
                             col: html_attr.value.col,
                             raw: html_attr.value.raw.clone(),

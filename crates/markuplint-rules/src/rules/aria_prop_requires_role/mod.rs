@@ -6,6 +6,7 @@
 //! implicit) is `null` is looked at; the properties are matched by the attribute name as written,
 //! case-sensitively, so `ARIA-CHECKED` is not recognised (as in TS).
 
+use markuplint_core::i18n::Primitive as Kw;
 use markuplint_dom::arena::DomArena;
 use markuplint_types::spec::aria;
 use markuplint_types::spec::types::MLMLSpec;
@@ -65,9 +66,22 @@ fn check(ctx: &ElementContext<'_>, violations: &mut Vec<Violation>) {
             continue;
         }
         let prop_type = prop_type_label(&prop.prop_type);
-        violations.push(ctx.attr_violation(
-            attr,
-            format!("The \"{name}\" ARIA {prop_type} is not global {prop_type}"),
-        ));
+        violations.push(
+            ctx.attr_violation(
+                attr,
+                ctx.tr.finish(
+                    &ctx.tr.t(
+                        "{0} is not {1}",
+                        &[
+                            Kw::S(
+                                &ctx.tr
+                                    .t("the \"{0*}\" {1}", &[Kw::S(name), Kw::S(&format!("ARIA {prop_type}"))]),
+                            ),
+                            Kw::S(&format!("global {prop_type}")),
+                        ],
+                    ),
+                ),
+            ),
+        );
     }
 }

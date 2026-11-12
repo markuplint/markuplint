@@ -12,6 +12,7 @@
 //! (`tagNameCaseSensitive`), and the attribute part by the attribute that is checked
 //! (`MLAttr#isNamedBy`). The option of an element replaces that of the rule for it.
 
+use markuplint_core::i18n::Primitive as Kw;
 use markuplint_core::mlast::{ElementType, MLASTAttr, NamespaceURI};
 use markuplint_dom::arena::DomArena;
 use markuplint_dom::helpers::{attr_name, is_named_by};
@@ -85,6 +86,17 @@ pub(crate) fn check_features(
     config: &RuleConfigSet,
 ) -> Vec<Violation> {
     let tag_name_case_sensitive = arena.settings().tag_name_case_sensitive;
+    let tr = config.translator();
+    // TS `t('{0} is {1:c}', t('the "{0*}" {1}', name, kind), flag)`
+    let message = |name: &str, kind: &str| {
+        tr.finish(&tr.t(
+            "{0} is {1:c}",
+            &[
+                Kw::S(&tr.t("the \"{0*}\" {1}", &[Kw::S(name), Kw::S(kind)])),
+                Kw::S(flag.word()),
+            ],
+        ))
+    };
     let mut violations = Vec::new();
     for (node_id, el) in arena.elements() {
         let rule_config = config.get(node_id);
@@ -119,7 +131,7 @@ pub(crate) fn check_features(
                 rule_id: rule_id.to_string(),
                 name: None,
                 severity: rule_config.severity,
-                message: format!("The \"{el_name}\" element is {}", flag.word()),
+                message: message(&el_name, "element"),
                 line: el.base.line,
                 col: el.base.col,
                 raw: el.base.raw.clone(),
@@ -158,7 +170,7 @@ pub(crate) fn check_features(
                 rule_id: rule_id.to_string(),
                 name: None,
                 severity: rule_config.severity,
-                message: format!("The \"{}\" attribute is {}", attr_name(html_attr), flag.word()),
+                message: message(attr_name(html_attr), "attribute"),
                 line: html_attr.name.line,
                 col: html_attr.name.col,
                 raw: html_attr.name.raw.clone(),

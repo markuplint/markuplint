@@ -7,6 +7,7 @@ use markuplint_selector::matcher;
 use markuplint_types::spec::types::{AttributeCondition, MLMLSpec};
 
 use crate::attr_name_key::{attr_specs_of, find_attr_spec};
+use crate::create_message::Kw;
 use crate::diagnostic;
 use crate::fix::Fix;
 use crate::rule::{Rule, RuleConfigSet};
@@ -28,6 +29,7 @@ impl Rule for NoIneffectiveAttr {
     }
 
     fn verify(&self, arena: &DomArena, spec: &MLMLSpec, config: &RuleConfigSet) -> Vec<Violation> {
+        let tr = config.translator();
         let mut violations = Vec::new();
 
         for (node_id, el) in arena.elements() {
@@ -77,7 +79,18 @@ impl Rule for NoIneffectiveAttr {
                         rule_id: self.id().to_string(),
                         name: None,
                         severity: rule_config.severity,
-                        message: format!("The \"{raw_name}\" attribute is ineffective. It doesn't need the attribute"),
+                        message: tr.finish(&format!(
+                            "{}{}{}",
+                            tr.t(
+                                "{0} is {1:c}",
+                                &[
+                                    Kw::S(&tr.t("the \"{0*}\" {1}", &[Kw::S(raw_name), Kw::S("attribute")])),
+                                    Kw::S("ineffective"),
+                                ],
+                            ),
+                            tr.t(". ", &[]),
+                            tr.t("It doesn't need {0}", &[Kw::S(&tr.t("the {0}", &[Kw::S("attribute")]))],),
+                        )),
                         line: html_attr.line,
                         col: html_attr.col,
                         raw: html_attr.raw.clone(),

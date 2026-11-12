@@ -7,6 +7,7 @@
 //! error reported here. A table [`crate::table_grid::Grid::has_overlapped`] is skipped, as
 //! `no-table-cell-overlap` reports it and its row groups are no longer reliable.
 
+use markuplint_core::i18n::Primitive as Kw;
 use markuplint_dom::arena::DomArena;
 use markuplint_types::spec::types::MLMLSpec;
 
@@ -26,6 +27,7 @@ impl Rule for NoTableSpanOverflow {
 
     fn verify(&self, arena: &DomArena, _spec: &MLMLSpec, config: &RuleConfigSet) -> Vec<Violation> {
         let mut violations = Vec::new();
+        let tr = config.translator();
 
         for (_, grid) in table_grid::tables(arena, config) {
             if grid.has_overlapped() {
@@ -42,7 +44,7 @@ impl Rule for NoTableSpanOverflow {
                     config,
                     overflow.cell,
                     rowspan,
-                    "Exceeds the number of available rows".to_string(),
+                    tr.finish(&tr.t("Exceeds the number of available {0}", &[Kw::S("rows")])),
                 ));
             }
         }

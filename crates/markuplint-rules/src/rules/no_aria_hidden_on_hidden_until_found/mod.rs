@@ -13,6 +13,7 @@
 //!
 //! <https://w3c.github.io/html-aria/#att-hidden>
 
+use markuplint_core::i18n::Primitive as Kw;
 use markuplint_dom::arena::DomArena;
 use markuplint_types::spec::types::MLMLSpec;
 
@@ -41,6 +42,7 @@ impl Rule for NoAriaHiddenOnHiddenUntilFound {
 
     fn verify(&self, arena: &DomArena, _spec: &MLMLSpec, config: &RuleConfigSet) -> Vec<Violation> {
         let mut violations = Vec::new();
+        let tr = config.translator();
         for (node_id, el) in arena.elements() {
             // TS `el.getAttributeNode('aria-hidden')`.
             let Some(aria_hidden) = find_attr(el, "aria-hidden") else {
@@ -64,8 +66,10 @@ impl Rule for NoAriaHiddenOnHiddenUntilFound {
                 rule_id: self.id().to_string(),
                 name: None,
                 severity: rule_config.severity,
-                message: "\"aria-hidden\" must not be \"true\" on an element with \"hidden\" value \"until-found\""
-                    .to_string(),
+                message: tr.finish(&tr.t(
+                    "\"aria-hidden\" must not be \"{0}\" on an element with \"hidden\" value \"{1}\"",
+                    &[Kw::S("true"), Kw::S("until-found")],
+                )),
                 line: aria_hidden.line,
                 col: aria_hidden.col,
                 raw: aria_hidden.raw.clone(),

@@ -1,5 +1,6 @@
 //! `attr-value-quotes` rule: attribute values must use consistent quote style.
 
+use markuplint_core::i18n::Primitive as Kw;
 use markuplint_core::mlast::MLASTAttr;
 use markuplint_dom::arena::DomArena;
 use markuplint_types::spec::types::MLMLSpec;
@@ -25,10 +26,19 @@ impl Rule for AttrValueQuotes {
     fn verify(&self, arena: &DomArena, _spec: &MLMLSpec, config: &RuleConfigSet) -> Vec<Violation> {
         let quote_style = config.global().value.as_str().unwrap_or("double");
 
-        let (expected_quote, message) = match quote_style {
-            "single" => ("'", "Attribute value is must quote on single quotation mark"),
-            _ => ("\"", "Attribute value is must quote on double quotation mark"),
+        let (expected_quote, kind) = match quote_style {
+            "single" => ("'", "single"),
+            _ => ("\"", "double"),
         };
+        let tr = config.translator();
+        let message = tr.finish(&tr.t(
+            "{0} is must {1} on {2}",
+            &[
+                Kw::S("Attribute value"),
+                Kw::S("quote"),
+                Kw::S(&format!("{kind} quotation mark")),
+            ],
+        ));
 
         let mut violations = Vec::new();
 
@@ -57,7 +67,7 @@ impl Rule for AttrValueQuotes {
                         rule_id: self.id().to_string(),
                         name: None,
                         severity: rule_config.severity,
-                        message: message.to_string(),
+                        message: message.clone(),
                         line: html_attr.name.line,
                         col: html_attr.name.col,
                         raw: html_attr.raw.clone(),

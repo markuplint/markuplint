@@ -11,10 +11,10 @@ const nativeAddonIsBuilt = await import('@markuplint/core').then(
 );
 
 /**
- * Rules the Rust engine does not take over: the TS engine evaluates them whatever the parser is
- * (`ml-engine.ts`), so a file that enables one never reaches it.
+ * Rules the comparison leaves out because the Rust engine does not take them over. Every rule
+ * runs in the Rust engine, so there is none.
  */
-const notInRust = new Set(['no-unsupported-browser-features', 'no-mismatched-aspect-ratio']);
+const notInRust = new Set<string>();
 
 /** Every rule that is not a deprecated alias of others and that the comparison can be made on. */
 const comparedRules = Object.fromEntries(

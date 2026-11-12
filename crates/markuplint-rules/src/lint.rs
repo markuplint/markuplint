@@ -1,5 +1,6 @@
 //! Top-level lint function: MLAST JSON + config → violations.
 
+use markuplint_core::literal::LiteralRendering;
 use markuplint_core::pretender::Pretender;
 use markuplint_dom::arena::DomArena;
 use markuplint_dom::builder;
@@ -71,6 +72,7 @@ use crate::rules::no_input_file_value::NoInputFileValue;
 use crate::rules::no_invalid_aria_prop_value::NoInvalidAriaPropValue;
 use crate::rules::no_invalid_attr_value::NoInvalidAttrValue;
 use crate::rules::no_malformed_character_reference::NoMalformedCharacterReference;
+use crate::rules::no_mismatched_aspect_ratio::NoMismatchedAspectRatio;
 use crate::rules::no_mixed_srcset_descriptors::NoMixedSrcsetDescriptors;
 use crate::rules::no_nested_top_level_landmark::NoNestedTopLevelLandmark;
 use crate::rules::no_nonstandard_features::NoNonstandardFeatures;
@@ -144,6 +146,10 @@ pub struct LintConfig {
     /// Resolved pretenders (TS `Pretender[]`), applied to the DOM before rules run.
     #[serde(default)]
     pub pretenders: Vec<Pretender>,
+
+    /// How a framework renders a literal that a pretender writes as code (`{ expression }`).
+    #[serde(default)]
+    pub literal_rendering: LiteralRendering,
 }
 
 #[derive(Debug, Serialize)]
@@ -200,7 +206,7 @@ fn run_rules(arena: &DomArena, spec: &MLMLSpec, config: &LintConfig, rules: &[Bo
     let pretended;
     let arena = if pretending::may_pretend(arena, &config.pretenders) {
         let mut copy = arena.clone();
-        pretending::apply_pretenders(&mut copy, &config.pretenders, spec);
+        pretending::apply_pretenders(&mut copy, &config.pretenders, &config.literal_rendering, spec);
         pretended = copy;
         &pretended
     } else {
@@ -222,6 +228,11 @@ fn run_rules(arena: &DomArena, spec: &MLMLSpec, config: &LintConfig, rules: &[Bo
     let mut config_index: std::collections::HashMap<&str, Vec<(&str, &Value)>> = std::collections::HashMap::new();
 
     for (key, value) in &config.rules {
+        // A rule that is `false` globally is not configured globally: it runs only where a
+        // `nodeRules` entry enables it (#4173), as a rule with no entry does below.
+        if matches!(value, Value::Bool(false)) {
+            continue;
+        }
         if is_named_rule_group(value) {
             if let Value::Object(obj) = value {
                 expand_named_rule_group(key, obj, &mut expanded_entries);
@@ -238,6 +249,9 @@ fn run_rules(arena: &DomArena, spec: &MLMLSpec, config: &LintConfig, rules: &[Bo
 
     // Separate loop: the expanded_entries borrows must outlive the index inserts.
     for (alias_name, base_rule_name, config_value) in &expanded_entries {
+        if matches!(config_value, Value::Bool(false)) {
+            continue;
+        }
         config_index
             .entry(base_rule_name.as_str())
             .or_default()
@@ -383,7 +397,7 @@ fn run_rules(arena: &DomArena, spec: &MLMLSpec, config: &LintConfig, rules: &[Bo
         &mut violations,
     );
 
-    sort_and_dedup(&mut violations);
+    dedup_keeping_order(&mut violations);
     convert_fixes_to_utf16(arena, &mut violations);
     violations
 }
@@ -460,20 +474,14 @@ fn parse_error_position(msg: &str, arena: &DomArena) -> (u32, u32, String) {
 /// produces its own violations independently. Rust includes `name` in the dedup
 /// key so that violations from different `NamedRuleGroup`s sharing the same base
 /// rule are preserved (matching TS behavior).
-fn sort_and_dedup(violations: &mut Vec<Violation>) {
-    violations.sort_by(|a, b| {
-        a.line
-            .cmp(&b.line)
-            .then(a.col.cmp(&b.col))
-            .then(a.rule_id.cmp(&b.rule_id))
-            .then(a.name.cmp(&b.name))
-    });
+fn dedup_keeping_order(violations: &mut Vec<Violation>) {
+    // No sort: TS `MLCore` returns violations in the order the rules ran, each rule
+    // in the order it reported (`#runAllRules` concatenates `rule.verify()` results).
     // Name is part of the dedup key because TS VirtualRules have distinct
     // identities — each NamedRuleGroup runs independently and its violations
-    // are separate.
-    violations.dedup_by(|a, b| {
-        a.rule_id == b.rule_id && a.name == b.name && a.line == b.line && a.col == b.col && a.message == b.message
-    });
+    // are separate. The first occurrence stays where it was.
+    let mut seen = std::collections::HashSet::new();
+    violations.retain(|v| seen.insert((v.rule_id.clone(), v.name.clone(), v.line, v.col, v.message.clone())));
 }
 
 fn run_named_entries(
@@ -732,6 +740,7 @@ fn get_all_rules() -> Vec<Box<dyn Rule>> {
         Box::new(RequireDialogAutofocus),
         Box::new(NoUnpairedSrcsetSizes),
         Box::new(NoMixedSrcsetDescriptors),
+        Box::new(NoMismatchedAspectRatio),
         Box::new(SizesAutoRequiresLazyLoading),
         Box::new(NoAlwaysMatchingSource),
         Box::new(RequireAttr),
@@ -931,6 +940,7 @@ mod tests {
             child_node_rules: vec![],
             rule_common_settings: None,
             pretenders: vec![],
+            literal_rendering: LiteralRendering::default(),
         };
 
         let result = lint(&arena, &spec, &config);
@@ -954,6 +964,7 @@ mod tests {
             child_node_rules: vec![],
             rule_common_settings: None,
             pretenders: vec![],
+            literal_rendering: LiteralRendering::default(),
         };
 
         let result = lint(&arena, &spec, &config);
@@ -974,6 +985,7 @@ mod tests {
             child_node_rules: vec![],
             rule_common_settings: None,
             pretenders: vec![],
+            literal_rendering: LiteralRendering::default(),
         };
 
         let result = lint(&arena, &spec, &config);
@@ -1020,6 +1032,61 @@ mod tests {
         // Only <div> should have a violation, <main> is disabled
         assert_eq!(result.violations.len(), 1);
         assert_eq!(result.violations[0].raw, "INVALID");
+    }
+
+    /// #4173: a rule that is `false` globally runs where a `nodeRules` entry enables it, for a rule
+    /// of every walker (attributes, ARIA elements, the whole document) and a rule of a plain list.
+    #[test]
+    fn v6_node_rules_enable_a_rule_that_is_false_globally() {
+        let spec = html_spec();
+        let raws = |html: &str, rules: serde_json::Value, node_rule: serde_json::Value| -> Vec<String> {
+            let config: LintConfig = serde_json::from_value(serde_json::json!({
+                "rules": rules,
+                "nodeRules": [{ "selector": "main", "rules": node_rule }],
+            }))
+            .unwrap();
+            lint(&html_arena(html), &spec, &config)
+                .violations
+                .into_iter()
+                .map(|v| v.raw)
+                .collect()
+        };
+
+        // `walk_attrs`
+        assert_eq!(
+            raws(
+                r#"<div id="a" id="b"><main id="c" id="d"></main></div>"#,
+                serde_json::json!({ "no-duplicate-attr": false }),
+                serde_json::json!({ "no-duplicate-attr": true }),
+            ),
+            ["id"]
+        );
+        assert_eq!(
+            raws(
+                r#"<div id="a" id="b"></div>"#,
+                serde_json::json!({ "no-duplicate-attr": false }),
+                serde_json::json!({ "no-duplicate-attr": true }),
+            ),
+            Vec::<String>::new()
+        );
+        // `walk_elements` of the ARIA rules
+        assert_eq!(
+            raws(
+                r#"<div role="widget"><main role="widget"></main></div>"#,
+                serde_json::json!({ "no-abstract-role": false }),
+                serde_json::json!({ "no-abstract-role": true }),
+            ),
+            ["widget"]
+        );
+        // The element walk of a rule that is not an attribute rule
+        assert_eq!(
+            raws(
+                r#"<div></div><main></main>"#,
+                serde_json::json!({ "no-empty-palpable-content": false }),
+                serde_json::json!({ "no-empty-palpable-content": true }),
+            ),
+            ["<main>"]
+        );
     }
 
     #[test]
@@ -1958,7 +2025,7 @@ mod tests {
 
     #[test]
     fn require_datetime_empty_time_element() {
-        // <time></time> → empty text → no violation
+        // <time></time> → empty text is not a datetime → violation
         let arena = html_arena("<time></time>");
         let spec = html_spec();
         let config: LintConfig = serde_json::from_value(serde_json::json!({
@@ -1971,7 +2038,7 @@ mod tests {
             .iter()
             .filter(|v| v.rule_id == "require-datetime")
             .collect();
-        assert_eq!(v.len(), 0, "Empty time element should be skipped: {v:?}");
+        assert_eq!(v.len(), 1, "Empty time element should be reported: {v:?}");
     }
 
     // --- Namespaced rule ID tests ---
@@ -1990,6 +2057,7 @@ mod tests {
             child_node_rules: vec![],
             rule_common_settings: None,
             pretenders: vec![],
+            literal_rendering: LiteralRendering::default(),
         };
 
         let result = lint(&arena, &spec, &config);
@@ -2026,6 +2094,7 @@ mod tests {
             child_node_rules: vec![],
             rule_common_settings: None,
             pretenders: vec![],
+            literal_rendering: LiteralRendering::default(),
         };
 
         let result = lint(&arena, &spec, &config);
@@ -2323,6 +2392,7 @@ mod tests {
             child_node_rules: vec![],
             rule_common_settings: None,
             pretenders: vec![],
+            literal_rendering: LiteralRendering::default(),
         };
 
         let result = lint(&arena, &spec, &config);

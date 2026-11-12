@@ -9,8 +9,14 @@ use markuplint_html_parser::tree::node::{Namespace, NodeId as ParserNodeId, Node
 use crate::arena::{DomArena, NodeId};
 use crate::node::{CommentData, DoctypeData, DocumentData, DomNode, ElementData, NodeBase, TextData};
 
+/// `is_fragment` says the parser did not take `source` for a document. A source that opens with
+/// `<head` or `<body` is parsed as a document here (the tree builder would drop those tags in a
+/// fragment), but is a fragment for TS (`isDocumentFragment`): its DOM has no `html`, `head` or
+/// `body` that the source does not write, and its `isFragment` is `true`. It is built the same way.
 #[must_use]
 pub fn build_from_html_arena(source: &str, parser_arena: &ParserArena, is_fragment: bool) -> DomArena {
+    let as_fragment_of_ts = !is_fragment && markuplint_html_parser::is_document_fragment(source);
+    let is_fragment = is_fragment || as_fragment_of_ts;
     let mut dom = DomArena::new();
     dom.source = Some(source.to_owned());
 
@@ -34,8 +40,16 @@ pub fn build_from_html_arena(source: &str, parser_arena: &ParserArena, is_fragme
     let mut text_tags = TextTags::new(parser_arena);
 
     for &child_id in &parser_doc.children {
-        let converted = convert_parser_node(source, parser_arena, child_id, &mut dom, 0, &mut text_tags);
-        top_level_ids.push(converted);
+        convert_into(
+            source,
+            parser_arena,
+            child_id,
+            &mut dom,
+            0,
+            &mut text_tags,
+            as_fragment_of_ts,
+            &mut top_level_ids,
+        );
     }
 
     if let Some(DomNode::Document(doc_data)) = dom.get_mut(0) {
@@ -121,6 +135,37 @@ fn extract_raw_for_parse_error(source: &str, start: usize, end: usize) -> String
     source[begin..end].to_owned()
 }
 
+/// Converts `parser_id` and appends it to `out`. With `skip_implied`, an element that the tree
+/// builder implied is not a node: its children take its place.
+#[allow(clippy::too_many_arguments)]
+fn convert_into(
+    source: &str,
+    parser_arena: &ParserArena,
+    parser_id: ParserNodeId,
+    dom: &mut DomArena,
+    depth: u32,
+    text_tags: &mut TextTags,
+    skip_implied: bool,
+    out: &mut Vec<NodeId>,
+) {
+    let node = parser_arena.get(parser_id);
+    if skip_implied && matches!(node.kind, NodeKind::Element { .. }) && node.is_implicit {
+        for &child_id in &node.children {
+            convert_into(source, parser_arena, child_id, dom, depth, text_tags, skip_implied, out);
+        }
+        return;
+    }
+    out.push(convert_parser_node(
+        source,
+        parser_arena,
+        parser_id,
+        dom,
+        depth,
+        text_tags,
+        skip_implied,
+    ));
+}
+
 #[allow(clippy::too_many_lines)]
 fn convert_parser_node(
     source: &str,
@@ -129,6 +174,7 @@ fn convert_parser_node(
     dom: &mut DomArena,
     depth: u32,
     text_tags: &mut TextTags,
+    skip_implied: bool,
 ) -> NodeId {
     let node = parser_arena.get(parser_id);
 
@@ -235,6 +281,7 @@ fn convert_parser_node(
                         is_dynamic_value: None,
                         is_expression_value: None,
                         is_absent: None,
+                        literal_expression: None,
                         is_directive: None,
                         potential_name: None,
                         potential_value: None,
@@ -269,11 +316,19 @@ fn convert_parser_node(
             debug_assert_eq!(pushed_id, dom_id);
 
             // Recursively convert children.
-            let child_ids: Vec<NodeId> = node
-                .children
-                .iter()
-                .map(|&child_id| convert_parser_node(source, parser_arena, child_id, dom, depth + 1, text_tags))
-                .collect();
+            let mut child_ids: Vec<NodeId> = Vec::new();
+            for &child_id in &node.children {
+                convert_into(
+                    source,
+                    parser_arena,
+                    child_id,
+                    dom,
+                    depth + 1,
+                    text_tags,
+                    skip_implied,
+                    &mut child_ids,
+                );
+            }
 
             if let Some(DomNode::Element(data)) = dom.get_mut(dom_id) {
                 data.base.children = child_ids;
@@ -310,6 +365,15 @@ fn make_base(
     let node_name = match &node.kind {
         NodeKind::Document => "#document".to_owned(),
         NodeKind::Doctype { .. } => "#doctype".to_owned(),
+        // The tree builder turns `<image>` into `img` (a parse error of the HTML standard), while
+        // the TS parser keeps the name as written: `<image>` is no `img`, and a rule that reads
+        // the spec of it (`permitted-contents`: the obsolete element) must see the former.
+        NodeKind::Element { tag_name, .. }
+            if tag_name == "img"
+                && crate::helpers::extract_tag_name_from_raw(&raw).is_some_and(|n| n.eq_ignore_ascii_case("image")) =>
+        {
+            "image".to_owned()
+        }
         NodeKind::Element { tag_name, .. } => tag_name.clone(),
         NodeKind::Text { .. } => "#text".to_owned(),
         NodeKind::Comment { .. } => "#comment".to_owned(),
@@ -476,6 +540,33 @@ mod tests {
     fn build(html: &str) -> DomArena {
         let parser_arena = markuplint_html_parser::parse_fragment(html);
         build_from_html_arena(html, &parser_arena, true)
+    }
+
+    /// A source that opens with `<body` is parsed as a document, and built as the fragment it is
+    /// for TS: no `html` or `head` that it does not write.
+    #[test]
+    fn a_source_opening_with_body_has_no_implied_html_or_head() {
+        let html = "<body><p></p></body>";
+        let parser_arena = markuplint_html_parser::parse_document(html);
+        let arena = build_from_html_arena(html, &parser_arena, false);
+        let names: Vec<String> = (1..arena.len())
+            .filter_map(|id| arena.get(id).and_then(DomNode::as_element))
+            .map(|el| el.base.node_name.clone())
+            .collect();
+        assert_eq!(names, ["body", "p"]);
+        assert!(arena.is_fragment());
+    }
+
+    #[test]
+    fn the_character_reference_without_a_semicolon_ends_before_the_next_tag() {
+        let arena = build("<div>&#10<style></style></div>");
+        let raws: Vec<String> = (1..arena.len())
+            .filter_map(|id| match arena.get(id) {
+                Some(DomNode::Text(t)) => Some(t.base.raw.clone()),
+                _ => None,
+            })
+            .collect();
+        assert_eq!(raws, ["&#10"]);
     }
 
     #[test]

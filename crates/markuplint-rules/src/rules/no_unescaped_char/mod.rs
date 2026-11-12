@@ -8,8 +8,10 @@
 //! by default only `<` is checked, and `strict` restores the pre-split set (`<`, `>`,
 //! `"`, any bare `&`), with entity-shaped sequences masked.
 
+use markuplint_core::i18n::Primitive as Kw;
 use std::sync::LazyLock;
 
+use markuplint_core::i18n::Translator;
 use markuplint_core::mlast::MLASTAttr;
 use markuplint_dom::arena::DomArena;
 use markuplint_dom::node::{DomNode, NodeBase};
@@ -44,6 +46,7 @@ impl Rule for NoUnescapedChar {
 
     fn verify(&self, arena: &DomArena, _spec: &MLMLSpec, config: &RuleConfigSet) -> Vec<Violation> {
         let mut violations = Vec::new();
+        let tr = config.translator();
 
         for node in arena.descendants(0) {
             let DomNode::Text(text) = node else {
@@ -75,6 +78,7 @@ impl Rule for NoUnescapedChar {
                 text.base.col,
                 self.id(),
                 rule_config,
+                tr,
                 &mut violations,
             );
         }
@@ -100,6 +104,7 @@ impl Rule for NoUnescapedChar {
                     html_attr.value.col,
                     self.id(),
                     rule_config,
+                    tr,
                     &mut violations,
                 );
             }
@@ -115,6 +120,7 @@ fn check_chars(
     start_col: u32,
     rule_id: &str,
     rule_config: &RuleConfig,
+    tr: Translator<'static>,
     violations: &mut Vec<Violation>,
 ) {
     let strict = rule_config
@@ -135,7 +141,10 @@ fn check_chars(
     } else {
         "should"
     };
-    let message = format!("Illegal characters {modal} escape in character reference");
+    let message = tr.finish(&tr.t(
+        &format!("{{0}} {modal} {{1}}"),
+        &[Kw::S("Illegal characters"), Kw::S("escape in character reference")],
+    ));
 
     let mut line = start_line;
     let mut col = start_col;

@@ -9,6 +9,7 @@
 //! `ignoreRoles` option are read from each element's own (per-node) config. Fragments are
 //! skipped. The default severity is `warning`.
 
+use markuplint_core::i18n::Primitive as Kw;
 use markuplint_dom::arena::{DomArena, NodeId};
 use markuplint_types::spec::types::MLMLSpec;
 
@@ -57,6 +58,7 @@ impl NoNestedTopLevelLandmark {
         roles: &[(&'static str, Vec<NodeId>)],
         violations: &mut Vec<Violation>,
     ) {
+        let tr = config.translator();
         let all_landmarks: Vec<_> = roles.iter().flat_map(|(_, ids)| ids.iter().copied()).collect();
         for role in TOP_LEVEL_ROLES {
             let Some((_, ids)) = roles.iter().find(|(r, _)| *r == role) else {
@@ -85,7 +87,13 @@ impl NoNestedTopLevelLandmark {
                     rule_id: self.id().to_string(),
                     name: None,
                     severity: rule_config.severity,
-                    message: format!("The \"{role}\" role should be top level"),
+                    message: tr.finish(&tr.t(
+                        "{0} should be {1}",
+                        &[
+                            Kw::S(&tr.t("the \"{0*}\" {1}", &[Kw::S(role), Kw::S("role")])),
+                            Kw::S("top level"),
+                        ],
+                    )),
                     line: el.base.line,
                     col: el.base.col,
                     raw: el.base.raw.clone(),

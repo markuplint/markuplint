@@ -123,6 +123,8 @@ pub(crate) struct ElementContext<'a> {
     pub(crate) rule_id: &'a str,
     pub(crate) severity: Severity,
     pub(crate) reason: Option<&'a str>,
+    /// TS `t()` for the locale of the run.
+    pub(crate) tr: markuplint_core::i18n::Translator<'static>,
     /// Resolved on first use: a rule asks for it once per attribute, and it matches selectors.
     aria: OnceCell<Option<ResolvedElementARIA>>,
 }
@@ -197,10 +199,6 @@ pub(crate) fn walk_elements<O>(
     parse_options: impl Fn(&Value) -> O,
     mut check: impl FnMut(&O, &ElementContext<'_>, &mut Vec<Violation>),
 ) -> Vec<Violation> {
-    if config.global().value == Value::Bool(false) {
-        return vec![];
-    }
-
     let mut violations = Vec::new();
 
     for (node_id, el) in arena.elements() {
@@ -225,6 +223,7 @@ pub(crate) fn walk_elements<O>(
             rule_id,
             severity: rule_config.severity,
             reason: rule_config.reason.as_deref(),
+            tr: config.translator(),
             aria: OnceCell::new(),
         };
         check(&options, &ctx, &mut violations);
@@ -293,15 +292,6 @@ pub(crate) fn role_attr(el: &ElementData) -> Option<&MLASTHTMLAttr> {
 /// TS `el.attributes.filter(isAriaAttr)`.
 pub(crate) fn aria_prop_attrs(el: &ElementData) -> Vec<&MLASTHTMLAttr> {
     html_attrs(el).filter(|attr| is_aria_prop_attr(el, attr)).collect()
-}
-
-/// A list of names as TS `t(list)` writes it without the last-separator flag: `"a", "b", "c"`.
-pub(crate) fn quoted_list(items: &[String]) -> String {
-    items
-        .iter()
-        .map(|item| format!("\"{item}\""))
-        .collect::<Vec<_>>()
-        .join(", ")
 }
 
 /// `"property"` or `"state"`, the word the messages put after `ARIA`.

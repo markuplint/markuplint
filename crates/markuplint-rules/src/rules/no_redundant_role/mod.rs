@@ -7,6 +7,7 @@
 //! the first matching token of an attribute is reported. The message quotes the element's local
 //! name.
 
+use markuplint_core::i18n::Primitive as Kw;
 use markuplint_dom::arena::DomArena;
 use markuplint_types::spec::types::MLMLSpec;
 
@@ -53,13 +54,30 @@ fn check(ctx: &ElementContext<'_>, violations: &mut Vec<Violation>) {
         return;
     };
     if let Some(token) = tokens.iter().find(|token| token.value == implicit_role) {
-        violations.push(ctx.token_violation(
-            token,
-            format!(
-                "The \"{}\" role is the implicit role of the \"{}\" element",
-                token.value,
-                ctx.local_name()
+        violations.push(
+            ctx.token_violation(
+                token,
+                ctx.tr.finish(
+                    &ctx.tr.t(
+                        "{0} is {1}",
+                        &[
+                            Kw::S(&ctx.tr.t("the \"{0*}\" {1}", &[Kw::S(&token.value), Kw::S("role")])),
+                            Kw::S(
+                                &ctx.tr.t(
+                                    "{0} of {1}",
+                                    &[
+                                        Kw::S("the implicit role"),
+                                        Kw::S(
+                                            &ctx.tr
+                                                .t("the \"{0*}\" {1}", &[Kw::S(&ctx.local_name()), Kw::S("element")]),
+                                        ),
+                                    ],
+                                ),
+                            ),
+                        ],
+                    ),
+                ),
             ),
-        ));
+        );
     }
 }

@@ -25,7 +25,7 @@
 //!   head-element-order-valid-014    → head_element_order_valid_014
 //!   head-element-order-valid-015    → head_element_order_valid_015
 //!   head-element-order-invalid-009  → head_element_order_invalid_009
-//!   head-element-order-invalid-010  — SKIP: i18n (ja locale) not supported in Rust
+//!   head-element-order-invalid-010  → head_element_order_invalid_010
 //!   head-element-order-fix-001      → head_element_order_fix_001
 //!   head-element-order-fix-002      → head_element_order_fix_002
 //!   head-element-order-fix-003      → head_element_order_fix_003
@@ -446,6 +446,21 @@ fn head_element_order_invalid_009() {
         serde_json::json!(["meta[charset]", "title"]),
     );
     assert_eq!(v[0].3, "The \"meta\" element should be before the \"title\" element");
+}
+
+/// TS: `[head-element-order-invalid-010]` Japanese message
+#[test]
+fn head_element_order_invalid_010() {
+    const _ID: &str = "head-element-order-invalid-010";
+    let v = lint_brief(
+        RULE,
+        r#"<html><head><title>Title</title><meta charset="UTF-8"></head><body></body></html>"#,
+        serde_json::json!({
+            "rules": { RULE: { "value": ["meta[charset]", "title"] } },
+            "ruleCommonSettings": { "locale": "ja" },
+        }),
+    );
+    assert_eq!(v[0].3, "要素「meta」は要素「title」より前にしたほうがよいです");
 }
 
 /// Expected values from the TS rule (`mlRuleTest`) on the same input.

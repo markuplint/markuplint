@@ -1,5 +1,6 @@
 //! `require-accessible-name` rule: elements with roles that require accessible names must have one.
 
+use markuplint_core::i18n::Primitive as Kw;
 use markuplint_dom::arena::DomArena;
 use markuplint_types::spec::aria::ARIAVersion;
 use markuplint_types::spec::types::MLMLSpec;
@@ -19,6 +20,7 @@ impl Rule for RequireAccessibleName {
     }
 
     fn verify(&self, arena: &DomArena, spec: &MLMLSpec, config: &RuleConfigSet) -> Vec<Violation> {
+        let tr = config.translator();
         let mut violations = Vec::new();
 
         let version = parse_aria_version(config.global());
@@ -54,7 +56,7 @@ impl Rule for RequireAccessibleName {
                         rule_id: self.id().to_string(),
                         name: None,
                         severity: rule_config.severity,
-                        message: "Require accessible name".to_string(),
+                        message: tr.finish(&tr.t("Require {0}", &[Kw::S("accessible name")])),
                         line: el.base.line,
                         col: el.base.col,
                         raw: el.base.raw.clone(),

@@ -6,6 +6,7 @@
 //! reports `"\n"`, not `<`. Based on WCAG Technique H42, which is non-normative, so the default
 //! severity is `warning`.
 
+use markuplint_core::i18n::Primitive as Kw;
 use markuplint_dom::arena::DomArena;
 use markuplint_dom::node::DomNode;
 use markuplint_types::spec::types::MLMLSpec;
@@ -30,6 +31,7 @@ impl Rule for RequireH1 {
     }
 
     fn verify(&self, arena: &DomArena, spec: &MLMLSpec, config: &RuleConfigSet) -> Vec<Violation> {
+        let tr = config.translator();
         let config = config.global();
         let trees = Trees::new(arena, spec);
         let Some(h1s) = collect_h1s(arena, &trees, config) else {
@@ -47,11 +49,15 @@ impl Rule for RequireH1 {
             Some(DomNode::Document(doc)) => doc.raw.chars().next().map(String::from).unwrap_or_default(),
             _ => String::new(),
         };
+        let message = tr.finish(&tr.t(
+            "Require {0}",
+            &[Kw::S(&tr.t("the \"{0*}\" {1}", &[Kw::S("h1"), Kw::S("element")]))],
+        ));
         vec![Violation {
             rule_id: self.id().to_string(),
             name: None,
             severity: config.severity,
-            message: "Require the \"h1\" element".to_string(),
+            message,
             line: 1,
             col: 1,
             raw,

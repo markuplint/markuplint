@@ -10,6 +10,7 @@
 //! properties and is reported. TS does the same (`role.ownedProperties.find(p => p.name ===
 //! attr.name)`); the behavior is kept so the two engines agree.
 
+use markuplint_core::i18n::Primitive as Kw;
 use markuplint_dom::arena::DomArena;
 use markuplint_types::spec::types::MLMLSpec;
 
@@ -57,11 +58,22 @@ fn check(ctx: &ElementContext<'_>, violations: &mut Vec<Violation>) {
         }
         violations.push(ctx.attr_violation(
             attr,
-            format!(
-                "The \"{name}\" ARIA {} is disallowed on the \"{}\" role",
-                ctx.prop_type_of(&key),
-                role.name
-            ),
+            ctx.tr.finish(&ctx.tr.t(
+                "{0:c} on {1}",
+                &[
+                    Kw::S(&ctx.tr.t(
+                        "{0} is {1:c}",
+                        &[
+                            Kw::S(&ctx.tr.t(
+                                "the \"{0*}\" {1}",
+                                &[Kw::S(name), Kw::S(&format!("ARIA {}", ctx.prop_type_of(&key)))],
+                            )),
+                            Kw::S("disallowed"),
+                        ],
+                    )),
+                    Kw::S(&ctx.tr.t("the \"{0*}\" {1}", &[Kw::S(&role.name), Kw::S("role")])),
+                ],
+            )),
         ));
     }
 }

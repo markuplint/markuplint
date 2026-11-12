@@ -39,6 +39,7 @@ pub mod pretending;
 pub mod rule;
 pub mod rule_mapper;
 pub mod rules;
+pub mod slot_assignment;
 pub(crate) mod slot_content;
 pub(crate) mod srcset_check;
 pub(crate) mod table_grid;

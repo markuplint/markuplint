@@ -6,6 +6,7 @@
 //! a pair differ only in which flag (`obsolete` or `deprecated`) they report. A node
 //! carrying both flags is reported by both rules.
 
+use markuplint_core::i18n::Primitive as Kw;
 use markuplint_core::mlast::{ElementType, MLASTAttr, NamespaceURI};
 use markuplint_dom::arena::DomArena;
 use markuplint_dom::helpers::attr_name;
@@ -48,6 +49,7 @@ pub(crate) fn verify_attr_lifecycle(
     config: &RuleConfigSet,
 ) -> Vec<Violation> {
     let mut violations = Vec::new();
+    let tr = config.translator();
 
     for (node_id, el) in arena.elements() {
         let rule_config = config.get(node_id);
@@ -80,7 +82,13 @@ pub(crate) fn verify_attr_lifecycle(
                 rule_id: rule_id.to_string(),
                 name: None,
                 severity: rule_config.severity,
-                message: format!("The \"{name}\" attribute is {}", lifecycle.key()),
+                message: tr.finish(&tr.t(
+                    "{0} is {1:c}",
+                    &[
+                        Kw::S(&tr.t("the \"{0*}\" {1}", &[Kw::S(name), Kw::S("attribute")])),
+                        Kw::S(lifecycle.key()),
+                    ],
+                )),
                 line: html_attr.name.line,
                 col: html_attr.name.col,
                 raw: html_attr.name.raw.clone(),
@@ -110,6 +118,7 @@ pub(crate) fn verify_element_lifecycle(
     config: &RuleConfigSet,
 ) -> Vec<Violation> {
     let mut violations = Vec::new();
+    let tr = config.translator();
 
     for (node_id, el) in arena.elements() {
         let rule_config = config.get(node_id);
@@ -140,7 +149,13 @@ pub(crate) fn verify_element_lifecycle(
             rule_id: rule_id.to_string(),
             name: None,
             severity: rule_config.severity,
-            message: format!("The \"{local_name}\" element is {}", lifecycle.key()),
+            message: tr.finish(&tr.t(
+                "{0} is {1:c}",
+                &[
+                    Kw::S(&tr.t("the \"{0*}\" {1}", &[Kw::S(&local_name), Kw::S("element")])),
+                    Kw::S(lifecycle.key()),
+                ],
+            )),
             line: el.base.line,
             col: el.base.col,
             raw: el.base.raw.clone(),

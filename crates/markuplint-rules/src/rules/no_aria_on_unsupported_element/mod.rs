@@ -10,6 +10,7 @@ use markuplint_dom::arena::DomArena;
 use markuplint_types::spec::types::MLMLSpec;
 
 use crate::aria_check::{ElementContext, ElementGate, aria_prop_attrs, attr_name, role_attr, walk_elements};
+use crate::create_message::Kw;
 use crate::rule::{Rule, RuleConfigSet};
 use crate::violation::Violation;
 
@@ -40,6 +41,14 @@ fn check(ctx: &ElementContext<'_>, violations: &mut Vec<Violation>) {
     // `role` first, then the `aria-*` attributes in source order.
     let attrs = role_attr(ctx.el).into_iter().chain(aria_prop_attrs(ctx.el));
     for attr in attrs {
-        violations.push(ctx.attr_violation(attr, format!("The \"{}\" attribute is disallowed", attr_name(attr))));
+        let tr = ctx.tr;
+        let message = tr.t(
+            "{0} is {1:c}",
+            &[
+                Kw::S(&tr.t("the \"{0*}\" {1}", &[Kw::S(attr_name(attr)), Kw::S("attribute")])),
+                Kw::S("disallowed"),
+            ],
+        );
+        violations.push(ctx.attr_violation(attr, tr.finish(&message)));
     }
 }

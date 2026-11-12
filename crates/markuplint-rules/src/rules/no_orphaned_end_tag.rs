@@ -1,5 +1,6 @@
 //! `no-orphaned-end-tag` rule: reports orphaned end tags with no matching start tag.
 
+use markuplint_core::i18n::Primitive as Kw;
 use markuplint_dom::arena::DomArena;
 use markuplint_dom::node::DomNode;
 use markuplint_types::spec::types::MLMLSpec;
@@ -16,6 +17,7 @@ impl Rule for NoOrphanedEndTag {
     }
 
     fn verify(&self, arena: &DomArena, _spec: &MLMLSpec, config: &RuleConfigSet) -> Vec<Violation> {
+        let tr = config.translator();
         let config = config.global();
         let mut violations = Vec::new();
 
@@ -29,7 +31,7 @@ impl Rule for NoOrphanedEndTag {
                     rule_id: self.id().to_string(),
                     name: None,
                     severity: config.severity,
-                    message: "Orphaned end tag detected".to_string(),
+                    message: tr.finish(&tr.t("{0} detected", &[Kw::S(&tr.t("Orphaned end tag", &[]))])),
                     line: text.base.line,
                     col: text.base.col,
                     raw: text.base.raw.clone(),
@@ -43,7 +45,7 @@ impl Rule for NoOrphanedEndTag {
                     rule_id: self.id().to_string(),
                     name: None,
                     severity: config.severity,
-                    message: "Orphaned end tag detected".to_string(),
+                    message: tr.finish(&tr.t("{0} detected", &[Kw::S(&tr.t("Orphaned end tag", &[]))])),
                     line: end_tag.base.line,
                     col: end_tag.base.col,
                     raw: end_tag.base.raw.clone(),

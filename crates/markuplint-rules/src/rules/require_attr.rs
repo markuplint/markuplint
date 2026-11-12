@@ -15,11 +15,12 @@ use markuplint_types::spec::types::{AttributeCondition, AttributeRequired, MLMLS
 
 use crate::aria_check::element_local_name;
 use crate::attr_name_key::attr_specs_of;
-use crate::create_message::{Kw, capitalize, t, t_list};
+use crate::create_message::Kw;
 use crate::diagnostic;
 use crate::helpers::pattern_match;
 use crate::rule::{Rule, RuleConfigSet};
 use crate::violation::Violation;
+use markuplint_core::i18n::Translator;
 
 pub struct RequireAttr;
 
@@ -51,21 +52,21 @@ fn is_same_attr_name(arena: &DomArena, el: &ElementData, a: &str, b: &str) -> bo
 }
 
 /// `{0} expects {1}` with the candidates the element is expected to have.
-fn expects_message(el_name: &str, candidates: &[&str], single_name: &str) -> String {
+fn expects_message(tr: Translator<'_>, el_name: &str, candidates: &[&str], single_name: &str) -> String {
     let expects = if candidates.len() == 1 {
-        t("the \"{0*}\" {1}", &[Kw::S(single_name), Kw::S("attribute")])
+        tr.t("the \"{0*}\" {1}", &[Kw::S(single_name), Kw::S("attribute")])
     } else {
         let joined = candidates
             .iter()
-            .map(|name| t("the \"{0*}\"", &[Kw::S(name)]))
-            .reduce(|a, b| t("{0} or {1}", &[Kw::S(&a), Kw::S(&b)]))
+            .map(|name| tr.t("the \"{0*}\"", &[Kw::S(name)]))
+            .reduce(|a, b| tr.t("{0} or {1}", &[Kw::S(&a), Kw::S(&b)]))
             .unwrap_or_default();
-        t("{0} {1}", &[Kw::S(&joined), Kw::S("attribute")])
+        tr.t("{0} {1}", &[Kw::S(&joined), Kw::S("attribute")])
     };
-    capitalize(&t(
+    tr.finish(&tr.t(
         "{0} expects {1}",
         &[
-            Kw::S(&t("the \"{0*}\" {1}", &[Kw::S(el_name), Kw::S("element")])),
+            Kw::S(&tr.t("the \"{0*}\" {1}", &[Kw::S(el_name), Kw::S("element")])),
             Kw::S(&expects),
         ],
     ))
@@ -106,6 +107,7 @@ impl Rule for RequireAttr {
     #[allow(clippy::too_many_lines)]
     fn verify(&self, arena: &DomArena, spec: &MLMLSpec, config: &RuleConfigSet) -> Vec<Violation> {
         let mut violations: Vec<Violation> = Vec::new();
+        let tr = config.translator();
 
         for (node_id, el) in arena.elements() {
             let rule_config = config.get(node_id);
@@ -200,7 +202,7 @@ impl Rule for RequireAttr {
                             either.iter().map(String::as_str).filter(|n| !is_ignored(n)).collect();
                         if !active.is_empty() && !active.iter().any(|n| has_attribute(n)) {
                             active.sort_unstable();
-                            let message = expects_message(&el_name, &active, active[0]);
+                            let message = expects_message(tr, &el_name, &active, active[0]);
                             report(&mut violations, message, el.base.line, el.base.col, el.base.raw.clone());
                         }
                     }
@@ -232,7 +234,7 @@ impl Rule for RequireAttr {
                 if invalid {
                     let mut sorted: Vec<&str> = candidate.iter().copied().filter(|n| !is_ignored(n)).collect();
                     sorted.sort_unstable();
-                    let message = expects_message(&el_name, &sorted, &requirement.name);
+                    let message = expects_message(tr, &el_name, &sorted, &requirement.name);
                     report(&mut violations, message, el.base.line, el.base.col, el.base.raw.clone());
                 }
 
@@ -246,14 +248,14 @@ impl Rule for RequireAttr {
                     continue;
                 }
                 let expects = if requirement.values.len() == 1 {
-                    t_list(&requirement.values)
+                    tr.t_list(&requirement.values, false)
                 } else {
-                    t("either {0}", &[Kw::S(&t_list(&requirement.values))])
+                    tr.t("either {0}", &[Kw::S(&tr.t_list(&requirement.values, false))])
                 };
-                let message = capitalize(&t(
+                let message = tr.finish(&tr.t(
                     "{0} expects {1}",
                     &[
-                        Kw::S(&t("the \"{0*}\" {1}", &[Kw::S(&requirement.name), Kw::S("attribute")])),
+                        Kw::S(&tr.t("the \"{0*}\" {1}", &[Kw::S(&requirement.name), Kw::S("attribute")])),
                         Kw::S(&expects),
                     ],
                 ));

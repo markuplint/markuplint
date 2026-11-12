@@ -7,6 +7,7 @@
 
 use std::sync::LazyLock;
 
+use markuplint_core::i18n::Primitive as Kw;
 use markuplint_core::mlast::MLASTAttr;
 use markuplint_dom::arena::{DomArena, NodeId};
 use markuplint_dom::node::DomNode;
@@ -15,6 +16,7 @@ use markuplint_types::whatwg::datetime::is_datetime;
 use regex::Regex;
 use whichtime::{Component, Locale, WhichTime};
 
+use crate::helpers::{has_mutable_children, is_unresolved_component};
 use crate::rule::{Rule, RuleConfigSet};
 use crate::violation::Violation;
 
@@ -31,6 +33,7 @@ impl Rule for RequireDatetime {
     }
 
     fn verify(&self, arena: &DomArena, _spec: &MLMLSpec, config: &RuleConfigSet) -> Vec<Violation> {
+        let tr = config.translator();
         let mut violations = Vec::new();
 
         for (node_id, el) in arena.elements() {
@@ -54,11 +57,12 @@ impl Rule for RequireDatetime {
                 continue;
             }
 
-            let text = get_text_content(arena, node_id);
-
-            if text.is_empty() {
+            // The text of the element is the text of its descendants, which a component may render.
+            if has_mutable_children(arena, node_id, false) || has_unresolved_component_descendant(arena, node_id) {
                 continue;
             }
+
+            let text = get_text_content(arena, node_id);
 
             // WHATWG datetime values are always ASCII; guarding on `is_ascii` also avoids
             // panics in the datetime parser on multibyte strings.
@@ -71,9 +75,14 @@ impl Rule for RequireDatetime {
             let candidate = try_slash_date_fallback(&text).or_else(|| try_whichtime_parse(&text, &langs));
 
             let message = if let Some(ref dt) = candidate {
-                format!("Need datetime=\"{dt}\"")
+                tr.finish(&tr.t("need {0*}", &[Kw::S(&format!("datetime=\"{dt}\""))]))
             } else {
-                "Need the \"datetime\" attribute".to_string()
+                tr.finish(&tr.t(
+                    "need {0}",
+                    &[Kw::S(
+                        &tr.t("the \"{0*}\" {1}", &[Kw::S("datetime"), Kw::S("attribute")]),
+                    )],
+                ))
             };
 
             violations.push(Violation {
@@ -93,16 +102,34 @@ impl Rule for RequireDatetime {
     }
 }
 
+/// TS `[...time.querySelectorAll('*')].some(el => el.isUnresolvedComponent())`.
+fn has_unresolved_component_descendant(arena: &DomArena, node_id: NodeId) -> bool {
+    arena.children_of(node_id).is_some_and(|children| {
+        children.iter().any(|&child_id| match arena.get(child_id) {
+            Some(DomNode::Element(el)) => {
+                is_unresolved_component(el) || has_unresolved_component_descendant(arena, child_id)
+            }
+            _ => false,
+        })
+    })
+}
+
+/// TS `time.textContent.trim()`: the text of every descendant text node.
 fn get_text_content(arena: &DomArena, node_id: NodeId) -> String {
-    let Some(children) = arena.children_of(node_id) else {
-        return String::new();
-    };
-    let mut text = String::new();
-    for &child_id in children {
-        if let Some(DomNode::Text(t)) = arena.get(child_id) {
-            text.push_str(&t.base.raw);
+    fn collect(arena: &DomArena, node_id: NodeId, text: &mut String) {
+        let Some(children) = arena.children_of(node_id) else {
+            return;
+        };
+        for &child_id in children {
+            match arena.get(child_id) {
+                Some(DomNode::Text(t)) => text.push_str(&t.base.raw),
+                Some(DomNode::Element(_)) => collect(arena, child_id, text),
+                _ => {}
+            }
         }
     }
+    let mut text = String::new();
+    collect(arena, node_id, &mut text);
     text.trim().to_string()
 }
 
@@ -271,13 +298,13 @@ mod tests {
     }
 
     #[test]
-    fn time_without_datetime_empty_text_skipped() {
-        // make_element_with_attrs creates element with no child text nodes → empty text → skipped
+    fn time_without_datetime_empty_text_reported() {
+        // make_element_with_attrs creates element with no child text nodes → empty text is not a datetime → reported
         let arena = make_element_with_attrs("time", &[]);
         let s = spec();
         let rule = RequireDatetime;
         let violations = rule.verify(&arena, &s, &RuleConfigSet::global_only(RuleConfig::default()));
-        assert!(violations.is_empty());
+        assert_eq!(violations.len(), 1);
     }
 
     #[test]

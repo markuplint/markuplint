@@ -6,6 +6,7 @@
 //! `<input>` is the boolean `required`. What follows the name, from the spaces before `=` to the
 //! closing quote, is what is reported and removed.
 
+use markuplint_core::i18n::Primitive as Kw;
 use markuplint_core::mlast::MLASTAttr;
 use markuplint_dom::arena::DomArena;
 use markuplint_types::spec::types::MLMLSpec;
@@ -28,6 +29,7 @@ impl Rule for NoBooleanAttrValue {
 
     fn verify(&self, arena: &DomArena, spec: &MLMLSpec, config: &RuleConfigSet) -> Vec<Violation> {
         let mut violations = Vec::new();
+        let tr = config.translator();
 
         for (node_id, el) in arena.elements() {
             let rule_config = config.get(node_id);
@@ -74,10 +76,21 @@ impl Rule for NoBooleanAttrValue {
                     rule_id: self.id().to_string(),
                     name: None,
                     severity: rule_config.severity,
-                    message: format!(
-                        "The \"{}\" attribute is a boolean attribute. It doesn't need the value",
-                        markuplint_dom::helpers::attr_name(html_attr)
-                    ),
+                    message: tr.finish(&format!(
+                        "{}{}{}",
+                        tr.t(
+                            "{0} is {1}",
+                            &[
+                                Kw::S(&tr.t(
+                                    "the \"{0*}\" {1}",
+                                    &[Kw::S(markuplint_dom::helpers::attr_name(html_attr)), Kw::S("attribute")]
+                                )),
+                                Kw::S(&tr.t("a {0}", &[Kw::S("boolean attribute")])),
+                            ],
+                        ),
+                        tr.t(". ", &[]),
+                        tr.t("It doesn't need {0}", &[Kw::S(&tr.t("the {0}", &[Kw::S("value")]))]),
+                    )),
                     line: html_attr.spaces_before_equal.line,
                     col: html_attr.spaces_before_equal.col,
                     raw: extra_raw,

@@ -4,6 +4,7 @@
 //! denylisting, independent of what the spec says: it applies to every element, not
 //! only HTML ones.
 
+use markuplint_core::i18n::Primitive as Kw;
 use markuplint_dom::arena::DomArena;
 use markuplint_types::spec::types::MLMLSpec;
 
@@ -56,44 +57,62 @@ fn check(
     html_attr: &markuplint_core::mlast::MLASTHTMLAttr,
     ctx: &AttrCheckContext<'_>,
 ) -> Option<Violation> {
-    // Use the raw (original-case) attribute name, matching TS behavior.
-    let name = markuplint_dom::helpers::get_raw_attr_name(html_attr);
+    let name = markuplint_dom::helpers::attr_name(html_attr);
 
-    let entry = options.disallowed.iter().find(|e| e.name.eq_ignore_ascii_case(name))?;
+    // TS `createNameOptionLookup`: the exact spelling first (the later of two entries of one
+    // spelling), else the last entry that the attribute says it is (`MLAttr#isNamedBy`), so the
+    // case of a name is decided by the attribute: an SVG element keeps it as written.
+    let entry = options.disallowed.iter().rfind(|e| e.name == name).or_else(|| {
+        options
+            .disallowed
+            .iter()
+            .rfind(|e| markuplint_dom::helpers::is_named_by(ctx.el, html_attr, &e.name))
+    })?;
     // TS checks the name first: a value that is not known (`attr.isDynamicValue`) is not judged
     if html_attr.is_dynamic_value == Some(true) && !matches!(entry.constraint, ValueConstraint::Any) {
         return None;
     }
     let value = get_clean_value(html_attr);
+    let tr = ctx.tr;
+    let the_attr = || tr.t("the \"{0*}\" {1}", &[Kw::S(name), Kw::S("attribute")]);
 
     match &entry.constraint {
         ValueConstraint::Any => Some(attr_violation(
             ctx,
             html_attr,
-            format!("The \"{name}\" attribute is disallowed"),
+            tr.finish(&tr.t("{0} is disallowed", &[Kw::S(&the_attr())])),
         )),
         ValueConstraint::Enum(values) => values.iter().any(|v| v == value).then(|| {
             attr_value_violation(
                 ctx,
                 html_attr,
-                format!(
-                    "The \"{name}\" attribute is disallowed to accept the following values: {}",
-                    values.iter().map(|v| format!("\"{v}\"")).collect::<Vec<_>>().join(", ")
-                ),
+                tr.finish(&tr.t(
+                    "{0} is disallowed to accept the following values: {1}",
+                    &[Kw::S(&the_attr()), Kw::S(&tr.t_list(values, false))],
+                )),
             )
         }),
         ValueConstraint::Pattern(re, original) => re.is_match(value).then(|| {
             attr_value_violation(
                 ctx,
                 html_attr,
-                format!("The \"{name}\" attribute is matched with the below disallowed patterns: {original}"),
+                tr.finish(&tr.t(
+                    "{0} is matched with the below disallowed patterns: {1}",
+                    &[Kw::S(&the_attr()), Kw::S(original)],
+                )),
             )
         }),
         ValueConstraint::Type(type_name) => check_type_constraint(value, type_name).then(|| {
             attr_value_violation(
                 ctx,
                 html_attr,
-                format!("The type of the \"{name}\" attribute is disallowed"),
+                tr.finish(&tr.t(
+                    "{0} is disallowed",
+                    &[Kw::S(&tr.t(
+                        "{0} of {1}",
+                        &[Kw::S(&tr.t("the {0}", &[Kw::S("type")])), Kw::S(&the_attr())],
+                    ))],
+                )),
             )
         }),
     }

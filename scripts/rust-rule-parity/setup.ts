@@ -12,16 +12,49 @@ import type * as Markuplint from 'markuplint';
 
 import path from 'node:path';
 
-import { expect, vi } from 'vitest';
+import { beforeEach, expect, vi } from 'vitest';
 
 type MarkuplintModule = typeof Markuplint;
 type RuleTestArgs = Parameters<MarkuplintModule['mlRuleTest']>;
 
 const RULES_SRC = path.resolve('packages', '@markuplint', 'rules', 'src');
 
+/**
+ * Tests whose expectation the Rust engine deliberately does not meet, keyed by the spec file
+ * (relative to the rules' `src`) and the ID in the test name: an ID is unique per spec file, not per
+ * rule (`permitted-contents-invalid-011` is also in `count-pattern.spec.ts` and `order.spec.ts`).
+ *
+ * `permitted-contents/index.spec.ts` `[permitted-contents-invalid-011]` (a `<div>` inside a
+ * `<select>`): the TS engine reads the
+ * markup with parse5 8.1, which still has the "in select" insertion mode and drops the `div`
+ * into the text of the `select`, so the TS rule reports a text node. The Rust HTML parser follows
+ * the current HTML Living Standard, where that mode is gone and the `div` stays an element of the
+ * `select` (https://html.spec.whatwg.org/multipage/parsing.html#parsing-main-inbody, the rules for
+ * the `select` and `option` start tags), and the html5lib-tests conformance suite that
+ * `markuplint-html-parser` runs says the same (`tree-construction/webkit02.dat`). Matching parse5
+ * would take a parser mode that contradicts that suite. The expectation of the TS spec flips when
+ * the TS engine is removed (RFC #3178 Phase 8-5).
+ */
+const KNOWN_DIVERGENCES: ReadonlyMap<string, string> = new Map([
+	[
+		'permitted-contents/index.spec.ts [permitted-contents-invalid-011]',
+		'the Rust HTML parser keeps a div inside a select; parse5 drops it',
+	],
+]);
+
+beforeEach(context => {
+	const id = /\[[a-z0-9-]+\]/.exec(context.task.name)?.[0];
+	const file = path.relative(RULES_SRC, context.task.file.filepath).split(path.sep).join('/');
+	const reason = id ? KNOWN_DIVERGENCES.get(`${file} ${id}`) : undefined;
+	if (reason) {
+		context.skip(reason);
+	}
+});
+
 vi.mock('markuplint', async importOriginal => {
 	const original = await importOriginal<MarkuplintModule>();
 	const { default: presetRules } = await import('@markuplint/rules');
+	const { lintWithRust } = await import('./rust-engine.ts');
 
 	function ruleUnderTest(): string | undefined {
 		const testPath = expect.getState().testPath ?? '';
@@ -29,54 +62,12 @@ vi.mock('markuplint', async importOriginal => {
 		return name && name in presetRules ? name : undefined;
 	}
 
-	async function mlRuleTest(...args: RuleTestArgs) {
+	function mlRuleTest(...args: RuleTestArgs) {
 		const name = ruleUnderTest();
 		if (!name) {
 			return original.mlRuleTest(...args);
 		}
-		const [, sourceCode, config = { rule: true }, fix = false, locale = 'en'] = args;
-		const { rule, nodeRule, childNodeRule, ...rest } = config;
-		const scoped = <N extends { rule?: unknown }>(entries: N[] | undefined) =>
-			entries?.map(({ rule: value, ...entry }) => ({
-				...entry,
-				rules: value === undefined ? undefined : { [name]: value },
-			}));
-		const fallbacks: string[] = [];
-		const write = process.stderr.write.bind(process.stderr);
-		process.stderr.write = ((chunk: string | Uint8Array, ...more: unknown[]) => {
-			if (String(chunk).includes('[experimental-rust-core]')) {
-				fallbacks.push(String(chunk).trim());
-				return true;
-			}
-			return (write as (...a: unknown[]) => boolean)(chunk, ...more);
-		}) as typeof process.stderr.write;
-		try {
-			const engine = await original.MLEngine.fromCode(sourceCode, {
-				config: {
-					...rest,
-					rules: { [name]: rule ?? true },
-					nodeRules: scoped(nodeRule),
-					childNodeRules: scoped(childNodeRule),
-				} as never,
-				locale,
-				fix,
-				ignoreExt: true,
-				importPresetRules: true,
-				experimentalRustCore: true,
-			});
-			const result = await engine.exec();
-			if (fallbacks.length > 0) {
-				throw new Error(`The Rust engine did not lint this: ${fallbacks.join(' / ')}`);
-			}
-			const violations = (result?.violations ?? []).map(({ ruleId: _, ...v }) => v);
-			return {
-				violations,
-				fixedCode: result?.fixedCode ?? sourceCode,
-				fixSummary: result?.fixSummary,
-			};
-		} finally {
-			process.stderr.write = write;
-		}
+		return lintWithRust(original, name, args);
 	}
 
 	return { ...original, mlRuleTest };

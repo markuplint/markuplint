@@ -9,6 +9,7 @@
 //!
 //! <https://html.spec.whatwg.org/multipage/document-sequences.html#valid-navigable-target-name-or-keyword>
 
+use markuplint_core::i18n::Primitive as Kw;
 use markuplint_core::mlast::MLASTAttr;
 use markuplint_dom::arena::DomArena;
 use markuplint_types::spec::types::MLMLSpec;
@@ -30,6 +31,7 @@ impl Rule for NoAmbiguousNavigableTargetNames {
 
     fn verify(&self, arena: &DomArena, spec: &MLMLSpec, config: &RuleConfigSet) -> Vec<Violation> {
         let mut violations = Vec::new();
+        let tr = config.translator();
 
         for (node_id, el) in arena.elements() {
             let rule_config = config.get(node_id);
@@ -70,11 +72,18 @@ impl Rule for NoAmbiguousNavigableTargetNames {
                     continue;
                 }
                 // As TS `t("a {0}", ...)` writes it (no "an").
-                let message = if with_keyword {
-                    format!("Don't use a ambiguous navigable target name. Did you mean \"{with_underscore}\"?")
-                } else {
-                    "Don't use a ambiguous navigable target name".to_string()
-                };
+                let mut message = tr.t(
+                    "don't use {0}",
+                    &[Kw::S(&tr.t(
+                        "a {0}",
+                        &[Kw::S(&tr.t("ambiguous {0}", &[Kw::S("navigable target name")]))],
+                    ))],
+                );
+                if with_keyword {
+                    message += &tr.t(". ", &[]);
+                    message += &tr.t("Did you mean \"{0}\"?", &[Kw::S(&with_underscore)]);
+                }
+                let message = tr.finish(&message);
                 violations.push(Violation {
                     rule_id: self.id().to_string(),
                     name: None,

@@ -10,6 +10,7 @@
 import type { AnyRuleSeed } from '@markuplint/ml-core';
 
 export { ruleAliasTable } from './rule-aliases.js';
+export { resolveBrowserSupportForRust } from './no-unsupported-browser-features/rust-input.js';
 
 import AriaPropRequiresRole from './aria-prop-requires-role/index.js';
 import AttrOrder from './attr-order/index.js';

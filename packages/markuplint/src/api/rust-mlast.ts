@@ -3,7 +3,7 @@ import type { AttrNameRoute, MLASTDocument, MLASTHTMLAttr } from '@markuplint/ml
 import type { PlainData, RuleConfigValue } from '@markuplint/ml-config';
 import type { ExtendedSpec, MLMLSpec } from '@markuplint/ml-spec';
 
-import { resolveAttrNames } from '@markuplint/ml-core';
+import { literalToExpression, resolveAttrNames } from '@markuplint/ml-core';
 
 /**
  * What the Rust engine needs besides the nodes to read a document the way the TS `Document`
@@ -20,6 +20,7 @@ type MLASTForRustOptions = {
 		readonly attrNameCaseSensitive?: boolean;
 		readonly attrNameRoute?: AttrNameRoute;
 		readonly componentNameVariants?: boolean;
+		readonly slotElement?: 'html' | 'framework';
 	};
 	/**
 	 * What the framework renders each attribute as, by the `uuid` of its token ({@link renderAttrs}).
@@ -42,6 +43,12 @@ export type AttrRendering = {
 	readonly isExpressionValue: boolean;
 	/** `MLAttr#isAbsent`: the framework does not output the attribute. */
 	readonly isAbsent: boolean;
+	/**
+	 * The code of the value when it is nothing but a literal (`literalToExpression` of `MLAttr#literal`).
+	 * What a component's attribute renders as is the string of the literal, which `"false"` and `false`
+	 * share, so a pretender that forwards the attribute (`{ fromAttr }`) needs the code.
+	 */
+	readonly literalExpression?: string;
 };
 
 /**
@@ -63,6 +70,9 @@ export function renderAttrs<T extends RuleConfigValue, O extends PlainData>(
 					isDynamicValue: attr.isDynamicValue === true,
 					isExpressionValue: attr.isExpressionValue === true,
 					isAbsent: attr.isAbsent === true,
+					...(attr.literal && {
+						literalExpression: literalToExpression(attr.literal),
+					}),
 				});
 			}
 		}
@@ -86,7 +96,7 @@ export function renderAttrs<T extends RuleConfigValue, O extends PlainData>(
  *   `MLAttr`: `isDynamicValue` that the value is not known, `isExpressionValue` that it is written
  *   as code (what the parser calls `isDynamicValue`), `isAbsent` that it is not output.
  * - `endTag`, `booleanish`, `tagNameCaseSensitive`, `attrNameCaseSensitive`, `attrNameRoute` and
- *   `componentNameVariants` of the parser are sent next to the nodes (`DocumentSettings` on the
+ *   `componentNameVariants` and `slotElement` of the parser are sent next to the nodes (`DocumentSettings` on the
  *   Rust side), as `MLCore` hands them to `Document`.
  *
  * @param ast - What the parser returned; it is not modified.
@@ -116,6 +126,7 @@ export function mlastForRust(ast: MLASTDocument, { spec, parser, renderings }: M
 			isDynamicValue: rendering ? rendering.isDynamicValue || undefined : isDynamicValue,
 			isExpressionValue: rendering ? rendering.isExpressionValue || undefined : isDynamicValue,
 			isAbsent: rendering?.isAbsent || undefined,
+			literalExpression: rendering?.literalExpression,
 			...(rendering &&
 				rendering.value !== written &&
 				!rendering.isDynamicValue && { potentialValue: rendering.value }),
@@ -136,6 +147,7 @@ export function mlastForRust(ast: MLASTDocument, { spec, parser, renderings }: M
 			attrNameCaseSensitive: parser.attrNameCaseSensitive,
 			attrNameRoute: parser.attrNameRoute,
 			componentNameVariants: parser.componentNameVariants,
+			slotElement: parser.slotElement,
 		},
 		(_key, value: unknown) => (isHTMLAttr(value) ? resolveAttr(value) : value),
 	);

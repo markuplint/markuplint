@@ -10,6 +10,7 @@
 //! [`crate::table_grid::Grid::has_overlapped`] is skipped, as `no-table-cell-overlap` reports it
 //! and the row widths derived from its grid are no longer reliable.
 
+use markuplint_core::i18n::Primitive as Kw;
 use markuplint_dom::arena::DomArena;
 use markuplint_types::spec::types::MLMLSpec;
 
@@ -59,6 +60,7 @@ impl ConsistentTableRowLength {
         row: &Row,
         base_col_length: usize,
     ) -> Option<Violation> {
+        let tr = config.translator();
         let col_length = row.slots.len();
         let row_el = table_grid::element(arena, row.element)?;
 
@@ -69,10 +71,13 @@ impl ConsistentTableRowLength {
                 config,
                 row.element,
                 row_el,
-                table_grid::capitalize(&format!(
-                    "{} missing {} in a row",
-                    table_grid::count_word(diff),
-                    columns(diff)
+                tr.finish(&tr.t(
+                    "{0} missing {1} in {2}",
+                    &[
+                        Kw::S(&tr.t(&diff.to_string(), &[])),
+                        Kw::S(&tr.t(columns(diff), &[])),
+                        Kw::S(&tr.t("a {0}", &[Kw::S(&tr.t("row", &[]))])),
+                    ],
                 )),
             ));
         }
@@ -100,7 +105,7 @@ impl ConsistentTableRowLength {
                 config,
                 span_start,
                 colspan,
-                "Exceeds the number of available columns".to_string(),
+                tr.finish(&tr.t("Exceeds the number of available {0}", &[Kw::S("columns")])),
             ));
         };
 
@@ -110,10 +115,13 @@ impl ConsistentTableRowLength {
             config,
             unexpected,
             table_grid::element(arena, unexpected)?,
-            table_grid::capitalize(&format!(
-                "{} extra {} in a row",
-                table_grid::count_word(diff),
-                columns(diff)
+            tr.finish(&tr.t(
+                "{0} extra {1} in {2}",
+                &[
+                    Kw::S(&tr.t(&diff.to_string(), &[])),
+                    Kw::S(&tr.t(columns(diff), &[])),
+                    Kw::S(&tr.t("a {0}", &[Kw::S(&tr.t("row", &[]))])),
+                ],
             )),
         ))
     }

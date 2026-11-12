@@ -20,6 +20,7 @@ use markuplint_types::spec::types::MLMLSpec;
 
 use crate::aria::computed_role::get_computed_role;
 use crate::aria_check::{ElementContext, ElementGate, find_attr, is_js_whitespace, walk_elements};
+use crate::create_message::Kw;
 use crate::rule::{Rule, RuleConfigSet};
 use crate::tree_scope::{decode_or_keep, dom_value, dom_value_of, element_by_id_of, is_expression, root_of};
 use crate::violation::Violation;
@@ -90,7 +91,15 @@ fn check(ctx: &ElementContext<'_>) -> Option<Violation> {
         }
     }
 
-    Some(ctx.element_violation("An active \"tab\" role requires a corresponding \"tabpanel\" role"))
+    let tr = ctx.tr;
+    let message = tr.t(
+        "{0} requires {1}",
+        &[
+            Kw::S(&tr.t("an active \"{0*}\" {1}", &[Kw::S("tab"), Kw::S("role")])),
+            Kw::S(&tr.t("a corresponding \"{0*}\" {1}", &[Kw::S("tabpanel"), Kw::S("role")])),
+        ],
+    );
+    Some(ctx.element_violation(tr.finish(&message)))
 }
 
 fn has_role(spec: &MLMLSpec, arena: &DomArena, node_id: NodeId, version: ARIAVersion, name: &str) -> bool {

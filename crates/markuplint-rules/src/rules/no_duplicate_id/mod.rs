@@ -10,6 +10,7 @@
 
 use std::collections::HashMap;
 
+use markuplint_core::i18n::Primitive as Kw;
 use markuplint_core::mlast::MLASTAttr;
 use markuplint_dom::arena::DomArena;
 use markuplint_types::spec::types::MLMLSpec;
@@ -33,6 +34,20 @@ impl Rule for NoDuplicateId {
 
     fn verify(&self, arena: &DomArena, spec: &MLMLSpec, config: &RuleConfigSet) -> Vec<Violation> {
         let mut violations = Vec::new();
+        let tr = config.translator();
+        let message = tr.finish(&tr.t(
+            "{0} is {1:c}",
+            &[
+                Kw::S(&tr.t(
+                    "{0} of {1}",
+                    &[
+                        Kw::S(&tr.t("the {0}", &[Kw::S("value")])),
+                        Kw::S(&tr.t("the \"{0*}\" {1}", &[Kw::S("id"), Kw::S("attribute")])),
+                    ],
+                )),
+                Kw::S("duplicated"),
+            ],
+        ));
         let trees = Trees::new(arena, spec);
         let mut seen: HashMap<(TreeRoot, String), Vec<Location>> = HashMap::new();
 
@@ -74,7 +89,7 @@ impl Rule for NoDuplicateId {
                         name: None,
                         severity: config.global().severity,
                         // TS message: The value of the "id" attribute is duplicated
-                        message: "The value of the \"id\" attribute is duplicated".to_string(),
+                        message: message.clone(),
                         line,
                         col,
                         raw: raw.clone(),

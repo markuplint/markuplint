@@ -1,5 +1,6 @@
 //! `no-consecutive-br` rule: reports consecutive `<br>` elements.
 
+use markuplint_core::i18n::Primitive as Kw;
 use markuplint_dom::arena::DomArena;
 use markuplint_dom::node::DomNode;
 use markuplint_types::spec::types::MLMLSpec;
@@ -21,6 +22,7 @@ impl Rule for NoConsecutiveBr {
 
     fn verify(&self, arena: &DomArena, _spec: &MLMLSpec, config: &RuleConfigSet) -> Vec<Violation> {
         let mut violations = Vec::new();
+        let tr = config.translator();
 
         for (node_id, el) in arena.elements() {
             let rule_config = config.get(node_id);
@@ -50,7 +52,13 @@ impl Rule for NoConsecutiveBr {
                     rule_id: self.id().to_string(),
                     name: None,
                     severity: rule_config.severity,
-                    message: "Consecutive \"br\" elements detected".to_string(),
+                    message: tr.finish(&tr.t(
+                        "{0} detected",
+                        &[Kw::S(&tr.t(
+                            "Consecutive {0}",
+                            &[Kw::S(&tr.t("\"{0*}\" {1}", &[Kw::S("br"), Kw::S("elements")]))],
+                        ))],
+                    )),
                     line: next_el.base.line,
                     col: next_el.base.col,
                     raw: next_el.base.raw.clone(),

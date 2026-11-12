@@ -54,6 +54,23 @@ impl Default for RuleConfig {
 pub struct RuleCommonSettings {
     #[serde(default, alias = "aria_version")]
     pub aria_version: Option<String>,
+    /// The browserslist targets and the BCD data of the file that is linted, for
+    /// `no-unsupported-browser-features` (resolved by the caller; see that rule).
+    #[serde(default, alias = "browser_support")]
+    pub browser_support: Option<crate::rules::no_unsupported_browser_features::BrowserSupport>,
+
+    /// The file name of the document being linted (TS `document.filename`), for a rule that
+    /// resolves a path relative to it (`no-mismatched-aspect-ratio`). It is not a user setting:
+    /// the engine adds it beside the user's `ruleCommonSettings` in the config JSON.
+    #[serde(default)]
+    pub filename: Option<String>,
+
+    /// The name of the locale of the messages (`en`, `ja`), resolved by the caller as
+    /// `packages/markuplint/src/i18n.ts` resolves it (option, then OS, `en` when there is no
+    /// dictionary). Like `filename` it is not a user setting: the engine adds it. A rule reads it
+    /// through [`RuleConfigSet::translator`].
+    #[serde(default)]
+    pub locale: Option<String>,
 }
 
 #[derive(Debug, Clone)]
@@ -90,6 +107,26 @@ impl RuleConfigSet {
 
     pub fn common_settings(&self) -> &RuleCommonSettings {
         &self.common_settings
+    }
+
+    /// The `t()` of `@markuplint/i18n` for the locale of this lint run: what a rule builds its
+    /// message with (TS `context.translate`).
+    pub fn translator(&self) -> markuplint_core::i18n::Translator<'static> {
+        markuplint_core::i18n::Translator::new(self.common_settings.locale.as_deref())
+    }
+
+    /// TS `t(template, ...keywords)` of this lint run's locale; see [`Translator::t`].
+    ///
+    /// [`Translator::t`]: markuplint_core::i18n::Translator::t
+    pub fn t(&self, template: &str, keywords: &[markuplint_core::i18n::Primitive<'_>]) -> String {
+        self.translator().t(template, keywords)
+    }
+
+    /// TS `t(list, useLastSeparator)` of this lint run's locale; see [`Translator::t_list`].
+    ///
+    /// [`Translator::t_list`]: markuplint_core::i18n::Translator::t_list
+    pub fn t_list<S: AsRef<str>>(&self, items: &[S], use_last_separator: bool) -> String {
+        self.translator().t_list(items, use_last_separator)
     }
 
     /// Returns the per-node override if present, otherwise the global config.

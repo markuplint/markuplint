@@ -17,6 +17,7 @@
 //!
 //! @see <https://html.spec.whatwg.org/multipage/scripting.html#the-template-element>
 
+use markuplint_core::i18n::Primitive as Kw;
 use markuplint_core::mlast::NamespaceURI;
 use markuplint_dom::arena::{DomArena, NodeId};
 use markuplint_dom::node::DomNode;
@@ -58,6 +59,7 @@ impl Rule for NoDisallowedAncestor {
     fn verify(&self, arena: &DomArena, spec: &MLMLSpec, config: &RuleConfigSet) -> Vec<Violation> {
         let resolver = SpecAriaResolver { spec };
         let mut violations = Vec::new();
+        let tr = config.translator();
         for (node_id, el) in arena.elements() {
             if !matches!(el.namespace, NamespaceURI::XHTML) {
                 continue;
@@ -119,10 +121,13 @@ impl Rule for NoDisallowedAncestor {
                 rule_id: self.id().to_string(),
                 name: None,
                 severity: rule_config.severity,
-                message: format!(
-                    "The \"{}\" element must not appear as a descendant of the \"{ancestor_name}\" element",
-                    el.base.node_name
-                ),
+                message: tr.finish(&tr.t(
+                    "{0} must not appear as a descendant of {1}",
+                    &[
+                        Kw::S(&tr.t("the \"{0}\" {1}", &[Kw::S(&el.base.node_name), Kw::S("element")])),
+                        Kw::S(&tr.t("the \"{0}\" {1}", &[Kw::S(ancestor_name), Kw::S("element")])),
+                    ],
+                )),
                 line: el.base.line,
                 col: el.base.col,
                 raw: el.base.raw.clone(),

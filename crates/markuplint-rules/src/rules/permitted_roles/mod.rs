@@ -20,6 +20,8 @@
 //! token is offending, so the first one is reported; when there is no token to name the message
 //! falls back to the attribute.
 
+use markuplint_core::i18n::Primitive as Kw;
+use markuplint_core::i18n::Translator;
 use markuplint_dom::arena::DomArena;
 use markuplint_types::spec::aria::{ARIAVersion, get_aria_spec};
 use markuplint_types::spec::types::MLMLSpec;
@@ -53,7 +55,24 @@ impl Rule for PermittedRoles {
     }
 }
 
-const NO_PERMITTED_SUFFIX: &str = "according to ARIA in HTML specification";
+/// TS `t('{0} according to {1}', <message>, 'ARIA in HTML specification')`, then `finish`.
+fn according_to_spec(tr: Translator<'static>, message: &str) -> String {
+    tr.finish(&tr.t(
+        "{0} according to {1}",
+        &[Kw::S(message), Kw::S("ARIA in HTML specification")],
+    ))
+}
+
+/// TS `t('Cannot overwrite {0} to {1}', t('the "{0*}" {1}', role, 'role'), t('the "{0*}" {1}', el, 'element'))`.
+fn cannot_overwrite_role(tr: Translator<'static>, role: &str, el_name: &str) -> String {
+    tr.t(
+        "Cannot overwrite {0} to {1}",
+        &[
+            Kw::S(&tr.t("the \"{0*}\" {1}", &[Kw::S(role), Kw::S("role")])),
+            Kw::S(&tr.t("the \"{0*}\" {1}", &[Kw::S(el_name), Kw::S("element")])),
+        ],
+    )
+}
 
 fn check(ctx: &ElementContext<'_>, violations: &mut Vec<Violation>) {
     let Some(attr) = role_attr(ctx.el) else {
@@ -61,21 +80,30 @@ fn check(ctx: &ElementContext<'_>, violations: &mut Vec<Violation>) {
     };
     let permitted = permitted_role_names(ctx);
     let tokens = role_tokens(attr);
-    let el_name = ctx.local_name();
+    let el_name = &ctx.local_name();
 
     if permitted.is_empty() {
         if let Some(first) = tokens.first() {
             violations.push(ctx.token_violation(
                 first,
-                format!(
-                    "Cannot overwrite the \"{}\" role to the \"{el_name}\" element {NO_PERMITTED_SUFFIX}",
-                    first.value
-                ),
+                according_to_spec(ctx.tr, &cannot_overwrite_role(ctx.tr, &first.value, el_name)),
             ));
         } else {
             violations.push(ctx.attr_violation(
                 attr,
-                format!("Cannot overwrite the role of the \"{el_name}\" element {NO_PERMITTED_SUFFIX}"),
+                according_to_spec(
+                    ctx.tr,
+                    &ctx.tr.t(
+                        "Cannot overwrite {0}",
+                        &[Kw::S(&ctx.tr.t(
+                            "{0} of {1}",
+                            &[
+                                Kw::S(&ctx.tr.t("the {0}", &[Kw::S("role")])),
+                                Kw::S(&ctx.tr.t("the \"{0*}\" {1}", &[Kw::S(el_name), Kw::S("element")])),
+                            ],
+                        ))],
+                    ),
+                ),
             ));
         }
         return;
@@ -84,10 +112,7 @@ fn check(ctx: &ElementContext<'_>, violations: &mut Vec<Violation>) {
     if let Some(token) = tokens.iter().find(|token| !permitted.contains(&token.value)) {
         violations.push(ctx.token_violation(
             token,
-            format!(
-                "Cannot overwrite the \"{}\" role to the \"{el_name}\" element {NO_PERMITTED_SUFFIX}",
-                token.value
-            ),
+            according_to_spec(ctx.tr, &cannot_overwrite_role(ctx.tr, &token.value, el_name)),
         ));
     }
 }

@@ -5,6 +5,7 @@ use markuplint_dom::arena::DomArena;
 use markuplint_types::spec::lookup::is_void_element;
 use markuplint_types::spec::types::MLMLSpec;
 
+use crate::create_message::Kw;
 use crate::rule::{Rule, RuleConfigSet};
 use crate::violation::Violation;
 
@@ -24,6 +25,7 @@ impl Rule for RequireEndTag {
     }
 
     fn verify(&self, arena: &DomArena, spec: &MLMLSpec, config: &RuleConfigSet) -> Vec<Violation> {
+        let tr = config.translator();
         let mut violations = Vec::new();
         let end_tag = arena.settings().end_tag;
 
@@ -64,7 +66,7 @@ impl Rule for RequireEndTag {
                 rule_id: self.id().to_string(),
                 name: None,
                 severity: rule_config.severity,
-                message: "Missing the end tag".to_string(),
+                message: tr.finish(&tr.t("Missing {0}", &[Kw::S(&tr.t("the {0}", &[Kw::S("end tag")]))])),
                 line: el.base.line,
                 col: el.base.col,
                 raw: el.base.raw.clone(),

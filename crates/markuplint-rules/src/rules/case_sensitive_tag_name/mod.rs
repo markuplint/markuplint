@@ -1,5 +1,6 @@
 //! `case-sensitive-tag-name` rule: checks tag name case (default: lowercase).
 
+use markuplint_core::i18n::Primitive as Kw;
 use markuplint_core::mlast::{ElementType, NamespaceURI};
 use markuplint_dom::arena::DomArena;
 use markuplint_dom::helpers::{extract_tag_name_from_raw, get_raw_tag_name};
@@ -26,6 +27,7 @@ impl Rule for CaseSensitiveTagName {
     fn verify(&self, arena: &DomArena, _spec: &MLMLSpec, config: &RuleConfigSet) -> Vec<Violation> {
         let case = config.global().value.as_str().unwrap_or("lower");
         let mut violations = Vec::new();
+        let tr = config.translator();
 
         if arena.settings().tag_name_case_sensitive {
             return violations;
@@ -49,7 +51,13 @@ impl Rule for CaseSensitiveTagName {
             } else {
                 "must"
             };
-            let message = format!("Tag names of HTML elements {verb} be {case}case");
+            let message = tr.finish(&tr.t(
+                &format!("{{0}} {verb} be {{1}}"),
+                &[
+                    Kw::S(&tr.t("{0} of {1}", &[Kw::S("tag names"), Kw::S("HTML elements")])),
+                    Kw::S(&format!("{case}case")),
+                ],
+            ));
 
             // Use the raw source name so original case is preserved for the comparison.
             let Some(raw_name) = get_raw_tag_name(el) else {

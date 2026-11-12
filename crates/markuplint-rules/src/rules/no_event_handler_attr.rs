@@ -1,5 +1,6 @@
 //! `no-event-handler-attr` rule: disallow inline event handler attributes.
 
+use markuplint_core::i18n::Primitive as Kw;
 use markuplint_core::mlast::MLASTAttr;
 use markuplint_dom::arena::DomArena;
 use markuplint_types::spec::types::MLMLSpec;
@@ -41,6 +42,7 @@ impl Rule for NoEventHandlerAttr {
             _ => vec![],
         };
 
+        let tr = config.translator();
         let mut violations = Vec::new();
 
         for (node_id, el) in arena.elements() {
@@ -92,7 +94,13 @@ impl Rule for NoEventHandlerAttr {
                     rule_id: self.id().to_string(),
                     name: None,
                     severity: rule_config.severity,
-                    message: format!("The \"{}\" attribute is disallowed", html_attr.node_name),
+                    message: tr.finish(&tr.t(
+                        "{0} is disallowed",
+                        &[Kw::S(&tr.t(
+                            "the \"{0*}\" {1}",
+                            &[Kw::S(&html_attr.node_name), Kw::S("attribute")],
+                        ))],
+                    )),
                     line: html_attr.name.line,
                     col: html_attr.name.col,
                     raw: html_attr.raw.clone(),

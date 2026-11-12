@@ -20,6 +20,7 @@ export type { MultiPassFixHost } from './multi-pass-fix.js';
 export * from './convert-ruleset.js';
 export * from './ml-core.js';
 export * from './ml-dom/index.js';
+export { getBooleanAttrNames, literalToExpression } from './ml-dom/helper/literal-values.js';
 export * from './ml-rule/index.js';
 export * from './plugin/index.js';
 export * from './test/index.js';

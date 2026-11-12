@@ -2,7 +2,15 @@ import type { APIOptions, MLEngineEventMap } from './types.js';
 import type { MLResultInfo } from '../types.js';
 import type { WatchSubscription } from './shared-watcher.js';
 import type { ConfigSet, MLFile, PretenderResolver, Target } from '@markuplint/file-resolver';
-import type { PlainData, Pretender, RuleAliasWarning, RuleCommonSettings, Violation } from '@markuplint/ml-config';
+import type {
+	OriginalNode,
+	PlainData,
+	Pretender,
+	PretenderContent,
+	RuleAliasWarning,
+	RuleCommonSettings,
+	Violation,
+} from '@markuplint/ml-config';
 import type { Ruleset, Plugin, Document, RuleConfigValue, MLFabric, FixSummary } from '@markuplint/ml-core';
 
 import {
@@ -24,12 +32,13 @@ import {
 	Document as MLDocument,
 	MLCore,
 	convertRuleset,
+	getBooleanAttrNames,
 	createRuleDeprecationViolations,
 	multiPassFix,
 } from '@markuplint/ml-core';
 import { schemaToSpec } from '@markuplint/ml-spec';
-import { ParserError } from '@markuplint/parser-utils';
-import { ruleAliasTable } from '@markuplint/rules';
+import { ParserError, isComponentName as isComponentNameByDefault } from '@markuplint/parser-utils';
+import { resolveBrowserSupportForRust, ruleAliasTable } from '@markuplint/rules';
 import { ConfigLoadError, isFatalError } from '@markuplint/shared';
 import { Emitter } from 'strict-event-emitter';
 
@@ -407,16 +416,6 @@ export class MLEngine extends Emitter<MLEngineEventMap> {
 			return null;
 		}
 
-		// Fallback: rules whose input is outside the document. Without the Rust side
-		// having it they would silently report nothing there.
-		const unsupportedRule = RULES_ONLY_THE_TS_ENGINE_EVALUATES.find(id => enablesRule(fabric.ruleset, id));
-		if (unsupportedRule) {
-			process.stderr.write(
-				`⚠ [experimental-rust-core] "${this.#file.path}" enables ${unsupportedRule}, which the Rust engine cannot evaluate — falling back to TypeScript engine.\n`,
-			);
-			return null;
-		}
-
 		// Load NAPI binding
 		let napi: NapiBinding;
 		try {
@@ -433,10 +432,23 @@ export class MLEngine extends Emitter<MLEngineEventMap> {
 
 		const sourceCode = await this.#file.getCode();
 
-		// Build config JSON for Rust
-		const configJson = buildRustConfigJson(fabric.ruleset, fabric.ruleCommonSettings, fabric.pretenders);
 		// The extended specs of a framework are merged here, as the TS document does with them.
 		const spec = schemaToSpec(fabric.schemas);
+		// Build config JSON for Rust
+		const browserSupport = await resolveBrowserSupport(fabric.ruleset, this.#file.path);
+		const configJson = buildRustConfigJson(
+			fabric.ruleset,
+			fabric.ruleCommonSettings,
+			fabric.pretenders,
+			browserSupport,
+			this.#file.path,
+			fabric.locale.locale,
+			{
+				isComponentName: fabric.parser.isComponentName?.bind(fabric.parser) ?? isComponentNameByDefault,
+				spec,
+				literalValues: fabric.parser.literalValues,
+			},
+		);
 		const specJson = JSON.stringify(spec);
 
 		// The HTML parser is the Rust one; every other parser runs in TS, and its MLAST goes over.
@@ -1099,7 +1111,11 @@ export class MLEngine extends Emitter<MLEngineEventMap> {
 		const configSet: ResolvedConfigSet =
 			ruleAliasWarnings.length === 0
 				? { ...resolvedConfigSet, ruleDeprecations: [] }
-				: { ...resolvedConfigSet, config: aliasedConfig, ruleDeprecations: ruleAliasWarnings };
+				: {
+						...resolvedConfigSet,
+						config: aliasedConfig,
+						ruleDeprecations: ruleAliasWarnings,
+					};
 
 		this.emit('config', this.#file.path, configSet);
 
@@ -1459,12 +1475,27 @@ async function loadNapiBinding(): Promise<NapiBinding> {
 	return cachedNapi;
 }
 
+const BROWSER_FEATURES_RULE = 'no-unsupported-browser-features';
+
 /**
- * Rules whose input lives outside the document, which only the TS engine can read:
- * `no-unsupported-browser-features` needs browserslist and browser-compat-data,
- * `no-mismatched-aspect-ratio` reads the image files from disk.
+ * The browser support input of `no-unsupported-browser-features`, which the Rust engine cannot
+ * resolve itself (browserslist) or read (the user's installed browser-compat-data). The targets
+ * come from the global options of the rule and the file name, as in the TS rule, so they are
+ * resolved once per file; nothing is resolved when the rule is not enabled.
  */
-const RULES_ONLY_THE_TS_ENGINE_EVALUATES = ['no-unsupported-browser-features', 'no-mismatched-aspect-ratio'] as const;
+function resolveBrowserSupport(ruleset: Partial<Readonly<Ruleset>>, filename: string) {
+	if (!enablesRule(ruleset, BROWSER_FEATURES_RULE)) {
+		return;
+	}
+	const entry = Object.entries(ruleset.rules ?? {}).find(
+		([id]) => id.split('/').pop() === BROWSER_FEATURES_RULE,
+	)?.[1];
+	const options =
+		typeof entry === 'object' && entry !== null && 'options' in entry && typeof entry.options === 'object'
+			? (entry.options as Parameters<typeof resolveBrowserSupportForRust>[1])
+			: {};
+	return resolveBrowserSupportForRust(filename, options ?? {});
+}
 
 /**
  * Whether `ruleset` turns the rule `ruleId` on, globally or for some nodes.
@@ -1478,7 +1509,10 @@ function enablesRule(ruleset: Partial<Readonly<Ruleset>>, ruleId: string): boole
 			return false;
 		}
 		if (typeof config === 'object' && config !== null) {
-			const { value, disabled } = config as { value?: unknown; disabled?: unknown };
+			const { value, disabled } = config as {
+				value?: unknown;
+				disabled?: unknown;
+			};
 			return value !== false && disabled !== true;
 		}
 		return true;
@@ -1514,12 +1548,79 @@ function buildRustConfigJson(
 	ruleset: Partial<Readonly<Ruleset>>,
 	ruleCommonSettings: Readonly<RuleCommonSettings>,
 	pretenders: readonly Pretender[],
+	browserSupport: Awaited<ReturnType<typeof resolveBrowserSupport>> | undefined,
+	filename: string,
+	locale: string,
+	{
+		isComponentName,
+		spec,
+		literalValues,
+	}: {
+		/** The rule of the parser of the document (`MLParser#isComponentName`). */
+		readonly isComponentName: (name: string) => boolean;
+		/** The merged spec of the document. */
+		readonly spec: Parameters<typeof getBooleanAttrNames>[0];
+		/** `MLParser#literalValues`. */
+		readonly literalValues: MLFabric['parser']['literalValues'];
+	},
 ): string {
 	return JSON.stringify({
 		rules: ruleset.rules ?? {},
 		node_rules: ruleset.nodeRules ?? [],
 		child_node_rules: ruleset.childNodeRules ?? [],
-		rule_common_settings: ruleCommonSettings,
-		pretenders,
+		// `browserSupport` belongs to no rule's own options (a node rule replaces them) and is
+		// resolved per file, so it travels with the settings that every rule of the run shares.
+		// `filename` is the document's path, which `no-mismatched-aspect-ratio` resolves a relative
+		// `src` against; it is not a setting the user can give. Neither is `locale`: the name that
+		// `i18n()` resolved (`en` or `ja`, `en` when there is no dictionary), which the Rust `t()`
+		// reads its embedded copy of `@markuplint/i18n/locales/<locale>.json` by.
+		rule_common_settings: {
+			...ruleCommonSettings,
+			...(browserSupport ? { browserSupport } : {}),
+			filename,
+			locale,
+		},
+		pretenders: pretenders.map(pretender => withComponentFlags(pretender, isComponentName)),
+		// What renders a literal that a pretender writes as code (`{ expression }`), as `MLAttr` does
+		...(pretenders.length > 0 && {
+			literalRendering: {
+				specLiteralValues: spec.literalValues,
+				parserLiteralValues: literalValues,
+				booleanAttrNames: [...getBooleanAttrNames(spec)],
+			},
+		}),
 	});
+}
+
+/**
+ * Tells the Rust engine which name that a pretender gives is a component's. The rule is the parser's
+ * (`MLParser#isComponentName`: a function, so it cannot go over JSON), and decides the type of the
+ * element that the pretender makes (`authored` or `html`) and the namespace it is in. The answer goes
+ * next to each name: `asIsComponent` for a string `as`, and `isComponent` on an `OriginalNode`, a slot
+ * and an element of `contents`.
+ */
+function withComponentFlags(pretender: Pretender, isComponentName: (name: string) => boolean) {
+	const { as } = pretender;
+	if (typeof as === 'string') {
+		return { ...pretender, asIsComponent: isComponentName(as) };
+	}
+	const flagContents = (contents: readonly PretenderContent[] | undefined) =>
+		contents?.map(entry =>
+			'element' in entry ? { ...entry, isComponent: isComponentName(entry.element) } : entry,
+		);
+	const flagNode = (node: Omit<OriginalNode, 'slots'>) => ({
+		...node,
+		isComponent: isComponentName(node.element),
+		...(node.contents && { contents: flagContents(node.contents) }),
+	});
+	const { slots } = as;
+	return {
+		...pretender,
+		as: {
+			...flagNode(as),
+			...(Array.isArray(slots) && {
+				slots: slots.map(slot => flagNode(slot)),
+			}),
+		},
+	};
 }

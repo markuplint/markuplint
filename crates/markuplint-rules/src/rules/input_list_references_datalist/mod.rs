@@ -8,6 +8,7 @@
 //!
 //! <https://html.spec.whatwg.org/multipage/input.html#the-list-attribute>
 
+use markuplint_core::i18n::Primitive as Kw;
 use markuplint_dom::arena::DomArena;
 use markuplint_dom::helpers::get_attr_node_from_el;
 use markuplint_types::spec::types::MLMLSpec;
@@ -29,6 +30,7 @@ impl Rule for InputListReferencesDatalist {
 
     fn verify(&self, arena: &DomArena, spec: &MLMLSpec, config: &RuleConfigSet) -> Vec<Violation> {
         let trees = Trees::new(arena, spec);
+        let tr = config.translator();
         let mut violations = Vec::new();
 
         for (node_id, el) in arena.elements() {
@@ -69,8 +71,10 @@ impl Rule for InputListReferencesDatalist {
                 rule_id: self.id().to_string(),
                 name: None,
                 severity: rule_config.severity,
-                message: "The \"list\" attribute of the \"input\" element must reference a \"datalist\" element"
-                    .to_string(),
+                message: tr.finish(&tr.t(
+                    "The \"{0}\" attribute of the \"{1}\" element must reference a \"{2}\" element",
+                    &[Kw::S("list"), Kw::S("input"), Kw::S("datalist")],
+                )),
                 line: list_attr.value.line,
                 col: list_attr.value.col,
                 raw: list_attr.value.raw.clone(),

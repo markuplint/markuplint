@@ -8,6 +8,7 @@
 //! table [`crate::table_grid::Grid::has_overlapped`] is skipped, as `no-table-cell-overlap`
 //! reports it and the anchors derived from its grid are no longer reliable.
 
+use markuplint_core::i18n::Primitive as Kw;
 use markuplint_dom::arena::DomArena;
 use markuplint_types::spec::types::MLMLSpec;
 
@@ -27,6 +28,7 @@ impl Rule for NoEmptyTableTrack {
 
     fn verify(&self, arena: &DomArena, _spec: &MLMLSpec, config: &RuleConfigSet) -> Vec<Violation> {
         let mut violations = Vec::new();
+        let tr = config.translator();
 
         for (_, grid) in table_grid::tables(arena, config) {
             if grid.has_overlapped() {
@@ -38,14 +40,17 @@ impl Rule for NoEmptyTableTrack {
                     continue;
                 };
                 let count = range.right - range.left;
-                let message = if count == 1 {
-                    "One column has no cells beginning in it".to_string()
+                let message = tr.finish(&if count == 1 {
+                    tr.t(
+                        "{0} {1} has no cells beginning in it",
+                        &[Kw::S(&tr.t("1", &[])), Kw::S(&tr.t("column", &[]))],
+                    )
                 } else {
-                    table_grid::capitalize(&format!(
-                        "{} columns have no cells beginning in them",
-                        table_grid::count_word(count)
-                    ))
-                };
+                    tr.t(
+                        "{0} {1} have no cells beginning in them",
+                        &[Kw::S(&tr.t(&count.to_string(), &[])), Kw::S(&tr.t("columns", &[]))],
+                    )
+                });
                 violations.push(match table_grid::attr_node(source, "colspan") {
                     Some(colspan) => table_grid::attr_violation(self.id(), config, range.source, colspan, message),
                     None => table_grid::element_violation(self.id(), config, range.source, source, message),
@@ -64,7 +69,10 @@ impl Rule for NoEmptyTableTrack {
                     config,
                     row.element,
                     row_el,
-                    "One row has no cells beginning in it".to_string(),
+                    tr.finish(&tr.t(
+                        "{0} {1} has no cells beginning in it",
+                        &[Kw::S(&tr.t("1", &[])), Kw::S(&tr.t("row", &[]))],
+                    )),
                 ));
             }
         }

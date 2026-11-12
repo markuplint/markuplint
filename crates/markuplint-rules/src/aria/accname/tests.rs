@@ -74,6 +74,7 @@ fn make_attrs(attrs: &[(&str, &str)]) -> Vec<MLASTAttr> {
                 is_dynamic_value: None,
                 is_expression_value: None,
                 is_absent: None,
+                literal_expression: None,
                 is_directive: None,
                 potential_name: None,
                 potential_value: None,
@@ -1550,8 +1551,9 @@ fn img_empty_alt_is_decorative() {
     let (arena, id) = make_arena("img", &[("alt", "")]);
     let result = get_accname(&s, &arena, id, ARIAVersion::V1_2);
     assert!(result.name.is_empty());
-    // empty alt = intentionally decorative, source is still Alt
-    assert_eq!(result.source, Some(AccnameSource::Alt));
+    // empty alt = intentionally decorative: an empty name that ends Step 2E, with no source
+    // (TS element-names.spec.ts "empty alt (intentional empty name)")
+    assert_eq!(result.source, None);
 }
 
 #[test]
@@ -3426,6 +3428,7 @@ mod algorithm_tests {
                     is_dynamic_value: None,
                     is_expression_value: None,
                     is_absent: None,
+                    literal_expression: None,
                     is_directive: None,
                     potential_name: None,
                     potential_value: None,

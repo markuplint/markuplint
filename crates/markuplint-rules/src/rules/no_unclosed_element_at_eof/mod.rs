@@ -13,6 +13,7 @@
 //!
 //! <https://html.spec.whatwg.org/multipage/parsing.html#parsing-main-inbody>
 
+use markuplint_core::i18n::Primitive as Kw;
 use markuplint_core::mlast::EndTagType;
 use markuplint_dom::arena::{DomArena, NodeId};
 use markuplint_dom::node::DomNode;
@@ -61,6 +62,8 @@ impl Rule for NoUnclosedElementAtEof {
             return vec![];
         }
 
+        let tr = config.translator();
+
         let Some(source) = arena.source().or_else(|| match arena.document() {
             Some(DomNode::Document(doc)) => Some(doc.raw.as_str()),
             _ => None,
@@ -89,10 +92,12 @@ impl Rule for NoUnclosedElementAtEof {
                     rule_id: self.id().to_string(),
                     name: None,
                     severity: rule_config.severity,
-                    message: format!(
-                        "The \"{}\" element is not closed at the end of the file",
-                        el.base.node_name
-                    ),
+                    message: tr.finish(&tr.t(
+                        "{0} is not closed at the end of the file",
+                        &[Kw::S(
+                            &tr.t("the \"{0}\" {1}", &[Kw::S(&el.base.node_name), Kw::S("element")]),
+                        )],
+                    )),
                     line: el.base.line,
                     col: el.base.col,
                     raw: el.base.raw.clone(),

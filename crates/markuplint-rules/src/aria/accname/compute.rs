@@ -8,7 +8,7 @@ use markuplint_dom::helpers as dom;
 use super::aria_steps;
 use super::element_names;
 use super::helpers;
-use super::{AccnameResolver, AccnameResult, AccnameSource};
+use super::{AccnameResolver, AccnameResult, AccnameSource, AccnameVisit};
 
 pub fn compute_accessible_name(
     arena: &DomArena,
@@ -48,8 +48,18 @@ fn compute_steps(
     visited: &HashSet<String>,
     computing: &mut HashSet<NodeId>,
 ) -> AccnameResult {
-    // Step 2A: Hidden check
-    if !in_labelledby_traversal && resolver.is_hidden(node_id) {
+    // Step 2A: Hidden check. In an `aria-labelledby` traversal whose referenced node is hidden,
+    // `compute_referenced` hands over a resolver that finds nothing hidden.
+    let hidden = resolver.is_hidden(node_id);
+    resolver.on_visit(
+        node_id,
+        AccnameVisit {
+            hidden,
+            embedded_control: false,
+            in_labelledby_traversal,
+        },
+    );
+    if hidden {
         return AccnameResult::empty();
     }
 
@@ -71,10 +81,16 @@ fn compute_steps(
         return result;
     }
 
-    // Step 2E: Element-specific name
-    if let Some(result) =
-        element_names::get_element_specific_name(arena, node_id, resolver, visited, in_labelledby_traversal, computing)
-        && (!result.name.is_empty() || result.source.is_some())
+    // Step 2E: Element-specific name, "unless the current node is exposed as presentational"
+    if !resolver.is_exposed_as_presentational(node_id)
+        && let Some(result) = element_names::get_element_specific_name(
+            arena,
+            node_id,
+            resolver,
+            visited,
+            in_labelledby_traversal,
+            computing,
+        )
     {
         return result;
     }

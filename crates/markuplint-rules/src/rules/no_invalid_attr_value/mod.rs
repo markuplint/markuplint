@@ -14,7 +14,6 @@ use crate::attr_check::{
     AttrCheckContext, AttrEligibility, attr_check_value, get_clean_value, lookup_name_option,
     resolve_attr_eligibility_of, walk_attrs,
 };
-use crate::create_message::capitalize;
 use crate::rule::{Rule, RuleConfigSet};
 use crate::violation::Violation;
 
@@ -43,7 +42,7 @@ fn check(options: &serde_json::Value, html_attr: &MLASTHTMLAttr, ctx: &AttrCheck
     let allow_type = lookup_name_option(options.get("allowAttrs"), ctx.el, html_attr, &any);
 
     let invalid = if let Some(allow_type) = allow_type {
-        attr_check_value(name, value, true, &allow_type)
+        attr_check_value(ctx.tr, name, value, true, &allow_type)
     } else {
         if !ctx.is_html() {
             return vec![];
@@ -54,7 +53,7 @@ fn check(options: &serde_json::Value, html_attr: &MLASTHTMLAttr, ctx: &AttrCheck
         let AttrEligibility::Ok { spec } = resolve_attr_eligibility_of(html_attr, specs, ctx) else {
             return vec![];
         };
-        attr_check_value(name, value, false, &spec.attr_type)
+        attr_check_value(ctx.tr, name, value, false, &spec.attr_type)
     };
 
     // TS `attr.isDynamicValue`: a value that is not known is not judged
@@ -85,7 +84,7 @@ fn check(options: &serde_json::Value, html_attr: &MLASTHTMLAttr, ctx: &AttrCheck
                 rule_id: ctx.rule_id.to_string(),
                 name: None,
                 severity: *ctx.severity,
-                message: capitalize(&one.message),
+                message: ctx.tr.finish(&one.message),
                 line,
                 col,
                 raw,

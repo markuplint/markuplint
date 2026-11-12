@@ -4,12 +4,20 @@
 //!   no-aria-on-presentational-children-valid-001    → no_aria_on_presentational_children_valid_001
 //!   no-aria-on-presentational-children-invalid-001  → no_aria_on_presentational_children_invalid_001
 //!   no-aria-on-presentational-children-valid-002    → no_aria_on_presentational_children_valid_002
-//!   v6_no_aria_on_presentational_children_001  — Rust-only: message, position and scope of the report
-//!   v6_no_aria_on_presentational_children_002  — Rust-only: an implicit role counts
+//!   the other `no-aria-on-presentational-children-<category>-NNN` of `index.spec.ts` that take HTML
+//!     → `no_aria_on_presentational_children_<category>_NNN`, with the same input and the same
+//!     violations. The ones that take the JSX parser or a pretender (`issue-4309-003`, `-004`, `-006`,
+//!     `-007`, `issue-4408-002`, `-014`, `-020`) are run against the Rust engine by the parity run of
+//!     the TS specs only, as the Rust tests parse HTML.
+//!   `invalid-001` keeps the input of the earlier TS spec (an `aria-label` on a child of a button),
+//!     which the TS rule no longer reports; the TS spec's own input is in `v6_..._007`.
+//!   v6_no_aria_on_presentational_children_001  — Rust-only: message, position and scope (the attribute) of the report
+//!   v6_no_aria_on_presentational_children_002  — Rust-only: an implicit role counts; `aria-hidden` is not reported
 //!   v6_no_aria_on_presentational_children_003  — Rust-only: the closest such ancestor is named
 //!   v6_no_aria_on_presentational_children_004  — Rust-only: which attributes and elements count
 //!   v6_no_aria_on_presentational_children_005  — Rust-only: other roles, role tokens and ARIA version
-//!   v6_no_aria_on_presentational_children_006  — Rust-only: severity, multi-line position and `rules: false`
+//!   v6_no_aria_on_presentational_children_006  — Rust-only: severity, multi-line position and `rules: false`, for an `aria-label` that takes no effect
+//!   v6_no_aria_on_presentational_children_007  — Rust-only: severity option and `rules: false`
 
 use crate::lint::{LintConfig, lint};
 use crate::violation::{Severity, Violation};
@@ -38,6 +46,28 @@ fn run_rule(html: &str, value: serde_json::Value) -> Vec<Violation> {
     }))
     .unwrap();
     lint(&html_arena(html), &spec(), &config).violations
+}
+
+/// `(line 1, col, raw, role)` of each violation, which the TS specs assert with the message of
+/// `ineffective(role)` and the severity `warning`.
+type AttrExpected<'a> = (u32, &'a str, &'a str);
+
+fn ineffective(role: &str) -> String {
+    format!(
+        "It may be ineffective because it has the \"{role}\" role as an ancestor that doesn't expose its descendants to the accessibility tree"
+    )
+}
+
+fn assert_attr_violations(actual: &[Violation], expected: &[AttrExpected<'_>]) {
+    assert_eq!(actual.len(), expected.len(), "violations: {actual:?}");
+    for (violation, (col, raw, role)) in actual.iter().zip(expected) {
+        assert_eq!(violation.rule_id, "no-aria-on-presentational-children");
+        assert_eq!(violation.severity, Severity::Warning);
+        assert_eq!(violation.line, 1);
+        assert_eq!(violation.col, *col);
+        assert_eq!(violation.message, ineffective(role));
+        assert_eq!(violation.raw, *raw);
+    }
 }
 
 /// `(severity, line, col, message, raw)`, the fields the TS specs assert.
@@ -77,6 +107,19 @@ fn no_aria_on_presentational_children_valid_001() {
     );
 }
 
+/// TS: `[no-aria-on-presentational-children-valid-003]` aria-label on a child of a role named from content is not reported
+#[test]
+fn no_aria_on_presentational_children_valid_003() {
+    const _ID: &str = "no-aria-on-presentational-children-valid-003";
+    assert_attr_violations(
+        &run_rule(
+            r#"<div role="button"><span aria-label="text"></span></div>"#,
+            serde_json::json!(true),
+        ),
+        &[],
+    );
+}
+
 /// TS: `[no-aria-on-presentational-children-invalid-001]`
 #[test]
 fn no_aria_on_presentational_children_invalid_001() {
@@ -85,8 +128,7 @@ fn no_aria_on_presentational_children_invalid_001() {
         r#"<div role="button"><span aria-label="text"></span></div>"#,
         serde_json::json!(true),
     );
-    assert_eq!(violations.len(), 1, "violations: {violations:?}");
-    assert_eq!(violations[0].severity, Severity::Warning);
+    assert_eq!(violations.len(), 0, "violations: {violations:?}");
 }
 
 /// TS: `[no-aria-on-presentational-children-valid-002]`
@@ -99,6 +141,564 @@ fn no_aria_on_presentational_children_valid_002() {
     );
 }
 
+/// TS: `[no-aria-on-presentational-children-issue-4309-001]` an upper-case aria-label on a child of a button is not reported, like the lower-case one
+#[test]
+fn no_aria_on_presentational_children_issue_4309_001() {
+    const _ID: &str = "no-aria-on-presentational-children-issue-4309-001";
+    assert_attr_violations(
+        &run_rule(
+            r#"<div role="button"><span ARIA-LABEL="text"></span></div>"#,
+            serde_json::json!(true),
+        ),
+        &[],
+    );
+}
+
+/// TS: `[no-aria-on-presentational-children-issue-4309-002]` an upper-case role on a child is reported like the lower-case one
+#[test]
+fn no_aria_on_presentational_children_issue_4309_002() {
+    const _ID: &str = "no-aria-on-presentational-children-issue-4309-002";
+    assert_attr_violations(
+        &run_rule(
+            r#"<div role="button"><span ROLE="img"></span></div>"#,
+            serde_json::json!(true),
+        ),
+        &[(26, r#"ROLE="img""#, "button")],
+    );
+}
+
+/// TS: `[no-aria-on-presentational-children-issue-4309-005]` an upper-case aria-describedby on a child is reported like the lower-case one
+#[test]
+fn no_aria_on_presentational_children_issue_4309_005() {
+    const _ID: &str = "no-aria-on-presentational-children-issue-4309-005";
+    assert_attr_violations(
+        &run_rule(
+            r#"<div role="button"><span ARIA-DESCRIBEDBY="d"></span></div><p id="d">d</p>"#,
+            serde_json::json!(true),
+        ),
+        &[(26, r#"ARIA-DESCRIBEDBY="d""#, "button")],
+    );
+}
+
+/// TS: `[no-aria-on-presentational-children-issue-4408-001]` aria-hidden="true" on a decorative svg in a button is not reported
+#[test]
+fn no_aria_on_presentational_children_issue_4408_001() {
+    const _ID: &str = "no-aria-on-presentational-children-issue-4408-001";
+    assert_attr_violations(
+        &run_rule(
+            r#"<button type="button"><svg aria-hidden="true" focusable="false" viewBox="0 0 1 1"><path d="M0 0" /></svg>Click</button>"#,
+            serde_json::json!(true),
+        ),
+        &[],
+    );
+}
+
+/// TS: `[no-aria-on-presentational-children-issue-4408-003]` aria-label and aria-labelledby on a child of a button are not reported
+#[test]
+fn no_aria_on_presentational_children_issue_4408_003() {
+    const _ID: &str = "no-aria-on-presentational-children-issue-4408-003";
+    assert_attr_violations(
+        &run_rule(
+            r#"<button type="button"><span aria-label="Save">x</span><span aria-labelledby="file">y</span></button><span id="file">report.pdf</span>"#,
+            serde_json::json!(true),
+        ),
+        &[],
+    );
+}
+
+/// TS: `[no-aria-on-presentational-children-issue-4408-004]` aria-hidden="true" on a child of a role whose name comes from content only is not reported
+#[test]
+fn no_aria_on_presentational_children_issue_4408_004() {
+    const _ID: &str = "no-aria-on-presentational-children-issue-4408-004";
+    assert_attr_violations(
+        &run_rule(
+            r#"<div role="tab"><span aria-hidden="true">★</span>Settings</div>"#,
+            serde_json::json!(true),
+        ),
+        &[],
+    );
+}
+
+/// TS: `[no-aria-on-presentational-children-issue-4408-005]` aria-hidden="true" on a child of a role that is not named from content is reported
+#[test]
+fn no_aria_on_presentational_children_issue_4408_005() {
+    const _ID: &str = "no-aria-on-presentational-children-issue-4408-005";
+    assert_attr_violations(
+        &run_rule(
+            r#"<div role="img"><span aria-hidden="true">deco</span></div>"#,
+            serde_json::json!(true),
+        ),
+        &[(23, r#"aria-hidden="true""#, "img")],
+    );
+}
+
+/// TS: `[no-aria-on-presentational-children-issue-4408-006]` aria-hidden="true" in a button named by aria-label is reported
+#[test]
+fn no_aria_on_presentational_children_issue_4408_006() {
+    const _ID: &str = "no-aria-on-presentational-children-issue-4408-006";
+    assert_attr_violations(
+        &run_rule(
+            r#"<button type="button" aria-label="Save"><svg aria-hidden="true"></svg></button>"#,
+            serde_json::json!(true),
+        ),
+        &[(46, r#"aria-hidden="true""#, "button")],
+    );
+}
+
+/// TS: `[no-aria-on-presentational-children-issue-4408-007]` aria-hidden="true" under a child named by aria-label is reported
+#[test]
+fn no_aria_on_presentational_children_issue_4408_007() {
+    const _ID: &str = "no-aria-on-presentational-children-issue-4408-007";
+    assert_attr_violations(
+        &run_rule(
+            r#"<button type="button"><span aria-label="Save"><svg aria-hidden="true"></svg></span></button>"#,
+            serde_json::json!(true),
+        ),
+        &[(52, r#"aria-hidden="true""#, "button")],
+    );
+}
+
+/// TS: `[no-aria-on-presentational-children-issue-4408-008]` aria-label under a hidden child is reported
+#[test]
+fn no_aria_on_presentational_children_issue_4408_008() {
+    const _ID: &str = "no-aria-on-presentational-children-issue-4408-008";
+    assert_attr_violations(
+        &run_rule(
+            r#"<button type="button"><span aria-hidden="true"><span aria-label="Save">x</span></span>Click</button>"#,
+            serde_json::json!(true),
+        ),
+        &[(54, r#"aria-label="Save""#, "button")],
+    );
+}
+
+/// TS: `[no-aria-on-presentational-children-issue-4408-009]` aria-label on an element that is itself hidden is reported
+#[test]
+fn no_aria_on_presentational_children_issue_4408_009() {
+    const _ID: &str = "no-aria-on-presentational-children-issue-4408-009";
+    assert_attr_violations(
+        &run_rule(
+            r#"<button type="button"><span aria-hidden="true" aria-label="Save">x</span>Click</button>"#,
+            serde_json::json!(true),
+        ),
+        &[(48, r#"aria-label="Save""#, "button")],
+    );
+}
+
+/// TS: `[no-aria-on-presentational-children-issue-4408-010]` attributes that do not reach the name of a button are still reported
+#[test]
+fn no_aria_on_presentational_children_issue_4408_010() {
+    const _ID: &str = "no-aria-on-presentational-children-issue-4408-010";
+    assert_attr_violations(
+        &run_rule(
+            r#"<button type="button"><span aria-hidden="false">a</span><span aria-label="">b</span><span aria-describedby="d">c</span><span role="img">d</span></button><span id="d">desc</span>"#,
+            serde_json::json!(true),
+        ),
+        &[
+            (29, r#"aria-hidden="false""#, "button"),
+            (63, r#"aria-label="""#, "button"),
+            (91, r#"aria-describedby="d""#, "button"),
+            (126, r#"role="img""#, "button"),
+        ],
+    );
+}
+
+/// TS: `[no-aria-on-presentational-children-issue-4408-011]` role="none" that drops the title of an svg from the name of a button is not reported
+#[test]
+fn no_aria_on_presentational_children_issue_4408_011() {
+    const _ID: &str = "no-aria-on-presentational-children-issue-4408-011";
+    assert_attr_violations(
+        &run_rule(
+            r#"<button type="button"><svg role="none"><title>Save</title></svg><svg role="presentation"><title>Open</title></svg>Click</button>"#,
+            serde_json::json!(true),
+        ),
+        &[],
+    );
+}
+
+/// TS: `[no-aria-on-presentational-children-issue-4408-012]` role="none" that does not change the name of a button is reported
+#[test]
+fn no_aria_on_presentational_children_issue_4408_012() {
+    const _ID: &str = "no-aria-on-presentational-children-issue-4408-012";
+    assert_attr_violations(
+        &run_rule(
+            r#"<div role="button"><img src="s.svg" alt="" role="none"><span role="none">Save</span><img src="o.svg" alt="Open" role="none" tabindex="0"></div>"#,
+            serde_json::json!(true),
+        ),
+        &[
+            (44, r#"role="none""#, "button"),
+            (62, r#"role="none""#, "button"),
+            (113, r#"role="none""#, "button"),
+        ],
+    );
+}
+
+/// TS: `[no-aria-on-presentational-children-issue-4408-013]` role="none" that drops the alt of an image from the name of a button is not reported, though ARIA in HTML does not permit it
+#[test]
+fn no_aria_on_presentational_children_issue_4408_013() {
+    const _ID: &str = "no-aria-on-presentational-children-issue-4408-013";
+    assert_attr_violations(
+        &run_rule(
+            r#"<button type="button"><img src="s.svg" alt="Save" role="none"><img src="o.svg" alt="Open" role="presentation"></button>"#,
+            serde_json::json!(true),
+        ),
+        &[],
+    );
+}
+
+/// TS: `[no-aria-on-presentational-children-issue-4408-015]` aria-label under an element named by its own host language label is reported
+#[test]
+fn no_aria_on_presentational_children_issue_4408_015() {
+    const _ID: &str = "no-aria-on-presentational-children-issue-4408-015";
+    assert_attr_violations(
+        &run_rule(
+            r#"<div role="button"><fieldset title="t"><span aria-label="x">y</span></fieldset></div>"#,
+            serde_json::json!(true),
+        ),
+        &[(46, r#"aria-label="x""#, "button")],
+    );
+}
+
+/// TS: `[no-aria-on-presentational-children-issue-4408-016]` aria-label in a hidden button is reported
+#[test]
+fn no_aria_on_presentational_children_issue_4408_016() {
+    const _ID: &str = "no-aria-on-presentational-children-issue-4408-016";
+    assert_attr_violations(
+        &run_rule(
+            r#"<div role="button" aria-hidden="true"><span aria-label="x"></span></div>"#,
+            serde_json::json!(true),
+        ),
+        &[(45, r#"aria-label="x""#, "button")],
+    );
+}
+
+/// TS: `[no-aria-on-presentational-children-issue-4408-017]` aria-label on an embedded control is reported
+#[test]
+fn no_aria_on_presentational_children_issue_4408_017() {
+    const _ID: &str = "no-aria-on-presentational-children-issue-4408-017";
+    assert_attr_violations(
+        &run_rule(
+            r#"<div role="checkbox" aria-checked="false"><input type="text" aria-label="x" value="v"></div>"#,
+            serde_json::json!(true),
+        ),
+        &[(62, r#"aria-label="x""#, "checkbox")],
+    );
+}
+
+/// TS: `[no-aria-on-presentational-children-issue-4408-018]` aria-labelledby that refers to no element is reported
+#[test]
+fn no_aria_on_presentational_children_issue_4408_018() {
+    const _ID: &str = "no-aria-on-presentational-children-issue-4408-018";
+    assert_attr_violations(
+        &run_rule(
+            r#"<div role="button"><span aria-labelledby="missing">Save</span></div>"#,
+            serde_json::json!(true),
+        ),
+        &[(26, r#"aria-labelledby="missing""#, "button")],
+    );
+}
+
+/// TS: `[no-aria-on-presentational-children-issue-4489-001]` aria-labelledby that refers to an element of the same template is not reported
+#[test]
+fn no_aria_on_presentational_children_issue_4489_001() {
+    const _ID: &str = "no-aria-on-presentational-children-issue-4489-001";
+    assert_attr_violations(
+        &run_rule(
+            r#"<template><div role="button"><span aria-labelledby="file">y</span></div><span id="file">report.pdf</span></template>"#,
+            serde_json::json!(true),
+        ),
+        &[],
+    );
+}
+
+/// TS: `[no-aria-on-presentational-children-issue-4489-002]` aria-labelledby that refers to an element of another tree is reported
+#[test]
+fn no_aria_on_presentational_children_issue_4489_002() {
+    const _ID: &str = "no-aria-on-presentational-children-issue-4489-002";
+    assert_attr_violations(
+        &run_rule(
+            r#"<template><div role="button"><span aria-labelledby="file">y</span></div></template><span id="file">report.pdf</span>"#,
+            serde_json::json!(true),
+        ),
+        &[(36, r#"aria-labelledby="file""#, "button")],
+    );
+}
+
+/// TS: `[no-aria-on-presentational-children-issue-4408-019]` aria-hidden="true" on an element hidden by the hidden attribute is reported
+#[test]
+fn no_aria_on_presentational_children_issue_4408_019() {
+    const _ID: &str = "no-aria-on-presentational-children-issue-4408-019";
+    assert_attr_violations(
+        &run_rule(
+            r#"<div role="button"><span hidden aria-hidden="true">x</span>Save</div>"#,
+            serde_json::json!(true),
+        ),
+        &[(33, r#"aria-hidden="true""#, "button")],
+    );
+}
+
+/// TS: `[no-aria-on-presentational-children-issue-4408-021]` aria-hidden="true" in a role named from author that aria-labelledby refers to is not reported
+#[test]
+fn no_aria_on_presentational_children_issue_4408_021() {
+    const _ID: &str = "no-aria-on-presentational-children-issue-4408-021";
+    assert_attr_violations(
+        &run_rule(
+            r#"<div role="img" id="pic"><span aria-hidden="true">decor</span>Chart</div><figure aria-labelledby="pic"></figure>"#,
+            serde_json::json!(true),
+        ),
+        &[],
+    );
+}
+
+/// TS: `[no-aria-on-presentational-children-issue-4408-022]` aria-label under a hidden element of a node aria-labelledby refers to is reported
+#[test]
+fn no_aria_on_presentational_children_issue_4408_022() {
+    const _ID: &str = "no-aria-on-presentational-children-issue-4408-022";
+    assert_attr_violations(
+        &run_rule(
+            r#"<div role="img" id="pic"><span aria-hidden="true"><span aria-label="x">y</span></span>Chart</div><figure aria-labelledby="pic"></figure>"#,
+            serde_json::json!(true),
+        ),
+        &[(57, r#"aria-label="x""#, "img")],
+    );
+}
+
+/// TS: `[no-aria-on-presentational-children-issue-4408-023]` aria-labelledby on an embedded control is not reported
+#[test]
+fn no_aria_on_presentational_children_issue_4408_023() {
+    const _ID: &str = "no-aria-on-presentational-children-issue-4408-023";
+    assert_attr_violations(
+        &run_rule(
+            r#"<div role="checkbox" aria-checked="false">Flash <input type="text" value="5" aria-labelledby="n"> times</div><span id="n">five</span>"#,
+            serde_json::json!(true),
+        ),
+        &[],
+    );
+}
+
+/// TS: `[no-aria-on-presentational-children-issue-4408-024]` aria-hidden="true" that an outer button reads through an inner img is not reported
+#[test]
+fn no_aria_on_presentational_children_issue_4408_024() {
+    const _ID: &str = "no-aria-on-presentational-children-issue-4408-024";
+    assert_attr_violations(
+        &run_rule(
+            r#"<div role="button"><div role="img"><span aria-hidden="true">x</span>Y</div></div>"#,
+            serde_json::json!(true),
+        ),
+        &[(25, r#"role="img""#, "button")],
+    );
+}
+
+/// TS: `[no-aria-on-presentational-children-issue-4408-025]` aria-hidden="true" that the name of a labeled control reads is not reported
+#[test]
+fn no_aria_on_presentational_children_issue_4408_025() {
+    const _ID: &str = "no-aria-on-presentational-children-issue-4408-025";
+    assert_attr_violations(
+        &run_rule(
+            r#"<input id="i" type="text"><label for="i"><span role="img"><span aria-hidden="true">x</span>Y</span></label>"#,
+            serde_json::json!(true),
+        ),
+        &[],
+    );
+}
+
+/// TS: `[no-aria-on-presentational-children-issue-4408-026]` aria-label that an aria-labelledby of the same element overrides is reported
+#[test]
+fn no_aria_on_presentational_children_issue_4408_026() {
+    const _ID: &str = "no-aria-on-presentational-children-issue-4408-026";
+    assert_attr_violations(
+        &run_rule(
+            r#"<div role="button"><span aria-labelledby="x" aria-label="y">z</span></div><p id="x">x</p>"#,
+            serde_json::json!(true),
+        ),
+        &[(46, r#"aria-label="y""#, "button")],
+    );
+}
+
+/// TS: `[no-aria-on-presentational-children-issue-4408-027]` aria-labelledby that refers only to elements without text is reported
+#[test]
+fn no_aria_on_presentational_children_issue_4408_027() {
+    const _ID: &str = "no-aria-on-presentational-children-issue-4408-027";
+    assert_attr_violations(
+        &run_rule(
+            r#"<div role="button"><span aria-labelledby="e">Save</span></div><span id="e"></span>"#,
+            serde_json::json!(true),
+        ),
+        &[(26, r#"aria-labelledby="e""#, "button")],
+    );
+}
+
+/// TS: `[no-aria-on-presentational-children-issue-4408-028]` only the attribute that takes no effect is reported
+#[test]
+fn no_aria_on_presentational_children_issue_4408_028() {
+    const _ID: &str = "no-aria-on-presentational-children-issue-4408-028";
+    assert_attr_violations(
+        &run_rule(
+            r#"<div role="button"><span aria-hidden="true" aria-describedby="d">x</span>Save</div><p id="d">d</p>"#,
+            serde_json::json!(true),
+        ),
+        &[(45, r#"aria-describedby="d""#, "button")],
+    );
+}
+
+/// TS: `[no-aria-on-presentational-children-issue-4408-029]` aria-hidden="true" in a hidden node that aria-labelledby refers to is reported
+#[test]
+fn no_aria_on_presentational_children_issue_4408_029() {
+    const _ID: &str = "no-aria-on-presentational-children-issue-4408-029";
+    assert_attr_violations(
+        &run_rule(
+            r#"<div role="img" id="pic" hidden><span aria-hidden="true">x</span>Chart</div><figure aria-labelledby="pic"></figure>"#,
+            serde_json::json!(true),
+        ),
+        &[(39, r#"aria-hidden="true""#, "img")],
+    );
+}
+
+/// TS: `[no-aria-on-presentational-children-issue-4408-030]` aria-hidden="true" on an embedded control is not reported
+#[test]
+fn no_aria_on_presentational_children_issue_4408_030() {
+    const _ID: &str = "no-aria-on-presentational-children-issue-4408-030";
+    assert_attr_violations(
+        &run_rule(
+            r#"<div role="checkbox" aria-checked="false"><input type="text" aria-hidden="true" value="v">Flash</div>"#,
+            serde_json::json!(true),
+        ),
+        &[],
+    );
+}
+
+/// TS: `[no-aria-on-presentational-children-issue-4408-031]` aria-hidden="true" in a role named from author that aria-describedby refers to is not reported
+#[test]
+fn no_aria_on_presentational_children_issue_4408_031() {
+    const _ID: &str = "no-aria-on-presentational-children-issue-4408-031";
+    assert_attr_violations(
+        &run_rule(
+            r#"<div role="img" id="pic"><span aria-hidden="true">decor</span>Chart</div><figure aria-describedby="pic"></figure>"#,
+            serde_json::json!(true),
+        ),
+        &[],
+    );
+}
+
+/// TS: `[no-aria-on-presentational-children-issue-4408-032]` aria-label that a link outside the img reads is not reported
+#[test]
+fn no_aria_on_presentational_children_issue_4408_032() {
+    const _ID: &str = "no-aria-on-presentational-children-issue-4408-032";
+    assert_attr_violations(
+        &run_rule(
+            r##"<a href="#"><span role="img"><span aria-label="Home"></span></span></a>"##,
+            serde_json::json!(true),
+        ),
+        &[],
+    );
+}
+
+/// TS: `[no-aria-on-presentational-children-issue-4408-033]` a role that makes a child of a button a range control, and its value, are not reported
+#[test]
+fn no_aria_on_presentational_children_issue_4408_033() {
+    const _ID: &str = "no-aria-on-presentational-children-issue-4408-033";
+    assert_attr_violations(
+        &run_rule(
+            r#"<button><span role="slider" aria-valuenow="5" aria-valuemin="0" aria-valuemax="10">volume</span></button>"#,
+            serde_json::json!(true),
+        ),
+        &[
+            (47, r#"aria-valuemin="0""#, "button"),
+            (65, r#"aria-valuemax="10""#, "button"),
+        ],
+    );
+}
+
+/// TS: `[no-aria-on-presentational-children-issue-4408-034]` aria-label that an aria-labelledby referring to its own element reads is not reported
+#[test]
+fn no_aria_on_presentational_children_issue_4408_034() {
+    const _ID: &str = "no-aria-on-presentational-children-issue-4408-034";
+    assert_attr_violations(
+        &run_rule(
+            r#"<button><span id="s" aria-labelledby="s" aria-label="Close"></span></button>"#,
+            serde_json::json!(true),
+        ),
+        &[],
+    );
+}
+
+/// TS: `[no-aria-on-presentational-children-issue-4408-035]` aria-hidden="true" that a control nested in the label reads is not reported
+#[test]
+fn no_aria_on_presentational_children_issue_4408_035() {
+    const _ID: &str = "no-aria-on-presentational-children-issue-4408-035";
+    assert_attr_violations(
+        &run_rule(
+            r#"<label for="x"><input id="a" type="checkbox"><span role="img"><svg aria-hidden="true"></svg>Text</span></label><input id="x">"#,
+            serde_json::json!(true),
+        ),
+        &[],
+    );
+}
+
+/// TS: `[no-aria-on-presentational-children-issue-4506-001]` a presentational ancestor outside of the content of a template is not an ancestor
+#[test]
+fn no_aria_on_presentational_children_issue_4506_001() {
+    const _ID: &str = "no-aria-on-presentational-children-issue-4506-001";
+    assert_attr_violations(
+        &run_rule(
+            r#"<div role="button"><template><span aria-describedby="d"></span></template></div><p id="d">d</p>"#,
+            serde_json::json!(true),
+        ),
+        &[],
+    );
+}
+
+/// TS: `[no-aria-on-presentational-children-issue-4506-002]` a presentational ancestor in the content of a template is an ancestor
+#[test]
+fn no_aria_on_presentational_children_issue_4506_002() {
+    const _ID: &str = "no-aria-on-presentational-children-issue-4506-002";
+    assert_attr_violations(
+        &run_rule(
+            r#"<template><div role="button"><span aria-describedby="d"></span></div><p id="d">d</p></template>"#,
+            serde_json::json!(true),
+        ),
+        &[(36, r#"aria-describedby="d""#, "button")],
+    );
+}
+
+/// TS: `[no-aria-on-presentational-children-issue-4506-003]` the host of a declarative shadow root is an ancestor
+#[test]
+fn no_aria_on_presentational_children_issue_4506_003() {
+    const _ID: &str = "no-aria-on-presentational-children-issue-4506-003";
+    assert_attr_violations(
+        &run_rule(
+            r#"<div role="button"><template shadowrootmode="open"><span aria-describedby="d"></span></template></div>"#,
+            serde_json::json!(true),
+        ),
+        &[(58, r#"aria-describedby="d""#, "button")],
+    );
+}
+
+/// TS: `[no-aria-on-presentational-children-issue-4506-004]` a name reader outside of the content of a template does not read it
+#[test]
+fn no_aria_on_presentational_children_issue_4506_004() {
+    const _ID: &str = "no-aria-on-presentational-children-issue-4506-004";
+    assert_attr_violations(
+        &run_rule(
+            r##"<a href="#"><template><div role="img"><span aria-label="x">y</span></div></template></a>"##,
+            serde_json::json!(true),
+        ),
+        &[(45, r#"aria-label="x""#, "img")],
+    );
+}
+
+/// TS: `[no-aria-on-presentational-children-issue-4506-005]` a name reader in the content of a template reads it
+#[test]
+fn no_aria_on_presentational_children_issue_4506_005() {
+    const _ID: &str = "no-aria-on-presentational-children-issue-4506-005";
+    assert_attr_violations(
+        &run_rule(
+            r##"<template><a href="#"><div role="img"><span aria-label="x">y</span></div></a></template>"##,
+            serde_json::json!(true),
+        ),
+        &[],
+    );
+}
+
 #[test]
 fn v6_no_aria_on_presentational_children_001() {
     assert_violations(
@@ -106,14 +706,14 @@ fn v6_no_aria_on_presentational_children_001() {
             r#"<div role="button"><span aria-label="text"></span></div>"#,
             serde_json::json!(true),
         ),
-        &[(Severity::Warning, 1, 20, BUTTON_MESSAGE, r#"<span aria-label="text">"#)],
+        &[],
     );
     assert_violations(
         &run_rule(
             r#"<div role="button"><span role="img"></span></div>"#,
             serde_json::json!(true),
         ),
-        &[(Severity::Warning, 1, 20, BUTTON_MESSAGE, r#"<span role="img">"#)],
+        &[(Severity::Warning, 1, 26, BUTTON_MESSAGE, r#"role="img""#)],
     );
     // Every descendant with such an attribute is reported.
     assert_violations(
@@ -122,14 +722,8 @@ fn v6_no_aria_on_presentational_children_001() {
             serde_json::json!(true),
         ),
         &[
-            (Severity::Warning, 1, 20, BUTTON_MESSAGE, r#"<span role="img">"#),
-            (
-                Severity::Warning,
-                1,
-                44,
-                BUTTON_MESSAGE,
-                r#"<span aria-label="x" role="none">"#,
-            ),
+            (Severity::Warning, 1, 26, BUTTON_MESSAGE, r#"role="img""#),
+            (Severity::Warning, 1, 65, BUTTON_MESSAGE, r#"role="none""#),
         ],
     );
 }
@@ -141,7 +735,7 @@ fn v6_no_aria_on_presentational_children_002() {
             r#"<button><span aria-hidden="true"></span></button>"#,
             serde_json::json!(true),
         ),
-        &[(Severity::Warning, 1, 9, BUTTON_MESSAGE, r#"<span aria-hidden="true">"#)],
+        &[],
     );
 }
 
@@ -153,7 +747,7 @@ fn v6_no_aria_on_presentational_children_003() {
             r#"<div role="button"><div><span aria-label="x"></span></div></div>"#,
             serde_json::json!(true),
         ),
-        &[(Severity::Warning, 1, 25, BUTTON_MESSAGE, r#"<span aria-label="x">"#)],
+        &[],
     );
     // The closest one is named, and a descendant that is itself such an element is reported too.
     assert_violations(
@@ -162,8 +756,8 @@ fn v6_no_aria_on_presentational_children_003() {
             serde_json::json!(true),
         ),
         &[
-            (Severity::Warning, 1, 17, IMG_MESSAGE, r#"<div role="button">"#),
-            (Severity::Warning, 1, 36, BUTTON_MESSAGE, r#"<span role="none">"#),
+            (Severity::Warning, 1, 22, IMG_MESSAGE, r#"role="button""#),
+            (Severity::Warning, 1, 42, BUTTON_MESSAGE, r#"role="none""#),
         ],
     );
 }
@@ -176,7 +770,7 @@ fn v6_no_aria_on_presentational_children_004() {
             r#"<div role="button"><span ARIA-LABEL="x"></span></div>"#,
             serde_json::json!(true),
         ),
-        &[(Severity::Warning, 1, 20, BUTTON_MESSAGE, r#"<span ARIA-LABEL="x">"#)],
+        &[],
     );
     // Other attributes do not count.
     assert_violations(
@@ -203,56 +797,43 @@ fn v6_no_aria_on_presentational_children_004() {
 
 #[test]
 fn v6_no_aria_on_presentational_children_005() {
-    for (html, role, col, raw) in [
+    for (html, role, reported) in [
         (
             r#"<div role="checkbox"><span aria-describedby="d"></span></div>"#,
             "checkbox",
-            22,
-            r#"<span aria-describedby="d">"#,
+            Some((28, r#"aria-describedby="d""#)),
         ),
         (
             r#"<div role="separator"><span aria-label="x"></span></div>"#,
             "separator",
-            23,
-            r#"<span aria-label="x">"#,
+            Some((29, r#"aria-label="x""#)),
         ),
-        (
-            r#"<div role="tab"><span aria-label="x"></span></div>"#,
-            "tab",
-            17,
-            r#"<span aria-label="x">"#,
-        ),
+        (r#"<div role="tab"><span aria-label="x"></span></div>"#, "tab", None),
         // The computed role: case-folded, and the first known token.
         (
             r#"<div role="BUTTON"><span aria-label="x"></span></div>"#,
             "button",
-            20,
-            r#"<span aria-label="x">"#,
+            None,
         ),
         (
             r#"<div role="hoge button"><span aria-label="x"></span></div>"#,
             "button",
-            25,
-            r#"<span aria-label="x">"#,
+            None,
         ),
     ] {
-        assert_violations(
-            &run_rule(html, serde_json::json!(true)),
-            &[(Severity::Warning, 1, col, &message_for(role), raw)],
-        );
+        let message = message_for(role);
+        let expected: Vec<Expected<'_>> = reported
+            .map(|(col, raw)| (Severity::Warning, 1, col, message.as_str(), raw))
+            .into_iter()
+            .collect();
+        assert_violations(&run_rule(html, serde_json::json!(true)), &expected);
     }
     assert_violations(
         &run_rule(
             r#"<div role="separator"><span aria-label="x"></span></div>"#,
             serde_json::json!({ "options": { "version": "1.1" } }),
         ),
-        &[(
-            Severity::Warning,
-            1,
-            23,
-            &message_for("separator"),
-            r#"<span aria-label="x">"#,
-        )],
+        &[(Severity::Warning, 1, 29, &message_for("separator"), r#"aria-label="x""#)],
     );
 }
 
@@ -263,14 +844,14 @@ fn v6_no_aria_on_presentational_children_006() {
             r#"<div role="button"><span aria-label="text"></span></div>"#,
             serde_json::json!({ "severity": "error" }),
         ),
-        &[(Severity::Error, 1, 20, BUTTON_MESSAGE, r#"<span aria-label="text">"#)],
+        &[],
     );
     assert_violations(
         &run_rule(
             "<div role=\"button\">\n  <span\n    aria-label=\"x\"></span>\n</div>",
             serde_json::json!(true),
         ),
-        &[(Severity::Warning, 2, 3, BUTTON_MESSAGE, "<span\n    aria-label=\"x\">")],
+        &[],
     );
     assert_violations(
         &run_rule(
@@ -279,4 +860,13 @@ fn v6_no_aria_on_presentational_children_006() {
         ),
         &[],
     );
+}
+
+#[test]
+fn v6_no_aria_on_presentational_children_007() {
+    let html = r#"<div role="button"><span aria-describedby="d"></span></div><p id="d">d</p>"#;
+    let violations = run_rule(html, serde_json::json!({ "severity": "error" }));
+    assert_eq!(violations.len(), 1, "violations: {violations:?}");
+    assert_eq!(violations[0].severity, Severity::Error);
+    assert_eq!(run_rule(html, serde_json::json!(false)).len(), 0);
 }

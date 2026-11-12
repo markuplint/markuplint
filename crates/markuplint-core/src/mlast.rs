@@ -33,9 +33,23 @@ pub enum AttrNameRoute {
     DomApiWhenDynamic,
 }
 
+/// TS `MLParser#slotElement`: what the `slot` element is in the language of the document.
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Default, Deserialize)]
+pub enum SlotElement {
+    /// The HTML `slot` element, which has a slot assignment when it is in a shadow root. Absent
+    /// means this.
+    #[default]
+    #[serde(rename = "html")]
+    Html,
+    /// The placeholder of a framework's component (Vue, Svelte, Astro): replaced with what it is
+    /// given, so no slot assignment is computed.
+    #[serde(rename = "framework")]
+    Framework,
+}
+
 /// What the TS `Document` takes from the parser besides its nodes (`MLParser.endTag`,
 /// `booleanish`, `tagNameCaseSensitive`, `attrNameCaseSensitive`, `attrNameRoute`,
-/// `componentNameVariants`). The TS engine sends them next to the `MLASTDocument` fields in the
+/// `componentNameVariants`, `slotElement`). The TS engine sends them next to the `MLASTDocument` fields in the
 /// same JSON, and every field may be absent, as it is for the HTML parser.
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Default, Deserialize)]
 #[serde(rename_all = "camelCase")]
@@ -58,6 +72,9 @@ pub struct DocumentSettings {
     /// site is a prop that Vue camelizes (TS `MLParser.componentNameVariants`).
     #[serde(default)]
     pub component_name_variants: bool,
+    /// What the `slot` element is (TS `MLParser.slotElement`).
+    #[serde(default)]
+    pub slot_element: SlotElement,
 }
 
 /// Corresponds to `MLASTDocument` in TS.
@@ -325,6 +342,12 @@ pub struct MLASTHTMLAttr {
     /// rule that judges the name sees it, but a lookup by name does not find it, as the DOM does not.
     #[serde(default)]
     pub is_absent: Option<bool>,
+    /// The code of the value when it is nothing but a literal (TS `literalToExpression` of
+    /// `MLAttr#literal`: `false`, `"x"`, `0`). The value of a component's attribute is the string
+    /// form of the literal, which a string `"false"` and a boolean `false` share, so the code is what
+    /// tells them apart when a pretender forwards the attribute (`{ fromAttr }`).
+    #[serde(default)]
+    pub literal_expression: Option<String>,
     #[serde(default)]
     pub is_directive: Option<bool>,
     #[serde(default)]

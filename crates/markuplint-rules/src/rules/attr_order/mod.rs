@@ -12,6 +12,7 @@ use serde_json::Value;
 
 use crate::aria_check::attr_name;
 use crate::attr_name_key::AttrNames;
+use crate::create_message::Kw;
 use crate::fix::Fix;
 use crate::rule::{Rule, RuleConfigSet};
 use crate::violation::{Severity, Violation};
@@ -147,11 +148,19 @@ impl Rule for AttrOrder {
     fn verify(&self, arena: &DomArena, spec: &MLMLSpec, config: &RuleConfigSet) -> Vec<Violation> {
         let global_attrs = spec_attr_names(spec, "#HTMLGlobalAttrs");
         let event_attrs = spec_attr_names(spec, "#GlobalEventAttrs");
+        let tr = config.translator();
         let mut violations = Vec::new();
 
         for (node_id, el) in arena.elements() {
             let rule_config = config.get(node_id);
-            if rule_config.disabled || el.attributes.len() <= 1 {
+            // An attribute that a pretender made is not in the source, so it has no place in the
+            // order of it
+            let attrs: Vec<&MLASTAttr> = el
+                .attributes
+                .iter()
+                .filter(|attr| !crate::pretending::is_pretended_attr(attr))
+                .collect();
+            if rule_config.disabled || attrs.len() <= 1 {
                 continue;
             }
 
@@ -171,9 +180,8 @@ impl Rule for AttrOrder {
             let compiled = compile_entries(entries, &global_attrs, &event_attrs);
 
             let names = AttrNames::new(el);
-            let infos: Vec<AttrInfo<'_>> = el
-                .attributes
-                .iter()
+            let infos: Vec<AttrInfo<'_>> = attrs
+                .into_iter()
                 .enumerate()
                 .map(|(index, attr)| match attr {
                     MLASTAttr::HTMLAttr(html_attr) => AttrInfo {
@@ -227,11 +235,13 @@ impl Rule for AttrOrder {
                     rule_id: self.id().to_string(),
                     name: None,
                     severity: rule_config.severity,
-                    message: format!(
-                        "\"{}\" {ms} be before \"{}\"",
-                        display_name(expected.name),
-                        display_name(actual.name)
-                    ),
+                    message: tr.finish(&tr.t(
+                        &format!("{{0}} {ms} be before {{1}}"),
+                        &[
+                            Kw::S(&format!("\"{}\"", display_name(expected.name))),
+                            Kw::S(&format!("\"{}\"", display_name(actual.name))),
+                        ],
+                    )),
                     line,
                     col,
                     raw: raw.to_owned(),

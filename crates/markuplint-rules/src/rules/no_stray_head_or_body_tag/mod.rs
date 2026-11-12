@@ -6,11 +6,12 @@
 //! second `<body>` in the source is such a token. The tree builder discards it, and the text
 //! node around it keeps it in its raw (see `markuplint_dom::html_builder`); an orphaned end
 //! tag outside such a text is its own bogus text node. The rule looks for that residue in
-//! every text node, except the content of raw text and RCDATA elements, where tag-shaped text
+//! every text node, except the content of raw text and RCDATA elements (`iframe` included), where tag-shaped text
 //! is never a tag.
 //!
 //! <https://html.spec.whatwg.org/multipage/parsing.html#parsing-main-inbody>
 
+use markuplint_core::i18n::Primitive as Kw;
 use markuplint_dom::arena::DomArena;
 use markuplint_dom::node::DomNode;
 use markuplint_types::spec::types::MLMLSpec;
@@ -24,8 +25,12 @@ mod tests;
 
 pub struct NoStrayHeadOrBodyTag;
 
-/// TS `RAW_TEXT_CONTAINERS`: elements whose content the tokenizer never reads as tags.
-const RAW_TEXT_CONTAINERS: [&str; 5] = ["script", "style", "title", "textarea", "xmp"];
+/// TS `RAW_TEXT_CONTAINERS`: elements whose content the tokenizer never reads as tags. `iframe`,
+/// `noembed` and `noframes` are RAWTEXT too; the TS parser still tokenizes their content as markup,
+/// and the rule skips them instead (#4180).
+const RAW_TEXT_CONTAINERS: [&str; 8] = [
+    "script", "style", "title", "textarea", "xmp", "iframe", "noembed", "noframes",
+];
 
 /// TS `/<\/head(?=[\s/>])/i` and `/<body(?=[\s/>])/i`: `prefix` (ASCII, matched
 /// case-insensitively) followed by whitespace, `/` or `>`.
@@ -49,6 +54,23 @@ impl Rule for NoStrayHeadOrBodyTag {
 
     fn verify(&self, arena: &DomArena, _spec: &MLMLSpec, config: &RuleConfigSet) -> Vec<Violation> {
         let mut violations = Vec::new();
+        let tr = config.translator();
+        let stray = [
+            (
+                "</head",
+                tr.finish(&tr.t(
+                    "{0} detected",
+                    &[Kw::S(&tr.t("a stray \"{0}\" end tag", &[Kw::S("head")]))],
+                )),
+            ),
+            (
+                "<body",
+                tr.finish(&tr.t(
+                    "{0} detected",
+                    &[Kw::S(&tr.t("a duplicate \"{0}\" start tag", &[Kw::S("body")]))],
+                )),
+            ),
+        ];
         for node_id in 0..arena.len() {
             let Some(DomNode::Text(text)) = arena.get(node_id) else {
                 continue;
@@ -64,16 +86,13 @@ impl Rule for NoStrayHeadOrBodyTag {
             if rule_config.disabled {
                 continue;
             }
-            for (prefix, message) in [
-                ("</head", "A stray \"head\" end tag detected"),
-                ("<body", "A duplicate \"body\" start tag detected"),
-            ] {
+            for (prefix, message) in &stray {
                 if contains_tag(&text.base.raw, prefix) {
                     violations.push(Violation {
                         rule_id: self.id().to_string(),
                         name: None,
                         severity: rule_config.severity,
-                        message: message.to_string(),
+                        message: message.clone(),
                         line: text.base.line,
                         col: text.base.col,
                         raw: text.base.raw.clone(),

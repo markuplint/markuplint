@@ -6,6 +6,7 @@
 //!
 //! <https://html.spec.whatwg.org/multipage/image-maps.html#the-map-element>
 
+use markuplint_core::i18n::Primitive as Kw;
 use markuplint_dom::arena::DomArena;
 use markuplint_dom::helpers::get_attr_node_from_el;
 use markuplint_types::spec::types::MLMLSpec;
@@ -26,6 +27,7 @@ impl Rule for MapIdNameMatch {
 
     fn verify(&self, arena: &DomArena, _spec: &MLMLSpec, config: &RuleConfigSet) -> Vec<Violation> {
         let mut violations = Vec::new();
+        let tr = config.translator();
 
         for (node_id, el) in arena.elements() {
             let rule_config = config.get(node_id);
@@ -53,8 +55,10 @@ impl Rule for MapIdNameMatch {
                 rule_id: self.id().to_string(),
                 name: None,
                 severity: rule_config.severity,
-                message: "The \"id\" attribute on a \"map\" element must have the same value as the \"name\" attribute"
-                    .to_string(),
+                message: tr.finish(&tr.t(
+                    "The \"{0}\" attribute on a \"{1}\" element must have the same value as the \"{2}\" attribute",
+                    &[Kw::S("id"), Kw::S("map"), Kw::S("name")],
+                )),
                 line: id_attr.value.line,
                 col: id_attr.value.col,
                 raw: id_attr.value.raw.clone(),

@@ -3,7 +3,7 @@
 //! Test ID mapping (TS → Rust):
 //!   no-duplicate-attr-invalid-001  → no_duplicate_attr_invalid_001
 //!   no-duplicate-attr-invalid-002  → no_duplicate_attr_invalid_002
-//!   no-duplicate-attr-invalid-003  — SKIP: i18n (ja locale) not supported in Rust
+//!   no-duplicate-attr-invalid-003  → no_duplicate_attr_invalid_003
 //!   no-duplicate-attr-invalid-004  → no_duplicate_attr_invalid_004
 //!   no-duplicate-attr-parser-*     — SKIP: framework parsers stay in TS (`v6_attr_duplication_008` checks the resolved names;
 //!                                    `ml-engine.rust-framework.spec.ts` compares whole files)
@@ -139,6 +139,22 @@ fn no_duplicate_attr_invalid_002() {
 }
 
 /// TS: `[no-duplicate-attr-invalid-004]` — nodeRules disable
+/// TS: `[no-duplicate-attr-invalid-003]` Japanese message
+#[test]
+fn no_duplicate_attr_invalid_003() {
+    const _ID: &str = "no-duplicate-attr-invalid-003";
+    let arena = html_arena("<img src=\"/\" SRC=\"/\" >");
+    let spec = spec();
+    let config: LintConfig = serde_json::from_value(serde_json::json!({
+        "rules": { "no-duplicate-attr": true },
+        "ruleCommonSettings": { "locale": "ja" }
+    }))
+    .unwrap();
+    let result = lint(&arena, &spec, &config);
+    let messages: Vec<&str> = result.violations.iter().map(|v| v.message.as_str()).collect();
+    assert_eq!(messages, ["属性名が重複しています"]);
+}
+
 /// Input: `<div><span attr attr></span></div>` with nodeRule disabling span
 /// Expect: 0 violations
 #[test]
@@ -213,6 +229,7 @@ pub(crate) fn make_element_with_attrs(tag: &str, attrs: &[(&str, &str)]) -> DomA
                 is_dynamic_value: None,
                 is_expression_value: None,
                 is_absent: None,
+                literal_expression: None,
                 is_directive: None,
                 potential_name: None,
                 potential_value: None,

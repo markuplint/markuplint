@@ -10,6 +10,7 @@ use markuplint_types::spec::aria::{self, ARIAVersion};
 use markuplint_types::spec::types::{ARIARoleInSchema, MLMLSpec};
 
 use super::may_be_focusable;
+use crate::slot_assignment::{accessibility_parent_element, composed_ancestors_inclusive, composed_parent_element};
 
 // ============================================================
 // Public types
@@ -120,15 +121,16 @@ fn compute_role(
         && !role.required_accessibility_parent_role.is_empty()
         && !is_native_context_intact(spec, arena, node_id, role, version)
     {
-        // TS `el.parentElement === null`: an element at the root (of a fragment, or under the
-        // document) cannot satisfy the requirement, and keeps its role, reported as `NoOwner`.
-        let Some(parent_id) = parent_element(arena, node_id) else {
+        // TS `getComposedParentElement(el) === null`: an element at the root (of a fragment, or
+        // under the document, or at the top of the content of an ordinary `template`) cannot
+        // satisfy the requirement, and keeps its role, reported as `NoOwner`.
+        if composed_parent_element(arena, spec, node_id).is_none() {
             return ComputedRole {
                 role: computed_role,
                 error_type: Some(RoleComputationError::NoOwner),
             };
-        };
-        if get_non_presentational_ancestor(spec, arena, parent_id, version, visited)
+        }
+        if get_non_presentational_ancestor(spec, arena, node_id, version, visited)
             .role
             .is_none()
         {
@@ -203,9 +205,9 @@ fn resolve_presentational_conflict(
     // 5a. A focusable element is exposed with its implicit role, unless it or an ancestor is
     // disabled, inert or hidden (WAI-ARIA, conflict resolution of none/presentation).
     if may_be_focusable::may_be_focusable(spec, arena, node_id)
-        && !some_ancestors(arena, node_id, |id| is_enabled_attr(spec, arena, id, "disabled"))
-        && !some_ancestors(arena, node_id, |id| is_enabled_attr(spec, arena, id, "inert"))
-        && !some_ancestors(arena, node_id, |id| is_enabled_attr(spec, arena, id, "hidden"))
+        && !some_ancestors(spec, arena, node_id, |id| is_enabled_attr(spec, arena, id, "disabled"))
+        && !some_ancestors(spec, arena, node_id, |id| is_enabled_attr(spec, arena, id, "inert"))
+        && !some_ancestors(spec, arena, node_id, |id| is_enabled_attr(spec, arena, id, "hidden"))
     {
         return Some(ComputedRole {
             role: implicit.role,
@@ -215,8 +217,8 @@ fn resolve_presentational_conflict(
 
     // 5b. A required owned element of the non-presentational ancestor ignores an explicit
     // presentational role.
-    if has_explicit_role && let Some(parent_id) = parent_element(arena, node_id) {
-        let ancestor = get_non_presentational_ancestor(spec, arena, parent_id, version, visited);
+    if has_explicit_role {
+        let ancestor = get_non_presentational_ancestor(spec, arena, node_id, version, visited);
         if let Some(ancestor_role) = ancestor.role
             && ancestor_role.allowed_accessibility_child_roles.iter().any(|expected| {
                 is_required_owned_element(spec, arena, node_id, implicit.role.as_ref(), expected, version)
@@ -240,29 +242,10 @@ fn resolve_presentational_conflict(
     None
 }
 
-/// TS `parentElement` / `getComposedParentElement`: the parent node when it is an element.
-fn parent_element(arena: &DomArena, node_id: NodeId) -> Option<NodeId> {
-    arena
-        .get(node_id)
-        .and_then(markuplint_dom::node::DomNode::parent_id)
-        .filter(|&parent_id| {
-            arena
-                .get(parent_id)
-                .and_then(markuplint_dom::node::DomNode::as_element)
-                .is_some()
-        })
-}
-
-/// TS `someAncestors`: the element or one of its ancestor elements.
-fn some_ancestors(arena: &DomArena, node_id: NodeId, mut predicate: impl FnMut(NodeId) -> bool) -> bool {
-    let mut current = Some(node_id);
-    while let Some(id) = current {
-        if predicate(id) {
-            return true;
-        }
-        current = parent_element(arena, id);
-    }
-    false
+/// TS `someAncestors`: the element or one of its ancestors in the accessibility tree
+/// ([`composed_parent_element`]).
+fn some_ancestors(spec: &MLMLSpec, arena: &DomArena, node_id: NodeId, predicate: impl FnMut(NodeId) -> bool) -> bool {
+    composed_ancestors_inclusive(arena, spec, node_id).any(predicate)
 }
 
 /// TS `isEnabledAttr`: the element has the attribute, and its spec defines it.
@@ -534,7 +517,7 @@ impl Drop for ConditionGuard {
 /// TS `getImplicitRole()`: the `implicitRole` of `getARIA()`, looked up among the roles of the
 /// element's namespace (the graphics roles for SVG). An implicit role the namespace does not
 /// have is `ImplicitRoleNamespaceError`.
-fn get_implicit_role(
+pub(crate) fn get_implicit_role(
     spec: &MLMLSpec,
     arena: &DomArena,
     node_id: NodeId,
@@ -564,18 +547,18 @@ fn get_implicit_role(
 // Context role validation
 // ============================================================
 
-/// TS `getNonPresentationalAncestor()`: the computed role of the closest ancestor, from
-/// `start_id` up, whose role is not transparent for ownership. From ARIA 1.3 the role of an
-/// ancestor is computed as for a single node.
+/// TS `getNonPresentationalAncestor()`: the computed role of the closest ancestor of `node_id` in the
+/// accessibility tree ([`accessibility_parent_element`]) whose role is not transparent for ownership.
+/// From ARIA 1.3 the role of an ancestor is computed as for a single node.
 fn get_non_presentational_ancestor(
     spec: &MLMLSpec,
     arena: &DomArena,
-    start_id: NodeId,
+    node_id: NodeId,
     version: ARIAVersion,
     visited: &mut HashSet<NodeId>,
 ) -> ComputedRole {
     let assume_single_node = version == ARIAVersion::V1_3;
-    let mut current = Some(start_id);
+    let mut current = accessibility_parent_element(arena, spec, node_id);
     while let Some(id) = current {
         if !visited.insert(id) {
             break; // Cycle detection
@@ -589,7 +572,7 @@ fn get_non_presentational_ancestor(
         {
             return cr;
         }
-        current = parent_element(arena, id);
+        current = accessibility_parent_element(arena, spec, id);
     }
     ComputedRole {
         role: None,
@@ -609,9 +592,7 @@ fn matches_context_role(
         let chain: Vec<&str> = condition.split(" > ").collect();
         let reversed: Vec<&str> = chain.into_iter().rev().collect();
 
-        let mut current_id = arena
-            .get(owned_el_id)
-            .and_then(markuplint_dom::node::DomNode::parent_id);
+        let mut current_id = accessibility_parent_element(arena, spec, owned_el_id);
         let mut all_matched = true;
 
         for &expected_role in &reversed {
@@ -621,7 +602,7 @@ fn matches_context_role(
                     break;
                 };
                 let cr = compute_role(spec, arena, id, version, false, visited);
-                current_id = arena.get(id).and_then(markuplint_dom::node::DomNode::parent_id);
+                current_id = accessibility_parent_element(arena, spec, id);
 
                 if let Some(ref role) = cr.role {
                     if is_transparent_for_ownership(&role.name, version) {
@@ -658,7 +639,7 @@ fn is_native_context_intact(
     if !role.is_implicit {
         return false;
     }
-    let Some(parent_id) = parent_element(arena, node_id) else {
+    let Some(parent_id) = accessibility_parent_element(arena, spec, node_id) else {
         return false;
     };
     let Some(parent) = arena.get(parent_id).and_then(|n| n.as_element()) else {

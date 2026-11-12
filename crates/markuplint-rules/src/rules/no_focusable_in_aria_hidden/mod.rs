@@ -4,7 +4,9 @@
 //! Ports `packages/@markuplint/rules/src/no-focusable-in-aria-hidden/` and its checker
 //! `wai-aria/checkings/interaction-in-hidden.ts`. Focusability is the static `mayBeFocusable()`
 //! heuristic ([`may_be_focusable`]), so a `disabled` control is still reported. The closest
-//! element (the element itself first, then its `parentElement` chain) whose `aria-hidden` value
+//! element (the element itself first, then its composed parents: the flat tree, so a walk leaves
+//! the content of a shadow root for its host and ends at the top of an ordinary `template`)
+//! whose `aria-hidden` value
 //! is exactly `true` decides the message; an intervening `aria-hidden="false"` does not stop the
 //! walk. As TS `getAttributeNode('aria-hidden')` compares the lower-cased query with the
 //! attribute name as written, an `ARIA-HIDDEN` attribute is not found, and the value comparison
@@ -18,6 +20,7 @@ use markuplint_types::spec::types::MLMLSpec;
 use crate::aria::may_be_focusable::may_be_focusable;
 use crate::aria_check::{ElementContext, ElementGate, find_attr, walk_elements};
 use crate::rule::{Rule, RuleConfigSet};
+use crate::slot_assignment::composed_ancestors_inclusive;
 use crate::violation::{Severity, Violation};
 
 #[cfg(test)]
@@ -52,25 +55,27 @@ fn check(ctx: &ElementContext<'_>) -> Option<Violation> {
         return None;
     }
 
-    let hidden_by = closest_aria_hidden(ctx.arena, ctx.node_id, ctx.el)?;
+    let hidden_by = closest_aria_hidden(ctx.arena, ctx.spec, ctx.node_id)?;
     let message = if hidden_by == ctx.node_id {
-        "It may be focusable in spite of it has aria-hidden=true"
+        ctx.tr.t("It may be focusable in spite of it has aria-hidden=true", &[])
     } else {
-        "It may be focusable in spite of it has the ancestor that has aria-hidden=true"
+        ctx.tr.t(
+            "It may be focusable in spite of it has the ancestor that has aria-hidden=true",
+            &[],
+        )
     };
-    Some(ctx.element_violation(message))
+    Some(ctx.element_violation(ctx.tr.finish(&message)))
 }
 
-/// The element itself or its closest ancestor element whose `aria-hidden` is `true`.
-fn closest_aria_hidden(arena: &DomArena, node_id: NodeId, el: &ElementData) -> Option<NodeId> {
-    if is_aria_hidden(el) {
-        return Some(node_id);
-    }
-    arena
-        .ancestors(node_id)
-        .map_while(|node| node.as_element())
-        .find(|ancestor| is_aria_hidden(ancestor))
-        .map(|ancestor| ancestor.base.id)
+/// The element itself or its closest ancestor element in the accessibility tree whose `aria-hidden`
+/// is `true`.
+fn closest_aria_hidden(arena: &DomArena, spec: &MLMLSpec, node_id: NodeId) -> Option<NodeId> {
+    composed_ancestors_inclusive(arena, spec, node_id).find(|&id| {
+        arena
+            .get(id)
+            .and_then(|node| node.as_element())
+            .is_some_and(is_aria_hidden)
+    })
 }
 
 /// TS `el.getAttributeNode('aria-hidden')?.value === 'true'`.
