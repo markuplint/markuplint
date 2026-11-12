@@ -18,6 +18,8 @@ use markuplint_dom::helpers::{attr_name, is_named_by};
 use markuplint_types::spec::types::{ElementSpec, MLMLSpec};
 use serde_json::Value;
 
+use markuplint_core::i18n::Primitive as Kw;
+
 use crate::attr_name_key::{attr_specs_of, find_attr_spec};
 use crate::rule::RuleConfigSet;
 use crate::violation::Violation;
@@ -85,6 +87,7 @@ pub(crate) fn check_features(
     config: &RuleConfigSet,
 ) -> Vec<Violation> {
     let tag_name_case_sensitive = arena.settings().tag_name_case_sensitive;
+    let tr = config.translator();
     let mut violations = Vec::new();
     for (node_id, el) in arena.elements() {
         let rule_config = config.get(node_id);
@@ -119,7 +122,13 @@ pub(crate) fn check_features(
                 rule_id: rule_id.to_string(),
                 name: None,
                 severity: rule_config.severity,
-                message: format!("The \"{el_name}\" element is {}", flag.word()),
+                message: tr.finish(&tr.t(
+                    "{0} is {1:c}",
+                    &[
+                        Kw::S(&tr.t("the \"{0*}\" {1}", &[Kw::S(&el_name), Kw::S("element")])),
+                        Kw::S(flag.word()),
+                    ],
+                )),
                 line: el.base.line,
                 col: el.base.col,
                 raw: el.base.raw.clone(),
@@ -158,7 +167,13 @@ pub(crate) fn check_features(
                 rule_id: rule_id.to_string(),
                 name: None,
                 severity: rule_config.severity,
-                message: format!("The \"{}\" attribute is {}", attr_name(html_attr), flag.word()),
+                message: tr.finish(&tr.t(
+                    "{0} is {1:c}",
+                    &[
+                        Kw::S(&tr.t("the \"{0*}\" {1}", &[Kw::S(attr_name(html_attr)), Kw::S("attribute")])),
+                        Kw::S(flag.word()),
+                    ],
+                )),
                 line: html_attr.name.line,
                 col: html_attr.name.col,
                 raw: html_attr.name.raw.clone(),

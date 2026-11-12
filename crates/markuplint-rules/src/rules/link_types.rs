@@ -1,6 +1,7 @@
 //! `link-types` rule: validates link type keywords in the `rel` attribute
 //! on `<link>`, `<a>`, `<area>`, and `<form>` elements.
 
+use markuplint_core::i18n::{Primitive as Kw, Translator};
 use markuplint_dom::arena::DomArena;
 use markuplint_dom::helpers;
 use markuplint_types::spec::types::MLMLSpec;
@@ -17,6 +18,7 @@ impl Rule for LinkTypes {
     }
 
     fn verify(&self, arena: &DomArena, _spec: &MLMLSpec, config: &RuleConfigSet) -> Vec<Violation> {
+        let tr = config.translator();
         let mut violations = Vec::new();
 
         for (node_id, el) in arena.elements() {
@@ -64,12 +66,12 @@ impl Rule for LinkTypes {
                 let keyword = token.value.as_str();
                 let kw_lower = keyword.to_ascii_lowercase();
 
-                if let Some(msg) = validate_keyword(&kw_lower, keyword, context, &allow_microformats) {
+                if let Some(msg) = validate_keyword(&kw_lower, context, &allow_microformats, tr) {
                     violations.push(Violation {
                         rule_id: self.id().to_string(),
                         name: None,
                         severity: rule_config.severity,
-                        message: msg,
+                        message: tr.finish(&msg),
                         line: token.line,
                         col: token.col,
                         raw: keyword.to_string(),
@@ -119,46 +121,49 @@ fn parse_allow_microformats(options: &Value) -> AllowMicroformats {
 
 fn validate_keyword(
     kw_lower: &str,
-    original: &str,
     context: ElementContext,
     allow_microformats: &AllowMicroformats,
+    tr: Translator<'_>,
 ) -> Option<String> {
     if let Some(def) = WHATWG_KEYWORDS.iter().find(|d| d.keyword == kw_lower) {
-        return validate_whatwg(def, context);
+        return validate_whatwg(def, context, tr);
     }
 
+    let quoted = format!("\"{kw_lower}\"");
+    let is_ = |state: &str| tr.t("{0} is {1:c}", &[Kw::S(&quoted), Kw::S(state)]);
+
     if DROPPED_KEYWORDS.iter().any(|k| k.eq_ignore_ascii_case(kw_lower)) {
-        return Some(format!("\"{original}\" is dropped"));
+        return Some(is_("dropped"));
     }
 
     if DROPPED_WITHOUT_PREJUDICE
         .iter()
         .any(|k| k.eq_ignore_ascii_case(kw_lower))
     {
-        return Some(format!("\"{original}\" is dropped"));
+        return Some(is_("dropped"));
     }
 
     if REJECTED_KEYWORDS.iter().any(|k| k.eq_ignore_ascii_case(kw_lower)) {
-        return Some(format!("\"{original}\" is rejected"));
+        return Some(is_("rejected"));
     }
 
     if NON_HTML_REL_VALUES.iter().any(|k| k.eq_ignore_ascii_case(kw_lower)) {
-        return Some(format!("\"{original}\" is not allowed"));
+        return Some(is_("not allowed"));
     }
 
     match allow_microformats {
-        AllowMicroformats::Disabled => Some(format!("The \"{original}\" keyword is not allowed")),
-        AllowMicroformats::All => validate_microformat_keyword(kw_lower, original, context),
+        AllowMicroformats::Disabled => Some(not_allowed_keyword(kw_lower, tr)),
+        AllowMicroformats::All => validate_microformat_keyword(kw_lower, context, tr),
         AllowMicroformats::List(list) => {
             if !list.iter().any(|a| a == kw_lower) {
-                return Some(format!("The \"{original}\" keyword is not allowed"));
+                return Some(not_allowed_keyword(kw_lower, tr));
             }
             // Even if in allow list, check element context for registered microformats
             if let Some(def) = MICROFORMAT_KEYWORDS
                 .iter()
                 .find(|d| d.keyword.eq_ignore_ascii_case(kw_lower))
             {
-                return validate_microformat_context(def, original, context);
+                return validate_microformat_context(def, context, tr);
             }
             // Custom keyword in allow list — allow it
             None
@@ -166,80 +171,71 @@ fn validate_keyword(
     }
 }
 
-fn validate_whatwg(def: &WhatwgKeyword, context: ElementContext) -> Option<String> {
+/// TS `t('The "{0*}" {1} is {2:c}', keyword, 'keyword', 'not allowed')`.
+fn not_allowed_keyword(keyword: &str, tr: Translator<'_>) -> String {
+    tr.t(
+        "The \"{0*}\" {1} is {2:c}",
+        &[Kw::S(keyword), Kw::S("keyword"), Kw::S("not allowed")],
+    )
+}
+
+/// TS `t('The "{0*}" {1} is not allowed on the {2}', keyword, 'keyword', '"<element>" element')`.
+fn not_allowed_on(keyword: &str, element: &str, tr: Translator<'_>) -> String {
+    tr.t(
+        "The \"{0*}\" {1} is not allowed on the {2}",
+        &[
+            Kw::S(keyword),
+            Kw::S("keyword"),
+            Kw::S(&format!("\"{element}\" element")),
+        ],
+    )
+}
+
+fn validate_whatwg(def: &WhatwgKeyword, context: ElementContext, tr: Translator<'_>) -> Option<String> {
     match context {
-        ElementContext::Link => {
-            if def.link_not_allowed {
-                Some(format!(
-                    "The \"{}\" keyword is not allowed on the \"link\" element",
-                    def.keyword
-                ))
-            } else {
-                None
-            }
-        }
+        ElementContext::Link => def.link_not_allowed.then(|| not_allowed_on(def.keyword, "link", tr)),
         ElementContext::BodyLink => {
             if def.link_not_allowed {
-                Some(format!(
-                    "The \"{}\" keyword is not allowed on the \"link\" element",
-                    def.keyword
-                ))
+                Some(not_allowed_on(def.keyword, "link", tr))
             } else if !def.body_ok {
-                Some(format!(
-                    "The \"{}\" keyword is not allowed on the \"link\" element inside the \"body\" element",
-                    def.keyword
+                Some(tr.t(
+                    "The \"{0*}\" {1} is not allowed on the {2} inside the {3}",
+                    &[
+                        Kw::S(def.keyword),
+                        Kw::S("keyword"),
+                        Kw::S("\"link\" element"),
+                        Kw::S("\"body\" element"),
+                    ],
                 ))
             } else {
                 None
             }
         }
-        ElementContext::AArea => {
-            if def.a_not_allowed {
-                Some(format!(
-                    "The \"{}\" keyword is not allowed on the \"a\" element",
-                    def.keyword
-                ))
-            } else {
-                None
-            }
-        }
-        ElementContext::Form => {
-            if def.form_not_allowed {
-                Some(format!(
-                    "The \"{}\" keyword is not allowed on the \"form\" element",
-                    def.keyword
-                ))
-            } else {
-                None
-            }
-        }
+        ElementContext::AArea => def.a_not_allowed.then(|| not_allowed_on(def.keyword, "a", tr)),
+        ElementContext::Form => def.form_not_allowed.then(|| not_allowed_on(def.keyword, "form", tr)),
     }
 }
 
-fn validate_microformat_keyword(kw_lower: &str, original: &str, context: ElementContext) -> Option<String> {
+fn validate_microformat_keyword(kw_lower: &str, context: ElementContext, tr: Translator<'_>) -> Option<String> {
     let Some(def) = MICROFORMAT_KEYWORDS
         .iter()
         .find(|d| d.keyword.eq_ignore_ascii_case(kw_lower))
     else {
-        return Some(format!("The \"{original}\" keyword is not allowed"));
+        return Some(not_allowed_keyword(kw_lower, tr));
     };
-    validate_microformat_context(def, original, context)
+    validate_microformat_context(def, context, tr)
 }
 
-fn validate_microformat_context(def: &MicroformatKeyword, original: &str, context: ElementContext) -> Option<String> {
+fn validate_microformat_context(
+    def: &MicroformatKeyword,
+    context: ElementContext,
+    tr: Translator<'_>,
+) -> Option<String> {
     match context {
-        ElementContext::Link | ElementContext::BodyLink => {
-            (!def.link).then(|| format!("The \"{original}\" keyword is not allowed on the \"link\" element"))
-        }
-        ElementContext::AArea => {
-            (!def.a).then(|| format!("The \"{original}\" keyword is not allowed on the \"a\" element"))
-        }
-        ElementContext::Form => {
-            // Microformats don't define form context; reject
-            Some(format!(
-                "The \"{original}\" keyword is not allowed on the \"form\" element"
-            ))
-        }
+        ElementContext::Link | ElementContext::BodyLink => (!def.link).then(|| not_allowed_on(def.keyword, "link", tr)),
+        ElementContext::AArea => (!def.a).then(|| not_allowed_on(def.keyword, "a", tr)),
+        // Microformats don't define form context; reject
+        ElementContext::Form => Some(not_allowed_on(def.keyword, "form", tr)),
     }
 }
 

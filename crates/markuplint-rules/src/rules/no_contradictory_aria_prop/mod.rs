@@ -16,6 +16,7 @@
 //! The native attribute is skipped when it does not apply to the element (unknown name, case
 //! mismatch, unmet condition); `noUse` still counts.
 
+use markuplint_core::i18n::Primitive as Kw;
 use markuplint_dom::arena::DomArena;
 use markuplint_types::spec::aria;
 use markuplint_types::spec::types::MLMLSpec;
@@ -100,13 +101,25 @@ fn check(ctx: &ElementContext<'_>, violations: &mut Vec<Violation>) {
                     continue;
                 };
 
-                violations.push(ctx.attr_violation(
-                    attr,
-                    format!(
-                        "The \"{name}\" ARIA {} contradicts the {contradicts_with} \"{native_name}\" attribute",
-                        ctx.prop_type_of(&key),
-                    ),
-                ));
+                let tr = ctx.tr;
+                let message = tr.t(
+                    "{0} contradicts {1}",
+                    &[
+                        Kw::S(&tr.t(
+                            "the \"{0*}\" {1}",
+                            &[Kw::S(name), Kw::S(&format!("ARIA {}", ctx.prop_type_of(&key)))],
+                        )),
+                        Kw::S(&tr.t(
+                            if contradicts_with == "current" {
+                                "the current \"{0}\" {1}"
+                            } else {
+                                "the implicit \"{0}\" {1}"
+                            },
+                            &[Kw::S(native_name), Kw::S("attribute")],
+                        )),
+                    ],
+                );
+                violations.push(ctx.attr_violation(attr, tr.finish(&message)));
                 break;
             }
         }

@@ -7,6 +7,7 @@
 //! parse errors ([`DomArena::parse_errors`]), which the HTML parser records with
 //! parse5's codes and positions.
 
+use markuplint_core::i18n::Primitive as Kw;
 use markuplint_dom::arena::DomArena;
 use markuplint_types::spec::types::MLMLSpec;
 
@@ -36,6 +37,7 @@ impl Rule for NoMalformedCharacterReference {
     }
 
     fn verify(&self, arena: &DomArena, _spec: &MLMLSpec, config: &RuleConfigSet) -> Vec<Violation> {
+        let tr = config.translator();
         let config = config.global();
         arena
             .parse_errors()
@@ -45,7 +47,10 @@ impl Rule for NoMalformedCharacterReference {
                 rule_id: self.id().to_string(),
                 name: None,
                 severity: config.severity,
-                message: format!("The character reference is {}", e.code),
+                message: tr.finish(&tr.t(
+                    "{0} is {1:c}",
+                    &[Kw::S(&tr.t("the {0}", &[Kw::S("character reference")])), Kw::S(&e.code)],
+                )),
                 line: e.start_line,
                 col: e.start_col,
                 raw: e.raw.clone(),

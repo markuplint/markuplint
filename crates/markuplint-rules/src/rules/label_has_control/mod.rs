@@ -6,6 +6,7 @@
 //! preprocessor is enough (TS `conditionalChildNodes()`): the label has it whenever that branch
 //! renders.
 
+use markuplint_core::i18n::Primitive as Kw;
 use markuplint_dom::arena::{DomArena, NodeId};
 use markuplint_dom::helpers::get_attr_value_from_el;
 use markuplint_dom::node::DomNode;
@@ -30,6 +31,7 @@ impl Rule for LabelHasControl {
     }
 
     fn verify(&self, arena: &DomArena, _spec: &MLMLSpec, config: &RuleConfigSet) -> Vec<Violation> {
+        let tr = config.translator();
         let mut violations = Vec::new();
 
         for (node_id, el) in arena.elements() {
@@ -58,7 +60,13 @@ impl Rule for LabelHasControl {
                 rule_id: self.id().to_string(),
                 name: None,
                 severity: rule_config.severity,
-                message: "The \"label\" element should associate with a control".to_string(),
+                message: tr.finish(&tr.t(
+                    "{0} should associate with {1}",
+                    &[
+                        Kw::S(&tr.t("The \"{0*}\" {1}", &[Kw::S("label"), Kw::S("element")])),
+                        Kw::S(&tr.t("a {0}", &[Kw::S("control")])),
+                    ],
+                )),
                 line: el.base.line,
                 col: el.base.col,
                 raw: el.base.raw.clone(),
