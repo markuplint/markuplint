@@ -22,8 +22,8 @@
 //!   v6_meter_value_bounds_005       — Rust-only: a pretender meter is skipped unless `as` pins it
 //!
 //! Expected values of the `v6_*` tests come from running the TS rule. TS lists violations in
-//! the order the rule reports them; the Rust engine sorts them by position, so where a test
-//! has several, they are listed here in position order.
+//! the order the rule reports them, and so does the Rust engine, so where a test has several,
+//! they are listed here in the order the rule reports them.
 
 use crate::test_util::{Brief, brief, lint_brief};
 use crate::violation::Severity;
@@ -252,16 +252,16 @@ fn v6_meter_value_bounds_002() {
             brief(
                 Severity::Error,
                 1,
-                25,
-                "The value of the \"min\" attribute must be less than or equal to the value of the \"high\" attribute",
-                "0.2"
+                45,
+                "The value of the \"low\" attribute must be less than or equal to the value of the \"max\" attribute",
+                "0.9"
             ),
             brief(
                 Severity::Error,
                 1,
-                45,
-                "The value of the \"low\" attribute must be less than or equal to the value of the \"max\" attribute",
-                "0.9"
+                25,
+                "The value of the \"min\" attribute must be less than or equal to the value of the \"high\" attribute",
+                "0.2"
             ),
             brief(
                 Severity::Error,
@@ -275,7 +275,6 @@ fn v6_meter_value_bounds_002() {
     assert_eq!(
         run(r#"<meter value="5" min="3" optimum="1">5</meter>"#),
         [
-            brief(Severity::Error, 1, 15, VALUE_LE_ONE, "5"),
             brief(
                 Severity::Error,
                 1,
@@ -283,6 +282,7 @@ fn v6_meter_value_bounds_002() {
                 "The value of the \"min\" attribute must be less than or equal to one when the \"max\" attribute is absent",
                 "3"
             ),
+            brief(Severity::Error, 1, 15, VALUE_LE_ONE, "5"),
             brief(
                 Severity::Error,
                 1,
@@ -301,7 +301,6 @@ fn v6_meter_value_bounds_003() {
     assert_eq!(
         run(r#"<meter min="2">x</meter>"#),
         [
-            brief(Severity::Error, 1, 1, VALUE_LE_ONE, r#"<meter min="2">"#),
             brief(
                 Severity::Error,
                 1,
@@ -309,6 +308,7 @@ fn v6_meter_value_bounds_003() {
                 "The value of the \"min\" attribute must be less than or equal to one when the \"max\" attribute is absent",
                 "2"
             ),
+            brief(Severity::Error, 1, 1, VALUE_LE_ONE, r#"<meter min="2">"#),
         ]
     );
 }
