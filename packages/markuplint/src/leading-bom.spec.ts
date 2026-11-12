@@ -22,7 +22,7 @@ describe('a leading BOM', () => {
 		expect(violations).toStrictEqual([
 			{
 				severity: 'warning',
-				message: 'Attribute value is must quote on double quotation mark',
+				message: 'Attribute value must be quoted with double quotation marks',
 				line: 1,
 				col: 5,
 				raw: 'class=a',
