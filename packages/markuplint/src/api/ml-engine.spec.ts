@@ -1197,10 +1197,16 @@ describe('experimentalRustCore falls back to the TypeScript engine for browser s
 		expect(stderrOf(write)).toContain('falling back to TypeScript engine');
 	});
 
-	it('says why it left the Rust engine when no-mismatched-aspect-ratio is enabled', async () => {
-		// The rule reads the image files from disk, which only the TS engine does.
+	it('does not leave the Rust engine for no-mismatched-aspect-ratio, which resolves src against the file name', async () => {
 		const write = vi.spyOn(process.stderr, 'write').mockImplementation(() => true);
-		const file = await MLEngine.toMLFile({ sourceCode: '<p>a</p>', name: 'page.html' });
+		const fixtures = path.resolve(
+			import.meta.dirname,
+			'../../../@markuplint/rules/src/no-mismatched-aspect-ratio/fixtures',
+		);
+		const file = await MLEngine.toMLFile({
+			sourceCode: '<img src="100x50.png" width="100" height="100">',
+			name: path.join(fixtures, 'page.html'),
+		});
 		const engine = new MLEngine(file!, {
 			noSearchConfig: true,
 			locale: 'en',
@@ -1208,10 +1214,12 @@ describe('experimentalRustCore falls back to the TypeScript engine for browser s
 			config: { rules: { 'no-mismatched-aspect-ratio': true } },
 		});
 
-		await engine.exec();
+		const result = await engine.exec();
 
-		expect(stderrOf(write)).toContain('no-mismatched-aspect-ratio');
-		expect(stderrOf(write)).toContain('falling back to TypeScript engine');
+		expect(stderrOf(write)).not.toContain('falling back to TypeScript engine');
+		expect(result?.violations.map(v => v.message)).toStrictEqual([
+			'The aspect ratio of the image (100:50) does not match the width/height attributes (100:100)',
+		]);
 	});
 
 	it('says why it left the Rust engine when only a node rule enables it', async () => {

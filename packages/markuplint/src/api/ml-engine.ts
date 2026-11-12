@@ -434,7 +434,12 @@ export class MLEngine extends Emitter<MLEngineEventMap> {
 		const sourceCode = await this.#file.getCode();
 
 		// Build config JSON for Rust
-		const configJson = buildRustConfigJson(fabric.ruleset, fabric.ruleCommonSettings, fabric.pretenders);
+		const configJson = buildRustConfigJson(
+			fabric.ruleset,
+			fabric.ruleCommonSettings,
+			fabric.pretenders,
+			this.#file.path,
+		);
 		// The extended specs of a framework are merged here, as the TS document does with them.
 		const spec = schemaToSpec(fabric.schemas);
 		const specJson = JSON.stringify(spec);
@@ -1461,10 +1466,9 @@ async function loadNapiBinding(): Promise<NapiBinding> {
 
 /**
  * Rules whose input lives outside the document, which only the TS engine can read:
- * `no-unsupported-browser-features` needs browserslist and browser-compat-data,
- * `no-mismatched-aspect-ratio` reads the image files from disk.
+ * `no-unsupported-browser-features` needs browserslist and browser-compat-data.
  */
-const RULES_ONLY_THE_TS_ENGINE_EVALUATES = ['no-unsupported-browser-features', 'no-mismatched-aspect-ratio'] as const;
+const RULES_ONLY_THE_TS_ENGINE_EVALUATES = ['no-unsupported-browser-features'] as const;
 
 /**
  * Whether `ruleset` turns the rule `ruleId` on, globally or for some nodes.
@@ -1514,12 +1518,15 @@ function buildRustConfigJson(
 	ruleset: Partial<Readonly<Ruleset>>,
 	ruleCommonSettings: Readonly<RuleCommonSettings>,
 	pretenders: readonly Pretender[],
+	filename: string,
 ): string {
 	return JSON.stringify({
 		rules: ruleset.rules ?? {},
 		node_rules: ruleset.nodeRules ?? [],
 		child_node_rules: ruleset.childNodeRules ?? [],
-		rule_common_settings: ruleCommonSettings,
+		// `filename` is the document's path, which `no-mismatched-aspect-ratio` resolves a relative
+		// `src` against; it is not a setting the user can give.
+		rule_common_settings: { ...ruleCommonSettings, filename },
 		pretenders,
 	});
 }
