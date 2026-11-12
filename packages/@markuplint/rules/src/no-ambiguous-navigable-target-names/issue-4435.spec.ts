@@ -12,7 +12,7 @@ test('[no-ambiguous-navigable-target-names-issue-4435-001] a literal is judged a
 			severity: 'warning',
 			line: 1,
 			col: 21,
-			message: 'Don\'t use a ambiguous navigable target name. Did you mean "_blank"?',
+			message: 'Don\'t use an ambiguous navigable target name. Did you mean "_blank"?',
 			raw: '"blank"',
 		},
 	]);

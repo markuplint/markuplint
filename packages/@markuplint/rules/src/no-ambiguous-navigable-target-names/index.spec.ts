@@ -10,7 +10,7 @@ test('[no-ambiguous-navigable-target-names-valid-001] _blank', async () => {
 			severity: 'warning',
 			line: 1,
 			col: 27,
-			message: 'Don\'t use a ambiguous navigable target name. Did you mean "_blank"?',
+			message: 'Don\'t use an ambiguous navigable target name. Did you mean "_blank"?',
 			raw: 'blank',
 		},
 	]);
@@ -23,7 +23,7 @@ test('[no-ambiguous-navigable-target-names-valid-002] _self', async () => {
 			severity: 'warning',
 			line: 1,
 			col: 27,
-			message: 'Don\'t use a ambiguous navigable target name. Did you mean "_self"?',
+			message: 'Don\'t use an ambiguous navigable target name. Did you mean "_self"?',
 			raw: 'self',
 		},
 	]);
@@ -36,7 +36,7 @@ test('[no-ambiguous-navigable-target-names-valid-003] _parent', async () => {
 			severity: 'warning',
 			line: 1,
 			col: 27,
-			message: 'Don\'t use a ambiguous navigable target name. Did you mean "_parent"?',
+			message: 'Don\'t use an ambiguous navigable target name. Did you mean "_parent"?',
 			raw: 'parent',
 		},
 	]);
@@ -49,7 +49,7 @@ test('[no-ambiguous-navigable-target-names-valid-004] _top', async () => {
 			severity: 'warning',
 			line: 1,
 			col: 29,
-			message: "Don't use a ambiguous navigable target name",
+			message: "Don't use an ambiguous navigable target name",
 			raw: 'top',
 		},
 	]);
@@ -60,6 +60,19 @@ test('[no-ambiguous-navigable-target-names-valid-005] _foo (invalid keyword)', a
 	expect((await mlRuleTest(rule, '<a href="path/to" target="foo"></a>')).violations.length).toBe(0);
 });
 
+test('[no-ambiguous-navigable-target-names-invalid-001] the Japanese message has no article', async () => {
+	const { violations } = await mlRuleTest(rule, '<a href="path/to" target="blank"></a>', undefined, false, 'ja');
+	expect(violations).toStrictEqual([
+		{
+			severity: 'warning',
+			line: 1,
+			col: 27,
+			message: '曖昧なナビゲート可能なターゲット名を使用しないでください。「_blank」ではありませんか？',
+			raw: 'blank',
+		},
+	]);
+});
+
 test('[no-ambiguous-navigable-target-names-issue-4309-001] an upper-case name is the attribute in HTML', async () => {
 	const { violations } = await mlRuleTest(rule, '<a href="path/to" TARGET="blank"></a>');
 	expect(violations).toStrictEqual([
@@ -67,7 +80,7 @@ test('[no-ambiguous-navigable-target-names-issue-4309-001] an upper-case name is
 			severity: 'warning',
 			line: 1,
 			col: 27,
-			message: 'Don\'t use a ambiguous navigable target name. Did you mean "_blank"?',
+			message: 'Don\'t use an ambiguous navigable target name. Did you mean "_blank"?',
 			raw: 'blank',
 		},
 	]);
@@ -81,7 +94,7 @@ test('[no-ambiguous-navigable-target-names-issue-4309-002] an HTML element in JS
 			severity: 'warning',
 			line: 1,
 			col: 27,
-			message: 'Don\'t use a ambiguous navigable target name. Did you mean "_blank"?',
+			message: 'Don\'t use an ambiguous navigable target name. Did you mean "_blank"?',
 			raw: 'blank',
 		},
 	]);
@@ -91,7 +104,7 @@ test('[no-ambiguous-navigable-target-names-issue-4309-002] an HTML element in JS
 			severity: 'warning',
 			line: 1,
 			col: 27,
-			message: 'Don\'t use a ambiguous navigable target name. Did you mean "_blank"?',
+			message: 'Don\'t use an ambiguous navigable target name. Did you mean "_blank"?',
 			raw: 'blank',
 		},
 	]);
@@ -110,7 +123,7 @@ test('[no-ambiguous-navigable-target-names-issue-4309-003] an upper-case name on
 			severity: 'warning',
 			line: 1,
 			col: 32,
-			message: 'Don\'t use a ambiguous navigable target name. Did you mean "_blank"?',
+			message: 'Don\'t use an ambiguous navigable target name. Did you mean "_blank"?',
 			raw: 'blank',
 		},
 	]);
@@ -122,7 +135,7 @@ test('[no-ambiguous-navigable-target-names-issue-4309-003] an upper-case name on
 			severity: 'warning',
 			line: 1,
 			col: 32,
-			message: 'Don\'t use a ambiguous navigable target name. Did you mean "_blank"?',
+			message: 'Don\'t use an ambiguous navigable target name. Did you mean "_blank"?',
 			raw: 'blank',
 		},
 	]);
