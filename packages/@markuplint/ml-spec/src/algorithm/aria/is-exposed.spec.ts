@@ -97,3 +97,26 @@ describe('isExposed', () => {
 		});
 	});
 });
+
+describe('an element of the light DOM of a shadow host', () => {
+	test('is not exposed when no slot takes it, as it is not rendered', () => {
+		const el = Object.assign(_('<button></button>'), { getFlatTreeSlot: () => null });
+		expect(isExposed(el, specs, '1.2')).toBe(false);
+	});
+
+	test('is not exposed when an ancestor is not rendered', () => {
+		const parent = Object.assign(_('<div><button></button></div>'), { getFlatTreeSlot: () => null });
+		const el = parent.querySelector('button')!;
+		expect(isExposed(el, specs, '1.2')).toBe(false);
+	});
+
+	test('is exposed when a slot takes it, or when the assignment is not known', () => {
+		const slot = _('<slot></slot>');
+		expect(isExposed(Object.assign(_('<button></button>'), { getFlatTreeSlot: () => slot }), specs, '1.2')).toBe(
+			true,
+		);
+		expect(isExposed(Object.assign(_('<button></button>'), { getFlatTreeSlot: () => {} }), specs, '1.2')).toBe(
+			true,
+		);
+	});
+});

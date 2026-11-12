@@ -599,6 +599,21 @@ export interface MLParser {
 	 */
 	literalValues?: LiteralValueDeclaration;
 
+	/**
+	 * What the `slot` element is in the language of the parser.
+	 *
+	 * - `'html'` (the default): the HTML `slot` element, which places the light DOM nodes of a shadow host
+	 *   in its shadow root.
+	 * - `'framework'`: the placeholder of a framework's component for the content given to it (Vue, Svelte
+	 *   and Astro), which is not the HTML element. `@markuplint/ml-core` does not compute the slot
+	 *   assignment of such a file, as a `slot` in a declarative shadow root (`<template shadowrootmode>`) of
+	 *   it is not known to place what the DOM says.
+	 *
+	 * It is the parser that says it, not a spec: a file of the language is read by its parser whatever the
+	 * configuration `specs` is, and not every framework has a spec package (Astro).
+	 */
+	slotElement?: 'html' | 'framework';
+
 	/** Whether tag names should be treated as case-sensitive (e.g. for XHTML or JSX) */
 	tagNameCaseSensitive?: boolean;
 

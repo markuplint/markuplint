@@ -468,16 +468,34 @@ export function accnameMayBeMutable(
 	// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
 	el: Element<any, any>,
 ) {
-	if (el.hasMutableAttributes() || el.hasMutableChildren(true)) {
+	if (el.hasMutableAttributes() || el.hasMutableChildren(true, isSlotOfUnknownAssignment)) {
 		return true;
 	}
 
 	const ownedLabel = getOwnedLabel(el);
-	if (ownedLabel && (ownedLabel.hasMutableAttributes() || ownedLabel.hasMutableChildren(true))) {
+	if (
+		ownedLabel &&
+		(ownedLabel.hasMutableAttributes() || ownedLabel.hasMutableChildren(true, isSlotOfUnknownAssignment))
+	) {
 		return true;
 	}
 
 	return false;
+}
+
+/**
+ * Whether a `slot` renders what the markup does not tell: the nodes assigned to it, or its children, are
+ * not known (`MLElement#getAssignedNodes` is `null`). A slot whose assignment is known renders them, which
+ * the rule reads itself.
+ *
+ * @param slot - A `slot` element
+ * @returns `true` if what the slot renders is not known
+ */
+function isSlotOfUnknownAssignment(
+	// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
+	slot: Element<any, any>,
+): boolean {
+	return slot.getAssignedNodes() === null;
 }
 
 /**

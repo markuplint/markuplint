@@ -6,7 +6,7 @@ import { isPresentational } from './is-presentational.js';
 import { SVG_NAMESPACE } from '../../const/index.js';
 import { hasSvgAccessibleNameSource } from './accname/svg-helpers.js';
 import { getAttrSpecs } from '../../utils/get-attr-specs.js';
-import { getComposedParentElement } from '../dom/tree-boundary.js';
+import { getAccessibilityParentElement, getComposedParentElement } from '../dom/tree-boundary.js';
 import { getExplicitRole } from './get-explicit-role.js';
 import { getImplicitRole } from './get-implicit-role.js';
 import { getNonPresentationalAncestor } from './get-non-presentational-ancestor.js';
@@ -372,7 +372,7 @@ function isNativeContextIntact(
 	if (!computedRole.role?.isImplicit) {
 		return false;
 	}
-	const parent = getComposedParentElement(el);
+	const parent = getAccessibilityParentElement(el);
 	if (!parent) {
 		return false;
 	}

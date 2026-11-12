@@ -909,6 +909,39 @@ describe('Accessibility', () => {
 		expect(a11y.role).toBe('button');
 		expect(a11y.name.unknown).toBe(true);
 	});
+
+	test('a slot of a shadow root whose assignment is known is not unknown: the name is what is assigned', () => {
+		const doc = createTestDocument(
+			'<div role="button"><template shadowrootmode="open"><slot></slot></template>Save</div>',
+			{ specs },
+		);
+		const a11y = doc.getAccessibilityProp(doc.querySelector('div'));
+
+		expect(a11y.role).toBe('button');
+		expect(a11y.name).toBe('Save');
+	});
+
+	test('a slot of a shadow root that has nothing assigned is known to have no name', () => {
+		const doc = createTestDocument(
+			'<div role="button"><template shadowrootmode="open"><slot></slot></template></div>',
+			{
+				specs,
+			},
+		);
+		const a11y = doc.getAccessibilityProp(doc.querySelector('div'));
+
+		expect(a11y.name).toBe('');
+	});
+
+	test('a slot of a shadow root whose assignment is not known has an unknown name', () => {
+		const doc = createTestDocument(
+			'<div role="button"><template shadowrootmode="open" shadowrootslotassignment="manual"><slot></slot></template></div>',
+			{ specs },
+		);
+		const a11y = doc.getAccessibilityProp(doc.querySelector('div'));
+
+		expect(a11y.name.unknown).toBe(true);
+	});
 });
 
 describe('the `as` attribute pretending', () => {

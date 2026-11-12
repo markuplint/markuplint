@@ -3,7 +3,7 @@ import { ARIA_RECOMMENDED_VERSION } from '@markuplint/ml-spec';
 import { test, expect } from 'vitest';
 
 import { convertRuleset } from '../../index.js';
-import { dummySchemas } from '../../test/index.js';
+import { createTestDocument, dummySchemas } from '../../test/index.js';
 import { MLDocument } from '../node/document.js';
 import type { MLElement } from '../node/element.js';
 
@@ -161,4 +161,77 @@ test('MLElement memoizes the visits and the host language label source', () => {
 	const svg = button.children[0]!;
 	expect(svg.getHostLanguageLabelSource('1.2')).toBe('svg-title');
 	expect(svg.getHostLanguageLabelSource('1.2')).toBe(svg.getHostLanguageLabelSource('1.2'));
+});
+
+/** The accessible name of the first `div` of the markup. */
+function nameOf(code: string) {
+	const doc = createTestDocument(code);
+	const el = doc.querySelector('div');
+	if (!el) {
+		throw new Error('The host is missing');
+	}
+	return el.getAccessibleName(ARIA_RECOMMENDED_VERSION).trim();
+}
+
+/**
+ * A slot renders the nodes assigned to it, or its own children when none is.
+ *
+ * > Otherwise, if the current node is a slot with assigned nodes, set the rendered child nodes to be the assigned nodes of the current node.
+ *
+ * @see https://w3c.github.io/accname/#comp_name_from_content
+ */
+test('the name of a shadow host is the nodes assigned to its slot', () => {
+	expect(nameOf('<div role="button"><template shadowrootmode="open"><slot></slot></template>Save</div>')).toBe(
+		'Save',
+	);
+});
+
+test('a slot that has no assigned node renders its own children', () => {
+	expect(nameOf('<div role="button"><template shadowrootmode="open"><slot>Fallback</slot></template></div>')).toBe(
+		'Fallback',
+	);
+});
+
+test('a slot does not render the fallback children when a node is assigned', () => {
+	expect(
+		nameOf('<div role="button"><template shadowrootmode="open"><slot>Fallback</slot></template>Save</div>'),
+	).toBe('Save');
+});
+
+test('a named slot renders the nodes that name it and the others are not rendered', () => {
+	expect(
+		nameOf(
+			'<div role="button"><template shadowrootmode="open"><slot name="a"></slot></template><span slot="a">A</span><span>B</span></div>',
+		),
+	).toBe('A');
+});
+
+test('a light child that no slot takes is not rendered', () => {
+	expect(
+		nameOf('<div role="button"><template shadowrootmode="open"><slot name="a"></slot></template>Save</div>'),
+	).toBe('');
+});
+
+test('a slot whose assignment is not known renders its own children', () => {
+	expect(
+		nameOf(
+			'<div role="button"><template shadowrootmode="open" shadowrootslotassignment="manual"><slot></slot></template>Save</div>',
+		),
+	).toBe('');
+});
+
+test('a hidden node that a slot takes is not the name, as a hidden child is not', () => {
+	expect(
+		nameOf(
+			'<div role="button"><template shadowrootmode="open"><slot></slot></template><span hidden>X</span>Save</div>',
+		),
+	).toBe('Save');
+});
+
+test('a template that a slot takes contributes nothing to the name', () => {
+	expect(
+		nameOf(
+			'<div role="button"><template shadowrootmode="open"><slot></slot></template><template>X</template>Save</div>',
+		),
+	).toBe('Save');
 });

@@ -105,3 +105,20 @@ describe('1.3', () => {
 		expect(matchesContextRole(['list'], el, specs, version)).toBe(true);
 	});
 });
+
+describe('slot', () => {
+	test('a slot between the element and its parent is passed through', () => {
+		const el = _('<div role="list"><slot><div role="listitem"></div></slot></div>', '[role="listitem"]');
+		expect(matchesContextRole(['list'], el, specs, '1.3')).toBe(true);
+	});
+
+	test('a slot is passed through in the middle of a chain', () => {
+		const nested = _('<div role="list"><div role="group"><slot><li></li></slot></div></div>', 'li');
+		expect(matchesContextRole(['list > group'], nested, specs, '1.3')).toBe(true);
+	});
+
+	test('a slot does not satisfy a required parent role', () => {
+		const el = _('<div><slot><div role="listitem"></div></slot></div>', '[role="listitem"]');
+		expect(matchesContextRole(['list'], el, specs, '1.3')).toBe(false);
+	});
+});
