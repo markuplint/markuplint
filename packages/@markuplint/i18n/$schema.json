@@ -174,6 +174,7 @@
 				"username": { "type": "string" },
 				"value": { "type": "string" },
 				"void element": { "type": "string" },
+				"week": { "type": "string" },
 				"whitespace": { "type": "string" },
 				"whitespaces": { "type": "string" },
 				"xml name": { "type": "string" },

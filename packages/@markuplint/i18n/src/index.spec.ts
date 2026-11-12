@@ -350,3 +350,8 @@ test('A text that is neither a keyword nor a sentence is returned as it is', () 
 	});
 	expect(t('baz')).toBe('baz');
 });
+
+test('The week part of a value is translated', () => {
+	expect(translator(ja)('{0} part of {1}', 'week', 'value')).toBe('値の週の部分');
+	expect(translator(en)('{0} part of {1}', 'week', 'value')).toBe('week part of value');
+});
