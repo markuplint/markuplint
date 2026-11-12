@@ -11,6 +11,7 @@ use std::collections::HashMap;
 use markuplint_dom::arena::DomArena;
 use markuplint_types::spec::types::MLMLSpec;
 
+use crate::create_message::Kw;
 use crate::h1_check::collect_h1s;
 use crate::rule::{Rule, RuleConfigSet};
 use crate::tree_scope::{TreeRoot, Trees};
@@ -31,6 +32,7 @@ impl Rule for NoDuplicateH1 {
     }
 
     fn verify(&self, arena: &DomArena, spec: &MLMLSpec, config: &RuleConfigSet) -> Vec<Violation> {
+        let tr = config.translator();
         let config = config.global();
         let trees = Trees::new(arena, spec);
         let Some(h1s) = collect_h1s(arena, &trees, config) else {
@@ -52,7 +54,13 @@ impl Rule for NoDuplicateH1 {
                 rule_id: self.id().to_string(),
                 name: None,
                 severity: config.severity,
-                message: "The \"h1\" element is duplicated".to_string(),
+                message: tr.finish(&tr.t(
+                    "{0} is {1:c}",
+                    &[
+                        Kw::S(&tr.t("the \"{0*}\" {1}", &[Kw::S("h1"), Kw::S("element")])),
+                        Kw::S("duplicated"),
+                    ],
+                )),
                 line: second.base.line,
                 col: second.base.col,
                 raw: second.base.raw.clone(),

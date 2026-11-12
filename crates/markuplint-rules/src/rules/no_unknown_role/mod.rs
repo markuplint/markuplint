@@ -13,6 +13,7 @@ use markuplint_types::spec::aria::get_role_spec_for_element;
 use markuplint_types::spec::types::MLMLSpec;
 
 use crate::aria_check::{ElementContext, ElementGate, role_attr, role_tokens, walk_elements};
+use crate::create_message::Kw;
 use crate::rule::{Rule, RuleConfigSet};
 use crate::violation::Violation;
 
@@ -48,12 +49,17 @@ fn check(ctx: &ElementContext<'_>, violations: &mut Vec<Violation>) {
         .into_iter()
         .find(|token| get_role_spec_for_element(ctx.spec, &token.value, ctx.version, is_svg).is_none());
     if let Some(token) = unknown {
-        violations.push(ctx.token_violation(
-            &token,
-            format!(
-                "The \"{}\" role does not exist according to the WAI-ARIA specification.",
-                token.value
-            ),
-        ));
+        let tr = ctx.tr;
+        let message = tr.t(
+            "{0} according to {1}",
+            &[
+                Kw::S(&tr.t(
+                    "{0} does not exist",
+                    &[Kw::S(&tr.t("the \"{0*}\" {1}", &[Kw::S(&token.value), Kw::S("role")]))],
+                )),
+                Kw::S("the WAI-ARIA specification"),
+            ],
+        ) + &tr.t(".", &[]);
+        violations.push(ctx.token_violation(&token, tr.finish(&message)));
     }
 }

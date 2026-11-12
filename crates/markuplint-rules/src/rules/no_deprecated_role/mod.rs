@@ -12,6 +12,7 @@ use markuplint_types::spec::types::MLMLSpec;
 
 use crate::aria::computed_role::get_computed_role;
 use crate::aria_check::{ElementContext, ElementGate, role_attr, walk_elements};
+use crate::create_message::Kw;
 use crate::rule::{Rule, RuleConfigSet};
 use crate::violation::{Severity, Violation};
 
@@ -48,12 +49,17 @@ fn check(ctx: &ElementContext<'_>, violations: &mut Vec<Violation>) {
     };
     let computed = get_computed_role(ctx.spec, ctx.arena, ctx.node_id, ctx.version, false);
     if computed.role.is_some_and(|role| role.deprecated) {
-        violations.push(ctx.attr_violation(
-            attr,
-            format!(
-                "The \"{}\" role is deprecated",
-                markuplint_dom::helpers::attr_value(attr)
-            ),
-        ));
+        let tr = ctx.tr;
+        let message = tr.t(
+            "{0} is {1:c}",
+            &[
+                Kw::S(&tr.t(
+                    "the \"{0*}\" {1}",
+                    &[Kw::S(markuplint_dom::helpers::attr_value(attr)), Kw::S("role")],
+                )),
+                Kw::S("deprecated"),
+            ],
+        );
+        violations.push(ctx.attr_violation(attr, tr.finish(&message)));
     }
 }

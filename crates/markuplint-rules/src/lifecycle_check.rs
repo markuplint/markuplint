@@ -13,6 +13,7 @@ use markuplint_types::spec::lookup::get_spec;
 use markuplint_types::spec::types::MLMLSpec;
 
 use crate::attr_name_key::{attr_specs_of, find_attr_spec};
+use crate::create_message::Kw;
 use crate::rule::RuleConfigSet;
 use crate::violation::Violation;
 
@@ -47,6 +48,7 @@ pub(crate) fn verify_attr_lifecycle(
     spec: &MLMLSpec,
     config: &RuleConfigSet,
 ) -> Vec<Violation> {
+    let tr = config.translator();
     let mut violations = Vec::new();
 
     for (node_id, el) in arena.elements() {
@@ -80,7 +82,13 @@ pub(crate) fn verify_attr_lifecycle(
                 rule_id: rule_id.to_string(),
                 name: None,
                 severity: rule_config.severity,
-                message: format!("The \"{name}\" attribute is {}", lifecycle.key()),
+                message: tr.finish(&tr.t(
+                    "{0} is {1:c}",
+                    &[
+                        Kw::S(&tr.t("the \"{0*}\" {1}", &[Kw::S(name), Kw::S("attribute")])),
+                        Kw::S(lifecycle.key()),
+                    ],
+                )),
                 line: html_attr.name.line,
                 col: html_attr.name.col,
                 raw: html_attr.name.raw.clone(),
