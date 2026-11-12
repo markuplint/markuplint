@@ -2,7 +2,7 @@
 //! expectations (the tagged-template test is not ported: it is `@experimental` and Rust has no tagged
 //! templates). Their TS test names are in the doc comments.
 
-use super::{LocaleSet, Primitive, Translator};
+use super::{LocaleSet, Primitive, Translator, no_translate};
 use Primitive::{N, S};
 
 fn en() -> &'static LocaleSet {
@@ -534,4 +534,75 @@ fn percent_escape_matches_do_not_overlap() {
     assert_eq!(t.t("%%%", &[]), "%%");
     assert_eq!(t.t("%%", &[]), "%");
     assert_eq!(t.t("%%%%", &[]), "%%");
+}
+
+fn marked(items: &[&str]) -> Vec<String> {
+    items.iter().map(|item| no_translate(item)).collect()
+}
+
+/// TS (`no-translate.spec.ts`): shows a value that is a keyword as written in a list
+#[test]
+fn no_translate_shows_a_keyword_as_written_in_a_list() {
+    let t = Translator::with_locale_set(ja());
+    assert_eq!(t.t_list(&["list", "row", "time"], false), "「リスト」「行」「時間」");
+    assert_eq!(
+        t.t_list(&marked(&["list", "row", "time"]), false),
+        "「list」「row」「time」"
+    );
+}
+
+/// TS (`no-translate.spec.ts`): mixes with a word that is to be translated
+#[test]
+fn no_translate_mixes_with_a_word_that_is_to_be_translated() {
+    let t = Translator::with_locale_set(ja());
+    assert_eq!(
+        t.t_list(&[no_translate("list"), "element".to_owned()], false),
+        "「list」「要素」"
+    );
+}
+
+/// TS (`no-translate.spec.ts`): keeps the value of a placeholder as written
+#[test]
+fn no_translate_keeps_the_value_of_a_placeholder_as_written() {
+    let t = Translator::with_locale_set(ja());
+    assert_eq!(
+        t.t("{0} is {1}", &[S(&no_translate("name")), S("element")]),
+        "nameは要素です"
+    );
+}
+
+/// TS (`no-translate.spec.ts`): shows a value with a percent sign as written, in a literal expectation
+#[test]
+fn no_translate_shows_a_value_with_a_percent_sign_as_written() {
+    let t = Translator::with_locale_set(ja());
+    assert_eq!(t.t_list(&[no_translate("50%")], false), "「50%」");
+    assert_eq!(t.t_list(&[no_translate("%list%")], false), "「%list%」");
+}
+
+/// TS (`no-translate.spec.ts`): leaves an empty value empty
+#[test]
+fn no_translate_leaves_an_empty_value_empty() {
+    let t = Translator::with_locale_set(ja());
+    assert_eq!(no_translate(""), "");
+    assert_eq!(t.t_list(&[no_translate("")], false), "「」");
+}
+
+/// TS (`no-translate.spec.ts`): shows the value with percent signs as written
+#[test]
+fn no_translate_shows_a_value_with_percent_signs_as_written() {
+    let t = Translator::with_locale_set(ja());
+    for value in [
+        "%", "%%", "%a", "a%", "%%a", "a%%", "%a%", "%list%", "list%", "%list", "list%x", "50%", "a%b",
+    ] {
+        assert_eq!(
+            t.t_list(&[no_translate(value)], false),
+            format!("「{value}」"),
+            "{value}"
+        );
+        assert_eq!(
+            t.t("{0} is {1}", &[S(&no_translate(value)), S("element")]),
+            format!("{value}は要素です"),
+            "{value}"
+        );
+    }
 }

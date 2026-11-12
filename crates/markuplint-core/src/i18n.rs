@@ -341,6 +341,41 @@ impl<'a> Translator<'a> {
     }
 }
 
+/// Port of `noTranslate()` of `@markuplint/rules`: marks a value so that the translator shows it as
+/// written.
+///
+/// The translator looks a placeholder's value up as a keyword (`list` is `リスト` with `locale: 'ja'`),
+/// and so it does each item of a list. A placeholder written `{n*}` is not translated, but a list has
+/// no such mark: an item that is data (a role name, an attribute value, a token the author wrote) is
+/// wrapped in `%…%`, the translator's own form of "not a keyword".
+///
+/// The translator reads `%…%` around a whole value as that mark and `%%` at an end as one `%`, so a
+/// value that has a `%` at an end is written with it doubled: `%list%` is shown as `%list%`, not
+/// `list`. A `%` inside a value needs nothing, as no keyword has one. An empty value is returned as it
+/// is: wrapped, `%%` would be read back as a stray `%`.
+#[must_use]
+pub fn no_translate(value: &str) -> String {
+    if value.is_empty() {
+        return String::new();
+    }
+    if !value.contains('%') {
+        return format!("%{value}%");
+    }
+    // `%%` is the escaped form of one `%` at an end, so a lone `%` is a single escaped one
+    if value == "%" {
+        return "%%".to_owned();
+    }
+    let mut out = String::with_capacity(value.len() + 2);
+    if value.starts_with('%') {
+        out.push('%');
+    }
+    out.push_str(value);
+    if value.ends_with('%') {
+        out.push('%');
+    }
+    out
+}
+
 /// `/^%[^%]+%$/`.
 fn is_marked_no_translate(keyword: &str) -> bool {
     keyword.len() > 2
