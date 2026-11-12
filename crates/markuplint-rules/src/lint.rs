@@ -397,7 +397,7 @@ fn run_rules(arena: &DomArena, spec: &MLMLSpec, config: &LintConfig, rules: &[Bo
         &mut violations,
     );
 
-    sort_and_dedup(&mut violations);
+    dedup_keeping_order(&mut violations);
     convert_fixes_to_utf16(arena, &mut violations);
     violations
 }
@@ -474,20 +474,14 @@ fn parse_error_position(msg: &str, arena: &DomArena) -> (u32, u32, String) {
 /// produces its own violations independently. Rust includes `name` in the dedup
 /// key so that violations from different `NamedRuleGroup`s sharing the same base
 /// rule are preserved (matching TS behavior).
-fn sort_and_dedup(violations: &mut Vec<Violation>) {
-    violations.sort_by(|a, b| {
-        a.line
-            .cmp(&b.line)
-            .then(a.col.cmp(&b.col))
-            .then(a.rule_id.cmp(&b.rule_id))
-            .then(a.name.cmp(&b.name))
-    });
+fn dedup_keeping_order(violations: &mut Vec<Violation>) {
+    // No sort: TS `MLCore` returns violations in the order the rules ran, each rule
+    // in the order it reported (`#runAllRules` concatenates `rule.verify()` results).
     // Name is part of the dedup key because TS VirtualRules have distinct
     // identities — each NamedRuleGroup runs independently and its violations
-    // are separate.
-    violations.dedup_by(|a, b| {
-        a.rule_id == b.rule_id && a.name == b.name && a.line == b.line && a.col == b.col && a.message == b.message
-    });
+    // are separate. The first occurrence stays where it was.
+    let mut seen = std::collections::HashSet::new();
+    violations.retain(|v| seen.insert((v.rule_id.clone(), v.name.clone(), v.line, v.col, v.message.clone())));
 }
 
 fn run_named_entries(
@@ -2031,7 +2025,7 @@ mod tests {
 
     #[test]
     fn require_datetime_empty_time_element() {
-        // <time></time> → empty text → no violation
+        // <time></time> → empty text is not a datetime → violation
         let arena = html_arena("<time></time>");
         let spec = html_spec();
         let config: LintConfig = serde_json::from_value(serde_json::json!({
@@ -2044,7 +2038,7 @@ mod tests {
             .iter()
             .filter(|v| v.rule_id == "require-datetime")
             .collect();
-        assert_eq!(v.len(), 0, "Empty time element should be skipped: {v:?}");
+        assert_eq!(v.len(), 1, "Empty time element should be reported: {v:?}");
     }
 
     // --- Namespaced rule ID tests ---
