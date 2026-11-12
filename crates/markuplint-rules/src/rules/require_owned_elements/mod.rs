@@ -28,6 +28,7 @@
 //! A `template` that may declare a shadow root without the markup telling it, or a block of a
 //! template language that may enclose it, leaves the owned nodes unknown as well.
 
+use markuplint_core::i18n::Primitive as Kw;
 use markuplint_dom::arena::{DomArena, NodeId};
 use markuplint_dom::helpers::get_attr_value;
 use markuplint_dom::node::DomNode;
@@ -36,9 +37,7 @@ use markuplint_types::spec::aria::ARIAVersion;
 use markuplint_types::spec::types::MLMLSpec;
 
 use crate::aria::computed_role::{ResolvedRole, get_computed_role};
-use crate::aria_check::{
-    ElementContext, ElementGate, element_local_name, is_js_whitespace, quoted_list, walk_elements,
-};
+use crate::aria_check::{ElementContext, ElementGate, element_local_name, is_js_whitespace, walk_elements};
 use crate::helpers::{has_mutable_attributes, has_mutable_children_with};
 use crate::rule::{Rule, RuleConfigSet};
 use crate::slot_assignment::{composed_parent_element, get_assigned_nodes, is_slot_element, shadow_root_template};
@@ -128,16 +127,32 @@ fn check(ctx: &ElementContext<'_>, node_id: NodeId, role: Option<&ResolvedRole>)
         return None;
     }
 
+    let tr = ctx.tr;
     let required = match child_roles.as_slice() {
-        [single] => format!("the \"{single}\" role"),
-        several => format!("the roles: {}", quoted_list(several)),
+        [single] => tr.t("the \"{0*}\" {1}", &[Kw::S(single), Kw::S("role")]),
+        several => format!("{}: {}", tr.t("the {0}", &[Kw::S("roles")]), tr.t_list(several, false)),
     };
     let message = if may_be_before_created(ctx.arena, &owned_children.unwrap_or_default()) {
-        format!("The child element requires {required}. Or, require aria-busy=\"true\"")
+        tr.t(
+            "{0}. Or, {1}",
+            &[
+                Kw::S(&tr.t(
+                    "{0} requires {1}",
+                    &[Kw::S(&tr.t("the {0}", &[Kw::S("child element")])), Kw::S(&required)],
+                )),
+                Kw::S(&tr.t("require {0}", &[Kw::S("aria-busy=\"true\"")])),
+            ],
+        )
     } else {
-        format!("The \"{}\" role expects {required}", role.name)
+        tr.t(
+            "{0} expects {1}",
+            &[
+                Kw::S(&tr.t("the \"{0*}\" {1}", &[Kw::S(&role.name), Kw::S("role")])),
+                Kw::S(&required),
+            ],
+        )
     };
-    Some(ctx.element_violation(message))
+    Some(ctx.element_violation(tr.finish(&message)))
 }
 
 /// TS `el.matches('[aria-busy="true" i]')`.

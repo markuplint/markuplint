@@ -10,6 +10,7 @@
 
 use std::collections::{HashMap, HashSet};
 
+use markuplint_core::i18n::{Primitive as Kw, Translator};
 use markuplint_core::mlast::MLASTAttr;
 use markuplint_dom::arena::DomArena;
 use markuplint_types::spec::aria::{self, ARIAVersion};
@@ -52,6 +53,7 @@ impl Rule for NoReferToNonExistentId {
             .map(|p| p.name.clone())
             .collect();
 
+        let tr = config.translator();
         let trees = Trees::new(arena, spec);
         let (ids_of_tree, trees_with_dynamic_id) = collect_ids(arena, config, &trees);
         let no_ids = HashSet::new();
@@ -93,7 +95,7 @@ impl Rule for NoReferToNonExistentId {
                 let id_set = ids_of_tree.get(&root).unwrap_or(&no_ids);
 
                 if aria_id_attrs.contains(&attr_name_lower) {
-                    check_space_separated_ids(value, id_set, html_attr, self.id(), rule_config, &mut violations);
+                    check_space_separated_ids(value, id_set, html_attr, self.id(), rule_config, tr, &mut violations);
                     continue;
                 }
 
@@ -114,7 +116,7 @@ impl Rule for NoReferToNonExistentId {
                                 rule_id: self.id().to_string(),
                                 name: None,
                                 severity: rule_config.severity,
-                                message: format!("Missing \"{value}\" ID"),
+                                message: missing_id(tr, &value),
                                 line: html_attr.value.line,
                                 col: html_attr.value.col,
                                 raw: html_attr.value.raw.clone(),
@@ -124,7 +126,15 @@ impl Rule for NoReferToNonExistentId {
                         }
                     }
                     DomIdType::SpaceList => {
-                        check_space_separated_ids(value, id_set, html_attr, self.id(), rule_config, &mut violations);
+                        check_space_separated_ids(
+                            value,
+                            id_set,
+                            html_attr,
+                            self.id(),
+                            rule_config,
+                            tr,
+                            &mut violations,
+                        );
                     }
                     DomIdType::None => {}
                 }
@@ -206,12 +216,18 @@ fn collect_ids(
     (ids_of_tree, trees_with_dynamic_id)
 }
 
+/// TS `t('Missing {0}', t('"{0*}" ID', id))`, through `finish`.
+fn missing_id(tr: Translator<'static>, id: &str) -> String {
+    tr.finish(&tr.t("Missing {0}", &[Kw::S(&tr.t("\"{0*}\" ID", &[Kw::S(id)]))]))
+}
+
 fn check_space_separated_ids(
     value: &str,
     id_set: &HashSet<String>,
     html_attr: &markuplint_core::mlast::MLASTHTMLAttr,
     rule_id: &str,
     config: &RuleConfig,
+    tr: Translator<'static>,
     violations: &mut Vec<Violation>,
 ) {
     // The value is split before the character references are resolved: `&#32;` is not a separator
@@ -226,7 +242,7 @@ fn check_space_separated_ids(
                 rule_id: rule_id.to_string(),
                 name: None,
                 severity: config.severity,
-                message: format!("Missing \"{id_ref}\" ID"),
+                message: missing_id(tr, &id_ref),
                 line: html_attr.value.line,
                 col: html_attr.value.col,
                 raw: html_attr.value.raw.clone(),

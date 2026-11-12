@@ -13,6 +13,7 @@
 //!   (`without` with `alt.method: "set-attr"`) and the element has it, nothing is reported for the
 //!   element at all, not even for a later missing property. That is how TS returns from the loop.
 
+use markuplint_core::i18n::Primitive as Kw;
 use markuplint_dom::arena::DomArena;
 use markuplint_types::spec::aria;
 use markuplint_types::spec::types::MLMLSpec;
@@ -81,11 +82,20 @@ fn check(ctx: &ElementContext<'_>) -> Option<Violation> {
             return None;
         }
 
-        return Some(ctx.element_violation(format!(
-            "Require the \"{required}\" ARIA {} on the \"{}\" role",
-            ctx.prop_type_of(required),
-            role.name
-        )));
+        let tr = ctx.tr;
+        return Some(ctx.element_violation(tr.finish(&tr.t(
+            "{0:c} on {1}",
+            &[
+                Kw::S(&tr.t(
+                    "Require {0}",
+                    &[Kw::S(&tr.t(
+                        "the \"{0*}\" {1}",
+                        &[Kw::S(required), Kw::S(&format!("ARIA {}", ctx.prop_type_of(required)))],
+                    ))],
+                )),
+                Kw::S(&tr.t("the \"{0*}\" {1}", &[Kw::S(&role.name), Kw::S("role")])),
+            ],
+        ))));
     }
 
     None

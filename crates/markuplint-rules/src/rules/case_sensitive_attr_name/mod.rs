@@ -6,6 +6,7 @@
 //! is reported and fixed to that spelling, whatever the option says. A name with no spec is not
 //! checked there.
 
+use markuplint_core::i18n::Primitive as Kw;
 use markuplint_core::mlast::{ElementType, MLASTAttr, NamespaceURI};
 use markuplint_dom::arena::DomArena;
 use markuplint_dom::helpers::attr_name;
@@ -32,6 +33,7 @@ impl Rule for CaseSensitiveAttrName {
 
     fn verify(&self, arena: &DomArena, spec: &MLMLSpec, config: &RuleConfigSet) -> Vec<Violation> {
         let mut violations = Vec::new();
+        let tr = config.translator();
 
         // JSX props (`onClick`) are JavaScript identifiers, not case-insensitive HTML attribute
         // names; lowercasing them breaks the app (TS `document.attrNameCaseSensitive`).
@@ -86,7 +88,13 @@ impl Rule for CaseSensitiveAttrName {
                             rule_id: self.id().to_string(),
                             name: None,
                             severity: rule_config.severity,
-                            message: format!("The \"{name}\" attribute {verb} be \"{spec_name}\""),
+                            message: tr.finish(&tr.t(
+                                &format!("{{0}} {verb} be {{1}}"),
+                                &[
+                                    Kw::S(&tr.t("the \"{0*}\" {1}", &[Kw::S(name), Kw::S("attribute")])),
+                                    Kw::S(&format!("\"{spec_name}\"")),
+                                ],
+                            )),
                             line: html_attr.name.line,
                             col: html_attr.name.col,
                             raw: raw_name.to_owned(),
@@ -121,7 +129,13 @@ impl Rule for CaseSensitiveAttrName {
                     rule_id: self.id().to_string(),
                     name: None,
                     severity: rule_config.severity,
-                    message: format!("Attribute names of HTML elements {verb} be {case_str}"),
+                    message: tr.finish(&tr.t(
+                        &format!("{{0}} {verb} be {{1}}"),
+                        &[
+                            Kw::S(&tr.t("{0} of {1}", &[Kw::S("attribute names"), Kw::S("HTML elements")])),
+                            Kw::S(case_str),
+                        ],
+                    )),
                     line: html_attr.name.line,
                     col: html_attr.name.col,
                     raw: raw_name.to_owned(),

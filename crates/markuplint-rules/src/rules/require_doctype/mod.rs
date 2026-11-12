@@ -4,6 +4,7 @@
 //! `no-obsolete-doctype`. An obsolete DOCTYPE still counts as present here. The
 //! rule's only value is `"always"`, so the value is not read.
 
+use markuplint_core::i18n::Primitive as Kw;
 use markuplint_dom::arena::DomArena;
 use markuplint_dom::node::DomNode;
 use markuplint_types::spec::types::MLMLSpec;
@@ -22,6 +23,7 @@ impl Rule for RequireDoctype {
     }
 
     fn verify(&self, arena: &DomArena, _spec: &MLMLSpec, config: &RuleConfigSet) -> Vec<Violation> {
+        let tr = config.translator();
         let config = config.global();
         match arena.document() {
             Some(DomNode::Document(doc)) if !doc.is_fragment => {}
@@ -37,7 +39,7 @@ impl Rule for RequireDoctype {
             rule_id: self.id().to_string(),
             name: None,
             severity: config.severity,
-            message: "Require doctype".to_string(),
+            message: tr.finish(&tr.t("Require {0}", &[Kw::S("doctype")])),
             line: 1,
             col: 1,
             raw: String::new(),

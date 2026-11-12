@@ -5,6 +5,7 @@
 //! 2. Per-element overrides (nodeRules): querySelectorAll on the matched
 //!    element's descendants (the override selectors are checked against children)
 
+use markuplint_core::i18n::{Primitive as Kw, Translator};
 use markuplint_dom::arena::DomArena;
 use markuplint_selector::matcher;
 use markuplint_types::spec::types::MLMLSpec;
@@ -18,6 +19,14 @@ mod tests;
 
 pub struct NoRestrictedElement;
 
+/// TS `t('{0} is disallowed', t('the "{0*}" {1}', query, 'element'))`, through `finish`.
+fn disallowed(tr: Translator<'static>, query: &str) -> String {
+    tr.finish(&tr.t(
+        "{0} is disallowed",
+        &[Kw::S(&tr.t("the \"{0*}\" {1}", &[Kw::S(query), Kw::S("element")]))],
+    ))
+}
+
 impl Rule for NoRestrictedElement {
     fn id(&self) -> &'static str {
         "no-restricted-element"
@@ -25,6 +34,7 @@ impl Rule for NoRestrictedElement {
 
     fn verify(&self, arena: &DomArena, spec: &MLMLSpec, config: &RuleConfigSet) -> Vec<Violation> {
         let mut violations = Vec::new();
+        let tr = config.translator();
 
         let global_selectors = parse_selectors(&config.global().value, spec);
         for (node_id, el) in arena.elements() {
@@ -40,7 +50,7 @@ impl Rule for NoRestrictedElement {
                         rule_id: self.id().to_string(),
                         name: None,
                         severity: rule_config.severity,
-                        message: format!("The \"{selector_str}\" element is disallowed"),
+                        message: disallowed(tr, selector_str),
                         line: el.base.line,
                         col: el.base.col,
                         raw: el.base.raw.clone(),
@@ -83,7 +93,7 @@ impl Rule for NoRestrictedElement {
                             rule_id: self.id().to_string(),
                             name: None,
                             severity: rule_config.severity,
-                            message: format!("The \"{selector_str}\" element is disallowed"),
+                            message: disallowed(tr, selector_str),
                             line: desc_el.base.line,
                             col: desc_el.base.col,
                             raw: desc_el.base.raw.clone(),

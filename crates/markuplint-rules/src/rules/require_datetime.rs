@@ -7,6 +7,7 @@
 
 use std::sync::LazyLock;
 
+use markuplint_core::i18n::Primitive as Kw;
 use markuplint_core::mlast::MLASTAttr;
 use markuplint_dom::arena::{DomArena, NodeId};
 use markuplint_dom::node::DomNode;
@@ -32,6 +33,7 @@ impl Rule for RequireDatetime {
     }
 
     fn verify(&self, arena: &DomArena, _spec: &MLMLSpec, config: &RuleConfigSet) -> Vec<Violation> {
+        let tr = config.translator();
         let mut violations = Vec::new();
 
         for (node_id, el) in arena.elements() {
@@ -73,9 +75,14 @@ impl Rule for RequireDatetime {
             let candidate = try_slash_date_fallback(&text).or_else(|| try_whichtime_parse(&text, &langs));
 
             let message = if let Some(ref dt) = candidate {
-                format!("Need datetime=\"{dt}\"")
+                tr.finish(&tr.t("need {0*}", &[Kw::S(&format!("datetime=\"{dt}\""))]))
             } else {
-                "Need the \"datetime\" attribute".to_string()
+                tr.finish(&tr.t(
+                    "need {0}",
+                    &[Kw::S(
+                        &tr.t("the \"{0*}\" {1}", &[Kw::S("datetime"), Kw::S("attribute")]),
+                    )],
+                ))
             };
 
             violations.push(Violation {
