@@ -6,6 +6,7 @@
 //! splits of `table-row-column-alignment` (`no-table-span-overflow`, `no-empty-table-track`,
 //! `consistent-table-row-length`) all skip a table for; see [`crate::table_grid`].
 
+use markuplint_core::i18n::Primitive as Kw;
 use markuplint_dom::arena::DomArena;
 use markuplint_types::spec::types::MLMLSpec;
 
@@ -24,6 +25,11 @@ impl Rule for NoTableCellOverlap {
     }
 
     fn verify(&self, arena: &DomArena, _spec: &MLMLSpec, config: &RuleConfigSet) -> Vec<Violation> {
+        let tr = config.translator();
+        let message = tr.finish(&tr.t(
+            "{0} are causing {1}",
+            &[Kw::S(&tr.t_list(&["rowspan", "colspan"], true)), Kw::S("cell overlap")],
+        ));
         table_grid::tables(arena, config)
             .filter(|(_, grid)| grid.has_overlapped())
             .filter_map(|(table, _)| {
@@ -33,7 +39,7 @@ impl Rule for NoTableCellOverlap {
                     config,
                     table,
                     el,
-                    "\"rowspan\" and \"colspan\" are causing cell overlap".to_string(),
+                    message.clone(),
                 ))
             })
             .collect()

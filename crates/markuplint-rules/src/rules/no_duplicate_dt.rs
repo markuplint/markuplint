@@ -2,6 +2,7 @@
 
 use std::collections::HashSet;
 
+use markuplint_core::i18n::Primitive as Kw;
 use markuplint_dom::arena::DomArena;
 use markuplint_dom::node::DomNode;
 use markuplint_types::spec::types::MLMLSpec;
@@ -22,6 +23,11 @@ impl Rule for NoDuplicateDt {
 
     fn verify(&self, arena: &DomArena, _spec: &MLMLSpec, config: &RuleConfigSet) -> Vec<Violation> {
         let mut violations = Vec::new();
+        let tr = config.translator();
+        let message = tr.finish(&tr.t(
+            "{0} {1:c}",
+            &[Kw::S(&tr.t("The {0}", &[Kw::S("name")])), Kw::S("duplicated")],
+        ));
 
         for (node_id, el) in arena.elements() {
             let rule_config = config.get(node_id);
@@ -65,7 +71,7 @@ impl Rule for NoDuplicateDt {
                         rule_id: self.id().to_string(),
                         name: None,
                         severity: rule_config.severity,
-                        message: "The name duplicated".to_string(),
+                        message: message.clone(),
                         line: dt.base.line,
                         col: dt.base.col,
                         raw: dt.base.raw.clone(),

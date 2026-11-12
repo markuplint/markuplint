@@ -7,6 +7,7 @@
 //! attribute name as written, case-sensitively, so `ARIA-INVALID` is not recognised as
 //! `aria-invalid` (as in TS). The default severity is `warning`.
 
+use markuplint_core::i18n::Primitive as Kw;
 use markuplint_dom::arena::DomArena;
 use markuplint_types::spec::aria;
 use markuplint_types::spec::types::MLMLSpec;
@@ -75,12 +76,30 @@ fn check(ctx: &ElementContext<'_>, violations: &mut Vec<Violation>) {
             .iter()
             .find(|p| p.name == key)
             .map_or("property", |p| prop_type_label(&p.prop_type));
-        violations.push(ctx.attr_violation(
-            attr,
-            format!(
-                "The \"{name}\" ARIA {prop_type} is deprecated on the \"{}\" role",
-                role.name
+        violations.push(
+            ctx.attr_violation(
+                attr,
+                ctx.tr.finish(
+                    &ctx.tr.t(
+                        "{0:c} on {1}",
+                        &[
+                            Kw::S(
+                                &ctx.tr.t(
+                                    "{0} is {1:c}",
+                                    &[
+                                        Kw::S(&ctx.tr.t(
+                                            "the \"{0*}\" {1}",
+                                            &[Kw::S(name), Kw::S(&format!("ARIA {prop_type}"))],
+                                        )),
+                                        Kw::S("deprecated"),
+                                    ],
+                                ),
+                            ),
+                            Kw::S(&ctx.tr.t("the \"{0*}\" {1}", &[Kw::S(&role.name), Kw::S("role")])),
+                        ],
+                    ),
+                ),
             ),
-        ));
+        );
     }
 }
