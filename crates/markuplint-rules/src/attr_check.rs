@@ -719,13 +719,13 @@ fn parse_regex_pattern(pattern: &str) -> Option<Regex> {
             } else {
                 regex_str.to_string()
             };
-            Regex::new(&full_pattern).ok()
+            crate::regex_cache::regex(&full_pattern)
         } else {
-            Regex::new(pattern).ok()
+            crate::regex_cache::regex(pattern)
         }
     } else {
         // Plain pattern: full match (TS check() uses anchored matching)
-        Regex::new(&format!("^{pattern}$")).ok()
+        crate::regex_cache::regex(&format!("^{pattern}$"))
     }
 }
 
