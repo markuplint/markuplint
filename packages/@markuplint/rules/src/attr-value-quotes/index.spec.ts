@@ -17,14 +17,14 @@ describe('verify', () => {
 		expect(violations).toStrictEqual([
 			{
 				severity: 'warning',
-				message: 'Attribute value is must quote on double quotation mark',
+				message: 'Attribute value must be quoted with double quotation marks',
 				line: 2,
 				col: 26,
 				raw: "data-Attr='db'",
 			},
 			{
 				severity: 'warning',
-				message: 'Attribute value is must quote on double quotation mark',
+				message: 'Attribute value must be quoted with double quotation marks',
 				line: 2,
 				col: 41,
 				raw: 'data-attR=tr',
@@ -51,14 +51,14 @@ describe('verify', () => {
 		expect(violations).toStrictEqual([
 			{
 				severity: 'error',
-				message: 'Attribute value is must quote on double quotation mark',
+				message: 'Attribute value must be quoted with double quotation marks',
 				line: 2,
 				col: 26,
 				raw: "data-Attr='db'",
 			},
 			{
 				severity: 'error',
-				message: 'Attribute value is must quote on double quotation mark',
+				message: 'Attribute value must be quoted with double quotation marks',
 				line: 2,
 				col: 41,
 				raw: 'data-attR=tr',
@@ -85,14 +85,14 @@ describe('verify', () => {
 		expect(violations).toStrictEqual([
 			{
 				severity: 'error',
-				message: 'Attribute value is must quote on single quotation mark',
+				message: 'Attribute value must be quoted with single quotation marks',
 				line: 2,
 				col: 8,
 				raw: 'data-attr="value"',
 			},
 			{
 				severity: 'error',
-				message: 'Attribute value is must quote on single quotation mark',
+				message: 'Attribute value must be quoted with single quotation marks',
 				line: 2,
 				col: 41,
 				raw: 'data-attR=tr',
@@ -161,4 +161,32 @@ describe('fix with parsers', () => {
 		);
 		expect(fixedCode).toBe('Some text\n\n<div data-attr="value">content</div>\n');
 	});
+});
+
+test('[attr-value-quotes-issue-4584-001] the message is in Japanese (single) with locale ja', async () => {
+	const { violations } = await mlRuleTest(rule, '<div class="a"></div>', { rule: 'single' }, false, 'ja');
+
+	expect(violations).toStrictEqual([
+		{
+			severity: 'warning',
+			line: 1,
+			col: 6,
+			message: '属性値はシングルクオートで囲むべきです',
+			raw: 'class="a"',
+		},
+	]);
+});
+
+test('[attr-value-quotes-issue-4584-002] the message is in Japanese (double) with locale ja', async () => {
+	const { violations } = await mlRuleTest(rule, "<div class='a'></div>", undefined, false, 'ja');
+
+	expect(violations).toStrictEqual([
+		{
+			severity: 'warning',
+			line: 1,
+			col: 6,
+			message: '属性値はダブルクオートで囲むべきです',
+			raw: "class='a'",
+		},
+	]);
 });

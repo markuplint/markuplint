@@ -273,3 +273,23 @@ describe('No violations', () => {
 		).toBe(0);
 	});
 });
+
+test('[require-dialog-autofocus-issue-4584-001] the message is in Japanese with locale ja', async () => {
+	const { violations } = await mlRuleTest(
+		rule,
+		'<template><button command="show-modal" commandfor="d">Open</button><dialog id="d"><p>Content</p></dialog></template>',
+		undefined,
+		false,
+		'ja',
+	);
+
+	expect(violations).toStrictEqual([
+		{
+			severity: 'warning',
+			line: 1,
+			col: 68,
+			message: '「show-modal」コマンドが参照する「dialog」要素には、「autofocus」属性を持つ要素が必要です',
+			raw: '<dialog id="d">',
+		},
+	]);
+});

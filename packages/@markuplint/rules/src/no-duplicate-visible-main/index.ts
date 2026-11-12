@@ -26,7 +26,7 @@ export default createRule<boolean, null>({
 		for (const el of visibleMains.slice(1)) {
 			report({
 				scope: el,
-				message: t('There must not be more than one visible "{0}" element in a document', 'main'),
+				message: t('There must not be more than one visible "{0*}" element in a document', 'main'),
 			});
 		}
 	},

@@ -36,7 +36,7 @@ export default createRule<boolean, Options>({
 			report({
 				scope: ariaHidden,
 				message: t(
-					'"aria-hidden" must not be "{0}" on an element with "hidden" value "{1}"',
+					'"aria-hidden" must not be "{0*}" on an element with "hidden" value "{1*}"',
 					'true',
 					'until-found',
 				),

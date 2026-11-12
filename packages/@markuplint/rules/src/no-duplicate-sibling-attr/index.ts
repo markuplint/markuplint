@@ -29,7 +29,7 @@ export default createRule({
 					report({
 						scope: el,
 						message: t(
-							'The "{0}" attribute must not appear on more than one "{1}" element within the same parent',
+							'The "{0*}" attribute must not appear on more than one "{1*}" element within the same parent',
 							attrName,
 							el.localName,
 						),

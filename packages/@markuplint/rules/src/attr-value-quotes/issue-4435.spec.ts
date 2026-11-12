@@ -30,7 +30,7 @@ test('[attr-value-quotes-issue-4435-004] a string of HTML is judged as before', 
 			severity: 'warning',
 			line: 1,
 			col: 6,
-			message: 'Attribute value is must quote on double quotation mark',
+			message: 'Attribute value must be quoted with double quotation marks',
 			raw: "title='x'",
 		},
 	]);

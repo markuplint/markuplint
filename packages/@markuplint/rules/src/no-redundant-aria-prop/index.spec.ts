@@ -50,3 +50,18 @@ test('[no-redundant-aria-prop-issue-4309-002] JSX: an upper-case aria-* on an HT
 		},
 	]);
 });
+
+test('[no-redundant-aria-prop-issue-4584-001] the message is in Japanese with locale ja', async () => {
+	const { violations } = await mlRuleTest(rule, '<input required aria-required="true">', undefined, false, 'ja');
+
+	expect(violations).toStrictEqual([
+		{
+			severity: 'warning',
+			line: 1,
+			col: 17,
+			message:
+				'ARIAプロパティ「aria-required」は現在の属性「required」もしくは暗黙の属性「required」と同等のセマンティクスを持っています',
+			raw: 'aria-required="true"',
+		},
+	]);
+});

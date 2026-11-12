@@ -90,7 +90,7 @@ export default createRule<boolean, null>({
 					report({
 						scope: control,
 						message: t(
-							'The "{0}" element must not contain a form-control descendant when the "{1}" attribute references an external labelable element',
+							'The "{0*}" element must not contain a form-control descendant when the "{1*}" attribute references an external labelable element',
 							'label',
 							'for',
 						),
@@ -105,7 +105,7 @@ export default createRule<boolean, null>({
 				report({
 					scope: control,
 					message: t(
-						'The "{0}" element may contain at most one form-control descendant ({1})',
+						'The "{0*}" element may contain at most one form-control descendant ({1})',
 						'label',
 						'button, input, meter, output, progress, select, or textarea',
 					),

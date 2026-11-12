@@ -6,6 +6,7 @@ import { check, isEnum, isPattern } from '@markuplint/types';
 
 import { attrCheck } from '../attr-check.js';
 import { createNameOptionLookup } from '../helpers.js';
+import { noTranslate } from '../no-translate.js';
 
 import meta from './meta.js';
 
@@ -127,7 +128,7 @@ function createDisallowMessage(
 		return t(
 			'{0} is disallowed to accept the following values: {1}',
 			t('the "{0*}" {1}', name, 'attribute'),
-			t(type.enum),
+			t(type.enum.map(noTranslate)),
 		);
 	}
 	return t('{0} is disallowed', t('{0} of {1}', t('the {0}', 'type'), t('the "{0*}" {1}', name, 'attribute')));

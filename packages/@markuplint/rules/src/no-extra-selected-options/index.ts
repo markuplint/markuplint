@@ -30,7 +30,7 @@ export default createRule<boolean, null>({
 				report({
 					scope: opt,
 					message: t(
-						'The "{0}" element cannot have more than one selected "{1}" descendant unless the "{2}" attribute is specified',
+						'The "{0*}" element cannot have more than one selected "{1*}" descendant unless the "{2*}" attribute is specified',
 						'select',
 						'option',
 						'multiple',

@@ -399,3 +399,79 @@ test('[valid-importmap-invalid-022] multiple violations are all reported', async
 		},
 	]);
 });
+
+test('[valid-importmap-issue-4584-001] an empty import map is in Japanese with locale ja', async () => {
+	const { violations } = await mlRuleTest(rule, '<script type="importmap"></script>', undefined, false, 'ja');
+
+	expect(violations).toStrictEqual([
+		{
+			severity: 'error',
+			line: 1,
+			col: 1,
+			message: 'インポートマップにはJSONオブジェクトを含めるべきです',
+			raw: '<script type="importmap">',
+		},
+	]);
+});
+
+test('[valid-importmap-issue-4584-002] a top-level key that is not allowed is in Japanese with locale ja', async () => {
+	const { violations } = await mlRuleTest(
+		rule,
+		'<script type="importmap">{"foo":{}}</script>',
+		undefined,
+		false,
+		'ja',
+	);
+
+	expect(violations).toStrictEqual([
+		{
+			severity: 'error',
+			line: 1,
+			col: 1,
+			message:
+				'インポートマップのトップレベルキー「foo」は許可されていません(「imports」「scopes」「integrity」のいずれかを使用してください)',
+			raw: '<script type="importmap">',
+		},
+	]);
+});
+
+test('[valid-importmap-issue-4584-003] the trailing slash of the specifier is in Japanese with locale ja', async () => {
+	const { violations } = await mlRuleTest(
+		rule,
+		'<script type="importmap">{"imports":{"a/":"/b"}}</script>',
+		undefined,
+		false,
+		'ja',
+	);
+
+	expect(violations).toStrictEqual([
+		{
+			severity: 'error',
+			line: 1,
+			col: 1,
+			message:
+				'「imports」内のスペシファイアキー「a/」は「/」で終わっているため、アドレス「/b」も「/」で終わるべきです',
+			raw: '<script type="importmap">',
+		},
+	]);
+});
+
+test('[valid-importmap-issue-4584-004] the integrity key is in Japanese with locale ja', async () => {
+	const { violations } = await mlRuleTest(
+		rule,
+		'<script type="importmap">{"integrity":{"x":"y"}}</script>',
+		undefined,
+		false,
+		'ja',
+	);
+
+	expect(violations).toStrictEqual([
+		{
+			severity: 'error',
+			line: 1,
+			col: 1,
+			message: 'integrityのキー「x」はURL風のスペシファイア(「/」「./」「../」で始まるか、絶対URL)にするべきです',
+			raw: '<script type="importmap">',
+		},
+	]);
+});

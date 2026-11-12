@@ -39,7 +39,7 @@ export default createRule<boolean>({
 			if (child.is(child.ELEMENT_NODE)) {
 				report({
 					scope: child,
-					message: t('Content after the end tag of the "{0}" element is not allowed', 'body'),
+					message: t('Content after the end tag of the "{0*}" element is not allowed', 'body'),
 				});
 				continue;
 			}
@@ -47,7 +47,7 @@ export default createRule<boolean>({
 			if (child.is(child.TEXT_NODE) && child.raw.trim() !== '') {
 				report({
 					scope: child,
-					message: t('Content after the end tag of the "{0}" element is not allowed', 'body'),
+					message: t('Content after the end tag of the "{0*}" element is not allowed', 'body'),
 				});
 			}
 		}

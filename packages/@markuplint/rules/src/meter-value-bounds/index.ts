@@ -82,14 +82,14 @@ export default createRule<boolean, null>({
 				upperDefault: number,
 			) => {
 				const upperDesc = upperAttr
-					? t('the value of the "{0}" attribute', upperName)
+					? t('the value of the "{0*}" attribute', upperName)
 					: t(
-							'{0} when the "{1}" attribute is absent',
+							'{0} when the "{1*}" attribute is absent',
 							upperDefault === 1 ? 'one' : String(upperDefault),
 							upperName,
 						);
 				const message = t(
-					'The value of the "{0}" attribute must be less than or equal to {1}',
+					'The value of the "{0*}" attribute must be less than or equal to {1}',
 					lowerName,
 					upperDesc,
 				);

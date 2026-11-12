@@ -68,7 +68,7 @@ export const checkingContradictoryAriaProp: AttrChecker<
 					message: t(
 						'{0} contradicts {1}',
 						t('the "{0*}" {1}', attr.name, `ARIA ${propSpec.type}`),
-						t('the current "{0}" {1}', equivalentHtmlAttr.htmlAttrName, 'attribute'),
+						t('the current "{0*}" {1}', equivalentHtmlAttr.htmlAttrName, 'attribute'),
 					),
 				};
 			} else if (
@@ -81,7 +81,7 @@ export const checkingContradictoryAriaProp: AttrChecker<
 					message: t(
 						'{0} contradicts {1}',
 						t('the "{0*}" {1}', attr.name, `ARIA ${propSpec.type}`),
-						t('the implicit "{0}" {1}', equivalentHtmlAttr.htmlAttrName, 'attribute'),
+						t('the implicit "{0*}" {1}', equivalentHtmlAttr.htmlAttrName, 'attribute'),
 					),
 				};
 			}

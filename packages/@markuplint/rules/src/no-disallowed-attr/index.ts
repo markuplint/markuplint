@@ -72,7 +72,7 @@ export default createRule<boolean, Option>({
 					line: attrName?.startLine,
 					col: attrName?.startCol,
 					raw: attrName?.raw,
-					message: t('The "{0}" attribute must not be specified on an autonomous custom element', 'is'),
+					message: t('The "{0*}" attribute must not be specified on an autonomous custom element', 'is'),
 				});
 				return;
 			}

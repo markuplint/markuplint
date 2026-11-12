@@ -222,3 +222,17 @@ test('[label-for-references-labelable-issue-4489-003] the id is compared after t
 		},
 	]);
 });
+
+test('[label-for-references-labelable-issue-4584-001] the message is in Japanese with locale ja', async () => {
+	const { violations } = await mlRuleTest(rule, '<div id="x"></div><label for="x">a</label>', undefined, false, 'ja');
+
+	expect(violations).toStrictEqual([
+		{
+			severity: 'error',
+			line: 1,
+			col: 31,
+			message: '「label」要素の「for」属性は、ラベル付け可能な要素を参照するべきです',
+			raw: 'x',
+		},
+	]);
+});

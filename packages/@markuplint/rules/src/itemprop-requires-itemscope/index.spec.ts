@@ -200,3 +200,17 @@ describe('trees', () => {
 		expect(violations).toStrictEqual([]);
 	});
 });
+
+test('[itemprop-requires-itemscope-issue-4584-001] the message is in Japanese with locale ja', async () => {
+	const { violations } = await mlRuleTest(rule, '<div itemprop="a"></div>', undefined, false, 'ja');
+
+	expect(violations).toStrictEqual([
+		{
+			severity: 'error',
+			line: 1,
+			col: 1,
+			message: '要素は祖先の`itemscope`を介してアイテムに属するか、`itemref`から参照される必要があります',
+			raw: '<div itemprop="a">',
+		},
+	]);
+});

@@ -40,7 +40,7 @@ export default createRule<boolean, null>({
 			if (seenScopingRoots.has(scopingRoot)) {
 				report({
 					scope: el,
-					message: t('The "{0}" attribute must be unique in the document', 'autofocus'),
+					message: t('The "{0*}" attribute must be unique in the document', 'autofocus'),
 				});
 				continue;
 			}

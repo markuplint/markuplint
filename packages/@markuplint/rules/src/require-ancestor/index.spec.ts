@@ -599,3 +599,17 @@ describe('a component whose output is not known may render the ancestor', () => 
 		]);
 	});
 });
+
+test('[require-ancestor-issue-4584-001] the message is in Japanese with locale ja', async () => {
+	const { violations } = await mlRuleTest(rule, '<div><area alt="x" href="#"></div>', undefined, false, 'ja');
+
+	expect(violations).toStrictEqual([
+		{
+			severity: 'error',
+			line: 1,
+			col: 6,
+			message: '要素「area」は要素「map」の子孫に出現するべきです',
+			raw: '<area alt="x" href="#">',
+		},
+	]);
+});

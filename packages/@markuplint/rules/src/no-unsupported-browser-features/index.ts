@@ -63,7 +63,7 @@ export default createRule<boolean, Options>({
 				if (unsupported.length > 0) {
 					report({
 						scope: el,
-						message: formatUnsupportedMessage(t, elName, 'element', unsupported),
+						message: __formatUnsupportedMessage(t, elName, 'element', unsupported),
 					});
 				}
 			}
@@ -86,7 +86,7 @@ export default createRule<boolean, Options>({
 						line: attr.nameNode?.startLine,
 						col: attr.nameNode?.startCol,
 						raw: attr.nameNode?.raw,
-						message: formatUnsupportedMessage(t, attrName, 'attribute', unsupported),
+						message: __formatUnsupportedMessage(t, attrName, 'attribute', unsupported),
 					});
 				}
 			}
@@ -98,8 +98,11 @@ export default createRule<boolean, Options>({
 
 /**
  * Format an unsupported feature message listing affected browsers.
+ *
+ * The double-underscore prefix marks this as exposed only for testing: the browsers a feature
+ * was removed from are not reachable through the data of the dependencies.
  */
-function formatUnsupportedMessage(
+export function __formatUnsupportedMessage(
 	t: Parameters<Parameters<typeof createRule>[0]['verify']>[0]['t'],
 	featureName: string,
 	featureType: string,
@@ -110,13 +113,13 @@ function formatUnsupportedMessage(
 		.map(u => {
 			if (u.addedVersion === false) {
 				if (u.removedVersion) {
-					return `${u.displayName} (removed in ${u.removedVersion})`;
+					return t('{0*} (removed in {1*})', u.displayName, u.removedVersion);
 				}
-				return `${u.displayName} (not supported)`;
+				return t('{0*} (not supported)', u.displayName);
 			}
-			return `${u.displayName} (added in ${u.addedVersion}, target: ${u.targetVersion})`;
+			return t('{0*} (added in {1*}, target: {2*})', u.displayName, u.addedVersion, u.targetVersion);
 		})
 		.join(', ');
 
-	return t('{0} is not supported in {1}', t('the "{0*}" {1}', featureName, featureType), browserDetails);
+	return t('{0} is not supported in {1*}', t('the "{0*}" {1}', featureName, featureType), browserDetails);
 }

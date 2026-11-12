@@ -306,3 +306,73 @@ describe('Edge cases', () => {
 		expect(violations.length).toBe(0);
 	});
 });
+
+test('[link-types-issue-4584-001] a keyword that the element does not allow is in Japanese with locale ja', async () => {
+	const { violations } = await mlRuleTest(rule, '<link rel="bookmark">', undefined, false, 'ja');
+
+	expect(violations).toStrictEqual([
+		{
+			severity: 'error',
+			line: 1,
+			col: 12,
+			message: 'キーワード「bookmark」は要素「link」では許可されていません',
+			raw: 'bookmark',
+		},
+	]);
+});
+
+test('[link-types-issue-4584-002] a keyword that is not allowed is in Japanese with locale ja', async () => {
+	const { violations } = await mlRuleTest(rule, '<a rel="vcard">x</a>', undefined, false, 'ja');
+
+	expect(violations).toStrictEqual([
+		{
+			severity: 'error',
+			line: 1,
+			col: 9,
+			message: 'キーワード「vcard」は許可されていません',
+			raw: 'vcard',
+		},
+	]);
+});
+
+test('[link-types-issue-4584-003] a keyword that the link element does not allow in the body is in Japanese with locale ja', async () => {
+	const { violations } = await mlRuleTest(rule, '<body><link rel="canonical"></body>', undefined, false, 'ja');
+
+	expect(violations).toStrictEqual([
+		{
+			severity: 'error',
+			line: 1,
+			col: 18,
+			message: 'キーワード「canonical」は要素「body」内の要素「link」では許可されていません',
+			raw: 'canonical',
+		},
+	]);
+});
+
+test('[link-types-issue-4584-004] a keyword that the form element does not allow is in Japanese with locale ja', async () => {
+	const { violations } = await mlRuleTest(rule, '<form rel="stylesheet"></form>', undefined, false, 'ja');
+
+	expect(violations).toStrictEqual([
+		{
+			severity: 'error',
+			line: 1,
+			col: 12,
+			message: 'キーワード「stylesheet」は要素「form」では許可されていません',
+			raw: 'stylesheet',
+		},
+	]);
+});
+
+test('[link-types-issue-4584-005] a keyword that the area element does not allow is in Japanese with locale ja', async () => {
+	const { violations } = await mlRuleTest(rule, '<area rel="stylesheet" alt="">', undefined, false, 'ja');
+
+	expect(violations).toStrictEqual([
+		{
+			severity: 'error',
+			line: 1,
+			col: 12,
+			message: 'キーワード「stylesheet」は要素「a」では許可されていません',
+			raw: 'stylesheet',
+		},
+	]);
+});

@@ -119,3 +119,23 @@ test('[tab-requires-tabpanel-invalid-003] tabpanel aria-labelledby references a 
 	expect(violations.length).toBe(1);
 	expect(violations[0]!.message).toBe('An active "tab" role requires a corresponding "tabpanel" role');
 });
+
+test('[tab-requires-tabpanel-issue-4584-001] the message is in Japanese with locale ja', async () => {
+	const { violations } = await mlRuleTest(
+		rule,
+		'<div role="tablist"><div role="tab" aria-selected="true">a</div></div>',
+		undefined,
+		false,
+		'ja',
+	);
+
+	expect(violations).toStrictEqual([
+		{
+			severity: 'error',
+			line: 1,
+			col: 21,
+			message: 'アクティブなロール「tab」に対応するロール「tabpanel」が必要です',
+			raw: '<div role="tab" aria-selected="true">',
+		},
+	]);
+});

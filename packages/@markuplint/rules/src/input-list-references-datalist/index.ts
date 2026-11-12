@@ -43,7 +43,7 @@ export default createRule<boolean, null>({
 					col: listAttr.valueNode?.startCol,
 					raw: listAttr.valueNode?.raw,
 					message: t(
-						'The "{0}" attribute of the "{1}" element must reference a "{2}" element',
+						'The "{0*}" attribute of the "{1*}" element must reference a "{2*}" element',
 						'list',
 						'input',
 						'datalist',

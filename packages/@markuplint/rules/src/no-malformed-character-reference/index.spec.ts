@@ -65,3 +65,31 @@ test('[no-malformed-character-reference-invalid-008] character-reference-outside
 	const { violations } = await mlRuleTest(rule, '<p>&#x110000;</p>');
 	expect(violations.some(v => v.message.includes('character-reference-outside-unicode-range'))).toBe(true);
 });
+
+test('[no-malformed-character-reference-issue-4584-001] the message is in Japanese with locale ja', async () => {
+	const { violations } = await mlRuleTest(rule, '<div>&#x110000;</div>', undefined, false, 'ja');
+
+	expect(violations).toStrictEqual([
+		{
+			severity: 'error',
+			line: 1,
+			col: 16,
+			message: '文字参照はcharacter-reference-outside-unicode-rangeです',
+			raw: '#x110000;',
+		},
+	]);
+});
+
+test('[no-malformed-character-reference-issue-4584-002] another error code is in Japanese with locale ja', async () => {
+	const { violations } = await mlRuleTest(rule, '<div>&#0;</div>', undefined, false, 'ja');
+
+	expect(violations).toStrictEqual([
+		{
+			severity: 'error',
+			line: 1,
+			col: 10,
+			message: '文字参照はnull-character-referenceです',
+			raw: '#0;',
+		},
+	]);
+});

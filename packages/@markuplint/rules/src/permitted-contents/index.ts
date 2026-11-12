@@ -176,7 +176,7 @@ function name(
 ) {
 	if (scope.is(scope.ELEMENT_NODE)) {
 		const displayName = mode === 'origin' ? scope.rawName : scope.localName;
-		return t('the "{0}" {1}', displayName, 'element');
+		return t('the "{0*}" {1}', displayName, 'element');
 	}
 	if (scope.is(scope.TEXT_NODE)) {
 		return t('the {0}', 'text node');

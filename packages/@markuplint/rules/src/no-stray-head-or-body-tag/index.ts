@@ -57,14 +57,14 @@ export default createRule<boolean>({
 			if (STRAY_HEAD_END_TAG.test(text.raw)) {
 				report({
 					scope: text,
-					message: t('{0} detected', t('a stray "{0}" end tag', 'head')),
+					message: t('{0} detected', t('a stray "{0*}" end tag', 'head')),
 				});
 			}
 
 			if (DUPLICATE_BODY_START_TAG.test(text.raw)) {
 				report({
 					scope: text,
-					message: t('{0} detected', t('a duplicate "{0}" start tag', 'body')),
+					message: t('{0} detected', t('a duplicate "{0*}" start tag', 'body')),
 				});
 			}
 		});

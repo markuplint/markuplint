@@ -4,6 +4,8 @@ import type { ComputedRole } from '@markuplint/ml-spec';
 
 import { ARIA_RECOMMENDED_VERSION, ariaSpecs } from '@markuplint/ml-spec';
 
+import { noTranslate } from '../../no-translate.js';
+
 /**
  * Checks whether an element with an explicit role satisfies its
  * "Required Accessibility Parent Role" (called "Required Context Role" in ARIA 1.2).
@@ -72,7 +74,7 @@ export const checkingRequiredAccessibilityParentRole: ElementChecker<
 						parentRoles.length === 1 && parentRoles[0]
 							? t('an accessibility parent with the "{0*}" {1}', parentRoles[0], 'role')
 							: t('an accessibility parent with one of the {0}', 'roles') +
-									`: ${t(parentRoles as string[])}`,
+									`: ${t((parentRoles as string[]).map(noTranslate))}`,
 					),
 				};
 			}

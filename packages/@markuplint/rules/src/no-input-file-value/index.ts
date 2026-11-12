@@ -40,7 +40,7 @@ export default createRule<boolean, null>({
 				col: valueAttr.valueNode?.startCol,
 				raw: valueAttr.valueNode?.raw,
 				message: t(
-					'The "{0}" attribute on a "{1}" element with "{2}={3}" must be the empty string',
+					'The "{0*}" attribute on a "{1*}" element with "{2*}={3*}" must be the empty string',
 					'value',
 					'input',
 					'type',

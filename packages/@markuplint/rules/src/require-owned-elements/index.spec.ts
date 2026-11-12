@@ -271,3 +271,32 @@ test('[require-owned-elements-issue-4068-014] a component that renders none of i
 		},
 	]);
 });
+
+test('[require-owned-elements-issue-4584-001] the roles are shown as written with locale ja', async () => {
+	const { violations } = await mlRuleTest(rule, '<div role="listbox"></div>', undefined, false, 'ja');
+
+	expect(violations).toStrictEqual([
+		{
+			severity: 'error',
+			line: 1,
+			col: 1,
+			message: '子要素にロール: 「group > option」「option」が必要です。または、aria-busy="true"が必要です',
+			raw: '<div role="listbox">',
+		},
+	]);
+});
+
+test('[require-owned-elements-issue-4584-002] the roles are shown as written (`row` is also a keyword) with locale ja', async () => {
+	const { violations } = await mlRuleTest(rule, '<div role="table"></div>', undefined, false, 'ja');
+
+	expect(violations).toStrictEqual([
+		{
+			severity: 'error',
+			line: 1,
+			col: 1,
+			message:
+				'子要素にロール: 「caption」「row」「rowgroup > row」が必要です。または、aria-busy="true"が必要です',
+			raw: '<div role="table">',
+		},
+	]);
+});

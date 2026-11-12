@@ -175,34 +175,54 @@ function validateWhatwgKeyword(
 	switch (context) {
 		case 'link': {
 			if (def.link === 'not allowed') {
-				return t('The "{0*}" {1} is not allowed on the {2}', def.keyword, 'keyword', '"link" element');
+				return t(
+					'The "{0*}" {1} is not allowed on {2}',
+					def.keyword,
+					'keyword',
+					t('the "{0*}" {1}', 'link', 'element'),
+				);
 			}
 			return null;
 		}
 		case 'body-link': {
 			if (def.link === 'not allowed') {
-				return t('The "{0*}" {1} is not allowed on the {2}', def.keyword, 'keyword', '"link" element');
+				return t(
+					'The "{0*}" {1} is not allowed on {2}',
+					def.keyword,
+					'keyword',
+					t('the "{0*}" {1}', 'link', 'element'),
+				);
 			}
 			if (def.bodyOk !== 'Yes') {
 				return t(
-					'The "{0*}" {1} is not allowed on the {2} inside the {3}',
+					'The "{0*}" {1} is not allowed on {2} inside {3}',
 					def.keyword,
 					'keyword',
-					'"link" element',
-					'"body" element',
+					t('the "{0*}" {1}', 'link', 'element'),
+					t('the "{0*}" {1}', 'body', 'element'),
 				);
 			}
 			return null;
 		}
 		case 'a-area': {
 			if (def.a === 'not allowed') {
-				return t('The "{0*}" {1} is not allowed on the {2}', def.keyword, 'keyword', '"a" element');
+				return t(
+					'The "{0*}" {1} is not allowed on {2}',
+					def.keyword,
+					'keyword',
+					t('the "{0*}" {1}', 'a', 'element'),
+				);
 			}
 			return null;
 		}
 		case 'form': {
 			if (def.form === 'not allowed') {
-				return t('The "{0*}" {1} is not allowed on the {2}', def.keyword, 'keyword', '"form" element');
+				return t(
+					'The "{0*}" {1} is not allowed on {2}',
+					def.keyword,
+					'keyword',
+					t('the "{0*}" {1}', 'form', 'element'),
+				);
 			}
 			return null;
 		}
@@ -226,19 +246,34 @@ function validateMicroformatContext(
 		case 'link':
 		case 'body-link': {
 			if (!def.link) {
-				return t('The "{0*}" {1} is not allowed on the {2}', def.keyword, 'keyword', '"link" element');
+				return t(
+					'The "{0*}" {1} is not allowed on {2}',
+					def.keyword,
+					'keyword',
+					t('the "{0*}" {1}', 'link', 'element'),
+				);
 			}
 			return null;
 		}
 		case 'a-area': {
 			if (!def.a) {
-				return t('The "{0*}" {1} is not allowed on the {2}', def.keyword, 'keyword', '"a" element');
+				return t(
+					'The "{0*}" {1} is not allowed on {2}',
+					def.keyword,
+					'keyword',
+					t('the "{0*}" {1}', 'a', 'element'),
+				);
 			}
 			return null;
 		}
 		case 'form': {
 			// Microformats don't define form context; reject
-			return t('The "{0*}" {1} is not allowed on the {2}', def.keyword, 'keyword', '"form" element');
+			return t(
+				'The "{0*}" {1} is not allowed on {2}',
+				def.keyword,
+				'keyword',
+				t('the "{0*}" {1}', 'form', 'element'),
+			);
 		}
 	}
 }

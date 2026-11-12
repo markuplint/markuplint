@@ -99,7 +99,7 @@ export default createRule<boolean>({
 
 			report({
 				scope: el,
-				message: t('{0} is not closed at the end of the file', t('the "{0}" {1}', el.localName, 'element')),
+				message: t('{0} is not closed at the end of the file', t('the "{0*}" {1}', el.localName, 'element')),
 			});
 		});
 	},

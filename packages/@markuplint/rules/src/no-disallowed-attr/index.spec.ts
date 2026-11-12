@@ -1156,3 +1156,17 @@ test('[no-disallowed-attr-issue-4481-005] img: a sizes value other than "auto" o
 		[],
 	);
 });
+
+test('[no-disallowed-attr-issue-4584-001] the message is in Japanese with locale ja', async () => {
+	const { violations } = await mlRuleTest(rule, '<my-element is="my-other"></my-element>', undefined, false, 'ja');
+
+	expect(violations).toStrictEqual([
+		{
+			severity: 'error',
+			line: 1,
+			col: 13,
+			message: '「is」属性は自律カスタム要素に指定するべきではありません',
+			raw: 'is',
+		},
+	]);
+});
