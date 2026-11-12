@@ -2639,3 +2639,18 @@ test('[no-invalid-attr-value-issue-4586-002] input[type=week]: the week part is 
 		},
 	]);
 });
+
+test('[no-invalid-attr-value-issue-4584-001] the allowed values are shown as written (`time` is also a keyword) with locale ja', async () => {
+	const { violations } = await mlRuleTest(rule, '<input type="foo">', undefined, false, 'ja');
+
+	expect(violations).toStrictEqual([
+		{
+			severity: 'error',
+			line: 1,
+			col: 14,
+			message:
+				'属性「type」は「hidden」「text」「search」「tel」「url」「email」「password」「date」「month」「week」「time」「datetime-local」「number」「range」「color」「checkbox」「radio」「file」「submit」「image」「reset」「button」のいずれかである必要があります',
+			raw: 'foo',
+		},
+	]);
+});

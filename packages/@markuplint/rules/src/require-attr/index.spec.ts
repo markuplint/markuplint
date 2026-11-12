@@ -1192,3 +1192,23 @@ test('[require-attr-issue-4309-009] Vue: an SVG element keeps the name as writte
 			.violations,
 	).toStrictEqual([violation]);
 });
+
+test('[require-attr-issue-4584-001] the expected values are shown as written (`list` is also a keyword) with locale ja', async () => {
+	const { violations } = await mlRuleTest(
+		rule,
+		'<img src="a.png" decoding="sync">',
+		{ rule: [{ name: 'decoding', value: ['async', 'list'] }] },
+		false,
+		'ja',
+	);
+
+	expect(violations).toStrictEqual([
+		{
+			severity: 'error',
+			line: 1,
+			col: 28,
+			message: '属性「decoding」には「async」「list」のいずれかが必要です',
+			raw: 'sync',
+		},
+	]);
+});

@@ -6,8 +6,8 @@
 			"enum": ["double", "single"],
 			"default": "double",
 			"_description": {
-				"double": "Warns if the attribute value is not quoted on double quotation mark.",
-				"single": "Warns if the attribute value is not quoted on single quotation mark."
+				"double": "Warns if the attribute value is not quoted with double quotation marks.",
+				"single": "Warns if the attribute value is not quoted with single quotation marks."
 			},
 			"_description:ja": {
 				"double": "ダブルクオーテーションで囲われていない場合に警告をします。",

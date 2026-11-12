@@ -46,5 +46,8 @@
 		"debug": "^4.4.3",
 		"image-size": "^2.0.4",
 		"type-fest": "^5.10.0"
+	},
+	"devDependencies": {
+		"@markuplint/test-tools": "5.5.0"
 	}
 }

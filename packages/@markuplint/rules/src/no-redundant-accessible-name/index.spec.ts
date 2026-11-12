@@ -526,3 +526,50 @@ describe('the ancestors are those of the tree of the element', () => {
 		expect(violations).toStrictEqual([]);
 	});
 });
+
+test('[no-redundant-accessible-name-issue-4584-001] the content is a word and is translated, the attribute is shown as written with locale ja', async () => {
+	const { violations } = await mlRuleTest(
+		rule,
+		'<div role="button" aria-label="X"><template shadowrootmode="open"><slot></slot></template>Save</div>',
+		undefined,
+		false,
+		'ja',
+	);
+
+	expect(violations).toStrictEqual([
+		{
+			severity: 'warning',
+			line: 1,
+			col: 1,
+			message: '「aria-label」によるアクセシブルネームが「内容」を上書きします',
+			raw: '<div role="button" aria-label="X">',
+		},
+	]);
+});
+
+test('[no-redundant-accessible-name-issue-4584-002] the names of two attributes are shown as written with locale ja', async () => {
+	const { violations } = await mlRuleTest(
+		rule,
+		'<div id="a">A</div><div role="button" aria-labelledby="a" aria-label="X">Save</div>',
+		undefined,
+		false,
+		'ja',
+	);
+
+	expect(violations).toStrictEqual([
+		{
+			severity: 'warning',
+			line: 1,
+			col: 20,
+			message: '「aria-labelledby」によるアクセシブルネームが「aria-label」を上書きします',
+			raw: '<div role="button" aria-labelledby="a" aria-label="X">',
+		},
+		{
+			severity: 'warning',
+			line: 1,
+			col: 20,
+			message: '「aria-labelledby」によるアクセシブルネームが「内容」を上書きします',
+			raw: '<div role="button" aria-labelledby="a" aria-label="X">',
+		},
+	]);
+});

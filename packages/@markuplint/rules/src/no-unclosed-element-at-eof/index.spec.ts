@@ -75,3 +75,24 @@ html(lang="ja")
 		).violations,
 	).toStrictEqual([]);
 });
+
+test('[no-unclosed-element-at-eof-issue-4584-001] the name of the element is shown as written (`time` is also a keyword) with locale ja', async () => {
+	const { violations } = await mlRuleTest(rule, '<div><time>', undefined, false, 'ja');
+
+	expect(violations).toStrictEqual([
+		{
+			severity: 'error',
+			line: 1,
+			col: 1,
+			message: '要素「div」はファイルの終端で閉じられていません',
+			raw: '<div>',
+		},
+		{
+			severity: 'error',
+			line: 1,
+			col: 6,
+			message: '要素「time」はファイルの終端で閉じられていません',
+			raw: '<time>',
+		},
+	]);
+});

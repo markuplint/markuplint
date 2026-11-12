@@ -34,7 +34,7 @@ export default createRule({
 				line: pe.startLine,
 				col: pe.startCol,
 				raw: pe.raw,
-				message: t('{0} is {1:c}', t('the {0}', 'character reference'), pe.code),
+				message: t('{0} is {1*}', t('the {0}', 'character reference'), pe.code),
 			});
 		}
 	},

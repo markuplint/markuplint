@@ -34,7 +34,7 @@ export default createRule<boolean, null>({
 				col: idAttr.valueNode?.startCol,
 				raw: idAttr.valueNode?.raw,
 				message: t(
-					'The "{0}" attribute on a "{1}" element must have the same value as the "{2}" attribute',
+					'The "{0*}" attribute on a "{1*}" element must have the same value as the "{2*}" attribute',
 					'id',
 					'map',
 					'name',

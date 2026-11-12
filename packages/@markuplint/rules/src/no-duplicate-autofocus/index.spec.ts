@@ -95,3 +95,17 @@ test('[no-duplicate-autofocus-invalid-004] a dialog with autofocus and an inner 
 		},
 	]);
 });
+
+test('[no-duplicate-autofocus-issue-4584-001] the message is in Japanese with locale ja', async () => {
+	const { violations } = await mlRuleTest(rule, '<input autofocus><input autofocus>', undefined, false, 'ja');
+
+	expect(violations).toStrictEqual([
+		{
+			severity: 'error',
+			line: 1,
+			col: 18,
+			message: '「autofocus」属性は文書内で一意であるべきです',
+			raw: '<input autofocus>',
+		},
+	]);
+});

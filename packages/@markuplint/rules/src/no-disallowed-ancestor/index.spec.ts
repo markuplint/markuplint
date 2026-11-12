@@ -555,3 +555,17 @@ describe('main must be a hierarchically correct main element', () => {
 		});
 	});
 });
+
+test('[no-disallowed-ancestor-issue-4584-001] the message is in Japanese with locale ja', async () => {
+	const { violations } = await mlRuleTest(rule, '<address><address></address></address>', undefined, false, 'ja');
+
+	expect(violations).toStrictEqual([
+		{
+			severity: 'error',
+			line: 1,
+			col: 10,
+			message: '要素「address」は要素「address」の子孫に出現するべきではありません',
+			raw: '<address>',
+		},
+	]);
+});

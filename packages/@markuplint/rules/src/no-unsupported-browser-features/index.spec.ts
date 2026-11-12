@@ -1,7 +1,8 @@
-import { mlRuleTest } from 'markuplint';
+import { translator } from '@markuplint/i18n';
+import { i18n, mlRuleTest } from 'markuplint';
 import { describe, test, expect } from 'vitest';
 
-import rule from './index.js';
+import rule, { __formatUnsupportedMessage } from './index.js';
 
 describe('browser support (BCD-based)', () => {
 	test('[no-unsupported-browser-features-invalid-001] element not supported in IE 11', async () => {
@@ -296,5 +297,47 @@ describe('attribute name case', () => {
 			rule: { options: { ...options, ignoreFeatures: ['dialog', 'dialog[open]'] } },
 		});
 		expect(ignored.violations).toStrictEqual([]);
+	});
+});
+
+test('[no-unsupported-browser-features-issue-4584-001] the support of the browser is in Japanese with locale ja', async () => {
+	const { violations } = await mlRuleTest(
+		rule,
+		'<dialog></dialog>',
+		{ rule: { options: { browserslist: 'ie 11' } } },
+		false,
+		'ja',
+	);
+
+	expect(violations).toStrictEqual([
+		{
+			severity: 'warning',
+			line: 1,
+			col: 1,
+			message: '要素「dialog」はInternet Explorer(未サポート)ではサポートされていません',
+			raw: '<dialog>',
+		},
+	]);
+});
+
+describe('the browsers that a feature is not supported in', () => {
+	const unsupported = [
+		{ browser: 'chrome', displayName: 'Chrome', targetVersion: '30', addedVersion: '37' },
+		{ browser: 'firefox', displayName: 'Firefox', targetVersion: '100', addedVersion: false, removedVersion: '4' },
+		{ browser: 'ie', displayName: 'Internet Explorer', targetVersion: '11', addedVersion: false },
+	] as const;
+
+	test('[no-unsupported-browser-features-issue-4584-002] added, removed and never supported are in Japanese with locale ja', () => {
+		const t = translator(i18n('ja'));
+		expect(__formatUnsupportedMessage(t, 'dialog', 'element', unsupported)).toBe(
+			'要素「dialog」はChrome(37で追加、対象: 30), Firefox(4で削除済み), Internet Explorer(未サポート)ではサポートされていません',
+		);
+	});
+
+	test('[no-unsupported-browser-features-issue-4584-003] added, removed and never supported are as before in English', () => {
+		const t = translator(i18n('en'));
+		expect(__formatUnsupportedMessage(t, 'dialog', 'element', unsupported)).toBe(
+			'the "dialog" element is not supported in Chrome (added in 37, target: 30), Firefox (removed in 4), Internet Explorer (not supported)',
+		);
 	});
 });

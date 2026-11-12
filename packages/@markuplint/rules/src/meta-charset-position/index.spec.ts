@@ -44,3 +44,18 @@ test('[meta-charset-position-valid-001] meta charset within the first 1024 bytes
 test('[meta-charset-position-valid-002] no character encoding declaration present', async () => {
 	expect((await mlRuleTest(rule, '<!doctype html><title>no charset</title>')).violations).toStrictEqual([]);
 });
+
+test('[meta-charset-position-issue-4584-001] the message is in Japanese with locale ja', async () => {
+	const padding = '#'.repeat(1002);
+	const code = `<!doctype html><!--${padding}--><meta charset=utf-8>`;
+
+	expect((await mlRuleTest(rule, code, undefined, false, 'ja')).violations).toStrictEqual([
+		{
+			severity: 'error',
+			line: 1,
+			col: 1025,
+			raw: '<meta charset=utf-8>',
+			message: '文字エンコーディング宣言は、文書の先頭1024バイト以内にあるべきです',
+		},
+	]);
+});

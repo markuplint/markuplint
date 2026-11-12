@@ -3959,3 +3959,17 @@ describe('script-supporting elements in table sections, colgroup and dl (#4492)'
 		]);
 	});
 });
+
+test('[permitted-contents-issue-4584-001] the name of the element is shown as written (`time` is also a keyword) with locale ja', async () => {
+	const { violations } = await mlRuleTest(rule, '<time><div></div></time>', undefined, false, 'ja');
+
+	expect(violations).toStrictEqual([
+		{
+			severity: 'error',
+			line: 1,
+			col: 7,
+			message: 'このコンテキストでは、要素「time」に要素「div」を含めることはできません',
+			raw: '<div>',
+		},
+	]);
+});

@@ -75,3 +75,17 @@ test('[form-attr-references-form-issue-4489-002] an id in another tree is not th
 	const { violations } = await mlRuleTest(rule, '<div id="x"></div><template><input form="x"></template>');
 	expect(violations).toStrictEqual([]);
 });
+
+test('[form-attr-references-form-issue-4584-001] the message is in Japanese with locale ja', async () => {
+	const { violations } = await mlRuleTest(rule, '<div id="x"></div><input form="x">', undefined, false, 'ja');
+
+	expect(violations).toStrictEqual([
+		{
+			severity: 'error',
+			line: 1,
+			col: 32,
+			message: 'フォーム関連要素の「form」属性は、「form」要素を参照するべきです',
+			raw: 'x',
+		},
+	]);
+});

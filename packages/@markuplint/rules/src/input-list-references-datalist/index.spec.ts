@@ -153,3 +153,17 @@ test('[input-list-references-datalist-issue-4489-002] an id in another tree is n
 	const { violations } = await mlRuleTest(rule, '<div id="x"></div><template><input list="x"></template>');
 	expect(violations).toStrictEqual([]);
 });
+
+test('[input-list-references-datalist-issue-4584-001] the name of the attribute is shown as written (`list` is also a keyword) with locale ja', async () => {
+	const { violations } = await mlRuleTest(rule, '<div id="x"></div><input list="x">', undefined, false, 'ja');
+
+	expect(violations).toStrictEqual([
+		{
+			severity: 'error',
+			line: 1,
+			col: 32,
+			message: '「input」要素の「list」属性は、「datalist」要素を参照するべきです',
+			raw: 'x',
+		},
+	]);
+});

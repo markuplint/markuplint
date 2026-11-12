@@ -3,6 +3,7 @@ import type { Attribute } from '@markuplint/html-spec';
 import { createRule, getAttrSpecs } from '@markuplint/ml-core';
 
 import { attrMatches, match } from '../helpers.js';
+import { noTranslate } from '../no-translate.js';
 
 import meta from './meta.js';
 
@@ -171,7 +172,10 @@ export default createRule<RequiredAttributes, Options>({
 				if (spec.values.length > 0 && value) {
 					const matched = spec.values.some(pattern => match(value, pattern));
 					if (!matched) {
-						const expects = spec.values.length === 1 ? t(spec.values) : t('either {0}', t(spec.values));
+						const expects =
+							spec.values.length === 1
+								? t(spec.values.map(noTranslate))
+								: t('either {0}', t(spec.values.map(noTranslate)));
 						const message = t('{0} expects {1}', t('the "{0*}" {1}', spec.name, 'attribute'), expects);
 						const attrToken = el.getAttributeToken(spec.name);
 						const valueToken = attrToken[0]?.valueNode;

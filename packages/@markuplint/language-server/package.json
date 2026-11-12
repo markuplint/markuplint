@@ -53,6 +53,7 @@
 		"vscode-languageserver-textdocument": "^1.0.16"
 	},
 	"devDependencies": {
+		"@markuplint/test-tools": "5.5.0",
 		"@types/debug": "4.1.13",
 		"@types/semver": "7.8.0",
 		"vscode-jsonrpc": "8.2.1"

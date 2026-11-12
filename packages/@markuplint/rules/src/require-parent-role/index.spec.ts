@@ -55,3 +55,24 @@ describe('the parent is looked for in the tree of the element', () => {
 		]);
 	});
 });
+
+test('[require-parent-role-issue-4584-001] the roles are shown as written (`list` is also a keyword) with locale ja', async () => {
+	const { violations } = await mlRuleTest(
+		rule,
+		'<div><template shadowrootmode="open"><div role="listitem">x</div></template></div>',
+		undefined,
+		false,
+		'ja',
+	);
+
+	expect(violations).toStrictEqual([
+		{
+			severity: 'error',
+			line: 1,
+			col: 49,
+			message:
+				'ロール「listitem」に次のロールのいずれかを持つアクセシビリティ親要素: 「directory」「list」が必要です',
+			raw: 'listitem',
+		},
+	]);
+});

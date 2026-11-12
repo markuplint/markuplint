@@ -143,3 +143,39 @@ test('[label-no-multiple-controls-issue-4489-002] a control in the content of a 
 	const { violations } = await mlRuleTest(rule, '<label><input><template><input></template></label>');
 	expect(violations).toStrictEqual([]);
 });
+
+test('[label-no-multiple-controls-issue-4584-001] more than one control is in Japanese with locale ja', async () => {
+	const { violations } = await mlRuleTest(rule, '<label><input><input></label>', undefined, false, 'ja');
+
+	expect(violations).toStrictEqual([
+		{
+			severity: 'error',
+			line: 1,
+			col: 15,
+			message:
+				'「label」要素に含められるフォームコントロールの子孫は1つまでです(button, input, meter, output, progress, select, textarea)',
+			raw: '<input>',
+		},
+	]);
+});
+
+test('[label-no-multiple-controls-issue-4584-002] an external control is in Japanese with locale ja', async () => {
+	const { violations } = await mlRuleTest(
+		rule,
+		'<input id="x"><label for="x"><input></label>',
+		undefined,
+		false,
+		'ja',
+	);
+
+	expect(violations).toStrictEqual([
+		{
+			severity: 'error',
+			line: 1,
+			col: 30,
+			message:
+				'「for」属性が外部のラベル付け可能な要素を参照している場合、「label」要素はフォームコントロールの子孫を含むべきではありません',
+			raw: '<input>',
+		},
+	]);
+});

@@ -789,3 +789,99 @@ test('[valid-speculation-rules-invalid-040] a nested predicate inside and is inv
 		},
 	]);
 });
+
+test('[valid-speculation-rules-issue-4584-001] a top-level key that is not allowed is in Japanese with locale ja', async () => {
+	const { violations } = await mlRuleTest(
+		rule,
+		'<script type="speculationrules">{"foo":[]}</script>',
+		undefined,
+		false,
+		'ja',
+	);
+
+	expect(violations).toStrictEqual([
+		{
+			severity: 'error',
+			line: 1,
+			col: 1,
+			message:
+				'投機的ルールのトップレベルキー「foo」は許可されていません(「tag」「prefetch」「prerender」のいずれかを使用してください)',
+			raw: '<script type="speculationrules">',
+		},
+		{
+			severity: 'error',
+			line: 1,
+			col: 1,
+			message: '投機的ルールは「prefetch」または「prerender」プロパティを持つオブジェクトにするべきです',
+			raw: '<script type="speculationrules">',
+		},
+	]);
+});
+
+test('[valid-speculation-rules-issue-4584-002] a list rule without urls is in Japanese with locale ja', async () => {
+	const { violations } = await mlRuleTest(
+		rule,
+		'<script type="speculationrules">{"prefetch":[{"source":"list"}]}</script>',
+		undefined,
+		false,
+		'ja',
+	);
+
+	expect(violations).toStrictEqual([
+		{
+			severity: 'error',
+			line: 1,
+			col: 1,
+			message: 'リストルール「prefetch[0]」は「urls」プロパティを持つべきです',
+			raw: '<script type="speculationrules">',
+		},
+	]);
+});
+
+test('[valid-speculation-rules-issue-4584-003] the eagerness value is in Japanese with locale ja', async () => {
+	const { violations } = await mlRuleTest(
+		rule,
+		'<script type="speculationrules">{"prefetch":[{"source":"list","eagerness":"x"}]}</script>',
+		undefined,
+		false,
+		'ja',
+	);
+
+	expect(violations).toStrictEqual([
+		{
+			severity: 'error',
+			line: 1,
+			col: 1,
+			message:
+				'「eagerness」の値「x」は許可されていません(「immediate」「eager」「moderate」「conservative」のいずれかを使用してください)',
+			raw: '<script type="speculationrules">',
+		},
+		{
+			severity: 'error',
+			line: 1,
+			col: 1,
+			message: 'リストルール「prefetch[0]」は「urls」プロパティを持つべきです',
+			raw: '<script type="speculationrules">',
+		},
+	]);
+});
+
+test('[valid-speculation-rules-issue-4584-004] a pattern is in Japanese with locale ja', async () => {
+	const { violations } = await mlRuleTest(
+		rule,
+		'<script type="speculationrules">{"prefetch":[{"where":{"and":[{"href_matches":1}]}}]}</script>',
+		undefined,
+		false,
+		'ja',
+	);
+
+	expect(violations).toStrictEqual([
+		{
+			severity: 'error',
+			line: 1,
+			col: 1,
+			message: '「href_matches」パターンは文字列または文字列の配列にするべきです',
+			raw: '<script type="speculationrules">',
+		},
+	]);
+});

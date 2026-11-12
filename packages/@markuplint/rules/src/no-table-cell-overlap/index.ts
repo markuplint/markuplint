@@ -1,6 +1,7 @@
 import { createRule } from '@markuplint/ml-core';
 
 import { Grid } from '../table-row-column-alignment/grid.js';
+import { noTranslate } from '../no-translate.js';
 
 import meta from './meta.js';
 
@@ -28,7 +29,7 @@ export default createRule<boolean>({
 					message: t(
 						//
 						'{0} are causing {1}',
-						t(['rowspan', 'colspan'], true),
+						t(['rowspan', 'colspan'].map(noTranslate), true),
 						'cell overlap',
 					),
 				});

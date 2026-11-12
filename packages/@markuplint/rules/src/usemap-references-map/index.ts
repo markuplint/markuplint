@@ -50,7 +50,7 @@ export default createRule<boolean, null>({
 					col: usemapAttr.valueNode?.startCol,
 					raw: usemapAttr.valueNode?.raw,
 					message: t(
-						'The "{0}" attribute of the "{1}" element must be a valid hash-name reference to a "{2}" element',
+						'The "{0*}" attribute of the "{1*}" element must be a valid hash-name reference to a "{2*}" element',
 						'usemap',
 						'img',
 						'map',

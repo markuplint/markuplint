@@ -65,8 +65,8 @@ export const checkingRedundantAriaProp: AttrChecker<
 							'semantics',
 							t(
 								'{0} or {1}',
-								t('the current "{0}" {1}', equivalentHtmlAttr.htmlAttrName, 'attribute'),
-								t('the implicit "{0}" {1}', equivalentHtmlAttr.htmlAttrName, 'attribute'),
+								t('the current "{0*}" {1}', equivalentHtmlAttr.htmlAttrName, 'attribute'),
+								t('the implicit "{0*}" {1}', equivalentHtmlAttr.htmlAttrName, 'attribute'),
 							),
 						),
 					),

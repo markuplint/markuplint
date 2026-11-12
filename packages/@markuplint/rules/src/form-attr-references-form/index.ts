@@ -63,7 +63,7 @@ export default createRule<boolean, null>({
 					col: formAttr.valueNode?.startCol,
 					raw: formAttr.valueNode?.raw,
 					message: t(
-						'The "{0}" attribute on a form-associated element must reference a "{1}" element',
+						'The "{0*}" attribute on a form-associated element must reference a "{1*}" element',
 						'form',
 						'form',
 					),

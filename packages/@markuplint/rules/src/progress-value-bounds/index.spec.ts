@@ -119,3 +119,31 @@ test('[progress-value-bounds-parser-002] pretender with `as` attribute is verifi
 		'The value of the "value" attribute must be less than or equal to the value of the "max" attribute',
 	);
 });
+
+test('[progress-value-bounds-issue-4584-001] the names of the attributes are shown as written (`value` is also a keyword) with locale ja', async () => {
+	const { violations } = await mlRuleTest(rule, '<progress value="5" max="3"></progress>', undefined, false, 'ja');
+
+	expect(violations).toStrictEqual([
+		{
+			severity: 'error',
+			line: 1,
+			col: 18,
+			message: '「value」属性の値は「max」属性の値以下であるべきです',
+			raw: '5',
+		},
+	]);
+});
+
+test('[progress-value-bounds-issue-4584-002] an absent attribute is in Japanese with locale ja', async () => {
+	const { violations } = await mlRuleTest(rule, '<progress value="5"></progress>', undefined, false, 'ja');
+
+	expect(violations).toStrictEqual([
+		{
+			severity: 'error',
+			line: 1,
+			col: 18,
+			message: '「value」属性の値は「max」属性がない場合の1以下であるべきです',
+			raw: '5',
+		},
+	]);
+});

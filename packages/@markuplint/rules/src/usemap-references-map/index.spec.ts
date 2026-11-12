@@ -93,3 +93,17 @@ test('[usemap-references-map-issue-4489-004] a map whose name is not known until
 	});
 	expect(violations).toStrictEqual([]);
 });
+
+test('[usemap-references-map-issue-4584-001] the message is in Japanese with locale ja', async () => {
+	const { violations } = await mlRuleTest(rule, '<img usemap="#x" src="a.png" alt="">', undefined, false, 'ja');
+
+	expect(violations).toStrictEqual([
+		{
+			severity: 'error',
+			line: 1,
+			col: 14,
+			message: '「img」要素の「usemap」属性は、「map」要素への妥当なハッシュ名参照であるべきです',
+			raw: '#x',
+		},
+	]);
+});

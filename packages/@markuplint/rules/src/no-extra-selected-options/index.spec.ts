@@ -64,3 +64,24 @@ test('[no-extra-selected-options-invalid-003] three selected reports two excess'
 	expect(violations.length).toBe(2);
 	expect(violations.map(v => v.col)).toStrictEqual([36, 63]);
 });
+
+test('[no-extra-selected-options-issue-4584-001] the message is in Japanese with locale ja', async () => {
+	const { violations } = await mlRuleTest(
+		rule,
+		'<select><option selected></option><option selected></option></select>',
+		undefined,
+		false,
+		'ja',
+	);
+
+	expect(violations).toStrictEqual([
+		{
+			severity: 'error',
+			line: 1,
+			col: 35,
+			message:
+				'「multiple」属性が指定されていない場合、「select」要素は選択された「option」の子孫を複数持つことはできません',
+			raw: '<option selected>',
+		},
+	]);
+});
