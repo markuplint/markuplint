@@ -13,7 +13,24 @@ use super::helpers::{
 use super::label_steps::resolve_label_text;
 use super::{AccnameResolver, AccnameResult, AccnameSource};
 
-const TEXT_INPUT_TYPES: &[&str] = &["text", "search", "tel", "url", "email", "password", "number"];
+/// TS `TEXT_INPUT_TYPES`: the types of an `input` named by its label, its title and its placeholder.
+const TEXT_INPUT_TYPES: &[&str] = &[
+    "text",
+    "password",
+    "search",
+    "tel",
+    "url",
+    "email",
+    "number",
+    "date",
+    "month",
+    "week",
+    "time",
+    "datetime-local",
+    "color",
+    "range",
+    "file",
+];
 
 /// Step 2E: Get element-specific accessible name.
 pub fn get_element_specific_name(
@@ -212,11 +229,11 @@ fn handle_table(
 
 fn handle_img(arena: &DomArena, node_id: NodeId) -> Option<AccnameResult> {
     if dom::has_attr(arena, node_id, "alt") {
+        // A blank `alt` is an empty name that ends the step, with no source
         let alt = dom::get_attr_value(arena, node_id, "alt").unwrap_or("");
-        return Some(AccnameResult {
-            name: super::helpers::flatten_text(alt),
-            source: Some(AccnameSource::Alt),
-        });
+        let name = super::helpers::flatten_text(alt);
+        let source = (!name.is_empty()).then_some(AccnameSource::Alt);
+        return Some(AccnameResult { name, source });
     }
     title_attr(arena, node_id)
 }

@@ -1,6 +1,8 @@
 //! Cross-references use `NodeId` indices instead of pointers, avoiding lifetime complexity.
 
+use std::any::Any;
 use std::collections::HashMap;
+use std::sync::{Arc, Mutex};
 
 use markuplint_core::mlast::{AttrNameFold, DocumentSettings, MLASTAttr, MLASTParseError};
 
@@ -24,6 +26,28 @@ pub struct DomArena {
     /// path (Path A) can carry anything but the HTML defaults, as only there is the parser not
     /// the Rust HTML one.
     pub(crate) settings: DocumentSettings,
+    memo: Memo,
+}
+
+/// Answers that a rule computes about a tree and asks for again for each node it visits (the shadow
+/// root of a host, the slot assignment of a shadow root), kept per arena. The arena does not change
+/// once the rules run, as the TS `Document` does not, so an answer never goes stale; a pass that
+/// changes the arena ([`DomArena::element_mut`]) drops them. A clone starts without any.
+#[derive(Default)]
+struct Memo(Mutex<HashMap<(&'static str, NodeId), Answer>>);
+
+type Answer = Arc<dyn Any + Send + Sync>;
+
+impl Clone for Memo {
+    fn clone(&self) -> Self {
+        Self::default()
+    }
+}
+
+impl std::fmt::Debug for Memo {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        f.write_str("Memo")
+    }
 }
 
 impl DomArena {
@@ -35,7 +59,33 @@ impl DomArena {
             source: None,
             parse_errors: Vec::new(),
             settings: DocumentSettings::default(),
+            memo: Memo::default(),
         }
+    }
+
+    /// The answer `compute` gives for `(kind, id)`, computed once. `kind` names the question, and the
+    /// type behind a kind is always the same.
+    ///
+    /// `compute` runs without the lock held, so it may ask for another answer.
+    ///
+    /// # Panics
+    ///
+    /// Panics when `kind` was used with another type, or when the lock is poisoned.
+    pub fn memoize<T: Any + Send + Sync>(&self, kind: &'static str, id: NodeId, compute: impl FnOnce() -> T) -> Arc<T> {
+        let found = self.memo.0.lock().unwrap().get(&(kind, id)).cloned();
+        if let Some(found) = found {
+            return found.downcast::<T>().expect("a kind of memo has one type");
+        }
+        let computed = Arc::new(compute());
+        self.memo
+            .0
+            .lock()
+            .unwrap()
+            .entry((kind, id))
+            .or_insert_with(|| computed.clone())
+            .clone()
+            .downcast::<T>()
+            .expect("a kind of memo has one type")
     }
 
     #[must_use]
@@ -102,6 +152,12 @@ impl DomArena {
     /// Mutable access to an element, for passes that run after construction
     /// (the pretending pass rewrites the identity of matched elements).
     pub fn element_mut(&mut self, id: NodeId) -> Option<&mut ElementData> {
+        // A poisoned lock only means another thread panicked while it held it; the answers are dropped here
+        self.memo
+            .0
+            .get_mut()
+            .unwrap_or_else(std::sync::PoisonError::into_inner)
+            .clear();
         match self.nodes.get_mut(id) {
             Some(DomNode::Element(data)) => Some(data),
             _ => None,

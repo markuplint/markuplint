@@ -20,6 +20,7 @@ type MLASTForRustOptions = {
 		readonly attrNameCaseSensitive?: boolean;
 		readonly attrNameRoute?: AttrNameRoute;
 		readonly componentNameVariants?: boolean;
+		readonly slotElement?: 'html' | 'framework';
 	};
 	/**
 	 * What the framework renders each attribute as, by the `uuid` of its token ({@link renderAttrs}).
@@ -95,7 +96,7 @@ export function renderAttrs<T extends RuleConfigValue, O extends PlainData>(
  *   `MLAttr`: `isDynamicValue` that the value is not known, `isExpressionValue` that it is written
  *   as code (what the parser calls `isDynamicValue`), `isAbsent` that it is not output.
  * - `endTag`, `booleanish`, `tagNameCaseSensitive`, `attrNameCaseSensitive`, `attrNameRoute` and
- *   `componentNameVariants` of the parser are sent next to the nodes (`DocumentSettings` on the
+ *   `componentNameVariants` and `slotElement` of the parser are sent next to the nodes (`DocumentSettings` on the
  *   Rust side), as `MLCore` hands them to `Document`.
  *
  * @param ast - What the parser returned; it is not modified.
@@ -146,6 +147,7 @@ export function mlastForRust(ast: MLASTDocument, { spec, parser, renderings }: M
 			attrNameCaseSensitive: parser.attrNameCaseSensitive,
 			attrNameRoute: parser.attrNameRoute,
 			componentNameVariants: parser.componentNameVariants,
+			slotElement: parser.slotElement,
 		},
 		(_key, value: unknown) => (isHTMLAttr(value) ? resolveAttr(value) : value),
 	);

@@ -9,6 +9,28 @@ use markuplint_dom::node::DomNode;
 
 use super::AccnameResolver;
 
+/// TS `EMBEDDED_CONTROL_ROLES`: the roles of the controls whose value is used in name-from-content
+/// computation (Step 2C).
+pub const EMBEDDED_CONTROL_ROLES: [&str; 6] = ["textbox", "combobox", "listbox", "spinbutton", "slider", "searchbox"];
+
+/// TS `isNativeEmbeddedControl`: whether the element is an embedded control by what it is, without a
+/// role: a `textarea`, a `select`, or an `input` whose type is not a button, an image, a checkbox, a radio
+/// or hidden.
+pub fn is_native_embedded_control(el: &markuplint_dom::node::ElementData) -> bool {
+    match crate::aria_check::element_local_name(el).as_str() {
+        "textarea" | "select" => true,
+        "input" => {
+            let input_type =
+                dom::get_attr_value_from_el(el, "type").map_or_else(|| "text".to_owned(), str::to_lowercase);
+            !matches!(
+                input_type.as_str(),
+                "hidden" | "button" | "submit" | "reset" | "image" | "checkbox" | "radio"
+            )
+        }
+        _ => false,
+    }
+}
+
 pub fn flatten_text(text: &str) -> String {
     text.split_whitespace().collect::<Vec<_>>().join(" ")
 }
@@ -37,14 +59,14 @@ pub fn resolve_name_from_content(
                 }
             }
             DomNode::Element(_) => {
-                // Hidden elements are excluded from content traversal
-                if resolver.is_hidden(child_id) {
+                if is_svg_descriptive_element(arena, child_id) {
                     continue;
                 }
 
                 // Step 2C: Embedded control value
                 if resolver.is_embedded_control(child_id) {
-                    let value = get_embedded_control_value(arena, child_id, resolver);
+                    let value =
+                        embedded_control_text(arena, child_id, resolver, visited, in_labelledby_traversal, computing);
                     if !value.is_empty() {
                         parts.push(value);
                     }
@@ -106,8 +128,18 @@ fn collect_transparent_text(
         match arena.get(child_id) {
             Some(DomNode::Text(t)) => parts.push(t.base.raw.clone()),
             Some(DomNode::Element(_)) => {
+                if is_svg_descriptive_element(arena, child_id) {
+                    continue;
+                }
                 if resolver.is_embedded_control(child_id) {
-                    parts.push(get_embedded_control_value(arena, child_id, resolver));
+                    parts.push(embedded_control_text(
+                        arena,
+                        child_id,
+                        resolver,
+                        visited,
+                        in_labelledby_traversal,
+                        computing,
+                    ));
                     continue;
                 }
                 let result = super::compute::compute_accessible_name_internal(
@@ -135,6 +167,57 @@ fn collect_transparent_text(
         }
     }
     parts.join(" ")
+}
+
+/// The text an embedded control reached by name-from-content recursion contributes, in the order of
+/// `AccName` §4.3.2: nothing when it is hidden (Step 2A), the text of its `aria-labelledby` outside an
+/// ongoing `aria-labelledby` traversal (Step 2B), otherwise its value (Step 2C), as its `aria-label` is
+/// ignored (Step 2D).
+///
+/// > If traversal of the current node is due to Name From Content descendant node recursion and the
+/// > current node is an embedded control, ignore aria-label and skip to rule Embedded Control.
+///
+/// @see <https://w3c.github.io/accname/#comp_label>
+pub fn embedded_control_text(
+    arena: &DomArena,
+    node_id: NodeId,
+    resolver: &dyn AccnameResolver,
+    visited: &HashSet<String>,
+    in_labelledby_traversal: bool,
+    computing: &mut HashSet<NodeId>,
+) -> String {
+    let hidden = resolver.is_hidden(node_id);
+    resolver.on_visit(
+        node_id,
+        super::AccnameVisit {
+            hidden,
+            embedded_control: true,
+            in_labelledby_traversal,
+        },
+    );
+    if hidden {
+        return String::new();
+    }
+    if !in_labelledby_traversal
+        && let Some(labelledby) =
+            super::aria_steps::resolve_aria_labelledby(arena, node_id, resolver, visited, computing)
+    {
+        return labelledby.name;
+    }
+    get_embedded_control_value(arena, node_id, resolver)
+}
+
+/// TS `isSvgDescriptiveElement`: an SVG `title` or `desc`. They are never rendered, so their text is
+/// not content of the parent: a `title` gives the name only through Step 2E of its parent, which an
+/// element exposed as presentational skips.
+///
+/// @see <https://svgwg.org/svg2-draft/render.html#TermNeverRenderedElement>
+pub fn is_svg_descriptive_element(arena: &DomArena, node_id: NodeId) -> bool {
+    is_svg_element(arena, node_id)
+        && arena
+            .get(node_id)
+            .and_then(|n| n.as_element())
+            .is_some_and(|el| el.base.node_name == "title" || el.base.node_name == "desc")
 }
 
 fn get_embedded_control_value(arena: &DomArena, node_id: NodeId, resolver: &dyn AccnameResolver) -> String {
