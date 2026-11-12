@@ -4,6 +4,7 @@
 //!   no-stray-head-or-body-tag-invalid-001  → no_stray_head_or_body_tag_invalid_001
 //!   no-stray-head-or-body-tag-valid-001    → no_stray_head_or_body_tag_valid_001
 //!   no-stray-head-or-body-tag-valid-002    → no_stray_head_or_body_tag_valid_002
+//!   no-stray-head-or-body-tag-issue-4180-002 → no_stray_head_or_body_tag_issue_4180_002
 //!   v6_no_stray_head_or_body_tag_001  — Rust-only: an orphaned `</head>` between text is its own (bogus) text node
 //!   v6_no_stray_head_or_body_tag_002  — Rust-only: a duplicate `<body>` between whitespace stays in that text
 //!   v6_no_stray_head_or_body_tag_003  — Rust-only: tag names match case-insensitively, before whitespace, `/` or `>`
@@ -96,5 +97,15 @@ fn v6_no_stray_head_or_body_tag_003() {
             brief(Severity::Error, 1, 35, STRAY_HEAD, "x <BODY\ta> y</head > z"),
             brief(Severity::Error, 1, 35, DUPLICATE_BODY, "x <BODY\ta> y</head > z"),
         ]
+    );
+}
+
+/// TS: `[no-stray-head-or-body-tag-issue-4180-002]` tag-shaped text inside iframe is not flagged
+#[test]
+fn no_stray_head_or_body_tag_issue_4180_002() {
+    const _ID: &str = "no-stray-head-or-body-tag-issue-4180-002";
+    assert_eq!(
+        run("<!doctype html><head><title>t</title></head><body><iframe><body></iframe></body>"),
+        []
     );
 }

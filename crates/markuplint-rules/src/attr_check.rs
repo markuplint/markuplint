@@ -99,10 +99,6 @@ pub(crate) fn walk_attrs<O>(
     parse_options: impl Fn(&serde_json::Value) -> O,
     mut check: impl FnMut(&O, &MLASTHTMLAttr, &AttrCheckContext<'_>) -> Vec<Violation>,
 ) -> Vec<Violation> {
-    if config.global().value == serde_json::Value::Bool(false) {
-        return vec![];
-    }
-
     let mut violations = Vec::new();
 
     for (node_id, el) in arena.elements() {

@@ -94,13 +94,20 @@ fn compute_landmark_roles(
                 .filter(|&id| matches(&selector, arena, spec, id))
                 .collect();
             match role {
-                "banner" => list.extend(&headers),
-                "contentinfo" => list.extend(&footers),
+                "banner" => extend_without(&mut list, &headers),
+                "contentinfo" => extend_without(&mut list, &footers),
                 _ => {}
             }
             (role, list)
         })
         .collect()
+}
+
+/// Appends the implicit `<header>` / `<footer>` landmarks that the role's own selector has not
+/// already collected: a lone `<header role="banner">` must not count as a duplicate (#4180).
+fn extend_without(list: &mut Vec<NodeId>, implicit: &[NodeId]) {
+    let collected = list.clone();
+    list.extend(implicit.iter().copied().filter(|id| !collected.contains(id)));
 }
 
 /// TS `Element.isDescendantByUUIDList()`: whether any ancestor element is in `list`.

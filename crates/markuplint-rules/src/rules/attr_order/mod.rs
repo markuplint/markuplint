@@ -151,7 +151,14 @@ impl Rule for AttrOrder {
 
         for (node_id, el) in arena.elements() {
             let rule_config = config.get(node_id);
-            if rule_config.disabled || el.attributes.len() <= 1 {
+            // An attribute that a pretender made is not in the source, so it has no place in the
+            // order of it
+            let attrs: Vec<&MLASTAttr> = el
+                .attributes
+                .iter()
+                .filter(|attr| !crate::pretending::is_pretended_attr(attr))
+                .collect();
+            if rule_config.disabled || attrs.len() <= 1 {
                 continue;
             }
 
@@ -171,9 +178,8 @@ impl Rule for AttrOrder {
             let compiled = compile_entries(entries, &global_attrs, &event_attrs);
 
             let names = AttrNames::new(el);
-            let infos: Vec<AttrInfo<'_>> = el
-                .attributes
-                .iter()
+            let infos: Vec<AttrInfo<'_>> = attrs
+                .into_iter()
                 .enumerate()
                 .map(|(index, attr)| match attr {
                     MLASTAttr::HTMLAttr(html_attr) => AttrInfo {

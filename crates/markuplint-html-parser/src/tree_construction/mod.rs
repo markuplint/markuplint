@@ -1493,10 +1493,8 @@ impl<'a> TreeBuilder<'a> {
             }
             // WHATWG: <image> is a parse error — treat as <img>
             // (https://html.spec.whatwg.org/multipage/parsing.html#parsing-main-inbody).
-            // Divergence from the TS path: parse5 preserves the literal `image`
-            // element, so MLAST-built DOMs keep `image` while Rust-built DOMs see `img`.
-            // Rules such as `permitted-contents` therefore key on different tag names
-            // for the same source between the two construction paths.
+            // The tree here is `img`; `markuplint_dom::html_builder` names the DOM node as
+            // written (`image`), as the TS parser does, so that the DOM is the same on both paths.
             "image" => {
                 self.reconstruct_active_formatting_elements();
                 self.insert_html_element("img", attributes, span);

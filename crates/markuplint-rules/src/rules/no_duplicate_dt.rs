@@ -1,6 +1,6 @@
 //! `no-duplicate-dt` rule: no duplicate `<dt>` text within a `<dl>`.
 
-use std::collections::HashMap;
+use std::collections::HashSet;
 
 use markuplint_dom::arena::DomArena;
 use markuplint_dom::node::DomNode;
@@ -32,41 +32,48 @@ impl Rule for NoDuplicateDt {
                 continue;
             }
 
-            let mut dt_texts: HashMap<String, Vec<(u32, u32, String)>> = HashMap::new();
-
-            if let Some(children) = arena.children_of(el.base.id) {
-                for &child_id in children {
-                    if let Some(DomNode::Element(child_el)) = arena.get(child_id)
-                        && child_el.base.node_name.eq_ignore_ascii_case("dt")
-                    {
-                        let text = collect_text_content(arena, child_id);
-                        let trimmed = text.trim().to_string();
-                        if !trimmed.is_empty() {
-                            dt_texts.entry(trimmed).or_default().push((
-                                child_el.base.line,
-                                child_el.base.col,
-                                child_el.base.raw.clone(),
-                            ));
+            // TS `:scope > dt, :scope > div > dt`, in document order
+            let mut dts = Vec::new();
+            for child_id in arena.children_of(el.base.id).into_iter().flatten().copied() {
+                let Some(DomNode::Element(child_el)) = arena.get(child_id) else {
+                    continue;
+                };
+                if child_el.base.node_name.eq_ignore_ascii_case("dt") {
+                    dts.push(child_id);
+                } else if child_el.base.node_name.eq_ignore_ascii_case("div") {
+                    for grandchild_id in arena.children_of(child_id).into_iter().flatten().copied() {
+                        if let Some(DomNode::Element(g)) = arena.get(grandchild_id)
+                            && g.base.node_name.eq_ignore_ascii_case("dt")
+                        {
+                            dts.push(grandchild_id);
                         }
                     }
                 }
             }
 
-            for locations in dt_texts.values() {
-                if locations.len() > 1 {
-                    for &(line, col, ref raw) in &locations[1..] {
-                        violations.push(Violation {
-                            rule_id: self.id().to_string(),
-                            name: None,
-                            severity: rule_config.severity,
-                            message: "The name duplicated".to_string(),
-                            line,
-                            col,
-                            raw: raw.clone(),
-                            reason: rule_config.reason.clone(),
-                            fix: None,
-                        });
-                    }
+            let mut names: HashSet<String> = HashSet::new();
+            for dt_id in dts {
+                let Some(DomNode::Element(dt)) = arena.get(dt_id) else {
+                    continue;
+                };
+                let name = collect_text_content(arena, dt_id).trim().to_string();
+                if name.is_empty() {
+                    continue;
+                }
+                if names.contains(&name) {
+                    violations.push(Violation {
+                        rule_id: self.id().to_string(),
+                        name: None,
+                        severity: rule_config.severity,
+                        message: "The name duplicated".to_string(),
+                        line: dt.base.line,
+                        col: dt.base.col,
+                        raw: dt.base.raw.clone(),
+                        reason: rule_config.reason.clone(),
+                        fix: None,
+                    });
+                } else {
+                    names.insert(name);
                 }
             }
         }
@@ -156,6 +163,39 @@ mod tests {
             },
             is_bogus: false,
         }
+    }
+
+    /// TS: `[no-duplicate-dt-invalid-002]` Duplicate with <div>
+    #[test]
+    fn no_duplicate_dt_invalid_002() {
+        const _ID: &str = "no-duplicate-dt-invalid-002";
+        let violations = crate::test_util::lint_brief(
+            "no-duplicate-dt",
+            "\n<dl>\n  <div>\n    <dt>name1</dt>\n    <dd>description1</dd>\n  </div>\n  <div>\n    <dt>name1</dt>\n    <dd>description2</dd>\n  </div>\n</dl>\n",
+            serde_json::json!({ "rules": { "no-duplicate-dt": true } }),
+        );
+        assert_eq!(
+            violations,
+            [crate::test_util::brief(
+                crate::violation::Severity::Warning,
+                8,
+                5,
+                "The name duplicated",
+                "<dt>"
+            )]
+        );
+    }
+
+    /// TS: `[no-duplicate-dt-invalid-003]` Nested
+    #[test]
+    fn no_duplicate_dt_invalid_003() {
+        const _ID: &str = "no-duplicate-dt-invalid-003";
+        let violations = crate::test_util::lint_brief(
+            "no-duplicate-dt",
+            "\n<dl>\n  <div>\n    <dt>name1</dt>\n    <dd>description1</dd>\n  </div>\n  <dd>\n    <dl>\n      <dt>name1</dt>\n      <dd>description2</dd>\n    </dl>\n  </dd>\n</dl>\n",
+            serde_json::json!({ "rules": { "no-duplicate-dt": true } }),
+        );
+        assert_eq!(violations, []);
     }
 
     #[test]

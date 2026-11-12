@@ -570,3 +570,32 @@ fn no_restricted_attr_issue_716_007() {
         0
     );
 }
+
+/// TS: `[no-restricted-attr-issue-4309-004]` JSX: an HTML element folds the name, an SVG element
+/// keeps it as written. The JSX parser is stood in for by its `attrNameRoute` setting.
+#[test]
+fn no_restricted_attr_issue_4309_004() {
+    const _ID: &str = "no-restricted-attr-issue-4309-004";
+    use markuplint_core::mlast::{AttrNameRoute, DocumentSettings};
+    let run = |html: &str, name: &str| {
+        crate::test_util::lint_brief_with_settings(
+            "no-restricted-attr",
+            html,
+            serde_json::json!({ "rules": { "no-restricted-attr": { "options": { "disallowAttrs": [name] } } } }),
+            DocumentSettings {
+                attr_name_route: AttrNameRoute::DomApi,
+                ..DocumentSettings::default()
+            },
+        )
+    };
+    let disallowed = crate::test_util::brief(
+        Severity::Error,
+        1,
+        6,
+        "The \"X-ATTR\" attribute is disallowed",
+        "X-ATTR",
+    );
+    assert_eq!(run("<div X-ATTR />", "x-attr"), [disallowed.clone()]);
+    assert_eq!(run("<svg X-ATTR />", "x-attr"), []);
+    assert_eq!(run("<svg X-ATTR />", "X-ATTR"), [disallowed]);
+}
