@@ -14,7 +14,10 @@
 //! unless the caller wraps the call in [`collect`].
 
 use std::cell::RefCell;
+use std::collections::HashMap;
+use std::sync::{Arc, LazyLock, Mutex, PoisonError};
 
+use markuplint_selector::ast::SelectorList;
 use serde::Serialize;
 
 /// A selector the engine could not use, and where it came from.
@@ -119,8 +122,27 @@ fn report(origin: &str, selector: &str, reason: &str, fatal: bool) {
 }
 
 /// [`markuplint_selector::parser::parse`], reporting a rejection before returning `None`.
-pub(crate) fn parse_selector(origin: &str, selector: &str) -> Option<markuplint_selector::ast::SelectorList> {
-    match markuplint_selector::parser::parse(selector) {
+///
+/// The selectors of the spec's ARIA and attribute conditions and of `nodeRules` are asked for
+/// again for every element they are matched against, and parsing them took a large share of a
+/// lint; a selector is parsed once per process ([`PARSED`]). A rejection is reported on every
+/// call, as the sink and the running rule differ from one call to another.
+pub(crate) fn parse_selector(origin: &str, selector: &str) -> Option<Arc<SelectorList>> {
+    // A poisoned lock only means another thread panicked while it held it; the entries are whole.
+    let found = PARSED
+        .lock()
+        .unwrap_or_else(PoisonError::into_inner)
+        .get(selector)
+        .cloned();
+    let parsed = found.unwrap_or_else(|| {
+        let parsed = markuplint_selector::parser::parse(selector).map(Arc::new);
+        PARSED
+            .lock()
+            .unwrap_or_else(PoisonError::into_inner)
+            .insert(selector.to_owned(), parsed.clone());
+        parsed
+    });
+    match parsed {
         Ok(list) => Some(list),
         Err(reason) => {
             report_unreadable_selector(origin, selector, &reason);
@@ -128,6 +150,12 @@ pub(crate) fn parse_selector(origin: &str, selector: &str) -> Option<markuplint_
         }
     }
 }
+
+/// What [`parse_selector`] has parsed, by the selector. The selectors come from the spec and the
+/// configs, so they are few.
+static PARSED: LazyLock<Mutex<SelectorCache>> = LazyLock::new(Mutex::default);
+
+type SelectorCache = HashMap<String, Result<Arc<SelectorList>, String>>;
 
 /// A selector of a rule's options, which TS `createSelector` reads with the spec: it is parsed,
 /// and every `:model()` in it must name a category of the spec. A rejection is reported as

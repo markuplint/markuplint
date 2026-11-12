@@ -17,6 +17,8 @@
 //!
 //! @see <https://html.spec.whatwg.org/multipage/scripting.html#the-template-element>
 
+use std::sync::Arc;
+
 use markuplint_core::i18n::Primitive as Kw;
 use markuplint_core::mlast::NamespaceURI;
 use markuplint_dom::arena::{DomArena, NodeId};
@@ -41,7 +43,7 @@ pub struct NoDisallowedAncestor;
 /// `forbiddenAncestors` every entry is a selector, so `#custom` there would be an id selector.
 enum PermittedAncestor {
     Custom,
-    Selector(SelectorList),
+    Selector(Arc<SelectorList>),
 }
 
 fn selectors(spec: &MLMLSpec, local_name: &str, key: &str) -> Option<Vec<serde_json::Value>> {
@@ -65,7 +67,7 @@ impl Rule for NoDisallowedAncestor {
                 continue;
             }
             let name = el.base.node_name.as_str();
-            let forbidden: Vec<SelectorList> = selectors(spec, name, "forbiddenAncestors")
+            let forbidden: Vec<Arc<SelectorList>> = selectors(spec, name, "forbiddenAncestors")
                 .unwrap_or_default()
                 .iter()
                 .filter_map(serde_json::Value::as_str)
