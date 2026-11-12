@@ -5,7 +5,7 @@
 	"author": "Yusuke Hirao",
 	"license": "MIT",
 	"engines": {
-		"node": ">=24"
+		"node": ">=26"
 	},
 	"repository": {
 		"type": "git",
