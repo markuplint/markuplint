@@ -50,6 +50,7 @@ pub(crate) fn verify_attr_lifecycle(
 ) -> Vec<Violation> {
     let tr = config.translator();
     let mut violations = Vec::new();
+    let tr = config.translator();
 
     for (node_id, el) in arena.elements() {
         let rule_config = config.get(node_id);
@@ -119,6 +120,7 @@ pub(crate) fn verify_element_lifecycle(
 ) -> Vec<Violation> {
     let tr = config.translator();
     let mut violations = Vec::new();
+    let tr = config.translator();
 
     for (node_id, el) in arena.elements() {
         let rule_config = config.get(node_id);

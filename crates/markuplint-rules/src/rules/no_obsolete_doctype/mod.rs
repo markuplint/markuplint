@@ -5,6 +5,7 @@
 //! `require-doctype`'s concern. Like TS `document.doctype`, only the first DOCTYPE
 //! in the document is examined.
 
+use markuplint_core::i18n::Primitive as Kw;
 use markuplint_dom::arena::DomArena;
 use markuplint_dom::node::DomNode;
 use markuplint_types::spec::types::MLMLSpec;
@@ -28,6 +29,7 @@ impl Rule for NoObsoleteDoctype {
     }
 
     fn verify(&self, arena: &DomArena, _spec: &MLMLSpec, config: &RuleConfigSet) -> Vec<Violation> {
+        let tr = config.translator();
         let config = config.global();
         match arena.document() {
             Some(DomNode::Document(doc)) if !doc.is_fragment => {}
@@ -54,7 +56,7 @@ impl Rule for NoObsoleteDoctype {
             rule_id: self.id().to_string(),
             name: None,
             severity: config.severity,
-            message: "Never declare obsolete doctype".to_string(),
+            message: tr.finish(&tr.t("Never {0} {1}", &[Kw::S("declare"), Kw::S("obsolete doctype")])),
             line: dt.base.line,
             col: dt.base.col,
             raw: dt.base.raw.clone(),

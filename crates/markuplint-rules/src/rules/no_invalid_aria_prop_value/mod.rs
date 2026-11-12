@@ -16,6 +16,8 @@
 //! renders to `"true"`, while `aria-hidden=""` is the empty string and is judged as one, as TS does
 //! since it reads the rendered attribute.
 
+use markuplint_core::i18n::Primitive as Kw;
+use markuplint_core::i18n::Translator;
 use markuplint_core::mlast::MLASTHTMLAttr;
 use markuplint_dom::arena::DomArena;
 use markuplint_dom::node::ElementData;
@@ -64,7 +66,7 @@ fn check(ctx: &ElementContext<'_>, violations: &mut Vec<Violation>) {
     let props = &aria::get_aria_spec(ctx.spec, ctx.version).props;
 
     for attr in attrs {
-        if let Some(message) = invalid_value_message(ctx.el, attr, props, role_name.as_deref()) {
+        if let Some(message) = invalid_value_message_in(ctx.tr, ctx.el, attr, props, role_name.as_deref()) {
             violations.push(ctx.attr_violation(attr, message));
         }
     }
@@ -91,9 +93,21 @@ fn resolve_value_type<'a>(
     Some((prop, value_type))
 }
 
+/// [`invalid_value_message_in`] in English.
+#[cfg(test)]
+fn invalid_value_message(
+    el: &ElementData,
+    attr: &MLASTHTMLAttr,
+    props: &[ARIAProperty],
+    role_name: Option<&str>,
+) -> Option<String> {
+    invalid_value_message_in(Translator::new(None), el, attr, props, role_name)
+}
+
 /// The message for `attr` when its value does not fit the property, `None` when it does, when the
 /// property is unknown, or when the value is dynamic.
-fn invalid_value_message(
+fn invalid_value_message_in(
+    tr: Translator<'static>,
     el: &ElementData,
     attr: &MLASTHTMLAttr,
     props: &[ARIAProperty],
@@ -110,16 +124,30 @@ fn invalid_value_message(
         return None;
     }
 
-    let mut message = format!(
-        "The \"{value}\" is disallowed on the \"{name}\" ARIA {}",
-        prop_type_label(&prop.prop_type)
+    let mut message = tr.t(
+        "{0:c} on {1}",
+        &[
+            Kw::S(&tr.t(
+                "{0} is {1:c}",
+                &[Kw::S(&tr.t("the \"{0}\"", &[Kw::S(value)])), Kw::S("disallowed")],
+            )),
+            Kw::S(&tr.t(
+                "the \"{0*}\" {1}",
+                &[
+                    Kw::S(name),
+                    Kw::S(&format!("ARIA {}", prop_type_label(&prop.prop_type))),
+                ],
+            )),
+        ],
     );
     if !prop.enum_values.is_empty() {
-        let allowed: Vec<String> = prop.enum_values.iter().map(|v| format!("\"{v}\"")).collect();
-        message.push_str(". Allowed values are: ");
-        message.push_str(&allowed.join(", "));
+        message.push_str(&tr.t(". ", &[]));
+        message.push_str(&tr.t(
+            "Allowed values are: {0}",
+            &[Kw::S(&tr.t_list(&prop.enum_values, false))],
+        ));
     }
-    Some(message)
+    Some(tr.finish(&message))
 }
 
 /// Port of `checkAriaValue` (`wai-aria/checkings/value.ts`). `URI`, which TS has no case for, is

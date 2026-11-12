@@ -7,6 +7,7 @@
 //! (`ARIA-LIVE="off"` is not reported, as in TS). An attribute with a dynamic value is skipped.
 //! The default severity is `warning`.
 
+use markuplint_core::i18n::Primitive as Kw;
 use markuplint_core::mlast::MLASTHTMLAttr;
 use markuplint_dom::arena::DomArena;
 use markuplint_dom::node::ElementData;
@@ -54,7 +55,7 @@ fn check(ctx: &ElementContext<'_>, violations: &mut Vec<Violation>) {
 
     for attr in attrs {
         if is_default_value(ctx.el, attr, props) {
-            violations.push(ctx.attr_violation(attr, "It is default value"));
+            violations.push(ctx.attr_violation(attr, ctx.tr.finish(&ctx.tr.t("It is {0}", &[Kw::S("default value")]))));
         }
     }
 }

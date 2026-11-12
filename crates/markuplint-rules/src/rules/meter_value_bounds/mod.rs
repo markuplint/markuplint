@@ -9,6 +9,7 @@
 //! finite number skips the element: `no-invalid-attr-value` reports it, and a bound against an
 //! unknown value would only add noise. So does a dynamic value.
 
+use markuplint_core::i18n::Primitive as Kw;
 use markuplint_core::mlast::MLASTHTMLAttr;
 use markuplint_dom::arena::DomArena;
 use markuplint_dom::helpers::get_attr_value_from_el;
@@ -50,6 +51,7 @@ impl Rule for MeterValueBounds {
                 rule_id: self.id(),
                 rule_config,
                 el,
+                tr: config.translator(),
             };
             check(el, &report, &mut violations);
         }
@@ -120,6 +122,7 @@ struct Reporter<'a> {
     rule_id: &'a str,
     rule_config: &'a RuleConfig,
     el: &'a ElementData,
+    tr: markuplint_core::i18n::Translator<'static>,
 }
 
 impl Reporter<'_> {
@@ -133,8 +136,9 @@ impl Reporter<'_> {
         upper: Option<&MLASTHTMLAttr>,
         upper_default: f64,
     ) -> Violation {
+        let tr = self.tr;
         let upper_desc = if upper.is_some() {
-            format!("the value of the \"{upper_name}\" attribute")
+            tr.t("the value of the \"{0}\" attribute", &[Kw::S(upper_name)])
         } else {
             // TS `upperDefault === 1 ? 'one' : String(upperDefault)`; the defaults are 0 and 1.
             let default = if (upper_default - 1.0).abs() < f64::EPSILON {
@@ -142,9 +146,15 @@ impl Reporter<'_> {
             } else {
                 format!("{upper_default}")
             };
-            format!("{default} when the \"{upper_name}\" attribute is absent")
+            tr.t(
+                "{0} when the \"{1}\" attribute is absent",
+                &[Kw::S(&default), Kw::S(upper_name)],
+            )
         };
-        let message = format!("The value of the \"{lower_name}\" attribute must be less than or equal to {upper_desc}");
+        let message = tr.finish(&tr.t(
+            "The value of the \"{0}\" attribute must be less than or equal to {1}",
+            &[Kw::S(lower_name), Kw::S(&upper_desc)],
+        ));
         let (line, col, raw) = match lower.or(upper) {
             Some(attr) => (attr.value.line, attr.value.col, attr.value.raw.clone()),
             None => (self.el.base.line, self.el.base.col, self.el.base.raw.clone()),

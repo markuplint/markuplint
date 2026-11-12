@@ -5,6 +5,7 @@
 //! is compared case-insensitively (JS `toLowerCase()`, untrimmed), the `value` exactly. A dynamic
 //! `type` or `value` skips the element.
 
+use markuplint_core::i18n::Primitive as Kw;
 use markuplint_dom::arena::DomArena;
 use markuplint_dom::helpers::get_attr_value_from_el;
 use markuplint_types::spec::types::MLMLSpec;
@@ -26,6 +27,7 @@ impl Rule for NoInputFileValue {
 
     fn verify(&self, arena: &DomArena, _spec: &MLMLSpec, config: &RuleConfigSet) -> Vec<Violation> {
         let mut violations = Vec::new();
+        let tr = config.translator();
 
         for (node_id, el) in arena.elements() {
             let rule_config = config.get(node_id);
@@ -53,8 +55,10 @@ impl Rule for NoInputFileValue {
                 rule_id: self.id().to_owned(),
                 name: None,
                 severity: rule_config.severity,
-                message: "The \"value\" attribute on a \"input\" element with \"type=file\" must be the empty string"
-                    .to_owned(),
+                message: tr.finish(&tr.t(
+                    "The \"{0}\" attribute on a \"{1}\" element with \"{2}={3}\" must be the empty string",
+                    &[Kw::S("value"), Kw::S("input"), Kw::S("type"), Kw::S("file")],
+                )),
                 line: value_attr.value.line,
                 col: value_attr.value.col,
                 raw: value_attr.value.raw.clone(),

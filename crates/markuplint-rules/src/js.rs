@@ -27,6 +27,7 @@ pub fn trim(s: &str) -> &str {
 /// `Number.prototype.toLocaleString('en')` of a non-negative integer: groups of three
 /// digits separated by commas. The TS translator (`@markuplint/i18n`) formats a number
 /// it inserts into a message this way, even into a verbatim (`{0*}`) placeholder.
+#[cfg(test)]
 #[must_use]
 pub fn to_locale_string_en(n: usize) -> String {
     let digits = n.to_string();
