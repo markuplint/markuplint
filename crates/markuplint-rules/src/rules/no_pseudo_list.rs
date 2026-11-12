@@ -1,5 +1,6 @@
 //! `no-pseudo-list` rule: suggest using `<li>` elements instead of text with bullet characters.
 
+use markuplint_core::i18n::Primitive as Kw;
 use markuplint_dom::arena::DomArena;
 use markuplint_dom::node::DomNode;
 use markuplint_types::spec::types::MLMLSpec;
@@ -50,6 +51,7 @@ impl Rule for NoPseudoList {
 
     fn verify(&self, arena: &DomArena, _spec: &MLMLSpec, config: &RuleConfigSet) -> Vec<Violation> {
         let global = config.global();
+        let tr = config.translator();
         let mut bullets: Vec<&str> = DEFAULT_BULLETS.to_vec();
         let extra_owned: Vec<String>;
         if let serde_json::Value::Array(arr) = &global.value {
@@ -138,7 +140,10 @@ impl Rule for NoPseudoList {
                 rule_id: self.id().to_string(),
                 name: None,
                 severity: global.severity,
-                message: "Use the li element".to_string(),
+                message: tr.finish(&tr.t(
+                    "Use {0}",
+                    &[Kw::S(&tr.t("the \"{0*}\" {1}", &[Kw::S("li"), Kw::S("element")]))],
+                )),
                 line: text.base.line,
                 col: text.base.col,
                 raw: text.base.raw.clone(),
@@ -276,7 +281,7 @@ mod tests {
         let rule = NoPseudoList;
         let violations = rule.verify(&arena, &s, &RuleConfigSet::global_only(RuleConfig::default()));
         assert_eq!(violations.len(), 1);
-        assert_eq!(violations[0].message, "Use the li element");
+        assert_eq!(violations[0].message, "Use the \"li\" element");
     }
 
     #[test]
@@ -286,7 +291,7 @@ mod tests {
         let rule = NoPseudoList;
         let violations = rule.verify(&arena, &s, &RuleConfigSet::global_only(RuleConfig::default()));
         assert_eq!(violations.len(), 1);
-        assert_eq!(violations[0].message, "Use the li element");
+        assert_eq!(violations[0].message, "Use the \"li\" element");
     }
 
     #[test]
@@ -296,7 +301,7 @@ mod tests {
         let rule = NoPseudoList;
         let violations = rule.verify(&arena, &s, &RuleConfigSet::global_only(RuleConfig::default()));
         assert_eq!(violations.len(), 1);
-        assert_eq!(violations[0].message, "Use the li element");
+        assert_eq!(violations[0].message, "Use the \"li\" element");
     }
 
     #[test]

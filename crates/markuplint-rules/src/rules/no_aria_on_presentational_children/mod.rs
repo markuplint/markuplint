@@ -22,6 +22,7 @@
 //! @see <https://w3c.github.io/aria/#tree_exclusion>
 //! @see <https://w3c.github.io/aria/#tree_inclusion>
 
+use markuplint_core::i18n::Primitive as Kw;
 use std::cell::RefCell;
 use std::collections::{HashMap, HashSet};
 
@@ -133,10 +134,16 @@ fn check(env: &Env<'_>, ctx: &ElementContext<'_>) -> Vec<Violation> {
         }
         violations.push(ctx.attr_violation(
             attr,
-            format!(
-                "It may be ineffective because it has the \"{}\" role as an ancestor that doesn't expose its descendants to the accessibility tree",
-                context.role_name
-            ),
+            ctx.tr.finish(&ctx.tr.t(
+                "it may be ineffective because {0}",
+                &[Kw::S(&ctx.tr.t(
+                    "it has {0} as an ancestor that doesn't expose its descendants to the accessibility tree",
+                    &[Kw::S(&ctx.tr.t(
+                        "the \"{0*}\" {1}",
+                        &[Kw::S(&context.role_name), Kw::S("role")],
+                    ))],
+                ))],
+            )),
         ));
     }
     violations

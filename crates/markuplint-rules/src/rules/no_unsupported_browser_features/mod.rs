@@ -17,6 +17,7 @@
 //! The walk, the pretender gate, the `ignoreFeatures` lookup and the attribute-name folding are the
 //! same as `no-experimental-features` (`crate::feature_check`). The default severity is `warning`.
 
+use markuplint_core::i18n::{Primitive as Kw, Translator};
 use std::collections::HashMap;
 
 use markuplint_core::mlast::{ElementType, MLASTAttr, NamespaceURI};
@@ -216,7 +217,12 @@ fn find_attr_support<'a>(
 }
 
 /// TS `formatUnsupportedMessage`.
-fn format_message(feature_name: &str, feature_type: &str, unsupported: &[Unsupported<'_>]) -> String {
+fn format_message(
+    tr: Translator<'static>,
+    feature_name: &str,
+    feature_type: &str,
+    unsupported: &[Unsupported<'_>],
+) -> String {
     let details = unsupported
         .iter()
         .map(|u| match (u.added_version, u.removed_version) {
@@ -226,7 +232,13 @@ fn format_message(feature_name: &str, feature_type: &str, unsupported: &[Unsuppo
         })
         .collect::<Vec<_>>()
         .join(", ");
-    format!("The \"{feature_name}\" {feature_type} is not supported in {details}")
+    tr.finish(&tr.t(
+        "{0} is not supported in {1}",
+        &[
+            Kw::S(&tr.t("the \"{0*}\" {1}", &[Kw::S(feature_name), Kw::S(feature_type)])),
+            Kw::S(&details),
+        ],
+    ))
 }
 
 /// The parts of the keys of `ignoreFeatures` (TS `parseIgnoreFeatures`): the element keys, and the
@@ -274,6 +286,7 @@ impl Rule for NoUnsupportedBrowserFeatures {
     }
 
     fn verify(&self, arena: &DomArena, _spec: &MLMLSpec, config: &RuleConfigSet) -> Vec<Violation> {
+        let tr = config.translator();
         // Without a browserslist configuration, there is nothing to check against.
         let Some(support) = config.common_settings().browser_support.as_ref() else {
             return Vec::new();
@@ -316,7 +329,7 @@ impl Rule for NoUnsupportedBrowserFeatures {
                         rule_id: self.id().to_string(),
                         name: None,
                         severity: rule_config.severity,
-                        message: format_message(&el_name, "element", &unsupported),
+                        message: format_message(tr, &el_name, "element", &unsupported),
                         line: el.base.line,
                         col: el.base.col,
                         raw: el.base.raw.clone(),
@@ -350,7 +363,7 @@ impl Rule for NoUnsupportedBrowserFeatures {
                     rule_id: self.id().to_string(),
                     name: None,
                     severity: rule_config.severity,
-                    message: format_message(attr_name(html_attr), "attribute", &unsupported),
+                    message: format_message(tr, attr_name(html_attr), "attribute", &unsupported),
                     line: html_attr.name.line,
                     col: html_attr.name.col,
                     raw: html_attr.name.raw.clone(),
