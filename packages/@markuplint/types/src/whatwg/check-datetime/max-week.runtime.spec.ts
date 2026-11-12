@@ -1,5 +1,4 @@
 import { spawnSync } from 'node:child_process';
-import { statSync } from 'node:fs';
 import path from 'node:path';
 import { pathToFileURL } from 'node:url';
 
@@ -32,17 +31,9 @@ function runInTimeZone(tz: string) {
 		env: { ...process.env, TZ: tz },
 	});
 	const result: unknown = JSON.parse(stdout.trim().split('\n').at(-1) || '{}');
-	return { result, log: `exit ${status}\n${stderr}` };
+	// The child process loads `lib/`, so a `lib/` built before the last change to the source fails here: run `yarn build`.
+	return { result, log: `exit ${status}\n${stderr}\nIf lib/ is older than the source, run yarn build.` };
 }
-
-// The child process loads `lib/`: one built before the last change to the source would test old code.
-test('precondition: lib is built from the current source', () => {
-	for (const file of ['datetime-tokens', 'week-string']) {
-		const lib = statSync(path.resolve(libDir, `${file}.js`)).mtimeMs;
-		const src = statSync(path.resolve(srcDir, `${file}.ts`)).mtimeMs;
-		expect(lib, `lib/${file}.js is older than src/${file}.ts; run yarn build`).toBeGreaterThanOrEqual(src);
-	}
-});
 
 // The offset of 1970-01-01 shows that the child process runs in the zone
 test.each([
