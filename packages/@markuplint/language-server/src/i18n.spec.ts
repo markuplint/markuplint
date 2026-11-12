@@ -12,6 +12,16 @@ describe('t', () => {
 		expect(t('Unknown')).toBe('不明');
 	});
 
+	test('joins the sentences of a notice with the full stop of the locale', () => {
+		setLocale('ja');
+		expect(t('. ')).toBe('。');
+	});
+
+	test('joins the sentences of a notice with a period and a space in English', () => {
+		setLocale('en');
+		expect(t('. ')).toBe('. ');
+	});
+
 	test.each(['ja-JP', 'ja_JP', 'JA'])('uses the language of the region-qualified locale %s', locale => {
 		setLocale(locale);
 		expect(t('Unknown')).toBe('不明');

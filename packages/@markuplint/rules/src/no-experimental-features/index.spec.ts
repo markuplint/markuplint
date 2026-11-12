@@ -163,3 +163,17 @@ describe('attribute name case', () => {
 		expect(ignored.violations).toStrictEqual([]);
 	});
 });
+
+test('[no-experimental-features-issue-4584-001] the message is in Japanese with locale ja', async () => {
+	const { violations } = await mlRuleTest(rule, '<iframe credentialless></iframe>', { rule: true }, false, 'ja');
+
+	expect(violations).toStrictEqual([
+		{
+			severity: 'warning',
+			line: 1,
+			col: 9,
+			message: '属性「credentialless」は実験的です',
+			raw: 'credentialless',
+		},
+	]);
+});

@@ -1,3 +1,4 @@
+import type { Translator } from '@markuplint/i18n';
 import type { PlainData } from '@markuplint/ml-config';
 import type { Element, RuleConfigValue, Document } from '@markuplint/ml-core';
 import type { ComputedRole } from '@markuplint/ml-spec';
@@ -12,6 +13,13 @@ import meta from './meta.js';
 type NamingSource = {
 	readonly label: string;
 };
+
+/**
+ * Labels are names (shown as written, `{n*}`) except `content`, which is a word and is translated.
+ */
+function showLabel(t: Translator, label: string) {
+	return label === 'content' ? t('content') : label;
+}
 
 export default createRule({
 	meta,
@@ -48,7 +56,11 @@ export default createRule({
 				for (const loser of overridden) {
 					report({
 						scope: el,
-						message: t('The accessible name from "{0*}" overrides "{1*}"', winner.label, loser.label),
+						message: t(
+							'The accessible name from "{0*}" overrides "{1*}"',
+							showLabel(t, winner.label),
+							showLabel(t, loser.label),
+						),
 					});
 				}
 			}

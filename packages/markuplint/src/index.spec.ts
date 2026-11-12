@@ -21,7 +21,7 @@ describe('basic test', () => {
 		expect(violations).toEqual([
 			{
 				severity: 'warning',
-				message: 'Attribute value is must quote on double quotation mark',
+				message: 'Attribute value must be quoted with double quotation marks',
 				reason: 'For consistency',
 				line: 2,
 				col: 7,
@@ -30,7 +30,7 @@ describe('basic test', () => {
 			},
 			{
 				severity: 'warning',
-				message: 'Attribute value is must quote on double quotation mark',
+				message: 'Attribute value must be quoted with double quotation marks',
 				reason: 'Another reason',
 				line: 4,
 				col: 8,
@@ -39,7 +39,7 @@ describe('basic test', () => {
 			},
 			{
 				severity: 'warning',
-				message: 'Attribute value is must quote on double quotation mark',
+				message: 'Attribute value must be quoted with double quotation marks',
 				reason: 'Another reason',
 				line: 5,
 				col: 8,
@@ -48,7 +48,7 @@ describe('basic test', () => {
 			},
 			{
 				severity: 'warning',
-				message: 'Attribute value is must quote on double quotation mark',
+				message: 'Attribute value must be quoted with double quotation marks',
 				reason: 'Another reason',
 				line: 5,
 				col: 35,
@@ -57,7 +57,7 @@ describe('basic test', () => {
 			},
 			{
 				severity: 'warning',
-				message: 'Attribute value is must quote on double quotation mark',
+				message: 'Attribute value must be quoted with double quotation marks',
 				reason: 'Another reason',
 				line: 6,
 				col: 8,
@@ -66,7 +66,7 @@ describe('basic test', () => {
 			},
 			{
 				severity: 'warning',
-				message: 'Attribute value is must quote on double quotation mark',
+				message: 'Attribute value must be quoted with double quotation marks',
 				reason: 'Another reason',
 				line: 6,
 				col: 22,
@@ -105,10 +105,10 @@ describe('basic test', () => {
 			'The "img" element expects the "height" attribute',
 		]);
 		expect(warns.map(_ => _.message)).toStrictEqual([
-			'Attribute value is must quote on double quotation mark',
-			'Attribute value is must quote on double quotation mark',
-			'Attribute value is must quote on double quotation mark',
-			'Attribute value is must quote on double quotation mark',
+			'Attribute value must be quoted with double quotation marks',
+			'Attribute value must be quoted with double quotation marks',
+			'Attribute value must be quoted with double quotation marks',
+			'Attribute value must be quoted with double quotation marks',
 			'It is the default value',
 			'The "color" attribute is non-standard',
 			'Attribute names of HTML elements should be lowercase',

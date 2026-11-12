@@ -39,3 +39,17 @@ test('[map-id-name-match-invalid-002] case-sensitive comparison', async () => {
 	expect(violations.length).toBe(1);
 	expect(violations[0]?.raw).toBe('Foo');
 });
+
+test('[map-id-name-match-issue-4584-001] the names of the attributes are shown as written (`name` is also a keyword) with locale ja', async () => {
+	const { violations } = await mlRuleTest(rule, '<map id="a" name="b"></map>', undefined, false, 'ja');
+
+	expect(violations).toStrictEqual([
+		{
+			severity: 'error',
+			line: 1,
+			col: 10,
+			message: '「map」要素の「id」属性は、「name」属性と同じ値であるべきです',
+			raw: 'a',
+		},
+	]);
+});

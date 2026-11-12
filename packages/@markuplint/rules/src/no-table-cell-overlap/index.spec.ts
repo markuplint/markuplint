@@ -198,3 +198,23 @@ describe('Valid', () => {
 		expect(violations).toStrictEqual([]);
 	});
 });
+
+test('[no-table-cell-overlap-issue-4584-001] the names of the attributes are shown as written with locale ja', async () => {
+	const { violations } = await mlRuleTest(
+		rule,
+		'<template><table><tr><td></td><td rowspan="2"></td></tr><tr><td colspan="2"></td></tr></table></template>',
+		undefined,
+		false,
+		'ja',
+	);
+
+	expect(violations).toStrictEqual([
+		{
+			severity: 'error',
+			line: 1,
+			col: 11,
+			message: '「rowspan」「colspan」がセルの交差を引き起こしています',
+			raw: '<table>',
+		},
+	]);
+});

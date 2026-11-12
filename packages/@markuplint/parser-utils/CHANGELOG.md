@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [5.6.0](https://github.com/markuplint/markuplint/compare/v5.5.0...v5.6.0) (2026-11-12)
+
+### Bug Fixes
+
+* **parser-utils:** map the IDL attribute acceptCharset to accept-charset ([6f78de8](https://github.com/markuplint/markuplint/commit/6f78de8f503cb88f4e3e433989318fdff83e18f5)), closes [#4571](https://github.com/markuplint/markuplint/issues/4571)
+
+### Features
+
+* **parser-utils:** let a parser declare slotElement ([c6f97c5](https://github.com/markuplint/markuplint/commit/c6f97c5cd4f190843c00d1d8e89fbff4ca9097db))
+
+
 # [5.5.0](https://github.com/markuplint/markuplint/compare/v5.4.0...v5.5.0) (2026-11-10)
 
 ### Bug Fixes

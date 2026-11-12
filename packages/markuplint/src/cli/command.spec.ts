@@ -208,7 +208,7 @@ describe('command: the exit decision does not depend on --format', { timeout: 30
  * `[command-max-count-013]` pins the order the engine reports `a.html`'s two
  * violations in, which the `--max-count=1` specs depend on.
  */
-function useMaxCountFixture(tmpPrefix: string) {
+function useCommandFixture(tmpPrefix: string) {
 	const fixtureDir = path.resolve(import.meta.dirname, '../../test/max-count');
 	const fx = {
 		/** Set before each spec. */
@@ -265,7 +265,7 @@ function useMaxCountFixture(tmpPrefix: string) {
 }
 
 describe('command: --max-count does not change what the run decides', { timeout: 30_000 }, () => {
-	const fx = useMaxCountFixture('markuplint-command-max-count-');
+	const fx = useCommandFixture('markuplint-command-max-count-');
 	const { fileA, fileB, fileW, relPath, run, stderr, reported } = fx;
 
 	const writeSuppressions = (data: Record<string, Record<string, { count: number }>>) =>
@@ -413,7 +413,7 @@ describe('command: --max-count does not change what the run decides', { timeout:
 });
 
 describe('command: the entries of a suppressions file are judged per linted file', { timeout: 30_000 }, () => {
-	const fx = useMaxCountFixture('markuplint-command-entries-');
+	const fx = useCommandFixture('markuplint-command-entries-');
 	const { fileA, fileB, relPath, run, stderr } = fx;
 
 	test('[command-suppressions-scope-001] --prune-suppressions keeps the entries of files it did not lint', async () => {
@@ -559,5 +559,105 @@ describe('command: the entries of a suppressions file are judged per linted file
 		);
 		expect(await run([file], { config: fixConfig, fix: true })).toBe(false);
 		expect(stderr()).not.toContain('unused suppression');
+	});
+});
+
+describe('command: --suppress writes the scope of the violations', { timeout: 30_000 }, () => {
+	const fx = useCommandFixture('markuplint-command-suppress-scope-');
+	const { relPath, run, reported } = fx;
+
+	/** Both `no-duplicate-attr` errors are inside `div#a`, so the scope is `div#a`. */
+	const setup = async () => {
+		const config = path.join(fx.tmpDir, 'config.json');
+		await fs.writeFile(
+			config,
+			JSON.stringify({ rules: { 'no-duplicate-attr': true, 'no-hardcoded-id': { severity: 'error' } } }),
+			'utf8',
+		);
+		const file = path.join(fx.tmpDir, 'scope.html');
+		await fs.writeFile(
+			file,
+			'<div id="a"><p class="x" class="y">a</p><p class="z" class="w">b</p></div>\n<div class="c"><p>c</p></div>\n',
+			'utf8',
+		);
+		const read = async () =>
+			JSON.parse(await fs.readFile(fx.suppressionsFile, 'utf8')) as Record<
+				string,
+				Record<string, { count: number; scope?: string }>
+			>;
+		return { config, file, read };
+	};
+
+	test('[command-suppress-scope-001] --suppress writes the scope that contains every violation', async () => {
+		const { config, file, read } = await setup();
+		expect(await run([file], { config, suppress: true, suppressRule: 'no-duplicate-attr' })).toBe(false);
+		expect(await read()).toStrictEqual({
+			[relPath(file)]: { 'no-duplicate-attr': { count: 2, scope: '#a' } },
+		});
+	});
+
+	test('[command-suppress-scope-002] a second --suppress keeps the scopes already in the file', async () => {
+		const { config, file, read } = await setup();
+		expect(await run([file], { config, suppress: true, suppressRule: 'no-duplicate-attr' })).toBe(false);
+		// A run for another rule leaves the entry of `no-duplicate-attr` as it is.
+		expect(await run([file], { config, suppress: true, suppressRule: 'no-hardcoded-id' })).toBe(false);
+		// The `id` of `div#a` is a child of `<body>`, so its entry has no scope.
+		const both = {
+			[relPath(file)]: {
+				'no-duplicate-attr': { count: 2, scope: '#a' },
+				'no-hardcoded-id': { count: 1 },
+			},
+		};
+		expect(await read()).toStrictEqual(both);
+		// A run for the same rule keeps the scope it computes again.
+		expect(await run([file], { config, suppress: true, suppressRule: 'no-duplicate-attr' })).toBe(false);
+		expect(await read()).toStrictEqual(both);
+	});
+
+	test('[command-suppress-scope-003] a new violation outside the written scope is reported', async () => {
+		const { config, file } = await setup();
+		expect(await run([file], { config, suppress: true, suppressRule: 'no-duplicate-attr' })).toBe(false);
+		await fs.writeFile(
+			file,
+			'<div id="a"><p class="x" class="y">a</p></div>\n<div class="c"><p class="v" class="u">c</p></div>\n',
+			'utf8',
+		);
+		vi.mocked(process.stdout.write).mockClear();
+		expect(await run([file], { config })).toBe(true);
+		// Only the violation outside `div#a`, on line 2, is reported; the one inside is suppressed.
+		const violations = JSON.parse(fx.stdout()) as { ruleId: string; line: number }[];
+		expect(violations.filter(v => v.ruleId === 'no-duplicate-attr').map(v => v.line)).toStrictEqual([2]);
+	});
+
+	test('[command-suppress-scope-004] a violation at an end tag is inside the scope written for it', async () => {
+		const config = path.join(fx.tmpDir, 'case.json');
+		await fs.writeFile(
+			config,
+			JSON.stringify({ rules: { 'case-sensitive-tag-name': { severity: 'error' } } }),
+			'utf8',
+		);
+		// The rule reports `<P>` and `</P>`.
+		const file = path.join(fx.tmpDir, 'e.html');
+		await fs.writeFile(file, '<div id="a"><P>x</P></div>\n<div class="c"><p>c</p></div>\n', 'utf8');
+		expect(await run([file], { config, suppress: true })).toBe(false);
+		expect(JSON.parse(await fs.readFile(fx.suppressionsFile, 'utf8'))).toStrictEqual({
+			[relPath(file)]: { 'case-sensitive-tag-name': { count: 2, scope: '#a > p' } },
+		});
+		vi.mocked(process.stdout.write).mockClear();
+		expect(await run([file], { config })).toBe(false);
+		expect(reported()).toStrictEqual([]);
+	});
+
+	test('[command-suppress-scope-005] --suppress gives a scope to an entry written without one', async () => {
+		const { config, file, read } = await setup();
+		await fs.writeFile(
+			fx.suppressionsFile,
+			JSON.stringify({ [relPath(file)]: { 'no-duplicate-attr': { count: 5 } } }),
+			'utf8',
+		);
+		expect(await run([file], { config, suppress: true, suppressRule: 'no-duplicate-attr' })).toBe(false);
+		expect(await read()).toStrictEqual({
+			[relPath(file)]: { 'no-duplicate-attr': { count: 2, scope: '#a' } },
+		});
 	});
 });

@@ -138,6 +138,7 @@ $ markuplint --prune-suppressions "src/**/*.html"
 - Only `error`-severity violations are suppressed; `warning` and `info` always pass through.
 - If the number of violations for a file+rule pair **exceeds** the suppressed count, **all** violations for that pair are reported.
 - `--suppress` always exits with code 0 (success).
+- Running `--suppress` again keeps the entries it does not record, scope included, and gives the ones it records the newly computed scope.
 - When a DOM tree is available, each suppression entry includes a **scope selector** (computed via LCA) to narrow suppression to a specific subtree. Entries without `scope` apply to the entire file.
 
 ```json

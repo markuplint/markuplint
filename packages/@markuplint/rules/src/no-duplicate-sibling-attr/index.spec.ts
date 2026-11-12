@@ -38,3 +38,23 @@ test('[no-duplicate-sibling-attr-issue-3640-003] multiple track default in audio
 		}),
 	]);
 });
+
+test('[no-duplicate-sibling-attr-issue-4584-001] the message is in Japanese with locale ja', async () => {
+	const { violations } = await mlRuleTest(
+		rule,
+		'<video><track kind="subtitles" src="a.vtt" default><track kind="captions" src="b.vtt" default></video>',
+		undefined,
+		false,
+		'ja',
+	);
+
+	expect(violations).toStrictEqual([
+		{
+			severity: 'error',
+			line: 1,
+			col: 52,
+			message: '「default」属性は、同じ親の中にある複数の「track」要素に指定するべきではありません',
+			raw: '<track kind="captions" src="b.vtt" default>',
+		},
+	]);
+});

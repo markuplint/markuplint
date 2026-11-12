@@ -372,7 +372,8 @@ export async function getNodeWithAccessibilityProps(
 		return null;
 	}
 
-	const a11y = await getAccessibilityByLocation(engine, position.line + 1, position.character, ariaVersion);
+	// LSP counts the character from 0, the node list the column from 1.
+	const a11y = await getAccessibilityByLocation(engine, position.line + 1, position.character + 1, ariaVersion);
 
 	if (!a11y) {
 		return null;

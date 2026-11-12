@@ -5,6 +5,8 @@ import type { ReadonlyDeep } from 'type-fest';
 
 import { isList, isKeyword, isEnum, isNumber, isDirective, isPattern } from '@markuplint/types';
 
+import { noTranslate } from './no-translate.js';
+
 export function createMessageValueExpected(
 	t: Translator,
 	baseTarget: string,
@@ -80,7 +82,7 @@ export function __createMessageValueExpected(
 		}
 		case 'extra-token': {
 			const token = matches.partName ?? 'token';
-			reasonPart = t('Found {0}', t('extra {0}', token)) + ' ' + t([matches.raw]);
+			reasonPart = t('Found {0}', t('extra {0}', token)) + ' ' + t([noTranslate(matches.raw)]);
 			if (matches.extra) {
 				const extra = expectValueToWord(t, matches.extra, 'Any');
 				unnecessaryPart = t("It doesn't need {0}", extra);
@@ -242,10 +244,10 @@ function createExpectedObject(
 		);
 	} else if (isKeyword(type)) {
 		if (type[0] === '<') {
-			expectedObject.push(t('the CSS Syntax "{0}"', type));
+			expectedObject.push(t('the CSS Syntax "{0*}"', type));
 		}
 	} else if (isEnum(type)) {
-		expectedObject.push(...type.enum);
+		expectedObject.push(...type.enum.map(noTranslate));
 	} else if (isNumber(type)) {
 		expectedObject.push(createExpectedNumber(t, type));
 	} else if (isDirective(type)) {
@@ -270,7 +272,7 @@ function expectValueToWord(t: Translator, expect: Expect, type: ReadonlyDeep<Exc
 			return expect.value;
 		}
 		case 'const': {
-			return expect.value ? `%${expect.value}%` : '';
+			return noTranslate(expect.value);
 		}
 		case 'format': {
 			return t('the {0} format', expect.value);
@@ -280,7 +282,7 @@ function expectValueToWord(t: Translator, expect: Expect, type: ReadonlyDeep<Exc
 		}
 		case 'syntax': {
 			if (isKeyword(type) && type[0] === '<') {
-				return t('the CSS Syntax "{0}"', expect.value);
+				return t('the CSS Syntax "{0*}"', expect.value);
 			}
 			return t('{0} syntax', expect.value);
 		}

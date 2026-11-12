@@ -3,6 +3,48 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [5.6.0](https://github.com/markuplint/markuplint/compare/v5.5.0...v5.6.0) (2026-11-12)
+
+### Bug Fixes
+
+* **alpine-parser:** read a template that has x-if as an if block ([b9ba5b3](https://github.com/markuplint/markuplint/commit/b9ba5b34d67d679908f4fdcf56e66edefa7dd634))
+* **astro-parser:** treat Fragment and slot as fragments ([7084830](https://github.com/markuplint/markuplint/commit/7084830c0f96cfb79be9cd9d7e177c5bc6b0a010))
+* do not report an area element that has no parent node in the file ([916a166](https://github.com/markuplint/markuplint/commit/916a166916e4efd5292402abcd293927605ff799)), closes [#4528](https://github.com/markuplint/markuplint/issues/4528)
+* **file-resolver:** validate every selector of every configuration before they are merged ([be2611c](https://github.com/markuplint/markuplint/commit/be2611ca18243bee59676c81e409a070ce9af7ab))
+* **i18n:** add the Japanese sentences that the rule messages lack ([2091c2b](https://github.com/markuplint/markuplint/commit/2091c2ba0544e0abcc62a375777e6cc21073abd9))
+* **i18n:** start the sentence that follows another one with a capital in English ([f0834d7](https://github.com/markuplint/markuplint/commit/f0834d74811f42e29d2e777676c530884c1889d3))
+* **i18n:** translate "week" into Japanese ([0a189e2](https://github.com/markuplint/markuplint/commit/0a189e207f21d1ca65b541e5763feaa877fe60ab)), closes [#4586](https://github.com/markuplint/markuplint/issues/4586)
+* **jsx-parser:** treat Fragment and React.Fragment as fragments ([05383b2](https://github.com/markuplint/markuplint/commit/05383b2da1801453260fe864d14394d38b8e0c0e))
+* **language-server:** hover the element under the cursor ([91ebb1a](https://github.com/markuplint/markuplint/commit/91ebb1ae4e35a1484793267d74dcca9bcea3bc5d))
+* **language-server:** join the sentences of a notice with the Japanese full stop ([95bc29f](https://github.com/markuplint/markuplint/commit/95bc29f2bd3d0ad4ee7929161e5c66b99d7cb854))
+* **markuplint:** keep the scope of the suppressions ([4f2409d](https://github.com/markuplint/markuplint/commit/4f2409d1d9c98cefbbe91f7c0f084f5855fafeb5)), closes [#4592](https://github.com/markuplint/markuplint/issues/4592)
+* **ml-core:** compute the slot assignment of a declarative shadow root ([381ce83](https://github.com/markuplint/markuplint/commit/381ce8308c9f3e5602654bbbdec6a5a3f8597941))
+* **ml-core:** do not take a spread attribute for a directive of a template element ([9af419e](https://github.com/markuplint/markuplint/commit/9af419ec690df40448f4afa3a5c37933f35e4830))
+* **ml-core:** find the innermost node whose range holds a location ([d45b662](https://github.com/markuplint/markuplint/commit/d45b6623a7fe85b675263a74ad85e3d86fa7a422))
+* **ml-core:** read the declarative shadow root of a pretended host first ([905cbf6](https://github.com/markuplint/markuplint/commit/905cbf6f541c2dd8475ec4c4a3d2383b2a95341c)), closes [#4527](https://github.com/markuplint/markuplint/issues/4527)
+* **ml-core:** report an invalid selector of a pretender as an error of the configuration ([3af8221](https://github.com/markuplint/markuplint/commit/3af8221583b0d16805c250cfa0a84baa8733fdc4))
+* **ml-spec:** follow a light child to the slot that takes it ([5269f1f](https://github.com/markuplint/markuplint/commit/5269f1f3892df6e383a9f08de6ccb07f71b5cfb9))
+* **parser-utils:** map the IDL attribute acceptCharset to accept-charset ([6f78de8](https://github.com/markuplint/markuplint/commit/6f78de8f503cb88f4e3e433989318fdff83e18f5)), closes [#4571](https://github.com/markuplint/markuplint/issues/4571)
+* **rules:** do not report an area that a component of unknown output may enclose in a map ([91f796a](https://github.com/markuplint/markuplint/commit/91f796acd865c4815c66bf733a80c838b6f43be3)), closes [#4575](https://github.com/markuplint/markuplint/issues/4575)
+* **rules:** do not report what a component that no pretender resolved may render ([ecf810c](https://github.com/markuplint/markuplint/commit/ecf810c021b8fde9a6053b43293c5261f3911a46)), closes [#4572](https://github.com/markuplint/markuplint/issues/4572) [#4064](https://github.com/markuplint/markuplint/issues/4064)
+* **rules:** read the declarative shadow root as owned by its host ([2324117](https://github.com/markuplint/markuplint/commit/2324117dc83627db98f1f2f2b2f6d26d6886708f)), closes [#4527](https://github.com/markuplint/markuplint/issues/4527)
+* **rules:** read what a slot of a shadow root renders ([d3a5c76](https://github.com/markuplint/markuplint/commit/d3a5c76f5293322986ad0a122f13884f971735c5))
+* **rules:** show every message in Japanese and the names in it as written ([9145904](https://github.com/markuplint/markuplint/commit/9145904e5b43fbeb51b5d5efa6e4735eddef7921))
+* **rules:** write "an ambiguous" in the message of no-ambiguous-navigable-target-names ([9be22b3](https://github.com/markuplint/markuplint/commit/9be22b3949e114f08308d068c238666206384a45)), closes [#4585](https://github.com/markuplint/markuplint/issues/4585)
+* **selector:** reject unsupported syntax and invalid arguments when a selector is created ([becf262](https://github.com/markuplint/markuplint/commit/becf262f84aecc9b4978962168666aefcdd3d556))
+* **types:** count the weeks of a week-year by the spec, in any time zone ([c07d7f5](https://github.com/markuplint/markuplint/commit/c07d7f52c70641244c4a7c9b1c1dac08354649f6)), closes [#4586](https://github.com/markuplint/markuplint/issues/4586)
+* **vue-parser:** treat slot as a fragment ([0f5e7b2](https://github.com/markuplint/markuplint/commit/0f5e7b2748ddac50bbb276febfcd20bdccf51c5d))
+
+### Features
+
+* **astro-parser:** declare that slot is the placeholder of the framework ([700448b](https://github.com/markuplint/markuplint/commit/700448b32d6704af5e14f24d3da613ad98ee7a12))
+* **ml-ast:** add MLParser#slotElement ([e395c8d](https://github.com/markuplint/markuplint/commit/e395c8dd80472f8a1583d33e6459457673b5f208))
+* **ml-core:** add MLElement#isUnresolvedComponent ([9da55f2](https://github.com/markuplint/markuplint/commit/9da55f206aeeed4285cf094f9f033b3e92650365))
+* **parser-utils:** let a parser declare slotElement ([c6f97c5](https://github.com/markuplint/markuplint/commit/c6f97c5cd4f190843c00d1d8e89fbff4ca9097db))
+* **svelte-parser:** declare that slot is the placeholder of the framework ([47d05dc](https://github.com/markuplint/markuplint/commit/47d05dc73500c2b2e8a60f65a708acf252504678))
+* **vue-parser:** declare that slot is the placeholder of the framework ([cb12dd5](https://github.com/markuplint/markuplint/commit/cb12dd5016d48525905ab3fca578cb1da2bad369))
+
+
 # [5.5.0](https://github.com/markuplint/markuplint/compare/v5.4.0...v5.5.0) (2026-11-10)
 
 ### Bug Fixes

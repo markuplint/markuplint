@@ -2,6 +2,8 @@ import type { Options } from '../types.js';
 import type { AttrChecker } from '@markuplint/ml-core';
 import type { ARIAProperty, ARIARole } from '@markuplint/ml-spec';
 
+import { noTranslate } from '../../no-translate.js';
+
 /**
  * Checks whether the value of an ARIA property or state conforms to its expected type.
  *
@@ -39,11 +41,11 @@ export const checkingValue: AttrChecker<
 			message:
 				t(
 					'{0:c} on {1}',
-					t('{0} is {1:c}', t('the "{0}"', attr.value), 'disallowed'),
+					t('{0} is {1:c}', t('the "{0*}"', attr.value), 'disallowed'),
 					t('the "{0*}" {1}', attr.name, `ARIA ${propSpec?.type ?? 'property'}`),
 				) +
 				('enum' in result && result.enum.length > 0
-					? t('. ') + t('Allowed values are: {0}', t(result.enum))
+					? t('. ') + t('Allowed values are: {0}', t(result.enum.map(noTranslate)))
 					: ''),
 		};
 	};

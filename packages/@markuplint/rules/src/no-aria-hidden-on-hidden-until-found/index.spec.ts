@@ -71,3 +71,23 @@ test('[no-aria-hidden-on-hidden-until-found-parser-001] a dynamic (Vue-bound) ar
 	);
 	expect(violations).toStrictEqual([]);
 });
+
+test('[no-aria-hidden-on-hidden-until-found-issue-4584-001] the values are shown as written with locale ja', async () => {
+	const { violations } = await mlRuleTest(
+		rule,
+		'<div hidden="until-found" aria-hidden="true"></div>',
+		undefined,
+		false,
+		'ja',
+	);
+
+	expect(violations).toStrictEqual([
+		{
+			severity: 'error',
+			line: 1,
+			col: 27,
+			message: 'hidden属性の値が「until-found」である要素では、aria-hidden属性を「true」にしてはいけません',
+			raw: 'aria-hidden="true"',
+		},
+	]);
+});

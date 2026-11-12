@@ -12,6 +12,7 @@ import {
 } from '@markuplint/ml-spec';
 
 import { expandChildren, isContentMutable } from '../../permitted-contents/slot-content.js';
+import { noTranslate } from '../../no-translate.js';
 
 /**
  * Represents a classified child node when checking required owned elements.
@@ -132,9 +133,9 @@ export const checkingRequiredOwnedElements: ElementChecker<
 						t('the {0}', 'child element'),
 						role.allowedAccessibilityChildRoles.length === 1 && role.allowedAccessibilityChildRoles[0]
 							? t('the "{0*}" {1}', role.allowedAccessibilityChildRoles[0], 'role')
-							: t('the {0}', 'roles') + `: ${t(role.allowedAccessibilityChildRoles)}`,
+							: t('the {0}', 'roles') + `: ${t(role.allowedAccessibilityChildRoles.map(noTranslate))}`,
 					),
-					t('require {0}', 'aria-busy="true"'),
+					t('require {0*}', 'aria-busy="true"'),
 				),
 			};
 		}
@@ -146,7 +147,7 @@ export const checkingRequiredOwnedElements: ElementChecker<
 				t('the "{0*}" {1}', role.name, 'role'),
 				role.allowedAccessibilityChildRoles.length === 1 && role.allowedAccessibilityChildRoles[0]
 					? t('the "{0*}" {1}', role.allowedAccessibilityChildRoles[0], 'role')
-					: t('the {0}', 'roles') + `: ${t(role.allowedAccessibilityChildRoles)}`,
+					: t('the {0}', 'roles') + `: ${t(role.allowedAccessibilityChildRoles.map(noTranslate))}`,
 			),
 		};
 	};

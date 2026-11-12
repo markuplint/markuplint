@@ -59,3 +59,17 @@ test('[no-stray-head-or-body-tag-invalid-002] the messages are translated into J
 		'重複した「body」開始タグが検出されました',
 	]);
 });
+
+test('[no-stray-head-or-body-tag-issue-4584-001] the message is in Japanese with locale ja', async () => {
+	const { violations } = await mlRuleTest(rule, '<div>x</div></head>', undefined, false, 'ja');
+
+	expect(violations).toStrictEqual([
+		{
+			severity: 'error',
+			line: 1,
+			col: 13,
+			message: '迷子の「head」終了タグが検出されました',
+			raw: '</head>',
+		},
+	]);
+});

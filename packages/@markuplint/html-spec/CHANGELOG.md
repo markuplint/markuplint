@@ -3,6 +3,13 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [5.6.0](https://github.com/markuplint/markuplint/compare/v5.5.0...v5.6.0) (2026-11-12)
+
+### Bug Fixes
+
+* do not report an area element that has no parent node in the file ([916a166](https://github.com/markuplint/markuplint/commit/916a166916e4efd5292402abcd293927605ff799)), closes [#4528](https://github.com/markuplint/markuplint/issues/4528)
+
+
 # [5.5.0](https://github.com/markuplint/markuplint/compare/v5.4.0...v5.5.0) (2026-11-10)
 
 ### Bug Fixes

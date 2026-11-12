@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [5.6.0](https://github.com/markuplint/markuplint/compare/v5.5.0...v5.6.0) (2026-11-12)
+
+### Bug Fixes
+
+* **vue-parser:** treat slot as a fragment ([0f5e7b2](https://github.com/markuplint/markuplint/commit/0f5e7b2748ddac50bbb276febfcd20bdccf51c5d))
+
+### Features
+
+* **vue-parser:** declare that slot is the placeholder of the framework ([cb12dd5](https://github.com/markuplint/markuplint/commit/cb12dd5016d48525905ab3fca578cb1da2bad369))
+
+
 # [5.5.0](https://github.com/markuplint/markuplint/compare/v5.4.0...v5.5.0) (2026-11-10)
 
 ### Bug Fixes

@@ -46,3 +46,17 @@ test('[no-duplicate-visible-main-invalid-002] three mains one hidden', async () 
 		}),
 	]);
 });
+
+test('[no-duplicate-visible-main-issue-4584-001] the message is in Japanese with locale ja', async () => {
+	const { violations } = await mlRuleTest(rule, '<main></main><main></main>', undefined, false, 'ja');
+
+	expect(violations).toStrictEqual([
+		{
+			severity: 'error',
+			line: 1,
+			col: 14,
+			message: '文書内に表示される「main」要素は1つまでであるべきです',
+			raw: '<main>',
+		},
+	]);
+});

@@ -23,11 +23,21 @@ export const datetimeTokenCheck: Record<
 	| 'weekSign',
 	TokenEachCheck
 > &
-	Record<'_year' | '_month', number | null> = {
+	Record<'_yearMod400' | '_month', number | null> = {
 	/**
-	 * Temporary year state
+	 * Temporary year state, as the remainder of the year divided by 400.
+	 *
+	 * The Gregorian calendar repeats every 400 years, so the remainder decides
+	 * the leap year and the weekday. It is taken from the last four digits
+	 * (10000 is a multiple of 400), not from the whole year as a `number`:
+	 * the grammar allows any number of digits, and a `number` rounds a year past 2^53.
+	 * It stays `null` while the year is invalid.
+	 *
+	 * Like every temporary state here, it is written to the `TokenCollection` that runs the checks:
+	 * `TokenCollection#eachCheck` calls them with `this` bound to the collection, not to this object,
+	 * so the state does not carry over from one value to the next.
 	 */
-	_year: null,
+	_yearMod400: null,
 
 	/**
 	 * Temporary month state
@@ -42,7 +52,7 @@ export const datetimeTokenCheck: Record<
 			log('Parsing Datetime Year: "%s"', year?.value);
 		}
 
-		this._year = null;
+		this._yearMod400 = null;
 
 		if (!year || !year.value) {
 			return unmatched('', 'missing-token', {
@@ -67,15 +77,15 @@ export const datetimeTokenCheck: Record<
 			});
 		}
 
-		this._year = year.toNumber();
-
-		if (this._year <= 0) {
+		if (year.toNumber() <= 0) {
 			return year.unmatched({
 				reason: { type: 'out-of-range', gt: 0 },
 				expects: [],
 				partName: 'year',
 			});
 		}
+
+		this._yearMod400 = Number(year.value.slice(-4)) % 400;
 	},
 
 	/**
@@ -162,16 +172,15 @@ export const datetimeTokenCheck: Record<
 			});
 		}
 
-		// Set the leap year if _year is null
-		const year = this._year ?? 2000;
-		const isLeap = (year % 4 === 0 && year % 100 !== 0) || year % 400 === 0;
+		// Without a valid year (a yearless date), take a leap year
+		const yearMod400 = this._yearMod400 ?? 0;
 		const month = this._month ?? 1;
-		const dayOfMonth = (daysOfMonth[month] ?? 0) + (month === 2 && isLeap ? 1 : 0);
+		const dayOfMonth = (daysOfMonth[month] ?? 0) + (month === 2 && isLeapYear(yearMod400) ? 1 : 0);
 		const _date = date.toNumber();
 
 		if (log.enabled) {
-			log('Temporary Year and Month: %s, %s', this._year, this._month);
-			log('Computed Year, Month, and Day of Month: %s, %s, %s', year, month, dayOfMonth);
+			log('Temporary Year mod 400 and Month: %s, %s', this._yearMod400, this._month);
+			log('Computed Year mod 400, Month, and Day of Month: %s, %s, %s', yearMod400, month, dayOfMonth);
 		}
 
 		if (!(1 <= _date && _date <= dayOfMonth)) {
@@ -372,14 +381,16 @@ export const datetimeTokenCheck: Record<
 			});
 		}
 
-		const maxweek = getMaxWeekNum(this._year ?? 0);
+		// An invalid year is reported by its own check, and no week count can be derived from it:
+		// the week is then held to the most any week-year has, 53, rather than to that of an arbitrary year.
+		const maxweek = this._yearMod400 === null ? 53 : getMaxWeekNum(this._yearMod400);
 		const _week = week.toNumber();
 
 		if (!(1 <= _week && _week <= maxweek)) {
 			return week.unmatched({
 				reason: { type: 'out-of-range', gte: 1, lte: maxweek },
 				expects: [],
-				partName: 'date',
+				partName: 'week',
 			});
 		}
 	},
@@ -557,7 +568,7 @@ export const datetimeTokenCheck: Record<
 		if (!weekSign || !weekSign.value) {
 			return unmatched('', 'missing-token', {
 				expects: [{ type: 'const', value: 'W' }],
-				partName: 'time-zone',
+				partName: 'week',
 			});
 		}
 
@@ -565,7 +576,7 @@ export const datetimeTokenCheck: Record<
 			return weekSign.unmatched({
 				reason: 'unexpected-token',
 				expects: [{ type: 'const', value: 'W' }],
-				partName: 'time-zone',
+				partName: 'week',
 			});
 		}
 	},
@@ -611,18 +622,49 @@ const daysOfMonth = [
 	31,
 ] as const;
 
+/**
+ * Returns the number of weeks of the week-year `year`.
+ *
+ * > A week-year with a number year has 53 weeks if it corresponds to either
+ * > a year year in the proleptic Gregorian calendar that has a Thursday as its first day (January 1st),
+ * > or a year year in the proleptic Gregorian calendar that has a Wednesday as its first day (January 1st)
+ * > and where year is a number divisible by 400, or a number divisible by 4 but not by 100.
+ * > All other week-years have 52 weeks.
+ *
+ * The weekday is computed arithmetically rather than with `Date`:
+ * a `Date` read in local time shifts the day by the time zone of the machine,
+ * `Date.UTC` maps the years 0–99 to 1900–1999,
+ * and years after 275760 are outside the range of `Date`.
+ *
+ * Only `year` mod 400 matters, since the Gregorian calendar repeats every 400 years.
+ * Any integer is accepted (0 and below too); for a year that a `number` cannot hold exactly,
+ * pass year mod 400 instead.
+ *
+ * @see https://html.spec.whatwg.org/multipage/common-microsyntaxes.html#weeks
+ */
 export function getMaxWeekNum(year: number) {
-	let date = 31;
-	while (date > 0) {
-		const d = new Date(Date.UTC(year, 11, date, 0, 0, 0, 0));
-		const day = d.getDay();
-		d.setDate(d.getDate() + 4 - (day > 0 ? day : 7));
-		const yearStart = new Date(d.getFullYear(), 0, 1);
-		const weekNo = Math.ceil(((d.valueOf() - yearStart.valueOf()) / 86_400_000 + 1) / 7);
-		if (weekNo !== 1) {
-			return weekNo;
-		}
-		date--;
-	}
-	return Number.NaN;
+	const firstDay = getWeekdayOfJanuaryFirst(year);
+	const THURSDAY = 4;
+	const WEDNESDAY = 3;
+	return firstDay === THURSDAY || (firstDay === WEDNESDAY && isLeapYear(year)) ? 53 : 52;
+}
+
+function isLeapYear(year: number) {
+	return (year % 4 === 0 && year % 100 !== 0) || year % 400 === 0;
+}
+
+/**
+ * Gauss's algorithm for the weekday of January 1st in the proleptic Gregorian calendar
+ * (0 = Sunday … 6 = Saturday).
+ */
+function getWeekdayOfJanuaryFirst(year: number) {
+	const y = year - 1;
+	return mod(1 + 5 * mod(y, 4) + 4 * mod(y, 100) + 6 * mod(y, 400), 7);
+}
+
+/**
+ * The remainder with the sign of the divisor, so that the year 0 and below stay in 0…m-1.
+ */
+function mod(n: number, m: number) {
+	return ((n % m) + m) % m;
 }

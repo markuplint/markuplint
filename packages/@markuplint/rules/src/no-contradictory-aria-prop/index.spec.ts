@@ -53,3 +53,17 @@ test('[no-contradictory-aria-prop-issue-4309-002] JSX: an upper-case aria-* on a
 		},
 	]);
 });
+
+test('[no-contradictory-aria-prop-issue-4584-001] the message is in Japanese with locale ja', async () => {
+	const { violations } = await mlRuleTest(rule, '<input required aria-required="false">', undefined, false, 'ja');
+
+	expect(violations).toStrictEqual([
+		{
+			severity: 'error',
+			line: 1,
+			col: 17,
+			message: 'ARIAプロパティ「aria-required」は現在の属性「required」と矛盾しています',
+			raw: 'aria-required="false"',
+		},
+	]);
+});

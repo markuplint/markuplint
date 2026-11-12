@@ -471,3 +471,23 @@ test('[no-restricted-attr-issue-4309-004] JSX: an HTML element folds the name, a
 		},
 	]);
 });
+
+test('[no-restricted-attr-issue-4584-001] the disallowed values are shown as written (`list` is also a keyword) with locale ja', async () => {
+	const { violations } = await mlRuleTest(
+		rule,
+		'<div x-attr="a"></div>',
+		{ rule: { options: { disallowAttrs: [{ name: 'x-attr', value: { enum: ['a', 'list'] } }] } } },
+		false,
+		'ja',
+	);
+
+	expect(violations).toStrictEqual([
+		{
+			severity: 'error',
+			line: 1,
+			col: 14,
+			message: '属性「x-attr」は次の値を受け取ることを禁止しています: 「a」「list」',
+			raw: 'a',
+		},
+	]);
+});

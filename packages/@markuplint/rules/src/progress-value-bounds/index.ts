@@ -48,14 +48,14 @@ export default createRule<boolean, null>({
 
 			const message = maxAttr
 				? t(
-						'The value of the "{0}" attribute must be less than or equal to {1}',
+						'The value of the "{0*}" attribute must be less than or equal to {1}',
 						'value',
-						t('the value of the "{0}" attribute', 'max'),
+						t('the value of the "{0*}" attribute', 'max'),
 					)
 				: t(
-						'The value of the "{0}" attribute must be less than or equal to {1}',
+						'The value of the "{0*}" attribute must be less than or equal to {1}',
 						'value',
-						t('{0} when the "{1}" attribute is absent', 'one', 'max'),
+						t('{0} when the "{1*}" attribute is absent', 'one', 'max'),
 					);
 
 			report({

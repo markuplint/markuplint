@@ -1,6 +1,6 @@
 {
 	"name": "@markuplint/pretenders",
-	"version": "5.5.0",
+	"version": "5.6.0",
 	"description": "It loads components and then creates the pretenders data from them.",
 	"repository": {
 		"type": "git",
@@ -29,21 +29,21 @@
 		"clean": "npx tsc --build --clean tsconfig.build.json"
 	},
 	"dependencies": {
-		"@markuplint/ml-ast": "5.5.0",
-		"@markuplint/ml-config": "5.5.0",
-		"@markuplint/parser-utils": "5.5.0",
-		"@markuplint/shared": "5.5.0",
+		"@markuplint/ml-ast": "5.6.0",
+		"@markuplint/ml-config": "5.6.0",
+		"@markuplint/parser-utils": "5.6.0",
+		"@markuplint/shared": "5.6.0",
 		"es-module-lexer": "^3.0.4",
 		"glob": "^14.0.3",
 		"meow": "^14.1.0",
 		"typescript": "~6.0.3"
 	},
 	"devDependencies": {
-		"@markuplint/astro-parser": "5.5.0",
-		"@markuplint/jsx-parser": "5.5.0",
-		"@markuplint/mdx-parser": "5.5.0",
-		"@markuplint/svelte-parser": "5.5.0",
-		"@markuplint/vue-parser": "5.5.0"
+		"@markuplint/astro-parser": "5.6.0",
+		"@markuplint/jsx-parser": "5.6.0",
+		"@markuplint/mdx-parser": "5.6.0",
+		"@markuplint/svelte-parser": "5.6.0",
+		"@markuplint/vue-parser": "5.6.0"
 	},
 	"peerDependencies": {
 		"@markuplint/astro-parser": "^5.4.0",

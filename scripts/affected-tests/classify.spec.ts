@@ -10,6 +10,10 @@ const files: Record<string, string> = {
 	'packages/@markuplint/rules/src/attr-order/index.spec.ts': "import { mlRuleTest } from 'markuplint';",
 	'packages/@markuplint/rules/src/vue.spec.ts': "const vue = { parser: { '.*': '@markuplint/vue-parser' } };",
 	'packages/@markuplint/rules/src/other.spec.ts': '',
+	// Reads the sources of its package with `fs`, so no import of any spec reaches the code it checks
+	'packages/@markuplint/rules/src/ja-locale-coverage.spec.ts': "import { glob } from '@markuplint/test-tools';",
+	'packages/@markuplint/language-server/src/ja-locale-coverage.spec.ts':
+		"import { glob } from '@markuplint/test-tools';",
 	'packages/@markuplint/rules/src/multi-pass-fix.spec.ts': "const child = spawnSync('node', []);",
 	'packages/@markuplint/shared/src/errors/runtime.spec.ts': "import { execFile } from 'node:child_process';",
 	'packages/@markuplint/vue-parser/src/index.spec.ts': '',
@@ -156,6 +160,29 @@ describe('a source file of a package', () => {
 		expect(targets).toContain('packages/@markuplint/ml-core/src/types.d.ts');
 		expect(targets).toContain('packages/@markuplint/ml-core/src/a.spec.ts');
 		expect(targets).toContain('packages/@markuplint/ml-core/src/b.spec.ts');
+	});
+});
+
+describe('the locale guard of a package', () => {
+	test('runs for a source file of its package, with or without a build output, as it reads the sources with `fs`', () => {
+		expect(affected(modified('packages/@markuplint/rules/src/attr-order/index.ts'))).toContain(
+			'packages/@markuplint/rules/src/ja-locale-coverage.spec.ts',
+		);
+		expect(affected(modified('packages/@markuplint/language-server/src/server/new-file.ts'))).toContain(
+			'packages/@markuplint/language-server/src/ja-locale-coverage.spec.ts',
+		);
+	});
+
+	test('runs for the locale file of its package, which it reads, as for any file that is not source', () => {
+		expect(affected(modified('packages/@markuplint/language-server/locales/ja.json'))).toContain(
+			'packages/@markuplint/language-server/src/ja-locale-coverage.spec.ts',
+		);
+	});
+
+	test('does not run for a source file of another package', () => {
+		expect(affected(modified('packages/@markuplint/ml-core/src/a.ts'))).not.toContain(
+			'packages/@markuplint/rules/src/ja-locale-coverage.spec.ts',
+		);
 	});
 });
 

@@ -3,6 +3,21 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [5.6.0](https://github.com/markuplint/markuplint/compare/v5.5.0...v5.6.0) (2026-11-12)
+
+### Bug Fixes
+
+* **ml-core:** compute the slot assignment of a declarative shadow root ([381ce83](https://github.com/markuplint/markuplint/commit/381ce8308c9f3e5602654bbbdec6a5a3f8597941))
+* **ml-core:** do not take a spread attribute for a directive of a template element ([9af419e](https://github.com/markuplint/markuplint/commit/9af419ec690df40448f4afa3a5c37933f35e4830))
+* **ml-core:** find the innermost node whose range holds a location ([d45b662](https://github.com/markuplint/markuplint/commit/d45b6623a7fe85b675263a74ad85e3d86fa7a422))
+* **ml-core:** read the declarative shadow root of a pretended host first ([905cbf6](https://github.com/markuplint/markuplint/commit/905cbf6f541c2dd8475ec4c4a3d2383b2a95341c)), closes [#4527](https://github.com/markuplint/markuplint/issues/4527)
+* **ml-core:** report an invalid selector of a pretender as an error of the configuration ([3af8221](https://github.com/markuplint/markuplint/commit/3af8221583b0d16805c250cfa0a84baa8733fdc4))
+
+### Features
+
+* **ml-core:** add MLElement#isUnresolvedComponent ([9da55f2](https://github.com/markuplint/markuplint/commit/9da55f206aeeed4285cf094f9f033b3e92650365))
+
+
 # [5.5.0](https://github.com/markuplint/markuplint/compare/v5.4.0...v5.5.0) (2026-11-10)
 
 ### Bug Fixes

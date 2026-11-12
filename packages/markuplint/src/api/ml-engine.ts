@@ -307,10 +307,10 @@ export class MLEngine extends Emitter<MLEngineEventMap> {
 			return this.#rustView.nodes();
 		}
 		const document = this.document;
-		// `MLNode` structurally satisfies `PositionedNode` (startLine, startCol, localName, id,
-		// classList, parentElement, children are all present). The double cast is needed because
-		// TypeScript can't verify structural compatibility between the generic `MLNode<T, O>` and
-		// the plain interface at compile time.
+		// `MLNode` structurally satisfies `PositionedNode` (startLine, startCol, endLine, endCol,
+		// localName, id, classList, parentElement, children, and closeTag on an element, are all
+		// present). The double cast is needed because TypeScript can't verify structural
+		// compatibility between the generic `MLNode<T, O>` and the plain interface at compile time.
 		return document ? (document.nodeList as unknown as readonly PositionedNode[]) : null;
 	}
 

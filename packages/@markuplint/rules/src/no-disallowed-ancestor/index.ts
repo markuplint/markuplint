@@ -51,8 +51,8 @@ export default createRule({
 						scope: el,
 						message: t(
 							'{0} must not appear as a descendant of {1}',
-							t('the "{0}" {1}', el.localName, 'element'),
-							t('the "{0}" {1}', ancestor.localName, 'element'),
+							t('the "{0*}" {1}', el.localName, 'element'),
+							t('the "{0*}" {1}', ancestor.localName, 'element'),
 						),
 					});
 					break;

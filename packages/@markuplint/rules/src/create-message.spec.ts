@@ -4,13 +4,67 @@ import { translator } from '@markuplint/i18n';
 import { i18n } from 'markuplint';
 import { describe, test, expect, beforeAll } from 'vitest';
 
-import { __createMessageValueExpected } from './create-message.js';
+import { __createMessageValueExpected, createMessageValueExpected } from './create-message.js';
 
 let t: Translator;
+let tJa: Translator;
 
 beforeAll(() => {
-	const locale = i18n('en');
-	t = translator(locale);
+	t = translator(i18n('en'));
+	tJa = translator(i18n('ja'));
+});
+
+describe('locale ja', () => {
+	const position = { matched: false, length: 1, offset: 0, line: 1, column: 1 } as const;
+
+	test('[create-message-issue-4584-001] an extra token that is also a keyword is shown as written', () => {
+		expect(__createMessageValueExpected(tJa, 'A', '', { ref: 'REF', raw: 'list', reason: 'extra-token' })).toBe(
+			'余計なトークンが発見されました 「list」 (REF)',
+		);
+	});
+
+	test('[create-message-issue-4584-002] the values of an enumeration are shown as written', () => {
+		expect(
+			createMessageValueExpected(
+				tJa,
+				'属性「x」',
+				{ enum: ['list', 'time'] },
+				{ ...position, reason: 'doesnt-exist-in-enum', raw: 'x', ref: 'REF' },
+			),
+		).toBe('属性「x」は「list」「time」のいずれかである必要があります (REF)');
+	});
+
+	test('[create-message-issue-4584-003] a CSS syntax is shown as written', () => {
+		expect(
+			createMessageValueExpected(tJa, '属性「x」', '<length>', {
+				...position,
+				reason: 'syntax-error',
+				raw: 'x',
+				ref: 'REF',
+				expects: [{ type: 'syntax', value: '<length>' }],
+			}),
+		).toBe('属性「x」はCSS構文として「<length>」である必要があります (REF)');
+	});
+
+	test('[create-message-issue-4584-004] a constant that is also a keyword is shown as written', () => {
+		expect(
+			createMessageValueExpected(
+				tJa,
+				'属性「x」',
+				{ enum: ['list'] },
+				{
+					...position,
+					reason: 'unexpected-token',
+					raw: 'x',
+					ref: 'REF',
+					expects: [
+						{ type: 'const', value: 'list' },
+						{ type: 'const', value: 'time' },
+					],
+				},
+			),
+		).toBe('期待されない文字を含んでいます。属性「x」は「list」「time」のいずれかである必要があります (REF)');
+	});
 });
 
 describe('doesnt-exist-in-enum', () => {

@@ -132,3 +132,44 @@ test('[meter-value-bounds-valid-006] unparsable specified value is left to no-in
 	const { violations } = await mlRuleTest(rule, '<meter value="abc" max="10">abc</meter>');
 	expect(violations.length).toBe(0);
 });
+
+test('[meter-value-bounds-issue-4584-001] the names of the attributes are shown as written (`value` is also a keyword) with locale ja', async () => {
+	const { violations } = await mlRuleTest(
+		rule,
+		'<meter min="3" max="10" value="12"></meter>',
+		undefined,
+		false,
+		'ja',
+	);
+
+	expect(violations).toStrictEqual([
+		{
+			severity: 'error',
+			line: 1,
+			col: 32,
+			message: '「value」属性の値は「max」属性の値以下であるべきです',
+			raw: '12',
+		},
+	]);
+});
+
+test('[meter-value-bounds-issue-4584-002] an absent attribute is in Japanese with locale ja', async () => {
+	const { violations } = await mlRuleTest(rule, '<meter min="5" value="7"></meter>', undefined, false, 'ja');
+
+	expect(violations).toStrictEqual([
+		{
+			severity: 'error',
+			line: 1,
+			col: 13,
+			message: '「min」属性の値は「max」属性がない場合の1以下であるべきです',
+			raw: '5',
+		},
+		{
+			severity: 'error',
+			line: 1,
+			col: 23,
+			message: '「value」属性の値は「max」属性がない場合の1以下であるべきです',
+			raw: '7',
+		},
+	]);
+});

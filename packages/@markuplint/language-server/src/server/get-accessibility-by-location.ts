@@ -1,6 +1,8 @@
 import type { ARIAVersion } from '@markuplint/ml-spec';
 import type { MLEngine } from 'markuplint';
 
+import { searchNodeAtLocation } from '@markuplint/ml-core';
+
 /**
  * The element at a position and what the accessibility tree has of it. `aria` is `null` where the
  * markuplint that is older than 6 has none to give.
@@ -45,7 +47,10 @@ export async function getAccessibilityByLocation(
 		return null;
 	}
 
-	const node = engine.document.searchNodeByLocation(line, col);
+	// The engine is the markuplint the user installed, whose `searchNodeByLocation` may be of an older
+	// version (one that compared the line and the column apart and took the end of a range in), so the
+	// node list is searched here, by the rule of this version.
+	const node = searchNodeAtLocation(engine.document.nodeList, line, col);
 
 	if (!node || !node.is(node.ELEMENT_NODE)) {
 		return null;

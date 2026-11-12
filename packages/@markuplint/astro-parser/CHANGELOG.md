@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [5.6.0](https://github.com/markuplint/markuplint/compare/v5.5.0...v5.6.0) (2026-11-12)
+
+### Bug Fixes
+
+* **astro-parser:** treat Fragment and slot as fragments ([7084830](https://github.com/markuplint/markuplint/commit/7084830c0f96cfb79be9cd9d7e177c5bc6b0a010))
+
+### Features
+
+* **astro-parser:** declare that slot is the placeholder of the framework ([700448b](https://github.com/markuplint/markuplint/commit/700448b32d6704af5e14f24d3da613ad98ee7a12))
+
+
 # [5.5.0](https://github.com/markuplint/markuplint/compare/v5.4.0...v5.5.0) (2026-11-10)
 
 ### Bug Fixes

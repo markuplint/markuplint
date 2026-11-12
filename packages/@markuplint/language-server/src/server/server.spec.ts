@@ -267,7 +267,7 @@ describe('severityMap', () => {
 });
 
 describe('hover and code actions for a client that sends no settings', () => {
-	// `<button>` starts at the 51st character of the second line.
+	// `<button>` starts at character 51 (0-based, as LSP counts) of the second line.
 	const BUTTON_MARKUP =
 		'<!doctype html>\n<html lang="en"><head><title>t</title></head><body><button>Go</button></body></html>\n';
 
@@ -282,6 +282,22 @@ describe('hover and code actions for a client that sends no settings', () => {
 		});
 
 		expect(hover?.contents.value).toContain('`<button>`');
+	});
+
+	test('answers a hover on the `<` of a start tag with that element, not the one before', async () => {
+		const root = createWorkspace({});
+		const { client, received, uri } = await openDocument({ text: BUTTON_MARKUP }, root);
+		await waitForDiagnostics(received, uri);
+
+		// The character is 0-based: 51 is the `<` of `<button>`, and 50 the `>` of `<body>`.
+		const hoverAt = (character: number) =>
+			client.sendRequest<{ contents: { value: string } } | null>('textDocument/hover', {
+				textDocument: { uri },
+				position: { line: 1, character },
+			});
+
+		expect((await hoverAt(51))?.contents.value).toContain('`<button>`');
+		expect((await hoverAt(50))?.contents.value).toContain('`<body>`');
 	});
 
 	test('offers the fixes of the violations', async () => {

@@ -137,6 +137,7 @@ Each entry includes an optional **scope selector** that narrows the suppression 
 
 - Only `error`-severity violations are suppressed; `warning` and `info` always pass through
 - `--suppress` always exits with code 0 (success)
+- Running `--suppress` again updates the file in place: an entry it records again takes the newly computed scope, and keeps the higher of the two counts when the scope is unchanged or the new count when the scope changed. The entries of the rules and files it did not record are kept as they are, scope included. Entries whose scope an earlier version dropped get it back from one more `--suppress` run over the same files; `--suppress-rule` gives it back only to the entries of that rule
 - `--suppress` and `--prune-suppressions` cannot be used together
 - `--prune-suppressions` judges only the entries of the files it checked; the entries of other files are kept as they are. A normal run likewise reports unused entries only for the files it checked
 - A suppressions file that cannot be parsed, or an entry that cannot be applied, fails the run whatever the output format or options
@@ -162,7 +163,7 @@ The scope selector narrows suppression to a specific part of the document. It is
 
 A tag name, a class name and an `id` are written as an identifier of CSS (the way [`CSS.escape()`](https://drafts.csswg.org/cssom/#serialize-an-identifier) serializes one): a character that is not a letter, a digit, `-`, `_` or a non-ASCII letter has a `\` before it (`Tabs\.Root` for `<Tabs.Root>`, `div.py-1\.5` for `class="py-1.5"`, `div.hover\:bg-x` for `class="hover:bg-x"`, `#a\ \>\ b` for `id="a > b"`), and a digit at the start is written as a hex escape (`div.\32 xl\:flex` for `class="2xl:flex"`), so that a name is not read as the syntax of a scope. A scope is read with the escapes of CSS: a `\` is followed by 1 to 6 hex digits (and one whitespace that ends them) or by the character itself. A scope in the file that has no `\` is still read as it was written. A `role` or `type` value that holds a `"` or `>` is not used for the scope.
 
-If the scope cannot be narrowed (e.g., violations span the entire document), the suppression applies to the whole file.
+If the scope cannot be narrowed (e.g., violations span the entire document, or a violation is reported at a position that belongs to no element), the suppression applies to the whole file.
 
 When a scope selector no longer matches any element (e.g., after refactoring), the suppression remains active and `--prune-suppressions` will recommend cleanup. **Broken scopes never cause new violations to be hidden.**
 

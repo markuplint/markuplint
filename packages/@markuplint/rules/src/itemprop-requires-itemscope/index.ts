@@ -66,9 +66,8 @@ export default createRule<boolean, null>({
 				report({
 					scope: el,
 					message: t(
-						'{0} must {1}',
+						'{0} must belong to an item via an ancestor `itemscope` or be referenced by an `itemref`',
 						t('the {0}', 'element'),
-						'belong to an item via an ancestor `itemscope` or be referenced by an `itemref`',
 					),
 				});
 			}

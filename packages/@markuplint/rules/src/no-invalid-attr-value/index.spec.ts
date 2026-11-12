@@ -1566,8 +1566,7 @@ test('[no-invalid-attr-value-invalid-027] input[type=week][min] rejects week 54'
 	// Mirrors html/datatypes/week-invalid-format-novalid.html
 	const { violations } = await mlRuleTest(rule, '<input type="week" min="2024-W54">');
 	expect(violations.length).toBe(1);
-	// week-string week-number is internally validated under the "date" component.
-	expect(violations[0]?.message).toContain('date part');
+	expect(violations[0]?.message).toContain('week part');
 });
 
 test('[no-invalid-attr-value-invalid-028] input[type=date][min] rejects Feb 29 in non-leap year', async () => {
@@ -2606,6 +2605,52 @@ test('[no-invalid-attr-value-issue-4571-001] React: the value of acceptCharset i
 			col: 40,
 			message: 'The "accept-charset" attribute expects utf-8',
 			raw: 'shift_jis',
+		},
+	]);
+});
+
+// The time zones themselves are covered by @markuplint/types (check-datetime/max-week.runtime.spec.ts),
+// which runs the check in a process started in each zone.
+test('[no-invalid-attr-value-issue-4586-001] input[type=week]: 2021 has 52 weeks', async () => {
+	expect((await mlRuleTest(rule, '<input type="week" value="2021-W53">')).violations).toStrictEqual([
+		{
+			severity: 'error',
+			line: 1,
+			col: 33,
+			message:
+				'The week part of the "value" attribute expects integer greater than or equal to one less than or equal to 52 (https://html.spec.whatwg.org/multipage/common-microsyntaxes.html#weeks)',
+			raw: '53',
+		},
+	]);
+	expect((await mlRuleTest(rule, '<input type="week" value="2026-W53">')).violations).toStrictEqual([]);
+});
+
+test('[no-invalid-attr-value-issue-4586-002] input[type=week]: the week part is named in Japanese', async () => {
+	expect(
+		(await mlRuleTest(rule, '<input type="week" value="2021-W53">', { rule: true }, false, 'ja')).violations,
+	).toStrictEqual([
+		{
+			severity: 'error',
+			line: 1,
+			col: 33,
+			message:
+				'属性「value」の週の部分は1以上で52以下の整数である必要があります (https://html.spec.whatwg.org/multipage/common-microsyntaxes.html#weeks)',
+			raw: '53',
+		},
+	]);
+});
+
+test('[no-invalid-attr-value-issue-4584-001] the allowed values are shown as written (`time` is also a keyword) with locale ja', async () => {
+	const { violations } = await mlRuleTest(rule, '<input type="foo">', undefined, false, 'ja');
+
+	expect(violations).toStrictEqual([
+		{
+			severity: 'error',
+			line: 1,
+			col: 14,
+			message:
+				'属性「type」は「hidden」「text」「search」「tel」「url」「email」「password」「date」「month」「week」「time」「datetime-local」「number」「range」「color」「checkbox」「radio」「file」「submit」「image」「reset」「button」のいずれかである必要があります',
+			raw: 'foo',
 		},
 	]);
 });

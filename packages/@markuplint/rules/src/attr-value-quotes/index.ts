@@ -28,10 +28,9 @@ export default createRule<Type>({
 	async verify({ document, report, t }) {
 		await document.walkOn('Attr', attr => {
 			const message = t(
-				'{0} is must {1} on {2}',
+				'{0} must be quoted with {1}',
 				'Attribute value',
-				'quote',
-				`${attr.rule.value} quotation mark`,
+				attr.rule.value === 'double' ? 'double quotation marks' : 'single quotation marks',
 			);
 			if (attr.isExpressionValue || attr.isDirective || !attr.equal || attr.equal?.raw === '') {
 				return;

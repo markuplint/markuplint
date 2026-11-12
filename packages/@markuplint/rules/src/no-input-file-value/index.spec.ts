@@ -36,3 +36,17 @@ test('[no-input-file-value-invalid-002] case-insensitive type matching', async (
 	expect(violations.length).toBe(1);
 	expect(violations[0]?.raw).toBe('x');
 });
+
+test('[no-input-file-value-issue-4584-001] the names of the attributes are shown as written (`type` and `value` are also keywords) with locale ja', async () => {
+	const { violations } = await mlRuleTest(rule, '<input type="file" value="x">', undefined, false, 'ja');
+
+	expect(violations).toStrictEqual([
+		{
+			severity: 'error',
+			line: 1,
+			col: 27,
+			message: '「type=file」の「input」要素の「value」属性は空文字列であるべきです',
+			raw: 'x',
+		},
+	]);
+});

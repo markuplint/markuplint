@@ -3,6 +3,15 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [5.6.0](https://github.com/markuplint/markuplint/compare/v5.5.0...v5.6.0) (2026-11-12)
+
+### Bug Fixes
+
+* **i18n:** add the Japanese sentences that the rule messages lack ([2091c2b](https://github.com/markuplint/markuplint/commit/2091c2ba0544e0abcc62a375777e6cc21073abd9))
+* **i18n:** start the sentence that follows another one with a capital in English ([f0834d7](https://github.com/markuplint/markuplint/commit/f0834d74811f42e29d2e777676c530884c1889d3))
+* **i18n:** translate "week" into Japanese ([0a189e2](https://github.com/markuplint/markuplint/commit/0a189e207f21d1ca65b541e5763feaa877fe60ab)), closes [#4586](https://github.com/markuplint/markuplint/issues/4586)
+
+
 # [5.5.0](https://github.com/markuplint/markuplint/compare/v5.4.0...v5.5.0) (2026-11-10)
 
 ### Bug Fixes

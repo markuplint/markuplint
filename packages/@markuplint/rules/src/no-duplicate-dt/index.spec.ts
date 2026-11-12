@@ -98,3 +98,17 @@ test('[no-duplicate-dt-invalid-003] Nested', async () => {
 		).violations,
 	).toStrictEqual([]);
 });
+
+test('[no-duplicate-dt-issue-4584-001] the message is in Japanese with locale ja', async () => {
+	const { violations } = await mlRuleTest(rule, '<dl><dt>a</dt><dt>a</dt><dd></dd></dl>', undefined, false, 'ja');
+
+	expect(violations).toStrictEqual([
+		{
+			severity: 'warning',
+			line: 1,
+			col: 15,
+			message: '名前が重複しています',
+			raw: '<dt>',
+		},
+	]);
+});

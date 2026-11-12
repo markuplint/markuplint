@@ -22,3 +22,17 @@ test('[no-unknown-role-invalid-001] non-existent role', async () => {
 		},
 	]);
 });
+
+test('[no-unknown-role-issue-4584-001] the message is in Japanese with locale ja', async () => {
+	const { violations } = await mlRuleTest(rule, '<div role="foo"></div>', undefined, false, 'ja');
+
+	expect(violations).toStrictEqual([
+		{
+			severity: 'error',
+			line: 1,
+			col: 12,
+			message: 'WAI-ARIAの仕様において、ロール「foo」は存在しません。',
+			raw: 'foo',
+		},
+	]);
+});

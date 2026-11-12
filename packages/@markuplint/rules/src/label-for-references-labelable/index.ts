@@ -67,7 +67,7 @@ export default createRule<boolean, null>({
 					col: forAttr.valueNode?.startCol,
 					raw: forAttr.valueNode?.raw,
 					message: t(
-						'The "{0}" attribute of the "{1}" element must reference a labelable element',
+						'The "{0*}" attribute of the "{1*}" element must reference a labelable element',
 						'for',
 						'label',
 					),

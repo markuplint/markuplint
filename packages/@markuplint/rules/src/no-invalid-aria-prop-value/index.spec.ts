@@ -72,3 +72,24 @@ test('[no-invalid-aria-prop-value-issue-4309-004] JSX: an upper-case aria-* on a
 		},
 	]);
 });
+
+test('[no-invalid-aria-prop-value-issue-4584-001] the allowed values are shown as written (`list` is also a keyword) with locale ja', async () => {
+	const { violations } = await mlRuleTest(
+		rule,
+		'<input type="text" role="combobox" aria-autocomplete="foo">',
+		undefined,
+		false,
+		'ja',
+	);
+
+	expect(violations).toStrictEqual([
+		{
+			severity: 'error',
+			line: 1,
+			col: 36,
+			message:
+				'ARIAプロパティ「aria-autocomplete」では、「foo」は許可されていません。許可されている値は次のとおりです 「inline」「list」「both」「none」',
+			raw: 'aria-autocomplete="foo"',
+		},
+	]);
+});
