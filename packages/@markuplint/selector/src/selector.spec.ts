@@ -237,6 +237,24 @@ describe('selector matching', () => {
 		expect(createSelector(':scope > p').match(b, body)).toBeTruthy();
 	});
 
+	test('A compound to the left of :scope has to match: the document has nothing above it', () => {
+		const dom = new JSDOM('<!DOCTYPE html><html><body><p id="a"></p></body></html>');
+		const { document } = dom.window;
+		const html = document.documentElement;
+		expect(createSelector(':scope > html').match(html, document)).toBeTruthy();
+		expect(createSelector('div :scope > html').match(html, document)).toBe(false);
+		expect(createSelector('div :scope html').match(html, document)).toBe(false);
+	});
+
+	test('A compound to the left of :scope has to match: the scope that is an element', () => {
+		const dom = new JSDOM('<!DOCTYPE html><html><body><p id="a"></p></body></html>');
+		const { document } = dom.window;
+		const body = document.body;
+		const a = document.getElementById('a');
+		expect(createSelector('html :scope > p').match(a, body)).toBeTruthy();
+		expect(createSelector('section :scope > p').match(a, body)).toBe(false);
+	});
+
 	test(':root', () => {
 		const el = createTestElement('<html><div id="hoge" class="foo bar"></div></html>');
 		expect(createSelector(':root').match(el)).toBeTruthy();
