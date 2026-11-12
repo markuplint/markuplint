@@ -249,13 +249,13 @@ fn v6_pretending_012() {
 }
 
 /// TS `index.spec.ts` "pretenders: aria field on HTML selector is ignored (issue-3740)".
-/// TS passes `aria: { name: 'overridden' }`, a shape outside the `PretenderARIA`
-/// type that the Rust config does not accept; a valid `aria` is used instead.
+/// TS passes `aria: { name: 'overridden' }`, a shape outside the `PretenderARIA` type, which
+/// the Rust config reads as no name (as TS does) instead of refusing the whole config.
 #[test]
 fn v6_pretending_013() {
     let (arena, id) = pretended(
         "<button>x</button>",
-        json!([{ "selector": "button", "as": { "element": "a", "aria": { "name": true } } }]),
+        json!([{ "selector": "button", "as": { "element": "a", "aria": { "name": "overridden" } } }]),
     );
     assert!(el(&arena, id).pretender_context.is_none());
     assert_eq!(el(&arena, id).base.node_name, "button");
@@ -1057,4 +1057,124 @@ fn v6_pretending_expression_002() {
         assert_eq!(value_of(&arena, id, "aria-label"), Some(label.clone()), "{code}");
         assert_eq!(value_of(&arena, id, "title"), None, "{code}");
     }
+}
+
+// ============================================================
+// Shapes the TS runtime reads, which the Rust config types once refused
+// ============================================================
+
+/// A pretender with no `as` leaves the element to its `as` attribute, and the pretenders after it
+/// are not tried (TS `pretenderConfig?.as ?? <the as attribute>`).
+#[test]
+fn v6_pretending_without_as_001() {
+    for pretenders in [
+        json!([{ "selector": "x-btn" }]),
+        json!([{ "selector": "x-btn", "as": null }]),
+        json!([{ "selector": "x-btn" }, { "selector": "x-btn", "as": "div" }]),
+    ] {
+        let (arena, id) = pretended(r#"<x-btn as="button"></x-btn>"#, pretenders);
+        assert_eq!(el(&arena, id).base.node_name, "button");
+        // The attributes are inherited, as an `as` attribute pretender does
+        assert!(attr(el(&arena, id), "as").is_some());
+    }
+    let (arena, id) = pretended(
+        "<x-btn></x-btn>",
+        json!([{ "selector": "x-btn" }, { "selector": "x-btn", "as": "div" }]),
+    );
+    assert!(el(&arena, id).pretender_context.is_none());
+    assert_eq!(el(&arena, id).base.node_name, "x-btn");
+}
+
+/// `inheritAttrs` is read by its truthiness.
+#[test]
+fn v6_pretending_inherit_attrs_001() {
+    for (value, inherits) in [
+        (json!("yes"), true),
+        (json!(1), true),
+        (json!({}), true),
+        (json!(""), false),
+        (json!(0), false),
+        (json!(null), false),
+    ] {
+        let (arena, id) = pretended(
+            r#"<x-btn label="L"></x-btn>"#,
+            json!([{ "selector": "x-btn", "as": { "element": "button", "inheritAttrs": value } }]),
+        );
+        assert_eq!(attr(el(&arena, id), "label").is_some(), inherits, "{value}");
+    }
+}
+
+/// A namespace that is not `html`, `svg` or `math` is no namespace (TS `URIS[name]` is `undefined`),
+/// and an empty one leaves the namespace to where the element is rendered.
+#[test]
+fn v6_pretending_namespace_001() {
+    for name in [json!("xlink"), json!("SVG"), json!(5)] {
+        let (arena, id) = pretended(
+            "<x-icon></x-icon>",
+            json!([{ "selector": "x-icon", "as": { "element": "circle", "namespace": name } }]),
+        );
+        assert_eq!(el(&arena, id).namespace, NamespaceURI::XLink, "{name}");
+    }
+    for name in [json!(""), json!(null)] {
+        let (arena, id) = pretended(
+            "<x-icon></x-icon>",
+            json!([{ "selector": "x-icon", "as": { "element": "circle", "namespace": name } }]),
+        );
+        assert_eq!(el(&arena, id).namespace, NamespaceURI::XHTML, "{name}");
+    }
+}
+
+/// `dynamic` goes with `fromAttr` and `expression`, as TS asks for the key apart from the kind.
+#[test]
+fn v6_pretending_attr_value_001() {
+    let pretender = |value: serde_json::Value| json!([{ "selector": "x-btn", "as": { "element": "button", "attrs": [{ "name": "aria-label", "value": value }] } }]);
+    // The attribute that is read is missing; the key makes the value dynamic all the same
+    let (arena, id) = pretended(
+        "<x-btn></x-btn>",
+        pretender(json!({ "fromAttr": "label", "dynamic": true })),
+    );
+    assert_eq!(attr(el(&arena, id), "aria-label").unwrap().is_dynamic_value, Some(true));
+    // `omitIfMissing` decides whether the attribute is made, by its truthiness
+    let (arena, id) = pretended(
+        "<x-btn></x-btn>",
+        pretender(json!({ "fromAttr": "label", "omitIfMissing": false })),
+    );
+    assert_eq!(attr(el(&arena, id), "aria-label").unwrap().value.raw, "");
+    let (arena, id) = pretended(
+        "<x-btn></x-btn>",
+        pretender(json!({ "fromAttr": "label", "omitIfMissing": "yes" })),
+    );
+    assert!(attr(el(&arena, id), "aria-label").is_none());
+    // `{ dynamic: false }` is dynamic: the key is what counts
+    let (arena, id) = pretended("<x-btn></x-btn>", pretender(json!({ "dynamic": false })));
+    assert_eq!(attr(el(&arena, id), "aria-label").unwrap().is_dynamic_value, Some(true));
+    // None of the keys is an empty attribute
+    let (arena, id) = pretended("<x-btn></x-btn>", pretender(json!({})));
+    let label = attr(el(&arena, id), "aria-label").unwrap();
+    assert_eq!(label.value.raw, "");
+    assert_eq!(label.is_dynamic_value, None);
+}
+
+/// An entry of `contents` is told by its keys; one with none of them is kept as it is and skipped,
+/// and `{ slot, dynamic }` places the children and makes the content mutable.
+#[test]
+fn v6_pretending_contents_001() {
+    let (arena, id) = pretended(
+        "<x-box><p></p></x-box>",
+        json!([{ "selector": "x-box", "as": { "element": "div", "slots": true, "contents": [{}, { "slot": false, "dynamic": 0 }, { "foo": 1 }] } }]),
+    );
+    let content = slot_content(&arena, id);
+    assert!(content.mutable);
+    assert_eq!(content.entries, [SlotEntry::Slot]);
+    assert_eq!(names(&arena, &content.fill(&arena.pure_children_of(id))), ["p"]);
+
+    // The index of an element is the one in the definition, as the uuid of TS is
+    let (arena, id) = pretended(
+        "<x-box></x-box>",
+        json!([{ "selector": "x-box", "as": { "element": "div", "slots": true, "contents": [{}, { "element": "b" }] } }]),
+    );
+    let SlotEntry::Element(b) = slot_content(&arena, id).entries[0] else {
+        panic!("expected an element");
+    };
+    assert!(el(&arena, b).base.uuid.ends_with("_pretender_content_1"));
 }
