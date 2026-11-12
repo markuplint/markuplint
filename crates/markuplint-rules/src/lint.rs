@@ -1,5 +1,6 @@
 //! Top-level lint function: MLAST JSON + config → violations.
 
+use markuplint_core::literal::LiteralRendering;
 use markuplint_core::pretender::Pretender;
 use markuplint_dom::arena::DomArena;
 use markuplint_dom::builder;
@@ -144,6 +145,10 @@ pub struct LintConfig {
     /// Resolved pretenders (TS `Pretender[]`), applied to the DOM before rules run.
     #[serde(default)]
     pub pretenders: Vec<Pretender>,
+
+    /// How a framework renders a literal that a pretender writes as code (`{ expression }`).
+    #[serde(default)]
+    pub literal_rendering: LiteralRendering,
 }
 
 #[derive(Debug, Serialize)]
@@ -200,7 +205,7 @@ fn run_rules(arena: &DomArena, spec: &MLMLSpec, config: &LintConfig, rules: &[Bo
     let pretended;
     let arena = if pretending::may_pretend(arena, &config.pretenders) {
         let mut copy = arena.clone();
-        pretending::apply_pretenders(&mut copy, &config.pretenders, spec);
+        pretending::apply_pretenders(&mut copy, &config.pretenders, &config.literal_rendering, spec);
         pretended = copy;
         &pretended
     } else {
@@ -931,6 +936,7 @@ mod tests {
             child_node_rules: vec![],
             rule_common_settings: None,
             pretenders: vec![],
+            literal_rendering: LiteralRendering::default(),
         };
 
         let result = lint(&arena, &spec, &config);
@@ -954,6 +960,7 @@ mod tests {
             child_node_rules: vec![],
             rule_common_settings: None,
             pretenders: vec![],
+            literal_rendering: LiteralRendering::default(),
         };
 
         let result = lint(&arena, &spec, &config);
@@ -974,6 +981,7 @@ mod tests {
             child_node_rules: vec![],
             rule_common_settings: None,
             pretenders: vec![],
+            literal_rendering: LiteralRendering::default(),
         };
 
         let result = lint(&arena, &spec, &config);
@@ -1990,6 +1998,7 @@ mod tests {
             child_node_rules: vec![],
             rule_common_settings: None,
             pretenders: vec![],
+            literal_rendering: LiteralRendering::default(),
         };
 
         let result = lint(&arena, &spec, &config);
@@ -2026,6 +2035,7 @@ mod tests {
             child_node_rules: vec![],
             rule_common_settings: None,
             pretenders: vec![],
+            literal_rendering: LiteralRendering::default(),
         };
 
         let result = lint(&arena, &spec, &config);
@@ -2323,6 +2333,7 @@ mod tests {
             child_node_rules: vec![],
             rule_common_settings: None,
             pretenders: vec![],
+            literal_rendering: LiteralRendering::default(),
         };
 
         let result = lint(&arena, &spec, &config);

@@ -325,6 +325,12 @@ pub struct MLASTHTMLAttr {
     /// rule that judges the name sees it, but a lookup by name does not find it, as the DOM does not.
     #[serde(default)]
     pub is_absent: Option<bool>,
+    /// The code of the value when it is nothing but a literal (TS `literalToExpression` of
+    /// `MLAttr#literal`: `false`, `"x"`, `0`). The value of a component's attribute is the string
+    /// form of the literal, which a string `"false"` and a boolean `false` share, so the code is what
+    /// tells them apart when a pretender forwards the attribute (`{ fromAttr }`).
+    #[serde(default)]
+    pub literal_expression: Option<String>,
     #[serde(default)]
     pub is_directive: Option<bool>,
     #[serde(default)]

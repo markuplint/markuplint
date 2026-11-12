@@ -42,7 +42,12 @@ fn pretended(html: &str, pretenders: serde_json::Value) -> (DomArena, NodeId) {
 
 fn apply(arena: &mut DomArena, pretenders: serde_json::Value) {
     let pretenders: Vec<markuplint_core::pretender::Pretender> = serde_json::from_value(pretenders).unwrap();
-    apply_pretenders(arena, &pretenders, &spec());
+    apply_pretenders(
+        arena,
+        &pretenders,
+        &markuplint_core::literal::LiteralRendering::default(),
+        &spec(),
+    );
 }
 
 fn el(arena: &DomArena, id: NodeId) -> &ElementData {
@@ -909,4 +914,147 @@ fn v6_pretending_accname_006() {
         json!([]),
         None,
     );
+}
+
+// ============================================================
+// Components (`isComponent`) and `{ expression }` attributes
+// ============================================================
+
+/// A name that the parser of the document says is a component's makes an `authored` element, which keeps
+/// the case of its name and gives no name for the namespace (TS `MLDocument#isComponentName`).
+#[test]
+fn v6_pretending_component_001() {
+    let (arena, id) = pretended(
+        "<x-a></x-a>",
+        json!([{ "selector": "x-a", "as": "Tabs.Root", "asIsComponent": true }]),
+    );
+    let e = el(&arena, id);
+    assert_eq!(e.element_type, ElementType::Authored);
+    assert_eq!(e.base.node_name, "Tabs.Root");
+    assert_eq!(e.namespace, NamespaceURI::XHTML);
+
+    let (arena, id) = pretended(
+        "<x-a></x-a>",
+        json!([{ "selector": "x-a", "as": "Svg", "asIsComponent": true }]),
+    );
+    assert_eq!(el(&arena, id).namespace, NamespaceURI::XHTML);
+
+    // Not a component's name: an element of HTML, whose name is lower-cased
+    let (arena, id) = pretended("<x-a></x-a>", json!([{ "selector": "x-a", "as": "Div" }]));
+    assert_eq!(el(&arena, id).element_type, ElementType::Html);
+    assert_eq!(el(&arena, id).base.node_name, "div");
+}
+
+/// The flag of a slot and of an element of `contents` makes the virtual element `authored`.
+#[test]
+fn v6_pretending_component_002() {
+    let (arena, id) = pretended(
+        "<x-a></x-a>",
+        json!([{
+            "selector": "x-a",
+            "as": {
+                "element": "div",
+                "slots": [{ "element": "Inner", "isComponent": true, "contents": [{ "element": "Item", "isComponent": true }, { "element": "li" }] }]
+            }
+        }]),
+    );
+    let content = slot_content(&arena, id);
+    let wrapper = el(&arena, content.wrapper.unwrap());
+    assert_eq!(wrapper.element_type, ElementType::Authored);
+    assert_eq!(wrapper.base.node_name, "Inner");
+    let types: Vec<_> = content
+        .entries
+        .iter()
+        .filter_map(|e| match e {
+            SlotEntry::Element(id) => Some(el(&arena, *id).element_type.clone()),
+            _ => None,
+        })
+        .collect();
+    assert_eq!(types, vec![ElementType::Authored, ElementType::Html]);
+}
+
+fn value_of(arena: &DomArena, id: NodeId, name: &str) -> Option<(String, bool, bool, bool)> {
+    attr(el(arena, id), name).map(|a| {
+        (
+            a.value.raw.clone(),
+            a.is_dynamic_value == Some(true),
+            a.is_expression_value == Some(true),
+            a.is_absent == Some(true),
+        )
+    })
+}
+
+fn boolean_disabled() -> markuplint_core::literal::LiteralRendering {
+    serde_json::from_value(json!({ "booleanAttrNames": ["disabled"] })).unwrap()
+}
+
+/// A literal in `{ expression }` is rendered as the framework renders it on the element that gets it, and
+/// any other code is dynamic.
+#[test]
+fn v6_pretending_expression_001() {
+    let pretenders: Vec<markuplint_core::pretender::Pretender> = serde_json::from_value(json!([{
+        "selector": "x-a",
+        "as": {
+            "element": "button",
+            "attrs": [
+                { "name": "aria-busy", "value": { "expression": "true" } },
+                { "name": "disabled", "value": { "expression": "false" } },
+                { "name": "title", "value": { "expression": "selected ? 0 : -1" } },
+                { "name": "type", "value": { "expression": "'button'" } },
+            ]
+        }
+    }]))
+    .unwrap();
+    let mut arena = html_arena("<x-a></x-a>");
+    apply_pretenders(&mut arena, &pretenders, &boolean_disabled(), &spec());
+    let id = arena.elements().next().unwrap().0;
+    assert_eq!(
+        value_of(&arena, id, "aria-busy"),
+        Some(("true".into(), false, true, false))
+    );
+    assert_eq!(
+        value_of(&arena, id, "disabled"),
+        Some((String::new(), true, true, true))
+    );
+    assert_eq!(
+        value_of(&arena, id, "title"),
+        Some(("selected ? 0 : -1".into(), true, true, false))
+    );
+    assert_eq!(
+        value_of(&arena, id, "type"),
+        Some(("button".into(), false, true, false))
+    );
+}
+
+/// `{ fromAttr }` of a literal attribute of the usage site is rendered under the name of the attribute that
+/// the pretender makes; the code of the literal is what tells `false` from `"false"`.
+#[test]
+fn v6_pretending_expression_002() {
+    let pretenders: Vec<markuplint_core::pretender::Pretender> = serde_json::from_value(json!([{
+        "selector": "x-a",
+        "as": {
+            "element": "button",
+            "attrs": [
+                { "name": "disabled", "value": { "fromAttr": "off" } },
+                { "name": "aria-label", "value": { "fromAttr": "off" } },
+                { "name": "title", "value": { "fromAttr": "missing", "omitIfMissing": true } },
+            ]
+        }
+    }]))
+    .unwrap();
+    let label = ("false".to_owned(), false, true, false);
+    for (code, disabled) in [
+        ("false", (String::new(), true, true, true)),
+        ("\"false\"", (String::new(), false, true, false)),
+    ] {
+        let mut arena = html_arena("<x-a off></x-a>");
+        let id = arena.elements().next().unwrap().0;
+        if let Some(MLASTAttr::HTMLAttr(a)) = arena.element_mut(id).unwrap().attributes.first_mut() {
+            a.literal_expression = Some(code.to_owned());
+        }
+        apply_pretenders(&mut arena, &pretenders, &boolean_disabled(), &spec());
+        assert_eq!(value_of(&arena, id, "disabled"), Some(disabled), "{code}");
+        assert_eq!(value_of(&arena, id, "aria-label"), Some(label.clone()), "{code}");
+        assert_eq!(value_of(&arena, id, "title"), None, "{code}");
+    }
 }

@@ -235,6 +235,7 @@ fn convert_parser_node(
                         is_dynamic_value: None,
                         is_expression_value: None,
                         is_absent: None,
+                        literal_expression: None,
                         is_directive: None,
                         potential_name: None,
                         potential_value: None,
