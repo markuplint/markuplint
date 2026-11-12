@@ -1,4 +1,6 @@
 import type { PositionedNode } from '../suppressions/compute-scope.js';
+import type { AccessibilityProperties } from '@markuplint/ml-core';
+import type { ARIAVersion } from '@markuplint/ml-spec';
 
 import { createSelector } from '@markuplint/ml-core';
 import { isFatalError } from '@markuplint/shared';
@@ -19,6 +21,19 @@ export type RustDocumentView = {
 	 * that cannot be read.
 	 */
 	readonly search: (selector: string) => readonly SearchedPosition[];
+	/**
+	 * TS `Document#searchNodeByLocation()` and `Document#getAccessibilityProp()`: the element at the
+	 * position and what the accessibility tree has of it; `null` when there is none, or the
+	 * document did not parse.
+	 */
+	readonly accessibility: (line: number, col: number, ariaVersion: ARIAVersion) => AccessibilityAt | null;
+};
+
+/** The element at a position, and its accessibility properties (what the hover of the language server shows). */
+export type AccessibilityAt = {
+	/** TS `MLElement#localName`. */
+	readonly node: string;
+	readonly aria: AccessibilityProperties;
 };
 
 /** Where an element that a search found starts (TS `MLElement#startLine` / `startCol`). */
@@ -36,6 +51,31 @@ export type RustInspectBinding = {
 	nodeListHtml: (html: string, configJson: string, specJson: string) => string | null;
 	debugMapHtml: (html: string, configJson: string, specJson: string) => string[] | null;
 	searchHtml: (html: string, selector: string, configJson: string, specJson: string) => SearchedPosition[];
+	/** JSON of {@link InspectedAccessibility}, or `null` where there is no element. */
+	accessibilityHtml: (
+		html: string,
+		line: number,
+		col: number,
+		ariaVersion: string,
+		configJson: string,
+		specJson: string,
+	) => string | null;
+};
+
+/**
+ * What `markuplint_rules::inspect::InspectedAccessibility` serializes: JSON has no ordered record, so the
+ * properties are a list, in the order the hover shows them.
+ */
+type InspectedAccessibility = {
+	readonly nodeName: string;
+	readonly aria: Omit<Extract<AccessibilityProperties, { unknown: false }>, 'props' | 'unknown'> & {
+		readonly unknown: boolean;
+		readonly props?: readonly {
+			readonly name: string;
+			readonly value: string | null;
+			readonly required: boolean;
+		}[];
+	};
 };
 
 /**
@@ -91,6 +131,10 @@ export function createHtmlDocumentView(
 				throw error;
 			}
 		},
+		accessibility(line, col, ariaVersion) {
+			const json = binding.accessibilityHtml(code, line, col, ariaVersion, configJson, specJson);
+			return json === null ? null : toAccessibilityAt(JSON.parse(json) as InspectedAccessibility);
+		},
 	};
 }
 
@@ -124,4 +168,25 @@ export function toPositionedNodes(inspected: readonly InspectedNode[]): readonly
 	}
 
 	return nodes;
+}
+
+/**
+ * The accessibility properties as TS `getAccessibilityProp` has them: `props` is a record by the name
+ * without `aria-`, in the order of the list.
+ */
+function toAccessibilityAt({ nodeName, aria }: InspectedAccessibility): AccessibilityAt {
+	const { props, ...rest } = aria;
+	return {
+		node: nodeName,
+		aria: {
+			...rest,
+			...(props
+				? {
+						props: Object.fromEntries(
+							props.map(prop => [prop.name, { value: prop.value, required: prop.required }]),
+						),
+					}
+				: {}),
+		} as AccessibilityProperties,
+	};
 }
