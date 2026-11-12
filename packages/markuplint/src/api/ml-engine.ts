@@ -526,14 +526,6 @@ export class MLEngine extends Emitter<MLEngineEventMap> {
 			if (isFatalError(error)) {
 				throw error;
 			}
-			// The TS runtime accepts pretender shapes that the Rust types reject, and the Rust
-			// side fails on the whole config for one of them. The TS engine reads them all.
-			if (fabric.pretenders.length > 0) {
-				process.stderr.write(
-					`⚠ [experimental-rust-core] "${this.#file.path}" has pretenders the Rust engine could not read — falling back to TypeScript engine.\n`,
-				);
-				return null;
-			}
 			// NAPI errors (config/spec parse failures) — report as lint error
 			const message = error instanceof Error ? error.message : String(error);
 			this.emit('lint-error', this.#file.path, sourceCode, new Error(message));
@@ -1701,7 +1693,12 @@ function buildRustConfigJson(
  * and an element of `contents`.
  */
 function withComponentFlags(pretender: Pretender, isComponentName: (name: string) => boolean) {
-	const { as } = pretender;
+	// The type requires `as`, but a pretender of an unchecked JSON file may have none, and then the
+	// element is what its `as` attribute names, which `MLElement#pretending` and the Rust engine decide.
+	const as: Pretender['as'] | null | undefined = pretender.as;
+	if (as == null) {
+		return pretender;
+	}
 	if (typeof as === 'string') {
 		return { ...pretender, asIsComponent: isComponentName(as) };
 	}

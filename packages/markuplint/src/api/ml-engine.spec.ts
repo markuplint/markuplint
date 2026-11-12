@@ -1289,26 +1289,29 @@ describe('experimentalRustCore applies the configured pretenders', () => {
 		},
 	);
 
-	it('falls back to the TypeScript engine for a pretender the Rust engine cannot read', async () => {
-		const write = vi.spyOn(process.stderr, 'write').mockImplementation(() => true);
-		const file = await MLEngine.toMLFile({ sourceCode, name: 'page.html' });
-		const engine = new MLEngine(file!, {
-			noSearchConfig: true,
-			locale: 'en',
-			experimentalRustCore: true,
-			// `inheritAttrs` is a boolean in the type, but the TS runtime takes any truthy
-			// value, while the Rust types reject a string.
-			config: {
-				...config,
-				pretenders: [{ selector: 'x-btn', as: { element: 'button', inheritAttrs: 'yes' } }] as never,
-			},
-		});
+	it.skipIf(!nativeAddonIsBuilt)(
+		'reads a pretender the types do not allow without leaving the Rust engine',
+		async () => {
+			const write = vi.spyOn(process.stderr, 'write').mockImplementation(() => true);
+			const file = await MLEngine.toMLFile({ sourceCode, name: 'page.html' });
+			const engine = new MLEngine(file!, {
+				noSearchConfig: true,
+				locale: 'en',
+				experimentalRustCore: true,
+				// `inheritAttrs` is a boolean in the type, but the TS runtime takes any truthy
+				// value, and so does the Rust engine.
+				config: {
+					...config,
+					pretenders: [{ selector: 'x-btn', as: { element: 'button', inheritAttrs: 'yes' } }] as never,
+				},
+			});
 
-		const result = await engine.exec();
+			const result = await engine.exec();
 
-		expect(result?.violations.map(v => v.ruleId)).toStrictEqual(['require-accessible-name']);
-		expect(stderrOf(write)).toContain('falling back to TypeScript engine');
-	});
+			expect(result?.violations.map(v => v.ruleId)).toStrictEqual(['require-accessible-name']);
+			expect(stderrOf(write)).not.toContain('falling back to TypeScript engine');
+		},
+	);
 
 	it.skipIf(!nativeAddonIsBuilt)('lints a file without pretenders in the Rust engine', async () => {
 		const write = vi.spyOn(process.stderr, 'write').mockImplementation(() => true);
@@ -1324,6 +1327,167 @@ describe('experimentalRustCore applies the configured pretenders', () => {
 
 		expect(result?.violations).toStrictEqual([]);
 		expect(stderrOf(write)).not.toContain('falling back to TypeScript engine');
+	});
+});
+
+describe('experimentalRustCore reads the pretenders as the TypeScript runtime does', () => {
+	afterEach(() => {
+		vi.restoreAllMocks();
+	});
+
+	// `@markuplint/pretenders` emits only what the types allow, but a pretender that comes from
+	// `pretenders.files` or `pretenders.imports` is JSON that nothing checks, and the TS runtime
+	// reads it by the truthiness of a flag and by the presence of a key. The Rust engine has to
+	// read the same, or it would have to hand the file back to the TS engine.
+	const named = '<x-btn aria-label="l" label="L"></x-btn>';
+	const bare = '<x-btn></x-btn>';
+	const noName = ['require-accessible-name'];
+	const button = (props: Record<string, unknown>) => ({ selector: 'x-btn', as: { element: 'button', ...props } });
+	const attr = (value: unknown) => button({ attrs: [{ name: 'aria-label', value }] });
+
+	const cases: readonly {
+		readonly name: string;
+		readonly source: string;
+		readonly pretenders: readonly unknown[];
+		readonly violations: readonly string[];
+	}[] = [
+		{
+			name: 'inheritAttrs "yes" is truthy',
+			source: named,
+			pretenders: [button({ inheritAttrs: 'yes' })],
+			violations: [],
+		},
+		{
+			name: 'inheritAttrs 0 is falsy',
+			source: named,
+			pretenders: [button({ inheritAttrs: 0 })],
+			violations: noName,
+		},
+		{
+			name: 'inheritAttrs "" is falsy',
+			source: named,
+			pretenders: [button({ inheritAttrs: '' })],
+			violations: noName,
+		},
+		{
+			name: 'a namespace that is no namespace',
+			source: bare,
+			pretenders: [button({ namespace: 'xlink' })],
+			violations: noName,
+		},
+		{
+			name: 'omitIfMissing: false makes an empty attribute',
+			source: bare,
+			pretenders: [attr({ fromAttr: 'label', omitIfMissing: false })],
+			violations: noName,
+		},
+		{
+			name: 'omitIfMissing: "yes" omits the attribute',
+			source: bare,
+			pretenders: [attr({ fromAttr: 'label', omitIfMissing: 'yes' })],
+			violations: noName,
+		},
+		{
+			name: 'dynamic goes with fromAttr',
+			source: bare,
+			pretenders: [attr({ fromAttr: 'label', dynamic: true })],
+			violations: [],
+		},
+		{ name: 'dynamic: false is dynamic', source: bare, pretenders: [attr({ dynamic: false })], violations: [] },
+		{ name: 'an empty value is an empty attribute', source: bare, pretenders: [attr({})], violations: noName },
+		{
+			name: 'expression comes before fromAttr',
+			source: named,
+			pretenders: [attr({ fromAttr: 'label', expression: '"x"' })],
+			violations: [],
+		},
+		{
+			name: 'aria.name that gives no name',
+			source: bare,
+			pretenders: [button({ aria: { name: {} } })],
+			violations: noName,
+		},
+		{
+			name: 'aria.name: false is a name',
+			source: bare,
+			pretenders: [button({ aria: { name: false } })],
+			violations: [],
+		},
+		{
+			name: '{ slot, dynamic } is mutable',
+			source: bare,
+			pretenders: [button({ contents: [{ slot: true, dynamic: true }] })],
+			violations: [],
+		},
+		{
+			name: '{ slot: false } is a slot',
+			source: bare,
+			pretenders: [button({ contents: [{ slot: false }] })],
+			violations: noName,
+		},
+		{
+			name: 'an entry of contents with none of the keys',
+			source: bare,
+			pretenders: [button({ contents: [{}, { slot: true }] })],
+			violations: noName,
+		},
+		{ name: 'slots that is no list', source: bare, pretenders: [button({ slots: {} })], violations: noName },
+		{
+			name: 'a pretender without as reads the as attribute',
+			source: '<x-btn as="button"></x-btn>',
+			pretenders: [{ selector: 'x-btn' }],
+			violations: noName,
+		},
+		{
+			name: 'a pretender with a null as does not try the next one',
+			source: bare,
+			pretenders: [
+				{ selector: 'x-btn', as: null },
+				{ selector: 'x-btn', as: 'button' },
+			],
+			violations: [],
+		},
+	];
+
+	const lint = async (sourceCode: string, pretenders: readonly unknown[], rust: boolean) => {
+		const write = vi.spyOn(process.stderr, 'write').mockImplementation(() => true);
+		const file = await MLEngine.toMLFile({ sourceCode, name: 'page.html' });
+		const engine = new MLEngine(file!, {
+			noSearchConfig: true,
+			locale: 'en',
+			experimentalRustCore: rust,
+			config: { rules: { 'require-accessible-name': true }, pretenders: pretenders as never },
+		});
+		const result = await engine.exec();
+		return {
+			violations: result?.violations.map(v => v.ruleId),
+			stderr: write.mock.calls.map(args => String(args[0])).join(''),
+		};
+	};
+
+	it.skipIf(!nativeAddonIsBuilt).each(cases)('$name', async ({ source, pretenders, violations }) => {
+		const ts = await lint(source, pretenders, false);
+		const rust = await lint(source, pretenders, true);
+
+		// The TS result is pinned, so that two engines that both report nothing cannot pass for equal
+		expect(ts.violations).toStrictEqual(violations);
+		expect(rust.violations).toStrictEqual(violations);
+		expect(rust.stderr).not.toContain('falling back to TypeScript engine');
+	});
+
+	it.skipIf(!nativeAddonIsBuilt)('reports what the TS runtime fails on as a lint error', async () => {
+		const file = await MLEngine.toMLFile({ sourceCode: bare, name: 'page.html' });
+		const engine = new MLEngine(file!, {
+			noSearchConfig: true,
+			locale: 'en',
+			experimentalRustCore: true,
+			config: { rules: {}, pretenders: [attr(5)] as never },
+		});
+
+		const result = await engine.exec();
+
+		expect(result?.violations.map(v => v.ruleId)).toStrictEqual(['@markuplint/core']);
+		expect(result?.violations[0]?.message).toContain('Config parse error');
 	});
 });
 

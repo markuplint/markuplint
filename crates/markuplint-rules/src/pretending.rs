@@ -240,11 +240,15 @@ fn pretend(
     });
 
     let from_as_attr;
-    let (as_, as_is_component) = if let Some(pretender) = matched {
-        (&pretender.as_, pretender.as_is_component)
+    // `pretenderConfig?.as ?? <the as attribute>`: the first pretender that matches decides, and
+    // when it has no `as`, the later ones are not tried.
+    let (as_, as_is_component) = if let Some((as_, as_is_component)) =
+        matched.and_then(|pretender| Some((pretender.as_.as_ref()?, pretender.as_is_component)))
+    {
+        (as_, as_is_component)
     } else {
-        // Without a matching pretender, the `as` attribute of a non-HTML element
-        // names what it pretends to be.
+        // Without a pretender that says what the element is, the `as` attribute of a non-HTML
+        // element names what it pretends to be.
         if el.element_type == ElementType::Html {
             return;
         }
@@ -378,7 +382,16 @@ fn read_attr_value(
     target: AttrTarget,
     env: &AttrEnv<'_>,
 ) -> Option<AttrValue> {
-    let mut is_dynamic = matches!(value, Some(PretenderAttrValue::Dynamic { .. }));
+    // TS asks for the key `dynamic` apart from the kind of value, so it goes with `expression` and
+    // `fromAttr` too (`{ fromAttr, dynamic: true }`)
+    let mut is_dynamic = matches!(
+        value,
+        Some(
+            PretenderAttrValue::Dynamic
+                | PretenderAttrValue::Expression { dynamic: true, .. }
+                | PretenderAttrValue::FromAttr { dynamic: true, .. }
+        )
+    );
     let mut is_expression = false;
     let mut is_absent = false;
     let mut text = String::new();
@@ -386,10 +399,11 @@ fn read_attr_value(
     let mut expression: Option<&str> = None;
     match value {
         Some(PretenderAttrValue::Literal(v)) => text.clone_from(v),
-        Some(PretenderAttrValue::Expression { expression: code }) => expression = Some(code),
+        Some(PretenderAttrValue::Expression { expression: code, .. }) => expression = Some(code),
         Some(PretenderAttrValue::FromAttr {
             from_attr,
             omit_if_missing,
+            ..
         }) => {
             let source = origin.attributes.iter().find_map(|attr| match attr {
                 MLASTAttr::HTMLAttr(a)
@@ -404,7 +418,7 @@ fn read_attr_value(
                 _ => None,
             });
             match source {
-                None if omit_if_missing.is_some() => return None,
+                None if *omit_if_missing => return None,
                 None => {}
                 Some(a) => {
                     if let Some(code) = a.literal_expression.as_deref() {
@@ -417,7 +431,7 @@ fn read_attr_value(
                 }
             }
         }
-        Some(PretenderAttrValue::Dynamic { .. }) | None => {}
+        Some(PretenderAttrValue::Dynamic) | None => {}
     }
     if let Some(code) = expression {
         is_expression = true;
@@ -643,7 +657,7 @@ fn create_slot_content(
                     wrapper: None,
                     mutable: slots
                         .iter()
-                        .any(|s| s.contents.as_ref().is_some_and(|c| c.iter().any(is_dynamic))),
+                        .any(|s| s.contents.as_ref().is_some_and(|c| c.iter().any(has_dynamic_key))),
                     entries: Vec::new(),
                 }),
                 shared_wrapper(slots, &as_element),
@@ -674,25 +688,34 @@ fn create_slot_content(
             &as_element,
             env,
         );
-        contents = Some(slot.contents.clone().unwrap_or_else(|| {
-            vec![PretenderContent::Slot {
-                slot: markuplint_core::pretender::True,
-            }]
-        }));
+        contents = Some(
+            slot.contents
+                .clone()
+                .unwrap_or_else(|| vec![PretenderContent::Slot { dynamic: false }]),
+        );
     }
 
     let Some(contents) = contents else {
         return (None, Some(wrapper_element));
     };
+    // TS asks `'dynamic' in entry` of what is not an element it made, so `{ slot: true, dynamic: true }`
+    // places the children and makes the content mutable
+    let mutable = contents.iter().any(|entry| {
+        matches!(
+            entry,
+            PretenderContent::Dynamic | PretenderContent::Slot { dynamic: true }
+        )
+    });
     let entries: Vec<SlotEntry> = contents
         .iter()
         .enumerate()
-        .map(|(i, entry)| match entry {
+        .filter_map(|(i, entry)| match entry {
             PretenderContent::Element {
                 element,
                 is_component,
                 attrs,
-            } => SlotEntry::Element(push_virtual_element(
+                ..
+            } => Some(SlotEntry::Element(push_virtual_element(
                 arena,
                 (origin, origin_id),
                 &VirtualSpec {
@@ -706,16 +729,18 @@ fn create_slot_content(
                 wrapper,
                 &wrapper_element,
                 env,
-            )),
-            PretenderContent::Slot { .. } => SlotEntry::Slot,
-            PretenderContent::Dynamic { .. } => SlotEntry::Dynamic,
+            ))),
+            PretenderContent::Slot { .. } => Some(SlotEntry::Slot),
+            PretenderContent::Dynamic => Some(SlotEntry::Dynamic),
+            // TS keeps it as it is and `fill` skips it; the index of the others stays the one it has
+            PretenderContent::Inert => None,
         })
         .collect();
 
     (
         Some(SlotContent {
             wrapper: Some(wrapper),
-            mutable: entries.contains(&SlotEntry::Dynamic),
+            mutable,
             entries,
         }),
         Some(wrapper_element),
@@ -752,8 +777,15 @@ fn shared_wrapper(
         .then(|| first.clone())
 }
 
-fn is_dynamic(entry: &PretenderContent) -> bool {
-    matches!(entry, PretenderContent::Dynamic { .. })
+/// TS `'dynamic' in entry`, which `#createSlotContent` asks of every entry of the slots when there
+/// are several of them.
+fn has_dynamic_key(entry: &PretenderContent) -> bool {
+    matches!(
+        entry,
+        PretenderContent::Dynamic
+            | PretenderContent::Slot { dynamic: true }
+            | PretenderContent::Element { dynamic: true, .. }
+    )
 }
 
 #[cfg(test)]

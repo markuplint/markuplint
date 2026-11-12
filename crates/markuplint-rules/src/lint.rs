@@ -871,8 +871,8 @@ mod tests {
         }))
         .unwrap();
         assert_eq!(config.pretenders.len(), 2);
-        assert_eq!(config.pretenders[0].as_, PretenderAs::Name("button".into()));
-        assert!(matches!(config.pretenders[1].as_, PretenderAs::Node(_)));
+        assert_eq!(config.pretenders[0].as_, Some(PretenderAs::Name("button".into())));
+        assert!(matches!(config.pretenders[1].as_, Some(PretenderAs::Node(_))));
     }
 
     // --- Integration test: full pipeline ---
