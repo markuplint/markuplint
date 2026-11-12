@@ -84,9 +84,8 @@ pub struct InspectedProp {
 /// TS `Document#searchNodeByLocation` and `Document#getAccessibilityProp`: the element at `line` and
 /// `col` of the document that the rules run on, with what the accessibility tree has of it.
 ///
-/// `None` where TS returns `null`: no node at the position (TS reads the first node of the document
-/// whose range holds the position, the line and the column apart, so a position inside a multi-line
-/// node is found by its columns too), the node is not an element, or the document did not parse.
+/// `None` where TS returns `null`: no node at the position (see [`search_node_at_location`]), the
+/// node is not an element, or the document did not parse.
 #[must_use]
 pub fn accessibility_at(
     arena: &DomArena,
@@ -101,14 +100,7 @@ pub fn accessibility_at(
     }
     let arena = &*pretended_document(arena, spec, config);
 
-    let id = document_order(arena).into_iter().find(|&id| {
-        arena.get(id).and_then(DomNode::base).is_some_and(|base| {
-            base.line <= line
-                && line <= end_line(&base.raw, base.line)
-                && base.col <= col
-                && col <= end_col(&base.raw, base.col)
-        })
-    })?;
+    let id = search_node_at_location(arena, line, col)?;
     let DomNode::Element(element) = arena.get(id)? else {
         return None;
     };
@@ -117,6 +109,63 @@ pub fn accessibility_at(
         node_name: element_local_name(element),
         aria: accessibility_of(arena, spec, id, version),
     })
+}
+
+/// TS `searchNodeAtLocation` of `@markuplint/ml-core` (`Document#searchNodeByLocation`): the node of
+/// the document at the source location `line`:`col` (both 1-based).
+///
+/// The node is the one whose range holds the position, or whose end tag does. A range runs from its
+/// start, included, to its end, excluded (the end is where the next token starts), the line and the
+/// column compared together. A document's node list has no attribute nodes and no end tags, so a
+/// position at an attribute, inside its value or in an end tag is the element that has it. Of several
+/// such nodes the last in document order is taken: the innermost. A block holds the elements nested
+/// in it, and an omitted element (`<tbody>` with an empty source) starts where its first child does.
+///
+/// The list is in document order, so the search stops at the first node that starts after the
+/// position.
+fn search_node_at_location(arena: &DomArena, line: u32, col: u32) -> Option<NodeId> {
+    let mut found = None;
+    for id in document_order(arena) {
+        let Some(node) = arena.get(id) else {
+            continue;
+        };
+        let Some(base) = node.base() else {
+            continue;
+        };
+        if is_before(line, col, base.line, base.col) {
+            break;
+        }
+        let in_start = holds_location(line, col, base.line, base.col, &base.raw);
+        let in_close_tag = matches!(
+            node,
+            DomNode::Element(element) if element
+                .close_tag
+                .as_ref()
+                .is_some_and(|close| holds_location(line, col, close.line, close.col, &close.raw))
+        );
+        if in_start || in_close_tag {
+            found = Some(id);
+        }
+    }
+    found
+}
+
+/// Whether `line`:`col` comes before the start `start_line`:`start_col` of a token.
+fn is_before(line: u32, col: u32, start_line: u32, start_col: u32) -> bool {
+    line < start_line || (line == start_line && col < start_col)
+}
+
+/// Whether `line`:`col` is the start of a token or in its range, which ends before the end that its
+/// `raw` has when it starts at `start_line`:`start_col`.
+fn holds_location(line: u32, col: u32, start_line: u32, start_col: u32, raw: &str) -> bool {
+    if is_before(line, col, start_line, start_col) {
+        return false;
+    }
+    if line == start_line && col == start_col {
+        return true;
+    }
+    let last_line = end_line(raw, start_line);
+    line < last_line || (line == last_line && col < end_col(raw, start_col))
 }
 
 /// TS `Document#getAccessibilityProp` of an element.
