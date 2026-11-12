@@ -1,5 +1,6 @@
 //! `require-element` rule: require descendant elements matching CSS selectors.
 
+use markuplint_core::i18n::Primitive as Kw;
 use markuplint_dom::arena::DomArena;
 use markuplint_dom::node::DomNode;
 use markuplint_selector::ast::SelectorList;
@@ -23,6 +24,7 @@ impl Rule for RequireElement {
     fn verify(&self, arena: &DomArena, spec: &MLMLSpec, config: &RuleConfigSet) -> Vec<Violation> {
         let mut violations = Vec::new();
         let global = config.global();
+        let tr = config.translator();
 
         // The document: a required element anywhere in its tree, unless something may render
         // what is not known
@@ -57,7 +59,10 @@ impl Rule for RequireElement {
                         rule_id: self.id().to_string(),
                         name: None,
                         severity: global.severity,
-                        message: format!("Require the \"{query}\" element"),
+                        message: tr.finish(&tr.t(
+                            "Require {0}",
+                            &[Kw::S(&tr.t("the \"{0*}\" {1}", &[Kw::S(&query), Kw::S("element")]))],
+                        )),
                         line: 1,
                         col: 1,
                         raw,
@@ -97,7 +102,10 @@ impl Rule for RequireElement {
                         rule_id: self.id().to_string(),
                         name: None,
                         severity: node_config.severity,
-                        message: format!("Require the \"{query}\" element"),
+                        message: tr.finish(&tr.t(
+                            "Require {0}",
+                            &[Kw::S(&tr.t("the \"{0*}\" {1}", &[Kw::S(&query), Kw::S("element")]))],
+                        )),
                         line: el.base.line,
                         col: el.base.col,
                         raw: el.base.raw.clone(),

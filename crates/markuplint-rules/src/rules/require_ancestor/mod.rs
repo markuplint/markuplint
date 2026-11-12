@@ -12,6 +12,7 @@
 //! - the climb ended in the content of an ordinary `template` element, which a script places
 //!   where the markup does not tell. The content of a declarative shadow root is reported.
 
+use markuplint_core::i18n::Primitive as Kw;
 use markuplint_core::mlast::NamespaceURI;
 use markuplint_dom::arena::{DomArena, NodeId};
 use markuplint_dom::node::DomNode;
@@ -70,6 +71,7 @@ impl Rule for RequireAncestor {
     fn verify(&self, arena: &DomArena, spec: &MLMLSpec, config: &RuleConfigSet) -> Vec<Violation> {
         let trees = Trees::new(arena, spec);
         let mut violations = Vec::new();
+        let tr = config.translator();
         for (node_id, el) in arena.elements() {
             let local_name = element_local_name(el);
             let Some(content_model) = exact_spec(spec, &local_name, &el.namespace).map(|s| &s.content_model) else {
@@ -124,10 +126,13 @@ impl Rule for RequireAncestor {
                 rule_id: self.id().to_string(),
                 name: None,
                 severity: rule_config.severity,
-                message: format!(
-                    "The \"{}\" element must appear as a descendant of the \"{descendant_of}\" element",
-                    el.base.node_name
-                ),
+                message: tr.finish(&tr.t(
+                    "{0} must appear as a descendant of {1}",
+                    &[
+                        Kw::S(&tr.t("the \"{0}\" {1}", &[Kw::S(&el.base.node_name), Kw::S("element")])),
+                        Kw::S(&tr.t("the \"{0}\" {1}", &[Kw::S(descendant_of), Kw::S("element")])),
+                    ],
+                )),
                 line: el.base.line,
                 col: el.base.col,
                 raw: el.base.raw.clone(),

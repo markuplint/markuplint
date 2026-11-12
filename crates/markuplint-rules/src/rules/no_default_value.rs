@@ -5,6 +5,7 @@
 //! `getAttrSpecs`), by the name the DOM gives it (TS `findAttrSpec`), and the value and the
 //! default value are compared as the spec normalizes them (TS `toNormalizedValue`).
 
+use markuplint_core::i18n::Primitive as Kw;
 use markuplint_core::mlast::MLASTAttr;
 use markuplint_dom::arena::DomArena;
 use markuplint_types::spec::types::MLMLSpec;
@@ -28,6 +29,7 @@ impl Rule for NoDefaultValue {
 
     fn verify(&self, arena: &DomArena, spec: &MLMLSpec, config: &RuleConfigSet) -> Vec<Violation> {
         let mut violations = Vec::new();
+        let tr = config.translator();
 
         for (node_id, el) in arena.elements() {
             let rule_config = config.get(node_id);
@@ -62,7 +64,7 @@ impl Rule for NoDefaultValue {
                     rule_id: self.id().to_string(),
                     name: None,
                     severity: rule_config.severity,
-                    message: "It is the default value".to_string(),
+                    message: tr.finish(&tr.t("It is {0}", &[Kw::S(&tr.t("the {0}", &[Kw::S("default value")]))])),
                     line: html_attr.value.line,
                     col: html_attr.value.col,
                     raw: html_attr.value.raw.clone(),
