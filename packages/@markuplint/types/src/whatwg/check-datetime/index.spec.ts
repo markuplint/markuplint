@@ -38,6 +38,59 @@ test('max-week', () => {
 	expect(getMaxWeekNum(1981)).toBe(53);
 });
 
+test('max-week of years outside the range of two-digit and Date years', () => {
+	// January 1st of the year 99 is a Thursday (not of 1999, a Friday)
+	expect(getMaxWeekNum(99)).toBe(53);
+	expect(isWeek('0099-W53').matched).toBe(true);
+	// January 1st of the year 81 is a Wednesday in a common year (not of 1981, a Thursday)
+	expect(getMaxWeekNum(81)).toBe(52);
+	expect(isWeek('0081-W53')).toMatchObject({ reason: { type: 'out-of-range', gte: 1, lte: 52 }, partName: 'week' });
+	// The Gregorian calendar repeats every 400 years: 300099 is 99, 300000 is 2000 (a Saturday)
+	expect(getMaxWeekNum(300_099)).toBe(53);
+	expect(getMaxWeekNum(300_000)).toBe(52);
+	expect(isWeek('300099-W53').matched).toBe(true);
+});
+
+test('max-week of a year starting on a Wednesday depends on the leap year', () => {
+	// 2025 is a common year, 2020 a leap year
+	expect(getMaxWeekNum(2025)).toBe(52);
+	expect(getMaxWeekNum(2020)).toBe(53);
+	// 2200 is not a leap year (divisible by 100, not by 400)
+	expect(getMaxWeekNum(2200)).toBe(52);
+});
+
+test('a year with more digits than a number holds exactly', () => {
+	// 9007199254740995 mod 400 is 195 (January 1st is a Thursday); as a number it rounds to …996
+	expect(isWeek('9007199254740995-W53').matched).toBe(true);
+	// 9007199254740993 is not a leap year; as a number it rounds to …992, which is a leap year
+	expect(isDate('9007199254740993-02-29')).toMatchObject({
+		reason: { type: 'out-of-range', gte: 1, lte: 28 },
+		partName: 'date',
+	});
+	expect(isDate('9007199254740992-02-29').matched).toBe(true);
+});
+
+test('date-string takes the leap year from the year', () => {
+	expect(isDate('0400-02-29').matched).toBe(true);
+	expect(isDate('0100-02-29')).toMatchObject({ reason: { type: 'out-of-range', gte: 1, lte: 28 }, partName: 'date' });
+	// A yearless date after a common year still allows February 29th
+	expect(isDate('2001-02-29').matched).toBe(false);
+	expect(isYearlessDate('02-29').matched).toBe(true);
+});
+
+test('week-string names the week as the part', () => {
+	expect(isWeek('2000-W53')).toMatchObject({ reason: { type: 'out-of-range', gte: 1, lte: 52 }, partName: 'week' });
+	expect(isWeek('2000-')).toMatchObject({ reason: 'missing-token', partName: 'week' });
+	expect(isWeek('2000-X01')).toMatchObject({ reason: 'unexpected-token', partName: 'week' });
+});
+
+test('week-string reports an invalid year, not the week', () => {
+	expect(isWeek('0000-W99')).toMatchObject({ reason: { type: 'out-of-range', gt: 0 }, partName: 'year' });
+	expect(isWeek('abcd-W99')).toMatchObject({ reason: 'unexpected-token', partName: 'year' });
+	// The week is still held to the most any week-year has, which ranks this syntax among the others
+	expect(isWeek('abcd-W53').passCount).toBeGreaterThan(isWeek('abcd-W54').passCount);
+});
+
 test('month-string', () => {
 	expect(isMonth('').reason).toBe('empty-token');
 	expect(isMonth(' ').reason).toBe('unexpected-token');
