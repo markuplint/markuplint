@@ -3,6 +3,13 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [5.6.1](https://github.com/markuplint/markuplint/compare/v5.6.0...v5.6.1) (2026-11-13)
+
+### Bug Fixes
+
+* **vue-spec:** key the repeat of a directive by what Vue keeps of the name ([e27a546](https://github.com/markuplint/markuplint/commit/e27a5461578df9a8b8992ce7bba185e63ec7653d))
+
+
 # [5.6.0](https://github.com/markuplint/markuplint/compare/v5.5.0...v5.6.0) (2026-11-12)
 
 **Note:** Version bump only for package @markuplint/vue-spec
