@@ -21,6 +21,7 @@
 	"internalChecksFilter": "strict",
 	"osvVulnerabilityAlerts": true,
 	"vulnerabilityAlerts": {
+		"enabled": true,
 		"minimumReleaseAge": null
 	},
 	"autoApprove": true,
@@ -39,16 +40,39 @@
 			"addLabels": ["Dependencies: Production"]
 		},
 		{
-			"description": "Automerge non-major updates",
+			"description": "Automerge every update that keeps the major version, 0.x included, once the checks pass and minimumReleaseAge has elapsed",
 			"matchUpdateTypes": ["minor", "patch", "pin", "digest"],
-			"matchCurrentVersion": "!/^0/",
 			"automerge": true
 		},
 		{
-			"description": "v4 is a maintenance line that keeps Node 18.18+ support; a major update of a production dependency there drops it (meow 14 and os-locale 8 require Node 20), so Renovate must not propose them on that base branch",
-			"matchBaseBranches": ["v4"],
-			"matchDepTypes": ["dependencies"],
+			"description": "A major update is reviewed by the owner unless a later rule says otherwise. Its PRs stay open until then, so they get a lower prConcurrentLimit than the default 10: the limit is compared against the count of every open Renovate PR, so PRs waiting for review stop being raised at 5 and the other 5 slots stay free for updates that automerge",
 			"matchUpdateTypes": ["major"],
+			"prConcurrentLimit": 5
+		},
+		{
+			"description": "devDependencies do not reach consumers, so their major updates automerge too",
+			"matchDepTypes": ["devDependencies"],
+			"matchUpdateTypes": ["major"],
+			"automerge": true,
+			"prConcurrentLimit": 10
+		},
+		{
+			"description": "GitHub Actions do not reach consumers, so their major updates automerge too",
+			"matchManagers": ["github-actions"],
+			"matchUpdateTypes": ["major"],
+			"automerge": true,
+			"prConcurrentLimit": 10
+		},
+		{
+			"description": "helpers:pinGitHubActionDigestsToSemver already raises each new release of an action as a version update (`# v6` -> `# v6.1.1` with the new commit), which automerges after minimumReleaseAge. The digest update Renovate raises next to it for a floating major tag carries the same commit, but its renovate/stability-days check stays pending (#4233, #4389, #4400, #4583 never merged) and the open PR takes a prConcurrentLimit slot",
+			"matchManagers": ["github-actions"],
+			"matchUpdateTypes": ["digest"],
+			"enabled": false
+		},
+		{
+			"description": "v4 is a maintenance line: it takes vulnerability fixes (vulnerabilityAlerts.enabled overrides this rule, the mechanism of the security:only-security-updates preset) and lock file maintenance (not listed here), and no other update. This also keeps away major updates of production dependencies that would drop Node 18.18+ support (meow 14 and os-locale 8 require Node 20)",
+			"matchBaseBranches": ["v4"],
+			"matchUpdateTypes": ["major", "minor", "patch", "pin", "pinDigest", "digest", "lockfileUpdate", "rollback", "bump", "replacement"],
 			"enabled": false
 		},
 		{
