@@ -22,7 +22,6 @@ export default defineConfig({
 		include: [
 			'./packages/markuplint/**/*.spec.{js,mjs,ts}',
 			'./packages/@markuplint/file-resolver/**/*.spec.{js,mjs,ts}',
-			'./packages/@markuplint/create-rule/src/**/*.spec.{js,mjs,ts}',
 			'./packages/@markuplint/pretenders/**/*.spec.{js,mjs,ts}',
 		],
 		testTimeout: 10000,

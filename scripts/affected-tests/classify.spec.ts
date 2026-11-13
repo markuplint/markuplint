@@ -18,7 +18,6 @@ const files: Record<string, string> = {
 	'packages/@markuplint/shared/src/errors/runtime.spec.ts': "import { execFile } from 'node:child_process';",
 	'packages/@markuplint/vue-parser/src/index.spec.ts': '',
 	'packages/@markuplint/i18n/src/index.spec.ts': '',
-	'packages/@markuplint/create-rule/src/transfer.spec.ts': '',
 	'packages/markuplint/src/cli/index.spec.ts': "const entry = path.resolve(dir, '../../bin/markuplint.mjs');",
 	'packages/markuplint/src/api/lint.spec.ts': '',
 	'packages/@markuplint/language-server/src/server/server.spec.ts': '',
@@ -199,11 +198,6 @@ describe('a file of a package that is not source', () => {
 		'scripts/gone.ts',
 	])('a deleted %s makes the plan full', path => {
 		expect(plan([{ status: 'D', path }], probe).mode).toBe('full');
-	});
-
-	test('a Markdown file of create-rule runs its specs, as they read the scaffold', () => {
-		const targets = affected(modified('packages/@markuplint/create-rule/scaffold/core/README.md'));
-		expect(targets).toContain('packages/@markuplint/create-rule/src/transfer.spec.ts');
 	});
 
 	test('the README of markuplint runs the spec that keeps its `--help` copy, and nothing else', () => {

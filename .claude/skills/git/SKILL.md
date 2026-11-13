@@ -53,7 +53,7 @@ When committing changes that span multiple packages, always commit **from leaves
 | 7    | Framework parsers (jsx, vue, svelte, pug, astro, alpine, ejs, erb, htmx, liquid, markdown, mdx, mustache, nunjucks, php, smarty, tagged-template-literal) — `mdx-parser` depends on `markdown-parser`, so commit markdown first |
 | 8    | `ml-core`                                                                                                                                                     |
 | 9    | `rules`, `file-resolver`                                                                                                                                      |
-| 10   | `pretenders`, `create-rule`                                                                                                                                   |
+| 10   | `pretenders`                                                                                                                                   |
 | 11   | `markuplint`                                                                                                                                                  |
 | 12   | `language-server`                                                                                                                                             |
 

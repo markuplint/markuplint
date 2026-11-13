@@ -46,7 +46,6 @@
 		"site:up": "cd website && yarn install && yarn run site:up",
 		"postinstall": "husky",
 		"cli": "npx markuplint",
-		"create-rule": "npx @markuplint/create-rule",
 		"commit": "cz",
 		"co": "cz",
 		"bench:update": "node --experimental-strip-types tests/external/bench/update-snapshots.ts",

@@ -8,12 +8,6 @@ import config from '../../../../vitest.config.ts';
 
 const rootDir = path.resolve(import.meta.dirname, '../../../..');
 
-/**
- * Directories whose specs run but are deliberately outside the type check.
- * Mirrors the `exclude` of `tsconfig.spec.json`, which holds the reason.
- */
-const NOT_TYPE_CHECKED = ['packages/@markuplint/create-rule/scaffold/'];
-
 function typeCheckedFiles() {
 	const configPath = path.join(rootDir, 'tsconfig.spec.json');
 	const read = ts.readConfigFile(configPath, ts.sys.readFile);
@@ -30,10 +24,10 @@ function typeCheckedFiles() {
  *
  * `tsconfig.spec.json` lists its own `include`, so a spec that vitest runs but
  * that glob misses would escape the check without any failure. This asserts
- * that every `.ts` file `vitest.config.ts` selects is in the type-checked set,
- * except the directories in {@link NOT_TYPE_CHECKED}. `.mjs` specs are plain
- * JavaScript and have nothing to check. A too-broad `exclude` is caught only
- * for files that `test.include` matches, which is the set that matters here.
+ * that every `.ts` file `vitest.config.ts` selects is in the type-checked set.
+ * `.mjs` specs are plain JavaScript and have nothing to check. A too-broad
+ * `exclude` is caught only for files that `test.include` matches, which is the
+ * set that matters here.
  */
 describe('spec files are type-checked', () => {
 	const checked = typeCheckedFiles();
@@ -49,18 +43,12 @@ describe('spec files are type-checked', () => {
 	});
 
 	test('every .ts spec vitest runs is in tsconfig.spec.json', () => {
-		const missed = specs.filter(spec => !checked.has(spec) && !NOT_TYPE_CHECKED.some(dir => spec.startsWith(dir)));
+		const missed = specs.filter(spec => !checked.has(spec));
 		expect(missed).toStrictEqual([]);
 	});
 
-	test('the type-checked set is not empty and excludes the scaffold', () => {
+	test('the type-checked set is not empty', () => {
 		expect(checked.size).toBeGreaterThan(0);
-		expect([...checked].filter(file => NOT_TYPE_CHECKED.some(dir => file.startsWith(dir)))).toStrictEqual([]);
-	});
-
-	test('every NOT_TYPE_CHECKED directory still holds a spec that vitest runs', () => {
-		const stale = NOT_TYPE_CHECKED.filter(dir => !specs.some(spec => spec.startsWith(dir)));
-		expect(stale).toStrictEqual([]);
 	});
 
 	test('yarn test runs the type check before the specs', () => {

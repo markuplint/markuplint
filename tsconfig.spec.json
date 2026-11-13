@@ -21,12 +21,5 @@
 		"tests/external/bench/*.spec.ts",
 		"scripts/**/*.spec.ts"
 	],
-	"exclude": [
-		"**/node_modules/**",
-		"**/lib/**",
-		// Templates: placeholders such as `'__category__'` are substituted when a
-		// rule is generated, so the unsubstituted source cannot type-check.
-		// `NOT_TYPE_CHECKED` in the spec above lists the same directory.
-		"packages/@markuplint/create-rule/scaffold/**"
-	]
+	"exclude": ["**/node_modules/**", "**/lib/**"]
 }

@@ -78,7 +78,6 @@
 		"@markuplint/pretenders": "file:../../../../markuplint/packages/@markuplint/pretenders",
 		"@markuplint/pug-parser": "file:../../../../markuplint/packages/@markuplint/pug-parser",
 		"@markuplint/react-spec": "file:../../../../markuplint/packages/@markuplint/react-spec",
-		"@markuplint/rule-textlint": "file:../../../../markuplint/packages/@markuplint/rule-textlint",
 		"@markuplint/rules": "file:../../../../markuplint/packages/@markuplint/rules",
 		"@markuplint/selector": "file:../../../../markuplint/packages/@markuplint/selector",
 		"@markuplint/shared": "file:../../../../markuplint/packages/@markuplint/shared",

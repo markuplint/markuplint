@@ -1,6 +1,12 @@
 import { defineConfig } from 'vitest/config';
 
+import { RULES_REGISTRY_ALIAS } from './scripts/rust-rule-parity/registry-alias.ts';
+
 export default defineConfig({
+	// The testing API runs a rule by its registered name, and finds the name by the identity of the
+	// object: the rule a spec imports has to be the registry's own, not that of the built `lib`.
+	// `packages/@markuplint/rules/src/registry-identity.spec.ts` fails when the engine runs another.
+	resolve: { alias: RULES_REGISTRY_ALIAS },
 	test: {
 		include: [
 			'./packages/**/*.spec.{js,mjs,ts}',
