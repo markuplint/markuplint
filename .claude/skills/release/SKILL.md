@@ -26,8 +26,10 @@ disable-model-invocation: true
 | --- | --- | --- |
 | **Stable** (`X.Y.Z`) | `main` | Merge `dev` (or the prerelease branch) into `main` first, then run `yarn release` on `main` |
 | **Prerelease** (`-rc.N` / `-beta.N` / `-alpha.N`) | A dedicated branch, e.g. `v5-rc`, `v5-alpha` | Branch off **the line being released**, run `yarn release:rc` there, then merge that branch back into that line |
-| **Maintenance** (`4.x.y`, a patch of a superseded major) | `v4` itself | Run `yarn release` on `v4`; `.husky/pre-commit` guards only `dev`, and `publish.yml` publishes it under the `v4` dist-tag. Nothing is merged back: `v4` is never merged into another line |
-| Development | `dev` (v5 line), `v6` (next major) | — never released from directly |
+| **Maintenance** (`4.x.y`, a patch of the `lts` line) | `v4` itself | Run `yarn release` on `v4`; `.husky/pre-commit` guards only the `stable` and `experimental` branches (`dev`, `v6`), and `publish.yml` publishes it under the `v4` dist-tag. Nothing is merged back: `v4` is never merged into another line |
+| Development | `dev` (v5, `stable`), `v6` (next major, `experimental`) | — never released from directly |
+
+Which branch carries which major in which role is defined in `scripts/release-lines/lines.ts`. `.github/workflows/release-reminder.yml` opens an Issue for an `lts` or `stable` line once a change that reaches npm users has waited three days unreleased on its branch; the Issue lists the changed packages and the vulnerability fixes, and closes by itself after the release.
 
 Verify the claim rather than trusting this table if anything looks off:
 
@@ -64,7 +66,7 @@ For a stable release, merging into `main` flips four user-facing surfaces at onc
 
 Website changes therefore reach production in the same step. Confirm with the user that the website is in a shippable state before merging.
 
-The merge also makes `crates/` part of the stable line. The `no-breaking-change-on-stable-line` rule of `.commitlintrc.js` tells the lines apart by `crates/Cargo.toml`, so from then on it is silent in every checkout: re-key it to whatever marks the next major before the first commit on the new stable line.
+A stable release of a new major (merging the `experimental` line into `main`) also rotates every line one role down: the `lts` line ends, the old `stable` line becomes `lts`, and Renovate, the workflows, the commit guard, the labels, the commitlint rule and the support policy all have to follow. That is the `major-rotation` skill; run it as part of that release, not afterwards.
 
 # Steps
 

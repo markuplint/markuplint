@@ -23,12 +23,14 @@ The root `skills/` directory is not for this repository's development — it con
 
 Two major lines are developed in parallel:
 
-| Branch | Role                                                                               |
-| ------ | ---------------------------------------------------------------------------------- |
-| `main` | Released stable. Releases are cut here, never from `dev`.                          |
-| `dev`  | v5 line: the current stable major.                                                 |
-| `v6`   | Next major. Adds a Rust workspace under `crates/`, governed by `crates/CLAUDE.md`. |
-| `v4`   | v4 maintenance.                                                                    |
+| Branch | Line | Role                                                                                                   |
+| ------ | ---- | ------------------------------------------------------------------------------------------------------ |
+| `main` | —    | Released stable. Releases of the stable line are cut here, never from `dev`.                           |
+| `dev`  | v5   | `stable`: the current stable major.                                                                    |
+| `v6`   | v6   | `experimental`: the next major. Adds a Rust workspace under `crates/`, governed by `crates/CLAUDE.md`. |
+| `v4`   | v4   | `lts`: the previous major; vulnerability fixes only, released from `v4` itself.                        |
+
+What each role receives (dependency updates, release reminders) and how the roles rotate when a new major is released: module JSDoc of `scripts/release-lines/lines.ts`, the single definition of the lines; `consistency.spec.ts` beside it fails when a configuration that names a branch disagrees with it. The rotation itself is the `major-rotation` skill.
 
 - Merges go `dev` → `v6` only; `v6` is never merged into `dev`.
 - `Fixes #N` closes the issue only when the PR merges into the default branch (`dev`). After a PR into `v6` merges, check each linked issue with `gh issue view <n> --json state` and close the open ones by hand with `gh issue close <n> --reason completed`. Add `--comment "Fixed by #<PR> (merged into v6)."` only when someone other than the maintainer filed the issue — the same condition the `merged` skill applies to its post-merge report. A v6 PR is not done until its issues are closed.
@@ -109,3 +111,4 @@ The harness cuts a new worktree from the default branch (`dev`). For v6 work, re
   - A sibling that a package loads only when a configuration needs it (`@markuplint/pretenders` and the parsers it reads) is not a dependency: npm, Yarn and pnpm install `dependencies` and `optionalDependencies` by default. It is an optional `peerDependencies` entry (`peerDependenciesMeta`), as a caret range of the sibling's major rather than an exact pin, because `lerna version` rewrites a peer only when it uses the `workspace:` protocol and an exact one would be left behind at the next release; the monorepo's own tests take the exact `devDependencies` pin, which `lerna version` does rewrite. Enforced by `packages/@markuplint/test-tools/src/peer-dependencies.spec.ts`; what installing `markuplint` brings is guarded by `install-closure.spec.ts` in the same directory
 - Dependency install scripts are opt-in: `enableScripts: false` in `.yarnrc.yml`, and every dependency that has one is listed by name under `dependenciesMeta` in its project's `package.json` (the root workspace, or `website/` — a separate Yarn project that inherits the same `.yarnrc.yml`) with `built: true` to run it or `built: false` to skip it on purpose. `packages/@markuplint/test-tools/src/install-scripts.spec.ts` fails when an installed package with an install script has no entry or an entry has gone stale — add or remove the entry there; do not flip the setting
 - Check a new package's trustworthiness first; do not hand-edit `yarn.lock`
+- Renovate updates every line in `scripts/release-lines/lines.ts`; which updates automerge and which wait for the owner, per role, is in that file's module JSDoc, and the reason for each rule is its `description` in `.github/renovate.json`. Renovate reads the configuration from `dev` only, and a merged change shows on the Dependency Dashboard issue only after Renovate's next run there

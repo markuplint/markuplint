@@ -239,6 +239,12 @@ const ROOT_INPUTS: readonly {
 		],
 	},
 	{
+		// The configurations that name a branch, checked against the release lines.
+		pattern:
+			/^(?:\.github\/(?:renovate\.json|labeler\.yml|workflows\/[^/]+\.ya?ml)|\.husky\/pre-commit|CLAUDE\.md|SECURITY\.md|website\/community\/support-policy\.mdx|website\/i18n\/ja\/docusaurus-plugin-content-docs-community\/current\/support-policy\.mdx)$/,
+		specs: () => ['scripts/release-lines/consistency.spec.ts'],
+	},
+	{
 		pattern: /^config\.schema\.json$/,
 		specs: () => ['packages/@markuplint/ml-config/src/config-schema.spec.ts'],
 	},

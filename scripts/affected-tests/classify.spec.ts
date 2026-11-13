@@ -131,6 +131,14 @@ describe('a file that no rule recognises', () => {
 	);
 });
 
+/** The files above that name a branch, which `consistency.spec.ts` checks against the release lines. */
+const READ_BY_RELEASE_LINES = new Set([
+	'.github/workflows/website.yml',
+	'.github/workflows/nightly.yml',
+	'CLAUDE.md',
+	'.husky/pre-commit',
+]);
+
 describe('a file that no spec reads', () => {
 	test.each([
 		'.claude/skills/git/SKILL.md',
@@ -152,9 +160,18 @@ describe('a file that no spec reads', () => {
 		'packages/@markuplint/ml-core/README.md',
 		'packages/@markuplint/ml-core/CLAUDE.md',
 		'scripts/spec-citations/spec-citations.lock.json',
-	])('%s selects nothing, not even the specs that spawn a process', path => {
-		expect(affected(modified(path))).toStrictEqual([]);
+	])('%s selects nothing but the release-line check, not even the specs that spawn a process', path => {
+		expect(affected(modified(path))).toStrictEqual(
+			READ_BY_RELEASE_LINES.has(path) ? ['scripts/release-lines/consistency.spec.ts'] : [],
+		);
 	});
+
+	test.each(['.github/renovate.json', '.github/labeler.yml', 'SECURITY.md', 'website/community/support-policy.mdx'])(
+		'%s selects the release-line check',
+		path => {
+			expect(affected(modified(path))).toStrictEqual(['scripts/release-lines/consistency.spec.ts']);
+		},
+	);
 });
 
 describe('a source file of a package', () => {
