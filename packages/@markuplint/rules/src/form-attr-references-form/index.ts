@@ -44,9 +44,9 @@ export default createRule<boolean, null>({
 	async verify({ document, report, t }) {
 		await document.walkOn('Element', el => {
 			if (!el.matches(FORM_ASSOCIATED_SELECTOR)) return;
-			if (el.pretenderContext?.type === 'pretender' && !el.hasAttribute('as')) return;
+			if (el.pretenderContext?.type === 'pretender' && !el.hasAttr('as')) return;
 
-			const formAttr = el.getAttributeNode('form');
+			const formAttr = el.getAttrNode('form');
 			if (!formAttr) return;
 			if (formAttr.isDynamicValue) return;
 

@@ -12,7 +12,7 @@ export default createRule({
 				return;
 			}
 			for (const attrName of uniqueAttrs) {
-				if (!el.hasAttribute(attrName)) {
+				if (!el.hasAttr(attrName)) {
 					continue;
 				}
 				const parent = el.parentElement;
@@ -20,11 +20,11 @@ export default createRule({
 					continue;
 				}
 				// Only report on the second (and subsequent) element that has the attribute
-				const precedingSiblings = [...parent.children];
+				const precedingSiblings = [...parent.childElements];
 				const elIndex = precedingSiblings.indexOf(el);
 				const hasPrecedingDuplicate = precedingSiblings
 					.slice(0, elIndex)
-					.some(child => child.localName === el.localName && child.hasAttribute(attrName));
+					.some(child => child.localName === el.localName && child.hasAttr(attrName));
 				if (hasPrecedingDuplicate) {
 					report({
 						scope: el,

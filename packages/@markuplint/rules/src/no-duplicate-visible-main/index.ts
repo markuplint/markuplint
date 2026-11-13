@@ -18,7 +18,7 @@ export default createRule<boolean, null>({
 		const visibleMains: Element<boolean, null>[] = [];
 
 		await document.walkOn('Element', el => {
-			if (el.localName === 'main' && !el.hasAttribute('hidden')) {
+			if (el.localName === 'main' && !el.hasAttr('hidden')) {
 				visibleMains.push(el);
 			}
 		});

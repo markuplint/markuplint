@@ -43,7 +43,7 @@ function exceedPatternCap() {
 	const tags = Array.from({ length: 11 }, () => '<a href>{#if x}<span>s</span>{/if}</a>').join('');
 	const el = createTestElement(`<div>${tags}</div>`, { parser: svelteParser });
 	return representTransparentNodes(
-		[...el.children],
+		[...el.childElements],
 		[],
 		specs,
 		{ ignoreHasMutableChildren: true, evaluateConditionalChildNodes: true },

@@ -22,13 +22,13 @@ export default createRule({
 		Triggers: for (const trigger of triggers) {
 			let targetId: string | null = null;
 
-			const popovertarget = trigger.getAttribute('popovertarget');
+			const popovertarget = trigger.getAttrValue('popovertarget');
 			if (popovertarget) {
 				targetId = popovertarget;
 			} else {
-				const command = trigger.getAttribute('command');
+				const command = trigger.getAttrValue('command');
 				if (command && POPOVER_COMMANDS.has(command.toLowerCase())) {
-					targetId = trigger.getAttribute('commandfor');
+					targetId = trigger.getAttrValue('commandfor');
 				}
 			}
 
@@ -38,12 +38,12 @@ export default createRule({
 			const target = getElementByIdInTree(
 				trigger,
 				targetId,
-				trigger.getAttributeNode(popovertarget ? 'popovertarget' : 'commandfor')?.isExpressionValue,
+				trigger.getAttrNode(popovertarget ? 'popovertarget' : 'commandfor')?.isExpressionValue,
 			);
 			if (!target) {
 				continue;
 			}
-			if (!target.hasAttribute('popover')) {
+			if (!target.hasAttr('popover')) {
 				continue;
 			}
 

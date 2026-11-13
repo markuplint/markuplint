@@ -52,12 +52,12 @@ export default createRule<string[], Options>({
 			// What a descendant renders is not a child of the element that has to have the required one
 			if (
 				el.rule.options.ignoreHasMutableContents &&
-				[...el.getPureChildNodes()].some(child => mayRenderUnknownChildren(child))
+				[...el.pureChildren()].some(child => mayRenderUnknownChildren(child))
 			) {
 				return;
 			}
 			for (const query of el.rule.value) {
-				const exists = [...el.children].find(
+				const exists = [...el.childElements].find(
 					child => !(el.rule.options.ignoreOmittedElements && child.isOmitted) && child.matches(query),
 				);
 				if (!exists) {

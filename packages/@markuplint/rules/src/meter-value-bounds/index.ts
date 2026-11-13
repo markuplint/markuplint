@@ -29,14 +29,14 @@ export default createRule<boolean, null>({
 		await document.walkOn('Element', el => {
 			if (el.localName !== 'meter') return;
 			// Pretender meters with no `as` pin: descendants/attributes are unknown until typed.
-			if (el.pretenderContext?.type === 'pretender' && !el.hasAttribute('as')) return;
+			if (el.pretenderContext?.type === 'pretender' && !el.hasAttr('as')) return;
 
-			const valueAttr = el.getAttributeNode('value');
-			const minAttr = el.getAttributeNode('min');
-			const maxAttr = el.getAttributeNode('max');
-			const lowAttr = el.getAttributeNode('low');
-			const highAttr = el.getAttributeNode('high');
-			const optimumAttr = el.getAttributeNode('optimum');
+			const valueAttr = el.getAttrNode('value');
+			const minAttr = el.getAttrNode('min');
+			const maxAttr = el.getAttrNode('max');
+			const lowAttr = el.getAttrNode('low');
+			const highAttr = el.getAttrNode('high');
+			const optimumAttr = el.getAttrNode('optimum');
 
 			if (
 				valueAttr?.isDynamicValue ||
@@ -73,7 +73,7 @@ export default createRule<boolean, null>({
 			const maxValue = maxNum ?? DEFAULT_MAX;
 			const valueValue = valueNum ?? minValue;
 
-			type ReportableAttr = ReturnType<typeof el.getAttributeNode>;
+			type ReportableAttr = ReturnType<typeof el.getAttrNode>;
 			const reportLE = (
 				lowerName: string,
 				lowerAttr: ReportableAttr,

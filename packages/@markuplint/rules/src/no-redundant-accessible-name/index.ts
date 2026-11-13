@@ -96,7 +96,7 @@ function collectNamingSources<V extends RuleConfigValue, O extends PlainData>(
 	//
 	// Known limitation: step 2C (Embedded Control) is not modeled, so a self-referencing
 	// textbox, combobox, listbox or range is treated like any other element.
-	const ariaLabelledbyAttr = el.getAttributeNode('aria-labelledby');
+	const ariaLabelledbyAttr = el.getAttrNode('aria-labelledby');
 	const ariaLabelledby = ariaLabelledbyAttr?.value;
 	if (ariaLabelledbyAttr && ariaLabelledby && ariaLabelledby.trim()) {
 		const ids = ariaLabelledby.trim().split(/\s+/);
@@ -112,7 +112,7 @@ function collectNamingSources<V extends RuleConfigValue, O extends PlainData>(
 	}
 
 	// 2. aria-label
-	const ariaLabel = el.getAttribute('aria-label');
+	const ariaLabel = el.getAttrValue('aria-label');
 	if (ariaLabel && ariaLabel.trim()) {
 		sources.push({ label: 'aria-label' });
 	}
@@ -125,7 +125,7 @@ function collectNamingSources<V extends RuleConfigValue, O extends PlainData>(
 
 	// 4. alt — img, area, input[type=image]
 	if (el.matches('img, area, input[type=image]')) {
-		const alt = el.getAttribute('alt');
+		const alt = el.getAttrValue('alt');
 		if (alt != null && alt.trim()) {
 			sources.push({ label: 'alt' });
 		}
@@ -141,7 +141,7 @@ function collectNamingSources<V extends RuleConfigValue, O extends PlainData>(
 
 	// 6. value — input[type=button/submit/reset]
 	if (el.matches('input[type=button], input[type=submit], input[type=reset]')) {
-		const value = el.getAttribute('value');
+		const value = el.getAttrValue('value');
 		if (value != null && value.trim()) {
 			sources.push({ label: 'value' });
 		}
@@ -165,7 +165,7 @@ function collectNamingSources<V extends RuleConfigValue, O extends PlainData>(
 
 	// 9. title (optional)
 	if (options.checkTitleFallback) {
-		const title = el.getAttribute('title');
+		const title = el.getAttrValue('title');
 		if (title != null && title.trim()) {
 			sources.push({ label: 'title' });
 		}
@@ -173,7 +173,7 @@ function collectNamingSources<V extends RuleConfigValue, O extends PlainData>(
 
 	// 10. placeholder (optional)
 	if (options.checkPlaceholderFallback) {
-		const placeholder = el.getAttribute('placeholder');
+		const placeholder = el.getAttrValue('placeholder');
 		if (placeholder != null && placeholder.trim()) {
 			sources.push({ label: 'placeholder' });
 		}

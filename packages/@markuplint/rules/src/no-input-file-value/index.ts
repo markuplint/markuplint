@@ -24,10 +24,10 @@ export default createRule<boolean, null>({
 		await document.walkOn('Element', el => {
 			if (el.localName !== 'input') return;
 			// Pretender inputs with no `as` pin: attributes are unknown until typed.
-			if (el.pretenderContext?.type === 'pretender' && !el.hasAttribute('as')) return;
+			if (el.pretenderContext?.type === 'pretender' && !el.hasAttr('as')) return;
 
-			const typeAttr = el.getAttributeNode('type');
-			const valueAttr = el.getAttributeNode('value');
+			const typeAttr = el.getAttrNode('type');
+			const valueAttr = el.getAttrNode('value');
 
 			if (!typeAttr || !valueAttr) return;
 			if (typeAttr.isDynamicValue || valueAttr.isDynamicValue) return;

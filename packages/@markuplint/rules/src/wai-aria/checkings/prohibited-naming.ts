@@ -76,9 +76,9 @@ export const checkingProhibitedNaming: AttrChecker<
 		);
 
 		const isAutonomousCustomElement =
-			attr.ownerElement.elementType === 'web-component' && !attr.ownerElement.hasAttribute('is');
+			attr.ownerElement.elementType === 'web-component' && !attr.ownerElement.hasAttr('is');
 		const hasExplicitRoleAttr =
-			isAutonomousCustomElement && (attr.ownerElement.getAttribute('role')?.trim() ?? '') !== '';
+			isAutonomousCustomElement && (attr.ownerElement.getAttrValue('role')?.trim() ?? '') !== '';
 
 		if (hasExplicitRoleAttr) {
 			return;

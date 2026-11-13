@@ -68,12 +68,12 @@ export default createRule<boolean, null>({
 			if (el.localName !== 'label') return;
 
 			// Pretender labels have unknown descendants until the `as` attribute pins the type.
-			if (el.pretenderContext?.type === 'pretender' && !el.hasAttribute('as')) return;
+			if (el.pretenderContext?.type === 'pretender' && !el.hasAttr('as')) return;
 
 			const controls = [...el.querySelectorAll(FORM_CONTROL_SELECTOR)];
 			if (controls.length === 0) return;
 
-			const forAttr = el.getAttributeNode('for');
+			const forAttr = el.getAttrNode('for');
 			const hasExternalLabeledControl = (() => {
 				if (!forAttr || forAttr.isDynamicValue) return false;
 				const target = getElementByIdInTree(el, forAttr.value, forAttr.isExpressionValue);

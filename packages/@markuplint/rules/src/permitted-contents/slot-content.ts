@@ -131,7 +131,7 @@ export function hasMutableChildNodes<T extends RuleConfigValue, O extends PlainD
 	el: Element<T, O>,
 	mode: Mode,
 ): boolean {
-	return expandChildren(el, [...el.getPureChildNodes()], mode).some(child => mayRenderUnknownChildren(child, false));
+	return expandChildren(el, [...el.pureChildren()], mode).some(child => mayRenderUnknownChildren(child, false));
 }
 
 function isFragmentPretender<T extends RuleConfigValue, O extends PlainData>(

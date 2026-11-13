@@ -264,7 +264,7 @@ function collectColumnMarkup(
 		// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
 		source: Element<boolean>,
 	) => {
-		const span = parseSpan(source.getAttribute('span'), 1, 1, MAX_COLSPAN);
+		const span = parseSpan(source.getAttrValue('span'), 1, 1, MAX_COLSPAN);
 		ranges.push({ source, left, right: left + span });
 		left += span;
 	};
@@ -375,8 +375,8 @@ function processRowGroup(
 		let anchorCount = 0;
 
 		for (const cell of findChildren(rowElement, 'th, td')) {
-			const colspan = parseSpan(cell.getAttribute('colspan'), 1, 1, MAX_COLSPAN);
-			const declaredRowspan = parseSpan(cell.getAttribute('rowspan'), 1, 0, MAX_ROWSPAN);
+			const colspan = parseSpan(cell.getAttrValue('colspan'), 1, 1, MAX_COLSPAN);
+			const declaredRowspan = parseSpan(cell.getAttrValue('rowspan'), 1, 0, MAX_ROWSPAN);
 			const growsDownward = declaredRowspan === 0;
 			const rowspan = growsDownward ? Math.max(rowCount - y, 1) : declaredRowspan;
 

@@ -46,7 +46,7 @@ export const checkingRequiredAccessibilityParentRole: ElementChecker<
 			return;
 		}
 
-		const roleAttr = el.getAttributeNode('role');
+		const roleAttr = el.getAttrNode('role');
 		if (!roleAttr) {
 			return;
 		}

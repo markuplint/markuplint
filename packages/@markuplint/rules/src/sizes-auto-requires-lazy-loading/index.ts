@@ -42,11 +42,11 @@ export default createRule<boolean>({
 				return;
 			}
 
-			if (!el.getAttributeNode('srcset')) {
+			if (!el.getAttrNode('srcset')) {
 				return;
 			}
 
-			const sizesAttr = el.getAttributeNode('sizes');
+			const sizesAttr = el.getAttrNode('sizes');
 			const sizesValue = sizesAttr?.value ?? null;
 			const sizesIsDynamic = sizesAttr?.isDynamicValue;
 

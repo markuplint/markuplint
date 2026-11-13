@@ -85,8 +85,8 @@ function isAlwaysMatchingSource(
 	// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
 	el: Element<boolean>,
 ): boolean {
-	const typeAttr = el.getAttributeNode('type');
-	const mediaAttr = el.getAttributeNode('media');
+	const typeAttr = el.getAttrNode('type');
+	const mediaAttr = el.getAttrNode('media');
 	const hasUsableType = typeAttr != null;
 	const hasUsableMedia = mediaAttr != null && (mediaAttr.isDynamicValue || !isAlwaysMatchingMedia(mediaAttr.value));
 	return !hasUsableType && !hasUsableMedia && hasFollowingSrcsetSibling(el);
@@ -106,10 +106,7 @@ function hasFollowingSrcsetSibling(
 	el: Element<boolean>,
 ): boolean {
 	for (const sibling of followingElementSiblings(el)) {
-		if (
-			(sibling.localName === 'source' || sibling.localName === 'img') &&
-			sibling.getAttributeNode('srcset') != null
-		) {
+		if ((sibling.localName === 'source' || sibling.localName === 'img') && sibling.getAttrNode('srcset') != null) {
 			return true;
 		}
 	}

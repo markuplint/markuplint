@@ -27,7 +27,7 @@ export default createRule<boolean, null>({
 		const autofocusElements: Element<boolean, null>[] = [];
 
 		await document.walkOn('Element', el => {
-			if (el.hasAttribute('autofocus')) {
+			if (el.hasAttr('autofocus')) {
 				autofocusElements.push(el);
 			}
 		});

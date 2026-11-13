@@ -48,9 +48,9 @@ export default createRule<boolean, null>({
 	async verify({ document, report, t }) {
 		await document.walkOn('Element', el => {
 			if (el.localName !== 'label') return;
-			if (el.pretenderContext?.type === 'pretender' && !el.hasAttribute('as')) return;
+			if (el.pretenderContext?.type === 'pretender' && !el.hasAttr('as')) return;
 
-			const forAttr = el.getAttributeNode('for');
+			const forAttr = el.getAttrNode('for');
 			if (!forAttr) return;
 			if (forAttr.isDynamicValue) return;
 

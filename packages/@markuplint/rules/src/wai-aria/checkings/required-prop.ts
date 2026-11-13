@@ -72,7 +72,7 @@ export const checkingRequiredProp: ElementChecker<
 						? null
 						: (elAriaSpec?.properties?.without?.find(p => p.name === requiredProp)?.alt ?? null);
 
-				if (alt?.method === 'set-attr' && el.hasAttribute(alt.target)) {
+				if (alt?.method === 'set-attr' && el.hasAttr(alt.target)) {
 					return;
 				}
 

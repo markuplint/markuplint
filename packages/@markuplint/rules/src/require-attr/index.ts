@@ -101,7 +101,7 @@ export default createRule<RequiredAttributes, Options>({
 					if (spec.requiredEither) {
 						const activeCandidates = spec.requiredEither.filter(n => !isIgnored(n));
 						if (activeCandidates.length > 0) {
-							const invalid = !activeCandidates.some(attrName => el.hasAttribute(attrName));
+							const invalid = !activeCandidates.some(attrName => el.hasAttr(attrName));
 							if (invalid) {
 								const sortedCandidate = activeCandidates.toSorted();
 								const expects =
@@ -127,7 +127,7 @@ export default createRule<RequiredAttributes, Options>({
 					continue;
 				}
 
-				const didntHave = !el.hasAttribute(spec.name);
+				const didntHave = !el.hasAttr(spec.name);
 
 				const candidate: string[] = [spec.name];
 
@@ -137,7 +137,7 @@ export default createRule<RequiredAttributes, Options>({
 					candidate.push(...spec.requiredEither);
 
 					const activeCandidates = candidate.filter(n => !isIgnored(n));
-					invalid = !activeCandidates.some(attrName => el.hasAttribute(attrName));
+					invalid = !activeCandidates.some(attrName => el.hasAttr(attrName));
 				} else if (spec.required === true) {
 					invalid = attrMatches(el, spec.condition) && didntHave;
 				} else if (spec.required != null && spec.required !== false) {
@@ -167,7 +167,7 @@ export default createRule<RequiredAttributes, Options>({
 					});
 				}
 
-				const value = el.getAttribute(spec.name);
+				const value = el.getAttrValue(spec.name);
 
 				if (spec.values.length > 0 && value) {
 					const matched = spec.values.some(pattern => match(value, pattern));

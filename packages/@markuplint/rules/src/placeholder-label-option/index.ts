@@ -52,12 +52,12 @@ function needPlaceholderLabelOption(
 	// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
 	select: Element<boolean>,
 ) {
-	const hasRequired = select.hasAttribute('required');
+	const hasRequired = select.hasAttr('required');
 	if (!hasRequired) {
 		return false;
 	}
 
-	const hasMultiple = select.hasAttribute('multiple');
+	const hasMultiple = select.hasAttr('multiple');
 	if (hasMultiple) {
 		return false;
 	}
@@ -113,11 +113,11 @@ function displaySize(
 	// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
 	select: Element<boolean>,
 ): number | null {
-	const size = select.getAttributeNode('size');
+	const size = select.getAttrNode('size');
 	if (size?.isDynamicValue) {
 		return null;
 	}
-	return getSelectDisplaySize(size?.value ?? null, select.hasAttribute('multiple'));
+	return getSelectDisplaySize(size?.value ?? null, select.hasAttr('multiple'));
 }
 
 /**
@@ -183,7 +183,7 @@ function optionValue(
 	// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
 	option: Element<boolean>,
 ): string | null {
-	const valueAttr = option.getAttributeNode('value');
+	const valueAttr = option.getAttrNode('value');
 	if (valueAttr) {
 		// A value given by an expression (`:value="v"`, `value={v}`) is not known until the template runs.
 		return valueAttr.isDynamicValue ? null : valueAttr.value;

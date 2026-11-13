@@ -56,8 +56,8 @@ export default createRule<boolean, null>({
 
 		await document.walkOn('Element', el => {
 			if (el.localName !== 'script') return;
-			if (el.getAttribute('type')?.toLowerCase() !== 'speculationrules') return;
-			if (el.pretenderContext?.type === 'pretender' && !el.hasAttribute('as')) return;
+			if (el.getAttrValue('type')?.toLowerCase() !== 'speculationrules') return;
+			if (el.pretenderContext?.type === 'pretender' && !el.hasAttr('as')) return;
 			if (!el.closeTag) return;
 
 			const rawContent = sourceCode.slice(el.endOffset, el.closeTag.startOffset);

@@ -37,8 +37,8 @@ export default createRule<boolean, Options>({
 				return;
 			}
 
-			const widthAttr = el.getAttributeNode('width');
-			const heightAttr = el.getAttributeNode('height');
+			const widthAttr = el.getAttrNode('width');
+			const heightAttr = el.getAttrNode('height');
 
 			if (!widthAttr || !heightAttr) {
 				return;
@@ -51,13 +51,13 @@ export default createRule<boolean, Options>({
 			// Resolve the image URL from src (img) or srcset (source)
 			let src: string;
 			if (localName === 'img') {
-				const srcAttr = el.getAttributeNode('src');
+				const srcAttr = el.getAttrNode('src');
 				if (!srcAttr || srcAttr.isDynamicValue) {
 					return;
 				}
 				src = srcAttr.value;
 			} else {
-				const srcsetAttr = el.getAttributeNode('srcset');
+				const srcsetAttr = el.getAttrNode('srcset');
 				if (!srcsetAttr || srcsetAttr.isDynamicValue) {
 					return;
 				}

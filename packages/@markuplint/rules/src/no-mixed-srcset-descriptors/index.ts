@@ -35,7 +35,7 @@ export default createRule<boolean>({
 				return;
 			}
 
-			const srcsetAttr = el.getAttributeNode('srcset');
+			const srcsetAttr = el.getAttrNode('srcset');
 			if (!srcsetAttr || srcsetAttr.isDynamicValue) {
 				return;
 			}

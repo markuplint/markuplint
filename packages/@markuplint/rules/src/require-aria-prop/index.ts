@@ -12,7 +12,7 @@ export default createRule<boolean, Options>({
 	defaultOptions,
 	async verify({ document, report }) {
 		await document.walkOn('Element', el => {
-			const roleAttr = el.getAttributeNode('role');
+			const roleAttr = el.getAttrNode('role');
 			if (!roleAttr) return;
 			const elSpec = getSpec(el, document.specs.specs);
 			if (!elSpec) return;

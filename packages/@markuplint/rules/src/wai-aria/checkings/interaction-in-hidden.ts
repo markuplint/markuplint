@@ -58,7 +58,7 @@ function getClosestAriaHidden(
 ): Attr<boolean, Options> | null {
 	let current: Element<boolean, Options> | null = el;
 	while (current) {
-		const ariaHidden = current.getAttributeNode('aria-hidden');
+		const ariaHidden = current.getAttrNode('aria-hidden');
 		if (ariaHidden?.value === 'true') {
 			return ariaHidden;
 		}

@@ -55,7 +55,7 @@ export default createRule<Value>({
 			return;
 		}
 
-		const children = [...head.children];
+		const children = [...head.childElements];
 		if (children.length <= 1) {
 			return;
 		}
@@ -82,7 +82,7 @@ export default createRule<Value>({
 			const entry = groupIndex < entries.length ? entries[groupIndex] : undefined;
 			let subKey: string | number;
 			if (entry && entry.order === 'alphabetical' && entry.attr) {
-				subKey = el.getAttribute(entry.attr) ?? '';
+				subKey = el.getAttrValue(entry.attr) ?? '';
 			} else {
 				subKey = sourceIndex;
 			}

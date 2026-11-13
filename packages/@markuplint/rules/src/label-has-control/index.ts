@@ -16,9 +16,9 @@ import meta from './meta.js';
  *
  * @see https://html.spec.whatwg.org/multipage/forms.html#labeled-control
  *
- * `children` does not list that element, because a conditional block is not
+ * `childElements` does not list that element, because a conditional block is not
  * flattened into `childNodes`. This rule still treats any element in
- * `children` or in a `conditionalChildNodes()` branch as enough; it does not
+ * `childElements` or in a `conditionalChildNodes()` branch as enough; it does not
  * check that the element is labelable.
  *
  * A block that is not a fragment and has no `blockBehavior` is neither
@@ -38,20 +38,20 @@ export default createRule({
 			// If the label is a pretender, the descendants are unknown, so end the verification.
 			// However, if the `as` attribute is explicitly specified, the descendant relationship is clear,
 			// so verify it as a normal element.
-			if (el.pretenderContext?.type === 'pretender' && !el.hasAttribute('as')) {
+			if (el.pretenderContext?.type === 'pretender' && !el.hasAttr('as')) {
 				return;
 			}
 
 			// `for` already associates the label, so the branch walk is wasted there.
-			// `children` already includes elements of an `each` block. A conditional
+			// `childElements` already includes elements of an `each` block. A conditional
 			// block is not flattened, so look through its branches only when
-			// `children` is empty. One branch that contains an element is enough:
-			// the branches that never render together stay out of `children`.
-			if (el.hasAttribute('for')) {
+			// `childElements` is empty. One branch that contains an element is enough:
+			// the branches that never render together stay out of `childElements`.
+			if (el.hasAttr('for')) {
 				return;
 			}
 			const hasElementInSomeBranch =
-				el.children.length > 0 ||
+				el.childElements.length > 0 ||
 				el.conditionalChildNodes().some(branch => [...branch].some(node => node.is(node.ELEMENT_NODE)));
 			if (!hasElementInSomeBranch) {
 				report({

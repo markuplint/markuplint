@@ -33,7 +33,7 @@ export default createRule<boolean>({
 			for (const range of grid.getColumnsWithoutAnchor()) {
 				const count = range.right - range.left;
 				report({
-					scope: range.source.getAttributeNode('colspan') ?? range.source,
+					scope: range.source.getAttrNode('colspan') ?? range.source,
 					message:
 						count === 1
 							? t('{0} {1} has no cells beginning in it', t('1'), t('column'))

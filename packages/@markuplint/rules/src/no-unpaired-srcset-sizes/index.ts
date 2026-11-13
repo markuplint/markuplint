@@ -37,13 +37,13 @@ export default createRule<boolean>({
 				return;
 			}
 
-			const srcsetAttr = el.getAttributeNode('srcset');
+			const srcsetAttr = el.getAttrNode('srcset');
 			if (!srcsetAttr) {
 				return;
 			}
 
 			const srcsetIsDynamic = srcsetAttr.isDynamicValue;
-			const sizesAttr = el.getAttributeNode('sizes');
+			const sizesAttr = el.getAttrNode('sizes');
 			const sizesIsDynamic = sizesAttr?.isDynamicValue;
 
 			// Parse srcset unless dynamic

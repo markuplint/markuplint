@@ -47,7 +47,7 @@ export default createRule<boolean, null>({
 				itemrefIds = new Set();
 				itemrefIdsOfTree.set(root, itemrefIds);
 			}
-			const itemref = host.getAttributeNode('itemref');
+			const itemref = host.getAttrNode('itemref');
 			if (itemref?.isDynamicValue) {
 				treesWithDynamicItemref.add(root);
 			}
@@ -60,7 +60,7 @@ export default createRule<boolean, null>({
 		const itempropEls = document.deepQuerySelectorAll('[itemprop]');
 		for (const el of itempropEls) {
 			const hasAncestorScope = el.closest('[itemscope]') != null;
-			const id = getDOMValue(el.getAttributeNode('id'));
+			const id = getDOMValue(el.getAttrNode('id'));
 			const isItemrefTarget = id != null && id !== '' && !!itemrefIdsOfTree.get(el.getRootNode())?.has(id);
 			if (!hasAncestorScope && !isItemrefTarget && !treesWithDynamicItemref.has(el.getRootNode())) {
 				report({
