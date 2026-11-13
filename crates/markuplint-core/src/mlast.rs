@@ -364,6 +364,26 @@ pub struct MLASTHTMLAttr {
     #[serde(default)]
     pub candidate: Option<String>,
     pub is_duplicatable: bool,
+    /// What the directive pattern of the spec that resolved the name says of a repeat (TS
+    /// `MLAttr#duplicateKey`); `None` when no pattern matched.
+    #[serde(default)]
+    pub directive_key: Option<DirectiveKey>,
+}
+
+/// The part of a matching directive pattern that decides what `no-duplicate-attr` compares
+/// (TS `DirectiveResolution#duplicateKey` and `duplicateKeyFolds`).
+#[derive(Debug, Clone, Default, PartialEq, Eq, Deserialize)]
+#[serde(rename_all = "camelCase")]
+pub struct DirectiveKey {
+    /// The key the pattern declares; `None` when it says nothing of it.
+    #[serde(default)]
+    pub key: Option<String>,
+    /// The pattern never counts a repeat (a declared `null` key).
+    #[serde(default)]
+    pub never: bool,
+    /// The declared key is the name of an attribute, which the element folds.
+    #[serde(default)]
+    pub folds: bool,
 }
 
 /// How two spellings of an attribute name are one attribute: the key that TS `MLAttr#keyOf`

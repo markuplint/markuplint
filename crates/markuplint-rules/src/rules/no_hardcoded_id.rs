@@ -144,6 +144,7 @@ mod tests {
                     candidate: None,
                     is_duplicatable: false,
                     name_fold: None,
+                    directive_key: None,
                 }))
             })
             .collect();
@@ -295,6 +296,7 @@ mod tests {
                 candidate: None,
                 is_duplicatable: false,
                 name_fold: None,
+                directive_key: None,
             }))],
             has_spread_attr: false,
             block_behavior: None,

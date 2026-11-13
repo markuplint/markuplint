@@ -20,6 +20,7 @@
 //!   v6_attr_duplication_006       — Rust-only: pretender attributes, and names compared as the DOM names them on a custom element
 //!   v6_attr_duplication_007       — Rust-only: whitespace around the equal sign, non-ASCII text before the fix
 //!   v6_attr_duplication_008       — Rust-only: names are the ones the parser resolved (`:href` is `href`), `isDuplicatable`
+//!   v6_attr_duplication_009       — Rust-only: a directive is compared by what the framework keeps of its name (`directiveKey`; TS `[no-duplicate-attr-issue-4612-*]`, `[no-duplicate-attr-issue-4613-*]`)
 
 use markuplint_core::mlast::{ElementType, MLASTAttr, MLASTHTMLAttr, MLASTToken, NamespaceURI};
 use markuplint_dom::arena::{DomArena, DomArenaBuilder};
@@ -237,6 +238,7 @@ pub(crate) fn make_element_with_attrs(tag: &str, attrs: &[(&str, &str)]) -> DomA
                 candidate: None,
                 is_duplicatable: false,
                 name_fold: None,
+                directive_key: None,
             }))
         })
         .collect();
@@ -425,4 +427,82 @@ fn v6_attr_duplication_008() {
         run(&[("class", "a", serde_json::json!({})), (":class", "b", class)]),
         []
     );
+}
+
+/// TS `MLAttr#duplicateKey`: `@keydown.enter` and `@keydown.space` are `onkeydown` to the DOM but two
+/// listeners to the framework, so what is compared is the key the pattern declares, else the name
+/// as written, folded only when the HTML parser of the browser reads the name. TS:
+/// `[no-duplicate-attr-issue-4612-*]`, `[no-duplicate-attr-issue-4613-*]`, `[no-duplicate-attr-parser-*]`.
+#[test]
+fn v6_attr_duplication_009() {
+    let run = |settings: serde_json::Value, attrs: &[(&str, serde_json::Value)]| {
+        let attrs: Vec<(&str, &str, serde_json::Value)> = attrs.iter().map(|(n, j)| (*n, "a", j.clone())).collect();
+        crate::test_util::lint_mlast_brief(
+            "no-duplicate-attr",
+            &crate::test_util::mlast_element("button", &attrs, &settings),
+            serde_json::json!({ "rules": { "no-duplicate-attr": true } }),
+        )
+    };
+    let listener = || serde_json::json!({ "potentialName": "onkeydown", "isDirective": true, "isDynamicValue": true, "directiveKey": {} });
+    let vue = serde_json::json!({ "endTag": "xml", "attrNameRoute": "dom-api" });
+    let alpine = serde_json::json!({ "endTag": "xml" });
+
+    // Modifiers that differ are two listeners (`[no-duplicate-attr-issue-4612-001]`).
+    assert_eq!(
+        run(
+            vue.clone(),
+            &[("@keydown.enter", listener()), ("@keydown.space", listener())]
+        ),
+        []
+    );
+    // The same spelling twice is a repeat (`[no-duplicate-attr-issue-4612-002]`).
+    assert_eq!(
+        run(
+            vue.clone(),
+            &[("@keydown.enter.stop", listener()), ("@keydown.enter.stop", listener())]
+        )
+        .len(),
+        1
+    );
+    // The case is kept where code sets the name (Vue), and folded where the HTML parser reads it (Alpine).
+    assert_eq!(
+        run(vue.clone(), &[("@keydown", listener()), ("@KEYDOWN", listener())]),
+        []
+    );
+    assert_eq!(
+        run(alpine.clone(), &[("@click", listener()), ("@CLICK", listener())]).len(),
+        1
+    );
+    assert_eq!(
+        run(
+            alpine,
+            &[("@keydown.enter", listener()), ("@keydown.space", listener())]
+        ),
+        []
+    );
+
+    // A key the pattern declares replaces the name (`.id` and `:id.prop` are `.id` in Vue).
+    let key = |k: &str| serde_json::json!({ "potentialName": "id", "isDirective": true, "directiveKey": { "key": k } });
+    assert_eq!(
+        run(vue.clone(), &[(".id", key(".id")), (":id.prop", key(".id"))]).len(),
+        1
+    );
+    assert_eq!(
+        run(vue.clone(), &[(".id", key(".id")), ("id", serde_json::json!({}))]),
+        []
+    );
+    // A key that is the name of an attribute is folded as the attribute is.
+    let folds =
+        |k: &str| serde_json::json!({ "potentialName": "viewbox", "directiveKey": { "key": k, "folds": true } });
+    assert_eq!(
+        run(
+            vue.clone(),
+            &[(":view-box.camel", folds("viewBox")), (":viewbox", folds("viewbox"))]
+        )
+        .len(),
+        1
+    );
+    // A pattern that never repeats (`on:click` twice in Svelte) is not counted.
+    let never = serde_json::json!({ "isDirective": true, "isDuplicatable": true, "directiveKey": { "never": true } });
+    assert_eq!(run(vue, &[("on:click", never.clone()), ("on:click", never)]), []);
 }

@@ -12,7 +12,7 @@ use markuplint_types::spec::types::MLMLSpec;
 use crate::fix::Fix;
 use crate::rule::{Rule, RuleConfigSet};
 use crate::violation::Violation;
-use markuplint_dom::helpers::name_key;
+use markuplint_dom::helpers::duplicate_key;
 
 #[cfg(test)]
 pub(crate) mod tests;
@@ -26,6 +26,7 @@ impl Rule for NoDuplicateAttr {
 
     fn verify(&self, arena: &DomArena, _spec: &MLMLSpec, config: &RuleConfigSet) -> Vec<Violation> {
         let mut violations = Vec::new();
+        let route = arena.settings().attr_name_route;
         let tr = config.translator();
         let message = tr.finish(&tr.t(
             "{0} is {1:c}",
@@ -43,15 +44,14 @@ impl Rule for NoDuplicateAttr {
                 let MLASTAttr::HTMLAttr(html_attr) = attr else {
                     continue;
                 };
-                // An attribute a pretender adds may repeat one written on the element.
-                if html_attr.is_duplicatable {
+                // TS `attr.duplicateKey`: the name the DOM gives an attribute (`ID` and `id` are one
+                // on an element of the HTML namespace, and not on an SVG element whose attributes
+                // code sets, nor for the props of a component), and what the framework keeps of the
+                // name for a directive. `None` is an attribute that may repeat (a pretender's).
+                let Some(key) = duplicate_key(el, html_attr, route) else {
                     continue;
-                }
-
-                // TS `attr.nameKey`: the name the DOM gives the attribute, so `ID` and `id` are one
-                // on an element of the HTML namespace, a custom one included, and not on an SVG
-                // element whose attributes code sets, nor for the props of a component.
-                let count = seen.entry(name_key(el, html_attr)).or_insert(0);
+                };
+                let count = seen.entry(key).or_insert(0);
                 *count += 1;
 
                 if *count > 1 {

@@ -1,4 +1,4 @@
-use markuplint_core::mlast::{AttrNameFold, MLASTAttr, MLASTHTMLAttr};
+use markuplint_core::mlast::{AttrNameFold, AttrNameRoute, MLASTAttr, MLASTHTMLAttr};
 
 use crate::arena::{DomArena, NodeId};
 use crate::node::ElementData;
@@ -229,6 +229,44 @@ pub fn key_of(el: &ElementData, attr: &MLASTHTMLAttr, name: &str) -> String {
 #[must_use]
 pub fn name_key(el: &ElementData, attr: &MLASTHTMLAttr) -> String {
     key_of(el, attr, attr_name(attr))
+}
+
+/// TS `MLAttr#duplicateKey`: what `no-duplicate-attr` compares, `None` for an attribute that may repeat.
+///
+/// A directive of a framework is not an attribute of the DOM, so it is compared by what the framework
+/// keeps of its name (the key the matching pattern declares, else the name as written), not by
+/// [`name_key`]. The name as written is folded only when the language reads its names through the
+/// HTML parser of the browser (`route`).
+#[must_use]
+pub fn duplicate_key(el: &ElementData, attr: &MLASTHTMLAttr, route: AttrNameRoute) -> Option<String> {
+    let Some(directive) = &attr.directive_key else {
+        // What no pattern resolved is what the parser made of the name: an attribute of the DOM
+        // unless it may repeat.
+        return if attr.is_duplicatable {
+            None
+        } else {
+            Some(name_key(el, attr))
+        };
+    };
+    if directive.never {
+        return None;
+    }
+    if let Some(key) = &directive.key {
+        return Some(if directive.folds {
+            key_of(el, attr, key)
+        } else {
+            key.clone()
+        });
+    }
+    if attr.is_directive != Some(true) && !attr.is_duplicatable {
+        return Some(name_key(el, attr));
+    }
+    let name = get_raw_attr_name(attr);
+    Some(if route == AttrNameRoute::HtmlParser {
+        key_of(el, attr, name)
+    } else {
+        name.to_owned()
+    })
 }
 
 /// TS `MLAttr#isNamedBy`: whether `name`, a name of a spec, an option or a lookup, is the name of

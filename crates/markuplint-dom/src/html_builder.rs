@@ -303,6 +303,7 @@ fn convert_parser_node(
                         candidate: None,
                         is_duplicatable: false,
                         name_fold: None,
+                        directive_key: None,
                     }))
                 })
                 .collect();

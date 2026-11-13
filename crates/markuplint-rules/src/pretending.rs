@@ -541,6 +541,7 @@ fn create_pretender_attrs(
                 candidate: None,
                 is_duplicatable: true,
                 name_fold: None,
+                directive_key: None,
             })))
         })
         .collect()
