@@ -1,33 +1,13 @@
 // @ts-nocheck
 
-import { JSDOM } from 'jsdom';
-import { describe, test, expect, beforeEach } from 'vitest';
+import { InvalidSelectorError, Selector } from '@markuplint/selector';
+import { describe, test, expect } from 'vitest';
 
-import { InvalidSelectorError } from './invalid-selector-error.js';
-import { Selector } from './selector.js';
-
-beforeEach(() => {
-	const dom = new JSDOM();
-	globalThis.Element = dom.window.Element;
-});
+import { createTestDocument } from '../../test/index.js';
+import { elementOf } from '../element-of.js';
 
 function createTestElement(html: string, selector?: string) {
-	if (/^<html>/i.test(html)) {
-		const dom = new JSDOM(html);
-		return dom.window.document.querySelector('html');
-	}
-	const fragment = JSDOM.fragment(html);
-	if (selector) {
-		const el = fragment.querySelector(selector);
-		if (!el) {
-			throw new Error('An element is not created');
-		}
-		return el;
-	}
-	if (!fragment.firstChild) {
-		throw new Error('An element is not created');
-	}
-	return fragment.firstChild;
+	return elementOf(html, selector);
 }
 
 function createSelector(selector: string) {
@@ -123,11 +103,11 @@ describe('selector matching', () => {
 					namespaceURI: null,
 				},
 			],
-			parentNode: null,
+			parent: null,
 			parentElement: null,
-			previousElementSibling: null,
+			prevElementSibling: null,
 			nextElementSibling: null,
-			children: [],
+			childElements: [],
 		};
 		expect(createSelector('[charset]').match(mockHtmlElement)).toBeTruthy();
 		expect(createSelector('[Charset]').match(mockHtmlElement)).toBeTruthy();
@@ -154,11 +134,11 @@ describe('selector matching', () => {
 					namespaceURI: null,
 				},
 			],
-			parentNode: null,
+			parent: null,
 			parentElement: null,
-			previousElementSibling: null,
+			prevElementSibling: null,
 			nextElementSibling: null,
-			children: [],
+			childElements: [],
 		};
 		expect(createSelector('[viewBox]').match(mockSvgElement)).toBeTruthy();
 		expect(createSelector('[viewbox]').match(mockSvgElement)).toBe(false);
@@ -190,8 +170,8 @@ describe('selector matching', () => {
 		expect(createSelector(':HAS(div, span)').match(header)).toBeTruthy();
 
 		const withSiblings = createTestElement('<div>text<!-- comment --><span></span><a></a></div>');
-		const span = withSiblings.children[0];
-		const a = withSiblings.children[1];
+		const span = withSiblings.childElements[0];
+		const a = withSiblings.childElements[1];
 		expect(createSelector(':FIRST-CHILD').match(span)).toBeTruthy();
 		expect(createSelector(':FIRST-CHILD').match(a)).toBe(false);
 		expect(createSelector(':NOT(:FIRST-CHILD)').match(a)).toBeTruthy();
@@ -219,38 +199,36 @@ describe('selector matching', () => {
 	});
 
 	test(':scope matches only the scoping root, not a top-level element without a parent', () => {
-		const dom = new JSDOM();
-		const { document } = dom.window;
-		const top = document.createElement('div');
-		expect(top.parentNode).toBeNull();
+		const document = createTestDocument('<div></div>');
+		const top = document.querySelector('div');
+		expect(top.parent).toBeNull();
 		expect(createSelector(':scope').match(top, document)).toBe(false);
 		expect(createSelector(':scope').match(top, top)).toBeTruthy();
 	});
 
 	test('Child combinator with :scope on an element in a full document', () => {
-		const dom = new JSDOM('<!DOCTYPE html><html><body><div><p id="a"></p></div><p id="b"></p></body></html>');
-		const { document } = dom.window;
-		const body = document.body;
-		const a = document.getElementById('a');
-		const b = document.getElementById('b');
+		const document = createTestDocument(
+			'<!DOCTYPE html><html><body><div><p id="a"></p></div><p id="b"></p></body></html>',
+		);
+		const body = document.querySelector('body');
+		const a = document.findElementById('a');
+		const b = document.findElementById('b');
 		expect(createSelector(':scope > p').match(a, body)).toBe(false);
 		expect(createSelector(':scope > p').match(b, body)).toBeTruthy();
 	});
 
 	test('A compound to the left of :scope has to match: the document has nothing above it', () => {
-		const dom = new JSDOM('<!DOCTYPE html><html><body><p id="a"></p></body></html>');
-		const { document } = dom.window;
-		const html = document.documentElement;
+		const document = createTestDocument('<!DOCTYPE html><html><body><p id="a"></p></body></html>');
+		const html = document.querySelector('html');
 		expect(createSelector(':scope > html').match(html, document)).toBeTruthy();
 		expect(createSelector('div :scope > html').match(html, document)).toBe(false);
 		expect(createSelector('div :scope html').match(html, document)).toBe(false);
 	});
 
 	test('A compound to the left of :scope has to match: the scope that is an element', () => {
-		const dom = new JSDOM('<!DOCTYPE html><html><body><p id="a"></p></body></html>');
-		const { document } = dom.window;
-		const body = document.body;
-		const a = document.getElementById('a');
+		const document = createTestDocument('<!DOCTYPE html><html><body><p id="a"></p></body></html>');
+		const body = document.querySelector('body');
+		const a = document.findElementById('a');
 		expect(createSelector('html :scope > p').match(a, body)).toBeTruthy();
 		expect(createSelector('section :scope > p').match(a, body)).toBe(false);
 	});
@@ -264,8 +242,8 @@ describe('selector matching', () => {
 
 	test(':first-child', () => {
 		const el = createTestElement('<div>text<!-- comment --><span></span><a></a></div>');
-		const span = el.children[0];
-		const a = el.children[1];
+		const span = el.childElements[0];
+		const a = el.childElements[1];
 		expect(createSelector(':first-child').match(span)).toBeTruthy();
 		expect(createSelector('span:first-child').match(span)).toBeTruthy();
 		expect(createSelector('div > :first-child').match(span)).toBeTruthy();
@@ -276,15 +254,15 @@ describe('selector matching', () => {
 	});
 
 	test(':first-child matches an element without a parent', () => {
-		const el = new JSDOM().window.document.createElement('div');
-		expect(el.parentNode).toBeNull();
+		const el = createTestDocument('<div></div>').querySelector('div');
+		expect(el.parent).toBeNull();
 		expect(createSelector(':first-child').match(el)).toBeTruthy();
 	});
 
-	test(':first-child counts the siblings that previousElementSibling gives, as the sibling combinators do', () => {
+	test(':first-child counts the siblings that prevElementSibling gives, as the sibling combinators do', () => {
 		const prev = createTestElement('<li></li>');
-		const host = Object.defineProperty(createTestElement('<li></li>'), 'previousElementSibling', { value: null });
-		const sibling = Object.defineProperty(createTestElement('<li></li>'), 'previousElementSibling', {
+		const host = Object.defineProperty(createTestElement('<li></li>'), 'prevElementSibling', { value: null });
+		const sibling = Object.defineProperty(createTestElement('<li></li>'), 'prevElementSibling', {
 			value: prev,
 		});
 		expect(createSelector('li:first-child').match(host)).toBeTruthy();
@@ -294,7 +272,7 @@ describe('selector matching', () => {
 
 	test('Descendant combinator', () => {
 		const el = createTestElement('<div><span><a></a></span></div>');
-		const a = el.children[0].children[0];
+		const a = el.childElements[0].childElements[0];
 		expect(a.nodeName).toBe('A');
 		expect(createSelector('div a').match(a)).toBeTruthy();
 		expect(createSelector('div span a').match(a)).toBeTruthy();
@@ -304,7 +282,7 @@ describe('selector matching', () => {
 
 	test('Child combinator', () => {
 		const el = createTestElement('<div><span><a></a></span></div>');
-		const a = el.children[0].children[0];
+		const a = el.childElements[0].childElements[0];
 		expect(createSelector('div > div').match(el)).toBe(false);
 		expect(a.nodeName).toBe('A');
 		expect(createSelector('span > a').match(a)).toBeTruthy();
@@ -315,7 +293,7 @@ describe('selector matching', () => {
 
 	test('Child combinator with :scope', () => {
 		const el = createTestElement('<div><span><a></a></span></div>');
-		const a = el.children[0].children[0];
+		const a = el.childElements[0].childElements[0];
 		expect(a.nodeName).toBe('A');
 		expect(createSelector('a').match(a)).toBeTruthy();
 		expect(createSelector(':scope a').match(a, el)).toBeTruthy();
@@ -330,16 +308,16 @@ describe('selector matching', () => {
 			<li class="i4"><a class="a4">4</a></li>
 			<li class="i5"><a class="a5">5</a></li>
 		</ul>`);
-		expect(createSelector('.i2 + li').match(el.children[0])).toBe(false);
-		expect(createSelector('.i2 + li').match(el.children[1])).toBe(false);
-		expect(createSelector('.i2 + li').match(el.children[2])).toBeTruthy();
-		expect(createSelector('.i2 + li').match(el.children[3])).toBe(false);
-		expect(createSelector('.i2 + li').match(el.children[4])).toBe(false);
-		expect(createSelector('.i4 + li').match(el.children[0])).toBe(false);
-		expect(createSelector('.i4 + li').match(el.children[1])).toBe(false);
-		expect(createSelector('.i4 + li').match(el.children[2])).toBe(false);
-		expect(createSelector('.i4 + li').match(el.children[3])).toBe(false);
-		expect(createSelector('.i4 + li').match(el.children[4])).toBeTruthy();
+		expect(createSelector('.i2 + li').match(el.childElements[0])).toBe(false);
+		expect(createSelector('.i2 + li').match(el.childElements[1])).toBe(false);
+		expect(createSelector('.i2 + li').match(el.childElements[2])).toBeTruthy();
+		expect(createSelector('.i2 + li').match(el.childElements[3])).toBe(false);
+		expect(createSelector('.i2 + li').match(el.childElements[4])).toBe(false);
+		expect(createSelector('.i4 + li').match(el.childElements[0])).toBe(false);
+		expect(createSelector('.i4 + li').match(el.childElements[1])).toBe(false);
+		expect(createSelector('.i4 + li').match(el.childElements[2])).toBe(false);
+		expect(createSelector('.i4 + li').match(el.childElements[3])).toBe(false);
+		expect(createSelector('.i4 + li').match(el.childElements[4])).toBeTruthy();
 	});
 
 	test('Subsequent-sibling combinator', () => {
@@ -350,11 +328,11 @@ describe('selector matching', () => {
 			<li class="i4"><a class="a4">4</a></li>
 			<li class="i5"><a class="a5">5</a></li>
 		</ul>`);
-		expect(createSelector('.i2 ~ li').match(el.children[0])).toBe(false);
-		expect(createSelector('.i2 ~ li').match(el.children[1])).toBe(false);
-		expect(createSelector('.i2 ~ li').match(el.children[2])).toBeTruthy();
-		expect(createSelector('.i2 ~ li').match(el.children[3])).toBeTruthy();
-		expect(createSelector('.i2 ~ li').match(el.children[4])).toBeTruthy();
+		expect(createSelector('.i2 ~ li').match(el.childElements[0])).toBe(false);
+		expect(createSelector('.i2 ~ li').match(el.childElements[1])).toBe(false);
+		expect(createSelector('.i2 ~ li').match(el.childElements[2])).toBeTruthy();
+		expect(createSelector('.i2 ~ li').match(el.childElements[3])).toBeTruthy();
+		expect(createSelector('.i2 ~ li').match(el.childElements[4])).toBeTruthy();
 	});
 
 	test('combinator start error', () => {
@@ -376,7 +354,7 @@ describe('selector matching', () => {
 
 	test(':closest', () => {
 		const el = createTestElement('<table><tr><td></td></tr></table>');
-		const td = el.children[0].children[0].children[0];
+		const td = el.childElements[0].childElements[0].childElements[0];
 		expect(createSelector('td').match(td)).toBeTruthy();
 		expect(createSelector(':closest(table)').match(td)).toBeTruthy();
 		expect(createSelector(':closest(tr)').match(td)).toBeTruthy();
@@ -419,8 +397,8 @@ describe('selector matching', () => {
 
 	test('is invisible tags', () => {
 		const el = createTestElement('<html><head><title></title></head></html>');
-		const head = el.children[0];
-		const title = head.children[0];
+		const head = el.childElements[0];
+		const title = head.childElements[0];
 		expect(createSelector('head').match(head)).toBeTruthy();
 		expect(createSelector('title').match(title)).toBeTruthy();
 	});
@@ -429,7 +407,7 @@ describe('selector matching', () => {
 describe('specificity', () => {
 	test(':first-child', () => {
 		const el = createTestElement('<div><span></span></div>');
-		const span = el.children[0];
+		const span = el.childElements[0];
 		expect(createSelector(':first-child').match(span)).toStrictEqual([0, 1, 0]);
 		expect(createSelector('span:first-child').match(span)).toStrictEqual([0, 1, 1]);
 	});
@@ -482,11 +460,11 @@ describe('type selector of an element of a document that is case-sensitive about
 		namespaceURI: 'http://www.w3.org/1999/xhtml',
 		classList: { contains: () => false },
 		attributes: [],
-		parentNode: null,
+		parent: null,
 		parentElement: null,
-		previousElementSibling: null,
+		prevElementSibling: null,
 		nextElementSibling: null,
-		children: [],
+		childElements: [],
 		...(tagNameCaseSensitive === undefined ? {} : { tagNameCaseSensitive }),
 	});
 
@@ -526,11 +504,11 @@ describe('attribute name of an element that says how its names are compared', ()
 		id: '',
 		namespaceURI,
 		classList: { contains: () => false },
-		parentNode: null,
+		parent: null,
 		parentElement: null,
-		previousElementSibling: null,
+		prevElementSibling: null,
 		nextElementSibling: null,
-		children: [],
+		childElements: [],
 		attributes: [{ localName: attr.name, value: '', namespaceURI: null, ...attr }],
 	});
 	const HTML = 'http://www.w3.org/1999/xhtml';

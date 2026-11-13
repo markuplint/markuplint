@@ -2,10 +2,7 @@ import type { MLChildNode } from './child-node.js';
 import type { MLElement } from './element.js';
 import type { PlainData, RuleConfigValue } from '@markuplint/ml-config';
 
-class MLNodeList<T extends RuleConfigValue, O extends PlainData, N extends MLChildNode<T, O>>
-	extends Array<N>
-	implements NodeListOf<N>
-{
+export class MLNodeList<T extends RuleConfigValue, O extends PlainData, N extends MLChildNode<T, O>> extends Array<N> {
 	forEach(
 		callbackfn: (
 			value: N,
@@ -38,41 +35,27 @@ class MLNodeList<T extends RuleConfigValue, O extends PlainData, N extends MLChi
 
 export function toNodeList<T extends RuleConfigValue, O extends PlainData, N extends MLChildNode<T, O>>(
 	nodes: ReadonlyArray<N>,
-): NodeListOf<N> {
+): MLNodeList<T, O, N> {
 	const nodeList = new MLNodeList(...nodes);
 	return nodeList;
 }
 
-class MLHTMLCollection<T extends RuleConfigValue, O extends PlainData = undefined>
-	extends Array<MLElement<T, O>>
-	implements HTMLCollectionOf<MLElement<T, O>>
-{
+export class MLHTMLCollection<T extends RuleConfigValue, O extends PlainData = undefined> extends Array<
+	MLElement<T, O>
+> {
 	item(index: number): MLElement<T, O> | null {
 		return this[index] ?? null;
 	}
 
 	namedItem(name: string): MLElement<T, O> | null {
-		return this.find(el => el.getAttribute('name') === name) ?? null;
+		return this.find(el => el.getAttrValue('name') === name) ?? null;
 	}
 }
 
 export function toHTMLCollection<T extends RuleConfigValue, O extends PlainData = undefined>(
 	// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
 	nodes: ReadonlyArray<MLElement<T, O>>,
-): HTMLCollectionOf<MLElement<T, O>> {
+): MLHTMLCollection<T, O> {
 	const collection = new MLHTMLCollection(...nodes);
-	return collection;
-}
-
-export function nodeListToHTMLCollection<T extends RuleConfigValue, O extends PlainData = undefined>(
-	// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
-	nodeList: NodeListOf<MLChildNode<T, O>>,
-): HTMLCollectionOf<MLElement<T, O>> {
-	const collection = new MLHTMLCollection<T, O>();
-	for (const node of nodeList) {
-		if (node.is(node.ELEMENT_NODE)) {
-			collection.push(node);
-		}
-	}
 	return collection;
 }

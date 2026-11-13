@@ -36,7 +36,7 @@ export default createRule<boolean, Options>({
 				return;
 			}
 
-			const relAttr = el.getAttributeNode('rel');
+			const relAttr = el.getAttrNode('rel');
 			if (!relAttr) {
 				return;
 			}

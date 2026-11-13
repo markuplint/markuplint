@@ -55,7 +55,7 @@ export default createRule<boolean, Options>({
 				return;
 			}
 
-			if (el.rule.options.ignoreIfAriaBusy && el.getAttribute('aria-busy') === 'true') {
+			if (el.rule.options.ignoreIfAriaBusy && el.getAttrValue('aria-busy') === 'true') {
 				return;
 			}
 

@@ -57,15 +57,13 @@ describe('queries do not enter the content of a template', () => {
 		const doc = createTestDocument('<div><p id="a"></p></div><template><p id="b"></p></template>');
 		expect([...doc.querySelectorAll('p')].map(el => el.id)).toStrictEqual(['a']);
 		expect(must(doc.querySelector('template')).localName).toBe('template');
-		expect(doc.getElementById('b')).toBeNull();
+		expect(doc.findElementById('b')).toBeNull();
 	});
 
 	test('an element does not find an element in the content of a template under it', () => {
 		const doc = createTestDocument('<div><p id="a"></p><template><p id="b"></p></template></div>');
 		const div = must(doc.querySelector('div'));
 		expect([...div.querySelectorAll('p')].map(el => el.id)).toStrictEqual(['a']);
-		expect([...div.getElementsByTagName('p')].map(el => el.id)).toStrictEqual(['a']);
-		expect([...div.getElementsByClassName('x')].length).toBe(0);
 	});
 
 	test('a nested template is a boundary too', () => {
@@ -77,7 +75,7 @@ describe('queries do not enter the content of a template', () => {
 
 	test('the results are in tree order, the ancestor first', () => {
 		const doc = createTestDocument('<div id="a"><p id="a"></p></div>');
-		expect(must(doc.getElementById('a')).localName).toBe('div');
+		expect(must(doc.findElementById('a')).localName).toBe('div');
 		expect([...doc.querySelectorAll('[id]')].map(el => el.localName)).toStrictEqual(['div', 'p']);
 	});
 
@@ -85,58 +83,32 @@ describe('queries do not enter the content of a template', () => {
 		const doc = createTestDocument('<template><p></p></template>');
 		const template = must(doc.querySelector('template'));
 		expect(template.querySelectorAll('p').length).toBe(0);
-		expect(template.getElementsByTagName('p').length).toBe(0);
 	});
 });
 
-describe('getElementById', () => {
+describe('findElementById', () => {
 	test('finds an id that is not a valid CSS identifier', () => {
 		const doc = createTestDocument('<div id="a.b:c"></div><div id="1"></div>');
-		expect(must(doc.getElementById('a.b:c')).localName).toBe('div');
-		expect(must(doc.getElementById('1')).localName).toBe('div');
+		expect(must(doc.findElementById('a.b:c')).localName).toBe('div');
+		expect(must(doc.findElementById('1')).localName).toBe('div');
 	});
 
 	test('compares the id with its character references resolved', () => {
 		const doc = createTestDocument('<div id="&#97;&amp;b"></div>');
-		expect(must(doc.getElementById('a&b')).localName).toBe('div');
+		expect(must(doc.findElementById('a&b')).localName).toBe('div');
 	});
 
 	test('does not find an empty id', () => {
 		const doc = createTestDocument('<div id=""></div>');
-		expect(doc.getElementById('')).toBeNull();
+		expect(doc.findElementById('')).toBeNull();
 	});
 
 	test('a fragment finds an element in its own tree only', () => {
 		const doc = createTestDocument('<p id="a"></p><template><p id="b"></p></template>');
 		const content = must(must(doc.querySelector('template')).content);
-		expect(must(content.getElementById('b')).localName).toBe('p');
-		expect(content.getElementById('a')).toBeNull();
-		expect(content.getElementById('')).toBeNull();
-	});
-});
-
-describe('getElementsByClassName', () => {
-	test('matches the class, not a type selector', () => {
-		const doc = createTestDocument('<div class="foo"></div><foo></foo>');
-		expect([...doc.getElementsByClassName('foo')].map(el => el.localName)).toStrictEqual(['div']);
-	});
-
-	test('requires every class of a list', () => {
-		const doc = createTestDocument('<p class="a b"></p><p class="a"></p>');
-		expect([...doc.getElementsByClassName('a b')].length).toBe(1);
-	});
-
-	test('finds nothing for an empty list', () => {
-		const doc = createTestDocument('<p class="a"></p>');
-		expect(doc.getElementsByClassName('').length).toBe(0);
-		expect(doc.getElementsByClassName(' \t').length).toBe(0);
-	});
-});
-
-describe('getElementsByTagName', () => {
-	test('does not enter the content of a template', () => {
-		const doc = createTestDocument('<p id="a"></p><template><p id="b"></p></template>');
-		expect([...doc.getElementsByTagName('p')].map(el => el.id)).toStrictEqual(['a']);
+		expect(must(content.findElementById('b')).localName).toBe('p');
+		expect(content.findElementById('a')).toBeNull();
+		expect(content.findElementById('')).toBeNull();
 	});
 });
 
@@ -149,7 +121,7 @@ describe('the content of a template', () => {
 		expect(content.nodeType).toBe(11);
 		expect(content.nodeName).toBe('#document-fragment');
 		expect(content.childNodes.length).toBe(2);
-		expect(content.parentNode).toBeNull();
+		expect(content.parent).toBeNull();
 	});
 
 	test('is null on an element that is not a template', () => {
@@ -212,14 +184,14 @@ describe('treeParentElement', () => {
 	test('is the parent element in the tree', () => {
 		const doc = createTestDocument(code);
 		const content = must(must(doc.querySelector('template')).content);
-		expect(must(content.getElementById('p')).treeParentElement).toBe(content.querySelector('section'));
+		expect(must(content.findElementById('p')).treeParentElement).toBe(content.querySelector('section'));
 		expect(must(doc.querySelector('template')).treeParentElement).toBe(doc.querySelector('div'));
 	});
 
 	test('is null at the top of the content of a template, where parentElement is the template', () => {
 		const doc = createTestDocument(code);
 		const template = must(doc.querySelector('template'));
-		const top = must(must(template.content).getElementById('top'));
+		const top = must(must(template.content).findElementById('top'));
 		expect(top.treeParentElement).toBeNull();
 		expect(top.parentElement).toBe(template);
 	});
@@ -275,8 +247,8 @@ describe('a declarative shadow root', () => {
 		const doc = createTestDocument(
 			'<div><template shadowrootmode="open" id="a"></template><template shadowrootmode="open" id="b"></template></div>',
 		);
-		expect(doc.getElementById('a')).toBeNull();
-		const second = must(doc.getElementById('b'));
+		expect(doc.findElementById('a')).toBeNull();
+		const second = must(doc.findElementById('b'));
 		expect(second.localName).toBe('template');
 		expect(second.declarativeShadowRootAttachment).toBe('not-attached');
 	});
@@ -326,13 +298,13 @@ describe('a declarative shadow root', () => {
 		const template = must(doc.deepQuerySelectorAll('template')[0]);
 		expect(template.isInNoTree).toBe(true);
 		expect(doc.querySelector('template')).toBeNull();
-		expect(doc.getElementById('t')).toBeNull();
+		expect(doc.findElementById('t')).toBeNull();
 		expect(template.getRootNode()).toBe(template);
 	});
 
 	test('a template that fails to attach is an ordinary template of the outer tree', () => {
 		const doc = createTestDocument('<ul><template shadowrootmode="open" id="t"></template></ul>');
-		const template = must(doc.getElementById('t'));
+		const template = must(doc.findElementById('t'));
 		expect(template.localName).toBe('template');
 		expect(template.isInNoTree).toBe(false);
 		expect(template.getRootNode()).toBe(doc);
@@ -434,7 +406,7 @@ describe('a template of a framework whose children are put in the element', () =
 		const template = must(doc.querySelector('template'));
 		expect(template.isHTMLTemplateElement).toBe(false);
 		expect(template.content).toBeNull();
-		expect(must(doc.getElementById('a')).getRootNode()).toBe(doc);
+		expect(must(doc.findElementById('a')).getRootNode()).toBe(doc);
 	});
 
 	test('Vue: is an ordinary element, and what is in it is in the document', async () => {
@@ -444,7 +416,7 @@ describe('a template of a framework whose children are put in the element', () =
 			specs: await specs('vue'),
 		});
 		expect(must(doc.querySelector('template')).isHTMLTemplateElement).toBe(false);
-		expect(must(doc.getElementById('a')).getRootNode()).toBe(doc);
+		expect(must(doc.findElementById('a')).getRootNode()).toBe(doc);
 	});
 
 	test('Vue: a template with a directive is not a template element either', async () => {
@@ -464,7 +436,7 @@ describe('a template of a framework whose children are put in the element', () =
 			specs: schemaToSpec([htmlSpec as unknown as MLMLSpec, ext]),
 		});
 		expect(must(doc.querySelector('template')).isHTMLTemplateElement).toBe(true);
-		expect(doc.getElementById('a')).toBeNull();
+		expect(doc.findElementById('a')).toBeNull();
 	});
 });
 
@@ -474,19 +446,19 @@ describe('selectors and ancestors stop at the boundary of a tree', () => {
 
 	test('a descendant combinator does not reach an ancestor of another tree', () => {
 		const content = contentOf(createTestDocument(code));
-		expect(must(content.getElementById('p')).matches('section p')).toBe(false);
-		expect(must(content.getElementById('p')).matches('div p')).toBe(true);
-		expect(must(content.getElementById('top')).matches('section p')).toBe(false);
+		expect(must(content.findElementById('p')).matches('section p')).toBe(false);
+		expect(must(content.findElementById('p')).matches('div p')).toBe(true);
+		expect(must(content.findElementById('top')).matches('section p')).toBe(false);
 	});
 
 	test('a child combinator does not reach the template element', () => {
 		const content = contentOf(createTestDocument(code));
-		expect(must(content.getElementById('top')).matches('template > p')).toBe(false);
-		expect(must(content.getElementById('p')).matches('div > p')).toBe(true);
+		expect(must(content.findElementById('top')).matches('template > p')).toBe(false);
+		expect(must(content.findElementById('p')).matches('div > p')).toBe(true);
 	});
 
 	test(':closest and closest() do not reach an ancestor of another tree', () => {
-		const p = must(contentOf(createTestDocument(code)).getElementById('p'));
+		const p = must(contentOf(createTestDocument(code)).findElementById('p'));
 		expect(p.closest('section')).toBeNull();
 		expect(must(p.closest('div')).localName).toBe('div');
 		expect(p.matches(':closest(section)')).toBe(false);
@@ -506,7 +478,7 @@ describe('selectors and ancestors stop at the boundary of a tree', () => {
 
 	test('a sibling combinator works in the content', () => {
 		const content = contentOf(createTestDocument(code));
-		expect(must(content.getElementById('top')).matches('div + p')).toBe(true);
+		expect(must(content.findElementById('top')).matches('div + p')).toBe(true);
 	});
 
 	test('contains() does not enter the content of a template', () => {
@@ -514,7 +486,7 @@ describe('selectors and ancestors stop at the boundary of a tree', () => {
 		const section = must(doc.querySelector('section'));
 		const template = must(doc.querySelector('template'));
 		const content = must(template.content);
-		const p = must(content.getElementById('p'));
+		const p = must(content.findElementById('p'));
 		expect(section.contains(p)).toBe(false);
 		expect(template.contains(p)).toBe(false);
 		expect(content.contains(p)).toBe(true);

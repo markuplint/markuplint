@@ -95,6 +95,5 @@ fn unique_attrs<'a>(spec: &'a MLMLSpec, local_name: &str) -> Vec<&'a str> {
         .find(|s| s.name == local_name)
         .and_then(|s| s.content_model.get("uniqueAttrs"))
         .and_then(serde_json::Value::as_array)
-        .map(|attrs| attrs.iter().filter_map(serde_json::Value::as_str).collect())
-        .unwrap_or_default()
+        .map_or_default(|attrs| attrs.iter().filter_map(serde_json::Value::as_str).collect())
 }

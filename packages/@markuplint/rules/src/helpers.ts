@@ -32,7 +32,7 @@ export function getElementByIdInTree<T extends RuleConfigValue, O extends PlainD
 ): Element<T, O> | null {
 	const root = el.getRootNode();
 	if (root.is(root.DOCUMENT_NODE) || root.is(root.DOCUMENT_FRAGMENT_NODE)) {
-		return root.getElementById(isExpression ? reference : decodeEntities(reference));
+		return root.findElementById(isExpression ? reference : decodeEntities(reference));
 	}
 	return null;
 }
@@ -517,7 +517,7 @@ export function accnameMayComeFromUnknownContent(
 		return true;
 	}
 
-	const labelledbyAttr = el.getAttributeNode('aria-labelledby');
+	const labelledbyAttr = el.getAttrNode('aria-labelledby');
 	const labelledby = labelledbyAttr?.value;
 	if (labelledby) {
 		const referenced = labelledby
@@ -561,8 +561,8 @@ function hasUnknownContent(
 	return children.some(
 		child =>
 			child.is(child.ELEMENT_NODE) &&
-			child.getAttribute('aria-hidden') !== 'true' &&
-			!child.hasAttribute('hidden') &&
+			child.getAttrValue('aria-hidden') !== 'true' &&
+			!child.hasAttr('hidden') &&
 			hasUnknownContent(child),
 	);
 }
@@ -579,13 +579,12 @@ export function getOwnedLabel<V extends RuleConfigValue, O extends PlainData>(
 	let ownedLabel = el.closest('label');
 
 	if (!ownedLabel) {
-		const id = getDOMValue(el.getAttributeNode('id'));
+		const id = getDOMValue(el.getAttrNode('id'));
 		if (id) {
 			// The label is looked for in the tree of the element, and the two values are compared as the DOM has them
 			ownedLabel =
-				querySelectorAllInTree(el, 'label[for]').find(
-					label => getDOMValue(label.getAttributeNode('for')) === id,
-				) ?? null;
+				querySelectorAllInTree(el, 'label[for]').find(label => getDOMValue(label.getAttrNode('for')) === id) ??
+				null;
 		}
 	}
 

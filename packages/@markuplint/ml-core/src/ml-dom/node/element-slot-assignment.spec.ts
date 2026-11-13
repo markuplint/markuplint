@@ -101,8 +101,8 @@ describe('MLElement#getAssignedNodes', () => {
 		const found = slots(
 			'<div><template shadowrootmode="open"><p><template shadowrootmode="open"><slot name="in"></slot></template><b slot="in">i</b></p><slot></slot></template><u>o</u></div>',
 		);
-		const inner = found.find(slot => slot.getAttribute('name') === 'in');
-		const outer = found.find(slot => !slot.hasAttribute('name'));
+		const inner = found.find(slot => slot.getAttrValue('name') === 'in');
+		const outer = found.find(slot => !slot.hasAttr('name'));
 		expect(must(must(outer).getAssignedNodes()).map(n => describeNode(n))).toStrictEqual(['u']);
 		expect(must(must(inner).getAssignedNodes()).map(n => describeNode(n))).toStrictEqual(['b']);
 	});
@@ -221,47 +221,6 @@ describe('MLElement#getAssignedNodes', () => {
 	});
 });
 
-describe('MLElement#assignedNodes', () => {
-	test('throws for an element that is not a slot', () => {
-		const doc = createTestDocument('<div></div>');
-		expect(() => must(doc.querySelector('div')).assignedNodes()).toThrow(TypeError);
-	});
-
-	test('flatten returns the fallback children of a slot that takes none', () => {
-		const [slot] = slots('<div><template shadowrootmode="open"><slot name="x">fb</slot></template></div>');
-		expect(must(slot).assignedNodes()).toStrictEqual([]);
-		expect(
-			must(slot)
-				.assignedNodes({ flatten: true })
-				.map(n => describeNode(n)),
-		).toStrictEqual(['#text(fb)']);
-	});
-
-	test('flatten replaces an assigned slot with the nodes that it places', () => {
-		const found = slots(
-			'<div><template shadowrootmode="open"><div><template shadowrootmode="open"><slot id="inner"></slot></template><slot id="outer"></slot></div></template><p>a</p></div>',
-		);
-		const inner = found.find(slot => slot.id === 'inner');
-		expect(
-			must(inner)
-				.assignedNodes()
-				.map(n => describeNode(n)),
-		).toStrictEqual(['slot']);
-		expect(
-			must(inner)
-				.assignedNodes({ flatten: true })
-				.map(n => describeNode(n)),
-		).toStrictEqual(['p']);
-	});
-
-	test('returns the assigned nodes, and none when they are unknown', () => {
-		const [known] = slots('<div><template shadowrootmode="open"><slot></slot></template><p>a</p></div>');
-		expect(must(known).assignedNodes()).toHaveLength(1);
-		const [unknown] = slots('<div><slot></slot></div>');
-		expect(must(unknown).assignedNodes()).toStrictEqual([]);
-	});
-});
-
 describe('MLElement#getFlatTreeSlot', () => {
 	test('is the slot that places a light child', () => {
 		const doc = createTestDocument(
@@ -309,28 +268,5 @@ describe('MLElement#getFlatTreeSlot', () => {
 	test('is undefined for an element in the shadow root', () => {
 		const doc = createTestDocument('<div><template shadowrootmode="open"><p>x</p><slot></slot></template></div>');
 		expect(must(doc.deepQuerySelectorAll('p')[0]).getFlatTreeSlot()).toBeUndefined();
-	});
-});
-
-describe('assignedSlot', () => {
-	test('an element and a text node have the slot of an open shadow root', () => {
-		const doc = createTestDocument('<div><template shadowrootmode="open"><slot></slot></template><p>a</p>b</div>');
-		const slot = must(doc.deepQuerySelectorAll('slot')[0]);
-		expect(must(doc.querySelector('p')).assignedSlot).toBe(slot);
-		const host = must(doc.querySelector('div'));
-		const text = [...host.childNodes].find(n => n.is(n.TEXT_NODE));
-		expect(must(text).assignedSlot).toBe(slot);
-	});
-
-	test('is null for a closed shadow root, which the DOM does not expose', () => {
-		const doc = createTestDocument('<div><template shadowrootmode="closed"><slot></slot></template><p>a</p></div>');
-		expect(must(doc.querySelector('p')).assignedSlot).toBeNull();
-	});
-
-	test('is null when no slot takes the node or the assignment is unknown', () => {
-		const doc = createTestDocument(
-			'<div><template shadowrootmode="open"><slot name="a"></slot></template><p>a</p></div>',
-		);
-		expect(must(doc.querySelector('p')).assignedSlot).toBeNull();
 	});
 });

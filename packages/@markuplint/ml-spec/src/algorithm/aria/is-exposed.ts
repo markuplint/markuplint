@@ -1,3 +1,4 @@
+import type { SpecElement } from '../../types/spec-element.js';
 import type { ARIAVersion, MLMLSpec } from '../../types/index.js';
 
 import { ariaSpecs } from './aria-specs.js';
@@ -7,12 +8,6 @@ import { isPresentational } from './is-presentational.js';
 import { resolveNamespace } from '../../utils/resolve-namespace.js';
 
 import { getComputedRole } from './get-computed-role.js';
-
-/**
- * The attribute of the element that `@markuplint/ml-core` hands over (`MLAttr`): the DOM `Attr` does not
- * have `isAbsent`, which is `true` for an attribute that the host does not output.
- */
-type AttrOfMLDOM = Attr & { readonly isAbsent?: true };
 
 /**
  * Detects whether an element is included in (exposed to) the Accessibility Tree.
@@ -30,7 +25,7 @@ type AttrOfMLDOM = Attr & { readonly isAbsent?: true };
  */
 export function isExposed(
 	// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
-	el: Element,
+	el: SpecElement,
 	specs: MLMLSpec,
 	version: ARIAVersion,
 ): boolean {
@@ -76,7 +71,7 @@ export function isExposed(
  */
 function isExcluding(
 	// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
-	el: Element,
+	el: SpecElement,
 	specs: MLMLSpec,
 	version: ARIAVersion,
 ): boolean {
@@ -92,12 +87,12 @@ function isExcluding(
 	 * that no slot takes.
 	 */
 	{
-		let currentEl: Element | null = el;
+		let currentEl: SpecElement | null = el;
 		while (currentEl) {
 			if (
 				isNotRendered(currentEl) ||
 				hasDisplayNodeOrVisibilityHidden(currentEl) ||
-				currentEl.hasAttribute('hidden')
+				currentEl.hasAttr('hidden')
 			) {
 				return true;
 			}
@@ -112,7 +107,7 @@ function isExcluding(
 	 *   These exceptions and conditions are documented in the presentation (role)
 	 *   section.
 	 */
-	if (isPresentational((el.getAttribute('role') ?? '').split(/\s+/)[0])) {
+	if (isPresentational((el.getAttrValue('role') ?? '').split(/\s+/)[0])) {
 		return true;
 	}
 
@@ -125,9 +120,9 @@ function isExcluding(
 	 *   on descendants.
 	 */
 	{
-		let currentEl: Element | null = el;
+		let currentEl: SpecElement | null = el;
 		while (currentEl) {
-			if (currentEl.getAttribute('aria-hidden') === 'true') {
+			if (currentEl.getAttrValue('aria-hidden') === 'true') {
 				return true;
 			}
 			currentEl = getComposedParentElement(currentEl);
@@ -172,7 +167,7 @@ function isExcluding(
  */
 function isIncluding(
 	// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
-	el: Element,
+	el: SpecElement,
 	specs: MLMLSpec,
 	version: ARIAVersion,
 ): boolean {
@@ -205,7 +200,7 @@ function isIncluding(
 	 * (See Excluding Elements in the Accessibility Tree for
 	 * additional guidance on aria-hidden.)
 	 */
-	if (el.getAttribute('aria-hidden') !== 'true') {
+	if (el.getAttrValue('aria-hidden') !== 'true') {
 		const globalAria = ariaSpecs(specs, version).props.filter(prop => prop.isGlobal);
 		const { role } = getComputedRole(specs, el, version);
 		// Has an explicit role
@@ -216,7 +211,7 @@ function isIncluding(
 		for (const attr of el.attributes) {
 			// An attribute that the host does not output (`MLAttr#isAbsent`, e.g. `aria-label={null}`)
 			// is not an attribute of the DOM
-			if ((attr as AttrOfMLDOM).isAbsent) {
+			if (attr.isAbsent) {
 				continue;
 			}
 			if (globalAria.some(aria => aria.name === attr.localName)) {
@@ -241,9 +236,9 @@ function isIncluding(
 
 function hasDisplayNodeOrVisibilityHidden(
 	// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
-	el: Element,
+	el: SpecElement,
 ) {
-	const style = el.getAttribute('style');
+	const style = el.getAttrValue('style');
 	if (!style) {
 		return false;
 	}
@@ -255,7 +250,7 @@ function hasDisplayNodeOrVisibilityHidden(
 
 function isExposedElement(
 	// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
-	el: Element,
+	el: SpecElement,
 	specs: MLMLSpec,
 ) {
 	const svgRenderedConditions = specs.def['#contentModels']['#SVGRenderable']?.join(',');
@@ -269,7 +264,7 @@ function isExposedElement(
 
 function isNotMetaOrHiddenHTMLElement(
 	// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
-	el: Element,
+	el: SpecElement,
 	specs: MLMLSpec,
 ) {
 	const metadataConditions = specs.def['#contentModels']['#metadata']?.join(',');

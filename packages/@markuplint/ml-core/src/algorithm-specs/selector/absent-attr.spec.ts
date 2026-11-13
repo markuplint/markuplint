@@ -1,13 +1,7 @@
-import { JSDOM } from 'jsdom';
-import { beforeEach, describe, expect, test } from 'vitest';
+import type { SelectorElement } from '@markuplint/selector';
 
-import { matchSelector } from './match-selector.js';
-import { Selector } from './selector.js';
-
-beforeEach(() => {
-	const dom = new JSDOM();
-	globalThis.Element = dom.window.Element as unknown as typeof Element;
-});
+import { matchSelector, Selector } from '@markuplint/selector';
+import { describe, expect, test } from 'vitest';
 
 /**
  * An attribute that the framework does not output (`disabled={false}`) is in the list of the
@@ -15,7 +9,7 @@ beforeEach(() => {
  */
 type Attribute = { readonly name: string; readonly value?: string; readonly absent?: boolean };
 
-function element(attributes: readonly Attribute[]): Element {
+function element(attributes: readonly Attribute[]): SelectorElement {
 	const el = {
 		nodeType: 1,
 		nodeName: 'X',
@@ -23,14 +17,14 @@ function element(attributes: readonly Attribute[]): Element {
 		id: '',
 		namespaceURI: 'http://www.w3.org/1999/xhtml',
 		classList: { contains: () => false },
-		parentNode: null,
+		parent: null,
 		parentElement: null,
-		previousElementSibling: null,
+		prevElementSibling: null,
 		nextElementSibling: null,
-		children: [],
+		childElements: [],
 		attributes: attributes.map(attr => ({ localName: attr.name, value: '', namespaceURI: null, ...attr })),
 	};
-	return el as unknown as Element;
+	return el as unknown as SelectorElement;
 }
 
 describe('a selector of an attribute', () => {

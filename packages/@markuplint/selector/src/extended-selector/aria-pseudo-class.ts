@@ -1,7 +1,7 @@
 import type { SelectorElement, SelectorResult } from '../types.js';
-import type { ARIAVersion, MLMLSpec } from '@markuplint/ml-spec';
+import type { ARIAVersion } from '@markuplint/ml-spec';
 
-import { validateAriaVersion, ARIA_RECOMMENDED_VERSION, getAccname } from '@markuplint/ml-spec';
+import { validateAriaVersion, ARIA_RECOMMENDED_VERSION } from '@markuplint/ml-spec';
 
 import { InvalidSelectorError } from '../invalid-selector-error.js';
 
@@ -10,20 +10,12 @@ import { InvalidSelectorError } from '../invalid-selector-error.js';
  *
  * ## Accessible name resolution strategy
  *
- * When the element exposes a `getAccessibleName()` method (i.e. it is an
- * `MLElement` from `@markuplint/ml-core`), that method is called via
- * duck-typing so that its per-element memoization cache is shared with
- * other consumers (`require-accessible-name`, `wai-aria`, etc.).
- *
- * The `@markuplint/selector` package cannot depend on `@markuplint/ml-core`
- * (it sits lower in the dependency graph), so a structural type check
- * (`'getAccessibleName' in el`) is used instead of an `instanceof` guard.
- *
- * For elements that do **not** have the method (e.g. plain DOM `Element`
- * instances in unit tests), the function falls back to the stateless
- * `getAccname()` from `@markuplint/ml-spec`.
+ * The element is an `MLElement` from `@markuplint/ml-core`, and its `getAccessibleName()` is called so
+ * that its per-element memoization cache is shared with other consumers (`require-accessible-name`,
+ * `wai-aria`, etc.). `SelectorElement#getAccessibleName` is how the `@markuplint/selector` package, which
+ * sits below `@markuplint/ml-core` in the dependency graph, reads it.
  */
-export function ariaPseudoClass(specs: MLMLSpec) {
+export function ariaPseudoClass() {
 	return (content: string) => {
 		const aria = ariaPseudoClassParser(content);
 		return (
@@ -32,14 +24,7 @@ export function ariaPseudoClass(specs: MLMLSpec) {
 		): SelectorResult => {
 			const version = aria.version ?? ARIA_RECOMMENDED_VERSION;
 
-			// Prefer MLElement.getAccessibleName() (cached) over ml-spec's
-			// stateless getAccname(). The duck-typing check is necessary because
-			// SelectorElement is an interface that does not declare
-			// getAccessibleName — the concrete MLElement adds it at runtime.
-			const name =
-				'getAccessibleName' in el && typeof (el as Record<string, unknown>).getAccessibleName === 'function'
-					? (el as unknown as { getAccessibleName(v: ARIAVersion): string }).getAccessibleName(version)
-					: getAccname(el as Element, specs, version);
+			const name = el.getAccessibleName(version);
 			switch (aria.type) {
 				case 'hasName': {
 					if (name) {

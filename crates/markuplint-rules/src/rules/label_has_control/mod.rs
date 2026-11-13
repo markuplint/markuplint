@@ -49,7 +49,7 @@ impl Rule for LabelHasControl {
             if el.pretended().is_some() && get_attr_value_from_el(el, "as").is_none() {
                 continue;
             }
-            // TS `el.hasAttribute('for')`
+            // TS `el.hasAttr('for')`
             if get_attr_value_from_el(el, "for").is_some() {
                 continue;
             }

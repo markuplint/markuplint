@@ -188,7 +188,7 @@ function getVisits(
 			add(current);
 		}
 		// An `aria-labelledby` refers to an element of its own tree
-		const idValue: string | null = getDOMValue(current.getAttributeNode('id'));
+		const idValue: string | null = getDOMValue(current.getAttrNode('id'));
 		if (
 			idValue &&
 			referenced.get(current.getRootNode())?.has(idValue) &&
@@ -217,7 +217,7 @@ const getLabeledControls = memoizeByObject(
 		if (el.localName !== 'label' || el.namespaceURI !== 'http://www.w3.org/1999/xhtml') {
 			return [];
 		}
-		const forAttr = el.getAttributeNode('for');
+		const forAttr = el.getAttrNode('for');
 		const target = forAttr == null ? null : getElementByIdInTree(el, forAttr.value, forAttr.isExpressionValue);
 		return [...(target ? [target] : []), ...el.querySelectorAll(labelable.join(', '))];
 	},
@@ -239,7 +239,7 @@ const getReferencedIds = memoizeByObject(
 				idsOfTree.set(root, ids);
 			}
 			for (const name of ['aria-labelledby', 'aria-describedby']) {
-				const attr = referrer.getAttributeNode(name);
+				const attr = referrer.getAttrNode(name);
 				for (const id of attr?.value.split(/\s+/) ?? []) {
 					const domId = id === '' ? null : getDOMValue(attr, id);
 					if (domId != null) {
@@ -299,7 +299,7 @@ function takesEffect(
 	const shown = visits.filter(visit => !visit.hidden);
 	switch (namespaceKeyOf(attr)) {
 		case 'aria-hidden': {
-			return attr.value === 'true' && visits.some(visit => visit.hidden) && !el.hasAttribute('hidden');
+			return attr.value === 'true' && visits.some(visit => visit.hidden) && !el.hasAttr('hidden');
 		}
 		case 'aria-labelledby': {
 			return labelledbyGivesText(el, ariaVersion) && shown.some(visit => !visit.inLabelledbyTraversal);
@@ -307,7 +307,7 @@ function takesEffect(
 		case 'aria-label': {
 			const overridden =
 				labelledbyGivesText(el, ariaVersion) &&
-				!(el.id !== '' && el.getAttribute('aria-labelledby')?.split(/\s+/).includes(el.id));
+				!(el.id !== '' && el.getAttrValue('aria-labelledby')?.split(/\s+/).includes(el.id));
 			return (
 				attr.value.trim() !== '' &&
 				shown.some(visit => !visit.embeddedControl && (visit.inLabelledbyTraversal || !overridden))
@@ -317,9 +317,9 @@ function takesEffect(
 		case 'aria-valuenow': {
 			// The value of a range embedded control: `aria-valuetext`, else `aria-valuenow`
 			const isRange =
-				['slider', 'spinbutton'].includes(el.getAttribute('role')?.trim().split(/\s+/)[0] ?? '') ||
-				(el.localName === 'input' && el.getAttribute('type')?.trim().toLowerCase() === 'range');
-			const valuetext = el.getAttribute('aria-valuetext')?.trim() ?? '';
+				['slider', 'spinbutton'].includes(el.getAttrValue('role')?.trim().split(/\s+/)[0] ?? '') ||
+				(el.localName === 'input' && el.getAttrValue('type')?.trim().toLowerCase() === 'range');
+			const valuetext = el.getAttrValue('aria-valuetext')?.trim() ?? '';
 			const shadowed = namespaceKeyOf(attr) === 'aria-valuenow' && valuetext !== '';
 			// Step 2B comes first outside an ongoing aria-labelledby traversal
 			const labelledby = labelledbyGivesText(el, ariaVersion);
@@ -370,7 +370,7 @@ function labelledbyGivesText(
 	el: Element<boolean, Options>,
 	ariaVersion: ARIAVersion,
 ): boolean {
-	const labelledbyAttr = el.getAttributeNode('aria-labelledby');
+	const labelledbyAttr = el.getAttrNode('aria-labelledby');
 	return (labelledbyAttr?.value.split(/\s+/) ?? []).some(id => {
 		if (id === '') {
 			return false;

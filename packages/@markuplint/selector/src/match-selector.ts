@@ -141,10 +141,10 @@ class SelectorTarget {
 			}
 			// Next-sibling combinator
 			case '+': {
-				if (!el.previousElementSibling) {
+				if (!el.prevElementSibling) {
 					return { matched: false };
 				}
-				const matches = target.match(el.previousElementSibling);
+				const matches = target.match(el.prevElementSibling);
 				if (matches.matched) {
 					return mergeMatches(matches, unitCheck, ' + ');
 				}
@@ -152,13 +152,13 @@ class SelectorTarget {
 			}
 			// Subsequent-sibling combinator
 			case '~': {
-				let prev = el.previousElementSibling;
+				let prev = el.prevElementSibling;
 				while (prev) {
 					const matches = target.match(prev);
 					if (matches.matched) {
 						return mergeMatches(matches, unitCheck, ' ~ ');
 					}
-					prev = prev.previousElementSibling;
+					prev = prev.prevElementSibling;
 				}
 				return { matched: false };
 			}

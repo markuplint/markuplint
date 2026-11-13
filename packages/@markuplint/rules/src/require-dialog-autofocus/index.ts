@@ -23,12 +23,12 @@ export default createRule({
 		const reportedDialogs = new Set<object>();
 
 		for (const trigger of triggers) {
-			const command = trigger.getAttribute('command');
+			const command = trigger.getAttrValue('command');
 			if (!command || command.toLowerCase() !== 'show-modal') {
 				continue;
 			}
 
-			const targetId = trigger.getAttribute('commandfor');
+			const targetId = trigger.getAttrValue('commandfor');
 			if (!targetId) {
 				continue;
 			}
@@ -36,7 +36,7 @@ export default createRule({
 			const target = getElementByIdInTree(
 				trigger,
 				targetId,
-				trigger.getAttributeNode('commandfor')?.isExpressionValue,
+				trigger.getAttrNode('commandfor')?.isExpressionValue,
 			);
 			if (!target) {
 				continue;
@@ -50,7 +50,7 @@ export default createRule({
 				continue;
 			}
 
-			if (target.hasAttribute('autofocus')) {
+			if (target.hasAttr('autofocus')) {
 				continue;
 			}
 

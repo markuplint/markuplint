@@ -1,17 +1,12 @@
 // @ts-nocheck
 
-import { JSDOM } from 'jsdom';
+import { matchSelector } from '@markuplint/selector';
 import { test, expect, describe } from 'vitest';
 
-import { matchSelector } from './match-selector.js';
+import { elementOf } from '../element-of.js';
 
 function createTestElement(html: string) {
-	if (/^<html>/i.test(html)) {
-		const dom = new JSDOM(html);
-		return dom.window.document.querySelector('html');
-	}
-	const fragment = JSDOM.fragment(html);
-	return fragment.firstChild;
+	return elementOf(html);
 }
 
 test('CSS Selector', () => {
@@ -196,7 +191,7 @@ test('nodeName & attrName & attrValue', () => {
 
 test('combination " "', () => {
 	const el = createTestElement('<div data-attr="abc"><span></span></div>');
-	const span = el.children[0];
+	const span = el.childElements[0];
 	expect(
 		matchSelector(span, {
 			nodeName: 'div',
@@ -217,8 +212,8 @@ test('combination " "', () => {
 
 test('combination >', () => {
 	const el = createTestElement('<div data-attr="abc"><span><a></a></span></div>');
-	const span = el.children[0];
-	const a = span.children[0];
+	const span = el.childElements[0];
+	const a = span.childElements[0];
 	expect(
 		matchSelector(a, {
 			nodeName: 'div',
@@ -252,7 +247,7 @@ test('combination +', () => {
 	<li class="i4"><a class="a4">4</a></li>
 	<li class="i5"><a class="a5">5</a></li>
 </ul>`);
-	const i4 = el.children[3];
+	const i4 = el.childElements[3];
 	expect(
 		matchSelector(i4, {
 			attrValue: 'i3',
@@ -277,7 +272,7 @@ test('combination ~', () => {
 	<li class="i4"><a class="a4">4</a></li>
 	<li class="i5"><a class="a5">5</a></li>
 </ul>`);
-	const i5 = el.children[4];
+	const i5 = el.childElements[4];
 	expect(
 		matchSelector(i5, {
 			attrValue: 'i3',
@@ -302,7 +297,7 @@ test('combination :has(+)', () => {
 	<li class="i4"><a class="a4">4</a></li>
 	<li class="i5"><a class="a5">5</a></li>
 </ul>`);
-	const i3 = el.children[2];
+	const i3 = el.childElements[2];
 	expect(
 		matchSelector(i3, {
 			attrValue: 'i4',
@@ -327,7 +322,7 @@ test('combination :has(~)', () => {
 	<li class="i4"><a class="a4">4</a></li>
 	<li class="i5"><a class="a5">5</a></li>
 </ul>`);
-	const i3 = el.children[2];
+	const i3 = el.childElements[2];
 	expect(
 		matchSelector(i3, {
 			attrValue: 'i5',
@@ -375,11 +370,11 @@ describe('nodeName of a regular expression selector in a document that is case-s
 		namespaceURI: 'http://www.w3.org/1999/xhtml',
 		classList: { contains: () => false },
 		attributes: [],
-		parentNode: null,
+		parent: null,
 		parentElement: null,
-		previousElementSibling: null,
+		prevElementSibling: null,
 		nextElementSibling: null,
-		children: [],
+		childElements: [],
 		...(tagNameCaseSensitive === undefined ? {} : { tagNameCaseSensitive }),
 	});
 
@@ -404,11 +399,11 @@ describe('attrName of an attribute that says how its name is compared', () => {
 		id: '',
 		namespaceURI: 'http://www.w3.org/2000/svg',
 		classList: { contains: () => false },
-		parentNode: null,
+		parent: null,
 		parentElement: null,
-		previousElementSibling: null,
+		prevElementSibling: null,
 		nextElementSibling: null,
-		children: [],
+		childElements: [],
 		attributes: [{ name: 'VIEWBOX', localName: 'VIEWBOX', value: '', namespaceURI: null, ...attr }],
 	});
 

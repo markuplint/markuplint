@@ -8,7 +8,7 @@ import { asciiLowerCase } from '@markuplint/shared';
  * How a literal in an attribute value that is written as code is rendered as an attribute of the DOM.
  *
  * - `value`: the attribute has this value (`""` for `disabled={true}`)
- * - `absent`: the attribute is not output (`disabled={false}`), as `getAttribute()` returns `null`
+ * - `absent`: the attribute is not output (`disabled={false}`), as `getAttrValue()` returns `null`
  * - `unknown`: the frameworks differ and the attribute has a value that is not known (`disabled={""}`
  *   is `""` in Vue and Svelte, and absent in React and Astro)
  */

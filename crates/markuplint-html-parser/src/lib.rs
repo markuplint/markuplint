@@ -21,11 +21,7 @@ pub fn is_document_fragment(html: &str) -> bool {
     let lower = trimmed.to_ascii_lowercase();
 
     // Not a fragment if it starts with <!doctype or <html
-    if lower.starts_with("<!doctype") || lower.starts_with("<html") {
-        return false;
-    }
-
-    true
+    !(lower.starts_with("<!doctype") || lower.starts_with("<html"))
 }
 
 /// More aggressive than `is_document_fragment`: also treats `<head>` and

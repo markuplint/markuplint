@@ -235,8 +235,7 @@ fn accessibility_of(arena: &DomArena, spec: &MLMLSpec, id: NodeId, version: ARIA
 fn has_unassigned_slot(arena: &DomArena, spec: &MLMLSpec, id: NodeId) -> bool {
     let mut stack: Vec<NodeId> = arena
         .get(id)
-        .map(|node| node.children().iter().rev().copied().collect())
-        .unwrap_or_default();
+        .map_or_default(|node| node.children().iter().rev().copied().collect());
     while let Some(current) = stack.pop() {
         let Some(node) = arena.get(current) else {
             continue;

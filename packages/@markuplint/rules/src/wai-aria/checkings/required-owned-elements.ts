@@ -435,7 +435,7 @@ function getShadowRootTemplate(
 	}
 	// A block without a behavior may be a marker of a language whose blocks the syntax tree does
 	// not nest (`{% if %}` … `{% endif %}`), so whether it encloses the `template` is not known.
-	for (const child of host.getPureChildNodes()) {
+	for (const child of host.pureChildren()) {
 		if (child.is(child.MARKUPLINT_PREPROCESSOR_BLOCK) && !child.blockBehavior) {
 			return 'unknown';
 		}

@@ -173,7 +173,7 @@ function matchesSegment(node: ScopedNode, segment: ScopeSegment): boolean {
 			return false;
 		}
 		let position = 0;
-		for (const sibling of parent.children) {
+		for (const sibling of parent.childElements) {
 			if (sibling.localName === node.localName) {
 				position++;
 				if (sibling === node) {

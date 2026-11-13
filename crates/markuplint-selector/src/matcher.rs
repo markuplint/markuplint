@@ -691,7 +691,7 @@ fn match_attribute(attributes: &[MLASTAttr], sel: &AttributeSelector) -> bool {
 
 /// The value an attribute selector compares: the rendered value (`attr_value`), and no value for an
 /// attribute that the framework does not output, which a selector does not match (TS
-/// `MLElement#getAttribute`).
+/// `MLElement#getAttrValue`).
 fn get_attr<'a>(attributes: &'a [MLASTAttr], name: &str) -> Option<&'a str> {
     for attr in attributes {
         if let MLASTAttr::HTMLAttr(html_attr) = attr
@@ -961,10 +961,7 @@ pub fn is_content_model_first_child(arena: &DomArena, node_id: NodeId) -> bool {
     let siblings = if flat.contains(&node_id) {
         flat
     } else {
-        arena
-            .get(parent_id)
-            .map(|parent| parent.children().to_vec())
-            .unwrap_or_default()
+        arena.get(parent_id).map_or_default(|parent| parent.children().to_vec())
     };
     let Some(pos) = siblings.iter().position(|&id| id == node_id) else {
         return true;

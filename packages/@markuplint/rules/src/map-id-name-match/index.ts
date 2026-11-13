@@ -18,10 +18,10 @@ export default createRule<boolean, null>({
 		await document.walkOn('Element', el => {
 			if (el.localName !== 'map') return;
 			// Pretender maps with no `as` pin: attributes are unknown until typed.
-			if (el.pretenderContext?.type === 'pretender' && !el.hasAttribute('as')) return;
+			if (el.pretenderContext?.type === 'pretender' && !el.hasAttr('as')) return;
 
-			const idAttr = el.getAttributeNode('id');
-			const nameAttr = el.getAttributeNode('name');
+			const idAttr = el.getAttrNode('id');
+			const nameAttr = el.getAttrNode('name');
 
 			if (!idAttr || !nameAttr) return;
 			if (idAttr.isDynamicValue || nameAttr.isDynamicValue) return;

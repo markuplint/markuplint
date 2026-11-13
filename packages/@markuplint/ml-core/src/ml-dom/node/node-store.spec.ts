@@ -94,8 +94,8 @@ describe('NodeStore resolves nodes within their own document', () => {
 
 		// `toBe` on two distinct MLNodes makes Vitest call `isEqualNode`, which
 		// MLDOM does not support, so identity is compared with `Object.is`.
-		expect(Object.is(pA?.parentNode, divA)).toBe(true);
-		expect(Object.is(pA?.parentNode, divB)).toBe(false);
+		expect(Object.is(pA?.parent, divA)).toBe(true);
+		expect(Object.is(pA?.parent, divB)).toBe(false);
 		expect(Object.is(divA?.childNodes[0], pA)).toBe(true);
 	});
 });

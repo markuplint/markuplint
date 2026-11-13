@@ -1,14 +1,10 @@
-import type { SelectorElement } from './types.js';
+import type { SelectorElement } from '@markuplint/selector';
 
 import specs from '@markuplint/html-spec';
-import { createJSDOMElement } from '@markuplint/test-tools';
+import { contentModelFirstChildBase, isContentModelFirstChild, isInterElementWhitespace } from '@markuplint/selector';
 import { describe, test, expect } from 'vitest';
 
-import {
-	contentModelFirstChildBase,
-	isContentModelFirstChild,
-	isInterElementWhitespace,
-} from './content-model-first-child.js';
+import { elementOf } from '../element-of.js';
 
 describe('isInterElementWhitespace', () => {
 	test.each([
@@ -42,17 +38,17 @@ describe('isContentModelFirstChild', () => {
 		['<div><p></p><style></style></div>', false],
 		['<div><p></p>\n<style></style></div>', false],
 	])('%j → %s', (html, expected) => {
-		expect(isContentModelFirstChild(createJSDOMElement(html, 'style'))).toBe(expected);
+		expect(isContentModelFirstChild(elementOf(html, 'style'))).toBe(expected);
 	});
 
 	test('a host that gives the text as written counts a character reference to whitespace as whitespace', () => {
-		const text = { nodeType: 3, nodeName: '#text', parentNode: null, nodeValue: '&#x20;', previousSibling: null };
-		const el = { previousElementSibling: null, previousSibling: text } as unknown as SelectorElement;
+		const text = { nodeType: 3, nodeName: '#text', parent: null, nodeValue: '&#x20;', prevSibling: null };
+		const el = { prevElementSibling: null, prevSibling: text } as unknown as SelectorElement;
 		expect(isContentModelFirstChild(el)).toBe(true);
 	});
 
-	test('a host without previousSibling is judged by the elements alone', () => {
-		const el = { previousElementSibling: null } as unknown as SelectorElement;
+	test('a host without prevSibling is judged by the elements alone', () => {
+		const el = { prevElementSibling: null } as unknown as SelectorElement;
 		expect(isContentModelFirstChild(el)).toBe(true);
 	});
 });

@@ -1,6 +1,6 @@
 import { parser } from '@markuplint/html-parser';
 import { ARIA_RECOMMENDED_VERSION } from '@markuplint/ml-spec';
-import { test, expect } from 'vitest';
+import { describe, test, expect } from 'vitest';
 
 import { convertRuleset } from '../../index.js';
 import { createTestDocument, dummySchemas } from '../../test/index.js';
@@ -29,7 +29,9 @@ test('Get accessible name', () => {
 	expect(getAccname(c('<span aria-label="label">text</span>'), '1.2')).toBe('label');
 	expect(getAccname(c('<img alt="alternative-text" />'), '1.2')).toBe('alternative-text');
 	expect(getAccname(c('<img title="title" />'), '1.2')).toBe('title');
-	expect(getAccname(c('<div><label for="a">label</label><input id="a" /></div>').children[1]!, '1.2')).toBe('label');
+	expect(getAccname(c('<div><label for="a">label</label><input id="a" /></div>').childElements[1]!, '1.2')).toBe(
+		'label',
+	);
 });
 
 test('Invisible element', () => {
@@ -49,9 +51,9 @@ test('accname-1.2 Example 1', () => {
 <input id="el2" aria-labelledby="el1" />
 <h1 id="el3"> hello </h1>
 </div>`);
-	expect(getAccname(complex.children[0]!, '1.2')).toBe('hello');
-	expect(getAccname(complex.children[1]!, '1.2')).toBe('');
-	expect(getAccname(complex.children[2]!, '1.2')).toBe('hello');
+	expect(getAccname(complex.childElements[0]!, '1.2')).toBe('hello');
+	expect(getAccname(complex.childElements[1]!, '1.2')).toBe('');
+	expect(getAccname(complex.childElements[2]!, '1.2')).toBe('hello');
 });
 
 /**
@@ -158,7 +160,7 @@ test('MLElement memoizes the visits and the host language label source', () => {
 		visits === button.getAccessibleNameVisits('1.2'),
 		visits === button.getAccessibleNameVisits('1.2', true),
 	]).toStrictEqual([true, false]);
-	const svg = button.children[0]!;
+	const svg = button.childElements[0]!;
 	expect(svg.getHostLanguageLabelSource('1.2')).toBe('svg-title');
 	expect(svg.getHostLanguageLabelSource('1.2')).toBe(svg.getHostLanguageLabelSource('1.2'));
 });
@@ -234,4 +236,68 @@ test('a template that a slot takes contributes nothing to the name', () => {
 			'<div role="button"><template shadowrootmode="open"><slot></slot></template><template>X</template>Save</div>',
 		),
 	).toBe('Save');
+});
+
+test('Host language label of an element exposed as presentational', () => {
+	expect(getAccname(c('<img src="s.svg" alt="Save" role="none">'), '1.2')).toBe('');
+	expect(getAccname(c('<button><img src="s.svg" alt="Save" role="none">Click</button>'), '1.2')).toBe('Click');
+	expect(getAccname(c('<button><svg role="presentation"><title>Save</title></svg>Click</button>'), '1.2')).toBe(
+		'Click',
+	);
+	// Control: the same markup without the role
+	expect(getAccname(c('<button><img src="s.svg" alt="Save">Click</button>'), '1.2')).toBe('Save Click');
+	expect(getAccname(c('<button><svg><title>Save</title></svg>Click</button>'), '1.2')).toBe('Save Click');
+});
+
+/**
+ * @see https://w3c.github.io/accname/#comp_hidden_not_referenced
+ */
+test('Hidden descendants of a node referenced by aria-labelledby', () => {
+	// Example 1: the referenced node is hidden, so its hidden descendant is included
+	const hiddenRoot = c(
+		'<div><div id="el1" role="button" aria-labelledby="el2"></div><div id="el2" hidden><span id="el3" hidden>hello</span></div></div>',
+	);
+	expect(getAccname(hiddenRoot.childElements[0]!, '1.2')).toBe('hello');
+	// Example 2: the referenced node is not hidden, so its hidden descendant is not
+	const visibleRoot = c(
+		'<div><div id="el1" role="button" aria-labelledby="el2"></div><div id="el2"><span id="el3" hidden>hello</span></div></div>',
+	);
+	expect(getAccname(visibleRoot.childElements[0]!, '1.2')).toBe('');
+	const mixed = c(
+		'<div><button aria-labelledby="l"></button><div id="l">Save<span aria-hidden="true">x</span></div></div>',
+	);
+	expect(getAccname(mixed.childElements[0]!, '1.2')).toBe('Save');
+});
+
+test('A hidden embedded control contributes nothing', () => {
+	expect(
+		getAccname(
+			c('<label for="c"><input id="c" type="checkbox">Flash <input type="text" value="5" hidden> times</label>')
+				.childElements[0]!,
+			'1.2',
+		),
+	).toBe('Flash times');
+});
+
+test('aria-labelledby of an embedded control comes before its value, and aria-label does not', () => {
+	const doc = c(
+		'<div><div role="checkbox" aria-checked="false">Flash <input type="text" value="5" aria-labelledby="n"> times <input type="text" value="9" aria-label="nine"></div><span id="n">five</span></div>',
+	);
+	expect(getAccname(doc.childElements[0]!, '1.2')).toBe('Flash five times 9');
+});
+
+test.each([
+	['<label for="i"><svg><desc>A floppy disk</desc></svg>Save</label>', 'Save'],
+	['<label for="i"><svg role="none"><title>T</title></svg>Save</label>', 'Save'],
+	['<label for="i"><span aria-hidden="true">x</span>Save</label>', 'Save'],
+	['<label for="i">Flash <input type="text" value="5"> times</label>', 'Flash 5 times'],
+])('Label text of %s', (label, name) => {
+	const doc = c(`<div><input id="i" type="checkbox">${label}</div>`);
+	expect(getAccname(doc.childElements[0]!, '1.2')).toBe(name);
+});
+
+describe('Issues', () => {
+	test('#1478', () => {
+		expect(getAccname(c('<input placeholder=" placeholder text " />'), '1.2')).toBe('placeholder text');
+	});
 });

@@ -21,11 +21,11 @@ function mockElement(localName: string, tagNameKind?: Kind): SelectorElement {
 		namespaceURI: 'http://www.w3.org/1999/xhtml',
 		classList: { contains: () => false },
 		attributes: [],
-		parentNode: null,
+		parent: null,
 		parentElement: null,
-		previousElementSibling: null,
+		prevElementSibling: null,
 		nextElementSibling: null,
-		children: [],
+		childElements: [],
 		...(tagNameKind === undefined ? {} : { tagNameKind }),
 	} as unknown as SelectorElement;
 }

@@ -153,7 +153,7 @@ export function toPositionedNodes(inspected: readonly InspectedNode[]): readonly
 		}),
 		attributes: node.attributes,
 		parentElement: null,
-		children: [],
+		childElements: [],
 		startLine: node.startLine,
 		startCol: node.startCol,
 	}));
@@ -164,7 +164,7 @@ export function toPositionedNodes(inspected: readonly InspectedNode[]): readonly
 			continue;
 		}
 		target.parentElement = node.parentElement === null ? null : (nodes[node.parentElement] ?? null);
-		target.children = node.children.map(child => nodes[child]).filter(child => child !== undefined);
+		target.childElements = node.children.map(child => nodes[child]).filter(child => child !== undefined);
 	}
 
 	return nodes;

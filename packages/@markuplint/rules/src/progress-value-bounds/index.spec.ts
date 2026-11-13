@@ -79,7 +79,7 @@ test('[progress-value-bounds-valid-009] progress with only max attribute (no val
 });
 
 test('[progress-value-bounds-parser-001] pretender without `as` attribute is skipped', async () => {
-	// pretenderContext.type === 'pretender' && !hasAttribute('as'): attributes are unknown
+	// pretenderContext.type === 'pretender' && !hasAttr('as'): attributes are unknown
 	// until the component is `as`-pinned, so bounds cannot be enforced.
 	const { violations } = await mlRuleTest(rule, '<MyProgress value="10" max="5">10 of 5</MyProgress>', {
 		parser: {

@@ -1,10 +1,7 @@
 import type { MLDocument } from './document.js';
-import type { MLElement } from './element.js';
 import type { MarkuplintPreprocessorBlockType } from './types.js';
 import type { MLASTPreprocessorSpecificBlock, MLASTBlockBehavior } from '@markuplint/ml-ast';
 import type { PlainData, RuleConfigValue } from '@markuplint/ml-config';
-
-import { after, before, remove, replaceWith } from '../manipulations/child-node-methods.js';
 
 import { MLNode } from './node.js';
 
@@ -14,7 +11,7 @@ import { MLNode } from './node.js';
  * loops (`each`), and other preprocessor directives that are not part of standard HTML.
  *
  * Serves as the bridge between template syntax and HTML content model
- * validation. `isTransparent` is always true, so `parentNode` walks through
+ * validation. `isTransparent` is always true, so `parent` walks through
  * every preprocessor block and an element inside a block keeps the element
  * that contains the block as its parent.
  *
@@ -38,7 +35,7 @@ export class MLBlock<T extends RuleConfigValue, O extends PlainData = undefined>
 	readonly blockBehavior: MLASTBlockBehavior | null;
 
 	/**
-	 * Whether `parentNode` walks through this block. Always true, so an
+	 * Whether `parent` walks through this block. Always true, so an
 	 * element inside the block keeps the element that contains the block as
 	 * its parent. This flag does not decide `childNodes` flattening: only
 	 * fragments and blocks whose `blockBehavior.type` is `each` or `end` are
@@ -59,7 +56,7 @@ export class MLBlock<T extends RuleConfigValue, O extends PlainData = undefined>
 		document: MLDocument<T, O>,
 	) {
 		super(astNode, document, astNode.isFragment);
-		// `parentNode` walks through every block. `childNodes` flattens only
+		// `parent` walks through every block. `childNodes` flattens only
 		// `each` and `end`; see the class comment.
 		this.isTransparent = true;
 		this.blockBehavior = astNode.blockBehavior;
@@ -81,42 +78,5 @@ export class MLBlock<T extends RuleConfigValue, O extends PlainData = undefined>
 	 */
 	get nodeType(): MarkuplintPreprocessorBlockType {
 		return this.MARKUPLINT_PREPROCESSOR_BLOCK;
-	}
-
-	/**
-	 * @implements DOM API: `ChildNode`
-	 */
-	after(
-		// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
-		...nodes: (string | MLElement<any, any>)[]
-	): void {
-		after(this, ...nodes);
-	}
-
-	/**
-	 * @implements DOM API: `ChildNode`
-	 */
-	before(
-		// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
-		...nodes: (string | MLElement<any, any>)[]
-	): void {
-		before(this, ...nodes);
-	}
-
-	/**
-	 * @implements DOM API: `ChildNode`
-	 */
-	remove(): void {
-		remove(this);
-	}
-
-	/**
-	 * @implements DOM API: `ChildNode`
-	 */
-	replaceWith(
-		// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
-		...nodes: (string | MLElement<any, any>)[]
-	): void {
-		replaceWith(this, ...nodes);
 	}
 }

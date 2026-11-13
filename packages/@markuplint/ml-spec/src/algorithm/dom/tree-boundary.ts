@@ -5,7 +5,7 @@ import { XHTML_NAMESPACE } from '../../const/dom.js';
  *
  * The parent of an element as the DOM sees it, for the algorithms that walk up from an element.
  *
- * The algorithms of this package are written against the DOM `Element`, where `parentElement`
+ * The algorithms of this package are written against the DOM `Element` model, where `parentElement`
  * stops at the boundary of a tree: the parent element of a node whose parent is not an element
  * (a document fragment, such as the content of a `template` element or a shadow root) is `null`.
  * `@markuplint/ml-core` hands them its own elements, whose `parentElement` is the syntactical
@@ -61,13 +61,11 @@ import { XHTML_NAMESPACE } from '../../const/dom.js';
 const DOCUMENT_FRAGMENT_NODE = 11;
 
 /**
- * What the helpers read of an element: the DOM `Element`, and `MLElement` of `@markuplint/ml-core`.
- * An element without `getRootNode` (an adapter that has no notion of a tree boundary) is in one
- * tree with its parent element.
+ * What the helpers read of an element: `SpecElement`, which `MLElement` of `@markuplint/ml-core` satisfies.
  */
 type TreeElement = {
 	readonly parentElement: unknown;
-	getRootNode?(): unknown;
+	getRootNode(): unknown;
 };
 
 /**
@@ -79,8 +77,8 @@ type TreeElement = {
  */
 type FlatTreeElement<P extends TreeElement> = {
 	readonly parentElement: P | null;
-	getRootNode?(): unknown;
-	getFlatTreeSlot?(): P | null | undefined;
+	getRootNode(): unknown;
+	getFlatTreeSlot(): P | null | undefined;
 };
 
 /**
@@ -94,15 +92,11 @@ type FlatTreeElement<P extends TreeElement> = {
  */
 export function getTreeParentElement<P extends TreeElement>(el: {
 	readonly parentElement: P | null;
-	getRootNode?(): unknown;
+	getRootNode(): unknown;
 }): P | null {
 	const parent = el.parentElement;
 	if (!parent) {
 		return null;
-	}
-	// Without a tree on either side there is no boundary between them
-	if (!parent.getRootNode || !el.getRootNode) {
-		return parent;
 	}
 	return parent.getRootNode() === el.getRootNode() ? parent : null;
 }
@@ -118,7 +112,7 @@ export function getTreeParentElement<P extends TreeElement>(el: {
  * @returns The parent element or the shadow host, or `null` when the walk ends
  */
 export function getComposedParentElement<P extends TreeElement>(el: FlatTreeElement<P>): P | null {
-	const slot = el.getFlatTreeSlot?.();
+	const slot = el.getFlatTreeSlot();
 	if (slot !== undefined) {
 		return slot;
 	}
@@ -126,7 +120,7 @@ export function getComposedParentElement<P extends TreeElement>(el: FlatTreeElem
 	if (parent) {
 		return parent;
 	}
-	const root = el.getRootNode?.();
+	const root = el.getRootNode();
 	if (isShadowRoot<P>(root)) {
 		return root.host;
 	}
@@ -184,9 +178,8 @@ export function isSlotElement(el: { readonly localName: string; readonly namespa
  * @returns `true` for an element that is known not to be rendered
  * @see https://dom.spec.whatwg.org/#find-flattened-slotables
  */
-export function isNotRendered(el: object): boolean {
-	// The DOM `Element` has no `getFlatTreeSlot`: only the element of `@markuplint/ml-core` knows it
-	return (el as { getFlatTreeSlot?(): unknown }).getFlatTreeSlot?.() === null;
+export function isNotRendered(el: { getFlatTreeSlot(): unknown }): boolean {
+	return el.getFlatTreeSlot() === null;
 }
 
 /**
@@ -204,8 +197,8 @@ export function getAccessibilityParentElement<
 		readonly parentElement: E | null;
 		readonly localName: string;
 		readonly namespaceURI?: string | null;
-		getRootNode?(): unknown;
-		getFlatTreeSlot?(): E | null | undefined;
+		getRootNode(): unknown;
+		getFlatTreeSlot(): E | null | undefined;
 	},
 >(el: E): E | null {
 	let parent = getComposedParentElement(el);

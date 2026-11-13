@@ -87,7 +87,7 @@ fn v6_map_id_name_match_001() {
 }
 
 /// `ID` and `NAME` are the `id` and `name` attributes of an HTML element, as the DOM names
-/// them (TS `getAttributeNode()` asks `MLAttr#isNamedBy`, #4309).
+/// them (TS `getAttrNode()` asks `MLAttr#isNamedBy`, #4309).
 #[test]
 fn v6_map_id_name_match_002() {
     assert_eq!(

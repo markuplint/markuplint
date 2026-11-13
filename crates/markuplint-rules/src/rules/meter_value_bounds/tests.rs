@@ -313,7 +313,7 @@ fn v6_meter_value_bounds_003() {
     );
 }
 
-/// TS `getAttributeNode()` matches the attribute name as written (an upper-case `VALUE` is not
+/// TS `getAttrNode()` matches the attribute name as written (an upper-case `VALUE` is not
 /// found), while the element name is case-insensitive.
 #[test]
 fn v6_meter_value_bounds_004() {

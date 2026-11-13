@@ -1,3 +1,4 @@
+import type { SpecElement } from '../../types/spec-element.js';
 import type { MLMLSpec } from '../../types/index.js';
 
 import { getSelectorsByContentModelCategory } from './get-selectors-by-content-model-category.js';
@@ -14,7 +15,7 @@ import { getSelectorsByContentModelCategory } from './get-selectors-by-content-m
  */
 export function mayBeFocusable(
 	// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
-	el: Element,
+	el: SpecElement,
 	specs: MLMLSpec,
 ): boolean {
 	return [

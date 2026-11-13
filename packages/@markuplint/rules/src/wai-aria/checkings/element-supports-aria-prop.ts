@@ -100,7 +100,7 @@ export const checkingElementSupportsAriaProp: AttrChecker<
 			for (const ignore of elAriaSpec.properties.without) {
 				if (ignore.name === attr.nameKey) {
 					const hasNativeAttr =
-						ignore.alt?.method === 'set-attr' && attr.ownerElement.hasAttribute(ignore.alt.target);
+						ignore.alt?.method === 'set-attr' && attr.ownerElement.hasAttr(ignore.alt.target);
 
 					return {
 						scope: attr,

@@ -193,7 +193,7 @@ fn collect_ids(
         if rule_config.disabled {
             continue;
         }
-        // TS `getAttributeNode('id')`: an attribute that the framework does not output is not one
+        // TS `getAttrNode('id')`: an attribute that the framework does not output is not one
         let Some(html_attr) = markuplint_dom::helpers::get_attr_node_from_el(el, "id") else {
             continue;
         };

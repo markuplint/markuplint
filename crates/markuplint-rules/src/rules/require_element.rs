@@ -53,8 +53,7 @@ impl Rule for RequireElement {
                         .and_then(|&first| arena.get(first))
                         .and_then(DomNode::base)
                         .and_then(|base| base.raw.chars().next())
-                        .map(String::from)
-                        .unwrap_or_default();
+                        .map_or_default(String::from);
                     violations.push(Violation {
                         spec_conformance: None,
                         rule_id: self.id().to_string(),

@@ -69,7 +69,7 @@ export function getElementSpecificName(
 			return handleSummary(el, resolver, visited, computeFn, inLabelledbyTraversal);
 		}
 		case 'a': {
-			if (el.hasAttribute('href')) {
+			if (el.hasAttr('href')) {
 				return handleAnchor(el, resolver, visited, computeFn, inLabelledbyTraversal);
 			}
 			return null;
@@ -102,12 +102,12 @@ function handleLabelableWithTitle(
 		return labelResult;
 	}
 
-	const title = el.getAttribute('title');
+	const title = el.getAttrValue('title');
 	if (title?.trim()) {
 		return makeResult(title, 'title');
 	}
 
-	const placeholder = el.getAttribute('placeholder');
+	const placeholder = el.getAttrValue('placeholder');
 	if (placeholder?.trim()) {
 		return makeResult(placeholder, 'placeholder');
 	}
@@ -171,12 +171,12 @@ function handleInputButton(
 		return labelResult;
 	}
 
-	const value = el.getAttribute('value');
+	const value = el.getAttrValue('value');
 	if (value?.trim()) {
 		return makeResult(value, 'value');
 	}
 
-	const title = el.getAttribute('title');
+	const title = el.getAttrValue('title');
 	if (title?.trim()) {
 		return makeResult(title, 'title');
 	}
@@ -209,12 +209,12 @@ function handleInputImage(
 		return labelResult;
 	}
 
-	const alt = el.getAttribute('alt');
+	const alt = el.getAttrValue('alt');
 	if (alt?.trim()) {
 		return makeResult(alt, 'alt');
 	}
 
-	const title = el.getAttribute('title');
+	const title = el.getAttrValue('title');
 	if (title?.trim()) {
 		return makeResult(title, 'title');
 	}
@@ -244,7 +244,7 @@ function handleButton(
 		return makeResult(content, 'content');
 	}
 
-	const title = el.getAttribute('title');
+	const title = el.getAttrValue('title');
 	if (title?.trim()) {
 		return makeResult(title, 'title');
 	}
@@ -272,7 +272,7 @@ function handleFieldset(
 		}
 	}
 
-	const title = el.getAttribute('title');
+	const title = el.getAttrValue('title');
 	if (title?.trim()) {
 		return makeResult(title, 'title');
 	}
@@ -300,7 +300,7 @@ function handleTable(
 		}
 	}
 
-	const title = el.getAttribute('title');
+	const title = el.getAttrValue('title');
 	if (title?.trim()) {
 		return makeResult(title, 'title');
 	}
@@ -315,12 +315,12 @@ function handleTable(
  * @see https://www.w3.org/TR/html-aam/#el-img
  */
 function handleImg(el: AccnameElement): AccnameResult | null {
-	if (el.hasAttribute('alt')) {
-		const alt = el.getAttribute('alt') ?? '';
+	if (el.hasAttr('alt')) {
+		const alt = el.getAttrValue('alt') ?? '';
 		return makeResult(alt, alt.trim() ? 'alt' : null);
 	}
 
-	const title = el.getAttribute('title');
+	const title = el.getAttrValue('title');
 	if (title?.trim()) {
 		return makeResult(title, 'title');
 	}
@@ -334,12 +334,12 @@ function handleImg(el: AccnameElement): AccnameResult | null {
  * @see https://www.w3.org/TR/html-aam/#el-area
  */
 function handleArea(el: AccnameElement): AccnameResult | null {
-	const alt = el.getAttribute('alt');
+	const alt = el.getAttrValue('alt');
 	if (alt?.trim()) {
 		return makeResult(alt, 'alt');
 	}
 
-	const title = el.getAttribute('title');
+	const title = el.getAttrValue('title');
 	if (title?.trim()) {
 		return makeResult(title, 'title');
 	}
@@ -354,7 +354,7 @@ function handleArea(el: AccnameElement): AccnameResult | null {
  * @see https://www.w3.org/TR/html-aam/#el-figure
  */
 function handleFigure(el: AccnameElement): AccnameResult | null {
-	const title = el.getAttribute('title');
+	const title = el.getAttrValue('title');
 	if (title?.trim()) {
 		return makeResult(title, 'title');
 	}
@@ -379,7 +379,7 @@ function handleSummary(
 		return makeResult(content, 'content');
 	}
 
-	const title = el.getAttribute('title');
+	const title = el.getAttrValue('title');
 	if (title?.trim()) {
 		return makeResult(title, 'title');
 	}
@@ -404,7 +404,7 @@ function handleAnchor(
 		return makeResult(content, 'content');
 	}
 
-	const title = el.getAttribute('title');
+	const title = el.getAttrValue('title');
 	if (title?.trim()) {
 		return makeResult(title, 'title');
 	}
@@ -417,7 +417,7 @@ function handleAnchor(
  * @see https://www.w3.org/TR/html-aam/#el-iframe
  */
 function handleTitleOnly(el: AccnameElement): AccnameResult | null {
-	const title = el.getAttribute('title');
+	const title = el.getAttrValue('title');
 	if (title?.trim()) {
 		return makeResult(title, 'title');
 	}

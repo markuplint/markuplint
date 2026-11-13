@@ -1,3 +1,4 @@
+import type { SpecElement } from '../../types/spec-element.js';
 import type { ARIAAttributeValue, ARIAProperty, ARIAVersion, MLMLSpec } from '../../types/index.js';
 
 import { ariaSpecs as _ariaSpecs } from './aria-specs.js';
@@ -41,7 +42,7 @@ type ARIAPropReferenceType = 'default' | 'html-attr' | 'aria-attr';
 export function getComputedAriaProps(
 	specs: MLMLSpec,
 	// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
-	el: Element,
+	el: SpecElement,
 	version: ARIAVersion,
 ): ARIAProps {
 	const ariaSpecs = _ariaSpecs(specs, version);
@@ -60,8 +61,8 @@ export function getComputedAriaProps(
 			continue;
 		}
 
-		if (el.hasAttribute(spec.name)) {
-			const attrValue = el.getAttribute(spec.name);
+		if (el.hasAttr(spec.name)) {
+			const attrValue = el.getAttrValue(spec.name);
 			if (attrValue && isValidAriaValue(spec, role.name, attrValue, spec.enum)) {
 				props[ownedProp.name] = {
 					name: ownedProp.name,
@@ -75,10 +76,10 @@ export function getComputedAriaProps(
 		}
 
 		const equivalentHtmlAttr = spec.equivalentHtmlAttrs?.[0];
-		if (equivalentHtmlAttr && el.hasAttribute(equivalentHtmlAttr.htmlAttrName)) {
+		if (equivalentHtmlAttr && el.hasAttr(equivalentHtmlAttr.htmlAttrName)) {
 			const value =
 				equivalentHtmlAttr.value === null
-					? el.getAttribute(equivalentHtmlAttr.htmlAttrName)
+					? el.getAttrValue(equivalentHtmlAttr.htmlAttrName)
 					: equivalentHtmlAttr.value;
 			if (value != null) {
 				props[ownedProp.name] = {

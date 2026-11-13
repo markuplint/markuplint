@@ -46,7 +46,7 @@ impl Rule for RequireH1 {
         // source's first character. Reading it from the document's raw text keeps whitespace
         // that the WHATWG tree builder drops before `<html>`.
         let raw = match arena.document() {
-            Some(DomNode::Document(doc)) => doc.raw.chars().next().map(String::from).unwrap_or_default(),
+            Some(DomNode::Document(doc)) => doc.raw.chars().next().map_or_default(String::from),
             _ => String::new(),
         };
         let message = tr.finish(&tr.t(

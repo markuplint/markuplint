@@ -22,7 +22,7 @@ function element(tag: string, classes: readonly string[], parent: ScopedNode | n
 		},
 		attributes: [],
 		parentElement: parent,
-		children: [],
+		childElements: [],
 		startLine: 2,
 		startCol: 1,
 	};
@@ -70,7 +70,7 @@ describe('the scope written by --suppress is read back as the element it was mad
 		const parent = element('div', [], null);
 		const first = element('Tabs.Root', [], parent);
 		const second = element('Tabs.Root', [], parent);
-		(parent as { children: Iterable<ScopedNode> }).children = [first, second];
+		(parent as { childElements: Iterable<ScopedNode> }).childElements = [first, second];
 		expect(generateUniqueSelector(second)).toBe(String.raw`div > Tabs\.Root:nth-of-type(2)`);
 		expect(roundTrip(second, first)).toStrictEqual({ own: true, other: false });
 	});
@@ -163,7 +163,7 @@ describe('the scope written by --suppress is read back as the element it was mad
 	it.each(['a > b', 'a >', '> b', '>'])('an ancestor whose id is %j, and whose descendant is the violation', id => {
 		const parent = element('div', [], div, id);
 		const child = element('p', [], parent);
-		(parent as { children: Iterable<ScopedNode> }).children = [child];
+		(parent as { childElements: Iterable<ScopedNode> }).childElements = [child];
 		expect(roundTrip(child, element('p', [], element('div', [], div, 'a')))).toStrictEqual({
 			own: true,
 			other: false,
@@ -173,7 +173,7 @@ describe('the scope written by --suppress is read back as the element it was mad
 	it('an ancestor whose class ends with `:nth-of-type(n)`, and whose descendant is the violation', () => {
 		const parent = element('div', ['a:nth-of-type(2)'], div);
 		const child = element('p', [], parent);
-		(parent as { children: Iterable<ScopedNode> }).children = [child];
+		(parent as { childElements: Iterable<ScopedNode> }).childElements = [child];
 		expect(generateUniqueSelector(child)).toBe(String.raw`div.a\:nth-of-type\(2\) > p`);
 		expect(roundTrip(child, element('p', [], element('div', ['a'], div)))).toStrictEqual({
 			own: true,
@@ -205,7 +205,7 @@ describe('the scope written by --suppress is read back as the element it was mad
 		const parent = element('div', [], null);
 		const first = element('foo\\', [], parent);
 		const second = element('foo\\', [], parent);
-		(parent as { children: Iterable<ScopedNode> }).children = [first, second];
+		(parent as { childElements: Iterable<ScopedNode> }).childElements = [first, second];
 		expect(generateUniqueSelector(second)).toBe(String.raw`div > foo\\:nth-of-type(2)`);
 		expect(roundTrip(second, first)).toStrictEqual({ own: true, other: false });
 	});
@@ -214,7 +214,7 @@ describe('the scope written by --suppress is read back as the element it was mad
 		const parent = element('div', [], null);
 		const first = element('foo:nth-of-type(2)', [], parent);
 		const second = element('foo:nth-of-type(2)', [], parent);
-		(parent as { children: Iterable<ScopedNode> }).children = [first, second];
+		(parent as { childElements: Iterable<ScopedNode> }).childElements = [first, second];
 		expect(generateUniqueSelector(second)).toBe(String.raw`div > foo\:nth-of-type\(2\):nth-of-type(2)`);
 		expect(roundTrip(second, first)).toStrictEqual({ own: true, other: false });
 	});
@@ -224,7 +224,7 @@ describe('the scope written by --suppress is read back as the element it was mad
 		const first = element('foo', [], parent);
 		const second = element('foo', [], parent);
 		const nth = element('foo:nth-of-type(2)', [], parent);
-		(parent as { children: Iterable<ScopedNode> }).children = [first, second, nth];
+		(parent as { childElements: Iterable<ScopedNode> }).childElements = [first, second, nth];
 		expect(roundTrip(nth, second)).toStrictEqual({ own: true, other: false });
 	});
 });
@@ -260,7 +260,7 @@ describe('a scope written before the escape', () => {
 		const first = element('div', ['a'], parent);
 		const second = element('div', ['a'], parent);
 		const named = element('div', ['a:nth-of-type(2)'], parent);
-		(parent as { children: Iterable<ScopedNode> }).children = [first, second, named];
+		(parent as { childElements: Iterable<ScopedNode> }).childElements = [first, second, named];
 		expect(isUsed('div.a:nth-of-type(2)', second)).toBe(true);
 		expect(isUsed('div.a:nth-of-type(2)', first)).toBe(false);
 		expect(isUsed('div.a:nth-of-type(2)', named)).toBe(false);

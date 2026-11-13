@@ -427,7 +427,7 @@ fn set_if_higher(
 }
 
 fn collect_children(arena: &DomArena, parent_id: NodeId) -> Vec<NodeId> {
-    arena.children_of(parent_id).map(<[NodeId]>::to_vec).unwrap_or_default()
+    arena.children_of(parent_id).map_or_default(<[NodeId]>::to_vec)
 }
 
 fn collect_descendants(arena: &DomArena, parent_id: NodeId) -> Vec<NodeId> {

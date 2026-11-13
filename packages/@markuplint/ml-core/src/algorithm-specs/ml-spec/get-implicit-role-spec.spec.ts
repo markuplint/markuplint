@@ -1,14 +1,15 @@
-import type { ARIAVersion } from '../../types/index.js';
+import type { ARIAVersion } from '@markuplint/ml-spec';
 
 import specs from '@markuplint/html-spec';
 import { createSelector } from '@markuplint/selector';
-import { createJSDOMElement } from '@markuplint/test-tools';
 import { describe, test, expect } from 'vitest';
 
-import { getImplicitRole } from './get-implicit-role-spec.js';
+import { elementOf } from '../element-of.js';
+
+import { getImplicitRoleByTagName as getImplicitRole } from '@markuplint/ml-spec';
 
 function c(html: string, version: ARIAVersion, selector?: string) {
-	const el = createJSDOMElement(html, selector);
+	const el = elementOf(html, selector);
 	return getImplicitRole(
 		specs,
 		el.localName,
@@ -105,7 +106,7 @@ describe('getImplicitRole', () => {
 
 	test('the select element is told by the native matches() as well, which cannot evaluate :display-size()', () => {
 		const native = (html: string) => {
-			const el = createJSDOMElement(html);
+			const el = elementOf(html);
 			return getImplicitRole(specs, el.localName, el.namespaceURI, '1.2', selector => el.matches(selector));
 		};
 		expect(native('<select></select>')).toBe('combobox');

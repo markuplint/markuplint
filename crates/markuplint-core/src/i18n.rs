@@ -268,8 +268,7 @@ impl<'a> Translator<'a> {
                 .parse::<usize>()
                 .ok()
                 .and_then(|n| keywords.get(n))
-                .map(Primitive::text)
-                .unwrap_or_default();
+                .map_or_default(Primitive::text);
             if no_translate.iter().any(|n| n == number) {
                 keyword
             } else {

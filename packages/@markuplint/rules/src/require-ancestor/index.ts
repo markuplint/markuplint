@@ -91,7 +91,7 @@ export default createRule({
  * has one. An element at the top of a file that is a fragment of a document (a partial, a component)
  * has none: where it is inserted is not known from the markup. What is rendered away between the
  * element and the top of the file is not a parent node: a block of a template language, which
- * `parentNode` (and so `parentElement`) walks through, and a fragment of JSX or a `template` with
+ * `parent` (and so `parentElement`) walks through, and a fragment of JSX or a `template` with
  * a directive ({@link isRenderedAway}).
  *
  * @template T - The rule configuration value type

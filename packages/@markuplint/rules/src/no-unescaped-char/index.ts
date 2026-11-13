@@ -58,7 +58,7 @@ export default createRule<boolean, Option>({
 			if (node.isBogus) {
 				return;
 			}
-			if (node.parentNode && ignoreParentElement.has(node.parentNode.nodeName.toLowerCase())) {
+			if (node.parent && ignoreParentElement.has(node.parent.nodeName.toLowerCase())) {
 				return;
 			}
 			const severity = node.rule.severity;

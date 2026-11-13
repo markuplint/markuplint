@@ -42,7 +42,7 @@ export function isInterElementWhitespace(data: string): boolean {
  * time, and the content model check accepts a block for the same reason. Text and
  * elements inside a conditional block count wherever the parser leaves them among
  * the siblings, as the content of the block is taken as present. A host that does
- * not give `previousSibling` (optional in {@link SelectorElement}) is judged by the
+ * not give `prevSibling` (optional in {@link SelectorElement}) is judged by the
  * elements alone.
  *
  * This sees the element's own parent, also inside a transparent element: the
@@ -65,10 +65,10 @@ export function isContentModelFirstChild(
 	// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
 	el: SelectorElement,
 ): boolean {
-	if (el.previousSibling === undefined) {
-		return el.previousElementSibling == null;
+	if (el.prevSibling === undefined) {
+		return el.prevElementSibling == null;
 	}
-	let prev = el.previousSibling;
+	let prev = el.prevSibling;
 	while (prev) {
 		if (prev.nodeType === ELEMENT_NODE) {
 			return false;
@@ -76,7 +76,7 @@ export function isContentModelFirstChild(
 		if (prev.nodeType === TEXT_NODE && !isInterElementWhitespace(prev.nodeValue ?? '')) {
 			return false;
 		}
-		prev = prev.previousSibling ?? null;
+		prev = prev.prevSibling ?? null;
 	}
 	return true;
 }

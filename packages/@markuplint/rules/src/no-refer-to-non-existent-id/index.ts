@@ -40,7 +40,7 @@ export default createRule({
 		}
 
 		for (const el of document.deepQuerySelectorAll('[id]')) {
-			const attr = el.getAttributeNode('id');
+			const attr = el.getAttrNode('id');
 			if (!attr) {
 				continue;
 			}

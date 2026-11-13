@@ -145,7 +145,7 @@ fn v6_input_list_references_datalist_001() {
 }
 
 /// `LIST` is the `list` attribute of an HTML element, as the DOM names it (TS
-/// `getAttributeNode()` asks `MLAttr#isNamedBy`, #4309).
+/// `getAttrNode()` asks `MLAttr#isNamedBy`, #4309).
 #[test]
 fn v6_input_list_references_datalist_002() {
     assert_eq!(

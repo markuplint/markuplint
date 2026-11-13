@@ -10,8 +10,9 @@
  * cross-specification behavior — so a split would create an artificial
  * boundary with no runtime benefit.
  *
- * The accessible name computation (`getAccname`) is implemented in-house with
- * no external dependency; this is intentional.
+ * The accessible name computation (`computeAccessibleName` and its steps) is implemented in-house with
+ * no external dependency; this is intentional. The elements are resolved by the host (`AccnameResolver`):
+ * `@markuplint/ml-core` is the only one.
  *
  * Versioning policy: the schemas and spec data structures are not part of
  * markuplint's public API surface. Changes to schemas, generated types, or
@@ -35,11 +36,13 @@ export { EMBEDDED_CONTROL_ROLES, isNativeEmbeddedControl } from './const/index.j
 
 // ARIA algorithms
 export * from './algorithm/aria/accname/index.js';
-export * from './algorithm/aria/accname-computation.js';
 export * from './algorithm/aria/get-computed-aria-props.js';
 export * from './algorithm/aria/get-computed-role.js';
 export * from './algorithm/aria/get-implicit-role.js';
+export { getImplicitRole as getImplicitRoleByTagName } from './algorithm/aria/get-implicit-role-spec.js';
 export * from './algorithm/aria/get-permitted-roles.js';
+export { getPermittedRoles as getPermittedRolesByTagName } from './algorithm/aria/get-permitted-roles-spec.js';
+export * from './algorithm/aria/matches-context-role.js';
 export * from './algorithm/aria/has-required-owned-elements.js';
 export * from './algorithm/aria/is-exposed.js';
 export * from './algorithm/aria/aria-specs.js';
@@ -75,3 +78,4 @@ export * from './types/index.js';
 export * from './types/aria.js';
 export * from './types/attributes.js';
 export * from './types/permitted-structures.js';
+export * from './types/spec-element.js';

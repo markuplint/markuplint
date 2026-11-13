@@ -24,9 +24,9 @@ export default createRule<boolean, null>({
 	async verify({ document, report, t }) {
 		await document.walkOn('Element', el => {
 			if (el.localName !== 'input') return;
-			if (el.pretenderContext?.type === 'pretender' && !el.hasAttribute('as')) return;
+			if (el.pretenderContext?.type === 'pretender' && !el.hasAttr('as')) return;
 
-			const listAttr = el.getAttributeNode('list');
+			const listAttr = el.getAttrNode('list');
 			if (!listAttr) return;
 			if (listAttr.isDynamicValue) return;
 

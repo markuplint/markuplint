@@ -34,7 +34,7 @@ function element(
 		},
 		attributes: attributes.map(({ name, value }) => ({ name, value })),
 		parentElement: null,
-		children: [],
+		childElements: [],
 		startLine: line,
 		startCol: col,
 	} as unknown as MutableNode;
@@ -162,7 +162,7 @@ describe('a scope that names an element whose name has a capital letter or a dig
 	/** Whether the violation of `target`, one of `children` of a `div`, is suppressed by the scope. */
 	function isSuppressedAmong(scope: string, children: readonly MutableNode[], target: MutableNode) {
 		const parent = node('div', 1);
-		parent.children = children;
+		parent.childElements = children;
 		for (const child of children) {
 			child.parentElement = parent;
 		}

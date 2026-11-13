@@ -24,7 +24,7 @@ export function findChildren(
 		return cached;
 	}
 
-	const children = [...el.children].filter(child => child.matches(selector));
+	const children = [...el.childElements].filter(child => child.matches(selector));
 
 	findCache[key] = children;
 	return children;

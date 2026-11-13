@@ -621,7 +621,7 @@ describe('T-3: custom isHidden function', () => {
 			children: [textNode('Hidden button')],
 		});
 		const resolver = createTestResolver({
-			isHiddenFn: target => target.getAttribute('style')?.includes('display: none') ?? false,
+			isHiddenFn: target => target.getAttrValue('style')?.includes('display: none') ?? false,
 		});
 		const result = computeAccessibleName(el, resolver);
 		expect(result.name).toBe('');
@@ -635,7 +635,7 @@ describe('T-3: custom isHidden function', () => {
 		});
 		const resolver = createTestResolver({
 			nameFromContent: new Set(['button']),
-			isHiddenFn: target => target.getAttribute('style')?.includes('display: none') ?? false,
+			isHiddenFn: target => target.getAttrValue('style')?.includes('display: none') ?? false,
 		});
 		const result = computeAccessibleName(el, resolver);
 		expect(result.name).toBe('Visible button');
@@ -655,7 +655,7 @@ describe('T-3: custom isHidden function', () => {
 		});
 		const resolver = createTestResolver({
 			nameFromContent: new Set(['h1']),
-			isHiddenFn: target => target.getAttribute('class') === 'sr-only',
+			isHiddenFn: target => target.getAttrValue('class') === 'sr-only',
 		});
 		const result = computeAccessibleName(el, resolver);
 		expect(result.name).toBe('visible');

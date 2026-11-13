@@ -28,7 +28,7 @@ export default createRule<boolean>({
 
 			for (const rowGroup of grid.rowGroups) {
 				for (const overflow of rowGroup.overflows) {
-					const rowSpan = overflow.cell.getAttributeNode('rowspan');
+					const rowSpan = overflow.cell.getAttrNode('rowspan');
 					if (!rowSpan) {
 						continue;
 					}

@@ -71,7 +71,7 @@ describe('pretenders: slot content (issue-4054)', () => {
 
 		const filled = slotContent.fill([...el.childNodes]);
 		expect(filled.map(node => node.localName)).toStrictEqual(['img', 'source']);
-		expect(filled[0].getAttribute('alt')).toBe('x');
+		expect(filled[0].getAttrValue('alt')).toBe('x');
 	});
 
 	test('the slot entry decides where the given children are placed', async () => {
@@ -124,7 +124,7 @@ describe('pretenders: slot content (issue-4054)', () => {
 		const { slotContent } = el.pretenderContext;
 		expect(el.localName).toBe('div');
 		expect(slotContent.wrapper.localName).toBe('p');
-		expect(slotContent.wrapper.getAttribute('class')).toBe('body');
+		expect(slotContent.wrapper.getAttrValue('class')).toBe('body');
 		expect(slotContent.wrapper.parentElement).toBe(el);
 	});
 

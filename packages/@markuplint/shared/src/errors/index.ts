@@ -6,7 +6,7 @@
  *
  * - **Tier 1 (Fatal)** — markuplint's own invariants are broken
  *   (`TypeError`, `ReferenceError`, `RangeError`, `SyntaxError` raised by
- *   markuplint's own code, `UnexpectedCallError`, or non-`Error` throws).
+ *   markuplint's own code, or non-`Error` throws).
  *   Continuing cannot produce trustworthy results, so these must never be
  *   caught, converted, or silenced; they propagate to the process boundary.
  * - **Tier 2 (Per-file recoverable)** — environmental or configuration
@@ -80,4 +80,3 @@ export { isModuleNotFoundError, missingPackageOf } from './module-not-found.js';
 export { ConfigParserError, ParserError, TargetParserError } from './parser-error.js';
 export type { ParserErrorInfo } from './parser-error.js';
 export { InvalidSelectorError } from './selector-error.js';
-export { UnexpectedCallError } from './unexpected-call-error.js';

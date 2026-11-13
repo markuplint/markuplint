@@ -54,7 +54,7 @@ export function isLazyLoading(
 	// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
 	img: Element<boolean>,
 ): boolean | null {
-	const loading = img.getAttributeNode('loading');
+	const loading = img.getAttrNode('loading');
 	if (loading?.isDynamicValue || (!loading && img.hasSpreadAttr)) {
 		return null;
 	}
@@ -99,7 +99,7 @@ export function isAutoSizes(
 	// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
 	img: Element<boolean>,
 ): boolean | null {
-	const sizes = img.getAttributeNode('sizes');
+	const sizes = img.getAttrNode('sizes');
 	if (sizes?.isDynamicValue || (!sizes && img.hasSpreadAttr)) {
 		return null;
 	}

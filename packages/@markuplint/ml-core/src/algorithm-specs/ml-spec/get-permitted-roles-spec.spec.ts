@@ -1,14 +1,15 @@
-import type { ARIAVersion } from '../../types/index.js';
+import type { ARIAVersion } from '@markuplint/ml-spec';
 
 import specs from '@markuplint/html-spec';
 import { createSelector } from '@markuplint/selector';
-import { createJSDOMElement } from '@markuplint/test-tools';
 import { describe, test, expect } from 'vitest';
 
-import { getPermittedRoles } from './get-permitted-roles-spec.js';
+import { elementOf } from '../element-of.js';
+
+import { getPermittedRolesByTagName as getPermittedRoles } from '@markuplint/ml-spec';
 
 function c(html: string, version: ARIAVersion, selector?: string) {
-	const el = createJSDOMElement(html, selector);
+	const el = elementOf(html, selector);
 	const roles = getPermittedRoles(
 		specs,
 		el.localName,

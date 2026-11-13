@@ -1,15 +1,12 @@
 import specs from '@markuplint/html-spec';
-import { createSelector } from '@markuplint/selector';
-import { createJSDOMElement } from '@markuplint/test-tools';
 import { describe, test, expect } from 'vitest';
 
-import { getImplicitRole } from './get-implicit-role.js';
+import { elementOf } from '../element-of.js';
+
+import { getImplicitRole } from '@markuplint/ml-spec';
 
 function _(html: string, selector?: string) {
-	return createJSDOMElement(html, selector, function (selector) {
-		// JSDOM supports no level 4 selectors yet.
-		return createSelector(selector, specs).match(this) !== false;
-	});
+	return elementOf(html, selector);
 }
 
 describe('1.2', () => {

@@ -1,75 +1,14 @@
 import type { MLAttr } from './attr.js';
 import type { PlainData, RuleConfigValue } from '@markuplint/ml-config';
 
-import { UnexpectedCallError } from '@markuplint/shared';
-
-export class MLNamedNodeMap<T extends RuleConfigValue, O extends PlainData = undefined>
-	extends Array<MLAttr<T, O>>
-	implements NamedNodeMap
-{
+export class MLNamedNodeMap<T extends RuleConfigValue, O extends PlainData = undefined> extends Array<MLAttr<T, O>> {
 	getNamedItem(qualifiedName: string): MLAttr<T, O> | null {
 		// An attribute that the framework does not output (`MLAttr#isAbsent`) is not found, as the DOM has none
 		return this.find(attr => !attr.isAbsent && attr.isNamedBy(qualifiedName)) ?? null;
 	}
 
-	/**
-	 * **IT THROWS AN ERROR WHEN CALLING THIS.**
-	 *
-	 * @unsupported
-	 * @implements DOM API: `NamedNodeMap`
-	 */
-	getNamedItemNS(namespace: string | null, localName: string): Attr | null {
-		throw new UnexpectedCallError('Not supported "getNamedItemNS" method');
-	}
-
 	item(index: number): MLAttr<T, O> | null {
 		return this[index] ?? null;
-	}
-
-	/**
-	 * **IT THROWS AN ERROR WHEN CALLING THIS.**
-	 *
-	 * @unsupported
-	 * @implements DOM API: `NamedNodeMap`
-	 */
-	removeNamedItem(qualifiedName: string): MLAttr<T, O> {
-		throw new UnexpectedCallError('Not supported "removeNamedItem" method');
-	}
-
-	/**
-	 * **IT THROWS AN ERROR WHEN CALLING THIS.**
-	 *
-	 * @unsupported
-	 * @implements DOM API: `NamedNodeMap`
-	 */
-	removeNamedItemNS(namespace: string | null, localName: string): MLAttr<T, O> {
-		throw new UnexpectedCallError('Not supported "removeNamedItemNS" method');
-	}
-
-	/**
-	 * **IT THROWS AN ERROR WHEN CALLING THIS.**
-	 *
-	 * @unsupported
-	 * @implements DOM API: `NamedNodeMap`
-	 */
-	setNamedItem(
-		// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
-		attr: MLAttr<T, O>,
-	): MLAttr<T, O> | null {
-		throw new UnexpectedCallError('Not supported "setNamedItem" method');
-	}
-
-	/**
-	 * **IT THROWS AN ERROR WHEN CALLING THIS.**
-	 *
-	 * @unsupported
-	 * @implements DOM API: `NamedNodeMap`
-	 */
-	setNamedItemNS(
-		// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
-		attr: MLAttr<T, O>,
-	): MLAttr<T, O> | null {
-		throw new UnexpectedCallError('Not supported "setNamedItemNS" method');
 	}
 }
 

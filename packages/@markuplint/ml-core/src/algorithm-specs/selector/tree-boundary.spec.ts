@@ -1,14 +1,9 @@
 // @ts-nocheck
 
-import { JSDOM } from 'jsdom';
-import { describe, test, expect, beforeEach } from 'vitest';
+import { Selector } from '@markuplint/selector';
+import { describe, test, expect } from 'vitest';
 
-import { Selector } from './selector.js';
-
-beforeEach(() => {
-	const dom = new JSDOM();
-	globalThis.Element = dom.window.Element;
-});
+import { elementOf } from '../element-of.js';
 
 /**
  * Wraps an element of a plain DOM so that it tells what a host with trees of its own tells: the
@@ -31,11 +26,7 @@ function withMembers(el: Element, members: Record<string, unknown>) {
 }
 
 function pOf(html: string) {
-	const el = JSDOM.fragment(html).querySelector('p');
-	if (!el) {
-		throw new Error('An element is not created');
-	}
-	return el;
+	return elementOf(html, 'p');
 }
 
 describe('treeParentElement', () => {
@@ -74,7 +65,7 @@ describe('treeParentElement', () => {
 
 describe('isHTMLTemplateElement', () => {
 	test(':has does not look into the children of an element that has a tree of their own', () => {
-		const section = JSDOM.fragment('<section><p></p></section>').querySelector('section');
+		const section = elementOf('<section><p></p></section>', 'section');
 		expect(new Selector('section:has(p)').match(section) !== false).toBe(true);
 		expect(new Selector('section:has(p)').match(withMembers(section, { isHTMLTemplateElement: true }))).toBe(false);
 	});

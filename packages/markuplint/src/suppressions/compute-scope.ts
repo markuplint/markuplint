@@ -40,7 +40,7 @@ export interface ScopedNode {
 	readonly classList: Iterable<string> & { contains(className: string): boolean };
 	readonly attributes: Iterable<{ readonly name: string; readonly value: string }>;
 	readonly parentElement: ScopedNode | null;
-	readonly children: Iterable<ScopedNode>;
+	readonly childElements: Iterable<ScopedNode>;
 }
 
 /**
@@ -445,7 +445,7 @@ function buildSegmentWithNth(node: ScopedNode): string {
 	// Count same-tag siblings and find this node's position
 	let sameTagCount = 0;
 	let position = 0;
-	for (const sibling of parent.children) {
+	for (const sibling of parent.childElements) {
 		if (sibling.localName === node.localName) {
 			sameTagCount++;
 			if (sibling === node) {

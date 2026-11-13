@@ -24,7 +24,7 @@ export default createRule({
 				return;
 			}
 
-			const roleAttr = el.getAttributeNode('role');
+			const roleAttr = el.getAttrNode('role');
 			const propAttrs = getAriaAttrs(el);
 			const ariaAttrs = new Collection(roleAttr, ...propAttrs);
 

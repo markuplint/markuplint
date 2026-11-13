@@ -1,12 +1,49 @@
-// @ts-nocheck -- assigns jsdom's `Element` onto `globalThis` and passes DOM nodes where `SelectorNode` is expected
+import type { SelectorElement } from './types.js';
 
 import debug from 'debug';
-import { JSDOM } from 'jsdom';
 import parser from 'postcss-selector-parser';
-import { afterEach, beforeEach, describe, expect, test, vi } from 'vitest';
+import { afterEach, describe, expect, test, vi } from 'vitest';
 
 import { log } from './debug.js';
 import { Selector } from './selector.js';
+
+const XHTML = 'http://www.w3.org/1999/xhtml';
+
+/**
+ * An element of a tree that the spec builds by hand: `selector` reads the tree through `SelectorElement`.
+ */
+function elementOf(html: string, picked?: string): SelectorElement {
+	const tags = [...html.matchAll(/<([a-z]+)>/g)].map(m => m[1]!);
+	let parent: SelectorElement | null = null;
+	let last: SelectorElement | null = null;
+	for (const tag of tags) {
+		const el: SelectorElement & { childElements: SelectorElement[] } = {
+			nodeType: 1,
+			nodeName: tag.toUpperCase(),
+			localName: tag,
+			id: '',
+			namespaceURI: XHTML,
+			classList: { contains: () => false },
+			attributes: [],
+			parent,
+			parentElement: parent,
+			prevElementSibling: null,
+			nextElementSibling: null,
+			childElements: [],
+			getAccessibleName: () => '',
+		};
+		(parent as (SelectorElement & { childElements: SelectorElement[] }) | null)?.childElements.push(el);
+		parent = el;
+		last = el;
+		if (picked === tag) {
+			return el;
+		}
+	}
+	if (!last) {
+		throw new Error('An element is not created');
+	}
+	return last;
+}
 
 function written(write: { mock: { calls: unknown[][] } }) {
 	return write.mock.calls.map(([chunk]) => String(chunk)).join('');
@@ -25,14 +62,10 @@ function nodeToStringOwner() {
 }
 
 describe('Selector debug logging', () => {
-	beforeEach(() => {
-		globalThis.Element = new JSDOM().window.Element;
-	});
-
 	afterEach(() => {
 		debug.disable();
 		// `debug` keeps `enabled = null` as "no override"; any other value, `undefined` included, pins the logger.
-		log.enabled = null;
+		(log as { enabled: boolean | null }).enabled = null;
 		vi.restoreAllMocks();
 	});
 
@@ -40,7 +73,7 @@ describe('Selector debug logging', () => {
 		debug.disable();
 		const write = vi.spyOn(process.stderr, 'write').mockImplementation(() => true);
 		const selector = new Selector('section div');
-		const el = JSDOM.fragment('<section><div></div></section>').firstChild.firstChild;
+		const el = elementOf('<section><div></div></section>', 'div');
 		const original = nodeToStringOwner().toString;
 		const toString = vi.spyOn(nodeToStringOwner(), 'toString').mockImplementation(original);
 
@@ -54,7 +87,7 @@ describe('Selector debug logging', () => {
 	test('emits the ruleset and result messages once the logger is enabled after import', () => {
 		const write = vi.spyOn(process.stderr, 'write').mockImplementation(() => true);
 		debug.enable('selector*');
-		const el = JSDOM.fragment('<div></div>').firstChild;
+		const el = elementOf('<div></div>');
 
 		const result = new Selector('div').match(el);
 
@@ -66,7 +99,7 @@ describe('Selector debug logging', () => {
 	test('follows a partial namespace pattern instead of treating all three loggers alike', () => {
 		const write = vi.spyOn(process.stderr, 'write').mockImplementation(() => true);
 		debug.enable('selector:result');
-		const el = JSDOM.fragment('<div></div>').firstChild;
+		const el = elementOf('<div></div>');
 
 		new Selector('div').match(el);
 
@@ -80,7 +113,7 @@ describe('Selector debug logging', () => {
 	test('enables only the selector logger when the pattern names just that namespace', () => {
 		const write = vi.spyOn(process.stderr, 'write').mockImplementation(() => true);
 		debug.enable('selector:selector');
-		const el = JSDOM.fragment('<div></div>').firstChild;
+		const el = elementOf('<div></div>');
 
 		new Selector('div').match(el);
 
@@ -92,7 +125,7 @@ describe('Selector debug logging', () => {
 	test('honours a skip pattern', () => {
 		const write = vi.spyOn(process.stderr, 'write').mockImplementation(() => true);
 		debug.enable('selector*,-selector:result');
-		const el = JSDOM.fragment('<div></div>').firstChild;
+		const el = elementOf('<div></div>');
 
 		new Selector('div').match(el);
 
@@ -102,7 +135,7 @@ describe('Selector debug logging', () => {
 
 	test('recomputes the flags when the pattern is replaced between two matches', () => {
 		const write = vi.spyOn(process.stderr, 'write').mockImplementation(() => true);
-		const el = JSDOM.fragment('<div></div>').firstChild;
+		const el = elementOf('<div></div>');
 		debug.enable('selector:result');
 		new Selector('div').match(el);
 		expect(written(write)).toContain('selector:result');
@@ -120,7 +153,7 @@ describe('Selector debug logging', () => {
 	// `debug.enable()` / `debug.disable()` replace, so pinning `logger.enabled` by hand is not seen in between.
 	test('does not see a manual `enabled` override until the next enable() or disable()', () => {
 		const write = vi.spyOn(process.stderr, 'write').mockImplementation(() => true);
-		const el = JSDOM.fragment('<div></div>').firstChild;
+		const el = elementOf('<div></div>');
 		debug.disable();
 		new Selector('div').match(el);
 
@@ -137,7 +170,7 @@ describe('Selector debug logging', () => {
 
 	test('stops writing once the logger is disabled again', () => {
 		const write = vi.spyOn(process.stderr, 'write').mockImplementation(() => true);
-		const el = JSDOM.fragment('<div></div>').firstChild;
+		const el = elementOf('<div></div>');
 		debug.enable('selector*');
 		new Selector('div').match(el);
 		write.mockClear();
@@ -164,8 +197,7 @@ describe('Selector debug logging', () => {
 	])('threads the enabled flag through the target recursion for "%s"', (selector, html, messages) => {
 		const write = vi.spyOn(process.stderr, 'write').mockImplementation(() => true);
 		debug.enable('selector*');
-		const fragment = JSDOM.fragment(html);
-		const el = fragment.firstChild.firstChild ?? fragment.firstChild;
+		const el = elementOf(html, 'div');
 		const original = nodeToStringOwner().toString;
 		const toString = vi.spyOn(nodeToStringOwner(), 'toString').mockImplementation(original);
 

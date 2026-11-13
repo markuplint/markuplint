@@ -1,17 +1,14 @@
-import type { ARIAVersion } from '../../types/index.js';
+import type { ARIAVersion } from '@markuplint/ml-spec';
 
 import specs from '@markuplint/html-spec';
-import { createSelector } from '@markuplint/selector';
-import { createJSDOMElement } from '@markuplint/test-tools';
 import { describe, test, expect } from 'vitest';
 
-import { getComputedAriaProps } from './get-computed-aria-props.js';
+import { elementOf } from '../element-of.js';
+
+import { getComputedAriaProps } from '@markuplint/ml-spec';
 
 function _(html: string, selector?: string) {
-	return createJSDOMElement(html, selector, function (selector) {
-		// JSDOM supports no level 4 selectors yet.
-		return createSelector(selector, specs).match(this) !== false;
-	});
+	return elementOf(html, selector);
 }
 
 function c(html: string, version: ARIAVersion, selector?: string) {

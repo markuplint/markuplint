@@ -18,10 +18,11 @@ import { MLParentNode } from './parent-node.js';
  * @template T - The rule configuration value type
  * @template O - The rule options type
  */
-export class MLDocumentFragment<T extends RuleConfigValue, O extends PlainData = undefined>
-	extends MLParentNode<T, O, MLASTNode>
-	implements DocumentFragment
-{
+export class MLDocumentFragment<T extends RuleConfigValue, O extends PlainData = undefined> extends MLParentNode<
+	T,
+	O,
+	MLASTNode
+> {
 	/**
 	 * Returns a string appropriate for the type of node as `DocumentFragment`
 	 *
@@ -62,7 +63,7 @@ export class MLDocumentFragment<T extends RuleConfigValue, O extends PlainData =
 	 * @implements DOM API: `DocumentFragment`
 	 * @see https://dom.spec.whatwg.org/#dom-nonelementparentnode-getelementbyid
 	 */
-	getElementById(elementId: string): MLElement<T, O> | null {
+	findElementById(elementId: string): MLElement<T, O> | null {
 		return this._getElementById(elementId);
 	}
 }

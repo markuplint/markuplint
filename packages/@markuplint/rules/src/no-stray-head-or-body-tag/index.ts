@@ -50,7 +50,7 @@ export default createRule<boolean>({
 	meta: meta,
 	async verify({ document, report, t }) {
 		await document.walkOn('Text', text => {
-			const parent = text.parentNode;
+			const parent = text.parent;
 			const parentLocalName = parent && 'localName' in parent ? parent.localName : '';
 			if (RAW_TEXT_CONTAINERS.has(parentLocalName)) return;
 

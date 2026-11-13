@@ -1,3 +1,4 @@
+import type { SpecElement } from '../../types/spec-element.js';
 import type { ARIAVersion, ComputedRole, MLMLSpec } from '../../types/index.js';
 
 import { ariaSpecs } from './aria-specs.js';
@@ -31,7 +32,7 @@ import { mayBeFocusable } from '../html/may-be-focusable.js';
  *   document snapshot. External consumers that use the algorithm on a live
  *   DOM with dynamic attribute mutations should be aware of this limitation.
  */
-const computedRoleCache = new WeakMap<Element, Map<string, ComputedRole>>();
+const computedRoleCache = new WeakMap<SpecElement, Map<string, ComputedRole>>();
 
 /**
  * Computes the final ARIA role for an element according to the WAI-ARIA specification,
@@ -48,7 +49,7 @@ const computedRoleCache = new WeakMap<Element, Map<string, ComputedRole>>();
 export function getComputedRole(
 	specs: MLMLSpec,
 	// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
-	el: Element,
+	el: SpecElement,
 	version: ARIAVersion,
 	assumeSingleNode = false,
 ): ComputedRole {
@@ -74,7 +75,7 @@ export function getComputedRole(
 function computeRole(
 	specs: MLMLSpec,
 	// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
-	el: Element,
+	el: SpecElement,
 	version: ARIAVersion,
 	assumeSingleNode: boolean,
 ): ComputedRole {
@@ -301,7 +302,7 @@ function computeRole(
 	const { props } = ariaSpecs(specs, version);
 	// Asks the element, not its attribute list: whether `ARIA-LABEL` is `aria-label` is up to the element
 	// (a document of the HTML syntax folds the name, one that sets it under the name written does not).
-	if (props.some(p => p.isGlobal && el.hasAttribute(p.name))) {
+	if (props.some(p => p.isGlobal && el.hasAttr(p.name))) {
 		return {
 			...implicitRole,
 			errorType: 'GLOBAL_PROP_MUST_NOT_BE_PRESENTATIONAL',
@@ -317,13 +318,13 @@ function computeRole(
  */
 function isEnabledAttr(
 	// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
-	el: Element,
+	el: SpecElement,
 	specs: MLMLSpec,
 	attrName: string,
 ) {
 	const attrs = getAttrSpecs(el, specs);
 	const attr = attrs?.find(attr => attr.name === attrName);
-	return !!attr && el.hasAttribute(attrName);
+	return !!attr && el.hasAttr(attrName);
 }
 
 /**
@@ -332,14 +333,14 @@ function isEnabledAttr(
  */
 function someAncestors(
 	// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
-	el: Element,
+	el: SpecElement,
 	predicate: (
 		// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
-		ancestor: Element,
+		ancestor: SpecElement,
 	) => boolean,
 ) {
-	const list: Element[] = [];
-	let current: Element | null = el;
+	const list: SpecElement[] = [];
+	let current: SpecElement | null = el;
 	while (current) {
 		list.push(current);
 		current = getComposedParentElement(current);
@@ -365,7 +366,7 @@ function isNativeContextIntact(
 	// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
 	computedRole: ComputedRole,
 	// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
-	el: Element,
+	el: SpecElement,
 	specs: MLMLSpec,
 	version: ARIAVersion,
 ): boolean {

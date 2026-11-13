@@ -359,7 +359,7 @@ class SelectorTarget {
 					ancestor =
 						ancestor && isElement(ancestor)
 							? getCombinatorParent(ancestor, scope)
-							: (ancestor?.parentNode ?? null);
+							: (ancestor?.parent ?? null);
 				}
 				if (!specificity) {
 					const res = matchCombinatorTarget(target, el, scope, count + 1, logEnabled);
@@ -424,8 +424,8 @@ class SelectorTarget {
 				const not: SelectorMatchedResult[] = [];
 				const specificity: Writable<Specificity> = [...unitCheck.specificity];
 
-				if (el.previousElementSibling) {
-					const res = target.match(el.previousElementSibling, scope, count + 1, logEnabled);
+				if (el.prevElementSibling) {
+					const res = target.match(el.prevElementSibling, scope, count + 1, logEnabled);
 					specificity[0] += res.specificity[0];
 					specificity[1] += res.specificity[1];
 					specificity[2] += res.specificity[2];
@@ -464,7 +464,7 @@ class SelectorTarget {
 				const matchedNodes: SelectorElement[] = [];
 				const has: SelectorMatchedResult[] = [];
 				const not: SelectorMatchedResult[] = [];
-				let prev = el.previousElementSibling;
+				let prev = el.prevElementSibling;
 				let specificity: Specificity | undefined = undefined;
 				while (prev) {
 					const res = target.match(prev, scope, count + 1, logEnabled);
@@ -483,7 +483,7 @@ class SelectorTarget {
 							not.push(...res.not);
 						}
 					}
-					prev = prev.previousElementSibling;
+					prev = prev.prevElementSibling;
 				}
 				if (!specificity) {
 					const res = target.match(el, scope, count + 1, logEnabled);
@@ -1019,7 +1019,7 @@ function pseudoMatch(
 		 * element does not stop it from being the first child. An element without a parent
 		 * matches as well, as the Level 4 definition no longer requires one.
 		 *
-		 * Siblings are those `previousElementSibling` gives, as for the sibling combinators,
+		 * Siblings are those `prevElementSibling` gives, as for the sibling combinators,
 		 * so whether an element inside a template block before it is one depends on how the
 		 * parser places the content of the block. A content model category counts text as
 		 * well (`isContentModelFirstChild`).
@@ -1027,7 +1027,7 @@ function pseudoMatch(
 		 * @see https://drafts.csswg.org/selectors/#the-first-child-pseudo
 		 */
 		case ':first-child': {
-			if (el.previousElementSibling == null) {
+			if (el.prevElementSibling == null) {
 				return {
 					specificity: [0, 1, 0],
 					matched: true,
@@ -1096,15 +1096,15 @@ function getParentElement(
 
 /**
  * Parent for combinator matching: the tree parent, or the scoping root when it is the
- * {@link SelectorNode#parentNode} but not an element (a document or document fragment).
+ * {@link SelectorNode#parent} but not an element (a document or document fragment).
  */
 function isTopLevelInScope(
 	// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
 	el: SelectorElement,
 	scope: SelectorNode,
 ): boolean {
-	if ('children' in scope) {
-		for (const child of scope.children as Iterable<SelectorNode>) {
+	if ('childElements' in scope) {
+		for (const child of scope.childElements as Iterable<SelectorNode>) {
 			if (child === el) {
 				return true;
 			}
@@ -1129,10 +1129,10 @@ function getCombinatorParent(
 	if (parent) {
 		return parent;
 	}
-	if (scope && el.parentNode === scope) {
+	if (scope && el.parent === scope) {
 		return scope;
 	}
-	if (scope && el.parentNode === null && isTopLevelInScope(el, scope)) {
+	if (scope && el.parent === null && isTopLevelInScope(el, scope)) {
 		return scope;
 	}
 	return null;
@@ -1180,7 +1180,7 @@ function getDescendants(
 	if (el.isHTMLTemplateElement) {
 		return includeSelf ? [el] : [];
 	}
-	return [...[...el.children].flatMap(child => getDescendants(child, true)), ...(includeSelf ? [el] : [])];
+	return [...[...el.childElements].flatMap(child => getDescendants(child, true)), ...(includeSelf ? [el] : [])];
 }
 
 function getSiblings(
@@ -1189,7 +1189,7 @@ function getSiblings(
 ): SelectorElement[] {
 	// Siblings share the parent of the syntax tree, and so the tree. What is in no tree (a `<template>` that a
 	// declarative shadow root is attached to) still has the siblings of its place in the markup.
-	return [...(el.parentElement?.children ?? [])];
+	return [...(el.parentElement?.childElements ?? [])];
 }
 
 function getSpecificity(

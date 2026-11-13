@@ -8,7 +8,7 @@
 //! the content of a shadow root for its host and ends at the top of an ordinary `template`)
 //! whose `aria-hidden` value
 //! is exactly `true` decides the message; an intervening `aria-hidden="false"` does not stop the
-//! walk. As TS `getAttributeNode('aria-hidden')` compares the lower-cased query with the
+//! walk. As TS `getAttrNode('aria-hidden')` compares the lower-cased query with the
 //! attribute name as written, an `ARIA-HIDDEN` attribute is not found, and the value comparison
 //! is a case-sensitive `=== 'true'`, so `TRUE` or ` true` does not count. The default severity is
 //! `warning`.
@@ -78,7 +78,7 @@ fn closest_aria_hidden(arena: &DomArena, spec: &MLMLSpec, node_id: NodeId) -> Op
     })
 }
 
-/// TS `el.getAttributeNode('aria-hidden')?.value === 'true'`.
+/// TS `el.getAttrNode('aria-hidden')?.value === 'true'`.
 fn is_aria_hidden(el: &ElementData) -> bool {
     find_attr(el, "aria-hidden").is_some_and(|attr| markuplint_dom::helpers::attr_value(attr) == "true")
 }

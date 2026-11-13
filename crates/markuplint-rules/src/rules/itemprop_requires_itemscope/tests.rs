@@ -197,7 +197,7 @@ fn v6_itemprop_requires_itemscope_004() {
     );
 }
 
-/// `itemref` is read through `getAttribute()`, from the pretended attributes: a bare-name
+/// `itemref` is read through `getAttrValue()`, from the pretended attributes: a bare-name
 /// pretender has none, a pretender may add `itemscope`.
 #[test]
 fn v6_itemprop_requires_itemscope_005() {

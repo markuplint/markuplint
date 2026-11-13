@@ -33,25 +33,18 @@ describe('an attribute that the framework does not output', () => {
 
 	test('is not found by name', async () => {
 		const { el } = await jsx('<button disabled={false} title={null} type="button"></button>', 'button');
-		expect(el.getAttribute('disabled')).toBeNull();
-		expect(el.hasAttribute('disabled')).toBe(false);
+		expect(el.getAttrValue('disabled')).toBeNull();
+		expect(el.hasAttr('disabled')).toBe(false);
 		expect(el.getAttributeToken('disabled')).toHaveLength(0);
-		expect(el.getAttributeNode('disabled')).toBeNull();
+		expect(el.getAttrNode('disabled')).toBeNull();
 		expect(el.attributes.getNamedItem('disabled')).toBeNull();
 		expect(el.getAttributePretended('disabled')).toBeNull();
 		// An attribute that is output is found
-		expect(el.getAttribute('type')).toBe('button');
-		expect(el.hasAttribute('type')).toBe(true);
+		expect(el.getAttrValue('type')).toBe('button');
+		expect(el.hasAttr('type')).toBe(true);
 		expect(el.getAttributeToken('type')).toHaveLength(1);
-		expect(el.getAttributeNode('type')?.name).toBe('type');
+		expect(el.getAttrNode('type')?.name).toBe('type');
 		expect(el.attributes.getNamedItem('type')?.name).toBe('type');
-	});
-
-	test('is not a name that the element has', async () => {
-		const { el } = await jsx('<button disabled={false} type="button"></button>', 'button');
-		expect(el.getAttributeNames()).toStrictEqual(['type']);
-		expect(el.hasAttributes()).toBe(true);
-		expect((await jsx('<button disabled={false}></button>', 'button')).el.hasAttributes()).toBe(false);
 	});
 
 	test('is not an id, and an id of code that is not a literal is', async () => {
@@ -101,13 +94,13 @@ describe('an attribute that the framework does not output', () => {
 
 	test('is one of the two that has the name when the same name is written twice', async () => {
 		const { el } = await jsx('<div title="a" title={null}></div>', 'div');
-		expect(el.getAttribute('title')).toBe('a');
+		expect(el.getAttrValue('title')).toBe('a');
 		expect(el.getAttributeToken('title')).toHaveLength(1);
 	});
 
 	test('is none in a document of HTML, where nothing is written as code', () => {
 		const el = createTestElement('<button disabled title="x"></button>');
 		expect([...el.attributes].every(attr => attr.isAbsent === undefined)).toBe(true);
-		expect(el.getAttribute('disabled')).toBe('');
+		expect(el.getAttrValue('disabled')).toBe('');
 	});
 });

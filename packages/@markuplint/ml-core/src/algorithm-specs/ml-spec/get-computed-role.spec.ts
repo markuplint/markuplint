@@ -1,17 +1,16 @@
-import type { ARIAVersion } from '../../types/index.js';
+import type { ARIAVersion } from '@markuplint/ml-spec';
 
 import specs from '@markuplint/html-spec';
-import { createSelector } from '@markuplint/selector';
-import { createJSDOMElement } from '@markuplint/test-tools';
 import { describe, test, expect } from 'vitest';
 
-import { getComputedRole } from './get-computed-role.js';
+import type { MLElement } from '../../ml-dom/node/element.js';
+
+import { elementOf } from '../element-of.js';
+
+import { getComputedRole } from '@markuplint/ml-spec';
 
 function _(html: string, selector?: string) {
-	return createJSDOMElement(html, selector, function (selector) {
-		// JSDOM supports no level 4 selectors yet.
-		return createSelector(selector, specs).match(this) !== false;
-	});
+	return elementOf(html, selector);
 }
 
 function c(html: string, version: ARIAVersion, selector?: string) {
@@ -21,7 +20,7 @@ function c(html: string, version: ARIAVersion, selector?: string) {
 function tree(html: string, version: ARIAVersion) {
 	const el = _(html);
 	const tree = [];
-	let current: Element | null = el;
+	let current: MLElement<any, any> | null = el;
 
 	while (current != null) {
 		const role = getComputedRole(specs, current, version);
@@ -30,7 +29,7 @@ function tree(html: string, version: ARIAVersion) {
 			result.push(role.errorType);
 		}
 		tree.push(result);
-		current = current.children.item(0);
+		current = current.childElements.item(0);
 	}
 	return tree;
 }
@@ -171,14 +170,8 @@ describe('1.2', () => {
 	});
 
 	test('a global prop is read through the lookups of the element, whatever case its source spells', () => {
-		// `MLElement` keeps the source spelling in `attributes` and folds in `hasAttribute`.
-		const el = _('<h1 role="presentation" aria-describedby="comment-1"> Sample Content </h1>');
-		Object.defineProperty(el, 'attributes', {
-			value: [
-				{ name: 'role', localName: 'role', value: 'presentation', namespaceURI: null },
-				{ name: 'ARIA-DESCRIBEDBY', localName: 'ARIA-DESCRIBEDBY', value: 'comment-1', namespaceURI: null },
-			],
-		});
+		// `MLElement` keeps the source spelling in `attributes` and folds in `hasAttr`.
+		const el = _('<h1 role="presentation" ARIA-DESCRIBEDBY="comment-1"> Sample Content </h1>');
 		expect(getComputedRole(specs, el, '1.2').role?.name).toBe('heading');
 		// Control: no global prop, so the presentational role is kept
 		const control = _('<h1 role="presentation" aria-level="2"> Sample Content </h1>');

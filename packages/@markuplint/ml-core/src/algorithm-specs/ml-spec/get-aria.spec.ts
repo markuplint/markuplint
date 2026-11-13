@@ -1,12 +1,13 @@
 import specs from '@markuplint/html-spec';
 import { createSelector } from '@markuplint/selector';
-import { createJSDOMElement } from '@markuplint/test-tools';
 import { describe, test, expect } from 'vitest';
 
-import { getARIA } from './get-aria.js';
+import { elementOf } from '../element-of.js';
+
+import { getARIA } from '@markuplint/ml-spec';
 
 function a(html: string, version: '1.1' | '1.2' | '1.3', selector?: string) {
-	const el = createJSDOMElement(html, selector);
+	const el = elementOf(html, selector);
 	return getARIA(
 		specs,
 		el.localName,

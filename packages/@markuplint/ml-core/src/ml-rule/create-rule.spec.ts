@@ -13,7 +13,7 @@ describe('createRule', () => {
 			verify({ document }) {
 				expect(document.rule.value).toStrictEqual([1, 2, 3]);
 
-				for (const el of document.getElementsByTagName('div')) {
+				for (const el of document.querySelectorAll('div')) {
 					expect(el.rule.value).toStrictEqual([1, 2, 3]);
 				}
 
@@ -41,7 +41,7 @@ describe('createRule', () => {
 			verify({ document }) {
 				expect(document.rule.value).toStrictEqual([4, 5, 6]);
 
-				for (const el of document.getElementsByTagName('div')) {
+				for (const el of document.querySelectorAll('div')) {
 					expect(el.rule.value).toStrictEqual([4, 5, 6]);
 				}
 
@@ -69,7 +69,7 @@ describe('createRule', () => {
 			verify({ document }) {
 				expect(document.rule.value).toStrictEqual([1, 2, 3]);
 
-				for (const el of document.getElementsByTagName('div')) {
+				for (const el of document.querySelectorAll('div')) {
 					expect(el.rule.value).toStrictEqual([1, 2, 3]);
 				}
 
@@ -97,7 +97,7 @@ describe('createRule', () => {
 			verify({ document }) {
 				expect(document.rule.value).toStrictEqual([]);
 
-				for (const el of document.getElementsByTagName('div')) {
+				for (const el of document.querySelectorAll('div')) {
 					expect(el.rule.value).toStrictEqual([]);
 				}
 

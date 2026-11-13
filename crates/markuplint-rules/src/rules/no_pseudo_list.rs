@@ -65,8 +65,7 @@ impl Rule for NoPseudoList {
             .options
             .get("spaceNeededBullets")
             .and_then(serde_json::Value::as_array)
-            .map(|arr| arr.iter().filter_map(|v| v.as_str().map(String::from)).collect())
-            .unwrap_or_default();
+            .map_or_default(|arr| arr.iter().filter_map(|v| v.as_str().map(String::from)).collect());
         let space_needed: Vec<&str> = if space_needed_owned.is_empty() {
             SPACE_NEEDED_BULLETS.to_vec()
         } else {

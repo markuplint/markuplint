@@ -7,8 +7,8 @@
 //! Hidden Until Found state." Both values are compared trimmed and lower-cased; the report is
 //! on the `aria-hidden` attribute. A dynamic `aria-hidden` value is skipped.
 //!
-//! As TS `getAttributeNode('aria-hidden')` compares the lower-cased query with the attribute
-//! name as written, an `ARIA-HIDDEN` attribute is not found; `getAttribute('hidden')`
+//! As TS `getAttrNode('aria-hidden')` compares the lower-cased query with the attribute
+//! name as written, an `ARIA-HIDDEN` attribute is not found; `getAttrValue('hidden')`
 //! lower-cases both sides, so `HIDDEN` is.
 //!
 //! <https://w3c.github.io/html-aria/#att-hidden>
@@ -44,7 +44,7 @@ impl Rule for NoAriaHiddenOnHiddenUntilFound {
         let mut violations = Vec::new();
         let tr = config.translator();
         for (node_id, el) in arena.elements() {
-            // TS `el.getAttributeNode('aria-hidden')`.
+            // TS `el.getAttrNode('aria-hidden')`.
             let Some(aria_hidden) = find_attr(el, "aria-hidden") else {
                 continue;
             };
@@ -53,7 +53,7 @@ impl Rule for NoAriaHiddenOnHiddenUntilFound {
             {
                 continue;
             }
-            // TS `el.getAttribute('hidden')`.
+            // TS `el.getAttrValue('hidden')`.
             let hidden = find_attr(el, "hidden");
             if !hidden.is_some_and(|attr| is_value(markuplint_dom::helpers::attr_value(attr), "until-found")) {
                 continue;

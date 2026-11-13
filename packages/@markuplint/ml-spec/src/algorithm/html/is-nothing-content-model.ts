@@ -1,3 +1,4 @@
+import type { SpecElement } from '../../types/spec-element.js';
 import { isVoidElement } from './is-void-element.js';
 
 /**
@@ -13,7 +14,7 @@ import { isVoidElement } from './is-void-element.js';
  */
 export function isNothingContentModel(
 	// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
-	el: Element,
+	el: SpecElement,
 ) {
 	return isVoidElement(el) || ['iframe', 'template'].includes(el.localName);
 }

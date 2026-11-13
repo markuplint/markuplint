@@ -4,7 +4,6 @@ import { ConfigLoadError } from './config-error.js';
 import { isFatalError } from './guards.js';
 import { ConfigParserError, ParserError } from './parser-error.js';
 import { InvalidSelectorError } from './selector-error.js';
-import { UnexpectedCallError } from './unexpected-call-error.js';
 
 describe('isFatalError', () => {
 	test('TypeError is fatal', () => {
@@ -21,10 +20,6 @@ describe('isFatalError', () => {
 
 	test('SyntaxError is fatal', () => {
 		expect(isFatalError(new SyntaxError('x'))).toBe(true);
-	});
-
-	test('UnexpectedCallError is fatal', () => {
-		expect(isFatalError(new UnexpectedCallError('x'))).toBe(true);
 	});
 
 	test('non-Error throw (string) is fatal', () => {

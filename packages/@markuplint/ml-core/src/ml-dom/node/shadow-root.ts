@@ -6,7 +6,6 @@ import type { PlainData, RuleConfigValue } from '@markuplint/ml-config';
 import { getShadowHost } from '../helper/tree-scope.js';
 
 import { MLDocumentFragment } from './document-fragment.js';
-import { UnexpectedCallError } from '@markuplint/shared';
 
 /**
  * A declarative shadow root: the content of a `template` element with a `shadowrootmode` attribute
@@ -18,10 +17,7 @@ import { UnexpectedCallError } from '@markuplint/shared';
  * @template O - The rule options type
  * @see https://html.spec.whatwg.org/multipage/parsing.html#parsing-main-inhead
  */
-export class MLShadowRoot<T extends RuleConfigValue, O extends PlainData = undefined>
-	extends MLDocumentFragment<T, O>
-	implements ShadowRoot
-{
+export class MLShadowRoot<T extends RuleConfigValue, O extends PlainData = undefined> extends MLDocumentFragment<T, O> {
 	readonly #template: MLElement<T, O>;
 
 	/**
@@ -68,7 +64,7 @@ export class MLShadowRoot<T extends RuleConfigValue, O extends PlainData = undef
 	 * @see https://dom.spec.whatwg.org/#dom-shadowroot-delegatesfocus
 	 */
 	get delegatesFocus(): boolean {
-		return this.#template.hasAttribute('shadowrootdelegatesfocus');
+		return this.#template.hasAttr('shadowrootdelegatesfocus');
 	}
 
 	/**
@@ -77,7 +73,7 @@ export class MLShadowRoot<T extends RuleConfigValue, O extends PlainData = undef
 	 * @see https://dom.spec.whatwg.org/#dom-shadowroot-clonable
 	 */
 	get clonable(): boolean {
-		return this.#template.hasAttribute('shadowrootclonable');
+		return this.#template.hasAttr('shadowrootclonable');
 	}
 
 	/**
@@ -86,7 +82,7 @@ export class MLShadowRoot<T extends RuleConfigValue, O extends PlainData = undef
 	 * @see https://dom.spec.whatwg.org/#dom-shadowroot-serializable
 	 */
 	get serializable(): boolean {
-		return this.#template.hasAttribute('shadowrootserializable');
+		return this.#template.hasAttr('shadowrootserializable');
 	}
 
 	/**
@@ -96,161 +92,6 @@ export class MLShadowRoot<T extends RuleConfigValue, O extends PlainData = undef
 	 * @see https://dom.spec.whatwg.org/#dom-shadowroot-slotassignment
 	 */
 	get slotAssignment(): 'named' | 'manual' {
-		return this.#template.getAttribute('shadowrootslotassignment')?.toLowerCase() === 'manual' ? 'manual' : 'named';
-	}
-
-	/**
-	 * **IT THROWS AN ERROR WHEN CALLING THIS.**
-	 *
-	 * @unsupported
-	 * @implements DOM API: `ShadowRoot`
-	 */
-	get innerHTML(): string {
-		throw new UnexpectedCallError('Not supported "innerHTML" property');
-	}
-
-	set innerHTML(html: string) {
-		throw new UnexpectedCallError('Not supported "innerHTML" property');
-	}
-
-	/**
-	 * **IT THROWS AN ERROR WHEN CALLING THIS.**
-	 *
-	 * @unsupported
-	 * @implements DOM API: `ShadowRoot`
-	 */
-	get onslotchange(): ((this: ShadowRoot, ev: Event) => any) | null {
-		throw new UnexpectedCallError('Not supported "onslotchange" property');
-	}
-
-	set onslotchange(handler: ((this: ShadowRoot, ev: Event) => any) | null) {
-		throw new UnexpectedCallError('Not supported "onslotchange" property');
-	}
-
-	/**
-	 * **IT THROWS AN ERROR WHEN CALLING THIS.**
-	 *
-	 * @unsupported
-	 * @implements DOM API: `ShadowRoot`
-	 */
-	getHTML(
-		// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
-		options?: GetHTMLOptions,
-	): string {
-		throw new UnexpectedCallError('Not supported "getHTML" method');
-	}
-
-	/**
-	 * **IT THROWS AN ERROR WHEN CALLING THIS.**
-	 *
-	 * @unsupported
-	 * @implements DOM API: `ShadowRoot`
-	 */
-	setHTMLUnsafe(html: string): void {
-		throw new UnexpectedCallError('Not supported "setHTMLUnsafe" method');
-	}
-
-	/**
-	 * **IT THROWS AN ERROR WHEN CALLING THIS.**
-	 *
-	 * @unsupported
-	 * @implements DOM API: `DocumentOrShadowRoot`
-	 */
-	get activeElement(): Element | null {
-		throw new UnexpectedCallError('Not supported "activeElement" property');
-	}
-
-	/**
-	 * **IT THROWS AN ERROR WHEN CALLING THIS.**
-	 *
-	 * @unsupported
-	 * @implements DOM API: `DocumentOrShadowRoot`
-	 */
-	get adoptedStyleSheets(): CSSStyleSheet[] {
-		throw new UnexpectedCallError('Not supported "adoptedStyleSheets" property');
-	}
-
-	set adoptedStyleSheets(sheets: CSSStyleSheet[]) {
-		throw new UnexpectedCallError('Not supported "adoptedStyleSheets" property');
-	}
-
-	/**
-	 * **IT THROWS AN ERROR WHEN CALLING THIS.**
-	 *
-	 * @unsupported
-	 * @implements DOM API: `DocumentOrShadowRoot`
-	 */
-	get customElementRegistry(): CustomElementRegistry | null {
-		throw new UnexpectedCallError('Not supported "customElementRegistry" property');
-	}
-
-	/**
-	 * **IT THROWS AN ERROR WHEN CALLING THIS.**
-	 *
-	 * @unsupported
-	 * @implements DOM API: `DocumentOrShadowRoot`
-	 */
-	get fullscreenElement(): Element | null {
-		throw new UnexpectedCallError('Not supported "fullscreenElement" property');
-	}
-
-	/**
-	 * **IT THROWS AN ERROR WHEN CALLING THIS.**
-	 *
-	 * @unsupported
-	 * @implements DOM API: `DocumentOrShadowRoot`
-	 */
-	get pictureInPictureElement(): Element | null {
-		throw new UnexpectedCallError('Not supported "pictureInPictureElement" property');
-	}
-
-	/**
-	 * **IT THROWS AN ERROR WHEN CALLING THIS.**
-	 *
-	 * @unsupported
-	 * @implements DOM API: `DocumentOrShadowRoot`
-	 */
-	get pointerLockElement(): Element | null {
-		throw new UnexpectedCallError('Not supported "pointerLockElement" property');
-	}
-
-	/**
-	 * **IT THROWS AN ERROR WHEN CALLING THIS.**
-	 *
-	 * @unsupported
-	 * @implements DOM API: `DocumentOrShadowRoot`
-	 */
-	get styleSheets(): StyleSheetList {
-		throw new UnexpectedCallError('Not supported "styleSheets" property');
-	}
-
-	/**
-	 * **IT THROWS AN ERROR WHEN CALLING THIS.**
-	 *
-	 * @unsupported
-	 * @implements DOM API: `DocumentOrShadowRoot`
-	 */
-	elementFromPoint(x: number, y: number): Element | null {
-		throw new UnexpectedCallError('Not supported "elementFromPoint" method');
-	}
-
-	/**
-	 * **IT THROWS AN ERROR WHEN CALLING THIS.**
-	 *
-	 * @unsupported
-	 * @implements DOM API: `DocumentOrShadowRoot`
-	 */
-	elementsFromPoint(x: number, y: number): Element[] {
-		throw new UnexpectedCallError('Not supported "elementsFromPoint" method');
-	}
-
-	/**
-	 * **IT THROWS AN ERROR WHEN CALLING THIS.**
-	 *
-	 * @unsupported
-	 * @implements DOM API: `DocumentOrShadowRoot`
-	 */
-	getAnimations(): Animation[] {
-		throw new UnexpectedCallError('Not supported "getAnimations" method');
+		return this.#template.getAttrValue('shadowrootslotassignment')?.toLowerCase() === 'manual' ? 'manual' : 'named';
 	}
 }

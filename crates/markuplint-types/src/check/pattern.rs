@@ -18,7 +18,7 @@ pub fn check_pattern(value: &str, type_def: &PatternType) -> CheckResult {
         && let Some(body) = caps.get(1).map(|m| m.as_str()).filter(|b| !b.is_empty())
     {
         let flags = caps.get(2).map_or("", |m| m.as_str());
-        let last_flag: String = flags.chars().last().map(String::from).unwrap_or_default();
+        let last_flag: String = flags.chars().last().map_or_default(String::from);
         if JsRegex::new(body, &last_flag).is_some_and(|re| re.is_match(value)) {
             return matched();
         }

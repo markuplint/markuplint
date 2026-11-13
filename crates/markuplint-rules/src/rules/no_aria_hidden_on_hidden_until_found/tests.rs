@@ -75,8 +75,8 @@ fn v6_no_aria_hidden_on_hidden_until_found_001() {
 }
 
 /// Expected values from the TS rule (`mlRuleTest`) on the same inputs. TS
-/// `getAttributeNode('aria-hidden')` compares the lower-cased query with the name as written,
-/// so `ARIA-HIDDEN` is not found, while `getAttribute('hidden')` lower-cases both sides.
+/// `getAttrNode('aria-hidden')` compares the lower-cased query with the name as written,
+/// so `ARIA-HIDDEN` is not found, while `getAttrValue('hidden')` lower-cases both sides.
 #[test]
 fn v6_no_aria_hidden_on_hidden_until_found_002() {
     assert_eq!(

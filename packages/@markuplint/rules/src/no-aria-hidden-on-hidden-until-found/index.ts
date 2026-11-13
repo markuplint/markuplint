@@ -23,14 +23,14 @@ export default createRule<boolean, Options>({
 	defaultOptions,
 	async verify({ document, report, t }) {
 		await document.walkOn('Element', el => {
-			const ariaHidden = el.getAttributeNode('aria-hidden');
+			const ariaHidden = el.getAttrNode('aria-hidden');
 			if (!ariaHidden || ariaHidden.isDynamicValue) {
 				return;
 			}
 			if (ariaHidden.value.trim().toLowerCase() !== 'true') {
 				return;
 			}
-			if (el.getAttribute('hidden')?.trim().toLowerCase() !== 'until-found') {
+			if (el.getAttrValue('hidden')?.trim().toLowerCase() !== 'until-found') {
 				return;
 			}
 			report({

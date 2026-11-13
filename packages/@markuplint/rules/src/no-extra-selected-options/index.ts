@@ -18,8 +18,8 @@ export default createRule<boolean, null>({
 		await document.walkOn('Element', el => {
 			if (el.localName !== 'select') return;
 			// Pretender selects with no `as` pin: descendants are unknown until typed.
-			if (el.pretenderContext?.type === 'pretender' && !el.hasAttribute('as')) return;
-			if (el.hasAttribute('multiple')) return;
+			if (el.pretenderContext?.type === 'pretender' && !el.hasAttr('as')) return;
+			if (el.hasAttr('multiple')) return;
 
 			const selected = [
 				...el.querySelectorAll(':scope > option[selected], :scope > optgroup > option[selected]'),

@@ -1,12 +1,11 @@
 import specs from '@markuplint/html-spec';
-import { createJSDOMElement } from '@markuplint/test-tools';
+import { createSelector, InvalidSelectorError } from '@markuplint/selector';
 import { describe, test, expect } from 'vitest';
 
-import { createSelector } from './create-selector.js';
-import { InvalidSelectorError } from './invalid-selector-error.js';
+import { elementOf } from '../element-of.js';
 
 function c(selector: string, html: string) {
-	return createSelector(selector, specs).match(createJSDOMElement(html));
+	return createSelector(selector, specs).match(elementOf(html));
 }
 
 describe('Extended Selector', () => {
@@ -46,22 +45,24 @@ describe('Extended Selector', () => {
 	])(
 		':model(flow) matches a style element only as the first child of its parent, as the HTML Standard counts it: %j',
 		(html, target, expected) => {
-			const el = createJSDOMElement(html, target);
+			const el = elementOf(html, target);
 			expect(createSelector(':model(flow)', specs).match(el) !== false).toBe(expected);
 			expect(createSelector(':not(:model(flow))', specs).match(el) !== false).toBe(!expected);
 		},
 	);
 
 	test('style:first-child written as a selector keeps the Selectors definition, which does not count text', () => {
-		const el = createJSDOMElement('<div>text<style></style></div>', 'style');
+		const el = elementOf('<div>text<style></style></div>', 'style');
 		expect(createSelector('style:first-child', specs).match(el)).toBeTruthy();
-		const afterElement = createJSDOMElement('<div><p></p><style></style></div>', 'style');
+		const afterElement = elementOf('<div><p></p><style></style></div>', 'style');
 		expect(createSelector('style:first-child', specs).match(afterElement)).toBe(false);
 	});
 
 	test(':model matches #custom only for an element that reports isCustomElement', () => {
-		const plain = createJSDOMElement('<x-foo></x-foo>');
-		const custom = Object.defineProperty(createJSDOMElement('<x-foo></x-foo>'), 'isCustomElement', {
+		const plain = Object.defineProperty(elementOf('<x-foo></x-foo>'), 'isCustomElement', {
+			value: undefined,
+		});
+		const custom = Object.defineProperty(elementOf('<x-foo></x-foo>'), 'isCustomElement', {
 			value: true,
 		});
 		expect(createSelector(':model(flow)', specs).match(plain)).toBeFalsy();
@@ -85,7 +86,7 @@ describe('Extended Selector', () => {
 
 describe(':display-size', () => {
 	function select(html: string, selector: string) {
-		return createSelector(selector, specs).match(createJSDOMElement(html, 'select')) !== false;
+		return createSelector(selector, specs).match(elementOf(html, 'select')) !== false;
 	}
 
 	test.each([
@@ -131,7 +132,7 @@ describe(':display-size', () => {
 
 	test('works without the specs', () => {
 		// The cache is keyed by the selector string: no other test uses `> 7`, so this is built without the specs
-		const el = createJSDOMElement('<select size="8"></select>', 'select');
+		const el = elementOf('<select size="8"></select>', 'select');
 		expect(createSelector(':display-size(> 7)').match(el)).toBeTruthy();
 		expect(createSelector(':display-size(> 8)').match(el)).toBe(false);
 	});
@@ -142,15 +143,15 @@ describe(':display-size', () => {
 	});
 
 	test('an element other than a select never matches', () => {
-		const div = createJSDOMElement('<div size="2"></div>', 'div');
+		const div = elementOf('<div size="2"></div>', 'div');
 		expect(createSelector(':display-size(> 1)', specs).match(div)).toBe(false);
 		expect(createSelector(':display-size(= 1)', specs).match(div)).toBe(false);
-		const input = createJSDOMElement('<input size="2">', 'input');
+		const input = elementOf('<input size="2">', 'input');
 		expect(createSelector(':display-size(> 1)', specs).match(input)).toBe(false);
 	});
 
 	test('a select in another namespace never matches', () => {
-		const el = createJSDOMElement('<svg><select size="2"></select></svg>', 'select');
+		const el = elementOf('<svg><select size="2"></select></svg>', 'select');
 		expect(createSelector(':display-size(> 1)', specs).match(el)).toBe(false);
 	});
 
@@ -163,7 +164,7 @@ describe(':display-size', () => {
 		[':display-size(> -1)'],
 		[':display-size(> 1.5)'],
 	])('%s is an invalid selector', selector => {
-		expect(() => createSelector(selector, specs).match(createJSDOMElement('<select></select>', 'select'))).toThrow(
+		expect(() => createSelector(selector, specs).match(elementOf('<select></select>', 'select'))).toThrow(
 			InvalidSelectorError,
 		);
 	});
@@ -235,7 +236,7 @@ describe('what the engine does not support is found for any spelling and positio
 });
 
 describe('what the engine supports is accepted when it is created and when it is matched', () => {
-	const el = createJSDOMElement('<div><span></span></div>', 'span');
+	const el = elementOf('<div><span></span></div>', 'span');
 
 	test.each([
 		['span:first-child'],
@@ -301,7 +302,7 @@ describe('syntax the engine does not support', () => {
 	});
 
 	test('an unknown namespace is an invalid selector when it is matched, and the error holds the selector and its own message', () => {
-		const el = createJSDOMElement('<div></div>');
+		const el = elementOf('<div></div>');
 		expect.assertions(3);
 		try {
 			createSelector('foo|div', specs).match(el);
@@ -313,7 +314,7 @@ describe('syntax the engine does not support', () => {
 	});
 
 	test('a nesting selector inside a pseudo-class is an invalid selector when it is created', () => {
-		const el = createJSDOMElement('<div></div>');
+		const el = elementOf('<div></div>');
 		expect(() => createSelector(':is(&)', specs).match(el)).toThrow(InvalidSelectorError);
 	});
 });
@@ -322,7 +323,7 @@ describe('syntax the engine does not support', () => {
 // instance made by an earlier test and the identity checks below would pass without exercising the cache key.
 describe('cache', () => {
 	test('an instance created without specs is not returned to a later call with specs', () => {
-		const el = createJSDOMElement('<a href="path/to"></a>');
+		const el = elementOf('<a href="path/to"></a>');
 		const withoutSpecs = createSelector(':model(interactive):not(.cache-order)');
 		const withSpecs = createSelector(':model(interactive):not(.cache-order)', specs);
 		expect(withSpecs).not.toBe(withoutSpecs);
@@ -330,7 +331,7 @@ describe('cache', () => {
 	});
 
 	test('an instance created with specs is not returned to a later call without specs', () => {
-		const el = createJSDOMElement('<a href="path/to"></a>');
+		const el = elementOf('<a href="path/to"></a>');
 		const withSpecs = createSelector(':model(interactive):not(.cache-reverse-order)', specs);
 		const withoutSpecs = createSelector(':model(interactive):not(.cache-reverse-order)');
 		expect(withoutSpecs).not.toBe(withSpecs);

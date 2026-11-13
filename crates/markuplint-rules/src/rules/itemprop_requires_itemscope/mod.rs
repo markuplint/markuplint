@@ -12,7 +12,7 @@
 //!
 //! Unlike the reference rules, TS has no pretender guard here: the selectors match a
 //! pretended element with either identity (as TS `matches()` does), while the attribute
-//! values are read from the pretended attributes (TS `getAttribute()`).
+//! values are read from the pretended attributes (TS `getAttrValue()`).
 //!
 //! <https://html.spec.whatwg.org/multipage/microdata.html#names:-the-itemprop-attribute>
 //! <https://html.spec.whatwg.org/multipage/microdata.html#associating-names-with-items>

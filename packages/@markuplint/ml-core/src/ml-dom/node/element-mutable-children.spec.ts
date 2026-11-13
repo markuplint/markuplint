@@ -73,12 +73,12 @@ describe('MLElement#hasMutableChildren(true) and a component that no pretender r
 describe('MLElement#isUnresolvedComponent', () => {
 	test.each([['<Icon />'], ['<Icon size={size} />'], ['<Foo.Bar />']])('%s is one', async code => {
 		const document = createTestDocument(`<div>${code}</div>`, { parser: await jsxParser() });
-		expect(document.querySelector('div')?.firstElementChild?.isUnresolvedComponent()).toBe(true);
+		expect(document.querySelector('div')?.childElements[0]?.isUnresolvedComponent()).toBe(true);
 	});
 
 	test.each([['<div />'], ['<span></span>'], ['<x-el></x-el>']])('%s is not', async code => {
 		const document = createTestDocument(`<div>${code}</div>`, { parser: await jsxParser() });
-		expect(document.querySelector('div')?.firstElementChild?.isUnresolvedComponent()).toBe(false);
+		expect(document.querySelector('div')?.childElements[0]?.isUnresolvedComponent()).toBe(false);
 	});
 
 	test('a component that a pretender resolved is not', async () => {
@@ -86,14 +86,14 @@ describe('MLElement#isUnresolvedComponent', () => {
 			parser: await jsxParser(),
 			pretenders: [{ selector: 'Icon', as: 'span' }],
 		});
-		expect(document.querySelector('div')?.firstElementChild?.isUnresolvedComponent()).toBe(false);
+		expect(document.querySelector('div')?.childElements[0]?.isUnresolvedComponent()).toBe(false);
 	});
 
 	test('a component in a Vue template is one', async () => {
 		const document = createTestDocument('<template><div><Icon /></div></template>', {
 			parser: (await import('@markuplint/vue-parser')).parser,
 		});
-		expect(document.querySelector('div')?.firstElementChild?.isUnresolvedComponent()).toBe(true);
+		expect(document.querySelector('div')?.childElements[0]?.isUnresolvedComponent()).toBe(true);
 	});
 
 	test('a component that a pretender stands for a web component is not', async () => {
@@ -101,7 +101,7 @@ describe('MLElement#isUnresolvedComponent', () => {
 			parser: await jsxParser(),
 			pretenders: [{ selector: 'Icon', as: 'x-icon' }],
 		});
-		expect(document.querySelector('div')?.firstElementChild?.isUnresolvedComponent()).toBe(false);
+		expect(document.querySelector('div')?.childElements[0]?.isUnresolvedComponent()).toBe(false);
 	});
 
 	test('a component that a pretender stands for another component is one', async () => {
@@ -109,7 +109,7 @@ describe('MLElement#isUnresolvedComponent', () => {
 			parser: await jsxParser(),
 			pretenders: [{ selector: 'Icon', as: 'Foo.Bar' }],
 		});
-		expect(document.querySelector('div')?.firstElementChild?.isUnresolvedComponent()).toBe(true);
+		expect(document.querySelector('div')?.childElements[0]?.isUnresolvedComponent()).toBe(true);
 	});
 });
 

@@ -1,17 +1,14 @@
-import type { ARIAVersion } from '../../types/index.js';
+import type { ARIAVersion } from '@markuplint/ml-spec';
 
 import specs from '@markuplint/html-spec';
-import { createSelector } from '@markuplint/selector';
-import { createJSDOMElement } from '@markuplint/test-tools';
 import { describe, test, expect } from 'vitest';
 
-import { isExposed } from './is-exposed.js';
+import { elementOf } from '../element-of.js';
+
+import { isExposed } from '@markuplint/ml-spec';
 
 function _(html: string, selector?: string) {
-	return createJSDOMElement(html, selector, function (selector) {
-		// JSDOM supports no level 4 selectors yet.
-		return createSelector(selector, specs).match(this) !== false;
-	});
+	return elementOf(html, selector);
 }
 
 function x(html: string, selector?: string, version: ARIAVersion = '1.2') {
@@ -76,22 +73,20 @@ describe('isExposed', () => {
 		// so it is not read for a global ARIA attribute. `isExposed` is `true` by default and the global ARIA
 		// attribute only confirms it, so the result does not tell whether an attribute was counted: what is
 		// observable is which attributes are read, whatever the order.
-		function withAttributes(html: string, attributes: readonly object[]) {
-			const el = _(html);
-			Object.defineProperty(el, 'attributes', { value: attributes });
-			return el;
-		}
-
-		test('is not read', () => {
+		test('is not read', async () => {
 			const read: string[] = [];
-			const attr = (name: string, isAbsent?: true) => ({
-				get localName() {
-					read.push(name);
-					return name;
-				},
-				isAbsent,
+			const el = elementOf('<span hidden={false} aria-busy="true"></span>', undefined, {
+				parser: (await import('@markuplint/jsx-parser')).parser,
 			});
-			const el = withAttributes('<span></span>', [attr('aria-label', true), attr('aria-busy')]);
+			for (const attr of el.attributes) {
+				const { localName } = attr;
+				Object.defineProperty(attr, 'localName', {
+					get() {
+						read.push(localName);
+						return localName;
+					},
+				});
+			}
 			expect(isExposed(el, specs, '1.2')).toBe(true);
 			expect([...new Set(read)]).toStrictEqual(['aria-busy']);
 		});

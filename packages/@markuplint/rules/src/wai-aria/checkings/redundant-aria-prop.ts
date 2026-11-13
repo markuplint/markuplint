@@ -48,12 +48,12 @@ export const checkingRedundantAriaProp: AttrChecker<
 				continue;
 			}
 
-			if (!attr.ownerElement.hasAttribute(equivalentHtmlAttr.htmlAttrName)) {
+			if (!attr.ownerElement.hasAttr(equivalentHtmlAttr.htmlAttrName)) {
 				continue;
 			}
 
 			const value = attr.value.trim().toLowerCase();
-			const targetAttrValue = attr.ownerElement.getAttribute(equivalentHtmlAttr.htmlAttrName);
+			const targetAttrValue = attr.ownerElement.getAttrValue(equivalentHtmlAttr.htmlAttrName);
 			if ((equivalentHtmlAttr.value == null && targetAttrValue === value) || equivalentHtmlAttr.value === value) {
 				return {
 					scope: attr,

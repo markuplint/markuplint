@@ -1,13 +1,13 @@
-import { createJSDOMElement } from '@markuplint/test-tools';
-import { describe, test, expect } from 'vitest';
-
 import {
 	getComposedParentElement,
 	getTreeParentElement,
 	isNotRendered,
 	isShadowRoot,
 	isSlotElement,
-} from './tree-boundary.js';
+} from '@markuplint/ml-spec';
+import { describe, test, expect } from 'vitest';
+
+import { elementOf } from '../element-of.js';
 
 function must<T>(value: T | null | undefined): T {
 	if (value == null) {
@@ -18,71 +18,58 @@ function must<T>(value: T | null | undefined): T {
 
 describe('getTreeParentElement', () => {
 	test('is the parent element in the same tree', () => {
-		const section = createJSDOMElement('<div><section><p></p></section></div>', 'section');
+		const section = elementOf('<div><section><p></p></section></div>', 'section');
 		const p = must(section.querySelector('p'));
 		expect(getTreeParentElement(p)).toBe(section);
 		expect(getTreeParentElement(section)?.localName).toBe('div');
 	});
 
 	test('is null at the top of a tree', () => {
-		const div = createJSDOMElement('<div></div>');
+		const div = elementOf('<div></div>');
 		expect(getTreeParentElement(div)).toBeNull();
 	});
 
 	test('is null at the top of the content of a template', () => {
-		const template = createJSDOMElement(
-			'<div><template><p></p></template></div>',
-			'template',
-		) as HTMLTemplateElement;
-		const p = must((template.content as DocumentFragment).firstElementChild);
+		const template = elementOf('<div><template><p></p></template></div>', 'template');
+		const p = must(must(template.content).childElements[0]);
 		expect(getTreeParentElement(p)).toBeNull();
 	});
 
 	test('is null at the top of a shadow root', () => {
-		const host = createJSDOMElement('<div></div>');
-		const shadowRoot = host.attachShadow({ mode: 'open' });
-		const p = host.ownerDocument.createElement('p');
-		shadowRoot.append(p);
+		const host = elementOf('<div><template shadowrootmode="open"><p></p></template></div>');
+		const p = must(host.deepQuerySelectorAll('p')[0]);
 		expect(getTreeParentElement(p)).toBeNull();
 	});
 
 	test('is the parent element inside a shadow root', () => {
-		const host = createJSDOMElement('<div></div>');
-		const shadowRoot = host.attachShadow({ mode: 'open' });
-		const section = host.ownerDocument.createElement('section');
-		const p = host.ownerDocument.createElement('p');
-		section.append(p);
-		shadowRoot.append(section);
+		const host = elementOf('<div><template shadowrootmode="open"><section><p></p></section></template></div>');
+		const section = must(host.deepQuerySelectorAll('section')[0]);
+		const p = must(host.deepQuerySelectorAll('p')[0]);
 		expect(getTreeParentElement(p)).toBe(section);
 	});
 });
 
 describe('getComposedParentElement', () => {
 	test('is the parent element in the same tree', () => {
-		const section = createJSDOMElement('<div><section><p></p></section></div>', 'section');
+		const section = elementOf('<div><section><p></p></section></div>', 'section');
 		const p = must(section.querySelector('p'));
 		expect(getComposedParentElement(p)).toBe(section);
 	});
 
 	test('is null at the top of the content of a template', () => {
-		const template = createJSDOMElement(
-			'<div><template><p></p></template></div>',
-			'template',
-		) as HTMLTemplateElement;
-		const p = must((template.content as DocumentFragment).firstElementChild);
+		const template = elementOf('<div><template><p></p></template></div>', 'template');
+		const p = must(must(template.content).childElements[0]);
 		expect(getComposedParentElement(p)).toBeNull();
 	});
 
 	test('is the host at the top of a shadow root', () => {
-		const host = createJSDOMElement('<div></div>');
-		const shadowRoot = host.attachShadow({ mode: 'open' });
-		const p = host.ownerDocument.createElement('p');
-		shadowRoot.append(p);
+		const host = elementOf('<div><template shadowrootmode="open"><p></p></template></div>');
+		const p = must(host.deepQuerySelectorAll('p')[0]);
 		expect(getComposedParentElement(p)).toBe(host);
 	});
 
 	test('is null for the top of a document', () => {
-		const div = createJSDOMElement('<div></div>');
+		const div = elementOf('<div></div>');
 		expect(getComposedParentElement(div)).toBeNull();
 	});
 });
@@ -93,14 +80,22 @@ describe('an element whose parent element is only the syntactical parent', () =>
 
 	test('has no tree parent where the roots differ', () => {
 		const template = { parentElement: null, getRootNode: () => documentRoot };
-		const top = { parentElement: template, getRootNode: () => contentRoot };
+		const top = {
+			parentElement: template,
+			getRootNode: () => contentRoot,
+			getFlatTreeSlot: (() => {}) as () => undefined,
+		};
 		expect(getTreeParentElement(top)).toBeNull();
 		expect(getComposedParentElement(top)).toBeNull();
 	});
 
 	test('has the tree parent where the roots are the same', () => {
 		const top = { parentElement: null, getRootNode: () => contentRoot };
-		const deep = { parentElement: top, getRootNode: () => contentRoot };
+		const deep = {
+			parentElement: top,
+			getRootNode: () => contentRoot,
+			getFlatTreeSlot: (() => {}) as () => undefined,
+		};
 		expect(getTreeParentElement(deep)).toBe(top);
 		expect(getComposedParentElement(deep)).toBe(top);
 	});
@@ -109,7 +104,11 @@ describe('an element whose parent element is only the syntactical parent', () =>
 		const host = { parentElement: null, getRootNode: () => documentRoot };
 		const shadowRoot = { nodeType: 11, host };
 		const template = { parentElement: host, getRootNode: () => documentRoot };
-		const top = { parentElement: template, getRootNode: () => shadowRoot };
+		const top = {
+			parentElement: template,
+			getRootNode: () => shadowRoot,
+			getFlatTreeSlot: (() => {}) as () => undefined,
+		};
 		expect(getTreeParentElement(top)).toBeNull();
 		expect(getComposedParentElement(top)).toBe(host);
 	});
@@ -145,7 +144,11 @@ describe('an element of the light DOM of a shadow host', () => {
 
 describe('isShadowRoot', () => {
 	test.each([
-		['a shadow root of a DOM', createJSDOMElement('<div></div>').attachShadow({ mode: 'open' }), true],
+		[
+			'a shadow root of a DOM',
+			elementOf('<div><template shadowrootmode="open"></template></div>').shadowRoot,
+			true,
+		],
 		['a document fragment that has a host', { nodeType: 11, host: {} }, true],
 		['a document fragment that has no host', { nodeType: 11 }, false],
 		['an element that has a host', { nodeType: 1, host: {} }, false],
@@ -156,34 +159,11 @@ describe('isShadowRoot', () => {
 	});
 });
 
-describe('an element without getRootNode', () => {
-	test('is in one tree with a parent element that has getRootNode', () => {
-		const parent = { parentElement: null, getRootNode: () => ({}) };
-		const el = { parentElement: parent };
-		expect(getTreeParentElement(el)).toBe(parent);
-	});
-
-	test('is in one tree with its parent element when only the element has getRootNode', () => {
-		const parent = { parentElement: null };
-		const el = { parentElement: parent, getRootNode: () => ({}) };
-		expect(getTreeParentElement(el)).toBe(parent);
-	});
-
-	test('is in one tree with its parent element', () => {
-		const parent = { parentElement: null };
-		const el = { parentElement: parent };
-		expect(getTreeParentElement(el)).toBe(parent);
-		expect(getComposedParentElement(el)).toBe(parent);
-		expect(getComposedParentElement(parent)).toBeNull();
-	});
-});
-
 describe('isNotRendered', () => {
 	test('is true only for an element that no slot of its shadow host takes', () => {
 		expect(isNotRendered({ getFlatTreeSlot: () => null })).toBe(true);
 		expect(isNotRendered({ getFlatTreeSlot: () => ({}) })).toBe(false);
 		expect(isNotRendered({ getFlatTreeSlot: () => {} })).toBe(false);
-		expect(isNotRendered({})).toBe(false);
 	});
 });
 

@@ -27,8 +27,8 @@ pub fn is_absent(attr: &MLASTHTMLAttr) -> bool {
     attr.is_absent == Some(true)
 }
 
-/// The attribute that [`get_attr_value_from_el`] reads the value of (TS `getAttributeNode()`, as
-/// `getAttribute()` names the attribute: [`is_named_by`]): for a rule that asks more of it than its
+/// The attribute that [`get_attr_value_from_el`] reads the value of (TS `getAttrNode()`, as
+/// `getAttrValue()` names the attribute: [`is_named_by`]): for a rule that asks more of it than its
 /// value.
 #[must_use]
 pub fn get_html_attr_from_el<'a>(el: &'a ElementData, attr_name: &str) -> Option<&'a MLASTHTMLAttr> {
@@ -40,7 +40,7 @@ pub fn get_html_attr_from_el<'a>(el: &'a ElementData, attr_name: &str) -> Option
     })
 }
 
-/// TS `getAttribute()`: `attr_name` names the attribute as the DOM names it ([`is_named_by`]: the
+/// TS `getAttrValue()`: `attr_name` names the attribute as the DOM names it ([`is_named_by`]: the
 /// name the parser resolved, `potentialName`, JSX's `htmlFor` is `for`, in any spelling the DOM
 /// makes the same attribute), and the answer is [`attr_value`]. Only
 /// `HTMLAttr` variants match (spread attrs are skipped), and an attribute the framework does not
@@ -50,7 +50,7 @@ pub fn get_attr_value_from_el<'a>(el: &'a ElementData, attr_name: &str) -> Optio
     get_html_attr_from_el(el, attr_name).map(attr_value)
 }
 
-/// TS `MLElement#getAttributeNode()`: the same lookup as [`get_html_attr_from_el`].
+/// TS `MLElement#getAttrNode()`: the same lookup as [`get_html_attr_from_el`].
 #[must_use]
 pub fn get_attr_node_from_el<'a>(el: &'a ElementData, attr_name: &str) -> Option<&'a MLASTHTMLAttr> {
     get_html_attr_from_el(el, attr_name)
@@ -64,7 +64,7 @@ pub fn has_attr(arena: &DomArena, node_id: NodeId, attr_name: &str) -> bool {
 
 /// The first element, in document order, whose `id` attribute equals `id`.
 ///
-/// Counterpart of `document.getElementById()`, which the TS rules (`tab-requires-tabpanel`
+/// Counterpart of `document.findElementById()`, which the TS rules (`tab-requires-tabpanel`
 /// and others) use to resolve `aria-controls` and similar ID references. The attribute
 /// name is matched case-insensitively and the value exactly, as the DOM does.
 #[must_use]

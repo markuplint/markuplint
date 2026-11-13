@@ -23,9 +23,9 @@ export default createRule<boolean, null>({
 	async verify({ document, report, t }) {
 		await document.walkOn('Element', el => {
 			if (el.localName !== 'img') return;
-			if (el.pretenderContext?.type === 'pretender' && !el.hasAttribute('as')) return;
+			if (el.pretenderContext?.type === 'pretender' && !el.hasAttr('as')) return;
 
-			const usemapAttr = el.getAttributeNode('usemap');
+			const usemapAttr = el.getAttrNode('usemap');
 			if (!usemapAttr) return;
 			if (usemapAttr.isDynamicValue) return;
 
@@ -35,7 +35,7 @@ export default createRule<boolean, null>({
 
 			const targetName = value.slice(1);
 			const target = querySelectorAllInTree(el, 'map').find(candidate => {
-				const name = candidate.getAttributeNode('name');
+				const name = candidate.getAttrNode('name');
 				if (!name) {
 					return false;
 				}

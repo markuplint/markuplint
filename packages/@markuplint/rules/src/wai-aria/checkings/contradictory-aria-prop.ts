@@ -51,8 +51,8 @@ export const checkingContradictoryAriaProp: AttrChecker<
 
 			const value = attr.value.trim().toLowerCase();
 
-			if (attr.ownerElement.hasAttribute(equivalentHtmlAttr.htmlAttrName)) {
-				const targetAttrValue = attr.ownerElement.getAttribute(equivalentHtmlAttr.htmlAttrName);
+			if (attr.ownerElement.hasAttr(equivalentHtmlAttr.htmlAttrName)) {
+				const targetAttrValue = attr.ownerElement.getAttrValue(equivalentHtmlAttr.htmlAttrName);
 				if (
 					(equivalentHtmlAttr.value == null && targetAttrValue === value) ||
 					equivalentHtmlAttr.value === value

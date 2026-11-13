@@ -32,7 +32,7 @@ export const checkingTabRequiresTabpanel: ElementChecker<
 			return;
 		}
 
-		const selectedAttr = el.getAttributeNode('aria-selected');
+		const selectedAttr = el.getAttrNode('aria-selected');
 		if (!selectedAttr || selectedAttr.isDynamicValue || selectedAttr.value !== 'true') {
 			return;
 		}
@@ -44,7 +44,7 @@ export const checkingTabRequiresTabpanel: ElementChecker<
 		const isTabpanel = (candidate: typeof el) =>
 			getComputedRole(document.specs, candidate, ariaVersion).role?.name === 'tabpanel';
 
-		const controlsAttr = el.getAttributeNode('aria-controls');
+		const controlsAttr = el.getAttrNode('aria-controls');
 		if (controlsAttr && !controlsAttr.isDynamicValue) {
 			const hasControlledTabpanel = controlsAttr.value
 				.split(/\s+/)
@@ -59,10 +59,10 @@ export const checkingTabRequiresTabpanel: ElementChecker<
 		}
 
 		// The tabpanel refers to the tab in the tree of the tab, and the ids are compared as the DOM has them
-		const tabId = getDOMValue(el.getAttributeNode('id'));
+		const tabId = getDOMValue(el.getAttrNode('id'));
 		if (tabId != null) {
 			const hasLabellingTabpanel = querySelectorAllInTree(el, '[aria-labelledby]').some(candidate => {
-				const labelledbyAttr = candidate.getAttributeNode('aria-labelledby');
+				const labelledbyAttr = candidate.getAttrNode('aria-labelledby');
 				if (!labelledbyAttr || labelledbyAttr.isDynamicValue) return false;
 				return (
 					labelledbyAttr.value

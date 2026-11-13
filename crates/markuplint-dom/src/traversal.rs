@@ -28,7 +28,7 @@ impl DomArena {
         self.source()?.get(start..close_tag.offset)
     }
 
-    /// Mirrors TS `getPureChildNodes()` which filters out `type === 'endtag'`
+    /// Mirrors TS `pureChildren()` which filters out `type === 'endtag'`
     /// and `type === 'invalid'` nodes. In Rust, this also filters Text/Comment/PSBlock
     /// nodes with `is_bogus = true`.
     #[must_use]
@@ -186,7 +186,7 @@ impl DomArena {
 
     /// Iterate over descendants of a node in document order (depth-first pre-order).
     pub fn descendants(&self, id: NodeId) -> DescendantIter<'_> {
-        let children = self.get(id).map(|n| n.children().to_vec()).unwrap_or_default();
+        let children = self.get(id).map_or_default(|n| n.children().to_vec());
         DescendantIter {
             arena: self,
             stack: children.into_iter().rev().collect(),

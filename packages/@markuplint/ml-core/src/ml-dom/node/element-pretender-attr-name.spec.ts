@@ -29,7 +29,7 @@ function labelOf(sourceCode: string, componentNameVariants: boolean, fromAttr = 
 		{ componentNameVariants, pretenders: pretendersOf(fromAttr) },
 	);
 	const el = document.querySelector('x-comp');
-	return (el?.pretenderContext as { as: { getAttribute(name: string): string | null } } | null)?.as.getAttribute(
+	return (el?.pretenderContext as { as: { getAttrValue(name: string): string | null } } | null)?.as.getAttrValue(
 		'aria-label',
 	);
 }

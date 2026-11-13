@@ -150,8 +150,7 @@ impl Rule for RequireAttr {
                 .options
                 .get("ignoreAttrs")
                 .and_then(serde_json::Value::as_array)
-                .map(|arr| arr.iter().filter_map(|v| v.as_str().map(String::from)).collect())
-                .unwrap_or_default();
+                .map_or_default(|arr| arr.iter().filter_map(|v| v.as_str().map(String::from)).collect());
             let is_ignored = |name: &str| {
                 ignore_attrs
                     .iter()

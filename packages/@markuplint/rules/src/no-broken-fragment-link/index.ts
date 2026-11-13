@@ -41,7 +41,7 @@ export default createRule({
 		}
 
 		for (const el of document.querySelectorAll('[id]')) {
-			const attr = el.getAttributeNode('id');
+			const attr = el.getAttrNode('id');
 			if (!attr) {
 				continue;
 			}
@@ -59,7 +59,7 @@ export default createRule({
 		}
 
 		for (const el of document.querySelectorAll('[name]')) {
-			const attr = el.getAttributeNode('name');
+			const attr = el.getAttrNode('name');
 			if (!attr) {
 				continue;
 			}
@@ -80,7 +80,7 @@ export default createRule({
 				return;
 			}
 
-			const href = el.getAttributeNode('href');
+			const href = el.getAttrNode('href');
 
 			if (!href) {
 				return;

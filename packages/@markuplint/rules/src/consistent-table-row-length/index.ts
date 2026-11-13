@@ -53,9 +53,9 @@ export default createRule<boolean>({
 					if (!unexpected) {
 						// The overshoot starts inside a spanned cell, so the `colspan` is the culprit.
 						const spanStart = cells.findLast(
-							cell => Number.parseInt(cell.getAttribute('colspan') ?? '1') > 1,
+							cell => Number.parseInt(cell.getAttrValue('colspan') ?? '1') > 1,
 						);
-						const colSpan = spanStart?.getAttributeNode('colspan');
+						const colSpan = spanStart?.getAttrNode('colspan');
 						if (!colSpan) {
 							continue;
 						}

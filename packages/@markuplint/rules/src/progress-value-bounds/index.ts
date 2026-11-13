@@ -28,10 +28,10 @@ export default createRule<boolean, null>({
 		await document.walkOn('Element', el => {
 			if (el.localName !== 'progress') return;
 			// Pretender progresses with no `as` pin: attributes are unknown until typed.
-			if (el.pretenderContext?.type === 'pretender' && !el.hasAttribute('as')) return;
+			if (el.pretenderContext?.type === 'pretender' && !el.hasAttr('as')) return;
 
-			const valueAttr = el.getAttributeNode('value');
-			const maxAttr = el.getAttributeNode('max');
+			const valueAttr = el.getAttrNode('value');
+			const maxAttr = el.getAttrNode('max');
 
 			if (valueAttr === null) return;
 			if (valueAttr.isDynamicValue || maxAttr?.isDynamicValue) return;

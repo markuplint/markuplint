@@ -3,10 +3,9 @@ import type { TextNodeType } from './types.js';
 import type { MLASTText } from '@markuplint/ml-ast';
 import type { PlainData, RuleConfigValue } from '@markuplint/ml-config';
 
-import { getAssignedSlot, getFlatTreeSlot } from '../helper/slot-assignment.js';
+import { getFlatTreeSlot } from '../helper/slot-assignment.js';
 
 import { MLCharacterData } from './character-data.js';
-import { UnexpectedCallError } from '@markuplint/shared';
 
 /**
  * Raw text elements
@@ -23,21 +22,11 @@ const rawTextElements = new Set(['script', 'style']);
  * @template T - The rule configuration value type
  * @template O - The rule options type
  */
-export class MLText<T extends RuleConfigValue, O extends PlainData = undefined>
-	extends MLCharacterData<T, O, MLASTText>
-	implements Text
-{
-	/**
-	 * The slot of an open declarative shadow root that this text is assigned to, or `null` when no
-	 * slot takes it, the root is closed (the DOM does not expose it), or the assignment is not known.
-	 *
-	 * @implements DOM API: `Text`
-	 * @see https://dom.spec.whatwg.org/#dom-slotable-assignedslot
-	 */
-	get assignedSlot(): HTMLSlotElement | null {
-		return getAssignedSlot(this) as HTMLSlotElement | null;
-	}
-
+export class MLText<T extends RuleConfigValue, O extends PlainData = undefined> extends MLCharacterData<
+	T,
+	O,
+	MLASTText
+> {
 	/**
 	 * The slot that places this text in the flat tree. See {@link MLElement.getFlatTreeSlot}.
 	 *
@@ -75,17 +64,6 @@ export class MLText<T extends RuleConfigValue, O extends PlainData = undefined>
 	}
 
 	/**
-	 * **IT THROWS AN ERROR WHEN CALLING THIS.**
-	 *
-	 * @unsupported
-	 * @implements DOM API: `Text`
-	 * @see https://dom.spec.whatwg.org/#ref-for-dom-text-splittext%E2%91%A0
-	 */
-	get wholeText(): string {
-		throw new UnexpectedCallError('Not supported "wholeText" property');
-	}
-
-	/**
 	 * Returns `true` if a parent element is `<script>` or `<style>`
 	 *
 	 * @implements `@markuplint/ml-core` API: `MLText`
@@ -104,16 +82,5 @@ export class MLText<T extends RuleConfigValue, O extends PlainData = undefined>
 	 */
 	isWhitespace() {
 		return /^\s+$/.test(this.raw);
-	}
-
-	/**
-	 * **IT THROWS AN ERROR WHEN CALLING THIS.**
-	 *
-	 * @unsupported
-	 * @implements DOM API: `Text`
-	 * @see https://dom.spec.whatwg.org/#ref-for-dom-text-wholetext%E2%91%A0
-	 */
-	splitText(offset: number): Text {
-		throw new UnexpectedCallError('Not supported "splitText" method');
 	}
 }

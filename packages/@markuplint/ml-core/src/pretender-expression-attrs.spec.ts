@@ -130,14 +130,12 @@ describe('a pretender attribute of { expression }', () => {
 		});
 		const el = document.querySelector('Btn');
 		// An element that is a pretender is asked as the element that it pretends to be
-		expect(el?.hasAttribute('disabled')).toBe(false);
-		expect(el?.getAttribute('disabled')).toBeNull();
+		expect(el?.hasAttr('disabled')).toBe(false);
+		expect(el?.getAttrValue('disabled')).toBeNull();
 		expect(el?.getAttributeToken('disabled')).toHaveLength(0);
 		expect(document.querySelector('Btn[disabled]')).toBeNull();
 		// The list of the attributes has it: a name that is misspelled is reported whatever its value is
 		expect(el?.getAttributeTokens().map(attr => attr.name)).toStrictEqual(['disabled']);
-		expect(el?.getAttributeNames()).toStrictEqual([]);
-		expect(el?.hasAttributes()).toBe(false);
 	});
 
 	test('a string value is the value of the attribute', async () => {
@@ -175,10 +173,10 @@ describe('a pretender attribute of { expression }', () => {
 		});
 		const as = pretenderOf(document.querySelector('Btn'));
 		// `alt=""`: the empty string, not `alt="true"`
-		expect(as.getAttribute('alt')).toBe('');
+		expect(as.getAttrValue('alt')).toBe('');
 		// An attribute without a value is a boolean attribute that is present: its value is empty
-		expect(as.getAttribute('title')).toBe('');
-		expect(as.getAttribute('aria-hidden')).toBe('');
+		expect(as.getAttrValue('title')).toBe('');
+		expect(as.getAttrValue('aria-hidden')).toBe('');
 		expect(as.attributes.find(a => a.name === 'alt')?.literal).toBeNull();
 	});
 
@@ -236,7 +234,7 @@ describe('a pretender attribute of { fromAttr } is rendered under its own name',
 			pretenders: forward('title', 'size'),
 		});
 		const as = pretenderOf(document.querySelector('Btn'));
-		expect(as.getAttribute('title')).toBe(rendered);
+		expect(as.getAttrValue('title')).toBe(rendered);
 		// The value is known: it is the literal that is rendered, not the text of code that is not read
 		expect(as.attributes.find(a => a.name === 'title')?.isDynamicValue).toBeUndefined();
 	});
@@ -324,7 +322,7 @@ describe('a fix of a report on an attribute that a pretender made', () => {
 			name: 'test-rule',
 			defaultValue: true,
 			verify({ document, report }) {
-				for (const el of document.getElementsByTagName('Btn')) {
+				for (const el of document.querySelectorAll('Btn')) {
 					const scope = scopeOf(el);
 					report({
 						scope,

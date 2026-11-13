@@ -1,3 +1,4 @@
+import type { SpecElement } from './spec-element.js';
 import type { ARIA } from './aria.js';
 import type { AttributeJSON, AttributeType, ConditionalAttributeType, GlobalAttributes } from './attributes.js';
 import type { ContentModel, Category } from './permitted-structures.js';
@@ -460,7 +461,7 @@ export type Matches = (selector: string) => boolean;
  * specified, as user agents still expose it.
  */
 export type ComputedRole = {
-	readonly el: Element;
+	readonly el: SpecElement;
 	readonly role:
 		| (ARIARole & {
 				readonly superClassRoles: readonly ARIARoleInSchema[];

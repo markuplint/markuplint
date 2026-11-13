@@ -32,14 +32,14 @@ pub fn pattern_match(needle: &str, pattern: &str) -> bool {
         && let Some(body) = caps.get(1).map(|m| m.as_str()).filter(|b| !b.is_empty())
     {
         let flags = caps.get(2).map_or("", |m| m.as_str());
-        let last_flag: String = flags.chars().last().map(String::from).unwrap_or_default();
+        let last_flag: String = flags.chars().last().map_or_default(String::from);
         // TS `new RegExp` throws for a pattern it cannot read
         return markuplint_types::check::js_regex::JsRegex::new(body, &last_flag).is_some_and(|re| re.is_match(needle));
     }
     needle == pattern
 }
 
-/// TS `el.pretenderContext?.type === 'pretender' && !el.hasAttribute('as')`: an element
+/// TS `el.pretenderContext?.type === 'pretender' && !el.hasAttr('as')`: an element
 /// a pretender makes pretend, without the `as` attribute that would say its type at the
 /// usage site. The reference rules skip such an element, whose attributes and
 /// descendants are those of the component's usage, not of what it renders.
@@ -197,7 +197,7 @@ fn has_unknown_content(arena: &DomArena, spec: &MLMLSpec, node_id: NodeId) -> bo
         return true;
     }
     let children = rendered_child_nodes(spec, arena, node_id)
-        .unwrap_or_else(|| arena.children_of(node_id).map(<[NodeId]>::to_vec).unwrap_or_default());
+        .unwrap_or_else(|| arena.children_of(node_id).map_or_default(<[NodeId]>::to_vec));
     children.into_iter().any(|child| {
         arena.get(child).and_then(DomNode::as_element).is_some()
             && get_attr_value(arena, child, "aria-hidden") != Some("true")

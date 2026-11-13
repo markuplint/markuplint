@@ -8,7 +8,7 @@ import { representTransparentNodes, transparentMode } from './represent-transpar
 function c(html: string, evaluateConditionalChildNodes = true) {
 	const el = createTestElement(`<div>${html}</div>`);
 	const patterns = representTransparentNodes(
-		[...el.children],
+		[...el.childElements],
 		[],
 		specs,
 		{
@@ -23,7 +23,7 @@ function c(html: string, evaluateConditionalChildNodes = true) {
 function svelteC(html: string) {
 	const el = createTestElement(`<div>${html}</div>`, { parser: svelteParser });
 	const patterns = representTransparentNodes(
-		[...el.children],
+		[...el.childElements],
 		[],
 		specs,
 		{

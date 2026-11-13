@@ -1,3 +1,4 @@
+import type { SpecElement } from '../../types/spec-element.js';
 import type { ARIAVersion, MLMLSpec } from '../../types/index.js';
 
 import { getPermittedRoles as _getPermittedRoles } from './get-permitted-roles-spec.js';
@@ -13,7 +14,7 @@ import { getPermittedRoles as _getPermittedRoles } from './get-permitted-roles-s
  */
 export function getPermittedRoles(
 	// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
-	el: Element,
+	el: SpecElement,
 	version: ARIAVersion,
 	specs: MLMLSpec,
 ) {

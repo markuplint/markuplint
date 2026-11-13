@@ -135,19 +135,19 @@ describe('AST', () => {
 			createTestElement('<label></label>', {
 				parser: await import('@markuplint/jsx-parser'),
 				specs: { ...specs, acceptedAttrNames: 'idl' },
-			}).getAttributeNode('for')?.localName,
+			}).getAttrNode('for')?.localName,
 		).toBeUndefined();
 		expect(
 			createTestElement('<label htmlFor></label>', {
 				parser: await import('@markuplint/jsx-parser'),
 				specs: { ...specs, acceptedAttrNames: 'idl' },
-			}).getAttributeNode('for')?.localName,
+			}).getAttrNode('for')?.localName,
 		).toBe('for');
 		expect(
 			createTestElement('<label htmlFor></label>', {
 				parser: await import('@markuplint/jsx-parser'),
 				specs: { ...specs, acceptedAttrNames: 'idl' },
-			}).getAttributeNode('htmlFor')?.localName,
+			}).getAttrNode('htmlFor')?.localName,
 		).toBeUndefined();
 	});
 
@@ -157,21 +157,21 @@ describe('AST', () => {
 			parser: await import('@markuplint/jsx-parser'),
 			specs: { ...specs, acceptedAttrNames: 'idl' },
 		});
-		expect(idlEl.getAttributeNode('tabindex')?.candidate).toBe('tabIndex');
+		expect(idlEl.getAttrNode('tabindex')?.candidate).toBe('tabIndex');
 
 		// In 'both' mode, no candidate is set (both names are accepted)
 		const bothEl = createTestElement('<div tabindex="0"></div>', {
 			parser: await import('@markuplint/jsx-parser'),
 			specs: { ...specs, acceptedAttrNames: 'both' },
 		});
-		expect(bothEl.getAttributeNode('tabindex')?.candidate).toBeUndefined();
+		expect(bothEl.getAttrNode('tabindex')?.candidate).toBeUndefined();
 	});
 
 	test('getAttributeToken matches attribute names case-insensitively (#4180)', () => {
 		const el = createTestElement('<div ARIA-HIDDEN="true" Data-Foo="1"></div>');
 		expect(el.getAttributeToken('aria-hidden').map(attr => attr.value)).toStrictEqual(['true']);
 		expect(el.getAttributeToken('ARIA-HIDDEN').map(attr => attr.value)).toStrictEqual(['true']);
-		expect(el.getAttributeNode('data-foo')?.value).toBe('1');
+		expect(el.getAttrNode('data-foo')?.value).toBe('1');
 		expect(el.getAttributeToken('aria-label')).toStrictEqual([]);
 	});
 
@@ -367,21 +367,21 @@ div#hoge.foo.bar
 			});
 
 		const getAs = (el: { pretenderContext: unknown }) =>
-			(el.pretenderContext as { as: { getAttribute(name: string): string | null } }).as;
+			(el.pretenderContext as { as: { getAttrValue(name: string): string | null } }).as;
 
 		test('the value of the attribute at the usage site is copied', async () => {
 			const el = await createComp('<Comp kind="submit" />', true);
-			expect(getAs(el).getAttribute('type')).toBe('submit');
+			expect(getAs(el).getAttrValue('type')).toBe('submit');
 		});
 
 		test('an attribute that is missing at the usage site is not created with omitIfMissing', async () => {
 			const el = await createComp('<Comp />', true);
-			expect(getAs(el).getAttribute('type')).toBeNull();
+			expect(getAs(el).getAttrValue('type')).toBeNull();
 		});
 
 		test('an attribute that is missing at the usage site is created empty without omitIfMissing', async () => {
 			const el = await createComp('<Comp />', false);
-			expect(getAs(el).getAttribute('type')).toBe('');
+			expect(getAs(el).getAttrValue('type')).toBe('');
 		});
 
 		test.each([true, false])('an expression at the usage site stays dynamic (omitIfMissing: %s)', async flag => {
@@ -1199,7 +1199,7 @@ describe('ChildNode with blockBehavior', () => {
 		);
 
 		expect(dom.nodeList[0]?.nodeName).toEqual('DL');
-		expect(dom.nodeList[0]?.children[0]?.nodeName).toEqual('DT');
+		expect(dom.nodeList[0]?.childElements[0]?.nodeName).toEqual('DT');
 	});
 
 	test('a conditional block stays in childNodes', async () => {
@@ -1210,12 +1210,12 @@ describe('ChildNode with blockBehavior', () => {
 		const ul = dom.nodeList[0];
 		expect(ul?.nodeName).toEqual('UL');
 		expect(ul?.childElementCount).toBe(1);
-		expect(ul?.children[0]?.raw).toBe('<li class="a">');
+		expect(ul?.childElements[0]?.raw).toBe('<li class="a">');
 		expect([...ul.childNodes].map(node => node.nodeName)).toEqual(['LI', '#ml-block']);
 		const block = ul?.childNodes[1];
 		expect(block?.is(block.MARKUPLINT_PREPROCESSOR_BLOCK) && block.blockBehavior?.type).toBe('if');
 		expect([...block.childNodes].map(node => node.raw)).toEqual(['<li class="b">']);
-		expect(block.childNodes[0]?.parentNode?.nodeName).toBe('UL');
+		expect(block.childNodes[0]?.parent?.nodeName).toBe('UL');
 	});
 
 	test('an element inside a Pug conditional keeps the element that contains the block as its parent', async () => {
@@ -1227,7 +1227,7 @@ describe('ChildNode with blockBehavior', () => {
 			{ parser: await import('@markuplint/pug-parser') },
 		);
 		const span = dom.querySelector('span');
-		expect(span?.parentNode?.nodeName).toBe('DIV');
+		expect(span?.parent?.nodeName).toBe('DIV');
 	});
 
 	test('the parents of a JSX fragment, of an element in it, and of an element in an expression', async () => {
@@ -1238,12 +1238,12 @@ describe('ChildNode with blockBehavior', () => {
 		const div = dom.querySelector('div');
 		const span = dom.querySelector('span');
 		expect(fragment?.nodeName).toBe('#JSX-FRAGMENT');
-		expect(fragment?.parentNode).toBeNull();
-		expect(div?.parentNode).toBe(fragment);
+		expect(fragment?.parent).toBeNull();
+		expect(div?.parent).toBe(fragment);
 		expect(fragment?.syntacticalParentNode?.nodeName).toBe('#document');
 		expect(div?.syntacticalParentNode).toBe(fragment);
 		expect(span?.syntacticalParentNode?.nodeName).toBe('#ml-block');
-		expect(span?.parentNode?.nodeName).toBe('DIV');
+		expect(span?.parent?.nodeName).toBe('DIV');
 	});
 });
 
