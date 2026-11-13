@@ -3,6 +3,13 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [5.6.0](https://github.com/markuplint/markuplint/compare/v5.5.0...v5.6.0) (2026-11-12)
+
+### Features
+
+* **ml-ast:** add MLParser#slotElement ([e395c8d](https://github.com/markuplint/markuplint/commit/e395c8dd80472f8a1583d33e6459457673b5f208))
+
+
 # [5.5.0](https://github.com/markuplint/markuplint/compare/v5.4.0...v5.5.0) (2026-11-10)
 
 ### Features
