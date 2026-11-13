@@ -961,10 +961,7 @@ pub fn is_content_model_first_child(arena: &DomArena, node_id: NodeId) -> bool {
     let siblings = if flat.contains(&node_id) {
         flat
     } else {
-        arena
-            .get(parent_id)
-            .map(|parent| parent.children().to_vec())
-            .unwrap_or_default()
+        arena.get(parent_id).map_or_default(|parent| parent.children().to_vec())
     };
     let Some(pos) = siblings.iter().position(|&id| id == node_id) else {
         return true;

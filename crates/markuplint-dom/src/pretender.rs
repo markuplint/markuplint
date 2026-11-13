@@ -179,7 +179,7 @@ impl crate::arena::DomArena {
     pub fn pretender_given_children(&self, id: NodeId) -> Option<Vec<NodeId>> {
         let pretended = self.get(id)?.as_element()?.pretended()?;
         Some(if pretended.renders_children {
-            self.children_of(id).map(<[NodeId]>::to_vec).unwrap_or_default()
+            self.children_of(id).map_or_default(<[NodeId]>::to_vec)
         } else {
             Vec::new()
         })

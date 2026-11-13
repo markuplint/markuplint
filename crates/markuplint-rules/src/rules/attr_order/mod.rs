@@ -268,8 +268,7 @@ fn spec_attr_names(spec: &MLMLSpec, category: &str) -> HashSet<String> {
     spec.def
         .global_attrs
         .get(category)
-        .map(|attrs| attrs.keys().cloned().collect())
-        .unwrap_or_default()
+        .map_or_default(|attrs| attrs.keys().cloned().collect())
 }
 
 /// TS `compareStrings`: the `<` of JavaScript strings, which compares UTF-16 code units.

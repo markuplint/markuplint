@@ -76,14 +76,11 @@ impl NapiDom {
 
     #[napi]
     pub fn get_children(&self, id: u32) -> Vec<NapiNode> {
-        self.arena
-            .children_of(id as NodeId)
-            .map(|ids| {
-                ids.iter()
-                    .filter_map(|&child_id| self.arena.get(child_id).map(to_napi_node))
-                    .collect()
-            })
-            .unwrap_or_default()
+        self.arena.children_of(id as NodeId).map_or_default(|ids| {
+            ids.iter()
+                .filter_map(|&child_id| self.arena.get(child_id).map(to_napi_node))
+                .collect()
+        })
     }
 
     #[napi]

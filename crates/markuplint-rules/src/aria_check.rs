@@ -746,15 +746,12 @@ fn optimize_permitted_roles(permitted: PermittedRoles, version: ARIAVersion) -> 
 // ---- implicitProperties / properties ----
 
 fn parse_implicit_properties(value: Option<&Value>) -> Vec<(String, String)> {
-    value
-        .and_then(Value::as_object)
-        .map(|props| {
-            props
-                .iter()
-                .filter_map(|(name, value)| Some((name.clone(), value.as_str()?.to_string())))
-                .collect()
-        })
-        .unwrap_or_default()
+    value.and_then(Value::as_object).map_or_default(|props| {
+        props
+            .iter()
+            .filter_map(|(name, value)| Some((name.clone(), value.as_str()?.to_string())))
+            .collect()
+    })
 }
 
 fn parse_properties(value: Option<&Value>) -> ElementProperties {

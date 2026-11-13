@@ -236,21 +236,17 @@ fn resolve(
 
     // Resolve ConditionalAttributeType[] to a concrete type based on element matching (#3598).
     if is_conditional_attribute_type_array(&spec.attr_type) {
-        let matched: Vec<&serde_json::Value> = spec
-            .attr_type
-            .as_array()
-            .map(|entries| {
-                entries
-                    .iter()
-                    .filter(|entry| {
-                        entry
-                            .get("condition")
-                            .and_then(condition_selector)
-                            .is_some_and(|selector| node_matches(&selector, ctx))
-                    })
-                    .collect()
-            })
-            .unwrap_or_default();
+        let matched: Vec<&serde_json::Value> = spec.attr_type.as_array().map_or_default(|entries| {
+            entries
+                .iter()
+                .filter(|entry| {
+                    entry
+                        .get("condition")
+                        .and_then(condition_selector)
+                        .is_some_and(|selector| node_matches(&selector, ctx))
+                })
+                .collect()
+        });
         spec.attr_type = combine_matched_conditional_types(&matched);
     }
 

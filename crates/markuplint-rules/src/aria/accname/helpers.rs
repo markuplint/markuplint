@@ -252,9 +252,7 @@ fn get_embedded_control_value(arena: &DomArena, node_id: NodeId, resolver: &dyn 
             if let Some(vn) = dom::get_attr_value(arena, node_id, "aria-valuenow") {
                 return vn.to_string();
             }
-            dom::get_attr_value(arena, node_id, "value")
-                .map(String::from)
-                .unwrap_or_default()
+            dom::get_attr_value(arena, node_id, "value").map_or_default(String::from)
         }
         "textbox" | "combobox" | "searchbox" => dom::get_attr_value(arena, node_id, "value")
             .map_or_else(|| text_content(arena, node_id, resolver), String::from),
@@ -277,13 +275,13 @@ fn get_embedded_control_value(arena: &DomArena, node_id: NodeId, resolver: &dyn 
 pub fn child_nodes(arena: &DomArena, node_id: NodeId, resolver: &dyn AccnameResolver) -> Vec<NodeId> {
     resolver
         .get_child_nodes(node_id)
-        .unwrap_or_else(|| arena.children_of(node_id).map(<[NodeId]>::to_vec).unwrap_or_default())
+        .unwrap_or_else(|| arena.children_of(node_id).map_or_default(<[NodeId]>::to_vec))
 }
 
 /// `el.textContent` as written: the text of the descendants, comments excluded.
 pub fn collect_text_content(arena: &DomArena, node_id: NodeId) -> String {
     text_content_of(arena, node_id, &|id| {
-        arena.children_of(id).map(<[NodeId]>::to_vec).unwrap_or_default()
+        arena.children_of(id).map_or_default(<[NodeId]>::to_vec)
     })
 }
 

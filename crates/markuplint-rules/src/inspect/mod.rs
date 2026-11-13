@@ -37,8 +37,7 @@ fn document_order(arena: &DomArena) -> Vec<NodeId> {
     let mut order = Vec::with_capacity(arena.len());
     let mut stack: Vec<NodeId> = arena
         .document()
-        .map(|document| document.children().iter().rev().copied().collect())
-        .unwrap_or_default();
+        .map_or_default(|document| document.children().iter().rev().copied().collect());
     while let Some(id) = stack.pop() {
         let Some(node) = arena.get(id) else {
             continue;

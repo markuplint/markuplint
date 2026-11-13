@@ -527,7 +527,7 @@ fn resolve_links(dom: &mut DomArena, child_ids: &[NodeId], parent_id: NodeId) {
         let prev = if i > 0 { Some(child_ids[i - 1]) } else { None };
         let next = child_ids.get(i + 1).copied();
 
-        let grandchild_ids: Vec<NodeId> = dom.get(child_id).map(|n| n.children().to_vec()).unwrap_or_default();
+        let grandchild_ids: Vec<NodeId> = dom.get(child_id).map_or_default(|n| n.children().to_vec());
 
         if let Some(node) = dom.get_mut(child_id)
             && let Some(base) = match node {

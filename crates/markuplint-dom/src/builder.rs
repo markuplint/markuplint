@@ -393,7 +393,7 @@ fn resolve_parents_and_siblings(arena: &mut DomArena, child_ids: &[NodeId], pare
         let next = child_ids.get(i + 1).copied();
 
         // Collect grandchild IDs before mutating.
-        let grandchild_ids: Vec<NodeId> = arena.get(child_id).map(|n| n.children().to_vec()).unwrap_or_default();
+        let grandchild_ids: Vec<NodeId> = arena.get(child_id).map_or_default(|n| n.children().to_vec());
 
         if let Some(node) = arena.get_mut(child_id)
             && let Some(base) = match node {
