@@ -1,8 +1,33 @@
+import type * as FileResolver from '@markuplint/file-resolver';
 import type { PlainData, RuleConfigValue } from '@markuplint/ml-config';
 
 import { MLRule } from '@markuplint/ml-core';
 import { mlTest } from 'markuplint';
-import { describe, test, expect } from 'vitest';
+import { afterEach, describe, test, expect, vi } from 'vitest';
+
+/**
+ * The rules that a spec has the engine run besides the built-in ones. The engine reads its rules
+ * from `resolveRules()` of `@markuplint/file-resolver` and takes no others, so a spec that needs a
+ * synthetic rule adds it there, after all the built-in ones. They are cleared after each test.
+ */
+const injectedRules = vi.hoisted((): MLRule<RuleConfigValue, PlainData>[] => []);
+
+vi.mock('@markuplint/file-resolver', async importOriginal => {
+	const original = await importOriginal<typeof FileResolver>();
+	return {
+		...original,
+		resolveRules: async () => [...(await original.resolveRules()), ...injectedRules],
+	};
+});
+
+afterEach(() => {
+	injectedRules.length = 0;
+});
+
+function mlTestWith(rules: readonly MLRule<RuleConfigValue, PlainData>[], ...args: Parameters<typeof mlTest>) {
+	injectedRules.splice(0, injectedRules.length, ...rules);
+	return mlTest(...args);
+}
 
 /**
  * Creates a rule that cyclically rewrites the value of `data-x` according to
@@ -95,7 +120,6 @@ describe('multi-pass fix', () => {
 					'attr-value-quotes': true,
 				},
 			},
-			undefined,
 			'en',
 			true,
 		);
@@ -112,7 +136,6 @@ describe('multi-pass fix', () => {
 					'attr-value-quotes': true,
 				},
 			},
-			undefined,
 			'en',
 			true,
 		);
@@ -129,7 +152,6 @@ describe('multi-pass fix', () => {
 					'attr-value-quotes': true,
 				},
 			},
-			undefined,
 			'en',
 			true,
 		);
@@ -147,7 +169,6 @@ describe('multi-pass fix', () => {
 					'no-duplicate-attr': true,
 				},
 			},
-			undefined,
 			'en',
 			true,
 		);
@@ -167,7 +188,6 @@ describe('multi-pass fix with parsers', () => {
 					'no-boolean-attr-value': true,
 				},
 			},
-			undefined,
 			'en',
 			true,
 		);
@@ -185,7 +205,6 @@ describe('multi-pass fix with parsers', () => {
 					'no-default-value': true,
 				},
 			},
-			undefined,
 			'en',
 			true,
 		);
@@ -204,7 +223,6 @@ describe('multi-pass fix with parsers', () => {
 					'no-boolean-attr-value': true,
 				},
 			},
-			undefined,
 			'en',
 			true,
 		);
@@ -221,7 +239,6 @@ describe('multi-pass fix with parsers', () => {
 					'no-duplicate-attr': true,
 				},
 			},
-			undefined,
 			'en',
 			true,
 		);
@@ -238,7 +255,6 @@ describe('multi-pass fix with parsers', () => {
 					'no-boolean-attr-value': true,
 				},
 			},
-			undefined,
 			'en',
 			true,
 		);
@@ -255,7 +271,6 @@ describe('multi-pass fix with parsers', () => {
 					'no-boolean-attr-value': true,
 				},
 			},
-			undefined,
 			'en',
 			true,
 		);
@@ -273,7 +288,6 @@ describe('finalPassViolations', () => {
 					'no-unknown-attr': true,
 				},
 			},
-			undefined,
 			'en',
 			true,
 		);
@@ -296,7 +310,6 @@ describe('finalPassViolations', () => {
 					'attr-value-quotes': true,
 				},
 			},
-			undefined,
 			'en',
 			true,
 		);
@@ -316,7 +329,6 @@ describe('finalPassViolations', () => {
 					'attr-value-quotes': true,
 				},
 			},
-			undefined,
 			'en',
 			true,
 		);
@@ -334,7 +346,6 @@ describe('finalPassViolations', () => {
 					'this-rule-does-not-exist': true,
 				},
 			},
-			undefined,
 			'en',
 			true,
 		);
@@ -345,14 +356,7 @@ describe('finalPassViolations', () => {
 
 	test('[multi-pass-fix-issue-3890-005] reflects the final code when the pass limit is reached', async () => {
 		// Non-converging, non-cycling fixes: a → b → … → k (10 passes, no repeat)
-		const { fixedCode, fixSummary } = await mlTest(
-			'<div data-x="a"></div>',
-			{
-				rules: {
-					'test-flip': true,
-					'test-overlap': true,
-				},
-			},
+		const { fixedCode, fixSummary } = await mlTestWith(
 			[
 				createFlipRule({
 					a: 'b',
@@ -369,6 +373,13 @@ describe('finalPassViolations', () => {
 				}),
 				overlapRule,
 			],
+			'<div data-x="a"></div>',
+			{
+				rules: {
+					'test-flip': true,
+					'test-overlap': true,
+				},
+			},
 			'en',
 			true,
 		);
@@ -384,7 +395,8 @@ describe('finalPassViolations', () => {
 describe('cycle detection', () => {
 	test('[multi-pass-fix-issue-3891-001] 2-pass oscillation (A → B → A) stops early', async () => {
 		const sourceCode = '<div data-x="a"></div>';
-		const { fixedCode, fixSummary } = await mlTest(
+		const { fixedCode, fixSummary } = await mlTestWith(
+			[createFlipRule({ a: 'b', b: 'a' }), overlapRule],
 			sourceCode,
 			{
 				rules: {
@@ -392,7 +404,6 @@ describe('cycle detection', () => {
 					'test-overlap': true,
 				},
 			},
-			[createFlipRule({ a: 'b', b: 'a' }), overlapRule],
 			'en',
 			true,
 		);
@@ -405,7 +416,8 @@ describe('cycle detection', () => {
 
 	test('[multi-pass-fix-issue-3891-002] 3-pass oscillation (A → B → C → A) is detected', async () => {
 		const sourceCode = '<div data-x="a"></div>';
-		const { fixedCode, fixSummary } = await mlTest(
+		const { fixedCode, fixSummary } = await mlTestWith(
+			[createFlipRule({ a: 'b', b: 'c', c: 'a' }), overlapRule],
 			sourceCode,
 			{
 				rules: {
@@ -413,7 +425,6 @@ describe('cycle detection', () => {
 					'test-overlap': true,
 				},
 			},
-			[createFlipRule({ a: 'b', b: 'c', c: 'a' }), overlapRule],
 			'en',
 			true,
 		);
@@ -432,7 +443,8 @@ describe('cycle detection', () => {
 describe('unparsable fix output', () => {
 	test('[multi-pass-fix-fix-011] multi-pass: pass producing unparsable code is rolled back', async () => {
 		const sourceCode = '<><div data-x="a"></div></>';
-		const { fixedCode, fixSummary } = await mlTest(
+		const { fixedCode, fixSummary } = await mlTestWith(
+			[breakRule, overlapRule],
 			sourceCode,
 			{
 				parser: { '.*': '@markuplint/jsx-parser' },
@@ -441,7 +453,6 @@ describe('unparsable fix output', () => {
 					'test-overlap': true,
 				},
 			},
-			[breakRule, overlapRule],
 			'en',
 			true,
 		);
@@ -455,7 +466,8 @@ describe('unparsable fix output', () => {
 
 	test('[multi-pass-fix-fix-012] single pass: unparsable output is rolled back, not written', async () => {
 		const sourceCode = '<><div data-x="a"></div></>';
-		const { fixedCode, fixSummary } = await mlTest(
+		const { fixedCode, fixSummary } = await mlTestWith(
+			[breakRule],
 			sourceCode,
 			{
 				parser: { '.*': '@markuplint/jsx-parser' },
@@ -463,7 +475,6 @@ describe('unparsable fix output', () => {
 					'test-break': true,
 				},
 			},
-			[breakRule],
 			'en',
 			true,
 		);
