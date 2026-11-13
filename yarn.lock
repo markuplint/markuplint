@@ -9116,9 +9116,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"got@npm:16.1.0":
-  version: 16.1.0
-  resolution: "got@npm:16.1.0"
+"got@npm:16.2.0":
+  version: 16.2.0
+  resolution: "got@npm:16.2.0"
   dependencies:
     "@sindresorhus/is": "npm:^8.1.0"
     byte-counter: "npm:^0.1.0"
@@ -9130,7 +9130,7 @@ __metadata:
     responselike: "npm:^4.0.2"
     type-fest: "npm:^5.10.0"
     uint8array-extras: "npm:^1.6.0"
-  checksum: 10c0/99a8ec70cf7bacf1e507cf1a16a52ad01d7fe347946575bff7299a3422aec3f39cd4b8880b3487f18b722f227b39b18460bac47a7f525399747d6365ed90594a
+  checksum: 10c0/1d017445c4bcccb00caab556dd800e099f017fd662837d2e34404f9ab312d14f7ca86cd8ab7aac7578311f2d6859e6dc7a915b0575ba70432da927fc87e23685
   languageName: node
   linkType: hard
 
@@ -11384,7 +11384,7 @@ __metadata:
     npm-run-all2: "npm:9.0.4"
     oxfmt: "npm:0.75.0"
     oxlint: "npm:1.90.0"
-    renovate: "npm:44.221.4"
+    renovate: "npm:44.221.5"
     textlint: "npm:15.8.0"
     textlint-filter-rule-comments: "npm:1.3.0"
     textlint-rule-preset-ja-spacing: "npm:3.0.4"
@@ -14655,9 +14655,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"renovate@npm:44.221.4":
-  version: 44.221.4
-  resolution: "renovate@npm:44.221.4"
+"renovate@npm:44.221.5":
+  version: 44.221.5
+  resolution: "renovate@npm:44.221.5"
   dependencies:
     "@aws-sdk/client-codecommit": "npm:3.1139.0"
     "@aws-sdk/client-ec2": "npm:3.1139.0"
@@ -14732,7 +14732,7 @@ __metadata:
     glob: "npm:13.0.6"
     global-agent: "npm:3.0.0"
     google-auth-library: "npm:11.3.2"
-    got: "npm:16.1.0"
+    got: "npm:16.2.0"
     graph-data-structure: "npm:4.5.0"
     handlebars: "npm:4.7.10"
     ignore: "npm:7.0.14"
@@ -14791,7 +14791,7 @@ __metadata:
   bin:
     renovate: dist/renovate.js
     renovate-config-validator: dist/config-validator.js
-  checksum: 10c0/59bbdee04e98f72176e28f44c31d32ff781b29c87eb6f8bcae757c0e8fdc8113a574e5cd225c884b0bc92633be5d8fd391e1127b245063e1daf77f1964f37cf1
+  checksum: 10c0/d807a3cc27ff49a68c1805633ae6f1bab453c3492c81ba291fc450ba7b8472af45ee6afdf207f4bd81cc190b9beba1b4c15f25496362ad61228fa6fc753993ae
   languageName: node
   linkType: hard
 
