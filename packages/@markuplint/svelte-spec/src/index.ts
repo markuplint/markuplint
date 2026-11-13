@@ -98,14 +98,32 @@ const spec: ExtendedSpec = {
 	},
 	/**
 	 * The core engine evaluates these in order and the first match wins,
-	 * so `^bind:(?:group|this)$` must precede the generic `^bind:(.+)$`;
+	 * so `^bind:this$` and `^bind:group$` must precede the generic `^bind:(.+)$`;
 	 * otherwise `bind:group` / `bind:this` would resolve to nonexistent
 	 * `group` / `this` attributes instead of staying directives.
 	 */
 	directivePatterns: [
-		// bind:group, bind:this → true directives
+		/**
+		 * bind:this → a true directive. The compiler keeps the names of the attributes that it has seen, and
+		 * leaves out one whose name is `this` (`<svelte:element bind:this this=…>` is allowed), so any number of
+		 * it is not a repeat.
+		 *
+		 * @see https://github.com/sveltejs/svelte/blob/main/packages/svelte/src/compiler/phases/1-parse/state/element.js#element
+		 */
 		{
-			pattern: '^bind:(?:group|this)$',
+			pattern: '^bind:this$',
+			isDirective: true,
+			isDynamicValue: true,
+			isDuplicatable: true,
+		},
+		/**
+		 * bind:group → a true directive. The compiler keeps its name with those of the attributes, and reports
+		 * the repeat (`attribute_duplicate`), which the parser reports as it is.
+		 *
+		 * @see https://github.com/sveltejs/svelte/blob/main/packages/svelte/src/compiler/phases/1-parse/state/element.js#element
+		 */
+		{
+			pattern: '^bind:group$',
 			isDirective: true,
 			isDynamicValue: true,
 		},
@@ -115,29 +133,61 @@ const spec: ExtendedSpec = {
 			potentialName: '$1',
 			isDynamicValue: true,
 		},
-		// on:event (Svelte 4 legacy)
+		/**
+		 * on:event (Svelte 4 legacy). The compiler checks the repeat of an attribute, `bind:`, `style:` and
+		 * `class:`, and not of this. Its comment on the check says:
+		 *
+		 * > use can be used multiple times, same for the on directive
+		 *
+		 * The case of the name is kept (`on:click` and `on:CLICK` are two events), so any number is a repeat of
+		 * nothing.
+		 *
+		 * @see https://github.com/sveltejs/svelte/blob/main/packages/svelte/src/compiler/phases/1-parse/state/element.js#element
+		 */
 		{
 			pattern: '^on:.+$',
 			isDirective: true,
 			isDynamicValue: true,
+			isDuplicatable: true,
 		},
-		// class:name → potentialName=class, isDuplicatable
+		/**
+		 * use:action may be written any number of times (see `on:` above).
+		 *
+		 * @see https://github.com/sveltejs/svelte/blob/main/packages/svelte/src/compiler/phases/1-parse/state/element.js#element
+		 */
+		{
+			pattern: '^use:',
+			isDirective: true,
+			isDuplicatable: true,
+		},
+		/**
+		 * class:name → potentialName=class, so it is not a repeat of `class`. The repeat of the same `class:name`
+		 * is an error of the compiler (`attribute_duplicate`), which the parser reports as it is
+		 * (`@markuplint/svelte-parser`), so this rule has nothing to add.
+		 *
+		 * @see https://github.com/sveltejs/svelte/blob/main/packages/svelte/src/compiler/phases/1-parse/state/element.js#element
+		 */
 		{
 			pattern: '^class:',
 			potentialName: 'class',
 			isDuplicatable: true,
 			isDynamicValue: true,
 		},
-		// style:property → potentialName=style, isDuplicatable
+		/**
+		 * style:property → potentialName=style, so it is not a repeat of `style`. The repeat of the same
+		 * property is an error of the compiler, which the parser reports as it is, as for `class:` above.
+		 *
+		 * @see https://github.com/sveltejs/svelte/blob/main/packages/svelte/src/compiler/phases/1-parse/state/element.js#element
+		 */
 		{
 			pattern: '^style:',
 			potentialName: 'style',
 			isDuplicatable: true,
 			isDynamicValue: true,
 		},
-		// animate:, transition:, in:, out:, use:, let: → isDirective
+		// animate:, transition:, in:, out:, let: → isDirective
 		{
-			pattern: '^(?:animate|transition|in|out|use|let):',
+			pattern: '^(?:animate|transition|in|out|let):',
 			isDirective: true,
 		},
 	],

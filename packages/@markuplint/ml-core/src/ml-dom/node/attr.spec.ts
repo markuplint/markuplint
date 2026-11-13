@@ -304,3 +304,70 @@ describe('namespaceURI', () => {
 		expect(div.matches('[html|id]')).toBe(false);
 	});
 });
+
+describe('duplicateKey', () => {
+	function keysOf(source: string, directivePatterns: MLMLSpec['directivePatterns']) {
+		const el = createTestElement(source, { specs: createSpecWithPatterns(directivePatterns) });
+		return Array.from(el.attributes, a => a.duplicateKey);
+	}
+
+	test('an attribute that no pattern resolves is keyed by nameKey', () => {
+		expect(keysOf('<div class="a" ID="b"></div>', [])).toStrictEqual(['class', 'id']);
+	});
+
+	test('an attribute that a pattern resolves to a name of the DOM is keyed by nameKey', () => {
+		const patterns = [{ pattern: '^:([^.]+)$', potentialName: '$1' }];
+		expect(keysOf('<div :ID="a"></div>', patterns)).toStrictEqual(['id']);
+	});
+
+	test('a spread attribute has none', async () => {
+		const el = createTestElement('<div {...props} />', { parser: await import('@markuplint/jsx-parser') });
+		expect(Array.from(el.attributes, a => a.duplicateKey)).toStrictEqual([null]);
+	});
+
+	test('a directive is keyed by the name as written, folded by the HTML parser', () => {
+		const patterns = [{ pattern: '^@(.+)$', potentialName: 'on$1', isDirective: true as const }];
+		expect(keysOf('<div @Click="a" @click.stop="b"></div>', patterns)).toStrictEqual(['@click', '@click.stop']);
+	});
+
+	test('a directive that is duplicatable and declares no key has none', () => {
+		const patterns = [{ pattern: '^on:.+$', isDirective: true as const, isDuplicatable: true as const }];
+		expect(keysOf('<div on:click="a" on:click="b"></div>', patterns)).toStrictEqual([null, null]);
+	});
+
+	test('a name that the pattern lets repeat is keyed by the name as written', () => {
+		const patterns = [
+			{ pattern: '^:([^.]+)$', potentialName: '$1', isDuplicatable: ['class'] as readonly string[] },
+		];
+		expect(keysOf('<div :class="a" :id="b"></div>', patterns)).toStrictEqual([':class', 'id']);
+	});
+
+	test('a key that the pattern declares is not folded', () => {
+		const patterns = [
+			{
+				pattern: '^(?:v-bind:|:)([^.]+)((?:\\.[^.]+)+)$',
+				isDirective: true as const,
+				duplicateKey: '$1',
+				duplicateKeyModifiers: { group: 2, camelize: ['camel'], prefixes: [{ modifier: 'prop', prefix: '.' }] },
+			},
+		];
+		expect(keysOf('<svg :view-box.camel="a" :ID.prop="b"></svg>', patterns)).toStrictEqual(['viewBox', '.ID']);
+	});
+
+	test('a key that is the name of an attribute is folded as the attribute is', () => {
+		const patterns = [
+			{
+				pattern: '^:([^.]+)((?:\\.[^.]+)+)$',
+				isDirective: true as const,
+				duplicateKey: '$1',
+				duplicateKeyModifiers: {
+					group: 2,
+					camelize: ['camel'],
+					prefixes: [{ modifier: 'prop', prefix: '.' }],
+					foldedWithoutPrefix: true as const,
+				},
+			},
+		];
+		expect(keysOf('<div :Id.foo="a" :ID.prop="b"></div>', patterns)).toStrictEqual(['id', '.ID']);
+	});
+});
