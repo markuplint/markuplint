@@ -108,14 +108,12 @@ describe('a spec that reads outside its own package', () => {
 
 /**
  * `plan()` takes a package's `README`, `CHANGELOG`, `CLAUDE.md` and any other Markdown file as
- * something that no spec reads, outside `create-rule` (it reads its scaffold), the citation
- * checks (they have a rule of their own) and the README of `markuplint` (`readme-help.spec.ts`
- * reads its copy of `--help`). This is what keeps that true: a spec that names a Markdown
+ * something that no spec reads, outside the citation checks (they have a rule of their own) and
+ * the README of `markuplint` (`readme-help.spec.ts` reads its copy of `--help`). This is what keeps that true: a spec that names a Markdown
  * file in code, not in a comment, has to be accounted for in `classify.ts` and added here.
  */
 describe('a spec that names a Markdown file', () => {
 	const KNOWN_READERS = [
-		'packages/@markuplint/create-rule/',
 		'packages/markuplint/src/cli/readme-help.spec.ts',
 		// v6 line only. It reads no file: `a.md` is the name of a document given to the Markdown parser.
 		'packages/markuplint/src/api/ml-engine.rust-framework.spec.ts',

@@ -10,12 +10,7 @@ const nativeAddonIsBuilt = await import('@markuplint/core').then(
 );
 
 /** Lints on one engine; the Rust one must not have fallen back to the TypeScript one. */
-const lint = async (
-	sourceCode: string,
-	config: Config,
-	rust: boolean,
-	importPresetRules?: boolean,
-): Promise<readonly Violation[]> => {
+const lint = async (sourceCode: string, config: Config, rust: boolean): Promise<readonly Violation[]> => {
 	const stderr = vi.spyOn(process.stderr, 'write').mockImplementation(() => true);
 	try {
 		const file = await MLEngine.toMLFile({ sourceCode, name: 'a.html' });
@@ -23,7 +18,6 @@ const lint = async (
 			noSearchConfig: true,
 			locale: 'en',
 			experimentalRustCore: rust,
-			importPresetRules,
 			config,
 		});
 		const result = await engine.exec();
@@ -54,8 +48,7 @@ const withoutReason = (summary: readonly string[]) =>
 
 /**
  * The Rust engine reports what `MLCore#verify` reports of a config before it runs a rule: a rule
- * that is not found (`importPresetRules: false` loads none of the built-in rules, so every rule the
- * config sets is), and the errors of the config and of expanding the named rules.
+ * that is not found, and the errors of the config and of expanding the named rules.
  */
 describe.skipIf(!nativeAddonIsBuilt)(
 	'experimentalRustCore reports the config the way the TypeScript engine does',
@@ -67,70 +60,34 @@ describe.skipIf(!nativeAddonIsBuilt)(
 		const source = '<div id="a"></div><div id="a"></div><img>';
 
 		it.each([
-			['a rule the config sets, without the built-in rules', { rules: { 'no-duplicate-id': true } }, false],
-			[
-				'a node rule the config sets, without the built-in rules',
-				{ nodeRules: [{ selector: 'img', rules: { 'require-attr': 'alt' } }] },
-				false,
-			],
-			[
-				'a child node rule the config sets, without the built-in rules',
-				{ childNodeRules: [{ selector: 'div', rules: { 'no-duplicate-id': true } }] },
-				false,
-			],
-			['no rule, without the built-in rules', {}, false],
-			['a rule the config sets, with the built-in rules', { rules: { 'no-duplicate-id': true } }, true],
-			['a deprecated rule name', { rules: { 'deprecated-attr': true } }, undefined],
-			['a deprecated rule name, without the built-in rules', { rules: { 'deprecated-attr': true } }, false],
-			['a rule that does not exist', { rules: { 'no-such-rule': true } }, true],
+			['a rule the config sets', { rules: { 'no-duplicate-id': true } }],
+			['a deprecated rule name', { rules: { 'deprecated-attr': true } }],
+			['a rule that does not exist', { rules: { 'no-such-rule': true } }],
 			[
 				'a rule that does not exist and a rule that does',
 				{ rules: { 'no-such-rule': true, 'no-duplicate-id': true } },
-				undefined,
 			],
 			[
 				'a named node rule without a scope',
 				{ nodeRules: [{ name: 'nosep', selector: 'p', rules: { 'no-duplicate-id': true } }] },
-				undefined,
 			],
-			[
-				'a named rule group whose base rule is not found',
-				{ rules: { 'code-styles/no-such-base': true } },
-				undefined,
-			],
-			['a plugin that is not found', { plugins: ['no-such-plugin-xyz'] }, undefined],
+			['a named rule group whose base rule is not found', { rules: { 'code-styles/no-such-base': true } }],
+			['a plugin that the configuration still names', { plugins: ['no-such-plugin-xyz'] }],
 			[
 				'a namespace wildcard of a node rule that is not false',
 				{ nodeRules: [{ selector: 'div', rules: { 'a11y/*': true } }] },
-				undefined,
 			],
 			[
 				'a namespace wildcard of a child node rule that is not false',
 				{ childNodeRules: [{ selector: 'body', rules: { 'a11y/*': true } }] },
-				undefined,
 			],
-			[
-				'a namespace wildcard of a node rule that is not false, without the built-in rules',
-				{ nodeRules: [{ selector: 'div', rules: { 'a11y/*': true, 'require-attr': 'alt' } }] },
-				false,
-			],
-			[
-				'a namespace wildcard of a child node rule that is not false, without the built-in rules',
-				{ childNodeRules: [{ selector: 'body', rules: { 'a11y/*': true } }] },
-				false,
-			],
-			[
-				'a namespace wildcard that is false',
-				{ nodeRules: [{ selector: 'div', rules: { 'a11y/*': false } }] },
-				undefined,
-			],
+			['a namespace wildcard that is false', { nodeRules: [{ selector: 'div', rules: { 'a11y/*': false } }] }],
 			[
 				'a namespace wildcard that is false and covers a named rule group',
 				{
 					rules: { 'x/dup': { rules: { 'no-duplicate-id': true } } },
 					nodeRules: [{ selector: 'div', rules: { 'x/*': false } }],
 				},
-				undefined,
 			],
 			[
 				'a namespace wildcard that is false and covers another namespace',
@@ -138,28 +95,22 @@ describe.skipIf(!nativeAddonIsBuilt)(
 					rules: { 'x/dup': { rules: { 'no-duplicate-id': true } } },
 					nodeRules: [{ selector: 'div', rules: { 'y/*': false } }],
 				},
-				undefined,
 			],
-			['a namespaced key that is not a named rule group', { rules: { 'x/no-duplicate-id': true } }, undefined],
+			['a namespaced key that is not a named rule group', { rules: { 'x/no-duplicate-id': true } }],
 			[
 				'a selector of a node rule that cannot be read',
 				{ nodeRules: [{ selector: 'p[', rules: { 'no-duplicate-id': true } }] },
-				undefined,
 			],
 			[
 				'a selector of a child node rule that cannot be read',
 				{ childNodeRules: [{ selector: 'p[', rules: { 'no-duplicate-id': true } }] },
-				undefined,
 			],
-		] as const)(
-			'has the violations that the TypeScript engine has for %s',
-			async (_name, config, importPresetRules) => {
-				const expected = await lint(source, config as Config, false, importPresetRules);
-				const actual = await lint(source, config as Config, true, importPresetRules);
+		] as const)('has the violations that the TypeScript engine has for %s', async (_name, config) => {
+			const expected = await lint(source, config as Config, false);
+			const actual = await lint(source, config as Config, true);
 
-				expect(withoutConfigNumber(summarize(actual))).toStrictEqual(withoutConfigNumber(summarize(expected)));
-			},
-		);
+			expect(withoutConfigNumber(summarize(actual))).toStrictEqual(withoutConfigNumber(summarize(expected)));
+		});
 
 		it('reports a namespace wildcard that is not false once for each element the node rule matches', async () => {
 			const config: Config = { nodeRules: [{ selector: 'div', rules: { 'a11y/*': true } }] };
@@ -223,12 +174,6 @@ describe.skipIf(!nativeAddonIsBuilt)(
 				'1:1 warning config-error Invalid selector: "My[" (<reason>) in <config>',
 			]);
 			expect(withoutConfigNumber(summarize(actual))).toStrictEqual(withoutConfigNumber(summarize(expected)));
-		});
-
-		it('runs no built-in rule without them', async () => {
-			const violations = await lint(source, { rules: { 'no-duplicate-id': true } }, true, false);
-
-			expect(violations.map(v => v.ruleId)).not.toContain('no-duplicate-id');
 		});
 	},
 );

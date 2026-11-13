@@ -12,7 +12,6 @@
 - ドキュメントや[ウェブサイト](https://markuplint.dev/)の改善
 - 運用方法の再設計と改善
 - [テスト](https://github.com/markuplint/markuplint/actions?query=workflow%3ATest)や[カバレッジ](https://coveralls.io/github/markuplint/markuplint?branch=main)の改善
-- プラグインの開発
 
 目的は、すべての開発者により良いマークアップができることと、多様なプロジェクトそれぞれに適合することです。そのため、みなさんの協力が必要です。あなたの思いが、多様性につながります。
 
@@ -33,5 +32,4 @@
 - トピックブランチにプッシュし、プルリクエストを作成してください
 - 以下のレビュアーをアサインします。
   - コード全般、コードの改善の場合: @yusukehirao
-  - プラグイン開発の場合: @yusukehirao
   - ドキュメントおよびウェブサイト関連の場合: @yusukehirao, @kagankan

@@ -8,7 +8,6 @@
 		"./*.html": {
 			"parser": { "\\.x$": "./parser.js", "\\.y$": "@markuplint/jsx-parser" },
 			"specs": { "\\.x$": "./spec.js" },
-			"plugins": [{ "name": "./plugin.js" }],
 			"excludeFiles": ["./ignored/**", "!./ignored/keep/**"],
 			"pretenders": {
 				"files": ["./pretenders.json"],

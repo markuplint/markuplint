@@ -10,7 +10,7 @@ const mLog = log.extend('module-exists');
 
 /**
  * Whether `name` resolves to a module from where markuplint is installed: a package, or a file of
- * one, as `extends`, `plugins`, `parser` and `specs` take a module.
+ * one, as `extends`, `parser` and `specs` take a module.
  *
  * The resolution is that of this file's own location, as `import()` and `createRequire()` do it,
  * never that of the configuration file that names the module, so a relative path is not a module

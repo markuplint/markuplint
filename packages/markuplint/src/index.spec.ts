@@ -1,10 +1,35 @@
+import type * as FileResolver from '@markuplint/file-resolver';
 import type { PlainData, RuleConfigValue } from '@markuplint/ml-config';
 
 import { MLRule } from '@markuplint/ml-core';
-import { describe, it, test, expect } from 'vitest';
+import { afterEach, describe, it, test, expect, vi } from 'vitest';
 
 import { setGlobal } from './global-settings.js';
 import { mlTest, mlTestFile } from './testing-tool/index.js';
+
+/**
+ * The rules that a spec has the engine run besides the built-in ones. The engine reads its rules
+ * from `resolveRules()` of `@markuplint/file-resolver` and takes no others, so a spec that needs a
+ * synthetic rule adds it there, after all the built-in ones. They are cleared after each test.
+ */
+const injectedRules = vi.hoisted((): MLRule<RuleConfigValue, PlainData>[] => []);
+
+vi.mock('@markuplint/file-resolver', async importOriginal => {
+	const original = await importOriginal<typeof FileResolver>();
+	return {
+		...original,
+		resolveRules: async () => [...(await original.resolveRules()), ...injectedRules],
+	};
+});
+
+afterEach(() => {
+	injectedRules.length = 0;
+});
+
+function mlTestWith(rules: readonly MLRule<RuleConfigValue, PlainData>[], ...args: Parameters<typeof mlTest>) {
+	injectedRules.splice(0, injectedRules.length, ...rules);
+	return mlTest(...args);
+}
 
 setGlobal({
 	locale: 'en',
@@ -307,42 +332,30 @@ describe('async and sync rules', () => {
 	});
 
 	it('works correctly with async rule', async () => {
-		const { violations } = await mlTest(
-			'content',
-			{
-				rules: {
-					'test-async-rule': true,
-				},
+		const { violations } = await mlTestWith([asyncRule], 'content', {
+			rules: {
+				'test-async-rule': true,
 			},
-			[asyncRule],
-		);
+		});
 		expect(violations).toMatchObject([asyncReport]);
 	});
 
 	it('works correctly with sync rule', async () => {
-		const { violations } = await mlTest(
-			'content',
-			{
-				rules: {
-					'test-sync-rule': true,
-				},
+		const { violations } = await mlTestWith([syncRule], 'content', {
+			rules: {
+				'test-sync-rule': true,
 			},
-			[syncRule],
-		);
+		});
 		expect(violations).toMatchObject([syncReport]);
 	});
 
 	it('works correctly with async and sync mixed rules', async () => {
-		const { violations } = await mlTest(
-			'content',
-			{
-				rules: {
-					'test-async-rule': true,
-					'test-sync-rule': true,
-				},
+		const { violations } = await mlTestWith([asyncRule, syncRule], 'content', {
+			rules: {
+				'test-async-rule': true,
+				'test-sync-rule': true,
 			},
-			[asyncRule, syncRule],
-		);
+		});
 		// This test also ensures that rules are executed sequentially
 		expect(violations).toMatchObject([asyncReport, syncReport]);
 	});
@@ -353,7 +366,6 @@ describe('fixSummary pipeline', () => {
 		const { fixSummary, fixedCode } = await mlTest(
 			'<input required="required" />',
 			{ rules: { 'no-boolean-attr-value': true } },
-			undefined,
 			'en',
 			true,
 		);
@@ -370,7 +382,6 @@ describe('fixSummary pipeline', () => {
 		const { fixSummary } = await mlTest(
 			'<input required />',
 			{ rules: { 'no-boolean-attr-value': true } },
-			undefined,
 			'en',
 			true,
 		);
@@ -386,7 +397,6 @@ describe('fixSummary pipeline', () => {
 		const { fixSummary } = await mlTest(
 			'<input required="required" />',
 			{ rules: { 'no-boolean-attr-value': true } },
-			undefined,
 			'en',
 			false,
 		);

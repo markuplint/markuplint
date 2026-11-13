@@ -141,66 +141,6 @@ describe('mergeConfig', () => {
 		});
 	});
 
-	test('plugins + plugins', () => {
-		expect(
-			mergeConfig(
-				{
-					plugins: ['a', 'b', 'c'],
-				},
-				{
-					plugins: ['c', 'b', 'd'],
-				},
-			),
-		).toStrictEqual({
-			plugins: [
-				{
-					name: 'a',
-				},
-				{
-					name: 'b',
-				},
-				{
-					name: 'c',
-				},
-				{
-					name: 'd',
-				},
-			],
-		});
-	});
-
-	test('plugins + plugins (with options)', () => {
-		expect(
-			mergeConfig(
-				{
-					plugins: ['a', 'b', { name: 'c', settings: { foo: 'foo', bar: 'bar' } }],
-				},
-				{
-					plugins: ['c', 'b', 'd', { name: 'c', settings: { foo2: 'foo2', bar: 'bar2' } }],
-				},
-			),
-		).toStrictEqual({
-			plugins: [
-				{
-					name: 'a',
-				},
-				{
-					name: 'b',
-				},
-				{
-					name: 'c',
-					settings: {
-						bar: 'bar2',
-						foo2: 'foo2',
-					},
-				},
-				{
-					name: 'd',
-				},
-			],
-		});
-	});
-
 	test('parser + parser', () => {
 		expect(
 			mergeConfig(

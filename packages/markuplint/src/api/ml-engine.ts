@@ -13,7 +13,7 @@ import type {
 	RuleCommonSettings,
 	Violation,
 } from '@markuplint/ml-config';
-import type { Ruleset, Plugin, Document, RuleConfigValue, MLFabric, FixSummary } from '@markuplint/ml-core';
+import type { Ruleset, Document, RuleConfigValue, MLFabric, FixSummary } from '@markuplint/ml-core';
 import type { ARIAVersion } from '@markuplint/ml-spec';
 
 import {
@@ -72,8 +72,7 @@ type MLEngineOptions = {
 	 * the `lint()` API) that constructs one `MLEngine` per file should share
 	 * a single `ConfigProvider` across that loop; every file whose config
 	 * resolves to the same `names` then reuses the same cached base config
-	 * (merge/validate/plugin-resolution) instead of redoing that work once
-	 * per file. See #3997.
+	 * (merge/validate) instead of redoing that work once per file. See #3997.
 	 *
 	 * Optional and additive: omitted, each `MLEngine` still creates its own
 	 * provider exactly as before.
@@ -198,8 +197,6 @@ export class MLEngine extends Emitter<MLEngineEventMap> {
 	#configFailure: Error | null = null;
 	#core: MLCore | null = null;
 	#file: Readonly<MLFile>;
-	/** Whether any plugin provides custom rules. Updated by #provide() on every exec(). */
-	#hasPluginRules = false;
 	#options?: APIOptions & MLEngineOptions;
 	/** The resolved parser module name. Updated by #provide() on every exec(). */
 	#parserModName = '@markuplint/html-parser';
@@ -263,6 +260,17 @@ export class MLEngine extends Emitter<MLEngineEventMap> {
 
 	constructor(file: Readonly<MLFile>, options?: APIOptions & MLEngineOptions) {
 		super();
+
+		// Dropped in v7, with the other reports of what the plugin mechanism left (`removedPluginError()`
+		// of `@markuplint/file-resolver`). An option that is not read would lint with the built-in rules
+		// alone, with no word that the rule the caller passed does not run.
+		for (const option of ['rules', 'importPresetRules']) {
+			if (options && option in options) {
+				throw new TypeError(
+					`The option "${option}" was removed in v6 (https://markuplint.dev/docs/migration/v5-to-v6/plugins#api)`,
+				);
+			}
+		}
 
 		if (options?.debug) {
 			verbosely();
@@ -514,33 +522,14 @@ export class MLEngine extends Emitter<MLEngineEventMap> {
 
 	/**
 	 * Attempts to execute linting via the Rust NAPI engine.
-	 * Returns `null` if the file is not eligible (plugin rules, rules given through the `rules`
-	 * option, or no native addon), in which case the caller should fall back to the TS engine.
+	 * Returns `null` if the native addon is missing, in which case the caller should fall back to the TS
+	 * engine.
 	 */
 	async #tryExecRustPath(fabric: MLFabric): Promise<MLResultInfo | null> {
 		const fix = this.#options?.fix ?? false;
 		// Until this lint is through, there is no document of the Rust path to show: a fallback to
 		// the TS engine below leaves the document to `MLCore`.
 		this.#rustView = null;
-
-		// Fallback: custom rules from plugins
-		if (this.#hasPluginRules) {
-			this.#tellFallback(
-				`⚠ [experimental-rust-core] "${this.#file.path}" has custom plugin rules — falling back to TypeScript engine.\n`,
-			);
-			return null;
-		}
-
-		// Fallback: a rule given to the API is run by the TypeScript engine only, and the Rust engine
-		// cannot tell a built-in rule from a custom one there: it would leave the violations of the rule
-		// out without a word. `noRules` evaluates no rule on either engine, and an empty list gives it
-		// none.
-		if (!this.#options?.noRules && (this.#options?.rules?.length ?? 0) > 0) {
-			this.#tellFallback(
-				`⚠ [experimental-rust-core] "${this.#file.path}" has rules given through the "rules" option, which only the TypeScript engine runs — falling back to TypeScript engine.\n`,
-			);
-			return null;
-		}
 
 		// Load NAPI binding
 		let napi: NapiBinding;
@@ -560,32 +549,10 @@ export class MLEngine extends Emitter<MLEngineEventMap> {
 
 		// The extended specs of a framework are merged here, as the TS document does with them.
 		const spec = schemaToSpec(fabric.schemas);
-		// The Rust engine runs the rules the config sets and knows no other: without the built-in
-		// rules (`importPresetRules: false`) it is given none to run, and what the config sets is
-		// reported as not found below, as `MLCore.verify()` reports it. A node rule keeps its namespace
-		// wildcards that are not `false`: TS reports them while it maps the node rules onto the document,
-		// whether or not a rule runs.
-		const wildcardsOnly = <T extends { readonly rules?: Readonly<Record<string, unknown>> }>(rule: T): T => ({
-			...rule,
-			rules: Object.fromEntries(
-				Object.entries(rule.rules ?? {}).filter(([name, value]) => name.endsWith('/*') && value !== false),
-			),
-		});
-		const rustRuleset: typeof fabric.ruleset =
-			(this.#options?.importPresetRules ?? true)
-				? fabric.ruleset
-				: {
-						...fabric.ruleset,
-						rules: {},
-						nodeRules: (fabric.ruleset.nodeRules ?? []).filter(rule => !rule.name).map(wildcardsOnly),
-						childNodeRules: (fabric.ruleset.childNodeRules ?? [])
-							.filter(rule => !rule.name)
-							.map(wildcardsOnly),
-					};
 		// Build config JSON for Rust
-		const browserSupport = await resolveBrowserSupport(rustRuleset, this.#file.path);
+		const browserSupport = await resolveBrowserSupport(fabric.ruleset, this.#file.path);
 		const configJson = buildRustConfigJson(
-			rustRuleset,
+			fabric.ruleset,
 			fabric.ruleCommonSettings,
 			fabric.pretenders,
 			browserSupport,
@@ -1084,7 +1051,7 @@ export class MLEngine extends Emitter<MLEngineEventMap> {
 	 * cannot be read for one, is reported as a `config-error` too, instead of
 	 * rejecting {@link exec} and ending a run that has other files to lint.
 	 *
-	 * The other `errs` (a rule or a plugin that is not found, an invalid
+	 * The other `errs` (a removed property, an invalid
 	 * selector, a circular `extends`) leave the rest of the config usable, so
 	 * they stay `config-error` warnings that `MLCore.verify()` reports.
 	 */
@@ -1105,7 +1072,6 @@ export class MLEngine extends Emitter<MLEngineEventMap> {
 		if (fileLog.enabled) {
 			fileLog('Fetched Config files: %O', configSet.files);
 			fileLog('Resolved Config: %O', configSet.config);
-			fileLog('Resolved Plugins: %O', configSet.plugins);
 			fileLog('Resolve Errors: %O', configSet.errs);
 		}
 
@@ -1175,8 +1141,7 @@ export class MLEngine extends Emitter<MLEngineEventMap> {
 		}
 
 		const noRules = this.#options?.noRules ?? false;
-		const rules = noRules ? [] : await this.#resolveRules(configSet.plugins, ruleset);
-		this.#hasPluginRules = !noRules && configSet.plugins.some(p => p.rules && Object.keys(p.rules).length > 0);
+		const rules = noRules ? [] : await this.#resolveRules();
 		fileLog('Resolved rules: %O', rules);
 
 		const locale = i18n(this.#options?.locale);
@@ -1412,12 +1377,8 @@ export class MLEngine extends Emitter<MLEngineEventMap> {
 		return { pretenders: disambiguated, dependencies };
 	}
 
-	async #resolveRules(plugins: readonly Plugin[], ruleset: Ruleset) {
-		const rules = await resolveRules(plugins, ruleset, this.#options?.importPresetRules ?? true);
-
-		if (this.#options?.rules) {
-			rules.push(...this.#options.rules);
-		}
+	async #resolveRules() {
+		const rules = await resolveRules();
 		this.emit('rules', this.#file.path, rules);
 		return rules;
 	}

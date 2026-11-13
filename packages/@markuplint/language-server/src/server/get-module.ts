@@ -178,7 +178,7 @@ export type ModuleResolver = (workspace: string) => Promise<Module>;
  * Create a resolver that loads the markuplint module per working directory and caches it.
  *
  * Resolution must follow the working directory rather than the workspace root: the modules a
- * config refers to (`parser` / `specs` / `plugins`) are imported by `@markuplint/file-resolver`
+ * config refers to (`parser` / `specs`, and `plugins` of a markuplint older than v6) are imported by `@markuplint/file-resolver`
  * relative to the loaded markuplint installation, so a parser installed only in a sub-package
  * is reachable only when markuplint itself is loaded from that sub-package. Falling back to the
  * bundled copy there leaves the parser unreachable and the document silently undiagnosed.

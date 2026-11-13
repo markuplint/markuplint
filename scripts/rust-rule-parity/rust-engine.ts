@@ -4,8 +4,8 @@
  * messages with the TypeScript engine's).
  *
  * The testing API lints with the Rust engine while `MARKUPLINT_EXPERIMENTAL_RUST_CORE` is on, and
- * falls back to the TypeScript engine, with a warning on stderr, for a rule it cannot run. A pass of
- * the parity run must be the Rust engine's own result, so a fallback is watched for here.
+ * falls back to the TypeScript engine, with a warning on stderr, when the native addon is missing. A
+ * pass of the parity run must be the Rust engine's own result, so a fallback is watched for here.
  */
 
 import type * as Markuplint from 'markuplint';
@@ -89,22 +89,28 @@ export async function lintWithRust(original: MarkuplintModule, args: RuleTestArg
 /**
  * Proves that the environment variable switches the testing API to the Rust engine. If the name of
  * the variable were not the one `markuplint` reads, every run would be on the TypeScript engine, with
- * no warning to watch for, and would pass. A custom rule has to fall back to the TypeScript engine,
- * with a warning, while the variable is on.
+ * no warning to watch for, and would pass.
  *
- * @throws When it did not fall back.
+ * The probe is an input the two engines read differently, which `KNOWN_DIVERGENCES` of `setup.ts`
+ * explains: a `<div>` inside a `<select>`. The TypeScript engine's parse5 drops it into the text of
+ * the `select`, so `permitted-contents` reports nothing; the Rust HTML parser keeps it an element,
+ * and the rule reports it. When the TypeScript engine reads it as the Rust one does, this probe has
+ * to be replaced by another input that the two read differently.
+ *
+ * @throws When the lint with the variable on does not report it, or the one with it off does.
  */
 export async function assertRustCoreSwitch(original: MarkuplintModule) {
-	const { MLRule, createRule } = await import('@markuplint/ml-core');
-	const watch = watchFallbacks();
-	try {
-		await withRustCore(true, () =>
-			original.mlTest('<p></p>', {}, [new MLRule<any, any>({ name: 'probe', ...createRule({ verify() {} }) })]),
+	const { default: presetRules } = await import('@markuplint/rules');
+	const rule = presetRules['permitted-contents']!;
+	const html = '<select><div></div></select>';
+	const onRust = await withRustCore(true, () => original.mlRuleTest(rule, html));
+	const onTypeScript = await withRustCore(false, () => original.mlRuleTest(rule, html));
+	if (onRust.violations.length === 0) {
+		throw new Error(`The testing API is not on the Rust engine: is ${RUST_CORE_ENV} the variable it reads?`);
+	}
+	if (onTypeScript.violations.length > 0) {
+		throw new Error(
+			'The TypeScript engine reads a <div> in a <select> as the Rust engine does: the probe of assertRustCoreSwitch() no longer tells them apart',
 		);
-		if (watch.fallbacks.length === 0) {
-			throw new Error(`The testing API is not on the Rust engine: is ${RUST_CORE_ENV} the variable it reads?`);
-		}
-	} finally {
-		watch.stop();
 	}
 }

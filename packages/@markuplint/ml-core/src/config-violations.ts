@@ -14,8 +14,8 @@ import type { Violation } from '@markuplint/ml-config';
 import { expandNamedNodeRules, expandNamedRules } from './virtual-rule.js';
 
 /**
- * `ruleId` of a genuinely broken config (unresolved rule reference, plugin
- * resolution failure, ...). Exported so consumers that need to recognize
+ * `ruleId` of a genuinely broken config (unresolved rule reference, a property that nothing
+ * reads, ...). Exported so consumers that need to recognize
  * config-level violations (e.g. the CLI's per-run dedupe and failed-file
  * counting in `packages/markuplint/src/cli/command.ts`) reference the same
  * literal `MLCore.verify()` emits, instead of duplicating the string.
@@ -89,7 +89,7 @@ export function createRuleNotFoundViolations(
 
 /**
  * The `config-error` warning of each error: a problem of the config that the rest of it does not
- * depend on (a plugin that is not found, a named rule that cannot be expanded), so the file is
+ * depend on (a property that nothing reads, a named rule that cannot be expanded), so the file is
  * linted as usual.
  *
  * @param errors - The errors of the config

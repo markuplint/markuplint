@@ -1,8 +1,7 @@
 import type { Target } from '@markuplint/file-resolver';
 import type { Config, RuleConfigValue, Rule, RegexSelector, PlainData } from '@markuplint/ml-config';
-import type { AnyMLRule, RuleSeed } from '@markuplint/ml-core';
+import type { RuleSeed } from '@markuplint/ml-core';
 
-import { MLRule } from '@markuplint/ml-core';
 import presetRules from '@markuplint/rules';
 
 import { lint } from '../api/index.js';
@@ -21,49 +20,57 @@ function isRustCoreEnabled() {
 }
 
 /**
- * The registered name of a rule, when it is one of the built-in rules: the object of the registry of
- * `@markuplint/rules` itself. The name or the shape of a rule says nothing, as a custom rule may have
- * either; the Rust engine runs the built-in rules only, and by their registered names. The registry
- * of another module instance of `@markuplint/rules` (another installed copy, or the built and the
- * source files of the same package) holds other objects: a rule of it is a custom rule here, and the
- * warning of the fallback says so.
+ * The registered name of a rule: the key of the object in the registry of `@markuplint/rules` itself.
+ * Both engines run a rule by its registered name, and the name or the shape of a rule says nothing
+ * about which rule it is. The registry of another module instance of `@markuplint/rules` (another
+ * installed copy, or the built and the source files of the same package) holds other objects, so a
+ * rule of it is not found: the engine would run a rule that is not the one the caller holds.
  *
  * @param rule - The rule seed given to the testing API
- * @returns The registered name, or `undefined` for any other rule
+ * @returns The registered name, or `undefined` for a seed that is not in the registry
  */
 function builtinRuleName(rule: Readonly<object>) {
 	return Object.entries(presetRules).find(([, seed]) => Object.is(seed, rule))?.[0];
 }
 
 /**
+ * The third parameter of `mlTest()` and `mlTestFile()` was a list of custom rules, and is the locale
+ * now. A caller that still passes the list, or `undefined` in its place (`mlTest(code, config,
+ * undefined, 'en', true)`), would otherwise have the locale and `fix` read from the wrong positions,
+ * with no error but a silently different lint.
+ *
+ * @param locale - The third argument as it came
+ * @param fix - The fourth argument as it came
+ * @throws {TypeError} When the locale is not a string, or `fix` is not a boolean
+ */
+function assertNoRules(locale: unknown, fix: unknown) {
+	if ((locale !== undefined && typeof locale !== 'string') || typeof fix !== 'boolean') {
+		throw new TypeError(
+			'The third argument is the locale: a rule cannot be given to the testing API, see https://markuplint.dev/docs/migration/v5-to-v6/plugins',
+		);
+	}
+}
+
+/**
  * Lints inline source code with a given configuration. Convenience function for testing.
  *
  * While the environment variable `MARKUPLINT_EXPERIMENTAL_RUST_CORE` is exactly `1` or `true`, it
- * lints with the Rust engine (`experimentalRustCore`). The rules given in `rules` are run by the
- * TypeScript engine only, so the lint falls back to it, with a warning on stderr.
+ * lints with the Rust engine (`experimentalRustCore`).
  *
  * @param sourceCode - The markup source code to lint
  * @param config - The markuplint configuration to apply
- * @param rules - Optional custom rules; if omitted, preset rules are imported
  * @param locale - The locale for error messages (defaults to `'en'`)
  * @param fix - Whether to attempt auto-fixing
  * @returns An object containing violations and the fixed code
  */
-export async function mlTest(
-	sourceCode: string,
-	config: Config,
-	rules?: readonly Readonly<AnyMLRule>[],
-	locale = 'en',
-	fix = false,
-) {
+export async function mlTest(sourceCode: string, config: Config, locale = 'en', fix = false) {
+	assertNoRules(locale, fix);
 	const global = getGlobal();
 	const results = await lint([{ sourceCode }], {
 		config,
-		rules,
 		locale: locale ?? global.locale,
 		fix,
 		ignoreExt: true,
-		importPresetRules: !rules,
 		experimentalRustCore: isRustCoreEnabled(),
 	});
 	const result = results[0];
@@ -78,18 +85,19 @@ export async function mlTest(
 /**
  * Tests a single rule against inline source code. Designed for rule unit testing.
  *
- * While the environment variable `MARKUPLINT_EXPERIMENTAL_RUST_CORE` is exactly `1` or `true`, a built-in
- * rule (the seed the registry of `@markuplint/rules` has) runs on the Rust engine by its registered
- * name; any other rule is a custom rule, which runs on the TypeScript engine.
+ * The rule runs by its registered name, so the seed has to be the object that the registry of
+ * `@markuplint/rules` holds. While the environment variable `MARKUPLINT_EXPERIMENTAL_RUST_CORE` is
+ * exactly `1` or `true`, it runs on the Rust engine, and on the TypeScript engine otherwise.
  *
  * @template T - The rule's configuration value type
  * @template O - The rule's options type
- * @param rule - The rule seed to test
+ * @param rule - The rule seed to test, as the registry of `@markuplint/rules` holds it
  * @param sourceCode - The markup source code to lint
  * @param config - Configuration with rule settings, nodeRule, and childNodeRule
  * @param fix - Whether to attempt auto-fixing
  * @param locale - The locale for error messages (defaults to `'en'`)
  * @returns An object containing violations (without ruleId) and the fixed code
+ * @throws {TypeError} When `rule` is not a seed of the registry of `@markuplint/rules`
  */
 export async function mlRuleTest<T extends RuleConfigValue, O extends PlainData>(
 	rule: Readonly<RuleSeed<T, O>>,
@@ -107,8 +115,12 @@ export async function mlRuleTest<T extends RuleConfigValue, O extends PlainData>
 	if (config.rule === undefined && (config.nodeRule || config.childNodeRule)) {
 		config.rule = true;
 	}
-	const registeredName = isRustCoreEnabled() ? builtinRuleName(rule) : undefined;
-	const ruleName = registeredName ?? '<current-rule>';
+	const ruleName = builtinRuleName(rule);
+	if (!ruleName) {
+		throw new TypeError(
+			'mlRuleTest() runs a rule by its registered name: the rule is not a seed of the registry of "@markuplint/rules" this module reads',
+		);
+	}
 	const _config: Config = {
 		...config,
 		rules:
@@ -147,26 +159,9 @@ export async function mlRuleTest<T extends RuleConfigValue, O extends PlainData>
 					})),
 	};
 
-	// A built-in rule is enabled by its registered name and is not given to the API: it is the engine's
-	// own rule, and a rule given to the API is a custom rule.
-	const res = await mlTest(
-		sourceCode,
-		_config,
-		registeredName
-			? undefined
-			: [
-					new MLRule<any, any>({
-						name: ruleName,
-						...rule,
-					}),
-				],
-		locale,
-		fix,
-	);
+	const res = await mlTest(sourceCode, _config, locale, fix);
 
-	// The rule under test runs under the temporary name `<current-rule>` (or its registered name on
-	// the Rust engine), so `ruleId` is removed to keep test assertions independent of the
-	// rule's actual registered name.
+	// `ruleId` is removed to keep test assertions independent of the rule's registered name.
 	res.violations.map(v => {
 		// @ts-ignore
 		delete v.ruleId;
@@ -182,27 +177,19 @@ export async function mlRuleTest<T extends RuleConfigValue, O extends PlainData>
  *
  * @param target - A file path or inline source code target
  * @param config - The markuplint configuration to apply
- * @param rules - Optional custom rules; if omitted, preset rules are imported
  * @param locale - The locale for error messages
  * @param fix - Whether to attempt auto-fixing
  * @returns An object containing violations and the fixed code
  */
-export async function mlTestFile(
-	target: Target,
-	config?: Config,
-	rules?: readonly Readonly<AnyMLRule>[],
-	locale?: string,
-	fix = false,
-) {
+export async function mlTestFile(target: Target, config?: Config, locale?: string, fix = false) {
+	assertNoRules(locale, fix);
 	const global = getGlobal();
 	const results = await lint([target], {
 		config,
-		rules,
 		locale: locale ?? global.locale,
 		fix,
 		ignoreExt: true,
 		noSearchConfig: !!config,
-		importPresetRules: !rules,
 		experimentalRustCore: isRustCoreEnabled(),
 	});
 	const result = results[0];

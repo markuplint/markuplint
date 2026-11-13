@@ -357,20 +357,12 @@ export function plan(changes: readonly Change[], probe: Probe): Plan {
 			continue;
 		}
 
-		// Package-level documents that no spec reads. The scaffold of `create-rule` and the
-		// source of the preset README are read, and fall through to the package's own specs.
-		if (
-			(/^(?:CHANGELOG|README(?:\.ja)?|CLAUDE|LICENSE)(?:\.md)?$/.test(rel) ||
-				/^\.(?:npm|git)ignore$/.test(rel)) &&
-			name !== 'create-rule'
-		) {
+		// Package-level documents that no spec reads. The source of the preset README is read, and falls
+		// through to the package's own specs.
+		if (/^(?:CHANGELOG|README(?:\.ja)?|CLAUDE|LICENSE)(?:\.md)?$/.test(rel) || /^\.(?:npm|git)ignore$/.test(rel)) {
 			continue;
 		}
-		if (
-			rel.endsWith('.md') &&
-			name !== 'create-rule' &&
-			path !== 'packages/@markuplint/config-presets/src/README.md'
-		) {
+		if (rel.endsWith('.md') && path !== 'packages/@markuplint/config-presets/src/README.md') {
 			continue;
 		}
 

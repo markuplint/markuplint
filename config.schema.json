@@ -16,36 +16,13 @@
 					"$ref": "https://raw.githubusercontent.com/markuplint/markuplint/main/packages/%40markuplint/rules/schema.json#/definitions/rules"
 				},
 				{
-					"title": "Custom rule",
-					"description": "@see https://markuplint.dev/docs/guides/applying-rules#applying-custom-rules",
-					"examples": ["[plugin-name]/[rule-name]"],
+					"title": "Named rule group",
+					"examples": ["[namespace]/[name]"],
 					"type": "object",
 					"additionalProperties": false,
 					"patternProperties": {
-						"^[^/]+/.+$": {
-							"oneOf": [
-								{
-									"$ref": "#/definitions/custom-rule-value"
-								},
-								{
-									"type": "object",
-									"additionalProperties": false,
-									"properties": {
-										"value": {
-											"$ref": "#/definitions/custom-rule-value"
-										},
-										"severity": {
-											"$ref": "https://raw.githubusercontent.com/markuplint/markuplint/main/packages/%40markuplint/ml-config/schema.json#/definitions/severity"
-										},
-										"reason": {
-											"type": "string"
-										}
-									}
-								},
-								{
-									"$ref": "#/definitions/namedRuleGroup"
-								}
-							]
+						"^[^/]+/(?!\\*$).+$": {
+							"$ref": "#/definitions/namedRuleGroup"
 						},
 						"^[^/]+/\\*$": {
 							"type": "boolean",
@@ -77,9 +54,6 @@
 		"baseRules": {
 			"$ref": "https://raw.githubusercontent.com/markuplint/markuplint/main/packages/%40markuplint/rules/schema.json#/definitions/rules",
 			"description": "Rules without named rule group support. Used inside nodeRules, childNodeRules, and namedRuleGroup."
-		},
-		"custom-rule-value": {
-			"type": ["string", "boolean", "number", "array", "object"]
 		},
 		"regexSelector": {
 			"allOf": [
@@ -126,29 +100,6 @@
 		"regexSelectorCombinator": {
 			"type": "string",
 			"enum": [" ", ">", "+", "~", ":has(+)", ":has(~)"]
-		},
-		"plugins": {
-			"type": "array",
-			"items": {
-				"oneOf": [
-					{
-						"type": "string"
-					},
-					{
-						"type": "object",
-						"required": ["name"],
-						"additionalProperties": false,
-						"properties": {
-							"name": {
-								"type": "string"
-							},
-							"settings": {
-								"type": "object"
-							}
-						}
-					}
-				]
-			}
 		},
 		"parser": {
 			"type": "object",
@@ -681,9 +632,6 @@
 		"ruleCommonSettings": {
 			"$ref": "#/definitions/ruleCommonSettings"
 		},
-		"plugins": {
-			"$ref": "#/definitions/plugins"
-		},
 		"parser": {
 			"$ref": "#/definitions/parser"
 		},
@@ -730,9 +678,6 @@
 				"type": "object",
 				"additionalProperties": false,
 				"properties": {
-					"plugins": {
-						"$ref": "#/definitions/plugins"
-					},
 					"parser": {
 						"$ref": "#/definitions/parser"
 					},

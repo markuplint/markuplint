@@ -17,8 +17,8 @@ const cache = new Map<string, unknown>();
 const require = createRequire(import.meta.url);
 
 /**
- * Imports the module that a configuration names (a configuration to `extends`, a parser, a
- * plugin, the data of `pretenders`) and returns what it exports: the default export when there is
+ * Imports the module that a configuration names (a configuration to `extends`, a parser, the data
+ * of `pretenders`) and returns what it exports: the default export when there is
  * one, the namespace otherwise. Whatever cannot be imported, for whatever reason, yields `null`,
  * as the callers report a missing module in their own terms; the reason goes to the debug log.
  *
@@ -72,7 +72,7 @@ export async function generalImport<T>(name: string): Promise<T | null> {
 		// `import()`, which evaluates third-party module code, so a Tier-1-shaped error here
 		// (TypeError / SyntaxError / etc.) may come from the imported module or from the runtime's
 		// loader rather than from markuplint's own code, and the two cannot be told apart. Every
-		// error is a recoverable `null`; the callers (config / parser / plugin loaders) decide how
+		// error is a recoverable `null`; the callers (config / parser loaders) decide how
 		// to surface the missing module.
 		if (error instanceof Error) {
 			const { filePath, packageName } =

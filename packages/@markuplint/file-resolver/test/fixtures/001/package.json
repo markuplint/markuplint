@@ -3,14 +3,6 @@
 	"markuplint": {
 		"dummy": true,
 		"key": "001/package.json",
-		"plugins": [
-			"a",
-			"@markuplint/file-resolver",
-			{
-				"name": "b",
-				"foo": "001"
-			}
-		],
 		"pretenders": [
 			{
 				"selector": "MyComponent",

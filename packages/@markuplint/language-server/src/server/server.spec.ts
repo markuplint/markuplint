@@ -406,31 +406,6 @@ describe.skipIf(!nativeAddonIsBuilt)('experimentalRustCore', () => {
 		);
 	});
 
-	test('logs that a lint left for the TypeScript engine once for the document, not at every edit', async () => {
-		const { client, received, uri } = await sessions(true, {
-			// A plugin is a rule the Rust engine does not run, so the lint leaves for the TypeScript engine
-			'plugin.cjs': `module.exports = {
-	name: 'foo',
-	create: () => ({
-		rules: { bar: { defaultValue: 'bar-value', defaultOptions: null, verify: ({ report }) => report({ message: 'x', line: 1, col: 1, raw: '' }) } },
-	}),
-};`,
-			'.markuplintrc': JSON.stringify({ plugins: ['./plugin.cjs'], rules: { 'foo/bar': true } }),
-		});
-		const fell = () => logMessages(received).filter(message => message.includes('falling back to TypeScript'));
-		expect(fell()).toHaveLength(1);
-
-		const published = () => received.filter(m => m.method === 'textDocument/publishDiagnostics').length;
-		const before = published();
-		void client.sendNotification('textDocument/didChange', {
-			textDocument: { uri, version: 2 },
-			contentChanges: [{ text: '<p id=b>x</p>\n' }],
-		});
-		await waitFor(() => (published() > before ? true : undefined), 'the diagnostics of the edit');
-
-		expect(fell()).toHaveLength(1);
-	});
-
 	test('logs nothing about a fallback while the Rust engine lints', async () => {
 		const { received } = await sessions(true);
 

@@ -21,6 +21,19 @@ import { search } from './search/index.js';
 const STDIN_OPERAND = '-';
 
 /**
+ * The flags of v5 that no longer exist, by the key that meow gives an unknown flag, and as they are
+ * written. meow lets an unknown flag through, so left alone `--no-import-preset-rules` would lint
+ * with every preset rule, with exit code 0, as if the flag had not been given.
+ *
+ * Dropped in v7 with the other reports of what the plugin mechanism left (`removedPluginError()` of
+ * `@markuplint/file-resolver`).
+ */
+const REMOVED_FLAGS = [
+	['importPresetRules', '--[no-]import-preset-rules'],
+	['createRule', '--create-rule'],
+] as const;
+
+/**
  * Runs the CLI and resolves to its exit code.
  *
  * Every branch returns a number: a branch that forgets to leaves `undefined`,
@@ -35,6 +48,15 @@ export async function main(): Promise<number> {
 
 	if (cli.flags.h || (isSoleArgument && cli.flags.help === true)) {
 		return showHelp(0);
+	}
+
+	for (const [key, flag] of REMOVED_FLAGS) {
+		if (key in cli.flags) {
+			process.stderr.write(
+				`${flag} was removed in v6 (https://markuplint.dev/docs/migration/v5-to-v6/plugins#cli).\n`,
+			);
+			return 1;
+		}
 	}
 
 	if (cli.flags.verbose) {
@@ -52,11 +74,6 @@ export async function main(): Promise<number> {
 			return 1;
 		}
 		return 0;
-	}
-
-	if (cli.flags.createRule) {
-		process.stderr.write("Use to run 'npx @markuplint/create-rule' instead of 'markuplint --create-rule'.\n");
-		return 1;
 	}
 
 	const files = cli.input;

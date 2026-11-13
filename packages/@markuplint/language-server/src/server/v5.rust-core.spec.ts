@@ -96,7 +96,7 @@ describe('v5 onDidOpen and experimentalRustCore', () => {
 
 	test('logs the fallback to the TypeScript engine once for a document, as a warning', async () => {
 		const { log, engines } = await open(true, true);
-		const message = '⚠ [experimental-rust-core] "/repo/a.html" has custom plugin rules — falling back.';
+		const message = '⚠ [experimental-rust-core] "/repo/a.html" NAPI binary not found — falling back.';
 
 		engines[0]!.log('experimental-rust-core:fallback', message);
 		engines[0]!.log('experimental-rust-core:fallback', message);

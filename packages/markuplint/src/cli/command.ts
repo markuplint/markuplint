@@ -143,7 +143,6 @@ export async function command(
 	const locale = options.locale;
 	const searchConfig = options.searchConfig;
 	const ignoreExt = options.ignoreExt;
-	const importPresetRules = options.importPresetRules;
 	const verbose = options.verbose;
 	const ignoreGlob = options.includeNodeModules ? undefined : 'node_modules/**';
 
@@ -209,8 +208,7 @@ export async function command(
 	const unusedSuppressionEntries: string[] = [];
 	// Shared across every file in this run so its config cache — keyed by
 	// resolved config `names`, not by target file — actually helps: config
-	// loading/merging/plugin-resolution is done once per distinct config,
-	// not once per file. See #3997.
+	// loading/merging is done once per distinct config, not once per file. See #3997.
 	const configProvider = new ConfigProvider();
 	const parsedSeverityParseError = parseSeverityFlag(options.severityParseError);
 	const parsedSeverityDeprecation = parseSeverityFlag(options.severityDeprecation);
@@ -249,7 +247,6 @@ export async function command(
 			locale,
 			noSearchConfig: !searchConfig,
 			ignoreExt,
-			importPresetRules,
 			debug: verbose,
 			severity,
 			experimentalRustCore: options.experimentalRustCore,
@@ -270,7 +267,6 @@ export async function command(
 					computedConfig: configSet.config,
 					configurationFile: configurationFile,
 					dependencies,
-					plugins: configSet.plugins,
 					errors: configSet.errs,
 					ruleDeprecations: configSet.ruleDeprecations,
 					appliedOverrides: configSet.appliedOverrides ?? [],

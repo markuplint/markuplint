@@ -13,6 +13,7 @@ import { searchNodeAtLocation } from '@markuplint/ml-core';
 import { getFilePath } from '../utils/get-file-path.js';
 
 import { convertDiagnostics } from './convert-diagnostics.js';
+import { usedPluginNames } from './used-plugin-names.js';
 
 const engines = new Map<string, _MLEngine>();
 
@@ -107,12 +108,13 @@ export async function onDidOpen(
 				} else {
 					diagnosticsLog('  No use configs');
 				}
-				if (configSet.plugins.length > 0) {
+				const plugins = usedPluginNames(configSet);
+				if (plugins && plugins.length > 0) {
 					diagnosticsLog('  Used plugins:');
-					for (const plugin of configSet.plugins.values()) {
-						diagnosticsLog(`    ${plugin.name}`);
+					for (const name of plugins) {
+						diagnosticsLog(`    ${name}`);
 					}
-				} else {
+				} else if (plugins) {
 					diagnosticsLog('  No use plugins');
 				}
 			}

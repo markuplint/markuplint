@@ -15,7 +15,6 @@ Options
 	--format,                -f FORMAT     Output format. Support "JSON", "Simple", "GitHub" and "Standard". Default: "Standard".
 	--no-search-config                     No search a configure file automatically.
 	--ignore-ext                           Evaluate files that are received even though the type of extension.
-	--no-import-preset-rules               No import preset rules.
 	--locale                               Locale of the message of violation. Default is an OS setting.
 	--no-color,                            Output no color.
 	--problem-only,          -p            Output only problems, without passeds.
@@ -79,10 +78,6 @@ export const cli = meow(help, {
 			type: 'boolean',
 			default: false,
 		},
-		importPresetRules: {
-			type: 'boolean',
-			default: true,
-		},
 		locale: {
 			type: 'string',
 		},
@@ -111,10 +106,6 @@ export const cli = meow(help, {
 			default: false,
 		},
 		init: {
-			type: 'boolean',
-			default: false,
-		},
-		createRule: {
 			type: 'boolean',
 			default: false,
 		},

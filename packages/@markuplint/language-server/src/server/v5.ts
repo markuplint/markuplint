@@ -19,6 +19,7 @@ import { convertDiagnostics } from './convert-diagnostics.js';
 import { getAccessibilityByLocation, hasAccessibilityAt } from './get-accessibility-by-location.js';
 import { isPretendersNotInstalled } from './parser-load-failure.js';
 import { applySuppressionsToViolations, loadSuppressions } from './suppression-support.js';
+import { usedPluginNames } from './used-plugin-names.js';
 
 /**
  * Snapshot of the latest lint result for a document, used to produce Code Actions.
@@ -219,12 +220,13 @@ export async function onDidOpen(
 				} else {
 					diagnosticsLog('  No use configs');
 				}
-				if (configSet.plugins.length > 0) {
+				const plugins = usedPluginNames(configSet);
+				if (plugins && plugins.length > 0) {
 					diagnosticsLog('  Used plugins:');
-					for (const plugin of configSet.plugins.values()) {
-						diagnosticsLog(`    ${plugin.name}`);
+					for (const name of plugins) {
+						diagnosticsLog(`    ${name}`);
 					}
-				} else {
+				} else if (plugins) {
 					diagnosticsLog('  No use plugins');
 				}
 			}

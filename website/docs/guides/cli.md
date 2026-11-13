@@ -24,31 +24,30 @@ With `--fix`, the exit code reflects the violations **remaining in the fixed out
 
 ## Options
 
-| Long Option                | Short Option | Argument                                 | Default                        | Description                                                                  |
-| -------------------------- | ------------ | ---------------------------------------- | ------------------------------ | ---------------------------------------------------------------------------- |
-| `--config`                 | `-c`         | File path                                | none                           | A configuration file path. Disables the automatic search.                    |
-| `--fix`                    | none         | none                                     | false                          | Fix target files if the rule supports.                                       |
-| `--fix-dry-run`            | none         | none                                     | false                          | Preview what `--fix` would change without modifying files.                   |
-| `--format`                 | `-f`         | `JSON`, `Simple`, `GitHub` or `Standard` | `Standard`                     | Select output format.                                                        |
-| `--no-search-config`       | none         | none                                     | false                          | Skip automatic configuration file search.                                    |
-| `--ignore-ext`             | none         | none                                     | false                          | Evaluate files regardless of their extension.                                |
-| `--no-import-preset-rules` | none         | none                                     | false                          | Do not import preset rules.                                                  |
-| `--locale`                 | none         | Language code (example: `en`)            | OS setting                     | Locale for violation messages.                                               |
-| `--no-color`               | none         | none                                     | false                          | Disable colored output.                                                      |
-| `--problem-only`           | `-p`         | none                                     | false                          | Output only violations.                                                      |
-| `--allow-warnings`         | none         | none                                     | true                           | Return status code 0 even if there are warnings.                             |
-| `--no-allow-empty-input`   | none         | none                                     | false                          | Return status code 1 even if there are no input files.                       |
-| `--show-config`            | none         | empty, `details`                         | none                           | Output computed configuration of the target file.                            |
-| `--verbose`                | none         | none                                     | false                          | Output with detailed information.                                            |
-| `--include-node-modules`   | none         | none                                     | false                          | Include files in node_modules directory.                                     |
-| `--severity-parse-error`   | none         | `error`, `warning` or `off`              | `error`                        | Specifies the severity level of parse errors.                                |
-| `--max-count`              | none         | Number                                   | `0`                            | Limit the number of violations shown, not the exit code. `0` means no limit. |
-| `--max-warnings`           | none         | Number                                   | `-1`                           | Number of warnings to trigger nonzero exit code. `-1` means no limit.        |
-| `--no-progressive-output`  | none         | none                                     | false                          | Wait until every file is processed before outputting results.                |
-| `--suppress`               | none         | none                                     | false                          | **[Experimental]** Generate/update suppressions file for all current errors. |
-| `--suppress-rule`          | none         | Rule ID                                  | none                           | **[Experimental]** Suppress only the specified rule.                         |
-| `--prune-suppressions`     | none         | none                                     | false                          | **[Experimental]** Remove stale entries from the suppressions file.          |
-| `--suppressions-location`  | none         | File path                                | `markuplint-suppressions.json` | **[Experimental]** Custom path for the suppressions file.                    |
+| Long Option               | Short Option | Argument                                 | Default                        | Description                                                                  |
+| ------------------------- | ------------ | ---------------------------------------- | ------------------------------ | ---------------------------------------------------------------------------- |
+| `--config`                | `-c`         | File path                                | none                           | A configuration file path. Disables the automatic search.                    |
+| `--fix`                   | none         | none                                     | false                          | Fix target files if the rule supports.                                       |
+| `--fix-dry-run`           | none         | none                                     | false                          | Preview what `--fix` would change without modifying files.                   |
+| `--format`                | `-f`         | `JSON`, `Simple`, `GitHub` or `Standard` | `Standard`                     | Select output format.                                                        |
+| `--no-search-config`      | none         | none                                     | false                          | Skip automatic configuration file search.                                    |
+| `--ignore-ext`            | none         | none                                     | false                          | Evaluate files regardless of their extension.                                |
+| `--locale`                | none         | Language code (example: `en`)            | OS setting                     | Locale for violation messages.                                               |
+| `--no-color`              | none         | none                                     | false                          | Disable colored output.                                                      |
+| `--problem-only`          | `-p`         | none                                     | false                          | Output only violations.                                                      |
+| `--allow-warnings`        | none         | none                                     | true                           | Return status code 0 even if there are warnings.                             |
+| `--no-allow-empty-input`  | none         | none                                     | false                          | Return status code 1 even if there are no input files.                       |
+| `--show-config`           | none         | empty, `details`                         | none                           | Output computed configuration of the target file.                            |
+| `--verbose`               | none         | none                                     | false                          | Output with detailed information.                                            |
+| `--include-node-modules`  | none         | none                                     | false                          | Include files in node_modules directory.                                     |
+| `--severity-parse-error`  | none         | `error`, `warning` or `off`              | `error`                        | Specifies the severity level of parse errors.                                |
+| `--max-count`             | none         | Number                                   | `0`                            | Limit the number of violations shown, not the exit code. `0` means no limit. |
+| `--max-warnings`          | none         | Number                                   | `-1`                           | Number of warnings to trigger nonzero exit code. `-1` means no limit.        |
+| `--no-progressive-output` | none         | none                                     | false                          | Wait until every file is processed before outputting results.                |
+| `--suppress`              | none         | none                                     | false                          | **[Experimental]** Generate/update suppressions file for all current errors. |
+| `--suppress-rule`         | none         | Rule ID                                  | none                           | **[Experimental]** Suppress only the specified rule.                         |
+| `--prune-suppressions`    | none         | none                                     | false                          | **[Experimental]** Remove stale entries from the suppressions file.          |
+| `--suppressions-location` | none         | File path                                | `markuplint-suppressions.json` | **[Experimental]** Custom path for the suppressions file.                    |
 
 ## Particular run
 

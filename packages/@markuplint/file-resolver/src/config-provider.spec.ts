@@ -2,14 +2,12 @@ import fs, { mkdir, mkdtemp, realpath, rm, writeFile } from 'node:fs/promises';
 import os from 'node:os';
 import path from 'node:path';
 
-import { Ruleset } from '@markuplint/ml-core';
 import { ConfigParserError } from '@markuplint/parser-utils';
 import { ConfigLoadError } from '@markuplint/shared';
 
 import { jsonc } from 'jsonc';
 import { afterEach, beforeEach, describe, test, expect, vi } from 'vitest';
 
-import { autoLoadRules } from './auto-load-rules.js';
 import { ConfigProvider } from './config-provider.js';
 import { getFile } from './ml-file/index.js';
 
@@ -32,23 +30,6 @@ test('001 + 002', async () => {
 		dummy: true,
 		dummy2: false,
 		key: '002/.markuplintrc.json',
-		plugins: [
-			{
-				name: path.resolve(testDir, '001', 'a'),
-			},
-			{
-				name: '@markuplint/file-resolver',
-				foo: '002',
-			},
-			{
-				name: path.resolve(testDir, '001', 'b'),
-				foo: '001',
-			},
-			{
-				name: path.resolve(testDir, '002', 'b'),
-				foo: '002',
-			},
-		],
 		pretenders: {
 			files: path.resolve(testDir, '..', 'pretenders.json'),
 			data: [
@@ -105,26 +86,6 @@ test('001 + 002 + 003', async () => {
 		dummy2: true,
 		key: '003/.markuplintrc',
 		key2: '001-2.js',
-		plugins: [
-			{
-				name: path.resolve(testDir, '001', 'a'),
-			},
-			{
-				name: '@markuplint/file-resolver',
-				foo: '002',
-			},
-			{
-				name: path.resolve(testDir, '001', 'b'),
-				foo: '001',
-			},
-			{
-				name: path.resolve(testDir, '002', 'b'),
-				foo: '002',
-			},
-			{
-				name: path.resolve(testDir, '..', 'plugins', '001.js'),
-			},
-		],
 		pretenders: {
 			files: path.resolve(testDir, '..', 'pretenders.json'),
 			data: [
@@ -148,10 +109,6 @@ test('001 + 002 + 003', async () => {
 			'rule__custom-setting2': false,
 			additional_rule: {
 				value: 'VALUE',
-			},
-			xxx: 'yyy',
-			zzz: {
-				severity: 'error',
 			},
 		},
 		nodeRules: [
@@ -492,11 +449,10 @@ test('Base config resolution is cached and reused across files sharing one Confi
 	const htmlResult = await sharedProvider.resolve(htmlFile, [resetKey]);
 	const vueResult = await sharedProvider.resolve(vueFile, [resetKey]);
 
-	// Both calls resolve the same `names`; `files`/`plugins` must be the SAME
+	// Both calls resolve the same `names`; `files` must be the SAME
 	// object across both results — proof the second call reused the cached
-	// base config instead of redoing merge/validate/plugin-resolution.
+	// base config instead of redoing merge/validate.
 	expect(vueResult.files).toBe(htmlResult.files);
-	expect(vueResult.plugins).toBe(htmlResult.plugins);
 });
 
 test('set() reuses the same key for the same config object identity (#3997)', () => {
@@ -590,22 +546,6 @@ test('runExclusive() serializes overlapping calls, deferring a later call until 
 	// runtime's exact `await` scheduling — relevant since this repo also
 	// tests under Bun and Deno, not just Node/V8.
 	expect(order).toStrictEqual(['first-start', 'first-end', 'second-start', 'second-end']);
-});
-
-test('invalidate() clears the auto-load rule cache so a cached miss is probed again', async () => {
-	const provider = new ConfigProvider();
-	const ruleset = new Ruleset({ rules: { 'not-installed': true } });
-
-	const first = await autoLoadRules(ruleset);
-	expect(first.errors.length).toBe(2);
-	// Served from the cache: the same error objects, not a new probe
-	expect((await autoLoadRules(ruleset)).errors[0]).toBe(first.errors[0]);
-
-	provider.invalidate();
-
-	const reprobed = await autoLoadRules(ruleset);
-	expect(reprobed.errors.length).toBe(2);
-	expect(reprobed.errors[0]).not.toBe(first.errors[0]);
 });
 
 test('Search goes up past a nested package.json without a markuplint field', async () => {
@@ -1018,7 +958,6 @@ describe('Relative paths are resolved from the directory of the configuration fi
 		expect(Object.keys(configSet.config).toSorted()).toStrictEqual([
 			'excludeFiles',
 			'parser',
-			'plugins',
 			'pretenders',
 			'specs',
 		]);
@@ -1026,7 +965,6 @@ describe('Relative paths are resolved from the directory of the configuration fi
 			// A module name stays as it is; only a path is resolved.
 			parser: { '\\.x$': path.resolve(subDir, 'parser.js'), '\\.y$': '@markuplint/jsx-parser' },
 			specs: { '\\.x$': path.resolve(subDir, 'spec.js') },
-			plugins: [{ name: path.resolve(subDir, 'plugin.js') }],
 			excludeFiles: [path.resolve(subDir, 'ignored/**'), `!${path.resolve(subDir, 'ignored/keep/**')}`],
 			pretenders: {
 				files: [path.resolve(subDir, 'pretenders.json')],
@@ -1037,46 +975,6 @@ describe('Relative paths are resolved from the directory of the configuration fi
 				data: [{ selector: 'Over', as: 'li', filePath: `${path.resolve(subDir, 'Over.tsx')}:3:4` }],
 			},
 		});
-	});
-});
-
-describe('Plugins in the value of an override are loaded for the file it applies to', () => {
-	const pluginsDir = path.resolve(import.meta.dirname, '..', 'test', 'fixtures', '015', 'plugins');
-	const resolveFor = (config: string, target: string) =>
-		new ConfigProvider().resolve(getFile(path.resolve(pluginsDir, target)), [path.resolve(pluginsDir, config)]);
-	const names = (configSet: Awaited<ReturnType<typeof resolveFor>>) => configSet.plugins.map(p => p.name);
-
-	test('a plugin that only the override declares', async () => {
-		const matched = await resolveFor('override-only.json', 'target.html');
-		expect(names(matched)).toStrictEqual(['foo']);
-		expect(matched.errs).toStrictEqual([]);
-	});
-
-	test('no plugin for a file that the override does not apply to', async () => {
-		const unmatched = await resolveFor('override-only.json', 'other.txt');
-		expect(names(unmatched)).toStrictEqual([]);
-	});
-
-	test('the plugins of the base remain when an override replaces the configuration without declaring plugins', async () => {
-		const matched = await resolveFor('reset-without-plugins.json', 'target.html');
-		expect(names(matched)).toStrictEqual(['base-plugin']);
-	});
-
-	test('the plugins of the base come first, then those of the override, when the configurations are merged', async () => {
-		const matched = await resolveFor('merge.json', 'target.html');
-		expect(names(matched)).toStrictEqual(['base-plugin', 'foo']);
-		expect(matched.errs).toStrictEqual([]);
-	});
-
-	test('a plugin of the override that is not found is reported for that file only', async () => {
-		const provider = new ConfigProvider();
-		const key = path.resolve(pluginsDir, 'missing.json');
-		const matched = await provider.resolve(getFile(path.resolve(pluginsDir, 'target.html')), [key]);
-		const unmatched = await provider.resolve(getFile(path.resolve(pluginsDir, 'other.txt')), [key]);
-		expect(matched.errs.map(e => e.message)).toStrictEqual([
-			`Plugin not found: ${path.resolve(pluginsDir, 'not-found.js')}`,
-		]);
-		expect(unmatched.errs).toStrictEqual([]);
 	});
 });
 
@@ -1202,22 +1100,6 @@ describe('the selectors of a configuration are validated wherever the configurat
 	});
 });
 
-describe('the selectors of a configuration that a plugin provides (extends)', () => {
-	const testDir = path.resolve(import.meta.dirname, '..', 'test', 'fixtures', '019');
-
-	test('the invalid selectors of the configuration and of the plugin are both reported', async () => {
-		const provider = new ConfigProvider();
-		const file = getFile(path.resolve(testDir, 'target.html'));
-		const configSet = await provider.resolve(file, [path.resolve(testDir, '.markuplintrc.json')]);
-		expect(
-			configSet.errs.map(error => [error.message, error instanceof ConfigParserError && error.filePath]),
-		).toStrictEqual([
-			[expect.stringContaining('Invalid selector: "span["'), 'plugin:invalid-selector/node-rules'],
-			[expect.stringContaining('Invalid selector: "div["'), path.resolve(testDir, '.markuplintrc.json')],
-		]);
-	});
-});
-
 describe('the file of a pretender that holds an invalid selector', () => {
 	test('is the file of the error when the pretender has one', async () => {
 		const provider = new ConfigProvider();
@@ -1228,5 +1110,74 @@ describe('the file of a pretender that holds an invalid selector', () => {
 		const configSet = await provider.resolve(file, [key]);
 		expect(configSet.errs).toHaveLength(1);
 		expect(configSet.errs[0]).toMatchObject({ filePath: 'src/Component.tsx:3:1', raw: 'div[' });
+	});
+});
+
+describe('The plugin mechanism is removed, and what is left of it in a configuration is reported', () => {
+	const target = getFile(path.resolve(import.meta.dirname, '..', 'test', 'fixtures', '001', 'target.html'));
+	const removed = expect.stringContaining('the plugin mechanism was removed in v6');
+	const reasons = (errs: readonly Readonly<Error>[]) =>
+		errs.map(error => [
+			error.message,
+			error instanceof ConfigParserError && error.filePath,
+			error instanceof ConfigParserError && error.raw,
+		]);
+
+	test('`plugins` at the top level names the configuration that holds it', async () => {
+		const provider = new ConfigProvider();
+		// @ts-expect-error `plugins` is not a property of the configuration
+		const key = provider.set({ plugins: ['a-plugin'], rules: { 'require-accessible-name': true } });
+		const configSet = await provider.resolve(target, [key]);
+		expect(reasons(configSet.errs)).toStrictEqual([[removed, key, 'plugins']]);
+		expect(configSet.config.rules).toStrictEqual({ 'require-accessible-name': true });
+	});
+
+	test('`plugins` in the value of an override is reported even when its glob does not match the target', async () => {
+		const provider = new ConfigProvider();
+		// @ts-expect-error `plugins` is not a property of the configuration
+		const key = provider.set({ overrides: { '*.vue': { plugins: ['a-plugin'] } } });
+		const configSet = await provider.resolve(target, [key]);
+		expect(reasons(configSet.errs)).toStrictEqual([[removed, key, 'plugins']]);
+	});
+
+	test('`plugin:<name>/<config>` in `extends` is reported, and the rest of the configuration is kept', async () => {
+		const provider = new ConfigProvider();
+		const key = provider.set({
+			extends: ['plugin:a-plugin/recommended'],
+			rules: { 'require-accessible-name': true },
+		});
+		const configSet = await provider.resolve(target, [key]);
+		expect(reasons(configSet.errs)).toStrictEqual([[removed, key, 'plugin:a-plugin/recommended']]);
+		expect(configSet.config.rules).toStrictEqual({ 'require-accessible-name': true });
+	});
+
+	test('`plugin:<name>/<config>` as a name given to `resolve()` is reported, not thrown', async () => {
+		const provider = new ConfigProvider();
+		const key = provider.set({ rules: { 'require-accessible-name': true } });
+		const configSet = await provider.resolve(target, [key, 'plugin:a-plugin/recommended']);
+		// No configuration holds the name, so the error names the file that is linted
+		expect(reasons(configSet.errs)).toStrictEqual([[removed, target.path, 'plugin:a-plugin/recommended']]);
+	});
+
+	test('`plugins` in an extended configuration names the file that holds it', async () => {
+		const dir = path.resolve(import.meta.dirname, '..', 'test', 'fixtures', '020');
+		const configSet = await new ConfigProvider().resolve(getFile(path.resolve(dir, 'target.html')), [
+			path.resolve(dir, '.markuplintrc.json'),
+		]);
+		expect(reasons(configSet.errs)).toStrictEqual([[removed, path.resolve(dir, 'base.json'), 'plugins']]);
+		expect(configSet.config.rules).toStrictEqual({ 'no-duplicate-id': true });
+	});
+
+	test.each([[undefined], [null], [[]]])('`plugins: %j` names no plugin and reports nothing', async plugins => {
+		const provider = new ConfigProvider();
+		// @ts-expect-error `plugins` is not a property of the configuration
+		const key = provider.set({ plugins, rules: { 'require-accessible-name': true } });
+		expect((await provider.resolve(target, [key])).errs).toStrictEqual([]);
+	});
+
+	test('a configuration without them reports nothing', async () => {
+		const provider = new ConfigProvider();
+		const key = provider.set({ rules: { 'require-accessible-name': true } });
+		expect((await provider.resolve(target, [key])).errs).toStrictEqual([]);
 	});
 });

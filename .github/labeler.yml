@@ -14,7 +14,6 @@ Command Line Interface:
                 - packages/markuplint/bin/*
                 - packages/markuplint/src/cli/*
                 - packages/@markuplint/cli-utils/src/**/*
-                - packages/@markuplint/create-rule/src/**/*
 
 Config Presets:
     - changed-files:
@@ -22,7 +21,6 @@ Config Presets:
                 - packages/markuplint/bin/*
                 - packages/markuplint/src/cli/*
                 - packages/@markuplint/cli-utils/src/**/*
-                - packages/@markuplint/create-rule/src/**/*
 
 Configuration File:
     - changed-files:
@@ -61,11 +59,6 @@ Parser:
           - any-glob-to-any-file:
                 - packages/@markuplint/*-parser/src/**/*
 
-'Plugin API: Extends Config':
-    - changed-files:
-          - any-glob-to-any-file:
-                - packages/@markuplint/ml-config/src/**/*
-
 'Plugin API: Parser':
     - changed-files:
           - any-glob-to-any-file:
@@ -75,11 +68,6 @@ Parser:
     - changed-files:
           - any-glob-to-any-file:
                 - packages/@markuplint/pretenders/src/**/*
-
-'Plugin API: Rule':
-    - changed-files:
-          - any-glob-to-any-file:
-                - packages/@markuplint/ml-core/src/ml-rule/**/*
 
 Rule:
     - changed-files:

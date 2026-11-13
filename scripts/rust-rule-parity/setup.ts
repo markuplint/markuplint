@@ -43,8 +43,8 @@ const KNOWN_DIVERGENCES: ReadonlyMap<string, string> = new Map([
 
 /**
  * Whether the specs of the directory test a built-in rule. The ones of a directory that is not
- * registered (`srcset-sizes-constraint`, whose spec lints a custom probe rule, `landmark-roles`,
- * `table-row-column-alignment` and `wai-aria`, which hold helpers) are not checked for a fallback.
+ * registered (`srcset-sizes-constraint`, `landmark-roles`, `table-row-column-alignment` and
+ * `wai-aria`, which hold helpers) are not checked for a fallback.
  */
 function isRegisteredRuleDirectory(filepath: string) {
 	const name = path.relative(RULES_SRC, path.dirname(filepath)).split(path.sep)[0];
@@ -58,9 +58,8 @@ const watch = watchFallbacks();
 /**
  * The testing API must be on the Rust engine at all: if the environment variable of the config were
  * not the one `markuplint` reads, every spec would run on the TypeScript engine, with no warning to
- * watch for, and pass. A custom rule has to fall back to the TypeScript engine, with a warning, when
- * it is on; and a built-in rule has to run on the Rust engine, which needs the native addon, the
- * environment variable and the redirect of `@markuplint/rules` (the registry identity that
+ * watch for, and pass. A built-in rule has to run on the Rust engine, which needs the native addon,
+ * the environment variable and the redirect of `@markuplint/rules` (the registry identity that
  * `mlRuleTest` looks up) all together.
  */
 beforeAll(async () => {

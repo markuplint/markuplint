@@ -488,52 +488,6 @@
 			}
 		},
 		{
-			"files": ["packages/@markuplint/create-rule/scaffold/**/*"],
-			"rules": {
-				"unicorn/error-message": "off",
-				"unicorn/no-await-expression-member": "off",
-				"unicorn/text-encoding-identifier-case": "off",
-				"unicorn/filename-case": "off",
-				"no-unused-vars": [
-					"error",
-					{
-						"argsIgnorePattern": ".*"
-					}
-				],
-				"import/named": "off",
-				"typescript/adjacent-overload-signatures": "error",
-				"typescript/no-namespace": [
-					"error",
-					{
-						"allowDeclarations": true
-					}
-				],
-				"typescript/no-var-requires": "off",
-				"typescript/no-unnecessary-type-assertion": "error",
-				"typescript/restrict-plus-operands": "off",
-				"typescript/consistent-type-imports": "warn",
-				"typescript/require-await": "error",
-				"typescript/no-floating-promises": "error",
-				"typescript/strict-boolean-expressions": [
-					"error",
-					{
-						"allowString": true,
-						"allowNumber": false,
-						"allowNullableObject": true,
-						"allowNullableEnum": false,
-						"allowNullableString": true,
-						"allowNullableBoolean": true,
-						"allowAny": true
-					}
-				],
-				"typescript/prefer-readonly-parameter-types": "off",
-				"typescript/ban-ts-comment": "off",
-				"typescript/no-empty-object-type": "off",
-				"typescript/no-explicit-any": "off",
-				"typescript/no-unnecessary-type-constraint": "off"
-			}
-		},
-		{
 			"files": ["vscode/{src,test}/**/*.{ts,js}"],
 			"rules": {
 				"no-restricted-globals": "off",

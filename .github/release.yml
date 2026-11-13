@@ -10,10 +10,8 @@ changelog:
               - Core API
               - Command Line Interface
               - Parser
-              - 'Plugin API: Extends Config'
               - 'Plugin API: Parser'
               - 'Plugin API: Pretender Hooks'
-              - 'Plugin API: Rule'
               - Rule
 
         - title: Update Specs

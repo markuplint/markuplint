@@ -12,7 +12,6 @@ You can contribute to:
 - Improve the documentation and [the website](https://markuplint.dev/).
 - Re-design and improve DevOps.
 - Improve [testing](https://github.com/markuplint/markuplint/actions?query=workflow%3ATest) and [coverage](https://coveralls.io/github/markuplint/markuplint?branch=main).
-- Create and develop its plugins.
 
 Its purpose is all developers are able to better markup and fit each of diverse their projects. So we want you to contribute. Your thought leads to diversity.
 

@@ -1,4 +1,0 @@
-src
-tsconfig*
-!scaffold/package/src
-!scaffold/package/tsconfig.json

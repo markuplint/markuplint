@@ -61,7 +61,7 @@ describe('Issues', () => {
 				severity: 'warning',
 				line: 1,
 				col: 1,
-				message: `Plugin not found: ${path.resolve(import.meta.dirname, '../../test/issue1824/no-exist-plugin.js')}`,
+				message: `"plugins" is not supported: the plugin mechanism was removed in v6 (https://markuplint.dev/docs/migration/v5-to-v6/plugins) in ${config1}`,
 				raw: '',
 			},
 		]);
@@ -88,6 +88,15 @@ describe('Issues', () => {
 				line: 1,
 				col: 1,
 				message: 'Rule not found: no-exist-namespace/my-rule',
+				raw: '',
+			},
+			{
+				ruleId: 'config-error',
+				filePath,
+				severity: 'warning',
+				line: 1,
+				col: 1,
+				message: `"plugins" is not supported: the plugin mechanism was removed in v6 (https://markuplint.dev/docs/migration/v5-to-v6/plugins) in ${config2}`,
 				raw: '',
 			},
 		]);

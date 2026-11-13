@@ -87,19 +87,6 @@ To apply rules only to certain elements, use [**selectors**](./selectors) with t
 
 You can use base rule names (e.g., `"no-unknown-role"`) and namespace wildcards (e.g., `"a11y/*": false`) in both `nodeRules` and `childNodeRules`. These automatically apply to virtual rules created by presets — see the [nodeRules reference](/docs/configuration/properties#noderules) for details.
 
-## Using custom rules
-
-You can use rules created by third-party developers or [create your own](./custom-rule). Specify the plugin name and rule name separated by a slash:
-
-```json class=config
-{
-  "plugins": ["./my-plugin.js"],
-  "rules": {
-    "my-plugin/my-rule": true
-  }
-}
-```
-
 ## Next steps
 
 - **[Selectors](/docs/guides/selectors)** — Learn the selector syntax for targeting specific elements

@@ -85,7 +85,7 @@ Refer to https://markuplint.dev/docs/guides/beyond-html for the exact parser/spe
 
 #### When to use JavaScript/TypeScript config
 
-If the project uses external config plugins or shared configs that require fine-grained merging, recommend `markuplint.config.ts` (or `.js`) with spread syntax — similar to ESLint's flat config pattern:
+If the project uses shared configs that require fine-grained merging, recommend `markuplint.config.ts` (or `.js`) with spread syntax — similar to ESLint's flat config pattern:
 
 ```ts
 import type { Config } from '@markuplint/ml-config';
