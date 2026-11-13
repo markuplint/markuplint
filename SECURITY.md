@@ -2,12 +2,12 @@
 
 ## Supported versions
 
-| Version      | Status       | Security fixes |
-| ------------ | ------------ | -------------- |
-| v6           | Experimental | Not released   |
-| v5           | Stable       | Yes            |
-| v4           | LTS          | Yes            |
-| v3 and older | End of life  | No             |
+| Version      | Status       | Security fixes        |
+| ------------ | ------------ | --------------------- |
+| v6           | Experimental | No (prereleases only) |
+| v5           | Stable       | Yes                   |
+| v4           | LTS          | Yes                   |
+| v3 and older | End of life  | No                    |
 
 How long each version is supported, and what else it receives: [Support policy](https://markuplint.dev/community/support-policy).
 
