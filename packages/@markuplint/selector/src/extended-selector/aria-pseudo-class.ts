@@ -19,6 +19,10 @@ import { InvalidSelectorError } from '../invalid-selector-error.js';
  * (it sits lower in the dependency graph), so a structural type check
  * (`'getAccessibleName' in el`) is used instead of an `instanceof` guard.
  *
+ * An element whose name is in a branch of a conditional block has no name as written, but may have
+ * one, so `has name` matches it and `has no name` does not: the same duck-typed
+ * `mayHaveAccessibleName()` is asked when the name as written is empty.
+ *
  * For elements that do **not** have the method (e.g. plain DOM `Element`
  * instances in unit tests), the function falls back to the stateless
  * `getAccname()` from `@markuplint/ml-spec`.
@@ -40,9 +44,18 @@ export function ariaPseudoClass(specs: MLMLSpec) {
 				'getAccessibleName' in el && typeof (el as Record<string, unknown>).getAccessibleName === 'function'
 					? (el as unknown as { getAccessibleName(v: ARIAVersion): string }).getAccessibleName(version)
 					: getAccname(el as Element, specs, version);
+			// An element whose name is in a branch of a conditional block may have a name: the markup as
+			// written does not say which branch is rendered (`MLElement#mayHaveAccessibleName`)
+			const hasName =
+				!!name ||
+				('mayHaveAccessibleName' in el &&
+					typeof (el as Record<string, unknown>).mayHaveAccessibleName === 'function' &&
+					(el as unknown as { mayHaveAccessibleName(v: ARIAVersion): boolean }).mayHaveAccessibleName(
+						version,
+					));
 			switch (aria.type) {
 				case 'hasName': {
-					if (name) {
+					if (hasName) {
 						return {
 							specificity: [0, 1, 0],
 							matched: true,
@@ -56,7 +69,7 @@ export function ariaPseudoClass(specs: MLMLSpec) {
 					};
 				}
 				case 'hasNoName': {
-					if (!name) {
+					if (!hasName) {
 						return {
 							specificity: [0, 1, 0],
 							matched: true,
