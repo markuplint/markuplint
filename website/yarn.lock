@@ -9596,7 +9596,7 @@ __metadata:
     stylelint: "npm:17.16.0"
     stylelint-config-recess-order: "npm:7.10.0"
     stylelint-config-standard: "npm:40.0.0"
-    stylelint-order: "npm:8.1.2"
+    stylelint-order: "npm:8.1.3"
     tsx: "npm:4.23.15"
     typescript: "npm:6.0.3"
     unist-util-visit: "npm:5.2.0"
@@ -13915,15 +13915,15 @@ __metadata:
   languageName: node
   linkType: hard
 
-"stylelint-order@npm:8.1.2":
-  version: 8.1.2
-  resolution: "stylelint-order@npm:8.1.2"
+"stylelint-order@npm:8.1.3":
+  version: 8.1.3
+  resolution: "stylelint-order@npm:8.1.3"
   dependencies:
     postcss: "npm:^8.5.28"
     postcss-sorting: "npm:^10.0.0"
   peerDependencies:
-    stylelint: ^16.18.0 || ^17.0.0
-  checksum: 10c0/f0a4cd0f811086798ed0cddeccebd88342b06122cf8e6e0836b01fb125c701016769eda7ed037976b37ea7124d72bc43110b438c0d589d648211920df59d4c0b
+    stylelint: ^16.18.0 || ^17.0.0 || ^18.0.0
+  checksum: 10c0/af3ff0bd44393fa2164114772d2adf057293c6092a74d6cd6e825a910cd355dcf62d9c8c6cbffb49dbd65000583aac0179bb60ee069d66a5884eed643a24df2f
   languageName: node
   linkType: hard
 
