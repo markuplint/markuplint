@@ -87,19 +87,6 @@ Markuplintは[設定ファイル](/docs/configuration)が見つからない場�
 
 `nodeRules` と `childNodeRules` ではベースルール名（例: `"no-unknown-role"`）や名前空間ワイルドカード（例: `"a11y/*": false`）も使用できます。これらはプリセットが作成した仮想ルールに自動的に適用されます — 詳細は [nodeRules リファレンス](/docs/configuration/properties#noderules) を参照してください。
 
-## カスタムルールを使う {#using-custom-rules}
-
-サードパーティ製のルールや、[自作のルール](./custom-rule)を使用できます。スラッシュ区切りでプラグイン名とルール名を指定します:
-
-```json class=config
-{
-  "plugins": ["./my-plugin.js"],
-  "rules": {
-    "my-plugin/my-rule": true
-  }
-}
-```
-
 ## 次のステップ
 
 - **[セレクタ](/docs/guides/selectors)** — 特定の要素を対象にするセレクタの構文を学ぶ

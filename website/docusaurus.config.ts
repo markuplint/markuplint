@@ -202,6 +202,10 @@ const config: Config = {
 						to: '/docs/guides/beyond-html',
 					},
 					{
+						from: '/docs/guides/custom-rule',
+						to: '/docs/migration/v5-to-v6/plugins',
+					},
+					{
 						from: '/cli',
 						to: '/docs/guides/cli',
 					},

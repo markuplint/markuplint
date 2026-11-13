@@ -19,7 +19,6 @@ Most projects only need a few properties. Here's what to use based on what you w
 ```json class=config
 {
   "extends": [],
-  "plugins": {},
   "parser": {},
   "parserOptions": {},
   "specs": [],
@@ -34,30 +33,28 @@ Most projects only need a few properties. Here's what to use based on what you w
 }
 ```
 
-| Property                                | First guide                                                                                                             | Interface                              |
-| --------------------------------------- | ----------------------------------------------------------------------------------------------------------------------- | -------------------------------------- |
-| [**`extends`**](#extends)               | [Using Presets](/docs/guides/presets)                                                                                   | [Interface](#extends/interface)        |
-| [**`plugins`**](#plugins)               | [Using custom rules](/docs/guides/applying-rules#using-custom-rules), [Creating Custom Rules](/docs/guides/custom-rule) | [Interface](#plugins/interface)        |
-| [**`parser`**](#parser)                 | [Beyond HTML](/docs/guides/beyond-html)                                                                                 | [Interface](#parser/interface)         |
-| [**`parserOptions`**](#parseroptions)   | -                                                                                                                       | [Interface](#parseroptions/interface)  |
-| [**`specs`**](#specs)                   | [Beyond HTML](/docs/guides/beyond-html)                                                                                 | [Interface](#specs/interface)          |
-| [**`excludeFiles`**](#excludefiles)     | [Ignoring file](/docs/guides/ignoring-code#ignoring-file)                                                               | [Interface](#excludefiles/interface)   |
-| [**`severity`**](#severity)             | -                                                                                                                       | [Interface](#severity/interface)       |
-| [**`rules`**](#rules)                   | [Applying Rules](/docs/guides/applying-rules)                                                                           | [Interface](#rules/interface)          |
-| [**`nodeRules`**](#noderules)           | [Applying rules to specific elements](/docs/guides/applying-rules#applying-rules-to-specific-elements)                  | [Interface](#noderules/interface)      |
-| [**`childNodeRules`**](#childnoderules) | [Applying rules to specific elements](/docs/guides/applying-rules#applying-rules-to-specific-elements)                  | [Interface](#childnoderules/interface) |
-| [**`pretenders`**](#pretenders)         | [Pretenders](/docs/guides/beyond-html#pretenders)                                                                       | [Interface](#pretenders/interface)     |
-| [**`overrideMode`**](#overridemode)     | [Overriding to disable rules](/docs/guides/ignoring-code#overriding-to-disable-rules)                                   | [Interface](#overridemode/interface)   |
-| [**`overrides`**](#overrides)           | [Overriding to disable rules](/docs/guides/ignoring-code#overriding-to-disable-rules)                                   | [Interface](#overrides/interface)      |
+| Property                                | First guide                                                                                            | Interface                              |
+| --------------------------------------- | ------------------------------------------------------------------------------------------------------ | -------------------------------------- |
+| [**`extends`**](#extends)               | [Using Presets](/docs/guides/presets)                                                                  | [Interface](#extends/interface)        |
+| [**`parser`**](#parser)                 | [Beyond HTML](/docs/guides/beyond-html)                                                                | [Interface](#parser/interface)         |
+| [**`parserOptions`**](#parseroptions)   | -                                                                                                      | [Interface](#parseroptions/interface)  |
+| [**`specs`**](#specs)                   | [Beyond HTML](/docs/guides/beyond-html)                                                                | [Interface](#specs/interface)          |
+| [**`excludeFiles`**](#excludefiles)     | [Ignoring file](/docs/guides/ignoring-code#ignoring-file)                                              | [Interface](#excludefiles/interface)   |
+| [**`severity`**](#severity)             | -                                                                                                      | [Interface](#severity/interface)       |
+| [**`rules`**](#rules)                   | [Applying Rules](/docs/guides/applying-rules)                                                          | [Interface](#rules/interface)          |
+| [**`nodeRules`**](#noderules)           | [Applying rules to specific elements](/docs/guides/applying-rules#applying-rules-to-specific-elements) | [Interface](#noderules/interface)      |
+| [**`childNodeRules`**](#childnoderules) | [Applying rules to specific elements](/docs/guides/applying-rules#applying-rules-to-specific-elements) | [Interface](#childnoderules/interface) |
+| [**`pretenders`**](#pretenders)         | [Pretenders](/docs/guides/beyond-html#pretenders)                                                      | [Interface](#pretenders/interface)     |
+| [**`overrideMode`**](#overridemode)     | [Overriding to disable rules](/docs/guides/ignoring-code#overriding-to-disable-rules)                  | [Interface](#overridemode/interface)   |
+| [**`overrides`**](#overrides)           | [Overriding to disable rules](/docs/guides/ignoring-code#overriding-to-disable-rules)                  | [Interface](#overrides/interface)      |
 
 ## Resolving specified paths
 
 [`extends`](#extends),
-[`plugins`](#plugins),
 [`parser`](#parser),
 [`specs`](#specs),
 and [`excludeFiles`](#excludefiles) can specify paths.
-In `extends`, `plugins`, `parser`, and `specs` , it can specify a npm package instead of a path.
+In `extends`, `parser`, and `specs` , it can specify a npm package instead of a path.
 
 A value written as a path, one that starts with a `.` or `..` segment or is an absolute path, is always resolved as a path, and never tried as a package.
 So is a value with the `!` prefix, which excludes what it matches.
@@ -98,66 +95,15 @@ The name added the prefix `markuplint:` loads a [**preset**](/docs/guides/preset
 }
 ```
 
-The name added the prefix `plugin:` loads the config provided from any plugins.
-The before the solidus is a namespace determined by the plugin.
-The after the solidus is the unique config name on the plugin.
-
-```json class=config
-{
-  "extends": ["plugin:third-party-plugin-name/config-name"],
-  "plugins": ["third-party-plugin"]
-}
-```
+:::caution
+The `plugin:` form (`plugin:<name>/<config>`) was removed in v6. See [Plugin mechanism](/docs/migration/v5-to-v6/plugins).
+:::
 
 #### Interface {#extends/interface}
 
 ```ts
 interface Config {
   extends?: string[];
-}
-```
-
-### `plugins`
-
-> **When to use:** When using [custom rules](/docs/guides/custom-rule) or third-party plugins.
-
-You can load any plugins.
-Specify a package name or a [path](#resolving-specified-paths).
-Can specify `settings` if the plugin has it.
-
-```json class=config
-{
-  "plugins": [
-    "third-party-plugin",
-    "@third-party/markuplint-plugin",
-    {
-      "name": "third-party-plugin2",
-      "settings": {
-        "foo": "bar"
-      }
-    },
-    "./path/to/local-plugin.js",
-    {
-      "name": "./path/to/local-plugin.js2",
-      "settings": {
-        "foo": "bar"
-      }
-    }
-  ]
-}
-```
-
-#### Interface {#plugins/interface}
-
-```ts
-interface Config {
-  plugins?: (
-    | string
-    | {
-        name: string;
-        settings?: Record<string, string | number | boolean | Object>;
-      }
-  )[];
 }
 ```
 
@@ -415,21 +361,7 @@ It accepts **Object** the rule defines. It's optional. There are cases in which 
 
 #### About the rule name
 
-There are cases in which a rule name includes a solidus.
-In that case, it indicates the rule is from a plugin.
-The before the solidus is a namespace determined by the plugin.
-The after the solidus is the unique rule name on the plugin.
-
-```json class=config
-{
-  "plugins": ["third-party-plugin", "./path/to/local-plugin.js"],
-  "rules": {
-    "core-rule-name": true,
-    "third-party-plugin/rule-name": true,
-    "named-plugin-imported-form-local/rule-name": true
-  }
-}
-```
+A rule name that includes a solidus is a [named rule](#named-rules-from-presets) or a [named rule group](#named-rule-groups) (`namespace/name`), or a namespace wildcard that disables them (`namespace/*: false`). It is not a rule of a plugin, which v6 does not support.
 
 #### Named rules from presets {#named-rules-from-presets}
 
@@ -1463,7 +1395,6 @@ It applies to **glob format paths** specified to a key. They are evaluated by [m
 
 It can override the following properties:
 
-- [`plugins`](#plugins)
 - [`parser`](#parser)
 - [`parserOptions`](#parseroptions)
 - [`specs`](#specs)

@@ -19,7 +19,6 @@
 ```json class=config
 {
   "extends": [],
-  "plugins": {},
   "parser": {},
   "parserOptions": {},
   "specs": [],
@@ -34,27 +33,26 @@
 }
 ```
 
-| プロパティ                              | 初期ガイド                                                                                                                 | インターフェイス                              |
-| --------------------------------------- | -------------------------------------------------------------------------------------------------------------------------- | --------------------------------------------- |
-| [**`extends`**](#extends)               | [プリセットをつかう](/docs/guides/presets)                                                                                 | [インターフェイス](#extends/interface)        |
-| [**`plugins`**](#plugins)               | [カスタムルールを使う](/docs/guides/applying-rules#using-custom-rules), [カスタムルールをつくる](/docs/guides/custom-rule) | [インターフェイス](#plugins/interface)        |
-| [**`parser`**](#parser)                 | [HTML以外で使う](/docs/guides/beyond-html)                                                                                 | [インターフェイス](#parser/interface)         |
-| [**`parserOptions`**](#parseroptions)   | -                                                                                                                          | [インターフェイス](#parseroptions/interface)  |
-| [**`specs`**](#specs)                   | [HTML以外で使う](/docs/guides/beyond-html)                                                                                 | [インターフェイス](#specs/interface)          |
-| [**`excludeFiles`**](#excludefiles)     | [ファイルの除外](/docs/guides/ignoring-code#ignoring-file)                                                                 | [インターフェイス](#excludefiles/interface)   |
-| [**`severity`**](#severity)             | -                                                                                                                          | [インターフェイス](#severity/interface)       |
-| [**`rules`**](#rules)                   | [ルールを適用する](/docs/guides/applying-rules)                                                                            | [インターフェイス](#rules/interface)          |
-| [**`nodeRules`**](#noderules)           | [部分的な適用](/docs/guides/applying-rules#applying-rules-to-specific-elements)                                            | [インターフェイス](#noderules/interface)      |
-| [**`childNodeRules`**](#childnoderules) | [部分的な適用](/docs/guides/applying-rules#applying-rules-to-specific-elements)                                            | [インターフェイス](#childnoderules/interface) |
-| [**`pretenders`**](#pretenders)         | [プリテンダー（偽装機能）](/docs/guides/beyond-html#pretenders)                                                            | [インターフェイス](#pretenders/interface)     |
-| [**`overrideMode`**](#overridemode)     | [ルールを上書きして無効化](/docs/guides/ignoring-code#overriding-to-disable-rules)                                         | [インターフェイス](#overridemode/interface)   |
-| [**`overrides`**](#overrides)           | [ルールを上書きして無効化](/docs/guides/ignoring-code#overriding-to-disable-rules)                                         | [インターフェイス](#overrides/interface)      |
+| プロパティ                              | 初期ガイド                                                                         | インターフェイス                              |
+| --------------------------------------- | ---------------------------------------------------------------------------------- | --------------------------------------------- |
+| [**`extends`**](#extends)               | [プリセットをつかう](/docs/guides/presets)                                         | [インターフェイス](#extends/interface)        |
+| [**`parser`**](#parser)                 | [HTML以外で使う](/docs/guides/beyond-html)                                         | [インターフェイス](#parser/interface)         |
+| [**`parserOptions`**](#parseroptions)   | -                                                                                  | [インターフェイス](#parseroptions/interface)  |
+| [**`specs`**](#specs)                   | [HTML以外で使う](/docs/guides/beyond-html)                                         | [インターフェイス](#specs/interface)          |
+| [**`excludeFiles`**](#excludefiles)     | [ファイルの除外](/docs/guides/ignoring-code#ignoring-file)                         | [インターフェイス](#excludefiles/interface)   |
+| [**`severity`**](#severity)             | -                                                                                  | [インターフェイス](#severity/interface)       |
+| [**`rules`**](#rules)                   | [ルールを適用する](/docs/guides/applying-rules)                                    | [インターフェイス](#rules/interface)          |
+| [**`nodeRules`**](#noderules)           | [部分的な適用](/docs/guides/applying-rules#applying-rules-to-specific-elements)    | [インターフェイス](#noderules/interface)      |
+| [**`childNodeRules`**](#childnoderules) | [部分的な適用](/docs/guides/applying-rules#applying-rules-to-specific-elements)    | [インターフェイス](#childnoderules/interface) |
+| [**`pretenders`**](#pretenders)         | [プリテンダー（偽装機能）](/docs/guides/beyond-html#pretenders)                    | [インターフェイス](#pretenders/interface)     |
+| [**`overrideMode`**](#overridemode)     | [ルールを上書きして無効化](/docs/guides/ignoring-code#overriding-to-disable-rules) | [インターフェイス](#overridemode/interface)   |
+| [**`overrides`**](#overrides)           | [ルールを上書きして無効化](/docs/guides/ignoring-code#overriding-to-disable-rules) | [インターフェイス](#overrides/interface)      |
 
 ## パスの解決 {#resolving-specified-paths}
 
 <!-- textlint-disable ja-technical-writing/max-comma -->
 
-[`extends`](#extends)、[`plugins`](#plugins)、[`parser`](#parser)、[`specs`](#specs)、[`excludeFiles`](#excludefiles)はパスを指定できます。そのうち`extends`、`plugins`、`parser`、`specs`の4つでは、パスの代わりにnpmパッケージを指定できます。
+[`extends`](#extends)、[`parser`](#parser)、[`specs`](#specs)、[`excludeFiles`](#excludefiles)はパスを指定できます。そのうち`extends`、`parser`、`specs`の3つでは、パスの代わりにnpmパッケージを指定できます。
 
 <!-- textlint-enable  ja-technical-writing/max-comma -->
 
@@ -87,60 +85,15 @@
 }
 ```
 
-`plugin:`というプレフィックスがついた名前は、プラグインから提供された設定を読み込みます。スラッシュの前はプラグインがもつ名前空間です。スラッシュの後ろは、そのプラグイン固有の設定名です。
-
-```json class=config
-{
-  "extends": ["plugin:third-party-plugin-name/config-name"],
-  "plugins": ["third-party-plugin"]
-}
-```
+:::caution
+`plugin:`の形式（`plugin:<name>/<config>`）はv6で削除されました。[プラグインの仕組み](/docs/migration/v5-to-v6/plugins)を参照してください。
+:::
 
 #### インターフェイス {#extends/interface}
 
 ```ts
 interface Config {
   extends?: string[];
-}
-```
-
-### `plugins`
-
-任意のプラグインを読み込むことができます。パッケージ名または[パス](#resolving-specified-paths)を指定します。プラグインが設定をもつ場合は`settings`に指定できます。
-
-```json class=config
-{
-  "plugins": [
-    "third-party-plugin",
-    "@third-party/markuplint-plugin",
-    {
-      "name": "third-party-plugin2",
-      "settings": {
-        "foo": "bar"
-      }
-    },
-    "./path/to/local-plugin.js",
-    {
-      "name": "./path/to/local-plugin.js2",
-      "settings": {
-        "foo": "bar"
-      }
-    }
-  ]
-}
-```
-
-#### インターフェイス {#plugins/interface}
-
-```ts
-interface Config {
-  plugins?: (
-    | string
-    | {
-        name: string;
-        settings?: Record<string, string | number | boolean | Object>;
-      }
-  )[];
 }
 ```
 
@@ -382,18 +335,7 @@ interface Config {
 
 #### ルール名について
 
-ルール名はスラッシュを含む場合があります。その場合、そのルールがプラグインによるものであることを示します。スラッシュの前はプラグインがもつ名前空間です。スラッシュの後ろは、そのプラグイン固有の一意なルール名です。
-
-```json class=config
-{
-  "plugins": ["third-party-plugin", "./path/to/local-plugin.js"],
-  "rules": {
-    "core-rule-name": true,
-    "third-party-plugin/rule-name": true,
-    "named-plugin-imported-form-local/rule-name": true
-  }
-}
-```
+スラッシュを含むルール名は、[名前付きルール](#named-rules-from-presets)または[名前付きルールグループ](#named-rule-groups)（`namespace/name`）、あるいはそれらを無効にする名前空間ワイルドカード（`namespace/*: false`）です。プラグインのルールではありません。v6はプラグインをサポートしません。
 
 #### プリセットの名前付きルール {#named-rules-from-presets}
 
@@ -1409,7 +1351,6 @@ interface Config {
 
 以下のプロパティを上書きできます。
 
-- [`plugins`](#plugins)
 - [`parser`](#parser)
 - [`parserOptions`](#parseroptions)
 - [`specs`](#specs)

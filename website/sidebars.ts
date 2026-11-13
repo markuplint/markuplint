@@ -27,7 +27,6 @@ const sidebars: SidebarsConfig = {
 				'guides/applying-rules',
 				'guides/selectors',
 				'guides/presets',
-				'guides/custom-rule',
 				'guides/ignoring-code',
 				'guides/cli',
 				'guides/faq',
@@ -119,6 +118,16 @@ const sidebars: SidebarsConfig = {
 				id: 'migration/index',
 			},
 			items: [
+				{
+					type: 'category',
+					label: 'v5 to v6',
+					collapsible: false,
+					link: {
+						type: 'doc',
+						id: 'migration/v5-to-v6/index',
+					},
+					items: ['migration/v5-to-v6/plugins'],
+				},
 				{
 					type: 'category',
 					label: 'v4 to v5',
