@@ -12,6 +12,7 @@ const sidebars: SidebarsConfig = {
 			items: [
 				'code-of-conduct',
 				'contributing',
+				'support-policy',
 				'branding',
 				{
 					type: 'link',

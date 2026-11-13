@@ -166,7 +166,7 @@ describe('a file that no spec reads', () => {
 		);
 	});
 
-	test.each(['.github/renovate.json', '.github/labeler.yml', 'website/community/support-policy.mdx'])(
+	test.each(['.github/renovate.json', '.github/labeler.yml', 'SECURITY.md', 'website/community/support-policy.mdx'])(
 		'%s selects the release-line check',
 		path => {
 			expect(affected(modified(path))).toStrictEqual(['scripts/release-lines/consistency.spec.ts']);

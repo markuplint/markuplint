@@ -36,7 +36,7 @@ On a topic branch from the tree that becomes the new `dev` (the `vN` line after 
 - `.husky/pre-commit`: the guarded branches (`stable` and `experimental`; not `lts`, where `lerna version` commits)
 - `branches:` of every workflow in `.github/workflows/`
 - the Branch Topology table of the root `CLAUDE.md`
-- the support policy page, en and ja (`website/community/support-policy.mdx` and its `website/i18n/ja/...` copy): rewrite its table and the "until" sentence of the ending line
+- the version tables of the support policy page, en and ja (`website/community/support-policy.mdx` and its `website/i18n/ja/...` copy), and of `SECURITY.md`. The spec checks the status column only: rewrite the other columns (dist-tag, Node.js), the sentence that names which version ends next, and the end-of-life row of `SECURITY.md`
 
 # 4. What the spec cannot see
 

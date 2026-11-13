@@ -112,6 +112,20 @@ describe('the configurations follow RELEASE_LINES', () => {
 		},
 	);
 
+	test.each([
+		'SECURITY.md',
+		'website/community/support-policy.mdx',
+		'website/i18n/ja/docusaurus-plugin-content-docs-community/current/support-policy.mdx',
+	])('the version table of %s lists each line with its status', file => {
+		const status = { experimental: 'Experimental', stable: 'Stable', lts: 'LTS' } as const;
+		const rows = [...read(file).matchAll(/^\| *v(\d+) *\| *(Experimental|Stable|LTS) *\|/gm)].map(
+			([, major = '', label = '']) => `v${major} ${label}`,
+		);
+		expect(rows.toSorted()).toStrictEqual(
+			RELEASE_LINES.map(line => `v${line.major} ${status[line.role]}`).toSorted(),
+		);
+	});
+
 	test('the Branch Topology table of CLAUDE.md lists each line with its role', () => {
 		const rows = [...read('CLAUDE.md').matchAll(/^\|\s*`([^`]+)`\s*\|\s*v(\d+)\s*\|\s*`([a-z]+)`/gm)].map(
 			([, branch = '', major = '', role = '']) => ({ major: Number(major), role, branch }),
