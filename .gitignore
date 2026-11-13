@@ -75,9 +75,6 @@ test/fixture/.__*
 # Heapdump test
 *.heapsnapshot
 
-# create-rule test files
-packages/@markuplint/rules/src/__*
-
 # IDEs
 .idea
 
