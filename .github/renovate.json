@@ -4,7 +4,7 @@
 	"extends": [
 		"config:recommended",
 		"docker:pinDigests",
-		"helpers:pinGitHubActionDigests",
+		"helpers:pinGitHubActionDigestsToSemver",
 		":pinDevDependencies",
 		":semanticCommitTypeAll(chore)"
 	],
@@ -56,6 +56,11 @@
 			"matchUpdateTypes": ["lockFileMaintenance"],
 			"prConcurrentLimit": 0,
 			"prHourlyLimit": 0
+		},
+		{
+			"description": "Lock file maintenance delegates resolution to the package manager, so its updates carry no release timestamp; under Renovate 42's default minimumReleaseAgeBehaviour=timestamp-required, the repository-wide minimumReleaseAge keeps renovate/stability-days pending forever and the PR never automerges. The cooldown for yarn.lock is enforced by npmMinimalAgeGate in .yarnrc.yml on every base branch instead (https://docs.renovatebot.com/key-concepts/minimum-release-age/#lockfilemaintenance-updates)",
+			"matchUpdateTypes": ["lockFileMaintenance"],
+			"minimumReleaseAge": null
 		},
 		{
 			"matchFileNames": ["vscode/*"],
