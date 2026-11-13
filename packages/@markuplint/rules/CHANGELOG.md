@@ -3,6 +3,13 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [5.6.1](https://github.com/markuplint/markuplint/compare/v5.6.0...v5.6.1) (2026-11-13)
+
+### Bug Fixes
+
+* **rules:** report in no-duplicate-attr what the framework counts as a repeat ([5164c08](https://github.com/markuplint/markuplint/commit/5164c08ceca6f74f6e71544080d5b58fb2d8cbfd))
+
+
 # [5.6.0](https://github.com/markuplint/markuplint/compare/v5.5.0...v5.6.0) (2026-11-12)
 
 ### Bug Fixes

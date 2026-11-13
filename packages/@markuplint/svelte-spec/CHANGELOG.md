@@ -3,6 +3,13 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [5.6.1](https://github.com/markuplint/markuplint/compare/v5.6.0...v5.6.1) (2026-11-13)
+
+### Bug Fixes
+
+* **svelte-spec:** take any number of on:, use: and bind:this ([590bca9](https://github.com/markuplint/markuplint/commit/590bca9d4bace09bd7f5916d34a7e0bd0c48a6fb))
+
+
 # [5.6.0](https://github.com/markuplint/markuplint/compare/v5.5.0...v5.6.0) (2026-11-12)
 
 **Note:** Version bump only for package @markuplint/svelte-spec
