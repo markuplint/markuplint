@@ -15,7 +15,6 @@ import {
 	isFatalError,
 } from '@markuplint/shared';
 
-import { clearAutoLoadRulesCache } from './auto-load-rules.js';
 import { load as loadConfig, search, clearExplorerCache, configLoadErrorFiles } from './cosmiconfig.js';
 import { log } from './debug.js';
 import { generalImport } from './general-import.js';
@@ -25,12 +24,31 @@ import { isPresetModuleName } from './is-preset-module-name.js';
 import { moduleExists } from './module-exists.js';
 import { relPathToNameOrAbsPath } from './path-to-abs-or-name.js';
 import { resolveNameOrAbsPath } from './resolve-name-or-abs-path.js';
-import { cacheClear, resolvePlugins } from './resolve-plugins.js';
 import { fileExists, uuid } from './utils.js';
 
 const cpLog = log.extend('config-provider');
 
 const KEY_SEPARATOR = '__ML_CONFIG_MERGE__';
+
+/**
+ * The error for `plugins` and `plugin:<name>/<config>` in `extends`, which nothing reads. Ignoring
+ * them silently would leave a rule that the user wrote (and relies on) switched off without a word.
+ *
+ * This is a migration aid for v6 only. v7 drops it entirely: this function, its two call sites
+ * (the `plugin:` check of `#recursiveLoad` and the `plugins` check of `#validateConfig`), and
+ * `is-plugin-module-name.ts`. A config that still names them is then read like any other with an
+ * unknown property.
+ *
+ * @param what - What is not supported, as the start of the message
+ * @param filePath - The configuration that holds it, or the linted file when none does
+ * @param raw - The property or the name as it is written
+ */
+function removedPluginError(what: string, filePath: string, raw: string) {
+	return new ConfigParserError(
+		`${what}: the plugin mechanism was removed in v6 (https://markuplint.dev/docs/migration/v5-to-v6/plugins)`,
+		{ filePath, raw },
+	);
+}
 
 /**
  * What a configuration, or the value of one of its `overrides`, holds that a selector matches. `Config`
@@ -46,19 +64,17 @@ function isPretenderList(pretenders: SelectorHolder['pretenders']): pretenders i
 /**
  * Manages loading, caching, and resolving markuplint configuration files.
  *
- * Handles `extends` chains, plugins, presets, overrides, and circular reference detection.
+ * Handles `extends` chains, presets, overrides, and circular reference detection.
  * Configuration files are searched via cosmiconfig and cached by file path.
  *
  * Designed to be shared across every target file in a run (see
  * `MLEngineOptions.configProvider` in `packages/markuplint/src/api/ml-engine.ts`):
  * {@link resolve}'s cache is keyed by the resolved config's `names`, not by
  * target file, so one instance reused across many files avoids redoing
- * merge/validate/plugin-resolution once per file that shares the same
- * config — see #3997.
+ * merge/validate once per file that shares the same config — see #3997.
  */
 export class ConfigProvider {
 	#cache = new Map<string, ConfigSet>();
-	#held = new Set<string>();
 	#store = new Map<string, Config | ConfigLoadError>();
 	/**
 	 * Stabilizes {@link set}'s auto-generated key for an inline config object
@@ -80,20 +96,15 @@ export class ConfigProvider {
 	/**
 	 * Clears every cached and stored config entry: the base-config cache
 	 * (`#cache`), the loaded/registered config store (`#store`), `set()`'s
-	 * identity→key stabilization (`#autoKeys`), `resolve-plugins.ts`'s own
-	 * module-level plugin-resolution cache, `auto-load-rules.ts`'s rule
-	 * cache, and the shared `cosmiconfig` explorer's own search/load caches
-	 * (so {@link search}, called right after this, re-reads the current file
-	 * content instead of a stale cosmiconfig-level cache).
+	 * identity→key stabilization (`#autoKeys`), and the shared `cosmiconfig`
+	 * explorer's own search/load caches (so {@link search}, called right after
+	 * this, re-reads the current file content instead of a stale
+	 * cosmiconfig-level cache).
 	 *
-	 * The `cosmiconfig` explorer and the `resolve-plugins.ts` /
-	 * `auto-load-rules.ts` caches are module-level singletons shared by every
-	 * `ConfigProvider` instance in the process — clearing them here affects
+	 * The `cosmiconfig` explorer is a module-level singleton shared by every
+	 * `ConfigProvider` instance in the process — clearing it here affects
 	 * other instances too, not just this one. Correctness is unaffected (they
-	 * just re-search/re-load), but the auto-load cache holds a miss for every
-	 * built-in rule name, so the first lint after a clear repeats two failing
-	 * imports per rule — worth knowing when reasoning about a cache-busting
-	 * re-resolve's blast radius.
+	 * just re-search/re-load).
 	 *
 	 * Callers doing a cache-busting re-resolve (e.g. watch mode after a file
 	 * change) must call this **before** registering any inline config via
@@ -108,8 +119,6 @@ export class ConfigProvider {
 		this.#store.clear();
 		this.#cache.clear();
 		this.#autoKeys = new WeakMap();
-		cacheClear();
-		clearAutoLoadRulesCache();
 		clearExplorerCache();
 	}
 
@@ -206,6 +215,13 @@ export class ConfigProvider {
 		}
 		visited.add(key);
 
+		// A name that cannot be loaded is reported where it was written (`referrer` is the configuration
+		// that extends it), and the rest of the configuration is still read. Dropped in v7, with
+		// `removedPluginError()`.
+		if (isPluginModuleName(key)) {
+			return { stack, errs: [removedPluginError(`"${key}" cannot be extended`, referrer, key)] };
+		}
+
 		let config = this.#store.get(key);
 
 		if (!config) {
@@ -252,11 +268,10 @@ export class ConfigProvider {
 	}
 
 	/**
-	 * Resolves the full configuration for a target file by merging all named configs,
-	 * resolving plugins, and applying file-specific overrides.
+	 * Resolves the full configuration for a target file by merging all named configs
+	 * and applying file-specific overrides.
 	 *
-	 * Split into a cacheable "base" phase (`#resolveBase`: merge/validate/plugin
-	 * resolution/plugin-provided `extends`) and a per-call `overrides` phase, because
+	 * Split into a cacheable "base" phase (`#resolveBase`: merge/validate) and a per-call `overrides` phase, because
 	 * `overrides` matching depends on `targetFile` while everything else in `names`
 	 * resolution does not. Only the base result is cached (keyed on `names`, not on
 	 * `targetFile`) — callers sharing one `ConfigProvider` across many target files
@@ -279,7 +294,7 @@ export class ConfigProvider {
 	 * value of `extends` is, from the working directory: a module name stays, a path becomes
 	 * absolute
 	 * @param cache - Whether to reuse already-loaded/cached entries
-	 * @returns The fully resolved configuration set including plugins and errors
+	 * @returns The fully resolved configuration set including errors
 	 */
 	async resolve(targetFile: Readonly<MLFile>, names: readonly Nullable<string>[], cache = true): Promise<ConfigSet> {
 		const keys = await Promise.all(
@@ -295,55 +310,23 @@ export class ConfigProvider {
 			this.#cache.set(key, baseConfigSet);
 		}
 
-		return await this.#applyOverrides(baseConfigSet, targetFile);
+		return this.#applyOverrides(baseConfigSet, targetFile);
 	}
 
 	/**
-	 * The `names`-dependent, `targetFile`-independent part of {@link resolve}:
-	 * merges all named configs, validates, resolves plugins, and expands
-	 * plugin-provided `extends`. Safe to cache under a `names`-only key.
+	 * The `names`-dependent, `targetFile`-independent part of {@link resolve}: merges all named
+	 * configs and validates them. Safe to cache under a `names`-only key.
 	 */
 	async #resolveBase(keys: readonly string[], cache: boolean, referrer: string): Promise<ConfigSet> {
-		let configSet = await this.#mergeConfigs(keys, cache, referrer);
+		const configSet = await this.#mergeConfigs(keys, cache, referrer);
 
-		const filePath = [...configSet.files].toReversed()[0];
-		if (!filePath) {
+		if (configSet.files.size === 0) {
 			throw new ConfigParserError('Config file not found', {
 				filePath: referrer,
 			});
 		}
-		const { plugins, errors: pluginErrors } = await resolvePlugins(configSet.config.plugins);
 
-		if (this.#held.size > 0) {
-			const extendHelds = [...this.#held.values()];
-			for (const held of extendHelds) {
-				const [, prefix, namespace, name] = held.match(/^([a-z]+:)([^/]+)(?:\/(.+))?$/) ?? [];
-
-				switch (prefix) {
-					case 'plugin:': {
-						const plugin = plugins.find(plugin => plugin.name === namespace);
-						const config = plugin?.configs?.[name ?? ''];
-						if (config) {
-							this.set(mergeConfig(config), held);
-						}
-						break;
-					}
-				}
-			}
-
-			configSet = await this.#mergeConfigs([...keys, ...extendHelds], cache, referrer);
-
-			this.#held.clear();
-		}
-
-		// After the plugins' configurations are merged in: that merge makes a new `errs`, which would lose
-		// these.
-		configSet.errs.push(...pluginErrors);
-
-		return {
-			...configSet,
-			plugins,
-		};
+		return configSet;
 	}
 
 	/**
@@ -359,13 +342,8 @@ export class ConfigProvider {
 	 * replaces every earlier match, not just the base config. `appliedOverrides`
 	 * records that match order for `--show-config=details` to surface, since this
 	 * "last match wins outright" behavior is easy to mistake for a bug (see #4023).
-	 *
-	 * The plugins an override declares are loaded here, as `#resolveBase` cannot know which
-	 * overrides apply. The result keeps every plugin of the base, replaced where the override
-	 * declares the same one: a `reset` override that declares none still reaches the rules of
-	 * the plugins the base loaded, as it did before the override's own were loaded at all.
 	 */
-	async #applyOverrides(baseConfigSet: ConfigSet, targetFile: Readonly<MLFile>): Promise<ConfigSet> {
+	#applyOverrides(baseConfigSet: ConfigSet, targetFile: Readonly<MLFile>): ConfigSet {
 		let config = baseConfigSet.config;
 		const appliedOverrides: string[] = [];
 		if (config.overrides) {
@@ -381,39 +359,12 @@ export class ConfigProvider {
 				return baseConfigSet;
 			}
 			return {
-				...(await this.#resolveOverridePlugins(baseConfigSet, config)),
+				...baseConfigSet,
 				config,
 				appliedOverrides,
 			};
 		}
 		return baseConfigSet;
-	}
-
-	/**
-	 * @param baseConfigSet - The base configuration set, which is never mutated
-	 * @param config - The configuration after the overrides are applied
-	 * @returns `baseConfigSet` with the plugins of `config` loaded in, or itself (same
-	 * reference) when `config` declares none
-	 */
-	async #resolveOverridePlugins(baseConfigSet: ConfigSet, config: OptimizedConfig): Promise<ConfigSet> {
-		if (!config.plugins || config.plugins === baseConfigSet.config.plugins) {
-			return baseConfigSet;
-		}
-
-		const { plugins: declared, errors } = await resolvePlugins(config.plugins);
-
-		const baseNames = new Set(baseConfigSet.plugins.map(plugin => plugin.name));
-		const plugins = [
-			...baseConfigSet.plugins.map(plugin => declared.find(d => d.name === plugin.name) ?? plugin),
-			...declared.filter(plugin => !baseNames.has(plugin.name)),
-		];
-
-		// `merge` mode declares the base's plugins again, and a plugin that is not found is cached
-		// as the error, so what the base already reported is not reported twice.
-		const reported = new Set(baseConfigSet.errs.map(error => error.message));
-		const errs = [...baseConfigSet.errs, ...errors.filter(error => !reported.has(error.message))];
-
-		return { ...baseConfigSet, plugins, errs };
 	}
 
 	/**
@@ -502,11 +453,6 @@ export class ConfigProvider {
 			return pathResolvedConfig;
 		}
 
-		if (isPluginModuleName(filePath)) {
-			this.#held.add(filePath);
-			return;
-		}
-
 		if (!(await moduleExists(filePath)) && !path.isAbsolute(filePath)) {
 			throw new TypeError(`${filePath} is not an absolute path`);
 		}
@@ -545,7 +491,7 @@ export class ConfigProvider {
 			}
 
 			// Each configuration is validated as it is, before the merge loses which one holds a selector,
-			// so that an error names the file (or the plugin configuration) that the user has to fix.
+			// so that an error names the file that the user has to fix.
 			errs.push(...this.#validateConfig(config, name));
 			resultConfig = mergeConfig(resultConfig, config);
 		}
@@ -561,7 +507,7 @@ export class ConfigProvider {
 		const dir = path.dirname(filePath);
 		// Only the keys of `overrides` (the globs) are resolved here; each value is a
 		// configuration of its own, whose paths are relative to the same directory.
-		const overrides = await relPathToNameOrAbsPath(dir, optimizedConfig.overrides, undefined, true);
+		const overrides = await relPathToNameOrAbsPath(dir, optimizedConfig.overrides, true);
 		return {
 			...(await resolveConfigPaths(dir, optimizedConfig)),
 			extends: await relPathToNameOrAbsPath(dir, optimizedConfig.extends),
@@ -583,11 +529,12 @@ export class ConfigProvider {
 	 * (whether or not its glob matches the target file, as the result is cached for every file of `names`).
 	 * It runs on each configuration before they are merged, because the merge loses which one holds a selector.
 	 * The selectors are those of `nodeRules`, `childNodeRules`, and the pretenders written in the
-	 * configuration itself (`pretenders.data`; the merge has turned an array into it), including those
-	 * that a plugin provides. Those that a pretender scan or a file produces are not known here;
-	 * `MLDocument` reports them when it meets them. An error names the file of the pretender
-	 * (`Pretender#filePath`) when it has one, and `filePath`, the key of the configuration (its file, or
-	 * `plugin:<name>/<config>`), otherwise.
+	 * configuration itself (`pretenders.data`; the merge has turned an array into it). Those that a
+	 * pretender scan or a file produces are not known here; `MLDocument` reports them when it meets them.
+	 * An error names the file of the pretender (`Pretender#filePath`) when it has one, and `filePath`,
+	 * the key of the configuration (its file), otherwise. A `plugins` property, which is not a property
+	 * of the configuration, is reported too, at the top level and in each `overrides` value, so that it
+	 * is not left to be silently ignored.
 	 */
 	#validateConfig(config: Config | OptimizedConfig, filePath: string) {
 		const errors: ConfigParserError[] = [];
@@ -624,9 +571,20 @@ export class ConfigProvider {
 				check(pretender.selector, pretender.filePath ?? filePath);
 			}
 		};
+		// Dropped in v7, with `removedPluginError()`
+		const checkRemoved = (holder: object) => {
+			// An empty list, or `undefined`, is what a default or a spread of a v5 config leaves, and
+			// names nothing that would not run
+			const plugins = 'plugins' in holder ? holder.plugins : undefined;
+			if (plugins !== undefined && plugins !== null && !(Array.isArray(plugins) && plugins.length === 0)) {
+				errors.push(removedPluginError('"plugins" is not supported', filePath, 'plugins'));
+			}
+		};
 		checkSelectors(config);
+		checkRemoved(config);
 		for (const override of Object.values(config.overrides ?? {})) {
 			checkSelectors(override);
+			checkRemoved(override);
 		}
 		return errors;
 	}
@@ -656,7 +614,6 @@ export class ConfigProvider {
 async function resolveConfigPaths<T extends OptimizedOverrideConfig>(dir: string, config: T): Promise<T> {
 	return {
 		...config,
-		...(config.plugins && { plugins: await relPathToNameOrAbsPath(dir, config.plugins, ['name']) }),
 		...(config.parser && { parser: await relPathToNameOrAbsPath(dir, config.parser) }),
 		...(config.specs && { specs: await relPathToNameOrAbsPath(dir, config.specs) }),
 		...(config.excludeFiles && { excludeFiles: await relPathToNameOrAbsPath(dir, config.excludeFiles) }),

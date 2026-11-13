@@ -1,5 +1,0 @@
-{
-	"plugins": ["../../plugins/004-invalid-selector.js"],
-	"extends": ["plugin:invalid-selector/node-rules"],
-	"nodeRules": [{ "selector": "div[", "rules": { "require-attr": "title" } }]
-}

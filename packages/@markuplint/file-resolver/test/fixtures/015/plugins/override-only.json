@@ -1,7 +1,0 @@
-{
-	"overrides": {
-		"./*.html": {
-			"plugins": ["../../../plugins/001.js"]
-		}
-	}
-}

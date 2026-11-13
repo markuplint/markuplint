@@ -1,7 +1,0 @@
-{
-	"overrides": {
-		"./*.html": {
-			"plugins": ["./not-found.js"]
-		}
-	}
-}
