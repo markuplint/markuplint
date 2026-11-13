@@ -50,6 +50,9 @@ export interface MLMLSpec {
 	 *   element and appends the children to it through the DOM API, which never fills `content` and
 	 *   never attaches a declarative shadow root: the `template` element is an ordinary element.
 	 *
+	 * A parser can declare it as well (`MLParser#templateContent` of `@markuplint/ml-ast`), so that the
+	 * document is read right without this spec in the configuration; what this spec says wins over it.
+	 *
 	 * Known limitations of `'in-place'`: React does not render the same tree when it hydrates server
 	 * output (the server output has the children in `content`), and Vue puts them in `content` when
 	 * it renders static markup as a string and replaces the element with its content when it hydrates.
