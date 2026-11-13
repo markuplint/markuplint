@@ -1,6 +1,9 @@
 import { defineConfig } from 'vitest/config';
 
+import { nodeBareSpecifierResolution } from './scripts/vitest-node-resolution.ts';
+
 export default defineConfig({
+	plugins: [nodeBareSpecifierResolution()],
 	test: {
 		include: [
 			'./packages/**/*.spec.{js,mjs,ts}',

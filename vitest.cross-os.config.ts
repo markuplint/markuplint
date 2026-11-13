@@ -1,5 +1,7 @@
 import { defineConfig } from 'vitest/config';
 
+import { nodeBareSpecifierResolution } from './scripts/vitest-node-resolution.ts';
+
 /**
  * Cross-OS test configuration for macOS/Windows runners.
  *
@@ -18,6 +20,7 @@ import { defineConfig } from 'vitest/config';
  * so it is also exercised on macOS/Windows.
  */
 export default defineConfig({
+	plugins: [nodeBareSpecifierResolution()],
 	test: {
 		include: [
 			'./packages/markuplint/**/*.spec.{js,mjs,ts}',
