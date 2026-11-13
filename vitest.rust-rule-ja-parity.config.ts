@@ -1,6 +1,7 @@
 import { defineConfig } from 'vitest/config';
 
 import { RULES_REGISTRY_ALIAS } from './scripts/rust-rule-parity/registry-alias.ts';
+import { nodeBareSpecifierResolution } from './scripts/vitest-node-resolution.ts';
 
 /**
  * The rule specs of `@markuplint/rules`, with the Japanese messages of the Rust engine compared with
@@ -9,6 +10,7 @@ import { RULES_REGISTRY_ALIAS } from './scripts/rust-rule-parity/registry-alias.
  * exported: `ja-setup.ts` switches `MARKUPLINT_EXPERIMENTAL_RUST_CORE` for each of its two calls.
  */
 export default defineConfig({
+	plugins: [nodeBareSpecifierResolution()],
 	resolve: { alias: RULES_REGISTRY_ALIAS },
 	test: {
 		include: ['./packages/@markuplint/rules/src/*/**/*.spec.ts'],

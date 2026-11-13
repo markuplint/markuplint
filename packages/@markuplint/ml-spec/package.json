@@ -1,6 +1,6 @@
 {
 	"name": "@markuplint/ml-spec",
-	"version": "5.6.0",
+	"version": "5.6.1",
 	"description": "Types and schema that specs of the Markup languages for markuplint",
 	"repository": {
 		"type": "git",

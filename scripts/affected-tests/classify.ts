@@ -72,6 +72,11 @@ const FULL_TRIGGERS: readonly RegExp[] = [
 	/^nx\.json$/,
 	/(^|\/)tsconfig[^/]*\.json$/,
 	/^vitest[^/]*\.config\.ts$/,
+	// A plugin of those configs, which changes how every spec resolves an `import()`.
+	/^scripts\/vitest-node-resolution\.ts$/,
+	// What the configs of the Rust-engine runs import: the alias that points every spec at the
+	// rules registry's own objects, and the switch that routes a lint to the Rust engine.
+	/^scripts\/rust-rule-parity\/(?:registry-alias|rust-engine)\.ts$/,
 	/^\.github\/workflows\/test\.yml$/,
 	// The selection itself, and the specs that guard repository policy by reading every manifest.
 	/^scripts\/affected-tests\//,

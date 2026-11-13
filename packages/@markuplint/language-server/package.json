@@ -1,6 +1,6 @@
 {
 	"name": "@markuplint/language-server",
-	"version": "5.6.0",
+	"version": "5.6.1",
 	"description": "Language Server Protocol server for markuplint",
 	"repository": {
 		"type": "git",
@@ -41,19 +41,19 @@
 		"clean": "tsc --build --clean tsconfig.build.json"
 	},
 	"dependencies": {
-		"@markuplint/file-resolver": "5.6.0",
+		"@markuplint/file-resolver": "5.6.1",
 		"@markuplint/i18n": "5.6.0",
-		"@markuplint/ml-config": "5.6.0",
-		"@markuplint/ml-core": "5.6.0",
-		"@markuplint/ml-spec": "5.6.0",
+		"@markuplint/ml-config": "5.6.1",
+		"@markuplint/ml-core": "5.6.1",
+		"@markuplint/ml-spec": "5.6.1",
 		"debug": "^4.4.3",
-		"markuplint": "5.6.0",
+		"markuplint": "5.6.1",
 		"semver": "^7.8.6",
 		"vscode-languageserver": "^9.0.1",
 		"vscode-languageserver-textdocument": "^1.0.16"
 	},
 	"devDependencies": {
-		"@markuplint/test-tools": "5.6.0",
+		"@markuplint/test-tools": "5.6.1",
 		"@types/debug": "4.1.13",
 		"@types/semver": "7.8.0",
 		"vscode-jsonrpc": "8.2.1"

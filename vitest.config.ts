@@ -1,8 +1,10 @@
 import { defineConfig } from 'vitest/config';
 
 import { RULES_REGISTRY_ALIAS } from './scripts/rust-rule-parity/registry-alias.ts';
+import { nodeBareSpecifierResolution } from './scripts/vitest-node-resolution.ts';
 
 export default defineConfig({
+	plugins: [nodeBareSpecifierResolution()],
 	// The testing API runs a rule by its registered name, and finds the name by the identity of the
 	// object: the rule a spec imports has to be the registry's own, not that of the built `lib`.
 	// `packages/@markuplint/rules/src/registry-identity.spec.ts` fails when the engine runs another.

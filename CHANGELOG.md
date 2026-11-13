@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [5.6.1](https://github.com/markuplint/markuplint/compare/v5.6.0...v5.6.1) (2026-11-13)
+
+### Bug Fixes
+
+* **ml-core:** add MLAttr#duplicateKey for the repeat of a directive ([0ea2d1e](https://github.com/markuplint/markuplint/commit/0ea2d1ea122437e35823c41e917dd26d0c7f3567))
+* **ml-spec:** let a directive pattern declare the key of its repeat ([df95b4c](https://github.com/markuplint/markuplint/commit/df95b4cd56753fa4c665991f6bc091e4c0620225))
+* **rules:** report in no-duplicate-attr what the framework counts as a repeat ([5164c08](https://github.com/markuplint/markuplint/commit/5164c08ceca6f74f6e71544080d5b58fb2d8cbfd))
+* **svelte-spec:** take any number of on:, use: and bind:this ([590bca9](https://github.com/markuplint/markuplint/commit/590bca9d4bace09bd7f5916d34a7e0bd0c48a6fb))
+* **vue-spec:** key the repeat of a directive by what Vue keeps of the name ([e27a546](https://github.com/markuplint/markuplint/commit/e27a5461578df9a8b8992ce7bba185e63ec7653d))
+
+
 # [5.6.0](https://github.com/markuplint/markuplint/compare/v5.5.0...v5.6.0) (2026-11-12)
 
 ### Bug Fixes

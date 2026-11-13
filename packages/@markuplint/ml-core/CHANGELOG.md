@@ -3,6 +3,13 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [5.6.1](https://github.com/markuplint/markuplint/compare/v5.6.0...v5.6.1) (2026-11-13)
+
+### Bug Fixes
+
+* **ml-core:** add MLAttr#duplicateKey for the repeat of a directive ([0ea2d1e](https://github.com/markuplint/markuplint/commit/0ea2d1ea122437e35823c41e917dd26d0c7f3567))
+
+
 # [5.6.0](https://github.com/markuplint/markuplint/compare/v5.5.0...v5.6.0) (2026-11-12)
 
 ### Bug Fixes

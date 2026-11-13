@@ -1,5 +1,8 @@
 import type { Change, Probe } from './classify.ts';
 
+import { readdirSync, readFileSync } from 'node:fs';
+import nodePath from 'node:path';
+
 import { describe, expect, test } from 'vitest';
 
 import { plan } from './classify.ts';
@@ -93,6 +96,26 @@ describe('a file that can change any spec', () => {
 		'packages/@markuplint-test/react/src/index.tsx',
 	])('%s makes the plan full', path => {
 		expect(plan([modified(path)], probe).mode).toBe('full');
+	});
+
+	test('every module under scripts/ that a vitest config imports, directly or not, makes the plan full', () => {
+		const root = nodePath.resolve(import.meta.dirname, '../..');
+		const relativeImports = (file: string) =>
+			[...readFileSync(nodePath.join(root, file), 'utf8').matchAll(/from '(\.{1,2}\/[^']+)'/g)].map(m =>
+				nodePath.posix.join(nodePath.posix.dirname(file), m[1] ?? ''),
+			);
+		const modules = new Set<string>();
+		const queue = readdirSync(root)
+			.filter(name => /^vitest[^/]*\.config\.ts$/.test(name))
+			.flatMap(relativeImports);
+		for (let file = queue.shift(); file !== undefined; file = queue.shift()) {
+			if (file.startsWith('scripts/') && !modules.has(file)) {
+				modules.add(file);
+				queue.push(...relativeImports(file));
+			}
+		}
+		expect(modules.size).toBeGreaterThan(0);
+		expect([...modules].filter(module => plan([modified(module)], probe).mode !== 'full')).toStrictEqual([]);
 	});
 });
 
