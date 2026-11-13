@@ -7,7 +7,7 @@ export function isElement(node: SelectorNode): node is SelectorElement {
 }
 
 export function isNonDocumentTypeChildNode(node: SelectorNode): node is SelectorElement {
-	return 'previousElementSibling' in node && 'nextElementSibling' in node;
+	return 'prevElementSibling' in node && 'nextElementSibling' in node;
 }
 
 /**

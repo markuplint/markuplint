@@ -1,3 +1,5 @@
+import type { ARIAVersion } from '@markuplint/ml-spec';
+
 /**
  * Minimal attribute representation for selector matching.
  * Pure data — no methods, no class instances.
@@ -43,27 +45,26 @@ export interface SelectorAttr {
 export interface SelectorNode {
 	readonly nodeType: number;
 	readonly nodeName: string;
-	readonly parentNode: SelectorNode | null;
+	readonly parent: SelectorNode | null;
 	/**
 	 * The DOM `Node` property: the data of a text node. The engine uses it only
 	 * to find text before an element (`isContentModelFirstChild`).
 	 */
 	readonly nodeValue?: string | null;
 	/**
-	 * The DOM `Node` property: the preceding sibling node, a text node included.
+	 * The preceding sibling node, a text node included (`previousSibling` of the DOM).
 	 * Absent means the host does not give it, and text before an element is not
 	 * seen (`isContentModelFirstChild`).
 	 */
-	readonly previousSibling?: SelectorNode | null;
+	readonly prevSibling?: SelectorNode | null;
 }
 
 /**
  * Minimal element representation for CSS selector matching.
  * Captures **only** the properties the selector engine actually reads.
  *
- * DOM `Element` and `MLElement` both satisfy this interface,
- * but plain objects can satisfy it too — enabling Rust interop
- * and unit-testing without a full DOM.
+ * `MLElement` of `@markuplint/ml-core` is the implementation. Plain objects can satisfy it too — enabling
+ * Rust interop and unit-testing without a full DOM.
  *
  * In Rust this maps to a struct + trait.
  */
@@ -114,9 +115,13 @@ export interface SelectorElement extends SelectorNode {
 	 * so that `:has()` does not look into them. Absent means they are not.
 	 */
 	readonly isHTMLTemplateElement?: boolean;
-	readonly previousElementSibling: SelectorElement | null;
+	readonly prevElementSibling: SelectorElement | null;
 	readonly nextElementSibling: SelectorElement | null;
-	readonly children: Iterable<SelectorElement>;
+	readonly childElements: Iterable<SelectorElement>;
+	/**
+	 * The accessible name of the element, memoized per element: what `:aria(has name)` reads.
+	 */
+	getAccessibleName(version: ARIAVersion): string;
 }
 
 /**
