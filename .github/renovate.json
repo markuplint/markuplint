@@ -64,7 +64,7 @@
 			"prConcurrentLimit": 10
 		},
 		{
-			"description": "helpers:pinGitHubActionDigestsToSemver already raises each new release of an action as a version update (`# v6` -> `# v6.1.1` with the new commit), which automerges after minimumReleaseAge. The digest update Renovate raises next to it for a floating major tag carries the same commit, but its renovate/stability-days check stays pending (#4233, #4389, #4400, #4583 never merged) and the open PR takes a prConcurrentLimit slot",
+			"description": "helpers:pinGitHubActionDigestsToSemver already raises each new release of an action as a version update (`# v6` -> `# v6.1.1` with the new commit), which automerges after minimumReleaseAge. The digest update Renovate raises next to it for a floating major tag carries the same commit, but its renovate/stability-days check stays pending forever (#4233, #4389, #4400, #4583): the branch stage reads a releaseTimestamp that a digest update does not carry (https://github.com/renovatebot/renovate/issues/45236), and the open PR takes a prConcurrentLimit slot. Exempting digest updates from minimumReleaseAge instead would merge a moved tag without the cooldown",
 			"matchManagers": ["github-actions"],
 			"matchUpdateTypes": ["digest"],
 			"enabled": false
