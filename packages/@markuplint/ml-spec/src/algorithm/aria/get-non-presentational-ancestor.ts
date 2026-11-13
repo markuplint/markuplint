@@ -1,3 +1,4 @@
+import type { SpecElement } from '../../types/spec-element.js';
 import type { ARIAVersion, MLMLSpec } from '../../types/index.js';
 
 import { getAccessibilityParentElement } from '../dom/tree-boundary.js';
@@ -13,11 +14,11 @@ import { getComputedRole } from './get-computed-role.js';
  */
 export function getNonPresentationalAncestor(
 	// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
-	el: Element,
+	el: SpecElement,
 	specs: MLMLSpec,
 	version: ARIAVersion,
 ) {
-	let ancestor: Element | null = getAccessibilityParentElement(el);
+	let ancestor: SpecElement | null = getAccessibilityParentElement(el);
 
 	/**
 	 * In ARIA 1.1 and 1.2, the role of an element is not affected by the role of its ancestor elements.

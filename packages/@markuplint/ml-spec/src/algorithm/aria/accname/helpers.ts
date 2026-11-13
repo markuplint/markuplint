@@ -164,19 +164,19 @@ export function embeddedControlText(
  * @see https://w3c.github.io/accname/#comp_embedded_control — AccName 1.2 §4.3.2 Step 2C
  */
 function getEmbeddedControlValue(el: AccnameElement, resolver: AccnameResolver): string {
-	const role = el.getAttribute('role')?.trim().split(/\s+/)[0];
+	const role = el.getAttrValue('role')?.trim().split(/\s+/)[0];
 
 	// Range controls: slider, spinbutton, input[type=range]
 	if (role === 'slider' || role === 'spinbutton' || (el.localName === 'input' && getInputType(el) === 'range')) {
-		const valuetext = el.getAttribute('aria-valuetext');
+		const valuetext = el.getAttrValue('aria-valuetext');
 		if (valuetext?.trim()) {
 			return valuetext;
 		}
-		const valuenow = el.getAttribute('aria-valuenow');
+		const valuenow = el.getAttrValue('aria-valuenow');
 		if (valuenow?.trim()) {
 			return valuenow;
 		}
-		const value = el.getAttribute('value');
+		const value = el.getAttrValue('value');
 		if (value?.trim()) {
 			return value;
 		}
@@ -191,7 +191,7 @@ function getEmbeddedControlValue(el: AccnameElement, resolver: AccnameResolver):
 		el.localName === 'textarea' ||
 		(el.localName === 'input' && isTextLikeInput(el))
 	) {
-		const value = el.getAttribute('value');
+		const value = el.getAttrValue('value');
 		if (value != null) {
 			return value;
 		}
@@ -231,7 +231,7 @@ function getEmbeddedControlValue(el: AccnameElement, resolver: AccnameResolver):
  */
 function getSelectedOptionText(el: AccnameElement, resolver: AccnameResolver): string {
 	const options = collectOptions(el, resolver);
-	const selected = options.filter(opt => opt.hasAttribute('selected'));
+	const selected = options.filter(opt => opt.hasAttr('selected'));
 
 	if (selected.length > 0) {
 		return selected.map(opt => getTextContent(opt, resolver).trim()).join(' ');
@@ -239,7 +239,7 @@ function getSelectedOptionText(el: AccnameElement, resolver: AccnameResolver): s
 
 	// No explicit selected attr: HTML spec says first non-disabled option is selected
 	// (only for non-multiple selects, but we approximate for all)
-	const first = options.find(opt => !opt.hasAttribute('disabled'));
+	const first = options.find(opt => !opt.hasAttr('disabled'));
 	return first ? getTextContent(first, resolver).trim() : '';
 }
 
@@ -309,7 +309,7 @@ export function findChildByLocalName(
 	resolver?: AccnameResolver,
 ): AccnameElement | null {
 	if (!resolver?.getChildNodes) {
-		for (const child of el.children) {
+		for (const child of el.childElements) {
 			if (child.localName === localName) {
 				return child;
 			}
@@ -365,7 +365,7 @@ export function getInputType(el: AccnameElement): string {
 	if (el.localName !== 'input') {
 		return '';
 	}
-	return (el.getAttribute('type') ?? 'text').toLowerCase();
+	return (el.getAttrValue('type') ?? 'text').toLowerCase();
 }
 
 export function isSvgElement(el: AccnameElement): boolean {

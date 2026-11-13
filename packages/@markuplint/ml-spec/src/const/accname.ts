@@ -59,7 +59,7 @@ export const DEFAULT_IMAGE_LABEL = 'Submit Query';
 
 /**
  * Checks if a native HTML element is an embedded control (without role resolution).
- * Centralizes the logic duplicated across accname-computation.ts, ml-core/accname.ts, test-helpers.ts.
+ * Centralizes the logic duplicated across ml-core/accname.ts and test-helpers.ts.
  *
  * @param el - The element to check
  * @returns True if the element is a native embedded control (textarea, select, or input with a value-producing type)
@@ -71,7 +71,7 @@ export function isNativeEmbeddedControl(el: AccnameElement): boolean {
 		return true;
 	}
 	if (localName === 'input') {
-		const type = (el.getAttribute('type') ?? 'text').toLowerCase();
+		const type = (el.getAttrValue('type') ?? 'text').toLowerCase();
 		return (
 			type !== 'hidden' &&
 			type !== 'button' &&

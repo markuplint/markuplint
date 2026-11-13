@@ -10,6 +10,9 @@ import {
 	isNativeEmbeddedControl,
 } from '../../../../const/index.js';
 
+/** The one tree that every mock element is in. */
+const mockRoot = { nodeType: 9 };
+
 interface ElementOptions {
 	readonly attrs?: Record<string, string>;
 	readonly children?: readonly (AccnameElement | AccnameNode)[];
@@ -45,14 +48,16 @@ export function element(localName: string, options: ElementOptions = {}): Accnam
 		namespaceURI: options.namespaceURI ?? XHTML_NAMESPACE,
 		textContent: computeTextContent(childNodes),
 		parentElement: options.parentElement ?? null,
-		children: elementChildren,
+		childElements: elementChildren,
 		childNodes,
-		getAttribute(name: string): string | null {
+		getAttrValue(name: string): string | null {
 			return attrs[name] ?? null;
 		},
-		hasAttribute(name: string): boolean {
+		hasAttr(name: string): boolean {
 			return name in attrs;
 		},
+		getRootNode: () => mockRoot,
+		getFlatTreeSlot: () => {},
 	};
 
 	return el;
@@ -130,10 +135,10 @@ export function createTestResolver(options: ResolverOptions = {}): AccnameResolv
 			if (hiddenIds.has(el.id)) {
 				return true;
 			}
-			if (el.getAttribute('aria-hidden') === 'true') {
+			if (el.getAttrValue('aria-hidden') === 'true') {
 				return true;
 			}
-			if (el.hasAttribute('hidden')) {
+			if (el.hasAttr('hidden')) {
 				return true;
 			}
 			return false;
@@ -143,7 +148,7 @@ export function createTestResolver(options: ResolverOptions = {}): AccnameResolv
 				return options.isEmbeddedControlFn(el);
 			}
 			// Check explicit role
-			const role = el.getAttribute('role')?.trim().split(/\s+/)[0];
+			const role = el.getAttrValue('role')?.trim().split(/\s+/)[0];
 			if (role && embeddedControlRoles.has(role)) {
 				return true;
 			}

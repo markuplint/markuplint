@@ -1,3 +1,4 @@
+import type { SpecElement } from '../../types/spec-element.js';
 import type { ARIAVersion, ComputedRole, MLMLSpec, RoleComputationError } from '../../types/index.js';
 import type { ReadonlyDeep } from 'type-fest';
 
@@ -23,10 +24,10 @@ import { getPermittedRoles } from './get-permitted-roles.js';
 export function getExplicitRole(
 	specs: MLMLSpec,
 	// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
-	el: Element,
+	el: SpecElement,
 	version: ARIAVersion,
 ): ComputedRole {
-	const roleValue = el.getAttribute('role');
+	const roleValue = el.getAttrValue('role');
 	const roleNames = roleValue?.toLowerCase().trim().split(/\s+/) ?? [];
 	const permittedRoles = getPermittedRoles(el, version, specs);
 	const { namespaceURI } = resolveNamespace(el.localName, el.namespaceURI);
@@ -160,7 +161,7 @@ const NEVER_RENDERED_HTML_ELEMENTS: ReadonlySet<string> = new Set([
 
 function isNeverRendered(
 	// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
-	el: Element,
+	el: SpecElement,
 	namespaceURI: string,
 ): boolean {
 	if (namespaceURI !== XHTML_NAMESPACE) {
@@ -169,7 +170,7 @@ function isNeverRendered(
 	if (NEVER_RENDERED_HTML_ELEMENTS.has(el.localName)) {
 		return true;
 	}
-	return el.localName === 'input' && el.getAttribute('type')?.trim().toLowerCase() === 'hidden';
+	return el.localName === 'input' && el.getAttrValue('type')?.trim().toLowerCase() === 'hidden';
 }
 
 function isLandmarkRole(role: ReadonlyDeep<NonNullable<ReturnType<typeof getRoleSpec>>>) {
@@ -178,27 +179,25 @@ function isLandmarkRole(role: ReadonlyDeep<NonNullable<ReturnType<typeof getRole
 
 function isValidLandmarkRole(
 	// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
-	el: Element,
+	el: SpecElement,
 	role: ReadonlyDeep<NonNullable<ReturnType<typeof getRoleSpec>>>,
 ) {
 	if (!role.accessibleNameRequired) {
 		return true;
 	}
 	if (role.accessibleNameFromAuthor) {
-		if (el.getAttribute('aria-label')) {
+		if (el.getAttrValue('aria-label')) {
 			return true;
 		}
 		// `aria-labelledby` is a list of ids, and each is resolved in the tree of the element: the
 		// content of a `template` element and a shadow root are trees of their own. A DOM has resolved the
 		// character references of a token already, but the markuplint DOM gives it as written in the markup,
 		// so the token is looked for as it is, and then with its character references resolved.
-		const ids = el.getAttribute('aria-labelledby')?.split(/\s+/).filter(Boolean) ?? [];
+		const ids = el.getAttrValue('aria-labelledby')?.split(/\s+/).filter(Boolean) ?? [];
 		const root = el.getRootNode();
 		if (
 			(root.nodeType === 9 || root.nodeType === 11) &&
-			ids.some(
-				id => (root as Document).getElementById(id) ?? (root as Document).getElementById(decodeEntities(id)),
-			)
+			ids.some(id => root.findElementById?.(id) ?? root.findElementById?.(decodeEntities(id)))
 		) {
 			return true;
 		}

@@ -1,3 +1,4 @@
+import type { SpecElement } from '../../types/spec-element.js';
 import type { MLMLSpec } from '../../types/index.js';
 
 /**
@@ -46,7 +47,7 @@ const exposableElementsThatAreNoBelongingAModel: string[] = [
  */
 export function isPalpableElement(
 	// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
-	el: Element,
+	el: SpecElement,
 	specs: MLMLSpec,
 	options?: {
 		readonly extendsSvg?: boolean;

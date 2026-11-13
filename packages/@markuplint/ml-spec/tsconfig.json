@@ -11,9 +11,6 @@
 			"path": "../shared"
 		},
 		{
-			"path": "../test-tools"
-		},
-		{
 			"path": "../types"
 		}
 	]

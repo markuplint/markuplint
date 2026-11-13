@@ -1,3 +1,4 @@
+import type { SpecElement } from '../../types/spec-element.js';
 import type { ElementSpec } from '../../types/index.js';
 import type { PermittedContentPattern } from '../../types/permitted-structures.js';
 import type { ReadonlyDeep } from 'type-fest';
@@ -6,7 +7,7 @@ import { getSpec } from '../../utils/get-spec.js';
 
 type Specs = readonly Pick<ElementSpec, 'name' | 'contentModel'>[];
 
-const contentModelCache = new WeakMap<Element, ReadonlyDeep<PermittedContentPattern[]> | boolean | null>();
+const contentModelCache = new WeakMap<SpecElement, ReadonlyDeep<PermittedContentPattern[]> | boolean | null>();
 
 /**
  * Retrieves the permitted content model for an element. Evaluates any conditional
@@ -19,7 +20,7 @@ const contentModelCache = new WeakMap<Element, ReadonlyDeep<PermittedContentPatt
  */
 export function getContentModel(
 	// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
-	el: Element,
+	el: SpecElement,
 	specs: Specs,
 ): ReadonlyDeep<PermittedContentPattern[]> | boolean | null {
 	const cached = contentModelCache.get(el);

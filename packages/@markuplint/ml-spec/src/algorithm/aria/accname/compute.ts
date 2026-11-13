@@ -156,7 +156,7 @@ export function computeAccessibleNameInternal(
 	}
 
 	// AccName 1.2 §4.3.2 Step 2I: Title attribute fallback
-	const title = el.getAttribute('title');
+	const title = el.getAttrValue('title');
 	if (title?.trim()) {
 		return makeResult(title, 'title');
 	}

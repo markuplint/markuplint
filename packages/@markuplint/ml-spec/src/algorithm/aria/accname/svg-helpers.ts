@@ -13,7 +13,7 @@ import type { AccnameElement } from './types.js';
  *
  * Checks (in order): `aria-label`, `aria-labelledby`, `<title>` child, `<desc>` child.
  *
- * Known limitation: this reads `el.children`, not `AccnameResolver.getChildNodes`,
+ * Known limitation: this reads `el.childElements`, not `AccnameResolver.getChildNodes`,
  * because `getComputedRole` has no resolver to pass. For a pretended component it
  * therefore answers from the children written at the usage site, while the name
  * computation reads the ones the component renders. A `<title>` that comes only
@@ -25,13 +25,13 @@ import type { AccnameElement } from './types.js';
  * @see https://www.w3.org/TR/svg-aam/#include_elements — SVG-AAM §4.1.2
  */
 export function hasSvgAccessibleNameSource(el: AccnameElement): boolean {
-	if (el.getAttribute('aria-label')?.trim()) {
+	if (el.getAttrValue('aria-label')?.trim()) {
 		return true;
 	}
-	if (el.getAttribute('aria-labelledby')?.trim()) {
+	if (el.getAttrValue('aria-labelledby')?.trim()) {
 		return true;
 	}
-	for (const child of el.children) {
+	for (const child of el.childElements) {
 		if ((child.localName === 'title' || child.localName === 'desc') && child.textContent?.trim()) {
 			return true;
 		}

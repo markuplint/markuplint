@@ -1,3 +1,4 @@
+import type { SpecElement } from '../../types/spec-element.js';
 import type { ARIAVersion, ComputedRole, MLMLSpec } from '../../types/index.js';
 
 import { isTransparentForOwnership } from './is-presentational.js';
@@ -20,7 +21,7 @@ import { getImplicitRole } from './get-implicit-role.js';
  */
 export function hasRequiredOwnedElement(
 	// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
-	el: Element,
+	el: SpecElement,
 	specs: MLMLSpec,
 	version: ARIAVersion,
 ): boolean {
@@ -29,7 +30,7 @@ export function hasRequiredOwnedElement(
 	 *
 	 * THIS CONDITION IS PARTIAL SUPPORT.
 	 */
-	if (el.hasAttribute('aria-owns')) {
+	if (el.hasAttr('aria-owns')) {
 		// FIXME: Partial support — assumes aria-owns always provides required owned elements.
 		// A complete implementation would resolve the ID references in the aria-owns value
 		// and verify that the referenced elements actually have the required roles.
@@ -68,7 +69,7 @@ export function hasRequiredOwnedElement(
  */
 export function isRequiredOwnedElement(
 	// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
-	el: Element,
+	el: SpecElement,
 	role: ComputedRole['role'],
 	query: string,
 	specs: MLMLSpec,
@@ -111,12 +112,12 @@ export function isRequiredOwnedElement(
  */
 function getClosestNonPresentationalDescendants(
 	// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
-	el: Element,
+	el: SpecElement,
 	specs: MLMLSpec,
 	version: ARIAVersion,
 ): ComputedRole[] {
 	const owned: ComputedRole[] = [];
-	for (const child of el.children) {
+	for (const child of el.childElements) {
 		const explicitRole = getExplicitRole(specs, child, version);
 		const computed = explicitRole.role ? explicitRole : getImplicitRole(specs, child, version);
 		if (isTransparentForOwnership(computed.role?.name, version)) {

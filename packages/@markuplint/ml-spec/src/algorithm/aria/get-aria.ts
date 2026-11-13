@@ -40,22 +40,7 @@ export function getARIA(
 	const conditionKeys = Object.keys(conditions);
 	let { implicitRole, permittedRoles, implicitProperties, properties, namingProhibited } = aria;
 	for (const cond of conditionKeys) {
-		let matched: boolean;
-		try {
-			matched = matches(cond);
-		} catch (error: unknown) {
-			// Native Element.prototype.matches() cannot evaluate :aria()
-			// pseudo-class. When called from getImplicitRoleName() or
-			// getPermittedRoles() via accname-computation, native matches
-			// is used, which throws a DOMException (name: "SyntaxError").
-			// Note: JSDOM's DOMException is context-local, so instanceof
-			// checks against the global DOMException/SyntaxError fail.
-			if (error instanceof Error && error.name === 'SyntaxError') {
-				continue;
-			}
-			throw error;
-		}
-		if (!matched) {
+		if (!matches(cond)) {
 			continue;
 		}
 		const condARIA = conditions[cond];

@@ -2,9 +2,7 @@
 
 /**
  * Minimal node interface for accessible name computation.
- * Structurally compatible with both DOM `Element` and `MLElement`,
- * enabling the AccName algorithm to run in both JSDOM (tests, accname-computation.ts)
- * and ml-core (MLElement-based lint rules) environments without adaptation.
+ * `MLElement` of `@markuplint/ml-core` is the implementation.
  */
 export interface AccnameNode {
 	readonly nodeType: number;
@@ -13,15 +11,15 @@ export interface AccnameNode {
 
 /**
  * Minimal element interface for accessible name computation.
- * MLElement satisfies this interface via structural typing (no adapter needed).
+ * `MLElement` satisfies this interface via structural typing.
  */
 export interface AccnameElement extends AccnameNode {
 	readonly nodeType: number;
 	readonly localName: string;
 	readonly id: string;
 	readonly namespaceURI: string | null;
-	getAttribute(name: string): string | null;
-	hasAttribute(name: string): boolean;
+	getAttrValue(name: string): string | null;
+	hasAttr(name: string): boolean;
 	readonly parentElement: AccnameElement | null;
 	/**
 	 * The root of the tree of the element. An element and its parent element are in the same tree,
@@ -29,8 +27,13 @@ export interface AccnameElement extends AccnameNode {
 	 * top of the content of a `template` element: see `getTreeParentElement`. An implementation without
 	 * it has no tree boundary.
 	 */
-	getRootNode?(): unknown;
-	readonly children: Iterable<AccnameElement>;
+	getRootNode(): unknown;
+	/**
+	 * The slot that places the element in the flat tree: `null` when it is not rendered, `undefined` when
+	 * it is not in a shadow host or the assignment is not known.
+	 */
+	getFlatTreeSlot(): AccnameElement | null | undefined;
+	readonly childElements: Iterable<AccnameElement>;
 	readonly childNodes: Iterable<AccnameNode>;
 }
 
@@ -38,10 +41,8 @@ export interface AccnameElement extends AccnameNode {
  * Environment-dependent resolver for accessible name computation.
  *
  * Decouples the pure AccName algorithm (accname/) from DOM traversal
- * and role resolution. Two implementations exist:
- * - **accname-computation.ts**: DOM-based resolver using `document.getElementById`,
- *   `querySelectorAll`, and `getComputedRole` for JSDOM/browser environments.
- * - **ml-core**: MLElement-based resolver using the parsed MLDOM tree.
+ * and role resolution. The implementation is in **ml-core**: an MLElement-based resolver that reads
+ * the parsed MLDOM tree.
  */
 export interface AccnameResolver {
 	getElementById(id: string): AccnameElement | null;

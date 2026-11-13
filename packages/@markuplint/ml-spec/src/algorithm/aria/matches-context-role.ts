@@ -1,3 +1,4 @@
+import type { SpecElement } from '../../types/spec-element.js';
 import type { ARIAVersion, MLMLSpec } from '../../types/index.js';
 
 import { getAccessibilityParentElement } from '../dom/tree-boundary.js';
@@ -23,7 +24,7 @@ import { getComputedRole } from './get-computed-role.js';
 export function matchesContextRole(
 	conditions: readonly string[],
 	// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
-	ownedEl: Element,
+	ownedEl: SpecElement,
 	specs: MLMLSpec,
 	version: ARIAVersion,
 ) {
@@ -35,7 +36,7 @@ export function matchesContextRole(
 function matchesCondition(
 	condition: string,
 	// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
-	parentEl: Element | null,
+	parentEl: SpecElement | null,
 	specs: MLMLSpec,
 	version: ARIAVersion,
 ) {

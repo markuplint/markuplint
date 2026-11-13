@@ -30,7 +30,7 @@ export function resolveAriaLabelledby(
 	visited: ReadonlySet<string>,
 	computeFn: AccnameComputeFn,
 ): AccnameResult | null {
-	const labelledbyAttr = el.getAttribute('aria-labelledby');
+	const labelledbyAttr = el.getAttrValue('aria-labelledby');
 	if (!labelledbyAttr?.trim()) {
 		return null;
 	}
@@ -124,7 +124,7 @@ export function resolveAriaLabel(el: AccnameElement): AccnameResult | null {
 	if (el.localName === 'slot' && el.namespaceURI === XHTML_NAMESPACE) {
 		return null;
 	}
-	const label = el.getAttribute('aria-label');
+	const label = el.getAttrValue('aria-label');
 	if (label?.trim()) {
 		return makeResult(label, 'aria-label');
 	}

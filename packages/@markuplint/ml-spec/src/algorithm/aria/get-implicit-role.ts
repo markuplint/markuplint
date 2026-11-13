@@ -1,3 +1,4 @@
+import type { SpecElement } from '../../types/spec-element.js';
 import type { ImplicitRole } from '../../types/aria.js';
 import type { ARIAVersion, ComputedRole, MLMLSpec } from '../../types/index.js';
 
@@ -17,7 +18,7 @@ import { resolveNamespace } from '../../utils/resolve-namespace.js';
 export function getImplicitRole(
 	specs: MLMLSpec,
 	// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
-	el: Element,
+	el: SpecElement,
 	version: ARIAVersion,
 ): ComputedRole {
 	const implicitRole = getImplicitRoleName(el, version, specs);
@@ -57,7 +58,7 @@ export function getImplicitRole(
  */
 export function getImplicitRoleName(
 	// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
-	el: Element,
+	el: SpecElement,
 	version: ARIAVersion,
 	specs: MLMLSpec,
 ): ImplicitRole {
