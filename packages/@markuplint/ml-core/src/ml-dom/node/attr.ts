@@ -49,7 +49,9 @@ export class MLAttr<T extends RuleConfigValue, O extends PlainData = undefined> 
 	readonly isDirective?: true;
 
 	/**
-	 * Whether this attribute can be duplicated on the same element.
+	 * Whether this attribute is not a repeat of an attribute of the same name on the same element (`:class`
+	 * beside `class`, which Vue merges): it is not compared by {@link MLAttr.nameKey}. Whether the same one
+	 * written twice is a repeat is told by {@link MLAttr.duplicateKey}.
 	 */
 	readonly isDuplicatable: boolean;
 
@@ -77,6 +79,19 @@ export class MLAttr<T extends RuleConfigValue, O extends PlainData = undefined> 
 	readonly #potentialValue: string;
 	readonly #literal: LiteralExpression | null = null;
 	readonly #isPretended: boolean = false;
+	/**
+	 * The key that the directive pattern of the spec declares (`DirectivePattern#duplicateKey`), `null` for a
+	 * pattern that never counts a repeat, and `undefined` when it says nothing of it.
+	 */
+	readonly #declaredDuplicateKey: string | null | undefined;
+	/**
+	 * Whether the declared key is the name of an attribute, which the element folds (`DirectiveResolution#duplicateKeyFolds`).
+	 */
+	readonly #declaredDuplicateKeyFolds: boolean = false;
+	/**
+	 * Whether a directive pattern of the spec resolved the name of this attribute.
+	 */
+	readonly #matchedDirectivePattern: boolean = false;
 	readonly #valueType: 'string' | 'number' | 'boolean' | 'code' = 'string';
 	#rendering?: Rendering;
 	/**
@@ -148,6 +163,9 @@ export class MLAttr<T extends RuleConfigValue, O extends PlainData = undefined> 
 		this.isExpressionValue = resolved.isDynamicValue;
 		this.isDirective = resolved.isDirective;
 		this.isDuplicatable = resolved.isDuplicatable;
+		this.#matchedDirectivePattern = resolved.matchedDirectivePattern === true;
+		this.#declaredDuplicateKey = resolved.duplicateKey;
+		this.#declaredDuplicateKeyFolds = resolved.duplicateKeyFolds === true;
 		if (resolved.valueType) {
 			this.#valueType = resolved.valueType;
 		}
@@ -285,6 +303,65 @@ export class MLAttr<T extends RuleConfigValue, O extends PlainData = undefined> 
 	 */
 	get nameKey(): string {
 		return this.keyOf(this.#potentialName);
+	}
+
+	/**
+	 * The key under which two attributes of one element are a repeat, or `null` when any number of this one
+	 * is fine. For an attribute of the DOM it is {@link MLAttr.nameKey}, the name that the DOM gives it. For a
+	 * directive (`@keydown.enter`, `on:click`, `hx-on:click`) and an attribute that may repeat the name of
+	 * another (`:class`, which Vue merges with `class`) it is what the framework keeps of the name, as follows.
+	 *
+	 * A directive is not an attribute of the DOM, so what its name resolves to (`onkeydown` for every
+	 * `@keydown.*`) says nothing of whether it is written twice: the framework decides it, by what it keeps of
+	 * the name as it is written.
+	 *
+	 * - Vue reports an attribute whose name is written the same, modifiers included, and not the same
+	 *   listener (`@keydown.enter` and `@keydown.space` are the handlers of one array, and so are `@click` and
+	 *   `v-on:click`). It keeps the case of the name of a listener of an element (`@KEYDOWN` is `on:KEYDOWN`), and
+	 *   it silently drops the later one of two `v-bind` that make the same key (`:id.prop` and `.id`, `.camel`
+	 *   and the camelCase name, a modifier that it does not know). A spec declares that key
+	 *   (`DirectivePattern#duplicateKey`).
+	 * - Svelte takes any number of `on:`, `use:` and `bind:this`, in the case that they are written (a spec
+	 *   says so by `DirectivePattern#isDuplicatable`). Its compiler errors on the repeat of `class:`,
+	 *   `style:` and the bound attributes of the same name, which the parser reports as it is.
+	 * - Alpine and htmx read the attributes that the HTML parser of the browser makes, so the case of the name
+	 *   is folded as for any attribute ({@link MLAttr.keyOf}), but a spelling that differs
+	 *   (`@click` and `x-on:click`, `hx-on:click` and `hx-on-click`) is another attribute.
+	 *
+	 * Whether a name is folded is told by the route that the name takes into the DOM
+	 * ({@link MLDocument.attrNameRoute}): only the HTML parser folds it. A key that a spec declares is
+	 * the spelling of the framework's own key, and is not folded, except one that is the name of an attribute
+	 * (`DirectivePattern#duplicateKeyModifiers`): it is a repeat of that attribute written as such, so it is
+	 * folded as the attribute is (`:view-box.camel` and `:viewBox` on a `<div>`).
+	 *
+	 * @see https://github.com/vuejs/core/blob/main/packages/compiler-core/src/parser.ts#tokenizer
+	 * @see https://github.com/vuejs/core/blob/main/packages/compiler-core/src/transforms/transformElement.ts#dedupeProperties
+	 * @see https://github.com/sveltejs/svelte/blob/main/packages/svelte/src/compiler/phases/1-parse/state/element.js#element
+	 * @see https://github.com/alpinejs/alpine/blob/main/packages/alpinejs/src/directives.js#directives
+	 * @see https://github.com/bigskysoftware/htmx/blob/master/src/htmx.js#htmx
+	 */
+	get duplicateKey(): string | null {
+		if (this.nameNode === null) {
+			return null;
+		}
+		if (this.#declaredDuplicateKey !== undefined) {
+			return this.#declaredDuplicateKey !== null && this.#declaredDuplicateKeyFolds
+				? this.keyOf(this.#declaredDuplicateKey)
+				: this.#declaredDuplicateKey;
+		}
+		// What no spec pattern resolved is what the parser made of the name (`class:list` and `client:load` of
+		// Astro, the classes of Pug): an attribute of the DOM, compared by `nameKey` unless it may repeat.
+		if (!this.#matchedDirectivePattern) {
+			return this.isDuplicatable ? null : this.nameKey;
+		}
+		// A pattern that says nothing of the key. A directive, and an attribute that may repeat the name of
+		// another (`:class` of Vue, whose `isDuplicatable` lists names), are keyed by the name as written; any
+		// other (`:id` of Vue) is the attribute of that name.
+		if (!this.isDirective && !this.isDuplicatable) {
+			return this.nameKey;
+		}
+		const name = this.nameNode.raw;
+		return this.ownerElement.ownerMLDocument.attrNameRoute === 'html-parser' ? this.keyOf(name) : name;
 	}
 
 	/**

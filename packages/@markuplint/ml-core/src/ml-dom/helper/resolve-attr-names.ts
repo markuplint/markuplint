@@ -25,6 +25,12 @@ export type ResolvedAttr = {
 	 *   condition of `class:list`, a variable of a shorthand), so it is not read as a literal.
 	 */
 	readonly expressionLanguage?: ExpressionLanguage | 'inherit';
+	/** Whether a directive pattern of the spec resolved the name. */
+	readonly matchedDirectivePattern?: true;
+	/** The key the matching pattern declares (`DirectivePattern#duplicateKey`); `null` when it never repeats. */
+	readonly duplicateKey?: string | null;
+	/** Whether the declared key is the name of an attribute, which the element folds. */
+	readonly duplicateKeyFolds?: true;
 };
 
 /**
@@ -90,5 +96,8 @@ export function resolveAttrNames(
 		isDuplicatable: (resolution ? resolution.isDuplicatable : undefined) ?? ast.isDuplicatable,
 		valueType: resolution?.valueType,
 		expressionLanguage: resolution ? resolution.expressionLanguage : 'inherit',
+		matchedDirectivePattern: resolution ? true : undefined,
+		duplicateKey: resolution?.duplicateKey,
+		duplicateKeyFolds: resolution?.duplicateKeyFolds === true ? true : undefined,
 	};
 }
