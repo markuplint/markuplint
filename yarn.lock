@@ -2082,7 +2082,7 @@ __metadata:
     "@markuplint/pretenders": "npm:5.6.1"
     "@markuplint/selector": "npm:5.6.1"
     "@markuplint/shared": "npm:5.6.0"
-    "@types/node": "npm:24.19.2"
+    "@types/node": "npm:26.6.6"
     cosmiconfig: "npm:^10.0.1"
     debug: "npm:^4.4.3"
     glob: "npm:^14.0.3"
@@ -5139,7 +5139,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/node@npm:*, @types/node@npm:>=13.7.0":
+"@types/node@npm:*, @types/node@npm:26.6.6, @types/node@npm:>=13.7.0":
   version: 26.6.6
   resolution: "@types/node@npm:26.6.6"
   dependencies:
@@ -5157,7 +5157,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/node@npm:24.19.2, @types/node@npm:^24.19.2":
+"@types/node@npm:^24.19.2":
   version: 24.19.2
   resolution: "@types/node@npm:24.19.2"
   dependencies:
