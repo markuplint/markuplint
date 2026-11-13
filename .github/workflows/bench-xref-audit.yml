@@ -9,7 +9,6 @@ on:
     pull_request:
         branches:
             - dev
-            - next
         paths:
             - 'tests/external/bench/issue-xref.config.ts'
             - 'tests/external/bench/xref-issue.ts'

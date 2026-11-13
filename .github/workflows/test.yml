@@ -17,9 +17,7 @@ on:
     pull_request:
         branches:
             - dev
-            - v3
             - v4
-            - next
     push:
         branches:
             - dev
