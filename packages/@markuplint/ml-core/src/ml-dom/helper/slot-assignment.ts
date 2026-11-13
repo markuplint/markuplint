@@ -102,7 +102,7 @@ function getSlotName<T extends RuleConfigValue, O extends PlainData>(
 	if (el.attributes.some(attr => !attr.nameNode)) {
 		return null;
 	}
-	const attr = el.getAttributeNode(name);
+	const attr = el.getAttrNode(name);
 	if (!attr || attr.isAbsent) {
 		return '';
 	}
@@ -127,7 +127,7 @@ function collectSlots<T extends RuleConfigValue, O extends PlainData>(
 	slots: MLElement<T, O>[],
 	inBlock: boolean,
 ): boolean {
-	for (const child of parent.getPureChildNodes()) {
+	for (const child of parent.pureChildren()) {
 		if (!child.is(child.ELEMENT_NODE) && !child.is(child.MARKUPLINT_PREPROCESSOR_BLOCK)) {
 			continue;
 		}
@@ -172,7 +172,7 @@ function collectSlottables<T extends RuleConfigValue, O extends PlainData>(
 	// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
 	declaring: MLElement<T, O>,
 ): boolean {
-	for (const child of parent.getPureChildNodes()) {
+	for (const child of parent.pureChildren()) {
 		if (child === declaring) {
 			continue;
 		}
@@ -335,52 +335,4 @@ export function getFlatTreeSlot<T extends RuleConfigValue, O extends PlainData>(
 		return undefined;
 	}
 	return getSlotAssignment(host)?.assigned.get(node);
-}
-
-/**
- * The slot of an open shadow root that a node is assigned to.
- *
- * @template T - The rule configuration value type
- * @template O - The rule options type
- * @param node - An element or a text node
- * @returns The slot, or `null` when none takes the node, its shadow root is closed, or the assignment is not known
- * @see https://dom.spec.whatwg.org/#dom-slotable-assignedslot
- */
-export function getAssignedSlot<T extends RuleConfigValue, O extends PlainData>(
-	// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
-	node: MLNode<T, O>,
-): MLElement<T, O> | null {
-	const slot = getFlatTreeSlot(node);
-	if (!slot) {
-		return null;
-	}
-	const root = slot.getRootNode();
-	return 'mode' in root && root.mode === 'open' ? slot : null;
-}
-
-/**
- * The nodes a `slot` renders, with each assigned slot replaced by what that slot renders in turn, and the
- * children of a slot that takes none in its place.
- *
- * @template T - The rule configuration value type
- * @template O - The rule options type
- * @param slot - An element
- * @returns The nodes, or `[]` when the assignment is not known
- * @see https://dom.spec.whatwg.org/#find-flattened-slotables
- */
-export function getFlattenedSlottables<T extends RuleConfigValue, O extends PlainData>(
-	// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
-	slot: MLElement<T, O>,
-): readonly MLChildNode<T, O>[] {
-	const assigned = getAssignedNodes(slot);
-	if (!assigned) {
-		return [];
-	}
-	const slottables =
-		assigned.length > 0
-			? assigned
-			: [...slot.childNodes].filter(node => node.is(node.ELEMENT_NODE) || node.is(node.TEXT_NODE));
-	return slottables.flatMap(node =>
-		node.is(node.ELEMENT_NODE) && getAssignedNodes(node) !== null ? getFlattenedSlottables(node) : [node],
-	);
 }

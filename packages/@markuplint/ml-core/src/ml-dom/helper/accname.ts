@@ -29,6 +29,17 @@ import { getDOMValue } from './tree-scope.js';
 
 const accnameLog = log.extend('accname');
 
+/**
+ * The resolvers of this module are handed the elements of the document they were created for, which are
+ * `MLElement`s; the algorithm of `@markuplint/ml-spec` calls them through `AccnameElement`.
+ *
+ * @param node - A node that the algorithm passes
+ * @returns `true` for an `MLElement`
+ */
+function isMLElement(node: AccnameNode): node is MLElement<any, any> {
+	return node.nodeType === 1 && 'ownerMLDocument' in node;
+}
+
 export function getAccname(
 	// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
 	el: MLElement<any, any>,
@@ -80,11 +91,12 @@ export function getAccnameVisits(
 		const resolver: AccnameResolver = {
 			...createMLCoreResolver(el, version),
 			onVisit(target, visit) {
-				// TODO: Remove cast when AccnameResolver is generic (#3178)
-				const targetEl = target as MLElement<any, any>;
-				const list = visits.get(targetEl) ?? [];
+				if (!isMLElement(target)) {
+					return;
+				}
+				const list = visits.get(target) ?? [];
 				list.push(visit);
-				visits.set(targetEl, list);
+				visits.set(target, list);
 			},
 		};
 		if (asReferenced) {
@@ -216,30 +228,34 @@ function createMLCoreResolver(
 	// `aria-labelledby`), so the character references are resolved on both sides, as the DOM has them
 	return {
 		getElementById(id: string): AccnameElement | null {
-			return root?.getElementById(decodeEntities(id)) ?? null;
+			return root?.findElementById(decodeEntities(id)) ?? null;
 		},
 		getLabelsForId(id: string): readonly AccnameElement[] {
 			const domId = decodeEntities(id);
 			return root
 				? [...root.querySelectorAll('label[for]')].filter(
-						label => getDOMValue(label.getAttributeNode('for')) === domId,
+						label => getDOMValue(label.getAttrNode('for')) === domId,
 					)
 				: [];
 		},
 		// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
 		allowsNameFromContent(target: AccnameElement): boolean {
-			// TODO: Remove cast when getComputedRole accepts AccnameElement (#3178)
-			const role = getComputedRole(doc.specs, target as Element, version);
+			if (!isMLElement(target)) {
+				return false;
+			}
+			const role = getComputedRole(doc.specs, target, version);
 			return !!role.role?.accessibleNameFromContent;
 		},
 		// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
 		isHidden(target: AccnameElement): boolean {
-			return target.getAttribute('aria-hidden') === 'true' || target.hasAttribute('hidden');
+			return target.getAttrValue('aria-hidden') === 'true' || target.hasAttr('hidden');
 		},
 		// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
 		isEmbeddedControl(target: AccnameElement): boolean {
-			// TODO: Remove cast when getComputedRole accepts AccnameElement (#3178)
-			const role = getComputedRole(doc.specs, target as Element, version);
+			if (!isMLElement(target)) {
+				return false;
+			}
+			const role = getComputedRole(doc.specs, target, version);
 			if (role.role?.name) {
 				return EMBEDDED_CONTROL_ROLES.has(role.role.name);
 			}
@@ -247,17 +263,14 @@ function createMLCoreResolver(
 		},
 		// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
 		isExposedAsPresentational(target: AccnameElement): boolean {
-			// TODO: Remove cast when getComputedRole accepts AccnameElement (#3178)
-			return isExposedAsPresentational(getComputedRole(doc.specs, target as Element, version));
+			return isMLElement(target) && isExposedAsPresentational(getComputedRole(doc.specs, target, version));
 		},
 		// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
 		getPrecomputedName(target: AccnameElement): string | null {
-			// TODO: Remove cast when AccnameResolver is generic (#3178)
-			const targetEl = target as MLElement<any, any>;
-			if (!targetEl.pretenderContext || targetEl.pretenderContext.type !== 'pretender') {
+			if (!isMLElement(target) || !target.pretenderContext || target.pretenderContext.type !== 'pretender') {
 				return null;
 			}
-			const ariaName = targetEl.pretenderContext.aria?.name;
+			const ariaName = target.pretenderContext.aria?.name;
 			if (ariaName == null) {
 				return null;
 			}
@@ -265,13 +278,12 @@ function createMLCoreResolver(
 				return 'some-name(Pretender Options)';
 			}
 			const attrName = ariaName.fromAttr;
-			const attrValue = targetEl.getAttributePretended(attrName);
+			const attrValue = target.getAttributePretended(attrName);
 			return attrValue || null;
 		},
 		// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
 		getChildNodes(target: AccnameElement): Iterable<AccnameNode> {
-			// TODO: Remove cast when AccnameResolver is generic (#3178)
-			return getRenderedChildNodes(target as MLElement<any, any>);
+			return isMLElement(target) ? getRenderedChildNodes(target) : target.childNodes;
 		},
 	};
 }

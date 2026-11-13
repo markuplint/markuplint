@@ -16,7 +16,7 @@ import { decodeEntities } from '@markuplint/shared';
  * markuplint keeps the content of a `template` element as the children of the element (the
  * syntax tree has no other place for it), so the boundary is made here and not by the shape of
  * the tree: the queries of `MLParentNode`, `getRootNode()`, `treeParentElement`, the selector
- * engine and `contains()` stop at it. `parentNode` / `parentElement` do not: the content
+ * engine and `contains()` stop at it. `parent` / `parentElement` do not: the content
  * model of a `template` element is validated against the elements that the syntax tree puts
  * in it, so they go on to the `template` element. The algorithms of `@markuplint/ml-spec` walk up
  * with `getTreeParentElement` / `getComposedParentElement`, which read `getRootNode()`, so the
@@ -155,7 +155,7 @@ function getShadowRootModeState<T extends RuleConfigValue, O extends PlainData>(
 	// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
 	template: MLElement<T, O>,
 ): 'open' | 'closed' | 'none' | 'dynamic' {
-	const attr = template.getAttributeNode('shadowrootmode');
+	const attr = template.getAttrNode('shadowrootmode');
 	if (!attr || attr.isAbsent) {
 		return 'none';
 	}
@@ -271,7 +271,7 @@ function getTemplatesOfHost<T extends RuleConfigValue, O extends PlainData>(
 	host: MLNode<T, O>,
 ): MLElement<T, O>[] {
 	const templates: MLElement<T, O>[] = [];
-	for (const child of host.getPureChildNodes()) {
+	for (const child of host.pureChildren()) {
 		if (isTransparent(child)) {
 			templates.push(...getTemplatesOfHost(child));
 			continue;

@@ -16,7 +16,7 @@ import { MLToken } from '../token/token.js';
 
 import { MLDomTokenList } from './dom-token-list.js';
 import { MLNode } from './node.js';
-import { UnexpectedCallError, asciiLowerCase, vuePropKey } from '@markuplint/shared';
+import { asciiLowerCase, vuePropKey } from '@markuplint/shared';
 
 /**
  * Represents a DOM Attr (attribute) node wrapper in the markuplint DOM tree.
@@ -27,10 +27,7 @@ import { UnexpectedCallError, asciiLowerCase, vuePropKey } from '@markuplint/sha
  * @template T - The rule configuration value type
  * @template O - The rule options type
  */
-export class MLAttr<T extends RuleConfigValue, O extends PlainData = undefined>
-	extends MLNode<T, O, MLASTAttr>
-	implements Attr
-{
+export class MLAttr<T extends RuleConfigValue, O extends PlainData = undefined> extends MLNode<T, O, MLASTAttr> {
 	/**
 	 * A candidate attribute name suggested by the parser, if available.
 	 */
@@ -180,7 +177,7 @@ export class MLAttr<T extends RuleConfigValue, O extends PlainData = undefined>
 	 * Whether the framework does not output this attribute, which is known from its value being a literal
 	 * that the framework drops (`disabled={false}`, `title={null}`). It is still in the list of the
 	 * attributes of the element (`MLElement#attributes`), as a name that is misspelled is so whatever its
-	 * value is, and a lookup by name (`getAttribute`, `hasAttribute`) does not find it, as the DOM does not.
+	 * value is, and a lookup by name (`getAttrValue`, `hasAttr`) does not find it, as the DOM does not.
 	 * An absent attribute is {@link MLAttr.isDynamicValue} as well, so that a rule that reads the value skips it.
 	 *
 	 * Which rules skip it: a rule that judges the value or the presence of an attribute (the value of
@@ -458,29 +455,10 @@ export class MLAttr<T extends RuleConfigValue, O extends PlainData = undefined>
 	}
 
 	/**
-	 * **IT THROWS AN ERROR WHEN CALLING THIS.**
-	 *
-	 * @unsupported
-	 * @implements DOM API: `Attr`
-	 * @see https://dom.spec.whatwg.org/#ref-for-dom-attr-prefix
-	 */
-	get prefix(): string | null {
-		throw new UnexpectedCallError('Not supported "prefix" property');
-	}
-
-	/**
 	 * @implements `@markuplint/ml-core` API: `MLAttr`
 	 */
 	get rule() {
 		return this.ownerElement.rule;
-	}
-
-	/**
-	 * @implements DOM API: `Attr`
-	 * @see https://dom.spec.whatwg.org/#dom-attr-specified
-	 */
-	get specified(): true {
-		return true;
 	}
 
 	/**

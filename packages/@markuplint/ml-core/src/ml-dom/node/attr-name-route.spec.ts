@@ -72,11 +72,11 @@ describe('an attribute name that the HTML parser reads', () => {
 	test('[ml-attr-name-route-002] is found by the lookups of the element in any case', () => {
 		const document = html('<a HREF="x"></a><svg VIEWBOX="0 0 1 1"></svg>');
 		const a = document.querySelector('a');
-		expect(a?.getAttribute('href')).toBe('x');
-		expect(a?.hasAttribute('HREF')).toBe(true);
+		expect(a?.getAttrValue('href')).toBe('x');
+		expect(a?.hasAttr('HREF')).toBe(true);
 		expect(a?.getAttributeToken('href')).toHaveLength(1);
 		expect(a?.getAttributePretended('href')).toBe('x');
-		expect(document.querySelector('svg')?.hasAttribute('viewBox')).toBe(true);
+		expect(document.querySelector('svg')?.hasAttr('viewBox')).toBe(true);
 	});
 
 	test('[ml-attr-name-route-003] folds only the ASCII letters', () => {
@@ -95,7 +95,7 @@ describe('an attribute name that the HTML parser reads', () => {
 
 	test('[ml-attr-name-route-005] the first of two spellings of one name is the one that the DOM keeps', () => {
 		const el = html('<div id="a" ID="b"></div>').querySelector('div');
-		expect(el?.getAttribute('id')).toBe('a');
+		expect(el?.getAttrValue('id')).toBe('a');
 		// Every attribute that was written is still there for a rule to check
 		expect(el?.attributes).toHaveLength(2);
 		expect(el?.getAttributeToken('id')).toHaveLength(2);
@@ -108,7 +108,7 @@ describe('an attribute name that code sets through the DOM API', () => {
 		const attr = attrOf(document, 'div > div');
 		expect(attr.nameKey).toBe('role');
 		expect(attr.isNamedBy('role')).toBe(true);
-		expect(document.querySelector('div > div')?.getAttribute('role')).toBe('button');
+		expect(document.querySelector('div > div')?.getAttrValue('role')).toBe('button');
 	});
 
 	test('[ml-attr-name-route-007] on an SVG element stays as written', async () => {
@@ -118,8 +118,8 @@ describe('an attribute name that code sets through the DOM API', () => {
 		expect(role.isNamedBy('role')).toBe(false);
 		expect(role.isNamedBy('ROLE')).toBe(true);
 		const svg = document.querySelector('svg');
-		expect(svg?.getAttribute('role')).toBeNull();
-		expect(svg?.hasAttribute('ROLE')).toBe(true);
+		expect(svg?.getAttrValue('role')).toBeNull();
+		expect(svg?.hasAttr('ROLE')).toBe(true);
 		expect(attrOf(document, 'svg', 1).isNamedBy('viewbox')).toBe(false);
 		expect(attrOf(document, 'svg', 2).isNamedBy('viewBox')).toBe(false);
 	});
@@ -138,7 +138,7 @@ describe('an attribute name that code sets through the DOM API', () => {
 
 	test('[ml-attr-name-route-009] the last of two spellings of one name is the one that the DOM keeps', async () => {
 		const el = (await jsx('<div id="a" ID="b" />')).querySelector('div');
-		expect(el?.getAttribute('id')).toBe('b');
+		expect(el?.getAttrValue('id')).toBe('b');
 		expect(el?.attributes).toHaveLength(2);
 	});
 
@@ -181,7 +181,7 @@ describe('an attribute name of a component', () => {
 		expect(attr.isNamedBy('myLabel')).toBe(true);
 		expect(attr.isNamedBy('mylabel')).toBe(false);
 		// and the lookups of the element read it so
-		expect(document.querySelector('Comp')?.getAttribute('myLabel')).toBe('1');
+		expect(document.querySelector('Comp')?.getAttrValue('myLabel')).toBe('1');
 	});
 
 	test('[ml-attr-name-route-014] is exact for the fromAttr of a pretender', async () => {
@@ -356,7 +356,7 @@ describe('the fromAttr of a pretender of a component in JSX', () => {
 			},
 		);
 		const el = document.querySelector('Comp');
-		return (el?.pretenderContext as { as: { getAttribute(name: string): string | null } } | null)?.as.getAttribute(
+		return (el?.pretenderContext as { as: { getAttrValue(name: string): string | null } } | null)?.as.getAttrValue(
 			'aria-label',
 		);
 	};
@@ -402,13 +402,13 @@ describe('the value of an attribute of a Vue template', () => {
 	test('[ml-attr-name-route-028] is the first of a duplicatable name and is not the directive that binds it', async () => {
 		const el = await vueDiv('<template><div class="a" :class="b"></div></template>');
 		expect(el?.getAttributeToken('class')).toHaveLength(2);
-		expect(el?.getAttribute('class')).toBe('a');
+		expect(el?.getAttrValue('class')).toBe('a');
 		const reversed = await vueDiv('<template><div :class="b" class="a"></div></template>');
-		expect(reversed?.getAttribute('class')).toBe('a');
+		expect(reversed?.getAttrValue('class')).toBe('a');
 	});
 
 	test('[ml-attr-name-route-029] is the last of two plain spellings of a name', async () => {
 		const el = await vueDiv('<template><div id="a" ID="b"></div></template>');
-		expect(el?.getAttribute('id')).toBe('b');
+		expect(el?.getAttrValue('id')).toBe('b');
 	});
 });

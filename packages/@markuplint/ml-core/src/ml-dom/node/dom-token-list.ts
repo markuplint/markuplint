@@ -3,8 +3,6 @@ import type { RuleInfo } from '@markuplint/ml-config';
 
 import { getPosition } from '@markuplint/parser-utils/location';
 
-import { UnexpectedCallError } from '@markuplint/shared';
-
 type Scope = {
 	raw: string;
 	startOffset: number;
@@ -13,7 +11,7 @@ type Scope = {
 	rule: RuleInfo<any, any>;
 };
 
-export class MLDomTokenList extends Array<string> implements DOMTokenList {
+export class MLDomTokenList extends Array<string> {
 	#origin: string;
 	/**
 	 * In some cases, an author specifies multiple attributes or directives.
@@ -110,24 +108,8 @@ export class MLDomTokenList extends Array<string> implements DOMTokenList {
 		};
 	}
 
-	remove(...tokens: readonly string[]): void {
-		throw new UnexpectedCallError('Not supported "remove" method');
-	}
-
-	replace(token: string, newToken: string): boolean {
-		throw new UnexpectedCallError('Not supported "replace" method');
-	}
-
-	supports(token: string): boolean {
-		throw new UnexpectedCallError('Not supported "supports" method');
-	}
-
 	toString(): string {
 		return this.value;
-	}
-
-	toggle(token: string, force?: boolean): boolean {
-		throw new UnexpectedCallError('Not supported "toggle" method');
 	}
 
 	#pick(token: string, _offset = 0): (Scope & { _searchedIndex: number }) | null {

@@ -11,10 +11,11 @@ import { MLCharacterData } from './character-data.js';
  * @template T - The rule configuration value type
  * @template O - The rule options type
  */
-export class MLComment<T extends RuleConfigValue, O extends PlainData = undefined>
-	extends MLCharacterData<T, O, MLASTComment>
-	implements Comment
-{
+export class MLComment<T extends RuleConfigValue, O extends PlainData = undefined> extends MLCharacterData<
+	T,
+	O,
+	MLASTComment
+> {
 	/**
 	 * Returns a string appropriate for the type of node as `Attr`
 	 *

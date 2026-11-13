@@ -1,3 +1,4 @@
+import type { MLNodeList, MLHTMLCollection } from './node-list.js';
 import type { MLElement } from './element.js';
 import type { MLASTNode } from '@markuplint/ml-ast';
 import type { PlainData, RuleConfigValue } from '@markuplint/ml-config';
@@ -8,7 +9,6 @@ import { getChildren } from '../manipulations/get-children.js';
 
 import { toNodeList } from './node-list.js';
 import { MLNode } from './node.js';
-import { UnexpectedCallError } from '@markuplint/shared';
 
 /**
  *
@@ -18,13 +18,10 @@ export abstract class MLParentNode<
 	T extends RuleConfigValue,
 	O extends PlainData = undefined,
 	A extends MLASTNode = MLASTNode,
->
-	extends MLNode<T, O, A>
-	implements ParentNode
-{
-	#children: HTMLCollectionOf<MLElement<T, O>> | null = null;
+> extends MLNode<T, O, A> {
+	#children: MLHTMLCollection<T, O> | null = null;
 
-	#selectedElements = new Map<string, NodeListOf<MLElement<T, O>>>();
+	#selectedElements = new Map<string, MLNodeList<T, O, MLElement<T, O>>>();
 
 	#deepSelectedElements = new Map<string, readonly MLElement<T, O>[]>();
 
@@ -35,64 +32,20 @@ export abstract class MLParentNode<
 	 * @see https://dom.spec.whatwg.org/#dom-parentnode-childelementcount
 	 */
 	get childElementCount() {
-		return this.children.length;
+		return this.childElements.length;
 	}
 
 	/**
 	 * @implements DOM API: `Element`, `Document`, `DocumentFragment`
 	 * @see https://dom.spec.whatwg.org/#dom-parentnode-children
 	 */
-	get children(): HTMLCollectionOf<MLElement<T, O>> {
+	get childElements(): MLHTMLCollection<T, O> {
 		if (this.#children) {
 			return this.#children;
 		}
-		const children: HTMLCollectionOf<MLElement<T, O>> = getChildren(this);
+		const children: MLHTMLCollection<T, O> = getChildren(this);
 		this.#children = children;
 		return this.#children;
-	}
-
-	/**
-	 * @implements DOM API: `Element`, `Document`, `DocumentFragment`
-	 * @see https://dom.spec.whatwg.org/#dom-parentnode-firstelementchild
-	 */
-	get firstElementChild() {
-		return this.children.item(0);
-	}
-
-	/**
-	 * @implements DOM API: `Element`, `Document`, `DocumentFragment`
-	 * @see https://dom.spec.whatwg.org/#dom-parentnode-lastelementchild
-	 */
-	get lastElementChild() {
-		return this.children.item(this.children.length - 1);
-	}
-
-	/**
-	 * **IT THROWS AN ERROR WHEN CALLING THIS.**
-	 *
-	 * @unsupported
-	 * @implements DOM API: `Element`, `Document`, `DocumentFragment`
-	 * @see https://dom.spec.whatwg.org/#dom-parentnode-append
-	 */
-	append(
-		// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
-		...nodes: (string | Node)[]
-	): void {
-		throw new UnexpectedCallError('Not supported "append" method');
-	}
-
-	/**
-	 * **IT THROWS AN ERROR WHEN CALLING THIS.**
-	 *
-	 * @unsupported
-	 * @implements DOM API: `Element`, `Document`, `DocumentFragment`
-	 * @see https://dom.spec.whatwg.org/#dom-parentnode-prepend
-	 */
-	prepend(
-		// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
-		...nodes: (string | Node)[]
-	): void {
-		throw new UnexpectedCallError('Not supported "prepend" method');
 	}
 
 	/**
@@ -111,7 +64,7 @@ export abstract class MLParentNode<
 	 * @implements DOM API: `Element`, `Document`, `DocumentFragment`
 	 * @see https://dom.spec.whatwg.org/#dom-parentnode-queryselectorall
 	 */
-	querySelectorAll(selectors: string): NodeListOf<MLElement<T, O>> {
+	querySelectorAll(selectors: string): MLNodeList<T, O, MLElement<T, O>> {
 		const selected = this.#selectedElements.get(selectors);
 		if (selected) {
 			return selected;
@@ -180,7 +133,7 @@ export abstract class MLParentNode<
 					return node;
 				}
 			})) {
-				const id = getDOMValue(el.getAttributeNode('id'));
+				const id = getDOMValue(el.getAttrNode('id'));
 				if (id != null && id !== '' && !idMap.has(id)) {
 					idMap.set(id, el);
 				}
@@ -188,20 +141,6 @@ export abstract class MLParentNode<
 			this.#idMap = idMap;
 		}
 		return this.#idMap.get(elementId) ?? null;
-	}
-
-	/**
-	 * **IT THROWS AN ERROR WHEN CALLING THIS.**
-	 *
-	 * @unsupported
-	 * @implements DOM API: `Element`, `Document`, `DocumentFragment`
-	 * @see https://dom.spec.whatwg.org/#dom-parentnode-replacechildren
-	 */
-	replaceChildren(
-		// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
-		...nodes: (string | Node)[]
-	): void {
-		throw new UnexpectedCallError('Not supported "replaceChildren" method');
 	}
 
 	/**

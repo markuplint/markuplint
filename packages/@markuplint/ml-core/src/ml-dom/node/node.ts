@@ -1,3 +1,4 @@
+import type { MLNodeList } from './node-list.js';
 import type { MLBlock } from './block.js';
 import type { MLChildNode } from './child-node.js';
 import type { MLDocumentFragment } from './document-fragment.js';
@@ -8,7 +9,7 @@ import type { RuleInfo } from '../../index.js';
 import type { MLASTChildNode, MLASTElementCloseTag, MLASTInvalid, MLASTNode } from '@markuplint/ml-ast';
 import type { AnyRule, PlainData, Rule, RuleConfigValue } from '@markuplint/ml-config';
 
-import { branchesToPatterns, UnexpectedCallError } from '@markuplint/shared';
+import { branchesToPatterns } from '@markuplint/shared';
 
 import { MLToken } from '../token/token.js';
 
@@ -18,15 +19,16 @@ import { NodeStore } from './node-store.js';
 
 /**
  * Abstract base class for all markuplint DOM node wrappers.
- * Extends `MLToken` with DOM `Node` interface compliance, tree traversal,
- * rule configuration access, and child node management.
+ * Extends `MLToken` with tree traversal, rule configuration access, and child node management.
  *
- * The `implements Node` declaration is a maintenance strategy: conforming to
- * the built-in DOM interfaces makes the compiler report errors whenever the
- * TypeScript DOM type definitions gain new members, so the MLDOM API surface
- * never drifts from the DOM Standard unnoticed. Members that are meaningless
- * in static analysis (mutation, events, layout) are stubbed to throw
- * `UnexpectedCallError` instead of being implemented.
+ * MLDOM implements no standard DOM interface. It keeps the members that the rules, the selector
+ * engine and `@markuplint/ml-spec` read (the contract is `SpecElement` of `@markuplint/ml-spec` and
+ * `SelectorElement` of `@markuplint/selector`), and it names them in the style of the Rust DOM
+ * (`crates/markuplint-dom`): `parent`, `prevSibling`, `childElements`,
+ * `getAttrValue()`, `hasAttr()`, `getAttrNode()`, `findElementById()`, `pureChildren()` and
+ * `prevElementSibling`. A member that carries `@implements DOM API` keeps the semantics of the DOM
+ * member that the tag names, which the `@see` beside it links to; there is no compiler check that it
+ * stays in step with `lib.dom`.
  *
  * The `T`/`O` generics exist solely for rule authors using `createRule`:
  * they propagate through the node tree so that `node.rule` is typed as
@@ -41,10 +43,7 @@ export abstract class MLNode<
 	T extends RuleConfigValue,
 	O extends PlainData = undefined,
 	A extends MLASTNode = MLASTNode,
->
-	extends MLToken<A>
-	implements Node
-{
+> extends MLToken<A> {
 	/**
 	 * @implements DOM API: `Node`
 	 * @see https://dom.spec.whatwg.org/#interface-node
@@ -77,42 +76,6 @@ export abstract class MLNode<
 
 	/**
 	 * @implements DOM API: `Node`
-	 * @see https://dom.spec.whatwg.org/#dom-node-document_position_contained_by
-	 */
-	readonly DOCUMENT_POSITION_CONTAINED_BY = 0b1_0000;
-
-	/**
-	 * @implements DOM API: `Node`
-	 * @see https://dom.spec.whatwg.org/#dom-node-document_position_contains
-	 */
-	readonly DOCUMENT_POSITION_CONTAINS = 0b1000;
-
-	/**
-	 * @implements DOM API: `Node`
-	 * @see https://dom.spec.whatwg.org/#dom-node-document_position_disconnected
-	 */
-	readonly DOCUMENT_POSITION_DISCONNECTED = 0b1;
-
-	/**
-	 * @implements DOM API: `Node`
-	 * @see https://dom.spec.whatwg.org/#dom-node-document_position_following
-	 */
-	readonly DOCUMENT_POSITION_FOLLOWING = 0b100;
-
-	/**
-	 * @implements DOM API: `Node`
-	 * @see https://dom.spec.whatwg.org/#dom-node-document_position_implementation_specific
-	 */
-	readonly DOCUMENT_POSITION_IMPLEMENTATION_SPECIFIC = 0b10_0000;
-
-	/**
-	 * @implements DOM API: `Node`
-	 * @see https://dom.spec.whatwg.org/#dom-node-document_position_preceding
-	 */
-	readonly DOCUMENT_POSITION_PRECEDING = 0b10;
-
-	/**
-	 * @implements DOM API: `Node`
 	 * @see https://dom.spec.whatwg.org/#interface-node
 	 */
 	readonly DOCUMENT_TYPE_NODE = 10;
@@ -124,36 +87,9 @@ export abstract class MLNode<
 	readonly ELEMENT_NODE = 1;
 
 	/**
-	 * @deprecated
-	 * @implements DOM API: `Node`
-	 * @see https://dom.spec.whatwg.org/#interface-node
-	 */
-	readonly ENTITY_NODE = 6;
-
-	/**
-	 * @deprecated
-	 * @implements DOM API: `Node`
-	 * @see https://dom.spec.whatwg.org/#interface-node
-	 */
-	readonly ENTITY_REFERENCE_NODE = 5;
-
-	/**
 	 * @implements `@markuplint/ml-core` API: `MLNode`
 	 */
 	readonly MARKUPLINT_PREPROCESSOR_BLOCK: MarkuplintPreprocessorBlockType = 101;
-
-	/**
-	 * @deprecated
-	 * @implements DOM API: `Node`
-	 * @see https://dom.spec.whatwg.org/#interface-node
-	 */
-	readonly NOTATION_NODE = 12;
-
-	/**
-	 * @implements DOM API: `Node`
-	 * @see https://dom.spec.whatwg.org/#interface-node
-	 */
-	readonly PROCESSING_INSTRUCTION_NODE = 7;
 
 	/**
 	 * @implements DOM API: `Node`
@@ -161,7 +97,7 @@ export abstract class MLNode<
 	 */
 	readonly TEXT_NODE = 3;
 
-	#pureChildNodesCache: NodeListOf<MLChildNode<T, O>> | undefined;
+	#pureChildNodesCache: MLNodeList<T, O, MLChildNode<T, O>> | undefined;
 
 	/**
 	 * Returns child nodes when parent node access by `childNodes` property.
@@ -173,13 +109,13 @@ export abstract class MLNode<
 	/**
 	 * Scoped to the owning document so the mapping is reclaimed together with
 	 * it, and held directly on each node so the hot `syntacticalParentNode` /
-	 * `getPureChildNodes` paths reach it without a lookup.
+	 * `pureChildren` paths reach it without a lookup.
 	 */
 	readonly #nodeStore: NodeStore;
 
 	#prevToken: MLNode<T, O> | null | undefined;
 
-	#conditionalChildNodes: NodeListOf<MLChildNode<T, O>>[] | undefined;
+	#conditionalChildNodes: MLNodeList<T, O, MLChildNode<T, O>>[] | undefined;
 
 	/**
 	 * Rules mapped to this node by `RuleMapper`. Deliberately untyped
@@ -214,17 +150,6 @@ export abstract class MLNode<
 	}
 
 	/**
-	 * **IT THROWS AN ERROR WHEN CALLING THIS.**
-	 *
-	 * @unsupported
-	 * @implements DOM API: `Node`
-	 * @see https://dom.spec.whatwg.org/#ref-for-dom-node-baseuri%E2%91%A0
-	 */
-	get baseURI(): string {
-		throw new UnexpectedCallError('Not supported "baseURI" property');
-	}
-
-	/**
 	 * The list of child nodes. Fragment nodes and preprocessor blocks whose
 	 * `blockBehavior.type` is `each` or `end` are flattened into this list.
 	 * Conditional blocks (`if`, `switch`, `await`, and their clauses) and
@@ -238,8 +163,8 @@ export abstract class MLNode<
 	 * @implements DOM API: `Node`
 	 * @see https://dom.spec.whatwg.org/#ref-for-dom-node-childnodes%E2%91%A0
 	 */
-	get childNodes(): NodeListOf<MLChildNode<T, O>> {
-		const pureChildNodes = [...this.getPureChildNodes()];
+	get childNodes(): MLNodeList<T, O, MLChildNode<T, O>> {
+		const pureChildNodes = [...this.pureChildren()];
 
 		const childNodes = pureChildNodes.flatMap(node => {
 			if (
@@ -267,29 +192,6 @@ export abstract class MLNode<
 	}
 
 	/**
-	 * **IT THROWS AN ERROR WHEN CALLING THIS.**
-	 *
-	 * @unsupported
-	 * @implements DOM API: `Node`
-	 * @see https://dom.spec.whatwg.org/#ref-for-dom-node-isconnected%E2%91%A0
-	 */
-	get isConnected(): boolean {
-		throw new UnexpectedCallError('Not supported "isConnected" property');
-	}
-
-	/**
-	 * The last node that may be `Element`, `Text`, and `CommentNode`.
-	 *
-	 * @readonly
-	 * @implements DOM API: `Node`
-	 * @see https://dom.spec.whatwg.org/#ref-for-dom-node-lastchild%E2%91%A0
-	 */
-	get lastChild(): MLChildNode<T, O> | null {
-		// eslint-disable-next-line unicorn/prefer-at
-		return this.childNodes[this.childNodes.length - 1] ?? null;
-	}
-
-	/**
 	 * The next node in the syntactical sibling list which, unlike
 	 * `nextSibling`, includes `MLBlock` nodes (AST-level traversal).
 	 *
@@ -312,8 +214,7 @@ export abstract class MLNode<
 		while (nextNode) {
 			if (
 				isChildNode(nextNode) &&
-				((this.parentNode === null && nextNode.parentNode === null) ||
-					this.parentNode?.uuid === nextNode.parentNode?.uuid)
+				((this.parent === null && nextNode.parent === null) || this.parent?.uuid === nextNode.parent?.uuid)
 			) {
 				return nextNode;
 			}
@@ -370,7 +271,7 @@ export abstract class MLNode<
 	/**
 	 * The owning `MLDocument` instance with proper generic types,
 	 * providing type-safe access to the document without the `any` type
-	 * used by the DOM-compatible `ownerDocument`.
+	 * used by the DOM-named `ownerDocument`.
 	 *
 	 * @implements `@markuplint/ml-core` API: `MLNode`
 	 */
@@ -385,12 +286,12 @@ export abstract class MLNode<
 	 * @see https://dom.spec.whatwg.org/#ref-for-dom-node-parentelement%E2%91%A0
 	 */
 	get parentElement(): MLElement<T, O> | null {
-		let parent = this.parentNode;
+		let parent = this.parent;
 		while (parent) {
 			if (parent.is(parent.ELEMENT_NODE)) {
 				return parent;
 			}
-			parent = parent.parentNode;
+			parent = parent.parent;
 		}
 		return null;
 	}
@@ -473,14 +374,14 @@ export abstract class MLNode<
 	 * @implements DOM API: `Node`
 	 * @see https://dom.spec.whatwg.org/#ref-for-dom-node-parentnode%E2%91%A0
 	 */
-	get parentNode(): MLDocument<any, any> | MLDocumentFragment<any, any> | MLElement<T, O> | null {
+	get parent(): MLDocument<any, any> | MLDocumentFragment<any, any> | MLElement<T, O> | null {
 		const parentNode = this.syntacticalParentNode;
 		if (!parentNode) {
 			return null;
 		}
 		if (parentNode.is(parentNode.MARKUPLINT_PREPROCESSOR_BLOCK)) {
 			if (parentNode.isTransparent) {
-				return parentNode.parentNode;
+				return parentNode.parent;
 			}
 			return null;
 		}
@@ -495,7 +396,7 @@ export abstract class MLNode<
 
 	/**
 	 * The previous node in the syntactical sibling list which, unlike
-	 * `previousSibling`, includes `MLBlock` nodes (AST-level traversal).
+	 * `prevSibling`, includes `MLBlock` nodes (AST-level traversal).
 	 *
 	 * @implements `@markuplint/ml-core` API: `MLNode`
 	 */
@@ -548,13 +449,12 @@ export abstract class MLNode<
 	 * @implements DOM API: `Node`
 	 * @see https://dom.spec.whatwg.org/#concept-tree-previous-sibling
 	 */
-	get previousSibling(): MLChildNode<T, O> | null {
+	get prevSibling(): MLChildNode<T, O> | null {
 		let prevNode = this.prevNode;
 		while (prevNode) {
 			if (
 				isChildNode(prevNode) &&
-				((this.parentNode === null && prevNode.parentNode === null) ||
-					this.parentNode?.uuid === prevNode.parentNode?.uuid)
+				((this.parent === null && prevNode.parent === null) || this.parent?.uuid === prevNode.parent?.uuid)
 			) {
 				return prevNode;
 			}
@@ -658,58 +558,6 @@ export abstract class MLNode<
 	}
 
 	/**
-	 * **IT THROWS AN ERROR WHEN CALLING THIS.**
-	 *
-	 * @unsupported
-	 * @implements DOM API: `EventTarget`
-	 * @see https://dom.spec.whatwg.org/#ref-for-dom-eventtarget-addeventlistener%E2%91%A2
-	 */
-	addEventListener(
-		type: string,
-		// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
-		callback?: EventListenerOrEventListenerObject | null,
-		options: AddEventListenerOptions | boolean = {},
-	): void {
-		throw new UnexpectedCallError('Not supported "addEventListener" method');
-	}
-
-	/**
-	 * **IT THROWS AN ERROR WHEN CALLING THIS.**
-	 *
-	 * @unsupported
-	 * @implements DOM API: `Node`
-	 * @see https://dom.spec.whatwg.org/#dom-node-appendchild
-	 */
-	appendChild<T extends Node>(node: T): T {
-		throw new UnexpectedCallError('Not supported "appendChild" method');
-	}
-
-	/**
-	 * **IT THROWS AN ERROR WHEN CALLING THIS.**
-	 *
-	 * @unsupported
-	 * @implements DOM API: `Node`
-	 * @see https://dom.spec.whatwg.org/#ref-for-dom-node-clonenode%E2%91%A0
-	 */
-	cloneNode(deep?: boolean): Node {
-		throw new UnexpectedCallError('Not supported "appendChild" method');
-	}
-
-	/**
-	 * **IT THROWS AN ERROR WHEN CALLING THIS.**
-	 *
-	 * @unsupported
-	 * @implements DOM API: `Node`
-	 * @see https://dom.spec.whatwg.org/#ref-for-dom-node-comparedocumentposition%E2%91%A0
-	 */
-	compareDocumentPosition(
-		// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
-		other: Node,
-	): number {
-		throw new UnexpectedCallError('Not supported "compareDocumentPosition" method');
-	}
-
-	/**
 	 * Returns an array of NodeLists representing the conditional child nodes of the current node.
 	 * Conditional child nodes are nodes that are nested within
 	 * **preprocessor blocks** such as `if` or `switch`.
@@ -730,7 +578,7 @@ export abstract class MLNode<
 	 * @experemental
 	 * @implements `@markuplint/ml-core` API: `MLNode`
 	 */
-	conditionalChildNodes(): NodeListOf<MLChildNode<T, O>>[] {
+	conditionalChildNodes(): MLNodeList<T, O, MLChildNode<T, O>>[] {
 		if (this.#conditionalChildNodes != null) {
 			return this.#conditionalChildNodes;
 		}
@@ -835,20 +683,6 @@ export abstract class MLNode<
 	}
 
 	/**
-	 * **IT THROWS AN ERROR WHEN CALLING THIS.**
-	 *
-	 * @unsupported
-	 * @implements DOM API: `EventTarget`
-	 * @see https://dom.spec.whatwg.org/#ref-for-dom-eventtarget-dispatchevent%E2%91%A2
-	 */
-	dispatchEvent(
-		// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
-		event: Event,
-	): boolean {
-		throw new UnexpectedCallError('Not supported "dispatchEvent" method');
-	}
-
-	/**
 	 * Finds subsequent nodes that match the given selector, in the tree of this node: what follows in
 	 * the markup but is in another tree (the content of an HTML `template` element) is not subsequent
 	 * to it.
@@ -891,14 +725,14 @@ export abstract class MLNode<
 	 *
 	 * @implements DOM API: `MLNode`
 	 */
-	getPureChildNodes(): NodeListOf<MLChildNode<T, O>> {
+	pureChildren(): MLNodeList<T, O, MLChildNode<T, O>> {
 		if (this.#pureChildNodesCache != null) {
 			return this.#pureChildNodesCache;
 		}
 		if (this.is(this.DOCUMENT_NODE)) {
 			const childNodes: MLChildNode<T, O>[] = [];
 			for (const node of this.nodeList) {
-				if (isChildNode(node) && (node.parentNode === this || node.parentNode === null)) {
+				if (isChildNode(node) && (node.parent === this || node.parent === null)) {
 					childNodes.push(node);
 				}
 			}
@@ -986,76 +820,10 @@ export abstract class MLNode<
 	}
 
 	/**
-	 * **IT THROWS AN ERROR WHEN CALLING THIS.**
-	 *
-	 * @unsupported
-	 * @implements DOM API: `Node`
-	 * @see https://dom.spec.whatwg.org/#ref-for-dom-node-haschildnodes%E2%91%A0
-	 */
-	hasChildNodes(): boolean {
-		throw new UnexpectedCallError('Not supported "hasChildNodes" method');
-	}
-
-	/**
-	 * **IT THROWS AN ERROR WHEN CALLING THIS.**
-	 *
-	 * @unsupported
-	 * @implements DOM API: `Node`
-	 * @see https://dom.spec.whatwg.org/#dom-node-insertbefore
-	 */
-	insertBefore<T extends Node>(
-		node: T,
-		// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
-		child: Node | null,
-	): T {
-		throw new UnexpectedCallError('Not supported "insertBefore" method');
-	}
-
-	/**
-	 * **IT THROWS AN ERROR WHEN CALLING THIS.**
-	 *
-	 * @unsupported
-	 * @implements DOM API: `Node`
-	 */
-	moveBefore(
-		// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
-		node: Node,
-		// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
-		child: Node | null,
-	): Node {
-		throw new UnexpectedCallError('Not supported "moveBefore" method');
-	}
-
-	/**
 	 * @implements `@markuplint/ml-core` API: `MLNode`
 	 */
 	is<NType extends NodeType>(nodeType: NType): this is NodeTypeOf<NType, T, O> {
 		return this.nodeType === nodeType;
-	}
-
-	/**
-	 * **IT THROWS AN ERROR WHEN CALLING THIS.**
-	 *
-	 * @unsupported
-	 * @implements DOM API: `Node`
-	 * @see https://dom.spec.whatwg.org/#dom-node-isdefaultnamespace
-	 */
-	isDefaultNamespace(namespace: string | null): boolean {
-		throw new UnexpectedCallError('Not supported "isDefaultNamespace" method');
-	}
-
-	/**
-	 * **IT THROWS AN ERROR WHEN CALLING THIS.**
-	 *
-	 * @unsupported
-	 * @implements DOM API: `Node`
-	 * @see https://dom.spec.whatwg.org/#ref-for-dom-node-isequalnode%E2%91%A0
-	 */
-	isEqualNode(
-		// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
-		otherNode: Node | null,
-	): boolean {
-		throw new UnexpectedCallError('Not supported "isEqualNode" method');
 	}
 
 	/**
@@ -1069,100 +837,11 @@ export abstract class MLNode<
 	}
 
 	/**
-	 * **IT THROWS AN ERROR WHEN CALLING THIS.**
-	 *
-	 * @unsupported
-	 * @implements DOM API: `Node`
-	 * @see https://dom.spec.whatwg.org/#dom-node-issamenode
-	 */
-	isSameNode(
-		// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
-		otherNode: Node | null,
-	): boolean {
-		throw new UnexpectedCallError('Not supported "isSameNode" method');
-	}
-
-	/**
-	 * **IT THROWS AN ERROR WHEN CALLING THIS.**
-	 *
-	 * @unsupported
-	 * @implements DOM API: `Node`
-	 * @see https://dom.spec.whatwg.org/#dom-node-lookupnamespaceuri
-	 */
-	lookupNamespaceURI(prefix: string | null): string | null {
-		throw new UnexpectedCallError('Not supported "lookupNamespaceURI" method');
-	}
-
-	/**
-	 * **IT THROWS AN ERROR WHEN CALLING THIS.**
-	 *
-	 * @unsupported
-	 * @implements DOM API: `Node`
-	 * @see https://dom.spec.whatwg.org/#dom-node-lookupprefix
-	 */
-	lookupPrefix(namespace: string | null): string | null {
-		throw new UnexpectedCallError('Not supported "lookupPrefix" method');
-	}
-
-	/**
-	 * **IT THROWS AN ERROR WHEN CALLING THIS.**
-	 *
-	 * @unsupported
-	 * @implements DOM API: `Node`
-	 * @see https://dom.spec.whatwg.org/#ref-for-dom-node-normalize%E2%91%A0
-	 */
-	normalize(): void {
-		throw new UnexpectedCallError('Not supported "normalize" method');
-	}
-
-	/**
-	 * **IT THROWS AN ERROR WHEN CALLING THIS.**
-	 *
-	 * @unsupported
-	 * @implements DOM API: `Node`
-	 * @see https://dom.spec.whatwg.org/#dom-node-removechild
-	 */
-	removeChild<T extends Node>(child: T): T {
-		throw new UnexpectedCallError('Not supported "removeChild" method');
-	}
-
-	/**
-	 * **IT THROWS AN ERROR WHEN CALLING THIS.**
-	 *
-	 * @unsupported
-	 * @implements DOM API: `EventTarget`
-	 * @see https://dom.spec.whatwg.org/#ref-for-dom-eventtarget-removeeventlistener%E2%91%A1
-	 */
-	removeEventListener(
-		type: string,
-		// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
-		callback?: EventListenerOrEventListenerObject | null,
-		options: EventListenerOptions | boolean = {},
-	): void {
-		throw new UnexpectedCallError('Not supported "removeEventListener" method');
-	}
-
-	/**
-	 * **IT THROWS AN ERROR WHEN CALLING THIS.**
-	 *
-	 * @unsupported
-	 * @implements DOM API: `Node`
-	 * @see https://dom.spec.whatwg.org/#dom-node-replacechild
-	 */
-	replaceChild<T extends Node>(
-		// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
-		node: Node,
-		child: T,
-	): T {
-		throw new UnexpectedCallError('Not supported "removeChild" method');
-	}
-
-	/**
 	 * @implements `@markuplint/ml-core` API: `MLNode`
 	 */
 	resetChildren(
 		// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
-		childNodes?: NodeListOf<MLChildNode<T, O>>,
+		childNodes?: MLNodeList<T, O, MLChildNode<T, O>>,
 	) {
 		this.#pureChildNodesCache = childNodes ?? this.#pureChildNodesCache;
 	}

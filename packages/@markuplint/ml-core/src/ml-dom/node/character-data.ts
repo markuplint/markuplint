@@ -2,43 +2,21 @@ import type { MLElement } from './element.js';
 import type { MLASTNode } from '@markuplint/ml-ast';
 import type { PlainData, RuleConfigValue } from '@markuplint/ml-config';
 
-import {
-	after,
-	before,
-	nextElementSibling,
-	previousElementSibling,
-	remove,
-	replaceWith,
-} from '../manipulations/child-node-methods.js';
+import { nextElementSibling, previousElementSibling } from '../manipulations/child-node-methods.js';
 
 import { MLNode } from './node.js';
-import { UnexpectedCallError } from '@markuplint/shared';
 
 export abstract class MLCharacterData<
 	T extends RuleConfigValue,
 	O extends PlainData = undefined,
 	A extends MLASTNode = MLASTNode,
->
-	extends MLNode<T, O, A>
-	implements CharacterData
-{
+> extends MLNode<T, O, A> {
 	/**
 	 * @implements DOM API: `CharacterData`
 	 * @see https://dom.spec.whatwg.org/#dom-characterdata-data
 	 */
 	get data(): string {
 		return this.raw;
-	}
-
-	/**
-	 * **IT THROWS AN ERROR WHEN CALLING THIS.**
-	 *
-	 * @unsupported
-	 * @implements DOM API: `CharacterData`
-	 * @see https://dom.spec.whatwg.org/#dom-characterdata-length
-	 */
-	get length(): number {
-		throw new UnexpectedCallError('Not supported "length" property');
 	}
 
 	/**
@@ -63,7 +41,7 @@ export abstract class MLCharacterData<
 	 * @implements DOM API: `CharacterData`
 	 * @see https://dom.spec.whatwg.org/#ref-for-dom-nondocumenttypechildnode-previouselementsibling%E2%91%A1
 	 */
-	get previousElementSibling(): MLElement<T, O> | null {
+	get prevElementSibling(): MLElement<T, O> | null {
 		return previousElementSibling(this);
 	}
 
@@ -73,89 +51,5 @@ export abstract class MLCharacterData<
 	 */
 	get textContent(): string {
 		return this.data;
-	}
-
-	/**
-	 * @implements DOM API: `CharacterData`
-	 */
-	after(
-		// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
-		...nodes: (string | MLElement<any, any>)[]
-	): void {
-		after(this, ...nodes);
-	}
-
-	/**
-	 * **IT THROWS AN ERROR WHEN CALLING THIS.**
-	 *
-	 * @unsupported
-	 * @implements DOM API: `CharacterData`
-	 * @see https://dom.spec.whatwg.org/#dom-characterdata-appenddata
-	 */
-	appendData(data: string): void {}
-
-	/**
-	 * @implements DOM API: `CharacterData`
-	 */
-	before(
-		// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
-		...nodes: (string | MLElement<any, any>)[]
-	): void {
-		before(this, ...nodes);
-	}
-
-	/**
-	 * **IT THROWS AN ERROR WHEN CALLING THIS.**
-	 *
-	 * @unsupported
-	 * @implements DOM API: `CharacterData`
-	 * @see https://dom.spec.whatwg.org/#dom-characterdata-deletedata
-	 */
-	deleteData(offset: number, count: number): void {}
-
-	/**
-	 * **IT THROWS AN ERROR WHEN CALLING THIS.**
-	 *
-	 * @unsupported
-	 * @implements DOM API: `CharacterData`
-	 * @see https://dom.spec.whatwg.org/#dom-characterdata-insertdata
-	 */
-	insertData(offset: number, data: string): void {}
-
-	/**
-	 * @implements DOM API: `CharacterData`
-	 */
-	remove(): void {
-		remove(this);
-	}
-
-	/**
-	 * **IT THROWS AN ERROR WHEN CALLING THIS.**
-	 *
-	 * @unsupported
-	 * @implements DOM API: `CharacterData`
-	 * @see https://dom.spec.whatwg.org/#dom-characterdata-replacedata
-	 */
-	replaceData(offset: number, count: number, data: string): void {}
-
-	/**
-	 * @implements DOM API: `CharacterData`
-	 */
-	replaceWith(
-		// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
-		...nodes: (string | MLElement<any, any>)[]
-	): void {
-		replaceWith(this, ...nodes);
-	}
-
-	/**
-	 * **IT THROWS AN ERROR WHEN CALLING THIS.**
-	 *
-	 * @unsupported
-	 * @implements DOM API: `CharacterData`
-	 * @see https://dom.spec.whatwg.org/#dom-characterdata-substringdata
-	 */
-	substringData(offset: number, count: number): string {
-		return '';
 	}
 }

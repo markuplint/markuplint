@@ -15,7 +15,7 @@ const nodeStoreError = nodeStoreLog.extend('error');
  *
  * Owned by a single `MLDocument` and shared with its nodes through `MLNode`'s
  * constructor. A node is only ever looked up through its own document
- * (`syntacticalParentNode` resolves `parentNodeUuid`, `getPureChildNodes`
+ * (`syntacticalParentNode` resolves `parentNodeUuid`, `pureChildren`
  * resolves child AST nodes), so the store must not be held anywhere that
  * outlives that document: a longer-lived holder keeps every node — and through
  * `ownerMLDocument` the whole tree — reachable, which an engine that calls

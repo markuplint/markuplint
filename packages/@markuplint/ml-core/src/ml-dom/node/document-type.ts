@@ -1,10 +1,7 @@
 import type { MLDocument } from './document.js';
-import type { MLElement } from './element.js';
 import type { DocumentTypeNodeType } from './types.js';
 import type { MLASTDoctype } from '@markuplint/ml-ast';
 import type { PlainData, RuleConfigValue } from '@markuplint/ml-config';
-
-import { after, before, remove, replaceWith } from '../manipulations/child-node-methods.js';
 
 import { MLNode } from './node.js';
 
@@ -15,10 +12,11 @@ import { MLNode } from './node.js';
  * @template T - The rule configuration value type
  * @template O - The rule options type
  */
-export class MLDocumentType<T extends RuleConfigValue, O extends PlainData = undefined>
-	extends MLNode<T, O, MLASTDoctype>
-	implements DocumentType
-{
+export class MLDocumentType<T extends RuleConfigValue, O extends PlainData = undefined> extends MLNode<
+	T,
+	O,
+	MLASTDoctype
+> {
 	/**
 	 * The name of the document type (e.g., `"html"`).
 	 */
@@ -73,42 +71,5 @@ export class MLDocumentType<T extends RuleConfigValue, O extends PlainData = und
 	 */
 	get textContent(): null {
 		return null;
-	}
-
-	/**
-	 * @implements DOM API: `CharacterData`
-	 */
-	after(
-		// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
-		...nodes: (string | MLElement<any, any>)[]
-	): void {
-		after(this, ...nodes);
-	}
-
-	/**
-	 * @implements DOM API: `CharacterData`
-	 */
-	before(
-		// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
-		...nodes: (string | MLElement<any, any>)[]
-	): void {
-		before(this, ...nodes);
-	}
-
-	/**
-	 * @implements DOM API: `CharacterData`
-	 */
-	remove(): void {
-		remove(this);
-	}
-
-	/**
-	 * @implements DOM API: `CharacterData`
-	 */
-	replaceWith(
-		// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
-		...nodes: (string | MLElement<any, any>)[]
-	): void {
-		replaceWith(this, ...nodes);
 	}
 }
