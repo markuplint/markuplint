@@ -119,6 +119,10 @@ describe('a spec that names a Markdown file', () => {
 		'packages/markuplint/src/cli/readme-help.spec.ts',
 		'scripts/spec-citations/',
 		'scripts/affected-tests/',
+		// Reads the Branch Topology table of the root `CLAUDE.md`: `ROOT_INPUTS` in `classify.ts`.
+		'scripts/release-lines/',
+		// Names Markdown files only as the content of a fake repository.
+		'scripts/release-reminder/',
 	];
 	const COMMENT_LINE = /^\s*(?:\*|\/\/|\/\*)/;
 	const MARKDOWN_PATH_LITERAL = /(['"`])[^'"`\n]*\.md\1/;
@@ -150,6 +154,8 @@ describe('a spec that names a file that the plan takes as unread', () => {
 		const named = probe.specs.filter(
 			spec =>
 				!spec.startsWith('scripts/affected-tests/') &&
+				// Reads the configurations that name a branch: `ROOT_INPUTS` in `classify.ts`.
+				!spec.startsWith('scripts/release-lines/') &&
 				probe
 					.read(spec)
 					.split('\n')

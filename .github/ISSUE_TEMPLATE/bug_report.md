@@ -14,9 +14,9 @@ Se aceptan comentarios en cualquier idioma. Por favor, escribe en tu lengua mate
 どの言語も歓迎します。あなたの母国語で書いてください。
 -->
 
-- Markuplint version: `4.x.x`
+- Markuplint version: `x.y.z` (`npx markuplint --version`)
 - Parser lang: HTML or JSX and more...
-- Node.js version: `20.x.x`
+- Node.js version: `x.y.z` (`node --version`)
 - OS: macOS or Windows
 
 ## Describe the bug
