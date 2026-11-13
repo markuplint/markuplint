@@ -19,6 +19,7 @@ The plugin mechanism was removed. A config that still has `plugins` or `plugin:`
 
 ## For developers
 
-| Area                                                     | Summary                                                                                                    | Who's affected                   |
-| -------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------- | -------------------------------- |
-| [Plugin mechanism](/docs/migration/v5-to-v6/plugins#api) | The `rules`, `importPresetRules` and `autoLoad` options, `createPlugin()`, and the testing API signatures. | Node.js API, custom rule authors |
+| Area                                                     | Summary                                                                                                                                           | Who's affected                                                                |
+| -------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------- |
+| [Plugin mechanism](/docs/migration/v5-to-v6/plugins#api) | The `rules`, `importPresetRules` and `autoLoad` options, `createPlugin()`, and the testing API signatures.                                        | Node.js API, custom rule authors                                              |
+| [MLDOM](/docs/migration/v5-to-v6/mldom)                  | MLDOM no longer implements the DOM interfaces: members renamed or removed, `SpecElement` in `@markuplint/ml-spec`, `UnexpectedCallError` removed. | Users of `@markuplint/ml-core`, `@markuplint/ml-spec`, `@markuplint/selector` |
