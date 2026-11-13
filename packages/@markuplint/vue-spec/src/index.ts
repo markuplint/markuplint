@@ -6,9 +6,11 @@
  * and `ref` for template refs) and element-level overrides such as
  * allowing dynamic properties on the `<slot>` element.
  *
- * This package has no dedicated test files because it only exports
- * a static data object; it is verified through the type check at
- * build time and `@markuplint/vue-parser`'s integration tests.
+ * It only exports a static data object, which is verified through the type
+ * check at build time and `@markuplint/vue-parser`'s integration tests. The
+ * one exception is the key that `directivePatterns` give to the repeat of a
+ * directive: it is a pure function of the patterns, so `index.spec.ts` pins it
+ * where the patterns are.
  */
 
 import type { ExtendedSpec } from '@markuplint/ml-spec';
@@ -27,23 +29,71 @@ const spec: ExtendedSpec = {
 	// (see `resolveDirective` in @markuplint/ml-spec), so any new pattern
 	// must be inserted before the generic `^v-` catch-all at the end.
 	directivePatterns: [
-		// .propName shorthand (Vue 3.2+, equivalent to v-bind:propName.prop)
+		/**
+		 * Dynamic attribute/event names with brackets (e.g., :[dynamicAttr], @[dynamicEvent], .[dynamicProp]).
+		 * It comes first: Vue never drops a dynamic key (`dedupeProperties` keeps every one), so the key of
+		 * the name that it makes is not the key of a repeat, and only the same spelling is (the parser reports it).
+		 *
+		 * @see https://github.com/vuejs/core/blob/main/packages/compiler-core/src/transforms/transformElement.ts#dedupeProperties
+		 */
 		{
-			pattern: '^\\.(.+)$',
+			pattern: '^(?:v-bind:|:|v-on:|@|\\.)\\[',
 			isDirective: true,
 			isDynamicValue: true,
 		},
-		// v-bind/: with .prop or .camel modifier → isDirective
+		/**
+		 * .propName shorthand (Vue 3.2+, equivalent to v-bind:propName.prop).
+		 *
+		 * The key that Vue keeps of a `v-bind` with a static argument is the argument as `transformBind` makes it:
+		 * camelized by `.camel`, then `.` in front of it by `.prop` and `^` by `.attr`. Vue keeps the first of two
+		 * with the same key and drops the others without an error (`dedupeProperties` merges only `class`, `style`
+		 * and the listeners), so a repeat is by that key: the order of the modifiers and a modifier that Vue
+		 * does not know make no difference, and `:id.prop` is not `:id`.
+		 *
+		 * @see https://github.com/vuejs/core/blob/main/packages/compiler-core/src/transforms/vBind.ts#transformBind
+		 * @see https://github.com/vuejs/core/blob/main/packages/compiler-core/src/transforms/transformElement.ts#dedupeProperties
+		 */
 		{
-			pattern: '^(?:v-bind:|:)([^.]+)\\..+$',
+			pattern: '^\\.([^.]+)((?:\\.[^.]*)*)$',
+			isDirective: true,
+			isDynamicValue: true,
+			duplicateKey: '.$1',
+			duplicateKeyModifiers: {
+				group: 2,
+				camelize: ['camel'],
+				prefixes: [{ modifier: 'attr', prefix: '^' }],
+			},
+		},
+		/**
+		 * `:class` and `:style` with modifiers that are neither `.prop` nor `.attr` make the key `class` or
+		 * `style`, which Vue merges with the others of the same key instead of dropping (`dedupeProperties`), as
+		 * it does `:class` and `class`. So they are not a repeat of one another, and only the same spelling is (the
+		 * parser reports it): the key is the name as it is written.
+		 *
+		 * @see https://github.com/vuejs/core/blob/main/packages/compiler-core/src/transforms/transformElement.ts#dedupeProperties
+		 */
+		{
+			pattern: '^(?:v-bind:|:)(?:class|style)(?:\\.(?!(?:prop|attr)(?:\\.|$))[^.]*)+$',
 			isDirective: true,
 			isDynamicValue: true,
 		},
-		// Dynamic attribute/event names with brackets (e.g., :[dynamicAttr], @[dynamicEvent])
+		// v-bind/: with a modifier (.prop, .camel, .attr) → isDirective. Keyed as the shorthand above.
 		{
-			pattern: '^(?:v-bind:|:|v-on:|@)\\[',
+			pattern: '^(?:v-bind:|:)([^.]+)((?:\\.[^.]*)+)$',
 			isDirective: true,
 			isDynamicValue: true,
+			duplicateKey: '$1',
+			duplicateKeyModifiers: {
+				group: 2,
+				camelize: ['camel'],
+				prefixes: [
+					{ modifier: 'attr', prefix: '^' },
+					{ modifier: 'prop', prefix: '.' },
+				],
+				// Without `.prop` and `.attr` it binds the attribute of that name (`.camel` or a modifier that
+				// Vue does not know), which is a repeat of `:name` as the element folds it
+				foldedWithoutPrefix: true,
+			},
 		},
 		// v-bind:attr or :attr (no modifier) → potentialName=attr, isDynamicValue
 		{
@@ -55,10 +105,24 @@ const spec: ExtendedSpec = {
 			// has no value, which `MLAttr` does not read as a literal.
 			expressionLanguage: 'javascript',
 			// Vue merges static `class`/`style` with their bound equivalents,
-			// so these attributes may legitimately appear alongside `:class`/`:style`
+			// so these attributes may legitimately appear alongside `:class`/`:style`. It is not that a
+			// bound one may be written twice: `:class` twice is a name written the same, which the
+			// parser reports, so it is keyed by the name as it is written (`MLAttr#duplicateKey`).
 			isDuplicatable: ['class', 'style'],
 		},
-		// v-on:event or @event (with optional modifiers)
+		/**
+		 * v-on:event or @event (with optional modifiers).
+		 *
+		 * It is keyed by the name as it is written, not by `potentialName` (`on$1` is the same for every
+		 * modifier): the parser reports only a name written the same, modifiers included, and the
+		 * listeners of the same key are merged into one array, which is why `@keydown.enter` and
+		 * `@keydown.space`, or `@click` and `v-on:click`, are not a repeat. Two listeners are two
+		 * attributes of the DOM only when the case of the name differs (`@KEYDOWN` is `on:KEYDOWN`).
+		 *
+		 * @see https://github.com/vuejs/core/blob/main/packages/compiler-core/src/parser.ts#tokenizer
+		 * @see https://github.com/vuejs/core/blob/main/packages/compiler-core/src/transforms/transformElement.ts#dedupeProperties
+		 * @see https://github.com/vuejs/core/blob/main/packages/compiler-core/src/transforms/vOn.ts#transformOn
+		 */
 		{
 			pattern: '^(?:v-on:|@)([^.]+)(?:\\..+)?$',
 			potentialName: 'on$1',
