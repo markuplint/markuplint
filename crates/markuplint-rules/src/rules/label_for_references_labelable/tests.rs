@@ -233,7 +233,7 @@ fn v6_label_for_references_labelable_002() {
 }
 
 /// `FOR` is the `for` attribute of an HTML element, as the DOM names it (TS
-/// `getAttributeNode()` asks `MLAttr#isNamedBy`, #4309).
+/// `getAttrNode()` asks `MLAttr#isNamedBy`, #4309).
 #[test]
 fn v6_label_for_references_labelable_003() {
     assert_eq!(

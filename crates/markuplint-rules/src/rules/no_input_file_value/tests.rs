@@ -88,7 +88,7 @@ fn v6_no_input_file_value_001() {
     );
 }
 
-/// TS `getAttributeNode()` matches the attribute name as written (`TYPE` and `VALUE` are not
+/// TS `getAttrNode()` matches the attribute name as written (`TYPE` and `VALUE` are not
 /// found), and the `type` value is compared without trimming.
 #[test]
 fn v6_no_input_file_value_002() {

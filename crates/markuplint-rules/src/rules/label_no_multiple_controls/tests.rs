@@ -217,7 +217,7 @@ fn v6_label_no_multiple_controls_005() {
 }
 
 /// `FOR` is the `for` attribute of an HTML element, as the DOM names it (TS
-/// `getAttributeNode()` asks `MLAttr#isNamedBy`, #4309), so the label references the external
+/// `getAttrNode()` asks `MLAttr#isNamedBy`, #4309), so the label references the external
 /// control.
 #[test]
 fn v6_label_no_multiple_controls_006() {

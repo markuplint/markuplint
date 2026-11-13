@@ -1,5 +1,5 @@
 //! The trees of a document: the Rust counterpart of `tree-scope.ts` of `ml-core` and of the
-//! tree-aware `getRootNode()`, `getElementById()`, `querySelectorAll()` / `deepQuerySelectorAll()`
+//! tree-aware `getRootNode()`, `findElementById()`, `querySelectorAll()` / `deepQuerySelectorAll()`
 //! and `treeParentElement` of its DOM, which the TS rules read through `getElementByIdInTree`,
 //! `querySelectorAllInTree` and `getDOMValue` of `packages/@markuplint/rules/src/helpers.ts`.
 //!
@@ -52,7 +52,7 @@ pub struct Trees<'a> {
     roots: HashMap<NodeId, TreeRoot>,
     /// The elements of each tree in the order of the markup (TS `querySelectorAll` of the root).
     elements: HashMap<TreeRoot, Vec<NodeId>>,
-    /// The first element of each tree for each id, as the DOM has the id (TS `getElementById`).
+    /// The first element of each tree for each id, as the DOM has the id (TS `findElementById`).
     ids: HashMap<TreeRoot, HashMap<String, NodeId>>,
 }
 
@@ -127,7 +127,7 @@ impl<'a> Trees<'a> {
         self.elements.get(&root).map_or(&[], Vec::as_slice)
     }
 
-    /// TS `getElementById` of the root: the first element of the tree whose id, as the DOM has it,
+    /// TS `findElementById` of the root: the first element of the tree whose id, as the DOM has it,
     /// is `id`.
     #[must_use]
     pub fn element_by_id(&self, root: TreeRoot, id: &str) -> Option<NodeId> {
@@ -242,7 +242,7 @@ pub fn root_of(arena: &DomArena, spec: &MLMLSpec, node_id: NodeId) -> TreeRoot {
     TreeRoot::Document
 }
 
-/// TS `getElementById` of the tree `root`, for a caller without [`Trees`]: the first element of the
+/// TS `findElementById` of the tree `root`, for a caller without [`Trees`]: the first element of the
 /// tree whose id, as the DOM has it, is `id`. `None` for [`TreeRoot::NoTree`].
 ///
 /// The accessible name of every element may resolve `aria-labelledby` through here, so a scan of

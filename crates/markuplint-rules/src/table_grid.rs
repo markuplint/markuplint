@@ -264,7 +264,7 @@ pub(crate) fn element(arena: &DomArena, id: NodeId) -> Option<&ElementData> {
     arena.get(id).and_then(DomNode::as_element)
 }
 
-/// The HTML attribute `name` of `el` (TS `getAttributeNode`).
+/// The HTML attribute `name` of `el` (TS `getAttrNode`).
 pub(crate) fn attr_node<'a>(el: &'a ElementData, name: &str) -> Option<&'a MLASTHTMLAttr> {
     el.attributes.iter().find_map(|attr| match attr {
         MLASTAttr::HTMLAttr(html_attr) if html_attr.node_name.eq_ignore_ascii_case(name) => Some(&**html_attr),

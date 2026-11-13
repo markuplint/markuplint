@@ -39,7 +39,7 @@ pub fn pattern_match(needle: &str, pattern: &str) -> bool {
     needle == pattern
 }
 
-/// TS `el.pretenderContext?.type === 'pretender' && !el.hasAttribute('as')`: an element
+/// TS `el.pretenderContext?.type === 'pretender' && !el.hasAttr('as')`: an element
 /// a pretender makes pretend, without the `as` attribute that would say its type at the
 /// usage site. The reference rules skip such an element, whose attributes and
 /// descendants are those of the component's usage, not of what it renders.

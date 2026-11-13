@@ -85,7 +85,7 @@ impl DomNode {
         }
     }
 
-    /// Mirrors TS `getPureChildNodes()` filtering: `EndTag`, `Invalid` (always bogus),
+    /// Mirrors TS `pureChildren()` filtering: `EndTag`, `Invalid` (always bogus),
     /// and nodes with `is_bogus = true` (`Text`, `Comment`, `PSBlock`) are excluded
     /// from pure child iteration.
     #[must_use]

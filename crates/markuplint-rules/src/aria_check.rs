@@ -239,7 +239,7 @@ fn namespace_uri(namespace: &NamespaceURI) -> &'static str {
 
 /// The HTML attributes of `el` that are output (spread attributes carry no name to check). An
 /// attribute that the framework does not output (`aria-label={null}`, TS `MLAttr#isAbsent`) is not
-/// an attribute of the element for the ARIA checks, as TS `getAriaAttrs` and `getAttributeNode`
+/// an attribute of the element for the ARIA checks, as TS `getAriaAttrs` and `getAttrNode`
 /// skip it.
 pub(crate) fn html_attrs(el: &ElementData) -> impl Iterator<Item = &MLASTHTMLAttr> {
     el.attributes.iter().filter_map(|attr| match attr {
@@ -270,7 +270,7 @@ pub(crate) fn is_aria_prop_attr(el: &ElementData, attr: &MLASTHTMLAttr) -> bool 
     crate::attr_name_key::namespace_key_of(el, attr).starts_with("aria-")
 }
 
-/// TS `el.getAttributeNode('role')`.
+/// TS `el.getAttrNode('role')`.
 pub(crate) fn role_attr(el: &ElementData) -> Option<&MLASTHTMLAttr> {
     find_attr(el, "role")
 }
@@ -849,7 +849,7 @@ impl<'a> ElementContext<'a> {
     }
 }
 
-/// TS `el.getAttributeNode(name)` for an HTML attribute: the first attribute that `name` names as
+/// TS `el.getAttrNode(name)` for an HTML attribute: the first attribute that `name` names as
 /// the DOM names it (`MLAttr#isNamedBy`).
 pub(crate) fn find_attr<'e>(el: &'e ElementData, name: &str) -> Option<&'e MLASTHTMLAttr> {
     html_attrs(el).find(|attr| markuplint_dom::helpers::is_named_by(el, attr, name))

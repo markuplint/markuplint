@@ -691,7 +691,7 @@ fn match_attribute(attributes: &[MLASTAttr], sel: &AttributeSelector) -> bool {
 
 /// The value an attribute selector compares: the rendered value (`attr_value`), and no value for an
 /// attribute that the framework does not output, which a selector does not match (TS
-/// `MLElement#getAttribute`).
+/// `MLElement#getAttrValue`).
 fn get_attr<'a>(attributes: &'a [MLASTAttr], name: &str) -> Option<&'a str> {
     for attr in attributes {
         if let MLASTAttr::HTMLAttr(html_attr) = attr

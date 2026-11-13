@@ -111,8 +111,8 @@ impl Rule for NoBrokenFragmentLink {
     }
 }
 
-/// TS `el.getAttributeNode(name)`: the first attribute of that name. Unlike
-/// `getAttribute`, it compares the name as written, case-sensitively, so neither
+/// TS `el.getAttrNode(name)`: the first attribute of that name. Unlike
+/// `getAttrValue`, it compares the name as written, case-sensitively, so neither
 /// `<div ID="x">` nor `<a HREF="#x">` takes part.
 fn attr_node<'a>(el: &'a ElementData, name: &str) -> Option<&'a MLASTHTMLAttr> {
     html_attrs(el).find(|attr| attr_name(attr) == name)

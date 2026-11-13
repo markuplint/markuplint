@@ -28,7 +28,7 @@ impl DomArena {
         self.source()?.get(start..close_tag.offset)
     }
 
-    /// Mirrors TS `getPureChildNodes()` which filters out `type === 'endtag'`
+    /// Mirrors TS `pureChildren()` which filters out `type === 'endtag'`
     /// and `type === 'invalid'` nodes. In Rust, this also filters Text/Comment/PSBlock
     /// nodes with `is_bogus = true`.
     #[must_use]

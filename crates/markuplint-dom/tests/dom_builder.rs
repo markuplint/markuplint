@@ -514,7 +514,7 @@ fn child_nodes_read_through_each_blocks() {
     assert_eq!(names(arena.child_nodes(main_id)), ["li"]);
 }
 
-/// TS `getAttribute()` compares `attr.name`, the name the parser resolved, and answers with
+/// TS `getAttrValue()` compares `attr.name`, the name the parser resolved, and answers with
 /// `attr.value`, the value it resolved: JSX's `htmlFor` is `for`.
 #[test]
 fn attribute_lookup_goes_by_the_resolved_name_and_value() {

@@ -123,7 +123,7 @@ fn v6_form_attr_references_form_003() {
 }
 
 /// `FORM` is the `form` attribute of an HTML element, as the DOM names it (TS
-/// `getAttributeNode()` asks `MLAttr#isNamedBy`, #4309).
+/// `getAttrNode()` asks `MLAttr#isNamedBy`, #4309).
 #[test]
 fn v6_form_attr_references_form_004() {
     assert_eq!(

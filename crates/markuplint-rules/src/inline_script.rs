@@ -22,7 +22,7 @@ pub enum ScriptJson {
 /// The body of `el` when it is a `<script>` whose `type` is `script_type` (ASCII
 /// lower-case), `None` when the element is not one or its body cannot be read.
 ///
-/// Mirrors the TS rules: the type is `getAttribute('type')?.toLowerCase()`; a pretender
+/// Mirrors the TS rules: the type is `getAttrValue('type')?.toLowerCase()`; a pretender
 /// is skipped unless an `as` attribute says what it is; the body is the source between
 /// the start tag and the close tag (TS `document.raw.slice(el.endOffset,
 /// el.closeTag.startOffset)` — markuplint's AST keeps no text child for a script), so an

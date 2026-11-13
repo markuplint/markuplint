@@ -750,7 +750,7 @@ fn has_child_element(arena: &DomArena, node_id: NodeId, child_tag: &str) -> bool
     })
 }
 
-/// TS `props.some(p => p.isGlobal && el.hasAttribute(p.name))`.
+/// TS `props.some(p => p.isGlobal && el.hasAttr(p.name))`.
 fn has_global_aria_property(spec: &MLMLSpec, arena: &DomArena, node_id: NodeId, version: ARIAVersion) -> bool {
     aria::get_aria_spec(spec, version)
         .props

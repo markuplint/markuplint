@@ -340,7 +340,7 @@ fn v6_no_unpaired_srcset_sizes_003() {
     );
 }
 
-/// Rust-only: TS `getAttributeNode` matches the attribute name as written, so an upper-case
+/// Rust-only: TS `getAttrNode` matches the attribute name as written, so an upper-case
 /// `SRCSET` is not found and nothing is reported. Expected value (`[]`) is the TS output.
 #[test]
 fn v6_no_unpaired_srcset_sizes_005() {

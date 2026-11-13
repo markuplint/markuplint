@@ -140,7 +140,7 @@ fn v6_progress_value_bounds_001() {
     );
 }
 
-/// TS `getAttributeNode()` matches the attribute name as written: an upper-case `VALUE` is not
+/// TS `getAttrNode()` matches the attribute name as written: an upper-case `VALUE` is not
 /// found, and an upper-case `MAX` counts as absent.
 #[test]
 fn v6_progress_value_bounds_002() {

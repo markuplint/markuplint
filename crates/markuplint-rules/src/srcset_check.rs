@@ -66,7 +66,7 @@ pub(crate) fn has_sizes_auto(value: &str) -> bool {
     value == "auto" || value.starts_with("auto,")
 }
 
-/// The HTML attribute `name` of `el` (TS `getAttributeNode`), named as the DOM names it, so
+/// The HTML attribute `name` of `el` (TS `getAttrNode`), named as the DOM names it, so
 /// `SRCSET` on an `<img>` is its `srcset`.
 pub(crate) fn attr_node<'a>(el: &'a ElementData, name: &str) -> Option<&'a MLASTHTMLAttr> {
     markuplint_dom::helpers::get_html_attr_from_el(el, name)
