@@ -71,11 +71,6 @@ export const xrefMappings: readonly XrefMapping[] = [
 	// === 2 次群: bench では裏取れない Issue（ステルブロック） ===
 	{
 		kind: 'secondary',
-		issue: 3675,
-		reason: 'Internal merge-order blocker; not a benchmark claim. Resolves once dev merges into the branch and the SRIHash type comes along.',
-	},
-	{
-		kind: 'secondary',
 		issue: 509,
 		reason: 'Parser-level concern (ignore preprocessor blocks inside attribute tokens). The nu-validator suite contains no preprocessor fixtures.',
 	},
