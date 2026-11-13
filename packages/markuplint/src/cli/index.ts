@@ -36,8 +36,8 @@
  * standard input is read, so an empty input gets that error, not the help.
  * `--fix-dry-run` is not among them: it writes nothing and only prints the diff.
  *
- * The flags that end the run early (`--help`, `--version`, `--init`,
- * `--create-rule`) are evaluated before the operands, so `-` next to them is
+ * The flags that end the run early (`--help`, `--version`, `--init`)
+ * are evaluated before the operands, so `-` next to them is
  * ignored. A failure that is not fatal (`isFatalError()`) is reported on stderr
  * with exit code 1; a fatal one is rethrown, and the top-level `await` ends the
  * process with exit code 1 and the stack.

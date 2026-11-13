@@ -11,7 +11,6 @@ const nativeAddonIsBuilt = await import('@markuplint/core').then(
 );
 
 const entryFilePath = path.resolve(import.meta.dirname, '../../bin/markuplint.mjs');
-const plugin001 = path.resolve(import.meta.dirname, '../../test/plugin001.js');
 
 const escape = (value: string) => value.replaceAll('\\', '\\\\'); // For Windows
 
@@ -209,17 +208,15 @@ describe.skipIf(!nativeAddonIsBuilt)('--search on the Rust engine', { timeout: 6
 		},
 	);
 
-	test('[search-rust-008] does not fall back to the TypeScript engine for the plugin of the config', async () => {
+	test('[search-rust-008] reports the plugin that the config still names as removed, as the TypeScript engine does', async () => {
 		const target = await write('target.html', '<p></p>');
-		const config = await write(
-			'.markuplintrc',
-			JSON.stringify({ plugins: [plugin001], rules: { 'foo/bar': true } }),
-		);
+		const config = await write('.markuplintrc', JSON.stringify({ plugins: ['a-plugin'] }));
 
 		const { expected, actual } = await both(['--config', escape(config), '--search', 'p', escape(target)]);
 
 		expect(places(expected.stdout)).toStrictEqual(['1:1']);
-		expect(expected.stderr).toBe('');
+		expect(expected.stderr).toContain('"plugins" is not supported');
+		expect(expected.stderr).toContain('/docs/migration/v5-to-v6/plugins');
 		expect(actual).toStrictEqual(expected);
 	});
 

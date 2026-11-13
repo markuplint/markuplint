@@ -69,10 +69,19 @@ describe('main', () => {
 		await expect(run('--init')).resolves.toBe(0);
 	});
 
-	test('--create-rule exits with 1 and points to the other command on stderr', async () => {
-		await expect(run('--create-rule')).resolves.toBe(1);
-		expect(stderr.join('')).toContain('npx @markuplint/create-rule');
-	});
+	test.each([
+		['--no-import-preset-rules', '--[no-]import-preset-rules'],
+		['--import-preset-rules', '--[no-]import-preset-rules'],
+		['--create-rule', '--create-rule'],
+	])(
+		'the flag %s, which is not a flag of the CLI, is rejected with the way to migrate, and nothing is linted',
+		async (flag, named) => {
+			await expect(run(flag, 'a.html')).resolves.toBe(1);
+			expect(stderr.join('')).toContain(named);
+			expect(stderr.join('')).toContain('https://markuplint.dev/docs/migration/v5-to-v6/plugins#cli');
+			expect(commandMock).not.toHaveBeenCalled();
+		},
+	);
 
 	test('the `-` operand with --fix is rejected before the standard input is read', async () => {
 		await expect(run('-', '--fix')).resolves.toBe(1);

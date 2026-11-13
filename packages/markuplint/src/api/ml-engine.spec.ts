@@ -242,38 +242,63 @@ describe('Watcher', () => {
 	});
 });
 
-describe('Resolving the plugin', () => {
-	// TODO: Importing the plugin as an ES module.
-	// Node 22+ has stable ESM support via `import()`, but plugin loading
-	// currently uses CommonJS `require()`. Migration requires changes to the plugin loader.
-	it('config', async () => {
+describe('A removed plugin mechanism', () => {
+	it.each(['rules', 'importPresetRules'])('rejects the removed option `%s`', async option => {
+		const file = await MLEngine.toMLFile('test/fixture/001.html');
+		expect(() => new MLEngine(file!, { [option]: option === 'rules' ? [] : false } as never)).toThrow(
+			new TypeError(
+				`The option "${option}" was removed in v6 (https://markuplint.dev/docs/migration/v5-to-v6/plugins#api)`,
+			),
+		);
+	});
+
+	it('is reported as a config-error by `plugins` in the config', async () => {
 		const file = await MLEngine.toMLFile('test/fixture/001.html');
 		const engine = new MLEngine(file!, {
-			// debug: true,
-			config: {
-				plugins: [
-					{
-						name: path.resolve(import.meta.dirname, '..', '..', 'test', 'plugin001.js'),
-						settings: {
-							foo: 'IT IS SUCCESS',
-						},
-					},
-				],
-				rules: {
-					'foo/bar': true,
-				},
-			},
+			// @ts-expect-error `plugins` is not a property of the configuration
+			config: { plugins: ['a-plugin'], rules: { 'no-duplicate-id': true } },
+			noSearchConfig: true,
 		});
 		const result = await engine.exec();
 		expect(result?.violations).toStrictEqual([
-			{
-				ruleId: 'foo/bar',
-				severity: 'error',
-				line: 0,
-				col: 0,
-				message: "It's test: IT IS SUCCESS",
-				raw: '<!-- code -->',
-			},
+			expect.objectContaining({
+				ruleId: 'config-error',
+				severity: 'warning',
+				message: expect.stringContaining('"plugins" is not supported: the plugin mechanism was removed in v6'),
+			}),
+		]);
+	});
+
+	it('is reported as a config-error by `plugins` in the value of an override', async () => {
+		const file = await MLEngine.toMLFile('test/fixture/001.html');
+		const engine = new MLEngine(file!, {
+			// @ts-expect-error `plugins` is not a property of the configuration
+			config: { overrides: { '*.html': { plugins: ['a-plugin'] } } },
+			noSearchConfig: true,
+		});
+		const result = await engine.exec();
+		expect(result?.violations).toStrictEqual([
+			expect.objectContaining({
+				ruleId: 'config-error',
+				severity: 'warning',
+				message: expect.stringContaining('"plugins" is not supported: the plugin mechanism was removed in v6'),
+			}),
+		]);
+	});
+
+	it('is reported as a config-error by `plugin:<name>/<config>` in `extends`', async () => {
+		const file = await MLEngine.toMLFile('test/fixture/001.html');
+		const engine = new MLEngine(file!, {
+			config: { extends: ['plugin:a-plugin/recommended'], rules: { 'no-duplicate-id': true } },
+			noSearchConfig: true,
+		});
+		const result = await engine.exec();
+		expect(result?.violations).toStrictEqual([
+			expect.objectContaining({
+				ruleId: 'config-error',
+				severity: 'warning',
+				message: expect.stringContaining('"plugin:a-plugin/recommended" cannot be extended'),
+			}),
 		]);
 	});
 });
@@ -1118,9 +1143,8 @@ describe('configProvider option (#3997)', () => {
 		const configSetB = await new MLEngine(fileB!, { config, configProvider }).resolveConfig(true);
 
 		// Same inline `config` object, same shared provider — the base config
-		// resolution (files/plugins) must be reused, not redone per engine.
+		// resolution (files) must be reused, not redone per engine.
 		expect(configSetB.files).toBe(configSetA.files);
-		expect(configSetB.plugins).toBe(configSetA.plugins);
 	});
 
 	it('does not share config resolution across engines without an explicit configProvider', async () => {

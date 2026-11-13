@@ -15,7 +15,6 @@ describe('a leading BOM', () => {
 		const { violations, fixedCode } = await mlTest(
 			'\uFEFF<p class=a>x</p>',
 			{ rules: { 'attr-value-quotes': true } },
-			undefined,
 			'en',
 			true,
 		);
