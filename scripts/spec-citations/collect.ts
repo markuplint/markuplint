@@ -33,6 +33,7 @@ const LINE_ANCHOR = /^L\d+(?:C\d+)?(?:-L\d+(?:C\d+)?)?$/;
  */
 const SOURCE_REPOS: ReadonlySet<string> = new Set([
 	'alpinejs/alpine',
+	'bigskysoftware/htmx',
 	'facebook/react',
 	'pugjs/pug',
 	'sveltejs/svelte',
