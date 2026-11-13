@@ -1,6 +1,6 @@
 {
 	"name": "@markuplint/ml-spec",
-	"version": "5.6.0",
+	"version": "5.6.1",
 	"description": "Types and schema that specs of the Markup languages for markuplint",
 	"repository": {
 		"type": "git",
@@ -40,7 +40,7 @@
 		"type-fest": "^5.10.0"
 	},
 	"devDependencies": {
-		"@markuplint/test-tools": "5.6.0",
+		"@markuplint/test-tools": "5.6.1",
 		"json-schema-to-typescript": "16.0.0"
 	}
 }

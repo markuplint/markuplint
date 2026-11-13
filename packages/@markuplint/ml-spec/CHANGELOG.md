@@ -3,6 +3,13 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [5.6.1](https://github.com/markuplint/markuplint/compare/v5.6.0...v5.6.1) (2026-11-13)
+
+### Bug Fixes
+
+* **ml-spec:** let a directive pattern declare the key of its repeat ([df95b4c](https://github.com/markuplint/markuplint/commit/df95b4cd56753fa4c665991f6bc091e4c0620225))
+
+
 # [5.6.0](https://github.com/markuplint/markuplint/compare/v5.5.0...v5.6.0) (2026-11-12)
 
 ### Bug Fixes
