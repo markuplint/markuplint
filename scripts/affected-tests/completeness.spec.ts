@@ -121,6 +121,8 @@ describe('a spec that names a Markdown file', () => {
 		'scripts/affected-tests/',
 		// Reads the Branch Topology table of the root `CLAUDE.md`: `ROOT_INPUTS` in `classify.ts`.
 		'scripts/release-lines/',
+		// Names Markdown files only as the content of a fake repository.
+		'scripts/release-reminder/',
 	];
 	const COMMENT_LINE = /^\s*(?:\*|\/\/|\/\*)/;
 	const MARKDOWN_PATH_LITERAL = /(['"`])[^'"`\n]*\.md\1/;

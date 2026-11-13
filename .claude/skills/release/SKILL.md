@@ -29,7 +29,7 @@ disable-model-invocation: true
 | **Maintenance** (`4.x.y`, a patch of the `lts` line) | `v4` itself | Run `yarn release` on `v4`; `.husky/pre-commit` guards only the `stable` and `experimental` branches (`dev`, `v6`), and `publish.yml` publishes it under the `v4` dist-tag. Nothing is merged back: `v4` is never merged into another line |
 | Development | `dev` (v5, `stable`), `v6` (next major, `experimental`) | — never released from directly |
 
-Which branch carries which major in which role is defined in `scripts/release-lines/lines.ts`.
+Which branch carries which major in which role is defined in `scripts/release-lines/lines.ts`. `.github/workflows/release-reminder.yml` opens an Issue for an `lts` or `stable` line once a change that reaches npm users has waited three days unreleased on its branch; the Issue lists the changed packages and the vulnerability fixes, and closes by itself after the release.
 
 Verify the claim rather than trusting this table if anything looks off:
 

@@ -1,0 +1,68 @@
+name: Release reminder
+
+# Opens an Issue that asks for a release when a line's branch has held a change that reaches npm
+# users for more than three days without a release, and closes it once a release contains the
+# change (`scripts/release-reminder/report.ts`). The lines it checks are the `lts` and `stable`
+# lines of `scripts/release-lines/lines.ts`. A vulnerability fix merged into the `lts` line is the
+# case it exists for: that line pins exact versions, so a fix reaches its users only through a
+# release.
+#
+# A pull request that touches the script, and a manual run with `dry-run`, only print the report to
+# the job summary.
+
+on:
+    schedule:
+        - cron: '0 0 * * *' # Daily at 09:00 JST
+    workflow_dispatch:
+        inputs:
+            dry-run:
+                description: Print the report without writing to Issues
+                type: boolean
+                default: true
+    pull_request:
+        branches:
+            - dev
+        paths:
+            - 'scripts/release-reminder/**'
+            - 'scripts/release-lines/**'
+            - '.github/workflows/release-reminder.yml'
+
+permissions:
+    contents: read
+
+concurrency:
+    group: release-reminder-${{ github.event_name == 'pull_request' && github.ref || 'scheduled' }}
+    cancel-in-progress: false
+
+env:
+    NODE_BUILD_VERSION: 26
+
+jobs:
+    remind:
+        runs-on: ubuntu-latest
+        timeout-minutes: 15
+        permissions:
+            contents: read
+            issues: write
+        steps:
+            # Every branch and tag: the report compares each line's branch with its newest release tag.
+            - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
+              with:
+                  fetch-depth: '0'
+
+            - name: Use Node.js ${{ env.NODE_BUILD_VERSION }}
+              uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7
+              with:
+                  node-version: ${{ env.NODE_BUILD_VERSION }}
+
+            # The script imports only Node.js built-ins and the line definition, so nothing is installed.
+            - name: Report, and update the Issues
+              env:
+                  GH_TOKEN: ${{ github.token }}
+                  WRITE: ${{ github.event_name == 'schedule' || (github.event_name == 'workflow_dispatch' && !inputs.dry-run) }}
+              run: |
+                  if [ "$WRITE" = true ]; then
+                      node --experimental-strip-types scripts/release-reminder/index.ts --write
+                  else
+                      node --experimental-strip-types scripts/release-reminder/index.ts
+                  fi
