@@ -9,7 +9,7 @@
 - `markuplint.defaultConfig`: It's the configuration specified if configuration files do not exist
 - `markuplint.targetLanguages`: Specify the target languages
 - `markuplint.workingDirectories`: Specify working directories for config resolution (see [Working Directories](#working-directories))
-- `markuplint.experimentalRustCore`: **Experimental.** Lint with the Rust engine of markuplint (v6). It needs the native addon of markuplint, and falls back to the TypeScript engine when the addon is missing or for plugin rules, and says so in the output channel; a markuplint older than v6 lints as before. Restart the language server after changing it
+- `markuplint.experimentalRustCore`: **Experimental.** Lint with the Rust engine of markuplint (v6). It needs the native addon of markuplint, and falls back to the TypeScript engine when the addon is missing, and says so in the output channel; a markuplint older than v6 lints as before. Restart the language server after changing it
 - `markuplint.hover.accessibility.enable`: Enable the feature that **popup Accessibility Object**
 - `markuplint.hover.accessibility.ariaVersion`: Set `1.1`, `1.2`, or `1.3` WAI-ARIA version. If not set, uses markuplint's default version.
 
@@ -45,7 +45,7 @@ To automatically fix all auto-fixable Markuplint problems when you save a file, 
 
 In monorepo setups where each sub-package has its own `.markuplintrc`, you may need to configure `markuplint.workingDirectories` so that markuplint resolves configuration files from the correct directory.
 
-The working directory is also where the extension looks for the `markuplint` package itself, so parsers, specs, and plugins installed alongside it (for example `@markuplint/jsx-parser`) are resolved from there. If no local installation is found upward from the working directory, the version bundled with the extension is used — which cannot load parsers installed in your workspace, and does not include `@markuplint/pretenders` or the parsers of Vue, Svelte, Astro, JSX and MDX. For those languages, and for `pretenders.scan` and `pretenders.auto`, install `markuplint` with what they need in the working directory; the extension shows what is missing. After installing `markuplint` in a working directory, run **Markuplint: Restart Language Server** — the resolved module is cached until the server restarts.
+The working directory is also where the extension looks for the `markuplint` package itself, so parsers and specs installed alongside it (and plugins, for a markuplint older than v6) (for example `@markuplint/jsx-parser`) are resolved from there. If no local installation is found upward from the working directory, the version bundled with the extension is used — which cannot load parsers installed in your workspace, and does not include `@markuplint/pretenders` or the parsers of Vue, Svelte, Astro, JSX and MDX. For those languages, and for `pretenders.scan` and `pretenders.auto`, install `markuplint` with what they need in the working directory; the extension shows what is missing. After installing `markuplint` in a working directory, run **Markuplint: Restart Language Server** — the resolved module is cached until the server restarts.
 
 ### Examples
 
