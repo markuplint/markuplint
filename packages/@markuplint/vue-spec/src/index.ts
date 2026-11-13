@@ -155,6 +155,9 @@ const spec: ExtendedSpec = {
 	 * `parent.insertBefore`), so the children are in the tree of the document, not in `content`.
 	 * Known limitations: Vue puts the children in `content` when it renders static markup as a
 	 * string, and when it hydrates server output it replaces the element with its content.
+	 *
+	 * `@markuplint/vue-parser` declares the same value (`MLParser#templateContent`), so that a file
+	 * is read right without this spec in the configuration. Change both together.
 	 */
 	templateContent: 'in-place',
 	/**

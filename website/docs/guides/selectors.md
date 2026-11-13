@@ -217,6 +217,8 @@ Matches elements that have an ancestor matching the given selectors.
 | `has name`    | `:aria(has name)`    | Apply elements have accessible name        |
 | `has no name` | `:aria(has no name)` | Apply elements have **no** accessible name |
 
+An element whose name may be in a branch of a conditional block (`{#if}` of Svelte, `<template x-if>` of Alpine.js, and the element that has `v-if`, `v-else-if`, `v-else` or `v-for` of Vue) has no name as written but may have one, so `has name` applies to it and `has no name` does not.
+
 ### `:role` {#ex-selector-role}
 
 **ARIA Role pseudo-class**

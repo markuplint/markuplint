@@ -16,6 +16,22 @@ describe('Extended Selector', () => {
 		expect(c(':aria(has name|1.2)', '<button>foo</button>')).toBeTruthy();
 	});
 
+	test(':aria with an element whose name may be in a branch of a conditional block', () => {
+		const may = Object.assign(createJSDOMElement('<div role="button"></div>'), {
+			getAccessibleName: () => '',
+			mayHaveAccessibleName: () => true,
+		});
+		expect(createSelector(':aria(has name)', specs).match(may)).toBeTruthy();
+		expect(createSelector(':aria(has no name)', specs).match(may)).toBeFalsy();
+
+		const mayNot = Object.assign(createJSDOMElement('<div role="button"></div>'), {
+			getAccessibleName: () => '',
+			mayHaveAccessibleName: () => false,
+		});
+		expect(createSelector(':aria(has name)', specs).match(mayNot)).toBeFalsy();
+		expect(createSelector(':aria(has no name)', specs).match(mayNot)).toBeTruthy();
+	});
+
 	test(':role', () => {
 		expect(c(':role(button)', '<button>foo</button>')).toBeTruthy();
 		expect(c(':role(button|1.1)', '<button>foo</button>')).toBeTruthy();

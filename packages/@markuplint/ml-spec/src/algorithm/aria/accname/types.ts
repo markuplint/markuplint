@@ -88,6 +88,14 @@ export interface AccnameResolver {
 	 * an embedded control. `hasSvgAccessibleNameSource` is the exception.
 	 */
 	getChildNodes?(el: AccnameElement): Iterable<AccnameNode>;
+	/**
+	 * Whether `absent` may not be rendered while `rendered` is, as when the children `getChildNodes`
+	 * returns are the branches of a conditional block, of which one is rendered. A lookup that takes the
+	 * first child of a name (`legend`, `caption`, the SVG `title`) then also takes a later child (`rendered`)
+	 * that every earlier one (`absent`) may be absent with, as that child may be the first that is rendered.
+	 * Absent, the first child is the only one.
+	 */
+	mayBeAbsentWith?(absent: AccnameElement, rendered: AccnameElement): boolean;
 }
 
 /**

@@ -102,12 +102,14 @@ function tokenDebug<
 		name?: string;
 		potentialName?: string;
 		type?: string;
+		blockBehavior?: { readonly type: string } | null;
 		raw: string;
 	},
 >(n: N, type = '') {
+	// The behavior is printed after the name as `@markuplint/parser-utils` prints it
 	return `[${n.startLine}:${n.startCol}]>[${n.endLine}:${n.endCol}](${n.startOffset},${n.endOffset})${
 		n.nodeName ?? n.potentialName ?? n.name ?? n.type ?? type
-	}: ${visibleWhiteSpace(n.raw)}`;
+	}${n.blockBehavior?.type ? ` (${n.blockBehavior.type})` : ''}: ${visibleWhiteSpace(n.raw)}`;
 }
 
 function visibleWhiteSpace(chars: string) {

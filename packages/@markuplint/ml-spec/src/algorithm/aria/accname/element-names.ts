@@ -8,7 +8,13 @@ import {
 	DEFAULT_SUBMIT_LABEL,
 	TEXT_INPUT_TYPES,
 } from '../../../const/index.js';
-import { findChildByLocalName, getInputType, getTextContent, isSvgElement, resolveNameFromContent } from './helpers.js';
+import {
+	findChildrenByLocalName,
+	getInputType,
+	getTextContent,
+	isSvgElement,
+	resolveNameFromContent,
+} from './helpers.js';
 import { resolveLabelText } from './label-steps.js';
 import { makeResult } from './result.js';
 
@@ -264,8 +270,7 @@ function handleFieldset(
 	computeFn: AccnameComputeFn,
 	inLabelledbyTraversal: boolean,
 ): AccnameResult | null {
-	const legend = findChildByLocalName(el, 'legend', resolver);
-	if (legend) {
+	for (const legend of findChildrenByLocalName(el, 'legend', resolver)) {
 		const content = resolveNameFromContent(legend, resolver, visited, computeFn, inLabelledbyTraversal);
 		if (content.trim()) {
 			return makeResult(content, 'legend');
@@ -292,8 +297,7 @@ function handleTable(
 	computeFn: AccnameComputeFn,
 	inLabelledbyTraversal: boolean,
 ): AccnameResult | null {
-	const caption = findChildByLocalName(el, 'caption', resolver);
-	if (caption) {
+	for (const caption of findChildrenByLocalName(el, 'caption', resolver)) {
 		const content = resolveNameFromContent(caption, resolver, visited, computeFn, inLabelledbyTraversal);
 		if (content.trim()) {
 			return makeResult(content, 'caption');
@@ -430,10 +434,11 @@ function handleTitleOnly(el: AccnameElement): AccnameResult | null {
  * @see https://www.w3.org/TR/svg-aam/#mapping_additional_nd — SVG-AAM §7.1
  */
 function handleSvgElement(el: AccnameElement, resolver: AccnameResolver): AccnameResult | null {
-	const titleEl = findChildByLocalName(el, 'title', resolver);
-	const title = titleEl ? getTextContent(titleEl, resolver) : '';
-	if (title.trim()) {
-		return makeResult(title, 'svg-title');
+	for (const titleEl of findChildrenByLocalName(el, 'title', resolver)) {
+		const title = getTextContent(titleEl, resolver);
+		if (title.trim()) {
+			return makeResult(title, 'svg-title');
+		}
 	}
 
 	return null;

@@ -145,7 +145,7 @@ export type Options = {
 	/**
 	 * @experimental
 	 * When true, evaluates conditional child node branches (e.g., from
-	 * template directives like `v-if`) to validate each possible branch
+	 * template blocks like `{#if}`) to validate each possible branch
 	 * against the content model.
 	 */
 	readonly evaluateConditionalChildNodes: boolean;

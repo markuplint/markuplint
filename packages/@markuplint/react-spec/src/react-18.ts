@@ -46,6 +46,9 @@ const spec: ExtendedSpec = {
 	 * treats a `template` apart), so the children are in the tree of the document, not in `content`.
 	 * Known limitation: the server output of React has them in `content`, and React reports a
 	 * hydration mismatch for the pair.
+	 *
+	 * `@markuplint/jsx-parser` does not declare it (`MLParser#templateContent`): SolidJS and Qwik compile a
+	 * `template` into an HTML string, so only this spec says it for React.
 	 */
 	templateContent: 'in-place',
 	/**

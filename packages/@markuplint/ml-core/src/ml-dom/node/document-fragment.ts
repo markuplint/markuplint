@@ -43,7 +43,10 @@ export class MLDocumentFragment<T extends RuleConfigValue, O extends PlainData =
 	 * @see https://dom.spec.whatwg.org/#dom-node-textcontent
 	 */
 	get textContent(): string {
-		return [...this.childNodes].map(child => child.textContent ?? '').join('');
+		return [...this.childNodes]
+			.filter(child => !child.is(child.COMMENT_NODE))
+			.map(child => child.textContent ?? '')
+			.join('');
 	}
 
 	/**

@@ -25,6 +25,7 @@ import { decodeEntities } from '@markuplint/shared';
 
 import { log } from '../../debug.js';
 
+import { expandConditionalBlocks, mayBeAbsentWith } from './conditional-block.js';
 import { getDOMValue } from './tree-scope.js';
 
 const accnameLog = log.extend('accname');
@@ -33,6 +34,37 @@ export function getAccname(
 	// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
 	el: MLElement<any, any>,
 	version: ARIAVersion,
+): string {
+	return computeNameWithoutThrowing(el, version, false);
+}
+
+/**
+ * The accessible name of the element with the branches of the conditional blocks read as one
+ * (see {@link getRenderedChildNodes}, `everyBranch`). Errors are handled as in {@link getAccname}.
+ *
+ * The text is the concatenation of the branches, of which only one is rendered, so it is not a
+ * name that the element has. Only whether it is empty means something: it is not empty when some
+ * branch gives a name, because the name from content is the concatenation of what every child gives
+ * on its own, and a lookup of a name that takes one child (`legend`, `caption`, the SVG `title`)
+ * reads each of them that a branch may leave out ({@link AccnameResolver.mayBeAbsentWith}).
+ *
+ * @param el - The element whose name is computed
+ * @param version - The ARIA version
+ * @returns The concatenated name of every branch, which is empty when no branch gives a name
+ */
+export function getAccnameOfEveryBranch(
+	// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
+	el: MLElement<any, any>,
+	version: ARIAVersion,
+): string {
+	return computeNameWithoutThrowing(el, version, true);
+}
+
+function computeNameWithoutThrowing(
+	// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
+	el: MLElement<any, any>,
+	version: ARIAVersion,
+	everyBranch: boolean,
 ): string {
 	// AccName computation involves DOM traversal, role resolution, and label
 	// lookup via querySelector. These may fail on unexpected DOM states (e.g.,
@@ -48,9 +80,7 @@ export function getAccname(
 	// unrelated rules, and "unnamed" still drives meaningful a11y rule
 	// violations downstream.
 	try {
-		const resolver = createMLCoreResolver(el, version);
-		const result = computeAccessibleName(el, resolver);
-		return result.name;
+		return computeAccessibleName(el, createMLCoreResolver(el, version, everyBranch)).name;
 	} catch (error) {
 		logFailure(el, error);
 		return '';
@@ -173,11 +203,21 @@ function logFailure(
  * @template T - The rule configuration value type
  * @template O - The rule options type
  * @param el - The element whose rendered children are asked for
+ * @param options - How the conditional blocks are read ({@link RenderedChildNodesOptions})
  * @returns The nodes the computation walks
  * @see https://html.spec.whatwg.org/multipage/scripting.html#the-template-element
  * @see https://w3c.github.io/accname/#comp_name_from_content
  */
 export function getRenderedChildNodes<T extends RuleConfigValue, O extends PlainData>(
+	// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
+	el: MLElement<T, O>,
+	options?: RenderedChildNodesOptions,
+): Iterable<MLNode<T, O>> {
+	const nodes = getRenderedChildNodesAsWritten(el);
+	return options?.everyBranch ? expandConditionalBlocks(nodes) : nodes;
+}
+
+function getRenderedChildNodesAsWritten<T extends RuleConfigValue, O extends PlainData>(
 	// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
 	el: MLElement<T, O>,
 ): Iterable<MLNode<T, O>> {
@@ -200,10 +240,25 @@ export function getRenderedChildNodes<T extends RuleConfigValue, O extends Plain
 	return el.childNodes;
 }
 
+/**
+ * How {@link getRenderedChildNodes} reads the conditional blocks.
+ */
+export type RenderedChildNodesOptions = {
+	/**
+	 * Replaces each block that has a `blockBehavior` (`if`, `switch`, `await` and their clauses,
+	 * which `MLNode#childNodes` keeps as nodes) with the nodes of its branches, as if every branch
+	 * were rendered at once. Which branch is rendered is not known from the markup, so a caller
+	 * that must not report on what it cannot know reads them all. A block that has no behavior stays:
+	 * it is unknown by itself (`MLElement#hasMutableChildren`).
+	 */
+	readonly everyBranch?: boolean;
+};
+
 function createMLCoreResolver(
 	// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
 	el: MLElement<any, any>,
 	version: ARIAVersion,
+	everyBranch = false,
 ): AccnameResolver {
 	const doc = el.ownerMLDocument;
 	// An id is resolved in the tree of the element: not in the content of a `template` outside of it.
@@ -215,6 +270,13 @@ function createMLCoreResolver(
 	// The ids the algorithm hands over are the ones written in the markup (`MLElement#id` and a token of
 	// `aria-labelledby`), so the character references are resolved on both sides, as the DOM has them
 	return {
+		...(everyBranch
+			? {
+					// A branch that renders the other candidate may leave this one out
+					mayBeAbsentWith: (candidate: AccnameElement, other: AccnameElement) =>
+						mayBeAbsentWith(candidate as MLElement<any, any>, other as MLElement<any, any>),
+				}
+			: {}),
 		getElementById(id: string): AccnameElement | null {
 			return root?.getElementById(decodeEntities(id)) ?? null;
 		},
@@ -271,7 +333,7 @@ function createMLCoreResolver(
 		// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
 		getChildNodes(target: AccnameElement): Iterable<AccnameNode> {
 			// TODO: Remove cast when AccnameResolver is generic (#3178)
-			return getRenderedChildNodes(target as MLElement<any, any>);
+			return getRenderedChildNodes(target as MLElement<any, any>, { everyBranch });
 		},
 	};
 }

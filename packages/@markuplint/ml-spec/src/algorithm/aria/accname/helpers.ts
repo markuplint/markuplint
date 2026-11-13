@@ -303,25 +303,41 @@ function getChildElements(el: AccnameElement, resolver: AccnameResolver): Accnam
 	return [...getChildNodes(el, resolver)].filter((child): child is AccnameElement => child.nodeType === ELEMENT_NODE);
 }
 
-export function findChildByLocalName(
+/**
+ * The children that a lookup of a name (`legend`, `caption`, the SVG `title`) reads: the first child
+ * with the name, and, when the resolver says which may be absent ({@link AccnameResolver.mayBeAbsentWith}),
+ * each later one that every earlier one may be absent with, as that one may be the first that is rendered.
+ *
+ * @param el - The element whose children are looked in
+ * @param localName - The local name of the child
+ * @param resolver - The resolver whose `getChildNodes` says the children the element renders
+ * @returns The candidates in the order they are written, empty when the element has none
+ */
+export function findChildrenByLocalName(
 	el: AccnameElement,
 	localName: string,
 	resolver?: AccnameResolver,
-): AccnameElement | null {
-	if (!resolver?.getChildNodes) {
-		for (const child of el.children) {
-			if (child.localName === localName) {
-				return child;
-			}
+): AccnameElement[] {
+	const found: AccnameElement[] = [];
+	const matched: AccnameElement[] = [];
+	const children: Iterable<AccnameNode> = resolver?.getChildNodes ? resolver.getChildNodes(el) : el.children;
+	const mayBeAbsentWith = resolver?.mayBeAbsentWith?.bind(resolver);
+	for (const child of children) {
+		if (child.nodeType !== ELEMENT_NODE || (child as AccnameElement).localName !== localName) {
+			continue;
 		}
-		return null;
-	}
-	for (const child of resolver.getChildNodes(el)) {
-		if (child.nodeType === ELEMENT_NODE && (child as AccnameElement).localName === localName) {
-			return child as AccnameElement;
+		const candidate = child as AccnameElement;
+		// Invariant: `matched` holds the children with the name before `candidate`. `every` of an empty
+		// list is true, so the first one always is a candidate; with no `mayBeAbsentWith` the loop ends after it.
+		if (matched.every(earlier => mayBeAbsentWith?.(earlier, candidate))) {
+			found.push(candidate);
+		}
+		matched.push(candidate);
+		if (!mayBeAbsentWith) {
+			break;
 		}
 	}
-	return null;
+	return found;
 }
 
 /**

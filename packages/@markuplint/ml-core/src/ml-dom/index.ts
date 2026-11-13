@@ -11,5 +11,6 @@ export type { MLShadowRoot as ShadowRoot } from './node/shadow-root.js';
 export type { DeclarativeShadowRootAttachment } from './helper/tree-scope.js';
 export { getDOMValue } from './helper/tree-scope.js';
 export { getRenderedChildNodes } from './helper/accname.js';
+export { expandConditionalBlocks, isConditionalBlock, mayBeLeftOut } from './helper/conditional-block.js';
 
 export { MLDocument as Document } from './node/document.js';

@@ -443,7 +443,7 @@ bool
 </div></template>`.replaceAll('\n', '\r\n'),
 		);
 		expect(nodeListToDebugMaps(doc.nodeList, true)).toStrictEqual([
-			'[2:2]>[6:3](12,36)div: <div␣⏎v-if␣⏎="␣⏎bool␣⏎">',
+			'[2:2]>[6:3](12,36)div (if): <div␣⏎v-if␣⏎="␣⏎bool␣⏎">',
 			'[3:1]>[6:2](18,35)v-if: v-if␣⏎="␣⏎bool␣⏎"',
 			'  [2:6]>[3:1](16,18)bN: ␣⏎',
 			'  [3:1]>[3:5](18,22)name: v-if',
@@ -528,11 +528,11 @@ describe('Issues', () => {
 		const map = nodeListToDebugMaps(doc.nodeList);
 		expect(map).toStrictEqual([
 			'[2:12]>[3:3](12,15)#text: ⏎→→',
-			'[3:3]>[3:40](15,52)ul: <ul␣v-if="props.examples.length␣>␣0">',
+			'[3:3]>[3:40](15,52)ul (if): <ul␣v-if="props.examples.length␣>␣0">',
 			'[3:40]>[4:4](52,56)#text: ⏎→→→',
 			'[4:4]>[4:56](56,108)#comment: <!--␣Error␣if␣comment␣inserted␣inside␣ul␣element␣-->',
 			'[4:56]>[5:4](108,112)#text: ⏎→→→',
-			'[5:4]>[5:54](112,162)li: <li␣v-for="item␣in␣props.examples"␣:key="item.id">',
+			'[5:4]>[5:54](112,162)li (each): <li␣v-for="item␣in␣props.examples"␣:key="item.id">',
 			'[5:54]>[6:5](162,167)#text: ⏎→→→→',
 			'[6:5]>[6:20](167,182)#ps:vue-expression-container: {{␣item.name␣}}',
 			'[6:20]>[7:4](182,186)#text: ⏎→→→',
