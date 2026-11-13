@@ -101,7 +101,7 @@ export function isTransparent<T extends RuleConfigValue, O extends PlainData>(
  * @param el - An element
  * @returns `true` if it is such a `template`
  */
-function hasDirectiveTemplate<T extends RuleConfigValue, O extends PlainData>(
+export function hasDirectiveTemplate<T extends RuleConfigValue, O extends PlainData>(
 	// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
 	el: MLElement<T, O>,
 ): boolean {
@@ -122,7 +122,8 @@ function hasDirectiveTemplate<T extends RuleConfigValue, O extends PlainData>(
  * of its own.
  *
  * It is not when the element is a fragment, has a directive of a template engine, or the
- * framework puts the children in the element itself (`templateContent: 'in-place'` of the spec).
+ * framework puts the children in the element itself (`templateContent: 'in-place'` of the spec, or of
+ * the parser when the spec says nothing).
  *
  * @template T - The rule configuration value type
  * @template O - The rule options type
@@ -136,7 +137,9 @@ export function isHTMLTemplateElement<T extends RuleConfigValue, O extends Plain
 	if (el.isFragment || el.localName !== 'template' || el.namespaceURI !== HTML_NAMESPACE) {
 		return false;
 	}
-	if (el.ownerMLDocument.specs.templateContent === 'in-place') {
+	// What the spec says wins over what the parser declares
+	const document = el.ownerMLDocument;
+	if ((document.specs.templateContent ?? document.templateContent) === 'in-place') {
 		return false;
 	}
 	return !hasDirectiveTemplate(el);

@@ -40,6 +40,7 @@ import { InvalidSelectorError } from '@markuplint/selector';
 import { log as coreLog } from '../../debug.js';
 import { searchNodeAtLocation } from '../../utils/search-node-at-location.js';
 import { createNode } from '../helper/create-node.js';
+import { mayBeLeftOut } from '../helper/conditional-block.js';
 import { nodeListToDebugMaps } from '../helper/debug.js';
 import { sequentialWalker, syncWalk } from '../helper/walkers.js';
 
@@ -94,6 +95,13 @@ export class MLDocument<T extends RuleConfigValue, O extends PlainData = undefin
 	readonly literalValues?: LiteralValueDeclaration;
 
 	/**
+	 * Where the framework of the parser holds the children of a `template` element written without a
+	 * directive (`MLParser#templateContent`). What the spec says (`MLMLSpec#templateContent`) wins over
+	 * this; the default is `'separate-tree'`.
+	 */
+	readonly templateContent?: 'separate-tree' | 'in-place';
+
+	/**
 	 * What the `slot` element is in the language of the document (`MLParser#slotElement`): the HTML
 	 * element, or the placeholder of a framework's component, whose slot assignment is not computed.
 	 */
@@ -130,6 +138,19 @@ export class MLDocument<T extends RuleConfigValue, O extends PlainData = undefin
 	 * used for sequential traversal and token-level operations.
 	 */
 	readonly nodeList: ReadonlyArray<MLNode<T, O>>;
+
+	#hasConditionalNode: boolean | undefined;
+
+	/**
+	 * Whether the document has a node that a conditional render may leave out ({@link mayBeLeftOut}): a
+	 * conditional block, a loop, or an element that carries such a behavior (Vue's `v-if`). Without one, every
+	 * node is rendered, and what depends on reading every branch (`MLElement#mayHaveAccessibleName`) is what
+	 * the markup as written says. The document does not change after it is built.
+	 */
+	get hasConditionalNode(): boolean {
+		this.#hasConditionalNode ??= this.nodeList.some(node => mayBeLeftOut(node));
+		return this.#hasConditionalNode;
+	}
 
 	readonly ontouchcancel?:
 		| ((
@@ -264,6 +285,7 @@ export class MLDocument<T extends RuleConfigValue, O extends PlainData = undefin
 			readonly booleanish?: boolean;
 			readonly attrExpressionLanguage?: ExpressionLanguage;
 			readonly literalValues?: LiteralValueDeclaration;
+			readonly templateContent?: 'separate-tree' | 'in-place';
 			readonly slotElement?: 'html' | 'framework';
 			readonly tagNameCaseSensitive?: boolean;
 			readonly componentNameVariants?: boolean;
@@ -282,6 +304,7 @@ export class MLDocument<T extends RuleConfigValue, O extends PlainData = undefin
 		this.booleanish = options?.booleanish ?? false;
 		this.attrExpressionLanguage = options?.attrExpressionLanguage;
 		this.literalValues = options?.literalValues;
+		this.templateContent = options?.templateContent;
 		this.slotElement = options?.slotElement ?? 'html';
 		this.endTag = options?.endTag ?? 'omittable';
 		this.#filename = options?.filename;
@@ -3155,7 +3178,9 @@ export class MLDocument<T extends RuleConfigValue, O extends PlainData = undefin
 	 *
 	 * The accessible name is obtained via `node.getAccessibleName()` so that
 	 * the per-element memoization cache is shared with other consumers
-	 * (rules, selectors). See {@link MLElement.getAccessibleName}.
+	 * (rules, selectors). See {@link MLElement.getAccessibleName}. A name that is empty as written
+	 * but may be in a branch of a conditional block ({@link MLElement.mayHaveAccessibleName}) is
+	 * `{ unknown: true }`, as the name of a slot of unknown assignment is.
 	 *
 	 * @param node - The node to compute accessibility properties for
 	 * @param ariaVersion - The ARIA specification version to use for computation
@@ -3211,9 +3236,10 @@ export class MLDocument<T extends RuleConfigValue, O extends PlainData = undefin
 		aria.role = role.role?.name;
 		aria.nameRequired = nameRequired;
 		aria.nameProhibited = nameProhibited;
+		// The name of a branch of a conditional block is not known to be rendered, as a slot is not
 		aria.name =
 			name ||
-			(hasSlot
+			(hasSlot || node.mayHaveAccessibleName(ariaVersion)
 				? {
 						unknown: true,
 					}

@@ -36,6 +36,7 @@ import { InvalidSelectorError, matchSelector, typeNameMatches } from '@markuplin
 
 import {
 	getAccname,
+	getAccnameOfEveryBranch,
 	getAccnameVisits,
 	getHostLanguageLabelSource,
 	getReferencedTextAlternative,
@@ -300,6 +301,16 @@ export class MLElement<T extends RuleConfigValue, O extends PlainData = undefine
 	 * @see {@link getAccessibleName} — the public method that reads/writes this cache
 	 */
 	#accessibleNameCache: Map<ARIAVersion, string> = new Map();
+
+	/**
+	 * Safe for the same reason as {@link #accessibleNameCache}.
+	 */
+	#mayHaveAccessibleNameCache: Map<ARIAVersion, boolean> = new Map();
+	/**
+	 * The versions for which {@link mayHaveAccessibleName} is reading every branch at this moment: a call
+	 * for one of them comes from the computation itself.
+	 */
+	#computingEveryBranch: Set<ARIAVersion> = new Set();
 	/**
 	 * Memoizes {@link getAccessibleNameVisits}, keyed by `${version}:${asReferenced}`.
 	 * Safe for the same reason as {@link #accessibleNameCache}.
@@ -375,7 +386,8 @@ export class MLElement<T extends RuleConfigValue, O extends PlainData = undefine
 	pretenderContext: PretenderContext<MLElement<T, O>, T, O> | null = null;
 
 	/**
-	 * Block behavior associated with this element, if any.
+	 * The behavior that the parser gives an element its language marks by an attribute (Vue's `v-if`
+	 * and `v-for`), or `null`. See {@link MLASTElement.blockBehavior}.
 	 */
 	readonly blockBehavior: MLASTBlockBehavior | null;
 
@@ -3369,12 +3381,12 @@ export class MLElement<T extends RuleConfigValue, O extends PlainData = undefine
 	/**
 	 * Whether this element is an HTML `template` element, which holds its children in {@link MLElement.content},
 	 * a tree of its own. A `template` of a framework that puts the children in the element itself
-	 * (`templateContent: 'in-place'` in the spec: React, Vue), a fragment, and a `template` with a
-	 * directive of a template engine are not.
+	 * (`templateContent: 'in-place'` in the spec, or in the parser when the spec says nothing: React, Vue),
+	 * a fragment, and a `template` with a directive of a template engine are not.
 	 *
 	 * The getters about trees (this one, {@link MLElement.declarativeShadowRootAttachment},
 	 * {@link MLElement.content}, `getRootNode()` and the id lookups) keep what they first return: they
-	 * depend on the pretenders, the spec and the whole syntax tree, which are all in place once the
+	 * depend on the pretenders, the spec, the parser's declaration and the whole syntax tree, which are all in place once the
 	 * document is built, and the document does not change after that.
 	 *
 	 * @implements `@markuplint/ml-core` API: `MLElement`
@@ -3532,7 +3544,10 @@ export class MLElement<T extends RuleConfigValue, O extends PlainData = undefine
 	 * @see https://dom.spec.whatwg.org/#dom-node-textcontent
 	 */
 	get textContent(): string {
-		return [...this.childNodes].map(child => child.textContent ?? '').join('');
+		return [...this.childNodes]
+			.filter(child => !child.is(child.COMMENT_NODE))
+			.map(child => child.textContent ?? '')
+			.join('');
 	}
 
 	/**
@@ -3767,6 +3782,12 @@ export class MLElement<T extends RuleConfigValue, O extends PlainData = undefine
 	 * Added as part of the fix for {@link https://github.com/markuplint/markuplint/issues/2179 | #2179}
 	 * to eliminate redundant AccName computation across rules.
 	 *
+	 * It is the name of the markup as written, in which a conditional block is a node that the computation
+	 * does not go into. A caller that reports an element for having no name, or counts on the name it has,
+	 * asks {@link mayHaveAccessibleName} instead, as the name may be in a branch. A caller whose answer is
+	 * already decided by the descendants (`require-adjacent-popover`, which reports the perceptible
+	 * text or named element in the branch itself) reads this.
+	 *
 	 * @implements `@markuplint/ml-core` API: `MLElement`
 	 * @param version - The ARIA specification version to use for computation
 	 * @returns The computed accessible name string (may be empty)
@@ -3779,6 +3800,65 @@ export class MLElement<T extends RuleConfigValue, O extends PlainData = undefine
 		const name = getAccname(this, version);
 		this.#accessibleNameCache.set(version, name);
 		return name;
+	}
+
+	/**
+	 * Whether this element has an accessible name, or may have one when a branch of a conditional
+	 * block (`if`, `switch`, `await` and their clauses) is rendered, or when an element that a conditional
+	 * directive may leave out (Vue's `v-if`) is, memoized per ARIA version like {@link getAccessibleName}.
+	 * What the directive changes is which `legend`, `caption` or SVG `title` is the first that gives the
+	 * name: the text of the element is in the name as written either way.
+	 *
+	 * {@link getAccessibleName} reads the markup as written, in which a conditional block is a node that
+	 * the computation does not go into. Which branch is rendered is not known, so an element whose name
+	 * is in a branch is not unnamed: the caller that reports an element without a name, or one that
+	 * counts on the name it has, asks this instead.
+	 *
+	 * The text of the branches is read as one, so only whether it is empty is used: the name from
+	 * content is the concatenation of what each child gives on its own, and the lookups of a name that
+	 * takes one child (`legend`, `caption`, the SVG `title`) read each that a branch may leave out
+	 * (`AccnameResolver#mayBeAbsentWith`).
+	 *
+	 * The role of an element depends on its name (`:aria(has name)` in the spec) and its name on its
+	 * role, so this is called from inside the computation it makes. Invariants: a call for an element
+	 * that is being computed answers from the name as written and counts itself in
+	 * `everyBranchFallbacks`; a name found is final and is cached, and that no branch has one is cached
+	 * only when no such call happened during the computation, as the answer is partial then. A document
+	 * without a conditional block is answered by the name as written.
+	 *
+	 * @implements `@markuplint/ml-core` API: `MLElement`
+	 * @see https://w3c.github.io/accname/#comp_name_from_content
+	 * @see https://svelte.dev/docs/svelte/if
+	 * @see https://vuejs.org/guide/essentials/conditional.html
+	 * @param version - The ARIA specification version to use for computation
+	 * @returns `true` if the accessible name is not empty, or is not empty in some branch
+	 */
+	mayHaveAccessibleName(version: ARIAVersion): boolean {
+		const cached = this.#mayHaveAccessibleNameCache.get(version);
+		if (cached != null) {
+			return cached;
+		}
+		// The role of an element depends on its name (`:aria(has name)` of the spec), and its name on its role, so
+		// a call that the computation itself makes sees only the name as written, as `getAccessibleName` does
+		if (this.#computingEveryBranch.has(version)) {
+			everyBranchFallbacks++;
+			return !!this.getAccessibleName(version).trim();
+		}
+		this.#computingEveryBranch.add(version);
+		const fallbacksBefore = everyBranchFallbacks;
+		try {
+			// Only a name found is final: that no branch has one is not known when the computation used the
+			// name as written of an element that is being computed
+			const found =
+				!!this.getAccessibleName(version).trim() ||
+				(this.ownerMLDocument.hasConditionalNode && !!getAccnameOfEveryBranch(this, version).trim());
+			if (found || (this.ownerMLDocument.hasConditionalNode && fallbacksBefore === everyBranchFallbacks)) {
+				this.#mayHaveAccessibleNameCache.set(version, found);
+			}
+			return found;
+		} finally {
+			this.#computingEveryBranch.delete(version);
+		}
 	}
 
 	/**
@@ -4174,11 +4254,11 @@ export class MLElement<T extends RuleConfigValue, O extends PlainData = undefine
 	 * such as preprocessor-specific blocks, slot elements, or (optionally) elements
 	 * with dynamic attributes and components that no pretender resolved.
 	 *
-	 * Blocks that carry a `blockBehavior` are not treated as mutable because
-	 * their branches are deterministically enumerable via
-	 * `conditionalChildNodes()`; blocks without one (e.g. expression output
-	 * like `{value}`) can produce arbitrary content, so the children are
-	 * considered mutable.
+	 * A block that carries a `blockBehavior` is not mutable itself, as its branches are enumerable via
+	 * `conditionalChildNodes()`, but what is written in a branch is as unknown as what is written
+	 * outside of it: the walk goes into the branches (`{#if a}{label}{/if}` and `{#if a}<Comp />{/if}`
+	 * are mutable as `{label}` and `<Comp />` are). A block without one (e.g. expression output
+	 * like `{value}`) can produce arbitrary content, so the children are considered mutable.
 	 *
 	 * A component that no pretender resolved renders something that is not known, however its
 	 * attributes are written (`size={size}`, `size={16}` and `size="16"` tell the same): a rule that
@@ -4202,30 +4282,8 @@ export class MLElement<T extends RuleConfigValue, O extends PlainData = undefine
 	 * @param isMutableSlot - Whether a `slot` among the descendants may render what is not known
 	 * @returns True if this element has potentially mutable children
 	 */
-	hasMutableChildren(attr = false, isMutableSlot: (slot: MLElement<T, O>) => boolean = () => true) {
-		for (const child of this.getPureChildNodes()) {
-			if (child.is(child.MARKUPLINT_PREPROCESSOR_BLOCK)) {
-				if (child.blockBehavior) {
-					continue;
-				}
-				return true;
-			}
-			if (child.is(child.ELEMENT_NODE)) {
-				if (attr && child.hasMutableAttributes()) {
-					return true;
-				}
-				if (attr && child.isUnresolvedComponent()) {
-					return true;
-				}
-				if (child.hasMutableChildren(attr, isMutableSlot)) {
-					return true;
-				}
-				if (child.localName === 'slot' && isMutableSlot(child)) {
-					return true;
-				}
-			}
-		}
-		return false;
+	hasMutableChildren(attr = false, isMutableSlot: (slot: MLElement<T, O>) => boolean = () => true): boolean {
+		return hasMutableNodes(this.getPureChildNodes(), attr, isMutableSlot);
 	}
 
 	/**
@@ -5132,4 +5190,51 @@ export class MLElement<T extends RuleConfigValue, O extends PlainData = undefine
 	webkitMatchesSelector(selectors: string): boolean {
 		throw new UnexpectedCallError('Not supported "webkitMatchesSelector" method');
 	}
+}
+
+/**
+ * How many times {@link MLElement.mayHaveAccessibleName} answered with the name as written because the
+ * element was being computed. A computation during which it grew is a partial answer.
+ *
+ * It is module-level on purpose: the computation is synchronous and runs on one thread, and the counter is
+ * compared only across the duration of one call, so only a computation nested in it can move it, which is
+ * what makes the answer partial whichever document or element it belongs to.
+ */
+let everyBranchFallbacks = 0;
+
+/**
+ * The walk of {@link MLElement.hasMutableChildren}. A block that carries a `blockBehavior` is not
+ * mutable itself, but what is written in its branches is as unknown as what is written outside
+ * of it, so the walk goes into it.
+ */
+function hasMutableNodes<T extends RuleConfigValue, O extends PlainData>(
+	// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
+	nodes: Iterable<MLChildNode<T, O>>,
+	attr: boolean,
+	// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
+	isMutableSlot: (slot: MLElement<T, O>) => boolean,
+): boolean {
+	for (const child of nodes) {
+		if (child.is(child.MARKUPLINT_PREPROCESSOR_BLOCK)) {
+			if (!child.blockBehavior || hasMutableNodes(child.getPureChildNodes(), attr, isMutableSlot)) {
+				return true;
+			}
+			continue;
+		}
+		if (child.is(child.ELEMENT_NODE)) {
+			if (attr && child.hasMutableAttributes()) {
+				return true;
+			}
+			if (attr && child.isUnresolvedComponent()) {
+				return true;
+			}
+			if (child.hasMutableChildren(attr, isMutableSlot)) {
+				return true;
+			}
+			if (child.localName === 'slot' && isMutableSlot(child)) {
+				return true;
+			}
+		}
+	}
+	return false;
 }

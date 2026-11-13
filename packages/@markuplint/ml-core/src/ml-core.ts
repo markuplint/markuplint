@@ -526,6 +526,7 @@ export class MLCore {
 				booleanish: this.#parser.booleanish,
 				attrExpressionLanguage: this.#parser.attrExpressionLanguage,
 				literalValues: this.#parser.literalValues,
+				templateContent: this.#parser.templateContent,
 				slotElement: this.#parser.slotElement,
 				tagNameCaseSensitive: this.#parser.tagNameCaseSensitive,
 				componentNameVariants: this.#parser.componentNameVariants,
