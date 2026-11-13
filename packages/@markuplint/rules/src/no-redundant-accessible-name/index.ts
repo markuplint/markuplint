@@ -3,10 +3,10 @@ import type { PlainData } from '@markuplint/ml-config';
 import type { Element, RuleConfigValue, Document } from '@markuplint/ml-core';
 import type { ComputedRole } from '@markuplint/ml-spec';
 
-import { createRule, getComputedRole } from '@markuplint/ml-core';
+import { createRule, expandConditionalBlocks, getComputedRole } from '@markuplint/ml-core';
 import { ARIA_RECOMMENDED_VERSION, isExposed } from '@markuplint/ml-spec';
 
-import { accnameMayBeMutable, getElementByIdInTree, getOwnedLabel } from '../helpers.js';
+import { accnameMayBeMutable, getElementByIdInTree, getOwnedLabel, textContentOfEveryBranch } from '../helpers.js';
 
 import meta from './meta.js';
 
@@ -132,8 +132,9 @@ function collectNamingSources<V extends RuleConfigValue, O extends PlainData>(
 	}
 
 	// 5. content — role allows nameFromContent
+	// A branch of a conditional block is content when it is rendered, so the text of any of them counts
 	if (computed.role?.accessibleNameFromContent) {
-		const text = el.textContent.trim();
+		const text = textContentOfEveryBranch(el).trim();
 		if (text) {
 			sources.push({ label: 'content' });
 		}
@@ -147,20 +148,14 @@ function collectNamingSources<V extends RuleConfigValue, O extends PlainData>(
 		}
 	}
 
-	// 7. legend — fieldset (direct child only)
-	if (el.matches('fieldset')) {
-		const legend = el.querySelector(':scope > legend');
-		if (legend && legend.textContent.trim()) {
-			sources.push({ label: 'legend' });
-		}
+	// 7. legend — fieldset (direct child only, in any branch of a conditional block)
+	if (el.matches('fieldset') && hasChildWithText(el, 'legend')) {
+		sources.push({ label: 'legend' });
 	}
 
-	// 8. caption — table (direct child only)
-	if (el.matches('table')) {
-		const caption = el.querySelector(':scope > caption');
-		if (caption && caption.textContent.trim()) {
-			sources.push({ label: 'caption' });
-		}
+	// 8. caption — table (direct child only, in any branch of a conditional block)
+	if (el.matches('table') && hasChildWithText(el, 'caption')) {
+		sources.push({ label: 'caption' });
 	}
 
 	// 9. title (optional)
@@ -180,4 +175,17 @@ function collectNamingSources<V extends RuleConfigValue, O extends PlainData>(
 	}
 
 	return sources;
+}
+
+function hasChildWithText<V extends RuleConfigValue, O extends PlainData>(
+	// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
+	el: Element<V, O>,
+	localName: string,
+): boolean {
+	for (const child of expandConditionalBlocks(el.childNodes)) {
+		if (child.is(child.ELEMENT_NODE) && child.localName === localName && textContentOfEveryBranch(child).trim()) {
+			return true;
+		}
+	}
+	return false;
 }

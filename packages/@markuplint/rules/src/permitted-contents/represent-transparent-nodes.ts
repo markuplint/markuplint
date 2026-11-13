@@ -33,7 +33,7 @@ type TransparentNode = {
  * ### Rationale
  *
  * When N transparent elements each have K conditional branches (e.g.,
- * `v-if`/`v-else`), the exact cross-product yields K^N patterns.
+ * `{#if}`/`{:else}`), the exact cross-product yields K^N patterns.
  * With K=2 and N=10, this is 2^10 = 1024 — still manageable.
  * At N=11 (2^11 = 2048) the cap triggers, switching to a
  * conservative fallback that merges all branch children into every

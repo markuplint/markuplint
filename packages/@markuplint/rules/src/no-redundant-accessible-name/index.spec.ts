@@ -408,6 +408,11 @@ describe('Edge cases', () => {
 		expect(violations).toStrictEqual([]);
 	});
 
+	test('[no-redundant-accessible-name-valid-019] a comment is not content that aria-label overrides', async () => {
+		const { violations } = await mlRuleTest(rule, '<button aria-label="Close"><!-- Close --></button>');
+		expect(violations).toStrictEqual([]);
+	});
+
 	test('[no-redundant-accessible-name-valid-018] nested table — caption belongs to inner table, not outer', async () => {
 		const { violations } = await mlRuleTest(
 			rule,
