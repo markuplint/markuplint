@@ -44,7 +44,7 @@
 		"browserslist": "^4.29.5",
 		"chrono-node": "^2.10.3",
 		"debug": "^4.4.3",
-		"image-size": "^2.0.4",
+		"image-size": "^2.1.0",
 		"type-fest": "^5.10.0"
 	},
 	"devDependencies": {

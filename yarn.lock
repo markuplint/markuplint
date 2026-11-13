@@ -2388,7 +2388,7 @@ __metadata:
     browserslist: "npm:^4.29.5"
     chrono-node: "npm:^2.10.3"
     debug: "npm:^4.4.3"
-    image-size: "npm:^2.0.4"
+    image-size: "npm:^2.1.0"
     type-fest: "npm:^5.10.0"
   languageName: unknown
   linkType: soft
@@ -9546,12 +9546,12 @@ __metadata:
   languageName: node
   linkType: hard
 
-"image-size@npm:^2.0.4":
-  version: 2.0.4
-  resolution: "image-size@npm:2.0.4"
+"image-size@npm:^2.1.0":
+  version: 2.1.0
+  resolution: "image-size@npm:2.1.0"
   bin:
     image-size: bin/image-size.js
-  checksum: 10c0/af01b8c2b7c536df1b866fc6daaa7e58ee909cde42fcae27562612ea77181f473445bc8acf0dfb5b9e8590e966a7a1f3f0fbf4c87ec6d1d4d60d68d87d529d76
+  checksum: 10c0/d4009752d698cf210b0e83a708ea74dbdf529ebd4cfb903f74ec1159d6b27177165a06b0607d0e81129721bf8bf65f00c4687506525f13039b2cebf516a3b434
   languageName: node
   linkType: hard
 
