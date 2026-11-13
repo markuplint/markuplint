@@ -17,14 +17,13 @@ import { deleteUndefProp, cleanOptions, isRuleConfigValue, isNamedRuleGroup } fr
 /**
  * Merges two markuplint configurations into an optimized result.
  *
- * Plugins, arrays, and rules are merged with specific strategies:
- * - Plugins are concatenated and deduplicated by name (settings shallow-merged)
+ * Arrays and rules are merged with specific strategies:
  * - Arrays (excludeFiles, nodeRules, childNodeRules) are concatenated
  * - Rules are merged per-key with right-side precedence
  * - Objects (parser, specs, etc.) are shallow-merged
  * - The `extends` property is removed from the result when `b` is provided
  *
- * Top-level collections (plugins, excludeFiles, nodeRules, childNodeRules)
+ * Top-level collections (excludeFiles, nodeRules, childNodeRules)
  * accumulate across config layers because their items are independent
  * entries forming a collection; rule values, by contrast, are overridden
  * (see {@link mergeRule}) because they represent a single rule's configuration.
@@ -48,14 +47,6 @@ export function mergeConfig(a: Config, b?: Config): OptimizedConfig {
 		...a,
 		...b,
 		ruleCommonSettings: mergeObject(a.ruleCommonSettings, b.ruleCommonSettings),
-		plugins: concatArray(a.plugins, b.plugins, true, 'name')?.map(plugin => {
-			if (typeof plugin === 'string') {
-				return {
-					name: plugin,
-				};
-			}
-			return plugin;
-		}),
 		parser: mergeObject(a.parser, b.parser),
 		parserOptions: mergeObject(a.parserOptions, b.parserOptions),
 		specs: mergeObject(a.specs, b.specs),
@@ -216,8 +207,8 @@ function mergeOverrides(
  * ESLint (complete replacement) and Biome (deep merge): top-level keys are
  * merged, nested objects are replaced. A deep-merge library was removed in
  * favor of plain object spread because every merged object in markuplint
- * config (parser, specs, parserOptions, severity, plugin settings, rule
- * options) is a flat key-value map.
+ * config (parser, specs, parserOptions, severity, rule options) is a flat
+ * key-value map.
  */
 function mergeObject<T>(a: Nullable<T>, b: Nullable<T>): T | undefined {
 	if (a == null) {

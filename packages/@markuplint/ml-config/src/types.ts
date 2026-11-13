@@ -7,7 +7,7 @@ export type { RegexSelector } from '@markuplint/selector';
 
 /**
  * The root configuration object for markuplint.
- * Defines rules, parsers, specs, plugins, and overrides for linting markup.
+ * Defines rules, parsers, specs, and overrides for linting markup.
  *
  * @see https://markuplint.dev/configuration
  */
@@ -15,7 +15,6 @@ export type Config = {
 	readonly $schema?: string;
 	readonly ruleCommonSettings?: RuleCommonSettings;
 	readonly extends?: string | readonly string[];
-	readonly plugins?: readonly (PluginConfig | string)[];
 	readonly parser?: ParserConfig;
 	readonly parserOptions?: ParserOptions;
 	readonly specs?: SpecConfig;
@@ -55,7 +54,7 @@ export type RuleCommonSettings = {
 export type PrimitiveScalar = string | number | boolean;
 
 /**
- * A JSON-compatible data structure used for rule options and plugin settings.
+ * A JSON-compatible data structure used for rule options.
  * Can be a primitive, null/undefined, an array of `PlainData`, or a plain object.
  */
 export type PlainData =
@@ -85,11 +84,10 @@ export type OverrideConfig = Omit<Config, NoInherit>;
 
 /**
  * A fully resolved and optimized configuration after merging.
- * Plugins are normalized to objects, and pretenders are converted to {@link PretenderDetails}.
+ * Pretenders are converted to {@link PretenderDetails}.
  */
-export type OptimizedConfig = Omit<Config, '$schema' | 'extends' | 'plugins' | 'pretenders' | 'overrides'> & {
+export type OptimizedConfig = Omit<Config, '$schema' | 'extends' | 'pretenders' | 'overrides'> & {
 	readonly extends?: readonly string[];
-	readonly plugins?: readonly PluginConfig[];
 	readonly pretenders?: PretenderDetails;
 	readonly overrides?: Readonly<Record<string, OptimizedOverrideConfig>>;
 };
@@ -98,14 +96,6 @@ export type OptimizedConfig = Omit<Config, '$schema' | 'extends' | 'plugins' | '
  * An optimized override configuration, excluding top-level-only properties.
  */
 export type OptimizedOverrideConfig = Omit<OptimizedConfig, NoInherit>;
-
-/**
- * Configuration for a single markuplint plugin.
- */
-export type PluginConfig = {
-	readonly name: string;
-	readonly settings?: Readonly<Record<string, NonNullablePlainData>>;
-};
 
 /**
  * Maps file extension patterns to parser module names or paths.
@@ -316,9 +306,9 @@ export type Pretender = {
 	 * An entry written by hand may leave out `:<line>:<column>`. It takes a relative `<path>`
 	 * from the directory of the configuration file that declares it, whether that file is the
 	 * one loaded or one it `extends`, and also in the value of an `overrides` entry. In a
-	 * configuration with no file behind it (`MLEngine`'s `config` / `defaultConfig` option, one
-	 * a plugin provides), it is read from the working directory. An entry of an npm package
-	 * listed in `pretenders.imports` is not rebased.
+	 * configuration with no file behind it (`MLEngine`'s `config` / `defaultConfig` option), it is read
+	 * from the working directory. An entry of an npm package listed in `pretenders.imports` is not
+	 * rebased.
 	 *
 	 * An entry that has it is matched to the file that the linted file imports by
 	 * `@markuplint/pretenders`, which `markuplint` does not install.
@@ -737,7 +727,7 @@ export type Severity = 'error' | 'warning' | 'info';
  *
  * - `'normative'` — derived from MUST/REQUIRED requirements in the HTML spec
  * - `'non-normative'` — derived from SHOULD/RECOMMENDED requirements in the HTML spec
- * - `undefined` — plugin/preset recommendation or user-defined (no spec backing)
+ * - `undefined` — preset recommendation (no spec backing)
  */
 export type SpecConformance = 'normative' | 'non-normative';
 
