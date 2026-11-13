@@ -72,6 +72,8 @@ const FULL_TRIGGERS: readonly RegExp[] = [
 	/^nx\.json$/,
 	/(^|\/)tsconfig[^/]*\.json$/,
 	/^vitest[^/]*\.config\.ts$/,
+	// A plugin of those configs, which changes how every spec resolves an `import()`.
+	/^scripts\/vitest-node-resolution\.ts$/,
 	/^\.github\/workflows\/test\.yml$/,
 	// The selection itself, and the specs that guard repository policy by reading every manifest.
 	/^scripts\/affected-tests\//,
