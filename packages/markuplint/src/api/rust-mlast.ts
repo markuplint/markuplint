@@ -113,10 +113,17 @@ export function mlastForRust(ast: MLASTDocument, { spec, parser, renderings }: M
 			return cached;
 		}
 		// The fields of the AST only: `expressionLanguage` is for reading a literal, which `renderings` did
-		const { potentialName, candidate, isDynamicValue, isDirective, isDuplicatable, valueType } = resolveAttrNames(
-			attr,
-			spec,
-		);
+		const {
+			potentialName,
+			candidate,
+			isDynamicValue,
+			isDirective,
+			isDuplicatable,
+			valueType,
+			matchedDirectivePattern,
+			duplicateKey,
+			duplicateKeyFolds,
+		} = resolveAttrNames(attr, spec);
 		const rendering = renderings?.get(attr.uuid);
 		const written = attr.potentialValue ?? attr.value.raw;
 		const result = {
@@ -133,6 +140,14 @@ export function mlastForRust(ast: MLASTDocument, { spec, parser, renderings }: M
 			isDirective,
 			isDuplicatable,
 			...(valueType && { valueType }),
+			// What the matching pattern says of a repeat, which `MLAttr#duplicateKey` is built from
+			...(matchedDirectivePattern && {
+				directiveKey: {
+					...(typeof duplicateKey === 'string' && { key: duplicateKey }),
+					...(duplicateKey === null && { never: true }),
+					...(duplicateKeyFolds && { folds: true }),
+				},
+			}),
 		};
 		resolvedAttrs.set(attr, result);
 		return result;
