@@ -89,7 +89,7 @@ const describeNodes = (nodes: readonly PositionedNode[] | null) =>
 						id: node.id,
 						classList: [...node.classList],
 						attributes: [...node.attributes].map(attr => [attr.name, attr.value]),
-						children: [...node.children].map(child => indexOf(child)),
+						children: [...node.childElements].map(child => indexOf(child)),
 					}
 				: {}),
 		};

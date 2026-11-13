@@ -40,7 +40,7 @@ function buildTree(structure: {
 		},
 		attributes: Object.entries(structure.attrs ?? {}).map(([name, value]) => ({ name, value })),
 		parentElement: null,
-		children: [],
+		childElements: [],
 	};
 
 	const children: ScopedNode[] = [];
@@ -49,7 +49,7 @@ function buildTree(structure: {
 		(child as { parentElement: ScopedNode | null }).parentElement = node;
 		children.push(child);
 	}
-	(node as unknown as { children: ScopedNode[] }).children = children;
+	(node as unknown as { childElements: ScopedNode[] }).childElements = children;
 
 	return node;
 }
@@ -57,7 +57,7 @@ function buildTree(structure: {
 /** Finds a node by tag name (DFS). */
 function find(root: ScopedNode, tag: string): ScopedNode | undefined {
 	if (root.localName === tag) return root;
-	for (const child of root.children) {
+	for (const child of root.childElements) {
 		const found = find(child, tag);
 		if (found) return found;
 	}
@@ -119,7 +119,7 @@ describe('compute-scope', () => {
 
 		it('returns common parent for sibling nodes', () => {
 			const ul = find(tree, 'ul')!;
-			const lis = [...ul.children];
+			const lis = [...ul.childElements];
 			const lca = computeLCA(lis);
 			expect(lca?.localName).toBe('ul');
 		});
@@ -234,7 +234,7 @@ describe('compute-scope', () => {
 				],
 			});
 			const main = find(siblingTree, 'main')!;
-			const sections = [...main.children];
+			const sections = [...main.childElements];
 			expect(generateUniqueSelector(sections[0]!)).toBe('main > section:nth-of-type(1)');
 			expect(generateUniqueSelector(sections[1]!)).toBe('main > section:nth-of-type(2)');
 			expect(generateUniqueSelector(sections[2]!)).toBe('main > section:nth-of-type(3)');
@@ -273,7 +273,7 @@ describe('compute-scope', () => {
 				],
 			});
 			const form = find(inputTree, 'form')!;
-			const inputs = [...form.children];
+			const inputs = [...form.childElements];
 			expect(generateUniqueSelector(inputs[0]!)).toBe('input[type="text"]');
 			expect(generateUniqueSelector(inputs[1]!)).toBe('input[type="checkbox"]');
 		});
@@ -411,7 +411,7 @@ describe('compute-scope', () => {
 					},
 				],
 			});
-			const [, second] = [...find(nth, 'div')!.children];
+			const [, second] = [...find(nth, 'div')!.childElements];
 			expect(generateUniqueSelector(second!)).toBe(String.raw`div > foo\:nth-of-type\(2\):nth-of-type(2)`);
 		});
 
@@ -535,7 +535,7 @@ describe('compute-scope', () => {
 				classList: { contains: () => false, [Symbol.iterator]: function* () {} },
 				attributes: [],
 				parentElement: parent,
-				children: [],
+				childElements: [],
 				startLine: line,
 				startCol: col,
 			};
@@ -562,7 +562,7 @@ describe('compute-scope', () => {
 				classList: { contains: () => false, [Symbol.iterator]: function* () {} },
 				attributes: [],
 				parentElement: div,
-				children: [],
+				childElements: [],
 				startLine: 2,
 				startCol: 5,
 			};
@@ -651,7 +651,7 @@ describe('compute-scope', () => {
 				classList: { contains: () => false, [Symbol.iterator]: function* () {} },
 				attributes: [],
 				parentElement: parent,
-				children: [],
+				childElements: [],
 				startLine: line,
 				startCol: col,
 			};

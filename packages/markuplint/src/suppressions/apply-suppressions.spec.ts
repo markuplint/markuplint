@@ -28,7 +28,7 @@ function pNode(
 		},
 		attributes: [],
 		parentElement: parent,
-		children: [],
+		childElements: [],
 		startLine: line,
 		startCol: col,
 	};
