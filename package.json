@@ -15,10 +15,11 @@
 		"test:run": "vitest run",
 		"test:affected": "node --experimental-strip-types scripts/affected-tests/index.ts",
 		"test:coverage": "vitest run --coverage",
-		"lint": "run-p lint:oxlint lint:format lint:github-actions",
+		"lint": "run-p lint:oxlint lint:format lint:github-actions lint:renovate",
 		"lint:oxlint": "oxlint --fix -c .oxlintrc.json packages vscode scripts",
 		"lint:format": "oxfmt --write \"./{packages,vscode,website,scripts}/**/*.{ts,tsx,mts,js,cjs,mjs,json,rc,md,mdx,css}\"",
 		"lint:github-actions": "actionlint",
+		"lint:renovate": "renovate-config-validator --strict",
 		"lint-check": "run-p lint-check:oxlint lint-check:format",
 		"lint-check:oxlint": "oxlint -c .oxlintrc.json packages vscode scripts",
 		"lint-check:format": "oxfmt --check \"./{packages,vscode,website,scripts}/**/*.{ts,tsx,mts,js,cjs,mjs,json,rc,md,mdx,css}\"",
@@ -90,6 +91,7 @@
 		"npm-run-all2": "9.0.4",
 		"oxfmt": "0.75.0",
 		"oxlint": "1.90.0",
+		"renovate": "44.221.4",
 		"textlint": "15.8.0",
 		"textlint-filter-rule-comments": "1.3.0",
 		"textlint-rule-preset-ja-spacing": "3.0.4",
@@ -116,11 +118,23 @@
 		"@vscode/vsce-sign": {
 			"built": true
 		},
+		"core-js-pure": {
+			"built": false
+		},
+		"dtrace-provider": {
+			"built": false
+		},
 		"esbuild": {
 			"built": true
 		},
 		"nx": {
 			"built": true
+		},
+		"protobufjs": {
+			"built": false
+		},
+		"re2": {
+			"built": false
 		}
 	}
 }
