@@ -166,11 +166,60 @@ export type DirectivePattern = {
 	readonly valueType?: 'string' | 'number' | 'boolean' | 'code';
 
 	/**
-	 * If true, the attribute can appear multiple times on the same element.
-	 * Can also be a string array of potentialName values for which
-	 * duplication is allowed (e.g., ['class', 'style']).
+	 * If true, the attribute is not a repeat of an attribute of the same name (`:class` beside `class`,
+	 * which Vue merges). Can also be a string array of potentialName values for which this holds
+	 * (e.g., ['class', 'style']).
+	 *
+	 * It is not whether the attribute may be written twice: that is told by {@link DirectivePattern.duplicateKey}
+	 * (without it, the same spelling of a name that is not `true` is a repeat, and `true` is never one).
 	 */
 	readonly isDuplicatable?: true | readonly string[];
+
+	/**
+	 * The key under which the framework counts this directive as written twice, as a template that takes the
+	 * captures of `pattern` (`$1`, `$2`, …) as they are spelled. Two attributes of an element with the same key
+	 * are a repeat, whatever name the directive resolves to (`potentialName`): a framework tells a repeat by
+	 * what it keeps of the name, and a directive is not an attribute of the DOM.
+	 *
+	 * Without it, a pattern is keyed by the name as it is written (how a framework that rejects only the
+	 * same spelling of a directive tells a repeat), except a pattern with `isDuplicatable: true`, which is
+	 * never a repeat (a framework that takes any number of the same directive).
+	 *
+	 * @example "$1" -- the key of `:view-box.camel` is its argument, `view-box` (with `duplicateKeyModifiers`, `viewBox`)
+	 */
+	readonly duplicateKey?: string;
+
+	/**
+	 * Modifiers of the directive that change {@link DirectivePattern.duplicateKey}: the modifiers are those
+	 * written after the name, and a framework gives two spellings of a name that differ in them the same key
+	 * (the order of them, a modifier that it does not know) or a different one (a modifier that changes the
+	 * name that is bound). Only the modifiers listed here count, and a modifier is matched as it is spelled.
+	 */
+	readonly duplicateKeyModifiers?: {
+		/**
+		 * The capture group of `pattern` that holds the modifiers, joined with `.` and starting with it (`.prop.camel`).
+		 */
+		readonly group: number;
+
+		/**
+		 * The modifiers that turn the template into camelCase before the prefixes are put in front of it.
+		 */
+		readonly camelize?: readonly string[];
+
+		/**
+		 * The prefix that a modifier puts in front of the key. They are put in the order listed, so that
+		 * the first of the listed modifiers that is written is the outermost.
+		 */
+		readonly prefixes?: readonly { readonly modifier: string; readonly prefix: string }[];
+
+		/**
+		 * When no prefix is put in front of the key, it is the name of an attribute (`:id.foo` binds `id`), so
+		 * the element folds its case as it does for any attribute and it is a repeat of that attribute
+		 * written as such (`:id`). A key with a prefix is a property or a namespaced name, which
+		 * keeps its case (`.id` and `.ID` are two).
+		 */
+		readonly foldedWithoutPrefix?: true;
+	};
 };
 
 /**

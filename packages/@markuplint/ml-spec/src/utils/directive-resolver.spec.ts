@@ -263,3 +263,131 @@ describe('resolveDirective', () => {
 		});
 	});
 });
+
+describe('duplicateKey', () => {
+	test('a pattern without it has no key of its own', () => {
+		const compiled = compileDirectivePatterns([{ pattern: '^@(.+)$', potentialName: 'on$1', isDirective: true }]);
+		expect(resolveDirective('@click', compiled)).not.toHaveProperty('duplicateKey');
+	});
+
+	test('a pattern that is duplicatable and has no key never counts a repeat', () => {
+		const compiled = compileDirectivePatterns([{ pattern: '^on:.+$', isDirective: true, isDuplicatable: true }]);
+		expect(resolveDirective('on:click', compiled)?.duplicateKey).toBeNull();
+	});
+
+	test('a pattern whose isDuplicatable lists names does not drop the key', () => {
+		const compiled = compileDirectivePatterns([
+			{ pattern: '^:([^.]+)$', potentialName: '$1', isDuplicatable: ['class', 'style'] },
+		]);
+		expect(resolveDirective(':class', compiled)).not.toHaveProperty('duplicateKey');
+	});
+
+	test('the template takes the captures and keeps their spelling', () => {
+		const compiled = compileDirectivePatterns([
+			{ pattern: '^class:([^|]+)', potentialName: 'class', isDuplicatable: true, duplicateKey: 'class:$1' },
+		]);
+		expect(resolveDirective('class:foo', compiled)?.duplicateKey).toBe('class:foo');
+		expect(resolveDirective('class:Foo', compiled)?.duplicateKey).toBe('class:Foo');
+	});
+
+	test('a key is declared even when the pattern is duplicatable', () => {
+		const compiled = compileDirectivePatterns([
+			{ pattern: '^style:([^|]+)', potentialName: 'style', isDuplicatable: true, duplicateKey: 'style:$1' },
+		]);
+		const result = resolveDirective('style:color|important', compiled);
+		expect(result?.isDuplicatable).toBe(true);
+		expect(result?.duplicateKey).toBe('style:color');
+	});
+
+	describe('modifiers', () => {
+		const compiled = compileDirectivePatterns([
+			{
+				pattern: '^(?:v-bind:|:)([^.]+)((?:\\.[^.]+)+)$',
+				isDirective: true,
+				duplicateKey: '$1',
+				duplicateKeyModifiers: {
+					group: 2,
+					camelize: ['camel'],
+					prefixes: [
+						{ modifier: 'attr', prefix: '^' },
+						{ modifier: 'prop', prefix: '.' },
+					],
+				},
+			},
+		]);
+
+		test.each([
+			[':id.prop', '.id'],
+			['v-bind:id.prop', '.id'],
+			[':id.attr', '^id'],
+			[':id.prop.attr', '^.id'],
+			[':id.attr.prop', '^.id'],
+			[':view-box.camel', 'viewBox'],
+			[':view-box.camel.prop', '.viewBox'],
+			[':view-box.prop.camel.attr', '^.viewBox'],
+			[':id.foo', 'id'],
+			[':id.foo.prop', '.id'],
+			[':id.PROP', 'id'],
+		])('%s is %s', (name, key) => {
+			expect(resolveDirective(name, compiled)?.duplicateKey).toBe(key);
+		});
+	});
+
+	test('camelize turns the captures into camelCase, not the text of the template', () => {
+		const compiled = compileDirectivePatterns([
+			{
+				pattern: '^:([^.]+)((?:\\.[^.]*)+)$',
+				isDirective: true,
+				duplicateKey: 'a-b-$1',
+				duplicateKeyModifiers: { group: 2, camelize: ['camel'] },
+			},
+		]);
+		expect(resolveDirective(':foo-bar.camel', compiled)?.duplicateKey).toBe('a-b-fooBar');
+		expect(resolveDirective(':foo-bar.x', compiled)?.duplicateKey).toBe('a-b-foo-bar');
+	});
+
+	describe('a key that is the name of an attribute', () => {
+		const compiled = compileDirectivePatterns([
+			{
+				pattern: '^:([^.]+)((?:\\.[^.]+)+)$',
+				isDirective: true,
+				duplicateKey: '$1',
+				duplicateKeyModifiers: {
+					group: 2,
+					camelize: ['camel'],
+					prefixes: [{ modifier: 'prop', prefix: '.' }],
+					foldedWithoutPrefix: true,
+				},
+			},
+		]);
+
+		test.each([':id.foo', ':view-box.camel'])('%s is folded as an attribute name', name => {
+			expect(resolveDirective(name, compiled)?.duplicateKeyFolds).toBe(true);
+		});
+
+		test.each([':id.prop', ':id.foo.prop'])('%s is not: a prefix is in front of it', name => {
+			expect(resolveDirective(name, compiled)).not.toHaveProperty('duplicateKeyFolds');
+		});
+
+		test('a pattern that does not declare it never folds', () => {
+			const plain = compileDirectivePatterns([
+				{ pattern: '^:([^.]+)\\.foo$', isDirective: true, duplicateKey: '$1' },
+			]);
+			expect(resolveDirective(':id.foo', plain)).not.toHaveProperty('duplicateKeyFolds');
+		});
+	});
+
+	test('a template with a base prefix takes the modifiers of the shorthand', () => {
+		const compiled = compileDirectivePatterns([
+			{
+				pattern: '^\\.([^.]+)((?:\\.[^.]+)*)$',
+				isDirective: true,
+				duplicateKey: '.$1',
+				duplicateKeyModifiers: { group: 2, camelize: ['camel'], prefixes: [{ modifier: 'attr', prefix: '^' }] },
+			},
+		]);
+		expect(resolveDirective('.id', compiled)?.duplicateKey).toBe('.id');
+		expect(resolveDirective('.view-box.camel', compiled)?.duplicateKey).toBe('.viewBox');
+		expect(resolveDirective('.id.attr', compiled)?.duplicateKey).toBe('^.id');
+	});
+});
