@@ -156,7 +156,12 @@ export interface MLASTElement extends MLASTAbstractNode {
 	readonly hasSpreadAttr?: boolean;
 	/** Direct child nodes of this element */
 	readonly childNodes: readonly MLASTChildNode[];
-	/** Block behavior associated with this element, if any */
+	/**
+	 * The behavior of an element that its language marks by an attribute: Vue's `v-if`, `v-else-if`,
+	 * `v-else` (`'if'`, `'if:elseif'`, `'if:else'`) and `v-for` (`'each'`). The element is not a block and
+	 * `conditionalChildNodes()` does not enumerate it; what asks whether a node may be left out (`mayBeLeftOut`
+	 * of `@markuplint/ml-core`) reads it. `null` for an element without such an attribute.
+	 */
 	readonly blockBehavior: MLASTBlockBehavior | null;
 	/** UUID of the matching closing tag, or `null` for void / self-closing elements */
 	readonly pairNodeUuid: string | null;
@@ -202,7 +207,8 @@ export interface MLASTElementCloseTag extends MLASTAbstractNode {
 /**
  * A preprocessor-specific block node, representing control-flow constructs
  * from template engines and frameworks (e.g. `{#if}`, `{#each}` in Svelte,
- * `v-if` blocks in Vue, `<% if %>` in EJS/ERB).
+ * `<% if %>` in EJS/ERB). Vue's `v-if` is no block: the element carries the behavior
+ * ({@link MLASTElement.blockBehavior}).
  *
  * In `ml-core` this maps to `MLBlock`. `parentNode` walks through every such
  * block, so an element inside it keeps the element that contains the block
@@ -233,7 +239,9 @@ export interface MLASTPreprocessorSpecificBlock extends MLASTAbstractNode {
  *
  * `ml-core` uses the `type` to enumerate conditional branches
  * (`conditionalChildNodes()`) so content-model rules such as
- * `permitted-contents` can analyze each branch separately.
+ * `permitted-contents` can analyze each branch separately, and to ask
+ * whether a node may be left out (`mayBeLeftOut`, `mayBeAbsentWith`) and what
+ * is in a branch (`MLElement#hasMutableChildren`).
  */
 export interface MLASTBlockBehavior {
 	/** The kind of block behavior (e.g. `'if'`, `'each'`, `'await'`) */
@@ -598,6 +606,24 @@ export interface MLParser {
 	 * Both say it in the same form ({@link LiteralValueDeclaration}).
 	 */
 	literalValues?: LiteralValueDeclaration;
+
+	/**
+	 * Where the framework holds the children of a `template` element that the author wrote without a
+	 * directive of the framework (`'separate-tree'`, the default, or `'in-place'`; see
+	 * `MLMLSpec#templateContent` of `@markuplint/ml-spec` for what each says). A parser declares it so that
+	 * the document is read right without the spec package of the framework in the configuration; what
+	 * the spec says (`MLMLSpec#templateContent`) wins over this.
+	 *
+	 * Only a parser of a framework that creates the element and appends the children to it declares `'in-place'`
+	 * (Vue). A parser that several frameworks share (JSX: React, SolidJS, Qwik) leaves it to the spec of the
+	 * framework (`@markuplint/react-spec`), as it does for `slotElement`. One that puts them in the `content` as the HTML parser does keeps the default: Svelte
+	 * (the compiler appends the children of a `template` to its `content`), a framework or a template
+	 * language that renders HTML for the browser to parse (Astro, Pug, Nunjucks and the like), and Alpine.js,
+	 * which works on the DOM of the HTML.
+	 *
+	 * @see https://github.com/sveltejs/svelte/blob/main/packages/svelte/src/compiler/phases/3-transform/client/visitors/RegularElement.js#RegularElement
+	 */
+	templateContent?: 'separate-tree' | 'in-place';
 
 	/**
 	 * What the `slot` element is in the language of the parser.
