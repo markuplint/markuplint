@@ -1,8 +1,8 @@
 import type * as cheerio from 'cheerio';
-import type { Element } from 'domhandler';
 
 import type { ElementSpec, ExtendedElementSpec, Category, Attribute } from '@markuplint/ml-spec';
 
+import type { Element } from './cheerio-types.ts';
 import type { FetchOptions } from './fetch.ts';
 
 import { fetch } from './fetch.ts';

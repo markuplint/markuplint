@@ -1,5 +1,4 @@
 import type * as cheerio from 'cheerio';
-import type { Element } from 'domhandler';
 
 import type {
 	ARIAProperty,
@@ -10,6 +9,8 @@ import type {
 	EquivalentHtmlAttr,
 } from '@markuplint/ml-spec';
 import type { WritableDeep } from 'type-fest';
+
+import type { Element } from './cheerio-types.ts';
 
 import { fetch } from './fetch.ts';
 import {

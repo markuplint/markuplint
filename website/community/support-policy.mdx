@@ -1,0 +1,25 @@
+# Support policy
+
+Markuplint keeps up to three major versions at a time: the current stable version, the previous one as LTS (long-term support), and the next one while it is developed.
+
+| Version | Status       | What it receives                                                              | npm dist-tag                             | Node.js           |
+| ------- | ------------ | ----------------------------------------------------------------------------- | ---------------------------------------- | ----------------- |
+| v6      | Experimental | The next major version in development. Breaking changes can land at any time. | Prereleases only (`alpha`, `beta`, `rc`) | v26 or later      |
+| v5      | Stable       | New features, bug fixes and dependency updates                                | `latest`                                 | v24 or later      |
+| v4      | LTS          | Fixes of security vulnerabilities only                                        | `v4`                                     | v18.18.0 or later |
+
+## How long a version is supported
+
+Two major versions are supported: the current stable version and the one before it. When the next major version is released as stable, every status moves one step: the LTS version reaches its end of life, the stable version becomes LTS, and the experimental version becomes stable. When v6 is released as stable, v4 support ends and v5 becomes LTS.
+
+A version that reached its end of life receives no more releases, including security fixes. Its packages stay on npm.
+
+## How fixes reach you
+
+- **Vulnerabilities in dependencies** are fixed on every supported version as soon as a fixed release is available.
+- **Other dependency updates** are taken by the stable and experimental versions only after the new release has been public for seven days. The LTS version takes no other dependency updates, so the dependency ranges and the Node.js versions it supports stay as they are.
+- **Releases**: a fix merged into a supported version is released within days. The repository opens an Issue automatically when a change that reaches npm users has waited three days without a release.
+
+## Reporting a vulnerability
+
+Do not report a vulnerability in a public Issue. See the [security policy](https://github.com/markuplint/markuplint/security/policy) for how to report it privately.

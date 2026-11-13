@@ -502,6 +502,28 @@
 			}
 		},
 		{
+			"files": ["packages/@markuplint/html-spec/**/*.ts"],
+			"rules": {
+				"no-restricted-imports": [
+					"error",
+					{
+						"paths": [
+							{
+								"name": "domhandler",
+								"message": "Use the node types in ./generator/cheerio-types.ts: html-spec does not depend on domhandler, and a hoisted copy can differ from cheerio's."
+							}
+						],
+						"patterns": [
+							{
+								"group": ["domhandler/**"],
+								"message": "Use the node types in ./generator/cheerio-types.ts: html-spec does not depend on domhandler, and a hoisted copy can differ from cheerio's."
+							}
+						]
+					}
+				]
+			}
+		},
+		{
 			"files": ["website/**/*"],
 			"rules": {
 				"react/display-name": "error",

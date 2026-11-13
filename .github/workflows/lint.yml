@@ -7,9 +7,7 @@ on:
     pull_request:
         branches:
             - dev
-            - v3
             - v6
-            - next
         paths:
             - '.github/workflows/lint.yml'
             - 'packages/**'
