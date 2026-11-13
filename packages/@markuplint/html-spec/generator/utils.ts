@@ -1,7 +1,8 @@
 import type * as cheerio from 'cheerio';
-import type { AnyNode } from 'domhandler';
 
 import type { ARIARoleInSchema } from '@markuplint/ml-spec';
+
+import type { AnyNode } from './cheerio-types.ts';
 
 type HasName = { readonly name: string };
 
