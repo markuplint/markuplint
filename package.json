@@ -112,7 +112,7 @@
 	"packageManager": "yarn@4.18.1",
 	"resolutions": {
 		"markuplint": "workspace:*",
-		"undici@npm:7.29.0": "7.30.2"
+		"undici@npm:7.29.0": "8.12.4"
 	},
 	"dependenciesMeta": {
 		"@vscode/vsce-sign": {
