@@ -38,7 +38,8 @@
 | `XMLName`                          | <code>svg&#x7C;[attributeName]</code>他                | [XML](https://www.w3.org/TR/xml/#d0e804)                                                                 | ✅       |
 | `DOMID`                            | `id`属性ほか                                           | [WHATWG](https://momdo.github.io/html/dom.html#global-attributes:concept-id)                             | ✅       |
 | `FunctionBody`                     | Event handler属性s                                     |                                                                                                          | 🚧       |
-| `Pattern`                          | `input[pattern]`                                       | [WHATWG](https://momdo.github.io/html/input.html#compiled-pattern-regular-expression)                    | ✅       |
+| `Pattern`                          | `input[pattern]`（`v` フラグでコンパイル）             | [WHATWG](https://momdo.github.io/html/input.html#compiled-pattern-regular-expression)                    | ✅       |
+| `FormControlName`                  | `input[name]`                                          | [WHATWG](https://momdo.github.io/html/form-control-infrastructure.html#attr-fe-name)                     | ✅       |
 | `DateTime`                         | `time[datetime]`ほか                                   | [WHATWG](https://momdo.github.io/html/text-level-semantics.html#datetime-value)                          | ✅       |
 | `TabIndex`                         | `tabindex`属性                                         | [WHATWG](https://momdo.github.io/html/interaction.html#attr-tabindex)                                    | ✅       |
 | `BCP47`                            | `lang`属性ほか                                         | [RFC](https://www.rfc-editor.org/info/bcp47)                                                             | ✅       |
