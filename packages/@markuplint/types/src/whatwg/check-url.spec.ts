@@ -1,4 +1,4 @@
-import { test, expect } from 'vitest';
+import { describe, test, expect } from 'vitest';
 
 import { checkURL } from './check-url.js';
 
@@ -362,4 +362,72 @@ test('IPv4-non-decimal-part check does not false-positive on ordinary domains', 
 test('IPv4-non-decimal-part check is scoped to special-scheme/scheme-relative hosts', () => {
 	// Non-special schemes have an opaque host — no IPv4 parsing applies.
 	expect(check('mailto:0x1@example.com').matched).toBe(true);
+});
+
+// file-invalid-Windows-drive-letter-host
+// https://url.spec.whatwg.org/#file-invalid-windows-drive-letter-host
+test.each([
+	'file://C:/foo',
+	'file://c|/foo',
+	'file://C|',
+	'file://C:?q',
+	'file://C|#h',
+	'FILE://c:/foo',
+	'file:\\\\C:/foo',
+])('file-invalid-Windows-drive-letter-host: the host `%s` is a Windows drive letter and is rejected', value => {
+	expect(check(value).matched).toBe(false);
+});
+
+test.each(['file://host/C:/foo', 'file://localhost/C:/foo', 'file://c/foo'])(
+	'file-invalid-Windows-drive-letter-host: `%s` does not have a drive letter as its host',
+	value => {
+		expect(check(value).matched).toBe(true);
+	},
+);
+
+// invalid-URL-unit: the ASCII code points that are not URL code points
+// https://url.spec.whatwg.org/#url-code-points
+describe('invalid-URL-unit: a code point that is not a URL code point in the path, the query or the fragment', () => {
+	const rejected = ['|', '^', '{', '}', '"', '<', '>', '`'];
+
+	test.each(rejected)('`%s` is rejected in the path, the query and the fragment of a special-scheme URL', c => {
+		expect(check(`http://example.com/a${c}b`).matched).toBe(false);
+		expect(check(`http://example.com/?q=a${c}b`).matched).toBe(false);
+		expect(check(`http://example.com/#a${c}b`).matched).toBe(false);
+		expect(check(`file:///C:/a${c}b`).matched).toBe(false);
+	});
+
+	test.each(rejected)('`%s` is rejected in a scheme-relative and in a relative URL', c => {
+		expect(check(`//example.com/a${c}b`).matched).toBe(false);
+		expect(check(`/a${c}b`).matched).toBe(false);
+		expect(check(`a${c}b`).matched).toBe(false);
+		expect(check(`?q=a${c}b`).matched).toBe(false);
+		expect(check(`#a${c}b`).matched).toBe(false);
+	});
+
+	test('`file:///C|/foo` is rejected because `|` is not a URL code point', () => {
+		expect(check('file:///C|/foo').matched).toBe(false);
+		expect(check('file:///C:/foo').matched).toBe(true);
+	});
+
+	test.each(rejected)('percent-encoded `%s` is accepted', c => {
+		const encoded = encodeURIComponent(c).replace('`', '%60');
+		expect(check(`http://example.com/a${encoded}b?q=${encoded}#${encoded}`).matched).toBe(true);
+	});
+
+	test('URL code points are accepted', () => {
+		expect(check("http://example.com/a-._~!$&'()*+,;=:@/b?q=c/d?e#f/g?h").matched).toBe(true);
+		expect(check('http://example.com/日本語/é?q=ü#ß').matched).toBe(true);
+	});
+
+	test('the authority is not read: an IPv6 host and userinfo-free hosts are unaffected', () => {
+		expect(check('http://[::1]/path').matched).toBe(true);
+		expect(check('//[::1]:8080/path').matched).toBe(true);
+	});
+
+	test('the content of a non-special scheme is accepted as opaque', () => {
+		expect(check('data:text/html,<h1>Hello</h1>').matched).toBe(true);
+		expect(check('javascript:alert("x")').matched).toBe(true);
+		expect(check('mailto:a|b@example.com').matched).toBe(true);
+	});
 });

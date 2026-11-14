@@ -116,6 +116,37 @@ function hasBracketsOutsideHost(value: string): boolean {
 }
 
 /**
+ * The ASCII code points that are neither URL code points nor handled by another check here:
+ * `"`, `<`, `>`, `^`, `` ` ``, `{`, `|` and `}`. (`[` and `]` are `hasBracketsOutsideHost`, space,
+ * the C0 controls, DEL and `#` have their own patterns, `%` is `MALFORMED_PERCENT`, and `\` is
+ * left alone: a special-scheme URL reports it as `invalid-reverse-solidus`, and the opaque path of
+ * a non-special scheme is accepted on purpose.)
+ *
+ * @see https://url.spec.whatwg.org/#url-code-points
+ */
+const NON_URL_CODE_POINT = /["<>^`{|}]/;
+
+/**
+ * Whether the path, the query or the fragment of a URL has a code point of
+ * {@link NON_URL_CODE_POINT}: the `invalid-URL-unit` of the path state, the opaque path state, the
+ * query state and the fragment state.
+ *
+ * The authority is not read: the userinfo and the host are not parsed in those states (a forbidden
+ * host code point makes the URL fail to parse, which `URL.canParse` reports below). The caller
+ * applies it to special-scheme and scheme-relative URLs only.
+ *
+ * Examples caught: `/a|b`, `http://example.com/?q=a|b`, `#a{b}`, `file:///C|/foo`.
+ *
+ * @see https://url.spec.whatwg.org/#invalid-url-unit
+ */
+function hasNonURLCodePointOutsideHost(value: string): boolean {
+	if (!NON_URL_CODE_POINT.test(value)) {
+		return false;
+	}
+	return NON_URL_CODE_POINT.test(value.replace(/^(?:[a-z][a-z0-9+.-]*:)?\/\/[^/?#]*/i, ''));
+}
+
+/**
  * Pattern: a `data:` URL with no `,` separator.
  *
  * RFC 2397 requires the form `data:[<mediatype>][;base64],<data>`; the
@@ -128,17 +159,21 @@ function hasBracketsOutsideHost(value: string): boolean {
 const DATA_URL_MISSING_COMMA = /^data:[^,]*$/i;
 
 /**
- * Pattern: file-scheme URL with a Windows drive letter that uses `|` instead of `:`.
+ * Pattern: a `file:` URL whose host is a Windows drive letter (`file://C:/foo`, `file://C|/foo`).
  *
- * URL LS §1.1 says `C|` is auto-corrected to `C:` and triggers a
- * `file-invalid-Windows-drive-letter` validation error. nu-validator surfaces
- * this and so do we.
+ * The file host state ends the host at `/`, `\`, `?`, `#` or the end of the input and, when what
+ * it read is a Windows drive letter (an ASCII alpha and `:` or `|`), reports
+ * `file-invalid-Windows-drive-letter-host` (URL LS §1.1).
  *
- * Matches `file:C|...`, `file:/C|...`, `file://C|...`, `file:///C|...`, etc.
+ * The other forms of a `file:` URL with `C|` are not this error, and are rejected by other checks:
+ * `file:C|/foo` and `file:/C|/foo` by the missing-solidus checks (a `file:` URL without `//`),
+ * `file:///C|/foo` by `invalid-URL-unit`, as `|` is not a URL code point.
+ * `file-invalid-Windows-drive-letter` itself is for a relative URL whose base URL has the scheme
+ * `file`, which the value alone does not decide.
  *
- * @see https://url.spec.whatwg.org/#file-invalid-windows-drive-letter
+ * @see https://url.spec.whatwg.org/#file-invalid-windows-drive-letter-host
  */
-const FILE_WINDOWS_DRIVE_LETTER_WITH_BAR = /^file:\/{0,3}[a-z]\|/i;
+const FILE_HOST_IS_WINDOWS_DRIVE_LETTER = /^file:[/\\]{2}[a-z][:|](?:[/\\?#]|$)/i;
 
 /**
  * Characters that are illegal in URLs per WHATWG URL Standard.
@@ -314,11 +349,12 @@ function isSpecialOrSchemeless(value: string): boolean {
  * Categories caught:
  *
  * - **invalid-URL-unit** (forbidden code points, malformed percent-encoding,
- *   unencoded space, tab/CR/LF)
+ *   unencoded space, tab/CR/LF, `[` `]` outside the host, and `"` `<` `>` `^` `` ` `` `{` `|` `}`
+ *   in the path, the query and the fragment)
  * - **invalid-reverse-solidus** (`\` in a special-scheme URL)
  * - **special-scheme-missing-following-solidus** (`http:foo`, `file:bar`)
  *   and its single-slash variants
- * - **file-invalid-Windows-drive-letter** (`file:///C|/foo`)
+ * - **file-invalid-Windows-drive-letter-host** (`file://C:/foo`, `file://C|/foo`)
  * - **invalid-credentials** (`http://user:pass@example.com`)
  * - **IPv4-non-decimal-part** (`http://192.0x00A80001`, hex/octal host labels)
  * - any URL that fails `new URL()` parsing (even with a dummy base)
@@ -375,8 +411,8 @@ export const checkURL: CustomSyntaxChecker = () =>
 			return unmatched(trimmed, 'unexpected-token');
 		}
 
-		// file-invalid-Windows-drive-letter (e.g., `file:///C|/foo`)
-		if (FILE_WINDOWS_DRIVE_LETTER_WITH_BAR.test(trimmed)) {
+		// file-invalid-Windows-drive-letter-host (e.g., `file://C|/foo`, `file://C:/foo`)
+		if (FILE_HOST_IS_WINDOWS_DRIVE_LETTER.test(trimmed)) {
 			return unmatched(trimmed, 'unexpected-token');
 		}
 
@@ -404,6 +440,13 @@ export const checkURL: CustomSyntaxChecker = () =>
 
 		// invalid-URL-unit: `[` or `]` outside the IPv6 host position.
 		if (hasBracketsOutsideHost(trimmed)) {
+			return unmatched(trimmed, 'unexpected-token');
+		}
+
+		// invalid-URL-unit: a code point of the path, the query or the fragment that is not a URL code point.
+		// Only for special-scheme / scheme-relative URLs, as for `#` above and `\` below: the content of a
+		// non-special scheme (`data:text/html,<h1>`, `javascript:alert("x")`) is accepted as opaque.
+		if (isSpecialOrSchemeless(trimmed) && hasNonURLCodePointOutsideHost(trimmed)) {
 			return unmatched(trimmed, 'unexpected-token');
 		}
 

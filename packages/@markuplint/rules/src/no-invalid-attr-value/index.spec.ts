@@ -2673,3 +2673,20 @@ test('[no-invalid-attr-value-issue-4584-001] the allowed values are shown as wri
 		},
 	]);
 });
+
+test('[no-invalid-attr-value-invalid-071] a URL with a code point that is not a URL code point is rejected', async () => {
+	// `|` is not a URL code point: invalid-URL-unit in the path, the query and the fragment.
+	// https://url.spec.whatwg.org/#url-code-points
+	const path = await mlRuleTest(rule, '<a href="file:///C|/foo"></a>');
+	expect(path.violations.length).toBe(1);
+	const query = await mlRuleTest(rule, '<a href="http://example.com/?q=a|b"></a>');
+	expect(query.violations.length).toBe(1);
+	const fragment = await mlRuleTest(rule, '<img src="/a#b{c}" alt="">');
+	expect(fragment.violations.length).toBe(1);
+});
+
+test('[no-invalid-attr-value-invalid-072] a drive letter as the host of a file URL is rejected', async () => {
+	// https://url.spec.whatwg.org/#file-invalid-windows-drive-letter-host
+	const { violations } = await mlRuleTest(rule, '<a href="file://C:/foo"></a>');
+	expect(violations.length).toBe(1);
+});
