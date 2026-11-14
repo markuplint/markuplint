@@ -28,10 +28,58 @@ test('OneLineAny', () => {
 	expect(check('a\rb', 'OneLineAny').matched).toBe(false);
 });
 
+/**
+ * @see https://html.spec.whatwg.org/multipage/form-control-infrastructure.html#attr-fe-name
+ *
+ * > If the attribute is specified, its value must not be the empty string or isindex.
+ */
+test('FormControlName', () => {
+	expect(check('', 'FormControlName').matched).toBe(false);
+	expect(check('isindex', 'FormControlName').matched).toBe(false);
+	expect(check('Isindex', 'FormControlName').matched).toBe(true);
+	expect(check('isindex ', 'FormControlName').matched).toBe(true);
+	expect(check('isindexes', 'FormControlName').matched).toBe(true);
+	expect(check(' ', 'FormControlName').matched).toBe(true);
+	expect(check('username', 'FormControlName').matched).toBe(true);
+	// Only the empty string and `isindex` are excluded: a value that starts with a line terminator is a name.
+	expect(check('\nfoo', 'FormControlName').matched).toBe(true);
+	expect(check('\u2028', 'FormControlName').matched).toBe(true);
+});
+
+test('FormControlName (reason)', () => {
+	expect(check('', 'FormControlName')).toMatchObject({ matched: false, reason: 'empty-token' });
+	expect(check('isindex', 'FormControlName')).toMatchObject({ matched: false, reason: 'unexpected-token' });
+});
+
 test('Pattern (keyword)', () => {
 	expect(check('.*', 'Pattern').matched).toBe(true);
 	expect(check('[a-z]+', 'Pattern').matched).toBe(true);
 	expect(check(']//[()?!+*', 'Pattern').matched).toBe(false);
+});
+
+/**
+ * The HTML Standard compiles the value of the `pattern` attribute with the `v` flag.
+ *
+ * @see https://html.spec.whatwg.org/multipage/input.html#compiled-pattern-regular-expression
+ */
+test('Pattern (keyword, compiled with the v flag)', () => {
+	// valid only with the `v` flag: set operations in a character class
+	expect(check(String.raw`[\p{L}--[a-z]]`, 'Pattern').matched).toBe(true);
+	// invalid only with the `v` flag: a syntax character that is not escaped in a class, a lone brace,
+	// an identity escape of `-` outside a class, a range-like trailing hyphen
+	expect(check('[(]', 'Pattern').matched).toBe(false);
+	expect(check('a{', 'Pattern').matched).toBe(false);
+	expect(check('{', 'Pattern').matched).toBe(false);
+	expect(check(String.raw`\-`, 'Pattern').matched).toBe(false);
+	expect(check('[a-]', 'Pattern').matched).toBe(false);
+	// the value alone is compiled as well as wrapped: `^(?:a)|(b)$` is valid, `a)|(b` is not
+	expect(check('a)|(b', 'Pattern').matched).toBe(false);
+	expect(check('a)(b', 'Pattern').matched).toBe(false);
+	// valid with and without it
+	expect(check(String.raw`(?=.*\d).{8,}`, 'Pattern').matched).toBe(true);
+	expect(check(String.raw`(a)\1`, 'Pattern').matched).toBe(true);
+	expect(check(String.raw`(?<year>\d{4})`, 'Pattern').matched).toBe(true);
+	expect(check(String.raw`[\-]`, 'Pattern').matched).toBe(true);
 });
 
 test('Pattern (object)', () => {

@@ -64,6 +64,33 @@ export const defs: Defs = {
 		is: value => (value.length > 0 ? matched() : unmatched(value, 'empty-token')),
 	},
 
+	/**
+	 * @see https://html.spec.whatwg.org/multipage/form-control-infrastructure.html#attr-fe-name
+	 *
+	 * > If the attribute is specified, its value must not be the empty string or isindex.
+	 *
+	 * The spec writes `isindex` without an ASCII case-insensitive qualifier, so the match is
+	 * case-sensitive.
+	 */
+	FormControlName: {
+		ref: 'https://html.spec.whatwg.org/multipage/form-control-infrastructure.html#attr-fe-name',
+		expects: [
+			{
+				type: 'format',
+				value: 'form control name',
+			},
+		],
+		is: value => {
+			if (value.length === 0) {
+				return unmatched(value, 'empty-token');
+			}
+			if (value === 'isindex') {
+				return unmatched(value, 'unexpected-token');
+			}
+			return matched();
+		},
+	},
+
 	OneLineAny: {
 		ref: '',
 		is: value => {
@@ -200,6 +227,21 @@ export const defs: Defs = {
 		is: () => matched(),
 	},
 
+	/**
+	 * @see https://html.spec.whatwg.org/multipage/input.html#compiled-pattern-regular-expression
+	 *
+	 * > Let regexpCompletion be RegExpCreate(pattern, "v").
+	 *
+	 * > If regexpCompletion is an abrupt completion, then return nothing. The element has no compiled pattern regular expression.
+	 *
+	 * > Let anchoredPattern be the string "^(?:", followed by pattern, followed by ")$".
+	 *
+	 * The value is compiled alone and then wrapped, both with the `v` flag. The Rust engine asks
+	 * `isValidPatternAttributeValue` in `ml-engine.ts` of `markuplint`, which makes the same two
+	 * compilations: keep them equal. The `catch` wraps `new RegExp` of the author's text alone, so a
+	 * `SyntaxError` is the answer "not a regular expression" and not a broken invariant (no
+	 * `isFatalError()` guard; `@markuplint/shared`, `errors/index.ts`).
+	 */
 	Pattern: {
 		ref: 'https://html.spec.whatwg.org/multipage/input.html#compiled-pattern-regular-expression',
 		expects: [
@@ -210,7 +252,8 @@ export const defs: Defs = {
 		],
 		is: value => {
 			try {
-				new RegExp(`^(?:${value})$`);
+				new RegExp(value, 'v');
+				new RegExp(`^(?:${value})$`, 'v');
 			} catch {
 				return unmatched(value);
 			}

@@ -1263,6 +1263,7 @@
 				"DateStringWithOptionalTime",
 				"DateTime",
 				"Email",
+				"FormControlName",
 				"FunctionBody",
 				"HTTPEquivContentType",
 				"HTTPEquivRefresh",
