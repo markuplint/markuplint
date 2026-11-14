@@ -1,4 +1,4 @@
-// https://drafts.fxtf.org/filter-effects/#feDiffuseLightingElement
+// https://drafts.csswg.org/filter-effects-1/#feDiffuseLightingElement
 // https://www.w3.org/TR/svg-aam/#role-map-fediffuselighting
 {
 	"contentModel": {
@@ -100,19 +100,19 @@
 		"#SVGFilterPrimitiveAttrs": ["x", "y", "width", "height", "result", "in"]
 	},
 	"attributes": {
-		// https://drafts.fxtf.org/filter-effects/#element-attrdef-fediffuselighting-surfacescale
+		// https://drafts.csswg.org/filter-effects-1/#element-attrdef-fediffuselighting-surfacescale
 		"surfaceScale": {
 			"type": "<number>",
 			"defaultValue": "1",
 			"animatable": true
 		},
-		// https://drafts.fxtf.org/filter-effects/#element-attrdef-fediffuselighting-diffuseconstant
+		// https://drafts.csswg.org/filter-effects-1/#element-attrdef-fediffuselighting-diffuseconstant
 		"diffuseConstant": {
 			"type": "<number>",
 			"defaultValue": "1",
 			"animatable": true
 		},
-		// https://drafts.fxtf.org/filter-effects/#element-attrdef-fediffuselighting-kernelunitlength
+		// https://drafts.csswg.org/filter-effects-1/#element-attrdef-fediffuselighting-kernelunitlength
 		"kernelUnitLength": {
 			"type": "<number-optional-number>",
 			"animatable": true,

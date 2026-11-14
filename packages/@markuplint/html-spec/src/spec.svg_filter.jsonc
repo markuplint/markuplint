@@ -1,4 +1,4 @@
-// https://drafts.fxtf.org/filter-effects/#FilterElement
+// https://drafts.csswg.org/filter-effects-1/#FilterElement
 // https://www.w3.org/TR/svg-aam/#role-map-filter
 {
 	"contentModel": {
@@ -97,23 +97,23 @@
 			},
 			"defaultValue": "true"
 		},
-		// https://drafts.fxtf.org/filter-effects/#element-attrdef-filter-x
+		// https://drafts.csswg.org/filter-effects-1/#element-attrdef-filter-x
 		"x": {
 			"defaultValue": "-10%"
 		},
-		// https://drafts.fxtf.org/filter-effects/#element-attrdef-filter-y
+		// https://drafts.csswg.org/filter-effects-1/#element-attrdef-filter-y
 		"y": {
 			"defaultValue": "-10%"
 		},
-		// https://drafts.fxtf.org/filter-effects/#element-attrdef-filter-width
+		// https://drafts.csswg.org/filter-effects-1/#element-attrdef-filter-width
 		"width": {
 			"defaultValue": "120%"
 		},
-		// https://drafts.fxtf.org/filter-effects/#element-attrdef-filter-height
+		// https://drafts.csswg.org/filter-effects-1/#element-attrdef-filter-height
 		"height": {
 			"defaultValue": "120%"
 		},
-		// https://drafts.fxtf.org/filter-effects/#element-attrdef-filter-filterunits
+		// https://drafts.csswg.org/filter-effects-1/#element-attrdef-filter-filterunits
 		"filterUnits": {
 			"type": {
 				"enum": ["userSpaceOnUse", "objectBoundingBox"],
@@ -122,7 +122,7 @@
 			"defaultValue": "objectBoundingBox",
 			"animatable": true
 		},
-		// https://drafts.fxtf.org/filter-effects/#element-attrdef-filter-primitiveunits
+		// https://drafts.csswg.org/filter-effects-1/#element-attrdef-filter-primitiveunits
 		"primitiveUnits": {
 			"type": {
 				"enum": ["userSpaceOnUse", "objectBoundingBox"]

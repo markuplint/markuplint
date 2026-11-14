@@ -10,9 +10,32 @@ import { sortObjectByKey } from './utils.ts';
 
 const MAIN_ARTICLE_SELECTOR = 'main#content';
 
+const OBSOLETE = 'https://html.spec.whatwg.org/multipage/obsolete.html';
+
+/**
+ * Where an obsolete element is defined. The `cite` is the only place that says so, since an obsolete element has no
+ * source file, and the spec citation watch reads it from `index.json`: the element's own term has the description
+ * that the list gives it, which a change of the specification is reported against. An element that the page names
+ * without a term of its own (`marquee`, in the group that shares one description) can only cite the list.
+ */
+function obsoleteCite(name: string, hasTerm: boolean): string {
+	return `${OBSOLETE}#${hasTerm ? name : 'non-conforming-features'}`;
+}
+
+/**
+ * Reads the list of non-conforming features, and answers whether it has a term (`id`) for an element name.
+ * A page that could not be fetched has none, so every element falls back to citing the list, and the failed fetch is
+ * reported with the others.
+ */
+export async function fetchObsoleteTerms(): Promise<(name: string) => boolean> {
+	const $ = await fetch(OBSOLETE);
+	return name => $(`[id="${name}"]`).length > 0;
+}
+
 export function fetchObsoleteElements(
 	obsoleteList: readonly string[],
 	specs: readonly ExtendedElementSpec[],
+	hasTerm: (name: string) => boolean = () => true,
 ): ExtendedElementSpec[] {
 	return obsoleteList
 		.map<ElementSpec | null>(name => {
@@ -22,7 +45,7 @@ export function fetchObsoleteElements(
 			}
 			return {
 				name,
-				cite: 'https://html.spec.whatwg.org/multipage/obsolete.html#non-conforming-features',
+				cite: obsoleteCite(name, hasTerm(name)),
 				obsolete: true,
 				categories: [],
 				contentModel: {
