@@ -33,12 +33,18 @@ type Attributes = NonNullable<Element['attributes']>;
 type Aria = NonNullable<Defs['#aria']>;
 type AriaList = Aria[keyof Aria];
 
-function omit<T extends object>(value: T, key: string): T {
-	return Object.fromEntries(Object.entries(value).filter(([name]) => name !== key)) as T;
+/** What is not an object with keys (a `null`, a string, an array) has nothing to drop and is left as it is. */
+const isKeyed = (value: unknown): value is object =>
+	typeof value === 'object' && value !== null && !Array.isArray(value);
+
+function omit<T>(value: T, key: string): T {
+	return isKeyed(value) ? (Object.fromEntries(Object.entries(value).filter(([name]) => name !== key)) as T) : value;
 }
 
 function stripAttributes(attributes: Attributes): Attributes {
-	return Object.fromEntries(Object.entries(attributes).map(([name, attr]) => [name, omit(attr, 'description')]));
+	return isKeyed(attributes)
+		? Object.fromEntries(Object.entries(attributes).map(([name, attr]) => [name, omit(attr, 'description')]))
+		: attributes;
 }
 
 function stripElement(element: Element): Element {

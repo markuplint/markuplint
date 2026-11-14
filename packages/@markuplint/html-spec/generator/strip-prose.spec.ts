@@ -124,6 +124,8 @@ describe('stripProse', () => {
 		['a spec with no element specs', { def: { '#contentModels': { '#flow': ['div'] } } }],
 		['a spec with no definitions', { specs: [{ name: 'my-element' }] }],
 		['an ARIA version with none of the lists', { def: { '#aria': { '1.3': {} } } }],
+		['an element whose attributes are not an object', { specs: [{ name: 'a', attributes: ['href'] }] }],
+		['an attribute that is not an object', { specs: [{ name: 'a', attributes: { href: null } }] }],
 		[
 			'the attributes that an extension adds to the global ones',
 			{ def: { '#globalAttrs': { '#extends': { 'my-attr': { type: 'Any', description: 'Mine.' } } } } },
