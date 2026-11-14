@@ -7,6 +7,10 @@ on:
         paths:
             - '.github/workflows/test-vscode.yml'
             - 'vscode/**'
+            # The extension runs the language server of the checkout (a workspace
+            # dependency) and, through it, markuplint and the other packages, so a
+            # change to any of them alone can break it.
+            - 'packages/**'
 
 jobs:
     test:
@@ -14,12 +18,24 @@ jobs:
         # Windows coverage exists specifically because of bugs like #3795 — the
         # `ERR_UNSUPPORTED_ESM_URL_SCHEME` crash that only manifested on Windows
         # drive-letter paths and went undetected under ubuntu-only CI.
+        # The `engines.vscode` minimum runs too, on Linux only: a major of
+        # `vscode-languageclient` can drop a VS Code that `engines.vscode` still
+        # promises, and only the extension host of that version shows it. The
+        # server also runs on that VS Code's own Node.js (TransportKind.ipc forks
+        # it with Electron), so `engines.vscode` must name a VS Code whose Node.js
+        # meets `engines.node` of the server and markuplint (>=24 from VS Code 1.123).
+        # `minimum` is read from `engines.vscode` in `vscode/package.json`.
         strategy:
             fail-fast: false
             matrix:
                 os:
                     - ubuntu-latest
                     - windows-latest
+                vscode-version:
+                    - stable
+                include:
+                    - os: ubuntu-latest
+                      vscode-version: minimum
         runs-on: ${{ matrix.os }}
         steps:
             - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
@@ -51,6 +67,11 @@ jobs:
             - name: Install dependencies
               shell: bash
               run: yarn install --immutable && yarn run build
+
+            - name: Pin the VS Code version (minimum only)
+              if: matrix.vscode-version == 'minimum'
+              shell: bash
+              run: echo "VSCODE_TEST_VERSION=$(node -p "require('./vscode/package.json').engines.vscode.match(/\d+\.\d+\.\d+/)[0]")" >> "$GITHUB_ENV"
 
             - name: Run tests
               shell: bash
