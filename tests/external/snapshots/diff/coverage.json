@@ -580,8 +580,8 @@
 			"path": "html-aria/author-requirements/581.html",
 			"category": "aria",
 			"nu": "clean",
-			"ml": "clean",
-			"verdict": "match-clean",
+			"ml": "error",
+			"verdict": "ml-only",
 			"excludedIds": []
 		},
 		{
@@ -2139,26 +2139,32 @@
 		{
 			"path": "html-aria/misc/role-alert-inside-h1-novalid.html",
 			"category": "aria",
-			"nu": "error",
+			"nu": "clean",
 			"ml": "clean",
-			"verdict": "nu-only",
-			"excludedIds": []
+			"verdict": "nu-over",
+			"excludedIds": [
+				"nv-bfce13d28185"
+			]
 		},
 		{
 			"path": "html-aria/misc/role-alertdialog-inside-h1-novalid.html",
 			"category": "aria",
-			"nu": "error",
+			"nu": "clean",
 			"ml": "clean",
-			"verdict": "nu-only",
-			"excludedIds": []
+			"verdict": "nu-over",
+			"excludedIds": [
+				"nv-03bfdbeec87e"
+			]
 		},
 		{
 			"path": "html-aria/misc/role-application-inside-h1-novalid.html",
 			"category": "aria",
-			"nu": "error",
+			"nu": "clean",
 			"ml": "clean",
-			"verdict": "nu-only",
-			"excludedIds": []
+			"verdict": "nu-over",
+			"excludedIds": [
+				"nv-584f26562285"
+			]
 		},
 		{
 			"path": "html-aria/misc/role-cell-without-row-ancestor-novalid.html",
@@ -2171,26 +2177,32 @@
 		{
 			"path": "html-aria/misc/role-dialog-inside-h1-novalid.html",
 			"category": "aria",
-			"nu": "error",
+			"nu": "clean",
 			"ml": "clean",
-			"verdict": "nu-only",
-			"excludedIds": []
+			"verdict": "nu-over",
+			"excludedIds": [
+				"nv-8559b0405804"
+			]
 		},
 		{
 			"path": "html-aria/misc/role-document-inside-h1-novalid.html",
 			"category": "aria",
-			"nu": "error",
+			"nu": "clean",
 			"ml": "clean",
-			"verdict": "nu-only",
-			"excludedIds": []
+			"verdict": "nu-over",
+			"excludedIds": [
+				"nv-c5613fe188f7"
+			]
 		},
 		{
 			"path": "html-aria/misc/role-feed-inside-h1-novalid.html",
 			"category": "aria",
-			"nu": "error",
+			"nu": "clean",
 			"ml": "error",
-			"verdict": "match-error",
-			"excludedIds": []
+			"verdict": "ml-only",
+			"excludedIds": [
+				"nv-b7ab280b531d"
+			]
 		},
 		{
 			"path": "html-aria/misc/role-group-inside-explicit-listitem-isvalid.html",
@@ -2211,10 +2223,12 @@
 		{
 			"path": "html-aria/misc/role-listbox-inside-h1-novalid.html",
 			"category": "aria",
-			"nu": "error",
+			"nu": "clean",
 			"ml": "clean",
-			"verdict": "nu-only",
-			"excludedIds": []
+			"verdict": "nu-over",
+			"excludedIds": [
+				"nv-a66d5097367e"
+			]
 		},
 		{
 			"path": "html-aria/misc/role-listitem-with-aria-level-haswarn.html",
@@ -2227,10 +2241,12 @@
 		{
 			"path": "html-aria/misc/role-log-inside-h1-novalid.html",
 			"category": "aria",
-			"nu": "error",
+			"nu": "clean",
 			"ml": "clean",
-			"verdict": "nu-only",
-			"excludedIds": []
+			"verdict": "nu-over",
+			"excludedIds": [
+				"nv-ec7ffd0604e5"
+			]
 		},
 		{
 			"path": "html-aria/misc/role-main-with-main-element-haswarn.html",
@@ -2243,26 +2259,32 @@
 		{
 			"path": "html-aria/misc/role-marquee-inside-h1-novalid.html",
 			"category": "aria",
-			"nu": "error",
+			"nu": "clean",
 			"ml": "clean",
-			"verdict": "nu-only",
-			"excludedIds": []
+			"verdict": "nu-over",
+			"excludedIds": [
+				"nv-67403fa4d36a"
+			]
 		},
 		{
 			"path": "html-aria/misc/role-math-inside-h1-novalid.html",
 			"category": "aria",
-			"nu": "error",
+			"nu": "clean",
 			"ml": "clean",
-			"verdict": "nu-only",
-			"excludedIds": []
+			"verdict": "nu-over",
+			"excludedIds": [
+				"nv-4d0a6a305516"
+			]
 		},
 		{
 			"path": "html-aria/misc/role-note-inside-h1-novalid.html",
 			"category": "aria",
-			"nu": "error",
+			"nu": "clean",
 			"ml": "clean",
-			"verdict": "nu-only",
-			"excludedIds": []
+			"verdict": "nu-over",
+			"excludedIds": [
+				"nv-10634351ee10"
+			]
 		},
 		{
 			"path": "html-aria/misc/role-on-math-element-haswarn.html",
@@ -2291,10 +2313,12 @@
 		{
 			"path": "html-aria/misc/role-status-inside-h1-novalid.html",
 			"category": "aria",
-			"nu": "error",
+			"nu": "clean",
 			"ml": "clean",
-			"verdict": "nu-only",
-			"excludedIds": []
+			"verdict": "nu-over",
+			"excludedIds": [
+				"nv-6d1fe82b5ee5"
+			]
 		},
 		{
 			"path": "html-aria/misc/role-tab-with-no-role-tabpanel-novalid.html",
@@ -2307,26 +2331,32 @@
 		{
 			"path": "html-aria/misc/role-tabpanel-inside-h1-novalid.html",
 			"category": "aria",
-			"nu": "error",
+			"nu": "clean",
 			"ml": "clean",
-			"verdict": "nu-only",
-			"excludedIds": []
+			"verdict": "nu-over",
+			"excludedIds": [
+				"nv-deeba4a415b0"
+			]
 		},
 		{
 			"path": "html-aria/misc/role-timer-inside-h1-novalid.html",
 			"category": "aria",
-			"nu": "error",
+			"nu": "clean",
 			"ml": "clean",
-			"verdict": "nu-only",
-			"excludedIds": []
+			"verdict": "nu-over",
+			"excludedIds": [
+				"nv-8c0d1cd269ae"
+			]
 		},
 		{
 			"path": "html-aria/misc/role-toolbar-inside-h1-novalid.html",
 			"category": "aria",
-			"nu": "error",
+			"nu": "clean",
 			"ml": "clean",
-			"verdict": "nu-only",
-			"excludedIds": []
+			"verdict": "nu-over",
+			"excludedIds": [
+				"nv-f26a6be4abf9"
+			]
 		},
 		{
 			"path": "html-aria/misc/s-role-deletion-haswarn.html",
@@ -14803,10 +14833,12 @@
 		{
 			"path": "html/datatypes/color-wrong-length-novalid.html",
 			"category": "data-types",
-			"nu": "error",
-			"ml": "error",
-			"verdict": "match-error",
-			"excludedIds": []
+			"nu": "clean",
+			"ml": "clean",
+			"verdict": "nu-over",
+			"excludedIds": [
+				"nv-170769f884fb"
+			]
 		},
 		{
 			"path": "html/datatypes/custom-element-empty-novalid.html",
@@ -22196,8 +22228,8 @@
 			"path": "html/elements/dl/dl-isvalid.html",
 			"category": "attribute-errors",
 			"nu": "clean",
-			"ml": "error",
-			"verdict": "ml-only",
+			"ml": "clean",
+			"verdict": "match-clean",
 			"excludedIds": []
 		},
 		{
@@ -26067,18 +26099,22 @@
 		{
 			"path": "html/elements/input/color-invalid-value-novalid.html",
 			"category": "attribute-errors",
-			"nu": "error",
-			"ml": "error",
-			"verdict": "match-error",
-			"excludedIds": []
+			"nu": "clean",
+			"ml": "clean",
+			"verdict": "nu-over",
+			"excludedIds": [
+				"nv-75d0de74c651"
+			]
 		},
 		{
 			"path": "html/elements/input/color-short-hex-novalid.html",
 			"category": "attribute-errors",
-			"nu": "error",
-			"ml": "error",
-			"verdict": "match-error",
-			"excludedIds": []
+			"nu": "clean",
+			"ml": "clean",
+			"verdict": "nu-over",
+			"excludedIds": [
+				"nv-be8aa4a62838"
+			]
 		},
 		{
 			"path": "html/elements/input/color-valid-isvalid.html",
@@ -44746,24 +44782,24 @@
 			"path": "langdetect/lang-en-dir-ltr-content-ja-haswarn.html",
 			"category": "uncategorized",
 			"nu": "clean",
-			"ml": "error",
-			"verdict": "ml-only",
+			"ml": "clean",
+			"verdict": "match-clean",
 			"excludedIds": []
 		},
 		{
 			"path": "langdetect/lang-en-dir-ltr-content-zh-haswarn.html",
 			"category": "uncategorized",
 			"nu": "clean",
-			"ml": "error",
-			"verdict": "ml-only",
+			"ml": "clean",
+			"verdict": "match-clean",
 			"excludedIds": []
 		},
 		{
 			"path": "langdetect/lang-en-dir-ltr-content-zh-size-less-1024-valid.html",
 			"category": "uncategorized",
 			"nu": "clean",
-			"ml": "error",
-			"verdict": "ml-only",
+			"ml": "clean",
+			"verdict": "match-clean",
 			"excludedIds": []
 		},
 		{
@@ -44778,16 +44814,16 @@
 			"path": "langdetect/lang-he-dir-ltr-content-he-haswarn.html",
 			"category": "uncategorized",
 			"nu": "clean",
-			"ml": "error",
-			"verdict": "ml-only",
+			"ml": "clean",
+			"verdict": "match-clean",
 			"excludedIds": []
 		},
 		{
 			"path": "langdetect/lang-he-dir-ltr-content-zh-in-p-he-in-pre-haswarn.html",
 			"category": "uncategorized",
 			"nu": "clean",
-			"ml": "error",
-			"verdict": "ml-only",
+			"ml": "clean",
+			"verdict": "match-clean",
 			"excludedIds": []
 		},
 		{
@@ -44802,8 +44838,8 @@
 			"path": "langdetect/lang-zh-dir-ltr-content-zh-in-pre-he-in-p-haswarn.html",
 			"category": "uncategorized",
 			"nu": "clean",
-			"ml": "error",
-			"verdict": "ml-only",
+			"ml": "clean",
+			"verdict": "match-clean",
 			"excludedIds": []
 		},
 		{

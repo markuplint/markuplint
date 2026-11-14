@@ -43,6 +43,13 @@
 			]
 		},
 		{
+			"path": "html-aria/author-requirements/581.html",
+			"category": "aria",
+			"ruleIds": [
+				"no-duplicate-aria-owns"
+			]
+		},
+		{
 			"path": "html-aria/combobox-autocomplete-list/div-haswarn.html",
 			"category": "aria",
 			"ruleIds": [
@@ -104,8 +111,7 @@
 			"path": "html-aria/misc/aria-labelledby-broken-idref-isvalid.html",
 			"category": "aria",
 			"ruleIds": [
-				"no-refer-to-non-existent-id",
-				"role-supports-aria-prop"
+				"no-refer-to-non-existent-id"
 			]
 		},
 		{
@@ -113,9 +119,7 @@
 			"category": "aria",
 			"ruleIds": [
 				"no-refer-to-non-existent-id",
-				"require-accessible-name",
-				"require-owned-elements",
-				"require-parent-role"
+				"require-accessible-name"
 			]
 		},
 		{
@@ -205,6 +209,13 @@
 			"category": "aria",
 			"ruleIds": [
 				"permitted-roles"
+			]
+		},
+		{
+			"path": "html-aria/misc/role-feed-inside-h1-novalid.html",
+			"category": "aria",
+			"ruleIds": [
+				"require-owned-elements"
 			]
 		},
 		{
@@ -8675,13 +8686,6 @@
 			]
 		},
 		{
-			"path": "html/elements/dl/dl-isvalid.html",
-			"category": "attribute-errors",
-			"ruleIds": [
-				"permitted-contents"
-			]
-		},
-		{
 			"path": "html/elements/h1/empty-haswarn.html",
 			"category": "attribute-errors",
 			"ruleIds": [
@@ -9149,69 +9153,24 @@
 			]
 		},
 		{
-			"path": "langdetect/lang-en-dir-ltr-content-ja-haswarn.html",
-			"category": "uncategorized",
-			"ruleIds": [
-				"permitted-contents"
-			]
-		},
-		{
-			"path": "langdetect/lang-en-dir-ltr-content-zh-haswarn.html",
-			"category": "uncategorized",
-			"ruleIds": [
-				"permitted-contents"
-			]
-		},
-		{
-			"path": "langdetect/lang-en-dir-ltr-content-zh-size-less-1024-valid.html",
-			"category": "uncategorized",
-			"ruleIds": [
-				"permitted-contents"
-			]
-		},
-		{
 			"path": "langdetect/lang-en-zh-in-svg-text-en-in-p-isvalid.html",
 			"category": "uncategorized",
 			"ruleIds": [
-				"no-deprecated-attr",
-				"permitted-contents"
-			]
-		},
-		{
-			"path": "langdetect/lang-he-dir-ltr-content-he-haswarn.html",
-			"category": "uncategorized",
-			"ruleIds": [
-				"permitted-contents"
-			]
-		},
-		{
-			"path": "langdetect/lang-he-dir-ltr-content-zh-in-p-he-in-pre-haswarn.html",
-			"category": "uncategorized",
-			"ruleIds": [
-				"permitted-contents"
+				"no-deprecated-attr"
 			]
 		},
 		{
 			"path": "langdetect/lang-he-zh-in-svg-text-he-in-p-isvalid.html",
 			"category": "uncategorized",
 			"ruleIds": [
-				"no-deprecated-attr",
-				"permitted-contents"
-			]
-		},
-		{
-			"path": "langdetect/lang-zh-dir-ltr-content-zh-in-pre-he-in-p-haswarn.html",
-			"category": "uncategorized",
-			"ruleIds": [
-				"permitted-contents"
+				"no-deprecated-attr"
 			]
 		},
 		{
 			"path": "langdetect/lang-zh-zh-in-p-he-in-svg-text-isvalid.html",
 			"category": "uncategorized",
 			"ruleIds": [
-				"no-deprecated-attr",
-				"permitted-contents"
+				"no-deprecated-attr"
 			]
 		},
 		{

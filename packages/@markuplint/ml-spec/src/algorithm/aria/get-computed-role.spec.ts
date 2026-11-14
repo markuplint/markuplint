@@ -439,3 +439,19 @@ describe('a role that ARIA in HTML does not permit', () => {
 		expect([computed.role?.name, computed.errorType]).toStrictEqual(['img', 'INVALID_LANDMARK']);
 	});
 });
+
+describe('aria-owns', () => {
+	test('an implicit role that aria-owns moves away from its native parent is judged by its owner', () => {
+		const computed = c('<div><ul><li id="x">a</li></ul><div role="group" aria-owns="x"></div></div>', '1.3', '#x');
+		expect([computed.role, computed.errorType]).toStrictEqual([null, 'INVALID_REQUIRED_CONTEXT_ROLE']);
+	});
+
+	test('an explicit role owned through aria-owns by its required parent keeps its role', () => {
+		const computed = c(
+			'<div><div role="listbox" aria-owns="x"></div><div id="x" role="option"></div></div>',
+			'1.3',
+			'#x',
+		);
+		expect(computed.role?.name).toBe('option');
+	});
+});
