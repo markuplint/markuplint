@@ -1,7 +1,12 @@
 import type { MLMLSpec } from '../../types/index.js';
 import type { Category } from '../../types/permitted-structures.js';
 
-const cache = new Map<Category, ReadonlyArray<string>>();
+/**
+ * The answer depends on the `#contentModels` it is read from, which differs between the base spec and a spec
+ * merged with an `ExtendedSpec` that adds to it, so each map is cached on its own. How long a map lives, and so
+ * how warm the cache stays, is described at `schemaToSpec`.
+ */
+const caches = new WeakMap<object, Map<Category, ReadonlyArray<string>>>();
 
 /**
  * Converts a content model category (e.g., `#flow`, `#phrasing`) to a sorted,
@@ -22,17 +27,23 @@ const cache = new Map<Category, ReadonlyArray<string>>();
  * @returns A frozen, sorted array of tag name strings belonging to the category
  */
 export function contentModelCategoryToTagNames(contentModel: Category, def: MLMLSpec['def']): ReadonlyArray<string> {
+	const models = def['#contentModels'];
+	let cache = caches.get(models);
+	if (!cache) {
+		cache = new Map();
+		caches.set(models, cache);
+	}
 	const cached = cache.get(contentModel);
 	if (cached) {
 		return cached;
 	}
-	let tags: readonly string[] | undefined = def['#contentModels'][contentModel];
+	let tags: readonly string[] | undefined = models[contentModel];
 	if (!tags) {
 		// Case-insensitive fallback for mixed-case categories (e.g., #MathMLPresentation, #SVGAnimation)
 		const lowerKey = contentModel.toLowerCase();
-		for (const key of Object.keys(def['#contentModels'])) {
+		for (const key of Object.keys(models)) {
 			if (key.toLowerCase() === lowerKey) {
-				tags = def['#contentModels'][key as Category];
+				tags = models[key as Category];
 				break;
 			}
 		}

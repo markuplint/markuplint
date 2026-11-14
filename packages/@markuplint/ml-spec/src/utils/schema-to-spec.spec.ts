@@ -221,4 +221,55 @@ describe('schemaToSpec', () => {
 			expect(first).toStrictEqual({ literalValues: { booleanAttrs: { '""': null } } });
 		});
 	});
+
+	/**
+	 * `getARIA` and `contentModelCategoryToTagNames` cache by the identity of `specs` and of `def['#contentModels']`,
+	 * so the base spec's own objects have to come back whenever no extension changes them: a copy per document would
+	 * leave those caches cold for every file.
+	 */
+	describe('what the merged spec shares with the base spec', () => {
+		test('the specs and the content models when there is no extension', () => {
+			const merged = schemaToSpec([htmlSpec]);
+			expect(merged.specs).toBe(htmlSpec.specs);
+			expect(merged.def['#contentModels']).toBe(htmlSpec.def['#contentModels']);
+		});
+
+		test('the specs and the content models when an extension changes neither', () => {
+			const merged = schemaToSpec([htmlSpec, { cites: ['https://example.com/'], movedToHead: ['x'] }]);
+			expect(merged.specs).toBe(htmlSpec.specs);
+			expect(merged.def['#contentModels']).toBe(htmlSpec.def['#contentModels']);
+		});
+
+		test.each([
+			['directive patterns', { directivePatterns: [{ pattern: '^v-', props: [] }] }],
+			['the literal values', { literalValues: { booleanAttrs: { '': null } } }],
+			['the global attributes', { def: { '#globalAttrs': { '#extends': { 'my-attr': { type: 'Any' } } } } }],
+		])('the specs and the content models when an extension changes only %s', (_name, extension) => {
+			const merged = schemaToSpec([htmlSpec, extension]);
+			expect(merged.specs).toBe(htmlSpec.specs);
+			expect(merged.def['#contentModels']).toBe(htmlSpec.def['#contentModels']);
+		});
+
+		test('the specs and the content models when an extension changes only the ARIA definitions', () => {
+			const aria = htmlSpec.def['#aria'];
+			const merged = schemaToSpec([
+				htmlSpec,
+				{ def: { '#aria': { '1.1': { ...aria['1.1'], roles: [] }, '1.2': aria['1.2'], '1.3': aria['1.3'] } } },
+			]);
+			expect(merged.specs).toBe(htmlSpec.specs);
+			expect(merged.def['#contentModels']).toBe(htmlSpec.def['#contentModels']);
+		});
+
+		test('the content models when an extension changes only the element specs', () => {
+			const merged = schemaToSpec([htmlSpec, { specs: [{ name: 'my-element', attributes: {} }] }]);
+			expect(merged.specs).not.toBe(htmlSpec.specs);
+			expect(merged.def['#contentModels']).toBe(htmlSpec.def['#contentModels']);
+		});
+
+		test('the element specs when an extension changes only the content models', () => {
+			const merged = schemaToSpec([htmlSpec, { def: { '#contentModels': { '#flow': ['my-element'] } } }]);
+			expect(merged.specs).toBe(htmlSpec.specs);
+			expect(merged.def['#contentModels']).not.toBe(htmlSpec.def['#contentModels']);
+		});
+	});
 });

@@ -5,7 +5,12 @@ import type { ReadonlyDeep } from 'type-fest';
 import { getSpecByTagName } from '../../utils/get-spec-by-tag-name.js';
 import { resolveVersion } from '../../utils/resolve-version.js';
 
-const cache = new Map<string, Omit<ReadonlyDeep<ARIA>, ARIAVersion> | null>();
+/**
+ * The resolved ARIA of an element depends on the element specs it is read from, which differ between the base
+ * spec and a spec merged with an `ExtendedSpec` that overrides an element, so each `specs` array is cached on its
+ * own. How long an array lives, and so how warm the cache stays, is described at `schemaToSpec`.
+ */
+const caches = new WeakMap<object, Map<string, Omit<ReadonlyDeep<ARIA>, ARIAVersion> | null>>();
 
 /**
  * Retrieves the resolved ARIA specification for an element, taking into account
@@ -82,6 +87,11 @@ export function getARIA(
  * Callers must apply optimizePermittedRoles() to the result.
  */
 function getVersionResolvedARIA(specs: MLMLSpec, localName: string, namespace: string | null, version: ARIAVersion) {
+	let cache = caches.get(specs.specs);
+	if (!cache) {
+		cache = new Map();
+		caches.set(specs.specs, cache);
+	}
 	const key = localName + namespace + version;
 	let aria = cache.get(key);
 	if (aria !== undefined) {

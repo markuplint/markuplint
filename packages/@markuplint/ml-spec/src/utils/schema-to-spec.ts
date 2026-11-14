@@ -20,6 +20,12 @@ import { mergeArray } from './merge-array.js';
  *
  * @see https://github.com/markuplint/markuplint/issues/3893
  *
+ * The merged spec shares the base spec's own `specs` array and `def['#contentModels']` object for as long as no
+ * extension changes them (it is a shallow copy; an extension that adds element specs or content models gets a
+ * new one). `getARIA` and `contentModelCategoryToTagNames` cache by the identity of these two, so that the caches
+ * stay warm across documents when there is no extension, and a copy of either would cool them for every file.
+ * `schema-to-spec.spec.ts` pins which extensions keep them.
+ *
  * @param schemas - A tuple where the first element is the base `MLMLSpec` and subsequent elements are extended specs to merge
  * @returns The merged specification combining the base spec with all extensions
  */
