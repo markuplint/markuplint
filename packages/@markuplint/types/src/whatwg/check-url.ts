@@ -128,22 +128,17 @@ function hasBracketsOutsideHost(value: string): boolean {
 const DATA_URL_MISSING_COMMA = /^data:[^,]*$/i;
 
 /**
- * Pattern: a `file:` URL whose host is a Windows drive letter (`file://C:/foo`, `file://C|/foo`).
+ * Pattern: file-scheme URL with a Windows drive letter that uses `|` instead of `:`.
  *
- * The host of a `file:` URL that is a Windows drive letter is the
- * `file-invalid-Windows-drive-letter-host` validation error (URL LS §1.1): the file host
- * state ends the host at `/`, `\`, `?`, `#` or the end of the input and, when what it read is a
- * Windows drive letter (an ASCII alpha and `:` or `|`), reports it.
+ * URL LS §1.1 says `C|` is auto-corrected to `C:` and triggers a
+ * `file-invalid-Windows-drive-letter` validation error. nu-validator surfaces
+ * this and so do we.
  *
- * The `C|` of a path (`file:///C|/foo`) is not an error: the path state turns it into `C:` without
- * reporting anything. `file-invalid-Windows-drive-letter` is for a relative URL, whose base URL has
- * the scheme `file`, and is not decidable from the value alone. `file:C|/foo` and `file:/C|/foo` are
- * reported by `SPECIAL_SCHEME_MISSING_SOLIDUS` and `SPECIAL_SCHEME_SINGLE_SLASH`, as any `file:` URL
- * without `//` is.
+ * Matches `file:C|...`, `file:/C|...`, `file://C|...`, `file:///C|...`, etc.
  *
- * @see https://url.spec.whatwg.org/#file-invalid-windows-drive-letter-host
+ * @see https://url.spec.whatwg.org/#file-invalid-windows-drive-letter
  */
-const FILE_HOST_IS_WINDOWS_DRIVE_LETTER = /^file:[/\\]{2}[a-z][:|](?:[/\\?#]|$)/i;
+const FILE_WINDOWS_DRIVE_LETTER_WITH_BAR = /^file:\/{0,3}[a-z]\|/i;
 
 /**
  * Characters that are illegal in URLs per WHATWG URL Standard.
@@ -380,8 +375,8 @@ export const checkURL: CustomSyntaxChecker = () =>
 			return unmatched(trimmed, 'unexpected-token');
 		}
 
-		// file-invalid-Windows-drive-letter-host (e.g., `file://C|/foo`)
-		if (FILE_HOST_IS_WINDOWS_DRIVE_LETTER.test(trimmed)) {
+		// file-invalid-Windows-drive-letter (e.g., `file:///C|/foo`)
+		if (FILE_WINDOWS_DRIVE_LETTER_WITH_BAR.test(trimmed)) {
 			return unmatched(trimmed, 'unexpected-token');
 		}
 

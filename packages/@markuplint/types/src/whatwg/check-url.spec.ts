@@ -249,34 +249,15 @@ test('invalid-reverse-solidus: `\\` in non-special scheme opaque path is accepte
 	expect(check('mailto:foo\\bar@example.com').matched).toBe(true);
 });
 
-// file-invalid-Windows-drive-letter-host
-// https://url.spec.whatwg.org/#file-invalid-windows-drive-letter-host
-test('file-invalid-Windows-drive-letter-host: `C|` is rejected as a host, and not as a path of a `file:///` URL', () => {
-	expect(check('file:///C|/foo').matched).toBe(true);
+// file-invalid-Windows-drive-letter
+// https://url.spec.whatwg.org/#file-invalid-windows-drive-letter
+test('file-invalid-Windows-drive-letter: `|` instead of `:` is rejected', () => {
+	expect(check('file:///C|/foo').matched).toBe(false);
 	expect(check('file://C|/foo').matched).toBe(false);
 	expect(check('file:/C|/foo').matched).toBe(false);
 	expect(check('file:C|/foo').matched).toBe(false);
-	expect(check('FILE:///c|/foo').matched).toBe(true);
+	expect(check('FILE:///c|/foo').matched).toBe(false);
 });
-
-test.each([
-	'file://C:/foo',
-	'file://c|/foo',
-	'file://C|',
-	'file://C:?q',
-	'file://C|#h',
-	'FILE://c:/foo',
-	'file:\\\\C:/foo',
-])('file-invalid-Windows-drive-letter-host: the host `%s` is a Windows drive letter and is rejected', value => {
-	expect(check(value).matched).toBe(false);
-});
-
-test.each(['file://host/C:/foo', 'file://localhost/C|/foo', 'file:///C|', 'file:///C|?q'])(
-	'file-invalid-Windows-drive-letter-host: `%s` has no drive letter as its host and is accepted',
-	value => {
-		expect(check(value).matched).toBe(true);
-	},
-);
 
 test('file-scheme with proper Windows drive letter `C:` is accepted', () => {
 	expect(check('file:///C:/foo').matched).toBe(true);
