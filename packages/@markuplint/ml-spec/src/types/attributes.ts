@@ -1245,19 +1245,26 @@ export type AttributeType =
           | "<text-coordinate>"
           | "<view-box>"
           | "AbsoluteURL"
+          | "AbsoluteURLOrEmpty"
           | "Accept"
           | "Any"
           | "AutoComplete"
+          | "AutoCompleteAnchorMantle"
+          | "AutoCompleteNoWebauthn"
           | "BCP47"
           | "BaseURL"
           | "BrowsingContextName"
           | "BrowsingContextNameOrKeyword"
+          | "ContentSecurityPolicy"
           | "CustomElementName"
           | "DOMID"
           | "DateString"
+          | "DateStringWithOptionalTime"
           | "DateTime"
           | "Email"
           | "FunctionBody"
+          | "HTTPEquivContentType"
+          | "HTTPEquivRefresh"
           | "HTTPSchemaURL"
           | "HashName"
           | "IconSize"
@@ -1270,10 +1277,12 @@ export type AttributeType =
           | "LinkTypeForLinkElementInBody"
           | "LocalDateTimeString"
           | "MIMEType"
+          | "MediaQueryList"
           | "MonthString"
           | "NavigableTargetName"
           | "NavigableTargetNameOrKeyword"
           | "NoEmptyAny"
+          | "NonEmptyURL"
           | "Number"
           | "OneCodePointChar"
           | "OneLineAny"
@@ -1393,6 +1402,10 @@ export interface GlobalAttributes {
         | "onwebkitanimationstart"
         | "onwebkittransitionend"
         | "onwheel"
+        | "ontouchstart"
+        | "ontouchend"
+        | "ontouchmove"
+        | "ontouchcancel"
         | "onanimationstart"
         | "onanimationiteration"
         | "onanimationend"
@@ -1424,16 +1437,7 @@ export interface GlobalAttributes {
    * @minItems 0
    */
   "#HTMLEmbededAndMediaContentAttrs"?: (
-    | "autoplay"
-    | "controls"
-    | "height"
-    | "loop"
-    | "muted"
-    | "preload"
-    | "sizes"
-    | "src"
-    | "srcset"
-    | "width"
+    "autoplay" | "controls" | "height" | "loop" | "muted" | "preload" | "sizes" | "src" | "srcset" | "width"
   )[];
   /**
    * @minItems 0
@@ -1479,15 +1483,7 @@ export interface GlobalAttributes {
    * @minItems 0
    */
   "#SVGAnimationTimingAttrs"?: (
-    | "begin"
-    | "dur"
-    | "end"
-    | "min"
-    | "max"
-    | "restart"
-    | "repeatCount"
-    | "repeatDur"
-    | "fill"
+    "begin" | "dur" | "end" | "min" | "max" | "restart" | "repeatCount" | "repeatDur" | "fill"
   )[];
   /**
    * @minItems 0
@@ -1513,16 +1509,7 @@ export interface GlobalAttributes {
    * @minItems 0
    */
   "#SVGCoreAttrs"?: (
-    | "id"
-    | "tabindex"
-    | "autofocus"
-    | "lang"
-    | "xml:space"
-    | "class"
-    | "style"
-    | "xmlns"
-    | "xml:lang"
-    | "xml:base"
+    "id" | "tabindex" | "autofocus" | "lang" | "xml:space" | "class" | "style" | "xmlns" | "xml:lang" | "xml:base"
   )[];
   /**
    * @minItems 0
@@ -1618,25 +1605,14 @@ export interface GlobalAttributes {
    * @minItems 0
    */
   "#SVGTransferFunctionAttrs"?: (
-    | "type"
-    | "tableValues"
-    | "slope"
-    | "intercept"
-    | "amplitude"
-    | "exponent"
-    | "offset"
+    "type" | "tableValues" | "slope" | "intercept" | "amplitude" | "exponent" | "offset"
   )[];
+  "#MathMLGlobalAttrs"?: boolean;
   /**
    * @minItems 0
    */
   "#XLinkAttrs"?: (
-    | "xlink:href"
-    | "xlink:title"
-    | "xlink:actuate"
-    | "xlink:arcrole"
-    | "xlink:role"
-    | "xlink:show"
-    | "xlink:type"
+    "xlink:href" | "xlink:title" | "xlink:actuate" | "xlink:arcrole" | "xlink:role" | "xlink:show" | "xlink:type"
   )[];
 }
 export interface Attributes {
@@ -1648,9 +1624,7 @@ export interface Attributes {
  */
 export interface AttributeJSON {
   type?:
-    | AttributeType
-    | [AttributeType, ...AttributeType[]]
-    | [ConditionalAttributeType, ...ConditionalAttributeType[]];
+    AttributeType | [AttributeType, ...AttributeType[]] | [ConditionalAttributeType, ...ConditionalAttributeType[]];
   defaultValue?: string;
   deprecated?: boolean;
   required?: boolean | AttributeCondition;
@@ -1699,19 +1673,26 @@ export interface List {
         | "<text-coordinate>"
         | "<view-box>"
         | "AbsoluteURL"
+        | "AbsoluteURLOrEmpty"
         | "Accept"
         | "Any"
         | "AutoComplete"
+        | "AutoCompleteAnchorMantle"
+        | "AutoCompleteNoWebauthn"
         | "BCP47"
         | "BaseURL"
         | "BrowsingContextName"
         | "BrowsingContextNameOrKeyword"
+        | "ContentSecurityPolicy"
         | "CustomElementName"
         | "DOMID"
         | "DateString"
+        | "DateStringWithOptionalTime"
         | "DateTime"
         | "Email"
         | "FunctionBody"
+        | "HTTPEquivContentType"
+        | "HTTPEquivRefresh"
         | "HTTPSchemaURL"
         | "HashName"
         | "IconSize"
@@ -1724,10 +1705,12 @@ export interface List {
         | "LinkTypeForLinkElementInBody"
         | "LocalDateTimeString"
         | "MIMEType"
+        | "MediaQueryList"
         | "MonthString"
         | "NavigableTargetName"
         | "NavigableTargetNameOrKeyword"
         | "NoEmptyAny"
+        | "NonEmptyURL"
         | "Number"
         | "OneCodePointChar"
         | "OneLineAny"
