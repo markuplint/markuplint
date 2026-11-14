@@ -70,3 +70,39 @@ describe('1.3', () => {
 		expect(m('<ul><span><li></li></span></ul>', '1.3')).toBe(true);
 	});
 });
+
+describe('aria-owns', () => {
+	const listbox = '[role="listbox"]';
+
+	test('an element that aria-owns refers to is owned', () => {
+		expect(m('<div role="listbox" aria-owns="o"></div><div id="o" role="option"></div>', '1.3', listbox)).toBe(
+			true,
+		);
+	});
+
+	test('an aria-owns that refers to no element owns nothing', () => {
+		expect(m('<div role="listbox" aria-owns="nonexistent"></div>', '1.3', listbox)).toBe(false);
+	});
+
+	test('an aria-owns that refers to an element with another role does not satisfy the constraint', () => {
+		expect(m('<div role="listbox" aria-owns="l"></div><div id="l" role="listitem"></div>', '1.3', listbox)).toBe(
+			false,
+		);
+	});
+
+	test('a generic that aria-owns refers to is transparent in 1.3', () => {
+		expect(
+			m('<div role="listbox" aria-owns="g"></div><div id="g"><div role="option"></div></div>', '1.3', listbox),
+		).toBe(true);
+	});
+
+	test('a child that another element owns through aria-owns is not owned by its parent', () => {
+		expect(
+			m(
+				'<div role="listbox"><div id="o" role="option"></div></div><div role="group" aria-owns="o"></div>',
+				'1.3',
+				listbox,
+			),
+		).toBe(false);
+	});
+});

@@ -6,7 +6,8 @@ import { isPresentational } from './is-presentational.js';
 import { SVG_NAMESPACE } from '../../const/index.js';
 import { hasSvgAccessibleNameSource } from './accname/svg-helpers.js';
 import { getAttrSpecs } from '../../utils/get-attr-specs.js';
-import { getAccessibilityParentElement, getComposedParentElement } from '../dom/tree-boundary.js';
+import { getComposedParentElement } from '../dom/tree-boundary.js';
+import { getOwningParentElement } from './aria-owns.js';
 import { getExplicitRole } from './get-explicit-role.js';
 import { getImplicitRole } from './get-implicit-role.js';
 import { getNonPresentationalAncestor } from './get-non-presentational-ancestor.js';
@@ -25,7 +26,11 @@ import { mayBeFocusable } from '../html/may-be-focusable.js';
  *   so it is not included in the cache key.
  * - Recursive calls from `computeRole` (via `getNonPresentationalAncestor`,
  *   `matchesContextRole`, `isNativeContextIntact`) always traverse upward
- *   in the DOM tree, so circular references cannot occur.
+ *   in the accessibility tree: the DOM parent, or the owner that `aria-owns`
+ *   resolves (`getOwningParentElement`). Circular references cannot occur
+ *   because the ownership of `aria-owns.ts` has no cycle (it removes the
+ *   references of a cycle until none is left); a change there that keeps a
+ *   cycle makes these walks loop forever.
  * - Cache entries become stale if an element's attributes are mutated after
  *   computation. This is acceptable because markuplint operates on a static
  *   document snapshot. External consumers that use the algorithm on a live
@@ -372,7 +377,7 @@ function isNativeContextIntact(
 	if (!computedRole.role?.isImplicit) {
 		return false;
 	}
-	const parent = getAccessibilityParentElement(el);
+	const parent = getOwningParentElement(el, specs, version);
 	if (!parent) {
 		return false;
 	}
