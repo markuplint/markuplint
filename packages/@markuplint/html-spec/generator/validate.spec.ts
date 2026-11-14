@@ -130,9 +130,14 @@ describe('validateSpecs', () => {
 		expect(() => validateSpecs(spec({ cites: [], specs: withoutDiv }))).toThrow(/2 issues/);
 	});
 
-	test('the committed index.json passes validation against itself', () => {
-		// Real-data shape check: the shipped spec must satisfy every rule,
-		// including the stability check when compared with itself.
-		expect(() => validateSpecs(realSpec, realSpec)).not.toThrow();
+	test('the committed index.json trips the empty-description check, as it carries no descriptions', () => {
+		// The generator runs that check on the scraped text, before the output drops the descriptions.
+		expect(() => validateSpecs(realSpec, realSpec)).toThrow(/\d+\/\d+ HTML elements .* empty descriptions/);
+	});
+
+	test('the committed index.json passes every other rule against itself', () => {
+		// Descriptions are filled in so that the check above does not hide what the other rules say about the real data.
+		const specs = realSpec.specs!.map(s => ({ ...s, description: 'x' }));
+		expect(() => validateSpecs({ ...realSpec, specs }, realSpec)).not.toThrow();
 	});
 });

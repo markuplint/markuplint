@@ -145,6 +145,20 @@ describe('summarizeChanges', () => {
 		expect(result).toContain('No structural changes');
 	});
 
+	test('reports no structural changes when only an attribute differs, and says that attributes are not summarized', () => {
+		const previous = {
+			...spec(['div']),
+			specs: [{ name: 'div', attributes: { id: { type: 'Any' } } }],
+		} as unknown as ExtendedSpec;
+		const next = {
+			...spec(['div']),
+			specs: [{ name: 'div', attributes: { id: { type: 'DOMID' } } }],
+		} as unknown as ExtendedSpec;
+		const result = summarizeChanges(previous, next);
+		expect(result).toContain('No structural changes');
+		expect(result).toContain('Attribute-level changes may still be present');
+	});
+
 	test('reports no structural changes for the committed index.json against itself', () => {
 		// Real-data shape check: identical input must not fabricate changes.
 		expect(summarizeChanges(realSpec, realSpec)).toContain('No structural changes');

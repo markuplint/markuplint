@@ -21,6 +21,7 @@
 				"#SVGFilterPrimitiveAttrs",
 				"#SVGPresentationAttrs",
 				"#SVGTransferFunctionAttrs",
+				"#MathMLGlobalAttrs",
 				"#XLinkAttrs"
 			]
 		},
@@ -53,6 +54,10 @@
 				"title",
 				"translate",
 				"writingsuggestions",
+				"focusgroup",
+				"focusgroupstart",
+				"headingoffset",
+				"headingreset",
 				"class",
 				"id",
 				"slot",
@@ -147,6 +152,10 @@
 				"onwebkitanimationstart",
 				"onwebkittransitionend",
 				"onwheel",
+				"ontouchstart",
+				"ontouchend",
+				"ontouchmove",
+				"ontouchcancel",
 				"onanimationstart",
 				"onanimationiteration",
 				"onanimationend",
@@ -334,6 +343,24 @@
 			"type": "string",
 			"enum": ["type", "tableValues", "slope", "intercept", "amplitude", "exponent", "offset"]
 		},
+		"MathMLGlobalAttrs": {
+			"type": "string",
+			"enum": [
+				"autofocus",
+				"class",
+				"data-*",
+				"dir",
+				"displaystyle",
+				"id",
+				"mathbackground",
+				"mathcolor",
+				"mathsize",
+				"nonce",
+				"scriptlevel",
+				"style",
+				"tabindex"
+			]
+		},
 		"XLinkAttrs": {
 			"type": "string",
 			"enum": [
@@ -369,6 +396,7 @@
 		"#SVGFilterPrimitiveAttrs",
 		"#SVGPresentationAttrs",
 		"#SVGTransferFunctionAttrs",
+		"#MathMLGlobalAttrs",
 		"#XLinkAttrs"
 	],
 	"properties": {
@@ -402,6 +430,10 @@
 				"title",
 				"translate",
 				"writingsuggestions",
+				"focusgroup",
+				"focusgroupstart",
+				"headingoffset",
+				"headingreset",
 				"class",
 				"id",
 				"slot",
@@ -499,6 +531,10 @@
 				"onwebkitanimationstart",
 				"onwebkittransitionend",
 				"onwheel",
+				"ontouchstart",
+				"ontouchend",
+				"ontouchmove",
+				"ontouchcancel",
 				"onanimationstart",
 				"onanimationiteration",
 				"onanimationend",
@@ -766,6 +802,27 @@
 			"type": "object",
 			"required": ["type", "tableValues", "slope", "intercept", "amplitude", "exponent", "offset"],
 			"propertyNames": { "$ref": "#/definitions/SVGTransferFunctionAttrs" },
+			"patternProperties": { ".+": { "$ref": "./attributes.schema.json#/definitions/AttributeJSON" } }
+		},
+		"#MathMLGlobalAttrs": {
+			"description": "[attributes common to HTML and MathML elements]( https://www.w3.org/TR/mathml-core/#attributes-common-to-html-and-mathml-elements )",
+			"type": "object",
+			"required": [
+				"autofocus",
+				"class",
+				"data-*",
+				"dir",
+				"displaystyle",
+				"id",
+				"mathbackground",
+				"mathcolor",
+				"mathsize",
+				"nonce",
+				"scriptlevel",
+				"style",
+				"tabindex"
+			],
+			"propertyNames": { "$ref": "#/definitions/MathMLGlobalAttrs" },
 			"patternProperties": { ".+": { "$ref": "./attributes.schema.json#/definitions/AttributeJSON" } }
 		},
 		"#XLinkAttrs": {

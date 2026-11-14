@@ -43,7 +43,8 @@ for (const key of Object.keys(globalAttrs)) {
 	};
 	switch (key) {
 		case '#HTMLGlobalAttrs':
-		case '#ARIAAttrs': {
+		case '#ARIAAttrs':
+		case '#MathMLGlobalAttrs': {
 			select[key] = {
 				type: 'boolean',
 			};

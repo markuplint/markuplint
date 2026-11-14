@@ -3,6 +3,30 @@
 	"additionalProperties": false,
 	"required": ["contentModel", "globalAttrs", "attributes", "aria"],
 	"properties": {
+		"experimental": {
+			"const": true,
+			"description": "Experimental technology: not yet standardized (proposed or draft; subject to change or removal)."
+		},
+		"obsolete": {
+			"description": "Obsolete or alternative elements: removed from the spec entirely. Optionally points to an alternative element via `alt`.",
+			"oneOf": [
+				{ "const": true },
+				{
+					"type": "object",
+					"additionalProperties": false,
+					"required": ["alt"],
+					"properties": { "alt": { "type": "string" } }
+				}
+			]
+		},
+		"deprecated": {
+			"const": true,
+			"description": "Deprecated: still defined by the spec but its use is discouraged."
+		},
+		"nonStandard": {
+			"const": true,
+			"description": "Non-standard: never part of any standard (vendor-specific or proprietary)."
+		},
 		"contentModel": { "$ref": "./content-models.schema.json#/definitions/ContentModel" },
 		"globalAttrs": { "$ref": "./attributes.schema.json#/definitions/GlobalAttributes" },
 		"attributes": { "$ref": "./attributes.schema.json#/definitions/Attributes" },

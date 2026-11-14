@@ -9,8 +9,8 @@ This package provides the consolidated HTML element specification data for marku
 - **HTML Living Standard elements** with complete attribute definitions
 - **WAI-ARIA mappings** (implicit roles, permitted roles, ARIA properties)
 - **Content model definitions** for each element
-- **MDN-enriched metadata** (descriptions, compatibility, experimental status)
-- **Automated external data integration** from authoritative sources
+- **MDN-enriched metadata** (status flags such as experimental, deprecated, obsolete and non-standard)
+- **Automated external data integration** from authoritative sources. The data holds structure and references, not their prose: for the text, see the HTML Living Standard, WAI-ARIA and MDN
 
 This package serves as the data layer in markuplint's specification system, depending on `@markuplint/ml-spec` for type definitions and structural schemas.
 
@@ -31,13 +31,13 @@ Core packages (Application Layer)
 
 ### Generated Output (DO NOT EDIT)
 
-- **`index.json`** - Consolidated specification data (48K+ lines)
+- **`index.json`** - Consolidated specification data
 
 ### Source Files (EDIT THESE)
 
-- **`src/spec.*.jsonc`** - Individual element specifications (208 files)
-- **`src/spec-common.attributes.jsonc`** - Global attribute category definitions (20 categories)
-- **`src/spec-common.contents.jsonc`** - Content model category macros (HTML 10 + SVG 19 + MathML 3 categories)
+- **`src/spec.*.jsonc`** - Individual element specifications
+- **`src/spec-common.attributes.jsonc`** - Global attribute category definitions
+- **`src/spec-common.contents.jsonc`** - Content model category macros
 
 ### Build System
 

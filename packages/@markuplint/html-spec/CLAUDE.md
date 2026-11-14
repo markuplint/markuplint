@@ -9,7 +9,7 @@ Constraints and judgment rules for editing spec data. None of this is derivable 
 - The first line of each `src/spec.<element>.jsonc` is a `//` comment that cites the section defining the element, and nothing goes before it: the weekly spec citation watch reads that section, which is what notices when the specification rewords the definition (`scripts/spec-citations/coverage.spec.ts` fails without it). Cite the section that holds the definition, not the `<dfn>` anchor of the term (`#elementdef-a`) or the section of one attribute (`#attr-map-name`); the watch reports a section that is only a few words as `anchor-thin`. An element with no source file (an obsolete one) is cited through its `cite`, which `generator/scraping.ts` writes and the watch reads from `index.json`.
 - Run the full `yarn test` suite before committing — spec data changes propagate to `@markuplint/rules` and `@markuplint/ml-spec` tests.
 - The comments in `src/*.jsonc` are citations that `yarn spec-citations` checks against the live specifications, and `scripts/spec-citations/citations-policy.spec.ts` holds them to the conventions under "Citing a specification" in `packages/@markuplint/rules/CLAUDE.md` (quote in `>` lines, never inline in double quotes; edition-less W3C URLs; the id of a heading rather than a text fragment alone, which the monitor searches in the whole page and which stops matching when the passage is reworded). After editing a citation, run `yarn spec-citations`.
-- `yarn up:gen` also refreshes the MDN-scraped data, so the regenerated `index.json` can carry changes to elements the branch did not touch (a `nonStandard` flag on `<font>`, a reworded `<html xmlns>` description). Those belong in their own PR: they bloat the review and can trip unrelated rule tests. Keep only the touched elements by merging per element against the base — write `git show HEAD:packages/@markuplint/html-spec/index.json` to a scratch file, load both JSON files, replace every entry in `specs` whose `name` is not one you changed with the base entry (names carry the namespace prefix, e.g. `mml:mfrac`), and write it back with tab indentation. Then confirm `git diff --stat` on `index.json` covers only your elements. The flag-transition check below still applies when the drift itself looks like a scraper regression.
+- `yarn up:gen` also refreshes the MDN-scraped data, so the regenerated `index.json` can carry changes to elements the branch did not touch (a `nonStandard` flag on `<font>`, a new MDN-sourced attribute). Those belong in their own PR: they bloat the review and can trip unrelated rule tests. Keep only the touched elements by merging per element against the base — write `git show HEAD:packages/@markuplint/html-spec/index.json` to a scratch file, load both JSON files, replace every entry in `specs` whose `name` is not one you changed with the base entry (names carry the namespace prefix, e.g. `mml:mfrac`), and write it back with tab indentation. Then confirm `git diff --stat` on `index.json` covers only your elements. The flag-transition check below still applies when the drift itself looks like a scraper regression.
 
 ## The scheduled regeneration PR
 
@@ -28,13 +28,14 @@ If that diff mostly removes fields `dev` already has, close the PR; the next sch
 
 ## Editing hazards
 
-- `index.json` contains WAI-ARIA 1.1 / 1.2 / 1.3 role definitions, so many strings appear three times. Do not use `replace_all` on it; target the specific version block.
+- `index.json` contains WAI-ARIA 1.1 / 1.2 / 1.3 role definitions, so many entries appear three times. Do not use `replace_all` on it; target the specific version block.
+- `index.json` carries no prose (`description`, `valueDescriptions`): do not write it back, and do not put a `description` in `src/*.jsonc`. `generator/strip-prose.ts` says why, and `test/structure.spec.mjs` fails on it.
 
 ## Data precedence (manual spec vs MDN)
 
 - Manual `src/spec.*.jsonc` data overrides same-named MDN-scraped data. Use this to correct inaccurate MDN data.
 - MDN-only attributes (no manual entry) can only be overridden or suppressed by ADDING a manual entry — merely deleting nothing has no effect.
-- In a regenerated diff: minor MDN description rewording and new MDN-sourced attributes → commit as-is. Substantive changes (ARIA mappings, content models) → require manual spec edits verified against HTML Living Standard / WAI-ARIA / HTML-ARIA (fetch the live spec; MDN is not the authority).
+- In a regenerated diff: new MDN-sourced attributes → commit as-is. Substantive changes (ARIA mappings, content models) → require manual spec edits verified against HTML Living Standard / WAI-ARIA / HTML-ARIA (fetch the live spec; MDN is not the authority).
 - **Flag transitions (`deprecated` / `nonStandard` / `experimental` / `obsolete` appearing or disappearing) are data updates only when they're isolated — a handful of attributes on a page that genuinely changed status.** If a regeneration flips dozens of flags at once across unrelated elements, that is a scraper regression, not an MDN update: MDN's page markup (badge class names, section structure) changes far more often than the underlying status does. Before committing a mass flag change, check in this order:
   1. Does [BCD](https://github.com/mdn/browser-compat-data) still mark the feature with the flag in question for the affected items? (`api.status` in the relevant `browser-compat-data/*.json`, or `npx bcd-utils` if available)
   2. Does the MDN page's source markdown ([mdn/content](https://github.com/mdn/content)) still carry the corresponding macro (e.g. `{{deprecated_inline}}`, `{{non-standard_inline}}`) for those items?
@@ -55,5 +56,5 @@ If that diff mostly removes fields `dev` already has, close the PR; the next sch
 
 ## Workflow
 
-- One spec change (new attribute, ARIA mapping fix, …) per branch/PR; description-only updates may be batched into one PR.
-- Commit prefixes: description-only updates → `chore`, attribute/spec additions → `feat`, spec data corrections → `fix`.
+- One spec change (new attribute, ARIA mapping fix, …) per branch/PR; regenerated data with no spec change may be batched into one PR.
+- Commit prefixes: regenerated data with no spec change → `chore`, attribute/spec additions → `feat`, spec data corrections → `fix`.

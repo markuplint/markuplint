@@ -34,6 +34,10 @@ export const globalAttrs: Record<
 			'title',
 			'translate',
 			'writingsuggestions',
+			'focusgroup',
+			'focusgroupstart',
+			'headingoffset',
+			'headingreset',
 			'class',
 			'id',
 			'slot',
@@ -134,6 +138,10 @@ export const globalAttrs: Record<
 			'onwebkitanimationstart',
 			'onwebkittransitionend',
 			'onwheel',
+			'ontouchstart', // Touch Events
+			'ontouchend', // Touch Events
+			'ontouchmove', // Touch Events
+			'ontouchcancel', // Touch Events
 			'onanimationstart', // CSS Animation Events
 			'onanimationiteration', // CSS Animation Events
 			'onanimationend', // CSS Animation Events
@@ -376,6 +384,25 @@ export const globalAttrs: Record<
 		description:
 			'[transfer function element attributes,]( https://drafts.csswg.org/filter-effects-1/#transfer-function-element-attributes )',
 		attrs: ['type', 'tableValues', 'slope', 'intercept', 'amplitude', 'exponent', 'offset'],
+	},
+	'#MathMLGlobalAttrs': {
+		description:
+			'[attributes common to HTML and MathML elements]( https://www.w3.org/TR/mathml-core/#attributes-common-to-html-and-mathml-elements )',
+		attrs: [
+			'autofocus',
+			'class',
+			'data-*',
+			'dir',
+			'displaystyle',
+			'id',
+			'mathbackground',
+			'mathcolor',
+			'mathsize',
+			'nonce',
+			'scriptlevel',
+			'style',
+			'tabindex',
+		],
 	},
 	'#XLinkAttrs': {
 		description:

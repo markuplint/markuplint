@@ -278,7 +278,7 @@
 		"switch": {
 			"type": "Boolean",
 			"experimental": true,
-			"condition": ["[type='checkbox' i]"]
+			"condition": "[type='checkbox' i]"
 		},
 		// https://html.spec.whatwg.org/multipage/input.html#attr-input-readonly
 		"readonly": {
