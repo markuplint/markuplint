@@ -82,58 +82,62 @@
 
 ### `markuplint:a11y` {#preset-a11y}
 
-| 名前付きルール                             | 解説                                                                                                                |
-| ------------------------------------------ | ------------------------------------------------------------------------------------------------------------------- |
-| `a11y/id-duplication`                      | `id`属性値が同じツリー内で重複している場合に警告します。機械可読性の観点から、支援技術における問題を回避できます。  |
-| `a11y/no-refer-to-non-existent-id`         | `for`、`form`、`aria-*`などに指定されたIDが同じツリー内に存在することを確認します。                                 |
-| `a11y/no-broken-fragment-link`             | ハイパーリンクに指定されたフラグメントが同じドキュメント内に存在するIDを参照していることを確認します。              |
-| `a11y/wai-aria/unsupported-element`        | ARIA属性を全くサポートしない要素へのARIA属性指定を禁止します。                                                      |
-| `a11y/wai-aria/non-existent-role`          | WAI-ARIA仕様に存在しないロールが指定された場合に警告します。                                                        |
-| `a11y/wai-aria/abstract-role`              | 抽象ロールが使用された場合に警告します。                                                                            |
-| `a11y/wai-aria/permitted-roles`            | ARIA in HTMLの仕様において要素に許可されていないロールが指定された場合に警告します。                                |
-| `a11y/wai-aria/implicit-role`              | 要素の暗黙のロールと同じロールが明示的に指定された場合に警告します。                                                |
-| `a11y/wai-aria/implicit-props`             | ARIAプロパティが等価なネイティブHTML属性と同じ意味を冗長に繰り返している場合に警告します。                          |
-| `a11y/wai-aria/contradictory-props`        | ARIAプロパティの値が等価なネイティブHTML属性と矛盾している場合に警告します。                                        |
-| `a11y/wai-aria/required-props`             | ロールに必須のARIAプロパティが指定されていない場合に警告します。                                                    |
-| `a11y/wai-aria/disallowed-props`           | 要素の計算されたロールでARIAプロパティ・状態が許可されていない場合に警告します。                                    |
-| `a11y/wai-aria/prohibited-naming`          | 命名禁止(naming-prohibited)要素に`aria-label`/`aria-labelledby`/`aria-braillelabel`が使われている場合に警告します。 |
-| `a11y/wai-aria/element-supports-aria-prop` | ARIA in HTMLの要素固有の制約によりARIAプロパティ・状態が禁止されている場合に警告します。                            |
-| `a11y/wai-aria/deprecated-role`            | 非推奨（廃止予定）のロールが使用された場合に警告します。                                                            |
-| `a11y/wai-aria/deprecated-props`           | ロールにおいて非推奨のARIAプロパティ/ステートが使用された場合に警告します。                                         |
-| `a11y/wai-aria/value`                      | ARIAプロパティ/ステートの値が期待される型に適合しない場合に警告します。                                             |
-| `a11y/wai-aria/required-owned-elements`    | ロールが必要とする子ロールを含んでいない場合に警告します。                                                          |
-| `a11y/wai-aria/required-parent-role`       | 明示的なロールを持つ要素が必須の親コンテキストの外に配置された場合に警告します。                                    |
-| `a11y/wai-aria/tab-requires-tabpanel`      | アクティブな"tab"ロールの要素に対応する"tabpanel"ロールの要素がない場合に警告します。                               |
-| `a11y/wai-aria/presentational-children`    | childrenPresentationalを持つロールの子孫要素にARIA属性が指定された場合に警告します。                                |
-| `a11y/wai-aria/no-global-prop`             | 明示的なロールを持たない要素にグローバルでないARIAプロパティが指定された場合に警告します。                          |
-| `a11y/wai-aria/default-value`              | ARIAプロパティにスペックで定義されたデフォルト値が明示的に指定された場合に警告します。                              |
-| `a11y/wai-aria/interaction-in-hidden`      | `aria-hidden`で非表示にされたサブツリー内にフォーカス可能なインタラクティブ要素がある場合に警告します。             |
-| `a11y/require-accessible-name`             | ARIAロールに従ってアクセシブル名がない場合に警告します。                                                            |
-| `a11y/redundant-accessible-name`           | 複数のアクセシブル名ソースが存在し、高優先度のソースが低優先度のソースを上書きする要素を検出します。                |
-| `a11y/label-has-control`                   | `<label>`要素が関連するコントロール要素を持たない場合に警告します。                                                 |
-| `a11y/landmark-roles`                      | `banner`、`main`、`contentinfo`がトップレベルのランドマークであることを確認します。                                 |
-| `a11y/require-landmark-label`              | ロールが重複するランドマークが一意のアクセシブルネームを持つことを確認します。                                      |
-| `a11y/required-h1`                         | ドキュメント内に`<h1>`要素がない場合に警告します。                                                                  |
-| `a11y/no-duplicate-h1`                     | ドキュメント内に`<h1>`要素が複数ある場合に警告します。                                                              |
-| `a11y/html-lang`                           | 支援技術がドキュメントの言語を識別できるよう、`<html>`要素に`lang`属性を必須とします。                              |
-| `a11y/abbr-title`                          | 略語の完全な展開を提供するため、`<abbr>`要素に`title`属性を必須とします。                                           |
-| `a11y/media-track`                         | キャプションと説明のため、`<audio>`や`<video>`に`<track>`要素を必須とします。                                       |
-| `a11y/video-autoplay-muted`                | 予期しない音声を防ぐため、`autoplay`属性を持つ`<video>`要素に`muted`属性を必須とします。                            |
-| `a11y/no-accesskey`                        | 支援技術のショートカットと競合する可能性があるため、`accesskey`属性を禁止します。                                   |
-| `a11y/tabindex-restrict`                   | 自然なタブ順序を壊さないよう、`tabindex`属性を`-1`または`0`のみに制限します。                                       |
-| `a11y/no-autofocus-outside-dialog`         | フォーカスを強制的に奪うべきではありません。ただし`dialog`要素とその子孫では許可されます。                          |
-| `a11y/viewport-no-user-scalable`           | 低視力ユーザーのズーム操作を妨げるため、viewportメタタグの`user-scalable=no`を禁止します。                          |
-| `a11y/no-consecutive-br`                   | 連続した`<br>`タグの使用に対して警告します。代わりにCSSマージンや適切なブロック要素を使用してください。             |
-| `a11y/no-ambiguous-navigable-target-names` | `_blank`などの特殊なナビゲーションキーワードを無効なターゲット名に置き換える可能性のあるタイポを防ぎます。          |
-| `a11y/use-list`                            | テキストノードの先頭に箇条書き文字がある場合、リスト要素の使用を促します。                                          |
-| `a11y/table-row-column-alignment`          | `colspan`と`rowspan`を考慮して、テーブルの行と列の数の一貫性を確認します。                                          |
-| `a11y/no-table-cell-overlap`               | 2つのセルが同じスロットを覆うことになる`rowspan`/`colspan`の値を禁止します。                                        |
-| `a11y/no-table-span-overflow`              | `<thead>`、`<tbody>`、`<tfoot>`の末尾を越えて伸びる`rowspan`を禁止します。                                          |
-| `a11y/no-empty-table-track`                | セルがひとつも開始しないテーブルの行または列を禁止します。                                                          |
-| `a11y/no-merge-cells`                      | 支援技術にとって困難なセル結合を防ぐため、テーブルセルの`colspan`と`rowspan`属性を禁止します。                      |
-| `a11y/neighbor-popovers`                   | ポップオーバートリガーと対応するターゲットがDOM上で隣接していない場合に警告します。                                 |
-| `a11y/summary-no-interactive`              | 支援技術がコンテンツにアクセスできない場合や、コンテンツが`<summary>`にマウスイベントを伝播しない場合があります。   |
-| `a11y/require-dialog-autofocus`            | `showModal()`メソッドで表示されるダイアログに`autofocus`属性を持つ要素が必要です。                                  |
+| 名前付きルール                                       | 解説                                                                                                                |
+| ---------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------- |
+| `a11y/id-duplication`                                | `id`属性値が同じツリー内で重複している場合に警告します。機械可読性の観点から、支援技術における問題を回避できます。  |
+| `a11y/no-refer-to-non-existent-id`                   | `for`、`form`、`aria-*`などに指定されたIDが同じツリー内に存在することを確認します。                                 |
+| `a11y/no-broken-fragment-link`                       | ハイパーリンクに指定されたフラグメントが同じドキュメント内に存在するIDを参照していることを確認します。              |
+| `a11y/wai-aria/unsupported-element`                  | ARIA属性を全くサポートしない要素へのARIA属性指定を禁止します。                                                      |
+| `a11y/wai-aria/non-existent-role`                    | WAI-ARIA仕様に存在しないロールが指定された場合に警告します。                                                        |
+| `a11y/wai-aria/abstract-role`                        | 抽象ロールが使用された場合に警告します。                                                                            |
+| `a11y/wai-aria/permitted-roles`                      | ARIA in HTMLの仕様において要素に許可されていないロールが指定された場合に警告します。                                |
+| `a11y/wai-aria/implicit-role`                        | 要素の暗黙のロールと同じロールが明示的に指定された場合に警告します。                                                |
+| `a11y/wai-aria/implicit-props`                       | ARIAプロパティが等価なネイティブHTML属性と同じ意味を冗長に繰り返している場合に警告します。                          |
+| `a11y/wai-aria/contradictory-props`                  | ARIAプロパティの値が等価なネイティブHTML属性と矛盾している場合に警告します。                                        |
+| `a11y/wai-aria/required-props`                       | ロールに必須のARIAプロパティが指定されていない場合に警告します。                                                    |
+| `a11y/wai-aria/disallowed-props`                     | 要素の計算されたロールでARIAプロパティ・状態が許可されていない場合に警告します。                                    |
+| `a11y/wai-aria/prohibited-naming`                    | 命名禁止(naming-prohibited)要素に`aria-label`/`aria-labelledby`/`aria-braillelabel`が使われている場合に警告します。 |
+| `a11y/wai-aria/element-supports-aria-prop`           | ARIA in HTMLの要素固有の制約によりARIAプロパティ・状態が禁止されている場合に警告します。                            |
+| `a11y/wai-aria/deprecated-role`                      | 非推奨（廃止予定）のロールが使用された場合に警告します。                                                            |
+| `a11y/wai-aria/deprecated-props`                     | ロールにおいて非推奨のARIAプロパティ/ステートが使用された場合に警告します。                                         |
+| `a11y/wai-aria/value`                                | ARIAプロパティ/ステートの値が期待される型に適合しない場合に警告します。                                             |
+| `a11y/wai-aria/required-owned-elements`              | ロールが必要とする子ロールを含んでいない場合に警告します。                                                          |
+| `a11y/wai-aria/required-parent-role`                 | 明示的なロールを持つ要素が必須の親コンテキストの外に配置された場合に警告します。                                    |
+| `a11y/wai-aria/tab-requires-tabpanel`                | アクティブな"tab"ロールの要素に対応する"tabpanel"ロールの要素がない場合に警告します。                               |
+| `a11y/wai-aria/hidden-until-found`                   | hidden属性がHidden Until Found状態である要素にaria-hidden="true"を指定することを禁止します。                        |
+| `a11y/wai-aria/aria-owns-duplicate-owner`            | 同じ要素を複数の要素のaria-owns属性から参照することを禁止します。                                                   |
+| `a11y/wai-aria/aria-owns-circular-reference`         | 要素を自分自身の祖先にしてしまうaria-owns属性を禁止します。                                                         |
+| `a11y/wai-aria/aria-owns-on-presentational-children` | 子孫がプレゼンテーショナルになるロールの要素にaria-owns属性を指定することを禁止します。                             |
+| `a11y/wai-aria/presentational-children`              | childrenPresentationalを持つロールの子孫要素にARIA属性が指定された場合に警告します。                                |
+| `a11y/wai-aria/no-global-prop`                       | 明示的なロールを持たない要素にグローバルでないARIAプロパティが指定された場合に警告します。                          |
+| `a11y/wai-aria/default-value`                        | ARIAプロパティにスペックで定義されたデフォルト値が明示的に指定された場合に警告します。                              |
+| `a11y/wai-aria/interaction-in-hidden`                | `aria-hidden`で非表示にされたサブツリー内にフォーカス可能なインタラクティブ要素がある場合に警告します。             |
+| `a11y/require-accessible-name`                       | ARIAロールに従ってアクセシブル名がない場合に警告します。                                                            |
+| `a11y/redundant-accessible-name`                     | 複数のアクセシブル名ソースが存在し、高優先度のソースが低優先度のソースを上書きする要素を検出します。                |
+| `a11y/label-has-control`                             | `<label>`要素が関連するコントロール要素を持たない場合に警告します。                                                 |
+| `a11y/landmark-roles`                                | `banner`、`main`、`contentinfo`がトップレベルのランドマークであることを確認します。                                 |
+| `a11y/require-landmark-label`                        | ロールが重複するランドマークが一意のアクセシブルネームを持つことを確認します。                                      |
+| `a11y/required-h1`                                   | ドキュメント内に`<h1>`要素がない場合に警告します。                                                                  |
+| `a11y/no-duplicate-h1`                               | ドキュメント内に`<h1>`要素が複数ある場合に警告します。                                                              |
+| `a11y/html-lang`                                     | 支援技術がドキュメントの言語を識別できるよう、`<html>`要素に`lang`属性を必須とします。                              |
+| `a11y/abbr-title`                                    | 略語の完全な展開を提供するため、`<abbr>`要素に`title`属性を必須とします。                                           |
+| `a11y/media-track`                                   | キャプションと説明のため、`<audio>`や`<video>`に`<track>`要素を必須とします。                                       |
+| `a11y/video-autoplay-muted`                          | 予期しない音声を防ぐため、`autoplay`属性を持つ`<video>`要素に`muted`属性を必須とします。                            |
+| `a11y/no-accesskey`                                  | 支援技術のショートカットと競合する可能性があるため、`accesskey`属性を禁止します。                                   |
+| `a11y/tabindex-restrict`                             | 自然なタブ順序を壊さないよう、`tabindex`属性を`-1`または`0`のみに制限します。                                       |
+| `a11y/no-autofocus-outside-dialog`                   | フォーカスを強制的に奪うべきではありません。ただし`dialog`要素とその子孫では許可されます。                          |
+| `a11y/viewport-no-user-scalable`                     | 低視力ユーザーのズーム操作を妨げるため、viewportメタタグの`user-scalable=no`を禁止します。                          |
+| `a11y/no-consecutive-br`                             | 連続した`<br>`タグの使用に対して警告します。代わりにCSSマージンや適切なブロック要素を使用してください。             |
+| `a11y/no-ambiguous-navigable-target-names`           | `_blank`などの特殊なナビゲーションキーワードを無効なターゲット名に置き換える可能性のあるタイポを防ぎます。          |
+| `a11y/use-list`                                      | テキストノードの先頭に箇条書き文字がある場合、リスト要素の使用を促します。                                          |
+| `a11y/table-row-column-alignment`                    | `colspan`と`rowspan`を考慮して、テーブルの行と列の数の一貫性を確認します。                                          |
+| `a11y/no-table-cell-overlap`                         | 2つのセルが同じスロットを覆うことになる`rowspan`/`colspan`の値を禁止します。                                        |
+| `a11y/no-table-span-overflow`                        | `<thead>`、`<tbody>`、`<tfoot>`の末尾を越えて伸びる`rowspan`を禁止します。                                          |
+| `a11y/no-empty-table-track`                          | セルがひとつも開始しないテーブルの行または列を禁止します。                                                          |
+| `a11y/no-merge-cells`                                | 支援技術にとって困難なセル結合を防ぐため、テーブルセルの`colspan`と`rowspan`属性を禁止します。                      |
+| `a11y/neighbor-popovers`                             | ポップオーバートリガーと対応するターゲットがDOM上で隣接していない場合に警告します。                                 |
+| `a11y/summary-no-interactive`                        | 支援技術がコンテンツにアクセスできない場合や、コンテンツが`<summary>`にマウスイベントを伝播しない場合があります。   |
+| `a11y/require-dialog-autofocus`                      | `showModal()`メソッドで表示されるダイアログに`autofocus`属性を持つ要素が必要です。                                  |
 
 ### `markuplint:html-standard` {#preset-html-standard}
 

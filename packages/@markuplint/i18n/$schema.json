@@ -258,6 +258,7 @@
 				"{0} is {1:c}": { "type": "string" },
 				"{0} is {1}": { "type": "string" },
 				"{0} is {1} but {2}": { "type": "string" },
+				"{0} is already referred to by the \"aria-owns\" of another element": { "type": "string" },
 				"{0} is causing {1}": { "type": "string" },
 				"{0} is disallowed": { "type": "string" },
 				"{0} is disallowed to accept the following values: {1}": { "type": "string" },
@@ -311,6 +312,9 @@
 				"\"{0}\" {1}": { "type": "string" },
 				"\"{0}\" ID": { "type": "string" },
 				"\"aria-hidden\" must not be \"{0}\" on an element with \"hidden\" value \"{1}\"": { "type": "string" },
+				"\"aria-owns\" must not be specified on an element with the \"{0}\" role, whose children are presentational": {
+					"type": "string"
+				},
 				"a {0}": { "type": "string" },
 				"a corresponding \"{0}\" {1}": { "type": "string" },
 				"a duplicate \"{0}\" start tag": { "type": "string" },
@@ -359,6 +363,7 @@
 				"need {0}": { "type": "string" },
 				"need \"{0}\"": { "type": "string" },
 				"never {0} {1}": { "type": "string" },
+				"referring to {0} from \"aria-owns\" makes a cycle": { "type": "string" },
 				"require {0}": { "type": "string" },
 				"remove {0}": { "type": "string" },
 				"the \"{0}\" {1} is {2:c}": { "type": "string" },

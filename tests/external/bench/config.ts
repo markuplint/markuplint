@@ -172,6 +172,13 @@ export const benchmarkConfig: Config = {
 		// ARIA in HTML §att-hidden: "authors MUST NOT use aria-hidden=\"true\" on any element
 		// which also has the hidden attribute specified in the Hidden Until Found state."
 		'no-aria-hidden-on-hidden-until-found': true,
+		// WAI-ARIA §aria-owns: "Authors MUST ensure that an element's ID is not specified in more than
+		// one other element's aria-owns attribute at any time." and "Authors MUST NOT create circular
+		// references with aria-owns."; §Children Presentational: "Authors MUST NOT specify aria-owns on
+		// an element which has Presentational Children."
+		'no-duplicate-aria-owns': true,
+		'no-circular-aria-owns': true,
+		'no-aria-owns-on-presentational-children': true,
 		'no-invalid-aria-prop-value': true,
 		'require-owned-elements': true,
 		'require-parent-role': true,

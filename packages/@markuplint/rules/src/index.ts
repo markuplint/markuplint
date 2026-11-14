@@ -36,8 +36,10 @@ import NoAmbiguousNavigableTargetNames from './no-ambiguous-navigable-target-nam
 import NoAriaHiddenOnHiddenUntilFound from './no-aria-hidden-on-hidden-until-found/index.js';
 import NoAriaOnPresentationalChildren from './no-aria-on-presentational-children/index.js';
 import NoAriaOnUnsupportedElement from './no-aria-on-unsupported-element/index.js';
+import NoAriaOwnsOnPresentationalChildren from './no-aria-owns-on-presentational-children/index.js';
 import NoBooleanAttrValue from './no-boolean-attr-value/index.js';
 import NoBrokenFragmentLink from './no-broken-fragment-link/index.js';
+import NoCircularAriaOwns from './no-circular-aria-owns/index.js';
 import NoConsecutiveBr from './no-consecutive-br/index.js';
 import NoContentAfterBody from './no-content-after-body/index.js';
 import NoContradictoryAriaProp from './no-contradictory-aria-prop/index.js';
@@ -49,6 +51,7 @@ import NoDeprecatedElement from './no-deprecated-element/index.js';
 import NoDeprecatedRole from './no-deprecated-role/index.js';
 import NoDisallowedAncestor from './no-disallowed-ancestor/index.js';
 import NoDisallowedAttr from './no-disallowed-attr/index.js';
+import NoDuplicateAriaOwns from './no-duplicate-aria-owns/index.js';
 import NoDuplicateAttr from './no-duplicate-attr/index.js';
 import NoDuplicateAutofocus from './no-duplicate-autofocus/index.js';
 import NoDuplicateDt from './no-duplicate-dt/index.js';
@@ -149,8 +152,10 @@ const rules = {
 	'no-aria-hidden-on-hidden-until-found': NoAriaHiddenOnHiddenUntilFound,
 	'no-aria-on-presentational-children': NoAriaOnPresentationalChildren,
 	'no-aria-on-unsupported-element': NoAriaOnUnsupportedElement,
+	'no-aria-owns-on-presentational-children': NoAriaOwnsOnPresentationalChildren,
 	'no-boolean-attr-value': NoBooleanAttrValue,
 	'no-broken-fragment-link': NoBrokenFragmentLink,
+	'no-circular-aria-owns': NoCircularAriaOwns,
 	'no-consecutive-br': NoConsecutiveBr,
 	'no-content-after-body': NoContentAfterBody,
 	'no-contradictory-aria-prop': NoContradictoryAriaProp,
@@ -162,6 +167,7 @@ const rules = {
 	'no-deprecated-role': NoDeprecatedRole,
 	'no-disallowed-ancestor': NoDisallowedAncestor,
 	'no-disallowed-attr': NoDisallowedAttr,
+	'no-duplicate-aria-owns': NoDuplicateAriaOwns,
 	'no-duplicate-attr': NoDuplicateAttr,
 	'no-duplicate-autofocus': NoDuplicateAutofocus,
 	'no-duplicate-dt': NoDuplicateDt,

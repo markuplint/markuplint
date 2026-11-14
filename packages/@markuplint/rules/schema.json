@@ -108,11 +108,17 @@
 				"no-aria-on-unsupported-element": {
 					"$ref": "https://raw.githubusercontent.com/markuplint/markuplint/main/packages/%40markuplint/rules/src/no-aria-on-unsupported-element/schema.json"
 				},
+				"no-aria-owns-on-presentational-children": {
+					"$ref": "https://raw.githubusercontent.com/markuplint/markuplint/main/packages/%40markuplint/rules/src/no-aria-owns-on-presentational-children/schema.json"
+				},
 				"no-boolean-attr-value": {
 					"$ref": "https://raw.githubusercontent.com/markuplint/markuplint/main/packages/%40markuplint/rules/src/no-boolean-attr-value/schema.json"
 				},
 				"no-broken-fragment-link": {
 					"$ref": "https://raw.githubusercontent.com/markuplint/markuplint/main/packages/%40markuplint/rules/src/no-broken-fragment-link/schema.json"
+				},
+				"no-circular-aria-owns": {
+					"$ref": "https://raw.githubusercontent.com/markuplint/markuplint/main/packages/%40markuplint/rules/src/no-circular-aria-owns/schema.json"
 				},
 				"no-consecutive-br": {
 					"$ref": "https://raw.githubusercontent.com/markuplint/markuplint/main/packages/%40markuplint/rules/src/no-consecutive-br/schema.json"
@@ -146,6 +152,9 @@
 				},
 				"no-disallowed-attr": {
 					"$ref": "https://raw.githubusercontent.com/markuplint/markuplint/main/packages/%40markuplint/rules/src/no-disallowed-attr/schema.json"
+				},
+				"no-duplicate-aria-owns": {
+					"$ref": "https://raw.githubusercontent.com/markuplint/markuplint/main/packages/%40markuplint/rules/src/no-duplicate-aria-owns/schema.json"
 				},
 				"no-duplicate-attr": {
 					"$ref": "https://raw.githubusercontent.com/markuplint/markuplint/main/packages/%40markuplint/rules/src/no-duplicate-attr/schema.json"

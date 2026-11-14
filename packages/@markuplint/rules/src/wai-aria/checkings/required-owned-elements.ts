@@ -9,6 +9,7 @@ import {
 	isRequiredOwnedElement,
 	isSlotElement,
 	isTransparentForOwnership,
+	resolveAriaOwnsChildren,
 } from '@markuplint/ml-spec';
 
 import { expandChildren, isContentMutable } from '../../permitted-contents/slot-content.js';
@@ -76,14 +77,9 @@ export const checkingRequiredOwnedElements: ElementChecker<
 			return;
 		}
 
-		// TODO: Needs to resolve `aria-owns` references to include virtually owned elements.
-		// Currently, only the child nodes (those of the shadow root for a shadow host) are checked.
-		// Elements referenced via `aria-owns` should also be considered as owned elements per the
-		// ARIA specification.
-
 		const ariaVersion =
 			el.rule.options?.version ?? el.ownerMLDocument.ruleCommonSettings?.ariaVersion ?? ARIA_RECOMMENDED_VERSION;
-		const ownedChildNodes = getOwnedChildNodes(el);
+		const ownedChildNodes = getOwnedChildNodes(el, ariaVersion);
 		const children: OwnedElement[] = classifyChildren(el, ownedChildNodes, role, ariaVersion);
 
 		if (children.some(([, type]) => type === 'BUSY' || type === 'UNKNOWN')) {
@@ -237,7 +233,7 @@ function classifyChildren(
 					result.push([child, 'UNKNOWN']);
 					continue;
 				}
-				result.push(...classifyChildren(child, getOwnedChildNodes(child), role, version));
+				result.push(...classifyChildren(child, getOwnedChildNodes(child, version), role, version));
 				continue;
 			}
 			result.push([child, 'OTHER']);
@@ -283,7 +279,7 @@ function classifySlot(
 		return [[slot, 'UNKNOWN']];
 	}
 	if (assigned.length === 0) {
-		return classifyChildren(slot, getOwnedChildNodes(slot), role, version);
+		return classifyChildren(slot, getOwnedChildNodes(slot, version), role, version);
 	}
 	const mutable = assigned.some(
 		node =>
@@ -325,11 +321,50 @@ function classifySlot(
  *
  * > […] the flat tree is the top-level DOM tree, but shadow hosts are filled with their shadow tree children instead of their light tree children […]
  *
+ * `aria-owns` moves elements in the tree after that: an element that an `aria-owns` of
+ * another element refers to is not owned by `el`, and the elements that the `aria-owns` of `el`
+ * refers to are owned by it, after its other child nodes (`resolveAriaOwnsChildren` of
+ * `@markuplint/ml-spec`). An `aria-owns` of `el` whose value is not known until it is rendered may own
+ * any element, so `null` is returned for it, and so it is when `aria-owns` moves a node in a document
+ * with a block of template syntax, where the element an ID refers to depends on the rendered branch.
+ *
  * @see https://drafts.csswg.org/css-shadow-1/#flattening
+ * @see https://w3c.github.io/aria/#aria-owns
  * @param el - The element, or the virtual slot wrapper of a pretended component.
+ * @param version - The WAI-ARIA version, which decides the roles that exclude an owner of `aria-owns`.
  * @returns The child nodes, or `null` when they cannot be known.
  */
 function getOwnedChildNodes(
+	// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
+	el: Element<boolean, Options>,
+	version: ARIAVersion,
+): readonly ChildNode<boolean, Options>[] | null {
+	const ariaOwns = el.getAttributeNode('aria-owns');
+	if (ariaOwns && !ariaOwns.isAbsent && ariaOwns.isDynamicValue) {
+		return null;
+	}
+	const childNodes = getFlatChildNodes(el);
+	if (!childNodes) {
+		return null;
+	}
+	const specs = el.ownerMLDocument.specs;
+	const resolved = resolveAriaOwnsChildren(el, childNodes, specs, version) as ChildNode<boolean, Options>[];
+	// In a document with a block of template syntax, the element an ID refers to depends on the branch
+	// that is rendered, so what `aria-owns` moves is not known
+	const moved = resolved.length !== childNodes.length || resolved.some((node, i) => node !== childNodes[i]);
+	if (moved && el.ownerMLDocument.nodeList.some(node => node.is(node.MARKUPLINT_PREPROCESSOR_BLOCK))) {
+		return null;
+	}
+	return resolved;
+}
+
+/**
+ * The child nodes of `el` as the page renders them, before `aria-owns` moves any (see `getOwnedChildNodes`).
+ *
+ * @param el - The element, or the virtual slot wrapper of a pretended component.
+ * @returns The child nodes, or `null` when they cannot be known.
+ */
+function getFlatChildNodes(
 	// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
 	el: Element<boolean, Options>,
 ): readonly ChildNode<boolean, Options>[] | null {
