@@ -21,6 +21,6 @@
 		"build:napi:debug": "napi build --manifest-path ../../../crates/markuplint-builder/Cargo.toml --output-dir . --platform --js index.cjs -- --locked"
 	},
 	"devDependencies": {
-		"@napi-rs/cli": "3.10.8"
+		"@napi-rs/cli": "3.10.12"
 	}
 }
