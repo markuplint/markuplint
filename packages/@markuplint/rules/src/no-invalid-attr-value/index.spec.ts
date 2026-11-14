@@ -244,10 +244,10 @@ test('[no-invalid-attr-value-invalid-009] URL Living Standard validation errors'
 	const { violations: reverseSolidus } = await mlRuleTest(rule, '<a href="http://example.com\\foo"></a>');
 	expect(reverseSolidus.length).toBe(1);
 
-	// file-invalid-Windows-drive-letter — `C|` instead of `C:`.
-	// https://url.spec.whatwg.org/#file-invalid-windows-drive-letter
+	// file-invalid-Windows-drive-letter-host — the host of a `file:` URL is a drive letter.
+	// https://url.spec.whatwg.org/#file-invalid-windows-drive-letter-host
 	const { violations: windowsDrive } = await mlRuleTest(rule, '<a href="file:///C|/foo"></a>');
-	expect(windowsDrive.length).toBe(1);
+	expect(windowsDrive.length).toBe(0);
 
 	// multiple `#` — second `#` is invalid-URL-unit in fragment grammar.
 	// https://url.spec.whatwg.org/#invalid-url-unit
