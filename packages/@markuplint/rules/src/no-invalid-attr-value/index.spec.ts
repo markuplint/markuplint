@@ -1028,6 +1028,25 @@ test('[no-invalid-attr-value-issue-3598-023] input[type=color] with a value that
 	expect(valueViolation!.message).toContain('CSS color');
 });
 
+test('[no-invalid-attr-value-issue-4655-001] input[type=color] with a three-digit hex color', async () => {
+	const { violations } = await mlRuleTest(rule, '<input type="color" value="#fff">');
+	expect(violations).toStrictEqual([]);
+});
+
+test('[no-invalid-attr-value-issue-4655-002] input[type=color] with six hex digits but no number sign', async () => {
+	const { violations } = await mlRuleTest(rule, '<input type="color" value="ff0000">');
+	expect(violations).toStrictEqual([
+		{
+			severity: 'error',
+			line: 1,
+			col: 28,
+			message:
+				'The "value" attribute expects the CSS color format (https://html.spec.whatwg.org/multipage/input.html#color-state-(type=color))',
+			raw: 'ff0000',
+		},
+	]);
+});
+
 test('[no-invalid-attr-value-issue-3189-001] rel=preload with valid as value', async () => {
 	const { violations } = await mlRuleTest(rule, '<link rel="preload" href="/a.js" as="script">');
 	expect(violations).toStrictEqual([]);

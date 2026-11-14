@@ -1,5 +1,6 @@
 import type { ARIAVersion, ComputedRole, MLMLSpec } from '../../types/index.js';
 
+import { getOwnedChildElements } from './aria-owns.js';
 import { isTransparentForOwnership } from './is-presentational.js';
 
 import { getComputedRole } from './get-computed-role.js';
@@ -9,14 +10,20 @@ import { getImplicitRole } from './get-implicit-role.js';
 /**
  * Checks whether an element satisfies the "Allowed Accessibility Child Roles"
  * constraint (called "Required Owned Elements" in ARIA 1.2)
- * defined by its computed ARIA role. An element satisfies this constraint if it
- * has `aria-owns`, or if any of its closest non-presentational descendants match
- * the required owned element roles.
+ * defined by its computed ARIA role. An element satisfies this constraint if any
+ * of its closest non-presentational descendants match the required owned element
+ * roles. The descendants are those of the accessibility tree with `aria-owns`
+ * resolved ({@link getOwnedChildElements}): the elements that its `aria-owns`
+ * refers to are among them, and a child that another element owns through
+ * `aria-owns` is not. An `aria-owns` whose value is not known until it is rendered
+ * (`isDynamicValue` of the attribute that `@markuplint/ml-core` hands over) may own any
+ * element, so the element is taken to satisfy the constraint.
  *
  * @param el - The DOM element to check
  * @param specs - The full markup language specification
  * @param version - The ARIA specification version to use
  * @returns `true` if the element has no required owned elements or the constraint is satisfied, `false` otherwise
+ * @see https://w3c.github.io/aria/#aria-owns
  */
 export function hasRequiredOwnedElement(
 	// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
@@ -24,21 +31,11 @@ export function hasRequiredOwnedElement(
 	specs: MLMLSpec,
 	version: ARIAVersion,
 ): boolean {
-	/**
-	 * The element has aria-owns which means it may have owned elements.
-	 *
-	 * THIS CONDITION IS PARTIAL SUPPORT.
-	 */
-	if (el.hasAttribute('aria-owns')) {
-		// FIXME: Partial support — assumes aria-owns always provides required owned elements.
-		// A complete implementation would resolve the ID references in the aria-owns value
-		// and verify that the referenced elements actually have the required roles.
+	const ariaOwns = el.getAttributeNode('aria-owns') as (Attr & { isDynamicValue?: boolean; isAbsent?: true }) | null;
+	if (ariaOwns && !ariaOwns.isAbsent && ariaOwns.isDynamicValue) {
 		return true;
 	}
 
-	/**
-	 * Otherwise, traverses descendants to find owned elements.
-	 */
 	const computed = getComputedRole(specs, el, version);
 	if (!computed.role || computed.role.allowedAccessibilityChildRoles.length === 0) {
 		return true;
@@ -116,7 +113,7 @@ function getClosestNonPresentationalDescendants(
 	version: ARIAVersion,
 ): ComputedRole[] {
 	const owned: ComputedRole[] = [];
-	for (const child of el.children) {
+	for (const child of getOwnedChildElements(el, specs, version)) {
 		const explicitRole = getExplicitRole(specs, child, version);
 		const computed = explicitRole.role ? explicitRole : getImplicitRole(specs, child, version);
 		if (isTransparentForOwnership(computed.role?.name, version)) {

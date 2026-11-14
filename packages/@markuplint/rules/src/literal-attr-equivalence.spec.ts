@@ -26,6 +26,8 @@ import noDefaultValue from './no-default-value/index.js';
 import noDeprecatedAriaProp from './no-deprecated-aria-prop/index.js';
 import noDeprecatedAttr from './no-deprecated-attr/index.js';
 import noDisallowedAttr from './no-disallowed-attr/index.js';
+import noCircularAriaOwns from './no-circular-aria-owns/index.js';
+import noDuplicateAriaOwns from './no-duplicate-aria-owns/index.js';
 import noDuplicateAttr from './no-duplicate-attr/index.js';
 import noDuplicateId from './no-duplicate-id/index.js';
 import noEventHandlerAttr from './no-event-handler-attr/index.js';
@@ -78,6 +80,8 @@ const RULES: Readonly<Record<string, unknown>> = {
 	'no-deprecated-attr': noDeprecatedAttr,
 	'no-disallowed-attr': noDisallowedAttr,
 	'no-duplicate-attr': noDuplicateAttr,
+	'no-circular-aria-owns': noCircularAriaOwns,
+	'no-duplicate-aria-owns': noDuplicateAriaOwns,
 	'no-duplicate-id': noDuplicateId,
 	'no-event-handler-attr': noEventHandlerAttr,
 	'no-focusable-in-aria-hidden': noFocusableInAriaHidden,
@@ -196,6 +200,12 @@ const LITERALS: readonly (readonly [string, string, string])[] = [
 		'<><input type={"text"} list={"notdatalist"} /><div id={"notdatalist"}>Not a datalist</div></>',
 	],
 	['no-refer-to-non-existent-id', '<label for="none"></label>', '<label for={"none"}></label>'],
+	[
+		'no-duplicate-aria-owns',
+		'<div><div aria-owns="a"></div><div aria-owns="a"></div><p id="a"></p></div>',
+		'<div><div aria-owns={"a"}></div><div aria-owns={"a"}></div><p id={"a"}></p></div>',
+	],
+	['no-circular-aria-owns', '<div id="a" aria-owns="a"></div>', '<div id={"a"} aria-owns={"a"}></div>'],
 	['no-broken-fragment-link', '<a href="#none"></a>', '<a href={"#none"}></a>'],
 	[
 		'no-unpaired-srcset-sizes',

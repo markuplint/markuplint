@@ -82,58 +82,62 @@ See the [rulesets tables](#rulesets-of-base-presets) below for the full list of 
 
 ### `markuplint:a11y` {#preset-a11y}
 
-| Named Rule                                 | Description                                                                                                                                       |
-| ------------------------------------------ | ------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `a11y/id-duplication`                      | Warns when `id` attribute values are duplicated in one tree. Avoids problems in assistive technologies from the viewpoint of machine readability. |
-| `a11y/no-refer-to-non-existent-id`         | Checks whether IDs specified in `for`, `form`, `aria-*`, and more reference an ID that exists in the same tree.                                   |
-| `a11y/no-broken-fragment-link`             | Checks whether a fragment in a hyperlink references an ID that exists in the same document.                                                       |
-| `a11y/wai-aria/unsupported-element`        | Disallows ARIA attributes on elements that don't support ARIA at all.                                                                             |
-| `a11y/wai-aria/non-existent-role`          | Warns when a role attribute value does not exist in the WAI-ARIA specification.                                                                   |
-| `a11y/wai-aria/abstract-role`              | Warns when an abstract WAI-ARIA role is used.                                                                                                     |
-| `a11y/wai-aria/permitted-roles`            | Warns when a role is not permitted on the element according to ARIA in HTML.                                                                      |
-| `a11y/wai-aria/implicit-role`              | Warns when the explicit role attribute duplicates the element's implicit role.                                                                    |
-| `a11y/wai-aria/implicit-props`             | Warns when an ARIA property redundantly restates the same semantics as an equivalent native HTML attribute.                                       |
-| `a11y/wai-aria/contradictory-props`        | Warns when an ARIA property's value contradicts an equivalent native HTML attribute.                                                              |
-| `a11y/wai-aria/required-props`             | Warns when required ARIA properties for a role are missing.                                                                                       |
-| `a11y/wai-aria/disallowed-props`           | Warns when an ARIA property or state is disallowed on the element's computed role.                                                                |
-| `a11y/wai-aria/prohibited-naming`          | Warns when `aria-label`, `aria-labelledby`, or `aria-braillelabel` is used on a naming-prohibited element.                                        |
-| `a11y/wai-aria/element-supports-aria-prop` | Warns when an ARIA property or state is disallowed by an element-specific ARIA in HTML restriction.                                               |
-| `a11y/wai-aria/deprecated-role`            | Warns when a deprecated WAI-ARIA role is used.                                                                                                    |
-| `a11y/wai-aria/deprecated-props`           | Warns when a deprecated ARIA property or state is used on a role.                                                                                 |
-| `a11y/wai-aria/value`                      | Warns when an ARIA property or state value does not conform to its expected type.                                                                 |
-| `a11y/wai-aria/required-owned-elements`    | Warns when a role does not contain its required child roles.                                                                                      |
-| `a11y/wai-aria/required-parent-role`       | Warns when an element with an explicit role is placed outside its required parent context.                                                        |
-| `a11y/wai-aria/tab-requires-tabpanel`      | Warns when an active "tab" role element has no corresponding "tabpanel" role element.                                                             |
-| `a11y/wai-aria/presentational-children`    | Warns when ARIA attributes are set on descendants of roles with presentational children.                                                          |
-| `a11y/wai-aria/no-global-prop`             | Warns when a non-global ARIA property is used on an element without an explicit role.                                                             |
-| `a11y/wai-aria/default-value`              | Warns when an ARIA property is explicitly set to its spec-defined default value.                                                                  |
-| `a11y/wai-aria/interaction-in-hidden`      | Warns when focusable interactive elements are placed inside an `aria-hidden` subtree.                                                             |
-| `a11y/require-accessible-name`             | Warns if the element has no accessible name according to its ARIA role.                                                                           |
-| `a11y/redundant-accessible-name`           | Detects elements with multiple accessible name sources where a higher-priority source overrides a lower-priority one.                             |
-| `a11y/label-has-control`                   | Warns if the `<label>` element has no associated control.                                                                                         |
-| `a11y/landmark-roles`                      | Checks that `banner`, `main`, and `contentinfo` are top-level landmarks.                                                                          |
-| `a11y/require-landmark-label`              | Checks that landmarks with a duplicated role have unique accessible names.                                                                        |
-| `a11y/required-h1`                         | Warns if there is no `<h1>` element in the document.                                                                                              |
-| `a11y/no-duplicate-h1`                     | Warns if there is more than one `<h1>` element in the document.                                                                                   |
-| `a11y/html-lang`                           | Requires the `lang` attribute on the `<html>` element for assistive technologies to identify the document language.                               |
-| `a11y/abbr-title`                          | Requires the `title` attribute on `<abbr>` elements to provide the full expansion of abbreviations.                                               |
-| `a11y/media-track`                         | Requires `<track>` elements in `<audio>` and `<video>` for captions and descriptions.                                                             |
-| `a11y/video-autoplay-muted`                | Requires `<video>` elements with `autoplay` to also have the `muted` attribute to prevent unexpected audio.                                       |
-| `a11y/no-accesskey`                        | Disallows the `accesskey` attribute as it can cause accessibility issues due to conflicts with assistive technology shortcuts.                    |
-| `a11y/tabindex-restrict`                   | Restricts the `tabindex` attribute to only `-1` or `0` values to prevent disrupting natural tab order.                                            |
-| `a11y/no-autofocus-outside-dialog`         | Don't take away focus forcibly. However, the `dialog` element and its descendants allow it.                                                       |
-| `a11y/viewport-no-user-scalable`           | Disallows `user-scalable=no` in viewport meta tag as it prevents zooming for users with low vision.                                               |
-| `a11y/no-consecutive-br`                   | Warns against the use of consecutive `<br>` tags. Use CSS margins or appropriate block elements instead.                                          |
-| `a11y/no-ambiguous-navigable-target-names` | Prevents typographical errors in links that could replace special navigational keywords like `_blank` with invalid target names.                  |
-| `a11y/use-list`                            | Prompts to use a list element when a bullet character appears at the start of a text node.                                                        |
-| `a11y/table-row-column-alignment`          | Ensures consistency in the defined number of rows and columns, accounting for `colspan` and `rowspan`.                                            |
-| `a11y/no-table-cell-overlap`               | Disallows `rowspan` / `colspan` values that cause two cells to cover the same slot.                                                               |
-| `a11y/no-table-span-overflow`              | Disallows a `rowspan` that reaches past the end of its `<thead>`, `<tbody>`, or `<tfoot>`.                                                        |
-| `a11y/no-empty-table-track`                | Disallows a table row or column that no cell is anchored to.                                                                                      |
-| `a11y/no-merge-cells`                      | Disallows `colspan` and `rowspan` attributes on table cells to prevent merged cells that are difficult for assistive technologies.                |
-| `a11y/neighbor-popovers`                   | Warns when popover triggers and their corresponding targets are not adjacent in the DOM.                                                          |
-| `a11y/summary-no-interactive`              | There is a case where an assistive technology can't access contents, or contents don't propagate a mouse event to `<summary>`.                    |
-| `a11y/require-dialog-autofocus`            | Requires a dialog shown via the `showModal()` method to contain an element with the `autofocus` attribute.                                        |
+| Named Rule                                           | Description                                                                                                                                       |
+| ---------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `a11y/id-duplication`                                | Warns when `id` attribute values are duplicated in one tree. Avoids problems in assistive technologies from the viewpoint of machine readability. |
+| `a11y/no-refer-to-non-existent-id`                   | Checks whether IDs specified in `for`, `form`, `aria-*`, and more reference an ID that exists in the same tree.                                   |
+| `a11y/no-broken-fragment-link`                       | Checks whether a fragment in a hyperlink references an ID that exists in the same document.                                                       |
+| `a11y/wai-aria/unsupported-element`                  | Disallows ARIA attributes on elements that don't support ARIA at all.                                                                             |
+| `a11y/wai-aria/non-existent-role`                    | Warns when a role attribute value does not exist in the WAI-ARIA specification.                                                                   |
+| `a11y/wai-aria/abstract-role`                        | Warns when an abstract WAI-ARIA role is used.                                                                                                     |
+| `a11y/wai-aria/permitted-roles`                      | Warns when a role is not permitted on the element according to ARIA in HTML.                                                                      |
+| `a11y/wai-aria/implicit-role`                        | Warns when the explicit role attribute duplicates the element's implicit role.                                                                    |
+| `a11y/wai-aria/implicit-props`                       | Warns when an ARIA property redundantly restates the same semantics as an equivalent native HTML attribute.                                       |
+| `a11y/wai-aria/contradictory-props`                  | Warns when an ARIA property's value contradicts an equivalent native HTML attribute.                                                              |
+| `a11y/wai-aria/required-props`                       | Warns when required ARIA properties for a role are missing.                                                                                       |
+| `a11y/wai-aria/disallowed-props`                     | Warns when an ARIA property or state is disallowed on the element's computed role.                                                                |
+| `a11y/wai-aria/prohibited-naming`                    | Warns when `aria-label`, `aria-labelledby`, or `aria-braillelabel` is used on a naming-prohibited element.                                        |
+| `a11y/wai-aria/element-supports-aria-prop`           | Warns when an ARIA property or state is disallowed by an element-specific ARIA in HTML restriction.                                               |
+| `a11y/wai-aria/deprecated-role`                      | Warns when a deprecated WAI-ARIA role is used.                                                                                                    |
+| `a11y/wai-aria/deprecated-props`                     | Warns when a deprecated ARIA property or state is used on a role.                                                                                 |
+| `a11y/wai-aria/value`                                | Warns when an ARIA property or state value does not conform to its expected type.                                                                 |
+| `a11y/wai-aria/required-owned-elements`              | Warns when a role does not contain its required child roles.                                                                                      |
+| `a11y/wai-aria/required-parent-role`                 | Warns when an element with an explicit role is placed outside its required parent context.                                                        |
+| `a11y/wai-aria/tab-requires-tabpanel`                | Warns when an active "tab" role element has no corresponding "tabpanel" role element.                                                             |
+| `a11y/wai-aria/hidden-until-found`                   | Disallows `aria-hidden="true"` on an element whose `hidden` attribute is in the Hidden Until Found state.                                         |
+| `a11y/wai-aria/aria-owns-duplicate-owner`            | Disallows referring to an element from the `aria-owns` of more than one element.                                                                  |
+| `a11y/wai-aria/aria-owns-circular-reference`         | Disallows an `aria-owns` that makes an element its own ancestor.                                                                                  |
+| `a11y/wai-aria/aria-owns-on-presentational-children` | Disallows `aria-owns` on an element whose role has presentational children.                                                                       |
+| `a11y/wai-aria/presentational-children`              | Warns when ARIA attributes are set on descendants of roles with presentational children.                                                          |
+| `a11y/wai-aria/no-global-prop`                       | Warns when a non-global ARIA property is used on an element without an explicit role.                                                             |
+| `a11y/wai-aria/default-value`                        | Warns when an ARIA property is explicitly set to its spec-defined default value.                                                                  |
+| `a11y/wai-aria/interaction-in-hidden`                | Warns when focusable interactive elements are placed inside an `aria-hidden` subtree.                                                             |
+| `a11y/require-accessible-name`                       | Warns if the element has no accessible name according to its ARIA role.                                                                           |
+| `a11y/redundant-accessible-name`                     | Detects elements with multiple accessible name sources where a higher-priority source overrides a lower-priority one.                             |
+| `a11y/label-has-control`                             | Warns if the `<label>` element has no associated control.                                                                                         |
+| `a11y/landmark-roles`                                | Checks that `banner`, `main`, and `contentinfo` are top-level landmarks.                                                                          |
+| `a11y/require-landmark-label`                        | Checks that landmarks with a duplicated role have unique accessible names.                                                                        |
+| `a11y/required-h1`                                   | Warns if there is no `<h1>` element in the document.                                                                                              |
+| `a11y/no-duplicate-h1`                               | Warns if there is more than one `<h1>` element in the document.                                                                                   |
+| `a11y/html-lang`                                     | Requires the `lang` attribute on the `<html>` element for assistive technologies to identify the document language.                               |
+| `a11y/abbr-title`                                    | Requires the `title` attribute on `<abbr>` elements to provide the full expansion of abbreviations.                                               |
+| `a11y/media-track`                                   | Requires `<track>` elements in `<audio>` and `<video>` for captions and descriptions.                                                             |
+| `a11y/video-autoplay-muted`                          | Requires `<video>` elements with `autoplay` to also have the `muted` attribute to prevent unexpected audio.                                       |
+| `a11y/no-accesskey`                                  | Disallows the `accesskey` attribute as it can cause accessibility issues due to conflicts with assistive technology shortcuts.                    |
+| `a11y/tabindex-restrict`                             | Restricts the `tabindex` attribute to only `-1` or `0` values to prevent disrupting natural tab order.                                            |
+| `a11y/no-autofocus-outside-dialog`                   | Don't take away focus forcibly. However, the `dialog` element and its descendants allow it.                                                       |
+| `a11y/viewport-no-user-scalable`                     | Disallows `user-scalable=no` in viewport meta tag as it prevents zooming for users with low vision.                                               |
+| `a11y/no-consecutive-br`                             | Warns against the use of consecutive `<br>` tags. Use CSS margins or appropriate block elements instead.                                          |
+| `a11y/no-ambiguous-navigable-target-names`           | Prevents typographical errors in links that could replace special navigational keywords like `_blank` with invalid target names.                  |
+| `a11y/use-list`                                      | Prompts to use a list element when a bullet character appears at the start of a text node.                                                        |
+| `a11y/table-row-column-alignment`                    | Ensures consistency in the defined number of rows and columns, accounting for `colspan` and `rowspan`.                                            |
+| `a11y/no-table-cell-overlap`                         | Disallows `rowspan` / `colspan` values that cause two cells to cover the same slot.                                                               |
+| `a11y/no-table-span-overflow`                        | Disallows a `rowspan` that reaches past the end of its `<thead>`, `<tbody>`, or `<tfoot>`.                                                        |
+| `a11y/no-empty-table-track`                          | Disallows a table row or column that no cell is anchored to.                                                                                      |
+| `a11y/no-merge-cells`                                | Disallows `colspan` and `rowspan` attributes on table cells to prevent merged cells that are difficult for assistive technologies.                |
+| `a11y/neighbor-popovers`                             | Warns when popover triggers and their corresponding targets are not adjacent in the DOM.                                                          |
+| `a11y/summary-no-interactive`                        | There is a case where an assistive technology can't access contents, or contents don't propagate a mouse event to `<summary>`.                    |
+| `a11y/require-dialog-autofocus`                      | Requires a dialog shown via the `showModal()` method to contain an element with the `autofocus` attribute.                                        |
 
 ### `markuplint:html-standard` {#preset-html-standard}
 
