@@ -249,9 +249,14 @@ test('invalid-reverse-solidus: `\\` in non-special scheme opaque path is accepte
 	expect(check('mailto:foo\\bar@example.com').matched).toBe(true);
 });
 
-// file-invalid-Windows-drive-letter
-// https://url.spec.whatwg.org/#file-invalid-windows-drive-letter
-test('file-invalid-Windows-drive-letter: `|` instead of `:` is rejected', () => {
+// `C|` in a `file:` URL: each form is rejected by another check
+// - `file:C|`, `file:/C|`: special-scheme-missing-following-solidus
+//   https://url.spec.whatwg.org/#special-scheme-missing-following-solidus
+// - `file://C|`: file-invalid-Windows-drive-letter-host
+//   https://url.spec.whatwg.org/#file-invalid-windows-drive-letter-host
+// - `file:///C|`: invalid-URL-unit, `|` is not a URL code point
+//   https://url.spec.whatwg.org/#url-code-points
+test('`C|` in a `file:` URL is rejected in every form', () => {
 	expect(check('file:///C|/foo').matched).toBe(false);
 	expect(check('file://C|/foo').matched).toBe(false);
 	expect(check('file:/C|/foo').matched).toBe(false);
@@ -366,17 +371,12 @@ test('IPv4-non-decimal-part check is scoped to special-scheme/scheme-relative ho
 
 // file-invalid-Windows-drive-letter-host
 // https://url.spec.whatwg.org/#file-invalid-windows-drive-letter-host
-test.each([
-	'file://C:/foo',
-	'file://c|/foo',
-	'file://C|',
-	'file://C:?q',
-	'file://C|#h',
-	'FILE://c:/foo',
-	'file:\\\\C:/foo',
-])('file-invalid-Windows-drive-letter-host: the host `%s` is a Windows drive letter and is rejected', value => {
-	expect(check(value).matched).toBe(false);
-});
+test.each(['file://C:/foo', 'file://c|/foo', 'file://C|', 'file://C:?q', 'file://C|#h', 'FILE://c:/foo'])(
+	'file-invalid-Windows-drive-letter-host: the host of `%s` is a Windows drive letter and is rejected',
+	value => {
+		expect(check(value).matched).toBe(false);
+	},
+);
 
 test.each(['file://host/C:/foo', 'file://localhost/C:/foo', 'file://c/foo'])(
 	'file-invalid-Windows-drive-letter-host: `%s` does not have a drive letter as its host',
@@ -388,30 +388,43 @@ test.each(['file://host/C:/foo', 'file://localhost/C:/foo', 'file://c/foo'])(
 // invalid-URL-unit: the ASCII code points that are not URL code points
 // https://url.spec.whatwg.org/#url-code-points
 describe('invalid-URL-unit: a code point that is not a URL code point in the path, the query or the fragment', () => {
-	const rejected = ['|', '^', '{', '}', '"', '<', '>', '`'];
+	const characters = ['|', '^', '{', '}', '"', '<', '>', '`'];
+	const positions: readonly (readonly [string, (c: string) => string])[] = [
+		['the path of a special-scheme URL', c => `http://example.com/a${c}b`],
+		['the query of a special-scheme URL', c => `http://example.com/?q=a${c}b`],
+		['the fragment of a special-scheme URL', c => `http://example.com/#a${c}b`],
+		['the path of a file URL', c => `file:///C:/a${c}b`],
+		['the path of a scheme-relative URL', c => `//example.com/a${c}b`],
+		['the path of a relative URL', c => `/a${c}b`],
+		['a relative URL with no slash', c => `a${c}b`],
+		['the query of a relative URL', c => `?q=a${c}b`],
+		['the fragment of a relative URL', c => `#a${c}b`],
+		['the path of a non-special scheme with an authority', c => `foo://example.com/a${c}b`],
+		['the query of a non-special scheme with an authority', c => `foo://example.com/?q=a${c}b`],
+	];
 
-	test.each(rejected)('`%s` is rejected in the path, the query and the fragment of a special-scheme URL', c => {
-		expect(check(`http://example.com/a${c}b`).matched).toBe(false);
-		expect(check(`http://example.com/?q=a${c}b`).matched).toBe(false);
-		expect(check(`http://example.com/#a${c}b`).matched).toBe(false);
-		expect(check(`file:///C:/a${c}b`).matched).toBe(false);
-	});
-
-	test.each(rejected)('`%s` is rejected in a scheme-relative and in a relative URL', c => {
-		expect(check(`//example.com/a${c}b`).matched).toBe(false);
-		expect(check(`/a${c}b`).matched).toBe(false);
-		expect(check(`a${c}b`).matched).toBe(false);
-		expect(check(`?q=a${c}b`).matched).toBe(false);
-		expect(check(`#a${c}b`).matched).toBe(false);
-	});
+	test.each(positions.flatMap(([position, make]) => characters.map(c => [position, c, make(c)] as const)))(
+		'is rejected in %s: `%s` in `%s`',
+		(_position, _c, value) => {
+			expect(check(value).matched).toBe(false);
+		},
+	);
 
 	test('`file:///C|/foo` is rejected because `|` is not a URL code point', () => {
 		expect(check('file:///C|/foo').matched).toBe(false);
 		expect(check('file:///C:/foo').matched).toBe(true);
 	});
 
-	test.each(rejected)('percent-encoded `%s` is accepted', c => {
-		const encoded = encodeURIComponent(c).replace('`', '%60');
+	test.each([
+		['|', '%7C'],
+		['^', '%5E'],
+		['{', '%7B'],
+		['}', '%7D'],
+		['"', '%22'],
+		['<', '%3C'],
+		['>', '%3E'],
+		['`', '%60'],
+	])('`%s` percent-encoded as %s is accepted', (_c, encoded) => {
 		expect(check(`http://example.com/a${encoded}b?q=${encoded}#${encoded}`).matched).toBe(true);
 	});
 
@@ -420,14 +433,32 @@ describe('invalid-URL-unit: a code point that is not a URL code point in the pat
 		expect(check('http://example.com/日本語/é?q=ü#ß').matched).toBe(true);
 	});
 
-	test('the authority is not read: an IPv6 host and userinfo-free hosts are unaffected', () => {
+	test('the authority is not read: `"`, `{`, `}` and the backtick in a host are not reported', () => {
+		// The host state reports no invalid-URL-unit, and the host parser rejects only `<`, `>`, `^` and `|`.
+		expect(check('http://exa{mple.com/').matched).toBe(true);
+		expect(check('http://exa}mple.com/').matched).toBe(true);
+		expect(check('http://exa"mple.com/').matched).toBe(true);
+		expect(check('//ex`ample.com/').matched).toBe(true);
 		expect(check('http://[::1]/path').matched).toBe(true);
 		expect(check('//[::1]:8080/path').matched).toBe(true);
 	});
 
-	test('the content of a non-special scheme is accepted as opaque', () => {
+	test('a host that the host parser rejects is still rejected', () => {
+		expect(check('http://exa|mple.com/').matched).toBe(false);
+		expect(check('http://exa^mple.com/').matched).toBe(false);
+	});
+
+	test('a lone surrogate is not a URL code point and is rejected, a pair is accepted', () => {
+		expect(check('/a\uD800b').matched).toBe(false);
+		expect(check('/a\uDC00b').matched).toBe(false);
+		expect(check('http://example.com/?q=\uD83D').matched).toBe(false);
+		expect(check('/a\u{1F600}b').matched).toBe(true);
+	});
+
+	test('the opaque path of a non-special scheme is accepted', () => {
 		expect(check('data:text/html,<h1>Hello</h1>').matched).toBe(true);
 		expect(check('javascript:alert("x")').matched).toBe(true);
 		expect(check('mailto:a|b@example.com').matched).toBe(true);
+		expect(check('blob:http://example.com/a|b').matched).toBe(true);
 	});
 });

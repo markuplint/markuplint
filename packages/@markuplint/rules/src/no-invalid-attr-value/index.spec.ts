@@ -2674,7 +2674,7 @@ test('[no-invalid-attr-value-issue-4584-001] the allowed values are shown as wri
 	]);
 });
 
-test('[no-invalid-attr-value-invalid-071] a URL with a code point that is not a URL code point is rejected', async () => {
+test('[no-invalid-attr-value-invalid-073] a URL with a code point that is not a URL code point is rejected', async () => {
 	// `|` is not a URL code point: invalid-URL-unit in the path, the query and the fragment.
 	// https://url.spec.whatwg.org/#url-code-points
 	const path = await mlRuleTest(rule, '<a href="file:///C|/foo"></a>');
@@ -2685,8 +2685,18 @@ test('[no-invalid-attr-value-invalid-071] a URL with a code point that is not a 
 	expect(fragment.violations.length).toBe(1);
 });
 
-test('[no-invalid-attr-value-invalid-072] a drive letter as the host of a file URL is rejected', async () => {
+test('[no-invalid-attr-value-invalid-074] a drive letter as the host of a file URL is rejected', async () => {
 	// https://url.spec.whatwg.org/#file-invalid-windows-drive-letter-host
 	const { violations } = await mlRuleTest(rule, '<a href="file://C:/foo"></a>');
-	expect(violations.length).toBe(1);
+	expect(violations).toMatchObject([{ severity: 'error', line: 1, col: 10, raw: 'file://C:/foo' }]);
+});
+
+test('[no-invalid-attr-value-parser-005] JSX: a URL written as an expression is not judged, a literal with braces is', async () => {
+	// A value that the parser reads as code (`isDynamicValue`) is skipped; a string literal is the value itself,
+	// and `{` and `}` are not URL code points.
+	const options = { parser: { '.*': '@markuplint/jsx-parser' } };
+	const dynamic = await mlRuleTest(rule, '<a href={`/p/${id}?q=a|b`}></a>', options);
+	expect(dynamic.violations).toStrictEqual([]);
+	const literal = await mlRuleTest(rule, '<a href="/p/{id}"></a>', options);
+	expect(literal.violations.length).toBe(1);
 });

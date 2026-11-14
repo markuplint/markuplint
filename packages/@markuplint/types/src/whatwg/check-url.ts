@@ -86,10 +86,10 @@ const MULTIPLE_HASH = /#.*#/;
 /**
  * Pattern: a URL whose path / query / fragment contains `[` or `]`.
  *
- * Square brackets are URL code points **only** in the host position of a
- * special-scheme URL, where they delimit an IPv6 address (e.g.,
- * `http://[::1]/`). Outside the authority component they are not URL code
- * points and trigger `invalid-URL-unit`.
+ * Square brackets are not URL code points anywhere. The host state does not check them
+ * in a special-scheme URL, where they delimit an IPv6 address (e.g.,
+ * `http://[::1]/`); outside the authority component they trigger
+ * `invalid-URL-unit`.
  *
  * Detection: strip the authority portion (everything between `://` and the
  * first `/`/`?`/`#`) and check the remainder for any `[` or `]`. Relative
@@ -107,20 +107,41 @@ function hasBracketsOutsideHost(value: string): boolean {
 	if (!/[[\]]/.test(value)) {
 		return false;
 	}
-	// Strip the authority component (host[:port][@userinfo]) if present.
-	// The optional scheme prefix matches both special and non-special schemes;
-	// the `[^/?#]*` swallows everything up to the first path/query/fragment
-	// delimiter, which includes a legitimate `[::1]` IPv6 host.
-	const withoutAuthority = value.replace(/^(?:[a-z][a-z0-9+.-]*:)?\/\/[^/?#]*/i, '');
-	return /[[\]]/.test(withoutAuthority);
+	return /[[\]]/.test(stripAuthority(value));
 }
+
+/**
+ * The authority component (`//host[:port]`, with the userinfo) after an optional scheme: the part of a
+ * URL that is neither its path, its query nor its fragment.
+ * The optional scheme prefix matches both special and non-special schemes; the `[^/?#]*` swallows
+ * everything up to the first path/query/fragment delimiter, which includes a legitimate `[::1]` IPv6 host.
+ */
+const AUTHORITY = /^(?:[a-z][a-z0-9+.-]*:)?\/\/[^/?#]*/i;
+
+/** The URL without its authority, if it has one: its path, query and fragment. */
+function stripAuthority(value: string): string {
+	return value.replace(AUTHORITY, '');
+}
+
+/**
+ * Pattern: a URL that has a scheme and an authority, `scheme://`.
+ *
+ * A non-special scheme with an authority (`foo://host/a`) has a path, a query and a fragment as a
+ * special one does; one without (`data:text/html,…`) has an opaque path.
+ */
+const SCHEME_WITH_AUTHORITY = /^[a-z][a-z0-9+.-]*:\/\//i;
 
 /**
  * The ASCII code points that are neither URL code points nor handled by another check here:
  * `"`, `<`, `>`, `^`, `` ` ``, `{`, `|` and `}`. (`[` and `]` are `hasBracketsOutsideHost`, space,
  * the C0 controls, DEL and `#` have their own patterns, `%` is `MALFORMED_PERCENT`, and `\` is
- * left alone: a special-scheme URL reports it as `invalid-reverse-solidus`, and the opaque path of
- * a non-special scheme is accepted on purpose.)
+ * left alone: a special-scheme URL reports it as `invalid-reverse-solidus`.)
+ *
+ * Known limitations, on purpose: the opaque path of a non-special scheme (`data:text/html,<h1>`,
+ * `javascript:alert("x")`, `mailto:`, `blob:`) is accepted, although the URL Standard reports
+ * `invalid-URL-unit` there too, because that content is another language's or arbitrary data (`[` and
+ * `]` are the exception, as `hasBracketsOutsideHost` has always been); and `"`, `` ` ``, `{` and `}` in
+ * a host (`http://exa{mple.com/`) are accepted, because the host state reports no `invalid-URL-unit`.
  *
  * @see https://url.spec.whatwg.org/#url-code-points
  */
@@ -128,12 +149,13 @@ const NON_URL_CODE_POINT = /["<>^`{|}]/;
 
 /**
  * Whether the path, the query or the fragment of a URL has a code point of
- * {@link NON_URL_CODE_POINT}: the `invalid-URL-unit` of the path state, the opaque path state, the
- * query state and the fragment state.
+ * {@link NON_URL_CODE_POINT}: the `invalid-URL-unit` of the path state, the query state and the
+ * fragment state.
  *
- * The authority is not read: the userinfo and the host are not parsed in those states (a forbidden
- * host code point makes the URL fail to parse, which `URL.canParse` reports below). The caller
- * applies it to special-scheme and scheme-relative URLs only.
+ * The authority is not read: the userinfo and the host are not parsed in those states (`<`, `>`,
+ * `^` and `|` in a host make the URL fail to parse, which `URL.canParse` reports below). The caller
+ * applies it to the URLs that have a path, not an opaque path: the special schemes, a URL without a
+ * scheme and a non-special scheme with an authority (`foo://host/a|b`).
  *
  * Examples caught: `/a|b`, `http://example.com/?q=a|b`, `#a{b}`, `file:///C|/foo`.
  *
@@ -143,7 +165,7 @@ function hasNonURLCodePointOutsideHost(value: string): boolean {
 	if (!NON_URL_CODE_POINT.test(value)) {
 		return false;
 	}
-	return NON_URL_CODE_POINT.test(value.replace(/^(?:[a-z][a-z0-9+.-]*:)?\/\/[^/?#]*/i, ''));
+	return NON_URL_CODE_POINT.test(stripAuthority(value));
 }
 
 /**
@@ -161,9 +183,10 @@ const DATA_URL_MISSING_COMMA = /^data:[^,]*$/i;
 /**
  * Pattern: a `file:` URL whose host is a Windows drive letter (`file://C:/foo`, `file://C|/foo`).
  *
- * The file host state ends the host at `/`, `\`, `?`, `#` or the end of the input and, when what
- * it read is a Windows drive letter (an ASCII alpha and `:` or `|`), reports
- * `file-invalid-Windows-drive-letter-host` (URL LS §1.1).
+ * The file host state ends the host at `/`, `?`, `#` or the end of the input and, when what it
+ * read is a Windows drive letter (an ASCII alpha and `:` or `|`), reports
+ * `file-invalid-Windows-drive-letter-host` (URL LS §1.1). A `\` ends the host too, but a URL with
+ * one is rejected earlier as `invalid-reverse-solidus`, so the pattern does not repeat it.
  *
  * The other forms of a `file:` URL with `C|` are not this error, and are rejected by other checks:
  * `file:C|/foo` and `file:/C|/foo` by the missing-solidus checks (a `file:` URL without `//`),
@@ -173,7 +196,7 @@ const DATA_URL_MISSING_COMMA = /^data:[^,]*$/i;
  *
  * @see https://url.spec.whatwg.org/#file-invalid-windows-drive-letter-host
  */
-const FILE_HOST_IS_WINDOWS_DRIVE_LETTER = /^file:[/\\]{2}[a-z][:|](?:[/\\?#]|$)/i;
+const FILE_HOST_IS_WINDOWS_DRIVE_LETTER = /^file:\/\/[a-z][:|](?:[/?#]|$)/i;
 
 /**
  * Characters that are illegal in URLs per WHATWG URL Standard.
@@ -199,6 +222,8 @@ const MALFORMED_PERCENT = /%(?![0-9A-F]{2})/i;
  * - Unicode noncharacters:
  *   - BMP: U+FDD0–U+FDEF, U+FFFE, U+FFFF
  *   - Supplementary planes: U+XFFFE / U+XFFFF for X = 1..10 (hex)
+ * - Lone surrogates (U+D800–U+DFFF): the URL code points exclude surrogates. With the `u` flag the class
+ *   matches only a surrogate that is not half of a pair.
  *
  * Requires the `u` flag for code points above U+FFFF.
  *
@@ -207,7 +232,7 @@ const MALFORMED_PERCENT = /%(?![0-9A-F]{2})/i;
  */
 const FORBIDDEN_CODE_POINT =
 	// eslint-disable-next-line no-control-regex
-	/[\u0000-\u0008\v\u000E-\u001F\u007F-\u009F\uFDD0-\uFDEF\uFFFE\uFFFF\u{1FFFE}\u{1FFFF}\u{2FFFE}\u{2FFFF}\u{3FFFE}\u{3FFFF}\u{4FFFE}\u{4FFFF}\u{5FFFE}\u{5FFFF}\u{6FFFE}\u{6FFFF}\u{7FFFE}\u{7FFFF}\u{8FFFE}\u{8FFFF}\u{9FFFE}\u{9FFFF}\u{AFFFE}\u{AFFFF}\u{BFFFE}\u{BFFFF}\u{CFFFE}\u{CFFFF}\u{DFFFE}\u{DFFFF}\u{EFFFE}\u{EFFFF}\u{FFFFE}\u{FFFFF}\u{10FFFE}\u{10FFFF}]/u;
+	/[\u0000-\u0008\v\u000E-\u001F\u007F-\u009F\uD800-\uDFFF\uFDD0-\uFDEF\uFFFE\uFFFF\u{1FFFE}\u{1FFFF}\u{2FFFE}\u{2FFFF}\u{3FFFE}\u{3FFFF}\u{4FFFE}\u{4FFFF}\u{5FFFE}\u{5FFFF}\u{6FFFE}\u{6FFFF}\u{7FFFE}\u{7FFFF}\u{8FFFE}\u{8FFFF}\u{9FFFE}\u{9FFFF}\u{AFFFE}\u{AFFFF}\u{BFFFE}\u{BFFFF}\u{CFFFE}\u{CFFFF}\u{DFFFE}\u{DFFFF}\u{EFFFE}\u{EFFFF}\u{FFFFE}\u{FFFFF}\u{10FFFE}\u{10FFFF}]/u;
 
 /**
  * Strips only HTML ASCII whitespace (TAB/LF/FF/CR/SPACE) from both ends.
@@ -444,9 +469,12 @@ export const checkURL: CustomSyntaxChecker = () =>
 		}
 
 		// invalid-URL-unit: a code point of the path, the query or the fragment that is not a URL code point.
-		// Only for special-scheme / scheme-relative URLs, as for `#` above and `\` below: the content of a
-		// non-special scheme (`data:text/html,<h1>`, `javascript:alert("x")`) is accepted as opaque.
-		if (isSpecialOrSchemeless(trimmed) && hasNonURLCodePointOutsideHost(trimmed)) {
+		// Not for the opaque path of a non-special scheme (`data:text/html,<h1>`, `javascript:alert("x")`),
+		// which is accepted on purpose: see `NON_URL_CODE_POINT`.
+		if (
+			(isSpecialOrSchemeless(trimmed) || SCHEME_WITH_AUTHORITY.test(trimmed)) &&
+			hasNonURLCodePointOutsideHost(trimmed)
+		) {
 			return unmatched(trimmed, 'unexpected-token');
 		}
 
