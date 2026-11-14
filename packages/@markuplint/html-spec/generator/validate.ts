@@ -5,6 +5,9 @@
  * Catches data loss from failed scraping (empty descriptions, dropped elements,
  * missing ARIA roles) that the >50%-empty-description check alone would miss.
  *
+ * It runs on the scraped text, before the descriptions are dropped (`finalizeSpec`): the committed `index.json`
+ * has none.
+ *
  * @see https://github.com/markuplint/markuplint/issues/3894
  */
 
@@ -59,7 +62,8 @@ const REQUIRED_ARIA_ROLES: readonly string[] = ['button', 'link'];
  * stability check runs against it; on first generation it is skipped.
  *
  * @param json - The freshly generated spec about to be written.
- * @param previous - The previously committed spec, if any, for stability checks.
+ * @param previous - The previously committed spec, if any, for stability checks. It has no descriptions (see
+ *   `finalizeSpec`): compare counts of elements and ARIA entries with it, never text.
  * @throws {Error} When a data-loss signal is detected.
  */
 export function validateSpecs(json: ExtendedSpec, previous?: ExtendedSpec | null): void {

@@ -133,7 +133,7 @@ export function summarizeChanges(previous: ExtendedSpec | null | undefined, next
 
 	if (sections.length === 1 && !elementDiff) {
 		// Only the unchanged element-count line — nothing structural changed.
-		return 'No structural changes to elements, ARIA roles/properties, or reference URLs. (Attribute-level or description-only changes may still be present — review the diff.)';
+		return 'No structural changes to elements, ARIA roles/properties, or reference URLs. (Attribute-level changes may still be present — review the diff.)';
 	}
 
 	return sections.join('\n\n');

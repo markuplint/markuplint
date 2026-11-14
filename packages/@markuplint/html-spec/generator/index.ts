@@ -29,6 +29,7 @@ import { getGlobalAttrs } from './global-attrs.ts';
 import { getElements } from './html-elements.ts';
 import { readJson } from './read-json.ts';
 import { expandConditionAliases, resolveAliases } from './selector-aliases.ts';
+import { stripProse } from './strip-prose.ts';
 import { summarizeChanges, summarizeFetchProblems } from './summarize.ts';
 import { validateSpecs } from './validate.ts';
 
@@ -118,9 +119,9 @@ export async function main({
 	// can drive the element-count stability check and the change summary.
 	const previous = await readPreviousSpec(outputFilePath);
 
-	validateSpecs(json, previous);
+	const output = finalizeSpec(json, previous);
 
-	const jsonString = JSON.stringify(json, null, 2);
+	const jsonString = JSON.stringify(output, null, 2);
 
 	await writeFile(outputFilePath, jsonString);
 
@@ -129,13 +130,25 @@ export async function main({
 
 	if (summaryFilePath) {
 		const fetchProblems = summarizeFetchProblems(failedUrls, unexpectedlyFoundUrls);
-		const summary = [summarizeChanges(previous, json), fetchProblems].filter(Boolean).join('\n\n');
+		const summary = [summarizeChanges(previous, output), fetchProblems].filter(Boolean).join('\n\n');
 		await writeFile(summaryFilePath, summary + '\n');
 		// eslint-disable-next-line no-console
 		console.log(`📝 Summary: ${summaryFilePath}`);
 	}
 
 	return { fetchProblems: hasFetchProblems() };
+}
+
+/**
+ * What is written: the scraped spec once it has passed validation, without its prose. The order is the point:
+ * validation reads the scraped text, which is what tells a failed MDN fetch from a real result, and the
+ * committed file has no prose to compare with, so the summary is made from the returned spec as well.
+ *
+ * @throws {Error} When `validateSpecs` detects data loss.
+ */
+export function finalizeSpec(json: ExtendedSpec, previous: ExtendedSpec | null): ExtendedSpec {
+	validateSpecs(json, previous);
+	return stripProse(json);
 }
 
 /**
