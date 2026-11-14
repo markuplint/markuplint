@@ -1,35 +1,16 @@
 import type { ExtendedSpec } from '@markuplint/ml-spec';
 
+import { readFileSync } from 'node:fs';
+import path from 'node:path';
+
 import { describe, test, expect } from 'vitest';
 
 import { finalizeSpec } from './index.ts';
 
-const required = [
-	'html',
-	'head',
-	'body',
-	'title',
-	'meta',
-	'link',
-	'script',
-	'style',
-	'div',
-	'span',
-	'a',
-	'p',
-	'img',
-	'ul',
-	'ol',
-	'li',
-	'table',
-	'form',
-	'input',
-	'button',
-	'select',
-	'option',
-	'textarea',
-	'label',
-];
+/** The element names of the committed data: `validateSpecs` needs the core elements, and these include them. */
+const elementNames = (
+	JSON.parse(readFileSync(path.resolve(import.meta.dirname, '..', 'index.json'), 'utf8')) as ExtendedSpec
+).specs!.map(spec => spec.name);
 
 function scraped(description: string): ExtendedSpec {
 	const role = (name: string) => ({ name, description: `The ${name} role.` });
@@ -42,7 +23,7 @@ function scraped(description: string): ExtendedSpec {
 	return {
 		cites: ['https://html.spec.whatwg.org/multipage/'],
 		def: { '#globalAttrs': {}, '#aria': { '1.1': aria, '1.2': aria, '1.3': aria }, '#contentModels': {} },
-		specs: required.map(name => ({ name, description, attributes: { id: { description: 'The id.' } } })),
+		specs: elementNames.map(name => ({ name, description, attributes: { id: { description: 'The id.' } } })),
 	} as unknown as ExtendedSpec;
 }
 
