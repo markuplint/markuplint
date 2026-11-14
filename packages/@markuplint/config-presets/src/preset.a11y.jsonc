@@ -324,6 +324,18 @@
 			"specConformance": "normative",
 			"rules": { "tab-requires-tabpanel": true }
 		},
+		"a11y/wai-aria/aria-owns-duplicate-owner": {
+			"specConformance": "normative",
+			"rules": { "no-duplicate-aria-owns": true }
+		},
+		"a11y/wai-aria/aria-owns-circular-reference": {
+			"specConformance": "normative",
+			"rules": { "no-circular-aria-owns": true }
+		},
+		"a11y/wai-aria/aria-owns-on-presentational-children": {
+			"specConformance": "normative",
+			"rules": { "no-aria-owns-on-presentational-children": true }
+		},
 		"a11y/wai-aria/presentational-children": {
 			"specConformance": "non-normative",
 			"severity": "warning",
