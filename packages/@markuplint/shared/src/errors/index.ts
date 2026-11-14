@@ -55,6 +55,10 @@
  * (`parse-literal-expression.ts` and `is-braced-expression.ts` in `@markuplint/parser-utils`,
  * whose `catch` wraps espree's reading of the author's own code alone, and takes its
  * `SyntaxError` for "not a literal" and "not one expression"),
+ * the compiled pattern regular expression check (`Pattern` in `defs.ts` of `@markuplint/types`,
+ * whose `catch` wraps the two `new RegExp` calls on the author's `pattern` value alone — the
+ * author's input, not markuplint's code — and takes their `SyntaxError` for "no compiled pattern
+ * regular expression" and re-throws any other error),
  * and the spec citation monitor (`fetch.ts` and `collect.ts` under
  * `scripts/spec-citations`, whose `catch` wraps the runtime's `fetch`,
  * `new URL` or `decodeURIComponent` call alone), where Tier-1-shaped errors

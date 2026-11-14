@@ -200,6 +200,31 @@ export const defs: Defs = {
 		is: () => matched(),
 	},
 
+	/**
+	 * Accepts exactly when the HTML Standard has a compiled pattern regular
+	 * expression for the value; a browser that has none ignores the attribute.
+	 *
+	 * The Standard asserts (`!`) that the wrapped compile cannot fail once the
+	 * value compiles alone, so only the first `new RegExp` can throw here.
+	 * The second stays as the Standard's own step.
+	 *
+	 * The `catch` is deliberately without an `isFatalError` guard, which
+	 * would treat the `SyntaxError` as fatal: it wraps the `new RegExp` calls
+	 * on the author's value alone, so that `SyntaxError` is the author's input
+	 * being invalid, not a broken invariant of markuplint. Any other error is
+	 * re-thrown (see the exceptions in the module JSDoc of
+	 * `@markuplint/shared`'s `errors/index.ts`).
+	 *
+	 * @see https://html.spec.whatwg.org/multipage/input.html#compiled-pattern-regular-expression
+	 *
+	 * > Let regexpCompletion be RegExpCreate(pattern, "v").
+	 *
+	 * > If regexpCompletion is an abrupt completion, then return nothing. The element has no compiled pattern regular expression.
+	 *
+	 * > Let anchoredPattern be the string "^(?:", followed by pattern, followed by ")$".
+	 *
+	 * > Return ! RegExpCreate(anchoredPattern, "v").
+	 */
 	Pattern: {
 		ref: 'https://html.spec.whatwg.org/multipage/input.html#compiled-pattern-regular-expression',
 		expects: [
@@ -210,9 +235,13 @@ export const defs: Defs = {
 		],
 		is: value => {
 			try {
-				new RegExp(`^(?:${value})$`);
-			} catch {
-				return unmatched(value);
+				new RegExp(value, 'v');
+				new RegExp(`^(?:${value})$`, 'v');
+			} catch (error) {
+				if (error instanceof SyntaxError) {
+					return unmatched(value);
+				}
+				throw error;
 			}
 			return matched();
 		},
