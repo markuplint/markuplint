@@ -76,7 +76,7 @@
 | `<end-value-list>`                 | SVGがいくつかの属性                                    | [SVG](https://svgwg.org/specs/animations/#EndValueListSyntax)                                            | 🚧       |
 | `<list-of-value>`                  | SVGがいくつかの属性                                    | [SVG](https://svgwg.org/specs/animations/#ValuesAttribute)                                               | 🚧       |
 | `<clock-value>`                    | SVGがいくつかの属性                                    | [SMIL](https://www.w3.org/TR/2001/REC-smil-animation-20010904/#Timing-ClockValueSyntax)                  | 🚧       |
-| `<color-matrix>`                   | SVGがいくつかの属性                                    | [W3C](https://drafts.fxtf.org/filter-effects/#element-attrdef-fecolormatrix-values)                      | ✅       |
+| `<color-matrix>`                   | SVGがいくつかの属性                                    | [W3C](https://drafts.csswg.org/filter-effects-1/#element-attrdef-fecolormatrix-values)                   | ✅       |
 | `<dasharray>`                      | SVGがいくつかの属性                                    | [SVG](https://svgwg.org/svg2-draft/painting.html#StrokeDasharrayProperty)                                | ✅       |
 | `<key-points>`                     | SVGがいくつかの属性                                    | [SVG](https://svgwg.org/specs/animations/#KeyPointsAttribute)                                            | ✅       |
 | `<key-splines>`                    | SVGがいくつかの属性                                    | [SVG](https://svgwg.org/specs/animations/#KeyTimesAttribute)                                             | ✅       |
