@@ -272,7 +272,8 @@ export const globalAttrs: Record<
 		],
 	},
 	'#SVGFilterPrimitiveAttrs': {
-		description: '[Common filter primitive attributes]( https://drafts.fxtf.org/filter-effects/#CommonAttributes )',
+		description:
+			'[Common filter primitive attributes]( https://drafts.csswg.org/filter-effects-1/#CommonAttributes )',
 		attrs: ['x', 'y', 'width', 'height', 'result', 'in'],
 	},
 	'#SVGPresentationAttrs': {
@@ -373,7 +374,7 @@ export const globalAttrs: Record<
 	},
 	'#SVGTransferFunctionAttrs': {
 		description:
-			'[transfer function element attributes,]( https://drafts.fxtf.org/filter-effects/#transfer-function-element-attributes )',
+			'[transfer function element attributes,]( https://drafts.csswg.org/filter-effects-1/#transfer-function-element-attributes )',
 		attrs: ['type', 'tableValues', 'slope', 'intercept', 'amplitude', 'exponent', 'offset'],
 	},
 	'#XLinkAttrs': {
