@@ -161,6 +161,28 @@ function extractHeading($: CheerioAPI, heading: El): { unit: string; scope: stri
 	return { unit: textOf($, unit), scope: textOf($, scope), secno };
 }
 
+/**
+ * The `dd`s that describe a `dt`. A description belongs to every term of the run of `dt`s before it (the HTML
+ * Standard lists `basefont`, `big`, `font` and others as consecutive terms with one description), and ends at the
+ * next term. The term alone, which is all that `closest(BLOCK)` finds for the id of a `dfn`, is the name of the
+ * thing and says nothing of what the specification says about it.
+ */
+function descriptionsOf($: CheerioAPI, block: El): El[] {
+	if ((block as Tag).tagName !== 'dt') {
+		return [];
+	}
+	const descriptions: El[] = [];
+	for (const sibling of $(block).nextAll().toArray()) {
+		const tag = (sibling as Tag).tagName;
+		if (tag === 'dd') {
+			descriptions.push(sibling);
+		} else if (tag !== 'dt' || descriptions.length > 0) {
+			break;
+		}
+	}
+	return descriptions;
+}
+
 function headingBefore(page: Page, el: El): El | null {
 	const at = page.order.get(el) ?? 0;
 	let found: El | null = null;
@@ -208,6 +230,27 @@ export function extractSection(page: Page, fragment: string): Section {
 	const block = algorithm ?? $(el).closest(BLOCK)[0] ?? el;
 	const heading = headingBefore(page, el);
 	const context = heading === null ? null : extractHeading($, heading);
-	const unit = (block as Tag).tagName === 'section' ? ownProse($, block) : textOf($, [block]);
+	// SVG 2 gives an element the id of the paragraph that introduces it, and puts what defines it (categories, content
+	// model, attributes) in the `div.element-summary` that follows, in the same section and sometimes past a note.
+	// The paragraph alone is a sentence of introduction, which would leave a change of the definition unseen. The box
+	// is the one of the element that the id names (`LinearGradientElement` and `elementdef-linearGradient`), so that a
+	// paragraph that merely comes before it does not take its text.
+	const anchor = ($(el).attr('id') ?? '').toLowerCase();
+	const summary = $(block)
+		.nextUntil('h1, h2, h3, h4, h5, h6')
+		.filter('div.element-summary')
+		.toArray()
+		.find(box =>
+			$(box)
+				.find('dfn[id^="elementdef-"]')
+				.toArray()
+				.some(
+					dfn => `${($(dfn).attr('id') ?? '').slice('elementdef-'.length)}element`.toLowerCase() === anchor,
+				),
+		);
+	const unit =
+		(block as Tag).tagName === 'section'
+			? ownProse($, block)
+			: textOf($, summary === undefined ? [block, ...descriptionsOf($, block)] : [block, summary]);
 	return { status: 'found', unit, scope: context?.scope ?? unit, secno: context?.secno ?? null };
 }

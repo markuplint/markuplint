@@ -1,8 +1,9 @@
+import { join } from 'node:path';
 import { fileURLToPath } from 'node:url';
 
 import { describe, expect, test } from 'vitest';
 
-import { classify, collectFiles, listCitingFiles } from './discover.ts';
+import { classify, collectAll, collectFiles, listCitingFiles } from './discover.ts';
 
 describe('classify', () => {
 	test('[discover-001] reads rule READMEs of both languages as READMEs', () => {
@@ -140,5 +141,34 @@ describe('collectFiles', () => {
 			{ path: 'packages/@markuplint/rules/src/deleted-rule/README.md', kind: 'readme' },
 		]);
 		expect(result).toStrictEqual({ citations: [], orphanQuotes: [], inlineQuotes: [] });
+	});
+});
+
+describe('collectAll', () => {
+	const root = fileURLToPath(new URL('../../', import.meta.url));
+
+	test('[discover-017] adds the sections of ARIA that the generated data defines to the citations of the files', () => {
+		const all = collectAll(root);
+		const files = collectFiles(root, listCitingFiles(root));
+		const derived = all.citations.filter(c => c.file === 'packages/@markuplint/html-spec/index.json');
+		expect(derived.length).toBeGreaterThan(0);
+		expect(derived.map(c => c.url)).toContain('https://w3c.github.io/aria/#button');
+		expect(all.citations).toHaveLength(files.citations.length + derived.length);
+	});
+
+	test('[discover-018] leaves the quotes of the files as they are', () => {
+		const all = collectAll(root);
+		const files = collectFiles(root, listCitingFiles(root));
+		expect(all.orphanQuotes).toStrictEqual(files.orphanQuotes);
+		expect(all.inlineQuotes).toStrictEqual(files.inlineQuotes);
+	});
+
+	test('[discover-019] fails for a tree without the generated data, rather than watching less without saying so', () => {
+		expect(() => collectAll(join(root, 'scripts'))).toThrow(/index\.json/);
+	});
+
+	test('[discover-020] adds the cite of each element that has no source file, which the monitor did not read', () => {
+		const urls = collectAll(root).citations.map(c => c.url);
+		expect(urls).toContain('https://html.spec.whatwg.org/multipage/obsolete.html#xmp');
 	});
 });
