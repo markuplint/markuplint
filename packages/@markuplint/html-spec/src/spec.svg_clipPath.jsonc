@@ -1,4 +1,4 @@
-// https://drafts.fxtf.org/css-masking/#ClipPathElement
+// https://drafts.csswg.org/css-masking-1/#ClipPathElement
 // https://www.w3.org/TR/svg-aam/#role-clippath
 {
 	"contentModel": {
@@ -91,7 +91,7 @@
 			},
 			"defaultValue": "true"
 		},
-		// https://drafts.fxtf.org/css-masking/#element-attrdef-clippath-clippathunits
+		// https://drafts.csswg.org/css-masking-1/#element-attrdef-clippath-clippathunits
 		"clipPathUnits": {
 			"type": {
 				"enum": ["userSpaceOnUse", "objectBoundingBox"],

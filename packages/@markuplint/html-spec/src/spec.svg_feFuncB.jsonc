@@ -1,4 +1,4 @@
-// https://drafts.fxtf.org/filter-effects/#elementdef-fefuncb
+// https://drafts.csswg.org/filter-effects-1/#feFuncBElement
 // https://www.w3.org/TR/svg-aam/#role-map-fefuncb
 {
 	"contentModel": {

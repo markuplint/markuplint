@@ -1,7 +1,8 @@
 name: Spec citation watch
 
 # Checks the passages that the sources of the packages, the rule READMEs, the
-# spec data and the website cite against the live specifications, the
+# spec data and the website cite, and the sections of ARIA that the generated
+# data defines (derived from it), against the live specifications, the
 # documentation of the frameworks and their source files, and opens an Issue
 # when one changed (see the module comment of `scripts/spec-citations/cli.ts`).
 # Nothing is fixed automatically: a maintainer decides whether the code that
@@ -14,10 +15,12 @@ name: Spec citation watch
 # Merging it is what accepts the changed passages, so that the next run
 # reports only what changed after it.
 #
-# A pull request that touches the script runs the check read-only, which
-# proves that the runner can install, run the script and reach the hosts that
-# it fetches (the specifications, the documentation and the sources of the
-# frameworks).
+# A pull request that touches the script, or what it reads from the generated
+# data (`index.json`, and the ARIA documents of the generator), runs the check
+# read-only, which proves that the runner can install, run the script and reach
+# the hosts that it fetches (the specifications, the documentation and the
+# sources of the frameworks), and that the sections that the data stands for
+# exist.
 # Findings do not fail it: the specs move on their own.
 
 on:
@@ -29,6 +32,8 @@ on:
             - dev
         paths:
             - 'scripts/spec-citations/**'
+            - 'packages/@markuplint/html-spec/generator/aria-documents.mts'
+            - 'packages/@markuplint/html-spec/index.json'
             - '.github/workflows/spec-citation-watch.yml'
 
 permissions:

@@ -1,6 +1,6 @@
 import specs from '@markuplint/html-spec';
 import { createJSDOMElement as c } from '@markuplint/test-tools';
-import { test, expect, describe } from 'vitest';
+import { test, expect, describe, vi } from 'vitest';
 
 import { getAccname } from './accname-computation.js';
 
@@ -89,6 +89,33 @@ test('Invisible element', () => {
 	expect(getAccname(c('<button aria-hidden="true">label</button>'), specs, version)).toBe('');
 	expect(getAccname(c('<button hidden>label</button>'), specs, version)).toBe('');
 	expect(getAccname(c('<button style="display: none">label</button>'), specs, version)).toBe('');
+});
+
+test('An error of getComputedStyle propagates to the caller', () => {
+	const el = c('<button>label</button>');
+	vi.stubGlobal('getComputedStyle', () => {
+		throw new Error('getComputedStyle failed');
+	});
+	try {
+		expect(() => getAccname(el, specs, version)).toThrow('getComputedStyle failed');
+	} finally {
+		vi.unstubAllGlobals();
+	}
+});
+
+test('Invisible element by CSS visibility', () => {
+	expect(getAccname(c('<button style="visibility: hidden">label</button>'), specs, version)).toBe('');
+	expect(getAccname(c('<button style="visibility: visible">label</button>'), specs, version)).toBe('label');
+});
+
+test('Invisible element by CSS of an ancestor', () => {
+	const html = '<div><p>before</p><div style="visibility: hidden"><button>label</button></div></div>';
+	expect(getAccname(c(html, 'button'), specs, version)).toBe('');
+});
+
+test('Invisible element by CSS of a stylesheet', () => {
+	const html = '<div><style>.x { display: none }</style><p>before</p><button class="x">label</button></div>';
+	expect(getAccname(c(html, 'button'), specs, version)).toBe('');
 });
 
 /**

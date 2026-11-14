@@ -100,24 +100,17 @@ function createDomResolver(
 			if (target.hasAttribute('hidden')) {
 				return true;
 			}
-			// Best-effort CSS visibility check (available in browser/JSDOM).
-			// getComputedStyle may throw on:
-			//   - SecurityError: cross-origin iframes
-			//   - TypeError: detached nodes not connected to a document
-			// These are expected operational failures. On error, fall through
-			// to return false (treat as visible). Attribute-based checks above
-			// (aria-hidden, hidden) are the primary detection for static analysis.
+			// Best-effort CSS visibility check: only where the environment provides a global
+			// `getComputedStyle` (a browser or JSDOM). It is not wrapped in a `catch`: a failure is not
+			// "visible", it propagates to the boundary of the accessible-name computation
+			// (`accname.ts` in `@markuplint/ml-core`), which treats the element as unnamed. A node
+			// that is not connected to a document gets an empty declaration from `getComputedStyle`
+			// and is taken as visible: attribute checks above cover static analysis.
 			if (typeof getComputedStyle === 'function') {
-				try {
-					// TODO: Remove cast when getComputedStyle dependency is decoupled (#3178)
-					const style = getComputedStyle(target as Element);
-					if (style.display === 'none' || style.visibility === 'hidden') {
-						return true;
-					}
-				} catch {
-					// Swallowed intentionally: SecurityError or TypeError from
-					// getComputedStyle is non-fatal. CSS hidden detection is
-					// supplementary; attribute checks above cover static analysis.
+				// TODO: Remove cast when getComputedStyle dependency is decoupled (#3178)
+				const style = getComputedStyle(target as Element);
+				if (style.display === 'none' || style.visibility === 'hidden') {
+					return true;
 				}
 			}
 			return false;

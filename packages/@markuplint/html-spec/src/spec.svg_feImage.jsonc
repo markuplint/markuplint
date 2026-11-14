@@ -1,4 +1,4 @@
-// https://drafts.fxtf.org/filter-effects/#feImageElement
+// https://drafts.csswg.org/filter-effects-1/#feImageElement
 // https://www.w3.org/TR/svg-aam/#role-map-feimage
 {
 	"contentModel": {
@@ -91,24 +91,24 @@
 			},
 			"defaultValue": "true"
 		},
-		// https://drafts.fxtf.org/filter-effects/#element-attrdef-feimage-preserveaspectratio
+		// https://drafts.csswg.org/filter-effects-1/#element-attrdef-feimage-preserveaspectratio
 		"preserveAspectRatio": {
 			"type": "<preserve-aspect-ratio>",
 			"defaultValue": "xMidYMid meet",
 			"animatable": true
 		},
-		// https://drafts.fxtf.org/filter-effects/#element-attrdef-feimage-xlinkhref
+		// https://drafts.csswg.org/filter-effects-1/#element-attrdef-feimage-xlinkhref
 		"xlink:href": {
 			"type": "URL",
 			"animatable": true,
 			"deprecated": true
 		},
-		// https://drafts.fxtf.org/filter-effects/#element-attrdef-feimage-href
+		// https://drafts.csswg.org/filter-effects-1/#element-attrdef-feimage-href
 		"href": {
 			"type": "URL",
 			"animatable": true
 		},
-		// https://drafts.fxtf.org/filter-effects/#element-attrdef-feimage-crossorigin
+		// https://drafts.csswg.org/filter-effects-1/#element-attrdef-feimage-crossorigin
 		"crossorigin": {
 			"type": {
 				"enum": ["anonymous", "use-credentials"],

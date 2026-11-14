@@ -1,4 +1,4 @@
-// https://drafts.fxtf.org/filter-effects/#feFloodElement
+// https://drafts.csswg.org/filter-effects-1/#feFloodElement
 // https://www.w3.org/TR/svg-aam/#role-map-feflood
 {
 	"contentModel": {
@@ -83,12 +83,12 @@
 		"#SVGFilterPrimitiveAttrs": ["x", "y", "width", "height", "result"]
 	},
 	"attributes": {
-		// https://drafts.fxtf.org/filter-effects/#FloodColorProperty
+		// https://drafts.csswg.org/filter-effects-1/#FloodColorProperty
 		"flood-color": {
 			"type": "<color>",
 			"defaultValue": "black"
 		},
-		// https://drafts.fxtf.org/filter-effects/#FloodOpacityProperty
+		// https://drafts.csswg.org/filter-effects-1/#FloodOpacityProperty
 		"flood-opacity": {
 			"type": "<alpha-value>",
 			"defaultValue": "1"

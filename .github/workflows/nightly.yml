@@ -500,7 +500,7 @@ jobs:
 
             - name: Install pnpm
               if: matrix.pm == 'pnpm'
-              uses: pnpm/action-setup@0977fd99725f1db4007ccb2928dbb4e90d06cc86 # v6
+              uses: pnpm/action-setup@73e46992e05b19abd31f2f3c20e0e7370d762115 # v6.1.1
               with:
                   version: latest # Use latest pnpm version
                   run_install: false
@@ -555,7 +555,7 @@ jobs:
                   yarn --version
 
             - name: Setup Bun
-              uses: oven-sh/setup-bun@0c5077e51419868618aeaa5fe8019c62421857d6 # v2
+              uses: oven-sh/setup-bun@0c5077e51419868618aeaa5fe8019c62421857d6 # v2.2.0
               with:
                   bun-version: latest
 

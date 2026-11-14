@@ -1,4 +1,4 @@
-// https://developer.mozilla.org/en-US/docs/Web/MathML/Reference/Element/maction
+// https://w3c.github.io/mathml/#presm_maction
 {
 	"deprecated": true,
 	"contentModel": {

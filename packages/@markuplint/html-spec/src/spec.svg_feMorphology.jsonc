@@ -1,4 +1,4 @@
-// https://drafts.fxtf.org/filter-effects/#feMorphologyElement
+// https://drafts.csswg.org/filter-effects-1/#feMorphologyElement
 // https://www.w3.org/TR/svg-aam/#role-map-femorphology
 {
 	"contentModel": {
@@ -83,7 +83,7 @@
 		"#SVGFilterPrimitiveAttrs": ["x", "y", "width", "height", "result", "in"]
 	},
 	"attributes": {
-		// https://drafts.fxtf.org/filter-effects/#element-attrdef-femorphology-operator
+		// https://drafts.csswg.org/filter-effects-1/#element-attrdef-femorphology-operator
 		"operator": {
 			"type": {
 				"enum": ["erode", "dilate"],
@@ -92,7 +92,7 @@
 			"defaultValue": "erode",
 			"animatable": true
 		},
-		// https://drafts.fxtf.org/filter-effects/#element-attrdef-femorphology-radius
+		// https://drafts.csswg.org/filter-effects-1/#element-attrdef-femorphology-radius
 		"radius": {
 			"type": "<number-optional-number>",
 			"defaultValue": "0",

@@ -35,6 +35,20 @@ description: 属性の値が仕様(あるいはカスタムルール)が要求�
 
 属性名はDOMが比較するのと同じ方法で比較します。これは構文と要素によって変わり、HTML構文では`TYPE`は`type`です。詳細は[属性名の大文字・小文字](/docs/rules/no-unknown-attr#attribute-name-case)を参照してください。`allowAttrs`の名前も同じ方法で比較します。
 
+### `pattern`属性 {#pattern-attribute}
+
+`<input pattern>`の値は、HTML標準と同じく`v`フラグで正規表現としてコンパイルできるときに限り受け入れられます。コンパイルできないとき、ブラウザーはこの属性を無視します。
+
+> Let regexpCompletion be RegExpCreate(pattern, "v").
+
+[HTML Standard](https://momdo.github.io/html/input.html#compiled-pattern-regular-expression)より引用
+
+> Let anchoredPattern be the string "^(?:", followed by pattern, followed by ")$".
+
+[HTML Standard](https://momdo.github.io/html/input.html#compiled-pattern-regular-expression)より引用
+
+`v`フラグはフラグなしより厳格なため、フラグなしでは有効なパターンが報告されることがあります。たとえば、文字クラスの末尾のハイフンはエスケープが必要です。`[\w.-]+`ではなく`[\w.\-]+`と書いてください。
+
 ### `allowAttrs`オプションの設定 {#setting-allow-attrs-option}
 
 [`no-unknown-attr`](/docs/rules/no-unknown-attr#setting-allow-attrs-option)が受け取る同名のオプションと同じ形式です。このルールは、そこで指定された`value`の型・パターンを使って属性値を検証します。両方のルールに同じ`allowAttrs`を設定してください。
