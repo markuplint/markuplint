@@ -1,4 +1,4 @@
-import { LogMessageNotification, MessageType, ShowMessageNotification } from 'vscode-languageserver/node.js';
+import { LogMessageNotification, MessageType, ShowMessageNotification } from 'vscode-languageserver';
 import { describe, expect, test, vi } from 'vitest';
 
 import { errorToPopup, logToDiagnosticsChannel, logToPrimaryChannel, status, warningToPopup } from '../lsp.js';

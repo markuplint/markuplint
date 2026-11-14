@@ -1,17 +1,12 @@
 import type { Module, ModuleResolver } from './get-module.js';
 import type { Config, LangConfigs, Log } from '../types.js';
 import type { WorkingDirectoryEntry } from '../utils/resolve-working-directory.js';
-import type {
-	CodeAction,
-	CodeActionParams,
-	PublishDiagnosticsParams,
-	HoverParams,
-} from 'vscode-languageserver/node.js';
+import type { CodeAction, CodeActionParams, PublishDiagnosticsParams, HoverParams } from 'vscode-languageserver';
 import type { TextDocument } from 'vscode-languageserver-textdocument';
 
 import { isFatalError } from 'markuplint/suppressions';
 import { satisfies, lt, gte } from 'semver';
-import { MarkupKind } from 'vscode-languageserver/node.js';
+import { MarkupKind } from 'vscode-languageserver';
 
 import { t } from '../i18n.js';
 import { getFilePath } from '../utils/get-file-path.js';

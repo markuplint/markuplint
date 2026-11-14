@@ -1,6 +1,6 @@
 import type { Module } from './get-module.js';
 import type { Config, LangConfigs } from '../types.js';
-import type { CodeActionParams } from 'vscode-languageserver/node.js';
+import type { CodeActionParams } from 'vscode-languageserver';
 
 import os from 'node:os';
 import path from 'node:path';

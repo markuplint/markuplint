@@ -138,7 +138,19 @@
 			"enabled": false
 		},
 		{
-			"description": "Do not update engines.vscode — must stay pinned for Cursor and other forks",
+			"description": "vscode-jsonrpc, the protocol, textdocument and the server and client packages are released together from microsoft/vscode-languageserver-node, each depending on the exact version of the ones below it, so an update of one alone fails to build or leaves two vscode-jsonrpc versions installed (#4663, #4669, #4674 each failed alone). group:monorepos did not group them",
+			"matchPackageNames": [
+				"vscode-jsonrpc",
+				"vscode-languageserver-types",
+				"vscode-languageserver-protocol",
+				"vscode-languageserver",
+				"vscode-languageserver-textdocument",
+				"vscode-languageclient"
+			],
+			"groupName": "vscode-languageserver-node"
+		},
+		{
+			"description": "Do not update engines.vscode — it is raised by hand, to the lowest VS Code that the forks we support (Cursor, Windsurf, VSCodium) have all reached and whose Node.js meets engines.node of the language server (test-vscode.yml runs that minimum)",
 			"matchPackageNames": ["vscode"],
 			"matchDepTypes": ["engines"],
 			"enabled": false
