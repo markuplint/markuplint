@@ -37,34 +37,68 @@ type AriaData = {
 	};
 };
 
-const escapeRegExp = (text: string) => text.replaceAll(/[$()*+.?[\\\]^{|}]/g, String.raw`\$&`);
+/** Where the entries of `def['#aria']` are in the generated file: the line that opens each list, and each entry's own. */
+type LineIndex = {
+	readonly lists: ReadonlyMap<string, number>;
+	readonly entries: ReadonlyMap<string, number>;
+};
+
+const keyOf = (version: string, key: string, name?: string) => `${version}\0${key}\0${name ?? ''}`;
+
+const tabsOf = (line: string) => line.length - line.trimStart().length;
 
 /**
- * 1-based line of the entry called `name` in the list `key` of the version `version` of `def['#aria']`, found
- * through the indentation of the generated file: an entry's own `name` is the one that sits two levels in from
- * the list, so a role that names the property in its `ownedProperties` is not taken for the property.
- * Falls back to line 1 when the file has no `#aria` object, version or list laid out as the generator writes them,
- * and to the line that opens the list when the entry is not in it, which is still in the right place of the file.
+ * One pass over the generated file, found through its indentation: a version sits one level in from `"#aria"`, a
+ * list two, and an entry's own `name` four (a role that names a property in its `ownedProperties` sits deeper, so it
+ * is not taken for the property). `null` when the file has no `#aria` object laid out as the generator writes it.
+ * It is one pass, not a search for each of the several hundred entries: the file is some 65,000 lines long.
  */
-function lineOf(lines: readonly string[], version: string, key: string, name: string): number {
-	const opening = (word: string, bracket: string) => new RegExp(`^\\t*"${escapeRegExp(word)}": \\${bracket}$`);
-	const aria = lines.findIndex(l => opening('#aria', '{').test(l));
-	const versionAt = lines.findIndex((l, i) => i > aria && opening(version, '{').test(l));
-	const listAt = lines.findIndex((l, i) => i > versionAt && opening(key, '[').test(l));
-	if (aria === -1 || versionAt === -1 || listAt === -1) {
-		return 1;
+function indexLines(lines: readonly string[]): LineIndex | null {
+	const start = lines.findIndex(l => l.trimStart() === '"#aria": {');
+	if (start === -1) {
+		return null;
 	}
-	const indent = /^\t*/.exec(lines[listAt] ?? '')?.[0] ?? '';
-	const entry = new RegExp(`^${indent}\\t\\t"name": ${escapeRegExp(JSON.stringify(name))},?$`);
-	for (let i = listAt + 1; i < lines.length; i++) {
-		if (lines[i] === `${indent}]` || lines[i] === `${indent}],`) {
+	const base = tabsOf(lines[start] ?? '');
+	const lists = new Map<string, number>();
+	const entries = new Map<string, number>();
+	let version: string | null = null;
+	let key: string | null = null;
+	for (let i = start + 1; i < lines.length; i++) {
+		const line = lines[i] ?? '';
+		const depth = tabsOf(line);
+		if (depth <= base) {
 			break;
 		}
-		if (entry.test(lines[i] ?? '')) {
-			return i + 1;
+		const text = line.trimStart();
+		const opened = /^"([^"]+)": ([[{])$/.exec(text);
+		if (depth === base + 1 && opened?.[2] === '{') {
+			version = opened[1] ?? null;
+			key = null;
+		} else if (depth === base + 2 && opened?.[2] === '[' && version !== null) {
+			key = opened[1] ?? null;
+			lists.set(keyOf(version, key ?? ''), i + 1);
+		} else if (depth === base + 2 && text.startsWith(']')) {
+			key = null;
+		} else if (depth === base + 4 && version !== null && key !== null) {
+			const named = /^"name": ("(?:[^"\\]|\\.)*"),?$/.exec(text);
+			if (named?.[1] !== undefined) {
+				const entry = keyOf(version, key, JSON.parse(named[1]) as string);
+				if (!entries.has(entry)) {
+					entries.set(entry, i + 1);
+				}
+			}
 		}
 	}
-	return listAt + 1;
+	return { lists, entries };
+}
+
+/**
+ * 1-based line of the entry called `name` in the list `key` of the version `version` of `def['#aria']`. Falls back
+ * to line 1 when the file has no `#aria` object, version or list laid out as the generator writes them, and to the
+ * line that opens the list when the entry is not in it, which is still in the right place of the file.
+ */
+function lineOf(index: LineIndex | null, version: string, key: string, name: string): number {
+	return index?.entries.get(keyOf(version, key, name)) ?? index?.lists.get(keyOf(version, key)) ?? 1;
 }
 
 /**
@@ -85,7 +119,7 @@ function lineOf(lines: readonly string[], version: string, key: string, name: st
 export function collectAriaCitations(indexJson: string, file: string): Citation[] {
 	const data = JSON.parse(indexJson) as AriaData;
 	const aria = data.def?.['#aria'] ?? {};
-	const lines = indexJson.split(/\r?\n/);
+	const index = indexLines(indexJson.split(/\r?\n/));
 	const seen = new Set<string>();
 	const citations: Citation[] = [];
 	for (const [version, lists] of Object.entries(aria)) {
@@ -103,7 +137,7 @@ export function collectAriaCitations(indexJson: string, file: string): Citation[
 				seen.add(url);
 				citations.push({
 					file,
-					line: lineOf(lines, version, key, name),
+					line: lineOf(index, version, key, name),
 					url,
 					page,
 					fragment: name,
