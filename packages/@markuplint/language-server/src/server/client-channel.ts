@@ -1,8 +1,8 @@
 import type { Log, LogType, Status } from '../types.js';
-import type { Connection } from 'vscode-languageserver/node.js';
+import type { Connection } from 'vscode-languageserver';
 
 import { isFatalError } from 'markuplint/suppressions';
-import { LogMessageNotification, MessageType, ShowMessageNotification } from 'vscode-languageserver/node.js';
+import { LogMessageNotification, MessageType, ShowMessageNotification } from 'vscode-languageserver';
 
 import { errorToPopup, logToDiagnosticsChannel, logToPrimaryChannel, status, warningToPopup } from '../lsp.js';
 

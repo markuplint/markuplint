@@ -1,5 +1,5 @@
 import type { InitializationOptions } from '../types.js';
-import type { Diagnostic, InitializeResult } from 'vscode-languageserver/node.js';
+import type { Diagnostic, InitializeResult } from 'vscode-languageserver';
 
 import { mkdirSync, mkdtempSync, realpathSync, rmSync, writeFileSync } from 'node:fs';
 import os from 'node:os';
@@ -13,8 +13,8 @@ import {
 	createMessageConnection,
 	StreamMessageReader,
 	StreamMessageWriter,
-} from 'vscode-jsonrpc/node.js';
-import { createConnection, DiagnosticSeverity, ProposedFeatures } from 'vscode-languageserver/node.js';
+} from 'vscode-jsonrpc/node';
+import { createConnection, DiagnosticSeverity, ProposedFeatures } from 'vscode-languageserver/node';
 import { afterEach, describe, expect, test } from 'vitest';
 
 import { bootServer } from './server.js';

@@ -1,4 +1,4 @@
-import { DiagnosticSeverity } from 'vscode-languageserver/node.js';
+import { DiagnosticSeverity } from 'vscode-languageserver';
 import { describe, test, expect } from 'vitest';
 
 import { applySeverityMap, convertDiagnostics } from './convert-diagnostics.js';

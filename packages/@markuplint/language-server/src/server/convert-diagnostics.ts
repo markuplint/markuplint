@@ -1,8 +1,8 @@
 import type { MLResultInfo } from 'markuplint';
 import type { ReportedSeverity, SeverityMap } from '../types.js';
-import type { Diagnostic } from 'vscode-languageserver/node.js';
+import type { Diagnostic } from 'vscode-languageserver';
 
-import { DiagnosticSeverity } from 'vscode-languageserver/node.js';
+import { DiagnosticSeverity } from 'vscode-languageserver';
 
 import { NAME, WEBSITE_URL_RULE_PAGE } from '../const.js';
 
