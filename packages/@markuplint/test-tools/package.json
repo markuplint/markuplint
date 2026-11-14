@@ -33,7 +33,7 @@
 		"jsdom": "31.0.0",
 		"textlint-rule-prh": "6.1.1",
 		"type-fest": "5.10.0",
-		"typescript": "6.0.3",
+		"typescript": "7.0.2",
 		"vite": "8.3.6",
 		"vitest": "5.1.0"
 	},
