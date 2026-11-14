@@ -36,7 +36,7 @@ enum SortOrder {
 /// TS `CompiledEntry.match`.
 enum Matcher<'s> {
     Name(String),
-    Pattern(std::sync::Arc<fancy_regex::Regex>),
+    Pattern(std::rc::Rc<markuplint_types::check::js_regex::JsRegex>),
     /// The `global` and `event` groups: membership in a set of names from the spec.
     InSet(&'s HashSet<String>),
     Aria,
@@ -318,7 +318,7 @@ fn compile_entries<'s>(
                 // TS skips an entry whose pattern is not a valid regular expression.
                 let matcher = pattern
                     .as_str()
-                    .and_then(crate::regex_cache::fancy_regex)
+                    .and_then(|pattern| markuplint_types::check::js_regex::JsRegex::cached(pattern, ""))
                     .map_or(Matcher::Never, Matcher::Pattern);
                 return CompiledEntry { order, matcher };
             }
@@ -358,7 +358,7 @@ impl Matcher<'_> {
         let key = info.key.as_str();
         match self {
             Self::Name(n) => info.is_named_by(n),
-            Self::Pattern(re) => re.is_match(name).unwrap_or(false),
+            Self::Pattern(re) => re.is_match(name),
             Self::InSet(names) => names.contains(key),
             // TS `/^aria-.+$/` and `/^data-.+$/`.
             Self::Aria => prefixed_by(key, "aria-"),

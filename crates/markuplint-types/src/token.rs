@@ -7,12 +7,24 @@
 
 use std::rc::Rc;
 
-use regex::Regex;
-
 use crate::check::types::{
     CheckResult, Expect, ListNumber, ListType, Reason, Separator, UnmatchedOpts, UnmatchedResult, matched,
     unmatched_with,
 };
+
+/// A token pattern of [`TokenCollection::from_patterns`]: the length in bytes of the match that
+/// starts at the start of the text, `None` for no match. A pattern is a class and a count, or a
+/// sequence of them, as in the regular expressions of the TS checkers.
+pub type Matcher = fn(&str) -> Option<usize>;
+
+/// The leftmost match of `matcher`, as a byte range, the way a regular expression finds it.
+pub(crate) fn find_leftmost(value: &str, matcher: Matcher) -> Option<(usize, usize)> {
+    value
+        .char_indices()
+        .map(|(start, _)| start)
+        .chain(std::iter::once(value.len()))
+        .find_map(|start| matcher(&value[start..]).map(|len| (start, start + len)))
+}
 
 /// TS `Token.Ident` / `Token.WhiteSpace` / `Token.Comma`.
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
@@ -104,12 +116,6 @@ impl Token {
     #[must_use]
     pub fn matches_any(&self, values: &[&str], case_insensitive: bool) -> bool {
         values.iter().any(|v| self.matches_str(v, case_insensitive))
-    }
-
-    /// TS `token.matches(RegExp)`.
-    #[must_use]
-    pub fn matches_re(&self, re: &Regex) -> bool {
-        re.is_match(&self.value)
     }
 
     /// TS `token.includes(string)`.
@@ -296,7 +302,7 @@ impl TokenCollection {
 
     /// TS `TokenCollection.fromPatterns`.
     #[must_use]
-    pub fn from_patterns(value: &str, patterns: &[&Regex], options: TokenCollectionOptions, repeat: bool) -> Self {
+    pub fn from_patterns(value: &str, patterns: &[Matcher], options: TokenCollectionOptions, repeat: bool) -> Self {
         Self::from_patterns_at(value, 0, &Rc::from(value), patterns, options, repeat)
     }
 
@@ -304,7 +310,7 @@ impl TokenCollection {
     #[must_use]
     pub fn from_patterns_token(
         token: &Token,
-        patterns: &[&Regex],
+        patterns: &[Matcher],
         options: TokenCollectionOptions,
         repeat: bool,
     ) -> Self {
@@ -322,7 +328,7 @@ impl TokenCollection {
         value: &str,
         start_offset: usize,
         original: &Rc<str>,
-        patterns: &[&Regex],
+        patterns: &[Matcher],
         options: TokenCollectionOptions,
         repeat: bool,
     ) -> Self {
@@ -339,9 +345,9 @@ impl TokenCollection {
         loop {
             let mut is_broken = false;
             for pattern in patterns {
-                let token_value = match pattern.find(&strings) {
-                    Some(m) if m.start() == 0 => m.as_str().to_owned(),
-                    Some(m) => strings.get(m.end()..).unwrap_or("").to_owned(),
+                let token_value = match find_leftmost(&strings, *pattern) {
+                    Some((0, end)) => strings[..end].to_owned(),
+                    Some((_, end)) => strings.get(end..).unwrap_or("").to_owned(),
                     None => {
                         is_broken = true;
                         String::new()

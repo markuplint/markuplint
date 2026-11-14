@@ -4,13 +4,22 @@ version = "0.0.0"
 edition = "2024"
 publish = false
 
+[features]
+# Exposes `equivalence`: the strings on which the tests of `markuplint-rules` and
+# `markuplint-selector` compare a hand-written matcher with the regular expression it replaced.
+# A dependent turns it on in its `dev-dependencies`.
+test-support = []
+
 [dependencies]
 fancy-regex = "0.14"
-regex = { workspace = true }
 serde = { version = "1", features = ["derive"] }
 serde_json = "1"
 strsim = "0.11"
 url = "2"
+
+# Only the equivalence tests read the regular expressions that the hand-written matchers replaced.
+[dev-dependencies]
+regex = { workspace = true }
 
 [lints]
 workspace = true

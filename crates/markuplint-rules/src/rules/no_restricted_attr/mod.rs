@@ -6,6 +6,8 @@
 
 use markuplint_core::i18n::Primitive as Kw;
 use markuplint_dom::arena::DomArena;
+use markuplint_types::check::pattern::check_pattern;
+use markuplint_types::check::types::PatternType;
 use markuplint_types::spec::types::MLMLSpec;
 
 use crate::attr_check::{
@@ -95,13 +97,13 @@ fn check(
                 )),
             )
         }),
-        ValueConstraint::Pattern(re, original) => re.is_match(value).then(|| {
+        ValueConstraint::Pattern(pattern) => matches_pattern(value, pattern).then(|| {
             attr_value_violation(
                 ctx,
                 html_attr,
                 tr.finish(&tr.t(
                     "{0} is matched with the below disallowed patterns: {1}",
-                    &[Kw::S(&the_attr()), Kw::S(original)],
+                    &[Kw::S(&the_attr()), Kw::S(pattern)],
                 )),
             )
         }),
@@ -119,4 +121,15 @@ fn check(
             )
         }),
     }
+}
+
+/// TS `check(value, { pattern })`: whether `value` matches the pattern of an entry.
+fn matches_pattern(value: &str, pattern: &str) -> bool {
+    check_pattern(
+        value,
+        &PatternType {
+            pattern: pattern.to_owned(),
+        },
+    )
+    .is_matched()
 }

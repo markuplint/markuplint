@@ -1906,10 +1906,10 @@ test('[no-invalid-attr-value-invalid-056] input[name="isindex"] is rejected', as
 	expect(violations.length).toBeGreaterThan(0);
 });
 
-test('[no-invalid-attr-value-invalid-057] input[name=""] is rejected (empty preserved by Pattern override)', async () => {
-	// The Pattern override drops the inherited NoEmptyAny; the `.+` arm of
-	// the regex must keep the empty case rejected. Pin this so a future
-	// rewrite of the Pattern does not silently widen the contract.
+test('[no-invalid-attr-value-invalid-057] input[name=""] is rejected (empty preserved by FormControlName)', async () => {
+	// The type of `input[name]` replaces the inherited NoEmptyAny, so it has to
+	// reject the empty case itself. Pin this so a future rewrite of the type
+	// does not silently widen the contract.
 	const { violations } = await mlRuleTest(rule, '<input type="text" name="">');
 	expect(violations.length).toBeGreaterThan(0);
 });

@@ -17,6 +17,7 @@
 //!   no-restricted-attr-issue-716-003  → no_restricted_attr_issue_716_003  (was invalid-attr-issue-716-003)
 //!   no-restricted-attr-issue-716-006  → no_restricted_attr_issue_716_006  (was invalid-attr-issue-716-006)
 //!   no-restricted-attr-issue-716-007  → no_restricted_attr_issue_716_007  (was invalid-attr-issue-716-007)
+//!   v6_no_restricted_attr_001  — Rust-only: a pattern that is not `/…/` is the value itself, as TS `checkPattern` has it
 
 use super::*;
 use crate::lint::{LintConfig, lint};
@@ -598,4 +599,32 @@ fn no_restricted_attr_issue_4309_004() {
     assert_eq!(run("<div X-ATTR />", "x-attr"), [disallowed.clone()]);
     assert_eq!(run("<svg X-ATTR />", "x-attr"), []);
     assert_eq!(run("<svg X-ATTR />", "X-ATTR"), [disallowed]);
+}
+
+/// TS `checkPattern`: only `/…/flags` is a regular expression; any other pattern is compared to
+/// the value as a string, so `.` in it is a dot.
+#[test]
+fn v6_no_restricted_attr_001() {
+    let run = |pattern: &str, value: &str| {
+        let arena = make_element_with_attrs("div", &[("data-x", value)]);
+        let config = RuleConfig {
+            options: serde_json::json!({
+                "disallowAttrs": [{ "name": "data-x", "value": { "pattern": pattern } }],
+            }),
+            ..RuleConfig::default()
+        };
+        NoRestrictedAttr
+            .verify(&arena, &spec(), &RuleConfigSet::global_only(config))
+            .len()
+    };
+    assert_eq!(run("a.c", "a.c"), 1);
+    assert_eq!(run("a.c", "abc"), 0);
+    assert_eq!(run("a.c", "xa.c"), 0);
+    assert_eq!(run("/^a.c$/", "abc"), 1);
+    assert_eq!(run("/^A.C$/i", "abc"), 1);
+    // TS compares the flag that comes last only: `/…/gi` compiles with `i`
+    assert_eq!(run("/^A.C$/gi", "abc"), 1);
+    // a lookahead is a JavaScript regular expression too
+    assert_eq!(run("/^(?!no).+/", "yes"), 1);
+    assert_eq!(run("/^(?!no).+/", "no"), 0);
 }

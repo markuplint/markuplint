@@ -1,9 +1,5 @@
 //! The checkers of TS `defs` (`defs.ts`) that need more than a predicate.
 
-use std::sync::LazyLock;
-
-use regex::Regex;
-
 use super::candidate::get_candidate;
 use super::types::{CheckResult, Expect, ExpectType, Reason, UnmatchedOpts, matched, unmatched, unmatched_with};
 use crate::primitive::{is_float, is_uint, split_unit};
@@ -61,17 +57,31 @@ pub fn check_one_line_any(value: &str) -> CheckResult {
 /// TS `XMLName`: the pattern is tested unanchored, as TS does.
 #[must_use]
 pub fn check_xml_name(value: &str) -> CheckResult {
-    static NAME: LazyLock<Regex> = LazyLock::new(|| {
-        Regex::new(
-            r"[:A-Z_a-z\u{00C0}-\u{00D6}\u{00D8}-\u{00F6}\u{00F8}-\u{02FF}\u{0370}-\u{037D}\u{037F}-\u{1FFF}\u{200C}\u{200D}\u{2070}-\u{218F}\u{2C00}-\u{2FEF}\u{3001}-\u{D7FF}\u{F900}-\u{FDCF}\u{FDF0}-\u{FFFD}\u{10000}-\u{EFFFF}][0-9.\u{00B7}\u{0300}-\u{036F}\u{203F}\u{2040}-]*",
-        )
-        .unwrap()
-    });
-    if NAME.is_match(value) {
+    // The pattern is a `NameStartChar` followed by name characters it never has to reach, so it
+    // matches wherever the value has a `NameStartChar`.
+    if value.chars().any(crate::simple_patterns::is_xml_name_start_char) {
         matched()
     } else {
         unmatched(value, Reason::UnexpectedToken)
     }
+}
+
+/// TS `FormControlName`.
+///
+/// @see <https://html.spec.whatwg.org/multipage/form-control-infrastructure.html#attr-fe-name>
+///
+/// > If the attribute is specified, its value must not be the empty string or isindex.
+///
+/// `isindex` is matched case-sensitively, as the spec writes it.
+#[must_use]
+pub fn check_form_control_name(value: &str) -> CheckResult {
+    if value.is_empty() {
+        return unmatched(value, Reason::EmptyToken);
+    }
+    if value == "isindex" {
+        return unmatched(value, Reason::UnexpectedToken);
+    }
+    matched()
 }
 
 /// TS `DOMID`.
@@ -87,12 +97,14 @@ pub fn check_dom_id(value: &str) -> CheckResult {
     matched()
 }
 
+/// The `Pattern` keyword: a value that compiles as the regular expression of a `pattern`
+/// attribute ([`super::pattern_syntax`]).
 #[must_use]
 pub fn check_pattern_keyword(value: &str) -> CheckResult {
-    let pattern = format!("^(?:{value})$");
-    match Regex::new(&pattern) {
-        Ok(_) => matched(),
-        Err(_) => unmatched(value, Reason::SyntaxError),
+    if super::pattern_syntax::is_valid(value) {
+        matched()
+    } else {
+        unmatched(value, Reason::SyntaxError)
     }
 }
 
@@ -107,17 +119,28 @@ pub fn check_json(value: &str) -> CheckResult {
 /// TS `isEmail` (`whatwg/check-email.ts`): the pattern the HTML Standard gives.
 ///
 /// TS writes it `[a-z0-9]` with the `i` flag. A JS case-insensitive pattern without the `u` flag
-/// folds no non-ASCII character onto an ASCII one, whereas the `regex` crate's Unicode `(?i)`
-/// matches U+017F (ſ) for `s` and U+212A (K) for `k`; the ranges are spelled out instead.
+/// folds no non-ASCII character onto an ASCII one (U+017F, ſ, is not `s`; U+212A, K, is not `k`),
+/// so every class here is ASCII.
 #[must_use]
 pub fn is_email(value: &str) -> bool {
-    static EMAIL: LazyLock<Regex> = LazyLock::new(|| {
-        Regex::new(
-            r"^[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?(?:\.[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?)*$",
-        )
-        .unwrap()
-    });
-    EMAIL.is_match(value)
+    let Some((local, domain)) = value.split_once('@') else {
+        return false;
+    };
+    !local.is_empty()
+        && local
+            .bytes()
+            .all(|b| b.is_ascii_alphanumeric() || b".!#$%&'*+/=?^_`{|}~-".contains(&b))
+        && domain.split('.').all(is_email_domain_label)
+}
+
+/// One label of the domain of an email address: 1 to 63 ASCII letters, digits and hyphens that
+/// neither starts nor ends with a hyphen.
+fn is_email_domain_label(label: &str) -> bool {
+    let bytes = label.as_bytes();
+    (1..=63).contains(&bytes.len())
+        && bytes.iter().all(|b| b.is_ascii_alphanumeric() || *b == b'-')
+        && bytes.first().is_some_and(u8::is_ascii_alphanumeric)
+        && bytes.last().is_some_and(u8::is_ascii_alphanumeric)
 }
 
 /// TS `checkURL()`: the URL Living Standard validation of a URL.
@@ -327,21 +350,36 @@ fn js_number(value: &str) -> Option<f64> {
 /// TS `SRIHash`.
 #[must_use]
 pub fn check_sri_hash(value: &str) -> CheckResult {
-    static TOKEN: LazyLock<Regex> = LazyLock::new(|| Regex::new(r"^sha(?:256|384|512)-[A-Za-z0-9_+/]+=*$").unwrap());
-    let tokens: Vec<&str> = value
-        .trim()
-        .split(char::is_whitespace)
+    let tokens: Vec<&str> = crate::js_string::trim(value)
+        .split(crate::js_string::is_white_space)
         .filter(|t| !t.is_empty())
         .collect();
     if tokens.is_empty() {
         return unmatched(value, Reason::EmptyToken);
     }
     for token in tokens {
-        if !TOKEN.is_match(token) {
+        if !is_sri_token(token) {
             return unmatched(value, Reason::UnexpectedToken);
         }
     }
     matched()
+}
+
+/// `/^sha(?:256|384|512)-[A-Za-z0-9_+\/]+=*$/`: a digest algorithm, a hyphen, base64 (URL-safe
+/// characters included) and any padding.
+fn is_sri_token(token: &str) -> bool {
+    let Some(digest) = token.strip_prefix("sha").and_then(|rest| {
+        ["256-", "384-", "512-"]
+            .iter()
+            .find_map(|algorithm| rest.strip_prefix(algorithm))
+    }) else {
+        return false;
+    };
+    let body = digest.trim_end_matches('=');
+    !body.is_empty()
+        && body
+            .bytes()
+            .all(|b| b.is_ascii_alphanumeric() || matches!(b, b'_' | b'+' | b'/'))
 }
 
 /// TS `IconSize`.
@@ -530,5 +568,92 @@ mod tests {
         assert!(!check_srcset("a.png 1x, b.png 1.0x").is_matched());
         assert!(!check_srcset("a.png 100w, b.png 100w").is_matched());
         assert!(check_srcset("a.png 1x, b.png 2x").is_matched());
+    }
+
+    mod equivalence {
+        use regex::Regex;
+
+        use super::super::*;
+        use crate::equivalence::for_each_string;
+
+        #[test]
+        fn email_is_the_regular_expression() {
+            // The characters of the local part, the domain, and what is just outside both.
+            let re = Regex::new(
+                r"^[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?(?:\.[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?)*$",
+            )
+            .unwrap();
+            for_each_string(
+                &["a", "-", ".", "@", "!", "(", " ", "\n", "\u{e9}", "\u{17f}"],
+                6,
+                &mut |s| {
+                    assert_eq!(is_email(s), re.is_match(s), "is_email({s:?})");
+                },
+            );
+            // Every ASCII character, in each place of the local part and of the domain.
+            for c in (0u8..128).map(char::from) {
+                for value in [
+                    format!("{c}@a"),
+                    format!("a{c}b@a"),
+                    format!("a@{c}"),
+                    format!("a@a{c}"),
+                    format!("a@{c}a"),
+                    format!("a@a{c}a"),
+                    format!("a@a.{c}"),
+                    format!("a@a.{c}a"),
+                ] {
+                    assert_eq!(is_email(&value), re.is_match(&value), "is_email({value:?})");
+                }
+            }
+            for len in [61, 62, 63, 64, 65] {
+                for value in [
+                    format!("a@{}", "b".repeat(len)),
+                    format!("a@{}-", "b".repeat(len)),
+                    format!("a@b.{}.c", "d".repeat(len)),
+                    format!("a@b.{}-c", "d".repeat(len.saturating_sub(3))),
+                ] {
+                    assert_eq!(is_email(&value), re.is_match(&value), "is_email({value:?})");
+                }
+            }
+        }
+
+        #[test]
+        fn sri_token_is_the_regular_expression() {
+            let re = Regex::new(r"^sha(?:256|384|512)-[A-Za-z0-9_+/]+=*$").unwrap();
+            for_each_string(
+                &["sha", "256", "384", "512", "-", "=", "a", "+", "/", "_", ".", " ", "\n"],
+                5,
+                &mut |s| {
+                    assert_eq!(is_sri_token(s), re.is_match(s), "is_sri_token({s:?})");
+                },
+            );
+            // The characters on both sides of each class of the digest, behind each algorithm.
+            let digest = [
+                "a", "Z", "0", "9", "+", "/", "-", "_", "=", "@", "[", "`", "{", ":", ".", " ", "\n",
+            ];
+            for algorithm in ["sha256-", "sha384-", "sha512-", "sha1-", "sha-", "SHA256-"] {
+                for_each_string(&digest, 4, &mut |s| {
+                    let token = format!("{algorithm}{s}");
+                    assert_eq!(is_sri_token(&token), re.is_match(&token), "is_sri_token({token:?})");
+                });
+            }
+        }
+
+        #[test]
+        fn xml_name_matches_where_the_value_has_a_name_start_character() {
+            assert!(check_xml_name("a").is_matched());
+            assert!(check_xml_name("1a").is_matched());
+            assert!(!check_xml_name("1").is_matched());
+            assert!(!check_xml_name("-").is_matched());
+            assert!(!check_xml_name("").is_matched());
+        }
+
+        #[test]
+        fn sri_hash_splits_at_the_js_white_space() {
+            assert!(check_sri_hash("sha256-abc\u{FEFF}sha384-def").is_matched());
+            assert!(check_sri_hash("\u{FEFF}sha256-abc\u{3000}").is_matched());
+            assert!(!check_sri_hash("sha256-abc\u{85}sha384-def").is_matched());
+            assert!(!check_sri_hash("\u{FEFF}").is_matched());
+        }
     }
 }

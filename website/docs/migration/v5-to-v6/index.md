@@ -13,9 +13,10 @@ The plugin mechanism was removed. A config that still has `plugins` or `plugin:`
 
 ## For users
 
-| Area                                                 | Summary                                                                                                  | Who's affected               |
-| ---------------------------------------------------- | -------------------------------------------------------------------------------------------------------- | ---------------------------- |
-| [Plugin mechanism](/docs/migration/v5-to-v6/plugins) | `plugins`, `plugin:` in `extends`, custom rules, `--create-rule`, and `@markuplint/create-rule` removed. | Plugin and custom rule users |
+| Area                                                                  | Summary                                                                                                          | Who's affected                                      |
+| --------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------- | --------------------------------------------------- |
+| [Plugin mechanism](/docs/migration/v5-to-v6/plugins)                  | `plugins`, `plugin:` in `extends`, custom rules, `--create-rule`, and `@markuplint/create-rule` removed.         | Plugin and custom rule users                        |
+| [The `pattern` attribute](/docs/migration/v5-to-v6/pattern-attribute) | The value of `<input pattern>` is compiled as the HTML Standard does, with the `v` flag, alone and then wrapped. | Users of `<input pattern>`, `no-invalid-attr-value` |
 
 ## For developers
 

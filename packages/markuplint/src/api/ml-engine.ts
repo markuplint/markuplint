@@ -1739,6 +1739,9 @@ function accessibilityOfDocument<O extends PlainData = undefined>(
 type NapiBinding = RustInspectBinding & {
 	lintHtml: (html: string, configJson: string, specJson: string) => NapiViolation[];
 	lint: (mlastJson: string, configJson: string, specJson: string) => NapiViolation[];
+	/** Undefined when the loaded module does not export it (a test double). */
+	setPatternValidator?: (validator: ((value: string) => boolean) | undefined) => void;
+	patternValidatorRegistered?: () => boolean;
 };
 
 let cachedNapi: NapiBinding | undefined;
@@ -1748,8 +1751,35 @@ async function loadNapiBinding(): Promise<NapiBinding> {
 		return cachedNapi;
 	}
 	const mod = (await import('@markuplint/core')) as NapiBinding;
+	// The Rust engine has no JavaScript regular expression engine: Node.js decides whether the
+	// value of a `pattern` attribute is one. A module without the setter is left alone (a test
+	// double throws on a member it does not define, so `in` asks without reading it).
+	if ('setPatternValidator' in mod) {
+		mod.setPatternValidator?.(isValidPatternAttributeValue);
+	}
 	cachedNapi = mod;
 	return cachedNapi;
+}
+
+/**
+ * Whether the value of a `pattern` attribute compiles, as the HTML Standard compiles it: as a
+ * JavaScript regular expression with the `v` flag, alone and then wrapped as `^(?:value)$`.
+ * It is the `Pattern` type of `@markuplint/types` (`defs.ts`), which the TS engine runs, so
+ * that both engines agree: keep them equal.
+ *
+ * @see https://html.spec.whatwg.org/multipage/input.html#compiled-pattern-regular-expression
+ */
+function isValidPatternAttributeValue(value: string): boolean {
+	try {
+		new RegExp(value, 'v');
+		new RegExp(`^(?:${value})$`, 'v');
+		return true;
+	} catch {
+		// Only the author's text can be at fault here, and a `SyntaxError` from it is the answer
+		// "not a regular expression", not a broken invariant of markuplint: no `isFatalError()`
+		// guard, as with the `Pattern` type.
+		return false;
+	}
 }
 
 const BROWSER_FEATURES_RULE = 'no-unsupported-browser-features';

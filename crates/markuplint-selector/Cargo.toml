@@ -8,13 +8,17 @@ publish = false
 markuplint-core = { path = "../markuplint-core" }
 markuplint-dom = { path = "../markuplint-dom" }
 markuplint-types = { path = "../markuplint-types" }
-regex = { workspace = true }
 serde = { workspace = true, features = ["derive"] }
 serde_json = { workspace = true }
 
 # The matcher is tested on the documents the HTML parser builds: a tree boundary is not something
 # a hand-built arena shows.
 [dev-dependencies]
+# The test compares the hand-written matcher with the regular expression it replaced; `equivalence` gives
+# the strings, and nothing here compiles a regular expression of its own.
+regex = { workspace = true }
+# `equivalence`, the strings of the tests that compare a matcher with the regular expression it replaced.
+markuplint-types = { path = "../markuplint-types", features = ["test-support"] }
 markuplint-dom = { path = "../markuplint-dom", features = ["html-parser"] }
 markuplint-html-parser = { path = "../markuplint-html-parser" }
 

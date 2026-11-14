@@ -10,15 +10,26 @@
 use markuplint_core::mlast::MLASTHTMLAttr;
 use markuplint_dom::arena::{DomArena, NodeId};
 use markuplint_dom::node::{DomNode, ElementData};
-use regex::Regex;
+use markuplint_types::primitive::is_uint;
 use serde_json::Value;
-use std::sync::LazyLock;
 
 use crate::rule::{RuleConfig, RuleConfigSet};
 use crate::violation::Violation;
 
-static WIDTH_DESCRIPTOR: LazyLock<Regex> = LazyLock::new(|| Regex::new(r"^[1-9]\d*w$").unwrap());
-static DENSITY_DESCRIPTOR: LazyLock<Regex> = LazyLock::new(|| Regex::new(r"^\d+(?:\.\d+)?x$").unwrap());
+/// TS `/^[1-9]\d*w$/`: a positive integer and `w`. JS `\d` is an ASCII digit.
+fn is_width_descriptor(descriptor: &str) -> bool {
+    descriptor
+        .strip_suffix('w')
+        .is_some_and(|number| number.starts_with(|c: char| ('1'..='9').contains(&c)) && is_uint(number, None))
+}
+
+/// TS `/^\d+(?:\.\d+)?x$/`: a non-negative decimal number and `x`.
+fn is_density_descriptor(descriptor: &str) -> bool {
+    descriptor.strip_suffix('x').is_some_and(|number| {
+        let (integer, fraction) = number.split_once('.').map_or((number, None), |(i, f)| (i, Some(f)));
+        is_uint(integer, None) && fraction.is_none_or(|fraction| is_uint(fraction, None))
+    })
+}
 
 /// Which descriptor kinds the candidates of a `srcset` use.
 ///
@@ -46,8 +57,8 @@ pub(crate) fn parse_srcset(value: &str) -> SrcsetDescriptors {
             continue;
         }
         match tokens.next() {
-            Some(descriptor) if WIDTH_DESCRIPTOR.is_match(descriptor) => descriptors.has_width = true,
-            Some(descriptor) if DENSITY_DESCRIPTOR.is_match(descriptor) => descriptors.has_density = true,
+            Some(descriptor) if is_width_descriptor(descriptor) => descriptors.has_width = true,
+            Some(descriptor) if is_density_descriptor(descriptor) => descriptors.has_density = true,
             Some(_) => {}
             None => descriptors.has_implied = true,
         }
@@ -229,4 +240,23 @@ fn parent_is_picture(arena: &DomArena, el: &ElementData) -> bool {
         .and_then(|parent| arena.get(parent))
         .and_then(DomNode::as_element)
         .is_some_and(|parent| parent.base.node_name == "picture")
+}
+
+#[cfg(test)]
+mod equivalence_tests {
+    use regex::Regex;
+
+    use super::*;
+    use markuplint_types::equivalence::for_each_string;
+
+    #[test]
+    fn descriptors_are_the_regular_expressions() {
+        // JS `\d` is ASCII, so the references spell it out.
+        let width = Regex::new(r"^[1-9][0-9]*w$").unwrap();
+        let density = Regex::new(r"^[0-9]+(?:\.[0-9]+)?x$").unwrap();
+        for_each_string(&["0", "1", "9", ".", "w", "x", "-", "\u{661}", "\n"], 5, &mut |s| {
+            assert_eq!(is_width_descriptor(s), width.is_match(s), "width {s:?}");
+            assert_eq!(is_density_descriptor(s), density.is_match(s), "density {s:?}");
+        });
+    }
 }

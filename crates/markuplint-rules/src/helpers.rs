@@ -1,9 +1,8 @@
-use std::sync::LazyLock;
-
 use markuplint_core::mlast::MLASTAttr;
 use markuplint_dom::arena::{DomArena, NodeId};
 use markuplint_dom::helpers::{get_attr_node_from_el, get_attr_value, get_attr_value_from_el, has_attr};
 use markuplint_dom::node::{DomNode, ElementData};
+use markuplint_types::check::js_regex::{JsRegex, split_literal};
 use markuplint_types::spec::types::MLMLSpec;
 
 use crate::aria::accname::resolver::rendered_child_nodes;
@@ -15,8 +14,6 @@ use crate::tree_scope::{
     is_expression, root_of,
 };
 
-static REGEX_LITERAL_RE: LazyLock<regex::Regex> = LazyLock::new(|| regex::Regex::new(r"^/(.*)/([gim]*)$").unwrap());
-
 /// If the pattern is wrapped in `/` (e.g. `/^[a-z]+$/i`), it is treated
 /// as a regular expression (with optional flags `g`, `i`, `m`).
 /// Otherwise, the pattern is compared as an exact string match.
@@ -25,16 +22,11 @@ static REGEX_LITERAL_RE: LazyLock<regex::Regex> = LazyLock::new(|| regex::Regex:
 /// length), and of the flags only the last counts, as the capture of TS `/^\/(.*)\/([gim])*$/` keeps.
 ///
 /// Mirrors the TS `match()` helper in `@markuplint/rules/src/helpers.ts`.
-///
-/// [`JsRegex`]: markuplint_types::check::js_regex::JsRegex
 pub fn pattern_match(needle: &str, pattern: &str) -> bool {
-    if let Some(caps) = REGEX_LITERAL_RE.captures(pattern)
-        && let Some(body) = caps.get(1).map(|m| m.as_str()).filter(|b| !b.is_empty())
-    {
-        let flags = caps.get(2).map_or("", |m| m.as_str());
+    if let Some((body, flags)) = split_literal(pattern, "gim").filter(|(body, _)| !body.is_empty()) {
         let last_flag: String = flags.chars().last().map_or_default(String::from);
         // TS `new RegExp` throws for a pattern it cannot read
-        return markuplint_types::check::js_regex::JsRegex::new(body, &last_flag).is_some_and(|re| re.is_match(needle));
+        return JsRegex::cached(body, &last_flag).is_some_and(|re| re.is_match(needle));
     }
     needle == pattern
 }

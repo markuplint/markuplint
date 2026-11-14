@@ -51,6 +51,10 @@
  * the import of `@markuplint/pretenders` to clear its caches (`invalidatePretenderResolutionCaches`
  * in `@markuplint/file-resolver`, whose `catch` wraps that `import()` alone and goes on, logging a
  * failure other than the package being absent, as a module the package needs runs as it loads),
+ * the check of the value of a `pattern` attribute (the `Pattern` type of `@markuplint/types` and
+ * `isValidPatternAttributeValue` in `ml-engine.ts` of `markuplint`, whose `catch` wraps one
+ * `new RegExp` of the author's text alone and takes its `SyntaxError` for "not a regular
+ * expression"),
  * the literal reader of an expression and the check of a braced expression
  * (`parse-literal-expression.ts` and `is-braced-expression.ts` in `@markuplint/parser-utils`,
  * whose `catch` wraps espree's reading of the author's own code alone, and takes its

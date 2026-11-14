@@ -3,12 +3,10 @@
 //! @see <https://html.spec.whatwg.org/multipage/images.html#sizes-attributes>
 
 use std::rc::Rc;
-use std::sync::LazyLock;
-
-use regex::Regex;
 
 use crate::check::css_syntax::{CssSyntax, CustomCssSyntax, css_syntax_match};
 use crate::check::types::{CheckResult, Expect, ExpectType, Reason, UnmatchedOpts, matched, unmatched_with};
+use crate::js_string::is_white_space;
 use crate::token::Token;
 use crate::whatwg::media_query_list::find_general_enclosed;
 
@@ -29,11 +27,20 @@ const SYNTAX: CustomCssSyntax<'static> = CustomCssSyntax {
     ],
 };
 
-/// TS `/(?:^|[,)])\s*-\s*\d/u`, with JS's `\s` and `\d` spelled out (Rust's are wider).
-static NEGATIVE_AT_SOURCE_SIZE_BOUNDARY: LazyLock<Regex> = LazyLock::new(|| {
-    let s = r"[\t\n\x0B\x0C\r \x{A0}\x{1680}\x{2000}-\x{200A}\x{2028}\x{2029}\x{202F}\x{205F}\x{3000}\x{FEFF}]";
-    Regex::new(&format!(r"(?:^|[,)]){s}*-{s}*[0-9]")).expect("valid regex")
-});
+/// TS `/(?:^|[,)])\s*-\s*\d/u`, with JS's `\s` and `\d` (ASCII digits) spelled out: whether a `-`
+/// and a digit follow, across white space, the start of the value or a `,` or `)`.
+fn has_negative_at_source_size_boundary(value: &str) -> bool {
+    let starts = std::iter::once(0).chain(value.match_indices([',', ')']).map(|(i, _)| i + 1));
+    starts.into_iter().any(|start| {
+        value[start..]
+            .trim_start_matches(is_white_space)
+            .strip_prefix('-')
+            .is_some_and(|rest| {
+                rest.trim_start_matches(is_white_space)
+                    .starts_with(|c: char| c.is_ascii_digit())
+            })
+    })
+}
 
 /// TS `defs.SourceSizeList.is`.
 ///
@@ -53,7 +60,7 @@ pub fn check_source_size_list(value: &str) -> CheckResult {
         return result;
     }
 
-    if NEGATIVE_AT_SOURCE_SIZE_BOUNDARY.is_match(value) {
+    if has_negative_at_source_size_boundary(value) {
         return unmatched_with(
             value,
             Reason::OutOfRange,
@@ -107,4 +114,31 @@ pub fn check_source_size_list(value: &str) -> CheckResult {
         prev = Some(c);
     }
     matched()
+}
+
+#[cfg(test)]
+mod equivalence_tests {
+    use regex::Regex;
+
+    use super::*;
+    use crate::equivalence::for_each_string;
+
+    #[test]
+    fn negative_boundary_is_the_regular_expression() {
+        let ws = r"[\t\n\x0B\x0C\r \x{A0}\x{1680}\x{2000}-\x{200A}\x{2028}\x{2029}\x{202F}\x{205F}\x{3000}\x{FEFF}]";
+        let re = Regex::new(&format!(r"(?:^|[,)]){ws}*-{ws}*[0-9]")).unwrap();
+        let alphabet = ["-", "1", ",", ")", "(", " ", "\n", "\u{FEFF}", "\u{85}", "e", "\u{661}"];
+        for_each_string(&alphabet, 6, &mut |s| {
+            assert_eq!(has_negative_at_source_size_boundary(s), re.is_match(s), "{s:?}");
+        });
+        // Every character of JS `\s` between the boundary, the hyphen and the digit.
+        let white_space = [
+            "\t", "\n", "\u{B}", "\u{C}", "\r", " ", "\u{A0}", "\u{1680}", "\u{2000}", "\u{2005}", "\u{200A}",
+            "\u{2028}", "\u{2029}", "\u{202F}", "\u{205F}", "\u{3000}", "\u{FEFF}", "\u{85}", "\u{180E}", "-", "1",
+            ",",
+        ];
+        for_each_string(&white_space, 4, &mut |s| {
+            assert_eq!(has_negative_at_source_size_boundary(s), re.is_match(s), "{s:?}");
+        });
+    }
 }

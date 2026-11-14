@@ -10,8 +10,6 @@ markuplint-dom = { path = "../markuplint-dom" }
 markuplint-html-parser = { path = "../markuplint-html-parser" }
 markuplint-selector = { path = "../markuplint-selector" }
 markuplint-types = { path = "../markuplint-types" }
-fancy-regex = "0.14"
-regex = { workspace = true }
 strsim = "0.11"
 serde = { workspace = true, features = ["derive"] }
 serde_json = { workspace = true }
@@ -22,6 +20,11 @@ serde_json = { workspace = true }
 whichtime = "=0.1.0"
 
 [dev-dependencies]
+# The tests compare each hand-written matcher with the regular expression it replaced; `equivalence` gives
+# the strings, and no rule compiles a regular expression of its own.
+regex = { workspace = true }
+# `equivalence`, the strings of the tests that compare a matcher with the regular expression it replaced.
+markuplint-types = { path = "../markuplint-types", features = ["test-support"] }
 markuplint-dom = { path = "../markuplint-dom", features = ["html-parser"] }
 
 [lints]

@@ -1261,6 +1261,7 @@ export type ExtendedType =
   | "DateStringWithOptionalTime"
   | "DateTime"
   | "Email"
+  | "FormControlName"
   | "FunctionBody"
   | "HTTPEquivContentType"
   | "HTTPEquivRefresh"
