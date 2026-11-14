@@ -1,4 +1,4 @@
-// https://drafts.fxtf.org/filter-effects/#feColorMatrixElement
+// https://drafts.csswg.org/filter-effects-1/#feColorMatrixElement
 // https://www.w3.org/TR/svg-aam/#role-map-feColorMatrix
 {
 	"contentModel": {
@@ -83,7 +83,7 @@
 		"#SVGFilterPrimitiveAttrs": ["x", "y", "width", "height", "result", "in"]
 	},
 	"attributes": {
-		// https://drafts.fxtf.org/filter-effects/#element-attrdef-fecolormatrix-type
+		// https://drafts.csswg.org/filter-effects-1/#element-attrdef-fecolormatrix-type
 		"type": {
 			"type": {
 				"enum": ["matrix", "saturate", "hueRotate", "luminanceToAlpha"],
@@ -92,7 +92,7 @@
 			"defaultValue": "matrix",
 			"animatable": true
 		},
-		// https://drafts.fxtf.org/filter-effects/#element-attrdef-fecolormatrix-values
+		// https://drafts.csswg.org/filter-effects-1/#element-attrdef-fecolormatrix-values
 		"values": {
 			"type": "<color-matrix>"
 		}

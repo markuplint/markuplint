@@ -1,4 +1,4 @@
-// https://drafts.fxtf.org/css-masking/#MaskElement
+// https://drafts.csswg.org/css-masking-1/#MaskElement
 // https://www.w3.org/TR/svg-aam/#role-map-mask
 {
 	"contentModel": {
@@ -101,23 +101,23 @@
 		"#SVGFilterPrimitiveAttrs": ["x", "y", "width", "height"]
 	},
 	"attributes": {
-		// https://drafts.fxtf.org/css-masking/#element-attrdef-mask-x
+		// https://drafts.csswg.org/css-masking-1/#element-attrdef-mask-x
 		"x": {
 			"defaultValue": "-10%"
 		},
-		// https://drafts.fxtf.org/css-masking/#element-attrdef-mask-y
+		// https://drafts.csswg.org/css-masking-1/#element-attrdef-mask-y
 		"y": {
 			"defaultValue": "-10%"
 		},
-		// https://drafts.fxtf.org/css-masking/#element-attrdef-mask-width
+		// https://drafts.csswg.org/css-masking-1/#element-attrdef-mask-width
 		"width": {
 			"defaultValue": "120%"
 		},
-		// https://drafts.fxtf.org/css-masking/#element-attrdef-mask-height
+		// https://drafts.csswg.org/css-masking-1/#element-attrdef-mask-height
 		"height": {
 			"defaultValue": "120%"
 		},
-		// https://drafts.fxtf.org/css-masking/#element-attrdef-mask-maskunits
+		// https://drafts.csswg.org/css-masking-1/#element-attrdef-mask-maskunits
 		"maskUnits": {
 			"type": {
 				"enum": ["userSpaceOnUse", "objectBoundingBox"],
@@ -126,7 +126,7 @@
 			"defaultValue": "objectBoundingBox",
 			"animatable": true
 		},
-		// https://drafts.fxtf.org/css-masking/#element-attrdef-mask-maskcontentunits
+		// https://drafts.csswg.org/css-masking-1/#element-attrdef-mask-maskcontentunits
 		"maskContentUnits": {
 			"type": {
 				"enum": ["userSpaceOnUse", "objectBoundingBox"]

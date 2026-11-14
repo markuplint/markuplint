@@ -48846,7 +48846,7 @@
 		},
 		{
 			"name": "acronym",
-			"cite": "https://html.spec.whatwg.org/multipage/obsolete.html#non-conforming-features",
+			"cite": "https://html.spec.whatwg.org/multipage/obsolete.html#acronym",
 			"description": "The <acronym> HTML element allows authors to clearly indicate a sequence of characters that compose an acronym or abbreviation for a word. Warning: Don't use this element. Use the <abbr> element instead.",
 			"categories": [],
 			"contentModel": {
@@ -48892,7 +48892,7 @@
 		},
 		{
 			"name": "applet",
-			"cite": "https://html.spec.whatwg.org/multipage/obsolete.html#non-conforming-features",
+			"cite": "https://html.spec.whatwg.org/multipage/obsolete.html#applet",
 			"description": "",
 			"categories": [],
 			"contentModel": {
@@ -49211,7 +49211,7 @@
 		},
 		{
 			"name": "basefont",
-			"cite": "https://html.spec.whatwg.org/multipage/obsolete.html#non-conforming-features",
+			"cite": "https://html.spec.whatwg.org/multipage/obsolete.html#basefont",
 			"description": "",
 			"categories": [],
 			"contentModel": {
@@ -49292,7 +49292,7 @@
 		},
 		{
 			"name": "bgsound",
-			"cite": "https://html.spec.whatwg.org/multipage/obsolete.html#non-conforming-features",
+			"cite": "https://html.spec.whatwg.org/multipage/obsolete.html#bgsound",
 			"description": "",
 			"categories": [],
 			"contentModel": {
@@ -49309,7 +49309,7 @@
 		},
 		{
 			"name": "big",
-			"cite": "https://html.spec.whatwg.org/multipage/obsolete.html#non-conforming-features",
+			"cite": "https://html.spec.whatwg.org/multipage/obsolete.html#big",
 			"description": "The <big> HTML deprecated element renders the enclosed text at a font size one level larger than the surrounding text (medium becomes large, for example). The size is capped at the browser's maximum permitted font size. Warning: This element has been removed from the specification and shouldn't be used anymore. Use the CSS font-size property to adjust the font size.",
 			"categories": [],
 			"contentModel": {
@@ -49326,7 +49326,7 @@
 		},
 		{
 			"name": "blink",
-			"cite": "https://html.spec.whatwg.org/multipage/obsolete.html#non-conforming-features",
+			"cite": "https://html.spec.whatwg.org/multipage/obsolete.html#blink",
 			"description": "",
 			"categories": [],
 			"contentModel": {
@@ -49798,7 +49798,7 @@
 		},
 		{
 			"name": "center",
-			"cite": "https://html.spec.whatwg.org/multipage/obsolete.html#non-conforming-features",
+			"cite": "https://html.spec.whatwg.org/multipage/obsolete.html#center",
 			"description": "The <center> HTML element is a block-level element that displays its block-level or inline contents centered horizontally within its containing element. The container is usually, but isn't required to be, <body>. This tag has been deprecated in HTML 4 (and XHTML 1) in favor of the CSS text-align property, which can be applied to the <div> element or to an individual <p>. For centering blocks, use other CSS properties like margin-left and margin-right and set them to auto (or set margin to 0 auto).",
 			"categories": [],
 			"contentModel": {
@@ -50236,7 +50236,7 @@
 		},
 		{
 			"name": "dir",
-			"cite": "https://html.spec.whatwg.org/multipage/obsolete.html#non-conforming-features",
+			"cite": "https://html.spec.whatwg.org/multipage/obsolete.html#dir",
 			"description": "The <dir> HTML element is used as a container for a directory of files and/or folders, potentially with styles and icons applied by the user agent. Do not use this obsolete element; instead, you should use the <ul> element for lists, including lists of files. Warning: Do not use this element. Though present in early HTML specifications, it has been deprecated in HTML 4, and has since been removed entirely.",
 			"categories": [],
 			"contentModel": {
@@ -50742,7 +50742,7 @@
 		},
 		{
 			"name": "frame",
-			"cite": "https://html.spec.whatwg.org/multipage/obsolete.html#non-conforming-features",
+			"cite": "https://html.spec.whatwg.org/multipage/obsolete.html#frame",
 			"description": "The <frame> HTML element defines a particular area in which another HTML document can be displayed. A frame should be used within a <frameset>. Using the <frame> element is not encouraged because of certain disadvantages such as performance problems and lack of accessibility for users with screen readers. Instead of the <frame> element, <iframe> may be preferred.",
 			"categories": [],
 			"contentModel": {
@@ -50795,7 +50795,7 @@
 		},
 		{
 			"name": "frameset",
-			"cite": "https://html.spec.whatwg.org/multipage/obsolete.html#non-conforming-features",
+			"cite": "https://html.spec.whatwg.org/multipage/obsolete.html#frameset",
 			"description": "The <frameset> HTML element is used to contain <frame> elements. Note: Because the use of frames is now discouraged in favor of using <iframe>, this element is not typically used by modern websites.",
 			"categories": [],
 			"contentModel": {
@@ -52713,7 +52713,7 @@
 		},
 		{
 			"name": "isindex",
-			"cite": "https://html.spec.whatwg.org/multipage/obsolete.html#non-conforming-features",
+			"cite": "https://html.spec.whatwg.org/multipage/obsolete.html#isindex",
 			"description": "",
 			"categories": [],
 			"contentModel": {
@@ -52755,7 +52755,7 @@
 		},
 		{
 			"name": "keygen",
-			"cite": "https://html.spec.whatwg.org/multipage/obsolete.html#non-conforming-features",
+			"cite": "https://html.spec.whatwg.org/multipage/obsolete.html#keygen",
 			"description": "",
 			"categories": [],
 			"contentModel": {
@@ -53035,7 +53035,7 @@
 		},
 		{
 			"name": "listing",
-			"cite": "https://html.spec.whatwg.org/multipage/obsolete.html#non-conforming-features",
+			"cite": "https://html.spec.whatwg.org/multipage/obsolete.html#listing",
 			"description": "",
 			"categories": [],
 			"contentModel": {
@@ -53263,7 +53263,7 @@
 		},
 		{
 			"name": "menuitem",
-			"cite": "https://html.spec.whatwg.org/multipage/obsolete.html#non-conforming-features",
+			"cite": "https://html.spec.whatwg.org/multipage/obsolete.html#menuitem",
 			"description": "",
 			"categories": [],
 			"contentModel": {
@@ -53446,7 +53446,7 @@
 		},
 		{
 			"name": "multicol",
-			"cite": "https://html.spec.whatwg.org/multipage/obsolete.html#non-conforming-features",
+			"cite": "https://html.spec.whatwg.org/multipage/obsolete.html#multicol",
 			"description": "",
 			"categories": [],
 			"contentModel": {
@@ -53490,7 +53490,7 @@
 		},
 		{
 			"name": "nextid",
-			"cite": "https://html.spec.whatwg.org/multipage/obsolete.html#non-conforming-features",
+			"cite": "https://html.spec.whatwg.org/multipage/obsolete.html#nextid",
 			"description": "",
 			"categories": [],
 			"contentModel": {
@@ -53507,7 +53507,7 @@
 		},
 		{
 			"name": "nobr",
-			"cite": "https://html.spec.whatwg.org/multipage/obsolete.html#non-conforming-features",
+			"cite": "https://html.spec.whatwg.org/multipage/obsolete.html#nobr",
 			"description": "The <nobr> HTML element prevents the text it contains from automatically wrapping across multiple lines, potentially resulting in the user having to scroll horizontally to see the entire width of the text. Warning: Although this element is widely supported, it was never standard HTML, so you shouldn't use it. Instead, use the CSS property white-space like this: html<span class=\"nobr\">Long line with no breaks</span> css.nobr { white-space: nowrap; }",
 			"categories": [],
 			"contentModel": {
@@ -53524,7 +53524,7 @@
 		},
 		{
 			"name": "noembed",
-			"cite": "https://html.spec.whatwg.org/multipage/obsolete.html#non-conforming-features",
+			"cite": "https://html.spec.whatwg.org/multipage/obsolete.html#noembed",
 			"description": "The <noembed> HTML element is an obsolete, non-standard way to provide alternative, or \"fallback\", content for browsers that do not support the <embed> element or do not support the type of embedded content an author wishes to use. This element was deprecated in HTML 4.01 and above in favor of placing fallback content between the opening and closing tags of an <object> element. Note: While this element currently still works in many browsers, it is obsolete and should not be used. Use <object> instead, with fallback content between the opening and closing tags of the element.",
 			"categories": [],
 			"contentModel": {
@@ -53541,7 +53541,7 @@
 		},
 		{
 			"name": "noframes",
-			"cite": "https://html.spec.whatwg.org/multipage/obsolete.html#non-conforming-features",
+			"cite": "https://html.spec.whatwg.org/multipage/obsolete.html#noframes",
 			"description": "The <noframes> HTML element provides content to be presented in browsers that don't support (or have disabled support for) the <frame> element. Although most commonly-used browsers support frames, there are exceptions, including certain special-use browsers including some mobile browsers, as well as text-mode browsers. A <noframes> element can contain any HTML elements that are allowed within the body of an HTML document, except for the <frameset> and <frame> elements, since using frames when they aren't supported doesn't make sense. <noframes> can be used to present a message explaining that the user's browser doesn't support frames, but ideally should be used to present an alternate form of the site that doesn't use frames but still offers the same or similar functionality. Note: This element is obsolete and shouldn't be used, since the <frame> and <frameset> elements are also obsolete. When frames are needed at all, they should be presented using the <iframe> element.",
 			"categories": [],
 			"contentModel": {
@@ -53940,7 +53940,7 @@
 		},
 		{
 			"name": "param",
-			"cite": "https://html.spec.whatwg.org/multipage/obsolete.html#non-conforming-features",
+			"cite": "https://html.spec.whatwg.org/multipage/obsolete.html#param",
 			"description": "The <param> HTML element defines parameters for an <object> element. Note: Use the <object> element with a data attribute to set the URL of an external resource.",
 			"categories": [],
 			"contentModel": {
@@ -54025,7 +54025,7 @@
 		},
 		{
 			"name": "plaintext",
-			"cite": "https://html.spec.whatwg.org/multipage/obsolete.html#non-conforming-features",
+			"cite": "https://html.spec.whatwg.org/multipage/obsolete.html#plaintext",
 			"description": "The <plaintext> HTML element renders everything following the start tag as raw text, ignoring any following HTML. There is no closing tag, since everything after it is considered raw text. Warning: Do not use this element. <plaintext> is deprecated since HTML 2, and not all browsers implemented it. Browsers that did implement it didn't do so consistently. <plaintext> is obsolete; browsers that accept it may instead treat it as a <pre> element that still interprets HTML within. If <plaintext> is the first element on the page (other than any non-displayed elements, like <head>), do not use HTML at all. Instead serve a text file with the text/plain MIME-type. Instead of <plaintext>, use the <pre> element or, if semantically accurate (such as for inline text), the <code> element. Escape any <, > and & characters, to prevent browsers inadvertently parsing the element content as HTML. A monospaced font can be applied to any HTML element via a CSS font-family style with the monospace generic value.",
 			"categories": [],
 			"contentModel": {
@@ -54175,7 +54175,7 @@
 		},
 		{
 			"name": "rb",
-			"cite": "https://html.spec.whatwg.org/multipage/obsolete.html#non-conforming-features",
+			"cite": "https://html.spec.whatwg.org/multipage/obsolete.html#rb",
 			"description": "The <rb> HTML element is used to delimit the base text component of a <ruby> annotation, i.e., the text that is being annotated. One <rb> element should wrap each separate atomic segment of the base text.",
 			"categories": [],
 			"contentModel": {
@@ -54241,7 +54241,7 @@
 		},
 		{
 			"name": "rtc",
-			"cite": "https://html.spec.whatwg.org/multipage/obsolete.html#non-conforming-features",
+			"cite": "https://html.spec.whatwg.org/multipage/obsolete.html#rtc",
 			"description": "The <rtc> HTML element embraces semantic annotations of characters presented in a ruby of <rb> elements used inside of <ruby> element. <rb> elements can have both pronunciation (<rt>) and semantic (<rtc>) annotations.",
 			"categories": [],
 			"contentModel": {
@@ -54790,7 +54790,7 @@
 		},
 		{
 			"name": "spacer",
-			"cite": "https://html.spec.whatwg.org/multipage/obsolete.html#non-conforming-features",
+			"cite": "https://html.spec.whatwg.org/multipage/obsolete.html#spacer",
 			"description": "",
 			"categories": [],
 			"contentModel": {
@@ -54835,7 +54835,7 @@
 		},
 		{
 			"name": "strike",
-			"cite": "https://html.spec.whatwg.org/multipage/obsolete.html#non-conforming-features",
+			"cite": "https://html.spec.whatwg.org/multipage/obsolete.html#strike",
 			"description": "The <strike> HTML element places a strikethrough (horizontal line) over text. Warning: This element is deprecated in HTML 4 and XHTML 1, and obsoleted in the HTML Living Standard. If semantically appropriate, i.e., if it represents deleted content, use <del> instead. In all other cases use <s>.",
 			"categories": [],
 			"contentModel": {
@@ -55799,7 +55799,7 @@
 		},
 		{
 			"name": "tt",
-			"cite": "https://html.spec.whatwg.org/multipage/obsolete.html#non-conforming-features",
+			"cite": "https://html.spec.whatwg.org/multipage/obsolete.html#tt",
 			"description": "The <tt> HTML element creates inline text which is presented using the user agent's default monospace font face. This element was created for the purpose of rendering text as it would be displayed on a fixed-width display such as a teletype, text-only screen, or line printer. The terms non-proportional, monotype, and monospace are used interchangeably and have the same general meaning: they describe a typeface whose characters are all the same number of pixels wide. This element is obsolete, however. You should use the more semantically helpful <code>, <kbd>, <samp>, or <var> elements for inline text that needs to be presented in monospace type, or the <pre> tag for content that should be presented as a separate block. Note: If none of the semantic elements are appropriate for your use case (for example, if you need to show some content in a non-proportional font), you should consider using the <span> element, styling it as desired using CSS. The font-family property is a good place to start.",
 			"categories": [],
 			"contentModel": {
@@ -56074,7 +56074,7 @@
 		},
 		{
 			"name": "xmp",
-			"cite": "https://html.spec.whatwg.org/multipage/obsolete.html#non-conforming-features",
+			"cite": "https://html.spec.whatwg.org/multipage/obsolete.html#xmp",
 			"description": "Summary The <xmp> HTML element renders text between the start and end tags without interpreting the HTML in between and using a monospaced font. The HTML2 specification recommended that it should be rendered wide enough to allow 80 characters per line. Note: Do not use this element. It has been deprecated since HTML3.2 and was not implemented in a consistent way. It was completely removed from current HTML. Use the <pre> element or, if semantically adequate, the <code> element instead. Note that you will need to escape the < character as &lt; and the & character as &amp; to make sure they are not interpreted as markup. A monospaced font can also be obtained on any element, by applying an adequate CSS style using monospace as the generic-font value for the font-family property.",
 			"categories": [],
 			"contentModel": {

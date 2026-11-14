@@ -24,6 +24,7 @@ const HEADINGS: Readonly<Record<ProblemKind, string>> = {
 	'page-missing': 'Page no longer exists',
 	'anchor-missing': 'Anchor not found',
 	'anchor-empty': 'Anchor has no text',
+	'anchor-thin': 'Definition is cited at an anchor with too little text',
 	'quote-mismatch': 'Quoted text not found in the cited section',
 	'orphan-quote': 'Blockquote without a specification link',
 	'inline-quote': 'Specification sentence quoted inline',

@@ -1,4 +1,4 @@
-// https://drafts.fxtf.org/filter-effects/#feOffsetElement
+// https://drafts.csswg.org/filter-effects-1/#feOffsetElement
 // https://www.w3.org/TR/svg-aam/#role-map-feoffset
 {
 	"contentModel": {
@@ -83,13 +83,13 @@
 		"#SVGFilterPrimitiveAttrs": ["x", "y", "width", "height", "result", "in"]
 	},
 	"attributes": {
-		// https://drafts.fxtf.org/filter-effects/#element-attrdef-feoffset-dx
+		// https://drafts.csswg.org/filter-effects-1/#element-attrdef-feoffset-dx
 		"dx": {
 			"type": "<number>",
 			"defaultValue": "0",
 			"animatable": true
 		},
-		// https://drafts.fxtf.org/filter-effects/#element-attrdef-feoffset-dy
+		// https://drafts.csswg.org/filter-effects-1/#element-attrdef-feoffset-dy
 		"dy": {
 			"type": "<number>",
 			"defaultValue": "0",

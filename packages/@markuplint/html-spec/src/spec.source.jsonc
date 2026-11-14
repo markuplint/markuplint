@@ -1,4 +1,4 @@
-// https://developer.mozilla.org/en-US/docs/Web/HTML/Element/source
+// https://html.spec.whatwg.org/multipage/embedded-content.html#the-source-element
 // https://www.w3.org/TR/html-aria/#el-source
 {
 	"contentModel": {

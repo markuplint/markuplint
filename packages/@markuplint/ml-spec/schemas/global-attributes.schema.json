@@ -666,7 +666,7 @@
 			"patternProperties": { ".+": { "$ref": "./attributes.schema.json#/definitions/AttributeJSON" } }
 		},
 		"#SVGFilterPrimitiveAttrs": {
-			"description": "[Common filter primitive attributes]( https://drafts.fxtf.org/filter-effects/#CommonAttributes )",
+			"description": "[Common filter primitive attributes]( https://drafts.csswg.org/filter-effects-1/#CommonAttributes )",
 			"type": "object",
 			"required": ["x", "y", "width", "height", "result", "in"],
 			"propertyNames": { "$ref": "#/definitions/SVGFilterPrimitiveAttrs" },
@@ -762,7 +762,7 @@
 			"patternProperties": { ".+": { "$ref": "./attributes.schema.json#/definitions/AttributeJSON" } }
 		},
 		"#SVGTransferFunctionAttrs": {
-			"description": "[transfer function element attributes,]( https://drafts.fxtf.org/filter-effects/#transfer-function-element-attributes )",
+			"description": "[transfer function element attributes,]( https://drafts.csswg.org/filter-effects-1/#transfer-function-element-attributes )",
 			"type": "object",
 			"required": ["type", "tableValues", "slope", "intercept", "amplitude", "exponent", "offset"],
 			"propertyNames": { "$ref": "#/definitions/SVGTransferFunctionAttrs" },

@@ -34,6 +34,24 @@ test('Pattern (keyword)', () => {
 	expect(check(']//[()?!+*', 'Pattern').matched).toBe(false);
 });
 
+test.each(['[(]', 'a{', '{', String.raw`\-`, '[a-]', 'a)|(b', String.raw`[\w.-]+`, '[^-]', '[a-z&&[aeiou]]', 'a|b)'])(
+	'Pattern (keyword) rejects %s, which the `v` flag cannot compile',
+	value => {
+		expect(check(value, 'Pattern').matched).toBe(false);
+	},
+);
+
+test.each([
+	String.raw`[\p{L}--[a-z]]`,
+	String.raw`[\p{L}&&\p{ASCII}]`,
+	String.raw`[\q{abc}]`,
+	String.raw`\p{RGI_Emoji}`,
+	String.raw`[\w.\-]+`,
+	String.raw`\d{3}-\d{4}`,
+])('Pattern (keyword) accepts %s, which the `v` flag compiles', value => {
+	expect(check(value, 'Pattern').matched).toBe(true);
+});
+
 test('Pattern (object)', () => {
 	expect(check('hello', { pattern: '/^he/' }).matched).toBe(true);
 	expect(check('hello', { pattern: '/^xyz/' }).matched).toBe(false);

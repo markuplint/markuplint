@@ -25,7 +25,10 @@
  *   source file of a framework the anchor is the name of a top-level
  *   declaration, and the quoted text is looked up in that declaration. A text
  *   fragment with no `#fragment` is searched in the whole page, which is how a
- *   passage that no heading anchors is cited.
+ *   passage that no heading anchors is cited. A definition (the first line of the
+ *   source file of an element, a role or a property of ARIA) that is cited at an
+ *   anchor holding only a few words is reported as `anchor-thin`: it would never
+ *   show a change.
  * - Against the lock (`spec-citations.lock.json`): the cited passage is not
  *   the one a maintainer last accepted. The lock stores the text, not only a
  *   hash, so the report can show what changed without a second fetch.
@@ -45,6 +48,13 @@
  *
  * The lock PR's body lists what it adds to and removes from the lock
  * (`lock-changes.ts`), and names the removed sections that a file still cites.
+ *
+ * The data of `@markuplint/html-spec` is watched as well, and this monitor, which reads the section itself, is what
+ * notices that the specification reworded a definition. The first line of each `html-spec/src/spec.*.jsonc` cites the
+ * section that defines the element (`definition.ts`), and `coverage.spec.ts` fails for an element of `index.json`
+ * whose first line does not name a section that this monitor reads. What nobody writes as a citation is read from
+ * `index.json`: the `cite` of an element that has no source file, the obsolete ones (`elements.ts`), and one section
+ * for each role and property of ARIA (`aria.ts`).
  */
 import type { CollectResult, PageResult } from './types.ts';
 
@@ -54,7 +64,7 @@ import { fileURLToPath } from 'node:url';
 import { parseArgs } from 'node:util';
 
 import { check } from './check.ts';
-import { collectFiles, listCitingFiles } from './discover.ts';
+import { collectAll } from './discover.ts';
 import { isCliEntry } from './entry.ts';
 import { fetchPages } from './fetch.ts';
 import { EMPTY_LOCK, parseLock, serializeLock } from './lockfile.ts';
@@ -160,8 +170,8 @@ export async function run(options: CliOptions, deps: CliDeps): Promise<number> {
 	return report.failures > 0 ? 2 : 0;
 }
 
-const realDeps: CliDeps = {
-	collect: root => collectFiles(root, listCitingFiles(root)),
+export const realDeps: CliDeps = {
+	collect: root => collectAll(root),
 	fetchPages: urls => fetchPages(urls),
 	readText: path => (existsSync(path) ? readFileSync(path, 'utf8') : null),
 	writeText: (path, text) => writeFileSync(path, text),
