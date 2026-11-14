@@ -95,7 +95,7 @@ export const cssDefs: Defs = {
 	},
 
 	'<color-matrix>': {
-		ref: 'https://drafts.fxtf.org/filter-effects/#element-attrdef-fecolormatrix-values',
+		ref: 'https://drafts.csswg.org/filter-effects-1/#element-attrdef-fecolormatrix-values',
 		syntax: {
 			apply: '<color-matrix>',
 			def: {
@@ -196,7 +196,7 @@ export const cssDefs: Defs = {
 				'meet-or-slice': 'meet | slice',
 			},
 			// A new spec
-			// @see https://drafts.fxtf.org/filter-effects/#element-attrdef-feimage-preserveaspectratio
+			// @see https://drafts.csswg.org/filter-effects-1/#element-attrdef-feimage-preserveaspectratio
 			// > preserveAspectRatio = "[defer] <align> [<meetOrSlice>]"
 		},
 	},
