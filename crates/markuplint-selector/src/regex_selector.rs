@@ -1,18 +1,17 @@
 //! Regex-based selector matching: a system separate from CSS selectors.
 //!
 //! Corresponds to `@markuplint/selector/src/match-selector.ts` (regex path).
+//!
+//! The patterns a config gives are read as JavaScript reads them
+//! ([`markuplint_types::check::js_regex::JsRegex`]); a pattern that cannot be read matches nothing.
 
 use std::collections::HashMap;
-use std::sync::{LazyLock, Mutex, PoisonError};
 
 use markuplint_core::mlast::{MLASTAttr, NamespaceURI};
 use markuplint_dom::arena::{DomArena, NodeId};
 use markuplint_dom::node::DomNode;
-use regex::Regex;
+use markuplint_types::check::js_regex::{JsRegex, split_literal};
 use serde::Deserialize;
-
-static REGEX_LITERAL_PATTERN: LazyLock<Regex> =
-    LazyLock::new(|| Regex::new(r"^/(.+)/([gi]*)$").expect("regex literal pattern must compile"));
 
 use crate::ast::Specificity;
 
@@ -238,7 +237,12 @@ fn uncombined_match(
     let mut specificity: Specificity = [0, 0, 0];
     let mut specified_attrs: Vec<(String, String)> = Vec::new();
 
-    if let Some(pattern) = target.node_name {
+    // TS tests each of the three for truthiness: an empty string is no condition at all.
+    let node_name = target.node_name.filter(|pattern| !pattern.is_empty());
+    let attr_name_pattern = target.attr_name.filter(|pattern| !pattern.is_empty());
+    let attr_value_pattern = target.attr_value.filter(|pattern| !pattern.is_empty());
+
+    if let Some(pattern) = node_name {
         if let Some(captures) = regex_match(pattern, identity.node_name, is_html) {
             // $0 is dropped for nodeName, matching TS behavior.
             for (key, value) in &captures {
@@ -253,13 +257,13 @@ fn uncombined_match(
         }
     }
 
-    if target.attr_name.is_some() || target.attr_value.is_some() {
+    if attr_name_pattern.is_some() || attr_value_pattern.is_some() {
         let mut any_attr_matched = false;
 
         for attr in identity.attributes {
             let (attr_name, attr_value) = get_attr_name_value(attr);
 
-            if let Some(pattern) = target.attr_name {
+            if let Some(pattern) = attr_name_pattern {
                 let Some(captures) = regex_match(pattern, &attr_name, is_html) else {
                     continue;
                 };
@@ -270,7 +274,7 @@ fn uncombined_match(
                 }
             }
 
-            if let Some(pattern) = target.attr_value {
+            if let Some(pattern) = attr_value_pattern {
                 let Some(captures) = regex_match(pattern, &attr_value, is_html) else {
                     continue;
                 };
@@ -325,66 +329,41 @@ fn uncombined_match(
 // ============================================================
 
 fn regex_match(pattern: &str, raw: &str, ignore_case: bool) -> Option<HashMap<String, String>> {
+    // TS `regexSelectorMatches`: `if (!reg) return null`
+    if pattern.is_empty() {
+        return None;
+    }
     let regex = to_regex(pattern, ignore_case)?;
     let caps = regex.captures(raw)?;
 
     let mut result = HashMap::new();
-    for (i, m) in caps.iter().enumerate() {
-        if let Some(m) = m {
-            result.insert(format!("${i}"), m.as_str().to_string());
+    for (i, group) in caps.numbered.into_iter().enumerate() {
+        if let Some(group) = group {
+            result.insert(format!("${i}"), group);
         }
     }
-    for name in regex.capture_names().flatten() {
-        if let Some(m) = caps.name(name) {
-            result.insert(name.to_string(), m.as_str().to_string());
-        }
-    }
+    result.extend(caps.named);
     Some(result)
 }
 
-/// The compiled regex of each pattern a config has given, by [`to_regex`]'s arguments. A
-/// `regexSelector` of `nodeRules` / `childNodeRules` is matched against every element, and
-/// compiling the pattern took most of the time of a lint; a config names few patterns, so the cache
-/// stays small. A `Regex` is cheap to clone (its matcher is shared).
-static COMPILED: LazyLock<Mutex<RegexCache>> = LazyLock::new(Mutex::default);
-
-type RegexCache = HashMap<(String, bool), Option<Regex>>;
-
-fn to_regex(pattern: &str, ignore_case: bool) -> Option<Regex> {
-    let key = (pattern.to_owned(), ignore_case);
-    // A poisoned lock only means another thread panicked while it held it; the entries are whole.
-    if let Some(found) = COMPILED.lock().unwrap_or_else(PoisonError::into_inner).get(&key) {
-        return found.clone();
-    }
-    let compiled = compile_regex(pattern, ignore_case);
-    COMPILED
-        .lock()
-        .unwrap_or_else(PoisonError::into_inner)
-        .insert(key, compiled.clone());
-    compiled
-}
-
-fn compile_regex(pattern: &str, ignore_case: bool) -> Option<Regex> {
-    if let Some(caps) = REGEX_LITERAL_PATTERN.captures(pattern) {
-        let inner = caps.get(1)?.as_str();
-        let flags = caps.get(2).map_or("", |m| m.as_str());
+/// The pattern of a config as a regular expression: [`JsRegex::cached`] compiles it once, which
+/// matters because a `regexSelector` of `nodeRules` / `childNodeRules` is matched against every
+/// element.
+fn to_regex(pattern: &str, ignore_case: bool) -> Option<std::rc::Rc<JsRegex>> {
+    // TS `/^\/(.+)\/([gi]*)$/i`: a literal has a body, and its flags are matched without regard
+    // to case, so that `/div/I` is a literal whose flags `new RegExp` then rejects.
+    if let Some((inner, flags)) = split_literal(pattern, "giGI").filter(|(inner, _)| !inner.is_empty()) {
+        if flags.contains(['G', 'I']) {
+            return None;
+        }
         let case_insensitive = flags.contains('i') || ignore_case;
-        let pat = if case_insensitive {
-            format!("(?i){inner}")
-        } else {
-            inner.to_string()
-        };
-        Regex::new(&pat).ok()
+        JsRegex::cached(inner, if case_insensitive { "i" } else { "" })
     } else {
-        // TS: new RegExp(pattern) — treated as raw regex, not escaped.
-        // Patterns like "^(?<value>.+)$" must work as-is.
-        let trimmed = pattern.trim();
-        let pat = if ignore_case {
-            format!("(?i){trimmed}")
-        } else {
-            trimmed.to_string()
-        };
-        Regex::new(&pat).ok()
+        // TS: new RegExp(`^${pattern.trim()}$`) — a raw regex that matches the whole text, not
+        // escaped. Patterns like "^(?<value>.+)$" must work as-is. JS `trim()` strips its own
+        // white space set.
+        let anchored = format!("^{}$", markuplint_types::js_string::trim(pattern));
+        JsRegex::cached(&anchored, if ignore_case { "i" } else { "" })
     }
 }
 
@@ -631,10 +610,10 @@ mod tests {
     }
 
     #[test]
-    fn empty_pattern_matches_everything() {
-        // TS: new RegExp("") matches everything (like /(?:)/)
-        assert!(regex_match("", "", false).is_some());
-        assert!(regex_match("", "div", false).is_some());
+    fn empty_pattern_matches_nothing() {
+        // TS: `if (!reg) return null`; a selector with an empty pattern has no such condition
+        assert!(regex_match("", "", false).is_none());
+        assert!(regex_match("", "div", false).is_none());
     }
 
     // --- uncombined_match tests ---
@@ -651,6 +630,36 @@ mod tests {
         let result = uncombined_match(&arena, id, &target, None);
         assert!(result.matched);
         assert_eq!(result.specificity, [0, 0, 1]);
+    }
+
+    #[test]
+    fn plain_node_name_pattern_matches_the_whole_name() {
+        // TS: `new RegExp(`^${pattern.trim()}$`)` for a pattern that is not `/…/`
+        let target = RegexTarget {
+            node_name: Some("div"),
+            attr_name: None,
+            attr_value: None,
+            combined_from: None,
+        };
+        let (arena, id) = make_arena_with_element("mydiv", &[]);
+        assert!(!uncombined_match(&arena, id, &target, None).matched);
+        let (arena, id) = make_arena_with_element("divider", &[]);
+        assert!(!uncombined_match(&arena, id, &target, None).matched);
+    }
+
+    #[test]
+    fn empty_patterns_are_no_condition() {
+        // TS tests `selector.nodeName`, `attrName` and `attrValue` for truthiness
+        let (arena, id) = make_arena_with_element("div", &[("id", "a")]);
+        let target = RegexTarget {
+            node_name: Some(""),
+            attr_name: Some(""),
+            attr_value: Some(""),
+            combined_from: None,
+        };
+        let result = uncombined_match(&arena, id, &target, None);
+        assert!(result.matched);
+        assert_eq!(result.specificity, [0, 0, 0]);
     }
 
     #[test]
@@ -825,11 +834,56 @@ mod tests {
 
     #[test]
     fn to_regex_plain_string() {
-        // TS: new RegExp("foo") — substring match, not exact
+        // TS: new RegExp("^foo$") — the whole text, not a substring
         let re = to_regex("foo", false).unwrap();
         assert!(re.is_match("foo"));
-        assert!(re.is_match("foobar")); // substring match
-        assert!(re.is_match("barfoo")); // substring match
+        assert!(!re.is_match("foobar")); // not a substring match
+        assert!(!re.is_match("barfoo")); // not a substring match
+    }
+
+    #[test]
+    fn to_regex_reads_javascript() {
+        // lookahead and a backreference, which the `regex` crate cannot read
+        let re = to_regex("/^(?!no)/", false).unwrap();
+        assert!(re.is_match("yes"));
+        assert!(!re.is_match("no"));
+        let re = to_regex(r"(a)\1", false).unwrap();
+        assert!(re.is_match("aa"));
+        // JS `\d` is ASCII
+        let re = to_regex(r"\d", false).unwrap();
+        assert!(re.is_match("7"));
+        assert!(!re.is_match("\u{661}"));
+        // a pattern that cannot be read matches nothing
+        assert!(to_regex("(", false).is_none());
+    }
+
+    #[test]
+    fn regex_match_gives_the_groups_of_javascript() {
+        let groups = regex_match("/^data-(?<name>[a-z]+)-(\\d)$/", "data-foo-7", false).unwrap();
+        assert_eq!(groups["$0"], "data-foo-7");
+        assert_eq!(groups["$1"], "foo");
+        assert_eq!(groups["$2"], "7");
+        assert_eq!(groups["name"], "foo");
+    }
+
+    #[test]
+    fn to_regex_trims_the_js_white_space() {
+        // TS `pattern.trim()`: U+FEFF is stripped, U+0085 is not
+        let re = to_regex("\u{FEFF}div\u{3000}", false).unwrap();
+        assert!(re.is_match("div"));
+        let re = to_regex("\u{85}div", false).unwrap();
+        assert!(!re.is_match("div"));
+        assert!(re.is_match("\u{85}div"));
+    }
+
+    #[test]
+    fn to_regex_literal_flags_are_matched_without_regard_to_case() {
+        // TS: `/div/I` is a literal, and `new RegExp("div", "I")` throws
+        assert!(to_regex("/div/I", false).is_none());
+        assert!(to_regex("/div/G", false).is_none());
+        assert!(to_regex("/div/gi", false).is_some());
+        // a body-less literal is a plain pattern
+        assert!(to_regex("//", false).is_some());
     }
 
     #[test]

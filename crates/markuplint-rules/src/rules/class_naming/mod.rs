@@ -3,10 +3,11 @@
 use markuplint_core::i18n::Primitive as Kw;
 use markuplint_core::mlast::MLASTAttr;
 use markuplint_dom::arena::DomArena;
+use markuplint_types::js_string::is_white_space;
 use markuplint_types::spec::types::MLMLSpec;
-use regex::Regex;
 
 use crate::aria_check::attr_name;
+use crate::helpers::pattern_match;
 use crate::rule::{Rule, RuleConfigSet};
 use crate::violation::Violation;
 
@@ -47,17 +48,8 @@ impl Rule for ClassNaming {
             .filter(|p| !p.is_empty())
             .collect();
 
-            let regexes: Vec<(String, Regex)> = pattern_strs
-                .iter()
-                .filter_map(|ps| {
-                    let regex_str = strip_regex_delimiters(ps);
-                    crate::regex_cache::regex(&regex_str).map(|re| (ps.clone(), re))
-                })
-                .collect();
-
-            // Having no pattern disables the rule. Patterns that all fail to parse as a regex skip
-            // the element too; that is a separate case that happens to end the same way.
-            if regexes.is_empty() {
+            // No pattern disables the rule for the element.
+            if pattern_strs.is_empty() {
                 continue;
             }
 
@@ -76,8 +68,8 @@ impl Rule for ClassNaming {
 
                 let value = markuplint_dom::helpers::attr_value(html_attr);
 
-                for class_name in value.split_whitespace() {
-                    let matches_any = regexes.iter().any(|(_, re)| re.is_match(class_name));
+                for class_name in value.split(is_white_space).filter(|class_name| !class_name.is_empty()) {
+                    let matches_any = pattern_strs.iter().any(|pattern| pattern_match(class_name, pattern));
                     if !matches_any {
                         // As TS: every class of the attribute is reported at the start of the
                         // attribute value, with the whole value as `raw` (#4248).
@@ -105,17 +97,5 @@ impl Rule for ClassNaming {
         }
 
         violations
-    }
-}
-
-fn strip_regex_delimiters(pattern: &str) -> String {
-    if let Some(rest) = pattern.strip_prefix('/') {
-        if let Some(last_slash) = rest.rfind('/') {
-            rest[..last_slash].to_string()
-        } else {
-            pattern.to_string()
-        }
-    } else {
-        pattern.to_string()
     }
 }

@@ -1,5 +1,9 @@
 //! Port of `packages/@markuplint/types/src/directive.ts`.
 
+use std::cell::RefCell;
+use std::collections::HashMap;
+use std::rc::Rc;
+
 use super::types::{CheckResult, DirectiveType, Reason, UnmatchedOpts, UnmatchedResult, matched, unmatched_with};
 
 /// TS `regexParser` of `@markuplint/shared`: `/pattern/flags` as a regular expression. A flag that
@@ -16,6 +20,23 @@ pub fn regex_parser(regexp_like: &str) -> Option<fancy_regex::Regex> {
     js_regex(pattern, flags)
 }
 
+thread_local! {
+    /// `directive` to its [`regex_parser`] result, which is `None` for a directive that is a plain
+    /// prefix: the directives come from a spec, so they are few, and compiling one for every value
+    /// checked is what the cache avoids. Per thread, like [`super::js_regex::JsRegex::cached`]:
+    /// a hit takes no lock and builds no key.
+    static MATCHERS: RefCell<HashMap<String, Option<Rc<fancy_regex::Regex>>>> = RefCell::default();
+}
+
+fn cached_regex_parser(directive: &str) -> Option<Rc<fancy_regex::Regex>> {
+    if let Some(found) = MATCHERS.with(|cache| cache.borrow().get(directive).cloned()) {
+        return found;
+    }
+    let compiled = regex_parser(directive).map(Rc::new);
+    MATCHERS.with(|cache| cache.borrow_mut().insert(directive.to_owned(), compiled.clone()));
+    compiled
+}
+
 /// A JS regular expression with its flags. `fancy-regex` reads the lookaround and backreferences
 /// that a JS pattern may have.
 #[must_use]
@@ -26,10 +47,11 @@ pub fn js_regex(pattern: &str, flags: &str) -> Option<fancy_regex::Regex> {
             inline.push(inner);
         }
     }
+    let translated = super::js_regex::translate(pattern, flags.contains('s'));
     let source = if inline.is_empty() {
-        pattern.to_owned()
+        translated
     } else {
-        format!("(?{inline}){pattern}")
+        format!("(?{inline}){translated}")
     };
     fancy_regex::Regex::new(&source).ok()
 }
@@ -57,7 +79,7 @@ where
 
     for directive in &type_def.directive {
         // TS `regexParser` returns `null` for a string it cannot read, and the directive is a prefix then
-        let token_part: String = if let Some(matcher) = regex_parser(directive) {
+        let token_part: String = if let Some(matcher) = cached_regex_parser(directive) {
             let Ok(Some(caps)) = matcher.captures(value) else {
                 unmatches.push(missing());
                 continue;

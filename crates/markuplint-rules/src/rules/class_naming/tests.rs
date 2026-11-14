@@ -22,6 +22,7 @@
 //!   v6_class_naming_002       — Rust-only: the attribute is read by its resolved name; dynamic values are skipped
 //!   v6_class_naming_003       — Rust-only: a directive is not the `class` attribute
 //!   v6_class_naming_004       — Rust-only: an array of empty strings is a no-op
+//!   v6_class_naming_005       — Rust-only: a pattern that is not `/…/` is the class name itself; the list splits at JS white space
 
 use crate::lint::{LintConfig, lint};
 use crate::violation::Severity;
@@ -629,4 +630,29 @@ fn v6_class_naming_003() {
     );
 
     assert_eq!(lint_mlast_brief("class-naming", &mlast, config), vec![]);
+}
+
+/// TS `match()` (`helpers.ts`): only `/…/flags` is a JavaScript regular expression, and any other
+/// pattern is compared to the class name as a string. The class list splits at `\s` of JS.
+#[test]
+fn v6_class_naming_005() {
+    let count = |class: &str, pattern: &str| {
+        crate::test_util::lint_html(
+            &format!("<div class=\"{class}\"></div>"),
+            serde_json::json!({ "rules": { "class-naming": { "severity": "error", "value": pattern } } }),
+        )
+        .iter()
+        .filter(|v| v.rule_id == "class-naming")
+        .count()
+    };
+    assert_eq!(count("a.c", "a.c"), 0);
+    assert_eq!(count("abc", "a.c"), 1);
+    assert_eq!(count("abc", "/^a.c$/"), 0);
+    // lookahead and a backreference are JavaScript
+    assert_eq!(count("yes", "/^(?!no)/"), 0);
+    assert_eq!(count("no", "/^(?!no)/"), 1);
+    assert_eq!(count("aa", r"/^(a)\1$/"), 0);
+    // U+FEFF is JS white space, U+0085 is not
+    assert_eq!(count("a\u{FEFF}b", "/^[ab]$/"), 0);
+    assert_eq!(count("a\u{85}b", "/^[ab]$/"), 1);
 }

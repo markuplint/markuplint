@@ -2,13 +2,10 @@
 //!
 //! Every value that reaches the grammar checks is ASCII without control characters other than
 //! TAB (the first check rejects anything else), so JS `\s`, `trim()` and `toLowerCase()` act on
-//! TAB and SPACE and ASCII letters only, and the regular expressions see the same input in both
-//! engines.
+//! TAB and SPACE and ASCII letters only, and the matchers see the input that the regular
+//! expressions of TS see.
 
 use std::rc::Rc;
-use std::sync::LazyLock;
-
-use regex::Regex;
 
 use crate::check::types::{CheckResult, Expect, ExpectType, Reason, UnmatchedOpts, matched};
 use crate::token::Token;
@@ -92,23 +89,103 @@ const NONE_SOURCE: &str = "'none'";
 
 const TRUSTED_TYPES_KEYWORDS: &[&str] = &["'allow-duplicates'", "'none'"];
 
-/// `scheme-part ":"`.
-static SCHEME_SOURCE: LazyLock<Regex> = LazyLock::new(|| Regex::new(r"(?i)^[A-Z][A-Z0-9+.-]*:$").unwrap());
+/// `scheme-part ":"`: JS `/^[A-Z][A-Z0-9+.-]*:$/i`, whose classes are ASCII.
+fn is_scheme_source(value: &str) -> bool {
+    value.strip_suffix(':').is_some_and(is_scheme_part)
+}
 
-/// `[ scheme-part "://" ] host-part [ port-part ] [ path-part ]`.
-static HOST_SOURCE: LazyLock<Regex> = LazyLock::new(|| {
-    Regex::new(
-        r"(?i)^(?:[A-Z][A-Z0-9+.-]*://)?(?:\*|(?:\*\.)?[A-Z0-9-]+(?:\.[A-Z0-9-]+)*)(?::(?:[0-9]+|\*))?(?:/\S*)?$",
-    )
-    .unwrap()
-});
+/// `ALPHA *( ALPHA / DIGIT / "+" / "-" / "." )`.
+fn is_scheme_part(value: &str) -> bool {
+    let bytes = value.as_bytes();
+    bytes.first().is_some_and(u8::is_ascii_alphabetic)
+        && bytes
+            .iter()
+            .all(|b| b.is_ascii_alphanumeric() || matches!(b, b'+' | b'.' | b'-'))
+}
+
+/// `[ scheme-part "://" ] host-part [ port-part ] [ path-part ]`, JS
+/// `/^(?:[A-Z][A-Z0-9+.-]*:\/\/)?(?:\*|(?:\*\.)?[A-Z0-9-]+(?:\.[A-Z0-9-]+)*)(?::(?:\d+|\*))?(?:\/\S*)?$/i`.
+///
+/// `\S` is a character that is not JS white space.
+fn is_host_source(value: &str) -> bool {
+    // `://` cannot occur inside a scheme part, so there is at most one way to read a scheme.
+    value
+        .split_once("://")
+        .is_some_and(|(scheme, rest)| is_scheme_part(scheme) && is_host_port_path(rest))
+        || is_host_port_path(value)
+}
+
+/// `host-part [ port-part ] [ path-part ]`.
+fn is_host_port_path(value: &str) -> bool {
+    match value.strip_prefix('*') {
+        // `"*"` alone, or `"*."` before the labels
+        Some(rest) => is_port_path(rest) || rest.strip_prefix('.').is_some_and(is_labels_port_path),
+        None => is_labels_port_path(value),
+    }
+}
+
+/// `label *( "." label ) [ port-part ] [ path-part ]`, a `label` being `1*( ALPHA / DIGIT / "-" )`.
+fn is_labels_port_path(value: &str) -> bool {
+    // A shorter run would leave a label character where the port or the path has to start.
+    let end = value
+        .find(|c: char| !(c.is_ascii_alphanumeric() || matches!(c, '-' | '.')))
+        .unwrap_or(value.len());
+    value[..end].split('.').all(|label| !label.is_empty()) && is_port_path(&value[end..])
+}
+
+/// `[ ":" ( 1*DIGIT / "*" ) ] [ "/" *non-white-space ]`.
+fn is_port_path(value: &str) -> bool {
+    let rest = if let Some(port) = value.strip_prefix(':') {
+        if let Some(rest) = port.strip_prefix('*') {
+            rest
+        } else {
+            let digits = port.bytes().take_while(u8::is_ascii_digit).count();
+            if digits == 0 {
+                return false;
+            }
+            &port[digits..]
+        }
+    } else {
+        value
+    };
+    rest.is_empty()
+        || rest
+            .strip_prefix('/')
+            .is_some_and(|path| !path.contains(crate::js_string::is_white_space))
+}
 
 /// `"'nonce-" base64-value "'"`.
-static NONCE_SOURCE: LazyLock<Regex> = LazyLock::new(|| Regex::new(r"^'nonce-[A-Za-z0-9_+/-]+={0,2}'$").unwrap());
+fn is_nonce_source(value: &str) -> bool {
+    value
+        .strip_prefix("'nonce-")
+        .and_then(|rest| rest.strip_suffix('\''))
+        .is_some_and(is_base64_value)
+}
 
 /// `"'" hash-algorithm "-" base64-value "'"`.
-static HASH_SOURCE: LazyLock<Regex> =
-    LazyLock::new(|| Regex::new(r"^'sha(?:256|384|512)-[A-Za-z0-9_+/-]+={0,2}'$").unwrap());
+fn is_hash_source(value: &str) -> bool {
+    value
+        .strip_prefix("'sha")
+        .and_then(|rest| {
+            ["256-", "384-", "512-"]
+                .iter()
+                .find_map(|algorithm| rest.strip_prefix(algorithm))
+        })
+        .and_then(|rest| rest.strip_suffix('\''))
+        .is_some_and(is_base64_value)
+}
+
+/// `[A-Za-z0-9_+/-]+={0,2}`: URL-safe base64 characters and at most two padding characters.
+fn is_base64_value(value: &str) -> bool {
+    let body = value
+        .strip_suffix("==")
+        .or_else(|| value.strip_suffix('='))
+        .unwrap_or(value);
+    !body.is_empty()
+        && body
+            .bytes()
+            .all(|b| b.is_ascii_alphanumeric() || matches!(b, b'_' | b'+' | b'/' | b'-'))
+}
 
 /// `trusted-types-policy-name` charset.
 ///
@@ -359,10 +436,10 @@ fn check_source_list(value: Piece<'_>, original: &Rc<str>) -> CheckResult {
         if lower == NONE_SOURCE
             || token.value == "*"
             || KEYWORD_SOURCES.contains(&lower.as_str())
-            || NONCE_SOURCE.is_match(token.value)
-            || HASH_SOURCE.is_match(token.value)
-            || SCHEME_SOURCE.is_match(token.value)
-            || HOST_SOURCE.is_match(token.value)
+            || is_nonce_source(token.value)
+            || is_hash_source(token.value)
+            || is_scheme_source(token.value)
+            || is_host_source(token.value)
         {
             continue;
         }
@@ -439,4 +516,58 @@ fn check_trusted_types(value: Piece<'_>, original: &Rc<str>) -> CheckResult {
         );
     }
     matched()
+}
+
+#[cfg(test)]
+mod equivalence_tests {
+    use regex::Regex;
+
+    use super::*;
+    use crate::equivalence::for_each_string;
+
+    /// The characters of JS `\s`, as a class body.
+    const WS: &str = r"\t\n\x0B\x0C\r \x{A0}\x{1680}\x{2000}-\x{200A}\x{2028}\x{2029}\x{202F}\x{205F}\x{3000}\x{FEFF}";
+
+    #[test]
+    fn source_expressions_are_the_regular_expressions() {
+        // JS `\d`, `\w` and the `i` flag are ASCII, so the references spell the classes out.
+        let scheme = Regex::new(r"^[A-Za-z][A-Za-z0-9+.-]*:$").unwrap();
+        let host = Regex::new(&format!(
+            r"^(?:[A-Za-z][A-Za-z0-9+.-]*://)?(?:\*|(?:\*\.)?[A-Za-z0-9-]+(?:\.[A-Za-z0-9-]+)*)(?::(?:[0-9]+|\*))?(?:/[^{WS}]*)?$"
+        ))
+        .unwrap();
+        let alphabet = [
+            "a", "Z", "0", "-", ".", "*", ":", "/", "://", " ", "\t", "+", "_", "\u{FEFF}", "\u{85}", "\n",
+        ];
+        for_each_string(&alphabet, 5, &mut |s| {
+            assert_eq!(is_scheme_source(s), scheme.is_match(s), "scheme {s:?}");
+            assert_eq!(is_host_source(s), host.is_match(s), "host {s:?}");
+        });
+    }
+
+    #[test]
+    fn nonce_and_hash_sources_are_the_regular_expressions() {
+        let nonce = Regex::new(r"^'nonce-[A-Za-z0-9_+/-]+={0,2}'$").unwrap();
+        let hash = Regex::new(r"^'sha(?:256|384|512)-[A-Za-z0-9_+/-]+={0,2}'$").unwrap();
+        // The characters on both sides of each class of the digest, and padding of every length.
+        let digest = [
+            "a", "Z", "0", "9", "+", "/", "-", "_", "=", "==", "===", "@", "[", "`", "{", ":", ".", " ",
+        ];
+        for prefix in [
+            "'nonce-", "'sha256-", "'sha384-", "'sha512-", "'sha1-", "'sha-", "'SHA256-", "nonce-",
+        ] {
+            for_each_string(&digest, 4, &mut |s| {
+                for source in [format!("{prefix}{s}'"), format!("{prefix}{s}")] {
+                    assert_eq!(is_nonce_source(&source), nonce.is_match(&source), "nonce {source:?}");
+                    assert_eq!(is_hash_source(&source), hash.is_match(&source), "hash {source:?}");
+                }
+            });
+        }
+        for padding in ["", "=", "==", "==="] {
+            assert!(is_nonce_source(&format!("'nonce-a{padding}'")) == (padding.len() <= 2));
+            assert!(is_hash_source(&format!("'sha256-a{padding}'")) == (padding.len() <= 2));
+        }
+        assert!(!is_nonce_source("'nonce-a=b'"));
+        assert!(!is_nonce_source("'nonce-='"));
+    }
 }

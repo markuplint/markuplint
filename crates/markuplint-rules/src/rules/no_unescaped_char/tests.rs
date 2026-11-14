@@ -15,6 +15,7 @@
 //!   v6_no_unescaped_char_002       — Rust-only: `<` in an attribute value, RCDATA and on a later line; not in `style`
 //!   v6_no_unescaped_char_003       — Rust-only: escaped `<` is not reported
 //!   v6_no_unescaped_char_004       — Rust-only: strict mode masks entity-shaped sequences, known or not
+//!   v6_no_unescaped_char_005       — Rust-only: the hand-written masking is the regular expression TS has
 
 use crate::lint::{LintConfig, lint};
 use crate::violation::{Severity, Violation};
@@ -199,4 +200,16 @@ fn v6_no_unescaped_char_004() {
     assert_eq!(violations[0].line, 1);
     assert_eq!(violations[0].col, 10);
     assert_eq!(violations[0].raw, "<");
+}
+
+#[test]
+fn v6_no_unescaped_char_005() {
+    // TS `replaceAll(/&(?:[a-z]+|#\d+|#x[\da-f]+);/gi, $0 => '*'.repeat($0.length))`; JS `\d` and
+    // the `i` flag are ASCII, so the reference spells the classes out.
+    let re = regex::Regex::new(r"&(?:[a-zA-Z]+|#[0-9]+|#[xX][0-9a-fA-F]+);").unwrap();
+    let alphabet = ["&", "#", "x", "X", "a", "F", "g", "1", ";", " ", "\u{661}", "\u{17f}"];
+    markuplint_types::equivalence::for_each_string(&alphabet, 6, &mut |s| {
+        let expected = re.replace_all(s, |caps: &regex::Captures| "*".repeat(caps[0].len()));
+        assert_eq!(super::mask_entities(s), expected, "{s:?}");
+    });
 }

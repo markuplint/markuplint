@@ -5,22 +5,28 @@
 //! a manual `YYYY/MM/DD` fallback, then suggests a candidate `datetime` value
 //! built from components that are certain.
 
-use std::sync::LazyLock;
-
 use markuplint_core::i18n::Primitive as Kw;
 use markuplint_core::mlast::MLASTAttr;
 use markuplint_dom::arena::{DomArena, NodeId};
 use markuplint_dom::node::DomNode;
 use markuplint_types::spec::types::MLMLSpec;
 use markuplint_types::whatwg::datetime::is_datetime;
-use regex::Regex;
 use whichtime::{Component, Locale, WhichTime};
 
 use crate::helpers::{has_mutable_children, is_unresolved_component};
 use crate::rule::{Rule, RuleConfigSet};
 use crate::violation::Violation;
 
-static SLASH_DATE_RE: LazyLock<Regex> = LazyLock::new(|| Regex::new(r"^\d{4}/\d{2}/\d{2}$").unwrap());
+/// TS `/^\d{4}\/\d{2}\/\d{2}$/`: `YYYY/MM/DD` in ASCII digits.
+fn is_slash_date(text: &str) -> bool {
+    let mut parts = text.split('/');
+    let shapes = [4, 2, 2].map(|len| {
+        parts
+            .next()
+            .is_some_and(|part| part.len() == len && part.bytes().all(|b| b.is_ascii_digit()))
+    });
+    shapes.into_iter().all(|ok| ok) && parts.next().is_none()
+}
 
 /// Default locales to try (matches TS implementation).
 const DEFAULT_LANGS: &[&str] = &["en", "ja", "fr", "nl", "ru", "de", "pt", "zh"];
@@ -165,7 +171,7 @@ fn str_to_locale(s: &str) -> Option<Locale> {
 
 /// Manual fallback for `YYYY/MM/DD` format (not handled by whichtime).
 fn try_slash_date_fallback(text: &str) -> Option<String> {
-    if SLASH_DATE_RE.is_match(text) {
+    if is_slash_date(text) {
         let candidate = text.replace('/', "-");
         if is_datetime(&candidate) {
             return Some(candidate);
@@ -377,5 +383,30 @@ mod tests {
         // Text "2000-01-01" is a valid WHATWG datetime → no violation expected
         // (This requires integration test with HTML parser for text node support)
         assert!(is_datetime("2000-01-01"));
+    }
+
+    #[test]
+    fn slash_date_is_the_regular_expression() {
+        // JS `\d` is ASCII, so the reference spells it out. The pieces make a date of the right
+        // shape in a few of them, and one of any other.
+        let re = regex::Regex::new(r"^[0-9]{4}/[0-9]{2}/[0-9]{2}$").unwrap();
+        let pieces = [
+            "2024", "202", "20245", "01", "1", "012", "/", "0", "\u{661}", "\n", "-", "\u{FF11}",
+        ];
+        markuplint_types::equivalence::for_each_string(&pieces, 5, &mut |s| {
+            assert_eq!(is_slash_date(s), re.is_match(s), "{s:?}");
+        });
+        for date in [
+            "2024/01/02",
+            "0001/01/01",
+            "2024/01/02/",
+            "2024/1/02",
+            "12024/01/02",
+            "2024/01/023",
+            "2024/01/02\n",
+        ] {
+            assert_eq!(is_slash_date(date), re.is_match(date), "{date:?}");
+        }
+        assert!(is_slash_date("2024/01/02"));
     }
 }

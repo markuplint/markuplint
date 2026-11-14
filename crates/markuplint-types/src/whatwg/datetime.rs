@@ -3,9 +3,10 @@
 //!
 //! Each checker splits the value into tokens with the same patterns TS uses and checks them with
 //! [`TokenCollection::each_check`], so a mismatch carries the token, reason, part name and pass
-//! count TS reports. The JS regular expressions are rewritten for the `regex` crate with JS
-//! semantics: `.` excludes all four JS line terminators, `\d`/`\D` are ASCII, and `\s` is the JS
-//! white-space set.
+//! count TS reports. The patterns are matchers with JS semantics: `.` excludes all four JS line
+//! terminators, `\d`/`\D` are ASCII, and `\s` is the JS white-space set. The tests compare each
+//! of them with the regular expression TS has, over every short string of the characters that
+//! tell them apart.
 //!
 //! The year and month a date is checked against are the state of one check (TS keeps them on the
 //! `TokenCollection` the callbacks are called with), so a yearless date is checked against a leap
@@ -14,39 +15,83 @@
 //! @see <https://html.spec.whatwg.org/multipage/common-microsyntaxes.html#dates-and-times>
 
 use std::cell::{Cell, RefCell};
-use std::sync::LazyLock;
-
-use regex::Regex;
 
 use crate::check::custom::check_multi_types;
 use crate::check::types::{CheckResult, Expect, ExpectType, Reason, UnmatchedOpts, matched, unmatched_with};
-use crate::token::{Token, TokenCollection, TokenCollectionOptions, TokenEachCheck};
+use crate::js_string::{is_line_terminator, is_white_space};
+use crate::token::{Matcher, Token, TokenCollection, TokenCollectionOptions, TokenEachCheck};
 
 use ExpectType::{Common, Const};
 
+/// No upper bound on the length of a run.
+const UNBOUNDED: usize = usize::MAX;
+
+/// The length of the run of up to `max` characters of `set` at the start of `value`, `None` when
+/// it is shorter than `min`.
+fn run(value: &str, min: usize, max: usize, set: impl Fn(char) -> bool) -> Option<usize> {
+    let mut count = 0;
+    let mut end = 0;
+    for c in value.chars() {
+        if count == max || !set(c) {
+            break;
+        }
+        count += 1;
+        end += c.len_utf8();
+    }
+    (count >= min).then_some(end)
+}
+
+/// A token pattern that is one class with a count: `class!(min, max, |c| …)`.
+macro_rules! class {
+    ($min:expr, $max:expr, $set:expr) => {
+        (|value: &str| run(value, $min, $max, $set)) as Matcher
+    };
+}
+
 /// JS `.`: any character but a line terminator.
-const DOT: &str = r"[^\n\r\x{2028}\x{2029}]";
-/// The characters of JS `\s`.
-const JS_WS: &str = r"\t\n\x0B\x0C\r \x{A0}\x{1680}\x{2000}-\x{200A}\x{2028}\x{2029}\x{202F}\x{205F}\x{3000}\x{FEFF}";
-
-fn compile(patterns: &[&str]) -> Vec<Regex> {
-    patterns
-        .iter()
-        .map(|p| {
-            let p = p.replace("{DOT}", DOT).replace("{WS}", JS_WS);
-            Regex::new(&p).unwrap_or_else(|e| panic!("invalid pattern {p}: {e}"))
-        })
-        .collect()
+fn is_dot(c: char) -> bool {
+    !is_line_terminator(c)
 }
 
-fn tokens_of(value: &str, patterns: &[Regex], repeat: bool) -> TokenCollection {
-    let refs: Vec<&Regex> = patterns.iter().collect();
-    TokenCollection::from_patterns(value, &refs, TokenCollectionOptions::default(), repeat)
+/// `{DOT}[0-9]*`.
+fn dot_digits(value: &str) -> Option<usize> {
+    let dot = run(value, 1, 1, is_dot)?;
+    Some(dot + run(&value[dot..], 0, UNBOUNDED, |c| c.is_ascii_digit())?)
 }
 
-fn tokens_of_token(token: &Token, patterns: &[Regex]) -> TokenCollection {
-    let refs: Vec<&Regex> = patterns.iter().collect();
-    TokenCollection::from_patterns_token(token, &refs, TokenCollectionOptions::default(), false)
+/// `\.[0-9]*`.
+fn fraction(value: &str) -> Option<usize> {
+    let rest = value.strip_prefix('.')?;
+    Some(1 + run(rest, 0, UNBOUNDED, |c| c.is_ascii_digit())?)
+}
+
+/// `(\.[0-9]*)?`.
+#[allow(clippy::unnecessary_wraps)] // the shape a [`Matcher`] has
+fn optional_fraction(value: &str) -> Option<usize> {
+    Some(fraction(value).unwrap_or(0))
+}
+
+/// `(:[0-9.]*)?`.
+fn optional_colon_fraction(value: &str) -> Option<usize> {
+    let Some(rest) = value.strip_prefix(':') else {
+        return Some(0);
+    };
+    Some(1 + run(rest, 0, UNBOUNDED, |c| c.is_ascii_digit() || c == '.')?)
+}
+
+/// `[0-9]+(\.[0-9]*)?[^0-9]?`: a number with its fraction, and the unit that follows.
+fn time_part_matcher(value: &str) -> Option<usize> {
+    let number = run(value, 1, UNBOUNDED, |c| c.is_ascii_digit())?;
+    let number = number + fraction(&value[number..]).unwrap_or(0);
+    Some(number + run(&value[number..], 0, 1, |c| !c.is_ascii_digit())?)
+}
+
+fn tokens_of(value: &str, patterns: &[Matcher], repeat: bool) -> TokenCollection {
+    TokenCollection::from_patterns(value, patterns, TokenCollectionOptions::default(), repeat)
+}
+
+fn tokens_of_token(token: &Token, patterns: &[Matcher]) -> TokenCollection {
+    TokenCollection::from_patterns_token(token, patterns, TokenCollectionOptions::default(), false)
 }
 
 fn expects(list: &[(ExpectType, &str)]) -> Vec<Expect> {
@@ -422,8 +467,13 @@ fn time_parts() -> [Each<'static>; 7] {
     ]
 }
 
-static P_DATE: LazyLock<Vec<Regex>> =
-    LazyLock::new(|| compile(&[r"[^-]*", r"[^0-9]?", r"[^-]*", r"[^0-9]", r"{DOT}[0-9]*"]));
+static P_DATE: [Matcher; 5] = [
+    class!(0, UNBOUNDED, |c| c != '-'),
+    class!(0, 1, |c| !c.is_ascii_digit()),
+    class!(0, UNBOUNDED, |c| c != '-'),
+    class!(1, 1, |c| !c.is_ascii_digit()),
+    dot_digits,
+];
 
 /// TS `checkDateString`.
 ///
@@ -437,17 +487,15 @@ pub fn check_date_string(value: &str) -> CheckResult {
     tokens.each_check(&callbacks)
 }
 
-static P_TIME: LazyLock<Vec<Regex>> = LazyLock::new(|| {
-    compile(&[
-        r"[^:]*",
-        r"[^0-9]?",
-        r"[^:]*",
-        r"[^0-9]?",
-        r"[^.]*",
-        r"[^0-9]?",
-        r"{DOT}[0-9]*",
-    ])
-});
+static P_TIME: [Matcher; 7] = [
+    class!(0, UNBOUNDED, |c| c != ':'),
+    class!(0, 1, |c| !c.is_ascii_digit()),
+    class!(0, UNBOUNDED, |c| c != ':'),
+    class!(0, 1, |c| !c.is_ascii_digit()),
+    class!(0, UNBOUNDED, |c| c != '.'),
+    class!(0, 1, |c| !c.is_ascii_digit()),
+    dot_digits,
+];
 
 /// TS `checkTimeString`.
 ///
@@ -457,7 +505,11 @@ pub fn check_time_string(value: &str) -> CheckResult {
     tokens_of(value, &P_TIME, false).each_check(&time_parts())
 }
 
-static P_MONTH: LazyLock<Vec<Regex>> = LazyLock::new(|| compile(&[r"[^-]*", r"[^0-9]?", r"{DOT}[0-9]*"]));
+static P_MONTH: [Matcher; 3] = [
+    class!(0, UNBOUNDED, |c| c != '-'),
+    class!(0, 1, |c| !c.is_ascii_digit()),
+    dot_digits,
+];
 
 /// TS `checkMonthString`.
 ///
@@ -487,7 +539,12 @@ pub fn check_yearless_date_string(value: &str) -> CheckResult {
     ])
 }
 
-static P_WEEK: LazyLock<Vec<Regex>> = LazyLock::new(|| compile(&[r"[^-]+", r"[^W]?", r"[^0-9]?", r"{DOT}[0-9]*"]));
+static P_WEEK: [Matcher; 4] = [
+    class!(1, UNBOUNDED, |c| c != '-'),
+    class!(0, 1, |c| c != 'W'),
+    class!(0, 1, |c| !c.is_ascii_digit()),
+    dot_digits,
+];
 
 /// TS `checkWeekString`.
 ///
@@ -504,7 +561,7 @@ pub fn check_week_string(value: &str) -> CheckResult {
     ])
 }
 
-static P_YEAR: LazyLock<Vec<Regex>> = LazyLock::new(|| compile(&[r"{DOT}*"]));
+static P_YEAR: [Matcher; 1] = [class!(0, UNBOUNDED, is_dot)];
 
 /// TS `checkYearString`.
 #[must_use]
@@ -513,28 +570,27 @@ pub fn check_year_string(value: &str) -> CheckResult {
     tokens_of(value, &P_YEAR, false).each_check(&[cb(move |t, _| st.year(t)), each(extra)])
 }
 
-/// The patterns of a local date and time; `date_end` is the class that ends the day part.
-fn local_patterns(date_end: &str) -> Vec<Regex> {
-    let dd = format!("[^{date_end}]*");
-    compile(&[
-        r"[^-]*",
-        r"[^0-9]?",
-        r"[^-]*",
-        r"[^0-9]?",
-        &dd,
-        r"[^0-9]?",
-        r"[^:]*",
-        r"[^0-9]?",
-        r"[^:]*",
-        r"[^0-9]?",
-        r"[^.]*",
-        r"[^0-9]?",
-        r"{DOT}[0-9]*",
-    ])
+/// The patterns of a local date and time; `day` is the class that ends the day part.
+const fn local_patterns(day: Matcher) -> [Matcher; 13] {
+    [
+        class!(0, UNBOUNDED, |c| c != '-'),
+        class!(0, 1, |c| !c.is_ascii_digit()),
+        class!(0, UNBOUNDED, |c| c != '-'),
+        class!(0, 1, |c| !c.is_ascii_digit()),
+        day,
+        class!(0, 1, |c| !c.is_ascii_digit()),
+        class!(0, UNBOUNDED, |c| c != ':'),
+        class!(0, 1, |c| !c.is_ascii_digit()),
+        class!(0, UNBOUNDED, |c| c != ':'),
+        class!(0, 1, |c| !c.is_ascii_digit()),
+        class!(0, UNBOUNDED, |c| c != '.'),
+        class!(0, 1, |c| !c.is_ascii_digit()),
+        dot_digits,
+    ]
 }
 
-static P_LOCAL: LazyLock<Vec<Regex>> = LazyLock::new(|| local_patterns("{WS}T"));
-static P_NORMALIZED_LOCAL: LazyLock<Vec<Regex>> = LazyLock::new(|| local_patterns("T"));
+static P_LOCAL: [Matcher; 13] = local_patterns(class!(0, UNBOUNDED, |c| !is_white_space(c) && c != 'T'));
+static P_NORMALIZED_LOCAL: [Matcher; 13] = local_patterns(class!(0, UNBOUNDED, |c| c != 'T'));
 
 fn check_local(tokens: &TokenCollection, separator: fn(Option<&Token>) -> Option<CheckResult>) -> CheckResult {
     let st = &DatetimeTokenCheck::default();
@@ -593,8 +649,12 @@ pub fn check_normalized_local_date_and_time_string(value: &str) -> CheckResult {
     res
 }
 
-static P_TIME_ZONE: LazyLock<Vec<Regex>> =
-    LazyLock::new(|| compile(&[r"[^0-9]?", r"[^:]{0,2}", r"[^0-9]?", r"{DOT}[0-9]*"]));
+static P_TIME_ZONE: [Matcher; 4] = [
+    class!(0, 1, |c| !c.is_ascii_digit()),
+    class!(0, 2, |c| c != ':'),
+    class!(0, 1, |c| !c.is_ascii_digit()),
+    dot_digits,
+];
 
 /// TS `parseTimeZone` over `tokens`, `value` being the zone's text.
 fn parse_time_zone(value: &str, tokens: &TokenCollection) -> CheckResult {
@@ -650,25 +710,28 @@ pub fn check_time_zone_offset_string(value: &str) -> CheckResult {
     parse_time_zone(value, &tokens_of(value, &P_TIME_ZONE, false))
 }
 
-static P_GLOBAL: LazyLock<Vec<Regex>> = LazyLock::new(|| {
-    compile(&[
-        r"[^-]*",
-        r"[^0-9]?",
-        r"[^-]*",
-        r"[^0-9]?",
-        r"[^{WS}T]*",
-        r"[^0-9]?",
-        r"[^:]*",
-        r"[^0-9]?",
-        r"[^+:Z-]*",
-        // `:ss.sss`, restricted to digits and the decimal point so that an invalid fraction
-        // separator (e.g. `,`) is left in the time-zone part, where it is rejected.
-        r"(:[0-9.]*)?",
-        r"{DOT}*",
-    ])
-});
+static P_GLOBAL: [Matcher; 11] = [
+    class!(0, UNBOUNDED, |c| c != '-'),
+    class!(0, 1, |c| !c.is_ascii_digit()),
+    class!(0, UNBOUNDED, |c| c != '-'),
+    class!(0, 1, |c| !c.is_ascii_digit()),
+    class!(0, UNBOUNDED, |c| !is_white_space(c) && c != 'T'),
+    class!(0, 1, |c| !c.is_ascii_digit()),
+    class!(0, UNBOUNDED, |c| c != ':'),
+    class!(0, 1, |c| !c.is_ascii_digit()),
+    class!(0, UNBOUNDED, |c| !matches!(c, '+' | ':' | 'Z' | '-')),
+    // `:ss.sss`, restricted to digits and the decimal point so that an invalid fraction
+    // separator (e.g. `,`) is left in the time-zone part, where it is rejected.
+    optional_colon_fraction,
+    class!(0, UNBOUNDED, is_dot),
+];
 
-static P_GLOBAL_SECOND: LazyLock<Vec<Regex>> = LazyLock::new(|| compile(&[r":?", r"[0-9]*", r"\.?", r"[0-9]*"]));
+static P_GLOBAL_SECOND: [Matcher; 4] = [
+    class!(0, 1, |c| c == ':'),
+    class!(0, UNBOUNDED, |c| c.is_ascii_digit()),
+    class!(0, 1, |c| c == '.'),
+    class!(0, UNBOUNDED, |c| c.is_ascii_digit()),
+];
 
 /// TS `checkGlobalDateAndTimeString`.
 ///
@@ -719,17 +782,20 @@ pub fn check_date_string_with_optional_time(value: &str) -> CheckResult {
     check_multi_types(value, &[&check_date_string, &check_global_date_and_time_string])
 }
 
-static P_DURATION: LazyLock<Vec<Regex>> = LazyLock::new(|| compile(&[r"[^0-9T]?", r"[^T]*", r"[^0-9]?", r"{DOT}*"]));
-static P_DURATION_DATE: LazyLock<Vec<Regex>> = LazyLock::new(|| compile(&[r"[0-9]+", r"{DOT}"]));
-static P_DURATION_TIME: LazyLock<Vec<Regex>> = LazyLock::new(|| {
-    compile(&[
-        r"[0-9]+(\.[0-9]*)?[^0-9]?",
-        r"[0-9]+(\.[0-9]*)?[^0-9]?",
-        r"[0-9]+(\.[0-9]*)?[^0-9]?",
-    ])
-});
-static P_DURATION_TIME_PART: LazyLock<Vec<Regex>> = LazyLock::new(|| compile(&[r"[0-9]+", r"(\.[0-9]*)?", r"[^0-9]+"]));
-static P_DP_FP: LazyLock<Vec<Regex>> = LazyLock::new(|| compile(&[r"\.", r"[0-9]+"]));
+static P_DURATION: [Matcher; 4] = [
+    class!(0, 1, |c| !c.is_ascii_digit() && c != 'T'),
+    class!(0, UNBOUNDED, |c| c != 'T'),
+    class!(0, 1, |c| !c.is_ascii_digit()),
+    class!(0, UNBOUNDED, is_dot),
+];
+static P_DURATION_DATE: [Matcher; 2] = [class!(1, UNBOUNDED, |c| c.is_ascii_digit()), class!(1, 1, is_dot)];
+static P_DURATION_TIME: [Matcher; 3] = [time_part_matcher, time_part_matcher, time_part_matcher];
+static P_DURATION_TIME_PART: [Matcher; 3] = [
+    class!(1, UNBOUNDED, |c| c.is_ascii_digit()),
+    optional_fraction,
+    class!(1, UNBOUNDED, |c| !c.is_ascii_digit()),
+];
+static P_DP_FP: [Matcher; 2] = [class!(1, 1, |c| c == '.'), class!(1, UNBOUNDED, |c| c.is_ascii_digit())];
 
 /// The `PnD` part of an ISO 8601-like duration.
 fn duration_date_part(d: Option<&Token>) -> Option<CheckResult> {
@@ -874,8 +940,14 @@ pub fn check_duration_iso8601_like_string(value: &str) -> CheckResult {
     ])
 }
 
-static P_DURATION_COMPONENT: LazyLock<Vec<Regex>> =
-    LazyLock::new(|| compile(&[r"[{WS}]*", r"[0-9]+", r"(\.[0-9]*)?", r"[{WS}]*", r"[^0-9]", r"[{WS}]*"]));
+static P_DURATION_COMPONENT: [Matcher; 6] = [
+    class!(0, UNBOUNDED, is_white_space),
+    class!(1, UNBOUNDED, |c| c.is_ascii_digit()),
+    optional_fraction,
+    class!(0, UNBOUNDED, is_white_space),
+    class!(1, 1, |c| !c.is_ascii_digit()),
+    class!(0, UNBOUNDED, is_white_space),
+];
 
 /// TS `checkDurationComponentListString`: `4h 18m 3s`.
 ///
@@ -1046,4 +1118,170 @@ is_fns! {
     is_duration_component_list_string => check_duration_component_list_string;
     /// Whether [`check_datetime`] matches.
     is_datetime => check_datetime;
+}
+
+#[cfg(test)]
+mod equivalence_tests {
+    use regex::Regex;
+
+    use super::*;
+    use crate::equivalence::for_each_string;
+    use crate::token::find_leftmost;
+
+    /// JS `.`: any character but a line terminator.
+    const DOT: &str = r"[^\n\r\x{2028}\x{2029}]";
+    /// The characters of JS `\s`.
+    const WS: &str = r"\t\n\x0B\x0C\r \x{A0}\x{1680}\x{2000}-\x{200A}\x{2028}\x{2029}\x{202F}\x{205F}\x{3000}\x{FEFF}";
+
+    fn compile(patterns: &[String]) -> Vec<Regex> {
+        patterns
+            .iter()
+            .map(|p| Regex::new(&p.replace("{DOT}", DOT).replace("{WS}", WS)).unwrap())
+            .collect()
+    }
+
+    fn strs(list: &[&str]) -> Vec<String> {
+        list.iter().map(|s| (*s).to_owned()).collect()
+    }
+
+    fn local(day: &str) -> Vec<String> {
+        let day = format!("[^{day}]*");
+        strs(&[
+            r"[^-]*",
+            r"[^0-9]?",
+            r"[^-]*",
+            r"[^0-9]?",
+            &day,
+            r"[^0-9]?",
+            r"[^:]*",
+            r"[^0-9]?",
+            r"[^:]*",
+            r"[^0-9]?",
+            r"[^.]*",
+            r"[^0-9]?",
+            r"{DOT}[0-9]*",
+        ])
+    }
+
+    /// Each table with the regular expressions TS has for it.
+    fn tables() -> Vec<(&'static str, &'static [Matcher], Vec<String>)> {
+        vec![
+            (
+                "P_DATE",
+                &P_DATE,
+                strs(&[r"[^-]*", r"[^0-9]?", r"[^-]*", r"[^0-9]", r"{DOT}[0-9]*"]),
+            ),
+            (
+                "P_TIME",
+                &P_TIME,
+                strs(&[
+                    r"[^:]*",
+                    r"[^0-9]?",
+                    r"[^:]*",
+                    r"[^0-9]?",
+                    r"[^.]*",
+                    r"[^0-9]?",
+                    r"{DOT}[0-9]*",
+                ]),
+            ),
+            ("P_MONTH", &P_MONTH, strs(&[r"[^-]*", r"[^0-9]?", r"{DOT}[0-9]*"])),
+            (
+                "P_WEEK",
+                &P_WEEK,
+                strs(&[r"[^-]+", r"[^W]?", r"[^0-9]?", r"{DOT}[0-9]*"]),
+            ),
+            ("P_YEAR", &P_YEAR, strs(&[r"{DOT}*"])),
+            ("P_LOCAL", &P_LOCAL, local("{WS}T")),
+            ("P_NORMALIZED_LOCAL", &P_NORMALIZED_LOCAL, local("T")),
+            (
+                "P_TIME_ZONE",
+                &P_TIME_ZONE,
+                strs(&[r"[^0-9]?", r"[^:]{0,2}", r"[^0-9]?", r"{DOT}[0-9]*"]),
+            ),
+            (
+                "P_GLOBAL",
+                &P_GLOBAL,
+                strs(&[
+                    r"[^-]*",
+                    r"[^0-9]?",
+                    r"[^-]*",
+                    r"[^0-9]?",
+                    r"[^{WS}T]*",
+                    r"[^0-9]?",
+                    r"[^:]*",
+                    r"[^0-9]?",
+                    r"[^+:Z-]*",
+                    r"(:[0-9.]*)?",
+                    r"{DOT}*",
+                ]),
+            ),
+            (
+                "P_GLOBAL_SECOND",
+                &P_GLOBAL_SECOND,
+                strs(&[r":?", r"[0-9]*", r"\.?", r"[0-9]*"]),
+            ),
+            (
+                "P_DURATION",
+                &P_DURATION,
+                strs(&[r"[^0-9T]?", r"[^T]*", r"[^0-9]?", r"{DOT}*"]),
+            ),
+            ("P_DURATION_DATE", &P_DURATION_DATE, strs(&[r"[0-9]+", r"{DOT}"])),
+            (
+                "P_DURATION_TIME",
+                &P_DURATION_TIME,
+                strs(&[
+                    r"[0-9]+(\.[0-9]*)?[^0-9]?",
+                    r"[0-9]+(\.[0-9]*)?[^0-9]?",
+                    r"[0-9]+(\.[0-9]*)?[^0-9]?",
+                ]),
+            ),
+            (
+                "P_DURATION_TIME_PART",
+                &P_DURATION_TIME_PART,
+                strs(&[r"[0-9]+", r"(\.[0-9]*)?", r"[^0-9]+"]),
+            ),
+            ("P_DP_FP", &P_DP_FP, strs(&[r"\.", r"[0-9]+"])),
+            (
+                "P_DURATION_COMPONENT",
+                &P_DURATION_COMPONENT,
+                strs(&[r"[{WS}]*", r"[0-9]+", r"(\.[0-9]*)?", r"[{WS}]*", r"[^0-9]", r"[{WS}]*"]),
+            ),
+        ]
+    }
+
+    #[test]
+    fn every_pattern_finds_what_the_regular_expression_finds() {
+        // The characters that tell the classes apart: digits, the delimiters the patterns exclude,
+        // the letters they name, JS white space and line terminators, and a non-ASCII digit.
+        let alphabet = [
+            "0", "7", "a", "-", ":", ".", "T", "W", "Z", "+", ",", " ", "\n", "\u{2028}", "\u{FEFF}", "\u{85}",
+            "\u{661}",
+        ];
+        let white_space = [
+            "\t", "\n", "\u{B}", "\u{C}", "\r", " ", "\u{A0}", "\u{1680}", "\u{2000}", "\u{2001}", "\u{2002}",
+            "\u{2003}", "\u{2004}", "\u{2005}", "\u{2006}", "\u{2007}", "\u{2008}", "\u{2009}", "\u{200A}", "\u{2028}",
+            "\u{2029}", "\u{202F}", "\u{205F}", "\u{3000}", "\u{FEFF}", "\u{85}", "\u{180E}", "T", "0", ":",
+        ];
+        for (name, matchers, sources) in tables() {
+            let regexes = compile(&sources);
+            assert_eq!(matchers.len(), regexes.len(), "{name}: pattern count");
+            for (index, (matcher, regex)) in matchers.iter().zip(&regexes).enumerate() {
+                for_each_string(&alphabet, 4, &mut |s| {
+                    assert_eq!(
+                        find_leftmost(s, *matcher),
+                        regex.find(s).map(|m| (m.start(), m.end())),
+                        "{name}[{index}] {regex} on {s:?}"
+                    );
+                });
+                // Every character of JS `\s`: the white space classes are in these tables.
+                for_each_string(&white_space, 3, &mut |s| {
+                    assert_eq!(
+                        find_leftmost(s, *matcher),
+                        regex.find(s).map(|m| (m.start(), m.end())),
+                        "{name}[{index}] {regex} on {s:?}"
+                    );
+                });
+            }
+        }
+    }
 }

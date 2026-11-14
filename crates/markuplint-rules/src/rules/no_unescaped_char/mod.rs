@@ -9,14 +9,12 @@
 //! `"`, any bare `&`), with entity-shaped sequences masked.
 
 use markuplint_core::i18n::Primitive as Kw;
-use std::sync::LazyLock;
 
 use markuplint_core::i18n::Translator;
 use markuplint_core::mlast::MLASTAttr;
 use markuplint_dom::arena::DomArena;
 use markuplint_dom::node::{DomNode, NodeBase};
 use markuplint_types::spec::types::MLMLSpec;
-use regex::Regex;
 
 use crate::rule::{Rule, RuleConfig, RuleConfigSet};
 use crate::violation::{Severity, Violation};
@@ -24,9 +22,42 @@ use crate::violation::{Severity, Violation};
 #[cfg(test)]
 mod tests;
 
-/// TS: `/&(?:[a-z]+|#\d+|#x[\da-f]+);/gi`. Named references are letters only, so a
-/// name with digits (`&x25BC;`) is not masked.
-static ENTITY_RE: LazyLock<Regex> = LazyLock::new(|| Regex::new(r"(?i)&(?:[a-z]+|#[0-9]+|#x[0-9a-f]+);").unwrap());
+/// The length of the character reference at the start of `text` (which starts with `&`): TS
+/// `/&(?:[a-z]+|#\d+|#x[\da-f]+);/i`, whose classes are ASCII. Named references are letters
+/// only, so a name with digits (`&x25BC;`) is not one.
+fn entity_len(text: &str) -> Option<usize> {
+    let body = text.strip_prefix('&')?;
+    let run = |rest: &str, set: fn(&u8) -> bool| rest.bytes().take_while(set).count();
+    let (digits, prefix) = if let Some(rest) = body.strip_prefix('#') {
+        match rest.strip_prefix(['x', 'X']) {
+            Some(hex) => (run(hex, u8::is_ascii_hexdigit), 2),
+            None => (run(rest, u8::is_ascii_digit), 1),
+        }
+    } else {
+        (run(body, u8::is_ascii_alphabetic), 0)
+    };
+    (digits > 0 && body[prefix + digits..].starts_with(';')).then_some(1 + prefix + digits + 1)
+}
+
+/// `raw` with each character reference replaced by as many `*` as it has characters, so a `&`
+/// that starts one is not read as an unescaped character.
+fn mask_entities(raw: &str) -> String {
+    let mut masked = String::with_capacity(raw.len());
+    let mut rest = raw;
+    while let Some(start) = rest.find('&') {
+        masked.push_str(&rest[..start]);
+        rest = &rest[start..];
+        if let Some(len) = entity_len(rest) {
+            masked.push_str(&"*".repeat(len));
+            rest = &rest[len..];
+        } else {
+            masked.push('&');
+            rest = &rest[1..];
+        }
+    }
+    masked.push_str(rest);
+    masked
+}
 
 /// Characters that must always be escaped.
 const DEFAULT_CHARS: &[char] = &['<'];
@@ -129,10 +160,7 @@ fn check_chars(
         .and_then(serde_json::Value::as_bool)
         .unwrap_or(false);
     let (chars, text) = if strict {
-        (
-            STRICT_CHARS,
-            ENTITY_RE.replace_all(raw, |caps: &regex::Captures| "*".repeat(caps[0].len())),
-        )
+        (STRICT_CHARS, std::borrow::Cow::Owned(mask_entities(raw)))
     } else {
         (DEFAULT_CHARS, std::borrow::Cow::Borrowed(raw))
     };

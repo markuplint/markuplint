@@ -7,6 +7,10 @@
 //! dual `new`/`from_html` and `lint`/`lint_html` entry points mirror the two
 //! DOM-construction paths (MLAST-JSON vs. full-Rust); see the `markuplint-dom`
 //! crate docs for why both exist.
+//!
+//! One behavior differs by design from the TypeScript engine unless the host acts: the value of a
+//! `pattern` attribute is validated by a JavaScript function that `set_pattern_validator`
+//! registers on the thread of the lint, and by an approximation when there is none.
 
 #![allow(clippy::cast_possible_truncation)]
 
@@ -401,6 +405,40 @@ fn parse_config(
     let config = serde_json::from_str::<markuplint_rules::lint::LintConfig>(config_json)
         .map_err(|e| napi::Error::from_reason(format!("Config parse error: {e}")))?;
     Ok((spec, config))
+}
+
+/// Registers the function `(value: string) => boolean` that decides whether the value of a
+/// `pattern` attribute is a regular expression, or removes it (`undefined`).
+///
+/// The HTML Standard compiles that value as a JavaScript regular expression with the `v` flag,
+/// which only a JavaScript engine reads exactly. A lint asks the function registered on its own
+/// thread (each thread registers its own). Without one, or when it throws or answers with
+/// anything but a boolean, the lint falls back to an approximation that reads what Rust's
+/// `fancy-regex` reads: it disagrees with the `v` flag for some patterns, such as `[(]`, `a{` and
+/// `\-`, which the `v` flag rejects. `MLEngine` of `markuplint` registers it when it loads the
+/// addon, so a direct user of the addon registers one too to get the answers of the TypeScript
+/// engine.
+#[napi]
+#[allow(clippy::needless_pass_by_value)]
+pub fn set_pattern_validator(env: Env, validator: Option<FunctionRef<String, bool>>) {
+    let validator = validator.map(|function| {
+        // Never released: a release at the exit of the thread would reach a JavaScript
+        // environment that is already gone, and the process ends with it.
+        let function = std::mem::ManuallyDrop::new(function);
+        Box::new(move |value: &str| {
+            let callable = function.borrow_back(&env).ok()?;
+            callable.call(value.to_owned()).ok()
+        }) as Box<dyn Fn(&str) -> Option<bool>>
+    });
+    markuplint_types::check::pattern_syntax::set_validator(validator);
+}
+
+/// Whether a function is registered by `setPatternValidator` on the calling thread: when it is
+/// not, a lint of a `pattern` attribute answers with the approximation.
+#[napi]
+#[must_use]
+pub fn pattern_validator_registered() -> bool {
+    markuplint_types::check::pattern_syntax::is_registered()
 }
 
 /// # Errors

@@ -1,6 +1,7 @@
 use markuplint_types::check::check;
 use markuplint_types::check::types::{
-    DirectiveType, EnumType, ListNumber, ListType, NumberType, NumericKind, PatternType, Separator, Type,
+    CheckResult, DirectiveType, EnumType, ListNumber, ListType, NumberType, NumericKind, PatternType, Reason,
+    Separator, Type, UnmatchedResult,
 };
 
 // --- Keyword types ---
@@ -30,6 +31,36 @@ fn one_line_any() {
     assert!(!check("a\nb", &Type::Keyword("OneLineAny".into()), None).is_matched());
     assert!(!check("a\r\nb", &Type::Keyword("OneLineAny".into()), None).is_matched());
     assert!(!check("a\rb", &Type::Keyword("OneLineAny".into()), None).is_matched());
+}
+
+#[test]
+fn form_control_name() {
+    let name = Type::Keyword("FormControlName".into());
+    assert!(!check("", &name, None).is_matched());
+    assert!(!check("isindex", &name, None).is_matched());
+    // the reasons TS gives: `empty-token` and `unexpected-token`
+    assert!(matches!(
+        check("", &name, None),
+        CheckResult::Unmatched(UnmatchedResult {
+            reason: Reason::EmptyToken,
+            ..
+        })
+    ));
+    assert!(matches!(
+        check("isindex", &name, None),
+        CheckResult::Unmatched(UnmatchedResult {
+            reason: Reason::UnexpectedToken,
+            ..
+        })
+    ));
+    assert!(check("Isindex", &name, None).is_matched());
+    assert!(check("isindex ", &name, None).is_matched());
+    assert!(check("isindexes", &name, None).is_matched());
+    assert!(check(" ", &name, None).is_matched());
+    assert!(check("username", &name, None).is_matched());
+    // only the empty string and `isindex` are excluded: a line terminator does not make a name
+    assert!(check("\nfoo", &name, None).is_matched());
+    assert!(check("\u{2028}", &name, None).is_matched());
 }
 
 #[test]

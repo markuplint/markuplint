@@ -39,7 +39,6 @@ mod lint_diagnostics_tests;
 #[cfg(test)]
 mod lint_spec_conformance_tests;
 pub mod pretending;
-pub(crate) mod regex_cache;
 pub mod rule;
 pub mod rule_mapper;
 pub mod rules;

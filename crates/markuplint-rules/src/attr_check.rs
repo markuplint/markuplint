@@ -22,7 +22,6 @@ use markuplint_types::check::candidate::get_candidate;
 use markuplint_types::check::types::{CheckResult, Type, value_to_type};
 use markuplint_types::spec::lookup::get_spec;
 use markuplint_types::spec::types::{Attribute, AttributeCondition, MLMLSpec};
-use regex::Regex;
 
 use crate::attr_name_key::{attr_specs_of, find_attr_spec, namespace_key_of};
 use crate::create_message::{Kw, create_message_value_expected};
@@ -37,8 +36,9 @@ pub(crate) enum ValueConstraint {
     Any,
     /// Value must be one of these strings.
     Enum(Vec<String>),
-    /// Value must match this regex pattern. Second field is the original pattern string.
-    Pattern(Regex, String),
+    /// Value must match this pattern (TS `checkPattern`): `/…/flags` is a JavaScript regular
+    /// expression, and any other string is the value itself.
+    Pattern(String),
     /// Value must match a named type (e.g., `NoEmptyAny`, `Int`).
     Type(String),
 }
@@ -600,10 +600,7 @@ pub(crate) fn parse_value_constraint(value: &serde_json::Value) -> ValueConstrai
                 let values: Vec<String> = enum_arr.iter().filter_map(|v| v.as_str().map(String::from)).collect();
                 ValueConstraint::Enum(values)
             } else if let Some(pattern) = obj.get("pattern").and_then(serde_json::Value::as_str) {
-                match parse_regex_pattern(pattern) {
-                    Some(re) => ValueConstraint::Pattern(re, pattern.to_string()),
-                    None => ValueConstraint::Any,
-                }
+                ValueConstraint::Pattern(pattern.to_string())
             } else {
                 ValueConstraint::Any
             }
@@ -699,30 +696,6 @@ pub(crate) fn parse_disallow_attrs(options: &serde_json::Value) -> (Vec<String>,
     }
 
     (simple, entries)
-}
-
-/// Parse a regex pattern like `/pattern/flags` into a Regex.
-///
-/// - `/pattern/flags` format: use the inner regex with flags applied
-/// - Plain string: wrap with `^...$` for full match (matching TS `check()` behavior)
-fn parse_regex_pattern(pattern: &str) -> Option<Regex> {
-    if let Some(rest) = pattern.strip_prefix('/') {
-        if let Some(last_slash) = rest.rfind('/') {
-            let regex_str = &rest[..last_slash];
-            let flags = &rest[last_slash + 1..];
-            let full_pattern = if flags.contains('i') {
-                format!("(?i){regex_str}")
-            } else {
-                regex_str.to_string()
-            };
-            crate::regex_cache::regex(&full_pattern)
-        } else {
-            crate::regex_cache::regex(pattern)
-        }
-    } else {
-        // Plain pattern: full match (TS check() uses anchored matching)
-        crate::regex_cache::regex(&format!("^{pattern}$"))
-    }
 }
 
 pub(crate) fn check_type_constraint(value: &str, type_name: &str) -> bool {

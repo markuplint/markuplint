@@ -935,13 +935,59 @@ fn has_candidates(ctx: &Ctx<'_>, anchor: NodeId) -> Vec<NodeId> {
 /// whitespace only, with a character reference to such a character counted as the character.
 #[must_use]
 pub fn is_inter_element_whitespace(data: &str) -> bool {
-    static WHITESPACE_REFERENCE: std::sync::LazyLock<regex::Regex> = std::sync::LazyLock::new(|| {
-        regex::Regex::new(r"&(?:#[xX]0*(?:[9aAcCdD]|20);?|#0*(?:9|10|12|13|32);?|Tab;|NewLine;)").expect("valid regex")
-    });
-    WHITESPACE_REFERENCE
-        .replace_all(data, " ")
-        .chars()
-        .all(|c| matches!(c, '\t' | '\n' | '\x0C' | '\r' | ' '))
+    let mut rest = data;
+    while let Some(c) = rest.chars().next() {
+        if c == '&' {
+            match whitespace_reference_len(rest) {
+                Some(len) => rest = &rest[len..],
+                None => return false,
+            }
+        } else if matches!(c, '\t' | '\n' | '\x0C' | '\r' | ' ') {
+            rest = &rest[1..];
+        } else {
+            return false;
+        }
+    }
+    true
+}
+
+/// The length of the character reference to an ASCII whitespace character at the start of `text`
+/// (which starts with `&`), the pattern of TS `isInterElementWhitespace`:
+/// `&(?:#[xX]0*(?:[9aAcCdD]|20);?|#0*(?:9|10|12|13|32);?|Tab;|NewLine;)`.
+///
+/// A zero run is taken whole: no alternative after it starts with `0`, so a shorter run could
+/// not match where the whole one does not.
+fn whitespace_reference_len(text: &str) -> Option<usize> {
+    let body = text.strip_prefix('&')?;
+    if body.starts_with("Tab;") {
+        return Some(1 + "Tab;".len());
+    }
+    if body.starts_with("NewLine;") {
+        return Some(1 + "NewLine;".len());
+    }
+    let numeric = body.strip_prefix('#')?;
+    let (digits, prefix) = match numeric.strip_prefix(['x', 'X']) {
+        Some(hex) => (hex, 2),
+        None => (numeric, 1),
+    };
+    let zeros = digits.bytes().take_while(|b| *b == b'0').count();
+    let value = &digits[zeros..];
+    let value_len = if prefix == 2 {
+        if value.starts_with(['9', 'a', 'A', 'c', 'C', 'd', 'D']) {
+            1
+        } else if value.starts_with("20") {
+            2
+        } else {
+            return None;
+        }
+    } else {
+        ["9", "10", "12", "13", "32"]
+            .iter()
+            .find(|decimal| value.starts_with(**decimal))
+            .map(|decimal| decimal.len())?
+    };
+    let semicolon = usize::from(value[value_len..].starts_with(';'));
+    Some(1 + prefix + zeros + value_len + semicolon)
 }
 
 /// TS `isContentModelFirstChild` of `@markuplint/selector`: whether the element is the first child
@@ -1615,6 +1661,23 @@ mod tests {
         assert_eq!(spec_of(":where(div, #foo, .bar)", "div", &[]), Some([0, 0, 0]));
         // TS: createSelector(':where(div, #foo.bar)').match(el) => [0, 0, 0]
         assert_eq!(spec_of(":where(div, #foo.bar)", "div", &[]), Some([0, 0, 0]));
+    }
+
+    #[test]
+    fn inter_element_whitespace_is_the_regular_expression() {
+        let reference =
+            regex::Regex::new(r"&(?:#[xX]0*(?:[9aAcCdD]|20);?|#0*(?:9|10|12|13|32);?|Tab;|NewLine;)").unwrap();
+        let alphabet = [
+            "&", "#", "x", "X", "0", "1", "2", "3", "9", "a", "D", "f", ";", "Tab", "NewLine", "tab", " ", "\n",
+            "\u{A0}",
+        ];
+        markuplint_types::equivalence::for_each_string(&alphabet, 5, &mut |s| {
+            let expected = reference
+                .replace_all(s, " ")
+                .chars()
+                .all(|c| matches!(c, '\t' | '\n' | '\x0C' | '\r' | ' '));
+            assert_eq!(is_inter_element_whitespace(s), expected, "{s:?}");
+        });
     }
 
     #[test]

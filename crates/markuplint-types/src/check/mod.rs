@@ -9,6 +9,7 @@ pub mod keyword_type;
 pub mod list;
 pub mod number;
 pub mod pattern;
+pub mod pattern_syntax;
 pub mod types;
 
 use types::{CheckResult, Type};

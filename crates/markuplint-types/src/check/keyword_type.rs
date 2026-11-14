@@ -130,6 +130,11 @@ pub fn get_def(keyword: &str) -> Option<Def> {
             &[(Format, "XML name")],
             custom::check_xml_name,
         ),
+        "FormControlName" => def(
+            "https://html.spec.whatwg.org/multipage/form-control-infrastructure.html#attr-fe-name",
+            &[(Format, "form control name")],
+            custom::check_form_control_name,
+        ),
         "DOMID" => def(
             "https://html.spec.whatwg.org/multipage/dom.html#global-attributes:concept-id",
             &[(Format, "ID")],
