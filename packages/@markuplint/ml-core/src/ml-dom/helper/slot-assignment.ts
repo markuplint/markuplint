@@ -48,7 +48,7 @@ import { getDOMValue, getShadowHost, getShadowRootTemplate, HTML_NAMESPACE, isTr
  * @see https://dom.spec.whatwg.org/#find-slotables
  * @see https://dom.spec.whatwg.org/#find-flattened-slotables
  * @see https://dom.spec.whatwg.org/#find-a-slot
- * @see https://dom.spec.whatwg.org/#dom-slot-assignednodes
+ * @see https://html.spec.whatwg.org/multipage/scripting.html#dom-slot-assignednodes
  */
 
 /**
@@ -298,7 +298,7 @@ function getSlotAssignment<T extends RuleConfigValue, O extends PlainData>(
  * @param slot - An element
  * @returns The assigned nodes in tree order (`[]` when it takes none), or `null` when the element is not an
  *   HTML `slot` of a declarative shadow root whose assignment is known (see the module comment)
- * @see https://dom.spec.whatwg.org/#dom-slot-assignednodes
+ * @see https://html.spec.whatwg.org/multipage/scripting.html#dom-slot-assignednodes
  */
 export function getAssignedNodes<T extends RuleConfigValue, O extends PlainData>(
 	// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types

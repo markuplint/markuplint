@@ -1,4 +1,4 @@
-// https://developer.mozilla.org/en-US/docs/Web/MathML/Reference/Element/mfenced
+// https://w3c.github.io/mathml/#presm_mfenced_desc
 {
 	"deprecated": true,
 	"nonStandard": true,

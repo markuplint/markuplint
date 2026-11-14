@@ -9,6 +9,7 @@ import { EMPTY_LOCK } from './lockfile.ts';
 import { hashText, normalizeSpecText } from './normalize.ts';
 
 const PAGE = 'https://html.spec.whatwg.org/multipage/input.html';
+const ARIA = 'https://w3c.github.io/aria/';
 const OTHER = 'https://html.spec.whatwg.org/multipage/other.html';
 const NOW = '2026-10-18T00:00:00.000Z';
 const EARLIER = '2026-09-01T00:00:00.000Z';
@@ -249,6 +250,100 @@ describe('check', () => {
 			'secno-stale',
 			'section-changed',
 		]);
+	});
+
+	test('[check-032] reports the definition of an element that is cited at the anchor of a term, whose few words could not show a change of the definition', () => {
+		const html = '<body><h4 id="sec"><span class="secno">4.1</span> a</h4><p>x</p></body>';
+		const definition = cite({ file: 'packages/@markuplint/html-spec/src/spec.a.jsonc', line: 1 });
+		const { problems, lock } = run([definition], { [PAGE]: ok(html) });
+		expect(problems.map(p => p.kind)).toStrictEqual(['anchor-thin']);
+		expect(problems[0]?.message).toContain('`#sec`');
+		expect(lock.sections).toStrictEqual({});
+	});
+
+	test('[check-033] reads a short section as a section when it is not the first line of the source file of an element', () => {
+		const html = '<body><h4 id="sec"><span class="secno">4.1</span> a</h4><p>x</p></body>';
+		const accessibilityMapping = cite({ file: 'packages/@markuplint/html-spec/src/spec.a.jsonc', line: 2 });
+		const elsewhere = cite({ file: 'packages/@markuplint/rules/src/r/README.md', line: 1 });
+		expect(run([accessibilityMapping, elsewhere], { [PAGE]: ok(html) }).problems).toStrictEqual([]);
+	});
+
+	test('[check-034] keeps a definition of an element that holds the text of a section', () => {
+		const html = `<body><h4 id="sec"><span class="secno">4.1</span> The a element</h4><p>${'It represents a hyperlink to another resource. '.repeat(3)}</p></body>`;
+		const definition = cite({ file: 'packages/@markuplint/html-spec/src/spec.a.jsonc', line: 1 });
+		const { problems, lock } = run([definition], { [PAGE]: ok(html) });
+		expect(problems).toStrictEqual([]);
+		expect(Object.keys(lock.sections)).toStrictEqual([`${PAGE}#sec`]);
+	});
+
+	test('[check-035] still checks a quote of a definition whose anchor is too thin, so that the quote is not hidden behind the thin anchor', () => {
+		const html = '<body><h4 id="sec"><span class="secno">4.1</span> a</h4><p>x</p></body>';
+		const definition = cite({
+			file: 'packages/@markuplint/html-spec/src/spec.a.jsonc',
+			line: 1,
+			quotes: [quote('A quote that is not there.')],
+		});
+		const { problems, lock } = run([definition], { [PAGE]: ok(html) });
+		expect(problems.map(p => p.kind)).toStrictEqual(['anchor-thin', 'quote-mismatch']);
+		expect(lock.sections).toStrictEqual({});
+	});
+
+	test('[check-036] reports the section of a role or a property, which the generated data cites, when its anchor is too thin', () => {
+		const html = '<body><h4 id="sec"><span class="secno">4.1</span> a</h4><p>x</p></body>';
+		const derived = cite({
+			file: 'packages/@markuplint/html-spec/index.json',
+			line: 10,
+			url: `${ARIA}#sec`,
+			page: ARIA,
+		});
+		const { problems, lock } = run([derived], { [ARIA]: ok(html) });
+		expect(problems.map(p => p.kind)).toStrictEqual(['anchor-thin']);
+		expect(problems[0]?.message).toContain('role or property');
+		expect(lock.sections).toStrictEqual({});
+	});
+
+	test('[check-037] keeps the section of a role or a property that holds a sentence, shorter than the definition of an element has to be', () => {
+		const html = `<body><h4 id="sec"><span class="secno">4.1</span> tab</h4><p>A short description of the role in a sentence.</p></body>`;
+		const derived = cite({
+			file: 'packages/@markuplint/html-spec/index.json',
+			line: 10,
+			url: `${ARIA}#sec`,
+			page: ARIA,
+		});
+		const { problems, lock } = run([derived], { [ARIA]: ok(html) });
+		expect(problems).toStrictEqual([]);
+		expect(Object.keys(lock.sections)).toStrictEqual([`${ARIA}#sec`]);
+	});
+
+	test('[check-038] does not lock the section for a thin definition, and leaves the lock to another citation of the same section', () => {
+		const html = '<body><h4 id="sec"><span class="secno">4.1</span> a</h4><p>x</p></body>';
+		const definition = cite({ file: 'packages/@markuplint/html-spec/src/spec.a.jsonc', line: 1 });
+		const elsewhere = cite({ file: 'packages/@markuplint/rules/src/r/README.md', line: 4 });
+		const { problems, lock } = run([definition, elsewhere], { [PAGE]: ok(html) });
+		expect(problems.map(p => p.kind)).toStrictEqual(['anchor-thin']);
+		expect(Object.keys(lock.sections)).toStrictEqual([`${PAGE}#sec`]);
+	});
+
+	test('[check-039] reads the term of an obsolete element, which the generated data cites and which is a line long, as a section', () => {
+		const html = '<body><dl><dt><dfn id="xmp">xmp</dfn></dt><dd>Use pre instead.</dd></dl></body>';
+		const derived = cite({
+			file: 'packages/@markuplint/html-spec/index.json',
+			line: 10,
+			url: `${PAGE}#xmp`,
+			fragment: 'xmp',
+		});
+		const { problems, lock } = run([derived], { [PAGE]: ok(html) });
+		expect(problems).toStrictEqual([]);
+		expect(Object.keys(lock.sections)).toStrictEqual([`${PAGE}#xmp`]);
+	});
+
+	test('[check-040] leaves the lock entry of a section as it was while its definition is cited at an anchor that is too thin', () => {
+		const html = '<body><h4 id="sec"><span class="secno">4.1</span> a</h4><p>x</p></body>';
+		const definition = cite({ file: 'packages/@markuplint/html-spec/src/spec.a.jsonc', line: 1 });
+		const earlier = lockOf({ [`${PAGE}#sec`]: { text: 'The a element represents a hyperlink.' } });
+		const { problems, lock } = run([definition], { [PAGE]: ok(html) }, earlier);
+		expect(problems.map(p => p.kind)).toStrictEqual(['anchor-thin']);
+		expect(lock.sections).toStrictEqual(earlier.sections);
 	});
 });
 

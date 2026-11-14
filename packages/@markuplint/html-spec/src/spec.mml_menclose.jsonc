@@ -1,4 +1,4 @@
-// https://developer.mozilla.org/en-US/docs/Web/MathML/Reference/Element/menclose
+// https://w3c.github.io/mathml/#presm_menclose_desc
 {
 	"nonStandard": true,
 	"contentModel": {

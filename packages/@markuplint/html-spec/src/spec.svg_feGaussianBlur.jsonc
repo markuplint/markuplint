@@ -1,4 +1,4 @@
-// https://drafts.fxtf.org/filter-effects/#feGaussianBlurElement
+// https://drafts.csswg.org/filter-effects-1/#feGaussianBlurElement
 // https://www.w3.org/TR/svg-aam/#role-map-fegaussianblur
 {
 	"contentModel": {
@@ -83,13 +83,13 @@
 		"#SVGFilterPrimitiveAttrs": ["x", "y", "width", "height", "result", "in"]
 	},
 	"attributes": {
-		// https://drafts.fxtf.org/filter-effects/#element-attrdef-fegaussianblur-stddeviation
+		// https://drafts.csswg.org/filter-effects-1/#element-attrdef-fegaussianblur-stddeviation
 		"stdDeviation": {
 			"type": "<number-optional-number>",
 			"defaultValue": "0",
 			"animatable": true
 		},
-		// https://drafts.fxtf.org/filter-effects/#element-attrdef-fegaussianblur-edgemode
+		// https://drafts.csswg.org/filter-effects-1/#element-attrdef-fegaussianblur-edgemode
 		"edgeMode": {
 			"type": {
 				"enum": ["duplicate", "wrap", "none"],

@@ -122,4 +122,12 @@ describe('renderReport', () => {
 		expect(summary).toContain("-const doc = \"'''js\";");
 		expect(summary).toContain("+const doc = \"'''ts\";");
 	});
+
+	test('[report-011] reports a definition that is cited at an anchor with too little text under a heading that fits an element and a role alike', () => {
+		const p = problem({ kind: 'anchor-thin', message: '`#elementdef-a` holds 1 characters' });
+		const { summary, findings } = renderReport([p], [cite()], { date: DATE });
+		expect(findings).toBe(1);
+		expect(summary).toContain('Definition is cited at an anchor with too little text');
+		expect(summary).toContain('`#elementdef-a` holds 1 characters');
+	});
 });

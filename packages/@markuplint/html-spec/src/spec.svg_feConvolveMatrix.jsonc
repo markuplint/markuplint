@@ -1,4 +1,4 @@
-// https://drafts.fxtf.org/filter-effects/#feConvolveMatrixElement
+// https://drafts.csswg.org/filter-effects-1/#feConvolveMatrixElement
 // https://www.w3.org/TR/svg-aam/#role-map-feConvolveMatrix
 {
 	"contentModel": {
@@ -83,39 +83,39 @@
 		"#SVGFilterPrimitiveAttrs": ["x", "y", "width", "height", "result", "in"]
 	},
 	"attributes": {
-		// https://drafts.fxtf.org/filter-effects/#element-attrdef-order
+		// https://drafts.csswg.org/filter-effects-1/#element-attrdef-order
 		"order": {
 			"type": "<number-optional-number>",
 			"defaultValue": "3",
 			"animatable": true
 		},
-		// https://drafts.fxtf.org/filter-effects/#element-attrdef-feconvolvematrix-kernelmatrix
+		// https://drafts.csswg.org/filter-effects-1/#element-attrdef-feconvolvematrix-kernelmatrix
 		"kernelMatrix": {
 			"type": "<list-of-numbers>",
 			"animatable": true
 		},
-		// https://drafts.fxtf.org/filter-effects/#element-attrdef-feconvolvematrix-divisor
+		// https://drafts.csswg.org/filter-effects-1/#element-attrdef-feconvolvematrix-divisor
 		"divisor": {
 			"type": "<number>",
 			"animatable": true
 		},
-		// https://drafts.fxtf.org/filter-effects/#element-attrdef-feconvolvematrix-bias
+		// https://drafts.csswg.org/filter-effects-1/#element-attrdef-feconvolvematrix-bias
 		"bias": {
 			"type": "<number>",
 			"defaultValue": "0",
 			"animatable": true
 		},
-		// https://drafts.fxtf.org/filter-effects/#element-attrdef-feconvolvematrix-targetx
+		// https://drafts.csswg.org/filter-effects-1/#element-attrdef-feconvolvematrix-targetx
 		"targetX": {
 			"type": "<integer>",
 			"animatable": true
 		},
-		// https://drafts.fxtf.org/filter-effects/#element-attrdef-feconvolvematrix-targety
+		// https://drafts.csswg.org/filter-effects-1/#element-attrdef-feconvolvematrix-targety
 		"targetY": {
 			"type": "<integer>",
 			"animatable": true
 		},
-		// https://drafts.fxtf.org/filter-effects/#element-attrdef-feconvolvematrix-edgemode
+		// https://drafts.csswg.org/filter-effects-1/#element-attrdef-feconvolvematrix-edgemode
 		"edgeMode": {
 			"type": {
 				"enum": ["duplicate", "wrap", "none"],
@@ -124,13 +124,13 @@
 			"defaultValue": "duplicate",
 			"animatable": true
 		},
-		// https://drafts.fxtf.org/filter-effects/#element-attrdef-feconvolvematrix-kernelunitlength
+		// https://drafts.csswg.org/filter-effects-1/#element-attrdef-feconvolvematrix-kernelunitlength
 		"kernelUnitLength": {
 			"type": "<number-optional-number>",
 			"animatable": true,
 			"deprecated": true
 		},
-		// https://drafts.fxtf.org/filter-effects/#element-attrdef-feconvolvematrix-preservealpha
+		// https://drafts.csswg.org/filter-effects-1/#element-attrdef-feconvolvematrix-preservealpha
 		"preserveAlpha": {
 			"type": {
 				"enum": ["true", "false"],

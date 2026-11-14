@@ -124,11 +124,11 @@
 			"defaultValue": "xMidYMid meet",
 			"animatable": true
 		},
-		// https://drafts.fxtf.org/filter-effects/#element-attrdef-filter-primitive-width
+		// https://drafts.csswg.org/filter-effects-1/#element-attrdef-filter-primitive-width
 		"width": {
 			"defaultValue": "auto"
 		},
-		// https://drafts.fxtf.org/filter-effects/#element-attrdef-filter-primitive-height
+		// https://drafts.csswg.org/filter-effects-1/#element-attrdef-filter-primitive-height
 		"height": {
 			"defaultValue": "auto"
 		},

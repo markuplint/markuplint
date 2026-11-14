@@ -4,7 +4,10 @@ import { execFileSync } from 'node:child_process';
 import { existsSync, readFileSync } from 'node:fs';
 import { join } from 'node:path';
 
+import { collectAriaCitations, GENERATED_DATA } from './aria.ts';
 import { collectFromMarkdown, collectFromSource, collectFromText } from './collect.ts';
+import { elementSourcePath, SPEC_DATA } from './definition.ts';
+import { collectElementCitations } from './elements.ts';
 
 export type FileKind = 'readme' | 'source' | 'data' | 'doc';
 
@@ -19,12 +22,6 @@ const DOCS = ['website/docs', 'website/i18n/ja/docusaurus-plugin-content-docs'];
  * rules.
  */
 const PACKAGES = ['packages/@markuplint', 'packages/markuplint'];
-/**
- * The HTML spec data (`html-spec/src/*.jsonc`) cites the passages behind the content models and the attributes
- * that `permitted-contents` and `invalid-attr` rely on. Only the `.jsonc` files directly in the directory are
- * spec data.
- */
-const SPEC_DATA = 'packages/@markuplint/html-spec/src';
 
 /**
  * Which files hold citations, and how they are read.
@@ -79,6 +76,34 @@ export function listCitingFiles(root: string): { path: string; kind: FileKind }[
 			return kind === null ? [] : [{ path, kind }];
 		})
 		.toSorted((a, b) => a.path.localeCompare(b.path));
+}
+
+/**
+ * Every citation that the monitor reads: those written in the tracked files, and the ones that the generated
+ * data stands for. The second kind is not part of `collectFiles`: nobody writes it, so the conventions of how a
+ * citation is written (`citations-policy.spec.ts`) do not apply to it, and a dated edition of WAI-ARIA is
+ * right for it where the READMEs cite the edition-less one.
+ */
+export function collectAll(root: string): CollectResult {
+	const listed = listCitingFiles(root);
+	const files = collectFiles(root, listed);
+	// Not skipped when missing: the watch of what the data stands for would shrink without a report saying so.
+	const text = readFileSync(join(root, GENERATED_DATA), 'utf8');
+	// The file that `collectFiles` reads: tracked, and still in the working tree. A file that is not (a new one that
+	// is not added yet, or one that is deleted and not staged) cites nothing, so its element is read from its `cite`.
+	const tracked = new Set(listed.map(f => f.path));
+	const hasSource = (name: string) => {
+		const path = elementSourcePath(name);
+		return tracked.has(path) && existsSync(join(root, path));
+	};
+	return {
+		...files,
+		citations: [
+			...files.citations,
+			...collectAriaCitations(text, GENERATED_DATA),
+			...collectElementCitations(text, GENERATED_DATA, hasSource),
+		],
+	};
 }
 
 export function collectFiles(root: string, files: readonly { path: string; kind: FileKind }[]): CollectResult {

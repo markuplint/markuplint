@@ -12,6 +12,7 @@ import type { WritableDeep } from 'type-fest';
 
 import type { Element } from './cheerio-types.ts';
 
+import { ariaSpecURLByVersion, DPUB_ARIA_URL } from './aria-documents.mts';
 import { fetch } from './fetch.ts';
 import {
 	arrayUnique,
@@ -56,8 +57,6 @@ export async function getAria() {
 		},
 	};
 }
-
-const DPUB_ARIA_URL = 'https://w3c.github.io/dpub-aria/';
 
 /**
  * DPub ARIA is a single-version module independent of WAI-ARIA versioning, so the same
@@ -145,31 +144,8 @@ function getOwnedProperty(
 	};
 }
 
-function getARIASpecURLByVersion(version: ARIAVersion, graphicsAria = false) {
-	switch (version) {
-		case '1.3': {
-			if (!graphicsAria) {
-				return 'https://w3c.github.io/aria/';
-			}
-			return 'https://w3c.github.io/graphics-aria/';
-		}
-		case '1.2': {
-			if (!graphicsAria) {
-				return 'https://www.w3.org/TR/wai-aria-1.2/';
-			}
-			return 'https://w3c.github.io/graphics-aria/';
-		}
-		case '1.1': {
-			if (!graphicsAria) {
-				return 'https://www.w3.org/TR/wai-aria-1.1/';
-			}
-			return 'https://www.w3.org/TR/graphics-aria-1.0/';
-		}
-	}
-}
-
 async function getRoles(version: ARIAVersion, graphicsAria = false) {
-	const $ = await fetch(getARIASpecURLByVersion(version, graphicsAria));
+	const $ = await fetch(ariaSpecURLByVersion(version, graphicsAria));
 	const $roleList = $('#role_definitions section.role');
 	const roles: ARIARoleInSchema[] = [];
 	const getAttr = (
@@ -323,7 +299,7 @@ async function getRoles(version: ARIAVersion, graphicsAria = false) {
 }
 
 async function getProps(version: ARIAVersion, roles: readonly ARIARoleInSchema[]) {
-	const $ = await fetch(getARIASpecURLByVersion(version));
+	const $ = await fetch(ariaSpecURLByVersion(version));
 
 	const ariaNameList: Set<string> = new Set();
 	for (const role of roles) {

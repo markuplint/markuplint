@@ -1176,35 +1176,35 @@
 		}
 	},
 	"#SVGFilterPrimitiveAttrs": {
-		// https://drafts.fxtf.org/filter-effects/#element-attrdef-filter-primitive-x
+		// https://drafts.csswg.org/filter-effects-1/#element-attrdef-filter-primitive-x
 		"x": {
 			"type": ["<svg-length>", "<percentage>"],
 			"defaultValue": "0%",
 			"animatable": true
 		},
-		// https://drafts.fxtf.org/filter-effects/#element-attrdef-filter-primitive-y
+		// https://drafts.csswg.org/filter-effects-1/#element-attrdef-filter-primitive-y
 		"y": {
 			"type": ["<svg-length>", "<percentage>"],
 			"defaultValue": "0%",
 			"animatable": true
 		},
-		// https://drafts.fxtf.org/filter-effects/#element-attrdef-filter-primitive-width
+		// https://drafts.csswg.org/filter-effects-1/#element-attrdef-filter-primitive-width
 		"width": {
 			"type": ["<svg-length>", "<percentage>"],
 			"defaultValue": "100%",
 			"animatable": true
 		},
-		// https://drafts.fxtf.org/filter-effects/#element-attrdef-filter-primitive-height
+		// https://drafts.csswg.org/filter-effects-1/#element-attrdef-filter-primitive-height
 		"height": {
 			"type": ["<svg-length>", "<percentage>"],
 			"defaultValue": "100%",
 			"animatable": true
 		},
-		// https://drafts.fxtf.org/filter-effects/#element-attrdef-filter-primitive-result
+		// https://drafts.csswg.org/filter-effects-1/#element-attrdef-filter-primitive-result
 		"result": {
 			"type": "<custom-ident>"
 		},
-		// https://drafts.fxtf.org/filter-effects/#element-attrdef-filter-primitive-in
+		// https://drafts.csswg.org/filter-effects-1/#element-attrdef-filter-primitive-in
 		"in": {
 			"type": [
 				{
@@ -1329,13 +1329,13 @@
 			"defaultValue": "0",
 			"animatable": true
 		},
-		// https://drafts.fxtf.org/css-masking/#propdef-clip-path
+		// https://drafts.csswg.org/css-masking-1/#propdef-clip-path
 		"clip-path": {
 			"type": "<'clip-path'>",
 			"defaultValue": "none",
 			"animatable": true
 		},
-		// https://drafts.fxtf.org/css-masking/#propdef-clip-rule
+		// https://drafts.csswg.org/css-masking-1/#propdef-clip-rule
 		"clip-rule": {
 			"type": "<'clip-rule'>",
 			"defaultValue": "nonzero",
@@ -1355,7 +1355,7 @@
 			"defaultValue": "sRGB",
 			"animatable": true
 		},
-		// https://drafts.fxtf.org/filter-effects-1/#propdef-color-interpolation-filters
+		// https://drafts.csswg.org/filter-effects-1/#propdef-color-interpolation-filters
 		"color-interpolation-filters": {
 			"type": {
 				"enum": ["auto", "sRGB", "linearRGB"],
@@ -1404,19 +1404,19 @@
 			"defaultValue": "nonzero",
 			"animatable": true
 		},
-		// https://drafts.fxtf.org/filter-effects-1/#propdef-filter
+		// https://drafts.csswg.org/filter-effects-1/#propdef-filter
 		"filter": {
 			"type": "<'filter'>",
 			"defaultValue": "none",
 			"animatable": true
 		},
-		// https://drafts.fxtf.org/filter-effects-1/#propdef-flood-color
+		// https://drafts.csswg.org/filter-effects-1/#propdef-flood-color
 		"flood-color": {
 			"type": "<color>",
 			"defaultValue": "black",
 			"animatable": true
 		},
-		// https://drafts.fxtf.org/filter-effects-1/#propdef-flood-opacity
+		// https://drafts.csswg.org/filter-effects-1/#propdef-flood-opacity
 		"flood-opacity": {
 			"type": "<alpha-value>",
 			"defaultValue": "1",
@@ -1485,7 +1485,7 @@
 			"defaultValue": "auto",
 			"animatable": true
 		},
-		// https://drafts.fxtf.org/compositing-2/#propdef-isolation
+		// https://drafts.csswg.org/compositing-2/#propdef-isolation
 		"isolation": {
 			"type": "<'isolation'>",
 			"defaultValue": "auto"
@@ -1496,7 +1496,7 @@
 			"defaultValue": "normal",
 			"animatable": true
 		},
-		// https://drafts.fxtf.org/filter-effects-1/#propdef-lighting-color
+		// https://drafts.csswg.org/filter-effects-1/#propdef-lighting-color
 		"lighting-color": {
 			"type": "<color>",
 			"defaultValue": "white",
@@ -1525,12 +1525,12 @@
 			"defaultValue": "none",
 			"animatable": true
 		},
-		// https://drafts.fxtf.org/css-masking/#propdef-mask
+		// https://drafts.csswg.org/css-masking-1/#propdef-mask
 		"mask": {
 			"type": "<'mask'>",
 			"animatable": true
 		},
-		// https://drafts.fxtf.org/css-masking-1/#propdef-mask-type
+		// https://drafts.csswg.org/css-masking-1/#propdef-mask-type
 		"mask-type": {
 			"type": "<'mask-type'>",
 			"animatable": true
@@ -1683,7 +1683,7 @@
 			"type": "<'writing-mode'>",
 			"defaultValue": "horizontal-tb"
 		},
-		// https://drafts.fxtf.org/css-masking/#propdef-clip
+		// https://drafts.csswg.org/css-masking-1/#propdef-clip
 		"clip": {
 			"type": "<'clip'>",
 			"defaultValue": "auto",
@@ -1719,7 +1719,7 @@
 		}
 	},
 	"#SVGTransferFunctionAttrs": {
-		// https://drafts.fxtf.org/filter-effects/#element-attrdef-fecomponenttransfer-type
+		// https://drafts.csswg.org/filter-effects-1/#element-attrdef-fecomponenttransfer-type
 		"type": {
 			"type": {
 				"enum": ["identity", "table", "discrete", "linear", "gamma"]
@@ -1727,36 +1727,36 @@
 			"defaultValue": "identity",
 			"animatable": true
 		},
-		// https://drafts.fxtf.org/filter-effects/#element-attrdef-fecomponenttransfer-tablevalues
+		// https://drafts.csswg.org/filter-effects-1/#element-attrdef-fecomponenttransfer-tablevalues
 		"tableValues": {
 			"type": "<list-of-numbers>",
 			"animatable": true
 		},
-		// https://drafts.fxtf.org/filter-effects/#element-attrdef-fecomponenttransfer-slope
+		// https://drafts.csswg.org/filter-effects-1/#element-attrdef-fecomponenttransfer-slope
 		"slope": {
 			"type": "<number>",
 			"defaultValue": "1",
 			"animatable": true
 		},
-		// https://drafts.fxtf.org/filter-effects/#element-attrdef-fecomponenttransfer-intercept
+		// https://drafts.csswg.org/filter-effects-1/#element-attrdef-fecomponenttransfer-intercept
 		"intercept": {
 			"type": "<number>",
 			"defaultValue": "0",
 			"animatable": true
 		},
-		// https://drafts.fxtf.org/filter-effects/#element-attrdef-fecomponenttransfer-amplitude
+		// https://drafts.csswg.org/filter-effects-1/#element-attrdef-fecomponenttransfer-amplitude
 		"amplitude": {
 			"type": "<number>",
 			"defaultValue": "1",
 			"animatable": true
 		},
-		// https://drafts.fxtf.org/filter-effects/#element-attrdef-fecomponenttransfer-exponent
+		// https://drafts.csswg.org/filter-effects-1/#element-attrdef-fecomponenttransfer-exponent
 		"exponent": {
 			"type": "<number>",
 			"defaultValue": "1",
 			"animatable": true
 		},
-		// https://drafts.fxtf.org/filter-effects/#element-attrdef-fecomponenttransfer-offset
+		// https://drafts.csswg.org/filter-effects-1/#element-attrdef-fecomponenttransfer-offset
 		"offset": {
 			"type": "<number>",
 			"defaultValue": "0",
