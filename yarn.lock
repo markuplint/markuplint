@@ -2086,7 +2086,7 @@ __metadata:
     markuplint: "npm:5.6.1"
     semver: "npm:^7.8.6"
     vscode-jsonrpc: "npm:8.2.1"
-    vscode-languageserver: "npm:^9.0.1"
+    vscode-languageserver: "npm:^11.0.0"
     vscode-languageserver-textdocument: "npm:^1.0.16"
   bin:
     markuplint-language-server: ./bin/markuplint-language-server.mjs
@@ -11340,7 +11340,7 @@ __metadata:
     mocha: "npm:12.0.3"
     typescript: "npm:6.0.3"
     vscode-languageclient: "npm:9.0.1"
-    vscode-languageserver: "npm:9.0.1"
+    vscode-languageserver: "npm:11.0.0"
   languageName: unknown
   linkType: soft
 
@@ -17346,6 +17346,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"vscode-jsonrpc@npm:10.0.0":
+  version: 10.0.0
+  resolution: "vscode-jsonrpc@npm:10.0.0"
+  checksum: 10c0/c8a4b44d753e850bc61686c45eeb43d894d14751c6074ea3fa97d44903b01e4ffb498028d20468ade6ace4fe4555ba6ee764a2d1af50bdaed175c8be00449cab
+  languageName: node
+  linkType: hard
+
 "vscode-jsonrpc@npm:8.2.0":
   version: 8.2.0
   resolution: "vscode-jsonrpc@npm:8.2.0"
@@ -17381,6 +17388,16 @@ __metadata:
   languageName: node
   linkType: hard
 
+"vscode-languageserver-protocol@npm:3.18.5":
+  version: 3.18.5
+  resolution: "vscode-languageserver-protocol@npm:3.18.5"
+  dependencies:
+    vscode-jsonrpc: "npm:10.0.0"
+    vscode-languageserver-types: "npm:3.18.5"
+  checksum: 10c0/d5ca0dff85619d15557629bce33a745d2662a2c6ef43d0c4dd41ea6407bb2c3ee5a01c1e4e1c25a89d1c413926dc50ae38131122112606391c3a062fa1f08882
+  languageName: node
+  linkType: hard
+
 "vscode-languageserver-textdocument@npm:^1.0.16":
   version: 1.0.16
   resolution: "vscode-languageserver-textdocument@npm:1.0.16"
@@ -17395,14 +17412,21 @@ __metadata:
   languageName: node
   linkType: hard
 
-"vscode-languageserver@npm:9.0.1, vscode-languageserver@npm:^9.0.1":
-  version: 9.0.1
-  resolution: "vscode-languageserver@npm:9.0.1"
+"vscode-languageserver-types@npm:3.18.5":
+  version: 3.18.5
+  resolution: "vscode-languageserver-types@npm:3.18.5"
+  checksum: 10c0/de783b4c3d22908e5e4b0434548aa7935771d2a2514f65706f7746b859fdd755ee8aedae020f81e8416c4a87f2b131d2b43124b9010baed957c4b4a661726cfa
+  languageName: node
+  linkType: hard
+
+"vscode-languageserver@npm:11.0.0, vscode-languageserver@npm:^11.0.0":
+  version: 11.0.0
+  resolution: "vscode-languageserver@npm:11.0.0"
   dependencies:
-    vscode-languageserver-protocol: "npm:3.17.5"
+    vscode-languageserver-protocol: "npm:3.18.5"
   bin:
     installServerIntoExtension: bin/installServerIntoExtension
-  checksum: 10c0/8a0838d77c98a211c76e54bd3a6249fc877e4e1a73322673fb0e921168d8e91de4f170f1d4ff7e8b6289d0698207afc6aba6662d4c1cd8e4bd7cae96afd6b0c2
+  checksum: 10c0/1112cf27e9679164f307742015f27fb860ecbaac73e2a76856ae3cf3f4849e186c5c69e3aa305b3fe7fd2cab16f32a8cf3664ca515e87af9db1fdfba6ffea730
   languageName: node
   linkType: hard
 
