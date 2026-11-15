@@ -100,9 +100,6 @@ const spec: ExtendedSpec = {
 			rows: { '0': null, '""': null, true: 'true' },
 			size: { '0': null, '""': null, true: 'true' },
 			span: { '0': null, '""': null, true: 'true' },
-			// Booleans of React that the spec does not know as boolean
-			disablepictureinpicture: { true: '', false: null, '0': null, '""': null },
-			disableremoteplayback: { true: '', false: null, '0': null, '""': null },
 			// Boolean attributes of the spec that React does not render as boolean, so it drops a boolean
 			alpha: { true: null, false: null },
 			focusgroupstart: { true: null, false: null },
@@ -115,6 +112,8 @@ const spec: ExtendedSpec = {
 			switch: { true: null, false: null },
 			suppresscontenteditablewarning: { true: null, false: null },
 			suppresshydrationwarning: { true: null, false: null },
+			// Unlike the names above, a number and a string are output as they are (`pushAttribute` drops only a boolean)
+			webkitdirectory: { true: null, false: null, '0': '0', '""': '' },
 		},
 		customElements: {
 			booleanAttrs: { '""': '', '0': '0' },
