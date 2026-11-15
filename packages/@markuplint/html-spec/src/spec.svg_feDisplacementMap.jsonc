@@ -80,7 +80,7 @@
 			"word-spacing",
 			"writing-mode"
 		],
-		"#SVGFilterPrimitiveAttrs": ["x", "y", "width", "height", "result"]
+		"#SVGFilterPrimitiveAttrs": ["x", "y", "width", "height", "result", "in"]
 	},
 	"attributes": {
 		// https://drafts.csswg.org/filter-effects-1/#element-attrdef-fedisplacementmap-in2

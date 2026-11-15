@@ -4,7 +4,7 @@ import { getMathMLElementList } from './mathml.ts';
 import { getDefinitionCite, readJsons } from './read-json.ts';
 import { fetchHTMLElement, fetchObsoleteElements, fetchObsoleteTerms } from './scraping.ts';
 import { getSVGElementList } from './svg.ts';
-import { getName, nameCompare, sortObjectByKey } from './utils.ts';
+import { STATUS_FLAGS, getName, nameCompare, sortObjectByKey } from './utils.ts';
 
 /**
  * List of non-conforming (obsolete) HTML elements.
@@ -106,9 +106,10 @@ const namespaceSortOrder: Record<string, number> = {
  * Merge precedence: manual spec data always wins over MDN-scraped data.
  * `cite`, `contentModel`, `aria`, and `globalAttrs` are never scraped (manual
  * only); MDN only fills gaps — descriptions, status flags, and attributes that
- * the manual spec does not define. Its content categories and tag omission are
- * not written: nothing reads them, and the categories the rules use are the
- * hand-written `#contentModels`.
+ * the manual spec does not define and that carry a status flag (a bare name
+ * from MDN is not added: see `mergeMDNAttributes`). Its content categories and
+ * tag omission are not written: nothing reads them, and the categories the
+ * rules use are the hand-written `#contentModels`.
  */
 export async function getElements(filePattern: string) {
 	let specs = await readJsons<ExtendedElementSpec>(filePattern, (file, body, source) => {
@@ -181,8 +182,14 @@ export async function getElements(filePattern: string) {
 
 /**
  * Merges the attributes scraped from MDN into the manual ones of an element.
- * A manual entry wins over the MDN fields it also has; an attribute only MDN
- * has takes its description and status flags.
+ * A manual entry wins over the MDN fields it also has. A status flag is written as
+ * `true` or not at all, which is what the schema of the sources accepts (`nonStandard`
+ * is `const: true`), whatever the flag of the MDN side holds. The names of the
+ * attributes come from the manual spec, which cites the specification that
+ * defines each one; an attribute only MDN has is added only when it carries a
+ * status flag, and then takes its description and flags. Nothing is added for
+ * a bare name: it would make the attribute known without a specification
+ * behind it.
  *
  * @param manual - The attributes of the manual spec (`src/spec.*.jsonc`)
  * @param mdn - The attributes scraped from the element's MDN page
@@ -198,12 +205,15 @@ export function mergeMDNAttributes(manual: ExtendedElementSpec['attributes'], md
 		const current = attrs[mdnAttr.name];
 
 		if (!current) {
+			if (!STATUS_FLAGS.some(flag => mdnAttr[flag])) {
+				continue;
+			}
 			attrs[mdnAttr.name] = {
 				description: mdnAttr.description,
-				experimental: mdnAttr.experimental,
-				obsolete: mdnAttr.obsolete,
-				deprecated: mdnAttr.deprecated,
-				nonStandard: mdnAttr.nonStandard,
+				experimental: mdnAttr.experimental || undefined,
+				obsolete: mdnAttr.obsolete || undefined,
+				deprecated: mdnAttr.deprecated || undefined,
+				nonStandard: mdnAttr.nonStandard || undefined,
 			};
 			continue;
 		}
@@ -212,10 +222,10 @@ export function mergeMDNAttributes(manual: ExtendedElementSpec['attributes'], md
 			// A manual entry that has "name" keeps it as its first key
 			...('name' in current ? { name: mdnAttr.name } : {}),
 			description: mdnAttr.description,
-			experimental: mdnAttr.experimental,
-			obsolete: mdnAttr.obsolete,
-			deprecated: mdnAttr.deprecated,
-			nonStandard: mdnAttr.nonStandard,
+			experimental: mdnAttr.experimental || undefined,
+			obsolete: mdnAttr.obsolete || undefined,
+			deprecated: mdnAttr.deprecated || undefined,
+			nonStandard: mdnAttr.nonStandard || undefined,
 			...current,
 		};
 	}

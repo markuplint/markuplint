@@ -48,6 +48,13 @@
 			"type": "HashName",
 			"condition": ":is(:not(a):not(button)) img"
 		},
+		// https://html.spec.whatwg.org/multipage/embedded-content.html#attr-img-controls
+		// The section says the attribute must not be specified on an element that has no `alt` attribute or whose
+		// `alt` is the empty string, which the condition models.
+		"controls": {
+			"type": "Boolean",
+			"condition": "[alt]:not([alt=''])"
+		},
 		// https://html.spec.whatwg.org/multipage/embedded-content.html#attr-img-ismap
 		"ismap": {
 			"type": "Boolean",

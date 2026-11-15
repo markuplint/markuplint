@@ -69,6 +69,14 @@
 				"unique": true,
 				"separator": "space"
 			}
+		},
+		// https://w3c.github.io/remote-playback/#the-disableremoteplayback-attribute
+		"disableremoteplayback": {
+			"type": "Boolean"
+		},
+		// https://w3c.github.io/picture-in-picture/#disable-pip
+		"disablepictureinpicture": {
+			"type": "Boolean"
 		}
 	},
 	"aria": {

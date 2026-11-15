@@ -47425,6 +47425,7 @@
 				"details",
 				"embed",
 				"iframe",
+				"img[controls]",
 				"img[usemap]",
 				"input:not([type='hidden' i])",
 				"label",
@@ -47677,7 +47678,6 @@
 	"specs": [
 		{
 			"name": "a",
-			"cite": "https://html.spec.whatwg.org/multipage/text-level-semantics.html#the-a-element",
 			"contentModel": {
 				"contents": [
 					{
@@ -47755,9 +47755,6 @@
 				"coords": {
 					"deprecated": true
 				},
-				"download": {},
-				"href": {},
-				"hreflang": {},
 				"interestfor": {
 					"experimental": true,
 					"nonStandard": true,
@@ -47766,22 +47763,17 @@
 				"name": {
 					"deprecated": true
 				},
-				"ping": {},
-				"referrerpolicy": {},
-				"rel": {},
 				"rev": {
 					"deprecated": true
 				},
 				"shape": {
 					"deprecated": true
-				},
-				"target": {},
-				"type": {}
-			}
+				}
+			},
+			"cite": "https://html.spec.whatwg.org/multipage/text-level-semantics.html#the-a-element"
 		},
 		{
 			"name": "abbr",
-			"cite": "https://html.spec.whatwg.org/multipage/text-level-semantics.html#the-abbr-element",
 			"contentModel": {
 				"contents": [
 					{
@@ -47799,11 +47791,11 @@
 				"#GlobalEventAttrs": true,
 				"#HTMLGlobalAttrs": true
 			},
-			"attributes": {}
+			"attributes": {},
+			"cite": "https://html.spec.whatwg.org/multipage/text-level-semantics.html#the-abbr-element"
 		},
 		{
 			"name": "acronym",
-			"cite": "https://html.spec.whatwg.org/multipage/obsolete.html#acronym",
 			"contentModel": {
 				"contents": true
 			},
@@ -47811,13 +47803,13 @@
 				"permittedRoles": true,
 				"implicitRole": false
 			},
+			"cite": "https://html.spec.whatwg.org/multipage/obsolete.html#acronym",
 			"obsolete": true,
 			"globalAttrs": {},
 			"attributes": {}
 		},
 		{
 			"name": "address",
-			"cite": "https://html.spec.whatwg.org/multipage/sections.html#the-address-element",
 			"contentModel": {
 				"contents": [
 					{
@@ -47839,11 +47831,11 @@
 				"#GlobalEventAttrs": true,
 				"#HTMLGlobalAttrs": true
 			},
-			"attributes": {}
+			"attributes": {},
+			"cite": "https://html.spec.whatwg.org/multipage/sections.html#the-address-element"
 		},
 		{
 			"name": "applet",
-			"cite": "https://html.spec.whatwg.org/multipage/obsolete.html#applet",
 			"contentModel": {
 				"contents": true
 			},
@@ -47851,13 +47843,13 @@
 				"permittedRoles": true,
 				"implicitRole": false
 			},
+			"cite": "https://html.spec.whatwg.org/multipage/obsolete.html#applet",
 			"obsolete": true,
 			"globalAttrs": {},
 			"attributes": {}
 		},
 		{
 			"name": "area",
-			"cite": "https://html.spec.whatwg.org/multipage/image-maps.html#the-area-element",
 			"contentModel": {
 				"contents": false,
 				"descendantOf": "map",
@@ -47914,29 +47906,23 @@
 						"separator": "comma"
 					}
 				},
-				"download": {},
-				"href": {},
 				"interestfor": {
 					"experimental": true,
 					"nonStandard": true,
 					"type": "DOMID"
 				},
-				"ping": {},
-				"referrerpolicy": {},
-				"rel": {},
 				"shape": {
 					"type": {
 						"enum": ["rect", "circle", "poly", "default"],
 						"missingValueDefault": "rect",
 						"invalidValueDefault": "rect"
 					}
-				},
-				"target": {}
-			}
+				}
+			},
+			"cite": "https://html.spec.whatwg.org/multipage/image-maps.html#the-area-element"
 		},
 		{
 			"name": "article",
-			"cite": "https://html.spec.whatwg.org/multipage/sections.html#the-article-element",
 			"contentModel": {
 				"contents": [
 					{
@@ -47953,11 +47939,11 @@
 				"#GlobalEventAttrs": true,
 				"#HTMLGlobalAttrs": true
 			},
-			"attributes": {}
+			"attributes": {},
+			"cite": "https://html.spec.whatwg.org/multipage/sections.html#the-article-element"
 		},
 		{
 			"name": "aside",
-			"cite": "https://html.spec.whatwg.org/multipage/sections.html#the-aside-element",
 			"contentModel": {
 				"contents": [
 					{
@@ -47989,11 +47975,11 @@
 				"#GlobalEventAttrs": true,
 				"#HTMLGlobalAttrs": true
 			},
-			"attributes": {}
+			"attributes": {},
+			"cite": "https://html.spec.whatwg.org/multipage/sections.html#the-aside-element"
 		},
 		{
 			"name": "audio",
-			"cite": "https://html.spec.whatwg.org/multipage/media.html#the-audio-element",
 			"contentModel": {
 				"contents": [
 					{
@@ -48036,23 +48022,28 @@
 				"#HTMLLinkAndFetchingAttrs": ["crossorigin", "loading"]
 			},
 			"attributes": {
-				"autoplay": {},
-				"controls": {},
-				"controlslist": {},
-				"crossorigin": {},
-				"disableremoteplayback": {},
+				"controlslist": {
+					"type": {
+						"token": {
+							"enum": ["nodownload", "nofullscreen", "noremoteplayback"]
+						},
+						"ordered": false,
+						"caseInsensitive": true,
+						"unique": true,
+						"separator": "space"
+					}
+				},
+				"disableremoteplayback": {
+					"type": "Boolean"
+				},
 				"loading": {
 					"experimental": false
-				},
-				"loop": {},
-				"muted": {},
-				"preload": {},
-				"src": {}
-			}
+				}
+			},
+			"cite": "https://html.spec.whatwg.org/multipage/media.html#the-audio-element"
 		},
 		{
 			"name": "b",
-			"cite": "https://html.spec.whatwg.org/multipage/text-level-semantics.html#the-b-element",
 			"contentModel": {
 				"contents": [
 					{
@@ -48073,11 +48064,11 @@
 				"#GlobalEventAttrs": true,
 				"#HTMLGlobalAttrs": true
 			},
-			"attributes": {}
+			"attributes": {},
+			"cite": "https://html.spec.whatwg.org/multipage/text-level-semantics.html#the-b-element"
 		},
 		{
 			"name": "base",
-			"cite": "https://html.spec.whatwg.org/multipage/semantics.html#the-base-element",
 			"contentModel": {
 				"contents": false
 			},
@@ -48100,11 +48091,11 @@
 				"target": {
 					"requiredEither": ["href"]
 				}
-			}
+			},
+			"cite": "https://html.spec.whatwg.org/multipage/semantics.html#the-base-element"
 		},
 		{
 			"name": "basefont",
-			"cite": "https://html.spec.whatwg.org/multipage/obsolete.html#basefont",
 			"contentModel": {
 				"contents": true
 			},
@@ -48112,13 +48103,13 @@
 				"permittedRoles": true,
 				"implicitRole": false
 			},
+			"cite": "https://html.spec.whatwg.org/multipage/obsolete.html#basefont",
 			"obsolete": true,
 			"globalAttrs": {},
 			"attributes": {}
 		},
 		{
 			"name": "bdi",
-			"cite": "https://html.spec.whatwg.org/multipage/text-level-semantics.html#the-bdi-element",
 			"contentModel": {
 				"contents": [
 					{
@@ -48139,11 +48130,11 @@
 				"#GlobalEventAttrs": true,
 				"#HTMLGlobalAttrs": true
 			},
-			"attributes": {}
+			"attributes": {},
+			"cite": "https://html.spec.whatwg.org/multipage/text-level-semantics.html#the-bdi-element"
 		},
 		{
 			"name": "bdo",
-			"cite": "https://html.spec.whatwg.org/multipage/text-level-semantics.html#the-bdo-element",
 			"contentModel": {
 				"contents": [
 					{
@@ -48171,11 +48162,11 @@
 						"enum": ["ltr", "rtl"]
 					}
 				}
-			}
+			},
+			"cite": "https://html.spec.whatwg.org/multipage/text-level-semantics.html#the-bdo-element"
 		},
 		{
 			"name": "bgsound",
-			"cite": "https://html.spec.whatwg.org/multipage/obsolete.html#bgsound",
 			"contentModel": {
 				"contents": true
 			},
@@ -48183,13 +48174,13 @@
 				"permittedRoles": true,
 				"implicitRole": false
 			},
+			"cite": "https://html.spec.whatwg.org/multipage/obsolete.html#bgsound",
 			"obsolete": true,
 			"globalAttrs": {},
 			"attributes": {}
 		},
 		{
 			"name": "big",
-			"cite": "https://html.spec.whatwg.org/multipage/obsolete.html#big",
 			"contentModel": {
 				"contents": true
 			},
@@ -48197,13 +48188,13 @@
 				"permittedRoles": true,
 				"implicitRole": false
 			},
+			"cite": "https://html.spec.whatwg.org/multipage/obsolete.html#big",
 			"obsolete": true,
 			"globalAttrs": {},
 			"attributes": {}
 		},
 		{
 			"name": "blink",
-			"cite": "https://html.spec.whatwg.org/multipage/obsolete.html#blink",
 			"contentModel": {
 				"contents": true
 			},
@@ -48211,13 +48202,13 @@
 				"permittedRoles": true,
 				"implicitRole": false
 			},
+			"cite": "https://html.spec.whatwg.org/multipage/obsolete.html#blink",
 			"obsolete": true,
 			"globalAttrs": {},
 			"attributes": {}
 		},
 		{
 			"name": "blockquote",
-			"cite": "https://html.spec.whatwg.org/multipage/grouping-content.html#the-blockquote-element",
 			"contentModel": {
 				"contents": [
 					{
@@ -48241,11 +48232,11 @@
 				"cite": {
 					"type": "URL"
 				}
-			}
+			},
+			"cite": "https://html.spec.whatwg.org/multipage/grouping-content.html#the-blockquote-element"
 		},
 		{
 			"name": "body",
-			"cite": "https://html.spec.whatwg.org/multipage/sections.html#the-body-element",
 			"contentModel": {
 				"contents": [
 					{
@@ -48365,11 +48356,11 @@
 				"vlink": {
 					"deprecated": true
 				}
-			}
+			},
+			"cite": "https://html.spec.whatwg.org/multipage/sections.html#the-body-element"
 		},
 		{
 			"name": "br",
-			"cite": "https://html.spec.whatwg.org/multipage/text-level-semantics.html#the-br-element",
 			"contentModel": {
 				"contents": false
 			},
@@ -48395,11 +48386,11 @@
 				"clear": {
 					"deprecated": true
 				}
-			}
+			},
+			"cite": "https://html.spec.whatwg.org/multipage/text-level-semantics.html#the-br-element"
 		},
 		{
 			"name": "button",
-			"cite": "https://html.spec.whatwg.org/multipage/form-elements.html#the-button-element",
 			"contentModel": {
 				"contents": [
 					{
@@ -48489,7 +48480,6 @@
 				"#HTMLGlobalAttrs": true
 			},
 			"attributes": {
-				"autofocus": {},
 				"command": {
 					"type": [
 						{
@@ -48510,19 +48500,11 @@
 				"commandfor": {
 					"type": "DOMID"
 				},
-				"disabled": {},
-				"form": {},
-				"formaction": {},
-				"formenctype": {},
-				"formmethod": {},
-				"formnovalidate": {},
-				"formtarget": {},
 				"interestfor": {
 					"experimental": true,
 					"nonStandard": true,
 					"type": "DOMID"
 				},
-				"name": {},
 				"popovertarget": {
 					"type": "DOMID"
 				},
@@ -48544,11 +48526,11 @@
 				"value": {
 					"type": "Any"
 				}
-			}
+			},
+			"cite": "https://html.spec.whatwg.org/multipage/form-elements.html#the-button-element"
 		},
 		{
 			"name": "canvas",
-			"cite": "https://html.spec.whatwg.org/multipage/canvas.html#the-canvas-element",
 			"contentModel": {
 				"contents": [
 					{
@@ -48577,11 +48559,11 @@
 				"width": {
 					"defaultValue": "300"
 				}
-			}
+			},
+			"cite": "https://html.spec.whatwg.org/multipage/canvas.html#the-canvas-element"
 		},
 		{
 			"name": "caption",
-			"cite": "https://html.spec.whatwg.org/multipage/tables.html#the-caption-element",
 			"contentModel": {
 				"contents": [
 					{
@@ -48609,11 +48591,11 @@
 				"align": {
 					"deprecated": true
 				}
-			}
+			},
+			"cite": "https://html.spec.whatwg.org/multipage/tables.html#the-caption-element"
 		},
 		{
 			"name": "center",
-			"cite": "https://html.spec.whatwg.org/multipage/obsolete.html#center",
 			"contentModel": {
 				"contents": true
 			},
@@ -48621,13 +48603,13 @@
 				"permittedRoles": true,
 				"implicitRole": false
 			},
+			"cite": "https://html.spec.whatwg.org/multipage/obsolete.html#center",
 			"obsolete": true,
 			"globalAttrs": {},
 			"attributes": {}
 		},
 		{
 			"name": "cite",
-			"cite": "https://html.spec.whatwg.org/multipage/text-level-semantics.html#the-cite-element",
 			"contentModel": {
 				"contents": [
 					{
@@ -48645,11 +48627,11 @@
 				"#GlobalEventAttrs": true,
 				"#HTMLGlobalAttrs": true
 			},
-			"attributes": {}
+			"attributes": {},
+			"cite": "https://html.spec.whatwg.org/multipage/text-level-semantics.html#the-cite-element"
 		},
 		{
 			"name": "code",
-			"cite": "https://html.spec.whatwg.org/multipage/text-level-semantics.html#the-code-element",
 			"contentModel": {
 				"contents": [
 					{
@@ -48670,11 +48652,11 @@
 				"#GlobalEventAttrs": true,
 				"#HTMLGlobalAttrs": true
 			},
-			"attributes": {}
+			"attributes": {},
+			"cite": "https://html.spec.whatwg.org/multipage/text-level-semantics.html#the-code-element"
 		},
 		{
 			"name": "col",
-			"cite": "https://html.spec.whatwg.org/multipage/tables.html#the-col-element",
 			"contentModel": {
 				"contents": false
 			},
@@ -48716,11 +48698,11 @@
 				"width": {
 					"deprecated": true
 				}
-			}
+			},
+			"cite": "https://html.spec.whatwg.org/multipage/tables.html#the-col-element"
 		},
 		{
 			"name": "colgroup",
-			"cite": "https://html.spec.whatwg.org/multipage/tables.html#the-colgroup-element",
 			"contentModel": {
 				"contents": [
 					{
@@ -48772,11 +48754,11 @@
 				"width": {
 					"deprecated": true
 				}
-			}
+			},
+			"cite": "https://html.spec.whatwg.org/multipage/tables.html#the-colgroup-element"
 		},
 		{
 			"name": "data",
-			"cite": "https://html.spec.whatwg.org/multipage/text-level-semantics.html#the-data-element",
 			"contentModel": {
 				"contents": [
 					{
@@ -48802,11 +48784,11 @@
 					"type": "Any",
 					"required": true
 				}
-			}
+			},
+			"cite": "https://html.spec.whatwg.org/multipage/text-level-semantics.html#the-data-element"
 		},
 		{
 			"name": "datalist",
-			"cite": "https://html.spec.whatwg.org/multipage/form-elements.html#the-datalist-element",
 			"contentModel": {
 				"contents": [
 					{
@@ -48835,11 +48817,11 @@
 				"#GlobalEventAttrs": true,
 				"#HTMLGlobalAttrs": true
 			},
-			"attributes": {}
+			"attributes": {},
+			"cite": "https://html.spec.whatwg.org/multipage/form-elements.html#the-datalist-element"
 		},
 		{
 			"name": "dd",
-			"cite": "https://html.spec.whatwg.org/multipage/grouping-content.html#the-dd-element",
 			"contentModel": {
 				"contents": [
 					{
@@ -48863,11 +48845,11 @@
 				"#GlobalEventAttrs": true,
 				"#HTMLGlobalAttrs": true
 			},
-			"attributes": {}
+			"attributes": {},
+			"cite": "https://html.spec.whatwg.org/multipage/grouping-content.html#the-dd-element"
 		},
 		{
 			"name": "del",
-			"cite": "https://html.spec.whatwg.org/multipage/edits.html#the-del-element",
 			"contentModel": {
 				"contents": [
 					{
@@ -48895,11 +48877,11 @@
 				"datetime": {
 					"type": "DateStringWithOptionalTime"
 				}
-			}
+			},
+			"cite": "https://html.spec.whatwg.org/multipage/edits.html#the-del-element"
 		},
 		{
 			"name": "details",
-			"cite": "https://html.spec.whatwg.org/multipage/interactive-elements.html#the-details-element",
 			"contentModel": {
 				"contents": [
 					{
@@ -48930,11 +48912,11 @@
 				"open": {
 					"type": "Boolean"
 				}
-			}
+			},
+			"cite": "https://html.spec.whatwg.org/multipage/interactive-elements.html#the-details-element"
 		},
 		{
 			"name": "dfn",
-			"cite": "https://html.spec.whatwg.org/multipage/text-level-semantics.html#the-dfn-element",
 			"contentModel": {
 				"contents": [
 					{
@@ -48951,11 +48933,11 @@
 				"#GlobalEventAttrs": true,
 				"#HTMLGlobalAttrs": true
 			},
-			"attributes": {}
+			"attributes": {},
+			"cite": "https://html.spec.whatwg.org/multipage/text-level-semantics.html#the-dfn-element"
 		},
 		{
 			"name": "dialog",
-			"cite": "https://html.spec.whatwg.org/multipage/interactive-elements.html#the-dialog-element",
 			"contentModel": {
 				"contents": [
 					{
@@ -48990,11 +48972,11 @@
 				"tabindex": {
 					"noUse": true
 				}
-			}
+			},
+			"cite": "https://html.spec.whatwg.org/multipage/interactive-elements.html#the-dialog-element"
 		},
 		{
 			"name": "dir",
-			"cite": "https://html.spec.whatwg.org/multipage/obsolete.html#dir",
 			"contentModel": {
 				"contents": true
 			},
@@ -49002,6 +48984,7 @@
 				"permittedRoles": true,
 				"implicitRole": false
 			},
+			"cite": "https://html.spec.whatwg.org/multipage/obsolete.html#dir",
 			"obsolete": true,
 			"globalAttrs": {},
 			"attributes": {
@@ -49013,7 +48996,6 @@
 		},
 		{
 			"name": "div",
-			"cite": "https://html.spec.whatwg.org/multipage/grouping-content.html#the-div-element",
 			"contentModel": {
 				"contents": [
 					{
@@ -49062,11 +49044,11 @@
 				"#GlobalEventAttrs": true,
 				"#HTMLGlobalAttrs": true
 			},
-			"attributes": {}
+			"attributes": {},
+			"cite": "https://html.spec.whatwg.org/multipage/grouping-content.html#the-div-element"
 		},
 		{
 			"name": "dl",
-			"cite": "https://html.spec.whatwg.org/multipage/grouping-content.html#the-dl-element",
 			"contentModel": {
 				"contents": [
 					{
@@ -49120,11 +49102,11 @@
 				"compact": {
 					"deprecated": true
 				}
-			}
+			},
+			"cite": "https://html.spec.whatwg.org/multipage/grouping-content.html#the-dl-element"
 		},
 		{
 			"name": "dt",
-			"cite": "https://html.spec.whatwg.org/multipage/grouping-content.html#the-dt-element",
 			"contentModel": {
 				"contents": [
 					{
@@ -49144,11 +49126,11 @@
 				"#GlobalEventAttrs": true,
 				"#HTMLGlobalAttrs": true
 			},
-			"attributes": {}
+			"attributes": {},
+			"cite": "https://html.spec.whatwg.org/multipage/grouping-content.html#the-dt-element"
 		},
 		{
 			"name": "em",
-			"cite": "https://html.spec.whatwg.org/multipage/text-level-semantics.html#the-em-element",
 			"contentModel": {
 				"contents": [
 					{
@@ -49169,11 +49151,11 @@
 				"#GlobalEventAttrs": true,
 				"#HTMLGlobalAttrs": true
 			},
-			"attributes": {}
+			"attributes": {},
+			"cite": "https://html.spec.whatwg.org/multipage/text-level-semantics.html#the-em-element"
 		},
 		{
 			"name": "embed",
-			"cite": "https://html.spec.whatwg.org/multipage/iframe-embed-object.html#the-embed-element",
 			"contentModel": {
 				"contents": false
 			},
@@ -49188,20 +49170,18 @@
 				"#HTMLGlobalAttrs": true
 			},
 			"attributes": {
-				"height": {},
 				"src": {
 					"type": "NonEmptyURL",
 					"required": "[itemprop]"
 				},
 				"type": {
 					"type": "MIMEType"
-				},
-				"width": {}
-			}
+				}
+			},
+			"cite": "https://html.spec.whatwg.org/multipage/iframe-embed-object.html#the-embed-element"
 		},
 		{
 			"name": "fieldset",
-			"cite": "https://html.spec.whatwg.org/multipage/form-elements.html#the-fieldset-element",
 			"contentModel": {
 				"contents": [
 					{
@@ -49222,15 +49202,11 @@
 				"#HTMLFormControlElementAttrs": ["disabled", "form", "name"],
 				"#HTMLGlobalAttrs": true
 			},
-			"attributes": {
-				"disabled": {},
-				"form": {},
-				"name": {}
-			}
+			"attributes": {},
+			"cite": "https://html.spec.whatwg.org/multipage/form-elements.html#the-fieldset-element"
 		},
 		{
 			"name": "figcaption",
-			"cite": "https://html.spec.whatwg.org/multipage/grouping-content.html#the-figcaption-element",
 			"contentModel": {
 				"contents": [
 					{
@@ -49248,11 +49224,11 @@
 				"#GlobalEventAttrs": true,
 				"#HTMLGlobalAttrs": true
 			},
-			"attributes": {}
+			"attributes": {},
+			"cite": "https://html.spec.whatwg.org/multipage/grouping-content.html#the-figcaption-element"
 		},
 		{
 			"name": "figure",
-			"cite": "https://html.spec.whatwg.org/multipage/grouping-content.html#the-figure-element",
 			"contentModel": {
 				"contents": [
 					{
@@ -49296,11 +49272,11 @@
 				"#GlobalEventAttrs": true,
 				"#HTMLGlobalAttrs": true
 			},
-			"attributes": {}
+			"attributes": {},
+			"cite": "https://html.spec.whatwg.org/multipage/grouping-content.html#the-figure-element"
 		},
 		{
 			"name": "font",
-			"cite": "https://html.spec.whatwg.org/multipage/obsolete.html#font",
 			"contentModel": {
 				"contents": true
 			},
@@ -49327,11 +49303,11 @@
 					"deprecated": true,
 					"nonStandard": true
 				}
-			}
+			},
+			"cite": "https://html.spec.whatwg.org/multipage/obsolete.html#font"
 		},
 		{
 			"name": "footer",
-			"cite": "https://html.spec.whatwg.org/multipage/sections.html#the-footer-element",
 			"contentModel": {
 				"contents": [
 					{
@@ -49363,11 +49339,11 @@
 				"#GlobalEventAttrs": true,
 				"#HTMLGlobalAttrs": true
 			},
-			"attributes": {}
+			"attributes": {},
+			"cite": "https://html.spec.whatwg.org/multipage/sections.html#the-footer-element"
 		},
 		{
 			"name": "form",
-			"cite": "https://html.spec.whatwg.org/multipage/forms.html#the-form-element",
 			"contentModel": {
 				"contents": [
 					{
@@ -49402,7 +49378,6 @@
 				"action": {
 					"type": "NonEmptyURL"
 				},
-				"autocapitalize": {},
 				"autocomplete": {
 					"type": {
 						"enum": ["on", "off"],
@@ -49436,11 +49411,11 @@
 				"target": {
 					"type": "NavigableTargetNameOrKeyword"
 				}
-			}
+			},
+			"cite": "https://html.spec.whatwg.org/multipage/forms.html#the-form-element"
 		},
 		{
 			"name": "frame",
-			"cite": "https://html.spec.whatwg.org/multipage/obsolete.html#frame",
 			"contentModel": {
 				"contents": true
 			},
@@ -49448,6 +49423,7 @@
 				"permittedRoles": true,
 				"implicitRole": false
 			},
+			"cite": "https://html.spec.whatwg.org/multipage/obsolete.html#frame",
 			"obsolete": true,
 			"globalAttrs": {},
 			"attributes": {
@@ -49483,7 +49459,6 @@
 		},
 		{
 			"name": "frameset",
-			"cite": "https://html.spec.whatwg.org/multipage/obsolete.html#frameset",
 			"contentModel": {
 				"contents": true
 			},
@@ -49491,6 +49466,7 @@
 				"permittedRoles": true,
 				"implicitRole": false
 			},
+			"cite": "https://html.spec.whatwg.org/multipage/obsolete.html#frameset",
 			"obsolete": true,
 			"globalAttrs": {},
 			"attributes": {
@@ -49506,7 +49482,6 @@
 		},
 		{
 			"name": "h1",
-			"cite": "https://html.spec.whatwg.org/multipage/sections.html#the-h1,-h2,-h3,-h4,-h5,-and-h6-elements",
 			"contentModel": {
 				"contents": [
 					{
@@ -49526,11 +49501,11 @@
 				"#GlobalEventAttrs": true,
 				"#HTMLGlobalAttrs": true
 			},
-			"attributes": {}
+			"attributes": {},
+			"cite": "https://html.spec.whatwg.org/multipage/sections.html#the-h1,-h2,-h3,-h4,-h5,-and-h6-elements"
 		},
 		{
 			"name": "h2",
-			"cite": "https://html.spec.whatwg.org/multipage/sections.html#the-h1,-h2,-h3,-h4,-h5,-and-h6-elements",
 			"contentModel": {
 				"contents": [
 					{
@@ -49550,11 +49525,11 @@
 				"#GlobalEventAttrs": true,
 				"#HTMLGlobalAttrs": true
 			},
-			"attributes": {}
+			"attributes": {},
+			"cite": "https://html.spec.whatwg.org/multipage/sections.html#the-h1,-h2,-h3,-h4,-h5,-and-h6-elements"
 		},
 		{
 			"name": "h3",
-			"cite": "https://html.spec.whatwg.org/multipage/sections.html#the-h1,-h2,-h3,-h4,-h5,-and-h6-elements",
 			"contentModel": {
 				"contents": [
 					{
@@ -49574,11 +49549,11 @@
 				"#GlobalEventAttrs": true,
 				"#HTMLGlobalAttrs": true
 			},
-			"attributes": {}
+			"attributes": {},
+			"cite": "https://html.spec.whatwg.org/multipage/sections.html#the-h1,-h2,-h3,-h4,-h5,-and-h6-elements"
 		},
 		{
 			"name": "h4",
-			"cite": "https://html.spec.whatwg.org/multipage/sections.html#the-h1,-h2,-h3,-h4,-h5,-and-h6-elements",
 			"contentModel": {
 				"contents": [
 					{
@@ -49598,11 +49573,11 @@
 				"#GlobalEventAttrs": true,
 				"#HTMLGlobalAttrs": true
 			},
-			"attributes": {}
+			"attributes": {},
+			"cite": "https://html.spec.whatwg.org/multipage/sections.html#the-h1,-h2,-h3,-h4,-h5,-and-h6-elements"
 		},
 		{
 			"name": "h5",
-			"cite": "https://html.spec.whatwg.org/multipage/sections.html#the-h1,-h2,-h3,-h4,-h5,-and-h6-elements",
 			"contentModel": {
 				"contents": [
 					{
@@ -49622,11 +49597,11 @@
 				"#GlobalEventAttrs": true,
 				"#HTMLGlobalAttrs": true
 			},
-			"attributes": {}
+			"attributes": {},
+			"cite": "https://html.spec.whatwg.org/multipage/sections.html#the-h1,-h2,-h3,-h4,-h5,-and-h6-elements"
 		},
 		{
 			"name": "h6",
-			"cite": "https://html.spec.whatwg.org/multipage/sections.html#the-h1,-h2,-h3,-h4,-h5,-and-h6-elements",
 			"contentModel": {
 				"contents": [
 					{
@@ -49646,11 +49621,11 @@
 				"#GlobalEventAttrs": true,
 				"#HTMLGlobalAttrs": true
 			},
-			"attributes": {}
+			"attributes": {},
+			"cite": "https://html.spec.whatwg.org/multipage/sections.html#the-h1,-h2,-h3,-h4,-h5,-and-h6-elements"
 		},
 		{
 			"name": "head",
-			"cite": "https://html.spec.whatwg.org/multipage/semantics.html#the-head-element",
 			"contentModel": {
 				"contents": [
 					{
@@ -49678,11 +49653,11 @@
 				"profile": {
 					"deprecated": true
 				}
-			}
+			},
+			"cite": "https://html.spec.whatwg.org/multipage/semantics.html#the-head-element"
 		},
 		{
 			"name": "header",
-			"cite": "https://html.spec.whatwg.org/multipage/sections.html#the-header-element",
 			"contentModel": {
 				"contents": [
 					{
@@ -49714,11 +49689,11 @@
 				"#GlobalEventAttrs": true,
 				"#HTMLGlobalAttrs": true
 			},
-			"attributes": {}
+			"attributes": {},
+			"cite": "https://html.spec.whatwg.org/multipage/sections.html#the-header-element"
 		},
 		{
 			"name": "hgroup",
-			"cite": "https://html.spec.whatwg.org/multipage/sections.html#the-hgroup-element",
 			"contentModel": {
 				"contents": [
 					{
@@ -49757,11 +49732,11 @@
 				"#GlobalEventAttrs": true,
 				"#HTMLGlobalAttrs": true
 			},
-			"attributes": {}
+			"attributes": {},
+			"cite": "https://html.spec.whatwg.org/multipage/sections.html#the-hgroup-element"
 		},
 		{
 			"name": "hr",
-			"cite": "https://html.spec.whatwg.org/multipage/grouping-content.html#the-hr-element",
 			"contentModel": {
 				"contents": false
 			},
@@ -49799,11 +49774,11 @@
 					"deprecated": true,
 					"nonStandard": true
 				}
-			}
+			},
+			"cite": "https://html.spec.whatwg.org/multipage/grouping-content.html#the-hr-element"
 		},
 		{
 			"name": "html",
-			"cite": "https://html.spec.whatwg.org/multipage/semantics.html#the-html-element",
 			"contentModel": {
 				"contents": [
 					{
@@ -49836,11 +49811,11 @@
 				"xmlns": {
 					"nonStandard": true
 				}
-			}
+			},
+			"cite": "https://html.spec.whatwg.org/multipage/semantics.html#the-html-element"
 		},
 		{
 			"name": "i",
-			"cite": "https://html.spec.whatwg.org/multipage/text-level-semantics.html#the-i-element",
 			"contentModel": {
 				"contents": [
 					{
@@ -49861,11 +49836,11 @@
 				"#GlobalEventAttrs": true,
 				"#HTMLGlobalAttrs": true
 			},
-			"attributes": {}
+			"attributes": {},
+			"cite": "https://html.spec.whatwg.org/multipage/text-level-semantics.html#the-i-element"
 		},
 		{
 			"name": "iframe",
-			"cite": "https://html.spec.whatwg.org/multipage/iframe-embed-object.html#the-iframe-element",
 			"contentModel": {
 				"contents": false
 			},
@@ -49907,8 +49882,6 @@
 				"frameborder": {
 					"deprecated": true
 				},
-				"height": {},
-				"loading": {},
 				"longdesc": {
 					"deprecated": true
 				},
@@ -49925,7 +49898,6 @@
 					"experimental": true,
 					"type": "Any"
 				},
-				"referrerpolicy": {},
 				"sandbox": {
 					"type": {
 						"token": {
@@ -49960,13 +49932,12 @@
 				},
 				"srcdoc": {
 					"type": "Any"
-				},
-				"width": {}
-			}
+				}
+			},
+			"cite": "https://html.spec.whatwg.org/multipage/iframe-embed-object.html#the-iframe-element"
 		},
 		{
 			"name": "img",
-			"cite": "https://html.spec.whatwg.org/multipage/embedded-content.html#the-img-element",
 			"contentModel": {
 				"contents": false
 			},
@@ -50057,7 +50028,10 @@
 				"border": {
 					"deprecated": true
 				},
-				"crossorigin": {},
+				"controls": {
+					"type": "Boolean",
+					"condition": "[alt]:not([alt=''])"
+				},
 				"decoding": {
 					"type": {
 						"enum": ["sync", "async", "auto"],
@@ -50065,9 +50039,6 @@
 						"missingValueDefault": "auto"
 					}
 				},
-				"elementtiming": {},
-				"fetchpriority": {},
-				"height": {},
 				"hspace": {
 					"deprecated": true
 				},
@@ -50075,14 +50046,12 @@
 					"type": "Boolean",
 					"condition": "a[href] img"
 				},
-				"loading": {},
 				"longdesc": {
 					"deprecated": true
 				},
 				"name": {
 					"deprecated": true
 				},
-				"referrerpolicy": {},
 				"sizes": {
 					"type": [
 						{
@@ -50112,13 +50081,12 @@
 				},
 				"vspace": {
 					"deprecated": true
-				},
-				"width": {}
-			}
+				}
+			},
+			"cite": "https://html.spec.whatwg.org/multipage/embedded-content.html#the-img-element"
 		},
 		{
 			"name": "input",
-			"cite": "https://html.spec.whatwg.org/multipage/input.html#the-input-element",
 			"contentModel": {
 				"contents": false
 			},
@@ -50771,7 +50739,6 @@
 					"required": true,
 					"condition": "[type='image' i]"
 				},
-				"autocapitalize": {},
 				"autocomplete": {
 					"type": [
 						{
@@ -50802,8 +50769,14 @@
 						"[type='color' i]"
 					]
 				},
-				"autofocus": {},
-				"capture": {},
+				"capture": {
+					"type": {
+						"enum": ["", "user", "environment"],
+						"invalidValueDefault": "",
+						"missingValueDefault": ""
+					},
+					"condition": "[type='file' i][accept]"
+				},
 				"checked": {
 					"type": "Boolean",
 					"condition": ["[type='checkbox' i]", "[type='radio' i]"]
@@ -50830,21 +50803,12 @@
 						"[type='submit' i]"
 					]
 				},
-				"disabled": {},
-				"form": {},
-				"formaction": {},
-				"formenctype": {},
-				"formmethod": {},
-				"formnovalidate": {},
-				"formtarget": {},
 				"height": {
 					"condition": "[type='image' i]"
 				},
-				"id": {},
 				"incremental": {
 					"nonStandard": true
 				},
-				"inputmode": {},
 				"list": {
 					"type": "DOMID",
 					"condition": [
@@ -51097,8 +51061,6 @@
 					"type": "Boolean",
 					"condition": "[type='checkbox' i]"
 				},
-				"tabindex": {},
-				"title": {},
 				"type": {
 					"type": {
 						"enum": [
@@ -51184,15 +51146,18 @@
 						}
 					]
 				},
-				"webkitdirectory": {},
+				"webkitdirectory": {
+					"type": "Boolean",
+					"condition": "[type='file' i]"
+				},
 				"width": {
 					"condition": "[type='image' i]"
 				}
-			}
+			},
+			"cite": "https://html.spec.whatwg.org/multipage/input.html#the-input-element"
 		},
 		{
 			"name": "ins",
-			"cite": "https://html.spec.whatwg.org/multipage/edits.html#the-ins-element",
 			"contentModel": {
 				"contents": [
 					{
@@ -51220,11 +51185,11 @@
 				"datetime": {
 					"type": "DateStringWithOptionalTime"
 				}
-			}
+			},
+			"cite": "https://html.spec.whatwg.org/multipage/edits.html#the-ins-element"
 		},
 		{
 			"name": "isindex",
-			"cite": "https://html.spec.whatwg.org/multipage/obsolete.html#isindex",
 			"contentModel": {
 				"contents": true
 			},
@@ -51232,13 +51197,13 @@
 				"permittedRoles": true,
 				"implicitRole": false
 			},
+			"cite": "https://html.spec.whatwg.org/multipage/obsolete.html#isindex",
 			"obsolete": true,
 			"globalAttrs": {},
 			"attributes": {}
 		},
 		{
 			"name": "kbd",
-			"cite": "https://html.spec.whatwg.org/multipage/text-level-semantics.html#the-kbd-element",
 			"contentModel": {
 				"contents": [
 					{
@@ -51256,11 +51221,11 @@
 				"#GlobalEventAttrs": true,
 				"#HTMLGlobalAttrs": true
 			},
-			"attributes": {}
+			"attributes": {},
+			"cite": "https://html.spec.whatwg.org/multipage/text-level-semantics.html#the-kbd-element"
 		},
 		{
 			"name": "keygen",
-			"cite": "https://html.spec.whatwg.org/multipage/obsolete.html#keygen",
 			"contentModel": {
 				"contents": true
 			},
@@ -51268,13 +51233,13 @@
 				"permittedRoles": true,
 				"implicitRole": false
 			},
+			"cite": "https://html.spec.whatwg.org/multipage/obsolete.html#keygen",
 			"obsolete": true,
 			"globalAttrs": {},
 			"attributes": {}
 		},
 		{
 			"name": "label",
-			"cite": "https://html.spec.whatwg.org/multipage/forms.html#the-label-element",
 			"contentModel": {
 				"contents": [
 					{
@@ -51296,11 +51261,11 @@
 				"for": {
 					"type": "DOMID"
 				}
-			}
+			},
+			"cite": "https://html.spec.whatwg.org/multipage/forms.html#the-label-element"
 		},
 		{
 			"name": "legend",
-			"cite": "https://html.spec.whatwg.org/multipage/form-elements.html#the-legend-element",
 			"contentModel": {
 				"contents": [
 					{
@@ -51318,11 +51283,11 @@
 				"#GlobalEventAttrs": true,
 				"#HTMLGlobalAttrs": true
 			},
-			"attributes": {}
+			"attributes": {},
+			"cite": "https://html.spec.whatwg.org/multipage/form-elements.html#the-legend-element"
 		},
 		{
 			"name": "li",
-			"cite": "https://html.spec.whatwg.org/multipage/grouping-content.html#the-li-element",
 			"contentModel": {
 				"contents": [
 					{
@@ -51358,11 +51323,11 @@
 					"type": "Int",
 					"condition": "ol > li"
 				}
-			}
+			},
+			"cite": "https://html.spec.whatwg.org/multipage/grouping-content.html#the-li-element"
 		},
 		{
 			"name": "link",
-			"cite": "https://html.spec.whatwg.org/multipage/semantics.html#the-link-element",
 			"contentModel": {
 				"contents": false
 			},
@@ -51433,17 +51398,14 @@
 					"type": "<color>",
 					"condition": "[rel~='mask-icon' i]"
 				},
-				"crossorigin": {},
 				"disabled": {
 					"type": "Boolean",
 					"condition": "[rel~='stylesheet' i]"
 				},
-				"fetchpriority": {},
 				"href": {
 					"type": "NonEmptyURL",
 					"requiredEither": ["imagesrcset"]
 				},
-				"hreflang": {},
 				"imagesizes": {
 					"type": "SourceSizeList",
 					"condition": "[imagesrcset][rel~='preload' i][as='image' i]",
@@ -51460,8 +51422,6 @@
 				"itemprop": {
 					"requiredEither": ["rel"]
 				},
-				"media": {},
-				"referrerpolicy": {},
 				"rel": {
 					"type": "LinkTypeForLinkElement",
 					"requiredEither": ["itemprop"]
@@ -51491,13 +51451,12 @@
 						}
 					],
 					"required": "[rel~='alternate' i][rel~='stylesheet' i]"
-				},
-				"type": {}
-			}
+				}
+			},
+			"cite": "https://html.spec.whatwg.org/multipage/semantics.html#the-link-element"
 		},
 		{
 			"name": "listing",
-			"cite": "https://html.spec.whatwg.org/multipage/obsolete.html#listing",
 			"contentModel": {
 				"contents": true
 			},
@@ -51505,13 +51464,13 @@
 				"permittedRoles": true,
 				"implicitRole": false
 			},
+			"cite": "https://html.spec.whatwg.org/multipage/obsolete.html#listing",
 			"obsolete": true,
 			"globalAttrs": {},
 			"attributes": {}
 		},
 		{
 			"name": "main",
-			"cite": "https://html.spec.whatwg.org/multipage/grouping-content.html#the-main-element",
 			"contentModel": {
 				"contents": [
 					{
@@ -51533,11 +51492,11 @@
 				"#GlobalEventAttrs": true,
 				"#HTMLGlobalAttrs": true
 			},
-			"attributes": {}
+			"attributes": {},
+			"cite": "https://html.spec.whatwg.org/multipage/grouping-content.html#the-main-element"
 		},
 		{
 			"name": "map",
-			"cite": "https://html.spec.whatwg.org/multipage/image-maps.html#the-map-element",
 			"contentModel": {
 				"contents": [
 					{
@@ -51559,11 +51518,11 @@
 				"name": {
 					"type": "NoEmptyAny"
 				}
-			}
+			},
+			"cite": "https://html.spec.whatwg.org/multipage/image-maps.html#the-map-element"
 		},
 		{
 			"name": "mark",
-			"cite": "https://html.spec.whatwg.org/multipage/text-level-semantics.html#the-mark-element",
 			"contentModel": {
 				"contents": [
 					{
@@ -51581,11 +51540,11 @@
 				"#GlobalEventAttrs": true,
 				"#HTMLGlobalAttrs": true
 			},
-			"attributes": {}
+			"attributes": {},
+			"cite": "https://html.spec.whatwg.org/multipage/text-level-semantics.html#the-mark-element"
 		},
 		{
 			"name": "marquee",
-			"cite": "https://html.spec.whatwg.org/multipage/obsolete.html#non-conforming-features",
 			"contentModel": {
 				"contents": true
 			},
@@ -51593,6 +51552,7 @@
 				"permittedRoles": true,
 				"implicitRole": false
 			},
+			"cite": "https://html.spec.whatwg.org/multipage/obsolete.html#non-conforming-features",
 			"obsolete": true,
 			"globalAttrs": {},
 			"attributes": {
@@ -51639,7 +51599,6 @@
 		},
 		{
 			"name": "menu",
-			"cite": "https://html.spec.whatwg.org/multipage/grouping-content.html#the-menu-element",
 			"contentModel": {
 				"contents": [
 					{
@@ -51690,11 +51649,11 @@
 				"compact": {
 					"deprecated": true
 				}
-			}
+			},
+			"cite": "https://html.spec.whatwg.org/multipage/grouping-content.html#the-menu-element"
 		},
 		{
 			"name": "menuitem",
-			"cite": "https://html.spec.whatwg.org/multipage/obsolete.html#menuitem",
 			"contentModel": {
 				"contents": true
 			},
@@ -51702,13 +51661,13 @@
 				"permittedRoles": true,
 				"implicitRole": false
 			},
+			"cite": "https://html.spec.whatwg.org/multipage/obsolete.html#menuitem",
 			"obsolete": true,
 			"globalAttrs": {},
 			"attributes": {}
 		},
 		{
 			"name": "meta",
-			"cite": "https://html.spec.whatwg.org/multipage/semantics.html#the-meta-element",
 			"contentModel": {
 				"contents": false
 			},
@@ -51781,11 +51740,11 @@
 					"requiredEither": ["itemprop", "http-equiv", "charset"],
 					"condition": [":not([itemprop])", ":not([http-equiv])", ":not([charset])"]
 				}
-			}
+			},
+			"cite": "https://html.spec.whatwg.org/multipage/semantics.html#the-meta-element"
 		},
 		{
 			"name": "meter",
-			"cite": "https://html.spec.whatwg.org/multipage/form-elements.html#the-meter-element",
 			"contentModel": {
 				"contents": [
 					{
@@ -51853,11 +51812,11 @@
 				"value": {
 					"type": "Number"
 				}
-			}
+			},
+			"cite": "https://html.spec.whatwg.org/multipage/form-elements.html#the-meter-element"
 		},
 		{
 			"name": "multicol",
-			"cite": "https://html.spec.whatwg.org/multipage/obsolete.html#multicol",
 			"contentModel": {
 				"contents": true
 			},
@@ -51865,13 +51824,13 @@
 				"permittedRoles": true,
 				"implicitRole": false
 			},
+			"cite": "https://html.spec.whatwg.org/multipage/obsolete.html#multicol",
 			"obsolete": true,
 			"globalAttrs": {},
 			"attributes": {}
 		},
 		{
 			"name": "nav",
-			"cite": "https://html.spec.whatwg.org/multipage/sections.html#the-nav-element",
 			"contentModel": {
 				"contents": [
 					{
@@ -51891,11 +51850,11 @@
 				"#GlobalEventAttrs": true,
 				"#HTMLGlobalAttrs": true
 			},
-			"attributes": {}
+			"attributes": {},
+			"cite": "https://html.spec.whatwg.org/multipage/sections.html#the-nav-element"
 		},
 		{
 			"name": "nextid",
-			"cite": "https://html.spec.whatwg.org/multipage/obsolete.html#nextid",
 			"contentModel": {
 				"contents": true
 			},
@@ -51903,13 +51862,13 @@
 				"permittedRoles": true,
 				"implicitRole": false
 			},
+			"cite": "https://html.spec.whatwg.org/multipage/obsolete.html#nextid",
 			"obsolete": true,
 			"globalAttrs": {},
 			"attributes": {}
 		},
 		{
 			"name": "nobr",
-			"cite": "https://html.spec.whatwg.org/multipage/obsolete.html#nobr",
 			"contentModel": {
 				"contents": true
 			},
@@ -51917,13 +51876,13 @@
 				"permittedRoles": true,
 				"implicitRole": false
 			},
+			"cite": "https://html.spec.whatwg.org/multipage/obsolete.html#nobr",
 			"obsolete": true,
 			"globalAttrs": {},
 			"attributes": {}
 		},
 		{
 			"name": "noembed",
-			"cite": "https://html.spec.whatwg.org/multipage/obsolete.html#noembed",
 			"contentModel": {
 				"contents": true
 			},
@@ -51931,13 +51890,13 @@
 				"permittedRoles": true,
 				"implicitRole": false
 			},
+			"cite": "https://html.spec.whatwg.org/multipage/obsolete.html#noembed",
 			"obsolete": true,
 			"globalAttrs": {},
 			"attributes": {}
 		},
 		{
 			"name": "noframes",
-			"cite": "https://html.spec.whatwg.org/multipage/obsolete.html#noframes",
 			"contentModel": {
 				"contents": true
 			},
@@ -51945,13 +51904,13 @@
 				"permittedRoles": true,
 				"implicitRole": false
 			},
+			"cite": "https://html.spec.whatwg.org/multipage/obsolete.html#noframes",
 			"obsolete": true,
 			"globalAttrs": {},
 			"attributes": {}
 		},
 		{
 			"name": "noscript",
-			"cite": "https://html.spec.whatwg.org/multipage/scripting.html#the-noscript-element",
 			"contentModel": {
 				"contents": [
 					{
@@ -51969,11 +51928,11 @@
 				"#GlobalEventAttrs": true,
 				"#HTMLGlobalAttrs": true
 			},
-			"attributes": {}
+			"attributes": {},
+			"cite": "https://html.spec.whatwg.org/multipage/scripting.html#the-noscript-element"
 		},
 		{
 			"name": "object",
-			"cite": "https://html.spec.whatwg.org/multipage/iframe-embed-object.html#the-object-element",
 			"contentModel": {
 				"contents": [
 					{
@@ -52015,8 +51974,6 @@
 				"declare": {
 					"deprecated": true
 				},
-				"form": {},
-				"height": {},
 				"name": {
 					"type": "NavigableTargetName"
 				},
@@ -52029,13 +51986,12 @@
 				},
 				"usemap": {
 					"deprecated": true
-				},
-				"width": {}
-			}
+				}
+			},
+			"cite": "https://html.spec.whatwg.org/multipage/iframe-embed-object.html#the-object-element"
 		},
 		{
 			"name": "ol",
-			"cite": "https://html.spec.whatwg.org/multipage/grouping-content.html#the-ol-element",
 			"contentModel": {
 				"contents": [
 					{
@@ -52101,11 +52057,11 @@
 						"missingValueDefault": "decimal"
 					}
 				}
-			}
+			},
+			"cite": "https://html.spec.whatwg.org/multipage/grouping-content.html#the-ol-element"
 		},
 		{
 			"name": "optgroup",
-			"cite": "https://html.spec.whatwg.org/multipage/form-elements.html#the-optgroup-element",
 			"contentModel": {
 				"contents": [
 					{
@@ -52128,16 +52084,15 @@
 				"#HTMLGlobalAttrs": true
 			},
 			"attributes": {
-				"disabled": {},
 				"label": {
 					"type": "NoEmptyAny",
 					"required": true
 				}
-			}
+			},
+			"cite": "https://html.spec.whatwg.org/multipage/form-elements.html#the-optgroup-element"
 		},
 		{
 			"name": "option",
-			"cite": "https://html.spec.whatwg.org/multipage/form-elements.html#the-option-element",
 			"contentModel": {
 				"contents": [
 					{
@@ -52206,7 +52161,6 @@
 				"#HTMLGlobalAttrs": true
 			},
 			"attributes": {
-				"disabled": {},
 				"label": {
 					"type": "Any"
 				},
@@ -52216,11 +52170,11 @@
 				"value": {
 					"type": "Any"
 				}
-			}
+			},
+			"cite": "https://html.spec.whatwg.org/multipage/form-elements.html#the-option-element"
 		},
 		{
 			"name": "output",
-			"cite": "https://html.spec.whatwg.org/multipage/form-elements.html#the-output-element",
 			"contentModel": {
 				"contents": [
 					{
@@ -52246,14 +52200,12 @@
 						"unique": true,
 						"caseInsensitive": true
 					}
-				},
-				"form": {},
-				"name": {}
-			}
+				}
+			},
+			"cite": "https://html.spec.whatwg.org/multipage/form-elements.html#the-output-element"
 		},
 		{
 			"name": "p",
-			"cite": "https://html.spec.whatwg.org/multipage/grouping-content.html#the-p-element",
 			"contentModel": {
 				"contents": [
 					{
@@ -52274,11 +52226,11 @@
 				"#GlobalEventAttrs": true,
 				"#HTMLGlobalAttrs": true
 			},
-			"attributes": {}
+			"attributes": {},
+			"cite": "https://html.spec.whatwg.org/multipage/grouping-content.html#the-p-element"
 		},
 		{
 			"name": "param",
-			"cite": "https://html.spec.whatwg.org/multipage/obsolete.html#param",
 			"contentModel": {
 				"contents": true
 			},
@@ -52286,6 +52238,7 @@
 				"permittedRoles": true,
 				"implicitRole": false
 			},
+			"cite": "https://html.spec.whatwg.org/multipage/obsolete.html#param",
 			"obsolete": true,
 			"globalAttrs": {},
 			"attributes": {
@@ -52309,7 +52262,6 @@
 		},
 		{
 			"name": "picture",
-			"cite": "https://html.spec.whatwg.org/multipage/embedded-content.html#the-picture-element",
 			"contentModel": {
 				"contents": [
 					{
@@ -52349,11 +52301,11 @@
 				"#GlobalEventAttrs": true,
 				"#HTMLGlobalAttrs": true
 			},
-			"attributes": {}
+			"attributes": {},
+			"cite": "https://html.spec.whatwg.org/multipage/embedded-content.html#the-picture-element"
 		},
 		{
 			"name": "plaintext",
-			"cite": "https://html.spec.whatwg.org/multipage/obsolete.html#plaintext",
 			"contentModel": {
 				"contents": true
 			},
@@ -52361,13 +52313,13 @@
 				"permittedRoles": true,
 				"implicitRole": false
 			},
+			"cite": "https://html.spec.whatwg.org/multipage/obsolete.html#plaintext",
 			"obsolete": true,
 			"globalAttrs": {},
 			"attributes": {}
 		},
 		{
 			"name": "pre",
-			"cite": "https://html.spec.whatwg.org/multipage/grouping-content.html#the-pre-element",
 			"contentModel": {
 				"contents": [
 					{
@@ -52397,11 +52349,11 @@
 					"deprecated": true,
 					"nonStandard": true
 				}
-			}
+			},
+			"cite": "https://html.spec.whatwg.org/multipage/grouping-content.html#the-pre-element"
 		},
 		{
 			"name": "progress",
-			"cite": "https://html.spec.whatwg.org/multipage/form-elements.html#the-progress-element",
 			"contentModel": {
 				"contents": [
 					{
@@ -52453,11 +52405,11 @@
 						"gte": 0
 					}
 				}
-			}
+			},
+			"cite": "https://html.spec.whatwg.org/multipage/form-elements.html#the-progress-element"
 		},
 		{
 			"name": "q",
-			"cite": "https://html.spec.whatwg.org/multipage/text-level-semantics.html#the-q-element",
 			"contentModel": {
 				"contents": [
 					{
@@ -52482,11 +52434,11 @@
 				"cite": {
 					"type": "URL"
 				}
-			}
+			},
+			"cite": "https://html.spec.whatwg.org/multipage/text-level-semantics.html#the-q-element"
 		},
 		{
 			"name": "rb",
-			"cite": "https://html.spec.whatwg.org/multipage/obsolete.html#rb",
 			"contentModel": {
 				"contents": true
 			},
@@ -52494,13 +52446,13 @@
 				"permittedRoles": true,
 				"implicitRole": false
 			},
+			"cite": "https://html.spec.whatwg.org/multipage/obsolete.html#rb",
 			"obsolete": true,
 			"globalAttrs": {},
 			"attributes": {}
 		},
 		{
 			"name": "rp",
-			"cite": "https://html.spec.whatwg.org/multipage/text-level-semantics.html#the-rp-element",
 			"contentModel": {
 				"contents": [
 					{
@@ -52517,11 +52469,11 @@
 				"#GlobalEventAttrs": true,
 				"#HTMLGlobalAttrs": true
 			},
-			"attributes": {}
+			"attributes": {},
+			"cite": "https://html.spec.whatwg.org/multipage/text-level-semantics.html#the-rp-element"
 		},
 		{
 			"name": "rt",
-			"cite": "https://html.spec.whatwg.org/multipage/text-level-semantics.html#the-rt-element",
 			"contentModel": {
 				"contents": [
 					{
@@ -52539,11 +52491,11 @@
 				"#GlobalEventAttrs": true,
 				"#HTMLGlobalAttrs": true
 			},
-			"attributes": {}
+			"attributes": {},
+			"cite": "https://html.spec.whatwg.org/multipage/text-level-semantics.html#the-rt-element"
 		},
 		{
 			"name": "rtc",
-			"cite": "https://html.spec.whatwg.org/multipage/obsolete.html#rtc",
 			"contentModel": {
 				"contents": true
 			},
@@ -52551,13 +52503,13 @@
 				"permittedRoles": true,
 				"implicitRole": false
 			},
+			"cite": "https://html.spec.whatwg.org/multipage/obsolete.html#rtc",
 			"obsolete": true,
 			"globalAttrs": {},
 			"attributes": {}
 		},
 		{
 			"name": "ruby",
-			"cite": "https://html.spec.whatwg.org/multipage/text-level-semantics.html#the-ruby-element",
 			"contentModel": {
 				"contents": [
 					{
@@ -52602,11 +52554,11 @@
 				"#GlobalEventAttrs": true,
 				"#HTMLGlobalAttrs": true
 			},
-			"attributes": {}
+			"attributes": {},
+			"cite": "https://html.spec.whatwg.org/multipage/text-level-semantics.html#the-ruby-element"
 		},
 		{
 			"name": "s",
-			"cite": "https://html.spec.whatwg.org/multipage/text-level-semantics.html#the-s-element",
 			"contentModel": {
 				"contents": [
 					{
@@ -52627,11 +52579,11 @@
 				"#GlobalEventAttrs": true,
 				"#HTMLGlobalAttrs": true
 			},
-			"attributes": {}
+			"attributes": {},
+			"cite": "https://html.spec.whatwg.org/multipage/text-level-semantics.html#the-s-element"
 		},
 		{
 			"name": "samp",
-			"cite": "https://html.spec.whatwg.org/multipage/text-level-semantics.html#the-samp-element",
 			"contentModel": {
 				"contents": [
 					{
@@ -52652,11 +52604,11 @@
 				"#GlobalEventAttrs": true,
 				"#HTMLGlobalAttrs": true
 			},
-			"attributes": {}
+			"attributes": {},
+			"cite": "https://html.spec.whatwg.org/multipage/text-level-semantics.html#the-samp-element"
 		},
 		{
 			"name": "script",
-			"cite": "https://html.spec.whatwg.org/multipage/scripting.html#the-script-element",
 			"contentModel": {
 				"contents": [
 					{
@@ -52724,7 +52676,6 @@
 					"type": "Boolean",
 					"condition": ":is(:not([type]), [type=''], [type='application/ecmascript' i], [type='application/javascript' i], [type='application/x-ecmascript' i], [type='application/x-javascript' i], [type='text/ecmascript' i], [type='text/javascript' i], [type='text/javascript1.0' i], [type='text/javascript1.1' i], [type='text/javascript1.2' i], [type='text/javascript1.3' i], [type='text/javascript1.4' i], [type='text/javascript1.5' i], [type='text/jscript' i], [type='text/livescript' i], [type='text/x-ecmascript' i], [type='text/x-javascript' i])"
 				},
-				"nonce": {},
 				"referrerpolicy": {
 					"condition": ":is(:not([type]), [type=''], [type='module' i], [type='application/ecmascript' i], [type='application/javascript' i], [type='application/x-ecmascript' i], [type='application/x-javascript' i], [type='text/ecmascript' i], [type='text/javascript' i], [type='text/javascript1.0' i], [type='text/javascript1.1' i], [type='text/javascript1.2' i], [type='text/javascript1.3' i], [type='text/javascript1.4' i], [type='text/javascript1.5' i], [type='text/jscript' i], [type='text/livescript' i], [type='text/x-ecmascript' i], [type='text/x-javascript' i])"
 				},
@@ -52741,11 +52692,11 @@
 						}
 					]
 				}
-			}
+			},
+			"cite": "https://html.spec.whatwg.org/multipage/scripting.html#the-script-element"
 		},
 		{
 			"name": "search",
-			"cite": "https://html.spec.whatwg.org/multipage/grouping-content.html#the-search-element",
 			"contentModel": {
 				"contents": [
 					{
@@ -52762,11 +52713,11 @@
 				"#GlobalEventAttrs": true,
 				"#HTMLGlobalAttrs": true
 			},
-			"attributes": {}
+			"attributes": {},
+			"cite": "https://html.spec.whatwg.org/multipage/grouping-content.html#the-search-element"
 		},
 		{
 			"name": "section",
-			"cite": "https://html.spec.whatwg.org/multipage/sections.html#the-section-element",
 			"contentModel": {
 				"contents": [
 					{
@@ -52832,11 +52783,11 @@
 				"#GlobalEventAttrs": true,
 				"#HTMLGlobalAttrs": true
 			},
-			"attributes": {}
+			"attributes": {},
+			"cite": "https://html.spec.whatwg.org/multipage/sections.html#the-section-element"
 		},
 		{
 			"name": "select",
-			"cite": "https://html.spec.whatwg.org/multipage/form-elements.html#the-select-element",
 			"contentModel": {
 				"contents": [
 					{
@@ -52910,25 +52861,20 @@
 				"autocomplete": {
 					"type": "AutoCompleteNoWebauthn"
 				},
-				"autofocus": {},
-				"disabled": {},
-				"form": {},
 				"multiple": {
 					"type": "Boolean"
 				},
-				"name": {},
-				"required": {},
 				"size": {
 					"type": {
 						"type": "integer",
 						"gt": 0
 					}
 				}
-			}
+			},
+			"cite": "https://html.spec.whatwg.org/multipage/form-elements.html#the-select-element"
 		},
 		{
 			"name": "slot",
-			"cite": "https://html.spec.whatwg.org/multipage/scripting.html#the-slot-element",
 			"contentModel": {
 				"contents": [
 					{
@@ -52950,11 +52896,11 @@
 				"name": {
 					"type": "NoEmptyAny"
 				}
-			}
+			},
+			"cite": "https://html.spec.whatwg.org/multipage/scripting.html#the-slot-element"
 		},
 		{
 			"name": "small",
-			"cite": "https://html.spec.whatwg.org/multipage/text-level-semantics.html#the-small-element",
 			"contentModel": {
 				"contents": [
 					{
@@ -52975,11 +52921,11 @@
 				"#GlobalEventAttrs": true,
 				"#HTMLGlobalAttrs": true
 			},
-			"attributes": {}
+			"attributes": {},
+			"cite": "https://html.spec.whatwg.org/multipage/text-level-semantics.html#the-small-element"
 		},
 		{
 			"name": "source",
-			"cite": "https://html.spec.whatwg.org/multipage/embedded-content.html#the-source-element",
 			"contentModel": {
 				"contents": false
 			},
@@ -53019,11 +52965,11 @@
 				"width": {
 					"condition": "picture > source"
 				}
-			}
+			},
+			"cite": "https://html.spec.whatwg.org/multipage/embedded-content.html#the-source-element"
 		},
 		{
 			"name": "spacer",
-			"cite": "https://html.spec.whatwg.org/multipage/obsolete.html#spacer",
 			"contentModel": {
 				"contents": true
 			},
@@ -53031,13 +52977,13 @@
 				"permittedRoles": true,
 				"implicitRole": false
 			},
+			"cite": "https://html.spec.whatwg.org/multipage/obsolete.html#spacer",
 			"obsolete": true,
 			"globalAttrs": {},
 			"attributes": {}
 		},
 		{
 			"name": "span",
-			"cite": "https://html.spec.whatwg.org/multipage/text-level-semantics.html#the-span-element",
 			"contentModel": {
 				"contents": [
 					{
@@ -53058,11 +53004,11 @@
 				"#GlobalEventAttrs": true,
 				"#HTMLGlobalAttrs": true
 			},
-			"attributes": {}
+			"attributes": {},
+			"cite": "https://html.spec.whatwg.org/multipage/text-level-semantics.html#the-span-element"
 		},
 		{
 			"name": "strike",
-			"cite": "https://html.spec.whatwg.org/multipage/obsolete.html#strike",
 			"contentModel": {
 				"contents": true
 			},
@@ -53070,13 +53016,13 @@
 				"permittedRoles": true,
 				"implicitRole": false
 			},
+			"cite": "https://html.spec.whatwg.org/multipage/obsolete.html#strike",
 			"obsolete": true,
 			"globalAttrs": {},
 			"attributes": {}
 		},
 		{
 			"name": "strong",
-			"cite": "https://html.spec.whatwg.org/multipage/text-level-semantics.html#the-strong-element",
 			"contentModel": {
 				"contents": [
 					{
@@ -53097,11 +53043,11 @@
 				"#GlobalEventAttrs": true,
 				"#HTMLGlobalAttrs": true
 			},
-			"attributes": {}
+			"attributes": {},
+			"cite": "https://html.spec.whatwg.org/multipage/text-level-semantics.html#the-strong-element"
 		},
 		{
 			"name": "style",
-			"cite": "https://html.spec.whatwg.org/multipage/semantics.html#the-style-element",
 			"contentModel": {
 				"contents": [
 					{
@@ -53132,16 +53078,14 @@
 				"media": {
 					"type": "MediaQueryList"
 				},
-				"nonce": {},
-				"title": {},
 				"type": {
 					"deprecated": true
 				}
-			}
+			},
+			"cite": "https://html.spec.whatwg.org/multipage/semantics.html#the-style-element"
 		},
 		{
 			"name": "sub",
-			"cite": "https://html.spec.whatwg.org/multipage/text-level-semantics.html#the-sub-and-sup-elements",
 			"contentModel": {
 				"contents": [
 					{
@@ -53162,11 +53106,11 @@
 				"#GlobalEventAttrs": true,
 				"#HTMLGlobalAttrs": true
 			},
-			"attributes": {}
+			"attributes": {},
+			"cite": "https://html.spec.whatwg.org/multipage/text-level-semantics.html#the-sub-and-sup-elements"
 		},
 		{
 			"name": "summary",
-			"cite": "https://html.spec.whatwg.org/multipage/interactive-elements.html#the-summary-element",
 			"contentModel": {
 				"contents": [
 					{
@@ -53216,11 +53160,11 @@
 				"#GlobalEventAttrs": true,
 				"#HTMLGlobalAttrs": true
 			},
-			"attributes": {}
+			"attributes": {},
+			"cite": "https://html.spec.whatwg.org/multipage/interactive-elements.html#the-summary-element"
 		},
 		{
 			"name": "sup",
-			"cite": "https://html.spec.whatwg.org/multipage/text-level-semantics.html#the-sub-and-sup-elements",
 			"contentModel": {
 				"contents": [
 					{
@@ -53241,11 +53185,11 @@
 				"#GlobalEventAttrs": true,
 				"#HTMLGlobalAttrs": true
 			},
-			"attributes": {}
+			"attributes": {},
+			"cite": "https://html.spec.whatwg.org/multipage/text-level-semantics.html#the-sub-and-sup-elements"
 		},
 		{
 			"name": "table",
-			"cite": "https://html.spec.whatwg.org/multipage/tables.html#the-table-element",
 			"contentModel": {
 				"contents": [
 					{
@@ -53331,11 +53275,11 @@
 				"width": {
 					"deprecated": true
 				}
-			}
+			},
+			"cite": "https://html.spec.whatwg.org/multipage/tables.html#the-table-element"
 		},
 		{
 			"name": "tbody",
-			"cite": "https://html.spec.whatwg.org/multipage/tables.html#the-tbody-element",
 			"contentModel": {
 				"contents": [
 					{
@@ -53369,11 +53313,11 @@
 				"valign": {
 					"deprecated": true
 				}
-			}
+			},
+			"cite": "https://html.spec.whatwg.org/multipage/tables.html#the-tbody-element"
 		},
 		{
 			"name": "td",
-			"cite": "https://html.spec.whatwg.org/multipage/tables.html#the-td-element",
 			"contentModel": {
 				"contents": [
 					{
@@ -53421,12 +53365,9 @@
 				"charoff": {
 					"deprecated": true
 				},
-				"colspan": {},
-				"headers": {},
 				"height": {
 					"deprecated": true
 				},
-				"rowspan": {},
 				"scope": {
 					"deprecated": true
 				},
@@ -53436,11 +53377,11 @@
 				"width": {
 					"deprecated": true
 				}
-			}
+			},
+			"cite": "https://html.spec.whatwg.org/multipage/tables.html#the-td-element"
 		},
 		{
 			"name": "template",
-			"cite": "https://html.spec.whatwg.org/multipage/scripting.html#the-template-element",
 			"contentModel": {
 				"contents": true
 			},
@@ -53490,11 +53431,11 @@
 						"invalidValueDefault": "named"
 					}
 				}
-			}
+			},
+			"cite": "https://html.spec.whatwg.org/multipage/scripting.html#the-template-element"
 		},
 		{
 			"name": "textarea",
-			"cite": "https://html.spec.whatwg.org/multipage/form-elements.html#the-textarea-element",
 			"contentModel": {
 				"contents": [
 					{
@@ -53527,10 +53468,6 @@
 				"#HTMLGlobalAttrs": true
 			},
 			"attributes": {
-				"autocapitalize": {},
-				"autocomplete": {},
-				"autocorrect": {},
-				"autofocus": {},
 				"cols": {
 					"type": {
 						"type": "integer",
@@ -53538,17 +53475,9 @@
 					},
 					"defaultValue": "20"
 				},
-				"dirname": {},
-				"disabled": {},
-				"form": {},
-				"maxlength": {},
-				"minlength": {},
-				"name": {},
 				"placeholder": {
 					"type": "Any"
 				},
-				"readonly": {},
-				"required": {},
 				"rows": {
 					"type": {
 						"type": "integer",
@@ -53556,7 +53485,6 @@
 					},
 					"defaultValue": "2"
 				},
-				"spellcheck": {},
 				"wrap": {
 					"type": {
 						"enum": ["soft", "hard"],
@@ -53564,11 +53492,11 @@
 						"invalidValueDefault": "soft"
 					}
 				}
-			}
+			},
+			"cite": "https://html.spec.whatwg.org/multipage/form-elements.html#the-textarea-element"
 		},
 		{
 			"name": "tfoot",
-			"cite": "https://html.spec.whatwg.org/multipage/tables.html#the-tfoot-element",
 			"contentModel": {
 				"contents": [
 					{
@@ -53602,11 +53530,11 @@
 				"valign": {
 					"deprecated": true
 				}
-			}
+			},
+			"cite": "https://html.spec.whatwg.org/multipage/tables.html#the-tfoot-element"
 		},
 		{
 			"name": "th",
-			"cite": "https://html.spec.whatwg.org/multipage/tables.html#the-th-element",
 			"contentModel": {
 				"contents": [
 					{
@@ -53666,12 +53594,9 @@
 				"charoff": {
 					"deprecated": true
 				},
-				"colspan": {},
-				"headers": {},
 				"height": {
 					"deprecated": true
 				},
-				"rowspan": {},
 				"scope": {
 					"type": {
 						"enum": ["row", "col", "rowgroup", "colgroup"],
@@ -53685,11 +53610,11 @@
 				"width": {
 					"deprecated": true
 				}
-			}
+			},
+			"cite": "https://html.spec.whatwg.org/multipage/tables.html#the-th-element"
 		},
 		{
 			"name": "thead",
-			"cite": "https://html.spec.whatwg.org/multipage/tables.html#the-thead-element",
 			"contentModel": {
 				"contents": [
 					{
@@ -53723,11 +53648,11 @@
 				"valign": {
 					"deprecated": true
 				}
-			}
+			},
+			"cite": "https://html.spec.whatwg.org/multipage/tables.html#the-thead-element"
 		},
 		{
 			"name": "time",
-			"cite": "https://html.spec.whatwg.org/multipage/text-level-semantics.html#the-time-element",
 			"contentModel": {
 				"contents": [
 					{
@@ -53752,11 +53677,11 @@
 				"datetime": {
 					"type": "DateTime"
 				}
-			}
+			},
+			"cite": "https://html.spec.whatwg.org/multipage/text-level-semantics.html#the-time-element"
 		},
 		{
 			"name": "title",
-			"cite": "https://html.spec.whatwg.org/multipage/semantics.html#the-title-element",
 			"contentModel": {
 				"contents": [
 					{
@@ -53774,11 +53699,11 @@
 				"#GlobalEventAttrs": true,
 				"#HTMLGlobalAttrs": true
 			},
-			"attributes": {}
+			"attributes": {},
+			"cite": "https://html.spec.whatwg.org/multipage/semantics.html#the-title-element"
 		},
 		{
 			"name": "tr",
-			"cite": "https://html.spec.whatwg.org/multipage/tables.html#the-tr-element",
 			"contentModel": {
 				"contents": [
 					{
@@ -53816,11 +53741,11 @@
 				"valign": {
 					"deprecated": true
 				}
-			}
+			},
+			"cite": "https://html.spec.whatwg.org/multipage/tables.html#the-tr-element"
 		},
 		{
 			"name": "track",
-			"cite": "https://html.spec.whatwg.org/multipage/media.html#the-track-element",
 			"contentModel": {
 				"contents": false,
 				"uniqueAttrs": ["default"]
@@ -53856,11 +53781,11 @@
 				"srclang": {
 					"type": "BCP47"
 				}
-			}
+			},
+			"cite": "https://html.spec.whatwg.org/multipage/media.html#the-track-element"
 		},
 		{
 			"name": "tt",
-			"cite": "https://html.spec.whatwg.org/multipage/obsolete.html#tt",
 			"contentModel": {
 				"contents": true
 			},
@@ -53868,13 +53793,13 @@
 				"permittedRoles": true,
 				"implicitRole": false
 			},
+			"cite": "https://html.spec.whatwg.org/multipage/obsolete.html#tt",
 			"obsolete": true,
 			"globalAttrs": {},
 			"attributes": {}
 		},
 		{
 			"name": "u",
-			"cite": "https://html.spec.whatwg.org/multipage/text-level-semantics.html#the-u-element",
 			"contentModel": {
 				"contents": [
 					{
@@ -53895,11 +53820,11 @@
 				"#GlobalEventAttrs": true,
 				"#HTMLGlobalAttrs": true
 			},
-			"attributes": {}
+			"attributes": {},
+			"cite": "https://html.spec.whatwg.org/multipage/text-level-semantics.html#the-u-element"
 		},
 		{
 			"name": "ul",
-			"cite": "https://html.spec.whatwg.org/multipage/grouping-content.html#the-ul-element",
 			"contentModel": {
 				"contents": [
 					{
@@ -53953,11 +53878,11 @@
 				"type": {
 					"deprecated": true
 				}
-			}
+			},
+			"cite": "https://html.spec.whatwg.org/multipage/grouping-content.html#the-ul-element"
 		},
 		{
 			"name": "var",
-			"cite": "https://html.spec.whatwg.org/multipage/text-level-semantics.html#the-var-element",
 			"contentModel": {
 				"contents": [
 					{
@@ -53975,11 +53900,11 @@
 				"#GlobalEventAttrs": true,
 				"#HTMLGlobalAttrs": true
 			},
-			"attributes": {}
+			"attributes": {},
+			"cite": "https://html.spec.whatwg.org/multipage/text-level-semantics.html#the-var-element"
 		},
 		{
 			"name": "video",
-			"cite": "https://html.spec.whatwg.org/multipage/media.html#the-video-element",
 			"contentModel": {
 				"contents": [
 					{
@@ -54031,8 +53956,6 @@
 				"#HTMLLinkAndFetchingAttrs": ["crossorigin", "loading"]
 			},
 			"attributes": {
-				"autoplay": {},
-				"controls": {},
 				"controlslist": {
 					"type": {
 						"token": {
@@ -54044,29 +53967,26 @@
 						"separator": "space"
 					}
 				},
-				"crossorigin": {},
-				"disablepictureinpicture": {},
-				"disableremoteplayback": {},
-				"height": {},
+				"disablepictureinpicture": {
+					"type": "Boolean"
+				},
+				"disableremoteplayback": {
+					"type": "Boolean"
+				},
 				"loading": {
 					"experimental": false
 				},
-				"loop": {},
-				"muted": {},
 				"playsinline": {
 					"type": "Boolean"
 				},
 				"poster": {
 					"type": "NonEmptyURL"
-				},
-				"preload": {},
-				"src": {},
-				"width": {}
-			}
+				}
+			},
+			"cite": "https://html.spec.whatwg.org/multipage/media.html#the-video-element"
 		},
 		{
 			"name": "wbr",
-			"cite": "https://html.spec.whatwg.org/multipage/text-level-semantics.html#the-wbr-element",
 			"contentModel": {
 				"contents": false
 			},
@@ -54085,11 +54005,11 @@
 				"#GlobalEventAttrs": true,
 				"#HTMLGlobalAttrs": true
 			},
-			"attributes": {}
+			"attributes": {},
+			"cite": "https://html.spec.whatwg.org/multipage/text-level-semantics.html#the-wbr-element"
 		},
 		{
 			"name": "xmp",
-			"cite": "https://html.spec.whatwg.org/multipage/obsolete.html#xmp",
 			"contentModel": {
 				"contents": true
 			},
@@ -54097,6 +54017,7 @@
 				"permittedRoles": true,
 				"implicitRole": false
 			},
+			"cite": "https://html.spec.whatwg.org/multipage/obsolete.html#xmp",
 			"obsolete": true,
 			"globalAttrs": {},
 			"attributes": {}
@@ -54104,7 +54025,6 @@
 		{
 			"name": "mml:annotation",
 			"namespace": "http://www.w3.org/1998/Math/MathML",
-			"cite": "https://www.w3.org/TR/mathml-core/#semantics-and-presentation",
 			"contentModel": {
 				"contents": [
 					{
@@ -54129,12 +54049,12 @@
 					"deprecated": true,
 					"type": "URL"
 				}
-			}
+			},
+			"cite": "https://www.w3.org/TR/mathml-core/#semantics-and-presentation"
 		},
 		{
 			"name": "mml:annotation-xml",
 			"namespace": "http://www.w3.org/1998/Math/MathML",
-			"cite": "https://www.w3.org/TR/mathml-core/#semantics-and-presentation",
 			"contentModel": {
 				"contents": [
 					{
@@ -54165,12 +54085,12 @@
 					"deprecated": true,
 					"type": "URL"
 				}
-			}
+			},
+			"cite": "https://www.w3.org/TR/mathml-core/#semantics-and-presentation"
 		},
 		{
 			"name": "mml:maction",
 			"namespace": "http://www.w3.org/1998/Math/MathML",
-			"cite": "https://w3c.github.io/mathml/#presm_maction",
 			"contentModel": {
 				"contents": [
 					{
@@ -54205,12 +54125,12 @@
 					"nonStandard": true,
 					"type": "Any"
 				}
-			}
+			},
+			"cite": "https://w3c.github.io/mathml/#presm_maction"
 		},
 		{
 			"name": "mml:math",
 			"namespace": "http://www.w3.org/1998/Math/MathML",
-			"cite": "https://www.w3.org/TR/mathml-core/#the-top-level-math-element",
 			"contentModel": {
 				"contents": [
 					{
@@ -54245,12 +54165,12 @@
 				"xmlns": {
 					"type": "URL"
 				}
-			}
+			},
+			"cite": "https://www.w3.org/TR/mathml-core/#the-top-level-math-element"
 		},
 		{
 			"name": "mml:menclose",
 			"namespace": "http://www.w3.org/1998/Math/MathML",
-			"cite": "https://w3c.github.io/mathml/#presm_menclose_desc",
 			"contentModel": {
 				"contents": [
 					{
@@ -54279,12 +54199,12 @@
 					"nonStandard": true,
 					"type": "Any"
 				}
-			}
+			},
+			"cite": "https://w3c.github.io/mathml/#presm_menclose_desc"
 		},
 		{
 			"name": "mml:merror",
 			"namespace": "http://www.w3.org/1998/Math/MathML",
-			"cite": "https://www.w3.org/TR/mathml-core/#error-message-merror",
 			"contentModel": {
 				"contents": [
 					{
@@ -54307,12 +54227,12 @@
 				"#GlobalEventAttrs": true,
 				"#MathMLGlobalAttrs": true
 			},
-			"attributes": {}
+			"attributes": {},
+			"cite": "https://www.w3.org/TR/mathml-core/#error-message-merror"
 		},
 		{
 			"name": "mml:mfenced",
 			"namespace": "http://www.w3.org/1998/Math/MathML",
-			"cite": "https://w3c.github.io/mathml/#presm_mfenced_desc",
 			"contentModel": {
 				"contents": [
 					{
@@ -54350,12 +54270,12 @@
 					"type": "Any",
 					"defaultValue": ","
 				}
-			}
+			},
+			"cite": "https://w3c.github.io/mathml/#presm_mfenced_desc"
 		},
 		{
 			"name": "mml:mfrac",
 			"namespace": "http://www.w3.org/1998/Math/MathML",
-			"cite": "https://www.w3.org/TR/mathml-core/#fractions-mfrac",
 			"contentModel": {
 				"contents": [
 					{
@@ -54386,12 +54306,12 @@
 					"deprecated": true,
 					"nonStandard": true
 				}
-			}
+			},
+			"cite": "https://www.w3.org/TR/mathml-core/#fractions-mfrac"
 		},
 		{
 			"name": "mml:mi",
 			"namespace": "http://www.w3.org/1998/Math/MathML",
-			"cite": "https://www.w3.org/TR/mathml-core/#the-mi-element",
 			"contentModel": {
 				"contents": [
 					{
@@ -54421,12 +54341,12 @@
 						"disallowToSurroundBySpaces": false
 					}
 				}
-			}
+			},
+			"cite": "https://www.w3.org/TR/mathml-core/#the-mi-element"
 		},
 		{
 			"name": "mml:mmultiscripts",
 			"namespace": "http://www.w3.org/1998/Math/MathML",
-			"cite": "https://www.w3.org/TR/mathml-core/#prescripts-and-tensor-indices-mmultiscripts",
 			"contentModel": {
 				"contents": [
 					{
@@ -54452,12 +54372,12 @@
 					"deprecated": true,
 					"nonStandard": true
 				}
-			}
+			},
+			"cite": "https://www.w3.org/TR/mathml-core/#prescripts-and-tensor-indices-mmultiscripts"
 		},
 		{
 			"name": "mml:mn",
 			"namespace": "http://www.w3.org/1998/Math/MathML",
-			"cite": "https://www.w3.org/TR/mathml-core/#number-mn",
 			"contentModel": {
 				"contents": [
 					{
@@ -54480,12 +54400,12 @@
 				"#GlobalEventAttrs": true,
 				"#MathMLGlobalAttrs": true
 			},
-			"attributes": {}
+			"attributes": {},
+			"cite": "https://www.w3.org/TR/mathml-core/#number-mn"
 		},
 		{
 			"name": "mml:mo",
 			"namespace": "http://www.w3.org/1998/Math/MathML",
-			"cite": "https://www.w3.org/TR/mathml-core/#operator-fence-separator-or-accent-mo",
 			"contentModel": {
 				"contents": [
 					{
@@ -54570,12 +54490,12 @@
 						"disallowToSurroundBySpaces": false
 					}
 				}
-			}
+			},
+			"cite": "https://www.w3.org/TR/mathml-core/#operator-fence-separator-or-accent-mo"
 		},
 		{
 			"name": "mml:mover",
 			"namespace": "http://www.w3.org/1998/Math/MathML",
-			"cite": "https://www.w3.org/TR/mathml-core/#underscripts-and-overscripts-munder-mover-munderover",
 			"contentModel": {
 				"contents": [
 					{
@@ -54607,12 +54527,12 @@
 						"disallowToSurroundBySpaces": false
 					}
 				}
-			}
+			},
+			"cite": "https://www.w3.org/TR/mathml-core/#underscripts-and-overscripts-munder-mover-munderover"
 		},
 		{
 			"name": "mml:mpadded",
 			"namespace": "http://www.w3.org/1998/Math/MathML",
-			"cite": "https://www.w3.org/TR/mathml-core/#adjust-space-around-content-mpadded",
 			"contentModel": {
 				"contents": [
 					{
@@ -54651,12 +54571,12 @@
 				"width": {
 					"type": "<length-percentage>"
 				}
-			}
+			},
+			"cite": "https://www.w3.org/TR/mathml-core/#adjust-space-around-content-mpadded"
 		},
 		{
 			"name": "mml:mphantom",
 			"namespace": "http://www.w3.org/1998/Math/MathML",
-			"cite": "https://www.w3.org/TR/mathml-core/#making-sub-expressions-invisible-mphantom",
 			"contentModel": {
 				"contents": [
 					{
@@ -54679,12 +54599,12 @@
 				"#GlobalEventAttrs": true,
 				"#MathMLGlobalAttrs": true
 			},
-			"attributes": {}
+			"attributes": {},
+			"cite": "https://www.w3.org/TR/mathml-core/#making-sub-expressions-invisible-mphantom"
 		},
 		{
 			"name": "mml:mprescripts",
 			"namespace": "http://www.w3.org/1998/Math/MathML",
-			"cite": "https://www.w3.org/TR/mathml-core/#prescripts-and-tensor-indices-mmultiscripts",
 			"contentModel": {
 				"contents": false
 			},
@@ -54697,12 +54617,12 @@
 				"#GlobalEventAttrs": true,
 				"#MathMLGlobalAttrs": true
 			},
-			"attributes": {}
+			"attributes": {},
+			"cite": "https://www.w3.org/TR/mathml-core/#prescripts-and-tensor-indices-mmultiscripts"
 		},
 		{
 			"name": "mml:mroot",
 			"namespace": "http://www.w3.org/1998/Math/MathML",
-			"cite": "https://www.w3.org/TR/mathml-core/#radicals-msqrt-mroot",
 			"contentModel": {
 				"contents": [
 					{
@@ -54721,12 +54641,12 @@
 				"#GlobalEventAttrs": true,
 				"#MathMLGlobalAttrs": true
 			},
-			"attributes": {}
+			"attributes": {},
+			"cite": "https://www.w3.org/TR/mathml-core/#radicals-msqrt-mroot"
 		},
 		{
 			"name": "mml:mrow",
 			"namespace": "http://www.w3.org/1998/Math/MathML",
-			"cite": "https://www.w3.org/TR/mathml-core/#horizontally-group-sub-expressions-mrow",
 			"contentModel": {
 				"contents": [
 					{
@@ -54752,12 +54672,12 @@
 				"#GlobalEventAttrs": true,
 				"#MathMLGlobalAttrs": true
 			},
-			"attributes": {}
+			"attributes": {},
+			"cite": "https://www.w3.org/TR/mathml-core/#horizontally-group-sub-expressions-mrow"
 		},
 		{
 			"name": "mml:ms",
 			"namespace": "http://www.w3.org/1998/Math/MathML",
-			"cite": "https://www.w3.org/TR/mathml-core/#string-literal-ms",
 			"contentModel": {
 				"contents": [
 					{
@@ -54780,12 +54700,12 @@
 				"#GlobalEventAttrs": true,
 				"#MathMLGlobalAttrs": true
 			},
-			"attributes": {}
+			"attributes": {},
+			"cite": "https://www.w3.org/TR/mathml-core/#string-literal-ms"
 		},
 		{
 			"name": "mml:mspace",
 			"namespace": "http://www.w3.org/1998/Math/MathML",
-			"cite": "https://www.w3.org/TR/mathml-core/#space-mspace",
 			"contentModel": {
 				"contents": false
 			},
@@ -54808,12 +54728,12 @@
 				"width": {
 					"type": "<length-percentage>"
 				}
-			}
+			},
+			"cite": "https://www.w3.org/TR/mathml-core/#space-mspace"
 		},
 		{
 			"name": "mml:msqrt",
 			"namespace": "http://www.w3.org/1998/Math/MathML",
-			"cite": "https://www.w3.org/TR/mathml-core/#radicals-msqrt-mroot",
 			"contentModel": {
 				"contents": [
 					{
@@ -54830,12 +54750,12 @@
 				"#GlobalEventAttrs": true,
 				"#MathMLGlobalAttrs": true
 			},
-			"attributes": {}
+			"attributes": {},
+			"cite": "https://www.w3.org/TR/mathml-core/#radicals-msqrt-mroot"
 		},
 		{
 			"name": "mml:mstyle",
 			"namespace": "http://www.w3.org/1998/Math/MathML",
-			"cite": "https://www.w3.org/TR/mathml-core/#style-change-mstyle",
 			"contentModel": {
 				"contents": [
 					{
@@ -54879,12 +54799,12 @@
 					"deprecated": true,
 					"nonStandard": true
 				}
-			}
+			},
+			"cite": "https://www.w3.org/TR/mathml-core/#style-change-mstyle"
 		},
 		{
 			"name": "mml:msub",
 			"namespace": "http://www.w3.org/1998/Math/MathML",
-			"cite": "https://www.w3.org/TR/mathml-core/#subscripts-and-superscripts-msub-msup-msubsup",
 			"contentModel": {
 				"contents": [
 					{
@@ -54914,12 +54834,12 @@
 					"deprecated": true,
 					"nonStandard": true
 				}
-			}
+			},
+			"cite": "https://www.w3.org/TR/mathml-core/#subscripts-and-superscripts-msub-msup-msubsup"
 		},
 		{
 			"name": "mml:msubsup",
 			"namespace": "http://www.w3.org/1998/Math/MathML",
-			"cite": "https://www.w3.org/TR/mathml-core/#subscripts-and-superscripts-msub-msup-msubsup",
 			"contentModel": {
 				"contents": [
 					{
@@ -54953,12 +54873,12 @@
 					"deprecated": true,
 					"nonStandard": true
 				}
-			}
+			},
+			"cite": "https://www.w3.org/TR/mathml-core/#subscripts-and-superscripts-msub-msup-msubsup"
 		},
 		{
 			"name": "mml:msup",
 			"namespace": "http://www.w3.org/1998/Math/MathML",
-			"cite": "https://www.w3.org/TR/mathml-core/#subscripts-and-superscripts-msub-msup-msubsup",
 			"contentModel": {
 				"contents": [
 					{
@@ -54988,12 +54908,12 @@
 					"deprecated": true,
 					"nonStandard": true
 				}
-			}
+			},
+			"cite": "https://www.w3.org/TR/mathml-core/#subscripts-and-superscripts-msub-msup-msubsup"
 		},
 		{
 			"name": "mml:mtable",
 			"namespace": "http://www.w3.org/1998/Math/MathML",
-			"cite": "https://www.w3.org/TR/mathml-core/#table-or-matrix-mtable",
 			"contentModel": {
 				"contents": [
 					{
@@ -55041,12 +54961,12 @@
 				"width": {
 					"nonStandard": true
 				}
-			}
+			},
+			"cite": "https://www.w3.org/TR/mathml-core/#table-or-matrix-mtable"
 		},
 		{
 			"name": "mml:mtd",
 			"namespace": "http://www.w3.org/1998/Math/MathML",
-			"cite": "https://www.w3.org/TR/mathml-core/#entry-in-table-or-matrix-mtd",
 			"contentModel": {
 				"contents": [
 					{
@@ -55088,12 +55008,12 @@
 						"gt": 0
 					}
 				}
-			}
+			},
+			"cite": "https://www.w3.org/TR/mathml-core/#entry-in-table-or-matrix-mtd"
 		},
 		{
 			"name": "mml:mtext",
 			"namespace": "http://www.w3.org/1998/Math/MathML",
-			"cite": "https://www.w3.org/TR/mathml-core/#text-mtext",
 			"contentModel": {
 				"contents": [
 					{
@@ -55116,12 +55036,12 @@
 				"#GlobalEventAttrs": true,
 				"#MathMLGlobalAttrs": true
 			},
-			"attributes": {}
+			"attributes": {},
+			"cite": "https://www.w3.org/TR/mathml-core/#text-mtext"
 		},
 		{
 			"name": "mml:mtr",
 			"namespace": "http://www.w3.org/1998/Math/MathML",
-			"cite": "https://www.w3.org/TR/mathml-core/#row-in-table-or-matrix-mtr",
 			"contentModel": {
 				"contents": [
 					{
@@ -55145,12 +55065,12 @@
 				"rowalign": {
 					"nonStandard": true
 				}
-			}
+			},
+			"cite": "https://www.w3.org/TR/mathml-core/#row-in-table-or-matrix-mtr"
 		},
 		{
 			"name": "mml:munder",
 			"namespace": "http://www.w3.org/1998/Math/MathML",
-			"cite": "https://www.w3.org/TR/mathml-core/#underscripts-and-overscripts-munder-mover-munderover",
 			"contentModel": {
 				"contents": [
 					{
@@ -55182,12 +55102,12 @@
 						"disallowToSurroundBySpaces": false
 					}
 				}
-			}
+			},
+			"cite": "https://www.w3.org/TR/mathml-core/#underscripts-and-overscripts-munder-mover-munderover"
 		},
 		{
 			"name": "mml:munderover",
 			"namespace": "http://www.w3.org/1998/Math/MathML",
-			"cite": "https://www.w3.org/TR/mathml-core/#underscripts-and-overscripts-munder-mover-munderover",
 			"contentModel": {
 				"contents": [
 					{
@@ -55225,12 +55145,12 @@
 						"disallowToSurroundBySpaces": false
 					}
 				}
-			}
+			},
+			"cite": "https://www.w3.org/TR/mathml-core/#underscripts-and-overscripts-munder-mover-munderover"
 		},
 		{
 			"name": "mml:semantics",
 			"namespace": "http://www.w3.org/1998/Math/MathML",
-			"cite": "https://www.w3.org/TR/mathml-core/#semantics-and-presentation",
 			"contentModel": {
 				"contents": [
 					{
@@ -55253,12 +55173,12 @@
 				"#GlobalEventAttrs": true,
 				"#MathMLGlobalAttrs": true
 			},
-			"attributes": {}
+			"attributes": {},
+			"cite": "https://www.w3.org/TR/mathml-core/#semantics-and-presentation"
 		},
 		{
 			"name": "svg:a",
 			"namespace": "http://www.w3.org/2000/svg",
-			"cite": "https://svgwg.org/svg2-draft/linking.html#AElement",
 			"contentModel": {
 				"conditional": [
 					{
@@ -55377,9 +55297,6 @@
 				"#XLinkAttrs": ["xlink:href", "xlink:title"]
 			},
 			"attributes": {
-				"download": {},
-				"href": {},
-				"hreflang": {},
 				"interestfor": {
 					"experimental": true,
 					"nonStandard": true,
@@ -55388,19 +55305,15 @@
 				"ping": {
 					"experimental": true
 				},
-				"referrerpolicy": {},
-				"rel": {},
-				"target": {},
-				"type": {},
 				"xlink:href": {
 					"deprecated": true
 				}
-			}
+			},
+			"cite": "https://svgwg.org/svg2-draft/linking.html#AElement"
 		},
 		{
 			"name": "svg:animate",
 			"namespace": "http://www.w3.org/2000/svg",
-			"cite": "https://svgwg.org/specs/animations/#AnimateElement",
 			"contentModel": {
 				"contents": [
 					{
@@ -55504,12 +55417,12 @@
 					"writing-mode"
 				]
 			},
-			"attributes": {}
+			"attributes": {},
+			"cite": "https://svgwg.org/specs/animations/#AnimateElement"
 		},
 		{
 			"name": "svg:animateMotion",
 			"namespace": "http://www.w3.org/2000/svg",
-			"cite": "https://svgwg.org/specs/animations/#AnimateMotionElement",
 			"contentModel": {
 				"contents": [
 					{
@@ -55573,12 +55486,12 @@
 				"rotate": {
 					"type": "<rotate>"
 				}
-			}
+			},
+			"cite": "https://svgwg.org/specs/animations/#AnimateMotionElement"
 		},
 		{
 			"name": "svg:animateTransform",
 			"namespace": "http://www.w3.org/2000/svg",
-			"cite": "https://svgwg.org/specs/animations/#AnimateTransformElement",
 			"contentModel": {
 				"contents": [
 					{
@@ -55619,12 +55532,12 @@
 					},
 					"defaultValue": "translate"
 				}
-			}
+			},
+			"cite": "https://svgwg.org/specs/animations/#AnimateTransformElement"
 		},
 		{
 			"name": "svg:circle",
 			"namespace": "http://www.w3.org/2000/svg",
-			"cite": "https://svgwg.org/svg2-draft/shapes.html#CircleElement",
 			"contentModel": {
 				"contents": [
 					{
@@ -55727,19 +55640,16 @@
 				]
 			},
 			"attributes": {
-				"cx": {},
-				"cy": {},
 				"pathLength": {
 					"type": "<number>",
 					"animatable": true
-				},
-				"r": {}
-			}
+				}
+			},
+			"cite": "https://svgwg.org/svg2-draft/shapes.html#CircleElement"
 		},
 		{
 			"name": "svg:clipPath",
 			"namespace": "http://www.w3.org/2000/svg",
-			"cite": "https://drafts.csswg.org/css-masking-1/#ClipPathElement",
 			"contentModel": {
 				"contents": [
 					{
@@ -55841,12 +55751,12 @@
 					},
 					"defaultValue": "true"
 				}
-			}
+			},
+			"cite": "https://drafts.csswg.org/css-masking-1/#ClipPathElement"
 		},
 		{
 			"name": "svg:defs",
 			"namespace": "http://www.w3.org/2000/svg",
-			"cite": "https://svgwg.org/svg2-draft/struct.html#DefsElement",
 			"contentModel": {
 				"contents": [
 					{
@@ -55950,12 +55860,12 @@
 					"writing-mode"
 				]
 			},
-			"attributes": {}
+			"attributes": {},
+			"cite": "https://svgwg.org/svg2-draft/struct.html#DefsElement"
 		},
 		{
 			"name": "svg:desc",
 			"namespace": "http://www.w3.org/2000/svg",
-			"cite": "https://svgwg.org/svg2-draft/struct.html#DescElement",
 			"contentModel": {
 				"contents": [
 					{
@@ -55971,12 +55881,12 @@
 				"#GlobalEventAttrs": true,
 				"#SVGCoreAttrs": ["id", "tabindex", "autofocus", "lang", "xml:space", "class", "style"]
 			},
-			"attributes": {}
+			"attributes": {},
+			"cite": "https://svgwg.org/svg2-draft/struct.html#DescElement"
 		},
 		{
 			"name": "svg:discard",
 			"namespace": "http://www.w3.org/2000/svg",
-			"cite": "https://www.w3.org/TR/SVGTiny12/struct.html#DiscardElement",
 			"contentModel": {
 				"contents": [
 					{
@@ -56001,12 +55911,12 @@
 				"href": {
 					"type": "URL"
 				}
-			}
+			},
+			"cite": "https://www.w3.org/TR/SVGTiny12/struct.html#DiscardElement"
 		},
 		{
 			"name": "svg:ellipse",
 			"namespace": "http://www.w3.org/2000/svg",
-			"cite": "https://svgwg.org/svg2-draft/shapes.html#EllipseElement",
 			"contentModel": {
 				"contents": [
 					{
@@ -56112,20 +56022,16 @@
 				]
 			},
 			"attributes": {
-				"cx": {},
-				"cy": {},
 				"pathLength": {
 					"type": "<number>",
 					"animatable": true
-				},
-				"rx": {},
-				"ry": {}
-			}
+				}
+			},
+			"cite": "https://svgwg.org/svg2-draft/shapes.html#EllipseElement"
 		},
 		{
 			"name": "svg:feBlend",
 			"namespace": "http://www.w3.org/2000/svg",
-			"cite": "https://drafts.csswg.org/filter-effects-1/#feBlendElement",
 			"contentModel": {
 				"contents": [
 					{
@@ -56234,12 +56140,12 @@
 					"defaultValue": "normal",
 					"animatable": true
 				}
-			}
+			},
+			"cite": "https://drafts.csswg.org/filter-effects-1/#feBlendElement"
 		},
 		{
 			"name": "svg:feColorMatrix",
 			"namespace": "http://www.w3.org/2000/svg",
-			"cite": "https://drafts.csswg.org/filter-effects-1/#feColorMatrixElement",
 			"contentModel": {
 				"contents": [
 					{
@@ -56337,12 +56243,12 @@
 				"values": {
 					"type": "<color-matrix>"
 				}
-			}
+			},
+			"cite": "https://drafts.csswg.org/filter-effects-1/#feColorMatrixElement"
 		},
 		{
 			"name": "svg:feComponentTransfer",
 			"namespace": "http://www.w3.org/2000/svg",
-			"cite": "https://drafts.csswg.org/filter-effects-1/#feComponentTransferElement",
 			"contentModel": {
 				"contents": [
 					{
@@ -56435,12 +56341,12 @@
 					"writing-mode"
 				]
 			},
-			"attributes": {}
+			"attributes": {},
+			"cite": "https://drafts.csswg.org/filter-effects-1/#feComponentTransferElement"
 		},
 		{
 			"name": "svg:feComposite",
 			"namespace": "http://www.w3.org/2000/svg",
-			"cite": "https://drafts.csswg.org/filter-effects-1/#feCompositeElement",
 			"contentModel": {
 				"contents": [
 					{
@@ -56576,12 +56482,12 @@
 					"defaultValue": "over",
 					"animatable": true
 				}
-			}
+			},
+			"cite": "https://drafts.csswg.org/filter-effects-1/#feCompositeElement"
 		},
 		{
 			"name": "svg:feConvolveMatrix",
 			"namespace": "http://www.w3.org/2000/svg",
-			"cite": "https://drafts.csswg.org/filter-effects-1/#feConvolveMatrixElement",
 			"contentModel": {
 				"contents": [
 					{
@@ -56715,12 +56621,12 @@
 					"type": "<integer>",
 					"animatable": true
 				}
-			}
+			},
+			"cite": "https://drafts.csswg.org/filter-effects-1/#feConvolveMatrixElement"
 		},
 		{
 			"name": "svg:feDiffuseLighting",
 			"namespace": "http://www.w3.org/2000/svg",
-			"cite": "https://drafts.csswg.org/filter-effects-1/#feDiffuseLightingElement",
 			"contentModel": {
 				"contents": [
 					{
@@ -56839,12 +56745,12 @@
 					"defaultValue": "1",
 					"animatable": true
 				}
-			}
+			},
+			"cite": "https://drafts.csswg.org/filter-effects-1/#feDiffuseLightingElement"
 		},
 		{
 			"name": "svg:feDisplacementMap",
 			"namespace": "http://www.w3.org/2000/svg",
-			"cite": "https://drafts.csswg.org/filter-effects-1/#feDisplacementMapElement",
 			"contentModel": {
 				"contents": [
 					{
@@ -56858,7 +56764,7 @@
 			},
 			"globalAttrs": {
 				"#SVGCoreAttrs": ["id", "xml:base", "xml:lang", "xml:space", "class", "style"],
-				"#SVGFilterPrimitiveAttrs": ["x", "y", "width", "height", "result"],
+				"#SVGFilterPrimitiveAttrs": ["x", "y", "width", "height", "result", "in"],
 				"#SVGPresentationAttrs": [
 					"alignment-baseline",
 					"baseline-shift",
@@ -56969,12 +56875,12 @@
 					"defaultValue": "A",
 					"animatable": true
 				}
-			}
+			},
+			"cite": "https://drafts.csswg.org/filter-effects-1/#feDisplacementMapElement"
 		},
 		{
 			"name": "svg:feDistantLight",
 			"namespace": "http://www.w3.org/2000/svg",
-			"cite": "https://drafts.csswg.org/filter-effects-1/#feDistantLightElement",
 			"contentModel": {
 				"contents": [
 					{
@@ -57000,12 +56906,12 @@
 					"defaultValue": "0",
 					"animatable": true
 				}
-			}
+			},
+			"cite": "https://drafts.csswg.org/filter-effects-1/#feDistantLightElement"
 		},
 		{
 			"name": "svg:feDropShadow",
 			"namespace": "http://www.w3.org/2000/svg",
-			"cite": "https://drafts.csswg.org/filter-effects-1/#feDropShadowElement",
 			"contentModel": {
 				"contents": [
 					{
@@ -57107,12 +57013,12 @@
 					"defaultValue": "2",
 					"animatable": true
 				}
-			}
+			},
+			"cite": "https://drafts.csswg.org/filter-effects-1/#feDropShadowElement"
 		},
 		{
 			"name": "svg:feFlood",
 			"namespace": "http://www.w3.org/2000/svg",
-			"cite": "https://drafts.csswg.org/filter-effects-1/#feFloodElement",
 			"contentModel": {
 				"contents": [
 					{
@@ -57207,12 +57113,12 @@
 					"type": "<alpha-value>",
 					"defaultValue": "1"
 				}
-			}
+			},
+			"cite": "https://drafts.csswg.org/filter-effects-1/#feFloodElement"
 		},
 		{
 			"name": "svg:feFuncA",
 			"namespace": "http://www.w3.org/2000/svg",
-			"cite": "https://drafts.csswg.org/filter-effects-1/#feFuncAElement",
 			"contentModel": {
 				"contents": [
 					{
@@ -57236,12 +57142,12 @@
 					"offset"
 				]
 			},
-			"attributes": {}
+			"attributes": {},
+			"cite": "https://drafts.csswg.org/filter-effects-1/#feFuncAElement"
 		},
 		{
 			"name": "svg:feFuncB",
 			"namespace": "http://www.w3.org/2000/svg",
-			"cite": "https://drafts.csswg.org/filter-effects-1/#feFuncBElement",
 			"contentModel": {
 				"contents": [
 					{
@@ -57265,12 +57171,12 @@
 					"offset"
 				]
 			},
-			"attributes": {}
+			"attributes": {},
+			"cite": "https://drafts.csswg.org/filter-effects-1/#feFuncBElement"
 		},
 		{
 			"name": "svg:feFuncG",
 			"namespace": "http://www.w3.org/2000/svg",
-			"cite": "https://drafts.csswg.org/filter-effects-1/#feFuncGElement",
 			"contentModel": {
 				"contents": [
 					{
@@ -57294,12 +57200,12 @@
 					"offset"
 				]
 			},
-			"attributes": {}
+			"attributes": {},
+			"cite": "https://drafts.csswg.org/filter-effects-1/#feFuncGElement"
 		},
 		{
 			"name": "svg:feFuncR",
 			"namespace": "http://www.w3.org/2000/svg",
-			"cite": "https://drafts.csswg.org/filter-effects-1/#feFuncRElement",
 			"contentModel": {
 				"contents": [
 					{
@@ -57323,12 +57229,12 @@
 					"offset"
 				]
 			},
-			"attributes": {}
+			"attributes": {},
+			"cite": "https://drafts.csswg.org/filter-effects-1/#feFuncRElement"
 		},
 		{
 			"name": "svg:feGaussianBlur",
 			"namespace": "http://www.w3.org/2000/svg",
-			"cite": "https://drafts.csswg.org/filter-effects-1/#feGaussianBlurElement",
 			"contentModel": {
 				"contents": [
 					{
@@ -57427,12 +57333,12 @@
 					"defaultValue": "0",
 					"animatable": true
 				}
-			}
+			},
+			"cite": "https://drafts.csswg.org/filter-effects-1/#feGaussianBlurElement"
 		},
 		{
 			"name": "svg:feImage",
 			"namespace": "http://www.w3.org/2000/svg",
-			"cite": "https://drafts.csswg.org/filter-effects-1/#feImageElement",
 			"contentModel": {
 				"contents": [
 					{
@@ -57552,12 +57458,12 @@
 					"animatable": true,
 					"deprecated": true
 				}
-			}
+			},
+			"cite": "https://drafts.csswg.org/filter-effects-1/#feImageElement"
 		},
 		{
 			"name": "svg:feMerge",
 			"namespace": "http://www.w3.org/2000/svg",
-			"cite": "https://drafts.csswg.org/filter-effects-1/#feMergeElement",
 			"contentModel": {
 				"contents": [
 					{
@@ -57643,12 +57549,12 @@
 					"writing-mode"
 				]
 			},
-			"attributes": {}
+			"attributes": {},
+			"cite": "https://drafts.csswg.org/filter-effects-1/#feMergeElement"
 		},
 		{
 			"name": "svg:feMergeNode",
 			"namespace": "http://www.w3.org/2000/svg",
-			"cite": "https://drafts.csswg.org/filter-effects-1/#feMergeNodeElement",
 			"contentModel": {
 				"contents": [
 					{
@@ -57664,12 +57570,12 @@
 				"#SVGCoreAttrs": ["id", "xml:base", "xml:lang", "xml:space"],
 				"#SVGFilterPrimitiveAttrs": ["in"]
 			},
-			"attributes": {}
+			"attributes": {},
+			"cite": "https://drafts.csswg.org/filter-effects-1/#feMergeNodeElement"
 		},
 		{
 			"name": "svg:feMorphology",
 			"namespace": "http://www.w3.org/2000/svg",
-			"cite": "https://drafts.csswg.org/filter-effects-1/#feMorphologyElement",
 			"contentModel": {
 				"contents": [
 					{
@@ -57769,12 +57675,12 @@
 					"defaultValue": "0",
 					"animatable": true
 				}
-			}
+			},
+			"cite": "https://drafts.csswg.org/filter-effects-1/#feMorphologyElement"
 		},
 		{
 			"name": "svg:feOffset",
 			"namespace": "http://www.w3.org/2000/svg",
-			"cite": "https://drafts.csswg.org/filter-effects-1/#feOffsetElement",
 			"contentModel": {
 				"contents": [
 					{
@@ -57871,12 +57777,12 @@
 					"defaultValue": "0",
 					"animatable": true
 				}
-			}
+			},
+			"cite": "https://drafts.csswg.org/filter-effects-1/#feOffsetElement"
 		},
 		{
 			"name": "svg:fePointLight",
 			"namespace": "http://www.w3.org/2000/svg",
-			"cite": "https://drafts.csswg.org/filter-effects-1/#fePointLightElement",
 			"contentModel": {
 				"contents": [
 					{
@@ -57907,12 +57813,12 @@
 					"defaultValue": "0",
 					"animatable": true
 				}
-			}
+			},
+			"cite": "https://drafts.csswg.org/filter-effects-1/#fePointLightElement"
 		},
 		{
 			"name": "svg:feSpecularLighting",
 			"namespace": "http://www.w3.org/2000/svg",
-			"cite": "https://drafts.csswg.org/filter-effects-1/#feSpecularLightingElement",
 			"contentModel": {
 				"contents": [
 					{
@@ -58035,12 +57941,12 @@
 					"defaultValue": "1",
 					"animatable": true
 				}
-			}
+			},
+			"cite": "https://drafts.csswg.org/filter-effects-1/#feSpecularLightingElement"
 		},
 		{
 			"name": "svg:feSpotLight",
 			"namespace": "http://www.w3.org/2000/svg",
-			"cite": "https://drafts.csswg.org/filter-effects-1/#feSpotLightElement",
 			"contentModel": {
 				"contents": [
 					{
@@ -58095,12 +58001,12 @@
 					"defaultValue": "0",
 					"animatable": true
 				}
-			}
+			},
+			"cite": "https://drafts.csswg.org/filter-effects-1/#feSpotLightElement"
 		},
 		{
 			"name": "svg:feTile",
 			"namespace": "http://www.w3.org/2000/svg",
-			"cite": "https://drafts.csswg.org/filter-effects-1/#feTileElement",
 			"contentModel": {
 				"contents": [
 					{
@@ -58186,12 +58092,12 @@
 					"writing-mode"
 				]
 			},
-			"attributes": {}
+			"attributes": {},
+			"cite": "https://drafts.csswg.org/filter-effects-1/#feTileElement"
 		},
 		{
 			"name": "svg:feTurbulence",
 			"namespace": "http://www.w3.org/2000/svg",
-			"cite": "https://drafts.csswg.org/filter-effects-1/#feTurbulenceElement",
 			"contentModel": {
 				"contents": [
 					{
@@ -58307,12 +58213,12 @@
 					"defaultValue": "turbulence",
 					"animatable": true
 				}
-			}
+			},
+			"cite": "https://drafts.csswg.org/filter-effects-1/#feTurbulenceElement"
 		},
 		{
 			"name": "svg:filter",
 			"namespace": "http://www.w3.org/2000/svg",
-			"cite": "https://drafts.csswg.org/filter-effects-1/#FilterElement",
 			"contentModel": {
 				"contents": [
 					{
@@ -58444,12 +58350,12 @@
 				"y": {
 					"defaultValue": "-10%"
 				}
-			}
+			},
+			"cite": "https://drafts.csswg.org/filter-effects-1/#FilterElement"
 		},
 		{
 			"name": "svg:foreignObject",
 			"namespace": "http://www.w3.org/2000/svg",
-			"cite": "https://svgwg.org/svg2-draft/embedded.html#ForeignObjectElement",
 			"contentModel": {
 				"contents": true
 			},
@@ -58541,17 +58447,12 @@
 					"writing-mode"
 				]
 			},
-			"attributes": {
-				"height": {},
-				"width": {},
-				"x": {},
-				"y": {}
-			}
+			"attributes": {},
+			"cite": "https://svgwg.org/svg2-draft/embedded.html#ForeignObjectElement"
 		},
 		{
 			"name": "svg:g",
 			"namespace": "http://www.w3.org/2000/svg",
-			"cite": "https://svgwg.org/svg2-draft/struct.html#GElement",
 			"contentModel": {
 				"contents": [
 					{
@@ -58661,12 +58562,12 @@
 					"writing-mode"
 				]
 			},
-			"attributes": {}
+			"attributes": {},
+			"cite": "https://svgwg.org/svg2-draft/struct.html#GElement"
 		},
 		{
 			"name": "svg:image",
 			"namespace": "http://www.w3.org/2000/svg",
-			"cite": "https://svgwg.org/svg2-draft/embedded.html#ImageElement",
 			"contentModel": {
 				"contents": [
 					{
@@ -58779,12 +58680,18 @@
 						}
 					}
 				},
-				"decoding": {},
+				"decoding": {
+					"nonStandard": true,
+					"type": {
+						"enum": ["sync", "async", "auto"],
+						"invalidValueDefault": "auto",
+						"missingValueDefault": "auto"
+					}
+				},
 				"fetchpriority": {
 					"experimental": true,
 					"nonStandard": true
 				},
-				"height": {},
 				"href": {
 					"type": "URL"
 				},
@@ -58792,18 +58699,15 @@
 					"type": "<preserve-aspect-ratio>",
 					"defaultValue": "xMidYMid meet"
 				},
-				"width": {},
-				"x": {},
 				"xlink:href": {
 					"deprecated": true
-				},
-				"y": {}
-			}
+				}
+			},
+			"cite": "https://svgwg.org/svg2-draft/embedded.html#ImageElement"
 		},
 		{
 			"name": "svg:line",
 			"namespace": "http://www.w3.org/2000/svg",
-			"cite": "https://svgwg.org/svg2-draft/shapes.html#LineElement",
 			"contentModel": {
 				"contents": [
 					{
@@ -58929,12 +58833,12 @@
 					"defaultValue": "0",
 					"animatable": true
 				}
-			}
+			},
+			"cite": "https://svgwg.org/svg2-draft/shapes.html#LineElement"
 		},
 		{
 			"name": "svg:linearGradient",
 			"namespace": "http://www.w3.org/2000/svg",
-			"cite": "https://svgwg.org/svg2-draft/pservers.html#LinearGradientElement",
 			"contentModel": {
 				"contents": [
 					{
@@ -59076,12 +58980,12 @@
 					"defaultValue": "0%",
 					"animatable": true
 				}
-			}
+			},
+			"cite": "https://svgwg.org/svg2-draft/pservers.html#LinearGradientElement"
 		},
 		{
 			"name": "svg:marker",
 			"namespace": "http://www.w3.org/2000/svg",
-			"cite": "https://svgwg.org/svg2-draft/painting.html#MarkerElement",
 			"contentModel": {
 				"contents": [
 					{
@@ -59248,12 +59152,12 @@
 					"type": "<view-box>",
 					"animatable": true
 				}
-			}
+			},
+			"cite": "https://svgwg.org/svg2-draft/painting.html#MarkerElement"
 		},
 		{
 			"name": "svg:mask",
 			"namespace": "http://www.w3.org/2000/svg",
-			"cite": "https://drafts.csswg.org/css-masking-1/#MaskElement",
 			"contentModel": {
 				"contents": [
 					{
@@ -59334,6 +59238,7 @@
 					"marker-mid",
 					"marker-start",
 					"mask",
+					"mask-type",
 					"opacity",
 					"overflow",
 					"pointer-events",
@@ -59361,7 +59266,6 @@
 				"height": {
 					"defaultValue": "120%"
 				},
-				"mask-type": {},
 				"maskContentUnits": {
 					"type": {
 						"enum": ["userSpaceOnUse", "objectBoundingBox"]
@@ -59386,12 +59290,12 @@
 				"y": {
 					"defaultValue": "-10%"
 				}
-			}
+			},
+			"cite": "https://drafts.csswg.org/css-masking-1/#MaskElement"
 		},
 		{
 			"name": "svg:metadata",
 			"namespace": "http://www.w3.org/2000/svg",
-			"cite": "https://svgwg.org/svg2-draft/struct.html#MetadataElement",
 			"contentModel": {
 				"contents": [
 					{
@@ -59407,12 +59311,12 @@
 				"#GlobalEventAttrs": true,
 				"#SVGCoreAttrs": ["id", "tabindex", "autofocus", "lang", "xml:space", "class", "style"]
 			},
-			"attributes": {}
+			"attributes": {},
+			"cite": "https://svgwg.org/svg2-draft/struct.html#MetadataElement"
 		},
 		{
 			"name": "svg:mpath",
 			"namespace": "http://www.w3.org/2000/svg",
-			"cite": "https://svgwg.org/specs/animations/#MPathElement",
 			"contentModel": {
 				"contents": [
 					{
@@ -59432,12 +59336,12 @@
 				"href": {
 					"type": "URL"
 				}
-			}
+			},
+			"cite": "https://svgwg.org/specs/animations/#MPathElement"
 		},
 		{
 			"name": "svg:path",
 			"namespace": "http://www.w3.org/2000/svg",
-			"cite": "https://svgwg.org/svg2-draft/paths.html#PathElement",
 			"contentModel": {
 				"contents": [
 					{
@@ -59541,17 +59445,16 @@
 				"#XLinkAttrs": ["xlink:href", "xlink:title"]
 			},
 			"attributes": {
-				"d": {},
 				"pathLength": {
 					"type": "<number>",
 					"animatable": true
 				}
-			}
+			},
+			"cite": "https://svgwg.org/svg2-draft/paths.html#PathElement"
 		},
 		{
 			"name": "svg:pattern",
 			"namespace": "http://www.w3.org/2000/svg",
-			"cite": "https://svgwg.org/svg2-draft/pservers.html#PatternElement",
 			"contentModel": {
 				"contents": [
 					{
@@ -59657,7 +59560,9 @@
 			},
 			"attributes": {
 				"height": {
-					"defaultValue": "0"
+					"type": ["<svg-length>", "<percentage>"],
+					"defaultValue": "0",
+					"animatable": true
 				},
 				"href": {
 					"type": "URL",
@@ -59693,19 +59598,29 @@
 					"animatable": true
 				},
 				"width": {
-					"defaultValue": "0"
+					"type": ["<svg-length>", "<percentage>"],
+					"defaultValue": "0",
+					"animatable": true
 				},
-				"x": {},
+				"x": {
+					"type": ["<svg-length>", "<percentage>"],
+					"defaultValue": "0",
+					"animatable": true
+				},
 				"xlink:href": {
 					"deprecated": true
 				},
-				"y": {}
-			}
+				"y": {
+					"type": ["<svg-length>", "<percentage>"],
+					"defaultValue": "0",
+					"animatable": true
+				}
+			},
+			"cite": "https://svgwg.org/svg2-draft/pservers.html#PatternElement"
 		},
 		{
 			"name": "svg:polygon",
 			"namespace": "http://www.w3.org/2000/svg",
-			"cite": "https://svgwg.org/svg2-draft/shapes.html#PolygonElement",
 			"contentModel": {
 				"contents": [
 					{
@@ -59815,12 +59730,12 @@
 					"type": "<points>",
 					"animatable": true
 				}
-			}
+			},
+			"cite": "https://svgwg.org/svg2-draft/shapes.html#PolygonElement"
 		},
 		{
 			"name": "svg:polyline",
 			"namespace": "http://www.w3.org/2000/svg",
-			"cite": "https://svgwg.org/svg2-draft/shapes.html#PolylineElement",
 			"contentModel": {
 				"contents": [
 					{
@@ -59930,12 +59845,12 @@
 					"type": "<points>",
 					"animatable": true
 				}
-			}
+			},
+			"cite": "https://svgwg.org/svg2-draft/shapes.html#PolylineElement"
 		},
 		{
 			"name": "svg:radialGradient",
 			"namespace": "http://www.w3.org/2000/svg",
-			"cite": "https://svgwg.org/svg2-draft/pservers.html#RadialGradientElement",
 			"contentModel": {
 				"contents": [
 					{
@@ -60085,12 +60000,12 @@
 				"xlink:href": {
 					"deprecated": true
 				}
-			}
+			},
+			"cite": "https://svgwg.org/svg2-draft/pservers.html#RadialGradientElement"
 		},
 		{
 			"name": "svg:rect",
 			"namespace": "http://www.w3.org/2000/svg",
-			"cite": "https://svgwg.org/svg2-draft/shapes.html#RectElement",
 			"contentModel": {
 				"contents": [
 					{
@@ -60198,22 +60113,16 @@
 				]
 			},
 			"attributes": {
-				"height": {},
 				"pathLength": {
 					"type": "<number>",
 					"animatable": true
-				},
-				"rx": {},
-				"ry": {},
-				"width": {},
-				"x": {},
-				"y": {}
-			}
+				}
+			},
+			"cite": "https://svgwg.org/svg2-draft/shapes.html#RectElement"
 		},
 		{
 			"name": "svg:script",
 			"namespace": "http://www.w3.org/2000/svg",
-			"cite": "https://svgwg.org/svg2-draft/interact.html#ScriptElement",
 			"contentModel": {
 				"contents": [
 					{
@@ -60260,12 +60169,12 @@
 				"xlink:href": {
 					"deprecated": true
 				}
-			}
+			},
+			"cite": "https://svgwg.org/svg2-draft/interact.html#ScriptElement"
 		},
 		{
 			"name": "svg:set",
 			"namespace": "http://www.w3.org/2000/svg",
-			"cite": "https://svgwg.org/specs/animations/#SetElement",
 			"contentModel": {
 				"contents": [
 					{
@@ -60300,12 +60209,12 @@
 				"to": {
 					"type": "NoEmptyAny"
 				}
-			}
+			},
+			"cite": "https://svgwg.org/specs/animations/#SetElement"
 		},
 		{
 			"name": "svg:stop",
 			"namespace": "http://www.w3.org/2000/svg",
-			"cite": "https://svgwg.org/svg2-draft/pservers.html#StopElement",
 			"contentModel": {
 				"contents": [
 					{
@@ -60407,12 +60316,12 @@
 					"defaultValue": "1",
 					"animatable": true
 				}
-			}
+			},
+			"cite": "https://svgwg.org/svg2-draft/pservers.html#StopElement"
 		},
 		{
 			"name": "svg:style",
 			"namespace": "http://www.w3.org/2000/svg",
-			"cite": "https://svgwg.org/svg2-draft/styling.html#StyleElement",
 			"contentModel": {
 				"contents": [
 					{
@@ -60440,12 +60349,12 @@
 					"type": "MIMEType",
 					"defaultValue": "text/css"
 				}
-			}
+			},
+			"cite": "https://svgwg.org/svg2-draft/styling.html#StyleElement"
 		},
 		{
 			"name": "svg:svg",
 			"namespace": "http://www.w3.org/2000/svg",
-			"cite": "https://svgwg.org/svg2-draft/struct.html#SVGElement",
 			"contentModel": {
 				"contents": [
 					{
@@ -60595,15 +60504,13 @@
 				},
 				"width": {
 					"defaultValue": "auto"
-				},
-				"x": {},
-				"y": {}
-			}
+				}
+			},
+			"cite": "https://svgwg.org/svg2-draft/struct.html#SVGElement"
 		},
 		{
 			"name": "svg:switch",
 			"namespace": "http://www.w3.org/2000/svg",
-			"cite": "https://svgwg.org/svg2-draft/struct.html#SwitchElement",
 			"contentModel": {
 				"contents": [
 					{
@@ -60703,15 +60610,12 @@
 					"writing-mode"
 				]
 			},
-			"attributes": {
-				"requiredExtensions": {},
-				"systemLanguage": {}
-			}
+			"attributes": {},
+			"cite": "https://svgwg.org/svg2-draft/struct.html#SwitchElement"
 		},
 		{
 			"name": "svg:symbol",
 			"namespace": "http://www.w3.org/2000/svg",
-			"cite": "https://svgwg.org/svg2-draft/struct.html#SymbolElement",
 			"contentModel": {
 				"contents": [
 					{
@@ -60752,7 +60656,6 @@
 				"#SVGPresentationAttrs": ["x", "y", "width", "height"]
 			},
 			"attributes": {
-				"height": {},
 				"preserveAspectRatio": {
 					"type": "<preserve-aspect-ratio>",
 					"defaultValue": "xMidYMid meet"
@@ -60779,16 +60682,13 @@
 				},
 				"viewBox": {
 					"type": "<view-box>"
-				},
-				"width": {},
-				"x": {},
-				"y": {}
-			}
+				}
+			},
+			"cite": "https://svgwg.org/svg2-draft/struct.html#SymbolElement"
 		},
 		{
 			"name": "svg:text",
 			"namespace": "http://www.w3.org/2000/svg",
-			"cite": "https://svgwg.org/svg2-draft/text.html#TextElement",
 			"contentModel": {
 				"contents": [
 					{
@@ -60927,12 +60827,12 @@
 					"defaultValue": "0",
 					"animatable": true
 				}
-			}
+			},
+			"cite": "https://svgwg.org/svg2-draft/text.html#TextElement"
 		},
 		{
 			"name": "svg:textPath",
 			"namespace": "http://www.w3.org/2000/svg",
-			"cite": "https://svgwg.org/svg2-draft/text.html#TextPathElement",
 			"contentModel": {
 				"contents": [
 					{
@@ -61089,12 +60989,12 @@
 					"type": ["<svg-length>", "<percentage>"],
 					"animatable": true
 				}
-			}
+			},
+			"cite": "https://svgwg.org/svg2-draft/text.html#TextPathElement"
 		},
 		{
 			"name": "svg:title",
 			"namespace": "http://www.w3.org/2000/svg",
-			"cite": "https://svgwg.org/svg2-draft/struct.html#TitleElement",
 			"contentModel": {
 				"contents": [
 					{
@@ -61110,12 +61010,12 @@
 				"#GlobalEventAttrs": true,
 				"#SVGCoreAttrs": ["id", "tabindex", "autofocus", "lang", "xml:space", "class", "style"]
 			},
-			"attributes": {}
+			"attributes": {},
+			"cite": "https://svgwg.org/svg2-draft/struct.html#TitleElement"
 		},
 		{
 			"name": "svg:tspan",
 			"namespace": "http://www.w3.org/2000/svg",
-			"cite": "https://svgwg.org/svg2-draft/text.html#TextElement",
 			"contentModel": {
 				"contents": [
 					{
@@ -61250,12 +61150,12 @@
 					"type": "<text-coordinate>",
 					"animatable": true
 				}
-			}
+			},
+			"cite": "https://svgwg.org/svg2-draft/text.html#TextElement"
 		},
 		{
 			"name": "svg:use",
 			"namespace": "http://www.w3.org/2000/svg",
-			"cite": "https://svgwg.org/svg2-draft/struct.html#UseElement",
 			"contentModel": {
 				"contents": [
 					{
@@ -61360,22 +61260,18 @@
 				"#XLinkAttrs": ["xlink:href", "xlink:title"]
 			},
 			"attributes": {
-				"height": {},
 				"href": {
 					"type": "URL"
 				},
-				"width": {},
-				"x": {},
 				"xlink:href": {
 					"deprecated": true
-				},
-				"y": {}
-			}
+				}
+			},
+			"cite": "https://svgwg.org/svg2-draft/struct.html#UseElement"
 		},
 		{
 			"name": "svg:view",
 			"namespace": "http://www.w3.org/2000/svg",
-			"cite": "https://svgwg.org/svg2-draft/linking.html#ViewElement",
 			"contentModel": {
 				"contents": [
 					{
@@ -61411,7 +61307,8 @@
 					},
 					"defaultValue": "magnify"
 				}
-			}
+			},
+			"cite": "https://svgwg.org/svg2-draft/linking.html#ViewElement"
 		}
 	]
 }
