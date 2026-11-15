@@ -143,7 +143,8 @@ describe('a spec that names a Markdown file', () => {
 /**
  * `IGNORED` in `classify.ts` takes the repository's own configuration and tooling as something that
  * no spec reads, `.github/workflows/test.yml` excepted (it is a full trigger). A spec that names one
- * of them in code has to be accounted for in `classify.ts` and added here.
+ * of them in code has to be accounted for in `classify.ts` and added here. On the v6 line,
+ * `scripts/ci-gate/` is one: it reads the workflows that gate a pull request.
  */
 describe('a spec that names a file that the plan takes as unread', () => {
 	const UNREAD_PATH_LITERAL =
@@ -156,6 +157,8 @@ describe('a spec that names a file that the plan takes as unread', () => {
 				!spec.startsWith('scripts/affected-tests/') &&
 				// Reads the configurations that name a branch: `ROOT_INPUTS` in `classify.ts`.
 				!spec.startsWith('scripts/release-lines/') &&
+				// v6 line only. Reads the workflows that gate a pull request: `ROOT_INPUTS` in `classify.ts`.
+				!spec.startsWith('scripts/ci-gate/') &&
 				probe
 					.read(spec)
 					.split('\n')
