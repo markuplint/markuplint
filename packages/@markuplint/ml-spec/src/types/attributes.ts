@@ -1634,6 +1634,10 @@ export interface AttributeJSON {
   ineffective?: AttributeCondition;
   animatable?: boolean;
   experimental?: boolean;
+  /**
+   * Non-standard: never part of any standard (vendor-specific or proprietary).
+   */
+  nonStandard?: true;
 }
 /**
  * - [Space-separated tokens](https://html.spec.whatwg.org/multipage/common-microsyntaxes.html#space-separated-tokens)

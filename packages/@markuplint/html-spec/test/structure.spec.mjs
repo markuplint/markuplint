@@ -10,6 +10,7 @@ import { parse } from 'jsonc-parser';
 import { describe, test, expect } from 'vitest';
 
 import { getDefinitionCite } from '../generator/read-json.ts';
+import { STATUS_FLAGS } from '../generator/utils.ts';
 import htmlSpec from '../index.js';
 
 const __filename = fileURLToPath(import.meta.url);
@@ -208,6 +209,66 @@ describe('index.json carries what the sources own', () => {
 		const cites = await readDefinitionCites();
 		const names = new Set(htmlSpec.specs.map(el => el.name));
 		expect([...cites.keys()].filter(name => !names.has(name))).toStrictEqual([]);
+	});
+
+	/**
+	 * The names of the attributes of an element are what the sources define, each with the citation of its section:
+	 * in the `attributes` of its file, or through the categories of `globalAttrs` that the file selects. MDN adds an
+	 * attribute only when it carries a status flag.
+	 */
+	test('every attribute of an element is in its source file or carries a status flag', async () => {
+		const stray = [];
+		for (const el of htmlSpec.specs) {
+			const file = path.join(
+				sourceDir,
+				`spec.${el.name.replace(/^svg:/, 'svg_').replace(/^mml:/, 'mml_')}.jsonc`,
+			);
+			let source = {};
+			try {
+				const parseErrors = [];
+				source = parse(await readFile(file, { encoding: 'utf-8' }), parseErrors);
+				expect(parseErrors, `${el.name}: ${file}`).toStrictEqual([]);
+			} catch (error) {
+				// An element without a source file (an obsolete one) has only flagged attributes.
+				if (error?.code !== 'ENOENT') {
+					throw error;
+				}
+			}
+			const defined = new Set(Object.keys(source.attributes ?? {}));
+			for (const [category, selected] of Object.entries(source.globalAttrs ?? {})) {
+				if (selected === true) {
+					const names = htmlSpec.def['#globalAttrs'][category];
+					expect(names, `${el.name} selects the category ${category}`).toBeDefined();
+					for (const name of Object.keys(names)) {
+						defined.add(name);
+					}
+				} else if (Array.isArray(selected)) {
+					for (const name of selected) {
+						defined.add(name);
+					}
+				}
+			}
+			for (const [name, attr] of Object.entries(el.attributes ?? {})) {
+				if (!defined.has(name) && !STATUS_FLAGS.some(flag => attr[flag])) {
+					stray.push(`${el.name}[${name}]`);
+				}
+			}
+		}
+		expect(stray).toStrictEqual([]);
+	});
+
+	/**
+	 * No specification defines `decoding` for the SVG `image` element (SVG 2 lists none, and the HTML Standard
+	 * defines it for `img`), while browsers implement it: it is known, and flagged as no specification's.
+	 */
+	test('decoding of the SVG image element is known and non-standard', () => {
+		const attribute = htmlSpec.specs.find(el => el.name === 'svg:image')?.attributes.decoding;
+		expect(attribute?.nonStandard).toBe(true);
+		expect(attribute?.type).toStrictEqual({
+			enum: ['sync', 'async', 'auto'],
+			invalidValueDefault: 'auto',
+			missingValueDefault: 'auto',
+		});
 	});
 
 	test('an element without a source file cites the list of non-conforming features', async () => {

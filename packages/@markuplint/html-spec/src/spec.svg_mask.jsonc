@@ -76,6 +76,7 @@
 			"marker-mid",
 			"marker-start",
 			"mask",
+			"mask-type",
 			"opacity",
 			"overflow",
 			"pointer-events",

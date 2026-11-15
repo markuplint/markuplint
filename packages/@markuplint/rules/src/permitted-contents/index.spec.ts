@@ -3973,3 +3973,51 @@ test('[permitted-contents-issue-4584-001] the name of the element is shown as wr
 		},
 	]);
 });
+
+describe('an image with a controls attribute is interactive content', () => {
+	test('[permitted-contents-invalid-041] an image with a controls attribute is interactive content, so a button rejects it', async () => {
+		// https://html.spec.whatwg.org/multipage/embedded-content.html#the-img-element
+		const { violations } = await mlRuleTest(rule, '<button><img src="x" alt="photo" controls></button>');
+		expect(violations).toStrictEqual([
+			{
+				severity: 'error',
+				line: 1,
+				col: 9,
+				message: 'The "img" element is not allowed in the "button" element in this context',
+				raw: '<img src="x" alt="photo" controls>',
+			},
+		]);
+	});
+
+	test('[permitted-contents-invalid-042] an image with a controls attribute is interactive content, so a link rejects it', async () => {
+		const { violations } = await mlRuleTest(rule, '<a href="/x"><img src="x" alt="photo" controls></a>');
+		expect(violations).toStrictEqual([
+			{
+				severity: 'error',
+				line: 1,
+				col: 14,
+				message: 'The "a" element is a transparent model but also disallows the "img" element in this context',
+				raw: '<img src="x" alt="photo" controls>',
+			},
+		]);
+	});
+
+	test('[permitted-contents-invalid-043] an image with a controls attribute is not one of the interactive elements that the canvas allows', async () => {
+		const { violations } = await mlRuleTest(rule, '<canvas><div><img src="x" alt="photo" controls></div></canvas>');
+		expect(violations).toStrictEqual([
+			{
+				severity: 'error',
+				line: 1,
+				col: 14,
+				message:
+					'The "canvas" element is a transparent model but also disallows the "img" element in this context',
+				raw: '<img src="x" alt="photo" controls>',
+			},
+		]);
+	});
+
+	test('[permitted-contents-valid-008] an image without a controls attribute is accepted inside a button and a link', async () => {
+		expect((await mlRuleTest(rule, '<button><img src="x" alt=""></button>')).violations).toStrictEqual([]);
+		expect((await mlRuleTest(rule, '<a href="/x"><img src="x" alt=""></a>')).violations).toStrictEqual([]);
+	});
+});

@@ -10,6 +10,7 @@ import {
 	obsoleteWithoutMDNPage,
 } from './html-elements.ts';
 import { getDefinitionCite } from './read-json.ts';
+import { STATUS_FLAGS } from './utils.ts';
 
 afterEach(() => {
 	vi.unstubAllGlobals();
@@ -22,16 +23,38 @@ describe('mergeMDNAttributes', () => {
 		ping: { name: 'ping', type: 'Any' as const, description: 'MDN ping' },
 	};
 
-	test('takes the description and the status flags of an attribute that only MDN has', () => {
-		expect(mergeMDNAttributes({}, { ping: mdn.ping })).toStrictEqual({
-			ping: {
-				description: 'MDN ping',
+	test('does not take an attribute that only MDN has and that has no status flag', () => {
+		expect(mergeMDNAttributes({}, { ping: mdn.ping })).toStrictEqual({});
+	});
+
+	test('does not take an attribute that only MDN has and whose status flags are all false', () => {
+		const flags = { experimental: false, obsolete: false, deprecated: false, nonStandard: false };
+		expect(mergeMDNAttributes({}, { ping: { ...mdn.ping, ...flags } as never })).toStrictEqual({});
+	});
+
+	test('takes an attribute that only MDN has when it has a status flag, with its description and flags', () => {
+		expect(mergeMDNAttributes({}, { href: mdn.href })).toStrictEqual({
+			href: {
+				description: 'MDN href',
 				experimental: undefined,
 				obsolete: undefined,
-				deprecated: undefined,
+				deprecated: true,
 				nonStandard: undefined,
 			},
 		});
+	});
+
+	test('writes a status flag that is false on the MDN side as no flag at all', () => {
+		const mdnAttr = { name: 'x', type: 'Any' as const, experimental: true as const, nonStandard: false };
+		const merged = mergeMDNAttributes({}, { x: mdnAttr as never });
+		expect(merged.x?.experimental).toBe(true);
+		expect(merged.x?.nonStandard).toBeUndefined();
+		expect(JSON.stringify(merged.x)).not.toContain('nonStandard');
+	});
+
+	test.each(STATUS_FLAGS)('takes an attribute that only MDN has and that is flagged %s', flag => {
+		const merged = mergeMDNAttributes({}, { flagged: { name: 'flagged', type: 'Any', [flag]: true } });
+		expect(merged.flagged?.[flag]).toBe(true);
 	});
 
 	test('lets a manual entry win over the MDN fields it also has', () => {
@@ -43,13 +66,6 @@ describe('mergeMDNAttributes', () => {
 				deprecated: false,
 				nonStandard: undefined,
 				type: 'URL',
-			},
-			ping: {
-				description: 'MDN ping',
-				experimental: undefined,
-				obsolete: undefined,
-				deprecated: undefined,
-				nonStandard: undefined,
 			},
 		});
 	});
@@ -65,13 +81,6 @@ describe('mergeMDNAttributes', () => {
 				deprecated: true,
 				nonStandard: undefined,
 				type: 'URL',
-			},
-			ping: {
-				description: 'MDN ping',
-				experimental: undefined,
-				obsolete: undefined,
-				deprecated: undefined,
-				nonStandard: undefined,
 			},
 		});
 		expect(Object.keys(merged.href!)[0]).toBe('name');

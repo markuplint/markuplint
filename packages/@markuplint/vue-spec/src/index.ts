@@ -170,6 +170,9 @@ const spec: ExtendedSpec = {
 	 *
 	 * - A boolean attribute (`isBooleanAttr` of `@vue/shared`) is present for any truthy value and for the
 	 *   empty string (`includeBooleanAttr`)
+	 * - A name that the spec types as `Boolean` and `isBooleanAttr` does not list (`alpha`, `switch`, `webkitdirectory`
+	 *   and the like) is rendered with its value: `true` is `"true"` and `false` is `"false"`. The names that it does
+	 *   list (`disablepictureinpicture` and `disableremoteplayback` among them) need no entry: the default is right
 	 * - `class` and `style` are always output, and a value that is not a string, an array or an object
 	 *   is `""` (`ssrRenderClass`, `ssrRenderStyle`)
 	 *
@@ -182,7 +185,9 @@ const spec: ExtendedSpec = {
 	 *   `key="x"` is seen as an attribute too
 	 * - The client renders `:disabled="false"` on an element that has no boolean attribute `disabled` as
 	 *   `disabled="false"`; the server does not output it, and the table follows the server
-	 * - A number other than `0` on `class` and `style` is `""` too, which a table cannot list: it is `"1"` here
+	 * - A number other than `0` on `class` and `style` is `""` too, which a table cannot list: it is `"1"` here. The
+	 *   same holds for the names of the spec that are not in `isBooleanAttr` (`alpha`, `switch`, `webkitdirectory`
+	 *   and the like): Vue outputs the number, and a table cannot list every number
 	 *
 	 * @see https://vuejs.org/guide/essentials/template-syntax.html#boolean-attributes
 	 * @see https://github.com/vuejs/core/blob/main/packages/server-renderer/src/helpers/ssrRenderAttrs.ts#ssrRenderDynamicAttr
@@ -194,6 +199,17 @@ const spec: ExtendedSpec = {
 		attrs: {
 			class: { true: '', false: '', null: '', undefined: '', '0': '' },
 			style: { true: '', false: '', null: '', undefined: '', '0': '' },
+			// Boolean attributes of the spec that Vue does not render as boolean (not in `isBooleanAttr`): `ssrRenderDynamicAttr`
+			// outputs the value, and `""` is present as it is for a boolean attribute
+			alpha: { true: 'true', false: 'false', '0': '0' },
+			focusgroupstart: { true: 'true', false: 'false', '0': '0' },
+			headingreset: { true: 'true', false: 'false', '0': '0' },
+			shadowrootclonable: { true: 'true', false: 'false', '0': '0' },
+			shadowrootcustomelementregistry: { true: 'true', false: 'false', '0': '0' },
+			shadowrootdelegatesfocus: { true: 'true', false: 'false', '0': '0' },
+			shadowrootserializable: { true: 'true', false: 'false', '0': '0' },
+			switch: { true: 'true', false: 'false', '0': '0' },
+			webkitdirectory: { true: 'true', false: 'false', '0': '0' },
 		},
 	},
 	def: {

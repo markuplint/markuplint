@@ -62,10 +62,7 @@ const spec: ExtendedSpec = {
 		attrs: {
 			translate: { true: 'yes', false: 'no' },
 			// Booleans of Svelte that the spec does not know as boolean
-			disablepictureinpicture: { true: '', false: null, '0': null },
-			disableremoteplayback: { true: '', false: null, '0': null },
 			indeterminate: { true: '', false: null, '0': null },
-			webkitdirectory: { true: '', false: null, '0': null },
 			// Boolean attributes of the spec that Svelte does not render as boolean
 			alpha: { true: 'true', false: 'false', '0': '0', '""': '' },
 			focusgroupstart: { true: 'true', false: 'false', '0': '0', '""': '' },

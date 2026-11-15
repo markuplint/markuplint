@@ -98,6 +98,20 @@
 		"#XLinkAttrs": ["xlink:href", "xlink:title"]
 	},
 	"attributes": {
+		// No specification defines `decoding` for the SVG `image` element: the SVG 2 summary of the element lists
+		// no such attribute, and the HTML Standard defines it for `img` only. Browsers read the attribute of `img`
+		// on `image` as well, so the entry is that of `img` and flagged `nonStandard`. The element definition of SVG 2
+		// is cited too, so that the watch reports when it starts to list the attribute.
+		// https://svgwg.org/svg2-draft/embedded.html#ImageElement
+		// https://html.spec.whatwg.org/multipage/embedded-content.html#attr-img-decoding
+		"decoding": {
+			"type": {
+				"enum": ["sync", "async", "auto"],
+				"invalidValueDefault": "auto",
+				"missingValueDefault": "auto"
+			},
+			"nonStandard": true
+		},
 		// https://svgwg.org/svg2-draft/coords.html#PreserveAspectRatioAttribute
 		"preserveAspectRatio": {
 			"type": "<preserve-aspect-ratio>",

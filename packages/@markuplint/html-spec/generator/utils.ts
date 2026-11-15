@@ -6,6 +6,12 @@ import type { AnyNode } from './cheerio-types.ts';
 
 type HasName = { readonly name: string };
 
+/**
+ * The status flags of an attribute that MDN gives and the sources may write. An attribute that only MDN lists is
+ * added to an element only when it carries one of them (`mergeMDNAttributes`).
+ */
+export const STATUS_FLAGS = ['experimental', 'obsolete', 'deprecated', 'nonStandard'] as const;
+
 export function nameCompare(a: HasName | string, b: HasName | string) {
 	const nameA = typeof a === 'string' ? a : (a.name?.toUpperCase() ?? String(a));
 	const nameB = typeof b === 'string' ? b : (b.name?.toUpperCase() ?? String(b));
