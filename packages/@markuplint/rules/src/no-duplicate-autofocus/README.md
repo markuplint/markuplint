@@ -29,6 +29,10 @@ The scoping root for an element is the element itself if it is a `dialog` elemen
 ```
 
 ```html
-<dialog><input autofocus /></dialog>
-<dialog><button autofocus>Submit</button></dialog>
+<dialog>
+  <input autofocus />
+</dialog>
+<dialog>
+  <button autofocus>Submit</button>
+</dialog>
 ```
