@@ -1,6 +1,6 @@
 import type * as cheerio from 'cheerio';
 
-import type { ElementSpec, ExtendedElementSpec, Category, Attribute } from '@markuplint/ml-spec';
+import type { ElementSpec, ExtendedElementSpec, Attribute } from '@markuplint/ml-spec';
 
 import type { Element } from './cheerio-types.ts';
 import type { FetchOptions } from './fetch.ts';
@@ -47,7 +47,6 @@ export function fetchObsoleteElements(
 				name,
 				cite: obsoleteCite(name, hasTerm(name)),
 				obsolete: true,
-				categories: [],
 				contentModel: {
 					contents: true,
 				},
@@ -55,7 +54,6 @@ export function fetchObsoleteElements(
 					permittedRoles: true,
 					implicitRole: false,
 				},
-				omission: false,
 				globalAttrs: {},
 				attributes: {},
 			};
@@ -102,18 +100,6 @@ export async function fetchHTMLElement(link: string, options?: FetchOptions) {
 		nonStandard = $article.find('.nonStandardHeader, h4#Non-standard').length > 0 || undefined;
 	}
 
-	const categories: Category[] = [];
-	const cat = getProperty($, 'Content categories');
-	if (/metadata content/i.test(cat)) categories.push('#metadata');
-	if (/flow content/i.test(cat)) categories.push('#flow');
-	if (/sectioning content/i.test(cat)) categories.push('#sectioning');
-	if (/heading content/i.test(cat)) categories.push('#heading');
-	if (/phrasing content/i.test(cat)) categories.push('#phrasing');
-	if (/embedded content/i.test(cat)) categories.push('#embedded');
-	if (/interactive content/i.test(cat)) categories.push('#interactive');
-	if (/palpable content/i.test(cat)) categories.push('#palpable');
-	if (/script-supporting/i.test(cat)) categories.push('#script-supporting');
-
 	let { attributes } = getAttributes($, 'attributes');
 	const { attributes: deprecatedAttributes } = getAttributes($, 'deprecated_attributes');
 	const { attributes: individualAttributes } = getAttributes($, 'individual_attributes');
@@ -129,13 +115,11 @@ export async function fetchHTMLElement(link: string, options?: FetchOptions) {
 
 	const spec: ExtendedElementSpec = {
 		name,
-		cite: link,
 		description,
 		experimental,
 		obsolete,
 		deprecated,
 		nonStandard,
-		categories,
 		contentModel: {
 			contents: false,
 		},
@@ -143,26 +127,10 @@ export async function fetchHTMLElement(link: string, options?: FetchOptions) {
 			implicitRole: false,
 			permittedRoles: true,
 		},
-		omission: false,
 		attributes,
 	};
 
 	return spec;
-}
-
-function getProperty(
-	// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
-	$: cheerio.CheerioAPI,
-	prop: string,
-) {
-	const $tr = $('#technical_summary ~ figure.table-container > table tr');
-	const $th = $(
-		$tr
-			.find('th')
-			.toArray()
-			.filter(el => new RegExp(prop, 'i').test($(el).text())),
-	);
-	return $th.siblings('td').text().trim().replaceAll(/\s+/g, ' ');
 }
 
 function getAttributes(

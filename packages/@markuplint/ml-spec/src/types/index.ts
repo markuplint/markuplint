@@ -9,7 +9,15 @@ import type { ReadonlyDeep } from 'type-fest';
  * markuplint Markup-language spec
  */
 export interface MLMLSpec {
-	readonly cites: Cites;
+	/**
+	 * Reference URLs
+	 *
+	 * `@markuplint/html-spec` writes none and nothing in markuplint reads it; `schemaToSpec` appends what an
+	 * extension sets.
+	 *
+	 * @deprecated Delete it; there is no replacement. Removed in v6.
+	 */
+	readonly cites?: Cites;
 	readonly def: SpecDefs;
 	readonly specs: readonly ElementSpec[];
 	readonly directivePatterns?: readonly DirectivePattern[];
@@ -82,6 +90,11 @@ export type ExtendedElementSpec = Partial<Omit<ElementSpec, 'name' | 'attributes
  * Typically provided by parser plugins or framework-specific spec packages (e.g., `@markuplint/vue-spec`).
  */
 export type ExtendedSpec = {
+	/**
+	 * Reference URLs that `schemaToSpec` appends to {@link MLMLSpec.cites}.
+	 *
+	 * @deprecated Delete it; there is no replacement. Removed in v6.
+	 */
 	readonly cites?: Cites;
 	readonly def?: Partial<SpecDefs>;
 	readonly specs?: readonly ExtendedElementSpec[];
@@ -226,7 +239,7 @@ export type DirectivePattern = {
 };
 
 /**
- * Reference URLs
+ * Reference URLs. Only the deprecated `cites` fields use it (see {@link MLMLSpec.cites}).
  */
 export type Cites = readonly string[];
 
@@ -271,7 +284,10 @@ export type ElementSpec = {
 	readonly namespace?: NamespaceURI;
 
 	/**
-	 * Reference URL
+	 * The URL of the section that defines the element
+	 *
+	 * In `@markuplint/html-spec` it is the URL on the first line of `src/spec.<name>.jsonc`, or, for an obsolete
+	 * element that has no such file, its entry in the list of non-conforming features.
 	 */
 	readonly cite: string;
 
@@ -314,8 +330,12 @@ export type ElementSpec = {
 
 	/**
 	 * Element categories
+	 *
+	 * `@markuplint/html-spec` writes none and nothing reads it.
+	 *
+	 * @deprecated Use `MLMLSpec.def['#contentModels']`, which holds the categories that the rules use. Removed in v6.
 	 */
-	readonly categories: readonly Category[];
+	readonly categories?: readonly Category[];
 
 	/**
 	 * Permitted contents and permitted parents
@@ -324,8 +344,12 @@ export type ElementSpec = {
 
 	/**
 	 * Tag omission
+	 *
+	 * `@markuplint/html-spec` writes none and nothing reads it.
+	 *
+	 * @deprecated Delete it; there is no replacement. Removed in v6.
 	 */
-	readonly omission: ElementSpecOmission;
+	readonly omission?: ElementSpecOmission;
 
 	/**
 	 * Global Attributes

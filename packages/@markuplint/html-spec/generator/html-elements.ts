@@ -1,7 +1,7 @@
 import type { ExtendedElementSpec } from '@markuplint/ml-spec';
 
 import { getMathMLElementList } from './mathml.ts';
-import { readJsons } from './read-json.ts';
+import { getDefinitionCite, readJsons } from './read-json.ts';
 import { fetchHTMLElement, fetchObsoleteElements, fetchObsoleteTerms } from './scraping.ts';
 import { getSVGElementList } from './svg.ts';
 import { getName, nameCompare, sortObjectByKey } from './utils.ts';
@@ -48,7 +48,7 @@ export const obsoleteList: readonly string[] = [
  * for. Their page is still fetched, as a page expected to answer 404: a 404
  * is not reported as a failure on every run, and a page that MDN adds back is
  * read and reported, so that the element can be taken out of this list. While
- * the page does not exist, the element has no MDN description, categories or
+ * the page does not exist, the element has no MDN description or
  * attributes, only what `fetchObsoleteElements` gives every obsolete element.
  */
 export const obsoleteWithoutMDNPage: ReadonlySet<string> = new Set([
@@ -104,17 +104,22 @@ const namespaceSortOrder: Record<string, number> = {
  * from the output — there is no warning for it.
  *
  * Merge precedence: manual spec data always wins over MDN-scraped data.
- * `contentModel`, `aria`, and `globalAttrs` are never scraped (manual only);
- * MDN only fills gaps — descriptions, categories, status flags, and attributes
- * that the manual spec does not define.
+ * `cite`, `contentModel`, `aria`, and `globalAttrs` are never scraped (manual
+ * only); MDN only fills gaps — descriptions, status flags, and attributes that
+ * the manual spec does not define. Its content categories and tag omission are
+ * not written: nothing reads them, and the categories the rules use are the
+ * hand-written `#contentModels`.
  */
 export async function getElements(filePattern: string) {
-	let specs = await readJsons<ExtendedElementSpec>(filePattern, (file, body) => {
+	let specs = await readJsons<ExtendedElementSpec>(filePattern, (file, body, source) => {
 		const name = file.replace(/^.+spec\.([\w-]+)\.jsonc$/i, '$1');
 		return {
 			// @ts-ignore
 			name,
 			...body,
+			// The section of the source file; an obsolete element without one gets the list of
+			// non-conforming features from `fetchObsoleteElements`. Never the MDN page.
+			cite: getDefinitionCite(source, file),
 		};
 	});
 
@@ -155,15 +160,9 @@ export async function getElements(filePattern: string) {
 				// @ts-ignore
 				name: qualifiedName,
 				namespace,
-				// An MDN page that answered 404 stays here although it leaves `cites`:
-				// `cite` is required and nothing else names the element. The 404 fails
-				// the run (`getFailedUrls`); the fix is a `cite` in the manual spec.
-				cite: el.cite ?? mdnData.cite,
 				description: mdnData.description,
-				categories: mdnData.categories,
 				contentModel: el.contentModel,
 				aria: el.aria,
-				omission: mdnData.omission,
 				...el,
 				globalAttrs: sortObjectByKey(el.globalAttrs ?? {}),
 				attributes: sortObjectByKey(mergeMDNAttributes(el.attributes, mdnData.attributes)),

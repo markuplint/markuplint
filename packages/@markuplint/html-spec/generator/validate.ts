@@ -93,12 +93,7 @@ export function validateSpecs(json: ExtendedSpec, previous?: ExtendedSpec | null
 		errors.push(`Required core elements are missing: ${missingElements.join(', ')}.`);
 	}
 
-	// 3. Reference URLs collected.
-	if (!json.cites || json.cites.length === 0) {
-		errors.push('No reference URLs (cites) were collected. This indicates a total fetch failure.');
-	}
-
-	// 4. ARIA roles present in every version.
+	// 3. ARIA roles present in every version.
 	const aria = json.def?.['#aria'];
 	if (aria) {
 		for (const version of ['1.1', '1.2', '1.3'] as const) {
@@ -117,7 +112,7 @@ export function validateSpecs(json: ExtendedSpec, previous?: ExtendedSpec | null
 		errors.push('ARIA definitions (def["#aria"]) are missing entirely.');
 	}
 
-	// 5. Element-count stability against the previous spec (skipped on first run).
+	// 4. Element-count stability against the previous spec (skipped on first run).
 	const previousSpecs = previous?.specs;
 	if (previousSpecs && previousSpecs.length > 0) {
 		const ratio = specs.length / previousSpecs.length;

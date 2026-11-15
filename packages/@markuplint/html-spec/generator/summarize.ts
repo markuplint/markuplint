@@ -61,7 +61,7 @@ function countDelta(prev: number, next: number): string {
 export function summarizeChanges(previous: ExtendedSpec | null | undefined, next: ExtendedSpec): string {
 	if (!previous) {
 		const elementCount = next.specs?.length ?? 0;
-		return `Initial generation: ${elementCount} elements, ${next.cites?.length ?? 0} reference URLs.`;
+		return `Initial generation: ${elementCount} elements.`;
 	}
 
 	const sections: string[] = [];
@@ -114,26 +114,9 @@ export function summarizeChanges(previous: ExtendedSpec | null | undefined, next
 		sections.push(['### ARIA changes', '', ...ariaLines].join('\n'));
 	}
 
-	// Reference URLs.
-	const prevCites = previous.cites?.length ?? 0;
-	const nextCites = next.cites?.length ?? 0;
-	// Listed by URL: a URL leaves `cites` when its page answers 404 as well as when
-	// its element is removed, and only the former needs a look at MDN
-	const { added: addedCites, removed: removedCites } = diffNames(previous.cites ?? [], next.cites ?? []);
-	if (addedCites.length > 0 || removedCites.length > 0) {
-		const lines = [`**Reference URLs**: ${countDelta(prevCites, nextCites)}`];
-		for (const url of addedCites) {
-			lines.push(`- Added: ${url}`);
-		}
-		for (const url of removedCites) {
-			lines.push(`- Removed: ${url}`);
-		}
-		sections.push(lines.join('\n'));
-	}
-
 	if (sections.length === 1 && !elementDiff) {
 		// Only the unchanged element-count line — nothing structural changed.
-		return 'No structural changes to elements, ARIA roles/properties, or reference URLs. (Attribute-level changes may still be present — review the diff.)';
+		return 'No structural changes to elements or ARIA roles/properties. (Attribute-level changes may still be present — review the diff.)';
 	}
 
 	return sections.join('\n\n');

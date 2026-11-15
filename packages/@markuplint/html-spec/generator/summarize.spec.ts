@@ -42,7 +42,7 @@ function spec(elements: readonly string[], cites: readonly string[] = ['https://
 describe('summarizeChanges', () => {
 	test('returns an initial-generation note when there is no previous spec', () => {
 		const result = summarizeChanges(null, spec(['div', 'span']));
-		expect(result).toBe('Initial generation: 2 elements, 1 reference URLs.');
+		expect(result).toBe('Initial generation: 2 elements.');
 	});
 
 	test('reports added and removed elements', () => {
@@ -117,19 +117,16 @@ describe('summarizeChanges', () => {
 		expect(result).toContain('dpub roles added: `doc-chapter`');
 	});
 
-	test('reports a reference URL count change', () => {
+	test('does not report a reference URL count change', () => {
 		const previous = spec(['div'], ['https://a/']);
 		const next = spec(['div'], ['https://a/', 'https://b/']);
-		const result = summarizeChanges(previous, next);
-		expect(result).toContain('**Reference URLs**: 1 → 2 (+1)');
+		expect(summarizeChanges(previous, next)).toBe(summarizeChanges(spec(['div']), spec(['div'])));
 	});
 
-	test('lists the reference URLs that were added and removed', () => {
+	test('does not list the reference URLs that were added and removed', () => {
 		const previous = spec(['div'], ['https://a/', 'https://b/']);
 		const next = spec(['div'], ['https://a/', 'https://c/']);
-		expect(summarizeChanges(previous, next)).toContain(
-			['**Reference URLs**: 2 (unchanged)', '- Added: https://c/', '- Removed: https://b/'].join('\n'),
-		);
+		expect(summarizeChanges(previous, next)).toBe(summarizeChanges(spec(['div']), spec(['div'])));
 	});
 
 	test('reports no structural changes when only descriptions/attributes differ', () => {

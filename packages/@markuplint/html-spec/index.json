@@ -1,237 +1,4 @@
 {
-	"cites": [
-		"https://developer.mozilla.org/en-US/docs/Web/HTML/Reference/Elements/Heading_Elements",
-		"https://developer.mozilla.org/en-US/docs/Web/HTML/Reference/Elements/a",
-		"https://developer.mozilla.org/en-US/docs/Web/HTML/Reference/Elements/abbr",
-		"https://developer.mozilla.org/en-US/docs/Web/HTML/Reference/Elements/acronym",
-		"https://developer.mozilla.org/en-US/docs/Web/HTML/Reference/Elements/address",
-		"https://developer.mozilla.org/en-US/docs/Web/HTML/Reference/Elements/area",
-		"https://developer.mozilla.org/en-US/docs/Web/HTML/Reference/Elements/article",
-		"https://developer.mozilla.org/en-US/docs/Web/HTML/Reference/Elements/aside",
-		"https://developer.mozilla.org/en-US/docs/Web/HTML/Reference/Elements/audio",
-		"https://developer.mozilla.org/en-US/docs/Web/HTML/Reference/Elements/b",
-		"https://developer.mozilla.org/en-US/docs/Web/HTML/Reference/Elements/base",
-		"https://developer.mozilla.org/en-US/docs/Web/HTML/Reference/Elements/bdi",
-		"https://developer.mozilla.org/en-US/docs/Web/HTML/Reference/Elements/bdo",
-		"https://developer.mozilla.org/en-US/docs/Web/HTML/Reference/Elements/big",
-		"https://developer.mozilla.org/en-US/docs/Web/HTML/Reference/Elements/blockquote",
-		"https://developer.mozilla.org/en-US/docs/Web/HTML/Reference/Elements/body",
-		"https://developer.mozilla.org/en-US/docs/Web/HTML/Reference/Elements/br",
-		"https://developer.mozilla.org/en-US/docs/Web/HTML/Reference/Elements/button",
-		"https://developer.mozilla.org/en-US/docs/Web/HTML/Reference/Elements/canvas",
-		"https://developer.mozilla.org/en-US/docs/Web/HTML/Reference/Elements/caption",
-		"https://developer.mozilla.org/en-US/docs/Web/HTML/Reference/Elements/center",
-		"https://developer.mozilla.org/en-US/docs/Web/HTML/Reference/Elements/cite",
-		"https://developer.mozilla.org/en-US/docs/Web/HTML/Reference/Elements/code",
-		"https://developer.mozilla.org/en-US/docs/Web/HTML/Reference/Elements/col",
-		"https://developer.mozilla.org/en-US/docs/Web/HTML/Reference/Elements/colgroup",
-		"https://developer.mozilla.org/en-US/docs/Web/HTML/Reference/Elements/data",
-		"https://developer.mozilla.org/en-US/docs/Web/HTML/Reference/Elements/datalist",
-		"https://developer.mozilla.org/en-US/docs/Web/HTML/Reference/Elements/dd",
-		"https://developer.mozilla.org/en-US/docs/Web/HTML/Reference/Elements/del",
-		"https://developer.mozilla.org/en-US/docs/Web/HTML/Reference/Elements/details",
-		"https://developer.mozilla.org/en-US/docs/Web/HTML/Reference/Elements/dfn",
-		"https://developer.mozilla.org/en-US/docs/Web/HTML/Reference/Elements/dialog",
-		"https://developer.mozilla.org/en-US/docs/Web/HTML/Reference/Elements/dir",
-		"https://developer.mozilla.org/en-US/docs/Web/HTML/Reference/Elements/div",
-		"https://developer.mozilla.org/en-US/docs/Web/HTML/Reference/Elements/dl",
-		"https://developer.mozilla.org/en-US/docs/Web/HTML/Reference/Elements/dt",
-		"https://developer.mozilla.org/en-US/docs/Web/HTML/Reference/Elements/em",
-		"https://developer.mozilla.org/en-US/docs/Web/HTML/Reference/Elements/embed",
-		"https://developer.mozilla.org/en-US/docs/Web/HTML/Reference/Elements/fieldset",
-		"https://developer.mozilla.org/en-US/docs/Web/HTML/Reference/Elements/figcaption",
-		"https://developer.mozilla.org/en-US/docs/Web/HTML/Reference/Elements/figure",
-		"https://developer.mozilla.org/en-US/docs/Web/HTML/Reference/Elements/font",
-		"https://developer.mozilla.org/en-US/docs/Web/HTML/Reference/Elements/footer",
-		"https://developer.mozilla.org/en-US/docs/Web/HTML/Reference/Elements/form",
-		"https://developer.mozilla.org/en-US/docs/Web/HTML/Reference/Elements/frame",
-		"https://developer.mozilla.org/en-US/docs/Web/HTML/Reference/Elements/frameset",
-		"https://developer.mozilla.org/en-US/docs/Web/HTML/Reference/Elements/head",
-		"https://developer.mozilla.org/en-US/docs/Web/HTML/Reference/Elements/header",
-		"https://developer.mozilla.org/en-US/docs/Web/HTML/Reference/Elements/hgroup",
-		"https://developer.mozilla.org/en-US/docs/Web/HTML/Reference/Elements/hr",
-		"https://developer.mozilla.org/en-US/docs/Web/HTML/Reference/Elements/html",
-		"https://developer.mozilla.org/en-US/docs/Web/HTML/Reference/Elements/i",
-		"https://developer.mozilla.org/en-US/docs/Web/HTML/Reference/Elements/iframe",
-		"https://developer.mozilla.org/en-US/docs/Web/HTML/Reference/Elements/img",
-		"https://developer.mozilla.org/en-US/docs/Web/HTML/Reference/Elements/input",
-		"https://developer.mozilla.org/en-US/docs/Web/HTML/Reference/Elements/ins",
-		"https://developer.mozilla.org/en-US/docs/Web/HTML/Reference/Elements/kbd",
-		"https://developer.mozilla.org/en-US/docs/Web/HTML/Reference/Elements/label",
-		"https://developer.mozilla.org/en-US/docs/Web/HTML/Reference/Elements/legend",
-		"https://developer.mozilla.org/en-US/docs/Web/HTML/Reference/Elements/li",
-		"https://developer.mozilla.org/en-US/docs/Web/HTML/Reference/Elements/link",
-		"https://developer.mozilla.org/en-US/docs/Web/HTML/Reference/Elements/main",
-		"https://developer.mozilla.org/en-US/docs/Web/HTML/Reference/Elements/map",
-		"https://developer.mozilla.org/en-US/docs/Web/HTML/Reference/Elements/mark",
-		"https://developer.mozilla.org/en-US/docs/Web/HTML/Reference/Elements/marquee",
-		"https://developer.mozilla.org/en-US/docs/Web/HTML/Reference/Elements/menu",
-		"https://developer.mozilla.org/en-US/docs/Web/HTML/Reference/Elements/meta",
-		"https://developer.mozilla.org/en-US/docs/Web/HTML/Reference/Elements/meter",
-		"https://developer.mozilla.org/en-US/docs/Web/HTML/Reference/Elements/nav",
-		"https://developer.mozilla.org/en-US/docs/Web/HTML/Reference/Elements/nobr",
-		"https://developer.mozilla.org/en-US/docs/Web/HTML/Reference/Elements/noembed",
-		"https://developer.mozilla.org/en-US/docs/Web/HTML/Reference/Elements/noframes",
-		"https://developer.mozilla.org/en-US/docs/Web/HTML/Reference/Elements/noscript",
-		"https://developer.mozilla.org/en-US/docs/Web/HTML/Reference/Elements/object",
-		"https://developer.mozilla.org/en-US/docs/Web/HTML/Reference/Elements/ol",
-		"https://developer.mozilla.org/en-US/docs/Web/HTML/Reference/Elements/optgroup",
-		"https://developer.mozilla.org/en-US/docs/Web/HTML/Reference/Elements/option",
-		"https://developer.mozilla.org/en-US/docs/Web/HTML/Reference/Elements/output",
-		"https://developer.mozilla.org/en-US/docs/Web/HTML/Reference/Elements/p",
-		"https://developer.mozilla.org/en-US/docs/Web/HTML/Reference/Elements/param",
-		"https://developer.mozilla.org/en-US/docs/Web/HTML/Reference/Elements/picture",
-		"https://developer.mozilla.org/en-US/docs/Web/HTML/Reference/Elements/plaintext",
-		"https://developer.mozilla.org/en-US/docs/Web/HTML/Reference/Elements/pre",
-		"https://developer.mozilla.org/en-US/docs/Web/HTML/Reference/Elements/progress",
-		"https://developer.mozilla.org/en-US/docs/Web/HTML/Reference/Elements/q",
-		"https://developer.mozilla.org/en-US/docs/Web/HTML/Reference/Elements/rb",
-		"https://developer.mozilla.org/en-US/docs/Web/HTML/Reference/Elements/rp",
-		"https://developer.mozilla.org/en-US/docs/Web/HTML/Reference/Elements/rt",
-		"https://developer.mozilla.org/en-US/docs/Web/HTML/Reference/Elements/rtc",
-		"https://developer.mozilla.org/en-US/docs/Web/HTML/Reference/Elements/ruby",
-		"https://developer.mozilla.org/en-US/docs/Web/HTML/Reference/Elements/s",
-		"https://developer.mozilla.org/en-US/docs/Web/HTML/Reference/Elements/samp",
-		"https://developer.mozilla.org/en-US/docs/Web/HTML/Reference/Elements/script",
-		"https://developer.mozilla.org/en-US/docs/Web/HTML/Reference/Elements/search",
-		"https://developer.mozilla.org/en-US/docs/Web/HTML/Reference/Elements/section",
-		"https://developer.mozilla.org/en-US/docs/Web/HTML/Reference/Elements/select",
-		"https://developer.mozilla.org/en-US/docs/Web/HTML/Reference/Elements/slot",
-		"https://developer.mozilla.org/en-US/docs/Web/HTML/Reference/Elements/small",
-		"https://developer.mozilla.org/en-US/docs/Web/HTML/Reference/Elements/source",
-		"https://developer.mozilla.org/en-US/docs/Web/HTML/Reference/Elements/span",
-		"https://developer.mozilla.org/en-US/docs/Web/HTML/Reference/Elements/strike",
-		"https://developer.mozilla.org/en-US/docs/Web/HTML/Reference/Elements/strong",
-		"https://developer.mozilla.org/en-US/docs/Web/HTML/Reference/Elements/style",
-		"https://developer.mozilla.org/en-US/docs/Web/HTML/Reference/Elements/sub",
-		"https://developer.mozilla.org/en-US/docs/Web/HTML/Reference/Elements/summary",
-		"https://developer.mozilla.org/en-US/docs/Web/HTML/Reference/Elements/sup",
-		"https://developer.mozilla.org/en-US/docs/Web/HTML/Reference/Elements/table",
-		"https://developer.mozilla.org/en-US/docs/Web/HTML/Reference/Elements/tbody",
-		"https://developer.mozilla.org/en-US/docs/Web/HTML/Reference/Elements/td",
-		"https://developer.mozilla.org/en-US/docs/Web/HTML/Reference/Elements/template",
-		"https://developer.mozilla.org/en-US/docs/Web/HTML/Reference/Elements/textarea",
-		"https://developer.mozilla.org/en-US/docs/Web/HTML/Reference/Elements/tfoot",
-		"https://developer.mozilla.org/en-US/docs/Web/HTML/Reference/Elements/th",
-		"https://developer.mozilla.org/en-US/docs/Web/HTML/Reference/Elements/thead",
-		"https://developer.mozilla.org/en-US/docs/Web/HTML/Reference/Elements/time",
-		"https://developer.mozilla.org/en-US/docs/Web/HTML/Reference/Elements/title",
-		"https://developer.mozilla.org/en-US/docs/Web/HTML/Reference/Elements/tr",
-		"https://developer.mozilla.org/en-US/docs/Web/HTML/Reference/Elements/track",
-		"https://developer.mozilla.org/en-US/docs/Web/HTML/Reference/Elements/tt",
-		"https://developer.mozilla.org/en-US/docs/Web/HTML/Reference/Elements/u",
-		"https://developer.mozilla.org/en-US/docs/Web/HTML/Reference/Elements/ul",
-		"https://developer.mozilla.org/en-US/docs/Web/HTML/Reference/Elements/var",
-		"https://developer.mozilla.org/en-US/docs/Web/HTML/Reference/Elements/video",
-		"https://developer.mozilla.org/en-US/docs/Web/HTML/Reference/Elements/wbr",
-		"https://developer.mozilla.org/en-US/docs/Web/HTML/Reference/Elements/xmp",
-		"https://developer.mozilla.org/en-US/docs/Web/MathML/Element",
-		"https://developer.mozilla.org/en-US/docs/Web/MathML/Reference/Element/annotation",
-		"https://developer.mozilla.org/en-US/docs/Web/MathML/Reference/Element/annotation-xml",
-		"https://developer.mozilla.org/en-US/docs/Web/MathML/Reference/Element/maction",
-		"https://developer.mozilla.org/en-US/docs/Web/MathML/Reference/Element/math",
-		"https://developer.mozilla.org/en-US/docs/Web/MathML/Reference/Element/menclose",
-		"https://developer.mozilla.org/en-US/docs/Web/MathML/Reference/Element/merror",
-		"https://developer.mozilla.org/en-US/docs/Web/MathML/Reference/Element/mfenced",
-		"https://developer.mozilla.org/en-US/docs/Web/MathML/Reference/Element/mfrac",
-		"https://developer.mozilla.org/en-US/docs/Web/MathML/Reference/Element/mi",
-		"https://developer.mozilla.org/en-US/docs/Web/MathML/Reference/Element/mmultiscripts",
-		"https://developer.mozilla.org/en-US/docs/Web/MathML/Reference/Element/mn",
-		"https://developer.mozilla.org/en-US/docs/Web/MathML/Reference/Element/mo",
-		"https://developer.mozilla.org/en-US/docs/Web/MathML/Reference/Element/mover",
-		"https://developer.mozilla.org/en-US/docs/Web/MathML/Reference/Element/mpadded",
-		"https://developer.mozilla.org/en-US/docs/Web/MathML/Reference/Element/mphantom",
-		"https://developer.mozilla.org/en-US/docs/Web/MathML/Reference/Element/mprescripts",
-		"https://developer.mozilla.org/en-US/docs/Web/MathML/Reference/Element/mroot",
-		"https://developer.mozilla.org/en-US/docs/Web/MathML/Reference/Element/mrow",
-		"https://developer.mozilla.org/en-US/docs/Web/MathML/Reference/Element/ms",
-		"https://developer.mozilla.org/en-US/docs/Web/MathML/Reference/Element/mspace",
-		"https://developer.mozilla.org/en-US/docs/Web/MathML/Reference/Element/msqrt",
-		"https://developer.mozilla.org/en-US/docs/Web/MathML/Reference/Element/mstyle",
-		"https://developer.mozilla.org/en-US/docs/Web/MathML/Reference/Element/msub",
-		"https://developer.mozilla.org/en-US/docs/Web/MathML/Reference/Element/msubsup",
-		"https://developer.mozilla.org/en-US/docs/Web/MathML/Reference/Element/msup",
-		"https://developer.mozilla.org/en-US/docs/Web/MathML/Reference/Element/mtable",
-		"https://developer.mozilla.org/en-US/docs/Web/MathML/Reference/Element/mtd",
-		"https://developer.mozilla.org/en-US/docs/Web/MathML/Reference/Element/mtext",
-		"https://developer.mozilla.org/en-US/docs/Web/MathML/Reference/Element/mtr",
-		"https://developer.mozilla.org/en-US/docs/Web/MathML/Reference/Element/munder",
-		"https://developer.mozilla.org/en-US/docs/Web/MathML/Reference/Element/munderover",
-		"https://developer.mozilla.org/en-US/docs/Web/MathML/Reference/Element/semantics",
-		"https://developer.mozilla.org/en-US/docs/Web/SVG/Element",
-		"https://developer.mozilla.org/en-US/docs/Web/SVG/Reference/Element/a",
-		"https://developer.mozilla.org/en-US/docs/Web/SVG/Reference/Element/animate",
-		"https://developer.mozilla.org/en-US/docs/Web/SVG/Reference/Element/animateMotion",
-		"https://developer.mozilla.org/en-US/docs/Web/SVG/Reference/Element/animateTransform",
-		"https://developer.mozilla.org/en-US/docs/Web/SVG/Reference/Element/circle",
-		"https://developer.mozilla.org/en-US/docs/Web/SVG/Reference/Element/clipPath",
-		"https://developer.mozilla.org/en-US/docs/Web/SVG/Reference/Element/defs",
-		"https://developer.mozilla.org/en-US/docs/Web/SVG/Reference/Element/desc",
-		"https://developer.mozilla.org/en-US/docs/Web/SVG/Reference/Element/discard",
-		"https://developer.mozilla.org/en-US/docs/Web/SVG/Reference/Element/ellipse",
-		"https://developer.mozilla.org/en-US/docs/Web/SVG/Reference/Element/feBlend",
-		"https://developer.mozilla.org/en-US/docs/Web/SVG/Reference/Element/feColorMatrix",
-		"https://developer.mozilla.org/en-US/docs/Web/SVG/Reference/Element/feComponentTransfer",
-		"https://developer.mozilla.org/en-US/docs/Web/SVG/Reference/Element/feComposite",
-		"https://developer.mozilla.org/en-US/docs/Web/SVG/Reference/Element/feConvolveMatrix",
-		"https://developer.mozilla.org/en-US/docs/Web/SVG/Reference/Element/feDiffuseLighting",
-		"https://developer.mozilla.org/en-US/docs/Web/SVG/Reference/Element/feDisplacementMap",
-		"https://developer.mozilla.org/en-US/docs/Web/SVG/Reference/Element/feDistantLight",
-		"https://developer.mozilla.org/en-US/docs/Web/SVG/Reference/Element/feDropShadow",
-		"https://developer.mozilla.org/en-US/docs/Web/SVG/Reference/Element/feFlood",
-		"https://developer.mozilla.org/en-US/docs/Web/SVG/Reference/Element/feFuncA",
-		"https://developer.mozilla.org/en-US/docs/Web/SVG/Reference/Element/feFuncB",
-		"https://developer.mozilla.org/en-US/docs/Web/SVG/Reference/Element/feFuncG",
-		"https://developer.mozilla.org/en-US/docs/Web/SVG/Reference/Element/feFuncR",
-		"https://developer.mozilla.org/en-US/docs/Web/SVG/Reference/Element/feGaussianBlur",
-		"https://developer.mozilla.org/en-US/docs/Web/SVG/Reference/Element/feImage",
-		"https://developer.mozilla.org/en-US/docs/Web/SVG/Reference/Element/feMerge",
-		"https://developer.mozilla.org/en-US/docs/Web/SVG/Reference/Element/feMergeNode",
-		"https://developer.mozilla.org/en-US/docs/Web/SVG/Reference/Element/feMorphology",
-		"https://developer.mozilla.org/en-US/docs/Web/SVG/Reference/Element/feOffset",
-		"https://developer.mozilla.org/en-US/docs/Web/SVG/Reference/Element/fePointLight",
-		"https://developer.mozilla.org/en-US/docs/Web/SVG/Reference/Element/feSpecularLighting",
-		"https://developer.mozilla.org/en-US/docs/Web/SVG/Reference/Element/feSpotLight",
-		"https://developer.mozilla.org/en-US/docs/Web/SVG/Reference/Element/feTile",
-		"https://developer.mozilla.org/en-US/docs/Web/SVG/Reference/Element/feTurbulence",
-		"https://developer.mozilla.org/en-US/docs/Web/SVG/Reference/Element/filter",
-		"https://developer.mozilla.org/en-US/docs/Web/SVG/Reference/Element/foreignObject",
-		"https://developer.mozilla.org/en-US/docs/Web/SVG/Reference/Element/g",
-		"https://developer.mozilla.org/en-US/docs/Web/SVG/Reference/Element/image",
-		"https://developer.mozilla.org/en-US/docs/Web/SVG/Reference/Element/line",
-		"https://developer.mozilla.org/en-US/docs/Web/SVG/Reference/Element/linearGradient",
-		"https://developer.mozilla.org/en-US/docs/Web/SVG/Reference/Element/marker",
-		"https://developer.mozilla.org/en-US/docs/Web/SVG/Reference/Element/mask",
-		"https://developer.mozilla.org/en-US/docs/Web/SVG/Reference/Element/metadata",
-		"https://developer.mozilla.org/en-US/docs/Web/SVG/Reference/Element/mpath",
-		"https://developer.mozilla.org/en-US/docs/Web/SVG/Reference/Element/path",
-		"https://developer.mozilla.org/en-US/docs/Web/SVG/Reference/Element/pattern",
-		"https://developer.mozilla.org/en-US/docs/Web/SVG/Reference/Element/polygon",
-		"https://developer.mozilla.org/en-US/docs/Web/SVG/Reference/Element/polyline",
-		"https://developer.mozilla.org/en-US/docs/Web/SVG/Reference/Element/radialGradient",
-		"https://developer.mozilla.org/en-US/docs/Web/SVG/Reference/Element/rect",
-		"https://developer.mozilla.org/en-US/docs/Web/SVG/Reference/Element/script",
-		"https://developer.mozilla.org/en-US/docs/Web/SVG/Reference/Element/set",
-		"https://developer.mozilla.org/en-US/docs/Web/SVG/Reference/Element/stop",
-		"https://developer.mozilla.org/en-US/docs/Web/SVG/Reference/Element/style",
-		"https://developer.mozilla.org/en-US/docs/Web/SVG/Reference/Element/svg",
-		"https://developer.mozilla.org/en-US/docs/Web/SVG/Reference/Element/switch",
-		"https://developer.mozilla.org/en-US/docs/Web/SVG/Reference/Element/symbol",
-		"https://developer.mozilla.org/en-US/docs/Web/SVG/Reference/Element/text",
-		"https://developer.mozilla.org/en-US/docs/Web/SVG/Reference/Element/textPath",
-		"https://developer.mozilla.org/en-US/docs/Web/SVG/Reference/Element/title",
-		"https://developer.mozilla.org/en-US/docs/Web/SVG/Reference/Element/tspan",
-		"https://developer.mozilla.org/en-US/docs/Web/SVG/Reference/Element/use",
-		"https://developer.mozilla.org/en-US/docs/Web/SVG/Reference/Element/view",
-		"https://html.spec.whatwg.org/multipage/obsolete.html",
-		"https://w3c.github.io/aria/",
-		"https://w3c.github.io/dpub-aria/",
-		"https://w3c.github.io/graphics-aria/",
-		"https://www.w3.org/TR/graphics-aria-1.0/",
-		"https://www.w3.org/TR/html-aria/",
-		"https://www.w3.org/TR/wai-aria-1.1/",
-		"https://www.w3.org/TR/wai-aria-1.2/"
-	],
 	"def": {
 		"#globalAttrs": {
 			"#HTMLGlobalAttrs": {
@@ -47910,8 +47677,7 @@
 	"specs": [
 		{
 			"name": "a",
-			"cite": "https://developer.mozilla.org/en-US/docs/Web/HTML/Reference/Elements/a",
-			"categories": ["#flow", "#phrasing", "#interactive", "#palpable"],
+			"cite": "https://html.spec.whatwg.org/multipage/text-level-semantics.html#the-a-element",
 			"contentModel": {
 				"contents": [
 					{
@@ -47963,7 +47729,6 @@
 					}
 				}
 			},
-			"omission": false,
 			"globalAttrs": {
 				"#ARIAAttrs": true,
 				"#GlobalEventAttrs": true,
@@ -48016,8 +47781,7 @@
 		},
 		{
 			"name": "abbr",
-			"cite": "https://developer.mozilla.org/en-US/docs/Web/HTML/Reference/Elements/abbr",
-			"categories": ["#flow", "#phrasing", "#palpable"],
+			"cite": "https://html.spec.whatwg.org/multipage/text-level-semantics.html#the-abbr-element",
 			"contentModel": {
 				"contents": [
 					{
@@ -48030,7 +47794,6 @@
 				"permittedRoles": true,
 				"namingProhibited": true
 			},
-			"omission": false,
 			"globalAttrs": {
 				"#ARIAAttrs": true,
 				"#GlobalEventAttrs": true,
@@ -48041,7 +47804,6 @@
 		{
 			"name": "acronym",
 			"cite": "https://html.spec.whatwg.org/multipage/obsolete.html#acronym",
-			"categories": [],
 			"contentModel": {
 				"contents": true
 			},
@@ -48049,15 +47811,13 @@
 				"permittedRoles": true,
 				"implicitRole": false
 			},
-			"omission": false,
 			"obsolete": true,
 			"globalAttrs": {},
 			"attributes": {}
 		},
 		{
 			"name": "address",
-			"cite": "https://developer.mozilla.org/en-US/docs/Web/HTML/Reference/Elements/address",
-			"categories": ["#flow", "#palpable"],
+			"cite": "https://html.spec.whatwg.org/multipage/sections.html#the-address-element",
 			"contentModel": {
 				"contents": [
 					{
@@ -48074,7 +47834,6 @@
 					"implicitRole": false
 				}
 			},
-			"omission": false,
 			"globalAttrs": {
 				"#ARIAAttrs": true,
 				"#GlobalEventAttrs": true,
@@ -48085,7 +47844,6 @@
 		{
 			"name": "applet",
 			"cite": "https://html.spec.whatwg.org/multipage/obsolete.html#applet",
-			"categories": [],
 			"contentModel": {
 				"contents": true
 			},
@@ -48093,15 +47851,13 @@
 				"permittedRoles": true,
 				"implicitRole": false
 			},
-			"omission": false,
 			"obsolete": true,
 			"globalAttrs": {},
 			"attributes": {}
 		},
 		{
 			"name": "area",
-			"cite": "https://developer.mozilla.org/en-US/docs/Web/HTML/Reference/Elements/area",
-			"categories": ["#flow", "#phrasing"],
+			"cite": "https://html.spec.whatwg.org/multipage/image-maps.html#the-area-element",
 			"contentModel": {
 				"contents": false,
 				"descendantOf": "map",
@@ -48130,7 +47886,6 @@
 					}
 				}
 			},
-			"omission": false,
 			"globalAttrs": {
 				"#ARIAAttrs": true,
 				"#GlobalEventAttrs": true,
@@ -48181,8 +47936,7 @@
 		},
 		{
 			"name": "article",
-			"cite": "https://developer.mozilla.org/en-US/docs/Web/HTML/Reference/Elements/article",
-			"categories": ["#flow", "#sectioning", "#palpable"],
+			"cite": "https://html.spec.whatwg.org/multipage/sections.html#the-article-element",
 			"contentModel": {
 				"contents": [
 					{
@@ -48194,7 +47948,6 @@
 				"implicitRole": "article",
 				"permittedRoles": ["application", "document", "feed", "main", "none", "presentation", "region"]
 			},
-			"omission": false,
 			"globalAttrs": {
 				"#ARIAAttrs": true,
 				"#GlobalEventAttrs": true,
@@ -48204,8 +47957,7 @@
 		},
 		{
 			"name": "aside",
-			"cite": "https://developer.mozilla.org/en-US/docs/Web/HTML/Reference/Elements/aside",
-			"categories": ["#flow", "#sectioning", "#palpable"],
+			"cite": "https://html.spec.whatwg.org/multipage/sections.html#the-aside-element",
 			"contentModel": {
 				"contents": [
 					{
@@ -48232,7 +47984,6 @@
 					"conditions": false
 				}
 			},
-			"omission": false,
 			"globalAttrs": {
 				"#ARIAAttrs": true,
 				"#GlobalEventAttrs": true,
@@ -48242,8 +47993,7 @@
 		},
 		{
 			"name": "audio",
-			"cite": "https://developer.mozilla.org/en-US/docs/Web/HTML/Reference/Elements/audio",
-			"categories": ["#flow", "#phrasing", "#embedded", "#interactive", "#palpable"],
+			"cite": "https://html.spec.whatwg.org/multipage/media.html#the-audio-element",
 			"contentModel": {
 				"contents": [
 					{
@@ -48278,7 +48028,6 @@
 					"role": "application"
 				}
 			},
-			"omission": false,
 			"globalAttrs": {
 				"#ARIAAttrs": true,
 				"#GlobalEventAttrs": true,
@@ -48303,8 +48052,7 @@
 		},
 		{
 			"name": "b",
-			"cite": "https://developer.mozilla.org/en-US/docs/Web/HTML/Reference/Elements/b",
-			"categories": ["#flow", "#phrasing", "#palpable"],
+			"cite": "https://html.spec.whatwg.org/multipage/text-level-semantics.html#the-b-element",
 			"contentModel": {
 				"contents": [
 					{
@@ -48320,7 +48068,6 @@
 					"implicitRole": false
 				}
 			},
-			"omission": false,
 			"globalAttrs": {
 				"#ARIAAttrs": true,
 				"#GlobalEventAttrs": true,
@@ -48330,8 +48077,7 @@
 		},
 		{
 			"name": "base",
-			"cite": "https://developer.mozilla.org/en-US/docs/Web/HTML/Reference/Elements/base",
-			"categories": ["#metadata"],
+			"cite": "https://html.spec.whatwg.org/multipage/semantics.html#the-base-element",
 			"contentModel": {
 				"contents": false
 			},
@@ -48340,7 +48086,6 @@
 				"permittedRoles": false,
 				"properties": false
 			},
-			"omission": false,
 			"globalAttrs": {
 				"#ARIAAttrs": true,
 				"#GlobalEventAttrs": true,
@@ -48360,7 +48105,6 @@
 		{
 			"name": "basefont",
 			"cite": "https://html.spec.whatwg.org/multipage/obsolete.html#basefont",
-			"categories": [],
 			"contentModel": {
 				"contents": true
 			},
@@ -48368,15 +48112,13 @@
 				"permittedRoles": true,
 				"implicitRole": false
 			},
-			"omission": false,
 			"obsolete": true,
 			"globalAttrs": {},
 			"attributes": {}
 		},
 		{
 			"name": "bdi",
-			"cite": "https://developer.mozilla.org/en-US/docs/Web/HTML/Reference/Elements/bdi",
-			"categories": ["#flow", "#phrasing", "#palpable"],
+			"cite": "https://html.spec.whatwg.org/multipage/text-level-semantics.html#the-bdi-element",
 			"contentModel": {
 				"contents": [
 					{
@@ -48392,7 +48134,6 @@
 					"implicitRole": false
 				}
 			},
-			"omission": false,
 			"globalAttrs": {
 				"#ARIAAttrs": true,
 				"#GlobalEventAttrs": true,
@@ -48402,8 +48143,7 @@
 		},
 		{
 			"name": "bdo",
-			"cite": "https://developer.mozilla.org/en-US/docs/Web/HTML/Reference/Elements/bdo",
-			"categories": ["#flow", "#phrasing", "#palpable"],
+			"cite": "https://html.spec.whatwg.org/multipage/text-level-semantics.html#the-bdo-element",
 			"contentModel": {
 				"contents": [
 					{
@@ -48419,7 +48159,6 @@
 					"implicitRole": false
 				}
 			},
-			"omission": false,
 			"globalAttrs": {
 				"#ARIAAttrs": true,
 				"#GlobalEventAttrs": true,
@@ -48437,7 +48176,6 @@
 		{
 			"name": "bgsound",
 			"cite": "https://html.spec.whatwg.org/multipage/obsolete.html#bgsound",
-			"categories": [],
 			"contentModel": {
 				"contents": true
 			},
@@ -48445,7 +48183,6 @@
 				"permittedRoles": true,
 				"implicitRole": false
 			},
-			"omission": false,
 			"obsolete": true,
 			"globalAttrs": {},
 			"attributes": {}
@@ -48453,7 +48190,6 @@
 		{
 			"name": "big",
 			"cite": "https://html.spec.whatwg.org/multipage/obsolete.html#big",
-			"categories": [],
 			"contentModel": {
 				"contents": true
 			},
@@ -48461,7 +48197,6 @@
 				"permittedRoles": true,
 				"implicitRole": false
 			},
-			"omission": false,
 			"obsolete": true,
 			"globalAttrs": {},
 			"attributes": {}
@@ -48469,7 +48204,6 @@
 		{
 			"name": "blink",
 			"cite": "https://html.spec.whatwg.org/multipage/obsolete.html#blink",
-			"categories": [],
 			"contentModel": {
 				"contents": true
 			},
@@ -48477,15 +48211,13 @@
 				"permittedRoles": true,
 				"implicitRole": false
 			},
-			"omission": false,
 			"obsolete": true,
 			"globalAttrs": {},
 			"attributes": {}
 		},
 		{
 			"name": "blockquote",
-			"cite": "https://developer.mozilla.org/en-US/docs/Web/HTML/Reference/Elements/blockquote",
-			"categories": ["#flow", "#palpable"],
+			"cite": "https://html.spec.whatwg.org/multipage/grouping-content.html#the-blockquote-element",
 			"contentModel": {
 				"contents": [
 					{
@@ -48500,7 +48232,6 @@
 					"implicitRole": false
 				}
 			},
-			"omission": false,
 			"globalAttrs": {
 				"#ARIAAttrs": true,
 				"#GlobalEventAttrs": true,
@@ -48514,8 +48245,7 @@
 		},
 		{
 			"name": "body",
-			"cite": "https://developer.mozilla.org/en-US/docs/Web/HTML/Reference/Elements/body",
-			"categories": [],
+			"cite": "https://html.spec.whatwg.org/multipage/sections.html#the-body-element",
 			"contentModel": {
 				"contents": [
 					{
@@ -48545,7 +48275,6 @@
 					}
 				}
 			},
-			"omission": false,
 			"globalAttrs": {
 				"#ARIAAttrs": true,
 				"#GlobalEventAttrs": true,
@@ -48640,8 +48369,7 @@
 		},
 		{
 			"name": "br",
-			"cite": "https://developer.mozilla.org/en-US/docs/Web/HTML/Reference/Elements/br",
-			"categories": ["#flow", "#phrasing"],
+			"cite": "https://html.spec.whatwg.org/multipage/text-level-semantics.html#the-br-element",
 			"contentModel": {
 				"contents": false
 			},
@@ -48658,7 +48386,6 @@
 					}
 				}
 			},
-			"omission": false,
 			"globalAttrs": {
 				"#ARIAAttrs": true,
 				"#GlobalEventAttrs": true,
@@ -48672,8 +48399,7 @@
 		},
 		{
 			"name": "button",
-			"cite": "https://developer.mozilla.org/en-US/docs/Web/HTML/Reference/Elements/button",
-			"categories": ["#flow", "#phrasing", "#interactive", "#palpable"],
+			"cite": "https://html.spec.whatwg.org/multipage/form-elements.html#the-button-element",
 			"contentModel": {
 				"contents": [
 					{
@@ -48747,7 +48473,6 @@
 					]
 				}
 			},
-			"omission": false,
 			"globalAttrs": {
 				"#ARIAAttrs": true,
 				"#GlobalEventAttrs": true,
@@ -48823,8 +48548,7 @@
 		},
 		{
 			"name": "canvas",
-			"cite": "https://developer.mozilla.org/en-US/docs/Web/HTML/Reference/Elements/canvas",
-			"categories": ["#flow", "#phrasing", "#embedded", "#palpable"],
+			"cite": "https://html.spec.whatwg.org/multipage/canvas.html#the-canvas-element",
 			"contentModel": {
 				"contents": [
 					{
@@ -48836,7 +48560,6 @@
 				"implicitRole": false,
 				"permittedRoles": true
 			},
-			"omission": false,
 			"globalAttrs": {
 				"#ARIAAttrs": true,
 				"#GlobalEventAttrs": true,
@@ -48858,8 +48581,7 @@
 		},
 		{
 			"name": "caption",
-			"cite": "https://developer.mozilla.org/en-US/docs/Web/HTML/Reference/Elements/caption",
-			"categories": [],
+			"cite": "https://html.spec.whatwg.org/multipage/tables.html#the-caption-element",
 			"contentModel": {
 				"contents": [
 					{
@@ -48878,7 +48600,6 @@
 					"implicitRole": false
 				}
 			},
-			"omission": false,
 			"globalAttrs": {
 				"#ARIAAttrs": true,
 				"#GlobalEventAttrs": true,
@@ -48893,7 +48614,6 @@
 		{
 			"name": "center",
 			"cite": "https://html.spec.whatwg.org/multipage/obsolete.html#center",
-			"categories": [],
 			"contentModel": {
 				"contents": true
 			},
@@ -48901,15 +48621,13 @@
 				"permittedRoles": true,
 				"implicitRole": false
 			},
-			"omission": false,
 			"obsolete": true,
 			"globalAttrs": {},
 			"attributes": {}
 		},
 		{
 			"name": "cite",
-			"cite": "https://developer.mozilla.org/en-US/docs/Web/HTML/Reference/Elements/cite",
-			"categories": ["#flow", "#phrasing", "#palpable"],
+			"cite": "https://html.spec.whatwg.org/multipage/text-level-semantics.html#the-cite-element",
 			"contentModel": {
 				"contents": [
 					{
@@ -48922,7 +48640,6 @@
 				"permittedRoles": true,
 				"namingProhibited": true
 			},
-			"omission": false,
 			"globalAttrs": {
 				"#ARIAAttrs": true,
 				"#GlobalEventAttrs": true,
@@ -48932,8 +48649,7 @@
 		},
 		{
 			"name": "code",
-			"cite": "https://developer.mozilla.org/en-US/docs/Web/HTML/Reference/Elements/code",
-			"categories": ["#flow", "#phrasing", "#palpable"],
+			"cite": "https://html.spec.whatwg.org/multipage/text-level-semantics.html#the-code-element",
 			"contentModel": {
 				"contents": [
 					{
@@ -48949,7 +48665,6 @@
 					"implicitRole": false
 				}
 			},
-			"omission": false,
 			"globalAttrs": {
 				"#ARIAAttrs": true,
 				"#GlobalEventAttrs": true,
@@ -48959,8 +48674,7 @@
 		},
 		{
 			"name": "col",
-			"cite": "https://developer.mozilla.org/en-US/docs/Web/HTML/Reference/Elements/col",
-			"categories": [],
+			"cite": "https://html.spec.whatwg.org/multipage/tables.html#the-col-element",
 			"contentModel": {
 				"contents": false
 			},
@@ -48969,7 +48683,6 @@
 				"permittedRoles": false,
 				"properties": false
 			},
-			"omission": false,
 			"globalAttrs": {
 				"#ARIAAttrs": true,
 				"#GlobalEventAttrs": true,
@@ -49007,8 +48720,7 @@
 		},
 		{
 			"name": "colgroup",
-			"cite": "https://developer.mozilla.org/en-US/docs/Web/HTML/Reference/Elements/colgroup",
-			"categories": [],
+			"cite": "https://html.spec.whatwg.org/multipage/tables.html#the-colgroup-element",
 			"contentModel": {
 				"contents": [
 					{
@@ -49027,7 +48739,6 @@
 				"permittedRoles": false,
 				"properties": false
 			},
-			"omission": false,
 			"globalAttrs": {
 				"#ARIAAttrs": true,
 				"#GlobalEventAttrs": true,
@@ -49065,8 +48776,7 @@
 		},
 		{
 			"name": "data",
-			"cite": "https://developer.mozilla.org/en-US/docs/Web/HTML/Reference/Elements/data",
-			"categories": ["#flow", "#phrasing", "#palpable"],
+			"cite": "https://html.spec.whatwg.org/multipage/text-level-semantics.html#the-data-element",
 			"contentModel": {
 				"contents": [
 					{
@@ -49082,7 +48792,6 @@
 					"implicitRole": false
 				}
 			},
-			"omission": false,
 			"globalAttrs": {
 				"#ARIAAttrs": true,
 				"#GlobalEventAttrs": true,
@@ -49097,8 +48806,7 @@
 		},
 		{
 			"name": "datalist",
-			"cite": "https://developer.mozilla.org/en-US/docs/Web/HTML/Reference/Elements/datalist",
-			"categories": ["#flow", "#phrasing"],
+			"cite": "https://html.spec.whatwg.org/multipage/form-elements.html#the-datalist-element",
 			"contentModel": {
 				"contents": [
 					{
@@ -49122,7 +48830,6 @@
 				"permittedRoles": false,
 				"properties": false
 			},
-			"omission": false,
 			"globalAttrs": {
 				"#ARIAAttrs": true,
 				"#GlobalEventAttrs": true,
@@ -49132,8 +48839,7 @@
 		},
 		{
 			"name": "dd",
-			"cite": "https://developer.mozilla.org/en-US/docs/Web/HTML/Reference/Elements/dd",
-			"categories": [],
+			"cite": "https://html.spec.whatwg.org/multipage/grouping-content.html#the-dd-element",
 			"contentModel": {
 				"contents": [
 					{
@@ -49152,7 +48858,6 @@
 					"implicitRole": "definition"
 				}
 			},
-			"omission": false,
 			"globalAttrs": {
 				"#ARIAAttrs": true,
 				"#GlobalEventAttrs": true,
@@ -49162,8 +48867,7 @@
 		},
 		{
 			"name": "del",
-			"cite": "https://developer.mozilla.org/en-US/docs/Web/HTML/Reference/Elements/del",
-			"categories": ["#flow", "#phrasing"],
+			"cite": "https://html.spec.whatwg.org/multipage/edits.html#the-del-element",
 			"contentModel": {
 				"contents": [
 					{
@@ -49179,7 +48883,6 @@
 					"implicitRole": false
 				}
 			},
-			"omission": false,
 			"globalAttrs": {
 				"#ARIAAttrs": true,
 				"#GlobalEventAttrs": true,
@@ -49196,8 +48899,7 @@
 		},
 		{
 			"name": "details",
-			"cite": "https://developer.mozilla.org/en-US/docs/Web/HTML/Reference/Elements/details",
-			"categories": ["#flow", "#interactive", "#palpable"],
+			"cite": "https://html.spec.whatwg.org/multipage/interactive-elements.html#the-details-element",
 			"contentModel": {
 				"contents": [
 					{
@@ -49216,7 +48918,6 @@
 					"role": "group"
 				}
 			},
-			"omission": false,
 			"globalAttrs": {
 				"#ARIAAttrs": true,
 				"#GlobalEventAttrs": true,
@@ -49233,8 +48934,7 @@
 		},
 		{
 			"name": "dfn",
-			"cite": "https://developer.mozilla.org/en-US/docs/Web/HTML/Reference/Elements/dfn",
-			"categories": ["#flow", "#phrasing", "#palpable"],
+			"cite": "https://html.spec.whatwg.org/multipage/text-level-semantics.html#the-dfn-element",
 			"contentModel": {
 				"contents": [
 					{
@@ -49246,7 +48946,6 @@
 				"implicitRole": "term",
 				"permittedRoles": true
 			},
-			"omission": false,
 			"globalAttrs": {
 				"#ARIAAttrs": true,
 				"#GlobalEventAttrs": true,
@@ -49256,8 +48955,7 @@
 		},
 		{
 			"name": "dialog",
-			"cite": "https://developer.mozilla.org/en-US/docs/Web/HTML/Reference/Elements/dialog",
-			"categories": ["#flow"],
+			"cite": "https://html.spec.whatwg.org/multipage/interactive-elements.html#the-dialog-element",
 			"contentModel": {
 				"contents": [
 					{
@@ -49273,7 +48971,6 @@
 					"role": "dialog"
 				}
 			},
-			"omission": false,
 			"globalAttrs": {
 				"#ARIAAttrs": true,
 				"#GlobalEventAttrs": true,
@@ -49298,7 +48995,6 @@
 		{
 			"name": "dir",
 			"cite": "https://html.spec.whatwg.org/multipage/obsolete.html#dir",
-			"categories": [],
 			"contentModel": {
 				"contents": true
 			},
@@ -49306,7 +49002,6 @@
 				"permittedRoles": true,
 				"implicitRole": false
 			},
-			"omission": false,
 			"obsolete": true,
 			"globalAttrs": {},
 			"attributes": {
@@ -49318,8 +49013,7 @@
 		},
 		{
 			"name": "div",
-			"cite": "https://developer.mozilla.org/en-US/docs/Web/HTML/Reference/Elements/div",
-			"categories": ["#flow", "#palpable"],
+			"cite": "https://html.spec.whatwg.org/multipage/grouping-content.html#the-div-element",
 			"contentModel": {
 				"contents": [
 					{
@@ -49363,7 +49057,6 @@
 					"permittedRoles": true
 				}
 			},
-			"omission": false,
 			"globalAttrs": {
 				"#ARIAAttrs": true,
 				"#GlobalEventAttrs": true,
@@ -49373,8 +49066,7 @@
 		},
 		{
 			"name": "dl",
-			"cite": "https://developer.mozilla.org/en-US/docs/Web/HTML/Reference/Elements/dl",
-			"categories": ["#flow", "#palpable"],
+			"cite": "https://html.spec.whatwg.org/multipage/grouping-content.html#the-dl-element",
 			"contentModel": {
 				"contents": [
 					{
@@ -49419,7 +49111,6 @@
 				"implicitRole": false,
 				"permittedRoles": ["group", "list", "none", "presentation"]
 			},
-			"omission": false,
 			"globalAttrs": {
 				"#ARIAAttrs": true,
 				"#GlobalEventAttrs": true,
@@ -49433,8 +49124,7 @@
 		},
 		{
 			"name": "dt",
-			"cite": "https://developer.mozilla.org/en-US/docs/Web/HTML/Reference/Elements/dt",
-			"categories": [],
+			"cite": "https://html.spec.whatwg.org/multipage/grouping-content.html#the-dt-element",
 			"contentModel": {
 				"contents": [
 					{
@@ -49449,7 +49139,6 @@
 					"implicitRole": "term"
 				}
 			},
-			"omission": false,
 			"globalAttrs": {
 				"#ARIAAttrs": true,
 				"#GlobalEventAttrs": true,
@@ -49459,8 +49148,7 @@
 		},
 		{
 			"name": "em",
-			"cite": "https://developer.mozilla.org/en-US/docs/Web/HTML/Reference/Elements/em",
-			"categories": ["#flow", "#phrasing", "#palpable"],
+			"cite": "https://html.spec.whatwg.org/multipage/text-level-semantics.html#the-em-element",
 			"contentModel": {
 				"contents": [
 					{
@@ -49476,7 +49164,6 @@
 					"implicitRole": false
 				}
 			},
-			"omission": false,
 			"globalAttrs": {
 				"#ARIAAttrs": true,
 				"#GlobalEventAttrs": true,
@@ -49486,8 +49173,7 @@
 		},
 		{
 			"name": "embed",
-			"cite": "https://developer.mozilla.org/en-US/docs/Web/HTML/Reference/Elements/embed",
-			"categories": ["#flow", "#phrasing", "#embedded", "#interactive", "#palpable"],
+			"cite": "https://html.spec.whatwg.org/multipage/iframe-embed-object.html#the-embed-element",
 			"contentModel": {
 				"contents": false
 			},
@@ -49495,7 +49181,6 @@
 				"implicitRole": false,
 				"permittedRoles": ["application", "document", "img", "none", "presentation"]
 			},
-			"omission": false,
 			"globalAttrs": {
 				"#ARIAAttrs": true,
 				"#GlobalEventAttrs": true,
@@ -49516,8 +49201,7 @@
 		},
 		{
 			"name": "fieldset",
-			"cite": "https://developer.mozilla.org/en-US/docs/Web/HTML/Reference/Elements/fieldset",
-			"categories": ["#flow", "#palpable"],
+			"cite": "https://html.spec.whatwg.org/multipage/form-elements.html#the-fieldset-element",
 			"contentModel": {
 				"contents": [
 					{
@@ -49532,7 +49216,6 @@
 				"implicitRole": "group",
 				"permittedRoles": ["radiogroup", "presentation", "none"]
 			},
-			"omission": false,
 			"globalAttrs": {
 				"#ARIAAttrs": true,
 				"#GlobalEventAttrs": true,
@@ -49547,8 +49230,7 @@
 		},
 		{
 			"name": "figcaption",
-			"cite": "https://developer.mozilla.org/en-US/docs/Web/HTML/Reference/Elements/figcaption",
-			"categories": [],
+			"cite": "https://html.spec.whatwg.org/multipage/grouping-content.html#the-figcaption-element",
 			"contentModel": {
 				"contents": [
 					{
@@ -49561,7 +49243,6 @@
 				"permittedRoles": ["group", "none", "presentation"],
 				"namingProhibited": true
 			},
-			"omission": false,
 			"globalAttrs": {
 				"#ARIAAttrs": true,
 				"#GlobalEventAttrs": true,
@@ -49571,8 +49252,7 @@
 		},
 		{
 			"name": "figure",
-			"cite": "https://developer.mozilla.org/en-US/docs/Web/HTML/Reference/Elements/figure",
-			"categories": ["#flow", "#palpable"],
+			"cite": "https://html.spec.whatwg.org/multipage/grouping-content.html#the-figure-element",
 			"contentModel": {
 				"contents": [
 					{
@@ -49611,7 +49291,6 @@
 					}
 				}
 			},
-			"omission": false,
 			"globalAttrs": {
 				"#ARIAAttrs": true,
 				"#GlobalEventAttrs": true,
@@ -49621,8 +49300,7 @@
 		},
 		{
 			"name": "font",
-			"cite": "https://developer.mozilla.org/en-US/docs/Web/HTML/Reference/Elements/font",
-			"categories": [],
+			"cite": "https://html.spec.whatwg.org/multipage/obsolete.html#font",
 			"contentModel": {
 				"contents": true
 			},
@@ -49630,7 +49308,6 @@
 				"permittedRoles": true,
 				"implicitRole": false
 			},
-			"omission": false,
 			"obsolete": true,
 			"globalAttrs": {
 				"#ARIAAttrs": true,
@@ -49654,8 +49331,7 @@
 		},
 		{
 			"name": "footer",
-			"cite": "https://developer.mozilla.org/en-US/docs/Web/HTML/Reference/Elements/footer",
-			"categories": ["#flow", "#palpable"],
+			"cite": "https://html.spec.whatwg.org/multipage/sections.html#the-footer-element",
 			"contentModel": {
 				"contents": [
 					{
@@ -49682,7 +49358,6 @@
 					}
 				}
 			},
-			"omission": false,
 			"globalAttrs": {
 				"#ARIAAttrs": true,
 				"#GlobalEventAttrs": true,
@@ -49692,8 +49367,7 @@
 		},
 		{
 			"name": "form",
-			"cite": "https://developer.mozilla.org/en-US/docs/Web/HTML/Reference/Elements/form",
-			"categories": ["#flow", "#palpable"],
+			"cite": "https://html.spec.whatwg.org/multipage/forms.html#the-form-element",
 			"contentModel": {
 				"contents": [
 					{
@@ -49710,7 +49384,6 @@
 				},
 				"permittedRoles": ["search", "none", "presentation"]
 			},
-			"omission": false,
 			"globalAttrs": {
 				"#ARIAAttrs": true,
 				"#GlobalEventAttrs": true,
@@ -49768,7 +49441,6 @@
 		{
 			"name": "frame",
 			"cite": "https://html.spec.whatwg.org/multipage/obsolete.html#frame",
-			"categories": [],
 			"contentModel": {
 				"contents": true
 			},
@@ -49776,7 +49448,6 @@
 				"permittedRoles": true,
 				"implicitRole": false
 			},
-			"omission": false,
 			"obsolete": true,
 			"globalAttrs": {},
 			"attributes": {
@@ -49813,7 +49484,6 @@
 		{
 			"name": "frameset",
 			"cite": "https://html.spec.whatwg.org/multipage/obsolete.html#frameset",
-			"categories": [],
 			"contentModel": {
 				"contents": true
 			},
@@ -49821,7 +49491,6 @@
 				"permittedRoles": true,
 				"implicitRole": false
 			},
-			"omission": false,
 			"obsolete": true,
 			"globalAttrs": {},
 			"attributes": {
@@ -49837,8 +49506,7 @@
 		},
 		{
 			"name": "h1",
-			"cite": "https://developer.mozilla.org/en-US/docs/Web/HTML/Reference/Elements/Heading_Elements",
-			"categories": ["#flow", "#heading", "#palpable"],
+			"cite": "https://html.spec.whatwg.org/multipage/sections.html#the-h1,-h2,-h3,-h4,-h5,-and-h6-elements",
 			"contentModel": {
 				"contents": [
 					{
@@ -49853,7 +49521,6 @@
 				},
 				"permittedRoles": ["tab", "presentation", "none"]
 			},
-			"omission": false,
 			"globalAttrs": {
 				"#ARIAAttrs": true,
 				"#GlobalEventAttrs": true,
@@ -49863,8 +49530,7 @@
 		},
 		{
 			"name": "h2",
-			"cite": "https://developer.mozilla.org/en-US/docs/Web/HTML/Reference/Elements/Heading_Elements",
-			"categories": ["#flow", "#heading", "#palpable"],
+			"cite": "https://html.spec.whatwg.org/multipage/sections.html#the-h1,-h2,-h3,-h4,-h5,-and-h6-elements",
 			"contentModel": {
 				"contents": [
 					{
@@ -49879,7 +49545,6 @@
 				},
 				"permittedRoles": ["tab", "presentation", "none"]
 			},
-			"omission": false,
 			"globalAttrs": {
 				"#ARIAAttrs": true,
 				"#GlobalEventAttrs": true,
@@ -49889,8 +49554,7 @@
 		},
 		{
 			"name": "h3",
-			"cite": "https://developer.mozilla.org/en-US/docs/Web/HTML/Reference/Elements/Heading_Elements",
-			"categories": ["#flow", "#heading", "#palpable"],
+			"cite": "https://html.spec.whatwg.org/multipage/sections.html#the-h1,-h2,-h3,-h4,-h5,-and-h6-elements",
 			"contentModel": {
 				"contents": [
 					{
@@ -49905,7 +49569,6 @@
 				},
 				"permittedRoles": ["tab", "presentation", "none"]
 			},
-			"omission": false,
 			"globalAttrs": {
 				"#ARIAAttrs": true,
 				"#GlobalEventAttrs": true,
@@ -49915,8 +49578,7 @@
 		},
 		{
 			"name": "h4",
-			"cite": "https://developer.mozilla.org/en-US/docs/Web/HTML/Reference/Elements/Heading_Elements",
-			"categories": ["#flow", "#heading", "#palpable"],
+			"cite": "https://html.spec.whatwg.org/multipage/sections.html#the-h1,-h2,-h3,-h4,-h5,-and-h6-elements",
 			"contentModel": {
 				"contents": [
 					{
@@ -49931,7 +49593,6 @@
 				},
 				"permittedRoles": ["tab", "presentation", "none"]
 			},
-			"omission": false,
 			"globalAttrs": {
 				"#ARIAAttrs": true,
 				"#GlobalEventAttrs": true,
@@ -49941,8 +49602,7 @@
 		},
 		{
 			"name": "h5",
-			"cite": "https://developer.mozilla.org/en-US/docs/Web/HTML/Reference/Elements/Heading_Elements",
-			"categories": ["#flow", "#heading", "#palpable"],
+			"cite": "https://html.spec.whatwg.org/multipage/sections.html#the-h1,-h2,-h3,-h4,-h5,-and-h6-elements",
 			"contentModel": {
 				"contents": [
 					{
@@ -49957,7 +49617,6 @@
 				},
 				"permittedRoles": ["tab", "presentation", "none"]
 			},
-			"omission": false,
 			"globalAttrs": {
 				"#ARIAAttrs": true,
 				"#GlobalEventAttrs": true,
@@ -49967,8 +49626,7 @@
 		},
 		{
 			"name": "h6",
-			"cite": "https://developer.mozilla.org/en-US/docs/Web/HTML/Reference/Elements/Heading_Elements",
-			"categories": ["#flow", "#heading", "#palpable"],
+			"cite": "https://html.spec.whatwg.org/multipage/sections.html#the-h1,-h2,-h3,-h4,-h5,-and-h6-elements",
 			"contentModel": {
 				"contents": [
 					{
@@ -49983,7 +49641,6 @@
 				},
 				"permittedRoles": ["tab", "presentation", "none"]
 			},
-			"omission": false,
 			"globalAttrs": {
 				"#ARIAAttrs": true,
 				"#GlobalEventAttrs": true,
@@ -49993,8 +49650,7 @@
 		},
 		{
 			"name": "head",
-			"cite": "https://developer.mozilla.org/en-US/docs/Web/HTML/Reference/Elements/head",
-			"categories": [],
+			"cite": "https://html.spec.whatwg.org/multipage/semantics.html#the-head-element",
 			"contentModel": {
 				"contents": [
 					{
@@ -50013,7 +49669,6 @@
 				"permittedRoles": false,
 				"properties": false
 			},
-			"omission": false,
 			"globalAttrs": {
 				"#ARIAAttrs": true,
 				"#GlobalEventAttrs": true,
@@ -50027,8 +49682,7 @@
 		},
 		{
 			"name": "header",
-			"cite": "https://developer.mozilla.org/en-US/docs/Web/HTML/Reference/Elements/header",
-			"categories": ["#flow", "#palpable"],
+			"cite": "https://html.spec.whatwg.org/multipage/sections.html#the-header-element",
 			"contentModel": {
 				"contents": [
 					{
@@ -50055,7 +49709,6 @@
 					}
 				}
 			},
-			"omission": false,
 			"globalAttrs": {
 				"#ARIAAttrs": true,
 				"#GlobalEventAttrs": true,
@@ -50065,8 +49718,7 @@
 		},
 		{
 			"name": "hgroup",
-			"cite": "https://developer.mozilla.org/en-US/docs/Web/HTML/Reference/Elements/hgroup",
-			"categories": ["#flow", "#heading", "#palpable"],
+			"cite": "https://html.spec.whatwg.org/multipage/sections.html#the-hgroup-element",
 			"contentModel": {
 				"contents": [
 					{
@@ -50100,7 +49752,6 @@
 					"implicitRole": false
 				}
 			},
-			"omission": false,
 			"globalAttrs": {
 				"#ARIAAttrs": true,
 				"#GlobalEventAttrs": true,
@@ -50110,8 +49761,7 @@
 		},
 		{
 			"name": "hr",
-			"cite": "https://developer.mozilla.org/en-US/docs/Web/HTML/Reference/Elements/hr",
-			"categories": ["#flow"],
+			"cite": "https://html.spec.whatwg.org/multipage/grouping-content.html#the-hr-element",
 			"contentModel": {
 				"contents": false
 			},
@@ -50123,7 +49773,6 @@
 					"role": "separator"
 				}
 			},
-			"omission": false,
 			"globalAttrs": {
 				"#ARIAAttrs": true,
 				"#GlobalEventAttrs": true,
@@ -50154,8 +49803,7 @@
 		},
 		{
 			"name": "html",
-			"cite": "https://developer.mozilla.org/en-US/docs/Web/HTML/Reference/Elements/html",
-			"categories": [],
+			"cite": "https://html.spec.whatwg.org/multipage/semantics.html#the-html-element",
 			"contentModel": {
 				"contents": [
 					{
@@ -50176,7 +49824,6 @@
 					"permittedRoles": false
 				}
 			},
-			"omission": false,
 			"globalAttrs": {
 				"#ARIAAttrs": true,
 				"#GlobalEventAttrs": true,
@@ -50193,8 +49840,7 @@
 		},
 		{
 			"name": "i",
-			"cite": "https://developer.mozilla.org/en-US/docs/Web/HTML/Reference/Elements/i",
-			"categories": ["#flow", "#phrasing", "#palpable"],
+			"cite": "https://html.spec.whatwg.org/multipage/text-level-semantics.html#the-i-element",
 			"contentModel": {
 				"contents": [
 					{
@@ -50210,7 +49856,6 @@
 					"implicitRole": false
 				}
 			},
-			"omission": false,
 			"globalAttrs": {
 				"#ARIAAttrs": true,
 				"#GlobalEventAttrs": true,
@@ -50220,8 +49865,7 @@
 		},
 		{
 			"name": "iframe",
-			"cite": "https://developer.mozilla.org/en-US/docs/Web/HTML/Reference/Elements/iframe",
-			"categories": ["#flow", "#phrasing", "#embedded", "#interactive", "#palpable"],
+			"cite": "https://html.spec.whatwg.org/multipage/iframe-embed-object.html#the-iframe-element",
 			"contentModel": {
 				"contents": false
 			},
@@ -50229,7 +49873,6 @@
 				"implicitRole": false,
 				"permittedRoles": ["application", "document", "img", "none", "presentation"]
 			},
-			"omission": false,
 			"globalAttrs": {
 				"#ARIAAttrs": true,
 				"#GlobalEventAttrs": true,
@@ -50323,8 +49966,7 @@
 		},
 		{
 			"name": "img",
-			"cite": "https://developer.mozilla.org/en-US/docs/Web/HTML/Reference/Elements/img",
-			"categories": ["#flow", "#phrasing", "#embedded", "#interactive", "#palpable"],
+			"cite": "https://html.spec.whatwg.org/multipage/embedded-content.html#the-img-element",
 			"contentModel": {
 				"contents": false
 			},
@@ -50394,7 +50036,6 @@
 					]
 				}
 			},
-			"omission": false,
 			"globalAttrs": {
 				"#ARIAAttrs": true,
 				"#GlobalEventAttrs": true,
@@ -50477,8 +50118,7 @@
 		},
 		{
 			"name": "input",
-			"cite": "https://developer.mozilla.org/en-US/docs/Web/HTML/Reference/Elements/input",
-			"categories": ["#flow", "#phrasing", "#palpable"],
+			"cite": "https://html.spec.whatwg.org/multipage/input.html#the-input-element",
 			"contentModel": {
 				"contents": false
 			},
@@ -51089,7 +50729,6 @@
 					}
 				}
 			},
-			"omission": false,
 			"globalAttrs": {
 				"#ARIAAttrs": true,
 				"#GlobalEventAttrs": true,
@@ -51553,8 +51192,7 @@
 		},
 		{
 			"name": "ins",
-			"cite": "https://developer.mozilla.org/en-US/docs/Web/HTML/Reference/Elements/ins",
-			"categories": ["#flow", "#phrasing"],
+			"cite": "https://html.spec.whatwg.org/multipage/edits.html#the-ins-element",
 			"contentModel": {
 				"contents": [
 					{
@@ -51570,7 +51208,6 @@
 					"implicitRole": false
 				}
 			},
-			"omission": false,
 			"globalAttrs": {
 				"#ARIAAttrs": true,
 				"#GlobalEventAttrs": true,
@@ -51588,7 +51225,6 @@
 		{
 			"name": "isindex",
 			"cite": "https://html.spec.whatwg.org/multipage/obsolete.html#isindex",
-			"categories": [],
 			"contentModel": {
 				"contents": true
 			},
@@ -51596,15 +51232,13 @@
 				"permittedRoles": true,
 				"implicitRole": false
 			},
-			"omission": false,
 			"obsolete": true,
 			"globalAttrs": {},
 			"attributes": {}
 		},
 		{
 			"name": "kbd",
-			"cite": "https://developer.mozilla.org/en-US/docs/Web/HTML/Reference/Elements/kbd",
-			"categories": ["#flow", "#phrasing", "#palpable"],
+			"cite": "https://html.spec.whatwg.org/multipage/text-level-semantics.html#the-kbd-element",
 			"contentModel": {
 				"contents": [
 					{
@@ -51617,7 +51251,6 @@
 				"permittedRoles": true,
 				"namingProhibited": true
 			},
-			"omission": false,
 			"globalAttrs": {
 				"#ARIAAttrs": true,
 				"#GlobalEventAttrs": true,
@@ -51628,7 +51261,6 @@
 		{
 			"name": "keygen",
 			"cite": "https://html.spec.whatwg.org/multipage/obsolete.html#keygen",
-			"categories": [],
 			"contentModel": {
 				"contents": true
 			},
@@ -51636,15 +51268,13 @@
 				"permittedRoles": true,
 				"implicitRole": false
 			},
-			"omission": false,
 			"obsolete": true,
 			"globalAttrs": {},
 			"attributes": {}
 		},
 		{
 			"name": "label",
-			"cite": "https://developer.mozilla.org/en-US/docs/Web/HTML/Reference/Elements/label",
-			"categories": ["#flow", "#phrasing", "#interactive", "#palpable"],
+			"cite": "https://html.spec.whatwg.org/multipage/forms.html#the-label-element",
 			"contentModel": {
 				"contents": [
 					{
@@ -51657,7 +51287,6 @@
 				"permittedRoles": false,
 				"namingProhibited": true
 			},
-			"omission": false,
 			"globalAttrs": {
 				"#ARIAAttrs": true,
 				"#GlobalEventAttrs": true,
@@ -51671,8 +51300,7 @@
 		},
 		{
 			"name": "legend",
-			"cite": "https://developer.mozilla.org/en-US/docs/Web/HTML/Reference/Elements/legend",
-			"categories": [],
+			"cite": "https://html.spec.whatwg.org/multipage/form-elements.html#the-legend-element",
 			"contentModel": {
 				"contents": [
 					{
@@ -51685,7 +51313,6 @@
 				"permittedRoles": false,
 				"namingProhibited": true
 			},
-			"omission": false,
 			"globalAttrs": {
 				"#ARIAAttrs": true,
 				"#GlobalEventAttrs": true,
@@ -51695,8 +51322,7 @@
 		},
 		{
 			"name": "li",
-			"cite": "https://developer.mozilla.org/en-US/docs/Web/HTML/Reference/Elements/li",
-			"categories": [],
+			"cite": "https://html.spec.whatwg.org/multipage/grouping-content.html#the-li-element",
 			"contentModel": {
 				"contents": [
 					{
@@ -51719,7 +51345,6 @@
 					"treeitem"
 				]
 			},
-			"omission": false,
 			"globalAttrs": {
 				"#ARIAAttrs": true,
 				"#GlobalEventAttrs": true,
@@ -51737,8 +51362,7 @@
 		},
 		{
 			"name": "link",
-			"cite": "https://developer.mozilla.org/en-US/docs/Web/HTML/Reference/Elements/link",
-			"categories": ["#metadata", "#flow", "#phrasing"],
+			"cite": "https://html.spec.whatwg.org/multipage/semantics.html#the-link-element",
 			"contentModel": {
 				"contents": false
 			},
@@ -51747,7 +51371,6 @@
 				"permittedRoles": false,
 				"properties": false
 			},
-			"omission": false,
 			"globalAttrs": {
 				"#ARIAAttrs": true,
 				"#GlobalEventAttrs": true,
@@ -51875,7 +51498,6 @@
 		{
 			"name": "listing",
 			"cite": "https://html.spec.whatwg.org/multipage/obsolete.html#listing",
-			"categories": [],
 			"contentModel": {
 				"contents": true
 			},
@@ -51883,15 +51505,13 @@
 				"permittedRoles": true,
 				"implicitRole": false
 			},
-			"omission": false,
 			"obsolete": true,
 			"globalAttrs": {},
 			"attributes": {}
 		},
 		{
 			"name": "main",
-			"cite": "https://developer.mozilla.org/en-US/docs/Web/HTML/Reference/Elements/main",
-			"categories": ["#flow", "#palpable"],
+			"cite": "https://html.spec.whatwg.org/multipage/grouping-content.html#the-main-element",
 			"contentModel": {
 				"contents": [
 					{
@@ -51908,7 +51528,6 @@
 					"role": "main"
 				}
 			},
-			"omission": false,
 			"globalAttrs": {
 				"#ARIAAttrs": true,
 				"#GlobalEventAttrs": true,
@@ -51918,8 +51537,7 @@
 		},
 		{
 			"name": "map",
-			"cite": "https://developer.mozilla.org/en-US/docs/Web/HTML/Reference/Elements/map",
-			"categories": ["#flow", "#phrasing", "#palpable"],
+			"cite": "https://html.spec.whatwg.org/multipage/image-maps.html#the-map-element",
 			"contentModel": {
 				"contents": [
 					{
@@ -51932,7 +51550,6 @@
 				"permittedRoles": false,
 				"properties": false
 			},
-			"omission": false,
 			"globalAttrs": {
 				"#ARIAAttrs": true,
 				"#GlobalEventAttrs": true,
@@ -51946,8 +51563,7 @@
 		},
 		{
 			"name": "mark",
-			"cite": "https://developer.mozilla.org/en-US/docs/Web/HTML/Reference/Elements/mark",
-			"categories": ["#flow", "#phrasing", "#palpable"],
+			"cite": "https://html.spec.whatwg.org/multipage/text-level-semantics.html#the-mark-element",
 			"contentModel": {
 				"contents": [
 					{
@@ -51960,7 +51576,6 @@
 				"permittedRoles": true,
 				"namingProhibited": true
 			},
-			"omission": false,
 			"globalAttrs": {
 				"#ARIAAttrs": true,
 				"#GlobalEventAttrs": true,
@@ -51971,7 +51586,6 @@
 		{
 			"name": "marquee",
 			"cite": "https://html.spec.whatwg.org/multipage/obsolete.html#non-conforming-features",
-			"categories": [],
 			"contentModel": {
 				"contents": true
 			},
@@ -51979,7 +51593,6 @@
 				"permittedRoles": true,
 				"implicitRole": false
 			},
-			"omission": false,
 			"obsolete": true,
 			"globalAttrs": {},
 			"attributes": {
@@ -52026,8 +51639,7 @@
 		},
 		{
 			"name": "menu",
-			"cite": "https://developer.mozilla.org/en-US/docs/Web/HTML/Reference/Elements/menu",
-			"categories": ["#flow", "#palpable"],
+			"cite": "https://html.spec.whatwg.org/multipage/grouping-content.html#the-menu-element",
 			"contentModel": {
 				"contents": [
 					{
@@ -52069,7 +51681,6 @@
 					]
 				}
 			},
-			"omission": false,
 			"globalAttrs": {
 				"#ARIAAttrs": true,
 				"#GlobalEventAttrs": true,
@@ -52084,7 +51695,6 @@
 		{
 			"name": "menuitem",
 			"cite": "https://html.spec.whatwg.org/multipage/obsolete.html#menuitem",
-			"categories": [],
 			"contentModel": {
 				"contents": true
 			},
@@ -52092,15 +51702,13 @@
 				"permittedRoles": true,
 				"implicitRole": false
 			},
-			"omission": false,
 			"obsolete": true,
 			"globalAttrs": {},
 			"attributes": {}
 		},
 		{
 			"name": "meta",
-			"cite": "https://developer.mozilla.org/en-US/docs/Web/HTML/Reference/Elements/meta",
-			"categories": ["#metadata", "#flow", "#phrasing"],
+			"cite": "https://html.spec.whatwg.org/multipage/semantics.html#the-meta-element",
 			"contentModel": {
 				"contents": false
 			},
@@ -52109,7 +51717,6 @@
 				"permittedRoles": false,
 				"properties": false
 			},
-			"omission": false,
 			"globalAttrs": {
 				"#ARIAAttrs": true,
 				"#GlobalEventAttrs": true,
@@ -52178,8 +51785,7 @@
 		},
 		{
 			"name": "meter",
-			"cite": "https://developer.mozilla.org/en-US/docs/Web/HTML/Reference/Elements/meter",
-			"categories": ["#flow", "#phrasing", "#palpable"],
+			"cite": "https://html.spec.whatwg.org/multipage/form-elements.html#the-meter-element",
 			"contentModel": {
 				"contents": [
 					{
@@ -52223,7 +51829,6 @@
 					"implicitRole": false
 				}
 			},
-			"omission": false,
 			"globalAttrs": {
 				"#ARIAAttrs": true,
 				"#GlobalEventAttrs": true,
@@ -52253,7 +51858,6 @@
 		{
 			"name": "multicol",
 			"cite": "https://html.spec.whatwg.org/multipage/obsolete.html#multicol",
-			"categories": [],
 			"contentModel": {
 				"contents": true
 			},
@@ -52261,15 +51865,13 @@
 				"permittedRoles": true,
 				"implicitRole": false
 			},
-			"omission": false,
 			"obsolete": true,
 			"globalAttrs": {},
 			"attributes": {}
 		},
 		{
 			"name": "nav",
-			"cite": "https://developer.mozilla.org/en-US/docs/Web/HTML/Reference/Elements/nav",
-			"categories": ["#flow", "#sectioning", "#palpable"],
+			"cite": "https://html.spec.whatwg.org/multipage/sections.html#the-nav-element",
 			"contentModel": {
 				"contents": [
 					{
@@ -52284,7 +51886,6 @@
 					"permittedRoles": ["menu", "menubar", "tablist"]
 				}
 			},
-			"omission": false,
 			"globalAttrs": {
 				"#ARIAAttrs": true,
 				"#GlobalEventAttrs": true,
@@ -52295,7 +51896,6 @@
 		{
 			"name": "nextid",
 			"cite": "https://html.spec.whatwg.org/multipage/obsolete.html#nextid",
-			"categories": [],
 			"contentModel": {
 				"contents": true
 			},
@@ -52303,7 +51903,6 @@
 				"permittedRoles": true,
 				"implicitRole": false
 			},
-			"omission": false,
 			"obsolete": true,
 			"globalAttrs": {},
 			"attributes": {}
@@ -52311,7 +51910,6 @@
 		{
 			"name": "nobr",
 			"cite": "https://html.spec.whatwg.org/multipage/obsolete.html#nobr",
-			"categories": [],
 			"contentModel": {
 				"contents": true
 			},
@@ -52319,7 +51917,6 @@
 				"permittedRoles": true,
 				"implicitRole": false
 			},
-			"omission": false,
 			"obsolete": true,
 			"globalAttrs": {},
 			"attributes": {}
@@ -52327,7 +51924,6 @@
 		{
 			"name": "noembed",
 			"cite": "https://html.spec.whatwg.org/multipage/obsolete.html#noembed",
-			"categories": [],
 			"contentModel": {
 				"contents": true
 			},
@@ -52335,7 +51931,6 @@
 				"permittedRoles": true,
 				"implicitRole": false
 			},
-			"omission": false,
 			"obsolete": true,
 			"globalAttrs": {},
 			"attributes": {}
@@ -52343,7 +51938,6 @@
 		{
 			"name": "noframes",
 			"cite": "https://html.spec.whatwg.org/multipage/obsolete.html#noframes",
-			"categories": [],
 			"contentModel": {
 				"contents": true
 			},
@@ -52351,15 +51945,13 @@
 				"permittedRoles": true,
 				"implicitRole": false
 			},
-			"omission": false,
 			"obsolete": true,
 			"globalAttrs": {},
 			"attributes": {}
 		},
 		{
 			"name": "noscript",
-			"cite": "https://developer.mozilla.org/en-US/docs/Web/HTML/Reference/Elements/noscript",
-			"categories": ["#metadata", "#flow", "#phrasing"],
+			"cite": "https://html.spec.whatwg.org/multipage/scripting.html#the-noscript-element",
 			"contentModel": {
 				"contents": [
 					{
@@ -52372,7 +51964,6 @@
 				"permittedRoles": false,
 				"properties": false
 			},
-			"omission": false,
 			"globalAttrs": {
 				"#ARIAAttrs": true,
 				"#GlobalEventAttrs": true,
@@ -52382,8 +51973,7 @@
 		},
 		{
 			"name": "object",
-			"cite": "https://developer.mozilla.org/en-US/docs/Web/HTML/Reference/Elements/object",
-			"categories": ["#flow", "#phrasing", "#embedded", "#interactive", "#palpable"],
+			"cite": "https://html.spec.whatwg.org/multipage/iframe-embed-object.html#the-object-element",
 			"contentModel": {
 				"contents": [
 					{
@@ -52395,7 +51985,6 @@
 				"implicitRole": false,
 				"permittedRoles": ["application", "document", "img"]
 			},
-			"omission": false,
 			"globalAttrs": {
 				"#ARIAAttrs": true,
 				"#GlobalEventAttrs": true,
@@ -52446,8 +52035,7 @@
 		},
 		{
 			"name": "ol",
-			"cite": "https://developer.mozilla.org/en-US/docs/Web/HTML/Reference/Elements/ol",
-			"categories": ["#flow", "#palpable"],
+			"cite": "https://html.spec.whatwg.org/multipage/grouping-content.html#the-ol-element",
 			"contentModel": {
 				"contents": [
 					{
@@ -52489,7 +52077,6 @@
 					]
 				}
 			},
-			"omission": false,
 			"globalAttrs": {
 				"#ARIAAttrs": true,
 				"#GlobalEventAttrs": true,
@@ -52518,8 +52105,7 @@
 		},
 		{
 			"name": "optgroup",
-			"cite": "https://developer.mozilla.org/en-US/docs/Web/HTML/Reference/Elements/optgroup",
-			"categories": [],
+			"cite": "https://html.spec.whatwg.org/multipage/form-elements.html#the-optgroup-element",
 			"contentModel": {
 				"contents": [
 					{
@@ -52535,7 +52121,6 @@
 					"role": "group"
 				}
 			},
-			"omission": false,
 			"globalAttrs": {
 				"#ARIAAttrs": true,
 				"#GlobalEventAttrs": true,
@@ -52552,8 +52137,7 @@
 		},
 		{
 			"name": "option",
-			"cite": "https://developer.mozilla.org/en-US/docs/Web/HTML/Reference/Elements/option",
-			"categories": [],
+			"cite": "https://html.spec.whatwg.org/multipage/form-elements.html#the-option-element",
 			"contentModel": {
 				"contents": [
 					{
@@ -52615,7 +52199,6 @@
 					}
 				}
 			},
-			"omission": false,
 			"globalAttrs": {
 				"#ARIAAttrs": true,
 				"#GlobalEventAttrs": true,
@@ -52637,8 +52220,7 @@
 		},
 		{
 			"name": "output",
-			"cite": "https://developer.mozilla.org/en-US/docs/Web/HTML/Reference/Elements/output",
-			"categories": ["#flow", "#phrasing", "#palpable"],
+			"cite": "https://html.spec.whatwg.org/multipage/form-elements.html#the-output-element",
 			"contentModel": {
 				"contents": [
 					{
@@ -52650,7 +52232,6 @@
 				"implicitRole": "status",
 				"permittedRoles": false
 			},
-			"omission": false,
 			"globalAttrs": {
 				"#ARIAAttrs": true,
 				"#GlobalEventAttrs": true,
@@ -52672,8 +52253,7 @@
 		},
 		{
 			"name": "p",
-			"cite": "https://developer.mozilla.org/en-US/docs/Web/HTML/Reference/Elements/p",
-			"categories": ["#flow", "#palpable"],
+			"cite": "https://html.spec.whatwg.org/multipage/grouping-content.html#the-p-element",
 			"contentModel": {
 				"contents": [
 					{
@@ -52689,7 +52269,6 @@
 					"implicitRole": false
 				}
 			},
-			"omission": false,
 			"globalAttrs": {
 				"#ARIAAttrs": true,
 				"#GlobalEventAttrs": true,
@@ -52700,7 +52279,6 @@
 		{
 			"name": "param",
 			"cite": "https://html.spec.whatwg.org/multipage/obsolete.html#param",
-			"categories": [],
 			"contentModel": {
 				"contents": true
 			},
@@ -52708,7 +52286,6 @@
 				"permittedRoles": true,
 				"implicitRole": false
 			},
-			"omission": false,
 			"obsolete": true,
 			"globalAttrs": {},
 			"attributes": {
@@ -52732,8 +52309,7 @@
 		},
 		{
 			"name": "picture",
-			"cite": "https://developer.mozilla.org/en-US/docs/Web/HTML/Reference/Elements/picture",
-			"categories": ["#flow", "#phrasing", "#embedded"],
+			"cite": "https://html.spec.whatwg.org/multipage/embedded-content.html#the-picture-element",
 			"contentModel": {
 				"contents": [
 					{
@@ -52768,7 +52344,6 @@
 					"properties": false
 				}
 			},
-			"omission": false,
 			"globalAttrs": {
 				"#ARIAAttrs": true,
 				"#GlobalEventAttrs": true,
@@ -52779,7 +52354,6 @@
 		{
 			"name": "plaintext",
 			"cite": "https://html.spec.whatwg.org/multipage/obsolete.html#plaintext",
-			"categories": [],
 			"contentModel": {
 				"contents": true
 			},
@@ -52787,15 +52361,13 @@
 				"permittedRoles": true,
 				"implicitRole": false
 			},
-			"omission": false,
 			"obsolete": true,
 			"globalAttrs": {},
 			"attributes": {}
 		},
 		{
 			"name": "pre",
-			"cite": "https://developer.mozilla.org/en-US/docs/Web/HTML/Reference/Elements/pre",
-			"categories": ["#flow", "#palpable"],
+			"cite": "https://html.spec.whatwg.org/multipage/grouping-content.html#the-pre-element",
 			"contentModel": {
 				"contents": [
 					{
@@ -52811,7 +52383,6 @@
 					"implicitRole": false
 				}
 			},
-			"omission": false,
 			"globalAttrs": {
 				"#ARIAAttrs": true,
 				"#GlobalEventAttrs": true,
@@ -52830,8 +52401,7 @@
 		},
 		{
 			"name": "progress",
-			"cite": "https://developer.mozilla.org/en-US/docs/Web/HTML/Reference/Elements/progress",
-			"categories": ["#flow", "#phrasing", "#palpable"],
+			"cite": "https://html.spec.whatwg.org/multipage/form-elements.html#the-progress-element",
 			"contentModel": {
 				"contents": [
 					{
@@ -52865,7 +52435,6 @@
 					]
 				}
 			},
-			"omission": false,
 			"globalAttrs": {
 				"#ARIAAttrs": true,
 				"#GlobalEventAttrs": true,
@@ -52888,8 +52457,7 @@
 		},
 		{
 			"name": "q",
-			"cite": "https://developer.mozilla.org/en-US/docs/Web/HTML/Reference/Elements/q",
-			"categories": ["#flow", "#phrasing", "#palpable"],
+			"cite": "https://html.spec.whatwg.org/multipage/text-level-semantics.html#the-q-element",
 			"contentModel": {
 				"contents": [
 					{
@@ -52905,7 +52473,6 @@
 					"implicitRole": false
 				}
 			},
-			"omission": false,
 			"globalAttrs": {
 				"#ARIAAttrs": true,
 				"#GlobalEventAttrs": true,
@@ -52920,7 +52487,6 @@
 		{
 			"name": "rb",
 			"cite": "https://html.spec.whatwg.org/multipage/obsolete.html#rb",
-			"categories": [],
 			"contentModel": {
 				"contents": true
 			},
@@ -52928,15 +52494,13 @@
 				"permittedRoles": true,
 				"implicitRole": false
 			},
-			"omission": false,
 			"obsolete": true,
 			"globalAttrs": {},
 			"attributes": {}
 		},
 		{
 			"name": "rp",
-			"cite": "https://developer.mozilla.org/en-US/docs/Web/HTML/Reference/Elements/rp",
-			"categories": [],
+			"cite": "https://html.spec.whatwg.org/multipage/text-level-semantics.html#the-rp-element",
 			"contentModel": {
 				"contents": [
 					{
@@ -52948,7 +52512,6 @@
 				"implicitRole": false,
 				"permittedRoles": true
 			},
-			"omission": false,
 			"globalAttrs": {
 				"#ARIAAttrs": true,
 				"#GlobalEventAttrs": true,
@@ -52958,8 +52521,7 @@
 		},
 		{
 			"name": "rt",
-			"cite": "https://developer.mozilla.org/en-US/docs/Web/HTML/Reference/Elements/rt",
-			"categories": [],
+			"cite": "https://html.spec.whatwg.org/multipage/text-level-semantics.html#the-rt-element",
 			"contentModel": {
 				"contents": [
 					{
@@ -52972,7 +52534,6 @@
 				"permittedRoles": true,
 				"namingProhibited": true
 			},
-			"omission": false,
 			"globalAttrs": {
 				"#ARIAAttrs": true,
 				"#GlobalEventAttrs": true,
@@ -52983,7 +52544,6 @@
 		{
 			"name": "rtc",
 			"cite": "https://html.spec.whatwg.org/multipage/obsolete.html#rtc",
-			"categories": [],
 			"contentModel": {
 				"contents": true
 			},
@@ -52991,15 +52551,13 @@
 				"permittedRoles": true,
 				"implicitRole": false
 			},
-			"omission": false,
 			"obsolete": true,
 			"globalAttrs": {},
 			"attributes": {}
 		},
 		{
 			"name": "ruby",
-			"cite": "https://developer.mozilla.org/en-US/docs/Web/HTML/Reference/Elements/ruby",
-			"categories": ["#flow", "#phrasing", "#palpable"],
+			"cite": "https://html.spec.whatwg.org/multipage/text-level-semantics.html#the-ruby-element",
 			"contentModel": {
 				"contents": [
 					{
@@ -53039,7 +52597,6 @@
 				"implicitRole": false,
 				"permittedRoles": true
 			},
-			"omission": false,
 			"globalAttrs": {
 				"#ARIAAttrs": true,
 				"#GlobalEventAttrs": true,
@@ -53049,8 +52606,7 @@
 		},
 		{
 			"name": "s",
-			"cite": "https://developer.mozilla.org/en-US/docs/Web/HTML/Reference/Elements/s",
-			"categories": ["#flow", "#phrasing"],
+			"cite": "https://html.spec.whatwg.org/multipage/text-level-semantics.html#the-s-element",
 			"contentModel": {
 				"contents": [
 					{
@@ -53066,7 +52622,6 @@
 					"implicitRole": false
 				}
 			},
-			"omission": false,
 			"globalAttrs": {
 				"#ARIAAttrs": true,
 				"#GlobalEventAttrs": true,
@@ -53076,8 +52631,7 @@
 		},
 		{
 			"name": "samp",
-			"cite": "https://developer.mozilla.org/en-US/docs/Web/HTML/Reference/Elements/samp",
-			"categories": ["#flow", "#phrasing", "#palpable"],
+			"cite": "https://html.spec.whatwg.org/multipage/text-level-semantics.html#the-samp-element",
 			"contentModel": {
 				"contents": [
 					{
@@ -53093,7 +52647,6 @@
 					"implicitRole": false
 				}
 			},
-			"omission": false,
 			"globalAttrs": {
 				"#ARIAAttrs": true,
 				"#GlobalEventAttrs": true,
@@ -53103,8 +52656,7 @@
 		},
 		{
 			"name": "script",
-			"cite": "https://developer.mozilla.org/en-US/docs/Web/HTML/Reference/Elements/script",
-			"categories": ["#metadata", "#flow", "#phrasing"],
+			"cite": "https://html.spec.whatwg.org/multipage/scripting.html#the-script-element",
 			"contentModel": {
 				"contents": [
 					{
@@ -53117,7 +52669,6 @@
 				"permittedRoles": false,
 				"properties": false
 			},
-			"omission": false,
 			"globalAttrs": {
 				"#ARIAAttrs": true,
 				"#GlobalEventAttrs": true,
@@ -53194,8 +52745,7 @@
 		},
 		{
 			"name": "search",
-			"cite": "https://developer.mozilla.org/en-US/docs/Web/HTML/Reference/Elements/search",
-			"categories": ["#flow", "#palpable"],
+			"cite": "https://html.spec.whatwg.org/multipage/grouping-content.html#the-search-element",
 			"contentModel": {
 				"contents": [
 					{
@@ -53207,7 +52757,6 @@
 				"implicitRole": "search",
 				"permittedRoles": ["form", "group", "none", "presentation", "region"]
 			},
-			"omission": false,
 			"globalAttrs": {
 				"#ARIAAttrs": true,
 				"#GlobalEventAttrs": true,
@@ -53217,8 +52766,7 @@
 		},
 		{
 			"name": "section",
-			"cite": "https://developer.mozilla.org/en-US/docs/Web/HTML/Reference/Elements/section",
-			"categories": ["#flow", "#sectioning", "#palpable"],
+			"cite": "https://html.spec.whatwg.org/multipage/sections.html#the-section-element",
 			"contentModel": {
 				"contents": [
 					{
@@ -53279,7 +52827,6 @@
 					]
 				}
 			},
-			"omission": false,
 			"globalAttrs": {
 				"#ARIAAttrs": true,
 				"#GlobalEventAttrs": true,
@@ -53289,8 +52836,7 @@
 		},
 		{
 			"name": "select",
-			"cite": "https://developer.mozilla.org/en-US/docs/Web/HTML/Reference/Elements/select",
-			"categories": ["#flow", "#phrasing", "#interactive"],
+			"cite": "https://html.spec.whatwg.org/multipage/form-elements.html#the-select-element",
 			"contentModel": {
 				"contents": [
 					{
@@ -53354,7 +52900,6 @@
 					}
 				}
 			},
-			"omission": false,
 			"globalAttrs": {
 				"#ARIAAttrs": true,
 				"#GlobalEventAttrs": true,
@@ -53383,8 +52928,7 @@
 		},
 		{
 			"name": "slot",
-			"cite": "https://developer.mozilla.org/en-US/docs/Web/HTML/Reference/Elements/slot",
-			"categories": ["#flow", "#phrasing"],
+			"cite": "https://html.spec.whatwg.org/multipage/scripting.html#the-slot-element",
 			"contentModel": {
 				"contents": [
 					{
@@ -53397,7 +52941,6 @@
 				"permittedRoles": false,
 				"properties": false
 			},
-			"omission": false,
 			"globalAttrs": {
 				"#ARIAAttrs": true,
 				"#GlobalEventAttrs": true,
@@ -53411,8 +52954,7 @@
 		},
 		{
 			"name": "small",
-			"cite": "https://developer.mozilla.org/en-US/docs/Web/HTML/Reference/Elements/small",
-			"categories": ["#flow", "#phrasing"],
+			"cite": "https://html.spec.whatwg.org/multipage/text-level-semantics.html#the-small-element",
 			"contentModel": {
 				"contents": [
 					{
@@ -53428,7 +52970,6 @@
 					"implicitRole": false
 				}
 			},
-			"omission": false,
 			"globalAttrs": {
 				"#ARIAAttrs": true,
 				"#GlobalEventAttrs": true,
@@ -53438,8 +52979,7 @@
 		},
 		{
 			"name": "source",
-			"cite": "https://developer.mozilla.org/en-US/docs/Web/HTML/Reference/Elements/source",
-			"categories": [],
+			"cite": "https://html.spec.whatwg.org/multipage/embedded-content.html#the-source-element",
 			"contentModel": {
 				"contents": false
 			},
@@ -53448,7 +52988,6 @@
 				"permittedRoles": false,
 				"properties": false
 			},
-			"omission": false,
 			"globalAttrs": {
 				"#ARIAAttrs": true,
 				"#GlobalEventAttrs": true,
@@ -53485,7 +53024,6 @@
 		{
 			"name": "spacer",
 			"cite": "https://html.spec.whatwg.org/multipage/obsolete.html#spacer",
-			"categories": [],
 			"contentModel": {
 				"contents": true
 			},
@@ -53493,15 +53031,13 @@
 				"permittedRoles": true,
 				"implicitRole": false
 			},
-			"omission": false,
 			"obsolete": true,
 			"globalAttrs": {},
 			"attributes": {}
 		},
 		{
 			"name": "span",
-			"cite": "https://developer.mozilla.org/en-US/docs/Web/HTML/Reference/Elements/span",
-			"categories": ["#flow", "#phrasing"],
+			"cite": "https://html.spec.whatwg.org/multipage/text-level-semantics.html#the-span-element",
 			"contentModel": {
 				"contents": [
 					{
@@ -53517,7 +53053,6 @@
 					"implicitRole": false
 				}
 			},
-			"omission": false,
 			"globalAttrs": {
 				"#ARIAAttrs": true,
 				"#GlobalEventAttrs": true,
@@ -53528,7 +53063,6 @@
 		{
 			"name": "strike",
 			"cite": "https://html.spec.whatwg.org/multipage/obsolete.html#strike",
-			"categories": [],
 			"contentModel": {
 				"contents": true
 			},
@@ -53536,15 +53070,13 @@
 				"permittedRoles": true,
 				"implicitRole": false
 			},
-			"omission": false,
 			"obsolete": true,
 			"globalAttrs": {},
 			"attributes": {}
 		},
 		{
 			"name": "strong",
-			"cite": "https://developer.mozilla.org/en-US/docs/Web/HTML/Reference/Elements/strong",
-			"categories": ["#flow", "#phrasing", "#palpable"],
+			"cite": "https://html.spec.whatwg.org/multipage/text-level-semantics.html#the-strong-element",
 			"contentModel": {
 				"contents": [
 					{
@@ -53560,7 +53092,6 @@
 					"implicitRole": false
 				}
 			},
-			"omission": false,
 			"globalAttrs": {
 				"#ARIAAttrs": true,
 				"#GlobalEventAttrs": true,
@@ -53570,8 +53101,7 @@
 		},
 		{
 			"name": "style",
-			"cite": "https://developer.mozilla.org/en-US/docs/Web/HTML/Reference/Elements/style",
-			"categories": ["#metadata", "#flow"],
+			"cite": "https://html.spec.whatwg.org/multipage/semantics.html#the-style-element",
 			"contentModel": {
 				"contents": [
 					{
@@ -53584,7 +53114,6 @@
 				"permittedRoles": false,
 				"properties": false
 			},
-			"omission": false,
 			"globalAttrs": {
 				"#ARIAAttrs": true,
 				"#GlobalEventAttrs": true,
@@ -53612,8 +53141,7 @@
 		},
 		{
 			"name": "sub",
-			"cite": "https://developer.mozilla.org/en-US/docs/Web/HTML/Reference/Elements/sub",
-			"categories": ["#flow", "#phrasing", "#palpable"],
+			"cite": "https://html.spec.whatwg.org/multipage/text-level-semantics.html#the-sub-and-sup-elements",
 			"contentModel": {
 				"contents": [
 					{
@@ -53629,7 +53157,6 @@
 					"implicitRole": false
 				}
 			},
-			"omission": false,
 			"globalAttrs": {
 				"#ARIAAttrs": true,
 				"#GlobalEventAttrs": true,
@@ -53639,8 +53166,7 @@
 		},
 		{
 			"name": "summary",
-			"cite": "https://developer.mozilla.org/en-US/docs/Web/HTML/Reference/Elements/summary",
-			"categories": [],
+			"cite": "https://html.spec.whatwg.org/multipage/interactive-elements.html#the-summary-element",
 			"contentModel": {
 				"contents": [
 					{
@@ -53685,7 +53211,6 @@
 					}
 				}
 			},
-			"omission": false,
 			"globalAttrs": {
 				"#ARIAAttrs": true,
 				"#GlobalEventAttrs": true,
@@ -53695,8 +53220,7 @@
 		},
 		{
 			"name": "sup",
-			"cite": "https://developer.mozilla.org/en-US/docs/Web/HTML/Reference/Elements/sup",
-			"categories": ["#flow", "#phrasing", "#palpable"],
+			"cite": "https://html.spec.whatwg.org/multipage/text-level-semantics.html#the-sub-and-sup-elements",
 			"contentModel": {
 				"contents": [
 					{
@@ -53712,7 +53236,6 @@
 					"implicitRole": false
 				}
 			},
-			"omission": false,
 			"globalAttrs": {
 				"#ARIAAttrs": true,
 				"#GlobalEventAttrs": true,
@@ -53722,8 +53245,7 @@
 		},
 		{
 			"name": "table",
-			"cite": "https://developer.mozilla.org/en-US/docs/Web/HTML/Reference/Elements/table",
-			"categories": ["#flow"],
+			"cite": "https://html.spec.whatwg.org/multipage/tables.html#the-table-element",
 			"contentModel": {
 				"contents": [
 					{
@@ -53776,7 +53298,6 @@
 				"implicitRole": "table",
 				"permittedRoles": true
 			},
-			"omission": false,
 			"globalAttrs": {
 				"#ARIAAttrs": true,
 				"#GlobalEventAttrs": true,
@@ -53814,8 +53335,7 @@
 		},
 		{
 			"name": "tbody",
-			"cite": "https://developer.mozilla.org/en-US/docs/Web/HTML/Reference/Elements/tbody",
-			"categories": [],
+			"cite": "https://html.spec.whatwg.org/multipage/tables.html#the-tbody-element",
 			"contentModel": {
 				"contents": [
 					{
@@ -53827,7 +53347,6 @@
 				"implicitRole": "rowgroup",
 				"permittedRoles": true
 			},
-			"omission": false,
 			"globalAttrs": {
 				"#ARIAAttrs": true,
 				"#GlobalEventAttrs": true,
@@ -53854,8 +53373,7 @@
 		},
 		{
 			"name": "td",
-			"cite": "https://developer.mozilla.org/en-US/docs/Web/HTML/Reference/Elements/td",
-			"categories": [],
+			"cite": "https://html.spec.whatwg.org/multipage/tables.html#the-td-element",
 			"contentModel": {
 				"contents": [
 					{
@@ -53878,7 +53396,6 @@
 					}
 				}
 			},
-			"omission": false,
 			"globalAttrs": {
 				"#ARIAAttrs": true,
 				"#GlobalEventAttrs": true,
@@ -53923,8 +53440,7 @@
 		},
 		{
 			"name": "template",
-			"cite": "https://developer.mozilla.org/en-US/docs/Web/HTML/Reference/Elements/template",
-			"categories": ["#metadata", "#flow", "#phrasing", "#script-supporting"],
+			"cite": "https://html.spec.whatwg.org/multipage/scripting.html#the-template-element",
 			"contentModel": {
 				"contents": true
 			},
@@ -53933,7 +53449,6 @@
 				"permittedRoles": false,
 				"properties": false
 			},
-			"omission": false,
 			"globalAttrs": {
 				"#ARIAAttrs": true,
 				"#GlobalEventAttrs": true,
@@ -53979,8 +53494,7 @@
 		},
 		{
 			"name": "textarea",
-			"cite": "https://developer.mozilla.org/en-US/docs/Web/HTML/Reference/Elements/textarea",
-			"categories": ["#flow", "#phrasing", "#interactive"],
+			"cite": "https://html.spec.whatwg.org/multipage/form-elements.html#the-textarea-element",
 			"contentModel": {
 				"contents": [
 					{
@@ -53996,7 +53510,6 @@
 					"role": "textbox"
 				}
 			},
-			"omission": false,
 			"globalAttrs": {
 				"#ARIAAttrs": true,
 				"#GlobalEventAttrs": true,
@@ -54055,8 +53568,7 @@
 		},
 		{
 			"name": "tfoot",
-			"cite": "https://developer.mozilla.org/en-US/docs/Web/HTML/Reference/Elements/tfoot",
-			"categories": [],
+			"cite": "https://html.spec.whatwg.org/multipage/tables.html#the-tfoot-element",
 			"contentModel": {
 				"contents": [
 					{
@@ -54068,7 +53580,6 @@
 				"implicitRole": "rowgroup",
 				"permittedRoles": true
 			},
-			"omission": false,
 			"globalAttrs": {
 				"#ARIAAttrs": true,
 				"#GlobalEventAttrs": true,
@@ -54095,8 +53606,7 @@
 		},
 		{
 			"name": "th",
-			"cite": "https://developer.mozilla.org/en-US/docs/Web/HTML/Reference/Elements/th",
-			"categories": [],
+			"cite": "https://html.spec.whatwg.org/multipage/tables.html#the-th-element",
 			"contentModel": {
 				"contents": [
 					{
@@ -54131,7 +53641,6 @@
 					}
 				}
 			},
-			"omission": false,
 			"globalAttrs": {
 				"#ARIAAttrs": true,
 				"#GlobalEventAttrs": true,
@@ -54180,8 +53689,7 @@
 		},
 		{
 			"name": "thead",
-			"cite": "https://developer.mozilla.org/en-US/docs/Web/HTML/Reference/Elements/thead",
-			"categories": [],
+			"cite": "https://html.spec.whatwg.org/multipage/tables.html#the-thead-element",
 			"contentModel": {
 				"contents": [
 					{
@@ -54193,7 +53701,6 @@
 				"implicitRole": "rowgroup",
 				"permittedRoles": true
 			},
-			"omission": false,
 			"globalAttrs": {
 				"#ARIAAttrs": true,
 				"#GlobalEventAttrs": true,
@@ -54220,8 +53727,7 @@
 		},
 		{
 			"name": "time",
-			"cite": "https://developer.mozilla.org/en-US/docs/Web/HTML/Reference/Elements/time",
-			"categories": ["#flow", "#phrasing", "#palpable"],
+			"cite": "https://html.spec.whatwg.org/multipage/text-level-semantics.html#the-time-element",
 			"contentModel": {
 				"contents": [
 					{
@@ -54237,7 +53743,6 @@
 					"implicitRole": false
 				}
 			},
-			"omission": false,
 			"globalAttrs": {
 				"#ARIAAttrs": true,
 				"#GlobalEventAttrs": true,
@@ -54251,8 +53756,7 @@
 		},
 		{
 			"name": "title",
-			"cite": "https://developer.mozilla.org/en-US/docs/Web/HTML/Reference/Elements/title",
-			"categories": ["#metadata"],
+			"cite": "https://html.spec.whatwg.org/multipage/semantics.html#the-title-element",
 			"contentModel": {
 				"contents": [
 					{
@@ -54265,7 +53769,6 @@
 				"permittedRoles": false,
 				"properties": false
 			},
-			"omission": false,
 			"globalAttrs": {
 				"#ARIAAttrs": true,
 				"#GlobalEventAttrs": true,
@@ -54275,8 +53778,7 @@
 		},
 		{
 			"name": "tr",
-			"cite": "https://developer.mozilla.org/en-US/docs/Web/HTML/Reference/Elements/tr",
-			"categories": [],
+			"cite": "https://html.spec.whatwg.org/multipage/tables.html#the-tr-element",
 			"contentModel": {
 				"contents": [
 					{
@@ -54293,7 +53795,6 @@
 					}
 				}
 			},
-			"omission": false,
 			"globalAttrs": {
 				"#ARIAAttrs": true,
 				"#GlobalEventAttrs": true,
@@ -54319,8 +53820,7 @@
 		},
 		{
 			"name": "track",
-			"cite": "https://developer.mozilla.org/en-US/docs/Web/HTML/Reference/Elements/track",
-			"categories": [],
+			"cite": "https://html.spec.whatwg.org/multipage/media.html#the-track-element",
 			"contentModel": {
 				"contents": false,
 				"uniqueAttrs": ["default"]
@@ -54330,7 +53830,6 @@
 				"permittedRoles": false,
 				"properties": false
 			},
-			"omission": false,
 			"globalAttrs": {
 				"#ARIAAttrs": true,
 				"#GlobalEventAttrs": true,
@@ -54362,7 +53861,6 @@
 		{
 			"name": "tt",
 			"cite": "https://html.spec.whatwg.org/multipage/obsolete.html#tt",
-			"categories": [],
 			"contentModel": {
 				"contents": true
 			},
@@ -54370,15 +53868,13 @@
 				"permittedRoles": true,
 				"implicitRole": false
 			},
-			"omission": false,
 			"obsolete": true,
 			"globalAttrs": {},
 			"attributes": {}
 		},
 		{
 			"name": "u",
-			"cite": "https://developer.mozilla.org/en-US/docs/Web/HTML/Reference/Elements/u",
-			"categories": ["#flow", "#phrasing", "#palpable"],
+			"cite": "https://html.spec.whatwg.org/multipage/text-level-semantics.html#the-u-element",
 			"contentModel": {
 				"contents": [
 					{
@@ -54394,7 +53890,6 @@
 					"implicitRole": false
 				}
 			},
-			"omission": false,
 			"globalAttrs": {
 				"#ARIAAttrs": true,
 				"#GlobalEventAttrs": true,
@@ -54404,8 +53899,7 @@
 		},
 		{
 			"name": "ul",
-			"cite": "https://developer.mozilla.org/en-US/docs/Web/HTML/Reference/Elements/ul",
-			"categories": ["#flow", "#palpable"],
+			"cite": "https://html.spec.whatwg.org/multipage/grouping-content.html#the-ul-element",
 			"contentModel": {
 				"contents": [
 					{
@@ -54447,7 +53941,6 @@
 					]
 				}
 			},
-			"omission": false,
 			"globalAttrs": {
 				"#ARIAAttrs": true,
 				"#GlobalEventAttrs": true,
@@ -54464,8 +53957,7 @@
 		},
 		{
 			"name": "var",
-			"cite": "https://developer.mozilla.org/en-US/docs/Web/HTML/Reference/Elements/var",
-			"categories": ["#flow", "#phrasing", "#palpable"],
+			"cite": "https://html.spec.whatwg.org/multipage/text-level-semantics.html#the-var-element",
 			"contentModel": {
 				"contents": [
 					{
@@ -54478,7 +53970,6 @@
 				"permittedRoles": true,
 				"namingProhibited": true
 			},
-			"omission": false,
 			"globalAttrs": {
 				"#ARIAAttrs": true,
 				"#GlobalEventAttrs": true,
@@ -54488,8 +53979,7 @@
 		},
 		{
 			"name": "video",
-			"cite": "https://developer.mozilla.org/en-US/docs/Web/HTML/Reference/Elements/video",
-			"categories": ["#flow", "#phrasing", "#embedded", "#interactive", "#palpable"],
+			"cite": "https://html.spec.whatwg.org/multipage/media.html#the-video-element",
 			"contentModel": {
 				"contents": [
 					{
@@ -54524,7 +54014,6 @@
 					"role": "application"
 				}
 			},
-			"omission": false,
 			"globalAttrs": {
 				"#ARIAAttrs": true,
 				"#GlobalEventAttrs": true,
@@ -54577,8 +54066,7 @@
 		},
 		{
 			"name": "wbr",
-			"cite": "https://developer.mozilla.org/en-US/docs/Web/HTML/Reference/Elements/wbr",
-			"categories": ["#flow", "#phrasing"],
+			"cite": "https://html.spec.whatwg.org/multipage/text-level-semantics.html#the-wbr-element",
 			"contentModel": {
 				"contents": false
 			},
@@ -54592,7 +54080,6 @@
 					"permittedRoles": true
 				}
 			},
-			"omission": false,
 			"globalAttrs": {
 				"#ARIAAttrs": true,
 				"#GlobalEventAttrs": true,
@@ -54603,7 +54090,6 @@
 		{
 			"name": "xmp",
 			"cite": "https://html.spec.whatwg.org/multipage/obsolete.html#xmp",
-			"categories": [],
 			"contentModel": {
 				"contents": true
 			},
@@ -54611,7 +54097,6 @@
 				"permittedRoles": true,
 				"implicitRole": false
 			},
-			"omission": false,
 			"obsolete": true,
 			"globalAttrs": {},
 			"attributes": {}
@@ -54619,8 +54104,7 @@
 		{
 			"name": "mml:annotation",
 			"namespace": "http://www.w3.org/1998/Math/MathML",
-			"cite": "https://developer.mozilla.org/en-US/docs/Web/MathML/Reference/Element/annotation",
-			"categories": [],
+			"cite": "https://www.w3.org/TR/mathml-core/#semantics-and-presentation",
 			"contentModel": {
 				"contents": [
 					{
@@ -54632,7 +54116,6 @@
 				"implicitRole": false,
 				"permittedRoles": true
 			},
-			"omission": false,
 			"globalAttrs": {
 				"#ARIAAttrs": true,
 				"#GlobalEventAttrs": true,
@@ -54651,8 +54134,7 @@
 		{
 			"name": "mml:annotation-xml",
 			"namespace": "http://www.w3.org/1998/Math/MathML",
-			"cite": "https://developer.mozilla.org/en-US/docs/Web/MathML/Reference/Element/annotation-xml",
-			"categories": [],
+			"cite": "https://www.w3.org/TR/mathml-core/#semantics-and-presentation",
 			"contentModel": {
 				"contents": [
 					{
@@ -54670,7 +54152,6 @@
 				"implicitRole": false,
 				"permittedRoles": true
 			},
-			"omission": false,
 			"globalAttrs": {
 				"#ARIAAttrs": true,
 				"#GlobalEventAttrs": true,
@@ -54689,8 +54170,7 @@
 		{
 			"name": "mml:maction",
 			"namespace": "http://www.w3.org/1998/Math/MathML",
-			"cite": "https://developer.mozilla.org/en-US/docs/Web/MathML/Reference/Element/maction",
-			"categories": [],
+			"cite": "https://w3c.github.io/mathml/#presm_maction",
 			"contentModel": {
 				"contents": [
 					{
@@ -54708,7 +54188,6 @@
 				"implicitRole": false,
 				"permittedRoles": true
 			},
-			"omission": false,
 			"deprecated": true,
 			"globalAttrs": {
 				"#ARIAAttrs": true,
@@ -54731,8 +54210,7 @@
 		{
 			"name": "mml:math",
 			"namespace": "http://www.w3.org/1998/Math/MathML",
-			"cite": "https://developer.mozilla.org/en-US/docs/Web/MathML/Reference/Element/math",
-			"categories": [],
+			"cite": "https://www.w3.org/TR/mathml-core/#the-top-level-math-element",
 			"contentModel": {
 				"contents": [
 					{
@@ -54748,7 +54226,6 @@
 					"role": "math"
 				}
 			},
-			"omission": false,
 			"globalAttrs": {
 				"#ARIAAttrs": true,
 				"#GlobalEventAttrs": true,
@@ -54773,8 +54250,7 @@
 		{
 			"name": "mml:menclose",
 			"namespace": "http://www.w3.org/1998/Math/MathML",
-			"cite": "https://developer.mozilla.org/en-US/docs/Web/MathML/Reference/Element/menclose",
-			"categories": [],
+			"cite": "https://w3c.github.io/mathml/#presm_menclose_desc",
 			"contentModel": {
 				"contents": [
 					{
@@ -54792,7 +54268,6 @@
 				"implicitRole": false,
 				"permittedRoles": true
 			},
-			"omission": false,
 			"nonStandard": true,
 			"globalAttrs": {
 				"#ARIAAttrs": true,
@@ -54809,8 +54284,7 @@
 		{
 			"name": "mml:merror",
 			"namespace": "http://www.w3.org/1998/Math/MathML",
-			"cite": "https://developer.mozilla.org/en-US/docs/Web/MathML/Reference/Element/merror",
-			"categories": [],
+			"cite": "https://www.w3.org/TR/mathml-core/#error-message-merror",
 			"contentModel": {
 				"contents": [
 					{
@@ -54828,7 +54302,6 @@
 				"implicitRole": false,
 				"permittedRoles": true
 			},
-			"omission": false,
 			"globalAttrs": {
 				"#ARIAAttrs": true,
 				"#GlobalEventAttrs": true,
@@ -54839,8 +54312,7 @@
 		{
 			"name": "mml:mfenced",
 			"namespace": "http://www.w3.org/1998/Math/MathML",
-			"cite": "https://developer.mozilla.org/en-US/docs/Web/MathML/Reference/Element/mfenced",
-			"categories": [],
+			"cite": "https://w3c.github.io/mathml/#presm_mfenced_desc",
 			"contentModel": {
 				"contents": [
 					{
@@ -54858,7 +54330,6 @@
 				"implicitRole": false,
 				"permittedRoles": true
 			},
-			"omission": false,
 			"deprecated": true,
 			"nonStandard": true,
 			"globalAttrs": {
@@ -54884,8 +54355,7 @@
 		{
 			"name": "mml:mfrac",
 			"namespace": "http://www.w3.org/1998/Math/MathML",
-			"cite": "https://developer.mozilla.org/en-US/docs/Web/MathML/Reference/Element/mfrac",
-			"categories": [],
+			"cite": "https://www.w3.org/TR/mathml-core/#fractions-mfrac",
 			"contentModel": {
 				"contents": [
 					{
@@ -54899,7 +54369,6 @@
 				"implicitRole": false,
 				"permittedRoles": true
 			},
-			"omission": false,
 			"globalAttrs": {
 				"#ARIAAttrs": true,
 				"#GlobalEventAttrs": true,
@@ -54922,8 +54391,7 @@
 		{
 			"name": "mml:mi",
 			"namespace": "http://www.w3.org/1998/Math/MathML",
-			"cite": "https://developer.mozilla.org/en-US/docs/Web/MathML/Reference/Element/mi",
-			"categories": [],
+			"cite": "https://www.w3.org/TR/mathml-core/#the-mi-element",
 			"contentModel": {
 				"contents": [
 					{
@@ -54941,7 +54409,6 @@
 				"implicitRole": false,
 				"permittedRoles": true
 			},
-			"omission": false,
 			"globalAttrs": {
 				"#ARIAAttrs": true,
 				"#GlobalEventAttrs": true,
@@ -54959,8 +54426,7 @@
 		{
 			"name": "mml:mmultiscripts",
 			"namespace": "http://www.w3.org/1998/Math/MathML",
-			"cite": "https://developer.mozilla.org/en-US/docs/Web/MathML/Reference/Element/mmultiscripts",
-			"categories": [],
+			"cite": "https://www.w3.org/TR/mathml-core/#prescripts-and-tensor-indices-mmultiscripts",
 			"contentModel": {
 				"contents": [
 					{
@@ -54972,7 +54438,6 @@
 				"implicitRole": false,
 				"permittedRoles": true
 			},
-			"omission": false,
 			"globalAttrs": {
 				"#ARIAAttrs": true,
 				"#GlobalEventAttrs": true,
@@ -54992,8 +54457,7 @@
 		{
 			"name": "mml:mn",
 			"namespace": "http://www.w3.org/1998/Math/MathML",
-			"cite": "https://developer.mozilla.org/en-US/docs/Web/MathML/Reference/Element/mn",
-			"categories": [],
+			"cite": "https://www.w3.org/TR/mathml-core/#number-mn",
 			"contentModel": {
 				"contents": [
 					{
@@ -55011,7 +54475,6 @@
 				"implicitRole": false,
 				"permittedRoles": true
 			},
-			"omission": false,
 			"globalAttrs": {
 				"#ARIAAttrs": true,
 				"#GlobalEventAttrs": true,
@@ -55022,8 +54485,7 @@
 		{
 			"name": "mml:mo",
 			"namespace": "http://www.w3.org/1998/Math/MathML",
-			"cite": "https://developer.mozilla.org/en-US/docs/Web/MathML/Reference/Element/mo",
-			"categories": [],
+			"cite": "https://www.w3.org/TR/mathml-core/#operator-fence-separator-or-accent-mo",
 			"contentModel": {
 				"contents": [
 					{
@@ -55041,7 +54503,6 @@
 				"implicitRole": false,
 				"permittedRoles": true
 			},
-			"omission": false,
 			"globalAttrs": {
 				"#ARIAAttrs": true,
 				"#GlobalEventAttrs": true,
@@ -55114,8 +54575,7 @@
 		{
 			"name": "mml:mover",
 			"namespace": "http://www.w3.org/1998/Math/MathML",
-			"cite": "https://developer.mozilla.org/en-US/docs/Web/MathML/Reference/Element/mover",
-			"categories": [],
+			"cite": "https://www.w3.org/TR/mathml-core/#underscripts-and-overscripts-munder-mover-munderover",
 			"contentModel": {
 				"contents": [
 					{
@@ -55135,7 +54595,6 @@
 				"implicitRole": false,
 				"permittedRoles": true
 			},
-			"omission": false,
 			"globalAttrs": {
 				"#ARIAAttrs": true,
 				"#GlobalEventAttrs": true,
@@ -55153,8 +54612,7 @@
 		{
 			"name": "mml:mpadded",
 			"namespace": "http://www.w3.org/1998/Math/MathML",
-			"cite": "https://developer.mozilla.org/en-US/docs/Web/MathML/Reference/Element/mpadded",
-			"categories": [],
+			"cite": "https://www.w3.org/TR/mathml-core/#adjust-space-around-content-mpadded",
 			"contentModel": {
 				"contents": [
 					{
@@ -55172,7 +54630,6 @@
 				"implicitRole": false,
 				"permittedRoles": true
 			},
-			"omission": false,
 			"globalAttrs": {
 				"#ARIAAttrs": true,
 				"#GlobalEventAttrs": true,
@@ -55199,8 +54656,7 @@
 		{
 			"name": "mml:mphantom",
 			"namespace": "http://www.w3.org/1998/Math/MathML",
-			"cite": "https://developer.mozilla.org/en-US/docs/Web/MathML/Reference/Element/mphantom",
-			"categories": [],
+			"cite": "https://www.w3.org/TR/mathml-core/#making-sub-expressions-invisible-mphantom",
 			"contentModel": {
 				"contents": [
 					{
@@ -55218,7 +54674,6 @@
 				"implicitRole": false,
 				"permittedRoles": true
 			},
-			"omission": false,
 			"globalAttrs": {
 				"#ARIAAttrs": true,
 				"#GlobalEventAttrs": true,
@@ -55229,8 +54684,7 @@
 		{
 			"name": "mml:mprescripts",
 			"namespace": "http://www.w3.org/1998/Math/MathML",
-			"cite": "https://developer.mozilla.org/en-US/docs/Web/MathML/Reference/Element/mprescripts",
-			"categories": [],
+			"cite": "https://www.w3.org/TR/mathml-core/#prescripts-and-tensor-indices-mmultiscripts",
 			"contentModel": {
 				"contents": false
 			},
@@ -55238,7 +54692,6 @@
 				"implicitRole": false,
 				"permittedRoles": true
 			},
-			"omission": false,
 			"globalAttrs": {
 				"#ARIAAttrs": true,
 				"#GlobalEventAttrs": true,
@@ -55249,8 +54702,7 @@
 		{
 			"name": "mml:mroot",
 			"namespace": "http://www.w3.org/1998/Math/MathML",
-			"cite": "https://developer.mozilla.org/en-US/docs/Web/MathML/Reference/Element/mroot",
-			"categories": [],
+			"cite": "https://www.w3.org/TR/mathml-core/#radicals-msqrt-mroot",
 			"contentModel": {
 				"contents": [
 					{
@@ -55264,7 +54716,6 @@
 				"implicitRole": false,
 				"permittedRoles": true
 			},
-			"omission": false,
 			"globalAttrs": {
 				"#ARIAAttrs": true,
 				"#GlobalEventAttrs": true,
@@ -55275,8 +54726,7 @@
 		{
 			"name": "mml:mrow",
 			"namespace": "http://www.w3.org/1998/Math/MathML",
-			"cite": "https://developer.mozilla.org/en-US/docs/Web/MathML/Reference/Element/mrow",
-			"categories": [],
+			"cite": "https://www.w3.org/TR/mathml-core/#horizontally-group-sub-expressions-mrow",
 			"contentModel": {
 				"contents": [
 					{
@@ -55297,7 +54747,6 @@
 				"implicitRole": false,
 				"permittedRoles": true
 			},
-			"omission": false,
 			"globalAttrs": {
 				"#ARIAAttrs": true,
 				"#GlobalEventAttrs": true,
@@ -55308,8 +54757,7 @@
 		{
 			"name": "mml:ms",
 			"namespace": "http://www.w3.org/1998/Math/MathML",
-			"cite": "https://developer.mozilla.org/en-US/docs/Web/MathML/Reference/Element/ms",
-			"categories": [],
+			"cite": "https://www.w3.org/TR/mathml-core/#string-literal-ms",
 			"contentModel": {
 				"contents": [
 					{
@@ -55327,7 +54775,6 @@
 				"implicitRole": false,
 				"permittedRoles": true
 			},
-			"omission": false,
 			"globalAttrs": {
 				"#ARIAAttrs": true,
 				"#GlobalEventAttrs": true,
@@ -55338,8 +54785,7 @@
 		{
 			"name": "mml:mspace",
 			"namespace": "http://www.w3.org/1998/Math/MathML",
-			"cite": "https://developer.mozilla.org/en-US/docs/Web/MathML/Reference/Element/mspace",
-			"categories": [],
+			"cite": "https://www.w3.org/TR/mathml-core/#space-mspace",
 			"contentModel": {
 				"contents": false
 			},
@@ -55347,7 +54793,6 @@
 				"implicitRole": false,
 				"permittedRoles": true
 			},
-			"omission": false,
 			"globalAttrs": {
 				"#ARIAAttrs": true,
 				"#GlobalEventAttrs": true,
@@ -55368,8 +54813,7 @@
 		{
 			"name": "mml:msqrt",
 			"namespace": "http://www.w3.org/1998/Math/MathML",
-			"cite": "https://developer.mozilla.org/en-US/docs/Web/MathML/Reference/Element/msqrt",
-			"categories": [],
+			"cite": "https://www.w3.org/TR/mathml-core/#radicals-msqrt-mroot",
 			"contentModel": {
 				"contents": [
 					{
@@ -55381,7 +54825,6 @@
 				"implicitRole": false,
 				"permittedRoles": true
 			},
-			"omission": false,
 			"globalAttrs": {
 				"#ARIAAttrs": true,
 				"#GlobalEventAttrs": true,
@@ -55392,8 +54835,7 @@
 		{
 			"name": "mml:mstyle",
 			"namespace": "http://www.w3.org/1998/Math/MathML",
-			"cite": "https://developer.mozilla.org/en-US/docs/Web/MathML/Reference/Element/mstyle",
-			"categories": [],
+			"cite": "https://www.w3.org/TR/mathml-core/#style-change-mstyle",
 			"contentModel": {
 				"contents": [
 					{
@@ -55411,7 +54853,6 @@
 				"implicitRole": false,
 				"permittedRoles": true
 			},
-			"omission": false,
 			"globalAttrs": {
 				"#ARIAAttrs": true,
 				"#GlobalEventAttrs": true,
@@ -55443,8 +54884,7 @@
 		{
 			"name": "mml:msub",
 			"namespace": "http://www.w3.org/1998/Math/MathML",
-			"cite": "https://developer.mozilla.org/en-US/docs/Web/MathML/Reference/Element/msub",
-			"categories": [],
+			"cite": "https://www.w3.org/TR/mathml-core/#subscripts-and-superscripts-msub-msup-msubsup",
 			"contentModel": {
 				"contents": [
 					{
@@ -55464,7 +54904,6 @@
 				"implicitRole": false,
 				"permittedRoles": true
 			},
-			"omission": false,
 			"globalAttrs": {
 				"#ARIAAttrs": true,
 				"#GlobalEventAttrs": true,
@@ -55480,8 +54919,7 @@
 		{
 			"name": "mml:msubsup",
 			"namespace": "http://www.w3.org/1998/Math/MathML",
-			"cite": "https://developer.mozilla.org/en-US/docs/Web/MathML/Reference/Element/msubsup",
-			"categories": [],
+			"cite": "https://www.w3.org/TR/mathml-core/#subscripts-and-superscripts-msub-msup-msubsup",
 			"contentModel": {
 				"contents": [
 					{
@@ -55501,7 +54939,6 @@
 				"implicitRole": false,
 				"permittedRoles": true
 			},
-			"omission": false,
 			"globalAttrs": {
 				"#ARIAAttrs": true,
 				"#GlobalEventAttrs": true,
@@ -55521,8 +54958,7 @@
 		{
 			"name": "mml:msup",
 			"namespace": "http://www.w3.org/1998/Math/MathML",
-			"cite": "https://developer.mozilla.org/en-US/docs/Web/MathML/Reference/Element/msup",
-			"categories": [],
+			"cite": "https://www.w3.org/TR/mathml-core/#subscripts-and-superscripts-msub-msup-msubsup",
 			"contentModel": {
 				"contents": [
 					{
@@ -55542,7 +54978,6 @@
 				"implicitRole": false,
 				"permittedRoles": true
 			},
-			"omission": false,
 			"globalAttrs": {
 				"#ARIAAttrs": true,
 				"#GlobalEventAttrs": true,
@@ -55558,8 +54993,7 @@
 		{
 			"name": "mml:mtable",
 			"namespace": "http://www.w3.org/1998/Math/MathML",
-			"cite": "https://developer.mozilla.org/en-US/docs/Web/MathML/Reference/Element/mtable",
-			"categories": [],
+			"cite": "https://www.w3.org/TR/mathml-core/#table-or-matrix-mtable",
 			"contentModel": {
 				"contents": [
 					{
@@ -55571,7 +55005,6 @@
 				"implicitRole": false,
 				"permittedRoles": true
 			},
-			"omission": false,
 			"globalAttrs": {
 				"#ARIAAttrs": true,
 				"#GlobalEventAttrs": true,
@@ -55613,8 +55046,7 @@
 		{
 			"name": "mml:mtd",
 			"namespace": "http://www.w3.org/1998/Math/MathML",
-			"cite": "https://developer.mozilla.org/en-US/docs/Web/MathML/Reference/Element/mtd",
-			"categories": [],
+			"cite": "https://www.w3.org/TR/mathml-core/#entry-in-table-or-matrix-mtd",
 			"contentModel": {
 				"contents": [
 					{
@@ -55632,7 +55064,6 @@
 				"implicitRole": false,
 				"permittedRoles": true
 			},
-			"omission": false,
 			"globalAttrs": {
 				"#ARIAAttrs": true,
 				"#GlobalEventAttrs": true,
@@ -55662,8 +55093,7 @@
 		{
 			"name": "mml:mtext",
 			"namespace": "http://www.w3.org/1998/Math/MathML",
-			"cite": "https://developer.mozilla.org/en-US/docs/Web/MathML/Reference/Element/mtext",
-			"categories": [],
+			"cite": "https://www.w3.org/TR/mathml-core/#text-mtext",
 			"contentModel": {
 				"contents": [
 					{
@@ -55681,7 +55111,6 @@
 				"implicitRole": false,
 				"permittedRoles": true
 			},
-			"omission": false,
 			"globalAttrs": {
 				"#ARIAAttrs": true,
 				"#GlobalEventAttrs": true,
@@ -55692,8 +55121,7 @@
 		{
 			"name": "mml:mtr",
 			"namespace": "http://www.w3.org/1998/Math/MathML",
-			"cite": "https://developer.mozilla.org/en-US/docs/Web/MathML/Reference/Element/mtr",
-			"categories": [],
+			"cite": "https://www.w3.org/TR/mathml-core/#row-in-table-or-matrix-mtr",
 			"contentModel": {
 				"contents": [
 					{
@@ -55705,7 +55133,6 @@
 				"implicitRole": false,
 				"permittedRoles": true
 			},
-			"omission": false,
 			"globalAttrs": {
 				"#ARIAAttrs": true,
 				"#GlobalEventAttrs": true,
@@ -55723,8 +55150,7 @@
 		{
 			"name": "mml:munder",
 			"namespace": "http://www.w3.org/1998/Math/MathML",
-			"cite": "https://developer.mozilla.org/en-US/docs/Web/MathML/Reference/Element/munder",
-			"categories": [],
+			"cite": "https://www.w3.org/TR/mathml-core/#underscripts-and-overscripts-munder-mover-munderover",
 			"contentModel": {
 				"contents": [
 					{
@@ -55744,7 +55170,6 @@
 				"implicitRole": false,
 				"permittedRoles": true
 			},
-			"omission": false,
 			"globalAttrs": {
 				"#ARIAAttrs": true,
 				"#GlobalEventAttrs": true,
@@ -55762,8 +55187,7 @@
 		{
 			"name": "mml:munderover",
 			"namespace": "http://www.w3.org/1998/Math/MathML",
-			"cite": "https://developer.mozilla.org/en-US/docs/Web/MathML/Reference/Element/munderover",
-			"categories": [],
+			"cite": "https://www.w3.org/TR/mathml-core/#underscripts-and-overscripts-munder-mover-munderover",
 			"contentModel": {
 				"contents": [
 					{
@@ -55783,7 +55207,6 @@
 				"implicitRole": false,
 				"permittedRoles": true
 			},
-			"omission": false,
 			"globalAttrs": {
 				"#ARIAAttrs": true,
 				"#GlobalEventAttrs": true,
@@ -55807,8 +55230,7 @@
 		{
 			"name": "mml:semantics",
 			"namespace": "http://www.w3.org/1998/Math/MathML",
-			"cite": "https://developer.mozilla.org/en-US/docs/Web/MathML/Reference/Element/semantics",
-			"categories": [],
+			"cite": "https://www.w3.org/TR/mathml-core/#semantics-and-presentation",
 			"contentModel": {
 				"contents": [
 					{
@@ -55826,7 +55248,6 @@
 				"implicitRole": false,
 				"permittedRoles": true
 			},
-			"omission": false,
 			"globalAttrs": {
 				"#ARIAAttrs": true,
 				"#GlobalEventAttrs": true,
@@ -55837,8 +55258,7 @@
 		{
 			"name": "svg:a",
 			"namespace": "http://www.w3.org/2000/svg",
-			"cite": "https://developer.mozilla.org/en-US/docs/Web/SVG/Reference/Element/a",
-			"categories": [],
+			"cite": "https://svgwg.org/svg2-draft/linking.html#AElement",
 			"contentModel": {
 				"conditional": [
 					{
@@ -55868,7 +55288,6 @@
 					}
 				}
 			},
-			"omission": false,
 			"globalAttrs": {
 				"#ARIAAttrs": true,
 				"#GlobalEventAttrs": true,
@@ -55981,8 +55400,7 @@
 		{
 			"name": "svg:animate",
 			"namespace": "http://www.w3.org/2000/svg",
-			"cite": "https://developer.mozilla.org/en-US/docs/Web/SVG/Reference/Element/animate",
-			"categories": [],
+			"cite": "https://svgwg.org/specs/animations/#AnimateElement",
 			"contentModel": {
 				"contents": [
 					{
@@ -55995,7 +55413,6 @@
 				"permittedRoles": false,
 				"properties": false
 			},
-			"omission": false,
 			"globalAttrs": {
 				"#GlobalEventAttrs": true,
 				"#SVGAnimationAdditionAttrs": ["additive", "accumulate"],
@@ -56092,8 +55509,7 @@
 		{
 			"name": "svg:animateMotion",
 			"namespace": "http://www.w3.org/2000/svg",
-			"cite": "https://developer.mozilla.org/en-US/docs/Web/SVG/Reference/Element/animateMotion",
-			"categories": [],
+			"cite": "https://svgwg.org/specs/animations/#AnimateMotionElement",
 			"contentModel": {
 				"contents": [
 					{
@@ -56123,7 +55539,6 @@
 				"permittedRoles": false,
 				"properties": false
 			},
-			"omission": false,
 			"globalAttrs": {
 				"#GlobalEventAttrs": true,
 				"#SVGAnimationAdditionAttrs": ["additive", "accumulate"],
@@ -56163,8 +55578,7 @@
 		{
 			"name": "svg:animateTransform",
 			"namespace": "http://www.w3.org/2000/svg",
-			"cite": "https://developer.mozilla.org/en-US/docs/Web/SVG/Reference/Element/animateTransform",
-			"categories": [],
+			"cite": "https://svgwg.org/specs/animations/#AnimateTransformElement",
 			"contentModel": {
 				"contents": [
 					{
@@ -56177,7 +55591,6 @@
 				"permittedRoles": false,
 				"properties": false
 			},
-			"omission": false,
 			"globalAttrs": {
 				"#GlobalEventAttrs": true,
 				"#SVGAnimationAdditionAttrs": ["additive", "accumulate"],
@@ -56211,8 +55624,7 @@
 		{
 			"name": "svg:circle",
 			"namespace": "http://www.w3.org/2000/svg",
-			"cite": "https://developer.mozilla.org/en-US/docs/Web/SVG/Reference/Element/circle",
-			"categories": [],
+			"cite": "https://svgwg.org/svg2-draft/shapes.html#CircleElement",
 			"contentModel": {
 				"contents": [
 					{
@@ -56234,7 +55646,6 @@
 				"permittedRoles": false,
 				"properties": false
 			},
-			"omission": false,
 			"globalAttrs": {
 				"#ARIAAttrs": true,
 				"#GlobalEventAttrs": true,
@@ -56328,8 +55739,7 @@
 		{
 			"name": "svg:clipPath",
 			"namespace": "http://www.w3.org/2000/svg",
-			"cite": "https://developer.mozilla.org/en-US/docs/Web/SVG/Reference/Element/clipPath",
-			"categories": [],
+			"cite": "https://drafts.csswg.org/css-masking-1/#ClipPathElement",
 			"contentModel": {
 				"contents": [
 					{
@@ -56348,7 +55758,6 @@
 				"implicitRole": false,
 				"permittedRoles": false
 			},
-			"omission": false,
 			"globalAttrs": {
 				"#SVGConditionalProcessingAttrs": ["requiredFeatures", "requiredExtensions", "systemLanguage"],
 				"#SVGCoreAttrs": ["id", "xml:base", "xml:lang", "xml:space", "class", "style"],
@@ -56437,8 +55846,7 @@
 		{
 			"name": "svg:defs",
 			"namespace": "http://www.w3.org/2000/svg",
-			"cite": "https://developer.mozilla.org/en-US/docs/Web/SVG/Reference/Element/defs",
-			"categories": [],
+			"cite": "https://svgwg.org/svg2-draft/struct.html#DefsElement",
 			"contentModel": {
 				"contents": [
 					{
@@ -56468,7 +55876,6 @@
 				"implicitRole": false,
 				"permittedRoles": false
 			},
-			"omission": false,
 			"globalAttrs": {
 				"#GlobalEventAttrs": true,
 				"#SVGCoreAttrs": ["id", "tabindex", "autofocus", "lang", "xml:space", "class", "style"],
@@ -56548,8 +55955,7 @@
 		{
 			"name": "svg:desc",
 			"namespace": "http://www.w3.org/2000/svg",
-			"cite": "https://developer.mozilla.org/en-US/docs/Web/SVG/Reference/Element/desc",
-			"categories": [],
+			"cite": "https://svgwg.org/svg2-draft/struct.html#DescElement",
 			"contentModel": {
 				"contents": [
 					{
@@ -56561,7 +55967,6 @@
 				"implicitRole": false,
 				"permittedRoles": false
 			},
-			"omission": false,
 			"globalAttrs": {
 				"#GlobalEventAttrs": true,
 				"#SVGCoreAttrs": ["id", "tabindex", "autofocus", "lang", "xml:space", "class", "style"]
@@ -56571,8 +55976,7 @@
 		{
 			"name": "svg:discard",
 			"namespace": "http://www.w3.org/2000/svg",
-			"cite": "https://developer.mozilla.org/en-US/docs/Web/SVG/Reference/Element/discard",
-			"categories": [],
+			"cite": "https://www.w3.org/TR/SVGTiny12/struct.html#DiscardElement",
 			"contentModel": {
 				"contents": [
 					{
@@ -56584,7 +55988,6 @@
 				"implicitRole": false,
 				"permittedRoles": false
 			},
-			"omission": false,
 			"globalAttrs": {
 				"#ARIAAttrs": true,
 				"#SVGConditionalProcessingAttrs": ["requiredExtensions", "systemLanguage"],
@@ -56603,8 +56006,7 @@
 		{
 			"name": "svg:ellipse",
 			"namespace": "http://www.w3.org/2000/svg",
-			"cite": "https://developer.mozilla.org/en-US/docs/Web/SVG/Reference/Element/ellipse",
-			"categories": [],
+			"cite": "https://svgwg.org/svg2-draft/shapes.html#EllipseElement",
 			"contentModel": {
 				"contents": [
 					{
@@ -56628,7 +56030,6 @@
 					"graphics-aam": true
 				}
 			},
-			"omission": false,
 			"globalAttrs": {
 				"#ARIAAttrs": true,
 				"#GlobalEventAttrs": true,
@@ -56724,8 +56125,7 @@
 		{
 			"name": "svg:feBlend",
 			"namespace": "http://www.w3.org/2000/svg",
-			"cite": "https://developer.mozilla.org/en-US/docs/Web/SVG/Reference/Element/feBlend",
-			"categories": [],
+			"cite": "https://drafts.csswg.org/filter-effects-1/#feBlendElement",
 			"contentModel": {
 				"contents": [
 					{
@@ -56737,7 +56137,6 @@
 				"implicitRole": false,
 				"permittedRoles": false
 			},
-			"omission": false,
 			"globalAttrs": {
 				"#SVGCoreAttrs": ["id", "xml:base", "xml:lang", "xml:space", "class", "style"],
 				"#SVGFilterPrimitiveAttrs": ["x", "y", "width", "height", "result", "in"],
@@ -56840,8 +56239,7 @@
 		{
 			"name": "svg:feColorMatrix",
 			"namespace": "http://www.w3.org/2000/svg",
-			"cite": "https://developer.mozilla.org/en-US/docs/Web/SVG/Reference/Element/feColorMatrix",
-			"categories": [],
+			"cite": "https://drafts.csswg.org/filter-effects-1/#feColorMatrixElement",
 			"contentModel": {
 				"contents": [
 					{
@@ -56853,7 +56251,6 @@
 				"implicitRole": false,
 				"permittedRoles": false
 			},
-			"omission": false,
 			"globalAttrs": {
 				"#SVGCoreAttrs": ["id", "xml:base", "xml:lang", "xml:space", "class", "style"],
 				"#SVGFilterPrimitiveAttrs": ["x", "y", "width", "height", "result", "in"],
@@ -56945,8 +56342,7 @@
 		{
 			"name": "svg:feComponentTransfer",
 			"namespace": "http://www.w3.org/2000/svg",
-			"cite": "https://developer.mozilla.org/en-US/docs/Web/SVG/Reference/Element/feComponentTransfer",
-			"categories": [],
+			"cite": "https://drafts.csswg.org/filter-effects-1/#feComponentTransferElement",
 			"contentModel": {
 				"contents": [
 					{
@@ -56965,7 +56361,6 @@
 				"implicitRole": false,
 				"permittedRoles": false
 			},
-			"omission": false,
 			"globalAttrs": {
 				"#SVGCoreAttrs": ["id", "xml:base", "xml:lang", "xml:space", "class", "style"],
 				"#SVGFilterPrimitiveAttrs": ["x", "y", "width", "height", "result", "in"],
@@ -57045,8 +56440,7 @@
 		{
 			"name": "svg:feComposite",
 			"namespace": "http://www.w3.org/2000/svg",
-			"cite": "https://developer.mozilla.org/en-US/docs/Web/SVG/Reference/Element/feComposite",
-			"categories": [],
+			"cite": "https://drafts.csswg.org/filter-effects-1/#feCompositeElement",
 			"contentModel": {
 				"contents": [
 					{
@@ -57058,7 +56452,6 @@
 				"implicitRole": false,
 				"permittedRoles": false
 			},
-			"omission": false,
 			"globalAttrs": {
 				"#SVGCoreAttrs": ["id", "xml:base", "xml:lang", "xml:space", "class", "style"],
 				"#SVGFilterPrimitiveAttrs": ["x", "y", "width", "height", "result", "in"],
@@ -57188,8 +56581,7 @@
 		{
 			"name": "svg:feConvolveMatrix",
 			"namespace": "http://www.w3.org/2000/svg",
-			"cite": "https://developer.mozilla.org/en-US/docs/Web/SVG/Reference/Element/feConvolveMatrix",
-			"categories": [],
+			"cite": "https://drafts.csswg.org/filter-effects-1/#feConvolveMatrixElement",
 			"contentModel": {
 				"contents": [
 					{
@@ -57201,7 +56593,6 @@
 				"implicitRole": false,
 				"permittedRoles": false
 			},
-			"omission": false,
 			"globalAttrs": {
 				"#SVGCoreAttrs": ["id", "xml:base", "xml:lang", "xml:space", "class", "style"],
 				"#SVGFilterPrimitiveAttrs": ["x", "y", "width", "height", "result", "in"],
@@ -57329,8 +56720,7 @@
 		{
 			"name": "svg:feDiffuseLighting",
 			"namespace": "http://www.w3.org/2000/svg",
-			"cite": "https://developer.mozilla.org/en-US/docs/Web/SVG/Reference/Element/feDiffuseLighting",
-			"categories": [],
+			"cite": "https://drafts.csswg.org/filter-effects-1/#feDiffuseLightingElement",
 			"contentModel": {
 				"contents": [
 					{
@@ -57359,7 +56749,6 @@
 				"implicitRole": false,
 				"permittedRoles": false
 			},
-			"omission": false,
 			"globalAttrs": {
 				"#SVGCoreAttrs": ["id", "xml:base", "xml:lang", "xml:space", "class", "style"],
 				"#SVGFilterPrimitiveAttrs": ["x", "y", "width", "height", "result", "in"],
@@ -57455,8 +56844,7 @@
 		{
 			"name": "svg:feDisplacementMap",
 			"namespace": "http://www.w3.org/2000/svg",
-			"cite": "https://developer.mozilla.org/en-US/docs/Web/SVG/Reference/Element/feDisplacementMap",
-			"categories": [],
+			"cite": "https://drafts.csswg.org/filter-effects-1/#feDisplacementMapElement",
 			"contentModel": {
 				"contents": [
 					{
@@ -57468,7 +56856,6 @@
 				"implicitRole": false,
 				"permittedRoles": false
 			},
-			"omission": false,
 			"globalAttrs": {
 				"#SVGCoreAttrs": ["id", "xml:base", "xml:lang", "xml:space", "class", "style"],
 				"#SVGFilterPrimitiveAttrs": ["x", "y", "width", "height", "result"],
@@ -57587,8 +56974,7 @@
 		{
 			"name": "svg:feDistantLight",
 			"namespace": "http://www.w3.org/2000/svg",
-			"cite": "https://developer.mozilla.org/en-US/docs/Web/SVG/Reference/Element/feDistantLight",
-			"categories": [],
+			"cite": "https://drafts.csswg.org/filter-effects-1/#feDistantLightElement",
 			"contentModel": {
 				"contents": [
 					{
@@ -57600,7 +56986,6 @@
 				"implicitRole": false,
 				"permittedRoles": false
 			},
-			"omission": false,
 			"globalAttrs": {
 				"#SVGCoreAttrs": ["id", "xml:base", "xml:lang", "xml:space"]
 			},
@@ -57620,8 +57005,7 @@
 		{
 			"name": "svg:feDropShadow",
 			"namespace": "http://www.w3.org/2000/svg",
-			"cite": "https://developer.mozilla.org/en-US/docs/Web/SVG/Reference/Element/feDropShadow",
-			"categories": [],
+			"cite": "https://drafts.csswg.org/filter-effects-1/#feDropShadowElement",
 			"contentModel": {
 				"contents": [
 					{
@@ -57633,7 +57017,6 @@
 				"implicitRole": false,
 				"permittedRoles": false
 			},
-			"omission": false,
 			"globalAttrs": {
 				"#SVGCoreAttrs": ["id", "xml:base", "xml:lang", "xml:space", "class", "style"],
 				"#SVGFilterPrimitiveAttrs": ["x", "y", "width", "height", "result", "in"],
@@ -57729,8 +57112,7 @@
 		{
 			"name": "svg:feFlood",
 			"namespace": "http://www.w3.org/2000/svg",
-			"cite": "https://developer.mozilla.org/en-US/docs/Web/SVG/Reference/Element/feFlood",
-			"categories": [],
+			"cite": "https://drafts.csswg.org/filter-effects-1/#feFloodElement",
 			"contentModel": {
 				"contents": [
 					{
@@ -57742,7 +57124,6 @@
 				"implicitRole": false,
 				"permittedRoles": false
 			},
-			"omission": false,
 			"globalAttrs": {
 				"#SVGCoreAttrs": ["id", "xml:base", "xml:lang", "xml:space", "class", "style"],
 				"#SVGFilterPrimitiveAttrs": ["x", "y", "width", "height", "result"],
@@ -57831,8 +57212,7 @@
 		{
 			"name": "svg:feFuncA",
 			"namespace": "http://www.w3.org/2000/svg",
-			"cite": "https://developer.mozilla.org/en-US/docs/Web/SVG/Reference/Element/feFuncA",
-			"categories": [],
+			"cite": "https://drafts.csswg.org/filter-effects-1/#feFuncAElement",
 			"contentModel": {
 				"contents": [
 					{
@@ -57844,7 +57224,6 @@
 				"implicitRole": false,
 				"permittedRoles": false
 			},
-			"omission": false,
 			"globalAttrs": {
 				"#SVGCoreAttrs": ["id", "xml:base", "xml:lang", "xml:space"],
 				"#SVGTransferFunctionAttrs": [
@@ -57862,8 +57241,7 @@
 		{
 			"name": "svg:feFuncB",
 			"namespace": "http://www.w3.org/2000/svg",
-			"cite": "https://developer.mozilla.org/en-US/docs/Web/SVG/Reference/Element/feFuncB",
-			"categories": [],
+			"cite": "https://drafts.csswg.org/filter-effects-1/#feFuncBElement",
 			"contentModel": {
 				"contents": [
 					{
@@ -57875,7 +57253,6 @@
 				"implicitRole": false,
 				"permittedRoles": false
 			},
-			"omission": false,
 			"globalAttrs": {
 				"#SVGCoreAttrs": ["id", "xml:base", "xml:lang", "xml:space"],
 				"#SVGTransferFunctionAttrs": [
@@ -57893,8 +57270,7 @@
 		{
 			"name": "svg:feFuncG",
 			"namespace": "http://www.w3.org/2000/svg",
-			"cite": "https://developer.mozilla.org/en-US/docs/Web/SVG/Reference/Element/feFuncG",
-			"categories": [],
+			"cite": "https://drafts.csswg.org/filter-effects-1/#feFuncGElement",
 			"contentModel": {
 				"contents": [
 					{
@@ -57906,7 +57282,6 @@
 				"implicitRole": false,
 				"permittedRoles": false
 			},
-			"omission": false,
 			"globalAttrs": {
 				"#SVGCoreAttrs": ["id", "xml:base", "xml:lang", "xml:space"],
 				"#SVGTransferFunctionAttrs": [
@@ -57924,8 +57299,7 @@
 		{
 			"name": "svg:feFuncR",
 			"namespace": "http://www.w3.org/2000/svg",
-			"cite": "https://developer.mozilla.org/en-US/docs/Web/SVG/Reference/Element/feFuncR",
-			"categories": [],
+			"cite": "https://drafts.csswg.org/filter-effects-1/#feFuncRElement",
 			"contentModel": {
 				"contents": [
 					{
@@ -57937,7 +57311,6 @@
 				"implicitRole": false,
 				"permittedRoles": false
 			},
-			"omission": false,
 			"globalAttrs": {
 				"#SVGCoreAttrs": ["id", "xml:base", "xml:lang", "xml:space"],
 				"#SVGTransferFunctionAttrs": [
@@ -57955,8 +57328,7 @@
 		{
 			"name": "svg:feGaussianBlur",
 			"namespace": "http://www.w3.org/2000/svg",
-			"cite": "https://developer.mozilla.org/en-US/docs/Web/SVG/Reference/Element/feGaussianBlur",
-			"categories": [],
+			"cite": "https://drafts.csswg.org/filter-effects-1/#feGaussianBlurElement",
 			"contentModel": {
 				"contents": [
 					{
@@ -57968,7 +57340,6 @@
 				"implicitRole": false,
 				"permittedRoles": false
 			},
-			"omission": false,
 			"globalAttrs": {
 				"#SVGCoreAttrs": ["id", "xml:base", "xml:lang", "xml:space", "class", "style"],
 				"#SVGFilterPrimitiveAttrs": ["x", "y", "width", "height", "result", "in"],
@@ -58061,8 +57432,7 @@
 		{
 			"name": "svg:feImage",
 			"namespace": "http://www.w3.org/2000/svg",
-			"cite": "https://developer.mozilla.org/en-US/docs/Web/SVG/Reference/Element/feImage",
-			"categories": [],
+			"cite": "https://drafts.csswg.org/filter-effects-1/#feImageElement",
 			"contentModel": {
 				"contents": [
 					{
@@ -58080,7 +57450,6 @@
 				"implicitRole": false,
 				"permittedRoles": false
 			},
-			"omission": false,
 			"globalAttrs": {
 				"#SVGCoreAttrs": ["id", "xml:base", "xml:lang", "xml:space", "class", "style"],
 				"#SVGFilterPrimitiveAttrs": ["x", "y", "width", "height", "result"],
@@ -58188,8 +57557,7 @@
 		{
 			"name": "svg:feMerge",
 			"namespace": "http://www.w3.org/2000/svg",
-			"cite": "https://developer.mozilla.org/en-US/docs/Web/SVG/Reference/Element/feMerge",
-			"categories": [],
+			"cite": "https://drafts.csswg.org/filter-effects-1/#feMergeElement",
 			"contentModel": {
 				"contents": [
 					{
@@ -58201,7 +57569,6 @@
 				"implicitRole": false,
 				"permittedRoles": false
 			},
-			"omission": false,
 			"globalAttrs": {
 				"#SVGCoreAttrs": ["id", "xml:base", "xml:lang", "xml:space", "class", "style"],
 				"#SVGFilterPrimitiveAttrs": ["x", "y", "width", "height", "result"],
@@ -58281,8 +57648,7 @@
 		{
 			"name": "svg:feMergeNode",
 			"namespace": "http://www.w3.org/2000/svg",
-			"cite": "https://developer.mozilla.org/en-US/docs/Web/SVG/Reference/Element/feMergeNode",
-			"categories": [],
+			"cite": "https://drafts.csswg.org/filter-effects-1/#feMergeNodeElement",
 			"contentModel": {
 				"contents": [
 					{
@@ -58294,7 +57660,6 @@
 				"implicitRole": false,
 				"permittedRoles": false
 			},
-			"omission": false,
 			"globalAttrs": {
 				"#SVGCoreAttrs": ["id", "xml:base", "xml:lang", "xml:space"],
 				"#SVGFilterPrimitiveAttrs": ["in"]
@@ -58304,8 +57669,7 @@
 		{
 			"name": "svg:feMorphology",
 			"namespace": "http://www.w3.org/2000/svg",
-			"cite": "https://developer.mozilla.org/en-US/docs/Web/SVG/Reference/Element/feMorphology",
-			"categories": [],
+			"cite": "https://drafts.csswg.org/filter-effects-1/#feMorphologyElement",
 			"contentModel": {
 				"contents": [
 					{
@@ -58317,7 +57681,6 @@
 				"implicitRole": false,
 				"permittedRoles": false
 			},
-			"omission": false,
 			"globalAttrs": {
 				"#SVGCoreAttrs": ["id", "xml:base", "xml:lang", "xml:space", "class", "style"],
 				"#SVGFilterPrimitiveAttrs": ["x", "y", "width", "height", "result", "in"],
@@ -58411,8 +57774,7 @@
 		{
 			"name": "svg:feOffset",
 			"namespace": "http://www.w3.org/2000/svg",
-			"cite": "https://developer.mozilla.org/en-US/docs/Web/SVG/Reference/Element/feOffset",
-			"categories": [],
+			"cite": "https://drafts.csswg.org/filter-effects-1/#feOffsetElement",
 			"contentModel": {
 				"contents": [
 					{
@@ -58424,7 +57786,6 @@
 				"implicitRole": false,
 				"permittedRoles": false
 			},
-			"omission": false,
 			"globalAttrs": {
 				"#SVGCoreAttrs": ["id", "xml:base", "xml:lang", "xml:space", "class", "style"],
 				"#SVGFilterPrimitiveAttrs": ["x", "y", "width", "height", "result", "in"],
@@ -58515,8 +57876,7 @@
 		{
 			"name": "svg:fePointLight",
 			"namespace": "http://www.w3.org/2000/svg",
-			"cite": "https://developer.mozilla.org/en-US/docs/Web/SVG/Reference/Element/fePointLight",
-			"categories": [],
+			"cite": "https://drafts.csswg.org/filter-effects-1/#fePointLightElement",
 			"contentModel": {
 				"contents": [
 					{
@@ -58528,7 +57888,6 @@
 				"implicitRole": false,
 				"permittedRoles": false
 			},
-			"omission": false,
 			"globalAttrs": {
 				"#SVGCoreAttrs": ["id", "xml:base", "xml:lang", "xml:space"]
 			},
@@ -58553,8 +57912,7 @@
 		{
 			"name": "svg:feSpecularLighting",
 			"namespace": "http://www.w3.org/2000/svg",
-			"cite": "https://developer.mozilla.org/en-US/docs/Web/SVG/Reference/Element/feSpecularLighting",
-			"categories": [],
+			"cite": "https://drafts.csswg.org/filter-effects-1/#feSpecularLightingElement",
 			"contentModel": {
 				"contents": [
 					{
@@ -58583,7 +57941,6 @@
 				"implicitRole": false,
 				"permittedRoles": false
 			},
-			"omission": false,
 			"globalAttrs": {
 				"#SVGCoreAttrs": ["id", "xml:base", "xml:lang", "xml:space", "class", "style"],
 				"#SVGFilterPrimitiveAttrs": ["x", "y", "width", "height", "result", "in"],
@@ -58683,8 +58040,7 @@
 		{
 			"name": "svg:feSpotLight",
 			"namespace": "http://www.w3.org/2000/svg",
-			"cite": "https://developer.mozilla.org/en-US/docs/Web/SVG/Reference/Element/feSpotLight",
-			"categories": [],
+			"cite": "https://drafts.csswg.org/filter-effects-1/#feSpotLightElement",
 			"contentModel": {
 				"contents": [
 					{
@@ -58696,7 +58052,6 @@
 				"implicitRole": false,
 				"permittedRoles": false
 			},
-			"omission": false,
 			"globalAttrs": {
 				"#SVGCoreAttrs": ["id", "xml:base", "xml:lang", "xml:space"]
 			},
@@ -58745,8 +58100,7 @@
 		{
 			"name": "svg:feTile",
 			"namespace": "http://www.w3.org/2000/svg",
-			"cite": "https://developer.mozilla.org/en-US/docs/Web/SVG/Reference/Element/feTile",
-			"categories": [],
+			"cite": "https://drafts.csswg.org/filter-effects-1/#feTileElement",
 			"contentModel": {
 				"contents": [
 					{
@@ -58758,7 +58112,6 @@
 				"implicitRole": false,
 				"permittedRoles": false
 			},
-			"omission": false,
 			"globalAttrs": {
 				"#SVGCoreAttrs": ["id", "xml:base", "xml:lang", "xml:space", "class", "style"],
 				"#SVGFilterPrimitiveAttrs": ["x", "y", "width", "height", "result", "in"],
@@ -58838,8 +58191,7 @@
 		{
 			"name": "svg:feTurbulence",
 			"namespace": "http://www.w3.org/2000/svg",
-			"cite": "https://developer.mozilla.org/en-US/docs/Web/SVG/Reference/Element/feTurbulence",
-			"categories": [],
+			"cite": "https://drafts.csswg.org/filter-effects-1/#feTurbulenceElement",
 			"contentModel": {
 				"contents": [
 					{
@@ -58851,7 +58203,6 @@
 				"implicitRole": false,
 				"permittedRoles": false
 			},
-			"omission": false,
 			"globalAttrs": {
 				"#SVGCoreAttrs": ["id", "xml:base", "xml:lang", "xml:space", "class", "style"],
 				"#SVGFilterPrimitiveAttrs": ["x", "y", "width", "height", "result"],
@@ -58961,8 +58312,7 @@
 		{
 			"name": "svg:filter",
 			"namespace": "http://www.w3.org/2000/svg",
-			"cite": "https://developer.mozilla.org/en-US/docs/Web/SVG/Reference/Element/filter",
-			"categories": [],
+			"cite": "https://drafts.csswg.org/filter-effects-1/#FilterElement",
 			"contentModel": {
 				"contents": [
 					{
@@ -58980,7 +58330,6 @@
 				"implicitRole": false,
 				"permittedRoles": false
 			},
-			"omission": false,
 			"globalAttrs": {
 				"#SVGCoreAttrs": ["id", "xml:base", "xml:lang", "xml:space", "class", "style"],
 				"#SVGFilterPrimitiveAttrs": ["x", "y", "width", "height"],
@@ -59100,8 +58449,7 @@
 		{
 			"name": "svg:foreignObject",
 			"namespace": "http://www.w3.org/2000/svg",
-			"cite": "https://developer.mozilla.org/en-US/docs/Web/SVG/Reference/Element/foreignObject",
-			"categories": [],
+			"cite": "https://svgwg.org/svg2-draft/embedded.html#ForeignObjectElement",
 			"contentModel": {
 				"contents": true
 			},
@@ -59112,7 +58460,6 @@
 					"graphics-aam": true
 				}
 			},
-			"omission": false,
 			"globalAttrs": {
 				"#ARIAAttrs": true,
 				"#GlobalEventAttrs": true,
@@ -59204,8 +58551,7 @@
 		{
 			"name": "svg:g",
 			"namespace": "http://www.w3.org/2000/svg",
-			"cite": "https://developer.mozilla.org/en-US/docs/Web/SVG/Reference/Element/g",
-			"categories": [],
+			"cite": "https://svgwg.org/svg2-draft/struct.html#GElement",
 			"contentModel": {
 				"contents": [
 					{
@@ -59238,7 +58584,6 @@
 					"graphics-aam": true
 				}
 			},
-			"omission": false,
 			"globalAttrs": {
 				"#ARIAAttrs": true,
 				"#GlobalEventAttrs": true,
@@ -59321,8 +58666,7 @@
 		{
 			"name": "svg:image",
 			"namespace": "http://www.w3.org/2000/svg",
-			"cite": "https://developer.mozilla.org/en-US/docs/Web/SVG/Reference/Element/image",
-			"categories": [],
+			"cite": "https://svgwg.org/svg2-draft/embedded.html#ImageElement",
 			"contentModel": {
 				"contents": [
 					{
@@ -59344,7 +58688,6 @@
 					"graphics-aam": true
 				}
 			},
-			"omission": false,
 			"globalAttrs": {
 				"#ARIAAttrs": true,
 				"#GlobalEventAttrs": true,
@@ -59460,8 +58803,7 @@
 		{
 			"name": "svg:line",
 			"namespace": "http://www.w3.org/2000/svg",
-			"cite": "https://developer.mozilla.org/en-US/docs/Web/SVG/Reference/Element/line",
-			"categories": [],
+			"cite": "https://svgwg.org/svg2-draft/shapes.html#LineElement",
 			"contentModel": {
 				"contents": [
 					{
@@ -59485,7 +58827,6 @@
 					"graphics-aam": true
 				}
 			},
-			"omission": false,
 			"globalAttrs": {
 				"#ARIAAttrs": true,
 				"#GlobalEventAttrs": true,
@@ -59593,8 +58934,7 @@
 		{
 			"name": "svg:linearGradient",
 			"namespace": "http://www.w3.org/2000/svg",
-			"cite": "https://developer.mozilla.org/en-US/docs/Web/SVG/Reference/Element/linearGradient",
-			"categories": [],
+			"cite": "https://svgwg.org/svg2-draft/pservers.html#LinearGradientElement",
 			"contentModel": {
 				"contents": [
 					{
@@ -59614,7 +58954,6 @@
 				"implicitRole": false,
 				"permittedRoles": false
 			},
-			"omission": false,
 			"globalAttrs": {
 				"#GlobalEventAttrs": true,
 				"#SVGCoreAttrs": ["id", "tabindex", "autofocus", "lang", "xml:space", "class", "style"],
@@ -59742,8 +59081,7 @@
 		{
 			"name": "svg:marker",
 			"namespace": "http://www.w3.org/2000/svg",
-			"cite": "https://developer.mozilla.org/en-US/docs/Web/SVG/Reference/Element/marker",
-			"categories": [],
+			"cite": "https://svgwg.org/svg2-draft/painting.html#MarkerElement",
 			"contentModel": {
 				"contents": [
 					{
@@ -59773,7 +59111,6 @@
 				"implicitRole": false,
 				"permittedRoles": false
 			},
-			"omission": false,
 			"globalAttrs": {
 				"#GlobalEventAttrs": true,
 				"#SVGCoreAttrs": ["id", "tabindex", "autofocus", "lang", "xml:space", "class", "style"],
@@ -59916,8 +59253,7 @@
 		{
 			"name": "svg:mask",
 			"namespace": "http://www.w3.org/2000/svg",
-			"cite": "https://developer.mozilla.org/en-US/docs/Web/SVG/Reference/Element/mask",
-			"categories": [],
+			"cite": "https://drafts.csswg.org/css-masking-1/#MaskElement",
 			"contentModel": {
 				"contents": [
 					{
@@ -59953,7 +59289,6 @@
 				"implicitRole": false,
 				"permittedRoles": false
 			},
-			"omission": false,
 			"globalAttrs": {
 				"#SVGConditionalProcessingAttrs": ["requiredFeatures", "requiredExtensions", "systemLanguage"],
 				"#SVGCoreAttrs": ["id", "xml:base", "xml:lang", "xml:space", "class", "style"],
@@ -60056,8 +59391,7 @@
 		{
 			"name": "svg:metadata",
 			"namespace": "http://www.w3.org/2000/svg",
-			"cite": "https://developer.mozilla.org/en-US/docs/Web/SVG/Reference/Element/metadata",
-			"categories": [],
+			"cite": "https://svgwg.org/svg2-draft/struct.html#MetadataElement",
 			"contentModel": {
 				"contents": [
 					{
@@ -60069,7 +59403,6 @@
 				"implicitRole": false,
 				"permittedRoles": false
 			},
-			"omission": false,
 			"globalAttrs": {
 				"#GlobalEventAttrs": true,
 				"#SVGCoreAttrs": ["id", "tabindex", "autofocus", "lang", "xml:space", "class", "style"]
@@ -60079,8 +59412,7 @@
 		{
 			"name": "svg:mpath",
 			"namespace": "http://www.w3.org/2000/svg",
-			"cite": "https://developer.mozilla.org/en-US/docs/Web/SVG/Reference/Element/mpath",
-			"categories": [],
+			"cite": "https://svgwg.org/specs/animations/#MPathElement",
 			"contentModel": {
 				"contents": [
 					{
@@ -60092,7 +59424,6 @@
 				"implicitRole": false,
 				"permittedRoles": false
 			},
-			"omission": false,
 			"globalAttrs": {
 				"#GlobalEventAttrs": true,
 				"#SVGCoreAttrs": ["id", "tabindex", "autofocus", "lang", "xml:space", "class", "style"]
@@ -60106,8 +59437,7 @@
 		{
 			"name": "svg:path",
 			"namespace": "http://www.w3.org/2000/svg",
-			"cite": "https://developer.mozilla.org/en-US/docs/Web/SVG/Reference/Element/path",
-			"categories": [],
+			"cite": "https://svgwg.org/svg2-draft/paths.html#PathElement",
 			"contentModel": {
 				"contents": [
 					{
@@ -60131,7 +59461,6 @@
 					"graphics-aam": true
 				}
 			},
-			"omission": false,
 			"globalAttrs": {
 				"#ARIAAttrs": true,
 				"#GlobalEventAttrs": true,
@@ -60222,8 +59551,7 @@
 		{
 			"name": "svg:pattern",
 			"namespace": "http://www.w3.org/2000/svg",
-			"cite": "https://developer.mozilla.org/en-US/docs/Web/SVG/Reference/Element/pattern",
-			"categories": [],
+			"cite": "https://svgwg.org/svg2-draft/pservers.html#PatternElement",
 			"contentModel": {
 				"contents": [
 					{
@@ -60253,7 +59581,6 @@
 				"implicitRole": false,
 				"permittedRoles": false
 			},
-			"omission": false,
 			"globalAttrs": {
 				"#GlobalEventAttrs": true,
 				"#SVGCoreAttrs": ["id", "tabindex", "autofocus", "lang", "xml:space", "class", "style"],
@@ -60378,8 +59705,7 @@
 		{
 			"name": "svg:polygon",
 			"namespace": "http://www.w3.org/2000/svg",
-			"cite": "https://developer.mozilla.org/en-US/docs/Web/SVG/Reference/Element/polygon",
-			"categories": [],
+			"cite": "https://svgwg.org/svg2-draft/shapes.html#PolygonElement",
 			"contentModel": {
 				"contents": [
 					{
@@ -60403,7 +59729,6 @@
 					"graphics-aam": true
 				}
 			},
-			"omission": false,
 			"globalAttrs": {
 				"#ARIAAttrs": true,
 				"#GlobalEventAttrs": true,
@@ -60495,8 +59820,7 @@
 		{
 			"name": "svg:polyline",
 			"namespace": "http://www.w3.org/2000/svg",
-			"cite": "https://developer.mozilla.org/en-US/docs/Web/SVG/Reference/Element/polyline",
-			"categories": [],
+			"cite": "https://svgwg.org/svg2-draft/shapes.html#PolylineElement",
 			"contentModel": {
 				"contents": [
 					{
@@ -60520,7 +59844,6 @@
 					"graphics-aam": true
 				}
 			},
-			"omission": false,
 			"globalAttrs": {
 				"#ARIAAttrs": true,
 				"#GlobalEventAttrs": true,
@@ -60612,8 +59935,7 @@
 		{
 			"name": "svg:radialGradient",
 			"namespace": "http://www.w3.org/2000/svg",
-			"cite": "https://developer.mozilla.org/en-US/docs/Web/SVG/Reference/Element/radialGradient",
-			"categories": [],
+			"cite": "https://svgwg.org/svg2-draft/pservers.html#RadialGradientElement",
 			"contentModel": {
 				"contents": [
 					{
@@ -60633,7 +59955,6 @@
 				"implicitRole": false,
 				"permittedRoles": false
 			},
-			"omission": false,
 			"globalAttrs": {
 				"#GlobalEventAttrs": true,
 				"#SVGCoreAttrs": ["id", "tabindex", "autofocus", "lang", "xml:space", "class", "style"],
@@ -60769,8 +60090,7 @@
 		{
 			"name": "svg:rect",
 			"namespace": "http://www.w3.org/2000/svg",
-			"cite": "https://developer.mozilla.org/en-US/docs/Web/SVG/Reference/Element/rect",
-			"categories": [],
+			"cite": "https://svgwg.org/svg2-draft/shapes.html#RectElement",
 			"contentModel": {
 				"contents": [
 					{
@@ -60794,7 +60114,6 @@
 					"graphics-aam": true
 				}
 			},
-			"omission": false,
 			"globalAttrs": {
 				"#ARIAAttrs": true,
 				"#GlobalEventAttrs": true,
@@ -60894,8 +60213,7 @@
 		{
 			"name": "svg:script",
 			"namespace": "http://www.w3.org/2000/svg",
-			"cite": "https://developer.mozilla.org/en-US/docs/Web/SVG/Reference/Element/script",
-			"categories": [],
+			"cite": "https://svgwg.org/svg2-draft/interact.html#ScriptElement",
 			"contentModel": {
 				"contents": [
 					{
@@ -60907,7 +60225,6 @@
 				"implicitRole": false,
 				"permittedRoles": false
 			},
-			"omission": false,
 			"globalAttrs": {
 				"#GlobalEventAttrs": true,
 				"#SVGCoreAttrs": ["id", "tabindex", "autofocus", "lang", "xml:space", "class", "style"],
@@ -60948,8 +60265,7 @@
 		{
 			"name": "svg:set",
 			"namespace": "http://www.w3.org/2000/svg",
-			"cite": "https://developer.mozilla.org/en-US/docs/Web/SVG/Reference/Element/set",
-			"categories": [],
+			"cite": "https://svgwg.org/specs/animations/#SetElement",
 			"contentModel": {
 				"contents": [
 					{
@@ -60961,7 +60277,6 @@
 				"implicitRole": false,
 				"permittedRoles": false
 			},
-			"omission": false,
 			"globalAttrs": {
 				"#GlobalEventAttrs": true,
 				"#SVGAnimationAttributeTargetAttrs": ["attributeName"],
@@ -60990,8 +60305,7 @@
 		{
 			"name": "svg:stop",
 			"namespace": "http://www.w3.org/2000/svg",
-			"cite": "https://developer.mozilla.org/en-US/docs/Web/SVG/Reference/Element/stop",
-			"categories": [],
+			"cite": "https://svgwg.org/svg2-draft/pservers.html#StopElement",
 			"contentModel": {
 				"contents": [
 					{
@@ -61003,7 +60317,6 @@
 				"implicitRole": false,
 				"permittedRoles": false
 			},
-			"omission": false,
 			"globalAttrs": {
 				"#GlobalEventAttrs": true,
 				"#SVGCoreAttrs": ["id", "tabindex", "autofocus", "lang", "xml:space", "class", "style"],
@@ -61099,8 +60412,7 @@
 		{
 			"name": "svg:style",
 			"namespace": "http://www.w3.org/2000/svg",
-			"cite": "https://developer.mozilla.org/en-US/docs/Web/SVG/Reference/Element/style",
-			"categories": [],
+			"cite": "https://svgwg.org/svg2-draft/styling.html#StyleElement",
 			"contentModel": {
 				"contents": [
 					{
@@ -61112,7 +60424,6 @@
 				"implicitRole": false,
 				"permittedRoles": false
 			},
-			"omission": false,
 			"globalAttrs": {
 				"#GlobalEventAttrs": true,
 				"#SVGCoreAttrs": ["id", "tabindex", "autofocus", "lang", "xml:space", "class", "style"]
@@ -61134,8 +60445,7 @@
 		{
 			"name": "svg:svg",
 			"namespace": "http://www.w3.org/2000/svg",
-			"cite": "https://developer.mozilla.org/en-US/docs/Web/SVG/Reference/Element/svg",
-			"categories": [],
+			"cite": "https://svgwg.org/svg2-draft/struct.html#SVGElement",
 			"contentModel": {
 				"contents": [
 					{
@@ -61168,7 +60478,6 @@
 					"graphics-aam": true
 				}
 			},
-			"omission": false,
 			"globalAttrs": {
 				"#ARIAAttrs": true,
 				"#GlobalEventAttrs": true,
@@ -61294,8 +60603,7 @@
 		{
 			"name": "svg:switch",
 			"namespace": "http://www.w3.org/2000/svg",
-			"cite": "https://developer.mozilla.org/en-US/docs/Web/SVG/Reference/Element/switch",
-			"categories": [],
+			"cite": "https://svgwg.org/svg2-draft/struct.html#SwitchElement",
 			"contentModel": {
 				"contents": [
 					{
@@ -61318,7 +60626,6 @@
 				"implicitRole": false,
 				"permittedRoles": false
 			},
-			"omission": false,
 			"globalAttrs": {
 				"#ARIAAttrs": true,
 				"#GlobalEventAttrs": true,
@@ -61404,8 +60711,7 @@
 		{
 			"name": "svg:symbol",
 			"namespace": "http://www.w3.org/2000/svg",
-			"cite": "https://developer.mozilla.org/en-US/docs/Web/SVG/Reference/Element/symbol",
-			"categories": [],
+			"cite": "https://svgwg.org/svg2-draft/struct.html#SymbolElement",
 			"contentModel": {
 				"contents": [
 					{
@@ -61438,7 +60744,6 @@
 					"graphics-aam": true
 				}
 			},
-			"omission": false,
 			"globalAttrs": {
 				"#ARIAAttrs": true,
 				"#GlobalEventAttrs": true,
@@ -61483,8 +60788,7 @@
 		{
 			"name": "svg:text",
 			"namespace": "http://www.w3.org/2000/svg",
-			"cite": "https://developer.mozilla.org/en-US/docs/Web/SVG/Reference/Element/text",
-			"categories": [],
+			"cite": "https://svgwg.org/svg2-draft/text.html#TextElement",
 			"contentModel": {
 				"contents": [
 					{
@@ -61511,7 +60815,6 @@
 					"graphics-aam": true
 				}
 			},
-			"omission": false,
 			"globalAttrs": {
 				"#ARIAAttrs": true,
 				"#GlobalEventAttrs": true,
@@ -61629,8 +60932,7 @@
 		{
 			"name": "svg:textPath",
 			"namespace": "http://www.w3.org/2000/svg",
-			"cite": "https://developer.mozilla.org/en-US/docs/Web/SVG/Reference/Element/textPath",
-			"categories": [],
+			"cite": "https://svgwg.org/svg2-draft/text.html#TextPathElement",
 			"contentModel": {
 				"contents": [
 					{
@@ -61658,7 +60960,6 @@
 					"graphics-aam": true
 				}
 			},
-			"omission": false,
 			"globalAttrs": {
 				"#ARIAAttrs": true,
 				"#GlobalEventAttrs": true,
@@ -61793,8 +61094,7 @@
 		{
 			"name": "svg:title",
 			"namespace": "http://www.w3.org/2000/svg",
-			"cite": "https://developer.mozilla.org/en-US/docs/Web/SVG/Reference/Element/title",
-			"categories": [],
+			"cite": "https://svgwg.org/svg2-draft/struct.html#TitleElement",
 			"contentModel": {
 				"contents": [
 					{
@@ -61806,7 +61106,6 @@
 				"implicitRole": false,
 				"permittedRoles": false
 			},
-			"omission": false,
 			"globalAttrs": {
 				"#GlobalEventAttrs": true,
 				"#SVGCoreAttrs": ["id", "tabindex", "autofocus", "lang", "xml:space", "class", "style"]
@@ -61816,8 +61115,7 @@
 		{
 			"name": "svg:tspan",
 			"namespace": "http://www.w3.org/2000/svg",
-			"cite": "https://developer.mozilla.org/en-US/docs/Web/SVG/Reference/Element/tspan",
-			"categories": [],
+			"cite": "https://svgwg.org/svg2-draft/text.html#TextElement",
 			"contentModel": {
 				"contents": [
 					{
@@ -61842,7 +61140,6 @@
 					"graphics-aam": true
 				}
 			},
-			"omission": false,
 			"globalAttrs": {
 				"#ARIAAttrs": true,
 				"#GlobalEventAttrs": true,
@@ -61958,8 +61255,7 @@
 		{
 			"name": "svg:use",
 			"namespace": "http://www.w3.org/2000/svg",
-			"cite": "https://developer.mozilla.org/en-US/docs/Web/SVG/Reference/Element/use",
-			"categories": [],
+			"cite": "https://svgwg.org/svg2-draft/struct.html#UseElement",
 			"contentModel": {
 				"contents": [
 					{
@@ -61981,7 +61277,6 @@
 					"graphics-aam": true
 				}
 			},
-			"omission": false,
 			"globalAttrs": {
 				"#ARIAAttrs": true,
 				"#GlobalEventAttrs": true,
@@ -62080,8 +61375,7 @@
 		{
 			"name": "svg:view",
 			"namespace": "http://www.w3.org/2000/svg",
-			"cite": "https://developer.mozilla.org/en-US/docs/Web/SVG/Reference/Element/view",
-			"categories": [],
+			"cite": "https://svgwg.org/svg2-draft/linking.html#ViewElement",
 			"contentModel": {
 				"contents": [
 					{
@@ -62093,7 +61387,6 @@
 				"implicitRole": false,
 				"permittedRoles": false
 			},
-			"omission": false,
 			"globalAttrs": {
 				"#ARIAAttrs": true,
 				"#GlobalEventAttrs": true,

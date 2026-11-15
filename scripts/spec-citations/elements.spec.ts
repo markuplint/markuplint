@@ -5,10 +5,10 @@ import { collectElementCitations } from './elements.ts';
 const FILE = 'packages/@markuplint/html-spec/index.json';
 const OBSOLETE = 'https://html.spec.whatwg.org/multipage/obsolete.html';
 
-const indexOf = (specs: { name: string; cite: string }[]) => JSON.stringify({ cites: [], def: {}, specs }, null, '\t');
+const indexOf = (specs: { name: string; cite: string }[]) => JSON.stringify({ def: {}, specs }, null, '\t');
 
 const FIXTURE = indexOf([
-	{ name: 'a', cite: 'https://developer.mozilla.org/en-US/docs/Web/HTML/Reference/Elements/a' },
+	{ name: 'a', cite: 'https://html.spec.whatwg.org/multipage/text-level-semantics.html#the-a-element' },
 	{ name: 'xmp', cite: `${OBSOLETE}#xmp` },
 	{ name: 'marquee', cite: `${OBSOLETE}#non-conforming-features` },
 	{ name: 'blink', cite: 'https://developer.mozilla.org/en-US/docs/Web/HTML/Reference/Elements/blink' },

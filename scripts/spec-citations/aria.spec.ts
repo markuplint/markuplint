@@ -11,7 +11,7 @@ const FILE = 'packages/@markuplint/html-spec/index.json';
 
 /** `index.json` as the generator writes it: tab-indented, the three versions each with the four lists. */
 const indexOf = (aria: Record<string, Record<string, unknown[]>>) =>
-	JSON.stringify({ cites: [], def: { '#aria': aria }, specs: [] }, null, '\t');
+	JSON.stringify({ def: { '#aria': aria }, specs: [] }, null, '\t');
 
 const FIXTURE = indexOf({
 	'1.3': {

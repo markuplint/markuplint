@@ -9,6 +9,7 @@ import {
 	obsoleteList,
 	obsoleteWithoutMDNPage,
 } from './html-elements.ts';
+import { getDefinitionCite } from './read-json.ts';
 
 afterEach(() => {
 	vi.unstubAllGlobals();
@@ -94,6 +95,43 @@ describe('getMDNElementURL', () => {
 	});
 });
 
+describe('getElements', () => {
+	/**
+	 * MDN answers 404 for every page, so what the output holds comes from the source file and from the generator
+	 * itself, never from MDN.
+	 */
+	async function getElementsWithoutMDN() {
+		vi.stubGlobal(
+			'fetch',
+			vi.fn(() => Promise.resolve(new Response('', { status: 404 }))),
+		);
+		vi.spyOn(console, 'error').mockImplementation(() => {});
+		vi.resetModules();
+		const { getElements: getFreshElements } = await import('./html-elements.ts');
+		return getFreshElements(path.resolve(import.meta.dirname, '..', 'src', 'spec.a.jsonc'));
+	}
+
+	test('cites the section on the first line of the source file', async () => {
+		const specs = await getElementsWithoutMDN();
+		expect(specs.find(el => el.name === 'a')?.cite).toBe(
+			'https://html.spec.whatwg.org/multipage/text-level-semantics.html#the-a-element',
+		);
+	});
+
+	test('cites the list of non-conforming features for an element that has no source file', async () => {
+		const specs = await getElementsWithoutMDN();
+		expect(specs.find(el => el.name === 'acronym')?.cite).toMatch(
+			/^https:\/\/html\.spec\.whatwg\.org\/multipage\/obsolete\.html#/,
+		);
+	});
+
+	test('writes neither the categories nor the tag omission of any element', async () => {
+		const specs = await getElementsWithoutMDN();
+		expect(specs.length).toBeGreaterThan(1);
+		expect(specs.filter(el => 'categories' in el || 'omission' in el).map(el => el.name)).toStrictEqual([]);
+	});
+});
+
 describe('isWithoutMDNPage', () => {
 	test('lists only obsolete HTML elements', () => {
 		expect([...obsoleteWithoutMDNPage].filter(name => !obsoleteList.includes(name))).toStrictEqual([]);
@@ -129,5 +167,48 @@ describe('isWithoutMDNPage', () => {
 
 	test('is false for an element of the same name in another namespace', () => {
 		expect(isWithoutMDNPage('spacer', 'SVG')).toBe(false);
+	});
+});
+
+describe('getDefinitionCite', () => {
+	test('is the URL on the first line of the source file, which cites the definition of the element', () => {
+		const source = [
+			'// https://html.spec.whatwg.org/multipage/text-level-semantics.html#the-a-element',
+			'// https://www.w3.org/TR/html-aria/#el-a',
+			'{}',
+		].join('\n');
+		expect(getDefinitionCite(source, 'spec.a.jsonc')).toBe(
+			'https://html.spec.whatwg.org/multipage/text-level-semantics.html#the-a-element',
+		);
+	});
+
+	test('reads a file that starts with a byte order mark', () => {
+		expect(getDefinitionCite('\uFEFF// https://example.com/#a\n{}', 'spec.x.jsonc')).toBe('https://example.com/#a');
+	});
+
+	test('reads a URL of http, with no space after the slashes and with trailing spaces', () => {
+		expect(getDefinitionCite('//http://example.com/#a  \n{}', 'spec.x.jsonc')).toBe('http://example.com/#a');
+	});
+
+	test('reads a file with a byte order mark and CRLF line breaks', () => {
+		expect(getDefinitionCite('\uFEFF// https://example.com/#a\r\n{}\r\n', 'spec.x.jsonc')).toBe(
+			'https://example.com/#a',
+		);
+	});
+
+	test('reads a file with CRLF line breaks', () => {
+		const source = '// https://svgwg.org/svg2-draft/shapes.html#RectElement\r\n{}\r\n';
+		expect(getDefinitionCite(source, 'spec.svg_rect.jsonc')).toBe(
+			'https://svgwg.org/svg2-draft/shapes.html#RectElement',
+		);
+	});
+
+	test.each([
+		['a file that does not start with a comment', '{}\n// https://example.com/'],
+		['a first line that is a comment without a URL', '// the a element\n{}'],
+		['a first line that has more than the URL', '// see https://example.com/ for details\n{}'],
+		['an empty file', ''],
+	])('throws for %s, naming the file', (_name, source) => {
+		expect(() => getDefinitionCite(source, 'spec.x.jsonc')).toThrow(/spec\.x\.jsonc/);
 	});
 });

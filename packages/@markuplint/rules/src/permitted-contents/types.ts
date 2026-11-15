@@ -18,7 +18,7 @@ export type ChildNode = _ChildNode<TagRule[], Options>;
  * and per-element content model specifications.
  */
 export type Specs = {
-	readonly cites: MLMLSpec['cites'];
+	readonly cites?: MLMLSpec['cites'];
 	readonly def: MLMLSpec['def'];
 	readonly specs: readonly {
 		readonly name: string;
