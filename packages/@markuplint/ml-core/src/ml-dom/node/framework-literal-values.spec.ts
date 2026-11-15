@@ -569,3 +569,129 @@ describeCases(
 	],
 	'alpine: every attribute of the table',
 );
+
+/**
+ * The boolean attributes that Remote Playback, Picture-in-Picture and the Entries API define, which the spec types as
+ * `Boolean`. Whether each framework knows the name as a boolean is read from its source: React (`pushAttribute`), Vue
+ * (`isBooleanAttr`) and Astro (`htmlBooleanAttributes`) know the first two, Svelte (`DOM_BOOLEAN_ATTRIBUTES`) knows all
+ * three, and Alpine (`booleanAttributes`) knows none of them.
+ */
+describeCases(
+	'react',
+	[
+		...rowsOf(
+			inJSX,
+			['webkitdirectory'],
+			[
+				['true', null],
+				['false', null],
+				['0', '0'],
+				["''", ''],
+			],
+		),
+	],
+	'react: a boolean attribute of the spec that React does not know as boolean',
+);
+
+describeCases(
+	'vue',
+	[
+		...rowsOf(
+			inVue,
+			['disablepictureinpicture', 'disableremoteplayback'],
+			[
+				['true', ''],
+				['false', null],
+				['0', null],
+				["''", ''],
+			],
+		),
+		...rowsOf(
+			inVue,
+			[
+				'alpha',
+				'focusgroupstart',
+				'headingreset',
+				'shadowrootclonable',
+				'shadowrootcustomelementregistry',
+				'shadowrootdelegatesfocus',
+				'shadowrootserializable',
+				'switch',
+				'webkitdirectory',
+			],
+			[
+				['true', 'true'],
+				['false', 'false'],
+				['0', '0'],
+				["''", ''],
+			],
+		),
+	],
+	'vue: the boolean attributes of the spec that Vue does not render as boolean, and the two that it does',
+);
+
+describeCases(
+	'astro',
+	[
+		...rowsOf(
+			inJSX,
+			['webkitdirectory'],
+			[
+				['true', 'true'],
+				['false', 'false'],
+				['0', '0'],
+				["''", ''],
+			],
+		),
+	],
+	'astro: a boolean attribute of the spec that Astro does not know as boolean',
+);
+
+describeCases(
+	'alpine',
+	[
+		...rowsOf(
+			inVue,
+			['disablepictureinpicture', 'disableremoteplayback', 'webkitdirectory'],
+			[
+				['true', 'true'],
+				['false', null],
+				['0', '0'],
+				["''", ''],
+			],
+		),
+	],
+	'alpine: the boolean attributes of Remote Playback, Picture-in-Picture and the Entries API',
+);
+
+describeCases(
+	'mdx',
+	[
+		...rowsOf(
+			inJSX,
+			['disablepictureinpicture', 'disableremoteplayback', 'webkitdirectory'],
+			[
+				['true', ''],
+				['false', null],
+				['0', null],
+			],
+		),
+	],
+	'mdx: the boolean attributes of Remote Playback, Picture-in-Picture and the Entries API, by the default',
+);
+
+describeCases(
+	'pug',
+	[
+		...rowsOf(
+			inPug,
+			['disablepictureinpicture', 'disableremoteplayback', 'webkitdirectory'],
+			[
+				['true', ''],
+				['false', null],
+				['0', '0'],
+			],
+		),
+	],
+	'pug: the boolean attributes of Remote Playback, Picture-in-Picture and the Entries API, by the default',
+);
