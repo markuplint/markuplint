@@ -28,6 +28,10 @@ description: 同一のautofocusスコープ起点要素を共有する複数の�
 ```
 
 ```html
-<dialog><input autofocus /></dialog>
-<dialog><button autofocus>送信</button></dialog>
+<dialog>
+  <input autofocus />
+</dialog>
+<dialog>
+  <button autofocus>送信</button>
+</dialog>
 ```
