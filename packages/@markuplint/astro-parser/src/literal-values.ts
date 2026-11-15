@@ -7,12 +7,6 @@ import type { LiteralValueDeclaration } from '@markuplint/ml-ast';
 const AS_STRING = { true: 'true', false: 'false', '0': '0', '""': '' } as const;
 
 /**
- * The rendering of the attribute that Astro renders as a boolean and the spec does not know as one:
- * present for a truthy value.
- */
-const AS_BOOLEAN = { true: '', false: null, '0': null, '""': null } as const;
-
-/**
  * How Astro renders a literal in `{…}` (`addAttribute` of `astro/runtime/server/render/util.ts`),
  * where it differs from the default of `@markuplint/ml-core`. Astro has no spec package, so the
  * parser says it. Names are in lower case.
@@ -43,9 +37,6 @@ export const ASTRO_LITERAL_VALUES: LiteralValueDeclaration = {
 		download: { true: '', false: null },
 		popover: { true: '', false: null },
 		hidden: { '0': '0' },
-		// Booleans of Astro that the spec does not know as boolean
-		disablepictureinpicture: AS_BOOLEAN,
-		disableremoteplayback: AS_BOOLEAN,
 		// Boolean attributes of the spec that Astro does not render as boolean
 		alpha: AS_STRING,
 		focusgroupstart: AS_STRING,
@@ -57,6 +48,8 @@ export const ASTRO_LITERAL_VALUES: LiteralValueDeclaration = {
 		shadowrootdelegatesfocus: AS_STRING,
 		shadowrootserializable: AS_STRING,
 		switch: AS_STRING,
+		// Not in `htmlBooleanAttributes`, so `addAttribute` renders the value as a string
+		webkitdirectory: AS_STRING,
 	},
 	customElements: {
 		booleanAttrs: AS_STRING,
