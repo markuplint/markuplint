@@ -27,6 +27,19 @@ afterEach(() => {
 	vi.restoreAllMocks();
 });
 
+describe('finishFetching', () => {
+	test('keeps what failed, so that the failures are reported after the fetching is finished', async () => {
+		stubFetch({ 'https://example.com/missing': 404 });
+		const { fetchText, finishFetching, getFailedUrls, hasFetchProblems } = await load();
+
+		await fetchText('https://example.com/missing');
+		finishFetching();
+
+		expect(getFailedUrls()).toStrictEqual(['https://example.com/missing']);
+		expect(hasFetchProblems()).toBe(true);
+	});
+});
+
 describe('hasFetchProblems', () => {
 	test('is false when every page answered or answered 404 as expected', async () => {
 		stubFetch({ 'https://example.com/gone': 404 });
@@ -58,15 +71,14 @@ describe('hasFetchProblems', () => {
 });
 
 describe('fetchText', () => {
-	test('reports a page that answers 404 as a failure, and leaves it out of the references', async () => {
+	test('reports a page that answers 404 as a failure', async () => {
 		stubFetch({ 'https://example.com/missing': 404 });
-		const { fetchText, getFailedUrls, getReferences } = await load();
+		const { fetchText, getFailedUrls } = await load();
 
 		expect(await fetchText('https://example.com/found')).toBe('<p>https://example.com/found</p>');
 		expect(await fetchText('https://example.com/missing')).toBe('');
 
 		expect(getFailedUrls()).toStrictEqual(['https://example.com/missing']);
-		expect(getReferences()).toStrictEqual(['https://example.com/found']);
 		expect(errorSpy).toHaveBeenCalledWith('⚠️ Fetch failed: https://example.com/missing (HTTP 404)');
 	});
 
@@ -90,47 +102,44 @@ describe('fetchText', () => {
 		expect(fetchMock).toHaveBeenCalledTimes(1);
 	});
 
-	test('keeps a page that failed for a reason other than 404 in the references', async () => {
+	test('reports a page that failed for a reason other than 404', async () => {
 		vi.useFakeTimers();
 		stubFetch({ 'https://example.com/down': 503 });
-		const { fetchText, getFailedUrls, getReferences } = await load();
+		const { fetchText, getFailedUrls } = await load();
 
 		const text = fetchText('https://example.com/down');
 		await vi.runAllTimersAsync();
 
 		expect(await text).toBe('');
 		expect(getFailedUrls()).toStrictEqual(['https://example.com/down']);
-		expect(getReferences()).toStrictEqual(['https://example.com/down']);
 	});
 
-	test('does not report a 404 that is expected, and leaves it out of the references', async () => {
+	test('does not report a 404 that is expected', async () => {
 		stubFetch({ 'https://example.com/gone': 404 });
-		const { fetchText, getFailedUrls, getReferences, getUnexpectedlyFoundUrls } = await load();
+		const { fetchText, getFailedUrls, getUnexpectedlyFoundUrls } = await load();
 
 		expect(await fetchText('https://example.com/gone', { expectNotFound: true })).toBe('');
 
 		expect(getFailedUrls()).toStrictEqual([]);
 		expect(getUnexpectedlyFoundUrls()).toStrictEqual([]);
-		expect(getReferences()).toStrictEqual([]);
 		expect(errorSpy).not.toHaveBeenCalled();
 	});
 
-	test('reports a page expected not to exist that failed for a reason other than 404, and leaves it out of the references', async () => {
+	test('reports a page expected not to exist that failed for a reason other than 404', async () => {
 		vi.useFakeTimers();
 		stubFetch({ 'https://example.com/gone': 503 });
-		const { fetchText, getFailedUrls, getReferences } = await load();
+		const { fetchText, getFailedUrls } = await load();
 
 		const text = fetchText('https://example.com/gone', { expectNotFound: true });
 		await vi.runAllTimersAsync();
 
 		expect(await text).toBe('');
 		expect(getFailedUrls()).toStrictEqual(['https://example.com/gone']);
-		expect(getReferences()).toStrictEqual([]);
 	});
 
 	test('reads and reports a page that answers although it is expected not to exist', async () => {
 		stubFetch({});
-		const { fetchText, getFailedUrls, getReferences, getUnexpectedlyFoundUrls } = await load();
+		const { fetchText, getFailedUrls, getUnexpectedlyFoundUrls } = await load();
 
 		expect(await fetchText('https://example.com/back', { expectNotFound: true })).toBe(
 			'<p>https://example.com/back</p>',
@@ -138,6 +147,5 @@ describe('fetchText', () => {
 
 		expect(getFailedUrls()).toStrictEqual([]);
 		expect(getUnexpectedlyFoundUrls()).toStrictEqual(['https://example.com/back']);
-		expect(getReferences()).toStrictEqual(['https://example.com/back']);
 	});
 });

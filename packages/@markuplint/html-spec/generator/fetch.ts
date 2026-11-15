@@ -16,14 +16,6 @@ const domCache = new Map<string, cheerio.CheerioAPI>();
 const failedUrls = new Set<string>();
 
 /**
- * URLs that are no reference: those that answered 404 (unlike a failure that a
- * later run may not repeat, such as a network error or a 5xx, the page does not
- * exist), and those fetched with `expectNotFound` that gave no page for any
- * reason (they are not in `cites` normally, so an outage must not add them).
- */
-const unreferencedUrls = new Set<string>();
-
-/**
  * URLs fetched with `expectNotFound` that answered with a page.
  */
 const unexpectedlyFoundUrls = new Set<string>();
@@ -91,7 +83,6 @@ async function download(url: string, options: FetchOptions | undefined) {
 				headers: { 'User-Agent': USER_AGENT },
 			});
 			if (res.status === 404) {
-				unreferencedUrls.add(url);
 				if (!options?.expectNotFound) {
 					// eslint-disable-next-line no-console
 					console.error(`⚠️ Fetch failed: ${url} (${httpStatus(res)})`);
@@ -125,9 +116,6 @@ async function download(url: string, options: FetchOptions | undefined) {
 		}
 	}
 	failedUrls.add(url);
-	if (options?.expectNotFound) {
-		unreferencedUrls.add(url);
-	}
 	return '';
 }
 
@@ -136,19 +124,14 @@ function httpStatus(res: Readonly<Response>) {
 }
 
 /**
- * Must be called only after all fetch operations are complete: the returned
- * URLs become the spec's reference citations. A URL that gave no page is
- * cached as an empty page so that it is not fetched again. Whether it is a
- * reference is decided so that an outage does not change `index.json`: a URL
- * that failed for a reason other than 404 keeps the place it normally has (in
- * `cites`, unless it is fetched with `expectNotFound`), and the failure is
- * reported by `getFailedUrls`.
+ * Must be called only after all fetch operations are complete: it closes the
+ * progress bar. A URL that gave no page is cached as an empty page so that it
+ * is not fetched again; the failure is reported by `getFailedUrls`.
  */
-export function getReferences() {
+export function finishFetching() {
 	current += 1;
 	bar?.update(current, { process: '🎉 Finished.' });
 	bar?.stop();
-	return [...cache.keys()].filter(url => !unreferencedUrls.has(url)).toSorted();
 }
 
 export function getFailedUrls(): readonly string[] {

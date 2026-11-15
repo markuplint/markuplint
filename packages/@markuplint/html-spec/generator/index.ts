@@ -24,7 +24,7 @@ import type { ExtendedSpec } from '@markuplint/ml-spec';
 import { readFile, writeFile } from 'node:fs/promises';
 
 import { getAria } from './aria.ts';
-import { getFailedUrls, getReferences, getUnexpectedlyFoundUrls, hasFetchProblems } from './fetch.ts';
+import { finishFetching, getFailedUrls, getUnexpectedlyFoundUrls, hasFetchProblems } from './fetch.ts';
 import { getGlobalAttrs } from './global-attrs.ts';
 import { getElements } from './html-elements.ts';
 import { readJson } from './read-json.ts';
@@ -80,7 +80,7 @@ export async function main({
 		}
 	}
 
-	const cites = getReferences();
+	finishFetching();
 	const failedUrls = getFailedUrls();
 
 	if (failedUrls.length > 0) {
@@ -106,7 +106,6 @@ export async function main({
 	}
 
 	const json: ExtendedSpec = {
-		cites,
 		def: {
 			'#globalAttrs': globalAttrs,
 			'#aria': aria,

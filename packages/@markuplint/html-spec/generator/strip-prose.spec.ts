@@ -8,6 +8,7 @@ const role = (name: string) => ({ name, description: `The ${name} role.`, isAbst
 
 function spec(extraAttributes: Record<string, object> = {}): ExtendedSpec {
 	return {
+		// `@markuplint/html-spec` writes no `cites`; an extension can still set them, and they pass through
 		cites: ['https://html.spec.whatwg.org/multipage/'],
 		def: {
 			'#globalAttrs': { '#HTMLGlobalAttrs': { id: { type: 'Any', description: 'The unique identifier.' } } },

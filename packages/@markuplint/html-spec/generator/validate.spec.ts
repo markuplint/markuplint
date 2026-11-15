@@ -36,7 +36,6 @@ function spec(overrides: Partial<ExtendedSpec> = {}): ExtendedSpec {
 		'img',
 	];
 	return {
-		cites: ['https://html.spec.whatwg.org/'],
 		def: {
 			'#globalAttrs': {},
 			'#aria': {
@@ -67,8 +66,8 @@ describe('validateSpecs', () => {
 		expect(() => validateSpecs(spec({ specs: withoutDiv }))).toThrow(/Required core elements are missing: div/);
 	});
 
-	test('throws when there are no cites', () => {
-		expect(() => validateSpecs(spec({ cites: [] }))).toThrow(/No reference URLs/);
+	test('does not need cites', () => {
+		expect(() => validateSpecs(spec({ cites: [] }))).not.toThrow();
 	});
 
 	test('throws when an ARIA version has no roles', () => {
@@ -125,9 +124,10 @@ describe('validateSpecs', () => {
 	});
 
 	test('reports multiple issues together', () => {
-		// Empty cites (1) + a missing required element (1) = exactly 2 issues
+		// Missing ARIA definitions (1) + a missing required element (1) = exactly 2 issues
 		const withoutDiv = spec().specs!.filter(s => s.name !== 'div');
-		expect(() => validateSpecs(spec({ cites: [], specs: withoutDiv }))).toThrow(/2 issues/);
+		const withoutAria = { ...spec().def!, '#aria': undefined } as unknown as ExtendedSpec['def'];
+		expect(() => validateSpecs(spec({ def: withoutAria, specs: withoutDiv }))).toThrow(/2 issues/);
 	});
 
 	test('the committed index.json trips the empty-description check, as it carries no descriptions', () => {

@@ -9,6 +9,7 @@ import Ajv from 'ajv';
 import { parse } from 'jsonc-parser';
 import { describe, test, expect } from 'vitest';
 
+import { getDefinitionCite } from '../generator/read-json.ts';
 import htmlSpec from '../index.js';
 
 const __filename = fileURLToPath(import.meta.url);
@@ -155,6 +156,69 @@ describe('deprecation flags scraped from the specs', () => {
 		const noteref = aria[version].dpubRoles.find(role => role.name === 'doc-noteref');
 		const deprecated = noteref?.ownedProperties?.filter(prop => prop.deprecated).map(prop => prop.name);
 		expect(deprecated).toStrictEqual(['aria-errormessage', 'aria-invalid']);
+	});
+});
+
+/**
+ * What an element says about where it is defined comes from the sources, not from MDN: the `cite` of an element with
+ * a source file is the section on the first line of that file, which the weekly spec citation watch reads, and the
+ * categories and the tag omission of MDN are not written at all.
+ */
+describe('index.json carries what the sources own', () => {
+	const sourceDir = path.resolve(__dirname, '..', 'src');
+
+	/**
+	 * @returns A map of the qualified name of an element to the URL on the first line of its source file
+	 */
+	async function readDefinitionCites() {
+		const files = await glob('spec.*.jsonc', { cwd: sourceDir, absolute: true });
+		// A pattern that matches nothing checks nothing and passes: the source files are in `src/`.
+		expect(files.length).toBeGreaterThan(0);
+		const cites = new Map();
+		for (const file of files) {
+			const name = path
+				.basename(file)
+				.replace(/^spec\.(.+)\.jsonc$/, '$1')
+				.replace(/^svg_/, 'svg:')
+				.replace(/^mml_/, 'mml:');
+			cites.set(name, getDefinitionCite(await readFile(file, { encoding: 'utf-8' }), file));
+		}
+		return cites;
+	}
+
+	test('no element has categories or omission', () => {
+		expect(htmlSpec.specs.filter(el => 'categories' in el || 'omission' in el).map(el => el.name)).toStrictEqual(
+			[],
+		);
+	});
+
+	test('there is no list of reference URLs', () => {
+		expect('cites' in htmlSpec).toBe(false);
+	});
+
+	test('the cite of an element with a source file is the URL on the first line of the file', async () => {
+		const cites = await readDefinitionCites();
+		const mismatched = htmlSpec.specs
+			.filter(el => cites.has(el.name) && el.cite !== cites.get(el.name))
+			.map(el => `${el.name}: ${el.cite}`);
+		expect(mismatched).toStrictEqual([]);
+	});
+
+	test('every source file is an element of the data', async () => {
+		const cites = await readDefinitionCites();
+		const names = new Set(htmlSpec.specs.map(el => el.name));
+		expect([...cites.keys()].filter(name => !names.has(name))).toStrictEqual([]);
+	});
+
+	test('an element without a source file cites the list of non-conforming features', async () => {
+		const cites = await readDefinitionCites();
+		const withoutSource = htmlSpec.specs.filter(el => !cites.has(el.name));
+		expect(withoutSource.length).toBeGreaterThan(0);
+		expect(
+			withoutSource
+				.filter(el => !el.cite.startsWith('https://html.spec.whatwg.org/multipage/obsolete.html#'))
+				.map(el => `${el.name}: ${el.cite}`),
+		).toStrictEqual([]);
 	});
 });
 
