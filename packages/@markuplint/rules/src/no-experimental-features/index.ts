@@ -1,6 +1,6 @@
 import { createRule, getAttrSpecs, getSpec } from '@markuplint/ml-core';
 
-import { createIgnoreFeaturesLookup, findAttrSpec } from '../helpers.js';
+import { createIgnoreFeaturesLookup, findAttrSpec, isFlagCheckedElement } from '../helpers.js';
 import meta from './meta.js';
 
 /**
@@ -9,8 +9,10 @@ import meta from './meta.js';
 type Options = {
 	/**
 	 * Features to ignore: an element name ("dialog") or an attribute of an element ("input[list]"). The
-	 * element name is compared as the document compares tag names, the attribute name as the DOM
-	 * compares it with the attribute that is checked.
+	 * element name is a local name with no namespace, so it names the element of that name in HTML, SVG
+	 * and MathML alike ("a[interestfor]" covers the HTML and the SVG `a`). It is compared as the
+	 * document compares tag names, the attribute name as the DOM compares it with the attribute that is
+	 * checked.
 	 */
 	readonly ignoreFeatures?: readonly string[];
 };
@@ -23,13 +25,7 @@ export default createRule<boolean, Options>({
 		const ignored = createIgnoreFeaturesLookup(document.tagNameCaseSensitive, document.rule.options.ignoreFeatures);
 
 		await document.walkOn('Element', el => {
-			// Web components and authored elements (JSX/Vue/Svelte) reach this rule
-			// via `pretenders`: they masquerade as a known HTML element on `el.localName`,
-			// so spec lookups below resolve correctly. See #3740.
-			if (
-				el.namespaceURI !== 'http://www.w3.org/1999/xhtml' ||
-				(el.elementType !== 'html' && el.pretenderContext?.type !== 'pretender')
-			) {
+			if (!isFlagCheckedElement(el)) {
 				return;
 			}
 

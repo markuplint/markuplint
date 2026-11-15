@@ -109,3 +109,8 @@ describe('fix', () => {
 		expect(fixedCode).toBe('<div data-lowercase></div>');
 	});
 });
+
+test('[case-sensitive-tag-name-issue-4701-001] an element in a foreign namespace is left to the HTML parser, which names it as the standard says whatever case it is written in', async () => {
+	const { violations } = await mlRuleTest(rule, '<svg><FOREIGNOBJECT></FOREIGNOBJECT><textPath></textPath></svg>');
+	expect(violations).toStrictEqual([]);
+});

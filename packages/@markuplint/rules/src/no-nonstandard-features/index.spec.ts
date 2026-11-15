@@ -1,3 +1,5 @@
+import { fileURLToPath } from 'node:url';
+
 import { mlRuleTest } from 'markuplint';
 import { describe, test, expect } from 'vitest';
 
@@ -150,4 +152,167 @@ describe('attribute name case', () => {
 		});
 		expect(ignored.violations).toStrictEqual([]);
 	});
+});
+
+describe('SVG and MathML', () => {
+	const svgImage = '<svg><image href="a.png" fetchpriority="high"></image></svg>';
+	const mathTable = '<math><mtable columnalign="left"><mtr><mtd></mtd></mtr></mtable></math>';
+
+	test('[no-nonstandard-features-issue-4701-001] SVG: an attribute that the data flags non-standard is reported', async () => {
+		const { violations } = await mlRuleTest(rule, svgImage, { rule: true });
+		expect(violations).toStrictEqual([
+			{
+				severity: 'warning',
+				line: 1,
+				col: 26,
+				raw: 'fetchpriority',
+				message: 'The "fetchpriority" attribute is non-standard',
+			},
+		]);
+	});
+
+	test('[no-nonstandard-features-issue-4701-002] MathML: an attribute that the data flags non-standard is reported', async () => {
+		const { violations } = await mlRuleTest(rule, mathTable, { rule: true });
+		expect(violations).toStrictEqual([
+			{
+				severity: 'warning',
+				line: 1,
+				col: 15,
+				raw: 'columnalign',
+				message: 'The "columnalign" attribute is non-standard',
+			},
+		]);
+	});
+
+	test('[no-nonstandard-features-issue-4701-003] MathML: an element that the data flags non-standard is reported', async () => {
+		const { violations } = await mlRuleTest(rule, '<math><mfenced></mfenced></math>', { rule: true });
+		expect(violations).toStrictEqual([
+			{
+				severity: 'warning',
+				line: 1,
+				col: 7,
+				raw: '<mfenced>',
+				message: 'The "mfenced" element is non-standard',
+			},
+		]);
+	});
+
+	test('[no-nonstandard-features-issue-4701-004] a standard feature of SVG and MathML is not reported', async () => {
+		const svg = await mlRuleTest(rule, '<svg><image href="a.png" width="10"></image></svg>', { rule: true });
+		expect(svg.violations).toStrictEqual([]);
+		const math = await mlRuleTest(rule, '<math><mi mathvariant="normal">x</mi></math>', { rule: true });
+		expect(math.violations).toStrictEqual([]);
+	});
+
+	test('[no-nonstandard-features-issue-4701-005] SVG: ignoreFeatures names the attribute by the local name of the element', async () => {
+		const ignored = await mlRuleTest(rule, svgImage, {
+			rule: { options: { ignoreFeatures: ['image[fetchpriority]'] } },
+		});
+		expect(ignored.violations).toStrictEqual([]);
+		const other = await mlRuleTest(rule, svgImage, {
+			rule: { options: { ignoreFeatures: ['image[decoding]'] } },
+		});
+		expect(other.violations.map(v => v.raw)).toStrictEqual(['fetchpriority']);
+	});
+
+	test('[no-nonstandard-features-issue-4701-006] MathML: ignoreFeatures names the element by its local name', async () => {
+		const ignored = await mlRuleTest(rule, '<math><mfenced></mfenced></math>', {
+			rule: { options: { ignoreFeatures: ['mfenced'] } },
+		});
+		expect(ignored.violations).toStrictEqual([]);
+	});
+
+	test('[no-nonstandard-features-issue-4701-007] MathML: ignoreFeatures names the attribute by the local name of the element', async () => {
+		const ignored = await mlRuleTest(rule, mathTable, {
+			rule: { options: { ignoreFeatures: ['mtable[columnalign]'] } },
+		});
+		expect(ignored.violations).toStrictEqual([]);
+		const other = await mlRuleTest(rule, mathTable, {
+			rule: { options: { ignoreFeatures: ['mtable[rowalign]'] } },
+		});
+		expect(other.violations.map(v => v.raw)).toStrictEqual(['columnalign']);
+	});
+
+	test('[no-nonstandard-features-issue-4701-008] a name of ignoreFeatures covers the element of that name in every namespace', async () => {
+		// `interestfor` is non-standard on both the HTML `a` and the SVG `a`.
+		const html = '<a href="#x" interestfor="y"></a><svg><a href="#x" interestfor="y"></a></svg>';
+		const reported = await mlRuleTest(rule, html, { rule: true });
+		expect(reported.violations).toStrictEqual([
+			{
+				severity: 'warning',
+				line: 1,
+				col: 14,
+				raw: 'interestfor',
+				message: 'The "interestfor" attribute is non-standard',
+			},
+			{
+				severity: 'warning',
+				line: 1,
+				col: 52,
+				raw: 'interestfor',
+				message: 'The "interestfor" attribute is non-standard',
+			},
+		]);
+		const ignored = await mlRuleTest(rule, html, {
+			rule: { options: { ignoreFeatures: ['a[interestfor]'] } },
+		});
+		expect(ignored.violations).toStrictEqual([]);
+	});
+
+	test('[no-nonstandard-features-issue-4701-009] ignoreFeatures of a nodeRule applies to an SVG or MathML element it selects', async () => {
+		const { violations } = await mlRuleTest(
+			rule,
+			'<math><mfenced class="a"></mfenced><mfenced class="b"></mfenced></math>',
+			{
+				rule: true,
+				nodeRule: [{ selector: '.b', rule: { options: { ignoreFeatures: ['mfenced'] } } }],
+			},
+		);
+		expect(violations).toStrictEqual([
+			{
+				severity: 'warning',
+				line: 1,
+				col: 7,
+				raw: '<mfenced class="a">',
+				message: 'The "mfenced" element is non-standard',
+			},
+		]);
+	});
+
+	test('[no-nonstandard-features-issue-4701-010] an authored element in MathML is reported when a pretender makes it stand for a flagged element, and not otherwise', async () => {
+		const parser = { '.*': '@markuplint/jsx-parser' };
+		const pretended = await mlRuleTest(rule, '<math><Formula /></math>', {
+			parser,
+			pretenders: [{ selector: 'Formula', as: 'mfenced' }],
+			rule: true,
+		});
+		expect(pretended.violations).toStrictEqual([
+			{
+				severity: 'warning',
+				line: 1,
+				col: 7,
+				raw: '<Formula />',
+				message: 'The "mfenced" element is non-standard',
+			},
+		]);
+		const plain = await mlRuleTest(rule, '<math><Formula /></math>', { parser, rule: true });
+		expect(plain.violations).toStrictEqual([]);
+	});
+});
+
+// The bundled spec data has no element or attribute with the flag that the tests below need,
+// so they pass a spec of their own.
+const specs = { '.*': fileURLToPath(new URL('flagged-fixture.mjs', import.meta.url)) };
+
+test('[no-nonstandard-features-issue-4701-011] an SVG element that the spec flags non-standard is reported', async () => {
+	const { violations } = await mlRuleTest(rule, '<svg><circle></circle></svg>', { rule: true, specs });
+	expect(violations).toStrictEqual([
+		{
+			severity: 'warning',
+			line: 1,
+			col: 6,
+			raw: '<circle>',
+			message: 'The "circle" element is non-standard',
+		},
+	]);
 });

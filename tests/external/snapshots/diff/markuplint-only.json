@@ -2241,7 +2241,8 @@
 			"path": "html-math/maction-isvalid.html",
 			"category": "uncategorized",
 			"ruleIds": [
-				"no-deprecated-attr"
+				"no-deprecated-attr",
+				"no-deprecated-element"
 			]
 		},
 		{
@@ -8711,13 +8712,6 @@
 			"category": "attribute-errors",
 			"ruleIds": [
 				"no-deprecated-attr"
-			]
-		},
-		{
-			"path": "html/elements/img/controls-isvalid.html",
-			"category": "attribute-errors",
-			"ruleIds": [
-				"no-unknown-attr"
 			]
 		},
 		{

@@ -1,3 +1,5 @@
+import { fileURLToPath } from 'node:url';
+
 import { mlRuleTest } from 'markuplint';
 import { describe, test, expect } from 'vitest';
 
@@ -174,6 +176,105 @@ test('[no-experimental-features-issue-4584-001] the message is in Japanese with 
 			col: 9,
 			message: '属性「credentialless」は実験的です',
 			raw: 'credentialless',
+		},
+	]);
+});
+
+describe('SVG', () => {
+	const textPath = '<svg><textPath href="#p" side="left"></textPath></svg>';
+
+	test('[no-experimental-features-issue-4701-001] an attribute that the data flags experimental is reported', async () => {
+		const { violations } = await mlRuleTest(rule, textPath, { rule: true });
+		expect(violations).toStrictEqual([
+			{
+				severity: 'warning',
+				line: 1,
+				col: 26,
+				raw: 'side',
+				message: 'The "side" attribute is experimental',
+			},
+		]);
+	});
+
+	test('[no-experimental-features-issue-4701-002] a stable feature is not reported', async () => {
+		const { violations } = await mlRuleTest(rule, '<svg><textPath href="#p" startOffset="10"></textPath></svg>', {
+			rule: true,
+		});
+		expect(violations).toStrictEqual([]);
+	});
+
+	test.each(['textPath[side]', 'textpath[side]', 'textPath[SIDE]'])(
+		'[no-experimental-features-issue-4701-003] ignoreFeatures names the feature by the local name, in any spelling in HTML: %s',
+		async key => {
+			const { violations } = await mlRuleTest(rule, textPath, { rule: { options: { ignoreFeatures: [key] } } });
+			expect(violations).toStrictEqual([]);
+		},
+	);
+
+	test('[no-experimental-features-issue-4701-004] ignoreFeatures of another attribute of the element does not ignore it', async () => {
+		const { violations } = await mlRuleTest(rule, textPath, {
+			rule: { options: { ignoreFeatures: ['textPath[startOffset]'] } },
+		});
+		expect(violations.map(v => v.raw)).toStrictEqual(['side']);
+	});
+
+	test.each(['textpath', 'TEXTPATH'])(
+		'[no-experimental-features-issue-4701-006] the HTML parser restores the case of the element, so <%s> in an <svg> is textPath',
+		async tag => {
+			const { violations } = await mlRuleTest(rule, `<svg><${tag} href="#p" side="left"></${tag}></svg>`, {
+				rule: true,
+			});
+			expect(violations).toStrictEqual([
+				{
+					severity: 'warning',
+					line: 1,
+					col: 26,
+					raw: 'side',
+					message: 'The "side" attribute is experimental',
+				},
+			]);
+		},
+	);
+
+	test('[no-experimental-features-issue-4701-007] a language that keeps the case of a tag name does not take <textpath> for textPath', async () => {
+		const { violations } = await mlRuleTest(rule, '<svg><textpath href="#p" side="left" /></svg>', {
+			parser: { '.*': '@markuplint/jsx-parser' },
+			rule: true,
+		});
+		expect(violations).toStrictEqual([]);
+	});
+});
+
+// The bundled spec data has no element or attribute with the flag that the tests below need,
+// so they pass a spec of their own.
+const specs = { '.*': fileURLToPath(new URL('flagged-fixture.mjs', import.meta.url)) };
+
+test('[no-experimental-features-issue-4701-005] an SVG or MathML element and a MathML attribute that the spec flags experimental are reported', async () => {
+	const { violations } = await mlRuleTest(rule, '<svg><circle></circle></svg><math><mi flag="x">x</mi></math>', {
+		rule: true,
+		specs,
+	});
+	expect(violations).toStrictEqual([
+		{
+			severity: 'warning',
+			line: 1,
+			col: 6,
+			raw: '<circle>',
+			message: 'The "circle" element is experimental',
+		},
+		{
+			severity: 'warning',
+			line: 1,
+			col: 35,
+			raw: '<mi flag="x">',
+			message: 'The "mi" element is experimental',
+		},
+		{
+			severity: 'warning',
+			line: 1,
+			col: 39,
+			raw: 'flag',
+			message: 'The "flag" attribute is experimental',
 		},
 	]);
 });

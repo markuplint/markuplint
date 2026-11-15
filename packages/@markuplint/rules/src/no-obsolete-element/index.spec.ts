@@ -1,3 +1,5 @@
+import { fileURLToPath } from 'node:url';
+
 import { mlRuleTest } from 'markuplint';
 import { test, expect } from 'vitest';
 
@@ -118,6 +120,32 @@ test('[no-obsolete-element-issue-3740-005] Vue web-component pretendered to obso
 			line: 1,
 			col: 11,
 			raw: '<x-marquee>',
+		},
+	]);
+});
+
+// The bundled spec data has no element or attribute with the flag that the tests below need,
+// so they pass a spec of their own.
+const specs = { '.*': fileURLToPath(new URL('obsolete-fixture.mjs', import.meta.url)) };
+
+test('[no-obsolete-element-issue-4701-001] a MathML and an SVG element that the spec flags obsolete are reported', async () => {
+	const { violations } = await mlRuleTest(rule, '<math><mi>x</mi><mn>1</mn></math><svg><circle></circle></svg>', {
+		specs,
+	});
+	expect(violations).toStrictEqual([
+		{
+			severity: 'error',
+			line: 1,
+			col: 7,
+			message: 'The "mi" element is obsolete',
+			raw: '<mi>',
+		},
+		{
+			severity: 'error',
+			line: 1,
+			col: 39,
+			message: 'The "circle" element is obsolete',
+			raw: '<circle>',
 		},
 	]);
 });
