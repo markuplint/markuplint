@@ -28,7 +28,6 @@ import type { ExtendedSpec } from '@markuplint/ml-spec';
  * Alpine.js directives are all global and prefixed with `x-`.
  */
 const spec: ExtendedSpec = {
-	cites: ['https://alpinejs.dev/'],
 	/**
 	 * How Alpine.js renders a literal in `:attr="…"` (`bindAttribute` of `alpinejs/src/utils/bind.js`),
 	 * where it differs from the default of `@markuplint/ml-core`. Names are in lower case.
