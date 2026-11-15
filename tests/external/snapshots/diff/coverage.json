@@ -25026,8 +25026,8 @@
 			"path": "html/elements/img/controls-isvalid.html",
 			"category": "attribute-errors",
 			"nu": "clean",
-			"ml": "error",
-			"verdict": "ml-only",
+			"ml": "clean",
+			"verdict": "match-clean",
 			"excludedIds": []
 		},
 		{
