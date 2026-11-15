@@ -23,3 +23,5 @@ pub mod whatwg;
 
 #[cfg(any(test, feature = "test-support"))]
 pub mod equivalence;
+
+pub  fn   verify_4707_red ( )   {   }
