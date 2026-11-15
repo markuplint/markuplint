@@ -41,6 +41,7 @@ import {
 	getHostLanguageLabelSource,
 	getReferencedTextAlternative,
 } from '../helper/accname.js';
+import { adjustForeignTagName } from '../helper/foreign-tag-names.js';
 import { literalToExpression } from '../helper/literal-values.js';
 import { markPretendedAttr } from '../helper/pretended-attrs.js';
 import {
@@ -114,6 +115,18 @@ export class MLElement<T extends RuleConfigValue, O extends PlainData = undefine
 	 */
 	get isForeignElement(): boolean {
 		return this.#namespaceURI !== HTML_NAMESPACE;
+	}
+
+	/**
+	 * Whether the tag of this element is read by the HTML parser, which lower-cases the name of the
+	 * tag: the element is not a component, the language does not keep the case of a tag name, and
+	 * its elements are not set through the DOM API (see {@link MLDocument.attrNameRoute}).
+	 */
+	get #isNamedByHTMLParser(): boolean {
+		const document = this.ownerMLDocument;
+		return (
+			this.elementType === 'html' && !document.tagNameCaseSensitive && document.attrNameRoute === 'html-parser'
+		);
 	}
 
 	/**
@@ -260,6 +273,7 @@ export class MLElement<T extends RuleConfigValue, O extends PlainData = undefine
 	 */
 	readonly isOmitted: boolean;
 	#localName: string;
+	#foreignLocalName: string | null = null;
 
 	/**
 	 * The namespace URI of this element (e.g., `http://www.w3.org/1999/xhtml` for HTML elements).
@@ -1336,14 +1350,27 @@ export class MLElement<T extends RuleConfigValue, O extends PlainData = undefine
 	 * <X-FOO> => "x-foo"
 	 * ```
 	 *
+	 * The name of an element in a foreign namespace that the HTML parser reads is lower-cased and then
+	 * restored for SVG, as the HTML parser does, so `<FOREIGNOBJECT>` and `<foreignobject>` in an
+	 * `<svg>` are `foreignObject`. A language that keeps the case of a tag name (JSX, Svelte, Astro,
+	 * MDX) or sets the element through the DOM API keeps the name as written.
+	 *
 	 * @implements DOM API: `Element`
 	 * @see https://dom.spec.whatwg.org/#ref-for-dom-element-localname%E2%91%A0
+	 * @see https://html.spec.whatwg.org/multipage/parsing.html#parsing-main-inforeign
 	 */
 	get localName(): string {
 		if (this.pretenderContext?.type === 'pretender') {
 			return this.pretenderContext.as.localName;
 		}
-		if (this.isForeignElement || this.elementType !== 'html') {
+		if (this.isForeignElement) {
+			// The name, the namespace and the language do not change, so the name is worked out once.
+			this.#foreignLocalName ??= this.#isNamedByHTMLParser
+				? adjustForeignTagName(asciiLowerCase(this.#localName), this.#namespaceURI)
+				: this.#localName;
+			return this.#foreignLocalName;
+		}
+		if (this.elementType !== 'html') {
 			return this.#localName;
 		}
 		if (this.ownerMLDocument.tagNameCaseSensitive) {
