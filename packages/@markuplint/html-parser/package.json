@@ -30,7 +30,7 @@
 	"dependencies": {
 		"@markuplint/ml-ast": "5.6.0",
 		"@markuplint/parser-utils": "5.6.1",
-		"parse5": "^8.1.0",
+		"parse5": "^8.1.1",
 		"type-fest": "^5.10.0"
 	}
 }
