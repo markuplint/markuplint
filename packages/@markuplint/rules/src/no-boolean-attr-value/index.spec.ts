@@ -168,3 +168,29 @@ test('[no-boolean-attr-value-issue-4309-002] an HTML element in JSX folds the na
 		},
 	]);
 });
+
+// Attributes that a specification besides the HTML Standard defines, or that the HTML Standard defines for the image
+// only (`controls`), were typed `Any` and are `Boolean` now.
+test('[no-boolean-attr-value-invalid-003] video: disablepictureinpicture takes no value', async () => {
+	// https://w3c.github.io/picture-in-picture/#disable-pip
+	const { violations } = await mlRuleTest(rule, '<video disablepictureinpicture="true"></video>');
+	expect(violations.map(v => v.raw)).toStrictEqual(['="true"']);
+});
+
+test('[no-boolean-attr-value-invalid-004] audio: disableremoteplayback takes no value', async () => {
+	// https://w3c.github.io/remote-playback/#the-disableremoteplayback-attribute
+	const { violations } = await mlRuleTest(rule, '<audio disableremoteplayback="disableremoteplayback"></audio>');
+	expect(violations.map(v => v.raw)).toStrictEqual(['="disableremoteplayback"']);
+});
+
+test('[no-boolean-attr-value-invalid-005] input: webkitdirectory takes no value', async () => {
+	// https://wicg.github.io/entries-api/#html-forms
+	const { violations } = await mlRuleTest(rule, '<input type="file" webkitdirectory="true">');
+	expect(violations.map(v => v.raw)).toStrictEqual(['="true"']);
+});
+
+test('[no-boolean-attr-value-invalid-006] img: controls takes no value', async () => {
+	// https://html.spec.whatwg.org/multipage/embedded-content.html#attr-img-controls
+	const { violations } = await mlRuleTest(rule, '<img src="a.png" alt="photo" controls="true">');
+	expect(violations.map(v => v.raw)).toStrictEqual(['="true"']);
+});

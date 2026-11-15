@@ -1090,3 +1090,86 @@ test('[no-unknown-attr-issue-4571-005] Svelte: acceptCharset and accept-charset 
 		(await mlRuleTest(rule, '<form action="/submit" accept-charset="utf-8"></form>', svelte)).violations,
 	).toStrictEqual([]);
 });
+
+test('[no-unknown-attr-valid-007] HTML: the attributes that specifications other than the HTML Standard define are known', async () => {
+	// Remote Playback, Picture-in-Picture, WICG controls-list, HTML Media Capture and the Entries API
+	for (const html of [
+		'<audio controlslist="nodownload" disableremoteplayback></audio>',
+		'<video controlslist="nodownload" disablepictureinpicture disableremoteplayback></video>',
+		'<input type="file" accept="image/*" capture="user" webkitdirectory>',
+		'<img src="a.png" alt="photo" controls>',
+	]) {
+		expect((await mlRuleTest(rule, html)).violations, html).toStrictEqual([]);
+	}
+});
+
+test('[no-unknown-attr-valid-008] SVG: pattern x and y, mask-type of mask and in of feDisplacementMap are known', async () => {
+	// https://svgwg.org/svg2-draft/pservers.html#PatternElementXAttribute
+	// https://drafts.csswg.org/css-masking-1/#propdef-mask-type
+	// https://drafts.csswg.org/filter-effects-1/#feDisplacementMapElement
+	const svg = `<svg xmlns="http://www.w3.org/2000/svg">
+<pattern x="1" y="2" width="3" height="4"></pattern>
+<mask mask-type="alpha"></mask>
+<filter><feDisplacementMap in="SourceGraphic" in2="SourceAlpha"></feDisplacementMap></filter>
+</svg>`;
+	expect((await mlRuleTest(rule, svg)).violations).toStrictEqual([]);
+});
+
+test('[no-unknown-attr-invalid-006] SVG: an attribute that no specification defines for the element is reported', async () => {
+	// SVG Animations: "the attributeType attribute is not supported by SVG"; SVG 2 gives defs and pattern no
+	// conditional processing attributes.
+	const svg = `<svg xmlns="http://www.w3.org/2000/svg">
+<animate attributeType="XML"></animate>
+<defs systemLanguage="ja"></defs>
+<pattern systemLanguage="ja"></pattern>
+</svg>`;
+	const { violations } = await mlRuleTest(rule, svg);
+	expect(violations).toStrictEqual([
+		{
+			severity: 'error',
+			line: 2,
+			col: 10,
+			message: 'The "attributeType" attribute is disallowed. Did you mean "attributeName"?',
+			raw: 'attributeType',
+		},
+		{
+			severity: 'error',
+			line: 3,
+			col: 7,
+			message: 'The "systemLanguage" attribute is disallowed',
+			raw: 'systemLanguage',
+		},
+		{
+			severity: 'error',
+			line: 4,
+			col: 10,
+			message: 'The "systemLanguage" attribute is disallowed',
+			raw: 'systemLanguage',
+		},
+	]);
+});
+
+test('[no-unknown-attr-valid-009] SVG: decoding of the image element is known, though no specification defines it for the element', async () => {
+	expect(
+		(
+			await mlRuleTest(
+				rule,
+				'<svg xmlns="http://www.w3.org/2000/svg"><image href="a.png" decoding="async"></image></svg>',
+			)
+		).violations,
+	).toStrictEqual([]);
+});
+
+test('[no-unknown-attr-invalid-007] audio: disablepictureinpicture is defined for the video element only', async () => {
+	// https://w3c.github.io/picture-in-picture/#disable-pip
+	const { violations } = await mlRuleTest(rule, '<audio disablepictureinpicture></audio>');
+	expect(violations).toStrictEqual([
+		{
+			severity: 'error',
+			line: 1,
+			col: 8,
+			message: 'The "disablepictureinpicture" attribute is disallowed',
+			raw: 'disablepictureinpicture',
+		},
+	]);
+});

@@ -116,15 +116,18 @@ export function valueCheck(
 	value: string,
 	type: ReadonlyDeep<AttributeType | Type>,
 ): [string, Loc] | false {
-	if (type === 'Boolean') {
-		// Valid because an attribute is exist
-		return false;
-	}
+	// The presence of a boolean attribute is its true value, and the value, if there is one, is the empty string or
+	// the name of the attribute, which is the enumerated type of those two.
+	// @see https://html.spec.whatwg.org/multipage/common-microsyntaxes.html#boolean-attributes
+	// > If the attribute is present, its value must either be the empty string or a value that is an ASCII
+	// > case-insensitive match for the attribute's canonical name, with no leading or trailing whitespace.
+	const checkedType: ReadonlyDeep<AttributeType | Type> =
+		type === 'Boolean' ? { enum: ['', name], disallowToSurroundBySpaces: true } : type;
 
-	const matches = check(value, type);
+	const matches = check(value, checkedType);
 
 	if (log.enabled) {
-		log(`Result ([${name}="${value}"]): %O`, { ...matches, type });
+		log(`Result ([${name}="${value}"]): %O`, { ...matches, type: checkedType });
 	}
 
 	if (!matches.matched) {
@@ -136,7 +139,7 @@ export function valueCheck(
 
 		const base = t('the "{0*}" {1}', name, 'attribute');
 
-		const message = createMessageValueExpected(t, base, type, matches);
+		const message = createMessageValueExpected(t, base, checkedType, matches);
 
 		return [message, location];
 	}
