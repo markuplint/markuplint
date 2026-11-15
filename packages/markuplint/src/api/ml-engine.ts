@@ -733,14 +733,12 @@ export class MLEngine extends Emitter<MLEngineEventMap> {
 
 		const schemas = await this.#resolveSchemas(configSet);
 		if (fileLog.enabled) {
-			if (schemas[0].cites.length > 0) {
-				const [, ...additionalSpecs] = schemas;
-				fileLog('Resolved schemas: HTML Standard');
-				for (const additionalSpec of additionalSpecs) {
-					fileLog('Resolved schemas: %O', additionalSpec);
-				}
-			} else {
-				fileLog('Resolved schemas: %O', schemas);
+			// The first is always `@markuplint/html-spec`, whatever the config says (`resolveSpecs` imports it and
+			// returns it first): its data is too large to log
+			const [, ...additionalSpecs] = schemas;
+			fileLog('Resolved schemas: HTML Standard');
+			for (const additionalSpec of additionalSpecs) {
+				fileLog('Resolved schemas: %O', additionalSpec);
 			}
 		}
 
