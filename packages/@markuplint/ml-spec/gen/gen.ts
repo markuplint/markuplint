@@ -191,9 +191,9 @@ fs.writeFileSync(
 						],
 					},
 					defaultValue: { type: 'string' },
-					// Status-flag semantics (deprecated/experimental here; obsolete and
-					// nonStandard exist only on the TS types) are documented on
-					// `ElementSpec`/`Attribute` in ../src/types/index.ts.
+					// Status-flag semantics (deprecated, experimental and nonStandard here; obsolete
+					// exists only on the TS types) are documented on `ElementSpec`/`Attribute` in
+					// ../src/types/index.ts.
 					deprecated: { type: 'boolean' },
 					required: {
 						oneOf: [
@@ -225,6 +225,12 @@ fs.writeFileSync(
 					},
 					experimental: {
 						type: 'boolean',
+					},
+					// `const: true` as in `element.schema.json` and the `nonStandard?: true` of the types: a flag
+					// is written when it holds, never as `false`.
+					nonStandard: {
+						const: true,
+						description: 'Non-standard: never part of any standard (vendor-specific or proprietary).',
 					},
 				},
 			},

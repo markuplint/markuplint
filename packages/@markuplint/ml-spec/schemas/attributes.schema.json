@@ -56,7 +56,11 @@
 				"condition": { "$ref": "#/definitions/AttributeCondition" },
 				"ineffective": { "$ref": "#/definitions/Selectors" },
 				"animatable": { "type": "boolean" },
-				"experimental": { "type": "boolean" }
+				"experimental": { "type": "boolean" },
+				"nonStandard": {
+					"const": true,
+					"description": "Non-standard: never part of any standard (vendor-specific or proprietary)."
+				}
 			}
 		},
 		"GlobalAttributes": {
