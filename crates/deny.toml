@@ -61,6 +61,7 @@ allow-build-scripts = [
     "icu_properties_data",
     "libc",
     "napi",
+    "napi-sys",
     "num-traits",
     "prettyplease",
     "proc-macro2",
