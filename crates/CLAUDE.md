@@ -18,11 +18,12 @@ cargo clippy --locked -- -D warnings
 cargo test --locked
 ```
 
-- `-D warnings` is what `.github/workflows/rust.yml` runs, so a clippy warning is a CI failure. The workspace enables `clippy::pedantic` (`Cargo.toml`), so lints such as `missing_errors_doc` and `match_same_arms` apply.
+- `-D warnings` is what `.github/workflows/rust.yml` runs (a pull request gets it through `test.yml`, whose `ci-ok` needs it), so a clippy warning is a CI failure. The workspace enables `clippy::pedantic` (`Cargo.toml`), so lints such as `missing_errors_doc` and `match_same_arms` apply.
 - **Keep the local toolchain current** (`rustup update stable`). Nothing in the repo pins a Rust version, and CI installs whatever stable is current, so clippy's lint set moves even when no code changes — a stale local toolchain reports clean on exactly the code CI rejects. When CI names a lint that does not reproduce locally, compare `rustc --version` before looking for anything subtler.
 - `--locked` everywhere, and the `cargo metadata` line first: the napi build's internal `cargo metadata` can rewrite `Cargo.lock`, and CI asserts the lock is unchanged after building the addon (`test.yml`, "Assert Cargo.lock unchanged"). `cargo fmt` has no `--locked` flag, so the metadata call is what fails fast on a stale lock.
 - Dependency changes also pass `cargo-deny` in CI (`deny.toml`, `.github/workflows/cargo-deny.yml`) — licences and advisories. Adding a crate means satisfying `deny.toml`.
-- A change under `crates/` also starts `.github/workflows/test.yml`, which rebuilds the addon and runs the TypeScript suite, the napi end-to-end spec against it (`npx vitest run --config vitest.e2e.config.ts` after `build:napi:debug`, locally) and the rule specs of `@markuplint/rules` on the Rust engine (`yarn test:rust-rules`, which fails a spec whose lint fell back to the TypeScript engine). The last one is where a change to a Rust rule meets the specs that the TypeScript rule passes: run it after `build:napi:debug`.
+- A pull request reaches `rust.yml` and `cargo-deny.yml` through `.github/workflows/test.yml` (its header says how), so a red one blocks the merge, Renovate's automerge included.
+- A change under `crates/` also starts the rest of `.github/workflows/test.yml`, which rebuilds the addon and runs the TypeScript suite, the napi end-to-end spec against it (`npx vitest run --config vitest.e2e.config.ts` after `build:napi:debug`, locally) and the rule specs of `@markuplint/rules` on the Rust engine (`yarn test:rust-rules`, which fails a spec whose lint fell back to the TypeScript engine). The last one is where a change to a Rust rule meets the specs that the TypeScript rule passes: run it after `build:napi:debug`.
 
 ## Supply chain
 

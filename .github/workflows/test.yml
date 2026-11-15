@@ -14,14 +14,21 @@ name: Test
 # the three shards of the queue instead of the selection: it is the only gate before the change
 # reaches `v6`. The Rust addon (`@markuplint/core`) is built before the TypeScript packages in
 # every job that builds, as `markuplint` loads it; `crates/CLAUDE.md` says why the Cargo.lock
-# checks are around the napi build. `rust.yml` runs the Rust gate itself. The first shard of a pull
-# request into `v6` also runs the rule specs of `@markuplint/rules` on the Rust engine
+# checks are around the napi build. The Rust gate, `rust.yml` and `cargo-deny.yml`, is part of
+# that: `rust` and `cargo-deny` below call them as reusable workflows when the change touches
+# `crates/`, `@markuplint/core` (for `rust.yml`) or the called workflow's own file (`changes`), and `ci-ok`
+# needs them. They are in the pull request, not in a nightly run, because `v6` has none: a red
+# `napi-smoke` on macOS or Windows would otherwise show only after the merge. The first shard
+# of a pull request into `v6` also runs the rule specs of `@markuplint/rules` on the Rust engine
 # (`yarn test:rust-rules`, about 30 s), whatever the change: `v6` is the only line that has the Rust
 # engine, and nothing else reaches what a change to `crates/` does to a rule spec.
 #
 # There is no `paths:` filter: a workflow that a filter skips leaves its checks pending, which
 # blocks a required check, and `merge_group` does not take one. What a change touches is decided
-# inside the job, and `ci-ok` is the one check to require.
+# by the `changes` job, and a job skipped by its `if:` reports success. `ci-ok` is the one check to
+# require, so a check outside it cannot block a merge: `rust.yml` and `cargo-deny.yml` have no
+# `pull_request` trigger of their own, as a red result there would not gate anything (#4707). Run by
+# themselves they trigger on a push only, and `cargo-deny.yml` also on a schedule.
 permissions:
     contents: read
 
@@ -85,6 +92,68 @@ jobs:
 
             - name: Format (oxfmt)
               run: yarn lint-check:format
+
+    # Whether the change touches what `rust.yml` and `cargo-deny.yml` gate (`scripts/ci-gate`, whose
+    # JSDoc has the list). A file outside it that matters to the Rust gate is a miss that only the
+    # push run shows: the TypeScript side builds the addon on Linux in `test`. A push is not called for
+    # (see the jobs below).
+    #
+    # What the change is: a pull request is checked out as the merge of its head into the base, so
+    # the first parent is the base and `HEAD^1 HEAD` is the pull request, with two commits fetched
+    # and not the history; a merge group is `merge_group.base_sha HEAD`. When there is nothing to
+    # diff against (a checkout that is not a merge, an event without a base) both say "yes".
+    # `--no-renames` lists a file moved out of `crates/` under its old path too, and `pipefail`
+    # fails the job, and `ci-ok` with it, when `git diff` cannot run, rather than reading it as
+    # "nothing touched".
+    changes:
+        if: ${{ github.event_name != 'push' }}
+        runs-on: ubuntu-latest
+        outputs:
+            rust: ${{ steps.diff.outputs.rust }}
+            cargo_deny: ${{ steps.diff.outputs.cargo_deny }}
+        steps:
+            - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+              with:
+                  fetch-depth: ${{ github.event_name == 'pull_request' && '2' || '0' }}
+
+            - name: Use Node.js ${{ env.NODE_BUILD_VERSION }}
+              uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7
+              with:
+                  node-version: ${{ env.NODE_BUILD_VERSION }}
+
+            - name: List what the change touches
+              id: diff
+              env:
+                  EVENT_NAME: ${{ github.event_name }}
+                  MERGE_GROUP_BASE_SHA: ${{ github.event.merge_group.base_sha }}
+              run: |
+                  set -euo pipefail
+                  base=''
+                  if [ "$EVENT_NAME" = pull_request ] && git rev-parse --verify --quiet 'HEAD^2' > /dev/null; then
+                      base='HEAD^1'
+                  elif [ "$EVENT_NAME" = merge_group ] && [ -n "$MERGE_GROUP_BASE_SHA" ]; then
+                      base="$MERGE_GROUP_BASE_SHA"
+                  fi
+                  if [ -n "$base" ]; then
+                      git diff --name-only --no-renames "$base" HEAD | node --experimental-strip-types scripts/ci-gate/index.ts >> "$GITHUB_OUTPUT"
+                  else
+                      echo "Nothing to diff against ($EVENT_NAME): running both."
+                      printf 'rust=true\ncargo_deny=true\n' >> "$GITHUB_OUTPUT"
+                  fi
+                  cat "$GITHUB_OUTPUT"
+
+    # The Rust gate and the licence check, run by the workflows of the same names. They are skipped
+    # (a success for `ci-ok`) when `changes` says the change does not touch them, and on a push,
+    # where each workflow runs by itself.
+    rust:
+        needs: changes
+        if: ${{ needs.changes.outputs.rust == 'true' }}
+        uses: ./.github/workflows/rust.yml
+
+    cargo-deny:
+        needs: changes
+        if: ${{ needs.changes.outputs.cargo_deny == 'true' }}
+        uses: ./.github/workflows/cargo-deny.yml
 
     # A pull request and the merge queue. One job does it all (restore the caches, build, check the
     # types, run the specs), so that nothing waits for a job of its own.
@@ -375,15 +444,19 @@ jobs:
                   path: .nx/cache
                   key: nx-ubuntu-latest-node${{ env.NODE_BUILD_VERSION }}-${{ hashFiles('yarn.lock') }}-${{ github.sha }}
 
-    # The check that the ruleset requires on `dev`, on a pull request and in the queue. It fails when
-    # a job above failed or was cancelled and
-    # passes when one was skipped on purpose (`test` on a push, `build` elsewhere). `always()`
-    # makes it run after a failure, which would otherwise skip it and leave the required check
-    # pending.
+    # The check that the ruleset requires on `dev` (a pull request and the queue) and the branch
+    # protection on `v6` (a pull request). It fails when a job above failed or was cancelled and
+    # passes when one was skipped on purpose (`test` on a push, `build` elsewhere, `rust` and
+    # `cargo-deny` when the change does not touch them). `always()` makes it run after a failure,
+    # which would otherwise skip it and leave the required check pending. A job that is not in
+    # `needs` can be red while this is green: `ci-gate/ci-ok.spec.ts` fails when one is left out.
     ci-ok:
         if: ${{ always() }}
         needs:
             - lint
+            - changes
+            - rust
+            - cargo-deny
             - test
             - build
         runs-on: ubuntu-latest

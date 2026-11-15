@@ -3,14 +3,12 @@ name: Rust
 permissions:
     contents: read
 
+# A pull request gets this workflow through `test.yml`, whose `ci-ok` is the one required check:
+# a `pull_request` trigger of its own would be a check outside `ci-ok`, whose red result blocks
+# nothing (#4707). Whether the pull request touches `crates/` is decided by the `changes` job of
+# `test.yml`. A push runs it here, with the `paths:` filter, because no `changes` job runs on a push.
 on:
-    pull_request:
-        branches:
-            - dev
-            - v6
-        paths:
-            - '.github/workflows/rust.yml'
-            - 'crates/**'
+    workflow_call:
     push:
         branches:
             - dev
@@ -18,6 +16,7 @@ on:
         paths:
             - '.github/workflows/rust.yml'
             - 'crates/**'
+            - 'packages/@markuplint/core/**'
 
 jobs:
     fmt-clippy-test:

@@ -245,10 +245,11 @@ const ROOT_INPUTS: readonly {
 		],
 	},
 	{
-		// The configurations that name a branch, checked against the release lines.
+		// The configurations that name a branch, checked against the release lines; and, on the v6
+		// line only, every workflow edit also runs the specs of `scripts/ci-gate/`, which read them.
 		pattern:
 			/^(?:\.github\/(?:renovate\.json|labeler\.yml|workflows\/[^/]+\.ya?ml)|\.husky\/pre-commit|CLAUDE\.md|SECURITY\.md|website\/community\/support-policy\.mdx|website\/i18n\/ja\/docusaurus-plugin-content-docs-community\/current\/support-policy\.mdx)$/,
-		specs: () => ['scripts/release-lines/consistency.spec.ts'],
+		specs: probe => ['scripts/release-lines/consistency.spec.ts', ...specsUnder(probe, 'scripts/ci-gate')],
 	},
 	{
 		pattern: /^config\.schema\.json$/,
