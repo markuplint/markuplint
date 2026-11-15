@@ -272,4 +272,55 @@ describe('schemaToSpec', () => {
 			expect(merged.def['#contentModels']).not.toBe(htmlSpec.def['#contentModels']);
 		});
 	});
+
+	/**
+	 * `@markuplint/html-spec` writes neither `cites` nor the `categories` of an element, and an extension can still set
+	 * them.
+	 */
+	describe('the fields that the base spec does not write', () => {
+		const base = {
+			def: htmlSpec.def,
+			specs: [{ name: 'a', contentModel: { contents: true }, globalAttrs: {}, attributes: {} }],
+		};
+
+		test('no cites appear when neither the base spec nor an extension has them', () => {
+			expect('cites' in schemaToSpec([base, { movedToHead: ['x'] }])).toBe(false);
+		});
+
+		test('the cites of an extension are the cites of the merged spec when the base spec has none', () => {
+			expect(schemaToSpec([base, { cites: ['https://example.com/'] }]).cites).toStrictEqual([
+				'https://example.com/',
+			]);
+		});
+
+		test('the cites of an extension follow those of the base spec', () => {
+			const merged = schemaToSpec([
+				{ ...base, cites: ['https://a.example/'] },
+				{ cites: ['https://b.example/'] },
+			]);
+			expect(merged.cites).toStrictEqual(['https://a.example/', 'https://b.example/']);
+		});
+
+		test('the categories of an extension follow those of the base spec', () => {
+			const withCategories = { ...base, specs: [{ ...base.specs[0], categories: ['#phrasing'] }] };
+			const merged = schemaToSpec([withCategories, { specs: [{ name: 'a', categories: ['#flow'] }] }]);
+			expect(merged.specs[0].categories).toStrictEqual(['#phrasing', '#flow']);
+		});
+
+		test('the categories of the base spec stay when an extension has none', () => {
+			const withCategories = { ...base, specs: [{ ...base.specs[0], categories: ['#phrasing'] }] };
+			const merged = schemaToSpec([withCategories, { specs: [{ name: 'a', attributes: {} }] }]);
+			expect(merged.specs[0].categories).toStrictEqual(['#phrasing']);
+		});
+
+		test('no categories appear on an element when neither the base spec nor an extension has them', () => {
+			const merged = schemaToSpec([base, { specs: [{ name: 'a', attributes: {} }] }]);
+			expect('categories' in merged.specs[0]).toBe(false);
+		});
+
+		test('the categories of an extension are the categories of the element when the base spec has none', () => {
+			const merged = schemaToSpec([base, { specs: [{ name: 'a', categories: ['#flow'] }] }]);
+			expect(merged.specs[0].categories).toStrictEqual(['#flow']);
+		});
+	});
 });
