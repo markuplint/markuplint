@@ -164,7 +164,7 @@ Package-level tests alone will miss cross-package regressions.
 
 `yarn test`, `yarn lint` and lint-staged cover the TypeScript workspace only — nothing in
 them touches Rust, so a staged `crates/` change can look clean and still break CI
-(`.github/workflows/rust.yml`). When the diff includes `crates/`, run all three from `crates/`
+(`.github/workflows/rust.yml`, the `rust` job of `test.yml`). When the diff includes `crates/`, run all three from `crates/`
 before committing:
 
 ```bash

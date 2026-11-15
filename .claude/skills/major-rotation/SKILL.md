@@ -44,8 +44,8 @@ Work through each item; search for the old branch names (`v<N-2>`, `vN` where it
 
 Workflows and scripts:
 
-- `test.yml`: the `vN` line's own copy has `base_ref == 'vN'` conditions (full shards, Rust jobs). Now that the line is on `dev`, turn them into the default path; keep the merge queue gate (`merge_group`, `ci-ok`) on `dev`.
-- `rust.yml`, `cargo-deny.yml`, `lint.yml` and other workflows that only the `vN` line has: retarget their `branches:` to `dev` (and `vN+1`).
+- `test.yml`: the `vN` line's own copy has `base_ref == 'vN'` conditions (full shards) and the `changes`, `rust` and `cargo-deny` jobs that call `rust.yml` and `cargo-deny.yml`. Now that the line is on `dev`, turn the conditions into the default path and keep those jobs in `ci-ok`'s `needs` (`scripts/ci-gate/ci-ok.spec.ts` fails when one is left out, and pins the two called workflows: update it if the set changes); keep the merge queue gate (`merge_group`, `ci-ok`) on `dev`.
+- `rust.yml`, `cargo-deny.yml`, `lint.yml` and other workflows that only the `vN` line has: retarget their `branches:` to `dev` (and `vN+1`). `rust.yml` and `cargo-deny.yml` keep `branches:` under `push:` only; their pull requests come through `test.yml`'s `on.pull_request.branches`.
 - `nightly.yml`, `spec-citation-watch.yml`, `update-html-spec.yml`, `website.yml`, `website-vrt.yml`, `test-vscode.yml`: hardcode `dev` as the stable line. They stay correct as long as `dev` is the stable line; check the Node.js / runtime matrices against the new stable's `engines`.
 - `scripts/affected-tests/`: the default `--base` and the `crates/` test for the next-major line (`classify.ts`).
 - `.commitlintrc.js`: `no-breaking-change-on-stable-line` tells the lines apart by `crates/Cargo.toml`; re-key it to what marks the `N+1` line before the first commit on the new `dev`.
