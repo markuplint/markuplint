@@ -716,6 +716,26 @@ export function removeAttrValue(
 	return fixer.removeRange(range);
 }
 
+/**
+ * Whether a rule that reads a status flag of the spec data (`no-obsolete-element`,
+ * `no-deprecated-element`, `no-nonstandard-features`, `no-experimental-features`) looks at the
+ * element. The data describes the elements of HTML, SVG and MathML, and `getSpec` /
+ * `getAttrSpecs` resolve each of them by its namespace, so the namespace is not a condition here.
+ *
+ * A web component or an authored element (JSX, Vue, Svelte) is looked at only when `pretenders`
+ * makes it stand for a known element, so that the spec lookup resolves it by `el.localName`. It is
+ * not looked at otherwise: the data knows nothing of it.
+ *
+ * @param el - The element to check
+ * @returns `true` when the flags of the element's spec apply to it
+ */
+export function isFlagCheckedElement<T extends RuleConfigValue, O extends PlainData>(
+	// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
+	el: Element<T, O>,
+): boolean {
+	return el.elementType === 'html' || el.pretenderContext?.type === 'pretender';
+}
+
 /** The parts of the keys of `ignoreFeatures`: `dialog` is an element, `img[loading]` an attribute of one. */
 interface IgnoreFeaturesTable {
 	/** The element parts of the keys that name an element, as written and ASCII-folded. */

@@ -105,3 +105,16 @@ test('[no-deprecated-attr-issue-4309-003] an SVG element in JSX keeps the name a
 	const upper = await mlRuleTest(rule, '<svg><a XLINK:HREF="/" /></svg>', options);
 	expect(upper.violations).toStrictEqual([]);
 });
+
+test('[no-deprecated-attr-issue-4701-001] MathML: an attribute that the data flags deprecated is reported', async () => {
+	const { violations } = await mlRuleTest(rule, '<math><mfrac numalign="left"><mn>1</mn><mn>2</mn></mfrac></math>');
+	expect(violations).toStrictEqual([
+		{
+			severity: 'warning',
+			line: 1,
+			col: 14,
+			raw: 'numalign',
+			message: 'The "numalign" attribute is deprecated',
+		},
+	]);
+});

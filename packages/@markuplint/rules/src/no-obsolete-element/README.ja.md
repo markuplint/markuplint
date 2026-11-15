@@ -7,6 +7,8 @@ description: HTML Living Standardが非準拠かつ廃止された機能とし�
 
 [HTML Living Standard](https://momdo.github.io/html/obsolete.html#non-conforming-features)が非準拠かつ廃止された機能としてマークしている要素がある場合に警告します。作者はこれを使用してはいけません。
 
+このルールは、markuplint にバンドルされた仕様データの `obsolete` フラグを、HTML・SVG・MathMLの要素について参照します。現在このフラグを持つ要素はすべてHTML要素です。
+
 仕様からまだ削除されておらず、非推奨とマークされているだけの要素は[`no-deprecated-element`](/docs/rules/no-deprecated-element)の担当です。
 
 ❌ 間違ったコード例

@@ -1,10 +1,10 @@
 ---
-description: 実験的とマークされたHTML要素や属性を使用している場合に警告します。
+description: 実験的とマークされたHTML・SVG・MathMLの要素や属性を使用している場合に警告します。
 ---
 
 # `no-experimental-features`
 
-markuplint にバンドルされたHTML仕様データで**実験的（experimental）**とマークされた要素・属性について警告します。
+markuplint にバンドルされた仕様データで**実験的（experimental）**とマークされた、HTML・SVG・MathMLの要素・属性について警告します。
 
 :::info
 
@@ -14,7 +14,7 @@ markuplint にバンドルされたHTML仕様データで**実験的（experimen
 
 :::
 
-> **注意:** 要素や属性が実験的かどうかは、markuplint にバンドルされたHTML仕様データに依存します。機能が実験的でなくなった場合、このルールは報告しません。
+> **注意:** 要素や属性が実験的かどうかは、markuplint にバンドルされた仕様データに依存します。機能が実験的でなくなった場合、このルールは報告しません。
 
 <!-- textlint-disable ja-technical-writing/ja-no-mixed-period -->
 
@@ -34,6 +34,7 @@ markuplint にバンドルされたHTML仕様データで**実験的（experimen
 
 - `"dialog"` — `<dialog>` 要素を無視します。要素名はドキュメントがタグ名を比較する方法で比較します。HTMLではASCIIの大文字・小文字を区別せず、タグ名の大文字・小文字を区別する構文（JSX、Svelte）では完全一致です（`DIALOG` は `<dialog>` ではありません）
 - `"input[list]"` — `<input>` 要素の `list` 属性を無視します。属性名は、検査中の属性についてDOMが比較する方法で比較します。`LIST` は、HTMLでは同じ属性で、JSXやSvelteのHTML要素でも同じ属性ですが、JSXが設定する `<svg>` 要素では同じ綴りだけが同じ属性です
+- `"textPath[side]"` — 要素の部分はローカル名で、名前空間は書きません。同じ名前の要素を、HTML・SVG・MathMLのどれでも対象にします。`"a[interestfor]"` は、HTMLの `<a>` とSVGの `<a>` の両方で、その属性を無視します
 
 ## 使用例
 
@@ -43,10 +44,22 @@ markuplint にバンドルされたHTML仕様データで**実験的（experimen
 <iframe credentialless></iframe>
 ```
 
+```html
+<svg>
+  <textPath href="#p" side="left"></textPath>
+</svg>
+```
+
 ✅ 正しいコード例
 
 ```html
 <iframe></iframe>
+```
+
+```html
+<svg>
+  <textPath href="#p"></textPath>
+</svg>
 ```
 
 <!-- textlint-enable ja-technical-writing/ja-no-mixed-period -->

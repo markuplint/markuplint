@@ -16,6 +16,7 @@ import {
 	createPrefixMatcher,
 	findAttrSpec,
 	isAriaAttr,
+	isFlagCheckedElement,
 	memoizeByContent,
 	memoizeByObject,
 } from './helpers.js';
@@ -438,4 +439,33 @@ test('[helpers-issue-4309-011] createNameOptionLookup prefers the entry written 
 	// Without one, the last entry that the attribute says it is wins
 	expect(lookup(['x-attr', { name: 'X-Attr', value: 'Int' }], upper)).toBe('Int');
 	expect(lookup([{ name: 'X-Attr', value: 'Int' }, 'x-attr'], upper)).toBe('Any');
+});
+
+test('[helpers-issue-4701-001] isFlagCheckedElement looks at an element of HTML, SVG and MathML, and not at a component that no pretender stands for', () => {
+	expect(isFlagCheckedElement(createTestElement('<div></div>'))).toBe(true);
+	expect(isFlagCheckedElement(createTestElement('<svg></svg>'))).toBe(true);
+	expect(isFlagCheckedElement(createTestElement('<math></math>'))).toBe(true);
+	expect(isFlagCheckedElement(createTestElement('<x-foo></x-foo>'))).toBe(false);
+	expect(
+		isFlagCheckedElement(
+			createTestElement('<x-iframe></x-iframe>', {
+				pretenders: [{ selector: 'x-iframe', as: { element: 'iframe', inheritAttrs: true } }],
+			}),
+		),
+	).toBe(true);
+});
+
+test('[helpers-issue-4701-002] isFlagCheckedElement looks at a component that a pretender makes stand for an SVG or a MathML element', () => {
+	const parser = { parser: jsxParser };
+	expect(isFlagCheckedElement(createTestElement('<Icon />', parser))).toBe(false);
+	expect(
+		isFlagCheckedElement(
+			createTestElement('<Icon />', { ...parser, pretenders: [{ selector: 'Icon', as: 'svg' }] }),
+		),
+	).toBe(true);
+	expect(
+		isFlagCheckedElement(
+			createTestElement('<Formula />', { ...parser, pretenders: [{ selector: 'Formula', as: 'mfenced' }] }),
+		),
+	).toBe(true);
 });

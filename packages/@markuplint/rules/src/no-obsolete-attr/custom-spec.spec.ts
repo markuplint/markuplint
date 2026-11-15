@@ -43,3 +43,16 @@ test('[no-obsolete-attr-issue-4309-002] an upper-case name on an svg element is 
 		},
 	]);
 });
+
+test('[no-obsolete-attr-issue-4701-001] an attribute of a MathML element that the spec flags obsolete is reported', async () => {
+	const { violations } = await mlRuleTest(rule, '<math><mi flag="x">x</mi></math>', { specs });
+	expect(violations).toStrictEqual([
+		{
+			severity: 'error',
+			line: 1,
+			col: 11,
+			message: 'The "flag" attribute is obsolete',
+			raw: 'flag',
+		},
+	]);
+});
