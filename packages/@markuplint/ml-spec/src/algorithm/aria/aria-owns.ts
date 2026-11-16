@@ -413,11 +413,7 @@ function isHiddenFromAllUsers(
 ): boolean {
 	let current: SpecElement | null = el;
 	while (current) {
-		if (
-			isNotRendered(current) ||
-			current.hasAttr('hidden') ||
-			hasDisplayNoneOrVisibilityHiddenStyle(current)
-		) {
+		if (isNotRendered(current) || current.hasAttr('hidden') || hasDisplayNoneOrVisibilityHiddenStyle(current)) {
 			return true;
 		}
 		current = getComposedParentElement(current);
