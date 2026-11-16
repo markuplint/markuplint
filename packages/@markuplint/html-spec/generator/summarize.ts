@@ -128,23 +128,10 @@ export function summarizeChanges(previous: ExtendedSpec | null | undefined, next
  * summary in the PR body. Returns `null` when there is nothing to report.
  *
  * @param failed - URLs that failed to fetch (`getFailedUrls`)
- * @param unexpectedlyFound - URLs expected not to exist that answered (`getUnexpectedlyFoundUrls`)
  */
-export function summarizeFetchProblems(failed: readonly string[], unexpectedlyFound: readonly string[]): string | null {
-	const sections: string[] = [];
-	if (failed.length > 0) {
-		sections.push([`### Failed to fetch (${failed.length})`, '', ...failed.map(url => `- ${url}`)].join('\n'));
+export function summarizeFetchProblems(failed: readonly string[]): string | null {
+	if (failed.length === 0) {
+		return null;
 	}
-	if (unexpectedlyFound.length > 0) {
-		sections.push(
-			[
-				`### Found although expected not to exist (${unexpectedlyFound.length})`,
-				'',
-				'Take them out of `obsoleteWithoutMDNPage` in `generator/html-elements.ts`.',
-				'',
-				...unexpectedlyFound.map(url => `- ${url}`),
-			].join('\n'),
-		);
-	}
-	return sections.length > 0 ? sections.join('\n\n') : null;
+	return [`### Failed to fetch (${failed.length})`, '', ...failed.map(url => `- ${url}`)].join('\n');
 }

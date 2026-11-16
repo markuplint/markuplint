@@ -112,7 +112,7 @@ jobs:
                     echo "Automated update of \`@markuplint/html-spec\` generated data."
                     echo ""
                     echo "This PR was created automatically by the **Update HTML Spec** workflow."
-                    echo "It runs \`yarn up:gen\` to regenerate the HTML spec data from the latest HTML Living Standard."
+                    echo "It runs \`yarn up:gen\` to regenerate the HTML spec data from the hand-written sources, the W3C ARIA documents and the pinned \`@mdn/browser-compat-data\`."
                     echo ""
                     echo "## Changes"
                     echo ""
@@ -146,5 +146,5 @@ jobs:
             - name: Fail when up:gen failed
               if: steps.gen.outcome == 'failure'
               run: |
-                  echo "::error::yarn up:gen failed: a fetch failed, a page expected not to exist answered, or generation crashed. See the Run up:gen step."
+                  echo "::error::yarn up:gen failed: a fetch failed or generation crashed. See the Run up:gen step."
                   exit 1

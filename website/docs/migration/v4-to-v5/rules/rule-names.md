@@ -65,7 +65,7 @@ These 10 names existed in stable v4. Each split is independently configurable.
 | `character-reference`         | `no-malformed-character-reference` | Malformed character references                                                                                   |
 |                               | `no-unescaped-char`                | Unescaped `<` / ambiguous `&`                                                                                    |
 | `deprecated-attr`             | `no-obsolete-attr`                 | HTML LS obsolete attributes (`error`)                                                                            |
-|                               | `no-deprecated-attr`               | MDN/BCD deprecated attributes (`warning`)                                                                        |
+|                               | `no-deprecated-attr`               | Deprecated attributes of the specifications/BCD (`warning`)                                                      |
 | `deprecated-element`          | `no-obsolete-element`              | Obsolete elements (`error`)                                                                                      |
 |                               | `no-deprecated-element`            | Deprecated elements (`warning`)                                                                                  |
 | `landmark-roles`              | `no-nested-top-level-landmark`     | Nested `banner` / `main` / `contentinfo` (`ignoreRoles` carried over)                                            |

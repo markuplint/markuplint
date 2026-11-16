@@ -5,18 +5,17 @@ import type { ExtendedSpec } from '@markuplint/ml-spec';
  * an ARIA role, and no `valueDescriptions` of an ARIA property. A `description` in a source file of `src/` is
  * dropped as well.
  *
- * It is text copied from MDN (CC-BY-SA) and from the W3C documents, and markuplint reads none of it. What notices
- * that a specification was reworded is the weekly spec citation watch (`scripts/spec-citations`), which reads the
- * specification itself for every element and every ARIA role and property.
+ * It is text from the W3C documents, and markuplint reads none of it. What notices that a specification was reworded
+ * is the weekly spec citation watch (`scripts/spec-citations`), which reads the specification itself for every
+ * element and every ARIA role and property.
  *
- * The generator still scrapes the text and uses it before this runs (`isDeprecatedRole` reads the marker of a role,
- * and `validateSpecs` takes an empty description for a failed MDN fetch): `finalizeSpec` is where the order is
- * kept. This is the one place where the output is assembled, so a scraper does not decide what is written.
+ * The generator still scrapes the text of the W3C documents and uses it before this runs (`isDeprecatedRole` reads
+ * the marker of a role): `finalizeSpec` is where the order is kept. This is the one place where the output is
+ * assembled, so a scraper does not decide what is written.
  *
  * It is structural, not a walk that deletes every key called `description`: an attribute can be named
- * `description` and is data. An attribute that had nothing but a description (one that only MDN lists) stays as an
- * empty entry, because the entry is what makes the attribute known (`getAttrSpecs` gives it the type `Any`). The
- * input is not changed.
+ * `description` and is data. An attribute that has nothing but a description stays as an empty entry, because the
+ * entry is what makes the attribute known (`getAttrSpecs` gives it the type `Any`). The input is not changed.
  */
 export function stripProse(spec: ExtendedSpec): ExtendedSpec {
 	const { def, specs } = spec;

@@ -37,7 +37,7 @@ export async function readJsons<T = Record<string, any>>(
 /**
  * The URL on the first line of the source file of an element: the section that defines the element. It is the `cite`
  * of the element in `index.json`, so what the data says about where an element is defined is what the weekly spec
- * citation watch reads (`scripts/spec-citations/definition.ts`), not the MDN page that the generator also fetches.
+ * citation watch reads (`scripts/spec-citations/definition.ts`).
  *
  * @param source - The text of the source file (`src/spec.*.jsonc`)
  * @param file - The path of the source file, for the message

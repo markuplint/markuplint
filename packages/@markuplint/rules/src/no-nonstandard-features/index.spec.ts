@@ -337,3 +337,28 @@ test('[no-nonstandard-features-invalid-004] the attributes that BCD has on SVG e
 	const { violations } = await mlRuleTest(rule, svg);
 	expect(violations.map(v => v.raw)).toStrictEqual(['systemLanguage', 'systemLanguage']);
 });
+
+test('[no-nonstandard-features-invalid-005] SVG: `async` and `defer` of `script` that no specification defines for it (SVG 2 lists `type`, `href` and `crossorigin`; BCD cites the HTML definition)', async () => {
+	const { violations } = await mlRuleTest(rule, '<svg><script async defer href="a.js"></script></svg>');
+	expect(violations).toStrictEqual([
+		{
+			severity: 'warning',
+			line: 1,
+			col: 14,
+			raw: 'async',
+			message: 'The "async" attribute is non-standard',
+		},
+		{
+			severity: 'warning',
+			line: 1,
+			col: 20,
+			raw: 'defer',
+			message: 'The "defer" attribute is non-standard',
+		},
+	]);
+});
+
+test('[no-nonstandard-features-valid-002] HTML: `async` and `defer` of `script` are standard', async () => {
+	const { violations } = await mlRuleTest(rule, '<script async defer src="a.js"></script>');
+	expect(violations).toStrictEqual([]);
+});

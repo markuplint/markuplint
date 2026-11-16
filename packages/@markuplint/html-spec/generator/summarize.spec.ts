@@ -163,23 +163,13 @@ describe('summarizeChanges', () => {
 });
 
 describe('summarizeFetchProblems', () => {
-	test('returns null when every fetch went as expected', () => {
-		expect(summarizeFetchProblems([], [])).toBeNull();
+	test('returns null when no fetch failed', () => {
+		expect(summarizeFetchProblems([])).toBeNull();
 	});
 
-	test('lists the URLs that failed and the pages found although expected not to exist', () => {
-		expect(summarizeFetchProblems(['https://a/'], ['https://b/'])).toBe(
-			[
-				'### Failed to fetch (1)',
-				'',
-				'- https://a/',
-				'',
-				'### Found although expected not to exist (1)',
-				'',
-				'Take them out of `obsoleteWithoutMDNPage` in `generator/html-elements.ts`.',
-				'',
-				'- https://b/',
-			].join('\n'),
+	test('lists the URLs that failed', () => {
+		expect(summarizeFetchProblems(['https://a/', 'https://b/'])).toBe(
+			['### Failed to fetch (2)', '', '- https://a/', '- https://b/'].join('\n'),
 		);
 	});
 });

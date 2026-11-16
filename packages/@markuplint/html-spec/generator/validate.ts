@@ -2,11 +2,7 @@
  * @module @markuplint/html-spec/generator/validate
  *
  * Offline validation of the generated spec, run before the output is written.
- * Catches data loss from failed scraping (empty descriptions, dropped elements,
- * missing ARIA roles) that the >50%-empty-description check alone would miss.
- *
- * It runs on the scraped text, before the descriptions are dropped (`finalizeSpec`): the committed `index.json`
- * has none.
+ * Catches data loss from failed scraping or reading (dropped elements, missing ARIA roles).
  *
  * @see https://github.com/markuplint/markuplint/issues/3894
  */
@@ -14,20 +10,15 @@
 import type { ExtendedSpec } from '@markuplint/ml-spec';
 
 /**
- * Fraction of HTML elements allowed to have an empty description before the
- * generation is treated as a scraping failure.
- */
-const EMPTY_DESCRIPTION_THRESHOLD = 0.5;
-
-/**
  * Minimum fraction of the previous element count the new spec must retain.
- * A larger drop signals that scraping or parsing dropped elements.
+ * A larger drop signals that a source file or the glob that reads them dropped elements.
  */
 const ELEMENT_COUNT_STABILITY_THRESHOLD = 0.85;
 
 /**
- * HTML elements that must always be present. Their absence means the element
- * list itself failed to load, not that a single page 404'd.
+ * HTML elements that must always be present. Their absence means the source
+ * files themselves failed to load (an empty or mis-globbed set), not that one
+ * of them lacks an entry.
  */
 const REQUIRED_ELEMENTS: readonly string[] = [
 	'html',
@@ -70,30 +61,14 @@ export function validateSpecs(json: ExtendedSpec, previous?: ExtendedSpec | null
 	const specs = json.specs ?? [];
 	const errors: string[] = [];
 
-	// 1. Empty-description ratio among HTML elements (excludes svg:/mml: prefixed).
-	const htmlSpecs = specs.filter(s => !s.name.includes(':'));
-	if (htmlSpecs.length === 0) {
-		errors.push('No HTML elements were generated. This indicates a total scraping failure.');
-	} else {
-		const emptyDescriptions = htmlSpecs.filter(s => !s.description);
-		const emptyRatio = emptyDescriptions.length / htmlSpecs.length;
-		if (emptyRatio > EMPTY_DESCRIPTION_THRESHOLD) {
-			errors.push(
-				`${emptyDescriptions.length}/${htmlSpecs.length} HTML elements ` +
-					`(${Math.round(emptyRatio * 100)}%) have empty descriptions, exceeding the ` +
-					`${Math.round(EMPTY_DESCRIPTION_THRESHOLD * 100)}% threshold. This likely indicates MDN fetch failures.`,
-			);
-		}
-	}
-
-	// 2. Required core elements present.
+	// 1. Required core elements present.
 	const names = new Set(specs.map(s => s.name));
 	const missingElements = REQUIRED_ELEMENTS.filter(name => !names.has(name));
 	if (missingElements.length > 0) {
 		errors.push(`Required core elements are missing: ${missingElements.join(', ')}.`);
 	}
 
-	// 3. ARIA roles present in every version.
+	// 2. ARIA roles present in every version.
 	const aria = json.def?.['#aria'];
 	if (aria) {
 		for (const version of ['1.1', '1.2', '1.3'] as const) {
@@ -112,7 +87,7 @@ export function validateSpecs(json: ExtendedSpec, previous?: ExtendedSpec | null
 		errors.push('ARIA definitions (def["#aria"]) are missing entirely.');
 	}
 
-	// 4. Element-count stability against the previous spec (skipped on first run).
+	// 3. Element-count stability against the previous spec (skipped on first run).
 	const previousSpecs = previous?.specs;
 	if (previousSpecs && previousSpecs.length > 0) {
 		const ratio = specs.length / previousSpecs.length;
@@ -121,7 +96,7 @@ export function validateSpecs(json: ExtendedSpec, previous?: ExtendedSpec | null
 				`Element count dropped from ${previousSpecs.length} to ${specs.length} ` +
 					`(${Math.round(ratio * 100)}% retained, below the ` +
 					`${Math.round(ELEMENT_COUNT_STABILITY_THRESHOLD * 100)}% threshold). ` +
-					'This likely indicates a scraping or parsing regression.',
+					'This likely indicates that source files were dropped or are no longer read.',
 			);
 		}
 	}

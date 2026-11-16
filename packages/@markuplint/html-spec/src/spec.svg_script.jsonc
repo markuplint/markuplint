@@ -31,13 +31,25 @@
 			},
 			"animatable": true
 		},
-		// Not yet formalized in the SVG2 draft (tracked as an open requirement);
-		// MDN documents browser-implemented behavior equivalent to HTML's async/defer.
+		// No specification defines `async` and `defer` for the SVG `script` element: the SVG 2 summary of the element
+		// lists `type`, `href` and `crossorigin` only, and what the chapter says about them is a requirement that SVG 2
+		// will allow them, not a definition. The chapter also says that the element is equivalent to the HTML `script`
+		// element; that sentence is not taken as a definition of these attributes, because the same chapter lists the
+		// attributes of the element and says that SVG 2 will allow these two, in the future tense. Browsers read them
+		// as the HTML attributes. They are flagged `nonStandard` here: BCD has them on the standards track, but the
+		// specification it cites is the HTML definition for `script`
+		// (`html.spec.whatwg.org/multipage/scripting.html#attr-script-async`).
+		// https://svgwg.org/svg2-draft/interact.html#ScriptElement
+		// https://html.spec.whatwg.org/multipage/scripting.html#attr-script-async
 		"async": {
-			"type": "Boolean"
+			"type": "Boolean",
+			"nonStandard": true
 		},
+		// https://svgwg.org/svg2-draft/interact.html#ScriptElement
+		// https://html.spec.whatwg.org/multipage/scripting.html#attr-script-defer
 		"defer": {
-			"type": "Boolean"
+			"type": "Boolean",
+			"nonStandard": true
 		}
 	},
 	"aria": {

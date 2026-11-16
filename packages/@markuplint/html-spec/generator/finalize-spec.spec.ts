@@ -34,8 +34,10 @@ describe('finalizeSpec', () => {
 		expect(output).toContain('"name":"div"');
 	});
 
-	test('validates the scraped text: a failed MDN fetch (empty descriptions) is reported before the prose is dropped', () => {
-		expect(() => finalizeSpec(scraped(''), null)).toThrow(/empty descriptions/);
+	test('validates the spec before it is written: a missing core element is reported', () => {
+		const input = scraped('A scraped description.');
+		const withoutDiv = { ...input, specs: input.specs!.filter(spec => spec.name !== 'div') };
+		expect(() => finalizeSpec(withoutDiv, null)).toThrow(/Required core elements are missing: div/);
 	});
 
 	test('does not change the scraped spec', () => {
