@@ -14642,8 +14642,8 @@
 			"path": "html/attributes/lang/xmllang-same-isvalid.html",
 			"category": "global-attr",
 			"nu": "clean",
-			"ml": "error",
-			"verdict": "ml-only",
+			"ml": "clean",
+			"verdict": "match-clean",
 			"excludedIds": []
 		},
 		{
@@ -16746,8 +16746,8 @@
 			"path": "html/elements/area/hreflang-and-type-isvalid.html",
 			"category": "attribute-errors",
 			"nu": "clean",
-			"ml": "clean",
-			"verdict": "match-clean",
+			"ml": "error",
+			"verdict": "ml-only",
 			"excludedIds": []
 		},
 		{
@@ -37854,8 +37854,8 @@
 			"path": "html/elements/script/type-text-javascript-haswarn.html",
 			"category": "attribute-errors",
 			"nu": "clean",
-			"ml": "clean",
-			"verdict": "match-clean",
+			"ml": "error",
+			"verdict": "ml-only",
 			"excludedIds": []
 		},
 		{

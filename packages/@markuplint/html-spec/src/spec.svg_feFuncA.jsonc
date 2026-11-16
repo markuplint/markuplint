@@ -9,7 +9,7 @@
 		]
 	},
 	"globalAttrs": {
-		"#SVGCoreAttrs": ["id", "xml:base", "xml:lang", "xml:space"],
+		"#SVGCoreAttrs": ["id", "xml:base", "xml:lang", "xml:space", "part", "exportparts"],
 		"#SVGTransferFunctionAttrs": ["type", "tableValues", "slope", "intercept", "amplitude", "exponent", "offset"]
 	},
 	"attributes": {},

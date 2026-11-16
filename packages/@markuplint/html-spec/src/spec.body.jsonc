@@ -85,6 +85,54 @@
 		// https://html.spec.whatwg.org/multipage/webappapis.html#handler-window-onunload
 		"onunload": {
 			"type": "FunctionBody"
+		},
+		// https://html.spec.whatwg.org/multipage/obsolete.html#non-conforming-features
+		"alink": {
+			"obsolete": true
+		},
+		// https://html.spec.whatwg.org/multipage/obsolete.html#non-conforming-features
+		"bgcolor": {
+			"obsolete": true
+		},
+		// https://html.spec.whatwg.org/multipage/obsolete.html#non-conforming-features
+		"bottommargin": {
+			"obsolete": true
+		},
+		// https://html.spec.whatwg.org/multipage/obsolete.html#non-conforming-features
+		"leftmargin": {
+			"obsolete": true
+		},
+		// https://html.spec.whatwg.org/multipage/obsolete.html#non-conforming-features
+		"link": {
+			"obsolete": true
+		},
+		// https://html.spec.whatwg.org/multipage/obsolete.html#non-conforming-features
+		"marginheight": {
+			"obsolete": true
+		},
+		// https://html.spec.whatwg.org/multipage/obsolete.html#non-conforming-features
+		"marginwidth": {
+			"obsolete": true
+		},
+		// https://html.spec.whatwg.org/multipage/obsolete.html#non-conforming-features
+		"rightmargin": {
+			"obsolete": true
+		},
+		// https://html.spec.whatwg.org/multipage/obsolete.html#non-conforming-features
+		"text": {
+			"obsolete": true
+		},
+		// https://html.spec.whatwg.org/multipage/obsolete.html#non-conforming-features
+		"topmargin": {
+			"obsolete": true
+		},
+		// https://html.spec.whatwg.org/multipage/obsolete.html#non-conforming-features
+		"vlink": {
+			"obsolete": true
+		},
+		// https://html.spec.whatwg.org/multipage/obsolete.html#non-conforming-features
+		"background": {
+			"obsolete": true
 		}
 	},
 	"aria": {

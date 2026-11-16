@@ -2035,6 +2035,7 @@ __metadata:
   dependencies:
     "@markuplint/ml-spec": "npm:5.6.1"
     "@markuplint/test-tools": "npm:5.6.1"
+    "@mdn/browser-compat-data": "npm:8.1.8"
     "@types/cli-progress": "npm:3.11.6"
     cheerio: "npm:1.2.0"
     cli-progress: "npm:3.12.0"
@@ -2441,7 +2442,7 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@mdn/browser-compat-data@npm:^8.1.8":
+"@mdn/browser-compat-data@npm:8.1.8, @mdn/browser-compat-data@npm:^8.1.8":
   version: 8.1.8
   resolution: "@mdn/browser-compat-data@npm:8.1.8"
   checksum: 10c0/de989bf84aed905d312a3e892cd1b185a55622345c92ccaf655332c0f26d8654a6327a4ec738d507c8140f80674feba39a4b7d1dc236dc80cce668bbb5eaa88f

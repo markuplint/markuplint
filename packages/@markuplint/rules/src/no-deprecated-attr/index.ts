@@ -1,4 +1,5 @@
 import { createRule, getAttrSpecs } from '@markuplint/ml-core';
+import { toNoEmptyStringArrayFromStringOrArray } from '@markuplint/shared';
 
 import { findAttrSpec } from '../helpers.js';
 
@@ -6,8 +7,9 @@ import meta from './meta.js';
 
 export default createRule({
 	meta: meta,
-	// Deprecation data is sourced from MDN/BCD (factual, not a spec MUST/MUST
-	// NOT), unlike `no-obsolete-attr`'s HTML LS non-conforming-features list.
+	// Deprecation is what a specification calls deprecated or what browser vendors deprecate
+	// (BCD): factual, not a spec MUST/MUST NOT, unlike the HTML LS non-conforming
+	// features that `no-obsolete-attr` follows.
 	defaultSeverity: 'warning',
 	async verify({ document, report, t }) {
 		await document.walkOn('Attr', attr => {
@@ -22,7 +24,12 @@ export default createRule({
 			if (!attrSpec) {
 				return;
 			}
-			if (attrSpec.deprecated) {
+			if (
+				attrSpec.deprecated ||
+				toNoEmptyStringArrayFromStringOrArray(attrSpec.deprecatedWhen).some(selector =>
+					attr.ownerElement.matches(selector),
+				)
+			) {
 				report({
 					scope: attr,
 					line: attr.nameNode?.startLine,

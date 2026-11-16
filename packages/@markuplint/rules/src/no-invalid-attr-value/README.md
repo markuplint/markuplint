@@ -9,6 +9,8 @@ Warn if an attribute's value doesn't match the type or pattern the specification
 
 This rule according to [HTML Living Standard](https://html.spec.whatwg.org/). It has settings in [`@markuplint/html-spec`](https://github.com/markuplint/markuplint/tree/main/packages/%40markuplint/html-spec/src).
 
+An attribute that has to have the value of another attribute of the element is checked as well: `xml:lang` of an HTML element has to have the value of `lang`, compared as ASCII case-insensitive strings.
+
 Whether the attribute name is known and applicable at all is [`no-unknown-attr`](/docs/rules/no-unknown-attr)'s and [`no-disallowed-attr`](/docs/rules/no-disallowed-attr)'s concern; this rule only checks the value of an attribute both of those already accept.
 
 ❌ Examples of **incorrect** code for this rule

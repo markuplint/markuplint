@@ -1221,3 +1221,17 @@ test('[no-disallowed-attr-valid-008] input: capture is allowed on type=file with
 		[],
 	);
 });
+
+test('[no-disallowed-attr-invalid-015] xml:lang is allowed only where lang is specified', async () => {
+	// https://html.spec.whatwg.org/multipage/dom.html#the-lang-and-xml:lang-attributes
+	const { violations } = await mlRuleTest(rule, '<div xml:lang="en"></div>');
+	expect(violations).toStrictEqual([
+		{
+			severity: 'error',
+			line: 1,
+			col: 6,
+			message: 'The "xml:lang" attribute is disallowed',
+			raw: 'xml:lang',
+		},
+	]);
+});

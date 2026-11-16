@@ -5,8 +5,9 @@ import meta from './meta.js';
 
 export default createRule({
 	meta: meta,
-	// Deprecation data is sourced from MDN/BCD (factual, not a spec MUST/MUST
-	// NOT), unlike `no-obsolete-element`'s HTML LS non-conforming-features list.
+	// Deprecation is what a specification calls deprecated or what browser vendors deprecate
+	// (BCD): factual, not a spec MUST/MUST NOT, unlike the HTML LS non-conforming
+	// features that `no-obsolete-element` follows.
 	defaultSeverity: 'warning',
 	async verify({ document, report, t }) {
 		await document.walkOn('Element', el => {

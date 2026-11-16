@@ -45,7 +45,7 @@
 	},
 	"attributes": {
 		"loading": {
-			// MDN incorrectly marks this as experimental, but it is defined in the HTML Living Standard.
+			// BCD marks this as experimental, but it is defined in the HTML Living Standard.
 			// https://html.spec.whatwg.org/multipage/media.html#the-video-element
 			"experimental": false
 		},

@@ -316,3 +316,24 @@ test('[no-nonstandard-features-issue-4701-011] an SVG element that the spec flag
 		},
 	]);
 });
+
+test('[no-nonstandard-features-invalid-003] an attribute that BCD has and no specification defines (BCD-derived: bumping BCD can change this)', async () => {
+	const { violations } = await mlRuleTest(rule, '<a href="/" hreftranslate="true">A</a>');
+	expect(violations).toStrictEqual([
+		{
+			severity: 'warning',
+			line: 1,
+			col: 13,
+			raw: 'hreftranslate',
+			message: 'The "hreftranslate" attribute is non-standard',
+		},
+	]);
+});
+
+test('[no-nonstandard-features-invalid-004] the attributes that BCD has on SVG elements and no specification defines for them', async () => {
+	// BCD-derived: SVG 2 gives `defs` and `pattern` no conditional processing attributes
+	const svg =
+		'<svg xmlns="http://www.w3.org/2000/svg"><defs systemLanguage="ja"></defs><pattern systemLanguage="ja"></pattern></svg>';
+	const { violations } = await mlRuleTest(rule, svg);
+	expect(violations.map(v => v.raw)).toStrictEqual(['systemLanguage', 'systemLanguage']);
+});

@@ -30,7 +30,7 @@
 		/**
 		 * No deprecated attr
 		 *
-		 * MDN/BCD-sourced (factual, not a spec MUST) — kept enabled here
+		 * A specification's or BCD's flag (factual, not a spec MUST) — kept enabled here
 		 * (severity downgraded to warning, not removed from the preset) so
 		 * existing markuplint:html-standard users keep this coverage.
 		 */
@@ -58,7 +58,7 @@
 		/**
 		 * No deprecated element
 		 *
-		 * MDN/BCD-sourced (factual, not a spec MUST) — kept enabled here
+		 * A specification's or BCD's flag (factual, not a spec MUST) — kept enabled here
 		 * (severity downgraded to warning, not removed from the preset) so
 		 * existing markuplint:html-standard users keep this coverage.
 		 */

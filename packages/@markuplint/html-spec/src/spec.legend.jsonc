@@ -13,7 +13,24 @@
 		"#GlobalEventAttrs": true,
 		"#ARIAAttrs": true
 	},
-	"attributes": {},
+	"attributes": {
+		// https://html.spec.whatwg.org/multipage/obsolete.html#non-conforming-features
+		"datasrc": {
+			"obsolete": true
+		},
+		// https://html.spec.whatwg.org/multipage/obsolete.html#non-conforming-features
+		"datafld": {
+			"obsolete": true
+		},
+		// https://html.spec.whatwg.org/multipage/obsolete.html#non-conforming-features
+		"dataformatas": {
+			"obsolete": true
+		},
+		// https://html.spec.whatwg.org/multipage/obsolete.html#non-conforming-features
+		"align": {
+			"obsolete": true
+		}
+	},
 	"aria": {
 		"implicitRole": false,
 		"permittedRoles": false,

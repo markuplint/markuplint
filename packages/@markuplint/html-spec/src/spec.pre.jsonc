@@ -14,11 +14,14 @@
 		"#ARIAAttrs": true
 	},
 	"attributes": {
+		// https://html.spec.whatwg.org/multipage/obsolete.html#non-conforming-features
 		"width": {
-			"deprecated": true
+			"obsolete": true
 		},
+		// https://html.spec.whatwg.org/multipage/rendering.html#flow-content-3
+		// The HTML Standard lists wrap only as a presentational hint for rendering: it defines no such content attribute.
 		"wrap": {
-			"deprecated": true
+			"nonStandard": true
 		}
 	},
 	"aria": {

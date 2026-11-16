@@ -1,7 +1,5 @@
 // https://w3c.github.io/mathml/#presm_mfenced_desc
 {
-	"deprecated": true,
-	"nonStandard": true,
 	"contentModel": {
 		"contents": [
 			{

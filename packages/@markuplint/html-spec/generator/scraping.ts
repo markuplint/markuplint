@@ -1,125 +1,34 @@
-import type * as cheerio from 'cheerio';
+import type { ExtendedElementSpec } from '@markuplint/ml-spec';
 
-import type { ElementSpec, ExtendedElementSpec, Attribute } from '@markuplint/ml-spec';
-
-import type { Element } from './cheerio-types.ts';
 import type { FetchOptions } from './fetch.ts';
 
 import { fetch } from './fetch.ts';
-import { sortObjectByKey } from './utils.ts';
 
 const MAIN_ARTICLE_SELECTOR = 'main#content';
 
-const OBSOLETE = 'https://html.spec.whatwg.org/multipage/obsolete.html';
-
 /**
- * Where an obsolete element is defined. The `cite` is the only place that says so, since an obsolete element has no
- * source file, and the spec citation watch reads it from `index.json`: the element's own term has the description
- * that the list gives it, which a change of the specification is reported against. An element that the page names
- * without a term of its own (`marquee`, in the group that shares one description) can only cite the list.
+ * Reads the description of the MDN reference page of an element.
+ *
+ * Nothing else of the page is read: the status flags come from the sources and from the pinned
+ * `@mdn/browser-compat-data` (`bcd.ts`), the names of the attributes from the sources, and the content categories
+ * and the tag omission are not written at all. The description itself is dropped before the data is written
+ * (`strip-prose.ts`).
+ *
+ * @param link - The URL of the MDN reference page
+ * @param options - How a failed fetch is reported
  */
-function obsoleteCite(name: string, hasTerm: boolean): string {
-	return `${OBSOLETE}#${hasTerm ? name : 'non-conforming-features'}`;
-}
-
-/**
- * Reads the list of non-conforming features, and answers whether it has a term (`id`) for an element name.
- * A page that could not be fetched has none, so every element falls back to citing the list, and the failed fetch is
- * reported with the others.
- */
-export async function fetchObsoleteTerms(): Promise<(name: string) => boolean> {
-	const $ = await fetch(OBSOLETE);
-	return name => $(`[id="${name}"]`).length > 0;
-}
-
-export function fetchObsoleteElements(
-	obsoleteList: readonly string[],
-	specs: readonly ExtendedElementSpec[],
-	hasTerm: (name: string) => boolean = () => true,
-): ExtendedElementSpec[] {
-	return obsoleteList
-		.map<ElementSpec | null>(name => {
-			const found = specs.find(e => e.name === name);
-			if (found) {
-				return null;
-			}
-			return {
-				name,
-				cite: obsoleteCite(name, hasTerm(name)),
-				obsolete: true,
-				contentModel: {
-					contents: true,
-				},
-				aria: {
-					permittedRoles: true,
-					implicitRole: false,
-				},
-				globalAttrs: {},
-				attributes: {},
-			};
-		})
-		.filter((e): e is ElementSpec => !!e);
-}
-
 export async function fetchHTMLElement(link: string, options?: FetchOptions) {
 	const $ = await fetch(link, options);
 	const name = link.replace(/.+\/([\w-]+)$/, '$1').toLowerCase();
-	const $article = $(MAIN_ARTICLE_SELECTOR);
-	const description = $article
+	const description = $(MAIN_ARTICLE_SELECTOR)
 		.find('.reference-layout__header .content-section')
 		.text()
 		.trim()
 		.replaceAll(/\s+/g, ' ');
 
-	const $bcTable = $article.find('.bc-table');
-	const $bcTableFirstRow = $bcTable.find('tbody tr:first-child th');
-	const isBcTableIsAvailable = $bcTableFirstRow.find('code').text().trim() === name;
-
-	let experimental: true | undefined;
-	let obsolete: true | undefined;
-	let deprecated: true | undefined;
-	let nonStandard: true | undefined;
-
-	if (isBcTableIsAvailable) {
-		experimental = $bcTableFirstRow.find('.ic-experimental').length > 0 || undefined;
-		obsolete = $bcTableFirstRow.find('.ic-obsolete').length > 0 || undefined;
-		deprecated = $bcTableFirstRow.find('.ic-deprecated').length > 0 || undefined;
-		nonStandard = $bcTableFirstRow.find('.ic-non-standard').length > 0 || undefined;
-	} else {
-		experimental =
-			$article.find('.blockIndicator.experimental, > div .notecard.experimental').length > 0 || undefined;
-		obsolete =
-			$article.find('.obsoleteHeader').length > 0 ||
-			!!/obsolete/i.test($('h1').text()) ||
-			$article.find('> div:first-child .notecard.obsolete').length > 0 ||
-			undefined;
-		deprecated =
-			$article.find('.deprecatedHeader, > div:first-child .notecard.deprecated').length > 0 ||
-			$article.find('h1').next().find('.notecard.deprecated').length > 0 ||
-			undefined;
-		nonStandard = $article.find('.nonStandardHeader, h4#Non-standard').length > 0 || undefined;
-	}
-
-	let { attributes } = getAttributes($, 'attributes');
-	const { attributes: deprecatedAttributes } = getAttributes($, 'deprecated_attributes');
-	const { attributes: individualAttributes } = getAttributes($, 'individual_attributes');
-	const { attributes: nonStandardAttributes } = getAttributes($, 'non-standard_attributes');
-	const { attributes: obsoleteAttributes } = getAttributes($, 'obsolete_attributes');
-	attributes = sortObjectByKey({
-		...attributes,
-		...deprecatedAttributes,
-		...individualAttributes,
-		...nonStandardAttributes,
-		...obsoleteAttributes,
-	});
-
 	const spec: ExtendedElementSpec = {
 		name,
 		description,
-		experimental,
-		obsolete,
-		deprecated,
-		nonStandard,
 		contentModel: {
 			contents: false,
 		},
@@ -127,112 +36,8 @@ export async function fetchHTMLElement(link: string, options?: FetchOptions) {
 			implicitRole: false,
 			permittedRoles: true,
 		},
-		attributes,
+		attributes: {},
 	};
 
 	return spec;
-}
-
-function getAttributes(
-	// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
-	$: cheerio.CheerioAPI,
-	id: string,
-) {
-	const $section = $(`.content-section[aria-labelledby="${id}"]`);
-	const attributes: Record<string, Attribute> = {};
-	for (const dt of $section.find('> dl > dt')) {
-		const $dt = $(dt);
-		const name = $dt.find('code').text().trim();
-		if (!name) {
-			continue;
-		}
-
-		const $myHeading = getItsHeading($dt);
-		const experimental =
-			$dt.find('.icon-beaker, .icon.experimental, .icon.icon-experimental').length > 0 || undefined;
-		const obsolete =
-			$dt.find('.icon-trash, .icon.obsolete, .icon.icon-obsolete').length > 0 ||
-			$dt.find('.obsolete').length > 0 ||
-			$myHeading?.attr('id') === 'obsolete_attributes' ||
-			undefined;
-		const deprecated =
-			$dt.find(
-				'.icon-thumbs-down-alt, .icon.deprecated, .icon.icon-deprecated, .icon.discouraged, .icon.removing',
-			).length > 0 ||
-			$myHeading?.attr('id') === 'deprecated_attributes' ||
-			undefined;
-		const nonStandard =
-			$dt.find('.icon-warning-sign, .icon.non-standard, .icon.icon-nonstandard').length > 0 || undefined;
-		const description = $dt
-			.next('dd')
-			.toArray()
-			.map(el => $(el).text())
-			.join('')
-			.trim()
-			.replaceAll(/\s+/g, ' ');
-
-		const current = attributes[name];
-		if (!current) {
-			attributes[name] = {
-				name,
-				type: 'Any',
-				// @ts-ignore
-				description,
-				experimental,
-				obsolete,
-				deprecated,
-				nonStandard,
-			};
-			continue;
-		}
-
-		if (typeof current === 'object' && 'name' in current) {
-			attributes[name] = {
-				// @ts-ignore for key order that "name" is first
-				name,
-				// @ts-ignore for key order that "description" is second
-				description,
-				experimental,
-				obsolete,
-				deprecated,
-				nonStandard,
-				// @ts-ignore
-				...current,
-			};
-		}
-	}
-	return { attributes };
-}
-
-function getItsHeading(
-	// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
-	$start: cheerio.Cheerio<Element>,
-) {
-	let $needle = upToPrevOrParent($start);
-	while ($needle.length > 0) {
-		if (isHeading($needle)) {
-			return $needle;
-		}
-		$needle = upToPrevOrParent($needle);
-	}
-	return null;
-}
-
-function upToPrevOrParent(
-	// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
-	$start: cheerio.Cheerio<Element>,
-) {
-	let $needle = $start.prev();
-	if ($needle.length === 0) {
-		$needle = $start.parent();
-	}
-	return $needle;
-}
-
-function isHeading(
-	// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
-	$el: cheerio.Cheerio<Element>,
-) {
-	// @ts-ignore
-	return /^h[1-6]$/i.test($el[0].tagName);
 }

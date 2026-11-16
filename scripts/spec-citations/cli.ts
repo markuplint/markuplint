@@ -53,8 +53,8 @@
  * notices that the specification reworded a definition. The first line of each `html-spec/src/spec.*.jsonc` cites the
  * section that defines the element (`definition.ts`), and `coverage.spec.ts` fails for an element of `index.json`
  * whose first line does not name a section that this monitor reads. What nobody writes as a citation is read from
- * `index.json`: the `cite` of an element that has no source file, the obsolete ones (`elements.ts`), and one section
- * for each role and property of ARIA (`aria.ts`).
+ * `index.json`: the `cite` of an element whose source file is not tracked yet (`elements.ts`), and one section for
+ * each role and property of ARIA (`aria.ts`).
  */
 import type { CollectResult, PageResult } from './types.ts';
 

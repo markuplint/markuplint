@@ -5,7 +5,7 @@ description: Warns when there is an attribute the HTML Living Standard marks as 
 
 # `no-obsolete-attr`
 
-Warns when there is an attribute the [HTML Living Standard](https://html.spec.whatwg.org/multipage/obsolete.html#non-conforming-features) marks as a non-conforming, obsolete feature — authors must not use it.
+Warns when there is an attribute the [HTML Living Standard](https://html.spec.whatwg.org/multipage/obsolete.html#non-conforming-features) marks as a non-conforming, obsolete feature — authors must not use it. The attributes that [SVG 2](https://svgwg.org/svg2-draft/changes.html) removed (`xlink:type`, `baseProfile`, `version` of `<svg>`, ...) are reported on SVG elements in the same way.
 
 An attribute merely marked deprecated (not yet removed from the spec) is [`no-deprecated-attr`](/docs/rules/no-deprecated-attr)'s concern.
 

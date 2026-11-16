@@ -19,18 +19,28 @@
 		"#MathMLGlobalAttrs": true
 	},
 	"attributes": {
+		// https://www.w3.org/TR/MathML3/chapter3.html#presm.deprecatt
+		// MathML 3 deprecates the attribute; MathML 4 removes it.
 		"background": {
 			"deprecated": true
 		},
+		// https://www.w3.org/TR/MathML3/chapter3.html#presm.deprecatt
+		// MathML 3 deprecates the attribute; MathML 4 removes it.
 		"color": {
 			"deprecated": true
 		},
+		// https://www.w3.org/TR/MathML3/chapter3.html#presm.deprecatt
+		// MathML 3 deprecates the attribute; MathML 4 removes it.
 		"fontsize": {
 			"deprecated": true
 		},
+		// https://www.w3.org/TR/MathML3/chapter3.html#presm.deprecatt
+		// MathML 3 deprecates the attribute; MathML 4 removes it.
 		"fontstyle": {
 			"deprecated": true
 		},
+		// https://www.w3.org/TR/MathML3/chapter3.html#presm.deprecatt
+		// MathML 3 deprecates the attribute; MathML 4 removes it.
 		"fontweight": {
 			"deprecated": true
 		}

@@ -278,3 +278,16 @@ test('[no-experimental-features-issue-4701-005] an SVG or MathML element and a M
 		},
 	]);
 });
+
+test("[no-experimental-features-invalid-003] the experimental flag of an attribute is BCD's (BCD-derived: bumping BCD can change this)", async () => {
+	const { violations } = await mlRuleTest(rule, '<div headingoffset="1"></div>');
+	expect(violations).toStrictEqual([
+		{
+			severity: 'warning',
+			line: 1,
+			col: 6,
+			raw: 'headingoffset',
+			message: 'The "headingoffset" attribute is experimental',
+		},
+	]);
+});

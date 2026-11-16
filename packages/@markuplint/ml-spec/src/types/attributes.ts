@@ -1388,6 +1388,7 @@ export interface GlobalAttributes {
         | "onseeked"
         | "onseeking"
         | "onselect"
+        | "onshow"
         | "onslotchange"
         | "onstalled"
         | "onsubmit"
@@ -1509,7 +1510,18 @@ export interface GlobalAttributes {
    * @minItems 0
    */
   "#SVGCoreAttrs"?: (
-    "id" | "tabindex" | "autofocus" | "lang" | "xml:space" | "class" | "style" | "xmlns" | "xml:lang" | "xml:base"
+    | "id"
+    | "tabindex"
+    | "autofocus"
+    | "lang"
+    | "xml:space"
+    | "class"
+    | "style"
+    | "xmlns"
+    | "xml:lang"
+    | "xml:base"
+    | "part"
+    | "exportparts"
   )[];
   /**
    * @minItems 0
@@ -1626,7 +1638,19 @@ export interface AttributeJSON {
   type?:
     AttributeType | [AttributeType, ...AttributeType[]] | [ConditionalAttributeType, ...ConditionalAttributeType[]];
   defaultValue?: string;
+  /**
+   * The name of another attribute of the same element whose value this attribute has to have, compared as ASCII case-insensitive strings: `xml:lang` of an HTML element has to have the value of `lang` (HTML Standard, "The lang and xml:lang attributes"). The presence of that attribute is the business of `condition`.
+   */
+  sameValueAs?: string;
   deprecated?: boolean;
+  /**
+   * Deprecated for the elements that one of the selectors matches, as the "obsolete but conforming" features of the HTML Standard are: they depend on the value of the attribute or on another attribute. `deprecated: true` is the unconditional one.
+   */
+  deprecatedWhen?: AttributeCondition;
+  /**
+   * Obsolete: removed from the specification and must not be used by authors.
+   */
+  obsolete?: true;
   required?: boolean | AttributeCondition;
   requiredEither?: string[];
   noUse?: boolean;
@@ -1637,7 +1661,7 @@ export interface AttributeJSON {
   /**
    * Non-standard: never part of any standard (vendor-specific or proprietary).
    */
-  nonStandard?: true;
+  nonStandard?: boolean;
 }
 /**
  * - [Space-separated tokens](https://html.spec.whatwg.org/multipage/common-microsyntaxes.html#space-separated-tokens)

@@ -14,6 +14,16 @@
 		"#ARIAAttrs": true
 	},
 	"attributes": {
+		// https://html.spec.whatwg.org/multipage/obsolete.html#obsolete-but-conforming-features
+		// Obsolete but conforming, which conformance checkers warn about: the value has to be an ASCII
+		// case-insensitive match for "text/css" (any other value is non-conforming).
+		"type": {
+			"type": {
+				"enum": ["text/css"],
+				"caseInsensitive": true
+			},
+			"deprecated": true
+		},
 		// https://html.spec.whatwg.org/multipage/semantics.html#attr-style-media
 		// See spec-common.attributes.jsonc `media` for the rationale on
 		// using the dedicated `MediaQueryList` checker rather than the

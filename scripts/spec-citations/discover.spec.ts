@@ -167,8 +167,8 @@ describe('collectAll', () => {
 		expect(() => collectAll(join(root, 'scripts'))).toThrow(/index\.json/);
 	});
 
-	test('[discover-020] adds the cite of each element that has no source file, which the monitor did not read', () => {
+	test('[discover-020] reads the cite of the source file of each element, obsolete ones included', () => {
 		const urls = collectAll(root).citations.map(c => c.url);
-		expect(urls).toContain('https://html.spec.whatwg.org/multipage/obsolete.html#xmp');
+		expect(urls).toContain('https://html.spec.whatwg.org/multipage/obsolete.html#non-conforming-features');
 	});
 });

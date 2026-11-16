@@ -113,6 +113,11 @@
 		]
 	},
 	"attributes": {
+		// https://svgwg.org/svg2-draft/changes.html#structure
+		// SVG 2 removed the attribute (Changes from SVG 1.1).
+		"zoomAndPan": {
+			"obsolete": true
+		},
 		// https://svgwg.org/svg2-draft/coords.html#ViewBoxAttribute
 		"viewBox": {
 			"type": "<view-box>",
@@ -136,27 +141,31 @@
 		"onunload": {
 			"type": "FunctionBody"
 		},
-		// https://developer.mozilla.org/en-US/docs/Web/SVG/Attribute/baseProfile
+		// https://svgwg.org/svg2-draft/changes.html#structure
+		// SVG 2 removed the attribute (Changes from SVG 1.1).
 		"baseProfile": {
 			"type": "Any",
-			"deprecated": true
+			"obsolete": true
 		},
-		// https://developer.mozilla.org/en-US/docs/Web/SVG/Attribute/contentScriptType
+		// https://svgwg.org/svg2-draft/changes.html#script
+		// SVG 2 removed the attribute (Changes from SVG 1.1).
 		"contentScriptType": {
 			"type": "Any",
 			"defaultValue": "application/ecmascript",
-			"deprecated": true
+			"obsolete": true
 		},
-		// https://developer.mozilla.org/en-US/docs/Web/SVG/Attribute/contentStyleType
+		// https://svgwg.org/svg2-draft/changes.html#styling
+		// SVG 2 removed the attribute (Changes from SVG 1.1).
 		"contentStyleType": {
 			"type": "Any",
 			"defaultValue": "text/css",
-			"deprecated": true
+			"obsolete": true
 		},
-		// https://developer.mozilla.org/en-US/docs/Web/SVG/Attribute/version
+		// https://svgwg.org/svg2-draft/changes.html#structure
+		// SVG 2 removed the attribute (Changes from SVG 1.1).
 		"version": {
 			"type": "Any",
-			"deprecated": true
+			"obsolete": true
 		}
 	},
 	"aria": {

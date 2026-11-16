@@ -286,8 +286,7 @@ export type ElementSpec = {
 	/**
 	 * The URL of the section that defines the element
 	 *
-	 * In `@markuplint/html-spec` it is the URL on the first line of `src/spec.<name>.jsonc`, or, for an obsolete
-	 * element that has no such file, its entry in the list of non-conforming features.
+	 * In `@markuplint/html-spec` it is the URL on the first line of `src/spec.<name>.jsonc`.
 	 */
 	readonly cite: string;
 
@@ -405,10 +404,12 @@ export type Attribute = {
 	// Status flags share the semantics documented on `ElementSpec` above:
 	// experimental = not yet standardized; obsolete = removed from the spec;
 	// deprecated = discouraged but still defined; nonStandard = never standard.
+	// `deprecatedWhen` (in `AttributeJSON`) is `deprecated` for the elements that one of its selectors matches: the
+	// HTML Standard's "obsolete but conforming" features depend on the value or on another attribute.
 	readonly experimental?: boolean;
 	readonly obsolete?: true;
 	readonly deprecated?: boolean;
-	readonly nonStandard?: true;
+	readonly nonStandard?: boolean;
 } & ExtendableAttributeSpec;
 
 type ExtendableAttributeSpec = Omit<ReadonlyDeep<AttributeJSON>, 'type'>;

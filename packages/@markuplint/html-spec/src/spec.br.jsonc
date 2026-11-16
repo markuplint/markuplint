@@ -9,7 +9,12 @@
 		"#GlobalEventAttrs": true,
 		"#ARIAAttrs": true
 	},
-	"attributes": {},
+	"attributes": {
+		// https://html.spec.whatwg.org/multipage/obsolete.html#non-conforming-features
+		"clear": {
+			"obsolete": true
+		}
+	},
 	"aria": {
 		"implicitRole": false,
 		"permittedRoles": ["none", "presentation"],

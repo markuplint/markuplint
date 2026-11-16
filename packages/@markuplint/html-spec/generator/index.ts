@@ -1,8 +1,9 @@
 /**
  * @module @markuplint/html-spec/generator
  *
- * Generates the markuplint extended specification JSON file by scraping W3C and MDN web standards
- * documentation. Aggregates HTML/SVG element specs, global attributes, ARIA roles and properties,
+ * Generates the markuplint extended specification JSON file from the hand-written sources, the W3C ARIA
+ * documents (scraped), the status flags of the pinned `@mdn/browser-compat-data` and the MDN reference pages (the
+ * description, which is dropped again). Aggregates HTML/SVG element specs, global attributes, ARIA roles and properties,
  * and content model definitions into a single output file consumed by the markuplint linter.
  *
  * Architectural decisions (do not revisit without strong reasons):
@@ -13,7 +14,8 @@
  *   through the same enrichment process. Splitting the data package was
  *   considered and rejected.
  * - This generator's responsibility is external data fetching and enrichment
- *   ONLY (MDN scraping, W3C ARIA downloading). Schema structure generation
+ *   ONLY (the W3C ARIA downloading, the pinned BCD package read by `bcd.ts`, the
+ *   MDN description that is dropped again). Schema structure generation
  *   belongs to `@markuplint/ml-spec`'s `gen/`; moving schema operations into
  *   this generator was explicitly rejected to keep the architectural
  *   boundaries between the data package and the spec foundation package.
@@ -24,6 +26,7 @@ import type { ExtendedSpec } from '@markuplint/ml-spec';
 import { readFile, writeFile } from 'node:fs/promises';
 
 import { getAria } from './aria.ts';
+import { applyBCD, loadBCD } from './bcd.ts';
 import { finishFetching, getFailedUrls, getUnexpectedlyFoundUrls, hasFetchProblems } from './fetch.ts';
 import { getGlobalAttrs } from './global-attrs.ts';
 import { getElements } from './html-elements.ts';
@@ -31,6 +34,7 @@ import { readJson } from './read-json.ts';
 import { expandConditionAliases, resolveAliases } from './selector-aliases.ts';
 import { stripProse } from './strip-prose.ts';
 import { summarizeChanges, summarizeFetchProblems } from './summarize.ts';
+import { sortObjectByKey } from './utils.ts';
 import { validateSpecs } from './validate.ts';
 
 export type Options = {
@@ -64,20 +68,33 @@ export async function main({
 	selectorAliasesFilePath,
 	summaryFilePath,
 }: Options) {
-	const [specs, globalAttrs, aria] = await Promise.all([
+	const [manualSpecs, manualGlobalAttrs, aria, bcd] = await Promise.all([
 		getElements(htmlFilePattern),
 		getGlobalAttrs(commonAttrsFilePath),
 		getAria(),
+		loadBCD(),
 	]);
+
+	// The sources say what the specifications say; BCD gives the status flags that no specification defines.
+	const { specs, globalAttrs } = applyBCD(
+		manualSpecs as Parameters<typeof applyBCD>[0],
+		manualGlobalAttrs as Parameters<typeof applyBCD>[1],
+		bcd,
+	) as { specs: typeof manualSpecs; globalAttrs: typeof manualGlobalAttrs };
 
 	// Expand named selector aliases (e.g. #ClassicScript) in attribute
 	// conditions so that index.json contains only plain CSS selectors.
 	const selectorAliases = resolveAliases(readJson(selectorAliasesFilePath));
 	for (const spec of specs) {
 		if (spec.attributes) {
+			// Sorted again: BCD adds the attributes that the sources lack after the sorted ones
 			// @ts-ignore
-			spec.attributes = expandConditionAliases(spec.attributes, selectorAliases);
+			spec.attributes = sortObjectByKey(expandConditionAliases(spec.attributes, selectorAliases));
 		}
+	}
+	for (const [category, attrs] of Object.entries(globalAttrs)) {
+		// @ts-ignore
+		globalAttrs[category] = expandConditionAliases(attrs, selectorAliases);
 	}
 
 	finishFetching();

@@ -31,7 +31,6 @@ describe('getSpec', () => {
 		const specs = getAttrSpecs('linearGradient', 'http://www.w3.org/2000/svg', htmlSpec);
 		const x = specs?.find(spec => spec.name === 'xlink:href');
 		expect(x).toStrictEqual({
-			description: '',
 			name: 'xlink:href',
 			type: 'URL',
 			deprecated: true,

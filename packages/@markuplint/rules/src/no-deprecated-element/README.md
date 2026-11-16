@@ -7,7 +7,7 @@ description: Warns when there is an element defined as deprecated.
 
 Warns when there is an element defined as **deprecated**.
 
-This rule refers to [HTML Living Standard](https://html.spec.whatwg.org/) based [MDN Web docs](https://developer.mozilla.org/en/docs/Web/HTML). It has settings in [`@markuplint/html-spec`](https://github.com/markuplint/markuplint/tree/main/packages/%40markuplint/html-spec/src).
+This rule reads the `deprecated` flag of the spec data in [`@markuplint/html-spec`](https://github.com/markuplint/markuplint/tree/main/packages/%40markuplint/html-spec/src): what a specification marks as deprecated (the [features the HTML Living Standard keeps conforming with a warning](https://html.spec.whatwg.org/multipage/obsolete.html#obsolete-but-conforming-features), SVG, MathML) and what browser vendors deprecate according to [@mdn/browser-compat-data](https://github.com/mdn/browser-compat-data).
 
 An element the HTML Living Standard marks as a non-conforming, obsolete feature is [`no-obsolete-element`](/docs/rules/no-obsolete-element)'s concern.
 

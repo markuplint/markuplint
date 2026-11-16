@@ -9,7 +9,7 @@
 		]
 	},
 	"globalAttrs": {
-		"#SVGCoreAttrs": ["id", "xml:base", "xml:lang", "xml:space", "class", "style"],
+		"#SVGCoreAttrs": ["id", "xml:base", "xml:lang", "xml:space", "class", "style", "part", "exportparts"],
 		"#SVGPresentationAttrs": [
 			"alignment-baseline",
 			"baseline-shift",

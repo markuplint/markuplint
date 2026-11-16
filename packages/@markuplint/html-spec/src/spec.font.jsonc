@@ -10,14 +10,17 @@
 		"#ARIAAttrs": true
 	},
 	"attributes": {
+		// https://html.spec.whatwg.org/multipage/obsolete.html#other-elements,-attributes-and-apis
 		"color": {
-			"deprecated": true
+			"type": "Any"
 		},
+		// https://html.spec.whatwg.org/multipage/obsolete.html#other-elements,-attributes-and-apis
 		"face": {
-			"deprecated": true
+			"type": "Any"
 		},
+		// https://html.spec.whatwg.org/multipage/obsolete.html#other-elements,-attributes-and-apis
 		"size": {
-			"deprecated": true
+			"type": "Any"
 		}
 	},
 	"aria": {

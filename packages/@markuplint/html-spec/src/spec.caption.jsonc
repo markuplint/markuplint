@@ -13,7 +13,12 @@
 		"#GlobalEventAttrs": true,
 		"#ARIAAttrs": true
 	},
-	"attributes": {},
+	"attributes": {
+		// https://html.spec.whatwg.org/multipage/obsolete.html#non-conforming-features
+		"align": {
+			"obsolete": true
+		}
+	},
 	"aria": {
 		"implicitRole": "caption",
 		"permittedRoles": false,

@@ -10,7 +10,7 @@
 	},
 	"globalAttrs": {
 		"#GlobalEventAttrs": true,
-		"#SVGCoreAttrs": ["id", "tabindex", "autofocus", "lang", "xml:space", "class", "style"]
+		"#SVGCoreAttrs": ["id", "tabindex", "autofocus", "lang", "xml:space", "class", "style", "part", "exportparts"]
 	},
 	"attributes": {
 		// https://svgwg.org/svg2-draft/styling.html#StyleElementTypeAttribute

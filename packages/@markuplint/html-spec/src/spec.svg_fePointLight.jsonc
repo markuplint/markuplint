@@ -9,7 +9,7 @@
 		]
 	},
 	"globalAttrs": {
-		"#SVGCoreAttrs": ["id", "xml:base", "xml:lang", "xml:space"]
+		"#SVGCoreAttrs": ["id", "xml:base", "xml:lang", "xml:space", "part", "exportparts"]
 	},
 	"attributes": {
 		// https://drafts.csswg.org/filter-effects-1/#element-attrdef-fepointlight-x

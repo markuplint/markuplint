@@ -229,7 +229,7 @@ describe('index.json carries what the sources own', () => {
 				source = parse(await readFile(file, { encoding: 'utf-8' }), parseErrors);
 				expect(parseErrors, `${el.name}: ${file}`).toStrictEqual([]);
 			} catch (error) {
-				// An element without a source file (an obsolete one) has only flagged attributes.
+				// Every element has a source file (a test below says so): only a read error other than a missing file is thrown.
 				if (error?.code !== 'ENOENT') {
 					throw error;
 				}
@@ -271,16 +271,304 @@ describe('index.json carries what the sources own', () => {
 		});
 	});
 
-	test('an element without a source file cites the list of non-conforming features', async () => {
+	test('every element has a source file', async () => {
 		const cites = await readDefinitionCites();
 		const withoutSource = htmlSpec.specs.filter(el => !cites.has(el.name));
-		expect(withoutSource.length).toBeGreaterThan(0);
-		expect(
-			withoutSource
-				.filter(el => !el.cite.startsWith('https://html.spec.whatwg.org/multipage/obsolete.html#'))
-				.map(el => `${el.name}: ${el.cite}`),
-		).toStrictEqual([]);
+		expect(withoutSource.map(el => el.name)).toStrictEqual([]);
 	});
+});
+
+/**
+ * What the HTML Standard calls obsolete is written in the sources, with the citation of its section: "Non-conforming
+ * features" lists the attributes that "must not be used by authors", and the ones it lists "except as noted in the
+ * previous section" are the "obsolete but conforming" ones, which conformance checkers must warn about. The pairs are
+ * the list of the page as read on 2026-11-15 (`obsolete-features.json`), not read from the data, so that an attribute
+ * dropped from the sources fails here.
+ * @see https://html.spec.whatwg.org/multipage/obsolete.html#non-conforming-features
+ */
+describe('obsolete features of the HTML Standard', () => {
+	const {
+		obsoleteElements,
+		nonConformingAttributes,
+		obsoleteButConforming,
+		conditionalWarnings,
+	} = require('./obsolete-features.json');
+	const htmlNames = htmlSpec.specs.filter(el => !el.name.includes(':')).map(el => el.name);
+
+	/**
+	 * @param {string} element - The local name of an HTML element
+	 * @param {string} name - The attribute name
+	 * @returns The resolved attribute spec, or `undefined` for an unknown attribute
+	 */
+	function getAttr(element, name) {
+		const { localName, namespaceURI } = resolveNamespace(element);
+		return getAttrSpecsByNames(localName, namespaceURI, htmlSpec).find(attr => attr.name === name);
+	}
+
+	test('the list of the page has no entry twice, and none is missing from it', () => {
+		for (const pairs of [nonConformingAttributes, obsoleteButConforming, conditionalWarnings]) {
+			expect(pairs.length).toBeGreaterThan(0);
+			expect(new Set(pairs.map(pair => pair.join('[')))).toHaveProperty('size', pairs.length);
+		}
+		expect(obsoleteElements.length).toBeGreaterThan(0);
+	});
+
+	test('the elements that 16.2 lists are the obsolete elements of the data', () => {
+		const obsolete = htmlSpec.specs.filter(el => el.obsolete).map(el => el.name);
+		expect(obsolete.toSorted()).toStrictEqual(obsoleteElements.toSorted());
+	});
+
+	test('no HTML attribute is obsolete that 16.2 does not list', () => {
+		const listed = new Set(nonConformingAttributes.map(([element, name]) => `${element}[${name}]`));
+		const unlisted = [];
+		for (const el of htmlSpec.specs.filter(el => !el.name.includes(':'))) {
+			for (const [name, attr] of Object.entries(el.attributes ?? {})) {
+				if (attr.obsolete && !listed.has(`${el.name}[${name}]`) && !listed.has(`*[${name}]`)) {
+					unlisted.push(`${el.name}[${name}]`);
+				}
+			}
+		}
+		for (const name of ['#HTMLGlobalAttrs', '#GlobalEventAttrs']) {
+			for (const [attr, spec] of Object.entries(htmlSpec.def['#globalAttrs'][name])) {
+				if (spec.obsolete && !listed.has(`*[${attr}]`)) {
+					unlisted.push(`${name}[${attr}]`);
+				}
+			}
+		}
+		expect(unlisted).toStrictEqual([]);
+	});
+
+	test('every attribute of 16.2 is known and obsolete', () => {
+		const wrong = [];
+		for (const [element, name] of nonConformingAttributes) {
+			for (const el of element === '*' ? htmlNames : [element]) {
+				const attr = getAttr(el, name);
+				if (!attr?.obsolete) {
+					wrong.push(`${el}[${name}]`);
+				}
+			}
+		}
+		expect(wrong).toStrictEqual([]);
+	});
+
+	test('the obsolete but conforming ones are known and deprecated, not obsolete', () => {
+		const wrong = obsoleteButConforming
+			.filter(([element, name]) => {
+				const attr = getAttr(element, name);
+				return !attr?.deprecated || attr.obsolete;
+			})
+			.map(([element, name]) => `${element}[${name}]`);
+		expect(wrong).toStrictEqual([]);
+	});
+
+	test('the ones that depend on the value or on another attribute are deprecated by a selector', () => {
+		const wrong = conditionalWarnings
+			.filter(([element, name]) => {
+				const attr = getAttr(element, name);
+				return !attr?.deprecatedWhen || attr.deprecated || attr.obsolete;
+			})
+			.map(([element, name]) => `${element}[${name}]`);
+		expect(wrong).toStrictEqual([]);
+	});
+
+	test('no attribute is both obsolete and deprecated', () => {
+		const both = [];
+		for (const el of htmlSpec.specs) {
+			for (const [name, attr] of Object.entries(el.attributes ?? {})) {
+				if (attr.obsolete && attr.deprecated) {
+					both.push(`${el.name}[${name}]`);
+				}
+			}
+		}
+		for (const [category, attrs] of Object.entries(htmlSpec.def['#globalAttrs'])) {
+			for (const [name, attr] of Object.entries(attrs)) {
+				if (attr.obsolete && attr.deprecated) {
+					both.push(`${category}[${name}]`);
+				}
+			}
+		}
+		expect(both).toStrictEqual([]);
+	});
+
+	/**
+	 * Every obsolete element takes the global attributes: "The following attributes are global attributes and may be
+	 * specified on all HTML elements (even those not defined in this specification)".
+	 * @see https://html.spec.whatwg.org/multipage/dom.html#global-attributes
+	 */
+	test('an obsolete element takes the global attributes of HTML', () => {
+		const obsoleteInData = htmlSpec.specs.filter(el => el.obsolete);
+		expect(obsoleteInData.length).toBe(obsoleteElements.length);
+		const without = obsoleteInData
+			.filter(el => !['#HTMLGlobalAttrs', '#GlobalEventAttrs', '#ARIAAttrs'].every(c => el.globalAttrs?.[c]))
+			.map(el => el.name);
+		expect(without).toStrictEqual([]);
+	});
+});
+
+/**
+ * The aliases of the selector (`#ClassicScript`) are expanded where `index.json` is written: an alias that is left in
+ * a selector never matches, and the rules would run a selector that no engine parses.
+ */
+test('no selector of the data holds an alias that was not expanded', () => {
+	const selectors = [];
+	const collect = (where, attr) => {
+		for (const field of ['condition', 'deprecatedWhen', 'ineffective']) {
+			selectors.push(...[attr[field] ?? []].flat().map(selector => [where, selector]));
+		}
+	};
+	for (const el of htmlSpec.specs) {
+		for (const [name, attr] of Object.entries(el.attributes ?? {})) {
+			collect(`${el.name}[${name}]`, attr);
+		}
+	}
+	for (const [category, attrs] of Object.entries(htmlSpec.def['#globalAttrs'])) {
+		for (const [name, attr] of Object.entries(attrs)) {
+			collect(`${category}[${name}]`, attr);
+		}
+	}
+	expect(selectors.length).toBeGreaterThan(0);
+	expect(selectors.filter(([, selector]) => /#[A-Z]/.test(selector)).map(([where]) => where)).toStrictEqual([]);
+});
+
+/**
+ * Where a specification does not define an attribute, `nonStandard` comes from BCD (`generator/bcd.ts`): an attribute
+ * that BCD has for an element and the sources lack is added, and BCD's `standard_track` flags the others. BCD's
+ * keys are read by their shape, so a key that is not an attribute would be added as one. The list is pinned, so that
+ * a change of the BCD version that adds or drops one fails here and a person reads it: a real attribute that a
+ * specification defines is written in the sources (`html-spec/CLAUDE.md`, "Data precedence"), any other is added to
+ * this list, and a key that is not an attribute is a bug of the generator.
+ */
+test('the non-standard attributes are the ones that were read', () => {
+	const found = [];
+	for (const el of htmlSpec.specs) {
+		for (const [name, attr] of Object.entries(el.attributes ?? {})) {
+			if (attr.nonStandard) {
+				found.push(`${el.name}[${name}]`);
+			}
+		}
+	}
+	for (const [category, attrs] of Object.entries(htmlSpec.def['#globalAttrs'])) {
+		for (const [name, attr] of Object.entries(attrs)) {
+			if (attr.nonStandard) {
+				found.push(`${category}[${name}]`);
+			}
+		}
+	}
+	expect(found.toSorted()).toStrictEqual([
+		'#HTMLGlobalAttrs[anchor]',
+		'#HTMLGlobalAttrs[containertiming]',
+		'#HTMLGlobalAttrs[containertimingignore]',
+		'#HTMLGlobalAttrs[drawable]',
+		'#HTMLGlobalAttrs[focusgroup]',
+		'#HTMLGlobalAttrs[focusgroupstart]',
+		'#MathMLGlobalAttrs[href]',
+		'#SVGCoreAttrs[focusgroup]',
+		'#SVGCoreAttrs[focusgroupstart]',
+		'#SVGCoreAttrs[font-width]',
+		'a[attributionsourceid]',
+		'a[attributionsrc]',
+		'a[hreftranslate]',
+		'a[interestfor]',
+		'area[attributionsrc]',
+		'area[interestfor]',
+		'button[interestfor]',
+		'canvas[content]',
+		'canvas[moz-opaque]',
+		'colgroup[align]',
+		'colgroup[char]',
+		'colgroup[charoff]',
+		'colgroup[valign]',
+		'colgroup[width]',
+		'html[xmlns]',
+		'iframe[allowpaymentrequest]',
+		'iframe[browsingtopics]',
+		'iframe[credentialless]',
+		'iframe[cross-origin-top-navigation-by-user-activation]',
+		'iframe[csp]',
+		'img[attributionsrc]',
+		'input[incremental]',
+		'input[orient]',
+		'input[results]',
+		'input[switch]',
+		'mml:maction[actiontype]',
+		'mml:maction[selection]',
+		'mml:menclose[notation]',
+		'mml:mfrac[denomalign]',
+		'mml:mfrac[numalign]',
+		'mml:mmultiscripts[subscriptshift]',
+		'mml:mmultiscripts[superscriptshift]',
+		'mml:mo[accent]',
+		'mml:msub[subscriptshift]',
+		'mml:msubsup[subscriptshift]',
+		'mml:msubsup[superscriptshift]',
+		'mml:msup[superscriptshift]',
+		'mml:mtable[align]',
+		'mml:mtable[columnalign]',
+		'mml:mtable[columnlines]',
+		'mml:mtable[columnspacing]',
+		'mml:mtable[frame]',
+		'mml:mtable[framespacing]',
+		'mml:mtable[rowalign]',
+		'mml:mtable[rowlines]',
+		'mml:mtable[rowspacing]',
+		'mml:mtable[width]',
+		'mml:mtd[columnalign]',
+		'mml:mtd[rowalign]',
+		'mml:mtr[columnalign]',
+		'mml:mtr[rowalign]',
+		'pre[wrap]',
+		'script[attributionsrc]',
+		'svg:a[interestfor]',
+		'svg:defs[systemLanguage]',
+		'svg:feImage[fetchpriority]',
+		'svg:filter[xlink:href]',
+		'svg:image[decoding]',
+		'svg:image[fetchpriority]',
+		'svg:pattern[systemLanguage]',
+		'svg:script[fetchpriority]',
+		'svg:view[svgView]',
+		'tbody[bgcolor]',
+		'template[for]',
+		'template[shadowrootreferencetarget]',
+		'tfoot[bgcolor]',
+		'thead[bgcolor]',
+	]);
+});
+
+/**
+ * The elements are what the sources define: an element is added by writing its source file, and nothing in the
+ * generator notices that a specification or a browser has a new one. BCD lists the elements of the browsers, so the
+ * ones that it has and the data lacks are pinned here, and a change of the BCD version that adds one fails the test and
+ * a person reads it: an element that a specification defines is written in `src/`, any other is added to this list.
+ * `mml:a` (MathML Core) and `selectedcontent` (the HTML Standard) are defined by a specification and are not in the
+ * data yet.
+ */
+test('the elements that BCD has and the data lacks are the ones that were read', async () => {
+	const { default: bcd } = await import('@mdn/browser-compat-data/forLegacyNode');
+	const names = new Set(htmlSpec.specs.map(el => el.name));
+	const missing = [];
+	for (const [namespace, prefix] of [
+		['html', ''],
+		['svg', 'svg:'],
+		['mathml', 'mml:'],
+	]) {
+		for (const [name, feature] of Object.entries(bcd[namespace].elements)) {
+			if (feature.__compat && !names.has(`${prefix}${name}`)) {
+				missing.push(`${prefix}${name}`);
+			}
+		}
+	}
+	expect(missing.toSorted()).toStrictEqual([
+		'camera',
+		'fencedframe',
+		'geolocation',
+		'install',
+		'microphone',
+		'mml:a',
+		'model',
+		'selectedcontent',
+		'usermedia',
+	]);
 });
 
 describe('schema', () => {
