@@ -83,6 +83,7 @@ describe('basic test', () => {
 		const warns = violations.filter(v => v.severity === 'warning');
 
 		expect(errors.map(_ => _.message)).toStrictEqual([
+			'The "align" attribute is obsolete',
 			'The "font" element is obsolete',
 			'Never declare obsolete doctype',
 			'The value of the "id" attribute is duplicated',
@@ -110,12 +111,9 @@ describe('basic test', () => {
 			'Attribute value must be quoted with double quotation marks',
 			'Attribute value must be quoted with double quotation marks',
 			'It is the default value',
-			'The "color" attribute is non-standard',
 			'Attribute names of HTML elements should be lowercase',
 			'Tag names of HTML elements should be lowercase',
 			'Tag names of HTML elements should be lowercase',
-			'The "color" attribute is deprecated',
-			'The "align" attribute is deprecated',
 			'The "meta" element should be before the "meta" element',
 			'The "meta" element should be before the "meta" element',
 		]);
