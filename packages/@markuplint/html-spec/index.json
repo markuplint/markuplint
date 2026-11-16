@@ -60960,7 +60960,6 @@
 					"animatable": true
 				},
 				"path": {
-					"experimental": true,
 					"type": "<svg-path>",
 					"animatable": true
 				},
