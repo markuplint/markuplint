@@ -9,6 +9,8 @@ description: 属性の値が仕様(あるいはカスタムルール)が要求�
 
 このルールは[HTML Living Standard](https://html.spec.whatwg.org/)に基づいています。設定は[`@markuplint/html-spec`](https://github.com/markuplint/markuplint/tree/main/packages/%40markuplint/html-spec/src)にあります。
 
+同じ要素の別の属性と同じ値でなければならない属性も検査します。HTML要素の`xml:lang`は`lang`と同じ値でなければなりません(ASCIIの大文字小文字を区別せずに比較します)。
+
 属性名がそもそも既知で適用可能かどうかは[`no-unknown-attr`](/docs/rules/no-unknown-attr)と[`no-disallowed-attr`](/docs/rules/no-disallowed-attr)の担当です。このルールは、それらが既に許可している属性の値のみを検査します。
 
 ❌ 間違ったコード例

@@ -2877,3 +2877,54 @@ test('[no-invalid-attr-value-invalid-083] a boolean attribute does not take a na
 	expect(violations.length).toBe(1);
 	expect(violations[0]?.raw).toBe(' disabled ');
 });
+
+test('[no-invalid-attr-value-valid-054] the value that the HTML Standard allows for an obsolete but conforming attribute', async () => {
+	// https://html.spec.whatwg.org/multipage/obsolete.html#obsolete-but-conforming-features
+	const html =
+		'<img src="a.png" alt="" border="0"><style type="TEXT/CSS"></style><script src="a.js" charset="UTF-8" language="javascript"></script>';
+	expect((await mlRuleTest(rule, html)).violations).toStrictEqual([]);
+});
+
+test('[no-invalid-attr-value-invalid-084] any other value of an obsolete but conforming attribute is non-conforming', async () => {
+	const html = '<img src="a.png" alt="" border="1"><style type="text/plain"></style>';
+	const { violations } = await mlRuleTest(rule, html);
+	expect(violations.map(v => v.raw)).toStrictEqual(['1', 'text/plain']);
+});
+
+test('[no-invalid-attr-value-invalid-085] exportparts takes part mappings, which do not nest a mapping in a mapping', async () => {
+	// https://drafts.csswg.org/css-shadow-1/#exportparts-attr
+	const { violations } = await mlRuleTest(rule, '<div exportparts="a:b:c"></div>');
+	expect(violations.map(v => v.raw)).toStrictEqual(['a:b:c']);
+});
+
+test('[no-invalid-attr-value-invalid-086] xml:lang has to have the value of lang, ASCII case-insensitive', async () => {
+	// https://html.spec.whatwg.org/multipage/dom.html#the-lang-and-xml:lang-attributes
+	const { violations } = await mlRuleTest(rule, '<div lang="en" xml:lang="fr"></div><div lang="en" xml:lang></div>');
+	expect(violations).toStrictEqual([
+		{
+			severity: 'error',
+			line: 1,
+			col: 26,
+			message: 'The "xml:lang" attribute expects "en"',
+			raw: 'fr',
+		},
+		{
+			severity: 'error',
+			line: 1,
+			col: 59,
+			message: 'The "xml:lang" attribute expects "en"',
+			raw: '',
+		},
+	]);
+});
+
+test('[no-invalid-attr-value-valid-055] xml:lang with the same value as lang, in any ASCII case', async () => {
+	expect((await mlRuleTest(rule, '<div lang="en" xml:lang="EN"></div>')).violations).toStrictEqual([]);
+	// without lang the attribute is not allowed, which is no-disallowed-attr's to say
+	expect((await mlRuleTest(rule, '<div xml:lang="en"></div>')).violations).toStrictEqual([]);
+});
+
+test('[no-invalid-attr-value-valid-056] xml:lang is not compared with a lang that is code', async () => {
+	const options = { parser: { '.*': '@markuplint/jsx-parser' } };
+	expect((await mlRuleTest(rule, '<div lang={l} xml:lang="fr" />', options)).violations).toStrictEqual([]);
+});

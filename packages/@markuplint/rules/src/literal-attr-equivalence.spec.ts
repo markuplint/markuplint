@@ -411,7 +411,7 @@ describe('an attribute that the framework does not output is as if it were not w
  */
 const NAME_BASED: readonly (readonly [string, string, string, unknown])[] = [
 	['no-unknown-attr', '<div foo={null}></div>', '<div foo="x"></div>', undefined],
-	['no-deprecated-attr', '<a charset={null}></a>', '<a charset="x"></a>', undefined],
+	['no-deprecated-attr', '<a name={null}></a>', '<a name="x"></a>', undefined],
 	[
 		'no-obsolete-attr',
 		'<link rel="made" href="/a" rev={null} />',
