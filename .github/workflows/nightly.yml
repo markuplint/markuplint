@@ -139,7 +139,7 @@ jobs:
 
             - name: Cache Restore devDependencies
               id: cache-restore-dev-depends
-              uses: actions/cache/restore@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6
+              uses: actions/cache/restore@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
               with:
                   path: |
                       **/node_modules
@@ -153,7 +153,7 @@ jobs:
             # same paths, and a path that differs from this list is a build that is not restored.
             - name: Cache Restore Production
               id: cache-restore-prod
-              uses: actions/cache/restore@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6
+              uses: actions/cache/restore@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
               with:
                   lookup-only: true
                   enableCrossOsArchive: true
@@ -174,7 +174,7 @@ jobs:
 
             - name: Cache Save devDependencies
               if: steps.cache-restore-dev-depends.outputs.cache-hit != 'true'
-              uses: actions/cache/save@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6
+              uses: actions/cache/save@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
               with:
                   path: |
                       **/node_modules
@@ -186,7 +186,7 @@ jobs:
             - name: Cache Restore Nx
               id: cache-restore-nx
               if: steps.cache-restore-prod.outputs.cache-hit != 'true'
-              uses: actions/cache/restore@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6
+              uses: actions/cache/restore@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
               with:
                   path: .nx/cache
                   key: nx-ubuntu-latest-node${{ env.NODE_BUILD_VERSION }}-${{ hashFiles('yarn.lock') }}-${{ github.sha }}
@@ -211,14 +211,14 @@ jobs:
             # Not saved on an exact hit: the push to `dev` of `test.yml` saves the entry of this commit.
             - name: Cache Save Nx
               if: steps.cache-restore-prod.outputs.cache-hit != 'true' && steps.cache-restore-nx.outputs.cache-hit != 'true'
-              uses: actions/cache/save@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6
+              uses: actions/cache/save@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
               with:
                   path: .nx/cache
                   key: nx-ubuntu-latest-node${{ env.NODE_BUILD_VERSION }}-${{ hashFiles('yarn.lock') }}-${{ github.sha }}
 
             - name: Cache Save Production
               if: steps.cache-restore-prod.outputs.cache-hit != 'true'
-              uses: actions/cache/save@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6
+              uses: actions/cache/save@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
               with:
                   enableCrossOsArchive: true
                   path: |
@@ -267,7 +267,7 @@ jobs:
             # Nothing else saves the entry of Node.js 24, so this job does, on a miss.
             - name: Cache Restore devDependencies
               id: cache-restore-dev-depends
-              uses: actions/cache/restore@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6
+              uses: actions/cache/restore@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
               with:
                   path: |
                       **/node_modules
@@ -276,7 +276,7 @@ jobs:
 
             - name: Cache Restore Production
               id: cache-restore-prod
-              uses: actions/cache/restore@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6
+              uses: actions/cache/restore@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
               with:
                   enableCrossOsArchive: true
                   path: |
@@ -305,7 +305,7 @@ jobs:
 
             - name: Cache Save devDependencies
               if: steps.cache-restore-dev-depends.outputs.cache-hit != 'true'
-              uses: actions/cache/save@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6
+              uses: actions/cache/save@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
               with:
                   path: |
                       **/node_modules
@@ -361,7 +361,7 @@ jobs:
 
             - name: Cache Restore devDependencies
               id: cache-restore-dev-depends
-              uses: actions/cache/restore@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6
+              uses: actions/cache/restore@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
               with:
                   path: |
                       **/node_modules
@@ -370,7 +370,7 @@ jobs:
 
             - name: Cache Restore Production
               id: cache-restore-prod
-              uses: actions/cache/restore@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6
+              uses: actions/cache/restore@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
               with:
                   enableCrossOsArchive: true
                   path: |
@@ -399,7 +399,7 @@ jobs:
 
             - name: Cache Save devDependencies
               if: steps.cache-restore-dev-depends.outputs.cache-hit != 'true'
-              uses: actions/cache/save@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6
+              uses: actions/cache/save@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
               with:
                   path: |
                       **/node_modules
@@ -445,7 +445,7 @@ jobs:
               run: echo "dir=$(yarn config get cacheFolder)" >> "$GITHUB_OUTPUT"
 
             - name: Cache Restore devDependencies
-              uses: actions/cache/restore@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6
+              uses: actions/cache/restore@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
               with:
                   path: |
                       **/node_modules
@@ -454,7 +454,7 @@ jobs:
 
             - name: Cache Restore Production
               id: cache-restore-prod
-              uses: actions/cache/restore@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6
+              uses: actions/cache/restore@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
               with:
                   enableCrossOsArchive: true
                   path: |
@@ -564,7 +564,7 @@ jobs:
               run: echo "dir=$(yarn config get cacheFolder)" >> "$GITHUB_OUTPUT"
 
             - name: Cache Restore devDependencies
-              uses: actions/cache/restore@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6
+              uses: actions/cache/restore@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
               with:
                   path: |
                       **/node_modules
@@ -573,7 +573,7 @@ jobs:
 
             - name: Cache Restore Production
               id: cache-restore-prod
-              uses: actions/cache/restore@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6
+              uses: actions/cache/restore@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
               with:
                   enableCrossOsArchive: true
                   path: |
@@ -641,7 +641,7 @@ jobs:
               run: echo "dir=$(yarn config get cacheFolder)" >> "$GITHUB_OUTPUT"
 
             - name: Cache Restore devDependencies
-              uses: actions/cache/restore@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6
+              uses: actions/cache/restore@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
               with:
                   path: |
                       **/node_modules
@@ -650,7 +650,7 @@ jobs:
 
             - name: Cache Restore Production
               id: cache-restore-prod
-              uses: actions/cache/restore@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6
+              uses: actions/cache/restore@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
               with:
                   enableCrossOsArchive: true
                   path: |
