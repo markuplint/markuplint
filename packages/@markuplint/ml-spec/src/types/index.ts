@@ -293,8 +293,10 @@ export type ElementSpec = {
 	/**
 	 * Description
 	 *
-	 * `@markuplint/html-spec` does not fill it: the prose of MDN and the W3C documents is not copied into the data.
+	 * `@markuplint/html-spec` does not fill it: the prose of the specifications is not copied into the data.
 	 * Nothing in markuplint reads it; a spec that an `ExtendedSpec` adds may set it.
+	 *
+	 * @deprecated Delete it; there is no replacement. Removed in v6.
 	 */
 	readonly description?: string;
 
@@ -398,6 +400,8 @@ export type Attribute = {
 		| readonly ReadonlyDeep<ConditionalAttributeType>[];
 	/**
 	 * Description. Not filled by `@markuplint/html-spec` (see {@link ElementSpec.description}).
+	 *
+	 * @deprecated Delete it; there is no replacement. Removed in v6.
 	 */
 	readonly description?: string;
 	readonly caseSensitive?: true;
@@ -450,7 +454,11 @@ export type ARIARole = {
  */
 export type ARIARoleInSchema = Partial<
 	ARIARole & {
-		/** Not filled by `@markuplint/html-spec` (see {@link ElementSpec.description}). */
+		/**
+		 * Not filled by `@markuplint/html-spec` (see {@link ElementSpec.description}).
+		 *
+		 * @deprecated Delete it; there is no replacement. Removed in v6.
+		 */
 		readonly description: string;
 		readonly generalization: readonly string[];
 	}
@@ -494,7 +502,11 @@ export type ARIAProperty = {
 	readonly enum: readonly string[];
 	readonly defaultValue?: string;
 	readonly equivalentHtmlAttrs?: readonly EquivalentHtmlAttr[];
-	/** Not filled by `@markuplint/html-spec` (see {@link ElementSpec.description}). */
+	/**
+	 * Not filled by `@markuplint/html-spec` (see {@link ElementSpec.description}).
+	 *
+	 * @deprecated Delete it; there is no replacement. Removed in v6.
+	 */
 	readonly valueDescriptions?: Readonly<Record<string, string>>;
 };
 
