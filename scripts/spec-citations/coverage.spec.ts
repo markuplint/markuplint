@@ -19,7 +19,7 @@ const { specs } = JSON.parse(readFileSync(join(root, 'packages/@markuplint/html-
 	readonly specs: readonly Element[];
 };
 
-/** An element with a source file cites its definition there; one without (the obsolete elements) has only its `cite`. */
+/** An element whose source file the monitor reads cites its definition there; one whose file is not tracked yet has only its `cite`. */
 const withSource = specs.filter(s => files.some(f => f.path === elementSourcePath(s.name)));
 const withoutSource = specs.filter(s => !withSource.includes(s));
 
@@ -29,6 +29,20 @@ const withoutSource = specs.filter(s => !withSource.includes(s));
  * `mprescripts`). The section is pinned, so that moving the citation away from it fails as any other mismatch does.
  */
 const SHARED_SECTIONS: Readonly<Record<string, string>> = {
+	acronym: 'non-conforming-features',
+	applet: 'non-conforming-features',
+	bgsound: 'non-conforming-features',
+	dir: 'non-conforming-features',
+	frameset: 'non-conforming-features',
+	isindex: 'non-conforming-features',
+	listing: 'non-conforming-features',
+	menuitem: 'non-conforming-features',
+	nextid: 'non-conforming-features',
+	noembed: 'non-conforming-features',
+	param: 'non-conforming-features',
+	plaintext: 'non-conforming-features',
+	strike: 'non-conforming-features',
+	xmp: 'non-conforming-features',
 	'mml:annotation': 'semantics-and-presentation',
 	'mml:annotation-xml': 'semantics-and-presentation',
 	'mml:mprescripts': 'prescripts-and-tensor-indices-mmultiscripts',
@@ -48,7 +62,7 @@ const firstLine = (path: string) => readFileSync(join(root, path), 'utf8').split
  * The weekly monitor, which reads the section itself, is what notices that the specification reworded the definition
  * of an element. These tests hold, offline, the part of that promise that does not need the network: every element
  * of the generated data cites the section that defines it, on the first line of its source file, at a URL that the
- * monitor reads; an element with no source file has a `cite` that a tracked file cites. Whether the section holds
+ * monitor reads; an element whose source file is not tracked yet has a `cite` that a tracked file cites. Whether the section holds
  * enough text to be one is the monitor's own check (`anchor-thin`), which needs the page.
  */
 describe('every element cites the section that defines it', () => {

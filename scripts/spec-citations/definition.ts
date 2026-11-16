@@ -74,8 +74,8 @@ export const MIN_ARIA_DEFINITION_LENGTH = 30;
  * What a citation has to be long enough to stand for, or `null` when it need not be: the definition of an element
  * (the first line of its source file) or of a role or a property of ARIA (derived from the generated data). `advice`
  * is what to do about a section that is too short, which differs because only the first can be re-pointed by hand.
- * The term of an obsolete element is cited by the generated data too, and is a line long by nature (`xmp`: "Use pre
- * and code instead"), so it has no minimum.
+ * The cite of an element whose source file is not tracked yet is read from the generated data (`elements.ts`), and
+ * has no minimum: the first line of the file is what the minimum applies to once the file is added.
  */
 export function definitionOf(
 	citation: Citation,

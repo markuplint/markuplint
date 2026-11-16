@@ -22,13 +22,14 @@ function lineOf(lines: readonly string[], name: string): number {
 }
 
 /**
- * The sections that elements without a source file are defined by, as citations of the generated data: the `cite` of
- * each such element, when it is a page that the monitor reads. The obsolete elements are the ones, and the data
- * cites each at its own term of the list of non-conforming features. Nobody writes these as citations, so they are
- * read from the data, and an element that the generator picks up is watched without anyone adding it.
+ * The sections that elements whose source file the monitor cannot read are defined by, as citations of the generated
+ * data: the `cite` of each such element, when it is a page that the monitor reads. Every element of
+ * `@markuplint/html-spec` has a source file, so these are the elements whose file is not tracked yet (a new one that
+ * is not added): the data cites each at the section of its source file's first line, and reading it from the data
+ * keeps the element watched until the file is added.
  *
- * An element that has a source file is left out: it cites its definition there, on the first line. A section that
- * several elements cite is cited once.
+ * An element whose source file the monitor reads is left out: it cites its definition there, on the first line. A
+ * section that several elements cite is cited once.
  */
 export function collectElementCitations(
 	indexJson: string,
