@@ -110,6 +110,8 @@ pub enum IsDuplicatable {
 
 #[derive(Debug, Deserialize)]
 pub struct MLMLSpec {
+    /// TS `MLMLSpec.cites` (`@deprecated`): `@markuplint/html-spec` no longer writes it.
+    #[serde(default)]
     pub cites: Vec<String>,
     pub def: SpecDefs,
     pub specs: Vec<ElementSpec>,
@@ -237,8 +239,17 @@ pub struct Attribute {
     pub obsolete: Option<bool>,
     #[serde(default)]
     pub deprecated: Option<bool>,
+    /// TS `deprecatedWhen`: the attribute is `deprecated` for the elements that one of the selectors
+    /// matches (the "obsolete but conforming" features of the HTML Standard depend on a value or on
+    /// another attribute). `deprecated: true` is the unconditional one.
+    #[serde(default, rename = "deprecatedWhen")]
+    pub deprecated_when: Option<AttributeCondition>,
     #[serde(default, rename = "nonStandard")]
     pub non_standard: Option<bool>,
+    /// TS `sameValueAs`: the name of another attribute of the same element whose value this attribute
+    /// has to have, compared as ASCII case-insensitive strings (`xml:lang` has the value of `lang`).
+    #[serde(default, rename = "sameValueAs")]
+    pub same_value_as: Option<String>,
     #[serde(default, rename = "defaultValue")]
     pub default_value: Option<String>,
     /// TS: `bool | AttributeCondition`
@@ -283,7 +294,9 @@ impl Attribute {
             experimental,
             obsolete,
             deprecated,
+            deprecated_when,
             non_standard,
+            same_value_as,
             default_value,
             required,
             required_either,

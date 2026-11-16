@@ -8,7 +8,7 @@ description: 論理属性に値を指定すると警告します。
 
 :::info
 
-いずれのプリセットにも含まれません。HTMLは論理属性にどんな値を与えても許容します（存在するかどうかだけが意味を持つ）ため、これを禁止するのは純粋にプロジェクトのスタイル選好です。
+いずれのプリセットにも含まれません。空文字と属性名と同じ値（`required="required"`）は論理属性の適合する値なので、値を書かないことは純粋にプロジェクトのスタイル選好です。そのどちらでもない値は適合せず、[`no-invalid-attr-value`](/docs/rules/no-invalid-attr-value)が報告します（[HTML Standard](https://momdo.github.io/html/common-microsyntaxes.html#boolean-attributes)）。
 
 :::
 

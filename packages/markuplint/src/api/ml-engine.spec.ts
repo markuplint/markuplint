@@ -2142,6 +2142,53 @@ describe('debug option of the constructor', () => {
 	});
 });
 
+describe('the debug output of the resolved schemas', () => {
+	const logged: string[] = [];
+	const originalLog = debug.log;
+
+	beforeEach(() => {
+		logged.length = 0;
+		debug.log = (...args: unknown[]) => {
+			logged.push(args.join(' '));
+		};
+	});
+
+	afterEach(() => {
+		debug.log = originalLog;
+		debug.disable();
+	});
+
+	it('names the HTML Standard instead of dumping its data, and dumps the schemas that follow it', async () => {
+		debug.disable();
+		const file = await MLEngine.toMLFile({ sourceCode: '<div></div>', name: 'a.tsx' });
+		const engine = new MLEngine(file!, {
+			debug: true,
+			noSearchConfig: true,
+			config: { parser: { '\\.tsx$': '@markuplint/jsx-parser' }, specs: { '\\.tsx$': '@markuplint/react-spec' } },
+		});
+
+		await engine.exec();
+
+		const schemas = logged.filter(line => line.includes('Resolved schemas:'));
+		expect(schemas).toHaveLength(2);
+		expect(schemas[0]).toContain('Resolved schemas: HTML Standard');
+		expect(schemas[1]).not.toContain('HTML Standard');
+		expect(schemas[1]).toContain('Resolved schemas:');
+	});
+
+	it('names only the HTML Standard when no spec follows it', async () => {
+		debug.disable();
+		const file = await MLEngine.toMLFile({ sourceCode: '<div></div>', name: 'a.html' });
+		const engine = new MLEngine(file!, { debug: true, noSearchConfig: true, config: {} });
+
+		await engine.exec();
+
+		const schemas = logged.filter(line => line.includes('Resolved schemas:'));
+		expect(schemas).toHaveLength(1);
+		expect(schemas[0]).toContain('Resolved schemas: HTML Standard');
+	});
+});
+
 describe('a relative filePath of an inline pretender is resolved from the configuration that declares it', () => {
 	const pretender = (filePath: string) => ({ selector: 'Item', as: 'li', filePath });
 

@@ -1028,6 +1028,25 @@ test('[no-invalid-attr-value-issue-3598-023] input[type=color] with a value that
 	expect(valueViolation!.message).toContain('CSS color');
 });
 
+test('[no-invalid-attr-value-issue-4655-001] input[type=color] with a three-digit hex color', async () => {
+	const { violations } = await mlRuleTest(rule, '<input type="color" value="#fff">');
+	expect(violations).toStrictEqual([]);
+});
+
+test('[no-invalid-attr-value-issue-4655-002] input[type=color] with six hex digits but no number sign', async () => {
+	const { violations } = await mlRuleTest(rule, '<input type="color" value="ff0000">');
+	expect(violations).toStrictEqual([
+		{
+			severity: 'error',
+			line: 1,
+			col: 28,
+			message:
+				'The "value" attribute expects the CSS color format (https://html.spec.whatwg.org/multipage/input.html#color-state-(type=color))',
+			raw: 'ff0000',
+		},
+	]);
+});
+
 test('[no-invalid-attr-value-issue-3189-001] rel=preload with valid as value', async () => {
 	const { violations } = await mlRuleTest(rule, '<link rel="preload" href="/a.js" as="script">');
 	expect(violations).toStrictEqual([]);
@@ -2653,4 +2672,259 @@ test('[no-invalid-attr-value-issue-4584-001] the allowed values are shown as wri
 			raw: 'foo',
 		},
 	]);
+});
+
+test('[no-invalid-attr-value-invalid-073] a URL with a code point that is not a URL code point is rejected', async () => {
+	// `|` is not a URL code point: invalid-URL-unit in the path, the query and the fragment.
+	// https://url.spec.whatwg.org/#url-code-points
+	const path = await mlRuleTest(rule, '<a href="file:///C|/foo"></a>');
+	expect(path.violations.length).toBe(1);
+	const query = await mlRuleTest(rule, '<a href="http://example.com/?q=a|b"></a>');
+	expect(query.violations.length).toBe(1);
+	const fragment = await mlRuleTest(rule, '<img src="/a#b{c}" alt="">');
+	expect(fragment.violations.length).toBe(1);
+});
+
+test('[no-invalid-attr-value-invalid-074] a drive letter as the host of a file URL is rejected', async () => {
+	// https://url.spec.whatwg.org/#file-invalid-windows-drive-letter-host
+	const { violations } = await mlRuleTest(rule, '<a href="file://C:/foo"></a>');
+	expect(violations).toMatchObject([{ severity: 'error', line: 1, col: 10, raw: 'file://C:/foo' }]);
+});
+
+test('[no-invalid-attr-value-parser-005] JSX: a URL written as an expression is not judged, a literal with braces is', async () => {
+	// A value that the parser reads as code (`isDynamicValue`) is skipped; a string literal is the value itself,
+	// and `{` and `}` are not URL code points.
+	const options = { parser: { '.*': '@markuplint/jsx-parser' } };
+	const dynamic = await mlRuleTest(rule, '<a href={`/p/${id}?q=a|b`}></a>', options);
+	expect(dynamic.violations).toStrictEqual([]);
+	const literal = await mlRuleTest(rule, '<a href="/p/{id}"></a>', options);
+	expect(literal.violations.length).toBe(1);
+});
+
+test('[no-invalid-attr-value-valid-049] input: capture takes the keywords of HTML Media Capture and the empty string', async () => {
+	// https://www.w3.org/TR/html-media-capture/#the-capture-attribute
+	for (const html of [
+		'<input type="file" accept="image/*" capture="user">',
+		'<input type="file" accept="image/*" capture="environment">',
+		'<input type="file" accept="image/*" capture="">',
+		'<input type="file" accept="image/*" capture>',
+		'<input type="file" accept="image/*" capture="USER">',
+		'<input type="FILE" accept="image/*" capture="user">',
+		'<input type="file" webkitdirectory>',
+		'<input type="FILE" webkitdirectory>',
+	]) {
+		expect((await mlRuleTest(rule, html)).violations, html).toStrictEqual([]);
+	}
+});
+
+test('[no-invalid-attr-value-valid-050] SVG: x, y, width and height of pattern take a length or a percentage', async () => {
+	// https://svgwg.org/svg2-draft/pservers.html#PatternElementXAttribute
+	const svg =
+		'<svg xmlns="http://www.w3.org/2000/svg"><pattern x="10" y="5%" width="20px" height="2em"></pattern></svg>';
+	expect((await mlRuleTest(rule, svg)).violations).toStrictEqual([]);
+});
+
+test('[no-invalid-attr-value-invalid-075] input: capture does not take a keyword other than user and environment', async () => {
+	const { violations } = await mlRuleTest(rule, '<input type="file" accept="image/*" capture="front">');
+	expect(violations).toStrictEqual([
+		{
+			severity: 'error',
+			line: 1,
+			col: 46,
+			message: 'The "capture" attribute expects either "", "user", "environment"',
+			raw: 'front',
+		},
+	]);
+});
+
+test('[no-invalid-attr-value-invalid-076] SVG: x and width of pattern do not take a value that is not a length', async () => {
+	const svg = '<svg xmlns="http://www.w3.org/2000/svg"><pattern x="left" width="wide"></pattern></svg>';
+	const { violations } = await mlRuleTest(rule, svg);
+	expect(violations).toStrictEqual([
+		{
+			severity: 'error',
+			line: 1,
+			col: 53,
+			message:
+				'The "x" attribute expects the CSS Syntax "<svg-length>" (https://csstree.github.io/docs/syntax/#Type:svg-length). Or, the "x" attribute expects the CSS Syntax "<percentage>" (https://csstree.github.io/docs/syntax/#Type:percentage)',
+			raw: 'left',
+		},
+		{
+			severity: 'error',
+			line: 1,
+			col: 66,
+			message:
+				'The "width" attribute expects the CSS Syntax "<svg-length>" (https://csstree.github.io/docs/syntax/#Type:svg-length). Or, the "width" attribute expects the CSS Syntax "<percentage>" (https://csstree.github.io/docs/syntax/#Type:percentage)',
+			raw: 'wide',
+		},
+	]);
+});
+
+test('[no-invalid-attr-value-invalid-077] audio and video: controlslist takes the tokens of the WICG controls-list', async () => {
+	const video = await mlRuleTest(rule, '<video controlslist="nodownload nothing"></video>');
+	expect(video.violations.map(v => v.raw)).toStrictEqual(['nothing']);
+	const { violations } = await mlRuleTest(rule, '<audio controlslist="nodownload nothing"></audio>');
+	expect(violations).toStrictEqual([
+		{
+			severity: 'error',
+			line: 1,
+			col: 33,
+			message:
+				'The "controlslist" attribute expects space-separated list. the content of the list expects either "nodownload", "nofullscreen", "noremoteplayback"',
+			raw: 'nothing',
+		},
+	]);
+});
+
+test('[no-invalid-attr-value-invalid-078] SVG: mask-type of the mask element takes luminance or alpha', async () => {
+	// https://drafts.csswg.org/css-masking-1/#propdef-mask-type
+	const svg = '<svg xmlns="http://www.w3.org/2000/svg"><mask mask-type="foo"></mask></svg>';
+	expect((await mlRuleTest(rule, svg)).violations.map(v => v.raw)).toStrictEqual(['foo']);
+	expect(
+		(await mlRuleTest(rule, '<svg xmlns="http://www.w3.org/2000/svg"><mask mask-type="alpha"></mask></svg>'))
+			.violations,
+	).toStrictEqual([]);
+});
+
+test('[no-invalid-attr-value-invalid-079] SVG: decoding of the image element takes sync, async or auto', async () => {
+	const svg = '<svg xmlns="http://www.w3.org/2000/svg"><image href="a.png" decoding="fast"></image></svg>';
+	const { violations } = await mlRuleTest(rule, svg);
+	expect(violations.map(v => v.raw)).toStrictEqual(['fast']);
+});
+
+test('[no-invalid-attr-value-valid-051] input: the keywords of capture and the type of the input are ASCII case-insensitive', async () => {
+	// https://html.spec.whatwg.org/multipage/common-microsyntaxes.html#keywords-and-enumerated-attributes
+	for (const html of [
+		'<input type="file" capture="USER">',
+		'<input type="file" capture="Environment">',
+		'<input type="FILE" accept="image/*" capture="user">',
+	]) {
+		expect((await mlRuleTest(rule, html)).violations, html).toStrictEqual([]);
+	}
+});
+
+test('[no-invalid-attr-value-valid-052] SVG: in and in2 of feDisplacementMap take a keyword of the filter primitive input or a result name', async () => {
+	// https://drafts.csswg.org/filter-effects-1/#feDisplacementMapElement
+	const svg =
+		'<svg xmlns="http://www.w3.org/2000/svg"><filter><feDisplacementMap in="SourceGraphic" in2="map"></feDisplacementMap></filter></svg>';
+	expect((await mlRuleTest(rule, svg)).violations).toStrictEqual([]);
+});
+
+test('[no-invalid-attr-value-invalid-080] SVG: in of feDisplacementMap does not take two words', async () => {
+	const svg =
+		'<svg xmlns="http://www.w3.org/2000/svg"><filter><feDisplacementMap in="junk junk"></feDisplacementMap></filter></svg>';
+	const { violations } = await mlRuleTest(rule, svg);
+	expect(violations).toStrictEqual([
+		{
+			severity: 'error',
+			line: 1,
+			col: 72,
+			message:
+				'The "in" attribute expects either "SourceGraphic", "SourceAlpha", "BackgroundImage", "BackgroundAlpha", "FillPaint", "StrokePaint"',
+			raw: 'junk junk',
+		},
+		{
+			severity: 'error',
+			line: 1,
+			col: 77,
+			message:
+				'The value part of the "in" attribute expects the CSS Syntax "<custom-ident>" (https://csstree.github.io/docs/syntax/#Type:custom-ident)',
+			raw: 'junk',
+		},
+	]);
+});
+
+// https://html.spec.whatwg.org/multipage/common-microsyntaxes.html#boolean-attributes
+test('[no-invalid-attr-value-valid-053] the value of a boolean attribute is the empty string or the name of the attribute, in any case', async () => {
+	for (const html of [
+		'<input disabled>',
+		'<input disabled="">',
+		'<input disabled="disabled">',
+		'<input disabled="DISABLED">',
+		'<INPUT DISABLED="Disabled">',
+		'<img src="a.png" alt="photo" controls="controls">',
+		'<video disablepictureinpicture="disablepictureinpicture"></video>',
+	]) {
+		expect((await mlRuleTest(rule, html)).violations, html).toStrictEqual([]);
+	}
+});
+
+test('[no-invalid-attr-value-invalid-081] a boolean attribute does not take a value other than the empty string and its name', async () => {
+	const { violations } = await mlRuleTest(rule, '<img src="foo.jpg" alt="foo" controls="invalid">');
+	expect(violations).toStrictEqual([
+		{
+			severity: 'error',
+			line: 1,
+			col: 40,
+			message: 'The "controls" attribute expects either "", "controls"',
+			raw: 'invalid',
+		},
+	]);
+});
+
+test('[no-invalid-attr-value-invalid-082] disabled="true" and disabled="false" are reported, since the value is not the name', async () => {
+	for (const value of ['true', 'false', '1']) {
+		const { violations } = await mlRuleTest(rule, `<button disabled="${value}"></button>`);
+		expect(
+			violations.map(v => v.raw),
+			value,
+		).toStrictEqual([value]);
+	}
+});
+
+test('[no-invalid-attr-value-invalid-083] a boolean attribute does not take a name with leading or trailing whitespace', async () => {
+	const { violations } = await mlRuleTest(rule, '<input disabled=" disabled ">');
+	expect(violations.length).toBe(1);
+	expect(violations[0]?.raw).toBe(' disabled ');
+});
+
+test('[no-invalid-attr-value-valid-054] the value that the HTML Standard allows for an obsolete but conforming attribute', async () => {
+	// https://html.spec.whatwg.org/multipage/obsolete.html#obsolete-but-conforming-features
+	const html =
+		'<img src="a.png" alt="" border="0"><style type="TEXT/CSS"></style><script src="a.js" charset="UTF-8" language="javascript"></script>';
+	expect((await mlRuleTest(rule, html)).violations).toStrictEqual([]);
+});
+
+test('[no-invalid-attr-value-invalid-084] any other value of an obsolete but conforming attribute is non-conforming', async () => {
+	const html = '<img src="a.png" alt="" border="1"><style type="text/plain"></style>';
+	const { violations } = await mlRuleTest(rule, html);
+	expect(violations.map(v => v.raw)).toStrictEqual(['1', 'text/plain']);
+});
+
+test('[no-invalid-attr-value-invalid-085] exportparts takes part mappings, which do not nest a mapping in a mapping', async () => {
+	// https://drafts.csswg.org/css-shadow-1/#exportparts-attr
+	const { violations } = await mlRuleTest(rule, '<div exportparts="a:b:c"></div>');
+	expect(violations.map(v => v.raw)).toStrictEqual(['a:b:c']);
+});
+
+test('[no-invalid-attr-value-invalid-086] xml:lang has to have the value of lang, ASCII case-insensitive', async () => {
+	// https://html.spec.whatwg.org/multipage/dom.html#the-lang-and-xml:lang-attributes
+	const { violations } = await mlRuleTest(rule, '<div lang="en" xml:lang="fr"></div><div lang="en" xml:lang></div>');
+	expect(violations).toStrictEqual([
+		{
+			severity: 'error',
+			line: 1,
+			col: 26,
+			message: 'The "xml:lang" attribute expects "en"',
+			raw: 'fr',
+		},
+		{
+			severity: 'error',
+			line: 1,
+			col: 59,
+			message: 'The "xml:lang" attribute expects "en"',
+			raw: '',
+		},
+	]);
+});
+
+test('[no-invalid-attr-value-valid-055] xml:lang with the same value as lang, in any ASCII case', async () => {
+	expect((await mlRuleTest(rule, '<div lang="en" xml:lang="EN"></div>')).violations).toStrictEqual([]);
+	// without lang the attribute is not allowed, which is no-disallowed-attr's to say
+	expect((await mlRuleTest(rule, '<div xml:lang="en"></div>')).violations).toStrictEqual([]);
+});
+
+test('[no-invalid-attr-value-valid-056] xml:lang is not compared with a lang that is code', async () => {
+	const options = { parser: { '.*': '@markuplint/jsx-parser' } };
+	expect((await mlRuleTest(rule, '<div lang={l} xml:lang="fr" />', options)).violations).toStrictEqual([]);
 });

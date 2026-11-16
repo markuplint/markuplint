@@ -209,8 +209,23 @@ export async function mlTestFile(target: Target, config?: Config, locale?: strin
 export interface NodeRule<T extends RuleConfigValue, O extends PlainData = undefined> {
 	selector?: string;
 	regexSelector?: RegexSelector;
+	/**
+	 * Nothing reads it: a node rule is matched by `selector` or `regexSelector` only.
+	 *
+	 * @deprecated Delete it and use `selector` or `regexSelector`. Removed in v6.
+	 */
 	categories?: string[];
+	/**
+	 * Nothing reads it (see {@link NodeRule.categories}).
+	 *
+	 * @deprecated Delete it and use `selector` or `regexSelector`. Removed in v6.
+	 */
 	roles?: string[];
+	/**
+	 * Nothing reads it (see {@link NodeRule.categories}).
+	 *
+	 * @deprecated Delete it and use `selector` or `regexSelector`. Removed in v6.
+	 */
 	obsolete?: boolean;
 	rule?: Rule<T, O>;
 }

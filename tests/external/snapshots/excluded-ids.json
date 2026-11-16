@@ -81,6 +81,33 @@
 			"specUrl": "https://www.w3.org/TR/css-syntax-3/",
 			"addedAt": "2026-07-06",
 			"addedBy": "hirao"
+		},
+		{
+			"id": "nv-170769f884fb",
+			"path": "html/datatypes/color-wrong-length-novalid.html",
+			"nuMessage": "Bad value “#fff” for attribute “value” on element “input”: Incorrect length for color string.",
+			"reason": "HTML LS §4.10.5.1.14 Color state (type=color): 'The value attribute, if specified and not the empty string, must have a value that is a CSS color.' `#fff` is a CSS color (a three-digit hex color), so the fixture is spec-conformant. nu-validator's `SimpleColor` datatype (`src/nu/validator/datatype/SimpleColor.java`, `checkValid`) rejects every value whose length is not 7 and then requires '#' plus six hex digits, which is the former 'valid simple colour' definition; that is stricter than HTML LS. markuplint accepts any CSS `<color>` here (`packages/@markuplint/types/src/whatwg/check-simple-color.ts`). Excluded by id, not by a message pattern: the same message also fires on `html/datatypes/color-no-hash-novalid.html` (`ff0000`), which is not a CSS color and must stay match-error.",
+			"specUrl": "https://html.spec.whatwg.org/multipage/input.html#color-state-(type=color)",
+			"addedAt": "2026-11-14",
+			"addedBy": "hirao"
+		},
+		{
+			"id": "nv-75d0de74c651",
+			"path": "html/elements/input/color-invalid-value-novalid.html",
+			"nuMessage": "Bad value “red” for attribute “value” on element “input”: Incorrect length for color string.",
+			"reason": "HTML LS §4.10.5.1.14 Color state (type=color): 'The value attribute, if specified and not the empty string, must have a value that is a CSS color.' `red` is a CSS color (a named color), so the fixture is spec-conformant. nu-validator's `SimpleColor` datatype (`src/nu/validator/datatype/SimpleColor.java`, `checkValid`) rejects every value whose length is not 7 and then requires '#' plus six hex digits, which is the former 'valid simple colour' definition; that is stricter than HTML LS. markuplint accepts any CSS `<color>` here (`packages/@markuplint/types/src/whatwg/check-simple-color.ts`). Excluded by id, not by a message pattern: the same message also fires on `html/datatypes/color-no-hash-novalid.html` (`ff0000`), which is not a CSS color and must stay match-error.",
+			"specUrl": "https://html.spec.whatwg.org/multipage/input.html#color-state-(type=color)",
+			"addedAt": "2026-11-14",
+			"addedBy": "hirao"
+		},
+		{
+			"id": "nv-be8aa4a62838",
+			"path": "html/elements/input/color-short-hex-novalid.html",
+			"nuMessage": "Bad value “#fff” for attribute “value” on element “input”: Incorrect length for color string.",
+			"reason": "HTML LS §4.10.5.1.14 Color state (type=color): 'The value attribute, if specified and not the empty string, must have a value that is a CSS color.' `#fff` is a CSS color (a three-digit hex color), so the fixture is spec-conformant. nu-validator's `SimpleColor` datatype (`src/nu/validator/datatype/SimpleColor.java`, `checkValid`) rejects every value whose length is not 7 and then requires '#' plus six hex digits, which is the former 'valid simple colour' definition; that is stricter than HTML LS. markuplint accepts any CSS `<color>` here (`packages/@markuplint/types/src/whatwg/check-simple-color.ts`). Excluded by id, not by a message pattern: the same message also fires on `html/datatypes/color-no-hash-novalid.html` (`ff0000`), which is not a CSS color and must stay match-error.",
+			"specUrl": "https://html.spec.whatwg.org/multipage/input.html#color-state-(type=color)",
+			"addedAt": "2026-11-14",
+			"addedBy": "hirao"
 		}
 	],
 	"patterns": [
@@ -89,6 +116,13 @@
 			"reason": "WHATWG URL Living Standard supersedes RFC 2397. Per URL LS §4.3, 'A valid URL string must be either a relative-URL-with-fragment string or an absolute-URL-with-fragment string.' An absolute-URL-with-fragment string is 'an absolute-URL string, optionally followed by U+0023 (#) and a URL-fragment string.' Since 'data' is a non-special scheme, 'data:<body>#<fragment>' matches this grammar and is a valid URL string. HTML conformance (which requires a valid URL string) is therefore satisfied.",
 			"specUrl": "https://url.spec.whatwg.org/#url-writing",
 			"addedAt": "2026-04-23",
+			"addedBy": "hirao"
+		},
+		{
+			"messageContains": "” must not appear as a descendant of an “h1”, “h2”, “h3”, “h4”, “h5”, or “h6” element.",
+			"reason": "nu-validator reports an element whose role is listed as Flow content in ARIA in HTML §5 'Allowed descendants of ARIA roles' as a non-conforming h1–h6 descendant. That section opens with 'This section is non-normative.', and §6 adds 'As well as sections marked as non-normative, all authoring guidelines, diagrams, examples, and notes in this specification are non-normative.' The normative constraint on a document is §6.1: 'A conforming document MUST NOT contain any elements with author defined role or aria-* attributes with values other than those which, per this specification, authors MAY use on each HTML element in 4. Document conformance requirements for use of ARIA attributes in HTML.' §4 gives `span` 'Any role, though generic SHOULD NOT be used.', and HTML LS §4.3.6 gives h1–h6 the content model 'Phrasing content.', which `span` is; no normative text lets the role attribute change an element's HTML content categories. `<h1><span role=alert>…</span></h1>` and its siblings are therefore conformant. Expected effect: 15 fixtures (`html-aria/misc/role-*-inside-h1-novalid.html`); 14 are nu-over, and role-feed is ml-only because markuplint's require-owned-elements also reports it. The substring is the end of the message only, as the role sits in the middle: in the corpus it matches these 15 role messages and nothing else, and a new message that ends the same way must be checked against this reason. Withdraws the coverage claim of #4028.",
+			"specUrl": "https://www.w3.org/TR/html-aria/#allowed-descendants",
+			"addedAt": "2026-11-14",
 			"addedBy": "hirao"
 		}
 	]

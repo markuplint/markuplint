@@ -9,6 +9,8 @@ description: 属性の値が仕様(あるいはカスタムルール)が要求�
 
 このルールは[HTML Living Standard](https://html.spec.whatwg.org/)に基づいています。設定は[`@markuplint/html-spec`](https://github.com/markuplint/markuplint/tree/main/packages/%40markuplint/html-spec/src)にあります。
 
+同じ要素の別の属性と同じ値でなければならない属性も検査します。HTML要素の`xml:lang`は`lang`と同じ値でなければなりません(ASCIIの大文字小文字を区別せずに比較します)。
+
 属性名がそもそも既知で適用可能かどうかは[`no-unknown-attr`](/docs/rules/no-unknown-attr)と[`no-disallowed-attr`](/docs/rules/no-disallowed-attr)の担当です。このルールは、それらが既に許可している属性の値のみを検査します。
 
 ❌ 間違ったコード例
@@ -34,6 +36,20 @@ description: 属性の値が仕様(あるいはカスタムルール)が要求�
 ## 詳細
 
 属性名はDOMが比較するのと同じ方法で比較します。これは構文と要素によって変わり、HTML構文では`TYPE`は`type`です。詳細は[属性名の大文字・小文字](/docs/rules/no-unknown-attr#attribute-name-case)を参照してください。`allowAttrs`の名前も同じ方法で比較します。
+
+### `pattern`属性 {#pattern-attribute}
+
+`<input pattern>`の値は、HTML標準と同じく`v`フラグで正規表現としてコンパイルできるときに限り受け入れられます。コンパイルできないとき、ブラウザーはこの属性を無視します。
+
+> Let regexpCompletion be RegExpCreate(pattern, "v").
+
+[HTML Standard](https://momdo.github.io/html/input.html#compiled-pattern-regular-expression)より引用
+
+> Let anchoredPattern be the string "^(?:", followed by pattern, followed by ")$".
+
+[HTML Standard](https://momdo.github.io/html/input.html#compiled-pattern-regular-expression)より引用
+
+`v`フラグはフラグなしより厳格なため、フラグなしでは有効なパターンが報告されることがあります。たとえば、文字クラスの末尾のハイフンはエスケープが必要です。`[\w.-]+`ではなく`[\w.\-]+`と書いてください。
 
 ### `allowAttrs`オプションの設定 {#setting-allow-attrs-option}
 

@@ -228,6 +228,20 @@ export const defs: Defs = {
 	},
 
 	/**
+	 * Accepts exactly when the HTML Standard has a compiled pattern regular
+	 * expression for the value; a browser that has none ignores the attribute.
+	 *
+	 * The Standard asserts (`!`) that the wrapped compile cannot fail once the
+	 * value compiles alone, so only the first `new RegExp` can throw here.
+	 * The second stays as the Standard's own step.
+	 *
+	 * The `catch` is deliberately without an `isFatalError` guard, which
+	 * would treat the `SyntaxError` as fatal: it wraps the `new RegExp` calls
+	 * on the author's value alone, so that `SyntaxError` is the author's input
+	 * being invalid, not a broken invariant of markuplint. Any other error is
+	 * re-thrown (see the exceptions in the module JSDoc of
+	 * `@markuplint/shared`'s `errors/index.ts`).
+	 *
 	 * @see https://html.spec.whatwg.org/multipage/input.html#compiled-pattern-regular-expression
 	 *
 	 * > Let regexpCompletion be RegExpCreate(pattern, "v").
@@ -236,11 +250,10 @@ export const defs: Defs = {
 	 *
 	 * > Let anchoredPattern be the string "^(?:", followed by pattern, followed by ")$".
 	 *
-	 * The value is compiled alone and then wrapped, both with the `v` flag. The Rust engine asks
-	 * `isValidPatternAttributeValue` in `ml-engine.ts` of `markuplint`, which makes the same two
-	 * compilations: keep them equal. The `catch` wraps `new RegExp` of the author's text alone, so a
-	 * `SyntaxError` is the answer "not a regular expression" and not a broken invariant (no
-	 * `isFatalError()` guard; `@markuplint/shared`, `errors/index.ts`).
+	 * > Return ! RegExpCreate(anchoredPattern, "v").
+	 *
+	 * The Rust engine asks `isValidPatternAttributeValue` in `ml-engine.ts` of `markuplint`, which
+	 * makes the same two compilations: keep them equal.
 	 */
 	Pattern: {
 		ref: 'https://html.spec.whatwg.org/multipage/input.html#compiled-pattern-regular-expression',
@@ -254,8 +267,11 @@ export const defs: Defs = {
 			try {
 				new RegExp(value, 'v');
 				new RegExp(`^(?:${value})$`, 'v');
-			} catch {
-				return unmatched(value);
+			} catch (error) {
+				if (error instanceof SyntaxError) {
+					return unmatched(value);
+				}
+				throw error;
 			}
 			return matched();
 		},

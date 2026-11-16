@@ -122,6 +122,13 @@ export interface SelectorElement extends SelectorNode {
 	 * The accessible name of the element, memoized per element: what `:aria(has name)` reads.
 	 */
 	getAccessibleName(version: ARIAVersion): string;
+	/**
+	 * Whether the element may have an accessible name that the markup as written does not show: its name
+	 * is in a branch of a conditional block, and the markup does not say which branch is rendered. `:aria(has name)`
+	 * matches such an element and `:aria(has no name)` does not. Absent means the host has no conditional
+	 * block, so `getAccessibleName` is the whole answer.
+	 */
+	mayHaveAccessibleName?(version: ARIAVersion): boolean;
 }
 
 /**

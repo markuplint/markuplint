@@ -20,6 +20,12 @@ import { mergeArray } from './merge-array.js';
  *
  * @see https://github.com/markuplint/markuplint/issues/3893
  *
+ * The merged spec shares the base spec's own `specs` array and `def['#contentModels']` object for as long as no
+ * extension changes them (it is a shallow copy; an extension that adds element specs or content models gets a
+ * new one). `getARIA` and `contentModelCategoryToTagNames` cache by the identity of these two, so that the caches
+ * stay warm across documents when there is no extension, and a copy of either would cool them for every file.
+ * `schema-to-spec.spec.ts` pins which extensions keep them.
+ *
  * @param schemas - A tuple where the first element is the base `MLMLSpec` and subsequent elements are extended specs to merge
  * @returns The merged specification combining the base spec with all extensions
  */
@@ -28,7 +34,7 @@ export function schemaToSpec(schemas: readonly [MLMLSpec, ...ExtendedSpec[]]) {
 	const result = { ...main };
 	for (const extendedSpec of extendedSpecs) {
 		if (extendedSpec.cites) {
-			result.cites = [...result.cites, ...extendedSpec.cites];
+			result.cites = [...(result.cites ?? []), ...extendedSpec.cites];
 		}
 		if (extendedSpec.def) {
 			const def = { ...result.def };
@@ -123,6 +129,12 @@ export function schemaToSpec(schemas: readonly [MLMLSpec, ...ExtendedSpec[]]) {
 					continue;
 				}
 				const exSpec = exSpecs.splice(index, 1)[0];
+				// A base spec that has no categories (`@markuplint/html-spec` writes none) keeps the
+				// key off the element unless an extension sets it
+				const categories =
+					elSpec.categories || exSpec?.categories
+						? mergeArray(elSpec.categories ?? [], exSpec?.categories)
+						: undefined;
 				specs.push({
 					...elSpec,
 					...exSpec,
@@ -131,7 +143,7 @@ export function schemaToSpec(schemas: readonly [MLMLSpec, ...ExtendedSpec[]]) {
 						...exSpec?.globalAttrs,
 					},
 					attributes: mergeAttrSpec(elSpec.attributes, exSpec?.attributes),
-					categories: mergeArray(elSpec.categories, exSpec?.categories),
+					...(categories && { categories }),
 				});
 			}
 

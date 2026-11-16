@@ -1,24 +1,17 @@
 import { createRule, getSpec } from '@markuplint/ml-core';
 
+import { isFlagCheckedElement } from '../helpers.js';
 import meta from './meta.js';
 
 export default createRule({
 	meta: meta,
-	// Deprecation data is sourced from MDN/BCD (factual, not a spec MUST/MUST
-	// NOT), unlike `no-obsolete-element`'s HTML LS non-conforming-features list.
+	// Deprecation is what a specification calls deprecated or what browser vendors deprecate
+	// (BCD): factual, not a spec MUST/MUST NOT, unlike the HTML LS non-conforming
+	// features that `no-obsolete-element` follows.
 	defaultSeverity: 'warning',
 	async verify({ document, report, t }) {
 		await document.walkOn('Element', el => {
-			if (
-				!(
-					el.namespaceURI === 'http://www.w3.org/1999/xhtml' ||
-					el.namespaceURI === 'http://www.w3.org/2000/svg'
-				) ||
-				// Web components and authored elements (JSX/Vue/Svelte) reach this rule
-				// through `pretenders`: they masquerade as a known HTML element via
-				// `el.localName`, so the spec lookup below resolves correctly. See #3740.
-				(el.elementType !== 'html' && el.pretenderContext?.type !== 'pretender')
-			) {
+			if (!isFlagCheckedElement(el)) {
 				return;
 			}
 			const spec = getSpec(el, document.specs.specs);

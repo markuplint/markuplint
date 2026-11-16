@@ -1,4 +1,4 @@
-// https://svgwg.org/svg2-draft/pservers.html#Patterns
+// https://svgwg.org/svg2-draft/pservers.html#PatternElement
 // https://www.w3.org/TR/svg-aam/#role-map-pattern
 {
 	"contentModel": {
@@ -28,7 +28,7 @@
 	},
 	"globalAttrs": {
 		"#GlobalEventAttrs": true,
-		"#SVGCoreAttrs": ["id", "tabindex", "autofocus", "lang", "xml:space", "class", "style"],
+		"#SVGCoreAttrs": ["id", "tabindex", "autofocus", "lang", "xml:space", "class", "style", "part", "exportparts"],
 		"#SVGPresentationAttrs": [
 			"alignment-baseline",
 			"baseline-shift",
@@ -112,13 +112,29 @@
 			"defaultValue": "xMidYMid meet",
 			"animatable": true
 		},
+		// https://svgwg.org/svg2-draft/pservers.html#PatternElementXAttribute
+		"x": {
+			"type": ["<svg-length>", "<percentage>"],
+			"defaultValue": "0",
+			"animatable": true
+		},
+		// https://svgwg.org/svg2-draft/pservers.html#PatternElementYAttribute
+		"y": {
+			"type": ["<svg-length>", "<percentage>"],
+			"defaultValue": "0",
+			"animatable": true
+		},
 		// https://svgwg.org/svg2-draft/pservers.html#PatternElementWidthAttribute
 		"width": {
-			"defaultValue": "0"
+			"type": ["<svg-length>", "<percentage>"],
+			"defaultValue": "0",
+			"animatable": true
 		},
 		// https://svgwg.org/svg2-draft/pservers.html#PatternElementHeightAttribute
 		"height": {
-			"defaultValue": "0"
+			"type": ["<svg-length>", "<percentage>"],
+			"defaultValue": "0",
+			"animatable": true
 		},
 		// https://svgwg.org/svg2-draft/pservers.html#PatternElementPatternUnitsAttribute
 		"patternUnits": {

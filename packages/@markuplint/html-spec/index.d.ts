@@ -10,7 +10,12 @@ declare namespace json {
 }
 
 declare const json: {
-	cites: Cites;
+	/**
+	 * `@markuplint/html-spec` writes no `cites` (see `MLMLSpec.cites` of `@markuplint/ml-spec`).
+	 *
+	 * @deprecated Delete it; there is no replacement. Removed in v6.
+	 */
+	cites?: Cites;
 	def: SpecDefs;
 	specs: ElementSpec[];
 };

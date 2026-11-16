@@ -9,8 +9,8 @@ This package provides the consolidated HTML element specification data for marku
 - **HTML Living Standard elements** with complete attribute definitions
 - **WAI-ARIA mappings** (implicit roles, permitted roles, ARIA properties)
 - **Content model definitions** for each element
-- **MDN-enriched metadata** (descriptions, compatibility, experimental status)
-- **Automated external data integration** from authoritative sources
+- **Status flags** (experimental, deprecated, obsolete and non-standard): the ones a specification defines are written in the sources, the others come from `@mdn/browser-compat-data`
+- **Automated external data integration** from authoritative sources. The data holds structure and references, not their prose: for the text, see the HTML Living Standard and WAI-ARIA
 
 This package serves as the data layer in markuplint's specification system, depending on `@markuplint/ml-spec` for type definitions and structural schemas.
 
@@ -31,18 +31,18 @@ Core packages (Application Layer)
 
 ### Generated Output (DO NOT EDIT)
 
-- **`index.json`** - Consolidated specification data (48K+ lines)
+- **`index.json`** - Consolidated specification data
 
 ### Source Files (EDIT THESE)
 
-- **`src/spec.*.jsonc`** - Individual element specifications (208 files)
-- **`src/spec-common.attributes.jsonc`** - Global attribute category definitions (20 categories)
-- **`src/spec-common.contents.jsonc`** - Content model category macros (HTML 10 + SVG 19 + MathML 3 categories)
+- **`src/spec.*.jsonc`** - Individual element specifications
+- **`src/spec-common.attributes.jsonc`** - Global attribute category definitions
+- **`src/spec-common.contents.jsonc`** - Content model category macros
 
 ### Build System
 
 - **`build.ts`** - Generation script that invokes `generator/` modules
-- Fetches live data from MDN, W3C ARIA specs, Graphics ARIA, DPub ARIA, HTML-ARIA mappings, HTML Living Standard, SVG specs, and MathML specs
+- Fetches live data from W3C ARIA specs, Graphics ARIA, DPub ARIA and HTML-ARIA mappings, and reads the status flags from the pinned `@mdn/browser-compat-data`
 
 ## Relationship to @markuplint/ml-spec
 
@@ -55,7 +55,7 @@ Core packages (Application Layer)
 **@markuplint/html-spec** (this package) provides:
 
 - **Canonical HTML data** following the type definitions from `@markuplint/ml-spec`
-- **External data enrichment** from MDN and W3C specifications
+- **External data enrichment** from the W3C ARIA documents and `@mdn/browser-compat-data`
 - **Build automation** that keeps data synchronized with external sources
 
 ## Install

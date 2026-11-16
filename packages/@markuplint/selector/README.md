@@ -100,6 +100,8 @@ An argument that the pseudo-class does not accept (`:aria(foo)`, `:role(button|9
 | `has name`    | `:aria(has name)`    | Matches the element has accessible name        |
 | `has no name` | `:aria(has no name)` | Matches the element has **no** accessible name |
 
+An element whose name may be in a branch of a conditional block (`{#if}` of Svelte, `<template x-if>` of Alpine.js, and the element that has `v-if`, `v-else-if`, `v-else` or `v-for` of Vue) has no name as written but may have one, so `has name` matches it and `has no name` does not.
+
 ### ARIA Role pseudo-class
 
 ```

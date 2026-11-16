@@ -221,4 +221,106 @@ describe('schemaToSpec', () => {
 			expect(first).toStrictEqual({ literalValues: { booleanAttrs: { '""': null } } });
 		});
 	});
+
+	/**
+	 * `getARIA` and `contentModelCategoryToTagNames` cache by the identity of `specs` and of `def['#contentModels']`,
+	 * so the base spec's own objects have to come back whenever no extension changes them: a copy per document would
+	 * leave those caches cold for every file.
+	 */
+	describe('what the merged spec shares with the base spec', () => {
+		test('the specs and the content models when there is no extension', () => {
+			const merged = schemaToSpec([htmlSpec]);
+			expect(merged.specs).toBe(htmlSpec.specs);
+			expect(merged.def['#contentModels']).toBe(htmlSpec.def['#contentModels']);
+		});
+
+		test('the specs and the content models when an extension changes neither', () => {
+			const merged = schemaToSpec([htmlSpec, { cites: ['https://example.com/'], movedToHead: ['x'] }]);
+			expect(merged.specs).toBe(htmlSpec.specs);
+			expect(merged.def['#contentModels']).toBe(htmlSpec.def['#contentModels']);
+		});
+
+		test.each([
+			['directive patterns', { directivePatterns: [{ pattern: '^v-', props: [] }] }],
+			['the literal values', { literalValues: { booleanAttrs: { '': null } } }],
+			['the global attributes', { def: { '#globalAttrs': { '#extends': { 'my-attr': { type: 'Any' } } } } }],
+		])('the specs and the content models when an extension changes only %s', (_name, extension) => {
+			const merged = schemaToSpec([htmlSpec, extension]);
+			expect(merged.specs).toBe(htmlSpec.specs);
+			expect(merged.def['#contentModels']).toBe(htmlSpec.def['#contentModels']);
+		});
+
+		test('the specs and the content models when an extension changes only the ARIA definitions', () => {
+			const aria = htmlSpec.def['#aria'];
+			const merged = schemaToSpec([
+				htmlSpec,
+				{ def: { '#aria': { '1.1': { ...aria['1.1'], roles: [] }, '1.2': aria['1.2'], '1.3': aria['1.3'] } } },
+			]);
+			expect(merged.specs).toBe(htmlSpec.specs);
+			expect(merged.def['#contentModels']).toBe(htmlSpec.def['#contentModels']);
+		});
+
+		test('the content models when an extension changes only the element specs', () => {
+			const merged = schemaToSpec([htmlSpec, { specs: [{ name: 'my-element', attributes: {} }] }]);
+			expect(merged.specs).not.toBe(htmlSpec.specs);
+			expect(merged.def['#contentModels']).toBe(htmlSpec.def['#contentModels']);
+		});
+
+		test('the element specs when an extension changes only the content models', () => {
+			const merged = schemaToSpec([htmlSpec, { def: { '#contentModels': { '#flow': ['my-element'] } } }]);
+			expect(merged.specs).toBe(htmlSpec.specs);
+			expect(merged.def['#contentModels']).not.toBe(htmlSpec.def['#contentModels']);
+		});
+	});
+
+	/**
+	 * `@markuplint/html-spec` writes neither `cites` nor the `categories` of an element, and an extension can still set
+	 * them.
+	 */
+	describe('the fields that the base spec does not write', () => {
+		const base = {
+			def: htmlSpec.def,
+			specs: [{ name: 'a', contentModel: { contents: true }, globalAttrs: {}, attributes: {} }],
+		};
+
+		test('no cites appear when neither the base spec nor an extension has them', () => {
+			expect('cites' in schemaToSpec([base, { movedToHead: ['x'] }])).toBe(false);
+		});
+
+		test('the cites of an extension are the cites of the merged spec when the base spec has none', () => {
+			expect(schemaToSpec([base, { cites: ['https://example.com/'] }]).cites).toStrictEqual([
+				'https://example.com/',
+			]);
+		});
+
+		test('the cites of an extension follow those of the base spec', () => {
+			const merged = schemaToSpec([
+				{ ...base, cites: ['https://a.example/'] },
+				{ cites: ['https://b.example/'] },
+			]);
+			expect(merged.cites).toStrictEqual(['https://a.example/', 'https://b.example/']);
+		});
+
+		test('the categories of an extension follow those of the base spec', () => {
+			const withCategories = { ...base, specs: [{ ...base.specs[0], categories: ['#phrasing'] }] };
+			const merged = schemaToSpec([withCategories, { specs: [{ name: 'a', categories: ['#flow'] }] }]);
+			expect(merged.specs[0].categories).toStrictEqual(['#phrasing', '#flow']);
+		});
+
+		test('the categories of the base spec stay when an extension has none', () => {
+			const withCategories = { ...base, specs: [{ ...base.specs[0], categories: ['#phrasing'] }] };
+			const merged = schemaToSpec([withCategories, { specs: [{ name: 'a', attributes: {} }] }]);
+			expect(merged.specs[0].categories).toStrictEqual(['#phrasing']);
+		});
+
+		test('no categories appear on an element when neither the base spec nor an extension has them', () => {
+			const merged = schemaToSpec([base, { specs: [{ name: 'a', attributes: {} }] }]);
+			expect('categories' in merged.specs[0]).toBe(false);
+		});
+
+		test('the categories of an extension are the categories of the element when the base spec has none', () => {
+			const merged = schemaToSpec([base, { specs: [{ name: 'a', categories: ['#flow'] }] }]);
+			expect(merged.specs[0].categories).toStrictEqual(['#flow']);
+		});
+	});
 });

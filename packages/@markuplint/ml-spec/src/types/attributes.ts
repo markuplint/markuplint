@@ -1389,6 +1389,7 @@ export interface GlobalAttributes {
         | "onseeked"
         | "onseeking"
         | "onselect"
+        | "onshow"
         | "onslotchange"
         | "onstalled"
         | "onsubmit"
@@ -1403,6 +1404,10 @@ export interface GlobalAttributes {
         | "onwebkitanimationstart"
         | "onwebkittransitionend"
         | "onwheel"
+        | "ontouchstart"
+        | "ontouchend"
+        | "ontouchmove"
+        | "ontouchcancel"
         | "onanimationstart"
         | "onanimationiteration"
         | "onanimationend"
@@ -1434,16 +1439,7 @@ export interface GlobalAttributes {
    * @minItems 0
    */
   "#HTMLEmbededAndMediaContentAttrs"?: (
-    | "autoplay"
-    | "controls"
-    | "height"
-    | "loop"
-    | "muted"
-    | "preload"
-    | "sizes"
-    | "src"
-    | "srcset"
-    | "width"
+    "autoplay" | "controls" | "height" | "loop" | "muted" | "preload" | "sizes" | "src" | "srcset" | "width"
   )[];
   /**
    * @minItems 0
@@ -1489,15 +1485,7 @@ export interface GlobalAttributes {
    * @minItems 0
    */
   "#SVGAnimationTimingAttrs"?: (
-    | "begin"
-    | "dur"
-    | "end"
-    | "min"
-    | "max"
-    | "restart"
-    | "repeatCount"
-    | "repeatDur"
-    | "fill"
+    "begin" | "dur" | "end" | "min" | "max" | "restart" | "repeatCount" | "repeatDur" | "fill"
   )[];
   /**
    * @minItems 0
@@ -1533,6 +1521,8 @@ export interface GlobalAttributes {
     | "xmlns"
     | "xml:lang"
     | "xml:base"
+    | "part"
+    | "exportparts"
   )[];
   /**
    * @minItems 0
@@ -1628,25 +1618,14 @@ export interface GlobalAttributes {
    * @minItems 0
    */
   "#SVGTransferFunctionAttrs"?: (
-    | "type"
-    | "tableValues"
-    | "slope"
-    | "intercept"
-    | "amplitude"
-    | "exponent"
-    | "offset"
+    "type" | "tableValues" | "slope" | "intercept" | "amplitude" | "exponent" | "offset"
   )[];
+  "#MathMLGlobalAttrs"?: boolean;
   /**
    * @minItems 0
    */
   "#XLinkAttrs"?: (
-    | "xlink:href"
-    | "xlink:title"
-    | "xlink:actuate"
-    | "xlink:arcrole"
-    | "xlink:role"
-    | "xlink:show"
-    | "xlink:type"
+    "xlink:href" | "xlink:title" | "xlink:actuate" | "xlink:arcrole" | "xlink:role" | "xlink:show" | "xlink:type"
   )[];
 }
 export interface Attributes {
@@ -1658,11 +1637,21 @@ export interface Attributes {
  */
 export interface AttributeJSON {
   type?:
-    | AttributeType
-    | [AttributeType, ...AttributeType[]]
-    | [ConditionalAttributeType, ...ConditionalAttributeType[]];
+    AttributeType | [AttributeType, ...AttributeType[]] | [ConditionalAttributeType, ...ConditionalAttributeType[]];
   defaultValue?: string;
+  /**
+   * The name of another attribute of the same element whose value this attribute has to have, compared as ASCII case-insensitive strings: `xml:lang` of an HTML element has to have the value of `lang` (HTML Standard, "The lang and xml:lang attributes"). The presence of that attribute is the business of `condition`.
+   */
+  sameValueAs?: string;
   deprecated?: boolean;
+  /**
+   * Deprecated for the elements that one of the selectors matches, as the "obsolete but conforming" features of the HTML Standard are: they depend on the value of the attribute or on another attribute. `deprecated: true` is the unconditional one.
+   */
+  deprecatedWhen?: AttributeCondition;
+  /**
+   * Obsolete: removed from the specification and must not be used by authors.
+   */
+  obsolete?: true;
   required?: boolean | AttributeCondition;
   requiredEither?: string[];
   noUse?: boolean;
@@ -1670,6 +1659,10 @@ export interface AttributeJSON {
   ineffective?: AttributeCondition;
   animatable?: boolean;
   experimental?: boolean;
+  /**
+   * Non-standard: never part of any standard (vendor-specific or proprietary).
+   */
+  nonStandard?: boolean;
 }
 /**
  * - [Space-separated tokens](https://html.spec.whatwg.org/multipage/common-microsyntaxes.html#space-separated-tokens)

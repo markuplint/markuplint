@@ -9,8 +9,7 @@ import { cachedSpecs } from './content-model.js';
 // extended by `@markuplint/vue-spec`, are linted in one run), so the specs merged with the `tag` rules are kept
 // for each of them, not for the rules alone.
 describe('cachedSpecs', () => {
-	const specsOf = (...names: string[]) =>
-		({ specs: names.map(name => ({ name })), def: {}, cites: [] }) as unknown as MLMLSpec;
+	const specsOf = (...names: string[]) => ({ specs: names.map(name => ({ name })), def: {} }) as unknown as MLMLSpec;
 	const rules: TagRule[] = [{ tag: 'x-a', contents: [{ require: 'x-b' }] }];
 
 	test('[permitted-contents-issue-4314-010] merges the tag rules into the specs of the document', () => {

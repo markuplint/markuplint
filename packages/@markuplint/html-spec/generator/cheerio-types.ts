@@ -4,8 +4,8 @@
  * cheerio types its nodes with the `domhandler` copy it resolves itself and does
  * not re-export `AnyNode` or `Element`. Importing them from a direct `domhandler`
  * dependency ties the generator to whichever copy that dependency resolves, and
- * once it differs from cheerio's, the generator's un-annotated return types
- * (`getThisOutline` in `utils.ts`) would have to name cheerio's nested copy,
+ * once it differs from cheerio's, an exported helper of the generator whose
+ * return type is inferred from cheerio nodes would have to name cheerio's nested copy,
  * which `yarn test:types` rejects with TS2883 ("The inferred type of … cannot be
  * named without a reference to …"). Types read off cheerio's return types stay on
  * cheerio's copy whatever version cheerio moves to.

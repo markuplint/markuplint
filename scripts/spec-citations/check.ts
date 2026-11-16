@@ -1,6 +1,7 @@
 import type { Page } from './extract.ts';
 import type { Citation, Lock, LockEntry, PageResult, Problem, ProblemKind, Quote } from './types.ts';
 
+import { definitionOf } from './definition.ts';
 import { splitSentences, unifiedDiff } from './diff.ts';
 import { extractDeclaration, isSourcePage } from './extract-source.ts';
 import { extractSection, pageText, parsePage } from './extract.ts';
@@ -32,6 +33,7 @@ const PRIORITY: readonly ProblemKind[] = [
 	'page-missing',
 	'anchor-missing',
 	'anchor-empty',
+	'anchor-thin',
 	'quote-mismatch',
 	'orphan-quote',
 	'inline-quote',
@@ -167,9 +169,21 @@ export function check(input: CheckInput): CheckResult {
 			});
 			continue;
 		}
-		units.set(key, section.unit);
-		if (!firstCitation.has(key)) {
-			firstCitation.set(key, citation);
+		// The few words of a term would never show a change of the definition, so this citation does not put its
+		// section into the lock, which would say it is watched. What else the citation says (a quote, a text
+		// fragment, a section number) is still checked.
+		const definition = definitionOf(citation);
+		if (definition !== null && section.unit.length < definition.minimum) {
+			problems.push({
+				kind: 'anchor-thin',
+				citation,
+				message: `\`#${citation.fragment}\` holds ${section.unit.length} characters on ${citation.page}, too little to be the section that defines the ${definition.what}; it is probably the anchor of a term; ${definition.advice}`,
+			});
+		} else {
+			units.set(key, section.unit);
+			if (!firstCitation.has(key)) {
+				firstCitation.set(key, citation);
+			}
 		}
 
 		for (const quote of citation.quotes) {

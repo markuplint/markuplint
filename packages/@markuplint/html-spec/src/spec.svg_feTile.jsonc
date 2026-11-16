@@ -1,4 +1,4 @@
-// https://drafts.fxtf.org/filter-effects/#feTileElement
+// https://drafts.csswg.org/filter-effects-1/#feTileElement
 // https://www.w3.org/TR/svg-aam/#role-map-fetile
 {
 	"contentModel": {
@@ -9,7 +9,7 @@
 		]
 	},
 	"globalAttrs": {
-		"#SVGCoreAttrs": ["id", "xml:base", "xml:lang", "xml:space", "class", "style"],
+		"#SVGCoreAttrs": ["id", "xml:base", "xml:lang", "xml:space", "class", "style", "part", "exportparts"],
 		"#SVGPresentationAttrs": [
 			"alignment-baseline",
 			"baseline-shift",

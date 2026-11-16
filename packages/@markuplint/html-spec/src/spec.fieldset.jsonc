@@ -17,7 +17,12 @@
 		"#ARIAAttrs": true,
 		"#HTMLFormControlElementAttrs": ["disabled", "form", "name"]
 	},
-	"attributes": {},
+	"attributes": {
+		// https://html.spec.whatwg.org/multipage/obsolete.html#non-conforming-features
+		"datafld": {
+			"obsolete": true
+		}
+	},
 	"aria": {
 		"implicitRole": "group",
 		"permittedRoles": ["radiogroup", "presentation", "none"]

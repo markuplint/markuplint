@@ -43,6 +43,13 @@
 			]
 		},
 		{
+			"path": "html-aria/author-requirements/581.html",
+			"category": "aria",
+			"ruleIds": [
+				"no-duplicate-aria-owns"
+			]
+		},
+		{
 			"path": "html-aria/combobox-autocomplete-list/div-haswarn.html",
 			"category": "aria",
 			"ruleIds": [
@@ -104,8 +111,7 @@
 			"path": "html-aria/misc/aria-labelledby-broken-idref-isvalid.html",
 			"category": "aria",
 			"ruleIds": [
-				"no-refer-to-non-existent-id",
-				"role-supports-aria-prop"
+				"no-refer-to-non-existent-id"
 			]
 		},
 		{
@@ -113,9 +119,7 @@
 			"category": "aria",
 			"ruleIds": [
 				"no-refer-to-non-existent-id",
-				"require-accessible-name",
-				"require-owned-elements",
-				"require-parent-role"
+				"require-accessible-name"
 			]
 		},
 		{
@@ -205,6 +209,13 @@
 			"category": "aria",
 			"ruleIds": [
 				"permitted-roles"
+			]
+		},
+		{
+			"path": "html-aria/misc/role-feed-inside-h1-novalid.html",
+			"category": "aria",
+			"ruleIds": [
+				"require-owned-elements"
 			]
 		},
 		{
@@ -2230,7 +2241,8 @@
 			"path": "html-math/maction-isvalid.html",
 			"category": "uncategorized",
 			"ruleIds": [
-				"no-deprecated-attr"
+				"no-deprecated-attr",
+				"no-deprecated-element"
 			]
 		},
 		{
@@ -2252,8 +2264,8 @@
 			"category": "uncategorized",
 			"ruleIds": [
 				"link-types",
-				"no-deprecated-attr",
 				"no-invalid-attr-value",
+				"no-obsolete-attr",
 				"no-unknown-attr"
 			]
 		},
@@ -2262,8 +2274,8 @@
 			"category": "uncategorized",
 			"ruleIds": [
 				"link-types",
-				"no-deprecated-attr",
 				"no-invalid-attr-value",
+				"no-obsolete-attr",
 				"no-unknown-attr"
 			]
 		},
@@ -2280,7 +2292,6 @@
 			"path": "html-rdfa/0009-isvalid.html",
 			"category": "uncategorized",
 			"ruleIds": [
-				"no-deprecated-attr",
 				"no-obsolete-attr",
 				"no-unknown-attr"
 			]
@@ -2290,7 +2301,6 @@
 			"category": "uncategorized",
 			"ruleIds": [
 				"link-types",
-				"no-deprecated-attr",
 				"no-invalid-attr-value",
 				"no-obsolete-attr",
 				"no-unknown-attr"
@@ -3974,8 +3984,8 @@
 			"path": "html-svg/animate-elem-02-t-isvalid.html",
 			"category": "uncategorized",
 			"ruleIds": [
-				"no-deprecated-attr",
 				"no-invalid-attr-value",
+				"no-obsolete-attr",
 				"no-unknown-attr",
 				"permitted-contents"
 			]
@@ -3984,8 +3994,8 @@
 			"path": "html-svg/animate-elem-03-t-isvalid.html",
 			"category": "uncategorized",
 			"ruleIds": [
-				"no-deprecated-attr",
 				"no-invalid-attr-value",
+				"no-obsolete-attr",
 				"no-unknown-attr",
 				"permitted-contents"
 			]
@@ -3994,8 +4004,8 @@
 			"path": "html-svg/animate-elem-04-t-isvalid.html",
 			"category": "uncategorized",
 			"ruleIds": [
-				"no-deprecated-attr",
 				"no-invalid-attr-value",
+				"no-obsolete-attr",
 				"no-unknown-attr",
 				"permitted-contents"
 			]
@@ -4004,8 +4014,8 @@
 			"path": "html-svg/animate-elem-05-t-isvalid.html",
 			"category": "uncategorized",
 			"ruleIds": [
-				"no-deprecated-attr",
 				"no-invalid-attr-value",
+				"no-obsolete-attr",
 				"no-unknown-attr",
 				"permitted-contents"
 			]
@@ -4014,8 +4024,8 @@
 			"path": "html-svg/animate-elem-06-t-isvalid.html",
 			"category": "uncategorized",
 			"ruleIds": [
-				"no-deprecated-attr",
 				"no-invalid-attr-value",
+				"no-obsolete-attr",
 				"no-unknown-attr",
 				"permitted-contents"
 			]
@@ -4026,6 +4036,7 @@
 			"ruleIds": [
 				"no-deprecated-attr",
 				"no-invalid-attr-value",
+				"no-obsolete-attr",
 				"no-unknown-attr",
 				"permitted-contents"
 			]
@@ -4034,8 +4045,8 @@
 			"path": "html-svg/animate-elem-08-t-isvalid.html",
 			"category": "uncategorized",
 			"ruleIds": [
-				"no-deprecated-attr",
 				"no-invalid-attr-value",
+				"no-obsolete-attr",
 				"no-unknown-attr",
 				"permitted-contents"
 			]
@@ -4046,6 +4057,7 @@
 			"ruleIds": [
 				"no-deprecated-attr",
 				"no-invalid-attr-value",
+				"no-obsolete-attr",
 				"no-unknown-attr",
 				"permitted-contents"
 			]
@@ -4054,8 +4066,8 @@
 			"path": "html-svg/animate-elem-10-t-isvalid.html",
 			"category": "uncategorized",
 			"ruleIds": [
-				"no-deprecated-attr",
 				"no-invalid-attr-value",
+				"no-obsolete-attr",
 				"no-unknown-attr",
 				"permitted-contents"
 			]
@@ -4064,8 +4076,8 @@
 			"path": "html-svg/animate-elem-11-t-isvalid.html",
 			"category": "uncategorized",
 			"ruleIds": [
-				"no-deprecated-attr",
 				"no-invalid-attr-value",
+				"no-obsolete-attr",
 				"no-unknown-attr",
 				"permitted-contents"
 			]
@@ -4074,8 +4086,8 @@
 			"path": "html-svg/animate-elem-12-t-isvalid.html",
 			"category": "uncategorized",
 			"ruleIds": [
-				"no-deprecated-attr",
 				"no-invalid-attr-value",
+				"no-obsolete-attr",
 				"no-unknown-attr",
 				"permitted-contents"
 			]
@@ -4084,8 +4096,8 @@
 			"path": "html-svg/animate-elem-13-t-isvalid.html",
 			"category": "uncategorized",
 			"ruleIds": [
-				"no-deprecated-attr",
 				"no-invalid-attr-value",
+				"no-obsolete-attr",
 				"no-unknown-attr",
 				"permitted-contents"
 			]
@@ -4096,6 +4108,7 @@
 			"ruleIds": [
 				"no-deprecated-attr",
 				"no-invalid-attr-value",
+				"no-obsolete-attr",
 				"no-unknown-attr",
 				"permitted-contents"
 			]
@@ -4106,6 +4119,7 @@
 			"ruleIds": [
 				"no-deprecated-attr",
 				"no-invalid-attr-value",
+				"no-obsolete-attr",
 				"no-unknown-attr",
 				"permitted-contents"
 			]
@@ -4116,6 +4130,7 @@
 			"ruleIds": [
 				"no-deprecated-attr",
 				"no-invalid-attr-value",
+				"no-obsolete-attr",
 				"no-unknown-attr",
 				"permitted-contents"
 			]
@@ -4126,6 +4141,7 @@
 			"ruleIds": [
 				"no-deprecated-attr",
 				"no-invalid-attr-value",
+				"no-obsolete-attr",
 				"no-unknown-attr",
 				"permitted-contents"
 			]
@@ -4136,6 +4152,7 @@
 			"ruleIds": [
 				"no-deprecated-attr",
 				"no-invalid-attr-value",
+				"no-obsolete-attr",
 				"no-unknown-attr",
 				"permitted-contents"
 			]
@@ -4146,6 +4163,7 @@
 			"ruleIds": [
 				"no-deprecated-attr",
 				"no-invalid-attr-value",
+				"no-obsolete-attr",
 				"no-unknown-attr",
 				"permitted-contents"
 			]
@@ -4154,8 +4172,8 @@
 			"path": "html-svg/animate-elem-22-b-isvalid.html",
 			"category": "uncategorized",
 			"ruleIds": [
-				"no-deprecated-attr",
 				"no-invalid-attr-value",
+				"no-obsolete-attr",
 				"no-unknown-attr",
 				"permitted-contents"
 			]
@@ -4164,8 +4182,8 @@
 			"path": "html-svg/animate-elem-23-t-isvalid.html",
 			"category": "uncategorized",
 			"ruleIds": [
-				"no-deprecated-attr",
 				"no-invalid-attr-value",
+				"no-obsolete-attr",
 				"no-unknown-attr",
 				"permitted-contents"
 			]
@@ -4176,6 +4194,7 @@
 			"ruleIds": [
 				"no-deprecated-attr",
 				"no-invalid-attr-value",
+				"no-obsolete-attr",
 				"no-unknown-attr",
 				"permitted-contents"
 			]
@@ -4184,8 +4203,8 @@
 			"path": "html-svg/animate-elem-26-t-isvalid.html",
 			"category": "uncategorized",
 			"ruleIds": [
-				"no-deprecated-attr",
 				"no-invalid-attr-value",
+				"no-obsolete-attr",
 				"no-unknown-attr",
 				"permitted-contents"
 			]
@@ -4196,6 +4215,7 @@
 			"ruleIds": [
 				"no-deprecated-attr",
 				"no-invalid-attr-value",
+				"no-obsolete-attr",
 				"no-unknown-attr",
 				"permitted-contents"
 			]
@@ -4204,8 +4224,8 @@
 			"path": "html-svg/animate-elem-28-t-isvalid.html",
 			"category": "uncategorized",
 			"ruleIds": [
-				"no-deprecated-attr",
 				"no-invalid-attr-value",
+				"no-obsolete-attr",
 				"no-unknown-attr",
 				"permitted-contents"
 			]
@@ -4216,6 +4236,7 @@
 			"ruleIds": [
 				"no-deprecated-attr",
 				"no-invalid-attr-value",
+				"no-obsolete-attr",
 				"no-unknown-attr",
 				"permitted-contents"
 			]
@@ -4226,6 +4247,7 @@
 			"ruleIds": [
 				"no-deprecated-attr",
 				"no-invalid-attr-value",
+				"no-obsolete-attr",
 				"no-unknown-attr",
 				"permitted-contents"
 			]
@@ -4234,8 +4256,8 @@
 			"path": "html-svg/animate-elem-31-t-isvalid.html",
 			"category": "uncategorized",
 			"ruleIds": [
-				"no-deprecated-attr",
 				"no-invalid-attr-value",
+				"no-obsolete-attr",
 				"no-unknown-attr",
 				"permitted-contents"
 			]
@@ -4244,8 +4266,8 @@
 			"path": "html-svg/animate-elem-32-t-isvalid.html",
 			"category": "uncategorized",
 			"ruleIds": [
-				"no-deprecated-attr",
 				"no-invalid-attr-value",
+				"no-obsolete-attr",
 				"no-unknown-attr",
 				"permitted-contents"
 			]
@@ -4254,8 +4276,8 @@
 			"path": "html-svg/animate-elem-33-t-isvalid.html",
 			"category": "uncategorized",
 			"ruleIds": [
-				"no-deprecated-attr",
 				"no-invalid-attr-value",
+				"no-obsolete-attr",
 				"no-unknown-attr",
 				"permitted-contents"
 			]
@@ -4264,8 +4286,8 @@
 			"path": "html-svg/animate-elem-34-t-isvalid.html",
 			"category": "uncategorized",
 			"ruleIds": [
-				"no-deprecated-attr",
 				"no-invalid-attr-value",
+				"no-obsolete-attr",
 				"no-unknown-attr",
 				"permitted-contents"
 			]
@@ -4276,6 +4298,7 @@
 			"ruleIds": [
 				"no-deprecated-attr",
 				"no-invalid-attr-value",
+				"no-obsolete-attr",
 				"no-unknown-attr",
 				"permitted-contents"
 			]
@@ -4286,6 +4309,7 @@
 			"ruleIds": [
 				"no-deprecated-attr",
 				"no-invalid-attr-value",
+				"no-obsolete-attr",
 				"no-unknown-attr",
 				"permitted-contents"
 			]
@@ -4294,8 +4318,8 @@
 			"path": "html-svg/animate-elem-37-t-isvalid.html",
 			"category": "uncategorized",
 			"ruleIds": [
-				"no-deprecated-attr",
 				"no-invalid-attr-value",
+				"no-obsolete-attr",
 				"no-unknown-attr",
 				"permitted-contents"
 			]
@@ -4304,8 +4328,8 @@
 			"path": "html-svg/animate-elem-38-t-isvalid.html",
 			"category": "uncategorized",
 			"ruleIds": [
-				"no-deprecated-attr",
 				"no-invalid-attr-value",
+				"no-obsolete-attr",
 				"no-unknown-attr",
 				"permitted-contents"
 			]
@@ -4316,6 +4340,7 @@
 			"ruleIds": [
 				"no-deprecated-attr",
 				"no-invalid-attr-value",
+				"no-obsolete-attr",
 				"no-unknown-attr",
 				"permitted-contents"
 			]
@@ -4326,6 +4351,7 @@
 			"ruleIds": [
 				"no-deprecated-attr",
 				"no-invalid-attr-value",
+				"no-obsolete-attr",
 				"no-unknown-attr",
 				"permitted-contents"
 			]
@@ -4336,6 +4362,7 @@
 			"ruleIds": [
 				"no-deprecated-attr",
 				"no-invalid-attr-value",
+				"no-obsolete-attr",
 				"no-unknown-attr",
 				"permitted-contents"
 			]
@@ -4344,8 +4371,8 @@
 			"path": "html-svg/animate-elem-44-t-isvalid.html",
 			"category": "uncategorized",
 			"ruleIds": [
-				"no-deprecated-attr",
 				"no-invalid-attr-value",
+				"no-obsolete-attr",
 				"no-unknown-attr",
 				"permitted-contents"
 			]
@@ -4356,6 +4383,7 @@
 			"ruleIds": [
 				"no-deprecated-attr",
 				"no-invalid-attr-value",
+				"no-obsolete-attr",
 				"no-unknown-attr",
 				"permitted-contents"
 			]
@@ -4364,8 +4392,8 @@
 			"path": "html-svg/animate-elem-52-t-isvalid.html",
 			"category": "uncategorized",
 			"ruleIds": [
-				"no-deprecated-attr",
 				"no-invalid-attr-value",
+				"no-obsolete-attr",
 				"no-unknown-attr",
 				"permitted-contents"
 			]
@@ -4376,6 +4404,7 @@
 			"ruleIds": [
 				"no-deprecated-attr",
 				"no-invalid-attr-value",
+				"no-obsolete-attr",
 				"no-unknown-attr",
 				"permitted-contents"
 			]
@@ -4384,8 +4413,8 @@
 			"path": "html-svg/animate-elem-60-t-isvalid.html",
 			"category": "uncategorized",
 			"ruleIds": [
-				"no-deprecated-attr",
 				"no-invalid-attr-value",
+				"no-obsolete-attr",
 				"no-unknown-attr",
 				"permitted-contents"
 			]
@@ -4396,6 +4425,7 @@
 			"ruleIds": [
 				"no-deprecated-attr",
 				"no-invalid-attr-value",
+				"no-obsolete-attr",
 				"no-unknown-attr",
 				"permitted-contents"
 			]
@@ -4404,8 +4434,8 @@
 			"path": "html-svg/animate-elem-62-t-isvalid.html",
 			"category": "uncategorized",
 			"ruleIds": [
-				"no-deprecated-attr",
 				"no-invalid-attr-value",
+				"no-obsolete-attr",
 				"no-unknown-attr",
 				"permitted-contents"
 			]
@@ -4416,6 +4446,7 @@
 			"ruleIds": [
 				"no-deprecated-attr",
 				"no-invalid-attr-value",
+				"no-obsolete-attr",
 				"no-unknown-attr",
 				"permitted-contents"
 			]
@@ -4426,6 +4457,7 @@
 			"ruleIds": [
 				"no-deprecated-attr",
 				"no-invalid-attr-value",
+				"no-obsolete-attr",
 				"no-unknown-attr",
 				"permitted-contents"
 			]
@@ -4436,6 +4468,7 @@
 			"ruleIds": [
 				"no-deprecated-attr",
 				"no-invalid-attr-value",
+				"no-obsolete-attr",
 				"no-unknown-attr",
 				"permitted-contents"
 			]
@@ -4446,6 +4479,7 @@
 			"ruleIds": [
 				"no-deprecated-attr",
 				"no-invalid-attr-value",
+				"no-obsolete-attr",
 				"no-unknown-attr",
 				"permitted-contents"
 			]
@@ -4456,6 +4490,7 @@
 			"ruleIds": [
 				"no-deprecated-attr",
 				"no-invalid-attr-value",
+				"no-obsolete-attr",
 				"no-unknown-attr",
 				"permitted-contents"
 			]
@@ -4466,6 +4501,7 @@
 			"ruleIds": [
 				"no-deprecated-attr",
 				"no-invalid-attr-value",
+				"no-obsolete-attr",
 				"no-unknown-attr",
 				"permitted-contents"
 			]
@@ -4476,6 +4512,7 @@
 			"ruleIds": [
 				"no-deprecated-attr",
 				"no-invalid-attr-value",
+				"no-obsolete-attr",
 				"no-unknown-attr",
 				"permitted-contents"
 			]
@@ -4486,6 +4523,7 @@
 			"ruleIds": [
 				"no-deprecated-attr",
 				"no-invalid-attr-value",
+				"no-obsolete-attr",
 				"no-unknown-attr",
 				"permitted-contents"
 			]
@@ -4496,6 +4534,7 @@
 			"ruleIds": [
 				"no-deprecated-attr",
 				"no-invalid-attr-value",
+				"no-obsolete-attr",
 				"no-unknown-attr",
 				"permitted-contents"
 			]
@@ -4506,6 +4545,7 @@
 			"ruleIds": [
 				"no-deprecated-attr",
 				"no-invalid-attr-value",
+				"no-obsolete-attr",
 				"no-unknown-attr",
 				"permitted-contents"
 			]
@@ -4516,6 +4556,7 @@
 			"ruleIds": [
 				"no-deprecated-attr",
 				"no-invalid-attr-value",
+				"no-obsolete-attr",
 				"no-unknown-attr",
 				"permitted-contents"
 			]
@@ -4524,8 +4565,8 @@
 			"path": "html-svg/animate-elem-81-t-isvalid.html",
 			"category": "uncategorized",
 			"ruleIds": [
-				"no-deprecated-attr",
 				"no-invalid-attr-value",
+				"no-obsolete-attr",
 				"no-unknown-attr",
 				"permitted-contents"
 			]
@@ -4534,8 +4575,8 @@
 			"path": "html-svg/animate-elem-82-t-isvalid.html",
 			"category": "uncategorized",
 			"ruleIds": [
-				"no-deprecated-attr",
 				"no-invalid-attr-value",
+				"no-obsolete-attr",
 				"no-unknown-attr",
 				"permitted-contents"
 			]
@@ -4544,8 +4585,8 @@
 			"path": "html-svg/animate-elem-83-t-isvalid.html",
 			"category": "uncategorized",
 			"ruleIds": [
-				"no-deprecated-attr",
 				"no-invalid-attr-value",
+				"no-obsolete-attr",
 				"no-unknown-attr",
 				"permitted-contents"
 			]
@@ -4554,8 +4595,8 @@
 			"path": "html-svg/animate-elem-84-t-isvalid.html",
 			"category": "uncategorized",
 			"ruleIds": [
-				"no-deprecated-attr",
 				"no-invalid-attr-value",
+				"no-obsolete-attr",
 				"no-unknown-attr",
 				"permitted-contents"
 			]
@@ -4564,8 +4605,8 @@
 			"path": "html-svg/animate-elem-85-t-isvalid.html",
 			"category": "uncategorized",
 			"ruleIds": [
-				"no-deprecated-attr",
 				"no-invalid-attr-value",
+				"no-obsolete-attr",
 				"no-unknown-attr",
 				"permitted-contents"
 			]
@@ -4576,6 +4617,7 @@
 			"ruleIds": [
 				"no-deprecated-attr",
 				"no-invalid-attr-value",
+				"no-obsolete-attr",
 				"no-unknown-attr",
 				"permitted-contents"
 			]
@@ -4602,8 +4644,8 @@
 			"path": "html-svg/animate-elem-89-t-isvalid.html",
 			"category": "uncategorized",
 			"ruleIds": [
-				"no-deprecated-attr",
 				"no-invalid-attr-value",
+				"no-obsolete-attr",
 				"no-unknown-attr",
 				"permitted-contents"
 			]
@@ -4612,8 +4654,8 @@
 			"path": "html-svg/animate-elem-90-b-isvalid.html",
 			"category": "uncategorized",
 			"ruleIds": [
-				"no-deprecated-attr",
 				"no-invalid-attr-value",
+				"no-obsolete-attr",
 				"no-unknown-attr",
 				"permitted-contents"
 			]
@@ -4634,6 +4676,7 @@
 			"ruleIds": [
 				"no-deprecated-attr",
 				"no-invalid-attr-value",
+				"no-obsolete-attr",
 				"no-unknown-attr",
 				"permitted-contents"
 			]
@@ -4652,8 +4695,8 @@
 			"path": "html-svg/animate-interact-pevents-01-t-isvalid.html",
 			"category": "uncategorized",
 			"ruleIds": [
-				"no-deprecated-attr",
 				"no-invalid-attr-value",
+				"no-obsolete-attr",
 				"no-unknown-attr",
 				"permitted-contents"
 			]
@@ -4705,6 +4748,7 @@
 			"ruleIds": [
 				"no-deprecated-attr",
 				"no-invalid-attr-value",
+				"no-obsolete-attr",
 				"no-unknown-attr",
 				"permitted-contents"
 			]
@@ -4713,8 +4757,8 @@
 			"path": "html-svg/color-prop-01-b-isvalid.html",
 			"category": "uncategorized",
 			"ruleIds": [
-				"no-deprecated-attr",
 				"no-invalid-attr-value",
+				"no-obsolete-attr",
 				"no-unknown-attr",
 				"permitted-contents"
 			]
@@ -4723,8 +4767,8 @@
 			"path": "html-svg/color-prop-02-f-isvalid.html",
 			"category": "uncategorized",
 			"ruleIds": [
-				"no-deprecated-attr",
 				"no-invalid-attr-value",
+				"no-obsolete-attr",
 				"no-unknown-attr",
 				"permitted-contents"
 			]
@@ -4733,8 +4777,8 @@
 			"path": "html-svg/color-prop-03-t-isvalid.html",
 			"category": "uncategorized",
 			"ruleIds": [
-				"no-deprecated-attr",
 				"no-invalid-attr-value",
+				"no-obsolete-attr",
 				"no-unknown-attr",
 				"permitted-contents"
 			]
@@ -4743,8 +4787,8 @@
 			"path": "html-svg/color-prop-04-t-isvalid.html",
 			"category": "uncategorized",
 			"ruleIds": [
-				"no-deprecated-attr",
 				"no-invalid-attr-value",
+				"no-obsolete-attr",
 				"no-unknown-attr",
 				"permitted-contents"
 			]
@@ -4753,8 +4797,8 @@
 			"path": "html-svg/color-prop-05-t-isvalid.html",
 			"category": "uncategorized",
 			"ruleIds": [
-				"no-deprecated-attr",
 				"no-invalid-attr-value",
+				"no-obsolete-attr",
 				"no-unknown-attr",
 				"permitted-contents"
 			]
@@ -4773,8 +4817,8 @@
 			"path": "html-svg/coords-coord-01-t-isvalid.html",
 			"category": "uncategorized",
 			"ruleIds": [
-				"no-deprecated-attr",
 				"no-invalid-attr-value",
+				"no-obsolete-attr",
 				"no-unknown-attr",
 				"permitted-contents"
 			]
@@ -4783,8 +4827,8 @@
 			"path": "html-svg/coords-coord-02-t-isvalid.html",
 			"category": "uncategorized",
 			"ruleIds": [
-				"no-deprecated-attr",
 				"no-invalid-attr-value",
+				"no-obsolete-attr",
 				"no-unknown-attr",
 				"permitted-contents"
 			]
@@ -4807,8 +4851,8 @@
 			"path": "html-svg/coords-trans-01-b-isvalid.html",
 			"category": "uncategorized",
 			"ruleIds": [
-				"no-deprecated-attr",
 				"no-invalid-attr-value",
+				"no-obsolete-attr",
 				"no-unknown-attr",
 				"permitted-contents"
 			]
@@ -4817,8 +4861,8 @@
 			"path": "html-svg/coords-trans-02-t-isvalid.html",
 			"category": "uncategorized",
 			"ruleIds": [
-				"no-deprecated-attr",
 				"no-invalid-attr-value",
+				"no-obsolete-attr",
 				"no-unknown-attr",
 				"permitted-contents"
 			]
@@ -4827,8 +4871,8 @@
 			"path": "html-svg/coords-trans-03-t-isvalid.html",
 			"category": "uncategorized",
 			"ruleIds": [
-				"no-deprecated-attr",
 				"no-invalid-attr-value",
+				"no-obsolete-attr",
 				"no-unknown-attr",
 				"permitted-contents"
 			]
@@ -4837,8 +4881,8 @@
 			"path": "html-svg/coords-trans-04-t-isvalid.html",
 			"category": "uncategorized",
 			"ruleIds": [
-				"no-deprecated-attr",
 				"no-invalid-attr-value",
+				"no-obsolete-attr",
 				"no-unknown-attr",
 				"permitted-contents"
 			]
@@ -4847,8 +4891,8 @@
 			"path": "html-svg/coords-trans-05-t-isvalid.html",
 			"category": "uncategorized",
 			"ruleIds": [
-				"no-deprecated-attr",
 				"no-invalid-attr-value",
+				"no-obsolete-attr",
 				"no-unknown-attr",
 				"permitted-contents"
 			]
@@ -4857,8 +4901,8 @@
 			"path": "html-svg/coords-trans-06-t-isvalid.html",
 			"category": "uncategorized",
 			"ruleIds": [
-				"no-deprecated-attr",
 				"no-invalid-attr-value",
+				"no-obsolete-attr",
 				"no-unknown-attr",
 				"permitted-contents"
 			]
@@ -4867,8 +4911,8 @@
 			"path": "html-svg/coords-trans-07-t-isvalid.html",
 			"category": "uncategorized",
 			"ruleIds": [
-				"no-deprecated-attr",
 				"no-invalid-attr-value",
+				"no-obsolete-attr",
 				"no-unknown-attr",
 				"permitted-contents"
 			]
@@ -4877,8 +4921,8 @@
 			"path": "html-svg/coords-trans-08-t-isvalid.html",
 			"category": "uncategorized",
 			"ruleIds": [
-				"no-deprecated-attr",
 				"no-invalid-attr-value",
+				"no-obsolete-attr",
 				"no-unknown-attr",
 				"permitted-contents"
 			]
@@ -4887,8 +4931,8 @@
 			"path": "html-svg/coords-trans-09-t-isvalid.html",
 			"category": "uncategorized",
 			"ruleIds": [
-				"no-deprecated-attr",
 				"no-invalid-attr-value",
+				"no-obsolete-attr",
 				"no-unknown-attr",
 				"permitted-contents"
 			]
@@ -4978,8 +5022,8 @@
 			"path": "html-svg/coords-units-01-b-isvalid.html",
 			"category": "uncategorized",
 			"ruleIds": [
-				"no-deprecated-attr",
 				"no-invalid-attr-value",
+				"no-obsolete-attr",
 				"no-unknown-attr",
 				"permitted-contents"
 			]
@@ -4988,8 +5032,8 @@
 			"path": "html-svg/coords-units-02-b-isvalid.html",
 			"category": "uncategorized",
 			"ruleIds": [
-				"no-deprecated-attr",
 				"no-invalid-attr-value",
+				"no-obsolete-attr",
 				"no-unknown-attr",
 				"permitted-contents"
 			]
@@ -4998,8 +5042,8 @@
 			"path": "html-svg/coords-units-03-b-isvalid.html",
 			"category": "uncategorized",
 			"ruleIds": [
-				"no-deprecated-attr",
 				"no-invalid-attr-value",
+				"no-obsolete-attr",
 				"no-unknown-attr",
 				"permitted-contents"
 			]
@@ -5008,8 +5052,8 @@
 			"path": "html-svg/coords-viewattr-03-b-isvalid.html",
 			"category": "uncategorized",
 			"ruleIds": [
-				"no-deprecated-attr",
 				"no-invalid-attr-value",
+				"no-obsolete-attr",
 				"no-unknown-attr",
 				"permitted-contents"
 			]
@@ -5030,6 +5074,7 @@
 			"ruleIds": [
 				"no-deprecated-attr",
 				"no-invalid-attr-value",
+				"no-obsolete-attr",
 				"no-unknown-attr",
 				"permitted-contents"
 			]
@@ -5038,8 +5083,8 @@
 			"path": "html-svg/filters-color-01-b-isvalid.html",
 			"category": "uncategorized",
 			"ruleIds": [
-				"no-deprecated-attr",
 				"no-invalid-attr-value",
+				"no-obsolete-attr",
 				"no-unknown-attr",
 				"permitted-contents"
 			]
@@ -5050,6 +5095,7 @@
 			"ruleIds": [
 				"no-deprecated-attr",
 				"no-invalid-attr-value",
+				"no-obsolete-attr",
 				"no-unknown-attr",
 				"permitted-contents"
 			]
@@ -5087,8 +5133,8 @@
 			"path": "html-svg/filters-comptran-01-b-isvalid.html",
 			"category": "uncategorized",
 			"ruleIds": [
-				"no-deprecated-attr",
 				"no-invalid-attr-value",
+				"no-obsolete-attr",
 				"no-unknown-attr",
 				"permitted-contents"
 			]
@@ -5099,6 +5145,7 @@
 			"ruleIds": [
 				"no-deprecated-attr",
 				"no-invalid-attr-value",
+				"no-obsolete-attr",
 				"no-unknown-attr",
 				"permitted-contents"
 			]
@@ -5116,6 +5163,7 @@
 			"ruleIds": [
 				"no-deprecated-attr",
 				"no-invalid-attr-value",
+				"no-obsolete-attr",
 				"no-unknown-attr",
 				"permitted-contents"
 			]
@@ -5126,6 +5174,7 @@
 			"ruleIds": [
 				"no-deprecated-attr",
 				"no-invalid-attr-value",
+				"no-obsolete-attr",
 				"no-unknown-attr",
 				"permitted-contents"
 			]
@@ -5134,8 +5183,8 @@
 			"path": "html-svg/filters-displace-02-f-isvalid.html",
 			"category": "uncategorized",
 			"ruleIds": [
-				"no-deprecated-attr",
 				"no-invalid-attr-value",
+				"no-obsolete-attr",
 				"no-unknown-attr",
 				"permitted-contents"
 			]
@@ -5144,8 +5193,8 @@
 			"path": "html-svg/filters-example-01-b-isvalid.html",
 			"category": "uncategorized",
 			"ruleIds": [
-				"no-deprecated-attr",
 				"no-invalid-attr-value",
+				"no-obsolete-attr",
 				"no-unknown-attr",
 				"permitted-contents"
 			]
@@ -5154,8 +5203,8 @@
 			"path": "html-svg/filters-felem-01-b-isvalid.html",
 			"category": "uncategorized",
 			"ruleIds": [
-				"no-deprecated-attr",
 				"no-invalid-attr-value",
+				"no-obsolete-attr",
 				"no-unknown-attr",
 				"permitted-contents"
 			]
@@ -5176,6 +5225,7 @@
 			"ruleIds": [
 				"no-deprecated-attr",
 				"no-invalid-attr-value",
+				"no-obsolete-attr",
 				"no-unknown-attr",
 				"permitted-contents"
 			]
@@ -5206,6 +5256,7 @@
 			"ruleIds": [
 				"no-deprecated-attr",
 				"no-invalid-attr-value",
+				"no-obsolete-attr",
 				"no-unknown-attr",
 				"permitted-contents"
 			]
@@ -5256,6 +5307,7 @@
 			"ruleIds": [
 				"no-deprecated-attr",
 				"no-invalid-attr-value",
+				"no-obsolete-attr",
 				"no-unknown-attr",
 				"permitted-contents"
 			]
@@ -5282,8 +5334,8 @@
 			"path": "html-svg/filters-light-04-f-isvalid.html",
 			"category": "uncategorized",
 			"ruleIds": [
-				"no-deprecated-attr",
 				"no-invalid-attr-value",
+				"no-obsolete-attr",
 				"no-unknown-attr",
 				"permitted-contents"
 			]
@@ -5294,6 +5346,7 @@
 			"ruleIds": [
 				"no-deprecated-attr",
 				"no-invalid-attr-value",
+				"no-obsolete-attr",
 				"no-unknown-attr",
 				"permitted-contents"
 			]
@@ -5302,8 +5355,8 @@
 			"path": "html-svg/filters-offset-01-b-isvalid.html",
 			"category": "uncategorized",
 			"ruleIds": [
-				"no-deprecated-attr",
 				"no-invalid-attr-value",
+				"no-obsolete-attr",
 				"no-unknown-attr",
 				"permitted-contents"
 			]
@@ -5323,6 +5376,7 @@
 			"ruleIds": [
 				"no-deprecated-attr",
 				"no-invalid-attr-value",
+				"no-obsolete-attr",
 				"no-unknown-attr",
 				"permitted-contents"
 			]
@@ -5333,6 +5387,7 @@
 			"ruleIds": [
 				"no-deprecated-attr",
 				"no-invalid-attr-value",
+				"no-obsolete-attr",
 				"no-unknown-attr",
 				"permitted-contents"
 			]
@@ -5343,6 +5398,7 @@
 			"ruleIds": [
 				"no-deprecated-attr",
 				"no-invalid-attr-value",
+				"no-obsolete-attr",
 				"no-unknown-attr",
 				"permitted-contents"
 			]
@@ -5353,6 +5409,7 @@
 			"ruleIds": [
 				"no-deprecated-attr",
 				"no-invalid-attr-value",
+				"no-obsolete-attr",
 				"no-unknown-attr",
 				"permitted-contents"
 			]
@@ -5361,8 +5418,8 @@
 			"path": "html-svg/filters-tile-01-b-isvalid.html",
 			"category": "uncategorized",
 			"ruleIds": [
-				"no-deprecated-attr",
 				"no-invalid-attr-value",
+				"no-obsolete-attr",
 				"no-unknown-attr",
 				"permitted-contents"
 			]
@@ -5371,8 +5428,8 @@
 			"path": "html-svg/filters-turb-01-f-isvalid.html",
 			"category": "uncategorized",
 			"ruleIds": [
-				"no-deprecated-attr",
 				"no-invalid-attr-value",
+				"no-obsolete-attr",
 				"no-unknown-attr",
 				"permitted-contents"
 			]
@@ -5390,8 +5447,8 @@
 			"path": "html-svg/fonts-desc-01-t-isvalid.html",
 			"category": "uncategorized",
 			"ruleIds": [
-				"no-deprecated-attr",
 				"no-invalid-attr-value",
+				"no-obsolete-attr",
 				"no-unknown-attr",
 				"permitted-contents"
 			]
@@ -5400,8 +5457,8 @@
 			"path": "html-svg/fonts-desc-02-t-isvalid.html",
 			"category": "uncategorized",
 			"ruleIds": [
-				"no-deprecated-attr",
 				"no-invalid-attr-value",
+				"no-obsolete-attr",
 				"no-unknown-attr",
 				"permitted-contents"
 			]
@@ -5410,8 +5467,8 @@
 			"path": "html-svg/fonts-desc-03-t-isvalid.html",
 			"category": "uncategorized",
 			"ruleIds": [
-				"no-deprecated-attr",
 				"no-invalid-attr-value",
+				"no-obsolete-attr",
 				"no-unknown-attr",
 				"permitted-contents"
 			]
@@ -5420,8 +5477,8 @@
 			"path": "html-svg/fonts-desc-04-t-isvalid.html",
 			"category": "uncategorized",
 			"ruleIds": [
-				"no-deprecated-attr",
 				"no-invalid-attr-value",
+				"no-obsolete-attr",
 				"no-unknown-attr",
 				"permitted-contents"
 			]
@@ -5430,8 +5487,8 @@
 			"path": "html-svg/fonts-desc-05-t-isvalid.html",
 			"category": "uncategorized",
 			"ruleIds": [
-				"no-deprecated-attr",
 				"no-invalid-attr-value",
+				"no-obsolete-attr",
 				"no-unknown-attr",
 				"permitted-contents"
 			]
@@ -5440,8 +5497,8 @@
 			"path": "html-svg/fonts-elem-01-t-isvalid.html",
 			"category": "uncategorized",
 			"ruleIds": [
-				"no-deprecated-attr",
 				"no-invalid-attr-value",
+				"no-obsolete-attr",
 				"no-unknown-attr",
 				"permitted-contents"
 			]
@@ -5450,8 +5507,8 @@
 			"path": "html-svg/fonts-elem-02-t-isvalid.html",
 			"category": "uncategorized",
 			"ruleIds": [
-				"no-deprecated-attr",
 				"no-invalid-attr-value",
+				"no-obsolete-attr",
 				"no-unknown-attr",
 				"permitted-contents"
 			]
@@ -5460,8 +5517,8 @@
 			"path": "html-svg/fonts-elem-03-b-isvalid.html",
 			"category": "uncategorized",
 			"ruleIds": [
-				"no-deprecated-attr",
 				"no-invalid-attr-value",
+				"no-obsolete-attr",
 				"no-unknown-attr",
 				"permitted-contents"
 			]
@@ -5470,8 +5527,8 @@
 			"path": "html-svg/fonts-elem-04-b-isvalid.html",
 			"category": "uncategorized",
 			"ruleIds": [
-				"no-deprecated-attr",
 				"no-invalid-attr-value",
+				"no-obsolete-attr",
 				"no-unknown-attr",
 				"permitted-contents"
 			]
@@ -5482,6 +5539,7 @@
 			"ruleIds": [
 				"no-deprecated-attr",
 				"no-invalid-attr-value",
+				"no-obsolete-attr",
 				"no-unknown-attr",
 				"permitted-contents"
 			]
@@ -5492,6 +5550,7 @@
 			"ruleIds": [
 				"no-deprecated-attr",
 				"no-invalid-attr-value",
+				"no-obsolete-attr",
 				"no-unknown-attr",
 				"permitted-contents"
 			]
@@ -5500,8 +5559,8 @@
 			"path": "html-svg/fonts-elem-07-b-isvalid.html",
 			"category": "uncategorized",
 			"ruleIds": [
-				"no-deprecated-attr",
 				"no-invalid-attr-value",
+				"no-obsolete-attr",
 				"no-unknown-attr",
 				"permitted-contents"
 			]
@@ -5510,8 +5569,8 @@
 			"path": "html-svg/fonts-glyph-02-t-isvalid.html",
 			"category": "uncategorized",
 			"ruleIds": [
-				"no-deprecated-attr",
 				"no-invalid-attr-value",
+				"no-obsolete-attr",
 				"no-unknown-attr",
 				"permitted-contents"
 			]
@@ -5520,8 +5579,9 @@
 			"path": "html-svg/fonts-glyph-03-t-isvalid.html",
 			"category": "uncategorized",
 			"ruleIds": [
-				"no-deprecated-attr",
+				"no-disallowed-attr",
 				"no-invalid-attr-value",
+				"no-obsolete-attr",
 				"no-unknown-attr",
 				"permitted-contents"
 			]
@@ -5532,6 +5592,7 @@
 			"ruleIds": [
 				"no-deprecated-attr",
 				"no-invalid-attr-value",
+				"no-obsolete-attr",
 				"no-unknown-attr",
 				"permitted-contents"
 			]
@@ -5551,6 +5612,7 @@
 			"ruleIds": [
 				"no-deprecated-attr",
 				"no-invalid-attr-value",
+				"no-obsolete-attr",
 				"no-unknown-attr",
 				"permitted-contents"
 			]
@@ -5632,8 +5694,8 @@
 			"path": "html-svg/interact-pevents-04-t-isvalid.html",
 			"category": "uncategorized",
 			"ruleIds": [
-				"no-deprecated-attr",
 				"no-invalid-attr-value",
+				"no-obsolete-attr",
 				"no-unknown-attr",
 				"permitted-contents"
 			]
@@ -5698,8 +5760,8 @@
 			"path": "html-svg/interact-zoom-01-t-isvalid.html",
 			"category": "uncategorized",
 			"ruleIds": [
-				"no-deprecated-attr",
 				"no-invalid-attr-value",
+				"no-obsolete-attr",
 				"no-unknown-attr",
 				"permitted-contents"
 			]
@@ -5708,8 +5770,8 @@
 			"path": "html-svg/interact-zoom-02-t-isvalid.html",
 			"category": "uncategorized",
 			"ruleIds": [
-				"no-deprecated-attr",
 				"no-invalid-attr-value",
+				"no-obsolete-attr",
 				"no-unknown-attr",
 				"permitted-contents"
 			]
@@ -5718,8 +5780,8 @@
 			"path": "html-svg/interact-zoom-03-t-isvalid.html",
 			"category": "uncategorized",
 			"ruleIds": [
-				"no-deprecated-attr",
 				"no-invalid-attr-value",
+				"no-obsolete-attr",
 				"no-unknown-attr",
 				"permitted-contents"
 			]
@@ -5730,6 +5792,7 @@
 			"ruleIds": [
 				"no-deprecated-attr",
 				"no-invalid-attr-value",
+				"no-obsolete-attr",
 				"no-unknown-attr",
 				"permitted-contents"
 			]
@@ -5740,6 +5803,7 @@
 			"ruleIds": [
 				"no-deprecated-attr",
 				"no-invalid-attr-value",
+				"no-obsolete-attr",
 				"no-unknown-attr",
 				"permitted-contents"
 			]
@@ -5750,6 +5814,7 @@
 			"ruleIds": [
 				"no-deprecated-attr",
 				"no-invalid-attr-value",
+				"no-obsolete-attr",
 				"no-unknown-attr",
 				"permitted-contents"
 			]
@@ -5760,6 +5825,7 @@
 			"ruleIds": [
 				"no-deprecated-attr",
 				"no-invalid-attr-value",
+				"no-obsolete-attr",
 				"no-unknown-attr",
 				"permitted-contents"
 			]
@@ -5770,6 +5836,7 @@
 			"ruleIds": [
 				"no-deprecated-attr",
 				"no-invalid-attr-value",
+				"no-obsolete-attr",
 				"no-unknown-attr",
 				"permitted-contents"
 			]
@@ -5780,6 +5847,7 @@
 			"ruleIds": [
 				"no-deprecated-attr",
 				"no-invalid-attr-value",
+				"no-obsolete-attr",
 				"no-unknown-attr",
 				"permitted-contents"
 			]
@@ -5800,6 +5868,7 @@
 			"ruleIds": [
 				"no-deprecated-attr",
 				"no-invalid-attr-value",
+				"no-obsolete-attr",
 				"no-unknown-attr",
 				"permitted-contents"
 			]
@@ -5810,6 +5879,7 @@
 			"ruleIds": [
 				"no-deprecated-attr",
 				"no-invalid-attr-value",
+				"no-obsolete-attr",
 				"no-unknown-attr",
 				"permitted-contents"
 			]
@@ -5820,6 +5890,7 @@
 			"ruleIds": [
 				"no-deprecated-attr",
 				"no-invalid-attr-value",
+				"no-obsolete-attr",
 				"no-unknown-attr",
 				"permitted-contents"
 			]
@@ -5830,6 +5901,7 @@
 			"ruleIds": [
 				"no-deprecated-attr",
 				"no-invalid-attr-value",
+				"no-obsolete-attr",
 				"no-unknown-attr",
 				"permitted-contents"
 			]
@@ -5838,8 +5910,8 @@
 			"path": "html-svg/masking-mask-01-b-isvalid.html",
 			"category": "uncategorized",
 			"ruleIds": [
-				"no-deprecated-attr",
 				"no-invalid-attr-value",
+				"no-obsolete-attr",
 				"no-unknown-attr",
 				"permitted-contents"
 			]
@@ -5857,8 +5929,8 @@
 			"path": "html-svg/masking-opacity-01-b-isvalid.html",
 			"category": "uncategorized",
 			"ruleIds": [
-				"no-deprecated-attr",
 				"no-invalid-attr-value",
+				"no-obsolete-attr",
 				"no-unknown-attr",
 				"permitted-contents"
 			]
@@ -5867,8 +5939,8 @@
 			"path": "html-svg/masking-path-01-b-isvalid.html",
 			"category": "uncategorized",
 			"ruleIds": [
-				"no-deprecated-attr",
 				"no-invalid-attr-value",
+				"no-obsolete-attr",
 				"no-unknown-attr",
 				"permitted-contents"
 			]
@@ -5877,8 +5949,8 @@
 			"path": "html-svg/masking-path-02-b-isvalid.html",
 			"category": "uncategorized",
 			"ruleIds": [
-				"no-deprecated-attr",
 				"no-invalid-attr-value",
+				"no-obsolete-attr",
 				"no-unknown-attr",
 				"permitted-contents"
 			]
@@ -5887,8 +5959,8 @@
 			"path": "html-svg/masking-path-03-b-isvalid.html",
 			"category": "uncategorized",
 			"ruleIds": [
-				"no-deprecated-attr",
 				"no-invalid-attr-value",
+				"no-obsolete-attr",
 				"no-unknown-attr",
 				"permitted-contents"
 			]
@@ -5899,6 +5971,7 @@
 			"ruleIds": [
 				"no-deprecated-attr",
 				"no-invalid-attr-value",
+				"no-obsolete-attr",
 				"no-unknown-attr",
 				"permitted-contents"
 			]
@@ -5907,8 +5980,8 @@
 			"path": "html-svg/masking-path-05-f-isvalid.html",
 			"category": "uncategorized",
 			"ruleIds": [
-				"no-deprecated-attr",
 				"no-invalid-attr-value",
+				"no-obsolete-attr",
 				"no-unknown-attr",
 				"permitted-contents"
 			]
@@ -5919,6 +5992,7 @@
 			"ruleIds": [
 				"no-deprecated-attr",
 				"no-invalid-attr-value",
+				"no-obsolete-attr",
 				"no-unknown-attr",
 				"permitted-contents"
 			]
@@ -5929,6 +6003,7 @@
 			"ruleIds": [
 				"no-deprecated-attr",
 				"no-invalid-attr-value",
+				"no-obsolete-attr",
 				"no-unknown-attr",
 				"permitted-contents"
 			]
@@ -6052,8 +6127,8 @@
 			"path": "html-svg/painting-fill-01-t-isvalid.html",
 			"category": "uncategorized",
 			"ruleIds": [
-				"no-deprecated-attr",
 				"no-invalid-attr-value",
+				"no-obsolete-attr",
 				"no-unknown-attr",
 				"permitted-contents"
 			]
@@ -6062,8 +6137,8 @@
 			"path": "html-svg/painting-fill-02-t-isvalid.html",
 			"category": "uncategorized",
 			"ruleIds": [
-				"no-deprecated-attr",
 				"no-invalid-attr-value",
+				"no-obsolete-attr",
 				"no-unknown-attr",
 				"permitted-contents"
 			]
@@ -6072,8 +6147,8 @@
 			"path": "html-svg/painting-fill-03-t-isvalid.html",
 			"category": "uncategorized",
 			"ruleIds": [
-				"no-deprecated-attr",
 				"no-invalid-attr-value",
+				"no-obsolete-attr",
 				"no-unknown-attr",
 				"permitted-contents"
 			]
@@ -6082,8 +6157,8 @@
 			"path": "html-svg/painting-fill-04-t-isvalid.html",
 			"category": "uncategorized",
 			"ruleIds": [
-				"no-deprecated-attr",
 				"no-invalid-attr-value",
+				"no-obsolete-attr",
 				"no-unknown-attr",
 				"permitted-contents"
 			]
@@ -6092,8 +6167,8 @@
 			"path": "html-svg/painting-fill-05-b-isvalid.html",
 			"category": "uncategorized",
 			"ruleIds": [
-				"no-deprecated-attr",
 				"no-invalid-attr-value",
+				"no-obsolete-attr",
 				"no-unknown-attr",
 				"permitted-contents"
 			]
@@ -6102,8 +6177,8 @@
 			"path": "html-svg/painting-marker-01-f-isvalid.html",
 			"category": "uncategorized",
 			"ruleIds": [
-				"no-deprecated-attr",
 				"no-invalid-attr-value",
+				"no-obsolete-attr",
 				"no-unknown-attr",
 				"permitted-contents"
 			]
@@ -6112,8 +6187,8 @@
 			"path": "html-svg/painting-marker-02-f-isvalid.html",
 			"category": "uncategorized",
 			"ruleIds": [
-				"no-deprecated-attr",
 				"no-invalid-attr-value",
+				"no-obsolete-attr",
 				"no-unknown-attr",
 				"permitted-contents"
 			]
@@ -6122,8 +6197,8 @@
 			"path": "html-svg/painting-marker-03-f-isvalid.html",
 			"category": "uncategorized",
 			"ruleIds": [
-				"no-deprecated-attr",
 				"no-invalid-attr-value",
+				"no-obsolete-attr",
 				"no-unknown-attr",
 				"permitted-contents"
 			]
@@ -6132,8 +6207,8 @@
 			"path": "html-svg/painting-marker-05-f-isvalid.html",
 			"category": "uncategorized",
 			"ruleIds": [
-				"no-deprecated-attr",
 				"no-invalid-attr-value",
+				"no-obsolete-attr",
 				"no-unknown-attr",
 				"permitted-contents"
 			]
@@ -6169,8 +6244,8 @@
 			"path": "html-svg/painting-render-01-b-isvalid.html",
 			"category": "uncategorized",
 			"ruleIds": [
-				"no-deprecated-attr",
 				"no-invalid-attr-value",
+				"no-obsolete-attr",
 				"no-unknown-attr",
 				"permitted-contents"
 			]
@@ -6188,8 +6263,8 @@
 			"path": "html-svg/painting-stroke-01-t-isvalid.html",
 			"category": "uncategorized",
 			"ruleIds": [
-				"no-deprecated-attr",
 				"no-invalid-attr-value",
+				"no-obsolete-attr",
 				"no-unknown-attr",
 				"permitted-contents"
 			]
@@ -6198,8 +6273,8 @@
 			"path": "html-svg/painting-stroke-02-t-isvalid.html",
 			"category": "uncategorized",
 			"ruleIds": [
-				"no-deprecated-attr",
 				"no-invalid-attr-value",
+				"no-obsolete-attr",
 				"no-unknown-attr",
 				"permitted-contents"
 			]
@@ -6208,8 +6283,8 @@
 			"path": "html-svg/painting-stroke-03-t-isvalid.html",
 			"category": "uncategorized",
 			"ruleIds": [
-				"no-deprecated-attr",
 				"no-invalid-attr-value",
+				"no-obsolete-attr",
 				"no-unknown-attr",
 				"permitted-contents"
 			]
@@ -6218,8 +6293,8 @@
 			"path": "html-svg/painting-stroke-04-t-isvalid.html",
 			"category": "uncategorized",
 			"ruleIds": [
-				"no-deprecated-attr",
 				"no-invalid-attr-value",
+				"no-obsolete-attr",
 				"no-unknown-attr",
 				"permitted-contents"
 			]
@@ -6228,8 +6303,8 @@
 			"path": "html-svg/painting-stroke-05-t-isvalid.html",
 			"category": "uncategorized",
 			"ruleIds": [
-				"no-deprecated-attr",
 				"no-invalid-attr-value",
+				"no-obsolete-attr",
 				"no-unknown-attr",
 				"permitted-contents"
 			]
@@ -6238,8 +6313,8 @@
 			"path": "html-svg/painting-stroke-06-t-isvalid.html",
 			"category": "uncategorized",
 			"ruleIds": [
-				"no-deprecated-attr",
 				"no-invalid-attr-value",
+				"no-obsolete-attr",
 				"no-unknown-attr",
 				"permitted-contents"
 			]
@@ -6248,8 +6323,8 @@
 			"path": "html-svg/painting-stroke-07-t-isvalid.html",
 			"category": "uncategorized",
 			"ruleIds": [
-				"no-deprecated-attr",
 				"no-invalid-attr-value",
+				"no-obsolete-attr",
 				"no-unknown-attr",
 				"permitted-contents"
 			]
@@ -6258,8 +6333,8 @@
 			"path": "html-svg/painting-stroke-08-t-isvalid.html",
 			"category": "uncategorized",
 			"ruleIds": [
-				"no-deprecated-attr",
 				"no-invalid-attr-value",
+				"no-obsolete-attr",
 				"no-unknown-attr",
 				"permitted-contents"
 			]
@@ -6268,8 +6343,8 @@
 			"path": "html-svg/painting-stroke-09-t-isvalid.html",
 			"category": "uncategorized",
 			"ruleIds": [
-				"no-deprecated-attr",
 				"no-invalid-attr-value",
+				"no-obsolete-attr",
 				"no-unknown-attr",
 				"permitted-contents"
 			]
@@ -6287,8 +6362,8 @@
 			"path": "html-svg/paths-data-01-t-isvalid.html",
 			"category": "uncategorized",
 			"ruleIds": [
-				"no-deprecated-attr",
 				"no-invalid-attr-value",
+				"no-obsolete-attr",
 				"no-unknown-attr",
 				"permitted-contents"
 			]
@@ -6297,8 +6372,8 @@
 			"path": "html-svg/paths-data-02-t-isvalid.html",
 			"category": "uncategorized",
 			"ruleIds": [
-				"no-deprecated-attr",
 				"no-invalid-attr-value",
+				"no-obsolete-attr",
 				"no-unknown-attr",
 				"permitted-contents"
 			]
@@ -6307,8 +6382,8 @@
 			"path": "html-svg/paths-data-03-f-isvalid.html",
 			"category": "uncategorized",
 			"ruleIds": [
-				"no-deprecated-attr",
 				"no-invalid-attr-value",
+				"no-obsolete-attr",
 				"no-unknown-attr",
 				"permitted-contents"
 			]
@@ -6317,8 +6392,8 @@
 			"path": "html-svg/paths-data-04-t-isvalid.html",
 			"category": "uncategorized",
 			"ruleIds": [
-				"no-deprecated-attr",
 				"no-invalid-attr-value",
+				"no-obsolete-attr",
 				"no-unknown-attr",
 				"permitted-contents"
 			]
@@ -6327,8 +6402,8 @@
 			"path": "html-svg/paths-data-05-t-isvalid.html",
 			"category": "uncategorized",
 			"ruleIds": [
-				"no-deprecated-attr",
 				"no-invalid-attr-value",
+				"no-obsolete-attr",
 				"no-unknown-attr",
 				"permitted-contents"
 			]
@@ -6337,8 +6412,8 @@
 			"path": "html-svg/paths-data-06-t-isvalid.html",
 			"category": "uncategorized",
 			"ruleIds": [
-				"no-deprecated-attr",
 				"no-invalid-attr-value",
+				"no-obsolete-attr",
 				"no-unknown-attr",
 				"permitted-contents"
 			]
@@ -6347,8 +6422,8 @@
 			"path": "html-svg/paths-data-07-t-isvalid.html",
 			"category": "uncategorized",
 			"ruleIds": [
-				"no-deprecated-attr",
 				"no-invalid-attr-value",
+				"no-obsolete-attr",
 				"no-unknown-attr",
 				"permitted-contents"
 			]
@@ -6357,8 +6432,8 @@
 			"path": "html-svg/paths-data-08-t-isvalid.html",
 			"category": "uncategorized",
 			"ruleIds": [
-				"no-deprecated-attr",
 				"no-invalid-attr-value",
+				"no-obsolete-attr",
 				"no-unknown-attr",
 				"permitted-contents"
 			]
@@ -6367,8 +6442,8 @@
 			"path": "html-svg/paths-data-09-t-isvalid.html",
 			"category": "uncategorized",
 			"ruleIds": [
-				"no-deprecated-attr",
 				"no-invalid-attr-value",
+				"no-obsolete-attr",
 				"no-unknown-attr",
 				"permitted-contents"
 			]
@@ -6377,8 +6452,8 @@
 			"path": "html-svg/paths-data-10-t-isvalid.html",
 			"category": "uncategorized",
 			"ruleIds": [
-				"no-deprecated-attr",
 				"no-invalid-attr-value",
+				"no-obsolete-attr",
 				"no-unknown-attr",
 				"permitted-contents"
 			]
@@ -6387,8 +6462,8 @@
 			"path": "html-svg/paths-data-12-t-isvalid.html",
 			"category": "uncategorized",
 			"ruleIds": [
-				"no-deprecated-attr",
 				"no-invalid-attr-value",
+				"no-obsolete-attr",
 				"no-unknown-attr",
 				"permitted-contents"
 			]
@@ -6397,8 +6472,8 @@
 			"path": "html-svg/paths-data-13-t-isvalid.html",
 			"category": "uncategorized",
 			"ruleIds": [
-				"no-deprecated-attr",
 				"no-invalid-attr-value",
+				"no-obsolete-attr",
 				"no-unknown-attr",
 				"permitted-contents"
 			]
@@ -6407,8 +6482,8 @@
 			"path": "html-svg/paths-data-14-t-isvalid.html",
 			"category": "uncategorized",
 			"ruleIds": [
-				"no-deprecated-attr",
 				"no-invalid-attr-value",
+				"no-obsolete-attr",
 				"no-unknown-attr",
 				"permitted-contents"
 			]
@@ -6417,8 +6492,8 @@
 			"path": "html-svg/paths-data-15-t-isvalid.html",
 			"category": "uncategorized",
 			"ruleIds": [
-				"no-deprecated-attr",
 				"no-invalid-attr-value",
+				"no-obsolete-attr",
 				"no-unknown-attr",
 				"permitted-contents"
 			]
@@ -6470,6 +6545,7 @@
 			"ruleIds": [
 				"no-deprecated-attr",
 				"no-invalid-attr-value",
+				"no-obsolete-attr",
 				"no-unknown-attr",
 				"permitted-contents"
 			]
@@ -6480,6 +6556,7 @@
 			"ruleIds": [
 				"no-deprecated-attr",
 				"no-invalid-attr-value",
+				"no-obsolete-attr",
 				"no-unknown-attr",
 				"permitted-contents"
 			]
@@ -6490,6 +6567,7 @@
 			"ruleIds": [
 				"no-deprecated-attr",
 				"no-invalid-attr-value",
+				"no-obsolete-attr",
 				"no-unknown-attr",
 				"permitted-contents"
 			]
@@ -6498,8 +6576,8 @@
 			"path": "html-svg/pservers-grad-04-b-isvalid.html",
 			"category": "uncategorized",
 			"ruleIds": [
-				"no-deprecated-attr",
 				"no-invalid-attr-value",
+				"no-obsolete-attr",
 				"no-unknown-attr",
 				"permitted-contents"
 			]
@@ -6508,8 +6586,8 @@
 			"path": "html-svg/pservers-grad-05-b-isvalid.html",
 			"category": "uncategorized",
 			"ruleIds": [
-				"no-deprecated-attr",
 				"no-invalid-attr-value",
+				"no-obsolete-attr",
 				"no-unknown-attr",
 				"permitted-contents"
 			]
@@ -6518,8 +6596,8 @@
 			"path": "html-svg/pservers-grad-06-b-isvalid.html",
 			"category": "uncategorized",
 			"ruleIds": [
-				"no-deprecated-attr",
 				"no-invalid-attr-value",
+				"no-obsolete-attr",
 				"no-unknown-attr",
 				"permitted-contents"
 			]
@@ -6528,8 +6606,8 @@
 			"path": "html-svg/pservers-grad-07-b-isvalid.html",
 			"category": "uncategorized",
 			"ruleIds": [
-				"no-deprecated-attr",
 				"no-invalid-attr-value",
+				"no-obsolete-attr",
 				"no-unknown-attr",
 				"permitted-contents"
 			]
@@ -6538,8 +6616,8 @@
 			"path": "html-svg/pservers-grad-08-b-isvalid.html",
 			"category": "uncategorized",
 			"ruleIds": [
-				"no-deprecated-attr",
 				"no-invalid-attr-value",
+				"no-obsolete-attr",
 				"no-unknown-attr",
 				"permitted-contents"
 			]
@@ -6548,8 +6626,8 @@
 			"path": "html-svg/pservers-grad-09-b-isvalid.html",
 			"category": "uncategorized",
 			"ruleIds": [
-				"no-deprecated-attr",
 				"no-invalid-attr-value",
+				"no-obsolete-attr",
 				"no-unknown-attr",
 				"permitted-contents"
 			]
@@ -6558,8 +6636,8 @@
 			"path": "html-svg/pservers-grad-10-b-isvalid.html",
 			"category": "uncategorized",
 			"ruleIds": [
-				"no-deprecated-attr",
 				"no-invalid-attr-value",
+				"no-obsolete-attr",
 				"no-unknown-attr",
 				"permitted-contents"
 			]
@@ -6568,8 +6646,8 @@
 			"path": "html-svg/pservers-grad-11-b-isvalid.html",
 			"category": "uncategorized",
 			"ruleIds": [
-				"no-deprecated-attr",
 				"no-invalid-attr-value",
+				"no-obsolete-attr",
 				"no-unknown-attr",
 				"permitted-contents"
 			]
@@ -6578,8 +6656,8 @@
 			"path": "html-svg/pservers-grad-12-b-isvalid.html",
 			"category": "uncategorized",
 			"ruleIds": [
-				"no-deprecated-attr",
 				"no-invalid-attr-value",
+				"no-obsolete-attr",
 				"no-unknown-attr",
 				"permitted-contents"
 			]
@@ -6590,6 +6668,7 @@
 			"ruleIds": [
 				"no-deprecated-attr",
 				"no-invalid-attr-value",
+				"no-obsolete-attr",
 				"no-unknown-attr",
 				"permitted-contents"
 			]
@@ -6598,8 +6677,8 @@
 			"path": "html-svg/pservers-grad-14-b-isvalid.html",
 			"category": "uncategorized",
 			"ruleIds": [
-				"no-deprecated-attr",
 				"no-invalid-attr-value",
+				"no-obsolete-attr",
 				"no-unknown-attr",
 				"permitted-contents"
 			]
@@ -6608,8 +6687,8 @@
 			"path": "html-svg/pservers-grad-15-b-isvalid.html",
 			"category": "uncategorized",
 			"ruleIds": [
-				"no-deprecated-attr",
 				"no-invalid-attr-value",
+				"no-obsolete-attr",
 				"no-unknown-attr",
 				"permitted-contents"
 			]
@@ -6618,8 +6697,8 @@
 			"path": "html-svg/pservers-grad-16-b-isvalid.html",
 			"category": "uncategorized",
 			"ruleIds": [
-				"no-deprecated-attr",
 				"no-invalid-attr-value",
+				"no-obsolete-attr",
 				"no-unknown-attr",
 				"permitted-contents"
 			]
@@ -6628,8 +6707,8 @@
 			"path": "html-svg/pservers-grad-17-b-isvalid.html",
 			"category": "uncategorized",
 			"ruleIds": [
-				"no-deprecated-attr",
 				"no-invalid-attr-value",
+				"no-obsolete-attr",
 				"no-unknown-attr",
 				"permitted-contents"
 			]
@@ -6638,8 +6717,8 @@
 			"path": "html-svg/pservers-grad-18-b-isvalid.html",
 			"category": "uncategorized",
 			"ruleIds": [
-				"no-deprecated-attr",
 				"no-invalid-attr-value",
+				"no-obsolete-attr",
 				"no-unknown-attr",
 				"permitted-contents"
 			]
@@ -6695,8 +6774,8 @@
 			"path": "html-svg/pservers-pattern-01-b-isvalid.html",
 			"category": "uncategorized",
 			"ruleIds": [
-				"no-deprecated-attr",
 				"no-invalid-attr-value",
+				"no-obsolete-attr",
 				"no-unknown-attr",
 				"permitted-contents"
 			]
@@ -6783,8 +6862,8 @@
 			"path": "html-svg/render-elems-01-t-isvalid.html",
 			"category": "uncategorized",
 			"ruleIds": [
-				"no-deprecated-attr",
 				"no-invalid-attr-value",
+				"no-obsolete-attr",
 				"no-unknown-attr",
 				"permitted-contents"
 			]
@@ -6793,8 +6872,8 @@
 			"path": "html-svg/render-elems-02-t-isvalid.html",
 			"category": "uncategorized",
 			"ruleIds": [
-				"no-deprecated-attr",
 				"no-invalid-attr-value",
+				"no-obsolete-attr",
 				"no-unknown-attr",
 				"permitted-contents"
 			]
@@ -6803,8 +6882,8 @@
 			"path": "html-svg/render-elems-06-t-isvalid.html",
 			"category": "uncategorized",
 			"ruleIds": [
-				"no-deprecated-attr",
 				"no-invalid-attr-value",
+				"no-obsolete-attr",
 				"no-unknown-attr",
 				"permitted-contents"
 			]
@@ -6813,8 +6892,8 @@
 			"path": "html-svg/render-elems-07-t-isvalid.html",
 			"category": "uncategorized",
 			"ruleIds": [
-				"no-deprecated-attr",
 				"no-invalid-attr-value",
+				"no-obsolete-attr",
 				"no-unknown-attr",
 				"permitted-contents"
 			]
@@ -6823,8 +6902,8 @@
 			"path": "html-svg/render-elems-08-t-isvalid.html",
 			"category": "uncategorized",
 			"ruleIds": [
-				"no-deprecated-attr",
 				"no-invalid-attr-value",
+				"no-obsolete-attr",
 				"no-unknown-attr",
 				"permitted-contents"
 			]
@@ -6835,6 +6914,7 @@
 			"ruleIds": [
 				"no-deprecated-attr",
 				"no-invalid-attr-value",
+				"no-obsolete-attr",
 				"no-unknown-attr",
 				"permitted-contents"
 			]
@@ -6845,6 +6925,7 @@
 			"ruleIds": [
 				"no-deprecated-attr",
 				"no-invalid-attr-value",
+				"no-obsolete-attr",
 				"no-unknown-attr",
 				"permitted-contents"
 			]
@@ -6888,8 +6969,8 @@
 			"path": "html-svg/shapes-circle-01-t-isvalid.html",
 			"category": "uncategorized",
 			"ruleIds": [
-				"no-deprecated-attr",
 				"no-invalid-attr-value",
+				"no-obsolete-attr",
 				"no-unknown-attr",
 				"permitted-contents"
 			]
@@ -6898,8 +6979,8 @@
 			"path": "html-svg/shapes-circle-02-t-isvalid.html",
 			"category": "uncategorized",
 			"ruleIds": [
-				"no-deprecated-attr",
 				"no-invalid-attr-value",
+				"no-obsolete-attr",
 				"no-unknown-attr",
 				"permitted-contents"
 			]
@@ -6908,8 +6989,8 @@
 			"path": "html-svg/shapes-ellipse-01-t-isvalid.html",
 			"category": "uncategorized",
 			"ruleIds": [
-				"no-deprecated-attr",
 				"no-invalid-attr-value",
+				"no-obsolete-attr",
 				"no-unknown-attr",
 				"permitted-contents"
 			]
@@ -6918,8 +6999,8 @@
 			"path": "html-svg/shapes-ellipse-02-t-isvalid.html",
 			"category": "uncategorized",
 			"ruleIds": [
-				"no-deprecated-attr",
 				"no-invalid-attr-value",
+				"no-obsolete-attr",
 				"no-unknown-attr",
 				"permitted-contents"
 			]
@@ -6946,8 +7027,8 @@
 			"path": "html-svg/shapes-intro-01-t-isvalid.html",
 			"category": "uncategorized",
 			"ruleIds": [
-				"no-deprecated-attr",
 				"no-invalid-attr-value",
+				"no-obsolete-attr",
 				"no-unknown-attr",
 				"permitted-contents"
 			]
@@ -6965,8 +7046,8 @@
 			"path": "html-svg/shapes-line-01-t-isvalid.html",
 			"category": "uncategorized",
 			"ruleIds": [
-				"no-deprecated-attr",
 				"no-invalid-attr-value",
+				"no-obsolete-attr",
 				"no-unknown-attr",
 				"permitted-contents"
 			]
@@ -6984,8 +7065,8 @@
 			"path": "html-svg/shapes-polygon-01-t-isvalid.html",
 			"category": "uncategorized",
 			"ruleIds": [
-				"no-deprecated-attr",
 				"no-invalid-attr-value",
+				"no-obsolete-attr",
 				"no-unknown-attr",
 				"permitted-contents"
 			]
@@ -6994,8 +7075,8 @@
 			"path": "html-svg/shapes-polygon-02-t-isvalid.html",
 			"category": "uncategorized",
 			"ruleIds": [
-				"no-deprecated-attr",
 				"no-invalid-attr-value",
+				"no-obsolete-attr",
 				"no-unknown-attr",
 				"permitted-contents"
 			]
@@ -7013,8 +7094,8 @@
 			"path": "html-svg/shapes-polyline-01-t-isvalid.html",
 			"category": "uncategorized",
 			"ruleIds": [
-				"no-deprecated-attr",
 				"no-invalid-attr-value",
+				"no-obsolete-attr",
 				"no-unknown-attr",
 				"permitted-contents"
 			]
@@ -7023,8 +7104,8 @@
 			"path": "html-svg/shapes-polyline-02-t-isvalid.html",
 			"category": "uncategorized",
 			"ruleIds": [
-				"no-deprecated-attr",
 				"no-invalid-attr-value",
+				"no-obsolete-attr",
 				"no-unknown-attr",
 				"permitted-contents"
 			]
@@ -7033,8 +7114,8 @@
 			"path": "html-svg/shapes-rect-01-t-isvalid.html",
 			"category": "uncategorized",
 			"ruleIds": [
-				"no-deprecated-attr",
 				"no-invalid-attr-value",
+				"no-obsolete-attr",
 				"no-unknown-attr",
 				"permitted-contents"
 			]
@@ -7043,8 +7124,8 @@
 			"path": "html-svg/shapes-rect-02-t-isvalid.html",
 			"category": "uncategorized",
 			"ruleIds": [
-				"no-deprecated-attr",
 				"no-invalid-attr-value",
+				"no-obsolete-attr",
 				"no-unknown-attr",
 				"permitted-contents"
 			]
@@ -7089,8 +7170,8 @@
 			"path": "html-svg/struct-cond-01-t-isvalid.html",
 			"category": "uncategorized",
 			"ruleIds": [
-				"no-deprecated-attr",
 				"no-invalid-attr-value",
+				"no-obsolete-attr",
 				"no-unknown-attr",
 				"permitted-contents"
 			]
@@ -7099,8 +7180,9 @@
 			"path": "html-svg/struct-cond-02-t-haswarn.html",
 			"category": "uncategorized",
 			"ruleIds": [
-				"no-deprecated-attr",
+				"no-disallowed-attr",
 				"no-invalid-attr-value",
+				"no-obsolete-attr",
 				"no-unknown-attr",
 				"permitted-contents"
 			]
@@ -7109,8 +7191,8 @@
 			"path": "html-svg/struct-cond-03-t-isvalid.html",
 			"category": "uncategorized",
 			"ruleIds": [
-				"no-deprecated-attr",
 				"no-invalid-attr-value",
+				"no-obsolete-attr",
 				"no-unknown-attr",
 				"permitted-contents"
 			]
@@ -7157,8 +7239,8 @@
 			"path": "html-svg/struct-defs-01-t-isvalid.html",
 			"category": "uncategorized",
 			"ruleIds": [
-				"no-deprecated-attr",
 				"no-invalid-attr-value",
+				"no-obsolete-attr",
 				"no-unknown-attr",
 				"permitted-contents"
 			]
@@ -7293,8 +7375,8 @@
 			"path": "html-svg/struct-frag-01-t-isvalid.html",
 			"category": "uncategorized",
 			"ruleIds": [
-				"no-deprecated-attr",
 				"no-invalid-attr-value",
+				"no-obsolete-attr",
 				"no-unknown-attr",
 				"permitted-contents"
 			]
@@ -7303,8 +7385,8 @@
 			"path": "html-svg/struct-frag-02-t-isvalid.html",
 			"category": "uncategorized",
 			"ruleIds": [
-				"no-deprecated-attr",
 				"no-invalid-attr-value",
+				"no-obsolete-attr",
 				"no-unknown-attr",
 				"permitted-contents"
 			]
@@ -7313,8 +7395,8 @@
 			"path": "html-svg/struct-frag-03-t-isvalid.html",
 			"category": "uncategorized",
 			"ruleIds": [
-				"no-deprecated-attr",
 				"no-invalid-attr-value",
+				"no-obsolete-attr",
 				"no-unknown-attr",
 				"permitted-contents"
 			]
@@ -7323,8 +7405,8 @@
 			"path": "html-svg/struct-frag-04-t-isvalid.html",
 			"category": "uncategorized",
 			"ruleIds": [
-				"no-deprecated-attr",
 				"no-invalid-attr-value",
+				"no-obsolete-attr",
 				"no-unknown-attr",
 				"permitted-contents"
 			]
@@ -7333,8 +7415,8 @@
 			"path": "html-svg/struct-frag-06-t-isvalid.html",
 			"category": "uncategorized",
 			"ruleIds": [
-				"no-deprecated-attr",
 				"no-invalid-attr-value",
+				"no-obsolete-attr",
 				"no-unknown-attr",
 				"permitted-contents"
 			]
@@ -7343,8 +7425,8 @@
 			"path": "html-svg/struct-group-01-t-isvalid.html",
 			"category": "uncategorized",
 			"ruleIds": [
-				"no-deprecated-attr",
 				"no-invalid-attr-value",
+				"no-obsolete-attr",
 				"no-unknown-attr",
 				"permitted-contents"
 			]
@@ -7353,8 +7435,8 @@
 			"path": "html-svg/struct-group-02-b-isvalid.html",
 			"category": "uncategorized",
 			"ruleIds": [
-				"no-deprecated-attr",
 				"no-invalid-attr-value",
+				"no-obsolete-attr",
 				"no-unknown-attr",
 				"permitted-contents"
 			]
@@ -7365,6 +7447,7 @@
 			"ruleIds": [
 				"no-deprecated-attr",
 				"no-invalid-attr-value",
+				"no-obsolete-attr",
 				"no-unknown-attr",
 				"permitted-contents"
 			]
@@ -7375,6 +7458,7 @@
 			"ruleIds": [
 				"no-deprecated-attr",
 				"no-invalid-attr-value",
+				"no-obsolete-attr",
 				"no-unknown-attr",
 				"permitted-contents"
 			]
@@ -7385,6 +7469,7 @@
 			"ruleIds": [
 				"no-deprecated-attr",
 				"no-invalid-attr-value",
+				"no-obsolete-attr",
 				"no-unknown-attr",
 				"permitted-contents"
 			]
@@ -7405,6 +7490,7 @@
 			"ruleIds": [
 				"no-deprecated-attr",
 				"no-invalid-attr-value",
+				"no-obsolete-attr",
 				"no-unknown-attr",
 				"permitted-contents"
 			]
@@ -7415,6 +7501,7 @@
 			"ruleIds": [
 				"no-deprecated-attr",
 				"no-invalid-attr-value",
+				"no-obsolete-attr",
 				"no-unknown-attr",
 				"permitted-contents"
 			]
@@ -7425,6 +7512,7 @@
 			"ruleIds": [
 				"no-deprecated-attr",
 				"no-invalid-attr-value",
+				"no-obsolete-attr",
 				"no-unknown-attr",
 				"permitted-contents"
 			]
@@ -7435,6 +7523,7 @@
 			"ruleIds": [
 				"no-deprecated-attr",
 				"no-invalid-attr-value",
+				"no-obsolete-attr",
 				"no-unknown-attr",
 				"permitted-contents"
 			]
@@ -7445,6 +7534,7 @@
 			"ruleIds": [
 				"no-deprecated-attr",
 				"no-invalid-attr-value",
+				"no-obsolete-attr",
 				"no-unknown-attr",
 				"permitted-contents"
 			]
@@ -7455,6 +7545,7 @@
 			"ruleIds": [
 				"no-deprecated-attr",
 				"no-invalid-attr-value",
+				"no-obsolete-attr",
 				"no-unknown-attr",
 				"permitted-contents"
 			]
@@ -7512,6 +7603,7 @@
 			"ruleIds": [
 				"no-deprecated-attr",
 				"no-invalid-attr-value",
+				"no-obsolete-attr",
 				"no-unknown-attr",
 				"permitted-contents"
 			]
@@ -7565,6 +7657,7 @@
 			"ruleIds": [
 				"no-deprecated-attr",
 				"no-invalid-attr-value",
+				"no-obsolete-attr",
 				"no-unknown-attr",
 				"permitted-contents"
 			]
@@ -7575,6 +7668,7 @@
 			"ruleIds": [
 				"no-deprecated-attr",
 				"no-invalid-attr-value",
+				"no-obsolete-attr",
 				"no-unknown-attr",
 				"permitted-contents"
 			]
@@ -7585,6 +7679,7 @@
 			"ruleIds": [
 				"no-deprecated-attr",
 				"no-invalid-attr-value",
+				"no-obsolete-attr",
 				"no-unknown-attr",
 				"permitted-contents"
 			]
@@ -7595,6 +7690,7 @@
 			"ruleIds": [
 				"no-deprecated-attr",
 				"no-invalid-attr-value",
+				"no-obsolete-attr",
 				"no-unknown-attr",
 				"permitted-contents"
 			]
@@ -7605,6 +7701,7 @@
 			"ruleIds": [
 				"no-deprecated-attr",
 				"no-invalid-attr-value",
+				"no-obsolete-attr",
 				"no-unknown-attr",
 				"permitted-contents"
 			]
@@ -7615,6 +7712,7 @@
 			"ruleIds": [
 				"no-deprecated-attr",
 				"no-invalid-attr-value",
+				"no-obsolete-attr",
 				"no-unknown-attr",
 				"permitted-contents"
 			]
@@ -7625,6 +7723,7 @@
 			"ruleIds": [
 				"no-deprecated-attr",
 				"no-invalid-attr-value",
+				"no-obsolete-attr",
 				"no-unknown-attr",
 				"permitted-contents"
 			]
@@ -7635,6 +7734,7 @@
 			"ruleIds": [
 				"no-deprecated-attr",
 				"no-invalid-attr-value",
+				"no-obsolete-attr",
 				"no-unknown-attr",
 				"permitted-contents"
 			]
@@ -7645,6 +7745,7 @@
 			"ruleIds": [
 				"no-deprecated-attr",
 				"no-invalid-attr-value",
+				"no-obsolete-attr",
 				"no-unknown-attr",
 				"permitted-contents"
 			]
@@ -7655,6 +7756,7 @@
 			"ruleIds": [
 				"no-deprecated-attr",
 				"no-invalid-attr-value",
+				"no-obsolete-attr",
 				"no-unknown-attr",
 				"permitted-contents"
 			]
@@ -7693,8 +7795,8 @@
 			"path": "html-svg/styling-css-01-b-isvalid.html",
 			"category": "uncategorized",
 			"ruleIds": [
-				"no-deprecated-attr",
 				"no-invalid-attr-value",
+				"no-obsolete-attr",
 				"no-unknown-attr",
 				"permitted-contents"
 			]
@@ -7703,8 +7805,8 @@
 			"path": "html-svg/styling-css-02-b-isvalid.html",
 			"category": "uncategorized",
 			"ruleIds": [
-				"no-deprecated-attr",
 				"no-invalid-attr-value",
+				"no-obsolete-attr",
 				"no-unknown-attr",
 				"permitted-contents"
 			]
@@ -7713,8 +7815,8 @@
 			"path": "html-svg/styling-css-03-b-isvalid.html",
 			"category": "uncategorized",
 			"ruleIds": [
-				"no-deprecated-attr",
 				"no-invalid-attr-value",
+				"no-obsolete-attr",
 				"no-unknown-attr",
 				"permitted-contents"
 			]
@@ -7723,8 +7825,8 @@
 			"path": "html-svg/styling-css-04-f-isvalid.html",
 			"category": "uncategorized",
 			"ruleIds": [
-				"no-deprecated-attr",
 				"no-invalid-attr-value",
+				"no-obsolete-attr",
 				"no-unknown-attr",
 				"permitted-contents"
 			]
@@ -7733,8 +7835,9 @@
 			"path": "html-svg/styling-css-05-b-isvalid.html",
 			"category": "uncategorized",
 			"ruleIds": [
-				"no-deprecated-attr",
+				"no-disallowed-attr",
 				"no-invalid-attr-value",
+				"no-obsolete-attr",
 				"no-unknown-attr",
 				"permitted-contents"
 			]
@@ -7745,6 +7848,7 @@
 			"ruleIds": [
 				"no-deprecated-attr",
 				"no-invalid-attr-value",
+				"no-obsolete-attr",
 				"no-unknown-attr",
 				"permitted-contents"
 			]
@@ -7798,8 +7902,8 @@
 			"path": "html-svg/styling-inherit-01-b-isvalid.html",
 			"category": "uncategorized",
 			"ruleIds": [
-				"no-deprecated-attr",
 				"no-invalid-attr-value",
+				"no-obsolete-attr",
 				"no-unknown-attr",
 				"permitted-contents"
 			]
@@ -7808,8 +7912,8 @@
 			"path": "html-svg/styling-pres-01-t-isvalid.html",
 			"category": "uncategorized",
 			"ruleIds": [
-				"no-deprecated-attr",
 				"no-invalid-attr-value",
+				"no-obsolete-attr",
 				"no-unknown-attr",
 				"permitted-contents"
 			]
@@ -7852,8 +7956,8 @@
 			"path": "html-svg/text-align-01-b-isvalid.html",
 			"category": "uncategorized",
 			"ruleIds": [
-				"no-deprecated-attr",
 				"no-invalid-attr-value",
+				"no-obsolete-attr",
 				"no-unknown-attr",
 				"permitted-contents"
 			]
@@ -7862,8 +7966,8 @@
 			"path": "html-svg/text-align-02-b-isvalid.html",
 			"category": "uncategorized",
 			"ruleIds": [
-				"no-deprecated-attr",
 				"no-invalid-attr-value",
+				"no-obsolete-attr",
 				"no-unknown-attr",
 				"permitted-contents"
 			]
@@ -7874,6 +7978,7 @@
 			"ruleIds": [
 				"no-deprecated-attr",
 				"no-invalid-attr-value",
+				"no-obsolete-attr",
 				"no-unknown-attr",
 				"permitted-contents"
 			]
@@ -7884,6 +7989,7 @@
 			"ruleIds": [
 				"no-deprecated-attr",
 				"no-invalid-attr-value",
+				"no-obsolete-attr",
 				"no-unknown-attr",
 				"permitted-contents"
 			]
@@ -7892,8 +7998,8 @@
 			"path": "html-svg/text-align-05-b-isvalid.html",
 			"category": "uncategorized",
 			"ruleIds": [
-				"no-deprecated-attr",
 				"no-invalid-attr-value",
+				"no-obsolete-attr",
 				"no-unknown-attr",
 				"permitted-contents"
 			]
@@ -7902,8 +8008,8 @@
 			"path": "html-svg/text-align-06-b-isvalid.html",
 			"category": "uncategorized",
 			"ruleIds": [
-				"no-deprecated-attr",
 				"no-invalid-attr-value",
+				"no-obsolete-attr",
 				"no-unknown-attr",
 				"permitted-contents"
 			]
@@ -7912,8 +8018,8 @@
 			"path": "html-svg/text-align-07-t-isvalid.html",
 			"category": "uncategorized",
 			"ruleIds": [
-				"no-deprecated-attr",
 				"no-invalid-attr-value",
+				"no-obsolete-attr",
 				"no-unknown-attr",
 				"permitted-contents"
 			]
@@ -7922,8 +8028,8 @@
 			"path": "html-svg/text-align-08-b-isvalid.html",
 			"category": "uncategorized",
 			"ruleIds": [
-				"no-deprecated-attr",
 				"no-invalid-attr-value",
+				"no-obsolete-attr",
 				"no-unknown-attr",
 				"permitted-contents"
 			]
@@ -7932,8 +8038,8 @@
 			"path": "html-svg/text-altglyph-01-b-isvalid.html",
 			"category": "uncategorized",
 			"ruleIds": [
-				"no-deprecated-attr",
 				"no-invalid-attr-value",
+				"no-obsolete-attr",
 				"no-unknown-attr",
 				"permitted-contents"
 			]
@@ -7942,8 +8048,8 @@
 			"path": "html-svg/text-altglyph-02-b-isvalid.html",
 			"category": "uncategorized",
 			"ruleIds": [
-				"no-deprecated-attr",
 				"no-invalid-attr-value",
+				"no-obsolete-attr",
 				"no-unknown-attr",
 				"permitted-contents"
 			]
@@ -7952,8 +8058,8 @@
 			"path": "html-svg/text-altglyph-03-b-isvalid.html",
 			"category": "uncategorized",
 			"ruleIds": [
-				"no-deprecated-attr",
 				"no-invalid-attr-value",
+				"no-obsolete-attr",
 				"no-unknown-attr",
 				"permitted-contents"
 			]
@@ -7972,8 +8078,8 @@
 			"path": "html-svg/text-deco-01-b-isvalid.html",
 			"category": "uncategorized",
 			"ruleIds": [
-				"no-deprecated-attr",
 				"no-invalid-attr-value",
+				"no-obsolete-attr",
 				"no-unknown-attr",
 				"permitted-contents"
 			]
@@ -8010,8 +8116,8 @@
 			"path": "html-svg/text-fonts-01-t-isvalid.html",
 			"category": "uncategorized",
 			"ruleIds": [
-				"no-deprecated-attr",
 				"no-invalid-attr-value",
+				"no-obsolete-attr",
 				"no-unknown-attr",
 				"permitted-contents"
 			]
@@ -8020,8 +8126,8 @@
 			"path": "html-svg/text-fonts-02-t-isvalid.html",
 			"category": "uncategorized",
 			"ruleIds": [
-				"no-deprecated-attr",
 				"no-invalid-attr-value",
+				"no-obsolete-attr",
 				"no-unknown-attr",
 				"permitted-contents"
 			]
@@ -8030,8 +8136,8 @@
 			"path": "html-svg/text-fonts-04-t-isvalid.html",
 			"category": "uncategorized",
 			"ruleIds": [
-				"no-deprecated-attr",
 				"no-invalid-attr-value",
+				"no-obsolete-attr",
 				"no-unknown-attr",
 				"permitted-contents"
 			]
@@ -8040,8 +8146,8 @@
 			"path": "html-svg/text-fonts-202-t-isvalid.html",
 			"category": "uncategorized",
 			"ruleIds": [
-				"no-deprecated-attr",
 				"no-invalid-attr-value",
+				"no-obsolete-attr",
 				"no-unknown-attr",
 				"permitted-contents"
 			]
@@ -8050,8 +8156,8 @@
 			"path": "html-svg/text-fonts-203-t-isvalid.html",
 			"category": "uncategorized",
 			"ruleIds": [
-				"no-deprecated-attr",
 				"no-invalid-attr-value",
+				"no-obsolete-attr",
 				"no-unknown-attr",
 				"permitted-contents"
 			]
@@ -8060,8 +8166,8 @@
 			"path": "html-svg/text-fonts-204-t-isvalid.html",
 			"category": "uncategorized",
 			"ruleIds": [
-				"no-deprecated-attr",
 				"no-invalid-attr-value",
+				"no-obsolete-attr",
 				"no-unknown-attr",
 				"permitted-contents"
 			]
@@ -8070,8 +8176,8 @@
 			"path": "html-svg/text-intro-01-t-isvalid.html",
 			"category": "uncategorized",
 			"ruleIds": [
-				"no-deprecated-attr",
 				"no-invalid-attr-value",
+				"no-obsolete-attr",
 				"no-unknown-attr",
 				"permitted-contents"
 			]
@@ -8080,8 +8186,8 @@
 			"path": "html-svg/text-intro-02-b-isvalid.html",
 			"category": "uncategorized",
 			"ruleIds": [
-				"no-deprecated-attr",
 				"no-invalid-attr-value",
+				"no-obsolete-attr",
 				"no-unknown-attr",
 				"permitted-contents"
 			]
@@ -8090,8 +8196,8 @@
 			"path": "html-svg/text-intro-03-b-isvalid.html",
 			"category": "uncategorized",
 			"ruleIds": [
-				"no-deprecated-attr",
 				"no-invalid-attr-value",
+				"no-obsolete-attr",
 				"no-unknown-attr",
 				"permitted-contents"
 			]
@@ -8100,8 +8206,8 @@
 			"path": "html-svg/text-intro-04-t-isvalid.html",
 			"category": "uncategorized",
 			"ruleIds": [
-				"no-deprecated-attr",
 				"no-invalid-attr-value",
+				"no-obsolete-attr",
 				"no-unknown-attr",
 				"permitted-contents"
 			]
@@ -8110,8 +8216,9 @@
 			"path": "html-svg/text-intro-05-t-isvalid.html",
 			"category": "uncategorized",
 			"ruleIds": [
-				"no-deprecated-attr",
+				"no-disallowed-attr",
 				"no-invalid-attr-value",
+				"no-obsolete-attr",
 				"no-unknown-attr",
 				"permitted-contents"
 			]
@@ -8120,8 +8227,9 @@
 			"path": "html-svg/text-intro-06-t-isvalid.html",
 			"category": "uncategorized",
 			"ruleIds": [
-				"no-deprecated-attr",
+				"no-disallowed-attr",
 				"no-invalid-attr-value",
+				"no-obsolete-attr",
 				"no-unknown-attr",
 				"permitted-contents"
 			]
@@ -8130,7 +8238,7 @@
 			"path": "html-svg/text-intro-07-t-isvalid.html",
 			"category": "uncategorized",
 			"ruleIds": [
-				"no-deprecated-attr",
+				"no-disallowed-attr",
 				"no-invalid-attr-value",
 				"no-unknown-attr",
 				"permitted-contents"
@@ -8140,8 +8248,8 @@
 			"path": "html-svg/text-intro-09-b-isvalid.html",
 			"category": "uncategorized",
 			"ruleIds": [
-				"no-deprecated-attr",
 				"no-invalid-attr-value",
+				"no-obsolete-attr",
 				"no-unknown-attr",
 				"permitted-contents"
 			]
@@ -8150,8 +8258,9 @@
 			"path": "html-svg/text-intro-10-f-isvalid.html",
 			"category": "uncategorized",
 			"ruleIds": [
-				"no-deprecated-attr",
+				"no-disallowed-attr",
 				"no-invalid-attr-value",
+				"no-obsolete-attr",
 				"no-unknown-attr",
 				"permitted-contents"
 			]
@@ -8160,8 +8269,9 @@
 			"path": "html-svg/text-intro-11-t-isvalid.html",
 			"category": "uncategorized",
 			"ruleIds": [
-				"no-deprecated-attr",
+				"no-disallowed-attr",
 				"no-invalid-attr-value",
+				"no-obsolete-attr",
 				"no-unknown-attr",
 				"permitted-contents"
 			]
@@ -8170,8 +8280,9 @@
 			"path": "html-svg/text-intro-12-t-isvalid.html",
 			"category": "uncategorized",
 			"ruleIds": [
-				"no-deprecated-attr",
+				"no-disallowed-attr",
 				"no-invalid-attr-value",
+				"no-obsolete-attr",
 				"no-unknown-attr",
 				"permitted-contents"
 			]
@@ -8182,6 +8293,7 @@
 			"ruleIds": [
 				"no-deprecated-attr",
 				"no-invalid-attr-value",
+				"no-obsolete-attr",
 				"no-unknown-attr",
 				"permitted-contents"
 			]
@@ -8200,8 +8312,8 @@
 			"path": "html-svg/text-spacing-01-b-isvalid.html",
 			"category": "uncategorized",
 			"ruleIds": [
-				"no-deprecated-attr",
 				"no-invalid-attr-value",
+				"no-obsolete-attr",
 				"no-unknown-attr",
 				"permitted-contents"
 			]
@@ -8210,8 +8322,8 @@
 			"path": "html-svg/text-text-01-b-isvalid.html",
 			"category": "uncategorized",
 			"ruleIds": [
-				"no-deprecated-attr",
 				"no-invalid-attr-value",
+				"no-obsolete-attr",
 				"no-unknown-attr",
 				"permitted-contents"
 			]
@@ -8220,8 +8332,8 @@
 			"path": "html-svg/text-text-03-b-isvalid.html",
 			"category": "uncategorized",
 			"ruleIds": [
-				"no-deprecated-attr",
 				"no-invalid-attr-value",
+				"no-obsolete-attr",
 				"no-unknown-attr",
 				"permitted-contents"
 			]
@@ -8232,6 +8344,7 @@
 			"ruleIds": [
 				"no-deprecated-attr",
 				"no-invalid-attr-value",
+				"no-obsolete-attr",
 				"no-unknown-attr",
 				"permitted-contents"
 			]
@@ -8242,6 +8355,7 @@
 			"ruleIds": [
 				"no-deprecated-attr",
 				"no-invalid-attr-value",
+				"no-obsolete-attr",
 				"no-unknown-attr",
 				"permitted-contents"
 			]
@@ -8252,6 +8366,7 @@
 			"ruleIds": [
 				"no-deprecated-attr",
 				"no-invalid-attr-value",
+				"no-obsolete-attr",
 				"no-unknown-attr",
 				"permitted-contents"
 			]
@@ -8260,8 +8375,8 @@
 			"path": "html-svg/text-text-07-t-isvalid.html",
 			"category": "uncategorized",
 			"ruleIds": [
-				"no-deprecated-attr",
 				"no-invalid-attr-value",
+				"no-obsolete-attr",
 				"no-unknown-attr",
 				"permitted-contents"
 			]
@@ -8270,8 +8385,8 @@
 			"path": "html-svg/text-text-08-b-isvalid.html",
 			"category": "uncategorized",
 			"ruleIds": [
-				"no-deprecated-attr",
 				"no-invalid-attr-value",
+				"no-obsolete-attr",
 				"no-unknown-attr",
 				"permitted-contents"
 			]
@@ -8280,8 +8395,8 @@
 			"path": "html-svg/text-text-09-t-isvalid.html",
 			"category": "uncategorized",
 			"ruleIds": [
-				"no-deprecated-attr",
 				"no-invalid-attr-value",
+				"no-obsolete-attr",
 				"no-unknown-attr",
 				"permitted-contents"
 			]
@@ -8310,6 +8425,7 @@
 			"ruleIds": [
 				"no-deprecated-attr",
 				"no-invalid-attr-value",
+				"no-obsolete-attr",
 				"no-unknown-attr",
 				"permitted-contents"
 			]
@@ -8318,8 +8434,8 @@
 			"path": "html-svg/text-tref-01-b-isvalid.html",
 			"category": "uncategorized",
 			"ruleIds": [
-				"no-deprecated-attr",
 				"no-invalid-attr-value",
+				"no-obsolete-attr",
 				"no-unknown-attr",
 				"permitted-contents"
 			]
@@ -8328,8 +8444,8 @@
 			"path": "html-svg/text-tselect-01-b-isvalid.html",
 			"category": "uncategorized",
 			"ruleIds": [
-				"no-deprecated-attr",
 				"no-invalid-attr-value",
+				"no-obsolete-attr",
 				"no-unknown-attr",
 				"permitted-contents"
 			]
@@ -8354,6 +8470,7 @@
 			"ruleIds": [
 				"no-deprecated-attr",
 				"no-invalid-attr-value",
+				"no-obsolete-attr",
 				"no-unknown-attr",
 				"permitted-contents"
 			]
@@ -8492,13 +8609,6 @@
 			]
 		},
 		{
-			"path": "html/attributes/lang/xmllang-same-isvalid.html",
-			"category": "global-attr",
-			"ruleIds": [
-				"no-deprecated-attr"
-			]
-		},
-		{
 			"path": "html/attributes/rel/rel-custom-isvalid.html",
 			"category": "global-attr",
 			"ruleIds": [
@@ -8579,6 +8689,7 @@
 			"category": "attribute-errors",
 			"ruleIds": [
 				"no-deprecated-attr",
+				"no-invalid-attr-value",
 				"require-accessible-name"
 			]
 		},
@@ -8601,6 +8712,13 @@
 			"category": "attribute-errors",
 			"ruleIds": [
 				"require-accessible-name"
+			]
+		},
+		{
+			"path": "html/elements/area/hreflang-and-type-isvalid.html",
+			"category": "attribute-errors",
+			"ruleIds": [
+				"no-obsolete-attr"
 			]
 		},
 		{
@@ -8675,13 +8793,6 @@
 			]
 		},
 		{
-			"path": "html/elements/dl/dl-isvalid.html",
-			"category": "attribute-errors",
-			"ruleIds": [
-				"permitted-contents"
-			]
-		},
-		{
 			"path": "html/elements/h1/empty-haswarn.html",
 			"category": "attribute-errors",
 			"ruleIds": [
@@ -8707,13 +8818,6 @@
 			"category": "attribute-errors",
 			"ruleIds": [
 				"no-deprecated-attr"
-			]
-		},
-		{
-			"path": "html/elements/img/controls-isvalid.html",
-			"category": "attribute-errors",
-			"ruleIds": [
-				"no-unknown-attr"
 			]
 		},
 		{
@@ -8947,6 +9051,14 @@
 			"path": "html/elements/script/language-haswarn.html",
 			"category": "attribute-errors",
 			"ruleIds": [
+				"no-deprecated-attr",
+				"no-invalid-attr-value"
+			]
+		},
+		{
+			"path": "html/elements/script/type-text-javascript-haswarn.html",
+			"category": "attribute-errors",
+			"ruleIds": [
 				"no-deprecated-attr"
 			]
 		},
@@ -9036,7 +9148,7 @@
 			"path": "html/obsolete/profile-haswarn.html",
 			"category": "deprecated",
 			"ruleIds": [
-				"no-deprecated-attr"
+				"no-obsolete-attr"
 			]
 		},
 		{
@@ -9149,69 +9261,24 @@
 			]
 		},
 		{
-			"path": "langdetect/lang-en-dir-ltr-content-ja-haswarn.html",
-			"category": "uncategorized",
-			"ruleIds": [
-				"permitted-contents"
-			]
-		},
-		{
-			"path": "langdetect/lang-en-dir-ltr-content-zh-haswarn.html",
-			"category": "uncategorized",
-			"ruleIds": [
-				"permitted-contents"
-			]
-		},
-		{
-			"path": "langdetect/lang-en-dir-ltr-content-zh-size-less-1024-valid.html",
-			"category": "uncategorized",
-			"ruleIds": [
-				"permitted-contents"
-			]
-		},
-		{
 			"path": "langdetect/lang-en-zh-in-svg-text-en-in-p-isvalid.html",
 			"category": "uncategorized",
 			"ruleIds": [
-				"no-deprecated-attr",
-				"permitted-contents"
-			]
-		},
-		{
-			"path": "langdetect/lang-he-dir-ltr-content-he-haswarn.html",
-			"category": "uncategorized",
-			"ruleIds": [
-				"permitted-contents"
-			]
-		},
-		{
-			"path": "langdetect/lang-he-dir-ltr-content-zh-in-p-he-in-pre-haswarn.html",
-			"category": "uncategorized",
-			"ruleIds": [
-				"permitted-contents"
+				"no-obsolete-attr"
 			]
 		},
 		{
 			"path": "langdetect/lang-he-zh-in-svg-text-he-in-p-isvalid.html",
 			"category": "uncategorized",
 			"ruleIds": [
-				"no-deprecated-attr",
-				"permitted-contents"
-			]
-		},
-		{
-			"path": "langdetect/lang-zh-dir-ltr-content-zh-in-pre-he-in-p-haswarn.html",
-			"category": "uncategorized",
-			"ruleIds": [
-				"permitted-contents"
+				"no-obsolete-attr"
 			]
 		},
 		{
 			"path": "langdetect/lang-zh-zh-in-p-he-in-svg-text-isvalid.html",
 			"category": "uncategorized",
 			"ruleIds": [
-				"no-deprecated-attr",
-				"permitted-contents"
+				"no-obsolete-attr"
 			]
 		},
 		{

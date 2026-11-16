@@ -441,5 +441,17 @@ test('default-rules', () => {
 			category: 'a11y',
 			defaultValue: true,
 		},
+		'no-aria-owns-on-presentational-children': {
+			category: 'a11y',
+			defaultValue: true,
+		},
+		'no-circular-aria-owns': {
+			category: 'a11y',
+			defaultValue: true,
+		},
+		'no-duplicate-aria-owns': {
+			category: 'a11y',
+			defaultValue: true,
+		},
 	});
 });

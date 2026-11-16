@@ -43,7 +43,8 @@ for (const key of Object.keys(globalAttrs)) {
 	};
 	switch (key) {
 		case '#HTMLGlobalAttrs':
-		case '#ARIAAttrs': {
+		case '#ARIAAttrs':
+		case '#MathMLGlobalAttrs': {
 			select[key] = {
 				type: 'boolean',
 			};
@@ -190,10 +191,28 @@ fs.writeFileSync(
 						],
 					},
 					defaultValue: { type: 'string' },
-					// Status-flag semantics (deprecated/experimental here; obsolete and
-					// nonStandard exist only on the TS types) are documented on
-					// `ElementSpec`/`Attribute` in ../src/types/index.ts.
+					sameValueAs: {
+						type: 'string',
+						description:
+							'The name of another attribute of the same element whose value this attribute has to have, compared as ASCII case-insensitive strings: `xml:lang` of an HTML element has to have the value of `lang` (HTML Standard, "The lang and xml:lang attributes"). The presence of that attribute is the business of `condition`.',
+					},
+					// Status-flag semantics are documented on `ElementSpec`/`Attribute` in ../src/types/index.ts.
 					deprecated: { type: 'boolean' },
+					// A deprecation that depends on the element (the value of the attribute or another attribute),
+					// as the "obsolete but conforming" features of the HTML Standard do: the attribute is deprecated
+					// on an element that one of the selectors matches. `deprecated: true` is the unconditional one.
+					deprecatedWhen: {
+						allOf: [{ $ref: '#/definitions/Selectors' }],
+						description:
+							'Deprecated for the elements that one of the selectors matches, as the "obsolete but conforming" features of the HTML Standard are: they depend on the value of the attribute or on another attribute. `deprecated: true` is the unconditional one.',
+					},
+					// `const: true`: a flag is written when it holds, never as `false`.
+					// What the HTML Standard lists as non-conforming (obsolete.html §16.2), which `deprecated`
+					// does not say: the attribute "must not be used by authors".
+					obsolete: {
+						const: true,
+						description: 'Obsolete: removed from the specification and must not be used by authors.',
+					},
 					required: {
 						oneOf: [
 							{
@@ -224,6 +243,12 @@ fs.writeFileSync(
 					},
 					experimental: {
 						type: 'boolean',
+					},
+					// A flag is written when it holds. `false` is a decision against BCD's flag (the generator writes it
+					// where an element takes back the flag that BCD gave a global attribute), as with `experimental`.
+					nonStandard: {
+						type: 'boolean',
+						description: 'Non-standard: never part of any standard (vendor-specific or proprietary).',
 					},
 				},
 			},

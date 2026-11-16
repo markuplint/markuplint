@@ -25,7 +25,7 @@
 			"fill"
 		],
 		"#SVGConditionalProcessingAttrs": ["requiredExtensions", "systemLanguage"],
-		"#SVGCoreAttrs": ["id", "tabindex", "autofocus", "lang", "xml:space", "class", "style"]
+		"#SVGCoreAttrs": ["id", "tabindex", "autofocus", "lang", "xml:space", "class", "style", "part", "exportparts"]
 	},
 	"attributes": {
 		// https://svgwg.org/specs/animations/#SetElementToAttribute

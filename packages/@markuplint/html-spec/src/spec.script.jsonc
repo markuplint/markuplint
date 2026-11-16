@@ -52,6 +52,9 @@
 		//
 		// The empty string is a classic script, so it is listed beside the keywords; the MIME type
 		// grammar does not accept it.
+		// https://html.spec.whatwg.org/multipage/obsolete.html#obsolete-but-conforming-features
+		// Obsolete but conforming, which conformance checkers warn about: the value is the empty string or a
+		// JavaScript MIME type essence match, which is what omitting the attribute says.
 		"type": {
 			"type": [
 				"MIMEType",
@@ -59,7 +62,8 @@
 					"enum": ["", "module", "importmap", "speculationrules"],
 					"caseInsensitive": true
 				}
-			]
+			],
+			"deprecatedWhen": ":is([type=''], #JSMIMETypes)"
 		},
 		// https://html.spec.whatwg.org/multipage/scripting.html#attr-script-nomodule
 		// §4.12.1 table: "Yes" only for external and inline classic scripts.
@@ -87,9 +91,28 @@
 			"condition": "#ClassicOrModuleScript[src]"
 		},
 		// https://html.spec.whatwg.org/multipage/obsolete.html#attr-script-charset
-		// Must not be used without src
+		// https://html.spec.whatwg.org/multipage/obsolete.html#obsolete-but-conforming-features
+		// Must not be used without src. Obsolete but conforming, which conformance checkers warn about: the value
+		// has to be an ASCII case-insensitive match for "utf-8" (any other value is non-conforming).
 		"charset": {
-			"condition": "[src]"
+			"type": {
+				"enum": ["utf-8"],
+				"caseInsensitive": true
+			},
+			"condition": "[src]",
+			"deprecated": true
+		},
+		// https://html.spec.whatwg.org/multipage/obsolete.html#obsolete-but-conforming-features
+		// Obsolete but conforming, which conformance checkers warn about: the value has to be an ASCII
+		// case-insensitive match for "JavaScript", and the type attribute has to be omitted or an ASCII
+		// case-insensitive match for "text/javascript" (otherwise non-conforming).
+		"language": {
+			"type": {
+				"enum": ["JavaScript"],
+				"caseInsensitive": true
+			},
+			"condition": [":not([type])", "[type='text/javascript' i]"],
+			"deprecated": true
 		},
 		// https://html.spec.whatwg.org/multipage/urls-and-fetching.html#blocking-attributes
 		// §4.12.1 https://html.spec.whatwg.org/multipage/scripting.html#the-script-element
@@ -132,6 +155,14 @@
 		// > fetchpriority does not affect module imports.
 		"fetchpriority": {
 			"condition": "#ClassicOrModuleScript[src]"
+		},
+		// https://html.spec.whatwg.org/multipage/obsolete.html#non-conforming-features
+		"event": {
+			"obsolete": true
+		},
+		// https://html.spec.whatwg.org/multipage/obsolete.html#non-conforming-features
+		"for": {
+			"obsolete": true
 		}
 	},
 	"aria": {

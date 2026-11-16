@@ -9,6 +9,8 @@ Warn if an attribute's value doesn't match the type or pattern the specification
 
 This rule according to [HTML Living Standard](https://html.spec.whatwg.org/). It has settings in [`@markuplint/html-spec`](https://github.com/markuplint/markuplint/tree/main/packages/%40markuplint/html-spec/src).
 
+An attribute that has to have the value of another attribute of the element is checked as well: `xml:lang` of an HTML element has to have the value of `lang`, compared as ASCII case-insensitive strings.
+
 Whether the attribute name is known and applicable at all is [`no-unknown-attr`](/docs/rules/no-unknown-attr)'s and [`no-disallowed-attr`](/docs/rules/no-disallowed-attr)'s concern; this rule only checks the value of an attribute both of those already accept.
 
 ❌ Examples of **incorrect** code for this rule
@@ -34,6 +36,20 @@ This rule doesn't evaluate the element that has the **spread attribute** in some
 ## Details
 
 Attribute names are compared as the DOM compares them, which depends on the syntax and on the element: `TYPE` is `type` in the HTML syntax. See [Attribute name case](/docs/rules/no-unknown-attr#attribute-name-case) for the details. The names in `allowAttrs` are compared the same way.
+
+### The `pattern` attribute {#pattern-attribute}
+
+The value of `<input pattern>` is accepted exactly when it compiles as a regular expression with the `v` flag, which is how the HTML Standard compiles it. A browser that cannot compile it ignores the attribute.
+
+> Let regexpCompletion be RegExpCreate(pattern, "v").
+
+Cite: [HTML Standard](https://html.spec.whatwg.org/multipage/input.html#compiled-pattern-regular-expression)
+
+> Let anchoredPattern be the string "^(?:", followed by pattern, followed by ")$".
+
+Cite: [HTML Standard](https://html.spec.whatwg.org/multipage/input.html#compiled-pattern-regular-expression)
+
+The `v` flag is stricter than the flag-less mode, so a pattern that was valid without it can be reported. For example, a hyphen at the end of a character class must be escaped: write `[\w.\-]+`, not `[\w.-]+`.
 
 ### Setting `allowAttrs` option {#setting-allow-attrs-option}
 

@@ -1,8 +1,4 @@
-import type * as cheerio from 'cheerio';
-
 import type { ARIARoleInSchema } from '@markuplint/ml-spec';
-
-import type { AnyNode } from './cheerio-types.ts';
 
 type HasName = { readonly name: string };
 
@@ -41,30 +37,6 @@ export function arrayUnique<T extends HasName>(array: readonly T[]) {
 		nameStack.push(item.name);
 	}
 	return result;
-}
-
-export function getThisOutline(
-	// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
-	$: cheerio.CheerioAPI,
-	// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
-	$start: cheerio.Cheerio<AnyNode>,
-) {
-	const $container = $('<div></div>');
-	let $next = $start.next();
-	const els = [$start.clone()];
-	while ($next.length > 0 && $next.filter('h2').length === 0) {
-		els.push($next.clone());
-		$next = $next.next();
-	}
-	for (const el of els) $container.append(el);
-	return $container;
-}
-
-export function mergeAttributes<T>(fromDocs: T, fromJSON: T): T {
-	return {
-		...fromDocs,
-		...fromJSON,
-	};
 }
 
 export function keys<T, K = keyof T>(object: T): K[] {

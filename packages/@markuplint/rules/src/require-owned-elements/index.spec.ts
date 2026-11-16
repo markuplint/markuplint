@@ -13,10 +13,92 @@ test('[require-owned-elements-valid-002] no role', async () => {
 	expect((await mlRuleTest(rule, '<div></div>')).violations).toStrictEqual([]);
 });
 
+test('[require-owned-elements-valid-003] a listbox that owns an option through aria-owns', async () => {
+	expect(
+		(
+			await mlRuleTest(
+				rule,
+				'<div role="listbox" aria-owns="existing-id nonexistent-id">Listbox</div><div id="existing-id" role="option">Option 1</div>',
+			)
+		).violations,
+	).toStrictEqual([]);
+});
+
+test('[require-owned-elements-valid-004] a listbox that owns, through aria-owns, a generic with an option in it', async () => {
+	expect(
+		(
+			await mlRuleTest(
+				rule,
+				'<div role="listbox" aria-owns="id1"></div><div id="id1"><div><div role="option">option text</div></div></div>',
+			)
+		).violations,
+	).toStrictEqual([]);
+});
+
 test('[require-owned-elements-invalid-001] list without listitem', async () => {
 	const { violations } = await mlRuleTest(rule, '<div role="list"><div>not a listitem</div></div>');
 	expect(violations.length).toBe(1);
 	expect(violations[0]!.severity).toBe('error');
+});
+
+test('[require-owned-elements-invalid-002] a child that another element owns through aria-owns is not a child of its parent', async () => {
+	expect(
+		(
+			await mlRuleTest(
+				rule,
+				'<div role="listbox"><div id="o" role="option"></div></div><div role="group" aria-owns="o"></div>',
+			)
+		).violations,
+	).toStrictEqual([
+		{
+			severity: 'error',
+			line: 1,
+			col: 1,
+			message: 'The child element requires the roles: "group > option", "option". Or, require aria-busy="true"',
+			raw: '<div role="listbox">',
+		},
+	]);
+});
+
+test('[require-owned-elements-invalid-003] aria-owns in a declarative shadow root moves the child it refers to', async () => {
+	expect(
+		(
+			await mlRuleTest(
+				rule,
+				'<div role="list"><template shadowrootmode="open"><div role="listitem" id="i"></div><div role="group" aria-owns="i"></div></template></div>',
+			)
+		).violations,
+	).toStrictEqual([
+		{
+			severity: 'error',
+			line: 1,
+			col: 1,
+			message: 'The "list" role expects the "listitem" role',
+			raw: '<div role="list">',
+		},
+	]);
+});
+
+test('[require-owned-elements-valid-006] what aria-owns moves is not known in a document with a block of template syntax', async () => {
+	expect(
+		(
+			await mlRuleTest(
+				rule,
+				'<div role="listbox" aria-owns="o"></div>{#if a}<div id="o" role="listitem"></div>{:else}<div id="o" role="option"></div>{/if}',
+				{ parser: { '.*': '@markuplint/svelte-parser' } },
+			)
+		).violations,
+	).toStrictEqual([]);
+});
+
+test('[require-owned-elements-valid-005] an aria-owns whose value is not known until it is rendered may own the owned element', async () => {
+	expect(
+		(
+			await mlRuleTest(rule, '<div role="listbox" aria-owns={ids}></div>', {
+				parser: { '.*': '@markuplint/jsx-parser' },
+			})
+		).violations,
+	).toStrictEqual([]);
 });
 
 // #3589: empty containers warn with busy suggestion (not error)

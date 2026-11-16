@@ -13,8 +13,10 @@ export const globalAttrs: Record<
 			'autocorrect',
 			'autofocus',
 			'contenteditable',
+			'contextmenu',
 			'dir',
 			'draggable',
+			'dropzone',
 			'enterkeyhint',
 			'hidden',
 			'inert',
@@ -34,6 +36,10 @@ export const globalAttrs: Record<
 			'title',
 			'translate',
 			'writingsuggestions',
+			'focusgroup',
+			'focusgroupstart',
+			'headingoffset',
+			'headingreset',
 			'class',
 			'id',
 			'slot',
@@ -41,6 +47,9 @@ export const globalAttrs: Record<
 			'xmlns',
 			'xml:lang',
 			'xml:space',
+			'part',
+			'exportparts',
+			'virtualkeyboardpolicy',
 
 			/**
 			 * Experimental
@@ -120,6 +129,7 @@ export const globalAttrs: Record<
 			'onseeked',
 			'onseeking',
 			'onselect',
+			'onshow',
 			'onslotchange',
 			'onstalled',
 			'onsubmit',
@@ -134,6 +144,10 @@ export const globalAttrs: Record<
 			'onwebkitanimationstart',
 			'onwebkittransitionend',
 			'onwheel',
+			'ontouchstart', // Touch Events
+			'ontouchend', // Touch Events
+			'ontouchmove', // Touch Events
+			'ontouchcancel', // Touch Events
 			'onanimationstart', // CSS Animation Events
 			'onanimationiteration', // CSS Animation Events
 			'onanimationend', // CSS Animation Events
@@ -269,10 +283,14 @@ export const globalAttrs: Record<
 			// "data-*" // No apply
 			'xml:lang', // Obsoleted
 			'xml:base', // Obsoleted
+			// CSS Shadow Module: any element in a shadow tree
+			'part',
+			'exportparts',
 		],
 	},
 	'#SVGFilterPrimitiveAttrs': {
-		description: '[Common filter primitive attributes]( https://drafts.fxtf.org/filter-effects/#CommonAttributes )',
+		description:
+			'[Common filter primitive attributes]( https://drafts.csswg.org/filter-effects-1/#CommonAttributes )',
 		attrs: ['x', 'y', 'width', 'height', 'result', 'in'],
 	},
 	'#SVGPresentationAttrs': {
@@ -373,8 +391,30 @@ export const globalAttrs: Record<
 	},
 	'#SVGTransferFunctionAttrs': {
 		description:
-			'[transfer function element attributes,]( https://drafts.fxtf.org/filter-effects/#transfer-function-element-attributes )',
+			'[transfer function element attributes,]( https://drafts.csswg.org/filter-effects-1/#transfer-function-element-attributes )',
 		attrs: ['type', 'tableValues', 'slope', 'intercept', 'amplitude', 'exponent', 'offset'],
+	},
+	'#MathMLGlobalAttrs': {
+		description:
+			'[attributes common to HTML and MathML elements]( https://www.w3.org/TR/mathml-core/#attributes-common-to-html-and-mathml-elements )',
+		attrs: [
+			'autofocus',
+			'class',
+			'data-*',
+			'dir',
+			'displaystyle',
+			'id',
+			'mathbackground',
+			'mathcolor',
+			'mathsize',
+			'nonce',
+			'scriptlevel',
+			'style',
+			'tabindex',
+			// CSS Shadow Module: any element in a shadow tree
+			'part',
+			'exportparts',
+		],
 	},
 	'#XLinkAttrs': {
 		description:

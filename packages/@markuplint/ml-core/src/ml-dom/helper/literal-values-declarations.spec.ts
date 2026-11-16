@@ -126,6 +126,8 @@ describe('the names that the specs type as Boolean are the ones that the tables 
 		'default',
 		'defer',
 		'disabled',
+		'disablepictureinpicture',
+		'disableremoteplayback',
 		'focusgroupstart',
 		'formnovalidate',
 		'headingreset',
@@ -148,6 +150,7 @@ describe('the names that the specs type as Boolean are the ones that the tables 
 		'shadowrootdelegatesfocus',
 		'shadowrootserializable',
 		'switch',
+		'webkitdirectory',
 	];
 
 	/** The specs that are merged into the HTML spec, and the names that they type as `Boolean` besides the HTML ones. */

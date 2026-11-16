@@ -1090,3 +1090,78 @@ test('[no-unknown-attr-issue-4571-005] Svelte: acceptCharset and accept-charset 
 		(await mlRuleTest(rule, '<form action="/submit" accept-charset="utf-8"></form>', svelte)).violations,
 	).toStrictEqual([]);
 });
+
+test('[no-unknown-attr-valid-007] HTML: the attributes that specifications other than the HTML Standard define are known', async () => {
+	// Remote Playback, Picture-in-Picture, WICG controls-list, HTML Media Capture and the Entries API
+	for (const html of [
+		'<audio controlslist="nodownload" disableremoteplayback></audio>',
+		'<video controlslist="nodownload" disablepictureinpicture disableremoteplayback></video>',
+		'<input type="file" accept="image/*" capture="user" webkitdirectory>',
+		'<img src="a.png" alt="photo" controls>',
+	]) {
+		expect((await mlRuleTest(rule, html)).violations, html).toStrictEqual([]);
+	}
+});
+
+test('[no-unknown-attr-valid-008] SVG: pattern x and y, mask-type of mask and in of feDisplacementMap are known', async () => {
+	// https://svgwg.org/svg2-draft/pservers.html#PatternElementXAttribute
+	// https://drafts.csswg.org/css-masking-1/#propdef-mask-type
+	// https://drafts.csswg.org/filter-effects-1/#feDisplacementMapElement
+	const svg = `<svg xmlns="http://www.w3.org/2000/svg">
+<pattern x="1" y="2" width="3" height="4"></pattern>
+<mask mask-type="alpha"></mask>
+<filter><feDisplacementMap in="SourceGraphic" in2="SourceAlpha"></feDisplacementMap></filter>
+</svg>`;
+	expect((await mlRuleTest(rule, svg)).violations).toStrictEqual([]);
+});
+
+test('[no-unknown-attr-invalid-006] SVG: an attribute that no specification defines for the element is known by its status flag', async () => {
+	// SVG Animations: the attributeType attribute is not supported by SVG (obsolete), and SVG 2 gives defs and
+	// pattern no conditional processing attributes (non-standard, as BCD has them).
+	const svg = `<svg xmlns="http://www.w3.org/2000/svg">
+<animate attributeType="XML"></animate>
+<defs systemLanguage="ja"></defs>
+<pattern systemLanguage="ja"></pattern>
+</svg>`;
+	const { violations } = await mlRuleTest(rule, svg);
+	expect(violations).toStrictEqual([]);
+});
+
+test('[no-unknown-attr-valid-009] SVG: decoding of the image element is known, though no specification defines it for the element', async () => {
+	expect(
+		(
+			await mlRuleTest(
+				rule,
+				'<svg xmlns="http://www.w3.org/2000/svg"><image href="a.png" decoding="async"></image></svg>',
+			)
+		).violations,
+	).toStrictEqual([]);
+});
+
+test('[no-unknown-attr-invalid-007] audio: disablepictureinpicture is defined for the video element only', async () => {
+	// https://w3c.github.io/picture-in-picture/#disable-pip
+	const { violations } = await mlRuleTest(rule, '<audio disablepictureinpicture></audio>');
+	expect(violations).toStrictEqual([
+		{
+			severity: 'error',
+			line: 1,
+			col: 8,
+			message: 'The "disablepictureinpicture" attribute is disallowed',
+			raw: 'disablepictureinpicture',
+		},
+	]);
+});
+
+test('[no-unknown-attr-valid-010] an obsolete element takes the global attributes of HTML', async () => {
+	// https://html.spec.whatwg.org/multipage/dom.html#global-attributes
+	const { violations } = await mlRuleTest(rule, '<acronym class="a" title="t"></acronym>');
+	expect(violations).toStrictEqual([]);
+});
+
+test('[no-unknown-attr-valid-011] part and exportparts are known on HTML, SVG and MathML elements', async () => {
+	// https://drafts.csswg.org/css-shadow-1/#part-attr
+	const html = `<div part="a b" exportparts="a, b : c"></div>
+<svg xmlns="http://www.w3.org/2000/svg"><rect part="a" exportparts="b"></rect><circle part="a"></circle></svg>
+<math><mi part="a" exportparts="b"></mi></math>`;
+	expect((await mlRuleTest(rule, html)).violations).toStrictEqual([]);
+});

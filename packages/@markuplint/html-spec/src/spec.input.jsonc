@@ -89,6 +89,18 @@
 				"[type='color' i]"
 			]
 		},
+		// https://www.w3.org/TR/html-media-capture/#the-capture-attribute
+		// The section applies to an `input` in the File Upload state whose `accept` is specified, which the condition
+		// models. It gives the keywords `user` and `environment` and the empty string, which is the
+		// implementation-specific state like a missing or an invalid value.
+		"capture": {
+			"type": {
+				"enum": ["", "user", "environment"],
+				"invalidValueDefault": "",
+				"missingValueDefault": ""
+			},
+			"condition": "[type='file' i][accept]"
+		},
 		// https://html.spec.whatwg.org/multipage/input.html#attr-input-checked
 		"checked": {
 			"type": "Boolean",
@@ -167,6 +179,9 @@
 			]
 		},
 		// https://html.spec.whatwg.org/multipage/input.html#attr-input-maxlength
+		// https://html.spec.whatwg.org/multipage/obsolete.html#obsolete-but-conforming-features
+		// On the Number state, authors should not, but may despite the requirements elsewhere, specify the
+		// attribute, and conformance checkers warn about it.
 		"maxlength": {
 			"condition": [
 				":not([type])",
@@ -175,8 +190,10 @@
 				"[type='url' i]",
 				"[type='tel' i]",
 				"[type='email' i]",
-				"[type='password' i]"
-			]
+				"[type='password' i]",
+				"[type='number' i]"
+			],
+			"deprecatedWhen": "[type='number' i]"
 		},
 		// https://html.spec.whatwg.org/multipage/input.html#attr-input-min
 		// See `max` above for the rationale on per-type conditional types.
@@ -275,8 +292,21 @@
 		// it lands.
 		"switch": {
 			"type": "Boolean",
-			"experimental": true,
-			"condition": ["[type='checkbox' i]"]
+			"condition": "[type='checkbox' i]"
+		},
+		// No specification defines `incremental`, `orient` and `results`, and BCD does not have them either, so the
+		// entries are non-standard by hand.
+		"incremental": {
+			"type": "Any",
+			"nonStandard": true
+		},
+		"orient": {
+			"type": "Any",
+			"nonStandard": true
+		},
+		"results": {
+			"type": "Any",
+			"nonStandard": true
 		},
 		// https://html.spec.whatwg.org/multipage/input.html#attr-input-readonly
 		"readonly": {
@@ -318,11 +348,15 @@
 			]
 		},
 		// https://html.spec.whatwg.org/multipage/input.html#attr-input-size
+		// https://html.spec.whatwg.org/multipage/obsolete.html#obsolete-but-conforming-features
+		// On the Number state, authors should not, but may despite the requirements elsewhere, specify the
+		// attribute, and conformance checkers warn about it.
 		"size": {
 			"type": {
 				"type": "integer",
 				"gt": 0
 			},
+			"deprecatedWhen": "[type='number' i]",
 			"condition": [
 				":not([type])",
 				"[type='text' i]",
@@ -330,7 +364,8 @@
 				"[type='url' i]",
 				"[type='tel' i]",
 				"[type='email' i]",
-				"[type='password' i]"
+				"[type='password' i]",
+				"[type='number' i]"
 			],
 			"defaultValue": "20"
 		},
@@ -455,9 +490,51 @@
 				{ "condition": "[type='datetime-local' i]", "type": "LocalDateTimeString" }
 			]
 		},
+		// https://wicg.github.io/entries-api/#html-forms
+		// The section applies to an `input` in the File Upload state, which the condition models as for `accept`.
+		"webkitdirectory": {
+			"type": "Boolean",
+			"condition": "[type='file' i]"
+		},
 		// https://html.spec.whatwg.org/multipage/embedded-content-other.html#attr-dim-width
 		"width": {
 			"condition": "[type='image' i]"
+		},
+		// https://html.spec.whatwg.org/multipage/obsolete.html#non-conforming-features
+		"ismap": {
+			"obsolete": true
+		},
+		// https://html.spec.whatwg.org/multipage/obsolete.html#non-conforming-features
+		"usemap": {
+			"obsolete": true
+		},
+		// https://html.spec.whatwg.org/multipage/obsolete.html#non-conforming-features
+		"datasrc": {
+			"obsolete": true
+		},
+		// https://html.spec.whatwg.org/multipage/obsolete.html#non-conforming-features
+		"datafld": {
+			"obsolete": true
+		},
+		// https://html.spec.whatwg.org/multipage/obsolete.html#non-conforming-features
+		"dataformatas": {
+			"obsolete": true
+		},
+		// https://html.spec.whatwg.org/multipage/obsolete.html#non-conforming-features
+		"align": {
+			"obsolete": true
+		},
+		// https://html.spec.whatwg.org/multipage/obsolete.html#non-conforming-features
+		"border": {
+			"obsolete": true
+		},
+		// https://html.spec.whatwg.org/multipage/obsolete.html#non-conforming-features
+		"hspace": {
+			"obsolete": true
+		},
+		// https://html.spec.whatwg.org/multipage/obsolete.html#non-conforming-features
+		"vspace": {
+			"obsolete": true
 		}
 	},
 	"aria": {

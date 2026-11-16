@@ -24,6 +24,8 @@ async function main() {
 		const workspacePath = path.resolve(process.cwd(), 'test', 'test.code-workspace');
 
 		await runTests({
+			// The CI sets it to the `engines.vscode` minimum in one job; unset runs the latest stable.
+			version: process.env.VSCODE_TEST_VERSION,
 			extensionDevelopmentPath,
 			extensionTestsPath,
 			launchArgs: [

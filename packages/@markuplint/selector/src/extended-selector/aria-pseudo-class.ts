@@ -14,6 +14,10 @@ import { InvalidSelectorError } from '../invalid-selector-error.js';
  * that its per-element memoization cache is shared with other consumers (`require-accessible-name`,
  * `wai-aria`, etc.). `SelectorElement#getAccessibleName` is how the `@markuplint/selector` package, which
  * sits below `@markuplint/ml-core` in the dependency graph, reads it.
+ *
+ * An element whose name is in a branch of a conditional block has no name as written, but may have
+ * one, so `has name` matches it and `has no name` does not: `SelectorElement#mayHaveAccessibleName`
+ * is asked when the name as written is empty.
  */
 export function ariaPseudoClass() {
 	return (content: string) => {
@@ -25,9 +29,12 @@ export function ariaPseudoClass() {
 			const version = aria.version ?? ARIA_RECOMMENDED_VERSION;
 
 			const name = el.getAccessibleName(version);
+			// An element whose name is in a branch of a conditional block may have a name: the markup as
+			// written does not say which branch is rendered (`MLElement#mayHaveAccessibleName`)
+			const hasName = !!name || (el.mayHaveAccessibleName?.(version) ?? false);
 			switch (aria.type) {
 				case 'hasName': {
-					if (name) {
+					if (hasName) {
 						return {
 							specificity: [0, 1, 0],
 							matched: true,
@@ -41,7 +48,7 @@ export function ariaPseudoClass() {
 					};
 				}
 				case 'hasNoName': {
-					if (!name) {
+					if (!hasName) {
 						return {
 							specificity: [0, 1, 0],
 							matched: true,

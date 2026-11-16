@@ -14,6 +14,16 @@ describe('Parser#attrExpressionLanguage', () => {
 	});
 });
 
+describe('Parser#templateContent', () => {
+	test('is absent by default', () => {
+		expect(new TestParser().templateContent).toBeUndefined();
+	});
+
+	test('is what the option says', () => {
+		expect(new TestParser({ templateContent: 'in-place' }).templateContent).toBe('in-place');
+	});
+});
+
 describe('Parser#literalValues', () => {
 	test('is absent by default', () => {
 		expect(new TestParser().literalValues).toBeUndefined();

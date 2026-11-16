@@ -20,8 +20,9 @@
 		"#ARIAAttrs": true
 	},
 	"attributes": {
+		// https://html.spec.whatwg.org/multipage/obsolete.html#non-conforming-features
 		"profile": {
-			"deprecated": true
+			"obsolete": true
 		}
 	},
 	"aria": {

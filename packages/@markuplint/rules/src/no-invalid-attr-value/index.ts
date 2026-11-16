@@ -40,6 +40,15 @@ type Attr = {
 	value: AttributeType | Pattern;
 };
 
+/**
+ * @param value - A string
+ * @returns The string with the ASCII upper case letters turned into lower case, and nothing else
+ *   (the comparison that the HTML Standard calls "ASCII case-insensitive")
+ */
+function asciiLowerCase(value: string) {
+	return value.replaceAll(/[A-Z]/g, letter => letter.toLowerCase());
+}
+
 export default createRule<boolean, Option>({
 	meta: meta,
 	defaultOptions: {},
@@ -60,6 +69,7 @@ export default createRule<boolean, Option>({
 			const allowType = lookupAllowed(attr.rule.options.allowAttrs, attr);
 
 			let invalid: ReturnType<typeof attrCheck> = false;
+			let sameValueAs: string | undefined;
 
 			if (allowType === undefined) {
 				if (attr.ownerElement.elementType !== 'html') {
@@ -77,6 +87,7 @@ export default createRule<boolean, Option>({
 					return;
 				}
 				invalid = attrCheck(t, name, value, false, eligibility.spec);
+				sameValueAs = eligibility.spec.sameValueAs;
 			} else {
 				invalid = attrCheck(t, name, value, true, {
 					name,
@@ -87,6 +98,22 @@ export default createRule<boolean, Option>({
 
 			if (attr.isDynamicValue) {
 				return;
+			}
+
+			// The attribute that this one has to have the value of: when it is absent the attribute is not allowed
+			// (`condition`), which is not this rule's to say, and a value that is code is not compared
+			const other = sameValueAs === undefined ? null : attr.ownerElement.getAttrNode(sameValueAs);
+			if (
+				other &&
+				!other.isDynamicValue &&
+				!other.isAbsent &&
+				asciiLowerCase(other.value) !== asciiLowerCase(value)
+			) {
+				report({
+					scope: attr,
+					message: t('{0} expects {1}', t('the "{0*}" {1}', name, 'attribute'), `"${other.value}"`),
+					...(valueNode ? { line: valueNode.startLine, col: valueNode.startCol, raw: valueNode.raw } : {}),
+				});
 			}
 
 			const invalidList = Array.isArray(invalid) ? invalid : [invalid];

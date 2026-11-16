@@ -3,6 +3,7 @@
 import { describe, test, expect } from 'vitest';
 
 import { computeAccessibleName } from '../compute.js';
+import { findChildrenByLocalName } from '../helpers.js';
 
 import { createTestResolver, element, textNode } from './test-helpers.js';
 
@@ -174,5 +175,137 @@ describe('AccnameResolver.getChildNodes', () => {
 		};
 
 		expect(computeAccessibleName(heading, resolver).name).toBe('Note: Rendered');
+	});
+});
+
+describe('AccnameResolver.mayBeAbsentWith', () => {
+	test('the legend that gives a name is taken among the candidates', () => {
+		const fieldset = element('fieldset');
+		const empty = element('legend');
+		const named = element('legend', { children: [textNode('Address')] });
+		const resolver = {
+			...createTestResolver({ nameFromContent: new Set(['legend']) }),
+			mayBeAbsentWith: () => true,
+			getChildNodes: (el: typeof fieldset) => (el === fieldset ? [empty, named] : el.childNodes),
+		};
+
+		expect(computeAccessibleName(fieldset, resolver)).toStrictEqual({ name: 'Address', source: 'legend' });
+	});
+
+	test('the first legend is the only candidate without it', () => {
+		const fieldset = element('fieldset');
+		const empty = element('legend');
+		const named = element('legend', { children: [textNode('Address')] });
+		const resolver = {
+			...createTestResolver({ nameFromContent: new Set(['legend']) }),
+			getChildNodes: (el: typeof fieldset) => (el === fieldset ? [empty, named] : el.childNodes),
+		};
+
+		expect(computeAccessibleName(fieldset, resolver)).toStrictEqual({ name: '', source: null });
+	});
+
+	test('a candidate that an earlier one may not be absent with is not taken', () => {
+		const fieldset = element('fieldset');
+		const empty = element('legend');
+		const named = element('legend', { children: [textNode('Address')] });
+		const resolver = {
+			...createTestResolver({ nameFromContent: new Set(['legend']) }),
+			mayBeAbsentWith: () => false,
+			getChildNodes: (el: typeof fieldset) => (el === fieldset ? [empty, named] : el.childNodes),
+		};
+
+		expect(computeAccessibleName(fieldset, resolver)).toStrictEqual({ name: '', source: null });
+	});
+
+	test('the caption that gives a name is taken among the candidates', () => {
+		const table = element('table');
+		const empty = element('caption');
+		const named = element('caption', { children: [textNode('Prices')] });
+		const resolver = {
+			...createTestResolver({ nameFromContent: new Set(['caption']) }),
+			mayBeAbsentWith: () => true,
+			getChildNodes: (el: typeof table) => (el === table ? [empty, named] : el.childNodes),
+		};
+
+		expect(computeAccessibleName(table, resolver)).toStrictEqual({ name: 'Prices', source: 'caption' });
+	});
+
+	test('the SVG title that gives a name is taken among the candidates', () => {
+		const svg = element('svg', { namespaceURI: 'http://www.w3.org/2000/svg' });
+		const empty = element('title', { namespaceURI: 'http://www.w3.org/2000/svg' });
+		const named = element('title', {
+			children: [textNode('Chart')],
+			namespaceURI: 'http://www.w3.org/2000/svg',
+		});
+		const resolver = {
+			...createTestResolver(),
+			mayBeAbsentWith: () => true,
+			getChildNodes: (el: typeof svg) => (el === svg ? [empty, named] : el.childNodes),
+		};
+
+		expect(computeAccessibleName(svg, resolver)).toStrictEqual({ name: 'Chart', source: 'svg-title' });
+	});
+});
+
+describe('findChildrenByLocalName', () => {
+	test('reads the children of the element when there is no resolver', () => {
+		const fieldset = element('fieldset');
+		const legend = element('legend');
+		const withChildren = element('fieldset', { children: [element('span'), legend, element('legend')] });
+		expect(findChildrenByLocalName(fieldset, 'legend')).toStrictEqual([]);
+		expect(findChildrenByLocalName(withChildren, 'legend')).toStrictEqual([legend]);
+	});
+
+	test('takes the first child with the name when the resolver does not say which may be absent', () => {
+		const fieldset = element('fieldset');
+		const [a, b] = [element('legend'), element('legend')];
+		const resolver = {
+			...createTestResolver(),
+			getChildNodes: (el: typeof fieldset) => (el === fieldset ? [a, b] : el.childNodes),
+		};
+
+		expect(findChildrenByLocalName(fieldset, 'legend', resolver)).toStrictEqual([a]);
+	});
+
+	test('asks whether an earlier candidate may be absent with the later one, in that order', () => {
+		const fieldset = element('fieldset');
+		const [a, b] = [element('legend'), element('legend')];
+		const asked: [unknown, unknown][] = [];
+		const resolver = {
+			...createTestResolver(),
+			mayBeAbsentWith: (candidate: unknown, other: unknown) => {
+				asked.push([candidate, other]);
+				return true;
+			},
+			getChildNodes: (el: typeof fieldset) => (el === fieldset ? [a, b] : el.childNodes),
+		};
+
+		expect(findChildrenByLocalName(fieldset, 'legend', resolver)).toStrictEqual([a, b]);
+		expect(asked).toStrictEqual([[a, b]]);
+	});
+
+	test('takes a later candidate only when every earlier one may be absent with it', () => {
+		const fieldset = element('fieldset');
+		const [a, b, c] = [element('legend'), element('legend'), element('legend')];
+		// a and b may be absent with c, but a is always rendered with b
+		const resolver = {
+			...createTestResolver(),
+			mayBeAbsentWith: (candidate: unknown, other: unknown) => !(candidate === a && other === b),
+			getChildNodes: (el: typeof fieldset) => (el === fieldset ? [a, b, c] : el.childNodes),
+		};
+
+		expect(findChildrenByLocalName(fieldset, 'legend', resolver)).toStrictEqual([a, c]);
+	});
+
+	test('skips the children that have another name and the text', () => {
+		const fieldset = element('fieldset');
+		const [span, legend] = [element('span'), element('legend')];
+		const resolver = {
+			...createTestResolver(),
+			mayBeAbsentWith: () => true,
+			getChildNodes: (el: typeof fieldset) => (el === fieldset ? [textNode('x'), span, legend] : el.childNodes),
+		};
+
+		expect(findChildrenByLocalName(fieldset, 'legend', resolver)).toStrictEqual([legend]);
 	});
 });

@@ -4,6 +4,7 @@ import type { MLChildNode } from './child-node.js';
 import type { MLDocumentFragment } from './document-fragment.js';
 import type { MLDocument } from './document.js';
 import type { MLElement } from './element.js';
+import type { MLParentNode } from './parent-node.js';
 import type { MarkuplintPreprocessorBlockType, NodeType, NodeTypeOf } from './types.js';
 import type { RuleInfo } from '../../index.js';
 import type { MLASTChildNode, MLASTElementCloseTag, MLASTInvalid, MLASTNode } from '@markuplint/ml-ast';
@@ -784,7 +785,7 @@ export abstract class MLNode<
 	getRootNode(
 		// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
 		options?: GetRootNodeOptions,
-	): MLNode<T, O> {
+	): MLParentNode<T, O> {
 		const root = this.#getTreeRoot();
 		if (options?.composed && root.is(root.DOCUMENT_FRAGMENT_NODE) && 'host' in root) {
 			return (root.host as MLNode<T, O>).getRootNode(options);
@@ -792,9 +793,9 @@ export abstract class MLNode<
 		return root;
 	}
 
-	#treeRoot: MLNode<T, O> | undefined;
+	#treeRoot: MLParentNode<T, O> | undefined;
 
-	#getTreeRoot(): MLNode<T, O> {
+	#getTreeRoot(): MLParentNode<T, O> {
 		if (this.#treeRoot) {
 			return this.#treeRoot;
 		}
@@ -802,7 +803,7 @@ export abstract class MLNode<
 		return this.#treeRoot;
 	}
 
-	#findTreeRoot(): MLNode<T, O> {
+	#findTreeRoot(): MLParentNode<T, O> {
 		if (this.is(this.DOCUMENT_NODE) || this.is(this.DOCUMENT_FRAGMENT_NODE)) {
 			return this;
 		}

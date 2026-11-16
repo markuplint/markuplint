@@ -3,7 +3,7 @@ import type { Attr, ChildNode, Element, RuleConfigValue } from '@markuplint/ml-c
 import type { Attribute } from '@markuplint/ml-spec';
 import type { WritableDeep } from 'type-fest';
 
-import { getDOMValue, getRenderedChildNodes } from '@markuplint/ml-core';
+import { expandConditionalBlocks, getDOMValue, getRenderedChildNodes } from '@markuplint/ml-core';
 import { asciiLowerCase, decodeEntities } from '@markuplint/shared';
 
 export { getDOMValue };
@@ -534,7 +534,9 @@ export function accnameMayComeFromUnknownContent(
 }
 
 /**
- * Walks the children {@link getRenderedChildNodes} returns. A hidden child is
+ * Walks the children {@link getRenderedChildNodes} returns, with the branches of the conditional
+ * blocks read as one (`everyBranch`): which branch is rendered is not known, so an element in any of
+ * them may be the one whose content is unknown. A hidden child is
  * skipped because the name computation never reads it (`isHidden` in that resolver).
  *
  * A `template` whose shadow root is only maybe attached returns `true` before
@@ -557,7 +559,7 @@ function hasUnknownContent(
 	if (context?.type !== 'pretender' && el.isHTMLTemplateElement && el.declarativeShadowRootAttachment === 'unknown') {
 		return true;
 	}
-	const children = [...getRenderedChildNodes(el)];
+	const children = [...getRenderedChildNodes(el, { everyBranch: true })];
 	return children.some(
 		child =>
 			child.is(child.ELEMENT_NODE) &&
@@ -565,6 +567,31 @@ function hasUnknownContent(
 			!child.hasAttr('hidden') &&
 			hasUnknownContent(child),
 	);
+}
+
+/**
+ * The text of an element as `Element#textContent` has it, with the branches of the conditional
+ * blocks read as one (`expandConditionalBlocks` of `@markuplint/ml-core`): which branch is rendered is not
+ * known from the markup, so a rule that must not report on what it cannot know reads every one of them.
+ *
+ * @template T - The rule configuration value type
+ * @template O - The rule options type
+ * @param el - The element whose text is asked for
+ * @returns The text of every branch, concatenated
+ */
+export function textContentOfEveryBranch<T extends RuleConfigValue, O extends PlainData>(
+	// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
+	el: Element<T, O>,
+): string {
+	let text = '';
+	for (const child of expandConditionalBlocks(el.childNodes)) {
+		if (child.is(child.ELEMENT_NODE)) {
+			text += textContentOfEveryBranch(child);
+		} else if (!child.is(child.COMMENT_NODE)) {
+			text += child.textContent ?? '';
+		}
+	}
+	return text;
 }
 
 export const labelable = ['button', 'input:not([type=hidden])', 'meter', 'output', 'progress', 'select', 'textarea'];
@@ -686,6 +713,26 @@ export function removeAttrValue(
 		return [];
 	}
 	return fixer.removeRange(range);
+}
+
+/**
+ * Whether a rule that reads a status flag of the spec data (`no-obsolete-element`,
+ * `no-deprecated-element`, `no-nonstandard-features`, `no-experimental-features`) looks at the
+ * element. The data describes the elements of HTML, SVG and MathML, and `getSpec` /
+ * `getAttrSpecs` resolve each of them by its namespace, so the namespace is not a condition here.
+ *
+ * A web component or an authored element (JSX, Vue, Svelte) is looked at only when `pretenders`
+ * makes it stand for a known element, so that the spec lookup resolves it by `el.localName`. It is
+ * not looked at otherwise: the data knows nothing of it.
+ *
+ * @param el - The element to check
+ * @returns `true` when the flags of the element's spec apply to it
+ */
+export function isFlagCheckedElement<T extends RuleConfigValue, O extends PlainData>(
+	// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
+	el: Element<T, O>,
+): boolean {
+	return el.elementType === 'html' || el.pretenderContext?.type === 'pretender';
 }
 
 /** The parts of the keys of `ignoreFeatures`: `dialog` is an element, `img[loading]` an attribute of one. */

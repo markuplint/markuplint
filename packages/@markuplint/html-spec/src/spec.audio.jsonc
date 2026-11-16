@@ -36,9 +36,25 @@
 	},
 	"attributes": {
 		"loading": {
-			// MDN incorrectly marks this as experimental, but it is defined in the HTML Living Standard.
+			// BCD marks this as experimental, but it is defined in the HTML Living Standard.
 			// https://html.spec.whatwg.org/multipage/media.html#the-audio-element
 			"experimental": false
+		},
+		// https://wicg.github.io/controls-list/html-output/multipage/embedded-content.html#attr-media-controlslist
+		"controlslist": {
+			"type": {
+				"token": {
+					"enum": ["nodownload", "nofullscreen", "noremoteplayback"]
+				},
+				"ordered": false,
+				"caseInsensitive": true,
+				"unique": true,
+				"separator": "space"
+			}
+		},
+		// https://w3c.github.io/remote-playback/#the-disableremoteplayback-attribute
+		"disableremoteplayback": {
+			"type": "Boolean"
 		}
 	},
 	"aria": {

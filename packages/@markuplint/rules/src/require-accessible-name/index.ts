@@ -34,8 +34,8 @@ export default createRule({
 				return;
 			}
 
-			const hasAccessibleName = !!el.getAccessibleName(ariaVersion).trim();
-			if (hasAccessibleName) {
+			// The name may be in a branch of a conditional block, which is not known to be rendered
+			if (el.mayHaveAccessibleName(ariaVersion)) {
 				return;
 			}
 

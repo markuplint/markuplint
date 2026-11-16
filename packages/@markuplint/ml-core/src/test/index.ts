@@ -52,6 +52,7 @@ export function createTestDocument<T extends RuleConfigValue = any, O extends Pl
 			booleanish: usedParser.booleanish,
 			attrExpressionLanguage: usedParser.attrExpressionLanguage,
 			literalValues: usedParser.literalValues,
+			templateContent: usedParser.templateContent,
 			slotElement: usedParser.slotElement,
 			tagNameCaseSensitive: usedParser.tagNameCaseSensitive,
 			componentNameVariants: usedParser.componentNameVariants,

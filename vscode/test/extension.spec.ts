@@ -5,6 +5,13 @@ import * as vscode from 'vscode';
 
 const EXTENSION_ID = 'markuplint.markuplint-vscode';
 
+/**
+ * The diagnostic's code. VS Code wraps it in { value, target } when the server sends a `codeDescription`.
+ */
+function codeOf(diagnostic: vscode.Diagnostic) {
+	return typeof diagnostic.code === 'object' ? diagnostic.code.value : diagnostic.code;
+}
+
 async function waitForExtension(timeout = 5000): Promise<vscode.Extension<unknown>> {
 	const start = Date.now();
 	while (Date.now() - start < timeout) {
@@ -70,6 +77,41 @@ suite('Extension Tests', () => {
 
 			const diagnostics = vscode.languages.getDiagnostics(doc.uri);
 			assert.ok(Array.isArray(diagnostics), 'Diagnostics should be available after restart');
+
+			await vscode.commands.executeCommand('workbench.action.closeActiveEditor');
+		});
+	});
+
+	suite('Diagnostics', () => {
+		test('the server publishes markuplint diagnostics to the client', async function () {
+			this.timeout(20_000);
+
+			const doc = await vscode.workspace.openTextDocument({
+				language: 'html',
+				content: '<div id="a" id="a"></div>\n',
+			});
+			await vscode.window.showTextDocument(doc);
+
+			const deadline = Date.now() + 15_000;
+			let diagnostics = vscode.languages.getDiagnostics(doc.uri);
+			while (!diagnostics.some(d => codeOf(d) === 'html-standard/attr-duplication') && Date.now() < deadline) {
+				await new Promise(resolve => setTimeout(resolve, 200));
+				diagnostics = vscode.languages.getDiagnostics(doc.uri);
+			}
+
+			const duplication = diagnostics.find(d => codeOf(d) === 'html-standard/attr-duplication');
+			assert.ok(
+				duplication,
+				`html-standard/attr-duplication was not published; got ${JSON.stringify(diagnostics)}`,
+			);
+			assert.deepStrictEqual(
+				{
+					source: duplication.source,
+					line: duplication.range.start.line,
+					character: duplication.range.start.character,
+				},
+				{ source: 'Markuplint', line: 0, character: 12 },
+			);
 
 			await vscode.commands.executeCommand('workbench.action.closeActiveEditor');
 		});

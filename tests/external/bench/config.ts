@@ -62,9 +62,9 @@ export const benchmarkConfig: Config = {
 		// genuinely never flags this one.
 		'no-obsolete-element': true,
 		'no-obsolete-attr': true,
-		// no-deprecated-element/no-deprecated-attr (factual, MDN/BCD-sourced) were assumed to be
+		// no-deprecated-element/no-deprecated-attr (factual: a specification's or BCD's flag) were assumed to be
 		// pure non-conformance opinion, on the theory that nu-validator never flags them — false:
-		// nu-validator treats several MDN-flagged-deprecated attributes (e.g. `<script language>`,
+		// nu-validator treats several deprecated attributes (e.g. `<script language>`,
 		// `<script charset>`, `<style type>`, `<iframe allowpaymentrequest>`) as outright parse
 		// errors, predating what the current HTML LS text still documents. Escalated to `error`
 		// here (their user-facing default stays `warning`, matching the plan's factual/BCD
@@ -172,6 +172,13 @@ export const benchmarkConfig: Config = {
 		// ARIA in HTML §att-hidden: "authors MUST NOT use aria-hidden=\"true\" on any element
 		// which also has the hidden attribute specified in the Hidden Until Found state."
 		'no-aria-hidden-on-hidden-until-found': true,
+		// WAI-ARIA §aria-owns: "Authors MUST ensure that an element's ID is not specified in more than
+		// one other element's aria-owns attribute at any time." and "Authors MUST NOT create circular
+		// references with aria-owns."; §Children Presentational: "Authors MUST NOT specify aria-owns on
+		// an element which has Presentational Children."
+		'no-duplicate-aria-owns': true,
+		'no-circular-aria-owns': true,
+		'no-aria-owns-on-presentational-children': true,
 		'no-invalid-aria-prop-value': true,
 		'require-owned-elements': true,
 		'require-parent-role': true,

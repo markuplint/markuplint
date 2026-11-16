@@ -13,7 +13,7 @@
 					"items": {
 						"type": "string"
 					},
-					"description": "Features to ignore. Element name (\"dialog\") or attribute pattern (\"input[list]\")."
+					"description": "Features to ignore. The local name of an element (\"dialog\"), which names the element of that name in every namespace, or an attribute of an element (\"input[list]\")."
 				}
 			}
 		}

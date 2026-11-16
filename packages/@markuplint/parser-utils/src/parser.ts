@@ -114,6 +114,7 @@ export abstract class Parser<Node extends {} = {}, State extends unknown = null>
 	readonly #booleanish: boolean = false;
 	readonly #attrExpressionLanguage?: ExpressionLanguage;
 	readonly #literalValues?: LiteralValueDeclaration;
+	readonly #templateContent?: 'separate-tree' | 'in-place';
 	readonly #slotElement: 'html' | 'framework' = 'html';
 	readonly #defaultState: State;
 	readonly #endTagType: EndTagType = 'omittable';
@@ -165,6 +166,7 @@ export abstract class Parser<Node extends {} = {}, State extends unknown = null>
 		this.#booleanish = options?.booleanish ?? this.#booleanish;
 		this.#attrExpressionLanguage = options?.attrExpressionLanguage ?? this.#attrExpressionLanguage;
 		this.#literalValues = options?.literalValues ?? this.#literalValues;
+		this.#templateContent = options?.templateContent ?? this.#templateContent;
 		this.#slotElement = options?.slotElement ?? this.#slotElement;
 		this.#endTagType = options?.endTagType ?? this.#endTagType;
 		this.#ignoreTags = options?.ignoreTags ?? this.#ignoreTags;
@@ -217,6 +219,14 @@ export abstract class Parser<Node extends {} = {}, State extends unknown = null>
 	 */
 	get literalValues(): LiteralValueDeclaration | undefined {
 		return this.#literalValues;
+	}
+
+	/**
+	 * Where the framework holds the children of a `template` element written without a directive.
+	 * See {@link MLParser.templateContent}.
+	 */
+	get templateContent(): 'separate-tree' | 'in-place' | undefined {
+		return this.#templateContent;
 	}
 
 	/**

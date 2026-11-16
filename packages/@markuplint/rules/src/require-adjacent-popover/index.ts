@@ -55,7 +55,9 @@ export default createRule({
 				}
 				if (
 					(node.is(node.ELEMENT_NODE) &&
-						// Element has accessible name
+						// Element has accessible name. As written is enough: a name in a branch of a conditional
+						// block comes from text or an element in the branch, and that node is itself found among the
+						// subsequent nodes.
 						(node.getAccessibleName(ariaVersion) ||
 							// Element is focusable
 							mayBeFocusable(node, node.ownerMLDocument.specs))) ||

@@ -23,18 +23,20 @@
 		"preserveAspectRatio": {
 			"type": "<preserve-aspect-ratio>"
 		},
-		// https://developer.mozilla.org/en-US/docs/Web/SVG/Attribute/zoomAndPan
+		// https://svgwg.org/svg2-draft/changes.html#interact
+		// SVG 2 removed the attribute (Changes from SVG 1.1).
 		"zoomAndPan": {
 			"type": {
 				"enum": ["disable", "magnify"]
 			},
 			"defaultValue": "magnify",
-			"deprecated": true
+			"obsolete": true
 		},
-		// https://developer.mozilla.org/en-US/docs/Web/SVG/Attribute/viewTarget
+		// https://svgwg.org/svg2-draft/changes.html#linking
+		// SVG 2 removed the attribute (Changes from SVG 1.1).
 		"viewTarget": {
 			"type": "Any",
-			"deprecated": true
+			"obsolete": true
 		}
 	},
 	"aria": {

@@ -738,7 +738,7 @@ export type SpecConformance = 'normative' | 'non-normative';
 export type RuleConfigValue = PrimitiveScalar | readonly (PrimitiveScalar | Readonly<Record<string, any>>)[] | null;
 
 /**
- * A rule override that targets specific nodes by CSS selector, regex selector, ARIA roles, or categories.
+ * A rule override that targets specific nodes by CSS selector or regex selector.
  *
  * When a `name` is provided (must contain `/`), this becomes a **named nodeRule**
  * that creates a virtual rule instance running independently from the base rule.
@@ -760,8 +760,24 @@ export type NodeRule = {
 	readonly specConformance?: SpecConformance;
 	readonly selector?: string;
 	readonly regexSelector?: RegexSelector;
+	/**
+	 * Nothing reads it: a `nodeRules` entry is matched by `selector` or `regexSelector` only, and one that sets
+	 * this is not narrowed by it.
+	 *
+	 * @deprecated Delete it and use `selector` or `regexSelector`. Removed in v6.
+	 */
 	readonly categories?: readonly string[];
+	/**
+	 * Nothing reads it (see {@link NodeRule.categories}).
+	 *
+	 * @deprecated Delete it and use `selector` or `regexSelector`. Removed in v6.
+	 */
 	readonly roles?: readonly string[];
+	/**
+	 * Nothing reads it (see {@link NodeRule.categories}).
+	 *
+	 * @deprecated Delete it and use `selector` or `regexSelector`. Removed in v6.
+	 */
 	readonly obsolete?: boolean;
 	/** Base rule settings. Does not accept {@link NamedRuleGroup} entries. */
 	readonly rules?: BaseRules;

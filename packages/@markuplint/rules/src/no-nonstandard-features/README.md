@@ -1,11 +1,11 @@
 ---
 id: no-nonstandard-features
-description: Warns when using HTML elements or attributes marked as non-standard.
+description: Warns when using HTML, SVG or MathML elements or attributes marked as non-standard.
 ---
 
 # `no-nonstandard-features`
 
-Warns about elements and attributes marked as **non-standard** in the HTML specification data bundled with markuplint.
+Warns about elements and attributes of HTML, SVG and MathML marked as **non-standard** in the specification data bundled with markuplint.
 
 :::info
 
@@ -29,6 +29,7 @@ Uses exact string matching (no glob or wildcard patterns), except for the case o
 
 - `"dialog"` — Ignores the `<dialog>` element. The element name is compared as the document compares tag names: without regard to ASCII case in HTML, and exactly in a syntax that tells tag names apart (JSX, Svelte), where `DIALOG` is not `<dialog>`.
 - `"input[list]"` — Ignores the `list` attribute on `<input>` elements. The attribute name is compared as the DOM compares it with the attribute that is checked: `LIST` is the same attribute in HTML, and on an HTML element in JSX or Svelte, but on an `<svg>` element that JSX sets, only the same spelling is.
+- `"image[fetchpriority]"`, `"mfenced"` — The element part is the local name, with no namespace: it names the element of that name in HTML, SVG and MathML alike. `"a[interestfor]"` ignores the attribute on the HTML `<a>` and on the SVG `<a>`.
 
 ## Examples
 
@@ -38,10 +39,28 @@ Uses exact string matching (no glob or wildcard patterns), except for the case o
 <canvas moz-opaque></canvas>
 ```
 
+```html
+<svg>
+  <image href="a.png" fetchpriority="high"></image>
+</svg>
+```
+
+```html
+<math>
+  <mfenced></mfenced>
+</math>
+```
+
 ✅ Examples of **correct** code for this rule
 
 ```html
 <canvas></canvas>
+```
+
+```html
+<svg>
+  <image href="a.png"></image>
+</svg>
 ```
 
 ## Migration from `deprecated-element`

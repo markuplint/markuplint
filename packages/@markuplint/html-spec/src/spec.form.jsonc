@@ -16,7 +16,7 @@
 	"attributes": {
 		// https://html.spec.whatwg.org/multipage/obsolete.html#attr-form-accept
 		"accept": {
-			"deprecated": true
+			"obsolete": true
 		},
 		// https://html.spec.whatwg.org/multipage/forms.html#attr-form-accept-charset
 		"accept-charset": {

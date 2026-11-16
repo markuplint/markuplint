@@ -1,9 +1,10 @@
 /**
  * @module @markuplint/html-spec/generator
  *
- * Generates the markuplint extended specification JSON file by scraping W3C and MDN web standards
- * documentation. Aggregates HTML/SVG element specs, global attributes, ARIA roles and properties,
- * and content model definitions into a single output file consumed by the markuplint linter.
+ * Generates the markuplint extended specification JSON file from the hand-written sources, the W3C ARIA
+ * documents (scraped) and the status flags of the pinned `@mdn/browser-compat-data`. Aggregates HTML/SVG element
+ * specs, global attributes, ARIA roles and properties, and content model definitions into a single output file
+ * consumed by the markuplint linter.
  *
  * Architectural decisions (do not revisit without strong reasons):
  *
@@ -13,7 +14,7 @@
  *   through the same enrichment process. Splitting the data package was
  *   considered and rejected.
  * - This generator's responsibility is external data fetching and enrichment
- *   ONLY (MDN scraping, W3C ARIA downloading). Schema structure generation
+ *   ONLY (the W3C ARIA downloading and the pinned BCD package read by `bcd.ts`). Schema structure generation
  *   belongs to `@markuplint/ml-spec`'s `gen/`; moving schema operations into
  *   this generator was explicitly rejected to keep the architectural
  *   boundaries between the data package and the spec foundation package.
@@ -24,12 +25,15 @@ import type { ExtendedSpec } from '@markuplint/ml-spec';
 import { readFile, writeFile } from 'node:fs/promises';
 
 import { getAria } from './aria.ts';
-import { getFailedUrls, getReferences, getUnexpectedlyFoundUrls, hasFetchProblems } from './fetch.ts';
+import { applyBCD, loadBCD } from './bcd.ts';
+import { finishFetching, getFailedUrls, hasFetchProblems } from './fetch.ts';
 import { getGlobalAttrs } from './global-attrs.ts';
 import { getElements } from './html-elements.ts';
 import { readJson } from './read-json.ts';
 import { expandConditionAliases, resolveAliases } from './selector-aliases.ts';
+import { stripProse } from './strip-prose.ts';
 import { summarizeChanges, summarizeFetchProblems } from './summarize.ts';
+import { sortObjectByKey } from './utils.ts';
 import { validateSpecs } from './validate.ts';
 
 export type Options = {
@@ -52,8 +56,7 @@ export type Options = {
  * manual spec data and the generator's merge logic disagree, and that
  * disagreement must be investigated before committing.
  *
- * @returns `fetchProblems` is true when a fetch failed or a page expected not
- * to exist answered; the output and the summary are written either way.
+ * @returns `fetchProblems` is true when a fetch failed; the output and the summary are written either way.
  */
 export async function main({
 	outputFilePath,
@@ -63,23 +66,36 @@ export async function main({
 	selectorAliasesFilePath,
 	summaryFilePath,
 }: Options) {
-	const [specs, globalAttrs, aria] = await Promise.all([
+	const [manualSpecs, manualGlobalAttrs, aria, bcd] = await Promise.all([
 		getElements(htmlFilePattern),
 		getGlobalAttrs(commonAttrsFilePath),
 		getAria(),
+		loadBCD(),
 	]);
+
+	// The sources say what the specifications say; BCD gives the status flags that no specification defines.
+	const { specs, globalAttrs } = applyBCD(
+		manualSpecs as Parameters<typeof applyBCD>[0],
+		manualGlobalAttrs as Parameters<typeof applyBCD>[1],
+		bcd,
+	) as { specs: typeof manualSpecs; globalAttrs: typeof manualGlobalAttrs };
 
 	// Expand named selector aliases (e.g. #ClassicScript) in attribute
 	// conditions so that index.json contains only plain CSS selectors.
 	const selectorAliases = resolveAliases(readJson(selectorAliasesFilePath));
 	for (const spec of specs) {
 		if (spec.attributes) {
+			// Sorted again: BCD adds the attributes that the sources lack after the sorted ones
 			// @ts-ignore
-			spec.attributes = expandConditionAliases(spec.attributes, selectorAliases);
+			spec.attributes = sortObjectByKey(expandConditionAliases(spec.attributes, selectorAliases));
 		}
 	}
+	for (const [category, attrs] of Object.entries(globalAttrs)) {
+		// @ts-ignore
+		globalAttrs[category] = expandConditionAliases(attrs, selectorAliases);
+	}
 
-	const cites = getReferences();
+	finishFetching();
 	const failedUrls = getFailedUrls();
 
 	if (failedUrls.length > 0) {
@@ -91,21 +107,7 @@ export async function main({
 		}
 	}
 
-	const unexpectedlyFoundUrls = getUnexpectedlyFoundUrls();
-
-	if (unexpectedlyFoundUrls.length > 0) {
-		// eslint-disable-next-line no-console
-		console.error(
-			`\n⚠️ ${unexpectedlyFoundUrls.length} page(s) expected not to exist were found; take them out of \`obsoleteWithoutMDNPage\` in generator/html-elements.ts:`,
-		);
-		for (const url of unexpectedlyFoundUrls) {
-			// eslint-disable-next-line no-console
-			console.error(`   - ${url}`);
-		}
-	}
-
 	const json: ExtendedSpec = {
-		cites,
 		def: {
 			'#globalAttrs': globalAttrs,
 			'#aria': aria,
@@ -118,9 +120,9 @@ export async function main({
 	// can drive the element-count stability check and the change summary.
 	const previous = await readPreviousSpec(outputFilePath);
 
-	validateSpecs(json, previous);
+	const output = finalizeSpec(json, previous);
 
-	const jsonString = JSON.stringify(json, null, 2);
+	const jsonString = JSON.stringify(output, null, 2);
 
 	await writeFile(outputFilePath, jsonString);
 
@@ -128,14 +130,26 @@ export async function main({
 	console.log(`🎁 Output: ${outputFilePath}`);
 
 	if (summaryFilePath) {
-		const fetchProblems = summarizeFetchProblems(failedUrls, unexpectedlyFoundUrls);
-		const summary = [summarizeChanges(previous, json), fetchProblems].filter(Boolean).join('\n\n');
+		const fetchProblems = summarizeFetchProblems(failedUrls);
+		const summary = [summarizeChanges(previous, output), fetchProblems].filter(Boolean).join('\n\n');
 		await writeFile(summaryFilePath, summary + '\n');
 		// eslint-disable-next-line no-console
 		console.log(`📝 Summary: ${summaryFilePath}`);
 	}
 
 	return { fetchProblems: hasFetchProblems() };
+}
+
+/**
+ * What is written: the generated spec once it has passed validation, without its prose (the W3C ARIA documents'
+ * descriptions are scraped and used before this runs: `isDeprecatedRole` reads the marker of a role). The committed
+ * file has no prose to compare with, so the summary is made from the returned spec as well.
+ *
+ * @throws {Error} When `validateSpecs` detects data loss.
+ */
+export function finalizeSpec(json: ExtendedSpec, previous: ExtendedSpec | null): ExtendedSpec {
+	validateSpecs(json, previous);
+	return stripProse(json);
 }
 
 /**

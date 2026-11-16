@@ -10,7 +10,15 @@ import type { ReadonlyDeep } from 'type-fest';
  * markuplint Markup-language spec
  */
 export interface MLMLSpec {
-	readonly cites: Cites;
+	/**
+	 * Reference URLs
+	 *
+	 * `@markuplint/html-spec` writes none and nothing in markuplint reads it; `schemaToSpec` appends what an
+	 * extension sets.
+	 *
+	 * @deprecated Delete it; there is no replacement. Removed in v6.
+	 */
+	readonly cites?: Cites;
 	readonly def: SpecDefs;
 	readonly specs: readonly ElementSpec[];
 	readonly directivePatterns?: readonly DirectivePattern[];
@@ -51,6 +59,9 @@ export interface MLMLSpec {
 	 *   element and appends the children to it through the DOM API, which never fills `content` and
 	 *   never attaches a declarative shadow root: the `template` element is an ordinary element.
 	 *
+	 * A parser can declare it as well (`MLParser#templateContent` of `@markuplint/ml-ast`), so that the
+	 * document is read right without this spec in the configuration; what this spec says wins over it.
+	 *
 	 * Known limitations of `'in-place'`: React does not render the same tree when it hydrates server
 	 * output (the server output has the children in `content`), and Vue puts them in `content` when
 	 * it renders static markup as a string and replaces the element with its content when it hydrates.
@@ -80,6 +91,11 @@ export type ExtendedElementSpec = Partial<Omit<ElementSpec, 'name' | 'attributes
  * Typically provided by parser plugins or framework-specific spec packages (e.g., `@markuplint/vue-spec`).
  */
 export type ExtendedSpec = {
+	/**
+	 * Reference URLs that `schemaToSpec` appends to {@link MLMLSpec.cites}.
+	 *
+	 * @deprecated Delete it; there is no replacement. Removed in v6.
+	 */
 	readonly cites?: Cites;
 	readonly def?: Partial<SpecDefs>;
 	readonly specs?: readonly ExtendedElementSpec[];
@@ -224,7 +240,7 @@ export type DirectivePattern = {
 };
 
 /**
- * Reference URLs
+ * Reference URLs. Only the deprecated `cites` fields use it (see {@link MLMLSpec.cites}).
  */
 export type Cites = readonly string[];
 
@@ -269,12 +285,19 @@ export type ElementSpec = {
 	readonly namespace?: NamespaceURI;
 
 	/**
-	 * Reference URL
+	 * The URL of the section that defines the element
+	 *
+	 * In `@markuplint/html-spec` it is the URL on the first line of `src/spec.<name>.jsonc`.
 	 */
 	readonly cite: string;
 
 	/**
 	 * Description
+	 *
+	 * `@markuplint/html-spec` does not fill it: the prose of the specifications is not copied into the data.
+	 * Nothing in markuplint reads it; a spec that an `ExtendedSpec` adds may set it.
+	 *
+	 * @deprecated Delete it; there is no replacement. Removed in v6.
 	 */
 	readonly description?: string;
 
@@ -309,8 +332,12 @@ export type ElementSpec = {
 
 	/**
 	 * Element categories
+	 *
+	 * `@markuplint/html-spec` writes none and nothing reads it.
+	 *
+	 * @deprecated Use `MLMLSpec.def['#contentModels']`, which holds the categories that the rules use. Removed in v6.
 	 */
-	readonly categories: readonly Category[];
+	readonly categories?: readonly Category[];
 
 	/**
 	 * Permitted contents and permitted parents
@@ -319,8 +346,12 @@ export type ElementSpec = {
 
 	/**
 	 * Tag omission
+	 *
+	 * `@markuplint/html-spec` writes none and nothing reads it.
+	 *
+	 * @deprecated Delete it; there is no replacement. Removed in v6.
 	 */
-	readonly omission: ElementSpecOmission;
+	readonly omission?: ElementSpecOmission;
 
 	/**
 	 * Global Attributes
@@ -368,15 +399,22 @@ export type Attribute = {
 		| ReadonlyDeep<AttributeType>
 		| readonly ReadonlyDeep<AttributeType>[]
 		| readonly ReadonlyDeep<ConditionalAttributeType>[];
+	/**
+	 * Description. Not filled by `@markuplint/html-spec` (see {@link ElementSpec.description}).
+	 *
+	 * @deprecated Delete it; there is no replacement. Removed in v6.
+	 */
 	readonly description?: string;
 	readonly caseSensitive?: true;
 	// Status flags share the semantics documented on `ElementSpec` above:
 	// experimental = not yet standardized; obsolete = removed from the spec;
 	// deprecated = discouraged but still defined; nonStandard = never standard.
+	// `deprecatedWhen` (in `AttributeJSON`) is `deprecated` for the elements that one of its selectors matches: the
+	// HTML Standard's "obsolete but conforming" features depend on the value or on another attribute.
 	readonly experimental?: boolean;
 	readonly obsolete?: true;
 	readonly deprecated?: boolean;
-	readonly nonStandard?: true;
+	readonly nonStandard?: boolean;
 } & ExtendableAttributeSpec;
 
 type ExtendableAttributeSpec = Omit<ReadonlyDeep<AttributeJSON>, 'type'>;
@@ -417,6 +455,11 @@ export type ARIARole = {
  */
 export type ARIARoleInSchema = Partial<
 	ARIARole & {
+		/**
+		 * Not filled by `@markuplint/html-spec` (see {@link ElementSpec.description}).
+		 *
+		 * @deprecated Delete it; there is no replacement. Removed in v6.
+		 */
 		readonly description: string;
 		readonly generalization: readonly string[];
 	}
@@ -460,6 +503,11 @@ export type ARIAProperty = {
 	readonly enum: readonly string[];
 	readonly defaultValue?: string;
 	readonly equivalentHtmlAttrs?: readonly EquivalentHtmlAttr[];
+	/**
+	 * Not filled by `@markuplint/html-spec` (see {@link ElementSpec.description}).
+	 *
+	 * @deprecated Delete it; there is no replacement. Removed in v6.
+	 */
 	readonly valueDescriptions?: Readonly<Record<string, string>>;
 };
 

@@ -27,7 +27,6 @@ import type { ExtendedSpec } from '@markuplint/ml-spec';
  * htmx attributes are all global and prefixed with `hx-`.
  */
 const spec: ExtendedSpec = {
-	cites: ['https://htmx.org/reference/'],
 	directivePatterns: [
 		/**
 		 * htmx event with explicit prefix: hx-on:htmx:event or hx-on-htmx-event

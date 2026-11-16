@@ -41,8 +41,7 @@
 		},
 		// https://open-ui.org/components/interest-invokers.explainer/
 		"interestfor": {
-			"type": "DOMID",
-			"experimental": true
+			"type": "DOMID"
 		},
 		// https://html.spec.whatwg.org/multipage/popover.html#attr-popovertarget
 		"popovertarget": {
@@ -68,6 +67,18 @@
 		// https://html.spec.whatwg.org/multipage/form-elements.html#attr-button-value
 		"value": {
 			"type": "Any"
+		},
+		// https://html.spec.whatwg.org/multipage/obsolete.html#non-conforming-features
+		"datasrc": {
+			"obsolete": true
+		},
+		// https://html.spec.whatwg.org/multipage/obsolete.html#non-conforming-features
+		"datafld": {
+			"obsolete": true
+		},
+		// https://html.spec.whatwg.org/multipage/obsolete.html#non-conforming-features
+		"dataformatas": {
+			"obsolete": true
 		}
 	},
 	"aria": {

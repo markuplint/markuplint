@@ -1,8 +1,8 @@
 import type { SendDiagnostics } from './document-events.js';
 import type { Log } from '../types.js';
-import type { CodeAction, CodeActionParams, Connection, InitializeResult } from 'vscode-languageserver/node.js';
+import type { CodeAction, CodeActionParams, Connection, InitializeResult } from 'vscode-languageserver';
 
-import { CodeActionKind, TextDocuments, TextDocumentSyncKind } from 'vscode-languageserver/node.js';
+import { CodeActionKind, TextDocuments, TextDocumentSyncKind } from 'vscode-languageserver';
 import { TextDocument } from 'vscode-languageserver-textdocument';
 
 import { setLocale } from '../i18n.js';

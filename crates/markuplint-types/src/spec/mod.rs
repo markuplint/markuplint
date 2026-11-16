@@ -28,7 +28,7 @@ mod tests {
     #[test]
     fn load_html_spec() {
         let spec = load_spec(html_spec_json()).expect("Failed to deserialize html-spec");
-        assert!(!spec.cites.is_empty(), "cites should not be empty");
+        assert!(spec.cites.is_empty(), "cites should be empty: the data carries none");
         assert!(!spec.specs.is_empty(), "specs should not be empty");
     }
 
@@ -87,7 +87,7 @@ mod tests {
     fn html_spec_element_categories() {
         let spec = load_spec(html_spec_json()).unwrap();
         let div = spec.specs.iter().find(|s| s.name == "div").unwrap();
-        assert!(!div.categories.is_empty(), "<div> should have categories");
+        assert!(div.categories.is_empty(), "<div> should have no categories: the data carries none");
     }
 
     #[test]
@@ -180,12 +180,12 @@ mod tests {
     }
 
     #[test]
-    fn div_categories_include_flow() {
+    fn div_categories_do_not_include_flow() {
         let spec = load_spec(html_spec_json()).unwrap();
         let div = spec.specs.iter().find(|s| s.name == "div").unwrap();
         assert!(
-            div.categories.contains(&"#flow".to_string()),
-            "<div> should be in #flow category"
+            !div.categories.contains(&"#flow".to_string()),
+            "<div> should not list #flow in its categories: the data carries none"
         );
     }
 

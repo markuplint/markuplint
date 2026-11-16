@@ -42,7 +42,7 @@ function spec(elements: readonly string[], cites: readonly string[] = ['https://
 describe('summarizeChanges', () => {
 	test('returns an initial-generation note when there is no previous spec', () => {
 		const result = summarizeChanges(null, spec(['div', 'span']));
-		expect(result).toBe('Initial generation: 2 elements, 1 reference URLs.');
+		expect(result).toBe('Initial generation: 2 elements.');
 	});
 
 	test('reports added and removed elements', () => {
@@ -117,19 +117,16 @@ describe('summarizeChanges', () => {
 		expect(result).toContain('dpub roles added: `doc-chapter`');
 	});
 
-	test('reports a reference URL count change', () => {
+	test('does not report a reference URL count change', () => {
 		const previous = spec(['div'], ['https://a/']);
 		const next = spec(['div'], ['https://a/', 'https://b/']);
-		const result = summarizeChanges(previous, next);
-		expect(result).toContain('**Reference URLs**: 1 → 2 (+1)');
+		expect(summarizeChanges(previous, next)).toBe(summarizeChanges(spec(['div']), spec(['div'])));
 	});
 
-	test('lists the reference URLs that were added and removed', () => {
+	test('does not list the reference URLs that were added and removed', () => {
 		const previous = spec(['div'], ['https://a/', 'https://b/']);
 		const next = spec(['div'], ['https://a/', 'https://c/']);
-		expect(summarizeChanges(previous, next)).toContain(
-			['**Reference URLs**: 2 (unchanged)', '- Added: https://c/', '- Removed: https://b/'].join('\n'),
-		);
+		expect(summarizeChanges(previous, next)).toBe(summarizeChanges(spec(['div']), spec(['div'])));
 	});
 
 	test('reports no structural changes when only descriptions/attributes differ', () => {
@@ -145,6 +142,20 @@ describe('summarizeChanges', () => {
 		expect(result).toContain('No structural changes');
 	});
 
+	test('reports no structural changes when only an attribute differs, and says that attributes are not summarized', () => {
+		const previous = {
+			...spec(['div']),
+			specs: [{ name: 'div', attributes: { id: { type: 'Any' } } }],
+		} as unknown as ExtendedSpec;
+		const next = {
+			...spec(['div']),
+			specs: [{ name: 'div', attributes: { id: { type: 'DOMID' } } }],
+		} as unknown as ExtendedSpec;
+		const result = summarizeChanges(previous, next);
+		expect(result).toContain('No structural changes');
+		expect(result).toContain('Attribute-level changes may still be present');
+	});
+
 	test('reports no structural changes for the committed index.json against itself', () => {
 		// Real-data shape check: identical input must not fabricate changes.
 		expect(summarizeChanges(realSpec, realSpec)).toContain('No structural changes');
@@ -152,23 +163,13 @@ describe('summarizeChanges', () => {
 });
 
 describe('summarizeFetchProblems', () => {
-	test('returns null when every fetch went as expected', () => {
-		expect(summarizeFetchProblems([], [])).toBeNull();
+	test('returns null when no fetch failed', () => {
+		expect(summarizeFetchProblems([])).toBeNull();
 	});
 
-	test('lists the URLs that failed and the pages found although expected not to exist', () => {
-		expect(summarizeFetchProblems(['https://a/'], ['https://b/'])).toBe(
-			[
-				'### Failed to fetch (1)',
-				'',
-				'- https://a/',
-				'',
-				'### Found although expected not to exist (1)',
-				'',
-				'Take them out of `obsoleteWithoutMDNPage` in `generator/html-elements.ts`.',
-				'',
-				'- https://b/',
-			].join('\n'),
+	test('lists the URLs that failed', () => {
+		expect(summarizeFetchProblems(['https://a/', 'https://b/'])).toBe(
+			['### Failed to fetch (2)', '', '- https://a/', '- https://b/'].join('\n'),
 		);
 	});
 });

@@ -12,6 +12,11 @@ export interface SpecAttr {
 	 * does not find it, though it is still one of the element's `attributes`. Only MLDOM has it.
 	 */
 	readonly isAbsent?: boolean;
+	/**
+	 * `true` when the value is written in the syntax of the framework or the template engine, so the markup
+	 * does not say what it is at run time. Only MLDOM has it.
+	 */
+	readonly isDynamicValue?: true;
 }
 
 /**
@@ -20,6 +25,7 @@ export interface SpecAttr {
  */
 export interface SpecRoot {
 	readonly nodeType: number;
+	readonly childElements: Iterable<SpecElement>;
 	findElementById?(id: string): SpecElement | null;
 }
 
@@ -30,6 +36,7 @@ export interface SpecRoot {
 export interface SpecElement extends AccnameElement {
 	readonly nodeName: string;
 	readonly attributes: Iterable<SpecAttr>;
+	getAttrNode(name: string): SpecAttr | null;
 	readonly parentElement: SpecElement | null;
 	readonly childElements: Iterable<SpecElement>;
 	matches(selectors: string): boolean;

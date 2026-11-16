@@ -1,4 +1,4 @@
-// https://drafts.fxtf.org/filter-effects/#feDisplacementMapElement
+// https://drafts.csswg.org/filter-effects-1/#feDisplacementMapElement
 // https://www.w3.org/TR/svg-aam/#role-map-fedisplacementmap
 {
 	"contentModel": {
@@ -9,7 +9,7 @@
 		]
 	},
 	"globalAttrs": {
-		"#SVGCoreAttrs": ["id", "xml:base", "xml:lang", "xml:space", "class", "style"],
+		"#SVGCoreAttrs": ["id", "xml:base", "xml:lang", "xml:space", "class", "style", "part", "exportparts"],
 		"#SVGPresentationAttrs": [
 			"alignment-baseline",
 			"baseline-shift",
@@ -80,10 +80,10 @@
 			"word-spacing",
 			"writing-mode"
 		],
-		"#SVGFilterPrimitiveAttrs": ["x", "y", "width", "height", "result"]
+		"#SVGFilterPrimitiveAttrs": ["x", "y", "width", "height", "result", "in"]
 	},
 	"attributes": {
-		// https://drafts.fxtf.org/filter-effects/#element-attrdef-fedisplacementmap-in2
+		// https://drafts.csswg.org/filter-effects-1/#element-attrdef-fedisplacementmap-in2
 		"in2": {
 			"type": [
 				{
@@ -101,13 +101,13 @@
 			],
 			"animatable": true
 		},
-		// https://drafts.fxtf.org/filter-effects/#element-attrdef-fedisplacementmap-scale
+		// https://drafts.csswg.org/filter-effects-1/#element-attrdef-fedisplacementmap-scale
 		"scale": {
 			"type": "<number>",
 			"defaultValue": "0",
 			"animatable": true
 		},
-		// https://drafts.fxtf.org/filter-effects/#element-attrdef-fedisplacementmap-xchannelselector
+		// https://drafts.csswg.org/filter-effects-1/#element-attrdef-fedisplacementmap-xchannelselector
 		"xChannelSelector": {
 			"type": {
 				"enum": ["R", "G", "B", "A"],
@@ -116,7 +116,7 @@
 			"defaultValue": "A",
 			"animatable": true
 		},
-		// https://drafts.fxtf.org/filter-effects/#element-attrdef-fedisplacementmap-ychannelselector
+		// https://drafts.csswg.org/filter-effects-1/#element-attrdef-fedisplacementmap-ychannelselector
 		"yChannelSelector": {
 			"type": {
 				"enum": ["R", "G", "B", "A"],

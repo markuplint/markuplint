@@ -71,7 +71,7 @@ export default createRule({
  *   `<section><template><main></main></template></section>` has a `main` element with none.
  *   markuplint holds the content as children of the `template` element, so the walk stops here.
  *   A `template` of a framework that puts the children in the element itself (React, Vue: the
- *   `templateContent` of its spec) is an `element` below: the children are in the document.
+ *   `templateContent` of its spec or of its parser) is an `element` below: the children are in the document.
  * - `transparent`: a node that is not an element of the document ({@link isRenderedAway}), which
  *   the walk skips as if it were not there and does not judge.
  * - `element`: any other element.

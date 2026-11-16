@@ -1,5 +1,5 @@
 import type { InitializationOptions } from '../types.js';
-import type { WorkspaceFolder } from 'vscode-languageserver/node.js';
+import type { WorkspaceFolder } from 'vscode-languageserver';
 
 import { fileURLToPath } from 'node:url';
 

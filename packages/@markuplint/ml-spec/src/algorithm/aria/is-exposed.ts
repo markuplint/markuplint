@@ -2,6 +2,7 @@ import type { SpecElement } from '../../types/spec-element.js';
 import type { ARIAVersion, MLMLSpec } from '../../types/index.js';
 
 import { ariaSpecs } from './aria-specs.js';
+import { hasDisplayNoneOrVisibilityHiddenStyle } from '../dom/inline-style.js';
 import { getComposedParentElement, isNotRendered } from '../dom/tree-boundary.js';
 import { getSpecByTagName } from '../../utils/get-spec-by-tag-name.js';
 import { isPresentational } from './is-presentational.js';
@@ -91,7 +92,7 @@ function isExcluding(
 		while (currentEl) {
 			if (
 				isNotRendered(currentEl) ||
-				hasDisplayNodeOrVisibilityHidden(currentEl) ||
+				hasDisplayNoneOrVisibilityHiddenStyle(currentEl) ||
 				currentEl.hasAttr('hidden')
 			) {
 				return true;
@@ -187,12 +188,9 @@ function isIncluding(
 
 	/**
 	 * - Elements that are a valid target of an aria-activedescendant attribute.
+	 *
+	 * Not computed, as the criterion of the referenced ID below is not: it would change no result.
 	 */
-	// TODO: Compute aria-activedescendant.
-	// To implement this, we need to find all elements with `aria-activedescendant`
-	// in the document and check if any of them reference this element's ID.
-	// This requires cross-element analysis that is not yet supported.
-	// results.push(true);
 
 	/**
 	 * Elements that have an explicit role or a global WAI-ARIA attribute and
@@ -222,30 +220,17 @@ function isIncluding(
 	}
 
 	/**
-	 * Elements that are not hidden and have an ID that is referenced
-	 * by another element via a WAI-ARIA property.
+	 * > Elements that are not hidden and have an ID that is referenced by another element via a
+	 * > WAI-ARIA property.
+	 *
+	 * Not computed: `isExposed` returns `true` for an element that no criterion here includes, so an
+	 * element that only this criterion would include is exposed either way, and finding the references
+	 * would change no result.
+	 *
+	 * @see https://w3c.github.io/aria/#tree_inclusion
 	 */
-	// TODO: Compute referring ID.
-	// To implement this, we need to find all ARIA relationship attributes
-	// (e.g., aria-labelledby, aria-describedby, aria-owns, aria-controls)
-	// across the document that reference this element's ID.
-	// results.push(true);
 
 	return results.includes(true);
-}
-
-function hasDisplayNodeOrVisibilityHidden(
-	// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
-	el: SpecElement,
-) {
-	const style = el.getAttrValue('style');
-	if (!style) {
-		return false;
-	}
-	// TODO: Improve accuracy by using a proper CSS parser instead of regex.
-	// This regex does not handle shorthand properties, `!important`, or values
-	// inside comments/strings. A CSS declaration parser would be more reliable.
-	return /display\s*:\s*none|visibility\s*:\s*hidden/i.test(style);
 }
 
 function isExposedElement(

@@ -92,6 +92,14 @@ export function expandConditionAliases<T extends Record<string, any>>(
 			expanded.condition = expanded.condition.map((selector: string) => expandTokens(selector, aliases));
 		}
 
+		if (typeof expanded.deprecatedWhen === 'string') {
+			expanded.deprecatedWhen = expandTokens(expanded.deprecatedWhen, aliases);
+		} else if (Array.isArray(expanded.deprecatedWhen)) {
+			expanded.deprecatedWhen = expanded.deprecatedWhen.map((selector: string) =>
+				expandTokens(selector, aliases),
+			);
+		}
+
 		if (Array.isArray(expanded.type)) {
 			expanded.type = expanded.type.map((entry: any) => {
 				if (entry == null || typeof entry !== 'object' || typeof entry.condition !== 'string') {

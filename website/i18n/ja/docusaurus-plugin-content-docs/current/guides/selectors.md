@@ -228,6 +228,8 @@ Markuplint独自の擬似クラスに似た拡張セレクタをつかうこと�
 | `has name`    | `:aria(has name)`    | アクセシブルな名前をもつ要素に適用         |
 | `has no name` | `:aria(has no name)` | アクセシブルな名前を**もたない**要素に適用 |
 
+条件ブロック(Svelteの`{#if}`、Alpine.jsの`<template x-if>`、Vueの`v-if`・`v-else-if`・`v-else`・`v-for`をもつ要素)の分岐に名前があるかもしれない要素は、書かれたままでは名前がありませんが、名前をもつ可能性があるため、`has name`に適用され、`has no name`には適用されません。
+
 ### `:role` {#ex-selector-role}
 
 **ARIAロール擬似クラス**

@@ -1,7 +1,7 @@
 import type { SpecElement } from '../../types/spec-element.js';
 import type { ARIAVersion, MLMLSpec } from '../../types/index.js';
 
-import { getAccessibilityParentElement } from '../dom/tree-boundary.js';
+import { getOwningParentElement } from './aria-owns.js';
 import { isTransparentForOwnership } from './is-presentational.js';
 
 import { getComputedRole } from './get-computed-role.js';
@@ -11,15 +11,14 @@ import { getComputedRole } from './get-computed-role.js';
  * Context Role" in ARIA 1.2). Each condition string describes a chain of
  * ancestor roles separated by ` > ` (e.g., `"list > group"`).
  *
- * TODO: This function only walks the composed parent chain and does not
- * consider `aria-owns` relationships. An element referenced by `aria-owns` on
- * a remote ancestor should be treated as if it were an accessibility child of
- * that ancestor. Implementing this requires a document-wide reverse lookup of
- * `aria-owns` attributes, which is a separate architectural concern.
- * See also: `has-required-owned-elements.ts` has a similar limitation.
+ * The chain is the one the accessibility tree is built from, which does not have a `slot`, with
+ * `aria-owns` resolved ({@link getOwningParentElement}): an element that an `aria-owns` refers to is
+ * an accessibility child of the element that refers to it.
  *
- * The chain is the one the accessibility tree is built from ({@link getAccessibilityParentElement}), which
- * does not have a `slot`.
+ * > If the list is not empty, authors MUST ensure that an element with the current role is an
+ * > accessibility child of an element with a role from this list.
+ *
+ * @see https://w3c.github.io/aria/#scope
  */
 export function matchesContextRole(
 	conditions: readonly string[],
@@ -29,7 +28,7 @@ export function matchesContextRole(
 	version: ARIAVersion,
 ) {
 	return conditions.some(condition =>
-		matchesCondition(condition, getAccessibilityParentElement(ownedEl), specs, version),
+		matchesCondition(condition, getOwningParentElement(ownedEl, specs, version), specs, version),
 	);
 }
 
@@ -70,7 +69,7 @@ function matchesCondition(
 		 * @see https://w3c.github.io/aria/#scope
 		 */
 		if (isTransparentForOwnership(parentRole?.name, version)) {
-			parentEl = getAccessibilityParentElement(parentEl);
+			parentEl = getOwningParentElement(parentEl, specs, version);
 			continue;
 		}
 
@@ -80,7 +79,7 @@ function matchesCondition(
 			return false;
 		}
 
-		parentEl = getAccessibilityParentElement(parentEl);
+		parentEl = getOwningParentElement(parentEl, specs, version);
 	}
 
 	return true;

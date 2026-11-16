@@ -1,5 +1,6 @@
 //! Corresponds to `@markuplint/ml-spec/src/utils/`.
 
+use super::attr_specs::get_attr_specs_list;
 use super::types::{Attribute, ElementSpec, MLMLSpec};
 use std::collections::HashMap;
 
@@ -82,24 +83,16 @@ pub fn get_content_model_tags<'a>(spec: &'a MLMLSpec, category: &str) -> Option<
     spec.def.content_models.get(category).map(std::vec::Vec::as_slice)
 }
 
-pub fn get_attr_specs<'a>(spec: &'a MLMLSpec, element_name: &str) -> HashMap<&'a str, &'a Attribute> {
-    let mut result: HashMap<&str, &Attribute> = HashMap::new();
-
-    let Some(el) = get_spec(spec, element_name) else {
-        return result;
+/// The attributes of an element by name: its own and those of the global categories it enables
+/// ([`get_attr_specs_list`], the port of TS `getAttrSpecs`). Empty when the spec has no such element.
+#[must_use]
+pub fn get_attr_specs(spec: &MLMLSpec, element_name: &str) -> HashMap<String, Attribute> {
+    let Some(list) = get_attr_specs_list(spec, element_name) else {
+        return HashMap::new();
     };
-
-    for (name, attr) in &el.attributes {
-        result.insert(name.as_str(), attr);
-    }
-
-    // TODO: Merge global attributes from enabled categories.
-    // Blocked: `SpecDefs.global_attrs` inner values are `serde_json::Value`, not `Attribute`.
-    // The JSON structure for global attrs differs from element-specific attrs (uses partial
-    // attribute definitions), so typing requires a `PartialAttribute` or flexible deserializer.
-    // Tracked in #3521. Needed when ARIA rules or the attribute rules (`attr_check`) access global attrs.
-
-    result
+    list.iter()
+        .filter_map(|attr| Some((attr.name.clone()?, attr.clone())))
+        .collect()
 }
 
 fn namespace_to_prefix(namespace: &str) -> &str {

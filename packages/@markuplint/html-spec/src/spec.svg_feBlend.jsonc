@@ -1,4 +1,4 @@
-// https://drafts.fxtf.org/filter-effects/#feBlendElement
+// https://drafts.csswg.org/filter-effects-1/#feBlendElement
 // https://www.w3.org/TR/svg-aam/#role-map-feblend
 {
 	"contentModel": {
@@ -9,7 +9,7 @@
 		]
 	},
 	"globalAttrs": {
-		"#SVGCoreAttrs": ["id", "xml:base", "xml:lang", "xml:space", "class", "style"],
+		"#SVGCoreAttrs": ["id", "xml:base", "xml:lang", "xml:space", "class", "style", "part", "exportparts"],
 		"#SVGPresentationAttrs": [
 			"alignment-baseline",
 			"baseline-shift",
@@ -84,7 +84,7 @@
 	},
 	"attributes": {
 		"in2": {
-			// https://drafts.fxtf.org/filter-effects/#element-attrdef-feblend-in2
+			// https://drafts.csswg.org/filter-effects-1/#element-attrdef-feblend-in2
 			"type": [
 				{
 					"enum": [
@@ -102,7 +102,7 @@
 			"animatable": true
 		},
 		"mode": {
-			// https://drafts.fxtf.org/filter-effects/#element-attrdef-feblend-mode
+			// https://drafts.csswg.org/filter-effects-1/#element-attrdef-feblend-mode
 			"type": "<blend-mode>",
 			"defaultValue": "normal",
 			"animatable": true

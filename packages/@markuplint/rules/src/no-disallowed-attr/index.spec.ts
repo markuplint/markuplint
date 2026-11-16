@@ -1170,3 +1170,68 @@ test('[no-disallowed-attr-issue-4584-001] the message is in Japanese with locale
 		},
 	]);
 });
+
+test('[no-disallowed-attr-invalid-012] input: capture and webkitdirectory apply to type=file only', async () => {
+	// https://www.w3.org/TR/html-media-capture/#the-capture-attribute
+	// https://wicg.github.io/entries-api/#dom-htmlinputelement-webkitdirectory
+	const { violations } = await mlRuleTest(rule, '<input type="text" capture webkitdirectory>');
+	expect(violations).toStrictEqual([
+		{ severity: 'error', line: 1, col: 20, message: 'The "capture" attribute is disallowed', raw: 'capture' },
+		{
+			severity: 'error',
+			line: 1,
+			col: 28,
+			message: 'The "webkitdirectory" attribute is disallowed',
+			raw: 'webkitdirectory',
+		},
+	]);
+});
+
+test('[no-disallowed-attr-valid-006] input: capture and webkitdirectory are allowed on type=file', async () => {
+	expect(
+		(await mlRuleTest(rule, '<input type="file" accept="image/*" capture webkitdirectory>')).violations,
+	).toStrictEqual([]);
+});
+
+test('[no-disallowed-attr-invalid-013] img: controls must not be specified on an image without alt or with an empty alt', async () => {
+	// https://html.spec.whatwg.org/multipage/embedded-content.html#attr-img-controls
+	for (const html of ['<img src="a.png" alt="" controls>', '<img src="a.png" controls>']) {
+		const { violations } = await mlRuleTest(rule, html);
+		expect(
+			violations.map(v => v.raw),
+			html,
+		).toStrictEqual(['controls']);
+	}
+});
+
+test('[no-disallowed-attr-valid-007] img: controls is allowed on an image with a non-empty alt', async () => {
+	expect((await mlRuleTest(rule, '<img src="a.png" alt="photo" controls>')).violations).toStrictEqual([]);
+});
+
+test('[no-disallowed-attr-invalid-014] input: capture applies to type=file with an accept attribute', async () => {
+	// https://www.w3.org/TR/html-media-capture/#the-capture-attribute
+	const { violations } = await mlRuleTest(rule, '<input type="file" capture="user">');
+	expect(violations).toStrictEqual([
+		{ severity: 'error', line: 1, col: 20, message: 'The "capture" attribute is disallowed', raw: 'capture' },
+	]);
+});
+
+test('[no-disallowed-attr-valid-008] input: capture is allowed on type=file with an accept attribute', async () => {
+	expect((await mlRuleTest(rule, '<input type="file" accept="image/*" capture="user">')).violations).toStrictEqual(
+		[],
+	);
+});
+
+test('[no-disallowed-attr-invalid-015] xml:lang is allowed only where lang is specified', async () => {
+	// https://html.spec.whatwg.org/multipage/dom.html#the-lang-and-xml:lang-attributes
+	const { violations } = await mlRuleTest(rule, '<div xml:lang="en"></div>');
+	expect(violations).toStrictEqual([
+		{
+			severity: 'error',
+			line: 1,
+			col: 6,
+			message: 'The "xml:lang" attribute is disallowed',
+			raw: 'xml:lang',
+		},
+	]);
+});

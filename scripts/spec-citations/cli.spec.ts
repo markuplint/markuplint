@@ -6,7 +6,7 @@ import { describe, expect, test } from 'vitest';
 import type { CliDeps } from './cli.ts';
 import type { CollectResult, Citation, PageResult } from './types.ts';
 
-import { parseCliArgs, run } from './cli.ts';
+import { parseCliArgs, realDeps, run } from './cli.ts';
 import { serializeLock } from './lockfile.ts';
 import { hashText, normalizeSpecText } from './normalize.ts';
 import { splitSentences } from './diff.ts';
@@ -207,5 +207,12 @@ describe('command line', () => {
 		const cli = fileURLToPath(new URL('cli.ts', import.meta.url));
 		const out = execFileSync(process.execPath, ['--experimental-strip-types', cli, '--help'], { encoding: 'utf8' });
 		expect(out).toContain('Usage');
+	});
+
+	test('[cli-015] collects what the files cite and the sections of ARIA that the generated data defines', () => {
+		const root = fileURLToPath(new URL('../../', import.meta.url));
+		const { citations } = realDeps.collect(root);
+		expect(citations.map(c => c.url)).toContain('https://w3c.github.io/aria/#button');
+		expect(citations.some(c => c.file.startsWith('packages/@markuplint/rules/src/'))).toBe(true);
 	});
 });

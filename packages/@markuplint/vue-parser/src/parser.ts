@@ -1,5 +1,11 @@
 import type { ASTNode, ASTComment, VElement } from './vue-parser/index.js';
-import type { MLASTParentNode, MLASTNodeTreeItem, MLASTParseError } from '@markuplint/ml-ast';
+import type {
+	MLASTBlockBehavior,
+	MLASTBlockBehaviorType,
+	MLASTParentNode,
+	MLASTNodeTreeItem,
+	MLASTParseError,
+} from '@markuplint/ml-ast';
 
 import { ParserError, Parser, isPotentialCustomElementName, isSVGElement } from '@markuplint/parser-utils';
 import { isHTMLTag, isMathMLTag, isSVGTag } from '@vue/shared';
@@ -9,6 +15,23 @@ import { vueParse } from './vue-parser/index.js';
 type State = {
 	comments: readonly ASTComment[];
 };
+
+/**
+ * The directives of an element that Vue renders or leaves out, and the behavior the element carries
+ * for each (`MLASTElement#blockBehavior`). The directive does not wrap the element in a block: it
+ * has to stay an element for its attributes to be validated. The behavior says that the element may be
+ * left out; it does not link `v-else-if` and `v-else` to the `v-if` before them, so the branches of a chain
+ * are not known to be exclusive. `v-if` wins over `v-for` on one element, as Vue 3 evaluates `v-if` first.
+ *
+ * @see https://vuejs.org/guide/essentials/conditional.html
+ * @see https://vuejs.org/guide/essentials/list.html
+ */
+const CONDITIONAL_DIRECTIVES: ReadonlyMap<string, MLASTBlockBehaviorType> = new Map([
+	['if', 'if'],
+	['else-if', 'if:elseif'],
+	['else', 'if:else'],
+	['for', 'each'],
+]);
 
 /**
  * The built-in components, as written or in kebab-case: `isBuiltInType(tag, name)` of Vue is
@@ -88,18 +111,14 @@ function collectIgnoredSideEffectTags(nodes: readonly ASTNode[], rawCode: string
  * `potentialName`/`isDirective`/`isDynamicValue` values only appear at the
  * core level.
  *
- * Known limitation: `v-if`/`v-for`/`v-else`/`v-else-if` do not set
- * `blockBehavior`, so content-model rules such as `permitted-contents` cannot
- * enumerate conditional branches via `conditionalChildNodes()` as they can for
- * Svelte, Pug, Alpine, JSX, and Astro. Unlike Alpine's fixed
- * `<template x-if="...">` wrapper, which converts cleanly into a PSBlock, Vue
- * directives attach to arbitrary elements that must remain valid HTML elements
- * for attribute validation while also acting as blocks for content-model
- * analysis, and `v-else`/`v-else-if` branch across sibling elements — both
- * beyond the per-node `nodeize()` model. These directives are handled at the
- * attribute level only (`isDirective: true`), which suppresses attribute
- * validation errors but provides no structural block information to the core
- * engine.
+ * `v-if`, `v-else-if`, `v-else` and `v-for` do not wrap the element in a block: they attach to arbitrary
+ * elements that must remain valid HTML elements for attribute validation, so the element carries
+ * the behavior (`MLASTElement#blockBehavior`, see `CONDITIONAL_DIRECTIVES`) and is read as an element.
+ * Known limitation: it is not a `PSBlock` that `conditionalChildNodes()` enumerates, so content-model
+ * rules such as `permitted-contents` cannot enumerate the branches of a `v-if` chain as they can for
+ * Svelte, Pug, Alpine, JSX, and Astro (`v-else` and `v-else-if` branch across sibling elements, which
+ * is beyond the per-node `nodeize()` model). What reads the behavior of an element is what asks if a
+ * node may be left out (`mayBeLeftOut` of `@markuplint/ml-core`), such as the accessible name.
  */
 class VueParser extends Parser<ASTNode, State> {
 	constructor() {
@@ -116,6 +135,8 @@ class VueParser extends Parser<ASTNode, State> {
 				// `<slot>` is replaced with what is passed to it, not the HTML `slot` element of a shadow tree
 				// @see https://vuejs.org/guide/components/slots.html
 				slotElement: 'framework',
+				// A `template` element without a directive is created in the tree, as `@markuplint/vue-spec` says
+				templateContent: 'in-place',
 			},
 			{
 				comments: [],
@@ -207,7 +228,10 @@ class VueParser extends Parser<ASTNode, State> {
 					{
 						// `<slot>` is replaced with what is passed to it: Vue renders no element for it
 						// @see https://vuejs.org/guide/components/slots.html
-						overwriteProps: originNode.name === 'slot' ? { isFragment: true } : undefined,
+						overwriteProps: {
+							...(originNode.name === 'slot' ? { isFragment: true } : {}),
+							blockBehavior: this.#detectBlockBehavior(originNode),
+						},
 						createEndTagToken: () => {
 							if (!originNode.endTag) {
 								return null;
@@ -223,6 +247,35 @@ class VueParser extends Parser<ASTNode, State> {
 				);
 			}
 		}
+	}
+
+	/**
+	 * The behavior of an element that has `v-if`, `v-else-if`, `v-else` or `v-for`, whose expression is
+	 * what is written as the value (none for `v-else`). An element that has `v-for` and a conditional
+	 * directive carries the conditional one, whichever is written first: Vue 3 evaluates `v-if` first.
+	 *
+	 * @see https://vuejs.org/guide/essentials/list.html#v-for-with-v-if
+	 */
+	#detectBlockBehavior(
+		// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
+		node: VElement,
+	): MLASTBlockBehavior | null {
+		let behavior: MLASTBlockBehavior | null = null;
+		for (const attr of node.startTag.attributes) {
+			if (!attr.directive) {
+				continue;
+			}
+			const type = CONDITIONAL_DIRECTIVES.get(attr.key.name.name);
+			if (!type || (behavior && type === 'each')) {
+				continue;
+			}
+			const expression = attr.value ? this.sliceFragment(attr.value.range[0], attr.value.range[1]).raw : '';
+			behavior = { type, expression: expression.replace(/^(["'])(.*)\1$/s, '$2') };
+			if (type !== 'each') {
+				return behavior;
+			}
+		}
+		return behavior;
 	}
 
 	/**

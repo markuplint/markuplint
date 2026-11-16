@@ -28,7 +28,6 @@ import type { ExtendedSpec } from '@markuplint/ml-spec';
  * Alpine.js directives are all global and prefixed with `x-`.
  */
 const spec: ExtendedSpec = {
-	cites: ['https://alpinejs.dev/'],
 	/**
 	 * How Alpine.js renders a literal in `:attr="…"` (`bindAttribute` of `alpinejs/src/utils/bind.js`),
 	 * where it differs from the default of `@markuplint/ml-core`. Names are in lower case.
@@ -64,10 +63,13 @@ const spec: ExtendedSpec = {
 			hidden: { true: 'true', '0': '0' },
 			// Boolean attributes of the spec that Alpine does not know as boolean
 			alpha: { true: 'true', '0': '0', '""': '' },
+			disablepictureinpicture: { true: 'true', '0': '0', '""': '' },
+			disableremoteplayback: { true: 'true', '0': '0', '""': '' },
 			focusgroupstart: { true: 'true', '0': '0', '""': '' },
 			headingreset: { true: 'true', '0': '0', '""': '' },
 			shadowrootcustomelementregistry: { true: 'true', '0': '0', '""': '' },
 			switch: { true: 'true', '0': '0', '""': '' },
+			webkitdirectory: { true: 'true', '0': '0', '""': '' },
 		},
 	},
 	directivePatterns: [

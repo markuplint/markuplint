@@ -1,11 +1,11 @@
 import type { Config, InitializationOptions, LangConfigs } from '@markuplint/language-server/protocol';
 import type { ExtensionContext } from 'vscode';
-import type { LanguageClientOptions, ServerOptions } from 'vscode-languageclient/node.js';
+import type { LanguageClientOptions, ServerOptions } from 'vscode-languageclient/node';
 
 import path from 'node:path';
 
 import { window, workspace, StatusBarAlignment, commands } from 'vscode';
-import { RevealOutputChannelOn, LanguageClient, TransportKind } from 'vscode-languageclient/node.js';
+import { RevealOutputChannelOn, LanguageClient, TransportKind } from 'vscode-languageclient/node';
 
 import {
 	COMMAND_NAME_OPEN_LOG_COMMAND,

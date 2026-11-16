@@ -199,6 +199,9 @@
 			"details",
 			"embed",
 			"iframe",
+			// @see https://html.spec.whatwg.org/multipage/embedded-content.html#the-img-element
+			// > If the element has a usemap or controls attribute: Interactive content.
+			"img[controls]",
 			"img[usemap]",
 			"input:not([type='hidden' i])",
 			"label",

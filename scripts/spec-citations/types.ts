@@ -97,6 +97,7 @@ export type ProblemKind =
 	| 'page-missing'
 	| 'anchor-missing'
 	| 'anchor-empty'
+	| 'anchor-thin'
 	| 'quote-mismatch'
 	| 'orphan-quote'
 	| 'inline-quote'

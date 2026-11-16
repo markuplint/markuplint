@@ -191,3 +191,117 @@ describe('extractSection on a page whose headings are wrapped with their anchor 
 		});
 	});
 });
+
+/** The shape of svgwg.org/svg2-draft: the id of an element is on the paragraph that introduces it, and its definition follows in `div.element-summary`. */
+const SVG_ELEMENT = `<!doctype html><body>
+<h3 id="Gradients">14.2.2. Linear gradients</h3>
+<p id="LinearGradientElement">Linear gradients are defined by a linearGradient element.</p>
+
+<div class="element-summary"><div class="element-summary-name"><dfn id="elementdef-linearGradient">linearGradient</dfn></div><dl><dt>Categories:</dt><dd>Gradient element</dd><dt>Content model:</dt><dd>Any number of descriptive elements.</dd></dl></div>
+<p id="Attributes">An unrelated paragraph that follows.</p>
+<p id="Plain">A paragraph with no definition after it.</p>
+<p>Another one.</p>
+<h3 id="Stops">14.2.4. Gradient stops</h3>
+<p id="StopElement">The vector of colors is defined by the stop element.</p>
+<p class="annotation">In SVG 1.1, the above read otherwise.</p>
+<div class="element-summary"><div class="element-summary-name"><dfn id="elementdef-stop">stop</dfn></div><dl><dt>Categories:</dt><dd>None</dd></dl></div>
+<h3 id="Shapes">9.2. Shapes</h3>
+<p id="ShapesIntro">An introduction that names no element.</p>
+<p id="RectElement">The rect element defines a rectangle.</p>
+<div class="element-summary"><div class="element-summary-name"><dfn id="elementdef-rect">rect</dfn></div><dl><dt>Categories:</dt><dd>Shape element</dd></dl></div>
+</body>`;
+
+describe('extractSection of an element that is introduced by a paragraph', () => {
+	test('[extract-019] takes the definition box that follows the paragraph as part of its unit', () => {
+		const section = extractSection(parsePage(SVG_ELEMENT), 'LinearGradientElement');
+		expect(section).toMatchObject({ status: 'found' });
+		expect(section.status === 'found' && section.unit).toBe(
+			'Linear gradients are defined by a linearGradient element. linearGradient Categories: Gradient element Content model: Any number of descriptive elements.',
+		);
+	});
+
+	test('[extract-020] leaves a paragraph that no definition box follows as its own unit', () => {
+		expect(extractSection(parsePage(SVG_ELEMENT), 'Plain')).toMatchObject({
+			unit: 'A paragraph with no definition after it.',
+		});
+		expect(extractSection(parsePage(SVG_ELEMENT), 'Attributes')).toMatchObject({
+			unit: 'An unrelated paragraph that follows.',
+		});
+	});
+
+	test('[extract-021] finds the definition box past a note that sits between it and the paragraph, and leaves the note out', () => {
+		const section = extractSection(parsePage(SVG_ELEMENT), 'StopElement');
+		expect(section.status === 'found' && section.unit).toBe(
+			'The vector of colors is defined by the stop element. stop Categories: None',
+		);
+	});
+
+	test('[extract-022] takes the box for the element that the anchor names, not for a paragraph that merely comes before it', () => {
+		expect(extractSection(parsePage(SVG_ELEMENT), 'ShapesIntro')).toMatchObject({
+			unit: 'An introduction that names no element.',
+		});
+		const section = extractSection(parsePage(SVG_ELEMENT), 'RectElement');
+		expect(section.status === 'found' && section.unit).toBe(
+			'The rect element defines a rectangle. rect Categories: Shape element',
+		);
+	});
+});
+
+/** The shape of a definition list of the HTML Standard: terms that share one description are consecutive `dt`s before it. */
+const TERMS = `<!doctype html><body>
+<h3 id="obsolete">Non-conforming features</h3>
+<dl>
+<dt><dfn id="basefont"><code>basefont</code></dfn>
+<dt><dfn id="font"><code>font</code></dfn>
+<dd><p>Use appropriate elements or CSS instead.</p>
+<p>Where the tt element was used, consider kbd.</p>
+<dt><dfn id="xmp"><code>xmp</code></dfn>
+<dd><p>Use pre instead.</p>
+</dl>
+<p id="after">A paragraph after the list.</p>
+</body>`;
+
+describe('extractSection of a term in a definition list', () => {
+	test('[extract-023] takes the description that follows the terms as part of the unit, for each of the terms that share it', () => {
+		const unit = (id: string) => {
+			const section = extractSection(parsePage(TERMS), id);
+			return section.status === 'found' ? section.unit : null;
+		};
+		expect(unit('font')).toBe(
+			'font Use appropriate elements or CSS instead. Where the tt element was used, consider kbd.',
+		);
+		expect(unit('basefont')).toBe(
+			'basefont Use appropriate elements or CSS instead. Where the tt element was used, consider kbd.',
+		);
+	});
+
+	test('[extract-024] stops the description at the next term', () => {
+		const section = extractSection(parsePage(TERMS), 'xmp');
+		expect(section.status === 'found' && section.unit).toBe('xmp Use pre instead.');
+	});
+
+	test('[extract-025] leaves a term that no description follows as the term alone', () => {
+		const page = parsePage(
+			'<!doctype html><body><dl><dt><dfn id="lone">lone</dfn></dl><p>Text after the list.</p></body>',
+		);
+		const section = extractSection(page, 'lone');
+		expect(section.status === 'found' && section.unit).toBe('lone');
+	});
+
+	test('[extract-026] finds the box of an element whose id is its name (`AElement`) and of one that shares a section (`TextElement`)', () => {
+		const page = parsePage(`<!doctype html><body>
+<h3 id="Links">The a element</h3>
+<p id="AElement">The a element creates a hyperlink.</p>
+<div class="element-summary"><div class="element-summary-name"><dfn id="elementdef-a">a</dfn></div><dl><dt>Categories:</dt><dd>Container element</dd></dl></div>
+<h3 id="Text">Text</h3>
+<p id="TextElement">The text and tspan elements.</p>
+<div class="element-summary"><div class="element-summary-name"><dfn id="elementdef-text">text</dfn></div><dl><dt>Categories:</dt><dd>Text content element</dd></dl></div>
+<div class="element-summary"><div class="element-summary-name"><dfn id="elementdef-tspan">tspan</dfn></div><dl><dt>Categories:</dt><dd>Text content child element</dd></dl></div>
+</body>`);
+		const a = extractSection(page, 'AElement');
+		const text = extractSection(page, 'TextElement');
+		expect(a.status === 'found' && a.unit).toContain('Container element');
+		expect(text.status === 'found' && text.unit).toContain('Text content element');
+		expect(text.status === 'found' && text.unit).not.toContain('Text content child element');
+	});
+});

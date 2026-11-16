@@ -1,4 +1,4 @@
-// https://drafts.fxtf.org/filter-effects/#elementdef-fefuncr
+// https://drafts.csswg.org/filter-effects-1/#feFuncRElement
 // https://www.w3.org/TR/svg-aam/#role-map-fefuncr
 {
 	"contentModel": {
@@ -9,7 +9,7 @@
 		]
 	},
 	"globalAttrs": {
-		"#SVGCoreAttrs": ["id", "xml:base", "xml:lang", "xml:space"],
+		"#SVGCoreAttrs": ["id", "xml:base", "xml:lang", "xml:space", "part", "exportparts"],
 		"#SVGTransferFunctionAttrs": ["type", "tableValues", "slope", "intercept", "amplitude", "exponent", "offset"]
 	},
 	"attributes": {},
