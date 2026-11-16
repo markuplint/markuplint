@@ -70,7 +70,7 @@ describe('getSpec', () => {
 });
 
 /**
- * `@markuplint/html-spec` no longer carries an attribute that MDN lists with nothing but its name: the names come
+ * `@markuplint/html-spec` no longer carries an attribute that MDN listed with nothing but its name: the names come
  * from the sources, in the `attributes` of an element or through the categories of its `globalAttrs`. These are the
  * names that the data listed that way when the entries were removed, and every one of them is defined by a category
  * that its element selects, so none became unknown.

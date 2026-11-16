@@ -53,7 +53,7 @@ describe('classify: the spec data and the selector engine', () => {
 
 	test('[discover-010] does not read the other files of those packages', () => {
 		expect(classify('packages/@markuplint/html-spec/index.json')).toBeNull();
-		expect(classify('packages/@markuplint/html-spec/generator/scraping.ts')).toBeNull();
+		expect(classify('packages/@markuplint/html-spec/generator/fetch.ts')).toBeNull();
 		expect(classify('packages/@markuplint/selector/src/selector.spec.ts')).toBeNull();
 		expect(classify('packages/@markuplint/selector/src/types.d.ts')).toBeNull();
 		expect(classify('packages/@markuplint/html-spec/src/nested/spec.a.jsonc')).toBeNull();
