@@ -30,13 +30,14 @@
 
 use markuplint_core::i18n::Primitive as Kw;
 use markuplint_dom::arena::{DomArena, NodeId};
-use markuplint_dom::helpers::get_attr_value;
+use markuplint_dom::helpers::{get_attr_node_from_el, get_attr_value};
 use markuplint_dom::node::DomNode;
 use markuplint_dom::pretender::PretenderContext;
 use markuplint_types::spec::aria::ARIAVersion;
 use markuplint_types::spec::types::MLMLSpec;
 
 use crate::aria::computed_role::{ResolvedRole, get_computed_role};
+use crate::aria::owns::{has_preprocessor_block, resolve_aria_owns_children};
 use crate::aria_check::{ElementContext, ElementGate, element_local_name, is_js_whitespace, walk_elements};
 use crate::helpers::{has_mutable_attributes, has_mutable_children_with};
 use crate::rule::{Rule, RuleConfigSet};
@@ -107,7 +108,7 @@ fn check(ctx: &ElementContext<'_>, node_id: NodeId, role: Option<&ResolvedRole>)
         return None;
     }
 
-    let owned_children = owned_child_nodes(ctx.spec, ctx.arena, node_id);
+    let owned_children = owned_child_nodes(ctx.spec, ctx.arena, node_id, ctx.version);
     let owned = classify_children(ctx.spec, ctx.arena, node_id, owned_children.clone(), role, ctx.version);
     if owned
         .iter()
@@ -221,7 +222,7 @@ fn classify_children(
                         spec,
                         arena,
                         child_id,
-                        owned_child_nodes(spec, arena, child_id),
+                        owned_child_nodes(spec, arena, child_id, version),
                         role,
                         version,
                     ));
@@ -250,7 +251,14 @@ fn classify_slot(
         return vec![Owned::Unknown];
     };
     if assigned.is_empty() {
-        return classify_children(spec, arena, slot, owned_child_nodes(spec, arena, slot), role, version);
+        return classify_children(
+            spec,
+            arena,
+            slot,
+            owned_child_nodes(spec, arena, slot, version),
+            role,
+            version,
+        );
     }
     let mutable = assigned.iter().any(|&node| {
         arena.get(node).and_then(DomNode::as_element).is_some_and(|el| {
@@ -383,14 +391,43 @@ fn is_transparent_for_ownership(role_name: Option<&str>, version: ARIAVersion) -
     }
 }
 
-/// TS `getOwnedChildNodes()`: the child nodes `node_id` owns as the page renders them.
+/// TS `getOwnedChildNodes()`: the child nodes `node_id` owns as the page renders them, with `aria-owns`
+/// resolved ([`resolve_aria_owns_children`]): an element that an `aria-owns` of another element refers
+/// to is not owned by `node_id`, and the elements that the `aria-owns` of `node_id` refers to are owned
+/// by it, after its other child nodes.
+///
+/// An `aria-owns` of `node_id` whose value is not known until it is rendered may own any element, so
+/// `None` is returned for it, and so it is when `aria-owns` moves a node in a document with a block of
+/// template syntax, where the element an ID refers to depends on the rendered branch.
+///
+/// @see <https://w3c.github.io/aria/#aria-owns>
+fn owned_child_nodes(spec: &MLMLSpec, arena: &DomArena, node_id: NodeId, version: ARIAVersion) -> Option<Vec<NodeId>> {
+    if arena
+        .get(node_id)
+        .and_then(DomNode::as_element)
+        .and_then(|el| get_attr_node_from_el(el, "aria-owns"))
+        .is_some_and(|attr| attr.is_dynamic_value == Some(true))
+    {
+        return None;
+    }
+    let child_nodes = flat_child_nodes(spec, arena, node_id)?;
+    let resolved = resolve_aria_owns_children(arena, spec, node_id, &child_nodes, version);
+    // In a document with a block of template syntax, the element an ID refers to depends on the branch
+    // that is rendered, so what `aria-owns` moves is not known
+    if resolved != child_nodes && has_preprocessor_block(arena) {
+        return None;
+    }
+    Some(resolved)
+}
+
+/// The child nodes `node_id` renders, before `aria-owns` moves any (see [`owned_child_nodes`]).
 ///
 /// For a pretended component, what it renders (its `contents` around the nodes given to it,
 /// none of which for `slots: null`), not what is written at the usage site. A single slot
 /// wrapper that differs from the component sits between them: the component owns the wrapper,
 /// and the wrapper owns the filled nodes. Several slot wrappers leave the owner of each node
 /// unknown (`None`).
-fn owned_child_nodes(spec: &MLMLSpec, arena: &DomArena, node_id: NodeId) -> Option<Vec<NodeId>> {
+fn flat_child_nodes(spec: &MLMLSpec, arena: &DomArena, node_id: NodeId) -> Option<Vec<NodeId>> {
     // The content of the `template` is the shadow root, and holds the same nodes as its children.
     match shadow_root_template_of(spec, arena, node_id) {
         ShadowTemplate::Unknown => return None,
