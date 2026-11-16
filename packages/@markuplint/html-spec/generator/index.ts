@@ -2,9 +2,9 @@
  * @module @markuplint/html-spec/generator
  *
  * Generates the markuplint extended specification JSON file from the hand-written sources, the W3C ARIA
- * documents (scraped), the status flags of the pinned `@mdn/browser-compat-data` and the MDN reference pages (the
- * description, which is dropped again). Aggregates HTML/SVG element specs, global attributes, ARIA roles and properties,
- * and content model definitions into a single output file consumed by the markuplint linter.
+ * documents (scraped) and the status flags of the pinned `@mdn/browser-compat-data`. Aggregates HTML/SVG element
+ * specs, global attributes, ARIA roles and properties, and content model definitions into a single output file
+ * consumed by the markuplint linter.
  *
  * Architectural decisions (do not revisit without strong reasons):
  *
@@ -14,8 +14,7 @@
  *   through the same enrichment process. Splitting the data package was
  *   considered and rejected.
  * - This generator's responsibility is external data fetching and enrichment
- *   ONLY (the W3C ARIA downloading, the pinned BCD package read by `bcd.ts`, the
- *   MDN description that is dropped again). Schema structure generation
+ *   ONLY (the W3C ARIA downloading and the pinned BCD package read by `bcd.ts`). Schema structure generation
  *   belongs to `@markuplint/ml-spec`'s `gen/`; moving schema operations into
  *   this generator was explicitly rejected to keep the architectural
  *   boundaries between the data package and the spec foundation package.
@@ -27,7 +26,7 @@ import { readFile, writeFile } from 'node:fs/promises';
 
 import { getAria } from './aria.ts';
 import { applyBCD, loadBCD } from './bcd.ts';
-import { finishFetching, getFailedUrls, getUnexpectedlyFoundUrls, hasFetchProblems } from './fetch.ts';
+import { finishFetching, getFailedUrls, hasFetchProblems } from './fetch.ts';
 import { getGlobalAttrs } from './global-attrs.ts';
 import { getElements } from './html-elements.ts';
 import { readJson } from './read-json.ts';
@@ -57,8 +56,7 @@ export type Options = {
  * manual spec data and the generator's merge logic disagree, and that
  * disagreement must be investigated before committing.
  *
- * @returns `fetchProblems` is true when a fetch failed or a page expected not
- * to exist answered; the output and the summary are written either way.
+ * @returns `fetchProblems` is true when a fetch failed; the output and the summary are written either way.
  */
 export async function main({
 	outputFilePath,
@@ -109,19 +107,6 @@ export async function main({
 		}
 	}
 
-	const unexpectedlyFoundUrls = getUnexpectedlyFoundUrls();
-
-	if (unexpectedlyFoundUrls.length > 0) {
-		// eslint-disable-next-line no-console
-		console.error(
-			`\n⚠️ ${unexpectedlyFoundUrls.length} page(s) expected not to exist were found; take them out of \`obsoleteWithoutMDNPage\` in generator/html-elements.ts:`,
-		);
-		for (const url of unexpectedlyFoundUrls) {
-			// eslint-disable-next-line no-console
-			console.error(`   - ${url}`);
-		}
-	}
-
 	const json: ExtendedSpec = {
 		def: {
 			'#globalAttrs': globalAttrs,
@@ -145,7 +130,7 @@ export async function main({
 	console.log(`🎁 Output: ${outputFilePath}`);
 
 	if (summaryFilePath) {
-		const fetchProblems = summarizeFetchProblems(failedUrls, unexpectedlyFoundUrls);
+		const fetchProblems = summarizeFetchProblems(failedUrls);
 		const summary = [summarizeChanges(previous, output), fetchProblems].filter(Boolean).join('\n\n');
 		await writeFile(summaryFilePath, summary + '\n');
 		// eslint-disable-next-line no-console
@@ -156,9 +141,9 @@ export async function main({
 }
 
 /**
- * What is written: the scraped spec once it has passed validation, without its prose. The order is the point:
- * validation reads the scraped text, which is what tells a failed MDN fetch from a real result, and the
- * committed file has no prose to compare with, so the summary is made from the returned spec as well.
+ * What is written: the generated spec once it has passed validation, without its prose (the W3C ARIA documents'
+ * descriptions are scraped and used before this runs: `isDeprecatedRole` reads the marker of a role). The committed
+ * file has no prose to compare with, so the summary is made from the returned spec as well.
  *
  * @throws {Error} When `validateSpecs` detects data loss.
  */

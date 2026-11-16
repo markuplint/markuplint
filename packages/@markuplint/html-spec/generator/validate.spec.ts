@@ -45,7 +45,7 @@ function spec(overrides: Partial<ExtendedSpec> = {}): ExtendedSpec {
 			},
 			'#contentModels': {},
 		},
-		specs: requiredElements.map(name => ({ name, description: `The ${name} element.` })),
+		specs: requiredElements.map(name => ({ name })),
 		...overrides,
 	} as ExtendedSpec;
 }
@@ -55,10 +55,8 @@ describe('validateSpecs', () => {
 		expect(() => validateSpecs(spec())).not.toThrow();
 	});
 
-	test('throws when more than half of HTML elements have empty descriptions', () => {
-		// 14 elements; empty the first 8 (57%) to cross the 50% threshold
-		const broken = spec().specs!.map((s, i) => (i < 8 ? { ...s, description: '' } : s));
-		expect(() => validateSpecs(spec({ specs: broken }))).toThrow(/empty descriptions/);
+	test('throws when no element was generated at all', () => {
+		expect(() => validateSpecs(spec({ specs: [] }))).toThrow(/Required core elements are missing/);
 	});
 
 	test('throws when a required core element is missing', () => {
@@ -107,7 +105,7 @@ describe('validateSpecs', () => {
 
 	test('throws when the element count drops below the stability threshold', () => {
 		const previous = spec({
-			specs: Array.from({ length: 100 }, (_, i) => ({ name: `el-${i}`, description: 'x' })),
+			specs: Array.from({ length: 100 }, (_, i) => ({ name: `el-${i}` })),
 		});
 		// current has the 14 required elements only → 14/100 = 14% retained
 		expect(() => validateSpecs(spec(), previous)).toThrow(/Element count dropped from 100 to 14/);
@@ -119,7 +117,7 @@ describe('validateSpecs', () => {
 
 	test('allows a small element-count decrease within the threshold', () => {
 		// previous 15, current 14 → 93% retained, above 85%
-		const previous = spec({ specs: [...spec().specs!, { name: 'aside', description: 'x' }] });
+		const previous = spec({ specs: [...spec().specs!, { name: 'aside' }] });
 		expect(() => validateSpecs(spec(), previous)).not.toThrow();
 	});
 
@@ -130,14 +128,7 @@ describe('validateSpecs', () => {
 		expect(() => validateSpecs(spec({ def: withoutAria, specs: withoutDiv }))).toThrow(/2 issues/);
 	});
 
-	test('the committed index.json trips the empty-description check, as it carries no descriptions', () => {
-		// The generator runs that check on the scraped text, before the output drops the descriptions.
-		expect(() => validateSpecs(realSpec, realSpec)).toThrow(/\d+\/\d+ HTML elements .* empty descriptions/);
-	});
-
-	test('the committed index.json passes every other rule against itself', () => {
-		// Descriptions are filled in so that the check above does not hide what the other rules say about the real data.
-		const specs = realSpec.specs!.map(s => ({ ...s, description: 'x' }));
-		expect(() => validateSpecs({ ...realSpec, specs }, realSpec)).not.toThrow();
+	test('the committed index.json passes every rule against itself', () => {
+		expect(() => validateSpecs(realSpec, realSpec)).not.toThrow();
 	});
 });

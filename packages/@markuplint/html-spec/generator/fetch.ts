@@ -15,11 +15,6 @@ const domCache = new Map<string, cheerio.CheerioAPI>();
 
 const failedUrls = new Set<string>();
 
-/**
- * URLs fetched with `expectNotFound` that answered with a page.
- */
-const unexpectedlyFoundUrls = new Set<string>();
-
 let total = 1;
 let current = 0;
 
@@ -33,22 +28,11 @@ const bar = isCI
 		);
 bar?.start(total, current, { process: '🚀 Started.' });
 
-/**
- * Options of `fetch` and `fetchText`.
- */
-export type FetchOptions = {
-	/**
-	 * The page is known not to exist: a 404 is not a failure. A page that
-	 * answers is still read, and is reported by `getUnexpectedlyFoundUrls`.
-	 */
-	readonly expectNotFound?: boolean;
-};
-
-export async function fetch(url: string, options?: FetchOptions) {
+export async function fetch(url: string) {
 	if (domCache.has(url)) {
 		return domCache.get(url)!;
 	}
-	const html = await fetchText(url, options);
+	const html = await fetchText(url);
 	const $ = cheerio.load(html);
 	domCache.set(url, $);
 	return $;
@@ -56,15 +40,15 @@ export async function fetch(url: string, options?: FetchOptions) {
 
 /**
  * The request for a URL is cached, not its result: the generator fetches in
- * parallel (`h1` to `h6` share one MDN page), and a URL requested again while
- * its first request is in flight must not be fetched, or reported, twice.
+ * parallel, and a URL requested again while its first request is in flight must
+ * not be fetched, or reported, twice.
  */
-export async function fetchText(url: string, options?: FetchOptions) {
+export async function fetchText(url: string) {
 	total += 1;
 	bar?.setTotal(total);
 	let request = cache.get(url);
 	if (!request) {
-		request = download(url, options);
+		request = download(url);
 		cache.set(url, request);
 	}
 	const text = await request;
@@ -76,18 +60,16 @@ export async function fetchText(url: string, options?: FetchOptions) {
 /**
  * Resolves to the empty string when the URL gives no page.
  */
-async function download(url: string, options: FetchOptions | undefined) {
+async function download(url: string) {
 	for (let attempt = 1; attempt <= MAX_RETRIES; attempt++) {
 		try {
 			const res = await globalThis.fetch(url, {
 				headers: { 'User-Agent': USER_AGENT },
 			});
 			if (res.status === 404) {
-				if (!options?.expectNotFound) {
-					// eslint-disable-next-line no-console
-					console.error(`⚠️ Fetch failed: ${url} (${httpStatus(res)})`);
-					failedUrls.add(url);
-				}
+				// eslint-disable-next-line no-console
+				console.error(`⚠️ Fetch failed: ${url} (${httpStatus(res)})`);
+				failedUrls.add(url);
 				return '';
 			}
 			if (!res.ok) {
@@ -99,11 +81,7 @@ async function download(url: string, options: FetchOptions | undefined) {
 				}
 				break;
 			}
-			const text = await res.text();
-			if (options?.expectNotFound) {
-				unexpectedlyFoundUrls.add(url);
-			}
-			return text;
+			return await res.text();
 		} catch (error) {
 			// eslint-disable-next-line no-console
 			console.error(
@@ -138,16 +116,12 @@ export function getFailedUrls(): readonly string[] {
 	return [...failedUrls];
 }
 
-export function getUnexpectedlyFoundUrls(): readonly string[] {
-	return [...unexpectedlyFoundUrls];
-}
-
 /**
- * Whether a fetch failed or a page expected not to exist answered: either one
- * needs a person, so the generation exits non-zero (`build.ts`).
+ * Whether a fetch failed: it needs a person, so the generation exits non-zero
+ * (`build.ts`).
  */
 export function hasFetchProblems() {
-	return failedUrls.size > 0 || unexpectedlyFoundUrls.size > 0;
+	return failedUrls.size > 0;
 }
 
 function delay(ms: number) {

@@ -10,7 +10,7 @@ This package provides the consolidated HTML element specification data for marku
 - **WAI-ARIA mappings** (implicit roles, permitted roles, ARIA properties)
 - **Content model definitions** for each element
 - **Status flags** (experimental, deprecated, obsolete and non-standard): the ones a specification defines are written in the sources, the others come from `@mdn/browser-compat-data`
-- **Automated external data integration** from authoritative sources. The data holds structure and references, not their prose: for the text, see the HTML Living Standard, WAI-ARIA and MDN
+- **Automated external data integration** from authoritative sources. The data holds structure and references, not their prose: for the text, see the HTML Living Standard and WAI-ARIA
 
 This package serves as the data layer in markuplint's specification system, depending on `@markuplint/ml-spec` for type definitions and structural schemas.
 
@@ -42,7 +42,7 @@ Core packages (Application Layer)
 ### Build System
 
 - **`build.ts`** - Generation script that invokes `generator/` modules
-- Fetches live data from W3C ARIA specs, Graphics ARIA, DPub ARIA and HTML-ARIA mappings (and an MDN description that it drops again), and reads the status flags from the pinned `@mdn/browser-compat-data`
+- Fetches live data from W3C ARIA specs, Graphics ARIA, DPub ARIA and HTML-ARIA mappings, and reads the status flags from the pinned `@mdn/browser-compat-data`
 
 ## Relationship to @markuplint/ml-spec
 

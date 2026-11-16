@@ -1,10 +1,8 @@
-import { readFileSync, readdirSync } from 'node:fs';
 import path from 'node:path';
 
-import { parse } from 'jsonc-parser';
 import { afterEach, describe, test, expect, vi } from 'vitest';
 
-import { getMDNElementURL, isWithoutMDNPage, obsoleteWithoutMDNPage } from './html-elements.ts';
+import { getElements } from './html-elements.ts';
 import { getDefinitionCite } from './read-json.ts';
 
 afterEach(() => {
@@ -12,119 +10,40 @@ afterEach(() => {
 	vi.restoreAllMocks();
 });
 
-describe('getMDNElementURL', () => {
-	test('builds the MDN reference page of an element in each namespace', () => {
-		expect(getMDNElementURL('a', 'HTML')).toBe(
-			'https://developer.mozilla.org/en-US/docs/Web/HTML/Reference/Elements/a',
-		);
-		expect(getMDNElementURL('h2', 'HTML')).toBe(
-			'https://developer.mozilla.org/en-US/docs/Web/HTML/Reference/Elements/Heading_Elements',
-		);
-		expect(getMDNElementURL('a', 'SVG')).toBe(
-			'https://developer.mozilla.org/en-US/docs/Web/SVG/Reference/Element/a',
-		);
-		expect(getMDNElementURL('math', 'MathML')).toBe(
-			'https://developer.mozilla.org/en-US/docs/Web/MathML/Reference/Element/math',
-		);
-	});
-});
+/** The glob takes forward slashes only. */
+function getElementsOf(fileName: string) {
+	return getElements(path.resolve(import.meta.dirname, '..', 'src', fileName).replaceAll('\\', '/'));
+}
 
 describe('getElements', () => {
-	/**
-	 * MDN answers 404 for every page, so what the output holds comes from the source file and from the generator
-	 * itself, never from MDN.
-	 */
-	async function getElementsWithoutMDN() {
-		vi.stubGlobal(
-			'fetch',
-			vi.fn(() => Promise.resolve(new Response('', { status: 404 }))),
-		);
-		vi.spyOn(console, 'error').mockImplementation(() => {});
-		vi.resetModules();
-		const { getElements: getFreshElements } = await import('./html-elements.ts');
-		return getFreshElements(path.resolve(import.meta.dirname, '..', 'src', 'spec.a.jsonc'));
-	}
-
 	test('cites the section on the first line of the source file', async () => {
-		const specs = await getElementsWithoutMDN();
+		const specs = await getElementsOf('spec.a.jsonc');
 		expect(specs.find(el => el.name === 'a')?.cite).toBe(
 			'https://html.spec.whatwg.org/multipage/text-level-semantics.html#the-a-element',
 		);
 	});
 
 	test('reads only the source files it is given', async () => {
-		const specs = await getElementsWithoutMDN();
+		const specs = await getElementsOf('spec.a.jsonc');
 		expect(specs.find(el => el.name === 'acronym')).toBeUndefined();
 	});
 
 	test('writes neither the categories nor the tag omission of any element', async () => {
-		const specs = await getElementsWithoutMDN();
+		const specs = await getElementsOf('spec.a.jsonc');
 		expect(specs.length).toBeGreaterThan(0);
 		expect(specs.filter(el => 'categories' in el || 'omission' in el).map(el => el.name)).toStrictEqual([]);
 	});
 });
 
-describe('isWithoutMDNPage', () => {
-	test('lists only obsolete HTML elements', () => {
-		const sourceDir = path.resolve(import.meta.dirname, '..', 'src');
-		const obsolete = new Set(
-			readdirSync(sourceDir)
-				.filter(file => /^spec\.\w+\.jsonc$/.test(file))
-				.filter(file => parse(readFileSync(path.join(sourceDir, file), 'utf8')).obsolete === true)
-				.map(file => file.replace(/^spec\.(\w+)\.jsonc$/, '$1')),
-		);
-		expect([...obsoleteWithoutMDNPage].filter(name => !obsolete.has(name))).toStrictEqual([]);
-	});
+describe('getElements: nothing is fetched', () => {
+	test('reads the source files only, with no request for any element of any kind', async () => {
+		const fetchMock = vi.fn(() => Promise.resolve(new Response('', { status: 200 })));
+		vi.stubGlobal('fetch', fetchMock);
 
-	test('fetches the page of the elements it is given only', async () => {
-		// MDN answers 404 for every page: only an unexpected 404 is a failure.
-		vi.stubGlobal(
-			'fetch',
-			vi.fn(() => Promise.resolve(new Response('', { status: 404 }))),
-		);
-		vi.spyOn(console, 'error').mockImplementation(() => {});
-		vi.resetModules();
-		const { getElements: getFreshElements } = await import('./html-elements.ts');
-		const { getFailedUrls } = await import('./fetch.ts');
+		const specs = await getElementsOf('spec.{a,acronym,spacer}.jsonc');
 
-		await getFreshElements(path.resolve(import.meta.dirname, '..', 'src', 'spec.a.jsonc'));
-
-		const failed = getFailedUrls();
-		expect(
-			failed.filter(url => [...obsoleteWithoutMDNPage].some(name => url.endsWith(`/Elements/${name}`))),
-		).toStrictEqual([]);
-		expect(failed).not.toContain('https://developer.mozilla.org/en-US/docs/Web/HTML/Reference/Elements/acronym');
-	});
-
-	test('lets getElements fetch the page of such an element as expected not to exist', async () => {
-		// MDN answers 404 for every page: only an unexpected 404 is a failure.
-		vi.stubGlobal(
-			'fetch',
-			vi.fn(() => Promise.resolve(new Response('', { status: 404 }))),
-		);
-		vi.spyOn(console, 'error').mockImplementation(() => {});
-		vi.resetModules();
-		const { getElements: getFreshElements } = await import('./html-elements.ts');
-		const { getFailedUrls } = await import('./fetch.ts');
-
-		await getFreshElements(path.resolve(import.meta.dirname, '..', 'src', 'spec.{a,acronym,spacer}.jsonc'));
-
-		const failed = getFailedUrls();
-		// `spacer` has no MDN page (expected), `acronym` has one (a 404 is a failure)
-		expect(failed).not.toContain('https://developer.mozilla.org/en-US/docs/Web/HTML/Reference/Elements/spacer');
-		expect(failed).toContain('https://developer.mozilla.org/en-US/docs/Web/HTML/Reference/Elements/acronym');
-	});
-
-	test('is true for an obsolete HTML element that MDN does not document', () => {
-		expect(isWithoutMDNPage('spacer', 'HTML')).toBe(true);
-	});
-
-	test('is false for an obsolete HTML element that MDN documents', () => {
-		expect(isWithoutMDNPage('acronym', 'HTML')).toBe(false);
-	});
-
-	test('is false for an element of the same name in another namespace', () => {
-		expect(isWithoutMDNPage('spacer', 'SVG')).toBe(false);
+		expect(specs.map(el => el.name)).toStrictEqual(['a', 'acronym', 'spacer']);
+		expect(fetchMock).not.toHaveBeenCalled();
 	});
 });
 
@@ -173,16 +92,7 @@ describe('getDefinitionCite', () => {
 
 describe('getElements: obsolete elements', () => {
 	test('reads an obsolete element from its source file, which cites its entry of the list of non-conforming features', async () => {
-		vi.stubGlobal(
-			'fetch',
-			vi.fn(() => Promise.resolve(new Response('', { status: 404 }))),
-		);
-		vi.spyOn(console, 'error').mockImplementation(() => {});
-		vi.resetModules();
-		const { getElements: getFreshElements } = await import('./html-elements.ts');
-		// the glob takes forward slashes only
-		const pattern = path.resolve(import.meta.dirname, '..', 'src', 'spec.{a,acronym}.jsonc').replaceAll('\\', '/');
-		const specs = await getFreshElements(pattern);
+		const specs = await getElementsOf('spec.{a,acronym}.jsonc');
 		const acronym = specs.find(el => el.name === 'acronym');
 		expect(acronym?.obsolete).toBe(true);
 		expect(acronym?.cite).toBe('https://html.spec.whatwg.org/multipage/obsolete.html#non-conforming-features');
