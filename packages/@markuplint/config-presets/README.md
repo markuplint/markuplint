@@ -58,9 +58,9 @@ No merge cells| |✅|✅|✅|✅|✅|✅|❌|❌|❌|❌|❌|❌|
 [Consistent **tag name** casing](https://html.spec.whatwg.org/multipage/syntax.html#syntax-tag-name)|HTML permits any mix of ASCII upper/lower case in tag names; this is a style preference, not a spec requirement.|✅|✅|✅|✅|✅|❌|✅|❌|❌|❌|❌|❌|
 [No duplicate attr](https://html.spec.whatwg.org/multipage/parsing.html#parse-error-duplicate-attribute)|The parser ignores all such duplicate occurrences of the attribute.|✅|✅|✅|✅|✅|❌|❌|❌|✅|❌|❌|❌|
 No obsolete attr|Authors must not use attributes the spec has removed entirely. The group name is kept as `deprecated-attr` for backward compatibility.|✅|✅|✅|✅|✅|❌|❌|❌|✅|❌|❌|❌|
-No deprecated attr|MDN/BCD-sourced (factual, not a spec MUST) — kept enabled here (severity downgraded to warning, not removed from the preset) so existing markuplint:html-standard users keep this coverage.|✅|✅|✅|✅|✅|❌|❌|❌|✅|❌|❌|❌|
+No deprecated attr|A specification's or BCD's flag (factual, not a spec MUST) — kept enabled here (severity downgraded to warning, not removed from the preset) so existing markuplint:html-standard users keep this coverage.|✅|✅|✅|✅|✅|❌|❌|❌|✅|❌|❌|❌|
 No obsolete element|Authors must not use elements the spec has removed entirely. The group name is kept as `deprecated-element` for backward compatibility.|✅|✅|✅|✅|✅|❌|❌|❌|✅|❌|❌|❌|
-No deprecated element|MDN/BCD-sourced (factual, not a spec MUST) — kept enabled here (severity downgraded to warning, not removed from the preset) so existing markuplint:html-standard users keep this coverage.|✅|✅|✅|✅|✅|❌|❌|❌|✅|❌|❌|❌|
+No deprecated element|A specification's or BCD's flag (factual, not a spec MUST) — kept enabled here (severity downgraded to warning, not removed from the preset) so existing markuplint:html-standard users keep this coverage.|✅|✅|✅|✅|✅|❌|❌|❌|✅|❌|❌|❌|
 [Require `doctype`](https://html.spec.whatwg.org/multipage/syntax.html#syntax-doctype)|It has the effect of avoiding quirks mode. The group name is kept as `doctype` for backward compatibility.|✅|✅|✅|✅|✅|❌|❌|❌|✅|❌|❌|❌|
 [No obsolete doctype](https://html.spec.whatwg.org/multipage/syntax.html#the-doctype)|Authors must not use an obsolete DOCTYPE (a public identifier, or a system identifier other than the one legacy-string exception the spec still permits).|✅|✅|✅|✅|✅|❌|❌|❌|✅|❌|❌|❌|
 Must not skip heading levels| |✅|✅|✅|✅|✅|❌|❌|❌|✅|❌|❌|❌|
