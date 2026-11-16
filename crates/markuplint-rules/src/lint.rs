@@ -40,8 +40,10 @@ use crate::rules::no_ambiguous_navigable_target_names::NoAmbiguousNavigableTarge
 use crate::rules::no_aria_hidden_on_hidden_until_found::NoAriaHiddenOnHiddenUntilFound;
 use crate::rules::no_aria_on_presentational_children::NoAriaOnPresentationalChildren;
 use crate::rules::no_aria_on_unsupported_element::NoAriaOnUnsupportedElement;
+use crate::rules::no_aria_owns_on_presentational_children::NoAriaOwnsOnPresentationalChildren;
 use crate::rules::no_boolean_attr_value::NoBooleanAttrValue;
 use crate::rules::no_broken_fragment_link::NoBrokenFragmentLink;
+use crate::rules::no_circular_aria_owns::NoCircularAriaOwns;
 use crate::rules::no_consecutive_br::NoConsecutiveBr;
 use crate::rules::no_content_after_body::NoContentAfterBody;
 use crate::rules::no_contradictory_aria_prop::NoContradictoryAriaProp;
@@ -53,6 +55,7 @@ use crate::rules::no_deprecated_element::NoDeprecatedElement;
 use crate::rules::no_deprecated_role::NoDeprecatedRole;
 use crate::rules::no_disallowed_ancestor::NoDisallowedAncestor;
 use crate::rules::no_disallowed_attr::NoDisallowedAttr;
+use crate::rules::no_duplicate_aria_owns::NoDuplicateAriaOwns;
 use crate::rules::no_duplicate_attr::NoDuplicateAttr;
 use crate::rules::no_duplicate_autofocus::NoDuplicateAutofocus;
 use crate::rules::no_duplicate_dt::NoDuplicateDt;
@@ -846,6 +849,9 @@ fn get_all_rules() -> Vec<Box<dyn Rule>> {
         Box::new(RequireOwnedElements),
         Box::new(TabRequiresTabpanel),
         Box::new(NoAriaOnPresentationalChildren),
+        Box::new(NoAriaOwnsOnPresentationalChildren),
+        Box::new(NoCircularAriaOwns),
+        Box::new(NoDuplicateAriaOwns),
         Box::new(NoFocusableInAriaHidden),
         Box::new(MeterValueBounds),
         Box::new(ProgressValueBounds),

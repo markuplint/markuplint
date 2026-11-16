@@ -10,7 +10,8 @@ use markuplint_types::spec::aria::{self, ARIAVersion};
 use markuplint_types::spec::types::{ARIARoleInSchema, MLMLSpec};
 
 use super::may_be_focusable;
-use crate::slot_assignment::{accessibility_parent_element, composed_ancestors_inclusive, composed_parent_element};
+use super::owns::{get_owned_child_elements, get_owning_parent_element};
+use crate::slot_assignment::{composed_ancestors_inclusive, composed_parent_element};
 
 // ============================================================
 // Public types
@@ -290,14 +291,8 @@ pub(crate) fn closest_non_presentational_descendants(
     version: ARIAVersion,
 ) -> Vec<Option<String>> {
     let mut owned = Vec::new();
-    for child_id in arena.child_nodes(node_id) {
-        if arena
-            .get(child_id)
-            .and_then(markuplint_dom::node::DomNode::as_element)
-            .is_none()
-        {
-            continue;
-        }
+    // The children of the accessibility tree with `aria-owns` resolved (TS `getOwnedChildElements`)
+    for child_id in get_owned_child_elements(arena, spec, node_id, version) {
         let name = get_computed_role(spec, arena, child_id, version, true)
             .role
             .map(|r| r.name);
@@ -427,7 +422,7 @@ fn is_never_rendered(arena: &DomArena, node_id: NodeId, el: &ElementData) -> boo
 ///
 /// - <https://w3c.github.io/aria/#document-handling_author-errors>
 /// - <https://w3c.github.io/core-aam/#mapping_conflicts>
-fn get_explicit_role(
+pub(crate) fn get_explicit_role(
     spec: &MLMLSpec,
     arena: &DomArena,
     node_id: NodeId,
@@ -548,7 +543,8 @@ pub(crate) fn get_implicit_role(
 // ============================================================
 
 /// TS `getNonPresentationalAncestor()`: the computed role of the closest ancestor of `node_id` in the
-/// accessibility tree ([`accessibility_parent_element`]) whose role is not transparent for ownership.
+/// accessibility tree with `aria-owns` resolved ([`get_owning_parent_element`]) whose role is not
+/// transparent for ownership.
 /// From ARIA 1.3 the role of an ancestor is computed as for a single node.
 fn get_non_presentational_ancestor(
     spec: &MLMLSpec,
@@ -558,7 +554,7 @@ fn get_non_presentational_ancestor(
     visited: &mut HashSet<NodeId>,
 ) -> ComputedRole {
     let assume_single_node = version == ARIAVersion::V1_3;
-    let mut current = accessibility_parent_element(arena, spec, node_id);
+    let mut current = get_owning_parent_element(arena, spec, node_id, version);
     while let Some(id) = current {
         if !visited.insert(id) {
             break; // Cycle detection
@@ -572,7 +568,7 @@ fn get_non_presentational_ancestor(
         {
             return cr;
         }
-        current = accessibility_parent_element(arena, spec, id);
+        current = get_owning_parent_element(arena, spec, id, version);
     }
     ComputedRole {
         role: None,
@@ -592,7 +588,7 @@ fn matches_context_role(
         let chain: Vec<&str> = condition.split(" > ").collect();
         let reversed: Vec<&str> = chain.into_iter().rev().collect();
 
-        let mut current_id = accessibility_parent_element(arena, spec, owned_el_id);
+        let mut current_id = get_owning_parent_element(arena, spec, owned_el_id, version);
         let mut all_matched = true;
 
         for &expected_role in &reversed {
@@ -602,7 +598,7 @@ fn matches_context_role(
                     break;
                 };
                 let cr = compute_role(spec, arena, id, version, false, visited);
-                current_id = accessibility_parent_element(arena, spec, id);
+                current_id = get_owning_parent_element(arena, spec, id, version);
 
                 if let Some(ref role) = cr.role {
                     if is_transparent_for_ownership(&role.name, version) {
@@ -639,7 +635,7 @@ fn is_native_context_intact(
     if !role.is_implicit {
         return false;
     }
-    let Some(parent_id) = accessibility_parent_element(arena, spec, node_id) else {
+    let Some(parent_id) = get_owning_parent_element(arena, spec, node_id, version) else {
         return false;
     };
     let Some(parent) = arena.get(parent_id).and_then(|n| n.as_element()) else {
@@ -683,7 +679,7 @@ fn resolved_from_spec(role_spec: &ARIARoleInSchema, is_implicit: bool) -> Resolv
     }
 }
 
-fn is_presentational(role_name: &str) -> bool {
+pub(crate) fn is_presentational(role_name: &str) -> bool {
     role_name == "presentation" || role_name == "none"
 }
 

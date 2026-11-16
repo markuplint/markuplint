@@ -158,12 +158,36 @@ fn is_presentational(role: &str) -> bool {
     role.eq_ignore_ascii_case("presentation") || role.eq_ignore_ascii_case("none")
 }
 
-fn has_display_none_or_visibility_hidden(arena: &DomArena, node_id: NodeId) -> bool {
+/// TS `hasDisplayNoneOrVisibilityHiddenStyle` (`/display\s*:\s*none|visibility\s*:\s*hidden/i`): whether
+/// the `style` attribute of an element sets `display: none` or `visibility: hidden`, the two
+/// declarations of the markup that hide an element from all users.
+///
+/// Known limitation, as in TS: it matches the text of the attribute, so a shorthand property,
+/// `!important` and a value inside a comment or a string are not read as a CSS declaration parser
+/// would read them.
+///
+/// @see <https://w3c.github.io/aria/#tree_exclusion>
+pub(crate) fn has_display_none_or_visibility_hidden(arena: &DomArena, node_id: NodeId) -> bool {
     let Some(style) = helpers::get_attr_value(arena, node_id, "style") else {
         return false;
     };
     let lower = style.to_ascii_lowercase();
-    (lower.contains("display") && lower.contains("none")) || (lower.contains("visibility") && lower.contains("hidden"))
+    style_declares(&lower, "display", "none") || style_declares(&lower, "visibility", "hidden")
+}
+
+/// `/<property>\s*:\s*<value>/` over the lower-cased text of a `style` attribute.
+fn style_declares(style: &str, property: &str, value: &str) -> bool {
+    let mut from = 0;
+    while let Some(found) = style[from..].find(property) {
+        let after = from + found + property.len();
+        if let Some(rest) = style[after..].trim_start().strip_prefix(':')
+            && rest.trim_start().starts_with(value)
+        {
+            return true;
+        }
+        from += found + 1;
+    }
+    false
 }
 
 #[cfg(test)]
