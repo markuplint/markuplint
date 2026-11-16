@@ -89,14 +89,42 @@ fn multiple_hash(value: &str) -> bool {
         .any(|line| line.matches('#').count() >= 2)
 }
 
-/// TS `hasBracketsOutsideHost`: `[` or `]` anywhere but the authority, the only position where
-/// they are URL code points (delimiting an IPv6 host).
+/// TS `stripAuthority`: the URL without its authority, if it has one: its path, query and fragment.
+fn strip_authority(value: &str) -> &str {
+    split_authority(value, false).map_or(value, |(_, rest)| rest)
+}
+
+/// TS `hasBracketsOutsideHost`: `[` or `]` anywhere but the authority. The host state does not check
+/// them in a special-scheme URL, where they delimit an IPv6 host.
 ///
 /// @see <https://url.spec.whatwg.org/#invalid-url-unit>
 /// @see <https://url.spec.whatwg.org/#url-code-points>
 fn has_brackets_outside_host(value: &str) -> bool {
-    let without_authority = split_authority(value, false).map_or(value, |(_, rest)| rest);
-    without_authority.contains(['[', ']'])
+    strip_authority(value).contains(['[', ']'])
+}
+
+/// TS `SCHEME_WITH_AUTHORITY` (`/^[a-z][a-z0-9+.-]*:\/\//i`): a URL that has a scheme and an
+/// authority, `scheme://`. A non-special scheme with an authority (`foo://host/a`) has a path, a query
+/// and a fragment as a special one does; one without (`data:text/html,…`) has an opaque path.
+fn scheme_with_authority(value: &str) -> bool {
+    after_any_scheme(value).is_some_and(|rest| rest.starts_with("//"))
+}
+
+/// TS `hasNonURLCodePointOutsideHost`: whether the path, the query or the fragment of a URL has one of
+/// the ASCII code points that are neither URL code points nor handled by another check here: `"`,
+/// `<`, `>`, `^`, `` ` ``, `{`, `|` and `}` (`NON_URL_CODE_POINT`). The authority is not read: the
+/// userinfo and the host are not parsed in those states. The caller applies it to the URLs that have
+/// a path, not an opaque path: the special schemes, a URL without a scheme and a non-special scheme
+/// with an authority.
+///
+/// Known limitations, on purpose, as in TS: the opaque path of a non-special scheme
+/// (`data:text/html,<h1>`, `javascript:alert("x")`) is accepted, and so are `"`, `` ` ``, `{` and `}` in
+/// a host.
+///
+/// @see <https://url.spec.whatwg.org/#invalid-url-unit>
+/// @see <https://url.spec.whatwg.org/#url-code-points>
+fn has_non_url_code_point_outside_host(value: &str) -> bool {
+    strip_authority(value).contains(['"', '<', '>', '^', '`', '{', '|', '}'])
 }
 
 /// TS `DATA_URL_MISSING_COMMA` (`/^data:[^,]*$/i`): a `data:` URL with no `,` separator, which
@@ -110,22 +138,29 @@ fn data_url_missing_comma(value: &str) -> bool {
         && !value[5..].contains(',')
 }
 
-/// TS `FILE_WINDOWS_DRIVE_LETTER_WITH_BAR` (`/^file:\/{0,3}[a-z]\|/i`): a Windows drive letter
-/// written with `|` instead of `:` (`file:///C|/foo`).
+/// TS `FILE_HOST_IS_WINDOWS_DRIVE_LETTER` (`/^file:\/\/[a-z][:|](?:[/?#]|$)/i`): a `file:` URL whose host
+/// is a Windows drive letter (`file://C:/foo`, `file://C|/foo`).
 ///
-/// @see <https://url.spec.whatwg.org/#file-invalid-windows-drive-letter>
-fn file_windows_drive_letter_with_bar(value: &str) -> bool {
+/// The file host state ends the host at `/`, `?`, `#` or the end of the input and, when what it read
+/// is a Windows drive letter (an ASCII alpha and `:` or `|`), reports
+/// `file-invalid-Windows-drive-letter-host`. The other forms of a `file:` URL with `C|` are rejected
+/// by other checks: `file:C|/foo` and `file:/C|/foo` by the missing-solidus checks, and
+/// `file:///C|/foo` by `invalid-URL-unit`, as `|` is not a URL code point.
+///
+/// @see <https://url.spec.whatwg.org/#file-invalid-windows-drive-letter-host>
+fn file_host_is_windows_drive_letter(value: &str) -> bool {
     let Some(rest) = value
-        .get(..5)
-        .filter(|s| s.eq_ignore_ascii_case("file:"))
-        .map(|_| &value[5..])
+        .get(..7)
+        .filter(|s| s.eq_ignore_ascii_case("file://"))
+        .map(|_| &value[7..])
     else {
         return false;
     };
-    let rest = rest.trim_start_matches('/');
-    let slashes = value.len() - 5 - rest.len();
     let bytes = rest.as_bytes();
-    slashes <= 3 && bytes.len() >= 2 && bytes[0].is_ascii_alphabetic() && bytes[1] == b'|'
+    bytes.len() >= 2
+        && bytes[0].is_ascii_alphabetic()
+        && matches!(bytes[1], b':' | b'|')
+        && bytes.get(2).is_none_or(|b| matches!(b, b'/' | b'?' | b'#'))
 }
 
 /// TS `ILLEGAL_WHITESPACE` (`/[\t\n\r]/`): tab and newlines, which the parser strips but which
@@ -296,13 +331,16 @@ pub fn check_url(value: &str) -> CheckResult {
         || trimmed.contains(' ')
         || special_scheme_missing_solidus(trimmed)
         || special_scheme_single_slash(trimmed)
-        || file_windows_drive_letter_with_bar(trimmed)
+        || file_host_is_windows_drive_letter(trimmed)
         // invalid-reverse-solidus: non-special schemes allow `\` in their opaque path.
         || (special_or_schemeless && trimmed.contains('\\'))
         || special_scheme_authority_has_at_sign(trimmed)
         // Non-special schemes treat an extra `#` as their own data.
         || (special_or_schemeless && multiple_hash(trimmed))
         || has_brackets_outside_host(trimmed)
+        // invalid-URL-unit of the path, the query and the fragment: not for the opaque path of a
+        // non-special scheme.
+        || ((special_or_schemeless || scheme_with_authority(trimmed)) && has_non_url_code_point_outside_host(trimmed))
         || data_url_missing_comma(trimmed)
         // Only a special-scheme host goes through the IPv4 parser.
         || (special_or_schemeless && has_ipv4_non_decimal_part(trimmed))

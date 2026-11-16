@@ -564,9 +564,16 @@ fn value_check(
     value: &str,
     type_val: &serde_json::Value,
 ) -> Option<(String, ValueLoc)> {
-    if type_val.as_str() == Some("Boolean") {
-        return None;
-    }
+    // The presence of a boolean attribute is its true value, and the value, if there is one, is the empty
+    // string or the name of the attribute, which is the enumerated type of those two (TS `valueCheck`).
+    // https://html.spec.whatwg.org/multipage/common-microsyntaxes.html#boolean-attributes
+    let boolean_type;
+    let type_val = if type_val.as_str() == Some("Boolean") {
+        boolean_type = serde_json::json!({ "enum": ["", name], "disallowToSurroundBySpaces": true });
+        &boolean_type
+    } else {
+        type_val
+    };
     // A type the checker cannot read accepts any value
     let type_def = value_to_type(type_val)?;
     let CheckResult::Unmatched(matches) = markuplint_types::check::check(value, &type_def, None) else {

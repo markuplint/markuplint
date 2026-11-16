@@ -5,6 +5,7 @@
 //! checked against its spec type, but only when the spec says the attribute applies
 //! (a name `no-unknown-attr` or `no-disallowed-attr` reports is not checked here).
 
+use markuplint_core::i18n::Primitive as Kw;
 use markuplint_core::mlast::MLASTHTMLAttr;
 use markuplint_dom::arena::DomArena;
 use markuplint_dom::helpers;
@@ -41,6 +42,7 @@ fn check(options: &serde_json::Value, html_attr: &MLASTHTMLAttr, ctx: &AttrCheck
     let any = serde_json::Value::String("Any".to_owned());
     let allow_type = lookup_name_option(options.get("allowAttrs"), ctx.el, html_attr, &any);
 
+    let mut same_value_as: Option<String> = None;
     let invalid = if let Some(allow_type) = allow_type {
         attr_check_value(ctx.tr, name, value, true, &allow_type)
     } else {
@@ -53,6 +55,7 @@ fn check(options: &serde_json::Value, html_attr: &MLASTHTMLAttr, ctx: &AttrCheck
         let AttrEligibility::Ok { spec } = resolve_attr_eligibility_of(html_attr, specs, ctx) else {
             return vec![];
         };
+        same_value_as.clone_from(&spec.same_value_as);
         attr_check_value(ctx.tr, name, value, false, &spec.attr_type)
     };
 
@@ -62,36 +65,63 @@ fn check(options: &serde_json::Value, html_attr: &MLASTHTMLAttr, ctx: &AttrCheck
     }
 
     let value_node = &html_attr.value;
-    invalid
-        .unwrap_or_default()
-        .into_iter()
-        .map(|one| {
-            // The value of an expression is what the code results in, so a position in it is not a
-            // position in the source (an escape, a quote): the whole value that is written is reported
-            let (line, col, raw) = if html_attr.is_expression_value == Some(true) {
-                (value_node.line, value_node.col, value_node.raw.clone())
+    let mut violations = Vec::new();
+
+    // The attribute that this one has to have the value of: when it is absent the attribute is not
+    // allowed (`condition`), which is not this rule's to say, and a value that is code is not
+    // compared. ASCII case-insensitive, as the HTML Standard compares them (TS `asciiLowerCase`).
+    if let Some(other_name) = same_value_as.as_deref()
+        && let Some(other) = helpers::get_attr_node_from_el(ctx.el, other_name)
+        && other.is_dynamic_value != Some(true)
+        && !helpers::attr_value(other).eq_ignore_ascii_case(value)
+    {
+        violations.push(Violation {
+            spec_conformance: None,
+            rule_id: ctx.rule_id.to_string(),
+            name: None,
+            severity: *ctx.severity,
+            message: ctx.tr.finish(&ctx.tr.t(
+                "{0} expects {1}",
+                &[
+                    Kw::S(&ctx.tr.t("the \"{0*}\" {1}", &[Kw::S(name), Kw::S("attribute")])),
+                    Kw::S(&format!("\"{}\"", helpers::attr_value(other))),
+                ],
+            )),
+            line: value_node.line,
+            col: value_node.col,
+            raw: value_node.raw.clone(),
+            reason: None,
+            fix: None,
+        });
+    }
+
+    violations.extend(invalid.unwrap_or_default().into_iter().map(|one| {
+        // The value of an expression is what the code results in, so a position in it is not a
+        // position in the source (an escape, a quote): the whole value that is written is reported
+        let (line, col, raw) = if html_attr.is_expression_value == Some(true) {
+            (value_node.line, value_node.col, value_node.raw.clone())
+        } else {
+            let loc_line = u32::try_from(one.loc.line).unwrap_or(u32::MAX);
+            let loc_col = u32::try_from(one.loc.col).unwrap_or(u32::MAX);
+            let col = if one.loc.line > 0 {
+                loc_col + 1
             } else {
-                let loc_line = u32::try_from(one.loc.line).unwrap_or(u32::MAX);
-                let loc_col = u32::try_from(one.loc.col).unwrap_or(u32::MAX);
-                let col = if one.loc.line > 0 {
-                    loc_col + 1
-                } else {
-                    value_node.col + loc_col
-                };
-                (value_node.line + loc_line, col, one.loc.raw)
+                value_node.col + loc_col
             };
-            Violation {
-                spec_conformance: None,
-                rule_id: ctx.rule_id.to_string(),
-                name: None,
-                severity: *ctx.severity,
-                message: ctx.tr.finish(&one.message),
-                line,
-                col,
-                raw,
-                reason: None,
-                fix: None,
-            }
-        })
-        .collect()
+            (value_node.line + loc_line, col, one.loc.raw)
+        };
+        Violation {
+            spec_conformance: None,
+            rule_id: ctx.rule_id.to_string(),
+            name: None,
+            severity: *ctx.severity,
+            message: ctx.tr.finish(&one.message),
+            line,
+            col,
+            raw,
+            reason: None,
+            fix: None,
+        }
+    }));
+    violations
 }
