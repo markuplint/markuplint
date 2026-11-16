@@ -100,7 +100,7 @@ Generated TypeScript types (do not edit directly):
 
 - **Built output**: `index.json` (48K+ lines, consolidated specification data)
 - **Sources**: `src/spec-*.json` (individual element specifications)
-- **Build process**: `build.ts` → `generator/` scripts → enriched with MDN/W3C data
+- **Build process**: `build.ts` → `generator/` scripts → enriched with W3C ARIA data and `@mdn/browser-compat-data`
 
 **@markuplint/ml-spec** (this package) provides:
 

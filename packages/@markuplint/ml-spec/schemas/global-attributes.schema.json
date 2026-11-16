@@ -33,8 +33,10 @@
 				"autocorrect",
 				"autofocus",
 				"contenteditable",
+				"contextmenu",
 				"dir",
 				"draggable",
+				"dropzone",
 				"enterkeyhint",
 				"hidden",
 				"inert",
@@ -64,6 +66,9 @@
 				"xmlns",
 				"xml:lang",
 				"xml:space",
+				"part",
+				"exportparts",
+				"virtualkeyboardpolicy",
 				"elementtiming"
 			]
 		},
@@ -138,6 +143,7 @@
 				"onseeked",
 				"onseeking",
 				"onselect",
+				"onshow",
 				"onslotchange",
 				"onstalled",
 				"onsubmit",
@@ -249,7 +255,9 @@
 				"style",
 				"xmlns",
 				"xml:lang",
-				"xml:base"
+				"xml:base",
+				"part",
+				"exportparts"
 			]
 		},
 		"SVGFilterPrimitiveAttrs": { "type": "string", "enum": ["x", "y", "width", "height", "result", "in"] },
@@ -358,7 +366,9 @@
 				"nonce",
 				"scriptlevel",
 				"style",
-				"tabindex"
+				"tabindex",
+				"part",
+				"exportparts"
 			]
 		},
 		"XLinkAttrs": {
@@ -409,8 +419,10 @@
 				"autocorrect",
 				"autofocus",
 				"contenteditable",
+				"contextmenu",
 				"dir",
 				"draggable",
+				"dropzone",
 				"enterkeyhint",
 				"hidden",
 				"inert",
@@ -440,6 +452,9 @@
 				"xmlns",
 				"xml:lang",
 				"xml:space",
+				"part",
+				"exportparts",
+				"virtualkeyboardpolicy",
 				"elementtiming"
 			],
 			"propertyNames": { "$ref": "#/definitions/HTMLGlobalAttrs" },
@@ -517,6 +532,7 @@
 				"onseeked",
 				"onseeking",
 				"onselect",
+				"onshow",
 				"onslotchange",
 				"onstalled",
 				"onsubmit",
@@ -696,7 +712,9 @@
 				"style",
 				"xmlns",
 				"xml:lang",
-				"xml:base"
+				"xml:base",
+				"part",
+				"exportparts"
 			],
 			"propertyNames": { "$ref": "#/definitions/SVGCoreAttrs" },
 			"patternProperties": { ".+": { "$ref": "./attributes.schema.json#/definitions/AttributeJSON" } }
@@ -820,7 +838,9 @@
 				"nonce",
 				"scriptlevel",
 				"style",
-				"tabindex"
+				"tabindex",
+				"part",
+				"exportparts"
 			],
 			"propertyNames": { "$ref": "#/definitions/MathMLGlobalAttrs" },
 			"patternProperties": { ".+": { "$ref": "./attributes.schema.json#/definitions/AttributeJSON" } }

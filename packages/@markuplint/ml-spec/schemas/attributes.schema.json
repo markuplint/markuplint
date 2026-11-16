@@ -49,7 +49,19 @@
 					]
 				},
 				"defaultValue": { "type": "string" },
+				"sameValueAs": {
+					"type": "string",
+					"description": "The name of another attribute of the same element whose value this attribute has to have, compared as ASCII case-insensitive strings: `xml:lang` of an HTML element has to have the value of `lang` (HTML Standard, \"The lang and xml:lang attributes\"). The presence of that attribute is the business of `condition`."
+				},
 				"deprecated": { "type": "boolean" },
+				"deprecatedWhen": {
+					"allOf": [{ "$ref": "#/definitions/Selectors" }],
+					"description": "Deprecated for the elements that one of the selectors matches, as the \"obsolete but conforming\" features of the HTML Standard are: they depend on the value of the attribute or on another attribute. `deprecated: true` is the unconditional one."
+				},
+				"obsolete": {
+					"const": true,
+					"description": "Obsolete: removed from the specification and must not be used by authors."
+				},
 				"required": { "oneOf": [{ "type": "boolean" }, { "$ref": "#/definitions/AttributeCondition" }] },
 				"requiredEither": { "type": "array", "items": { "type": "string" } },
 				"noUse": { "type": "boolean" },
@@ -58,7 +70,7 @@
 				"animatable": { "type": "boolean" },
 				"experimental": { "type": "boolean" },
 				"nonStandard": {
-					"const": true,
+					"type": "boolean",
 					"description": "Non-standard: never part of any standard (vendor-specific or proprietary)."
 				}
 			}

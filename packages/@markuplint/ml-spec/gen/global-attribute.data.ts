@@ -13,8 +13,10 @@ export const globalAttrs: Record<
 			'autocorrect',
 			'autofocus',
 			'contenteditable',
+			'contextmenu',
 			'dir',
 			'draggable',
+			'dropzone',
 			'enterkeyhint',
 			'hidden',
 			'inert',
@@ -45,6 +47,9 @@ export const globalAttrs: Record<
 			'xmlns',
 			'xml:lang',
 			'xml:space',
+			'part',
+			'exportparts',
+			'virtualkeyboardpolicy',
 
 			/**
 			 * Experimental
@@ -124,6 +129,7 @@ export const globalAttrs: Record<
 			'onseeked',
 			'onseeking',
 			'onselect',
+			'onshow',
 			'onslotchange',
 			'onstalled',
 			'onsubmit',
@@ -277,6 +283,9 @@ export const globalAttrs: Record<
 			// "data-*" // No apply
 			'xml:lang', // Obsoleted
 			'xml:base', // Obsoleted
+			// CSS Shadow Module: any element in a shadow tree
+			'part',
+			'exportparts',
 		],
 	},
 	'#SVGFilterPrimitiveAttrs': {
@@ -402,6 +411,9 @@ export const globalAttrs: Record<
 			'scriptlevel',
 			'style',
 			'tabindex',
+			// CSS Shadow Module: any element in a shadow tree
+			'part',
+			'exportparts',
 		],
 	},
 	'#XLinkAttrs': {
