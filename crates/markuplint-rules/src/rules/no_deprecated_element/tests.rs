@@ -77,10 +77,18 @@ fn v6_no_deprecated_element_001() {
     assert_eq!(violations[0].raw, "<div>");
 }
 
-/// Rust-only: `mml:mfenced` and `mml:maction` are deprecated in the spec data, but MathML
-/// elements are outside the rule's HTML/SVG namespace guard. Expected values from the TS rule.
+/// Rust-only: `mml:mfenced` and `mml:maction` are deprecated in the spec data, and the rule reports
+/// them: the namespace of an element is not a condition. Expected values from the TS rule.
 #[test]
 fn v6_no_deprecated_element_002() {
     let violations = run("<math><mfenced></mfenced><maction></maction></math>");
-    assert_eq!(violations.len(), 0);
+    assert_eq!(violations.len(), 2);
+    assert_eq!(violations[0].line, 1);
+    assert_eq!(violations[0].col, 7);
+    assert_eq!(violations[0].raw, "<mfenced>");
+    assert_eq!(violations[0].message, "The \"mfenced\" element is deprecated");
+    assert_eq!(violations[1].line, 1);
+    assert_eq!(violations[1].col, 26);
+    assert_eq!(violations[1].raw, "<maction>");
+    assert_eq!(violations[1].message, "The \"maction\" element is deprecated");
 }

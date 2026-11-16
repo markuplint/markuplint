@@ -93,18 +93,34 @@ fn v6_no_nonstandard_features_001() {
     assert_nonstandard(&run("<canvas moz-opaque></canvas>"), &[(1, 9, "moz-opaque")]);
     assert_nonstandard(
         &run("<hr align=\"center\"><input type=\"search\" incremental><font color=\"red\"></font>"),
-        &[(1, 5, "align"), (1, 41, "incremental"), (1, 59, "color")],
+        &[(1, 41, "incremental")],
     );
 }
 
-/// Rust-only: `xmlns` on `<html>` is non-standard; `<menclose>`/`<mfenced>` are non-standard
-/// elements but in the MathML namespace, which is not checked. Expected values are the TS output.
+/// Rust-only: `xmlns` on `<html>` is non-standard, and so are the elements `<menclose>` and
+/// `<mfenced>` of the MathML namespace, which is checked as HTML and SVG are. Expected values are the
+/// TS output.
 #[test]
 fn v6_no_nonstandard_features_002() {
     let violations = run(
         "<!doctype html><html xmlns=\"http://www.w3.org/1999/xhtml\"><head><title>x</title></head><body><math><menclose></menclose><mfenced></mfenced></math></body></html>",
     );
-    assert_nonstandard(&violations, &[(1, 22, "xmlns")]);
+    assert_eq!(violations.len(), 3, "{violations:?}");
+    assert_eq!(
+        (violations[0].line, violations[0].col, violations[0].raw.as_str()),
+        (1, 22, "xmlns")
+    );
+    assert_eq!(violations[0].message, "The \"xmlns\" attribute is non-standard");
+    assert_eq!(
+        (violations[1].line, violations[1].col, violations[1].raw.as_str()),
+        (1, 100, "<menclose>")
+    );
+    assert_eq!(violations[1].message, "The \"menclose\" element is non-standard");
+    assert_eq!(
+        (violations[2].line, violations[2].col, violations[2].raw.as_str()),
+        (1, 121, "<mfenced>")
+    );
+    assert_eq!(violations[2].message, "The \"mfenced\" element is non-standard");
 }
 
 /// Rust-only: attributes flagged both experimental and non-standard are reported here too.
@@ -119,10 +135,13 @@ fn v6_no_nonstandard_features_003() {
     assert_nonstandard(&run("<a attributionsrc></a>"), &[(1, 4, "attributionsrc")]);
 }
 
-/// Rust-only: experimental-only attributes are not reported, nor is anything when the rule is
-/// off. Expected values are the TS output.
+/// Rust-only: attributes that BCD flags non-standard as well as experimental are reported, and
+/// nothing is when the rule is off. Expected values are the TS output.
 #[test]
 fn v6_no_nonstandard_features_004() {
-    assert!(run("<iframe credentialless></iframe><div focusgroup></div>").is_empty());
+    assert_nonstandard(
+        &run("<iframe credentialless></iframe><div focusgroup></div>"),
+        &[(1, 9, "credentialless"), (1, 38, "focusgroup")],
+    );
     assert!(run_rule("<canvas moz-opaque></canvas>", serde_json::json!(false)).is_empty());
 }

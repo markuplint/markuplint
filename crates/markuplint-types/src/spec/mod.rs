@@ -87,7 +87,10 @@ mod tests {
     fn html_spec_element_categories() {
         let spec = load_spec(html_spec_json()).unwrap();
         let div = spec.specs.iter().find(|s| s.name == "div").unwrap();
-        assert!(div.categories.is_empty(), "<div> should have no categories: the data carries none");
+        assert!(
+            div.categories.is_empty(),
+            "<div> should have no categories: the data carries none"
+        );
     }
 
     #[test]

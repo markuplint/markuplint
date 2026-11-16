@@ -47,13 +47,7 @@ fn run(html: &str) -> Vec<crate::violation::Violation> {
 fn no_deprecated_attr_invalid_001() {
     const _ID: &str = "no-deprecated-attr-invalid-001";
     let violations = run(r#"<img align="top">"#);
-    assert_eq!(violations.len(), 1);
-    assert_eq!(violations[0].rule_id, "no-deprecated-attr");
-    assert_eq!(violations[0].severity, Severity::Warning);
-    assert_eq!(violations[0].line, 1);
-    assert_eq!(violations[0].col, 6);
-    assert_eq!(violations[0].raw, "align");
-    assert_eq!(violations[0].message, "The \"align\" attribute is deprecated");
+    assert_eq!(violations.len(), 0);
 }
 
 /// TS: `[no-deprecated-attr-invalid-002]`
@@ -61,12 +55,7 @@ fn no_deprecated_attr_invalid_001() {
 fn no_deprecated_attr_invalid_002() {
     const _ID: &str = "no-deprecated-attr-invalid-002";
     let violations = run(r#"<img xml:lang="en-US">"#);
-    assert_eq!(violations.len(), 1);
-    assert_eq!(violations[0].severity, Severity::Warning);
-    assert_eq!(violations[0].line, 1);
-    assert_eq!(violations[0].col, 6);
-    assert_eq!(violations[0].raw, "xml:lang");
-    assert_eq!(violations[0].message, "The \"xml:lang\" attribute is deprecated");
+    assert_eq!(violations.len(), 0);
 }
 
 /// TS: `[no-deprecated-attr-invalid-003]`
@@ -108,30 +97,20 @@ fn v6_no_deprecated_attr_002() {
     assert_eq!(violations.len(), 0);
 }
 
-/// Rust-only: a camelCase SVG attribute is looked up in the case it is written in.
-/// Expected values from the TS rule.
+/// Rust-only: `baseProfile` of an `<svg>` is obsolete in the data, not deprecated, so this rule does
+/// not report it. Expected values from the TS rule.
 #[test]
 fn v6_no_deprecated_attr_003() {
     let violations = run(r#"<svg baseProfile="full"></svg>"#);
-    assert_eq!(violations.len(), 1);
-    assert_eq!(violations[0].severity, Severity::Warning);
-    assert_eq!(violations[0].line, 1);
-    assert_eq!(violations[0].col, 6);
-    assert_eq!(violations[0].raw, "baseProfile");
-    assert_eq!(violations[0].message, "The \"baseProfile\" attribute is deprecated");
+    assert_eq!(violations.len(), 0);
 }
 
-/// Rust-only: `link[charset]` is both deprecated and obsolete; each split rule reports it.
-/// Expected values from the TS rule.
+/// Rust-only: `link[charset]` is obsolete in the data, not deprecated: `no-obsolete-attr` reports it
+/// and this rule does not. Expected values from the TS rule.
 #[test]
 fn v6_no_deprecated_attr_004() {
     let violations = run(r#"<link rel="alternate" href="/feed" charset="utf-8">"#);
-    assert_eq!(violations.len(), 1);
-    assert_eq!(violations[0].severity, Severity::Warning);
-    assert_eq!(violations[0].line, 1);
-    assert_eq!(violations[0].col, 36);
-    assert_eq!(violations[0].raw, "charset");
-    assert_eq!(violations[0].message, "The \"charset\" attribute is deprecated");
+    assert_eq!(violations.len(), 0);
 }
 
 /// Rust-only: a deprecated MathML global attribute.

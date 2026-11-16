@@ -10,10 +10,12 @@ use markuplint_core::i18n::Primitive as Kw;
 use markuplint_core::mlast::{ElementType, MLASTAttr, NamespaceURI};
 use markuplint_dom::arena::DomArena;
 use markuplint_dom::helpers::attr_name;
+use markuplint_selector::matcher;
 use markuplint_types::spec::lookup::get_spec;
-use markuplint_types::spec::types::MLMLSpec;
+use markuplint_types::spec::types::{AttributeCondition, MLMLSpec};
 
 use crate::attr_name_key::{attr_specs_of, find_attr_spec};
+use crate::diagnostic;
 use crate::rule::RuleConfigSet;
 use crate::violation::Violation;
 
@@ -38,6 +40,10 @@ impl Lifecycle {
 /// `lifecycle` flag. The spec is the one the attribute names as the DOM names it (TS
 /// `findAttrSpec`): `ALIGN` on a `<div>` is `align`, and `ID` on an `<svg>` whose attributes
 /// code sets is not `id`.
+///
+/// An attribute is `deprecated` as well when the element matches a selector of its
+/// `deprecatedWhen`: the "obsolete but conforming" features of the HTML Standard depend on the
+/// value of the attribute or on another attribute.
 ///
 /// The message names the attribute as written for `deprecated` (TS `attr.name`) and as the spec
 /// spells it for `obsolete` (TS `attrSpec.name`).
@@ -68,10 +74,16 @@ pub(crate) fn verify_attr_lifecycle(
                 continue;
             };
             let flagged = match lifecycle {
-                Lifecycle::Obsolete => attr_spec.obsolete,
-                Lifecycle::Deprecated => attr_spec.deprecated,
+                Lifecycle::Obsolete => attr_spec.obsolete == Some(true),
+                Lifecycle::Deprecated => {
+                    attr_spec.deprecated == Some(true)
+                        || attr_spec
+                            .deprecated_when
+                            .as_ref()
+                            .is_some_and(|when| matches_any(when, arena, spec, node_id))
+                }
             };
-            if flagged != Some(true) {
+            if !flagged {
                 continue;
             }
             let name = match lifecycle {
@@ -102,15 +114,34 @@ pub(crate) fn verify_attr_lifecycle(
     violations
 }
 
-/// Reports every HTML or SVG element whose spec carries the `lifecycle` flag.
+/// Whether the element matches one of the selectors (TS `toNoEmptyStringArrayFromStringOrArray()`
+/// then `Element#matches()`): an empty selector is left out.
+fn matches_any(
+    selectors: &AttributeCondition,
+    arena: &DomArena,
+    spec: &MLMLSpec,
+    node_id: markuplint_dom::arena::NodeId,
+) -> bool {
+    let list: Vec<&str> = match selectors {
+        AttributeCondition::Single(s) => vec![s.as_str()],
+        AttributeCondition::Multiple(v) => v.iter().map(String::as_str).collect(),
+    };
+    list.into_iter().filter(|s| !s.is_empty()).any(|selector| {
+        let Some(parsed) = diagnostic::parse_selector("spec attribute deprecatedWhen", selector) else {
+            return false;
+        };
+        matcher::matches(&parsed, arena, node_id, Some(node_id), Some(spec), None)
+    })
+}
+
+/// Reports every HTML, SVG or `MathML` element whose spec carries the `lifecycle` flag.
 ///
 /// TS reports `obsolete` when the field is present at all (`spec.obsolete != null`)
-/// and `deprecated` when it is truthy. Elements in the `MathML` namespace are out of
-/// scope (the spec's deprecated `mml:mfenced` and `mml:maction` are not reported),
-/// and so are custom and authored elements, unless they pretend to be an element.
+/// and `deprecated` when it is truthy. Custom and authored elements are out of scope, unless they
+/// pretend to be an element (TS `isFlagCheckedElement`).
 ///
-/// TS gates on, and looks the pretender name up in, `el.namespaceURI`, which follows
-/// the pretender as `localName` does.
+/// TS looks the pretender name up in `el.namespaceURI`, which follows the pretender as
+/// `localName` does.
 pub(crate) fn verify_element_lifecycle(
     rule_id: &str,
     lifecycle: Lifecycle,
@@ -134,7 +165,8 @@ pub(crate) fn verify_element_lifecycle(
                 (name.clone(), name)
             }
             NamespaceURI::SVG => (el.base.node_name.clone(), format!("svg:{}", el.base.node_name)),
-            _ => continue,
+            NamespaceURI::MathML => (el.base.node_name.clone(), format!("mml:{}", el.base.node_name)),
+            NamespaceURI::XLink => continue,
         };
         let Some(el_spec) = get_spec(spec, &qualified_name) else {
             continue;

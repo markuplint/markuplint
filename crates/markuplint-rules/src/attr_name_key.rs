@@ -59,6 +59,13 @@ pub(crate) fn attr_specs_of(spec: &MLMLSpec, el: &ElementData) -> Option<Arc<Vec
     if el.element_type == ElementType::Authored {
         return None;
     }
+    // TS `getSpecByTagName()` compares the name with the prefix exactly, so a language that keeps the
+    // case of a tag name does not take `<textpath>` for `textPath`; `get_spec` folds the case.
+    if matches!(el.namespace, NamespaceURI::SVG | NamespaceURI::MathML)
+        && !spec.specs.iter().any(|s| s.name == spec_name)
+    {
+        return None;
+    }
     get_attr_specs_list(spec, &spec_name)
 }
 

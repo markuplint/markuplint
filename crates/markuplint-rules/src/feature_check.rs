@@ -1,8 +1,9 @@
 //! The spec-flag walk shared by `no-experimental-features` and `no-nonstandard-features`, two of
 //! the three rules `no-unsupported-features` was split into.
 //!
-//! Both TS rules walk every element in the HTML namespace whose element type is `html` (custom
-//! and authored elements reach them only through pretenders), and report the element when its
+//! Both TS rules walk every element whose element type is `html`, of the HTML, SVG and `MathML`
+//! namespaces (custom and authored elements reach them only through pretenders; TS
+//! `isFlagCheckedElement`), and report the element when its
 //! spec carries the flag and every non-directive attribute whose merged attribute spec (TS
 //! `getAttrSpecs`), looked up by the name the DOM gives the attribute (TS `findAttrSpec`),
 //! carries it.
@@ -103,21 +104,27 @@ pub(crate) fn check_features(
         if rule_config.disabled || el.is_ghost {
             continue;
         }
-        // TS gates on `el.namespaceURI`, which follows a pretender as `localName` does, and lets
-        // a non-HTML element through when it pretends.
-        if el.namespace != NamespaceURI::XHTML || (el.element_type != ElementType::Html && el.pretended().is_none()) {
+        // TS `isFlagCheckedElement`: the spec describes the elements of HTML, SVG and `MathML`, and the
+        // lookup below resolves each by its namespace, so the namespace is not a condition.
+        if el.element_type != ElementType::Html && el.pretended().is_none() {
             continue;
         }
-        // TS `el.localName`
-        let el_name = if tag_name_case_sensitive {
+        // TS `el.localName`: an element of SVG or `MathML` keeps the name the parser gave it
+        let el_name = if el.namespace != NamespaceURI::XHTML || tag_name_case_sensitive {
             el.base.node_name.clone()
         } else {
             el.base.node_name.to_ascii_lowercase()
         };
         let empty = Value::Null;
         let ignore = IgnoreFeatures::parse(rule_config.options.get("ignoreFeatures").unwrap_or(&empty));
-        // TS `getSpec()` looks the HTML element up by its exact local name.
-        let el_spec = spec.specs.iter().find(|s| s.name == el_name);
+        // TS `getSpec()` looks the element up by its local name with the prefix of its namespace
+        // (`svg:a` for an `<a>` of SVG).
+        let spec_name = match el.namespace {
+            NamespaceURI::SVG => format!("svg:{el_name}"),
+            NamespaceURI::MathML => format!("mml:{el_name}"),
+            _ => el_name.clone(),
+        };
+        let el_spec = spec.specs.iter().find(|s| s.name == spec_name);
 
         let element_ignored = ignore
             .elements

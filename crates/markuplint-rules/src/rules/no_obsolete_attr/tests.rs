@@ -78,7 +78,12 @@ fn no_obsolete_attr_valid_001() {
 fn no_obsolete_attr_valid_002() {
     const _ID: &str = "no-obsolete-attr-valid-002";
     let violations = run(r#"<img align="top">"#);
-    assert_eq!(violations.len(), 0);
+    assert_eq!(violations.len(), 1);
+    assert_eq!(violations[0].severity, Severity::Error);
+    assert_eq!(violations[0].line, 1);
+    assert_eq!(violations[0].col, 6);
+    assert_eq!(violations[0].raw, "align");
+    assert_eq!(violations[0].message, "The \"align\" attribute is obsolete");
 }
 
 /// Rust-only: the attribute name is matched exactly as written, as TS `attr.name` is.
