@@ -7,6 +7,7 @@ use markuplint_types::spec::types::MLMLSpec;
 
 use crate::aria::accname::resolver::rendered_child_nodes;
 use crate::aria_check::element_local_name;
+use crate::conditional_block::expand_conditional_blocks;
 use crate::slot_assignment::{get_assigned_nodes, shadow_root_template};
 use crate::slot_content::slot_content;
 use crate::tree_scope::{
@@ -55,7 +56,8 @@ pub fn has_mutable_attributes(el: &ElementData) -> bool {
 
 /// TS `el.hasMutableChildren(attr)`: below the element there is a preprocessor block without a
 /// behavior (its branches cannot be enumerated), a `<slot>`, or — with `attr` — an element with a
-/// mutable attribute or a component whose output is not known.
+/// mutable attribute or a component whose output is not known. The branches of a block that has a
+/// behavior are read as if they were written outside of it.
 pub fn has_mutable_children(arena: &DomArena, node_id: NodeId, attr: bool) -> bool {
     has_mutable_children_with(arena, node_id, attr, &|_| true)
 }
@@ -74,7 +76,11 @@ pub fn has_mutable_children_with(
         .pure_children_of(node_id)
         .into_iter()
         .any(|child_id| match arena.get(child_id) {
-            Some(DomNode::PSBlock(block)) => block.block_behavior.is_none(),
+            // A block that carries a behavior is not mutable itself, but what is written in its branches is as
+            // unknown as what is written outside of it (TS `hasMutableNodes`)
+            Some(DomNode::PSBlock(block)) => {
+                block.block_behavior.is_none() || has_mutable_children_with(arena, child_id, attr, is_mutable_slot)
+            }
             Some(DomNode::Element(el)) => {
                 (attr && (has_mutable_attributes(el) || is_unresolved_component(el)))
                     || has_mutable_children_with(arena, child_id, attr, is_mutable_slot)
@@ -188,8 +194,10 @@ fn has_unknown_content(arena: &DomArena, spec: &MLMLSpec, node_id: NodeId) -> bo
     {
         return true;
     }
-    let children = rendered_child_nodes(spec, arena, node_id)
-        .unwrap_or_else(|| arena.children_of(node_id).map_or_default(<[NodeId]>::to_vec));
+    // The branches of the conditional blocks are read as one (`everyBranch`): which branch is rendered is not
+    // known, so an element in any of them may be the one whose content is unknown
+    let nodes = rendered_child_nodes(spec, arena, node_id).unwrap_or_else(|| arena.child_nodes(node_id));
+    let children = expand_conditional_blocks(arena, &nodes);
     children.into_iter().any(|child| {
         arena.get(child).and_then(DomNode::as_element).is_some()
             && get_attr_value(arena, child, "aria-hidden") != Some("true")

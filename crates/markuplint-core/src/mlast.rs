@@ -47,6 +47,19 @@ pub enum SlotElement {
     Framework,
 }
 
+/// TS `MLParser#templateContent`: where the framework holds the children of a `template` element that the
+/// author wrote without a directive of the framework. What the spec says (`MLMLSpec#templateContent`)
+/// wins over this.
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Deserialize)]
+pub enum TemplateContent {
+    /// In the `content` of the element, a tree of its own: the HTML behavior.
+    #[serde(rename = "separate-tree")]
+    SeparateTree,
+    /// In the element itself: Vue.
+    #[serde(rename = "in-place")]
+    InPlace,
+}
+
 /// What the TS `Document` takes from the parser besides its nodes (`MLParser.endTag`,
 /// `booleanish`, `tagNameCaseSensitive`, `attrNameCaseSensitive`, `attrNameRoute`,
 /// `componentNameVariants`, `slotElement`). The TS engine sends them next to the `MLASTDocument` fields in the
@@ -75,6 +88,10 @@ pub struct DocumentSettings {
     /// What the `slot` element is (TS `MLParser.slotElement`).
     #[serde(default)]
     pub slot_element: SlotElement,
+    /// Where the framework holds the children of a `template` element (TS `MLParser.templateContent`);
+    /// absent when the parser does not declare it.
+    #[serde(default)]
+    pub template_content: Option<TemplateContent>,
 }
 
 /// Corresponds to `MLASTDocument` in TS.

@@ -8,9 +8,9 @@ use markuplint_types::spec::aria::ARIAVersion;
 use markuplint_types::spec::types::MLMLSpec;
 use serde_json::Value;
 
-use crate::aria::accname::helpers::{collect_text_content, find_child_by_local_name};
 use crate::aria::computed_role::get_computed_role;
 use crate::aria::is_exposed::is_exposed;
+use crate::conditional_block::{expand_conditional_blocks, text_content_of_every_branch};
 use crate::helpers::{accname_may_be_mutable, get_owned_label};
 use crate::rule::{Rule, RuleConfigSet};
 use crate::tree_scope::{decode_or_keep, element_by_id_of, is_expression, root_of};
@@ -183,7 +183,8 @@ fn collect_naming_sources(
             .chain(aria_spec.dpub_roles.iter())
             .find(|r| r.name == role.name);
         if role_spec.is_some_and(|rs| rs.accessible_name_from_content == Some(true)) {
-            let text = collect_text_content(arena, node_id);
+            // A branch of a conditional block is content when it is rendered, so the text of any of them counts
+            let text = text_content_of_every_branch(arena, node_id);
             if !text.trim().is_empty() {
                 sources.push("content");
             }
@@ -198,24 +199,14 @@ fn collect_naming_sources(
         sources.push("value");
     }
 
-    // 7. legend — fieldset direct child only
-    if tag == "fieldset"
-        && let Some(legend_id) = find_child_by_local_name(arena, node_id, "legend")
-    {
-        let text = collect_text_content(arena, legend_id);
-        if !text.trim().is_empty() {
-            sources.push("legend");
-        }
+    // 7. legend — fieldset direct child only, in any branch of a conditional block
+    if tag == "fieldset" && has_child_with_text(arena, node_id, "legend") {
+        sources.push("legend");
     }
 
-    // 8. caption — table direct child only
-    if tag == "table"
-        && let Some(caption_id) = find_child_by_local_name(arena, node_id, "caption")
-    {
-        let text = collect_text_content(arena, caption_id);
-        if !text.trim().is_empty() {
-            sources.push("caption");
-        }
+    // 8. caption — table direct child only, in any branch of a conditional block
+    if tag == "table" && has_child_with_text(arena, node_id, "caption") {
+        sources.push("caption");
     }
 
     // 9. title (optional)
@@ -247,6 +238,20 @@ fn is_labelable(tag: &str, el: &markuplint_dom::node::ElementData) -> bool {
 fn is_input_type(el: &markuplint_dom::node::ElementData, type_val: &str) -> bool {
     el.base.node_name == "input"
         && helpers::get_attr_value_from_el(el, "type").is_some_and(|t| t.eq_ignore_ascii_case(type_val))
+}
+
+/// TS `hasChildWithText`: whether a child element named `local_name`, in any branch of a conditional
+/// block, has text.
+fn has_child_with_text(arena: &DomArena, node_id: NodeId, local_name: &str) -> bool {
+    expand_conditional_blocks(arena, &arena.child_nodes(node_id))
+        .into_iter()
+        .any(|child| {
+            arena
+                .get(child)
+                .and_then(markuplint_dom::node::DomNode::as_element)
+                .is_some_and(|el| el.base.node_name.eq_ignore_ascii_case(local_name))
+                && !text_content_of_every_branch(arena, child).trim().is_empty()
+        })
 }
 
 #[cfg(test)]

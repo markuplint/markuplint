@@ -5,7 +5,7 @@ use markuplint_dom::arena::DomArena;
 use markuplint_types::spec::aria::ARIAVersion;
 use markuplint_types::spec::types::MLMLSpec;
 
-use crate::aria::accname::get_accname;
+use crate::aria::accname::may_have_accessible_name;
 use crate::aria::computed_role::get_computed_role;
 use crate::aria::is_exposed::is_exposed;
 use crate::helpers::{accname_may_be_mutable, accname_may_come_from_unknown_content};
@@ -49,9 +49,12 @@ impl Rule for RequireAccessibleName {
             if let Some(role) = &computed.role
                 && role.accessible_name_required
             {
-                let accname = get_accname(spec, arena, node_id, version);
+                // The name may be in a branch of a conditional block, which is not known to be rendered
+                if may_have_accessible_name(spec, arena, node_id, version) {
+                    continue;
+                }
                 // The static scan cannot decide whether the unknown content is the name.
-                if accname.name.is_empty() && !accname_may_come_from_unknown_content(arena, spec, node_id) {
+                if !accname_may_come_from_unknown_content(arena, spec, node_id) {
                     violations.push(Violation {
                         spec_conformance: None,
                         rule_id: self.id().to_string(),

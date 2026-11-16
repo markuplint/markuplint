@@ -109,13 +109,15 @@ impl Rule for RequireDatetime {
     }
 }
 
-/// TS `[...time.querySelectorAll('*')].some(el => el.isUnresolvedComponent())`.
+/// TS `[...time.querySelectorAll('*')].some(el => el.isUnresolvedComponent())`: the descendants include
+/// those in the branches of a block of template syntax.
 fn has_unresolved_component_descendant(arena: &DomArena, node_id: NodeId) -> bool {
     arena.children_of(node_id).is_some_and(|children| {
         children.iter().any(|&child_id| match arena.get(child_id) {
             Some(DomNode::Element(el)) => {
                 is_unresolved_component(el) || has_unresolved_component_descendant(arena, child_id)
             }
+            Some(DomNode::PSBlock(_)) => has_unresolved_component_descendant(arena, child_id),
             _ => false,
         })
     })

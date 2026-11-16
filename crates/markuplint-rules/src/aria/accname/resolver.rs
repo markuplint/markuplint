@@ -10,6 +10,7 @@ use markuplint_types::spec::types::MLMLSpec;
 
 use super::helpers::{EMBEDDED_CONTROL_ROLES, is_native_embedded_control};
 use super::{AccnameResolver, AccnameVisit};
+use crate::conditional_block::{expand_conditional_blocks, may_be_absent_with};
 use crate::helpers::is_html_template_element;
 use crate::slot_assignment::{get_assigned_nodes, shadow_root_template, tree_parent_element};
 use crate::tree_scope::{TreeRoot, decode_or_keep, dom_value, element_by_id_of, root_of};
@@ -51,6 +52,8 @@ pub struct SpecAccnameResolver<'a> {
     version: ARIAVersion,
     root: TreeRoot,
     visits: RefCell<HashMap<NodeId, Vec<AccnameVisit>>>,
+    /// Whether the branches of the conditional blocks are read as one (TS `everyBranch`).
+    every_branch: bool,
 }
 
 impl<'a> SpecAccnameResolver<'a> {
@@ -62,7 +65,18 @@ impl<'a> SpecAccnameResolver<'a> {
             version,
             root: root_of(arena, spec, node_id),
             visits: RefCell::new(HashMap::new()),
+            every_branch: false,
         }
+    }
+
+    /// Reads the branches of the conditional blocks as one: every branch is rendered at once, and a
+    /// lookup of a name that takes one child reads each that a branch may leave out (TS `everyBranch`).
+    /// Which branch is rendered is not known from the markup, so a caller that must not report on what it
+    /// cannot know reads them all.
+    #[must_use]
+    pub fn every_branch(mut self) -> Self {
+        self.every_branch = true;
+        self
     }
 
     /// What [`AccnameResolver::on_visit`] was told, by element (TS `getAccnameVisits`).
@@ -211,6 +225,20 @@ impl AccnameResolver for SpecAccnameResolver<'_> {
     /// @see <https://html.spec.whatwg.org/multipage/scripting.html#the-template-element>
     /// @see <https://w3c.github.io/accname/#comp_name_from_content>
     fn get_child_nodes(&self, node_id: NodeId) -> Option<Vec<NodeId>> {
-        rendered_child_nodes(self.spec, self.arena, node_id)
+        let rendered = rendered_child_nodes(self.spec, self.arena, node_id);
+        if !self.every_branch {
+            return rendered;
+        }
+        // TS `getRenderedChildNodes(el, { everyBranch })`: the nodes as written, expanded
+        let nodes = rendered.unwrap_or_else(|| self.arena.child_nodes(node_id));
+        Some(expand_conditional_blocks(self.arena, &nodes))
+    }
+
+    fn reads_every_branch(&self) -> bool {
+        self.every_branch
+    }
+
+    fn may_be_absent_with(&self, absent: NodeId, rendered: NodeId) -> bool {
+        may_be_absent_with(self.arena, absent, rendered)
     }
 }

@@ -1654,6 +1654,7 @@ function createRenderingDocument(
 		isNativeTag: parser.isNativeTag?.bind(parser),
 		attrNameCaseSensitive: parser.attrNameCaseSensitive,
 		attrNameRoute: parser.attrNameRoute,
+		templateContent: parser.templateContent,
 		pretenders,
 	});
 }

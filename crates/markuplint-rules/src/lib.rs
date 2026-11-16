@@ -21,6 +21,7 @@ pub mod aria_check;
 pub mod aria_resolver_impl;
 pub mod attr_check;
 pub(crate) mod attr_name_key;
+pub mod conditional_block;
 pub(crate) mod create_message;
 pub(crate) mod decode;
 pub mod diagnostic;

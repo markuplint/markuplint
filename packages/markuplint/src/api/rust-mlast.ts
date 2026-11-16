@@ -21,6 +21,7 @@ type MLASTForRustOptions = {
 		readonly attrNameRoute?: AttrNameRoute;
 		readonly componentNameVariants?: boolean;
 		readonly slotElement?: 'html' | 'framework';
+		readonly templateContent?: 'separate-tree' | 'in-place';
 	};
 	/**
 	 * What the framework renders each attribute as, by the `uuid` of its token ({@link renderAttrs}).
@@ -163,6 +164,7 @@ export function mlastForRust(ast: MLASTDocument, { spec, parser, renderings }: M
 			attrNameRoute: parser.attrNameRoute,
 			componentNameVariants: parser.componentNameVariants,
 			slotElement: parser.slotElement,
+			templateContent: parser.templateContent,
 		},
 		(_key, value: unknown) => (isHTMLAttr(value) ? resolveAttr(value) : value),
 	);

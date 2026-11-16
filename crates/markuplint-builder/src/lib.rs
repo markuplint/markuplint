@@ -450,7 +450,18 @@ pub fn pattern_validator_registered() -> bool {
 pub fn lint(mlast_json: String, config_json: String, spec_json: String) -> napi::Result<Vec<NapiViolation>> {
     let arena = builder::build_from_json(&mlast_json)
         .map_err(|e| napi::Error::from_reason(format!("MLAST parse error: {e}")))?;
-    let (spec, config) = parse_config(&config_json, &spec_json)?;
+    let (mut spec, config) = parse_config(&config_json, &spec_json)?;
+    // The parser declares where the framework holds the children of a `template` element, so that the
+    // document is read right without the spec package of the framework in the configuration; what the
+    // spec says wins over it (TS `document.specs.templateContent ?? document.templateContent`).
+    if spec.template_content.is_none() {
+        spec.template_content = arena.settings().template_content.map(|declared| match declared {
+            markuplint_core::mlast::TemplateContent::SeparateTree => {
+                markuplint_types::spec::types::TemplateContent::SeparateTree
+            }
+            markuplint_core::mlast::TemplateContent::InPlace => markuplint_types::spec::types::TemplateContent::InPlace,
+        });
+    }
     let result = markuplint_rules::lint::lint(&arena, &spec, &config);
     to_napi_violations(result)
 }

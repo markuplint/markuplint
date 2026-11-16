@@ -357,15 +357,37 @@ pub fn find_child_by_local_name(arena: &DomArena, node_id: NodeId, tag: &str) ->
     find_named(arena, arena.children_of(node_id)?, tag)
 }
 
-/// TS `findChildByLocalName` with a resolver: the first child element named `tag`
-/// among the children the resolver says `node_id` renders.
-pub fn find_rendered_child_by_local_name(
+/// TS `findChildrenByLocalName`: the children that a lookup of a name (`legend`, `caption`, the SVG
+/// `title`) reads: the first child with the name, and, when the resolver says which may be absent
+/// ([`AccnameResolver::may_be_absent_with`]), each later one that every earlier one may be absent with, as
+/// that one may be the first that is rendered. In the order they are written, empty when the element has
+/// none.
+pub fn find_rendered_children_by_local_name(
     arena: &DomArena,
     node_id: NodeId,
     tag: &str,
     resolver: &dyn AccnameResolver,
-) -> Option<NodeId> {
-    find_named(arena, &child_nodes(arena, node_id, resolver), tag)
+) -> Vec<NodeId> {
+    let mut found = Vec::new();
+    let mut matched: Vec<NodeId> = Vec::new();
+    for child in child_nodes(arena, node_id, resolver) {
+        if find_named(arena, &[child], tag).is_none() {
+            continue;
+        }
+        // Invariant: `matched` holds the children with the name before `child`. `all` of an empty list is
+        // true, so the first one always is a candidate; with no hook the loop ends after it.
+        if matched
+            .iter()
+            .all(|&earlier| resolver.reads_every_branch() && resolver.may_be_absent_with(earlier, child))
+        {
+            found.push(child);
+        }
+        matched.push(child);
+        if !resolver.reads_every_branch() {
+            break;
+        }
+    }
+    found
 }
 
 fn find_named(arena: &DomArena, children: &[NodeId], tag: &str) -> Option<NodeId> {
