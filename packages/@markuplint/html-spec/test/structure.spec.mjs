@@ -10,13 +10,18 @@ import { parse } from 'jsonc-parser';
 import { describe, test, expect } from 'vitest';
 
 import { getDefinitionCite } from '../generator/read-json.ts';
-import { STATUS_FLAGS } from '../generator/utils.ts';
 import htmlSpec from '../index.js';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
 const require = createRequire(import.meta.url);
+
+/**
+ * The status flags that an attribute may carry in `index.json`: `obsolete` and the spec's `deprecated` are written
+ * in the sources, the other flags are the sources' or BCD's (`generator/bcd.ts`).
+ */
+const STATUS_FLAGS = ['experimental', 'obsolete', 'deprecated', 'nonStandard'];
 
 const schemas = {
 	element: {
@@ -57,8 +62,8 @@ test('structure', () => {
 });
 
 /**
- * The data carries no prose: the weekly spec citation watch reads the specifications themselves, and what MDN and
- * the W3C documents say in their own words is not copied into the package (`generator/strip-prose.ts`).
+ * The data carries no prose: the weekly spec citation watch reads the specifications themselves, and what the W3C
+ * documents say in their own words is not copied into the package (`generator/strip-prose.ts`).
  */
 describe('index.json carries no prose', () => {
 	const aria = htmlSpec.def['#aria'];
@@ -161,9 +166,9 @@ describe('deprecation flags scraped from the specs', () => {
 });
 
 /**
- * What an element says about where it is defined comes from the sources, not from MDN: the `cite` of an element with
+ * What an element says about where it is defined comes from the sources: the `cite` of an element with
  * a source file is the section on the first line of that file, which the weekly spec citation watch reads, and the
- * categories and the tag omission of MDN are not written at all.
+ * categories and the tag omission are not written at all.
  */
 describe('index.json carries what the sources own', () => {
 	const sourceDir = path.resolve(__dirname, '..', 'src');
@@ -213,8 +218,8 @@ describe('index.json carries what the sources own', () => {
 
 	/**
 	 * The names of the attributes of an element are what the sources define, each with the citation of its section:
-	 * in the `attributes` of its file, or through the categories of `globalAttrs` that the file selects. MDN adds an
-	 * attribute only when it carries a status flag.
+	 * in the `attributes` of its file, or through the categories of `globalAttrs` that the file selects. BCD adds an
+	 * attribute only with a status flag.
 	 */
 	test('every attribute of an element is in its source file or carries a status flag', async () => {
 		const stray = [];
@@ -525,6 +530,8 @@ test('the non-standard attributes are the ones that were read', () => {
 		'svg:image[decoding]',
 		'svg:image[fetchpriority]',
 		'svg:pattern[systemLanguage]',
+		'svg:script[async]',
+		'svg:script[defer]',
 		'svg:script[fetchpriority]',
 		'svg:view[svgView]',
 		'tbody[bgcolor]',

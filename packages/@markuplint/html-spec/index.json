@@ -61278,6 +61278,7 @@
 			"attributes": {
 				"async": {
 					"type": "Boolean",
+					"nonStandard": true,
 					"experimental": true
 				},
 				"crossorigin": {
@@ -61289,6 +61290,7 @@
 				},
 				"defer": {
 					"type": "Boolean",
+					"nonStandard": true,
 					"experimental": true
 				},
 				"fetchpriority": {
