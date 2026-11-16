@@ -62,9 +62,9 @@ export const benchmarkConfig: Config = {
 		// genuinely never flags this one.
 		'no-obsolete-element': true,
 		'no-obsolete-attr': true,
-		// no-deprecated-element/no-deprecated-attr (factual, MDN/BCD-sourced) were assumed to be
+		// no-deprecated-element/no-deprecated-attr (factual: a specification's or BCD's flag) were assumed to be
 		// pure non-conformance opinion, on the theory that nu-validator never flags them — false:
-		// nu-validator treats several MDN-flagged-deprecated attributes (e.g. `<script language>`,
+		// nu-validator treats several deprecated attributes (e.g. `<script language>`,
 		// `<script charset>`, `<style type>`, `<iframe allowpaymentrequest>`) as outright parse
 		// errors, predating what the current HTML LS text still documents. Escalated to `error`
 		// here (their user-facing default stays `warning`, matching the plan's factual/BCD
