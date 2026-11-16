@@ -65,7 +65,7 @@ v4 は 5 分類（`validation`、`a11y`、`naming-convention`、`maintainability
 | `character-reference`         | `no-malformed-character-reference` | 不正な文字参照                                                       |
 |                               | `no-unescaped-char`                | エスケープされていない `<` / 曖昧な `&`                              |
 | `deprecated-attr`             | `no-obsolete-attr`                 | 仕様から削除された属性（`error`）                                    |
-|                               | `no-deprecated-attr`               | MDN/BCD の非推奨（`warning`）                                        |
+|                               | `no-deprecated-attr`               | 仕様/BCD の非推奨（`warning`）                                       |
 | `deprecated-element`          | `no-obsolete-element`              | 廃止要素（`error`）                                                  |
 |                               | `no-deprecated-element`            | 非推奨要素（`warning`）                                              |
 | `landmark-roles`              | `no-nested-top-level-landmark`     | 入れ子の `banner` / `main` / `contentinfo`                           |

@@ -5,7 +5,7 @@ title: 'deprecated-element'
 
 # `deprecated-element`
 
-`no-obsolete-element`（`error`、仕様から削除）と `no-deprecated-element`（`warning`、MDN/BCD）に分割。エイリアスは両方へコピーします（v6 まで）。
+`no-obsolete-element`（`error`、仕様から削除）と `no-deprecated-element`（`warning`、仕様/BCD）に分割。エイリアスは両方へコピーします（v6 まで）。
 
 v4 の `deprecated-element` は両方 `error` でした。v5 で非推奨側だけ `warning` です。
 
