@@ -44,8 +44,7 @@
 		},
 		// https://developer.mozilla.org/en-US/docs/Web/HTML/Reference/Elements/template#shadowrootreferencetarget
 		"shadowrootreferencetarget": {
-			"type": "DOMID",
-			"experimental": true
+			"type": "DOMID"
 		}
 	},
 	"aria": {

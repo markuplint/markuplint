@@ -102,14 +102,13 @@
 			"word-spacing",
 			"writing-mode"
 		],
-		"#XLinkAttrs": ["xlink:href", "xlink:title"],
+		"#XLinkAttrs": ["xlink:href", "xlink:title", "xlink:show", "xlink:actuate"],
 		"#HTMLLinkAndFetchingAttrs": ["href", "target", "download", "ping", "rel", "hreflang", "type", "referrerpolicy"]
 	},
 	"attributes": {
 		// https://open-ui.org/components/interest-invokers.explainer/
 		"interestfor": {
-			"type": "DOMID",
-			"experimental": true
+			"type": "DOMID"
 		}
 	},
 	"aria": {

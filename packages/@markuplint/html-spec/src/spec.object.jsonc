@@ -31,29 +31,69 @@
 		"name": {
 			"type": "NavigableTargetName"
 		},
+		// https://html.spec.whatwg.org/multipage/obsolete.html#non-conforming-features
 		"archive": {
-			"deprecated": true
+			"obsolete": true
 		},
+		// https://html.spec.whatwg.org/multipage/obsolete.html#non-conforming-features
 		"border": {
-			"deprecated": true
+			"obsolete": true
 		},
+		// https://html.spec.whatwg.org/multipage/obsolete.html#non-conforming-features
 		"classid": {
-			"deprecated": true
+			"obsolete": true
 		},
+		// https://html.spec.whatwg.org/multipage/obsolete.html#non-conforming-features
 		"codebase": {
-			"deprecated": true
+			"obsolete": true
 		},
+		// https://html.spec.whatwg.org/multipage/obsolete.html#non-conforming-features
 		"codetype": {
-			"deprecated": true
+			"obsolete": true
 		},
+		// https://html.spec.whatwg.org/multipage/obsolete.html#non-conforming-features
 		"declare": {
-			"deprecated": true
+			"obsolete": true
 		},
+		// https://html.spec.whatwg.org/multipage/obsolete.html#non-conforming-features
 		"standby": {
-			"deprecated": true
+			"obsolete": true
 		},
+		// https://html.spec.whatwg.org/multipage/obsolete.html#non-conforming-features
 		"usemap": {
-			"deprecated": true
+			"obsolete": true
+		},
+		// https://html.spec.whatwg.org/multipage/obsolete.html#non-conforming-features
+		"code": {
+			"obsolete": true
+		},
+		// https://html.spec.whatwg.org/multipage/obsolete.html#non-conforming-features
+		"typemustmatch": {
+			"obsolete": true
+		},
+		// https://html.spec.whatwg.org/multipage/obsolete.html#non-conforming-features
+		"datasrc": {
+			"obsolete": true
+		},
+		// https://html.spec.whatwg.org/multipage/obsolete.html#non-conforming-features
+		"datafld": {
+			"obsolete": true
+		},
+		// https://html.spec.whatwg.org/multipage/obsolete.html#non-conforming-features
+		"dataformatas": {
+			"obsolete": true
+		},
+		// https://html.spec.whatwg.org/multipage/obsolete.html#non-conforming-features
+		"align": {
+			"obsolete": true
+		},
+		// https://html.spec.whatwg.org/multipage/obsolete.html#non-conforming-features
+		"hspace": {
+			"obsolete": true
+		},
+		// https://html.spec.whatwg.org/multipage/obsolete.html#non-conforming-features
+		"vspace": {
+			"obsolete": true
 		}
 	},
 	"aria": {

@@ -52,6 +52,14 @@
 				"missingValueDefault": "soft",
 				"invalidValueDefault": "soft"
 			}
+		},
+		// https://html.spec.whatwg.org/multipage/obsolete.html#non-conforming-features
+		"datasrc": {
+			"obsolete": true
+		},
+		// https://html.spec.whatwg.org/multipage/obsolete.html#non-conforming-features
+		"datafld": {
+			"obsolete": true
 		}
 	},
 	"aria": {

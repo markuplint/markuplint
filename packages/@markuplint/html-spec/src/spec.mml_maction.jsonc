@@ -1,6 +1,5 @@
 // https://w3c.github.io/mathml/#presm_maction
 {
-	"deprecated": true,
 	"contentModel": {
 		"contents": [
 			{
@@ -20,15 +19,13 @@
 		"#MathMLGlobalAttrs": true
 	},
 	"attributes": {
-		// https://developer.mozilla.org/en-US/docs/Web/MathML/Reference/Element/maction
+		// https://w3c.github.io/mathml/#presm_maction_att
 		"actiontype": {
-			"type": "Any",
-			"deprecated": true
+			"type": "Any"
 		},
-		// https://developer.mozilla.org/en-US/docs/Web/MathML/Reference/Element/maction
+		// https://w3c.github.io/mathml/#presm_maction_att
 		"selection": {
-			"type": "Any",
-			"deprecated": true
+			"type": "Any"
 		}
 	},
 	"aria": {

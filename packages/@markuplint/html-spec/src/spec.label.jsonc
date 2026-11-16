@@ -17,6 +17,18 @@
 		// https://html.spec.whatwg.org/multipage/forms.html#attr-label-for
 		"for": {
 			"type": "DOMID"
+		},
+		// https://html.spec.whatwg.org/multipage/obsolete.html#non-conforming-features
+		"datasrc": {
+			"obsolete": true
+		},
+		// https://html.spec.whatwg.org/multipage/obsolete.html#non-conforming-features
+		"datafld": {
+			"obsolete": true
+		},
+		// https://html.spec.whatwg.org/multipage/obsolete.html#non-conforming-features
+		"dataformatas": {
+			"obsolete": true
 		}
 	},
 	"aria": {

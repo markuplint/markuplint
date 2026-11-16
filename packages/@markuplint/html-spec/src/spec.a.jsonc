@@ -18,8 +18,47 @@
 	"attributes": {
 		// https://open-ui.org/components/interest-invokers.explainer/
 		"interestfor": {
-			"type": "DOMID",
-			"experimental": true
+			"type": "DOMID"
+		},
+		// https://html.spec.whatwg.org/multipage/obsolete.html#obsolete-but-conforming-features
+		// Obsolete but conforming, which conformance checkers warn about. The value must not be the empty string.
+		// The rest of the requirements (the value is unique among the IDs and the name attributes of the tree,
+		// and equals the ID of the element when it has one) are not a type.
+		"name": {
+			"type": "NoEmptyAny",
+			"deprecated": true
+		},
+		// https://html.spec.whatwg.org/multipage/obsolete.html#non-conforming-features
+		"charset": {
+			"obsolete": true
+		},
+		// https://html.spec.whatwg.org/multipage/obsolete.html#non-conforming-features
+		"coords": {
+			"obsolete": true
+		},
+		// https://html.spec.whatwg.org/multipage/obsolete.html#non-conforming-features
+		"shape": {
+			"obsolete": true
+		},
+		// https://html.spec.whatwg.org/multipage/obsolete.html#non-conforming-features
+		"methods": {
+			"obsolete": true
+		},
+		// https://html.spec.whatwg.org/multipage/obsolete.html#non-conforming-features
+		"rev": {
+			"obsolete": true
+		},
+		// https://html.spec.whatwg.org/multipage/obsolete.html#non-conforming-features
+		"urn": {
+			"obsolete": true
+		},
+		// https://html.spec.whatwg.org/multipage/obsolete.html#non-conforming-features
+		"datasrc": {
+			"obsolete": true
+		},
+		// https://html.spec.whatwg.org/multipage/obsolete.html#non-conforming-features
+		"datafld": {
+			"obsolete": true
 		}
 	},
 	"aria": {

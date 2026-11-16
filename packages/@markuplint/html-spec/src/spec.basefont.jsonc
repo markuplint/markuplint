@@ -1,0 +1,17 @@
+// https://html.spec.whatwg.org/multipage/obsolete.html#basefont
+{
+	"obsolete": true,
+	"contentModel": {
+		"contents": true
+	},
+	"globalAttrs": {
+		"#HTMLGlobalAttrs": true,
+		"#GlobalEventAttrs": true,
+		"#ARIAAttrs": true
+	},
+	"attributes": {},
+	"aria": {
+		"permittedRoles": true,
+		"implicitRole": false
+	}
+}

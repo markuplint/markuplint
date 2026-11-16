@@ -90,6 +90,10 @@
 		// https://html.spec.whatwg.org/multipage/semantics.html#attr-meta-media
 		"media": {
 			"condition": "[name='theme-color']"
+		},
+		// https://html.spec.whatwg.org/multipage/obsolete.html#non-conforming-features
+		"scheme": {
+			"obsolete": true
 		}
 	},
 	"aria": {

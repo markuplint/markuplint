@@ -7,8 +7,8 @@ import type { AnyNode } from './cheerio-types.ts';
 type HasName = { readonly name: string };
 
 /**
- * The status flags of an attribute that MDN gives and the sources may write. An attribute that only MDN lists is
- * added to an element only when it carries one of them (`mergeMDNAttributes`).
+ * The status flags that an attribute may carry in `index.json`: `obsolete` and the spec's `deprecated` are written
+ * in the sources, the other flags are the sources' or BCD's (`bcd.ts`). The structure spec reads them.
  */
 export const STATUS_FLAGS = ['experimental', 'obsolete', 'deprecated', 'nonStandard'] as const;
 

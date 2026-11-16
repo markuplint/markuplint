@@ -31,8 +31,9 @@
 				"missingValueDefault": "decimal"
 			}
 		},
+		// https://html.spec.whatwg.org/multipage/obsolete.html#non-conforming-features
 		"compact": {
-			"deprecated": true
+			"obsolete": true
 		}
 	},
 	"aria": {

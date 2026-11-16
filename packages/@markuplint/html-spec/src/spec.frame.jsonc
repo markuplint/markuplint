@@ -1,0 +1,58 @@
+// https://html.spec.whatwg.org/multipage/obsolete.html#frame
+{
+	"obsolete": true,
+	"contentModel": {
+		"contents": true
+	},
+	"globalAttrs": {
+		"#HTMLGlobalAttrs": true,
+		"#GlobalEventAttrs": true,
+		"#ARIAAttrs": true
+	},
+	"attributes": {
+		// https://html.spec.whatwg.org/multipage/obsolete.html#frames
+		"frameborder": {
+			"type": "Any"
+		},
+		// https://html.spec.whatwg.org/multipage/obsolete.html#frames
+		"longdesc": {
+			"type": "Any"
+		},
+		// https://html.spec.whatwg.org/multipage/obsolete.html#frames
+		"marginheight": {
+			"type": "Any"
+		},
+		// https://html.spec.whatwg.org/multipage/obsolete.html#frames
+		"marginwidth": {
+			"type": "Any"
+		},
+		// https://html.spec.whatwg.org/multipage/obsolete.html#frames
+		"name": {
+			"type": "Any"
+		},
+		// https://html.spec.whatwg.org/multipage/obsolete.html#frames
+		"noresize": {
+			"type": "Any"
+		},
+		// https://html.spec.whatwg.org/multipage/obsolete.html#frames
+		"scrolling": {
+			"type": "Any"
+		},
+		// https://html.spec.whatwg.org/multipage/obsolete.html#frames
+		"src": {
+			"type": "Any"
+		},
+		// https://html.spec.whatwg.org/multipage/obsolete.html#non-conforming-features
+		"datasrc": {
+			"obsolete": true
+		},
+		// https://html.spec.whatwg.org/multipage/obsolete.html#non-conforming-features
+		"datafld": {
+			"obsolete": true
+		}
+	},
+	"aria": {
+		"permittedRoles": true,
+		"implicitRole": false
+	}
+}

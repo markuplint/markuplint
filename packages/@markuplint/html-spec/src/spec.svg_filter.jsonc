@@ -15,7 +15,7 @@
 		]
 	},
 	"globalAttrs": {
-		"#SVGCoreAttrs": ["id", "xml:base", "xml:lang", "xml:space", "class", "style"],
+		"#SVGCoreAttrs": ["id", "xml:base", "xml:lang", "xml:space", "class", "style", "part", "exportparts"],
 		"#SVGPresentationAttrs": [
 			"alignment-baseline",
 			"baseline-shift",
@@ -130,11 +130,12 @@
 			"defaultValue": "userSpaceOnUse",
 			"animatable": true
 		},
-		// https://developer.mozilla.org/en-US/docs/Web/SVG/Attribute/filterRes
+		// https://drafts.csswg.org/filter-effects-1/#FilterElement
+		// Filter Effects removed the attribute from the specification.
 		"filterRes": {
 			"type": "<number-optional-number>",
 			"animatable": true,
-			"deprecated": true
+			"obsolete": true
 		}
 	},
 	"aria": {

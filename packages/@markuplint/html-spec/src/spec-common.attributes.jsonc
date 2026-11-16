@@ -51,6 +51,10 @@
 				}
 			}
 		},
+		// https://html.spec.whatwg.org/multipage/obsolete.html#non-conforming-features
+		"contextmenu": {
+			"obsolete": true
+		},
 		// https://html.spec.whatwg.org/multipage/dom.html#attr-dir
 		"dir": {
 			"type": {
@@ -65,13 +69,17 @@
 				"missingValueDefault": "auto"
 			}
 		},
+		// https://html.spec.whatwg.org/multipage/obsolete.html#non-conforming-features
+		"dropzone": {
+			"obsolete": true
+		},
 		// https://html.spec.whatwg.org/multipage/interaction.html#attr-enterkeyhint
 		"enterkeyhint": {
 			"type": {
 				"enum": ["enter", "done", "go", "next", "previous", "search", "send"]
 			}
 		},
-		// https://open-ui.org/components/focusgroup.explainer/
+		// https://open-ui.org/components/scoped-focusgroup.explainer/
 		"focusgroup": {
 			"type": {
 				"token": {
@@ -93,13 +101,11 @@
 				"separator": "space",
 				"unique": true,
 				"caseInsensitive": true
-			},
-			"experimental": true
+			}
 		},
-		// https://open-ui.org/components/focusgroup.explainer/
+		// https://open-ui.org/components/scoped-focusgroup.explainer/
 		"focusgroupstart": {
-			"type": "Boolean",
-			"experimental": true
+			"type": "Boolean"
 		},
 		// https://html.spec.whatwg.org/multipage/sections.html#attr-headingoffset
 		"headingoffset": {
@@ -267,23 +273,44 @@
 			"type": "URL",
 			"ineffective": "*"
 		},
-		// https://html.spec.whatwg.org/multipage/dom.html#the-lang-and-xml:lang-attributes
+		// > such attributes must only be specified if a lang attribute in no namespace is also specified, and
+		// > both attributes must have the same value when compared in an ASCII case-insensitive manner.
+		// @see https://html.spec.whatwg.org/multipage/dom.html#the-lang-and-xml:lang-attributes
 		"xml:lang": {
 			"type": "BCP47",
-			"deprecated": true
+			"condition": "[lang]",
+			"sameValueAs": "lang"
 		},
 		// https://html.spec.whatwg.org/multipage/dom.html#global-attributes:attr-xml-space
 		"xml:space": {
 			"type": {
 				"enum": ["default", "preserve"]
 			},
-			"defaultValue": "default",
-			"deprecated": true
+			"defaultValue": "default"
 		},
 		// https://w3c.github.io/element-timing/#sec-elements-exposed
 		"elementtiming": {
-			"type": "NoEmptyAny",
-			"experimental": true
+			"type": "NoEmptyAny"
+		},
+		// https://drafts.csswg.org/css-shadow-1/#part-attr
+		"part": {
+			"type": {
+				"token": "NoEmptyAny",
+				"separator": "space"
+			}
+		},
+		// https://drafts.csswg.org/css-shadow-1/#exportparts-attr
+		// A comma-separated list of part mappings (`ident`, `ident : ident`, `::ident : ident`); an empty entry is skipped.
+		"exportparts": {
+			"type": {
+				"pattern": "/^\\s*(?:(?:::)?[^\\s:,]+(?:\\s*:\\s*[^\\s:,]+)?)?\\s*(?:,\\s*(?:(?:::)?[^\\s:,]+(?:\\s*:\\s*[^\\s:,]+)?)?\\s*)*$/"
+			}
+		},
+		// https://www.w3.org/TR/virtual-keyboard/#dom-elementcontenteditable-virtualkeyboardpolicy
+		"virtualkeyboardpolicy": {
+			"type": {
+				"enum": ["", "auto", "manual"]
+			}
 		}
 	},
 	"#GlobalEventAttrs": {
@@ -559,6 +586,10 @@
 		"onselect": {
 			"type": "FunctionBody"
 		},
+		// https://html.spec.whatwg.org/multipage/obsolete.html#non-conforming-features
+		"onshow": {
+			"obsolete": true
+		},
 		// https://html.spec.whatwg.org/multipage/webappapis.html#handler-onslotchange
 		"onslotchange": {
 			"type": "FunctionBody"
@@ -633,23 +664,19 @@
 		},
 		// https://html.spec.whatwg.org/multipage/webappapis.html#handler-onwebkitanimationend
 		"onwebkitanimationend": {
-			"type": "FunctionBody",
-			"deprecated": true
+			"type": "FunctionBody"
 		},
 		// https://html.spec.whatwg.org/multipage/webappapis.html#handler-onwebkitanimationiteration
 		"onwebkitanimationiteration": {
-			"type": "FunctionBody",
-			"deprecated": true
+			"type": "FunctionBody"
 		},
 		// https://html.spec.whatwg.org/multipage/webappapis.html#handler-onwebkitanimationstart
 		"onwebkitanimationstart": {
-			"type": "FunctionBody",
-			"deprecated": true
+			"type": "FunctionBody"
 		},
 		// https://html.spec.whatwg.org/multipage/webappapis.html#handler-onwebkittransitionend
 		"onwebkittransitionend": {
-			"type": "FunctionBody",
-			"deprecated": true
+			"type": "FunctionBody"
 		},
 		// The touch event types are in the Recommendation; the GlobalEventHandlers extension that
 		// defines these handlers is only in the editor's draft of Touch Events Level 2
@@ -1120,10 +1147,11 @@
 				"separator": "comma"
 			}
 		},
-		// https://www.w3.org/TR/SVG11/struct.html#RequiredFeaturesAttribute
+		// https://svgwg.org/svg2-draft/changes.html#structure
+		// SVG 2 removed the attribute (Changes from SVG 1.1).
 		"requiredFeatures": {
 			"type": "<list-of-svg-feature-string>",
-			"deprecated": true
+			"obsolete": true
 		}
 	},
 	"#SVGCoreAttrs": {
@@ -1156,7 +1184,7 @@
 			"type": "URL",
 			"ineffective": ":not(:root)"
 		},
-		// https://svgwg.org/svg2-draft/struct.html#XMLSpaceAttribute
+		// https://svgwg.org/svg2-draft/struct.html#WhitespaceProcessingXMLSpaceAttribute
 		"xml:space": {
 			"type": {
 				"enum": ["default", "preserve"]
@@ -1166,13 +1194,28 @@
 		},
 		// https://svgwg.org/svg2-draft/struct.html#LangSpaceAttrs
 		"xml:lang": {
-			"type": "BCP47",
-			"deprecated": true
+			"type": "BCP47"
 		},
-		// https://www.w3.org/TR/SVG11/struct.html#XMLBaseAttribute
+		// https://svgwg.org/svg2-draft/changes.html#structure
+		// SVG 2 removed the attribute (Changes from SVG 1.1).
 		"xml:base": {
 			"type": "URL",
-			"deprecated": true
+			"obsolete": true
+		},
+		// https://drafts.csswg.org/css-shadow-1/#part-attr
+		// Any element in a shadow tree can have the attribute, SVG and MathML elements too.
+		"part": {
+			"type": {
+				"token": "NoEmptyAny",
+				"separator": "space"
+			}
+		},
+		// https://drafts.csswg.org/css-shadow-1/#exportparts-attr
+		// A comma-separated list of part mappings (`ident`, `ident : ident`, `::ident : ident`); an empty entry is skipped.
+		"exportparts": {
+			"type": {
+				"pattern": "/^\\s*(?:(?:::)?[^\\s:,]+(?:\\s*:\\s*[^\\s:,]+)?)?\\s*(?:,\\s*(?:(?:::)?[^\\s:,]+(?:\\s*:\\s*[^\\s:,]+)?)?\\s*)*$/"
+			}
 		}
 	},
 	"#SVGFilterPrimitiveAttrs": {
@@ -1468,16 +1511,17 @@
 			"defaultValue": "normal",
 			"animatable": true
 		},
-		// https://www.w3.org/TR/SVG11/text.html#GlyphOrientationHorizontalProperty
+		// https://svgwg.org/svg2-draft/text.html#GlyphOrientationHorizontalProperty
 		"glyph-orientation-horizontal": {
 			"type": "<'glyph-orientation-horizontal'>",
 			"defaultValue": "0deg",
-			"deprecated": true
+			"obsolete": true
 		},
-		// https://drafts.csswg.org/css-writing-modes-4/#propdef-glyph-orientation-vertical
+		// https://drafts.csswg.org/css-writing-modes-4/#glyph-orientation
+		// https://svgwg.org/svg2-draft/text.html#GlyphOrientationVerticalProperty
 		"glyph-orientation-vertical": {
 			"type": "<'glyph-orientation-vertical'>",
-			"deprecated": true
+			"obsolete": true
 		},
 		// https://drafts.csswg.org/css-images-3/#propdef-image-rendering
 		"image-rendering": {
@@ -1683,39 +1727,41 @@
 			"type": "<'writing-mode'>",
 			"defaultValue": "horizontal-tb"
 		},
-		// https://drafts.csswg.org/css-masking-1/#propdef-clip
+		// https://drafts.csswg.org/css-masking-1/#clip-property
 		"clip": {
 			"type": "<'clip'>",
 			"defaultValue": "auto",
 			"animatable": true,
 			"deprecated": true
 		},
-		// https://www.w3.org/TR/SVG11/color.html#ColorProfileProperty
+		// https://svgwg.org/svg2-draft/changes.html#color
+		// SVG 2 removed the chapter that defined the property.
 		"color-profile": {
 			"type": "<'color-profile'>",
 			"defaultValue": "auto",
 			"animatable": true,
-			"deprecated": true
+			"obsolete": true
 		},
-		// https://www.w3.org/TR/SVG11/painting.html#ColorRenderingProperty
+		// https://svgwg.org/svg2-draft/changes.html#painting
+		// SVG 2 removed the property (Changes from SVG 1.1).
 		"color-rendering": {
 			"type": "<'color-rendering'>",
 			"defaultValue": "auto",
 			"animatable": true,
-			"deprecated": true
+			"obsolete": true
 		},
-		// https://www.w3.org/TR/SVG11/filters.html#EnableBackgroundProperty
+		// https://drafts.csswg.org/filter-effects-1/#AccessBackgroundImage
 		"enable-background": {
 			"type": "<'enable-background'>",
 			"defaultValue": "accumulate",
 			"deprecated": true
 		},
-		// https://www.w3.org/TR/SVG11/text.html#KerningProperty
+		// https://svgwg.org/svg2-draft/text.html#KerningProperty
 		"kerning": {
 			"type": "<'kerning'>",
 			"defaultValue": "auto",
 			"animatable": true,
-			"deprecated": true
+			"obsolete": true
 		}
 	},
 	"#SVGTransferFunctionAttrs": {
@@ -1793,20 +1839,17 @@
 		"id": {
 			"type": "DOMID"
 		},
-		// https://developer.mozilla.org/en-US/docs/Web/MathML/Reference/Global_attributes/mathbackground
+		// https://www.w3.org/TR/mathml-core/#legacy-mathml-style-attributes
 		"mathbackground": {
-			"type": "<color>",
-			"deprecated": true
+			"type": "<color>"
 		},
-		// https://developer.mozilla.org/en-US/docs/Web/MathML/Reference/Global_attributes/mathcolor
+		// https://www.w3.org/TR/mathml-core/#legacy-mathml-style-attributes
 		"mathcolor": {
-			"type": "<color>",
-			"deprecated": true
+			"type": "<color>"
 		},
-		// https://developer.mozilla.org/en-US/docs/Web/MathML/Reference/Global_attributes/mathsize
+		// https://www.w3.org/TR/mathml-core/#legacy-mathml-style-attributes
 		"mathsize": {
-			"type": "<length-percentage>",
-			"deprecated": true
+			"type": "<length-percentage>"
 		},
 		// https://www.w3.org/TR/mathml-core/#dfn-nonce
 		"nonce": {
@@ -1823,49 +1866,69 @@
 		// https://www.w3.org/TR/mathml-core/#dfn-tabindex
 		"tabindex": {
 			"type": "TabIndex"
+		},
+		// https://drafts.csswg.org/css-shadow-1/#part-attr
+		// Any element in a shadow tree can have the attribute, SVG and MathML elements too.
+		"part": {
+			"type": {
+				"token": "NoEmptyAny",
+				"separator": "space"
+			}
+		},
+		// https://drafts.csswg.org/css-shadow-1/#exportparts-attr
+		// A comma-separated list of part mappings (`ident`, `ident : ident`, `::ident : ident`); an empty entry is skipped.
+		"exportparts": {
+			"type": {
+				"pattern": "/^\\s*(?:(?:::)?[^\\s:,]+(?:\\s*:\\s*[^\\s:,]+)?)?\\s*(?:,\\s*(?:(?:::)?[^\\s:,]+(?:\\s*:\\s*[^\\s:,]+)?)?\\s*)*$/"
+			}
 		}
 	},
 	"#XLinkAttrs": {
-		// https://www.w3.org/TR/xlink11/#link-locators
+		// https://svgwg.org/svg2-draft/linking.html#XLinkHrefAttribute
 		"xlink:href": {
 			"type": "URL",
 			"deprecated": true
 		},
-		// https://www.w3.org/TR/xlink11/#link-semantics
+		// https://svgwg.org/svg2-draft/linking.html#XLinkTitleAttribute
 		"xlink:title": {
 			"type": "Any",
 			"deprecated": true
 		},
-		// https://www.w3.org/TR/xlink11/#link-types
+		// https://svgwg.org/svg2-draft/changes.html#linking
+		// SVG 2 removed the attribute (Changes from SVG 1.1).
 		"xlink:type": {
 			"type": {
 				"enum": ["simple"]
 			},
 			"defaultValue": "simple",
-			"deprecated": true
+			"obsolete": true
 		},
-		// https://www.w3.org/TR/xlink11/#link-semantics
+		// https://svgwg.org/svg2-draft/changes.html#linking
+		// SVG 2 removed the attribute (Changes from SVG 1.1).
 		"xlink:role": {
 			"type": "Any",
-			"deprecated": true
+			"obsolete": true
 		},
-		// https://www.w3.org/TR/xlink11/#link-semantics
+		// https://svgwg.org/svg2-draft/changes.html#linking
+		// SVG 2 removed the attribute (Changes from SVG 1.1).
 		"xlink:arcrole": {
 			"type": "URL",
-			"deprecated": true
+			"obsolete": true
 		},
-		// https://www.w3.org/TR/xlink11/#link-behaviors
+		// https://svgwg.org/svg2-draft/changes.html#linking
+		// SVG 2 removed the attribute (Changes from SVG 1.1).
 		"xlink:show": {
 			"type": {
 				"enum": ["new", "replace", "embed", "other", "none"]
 			},
 			"defaultValue": "replace",
-			"deprecated": true
+			"obsolete": true
 		},
-		// https://www.w3.org/TR/xlink11/#link-behaviors
+		// https://svgwg.org/svg2-draft/changes.html#linking
+		// SVG 2 removed the attribute (Changes from SVG 1.1).
 		"xlink:actuate": {
 			"type": "Any",
-			"deprecated": true
+			"obsolete": true
 		}
 	}
 }

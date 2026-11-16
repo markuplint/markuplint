@@ -19,6 +19,22 @@
 		// https://html.spec.whatwg.org/multipage/iframe-embed-object.html#attr-embed-type
 		"type": {
 			"type": "MIMEType"
+		},
+		// https://html.spec.whatwg.org/multipage/obsolete.html#non-conforming-features
+		"name": {
+			"obsolete": true
+		},
+		// https://html.spec.whatwg.org/multipage/obsolete.html#non-conforming-features
+		"align": {
+			"obsolete": true
+		},
+		// https://html.spec.whatwg.org/multipage/obsolete.html#non-conforming-features
+		"hspace": {
+			"obsolete": true
+		},
+		// https://html.spec.whatwg.org/multipage/obsolete.html#non-conforming-features
+		"vspace": {
+			"obsolete": true
 		}
 	},
 	"aria": {

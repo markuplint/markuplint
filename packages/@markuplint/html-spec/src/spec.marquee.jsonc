@@ -1,0 +1,74 @@
+// https://html.spec.whatwg.org/multipage/obsolete.html#the-marquee-element
+{
+	"obsolete": true,
+	"contentModel": {
+		"contents": true
+	},
+	"globalAttrs": {
+		"#HTMLGlobalAttrs": true,
+		"#GlobalEventAttrs": true,
+		"#ARIAAttrs": true
+	},
+	"attributes": {
+		// https://html.spec.whatwg.org/multipage/obsolete.html#the-marquee-element
+		"behavior": {
+			"type": "Any"
+		},
+		// https://html.spec.whatwg.org/multipage/obsolete.html#the-marquee-element
+		"bgcolor": {
+			"type": "Any"
+		},
+		// https://html.spec.whatwg.org/multipage/obsolete.html#the-marquee-element
+		"direction": {
+			"type": "Any"
+		},
+		// https://html.spec.whatwg.org/multipage/obsolete.html#the-marquee-element
+		"height": {
+			"type": "Any"
+		},
+		// https://html.spec.whatwg.org/multipage/obsolete.html#the-marquee-element
+		"hspace": {
+			"type": "Any"
+		},
+		// https://html.spec.whatwg.org/multipage/obsolete.html#the-marquee-element
+		"loop": {
+			"type": "Any"
+		},
+		// https://html.spec.whatwg.org/multipage/obsolete.html#the-marquee-element
+		"scrollamount": {
+			"type": "Any"
+		},
+		// https://html.spec.whatwg.org/multipage/obsolete.html#the-marquee-element
+		"scrolldelay": {
+			"type": "Any"
+		},
+		// https://html.spec.whatwg.org/multipage/obsolete.html#the-marquee-element
+		"truespeed": {
+			"type": "Any"
+		},
+		// https://html.spec.whatwg.org/multipage/obsolete.html#the-marquee-element
+		"vspace": {
+			"type": "Any"
+		},
+		// https://html.spec.whatwg.org/multipage/obsolete.html#the-marquee-element
+		"width": {
+			"type": "Any"
+		},
+		// https://html.spec.whatwg.org/multipage/obsolete.html#non-conforming-features
+		"datasrc": {
+			"obsolete": true
+		},
+		// https://html.spec.whatwg.org/multipage/obsolete.html#non-conforming-features
+		"datafld": {
+			"obsolete": true
+		},
+		// https://html.spec.whatwg.org/multipage/obsolete.html#non-conforming-features
+		"dataformatas": {
+			"obsolete": true
+		}
+	},
+	"aria": {
+		"permittedRoles": true,
+		"implicitRole": false
+	}
+}

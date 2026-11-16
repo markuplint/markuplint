@@ -27,7 +27,7 @@
 		],
 		"#SVGAnimationValueAttrs": ["calcMode", "values", "keyTimes", "keySplines", "from", "to", "by"],
 		"#SVGConditionalProcessingAttrs": ["requiredExtensions", "systemLanguage"],
-		"#SVGCoreAttrs": ["id", "tabindex", "autofocus", "lang", "xml:space", "class", "style"],
+		"#SVGCoreAttrs": ["id", "tabindex", "autofocus", "lang", "xml:space", "class", "style", "part", "exportparts"],
 		"#SVGPresentationAttrs": [
 			"alignment-baseline",
 			"baseline-shift",
@@ -99,7 +99,13 @@
 			"writing-mode"
 		]
 	},
-	"attributes": {},
+	"attributes": {
+		// https://svgwg.org/specs/animations/
+		// SVG Animations: the attributeType attribute of SMIL Animation is not supported by SVG.
+		"attributeType": {
+			"obsolete": true
+		}
+	},
 	"aria": {
 		"implicitRole": false,
 		"permittedRoles": false,

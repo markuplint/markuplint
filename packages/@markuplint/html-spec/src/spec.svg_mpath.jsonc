@@ -9,8 +9,9 @@
 		]
 	},
 	"globalAttrs": {
-		"#SVGCoreAttrs": ["id", "tabindex", "autofocus", "lang", "xml:space", "class", "style"],
-		"#GlobalEventAttrs": true
+		"#SVGCoreAttrs": ["id", "tabindex", "autofocus", "lang", "xml:space", "class", "style", "part", "exportparts"],
+		"#GlobalEventAttrs": true,
+		"#XLinkAttrs": ["xlink:href"]
 	},
 	"attributes": {
 		// https://svgwg.org/specs/animations/#MPathElementHrefAttribute

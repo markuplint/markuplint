@@ -1,0 +1,22 @@
+// https://html.spec.whatwg.org/multipage/obsolete.html#non-conforming-features
+{
+	"obsolete": true,
+	"contentModel": {
+		"contents": true
+	},
+	"globalAttrs": {
+		"#HTMLGlobalAttrs": true,
+		"#GlobalEventAttrs": true,
+		"#ARIAAttrs": true
+	},
+	"attributes": {
+		// https://html.spec.whatwg.org/multipage/obsolete.html#other-elements,-attributes-and-apis
+		"compact": {
+			"type": "Any"
+		}
+	},
+	"aria": {
+		"permittedRoles": true,
+		"implicitRole": false
+	}
+}

@@ -1,90 +1,15 @@
+import { readFileSync, readdirSync } from 'node:fs';
 import path from 'node:path';
 
+import { parse } from 'jsonc-parser';
 import { afterEach, describe, test, expect, vi } from 'vitest';
 
-import {
-	getMDNElementURL,
-	isWithoutMDNPage,
-	mergeMDNAttributes,
-	obsoleteList,
-	obsoleteWithoutMDNPage,
-} from './html-elements.ts';
+import { getMDNElementURL, isWithoutMDNPage, obsoleteWithoutMDNPage } from './html-elements.ts';
 import { getDefinitionCite } from './read-json.ts';
-import { STATUS_FLAGS } from './utils.ts';
 
 afterEach(() => {
 	vi.unstubAllGlobals();
 	vi.restoreAllMocks();
-});
-
-describe('mergeMDNAttributes', () => {
-	const mdn = {
-		href: { name: 'href', type: 'Any' as const, description: 'MDN href', deprecated: true as const },
-		ping: { name: 'ping', type: 'Any' as const, description: 'MDN ping' },
-	};
-
-	test('does not take an attribute that only MDN has and that has no status flag', () => {
-		expect(mergeMDNAttributes({}, { ping: mdn.ping })).toStrictEqual({});
-	});
-
-	test('does not take an attribute that only MDN has and whose status flags are all false', () => {
-		const flags = { experimental: false, obsolete: false, deprecated: false, nonStandard: false };
-		expect(mergeMDNAttributes({}, { ping: { ...mdn.ping, ...flags } as never })).toStrictEqual({});
-	});
-
-	test('takes an attribute that only MDN has when it has a status flag, with its description and flags', () => {
-		expect(mergeMDNAttributes({}, { href: mdn.href })).toStrictEqual({
-			href: {
-				description: 'MDN href',
-				experimental: undefined,
-				obsolete: undefined,
-				deprecated: true,
-				nonStandard: undefined,
-			},
-		});
-	});
-
-	test('writes a status flag that is false on the MDN side as no flag at all', () => {
-		const mdnAttr = { name: 'x', type: 'Any' as const, experimental: true as const, nonStandard: false };
-		const merged = mergeMDNAttributes({}, { x: mdnAttr as never });
-		expect(merged.x?.experimental).toBe(true);
-		expect(merged.x?.nonStandard).toBeUndefined();
-		expect(JSON.stringify(merged.x)).not.toContain('nonStandard');
-	});
-
-	test.each(STATUS_FLAGS)('takes an attribute that only MDN has and that is flagged %s', flag => {
-		const merged = mergeMDNAttributes({}, { flagged: { name: 'flagged', type: 'Any', [flag]: true } });
-		expect(merged.flagged?.[flag]).toBe(true);
-	});
-
-	test('lets a manual entry win over the MDN fields it also has', () => {
-		expect(mergeMDNAttributes({ href: { type: 'URL', deprecated: false } }, mdn)).toStrictEqual({
-			href: {
-				description: 'MDN href',
-				experimental: undefined,
-				obsolete: undefined,
-				deprecated: false,
-				nonStandard: undefined,
-				type: 'URL',
-			},
-		});
-	});
-
-	test('merges only the MDN fields of the same attribute into a manual entry that has "name"', () => {
-		const merged = mergeMDNAttributes({ href: { name: 'href', type: 'URL' } }, mdn);
-		expect(merged).toStrictEqual({
-			href: {
-				name: 'href',
-				description: 'MDN href',
-				experimental: undefined,
-				obsolete: undefined,
-				deprecated: true,
-				nonStandard: undefined,
-				type: 'URL',
-			},
-		});
-		expect(Object.keys(merged.href!)[0]).toBe('name');
-	});
 });
 
 describe('getMDNElementURL', () => {
@@ -127,26 +52,31 @@ describe('getElements', () => {
 		);
 	});
 
-	test('cites the list of non-conforming features for an element that has no source file', async () => {
+	test('reads only the source files it is given', async () => {
 		const specs = await getElementsWithoutMDN();
-		expect(specs.find(el => el.name === 'acronym')?.cite).toMatch(
-			/^https:\/\/html\.spec\.whatwg\.org\/multipage\/obsolete\.html#/,
-		);
+		expect(specs.find(el => el.name === 'acronym')).toBeUndefined();
 	});
 
 	test('writes neither the categories nor the tag omission of any element', async () => {
 		const specs = await getElementsWithoutMDN();
-		expect(specs.length).toBeGreaterThan(1);
+		expect(specs.length).toBeGreaterThan(0);
 		expect(specs.filter(el => 'categories' in el || 'omission' in el).map(el => el.name)).toStrictEqual([]);
 	});
 });
 
 describe('isWithoutMDNPage', () => {
 	test('lists only obsolete HTML elements', () => {
-		expect([...obsoleteWithoutMDNPage].filter(name => !obsoleteList.includes(name))).toStrictEqual([]);
+		const sourceDir = path.resolve(import.meta.dirname, '..', 'src');
+		const obsolete = new Set(
+			readdirSync(sourceDir)
+				.filter(file => /^spec\.\w+\.jsonc$/.test(file))
+				.filter(file => parse(readFileSync(path.join(sourceDir, file), 'utf8')).obsolete === true)
+				.map(file => file.replace(/^spec\.(\w+)\.jsonc$/, '$1')),
+		);
+		expect([...obsoleteWithoutMDNPage].filter(name => !obsolete.has(name))).toStrictEqual([]);
 	});
 
-	test('lets getElements fetch the page of such an element as expected not to exist', async () => {
+	test('fetches the page of the elements it is given only', async () => {
 		// MDN answers 404 for every page: only an unexpected 404 is a failure.
 		vi.stubGlobal(
 			'fetch',
@@ -163,6 +93,25 @@ describe('isWithoutMDNPage', () => {
 		expect(
 			failed.filter(url => [...obsoleteWithoutMDNPage].some(name => url.endsWith(`/Elements/${name}`))),
 		).toStrictEqual([]);
+		expect(failed).not.toContain('https://developer.mozilla.org/en-US/docs/Web/HTML/Reference/Elements/acronym');
+	});
+
+	test('lets getElements fetch the page of such an element as expected not to exist', async () => {
+		// MDN answers 404 for every page: only an unexpected 404 is a failure.
+		vi.stubGlobal(
+			'fetch',
+			vi.fn(() => Promise.resolve(new Response('', { status: 404 }))),
+		);
+		vi.spyOn(console, 'error').mockImplementation(() => {});
+		vi.resetModules();
+		const { getElements: getFreshElements } = await import('./html-elements.ts');
+		const { getFailedUrls } = await import('./fetch.ts');
+
+		await getFreshElements(path.resolve(import.meta.dirname, '..', 'src', 'spec.{a,acronym,spacer}.jsonc'));
+
+		const failed = getFailedUrls();
+		// `spacer` has no MDN page (expected), `acronym` has one (a 404 is a failure)
+		expect(failed).not.toContain('https://developer.mozilla.org/en-US/docs/Web/HTML/Reference/Elements/spacer');
 		expect(failed).toContain('https://developer.mozilla.org/en-US/docs/Web/HTML/Reference/Elements/acronym');
 	});
 
@@ -219,5 +168,23 @@ describe('getDefinitionCite', () => {
 		['an empty file', ''],
 	])('throws for %s, naming the file', (_name, source) => {
 		expect(() => getDefinitionCite(source, 'spec.x.jsonc')).toThrow(/spec\.x\.jsonc/);
+	});
+});
+
+describe('getElements: obsolete elements', () => {
+	test('reads an obsolete element from its source file, which cites its entry of the list of non-conforming features', async () => {
+		vi.stubGlobal(
+			'fetch',
+			vi.fn(() => Promise.resolve(new Response('', { status: 404 }))),
+		);
+		vi.spyOn(console, 'error').mockImplementation(() => {});
+		vi.resetModules();
+		const { getElements: getFreshElements } = await import('./html-elements.ts');
+		// the glob takes forward slashes only
+		const pattern = path.resolve(import.meta.dirname, '..', 'src', 'spec.{a,acronym}.jsonc').replaceAll('\\', '/');
+		const specs = await getFreshElements(pattern);
+		const acronym = specs.find(el => el.name === 'acronym');
+		expect(acronym?.obsolete).toBe(true);
+		expect(acronym?.cite).toBe('https://html.spec.whatwg.org/multipage/obsolete.html#non-conforming-features');
 	});
 });

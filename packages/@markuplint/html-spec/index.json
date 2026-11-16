@@ -48,6 +48,9 @@
 						}
 					}
 				},
+				"contextmenu": {
+					"obsolete": true
+				},
 				"dir": {
 					"type": {
 						"enum": ["ltr", "rtl", "auto"]
@@ -59,6 +62,9 @@
 						"invalidValueDefault": "auto",
 						"missingValueDefault": "auto"
 					}
+				},
+				"dropzone": {
+					"obsolete": true
 				},
 				"enterkeyhint": {
 					"type": {
@@ -87,10 +93,12 @@
 						"unique": true,
 						"caseInsensitive": true
 					},
+					"nonStandard": true,
 					"experimental": true
 				},
 				"focusgroupstart": {
 					"type": "Boolean",
+					"nonStandard": true,
 					"experimental": true
 				},
 				"headingoffset": {
@@ -98,10 +106,12 @@
 						"type": "integer",
 						"gte": 0,
 						"lte": 8
-					}
+					},
+					"experimental": true
 				},
 				"headingreset": {
-					"type": "Boolean"
+					"type": "Boolean",
+					"experimental": true
 				},
 				"hidden": {
 					"type": {
@@ -226,17 +236,50 @@
 				},
 				"xml:lang": {
 					"type": "BCP47",
-					"deprecated": true
+					"condition": "[lang]",
+					"sameValueAs": "lang"
 				},
 				"xml:space": {
 					"type": {
 						"enum": ["default", "preserve"]
 					},
-					"defaultValue": "default",
-					"deprecated": true
+					"defaultValue": "default"
 				},
 				"elementtiming": {
 					"type": "NoEmptyAny",
+					"experimental": true
+				},
+				"part": {
+					"type": {
+						"token": "NoEmptyAny",
+						"separator": "space"
+					}
+				},
+				"exportparts": {
+					"type": {
+						"pattern": "/^\\s*(?:(?:::)?[^\\s:,]+(?:\\s*:\\s*[^\\s:,]+)?)?\\s*(?:,\\s*(?:(?:::)?[^\\s:,]+(?:\\s*:\\s*[^\\s:,]+)?)?\\s*)*$/"
+					}
+				},
+				"virtualkeyboardpolicy": {
+					"type": {
+						"enum": ["", "auto", "manual"]
+					},
+					"experimental": true
+				},
+				"anchor": {
+					"nonStandard": true,
+					"experimental": true
+				},
+				"containertiming": {
+					"experimental": true,
+					"nonStandard": true
+				},
+				"containertimingignore": {
+					"experimental": true,
+					"nonStandard": true
+				},
+				"drawable": {
+					"nonStandard": true,
 					"experimental": true
 				}
 			},
@@ -445,6 +488,9 @@
 				"onselect": {
 					"type": "FunctionBody"
 				},
+				"onshow": {
+					"obsolete": true
+				},
 				"onslotchange": {
 					"type": "FunctionBody"
 				},
@@ -500,20 +546,16 @@
 					"type": "FunctionBody"
 				},
 				"onwebkitanimationend": {
-					"type": "FunctionBody",
-					"deprecated": true
+					"type": "FunctionBody"
 				},
 				"onwebkitanimationiteration": {
-					"type": "FunctionBody",
-					"deprecated": true
+					"type": "FunctionBody"
 				},
 				"onwebkitanimationstart": {
-					"type": "FunctionBody",
-					"deprecated": true
+					"type": "FunctionBody"
 				},
 				"onwebkittransitionend": {
-					"type": "FunctionBody",
-					"deprecated": true
+					"type": "FunctionBody"
 				},
 				"ontouchstart": {
 					"type": "FunctionBody"
@@ -887,7 +929,7 @@
 				},
 				"requiredFeatures": {
 					"type": "<list-of-svg-feature-string>",
-					"deprecated": true
+					"obsolete": true
 				}
 			},
 			"#SVGCoreAttrs": {
@@ -926,7 +968,30 @@
 				},
 				"xml:base": {
 					"type": "URL",
-					"deprecated": true
+					"obsolete": true
+				},
+				"part": {
+					"type": {
+						"token": "NoEmptyAny",
+						"separator": "space"
+					}
+				},
+				"exportparts": {
+					"type": {
+						"pattern": "/^\\s*(?:(?:::)?[^\\s:,]+(?:\\s*:\\s*[^\\s:,]+)?)?\\s*(?:,\\s*(?:(?:::)?[^\\s:,]+(?:\\s*:\\s*[^\\s:,]+)?)?\\s*)*$/"
+					}
+				},
+				"focusgroup": {
+					"nonStandard": true,
+					"experimental": true
+				},
+				"focusgroupstart": {
+					"nonStandard": true,
+					"experimental": true
+				},
+				"font-width": {
+					"nonStandard": true,
+					"experimental": true
 				}
 			},
 			"#SVGFilterPrimitiveAttrs": {
@@ -1180,11 +1245,11 @@
 				"glyph-orientation-horizontal": {
 					"type": "<'glyph-orientation-horizontal'>",
 					"defaultValue": "0deg",
-					"deprecated": true
+					"obsolete": true
 				},
 				"glyph-orientation-vertical": {
 					"type": "<'glyph-orientation-vertical'>",
-					"deprecated": true
+					"obsolete": true
 				},
 				"image-rendering": {
 					"type": "<'image-rendering'>",
@@ -1365,13 +1430,13 @@
 					"type": "<'color-profile'>",
 					"defaultValue": "auto",
 					"animatable": true,
-					"deprecated": true
+					"obsolete": true
 				},
 				"color-rendering": {
 					"type": "<'color-rendering'>",
 					"defaultValue": "auto",
 					"animatable": true,
-					"deprecated": true
+					"obsolete": true
 				},
 				"enable-background": {
 					"type": "<'enable-background'>",
@@ -1382,7 +1447,7 @@
 					"type": "<'kerning'>",
 					"defaultValue": "auto",
 					"animatable": true,
-					"deprecated": true
+					"obsolete": true
 				}
 			},
 			"#SVGTransferFunctionAttrs": {
@@ -1469,6 +1534,21 @@
 				},
 				"tabindex": {
 					"type": "TabIndex"
+				},
+				"part": {
+					"type": {
+						"token": "NoEmptyAny",
+						"separator": "space"
+					}
+				},
+				"exportparts": {
+					"type": {
+						"pattern": "/^\\s*(?:(?:::)?[^\\s:,]+(?:\\s*:\\s*[^\\s:,]+)?)?\\s*(?:,\\s*(?:(?:::)?[^\\s:,]+(?:\\s*:\\s*[^\\s:,]+)?)?\\s*)*$/"
+					}
+				},
+				"href": {
+					"nonStandard": true,
+					"deprecated": true
 				}
 			},
 			"#XLinkAttrs": {
@@ -1485,26 +1565,26 @@
 						"enum": ["simple"]
 					},
 					"defaultValue": "simple",
-					"deprecated": true
+					"obsolete": true
 				},
 				"xlink:role": {
 					"type": "Any",
-					"deprecated": true
+					"obsolete": true
 				},
 				"xlink:arcrole": {
 					"type": "URL",
-					"deprecated": true
+					"obsolete": true
 				},
 				"xlink:show": {
 					"type": {
 						"enum": ["new", "replace", "embed", "other", "none"]
 					},
 					"defaultValue": "replace",
-					"deprecated": true
+					"obsolete": true
 				},
 				"xlink:actuate": {
 					"type": "Any",
-					"deprecated": true
+					"obsolete": true
 				}
 			}
 		},
@@ -47745,29 +47825,50 @@
 				]
 			},
 			"attributes": {
-				"attributionsrc": {
-					"deprecated": true,
+				"attributionsourceid": {
+					"experimental": true,
 					"nonStandard": true
 				},
-				"charset": {
+				"attributionsrc": {
+					"nonStandard": true,
 					"deprecated": true
+				},
+				"charset": {
+					"obsolete": true
 				},
 				"coords": {
-					"deprecated": true
+					"obsolete": true
+				},
+				"datafld": {
+					"obsolete": true
+				},
+				"datasrc": {
+					"obsolete": true
+				},
+				"hreftranslate": {
+					"nonStandard": true,
+					"experimental": true
 				},
 				"interestfor": {
-					"experimental": true,
+					"type": "DOMID",
 					"nonStandard": true,
-					"type": "DOMID"
+					"experimental": true
+				},
+				"methods": {
+					"obsolete": true
 				},
 				"name": {
+					"type": "NoEmptyAny",
 					"deprecated": true
 				},
 				"rev": {
-					"deprecated": true
+					"obsolete": true
 				},
 				"shape": {
-					"deprecated": true
+					"obsolete": true
+				},
+				"urn": {
+					"obsolete": true
 				}
 			},
 			"cite": "https://html.spec.whatwg.org/multipage/text-level-semantics.html#the-a-element"
@@ -47803,10 +47904,14 @@
 				"permittedRoles": true,
 				"implicitRole": false
 			},
-			"cite": "https://html.spec.whatwg.org/multipage/obsolete.html#acronym",
 			"obsolete": true,
-			"globalAttrs": {},
-			"attributes": {}
+			"globalAttrs": {
+				"#ARIAAttrs": true,
+				"#GlobalEventAttrs": true,
+				"#HTMLGlobalAttrs": true
+			},
+			"attributes": {},
+			"cite": "https://html.spec.whatwg.org/multipage/obsolete.html#non-conforming-features"
 		},
 		{
 			"name": "address",
@@ -47843,10 +47948,14 @@
 				"permittedRoles": true,
 				"implicitRole": false
 			},
-			"cite": "https://html.spec.whatwg.org/multipage/obsolete.html#applet",
 			"obsolete": true,
-			"globalAttrs": {},
-			"attributes": {}
+			"globalAttrs": {
+				"#ARIAAttrs": true,
+				"#GlobalEventAttrs": true,
+				"#HTMLGlobalAttrs": true
+			},
+			"attributes": {},
+			"cite": "https://html.spec.whatwg.org/multipage/obsolete.html#non-conforming-features"
 		},
 		{
 			"name": "area",
@@ -47899,6 +48008,10 @@
 					"required": true,
 					"condition": "[href]"
 				},
+				"attributionsrc": {
+					"nonStandard": true,
+					"deprecated": true
+				},
 				"coords": {
 					"type": {
 						"token": "Number",
@@ -47906,10 +48019,16 @@
 						"separator": "comma"
 					}
 				},
+				"hreflang": {
+					"obsolete": true
+				},
 				"interestfor": {
-					"experimental": true,
+					"type": "DOMID",
 					"nonStandard": true,
-					"type": "DOMID"
+					"experimental": true
+				},
+				"nohref": {
+					"obsolete": true
 				},
 				"shape": {
 					"type": {
@@ -47917,6 +48036,9 @@
 						"missingValueDefault": "rect",
 						"invalidValueDefault": "rect"
 					}
+				},
+				"type": {
+					"obsolete": true
 				}
 			},
 			"cite": "https://html.spec.whatwg.org/multipage/image-maps.html#the-area-element"
@@ -48103,10 +48225,14 @@
 				"permittedRoles": true,
 				"implicitRole": false
 			},
-			"cite": "https://html.spec.whatwg.org/multipage/obsolete.html#basefont",
 			"obsolete": true,
-			"globalAttrs": {},
-			"attributes": {}
+			"globalAttrs": {
+				"#ARIAAttrs": true,
+				"#GlobalEventAttrs": true,
+				"#HTMLGlobalAttrs": true
+			},
+			"attributes": {},
+			"cite": "https://html.spec.whatwg.org/multipage/obsolete.html#basefont"
 		},
 		{
 			"name": "bdi",
@@ -48174,10 +48300,14 @@
 				"permittedRoles": true,
 				"implicitRole": false
 			},
-			"cite": "https://html.spec.whatwg.org/multipage/obsolete.html#bgsound",
 			"obsolete": true,
-			"globalAttrs": {},
-			"attributes": {}
+			"globalAttrs": {
+				"#ARIAAttrs": true,
+				"#GlobalEventAttrs": true,
+				"#HTMLGlobalAttrs": true
+			},
+			"attributes": {},
+			"cite": "https://html.spec.whatwg.org/multipage/obsolete.html#non-conforming-features"
 		},
 		{
 			"name": "big",
@@ -48188,10 +48318,14 @@
 				"permittedRoles": true,
 				"implicitRole": false
 			},
-			"cite": "https://html.spec.whatwg.org/multipage/obsolete.html#big",
 			"obsolete": true,
-			"globalAttrs": {},
-			"attributes": {}
+			"globalAttrs": {
+				"#ARIAAttrs": true,
+				"#GlobalEventAttrs": true,
+				"#HTMLGlobalAttrs": true
+			},
+			"attributes": {},
+			"cite": "https://html.spec.whatwg.org/multipage/obsolete.html#big"
 		},
 		{
 			"name": "blink",
@@ -48202,10 +48336,14 @@
 				"permittedRoles": true,
 				"implicitRole": false
 			},
-			"cite": "https://html.spec.whatwg.org/multipage/obsolete.html#blink",
 			"obsolete": true,
-			"globalAttrs": {},
-			"attributes": {}
+			"globalAttrs": {
+				"#ARIAAttrs": true,
+				"#GlobalEventAttrs": true,
+				"#HTMLGlobalAttrs": true
+			},
+			"attributes": {},
+			"cite": "https://html.spec.whatwg.org/multipage/obsolete.html#blink"
 		},
 		{
 			"name": "blockquote",
@@ -48273,22 +48411,28 @@
 			},
 			"attributes": {
 				"alink": {
-					"deprecated": true
+					"obsolete": true
 				},
 				"background": {
-					"deprecated": true
+					"obsolete": true
 				},
 				"bgcolor": {
-					"deprecated": true
+					"obsolete": true
 				},
 				"bottommargin": {
-					"deprecated": true
+					"obsolete": true
 				},
 				"leftmargin": {
-					"deprecated": true
+					"obsolete": true
 				},
 				"link": {
-					"deprecated": true
+					"obsolete": true
+				},
+				"marginheight": {
+					"obsolete": true
+				},
+				"marginwidth": {
+					"obsolete": true
 				},
 				"onafterprint": {
 					"type": "FunctionBody"
@@ -48345,16 +48489,16 @@
 					"type": "FunctionBody"
 				},
 				"rightmargin": {
-					"deprecated": true
+					"obsolete": true
 				},
 				"text": {
-					"deprecated": true
+					"obsolete": true
 				},
 				"topmargin": {
-					"deprecated": true
+					"obsolete": true
 				},
 				"vlink": {
-					"deprecated": true
+					"obsolete": true
 				}
 			},
 			"cite": "https://html.spec.whatwg.org/multipage/sections.html#the-body-element"
@@ -48384,7 +48528,7 @@
 			},
 			"attributes": {
 				"clear": {
-					"deprecated": true
+					"obsolete": true
 				}
 			},
 			"cite": "https://html.spec.whatwg.org/multipage/text-level-semantics.html#the-br-element"
@@ -48500,10 +48644,19 @@
 				"commandfor": {
 					"type": "DOMID"
 				},
+				"datafld": {
+					"obsolete": true
+				},
+				"dataformatas": {
+					"obsolete": true
+				},
+				"datasrc": {
+					"obsolete": true
+				},
 				"interestfor": {
-					"experimental": true,
+					"type": "DOMID",
 					"nonStandard": true,
-					"type": "DOMID"
+					"experimental": true
 				},
 				"popovertarget": {
 					"type": "DOMID"
@@ -48549,12 +48702,16 @@
 				"#HTMLGlobalAttrs": true
 			},
 			"attributes": {
+				"content": {
+					"nonStandard": true,
+					"experimental": true
+				},
 				"height": {
 					"defaultValue": "150"
 				},
 				"moz-opaque": {
-					"deprecated": true,
-					"nonStandard": true
+					"nonStandard": true,
+					"deprecated": true
 				},
 				"width": {
 					"defaultValue": "300"
@@ -48589,7 +48746,7 @@
 			},
 			"attributes": {
 				"align": {
-					"deprecated": true
+					"obsolete": true
 				}
 			},
 			"cite": "https://html.spec.whatwg.org/multipage/tables.html#the-caption-element"
@@ -48603,10 +48760,14 @@
 				"permittedRoles": true,
 				"implicitRole": false
 			},
-			"cite": "https://html.spec.whatwg.org/multipage/obsolete.html#center",
 			"obsolete": true,
-			"globalAttrs": {},
-			"attributes": {}
+			"globalAttrs": {
+				"#ARIAAttrs": true,
+				"#GlobalEventAttrs": true,
+				"#HTMLGlobalAttrs": true
+			},
+			"attributes": {},
+			"cite": "https://html.spec.whatwg.org/multipage/obsolete.html#center"
 		},
 		{
 			"name": "cite",
@@ -48672,16 +48833,13 @@
 			},
 			"attributes": {
 				"align": {
-					"deprecated": true
-				},
-				"bgcolor": {
-					"deprecated": true
+					"obsolete": true
 				},
 				"char": {
-					"deprecated": true
+					"obsolete": true
 				},
 				"charoff": {
-					"deprecated": true
+					"obsolete": true
 				},
 				"span": {
 					"type": {
@@ -48693,10 +48851,10 @@
 					"defaultValue": "1"
 				},
 				"valign": {
-					"deprecated": true
+					"obsolete": true
 				},
 				"width": {
-					"deprecated": true
+					"obsolete": true
 				}
 			},
 			"cite": "https://html.spec.whatwg.org/multipage/tables.html#the-col-element"
@@ -48728,16 +48886,16 @@
 			},
 			"attributes": {
 				"align": {
-					"deprecated": true
-				},
-				"bgcolor": {
-					"deprecated": true
+					"deprecated": true,
+					"nonStandard": true
 				},
 				"char": {
-					"deprecated": true
+					"deprecated": true,
+					"nonStandard": true
 				},
 				"charoff": {
-					"deprecated": true
+					"deprecated": true,
+					"nonStandard": true
 				},
 				"span": {
 					"type": {
@@ -48749,10 +48907,12 @@
 					"defaultValue": "1"
 				},
 				"valign": {
-					"deprecated": true
+					"deprecated": true,
+					"nonStandard": true
 				},
 				"width": {
-					"deprecated": true
+					"deprecated": true,
+					"nonStandard": true
 				}
 			},
 			"cite": "https://html.spec.whatwg.org/multipage/tables.html#the-colgroup-element"
@@ -48984,15 +49144,18 @@
 				"permittedRoles": true,
 				"implicitRole": false
 			},
-			"cite": "https://html.spec.whatwg.org/multipage/obsolete.html#dir",
 			"obsolete": true,
-			"globalAttrs": {},
+			"globalAttrs": {
+				"#ARIAAttrs": true,
+				"#GlobalEventAttrs": true,
+				"#HTMLGlobalAttrs": true
+			},
 			"attributes": {
 				"compact": {
-					"deprecated": true,
-					"nonStandard": true
+					"type": "Any"
 				}
-			}
+			},
+			"cite": "https://html.spec.whatwg.org/multipage/obsolete.html#non-conforming-features"
 		},
 		{
 			"name": "div",
@@ -49044,7 +49207,20 @@
 				"#GlobalEventAttrs": true,
 				"#HTMLGlobalAttrs": true
 			},
-			"attributes": {},
+			"attributes": {
+				"align": {
+					"obsolete": true
+				},
+				"datafld": {
+					"obsolete": true
+				},
+				"dataformatas": {
+					"obsolete": true
+				},
+				"datasrc": {
+					"obsolete": true
+				}
+			},
 			"cite": "https://html.spec.whatwg.org/multipage/grouping-content.html#the-div-element"
 		},
 		{
@@ -49100,7 +49276,7 @@
 			},
 			"attributes": {
 				"compact": {
-					"deprecated": true
+					"obsolete": true
 				}
 			},
 			"cite": "https://html.spec.whatwg.org/multipage/grouping-content.html#the-dl-element"
@@ -49170,12 +49346,24 @@
 				"#HTMLGlobalAttrs": true
 			},
 			"attributes": {
+				"align": {
+					"obsolete": true
+				},
+				"hspace": {
+					"obsolete": true
+				},
+				"name": {
+					"obsolete": true
+				},
 				"src": {
 					"type": "NonEmptyURL",
 					"required": "[itemprop]"
 				},
 				"type": {
 					"type": "MIMEType"
+				},
+				"vspace": {
+					"obsolete": true
 				}
 			},
 			"cite": "https://html.spec.whatwg.org/multipage/iframe-embed-object.html#the-embed-element"
@@ -49202,7 +49390,11 @@
 				"#HTMLFormControlElementAttrs": ["disabled", "form", "name"],
 				"#HTMLGlobalAttrs": true
 			},
-			"attributes": {},
+			"attributes": {
+				"datafld": {
+					"obsolete": true
+				}
+			},
 			"cite": "https://html.spec.whatwg.org/multipage/form-elements.html#the-fieldset-element"
 		},
 		{
@@ -49292,16 +49484,13 @@
 			},
 			"attributes": {
 				"color": {
-					"deprecated": true,
-					"nonStandard": true
+					"type": "Any"
 				},
 				"face": {
-					"deprecated": true,
-					"nonStandard": true
+					"type": "Any"
 				},
 				"size": {
-					"deprecated": true,
-					"nonStandard": true
+					"type": "Any"
 				}
 			},
 			"cite": "https://html.spec.whatwg.org/multipage/obsolete.html#font"
@@ -49367,7 +49556,7 @@
 			},
 			"attributes": {
 				"accept": {
-					"deprecated": true
+					"obsolete": true
 				},
 				"accept-charset": {
 					"type": {
@@ -49423,39 +49612,45 @@
 				"permittedRoles": true,
 				"implicitRole": false
 			},
-			"cite": "https://html.spec.whatwg.org/multipage/obsolete.html#frame",
 			"obsolete": true,
-			"globalAttrs": {},
+			"globalAttrs": {
+				"#ARIAAttrs": true,
+				"#GlobalEventAttrs": true,
+				"#HTMLGlobalAttrs": true
+			},
 			"attributes": {
+				"datafld": {
+					"obsolete": true
+				},
+				"datasrc": {
+					"obsolete": true
+				},
 				"frameborder": {
-					"deprecated": true,
-					"nonStandard": true
+					"type": "Any"
+				},
+				"longdesc": {
+					"type": "Any"
 				},
 				"marginheight": {
-					"deprecated": true,
-					"nonStandard": true
+					"type": "Any"
 				},
 				"marginwidth": {
-					"deprecated": true,
-					"nonStandard": true
+					"type": "Any"
 				},
 				"name": {
-					"deprecated": true,
-					"nonStandard": true
+					"type": "Any"
 				},
 				"noresize": {
-					"deprecated": true,
-					"nonStandard": true
+					"type": "Any"
 				},
 				"scrolling": {
-					"deprecated": true,
-					"nonStandard": true
+					"type": "Any"
 				},
 				"src": {
-					"deprecated": true,
-					"nonStandard": true
+					"type": "Any"
 				}
-			}
+			},
+			"cite": "https://html.spec.whatwg.org/multipage/obsolete.html#frame"
 		},
 		{
 			"name": "frameset",
@@ -49466,19 +49661,21 @@
 				"permittedRoles": true,
 				"implicitRole": false
 			},
-			"cite": "https://html.spec.whatwg.org/multipage/obsolete.html#frameset",
 			"obsolete": true,
-			"globalAttrs": {},
+			"globalAttrs": {
+				"#ARIAAttrs": true,
+				"#GlobalEventAttrs": true,
+				"#HTMLGlobalAttrs": true
+			},
 			"attributes": {
 				"cols": {
-					"deprecated": true,
-					"nonStandard": true
+					"type": "Any"
 				},
 				"rows": {
-					"deprecated": true,
-					"nonStandard": true
+					"type": "Any"
 				}
-			}
+			},
+			"cite": "https://html.spec.whatwg.org/multipage/obsolete.html#non-conforming-features"
 		},
 		{
 			"name": "h1",
@@ -49501,7 +49698,11 @@
 				"#GlobalEventAttrs": true,
 				"#HTMLGlobalAttrs": true
 			},
-			"attributes": {},
+			"attributes": {
+				"align": {
+					"obsolete": true
+				}
+			},
 			"cite": "https://html.spec.whatwg.org/multipage/sections.html#the-h1,-h2,-h3,-h4,-h5,-and-h6-elements"
 		},
 		{
@@ -49525,7 +49726,11 @@
 				"#GlobalEventAttrs": true,
 				"#HTMLGlobalAttrs": true
 			},
-			"attributes": {},
+			"attributes": {
+				"align": {
+					"obsolete": true
+				}
+			},
 			"cite": "https://html.spec.whatwg.org/multipage/sections.html#the-h1,-h2,-h3,-h4,-h5,-and-h6-elements"
 		},
 		{
@@ -49549,7 +49754,11 @@
 				"#GlobalEventAttrs": true,
 				"#HTMLGlobalAttrs": true
 			},
-			"attributes": {},
+			"attributes": {
+				"align": {
+					"obsolete": true
+				}
+			},
 			"cite": "https://html.spec.whatwg.org/multipage/sections.html#the-h1,-h2,-h3,-h4,-h5,-and-h6-elements"
 		},
 		{
@@ -49573,7 +49782,11 @@
 				"#GlobalEventAttrs": true,
 				"#HTMLGlobalAttrs": true
 			},
-			"attributes": {},
+			"attributes": {
+				"align": {
+					"obsolete": true
+				}
+			},
 			"cite": "https://html.spec.whatwg.org/multipage/sections.html#the-h1,-h2,-h3,-h4,-h5,-and-h6-elements"
 		},
 		{
@@ -49597,7 +49810,11 @@
 				"#GlobalEventAttrs": true,
 				"#HTMLGlobalAttrs": true
 			},
-			"attributes": {},
+			"attributes": {
+				"align": {
+					"obsolete": true
+				}
+			},
 			"cite": "https://html.spec.whatwg.org/multipage/sections.html#the-h1,-h2,-h3,-h4,-h5,-and-h6-elements"
 		},
 		{
@@ -49621,7 +49838,11 @@
 				"#GlobalEventAttrs": true,
 				"#HTMLGlobalAttrs": true
 			},
-			"attributes": {},
+			"attributes": {
+				"align": {
+					"obsolete": true
+				}
+			},
 			"cite": "https://html.spec.whatwg.org/multipage/sections.html#the-h1,-h2,-h3,-h4,-h5,-and-h6-elements"
 		},
 		{
@@ -49651,7 +49872,7 @@
 			},
 			"attributes": {
 				"profile": {
-					"deprecated": true
+					"obsolete": true
 				}
 			},
 			"cite": "https://html.spec.whatwg.org/multipage/semantics.html#the-head-element"
@@ -49755,24 +49976,19 @@
 			},
 			"attributes": {
 				"align": {
-					"deprecated": true,
-					"nonStandard": true
+					"obsolete": true
 				},
 				"color": {
-					"deprecated": true,
-					"nonStandard": true
+					"obsolete": true
 				},
 				"noshade": {
-					"deprecated": true,
-					"nonStandard": true
+					"obsolete": true
 				},
 				"size": {
-					"deprecated": true,
-					"nonStandard": true
+					"obsolete": true
 				},
 				"width": {
-					"deprecated": true,
-					"nonStandard": true
+					"obsolete": true
 				}
 			},
 			"cite": "https://html.spec.whatwg.org/multipage/grouping-content.html#the-hr-element"
@@ -49805,8 +50021,11 @@
 				"#HTMLGlobalAttrs": true
 			},
 			"attributes": {
+				"manifest": {
+					"obsolete": true
+				},
 				"version": {
-					"deprecated": true
+					"obsolete": true
 				},
 				"xmlns": {
 					"nonStandard": true
@@ -49857,7 +50076,7 @@
 			},
 			"attributes": {
 				"align": {
-					"deprecated": true
+					"obsolete": true
 				},
 				"allow": {
 					"type": "SerializedPermissionsPolicy"
@@ -49866,37 +50085,57 @@
 					"type": "Boolean"
 				},
 				"allowpaymentrequest": {
-					"deprecated": true,
-					"nonStandard": true
+					"nonStandard": true,
+					"deprecated": true
+				},
+				"allowtransparency": {
+					"obsolete": true
 				},
 				"browsingtopics": {
-					"deprecated": true,
-					"nonStandard": true
+					"nonStandard": true,
+					"deprecated": true
 				},
 				"credentialless": {
-					"experimental": true
+					"experimental": true,
+					"nonStandard": true
+				},
+				"cross-origin-top-navigation-by-user-activation": {
+					"nonStandard": true
 				},
 				"csp": {
-					"experimental": true
+					"experimental": true,
+					"nonStandard": true
+				},
+				"datafld": {
+					"obsolete": true
+				},
+				"datasrc": {
+					"obsolete": true
 				},
 				"frameborder": {
-					"deprecated": true
+					"obsolete": true
+				},
+				"framespacing": {
+					"obsolete": true
+				},
+				"hspace": {
+					"obsolete": true
 				},
 				"longdesc": {
-					"deprecated": true
+					"obsolete": true
 				},
 				"marginheight": {
-					"deprecated": true
+					"obsolete": true
 				},
 				"marginwidth": {
-					"deprecated": true
+					"obsolete": true
 				},
 				"name": {
 					"type": "NavigableTargetName"
 				},
 				"privateToken": {
-					"experimental": true,
-					"type": "Any"
+					"type": "Any",
+					"experimental": true
 				},
 				"sandbox": {
 					"type": {
@@ -49924,7 +50163,7 @@
 					}
 				},
 				"scrolling": {
-					"deprecated": true
+					"obsolete": true
 				},
 				"src": {
 					"required": "[itemprop]",
@@ -49932,6 +50171,9 @@
 				},
 				"srcdoc": {
 					"type": "Any"
+				},
+				"vspace": {
+					"obsolete": true
 				}
 			},
 			"cite": "https://html.spec.whatwg.org/multipage/iframe-embed-object.html#the-iframe-element"
@@ -50016,21 +50258,31 @@
 			},
 			"attributes": {
 				"align": {
-					"deprecated": true
+					"obsolete": true
 				},
 				"alt": {
 					"type": "Any"
 				},
 				"attributionsrc": {
-					"deprecated": true,
-					"nonStandard": true
+					"nonStandard": true,
+					"deprecated": true
 				},
 				"border": {
+					"type": {
+						"enum": ["0"]
+					},
 					"deprecated": true
 				},
 				"controls": {
 					"type": "Boolean",
-					"condition": "[alt]:not([alt=''])"
+					"condition": "[alt]:not([alt=''])",
+					"experimental": true
+				},
+				"datafld": {
+					"obsolete": true
+				},
+				"datasrc": {
+					"obsolete": true
 				},
 				"decoding": {
 					"type": {
@@ -50040,17 +50292,20 @@
 					}
 				},
 				"hspace": {
-					"deprecated": true
+					"obsolete": true
 				},
 				"ismap": {
 					"type": "Boolean",
 					"condition": "a[href] img"
 				},
 				"longdesc": {
-					"deprecated": true
+					"obsolete": true
+				},
+				"lowsrc": {
+					"obsolete": true
 				},
 				"name": {
-					"deprecated": true
+					"obsolete": true
 				},
 				"sizes": {
 					"type": [
@@ -50080,7 +50335,7 @@
 					"condition": ":is(:not(a):not(button)) img"
 				},
 				"vspace": {
-					"deprecated": true
+					"obsolete": true
 				}
 			},
 			"cite": "https://html.spec.whatwg.org/multipage/embedded-content.html#the-img-element"
@@ -50729,10 +50984,13 @@
 					},
 					"condition": "[type='file' i]"
 				},
+				"align": {
+					"obsolete": true
+				},
 				"alpha": {
-					"experimental": true,
 					"type": "Boolean",
-					"condition": "[type='color' i]"
+					"condition": "[type='color' i]",
+					"experimental": true
 				},
 				"alt": {
 					"type": "Any",
@@ -50769,6 +51027,9 @@
 						"[type='color' i]"
 					]
 				},
+				"border": {
+					"obsolete": true
+				},
 				"capture": {
 					"type": {
 						"enum": ["", "user", "environment"],
@@ -50782,13 +51043,22 @@
 					"condition": ["[type='checkbox' i]", "[type='radio' i]"]
 				},
 				"colorspace": {
-					"experimental": true,
 					"type": {
 						"enum": ["limited-srgb", "display-p3"],
 						"invalidValueDefault": "limited-srgb",
 						"missingValueDefault": "limited-srgb"
 					},
-					"condition": "[type='color' i]"
+					"condition": "[type='color' i]",
+					"experimental": true
+				},
+				"datafld": {
+					"obsolete": true
+				},
+				"dataformatas": {
+					"obsolete": true
+				},
+				"datasrc": {
+					"obsolete": true
 				},
 				"dirname": {
 					"condition": [
@@ -50806,8 +51076,15 @@
 				"height": {
 					"condition": "[type='image' i]"
 				},
+				"hspace": {
+					"obsolete": true
+				},
 				"incremental": {
+					"type": "Any",
 					"nonStandard": true
+				},
+				"ismap": {
+					"obsolete": true
 				},
 				"list": {
 					"type": "DOMID",
@@ -50875,8 +51152,10 @@
 						"[type='url' i]",
 						"[type='tel' i]",
 						"[type='email' i]",
-						"[type='password' i]"
-					]
+						"[type='password' i]",
+						"[type='number' i]"
+					],
+					"deprecatedWhen": "[type='number' i]"
 				},
 				"min": {
 					"type": [
@@ -50938,6 +51217,7 @@
 					}
 				},
 				"orient": {
+					"type": "Any",
 					"nonStandard": true
 				},
 				"pattern": {
@@ -51016,6 +51296,7 @@
 					]
 				},
 				"results": {
+					"type": "Any",
 					"nonStandard": true
 				},
 				"size": {
@@ -51023,6 +51304,7 @@
 						"type": "integer",
 						"gt": 0
 					},
+					"deprecatedWhen": "[type='number' i]",
 					"condition": [
 						":not([type])",
 						"[type='text' i]",
@@ -51030,7 +51312,8 @@
 						"[type='url' i]",
 						"[type='tel' i]",
 						"[type='email' i]",
-						"[type='password' i]"
+						"[type='password' i]",
+						"[type='number' i]"
 					],
 					"defaultValue": "20"
 				},
@@ -51056,10 +51339,10 @@
 					]
 				},
 				"switch": {
-					"experimental": true,
-					"nonStandard": true,
 					"type": "Boolean",
-					"condition": "[type='checkbox' i]"
+					"condition": "[type='checkbox' i]",
+					"nonStandard": true,
+					"experimental": true
 				},
 				"type": {
 					"type": {
@@ -51091,6 +51374,9 @@
 						"missingValueDefault": "text"
 					},
 					"defaultValue": "text"
+				},
+				"usemap": {
+					"obsolete": true
 				},
 				"value": {
 					"condition": ":not([type='file' i]):not([type='image' i]):not([type='hidden' i][name='_charset_' i])",
@@ -51146,6 +51432,9 @@
 						}
 					]
 				},
+				"vspace": {
+					"obsolete": true
+				},
 				"webkitdirectory": {
 					"type": "Boolean",
 					"condition": "[type='file' i]"
@@ -51197,10 +51486,14 @@
 				"permittedRoles": true,
 				"implicitRole": false
 			},
-			"cite": "https://html.spec.whatwg.org/multipage/obsolete.html#isindex",
 			"obsolete": true,
-			"globalAttrs": {},
-			"attributes": {}
+			"globalAttrs": {
+				"#ARIAAttrs": true,
+				"#GlobalEventAttrs": true,
+				"#HTMLGlobalAttrs": true
+			},
+			"attributes": {},
+			"cite": "https://html.spec.whatwg.org/multipage/obsolete.html#non-conforming-features"
 		},
 		{
 			"name": "kbd",
@@ -51233,10 +51526,14 @@
 				"permittedRoles": true,
 				"implicitRole": false
 			},
-			"cite": "https://html.spec.whatwg.org/multipage/obsolete.html#keygen",
 			"obsolete": true,
-			"globalAttrs": {},
-			"attributes": {}
+			"globalAttrs": {
+				"#ARIAAttrs": true,
+				"#GlobalEventAttrs": true,
+				"#HTMLGlobalAttrs": true
+			},
+			"attributes": {},
+			"cite": "https://html.spec.whatwg.org/multipage/obsolete.html#keygen"
 		},
 		{
 			"name": "label",
@@ -51258,6 +51555,15 @@
 				"#HTMLGlobalAttrs": true
 			},
 			"attributes": {
+				"datafld": {
+					"obsolete": true
+				},
+				"dataformatas": {
+					"obsolete": true
+				},
+				"datasrc": {
+					"obsolete": true
+				},
 				"for": {
 					"type": "DOMID"
 				}
@@ -51283,7 +51589,20 @@
 				"#GlobalEventAttrs": true,
 				"#HTMLGlobalAttrs": true
 			},
-			"attributes": {},
+			"attributes": {
+				"align": {
+					"obsolete": true
+				},
+				"datafld": {
+					"obsolete": true
+				},
+				"dataformatas": {
+					"obsolete": true
+				},
+				"datasrc": {
+					"obsolete": true
+				}
+			},
 			"cite": "https://html.spec.whatwg.org/multipage/form-elements.html#the-legend-element"
 		},
 		{
@@ -51317,7 +51636,7 @@
 			},
 			"attributes": {
 				"type": {
-					"deprecated": true
+					"obsolete": true
 				},
 				"value": {
 					"type": "Int",
@@ -51391,8 +51710,7 @@
 					"condition": "[rel~='stylesheet' i]"
 				},
 				"charset": {
-					"obsolete": true,
-					"deprecated": true
+					"obsolete": true
 				},
 				"color": {
 					"type": "<color>",
@@ -51422,13 +51740,15 @@
 				"itemprop": {
 					"requiredEither": ["rel"]
 				},
+				"methods": {
+					"obsolete": true
+				},
 				"rel": {
 					"type": "LinkTypeForLinkElement",
 					"requiredEither": ["itemprop"]
 				},
 				"rev": {
-					"obsolete": true,
-					"deprecated": true
+					"obsolete": true
 				},
 				"sizes": {
 					"type": {
@@ -51441,7 +51761,7 @@
 					"condition": ["[rel~='icon' i]", "[rel~='apple-touch-icon' i]"]
 				},
 				"target": {
-					"deprecated": true
+					"obsolete": true
 				},
 				"title": {
 					"type": [
@@ -51451,6 +51771,9 @@
 						}
 					],
 					"required": "[rel~='alternate' i][rel~='stylesheet' i]"
+				},
+				"urn": {
+					"obsolete": true
 				}
 			},
 			"cite": "https://html.spec.whatwg.org/multipage/semantics.html#the-link-element"
@@ -51464,10 +51787,14 @@
 				"permittedRoles": true,
 				"implicitRole": false
 			},
-			"cite": "https://html.spec.whatwg.org/multipage/obsolete.html#listing",
 			"obsolete": true,
-			"globalAttrs": {},
-			"attributes": {}
+			"globalAttrs": {
+				"#ARIAAttrs": true,
+				"#GlobalEventAttrs": true,
+				"#HTMLGlobalAttrs": true
+			},
+			"attributes": {},
+			"cite": "https://html.spec.whatwg.org/multipage/obsolete.html#non-conforming-features"
 		},
 		{
 			"name": "main",
@@ -51552,50 +51879,57 @@
 				"permittedRoles": true,
 				"implicitRole": false
 			},
-			"cite": "https://html.spec.whatwg.org/multipage/obsolete.html#non-conforming-features",
 			"obsolete": true,
-			"globalAttrs": {},
+			"globalAttrs": {
+				"#ARIAAttrs": true,
+				"#GlobalEventAttrs": true,
+				"#HTMLGlobalAttrs": true
+			},
 			"attributes": {
 				"behavior": {
-					"deprecated": true
+					"type": "Any"
 				},
 				"bgcolor": {
-					"deprecated": true
+					"type": "Any"
+				},
+				"datafld": {
+					"obsolete": true
+				},
+				"dataformatas": {
+					"obsolete": true
+				},
+				"datasrc": {
+					"obsolete": true
 				},
 				"direction": {
-					"deprecated": true
+					"type": "Any"
 				},
 				"height": {
-					"deprecated": true,
-					"nonStandard": true
+					"type": "Any"
 				},
 				"hspace": {
-					"deprecated": true,
-					"nonStandard": true
+					"type": "Any"
 				},
 				"loop": {
-					"deprecated": true
+					"type": "Any"
 				},
 				"scrollamount": {
-					"deprecated": true,
-					"nonStandard": true
+					"type": "Any"
 				},
 				"scrolldelay": {
-					"deprecated": true,
-					"nonStandard": true
+					"type": "Any"
 				},
 				"truespeed": {
-					"deprecated": true
+					"type": "Any"
 				},
 				"vspace": {
-					"deprecated": true,
-					"nonStandard": true
+					"type": "Any"
 				},
 				"width": {
-					"deprecated": true,
-					"nonStandard": true
+					"type": "Any"
 				}
-			}
+			},
+			"cite": "https://html.spec.whatwg.org/multipage/obsolete.html#the-marquee-element"
 		},
 		{
 			"name": "menu",
@@ -51647,7 +51981,13 @@
 			},
 			"attributes": {
 				"compact": {
-					"deprecated": true
+					"obsolete": true
+				},
+				"label": {
+					"obsolete": true
+				},
+				"type": {
+					"obsolete": true
 				}
 			},
 			"cite": "https://html.spec.whatwg.org/multipage/grouping-content.html#the-menu-element"
@@ -51661,10 +52001,14 @@
 				"permittedRoles": true,
 				"implicitRole": false
 			},
-			"cite": "https://html.spec.whatwg.org/multipage/obsolete.html#menuitem",
 			"obsolete": true,
-			"globalAttrs": {},
-			"attributes": {}
+			"globalAttrs": {
+				"#ARIAAttrs": true,
+				"#GlobalEventAttrs": true,
+				"#HTMLGlobalAttrs": true
+			},
+			"attributes": {},
+			"cite": "https://html.spec.whatwg.org/multipage/obsolete.html#non-conforming-features"
 		},
 		{
 			"name": "meta",
@@ -51739,6 +52083,9 @@
 					"type": "Any",
 					"requiredEither": ["itemprop", "http-equiv", "charset"],
 					"condition": [":not([itemprop])", ":not([http-equiv])", ":not([charset])"]
+				},
+				"scheme": {
+					"obsolete": true
 				}
 			},
 			"cite": "https://html.spec.whatwg.org/multipage/semantics.html#the-meta-element"
@@ -51824,10 +52171,14 @@
 				"permittedRoles": true,
 				"implicitRole": false
 			},
-			"cite": "https://html.spec.whatwg.org/multipage/obsolete.html#multicol",
 			"obsolete": true,
-			"globalAttrs": {},
-			"attributes": {}
+			"globalAttrs": {
+				"#ARIAAttrs": true,
+				"#GlobalEventAttrs": true,
+				"#HTMLGlobalAttrs": true
+			},
+			"attributes": {},
+			"cite": "https://html.spec.whatwg.org/multipage/obsolete.html#multicol"
 		},
 		{
 			"name": "nav",
@@ -51862,10 +52213,14 @@
 				"permittedRoles": true,
 				"implicitRole": false
 			},
-			"cite": "https://html.spec.whatwg.org/multipage/obsolete.html#nextid",
 			"obsolete": true,
-			"globalAttrs": {},
-			"attributes": {}
+			"globalAttrs": {
+				"#ARIAAttrs": true,
+				"#GlobalEventAttrs": true,
+				"#HTMLGlobalAttrs": true
+			},
+			"attributes": {},
+			"cite": "https://html.spec.whatwg.org/multipage/obsolete.html#non-conforming-features"
 		},
 		{
 			"name": "nobr",
@@ -51876,10 +52231,14 @@
 				"permittedRoles": true,
 				"implicitRole": false
 			},
-			"cite": "https://html.spec.whatwg.org/multipage/obsolete.html#nobr",
 			"obsolete": true,
-			"globalAttrs": {},
-			"attributes": {}
+			"globalAttrs": {
+				"#ARIAAttrs": true,
+				"#GlobalEventAttrs": true,
+				"#HTMLGlobalAttrs": true
+			},
+			"attributes": {},
+			"cite": "https://html.spec.whatwg.org/multipage/obsolete.html#nobr"
 		},
 		{
 			"name": "noembed",
@@ -51890,10 +52249,14 @@
 				"permittedRoles": true,
 				"implicitRole": false
 			},
-			"cite": "https://html.spec.whatwg.org/multipage/obsolete.html#noembed",
 			"obsolete": true,
-			"globalAttrs": {},
-			"attributes": {}
+			"globalAttrs": {
+				"#ARIAAttrs": true,
+				"#GlobalEventAttrs": true,
+				"#HTMLGlobalAttrs": true
+			},
+			"attributes": {},
+			"cite": "https://html.spec.whatwg.org/multipage/obsolete.html#non-conforming-features"
 		},
 		{
 			"name": "noframes",
@@ -51904,10 +52267,14 @@
 				"permittedRoles": true,
 				"implicitRole": false
 			},
-			"cite": "https://html.spec.whatwg.org/multipage/obsolete.html#noframes",
 			"obsolete": true,
-			"globalAttrs": {},
-			"attributes": {}
+			"globalAttrs": {
+				"#ARIAAttrs": true,
+				"#GlobalEventAttrs": true,
+				"#HTMLGlobalAttrs": true
+			},
+			"attributes": {},
+			"cite": "https://html.spec.whatwg.org/multipage/obsolete.html#noframes"
 		},
 		{
 			"name": "noscript",
@@ -51952,40 +52319,64 @@
 				"#HTMLGlobalAttrs": true
 			},
 			"attributes": {
+				"align": {
+					"obsolete": true
+				},
 				"archive": {
-					"deprecated": true
+					"obsolete": true
 				},
 				"border": {
-					"deprecated": true
+					"obsolete": true
 				},
 				"classid": {
-					"deprecated": true
+					"obsolete": true
+				},
+				"code": {
+					"obsolete": true
 				},
 				"codebase": {
-					"deprecated": true
+					"obsolete": true
 				},
 				"codetype": {
-					"deprecated": true
+					"obsolete": true
 				},
 				"data": {
 					"type": "NonEmptyURL",
 					"requiredEither": ["type"]
 				},
+				"datafld": {
+					"obsolete": true
+				},
+				"dataformatas": {
+					"obsolete": true
+				},
+				"datasrc": {
+					"obsolete": true
+				},
 				"declare": {
-					"deprecated": true
+					"obsolete": true
+				},
+				"hspace": {
+					"obsolete": true
 				},
 				"name": {
 					"type": "NavigableTargetName"
 				},
 				"standby": {
-					"deprecated": true
+					"obsolete": true
 				},
 				"type": {
 					"type": "MIMEType",
 					"requiredEither": ["data"]
 				},
+				"typemustmatch": {
+					"obsolete": true
+				},
 				"usemap": {
-					"deprecated": true
+					"obsolete": true
+				},
+				"vspace": {
+					"obsolete": true
 				}
 			},
 			"cite": "https://html.spec.whatwg.org/multipage/iframe-embed-object.html#the-object-element"
@@ -52040,8 +52431,7 @@
 			},
 			"attributes": {
 				"compact": {
-					"deprecated": true,
-					"nonStandard": true
+					"obsolete": true
 				},
 				"reversed": {
 					"type": "Boolean"
@@ -52161,8 +52551,17 @@
 				"#HTMLGlobalAttrs": true
 			},
 			"attributes": {
+				"dataformatas": {
+					"obsolete": true
+				},
+				"datasrc": {
+					"obsolete": true
+				},
 				"label": {
 					"type": "Any"
+				},
+				"name": {
+					"obsolete": true
 				},
 				"selected": {
 					"type": "Boolean"
@@ -52226,7 +52625,11 @@
 				"#GlobalEventAttrs": true,
 				"#HTMLGlobalAttrs": true
 			},
-			"attributes": {},
+			"attributes": {
+				"align": {
+					"obsolete": true
+				}
+			},
 			"cite": "https://html.spec.whatwg.org/multipage/grouping-content.html#the-p-element"
 		},
 		{
@@ -52238,27 +52641,27 @@
 				"permittedRoles": true,
 				"implicitRole": false
 			},
-			"cite": "https://html.spec.whatwg.org/multipage/obsolete.html#param",
 			"obsolete": true,
-			"globalAttrs": {},
+			"globalAttrs": {
+				"#ARIAAttrs": true,
+				"#GlobalEventAttrs": true,
+				"#HTMLGlobalAttrs": true
+			},
 			"attributes": {
 				"name": {
-					"deprecated": true,
-					"nonStandard": true
+					"type": "Any"
 				},
 				"type": {
-					"deprecated": true,
-					"nonStandard": true
+					"type": "Any"
 				},
 				"value": {
-					"deprecated": true,
-					"nonStandard": true
+					"type": "Any"
 				},
 				"valuetype": {
-					"deprecated": true,
-					"nonStandard": true
+					"type": "Any"
 				}
-			}
+			},
+			"cite": "https://html.spec.whatwg.org/multipage/obsolete.html#non-conforming-features"
 		},
 		{
 			"name": "picture",
@@ -52313,10 +52716,14 @@
 				"permittedRoles": true,
 				"implicitRole": false
 			},
-			"cite": "https://html.spec.whatwg.org/multipage/obsolete.html#plaintext",
 			"obsolete": true,
-			"globalAttrs": {},
-			"attributes": {}
+			"globalAttrs": {
+				"#ARIAAttrs": true,
+				"#GlobalEventAttrs": true,
+				"#HTMLGlobalAttrs": true
+			},
+			"attributes": {},
+			"cite": "https://html.spec.whatwg.org/multipage/obsolete.html#non-conforming-features"
 		},
 		{
 			"name": "pre",
@@ -52342,11 +52749,9 @@
 			},
 			"attributes": {
 				"width": {
-					"deprecated": true,
-					"nonStandard": true
+					"obsolete": true
 				},
 				"wrap": {
-					"deprecated": true,
 					"nonStandard": true
 				}
 			},
@@ -52446,10 +52851,14 @@
 				"permittedRoles": true,
 				"implicitRole": false
 			},
-			"cite": "https://html.spec.whatwg.org/multipage/obsolete.html#rb",
 			"obsolete": true,
-			"globalAttrs": {},
-			"attributes": {}
+			"globalAttrs": {
+				"#ARIAAttrs": true,
+				"#GlobalEventAttrs": true,
+				"#HTMLGlobalAttrs": true
+			},
+			"attributes": {},
+			"cite": "https://html.spec.whatwg.org/multipage/obsolete.html#rb"
 		},
 		{
 			"name": "rp",
@@ -52503,10 +52912,14 @@
 				"permittedRoles": true,
 				"implicitRole": false
 			},
-			"cite": "https://html.spec.whatwg.org/multipage/obsolete.html#rtc",
 			"obsolete": true,
-			"globalAttrs": {},
-			"attributes": {}
+			"globalAttrs": {
+				"#ARIAAttrs": true,
+				"#GlobalEventAttrs": true,
+				"#HTMLGlobalAttrs": true
+			},
+			"attributes": {},
+			"cite": "https://html.spec.whatwg.org/multipage/obsolete.html#rtc"
 		},
 		{
 			"name": "ruby",
@@ -52637,8 +53050,8 @@
 					"ineffective": ":not([src]):not([type='module' i])"
 				},
 				"attributionsrc": {
-					"deprecated": true,
-					"nonStandard": true
+					"nonStandard": true,
+					"deprecated": true
 				},
 				"blocking": {
 					"type": {
@@ -52651,8 +53064,12 @@
 					"condition": ":is(:not([type]), [type=''], [type='module' i], [type='application/ecmascript' i], [type='application/javascript' i], [type='application/x-ecmascript' i], [type='application/x-javascript' i], [type='text/ecmascript' i], [type='text/javascript' i], [type='text/javascript1.0' i], [type='text/javascript1.1' i], [type='text/javascript1.2' i], [type='text/javascript1.3' i], [type='text/javascript1.4' i], [type='text/javascript1.5' i], [type='text/jscript' i], [type='text/livescript' i], [type='text/x-ecmascript' i], [type='text/x-javascript' i])[src]"
 				},
 				"charset": {
-					"deprecated": true,
-					"condition": "[src]"
+					"type": {
+						"enum": ["utf-8"],
+						"caseInsensitive": true
+					},
+					"condition": "[src]",
+					"deprecated": true
 				},
 				"crossorigin": {
 					"condition": ":is(:not([type]), [type=''], [type='module' i], [type='application/ecmascript' i], [type='application/javascript' i], [type='application/x-ecmascript' i], [type='application/x-javascript' i], [type='text/ecmascript' i], [type='text/javascript' i], [type='text/javascript1.0' i], [type='text/javascript1.1' i], [type='text/javascript1.2' i], [type='text/javascript1.3' i], [type='text/javascript1.4' i], [type='text/javascript1.5' i], [type='text/jscript' i], [type='text/livescript' i], [type='text/x-ecmascript' i], [type='text/x-javascript' i])"
@@ -52662,15 +53079,25 @@
 					"condition": ":is(:not([type]), [type=''], [type='application/ecmascript' i], [type='application/javascript' i], [type='application/x-ecmascript' i], [type='application/x-javascript' i], [type='text/ecmascript' i], [type='text/javascript' i], [type='text/javascript1.0' i], [type='text/javascript1.1' i], [type='text/javascript1.2' i], [type='text/javascript1.3' i], [type='text/javascript1.4' i], [type='text/javascript1.5' i], [type='text/jscript' i], [type='text/livescript' i], [type='text/x-ecmascript' i], [type='text/x-javascript' i])[src]",
 					"ineffective": [":not([src])", "[async]"]
 				},
+				"event": {
+					"obsolete": true
+				},
 				"fetchpriority": {
 					"condition": ":is(:not([type]), [type=''], [type='module' i], [type='application/ecmascript' i], [type='application/javascript' i], [type='application/x-ecmascript' i], [type='application/x-javascript' i], [type='text/ecmascript' i], [type='text/javascript' i], [type='text/javascript1.0' i], [type='text/javascript1.1' i], [type='text/javascript1.2' i], [type='text/javascript1.3' i], [type='text/javascript1.4' i], [type='text/javascript1.5' i], [type='text/jscript' i], [type='text/livescript' i], [type='text/x-ecmascript' i], [type='text/x-javascript' i])[src]"
+				},
+				"for": {
+					"obsolete": true
 				},
 				"integrity": {
 					"condition": ":is(:not([type]), [type=''], [type='module' i], [type='application/ecmascript' i], [type='application/javascript' i], [type='application/x-ecmascript' i], [type='application/x-javascript' i], [type='text/ecmascript' i], [type='text/javascript' i], [type='text/javascript1.0' i], [type='text/javascript1.1' i], [type='text/javascript1.2' i], [type='text/javascript1.3' i], [type='text/javascript1.4' i], [type='text/javascript1.5' i], [type='text/jscript' i], [type='text/livescript' i], [type='text/x-ecmascript' i], [type='text/x-javascript' i])[src]"
 				},
 				"language": {
-					"deprecated": true,
-					"nonStandard": true
+					"type": {
+						"enum": ["JavaScript"],
+						"caseInsensitive": true
+					},
+					"condition": [":not([type])", "[type='text/javascript' i]"],
+					"deprecated": true
 				},
 				"nomodule": {
 					"type": "Boolean",
@@ -52690,7 +53117,8 @@
 							"enum": ["", "module", "importmap", "speculationrules"],
 							"caseInsensitive": true
 						}
-					]
+					],
+					"deprecatedWhen": ":is([type=''], [type='application/ecmascript' i], [type='application/javascript' i], [type='application/x-ecmascript' i], [type='application/x-javascript' i], [type='text/ecmascript' i], [type='text/javascript' i], [type='text/javascript1.0' i], [type='text/javascript1.1' i], [type='text/javascript1.2' i], [type='text/javascript1.3' i], [type='text/javascript1.4' i], [type='text/javascript1.5' i], [type='text/jscript' i], [type='text/livescript' i], [type='text/x-ecmascript' i], [type='text/x-javascript' i])"
 				}
 			},
 			"cite": "https://html.spec.whatwg.org/multipage/scripting.html#the-script-element"
@@ -52861,6 +53289,15 @@
 				"autocomplete": {
 					"type": "AutoCompleteNoWebauthn"
 				},
+				"datafld": {
+					"obsolete": true
+				},
+				"dataformatas": {
+					"obsolete": true
+				},
+				"datasrc": {
+					"obsolete": true
+				},
 				"multiple": {
 					"type": "Boolean"
 				},
@@ -52977,10 +53414,14 @@
 				"permittedRoles": true,
 				"implicitRole": false
 			},
-			"cite": "https://html.spec.whatwg.org/multipage/obsolete.html#spacer",
 			"obsolete": true,
-			"globalAttrs": {},
-			"attributes": {}
+			"globalAttrs": {
+				"#ARIAAttrs": true,
+				"#GlobalEventAttrs": true,
+				"#HTMLGlobalAttrs": true
+			},
+			"attributes": {},
+			"cite": "https://html.spec.whatwg.org/multipage/obsolete.html#spacer"
 		},
 		{
 			"name": "span",
@@ -53004,7 +53445,17 @@
 				"#GlobalEventAttrs": true,
 				"#HTMLGlobalAttrs": true
 			},
-			"attributes": {},
+			"attributes": {
+				"datafld": {
+					"obsolete": true
+				},
+				"dataformatas": {
+					"obsolete": true
+				},
+				"datasrc": {
+					"obsolete": true
+				}
+			},
 			"cite": "https://html.spec.whatwg.org/multipage/text-level-semantics.html#the-span-element"
 		},
 		{
@@ -53016,10 +53467,14 @@
 				"permittedRoles": true,
 				"implicitRole": false
 			},
-			"cite": "https://html.spec.whatwg.org/multipage/obsolete.html#strike",
 			"obsolete": true,
-			"globalAttrs": {},
-			"attributes": {}
+			"globalAttrs": {
+				"#ARIAAttrs": true,
+				"#GlobalEventAttrs": true,
+				"#HTMLGlobalAttrs": true
+			},
+			"attributes": {},
+			"cite": "https://html.spec.whatwg.org/multipage/obsolete.html#non-conforming-features"
 		},
 		{
 			"name": "strong",
@@ -53079,6 +53534,10 @@
 					"type": "MediaQueryList"
 				},
 				"type": {
+					"type": {
+						"enum": ["text/css"],
+						"caseInsensitive": true
+					},
 					"deprecated": true
 				}
 			},
@@ -53249,31 +53708,49 @@
 			},
 			"attributes": {
 				"align": {
-					"deprecated": true
+					"obsolete": true
+				},
+				"background": {
+					"obsolete": true
 				},
 				"bgcolor": {
-					"deprecated": true
+					"obsolete": true
 				},
 				"border": {
-					"deprecated": true
+					"obsolete": true
+				},
+				"bordercolor": {
+					"obsolete": true
 				},
 				"cellpadding": {
-					"deprecated": true
+					"obsolete": true
 				},
 				"cellspacing": {
-					"deprecated": true
+					"obsolete": true
+				},
+				"dataformatas": {
+					"obsolete": true
+				},
+				"datapagesize": {
+					"obsolete": true
+				},
+				"datasrc": {
+					"obsolete": true
 				},
 				"frame": {
-					"deprecated": true
+					"obsolete": true
+				},
+				"height": {
+					"obsolete": true
 				},
 				"rules": {
-					"deprecated": true
+					"obsolete": true
 				},
 				"summary": {
-					"deprecated": true
+					"obsolete": true
 				},
 				"width": {
-					"deprecated": true
+					"obsolete": true
 				}
 			},
 			"cite": "https://html.spec.whatwg.org/multipage/tables.html#the-table-element"
@@ -53298,20 +53775,26 @@
 			},
 			"attributes": {
 				"align": {
-					"deprecated": true
+					"obsolete": true
+				},
+				"background": {
+					"obsolete": true
 				},
 				"bgcolor": {
-					"deprecated": true,
-					"nonStandard": true
+					"nonStandard": true,
+					"deprecated": true
 				},
 				"char": {
-					"deprecated": true
+					"obsolete": true
 				},
 				"charoff": {
-					"deprecated": true
+					"obsolete": true
+				},
+				"height": {
+					"obsolete": true
 				},
 				"valign": {
-					"deprecated": true
+					"obsolete": true
 				}
 			},
 			"cite": "https://html.spec.whatwg.org/multipage/tables.html#the-tbody-element"
@@ -53348,34 +53831,40 @@
 			},
 			"attributes": {
 				"abbr": {
-					"deprecated": true
+					"obsolete": true
 				},
 				"align": {
-					"deprecated": true
+					"obsolete": true
 				},
 				"axis": {
-					"deprecated": true
+					"obsolete": true
+				},
+				"background": {
+					"obsolete": true
 				},
 				"bgcolor": {
-					"deprecated": true
+					"obsolete": true
 				},
 				"char": {
-					"deprecated": true
+					"obsolete": true
 				},
 				"charoff": {
-					"deprecated": true
+					"obsolete": true
 				},
 				"height": {
-					"deprecated": true
+					"obsolete": true
+				},
+				"nowrap": {
+					"obsolete": true
 				},
 				"scope": {
-					"deprecated": true
+					"obsolete": true
 				},
 				"valign": {
-					"deprecated": true
+					"obsolete": true
 				},
 				"width": {
-					"deprecated": true
+					"obsolete": true
 				}
 			},
 			"cite": "https://html.spec.whatwg.org/multipage/tables.html#the-td-element"
@@ -53397,7 +53886,8 @@
 			},
 			"attributes": {
 				"for": {
-					"experimental": true
+					"experimental": true,
+					"nonStandard": true
 				},
 				"shadowrootclonable": {
 					"type": "Boolean"
@@ -53416,20 +53906,20 @@
 					}
 				},
 				"shadowrootreferencetarget": {
-					"experimental": true,
+					"type": "DOMID",
 					"nonStandard": true,
-					"type": "DOMID"
+					"experimental": true
 				},
 				"shadowrootserializable": {
 					"type": "Boolean"
 				},
 				"shadowrootslotassignment": {
-					"experimental": true,
 					"type": {
 						"enum": ["named", "manual"],
 						"missingValueDefault": "named",
 						"invalidValueDefault": "named"
-					}
+					},
+					"experimental": true
 				}
 			},
 			"cite": "https://html.spec.whatwg.org/multipage/scripting.html#the-template-element"
@@ -53475,6 +53965,12 @@
 					},
 					"defaultValue": "20"
 				},
+				"datafld": {
+					"obsolete": true
+				},
+				"datasrc": {
+					"obsolete": true
+				},
 				"placeholder": {
 					"type": "Any"
 				},
@@ -53515,20 +54011,26 @@
 			},
 			"attributes": {
 				"align": {
-					"deprecated": true
+					"obsolete": true
+				},
+				"background": {
+					"obsolete": true
 				},
 				"bgcolor": {
-					"deprecated": true,
-					"nonStandard": true
+					"nonStandard": true,
+					"deprecated": true
 				},
 				"char": {
-					"deprecated": true
+					"obsolete": true
 				},
 				"charoff": {
-					"deprecated": true
+					"obsolete": true
+				},
+				"height": {
+					"obsolete": true
 				},
 				"valign": {
-					"deprecated": true
+					"obsolete": true
 				}
 			},
 			"cite": "https://html.spec.whatwg.org/multipage/tables.html#the-tfoot-element"
@@ -53580,22 +54082,28 @@
 					"type": "Any"
 				},
 				"align": {
-					"deprecated": true
+					"obsolete": true
 				},
 				"axis": {
-					"deprecated": true
+					"obsolete": true
+				},
+				"background": {
+					"obsolete": true
 				},
 				"bgcolor": {
-					"deprecated": true
+					"obsolete": true
 				},
 				"char": {
-					"deprecated": true
+					"obsolete": true
 				},
 				"charoff": {
-					"deprecated": true
+					"obsolete": true
 				},
 				"height": {
-					"deprecated": true
+					"obsolete": true
+				},
+				"nowrap": {
+					"obsolete": true
 				},
 				"scope": {
 					"type": {
@@ -53605,10 +54113,10 @@
 					}
 				},
 				"valign": {
-					"deprecated": true
+					"obsolete": true
 				},
 				"width": {
-					"deprecated": true
+					"obsolete": true
 				}
 			},
 			"cite": "https://html.spec.whatwg.org/multipage/tables.html#the-th-element"
@@ -53633,20 +54141,26 @@
 			},
 			"attributes": {
 				"align": {
-					"deprecated": true
+					"obsolete": true
+				},
+				"background": {
+					"obsolete": true
 				},
 				"bgcolor": {
-					"deprecated": true,
-					"nonStandard": true
+					"nonStandard": true,
+					"deprecated": true
 				},
 				"char": {
-					"deprecated": true
+					"obsolete": true
 				},
 				"charoff": {
-					"deprecated": true
+					"obsolete": true
+				},
+				"height": {
+					"obsolete": true
 				},
 				"valign": {
-					"deprecated": true
+					"obsolete": true
 				}
 			},
 			"cite": "https://html.spec.whatwg.org/multipage/tables.html#the-thead-element"
@@ -53727,19 +54241,25 @@
 			},
 			"attributes": {
 				"align": {
-					"deprecated": true
+					"obsolete": true
+				},
+				"background": {
+					"obsolete": true
 				},
 				"bgcolor": {
-					"deprecated": true
+					"obsolete": true
 				},
 				"char": {
-					"deprecated": true
+					"obsolete": true
 				},
 				"charoff": {
-					"deprecated": true
+					"obsolete": true
+				},
+				"height": {
+					"obsolete": true
 				},
 				"valign": {
-					"deprecated": true
+					"obsolete": true
 				}
 			},
 			"cite": "https://html.spec.whatwg.org/multipage/tables.html#the-tr-element"
@@ -53793,10 +54313,14 @@
 				"permittedRoles": true,
 				"implicitRole": false
 			},
-			"cite": "https://html.spec.whatwg.org/multipage/obsolete.html#tt",
 			"obsolete": true,
-			"globalAttrs": {},
-			"attributes": {}
+			"globalAttrs": {
+				"#ARIAAttrs": true,
+				"#GlobalEventAttrs": true,
+				"#HTMLGlobalAttrs": true
+			},
+			"attributes": {},
+			"cite": "https://html.spec.whatwg.org/multipage/obsolete.html#tt"
 		},
 		{
 			"name": "u",
@@ -53873,10 +54397,10 @@
 			},
 			"attributes": {
 				"compact": {
-					"deprecated": true
+					"obsolete": true
 				},
 				"type": {
-					"deprecated": true
+					"obsolete": true
 				}
 			},
 			"cite": "https://html.spec.whatwg.org/multipage/grouping-content.html#the-ul-element"
@@ -54017,10 +54541,14 @@
 				"permittedRoles": true,
 				"implicitRole": false
 			},
-			"cite": "https://html.spec.whatwg.org/multipage/obsolete.html#xmp",
 			"obsolete": true,
-			"globalAttrs": {},
-			"attributes": {}
+			"globalAttrs": {
+				"#ARIAAttrs": true,
+				"#GlobalEventAttrs": true,
+				"#HTMLGlobalAttrs": true
+			},
+			"attributes": {},
+			"cite": "https://html.spec.whatwg.org/multipage/obsolete.html#non-conforming-features"
 		},
 		{
 			"name": "mml:annotation",
@@ -54046,7 +54574,6 @@
 					"type": "MIMEType"
 				},
 				"src": {
-					"deprecated": true,
 					"type": "URL"
 				}
 			},
@@ -54082,7 +54609,6 @@
 					"type": "MIMEType"
 				},
 				"src": {
-					"deprecated": true,
 					"type": "URL"
 				}
 			},
@@ -54108,7 +54634,6 @@
 				"implicitRole": false,
 				"permittedRoles": true
 			},
-			"deprecated": true,
 			"globalAttrs": {
 				"#ARIAAttrs": true,
 				"#GlobalEventAttrs": true,
@@ -54116,17 +54641,18 @@
 			},
 			"attributes": {
 				"actiontype": {
-					"deprecated": true,
+					"type": "Any",
 					"nonStandard": true,
-					"type": "Any"
+					"deprecated": true
 				},
 				"selection": {
-					"deprecated": true,
+					"type": "Any",
 					"nonStandard": true,
-					"type": "Any"
+					"deprecated": true
 				}
 			},
-			"cite": "https://w3c.github.io/mathml/#presm_maction"
+			"cite": "https://w3c.github.io/mathml/#presm_maction",
+			"deprecated": true
 		},
 		{
 			"name": "mml:math",
@@ -54188,7 +54714,6 @@
 				"implicitRole": false,
 				"permittedRoles": true
 			},
-			"nonStandard": true,
 			"globalAttrs": {
 				"#ARIAAttrs": true,
 				"#GlobalEventAttrs": true,
@@ -54196,11 +54721,12 @@
 			},
 			"attributes": {
 				"notation": {
-					"nonStandard": true,
-					"type": "Any"
+					"type": "Any",
+					"nonStandard": true
 				}
 			},
-			"cite": "https://w3c.github.io/mathml/#presm_menclose_desc"
+			"cite": "https://w3c.github.io/mathml/#presm_menclose_desc",
+			"nonStandard": true
 		},
 		{
 			"name": "mml:merror",
@@ -54250,8 +54776,6 @@
 				"implicitRole": false,
 				"permittedRoles": true
 			},
-			"deprecated": true,
-			"nonStandard": true,
 			"globalAttrs": {
 				"#ARIAAttrs": true,
 				"#GlobalEventAttrs": true,
@@ -54271,7 +54795,9 @@
 					"defaultValue": ","
 				}
 			},
-			"cite": "https://w3c.github.io/mathml/#presm_mfenced_desc"
+			"cite": "https://w3c.github.io/mathml/#presm_mfenced_desc",
+			"nonStandard": true,
+			"deprecated": true
 		},
 		{
 			"name": "mml:mfrac",
@@ -54296,15 +54822,15 @@
 			},
 			"attributes": {
 				"denomalign": {
-					"deprecated": true,
-					"nonStandard": true
+					"nonStandard": true,
+					"deprecated": true
 				},
 				"linethickness": {
 					"type": "<length-percentage>"
 				},
 				"numalign": {
-					"deprecated": true,
-					"nonStandard": true
+					"nonStandard": true,
+					"deprecated": true
 				}
 			},
 			"cite": "https://www.w3.org/TR/mathml-core/#fractions-mfrac"
@@ -54365,12 +54891,12 @@
 			},
 			"attributes": {
 				"subscriptshift": {
-					"deprecated": true,
-					"nonStandard": true
+					"nonStandard": true,
+					"deprecated": true
 				},
 				"superscriptshift": {
-					"deprecated": true,
-					"nonStandard": true
+					"nonStandard": true,
+					"deprecated": true
 				}
 			},
 			"cite": "https://www.w3.org/TR/mathml-core/#prescripts-and-tensor-indices-mmultiscripts"
@@ -54430,11 +54956,11 @@
 			},
 			"attributes": {
 				"accent": {
-					"nonStandard": true,
 					"type": {
 						"enum": ["true", "false"],
 						"disallowToSurroundBySpaces": false
-					}
+					},
+					"nonStandard": true
 				},
 				"fence": {
 					"type": {
@@ -54780,24 +55306,19 @@
 			},
 			"attributes": {
 				"background": {
-					"deprecated": true,
-					"nonStandard": true
+					"deprecated": true
 				},
 				"color": {
-					"deprecated": true,
-					"nonStandard": true
+					"deprecated": true
 				},
 				"fontsize": {
-					"deprecated": true,
-					"nonStandard": true
+					"deprecated": true
 				},
 				"fontstyle": {
-					"deprecated": true,
-					"nonStandard": true
+					"deprecated": true
 				},
 				"fontweight": {
-					"deprecated": true,
-					"nonStandard": true
+					"deprecated": true
 				}
 			},
 			"cite": "https://www.w3.org/TR/mathml-core/#style-change-mstyle"
@@ -54831,8 +55352,8 @@
 			},
 			"attributes": {
 				"subscriptshift": {
-					"deprecated": true,
-					"nonStandard": true
+					"nonStandard": true,
+					"deprecated": true
 				}
 			},
 			"cite": "https://www.w3.org/TR/mathml-core/#subscripts-and-superscripts-msub-msup-msubsup"
@@ -54866,12 +55387,12 @@
 			},
 			"attributes": {
 				"subscriptshift": {
-					"deprecated": true,
-					"nonStandard": true
+					"nonStandard": true,
+					"deprecated": true
 				},
 				"superscriptshift": {
-					"deprecated": true,
-					"nonStandard": true
+					"nonStandard": true,
+					"deprecated": true
 				}
 			},
 			"cite": "https://www.w3.org/TR/mathml-core/#subscripts-and-superscripts-msub-msup-msubsup"
@@ -54905,8 +55426,8 @@
 			},
 			"attributes": {
 				"superscriptshift": {
-					"deprecated": true,
-					"nonStandard": true
+					"nonStandard": true,
+					"deprecated": true
 				}
 			},
 			"cite": "https://www.w3.org/TR/mathml-core/#subscripts-and-superscripts-msub-msup-msubsup"
@@ -55223,7 +55744,18 @@
 					"referrerpolicy"
 				],
 				"#SVGConditionalProcessingAttrs": ["requiredExtensions", "systemLanguage"],
-				"#SVGCoreAttrs": ["id", "tabindex", "autofocus", "lang", "xml:space", "class", "style"],
+				"#SVGCoreAttrs": [
+					"id",
+					"tabindex",
+					"autofocus",
+					"lang",
+					"xml:space",
+					"class",
+					"style",
+					"focusgroup",
+					"focusgroupstart",
+					"font-width"
+				],
 				"#SVGPresentationAttrs": [
 					"alignment-baseline",
 					"baseline-shift",
@@ -55294,19 +55826,16 @@
 					"word-spacing",
 					"writing-mode"
 				],
-				"#XLinkAttrs": ["xlink:href", "xlink:title"]
+				"#XLinkAttrs": ["xlink:href", "xlink:title", "xlink:show", "xlink:actuate"]
 			},
 			"attributes": {
 				"interestfor": {
-					"experimental": true,
+					"type": "DOMID",
 					"nonStandard": true,
-					"type": "DOMID"
+					"experimental": true
 				},
 				"ping": {
 					"experimental": true
-				},
-				"xlink:href": {
-					"deprecated": true
 				}
 			},
 			"cite": "https://svgwg.org/svg2-draft/linking.html#AElement"
@@ -55345,7 +55874,20 @@
 				],
 				"#SVGAnimationValueAttrs": ["calcMode", "values", "keyTimes", "keySplines", "from", "to", "by"],
 				"#SVGConditionalProcessingAttrs": ["requiredExtensions", "systemLanguage"],
-				"#SVGCoreAttrs": ["id", "tabindex", "autofocus", "lang", "xml:space", "class", "style"],
+				"#SVGCoreAttrs": [
+					"id",
+					"tabindex",
+					"autofocus",
+					"lang",
+					"xml:space",
+					"class",
+					"style",
+					"part",
+					"exportparts",
+					"focusgroup",
+					"focusgroupstart",
+					"font-width"
+				],
 				"#SVGPresentationAttrs": [
 					"alignment-baseline",
 					"baseline-shift",
@@ -55417,7 +55959,11 @@
 					"writing-mode"
 				]
 			},
-			"attributes": {},
+			"attributes": {
+				"attributeType": {
+					"obsolete": true
+				}
+			},
 			"cite": "https://svgwg.org/specs/animations/#AnimateElement"
 		},
 		{
@@ -55470,7 +56016,20 @@
 				],
 				"#SVGAnimationValueAttrs": ["calcMode", "values", "keyTimes", "keySplines", "from", "to", "by"],
 				"#SVGConditionalProcessingAttrs": ["requiredExtensions", "systemLanguage"],
-				"#SVGCoreAttrs": ["id", "tabindex", "autofocus", "lang", "xml:space", "class", "style"]
+				"#SVGCoreAttrs": [
+					"id",
+					"tabindex",
+					"autofocus",
+					"lang",
+					"xml:space",
+					"class",
+					"style",
+					"part",
+					"exportparts",
+					"focusgroup",
+					"focusgroupstart",
+					"font-width"
+				]
 			},
 			"attributes": {
 				"keyPoints": {
@@ -55523,7 +56082,20 @@
 				],
 				"#SVGAnimationValueAttrs": ["calcMode", "values", "keyTimes", "keySplines", "from", "to", "by"],
 				"#SVGConditionalProcessingAttrs": ["requiredExtensions", "systemLanguage"],
-				"#SVGCoreAttrs": ["id", "tabindex", "autofocus", "lang", "xml:space", "class", "style"]
+				"#SVGCoreAttrs": [
+					"id",
+					"tabindex",
+					"autofocus",
+					"lang",
+					"xml:space",
+					"class",
+					"style",
+					"part",
+					"exportparts",
+					"focusgroup",
+					"focusgroupstart",
+					"font-width"
+				]
 			},
 			"attributes": {
 				"type": {
@@ -55564,7 +56136,18 @@
 				"#GlobalEventAttrs": true,
 				"#HTMLGlobalAttrs": true,
 				"#SVGConditionalProcessingAttrs": ["requiredExtensions", "systemLanguage"],
-				"#SVGCoreAttrs": ["id", "tabindex", "autofocus", "lang", "xml:space", "class", "style"],
+				"#SVGCoreAttrs": [
+					"id",
+					"tabindex",
+					"autofocus",
+					"lang",
+					"xml:space",
+					"class",
+					"style",
+					"focusgroup",
+					"focusgroupstart",
+					"font-width"
+				],
 				"#SVGPresentationAttrs": [
 					"cx",
 					"cy",
@@ -55670,7 +56253,19 @@
 			},
 			"globalAttrs": {
 				"#SVGConditionalProcessingAttrs": ["requiredFeatures", "requiredExtensions", "systemLanguage"],
-				"#SVGCoreAttrs": ["id", "xml:base", "xml:lang", "xml:space", "class", "style"],
+				"#SVGCoreAttrs": [
+					"id",
+					"xml:base",
+					"xml:lang",
+					"xml:space",
+					"class",
+					"style",
+					"part",
+					"exportparts",
+					"focusgroup",
+					"focusgroupstart",
+					"font-width"
+				],
 				"#SVGPresentationAttrs": [
 					"alignment-baseline",
 					"baseline-shift",
@@ -55788,7 +56383,20 @@
 			},
 			"globalAttrs": {
 				"#GlobalEventAttrs": true,
-				"#SVGCoreAttrs": ["id", "tabindex", "autofocus", "lang", "xml:space", "class", "style"],
+				"#SVGCoreAttrs": [
+					"id",
+					"tabindex",
+					"autofocus",
+					"lang",
+					"xml:space",
+					"class",
+					"style",
+					"part",
+					"exportparts",
+					"focusgroup",
+					"focusgroupstart",
+					"font-width"
+				],
 				"#SVGPresentationAttrs": [
 					"alignment-baseline",
 					"baseline-shift",
@@ -55860,7 +56468,11 @@
 					"writing-mode"
 				]
 			},
-			"attributes": {},
+			"attributes": {
+				"systemLanguage": {
+					"nonStandard": true
+				}
+			},
 			"cite": "https://svgwg.org/svg2-draft/struct.html#DefsElement"
 		},
 		{
@@ -55879,7 +56491,20 @@
 			},
 			"globalAttrs": {
 				"#GlobalEventAttrs": true,
-				"#SVGCoreAttrs": ["id", "tabindex", "autofocus", "lang", "xml:space", "class", "style"]
+				"#SVGCoreAttrs": [
+					"id",
+					"tabindex",
+					"autofocus",
+					"lang",
+					"xml:space",
+					"class",
+					"style",
+					"part",
+					"exportparts",
+					"focusgroup",
+					"focusgroupstart",
+					"font-width"
+				]
 			},
 			"attributes": {},
 			"cite": "https://svgwg.org/svg2-draft/struct.html#DescElement"
@@ -55901,7 +56526,20 @@
 			"globalAttrs": {
 				"#ARIAAttrs": true,
 				"#SVGConditionalProcessingAttrs": ["requiredExtensions", "systemLanguage"],
-				"#SVGCoreAttrs": ["id", "tabindex", "autofocus", "lang", "xml:space", "class", "style"]
+				"#SVGCoreAttrs": [
+					"id",
+					"tabindex",
+					"autofocus",
+					"lang",
+					"xml:space",
+					"class",
+					"style",
+					"part",
+					"exportparts",
+					"focusgroup",
+					"focusgroupstart",
+					"font-width"
+				]
 			},
 			"attributes": {
 				"begin": {
@@ -55945,7 +56583,18 @@
 				"#GlobalEventAttrs": true,
 				"#HTMLGlobalAttrs": true,
 				"#SVGConditionalProcessingAttrs": ["requiredExtensions", "systemLanguage"],
-				"#SVGCoreAttrs": ["id", "tabindex", "autofocus", "lang", "xml:space", "class", "style"],
+				"#SVGCoreAttrs": [
+					"id",
+					"tabindex",
+					"autofocus",
+					"lang",
+					"xml:space",
+					"class",
+					"style",
+					"focusgroup",
+					"focusgroupstart",
+					"font-width"
+				],
 				"#SVGPresentationAttrs": [
 					"cx",
 					"cy",
@@ -56044,7 +56693,19 @@
 				"permittedRoles": false
 			},
 			"globalAttrs": {
-				"#SVGCoreAttrs": ["id", "xml:base", "xml:lang", "xml:space", "class", "style"],
+				"#SVGCoreAttrs": [
+					"id",
+					"xml:base",
+					"xml:lang",
+					"xml:space",
+					"class",
+					"style",
+					"part",
+					"exportparts",
+					"focusgroup",
+					"focusgroupstart",
+					"font-width"
+				],
 				"#SVGFilterPrimitiveAttrs": ["x", "y", "width", "height", "result", "in"],
 				"#SVGPresentationAttrs": [
 					"alignment-baseline",
@@ -56158,7 +56819,19 @@
 				"permittedRoles": false
 			},
 			"globalAttrs": {
-				"#SVGCoreAttrs": ["id", "xml:base", "xml:lang", "xml:space", "class", "style"],
+				"#SVGCoreAttrs": [
+					"id",
+					"xml:base",
+					"xml:lang",
+					"xml:space",
+					"class",
+					"style",
+					"part",
+					"exportparts",
+					"focusgroup",
+					"focusgroupstart",
+					"font-width"
+				],
 				"#SVGFilterPrimitiveAttrs": ["x", "y", "width", "height", "result", "in"],
 				"#SVGPresentationAttrs": [
 					"alignment-baseline",
@@ -56268,7 +56941,19 @@
 				"permittedRoles": false
 			},
 			"globalAttrs": {
-				"#SVGCoreAttrs": ["id", "xml:base", "xml:lang", "xml:space", "class", "style"],
+				"#SVGCoreAttrs": [
+					"id",
+					"xml:base",
+					"xml:lang",
+					"xml:space",
+					"class",
+					"style",
+					"part",
+					"exportparts",
+					"focusgroup",
+					"focusgroupstart",
+					"font-width"
+				],
 				"#SVGFilterPrimitiveAttrs": ["x", "y", "width", "height", "result", "in"],
 				"#SVGPresentationAttrs": [
 					"alignment-baseline",
@@ -56359,7 +57044,19 @@
 				"permittedRoles": false
 			},
 			"globalAttrs": {
-				"#SVGCoreAttrs": ["id", "xml:base", "xml:lang", "xml:space", "class", "style"],
+				"#SVGCoreAttrs": [
+					"id",
+					"xml:base",
+					"xml:lang",
+					"xml:space",
+					"class",
+					"style",
+					"part",
+					"exportparts",
+					"focusgroup",
+					"focusgroupstart",
+					"font-width"
+				],
 				"#SVGFilterPrimitiveAttrs": ["x", "y", "width", "height", "result", "in"],
 				"#SVGPresentationAttrs": [
 					"alignment-baseline",
@@ -56500,7 +57197,19 @@
 				"permittedRoles": false
 			},
 			"globalAttrs": {
-				"#SVGCoreAttrs": ["id", "xml:base", "xml:lang", "xml:space", "class", "style"],
+				"#SVGCoreAttrs": [
+					"id",
+					"xml:base",
+					"xml:lang",
+					"xml:space",
+					"class",
+					"style",
+					"part",
+					"exportparts",
+					"focusgroup",
+					"focusgroupstart",
+					"font-width"
+				],
 				"#SVGFilterPrimitiveAttrs": ["x", "y", "width", "height", "result", "in"],
 				"#SVGPresentationAttrs": [
 					"alignment-baseline",
@@ -56656,7 +57365,19 @@
 				"permittedRoles": false
 			},
 			"globalAttrs": {
-				"#SVGCoreAttrs": ["id", "xml:base", "xml:lang", "xml:space", "class", "style"],
+				"#SVGCoreAttrs": [
+					"id",
+					"xml:base",
+					"xml:lang",
+					"xml:space",
+					"class",
+					"style",
+					"part",
+					"exportparts",
+					"focusgroup",
+					"focusgroupstart",
+					"font-width"
+				],
 				"#SVGFilterPrimitiveAttrs": ["x", "y", "width", "height", "result", "in"],
 				"#SVGPresentationAttrs": [
 					"alignment-baseline",
@@ -56763,7 +57484,19 @@
 				"permittedRoles": false
 			},
 			"globalAttrs": {
-				"#SVGCoreAttrs": ["id", "xml:base", "xml:lang", "xml:space", "class", "style"],
+				"#SVGCoreAttrs": [
+					"id",
+					"xml:base",
+					"xml:lang",
+					"xml:space",
+					"class",
+					"style",
+					"part",
+					"exportparts",
+					"focusgroup",
+					"focusgroupstart",
+					"font-width"
+				],
 				"#SVGFilterPrimitiveAttrs": ["x", "y", "width", "height", "result", "in"],
 				"#SVGPresentationAttrs": [
 					"alignment-baseline",
@@ -56893,7 +57626,17 @@
 				"permittedRoles": false
 			},
 			"globalAttrs": {
-				"#SVGCoreAttrs": ["id", "xml:base", "xml:lang", "xml:space"]
+				"#SVGCoreAttrs": [
+					"id",
+					"xml:base",
+					"xml:lang",
+					"xml:space",
+					"part",
+					"exportparts",
+					"focusgroup",
+					"focusgroupstart",
+					"font-width"
+				]
 			},
 			"attributes": {
 				"azimuth": {
@@ -56924,7 +57667,19 @@
 				"permittedRoles": false
 			},
 			"globalAttrs": {
-				"#SVGCoreAttrs": ["id", "xml:base", "xml:lang", "xml:space", "class", "style"],
+				"#SVGCoreAttrs": [
+					"id",
+					"xml:base",
+					"xml:lang",
+					"xml:space",
+					"class",
+					"style",
+					"part",
+					"exportparts",
+					"focusgroup",
+					"focusgroupstart",
+					"font-width"
+				],
 				"#SVGFilterPrimitiveAttrs": ["x", "y", "width", "height", "result", "in"],
 				"#SVGPresentationAttrs": [
 					"alignment-baseline",
@@ -57031,7 +57786,19 @@
 				"permittedRoles": false
 			},
 			"globalAttrs": {
-				"#SVGCoreAttrs": ["id", "xml:base", "xml:lang", "xml:space", "class", "style"],
+				"#SVGCoreAttrs": [
+					"id",
+					"xml:base",
+					"xml:lang",
+					"xml:space",
+					"class",
+					"style",
+					"part",
+					"exportparts",
+					"focusgroup",
+					"focusgroupstart",
+					"font-width"
+				],
 				"#SVGFilterPrimitiveAttrs": ["x", "y", "width", "height", "result"],
 				"#SVGPresentationAttrs": [
 					"alignment-baseline",
@@ -57131,7 +57898,17 @@
 				"permittedRoles": false
 			},
 			"globalAttrs": {
-				"#SVGCoreAttrs": ["id", "xml:base", "xml:lang", "xml:space"],
+				"#SVGCoreAttrs": [
+					"id",
+					"xml:base",
+					"xml:lang",
+					"xml:space",
+					"part",
+					"exportparts",
+					"focusgroup",
+					"focusgroupstart",
+					"font-width"
+				],
 				"#SVGTransferFunctionAttrs": [
 					"type",
 					"tableValues",
@@ -57160,7 +57937,17 @@
 				"permittedRoles": false
 			},
 			"globalAttrs": {
-				"#SVGCoreAttrs": ["id", "xml:base", "xml:lang", "xml:space"],
+				"#SVGCoreAttrs": [
+					"id",
+					"xml:base",
+					"xml:lang",
+					"xml:space",
+					"part",
+					"exportparts",
+					"focusgroup",
+					"focusgroupstart",
+					"font-width"
+				],
 				"#SVGTransferFunctionAttrs": [
 					"type",
 					"tableValues",
@@ -57189,7 +57976,17 @@
 				"permittedRoles": false
 			},
 			"globalAttrs": {
-				"#SVGCoreAttrs": ["id", "xml:base", "xml:lang", "xml:space"],
+				"#SVGCoreAttrs": [
+					"id",
+					"xml:base",
+					"xml:lang",
+					"xml:space",
+					"part",
+					"exportparts",
+					"focusgroup",
+					"focusgroupstart",
+					"font-width"
+				],
 				"#SVGTransferFunctionAttrs": [
 					"type",
 					"tableValues",
@@ -57218,7 +58015,17 @@
 				"permittedRoles": false
 			},
 			"globalAttrs": {
-				"#SVGCoreAttrs": ["id", "xml:base", "xml:lang", "xml:space"],
+				"#SVGCoreAttrs": [
+					"id",
+					"xml:base",
+					"xml:lang",
+					"xml:space",
+					"part",
+					"exportparts",
+					"focusgroup",
+					"focusgroupstart",
+					"font-width"
+				],
 				"#SVGTransferFunctionAttrs": [
 					"type",
 					"tableValues",
@@ -57247,7 +58054,19 @@
 				"permittedRoles": false
 			},
 			"globalAttrs": {
-				"#SVGCoreAttrs": ["id", "xml:base", "xml:lang", "xml:space", "class", "style"],
+				"#SVGCoreAttrs": [
+					"id",
+					"xml:base",
+					"xml:lang",
+					"xml:space",
+					"class",
+					"style",
+					"part",
+					"exportparts",
+					"focusgroup",
+					"focusgroupstart",
+					"font-width"
+				],
 				"#SVGFilterPrimitiveAttrs": ["x", "y", "width", "height", "result", "in"],
 				"#SVGPresentationAttrs": [
 					"alignment-baseline",
@@ -57357,7 +58176,19 @@
 				"permittedRoles": false
 			},
 			"globalAttrs": {
-				"#SVGCoreAttrs": ["id", "xml:base", "xml:lang", "xml:space", "class", "style"],
+				"#SVGCoreAttrs": [
+					"id",
+					"xml:base",
+					"xml:lang",
+					"xml:space",
+					"class",
+					"style",
+					"part",
+					"exportparts",
+					"focusgroup",
+					"focusgroupstart",
+					"font-width"
+				],
 				"#SVGFilterPrimitiveAttrs": ["x", "y", "width", "height", "result"],
 				"#SVGPresentationAttrs": [
 					"alignment-baseline",
@@ -57444,6 +58275,10 @@
 					},
 					"defaultValue": "true"
 				},
+				"fetchpriority": {
+					"nonStandard": true,
+					"experimental": true
+				},
 				"href": {
 					"type": "URL",
 					"animatable": true
@@ -57476,7 +58311,19 @@
 				"permittedRoles": false
 			},
 			"globalAttrs": {
-				"#SVGCoreAttrs": ["id", "xml:base", "xml:lang", "xml:space", "class", "style"],
+				"#SVGCoreAttrs": [
+					"id",
+					"xml:base",
+					"xml:lang",
+					"xml:space",
+					"class",
+					"style",
+					"part",
+					"exportparts",
+					"focusgroup",
+					"focusgroupstart",
+					"font-width"
+				],
 				"#SVGFilterPrimitiveAttrs": ["x", "y", "width", "height", "result"],
 				"#SVGPresentationAttrs": [
 					"alignment-baseline",
@@ -57567,7 +58414,17 @@
 				"permittedRoles": false
 			},
 			"globalAttrs": {
-				"#SVGCoreAttrs": ["id", "xml:base", "xml:lang", "xml:space"],
+				"#SVGCoreAttrs": [
+					"id",
+					"xml:base",
+					"xml:lang",
+					"xml:space",
+					"part",
+					"exportparts",
+					"focusgroup",
+					"focusgroupstart",
+					"font-width"
+				],
 				"#SVGFilterPrimitiveAttrs": ["in"]
 			},
 			"attributes": {},
@@ -57588,7 +58445,19 @@
 				"permittedRoles": false
 			},
 			"globalAttrs": {
-				"#SVGCoreAttrs": ["id", "xml:base", "xml:lang", "xml:space", "class", "style"],
+				"#SVGCoreAttrs": [
+					"id",
+					"xml:base",
+					"xml:lang",
+					"xml:space",
+					"class",
+					"style",
+					"part",
+					"exportparts",
+					"focusgroup",
+					"focusgroupstart",
+					"font-width"
+				],
 				"#SVGFilterPrimitiveAttrs": ["x", "y", "width", "height", "result", "in"],
 				"#SVGPresentationAttrs": [
 					"alignment-baseline",
@@ -57693,7 +58562,19 @@
 				"permittedRoles": false
 			},
 			"globalAttrs": {
-				"#SVGCoreAttrs": ["id", "xml:base", "xml:lang", "xml:space", "class", "style"],
+				"#SVGCoreAttrs": [
+					"id",
+					"xml:base",
+					"xml:lang",
+					"xml:space",
+					"class",
+					"style",
+					"part",
+					"exportparts",
+					"focusgroup",
+					"focusgroupstart",
+					"font-width"
+				],
 				"#SVGFilterPrimitiveAttrs": ["x", "y", "width", "height", "result", "in"],
 				"#SVGPresentationAttrs": [
 					"alignment-baseline",
@@ -57795,7 +58676,17 @@
 				"permittedRoles": false
 			},
 			"globalAttrs": {
-				"#SVGCoreAttrs": ["id", "xml:base", "xml:lang", "xml:space"]
+				"#SVGCoreAttrs": [
+					"id",
+					"xml:base",
+					"xml:lang",
+					"xml:space",
+					"part",
+					"exportparts",
+					"focusgroup",
+					"focusgroupstart",
+					"font-width"
+				]
 			},
 			"attributes": {
 				"x": {
@@ -57848,7 +58739,19 @@
 				"permittedRoles": false
 			},
 			"globalAttrs": {
-				"#SVGCoreAttrs": ["id", "xml:base", "xml:lang", "xml:space", "class", "style"],
+				"#SVGCoreAttrs": [
+					"id",
+					"xml:base",
+					"xml:lang",
+					"xml:space",
+					"class",
+					"style",
+					"part",
+					"exportparts",
+					"focusgroup",
+					"focusgroupstart",
+					"font-width"
+				],
 				"#SVGFilterPrimitiveAttrs": ["x", "y", "width", "height", "result", "in"],
 				"#SVGPresentationAttrs": [
 					"alignment-baseline",
@@ -57959,7 +58862,17 @@
 				"permittedRoles": false
 			},
 			"globalAttrs": {
-				"#SVGCoreAttrs": ["id", "xml:base", "xml:lang", "xml:space"]
+				"#SVGCoreAttrs": [
+					"id",
+					"xml:base",
+					"xml:lang",
+					"xml:space",
+					"part",
+					"exportparts",
+					"focusgroup",
+					"focusgroupstart",
+					"font-width"
+				]
 			},
 			"attributes": {
 				"limitingConeAngle": {
@@ -58019,7 +58932,19 @@
 				"permittedRoles": false
 			},
 			"globalAttrs": {
-				"#SVGCoreAttrs": ["id", "xml:base", "xml:lang", "xml:space", "class", "style"],
+				"#SVGCoreAttrs": [
+					"id",
+					"xml:base",
+					"xml:lang",
+					"xml:space",
+					"class",
+					"style",
+					"part",
+					"exportparts",
+					"focusgroup",
+					"focusgroupstart",
+					"font-width"
+				],
 				"#SVGFilterPrimitiveAttrs": ["x", "y", "width", "height", "result", "in"],
 				"#SVGPresentationAttrs": [
 					"alignment-baseline",
@@ -58110,7 +59035,19 @@
 				"permittedRoles": false
 			},
 			"globalAttrs": {
-				"#SVGCoreAttrs": ["id", "xml:base", "xml:lang", "xml:space", "class", "style"],
+				"#SVGCoreAttrs": [
+					"id",
+					"xml:base",
+					"xml:lang",
+					"xml:space",
+					"class",
+					"style",
+					"part",
+					"exportparts",
+					"focusgroup",
+					"focusgroupstart",
+					"font-width"
+				],
 				"#SVGFilterPrimitiveAttrs": ["x", "y", "width", "height", "result"],
 				"#SVGPresentationAttrs": [
 					"alignment-baseline",
@@ -58237,7 +59174,19 @@
 				"permittedRoles": false
 			},
 			"globalAttrs": {
-				"#SVGCoreAttrs": ["id", "xml:base", "xml:lang", "xml:space", "class", "style"],
+				"#SVGCoreAttrs": [
+					"id",
+					"xml:base",
+					"xml:lang",
+					"xml:space",
+					"class",
+					"style",
+					"part",
+					"exportparts",
+					"focusgroup",
+					"focusgroupstart",
+					"font-width"
+				],
 				"#SVGFilterPrimitiveAttrs": ["x", "y", "width", "height"],
 				"#SVGPresentationAttrs": [
 					"alignment-baseline",
@@ -58321,7 +59270,7 @@
 				"filterRes": {
 					"type": "<number-optional-number>",
 					"animatable": true,
-					"deprecated": true
+					"obsolete": true
 				},
 				"filterUnits": {
 					"type": {
@@ -58347,6 +59296,10 @@
 				"x": {
 					"defaultValue": "-10%"
 				},
+				"xlink:href": {
+					"deprecated": true,
+					"nonStandard": true
+				},
 				"y": {
 					"defaultValue": "-10%"
 				}
@@ -58371,7 +59324,18 @@
 				"#GlobalEventAttrs": true,
 				"#HTMLGlobalAttrs": true,
 				"#SVGConditionalProcessingAttrs": ["requiredExtensions", "systemLanguage"],
-				"#SVGCoreAttrs": ["id", "tabindex", "autofocus", "lang", "xml:space", "class", "style"],
+				"#SVGCoreAttrs": [
+					"id",
+					"tabindex",
+					"autofocus",
+					"lang",
+					"xml:space",
+					"class",
+					"style",
+					"focusgroup",
+					"focusgroupstart",
+					"font-width"
+				],
 				"#SVGPresentationAttrs": [
 					"x",
 					"y",
@@ -58490,7 +59454,18 @@
 				"#GlobalEventAttrs": true,
 				"#HTMLGlobalAttrs": true,
 				"#SVGConditionalProcessingAttrs": ["requiredExtensions", "systemLanguage"],
-				"#SVGCoreAttrs": ["id", "tabindex", "autofocus", "lang", "xml:space", "class", "style"],
+				"#SVGCoreAttrs": [
+					"id",
+					"tabindex",
+					"autofocus",
+					"lang",
+					"xml:space",
+					"class",
+					"style",
+					"focusgroup",
+					"focusgroupstart",
+					"font-width"
+				],
 				"#SVGPresentationAttrs": [
 					"alignment-baseline",
 					"baseline-shift",
@@ -58594,7 +59569,18 @@
 				"#GlobalEventAttrs": true,
 				"#HTMLGlobalAttrs": true,
 				"#SVGConditionalProcessingAttrs": ["requiredExtensions", "systemLanguage"],
-				"#SVGCoreAttrs": ["id", "tabindex", "autofocus", "lang", "xml:space", "class", "style"],
+				"#SVGCoreAttrs": [
+					"id",
+					"tabindex",
+					"autofocus",
+					"lang",
+					"xml:space",
+					"class",
+					"style",
+					"focusgroup",
+					"focusgroupstart",
+					"font-width"
+				],
 				"#SVGPresentationAttrs": [
 					"x",
 					"y",
@@ -58681,16 +59667,16 @@
 					}
 				},
 				"decoding": {
-					"nonStandard": true,
 					"type": {
 						"enum": ["sync", "async", "auto"],
 						"invalidValueDefault": "auto",
 						"missingValueDefault": "auto"
-					}
+					},
+					"nonStandard": true
 				},
 				"fetchpriority": {
-					"experimental": true,
-					"nonStandard": true
+					"nonStandard": true,
+					"experimental": true
 				},
 				"href": {
 					"type": "URL"
@@ -58698,9 +59684,6 @@
 				"preserveAspectRatio": {
 					"type": "<preserve-aspect-ratio>",
 					"defaultValue": "xMidYMid meet"
-				},
-				"xlink:href": {
-					"deprecated": true
 				}
 			},
 			"cite": "https://svgwg.org/svg2-draft/embedded.html#ImageElement"
@@ -58736,7 +59719,18 @@
 				"#GlobalEventAttrs": true,
 				"#HTMLGlobalAttrs": true,
 				"#SVGConditionalProcessingAttrs": ["requiredExtensions", "systemLanguage"],
-				"#SVGCoreAttrs": ["id", "tabindex", "autofocus", "lang", "xml:space", "class", "style"],
+				"#SVGCoreAttrs": [
+					"id",
+					"tabindex",
+					"autofocus",
+					"lang",
+					"xml:space",
+					"class",
+					"style",
+					"focusgroup",
+					"focusgroupstart",
+					"font-width"
+				],
 				"#SVGPresentationAttrs": [
 					"alignment-baseline",
 					"baseline-shift",
@@ -58860,7 +59854,20 @@
 			},
 			"globalAttrs": {
 				"#GlobalEventAttrs": true,
-				"#SVGCoreAttrs": ["id", "tabindex", "autofocus", "lang", "xml:space", "class", "style"],
+				"#SVGCoreAttrs": [
+					"id",
+					"tabindex",
+					"autofocus",
+					"lang",
+					"xml:space",
+					"class",
+					"style",
+					"part",
+					"exportparts",
+					"focusgroup",
+					"focusgroupstart",
+					"font-width"
+				],
 				"#SVGPresentationAttrs": [
 					"alignment-baseline",
 					"baseline-shift",
@@ -58967,9 +59974,6 @@
 					"defaultValue": "100%",
 					"animatable": true
 				},
-				"xlink:href": {
-					"deprecated": true
-				},
 				"y1": {
 					"type": ["<svg-length>", "<percentage>"],
 					"defaultValue": "0%",
@@ -59017,7 +60021,20 @@
 			},
 			"globalAttrs": {
 				"#GlobalEventAttrs": true,
-				"#SVGCoreAttrs": ["id", "tabindex", "autofocus", "lang", "xml:space", "class", "style"],
+				"#SVGCoreAttrs": [
+					"id",
+					"tabindex",
+					"autofocus",
+					"lang",
+					"xml:space",
+					"class",
+					"style",
+					"part",
+					"exportparts",
+					"focusgroup",
+					"focusgroupstart",
+					"font-width"
+				],
 				"#SVGPresentationAttrs": [
 					"alignment-baseline",
 					"baseline-shift",
@@ -59195,7 +60212,19 @@
 			},
 			"globalAttrs": {
 				"#SVGConditionalProcessingAttrs": ["requiredFeatures", "requiredExtensions", "systemLanguage"],
-				"#SVGCoreAttrs": ["id", "xml:base", "xml:lang", "xml:space", "class", "style"],
+				"#SVGCoreAttrs": [
+					"id",
+					"xml:base",
+					"xml:lang",
+					"xml:space",
+					"class",
+					"style",
+					"part",
+					"exportparts",
+					"focusgroup",
+					"focusgroupstart",
+					"font-width"
+				],
 				"#SVGFilterPrimitiveAttrs": ["x", "y", "width", "height"],
 				"#SVGPresentationAttrs": [
 					"alignment-baseline",
@@ -59309,7 +60338,20 @@
 			},
 			"globalAttrs": {
 				"#GlobalEventAttrs": true,
-				"#SVGCoreAttrs": ["id", "tabindex", "autofocus", "lang", "xml:space", "class", "style"]
+				"#SVGCoreAttrs": [
+					"id",
+					"tabindex",
+					"autofocus",
+					"lang",
+					"xml:space",
+					"class",
+					"style",
+					"part",
+					"exportparts",
+					"focusgroup",
+					"focusgroupstart",
+					"font-width"
+				]
 			},
 			"attributes": {},
 			"cite": "https://svgwg.org/svg2-draft/struct.html#MetadataElement"
@@ -59330,7 +60372,21 @@
 			},
 			"globalAttrs": {
 				"#GlobalEventAttrs": true,
-				"#SVGCoreAttrs": ["id", "tabindex", "autofocus", "lang", "xml:space", "class", "style"]
+				"#SVGCoreAttrs": [
+					"id",
+					"tabindex",
+					"autofocus",
+					"lang",
+					"xml:space",
+					"class",
+					"style",
+					"part",
+					"exportparts",
+					"focusgroup",
+					"focusgroupstart",
+					"font-width"
+				],
+				"#XLinkAttrs": ["xlink:href"]
 			},
 			"attributes": {
 				"href": {
@@ -59370,7 +60426,18 @@
 				"#GlobalEventAttrs": true,
 				"#HTMLGlobalAttrs": true,
 				"#SVGConditionalProcessingAttrs": ["requiredExtensions", "systemLanguage"],
-				"#SVGCoreAttrs": ["id", "tabindex", "autofocus", "lang", "xml:space", "class", "style"],
+				"#SVGCoreAttrs": [
+					"id",
+					"tabindex",
+					"autofocus",
+					"lang",
+					"xml:space",
+					"class",
+					"style",
+					"focusgroup",
+					"focusgroupstart",
+					"font-width"
+				],
 				"#SVGPresentationAttrs": [
 					"d",
 					"alignment-baseline",
@@ -59486,7 +60553,20 @@
 			},
 			"globalAttrs": {
 				"#GlobalEventAttrs": true,
-				"#SVGCoreAttrs": ["id", "tabindex", "autofocus", "lang", "xml:space", "class", "style"],
+				"#SVGCoreAttrs": [
+					"id",
+					"tabindex",
+					"autofocus",
+					"lang",
+					"xml:space",
+					"class",
+					"style",
+					"part",
+					"exportparts",
+					"focusgroup",
+					"focusgroupstart",
+					"font-width"
+				],
 				"#SVGPresentationAttrs": [
 					"alignment-baseline",
 					"baseline-shift",
@@ -59593,6 +60673,9 @@
 					"defaultValue": "xMidYMid meet",
 					"animatable": true
 				},
+				"systemLanguage": {
+					"nonStandard": true
+				},
 				"viewBox": {
 					"type": "<view-box>",
 					"animatable": true
@@ -59606,9 +60689,6 @@
 					"type": ["<svg-length>", "<percentage>"],
 					"defaultValue": "0",
 					"animatable": true
-				},
-				"xlink:href": {
-					"deprecated": true
 				},
 				"y": {
 					"type": ["<svg-length>", "<percentage>"],
@@ -59649,7 +60729,18 @@
 				"#GlobalEventAttrs": true,
 				"#HTMLGlobalAttrs": true,
 				"#SVGConditionalProcessingAttrs": ["requiredExtensions", "systemLanguage"],
-				"#SVGCoreAttrs": ["id", "tabindex", "autofocus", "lang", "xml:space", "class", "style"],
+				"#SVGCoreAttrs": [
+					"id",
+					"tabindex",
+					"autofocus",
+					"lang",
+					"xml:space",
+					"class",
+					"style",
+					"focusgroup",
+					"focusgroupstart",
+					"font-width"
+				],
 				"#SVGPresentationAttrs": [
 					"alignment-baseline",
 					"baseline-shift",
@@ -59764,7 +60855,18 @@
 				"#GlobalEventAttrs": true,
 				"#HTMLGlobalAttrs": true,
 				"#SVGConditionalProcessingAttrs": ["requiredExtensions", "systemLanguage"],
-				"#SVGCoreAttrs": ["id", "tabindex", "autofocus", "lang", "xml:space", "class", "style"],
+				"#SVGCoreAttrs": [
+					"id",
+					"tabindex",
+					"autofocus",
+					"lang",
+					"xml:space",
+					"class",
+					"style",
+					"focusgroup",
+					"focusgroupstart",
+					"font-width"
+				],
 				"#SVGPresentationAttrs": [
 					"alignment-baseline",
 					"baseline-shift",
@@ -59872,7 +60974,20 @@
 			},
 			"globalAttrs": {
 				"#GlobalEventAttrs": true,
-				"#SVGCoreAttrs": ["id", "tabindex", "autofocus", "lang", "xml:space", "class", "style"],
+				"#SVGCoreAttrs": [
+					"id",
+					"tabindex",
+					"autofocus",
+					"lang",
+					"xml:space",
+					"class",
+					"style",
+					"part",
+					"exportparts",
+					"focusgroup",
+					"focusgroupstart",
+					"font-width"
+				],
 				"#SVGPresentationAttrs": [
 					"alignment-baseline",
 					"baseline-shift",
@@ -59996,9 +61111,6 @@
 					},
 					"defaultValue": "pad",
 					"animatable": true
-				},
-				"xlink:href": {
-					"deprecated": true
 				}
 			},
 			"cite": "https://svgwg.org/svg2-draft/pservers.html#RadialGradientElement"
@@ -60034,7 +61146,18 @@
 				"#GlobalEventAttrs": true,
 				"#HTMLGlobalAttrs": true,
 				"#SVGConditionalProcessingAttrs": ["requiredExtensions", "systemLanguage"],
-				"#SVGCoreAttrs": ["id", "tabindex", "autofocus", "lang", "xml:space", "class", "style"],
+				"#SVGCoreAttrs": [
+					"id",
+					"tabindex",
+					"autofocus",
+					"lang",
+					"xml:space",
+					"class",
+					"style",
+					"focusgroup",
+					"focusgroupstart",
+					"font-width"
+				],
 				"#SVGPresentationAttrs": [
 					"x",
 					"y",
@@ -60136,13 +61259,26 @@
 			},
 			"globalAttrs": {
 				"#GlobalEventAttrs": true,
-				"#SVGCoreAttrs": ["id", "tabindex", "autofocus", "lang", "xml:space", "class", "style"],
+				"#SVGCoreAttrs": [
+					"id",
+					"tabindex",
+					"autofocus",
+					"lang",
+					"xml:space",
+					"class",
+					"style",
+					"part",
+					"exportparts",
+					"focusgroup",
+					"focusgroupstart",
+					"font-width"
+				],
 				"#XLinkAttrs": ["xlink:href", "xlink:title"]
 			},
 			"attributes": {
 				"async": {
-					"experimental": true,
-					"type": "Boolean"
+					"type": "Boolean",
+					"experimental": true
 				},
 				"crossorigin": {
 					"type": {
@@ -60152,12 +61288,12 @@
 					"animatable": true
 				},
 				"defer": {
-					"experimental": true,
-					"type": "Boolean"
+					"type": "Boolean",
+					"experimental": true
 				},
 				"fetchpriority": {
-					"experimental": true,
-					"nonStandard": true
+					"nonStandard": true,
+					"experimental": true
 				},
 				"href": {
 					"type": "URL"
@@ -60165,9 +61301,6 @@
 				"type": {
 					"type": "MIMEType",
 					"defaultValue": "application/ecmascript"
-				},
-				"xlink:href": {
-					"deprecated": true
 				}
 			},
 			"cite": "https://svgwg.org/svg2-draft/interact.html#ScriptElement"
@@ -60203,7 +61336,20 @@
 					"fill"
 				],
 				"#SVGConditionalProcessingAttrs": ["requiredExtensions", "systemLanguage"],
-				"#SVGCoreAttrs": ["id", "tabindex", "autofocus", "lang", "xml:space", "class", "style"]
+				"#SVGCoreAttrs": [
+					"id",
+					"tabindex",
+					"autofocus",
+					"lang",
+					"xml:space",
+					"class",
+					"style",
+					"part",
+					"exportparts",
+					"focusgroup",
+					"focusgroupstart",
+					"font-width"
+				]
 			},
 			"attributes": {
 				"to": {
@@ -60228,7 +61374,20 @@
 			},
 			"globalAttrs": {
 				"#GlobalEventAttrs": true,
-				"#SVGCoreAttrs": ["id", "tabindex", "autofocus", "lang", "xml:space", "class", "style"],
+				"#SVGCoreAttrs": [
+					"id",
+					"tabindex",
+					"autofocus",
+					"lang",
+					"xml:space",
+					"class",
+					"style",
+					"part",
+					"exportparts",
+					"focusgroup",
+					"focusgroupstart",
+					"font-width"
+				],
 				"#SVGPresentationAttrs": [
 					"alignment-baseline",
 					"baseline-shift",
@@ -60335,7 +61494,20 @@
 			},
 			"globalAttrs": {
 				"#GlobalEventAttrs": true,
-				"#SVGCoreAttrs": ["id", "tabindex", "autofocus", "lang", "xml:space", "class", "style"]
+				"#SVGCoreAttrs": [
+					"id",
+					"tabindex",
+					"autofocus",
+					"lang",
+					"xml:space",
+					"class",
+					"style",
+					"part",
+					"exportparts",
+					"focusgroup",
+					"focusgroupstart",
+					"font-width"
+				]
 			},
 			"attributes": {
 				"media": {
@@ -60392,7 +61564,19 @@
 				"#GlobalEventAttrs": true,
 				"#HTMLGlobalAttrs": true,
 				"#SVGConditionalProcessingAttrs": ["requiredExtensions", "systemLanguage"],
-				"#SVGCoreAttrs": ["id", "tabindex", "autofocus", "lang", "xml:space", "class", "style", "xmlns"],
+				"#SVGCoreAttrs": [
+					"id",
+					"tabindex",
+					"autofocus",
+					"lang",
+					"xml:space",
+					"class",
+					"style",
+					"xmlns",
+					"focusgroup",
+					"focusgroupstart",
+					"font-width"
+				],
 				"#SVGPresentationAttrs": [
 					"x",
 					"y",
@@ -60470,18 +61654,18 @@
 			},
 			"attributes": {
 				"baseProfile": {
-					"deprecated": true,
-					"type": "Any"
+					"type": "Any",
+					"obsolete": true
 				},
 				"contentScriptType": {
 					"type": "Any",
 					"defaultValue": "application/ecmascript",
-					"deprecated": true
+					"obsolete": true
 				},
 				"contentStyleType": {
 					"type": "Any",
 					"defaultValue": "text/css",
-					"deprecated": true
+					"obsolete": true
 				},
 				"height": {
 					"defaultValue": "auto"
@@ -60495,8 +61679,8 @@
 					"animatable": true
 				},
 				"version": {
-					"deprecated": true,
-					"type": "Any"
+					"type": "Any",
+					"obsolete": true
 				},
 				"viewBox": {
 					"type": "<view-box>",
@@ -60504,6 +61688,9 @@
 				},
 				"width": {
 					"defaultValue": "auto"
+				},
+				"zoomAndPan": {
+					"obsolete": true
 				}
 			},
 			"cite": "https://svgwg.org/svg2-draft/struct.html#SVGElement"
@@ -60538,7 +61725,18 @@
 				"#GlobalEventAttrs": true,
 				"#HTMLGlobalAttrs": true,
 				"#SVGConditionalProcessingAttrs": ["requiredExtensions", "systemLanguage"],
-				"#SVGCoreAttrs": ["id", "tabindex", "autofocus", "lang", "xml:space", "class", "style"],
+				"#SVGCoreAttrs": [
+					"id",
+					"tabindex",
+					"autofocus",
+					"lang",
+					"xml:space",
+					"class",
+					"style",
+					"focusgroup",
+					"focusgroupstart",
+					"font-width"
+				],
 				"#SVGPresentationAttrs": [
 					"alignment-baseline",
 					"baseline-shift",
@@ -60652,7 +61850,18 @@
 				"#ARIAAttrs": true,
 				"#GlobalEventAttrs": true,
 				"#HTMLGlobalAttrs": true,
-				"#SVGCoreAttrs": ["id", "tabindex", "autofocus", "lang", "xml:space", "class", "style"],
+				"#SVGCoreAttrs": [
+					"id",
+					"tabindex",
+					"autofocus",
+					"lang",
+					"xml:space",
+					"class",
+					"style",
+					"focusgroup",
+					"focusgroupstart",
+					"font-width"
+				],
 				"#SVGPresentationAttrs": ["x", "y", "width", "height"]
 			},
 			"attributes": {
@@ -60720,7 +61929,18 @@
 				"#GlobalEventAttrs": true,
 				"#HTMLGlobalAttrs": true,
 				"#SVGConditionalProcessingAttrs": ["requiredExtensions", "systemLanguage"],
-				"#SVGCoreAttrs": ["id", "tabindex", "autofocus", "lang", "xml:space", "class", "style"],
+				"#SVGCoreAttrs": [
+					"id",
+					"tabindex",
+					"autofocus",
+					"lang",
+					"xml:space",
+					"class",
+					"style",
+					"focusgroup",
+					"focusgroupstart",
+					"font-width"
+				],
 				"#SVGPresentationAttrs": [
 					"alignment-baseline",
 					"baseline-shift",
@@ -60865,7 +62085,18 @@
 				"#GlobalEventAttrs": true,
 				"#HTMLGlobalAttrs": true,
 				"#SVGConditionalProcessingAttrs": ["requiredExtensions", "systemLanguage"],
-				"#SVGCoreAttrs": ["id", "tabindex", "autofocus", "lang", "xml:space", "class", "style"],
+				"#SVGCoreAttrs": [
+					"id",
+					"tabindex",
+					"autofocus",
+					"lang",
+					"xml:space",
+					"class",
+					"style",
+					"focusgroup",
+					"focusgroupstart",
+					"font-width"
+				],
 				"#SVGPresentationAttrs": [
 					"alignment-baseline",
 					"baseline-shift",
@@ -60960,18 +62191,18 @@
 					"animatable": true
 				},
 				"path": {
-					"experimental": true,
 					"type": "<svg-path>",
-					"animatable": true
+					"animatable": true,
+					"experimental": true
 				},
 				"side": {
-					"experimental": true,
 					"type": {
 						"enum": ["left", "right"],
 						"disallowToSurroundBySpaces": false
 					},
 					"defaultValue": "left",
-					"animatable": true
+					"animatable": true,
+					"experimental": true
 				},
 				"spacing": {
 					"type": {
@@ -61008,7 +62239,20 @@
 			},
 			"globalAttrs": {
 				"#GlobalEventAttrs": true,
-				"#SVGCoreAttrs": ["id", "tabindex", "autofocus", "lang", "xml:space", "class", "style"]
+				"#SVGCoreAttrs": [
+					"id",
+					"tabindex",
+					"autofocus",
+					"lang",
+					"xml:space",
+					"class",
+					"style",
+					"part",
+					"exportparts",
+					"focusgroup",
+					"focusgroupstart",
+					"font-width"
+				]
 			},
 			"attributes": {},
 			"cite": "https://svgwg.org/svg2-draft/struct.html#TitleElement"
@@ -61045,7 +62289,18 @@
 				"#GlobalEventAttrs": true,
 				"#HTMLGlobalAttrs": true,
 				"#SVGConditionalProcessingAttrs": ["requiredExtensions", "systemLanguage"],
-				"#SVGCoreAttrs": ["id", "tabindex", "autofocus", "lang", "xml:space", "class", "style"],
+				"#SVGCoreAttrs": [
+					"id",
+					"tabindex",
+					"autofocus",
+					"lang",
+					"xml:space",
+					"class",
+					"style",
+					"focusgroup",
+					"focusgroupstart",
+					"font-width"
+				],
 				"#SVGPresentationAttrs": [
 					"alignment-baseline",
 					"baseline-shift",
@@ -61182,7 +62437,18 @@
 				"#GlobalEventAttrs": true,
 				"#HTMLGlobalAttrs": true,
 				"#SVGConditionalProcessingAttrs": ["requiredExtensions", "systemLanguage"],
-				"#SVGCoreAttrs": ["id", "tabindex", "autofocus", "lang", "xml:space", "class", "style"],
+				"#SVGCoreAttrs": [
+					"id",
+					"tabindex",
+					"autofocus",
+					"lang",
+					"xml:space",
+					"class",
+					"style",
+					"focusgroup",
+					"focusgroupstart",
+					"font-width"
+				],
 				"#SVGPresentationAttrs": [
 					"x",
 					"y",
@@ -61262,9 +62528,6 @@
 			"attributes": {
 				"href": {
 					"type": "URL"
-				},
-				"xlink:href": {
-					"deprecated": true
 				}
 			},
 			"cite": "https://svgwg.org/svg2-draft/struct.html#UseElement"
@@ -61287,25 +62550,39 @@
 				"#ARIAAttrs": true,
 				"#GlobalEventAttrs": true,
 				"#HTMLGlobalAttrs": true,
-				"#SVGCoreAttrs": ["id", "tabindex", "autofocus", "lang", "xml:space", "class", "style"]
+				"#SVGCoreAttrs": [
+					"id",
+					"tabindex",
+					"autofocus",
+					"lang",
+					"xml:space",
+					"class",
+					"style",
+					"focusgroup",
+					"focusgroupstart",
+					"font-width"
+				]
 			},
 			"attributes": {
 				"preserveAspectRatio": {
 					"type": "<preserve-aspect-ratio>"
+				},
+				"svgView": {
+					"nonStandard": true
 				},
 				"viewBox": {
 					"type": "<view-box>"
 				},
 				"viewTarget": {
 					"type": "Any",
-					"deprecated": true
+					"obsolete": true
 				},
 				"zoomAndPan": {
-					"deprecated": true,
 					"type": {
 						"enum": ["disable", "magnify"]
 					},
-					"defaultValue": "magnify"
+					"defaultValue": "magnify",
+					"obsolete": true
 				}
 			},
 			"cite": "https://svgwg.org/svg2-draft/linking.html#ViewElement"

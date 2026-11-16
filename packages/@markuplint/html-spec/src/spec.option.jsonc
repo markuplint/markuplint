@@ -59,6 +59,18 @@
 		"value": {
 			// https://html.spec.whatwg.org/multipage/form-elements.html#attr-option-value
 			"type": "Any"
+		},
+		// https://html.spec.whatwg.org/multipage/obsolete.html#non-conforming-features
+		"name": {
+			"obsolete": true
+		},
+		// https://html.spec.whatwg.org/multipage/obsolete.html#non-conforming-features
+		"datasrc": {
+			"obsolete": true
+		},
+		// https://html.spec.whatwg.org/multipage/obsolete.html#non-conforming-features
+		"dataformatas": {
+			"obsolete": true
 		}
 	},
 	"aria": {

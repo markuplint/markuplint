@@ -12,6 +12,15 @@
 		"#HTMLLinkAndFetchingAttrs": ["crossorigin", "referrerpolicy", "loading", "fetchpriority"]
 	},
 	"attributes": {
+		// https://html.spec.whatwg.org/multipage/obsolete.html#obsolete-but-conforming-features
+		// Obsolete but conforming, which conformance checkers warn about: the value has to be the string "0"
+		// (any other value is non-conforming).
+		"border": {
+			"type": {
+				"enum": ["0"]
+			},
+			"deprecated": true
+		},
 		// https://html.spec.whatwg.org/multipage/embedded-content.html#attr-img-alt
 		"alt": {
 			"type": "Any"
@@ -67,6 +76,38 @@
 				"invalidValueDefault": "auto",
 				"missingValueDefault": "auto"
 			}
+		},
+		// https://html.spec.whatwg.org/multipage/obsolete.html#non-conforming-features
+		"name": {
+			"obsolete": true
+		},
+		// https://html.spec.whatwg.org/multipage/obsolete.html#non-conforming-features
+		"longdesc": {
+			"obsolete": true
+		},
+		// https://html.spec.whatwg.org/multipage/obsolete.html#non-conforming-features
+		"lowsrc": {
+			"obsolete": true
+		},
+		// https://html.spec.whatwg.org/multipage/obsolete.html#non-conforming-features
+		"datasrc": {
+			"obsolete": true
+		},
+		// https://html.spec.whatwg.org/multipage/obsolete.html#non-conforming-features
+		"datafld": {
+			"obsolete": true
+		},
+		// https://html.spec.whatwg.org/multipage/obsolete.html#non-conforming-features
+		"align": {
+			"obsolete": true
+		},
+		// https://html.spec.whatwg.org/multipage/obsolete.html#non-conforming-features
+		"hspace": {
+			"obsolete": true
+		},
+		// https://html.spec.whatwg.org/multipage/obsolete.html#non-conforming-features
+		"vspace": {
+			"obsolete": true
 		}
 	},
 	"aria": {

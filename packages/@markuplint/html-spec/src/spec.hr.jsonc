@@ -10,21 +10,25 @@
 		"#ARIAAttrs": true
 	},
 	"attributes": {
-		// MDN dropped the deprecated badge; HTML presentational attrs remain deprecated.
+		// https://html.spec.whatwg.org/multipage/obsolete.html#non-conforming-features
 		"align": {
-			"deprecated": true
+			"obsolete": true
 		},
+		// https://html.spec.whatwg.org/multipage/obsolete.html#non-conforming-features
 		"color": {
-			"deprecated": true
+			"obsolete": true
 		},
+		// https://html.spec.whatwg.org/multipage/obsolete.html#non-conforming-features
 		"noshade": {
-			"deprecated": true
+			"obsolete": true
 		},
+		// https://html.spec.whatwg.org/multipage/obsolete.html#non-conforming-features
 		"size": {
-			"deprecated": true
+			"obsolete": true
 		},
+		// https://html.spec.whatwg.org/multipage/obsolete.html#non-conforming-features
 		"width": {
-			"deprecated": true
+			"obsolete": true
 		}
 	},
 	"aria": {

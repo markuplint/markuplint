@@ -139,7 +139,23 @@
 		},
 		// https://html.spec.whatwg.org/multipage/obsolete.html#attr-link-target
 		"target": {
-			"deprecated": true
+			"obsolete": true
+		},
+		// https://html.spec.whatwg.org/multipage/obsolete.html#non-conforming-features
+		"charset": {
+			"obsolete": true
+		},
+		// https://html.spec.whatwg.org/multipage/obsolete.html#non-conforming-features
+		"methods": {
+			"obsolete": true
+		},
+		// https://html.spec.whatwg.org/multipage/obsolete.html#non-conforming-features
+		"rev": {
+			"obsolete": true
+		},
+		// https://html.spec.whatwg.org/multipage/obsolete.html#non-conforming-features
+		"urn": {
+			"obsolete": true
 		}
 	},
 	"aria": {

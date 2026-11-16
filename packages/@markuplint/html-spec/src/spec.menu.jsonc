@@ -14,8 +14,17 @@
 		"#ARIAAttrs": true
 	},
 	"attributes": {
+		// https://html.spec.whatwg.org/multipage/obsolete.html#non-conforming-features
 		"compact": {
-			"deprecated": true
+			"obsolete": true
+		},
+		// https://html.spec.whatwg.org/multipage/obsolete.html#non-conforming-features
+		"type": {
+			"obsolete": true
+		},
+		// https://html.spec.whatwg.org/multipage/obsolete.html#non-conforming-features
+		"label": {
+			"obsolete": true
 		}
 	},
 	"aria": {

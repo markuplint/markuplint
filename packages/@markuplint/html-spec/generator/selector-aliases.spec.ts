@@ -63,6 +63,17 @@ describe('expandConditionAliases', () => {
 		});
 	});
 
+	test('expands the selectors of deprecatedWhen, a string or an array', () => {
+		const attributes = {
+			foo: { deprecatedWhen: '#Node[src]' },
+			bar: { deprecatedWhen: ['#Node', "[x='3']"] },
+		};
+		expect(expandConditionAliases(attributes, aliases)).toStrictEqual({
+			foo: { deprecatedWhen: ":is(:not([x]), [x='1'], [x='2'])[src]" },
+			bar: { deprecatedWhen: [":is(:not([x]), [x='1'], [x='2'])", "[x='3']"] },
+		});
+	});
+
 	test('expands conditions inside ConditionalAttributeType entries', () => {
 		const attributes = {
 			foo: {

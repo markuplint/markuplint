@@ -17,10 +17,9 @@
 		"encoding": {
 			"type": "MIMEType"
 		},
-		// https://www.w3.org/TR/mathml-core/#semantics-and-presentation
+		// https://w3c.github.io/mathml/#mixing_annotation_attributes
 		"src": {
-			"type": "URL",
-			"deprecated": true
+			"type": "URL"
 		}
 	},
 	"aria": {
