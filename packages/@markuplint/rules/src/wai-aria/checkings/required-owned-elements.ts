@@ -172,6 +172,13 @@ function mayBeBeforeCreated(childNodes: readonly ChildNode<boolean, Options>[]) 
  * (e.g., `generic`) are traversed recursively so that their descendants
  * are evaluated as if they were direct children of the owning element.
  *
+ * The body of a loop (`{#each}`, `<template v-for>`, an element with `v-for`) is a child as it is written:
+ * `MLNode#childNodes` flattens it, and whether a loop renders anything is known only at run time. An element
+ * whose owned elements are all in a loop is therefore satisfied, though it owns none when the loop has no
+ * items. This is the limit of a static check, which reports only what is a problem whatever the loop renders,
+ * as it reports nothing when a `{#if}` branch may hold the owned element. Reading the body as unknown would
+ * not report more, and would stop reporting a body that is not the required role.
+ *
  * @param el - The parent element whose children to classify.
  * @param childNodes - The child nodes `el` owns, from `getOwnedChildNodes`.
  * @param role - The ARIA role of the parent, which defines allowed child roles.
