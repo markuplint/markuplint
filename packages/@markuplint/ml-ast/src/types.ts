@@ -163,6 +163,34 @@ export interface MLASTElement extends MLASTAbstractNode {
 	 * of `@markuplint/ml-core`) reads it. `null` for an element without such an attribute.
 	 */
 	readonly blockBehavior: MLASTBlockBehavior | null;
+	/**
+	 * Whether the framework renders this element away and renders its children in its place: Vue's
+	 * `<template>` that has `v-if`, `v-else-if`, `v-else`, `v-for` or `v-slot`. The parser says it for
+	 * every `template` element of such a language, `false` for one that stays an element (a `template`
+	 * without those, or with `v-show`, `:id`), so that it holds without the spec of the framework.
+	 * `undefined` for a parser that does not say: the directive attributes that the spec resolves tell.
+	 *
+	 * Unlike {@link MLASTElement.isFragment} it does not flatten the element out of the child nodes:
+	 * what a rule reads as the children of the parent (`MLNode#childNodes`) is decided by
+	 * {@link MLASTElement.blockBehavior}.
+	 *
+	 * @see https://github.com/vuejs/core/blob/main/packages/compiler-core/src/transforms/vIf.ts#transformIf
+	 * @see https://github.com/vuejs/core/blob/main/packages/compiler-core/src/transforms/vFor.ts#transformFor
+	 * @see https://github.com/vuejs/core/blob/main/packages/compiler-core/src/transforms/vSlot.ts#buildSlots
+	 */
+	readonly renderedAway?: boolean;
+	/**
+	 * The slot of the parent component that the children of a `v-slot` template are passed to:
+	 * `'default'`, the name of the slot, or `null` for a dynamic name (`#[name]`). `undefined` for an
+	 * element that is not a `v-slot` template.
+	 *
+	 * What is passed to the default slot is what the component renders for its children, so a rule that reads
+	 * the children of a component reads it in place of the template. A named or dynamic slot is placed where the
+	 * component says, which is not known from the markup.
+	 *
+	 * @see https://vuejs.org/guide/components/slots.html#named-slots
+	 */
+	readonly slotTarget?: string | null;
 	/** UUID of the matching closing tag, or `null` for void / self-closing elements */
 	readonly pairNodeUuid: string | null;
 	/**
