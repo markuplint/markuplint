@@ -220,3 +220,55 @@ pub(crate) fn lint_brief_with_settings(
 pub(crate) fn brief(severity: Severity, line: u32, col: u32, message: &str, raw: &str) -> Brief {
     (severity, line, col, message.to_owned(), raw.to_owned())
 }
+
+/// A node of the syntax tree that the Vue parser makes, as MLAST JSON ([`mlast_vue`]): an element with the
+/// `blockBehavior` of its `v-if` (`"if"`, `"if:else"`, `"each"`), whether the parser says Vue renders it away
+/// (`renderedAway`), the slot a `v-slot` template passes to (`slotTarget`: `Some(Some("default"))`, `Some(None)`
+/// for a dynamic name), and its children.
+pub(crate) fn vue_element(
+    name: &str,
+    behavior: Option<&str>,
+    rendered_away: Option<bool>,
+    slot_target: Option<Option<&str>>,
+    children: Vec<serde_json::Value>,
+) -> serde_json::Value {
+    use std::sync::atomic::{AtomicUsize, Ordering};
+    static NEXT: AtomicUsize = AtomicUsize::new(1);
+    let uuid = NEXT.fetch_add(1, Ordering::Relaxed).to_string();
+    let mut element = serde_json::json!({
+        "uuid": uuid, "raw": format!("<{name}>"), "offset": 0, "line": 1, "col": 1, "depth": 1,
+        "nodeName": name, "parentNodeUuid": null, "type": "starttag", "elementType": "html",
+        "namespace": "http://www.w3.org/1999/xhtml", "attributes": [], "childNodes": children,
+        "pairNodeUuid": null, "tagOpenChar": "<", "tagCloseChar": ">", "isGhost": false, "isFragment": false,
+        "blockBehavior": behavior.map(|ty| serde_json::json!({ "type": ty, "expression": "a" })),
+    });
+    let fields = element.as_object_mut().unwrap();
+    if let Some(away) = rendered_away {
+        fields.insert("renderedAway".to_owned(), serde_json::json!(away));
+    }
+    if let Some(target) = slot_target {
+        fields.insert("slotTarget".to_owned(), serde_json::json!(target));
+    }
+    element
+}
+
+/// [`vue_element`] holding a text.
+pub(crate) fn vue_leaf(name: &str, behavior: Option<&str>, text: &str) -> serde_json::Value {
+    use std::sync::atomic::{AtomicUsize, Ordering};
+    static NEXT: AtomicUsize = AtomicUsize::new(1_000_000);
+    let uuid = NEXT.fetch_add(1, Ordering::Relaxed).to_string();
+    let text = serde_json::json!({
+        "uuid": uuid, "raw": text, "offset": 0, "line": 1, "col": 1, "depth": 2,
+        "nodeName": "#text", "parentNodeUuid": null, "type": "text"
+    });
+    vue_element(name, behavior, None, None, vec![text])
+}
+
+/// The MLAST document of a fragment that the Vue parser would make of `nodes`: its elements are closed by
+/// an end tag, and a `template` holds its children in place.
+pub(crate) fn mlast_vue(nodes: Vec<serde_json::Value>) -> String {
+    serde_json::json!({
+        "raw": "<vue>", "isFragment": true, "nodeList": nodes, "endTag": "xml", "templateContent": "in-place"
+    })
+    .to_string()
+}

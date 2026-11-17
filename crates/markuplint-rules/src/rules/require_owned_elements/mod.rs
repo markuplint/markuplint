@@ -29,10 +29,12 @@
 //! template language that may enclose it, leaves the owned nodes unknown as well.
 
 use markuplint_core::i18n::Primitive as Kw;
+use markuplint_core::mlast::SlotTarget;
 use markuplint_dom::arena::{DomArena, NodeId};
 use markuplint_dom::helpers::{get_attr_node_from_el, get_attr_value};
 use markuplint_dom::node::DomNode;
 use markuplint_dom::pretender::PretenderContext;
+use markuplint_dom::tree::is_rendered_away;
 use markuplint_types::spec::aria::ARIAVersion;
 use markuplint_types::spec::types::MLMLSpec;
 
@@ -181,7 +183,11 @@ fn classify_children(
     let mut result = Vec::new();
     for child_id in children {
         match arena.get(child_id) {
-            Some(DomNode::Element(_)) => {
+            Some(DomNode::Element(el)) => {
+                if is_rendered_away(el) {
+                    result.extend(classify_rendered_away(spec, arena, child_id, role, version));
+                    continue;
+                }
                 if is_busy(arena, child_id) {
                     result.push(Owned::Busy);
                     continue;
@@ -235,6 +241,36 @@ fn classify_children(
         }
     }
     result
+}
+
+/// TS `classifyRenderedAway()`: what an element that the framework renders away (Vue's `<template v-if>` and
+/// `<template v-slot>`) renders in its own place. It is no element of the accessibility tree, so what is
+/// written in it is owned by what is above it, as if it were written there.
+///
+/// Which of the branches of `v-if` and `v-else` is rendered is not known, as for a block of template syntax:
+/// `Unknown`. A `v-for` is not looked at here: [`DomArena::child_nodes`] flattens its body into the parent, as it
+/// does the body of an `each` block, so the body is owned as it is written. A `v-slot` of a name other than the
+/// default one, or of a dynamic name, is rendered where the component places that slot, which is not known from
+/// the markup either. What is passed to the default slot is what the component renders for its children.
+fn classify_rendered_away(
+    spec: &MLMLSpec,
+    arena: &DomArena,
+    template: NodeId,
+    role: &ResolvedRole,
+    version: ARIAVersion,
+) -> Vec<Owned> {
+    let Some(el) = arena.get(template).and_then(DomNode::as_element) else {
+        return vec![Owned::Unknown];
+    };
+    if el.block_behavior.is_some()
+        || el
+            .slot_target
+            .as_ref()
+            .is_some_and(|target| *target != SlotTarget::Default)
+    {
+        return vec![Owned::Unknown];
+    }
+    classify_children(spec, arena, template, Some(arena.child_nodes(template)), role, version)
 }
 
 /// TS `classifySlot()`: what a `slot` among the owned nodes places. A slot of unknown assignment, and

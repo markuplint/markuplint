@@ -52,13 +52,25 @@ fn has_directive(el: &ElementData) -> bool {
         .any(|attr| matches!(attr, MLASTAttr::HTMLAttr(a) if a.is_directive == Some(true)))
 }
 
-/// TS `isRenderedAway` (`packages/@markuplint/rules/src/helpers.ts`): the element is not an
-/// element of the output, so what is written in it is rendered in place of it. A fragment (`<>` of
-/// JSX), or a `template` element with a directive of a template engine (Vue's `<template v-if>`);
-/// a spread attribute is not such a directive.
+/// TS `hasDirectiveTemplate`: whether the element is a `template` that has a directive of a template engine
+/// (Vue's `v-if`, `v-for`, `v-slot`). It is what [`is_rendered_away`] asks for a parser that does not say
+/// (`MLASTElement#renderedAway`): it cannot tell Vue's `v-show` from `v-if`.
+#[must_use]
+pub fn has_directive_template(el: &ElementData) -> bool {
+    has_local_name(el, "template") && has_directive(el)
+}
+
+/// TS `isRenderedAwayElement` (`MLElement#isRenderedAway`): the framework or the template engine renders
+/// the element away and renders its children in its place, so that it is no element of the output. A
+/// fragment (`<>` of JSX), and a `template` that the parser says is rendered away (`renderedAway`, which
+/// holds without the spec of the framework), or, for a parser that does not say, one with a directive of a
+/// template engine ([`has_directive_template`]).
+///
+/// A parser that says is believed over the attributes: Vue renders `<template v-if>` away but leaves
+/// `<template v-show>` a `template` element.
 #[must_use]
 pub fn is_rendered_away(el: &ElementData) -> bool {
-    el.is_fragment || (has_local_name(el, "template") && has_directive(el))
+    el.is_fragment || el.rendered_away.unwrap_or_else(|| has_directive_template(el))
 }
 
 /// TS `MLElement#isHTMLTemplateElement` (`isHTMLTemplateElement` of `ml-core`'s `tree-scope.ts`):
@@ -76,7 +88,7 @@ pub fn is_html_template_element(el: &ElementData, spec: Option<&MLMLSpec>) -> bo
         && el.namespace == NamespaceURI::XHTML
         && has_local_name(el, "template")
         && spec.is_none_or(|spec| spec.template_content != Some(TemplateContent::InPlace))
-        && !has_directive(el)
+        && !is_rendered_away(el)
 }
 
 /// TS `MLElement#isInNoTree`: an HTML `template` element that a declarative shadow root is

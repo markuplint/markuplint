@@ -605,6 +605,8 @@ fn push_virtual_element(
         attributes,
         has_spread_attr: origin.has_spread_attr,
         block_behavior: origin.block_behavior.clone(),
+        rendered_away: None,
+        slot_target: None,
         pair_node_id: None,
         tag_open_char: origin.tag_open_char.clone(),
         tag_close_char: origin.tag_close_char.clone(),

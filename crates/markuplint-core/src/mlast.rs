@@ -145,11 +145,44 @@ pub struct MLASTElement {
     pub has_spread_attr: Option<bool>,
     pub child_nodes: Vec<MLASTChildNode>,
     pub block_behavior: Option<MLASTBlockBehavior>,
+    /// TS `MLASTElement#renderedAway`: what the parser says of whether the framework renders this element
+    /// away and renders its children in its place (Vue's `<template v-if>`). Absent for a parser that does
+    /// not say: the directive attributes tell.
+    #[serde(default)]
+    pub rendered_away: Option<bool>,
+    /// TS `MLASTElement#slotTarget`: the slot of the parent component that the children of a `v-slot`
+    /// template are passed to. Absent for an element that is not a `v-slot` template.
+    #[serde(default, deserialize_with = "deserialize_slot_target")]
+    pub slot_target: Option<SlotTarget>,
     pub pair_node_uuid: Option<String>,
     pub tag_open_char: String,
     pub tag_close_char: String,
     pub is_ghost: bool,
     pub parent_node_uuid: Option<String>,
+}
+
+/// The slot that the children of a `v-slot` template are passed to (TS `MLASTElement#slotTarget`).
+#[derive(Debug, Clone, PartialEq, Eq)]
+pub enum SlotTarget {
+    /// `'default'`: what is passed to it is what the component renders for its children.
+    Default,
+    /// A named slot, which the component places where it says.
+    Named(String),
+    /// A dynamic name (`#[name]`), which is `null` in TS: not known from the markup.
+    Dynamic,
+}
+
+/// `null` is a dynamic name and a string is a name, as TS has them; an absent key is `None` through `default`.
+fn deserialize_slot_target<'de, D>(deserializer: D) -> Result<Option<SlotTarget>, D::Error>
+where
+    D: serde::Deserializer<'de>,
+{
+    let name: Option<String> = Option::deserialize(deserializer)?;
+    Ok(Some(match name {
+        None => SlotTarget::Dynamic,
+        Some(name) if name == "default" => SlotTarget::Default,
+        Some(name) => SlotTarget::Named(name),
+    }))
 }
 
 /// Corresponds to `MLASTElementCloseTag` in TS.

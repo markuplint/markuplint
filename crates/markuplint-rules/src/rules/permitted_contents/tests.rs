@@ -56,6 +56,8 @@ fn make_parent_children(parent_tag: &str, children: &[(&str, &[(&str, &str)])]) 
         attributes: vec![],
         has_spread_attr: false,
         block_behavior: None,
+        rendered_away: None,
+        slot_target: None,
         pair_node_id: None,
         tag_open_char: "<".to_string(),
         tag_close_char: ">".to_string(),
@@ -90,6 +92,8 @@ fn make_parent_children(parent_tag: &str, children: &[(&str, &[(&str, &str)])]) 
             attributes: vec![],
             has_spread_attr: false,
             block_behavior: None,
+            rendered_away: None,
+            slot_target: None,
             pair_node_id: None,
             tag_open_char: "<".to_string(),
             tag_close_char: ">".to_string(),
@@ -407,6 +411,8 @@ fn void_element_whitespace_only_valid() {
         attributes: vec![],
         has_spread_attr: false,
         block_behavior: None,
+        rendered_away: None,
+        slot_target: None,
         pair_node_id: None,
         tag_open_char: "<".to_string(),
         tag_close_char: ">".to_string(),
@@ -1736,4 +1742,35 @@ fn permitted_contents_valid_001() {
 fn permitted_contents_issue_4475_019() {
     const _ID: &str = "permitted-contents-issue-4475-019";
     assert_eq!(permitted_contents_brief("<div>&#10<style></style></div>"), []);
+}
+
+/// TS `[permitted-contents-issue-4744-007]`: the elements of a chain of `v-if` and `v-else` are a choice
+/// of one even without `evaluateConditionalChildNodes`, so the `table` has one `caption` as the content
+/// model asks; two `caption`s that are both rendered are one too many.
+#[test]
+fn v6_permitted_contents_issue_4744_007() {
+    use crate::test_util::{lint_mlast_brief, mlast_vue, vue_element, vue_leaf};
+
+    let table = |first: Option<&str>, second: Option<&str>| {
+        let row = vue_element("tr", None, None, None, vec![vue_leaf("td", None, "1")]);
+        mlast_vue(vec![vue_element(
+            "table",
+            None,
+            None,
+            None,
+            vec![vue_leaf("caption", first, "A"), vue_leaf("caption", second, "B"), row],
+        )])
+    };
+    let config = serde_json::json!({ "rules": { "permitted-contents": true } });
+    assert_eq!(
+        lint_mlast_brief(
+            "permitted-contents",
+            &table(Some("if"), Some("if:else")),
+            config.clone()
+        ),
+        []
+    );
+    let both = lint_mlast_brief("permitted-contents", &table(None, None), config);
+    assert_eq!(both.len(), 1, "{both:?}");
+    assert_eq!(both[0].4, "<caption>");
 }

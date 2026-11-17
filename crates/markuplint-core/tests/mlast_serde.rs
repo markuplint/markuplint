@@ -258,6 +258,46 @@ fn block_behavior_types() {
     }
 }
 
+/// `renderedAway` and `slotTarget` of the Vue parser: absent when the parser does not say, and `null` is a
+/// dynamic slot name, which is not the same as absent.
+#[test]
+fn rendered_away_and_slot_target() {
+    let element = |extra: &str| {
+        let json = format!(
+            r#"{{"raw": "<template>", "isFragment": true, "nodeList": [{{
+                "uuid": "1", "raw": "<template>", "offset": 0, "line": 1, "col": 1, "depth": 0,
+                "nodeName": "template", "parentNodeUuid": null, "type": "starttag", "elementType": "html",
+                "namespace": "http://www.w3.org/1999/xhtml", "attributes": [], "childNodes": [],
+                "pairNodeUuid": null, "tagOpenChar": "<", "tagCloseChar": ">", "blockBehavior": null,
+                "isGhost": false, "isFragment": false{extra}
+            }}]}}"#
+        );
+        let doc = mlast::parse_mlast(&json).expect("Failed to parse the element");
+        let MLASTNode::Element(el) = doc.node_list.into_iter().next().unwrap() else {
+            panic!("Expected Element");
+        };
+        el
+    };
+
+    let el = element("");
+    assert_eq!((el.rendered_away, el.slot_target), (None, None));
+
+    let el = element(r#", "renderedAway": true, "slotTarget": "default""#);
+    assert_eq!(
+        (el.rendered_away, el.slot_target),
+        (Some(true), Some(mlast::SlotTarget::Default))
+    );
+
+    let el = element(r#", "renderedAway": false"#);
+    assert_eq!((el.rendered_away, el.slot_target), (Some(false), None));
+
+    let el = element(r#", "renderedAway": true, "slotTarget": "header""#);
+    assert_eq!(el.slot_target, Some(mlast::SlotTarget::Named("header".to_owned())));
+
+    let el = element(r#", "renderedAway": true, "slotTarget": null"#);
+    assert_eq!(el.slot_target, Some(mlast::SlotTarget::Dynamic));
+}
+
 #[test]
 fn all_namespace_uris() {
     let cases = [

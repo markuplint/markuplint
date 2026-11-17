@@ -7,10 +7,10 @@
 //! the markup, so a caller that must not report on what it cannot know reads them all
 //! ([`expand_conditional_blocks`]).
 
-use markuplint_core::mlast::{MLASTAttr, MLASTBlockBehaviorType};
+use markuplint_core::mlast::MLASTBlockBehaviorType;
 use markuplint_dom::arena::{DomArena, NodeId};
-use markuplint_dom::node::{DomNode, ElementData};
-use markuplint_dom::tree::element_local_name;
+use markuplint_dom::node::DomNode;
+use markuplint_dom::tree::{element_local_name, is_rendered_away};
 
 /// The key of an answer of [`DomArena::memoize`] that is about the whole arena and not one node.
 const WHOLE_ARENA: NodeId = 0;
@@ -35,33 +35,20 @@ pub fn is_conditional_block(arena: &DomArena, id: NodeId) -> bool {
         .is_some_and(|behavior| !matches!(behavior, MLASTBlockBehaviorType::Each | MLASTBlockBehaviorType::End))
 }
 
-/// TS `hasDirectiveTemplate`: whether the element is a `template` that has a directive of a template
-/// engine (Vue's `v-if`, `v-for`, `v-slot`). The engine renders its children in place of it and drops
-/// it, so it is not an HTML `template` element. A spread attribute sets attributes of the element,
-/// which stays.
-#[must_use]
-pub fn has_directive_template(el: &ElementData) -> bool {
-    element_local_name(el) == "template"
-        && el
-            .attributes
-            .iter()
-            .any(|attr| matches!(attr, MLASTAttr::HTMLAttr(html_attr) if html_attr.is_directive == Some(true)))
-}
-
-/// TS `isRenderedAwayTemplate`: a `template` of a framework that renders it away: one with a directive of a
-/// template engine, or one that the parser marks with a behavior (`v-if`, `v-for`), which it does without
-/// the spec.
+/// A `template` that the framework renders away ([`is_rendered_away`]), which TS `expandConditionalBlocks`
+/// reads through.
 fn is_rendered_away_template(arena: &DomArena, id: NodeId) -> bool {
-    arena.get(id).and_then(DomNode::as_element).is_some_and(|el| {
-        element_local_name(el) == "template" && (has_directive_template(el) || el.block_behavior.is_some())
-    })
+    arena
+        .get(id)
+        .and_then(DomNode::as_element)
+        .is_some_and(|el| element_local_name(el) == "template" && is_rendered_away(el))
 }
 
-/// TS `expandConditionalBlocks`: the nodes with every conditional block, and every `template` that has a
-/// directive, replaced by the nodes of its branches or of its content, recursively, as if every branch
-/// were rendered at once. A `template` with a directive (Vue's `<template v-if>`) is rendered away: its
-/// children are children of the element that holds it. A block that has no behavior stays: it is unknown
-/// by itself ([`crate::helpers::has_mutable_children`]).
+/// TS `expandConditionalBlocks`: the nodes with every conditional block, and every `template` that the
+/// framework renders away, replaced by the nodes of its branches or of its content, recursively, as if every
+/// branch were rendered at once. A `template` that is rendered away (Vue's `<template v-if>`) is no element of
+/// the output: its children are children of the element that holds it. A block that has no behavior stays: it
+/// is unknown by itself ([`crate::helpers::has_mutable_children`]).
 #[must_use]
 pub fn expand_conditional_blocks(arena: &DomArena, nodes: &[NodeId]) -> Vec<NodeId> {
     let mut expanded = Vec::new();

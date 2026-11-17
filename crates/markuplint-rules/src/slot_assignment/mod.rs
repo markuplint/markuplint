@@ -391,14 +391,26 @@ pub fn is_not_rendered(arena: &DomArena, spec: &MLMLSpec, id: NodeId) -> bool {
     get_flat_tree_slot(arena, spec, id) == FlatTreeSlot::NotRendered
 }
 
-/// TS `getAccessibilityParentElement`: the composed parent element with the `slot` elements passed
-/// through. The walks that read the roles of the ancestors take it; the walks that read an attribute of
-/// the ancestors take [`composed_parent_element`], as what a `slot` that has `hidden` renders is hidden.
+/// TS `isRenderedAway` (`tree-boundary.ts`): whether the framework renders an element away and renders its
+/// children in its place (`MLElement#isRenderedAway`): a fragment such as JSX's `<>`, and Vue's `<template v-if>`.
+/// Such an element is no element of the accessibility tree either.
+#[must_use]
+pub fn is_rendered_away_element(arena: &DomArena, id: NodeId) -> bool {
+    arena
+        .get(id)
+        .and_then(DomNode::as_element)
+        .is_some_and(markuplint_dom::tree::is_rendered_away)
+}
+
+/// TS `getAccessibilityParentElement`: the composed parent element with the `slot` elements and the elements
+/// that the framework renders away passed through. The walks that read the roles of the ancestors take it; the
+/// walks that read an attribute of the ancestors take [`composed_parent_element`], as what a `slot` that has
+/// `hidden` renders is hidden.
 #[must_use]
 pub fn accessibility_parent_element(arena: &DomArena, spec: &MLMLSpec, id: NodeId) -> Option<NodeId> {
     let mut parent = composed_parent_element(arena, spec, id);
     while let Some(p) = parent
-        && is_slot_element(arena, p)
+        && (is_slot_element(arena, p) || is_rendered_away_element(arena, p))
     {
         parent = composed_parent_element(arena, spec, p);
     }

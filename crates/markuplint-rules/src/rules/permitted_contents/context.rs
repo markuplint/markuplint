@@ -418,9 +418,15 @@ impl<'a> Ctx<'a> {
     }
 
     fn fill_and_expand(&self, id: NodeId, given: &[NodeId]) -> Vec<NodeId> {
+        // What the component renders is what it is given, as the pretender says (`slots` or not)
+        let passed = if self.mode == Mode::Pretended && crate::slot_content::is_pretended(self.arena, id) {
+            crate::slot_content::expand_default_slot_templates(self.arena, given)
+        } else {
+            given.to_vec()
+        };
         let children = match self.slot_content(id) {
-            Some(content) => content.fill(given),
-            None => given.to_vec(),
+            Some(content) => content.fill(&passed),
+            None => passed,
         };
         children
             .into_iter()

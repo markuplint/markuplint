@@ -317,6 +317,8 @@ fn convert_parser_node(
                 attributes: mlast_attrs,
                 has_spread_attr: false,
                 block_behavior: None,
+                rendered_away: None,
+                slot_target: None,
                 pair_node_id: None,
                 tag_open_char: "<".to_owned(),
                 tag_close_char: if *self_closing { "/>".to_owned() } else { ">".to_owned() },
@@ -330,9 +332,15 @@ fn convert_parser_node(
             }));
             debug_assert_eq!(pushed_id, dom_id);
 
-            // Recursively convert children.
+            // Recursively convert children. The body of a raw-text element (`rawTextElements` of TS: `style`,
+            // `script`, `xmp`) is CSS or JavaScript, not markup, so TS gives it no node. The tokenizer of the
+            // HTML standard reads it as one text only in the HTML namespace; in an SVG `script` or `style` the
+            // tree builder makes elements of what looks like one (`<svg><script><circle></circle></script></svg>`),
+            // which a rule would read as markup, so the body of those is left out as TS leaves it out.
             let mut child_ids: Vec<NodeId> = Vec::new();
-            for &child_id in &node.children {
+            let drops_children =
+                *namespace == Namespace::Svg && matches!(tag_name.to_ascii_lowercase().as_str(), "script" | "style");
+            for &child_id in node.children.iter().filter(|_| !drops_children) {
                 convert_into(
                     source,
                     parser_arena,
@@ -697,6 +705,21 @@ mod tests {
         // No close tag.
         assert_eq!(inner("br"), None);
         assert_eq!(inner("em"), None);
+    }
+
+    /// TS `[permitted-contents-valid-003]` (`svg-script.spec.ts`): the tree builder of the HTML standard makes
+    /// an element of what looks like one in an SVG `script`, and TS leaves the body of a raw-text element out
+    /// (`rawTextElements`), so the DOM of the SVG `script` and `style` has no child node. The body of an HTML
+    /// `script` is the text that the tokenizer made of it.
+    #[test]
+    fn the_body_of_an_svg_script_or_style_has_no_node() {
+        let dom = build("<svg><script><circle r=\"1\"></circle></script><style>a { }</style></svg>");
+        let names: Vec<String> = dom.elements().map(|(_, el)| el.base.node_name.clone()).collect();
+        assert_eq!(names, ["svg", "script", "style"]);
+        assert!(texts(&dom).is_empty());
+
+        let dom = build("<script>var a = 1;</script>");
+        assert_eq!(texts(&dom), [("var a = 1;", false)]);
     }
 
     #[test]

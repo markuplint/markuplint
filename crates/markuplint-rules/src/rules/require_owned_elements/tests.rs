@@ -34,6 +34,9 @@
 //!   require-owned-elements-issue-4068-013  — v6_require_owned_elements_021 (a `<slot>` for the JSX expression)
 //!   require-owned-elements-issue-4068-014  — v6_require_owned_elements_022
 //!   v6_require_owned_elements_023  — Rust-only: a child placed in a slot wrapper is resolved on its own
+//!
+//!   require-owned-elements-issue-4744-001 and -006 — v6_require_owned_elements_issue_4744_001 (the Vue
+//!   parser's MLAST by hand; the specs of TS run on this engine through `yarn test:rust-rules` as well)
 
 use crate::lint::{LintConfig, lint};
 use crate::violation::{Severity, Violation};
@@ -540,4 +543,34 @@ fn v6_require_owned_elements_023() {
         ),
         &[],
     );
+}
+
+/// TS `[require-owned-elements-issue-4744-001]` and `[require-owned-elements-issue-4744-006]`: what is
+/// in a `template` that Vue renders away is owned by what is above it, as if it were written there. The
+/// branch of `v-if` or a slot other than the default one may be rendered anywhere, or not at all, so it is
+/// not judged; what is passed to the default slot is.
+#[test]
+fn v6_require_owned_elements_issue_4744_001() {
+    use crate::test_util::{lint_mlast_brief, mlast_vue, vue_element, vue_leaf};
+
+    let of = |item: &str, behavior: Option<&str>, target: Option<Option<&str>>| {
+        let template = vue_element(
+            "template",
+            behavior,
+            Some(true),
+            target,
+            vec![vue_leaf(item, None, "a")],
+        );
+        mlast_vue(vec![vue_element("ul", None, None, None, vec![template])])
+    };
+    let config = serde_json::json!({ "rules": { "require-owned-elements": true } });
+    let lint = |mlast: &str| lint_mlast_brief("require-owned-elements", mlast, config.clone());
+
+    // The body of the default slot is owned as it is written
+    assert_eq!(lint(&of("li", None, Some(Some("default")))), []);
+    assert_eq!(lint(&of("p", None, Some(Some("default")))).len(), 1);
+    // A branch of `v-if`, and a named or dynamic slot, are not known
+    assert_eq!(lint(&of("p", Some("if"), None)), []);
+    assert_eq!(lint(&of("p", None, Some(Some("header")))), []);
+    assert_eq!(lint(&of("p", None, Some(None))), []);
 }

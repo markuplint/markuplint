@@ -1,4 +1,4 @@
-use markuplint_core::mlast::MLASTAttr;
+use markuplint_core::mlast::{MLASTAttr, SlotTarget};
 use markuplint_dom::arena::{DomArena, NodeId};
 use markuplint_dom::helpers::{get_attr_node_from_el, get_attr_value, get_attr_value_from_el, has_attr};
 use markuplint_dom::node::{DomNode, ElementData};
@@ -104,14 +104,29 @@ pub fn is_unresolved_component(el: &ElementData) -> bool {
 }
 
 /// TS `mayRenderUnknownChildren`: a child node that may stand for children that are not known —
-/// a preprocessor block without a behavior (`{value}`, an `include`), a `slot`, or, with
-/// `components`, a component whose output is not known.
+/// a preprocessor block without a behavior (`{value}`, an `include`), a `slot`, a `<template v-slot>`
+/// for a slot other than the default one, or, with `components`, a component whose output is not known.
 pub fn may_render_unknown_children(arena: &DomArena, node_id: NodeId, components: bool) -> bool {
     match arena.get(node_id) {
         Some(DomNode::PSBlock(block)) => block.block_behavior.is_none(),
-        Some(DomNode::Element(el)) => element_local_name(el) == "slot" || (components && is_unresolved_component(el)),
+        Some(DomNode::Element(el)) => {
+            element_local_name(el) == "slot"
+                || is_slot_template_of_other_slot(el)
+                || (components && is_unresolved_component(el))
+        }
         _ => false,
     }
+}
+
+/// TS `isSlotTemplateOfOtherSlot`: whether the element is a `<template v-slot>` for a slot other than the
+/// default one, or for one whose name is written as code. The component renders it where it places that slot,
+/// which is not known from the markup.
+fn is_slot_template_of_other_slot(el: &ElementData) -> bool {
+    is_rendered_away(el)
+        && el
+            .slot_target
+            .as_ref()
+            .is_some_and(|target| *target != SlotTarget::Default)
 }
 
 /// TS `accnameMayBeMutable()`: the element, or the label it owns, has an attribute or a child

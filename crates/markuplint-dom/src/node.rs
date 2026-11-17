@@ -1,4 +1,4 @@
-use markuplint_core::mlast::{ElementType, MLASTAttr, MLASTBlockBehavior, NamespaceURI};
+use markuplint_core::mlast::{ElementType, MLASTAttr, MLASTBlockBehavior, NamespaceURI, SlotTarget};
 
 use crate::arena::NodeId;
 use crate::pretender::PretenderContext;
@@ -135,6 +135,12 @@ pub struct ElementData {
     pub attributes: Vec<MLASTAttr>,
     pub has_spread_attr: bool,
     pub block_behavior: Option<MLASTBlockBehavior>,
+    /// TS `MLElement#renderedAway`: what the parser says of whether the framework renders the element away
+    /// (see [`crate::tree::is_rendered_away`], which is what a caller reads).
+    pub rendered_away: Option<bool>,
+    /// TS `MLElement#slotTarget`: the slot of the parent component that the children of a `v-slot` template
+    /// are passed to.
+    pub slot_target: Option<SlotTarget>,
     pub pair_node_id: Option<NodeId>,
     pub tag_open_char: String,
     pub tag_close_char: String,

@@ -37,10 +37,12 @@ fn start(
     ignore_unresolved_components: bool,
 ) -> Vec<ContentModelResult> {
     let evaluate_conditional = ctx.options.evaluate_conditional_child_nodes;
+    // Without `evaluateConditionalChildNodes` the elements of a chain of `v-if`, `v-else-if` and `v-else` are
+    // still a choice of one, as they are not siblings that are rendered together; the blocks stay opaque.
     let given_patterns = if evaluate_conditional {
         ctx.arena.conditional_child_nodes(el)
     } else {
-        vec![ctx.arena.child_nodes(el)]
+        ctx.arena.alternative_child_nodes(el)
     };
     // A model that is `false` does not allow a component either: what it renders may be anything
     let ignores_components = ignore_unresolved_components && matches!(contents, ContentModelContents::Patterns(_));
@@ -607,12 +609,16 @@ fn transparent_branch_groups(ctx: &Ctx<'_>, child: NodeId) -> Option<Vec<Vec<Ite
             })
             .collect()
     } else {
-        vec![
-            ctx.expand_children(child, &ctx.arena.child_nodes(child))
-                .into_iter()
-                .filter(|&n| !ctx.is_comment(n) && !ctx.is_whitespace_text(n))
-                .collect(),
-        ]
+        ctx.arena
+            .alternative_child_nodes(child)
+            .into_iter()
+            .map(|nodes| {
+                ctx.expand_children(child, &nodes)
+                    .into_iter()
+                    .filter(|&n| !ctx.is_comment(n) && !ctx.is_whitespace_text(n))
+                    .collect()
+            })
+            .collect()
     };
 
     let mut branch_groups = Vec::new();
