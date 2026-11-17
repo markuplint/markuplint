@@ -246,11 +246,14 @@ function transparentBranchGroups(
 				.map(childNodes =>
 					[...expandChildren(childNode, [...childNodes], mode)].filter(child => !isComment(child)),
 				)
-		: [
-				[...expandChildren(childNode, [...childNode.childNodes], mode)].filter(
-					child => !isComment(child) && !(child.is(child.TEXT_NODE) && isInterElementWhitespace(child.raw)),
-				),
-			];
+		: childNode
+				.alternativeChildNodes()
+				.map(childNodes =>
+					[...expandChildren(childNode, [...childNodes], mode)].filter(
+						child =>
+							!isComment(child) && !(child.is(child.TEXT_NODE) && isInterElementWhitespace(child.raw)),
+					),
+				);
 
 	const branchGroups: (ChildNode | Result)[][] = [];
 

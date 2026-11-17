@@ -43,7 +43,8 @@ import { XHTML_NAMESPACE } from '../../const/dom.js';
  * assignment is not known (`undefined`: manual assignment, a name written as code, a slot of a
  * framework), the walk goes to the host as it does for any other child. The `slot` element itself
  * is an element that is not mapped to the accessibility tree, which the algorithms of this package
- * pass through (`isSlotElement`).
+ * pass through (`isSlotElement`), as they do an element that the framework renders away (a fragment, Vue's
+ * `<template v-if>` and `<template v-slot>`; `isRenderedAway`): its children are the children of what is above it.
  *
  * Known limitation: a walk from the top of the shadow root goes to the host and does not model where
  * the `slot` sits in the shadow root, so the elements of the shadow root that are above the `slot` are
@@ -190,8 +191,29 @@ export function isNotRendered(el: object): boolean {
 }
 
 /**
+ * Whether the framework or the template engine renders an element away and renders its children in its
+ * place (`MLElement#isRenderedAway` of `@markuplint/ml-core`): a fragment such as JSX's `<>`, and Vue's
+ * `<template>` that has `v-if`, `v-else-if`, `v-else`, `v-for` or `v-slot`. It is no element of the
+ * output, so it is no element of the accessibility tree either: a walk up the ancestors that reads roles
+ * passes through it as it does a `slot` ({@link isSlotElement}).
+ *
+ * The DOM `Element` has no such notion: only the element of `@markuplint/ml-core` knows it, as with
+ * {@link isNotRendered}.
+ *
+ * @param el - An element
+ * @returns `true` for an element that is known to be rendered away
+ * @see https://github.com/vuejs/core/blob/main/packages/compiler-core/src/transforms/vIf.ts#transformIf
+ * @see https://github.com/vuejs/core/blob/main/packages/compiler-core/src/transforms/vFor.ts#transformFor
+ * @see https://github.com/vuejs/core/blob/main/packages/compiler-core/src/transforms/vSlot.ts#buildSlots
+ */
+export function isRenderedAway(el: object): boolean {
+	return (el as { isRenderedAway?: unknown }).isRenderedAway === true;
+}
+
+/**
  * The parent element of an element in the accessibility tree: the composed parent element
- * ({@link getComposedParentElement}) with the `slot` elements passed through ({@link isSlotElement}). The walks
+ * ({@link getComposedParentElement}) with the `slot` elements ({@link isSlotElement}) and the elements the
+ * framework renders away ({@link isRenderedAway}) passed through. The walks
  * that read the roles of the ancestors take it; the walks that read an attribute of the ancestors take
  * {@link getComposedParentElement}, as what a `slot` that has `hidden` renders is hidden.
  *
@@ -204,12 +226,13 @@ export function getAccessibilityParentElement<
 		readonly parentElement: E | null;
 		readonly localName: string;
 		readonly namespaceURI?: string | null;
+		readonly isRenderedAway?: boolean;
 		getRootNode?(): unknown;
 		getFlatTreeSlot?(): E | null | undefined;
 	},
 >(el: E): E | null {
 	let parent = getComposedParentElement(el);
-	while (parent && isSlotElement(parent)) {
+	while (parent && (isSlotElement(parent) || isRenderedAway(parent))) {
 		parent = getComposedParentElement(parent);
 	}
 	return parent;

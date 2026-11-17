@@ -91,8 +91,30 @@ function fillAndExpand<T extends RuleConfigValue, O extends PlainData>(
 	mode: Mode,
 ): readonly ChildNode<T, O>[] {
 	const slotContent = getSlotContent(el, mode);
-	const children = slotContent ? slotContent.fill(given) : given;
+	// What the component renders is what it is given, as the pretender says (`slots` or not)
+	const passed = mode === 'pretended' && el.pretenderContext ? expandDefaultSlotTemplates(given) : given;
+	const children = slotContent ? slotContent.fill(passed) : passed;
 	return children.flatMap(child => expandFragment(child, mode));
+}
+
+/**
+ * Replaces a `<template v-slot>` that passes its children to the default slot (`#default`, `v-slot`) with
+ * those children. The component renders the children that it is given, and the `template` is not one of them:
+ * Vue renders it away. A `template` for any other slot is placed where the component says, which is not known
+ * from the markup, so it stays (`mayRenderUnknownChildren`); so does one that also has `v-if`, which is a
+ * conditional branch.
+ *
+ * @see https://vuejs.org/guide/components/slots.html#named-slots
+ */
+function expandDefaultSlotTemplates<T extends RuleConfigValue, O extends PlainData>(
+	// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
+	given: readonly ChildNode<T, O>[],
+): readonly ChildNode<T, O>[] {
+	return given.flatMap(child =>
+		child.is(child.ELEMENT_NODE) && child.isRenderedAway && child.slotTarget === 'default' && !child.blockBehavior
+			? expandDefaultSlotTemplates([...child.childNodes])
+			: [child],
+	);
 }
 
 /**

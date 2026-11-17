@@ -157,7 +157,8 @@ const spec: ExtendedSpec = {
 	 * string, and when it hydrates server output it replaces the element with its content.
 	 *
 	 * `@markuplint/vue-parser` declares the same value (`MLParser#templateContent`), so that a file
-	 * is read right without this spec in the configuration. Change both together.
+	 * is read right without this spec in the configuration. It also says of each `template` whether it is
+	 * a fragment (`MLASTElement#renderedAway`), by the same list of directives. Change both together.
 	 */
 	templateContent: 'in-place',
 	/**

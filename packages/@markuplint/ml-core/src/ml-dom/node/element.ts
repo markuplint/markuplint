@@ -55,6 +55,7 @@ import {
 	getDeclarativeShadowRootMode,
 	getShadowRootTemplate,
 	isHTMLTemplateElement,
+	isRenderedAwayElement,
 } from '../helper/tree-scope.js';
 import {
 	after,
@@ -406,6 +407,19 @@ export class MLElement<T extends RuleConfigValue, O extends PlainData = undefine
 	readonly blockBehavior: MLASTBlockBehavior | null;
 
 	/**
+	 * What the parser says of whether the framework renders this element away. See {@link MLASTElement.renderedAway}
+	 * and {@link MLElement.isRenderedAway}, which is what a caller reads.
+	 */
+	readonly renderedAway: boolean | undefined;
+
+	/**
+	 * The slot of the parent component that the children of a `v-slot` template are passed to. See
+	 * {@link MLASTElement.slotTarget}. It tells the default slot, whose children the rules read in place of the
+	 * template, from a named or dynamic one, whose placement is not known.
+	 */
+	readonly slotTarget: string | null | undefined;
+
+	/**
 	 * The tag close character string (e.g., `>` or `/>` or `%>`).
 	 */
 	readonly tagCloseChar: string;
@@ -443,6 +457,8 @@ export class MLElement<T extends RuleConfigValue, O extends PlainData = undefine
 		this.tagCloseChar = astNode.tagCloseChar;
 
 		this.blockBehavior = astNode.blockBehavior;
+		this.renderedAway = astNode.renderedAway;
+		this.slotTarget = astNode.slotTarget;
 	}
 
 	/**
@@ -3406,10 +3422,30 @@ export class MLElement<T extends RuleConfigValue, O extends PlainData = undefine
 	}
 
 	/**
+	 * Whether the framework or the template engine renders this element away and renders its children in
+	 * its place, so that it is no element of the output: a fragment (JSX `<>`, Astro's `<Fragment>`), and a
+	 * `template` that Vue's `v-if`, `v-else-if`, `v-else`, `v-for` or `v-slot` takes. A parser that says
+	 * (`MLASTElement#renderedAway`) is believed; for any other, a `template` that has a directive the spec
+	 * resolves is (`hasDirectiveTemplate`).
+	 *
+	 * The algorithms of `@markuplint/ml-spec` read it to pass through such an element on the way up the
+	 * ancestors (`isRenderedAway` of `tree-boundary.ts`), as they do a `slot`, and the rules that walk the
+	 * ancestors read it.
+	 *
+	 * @implements `@markuplint/ml-core` API: `MLElement`
+	 * @see https://github.com/vuejs/core/blob/main/packages/compiler-core/src/transforms/vIf.ts#transformIf
+	 * @see https://github.com/vuejs/core/blob/main/packages/compiler-core/src/transforms/vFor.ts#transformFor
+	 * @see https://github.com/vuejs/core/blob/main/packages/compiler-core/src/transforms/vSlot.ts#buildSlots
+	 */
+	get isRenderedAway(): boolean {
+		return isRenderedAwayElement(this);
+	}
+
+	/**
 	 * Whether this element is an HTML `template` element, which holds its children in {@link MLElement.content},
 	 * a tree of its own. A `template` of a framework that puts the children in the element itself
 	 * (`templateContent: 'in-place'` in the spec, or in the parser when the spec says nothing: React, Vue),
-	 * a fragment, and a `template` with a directive of a template engine are not.
+	 * a fragment, and a `template` that is rendered away (`isRenderedAway`) are not.
 	 *
 	 * The getters about trees (this one, {@link MLElement.declarativeShadowRootAttachment},
 	 * {@link MLElement.content}, `getRootNode()` and the id lookups) keep what they first return: they

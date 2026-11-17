@@ -2,9 +2,11 @@ import { createJSDOMElement } from '@markuplint/test-tools';
 import { describe, test, expect } from 'vitest';
 
 import {
+	getAccessibilityParentElement,
 	getComposedParentElement,
 	getTreeParentElement,
 	isNotRendered,
+	isRenderedAway,
 	isShadowRoot,
 	isSlotElement,
 } from './tree-boundary.js';
@@ -192,5 +194,60 @@ describe('isSlotElement', () => {
 		expect(isSlotElement({ localName: 'slot', namespaceURI: 'http://www.w3.org/1999/xhtml' })).toBe(true);
 		expect(isSlotElement({ localName: 'slot', namespaceURI: 'http://www.w3.org/2000/svg' })).toBe(false);
 		expect(isSlotElement({ localName: 'div', namespaceURI: 'http://www.w3.org/1999/xhtml' })).toBe(false);
+	});
+});
+
+describe('isRenderedAway', () => {
+	test('is true only for an element that says the framework renders it away', () => {
+		expect(isRenderedAway({ isRenderedAway: true })).toBe(true);
+		expect(isRenderedAway({ isRenderedAway: false })).toBe(false);
+		expect(isRenderedAway({ isRenderedAway: 'true' })).toBe(false);
+		expect(isRenderedAway({ isRenderedAway: 1 })).toBe(false);
+		expect(isRenderedAway({})).toBe(false);
+	});
+});
+
+describe('getAccessibilityParentElement', () => {
+	const HTML = 'http://www.w3.org/1999/xhtml';
+	type Node = {
+		readonly parentElement: Node | null;
+		readonly localName: string;
+		readonly namespaceURI: string;
+		readonly isRenderedAway?: boolean;
+	};
+	const node = (localName: string, parentElement: Node | null, isRenderedAway?: boolean): Node => ({
+		parentElement,
+		localName,
+		namespaceURI: HTML,
+		...(isRenderedAway === undefined ? {} : { isRenderedAway }),
+	});
+
+	test('passes through an element that the framework renders away', () => {
+		const menu = node('div', null);
+		const away = node('template', menu, true);
+		const item = node('button', away);
+		expect(getAccessibilityParentElement(item)).toBe(menu);
+	});
+
+	test('passes through a chain of them, and a slot among them', () => {
+		const menu = node('div', null);
+		const outer = node('template', menu, true);
+		const slot = node('slot', outer);
+		const inner = node('template', slot, true);
+		const item = node('button', inner);
+		expect(getAccessibilityParentElement(item)).toBe(menu);
+	});
+
+	test('does not pass through an element that stays', () => {
+		const menu = node('div', null);
+		const template = node('template', menu, false);
+		const plain = node('template', menu);
+		expect(getAccessibilityParentElement(node('button', template))).toBe(template);
+		expect(getAccessibilityParentElement(node('button', plain))).toBe(plain);
+	});
+
+	test('ends at the top when only elements rendered away are above', () => {
+		const away = node('template', null, true);
+		expect(getAccessibilityParentElement(node('button', away))).toBeNull();
 	});
 });

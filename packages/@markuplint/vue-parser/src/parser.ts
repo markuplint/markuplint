@@ -34,6 +34,58 @@ const CONDITIONAL_DIRECTIVES: ReadonlyMap<string, MLASTBlockBehaviorType> = new 
 ]);
 
 /**
+ * The directives of a `<template>` that Vue's compiler renders away, whose children are rendered in
+ * its place. `v-if`, `v-else-if`, `v-else` and `v-for` of the `<template>` are what `transformIf` and
+ * `transformFor` handle; `v-slot` is what `buildSlots` takes: the children are passed to the component.
+ * Any other directive (`v-show`, `:id`) leaves a `template` element in the tree, as does none.
+ *
+ * The list is the one that `templateContent` of `@markuplint/vue-spec` names for the `template` that is a
+ * fragment: change both together.
+ *
+ * @see https://github.com/vuejs/core/blob/main/packages/compiler-core/src/transforms/vIf.ts#transformIf
+ * @see https://github.com/vuejs/core/blob/main/packages/compiler-core/src/transforms/vFor.ts#transformFor
+ * @see https://github.com/vuejs/core/blob/main/packages/compiler-core/src/transforms/vSlot.ts#buildSlots
+ */
+const RENDERED_AWAY_DIRECTIVES: ReadonlySet<string> = new Set([...CONDITIONAL_DIRECTIVES.keys(), 'slot']);
+
+/**
+ * What the parser says of whether Vue renders a `<template>` away (`MLASTElement#renderedAway`), and
+ * for a `v-slot` the slot that its children are passed to (`MLASTElement#slotTarget`). An element that is
+ * not a `<template>` says nothing. `rawName` is what tells a `<template>` from a component named
+ * `<Template>` (see {@link isIgnoredSideEffectTag}).
+ *
+ * @param element - The element of the template
+ * @returns The properties to overwrite on the element
+ */
+function detectRenderedAway(element: VElement): { renderedAway?: boolean; slotTarget?: string | null } {
+	if (element.name !== 'template') {
+		return {};
+	}
+	// The parser lower-cases `name`: a component that is written `<Template>` is no `template`, and Vue renders it
+	if (element.rawName !== 'template') {
+		return { renderedAway: false };
+	}
+	let renderedAway = false;
+	let slotTarget: string | null | undefined;
+	for (const attr of element.startTag.attributes) {
+		if (!attr.directive) {
+			continue;
+		}
+		const name = attr.key.name.name;
+		if (!RENDERED_AWAY_DIRECTIVES.has(name)) {
+			continue;
+		}
+		renderedAway = true;
+		if (name === 'slot') {
+			// `v-slot` without an argument is the default slot; a dynamic argument (`#[name]`) is not known
+			const argument = attr.key.argument;
+			slotTarget = argument === null ? 'default' : argument.type === 'VIdentifier' ? argument.name : null;
+		}
+	}
+	return { renderedAway, ...(slotTarget === undefined ? {} : { slotTarget }) };
+}
+
+/**
  * The built-in components, as written or in kebab-case: `isBuiltInType(tag, name)` of Vue is
  * `tag === name || tag === hyphenate(name)`.
  *
@@ -114,11 +166,14 @@ function collectIgnoredSideEffectTags(nodes: readonly ASTNode[], rawCode: string
  * `v-if`, `v-else-if`, `v-else` and `v-for` do not wrap the element in a block: they attach to arbitrary
  * elements that must remain valid HTML elements for attribute validation, so the element carries
  * the behavior (`MLASTElement#blockBehavior`, see `CONDITIONAL_DIRECTIVES`) and is read as an element.
- * Known limitation: it is not a `PSBlock` that `conditionalChildNodes()` enumerates, so content-model
- * rules such as `permitted-contents` cannot enumerate the branches of a `v-if` chain as they can for
- * Svelte, Pug, Alpine, JSX, and Astro (`v-else` and `v-else-if` branch across sibling elements, which
- * is beyond the per-node `nodeize()` model). What reads the behavior of an element is what asks if a
- * node may be left out (`mayBeLeftOut` of `@markuplint/ml-core`), such as the accessible name.
+ * It is not a `PSBlock`, and `v-else` and `v-else-if` are not linked to the `v-if` before them in the
+ * syntax tree: what enumerates the branches of a chain is `MLNode#conditionalChildNodes()` and
+ * `alternativeChildNodes()` of `@markuplint/ml-core`, which read the siblings that carry the behavior. What
+ * asks if a node may be left out reads the behavior of the element (`mayBeLeftOut` of `@markuplint/ml-core`),
+ * such as the accessible name.
+ *
+ * A `<template>` says whether Vue renders it away (`MLASTElement#renderedAway`, see `detectRenderedAway`),
+ * which holds without `@markuplint/vue-spec`: `v-show` and `:id` leave a `template` element in the tree.
  */
 class VueParser extends Parser<ASTNode, State> {
 	constructor() {
@@ -230,6 +285,7 @@ class VueParser extends Parser<ASTNode, State> {
 						// @see https://vuejs.org/guide/components/slots.html
 						overwriteProps: {
 							...(originNode.name === 'slot' ? { isFragment: true } : {}),
+							...detectRenderedAway(originNode),
 							blockBehavior: this.#detectBlockBehavior(originNode),
 						},
 						createEndTagToken: () => {
