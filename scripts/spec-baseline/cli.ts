@@ -24,7 +24,7 @@
  *
  * @module
  */
-import type { PerfPlan, Result } from './perf.ts';
+import type { PerfScenario, Result } from './perf.ts';
 
 import { readFileSync, writeFileSync } from 'node:fs';
 import { join } from 'node:path';
@@ -242,7 +242,7 @@ function perf(args: readonly string[]): string {
 	}
 	const rust = values.rust ? prepareRust(ROOT, { specPath: SPEC_PATH, processes, iterations }) : undefined;
 	try {
-		const scenarios: Record<string, PerfPlan['scenarios'][string]> = {
+		const scenarios: Record<string, PerfScenario> = {
 			load: { processes, options: { iterations } },
 			query: { processes, options: { iterations } },
 			file: { processes, options: { iterations } },

@@ -308,22 +308,18 @@ export const LINT_ITERATIONS = 3;
 /** The large documents of the lint scenario that generates them. */
 export const LINT_GENERATED = { count: 3, elements: 2000, depth: 30 } as const;
 
+/** One scenario of a plan: how many processes, what each is given, and optionally the way to run a process. */
+export interface PerfScenario {
+	readonly processes: number;
+	readonly options: ChildOptions;
+	/** For a scenario that is not of `perf-child.ts` (a program of another language): gives what a process measured. */
+	readonly run?: (iterations: number) => Measurement[];
+}
+
 /** What {@link runPerf} runs. */
 export interface PerfPlan {
-	/**
-	 * The scenarios by name. One that is not of `perf-child.ts` (a program of another language) brings the way to run
-	 * a process as `run`, which gives what the process measured for a number of iterations.
-	 */
-	readonly scenarios: Readonly<
-		Record<
-			string,
-			{
-				readonly processes: number;
-				readonly options: ChildOptions;
-				readonly run?: (iterations: number) => Measurement[];
-			}
-		>
-	>;
+	/** The scenarios by name. */
+	readonly scenarios: Readonly<Record<string, PerfScenario>>;
 	readonly seed: number;
 }
 

@@ -21,13 +21,12 @@
  *
  * @module
  */
-import type { ChildOptions } from './perf-child.ts';
-import type { Measurement } from './perf.ts';
+import type { Measurement, PerfScenario } from './perf.ts';
 
 import { execFileSync } from 'node:child_process';
-import { existsSync, mkdtempSync, readFileSync, rmSync, statSync, writeFileSync } from 'node:fs';
+import { existsSync, mkdtempSync, readFileSync, readdirSync, rmSync, statSync, writeFileSync } from 'node:fs';
 import { tmpdir } from 'node:os';
-import { join, resolve } from 'node:path';
+import { join } from 'node:path';
 
 import { askObject, assertQuestions, buildLayout, questionsFile, questionsOf, type SpecLike } from './layout.ts';
 import { parseChildOutput } from './perf.ts';
@@ -104,21 +103,44 @@ export function runRustChild(
 	return parseChildOutput(exec(file, args));
 }
 
+/** Gives the directory that cargo builds into, for a root of the repository. */
+export type TargetDirectory = (root: string) => string;
+
 /**
- * Finds the Rust program that a `--release` build of the workspace made: in `crates/target`, or where
- * `CARGO_TARGET_DIR` puts it (a relative one is read from `crates/`, where cargo is run). A `target-dir` that a cargo
- * configuration file sets, and a build for another target (`--target <triple>`, which puts it under
- * `target/<triple>`), are not read: set `CARGO_TARGET_DIR` to the same directory for the build and for this, and
- * build for the host.
+ * Asks cargo where it puts a build (`target_directory` of `cargo metadata`), which follows `CARGO_TARGET_DIR` and the
+ * `target-dir` of a cargo configuration file.
  *
  * @param root - The root of the repository
- * @param env - The environment variables, for `CARGO_TARGET_DIR`
+ * @returns The directory
+ */
+export const cargoTargetDirectory: TargetDirectory = root => {
+	const output = execFileSync(
+		'cargo',
+		[
+			'metadata',
+			'--manifest-path',
+			join(root, 'crates/Cargo.toml'),
+			'--locked',
+			'--no-deps',
+			'--format-version',
+			'1',
+		],
+		{ encoding: 'utf8', maxBuffer: 64 * 1024 * 1024, stdio: ['ignore', 'pipe', 'inherit'] },
+	);
+	return (JSON.parse(output) as { target_directory: string }).target_directory;
+};
+
+/**
+ * Finds the Rust program that a `--release` build of the workspace made. A build for another target
+ * (`--target <triple>`) puts it under `<target>/<triple>/release`, which is not read: build for the host.
+ *
+ * @param root - The root of the repository
+ * @param targetDirectory - Gives the directory that cargo builds into
  * @returns The path of the program
  */
-export function rustBinary(root: string, env: Readonly<Record<string, string | undefined>> = process.env): string {
-	const target = env.CARGO_TARGET_DIR ? resolve(root, 'crates', env.CARGO_TARGET_DIR) : join(root, 'crates/target');
+export function rustBinary(root: string, targetDirectory: TargetDirectory = cargoTargetDirectory): string {
 	const binary = join(
-		target,
+		targetDirectory(root),
 		'release/examples',
 		process.platform === 'win32' ? 'spec_baseline.exe' : 'spec_baseline',
 	);
@@ -128,6 +150,53 @@ export function rustBinary(root: string, env: Readonly<Record<string, string | u
 		);
 	}
 	return binary;
+}
+
+/** The files of the crates that a build reads. */
+const SOURCE = /(?:\.rs|Cargo\.toml|Cargo\.lock)$/;
+
+/**
+ * The newest of the sources that the program was built from: the Rust files, `Cargo.toml` and `Cargo.lock` under
+ * `crates/`, leaving out what a build writes (`target`).
+ *
+ * @param root - The root of the repository
+ * @returns The path and the time of modification of the newest one, or `null` when there is none
+ */
+export function newestSource(root: string): { path: string; mtimeMs: number } | null {
+	let newest: { path: string; mtimeMs: number } | null = null;
+	const walk = (directory: string) => {
+		for (const entry of readdirSync(directory, { withFileTypes: true })) {
+			const path = join(directory, entry.name);
+			if (entry.isDirectory()) {
+				if (entry.name !== 'target' && entry.name !== 'node_modules' && entry.name !== '.git') {
+					walk(path);
+				}
+			} else if (SOURCE.test(entry.name)) {
+				const { mtimeMs } = statSync(path);
+				if (!newest || mtimeMs > newest.mtimeMs) {
+					newest = { path, mtimeMs };
+				}
+			}
+		}
+	};
+	walk(join(root, 'crates'));
+	return newest;
+}
+
+/**
+ * Stops for a program that is older than the sources of the crates: it measures code that is gone, and its figures
+ * would be set beside those of the current TypeScript.
+ *
+ * @param root - The root of the repository
+ * @param binary - The path of the program
+ */
+export function assertFresh(root: string, binary: string): void {
+	const newest = newestSource(root);
+	if (newest && newest.mtimeMs > statSync(binary).mtimeMs) {
+		throw new Error(
+			`${binary} is older than ${newest.path}. Build it again from crates/ with: cargo build --locked --release --workspace --example spec_baseline`,
+		);
+	}
 }
 
 /**
@@ -156,16 +225,7 @@ export function rustVersion(): string {
 /** What {@link prepareRust} gives. */
 export interface PreparedRust {
 	/** The scenarios to add to a plan, each with the `run` that starts the program. */
-	readonly scenarios: Readonly<
-		Record<
-			string,
-			{
-				readonly processes: number;
-				readonly options: ChildOptions;
-				readonly run: (iterations: number) => Measurement[];
-			}
-		>
-	>;
+	readonly scenarios: Readonly<Record<string, PerfScenario & Required<Pick<PerfScenario, 'run'>>>>;
 	/** The version of the compiler, for the record. */
 	readonly rustc: string;
 	/** When the program was built: a program older than the source of the example measures code that is gone. */
@@ -184,8 +244,8 @@ export interface PrepareOptions {
 	readonly version?: () => string;
 	/** Runs the program. */
 	readonly exec?: Exec;
-	/** The environment variables. */
-	readonly env?: Readonly<Record<string, string | undefined>>;
+	/** Gives the directory that cargo builds into. */
+	readonly targetDirectory?: TargetDirectory;
 }
 
 /**
@@ -198,7 +258,8 @@ export interface PrepareOptions {
  * @returns The scenarios, the compiler, and the way to clean up
  */
 export function prepareRust(root: string, options: PrepareOptions): PreparedRust {
-	const binary = rustBinary(root, options.env);
+	const binary = rustBinary(root, options.targetDirectory);
+	assertFresh(root, binary);
 	const rustc = (options.version ?? rustVersion)();
 	const built = statSync(binary).mtime.toISOString();
 	const spec = JSON.parse(readFileSync(join(root, options.specPath), 'utf8')) as SpecLike;

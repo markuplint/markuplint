@@ -1,4 +1,13 @@
-import { existsSync, mkdirSync, mkdtempSync, readFileSync, readdirSync, rmSync, writeFileSync } from 'node:fs';
+import {
+	existsSync,
+	mkdirSync,
+	mkdtempSync,
+	readFileSync,
+	readdirSync,
+	rmSync,
+	utimesSync,
+	writeFileSync,
+} from 'node:fs';
 import { tmpdir } from 'node:os';
 import { dirname, join } from 'node:path';
 
@@ -6,7 +15,9 @@ import { describe, expect, test } from 'vitest';
 
 import { runPerf } from './perf.ts';
 import {
+	assertFresh,
 	isRustScenario,
+	newestSource,
 	prepareRust,
 	runRustChild,
 	rustBinary,
@@ -21,6 +32,11 @@ const PROGRAM = process.platform === 'win32' ? 'spec_baseline.exe' : 'spec_basel
 function repository(): { root: string; cleanup: () => void } {
 	const root = mkdtempSync(join(tmpdir(), 'spec-baseline-fake-repo-'));
 	mkdirSync(join(root, 'crates/target/release/examples'), { recursive: true });
+	mkdirSync(join(root, 'crates/markuplint-types/src'), { recursive: true });
+	const source = join(root, 'crates/markuplint-types/src/lib.rs');
+	writeFileSync(source, '');
+	// the program was built after the source was written
+	utimesSync(source, new Date(Date.now() - 60_000), new Date(Date.now() - 60_000));
 	writeFileSync(join(root, 'crates/target/release/examples', PROGRAM), '');
 	mkdirSync(join(root, 'data'), { recursive: true });
 	writeFileSync(
@@ -79,24 +95,61 @@ describe('the scenarios of the Rust program', () => {
 
 describe('rustBinary', () => {
 	test('says how to build the program when it is not there', () => {
-		expect(() => rustBinary('/this/directory/does/not/exist', {})).toThrow(
-			/cargo build --locked --release --workspace --example spec_baseline/,
-		);
+		expect(() =>
+			rustBinary('/this/directory/does/not/exist', () => '/this/directory/does/not/exist/target'),
+		).toThrow(/cargo build --locked --release --workspace --example spec_baseline/);
 	});
 
-	test('finds it in crates/target, and where CARGO_TARGET_DIR puts it (a relative one from crates/)', () => {
+	test('finds it in the directory that cargo says it builds into', () => {
 		const { root, cleanup } = repository();
 		try {
-			expect(rustBinary(root, {})).toBe(join(root, 'crates/target/release/examples', PROGRAM));
+			expect(rustBinary(root, () => join(root, 'crates/target'))).toBe(
+				join(root, 'crates/target/release/examples', PROGRAM),
+			);
+			mkdirSync(join(root, 'elsewhere/release/examples'), { recursive: true });
+			writeFileSync(join(root, 'elsewhere/release/examples', PROGRAM), '');
+			expect(rustBinary(root, () => join(root, 'elsewhere'))).toBe(
+				join(root, 'elsewhere/release/examples', PROGRAM),
+			);
+			expect(() => rustBinary(root, () => join(root, 'nowhere'))).toThrow(/nowhere/);
+		} finally {
+			cleanup();
+		}
+	});
+});
 
-			mkdirSync(join(root, 'crates/elsewhere/release/examples'), { recursive: true });
-			writeFileSync(join(root, 'crates/elsewhere/release/examples', PROGRAM), '');
-			expect(rustBinary(root, { CARGO_TARGET_DIR: 'elsewhere' })).toBe(
-				join(root, 'crates/elsewhere/release/examples', PROGRAM),
-			);
-			expect(() => rustBinary(root, { CARGO_TARGET_DIR: 'nowhere' })).toThrow(
-				new RegExp(join(root, 'crates/nowhere').replaceAll('\\', '\\\\')),
-			);
+describe('the freshness of the program', () => {
+	test('is the newest of the sources of the crates against the time that the program was made, leaving out target', () => {
+		const { root, cleanup } = repository();
+		try {
+			const binary = join(root, 'crates/target/release/examples', PROGRAM);
+			expect(() => assertFresh(root, binary)).not.toThrow();
+
+			// what a build writes is not a source
+			writeFileSync(join(root, 'crates/target/release/examples/other.rs'), '');
+			const later = new Date(Date.now() + 60_000);
+			utimesSync(join(root, 'crates/target/release/examples/other.rs'), later, later);
+			expect(() => assertFresh(root, binary)).not.toThrow();
+
+			// a source that is newer than the program is
+			const source = join(root, 'crates/markuplint-types/src/lib.rs');
+			utimesSync(source, later, later);
+			expect(newestSource(root)?.path).toBe(source);
+			expect(() => assertFresh(root, binary)).toThrow(/older than .*lib\.rs.*cargo build --locked --release/);
+		} finally {
+			cleanup();
+		}
+	});
+
+	test('is read as a file of the crates when it is Cargo.toml or Cargo.lock, and not when it is anything else', () => {
+		const { root, cleanup } = repository();
+		try {
+			const later = new Date(Date.now() + 60_000);
+			for (const name of ['notes.txt', 'Cargo.lock']) {
+				writeFileSync(join(root, 'crates', name), '');
+				utimesSync(join(root, 'crates', name), later, later);
+			}
+			expect(newestSource(root)?.path).toBe(join(root, 'crates/Cargo.lock'));
 		} finally {
 			cleanup();
 		}
@@ -146,7 +199,7 @@ describe('prepareRust', () => {
 				calls.push({ file, args });
 				return '{"measurements":[{"name":"rust-x","unit":"ms","values":[1]}]}';
 			},
-			env: {},
+			targetDirectory: () => join(root, 'crates/target'),
 		});
 		let directory = '';
 		try {
@@ -181,7 +234,7 @@ describe('prepareRust', () => {
 			iterations: 3,
 			version: () => 'rustc 1.2.3',
 			exec: () => '{"measurements":[{"name":"rust-x","unit":"ms","values":[5,1,1]}]}',
-			env: {},
+			targetDirectory: () => join(root, 'crates/target'),
 		});
 		try {
 			const result = runPerf({ seed: 1, scenarios: { 'rust-view': prepared.scenarios['rust-view'] as never } });
@@ -191,6 +244,27 @@ describe('prepareRust', () => {
 			]);
 		} finally {
 			prepared.cleanup();
+			cleanup();
+		}
+	});
+
+	test('refuses a program that is older than the sources of the crates, before it makes anything', () => {
+		const before = readdirSync(tmpdir()).filter(name => name.startsWith('spec-baseline-rust-'));
+		const { root, cleanup } = repository();
+		try {
+			const later = new Date(Date.now() + 60_000);
+			utimesSync(join(root, 'crates/markuplint-types/src/lib.rs'), later, later);
+			expect(() =>
+				prepareRust(root, {
+					specPath: 'data/index.json',
+					processes: 1,
+					iterations: 2,
+					version: () => 'rustc 1.2.3',
+					targetDirectory: () => join(root, 'crates/target'),
+				}),
+			).toThrow(/is older than/);
+			expect(readdirSync(tmpdir()).filter(name => name.startsWith('spec-baseline-rust-'))).toStrictEqual(before);
+		} finally {
 			cleanup();
 		}
 	});
@@ -205,7 +279,7 @@ describe('prepareRust', () => {
 					processes: 1,
 					iterations: 2,
 					version: () => 'rustc 1.2.3',
-					env: {},
+					targetDirectory: () => join(root, 'crates/target'),
 				}),
 			).toThrow(/missing\.json/);
 			expect(() =>
@@ -216,7 +290,7 @@ describe('prepareRust', () => {
 					version: () => {
 						throw new Error('spawnSync rustc ENOENT');
 					},
-					env: {},
+					targetDirectory: () => join(root, 'crates/target'),
 				}),
 			).toThrow(/rustc ENOENT/);
 			expect(readdirSync(tmpdir()).filter(name => name.startsWith('spec-baseline-rust-'))).toStrictEqual(before);
