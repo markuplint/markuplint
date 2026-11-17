@@ -1,8 +1,8 @@
 # nu-validator Benchmark Summary
 
-- generated: 2026-11-16T05:28:13.023Z
+- generated: 2026-11-17T07:09:08.842Z
 - submodule: `f84563f28898457af3cb76ec8c820cf17a2174c4`
-- nu-validator: `ghcr.io/validator/validator@sha256:ab58f1a04ce22a393725e3fd6468d2763c08be6a9dc6fcaa0b1d93dd0c5f804e`
+- nu-validator: `ghcr.io/validator/validator@sha256:371e4bb43417b005f50e9490c74b08f95cf8458d53ce1609353dbcde28b58f82`
 - markuplint: `5.6.1`
 - node: `26.13.1`
 
@@ -39,16 +39,16 @@
 
 | Rule | Count |
 | --- | ---: |
-| no-unknown-attr | 666 |
-| no-invalid-attr-value | 449 |
-| permitted-contents | 435 |
-| no-obsolete-attr | 308 |
+| no-unknown-attr | 741 |
+| no-invalid-attr-value | 524 |
+| permitted-contents | 510 |
+| no-obsolete-attr | 337 |
 | require-accessible-name | 194 |
-| no-deprecated-attr | 145 |
+| no-deprecated-attr | 166 |
 | role-supports-aria-prop | 111 |
-| @markuplint/ml-core | 75 |
 | require-owned-elements | 47 |
 | link-types | 34 |
+| require-attr | 22 |
 
 > `nu-only` entries are candidates for markuplint coverage work **after** verifying the relevant spec paragraph. `nu-over` entries are already confirmed nu-validator over-detection via `excluded-ids.json`. `ml-only` is informational; audit the spec before acting on any individual row.
 
