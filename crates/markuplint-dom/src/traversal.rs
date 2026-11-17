@@ -29,6 +29,15 @@ impl DomArena {
         self.source()?.get(start..close_tag.offset)
     }
 
+    /// The source from the end of an element's start tag to the end of the file. It is the body of a raw-text element
+    /// that no end tag closes ([`crate::helpers::is_raw_text_element_name`]): the tokenizer reads the rest of the file
+    /// as its body. `None` when `id` is not an element, or the arena has no [`Self::source`].
+    #[must_use]
+    pub fn source_after_start_tag(&self, id: NodeId) -> Option<&str> {
+        let el = self.get(id)?.as_element()?;
+        self.source()?.get(el.base.offset + el.base.raw.len()..)
+    }
+
     /// Mirrors TS `pureChildren()` which filters out `type === 'endtag'`
     /// and `type === 'invalid'` nodes. In Rust, this also filters Text/Comment/PSBlock
     /// nodes with `is_bogus = true`.

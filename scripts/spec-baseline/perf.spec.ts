@@ -1,6 +1,6 @@
 import { describe, expect, test } from 'vitest';
 
-import { scenarios } from './perf-child.ts';
+import { scenarios, timeStringify } from './perf-child.ts';
 import {
 	collect,
 	compareResults,
@@ -9,6 +9,7 @@ import {
 	pickValidatorFiles,
 	renderComparison,
 	renderTable,
+	runPerf,
 } from './perf.ts';
 
 describe('interleave', () => {
@@ -152,6 +153,56 @@ describe('the scenarios', () => {
 			'load',
 			'query',
 		]);
+	});
+});
+
+describe('runPerf', () => {
+	test('runs a scenario that brings its own way to run a process, once for each process, with the iterations of its options', () => {
+		const calls: number[] = [];
+		const result = runPerf({
+			seed: 1,
+			scenarios: {
+				other: {
+					processes: 3,
+					options: { iterations: 4 },
+					run: iterations => {
+						calls.push(iterations);
+						return [{ name: 'x', unit: 'ms', values: [calls.length, 2, 3, 4] }];
+					},
+				},
+			},
+		});
+		expect(calls).toStrictEqual([4, 4, 4]);
+		expect(result.x?.processes).toStrictEqual([
+			[1, 2, 3, 4],
+			[2, 2, 3, 4],
+			[3, 2, 3, 4],
+		]);
+	});
+
+	test('does not take a process that fails for one that measured nothing', () => {
+		expect(() =>
+			runPerf({
+				seed: 1,
+				scenarios: {
+					other: {
+						processes: 1,
+						options: { iterations: 2 },
+						run: () => {
+							throw new Error('The program exited with 1');
+						},
+					},
+				},
+			}),
+		).toThrow(/exited with 1/);
+	});
+});
+
+describe('timeStringify', () => {
+	test('gives the time of each of the iterations, one for each', () => {
+		const times = timeStringify({ a: [1, 2, 3] }, 3);
+		expect(times).toHaveLength(3);
+		expect(times.every(time => time >= 0)).toBe(true);
 	});
 });
 

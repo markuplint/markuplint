@@ -11,7 +11,10 @@
  *   (`size.ts`), grouped by the shape of the document, because the shape changed more than once.
  * - `duplication`: what repeats in the data, as strings, as fields and as subtrees (`duplication.ts`).
  * - `perf`: the time and memory of reading the data and of linting, one process for each sample
- *   (`perf.ts`, `perf-child.ts`), and `compare` for two such results measured on one machine.
+ *   (`perf.ts`, `perf-child.ts`), and `compare` for two such results measured on one machine. `--rust` adds the same
+ *   reading and the same questions in the Rust program of `crates/markuplint-types/examples/spec_baseline.rs`, which
+ *   exists on the `v6` line only and is built beforehand with `cargo build --locked --release --workspace --example
+ *   spec_baseline` (from `crates/`); `--no-lint` leaves the lint scenarios out.
  * - `mutation`: whether the records of `diagnostics.ts` notice a change of the data (`mutation.ts`).
  * - `coverage`: writes the generated inputs into `fixtures/inputs/` (`coverage.ts`). The inputs are committed, so this
  *   overwrites files that are in the repository, and the records of `diagnostics.spec.ts` are written again after it.
@@ -21,7 +24,7 @@
  *
  * @module
  */
-import type { Result } from './perf.ts';
+import type { PerfScenario, Result } from './perf.ts';
 
 import { readFileSync, writeFileSync } from 'node:fs';
 import { join } from 'node:path';
@@ -43,6 +46,7 @@ import {
 	renderTable,
 	runPerf,
 } from './perf.ts';
+import { prepareRust } from './rust.ts';
 import { groupBySignature, measure, parseJson, signature } from './size.ts';
 
 const ROOT = fileURLToPath(new URL('../..', import.meta.url));
@@ -53,6 +57,8 @@ const HELP = `Usage: yarn spec-baseline <command> [options]
   size         [--ref <ref>] [--every <n>]
   duplication  [--ref <commit>] [--top <n>]
   perf         [--processes <n>] [--lint-processes <n>] [--iterations <n>] [--files <n>] [--seed <n>] [--out <file>]
+               [--rust] [--no-lint]   (--rust: v6 only, build the program first; --no-lint: no submodule needed,
+                                       and --lint-processes and --files are only checked)
   compare      <before.json> <after.json> [--resamples <n>] [--seed <n>]
   mutation     [--count <n>] [--seed <n>]
   coverage     (writes scripts/spec-baseline/fixtures/inputs/generated-*.html)
@@ -219,43 +225,58 @@ function perf(args: readonly string[]): string {
 			files: { type: 'string', default: '100' },
 			seed: { type: 'string', default: '1' },
 			out: { type: 'string' },
+			rust: { type: 'boolean', default: false },
+			'no-lint': { type: 'boolean', default: false },
 		},
 	});
 	const processes = count('processes', values.processes, 1);
 	const lintProcesses = count('lint-processes', values['lint-processes'], 1);
 	const iterations = count('iterations', values.iterations, 2);
 	const seed = count('seed', values.seed, 0);
-	const files = pickValidatorFiles(join(ROOT, 'tests/external/validator'), count('files', values.files, 1));
-	if (files.length === 0) {
+	const withLint = !values['no-lint'];
+	// Checked with `--no-lint` as well: a typo in an option is not left unread because another option is on
+	const fileCount = count('files', values.files, 1);
+	const files = withLint ? pickValidatorFiles(join(ROOT, 'tests/external/validator'), fileCount) : [];
+	if (withLint && files.length === 0) {
 		throw new Error('No document of the validator: git submodule update --init tests/external/validator');
 	}
-	const result = runPerf(
-		{
-			seed,
-			scenarios: {
-				load: { processes, options: { iterations } },
-				query: { processes, options: { iterations } },
-				file: { processes, options: { iterations } },
-				'lint-validator': { processes: lintProcesses, options: { iterations: LINT_ITERATIONS, files } },
-				'lint-generated': {
-					processes: lintProcesses,
-					options: { iterations: LINT_ITERATIONS, generated: { ...LINT_GENERATED, seed } },
-				},
-			},
-		},
-		(scenario, index, total) => process.stderr.write(`\r${index + 1}/${total} ${scenario}          `),
-	);
-	process.stderr.write('\n');
-	const env = environment(ROOT);
-	if (values.out) {
-		writeFileSync(values.out, `${JSON.stringify({ environment: env, result })}\n`);
+	const rust = values.rust ? prepareRust(ROOT, { specPath: SPEC_PATH, processes, iterations }) : undefined;
+	try {
+		const scenarios: Record<string, PerfScenario> = {
+			load: { processes, options: { iterations } },
+			query: { processes, options: { iterations } },
+			file: { processes, options: { iterations } },
+		};
+		if (rust) {
+			Object.assign(scenarios, rust.scenarios);
+		}
+		if (withLint) {
+			scenarios['lint-validator'] = { processes: lintProcesses, options: { iterations: LINT_ITERATIONS, files } };
+			scenarios['lint-generated'] = {
+				processes: lintProcesses,
+				options: { iterations: LINT_ITERATIONS, generated: { ...LINT_GENERATED, seed } },
+			};
+		}
+		const result = runPerf({ seed, scenarios }, (scenario, index, total) =>
+			process.stderr.write(`\r${index + 1}/${total} ${scenario}          `),
+		);
+		process.stderr.write('\n');
+		const env = { ...environment(ROOT), ...(rust ? { rustc: rust.rustc, rustBuilt: rust.built } : {}) };
+		if (values.out) {
+			writeFileSync(values.out, `${JSON.stringify({ environment: env, result })}\n`);
+		}
+		return [
+			`${env.commit.slice(0, 9)} on node ${env.node} (v8 ${env.v8}), ${env.platform} ${env.arch}, ${env.cpus} x ${env.cpu}`,
+			...(rust ? [`${rust.rustc}; the Rust program was built ${rust.built}`] : []),
+			withLint
+				? `the lint scenarios read ${files.length} documents of the validator and ${LINT_GENERATED.count} generated ones of about ${LINT_GENERATED.elements} elements`
+				: 'the lint scenarios are not run (--no-lint)',
+			'',
+			renderTable(result, { resamples: 10_000, seed }),
+		].join('\n');
+	} finally {
+		rust?.cleanup();
 	}
-	return [
-		`${env.commit.slice(0, 9)} on node ${env.node} (v8 ${env.v8}), ${env.platform} ${env.arch}, ${env.cpus} x ${env.cpu}`,
-		`the lint scenarios read ${files.length} documents of the validator and ${LINT_GENERATED.count} generated ones of about ${LINT_GENERATED.elements} elements`,
-		'',
-		renderTable(result, { resamples: 10_000, seed }),
-	].join('\n');
 }
 
 function compare(args: readonly string[]): string {

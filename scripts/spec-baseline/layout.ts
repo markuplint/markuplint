@@ -210,3 +210,51 @@ export function askBits(layout: Layout, questions: readonly Question[]): Uint8Ar
 	}
 	return answers;
 }
+
+/**
+ * The layout, the questions and the answers of the data as objects, in a form that a reader in another
+ * language takes without knowing the rules of this file (JSON, with numbers only where a word is needed). The Rust
+ * measurement (`crates/markuplint-types/examples/spec_baseline.rs`) asks the same questions of the same data and
+ * has to give these answers: it builds the bits from its own reading of the data and compares them with
+ * `flags` and `categoryBits`, so that the two readers cannot differ unnoticed in how they read the layout.
+ */
+export interface QuestionsFile {
+	readonly flagNames: readonly string[];
+	readonly elements: readonly string[];
+	readonly categories: readonly string[];
+	readonly wordsPerRow: number;
+	/** The words of {@link Layout.flags}, each as an unsigned 32-bit integer. */
+	readonly flags: readonly number[];
+	/** The words of {@link Layout.categoryBits}, each as an unsigned 32-bit integer. */
+	readonly categoryBits: readonly number[];
+	/** Three numbers for each question: 0 for a flag and 1 for a category, the element, and the flag or the category. */
+	readonly questions: readonly number[];
+	/** 1 or 0 for each question, as the data answers as objects. */
+	readonly answers: readonly number[];
+}
+
+/**
+ * Makes the file that the Rust measurement reads.
+ *
+ * @param layout - The layout
+ * @param questions - The questions, which `assertQuestions` accepts
+ * @param answers - What the data as objects answers to each of them (`askObject`)
+ * @returns The content of the file, to write as JSON
+ */
+export function questionsFile(layout: Layout, questions: readonly Question[], answers: Uint8Array): QuestionsFile {
+	if (answers.length !== questions.length) {
+		throw new Error(`There are ${answers.length} answers for ${questions.length} questions`);
+	}
+	return {
+		flagNames: [...FLAG_NAMES],
+		elements: layout.elements,
+		categories: layout.categories,
+		wordsPerRow: layout.wordsPerRow,
+		flags: [...layout.flags],
+		categoryBits: [...layout.categoryBits],
+		questions: questions.flatMap(question =>
+			question.kind === 'flag' ? [0, question.element, question.flag] : [1, question.element, question.category],
+		),
+		answers: [...answers],
+	};
+}

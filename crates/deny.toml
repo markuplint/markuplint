@@ -19,7 +19,14 @@ targets = [
 [advisories]
 db-urls = ["https://github.com/rustsec/advisory-db"]
 yanked = "deny"
-ignore = []
+# Each entry says why it is kept. Both are advisories of the type "unmaintained", not of a flaw: the author of the
+# crates is winding down their maintenance, and `whichtime`, which the `require-datetime` rule uses to read a
+# date written in natural language, depends on them. The workspace keeps using it until an alternative is chosen,
+# and drops the entries when the dependency is gone.
+ignore = [
+    { id = "RUSTSEC-2026-0543", reason = "chrono is unmaintained; whichtime depends on it" },
+    { id = "RUSTSEC-2026-0555", reason = "chrono-tz is unmaintained; whichtime depends on it" },
+]
 
 [licenses]
 # Every license expression currently present across the 141 third-party

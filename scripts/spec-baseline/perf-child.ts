@@ -13,13 +13,16 @@
  *
  * - `load`: the steps between a process start and a spec that a document can use. `html-spec` is
  *   imported the way `resolveSpecs` does, and merged with `schemaToSpec` the way a document does,
- *   and the heap that remains after each step is the memory that the data costs.
+ *   and the heap that remains after each step is the memory that the data costs. The merged spec is also made
+ *   into the string that the engine of v6 hands to the Rust engine on every call (`load-stringify`).
  * - `query`: the questions of `layout.ts`, answered through the code of the packages that is
  *   used today, through the plain objects, and through the bits. The three must agree on every
  *   question before any time is taken: a faster answer that differs is not a measurement.
  * - `file`: the cost of reading the data from a file, as it is, compressed, and as bytes
  *   that are only viewed as 32-bit words and never parsed. The last is a floor: no format of that
  *   size can be read faster, and the gap to the first is what a format may recover.
+ * - `rust-load`, `rust-query` and `rust-view` are not here: they are the Rust program's, which `rust.ts` starts
+ *   (`crates/markuplint-types/examples/spec_baseline.rs`, with `--rust`).
  * - `lint-validator` and `lint-generated`: end to end, through `MLEngine` of `markuplint` with one
  *   `ConfigProvider` for a pass, as the command does, over many small documents and over a few large ones.
  *
@@ -81,6 +84,25 @@ async function loadSpecs() {
 	return { schemaToSpec, getSpecByTagName, contentModelCategoryToTagNames, spec: specModule.default };
 }
 
+/**
+ * Times what the engine of v6 pays on every call: the merged spec as the string that it hands to the Rust engine
+ * (`JSON.stringify(spec)` of `MLEngine`), which `load_spec` there parses again.
+ *
+ * @param spec - The merged spec
+ * @param iterations - How many times to make the string
+ * @returns The milliseconds of each
+ */
+export function timeStringify(spec: unknown, iterations: number): number[] {
+	const times: number[] = [];
+	for (let i = 0; i < iterations; i++) {
+		const start = performance.now();
+		const text = JSON.stringify(spec);
+		times.push(performance.now() - start);
+		sink.push(text.length);
+	}
+	return times;
+}
+
 async function load(options: ChildOptions): Promise<Measurement[]> {
 	// Everything that is not the data is loaded first, so that its cost is not charged to the data.
 	const { schemaToSpec } = await import('@markuplint/ml-spec');
@@ -102,9 +124,12 @@ async function load(options: ChildOptions): Promise<Measurement[]> {
 	sink.push(Object.keys(merged as object).length);
 	const afterMerge = heapUsed() - before;
 
+	const stringify = timeStringify(merged, options.iterations);
+
 	return [
 		{ name: 'load-import', unit: 'ms', values: [importMs] },
 		{ name: 'load-merge', unit: 'ms', values: merge },
+		{ name: 'load-stringify', unit: 'ms', values: stringify },
 		{ name: 'heap-after-import', unit: 'bytes', values: [afterImport] },
 		{ name: 'heap-after-merge', unit: 'bytes', values: [afterMerge] },
 		// `maxRSS` is in kilobytes

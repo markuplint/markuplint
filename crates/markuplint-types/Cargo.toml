@@ -21,5 +21,11 @@ url = "2"
 [dev-dependencies]
 regex = { workspace = true }
 
+# The Rust half of `yarn spec-baseline perf --rust`. It is a program of its own (the TypeScript side starts it for each
+# sample), and its pure parts have tests that `cargo test` runs.
+[[example]]
+name = "spec_baseline"
+test = true
+
 [lints]
 workspace = true

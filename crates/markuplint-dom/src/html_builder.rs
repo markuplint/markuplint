@@ -333,13 +333,14 @@ fn convert_parser_node(
             debug_assert_eq!(pushed_id, dom_id);
 
             // Recursively convert children. The body of a raw-text element (`rawTextElements` of TS: `style`,
-            // `script`, `xmp`) is CSS or JavaScript, not markup, so TS gives it no node. The tokenizer of the
-            // HTML standard reads it as one text only in the HTML namespace; in an SVG `script` or `style` the
-            // tree builder makes elements of what looks like one (`<svg><script><circle></circle></script></svg>`),
-            // which a rule would read as markup, so the body of those is left out as TS leaves it out.
+            // `script`, `xmp`) is CSS or JavaScript, not markup, so TS gives it no node: the text between the
+            // start tag and the end tag is read from the source (`element_inner_source`). TS tells such an element
+            // by its name alone (`visitChildren` of `parser-utils`), whatever its namespace, and so does this: in the
+            // HTML namespace the tokenizer makes one text of the body, and in an SVG `script` or `style` the tree
+            // builder makes elements of what looks like markup (`<svg><script><circle></circle></script></svg>`),
+            // which a rule would read as such. The body has no node either way.
             let mut child_ids: Vec<NodeId> = Vec::new();
-            let drops_children =
-                *namespace == Namespace::Svg && matches!(tag_name.to_ascii_lowercase().as_str(), "script" | "style");
+            let drops_children = crate::helpers::is_raw_text_element_name(tag_name);
             for &child_id in node.children.iter().filter(|_| !drops_children) {
                 convert_into(
                     source,
@@ -709,17 +710,54 @@ mod tests {
 
     /// TS `[permitted-contents-valid-003]` (`svg-script.spec.ts`): the tree builder of the HTML standard makes
     /// an element of what looks like one in an SVG `script`, and TS leaves the body of a raw-text element out
-    /// (`rawTextElements`), so the DOM of the SVG `script` and `style` has no child node. The body of an HTML
-    /// `script` is the text that the tokenizer made of it.
+    /// (`rawTextElements`: `style`, `script`, `xmp`), so the DOM of such an element has no child node, in the
+    /// HTML namespace as in the SVG one. The body is read from the source (`element_inner_source`).
     #[test]
-    fn the_body_of_an_svg_script_or_style_has_no_node() {
+    fn the_body_of_a_raw_text_element_has_no_node() {
         let dom = build("<svg><script><circle r=\"1\"></circle></script><style>a { }</style></svg>");
         let names: Vec<String> = dom.elements().map(|(_, el)| el.base.node_name.clone()).collect();
         assert_eq!(names, ["svg", "script", "style"]);
         assert!(texts(&dom).is_empty());
 
-        let dom = build("<script>var a = 1;</script>");
-        assert_eq!(texts(&dom), [("var a = 1;", false)]);
+        for html in [
+            "<script>var a = 1;</script>",
+            "<style>a { }</style>",
+            "<xmp><b>x</b></xmp>",
+        ] {
+            let dom = build(html);
+            assert!(texts(&dom).is_empty(), "{html}");
+            assert_eq!(dom.elements().count(), 1, "{html}");
+        }
+    }
+
+    /// What `title` and `textarea` hold is text of the page, not code: TS keeps it as a node.
+    #[test]
+    fn the_body_of_an_rcdata_element_is_a_text() {
+        let dom = build("<title>a &amp; b</title><textarea>c</textarea>");
+        assert_eq!(texts(&dom), [("a &amp; b", false), ("c", false)]);
+    }
+
+    /// TS tells a raw-text element by its name alone (`visitChildren` of `parser-utils`), so the case of the name, the
+    /// end of the file closing the element, and the namespace of the element do not give its body a node: in foreign
+    /// content the tree builder makes elements of what the tokenizer would have read as text, and they are dropped too.
+    #[test]
+    fn the_body_of_a_raw_text_element_has_no_node_whatever_its_case_end_or_namespace() {
+        let cases: [(&str, &[&str]); 6] = [
+            // the tokenizer lower-cases the name of an HTML element
+            ("<SCRIPT>x</SCRIPT>", &["script"]),
+            ("<Style>a { }</Style>", &["style"]),
+            ("<script>a<b>", &["script"]),
+            ("<script>a<b></script>", &["script"]),
+            ("<math><script>x</script></math>", &["math", "script"]),
+            ("<svg><xmp>x</xmp></svg>", &["svg", "xmp"]),
+        ];
+        for (html, expected) in cases {
+            let dom = build(html);
+            let names: Vec<&str> = dom.elements().map(|(_, el)| el.base.node_name.as_str()).collect();
+            assert_eq!(names, expected, "{html}");
+            let kept: Vec<_> = texts(&dom).into_iter().filter(|(_, is_bogus)| !is_bogus).collect();
+            assert!(kept.is_empty(), "{html}: {kept:?}");
+        }
     }
 
     #[test]

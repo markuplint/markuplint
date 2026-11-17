@@ -19,6 +19,12 @@ describe('run', () => {
 		await expect(Promise.resolve().then(() => run(argv))).rejects.toThrow(new RegExp(`${option} takes an integer`));
 	});
 
+	test('stops for a --files that is not a count when --no-lint leaves the lint scenarios out as well', async () => {
+		await expect(Promise.resolve().then(() => run(['perf', '--no-lint', '--files', 'abc']))).rejects.toThrow(
+			/--files takes an integer/,
+		);
+	});
+
 	test('reads the duplication of the data at a revision of git', async () => {
 		const report = await run(['duplication', '--ref', 'HEAD', '--top', '2']);
 		expect(report).toContain('HEAD:');
