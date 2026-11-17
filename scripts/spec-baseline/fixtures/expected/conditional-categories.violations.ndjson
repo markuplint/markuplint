@@ -1,0 +1,82 @@
+{"col":3,"line":10,"message":"Missing the end tag","raw":"<p>","ruleId":"require-end-tag","severity":"warning"}
+{"col":13,"line":12,"message":"Missing \"x\" ID","raw":"#x","ruleId":"no-broken-fragment-link","severity":"warning"}
+{"col":7,"line":13,"message":"The \"name\" attribute is deprecated","raw":"name","ruleId":"no-deprecated-attr","severity":"warning"}
+{"col":21,"line":20,"message":"\"alt\" should be before \"src\"","raw":"alt","ruleId":"attr-order","severity":"warning"}
+{"col":21,"line":21,"message":"\"alt\" should be before \"src\"","raw":"alt","ruleId":"attr-order","severity":"warning"}
+{"col":4,"line":22,"message":"The element should not empty","raw":"<object data=\"a.svg\" usemap=\"#m\">","ruleId":"no-empty-palpable-content","severity":"warning"}
+{"col":25,"line":22,"message":"The \"usemap\" attribute is obsolete","raw":"usemap","ruleId":"no-obsolete-attr","severity":"error"}
+{"col":4,"line":23,"message":"The element should not empty","raw":"<object data=\"a.svg\">","ruleId":"no-empty-palpable-content","severity":"warning"}
+{"col":4,"line":25,"message":"Require accessible name","raw":"<input type=\"text\" />","ruleId":"require-accessible-name","severity":"error"}
+{"col":17,"line":25,"message":"It is the default value","raw":"text","ruleId":"no-default-value","severity":"warning"}
+{"col":25,"line":26,"message":"\"name\" should be before \"type\"","raw":"name","ruleId":"attr-order","severity":"warning"}
+{"col":4,"line":27,"message":"Require accessible name","raw":"<input type=\"checkbox\" />","ruleId":"require-accessible-name","severity":"error"}
+{"col":4,"line":30,"message":"Require accessible name","raw":"<select>","ruleId":"require-accessible-name","severity":"error"}
+{"col":4,"line":31,"message":"Require accessible name","raw":"<textarea>","ruleId":"require-accessible-name","severity":"error"}
+{"col":32,"line":34,"message":"It is the default value","raw":"text","ruleId":"no-default-value","severity":"warning"}
+{"col":3,"line":36,"message":"The element should not empty","raw":"","ruleId":"no-empty-palpable-content","severity":"warning"}
+{"col":3,"line":36,"message":"Orphaned end tag detected","raw":"</p>","ruleId":"no-orphaned-end-tag","severity":"error"}
+{"col":25,"line":39,"message":"The \"a\" element is not allowed in the \"button\" element in this context","raw":"<a href=\"#x\">","ruleId":"permitted-contents","severity":"error"}
+{"col":34,"line":39,"message":"Missing \"x\" ID","raw":"#x","ruleId":"no-broken-fragment-link","severity":"warning"}
+{"col":28,"line":40,"message":"The \"name\" attribute is deprecated","raw":"name","ruleId":"no-deprecated-attr","severity":"warning"}
+{"col":3,"line":41,"message":"Require accessible name","raw":"<button type=\"button\">","ruleId":"require-accessible-name","severity":"error"}
+{"col":25,"line":41,"message":"The \"audio\" element is not allowed in the \"button\" element in this context","raw":"<audio controls src=\"a.mp3\">","ruleId":"permitted-contents","severity":"error"}
+{"col":3,"line":42,"message":"Require accessible name","raw":"<button type=\"button\">","ruleId":"require-accessible-name","severity":"error"}
+{"col":3,"line":43,"message":"Require accessible name","raw":"<button type=\"button\">","ruleId":"require-accessible-name","severity":"error"}
+{"col":25,"line":43,"message":"The \"img\" element is not allowed in the \"button\" element in this context","raw":"<img src=\"a.png\" alt=\"\" usemap=\"#m\" />","ruleId":"permitted-contents","severity":"error"}
+{"col":42,"line":43,"message":"\"alt\" should be before \"src\"","raw":"alt","ruleId":"attr-order","severity":"warning"}
+{"col":3,"line":44,"message":"Require accessible name","raw":"<button type=\"button\">","ruleId":"require-accessible-name","severity":"error"}
+{"col":42,"line":44,"message":"\"alt\" should be before \"src\"","raw":"alt","ruleId":"attr-order","severity":"warning"}
+{"col":3,"line":45,"message":"Require accessible name","raw":"<button type=\"button\">","ruleId":"require-accessible-name","severity":"error"}
+{"col":46,"line":45,"message":"\"name\" should be before \"type\"","raw":"name","ruleId":"attr-order","severity":"warning"}
+{"col":3,"line":46,"message":"Require accessible name","raw":"<button type=\"button\">","ruleId":"require-accessible-name","severity":"error"}
+{"col":25,"line":46,"message":"The \"input\" element is not allowed in the \"button\" element in this context","raw":"<input type=\"text\" />","ruleId":"permitted-contents","severity":"error"}
+{"col":38,"line":46,"message":"It is the default value","raw":"text","ruleId":"no-default-value","severity":"warning"}
+{"col":25,"line":47,"message":"The \"label\" element should associate with a control","raw":"<label>","ruleId":"label-has-control","severity":"warning"}
+{"col":25,"line":47,"message":"The \"label\" element is not allowed in the \"button\" element in this context","raw":"<label>","ruleId":"permitted-contents","severity":"error"}
+{"col":25,"line":48,"message":"The \"select\" element is not allowed in the \"button\" element in this context","raw":"<select>","ruleId":"permitted-contents","severity":"error"}
+{"col":3,"line":49,"message":"Require accessible name","raw":"<button type=\"button\">","ruleId":"require-accessible-name","severity":"error"}
+{"col":25,"line":49,"message":"The \"textarea\" element is not allowed in the \"button\" element in this context","raw":"<textarea>","ruleId":"permitted-contents","severity":"error"}
+{"col":12,"line":50,"message":"Missing \"x\" ID","raw":"#x","ruleId":"no-broken-fragment-link","severity":"warning"}
+{"col":16,"line":50,"message":"The \"a\" element is a transparent model but also disallows the \"button\" element in this context","raw":"<button type=\"button\">","ruleId":"permitted-contents","severity":"error"}
+{"col":3,"line":51,"message":"Require accessible name","raw":"<a href=\"#x\">","ruleId":"require-accessible-name","severity":"error"}
+{"col":12,"line":51,"message":"Missing \"x\" ID","raw":"#x","ruleId":"no-broken-fragment-link","severity":"warning"}
+{"col":16,"line":51,"message":"The \"a\" element is a transparent model but also disallows the \"input\" element in this context","raw":"<input type=\"text\" />","ruleId":"permitted-contents","severity":"error"}
+{"col":16,"line":51,"message":"Require accessible name","raw":"<input type=\"text\" />","ruleId":"require-accessible-name","severity":"error"}
+{"col":29,"line":51,"message":"It is the default value","raw":"text","ruleId":"no-default-value","severity":"warning"}
+{"col":3,"line":52,"message":"Require accessible name","raw":"<a href=\"#x\">","ruleId":"require-accessible-name","severity":"error"}
+{"col":12,"line":52,"message":"Missing \"x\" ID","raw":"#x","ruleId":"no-broken-fragment-link","severity":"warning"}
+{"col":37,"line":52,"message":"\"name\" should be before \"type\"","raw":"name","ruleId":"attr-order","severity":"warning"}
+{"col":3,"line":53,"message":"Require accessible name","raw":"<a href=\"#x\">","ruleId":"require-accessible-name","severity":"error"}
+{"col":12,"line":53,"message":"Missing \"x\" ID","raw":"#x","ruleId":"no-broken-fragment-link","severity":"warning"}
+{"col":16,"line":53,"message":"The \"a\" element is a transparent model but also disallows the \"img\" element in this context","raw":"<img src=\"a.png\" alt=\"\" usemap=\"#m\" />","ruleId":"permitted-contents","severity":"error"}
+{"col":33,"line":53,"message":"\"alt\" should be before \"src\"","raw":"alt","ruleId":"attr-order","severity":"warning"}
+{"col":3,"line":54,"message":"Require accessible name","raw":"<a href=\"#x\">","ruleId":"require-accessible-name","severity":"error"}
+{"col":12,"line":54,"message":"Missing \"x\" ID","raw":"#x","ruleId":"no-broken-fragment-link","severity":"warning"}
+{"col":33,"line":54,"message":"\"alt\" should be before \"src\"","raw":"alt","ruleId":"attr-order","severity":"warning"}
+{"col":12,"line":55,"message":"Missing \"x\" ID","raw":"#x","ruleId":"no-broken-fragment-link","severity":"warning"}
+{"col":16,"line":55,"message":"The \"a\" element is a transparent model but also disallows the \"span\" element in this context","raw":"<span tabindex=\"0\">","ruleId":"permitted-contents","severity":"error"}
+{"col":12,"line":56,"message":"Missing \"x\" ID","raw":"#x","ruleId":"no-broken-fragment-link","severity":"warning"}
+{"col":16,"line":56,"message":"The \"a\" element is a transparent model but also disallows the \"span\" element in this context","raw":"<span tabindex=\"-1\">","ruleId":"permitted-contents","severity":"error"}
+{"col":6,"line":57,"message":"The \"name\" attribute is deprecated","raw":"name","ruleId":"no-deprecated-attr","severity":"warning"}
+{"col":21,"line":57,"message":"The \"a\" element is a transparent model but also disallows the \"button\" element in this context","raw":"<button type=\"button\">","ruleId":"permitted-contents","severity":"error"}
+{"col":16,"line":58,"message":"The \"label\" element should associate with a control","raw":"<label>","ruleId":"label-has-control","severity":"warning"}
+{"col":16,"line":58,"message":"The \"label\" element is not allowed in the \"label\" element in this context","raw":"<label>","ruleId":"permitted-contents","severity":"error"}
+{"col":3,"line":61,"message":"The \"style\" element is not allowed in the \"body\" element in this context","raw":"<style>","ruleId":"permitted-contents","severity":"error"}
+{"col":26,"line":72,"message":"\"href\" should be before \"rel\"","raw":"href","ruleId":"attr-order","severity":"warning"}
+{"col":28,"line":73,"message":"\"href\" should be before \"rel\"","raw":"href","ruleId":"attr-order","severity":"warning"}
+{"col":14,"line":74,"message":"The \"canonical\" keyword is not allowed on the \"link\" element inside the \"body\" element","raw":"canonical","ruleId":"link-types","severity":"error"}
+{"col":25,"line":74,"message":"\"href\" should be before \"rel\"","raw":"href","ruleId":"attr-order","severity":"warning"}
+{"col":3,"line":75,"message":"The element must belong to an item via an ancestor `itemscope` or be referenced by an `itemref`","raw":"<link itemprop=\"url\" href=\"https://example.com/\" />","ruleId":"itemprop-requires-itemscope","severity":"error"}
+{"col":24,"line":75,"message":"\"href\" should be before \"itemprop\"","raw":"href","ruleId":"attr-order","severity":"warning"}
+{"col":28,"line":76,"message":"\"content\" should be before \"name\"","raw":"content","ruleId":"attr-order","severity":"warning"}
+{"col":3,"line":77,"message":"The element must belong to an item via an ancestor `itemscope` or be referenced by an `itemref`","raw":"<meta itemprop=\"name\" content=\"in the body\" />","ruleId":"itemprop-requires-itemscope","severity":"error"}
+{"col":25,"line":77,"message":"\"content\" should be before \"itemprop\"","raw":"content","ruleId":"attr-order","severity":"warning"}
+{"col":40,"line":92,"message":"\"name\" should be before \"type\"","raw":"name","ruleId":"attr-order","severity":"warning"}
+{"col":3,"line":93,"message":"The element should not empty","raw":"<div>","ruleId":"no-empty-palpable-content","severity":"warning"}
+{"col":3,"line":94,"message":"The element should not empty","raw":"<p>","ruleId":"no-empty-palpable-content","severity":"warning"}
+{"col":8,"line":96,"message":"The element should not empty","raw":"<span>","ruleId":"no-empty-palpable-content","severity":"warning"}
+{"col":3,"line":97,"message":"The child element requires the \"listitem\" role. Or, require aria-busy=\"true\"","raw":"<ul>","ruleId":"require-owned-elements","severity":"error"}
+{"col":3,"line":98,"message":"The element should not empty","raw":"<table>","ruleId":"no-empty-palpable-content","severity":"warning"}
+{"col":3,"line":98,"message":"The child element requires the roles: \"caption\", \"row\", \"rowgroup > row\". Or, require aria-busy=\"true\"","raw":"<table>","ruleId":"require-owned-elements","severity":"error"}
+{"col":59,"line":100,"message":"Missing \"x\" ID","raw":"#x","ruleId":"no-broken-fragment-link","severity":"warning"}
+{"col":63,"line":100,"message":"\"alt\" should be before \"shape\"","raw":"alt","ruleId":"attr-order","severity":"warning"}

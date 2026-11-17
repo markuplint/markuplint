@@ -1,0 +1,586 @@
+{"col":1,"line":4,"message":"Require an element. (Need \"#nonEmptyText\")","raw":"<title>","ruleId":"permitted-contents","severity":"error"}
+{"col":1,"line":7,"message":"The element should not empty","raw":"<a attributionsourceid=\"\" attributionsrc=\"\" charset=\"\" coords=\"\" datafld=\"\" datasrc=\"\" hreftranslate=\"\" interestfor=\"\" methods=\"\" name=\"\" rev=\"\" shape=\"\" urn=\"\">","ruleId":"no-empty-palpable-content","severity":"warning"}
+{"col":4,"line":7,"message":"The \"attributionsourceid\" attribute is experimental","raw":"attributionsourceid","ruleId":"no-experimental-features","severity":"warning"}
+{"col":4,"line":7,"message":"The \"attributionsourceid\" attribute is non-standard","raw":"attributionsourceid","ruleId":"no-nonstandard-features","severity":"warning"}
+{"col":27,"line":7,"message":"The \"attributionsrc\" attribute is deprecated","raw":"attributionsrc","ruleId":"no-deprecated-attr","severity":"warning"}
+{"col":27,"line":7,"message":"The \"attributionsrc\" attribute is non-standard","raw":"attributionsrc","ruleId":"no-nonstandard-features","severity":"warning"}
+{"col":45,"line":7,"message":"The \"charset\" attribute is obsolete","raw":"charset","ruleId":"no-obsolete-attr","severity":"error"}
+{"col":56,"line":7,"message":"The \"coords\" attribute is obsolete","raw":"coords","ruleId":"no-obsolete-attr","severity":"error"}
+{"col":66,"line":7,"message":"The \"datafld\" attribute is obsolete","raw":"datafld","ruleId":"no-obsolete-attr","severity":"error"}
+{"col":77,"line":7,"message":"The \"datasrc\" attribute is obsolete","raw":"datasrc","ruleId":"no-obsolete-attr","severity":"error"}
+{"col":88,"line":7,"message":"The \"hreftranslate\" attribute is experimental","raw":"hreftranslate","ruleId":"no-experimental-features","severity":"warning"}
+{"col":88,"line":7,"message":"The \"hreftranslate\" attribute is non-standard","raw":"hreftranslate","ruleId":"no-nonstandard-features","severity":"warning"}
+{"col":105,"line":7,"message":"The \"interestfor\" attribute is experimental","raw":"interestfor","ruleId":"no-experimental-features","severity":"warning"}
+{"col":105,"line":7,"message":"The \"interestfor\" attribute is non-standard","raw":"interestfor","ruleId":"no-nonstandard-features","severity":"warning"}
+{"col":118,"line":7,"message":"The \"interestfor\" attribute must not be empty. It expects the ID format (https://html.spec.whatwg.org/multipage/dom.html#global-attributes:concept-id)","raw":"","ruleId":"no-invalid-attr-value","severity":"error"}
+{"col":118,"line":7,"message":"Missing \"\" ID","raw":"","ruleId":"no-refer-to-non-existent-id","severity":"error"}
+{"col":120,"line":7,"message":"The \"methods\" attribute is obsolete","raw":"methods","ruleId":"no-obsolete-attr","severity":"error"}
+{"col":131,"line":7,"message":"The \"name\" attribute is deprecated","raw":"name","ruleId":"no-deprecated-attr","severity":"warning"}
+{"col":137,"line":7,"message":"The \"name\" attribute must not be empty","raw":"","ruleId":"no-invalid-attr-value","severity":"error"}
+{"col":139,"line":7,"message":"The \"rev\" attribute is obsolete","raw":"rev","ruleId":"no-obsolete-attr","severity":"error"}
+{"col":146,"line":7,"message":"The \"shape\" attribute is obsolete","raw":"shape","ruleId":"no-obsolete-attr","severity":"error"}
+{"col":155,"line":7,"message":"The \"urn\" attribute is obsolete","raw":"urn","ruleId":"no-obsolete-attr","severity":"error"}
+{"col":1,"line":8,"message":"The element should not empty","raw":"<abbr>","ruleId":"no-empty-palpable-content","severity":"warning"}
+{"col":1,"line":9,"message":"The \"acronym\" element is obsolete","raw":"<acronym>","ruleId":"no-obsolete-element","severity":"error"}
+{"col":1,"line":9,"message":"The \"acronym\" element is not allowed in the \"body\" element in this context","raw":"<acronym>","ruleId":"permitted-contents","severity":"error"}
+{"col":1,"line":10,"message":"The element should not empty","raw":"<address>","ruleId":"no-empty-palpable-content","severity":"warning"}
+{"col":1,"line":11,"message":"The \"applet\" element is obsolete","raw":"<applet>","ruleId":"no-obsolete-element","severity":"error"}
+{"col":1,"line":12,"message":"The \"area\" element must appear as a descendant of the \"map\" element","raw":"<area alt=\"\" attributionsrc=\"\" coords=\"\" hreflang=\"\" interestfor=\"\" nohref=\"\" shape=\"\" type=\"\">","ruleId":"require-ancestor","severity":"error"}
+{"col":7,"line":12,"message":"The \"alt\" attribute is disallowed","raw":"alt","ruleId":"no-disallowed-attr","severity":"error"}
+{"col":14,"line":12,"message":"The \"attributionsrc\" attribute is deprecated","raw":"attributionsrc","ruleId":"no-deprecated-attr","severity":"warning"}
+{"col":14,"line":12,"message":"The \"attributionsrc\" attribute is non-standard","raw":"attributionsrc","ruleId":"no-nonstandard-features","severity":"warning"}
+{"col":42,"line":12,"message":"The \"hreflang\" attribute is disallowed","raw":"hreflang","ruleId":"no-disallowed-attr","severity":"error"}
+{"col":42,"line":12,"message":"The \"hreflang\" attribute is obsolete","raw":"hreflang","ruleId":"no-obsolete-attr","severity":"error"}
+{"col":54,"line":12,"message":"The \"interestfor\" attribute is experimental","raw":"interestfor","ruleId":"no-experimental-features","severity":"warning"}
+{"col":54,"line":12,"message":"The \"interestfor\" attribute is non-standard","raw":"interestfor","ruleId":"no-nonstandard-features","severity":"warning"}
+{"col":67,"line":12,"message":"The \"interestfor\" attribute must not be empty. It expects the ID format (https://html.spec.whatwg.org/multipage/dom.html#global-attributes:concept-id)","raw":"","ruleId":"no-invalid-attr-value","severity":"error"}
+{"col":67,"line":12,"message":"Missing \"\" ID","raw":"","ruleId":"no-refer-to-non-existent-id","severity":"error"}
+{"col":69,"line":12,"message":"The \"nohref\" attribute is obsolete","raw":"nohref","ruleId":"no-obsolete-attr","severity":"error"}
+{"col":86,"line":12,"message":"The \"shape\" attribute expects either \"rect\", \"circle\", \"poly\", \"default\"","raw":"","ruleId":"no-invalid-attr-value","severity":"error"}
+{"col":88,"line":12,"message":"The \"type\" attribute is disallowed","raw":"type","ruleId":"no-disallowed-attr","severity":"error"}
+{"col":88,"line":12,"message":"The \"type\" attribute is obsolete","raw":"type","ruleId":"no-obsolete-attr","severity":"error"}
+{"col":1,"line":13,"message":"The element should not empty","raw":"<article>","ruleId":"no-empty-palpable-content","severity":"warning"}
+{"col":1,"line":14,"message":"The element should not empty","raw":"<aside>","ruleId":"no-empty-palpable-content","severity":"warning"}
+{"col":45,"line":15,"message":"The \"disableremoteplayback\" attribute is a boolean attribute. It doesn't need the value","raw":"=\"\"","ruleId":"no-boolean-attr-value","severity":"warning"}
+{"col":58,"line":15,"message":"The \"loading\" attribute expects either \"lazy\", \"eager\"","raw":"","ruleId":"no-invalid-attr-value","severity":"error"}
+{"col":1,"line":16,"message":"The element should not empty","raw":"<b>","ruleId":"no-empty-palpable-content","severity":"warning"}
+{"col":23,"line":17,"message":"It includes unexpected characters. the \"target\" attribute expects either \"_blank\", \"_self\", \"_parent\", \"_top\", \"navigable target name\" (https://html.spec.whatwg.org/multipage/document-sequences.html#valid-navigable-target-name-or-keyword)","raw":"","ruleId":"no-invalid-attr-value","severity":"error"}
+{"col":1,"line":18,"message":"The \"basefont\" element is obsolete","raw":"<basefont>","ruleId":"no-obsolete-element","severity":"error"}
+{"col":1,"line":18,"message":"Missing the end tag","raw":"<basefont>","ruleId":"require-end-tag","severity":"warning"}
+{"col":1,"line":19,"message":"The element should not empty","raw":"<bdi>","ruleId":"no-empty-palpable-content","severity":"warning"}
+{"col":1,"line":20,"message":"The element should not empty","raw":"<bdo dir=\"\">","ruleId":"no-empty-palpable-content","severity":"warning"}
+{"col":11,"line":20,"message":"The \"dir\" attribute expects either \"ltr\", \"rtl\"","raw":"","ruleId":"no-invalid-attr-value","severity":"error"}
+{"col":1,"line":21,"message":"The \"bgsound\" element is obsolete","raw":"<bgsound>","ruleId":"no-obsolete-element","severity":"error"}
+{"col":1,"line":21,"message":"Missing the end tag","raw":"<bgsound>","ruleId":"require-end-tag","severity":"warning"}
+{"col":1,"line":22,"message":"The \"big\" element is obsolete","raw":"<big>","ruleId":"no-obsolete-element","severity":"error"}
+{"col":1,"line":23,"message":"The \"blink\" element is obsolete","raw":"<blink>","ruleId":"no-obsolete-element","severity":"error"}
+{"col":1,"line":24,"message":"The element should not empty","raw":"<blockquote cite=\"\">","ruleId":"no-empty-palpable-content","severity":"warning"}
+{"col":5,"line":25,"message":"The \"clear\" attribute is obsolete","raw":"clear","ruleId":"no-obsolete-attr","severity":"error"}
+{"col":1,"line":26,"message":"The element should not empty","raw":"<button command=\"\" commandfor=\"\" datafld=\"\" dataformatas=\"\" datasrc=\"\" interestfor=\"\" popovertarget=\"\" popovertargetaction=\"\" type=\"\" value=\"\">","ruleId":"no-empty-palpable-content","severity":"warning"}
+{"col":1,"line":26,"message":"Require accessible name","raw":"<button command=\"\" commandfor=\"\" datafld=\"\" dataformatas=\"\" datasrc=\"\" interestfor=\"\" popovertarget=\"\" popovertargetaction=\"\" type=\"\" value=\"\">","ruleId":"require-accessible-name","severity":"error"}
+{"col":18,"line":26,"message":"The \"command\" attribute expects either \"toggle-popover\", \"show-popover\", \"hide-popover\", \"close\", \"request-close\", \"show-modal\". Or, the \"command\" attribute expects the custom command format. Did you mean \"--\"? (https://html.spec.whatwg.org/multipage/form-elements.html#attr-button-command-custom)","raw":"","ruleId":"no-invalid-attr-value","severity":"error"}
+{"col":32,"line":26,"message":"The \"commandfor\" attribute must not be empty. It expects the ID format (https://html.spec.whatwg.org/multipage/dom.html#global-attributes:concept-id)","raw":"","ruleId":"no-invalid-attr-value","severity":"error"}
+{"col":32,"line":26,"message":"Missing \"\" ID","raw":"","ruleId":"no-refer-to-non-existent-id","severity":"error"}
+{"col":34,"line":26,"message":"The \"datafld\" attribute is obsolete","raw":"datafld","ruleId":"no-obsolete-attr","severity":"error"}
+{"col":45,"line":26,"message":"The \"dataformatas\" attribute is obsolete","raw":"dataformatas","ruleId":"no-obsolete-attr","severity":"error"}
+{"col":61,"line":26,"message":"The \"datasrc\" attribute is obsolete","raw":"datasrc","ruleId":"no-obsolete-attr","severity":"error"}
+{"col":72,"line":26,"message":"The \"interestfor\" attribute is experimental","raw":"interestfor","ruleId":"no-experimental-features","severity":"warning"}
+{"col":72,"line":26,"message":"The \"interestfor\" attribute is non-standard","raw":"interestfor","ruleId":"no-nonstandard-features","severity":"warning"}
+{"col":85,"line":26,"message":"The \"interestfor\" attribute must not be empty. It expects the ID format (https://html.spec.whatwg.org/multipage/dom.html#global-attributes:concept-id)","raw":"","ruleId":"no-invalid-attr-value","severity":"error"}
+{"col":85,"line":26,"message":"Missing \"\" ID","raw":"","ruleId":"no-refer-to-non-existent-id","severity":"error"}
+{"col":102,"line":26,"message":"The \"popovertarget\" attribute must not be empty. It expects the ID format (https://html.spec.whatwg.org/multipage/dom.html#global-attributes:concept-id)","raw":"","ruleId":"no-invalid-attr-value","severity":"error"}
+{"col":102,"line":26,"message":"Missing \"\" ID","raw":"","ruleId":"no-refer-to-non-existent-id","severity":"error"}
+{"col":125,"line":26,"message":"The \"popovertargetaction\" attribute expects either \"toggle\", \"show\", \"hide\"","raw":"","ruleId":"no-invalid-attr-value","severity":"error"}
+{"col":133,"line":26,"message":"The \"type\" attribute expects either \"submit\", \"reset\", \"button\"","raw":"","ruleId":"no-invalid-attr-value","severity":"error"}
+{"col":9,"line":27,"message":"The \"content\" attribute is experimental","raw":"content","ruleId":"no-experimental-features","severity":"warning"}
+{"col":9,"line":27,"message":"The \"content\" attribute is non-standard","raw":"content","ruleId":"no-nonstandard-features","severity":"warning"}
+{"col":28,"line":27,"message":"It includes unexpected characters. the \"height\" attribute expects non-negative integer","raw":"","ruleId":"no-invalid-attr-value","severity":"error"}
+{"col":30,"line":27,"message":"The \"moz-opaque\" attribute is deprecated","raw":"moz-opaque","ruleId":"no-deprecated-attr","severity":"warning"}
+{"col":30,"line":27,"message":"The \"moz-opaque\" attribute is non-standard","raw":"moz-opaque","ruleId":"no-nonstandard-features","severity":"warning"}
+{"col":51,"line":27,"message":"It includes unexpected characters. the \"width\" attribute expects non-negative integer","raw":"","ruleId":"no-invalid-attr-value","severity":"error"}
+{"col":17,"line":28,"message":"The \"align\" attribute is obsolete","raw":"align","ruleId":"no-obsolete-attr","severity":"error"}
+{"col":1,"line":29,"message":"The \"center\" element is obsolete","raw":"<center>","ruleId":"no-obsolete-element","severity":"error"}
+{"col":1,"line":30,"message":"The element should not empty","raw":"<cite>","ruleId":"no-empty-palpable-content","severity":"warning"}
+{"col":1,"line":31,"message":"The element should not empty","raw":"<code>","ruleId":"no-empty-palpable-content","severity":"warning"}
+{"col":1,"line":32,"message":"The \"table\" role expects the roles: \"caption\", \"row\", \"rowgroup > row\"","raw":"<table>","ruleId":"require-owned-elements","severity":"error"}
+{"col":18,"line":32,"message":"One column has no cells beginning in it","raw":"<col align=\"\" char=\"\" charoff=\"\" span=\"\" valign=\"\" width=\"\">","ruleId":"no-empty-table-track","severity":"error"}
+{"col":23,"line":32,"message":"The \"align\" attribute is obsolete","raw":"align","ruleId":"no-obsolete-attr","severity":"error"}
+{"col":32,"line":32,"message":"The \"char\" attribute is obsolete","raw":"char","ruleId":"no-obsolete-attr","severity":"error"}
+{"col":40,"line":32,"message":"The \"charoff\" attribute is obsolete","raw":"charoff","ruleId":"no-obsolete-attr","severity":"error"}
+{"col":57,"line":32,"message":"The \"span\" attribute must not be empty. It expects integer greater than 0 less than or equal to 1,000","raw":"","ruleId":"no-invalid-attr-value","severity":"error"}
+{"col":59,"line":32,"message":"The \"valign\" attribute is obsolete","raw":"valign","ruleId":"no-obsolete-attr","severity":"error"}
+{"col":69,"line":32,"message":"The \"width\" attribute is obsolete","raw":"width","ruleId":"no-obsolete-attr","severity":"error"}
+{"col":1,"line":33,"message":"The \"table\" role expects the roles: \"caption\", \"row\", \"rowgroup > row\"","raw":"<table>","ruleId":"require-owned-elements","severity":"error"}
+{"col":8,"line":33,"message":"One column has no cells beginning in it","raw":"<colgroup align=\"\" char=\"\" charoff=\"\" span=\"\" valign=\"\" width=\"\">","ruleId":"no-empty-table-track","severity":"error"}
+{"col":18,"line":33,"message":"The \"align\" attribute is deprecated","raw":"align","ruleId":"no-deprecated-attr","severity":"warning"}
+{"col":18,"line":33,"message":"The \"align\" attribute is non-standard","raw":"align","ruleId":"no-nonstandard-features","severity":"warning"}
+{"col":27,"line":33,"message":"The \"char\" attribute is deprecated","raw":"char","ruleId":"no-deprecated-attr","severity":"warning"}
+{"col":27,"line":33,"message":"The \"char\" attribute is non-standard","raw":"char","ruleId":"no-nonstandard-features","severity":"warning"}
+{"col":35,"line":33,"message":"The \"charoff\" attribute is deprecated","raw":"charoff","ruleId":"no-deprecated-attr","severity":"warning"}
+{"col":35,"line":33,"message":"The \"charoff\" attribute is non-standard","raw":"charoff","ruleId":"no-nonstandard-features","severity":"warning"}
+{"col":52,"line":33,"message":"The \"span\" attribute must not be empty. It expects integer greater than 0 less than or equal to 1,000","raw":"","ruleId":"no-invalid-attr-value","severity":"error"}
+{"col":54,"line":33,"message":"The \"valign\" attribute is deprecated","raw":"valign","ruleId":"no-deprecated-attr","severity":"warning"}
+{"col":54,"line":33,"message":"The \"valign\" attribute is non-standard","raw":"valign","ruleId":"no-nonstandard-features","severity":"warning"}
+{"col":64,"line":33,"message":"The \"width\" attribute is deprecated","raw":"width","ruleId":"no-deprecated-attr","severity":"warning"}
+{"col":64,"line":33,"message":"The \"width\" attribute is non-standard","raw":"width","ruleId":"no-nonstandard-features","severity":"warning"}
+{"col":1,"line":34,"message":"The element should not empty","raw":"<data value=\"\">","ruleId":"no-empty-palpable-content","severity":"warning"}
+{"col":1,"line":35,"message":"Require accessible name","raw":"<datalist>","ruleId":"require-accessible-name","severity":"error"}
+{"col":1,"line":35,"message":"The child element requires the roles: \"group > option\", \"option\". Or, require aria-busy=\"true\"","raw":"<datalist>","ruleId":"require-owned-elements","severity":"error"}
+{"col":6,"line":36,"message":"The element should not empty","raw":"<dd>","ruleId":"no-empty-palpable-content","severity":"warning"}
+{"col":6,"line":36,"message":"The \"dd\" element is not allowed in the \"div\" element in this context","raw":"<dd>","ruleId":"permitted-contents","severity":"error"}
+{"col":1,"line":37,"message":"The element should not empty","raw":"<del cite=\"\" datetime=\"\">","ruleId":"no-empty-palpable-content","severity":"warning"}
+{"col":24,"line":37,"message":"The year part of the \"datetime\" attribute must not be empty. It expects the date string with optional time format (https://html.spec.whatwg.org/multipage/edits.html#attr-mod-datetime)","raw":"","ruleId":"no-invalid-attr-value","severity":"error"}
+{"col":1,"line":38,"message":"The element should not empty","raw":"<details name=\"\" open=\"\">","ruleId":"no-empty-palpable-content","severity":"warning"}
+{"col":1,"line":38,"message":"Require an element. (Need \"summary\")","raw":"<details name=\"\" open=\"\">","ruleId":"permitted-contents","severity":"error"}
+{"col":16,"line":38,"message":"The \"name\" attribute must not be empty","raw":"","ruleId":"no-invalid-attr-value","severity":"error"}
+{"col":22,"line":38,"message":"The \"open\" attribute is a boolean attribute. It doesn't need the value","raw":"=\"\"","ruleId":"no-boolean-attr-value","severity":"warning"}
+{"col":1,"line":39,"message":"The element should not empty","raw":"<dfn>","ruleId":"no-empty-palpable-content","severity":"warning"}
+{"col":19,"line":40,"message":"The \"closedby\" attribute expects either \"any\", \"closerequest\", \"none\"","raw":"","ruleId":"no-invalid-attr-value","severity":"error"}
+{"col":25,"line":40,"message":"The \"open\" attribute is a boolean attribute. It doesn't need the value","raw":"=\"\"","ruleId":"no-boolean-attr-value","severity":"warning"}
+{"col":29,"line":40,"message":"The \"tabindex\" attribute is disallowed","raw":"tabindex=\"\"","ruleId":"no-disallowed-attr","severity":"error"}
+{"col":1,"line":41,"message":"The \"dir\" element is obsolete","raw":"<dir compact=\"\">","ruleId":"no-obsolete-element","severity":"error"}
+{"col":1,"line":42,"message":"The element should not empty","raw":"<div align=\"\" datafld=\"\" dataformatas=\"\" datasrc=\"\">","ruleId":"no-empty-palpable-content","severity":"warning"}
+{"col":6,"line":42,"message":"The \"align\" attribute is obsolete","raw":"align","ruleId":"no-obsolete-attr","severity":"error"}
+{"col":15,"line":42,"message":"The \"datafld\" attribute is obsolete","raw":"datafld","ruleId":"no-obsolete-attr","severity":"error"}
+{"col":26,"line":42,"message":"The \"dataformatas\" attribute is obsolete","raw":"dataformatas","ruleId":"no-obsolete-attr","severity":"error"}
+{"col":42,"line":42,"message":"The \"datasrc\" attribute is obsolete","raw":"datasrc","ruleId":"no-obsolete-attr","severity":"error"}
+{"col":5,"line":43,"message":"The \"compact\" attribute is obsolete","raw":"compact","ruleId":"no-obsolete-attr","severity":"error"}
+{"col":6,"line":44,"message":"The element should not empty","raw":"<dt>","ruleId":"no-empty-palpable-content","severity":"warning"}
+{"col":6,"line":44,"message":"The \"dt\" element is not allowed in the \"div\" element in this context","raw":"<dt>","ruleId":"permitted-contents","severity":"error"}
+{"col":1,"line":45,"message":"The element should not empty","raw":"<em>","ruleId":"no-empty-palpable-content","severity":"warning"}
+{"col":8,"line":46,"message":"The \"align\" attribute is obsolete","raw":"align","ruleId":"no-obsolete-attr","severity":"error"}
+{"col":17,"line":46,"message":"The \"hspace\" attribute is obsolete","raw":"hspace","ruleId":"no-obsolete-attr","severity":"error"}
+{"col":27,"line":46,"message":"The \"name\" attribute is obsolete","raw":"name","ruleId":"no-obsolete-attr","severity":"error"}
+{"col":40,"line":46,"message":"It includes unexpected characters (https://html.spec.whatwg.org/multipage/urls-and-fetching.html#valid-non-empty-url-potentially-surrounded-by-spaces)","raw":"","ruleId":"no-invalid-attr-value","severity":"error"}
+{"col":48,"line":46,"message":"The \"type\" attribute must not be empty. It expects the MIME Type format (https://mimesniff.spec.whatwg.org/#valid-mime-type)","raw":"","ruleId":"no-invalid-attr-value","severity":"error"}
+{"col":50,"line":46,"message":"The \"vspace\" attribute is obsolete","raw":"vspace","ruleId":"no-obsolete-attr","severity":"error"}
+{"col":1,"line":47,"message":"The element should not empty","raw":"<fieldset datafld=\"\">","ruleId":"no-empty-palpable-content","severity":"warning"}
+{"col":11,"line":47,"message":"The \"datafld\" attribute is obsolete","raw":"datafld","ruleId":"no-obsolete-attr","severity":"error"}
+{"col":9,"line":48,"message":"The element should not empty","raw":"<figcaption>","ruleId":"no-empty-palpable-content","severity":"warning"}
+{"col":1,"line":49,"message":"The element should not empty","raw":"<figure>","ruleId":"no-empty-palpable-content","severity":"warning"}
+{"col":1,"line":50,"message":"The \"font\" element is obsolete","raw":"<font color=\"\" face=\"\" size=\"\">","ruleId":"no-obsolete-element","severity":"error"}
+{"col":1,"line":51,"message":"The element should not empty","raw":"<footer>","ruleId":"no-empty-palpable-content","severity":"warning"}
+{"col":1,"line":52,"message":"The element should not empty","raw":"<form accept=\"\" accept-charset=\"\" action=\"\" autocomplete=\"\" enctype=\"\" method=\"\" name=\"\" novalidate=\"\" rel=\"\" target=\"\">","ruleId":"no-empty-palpable-content","severity":"warning"}
+{"col":7,"line":52,"message":"The \"accept\" attribute is obsolete","raw":"accept","ruleId":"no-obsolete-attr","severity":"error"}
+{"col":33,"line":52,"message":"The \"accept-charset\" attribute expects utf-8","raw":"","ruleId":"no-invalid-attr-value","severity":"error"}
+{"col":43,"line":52,"message":"It includes unexpected characters (https://html.spec.whatwg.org/multipage/urls-and-fetching.html#valid-non-empty-url-potentially-surrounded-by-spaces)","raw":"","ruleId":"no-invalid-attr-value","severity":"error"}
+{"col":59,"line":52,"message":"The \"autocomplete\" attribute expects either \"on\", \"off\"","raw":"","ruleId":"no-invalid-attr-value","severity":"error"}
+{"col":70,"line":52,"message":"The \"enctype\" attribute expects either \"application/x-www-form-urlencoded\", \"multipart/form-data\", \"text/plain\"","raw":"","ruleId":"no-invalid-attr-value","severity":"error"}
+{"col":80,"line":52,"message":"The \"method\" attribute expects either \"post\", \"get\", \"dialog\"","raw":"","ruleId":"no-invalid-attr-value","severity":"error"}
+{"col":88,"line":52,"message":"The \"name\" attribute must not be empty","raw":"","ruleId":"no-invalid-attr-value","severity":"error"}
+{"col":100,"line":52,"message":"The \"novalidate\" attribute is a boolean attribute. It doesn't need the value","raw":"=\"\"","ruleId":"no-boolean-attr-value","severity":"warning"}
+{"col":119,"line":52,"message":"It includes unexpected characters. the \"target\" attribute expects either \"_blank\", \"_self\", \"_parent\", \"_top\", \"navigable target name\" (https://html.spec.whatwg.org/multipage/document-sequences.html#valid-navigable-target-name-or-keyword)","raw":"","ruleId":"no-invalid-attr-value","severity":"error"}
+{"col":1,"line":53,"message":"The element should not empty","raw":"<h1 align=\"\">","ruleId":"no-empty-palpable-content","severity":"warning"}
+{"col":1,"line":53,"message":"Require accessible name","raw":"<h1 align=\"\">","ruleId":"require-accessible-name","severity":"error"}
+{"col":5,"line":53,"message":"The \"align\" attribute is obsolete","raw":"align","ruleId":"no-obsolete-attr","severity":"error"}
+{"col":1,"line":54,"message":"The element should not empty","raw":"<h2 align=\"\">","ruleId":"no-empty-palpable-content","severity":"warning"}
+{"col":1,"line":54,"message":"Require accessible name","raw":"<h2 align=\"\">","ruleId":"require-accessible-name","severity":"error"}
+{"col":5,"line":54,"message":"The \"align\" attribute is obsolete","raw":"align","ruleId":"no-obsolete-attr","severity":"error"}
+{"col":1,"line":55,"message":"The element should not empty","raw":"<h3 align=\"\">","ruleId":"no-empty-palpable-content","severity":"warning"}
+{"col":1,"line":55,"message":"Require accessible name","raw":"<h3 align=\"\">","ruleId":"require-accessible-name","severity":"error"}
+{"col":5,"line":55,"message":"The \"align\" attribute is obsolete","raw":"align","ruleId":"no-obsolete-attr","severity":"error"}
+{"col":1,"line":56,"message":"The element should not empty","raw":"<h4 align=\"\">","ruleId":"no-empty-palpable-content","severity":"warning"}
+{"col":1,"line":56,"message":"Require accessible name","raw":"<h4 align=\"\">","ruleId":"require-accessible-name","severity":"error"}
+{"col":5,"line":56,"message":"The \"align\" attribute is obsolete","raw":"align","ruleId":"no-obsolete-attr","severity":"error"}
+{"col":1,"line":57,"message":"The element should not empty","raw":"<h5 align=\"\">","ruleId":"no-empty-palpable-content","severity":"warning"}
+{"col":1,"line":57,"message":"Require accessible name","raw":"<h5 align=\"\">","ruleId":"require-accessible-name","severity":"error"}
+{"col":5,"line":57,"message":"The \"align\" attribute is obsolete","raw":"align","ruleId":"no-obsolete-attr","severity":"error"}
+{"col":1,"line":58,"message":"The element should not empty","raw":"<h6 align=\"\">","ruleId":"no-empty-palpable-content","severity":"warning"}
+{"col":1,"line":58,"message":"Require accessible name","raw":"<h6 align=\"\">","ruleId":"require-accessible-name","severity":"error"}
+{"col":5,"line":58,"message":"The \"align\" attribute is obsolete","raw":"align","ruleId":"no-obsolete-attr","severity":"error"}
+{"col":1,"line":59,"message":"The element should not empty","raw":"<header>","ruleId":"no-empty-palpable-content","severity":"warning"}
+{"col":1,"line":60,"message":"The element should not empty","raw":"<hgroup>","ruleId":"no-empty-palpable-content","severity":"warning"}
+{"col":1,"line":60,"message":"Require an element. (Need \"h6\")","raw":"<hgroup>","ruleId":"permitted-contents","severity":"error"}
+{"col":5,"line":61,"message":"The \"align\" attribute is obsolete","raw":"align","ruleId":"no-obsolete-attr","severity":"error"}
+{"col":14,"line":61,"message":"The \"color\" attribute is obsolete","raw":"color","ruleId":"no-obsolete-attr","severity":"error"}
+{"col":23,"line":61,"message":"The \"noshade\" attribute is obsolete","raw":"noshade","ruleId":"no-obsolete-attr","severity":"error"}
+{"col":34,"line":61,"message":"The \"size\" attribute is obsolete","raw":"size","ruleId":"no-obsolete-attr","severity":"error"}
+{"col":42,"line":61,"message":"The \"width\" attribute is obsolete","raw":"width","ruleId":"no-obsolete-attr","severity":"error"}
+{"col":1,"line":62,"message":"The element should not empty","raw":"<i>","ruleId":"no-empty-palpable-content","severity":"warning"}
+{"col":9,"line":63,"message":"The \"align\" attribute is obsolete","raw":"align","ruleId":"no-obsolete-attr","severity":"error"}
+{"col":42,"line":63,"message":"The \"allowfullscreen\" attribute is a boolean attribute. It doesn't need the value","raw":"=\"\"","ruleId":"no-boolean-attr-value","severity":"warning"}
+{"col":46,"line":63,"message":"The \"allowpaymentrequest\" attribute is deprecated","raw":"allowpaymentrequest","ruleId":"no-deprecated-attr","severity":"warning"}
+{"col":46,"line":63,"message":"The \"allowpaymentrequest\" attribute is non-standard","raw":"allowpaymentrequest","ruleId":"no-nonstandard-features","severity":"warning"}
+{"col":69,"line":63,"message":"The \"allowtransparency\" attribute is obsolete","raw":"allowtransparency","ruleId":"no-obsolete-attr","severity":"error"}
+{"col":90,"line":63,"message":"The \"browsingtopics\" attribute is deprecated","raw":"browsingtopics","ruleId":"no-deprecated-attr","severity":"warning"}
+{"col":90,"line":63,"message":"The \"browsingtopics\" attribute is non-standard","raw":"browsingtopics","ruleId":"no-nonstandard-features","severity":"warning"}
+{"col":108,"line":63,"message":"The \"credentialless\" attribute is experimental","raw":"credentialless","ruleId":"no-experimental-features","severity":"warning"}
+{"col":108,"line":63,"message":"The \"credentialless\" attribute is non-standard","raw":"credentialless","ruleId":"no-nonstandard-features","severity":"warning"}
+{"col":126,"line":63,"message":"The \"cross-origin-top-navigation-by-user-activation\" attribute is non-standard","raw":"cross-origin-top-navigation-by-user-activation","ruleId":"no-nonstandard-features","severity":"warning"}
+{"col":176,"line":63,"message":"The \"csp\" attribute is experimental","raw":"csp","ruleId":"no-experimental-features","severity":"warning"}
+{"col":176,"line":63,"message":"The \"csp\" attribute is non-standard","raw":"csp","ruleId":"no-nonstandard-features","severity":"warning"}
+{"col":183,"line":63,"message":"The \"datafld\" attribute is obsolete","raw":"datafld","ruleId":"no-obsolete-attr","severity":"error"}
+{"col":194,"line":63,"message":"The \"datasrc\" attribute is obsolete","raw":"datasrc","ruleId":"no-obsolete-attr","severity":"error"}
+{"col":205,"line":63,"message":"The \"frameborder\" attribute is obsolete","raw":"frameborder","ruleId":"no-obsolete-attr","severity":"error"}
+{"col":220,"line":63,"message":"The \"framespacing\" attribute is obsolete","raw":"framespacing","ruleId":"no-obsolete-attr","severity":"error"}
+{"col":236,"line":63,"message":"The \"hspace\" attribute is obsolete","raw":"hspace","ruleId":"no-obsolete-attr","severity":"error"}
+{"col":246,"line":63,"message":"The \"longdesc\" attribute is obsolete","raw":"longdesc","ruleId":"no-obsolete-attr","severity":"error"}
+{"col":258,"line":63,"message":"The \"marginheight\" attribute is obsolete","raw":"marginheight","ruleId":"no-obsolete-attr","severity":"error"}
+{"col":274,"line":63,"message":"The \"marginwidth\" attribute is obsolete","raw":"marginwidth","ruleId":"no-obsolete-attr","severity":"error"}
+{"col":295,"line":63,"message":"The \"name\" attribute must not be empty. It expects navigable target name (https://html.spec.whatwg.org/multipage/document-sequences.html#valid-navigable-target-name)","raw":"","ruleId":"no-invalid-attr-value","severity":"error"}
+{"col":297,"line":63,"message":"Attribute names of HTML elements should be lowercase","raw":"privateToken","ruleId":"case-sensitive-attr-name","severity":"warning"}
+{"col":297,"line":63,"message":"The \"privateToken\" attribute is experimental","raw":"privateToken","ruleId":"no-experimental-features","severity":"warning"}
+{"col":324,"line":63,"message":"The \"scrolling\" attribute is obsolete","raw":"scrolling","ruleId":"no-obsolete-attr","severity":"error"}
+{"col":337,"line":63,"message":"The \"src\" attribute is ineffective. It doesn't need the attribute","raw":"src=\"\"","ruleId":"no-ineffective-attr","severity":"warning"}
+{"col":342,"line":63,"message":"It includes unexpected characters (https://html.spec.whatwg.org/multipage/urls-and-fetching.html#valid-non-empty-url-potentially-surrounded-by-spaces)","raw":"","ruleId":"no-invalid-attr-value","severity":"error"}
+{"col":354,"line":63,"message":"The \"vspace\" attribute is obsolete","raw":"vspace","ruleId":"no-obsolete-attr","severity":"error"}
+{"col":6,"line":64,"message":"The \"align\" attribute is obsolete","raw":"align","ruleId":"no-obsolete-attr","severity":"error"}
+{"col":22,"line":64,"message":"The \"attributionsrc\" attribute is deprecated","raw":"attributionsrc","ruleId":"no-deprecated-attr","severity":"warning"}
+{"col":22,"line":64,"message":"The \"attributionsrc\" attribute is non-standard","raw":"attributionsrc","ruleId":"no-nonstandard-features","severity":"warning"}
+{"col":40,"line":64,"message":"The \"border\" attribute is deprecated","raw":"border","ruleId":"no-deprecated-attr","severity":"warning"}
+{"col":48,"line":64,"message":"The \"border\" attribute expects 0","raw":"","ruleId":"no-invalid-attr-value","severity":"error"}
+{"col":50,"line":64,"message":"The \"controls\" attribute is disallowed","raw":"controls","ruleId":"no-disallowed-attr","severity":"error"}
+{"col":50,"line":64,"message":"The \"controls\" attribute is experimental","raw":"controls","ruleId":"no-experimental-features","severity":"warning"}
+{"col":58,"line":64,"message":"The \"controls\" attribute is a boolean attribute. It doesn't need the value","raw":"=\"\"","ruleId":"no-boolean-attr-value","severity":"warning"}
+{"col":62,"line":64,"message":"The \"datafld\" attribute is obsolete","raw":"datafld","ruleId":"no-obsolete-attr","severity":"error"}
+{"col":73,"line":64,"message":"The \"datasrc\" attribute is obsolete","raw":"datasrc","ruleId":"no-obsolete-attr","severity":"error"}
+{"col":94,"line":64,"message":"The \"decoding\" attribute expects either \"sync\", \"async\", \"auto\"","raw":"","ruleId":"no-invalid-attr-value","severity":"error"}
+{"col":96,"line":64,"message":"The \"hspace\" attribute is obsolete","raw":"hspace","ruleId":"no-obsolete-attr","severity":"error"}
+{"col":106,"line":64,"message":"The \"ismap\" attribute is disallowed","raw":"ismap","ruleId":"no-disallowed-attr","severity":"error"}
+{"col":111,"line":64,"message":"The \"ismap\" attribute is a boolean attribute. It doesn't need the value","raw":"=\"\"","ruleId":"no-boolean-attr-value","severity":"warning"}
+{"col":115,"line":64,"message":"The \"longdesc\" attribute is obsolete","raw":"longdesc","ruleId":"no-obsolete-attr","severity":"error"}
+{"col":127,"line":64,"message":"The \"lowsrc\" attribute is obsolete","raw":"lowsrc","ruleId":"no-obsolete-attr","severity":"error"}
+{"col":137,"line":64,"message":"The \"name\" attribute is obsolete","raw":"name","ruleId":"no-obsolete-attr","severity":"error"}
+{"col":152,"line":64,"message":"The \"sizes\" attribute expects <source-size-list> syntax (https://html.spec.whatwg.org/multipage/images.html#sizes-attributes)","raw":"","ruleId":"no-invalid-attr-value","severity":"error"}
+{"col":159,"line":64,"message":"It includes unexpected characters (https://html.spec.whatwg.org/multipage/urls-and-fetching.html#valid-non-empty-url-potentially-surrounded-by-spaces)","raw":"","ruleId":"no-invalid-attr-value","severity":"error"}
+{"col":169,"line":64,"message":"It includes unexpected characters. the \"srcset\" attribute expects the valid non-empty URL format (https://html.spec.whatwg.org/multipage/images.html#srcset-attributes)","raw":"","ruleId":"no-invalid-attr-value","severity":"error"}
+{"col":169,"line":64,"message":"The \"srcset\" attribute requires width descriptors when the \"sizes\" attribute is present","raw":"","ruleId":"no-unpaired-srcset-sizes","severity":"error"}
+{"col":179,"line":64,"message":"It includes unexpected characters. the \"usemap\" attribute expects the hash name format (https://html.spec.whatwg.org/multipage/common-microsyntaxes.html#valid-hash-name-reference)","raw":"","ruleId":"no-invalid-attr-value","severity":"error"}
+{"col":181,"line":64,"message":"The \"vspace\" attribute is obsolete","raw":"vspace","ruleId":"no-obsolete-attr","severity":"error"}
+{"col":1,"line":65,"message":"Require accessible name","raw":"<input accept=\"\" align=\"\" alpha=\"\" alt=\"\" autocomplete=\"\" border=\"\" capture=\"\" checked=\"\" colorspace=\"\" datafld=\"\" dataformatas=\"\" datasrc=\"\" dirname=\"\" height=\"\" hspace=\"\" incremental=\"\" ismap=\"\" list=\"\" max=\"\" maxlength=\"\" min=\"\" minlength=\"\" multiple=\"\" name=\"\" orient=\"\" pattern=\"\" placeholder=\"\" popovertarget=\"\" popovertargetaction=\"\" readonly=\"\" required=\"\" results=\"\" size=\"\" src=\"\" step=\"\" switch=\"\" type=\"\" usemap=\"\" value=\"\" vspace=\"\" webkitdirectory=\"\" width=\"\">","ruleId":"require-accessible-name","severity":"error"}
+{"col":8,"line":65,"message":"The \"accept\" attribute is disallowed","raw":"accept","ruleId":"no-disallowed-attr","severity":"error"}
+{"col":18,"line":65,"message":"The \"align\" attribute is obsolete","raw":"align","ruleId":"no-obsolete-attr","severity":"error"}
+{"col":27,"line":65,"message":"The \"alpha\" attribute is disallowed","raw":"alpha","ruleId":"no-disallowed-attr","severity":"error"}
+{"col":27,"line":65,"message":"The \"alpha\" attribute is experimental","raw":"alpha","ruleId":"no-experimental-features","severity":"warning"}
+{"col":32,"line":65,"message":"The \"alpha\" attribute is a boolean attribute. It doesn't need the value","raw":"=\"\"","ruleId":"no-boolean-attr-value","severity":"warning"}
+{"col":36,"line":65,"message":"The \"alt\" attribute is disallowed","raw":"alt","ruleId":"no-disallowed-attr","severity":"error"}
+{"col":43,"line":65,"message":"The \"autocomplete\" attribute is disallowed","raw":"autocomplete","ruleId":"no-disallowed-attr","severity":"error"}
+{"col":59,"line":65,"message":"The \"border\" attribute is obsolete","raw":"border","ruleId":"no-obsolete-attr","severity":"error"}
+{"col":69,"line":65,"message":"The \"capture\" attribute is disallowed","raw":"capture","ruleId":"no-disallowed-attr","severity":"error"}
+{"col":80,"line":65,"message":"The \"checked\" attribute is disallowed","raw":"checked","ruleId":"no-disallowed-attr","severity":"error"}
+{"col":87,"line":65,"message":"The \"checked\" attribute is a boolean attribute. It doesn't need the value","raw":"=\"\"","ruleId":"no-boolean-attr-value","severity":"warning"}
+{"col":91,"line":65,"message":"The \"colorspace\" attribute is disallowed","raw":"colorspace","ruleId":"no-disallowed-attr","severity":"error"}
+{"col":91,"line":65,"message":"The \"colorspace\" attribute is experimental","raw":"colorspace","ruleId":"no-experimental-features","severity":"warning"}
+{"col":105,"line":65,"message":"The \"datafld\" attribute is obsolete","raw":"datafld","ruleId":"no-obsolete-attr","severity":"error"}
+{"col":116,"line":65,"message":"The \"dataformatas\" attribute is obsolete","raw":"dataformatas","ruleId":"no-obsolete-attr","severity":"error"}
+{"col":132,"line":65,"message":"The \"datasrc\" attribute is obsolete","raw":"datasrc","ruleId":"no-obsolete-attr","severity":"error"}
+{"col":143,"line":65,"message":"The \"dirname\" attribute is disallowed","raw":"dirname","ruleId":"no-disallowed-attr","severity":"error"}
+{"col":154,"line":65,"message":"The \"height\" attribute is disallowed","raw":"height","ruleId":"no-disallowed-attr","severity":"error"}
+{"col":164,"line":65,"message":"The \"hspace\" attribute is obsolete","raw":"hspace","ruleId":"no-obsolete-attr","severity":"error"}
+{"col":174,"line":65,"message":"The \"incremental\" attribute is non-standard","raw":"incremental","ruleId":"no-nonstandard-features","severity":"warning"}
+{"col":189,"line":65,"message":"The \"ismap\" attribute is obsolete","raw":"ismap","ruleId":"no-obsolete-attr","severity":"error"}
+{"col":198,"line":65,"message":"The \"list\" attribute is disallowed","raw":"list","ruleId":"no-disallowed-attr","severity":"error"}
+{"col":204,"line":65,"message":"Missing \"\" ID","raw":"","ruleId":"no-refer-to-non-existent-id","severity":"error"}
+{"col":206,"line":65,"message":"The \"max\" attribute is disallowed","raw":"max","ruleId":"no-disallowed-attr","severity":"error"}
+{"col":213,"line":65,"message":"The \"maxlength\" attribute is disallowed","raw":"maxlength","ruleId":"no-disallowed-attr","severity":"error"}
+{"col":226,"line":65,"message":"The \"min\" attribute is disallowed","raw":"min","ruleId":"no-disallowed-attr","severity":"error"}
+{"col":233,"line":65,"message":"The \"minlength\" attribute is disallowed","raw":"minlength","ruleId":"no-disallowed-attr","severity":"error"}
+{"col":246,"line":65,"message":"The \"multiple\" attribute is disallowed","raw":"multiple","ruleId":"no-disallowed-attr","severity":"error"}
+{"col":254,"line":65,"message":"The \"multiple\" attribute is a boolean attribute. It doesn't need the value","raw":"=\"\"","ruleId":"no-boolean-attr-value","severity":"warning"}
+{"col":264,"line":65,"message":"The \"name\" attribute expects regular expression (/^(?!isindex$).+/)","raw":"","ruleId":"no-invalid-attr-value","severity":"error"}
+{"col":266,"line":65,"message":"The \"orient\" attribute is non-standard","raw":"orient","ruleId":"no-nonstandard-features","severity":"warning"}
+{"col":276,"line":65,"message":"The \"pattern\" attribute is disallowed","raw":"pattern","ruleId":"no-disallowed-attr","severity":"error"}
+{"col":287,"line":65,"message":"The \"placeholder\" attribute is disallowed","raw":"placeholder","ruleId":"no-disallowed-attr","severity":"error"}
+{"col":302,"line":65,"message":"The \"popovertarget\" attribute is disallowed","raw":"popovertarget","ruleId":"no-disallowed-attr","severity":"error"}
+{"col":317,"line":65,"message":"Missing \"\" ID","raw":"","ruleId":"no-refer-to-non-existent-id","severity":"error"}
+{"col":319,"line":65,"message":"The \"popovertargetaction\" attribute is disallowed","raw":"popovertargetaction","ruleId":"no-disallowed-attr","severity":"error"}
+{"col":342,"line":65,"message":"The \"readonly\" attribute is disallowed","raw":"readonly","ruleId":"no-disallowed-attr","severity":"error"}
+{"col":350,"line":65,"message":"The \"readonly\" attribute is a boolean attribute. It doesn't need the value","raw":"=\"\"","ruleId":"no-boolean-attr-value","severity":"warning"}
+{"col":354,"line":65,"message":"The \"required\" attribute is disallowed","raw":"required","ruleId":"no-disallowed-attr","severity":"error"}
+{"col":362,"line":65,"message":"The \"required\" attribute is a boolean attribute. It doesn't need the value","raw":"=\"\"","ruleId":"no-boolean-attr-value","severity":"warning"}
+{"col":366,"line":65,"message":"The \"results\" attribute is non-standard","raw":"results","ruleId":"no-nonstandard-features","severity":"warning"}
+{"col":377,"line":65,"message":"The \"size\" attribute is disallowed","raw":"size","ruleId":"no-disallowed-attr","severity":"error"}
+{"col":385,"line":65,"message":"The \"src\" attribute is disallowed","raw":"src","ruleId":"no-disallowed-attr","severity":"error"}
+{"col":392,"line":65,"message":"The \"step\" attribute is disallowed","raw":"step","ruleId":"no-disallowed-attr","severity":"error"}
+{"col":400,"line":65,"message":"The \"switch\" attribute is disallowed","raw":"switch","ruleId":"no-disallowed-attr","severity":"error"}
+{"col":400,"line":65,"message":"The \"switch\" attribute is experimental","raw":"switch","ruleId":"no-experimental-features","severity":"warning"}
+{"col":400,"line":65,"message":"The \"switch\" attribute is non-standard","raw":"switch","ruleId":"no-nonstandard-features","severity":"warning"}
+{"col":406,"line":65,"message":"The \"switch\" attribute is a boolean attribute. It doesn't need the value","raw":"=\"\"","ruleId":"no-boolean-attr-value","severity":"warning"}
+{"col":416,"line":65,"message":"The \"type\" attribute expects either \"hidden\", \"text\", \"search\", \"tel\", \"url\", \"email\", \"password\", \"date\", \"month\", \"week\", \"time\", \"datetime-local\", \"number\", \"range\", \"color\", \"checkbox\", \"radio\", \"file\", \"submit\", \"image\", \"reset\", \"button\"","raw":"","ruleId":"no-invalid-attr-value","severity":"error"}
+{"col":418,"line":65,"message":"The \"usemap\" attribute is obsolete","raw":"usemap","ruleId":"no-obsolete-attr","severity":"error"}
+{"col":437,"line":65,"message":"The \"vspace\" attribute is obsolete","raw":"vspace","ruleId":"no-obsolete-attr","severity":"error"}
+{"col":447,"line":65,"message":"The \"webkitdirectory\" attribute is disallowed","raw":"webkitdirectory","ruleId":"no-disallowed-attr","severity":"error"}
+{"col":462,"line":65,"message":"The \"webkitdirectory\" attribute is a boolean attribute. It doesn't need the value","raw":"=\"\"","ruleId":"no-boolean-attr-value","severity":"warning"}
+{"col":466,"line":65,"message":"The \"width\" attribute is disallowed","raw":"width","ruleId":"no-disallowed-attr","severity":"error"}
+{"col":1,"line":66,"message":"The element should not empty","raw":"<ins cite=\"\" datetime=\"\">","ruleId":"no-empty-palpable-content","severity":"warning"}
+{"col":24,"line":66,"message":"The year part of the \"datetime\" attribute must not be empty. It expects the date string with optional time format (https://html.spec.whatwg.org/multipage/edits.html#attr-mod-datetime)","raw":"","ruleId":"no-invalid-attr-value","severity":"error"}
+{"col":1,"line":67,"message":"The \"isindex\" element is obsolete","raw":"<isindex>","ruleId":"no-obsolete-element","severity":"error"}
+{"col":1,"line":68,"message":"The element should not empty","raw":"<kbd>","ruleId":"no-empty-palpable-content","severity":"warning"}
+{"col":1,"line":69,"message":"The \"keygen\" element is obsolete","raw":"<keygen>","ruleId":"no-obsolete-element","severity":"error"}
+{"col":1,"line":69,"message":"Missing the end tag","raw":"<keygen>","ruleId":"require-end-tag","severity":"warning"}
+{"col":1,"line":70,"message":"The element should not empty","raw":"<label datafld=\"\" dataformatas=\"\" datasrc=\"\" for=\"\">","ruleId":"no-empty-palpable-content","severity":"warning"}
+{"col":8,"line":70,"message":"The \"datafld\" attribute is obsolete","raw":"datafld","ruleId":"no-obsolete-attr","severity":"error"}
+{"col":19,"line":70,"message":"The \"dataformatas\" attribute is obsolete","raw":"dataformatas","ruleId":"no-obsolete-attr","severity":"error"}
+{"col":35,"line":70,"message":"The \"datasrc\" attribute is obsolete","raw":"datasrc","ruleId":"no-obsolete-attr","severity":"error"}
+{"col":51,"line":70,"message":"The \"for\" attribute must not be empty. It expects the ID format (https://html.spec.whatwg.org/multipage/dom.html#global-attributes:concept-id)","raw":"","ruleId":"no-invalid-attr-value","severity":"error"}
+{"col":51,"line":70,"message":"Missing \"\" ID","raw":"","ruleId":"no-refer-to-non-existent-id","severity":"error"}
+{"col":11,"line":71,"message":"The element should not empty","raw":"<legend align=\"\" datafld=\"\" dataformatas=\"\" datasrc=\"\">","ruleId":"no-empty-palpable-content","severity":"warning"}
+{"col":19,"line":71,"message":"The \"align\" attribute is obsolete","raw":"align","ruleId":"no-obsolete-attr","severity":"error"}
+{"col":28,"line":71,"message":"The \"datafld\" attribute is obsolete","raw":"datafld","ruleId":"no-obsolete-attr","severity":"error"}
+{"col":39,"line":71,"message":"The \"dataformatas\" attribute is obsolete","raw":"dataformatas","ruleId":"no-obsolete-attr","severity":"error"}
+{"col":55,"line":71,"message":"The \"datasrc\" attribute is obsolete","raw":"datasrc","ruleId":"no-obsolete-attr","severity":"error"}
+{"col":7,"line":72,"message":"The element should not empty","raw":"<li type=\"\" value=\"\">","ruleId":"no-empty-palpable-content","severity":"warning"}
+{"col":11,"line":72,"message":"The \"type\" attribute is obsolete","raw":"type","ruleId":"no-obsolete-attr","severity":"error"}
+{"col":19,"line":72,"message":"The \"value\" attribute is disallowed","raw":"value","ruleId":"no-disallowed-attr","severity":"error"}
+{"col":1,"line":73,"message":"The element must belong to an item via an ancestor `itemscope` or be referenced by an `itemref`","raw":"<link as=\"\" blocking=\"\" charset=\"\" color=\"\" disabled=\"\" href=\"\" imagesizes=\"\" imagesrcset=\"\" integrity=\"\" itemprop=\"\" methods=\"\" rel=\"\" rev=\"\" sizes=\"\" target=\"\" title=\"\" urn=\"\">","ruleId":"itemprop-requires-itemscope","severity":"error"}
+{"col":7,"line":73,"message":"The \"as\" attribute is disallowed","raw":"as","ruleId":"no-disallowed-attr","severity":"error"}
+{"col":13,"line":73,"message":"The \"blocking\" attribute is disallowed","raw":"blocking","ruleId":"no-disallowed-attr","severity":"error"}
+{"col":25,"line":73,"message":"The \"charset\" attribute is obsolete","raw":"charset","ruleId":"no-obsolete-attr","severity":"error"}
+{"col":36,"line":73,"message":"The \"color\" attribute is disallowed","raw":"color","ruleId":"no-disallowed-attr","severity":"error"}
+{"col":45,"line":73,"message":"The \"disabled\" attribute is disallowed","raw":"disabled","ruleId":"no-disallowed-attr","severity":"error"}
+{"col":53,"line":73,"message":"The \"disabled\" attribute is a boolean attribute. It doesn't need the value","raw":"=\"\"","ruleId":"no-boolean-attr-value","severity":"warning"}
+{"col":63,"line":73,"message":"It includes unexpected characters (https://html.spec.whatwg.org/multipage/urls-and-fetching.html#valid-non-empty-url-potentially-surrounded-by-spaces)","raw":"","ruleId":"no-invalid-attr-value","severity":"error"}
+{"col":65,"line":73,"message":"The \"imagesizes\" attribute is disallowed","raw":"imagesizes","ruleId":"no-disallowed-attr","severity":"error"}
+{"col":79,"line":73,"message":"The \"imagesrcset\" attribute is disallowed","raw":"imagesrcset","ruleId":"no-disallowed-attr","severity":"error"}
+{"col":94,"line":73,"message":"The \"integrity\" attribute is disallowed","raw":"integrity","ruleId":"no-disallowed-attr","severity":"error"}
+{"col":119,"line":73,"message":"The \"methods\" attribute is obsolete","raw":"methods","ruleId":"no-obsolete-attr","severity":"error"}
+{"col":137,"line":73,"message":"The \"rev\" attribute is obsolete","raw":"rev","ruleId":"no-obsolete-attr","severity":"error"}
+{"col":144,"line":73,"message":"The \"sizes\" attribute is disallowed","raw":"sizes","ruleId":"no-disallowed-attr","severity":"error"}
+{"col":153,"line":73,"message":"The \"target\" attribute is obsolete","raw":"target","ruleId":"no-obsolete-attr","severity":"error"}
+{"col":172,"line":73,"message":"The \"urn\" attribute is obsolete","raw":"urn","ruleId":"no-obsolete-attr","severity":"error"}
+{"col":1,"line":74,"message":"The \"listing\" element is obsolete","raw":"<listing>","ruleId":"no-obsolete-element","severity":"error"}
+{"col":1,"line":75,"message":"The element should not empty","raw":"<main>","ruleId":"no-empty-palpable-content","severity":"warning"}
+{"col":1,"line":76,"message":"The element should not empty","raw":"<map name=\"\">","ruleId":"no-empty-palpable-content","severity":"warning"}
+{"col":12,"line":76,"message":"The \"name\" attribute must not be empty","raw":"","ruleId":"no-invalid-attr-value","severity":"error"}
+{"col":1,"line":77,"message":"The element should not empty","raw":"<mark>","ruleId":"no-empty-palpable-content","severity":"warning"}
+{"col":1,"line":78,"message":"The \"marquee\" element is obsolete","raw":"<marquee behavior=\"\" bgcolor=\"\" datafld=\"\" dataformatas=\"\" datasrc=\"\" direction=\"\" height=\"\" hspace=\"\" loop=\"\" scrollamount=\"\" scrolldelay=\"\" truespeed=\"\" vspace=\"\" width=\"\">","ruleId":"no-obsolete-element","severity":"error"}
+{"col":33,"line":78,"message":"The \"datafld\" attribute is obsolete","raw":"datafld","ruleId":"no-obsolete-attr","severity":"error"}
+{"col":44,"line":78,"message":"The \"dataformatas\" attribute is obsolete","raw":"dataformatas","ruleId":"no-obsolete-attr","severity":"error"}
+{"col":60,"line":78,"message":"The \"datasrc\" attribute is obsolete","raw":"datasrc","ruleId":"no-obsolete-attr","severity":"error"}
+{"col":1,"line":79,"message":"The child element requires the \"listitem\" role. Or, require aria-busy=\"true\"","raw":"<menu compact=\"\" label=\"\" type=\"\">","ruleId":"require-owned-elements","severity":"error"}
+{"col":7,"line":79,"message":"The \"compact\" attribute is obsolete","raw":"compact","ruleId":"no-obsolete-attr","severity":"error"}
+{"col":18,"line":79,"message":"The \"label\" attribute is obsolete","raw":"label","ruleId":"no-obsolete-attr","severity":"error"}
+{"col":27,"line":79,"message":"The \"type\" attribute is obsolete","raw":"type","ruleId":"no-obsolete-attr","severity":"error"}
+{"col":1,"line":80,"message":"The \"menuitem\" element is obsolete","raw":"<menuitem>","ruleId":"no-obsolete-element","severity":"error"}
+{"col":1,"line":81,"message":"The element must belong to an item via an ancestor `itemscope` or be referenced by an `itemref`","raw":"<meta charset=\"\" content=\"\" http-equiv=\"\" itemprop=\"\" media=\"\" name=\"\" scheme=\"\">","ruleId":"itemprop-requires-itemscope","severity":"error"}
+{"col":1,"line":81,"message":"The character encoding declaration must be within the first 1024 bytes of the document","raw":"<meta charset=\"\" content=\"\" http-equiv=\"\" itemprop=\"\" media=\"\" name=\"\" scheme=\"\">","ruleId":"meta-charset-position","severity":"error"}
+{"col":7,"line":81,"message":"The \"charset\" attribute is disallowed","raw":"charset","ruleId":"no-disallowed-attr","severity":"error"}
+{"col":29,"line":81,"message":"The \"http-equiv\" attribute is disallowed","raw":"http-equiv","ruleId":"no-disallowed-attr","severity":"error"}
+{"col":43,"line":81,"message":"The \"itemprop\" attribute is disallowed","raw":"itemprop","ruleId":"no-disallowed-attr","severity":"error"}
+{"col":55,"line":81,"message":"The \"media\" attribute is disallowed","raw":"media","ruleId":"no-disallowed-attr","severity":"error"}
+{"col":64,"line":81,"message":"The \"name\" attribute is disallowed","raw":"name","ruleId":"no-disallowed-attr","severity":"error"}
+{"col":72,"line":81,"message":"The \"scheme\" attribute is obsolete","raw":"scheme","ruleId":"no-obsolete-attr","severity":"error"}
+{"col":1,"line":82,"message":"The element should not empty","raw":"<meter high=\"\" low=\"\" max=\"\" min=\"\" optimum=\"\" value=\"\">","ruleId":"no-empty-palpable-content","severity":"warning"}
+{"col":1,"line":82,"message":"Require accessible name","raw":"<meter high=\"\" low=\"\" max=\"\" min=\"\" optimum=\"\" value=\"\">","ruleId":"require-accessible-name","severity":"error"}
+{"col":14,"line":82,"message":"It includes unexpected characters. the \"high\" attribute expects number","raw":"","ruleId":"no-invalid-attr-value","severity":"error"}
+{"col":21,"line":82,"message":"It includes unexpected characters. the \"low\" attribute expects number","raw":"","ruleId":"no-invalid-attr-value","severity":"error"}
+{"col":28,"line":82,"message":"It includes unexpected characters. the \"max\" attribute expects number","raw":"","ruleId":"no-invalid-attr-value","severity":"error"}
+{"col":35,"line":82,"message":"It includes unexpected characters. the \"min\" attribute expects number","raw":"","ruleId":"no-invalid-attr-value","severity":"error"}
+{"col":46,"line":82,"message":"It includes unexpected characters. the \"optimum\" attribute expects number","raw":"","ruleId":"no-invalid-attr-value","severity":"error"}
+{"col":55,"line":82,"message":"It includes unexpected characters. the \"value\" attribute expects number","raw":"","ruleId":"no-invalid-attr-value","severity":"error"}
+{"col":1,"line":83,"message":"The \"multicol\" element is obsolete","raw":"<multicol>","ruleId":"no-obsolete-element","severity":"error"}
+{"col":1,"line":84,"message":"The element should not empty","raw":"<nav>","ruleId":"no-empty-palpable-content","severity":"warning"}
+{"col":1,"line":85,"message":"The \"nextid\" element is obsolete","raw":"<nextid>","ruleId":"no-obsolete-element","severity":"error"}
+{"col":1,"line":86,"message":"The \"nobr\" element is obsolete","raw":"<nobr>","ruleId":"no-obsolete-element","severity":"error"}
+{"col":1,"line":87,"message":"The \"noembed\" element is obsolete","raw":"<noembed>","ruleId":"no-obsolete-element","severity":"error"}
+{"col":1,"line":89,"message":"The element should not empty","raw":"<object align=\"\" archive=\"\" border=\"\" classid=\"\" code=\"\" codebase=\"\" codetype=\"\" data=\"\" datafld=\"\" dataformatas=\"\" datasrc=\"\" declare=\"\" hspace=\"\" name=\"\" standby=\"\" type=\"\" typemustmatch=\"\" usemap=\"\" vspace=\"\">","ruleId":"no-empty-palpable-content","severity":"warning"}
+{"col":9,"line":89,"message":"The \"align\" attribute is obsolete","raw":"align","ruleId":"no-obsolete-attr","severity":"error"}
+{"col":18,"line":89,"message":"The \"archive\" attribute is obsolete","raw":"archive","ruleId":"no-obsolete-attr","severity":"error"}
+{"col":29,"line":89,"message":"The \"border\" attribute is obsolete","raw":"border","ruleId":"no-obsolete-attr","severity":"error"}
+{"col":39,"line":89,"message":"The \"classid\" attribute is obsolete","raw":"classid","ruleId":"no-obsolete-attr","severity":"error"}
+{"col":50,"line":89,"message":"The \"code\" attribute is obsolete","raw":"code","ruleId":"no-obsolete-attr","severity":"error"}
+{"col":58,"line":89,"message":"The \"codebase\" attribute is obsolete","raw":"codebase","ruleId":"no-obsolete-attr","severity":"error"}
+{"col":70,"line":89,"message":"The \"codetype\" attribute is obsolete","raw":"codetype","ruleId":"no-obsolete-attr","severity":"error"}
+{"col":88,"line":89,"message":"It includes unexpected characters (https://html.spec.whatwg.org/multipage/urls-and-fetching.html#valid-non-empty-url-potentially-surrounded-by-spaces)","raw":"","ruleId":"no-invalid-attr-value","severity":"error"}
+{"col":90,"line":89,"message":"The \"datafld\" attribute is obsolete","raw":"datafld","ruleId":"no-obsolete-attr","severity":"error"}
+{"col":101,"line":89,"message":"The \"dataformatas\" attribute is obsolete","raw":"dataformatas","ruleId":"no-obsolete-attr","severity":"error"}
+{"col":117,"line":89,"message":"The \"datasrc\" attribute is obsolete","raw":"datasrc","ruleId":"no-obsolete-attr","severity":"error"}
+{"col":128,"line":89,"message":"The \"declare\" attribute is obsolete","raw":"declare","ruleId":"no-obsolete-attr","severity":"error"}
+{"col":139,"line":89,"message":"The \"hspace\" attribute is obsolete","raw":"hspace","ruleId":"no-obsolete-attr","severity":"error"}
+{"col":155,"line":89,"message":"The \"name\" attribute must not be empty. It expects navigable target name (https://html.spec.whatwg.org/multipage/document-sequences.html#valid-navigable-target-name)","raw":"","ruleId":"no-invalid-attr-value","severity":"error"}
+{"col":157,"line":89,"message":"The \"standby\" attribute is obsolete","raw":"standby","ruleId":"no-obsolete-attr","severity":"error"}
+{"col":174,"line":89,"message":"The \"type\" attribute must not be empty. It expects the MIME Type format (https://mimesniff.spec.whatwg.org/#valid-mime-type)","raw":"","ruleId":"no-invalid-attr-value","severity":"error"}
+{"col":176,"line":89,"message":"The \"typemustmatch\" attribute is obsolete","raw":"typemustmatch","ruleId":"no-obsolete-attr","severity":"error"}
+{"col":193,"line":89,"message":"The \"usemap\" attribute is obsolete","raw":"usemap","ruleId":"no-obsolete-attr","severity":"error"}
+{"col":203,"line":89,"message":"The \"vspace\" attribute is obsolete","raw":"vspace","ruleId":"no-obsolete-attr","severity":"error"}
+{"col":1,"line":90,"message":"The child element requires the \"listitem\" role. Or, require aria-busy=\"true\"","raw":"<ol compact=\"\" reversed=\"\" start=\"\" type=\"\">","ruleId":"require-owned-elements","severity":"error"}
+{"col":5,"line":90,"message":"The \"compact\" attribute is obsolete","raw":"compact","ruleId":"no-obsolete-attr","severity":"error"}
+{"col":24,"line":90,"message":"The \"reversed\" attribute is a boolean attribute. It doesn't need the value","raw":"=\"\"","ruleId":"no-boolean-attr-value","severity":"warning"}
+{"col":35,"line":90,"message":"It includes unexpected characters. the \"start\" attribute expects integer","raw":"","ruleId":"no-invalid-attr-value","severity":"error"}
+{"col":43,"line":90,"message":"The \"type\" attribute expects either \"1\", \"a\", \"A\", \"i\", \"I\"","raw":"","ruleId":"no-invalid-attr-value","severity":"error"}
+{"col":1,"line":91,"message":"Require accessible name","raw":"<select>","ruleId":"require-accessible-name","severity":"error"}
+{"col":9,"line":91,"message":"The element should not empty","raw":"<optgroup label=\"\">","ruleId":"no-empty-palpable-content","severity":"warning"}
+{"col":26,"line":91,"message":"The \"label\" attribute must not be empty","raw":"","ruleId":"no-invalid-attr-value","severity":"error"}
+{"col":1,"line":92,"message":"Require accessible name","raw":"<datalist>","ruleId":"require-accessible-name","severity":"error"}
+{"col":11,"line":92,"message":"The element should not empty","raw":"<option dataformatas=\"\" datasrc=\"\" label=\"\" name=\"\" selected=\"\" value=\"\">","ruleId":"no-empty-palpable-content","severity":"warning"}
+{"col":11,"line":92,"message":"Require accessible name","raw":"<option dataformatas=\"\" datasrc=\"\" label=\"\" name=\"\" selected=\"\" value=\"\">","ruleId":"require-accessible-name","severity":"error"}
+{"col":19,"line":92,"message":"The \"dataformatas\" attribute is obsolete","raw":"dataformatas","ruleId":"no-obsolete-attr","severity":"error"}
+{"col":35,"line":92,"message":"The \"datasrc\" attribute is obsolete","raw":"datasrc","ruleId":"no-obsolete-attr","severity":"error"}
+{"col":55,"line":92,"message":"The \"name\" attribute is obsolete","raw":"name","ruleId":"no-obsolete-attr","severity":"error"}
+{"col":71,"line":92,"message":"The \"selected\" attribute is a boolean attribute. It doesn't need the value","raw":"=\"\"","ruleId":"no-boolean-attr-value","severity":"warning"}
+{"col":1,"line":94,"message":"The element should not empty","raw":"<p align=\"\">","ruleId":"no-empty-palpable-content","severity":"warning"}
+{"col":4,"line":94,"message":"The \"align\" attribute is obsolete","raw":"align","ruleId":"no-obsolete-attr","severity":"error"}
+{"col":1,"line":95,"message":"The \"param\" element is obsolete","raw":"<param name=\"\" type=\"\" value=\"\" valuetype=\"\">","ruleId":"no-obsolete-element","severity":"error"}
+{"col":1,"line":95,"message":"Missing the end tag","raw":"<param name=\"\" type=\"\" value=\"\" valuetype=\"\">","ruleId":"require-end-tag","severity":"warning"}
+{"col":1,"line":96,"message":"The element should not empty","raw":"<picture>","ruleId":"no-empty-palpable-content","severity":"warning"}
+{"col":1,"line":96,"message":"Require an element. (Need \"img\")","raw":"<picture>","ruleId":"permitted-contents","severity":"error"}
+{"col":1,"line":97,"message":"The element should not empty","raw":"<pre width=\"\" wrap=\"\">","ruleId":"no-empty-palpable-content","severity":"warning"}
+{"col":6,"line":97,"message":"The \"width\" attribute is obsolete","raw":"width","ruleId":"no-obsolete-attr","severity":"error"}
+{"col":15,"line":97,"message":"The \"wrap\" attribute is non-standard","raw":"wrap","ruleId":"no-nonstandard-features","severity":"warning"}
+{"col":1,"line":98,"message":"The element should not empty","raw":"<progress max=\"\" value=\"\">","ruleId":"no-empty-palpable-content","severity":"warning"}
+{"col":1,"line":98,"message":"Require accessible name","raw":"<progress max=\"\" value=\"\">","ruleId":"require-accessible-name","severity":"error"}
+{"col":16,"line":98,"message":"The \"max\" attribute must not be empty. It expects float greater than 0","raw":"","ruleId":"no-invalid-attr-value","severity":"error"}
+{"col":25,"line":98,"message":"The \"value\" attribute must not be empty. It expects float greater than or equal to 0","raw":"","ruleId":"no-invalid-attr-value","severity":"error"}
+{"col":1,"line":99,"message":"The element should not empty","raw":"<q cite=\"\">","ruleId":"no-empty-palpable-content","severity":"warning"}
+{"col":1,"line":100,"message":"The \"rb\" element is obsolete","raw":"<rb>","ruleId":"no-obsolete-element","severity":"error"}
+{"col":1,"line":101,"message":"Require one or more elements. (Need \"ruby:not(:has(ruby))\")","raw":"<ruby>","ruleId":"permitted-contents","severity":"error"}
+{"col":7,"line":101,"message":"The element should not empty","raw":"<rp>","ruleId":"no-empty-palpable-content","severity":"warning"}
+{"col":1,"line":102,"message":"Require one or more elements. (Need \"ruby:not(:has(ruby))\")","raw":"<ruby>","ruleId":"permitted-contents","severity":"error"}
+{"col":7,"line":102,"message":"The element should not empty","raw":"<rt>","ruleId":"no-empty-palpable-content","severity":"warning"}
+{"col":1,"line":103,"message":"The \"rtc\" element is obsolete","raw":"<rtc>","ruleId":"no-obsolete-element","severity":"error"}
+{"col":1,"line":104,"message":"The element should not empty","raw":"<ruby>","ruleId":"no-empty-palpable-content","severity":"warning"}
+{"col":1,"line":104,"message":"Require one or more elements. (Need \"rt\")","raw":"<ruby>","ruleId":"permitted-contents","severity":"error"}
+{"col":1,"line":105,"message":"The element should not empty","raw":"<s>","ruleId":"no-empty-palpable-content","severity":"warning"}
+{"col":1,"line":106,"message":"The element should not empty","raw":"<samp>","ruleId":"no-empty-palpable-content","severity":"warning"}
+{"col":14,"line":107,"message":"The \"async\" attribute is a boolean attribute. It doesn't need the value","raw":"=\"\"","ruleId":"no-boolean-attr-value","severity":"warning"}
+{"col":18,"line":107,"message":"The \"attributionsrc\" attribute is deprecated","raw":"attributionsrc","ruleId":"no-deprecated-attr","severity":"warning"}
+{"col":18,"line":107,"message":"The \"attributionsrc\" attribute is non-standard","raw":"attributionsrc","ruleId":"no-nonstandard-features","severity":"warning"}
+{"col":48,"line":107,"message":"The \"charset\" attribute is deprecated","raw":"charset","ruleId":"no-deprecated-attr","severity":"warning"}
+{"col":57,"line":107,"message":"The \"charset\" attribute expects utf-8","raw":"","ruleId":"no-invalid-attr-value","severity":"error"}
+{"col":74,"line":107,"message":"The \"defer\" attribute is ineffective. It doesn't need the attribute","raw":"defer=\"\"","ruleId":"no-ineffective-attr","severity":"warning"}
+{"col":79,"line":107,"message":"The \"defer\" attribute is a boolean attribute. It doesn't need the value","raw":"=\"\"","ruleId":"no-boolean-attr-value","severity":"warning"}
+{"col":83,"line":107,"message":"The \"event\" attribute is obsolete","raw":"event","ruleId":"no-obsolete-attr","severity":"error"}
+{"col":107,"line":107,"message":"The \"fetchpriority\" attribute expects either \"high\", \"low\", \"auto\"","raw":"","ruleId":"no-invalid-attr-value","severity":"error"}
+{"col":109,"line":107,"message":"The \"for\" attribute is obsolete","raw":"for","ruleId":"no-obsolete-attr","severity":"error"}
+{"col":127,"line":107,"message":"The \"integrity\" attribute must not be empty. It expects the SRI hash format (https://w3c.github.io/webappsec-subresource-integrity/#integrity-metadata-description)","raw":"","ruleId":"no-invalid-attr-value","severity":"error"}
+{"col":129,"line":107,"message":"The \"language\" attribute is deprecated","raw":"language","ruleId":"no-deprecated-attr","severity":"warning"}
+{"col":129,"line":107,"message":"The \"language\" attribute is disallowed","raw":"language","ruleId":"no-disallowed-attr","severity":"error"}
+{"col":149,"line":107,"message":"The \"nomodule\" attribute is a boolean attribute. It doesn't need the value","raw":"=\"\"","ruleId":"no-boolean-attr-value","severity":"warning"}
+{"col":176,"line":107,"message":"It includes unexpected characters (https://html.spec.whatwg.org/multipage/urls-and-fetching.html#valid-non-empty-url-potentially-surrounded-by-spaces)","raw":"","ruleId":"no-invalid-attr-value","severity":"error"}
+{"col":178,"line":107,"message":"The \"type\" attribute is deprecated","raw":"type","ruleId":"no-deprecated-attr","severity":"warning"}
+{"col":1,"line":108,"message":"The element should not empty","raw":"<search>","ruleId":"no-empty-palpable-content","severity":"warning"}
+{"col":1,"line":109,"message":"The element should not empty","raw":"<section>","ruleId":"no-empty-palpable-content","severity":"warning"}
+{"col":1,"line":110,"message":"The element should not empty","raw":"<select autocomplete=\"\" datafld=\"\" dataformatas=\"\" datasrc=\"\" multiple=\"\" size=\"\">","ruleId":"no-empty-palpable-content","severity":"warning"}
+{"col":1,"line":110,"message":"Require accessible name","raw":"<select autocomplete=\"\" datafld=\"\" dataformatas=\"\" datasrc=\"\" multiple=\"\" size=\"\">","ruleId":"require-accessible-name","severity":"error"}
+{"col":1,"line":110,"message":"The child element requires the roles: \"group > option\", \"option\". Or, require aria-busy=\"true\"","raw":"<select autocomplete=\"\" datafld=\"\" dataformatas=\"\" datasrc=\"\" multiple=\"\" size=\"\">","ruleId":"require-owned-elements","severity":"error"}
+{"col":23,"line":110,"message":"The \"autocomplete\" attribute must not be empty. It expects the autocomplete format (https://html.spec.whatwg.org/multipage/form-control-infrastructure.html#attr-fe-autocomplete)","raw":"","ruleId":"no-invalid-attr-value","severity":"error"}
+{"col":25,"line":110,"message":"The \"datafld\" attribute is obsolete","raw":"datafld","ruleId":"no-obsolete-attr","severity":"error"}
+{"col":36,"line":110,"message":"The \"dataformatas\" attribute is obsolete","raw":"dataformatas","ruleId":"no-obsolete-attr","severity":"error"}
+{"col":52,"line":110,"message":"The \"datasrc\" attribute is obsolete","raw":"datasrc","ruleId":"no-obsolete-attr","severity":"error"}
+{"col":71,"line":110,"message":"The \"multiple\" attribute is a boolean attribute. It doesn't need the value","raw":"=\"\"","ruleId":"no-boolean-attr-value","severity":"warning"}
+{"col":81,"line":110,"message":"The \"size\" attribute must not be empty. It expects integer greater than 0","raw":"","ruleId":"no-invalid-attr-value","severity":"error"}
+{"col":13,"line":111,"message":"The \"name\" attribute must not be empty","raw":"","ruleId":"no-invalid-attr-value","severity":"error"}
+{"col":1,"line":112,"message":"The element should not empty","raw":"<small>","ruleId":"no-empty-palpable-content","severity":"warning"}
+{"col":16,"line":113,"message":"The \"height\" attribute is disallowed","raw":"height","ruleId":"no-disallowed-attr","severity":"error"}
+{"col":33,"line":113,"message":"The \"media\" attribute must not be empty. It expects the media query list format (https://www.w3.org/TR/mediaqueries-5/)","raw":"","ruleId":"no-invalid-attr-value","severity":"error"}
+{"col":35,"line":113,"message":"The \"sizes\" attribute is disallowed","raw":"sizes","ruleId":"no-disallowed-attr","severity":"error"}
+{"col":49,"line":113,"message":"It includes unexpected characters (https://html.spec.whatwg.org/multipage/urls-and-fetching.html#valid-non-empty-url-potentially-surrounded-by-spaces)","raw":"","ruleId":"no-invalid-attr-value","severity":"error"}
+{"col":51,"line":113,"message":"The \"srcset\" attribute is disallowed","raw":"srcset","ruleId":"no-disallowed-attr","severity":"error"}
+{"col":67,"line":113,"message":"The \"type\" attribute must not be empty. It expects the MIME Type format (https://mimesniff.spec.whatwg.org/#valid-mime-type)","raw":"","ruleId":"no-invalid-attr-value","severity":"error"}
+{"col":69,"line":113,"message":"The \"width\" attribute is disallowed","raw":"width","ruleId":"no-disallowed-attr","severity":"error"}
+{"col":1,"line":114,"message":"The \"spacer\" element is obsolete","raw":"<spacer>","ruleId":"no-obsolete-element","severity":"error"}
+{"col":1,"line":115,"message":"The element should not empty","raw":"<span datafld=\"\" dataformatas=\"\" datasrc=\"\">","ruleId":"no-empty-palpable-content","severity":"warning"}
+{"col":7,"line":115,"message":"The \"datafld\" attribute is obsolete","raw":"datafld","ruleId":"no-obsolete-attr","severity":"error"}
+{"col":18,"line":115,"message":"The \"dataformatas\" attribute is obsolete","raw":"dataformatas","ruleId":"no-obsolete-attr","severity":"error"}
+{"col":34,"line":115,"message":"The \"datasrc\" attribute is obsolete","raw":"datasrc","ruleId":"no-obsolete-attr","severity":"error"}
+{"col":1,"line":116,"message":"The \"strike\" element is obsolete","raw":"<strike>","ruleId":"no-obsolete-element","severity":"error"}
+{"col":1,"line":117,"message":"The element should not empty","raw":"<strong>","ruleId":"no-empty-palpable-content","severity":"warning"}
+{"col":27,"line":118,"message":"The \"media\" attribute must not be empty. It expects the media query list format (https://www.w3.org/TR/mediaqueries-5/)","raw":"","ruleId":"no-invalid-attr-value","severity":"error"}
+{"col":29,"line":118,"message":"The \"type\" attribute is deprecated","raw":"type","ruleId":"no-deprecated-attr","severity":"warning"}
+{"col":35,"line":118,"message":"The \"type\" attribute expects text/css","raw":"","ruleId":"no-invalid-attr-value","severity":"error"}
+{"col":1,"line":119,"message":"The element should not empty","raw":"<sub>","ruleId":"no-empty-palpable-content","severity":"warning"}
+{"col":10,"line":120,"message":"The element should not empty","raw":"<summary>","ruleId":"no-empty-palpable-content","severity":"warning"}
+{"col":10,"line":120,"message":"Require accessible name","raw":"<summary>","ruleId":"require-accessible-name","severity":"error"}
+{"col":1,"line":121,"message":"The element should not empty","raw":"<sup>","ruleId":"no-empty-palpable-content","severity":"warning"}
+{"col":1,"line":122,"message":"The element should not empty","raw":"<table align=\"\" background=\"\" bgcolor=\"\" border=\"\" bordercolor=\"\" cellpadding=\"\" cellspacing=\"\" dataformatas=\"\" datapagesize=\"\" datasrc=\"\" frame=\"\" height=\"\" rules=\"\" summary=\"\" width=\"\">","ruleId":"no-empty-palpable-content","severity":"warning"}
+{"col":1,"line":122,"message":"The child element requires the roles: \"caption\", \"row\", \"rowgroup > row\". Or, require aria-busy=\"true\"","raw":"<table align=\"\" background=\"\" bgcolor=\"\" border=\"\" bordercolor=\"\" cellpadding=\"\" cellspacing=\"\" dataformatas=\"\" datapagesize=\"\" datasrc=\"\" frame=\"\" height=\"\" rules=\"\" summary=\"\" width=\"\">","ruleId":"require-owned-elements","severity":"error"}
+{"col":8,"line":122,"message":"The \"align\" attribute is obsolete","raw":"align","ruleId":"no-obsolete-attr","severity":"error"}
+{"col":17,"line":122,"message":"The \"background\" attribute is obsolete","raw":"background","ruleId":"no-obsolete-attr","severity":"error"}
+{"col":31,"line":122,"message":"The \"bgcolor\" attribute is obsolete","raw":"bgcolor","ruleId":"no-obsolete-attr","severity":"error"}
+{"col":42,"line":122,"message":"The \"border\" attribute is obsolete","raw":"border","ruleId":"no-obsolete-attr","severity":"error"}
+{"col":52,"line":122,"message":"The \"bordercolor\" attribute is obsolete","raw":"bordercolor","ruleId":"no-obsolete-attr","severity":"error"}
+{"col":67,"line":122,"message":"The \"cellpadding\" attribute is obsolete","raw":"cellpadding","ruleId":"no-obsolete-attr","severity":"error"}
+{"col":82,"line":122,"message":"The \"cellspacing\" attribute is obsolete","raw":"cellspacing","ruleId":"no-obsolete-attr","severity":"error"}
+{"col":97,"line":122,"message":"The \"dataformatas\" attribute is obsolete","raw":"dataformatas","ruleId":"no-obsolete-attr","severity":"error"}
+{"col":113,"line":122,"message":"The \"datapagesize\" attribute is obsolete","raw":"datapagesize","ruleId":"no-obsolete-attr","severity":"error"}
+{"col":129,"line":122,"message":"The \"datasrc\" attribute is obsolete","raw":"datasrc","ruleId":"no-obsolete-attr","severity":"error"}
+{"col":140,"line":122,"message":"The \"frame\" attribute is obsolete","raw":"frame","ruleId":"no-obsolete-attr","severity":"error"}
+{"col":149,"line":122,"message":"The \"height\" attribute is obsolete","raw":"height","ruleId":"no-obsolete-attr","severity":"error"}
+{"col":159,"line":122,"message":"The \"rules\" attribute is obsolete","raw":"rules","ruleId":"no-obsolete-attr","severity":"error"}
+{"col":168,"line":122,"message":"The \"summary\" attribute is obsolete","raw":"summary","ruleId":"no-obsolete-attr","severity":"error"}
+{"col":179,"line":122,"message":"The \"width\" attribute is obsolete","raw":"width","ruleId":"no-obsolete-attr","severity":"error"}
+{"col":1,"line":123,"message":"The \"table\" role expects the roles: \"caption\", \"row\", \"rowgroup > row\"","raw":"<table>","ruleId":"require-owned-elements","severity":"error"}
+{"col":8,"line":123,"message":"The element should not empty","raw":"<tbody align=\"\" background=\"\" bgcolor=\"\" char=\"\" charoff=\"\" height=\"\" valign=\"\">","ruleId":"no-empty-palpable-content","severity":"warning"}
+{"col":8,"line":123,"message":"The child element requires the \"row\" role. Or, require aria-busy=\"true\"","raw":"<tbody align=\"\" background=\"\" bgcolor=\"\" char=\"\" charoff=\"\" height=\"\" valign=\"\">","ruleId":"require-owned-elements","severity":"error"}
+{"col":15,"line":123,"message":"The \"align\" attribute is obsolete","raw":"align","ruleId":"no-obsolete-attr","severity":"error"}
+{"col":24,"line":123,"message":"The \"background\" attribute is obsolete","raw":"background","ruleId":"no-obsolete-attr","severity":"error"}
+{"col":38,"line":123,"message":"The \"bgcolor\" attribute is deprecated","raw":"bgcolor","ruleId":"no-deprecated-attr","severity":"warning"}
+{"col":38,"line":123,"message":"The \"bgcolor\" attribute is non-standard","raw":"bgcolor","ruleId":"no-nonstandard-features","severity":"warning"}
+{"col":49,"line":123,"message":"The \"char\" attribute is obsolete","raw":"char","ruleId":"no-obsolete-attr","severity":"error"}
+{"col":57,"line":123,"message":"The \"charoff\" attribute is obsolete","raw":"charoff","ruleId":"no-obsolete-attr","severity":"error"}
+{"col":68,"line":123,"message":"The \"height\" attribute is obsolete","raw":"height","ruleId":"no-obsolete-attr","severity":"error"}
+{"col":78,"line":123,"message":"The \"valign\" attribute is obsolete","raw":"valign","ruleId":"no-obsolete-attr","severity":"error"}
+{"col":12,"line":124,"message":"The element should not empty","raw":"<td abbr=\"\" align=\"\" axis=\"\" background=\"\" bgcolor=\"\" char=\"\" charoff=\"\" height=\"\" nowrap=\"\" scope=\"\" valign=\"\" width=\"\">","ruleId":"no-empty-palpable-content","severity":"warning"}
+{"col":16,"line":124,"message":"The \"abbr\" attribute is obsolete","raw":"abbr","ruleId":"no-obsolete-attr","severity":"error"}
+{"col":24,"line":124,"message":"The \"align\" attribute is obsolete","raw":"align","ruleId":"no-obsolete-attr","severity":"error"}
+{"col":33,"line":124,"message":"The \"axis\" attribute is obsolete","raw":"axis","ruleId":"no-obsolete-attr","severity":"error"}
+{"col":41,"line":124,"message":"The \"background\" attribute is obsolete","raw":"background","ruleId":"no-obsolete-attr","severity":"error"}
+{"col":55,"line":124,"message":"The \"bgcolor\" attribute is obsolete","raw":"bgcolor","ruleId":"no-obsolete-attr","severity":"error"}
+{"col":66,"line":124,"message":"The \"char\" attribute is obsolete","raw":"char","ruleId":"no-obsolete-attr","severity":"error"}
+{"col":74,"line":124,"message":"The \"charoff\" attribute is obsolete","raw":"charoff","ruleId":"no-obsolete-attr","severity":"error"}
+{"col":85,"line":124,"message":"The \"height\" attribute is obsolete","raw":"height","ruleId":"no-obsolete-attr","severity":"error"}
+{"col":95,"line":124,"message":"The \"nowrap\" attribute is obsolete","raw":"nowrap","ruleId":"no-obsolete-attr","severity":"error"}
+{"col":105,"line":124,"message":"The \"scope\" attribute is obsolete","raw":"scope","ruleId":"no-obsolete-attr","severity":"error"}
+{"col":114,"line":124,"message":"The \"valign\" attribute is obsolete","raw":"valign","ruleId":"no-obsolete-attr","severity":"error"}
+{"col":124,"line":124,"message":"The \"width\" attribute is obsolete","raw":"width","ruleId":"no-obsolete-attr","severity":"error"}
+{"col":11,"line":125,"message":"The \"for\" attribute is experimental","raw":"for","ruleId":"no-experimental-features","severity":"warning"}
+{"col":11,"line":125,"message":"The \"for\" attribute is non-standard","raw":"for","ruleId":"no-nonstandard-features","severity":"warning"}
+{"col":36,"line":125,"message":"The \"shadowrootclonable\" attribute is a boolean attribute. It doesn't need the value","raw":"=\"\"","ruleId":"no-boolean-attr-value","severity":"warning"}
+{"col":71,"line":125,"message":"The \"shadowrootcustomelementregistry\" attribute is a boolean attribute. It doesn't need the value","raw":"=\"\"","ruleId":"no-boolean-attr-value","severity":"warning"}
+{"col":99,"line":125,"message":"The \"shadowrootdelegatesfocus\" attribute is a boolean attribute. It doesn't need the value","raw":"=\"\"","ruleId":"no-boolean-attr-value","severity":"warning"}
+{"col":119,"line":125,"message":"The \"shadowrootmode\" attribute expects either \"open\", \"closed\"","raw":"","ruleId":"no-invalid-attr-value","severity":"error"}
+{"col":121,"line":125,"message":"The \"shadowrootreferencetarget\" attribute is experimental","raw":"shadowrootreferencetarget","ruleId":"no-experimental-features","severity":"warning"}
+{"col":121,"line":125,"message":"The \"shadowrootreferencetarget\" attribute is non-standard","raw":"shadowrootreferencetarget","ruleId":"no-nonstandard-features","severity":"warning"}
+{"col":148,"line":125,"message":"The \"shadowrootreferencetarget\" attribute must not be empty. It expects the ID format (https://html.spec.whatwg.org/multipage/dom.html#global-attributes:concept-id)","raw":"","ruleId":"no-invalid-attr-value","severity":"error"}
+{"col":148,"line":125,"message":"Missing \"\" ID","raw":"","ruleId":"no-refer-to-non-existent-id","severity":"error"}
+{"col":172,"line":125,"message":"The \"shadowrootserializable\" attribute is a boolean attribute. It doesn't need the value","raw":"=\"\"","ruleId":"no-boolean-attr-value","severity":"warning"}
+{"col":176,"line":125,"message":"The \"shadowrootslotassignment\" attribute is experimental","raw":"shadowrootslotassignment","ruleId":"no-experimental-features","severity":"warning"}
+{"col":202,"line":125,"message":"The \"shadowrootslotassignment\" attribute expects either \"named\", \"manual\"","raw":"","ruleId":"no-invalid-attr-value","severity":"error"}
+{"col":1,"line":126,"message":"Require accessible name","raw":"<textarea cols=\"\" datafld=\"\" datasrc=\"\" placeholder=\"\" rows=\"\" wrap=\"\">","ruleId":"require-accessible-name","severity":"error"}
+{"col":17,"line":126,"message":"The \"cols\" attribute must not be empty. It expects integer greater than 0","raw":"","ruleId":"no-invalid-attr-value","severity":"error"}
+{"col":19,"line":126,"message":"The \"datafld\" attribute is obsolete","raw":"datafld","ruleId":"no-obsolete-attr","severity":"error"}
+{"col":30,"line":126,"message":"The \"datasrc\" attribute is obsolete","raw":"datasrc","ruleId":"no-obsolete-attr","severity":"error"}
+{"col":62,"line":126,"message":"The \"rows\" attribute must not be empty. It expects integer greater than 0","raw":"","ruleId":"no-invalid-attr-value","severity":"error"}
+{"col":70,"line":126,"message":"The \"wrap\" attribute expects either \"soft\", \"hard\"","raw":"","ruleId":"no-invalid-attr-value","severity":"error"}
+{"col":1,"line":127,"message":"The \"table\" role expects the roles: \"caption\", \"row\", \"rowgroup > row\"","raw":"<table>","ruleId":"require-owned-elements","severity":"error"}
+{"col":8,"line":127,"message":"The element should not empty","raw":"<tfoot align=\"\" background=\"\" bgcolor=\"\" char=\"\" charoff=\"\" height=\"\" valign=\"\">","ruleId":"no-empty-palpable-content","severity":"warning"}
+{"col":8,"line":127,"message":"The child element requires the \"row\" role. Or, require aria-busy=\"true\"","raw":"<tfoot align=\"\" background=\"\" bgcolor=\"\" char=\"\" charoff=\"\" height=\"\" valign=\"\">","ruleId":"require-owned-elements","severity":"error"}
+{"col":15,"line":127,"message":"The \"align\" attribute is obsolete","raw":"align","ruleId":"no-obsolete-attr","severity":"error"}
+{"col":24,"line":127,"message":"The \"background\" attribute is obsolete","raw":"background","ruleId":"no-obsolete-attr","severity":"error"}
+{"col":38,"line":127,"message":"The \"bgcolor\" attribute is deprecated","raw":"bgcolor","ruleId":"no-deprecated-attr","severity":"warning"}
+{"col":38,"line":127,"message":"The \"bgcolor\" attribute is non-standard","raw":"bgcolor","ruleId":"no-nonstandard-features","severity":"warning"}
+{"col":49,"line":127,"message":"The \"char\" attribute is obsolete","raw":"char","ruleId":"no-obsolete-attr","severity":"error"}
+{"col":57,"line":127,"message":"The \"charoff\" attribute is obsolete","raw":"charoff","ruleId":"no-obsolete-attr","severity":"error"}
+{"col":68,"line":127,"message":"The \"height\" attribute is obsolete","raw":"height","ruleId":"no-obsolete-attr","severity":"error"}
+{"col":78,"line":127,"message":"The \"valign\" attribute is obsolete","raw":"valign","ruleId":"no-obsolete-attr","severity":"error"}
+{"col":12,"line":128,"message":"The element should not empty","raw":"<th abbr=\"\" align=\"\" axis=\"\" background=\"\" bgcolor=\"\" char=\"\" charoff=\"\" height=\"\" nowrap=\"\" scope=\"\" valign=\"\" width=\"\">","ruleId":"no-empty-palpable-content","severity":"warning"}
+{"col":24,"line":128,"message":"The \"align\" attribute is obsolete","raw":"align","ruleId":"no-obsolete-attr","severity":"error"}
+{"col":33,"line":128,"message":"The \"axis\" attribute is obsolete","raw":"axis","ruleId":"no-obsolete-attr","severity":"error"}
+{"col":41,"line":128,"message":"The \"background\" attribute is obsolete","raw":"background","ruleId":"no-obsolete-attr","severity":"error"}
+{"col":55,"line":128,"message":"The \"bgcolor\" attribute is obsolete","raw":"bgcolor","ruleId":"no-obsolete-attr","severity":"error"}
+{"col":66,"line":128,"message":"The \"char\" attribute is obsolete","raw":"char","ruleId":"no-obsolete-attr","severity":"error"}
+{"col":74,"line":128,"message":"The \"charoff\" attribute is obsolete","raw":"charoff","ruleId":"no-obsolete-attr","severity":"error"}
+{"col":85,"line":128,"message":"The \"height\" attribute is obsolete","raw":"height","ruleId":"no-obsolete-attr","severity":"error"}
+{"col":95,"line":128,"message":"The \"nowrap\" attribute is obsolete","raw":"nowrap","ruleId":"no-obsolete-attr","severity":"error"}
+{"col":112,"line":128,"message":"The \"scope\" attribute expects either \"row\", \"col\", \"rowgroup\", \"colgroup\"","raw":"","ruleId":"no-invalid-attr-value","severity":"error"}
+{"col":114,"line":128,"message":"The \"valign\" attribute is obsolete","raw":"valign","ruleId":"no-obsolete-attr","severity":"error"}
+{"col":124,"line":128,"message":"The \"width\" attribute is obsolete","raw":"width","ruleId":"no-obsolete-attr","severity":"error"}
+{"col":1,"line":129,"message":"The \"table\" role expects the roles: \"caption\", \"row\", \"rowgroup > row\"","raw":"<table>","ruleId":"require-owned-elements","severity":"error"}
+{"col":8,"line":129,"message":"The element should not empty","raw":"<thead align=\"\" background=\"\" bgcolor=\"\" char=\"\" charoff=\"\" height=\"\" valign=\"\">","ruleId":"no-empty-palpable-content","severity":"warning"}
+{"col":8,"line":129,"message":"The child element requires the \"row\" role. Or, require aria-busy=\"true\"","raw":"<thead align=\"\" background=\"\" bgcolor=\"\" char=\"\" charoff=\"\" height=\"\" valign=\"\">","ruleId":"require-owned-elements","severity":"error"}
+{"col":15,"line":129,"message":"The \"align\" attribute is obsolete","raw":"align","ruleId":"no-obsolete-attr","severity":"error"}
+{"col":24,"line":129,"message":"The \"background\" attribute is obsolete","raw":"background","ruleId":"no-obsolete-attr","severity":"error"}
+{"col":38,"line":129,"message":"The \"bgcolor\" attribute is deprecated","raw":"bgcolor","ruleId":"no-deprecated-attr","severity":"warning"}
+{"col":38,"line":129,"message":"The \"bgcolor\" attribute is non-standard","raw":"bgcolor","ruleId":"no-nonstandard-features","severity":"warning"}
+{"col":49,"line":129,"message":"The \"char\" attribute is obsolete","raw":"char","ruleId":"no-obsolete-attr","severity":"error"}
+{"col":57,"line":129,"message":"The \"charoff\" attribute is obsolete","raw":"charoff","ruleId":"no-obsolete-attr","severity":"error"}
+{"col":68,"line":129,"message":"The \"height\" attribute is obsolete","raw":"height","ruleId":"no-obsolete-attr","severity":"error"}
+{"col":78,"line":129,"message":"The \"valign\" attribute is obsolete","raw":"valign","ruleId":"no-obsolete-attr","severity":"error"}
+{"col":1,"line":130,"message":"The element should not empty","raw":"<time datetime=\"\">","ruleId":"no-empty-palpable-content","severity":"warning"}
+{"col":17,"line":130,"message":"The \"datetime\" attribute must not be empty. It expects time (https://html.spec.whatwg.org/multipage/text-level-semantics.html#datetime-value)","raw":"","ruleId":"no-invalid-attr-value","severity":"error"}
+{"col":8,"line":131,"message":"The element should not empty","raw":"<tr align=\"\" background=\"\" bgcolor=\"\" char=\"\" charoff=\"\" height=\"\" valign=\"\">","ruleId":"no-empty-palpable-content","severity":"warning"}
+{"col":8,"line":131,"message":"One row has no cells beginning in it","raw":"<tr align=\"\" background=\"\" bgcolor=\"\" char=\"\" charoff=\"\" height=\"\" valign=\"\">","ruleId":"no-empty-table-track","severity":"error"}
+{"col":8,"line":131,"message":"The child element requires the roles: \"cell\", \"columnheader\", \"gridcell\", \"rowheader\". Or, require aria-busy=\"true\"","raw":"<tr align=\"\" background=\"\" bgcolor=\"\" char=\"\" charoff=\"\" height=\"\" valign=\"\">","ruleId":"require-owned-elements","severity":"error"}
+{"col":12,"line":131,"message":"The \"align\" attribute is obsolete","raw":"align","ruleId":"no-obsolete-attr","severity":"error"}
+{"col":21,"line":131,"message":"The \"background\" attribute is obsolete","raw":"background","ruleId":"no-obsolete-attr","severity":"error"}
+{"col":35,"line":131,"message":"The \"bgcolor\" attribute is obsolete","raw":"bgcolor","ruleId":"no-obsolete-attr","severity":"error"}
+{"col":46,"line":131,"message":"The \"char\" attribute is obsolete","raw":"char","ruleId":"no-obsolete-attr","severity":"error"}
+{"col":54,"line":131,"message":"The \"charoff\" attribute is obsolete","raw":"charoff","ruleId":"no-obsolete-attr","severity":"error"}
+{"col":65,"line":131,"message":"The \"height\" attribute is obsolete","raw":"height","ruleId":"no-obsolete-attr","severity":"error"}
+{"col":75,"line":131,"message":"The \"valign\" attribute is obsolete","raw":"valign","ruleId":"no-obsolete-attr","severity":"error"}
+{"col":22,"line":132,"message":"The \"default\" attribute is a boolean attribute. It doesn't need the value","raw":"=\"\"","ruleId":"no-boolean-attr-value","severity":"warning"}
+{"col":32,"line":132,"message":"The \"kind\" attribute expects either \"subtitles\", \"captions\", \"descriptions\", \"chapters\", \"metadata\"","raw":"","ruleId":"no-invalid-attr-value","severity":"error"}
+{"col":41,"line":132,"message":"The \"label\" attribute must not be empty","raw":"","ruleId":"no-invalid-attr-value","severity":"error"}
+{"col":48,"line":132,"message":"It includes unexpected characters (https://html.spec.whatwg.org/multipage/urls-and-fetching.html#valid-non-empty-url-potentially-surrounded-by-spaces)","raw":"","ruleId":"no-invalid-attr-value","severity":"error"}
+{"col":1,"line":133,"message":"The \"tt\" element is obsolete","raw":"<tt>","ruleId":"no-obsolete-element","severity":"error"}
+{"col":1,"line":134,"message":"The element should not empty","raw":"<u>","ruleId":"no-empty-palpable-content","severity":"warning"}
+{"col":1,"line":135,"message":"The child element requires the \"listitem\" role. Or, require aria-busy=\"true\"","raw":"<ul compact=\"\" type=\"\">","ruleId":"require-owned-elements","severity":"error"}
+{"col":5,"line":135,"message":"The \"compact\" attribute is obsolete","raw":"compact","ruleId":"no-obsolete-attr","severity":"error"}
+{"col":16,"line":135,"message":"The \"type\" attribute is obsolete","raw":"type","ruleId":"no-obsolete-attr","severity":"error"}
+{"col":1,"line":136,"message":"The element should not empty","raw":"<var>","ruleId":"no-empty-palpable-content","severity":"warning"}
+{"col":47,"line":137,"message":"The \"disablepictureinpicture\" attribute is a boolean attribute. It doesn't need the value","raw":"=\"\"","ruleId":"no-boolean-attr-value","severity":"warning"}
+{"col":72,"line":137,"message":"The \"disableremoteplayback\" attribute is a boolean attribute. It doesn't need the value","raw":"=\"\"","ruleId":"no-boolean-attr-value","severity":"warning"}
+{"col":85,"line":137,"message":"The \"loading\" attribute expects either \"lazy\", \"eager\"","raw":"","ruleId":"no-invalid-attr-value","severity":"error"}
+{"col":98,"line":137,"message":"The \"playsinline\" attribute is a boolean attribute. It doesn't need the value","raw":"=\"\"","ruleId":"no-boolean-attr-value","severity":"warning"}
+{"col":110,"line":137,"message":"It includes unexpected characters (https://html.spec.whatwg.org/multipage/urls-and-fetching.html#valid-non-empty-url-potentially-surrounded-by-spaces)","raw":"","ruleId":"no-invalid-attr-value","severity":"error"}
+{"col":1,"line":139,"message":"The \"xmp\" element is obsolete","raw":"<xmp>","ruleId":"no-obsolete-element","severity":"error"}

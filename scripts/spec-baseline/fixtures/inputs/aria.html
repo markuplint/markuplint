@@ -1,0 +1,129 @@
+<!doctype html>
+<html lang="en">
+	<head>
+		<meta charset="utf-8" />
+		<title>ARIA</title>
+	</head>
+	<body>
+		<h1>ARIA</h1>
+
+		<!-- implicit and permitted roles -->
+		<button type="button" role="button">redundant role</button>
+		<a href="#x" role="button">link as a button</a>
+		<a href="#x" role="menuitem">link as a menu item</a>
+		<a href="#x" role="heading">a link cannot be a heading</a>
+		<a name="n" role="link">an anchor with a link role</a>
+		<img src="a.png" alt="" role="presentation" />
+		<img src="a.png" alt="a" role="presentation" />
+		<img src="a.png" alt="" role="img" />
+		<ul role="menu">
+			<li role="menuitem">item</li>
+		</ul>
+		<ul role="list">
+			<li role="listitem">redundant</li>
+		</ul>
+		<nav role="navigation" aria-label="redundant role">n</nav>
+		<main role="main">redundant</main>
+		<input type="checkbox" role="switch" />
+		<input type="checkbox" role="button" />
+		<div role="foo">an unknown role</div>
+		<div role="widget">an abstract role</div>
+		<div role="directory">a deprecated role</div>
+		<div role="button link">several roles, the first is used</div>
+		<span role="">an empty role</span>
+		<div role="BUTTON">an uppercase role</div>
+
+		<!-- required properties, owned elements and context -->
+		<div role="checkbox">no aria-checked</div>
+		<div role="checkbox" aria-checked="true" aria-label="checked">ok</div>
+		<div role="slider" aria-label="s">no value now</div>
+		<div role="heading">no level</div>
+		<div role="list">no listitem owned</div>
+		<div role="list"><div role="listitem">owned</div></div>
+		<div role="listitem">no list context</div>
+		<div role="menu">no items</div>
+		<div role="menuitem">no menu context</div>
+		<div role="tab">no tablist</div>
+		<div role="tablist"><div role="tab" aria-selected="true">t</div></div>
+		<div role="row"><div role="cell">c</div></div>
+		<div role="grid" aria-label="g"><div role="row"><div role="gridcell">g</div></div></div>
+		<div role="combobox" aria-expanded="false" aria-controls="listbox1" aria-label="c"></div>
+
+		<!-- values, global properties, deprecated and unsupported properties -->
+		<div role="button" aria-pressed="maybe">an invalid token</div>
+		<div role="button" aria-pressed="true">pressed</div>
+		<div role="slider" aria-valuenow="abc" aria-valuemin="0" aria-valuemax="10" aria-label="s">not a number</div>
+		<div role="slider" aria-valuenow="5" aria-valuemin="0" aria-valuemax="10" aria-label="s">in range</div>
+		<div aria-hidden="yes">an invalid boolean</div>
+		<div aria-label="">an empty label</div>
+		<span aria-label="prohibited on a span">prohibited naming</span>
+		<p aria-label="prohibited on a paragraph">p</p>
+		<div aria-labelledby="missing-id">an id that does not exist</div>
+		<div aria-describedby="a b">ids that do not exist</div>
+		<div role="button" aria-expanded="true">expanded is supported</div>
+		<div role="note" aria-expanded="true">expanded is not supported</div>
+		<div aria-pressed="true">pressed on no role</div>
+		<div role="button" aria-checked="true">checked is not supported</div>
+		<div role="textbox" aria-multiline="true" aria-label="t"></div>
+		<div role="heading" aria-level="9">a level that is too high</div>
+		<h2 aria-level="3">a heading with a level</h2>
+		<input type="text" aria-required="true" required />
+		<input type="text" aria-disabled="true" disabled />
+		<input type="checkbox" aria-checked="true" checked />
+		<input type="text" aria-invalid="grammar" />
+		<div role="img" aria-label="i" aria-errormessage="err">errormessage on an img</div>
+		<div aria-relevant="additions">deprecated in 1.2: aria-relevant</div>
+		<div aria-grabbed="true">a deprecated property</div>
+		<div aria-dropeffect="copy">a deprecated property</div>
+		<div role="textbox" aria-multiline="false" aria-multiline="true" aria-label="duplicate"></div>
+
+		<!-- hidden and focusable -->
+		<div aria-hidden="true"><a href="#x">a focusable in hidden</a></div>
+		<div aria-hidden="true"><button type="button" tabindex="-1">negative</button></div>
+		<div aria-hidden="true"><button type="button" disabled>disabled</button></div>
+		<div aria-hidden="true"><span tabindex="0">tabindex</span></div>
+		<div aria-hidden="true"><input type="hidden" /></div>
+
+		<!-- presentational children -->
+		<button type="button"><span role="img" aria-label="x">presentational child</span></button>
+		<button type="button" aria-label="b"><img src="a.png" alt="alt in a button" /></button>
+		<div role="img" aria-label="i"><span aria-label="x">a labelled child of an img</span></div>
+		<div role="checkbox" aria-checked="false" aria-label="c"><span role="button">a button in a checkbox</span></div>
+
+		<!-- owns -->
+		<div id="owner1" role="list" aria-owns="item1 item2"></div>
+		<div id="item1" role="listitem">1</div>
+		<div id="item2" role="listitem">2</div>
+		<div id="owner2" role="list" aria-owns="item1">a second owner</div>
+		<div id="loop1" aria-owns="loop2">l1</div>
+		<div id="loop2" aria-owns="loop1">l2</div>
+		<div id="self" aria-owns="self">self</div>
+		<div id="dup" aria-owns="item1 item1">duplicates</div>
+		<button type="button" aria-owns="item1">owns on a presentational-children role</button>
+
+		<!-- accessible names -->
+		<a href="#x"></a>
+		<button type="button"></button>
+		<button type="button"><img src="a.png" alt="named by its image" /></button>
+		<button type="button" title="named by title"></button>
+		<input type="text" />
+		<input type="text" aria-label="named" />
+		<img src="a.png" />
+		<img src="a.png" alt="named" />
+		<section>section without a name</section>
+		<section aria-label="a section">section with a name</section>
+		<div role="region">region without a name</div>
+		<form>form without a name</form>
+		<table>
+			<tr>
+				<td>a table without a caption</td>
+			</tr>
+		</table>
+		<iframe src="a.html"></iframe>
+		<svg role="img"><title>named by its title</title></svg>
+		<svg role="img"></svg>
+		<dialog>a dialog without a name</dialog>
+		<div role="dialog">a dialog without a name</div>
+		<div role="alert">an alert needs no name</div>
+	</body>
+</html>

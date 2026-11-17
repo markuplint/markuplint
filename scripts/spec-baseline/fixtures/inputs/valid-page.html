@@ -1,0 +1,146 @@
+<!doctype html>
+<html lang="en">
+	<head>
+		<meta charset="utf-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1" />
+		<title>A page that follows its content models</title>
+		<link rel="stylesheet" href="/style.css" />
+		<base href="https://example.com/" />
+		<style>
+			body {
+				margin: 0;
+			}
+		</style>
+	</head>
+	<body>
+		<header>
+			<nav aria-label="Main">
+				<ul>
+					<li><a href="/">Home</a></li>
+					<li><a href="/about">About</a></li>
+				</ul>
+			</nav>
+			<hgroup>
+				<h1>Title</h1>
+				<p>Subtitle</p>
+			</hgroup>
+		</header>
+		<main>
+			<article>
+				<h2>Lists</h2>
+				<ol start="3" reversed>
+					<li>Three</li>
+					<li>Two</li>
+				</ol>
+				<dl>
+					<dt>Term</dt>
+					<dd>Description</dd>
+					<div>
+						<dt>Grouped term</dt>
+						<dd>Grouped description</dd>
+					</div>
+				</dl>
+				<menu>
+					<li><button type="button">Action</button></li>
+				</menu>
+				<h2>Media</h2>
+				<figure>
+					<picture>
+						<source srcset="a.avif" type="image/avif" />
+						<img src="a.png" alt="A picture" width="320" height="200" />
+					</picture>
+					<figcaption>Caption</figcaption>
+				</figure>
+				<audio controls src="a.mp3">Your browser does not support audio.</audio>
+				<video controls width="320">
+					<source src="a.mp4" type="video/mp4" />
+					<track kind="captions" src="a.vtt" srclang="en" label="English" />
+					Your browser does not support video.
+				</video>
+				<h2>Table</h2>
+				<table>
+					<caption>
+						Sales
+					</caption>
+					<colgroup>
+						<col />
+						<col span="2" />
+					</colgroup>
+					<thead>
+						<tr>
+							<th scope="col">Region</th>
+							<th scope="col">Q1</th>
+							<th scope="col">Q2</th>
+						</tr>
+					</thead>
+					<tbody>
+						<tr>
+							<th scope="row">North</th>
+							<td>1</td>
+							<td>2</td>
+						</tr>
+					</tbody>
+					<tfoot>
+						<tr>
+							<td colspan="3">Total</td>
+						</tr>
+					</tfoot>
+				</table>
+				<h2>Text</h2>
+				<p>
+					A <em>phrase</em> with <strong>strong</strong>, <code>code</code>, <kbd>kbd</kbd>, <abbr title="abbreviation">abbr</abbr>,
+					<time datetime="2026-11-17">today</time>, <ruby>漢<rp>(</rp><rt>kan</rt><rp>)</rp></ruby> and <br />
+					a <a href="https://example.com/">link</a>.
+				</p>
+				<blockquote cite="https://example.com/quote"><p>Quoted.</p></blockquote>
+				<pre><code>preformatted</code></pre>
+				<details open>
+					<summary>More</summary>
+					<p>Hidden until opened.</p>
+				</details>
+				<hr />
+			</article>
+			<section aria-labelledby="form-heading">
+				<h2 id="form-heading">Form</h2>
+				<form action="/submit" method="post">
+					<fieldset>
+						<legend>Profile</legend>
+						<label for="name">Name</label>
+						<input id="name" name="name" type="text" required autocomplete="name" />
+						<label>Email <input name="email" type="email" /></label>
+						<label for="color">Color</label>
+						<input id="color" name="color" type="text" list="colors" />
+						<datalist id="colors">
+							<option value="red"></option>
+							<option value="green"></option>
+						</datalist>
+						<label for="kind">Kind</label>
+						<select id="kind" name="kind">
+							<optgroup label="Group">
+								<option value="a">A</option>
+								<option value="b" selected>B</option>
+							</optgroup>
+						</select>
+						<label for="note">Note</label>
+						<textarea id="note" name="note" rows="3"></textarea>
+						<input type="hidden" name="token" value="x" />
+					</fieldset>
+					<p>
+						<meter min="0" max="10" value="5">5</meter>
+						<progress max="100" value="40">40%</progress>
+						<output name="result" for="name">ok</output>
+					</p>
+					<button type="submit">Send</button>
+				</form>
+			</section>
+			<aside>
+				<h2>Aside</h2>
+				<address>Mail <a href="mailto:user@example.com">user@example.com</a></address>
+			</aside>
+			<dialog><p>Dialog</p></dialog>
+		</main>
+		<footer>
+			<p><small>&copy; Example</small></p>
+		</footer>
+	</body>
+</html>

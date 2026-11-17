@@ -1,0 +1,141 @@
+<!doctype html>
+<html lang="en">
+	<head>
+		<meta charset="utf-8" />
+		<title>One title</title>
+		<title>A second title</title>
+		<base href="https://example.com/" />
+		<base href="https://example.org/" />
+		<p>Not metadata</p>
+	</head>
+	<body>
+		<h1>Content models that are broken</h1>
+
+		<ul>
+			<li>A list item</li>
+			<div>A div in a list</div>
+			<span>A span in a list</span>
+		</ul>
+		<ol>
+			<p>A paragraph in a list</p>
+			<li>Fine</li>
+		</ol>
+
+		<dl>
+			<dt>Term</dt>
+			<span>A span in a definition list</span>
+			<dd>Description</dd>
+		</dl>
+		<dl>
+			<dd>Description before the term</dd>
+			<dt>Term</dt>
+		</dl>
+		<dl>
+			<div>
+				<span>A span in a div of a definition list</span>
+			</div>
+		</dl>
+
+		<table>
+			<tbody>
+				<tr>
+					<td>A cell</td>
+				</tr>
+			</tbody>
+			<thead>
+				<tr>
+					<th>Head after body</th>
+				</tr>
+			</thead>
+			<caption>
+				A caption after the body
+			</caption>
+		</table>
+		<table>
+			<tr>
+				<td><p>Cell with a paragraph</p></td>
+			</tr>
+			<colgroup>
+				<col />
+			</colgroup>
+		</table>
+
+		<hgroup>
+			<span>A span in an hgroup</span>
+			<h1>One</h1>
+			<h2>Two heading in the same group</h2>
+		</hgroup>
+		<hgroup>
+			<p>No heading</p>
+		</hgroup>
+
+		<figure>
+			<figcaption>First caption</figcaption>
+			<img src="a.png" alt="a" />
+			<figcaption>Second caption</figcaption>
+		</figure>
+		<figure>
+			<figcaption>Only a caption</figcaption>
+		</figure>
+
+		<details>
+			<p>Before the summary</p>
+			<summary>The summary comes second</summary>
+		</details>
+		<details>
+			<summary>One</summary>
+			<summary>Two</summary>
+		</details>
+
+		<fieldset>
+			<p>Before the legend</p>
+			<legend>The legend comes second</legend>
+		</fieldset>
+
+		<p>
+			<div>A div in a paragraph</div>
+			<h2>A heading in a paragraph</h2>
+			<table>
+				<tr>
+					<td>A table in a paragraph</td>
+				</tr>
+			</table>
+		</p>
+
+		<!-- the parser takes these apart: it closes the paragraph at the div and makes the formatting element again -->
+		<p><a href="#x"><div>A div in a link in a paragraph</div></a></p>
+		<p><b>Bold <div>A div in a bold element in a paragraph</div> after</b></p>
+		<b><i>Misnested bold and italic</b> after</i>
+
+		<button>
+			<a href="#">A link in a button</a>
+			<input type="text" />
+			<button>A button in a button</button>
+		</button>
+		<a href="#"><a href="#other">A link in a link</a></a>
+		<label>Label <label>in a label</label></label>
+		<pre><div>A div in pre</div></pre>
+		<span><p>A paragraph in a span</p></span>
+		<em><div>A div in em</div></em>
+		<select>
+			<option>One</option>
+			<optgroup label="Group">
+				<option>Two</option>
+				<optgroup label="Nested">
+					<option>Three</option>
+				</optgroup>
+			</optgroup>
+		</select>
+		<picture>
+			<source srcset="a.avif" />
+		</picture>
+		<ruby>
+			<rt>Annotation first</rt>
+			base
+		</ruby>
+		<audio><track kind="captions" src="a.vtt" /><p>flow in audio</p></audio>
+		<textarea><b>not markup</b></textarea>
+		<img src="a.png" alt="a"><p>children of a void</p></img>
+		<br>child of br</br>
+	</body>
+</html>

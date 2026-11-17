@@ -90,3 +90,7 @@ consumes `document.parseErrors` and reports them under its own ruleId: `no-malfo
 Enforced by tests: `src/mirrors-parse-error-codes.spec.ts` (no duplicate declarations across
 rules) and `@markuplint/html-parser`'s `parse-error-code-sync.spec.ts` (compile-time alignment
 with parse5's code list).
+
+## Records of what every rule reports
+
+The records in `scripts/spec-baseline/fixtures/expected/` are compared by `scripts/spec-baseline/diagnostics.spec.ts`: see the module comment of `scripts/spec-baseline/diagnostics.ts`.

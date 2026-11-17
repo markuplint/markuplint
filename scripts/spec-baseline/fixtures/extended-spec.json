@@ -1,0 +1,58 @@
+{
+	"def": {
+		"#contentModels": {
+			"#flow": ["figcaption"],
+			"#phrasing": ["x-badge"]
+		}
+	},
+	"specs": [
+		{
+			"name": "section",
+			"contentModel": {
+				"contents": [{ "require": "h2" }, { "oneOrMore": ":model(flow)" }]
+			}
+		},
+		{
+			"name": "aside",
+			"contentModel": {
+				"contents": [{ "zeroOrMore": ":model(phrasing)" }]
+			}
+		},
+		{
+			"name": "ul",
+			"contentModel": {
+				"contents": [{ "zeroOrMore": ["li", "div", ":model(script-supporting)"] }]
+			}
+		},
+		{
+			"name": "blockquote",
+			"contentModel": {
+				"contents": [{ "oneOrMore": "p" }]
+			}
+		},
+		{
+			"name": "x-card",
+			"contentModel": {
+				"contents": [{ "require": "x-title" }, { "oneOrMore": ":model(flow)" }]
+			}
+		},
+		{
+			"name": "x-title",
+			"contentModel": {
+				"contents": [{ "oneOrMore": ":model(phrasing)" }]
+			}
+		},
+		{
+			"name": "x-badge",
+			"contentModel": {
+				"contents": [{ "require": "#text" }]
+			},
+			"attributes": {
+				"tone": { "type": { "enum": ["info", "warn", "error"] } },
+				"count": { "type": "Int" },
+				"legacy": { "type": "Boolean", "deprecated": true },
+				"preview": { "type": "Boolean", "experimental": true }
+			}
+		}
+	]
+}

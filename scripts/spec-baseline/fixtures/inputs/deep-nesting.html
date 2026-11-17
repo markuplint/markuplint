@@ -1,0 +1,109 @@
+<!doctype html>
+<html lang="en">
+	<head>
+		<meta charset="utf-8" />
+		<title>Deep nesting</title>
+	</head>
+	<body>
+		<div>
+			<div>
+				<section>
+					<div>
+						<article>
+							<div>
+								<div>
+									<section>
+										<div>
+											<div>
+												<blockquote>
+													<div>
+														<div>
+															<section>
+																<div>
+																	<div>
+																		<aside>
+																			<div>
+																				<div>
+																					<p>A valid paragraph at depth 20.</p>
+																					<p>
+																						A paragraph with a
+																						<span><em><strong><i><b><small><mark><q><cite><abbr><dfn><kbd><samp><var><sub><sup><bdi><bdo><u><s><code><time><data>deep phrase</data></time></code></s></u></bdo></bdi></sup></sub></var></samp></kbd></dfn></abbr></cite></q></mark></small></b></i></strong></em></span>
+																						chain.
+																					</p>
+																					<p>
+																						<div>A div in a paragraph at depth 21, which the parser takes out of it.</div>
+																					</p>
+																					<ul>
+																						<li>
+																							<ul>
+																								<li>
+																									<ul>
+																										<li>
+																											<ul>
+																												<li>
+																													<ul>
+																														<li>A list of depth five.</li>
+																														<div>A div in a list at depth 30.</div>
+																													</ul>
+																												</li>
+																											</ul>
+																										</li>
+																									</ul>
+																								</li>
+																							</ul>
+																						</li>
+																					</ul>
+																				</div>
+																			</div>
+																		</aside>
+																	</div>
+																</div>
+															</section>
+														</div>
+													</div>
+												</blockquote>
+											</div>
+										</div>
+									</section>
+								</div>
+							</div>
+						</article>
+					</div>
+				</section>
+			</div>
+		</div>
+		<table>
+			<tbody>
+				<tr>
+					<td>
+						<table>
+							<tbody>
+								<tr>
+									<td>
+										<table>
+											<tbody>
+												<tr>
+													<td>
+														<table>
+															<caption>
+																Inner caption
+															</caption>
+															<tr>
+																<td><p>Table in a table in a table in a table.</p></td>
+																<p>A paragraph in a row.</p>
+															</tr>
+														</table>
+													</td>
+												</tr>
+											</tbody>
+										</table>
+									</td>
+								</tr>
+							</tbody>
+						</table>
+					</td>
+				</tr>
+			</tbody>
+		</table>
+	</body>
+</html>

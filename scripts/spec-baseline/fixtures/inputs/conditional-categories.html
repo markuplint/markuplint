@@ -1,0 +1,102 @@
+<!doctype html>
+<html lang="en">
+	<head>
+		<meta charset="utf-8" />
+		<title>Categories that depend on attributes and descendants</title>
+	</head>
+	<body>
+		<h1>Conditional categories</h1>
+
+		<p>
+			<!-- interactive only with href -->
+			<a href="#x">a link</a>
+			<a name="anchor">an anchor that is not a link</a>
+			<!-- interactive only with controls -->
+			<audio controls src="a.mp3"></audio>
+			<audio src="a.mp3"></audio>
+			<video controls src="a.mp4"></video>
+			<video src="a.mp4"></video>
+			<!-- interactive only with usemap -->
+			<img src="a.png" alt="with a map" usemap="#m" />
+			<img src="a.png" alt="without a map" />
+			<object data="a.svg" usemap="#m"></object>
+			<object data="a.svg"></object>
+			<!-- interactive unless hidden -->
+			<input type="text" />
+			<input type="hidden" name="h" />
+			<input type="checkbox" />
+			<!-- always interactive -->
+			<button type="button">b</button>
+			<select><option>o</option></select>
+			<textarea></textarea>
+			<embed src="a.swf" />
+			<iframe src="a.html" title="frame"></iframe>
+			<label>a label <input type="text" /></label>
+			<details><summary>s</summary>d</details>
+		</p>
+
+		<!-- interactive content in an interactive parent -->
+		<button type="button"><a href="#x">link in a button</a></button>
+		<button type="button"><a name="anchor2">anchor in a button</a></button>
+		<button type="button"><audio controls src="a.mp3"></audio></button>
+		<button type="button"><audio src="a.mp3"></audio></button>
+		<button type="button"><img src="a.png" alt="" usemap="#m" /></button>
+		<button type="button"><img src="a.png" alt="" /></button>
+		<button type="button"><input type="hidden" name="h" /></button>
+		<button type="button"><input type="text" /></button>
+		<button type="button"><label>l</label></button>
+		<button type="button"><select><option>o</option></select></button>
+		<button type="button"><textarea></textarea></button>
+		<a href="#x"><button type="button">button in a link</button></a>
+		<a href="#x"><input type="text" /></a>
+		<a href="#x"><input type="hidden" name="h" /></a>
+		<a href="#x"><img src="a.png" alt="" usemap="#m" /></a>
+		<a href="#x"><img src="a.png" alt="" /></a>
+		<a href="#x"><span tabindex="0">a tabindex</span></a>
+		<a href="#x"><span tabindex="-1">a negative tabindex</span></a>
+		<a name="anchor3"><button type="button">button in an anchor</button></a>
+		<label>label <label>label</label></label>
+
+		<!-- the category of a style, a link and a meta depends on where it is -->
+		<style>
+			p {
+				color: red;
+			}
+		</style>
+		<p>after a style that is first in the body</p>
+		<style>
+			p {
+				color: blue;
+			}
+		</style>
+		<link rel="stylesheet" href="a.css" />
+		<link rel="dns-prefetch" href="https://example.com/" />
+		<link rel="canonical" href="https://example.com/" />
+		<link itemprop="url" href="https://example.com/" />
+		<meta name="description" content="not in the body" />
+		<meta itemprop="name" content="in the body" />
+		<noscript>noscript in the body</noscript>
+		<template><p>template content</p></template>
+
+		<!-- the category of a heading depends on the group -->
+		<hgroup>
+			<h2>heading</h2>
+			<p>subheading</p>
+		</hgroup>
+		<ul>
+			<li>list item</li>
+		</ul>
+		<menu>
+			<li>menu item</li>
+		</menu>
+		<p>text with an <input type="hidden" name="h" /> hidden input</p>
+		<div></div>
+		<p></p>
+		<div>text</div>
+		<div><span></span></div>
+		<ul></ul>
+		<table></table>
+		<span hidden>hidden</span>
+		<map name="m"><area shape="rect" coords="0,0,1,1" href="#x" alt="area" /></map>
+	</body>
+</html>

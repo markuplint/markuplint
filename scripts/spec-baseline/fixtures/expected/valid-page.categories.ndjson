@@ -1,0 +1,121 @@
+{"line":2,"col":1,"raw":"<html lang=\"en\">","categories":[]}
+{"line":3,"col":2,"raw":"<head>","categories":[]}
+{"line":4,"col":3,"raw":"<meta charset=\"utf-8\" />","categories":["#metadata"]}
+{"line":5,"col":3,"raw":"<meta name=\"viewport\" content=\"width=device-width, initial-scale=1\" />","categories":["#metadata"]}
+{"line":6,"col":3,"raw":"<title>","categories":["#metadata"]}
+{"line":7,"col":3,"raw":"<link rel=\"stylesheet\" href=\"/style.css\" />","categories":["#flow","#metadata","#phrasing"]}
+{"line":8,"col":3,"raw":"<base href=\"https://example.com/\" />","categories":["#metadata"]}
+{"line":9,"col":3,"raw":"<style>","categories":["#metadata"]}
+{"line":15,"col":2,"raw":"<body>","categories":[]}
+{"line":16,"col":3,"raw":"<header>","categories":["#flow","#palpable"]}
+{"line":17,"col":4,"raw":"<nav aria-label=\"Main\">","categories":["#flow","#palpable","#sectioning"]}
+{"line":18,"col":5,"raw":"<ul>","categories":["#flow","#palpable"]}
+{"line":19,"col":6,"raw":"<li>","categories":[]}
+{"line":19,"col":10,"raw":"<a href=\"/\">","categories":["#flow","#interactive","#palpable","#phrasing"]}
+{"line":20,"col":6,"raw":"<li>","categories":[]}
+{"line":20,"col":10,"raw":"<a href=\"/about\">","categories":["#flow","#interactive","#palpable","#phrasing"]}
+{"line":23,"col":4,"raw":"<hgroup>","categories":["#flow","#heading","#palpable"]}
+{"line":24,"col":5,"raw":"<h1>","categories":["#flow","#heading","#palpable"]}
+{"line":25,"col":5,"raw":"<p>","categories":["#flow","#palpable"]}
+{"line":28,"col":3,"raw":"<main>","categories":["#flow","#palpable"]}
+{"line":29,"col":4,"raw":"<article>","categories":["#flow","#palpable","#sectioning"]}
+{"line":30,"col":5,"raw":"<h2>","categories":["#flow","#heading","#palpable"]}
+{"line":31,"col":5,"raw":"<ol start=\"3\" reversed>","categories":["#flow","#palpable"]}
+{"line":32,"col":6,"raw":"<li>","categories":[]}
+{"line":33,"col":6,"raw":"<li>","categories":[]}
+{"line":35,"col":5,"raw":"<dl>","categories":["#flow","#palpable"]}
+{"line":36,"col":6,"raw":"<dt>","categories":[]}
+{"line":37,"col":6,"raw":"<dd>","categories":[]}
+{"line":38,"col":6,"raw":"<div>","categories":["#flow","#palpable"]}
+{"line":39,"col":7,"raw":"<dt>","categories":[]}
+{"line":40,"col":7,"raw":"<dd>","categories":[]}
+{"line":43,"col":5,"raw":"<menu>","categories":["#flow","#palpable"]}
+{"line":44,"col":6,"raw":"<li>","categories":[]}
+{"line":44,"col":10,"raw":"<button type=\"button\">","categories":["#flow","#interactive","#palpable","#phrasing"]}
+{"line":46,"col":5,"raw":"<h2>","categories":["#flow","#heading","#palpable"]}
+{"line":47,"col":5,"raw":"<figure>","categories":["#flow","#palpable"]}
+{"line":48,"col":6,"raw":"<picture>","categories":["#embedded","#flow","#palpable","#phrasing"]}
+{"line":49,"col":7,"raw":"<source srcset=\"a.avif\" type=\"image/avif\" />","categories":[]}
+{"line":50,"col":7,"raw":"<img src=\"a.png\" alt=\"A picture\" width=\"320\" height=\"200\" />","categories":["#embedded","#flow","#palpable","#phrasing"]}
+{"line":52,"col":6,"raw":"<figcaption>","categories":[]}
+{"line":54,"col":5,"raw":"<audio controls src=\"a.mp3\">","categories":["#embedded","#flow","#interactive","#palpable","#phrasing"]}
+{"line":55,"col":5,"raw":"<video controls width=\"320\">","categories":["#embedded","#flow","#interactive","#palpable","#phrasing"]}
+{"line":56,"col":6,"raw":"<source src=\"a.mp4\" type=\"video/mp4\" />","categories":[]}
+{"line":57,"col":6,"raw":"<track kind=\"captions\" src=\"a.vtt\" srclang=\"en\" label=\"English\" />","categories":[]}
+{"line":60,"col":5,"raw":"<h2>","categories":["#flow","#heading","#palpable"]}
+{"line":61,"col":5,"raw":"<table>","categories":["#flow","#palpable"]}
+{"line":62,"col":6,"raw":"<caption>","categories":[]}
+{"line":65,"col":6,"raw":"<colgroup>","categories":[]}
+{"line":66,"col":7,"raw":"<col />","categories":[]}
+{"line":67,"col":7,"raw":"<col span=\"2\" />","categories":[]}
+{"line":69,"col":6,"raw":"<thead>","categories":[]}
+{"line":70,"col":7,"raw":"<tr>","categories":[]}
+{"line":71,"col":8,"raw":"<th scope=\"col\">","categories":[]}
+{"line":72,"col":8,"raw":"<th scope=\"col\">","categories":[]}
+{"line":73,"col":8,"raw":"<th scope=\"col\">","categories":[]}
+{"line":76,"col":6,"raw":"<tbody>","categories":[]}
+{"line":77,"col":7,"raw":"<tr>","categories":[]}
+{"line":78,"col":8,"raw":"<th scope=\"row\">","categories":[]}
+{"line":79,"col":8,"raw":"<td>","categories":[]}
+{"line":80,"col":8,"raw":"<td>","categories":[]}
+{"line":83,"col":6,"raw":"<tfoot>","categories":[]}
+{"line":84,"col":7,"raw":"<tr>","categories":[]}
+{"line":85,"col":8,"raw":"<td colspan=\"3\">","categories":[]}
+{"line":89,"col":5,"raw":"<h2>","categories":["#flow","#heading","#palpable"]}
+{"line":90,"col":5,"raw":"<p>","categories":["#flow","#palpable"]}
+{"line":91,"col":8,"raw":"<em>","categories":["#flow","#palpable","#phrasing"]}
+{"line":91,"col":29,"raw":"<strong>","categories":["#flow","#palpable","#phrasing"]}
+{"line":91,"col":54,"raw":"<code>","categories":["#flow","#palpable","#phrasing"]}
+{"line":91,"col":73,"raw":"<kbd>","categories":["#flow","#palpable","#phrasing"]}
+{"line":91,"col":89,"raw":"<abbr title=\"abbreviation\">","categories":["#flow","#palpable","#phrasing"]}
+{"line":92,"col":6,"raw":"<time datetime=\"2026-11-17\">","categories":["#flow","#palpable","#phrasing"]}
+{"line":92,"col":48,"raw":"<ruby>","categories":["#flow","#palpable","#phrasing"]}
+{"line":92,"col":55,"raw":"<rp>","categories":[]}
+{"line":92,"col":65,"raw":"<rt>","categories":[]}
+{"line":92,"col":77,"raw":"<rp>","categories":[]}
+{"line":92,"col":99,"raw":"<br />","categories":["#flow","#phrasing"]}
+{"line":93,"col":8,"raw":"<a href=\"https://example.com/\">","categories":["#flow","#interactive","#palpable","#phrasing"]}
+{"line":95,"col":5,"raw":"<blockquote cite=\"https://example.com/quote\">","categories":["#flow","#palpable"]}
+{"line":95,"col":50,"raw":"<p>","categories":["#flow","#palpable"]}
+{"line":96,"col":5,"raw":"<pre>","categories":["#flow","#palpable"]}
+{"line":96,"col":10,"raw":"<code>","categories":["#flow","#palpable","#phrasing"]}
+{"line":97,"col":5,"raw":"<details open>","categories":["#flow","#interactive","#palpable"]}
+{"line":98,"col":6,"raw":"<summary>","categories":[]}
+{"line":99,"col":6,"raw":"<p>","categories":["#flow","#palpable"]}
+{"line":101,"col":5,"raw":"<hr />","categories":["#flow"]}
+{"line":103,"col":4,"raw":"<section aria-labelledby=\"form-heading\">","categories":["#flow","#palpable","#sectioning"]}
+{"line":104,"col":5,"raw":"<h2 id=\"form-heading\">","categories":["#flow","#heading","#palpable"]}
+{"line":105,"col":5,"raw":"<form action=\"/submit\" method=\"post\">","categories":["#flow","#palpable"]}
+{"line":106,"col":6,"raw":"<fieldset>","categories":["#flow","#palpable"]}
+{"line":107,"col":7,"raw":"<legend>","categories":[]}
+{"line":108,"col":7,"raw":"<label for=\"name\">","categories":["#flow","#interactive","#palpable","#phrasing"]}
+{"line":109,"col":7,"raw":"<input id=\"name\" name=\"name\" type=\"text\" required autocomplete=\"name\" />","categories":["#flow","#interactive","#palpable","#phrasing"]}
+{"line":110,"col":7,"raw":"<label>","categories":["#flow","#interactive","#palpable","#phrasing"]}
+{"line":110,"col":20,"raw":"<input name=\"email\" type=\"email\" />","categories":["#flow","#interactive","#palpable","#phrasing"]}
+{"line":111,"col":7,"raw":"<label for=\"color\">","categories":["#flow","#interactive","#palpable","#phrasing"]}
+{"line":112,"col":7,"raw":"<input id=\"color\" name=\"color\" type=\"text\" list=\"colors\" />","categories":["#flow","#interactive","#palpable","#phrasing"]}
+{"line":113,"col":7,"raw":"<datalist id=\"colors\">","categories":["#flow","#phrasing"]}
+{"line":114,"col":8,"raw":"<option value=\"red\">","categories":[]}
+{"line":115,"col":8,"raw":"<option value=\"green\">","categories":[]}
+{"line":117,"col":7,"raw":"<label for=\"kind\">","categories":["#flow","#interactive","#palpable","#phrasing"]}
+{"line":118,"col":7,"raw":"<select id=\"kind\" name=\"kind\">","categories":["#flow","#interactive","#palpable","#phrasing"]}
+{"line":119,"col":8,"raw":"<optgroup label=\"Group\">","categories":[]}
+{"line":120,"col":9,"raw":"<option value=\"a\">","categories":[]}
+{"line":121,"col":9,"raw":"<option value=\"b\" selected>","categories":[]}
+{"line":124,"col":7,"raw":"<label for=\"note\">","categories":["#flow","#interactive","#palpable","#phrasing"]}
+{"line":125,"col":7,"raw":"<textarea id=\"note\" name=\"note\" rows=\"3\">","categories":["#flow","#interactive","#palpable","#phrasing"]}
+{"line":126,"col":7,"raw":"<input type=\"hidden\" name=\"token\" value=\"x\" />","categories":["#flow","#phrasing"]}
+{"line":128,"col":6,"raw":"<p>","categories":["#flow","#palpable"]}
+{"line":129,"col":7,"raw":"<meter min=\"0\" max=\"10\" value=\"5\">","categories":["#flow","#palpable","#phrasing"]}
+{"line":130,"col":7,"raw":"<progress max=\"100\" value=\"40\">","categories":["#flow","#palpable","#phrasing"]}
+{"line":131,"col":7,"raw":"<output name=\"result\" for=\"name\">","categories":["#flow","#palpable","#phrasing"]}
+{"line":133,"col":6,"raw":"<button type=\"submit\">","categories":["#flow","#interactive","#palpable","#phrasing"]}
+{"line":136,"col":4,"raw":"<aside>","categories":["#flow","#palpable","#sectioning"]}
+{"line":137,"col":5,"raw":"<h2>","categories":["#flow","#heading","#palpable"]}
+{"line":138,"col":5,"raw":"<address>","categories":["#flow","#palpable"]}
+{"line":138,"col":19,"raw":"<a href=\"mailto:user@example.com\">","categories":["#flow","#interactive","#palpable","#phrasing"]}
+{"line":140,"col":4,"raw":"<dialog>","categories":["#flow"]}
+{"line":140,"col":12,"raw":"<p>","categories":["#flow","#palpable"]}
+{"line":142,"col":3,"raw":"<footer>","categories":["#flow","#palpable"]}
+{"line":143,"col":4,"raw":"<p>","categories":["#flow","#palpable"]}
+{"line":143,"col":7,"raw":"<small>","categories":["#flow","#palpable","#phrasing"]}

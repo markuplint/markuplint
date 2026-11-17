@@ -1,0 +1,129 @@
+{"line":2,"col":1,"raw":"<html lang=\"en\">","categories":[]}
+{"line":3,"col":2,"raw":"<head>","categories":[]}
+{"line":4,"col":3,"raw":"<meta charset=\"utf-8\" />","categories":["#metadata"]}
+{"line":5,"col":3,"raw":"<title>","categories":["#metadata"]}
+{"line":7,"col":2,"raw":"<body>","categories":[]}
+{"line":8,"col":3,"raw":"<h1>","categories":["#flow","#heading","#palpable"]}
+{"line":10,"col":3,"raw":"<svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 100 100\" width=\"100\" height=\"100\" role=\"img\" aria-labelledby=\"t\">","categories":["#SVGContainer","#SVGRenderable","#SVGStructural","#embedded","#flow","#palpable","#phrasing"]}
+{"line":11,"col":4,"raw":"<title id=\"t\">","categories":["#SVGDescriptive","#SVGNeverRendered","#metadata"]}
+{"line":12,"col":4,"raw":"<desc>","categories":["#SVGDescriptive"]}
+{"line":13,"col":4,"raw":"<defs>","categories":["#SVGContainer","#SVGNeverRendered","#SVGStructural"]}
+{"line":14,"col":5,"raw":"<linearGradient id=\"g\" x1=\"0\" y1=\"0\" x2=\"1\" y2=\"1\">","categories":["#SVGGradient","#SVGNeverRendered","#SVGPaintServer"]}
+{"line":15,"col":6,"raw":"<stop offset=\"0\" stop-color=\"red\" />","categories":["#SVGGradient"]}
+{"line":16,"col":6,"raw":"<stop offset=\"1\" stop-color=\"blue\" />","categories":["#SVGGradient"]}
+{"line":18,"col":5,"raw":"<filter id=\"f\">","categories":[]}
+{"line":19,"col":6,"raw":"<feGaussianBlur stdDeviation=\"2\" />","categories":["#SVGFilterPrimitive"]}
+{"line":20,"col":6,"raw":"<feOffset dx=\"1\" dy=\"1\" />","categories":["#SVGFilterPrimitive"]}
+{"line":22,"col":5,"raw":"<clipPath id=\"c\">","categories":["#SVGNeverRendered"]}
+{"line":22,"col":22,"raw":"<rect width=\"10\" height=\"10\" />","categories":["#SVGBasicShapes","#SVGGraphics","#SVGRenderable","#SVGShape"]}
+{"line":23,"col":5,"raw":"<mask id=\"m\">","categories":["#SVGContainer","#SVGNeverRendered"]}
+{"line":23,"col":18,"raw":"<circle r=\"5\" />","categories":["#SVGBasicShapes","#SVGGraphics","#SVGRenderable","#SVGShape"]}
+{"line":24,"col":5,"raw":"<pattern id=\"p\" width=\"2\" height=\"2\" patternUnits=\"userSpaceOnUse\">","categories":["#SVGContainer","#SVGNeverRendered","#SVGPaintServer"]}
+{"line":24,"col":72,"raw":"<rect width=\"1\" height=\"1\" />","categories":["#SVGBasicShapes","#SVGGraphics","#SVGRenderable","#SVGShape"]}
+{"line":25,"col":5,"raw":"<marker id=\"mk\" markerWidth=\"2\" markerHeight=\"2\">","categories":["#SVGContainer","#SVGNeverRendered"]}
+{"line":25,"col":54,"raw":"<path d=\"M0 0L1 1\" />","categories":["#SVGGraphics","#SVGRenderable","#SVGShape"]}
+{"line":26,"col":5,"raw":"<symbol id=\"s\" viewBox=\"0 0 1 1\">","categories":["#SVGContainer","#SVGNeverRendered","#SVGRenderable","#SVGStructural"]}
+{"line":26,"col":38,"raw":"<rect width=\"1\" height=\"1\" />","categories":["#SVGBasicShapes","#SVGGraphics","#SVGRenderable","#SVGShape"]}
+{"line":28,"col":4,"raw":"<g fill=\"url(#g)\" filter=\"url(#f)\">","categories":["#SVGContainer","#SVGRenderable","#SVGStructural"]}
+{"line":29,"col":5,"raw":"<rect x=\"0\" y=\"0\" width=\"50\" height=\"50\" rx=\"2\" ry=\"2\" />","categories":["#SVGBasicShapes","#SVGGraphics","#SVGRenderable","#SVGShape"]}
+{"line":30,"col":5,"raw":"<circle cx=\"75\" cy=\"25\" r=\"20\" />","categories":["#SVGBasicShapes","#SVGGraphics","#SVGRenderable","#SVGShape"]}
+{"line":31,"col":5,"raw":"<ellipse cx=\"25\" cy=\"75\" rx=\"20\" ry=\"10\" />","categories":["#SVGBasicShapes","#SVGGraphics","#SVGRenderable","#SVGShape"]}
+{"line":32,"col":5,"raw":"<line x1=\"0\" y1=\"0\" x2=\"100\" y2=\"100\" stroke=\"black\" />","categories":["#SVGBasicShapes","#SVGGraphics","#SVGRenderable","#SVGShape"]}
+{"line":33,"col":5,"raw":"<polyline points=\"0,0 10,10 20,0\" fill=\"none\" />","categories":["#SVGBasicShapes","#SVGGraphics","#SVGRenderable","#SVGShape"]}
+{"line":34,"col":5,"raw":"<polygon points=\"50,50 60,60 40,60\" />","categories":["#SVGBasicShapes","#SVGGraphics","#SVGRenderable","#SVGShape"]}
+{"line":35,"col":5,"raw":"<path d=\"M10 10 L 20 20\" stroke-width=\"2\" stroke-linecap=\"round\" />","categories":["#SVGGraphics","#SVGRenderable","#SVGShape"]}
+{"line":37,"col":4,"raw":"<use href=\"#s\" x=\"10\" y=\"10\" width=\"10\" height=\"10\" />","categories":["#SVGGraphics","#SVGGraphicsReferencing","#SVGRenderable","#SVGStructural"]}
+{"line":38,"col":4,"raw":"<use xlink:href=\"#s\" />","categories":["#SVGGraphics","#SVGGraphicsReferencing","#SVGRenderable","#SVGStructural"]}
+{"line":39,"col":4,"raw":"<text x=\"10\" y=\"90\" font-size=\"10\" text-anchor=\"middle\">","categories":["#SVGGraphics","#SVGRenderable","#SVGTextContent"]}
+{"line":40,"col":10,"raw":"<tspan font-weight=\"bold\">","categories":["#SVGRenderable","#SVGTextContent","#SVGTextContentChild"]}
+{"line":41,"col":5,"raw":"<textPath href=\"#p\">","categories":["#SVGRenderable","#SVGTextContent","#SVGTextContentChild"]}
+{"line":43,"col":4,"raw":"<image href=\"a.png\" width=\"10\" height=\"10\" decoding=\"async\" fetchpriority=\"high\" />","categories":["#SVGGraphics","#SVGRenderable"]}
+{"line":44,"col":4,"raw":"<a href=\"https://example.com/\">","categories":["#SVGContainer","#SVGRenderable","#flow","#interactive","#palpable","#phrasing"]}
+{"line":44,"col":35,"raw":"<text x=\"0\" y=\"0\">","categories":["#SVGGraphics","#SVGRenderable","#SVGTextContent"]}
+{"line":45,"col":4,"raw":"<script>","categories":["#SVGNeverRendered","#flow","#metadata","#phrasing","#script-supporting"]}
+{"line":48,"col":4,"raw":"<script href=\"a.js\" async>","categories":["#SVGNeverRendered","#flow","#metadata","#phrasing","#script-supporting"]}
+{"line":49,"col":4,"raw":"<script>","categories":["#SVGNeverRendered","#flow","#metadata","#phrasing","#script-supporting"]}
+{"line":50,"col":4,"raw":"<style>","categories":["#SVGNeverRendered","#metadata"]}
+{"line":55,"col":4,"raw":"<switch>","categories":["#SVGContainer","#SVGRenderable"]}
+{"line":55,"col":12,"raw":"<g systemLanguage=\"en\">","categories":["#SVGContainer","#SVGRenderable","#SVGStructural"]}
+{"line":56,"col":4,"raw":"<foreignObject x=\"0\" y=\"0\" width=\"50\" height=\"50\">","categories":["#SVGRenderable"]}
+{"line":57,"col":5,"raw":"<div>","categories":["#flow","#palpable"]}
+{"line":58,"col":5,"raw":"<p>","categories":["#flow","#palpable"]}
+{"line":60,"col":4,"raw":"<animate attributeName=\"x\" from=\"0\" to=\"10\" dur=\"1s\" repeatCount=\"indefinite\" />","categories":["#SVGAnimation"]}
+{"line":61,"col":4,"raw":"<set attributeName=\"y\" to=\"1\" />","categories":["#SVGAnimation"]}
+{"line":62,"col":4,"raw":"<animateTransform attributeName=\"transform\" type=\"rotate\" from=\"0\" to=\"360\" dur=\"1s\" />","categories":["#SVGAnimation"]}
+{"line":63,"col":4,"raw":"<div>","categories":["#flow","#palpable"]}
+{"line":64,"col":4,"raw":"<rect />","categories":[]}
+{"line":65,"col":4,"raw":"<circle r=\"-1\" />","categories":[]}
+{"line":66,"col":4,"raw":"<rect width=\"x\" height=\"1\" foo=\"bar\" />","categories":[]}
+{"line":67,"col":4,"raw":"<unknown-svg-element />","categories":["#flow","#palpable","#phrasing"]}
+{"line":68,"col":4,"raw":"<fooBar />","categories":[]}
+{"line":69,"col":4,"raw":"<mfrac>","categories":[]}
+{"line":72,"col":3,"raw":"<svg viewBox=\"0 0 1 1\">","categories":["#SVGContainer","#SVGRenderable","#SVGStructural","#embedded","#flow","#palpable","#phrasing"]}
+{"line":73,"col":3,"raw":"<svg>","categories":["#SVGContainer","#SVGRenderable","#SVGStructural","#embedded","#flow","#palpable","#phrasing"]}
+{"line":74,"col":4,"raw":"<g>","categories":["#SVGContainer","#SVGRenderable","#SVGStructural"]}
+{"line":74,"col":7,"raw":"<title>","categories":["#SVGDescriptive","#SVGNeverRendered","#metadata"]}
+{"line":75,"col":4,"raw":"<g>","categories":["#SVGContainer","#SVGRenderable","#SVGStructural"]}
+{"line":75,"col":7,"raw":"<desc>","categories":["#SVGDescriptive"]}
+{"line":75,"col":44,"raw":"<title>","categories":["#SVGDescriptive","#SVGNeverRendered","#metadata"]}
+{"line":77,"col":3,"raw":"<p>","categories":["#flow","#palpable"]}
+{"line":77,"col":19,"raw":"<svg width=\"10\" height=\"10\">","categories":["#SVGContainer","#SVGRenderable","#SVGStructural","#embedded","#flow","#palpable","#phrasing"]}
+{"line":77,"col":47,"raw":"<circle r=\"5\" />","categories":["#SVGBasicShapes","#SVGGraphics","#SVGRenderable","#SVGShape"]}
+{"line":78,"col":3,"raw":"<button type=\"button\">","categories":["#flow","#interactive","#palpable","#phrasing"]}
+{"line":78,"col":25,"raw":"<svg aria-hidden=\"true\" width=\"10\" height=\"10\">","categories":["#SVGContainer","#SVGRenderable","#SVGStructural","#embedded","#flow","#palpable","#phrasing"]}
+{"line":78,"col":72,"raw":"<path d=\"M0 0\" />","categories":["#SVGGraphics","#SVGRenderable","#SVGShape"]}
+{"line":79,"col":3,"raw":"<button type=\"button\">","categories":["#flow","#interactive","#palpable","#phrasing"]}
+{"line":79,"col":25,"raw":"<svg role=\"img\">","categories":["#SVGContainer","#SVGRenderable","#SVGStructural","#embedded","#flow","#palpable","#phrasing"]}
+{"line":79,"col":41,"raw":"<title>","categories":["#SVGDescriptive","#SVGNeverRendered","#metadata"]}
+{"line":81,"col":3,"raw":"<math display=\"block\" xmlns=\"http://www.w3.org/1998/Math/MathML\">","categories":["#embedded","#flow","#palpable","#phrasing"]}
+{"line":82,"col":4,"raw":"<mrow>","categories":["#MathMLPresentation"]}
+{"line":83,"col":5,"raw":"<mi>","categories":["#MathMLPresentation"]}
+{"line":84,"col":5,"raw":"<mo>","categories":["#MathMLPresentation"]}
+{"line":85,"col":5,"raw":"<mfrac>","categories":["#MathMLPresentation"]}
+{"line":86,"col":6,"raw":"<mrow>","categories":["#MathMLPresentation"]}
+{"line":87,"col":7,"raw":"<mo>","categories":["#MathMLPresentation"]}
+{"line":88,"col":7,"raw":"<mi>","categories":["#MathMLPresentation"]}
+{"line":89,"col":7,"raw":"<mo>","categories":["#MathMLPresentation"]}
+{"line":90,"col":7,"raw":"<msqrt>","categories":["#MathMLPresentation"]}
+{"line":91,"col":8,"raw":"<msup>","categories":["#MathMLPresentation","#MathMLScript"]}
+{"line":91,"col":14,"raw":"<mi>","categories":["#MathMLPresentation"]}
+{"line":91,"col":24,"raw":"<mn>","categories":["#MathMLPresentation"]}
+{"line":92,"col":8,"raw":"<mo>","categories":["#MathMLPresentation"]}
+{"line":93,"col":8,"raw":"<mn>","categories":["#MathMLPresentation"]}
+{"line":94,"col":8,"raw":"<mi>","categories":["#MathMLPresentation"]}
+{"line":95,"col":8,"raw":"<mi>","categories":["#MathMLPresentation"]}
+{"line":98,"col":6,"raw":"<mrow>","categories":["#MathMLPresentation"]}
+{"line":99,"col":7,"raw":"<mn>","categories":["#MathMLPresentation"]}
+{"line":100,"col":7,"raw":"<mi>","categories":["#MathMLPresentation"]}
+{"line":104,"col":4,"raw":"<mtable columnalign=\"left\" rowalign=\"top\" frame=\"solid\" rowlines=\"solid\" columnlines=\"solid\" displaystyle=\"true\" equalrows=\"true\" equalcolumns=\"true\" align=\"axis\" side=\"left\" width=\"auto\" columnwidth=\"auto\" columnspacing=\"1em\" rowspacing=\"1em\" framespacing=\"1em\" minlabelspacing=\"1em\">","categories":["#MathMLPresentation","#MathMLTabular"]}
+{"line":105,"col":5,"raw":"<mtr rowalign=\"top\" columnalign=\"left\">","categories":["#MathMLTabular"]}
+{"line":106,"col":6,"raw":"<mtd rowspan=\"2\" columnspan=\"2\" rowalign=\"top\" columnalign=\"left\">","categories":["#MathMLTabular"]}
+{"line":106,"col":72,"raw":"<mi>","categories":["#MathMLPresentation"]}
+{"line":107,"col":6,"raw":"<mtd>","categories":["#MathMLTabular"]}
+{"line":107,"col":11,"raw":"<mn>","categories":["#MathMLPresentation"]}
+{"line":110,"col":4,"raw":"<menclose notation=\"box\">","categories":["#MathMLPresentation"]}
+{"line":110,"col":29,"raw":"<mi>","categories":["#MathMLPresentation"]}
+{"line":111,"col":4,"raw":"<mfenced open=\"[\" close=\"]\" separators=\",\">","categories":["#MathMLPresentation"]}
+{"line":111,"col":47,"raw":"<mi>","categories":["#MathMLPresentation"]}
+{"line":111,"col":57,"raw":"<mi>","categories":["#MathMLPresentation"]}
+{"line":112,"col":4,"raw":"<msub>","categories":["#MathMLPresentation","#MathMLScript"]}
+{"line":112,"col":10,"raw":"<mi>","categories":["#MathMLPresentation"]}
+{"line":112,"col":20,"raw":"<mn>","categories":["#MathMLPresentation"]}
+{"line":113,"col":4,"raw":"<munderover>","categories":["#MathMLPresentation"]}
+{"line":113,"col":16,"raw":"<mo>","categories":["#MathMLPresentation"]}
+{"line":113,"col":33,"raw":"<mi>","categories":["#MathMLPresentation"]}
+{"line":113,"col":43,"raw":"<mi>","categories":["#MathMLPresentation"]}
+{"line":114,"col":4,"raw":"<mstyle mathvariant=\"bold\" mathsize=\"2\" mathcolor=\"red\" mathbackground=\"yellow\">","categories":["#MathMLPresentation"]}
+{"line":114,"col":84,"raw":"<mi>","categories":["#MathMLPresentation"]}
+{"line":115,"col":4,"raw":"<mtext>","categories":["#MathMLPresentation"]}
+{"line":116,"col":4,"raw":"<mspace width=\"1em\" />","categories":["#MathMLPresentation"]}
+{"line":117,"col":4,"raw":"<semantics>","categories":[]}
+{"line":117,"col":15,"raw":"<mi>","categories":["#MathMLPresentation"]}
+{"line":117,"col":25,"raw":"<annotation encoding=\"application/x-tex\">","categories":[]}
+{"line":118,"col":4,"raw":"<mi foo=\"bar\">","categories":["#MathMLPresentation"]}
+{"line":119,"col":4,"raw":"<unknown-math />","categories":["#flow","#palpable","#phrasing"]}
+{"line":120,"col":4,"raw":"<div>","categories":["#flow","#palpable"]}
+{"line":121,"col":4,"raw":"<rect />","categories":[]}
+{"line":123,"col":3,"raw":"<p>","categories":["#flow","#palpable"]}
+{"line":123,"col":13,"raw":"<math>","categories":["#embedded","#flow","#palpable","#phrasing"]}
+{"line":123,"col":19,"raw":"<mi>","categories":["#MathMLPresentation"]}

@@ -1,0 +1,100 @@
+<!doctype html>
+<html lang="en_US" dir="sideways">
+	<head>
+		<meta charset="utf-8" />
+		<meta charset="iso-8859-1" />
+		<meta name="viewport" />
+		<meta http-equiv="refresh" content="x" />
+		<meta content="no name" />
+		<link />
+		<link rel="stylesheet" />
+		<link rel="bogus" href="a.css" />
+		<link rel="stylesheet" href="a.css" blocking="render" fetchpriority="high" />
+		<title>Attributes</title>
+		<script src="a.js" async defer></script>
+		<script src="a.js" type="module" nomodule></script>
+		<script type="text/javascript" language="javascript">
+			var x = 1;
+		</script>
+	</head>
+	<body bgcolor="red" text="blue" link="green" onload="x()">
+		<h1 id="dup" class="a b a" style="color: red" hidden="until-found" tabindex="x" lang="xx-yy-zz-aaaaaaaaa">Attributes</h1>
+		<h2 id="dup" title="duplicate id" foo="unknown" data-ok="data" aria-foo="unknown aria" xml:lang="en" onclick="x()" ONCLICK="x()">
+			Unknown and duplicated
+		</h2>
+		<p align="center" id="a b" accesskey="ab" contenteditable="maybe" draggable="yes" spellcheck="no" translate="maybe" autocapitalize="x" inputmode="x" enterkeyhint="x" popover="x" is="x-y" nonce="n" slot="s" part="p" exportparts="p" itemscope itemtype="https://example.com/t" itemprop="p" itemid="i" itemref="a">
+			Global attributes
+		</p>
+
+		<!-- links -->
+		<a href="http://exa mple.com">invalid host</a>
+		<a href="https://example.com:99999/">port</a>
+		<a href="javascript:void(0)">javascript</a>
+		<a href="">empty</a>
+		<a href="#x" target="_foo">bad target</a>
+		<a href="#x" target="">empty target</a>
+		<a href="#x" rel="bogus noopener">bogus rel</a>
+		<a href="#x" rel="noopener noopener">duplicate rel</a>
+		<a href="#x" download="a.txt" ping="https://example.com/p" hreflang="x" type="x" referrerpolicy="bogus">link attrs</a>
+		<a href="#x" charset="utf-8" coords="1" shape="rect" rev="x" name="n">obsolete link attrs</a>
+		<a href="#x" attributionsrc="" target="_blank">non-standard</a>
+		<area shape="bogus" coords="x" href="#x" alt="area" />
+
+		<!-- images and embedded content -->
+		<img />
+		<img src="a.png" />
+		<img src="a.png" alt="a" width="abc" height="-1" />
+		<img src="a.png" alt="a" width="10.5" height="10px" />
+		<img src="a.png" alt="a" srcset="b.png 2x" sizes="100vw" loading="eager" decoding="sync" fetchpriority="high" crossorigin="x" />
+		<img src="a.png" alt="a" srcset="b.png 2x, c.png 2x" />
+		<img src="a.png" alt="a" srcset="b.png 100w" />
+		<img src="a.png" alt="a" sizes="100vw" />
+		<img src="a.png" alt="a" border="1" hspace="1" vspace="1" align="left" longdesc="x" name="n" lowsrc="x" />
+		<img src="a.png" alt="a" ismap />
+		<iframe src="a.html"></iframe>
+		<iframe src="a.html" title="t" sandbox="allow-bogus allow-scripts" allow="x" referrerpolicy="x" loading="x" frameborder="0" scrolling="no" marginwidth="0"></iframe>
+		<video src="a.mp4" autoplay="false" controls="controls" loop="" muted playsinline preload="x" poster="p.png"></video>
+		<audio src="a.mp3" autoplay controls preload="auto" crossorigin="anonymous" loop muted></audio>
+		<embed src="a.swf" type="x" />
+		<object data="a.svg" type="image/svg+xml" codebase="x" classid="x" archive="x"></object>
+		<picture><source srcset="a.avif" type="image/avif" media="(min-width: 10px)" sizes="100vw" /><img src="a.png" alt="a" /></picture>
+		<picture><source srcset="a.avif" media="bogus" /><source type="image/avif" /><img src="a.png" alt="a" /></picture>
+
+		<!-- tables -->
+		<table border="1" cellpadding="1" cellspacing="1" width="100" bgcolor="red" summary="x" frame="box" rules="all" align="center">
+			<tr>
+				<td colspan="0" rowspan="x" headers="nope" width="10" height="10" align="left" valign="top" bgcolor="x" nowrap abbr="x" axis="x" char="x" charoff="x">cell</td>
+				<td colspan="2000" rowspan="70000">cell</td>
+				<th scope="bogus" colspan="1" abbr="a">head</th>
+			</tr>
+		</table>
+		<colgroup span="2"></colgroup>
+
+		<!-- lists and text -->
+		<ol start="x" type="1" reversed="reversed" compact><li value="y" type="a">x</li></ol>
+		<ul type="disc" compact><li>x</li></ul>
+		<blockquote cite="not a url">q</blockquote>
+		<q cite="https://example.com/">q</q>
+		<time datetime="2026-13-45">bad date</time>
+		<time datetime="2026-11-17T10:00:00Z">good date</time>
+		<data value="x">d</data>
+		<br clear="all" />
+		<hr noshade size="1" width="1" align="left" color="red" />
+		<pre width="80" wrap>p</pre>
+		<font color="red" face="x" size="1">font</font>
+		<center>center</center>
+		<marquee>marquee</marquee>
+		<details open="open" name="n">d</details>
+		<dialog open closedby="any">d</dialog>
+		<div popover="auto" popovertarget="x">div</div>
+		<button popovertarget="nope" popovertargetaction="bogus" command="show-modal" commandfor="nope" type="bogus" formaction="a" formmethod="x" formenctype="x" formtarget="x" formnovalidate="x">b</button>
+		<button type="submit" value="v" name="n" disabled="disabled" autofocus>b</button>
+		<button type="button" autofocus>autofocus again</button>
+		<span autofocus>autofocus on a span</span>
+
+		<!-- svg and math attributes in html -->
+		<svg viewBox="0 0 10 10" width="10" height="10" xmlns="http://www.w3.org/2000/svg" foo="bar">
+			<rect x="0" y="0" width="5" height="5" fill="red" stroke="x" rx="1" ry="1" bogus="x" />
+		</svg>
+	</body>
+</html>

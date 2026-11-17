@@ -1,0 +1,89 @@
+{"col":1,"line":1,"message":"Require the \"h1\" element","raw":"<","ruleId":"require-h1","severity":"warning"}
+{"col":1,"line":3,"message":"Require an element. (Need \"title\")","raw":"<head>","ruleId":"permitted-contents","severity":"error"}
+{"col":7,"line":6,"message":"The \"maction\" element is deprecated","raw":"<maction>","ruleId":"no-deprecated-element","severity":"warning"}
+{"col":38,"line":6,"message":"The \"encoding\" attribute must not be empty. It expects the MIME Type format (https://mimesniff.spec.whatwg.org/#valid-mime-type)","raw":"","ruleId":"no-invalid-attr-value","severity":"error"}
+{"col":7,"line":7,"message":"The \"maction\" element is deprecated","raw":"<maction>","ruleId":"no-deprecated-element","severity":"warning"}
+{"col":42,"line":7,"message":"The \"encoding\" attribute must not be empty. It expects the MIME Type format (https://mimesniff.spec.whatwg.org/#valid-mime-type)","raw":"","ruleId":"no-invalid-attr-value","severity":"error"}
+{"col":7,"line":8,"message":"The \"maction\" element is deprecated","raw":"<maction actiontype=\"\" selection=\"\">","ruleId":"no-deprecated-element","severity":"warning"}
+{"col":16,"line":8,"message":"The \"actiontype\" attribute is deprecated","raw":"actiontype","ruleId":"no-deprecated-attr","severity":"warning"}
+{"col":16,"line":8,"message":"The \"actiontype\" attribute is non-standard","raw":"actiontype","ruleId":"no-nonstandard-features","severity":"warning"}
+{"col":30,"line":8,"message":"The \"selection\" attribute is deprecated","raw":"selection","ruleId":"no-deprecated-attr","severity":"warning"}
+{"col":30,"line":8,"message":"The \"selection\" attribute is non-standard","raw":"selection","ruleId":"no-nonstandard-features","severity":"warning"}
+{"col":1,"line":9,"message":"The element should not empty","raw":"<math alttext=\"\" display=\"\" xmlns=\"\">","ruleId":"no-empty-palpable-content","severity":"warning"}
+{"col":27,"line":9,"message":"The \"display\" attribute expects either \"block\", \"inline\"","raw":"","ruleId":"no-invalid-attr-value","severity":"error"}
+{"col":7,"line":10,"message":"The \"menclose\" element is non-standard","raw":"<menclose notation=\"\">","ruleId":"no-nonstandard-features","severity":"warning"}
+{"col":17,"line":10,"message":"The \"notation\" attribute is non-standard","raw":"notation","ruleId":"no-nonstandard-features","severity":"warning"}
+{"col":7,"line":12,"message":"The \"mfenced\" element is deprecated","raw":"<mfenced close=\"\" open=\"\" separators=\"\">","ruleId":"no-deprecated-element","severity":"warning"}
+{"col":7,"line":12,"message":"The \"mfenced\" element is non-standard","raw":"<mfenced close=\"\" open=\"\" separators=\"\">","ruleId":"no-nonstandard-features","severity":"warning"}
+{"col":7,"line":13,"message":"Require an element. (Need \"#text\")","raw":"<mfrac denomalign=\"\" linethickness=\"\" numalign=\"\">","ruleId":"permitted-contents","severity":"error"}
+{"col":14,"line":13,"message":"The \"denomalign\" attribute is deprecated","raw":"denomalign","ruleId":"no-deprecated-attr","severity":"warning"}
+{"col":14,"line":13,"message":"The \"denomalign\" attribute is non-standard","raw":"denomalign","ruleId":"no-nonstandard-features","severity":"warning"}
+{"col":43,"line":13,"message":"The \"linethickness\" attribute expects the CSS Syntax \"<length-percentage>\" (https://csstree.github.io/docs/syntax/#Type:length-percentage)","raw":"","ruleId":"no-invalid-attr-value","severity":"error"}
+{"col":45,"line":13,"message":"The \"numalign\" attribute is deprecated","raw":"numalign","ruleId":"no-deprecated-attr","severity":"warning"}
+{"col":45,"line":13,"message":"The \"numalign\" attribute is non-standard","raw":"numalign","ruleId":"no-nonstandard-features","severity":"warning"}
+{"col":24,"line":14,"message":"The \"mathvariant\" attribute expects normal","raw":"","ruleId":"no-invalid-attr-value","severity":"error"}
+{"col":22,"line":15,"message":"The \"subscriptshift\" attribute is deprecated","raw":"subscriptshift","ruleId":"no-deprecated-attr","severity":"warning"}
+{"col":22,"line":15,"message":"The \"subscriptshift\" attribute is non-standard","raw":"subscriptshift","ruleId":"no-nonstandard-features","severity":"warning"}
+{"col":40,"line":15,"message":"The \"superscriptshift\" attribute is deprecated","raw":"superscriptshift","ruleId":"no-deprecated-attr","severity":"warning"}
+{"col":40,"line":15,"message":"The \"superscriptshift\" attribute is non-standard","raw":"superscriptshift","ruleId":"no-nonstandard-features","severity":"warning"}
+{"col":11,"line":17,"message":"The \"accent\" attribute is non-standard","raw":"accent","ruleId":"no-nonstandard-features","severity":"warning"}
+{"col":19,"line":17,"message":"The \"accent\" attribute expects either \"true\", \"false\"","raw":"","ruleId":"no-invalid-attr-value","severity":"error"}
+{"col":28,"line":17,"message":"The \"fence\" attribute expects either \"true\", \"false\"","raw":"","ruleId":"no-invalid-attr-value","severity":"error"}
+{"col":36,"line":17,"message":"The \"form\" attribute expects either \"prefix\", \"infix\", \"postfix\"","raw":"","ruleId":"no-invalid-attr-value","severity":"error"}
+{"col":47,"line":17,"message":"The \"largeop\" attribute expects either \"true\", \"false\"","raw":"","ruleId":"no-invalid-attr-value","severity":"error"}
+{"col":57,"line":17,"message":"The \"lspace\" attribute expects the CSS Syntax \"<length-percentage>\" (https://csstree.github.io/docs/syntax/#Type:length-percentage)","raw":"","ruleId":"no-invalid-attr-value","severity":"error"}
+{"col":68,"line":17,"message":"The \"maxsize\" attribute expects the CSS Syntax \"<length-percentage>\" (https://csstree.github.io/docs/syntax/#Type:length-percentage)","raw":"","ruleId":"no-invalid-attr-value","severity":"error"}
+{"col":79,"line":17,"message":"The \"minsize\" attribute expects the CSS Syntax \"<length-percentage>\" (https://csstree.github.io/docs/syntax/#Type:length-percentage)","raw":"","ruleId":"no-invalid-attr-value","severity":"error"}
+{"col":96,"line":17,"message":"The \"movablelimits\" attribute expects either \"true\", \"false\"","raw":"","ruleId":"no-invalid-attr-value","severity":"error"}
+{"col":106,"line":17,"message":"The \"rspace\" attribute expects the CSS Syntax \"<length-percentage>\" (https://csstree.github.io/docs/syntax/#Type:length-percentage)","raw":"","ruleId":"no-invalid-attr-value","severity":"error"}
+{"col":119,"line":17,"message":"The \"separator\" attribute expects either \"true\", \"false\"","raw":"","ruleId":"no-invalid-attr-value","severity":"error"}
+{"col":131,"line":17,"message":"The \"stretchy\" attribute expects either \"true\", \"false\"","raw":"","ruleId":"no-invalid-attr-value","severity":"error"}
+{"col":144,"line":17,"message":"The \"symmetric\" attribute expects either \"true\", \"false\"","raw":"","ruleId":"no-invalid-attr-value","severity":"error"}
+{"col":7,"line":18,"message":"Require an element. (Need \"#text\")","raw":"<mover accent=\"\">","ruleId":"permitted-contents","severity":"error"}
+{"col":22,"line":18,"message":"The \"accent\" attribute expects either \"true\", \"false\"","raw":"","ruleId":"no-invalid-attr-value","severity":"error"}
+{"col":23,"line":19,"message":"The \"depth\" attribute expects the CSS Syntax \"<length-percentage>\" (https://csstree.github.io/docs/syntax/#Type:length-percentage)","raw":"","ruleId":"no-invalid-attr-value","severity":"error"}
+{"col":33,"line":19,"message":"The \"height\" attribute expects the CSS Syntax \"<length-percentage>\" (https://csstree.github.io/docs/syntax/#Type:length-percentage)","raw":"","ruleId":"no-invalid-attr-value","severity":"error"}
+{"col":43,"line":19,"message":"The \"lspace\" attribute expects the CSS Syntax \"<length-percentage>\" (https://csstree.github.io/docs/syntax/#Type:length-percentage)","raw":"","ruleId":"no-invalid-attr-value","severity":"error"}
+{"col":54,"line":19,"message":"The \"voffset\" attribute expects the CSS Syntax \"<length-percentage>\" (https://csstree.github.io/docs/syntax/#Type:length-percentage)","raw":"","ruleId":"no-invalid-attr-value","severity":"error"}
+{"col":63,"line":19,"message":"The \"width\" attribute expects the CSS Syntax \"<length-percentage>\" (https://csstree.github.io/docs/syntax/#Type:length-percentage)","raw":"","ruleId":"no-invalid-attr-value","severity":"error"}
+{"col":7,"line":22,"message":"Require an element. (Need \"#text\")","raw":"<mroot>","ruleId":"permitted-contents","severity":"error"}
+{"col":22,"line":25,"message":"The \"depth\" attribute expects the CSS Syntax \"<length-percentage>\" (https://csstree.github.io/docs/syntax/#Type:length-percentage)","raw":"","ruleId":"no-invalid-attr-value","severity":"error"}
+{"col":32,"line":25,"message":"The \"height\" attribute expects the CSS Syntax \"<length-percentage>\" (https://csstree.github.io/docs/syntax/#Type:length-percentage)","raw":"","ruleId":"no-invalid-attr-value","severity":"error"}
+{"col":41,"line":25,"message":"The \"width\" attribute expects the CSS Syntax \"<length-percentage>\" (https://csstree.github.io/docs/syntax/#Type:length-percentage)","raw":"","ruleId":"no-invalid-attr-value","severity":"error"}
+{"col":15,"line":27,"message":"The \"background\" attribute is deprecated","raw":"background","ruleId":"no-deprecated-attr","severity":"warning"}
+{"col":29,"line":27,"message":"The \"color\" attribute is deprecated","raw":"color","ruleId":"no-deprecated-attr","severity":"warning"}
+{"col":38,"line":27,"message":"The \"fontsize\" attribute is deprecated","raw":"fontsize","ruleId":"no-deprecated-attr","severity":"warning"}
+{"col":50,"line":27,"message":"The \"fontstyle\" attribute is deprecated","raw":"fontstyle","ruleId":"no-deprecated-attr","severity":"warning"}
+{"col":63,"line":27,"message":"The \"fontweight\" attribute is deprecated","raw":"fontweight","ruleId":"no-deprecated-attr","severity":"warning"}
+{"col":7,"line":28,"message":"Require an element. (Need \"#text\")","raw":"<msub subscriptshift=\"\">","ruleId":"permitted-contents","severity":"error"}
+{"col":13,"line":28,"message":"The \"subscriptshift\" attribute is deprecated","raw":"subscriptshift","ruleId":"no-deprecated-attr","severity":"warning"}
+{"col":13,"line":28,"message":"The \"subscriptshift\" attribute is non-standard","raw":"subscriptshift","ruleId":"no-nonstandard-features","severity":"warning"}
+{"col":7,"line":29,"message":"Require an element. (Need \"#text\")","raw":"<msubsup subscriptshift=\"\" superscriptshift=\"\">","ruleId":"permitted-contents","severity":"error"}
+{"col":16,"line":29,"message":"The \"subscriptshift\" attribute is deprecated","raw":"subscriptshift","ruleId":"no-deprecated-attr","severity":"warning"}
+{"col":16,"line":29,"message":"The \"subscriptshift\" attribute is non-standard","raw":"subscriptshift","ruleId":"no-nonstandard-features","severity":"warning"}
+{"col":34,"line":29,"message":"The \"superscriptshift\" attribute is deprecated","raw":"superscriptshift","ruleId":"no-deprecated-attr","severity":"warning"}
+{"col":34,"line":29,"message":"The \"superscriptshift\" attribute is non-standard","raw":"superscriptshift","ruleId":"no-nonstandard-features","severity":"warning"}
+{"col":7,"line":30,"message":"Require an element. (Need \"#text\")","raw":"<msup superscriptshift=\"\">","ruleId":"permitted-contents","severity":"error"}
+{"col":13,"line":30,"message":"The \"superscriptshift\" attribute is deprecated","raw":"superscriptshift","ruleId":"no-deprecated-attr","severity":"warning"}
+{"col":13,"line":30,"message":"The \"superscriptshift\" attribute is non-standard","raw":"superscriptshift","ruleId":"no-nonstandard-features","severity":"warning"}
+{"col":15,"line":31,"message":"The \"align\" attribute is non-standard","raw":"align","ruleId":"no-nonstandard-features","severity":"warning"}
+{"col":24,"line":31,"message":"The \"columnalign\" attribute is non-standard","raw":"columnalign","ruleId":"no-nonstandard-features","severity":"warning"}
+{"col":39,"line":31,"message":"The \"columnlines\" attribute is non-standard","raw":"columnlines","ruleId":"no-nonstandard-features","severity":"warning"}
+{"col":54,"line":31,"message":"The \"columnspacing\" attribute is non-standard","raw":"columnspacing","ruleId":"no-nonstandard-features","severity":"warning"}
+{"col":71,"line":31,"message":"The \"frame\" attribute is non-standard","raw":"frame","ruleId":"no-nonstandard-features","severity":"warning"}
+{"col":80,"line":31,"message":"The \"framespacing\" attribute is non-standard","raw":"framespacing","ruleId":"no-nonstandard-features","severity":"warning"}
+{"col":96,"line":31,"message":"The \"rowalign\" attribute is non-standard","raw":"rowalign","ruleId":"no-nonstandard-features","severity":"warning"}
+{"col":108,"line":31,"message":"The \"rowlines\" attribute is non-standard","raw":"rowlines","ruleId":"no-nonstandard-features","severity":"warning"}
+{"col":120,"line":31,"message":"The \"rowspacing\" attribute is non-standard","raw":"rowspacing","ruleId":"no-nonstandard-features","severity":"warning"}
+{"col":134,"line":31,"message":"The \"width\" attribute is non-standard","raw":"width","ruleId":"no-nonstandard-features","severity":"warning"}
+{"col":18,"line":32,"message":"The \"columnalign\" attribute is non-standard","raw":"columnalign","ruleId":"no-nonstandard-features","severity":"warning"}
+{"col":45,"line":32,"message":"The \"columnspan\" attribute must not be empty. It expects integer greater than 0","raw":"","ruleId":"no-invalid-attr-value","severity":"error"}
+{"col":47,"line":32,"message":"The \"rowalign\" attribute is non-standard","raw":"rowalign","ruleId":"no-nonstandard-features","severity":"warning"}
+{"col":68,"line":32,"message":"The \"rowspan\" attribute must not be empty. It expects integer greater than 0","raw":"","ruleId":"no-invalid-attr-value","severity":"error"}
+{"col":18,"line":34,"message":"The \"columnalign\" attribute is non-standard","raw":"columnalign","ruleId":"no-nonstandard-features","severity":"warning"}
+{"col":33,"line":34,"message":"The \"rowalign\" attribute is non-standard","raw":"rowalign","ruleId":"no-nonstandard-features","severity":"warning"}
+{"col":7,"line":35,"message":"Require an element. (Need \"#text\")","raw":"<munder accentunder=\"\">","ruleId":"permitted-contents","severity":"error"}
+{"col":28,"line":35,"message":"The \"accentunder\" attribute expects either \"true\", \"false\"","raw":"","ruleId":"no-invalid-attr-value","severity":"error"}
+{"col":7,"line":36,"message":"Require an element. (Need \"#text\")","raw":"<munderover accent=\"\" accentunder=\"\">","ruleId":"permitted-contents","severity":"error"}
+{"col":27,"line":36,"message":"The \"accent\" attribute expects either \"true\", \"false\"","raw":"","ruleId":"no-invalid-attr-value","severity":"error"}
+{"col":42,"line":36,"message":"The \"accentunder\" attribute expects either \"true\", \"false\"","raw":"","ruleId":"no-invalid-attr-value","severity":"error"}

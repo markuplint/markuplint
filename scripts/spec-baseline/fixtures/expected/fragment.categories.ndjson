@@ -1,0 +1,38 @@
+{"line":1,"col":1,"raw":"<li>","categories":[]}
+{"line":2,"col":1,"raw":"<dt>","categories":[]}
+{"line":3,"col":1,"raw":"<dd>","categories":[]}
+{"line":5,"col":1,"raw":"<p>","categories":["#flow","#palpable"]}
+{"line":6,"col":1,"raw":"<h3>","categories":["#flow","#heading","#palpable"]}
+{"line":7,"col":1,"raw":"<h5>","categories":["#flow","#heading","#palpable"]}
+{"line":8,"col":1,"raw":"<section>","categories":["#flow","#palpable","#sectioning"]}
+{"line":9,"col":2,"raw":"<h1>","categories":["#flow","#heading","#palpable"]}
+{"line":10,"col":2,"raw":"<h1>","categories":["#flow","#heading","#palpable"]}
+{"line":11,"col":2,"raw":"<h4>","categories":["#flow","#heading","#palpable"]}
+{"line":13,"col":1,"raw":"<div>","categories":["#flow","#palpable"]}
+{"line":14,"col":2,"raw":"<main>","categories":["#flow","#palpable"]}
+{"line":15,"col":2,"raw":"<main>","categories":["#flow","#palpable"]}
+{"line":16,"col":2,"raw":"<main hidden>","categories":["#flow","#palpable"]}
+{"line":18,"col":1,"raw":"<nav>","categories":["#flow","#palpable","#sectioning"]}
+{"line":18,"col":6,"raw":"<p>","categories":["#flow","#palpable"]}
+{"line":19,"col":1,"raw":"<article>","categories":["#flow","#palpable","#sectioning"]}
+{"line":19,"col":10,"raw":"<article>","categories":["#flow","#palpable","#sectioning"]}
+{"line":19,"col":19,"raw":"<article>","categories":["#flow","#palpable","#sectioning"]}
+{"line":20,"col":1,"raw":"<header>","categories":["#flow","#palpable"]}
+{"line":20,"col":9,"raw":"<header>","categories":["#flow","#palpable"]}
+{"line":21,"col":1,"raw":"<footer>","categories":["#flow","#palpable"]}
+{"line":21,"col":9,"raw":"<header>","categories":["#flow","#palpable"]}
+{"line":22,"col":1,"raw":"<address>","categories":["#flow","#palpable"]}
+{"line":22,"col":10,"raw":"<address>","categories":["#flow","#palpable"]}
+{"line":23,"col":1,"raw":"<a href=\"#x\">","categories":["#flow","#interactive","#palpable","#phrasing"]}
+{"line":24,"col":1,"raw":"<img src=\"a.png\" alt=\"a\" />","categories":["#embedded","#flow","#palpable","#phrasing"]}
+{"line":25,"col":1,"raw":"<input type=\"text\" />","categories":["#flow","#interactive","#palpable","#phrasing"]}
+{"line":26,"col":1,"raw":"<custom-element>","categories":["#flow","#palpable","#phrasing"]}
+{"line":26,"col":17,"raw":"<slot name=\"x\">","categories":["#flow","#phrasing"]}
+{"line":27,"col":1,"raw":"<unknown-tag>","categories":["#flow","#palpable","#phrasing"]}
+{"line":28,"col":1,"raw":"<unknowntag>","categories":[]}
+{"line":29,"col":1,"raw":"<UL>","categories":["#flow","#palpable"]}
+{"line":29,"col":5,"raw":"<LI>","categories":[]}
+{"line":30,"col":1,"raw":"<span>","categories":["#flow","#palpable","#phrasing"]}
+{"line":31,"col":1,"raw":"<div>","categories":["#flow","#palpable"]}
+{"line":32,"col":1,"raw":"<p>","categories":["#flow","#palpable"]}
+{"line":33,"col":1,"raw":"<p>","categories":["#flow","#palpable"]}

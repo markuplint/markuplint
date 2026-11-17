@@ -1,0 +1,126 @@
+<!doctype html>
+<html lang="en">
+	<head>
+		<meta charset="utf-8" />
+		<title>Forms</title>
+	</head>
+	<body>
+		<h1>Forms</h1>
+		<form id="f1" action="/a" method="get" enctype="multipart/form-data" novalidate autocomplete="off" target="_blank" accept-charset="utf-8" name="f1">
+			<!-- labels and controls -->
+			<label for="a">A</label>
+			<input id="a" name="a" type="text" />
+			<label for="missing">refers to nothing</label>
+			<label for="d">refers to a div</label>
+			<div id="d">not labelable</div>
+			<label>no control</label>
+			<label>two controls <input type="text" name="x1" /> <input type="text" name="x2" /></label>
+			<label for="a">second label of a</label>
+			<label>nested <input type="text" name="n" /></label>
+			<label for="b"><input id="b" type="text" name="b" /></label>
+			<label for="c"><input id="other" type="text" name="c" /></label>
+			<input type="text" form="missing-form" name="y" />
+			<input type="text" form="f1" name="z" />
+			<input type="text" form="d" name="z2" />
+
+			<!-- input types and their attributes -->
+			<input type="text" value="v" size="10" maxlength="5" minlength="2" pattern="[a-z]+" placeholder="p" readonly required />
+			<input type="text" maxlength="-1" minlength="x" size="0" pattern="[" />
+			<input type="number" min="1" max="10" step="2" value="x" />
+			<input type="number" min="x" max="1" step="0" />
+			<input type="range" min="0" max="10" step="1" value="5" list="r" />
+			<input type="range" min="10" max="0" value="50" />
+			<input type="email" multiple value="a@example.com" />
+			<input type="email" value="not an email" />
+			<input type="url" value="not a url" />
+			<input type="tel" pattern="[0-9]+" />
+			<input type="date" min="2026-01-01" max="2025-01-01" value="2026-13-01" />
+			<input type="time" step="1" />
+			<input type="datetime-local" value="2026-01-01T10:00" />
+			<input type="month" value="2026-01" />
+			<input type="week" value="2026-W01" />
+			<input type="color" value="#ff0000" />
+			<input type="color" value="red" />
+			<input type="checkbox" checked value="v" />
+			<input type="checkbox" min="1" size="3" />
+			<input type="radio" name="r" checked />
+			<input type="radio" name="r" checked />
+			<input type="file" accept="image/*" multiple />
+			<input type="file" value="not allowed" />
+			<input type="password" autocomplete="current-password" />
+			<input type="password" autocomplete="bogus" />
+			<input type="search" name="q" dirname="q.dir" />
+			<input type="hidden" name="h" value="x" required />
+			<input type="image" src="a.png" alt="go" width="10" height="10" formaction="/x" />
+			<input type="image" />
+			<input type="submit" value="Send" formaction="/b" formmethod="post" />
+			<input type="reset" />
+			<input type="button" value="b" />
+			<input type="bogus" />
+			<input type="TEXT" />
+			<input />
+			<input name="dup" /><input name="dup" />
+
+			<!-- datalist, select, option, optgroup -->
+			<input list="colors" name="c1" />
+			<input list="nothing" name="c2" />
+			<input list="d" name="c3" />
+			<input list="colors" name="c4" type="checkbox" />
+			<datalist id="colors">
+				<option value="red"></option>
+				<option value="green" label="Green"></option>
+				<option></option>
+			</datalist>
+			<select name="s1" required size="3">
+				<option value="">Choose</option>
+				<option value="a" selected>A</option>
+				<option value="b" selected>B</option>
+			</select>
+			<select name="s2" multiple size="x">
+				<option value="a" selected>A</option>
+				<option value="b" selected>B</option>
+				<option value="c" disabled label="C">c</option>
+			</select>
+			<select name="s3">
+				<option>No value and no selected</option>
+				<optgroup label="g" disabled>
+					<option>In the group</option>
+				</optgroup>
+				<optgroup>
+					<option>A group without a label</option>
+				</optgroup>
+			</select>
+			<select name="s4">
+				<option label="">Empty label</option>
+			</select>
+			<select name="s5" required>
+				<option value="a">The first option has a value</option>
+			</select>
+			<select name="s6" required multiple>
+				<option value="a">x</option>
+			</select>
+
+			<!-- textarea, button, output, meter, progress -->
+			<textarea name="t1" rows="3" cols="20" maxlength="10" minlength="1" wrap="hard" placeholder="p">text</textarea>
+			<textarea name="t2" rows="x" cols="0" wrap="bogus"></textarea>
+			<button type="submit" form="f1" formaction="/c">send</button>
+			<button type="submit" form="missing-form">send to nothing</button>
+			<output for="a b" name="o1">o</output>
+			<output for="missing" name="o2">o</output>
+			<meter min="0" max="10" value="5" low="2" high="8" optimum="5"></meter>
+			<meter min="10" max="0" value="50" low="20" high="5" optimum="500"></meter>
+			<progress max="100" value="50"></progress>
+			<progress max="0" value="-1"></progress>
+
+			<!-- fieldset -->
+			<fieldset disabled name="fs" form="f1">
+				<legend>Group</legend>
+				<input type="text" name="inside" />
+			</fieldset>
+		</form>
+		<form id="f1">the same id twice</form>
+		<form>
+			<form>a form in a form</form>
+		</form>
+	</body>
+</html>

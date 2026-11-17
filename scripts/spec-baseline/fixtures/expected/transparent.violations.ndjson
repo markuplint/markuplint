@@ -1,0 +1,46 @@
+{"col":2,"line":3,"message":"Missing the end tag","raw":"<head>","ruleId":"require-end-tag","severity":"warning"}
+{"col":36,"line":6,"message":"\"href\" should be before \"rel\"","raw":"href","ruleId":"attr-order","severity":"warning"}
+{"col":3,"line":7,"message":"Missing the end tag","raw":"<noscript>","ruleId":"require-end-tag","severity":"warning"}
+{"col":50,"line":7,"message":"Orphaned end tag detected","raw":"</noscript>","ruleId":"no-orphaned-end-tag","severity":"error"}
+{"col":61,"line":7,"message":"A duplicate \"body\" start tag detected","raw":"\n\t</head>\n\t<body>\n\t\t","ruleId":"no-stray-head-or-body-tag","severity":"error"}
+{"col":61,"line":7,"message":"A stray \"head\" end tag detected","raw":"\n\t</head>\n\t<body>\n\t\t","ruleId":"no-stray-head-or-body-tag","severity":"error"}
+{"col":2,"line":8,"message":"Illegal characters must escape in character reference","raw":"<","ruleId":"no-unescaped-char","severity":"error"}
+{"col":2,"line":9,"message":"Illegal characters must escape in character reference","raw":"<","ruleId":"no-unescaped-char","severity":"error"}
+{"col":15,"line":13,"message":"Missing \"x\" ID","raw":"#x","ruleId":"no-broken-fragment-link","severity":"warning"}
+{"col":18,"line":14,"message":"Missing \"x\" ID","raw":"#x","ruleId":"no-broken-fragment-link","severity":"warning"}
+{"col":22,"line":14,"message":"The \"div\" element is not allowed in the \"span\" element through the transparent model in this context","raw":"<div>","ruleId":"permitted-contents","severity":"error"}
+{"col":17,"line":15,"message":"Missing \"x\" ID","raw":"#x","ruleId":"no-broken-fragment-link","severity":"warning"}
+{"col":17,"line":16,"message":"Missing \"x\" ID","raw":"#x","ruleId":"no-broken-fragment-link","severity":"warning"}
+{"col":21,"line":16,"message":"The \"a\" element is a transparent model but also disallows the \"button\" element in this context","raw":"<button type=\"button\">","ruleId":"permitted-contents","severity":"error"}
+{"col":11,"line":17,"message":"The \"name\" attribute is deprecated","raw":"name","ruleId":"no-deprecated-attr","severity":"warning"}
+{"col":20,"line":17,"message":"The \"a\" element is a transparent model but also disallows the \"button\" element in this context","raw":"<button type=\"button\">","ruleId":"permitted-contents","severity":"error"}
+{"col":18,"line":18,"message":"Missing \"x\" ID","raw":"#x","ruleId":"no-broken-fragment-link","severity":"warning"}
+{"col":22,"line":18,"message":"The \"h2\" element is not allowed in the \"span\" element through the transparent model in this context","raw":"<h2>","ruleId":"permitted-contents","severity":"error"}
+{"col":17,"line":20,"message":"Missing \"x\" ID","raw":"#x","ruleId":"no-broken-fragment-link","severity":"warning"}
+{"col":18,"line":24,"message":"Missing \"x\" ID","raw":"#x","ruleId":"no-broken-fragment-link","severity":"warning"}
+{"col":28,"line":27,"message":"The \"name\" attribute is deprecated","raw":"name","ruleId":"no-deprecated-attr","severity":"warning"}
+{"col":19,"line":31,"message":"The \"div\" element is not allowed in the \"span\" element through the transparent model in this context","raw":"<div>","ruleId":"permitted-contents","severity":"error"}
+{"col":3,"line":34,"message":"The \"list\" role expects the \"listitem\" role","raw":"<ul>","ruleId":"require-owned-elements","severity":"error"}
+{"col":4,"line":35,"message":"The \"ins\" element is not allowed in the \"ul\" element in this context","raw":"<ins>","ruleId":"permitted-contents","severity":"error"}
+{"col":15,"line":39,"message":"Missing \"x\" ID","raw":"#x","ruleId":"no-broken-fragment-link","severity":"warning"}
+{"col":18,"line":40,"message":"Missing \"x\" ID","raw":"#x","ruleId":"no-broken-fragment-link","severity":"warning"}
+{"col":32,"line":40,"message":"The \"div\" element is not allowed in the \"span\" element through the transparent model in this context","raw":"<div>","ruleId":"permitted-contents","severity":"error"}
+{"col":22,"line":41,"message":"Missing \"x\" ID","raw":"#x","ruleId":"no-broken-fragment-link","severity":"warning"}
+{"col":12,"line":42,"message":"Missing \"x\" ID","raw":"#x","ruleId":"no-broken-fragment-link","severity":"warning"}
+{"col":21,"line":42,"message":"The \"a\" element is a transparent model but also disallows the \"button\" element in this context","raw":"<button type=\"button\">","ruleId":"permitted-contents","severity":"error"}
+{"col":37,"line":47,"message":"The \"div\" element is not allowed in the \"span\" element through the transparent model in this context","raw":"<div>","ruleId":"permitted-contents","severity":"error"}
+{"col":4,"line":55,"message":"The \"source\" element is not allowed in the \"body\" element through the transparent model in this context","raw":"<source src=\"a.mp4\" type=\"video/mp4\" />","ruleId":"permitted-contents","severity":"error"}
+{"col":40,"line":57,"message":"Missing \"x\" ID","raw":"#x","ruleId":"no-broken-fragment-link","severity":"warning"}
+{"col":24,"line":62,"message":"The \"param\" element is obsolete","raw":"<param name=\"p\" value=\"v\" />","ruleId":"no-obsolete-element","severity":"error"}
+{"col":24,"line":62,"message":"The \"param\" element is not allowed in the \"object\" element in this context","raw":"<param name=\"p\" value=\"v\" />","ruleId":"permitted-contents","severity":"error"}
+{"col":24,"line":62,"message":"Missing the end tag","raw":"<param name=\"p\" value=\"v\" />","ruleId":"require-end-tag","severity":"warning"}
+{"col":59,"line":64,"message":"Missing \"x\" ID","raw":"#x","ruleId":"no-broken-fragment-link","severity":"warning"}
+{"col":63,"line":64,"message":"\"alt\" should be before \"shape\"","raw":"alt","ruleId":"attr-order","severity":"warning"}
+{"col":52,"line":65,"message":"The \"div\" element is not allowed in the \"span\" element through the transparent model in this context","raw":"<div>","ruleId":"permitted-contents","severity":"error"}
+{"col":22,"line":66,"message":"\"height\" should be before \"width\"","raw":"height","ruleId":"attr-order","severity":"warning"}
+{"col":28,"line":67,"message":"\"height\" should be before \"width\"","raw":"height","ruleId":"attr-order","severity":"warning"}
+{"col":40,"line":67,"message":"The \"div\" element is not allowed in the \"span\" element through the transparent model in this context","raw":"<div>","ruleId":"permitted-contents","severity":"error"}
+{"col":22,"line":68,"message":"\"height\" should be before \"width\"","raw":"height","ruleId":"attr-order","severity":"warning"}
+{"col":43,"line":68,"message":"Missing \"x\" ID","raw":"#x","ruleId":"no-broken-fragment-link","severity":"warning"}
+{"col":19,"line":70,"message":"The \"div\" element is not allowed in the \"span\" element through the transparent model in this context","raw":"<div>","ruleId":"permitted-contents","severity":"error"}
+{"col":2,"line":71,"message":"Orphaned end tag detected","raw":"</body>","ruleId":"no-orphaned-end-tag","severity":"error"}

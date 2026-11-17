@@ -1,0 +1,66 @@
+{"col":2,"line":3,"message":"Missing the end tag","raw":"<head>","ruleId":"require-end-tag","severity":"warning"}
+{"col":3,"line":6,"message":"The \"title\" element is not allowed in the \"head\" element in this context","raw":"<title>","ruleId":"permitted-contents","severity":"error"}
+{"col":22,"line":9,"message":"A duplicate \"body\" start tag detected","raw":"\n\t</head>\n\t<body>\n\t\t","ruleId":"no-stray-head-or-body-tag","severity":"error"}
+{"col":22,"line":9,"message":"A stray \"head\" end tag detected","raw":"\n\t</head>\n\t<body>\n\t\t","ruleId":"no-stray-head-or-body-tag","severity":"error"}
+{"col":2,"line":10,"message":"Illegal characters must escape in character reference","raw":"<","ruleId":"no-unescaped-char","severity":"error"}
+{"col":2,"line":11,"message":"Illegal characters must escape in character reference","raw":"<","ruleId":"no-unescaped-char","severity":"error"}
+{"col":4,"line":16,"message":"The \"div\" element is not allowed in the \"ul\" element in this context","raw":"<div>","ruleId":"permitted-contents","severity":"error"}
+{"col":4,"line":20,"message":"The \"p\" element is not allowed in the \"ol\" element in this context","raw":"<p>","ruleId":"permitted-contents","severity":"error"}
+{"col":3,"line":24,"message":"Require one or more elements. (Need \"dd\")","raw":"<dl>","ruleId":"permitted-contents","severity":"error"}
+{"col":3,"line":29,"message":"Require one or more elements. (Need \"dt\")","raw":"<dl>","ruleId":"permitted-contents","severity":"error"}
+{"col":4,"line":34,"message":"Require one or more elements. (Need \"dt\")","raw":"<div>","ruleId":"permitted-contents","severity":"error"}
+{"col":4,"line":45,"message":"The \"thead\" element is not allowed in the \"table\" element in this context","raw":"<thead>","ruleId":"permitted-contents","severity":"error"}
+{"col":4,"line":58,"message":"The \"colgroup\" element is not allowed in the \"table\" element in this context","raw":"<colgroup>","ruleId":"permitted-contents","severity":"error"}
+{"col":3,"line":63,"message":"Require an element. (Need \"h6\")","raw":"<hgroup>","ruleId":"permitted-contents","severity":"error"}
+{"col":4,"line":65,"message":"The \"h1\" element is duplicated","raw":"<h1>","ruleId":"no-duplicate-h1","severity":"warning"}
+{"col":3,"line":68,"message":"Require an element. (Need \"h6\")","raw":"<hgroup>","ruleId":"permitted-contents","severity":"error"}
+{"col":21,"line":74,"message":"\"alt\" should be before \"src\"","raw":"alt","ruleId":"attr-order","severity":"warning"}
+{"col":4,"line":75,"message":"The \"figcaption\" element is not allowed in the \"figure\" element in this context","raw":"<figcaption>","ruleId":"permitted-contents","severity":"error"}
+{"col":3,"line":81,"message":"Require an element. (Need \"summary\")","raw":"<details>","ruleId":"permitted-contents","severity":"error"}
+{"col":4,"line":87,"message":"The \"summary\" element is not allowed in the \"details\" element in this context","raw":"<summary>","ruleId":"permitted-contents","severity":"error"}
+{"col":4,"line":92,"message":"The \"legend\" element is not allowed in the \"fieldset\" element in this context","raw":"<legend>","ruleId":"permitted-contents","severity":"error"}
+{"col":3,"line":95,"message":"The element should not empty","raw":"<p>","ruleId":"no-empty-palpable-content","severity":"warning"}
+{"col":3,"line":95,"message":"Missing the end tag","raw":"<p>","ruleId":"require-end-tag","severity":"warning"}
+{"col":3,"line":103,"message":"The element should not empty","raw":"","ruleId":"no-empty-palpable-content","severity":"warning"}
+{"col":3,"line":103,"message":"Orphaned end tag detected","raw":"</p>","ruleId":"no-orphaned-end-tag","severity":"error"}
+{"col":3,"line":106,"message":"Missing the end tag","raw":"<p>","ruleId":"require-end-tag","severity":"warning"}
+{"col":6,"line":106,"message":"The element should not empty","raw":"<a href=\"#x\">","ruleId":"no-empty-palpable-content","severity":"warning"}
+{"col":6,"line":106,"message":"Require accessible name","raw":"<a href=\"#x\">","ruleId":"require-accessible-name","severity":"error"}
+{"col":6,"line":106,"message":"Missing the end tag","raw":"<a href=\"#x\">","ruleId":"require-end-tag","severity":"warning"}
+{"col":15,"line":106,"message":"Missing \"x\" ID","raw":"#x","ruleId":"no-broken-fragment-link","severity":"warning"}
+{"col":60,"line":106,"message":"The element should not empty","raw":"","ruleId":"no-empty-palpable-content","severity":"warning"}
+{"col":60,"line":106,"message":"Orphaned end tag detected","raw":"</a>","ruleId":"no-orphaned-end-tag","severity":"error"}
+{"col":64,"line":106,"message":"Orphaned end tag detected","raw":"</p>","ruleId":"no-orphaned-end-tag","severity":"error"}
+{"col":3,"line":107,"message":"Missing the end tag","raw":"<p>","ruleId":"require-end-tag","severity":"warning"}
+{"col":6,"line":107,"message":"Missing the end tag","raw":"<b>","ruleId":"require-end-tag","severity":"warning"}
+{"col":63,"line":107,"message":"The element should not empty","raw":"","ruleId":"no-empty-palpable-content","severity":"warning"}
+{"col":69,"line":107,"message":"Orphaned end tag detected","raw":"</b>","ruleId":"no-orphaned-end-tag","severity":"error"}
+{"col":73,"line":107,"message":"Orphaned end tag detected","raw":"</p>","ruleId":"no-orphaned-end-tag","severity":"error"}
+{"col":6,"line":108,"message":"Missing the end tag","raw":"<i>","ruleId":"require-end-tag","severity":"warning"}
+{"col":44,"line":108,"message":"Orphaned end tag detected","raw":"</i>","ruleId":"no-orphaned-end-tag","severity":"error"}
+{"col":3,"line":110,"message":"Missing the end tag","raw":"<button>","ruleId":"require-end-tag","severity":"warning"}
+{"col":4,"line":111,"message":"The \"a\" element is not allowed in the \"button\" element in this context","raw":"<a href=\"#\">","ruleId":"permitted-contents","severity":"error"}
+{"col":17,"line":112,"message":"It is the default value","raw":"text","ruleId":"no-default-value","severity":"warning"}
+{"col":3,"line":114,"message":"Orphaned end tag detected","raw":"</button>","ruleId":"no-orphaned-end-tag","severity":"error"}
+{"col":3,"line":115,"message":"The element should not empty","raw":"<a href=\"#\">","ruleId":"no-empty-palpable-content","severity":"warning"}
+{"col":3,"line":115,"message":"Require accessible name","raw":"<a href=\"#\">","ruleId":"require-accessible-name","severity":"error"}
+{"col":3,"line":115,"message":"Missing the end tag","raw":"<a href=\"#\">","ruleId":"require-end-tag","severity":"warning"}
+{"col":24,"line":115,"message":"Missing \"other\" ID","raw":"#other","ruleId":"no-broken-fragment-link","severity":"warning"}
+{"col":52,"line":115,"message":"Orphaned end tag detected","raw":"</a>","ruleId":"no-orphaned-end-tag","severity":"error"}
+{"col":16,"line":116,"message":"The \"label\" element should associate with a control","raw":"<label>","ruleId":"label-has-control","severity":"warning"}
+{"col":16,"line":116,"message":"The \"label\" element is not allowed in the \"label\" element in this context","raw":"<label>","ruleId":"permitted-contents","severity":"error"}
+{"col":8,"line":117,"message":"The \"div\" element is not allowed in the \"pre\" element in this context","raw":"<div>","ruleId":"permitted-contents","severity":"error"}
+{"col":9,"line":118,"message":"The \"p\" element is not allowed in the \"span\" element in this context","raw":"<p>","ruleId":"permitted-contents","severity":"error"}
+{"col":7,"line":119,"message":"The \"div\" element is not allowed in the \"em\" element in this context","raw":"<div>","ruleId":"permitted-contents","severity":"error"}
+{"col":3,"line":120,"message":"Require accessible name","raw":"<select>","ruleId":"require-accessible-name","severity":"error"}
+{"col":4,"line":122,"message":"Missing the end tag","raw":"<optgroup label=\"Group\">","ruleId":"require-end-tag","severity":"warning"}
+{"col":4,"line":127,"message":"Orphaned end tag detected","raw":"</optgroup>","ruleId":"no-orphaned-end-tag","severity":"error"}
+{"col":3,"line":129,"message":"Require an element. (Need \"img\")","raw":"<picture>","ruleId":"permitted-contents","severity":"error"}
+{"col":3,"line":132,"message":"Require one or more elements. (Need \"ruby:not(:has(ruby))\")","raw":"<ruby>","ruleId":"permitted-contents","severity":"error"}
+{"col":3,"line":137,"message":"Require accessible name","raw":"<textarea>","ruleId":"require-accessible-name","severity":"error"}
+{"col":13,"line":137,"message":"Illegal characters must escape in character reference","raw":"<","ruleId":"no-unescaped-char","severity":"error"}
+{"col":26,"line":137,"message":"Illegal characters must escape in character reference","raw":"<","ruleId":"no-unescaped-char","severity":"error"}
+{"col":20,"line":138,"message":"\"alt\" should be before \"src\"","raw":"alt","ruleId":"attr-order","severity":"warning"}
+{"col":53,"line":138,"message":"Orphaned end tag detected","raw":"</img>","ruleId":"no-orphaned-end-tag","severity":"error"}
+{"col":18,"line":139,"message":"Orphaned end tag detected","raw":"</br>","ruleId":"no-orphaned-end-tag","severity":"error"}
+{"col":2,"line":140,"message":"Orphaned end tag detected","raw":"</body>","ruleId":"no-orphaned-end-tag","severity":"error"}

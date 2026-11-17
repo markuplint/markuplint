@@ -1,0 +1,23 @@
+{"col":25,"line":5,"message":"\"content\" should be before \"name\"","raw":"content","ruleId":"attr-order","severity":"warning"}
+{"col":26,"line":7,"message":"\"href\" should be before \"rel\"","raw":"href","ruleId":"attr-order","severity":"warning"}
+{"col":3,"line":8,"message":"The \"style\" element should be before the \"base\" element","raw":"<base href=\"https://example.com/\" />","ruleId":"head-element-order","severity":"warning"}
+{"col":3,"line":9,"message":"The \"base\" element should be before the \"style\" element","raw":"<style>","ruleId":"head-element-order","severity":"warning"}
+{"col":19,"line":31,"message":"\"reversed\" should be before \"start\"","raw":"reversed","ruleId":"attr-order","severity":"warning"}
+{"col":6,"line":36,"message":"The \"dt\" element is not allowed in the \"dl\" element in this context","raw":"<dt>","ruleId":"permitted-contents","severity":"error"}
+{"col":24,"line":50,"message":"\"alt\" should be before \"src\"","raw":"alt","ruleId":"attr-order","severity":"warning"}
+{"col":54,"line":57,"message":"\"label\" should be before \"src\"","raw":"label","ruleId":"attr-order","severity":"warning"}
+{"col":42,"line":109,"message":"It is the default value","raw":"text","ruleId":"no-default-value","severity":"warning"}
+{"col":57,"line":109,"message":"\"autocomplete\" should be before \"id\"","raw":"autocomplete","ruleId":"attr-order","severity":"warning"}
+{"col":44,"line":112,"message":"It is the default value","raw":"text","ruleId":"no-default-value","severity":"warning"}
+{"col":50,"line":112,"message":"\"list\" should be before \"name\"","raw":"list","ruleId":"attr-order","severity":"warning"}
+{"col":7,"line":113,"message":"Require accessible name","raw":"<datalist id=\"colors\">","ruleId":"require-accessible-name","severity":"error"}
+{"col":8,"line":114,"message":"The element should not empty","raw":"<option value=\"red\">","ruleId":"no-empty-palpable-content","severity":"warning"}
+{"col":8,"line":114,"message":"Require accessible name","raw":"<option value=\"red\">","ruleId":"require-accessible-name","severity":"error"}
+{"col":8,"line":115,"message":"The element should not empty","raw":"<option value=\"green\">","ruleId":"no-empty-palpable-content","severity":"warning"}
+{"col":8,"line":115,"message":"Require accessible name","raw":"<option value=\"green\">","ruleId":"require-accessible-name","severity":"error"}
+{"col":27,"line":121,"message":"\"selected\" should be before \"value\"","raw":"selected","ruleId":"attr-order","severity":"warning"}
+{"col":28,"line":126,"message":"\"name\" should be before \"type\"","raw":"name","ruleId":"attr-order","severity":"warning"}
+{"col":7,"line":129,"message":"Require accessible name","raw":"<meter min=\"0\" max=\"10\" value=\"5\">","ruleId":"require-accessible-name","severity":"error"}
+{"col":22,"line":129,"message":"\"max\" should be before \"min\"","raw":"max","ruleId":"attr-order","severity":"warning"}
+{"col":7,"line":130,"message":"Require accessible name","raw":"<progress max=\"100\" value=\"40\">","ruleId":"require-accessible-name","severity":"error"}
+{"col":29,"line":131,"message":"\"for\" should be before \"name\"","raw":"for","ruleId":"attr-order","severity":"warning"}

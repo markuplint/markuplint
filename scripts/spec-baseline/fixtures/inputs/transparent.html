@@ -1,0 +1,72 @@
+<!doctype html>
+<html lang="en">
+	<head>
+		<meta charset="utf-8" />
+		<title>Transparent content models</title>
+		<noscript><link rel="stylesheet" href="a.css" /></noscript>
+		<noscript><p>flow in a noscript in the head</p></noscript>
+	</head>
+	<body>
+		<h1>Transparent</h1>
+
+		<!-- a: what the parent permits, with no interactive content. A span stands for a phrasing parent that holds flow: a paragraph is closed by the parser at a flow start tag, so the content model never sees the case. -->
+		<p><a href="#x"><span>phrasing in a link in a paragraph</span></a></p>
+		<span><a href="#x"><div>flow in a link in a span</div></a></span>
+		<div><a href="#x"><div>flow in a link in a div</div></a></div>
+		<div><a href="#x"><button type="button">interactive in a link in a div</button></a></div>
+		<div><a name="n"><button type="button">interactive in an anchor in a div</button></a></div>
+		<span><a href="#x"><h2>heading in a link in a span</h2></a></span>
+		<ul>
+			<li><a href="#x"><div>flow in a link in a list item</div></a></li>
+		</ul>
+		<table>
+			<tr>
+				<td><a href="#x"><div>flow in a link in a cell</div></a></td>
+			</tr>
+		</table>
+		<button type="button"><a name="n">an anchor in a button</a></button>
+
+		<!-- ins and del: what the parent permits -->
+		<p>Text <ins>inserted <em>phrase</em></ins> and <del>deleted</del>.</p>
+		<span>Text <ins><div>flow in ins in a span</div></ins>.</span>
+		<div><ins><p>paragraph in ins in a div</p></ins></div>
+		<div><del><h2>heading in del in a div</h2></del></div>
+		<ul>
+			<ins><li>list item in ins in a list</li></ins>
+		</ul>
+
+		<!-- nested transparency -->
+		<p><a href="#x"><ins><del><span>phrasing through three transparent elements</span></del></ins></a></p>
+		<span><a href="#x"><ins><del><div>flow through three transparent elements in a span</div></del></ins></a></span>
+		<div><ins><a href="#x"><ins><span>mixed</span></ins></a></ins></div>
+		<a href="#x"><ins><button type="button">interactive in ins in a link</button></ins></a>
+
+		<!-- media: transparent after the source and track elements -->
+		<video controls src="a.mp4"><p>fallback flow in video</p></video>
+		<p><video controls src="a.mp4"><span>fallback phrasing in video in a paragraph</span></video></p>
+		<span><video controls src="a.mp4"><div>fallback flow in video in a span</div></video></span>
+		<video controls>
+			<source src="a.mp4" type="video/mp4" />
+			<track kind="captions" src="a.vtt" />
+			<span>fallback</span>
+		</video>
+		<video controls>
+			<span>fallback before source</span>
+			<source src="a.mp4" type="video/mp4" />
+		</video>
+		<audio controls src="a.mp3"><a href="#x">fallback with a link in audio</a></audio>
+		<audio controls src="a.mp3"><button type="button">button in audio with controls</button></audio>
+		<audio src="a.mp3"><button type="button">button in audio without controls</button></audio>
+
+		<!-- object, map, canvas, slot-like containers -->
+		<object data="a.pdf"><param name="p" value="v" /><p>fallback flow</p></object>
+		<span><object data="a.pdf"><div>fallback flow in a span</div></object></span>
+		<map name="m"><area shape="rect" coords="0,0,1,1" href="#x" alt="area" /><p>flow in map</p></map>
+		<span><map name="m2"><span>phrasing in map</span><div>flow in map in a span</div></map></span>
+		<canvas width="10" height="10"><p>fallback flow in canvas</p></canvas>
+		<span><canvas width="10" height="10"><div>fallback flow in canvas in a span</div></canvas></span>
+		<canvas width="10" height="10"><a href="#x">fallback link in canvas</a><button type="button">fallback button</button></canvas>
+		<noscript><p>flow in noscript in the body</p></noscript>
+		<span><noscript><div>flow in noscript in a span</div></noscript></span>
+	</body>
+</html>
