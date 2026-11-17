@@ -2013,6 +2013,20 @@ export abstract class Parser<Node extends {} = {}, State extends unknown = null>
 	}
 
 	/**
+	 * Keeps one node for each position and name. Two nodes are at one position when a parser reports a tag that it
+	 * has already reported: an element that is open at `</body>` takes the white space after it, which makes the one
+	 * text node that spans the end tag, and the tag that is found again in that text is the end tag of the element, a
+	 * second time.
+	 *
+	 * The node that is kept is the one that has a pair (the tag that its parser reported, which the start tag points at), or
+	 * the first one when no node has. A node that is not kept is taken out of its parent as well: a node that is in the
+	 * tree and not in the list is one that nothing can map.
+	 *
+	 * Three kinds of node are never a second report of a tag, so they are all kept: the same node when it is in the tree
+	 * twice (the second is only another way to it, and it is kept once), an element that has no source (`raw` is empty), and a
+	 * node that has children. Several elements without a source can be at one position, as the first child of an
+	 * element starts where its parent's start tag ends, and taking a node that has children out of the list would
+	 * leave them under a parent that nothing can map.
 	 *
 	 * @disruptive
 	 * @param nodeOrders [Disruptive change]
@@ -2020,23 +2034,38 @@ export abstract class Parser<Node extends {} = {}, State extends unknown = null>
 	#removeDeprecatedNode(nodeOrders: readonly MLASTNodeTreeItem[]) {
 		const sorted = nodeOrders.toSorted(sortNodes);
 
-		const stack: { [pos: string]: number } = {};
-		const removeIndexes: number[] = [];
-		for (const [i, node] of sorted.entries()) {
-			const id = `${node.offset}::${node.nodeName}`;
-			if (stack[id] != null) {
-				removeIndexes.push(i);
+		const seen = new Set<MLASTNodeTreeItem>();
+		const dropped = new Set<number>();
+		const kept = new Map<string, number>();
+		for (const [index, node] of sorted.entries()) {
+			if (seen.has(node)) {
+				dropped.add(index);
+				continue;
 			}
-			stack[id] = i;
-		}
-		let r = sorted.length;
-		while (r-- > 0) {
-			if (removeIndexes.includes(r)) {
-				sorted.splice(r, 1);
+			seen.add(node);
+			const own =
+				(node.type === 'starttag' && node.raw === '') || ('childNodes' in node && node.childNodes.length > 0);
+			const id = own ? `own:${index}` : `${node.offset}::${node.nodeName}`;
+			const current = kept.get(id);
+			if (current === undefined) {
+				kept.set(id, index);
+			} else if (hasPair(node) && !hasPair(sorted[current] as MLASTNodeTreeItem)) {
+				dropped.add(current);
+				kept.set(id, index);
+			} else {
+				dropped.add(index);
 			}
 		}
 
-		return sorted;
+		for (const index of dropped) {
+			const node = sorted[index] as MLASTNodeTreeItem;
+			// The same node that is in the tree twice is kept once, and it is not taken out of its parent
+			if (seen.has(node) && [...kept.values()].some(keptIndex => sorted[keptIndex] === node)) {
+				continue;
+			}
+			this.#removeChild(node.parentNode ?? null, node);
+		}
+		return sorted.filter((_, index) => !dropped.has(index));
 	}
 
 	#removeOffsetSpaces(nodeList: readonly MLASTNodeTreeItem[], options?: ParseOptions): readonly MLASTNodeTreeItem[] {
@@ -2136,4 +2165,9 @@ export abstract class Parser<Node extends {} = {}, State extends unknown = null>
 		}
 		return newNodeList;
 	}
+}
+
+/** Whether a tag is paired with the tag that opens or closes it. */
+function hasPair(node: MLASTNodeTreeItem): boolean {
+	return 'pairNodeUuid' in node && node.pairNodeUuid != null;
 }
