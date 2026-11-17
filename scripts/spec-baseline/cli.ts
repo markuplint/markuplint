@@ -240,9 +240,9 @@ function perf(args: readonly string[]): string {
 	const iterations = count('iterations', values.iterations, 2);
 	const seed = count('seed', values.seed, 0);
 	const withLint = !values['no-lint'];
-	const files = withLint
-		? pickValidatorFiles(join(ROOT, 'tests/external/validator'), count('files', values.files, 1))
-		: [];
+	// Checked with `--no-lint` as well: a typo in an option is not left unread because another option is on
+	const fileCount = count('files', values.files, 1);
+	const files = withLint ? pickValidatorFiles(join(ROOT, 'tests/external/validator'), fileCount) : [];
 	if (withLint && files.length === 0) {
 		throw new Error('No document of the validator: git submodule update --init tests/external/validator');
 	}

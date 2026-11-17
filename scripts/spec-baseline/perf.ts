@@ -25,7 +25,7 @@ import type { ChildOptions } from './perf-child.ts';
 import { execFileSync } from 'node:child_process';
 import { existsSync, readdirSync, statSync, writeFileSync } from 'node:fs';
 import { cpus, totalmem } from 'node:os';
-import { join, relative } from 'node:path';
+import { join, relative, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
 
 import { compareText } from './fixtures.ts';
@@ -371,15 +371,19 @@ export function runRustChild(scenario: string, rust: RustPlan, iterations: numbe
 }
 
 /**
- * Finds the Rust program that a `--release` build of the workspace made.
+ * Finds the Rust program that a `--release` build of the workspace made: in `crates/target`, or where
+ * `CARGO_TARGET_DIR` puts it (a relative one is read from `crates/`, where cargo is run). A `target-dir` that
+ * a cargo configuration file sets is not read: set `CARGO_TARGET_DIR` to the same directory for the build and for this.
  *
  * @param root - The root of the repository
+ * @param env - The environment variables, for `CARGO_TARGET_DIR`
  * @returns The path of the program
  */
-export function rustBinary(root: string): string {
+export function rustBinary(root: string, env: Readonly<Record<string, string | undefined>> = process.env): string {
+	const target = env.CARGO_TARGET_DIR ? resolve(root, 'crates', env.CARGO_TARGET_DIR) : join(root, 'crates/target');
 	const binary = join(
-		root,
-		'crates/target/release/examples',
+		target,
+		'release/examples',
 		process.platform === 'win32' ? 'spec_baseline.exe' : 'spec_baseline',
 	);
 	if (!existsSync(binary)) {

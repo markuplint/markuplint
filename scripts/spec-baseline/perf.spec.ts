@@ -1,4 +1,4 @@
-import { mkdtempSync, readFileSync, rmSync } from 'node:fs';
+import { mkdirSync, mkdtempSync, readFileSync, rmSync, writeFileSync } from 'node:fs';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
 
@@ -200,6 +200,25 @@ describe('the Rust scenarios', () => {
 		expect(() => rustBinary('/this/directory/does/not/exist')).toThrow(
 			/cargo build --locked --release --workspace --example spec_baseline/,
 		);
+	});
+
+	test('are found where CARGO_TARGET_DIR puts the build, and in crates/target when it is not set', () => {
+		const directory = mkdtempSync(join(tmpdir(), 'spec-baseline-target-'));
+		try {
+			const name = process.platform === 'win32' ? 'spec_baseline.exe' : 'spec_baseline';
+			mkdirSync(join(directory, 'elsewhere/release/examples'), { recursive: true });
+			writeFileSync(join(directory, 'elsewhere/release/examples', name), '');
+			// a relative directory is read from crates/, where cargo is run
+			expect(rustBinary(join(directory, 'repo'), { CARGO_TARGET_DIR: join(directory, 'elsewhere') })).toBe(
+				join(directory, 'elsewhere/release/examples', name),
+			);
+			expect(() => rustBinary(join(directory, 'repo'), {})).toThrow(/crates\/target\/release\/examples/);
+			expect(() => rustBinary(join(directory, 'repo'), { CARGO_TARGET_DIR: 'nowhere' })).toThrow(
+				/repo\/crates\/nowhere\/release\/examples/,
+			);
+		} finally {
+			rmSync(directory, { recursive: true, force: true });
+		}
 	});
 
 	test('read the questions that are written from the data, with the answers of the data as objects', () => {
