@@ -17,6 +17,17 @@ import { toNodeList } from './node-list.js';
 import { NodeStore } from './node-store.js';
 
 /**
+ * How many patterns the chains of elements make at most (`v-if`, `v-else-if` and `v-else` of Vue, in
+ * `MLNode#alternativeChildNodes` and `MLNode#conditionalChildNodes`). The chains of a parent multiply: `n`
+ * pairs of `v-if` and `v-else` make `2^n`, and a long form has many. 64 is six such pairs, which is more than
+ * markup written by hand has among the children of one element, and a rule that reads every pattern stays
+ * fast. Past the limit the elements of the further chains are read as written, all rendered together, so a rule
+ * may report the elements of a pair as if both were rendered: it can over-report there, where the cap of
+ * `permitted-contents` for transparent elements under-reports.
+ */
+const MAX_ALTERNATIVE_PATTERNS = 64;
+
+/**
  * Abstract base class for all markuplint DOM node wrappers.
  * Extends `MLToken` with DOM `Node` interface compliance, tree traversal,
  * rule configuration access, and child node management.
@@ -180,6 +191,7 @@ export abstract class MLNode<
 	#prevToken: MLNode<T, O> | null | undefined;
 
 	#conditionalChildNodes: NodeListOf<MLChildNode<T, O>>[] | undefined;
+	#alternativeChildNodes: NodeListOf<MLChildNode<T, O>>[] | undefined;
 
 	/**
 	 * Rules mapped to this node by `RuleMapper`. Deliberately untyped
@@ -225,8 +237,9 @@ export abstract class MLNode<
 	}
 
 	/**
-	 * The list of child nodes. Fragment nodes and preprocessor blocks whose
-	 * `blockBehavior.type` is `each` or `end` are flattened into this list.
+	 * The list of child nodes. Fragment nodes, preprocessor blocks whose
+	 * `blockBehavior.type` is `each` or `end`, and a `template` that Vue renders away
+	 * for `v-for` are flattened into this list.
 	 * Conditional blocks (`if`, `switch`, `await`, and their clauses) and
 	 * `each:empty` stay in this list: flattening a conditional block would
 	 * present elements that never render together as siblings, and would
@@ -245,7 +258,8 @@ export abstract class MLNode<
 			if (
 				node.isFragment ||
 				(node.is(node.MARKUPLINT_PREPROCESSOR_BLOCK) &&
-					['each', 'end'].includes(node.blockBehavior?.type ?? ''))
+					['each', 'end'].includes(node.blockBehavior?.type ?? '')) ||
+				(node.is(node.ELEMENT_NODE) && node.blockBehavior?.type === 'each' && node.isRenderedAway)
 			) {
 				return [...node.childNodes];
 			}
@@ -712,13 +726,18 @@ export abstract class MLNode<
 	/**
 	 * Returns an array of NodeLists representing the conditional child nodes of the current node.
 	 * Conditional child nodes are nodes that are nested within
-	 * **preprocessor blocks** such as `if` or `switch`.
+	 * **preprocessor blocks** such as `if` or `switch`, within a `template` that Vue renders away for
+	 * `v-if`, `v-else-if` or `v-else`, and the elements that carry one of those directives themselves.
 	 * Each NodeList represents a branch of conditional child nodes.
+	 *
+	 * The nodes of a branch are one choice: a branch of `<dt>` and `<dd>` is both of them or none.
+	 * A chain is `if` followed by any number of `if:elseif` and `if:else`; the next `if` starts another,
+	 * even when the `end` of a block or whitespace is between.
 	 *
 	 * Note: NodeList doesn't include whitespace nodes.
 	 *
-	 * For `if`/`switch` groups, a `null` sentinel is appended to each branch
-	 * group to represent the case where no branch renders at all, so that
+	 * For `if`/`switch` groups that do not end with `else` or `default`, a `null` sentinel is appended
+	 * to each branch group to represent the case where no branch renders at all, so that
 	 * content-model rules also validate the "empty branch" pattern
 	 * (`branchesToPatterns` filters the `null` out of the generated patterns).
 	 * `each` blocks intentionally do not start a conditional mode: their content
@@ -731,18 +750,118 @@ export abstract class MLNode<
 	 * @implements `@markuplint/ml-core` API: `MLNode`
 	 */
 	conditionalChildNodes(): NodeListOf<MLChildNode<T, O>>[] {
-		if (this.#conditionalChildNodes != null) {
-			return this.#conditionalChildNodes;
-		}
+		this.#conditionalChildNodes ??= this.#childNodePatterns(true);
+		return this.#conditionalChildNodes;
+	}
 
-		const branches: (MLChildNode<T, O> | (MLChildNode<T, O> | null)[])[] = [];
+	/**
+	 * Returns an array of NodeLists representing the child nodes in each way that the elements of a chain of
+	 * `v-if`, `v-else-if` and `v-else` can be rendered, a chain being a choice of one of its elements.
+	 * Unlike {@link MLNode.conditionalChildNodes} it expands nothing else: a preprocessor block and a
+	 * `template` that is rendered away stay nodes, and there is no pattern in which none of a chain is rendered,
+	 * so that an element without `v-else` is as written.
+	 *
+	 * What reads the children as the markup writes them takes it, since the elements of a chain are not
+	 * siblings that are rendered together. Whitespace text nodes stay in the patterns, which
+	 * {@link MLNode.conditionalChildNodes} drops: a caller that ignores them filters them itself. A chain of
+	 * more patterns than a limit is read as written (see `MAX_ALTERNATIVE_PATTERNS`).
+	 *
+	 * @returns An array of NodeLists, one for each combination of the elements of the chains.
+	 *
+	 * @experimental
+	 * @implements `@markuplint/ml-core` API: `MLNode`
+	 * @see https://vuejs.org/guide/essentials/conditional.html#v-else
+	 */
+	alternativeChildNodes(): NodeListOf<MLChildNode<T, O>>[] {
+		if (this.#alternativeChildNodes === undefined) {
+			const childNodes = this.childNodes;
+			// Most elements have no chain: their children are the one pattern, as written
+			const hasChain = [...childNodes].some(
+				child =>
+					child.is(child.ELEMENT_NODE) &&
+					!child.isRenderedAway &&
+					['if', 'if:elseif', 'if:else'].includes(child.blockBehavior?.type ?? ''),
+			);
+			this.#alternativeChildNodes = hasChain ? this.#childNodePatterns(false) : [childNodes];
+		}
+		return this.#alternativeChildNodes;
+	}
+
+	/**
+	 * @param expandBlocks - Whether to expand the preprocessor blocks and the templates that are rendered
+	 *   away into their branches, and to add the choice of none to a chain
+	 */
+	#childNodePatterns(expandBlocks: boolean): NodeListOf<MLChildNode<T, O>>[] {
+		type Branch = { readonly nodes: readonly MLChildNode<T, O>[] };
+
+		const branches: (Branch | (Branch | null)[])[] = [];
 		let mode: 'if' | 'switch' | null = null;
 		let openConditional = false;
-		let subBranches: (MLChildNode<T, O> | null)[] = [];
+		// What the open group is made of: whitespace between elements does not end it, as `v-else` may be on the next line
+		let openIsElements = false;
+		// The kind of the open group: `if` (with `else-if` and `else`), `switch`, `await` or `each`
+		let family = '';
+		// A chain that ends with `else` or `default` renders one of its branches
+		let exhaustive = false;
+		let alternatives: (Branch | null)[] = [];
+		// Whitespace and comments between the elements of a chain are not rendered, and are nodes if the chain ends before them
+		const pendingText: MLChildNode<T, O>[] = [];
+		// The elements of the open group, to read as written when the chains make too many patterns
+		const openMembers: MLChildNode<T, O>[] = [];
+		// The number of patterns that the chains so far make: it grows by the product of their sizes
+		let combinations = 1;
+
+		const close = () => {
+			if (!openConditional) {
+				return;
+			}
+			if (expandBlocks && !exhaustive && (mode === 'if' || mode === 'switch')) {
+				alternatives.push(null);
+			}
+			// A branch that renders nothing is the choice of none, which one `null` stands for
+			const choices = alternatives.filter(
+				(branch, index) => branch !== null || alternatives.indexOf(null) === index,
+			);
+			if (openIsElements && combinations * choices.length > MAX_ALTERNATIVE_PATTERNS) {
+				// Past the limit the elements of a chain are read as written: all of them are rendered
+				branches.push(...openMembers.map(member => ({ nodes: [member] })));
+			} else {
+				combinations *= Math.max(choices.length, 1);
+				branches.push(choices);
+			}
+			branches.push(...pendingText.map(text => ({ nodes: [text] })));
+			pendingText.length = 0;
+			openMembers.length = 0;
+			mode = null;
+			exhaustive = false;
+			openConditional = false;
+			openIsElements = false;
+			family = '';
+			alternatives = [];
+		};
 
 		for (const child of this.childNodes) {
-			if (child.is(child.MARKUPLINT_PREPROCESSOR_BLOCK)) {
-				switch (child.blockBehavior?.type) {
+			const behaviorType =
+				child.is(child.ELEMENT_NODE) || child.is(child.MARKUPLINT_PREPROCESSOR_BLOCK)
+					? child.blockBehavior?.type
+					: undefined;
+			const isExpandable =
+				expandBlocks &&
+				(child.is(child.MARKUPLINT_PREPROCESSOR_BLOCK) ||
+					(!!behaviorType && child.is(child.ELEMENT_NODE) && child.isRenderedAway));
+			const isChained =
+				!isExpandable &&
+				(behaviorType === 'if' || behaviorType === 'if:elseif' || behaviorType === 'if:else') &&
+				child.is(child.ELEMENT_NODE) &&
+				!child.isRenderedAway;
+
+			if (isExpandable || isChained) {
+				const nextFamily = behaviorType?.split(':')[0] ?? '';
+				// A block of another kind is another group, as is the next `if`: the `end` of a block is not a node
+				if (behaviorType === 'if' || (openConditional && nextFamily !== family)) {
+					close();
+				}
+				switch (behaviorType) {
 					case 'if':
 					case 'if:elseif': {
 						mode = 'if';
@@ -753,11 +872,20 @@ export abstract class MLNode<
 						break;
 					}
 
+					case 'if:else': {
+						mode = 'if';
+						exhaustive = true;
+						break;
+					}
+					case 'switch:default': {
+						mode = 'switch';
+						exhaustive = true;
+						break;
+					}
+
 					/* No default mode */
-					case 'if:else':
 					case 'each':
 					case 'each:empty':
-					case 'switch:default':
 					case 'await':
 					case 'await:catch':
 					case 'await:then': {
@@ -769,41 +897,54 @@ export abstract class MLNode<
 					}
 				}
 
-				const conditionalChildNodes = child.conditionalChildNodes();
-				subBranches.push(...conditionalChildNodes.flatMap(nodeList => [...nodeList]));
+				family = nextFamily;
+				openIsElements = child.is(child.ELEMENT_NODE);
+				pendingText.length = 0;
+				openMembers.push(child);
+				if (isChained) {
+					alternatives.push({ nodes: [child] });
+				} else {
+					// Each way that the branch is rendered is one choice, whatever the number of nodes in it
+					alternatives.push(
+						...child
+							.conditionalChildNodes()
+							.map(nodes => (nodes.length > 0 ? { nodes: [...nodes] } : null)),
+					);
+				}
 
 				openConditional = true;
 				continue;
 			}
 
-			if (openConditional) {
-				if ((['if', 'switch'] as (typeof mode)[]).includes(mode)) {
-					subBranches.push(null);
-				}
-				branches.push(subBranches);
-
-				mode = null;
-				openConditional = false;
-				subBranches = [];
-			}
-
-			if (child.is(child.TEXT_NODE) && child.isWhitespace()) {
+			// A comment between the elements of a chain is not rendered either, and is a node if the chain ends before it
+			if (openConditional && openIsElements && child.is(child.COMMENT_NODE)) {
+				pendingText.push(child);
 				continue;
 			}
 
-			branches.push(child);
-		}
-
-		if (subBranches.length > 0) {
-			if ((['if', 'switch'] as (typeof mode)[]).includes(mode)) {
-				subBranches.push(null);
+			if (child.is(child.TEXT_NODE) && child.isWhitespace()) {
+				if (expandBlocks) {
+					// It is dropped. It ends a group of blocks, but not a chain of elements: `v-else` may be on the next line
+					if (!openIsElements) {
+						close();
+					}
+					continue;
+				}
+				if (openConditional) {
+					pendingText.push(child);
+				} else {
+					branches.push({ nodes: [child] });
+				}
+				continue;
 			}
-			branches.push(subBranches);
+
+			close();
+			branches.push({ nodes: [child] });
 		}
 
-		const cache = branchesToPatterns(branches).map(array => toNodeList(array));
-		this.#conditionalChildNodes = cache;
-		return cache;
+		close();
+
+		return branchesToPatterns(branches).map(pattern => toNodeList(pattern.flatMap(branch => branch.nodes)));
 	}
 
 	/**
