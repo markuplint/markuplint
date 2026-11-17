@@ -101,12 +101,12 @@ describe.skipIf(!nativeAddonIsBuilt)('--search on the Rust engine', { timeout: 6
 		['a child relational selector', 'template:has(> p)', '<template><p></p></template>', []],
 		['a nested template', 'p', '<template><template><p></p></template><p></p></template>', ['1:21', '1:39']],
 		[
-			'closest in the content of a template',
-			'p:closest(section)',
+			'an ancestor in the content of a template',
+			'p:is(section *)',
 			'<section><template><p></p></template></section>',
 			[],
 		],
-		['closest', 'p:closest(section)', '<section><div><p></p></div></section>', ['1:15']],
+		['an ancestor', 'p:is(section *)', '<section><div><p></p></div></section>', ['1:15']],
 		['a role', ':role(button)', '<div role="button"></div><button></button><a href="/"></a>', ['1:1', '1:26']],
 		[
 			'a content model category',
