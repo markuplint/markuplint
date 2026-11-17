@@ -655,18 +655,6 @@ fn is_native_context_intact(
 // ============================================================
 
 fn resolved_from_spec(role_spec: &ARIARoleInSchema, is_implicit: bool) -> ResolvedRole {
-    // Normalize ARIA 1.1/1.2 field names to 1.3 equivalents
-    let parent_roles = if role_spec.required_accessibility_parent_role.is_empty() {
-        role_spec.required_context_role.clone()
-    } else {
-        role_spec.required_accessibility_parent_role.clone()
-    };
-    let child_roles = if role_spec.allowed_accessibility_child_roles.is_empty() {
-        role_spec.required_owned_elements.clone()
-    } else {
-        role_spec.allowed_accessibility_child_roles.clone()
-    };
-
     ResolvedRole {
         name: role_spec.name.clone(),
         is_implicit,
@@ -674,8 +662,8 @@ fn resolved_from_spec(role_spec: &ARIARoleInSchema, is_implicit: bool) -> Resolv
         accessible_name_required: role_spec.accessible_name_required.unwrap_or(false),
         accessible_name_from_author: role_spec.accessible_name_from_author.unwrap_or(false),
         children_presentational: role_spec.children_presentational.unwrap_or(false),
-        required_accessibility_parent_role: parent_roles,
-        allowed_accessibility_child_roles: child_roles,
+        required_accessibility_parent_role: role_spec.required_accessibility_parent_role.clone(),
+        allowed_accessibility_child_roles: role_spec.allowed_accessibility_child_roles.clone(),
     }
 }
 

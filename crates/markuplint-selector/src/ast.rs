@@ -85,8 +85,6 @@ pub enum PseudoClassSelector {
     /// the display size, which is the `size` parsed as a non-negative integer, else 4 with
     /// `multiple` and 1 without.
     DisplaySize(DisplaySizeOperator, f64),
-    /// markuplint extension: matches if any ancestor matches the argument.
-    Closest(SelectorList),
     /// markuplint extension: matches an element's content-model category.
     Model(String),
     /// markuplint extension: matches an element's computed ARIA role.

@@ -374,12 +374,6 @@ impl<'a> Parser<'a> {
                     self.expect(')')?;
                     Ok(PseudoClassSelector::Where(list))
                 }
-                "closest" => {
-                    let list = self.parse_selector_list()?;
-                    self.skip_whitespace();
-                    self.expect(')')?;
-                    Ok(PseudoClassSelector::Closest(list))
-                }
                 "model" => {
                     let content = self.parse_paren_content()?;
                     Ok(PseudoClassSelector::Model(content))
@@ -778,6 +772,17 @@ mod tests {
     fn error_unsupported_pseudo() {
         assert!(parse(":hover").is_err());
         assert!(parse(":focus").is_err());
+    }
+
+    #[test]
+    fn v6_error_closest_is_not_supported() {
+        assert_eq!(
+            parse("p:closest(section)").unwrap_err(),
+            "Unsupported pseudo-class :closest()"
+        );
+        assert!(parse("p:not(:closest(section))").is_err());
+        assert!(parse("p:is(:closest(section))").is_err());
+        assert!(parse("p:has(:closest(section))").is_err());
     }
 
     #[test]

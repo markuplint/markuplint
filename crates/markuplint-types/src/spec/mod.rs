@@ -26,9 +26,53 @@ mod tests {
     }
 
     #[test]
+    fn load_spec_ignores_the_keys_it_does_not_declare() {
+        let json = r##"{
+            "cites": ["https://example.com/"],
+            "def": {
+                "#globalAttrs": {},
+                "#aria": {
+                    "1.1": { "roles": [], "props": [], "graphicsRoles": [], "dpubRoles": [] },
+                    "1.2": {
+                        "roles": [{
+                            "name": "x-old",
+                            "description": "d",
+                            "requiredContextRole": ["list"],
+                            "requiredOwnedElements": ["listitem"]
+                        }],
+                        "props": [{
+                            "name": "aria-x",
+                            "type": "property",
+                            "value": "string",
+                            "enum": [],
+                            "valueDescriptions": { "a": "d" }
+                        }],
+                        "graphicsRoles": [],
+                        "dpubRoles": []
+                    },
+                    "1.3": { "roles": [], "props": [], "graphicsRoles": [], "dpubRoles": [] }
+                },
+                "#contentModels": {}
+            },
+            "specs": [{
+                "name": "x-el",
+                "description": "d",
+                "categories": ["#flow"],
+                "omission": false,
+                "attributes": { "foo": { "type": "Any", "description": "d" } }
+            }]
+        }"##;
+        let spec = load_spec(json).expect("the removed keys are ignored, not an error");
+        assert_eq!(spec.specs[0].name, "x-el");
+        assert!(spec.specs[0].attributes.contains_key("foo"));
+        let role = &spec.def.aria.v1_2.roles[0];
+        assert!(role.required_accessibility_parent_role.is_empty());
+        assert!(role.allowed_accessibility_child_roles.is_empty());
+    }
+
+    #[test]
     fn load_html_spec() {
         let spec = load_spec(html_spec_json()).expect("Failed to deserialize html-spec");
-        assert!(spec.cites.is_empty(), "cites should be empty: the data carries none");
         assert!(!spec.specs.is_empty(), "specs should not be empty");
     }
 
@@ -81,16 +125,6 @@ mod tests {
         let a = spec.specs.iter().find(|s| s.name == "a").unwrap();
         // <a> has an implicit role
         assert!(a.aria.implicit_role.is_some(), "<a> should have an implicit role");
-    }
-
-    #[test]
-    fn html_spec_element_categories() {
-        let spec = load_spec(html_spec_json()).unwrap();
-        let div = spec.specs.iter().find(|s| s.name == "div").unwrap();
-        assert!(
-            div.categories.is_empty(),
-            "<div> should have no categories: the data carries none"
-        );
     }
 
     #[test]
@@ -179,16 +213,6 @@ mod tests {
         assert!(
             html_globals.contains_key("class"),
             "#HTMLGlobalAttrs should contain 'class'"
-        );
-    }
-
-    #[test]
-    fn div_categories_do_not_include_flow() {
-        let spec = load_spec(html_spec_json()).unwrap();
-        let div = spec.specs.iter().find(|s| s.name == "div").unwrap();
-        assert!(
-            !div.categories.contains(&"#flow".to_string()),
-            "<div> should not list #flow in its categories: the data carries none"
         );
     }
 

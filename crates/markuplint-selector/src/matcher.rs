@@ -537,17 +537,6 @@ fn match_pseudo_class(pseudo: &PseudoClassSelector, node_id: NodeId, ctx: &Ctx<'
                 MatchResult::unmatched()
             }
         }
-        PseudoClassSelector::Closest(inner) => {
-            // :closest() — markuplint-specific: matches if any ancestor matches
-            let mut ancestor_id = tree_parent(ctx, node_id);
-            while let Some(aid) = ancestor_id {
-                if matches_inner(inner, aid, ctx) {
-                    return MatchResult::matched([0, 1, 0]);
-                }
-                ancestor_id = tree_parent(ctx, aid);
-            }
-            MatchResult::unmatched()
-        }
         PseudoClassSelector::Model(category) => {
             let Some(entries) = ctx.spec.and_then(|spec| extended::model_entries(spec, category)) else {
                 return MatchResult::unmatched();
@@ -891,25 +880,6 @@ fn compound_has(compound: &CompoundSelector, node_id: NodeId, ctx: &Ctx<'_>) -> 
                             has.extend(compound_has(&sel.subject, node_id, ctx));
                         }
                     }
-                }
-            }
-            PseudoClassSelector::Closest(inner) => {
-                let mut ancestor_id = tree_parent(ctx, node_id);
-                while let Some(aid) = ancestor_id {
-                    let matched: Vec<_> = inner
-                        .selectors
-                        .iter()
-                        .filter(|sel| match_complex(sel, aid, ctx).matched)
-                        .map(|sel| Matched {
-                            nodes: vec![aid],
-                            has: compound_has(&sel.subject, aid, ctx),
-                        })
-                        .collect();
-                    if !matched.is_empty() {
-                        has.extend(matched);
-                        break;
-                    }
-                    ancestor_id = tree_parent(ctx, aid);
                 }
             }
             _ => {}

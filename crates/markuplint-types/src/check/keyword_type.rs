@@ -287,17 +287,6 @@ pub fn get_def(keyword: &str) -> Option<Def> {
                 )
             },
         ),
-        "BrowsingContextName" => def(
-            "https://html.spec.whatwg.org/multipage/document-sequences.html#navigable-target-names",
-            &[(Common, "browsing context name")],
-            |v| {
-                matches(
-                    v,
-                    crate::whatwg::navigable_target_name::is_browser_context_name(v),
-                    None,
-                )
-            },
-        ),
         "NavigableTargetNameOrKeyword" => def(
             "https://html.spec.whatwg.org/multipage/document-sequences.html#valid-navigable-target-name-or-keyword",
             &[
@@ -308,17 +297,6 @@ pub fn get_def(keyword: &str) -> Option<Def> {
                 (Common, "navigable target name"),
             ],
             custom::check_navigable_target_name_or_keyword,
-        ),
-        "BrowsingContextNameOrKeyword" => def(
-            "https://html.spec.whatwg.org/multipage/document-sequences.html#valid-browsing-context-name-or-keyword",
-            &[
-                (Const, "_blank"),
-                (Const, "_self"),
-                (Const, "_parent"),
-                (Const, "_top"),
-                (Common, "browsing context name"),
-            ],
-            custom::check_browsing_context_name_or_keyword,
         ),
         "HTTPSchemaURL" => def(
             "https://html.spec.whatwg.org/multipage/links.html#ping",

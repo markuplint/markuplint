@@ -284,23 +284,23 @@ fn v6_search_reads_the_children_of_an_element_in_its_tree() {
 }
 
 #[test]
-fn v6_search_closest_does_not_reach_out_of_a_template() {
+fn v6_search_an_ancestor_does_not_reach_out_of_a_template() {
     assert_eq!(
         found(
             "<section><template><p></p></template></section>",
-            "p:closest(section)",
+            "p:is(section *)",
             json!({})
         ),
         Ok(vec![])
     );
     assert_eq!(
-        found("<section><div><p></p></div></section>", "p:closest(section)", json!({})),
+        found("<section><div><p></p></div></section>", "p:is(section *)", json!({})),
         Ok(vec![(1, 15)])
     );
     assert_eq!(
         found(
             "<section><template><p></p></template></section>",
-            "p:not(:closest(section))",
+            "p:not(:is(section *))",
             json!({})
         ),
         Ok(vec![(1, 20)])

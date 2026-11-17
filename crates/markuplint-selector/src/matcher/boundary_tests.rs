@@ -67,17 +67,17 @@ fn a_sibling_combinator_stays_in_the_content_of_a_template() {
 }
 
 #[test]
-fn closest_does_not_leave_the_content_of_a_template() {
+fn an_ancestor_through_is_does_not_leave_the_content_of_a_template() {
     assert_eq!(
         matched_paragraphs(
             "<section><template><p></p></template></section>",
-            "p:closest(section)",
+            "p:is(section *)",
             None
         ),
         Vec::<usize>::new()
     );
     assert_eq!(
-        matched_paragraphs("<section><div><p></p></div></section>", "p:closest(section)", None),
+        matched_paragraphs("<section><div><p></p></div></section>", "p:is(section *)", None),
         [0]
     );
 }

@@ -110,9 +110,6 @@ pub enum IsDuplicatable {
 
 #[derive(Debug, Deserialize)]
 pub struct MLMLSpec {
-    /// TS `MLMLSpec.cites` (`@deprecated`): `@markuplint/html-spec` no longer writes it.
-    #[serde(default)]
-    pub cites: Vec<String>,
     pub def: SpecDefs,
     pub specs: Vec<ElementSpec>,
     #[serde(default, rename = "directivePatterns")]
@@ -187,8 +184,6 @@ pub struct ElementSpec {
     #[serde(default)]
     pub cite: String,
     #[serde(default)]
-    pub description: Option<String>,
-    #[serde(default)]
     pub experimental: Option<bool>,
     /// TS: `true | { alt: string }`
     #[serde(default)]
@@ -197,14 +192,9 @@ pub struct ElementSpec {
     pub deprecated: Option<bool>,
     #[serde(default, rename = "nonStandard")]
     pub non_standard: Option<bool>,
-    #[serde(default)]
-    pub categories: Vec<String>,
     /// Remains `Value` — deserialized on demand via `get_content_model()`.
     #[serde(default, rename = "contentModel")]
     pub content_model: Value,
-    /// Remains `Value` — complex conditional structure, typed when omission rules are implemented.
-    #[serde(default)]
-    pub omission: Value,
     /// Remains `Value` — 15+ known keys + pattern properties (#3521).
     #[serde(default, rename = "globalAttrs")]
     pub global_attrs: HashMap<String, Value>,
@@ -229,8 +219,6 @@ pub struct Attribute {
     /// Will be typed in Phase 8-9.
     #[serde(default, rename = "type")]
     pub attr_type: Value,
-    #[serde(default)]
-    pub description: Option<String>,
     #[serde(default, rename = "caseSensitive")]
     pub case_sensitive: Option<bool>,
     #[serde(default)]
@@ -289,7 +277,6 @@ impl Attribute {
             };
         }
         take!(
-            description,
             case_sensitive,
             experimental,
             obsolete,
@@ -430,8 +417,6 @@ impl<'de> Deserialize<'de> for ARIAConditions {
 #[derive(Debug, Deserialize, PartialEq)]
 pub struct ARIARoleInSchema {
     pub name: String,
-    #[serde(default)]
-    pub description: Option<String>,
     #[serde(default, rename = "isAbstract")]
     pub is_abstract: Option<bool>,
     #[serde(default)]
@@ -442,12 +427,6 @@ pub struct ARIARoleInSchema {
     pub required_accessibility_parent_role: Vec<String>,
     #[serde(default, rename = "allowedAccessibilityChildRoles")]
     pub allowed_accessibility_child_roles: Vec<String>,
-    /// ARIA 1.2 compatibility field.
-    #[serde(default, rename = "requiredContextRole")]
-    pub required_context_role: Vec<String>,
-    /// ARIA 1.2 compatibility field.
-    #[serde(default, rename = "requiredOwnedElements")]
-    pub required_owned_elements: Vec<String>,
     #[serde(default, rename = "accessibleNameRequired")]
     pub accessible_name_required: Option<bool>,
     #[serde(default, rename = "accessibleNameFromAuthor")]
@@ -498,8 +477,6 @@ pub struct ARIAProperty {
     pub default_value: Option<String>,
     #[serde(default, rename = "equivalentHtmlAttrs")]
     pub equivalent_html_attrs: Option<Vec<EquivalentHtmlAttr>>,
-    #[serde(default, rename = "valueDescriptions")]
-    pub value_descriptions: Option<HashMap<String, String>>,
 }
 
 #[derive(Debug, Deserialize)]

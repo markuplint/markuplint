@@ -118,46 +118,6 @@ const CASES: &[(&str, &str, &str)] = &[
         r#"{"matched":true}"#,
     ),
     (
-        "BrowsingContextName",
-        "frame",
-        r#"{"matched":true}"#,
-    ),
-    (
-        "BrowsingContextName",
-        "a\tb",
-        r#"{"matched":true}"#,
-    ),
-    (
-        "BrowsingContextName",
-        "a<b",
-        r#"{"matched":true}"#,
-    ),
-    (
-        "BrowsingContextName",
-        "",
-        r#"{"matched":false,"ref":"https://html.spec.whatwg.org/multipage/document-sequences.html#navigable-target-names","raw":"","offset":0,"length":0,"line":1,"column":1,"reason":"empty-token","expects":[{"type":"common","value":"browsing context name"}]}"#,
-    ),
-    (
-        "BrowsingContextName",
-        "_blank",
-        r#"{"matched":false,"ref":"https://html.spec.whatwg.org/multipage/document-sequences.html#navigable-target-names","raw":"_blank","offset":0,"length":6,"line":1,"column":1,"reason":"syntax-error","expects":[{"type":"common","value":"browsing context name"}]}"#,
-    ),
-    (
-        "BrowsingContextName",
-        "a\t<b",
-        r#"{"matched":false,"ref":"https://html.spec.whatwg.org/multipage/document-sequences.html#navigable-target-names","raw":"a\t<b","offset":0,"length":4,"line":1,"column":1,"reason":"syntax-error","expects":[{"type":"common","value":"browsing context name"}]}"#,
-    ),
-    (
-        "BrowsingContextName",
-        "a<\nb",
-        r#"{"matched":false,"ref":"https://html.spec.whatwg.org/multipage/document-sequences.html#navigable-target-names","raw":"a<\nb","offset":0,"length":4,"line":1,"column":1,"reason":"syntax-error","expects":[{"type":"common","value":"browsing context name"}]}"#,
-    ),
-    (
-        "BrowsingContextName",
-        "my\tframe",
-        r#"{"matched":true}"#,
-    ),
-    (
         "NavigableTargetNameOrKeyword",
         "_blank",
         r#"{"matched":true}"#,
@@ -205,7 +165,7 @@ const CASES: &[(&str, &str, &str)] = &[
     (
         "NavigableTargetNameOrKeyword",
         "",
-        r#"{"matched":false,"ref":"https://html.spec.whatwg.org/multipage/document-sequences.html#valid-navigable-target-name-or-keyword","raw":"","offset":0,"length":0,"line":1,"column":1,"reason":"unexpected-token","expects":[{"type":"const","value":"_blank"},{"type":"const","value":"_self"},{"type":"const","value":"_parent"},{"type":"const","value":"_top"},{"type":"common","value":"navigable target name"}]}"#,
+        r#"{"matched":false,"ref":"https://html.spec.whatwg.org/multipage/document-sequences.html#valid-navigable-target-name-or-keyword","raw":"","offset":0,"length":0,"line":1,"column":1,"reason":"empty-token","expects":[{"type":"const","value":"_blank"},{"type":"const","value":"_self"},{"type":"const","value":"_parent"},{"type":"const","value":"_top"},{"type":"common","value":"navigable target name"}]}"#,
     ),
     (
         "NavigableTargetNameOrKeyword",
@@ -233,78 +193,13 @@ const CASES: &[(&str, &str, &str)] = &[
         r#"{"matched":true}"#,
     ),
     (
-        "BrowsingContextNameOrKeyword",
+        "BrowsingContextName",
         "_blank",
         r#"{"matched":true}"#,
     ),
     (
         "BrowsingContextNameOrKeyword",
-        "frame",
-        r#"{"matched":true}"#,
-    ),
-    (
-        "BrowsingContextNameOrKeyword",
-        "a\tb",
-        r#"{"matched":true}"#,
-    ),
-    (
-        "BrowsingContextNameOrKeyword",
-        "a\nb<",
-        r#"{"matched":false,"ref":"https://html.spec.whatwg.org/multipage/document-sequences.html#valid-browsing-context-name-or-keyword","raw":"a\nb<","offset":0,"length":4,"line":1,"column":1,"reason":"syntax-error","expects":[{"type":"const","value":"_blank"},{"type":"const","value":"_self"},{"type":"const","value":"_parent"},{"type":"const","value":"_top"},{"type":"common","value":"browsing context name"}]}"#,
-    ),
-    (
-        "BrowsingContextNameOrKeyword",
-        "_BLANK",
-        r#"{"matched":true}"#,
-    ),
-    (
-        "BrowsingContextNameOrKeyword",
-        "_Self",
-        r#"{"matched":true}"#,
-    ),
-    (
-        "BrowsingContextNameOrKeyword",
-        "_Unknown",
-        r#"{"matched":false,"ref":"https://html.spec.whatwg.org/multipage/document-sequences.html#valid-browsing-context-name-or-keyword","raw":"_Unknown","offset":0,"length":8,"line":1,"column":1,"reason":"unexpected-token","expects":[{"type":"const","value":"_blank"},{"type":"const","value":"_self"},{"type":"const","value":"_parent"},{"type":"const","value":"_top"},{"type":"common","value":"browsing context name"}]}"#,
-    ),
-    (
-        "BrowsingContextNameOrKeyword",
-        "Foo\tBar<",
-        r#"{"matched":false,"ref":"https://html.spec.whatwg.org/multipage/document-sequences.html#valid-browsing-context-name-or-keyword","raw":"Foo\tBar<","offset":0,"length":8,"line":1,"column":1,"reason":"syntax-error","expects":[{"type":"const","value":"_blank"},{"type":"const","value":"_self"},{"type":"const","value":"_parent"},{"type":"const","value":"_top"},{"type":"common","value":"browsing context name"}]}"#,
-    ),
-    (
-        "BrowsingContextNameOrKeyword",
-        "a\tb<",
-        r#"{"matched":false,"ref":"https://html.spec.whatwg.org/multipage/document-sequences.html#valid-browsing-context-name-or-keyword","raw":"a\tb<","offset":0,"length":4,"line":1,"column":1,"reason":"syntax-error","expects":[{"type":"const","value":"_blank"},{"type":"const","value":"_self"},{"type":"const","value":"_parent"},{"type":"const","value":"_top"},{"type":"common","value":"browsing context name"}]}"#,
-    ),
-    (
-        "BrowsingContextNameOrKeyword",
-        "",
-        r#"{"matched":false,"ref":"https://html.spec.whatwg.org/multipage/document-sequences.html#valid-browsing-context-name-or-keyword","raw":"","offset":0,"length":0,"line":1,"column":1,"reason":"empty-token","expects":[{"type":"const","value":"_blank"},{"type":"const","value":"_self"},{"type":"const","value":"_parent"},{"type":"const","value":"_top"},{"type":"common","value":"browsing context name"}]}"#,
-    ),
-    (
-        "BrowsingContextNameOrKeyword",
-        "_blnak",
-        r#"{"candidate":"_blank","matched":false,"ref":"https://html.spec.whatwg.org/multipage/document-sequences.html#valid-browsing-context-name-or-keyword","raw":"_blnak","offset":0,"length":6,"line":1,"column":1,"reason":"unexpected-token","expects":[{"type":"const","value":"_blank"},{"type":"const","value":"_self"},{"type":"const","value":"_parent"},{"type":"const","value":"_top"},{"type":"common","value":"browsing context name"}]}"#,
-    ),
-    (
-        "BrowsingContextNameOrKeyword",
-        "_foo",
-        r#"{"candidate":"_top","matched":false,"ref":"https://html.spec.whatwg.org/multipage/document-sequences.html#valid-browsing-context-name-or-keyword","raw":"_foo","offset":0,"length":4,"line":1,"column":1,"reason":"unexpected-token","expects":[{"type":"const","value":"_blank"},{"type":"const","value":"_self"},{"type":"const","value":"_parent"},{"type":"const","value":"_top"},{"type":"common","value":"browsing context name"}]}"#,
-    ),
-    (
-        "BrowsingContextNameOrKeyword",
-        "_parent",
-        r#"{"matched":true}"#,
-    ),
-    (
-        "BrowsingContextNameOrKeyword",
-        "_top",
-        r#"{"matched":true}"#,
-    ),
-    (
-        "BrowsingContextNameOrKeyword",
-        "myframe",
+        "a\t<b",
         r#"{"matched":true}"#,
     ),
 ];

@@ -257,8 +257,7 @@ pub fn validate_model_categories(selector: &SelectorList, spec: &MLMLSpec) -> Re
                 PseudoClassSelector::Not(list)
                 | PseudoClassSelector::Is(list)
                 | PseudoClassSelector::Has(list)
-                | PseudoClassSelector::Where(list)
-                | PseudoClassSelector::Closest(list) => validate_model_categories(list, spec)?,
+                | PseudoClassSelector::Where(list) => validate_model_categories(list, spec)?,
                 PseudoClassSelector::Scope
                 | PseudoClassSelector::Root
                 | PseudoClassSelector::FirstChild

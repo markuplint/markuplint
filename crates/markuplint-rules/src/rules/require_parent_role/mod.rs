@@ -64,13 +64,7 @@ fn check(ctx: &ElementContext<'_>) -> Option<Violation> {
         let Some(role_spec) = roles.iter().find(|role| role.name == token.value) else {
             continue;
         };
-        // TS `requiredContextRole ?? requiredAccessibilityParentRole`: the spec data carries the
-        // former for every version.
-        let parent_roles = if role_spec.required_context_role.is_empty() {
-            &role_spec.required_accessibility_parent_role
-        } else {
-            &role_spec.required_context_role
-        };
+        let parent_roles = &role_spec.required_accessibility_parent_role;
         let tr = ctx.tr;
         let requirement = match parent_roles.as_slice() {
             [] => continue,
