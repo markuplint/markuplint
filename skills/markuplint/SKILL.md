@@ -87,7 +87,7 @@ Always quote glob patterns to prevent shell expansion.
 
 ### Ancestor matching
 
-Use `:is(selector *)`. Do NOT use `:closest()` — it is deprecated.
+Use `:is(selector *)`. Do NOT use `:closest()` — it is not supported in v6 (deprecated in v5).
 
 ```json
 { "selector": "div:is(nav *)" }

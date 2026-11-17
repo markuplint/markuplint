@@ -218,6 +218,6 @@ These are frequently requested. Propose them directly when relevant:
 
 ### Selector tips
 
-- Ancestor matching: use `:is(nav *)` (NOT `:closest()` — it is deprecated)
+- Ancestor matching: use `:is(nav *)` (NOT `:closest()` — it is not supported in v6, and deprecated in v5)
 - For selector syntax details: `{doc-base}/docs/guides/selectors`
 - For all config properties: `{doc-base}/docs/configuration/properties`
