@@ -273,7 +273,7 @@ function classifyChildren(
  */
 function classifyRenderedAway(
 	// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
-	template: Element<boolean, Options>,
+	template: Element<boolean, undefined>,
 	role: ARIARole,
 	version: ARIAVersion,
 ): OwnedElement[] {

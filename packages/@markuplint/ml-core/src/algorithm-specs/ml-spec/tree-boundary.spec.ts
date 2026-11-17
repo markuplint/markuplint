@@ -194,11 +194,17 @@ describe('getAccessibilityParentElement', () => {
 		readonly localName: string;
 		readonly namespaceURI: string;
 		readonly isRenderedAway?: boolean;
+		getRootNode(): unknown;
+		getFlatTreeSlot(): Node | null | undefined;
 	};
+	// Every node is in one tree and none is in a shadow tree, so that only what is under test decides the parent
+	const root = {};
 	const node = (localName: string, parentElement: Node | null, isRenderedAway?: boolean): Node => ({
 		parentElement,
 		localName,
 		namespaceURI: HTML,
+		getRootNode: () => root,
+		getFlatTreeSlot: () => {},
 		...(isRenderedAway === undefined ? {} : { isRenderedAway }),
 	});
 

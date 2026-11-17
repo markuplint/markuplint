@@ -115,10 +115,14 @@ export async function diagnose(html: string, options: DiagnoseOptions = {}): Pro
 			rules: { ...Object.fromEntries(allRuleNames().map(name => [name, true])), [CATEGORIES_RULE]: true },
 			...(options.extendedSpec ? { specs: { '\\.html$': options.extendedSpec } } : {}),
 		},
-		rules: [categoriesRule()],
 		locale: 'en',
 		ignoreExt: true,
-		importPresetRules: true,
+	});
+	// The rules of a run are the package's own (the engine takes no rule from a caller), and what the engine
+	// resolved is a copy for this run: the rule that records the categories is put among them as the spec is
+	// put in place of the resolved one below.
+	engine.on('rules', (_path, resolved) => {
+		(resolved as unknown as MLRule<any, any>[]).push(categoriesRule());
 	});
 	const { transformSpec } = options;
 	if (transformSpec) {

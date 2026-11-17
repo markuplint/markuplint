@@ -234,7 +234,6 @@ async function lintPasses(
 				config: { extends: ['markuplint:recommended'] },
 				locale: 'en',
 				ignoreExt: true,
-				importPresetRules: true,
 				configProvider,
 			});
 			const result = await engine.exec();

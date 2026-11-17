@@ -44,7 +44,7 @@
 {"col":45,"line":15,"message":"The \"disableremoteplayback\" attribute is a boolean attribute. It doesn't need the value","raw":"=\"\"","ruleId":"no-boolean-attr-value","severity":"warning"}
 {"col":58,"line":15,"message":"The \"loading\" attribute expects either \"lazy\", \"eager\"","raw":"","ruleId":"no-invalid-attr-value","severity":"error"}
 {"col":1,"line":16,"message":"The element should not empty","raw":"<b>","ruleId":"no-empty-palpable-content","severity":"warning"}
-{"col":23,"line":17,"message":"It includes unexpected characters. the \"target\" attribute expects either \"_blank\", \"_self\", \"_parent\", \"_top\", \"navigable target name\" (https://html.spec.whatwg.org/multipage/document-sequences.html#valid-navigable-target-name-or-keyword)","raw":"","ruleId":"no-invalid-attr-value","severity":"error"}
+{"col":23,"line":17,"message":"The \"target\" attribute must not be empty. It expects either \"_blank\", \"_self\", \"_parent\", \"_top\", \"navigable target name\" (https://html.spec.whatwg.org/multipage/document-sequences.html#valid-navigable-target-name-or-keyword)","raw":"","ruleId":"no-invalid-attr-value","severity":"error"}
 {"col":1,"line":18,"message":"The \"basefont\" element is obsolete","raw":"<basefont>","ruleId":"no-obsolete-element","severity":"error"}
 {"col":1,"line":18,"message":"Missing the end tag","raw":"<basefont>","ruleId":"require-end-tag","severity":"warning"}
 {"col":1,"line":19,"message":"The element should not empty","raw":"<bdi>","ruleId":"no-empty-palpable-content","severity":"warning"}
@@ -149,7 +149,7 @@
 {"col":80,"line":52,"message":"The \"method\" attribute expects either \"post\", \"get\", \"dialog\"","raw":"","ruleId":"no-invalid-attr-value","severity":"error"}
 {"col":88,"line":52,"message":"The \"name\" attribute must not be empty","raw":"","ruleId":"no-invalid-attr-value","severity":"error"}
 {"col":100,"line":52,"message":"The \"novalidate\" attribute is a boolean attribute. It doesn't need the value","raw":"=\"\"","ruleId":"no-boolean-attr-value","severity":"warning"}
-{"col":119,"line":52,"message":"It includes unexpected characters. the \"target\" attribute expects either \"_blank\", \"_self\", \"_parent\", \"_top\", \"navigable target name\" (https://html.spec.whatwg.org/multipage/document-sequences.html#valid-navigable-target-name-or-keyword)","raw":"","ruleId":"no-invalid-attr-value","severity":"error"}
+{"col":119,"line":52,"message":"The \"target\" attribute must not be empty. It expects either \"_blank\", \"_self\", \"_parent\", \"_top\", \"navigable target name\" (https://html.spec.whatwg.org/multipage/document-sequences.html#valid-navigable-target-name-or-keyword)","raw":"","ruleId":"no-invalid-attr-value","severity":"error"}
 {"col":1,"line":53,"message":"The element should not empty","raw":"<h1 align=\"\">","ruleId":"no-empty-palpable-content","severity":"warning"}
 {"col":1,"line":53,"message":"Require accessible name","raw":"<h1 align=\"\">","ruleId":"require-accessible-name","severity":"error"}
 {"col":5,"line":53,"message":"The \"align\" attribute is obsolete","raw":"align","ruleId":"no-obsolete-attr","severity":"error"}
@@ -257,7 +257,7 @@
 {"col":233,"line":65,"message":"The \"minlength\" attribute is disallowed","raw":"minlength","ruleId":"no-disallowed-attr","severity":"error"}
 {"col":246,"line":65,"message":"The \"multiple\" attribute is disallowed","raw":"multiple","ruleId":"no-disallowed-attr","severity":"error"}
 {"col":254,"line":65,"message":"The \"multiple\" attribute is a boolean attribute. It doesn't need the value","raw":"=\"\"","ruleId":"no-boolean-attr-value","severity":"warning"}
-{"col":264,"line":65,"message":"The \"name\" attribute expects regular expression (/^(?!isindex$).+/)","raw":"","ruleId":"no-invalid-attr-value","severity":"error"}
+{"col":264,"line":65,"message":"The \"name\" attribute must not be empty. It expects the form control name format (https://html.spec.whatwg.org/multipage/form-control-infrastructure.html#attr-fe-name)","raw":"","ruleId":"no-invalid-attr-value","severity":"error"}
 {"col":266,"line":65,"message":"The \"orient\" attribute is non-standard","raw":"orient","ruleId":"no-nonstandard-features","severity":"warning"}
 {"col":276,"line":65,"message":"The \"pattern\" attribute is disallowed","raw":"pattern","ruleId":"no-disallowed-attr","severity":"error"}
 {"col":287,"line":65,"message":"The \"placeholder\" attribute is disallowed","raw":"placeholder","ruleId":"no-disallowed-attr","severity":"error"}
