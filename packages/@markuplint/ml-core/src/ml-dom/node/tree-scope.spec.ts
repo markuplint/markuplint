@@ -8,6 +8,7 @@ import {
 	getTreeParentElement,
 	schemaToSpec,
 } from '@markuplint/ml-spec';
+import { InvalidSelectorError } from '@markuplint/selector';
 import { describe, test, expect } from 'vitest';
 
 import { createTestDocument } from '../../test/index.js';
@@ -457,12 +458,17 @@ describe('selectors and ancestors stop at the boundary of a tree', () => {
 		expect(must(content.findElementById('p')).matches('div > p')).toBe(true);
 	});
 
-	test(':closest and closest() do not reach an ancestor of another tree', () => {
+	test('closest() and an ancestor through :is() do not reach an ancestor of another tree', () => {
 		const p = must(contentOf(createTestDocument(code)).findElementById('p'));
 		expect(p.closest('section')).toBeNull();
 		expect(must(p.closest('div')).localName).toBe('div');
-		expect(p.matches(':closest(section)')).toBe(false);
-		expect(p.matches(':closest(div)')).toBe(true);
+		expect(p.matches(':is(section *)')).toBe(false);
+		expect(p.matches(':is(div *)')).toBe(true);
+	});
+
+	test(':closest is not supported', () => {
+		const p = must(contentOf(createTestDocument(code)).findElementById('p'));
+		expect(() => p.matches(':closest(section)')).toThrow(InvalidSelectorError);
 	});
 
 	test(':has does not look into the content of a template', () => {

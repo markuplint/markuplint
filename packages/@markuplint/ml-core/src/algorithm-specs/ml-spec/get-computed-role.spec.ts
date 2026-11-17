@@ -180,7 +180,7 @@ describe('1.2', () => {
 
 	test('Presentational Roles Conflict Resolution with generic wrapper', () => {
 		// In 1.2, generic <div> is NOT transparent. The non-presentational
-		// ancestor is <div> (generic), which has no requiredOwnedElements.
+		// ancestor is <div> (generic), which has no allowedAccessibilityChildRoles.
 		// Conflict resolution does not trigger → presentation is kept.
 		expect(c('<ul><div><li role="presentation"></li></div></ul>', '1.2', 'li').role?.name).toBe('presentation');
 	});
@@ -333,7 +333,7 @@ describe('1.3', () => {
 
 	test('Presentational Roles Conflict Resolution with generic wrapper', () => {
 		// In 1.3, generic <div> is transparent for getNonPresentationalAncestor,
-		// so <ul> (list) is found as the ancestor with requiredOwnedElements.
+		// so <ul> (list) is found as the ancestor with allowedAccessibilityChildRoles.
 		// <li role="presentation"> matches listitem → conflict resolution triggers.
 		expect(c('<ul><div><li role="presentation"></li></div></ul>', '1.3', 'li').role?.name).toBe('listitem');
 		expect(c('<ul><div><li role="presentation"></li></div></ul>', '1.3', 'li').errorType).toBe(
