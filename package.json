@@ -91,7 +91,7 @@
 		"lint-staged": "17.6.0",
 		"npm-run-all2": "9.0.4",
 		"oxfmt": "0.78.0",
-		"oxlint": "1.92.0",
+		"oxlint": "1.93.0",
 		"renovate": "44.226.1",
 		"textlint": "15.8.0",
 		"textlint-filter-rule-comments": "1.3.0",
