@@ -93,7 +93,7 @@
 		"npm-run-all2": "9.0.4",
 		"oxfmt": "0.78.0",
 		"oxlint": "1.92.0",
-		"renovate": "44.224.0",
+		"renovate": "44.225.1",
 		"textlint": "15.8.0",
 		"textlint-filter-rule-comments": "1.3.0",
 		"textlint-rule-preset-ja-spacing": "3.0.4",
