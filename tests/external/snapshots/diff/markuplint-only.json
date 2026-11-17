@@ -3970,14 +3970,18 @@
 			"path": "html-svg/animate-dom-01-f-isvalid.html",
 			"category": "uncategorized",
 			"ruleIds": [
-				"@markuplint/ml-core"
+				"no-invalid-attr-value",
+				"no-unknown-attr",
+				"permitted-contents"
 			]
 		},
 		{
 			"path": "html-svg/animate-dom-02-f-isvalid.html",
 			"category": "uncategorized",
 			"ruleIds": [
-				"@markuplint/ml-core"
+				"no-invalid-attr-value",
+				"no-unknown-attr",
+				"permitted-contents"
 			]
 		},
 		{
@@ -4732,14 +4736,19 @@
 			"path": "html-svg/animate-script-elem-01-b-isvalid.html",
 			"category": "uncategorized",
 			"ruleIds": [
-				"@markuplint/ml-core"
+				"no-deprecated-attr",
+				"no-invalid-attr-value",
+				"no-unknown-attr",
+				"permitted-contents"
 			]
 		},
 		{
 			"path": "html-svg/animate-struct-dom-01-b-isvalid.html",
 			"category": "uncategorized",
 			"ruleIds": [
-				"@markuplint/ml-core"
+				"no-invalid-attr-value",
+				"no-unknown-attr",
+				"permitted-contents"
 			]
 		},
 		{
@@ -4837,14 +4846,18 @@
 			"path": "html-svg/coords-dom-03-f-isvalid.html",
 			"category": "uncategorized",
 			"ruleIds": [
-				"@markuplint/ml-core"
+				"no-invalid-attr-value",
+				"no-unknown-attr",
+				"permitted-contents"
 			]
 		},
 		{
 			"path": "html-svg/coords-dom-04-f-isvalid.html",
 			"category": "uncategorized",
 			"ruleIds": [
-				"@markuplint/ml-core"
+				"no-invalid-attr-value",
+				"no-unknown-attr",
+				"permitted-contents"
 			]
 		},
 		{
@@ -5154,7 +5167,10 @@
 			"path": "html-svg/filters-conv-03-f-isvalid.html",
 			"category": "uncategorized",
 			"ruleIds": [
-				"@markuplint/ml-core"
+				"no-deprecated-attr",
+				"no-invalid-attr-value",
+				"no-unknown-attr",
+				"permitted-contents"
 			]
 		},
 		{
@@ -5621,28 +5637,40 @@
 			"path": "html-svg/interact-dom-01-b-isvalid.html",
 			"category": "uncategorized",
 			"ruleIds": [
-				"@markuplint/ml-core"
+				"no-invalid-attr-value",
+				"no-obsolete-attr",
+				"no-unknown-attr",
+				"permitted-contents"
 			]
 		},
 		{
 			"path": "html-svg/interact-events-01-b-isvalid.html",
 			"category": "uncategorized",
 			"ruleIds": [
-				"@markuplint/ml-core"
+				"no-invalid-attr-value",
+				"no-obsolete-attr",
+				"no-unknown-attr",
+				"permitted-contents"
 			]
 		},
 		{
 			"path": "html-svg/interact-events-02-b-isvalid.html",
 			"category": "uncategorized",
 			"ruleIds": [
-				"@markuplint/ml-core"
+				"no-deprecated-attr",
+				"no-invalid-attr-value",
+				"no-unknown-attr",
+				"permitted-contents"
 			]
 		},
 		{
 			"path": "html-svg/interact-events-202-f-isvalid.html",
 			"category": "uncategorized",
 			"ruleIds": [
-				"@markuplint/ml-core"
+				"no-deprecated-attr",
+				"no-invalid-attr-value",
+				"no-unknown-attr",
+				"permitted-contents"
 			]
 		},
 		{
@@ -5659,35 +5687,52 @@
 			"path": "html-svg/interact-order-01-b-isvalid.html",
 			"category": "uncategorized",
 			"ruleIds": [
-				"@markuplint/ml-core"
+				"no-invalid-attr-value",
+				"no-obsolete-attr",
+				"no-unknown-attr",
+				"permitted-contents"
 			]
 		},
 		{
 			"path": "html-svg/interact-order-02-b-isvalid.html",
 			"category": "uncategorized",
 			"ruleIds": [
-				"@markuplint/ml-core"
+				"no-deprecated-attr",
+				"no-invalid-attr-value",
+				"no-obsolete-attr",
+				"no-unknown-attr",
+				"permitted-contents"
 			]
 		},
 		{
 			"path": "html-svg/interact-order-03-b-isvalid.html",
 			"category": "uncategorized",
 			"ruleIds": [
-				"@markuplint/ml-core"
+				"no-deprecated-attr",
+				"no-invalid-attr-value",
+				"no-obsolete-attr",
+				"no-unknown-attr",
+				"permitted-contents"
 			]
 		},
 		{
 			"path": "html-svg/interact-pevents-01-b-isvalid.html",
 			"category": "uncategorized",
 			"ruleIds": [
-				"@markuplint/ml-core"
+				"no-invalid-attr-value",
+				"no-obsolete-attr",
+				"no-unknown-attr",
+				"permitted-contents"
 			]
 		},
 		{
 			"path": "html-svg/interact-pevents-03-b-isvalid.html",
 			"category": "uncategorized",
 			"ruleIds": [
-				"@markuplint/ml-core"
+				"no-invalid-attr-value",
+				"no-obsolete-attr",
+				"no-unknown-attr",
+				"permitted-contents"
 			]
 		},
 		{
@@ -5704,56 +5749,73 @@
 			"path": "html-svg/interact-pevents-05-b-isvalid.html",
 			"category": "uncategorized",
 			"ruleIds": [
-				"@markuplint/ml-core"
+				"no-invalid-attr-value",
+				"no-obsolete-attr",
+				"no-unknown-attr",
+				"permitted-contents"
 			]
 		},
 		{
 			"path": "html-svg/interact-pevents-07-t-isvalid.html",
 			"category": "uncategorized",
 			"ruleIds": [
-				"@markuplint/ml-core"
+				"no-invalid-attr-value",
+				"no-unknown-attr",
+				"permitted-contents"
 			]
 		},
 		{
 			"path": "html-svg/interact-pevents-08-f-isvalid.html",
 			"category": "uncategorized",
 			"ruleIds": [
-				"@markuplint/ml-core"
+				"no-invalid-attr-value",
+				"no-unknown-attr",
+				"permitted-contents"
 			]
 		},
 		{
 			"path": "html-svg/interact-pevents-09-f-isvalid.html",
 			"category": "uncategorized",
 			"ruleIds": [
-				"@markuplint/ml-core"
+				"no-invalid-attr-value",
+				"no-unknown-attr",
+				"permitted-contents"
 			]
 		},
 		{
 			"path": "html-svg/interact-pevents-10-f-isvalid.html",
 			"category": "uncategorized",
 			"ruleIds": [
-				"@markuplint/ml-core"
+				"no-invalid-attr-value",
+				"no-unknown-attr",
+				"permitted-contents"
 			]
 		},
 		{
 			"path": "html-svg/interact-pointer-01-t-isvalid.html",
 			"category": "uncategorized",
 			"ruleIds": [
-				"@markuplint/ml-core"
+				"no-invalid-attr-value",
+				"no-unknown-attr",
+				"permitted-contents"
 			]
 		},
 		{
 			"path": "html-svg/interact-pointer-03-t-isvalid.html",
 			"category": "uncategorized",
 			"ruleIds": [
-				"@markuplint/ml-core"
+				"no-invalid-attr-value",
+				"no-unknown-attr",
+				"permitted-contents"
 			]
 		},
 		{
 			"path": "html-svg/interact-pointer-04-f-isvalid.html",
 			"category": "uncategorized",
 			"ruleIds": [
-				"@markuplint/ml-core"
+				"no-invalid-attr-value",
+				"no-unknown-attr",
+				"permitted-contents"
 			]
 		},
 		{
@@ -6021,7 +6083,9 @@
 			"path": "html-svg/masking-path-09-b-isvalid.html",
 			"category": "uncategorized",
 			"ruleIds": [
-				"@markuplint/ml-core"
+				"no-invalid-attr-value",
+				"no-unknown-attr",
+				"permitted-contents"
 			]
 		},
 		{
@@ -6047,7 +6111,9 @@
 			"path": "html-svg/masking-path-12-f-isvalid.html",
 			"category": "uncategorized",
 			"ruleIds": [
-				"@markuplint/ml-core"
+				"no-invalid-attr-value",
+				"no-unknown-attr",
+				"permitted-contents"
 			]
 		},
 		{
@@ -6529,14 +6595,21 @@
 			"path": "html-svg/paths-dom-01-f-isvalid.html",
 			"category": "uncategorized",
 			"ruleIds": [
-				"@markuplint/ml-core"
+				"no-deprecated-attr",
+				"no-invalid-attr-value",
+				"no-obsolete-attr",
+				"no-unknown-attr",
+				"permitted-contents"
 			]
 		},
 		{
 			"path": "html-svg/paths-dom-02-f-isvalid.html",
 			"category": "uncategorized",
 			"ruleIds": [
-				"@markuplint/ml-core"
+				"no-invalid-attr-value",
+				"no-obsolete-attr",
+				"no-unknown-attr",
+				"permitted-contents"
 			]
 		},
 		{
@@ -6934,35 +7007,49 @@
 			"path": "html-svg/script-handle-01-b-isvalid.html",
 			"category": "uncategorized",
 			"ruleIds": [
-				"@markuplint/ml-core"
+				"no-invalid-attr-value",
+				"no-obsolete-attr",
+				"no-unknown-attr",
+				"permitted-contents"
 			]
 		},
 		{
 			"path": "html-svg/script-handle-02-b-isvalid.html",
 			"category": "uncategorized",
 			"ruleIds": [
-				"@markuplint/ml-core"
+				"no-invalid-attr-value",
+				"no-obsolete-attr",
+				"no-unknown-attr",
+				"permitted-contents"
 			]
 		},
 		{
 			"path": "html-svg/script-handle-03-b-isvalid.html",
 			"category": "uncategorized",
 			"ruleIds": [
-				"@markuplint/ml-core"
+				"no-invalid-attr-value",
+				"no-obsolete-attr",
+				"no-unknown-attr",
+				"permitted-contents"
 			]
 		},
 		{
 			"path": "html-svg/script-handle-04-b-isvalid.html",
 			"category": "uncategorized",
 			"ruleIds": [
-				"@markuplint/ml-core"
+				"no-invalid-attr-value",
+				"no-obsolete-attr",
+				"no-unknown-attr",
+				"permitted-contents"
 			]
 		},
 		{
 			"path": "html-svg/script-specify-02-f-isvalid.html",
 			"category": "uncategorized",
 			"ruleIds": [
-				"@markuplint/ml-core"
+				"no-invalid-attr-value",
+				"no-unknown-attr",
+				"permitted-contents"
 			]
 		},
 		{
@@ -7249,126 +7336,178 @@
 			"path": "html-svg/struct-dom-01-b-isvalid.html",
 			"category": "uncategorized",
 			"ruleIds": [
-				"@markuplint/ml-core"
+				"no-deprecated-attr",
+				"no-invalid-attr-value",
+				"no-obsolete-attr",
+				"no-unknown-attr",
+				"permitted-contents"
 			]
 		},
 		{
 			"path": "html-svg/struct-dom-02-b-isvalid.html",
 			"category": "uncategorized",
 			"ruleIds": [
-				"@markuplint/ml-core"
+				"no-invalid-attr-value",
+				"no-obsolete-attr",
+				"no-unknown-attr",
+				"permitted-contents"
 			]
 		},
 		{
 			"path": "html-svg/struct-dom-03-b-isvalid.html",
 			"category": "uncategorized",
 			"ruleIds": [
-				"@markuplint/ml-core"
+				"no-invalid-attr-value",
+				"no-obsolete-attr",
+				"no-unknown-attr",
+				"permitted-contents"
 			]
 		},
 		{
 			"path": "html-svg/struct-dom-04-b-isvalid.html",
 			"category": "uncategorized",
 			"ruleIds": [
-				"@markuplint/ml-core"
+				"no-invalid-attr-value",
+				"no-obsolete-attr",
+				"no-unknown-attr",
+				"permitted-contents"
 			]
 		},
 		{
 			"path": "html-svg/struct-dom-05-b-isvalid.html",
 			"category": "uncategorized",
 			"ruleIds": [
-				"@markuplint/ml-core"
+				"no-invalid-attr-value",
+				"no-obsolete-attr",
+				"no-unknown-attr",
+				"permitted-contents"
 			]
 		},
 		{
 			"path": "html-svg/struct-dom-06-b-isvalid.html",
 			"category": "uncategorized",
 			"ruleIds": [
-				"@markuplint/ml-core"
+				"no-invalid-attr-value",
+				"no-obsolete-attr",
+				"no-unknown-attr",
+				"permitted-contents"
 			]
 		},
 		{
 			"path": "html-svg/struct-dom-07-f-isvalid.html",
 			"category": "uncategorized",
 			"ruleIds": [
-				"@markuplint/ml-core"
+				"no-deprecated-attr",
+				"no-invalid-attr-value",
+				"no-obsolete-attr",
+				"no-unknown-attr",
+				"permitted-contents"
 			]
 		},
 		{
 			"path": "html-svg/struct-dom-08-f-isvalid.html",
 			"category": "uncategorized",
 			"ruleIds": [
-				"@markuplint/ml-core"
+				"no-invalid-attr-value",
+				"no-unknown-attr",
+				"permitted-contents"
 			]
 		},
 		{
 			"path": "html-svg/struct-dom-11-f-isvalid.html",
 			"category": "uncategorized",
 			"ruleIds": [
-				"@markuplint/ml-core"
+				"no-invalid-attr-value",
+				"no-unknown-attr",
+				"permitted-contents"
 			]
 		},
 		{
 			"path": "html-svg/struct-dom-12-b-isvalid.html",
 			"category": "uncategorized",
 			"ruleIds": [
-				"@markuplint/ml-core"
+				"no-deprecated-attr",
+				"no-invalid-attr-value",
+				"no-obsolete-attr",
+				"no-unknown-attr",
+				"permitted-contents"
 			]
 		},
 		{
 			"path": "html-svg/struct-dom-13-f-isvalid.html",
 			"category": "uncategorized",
 			"ruleIds": [
-				"@markuplint/ml-core"
+				"no-invalid-attr-value",
+				"no-unknown-attr",
+				"permitted-contents"
 			]
 		},
 		{
 			"path": "html-svg/struct-dom-14-f-isvalid.html",
 			"category": "uncategorized",
 			"ruleIds": [
-				"@markuplint/ml-core"
+				"no-deprecated-attr",
+				"no-invalid-attr-value",
+				"no-unknown-attr",
+				"permitted-contents"
 			]
 		},
 		{
 			"path": "html-svg/struct-dom-15-f-isvalid.html",
 			"category": "uncategorized",
 			"ruleIds": [
-				"@markuplint/ml-core"
+				"no-deprecated-attr",
+				"no-invalid-attr-value",
+				"no-unknown-attr",
+				"permitted-contents"
 			]
 		},
 		{
 			"path": "html-svg/struct-dom-16-f-isvalid.html",
 			"category": "uncategorized",
 			"ruleIds": [
-				"@markuplint/ml-core"
+				"no-invalid-attr-value",
+				"no-unknown-attr",
+				"permitted-contents"
 			]
 		},
 		{
 			"path": "html-svg/struct-dom-17-f-isvalid.html",
 			"category": "uncategorized",
 			"ruleIds": [
-				"@markuplint/ml-core"
+				"no-invalid-attr-value",
+				"no-unknown-attr",
+				"permitted-contents"
 			]
 		},
 		{
 			"path": "html-svg/struct-dom-18-f-isvalid.html",
 			"category": "uncategorized",
 			"ruleIds": [
-				"@markuplint/ml-core"
+				"no-deprecated-attr",
+				"no-invalid-attr-value",
+				"no-unknown-attr",
+				"permitted-contents"
 			]
 		},
 		{
 			"path": "html-svg/struct-dom-19-f-isvalid.html",
 			"category": "uncategorized",
 			"ruleIds": [
-				"@markuplint/ml-core"
+				"no-deprecated-attr",
+				"no-invalid-attr-value",
+				"no-unknown-attr",
+				"permitted-contents"
 			]
 		},
 		{
 			"path": "html-svg/struct-dom-20-f-isvalid.html",
 			"category": "uncategorized",
 			"ruleIds": [
-				"@markuplint/ml-core"
+				"no-deprecated-attr",
+				"no-invalid-attr-value",
+				"no-unknown-attr",
+				"permitted-contents"
 			]
 		},
 		{
@@ -7554,7 +7693,11 @@
 			"path": "html-svg/struct-image-11-b-isvalid.html",
 			"category": "uncategorized",
 			"ruleIds": [
-				"@markuplint/ml-core"
+				"no-deprecated-attr",
+				"no-invalid-attr-value",
+				"no-obsolete-attr",
+				"no-unknown-attr",
+				"permitted-contents"
 			]
 		},
 		{
@@ -7632,14 +7775,19 @@
 			"path": "html-svg/struct-svg-01-f-isvalid.html",
 			"category": "uncategorized",
 			"ruleIds": [
-				"@markuplint/ml-core"
+				"no-invalid-attr-value",
+				"no-unknown-attr",
+				"permitted-contents"
 			]
 		},
 		{
 			"path": "html-svg/struct-svg-02-f-isvalid.html",
 			"category": "uncategorized",
 			"ruleIds": [
-				"@markuplint/ml-core"
+				"no-deprecated-attr",
+				"no-invalid-attr-value",
+				"no-unknown-attr",
+				"permitted-contents"
 			]
 		},
 		{
@@ -7765,21 +7913,30 @@
 			"path": "html-svg/struct-use-13-f-isvalid.html",
 			"category": "uncategorized",
 			"ruleIds": [
-				"@markuplint/ml-core"
+				"no-deprecated-attr",
+				"no-invalid-attr-value",
+				"no-unknown-attr",
+				"permitted-contents"
 			]
 		},
 		{
 			"path": "html-svg/struct-use-14-f-isvalid.html",
 			"category": "uncategorized",
 			"ruleIds": [
-				"@markuplint/ml-core"
+				"no-deprecated-attr",
+				"no-invalid-attr-value",
+				"no-unknown-attr",
+				"permitted-contents"
 			]
 		},
 		{
 			"path": "html-svg/struct-use-15-f-isvalid.html",
 			"category": "uncategorized",
 			"ruleIds": [
-				"@markuplint/ml-core"
+				"no-deprecated-attr",
+				"no-invalid-attr-value",
+				"no-unknown-attr",
+				"permitted-contents"
 			]
 		},
 		{
@@ -8088,28 +8245,39 @@
 			"path": "html-svg/text-dom-01-f-isvalid.html",
 			"category": "uncategorized",
 			"ruleIds": [
-				"@markuplint/ml-core"
+				"no-invalid-attr-value",
+				"no-obsolete-attr",
+				"no-unknown-attr",
+				"permitted-contents"
 			]
 		},
 		{
 			"path": "html-svg/text-dom-02-f-isvalid.html",
 			"category": "uncategorized",
 			"ruleIds": [
-				"@markuplint/ml-core"
+				"no-invalid-attr-value",
+				"no-obsolete-attr",
+				"no-unknown-attr",
+				"permitted-contents"
 			]
 		},
 		{
 			"path": "html-svg/text-dom-04-f-isvalid.html",
 			"category": "uncategorized",
 			"ruleIds": [
-				"@markuplint/ml-core"
+				"no-invalid-attr-value",
+				"no-unknown-attr",
+				"permitted-contents"
 			]
 		},
 		{
 			"path": "html-svg/text-dom-05-f-isvalid.html",
 			"category": "uncategorized",
 			"ruleIds": [
-				"@markuplint/ml-core"
+				"no-invalid-attr-value",
+				"no-obsolete-attr",
+				"no-unknown-attr",
+				"permitted-contents"
 			]
 		},
 		{
@@ -8454,14 +8622,20 @@
 			"path": "html-svg/text-tselect-02-f-isvalid.html",
 			"category": "uncategorized",
 			"ruleIds": [
-				"@markuplint/ml-core"
+				"no-invalid-attr-value",
+				"no-obsolete-attr",
+				"no-unknown-attr",
+				"permitted-contents"
 			]
 		},
 		{
 			"path": "html-svg/text-tselect-03-f-isvalid.html",
 			"category": "uncategorized",
 			"ruleIds": [
-				"@markuplint/ml-core"
+				"no-invalid-attr-value",
+				"no-obsolete-attr",
+				"no-unknown-attr",
+				"permitted-contents"
 			]
 		},
 		{
@@ -8507,84 +8681,110 @@
 			"path": "html-svg/types-dom-01-b-isvalid.html",
 			"category": "uncategorized",
 			"ruleIds": [
-				"@markuplint/ml-core"
+				"no-invalid-attr-value",
+				"no-obsolete-attr",
+				"no-unknown-attr",
+				"permitted-contents"
 			]
 		},
 		{
 			"path": "html-svg/types-dom-02-f-isvalid.html",
 			"category": "uncategorized",
 			"ruleIds": [
-				"@markuplint/ml-core"
+				"no-invalid-attr-value",
+				"no-unknown-attr",
+				"permitted-contents"
 			]
 		},
 		{
 			"path": "html-svg/types-dom-03-b-isvalid.html",
 			"category": "uncategorized",
 			"ruleIds": [
-				"@markuplint/ml-core"
+				"no-invalid-attr-value",
+				"no-unknown-attr",
+				"permitted-contents"
 			]
 		},
 		{
 			"path": "html-svg/types-dom-05-b-isvalid.html",
 			"category": "uncategorized",
 			"ruleIds": [
-				"@markuplint/ml-core"
+				"no-invalid-attr-value",
+				"no-unknown-attr",
+				"permitted-contents"
 			]
 		},
 		{
 			"path": "html-svg/types-dom-06-f-isvalid.html",
 			"category": "uncategorized",
 			"ruleIds": [
-				"@markuplint/ml-core"
+				"no-invalid-attr-value",
+				"no-unknown-attr",
+				"permitted-contents"
 			]
 		},
 		{
 			"path": "html-svg/types-dom-07-f-isvalid.html",
 			"category": "uncategorized",
 			"ruleIds": [
-				"@markuplint/ml-core"
+				"no-invalid-attr-value",
+				"no-unknown-attr",
+				"permitted-contents"
 			]
 		},
 		{
 			"path": "html-svg/types-dom-08-f-isvalid.html",
 			"category": "uncategorized",
 			"ruleIds": [
-				"@markuplint/ml-core"
+				"no-deprecated-attr",
+				"no-invalid-attr-value",
+				"no-unknown-attr",
+				"permitted-contents"
 			]
 		},
 		{
 			"path": "html-svg/types-dom-svgfittoviewbox-01-f-isvalid.html",
 			"category": "uncategorized",
 			"ruleIds": [
-				"@markuplint/ml-core"
+				"no-invalid-attr-value",
+				"no-unknown-attr",
+				"permitted-contents"
 			]
 		},
 		{
 			"path": "html-svg/types-dom-svglengthlist-01-f-isvalid.html",
 			"category": "uncategorized",
 			"ruleIds": [
-				"@markuplint/ml-core"
+				"no-invalid-attr-value",
+				"no-unknown-attr",
+				"permitted-contents"
 			]
 		},
 		{
 			"path": "html-svg/types-dom-svgnumberlist-01-f-isvalid.html",
 			"category": "uncategorized",
 			"ruleIds": [
-				"@markuplint/ml-core"
+				"no-invalid-attr-value",
+				"no-unknown-attr",
+				"permitted-contents"
 			]
 		},
 		{
 			"path": "html-svg/types-dom-svgstringlist-01-f-isvalid.html",
 			"category": "uncategorized",
 			"ruleIds": [
-				"@markuplint/ml-core"
+				"no-invalid-attr-value",
+				"no-unknown-attr",
+				"permitted-contents"
 			]
 		},
 		{
 			"path": "html-svg/types-dom-svgtransformable-01-f-isvalid.html",
 			"category": "uncategorized",
 			"ruleIds": [
-				"@markuplint/ml-core"
+				"no-invalid-attr-value",
+				"no-unknown-attr",
+				"permitted-contents"
 			]
 		},
 		{

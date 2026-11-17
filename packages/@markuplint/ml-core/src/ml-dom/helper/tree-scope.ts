@@ -71,11 +71,11 @@ const SHADOW_HOST_NAMES: ReadonlySet<string> = new Set([
 /**
  * Whether `node` is skipped when the parent of a `template` element is looked for: what the
  * template engine or the framework renders away (a block of a template language, a fragment of
- * JSX, a `template` with a directive such as `v-if`) leaves its children to the next element
+ * JSX, a `template` that Vue renders away for `v-if`) leaves its children to the next element
  * above.
  *
- * `isRenderedAway` of `@markuplint/rules` (`src/helpers.ts`) decides the same of an element for the
- * rules that walk up the ancestors: a kind added here belongs to it too.
+ * {@link isRenderedAwayElement} decides it of an element, for the walks up the ancestors of
+ * `@markuplint/ml-spec` and the rules as well (`MLElement#isRenderedAway`): there is one definition.
  *
  * @param node - A node of the syntax tree
  * @returns `true` if the node is not an element of the output
@@ -90,13 +90,36 @@ export function isTransparent<T extends RuleConfigValue, O extends PlainData>(
 	if (node.isFragment) {
 		return true;
 	}
-	return node.is(node.ELEMENT_NODE) && hasDirectiveTemplate(node);
+	return node.is(node.ELEMENT_NODE) && isRenderedAwayElement(node);
+}
+
+/**
+ * Whether the framework or the template engine renders an element away and renders its children in its
+ * place (`MLElement#isRenderedAway`): a fragment, and a `template` that the parser says is rendered away
+ * (`MLASTElement#renderedAway`, which holds without the spec of the framework), or, for a parser that does
+ * not say, one with a directive that the spec resolves ({@link hasDirectiveTemplate}).
+ *
+ * A parser that says is believed over the attributes: Vue renders `<template v-if>` away but leaves
+ * `<template v-show>` a `template` element, which {@link hasDirectiveTemplate} cannot tell apart.
+ *
+ * @param el - An element
+ * @returns `true` if the output has no element for it
+ */
+export function isRenderedAwayElement<T extends RuleConfigValue, O extends PlainData>(
+	// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
+	el: MLElement<T, O>,
+): boolean {
+	if (el.isFragment) {
+		return true;
+	}
+	return el.renderedAway ?? hasDirectiveTemplate(el);
 }
 
 /**
  * Whether the element is a `template` that has a directive of a template engine (Vue's `v-if`,
  * `v-for`, `v-slot`). The engine renders its children in place of it and drops it, so it is not
- * an HTML `template` element.
+ * an HTML `template` element. It is what {@link isRenderedAwayElement} asks for a parser that does not say
+ * (`MLASTElement#renderedAway`): it cannot tell Vue's `v-show` from `v-if`.
  *
  * @param el - An element
  * @returns `true` if it is such a `template`
@@ -121,7 +144,7 @@ export function hasDirectiveTemplate<T extends RuleConfigValue, O extends PlainD
  * Whether the element is an HTML `template` element, which holds its children in `content`, a tree
  * of its own.
  *
- * It is not when the element is a fragment, has a directive of a template engine, or the
+ * It is not when the element is a fragment, is rendered away ({@link isRenderedAwayElement}), or the
  * framework puts the children in the element itself (`templateContent: 'in-place'` of the spec, or of
  * the parser when the spec says nothing).
  *
@@ -142,7 +165,7 @@ export function isHTMLTemplateElement<T extends RuleConfigValue, O extends Plain
 	if ((document.specs.templateContent ?? document.templateContent) === 'in-place') {
 		return false;
 	}
-	return !hasDirectiveTemplate(el);
+	return !isRenderedAwayElement(el);
 }
 
 /**

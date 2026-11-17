@@ -236,6 +236,14 @@ The rule does not skip an element that has an unresolved component as a child. I
 
 When a tag rule is written for the element, the components are checked by the name they are written with. What a descendant of a child renders is not a child of the element, so it does not make the element mutable.
 
+### Conditional child nodes
+
+The branches of a block of a template language (`{#if}`) and the content of a `<template v-if>` are read as one unknown child unless `evaluateConditionalChildNodes` is `true`; with it, each way that they can be rendered is checked: the nodes of a branch are rendered together, a chain that ends with `else` (or `default`) renders one of its branches, and the next `if` starts another chain. Vue's `<template v-for>` is not a branch: its body is a child of the element above, as the body of an `{#each}` block is.
+
+The elements of a chain of `v-if`, `v-else-if` and `v-else` are a choice of one whether or not the option is on, so `<caption v-if>` and `<caption v-else>` are not two captions. A comment or whitespace between them does not end the chain. A parent that has many chains (more than six pairs of `v-if` and `v-else`) reads the elements of the further chains as written, all rendered together, so the elements of such a pair can be reported as if both were rendered.
+
+What is passed to the default slot of a component that a pretender resolved (`<template #default>`, `<template v-slot>`) is a child of the component. A named or dynamic slot is placed where the component says, which is not known from the markup.
+
 ### Detection limit for conditional transparent elements
 
 When many transparent elements (e.g. `<a>`, `<ins>`, `<del>`) with conditional branches such as `{#if}`/`{:else}` are siblings, the rule evaluates the cross-product of their branches. To keep this from growing exponentially, the cross-product is capped (currently `2^10 = 1024` patterns). Beyond the cap — roughly **11 or more conditional transparent siblings** — the rule falls back to a conservative over-approximation that merges all branches together. This never produces false positives, but it may **under-report** real violations (false negatives) in that one structure.

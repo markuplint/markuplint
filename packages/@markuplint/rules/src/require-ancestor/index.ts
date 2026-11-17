@@ -4,7 +4,7 @@ import type { Element, RuleConfigValue } from '@markuplint/ml-core';
 import { createRule } from '@markuplint/ml-core';
 import { getSpecByTagName, isShadowRoot } from '@markuplint/ml-spec';
 
-import { isRenderedAway, isUnknownOutput } from '../helpers.js';
+import { isUnknownOutput } from '../helpers.js';
 
 import meta from './meta.js';
 
@@ -92,7 +92,7 @@ export default createRule({
  * has none: where it is inserted is not known from the markup. What is rendered away between the
  * element and the top of the file is not a parent node: a block of a template language, which
  * `parent` (and so `parentElement`) walks through, and a fragment of JSX or a `template` with
- * a directive ({@link isRenderedAway}).
+ * a directive (`MLElement#isRenderedAway`).
  *
  * @template T - The rule configuration value type
  * @template O - The rule options type
@@ -107,7 +107,7 @@ function hasParentNode<T extends RuleConfigValue, O extends PlainData>(
 		return true;
 	}
 	let parent = el.parentElement;
-	while (parent && isRenderedAway(parent)) {
+	while (parent?.isRenderedAway) {
 		parent = parent.parentElement;
 	}
 	return parent !== null;

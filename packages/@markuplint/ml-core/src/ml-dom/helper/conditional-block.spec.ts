@@ -66,7 +66,7 @@ describe('a template that a framework renders away', () => {
 		const names = expandConditionalBlocks(must(doc.querySelector('div')).childNodes)
 			.filter(node => node.is(node.ELEMENT_NODE))
 			.map(node => node.nodeName.toLowerCase());
-		expect(names).toStrictEqual(['b', 'template']);
+		expect(names).toStrictEqual(['b', 'i']);
 	});
 });
 

@@ -1,12 +1,18 @@
 import type { Element } from '@markuplint/ml-core';
 
-/** Cache for `findChildren` results, keyed by element UUID and selector. */
-const findCache: Record<string, Element<boolean>[]> = {};
+/**
+ * Cache for `findChildren` results, by element and then by selector.
+ *
+ * Keyed by the element itself, weakly: the result holds elements, and an element holds the document that it is in,
+ * so a cache that outlives the document keeps every document that it has been asked about (a language server lints
+ * one after another in one process).
+ */
+const findCache = new WeakMap<Element<boolean>, Map<string, Element<boolean>[]>>();
 
 /**
  * Finds direct children of an element matching the given CSS selector, with caching.
  *
- * Results are cached by element UUID and selector to avoid redundant DOM traversals
+ * Results are cached by element and selector to avoid redundant DOM traversals
  * when the same element/selector combination is queried multiple times.
  *
  * @param el - The parent element to search within.
@@ -18,14 +24,18 @@ export function findChildren(
 	el: Element<boolean>,
 	selector: string,
 ) {
-	const key = `${el.uuid}:${selector}`;
-	const cached = findCache[key];
+	let bySelector = findCache.get(el);
+	if (!bySelector) {
+		bySelector = new Map();
+		findCache.set(el, bySelector);
+	}
+	const cached = bySelector.get(selector);
 	if (cached) {
 		return cached;
 	}
 
 	const children = [...el.childElements].filter(child => child.matches(selector));
 
-	findCache[key] = children;
+	bySelector.set(selector, children);
 	return children;
 }

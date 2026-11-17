@@ -16,6 +16,8 @@ import { getEndPosition } from '@markuplint/parser-utils/location';
 
 type State = {
 	startsHeadTagOrBodyTag: Replacements | null;
+	/** The offsets of the start tags that an element of this parse was made from. */
+	startTagOffsets: Set<number>;
 	afterPosition: {
 		endOffset: number;
 		endLine: number;
@@ -46,6 +48,7 @@ export class HtmlParser extends Parser<Node, State> {
 			{ ...options, rawTextElements: ['style', 'script', 'xmp'], leadingBom: 'mask' },
 			{
 				startsHeadTagOrBodyTag: null,
+				startTagOffsets: new Set(),
 				afterPosition: {
 					endOffset: 0,
 					endLine: 1,
@@ -139,36 +142,7 @@ export class HtmlParser extends Parser<Node, State> {
 		const location = originNode.sourceCodeLocation;
 
 		if (!location) {
-			// Ghost element: parse5 follows the HTML standard's tree construction
-			// and implicitly inserts elements (e.g. `<html>`, `<head>`, `<body>`)
-			// that have no counterpart in the source, so they carry no
-			// `sourceCodeLocation`. The empty `raw` and the position borrowed from
-			// `afterPosition` (or the parent's end position) keep the source
-			// mapping of real elements intact.
-			const afterNode =
-				this.state.afterPosition.depth === depth
-					? this.state.afterPosition
-					: parentNode
-						? getEndPosition(parentNode.raw, parentNode.offset, parentNode.line, parentNode.col)
-						: null;
-			const offset = afterNode?.endOffset ?? 0;
-			const line = afterNode?.endLine ?? 0;
-			const col = afterNode?.endCol ?? 0;
-
-			const childNodes = 'childNodes' in originNode ? originNode.childNodes : [];
-
-			return this.visitElement(
-				{
-					raw: '',
-					offset,
-					line,
-					col,
-					depth,
-					parentNode,
-					nodeName: originNode.nodeName,
-				},
-				childNodes,
-			);
+			return this.#visitGhostElement(originNode, parentNode, depth);
 		}
 
 		const { startOffset, endOffset } = location;
@@ -209,6 +183,13 @@ export class HtmlParser extends Parser<Node, State> {
 				const offset = tagLoc?.startOffset ?? startOffset;
 				const endOffset = tagLoc?.endOffset ?? offset;
 
+				// The parser makes an element again for a misnested formatting element, from the same start tag, so
+				// two elements share a position. The one that comes later in the tree has no source of its own.
+				if (this.state.startTagOffsets.has(offset)) {
+					return this.#visitGhostElement(originNode, parentNode, depth);
+				}
+				this.state.startTagOffsets.add(offset);
+
 				const startTagToken = this.sliceFragment(offset, endOffset);
 
 				const childNodes =
@@ -244,6 +225,57 @@ export class HtmlParser extends Parser<Node, State> {
 				);
 			}
 		}
+	}
+
+	/**
+	 * Makes an element that has no counterpart in the source: its `raw` is empty, and its position is where the previous
+	 * sibling ends (or the end of the start tag of its parent), so that the source mapping of the real elements stays intact.
+	 *
+	 * Two kinds of element come here. One is an element that parse5 inserts implicitly, following the tree
+	 * construction of the HTML Standard (`<html>`, `<head>`, `<body>`, `<tbody>`), which has no `sourceCodeLocation`. The other
+	 * is an element that the parser makes again where a formatting element is misnested (`<p><a href><div>`: the `div`
+	 * closes the `p`, and the `a` is made again inside the `div`), which has the location of the start tag that it repeats.
+	 * It is in the tree that the HTML Standard builds, so it is in the tree here. It has no start tag to read, so it
+	 * has no attributes: the `href` of the repeated `a` is on the first `a` only, and a rule that reads the attributes
+	 * reports the first and not this one, as it would otherwise report each twice.
+	 *
+	 * @see https://html.spec.whatwg.org/multipage/parsing.html#reconstruct-the-active-formatting-elements
+	 *
+	 * @param originNode - The element of parse5
+	 * @param parentNode - The parent in the markuplint AST, or `null` at the top
+	 * @param depth - The nesting depth
+	 * @returns The element and its descendants
+	 */
+	#visitGhostElement(
+		// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
+		originNode: Node,
+		parentNode: MLASTParentNode | null,
+		depth: number,
+	) {
+		const afterNode =
+			this.state.afterPosition.depth === depth
+				? this.state.afterPosition
+				: parentNode
+					? getEndPosition(parentNode.raw, parentNode.offset, parentNode.line, parentNode.col)
+					: null;
+		const offset = afterNode?.endOffset ?? 0;
+		const line = afterNode?.endLine ?? 0;
+		const col = afterNode?.endCol ?? 0;
+
+		const childNodes = 'childNodes' in originNode ? originNode.childNodes : [];
+
+		return this.visitElement(
+			{
+				raw: '',
+				offset,
+				line,
+				col,
+				depth,
+				parentNode,
+				nodeName: originNode.nodeName,
+			},
+			childNodes,
+		);
 	}
 
 	afterNodeize(siblings: readonly MLASTNodeTreeItem[], parentNode: MLASTParentNode | null, depth: number) {

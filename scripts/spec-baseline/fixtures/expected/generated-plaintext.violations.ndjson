@@ -1,0 +1,8 @@
+{"col":1,"line":1,"message":"Require the \"h1\" element","raw":"<","ruleId":"require-h1","severity":"warning"}
+{"col":1,"line":2,"message":"Missing the end tag","raw":"<html lang=\"en\">","ruleId":"require-end-tag","severity":"warning"}
+{"col":1,"line":3,"message":"Require an element. (Need \"title\")","raw":"<head>","ruleId":"permitted-contents","severity":"error"}
+{"col":1,"line":5,"message":"Missing the end tag","raw":"<body>","ruleId":"require-end-tag","severity":"warning"}
+{"col":1,"line":6,"message":"The \"plaintext\" element is obsolete","raw":"<plaintext>","ruleId":"no-obsolete-element","severity":"error"}
+{"col":1,"line":6,"message":"The \"plaintext\" element is not closed at the end of the file","raw":"<plaintext>","ruleId":"no-unclosed-element-at-eof","severity":"error"}
+{"col":1,"line":6,"message":"The \"plaintext\" element is not allowed in the \"body\" element in this context","raw":"<plaintext>","ruleId":"permitted-contents","severity":"error"}
+{"col":1,"line":6,"message":"Missing the end tag","raw":"<plaintext>","ruleId":"require-end-tag","severity":"warning"}

@@ -1,8 +1,6 @@
 import type { MLNode } from '../node/node.js';
 import type { PlainData, RuleConfigValue } from '@markuplint/ml-config';
 
-import { hasDirectiveTemplate } from './tree-scope.js';
-
 /**
  * Whether the node is a conditional block: a preprocessor block that has a `blockBehavior` other than
  * `each` and `end`. `MLNode#childNodes` keeps such a block as a node, of which at most one branch is
@@ -25,11 +23,11 @@ export function isConditionalBlock<T extends RuleConfigValue, O extends PlainDat
 }
 
 /**
- * The nodes with every conditional block, and every `template` that has a directive, replaced by the nodes
+ * The nodes with every conditional block, and every `template` that the framework renders away, replaced by the nodes
  * of its branches or of its content, recursively, as if every branch were rendered at once. Which branch is
  * rendered is not known from the markup, so a caller that must not report on what it cannot know reads them
- * all. A `template` with a directive (Vue's `<template v-if>`) is rendered away: its children are children of
- * the element that holds it. A block that has no behavior stays: it is unknown by itself
+ * all. A `template` that is rendered away (`MLElement#isRenderedAway`, Vue's `<template v-if>`) is no element of the
+ * output: its children are children of the element that holds it. A block that has no behavior stays: it is unknown by itself
  * (`MLElement#hasMutableChildren`).
  *
  * @template T - The rule configuration value type
@@ -43,29 +41,16 @@ export function expandConditionalBlocks<T extends RuleConfigValue, O extends Pla
 ): MLNode<T, O>[] {
 	const expanded: MLNode<T, O>[] = [];
 	for (const node of nodes) {
-		if (isConditionalBlock(node) || isRenderedAwayTemplate(node)) {
+		if (
+			isConditionalBlock(node) ||
+			(node.is(node.ELEMENT_NODE) && node.localName === 'template' && node.isRenderedAway)
+		) {
 			expanded.push(...expandConditionalBlocks(node.childNodes));
 		} else {
 			expanded.push(node);
 		}
 	}
 	return expanded;
-}
-
-/**
- * Whether the node is a `template` of a framework that renders it away: one with a directive of a
- * template engine (`hasDirectiveTemplate`, which needs the spec of the framework to know the attribute is
- * one), or one that the parser marks with a behavior (`v-if`, `v-for`), which it does without the spec.
- */
-function isRenderedAwayTemplate<T extends RuleConfigValue, O extends PlainData>(
-	// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
-	node: MLNode<T, O>,
-): boolean {
-	return (
-		node.is(node.ELEMENT_NODE) &&
-		node.localName === 'template' &&
-		(hasDirectiveTemplate(node) || !!node.blockBehavior)
-	);
 }
 
 /**

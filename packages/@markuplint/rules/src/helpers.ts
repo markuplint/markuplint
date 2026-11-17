@@ -38,47 +38,10 @@ export function getElementByIdInTree<T extends RuleConfigValue, O extends PlainD
 }
 
 /**
- * Whether the element is not an element of the output, so that what is written in it is rendered in
- * place of it:
- *
- * - a fragment (`<>` of JSX), which `childNodes` already flattens;
- * - a `template` element with a directive attribute (Vue's `<template v-if>`, `v-for`, `v-slot`).
- *   It is not an HTML `template` element: the template engine renders its children in place of it
- *   and drops it. A spread attribute (`{...props}`) is not such a directive: it sets attributes of
- *   the element, which stays.
- *
- * `isTransparent` of `@markuplint/ml-core` (`src/ml-dom/helper/tree-scope.ts`), which is not exported,
- * decides the same of an element for the tree boundaries (`getRootNode()`, the shadow host): a kind
- * added here belongs to it too.
- *
- * @template T - The rule configuration value type
- * @template O - The rule options type
- * @param el - An element
- * @returns `true` if the output has no element for it
- */
-export function isRenderedAway<T extends RuleConfigValue, O extends PlainData>(
-	// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
-	el: Element<T, O>,
-): boolean {
-	if (el.isFragment) {
-		return true;
-	}
-	if (el.localName !== 'template') {
-		return false;
-	}
-	for (const attr of el.attributes) {
-		if (attr.isDirective && attr.localName !== '#spread') {
-			return true;
-		}
-	}
-	return false;
-}
-
-/**
  * Whether the element is a component whose output is not known, so that it may render an element that
  * a rule looks for among the ancestors (`MLElement#isUnresolvedComponent`). What the parser sees as a
- * component but renders its children in place is not one: what {@link isRenderedAway} says (a
- * fragment such as `React.Fragment` or Astro's `Fragment`, a `template` with a directive).
+ * component but renders its children in place is not one: what `MLElement#isRenderedAway` says (a
+ * fragment such as `React.Fragment` or Astro's `Fragment`, a `template` that Vue renders away).
  *
  * @template T - The rule configuration value type
  * @template O - The rule options type
@@ -89,7 +52,7 @@ export function isUnknownOutput<T extends RuleConfigValue, O extends PlainData>(
 	// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
 	el: Element<T, O>,
 ): boolean {
-	return !isRenderedAway(el) && el.isUnresolvedComponent();
+	return !el.isRenderedAway && el.isUnresolvedComponent();
 }
 
 /**
@@ -435,8 +398,9 @@ export function toNormalizedValue(value: string, spec: Attribute) {
 
 /**
  * Whether a child of an element may stand for children that are not known: a block of a preprocessor
- * that has no `blockBehavior` (an output such as `{value}` or an `include`), a `slot`, or a component
- * whose output is not known (`MLElement#isUnresolvedComponent`).
+ * that has no `blockBehavior` (an output such as `{value}` or an `include`), a `slot`, a `<template v-slot>`
+ * for a slot other than the default one, or a component whose output is not known
+ * (`MLElement#isUnresolvedComponent`).
  *
  * It is for a rule that asks which children an element has (the required children, the elements that
  * satisfy a query). It looks at the child alone: a descendant of the child is not a child of the
@@ -461,7 +425,24 @@ export function mayRenderUnknownChildren<T extends RuleConfigValue, O extends Pl
 	if (node.is(node.MARKUPLINT_PREPROCESSOR_BLOCK)) {
 		return !node.blockBehavior;
 	}
-	return node.is(node.ELEMENT_NODE) && (node.localName === 'slot' || (components && node.isUnresolvedComponent()));
+	return (
+		node.is(node.ELEMENT_NODE) &&
+		(node.localName === 'slot' || isSlotTemplateOfOtherSlot(node) || (components && node.isUnresolvedComponent()))
+	);
+}
+
+/**
+ * Whether the element is a `<template v-slot>` for a slot other than the default one, or for one whose name is
+ * written as code. The component renders it where it places that slot, which is not known from the markup.
+ *
+ * @param el - An element
+ * @returns True for such a `template`
+ */
+function isSlotTemplateOfOtherSlot<T extends RuleConfigValue, O extends PlainData>(
+	// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
+	el: Element<T, O>,
+): boolean {
+	return el.isRenderedAway && el.slotTarget !== undefined && el.slotTarget !== 'default';
 }
 
 export function accnameMayBeMutable(

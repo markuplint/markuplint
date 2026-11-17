@@ -1,0 +1,3 @@
+# The inputs and the expected records of `scripts/spec-baseline` hold text that a record compares byte by byte (a `raw`
+# with a line break in it), so a checkout must not turn the line breaks into CRLF.
+scripts/spec-baseline/fixtures/** text eol=lf

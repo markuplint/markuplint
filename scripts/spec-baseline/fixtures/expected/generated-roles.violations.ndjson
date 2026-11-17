@@ -1,0 +1,516 @@
+{"col":1,"line":3,"message":"Require an element. (Need \"title\")","raw":"<head>","ruleId":"permitted-contents","severity":"error"}
+{"col":1,"line":6,"message":"The element should not empty","raw":"<a role=\"link\">","ruleId":"no-empty-palpable-content","severity":"warning"}
+{"col":1,"line":6,"message":"Require accessible name","raw":"<a role=\"link\">","ruleId":"require-accessible-name","severity":"error"}
+{"col":1,"line":7,"message":"The element should not empty","raw":"<a role=\"button\">","ruleId":"no-empty-palpable-content","severity":"warning"}
+{"col":1,"line":7,"message":"Require accessible name","raw":"<a role=\"button\">","ruleId":"require-accessible-name","severity":"error"}
+{"col":1,"line":8,"message":"The element should not empty","raw":"<a role=\"checkbox\">","ruleId":"no-empty-palpable-content","severity":"warning"}
+{"col":1,"line":8,"message":"Require accessible name","raw":"<a role=\"checkbox\">","ruleId":"require-accessible-name","severity":"error"}
+{"col":1,"line":8,"message":"Require the \"aria-checked\" ARIA state on the \"checkbox\" role","raw":"<a role=\"checkbox\">","ruleId":"require-aria-prop","severity":"error"}
+{"col":1,"line":9,"message":"The element should not empty","raw":"<a role=\"menuitem\">","ruleId":"no-empty-palpable-content","severity":"warning"}
+{"col":10,"line":9,"message":"The \"menuitem\" role requires an accessibility parent with one of the roles: \"menu\", \"menubar\", \"menu > group\", \"menubar > group\"","raw":"menuitem","ruleId":"require-parent-role","severity":"error"}
+{"col":1,"line":10,"message":"The element should not empty","raw":"<a role=\"menuitemcheckbox\">","ruleId":"no-empty-palpable-content","severity":"warning"}
+{"col":10,"line":10,"message":"The \"menuitemcheckbox\" role requires an accessibility parent with one of the roles: \"menu\", \"menubar\", \"menu > group\", \"menubar > group\"","raw":"menuitemcheckbox","ruleId":"require-parent-role","severity":"error"}
+{"col":1,"line":11,"message":"The element should not empty","raw":"<a role=\"menuitemradio\">","ruleId":"no-empty-palpable-content","severity":"warning"}
+{"col":10,"line":11,"message":"The \"menuitemradio\" role requires an accessibility parent with one of the roles: \"menu\", \"menubar\", \"menu > group\", \"menubar > group\"","raw":"menuitemradio","ruleId":"require-parent-role","severity":"error"}
+{"col":1,"line":12,"message":"The element should not empty","raw":"<a role=\"option\">","ruleId":"no-empty-palpable-content","severity":"warning"}
+{"col":10,"line":12,"message":"The \"option\" role requires an accessibility parent with one of the roles: \"listbox\", \"listbox > group\"","raw":"option","ruleId":"require-parent-role","severity":"error"}
+{"col":1,"line":13,"message":"The element should not empty","raw":"<a role=\"radio\">","ruleId":"no-empty-palpable-content","severity":"warning"}
+{"col":1,"line":13,"message":"Require accessible name","raw":"<a role=\"radio\">","ruleId":"require-accessible-name","severity":"error"}
+{"col":1,"line":13,"message":"Require the \"aria-checked\" ARIA state on the \"radio\" role","raw":"<a role=\"radio\">","ruleId":"require-aria-prop","severity":"error"}
+{"col":1,"line":14,"message":"The element should not empty","raw":"<a role=\"switch\">","ruleId":"no-empty-palpable-content","severity":"warning"}
+{"col":1,"line":14,"message":"Require accessible name","raw":"<a role=\"switch\">","ruleId":"require-accessible-name","severity":"error"}
+{"col":1,"line":14,"message":"Require the \"aria-checked\" ARIA state on the \"switch\" role","raw":"<a role=\"switch\">","ruleId":"require-aria-prop","severity":"error"}
+{"col":1,"line":15,"message":"The element should not empty","raw":"<a role=\"tab\">","ruleId":"no-empty-palpable-content","severity":"warning"}
+{"col":10,"line":15,"message":"The \"tab\" role requires an accessibility parent with the \"tablist\" role","raw":"tab","ruleId":"require-parent-role","severity":"error"}
+{"col":1,"line":16,"message":"The element should not empty","raw":"<a role=\"treeitem\">","ruleId":"no-empty-palpable-content","severity":"warning"}
+{"col":10,"line":16,"message":"The \"treeitem\" role requires an accessibility parent with one of the roles: \"tree\", \"treeitem > group\"","raw":"treeitem","ruleId":"require-parent-role","severity":"error"}
+{"col":1,"line":17,"message":"The element should not empty","raw":"<address role=\"group\">","ruleId":"no-empty-palpable-content","severity":"warning"}
+{"col":16,"line":17,"message":"The \"group\" role is the implicit role of the \"address\" element","raw":"group","ruleId":"no-redundant-role","severity":"warning"}
+{"col":1,"line":18,"message":"Require accessible name","raw":"<area role=\"link\">","ruleId":"require-accessible-name","severity":"error"}
+{"col":1,"line":18,"message":"The \"area\" element must appear as a descendant of the \"map\" element","raw":"<area role=\"link\">","ruleId":"require-ancestor","severity":"error"}
+{"col":1,"line":19,"message":"The element should not empty","raw":"<article role=\"article\">","ruleId":"no-empty-palpable-content","severity":"warning"}
+{"col":16,"line":19,"message":"The \"article\" role is the implicit role of the \"article\" element","raw":"article","ruleId":"no-redundant-role","severity":"warning"}
+{"col":1,"line":20,"message":"The element should not empty","raw":"<article role=\"application\">","ruleId":"no-empty-palpable-content","severity":"warning"}
+{"col":1,"line":20,"message":"Require accessible name","raw":"<article role=\"application\">","ruleId":"require-accessible-name","severity":"error"}
+{"col":1,"line":21,"message":"The element should not empty","raw":"<article role=\"document\">","ruleId":"no-empty-palpable-content","severity":"warning"}
+{"col":1,"line":22,"message":"The element should not empty","raw":"<article role=\"feed\">","ruleId":"no-empty-palpable-content","severity":"warning"}
+{"col":1,"line":22,"message":"The child element requires the \"article\" role. Or, require aria-busy=\"true\"","raw":"<article role=\"feed\">","ruleId":"require-owned-elements","severity":"error"}
+{"col":1,"line":23,"message":"The element should not empty","raw":"<article role=\"main\">","ruleId":"no-empty-palpable-content","severity":"warning"}
+{"col":1,"line":23,"message":"Require unique accessible name","raw":"<article role=\"main\">","ruleId":"require-landmark-label","severity":"warning"}
+{"col":1,"line":24,"message":"The element should not empty","raw":"<article role=\"none\">","ruleId":"no-empty-palpable-content","severity":"warning"}
+{"col":1,"line":25,"message":"The element should not empty","raw":"<article role=\"presentation\">","ruleId":"no-empty-palpable-content","severity":"warning"}
+{"col":1,"line":26,"message":"The element should not empty","raw":"<article role=\"region\">","ruleId":"no-empty-palpable-content","severity":"warning"}
+{"col":1,"line":26,"message":"Require unique accessible name","raw":"<article role=\"region\">","ruleId":"require-landmark-label","severity":"warning"}
+{"col":1,"line":27,"message":"The element should not empty","raw":"<aside role=\"complementary\">","ruleId":"no-empty-palpable-content","severity":"warning"}
+{"col":1,"line":27,"message":"Require unique accessible name","raw":"<aside role=\"complementary\">","ruleId":"require-landmark-label","severity":"warning"}
+{"col":14,"line":27,"message":"The \"complementary\" role is the implicit role of the \"aside\" element","raw":"complementary","ruleId":"no-redundant-role","severity":"warning"}
+{"col":1,"line":28,"message":"The element should not empty","raw":"<aside role=\"feed\">","ruleId":"no-empty-palpable-content","severity":"warning"}
+{"col":1,"line":28,"message":"Require unique accessible name","raw":"<aside role=\"feed\">","ruleId":"require-landmark-label","severity":"warning"}
+{"col":1,"line":28,"message":"The child element requires the \"article\" role. Or, require aria-busy=\"true\"","raw":"<aside role=\"feed\">","ruleId":"require-owned-elements","severity":"error"}
+{"col":1,"line":29,"message":"The element should not empty","raw":"<aside role=\"none\">","ruleId":"no-empty-palpable-content","severity":"warning"}
+{"col":1,"line":29,"message":"Require unique accessible name","raw":"<aside role=\"none\">","ruleId":"require-landmark-label","severity":"warning"}
+{"col":1,"line":30,"message":"The element should not empty","raw":"<aside role=\"note\">","ruleId":"no-empty-palpable-content","severity":"warning"}
+{"col":1,"line":30,"message":"Require unique accessible name","raw":"<aside role=\"note\">","ruleId":"require-landmark-label","severity":"warning"}
+{"col":1,"line":31,"message":"The element should not empty","raw":"<aside role=\"presentation\">","ruleId":"no-empty-palpable-content","severity":"warning"}
+{"col":1,"line":31,"message":"Require unique accessible name","raw":"<aside role=\"presentation\">","ruleId":"require-landmark-label","severity":"warning"}
+{"col":1,"line":32,"message":"The element should not empty","raw":"<aside role=\"region\">","ruleId":"no-empty-palpable-content","severity":"warning"}
+{"col":1,"line":32,"message":"Require unique accessible name","raw":"<aside role=\"region\">","ruleId":"require-landmark-label","severity":"warning"}
+{"col":1,"line":33,"message":"The element should not empty","raw":"<aside role=\"search\">","ruleId":"no-empty-palpable-content","severity":"warning"}
+{"col":1,"line":33,"message":"Require unique accessible name","raw":"<aside role=\"search\">","ruleId":"require-landmark-label","severity":"warning"}
+{"col":1,"line":34,"message":"Require accessible name","raw":"<audio role=\"application\">","ruleId":"require-accessible-name","severity":"error"}
+{"col":1,"line":35,"message":"The element should not empty","raw":"<b role=\"generic\">","ruleId":"no-empty-palpable-content","severity":"warning"}
+{"col":10,"line":35,"message":"The \"generic\" role is the implicit role of the \"b\" element","raw":"generic","ruleId":"no-redundant-role","severity":"warning"}
+{"col":1,"line":36,"message":"The element should not empty","raw":"<bdi role=\"generic\">","ruleId":"no-empty-palpable-content","severity":"warning"}
+{"col":12,"line":36,"message":"The \"generic\" role is the implicit role of the \"bdi\" element","raw":"generic","ruleId":"no-redundant-role","severity":"warning"}
+{"col":1,"line":37,"message":"The element should not empty","raw":"<bdo role=\"generic\">","ruleId":"no-empty-palpable-content","severity":"warning"}
+{"col":1,"line":37,"message":"The \"bdo\" element expects the \"dir\" attribute","raw":"<bdo role=\"generic\">","ruleId":"require-attr","severity":"error"}
+{"col":12,"line":37,"message":"The \"generic\" role is the implicit role of the \"bdo\" element","raw":"generic","ruleId":"no-redundant-role","severity":"warning"}
+{"col":1,"line":38,"message":"The element should not empty","raw":"<blockquote role=\"blockquote\">","ruleId":"no-empty-palpable-content","severity":"warning"}
+{"col":19,"line":38,"message":"The \"blockquote\" role is the implicit role of the \"blockquote\" element","raw":"blockquote","ruleId":"no-redundant-role","severity":"warning"}
+{"col":1,"line":40,"message":"Consecutive \"br\" elements detected","raw":"<br role=\"presentation\">","ruleId":"no-consecutive-br","severity":"warning"}
+{"col":1,"line":41,"message":"The element should not empty","raw":"<button role=\"button\">","ruleId":"no-empty-palpable-content","severity":"warning"}
+{"col":1,"line":41,"message":"Require accessible name","raw":"<button role=\"button\">","ruleId":"require-accessible-name","severity":"error"}
+{"col":15,"line":41,"message":"The \"button\" role is the implicit role of the \"button\" element","raw":"button","ruleId":"no-redundant-role","severity":"warning"}
+{"col":1,"line":42,"message":"The element should not empty","raw":"<button role=\"checkbox\">","ruleId":"no-empty-palpable-content","severity":"warning"}
+{"col":1,"line":42,"message":"Require accessible name","raw":"<button role=\"checkbox\">","ruleId":"require-accessible-name","severity":"error"}
+{"col":1,"line":42,"message":"Require the \"aria-checked\" ARIA state on the \"checkbox\" role","raw":"<button role=\"checkbox\">","ruleId":"require-aria-prop","severity":"error"}
+{"col":1,"line":43,"message":"The element should not empty","raw":"<button role=\"combobox\">","ruleId":"no-empty-palpable-content","severity":"warning"}
+{"col":1,"line":43,"message":"Require accessible name","raw":"<button role=\"combobox\">","ruleId":"require-accessible-name","severity":"error"}
+{"col":1,"line":43,"message":"Require the \"aria-expanded\" ARIA state on the \"combobox\" role","raw":"<button role=\"combobox\">","ruleId":"require-aria-prop","severity":"error"}
+{"col":1,"line":44,"message":"The element should not empty","raw":"<button role=\"gridcell\">","ruleId":"no-empty-palpable-content","severity":"warning"}
+{"col":15,"line":44,"message":"The \"gridcell\" role requires an accessibility parent with the \"row\" role","raw":"gridcell","ruleId":"require-parent-role","severity":"error"}
+{"col":1,"line":45,"message":"The element should not empty","raw":"<button role=\"link\">","ruleId":"no-empty-palpable-content","severity":"warning"}
+{"col":1,"line":45,"message":"Require accessible name","raw":"<button role=\"link\">","ruleId":"require-accessible-name","severity":"error"}
+{"col":1,"line":46,"message":"The element should not empty","raw":"<button role=\"menuitem\">","ruleId":"no-empty-palpable-content","severity":"warning"}
+{"col":15,"line":46,"message":"The \"menuitem\" role requires an accessibility parent with one of the roles: \"menu\", \"menubar\", \"menu > group\", \"menubar > group\"","raw":"menuitem","ruleId":"require-parent-role","severity":"error"}
+{"col":1,"line":47,"message":"The element should not empty","raw":"<button role=\"menuitemcheckbox\">","ruleId":"no-empty-palpable-content","severity":"warning"}
+{"col":15,"line":47,"message":"The \"menuitemcheckbox\" role requires an accessibility parent with one of the roles: \"menu\", \"menubar\", \"menu > group\", \"menubar > group\"","raw":"menuitemcheckbox","ruleId":"require-parent-role","severity":"error"}
+{"col":1,"line":48,"message":"The element should not empty","raw":"<button role=\"menuitemradio\">","ruleId":"no-empty-palpable-content","severity":"warning"}
+{"col":15,"line":48,"message":"The \"menuitemradio\" role requires an accessibility parent with one of the roles: \"menu\", \"menubar\", \"menu > group\", \"menubar > group\"","raw":"menuitemradio","ruleId":"require-parent-role","severity":"error"}
+{"col":1,"line":49,"message":"The element should not empty","raw":"<button role=\"option\">","ruleId":"no-empty-palpable-content","severity":"warning"}
+{"col":15,"line":49,"message":"The \"option\" role requires an accessibility parent with one of the roles: \"listbox\", \"listbox > group\"","raw":"option","ruleId":"require-parent-role","severity":"error"}
+{"col":1,"line":50,"message":"The element should not empty","raw":"<button role=\"radio\">","ruleId":"no-empty-palpable-content","severity":"warning"}
+{"col":1,"line":50,"message":"Require accessible name","raw":"<button role=\"radio\">","ruleId":"require-accessible-name","severity":"error"}
+{"col":1,"line":50,"message":"Require the \"aria-checked\" ARIA state on the \"radio\" role","raw":"<button role=\"radio\">","ruleId":"require-aria-prop","severity":"error"}
+{"col":1,"line":51,"message":"The element should not empty","raw":"<button role=\"separator\">","ruleId":"no-empty-palpable-content","severity":"warning"}
+{"col":1,"line":51,"message":"Require the \"aria-valuenow\" ARIA property on the \"separator\" role","raw":"<button role=\"separator\">","ruleId":"require-aria-prop","severity":"error"}
+{"col":1,"line":52,"message":"The element should not empty","raw":"<button role=\"slider\">","ruleId":"no-empty-palpable-content","severity":"warning"}
+{"col":1,"line":52,"message":"Require accessible name","raw":"<button role=\"slider\">","ruleId":"require-accessible-name","severity":"error"}
+{"col":1,"line":52,"message":"Require the \"aria-valuenow\" ARIA property on the \"slider\" role","raw":"<button role=\"slider\">","ruleId":"require-aria-prop","severity":"error"}
+{"col":1,"line":53,"message":"The element should not empty","raw":"<button role=\"switch\">","ruleId":"no-empty-palpable-content","severity":"warning"}
+{"col":1,"line":53,"message":"Require accessible name","raw":"<button role=\"switch\">","ruleId":"require-accessible-name","severity":"error"}
+{"col":1,"line":53,"message":"Require the \"aria-checked\" ARIA state on the \"switch\" role","raw":"<button role=\"switch\">","ruleId":"require-aria-prop","severity":"error"}
+{"col":1,"line":54,"message":"The element should not empty","raw":"<button role=\"tab\">","ruleId":"no-empty-palpable-content","severity":"warning"}
+{"col":15,"line":54,"message":"The \"tab\" role requires an accessibility parent with the \"tablist\" role","raw":"tab","ruleId":"require-parent-role","severity":"error"}
+{"col":1,"line":55,"message":"The element should not empty","raw":"<button role=\"treeitem\">","ruleId":"no-empty-palpable-content","severity":"warning"}
+{"col":15,"line":55,"message":"The \"treeitem\" role requires an accessibility parent with one of the roles: \"tree\", \"treeitem > group\"","raw":"treeitem","ruleId":"require-parent-role","severity":"error"}
+{"col":23,"line":56,"message":"The \"caption\" role is the implicit role of the \"caption\" element","raw":"caption","ruleId":"no-redundant-role","severity":"warning"}
+{"col":23,"line":56,"message":"Cannot overwrite the \"caption\" role to the \"caption\" element according to ARIA in HTML specification","raw":"caption","ruleId":"permitted-roles","severity":"error"}
+{"col":1,"line":57,"message":"The element should not empty","raw":"<code role=\"code\">","ruleId":"no-empty-palpable-content","severity":"warning"}
+{"col":13,"line":57,"message":"The \"code\" role is the implicit role of the \"code\" element","raw":"code","ruleId":"no-redundant-role","severity":"warning"}
+{"col":1,"line":58,"message":"The element should not empty","raw":"<data role=\"generic\">","ruleId":"no-empty-palpable-content","severity":"warning"}
+{"col":1,"line":58,"message":"The \"data\" element expects the \"value\" attribute","raw":"<data role=\"generic\">","ruleId":"require-attr","severity":"error"}
+{"col":13,"line":58,"message":"The \"generic\" role is the implicit role of the \"data\" element","raw":"generic","ruleId":"no-redundant-role","severity":"warning"}
+{"col":1,"line":59,"message":"Require accessible name","raw":"<datalist role=\"listbox\">","ruleId":"require-accessible-name","severity":"error"}
+{"col":1,"line":59,"message":"The child element requires the roles: \"group > option\", \"option\". Or, require aria-busy=\"true\"","raw":"<datalist role=\"listbox\">","ruleId":"require-owned-elements","severity":"error"}
+{"col":17,"line":59,"message":"The \"listbox\" role is the implicit role of the \"datalist\" element","raw":"listbox","ruleId":"no-redundant-role","severity":"warning"}
+{"col":17,"line":59,"message":"Cannot overwrite the \"listbox\" role to the \"datalist\" element according to ARIA in HTML specification","raw":"listbox","ruleId":"permitted-roles","severity":"error"}
+{"col":1,"line":60,"message":"The element should not empty","raw":"<del role=\"deletion\">","ruleId":"no-empty-palpable-content","severity":"warning"}
+{"col":12,"line":60,"message":"The \"deletion\" role is the implicit role of the \"del\" element","raw":"deletion","ruleId":"no-redundant-role","severity":"warning"}
+{"col":1,"line":61,"message":"The element should not empty","raw":"<details role=\"group\">","ruleId":"no-empty-palpable-content","severity":"warning"}
+{"col":1,"line":61,"message":"Require an element. (Need \"summary\")","raw":"<details role=\"group\">","ruleId":"permitted-contents","severity":"error"}
+{"col":16,"line":61,"message":"The \"group\" role is the implicit role of the \"details\" element","raw":"group","ruleId":"no-redundant-role","severity":"warning"}
+{"col":16,"line":61,"message":"Cannot overwrite the \"group\" role to the \"details\" element according to ARIA in HTML specification","raw":"group","ruleId":"permitted-roles","severity":"error"}
+{"col":1,"line":62,"message":"The element should not empty","raw":"<dfn role=\"term\">","ruleId":"no-empty-palpable-content","severity":"warning"}
+{"col":12,"line":62,"message":"The \"term\" role is the implicit role of the \"dfn\" element","raw":"term","ruleId":"no-redundant-role","severity":"warning"}
+{"col":15,"line":63,"message":"The \"dialog\" role is the implicit role of the \"dialog\" element","raw":"dialog","ruleId":"no-redundant-role","severity":"warning"}
+{"col":1,"line":65,"message":"The element should not empty","raw":"<div role=\"generic\">","ruleId":"no-empty-palpable-content","severity":"warning"}
+{"col":12,"line":65,"message":"The \"generic\" role is the implicit role of the \"div\" element","raw":"generic","ruleId":"no-redundant-role","severity":"warning"}
+{"col":1,"line":67,"message":"The child element requires the \"listitem\" role. Or, require aria-busy=\"true\"","raw":"<dl role=\"list\">","ruleId":"require-owned-elements","severity":"error"}
+{"col":6,"line":70,"message":"The element should not empty","raw":"<dt role=\"listitem\">","ruleId":"no-empty-palpable-content","severity":"warning"}
+{"col":6,"line":70,"message":"The \"dt\" element is not allowed in the \"div\" element in this context","raw":"<dt role=\"listitem\">","ruleId":"permitted-contents","severity":"error"}
+{"col":16,"line":70,"message":"The \"listitem\" role requires an accessibility parent with one of the roles: \"directory\", \"list\"","raw":"listitem","ruleId":"require-parent-role","severity":"error"}
+{"col":1,"line":71,"message":"The element should not empty","raw":"<em role=\"emphasis\">","ruleId":"no-empty-palpable-content","severity":"warning"}
+{"col":11,"line":71,"message":"The \"emphasis\" role is the implicit role of the \"em\" element","raw":"emphasis","ruleId":"no-redundant-role","severity":"warning"}
+{"col":1,"line":72,"message":"Require accessible name","raw":"<embed role=\"application\">","ruleId":"require-accessible-name","severity":"error"}
+{"col":1,"line":74,"message":"Require accessible name","raw":"<embed role=\"img\">","ruleId":"require-accessible-name","severity":"error"}
+{"col":1,"line":77,"message":"The element should not empty","raw":"<fieldset role=\"group\">","ruleId":"no-empty-palpable-content","severity":"warning"}
+{"col":17,"line":77,"message":"The \"group\" role is the implicit role of the \"fieldset\" element","raw":"group","ruleId":"no-redundant-role","severity":"warning"}
+{"col":1,"line":78,"message":"The element should not empty","raw":"<fieldset role=\"radiogroup\">","ruleId":"no-empty-palpable-content","severity":"warning"}
+{"col":1,"line":79,"message":"The element should not empty","raw":"<fieldset role=\"presentation\">","ruleId":"no-empty-palpable-content","severity":"warning"}
+{"col":1,"line":80,"message":"The element should not empty","raw":"<fieldset role=\"none\">","ruleId":"no-empty-palpable-content","severity":"warning"}
+{"col":9,"line":81,"message":"The element should not empty","raw":"<figcaption role=\"group\">","ruleId":"no-empty-palpable-content","severity":"warning"}
+{"col":9,"line":82,"message":"The element should not empty","raw":"<figcaption role=\"none\">","ruleId":"no-empty-palpable-content","severity":"warning"}
+{"col":9,"line":83,"message":"The element should not empty","raw":"<figcaption role=\"presentation\">","ruleId":"no-empty-palpable-content","severity":"warning"}
+{"col":1,"line":84,"message":"The element should not empty","raw":"<figure role=\"figure\">","ruleId":"no-empty-palpable-content","severity":"warning"}
+{"col":15,"line":84,"message":"The \"figure\" role is the implicit role of the \"figure\" element","raw":"figure","ruleId":"no-redundant-role","severity":"warning"}
+{"col":1,"line":85,"message":"The element should not empty","raw":"<footer role=\"contentinfo\">","ruleId":"no-empty-palpable-content","severity":"warning"}
+{"col":1,"line":85,"message":"Require unique accessible name","raw":"<footer role=\"contentinfo\">","ruleId":"require-landmark-label","severity":"warning"}
+{"col":15,"line":85,"message":"The \"contentinfo\" role is the implicit role of the \"footer\" element","raw":"contentinfo","ruleId":"no-redundant-role","severity":"warning"}
+{"col":1,"line":86,"message":"The element should not empty","raw":"<footer role=\"group\">","ruleId":"no-empty-palpable-content","severity":"warning"}
+{"col":1,"line":86,"message":"Require unique accessible name","raw":"<footer role=\"group\">","ruleId":"require-landmark-label","severity":"warning"}
+{"col":1,"line":87,"message":"The element should not empty","raw":"<footer role=\"presentation\">","ruleId":"no-empty-palpable-content","severity":"warning"}
+{"col":1,"line":87,"message":"Require unique accessible name","raw":"<footer role=\"presentation\">","ruleId":"require-landmark-label","severity":"warning"}
+{"col":1,"line":88,"message":"The element should not empty","raw":"<footer role=\"none\">","ruleId":"no-empty-palpable-content","severity":"warning"}
+{"col":1,"line":88,"message":"Require unique accessible name","raw":"<footer role=\"none\">","ruleId":"require-landmark-label","severity":"warning"}
+{"col":1,"line":89,"message":"The element should not empty","raw":"<form role=\"search\">","ruleId":"no-empty-palpable-content","severity":"warning"}
+{"col":1,"line":90,"message":"The element should not empty","raw":"<form role=\"none\">","ruleId":"no-empty-palpable-content","severity":"warning"}
+{"col":1,"line":91,"message":"The element should not empty","raw":"<form role=\"presentation\">","ruleId":"no-empty-palpable-content","severity":"warning"}
+{"col":1,"line":92,"message":"The element should not empty","raw":"<h1 role=\"heading\">","ruleId":"no-empty-palpable-content","severity":"warning"}
+{"col":1,"line":92,"message":"Require accessible name","raw":"<h1 role=\"heading\">","ruleId":"require-accessible-name","severity":"error"}
+{"col":1,"line":92,"message":"Require the \"aria-level\" ARIA property on the \"heading\" role","raw":"<h1 role=\"heading\">","ruleId":"require-aria-prop","severity":"error"}
+{"col":11,"line":92,"message":"The \"heading\" role is the implicit role of the \"h1\" element","raw":"heading","ruleId":"no-redundant-role","severity":"warning"}
+{"col":1,"line":93,"message":"The \"h1\" element is duplicated","raw":"<h1 role=\"tab\">","ruleId":"no-duplicate-h1","severity":"warning"}
+{"col":1,"line":93,"message":"The element should not empty","raw":"<h1 role=\"tab\">","ruleId":"no-empty-palpable-content","severity":"warning"}
+{"col":11,"line":93,"message":"The \"tab\" role requires an accessibility parent with the \"tablist\" role","raw":"tab","ruleId":"require-parent-role","severity":"error"}
+{"col":1,"line":94,"message":"The element should not empty","raw":"<h1 role=\"presentation\">","ruleId":"no-empty-palpable-content","severity":"warning"}
+{"col":1,"line":95,"message":"The element should not empty","raw":"<h1 role=\"none\">","ruleId":"no-empty-palpable-content","severity":"warning"}
+{"col":1,"line":96,"message":"The element should not empty","raw":"<h2 role=\"heading\">","ruleId":"no-empty-palpable-content","severity":"warning"}
+{"col":1,"line":96,"message":"Require accessible name","raw":"<h2 role=\"heading\">","ruleId":"require-accessible-name","severity":"error"}
+{"col":1,"line":96,"message":"Require the \"aria-level\" ARIA property on the \"heading\" role","raw":"<h2 role=\"heading\">","ruleId":"require-aria-prop","severity":"error"}
+{"col":11,"line":96,"message":"The \"heading\" role is the implicit role of the \"h2\" element","raw":"heading","ruleId":"no-redundant-role","severity":"warning"}
+{"col":1,"line":97,"message":"The element should not empty","raw":"<h2 role=\"tab\">","ruleId":"no-empty-palpable-content","severity":"warning"}
+{"col":11,"line":97,"message":"The \"tab\" role requires an accessibility parent with the \"tablist\" role","raw":"tab","ruleId":"require-parent-role","severity":"error"}
+{"col":1,"line":98,"message":"The element should not empty","raw":"<h2 role=\"presentation\">","ruleId":"no-empty-palpable-content","severity":"warning"}
+{"col":1,"line":99,"message":"The element should not empty","raw":"<h2 role=\"none\">","ruleId":"no-empty-palpable-content","severity":"warning"}
+{"col":1,"line":100,"message":"The element should not empty","raw":"<h3 role=\"heading\">","ruleId":"no-empty-palpable-content","severity":"warning"}
+{"col":1,"line":100,"message":"Require accessible name","raw":"<h3 role=\"heading\">","ruleId":"require-accessible-name","severity":"error"}
+{"col":1,"line":100,"message":"Require the \"aria-level\" ARIA property on the \"heading\" role","raw":"<h3 role=\"heading\">","ruleId":"require-aria-prop","severity":"error"}
+{"col":11,"line":100,"message":"The \"heading\" role is the implicit role of the \"h3\" element","raw":"heading","ruleId":"no-redundant-role","severity":"warning"}
+{"col":1,"line":101,"message":"The element should not empty","raw":"<h3 role=\"tab\">","ruleId":"no-empty-palpable-content","severity":"warning"}
+{"col":11,"line":101,"message":"The \"tab\" role requires an accessibility parent with the \"tablist\" role","raw":"tab","ruleId":"require-parent-role","severity":"error"}
+{"col":1,"line":102,"message":"The element should not empty","raw":"<h3 role=\"presentation\">","ruleId":"no-empty-palpable-content","severity":"warning"}
+{"col":1,"line":103,"message":"The element should not empty","raw":"<h3 role=\"none\">","ruleId":"no-empty-palpable-content","severity":"warning"}
+{"col":1,"line":104,"message":"The element should not empty","raw":"<h4 role=\"heading\">","ruleId":"no-empty-palpable-content","severity":"warning"}
+{"col":1,"line":104,"message":"Require accessible name","raw":"<h4 role=\"heading\">","ruleId":"require-accessible-name","severity":"error"}
+{"col":1,"line":104,"message":"Require the \"aria-level\" ARIA property on the \"heading\" role","raw":"<h4 role=\"heading\">","ruleId":"require-aria-prop","severity":"error"}
+{"col":11,"line":104,"message":"The \"heading\" role is the implicit role of the \"h4\" element","raw":"heading","ruleId":"no-redundant-role","severity":"warning"}
+{"col":1,"line":105,"message":"The element should not empty","raw":"<h4 role=\"tab\">","ruleId":"no-empty-palpable-content","severity":"warning"}
+{"col":11,"line":105,"message":"The \"tab\" role requires an accessibility parent with the \"tablist\" role","raw":"tab","ruleId":"require-parent-role","severity":"error"}
+{"col":1,"line":106,"message":"The element should not empty","raw":"<h4 role=\"presentation\">","ruleId":"no-empty-palpable-content","severity":"warning"}
+{"col":1,"line":107,"message":"The element should not empty","raw":"<h4 role=\"none\">","ruleId":"no-empty-palpable-content","severity":"warning"}
+{"col":1,"line":108,"message":"The element should not empty","raw":"<h5 role=\"heading\">","ruleId":"no-empty-palpable-content","severity":"warning"}
+{"col":1,"line":108,"message":"Require accessible name","raw":"<h5 role=\"heading\">","ruleId":"require-accessible-name","severity":"error"}
+{"col":1,"line":108,"message":"Require the \"aria-level\" ARIA property on the \"heading\" role","raw":"<h5 role=\"heading\">","ruleId":"require-aria-prop","severity":"error"}
+{"col":11,"line":108,"message":"The \"heading\" role is the implicit role of the \"h5\" element","raw":"heading","ruleId":"no-redundant-role","severity":"warning"}
+{"col":1,"line":109,"message":"The element should not empty","raw":"<h5 role=\"tab\">","ruleId":"no-empty-palpable-content","severity":"warning"}
+{"col":11,"line":109,"message":"The \"tab\" role requires an accessibility parent with the \"tablist\" role","raw":"tab","ruleId":"require-parent-role","severity":"error"}
+{"col":1,"line":110,"message":"The element should not empty","raw":"<h5 role=\"presentation\">","ruleId":"no-empty-palpable-content","severity":"warning"}
+{"col":1,"line":111,"message":"The element should not empty","raw":"<h5 role=\"none\">","ruleId":"no-empty-palpable-content","severity":"warning"}
+{"col":1,"line":112,"message":"The element should not empty","raw":"<h6 role=\"heading\">","ruleId":"no-empty-palpable-content","severity":"warning"}
+{"col":1,"line":112,"message":"Require accessible name","raw":"<h6 role=\"heading\">","ruleId":"require-accessible-name","severity":"error"}
+{"col":1,"line":112,"message":"Require the \"aria-level\" ARIA property on the \"heading\" role","raw":"<h6 role=\"heading\">","ruleId":"require-aria-prop","severity":"error"}
+{"col":11,"line":112,"message":"The \"heading\" role is the implicit role of the \"h6\" element","raw":"heading","ruleId":"no-redundant-role","severity":"warning"}
+{"col":1,"line":113,"message":"The element should not empty","raw":"<h6 role=\"tab\">","ruleId":"no-empty-palpable-content","severity":"warning"}
+{"col":11,"line":113,"message":"The \"tab\" role requires an accessibility parent with the \"tablist\" role","raw":"tab","ruleId":"require-parent-role","severity":"error"}
+{"col":1,"line":114,"message":"The element should not empty","raw":"<h6 role=\"presentation\">","ruleId":"no-empty-palpable-content","severity":"warning"}
+{"col":1,"line":115,"message":"The element should not empty","raw":"<h6 role=\"none\">","ruleId":"no-empty-palpable-content","severity":"warning"}
+{"col":1,"line":116,"message":"The element should not empty","raw":"<header role=\"banner\">","ruleId":"no-empty-palpable-content","severity":"warning"}
+{"col":1,"line":116,"message":"Require unique accessible name","raw":"<header role=\"banner\">","ruleId":"require-landmark-label","severity":"warning"}
+{"col":15,"line":116,"message":"The \"banner\" role is the implicit role of the \"header\" element","raw":"banner","ruleId":"no-redundant-role","severity":"warning"}
+{"col":1,"line":117,"message":"The element should not empty","raw":"<header role=\"group\">","ruleId":"no-empty-palpable-content","severity":"warning"}
+{"col":1,"line":117,"message":"Require unique accessible name","raw":"<header role=\"group\">","ruleId":"require-landmark-label","severity":"warning"}
+{"col":1,"line":118,"message":"The element should not empty","raw":"<header role=\"presentation\">","ruleId":"no-empty-palpable-content","severity":"warning"}
+{"col":1,"line":118,"message":"Require unique accessible name","raw":"<header role=\"presentation\">","ruleId":"require-landmark-label","severity":"warning"}
+{"col":1,"line":119,"message":"The element should not empty","raw":"<header role=\"none\">","ruleId":"no-empty-palpable-content","severity":"warning"}
+{"col":1,"line":119,"message":"Require unique accessible name","raw":"<header role=\"none\">","ruleId":"require-landmark-label","severity":"warning"}
+{"col":1,"line":120,"message":"The element should not empty","raw":"<hgroup role=\"generic\">","ruleId":"no-empty-palpable-content","severity":"warning"}
+{"col":1,"line":120,"message":"Require an element. (Need \"h6\")","raw":"<hgroup role=\"generic\">","ruleId":"permitted-contents","severity":"error"}
+{"col":15,"line":120,"message":"The \"generic\" role is the implicit role of the \"hgroup\" element","raw":"generic","ruleId":"no-redundant-role","severity":"warning"}
+{"col":11,"line":121,"message":"The \"separator\" role is the implicit role of the \"hr\" element","raw":"separator","ruleId":"no-redundant-role","severity":"warning"}
+{"col":1,"line":124,"message":"The element should not empty","raw":"<i role=\"generic\">","ruleId":"no-empty-palpable-content","severity":"warning"}
+{"col":10,"line":124,"message":"The \"generic\" role is the implicit role of the \"i\" element","raw":"generic","ruleId":"no-redundant-role","severity":"warning"}
+{"col":1,"line":125,"message":"Require accessible name","raw":"<iframe role=\"application\">","ruleId":"require-accessible-name","severity":"error"}
+{"col":1,"line":127,"message":"Require accessible name","raw":"<iframe role=\"img\">","ruleId":"require-accessible-name","severity":"error"}
+{"col":1,"line":130,"message":"Require accessible name","raw":"<img role=\"img\">","ruleId":"require-accessible-name","severity":"error"}
+{"col":1,"line":130,"message":"The \"img\" element expects the \"src\" or the \"srcset\" attribute","raw":"<img role=\"img\">","ruleId":"require-attr","severity":"error"}
+{"col":12,"line":130,"message":"The \"img\" role is the implicit role of the \"img\" element","raw":"img","ruleId":"no-redundant-role","severity":"warning"}
+{"col":12,"line":130,"message":"Cannot overwrite the \"img\" role to the \"img\" element according to ARIA in HTML specification","raw":"img","ruleId":"permitted-roles","severity":"error"}
+{"col":1,"line":131,"message":"Require accessible name","raw":"<img role=\"button\">","ruleId":"require-accessible-name","severity":"error"}
+{"col":1,"line":131,"message":"The \"img\" element expects the \"src\" or the \"srcset\" attribute","raw":"<img role=\"button\">","ruleId":"require-attr","severity":"error"}
+{"col":12,"line":131,"message":"Cannot overwrite the \"button\" role to the \"img\" element according to ARIA in HTML specification","raw":"button","ruleId":"permitted-roles","severity":"error"}
+{"col":1,"line":132,"message":"Require accessible name","raw":"<img role=\"checkbox\">","ruleId":"require-accessible-name","severity":"error"}
+{"col":1,"line":132,"message":"Require the \"aria-checked\" ARIA state on the \"checkbox\" role","raw":"<img role=\"checkbox\">","ruleId":"require-aria-prop","severity":"error"}
+{"col":1,"line":132,"message":"The \"img\" element expects the \"src\" or the \"srcset\" attribute","raw":"<img role=\"checkbox\">","ruleId":"require-attr","severity":"error"}
+{"col":12,"line":132,"message":"Cannot overwrite the \"checkbox\" role to the \"img\" element according to ARIA in HTML specification","raw":"checkbox","ruleId":"permitted-roles","severity":"error"}
+{"col":1,"line":133,"message":"Require accessible name","raw":"<img role=\"link\">","ruleId":"require-accessible-name","severity":"error"}
+{"col":1,"line":133,"message":"The \"img\" element expects the \"src\" or the \"srcset\" attribute","raw":"<img role=\"link\">","ruleId":"require-attr","severity":"error"}
+{"col":12,"line":133,"message":"Cannot overwrite the \"link\" role to the \"img\" element according to ARIA in HTML specification","raw":"link","ruleId":"permitted-roles","severity":"error"}
+{"col":1,"line":134,"message":"The \"img\" element expects the \"src\" or the \"srcset\" attribute","raw":"<img role=\"math\">","ruleId":"require-attr","severity":"error"}
+{"col":12,"line":134,"message":"Cannot overwrite the \"math\" role to the \"img\" element according to ARIA in HTML specification","raw":"math","ruleId":"permitted-roles","severity":"error"}
+{"col":1,"line":135,"message":"The \"img\" element expects the \"src\" or the \"srcset\" attribute","raw":"<img role=\"menuitem\">","ruleId":"require-attr","severity":"error"}
+{"col":12,"line":135,"message":"Cannot overwrite the \"menuitem\" role to the \"img\" element according to ARIA in HTML specification","raw":"menuitem","ruleId":"permitted-roles","severity":"error"}
+{"col":12,"line":135,"message":"The \"menuitem\" role requires an accessibility parent with one of the roles: \"menu\", \"menubar\", \"menu > group\", \"menubar > group\"","raw":"menuitem","ruleId":"require-parent-role","severity":"error"}
+{"col":1,"line":136,"message":"The \"img\" element expects the \"src\" or the \"srcset\" attribute","raw":"<img role=\"menuitemcheckbox\">","ruleId":"require-attr","severity":"error"}
+{"col":12,"line":136,"message":"Cannot overwrite the \"menuitemcheckbox\" role to the \"img\" element according to ARIA in HTML specification","raw":"menuitemcheckbox","ruleId":"permitted-roles","severity":"error"}
+{"col":12,"line":136,"message":"The \"menuitemcheckbox\" role requires an accessibility parent with one of the roles: \"menu\", \"menubar\", \"menu > group\", \"menubar > group\"","raw":"menuitemcheckbox","ruleId":"require-parent-role","severity":"error"}
+{"col":1,"line":137,"message":"The \"img\" element expects the \"src\" or the \"srcset\" attribute","raw":"<img role=\"menuitemradio\">","ruleId":"require-attr","severity":"error"}
+{"col":12,"line":137,"message":"Cannot overwrite the \"menuitemradio\" role to the \"img\" element according to ARIA in HTML specification","raw":"menuitemradio","ruleId":"permitted-roles","severity":"error"}
+{"col":12,"line":137,"message":"The \"menuitemradio\" role requires an accessibility parent with one of the roles: \"menu\", \"menubar\", \"menu > group\", \"menubar > group\"","raw":"menuitemradio","ruleId":"require-parent-role","severity":"error"}
+{"col":1,"line":138,"message":"Require accessible name","raw":"<img role=\"meter\">","ruleId":"require-accessible-name","severity":"error"}
+{"col":1,"line":138,"message":"Require the \"aria-valuenow\" ARIA property on the \"meter\" role","raw":"<img role=\"meter\">","ruleId":"require-aria-prop","severity":"error"}
+{"col":1,"line":138,"message":"The \"img\" element expects the \"src\" or the \"srcset\" attribute","raw":"<img role=\"meter\">","ruleId":"require-attr","severity":"error"}
+{"col":12,"line":138,"message":"Cannot overwrite the \"meter\" role to the \"img\" element according to ARIA in HTML specification","raw":"meter","ruleId":"permitted-roles","severity":"error"}
+{"col":1,"line":139,"message":"The \"img\" element expects the \"src\" or the \"srcset\" attribute","raw":"<img role=\"option\">","ruleId":"require-attr","severity":"error"}
+{"col":12,"line":139,"message":"Cannot overwrite the \"option\" role to the \"img\" element according to ARIA in HTML specification","raw":"option","ruleId":"permitted-roles","severity":"error"}
+{"col":12,"line":139,"message":"The \"option\" role requires an accessibility parent with one of the roles: \"listbox\", \"listbox > group\"","raw":"option","ruleId":"require-parent-role","severity":"error"}
+{"col":1,"line":140,"message":"Require accessible name","raw":"<img role=\"progressbar\">","ruleId":"require-accessible-name","severity":"error"}
+{"col":1,"line":140,"message":"The \"img\" element expects the \"src\" or the \"srcset\" attribute","raw":"<img role=\"progressbar\">","ruleId":"require-attr","severity":"error"}
+{"col":12,"line":140,"message":"Cannot overwrite the \"progressbar\" role to the \"img\" element according to ARIA in HTML specification","raw":"progressbar","ruleId":"permitted-roles","severity":"error"}
+{"col":1,"line":141,"message":"Require accessible name","raw":"<img role=\"radio\">","ruleId":"require-accessible-name","severity":"error"}
+{"col":1,"line":141,"message":"Require the \"aria-checked\" ARIA state on the \"radio\" role","raw":"<img role=\"radio\">","ruleId":"require-aria-prop","severity":"error"}
+{"col":1,"line":141,"message":"The \"img\" element expects the \"src\" or the \"srcset\" attribute","raw":"<img role=\"radio\">","ruleId":"require-attr","severity":"error"}
+{"col":12,"line":141,"message":"Cannot overwrite the \"radio\" role to the \"img\" element according to ARIA in HTML specification","raw":"radio","ruleId":"permitted-roles","severity":"error"}
+{"col":1,"line":142,"message":"Require the \"aria-valuenow\" ARIA property on the \"scrollbar\" role","raw":"<img role=\"scrollbar\">","ruleId":"require-aria-prop","severity":"error"}
+{"col":1,"line":142,"message":"The \"img\" element expects the \"src\" or the \"srcset\" attribute","raw":"<img role=\"scrollbar\">","ruleId":"require-attr","severity":"error"}
+{"col":12,"line":142,"message":"Cannot overwrite the \"scrollbar\" role to the \"img\" element according to ARIA in HTML specification","raw":"scrollbar","ruleId":"permitted-roles","severity":"error"}
+{"col":1,"line":143,"message":"The \"img\" element expects the \"src\" or the \"srcset\" attribute","raw":"<img role=\"separator\">","ruleId":"require-attr","severity":"error"}
+{"col":12,"line":143,"message":"Cannot overwrite the \"separator\" role to the \"img\" element according to ARIA in HTML specification","raw":"separator","ruleId":"permitted-roles","severity":"error"}
+{"col":1,"line":144,"message":"Require accessible name","raw":"<img role=\"slider\">","ruleId":"require-accessible-name","severity":"error"}
+{"col":1,"line":144,"message":"Require the \"aria-valuenow\" ARIA property on the \"slider\" role","raw":"<img role=\"slider\">","ruleId":"require-aria-prop","severity":"error"}
+{"col":1,"line":144,"message":"The \"img\" element expects the \"src\" or the \"srcset\" attribute","raw":"<img role=\"slider\">","ruleId":"require-attr","severity":"error"}
+{"col":12,"line":144,"message":"Cannot overwrite the \"slider\" role to the \"img\" element according to ARIA in HTML specification","raw":"slider","ruleId":"permitted-roles","severity":"error"}
+{"col":1,"line":145,"message":"Require accessible name","raw":"<img role=\"switch\">","ruleId":"require-accessible-name","severity":"error"}
+{"col":1,"line":145,"message":"Require the \"aria-checked\" ARIA state on the \"switch\" role","raw":"<img role=\"switch\">","ruleId":"require-aria-prop","severity":"error"}
+{"col":1,"line":145,"message":"The \"img\" element expects the \"src\" or the \"srcset\" attribute","raw":"<img role=\"switch\">","ruleId":"require-attr","severity":"error"}
+{"col":12,"line":145,"message":"Cannot overwrite the \"switch\" role to the \"img\" element according to ARIA in HTML specification","raw":"switch","ruleId":"permitted-roles","severity":"error"}
+{"col":1,"line":146,"message":"The \"img\" element expects the \"src\" or the \"srcset\" attribute","raw":"<img role=\"tab\">","ruleId":"require-attr","severity":"error"}
+{"col":12,"line":146,"message":"Cannot overwrite the \"tab\" role to the \"img\" element according to ARIA in HTML specification","raw":"tab","ruleId":"permitted-roles","severity":"error"}
+{"col":12,"line":146,"message":"The \"tab\" role requires an accessibility parent with the \"tablist\" role","raw":"tab","ruleId":"require-parent-role","severity":"error"}
+{"col":1,"line":147,"message":"The \"img\" element expects the \"src\" or the \"srcset\" attribute","raw":"<img role=\"treeitem\">","ruleId":"require-attr","severity":"error"}
+{"col":12,"line":147,"message":"Cannot overwrite the \"treeitem\" role to the \"img\" element according to ARIA in HTML specification","raw":"treeitem","ruleId":"permitted-roles","severity":"error"}
+{"col":12,"line":147,"message":"The \"treeitem\" role requires an accessibility parent with one of the roles: \"tree\", \"treeitem > group\"","raw":"treeitem","ruleId":"require-parent-role","severity":"error"}
+{"col":1,"line":148,"message":"Require accessible name","raw":"<input role=\"textbox\">","ruleId":"require-accessible-name","severity":"error"}
+{"col":14,"line":148,"message":"The \"textbox\" role is the implicit role of the \"input\" element","raw":"textbox","ruleId":"no-redundant-role","severity":"warning"}
+{"col":1,"line":149,"message":"Require accessible name","raw":"<input role=\"combobox\">","ruleId":"require-accessible-name","severity":"error"}
+{"col":1,"line":149,"message":"Require the \"aria-expanded\" ARIA state on the \"combobox\" role","raw":"<input role=\"combobox\">","ruleId":"require-aria-prop","severity":"error"}
+{"col":1,"line":150,"message":"Require accessible name","raw":"<input role=\"searchbox\">","ruleId":"require-accessible-name","severity":"error"}
+{"col":1,"line":151,"message":"Require accessible name","raw":"<input role=\"spinbutton\">","ruleId":"require-accessible-name","severity":"error"}
+{"col":1,"line":152,"message":"The element should not empty","raw":"<ins role=\"insertion\">","ruleId":"no-empty-palpable-content","severity":"warning"}
+{"col":12,"line":152,"message":"The \"insertion\" role is the implicit role of the \"ins\" element","raw":"insertion","ruleId":"no-redundant-role","severity":"warning"}
+{"col":7,"line":153,"message":"The element should not empty","raw":"<li role=\"listitem\">","ruleId":"no-empty-palpable-content","severity":"warning"}
+{"col":17,"line":153,"message":"The \"listitem\" role is the implicit role of the \"li\" element","raw":"listitem","ruleId":"no-redundant-role","severity":"warning"}
+{"col":1,"line":154,"message":"The \"list\" role expects the \"listitem\" role","raw":"<menu>","ruleId":"require-owned-elements","severity":"error"}
+{"col":7,"line":154,"message":"The element should not empty","raw":"<li role=\"menuitem\">","ruleId":"no-empty-palpable-content","severity":"warning"}
+{"col":17,"line":154,"message":"The \"menuitem\" role requires an accessibility parent with one of the roles: \"menu\", \"menubar\", \"menu > group\", \"menubar > group\"","raw":"menuitem","ruleId":"require-parent-role","severity":"error"}
+{"col":1,"line":155,"message":"The \"list\" role expects the \"listitem\" role","raw":"<menu>","ruleId":"require-owned-elements","severity":"error"}
+{"col":7,"line":155,"message":"The element should not empty","raw":"<li role=\"menuitemcheckbox\">","ruleId":"no-empty-palpable-content","severity":"warning"}
+{"col":17,"line":155,"message":"The \"menuitemcheckbox\" role requires an accessibility parent with one of the roles: \"menu\", \"menubar\", \"menu > group\", \"menubar > group\"","raw":"menuitemcheckbox","ruleId":"require-parent-role","severity":"error"}
+{"col":1,"line":156,"message":"The \"list\" role expects the \"listitem\" role","raw":"<menu>","ruleId":"require-owned-elements","severity":"error"}
+{"col":7,"line":156,"message":"The element should not empty","raw":"<li role=\"menuitemradio\">","ruleId":"no-empty-palpable-content","severity":"warning"}
+{"col":17,"line":156,"message":"The \"menuitemradio\" role requires an accessibility parent with one of the roles: \"menu\", \"menubar\", \"menu > group\", \"menubar > group\"","raw":"menuitemradio","ruleId":"require-parent-role","severity":"error"}
+{"col":1,"line":157,"message":"The \"list\" role expects the \"listitem\" role","raw":"<menu>","ruleId":"require-owned-elements","severity":"error"}
+{"col":7,"line":157,"message":"The element should not empty","raw":"<li role=\"option\">","ruleId":"no-empty-palpable-content","severity":"warning"}
+{"col":17,"line":157,"message":"The \"option\" role requires an accessibility parent with one of the roles: \"listbox\", \"listbox > group\"","raw":"option","ruleId":"require-parent-role","severity":"error"}
+{"col":7,"line":158,"message":"The element should not empty","raw":"<li role=\"none\">","ruleId":"no-empty-palpable-content","severity":"warning"}
+{"col":7,"line":159,"message":"The element should not empty","raw":"<li role=\"presentation\">","ruleId":"no-empty-palpable-content","severity":"warning"}
+{"col":1,"line":160,"message":"The \"list\" role expects the \"listitem\" role","raw":"<menu>","ruleId":"require-owned-elements","severity":"error"}
+{"col":7,"line":160,"message":"The element should not empty","raw":"<li role=\"radio\">","ruleId":"no-empty-palpable-content","severity":"warning"}
+{"col":7,"line":160,"message":"Require accessible name","raw":"<li role=\"radio\">","ruleId":"require-accessible-name","severity":"error"}
+{"col":7,"line":160,"message":"Require the \"aria-checked\" ARIA state on the \"radio\" role","raw":"<li role=\"radio\">","ruleId":"require-aria-prop","severity":"error"}
+{"col":1,"line":161,"message":"The \"list\" role expects the \"listitem\" role","raw":"<menu>","ruleId":"require-owned-elements","severity":"error"}
+{"col":7,"line":161,"message":"The element should not empty","raw":"<li role=\"separator\">","ruleId":"no-empty-palpable-content","severity":"warning"}
+{"col":1,"line":162,"message":"The \"list\" role expects the \"listitem\" role","raw":"<menu>","ruleId":"require-owned-elements","severity":"error"}
+{"col":7,"line":162,"message":"The element should not empty","raw":"<li role=\"tab\">","ruleId":"no-empty-palpable-content","severity":"warning"}
+{"col":17,"line":162,"message":"The \"tab\" role requires an accessibility parent with the \"tablist\" role","raw":"tab","ruleId":"require-parent-role","severity":"error"}
+{"col":1,"line":163,"message":"The \"list\" role expects the \"listitem\" role","raw":"<menu>","ruleId":"require-owned-elements","severity":"error"}
+{"col":7,"line":163,"message":"The element should not empty","raw":"<li role=\"treeitem\">","ruleId":"no-empty-palpable-content","severity":"warning"}
+{"col":17,"line":163,"message":"The \"treeitem\" role requires an accessibility parent with one of the roles: \"tree\", \"treeitem > group\"","raw":"treeitem","ruleId":"require-parent-role","severity":"error"}
+{"col":1,"line":164,"message":"The element should not empty","raw":"<main role=\"main\">","ruleId":"no-empty-palpable-content","severity":"warning"}
+{"col":1,"line":164,"message":"Require unique accessible name","raw":"<main role=\"main\">","ruleId":"require-landmark-label","severity":"warning"}
+{"col":13,"line":164,"message":"The \"main\" role is the implicit role of the \"main\" element","raw":"main","ruleId":"no-redundant-role","severity":"warning"}
+{"col":13,"line":164,"message":"Cannot overwrite the \"main\" role to the \"main\" element according to ARIA in HTML specification","raw":"main","ruleId":"permitted-roles","severity":"error"}
+{"col":1,"line":165,"message":"The child element requires the \"listitem\" role. Or, require aria-busy=\"true\"","raw":"<menu role=\"list\">","ruleId":"require-owned-elements","severity":"error"}
+{"col":13,"line":165,"message":"The \"list\" role is the implicit role of the \"menu\" element","raw":"list","ruleId":"no-redundant-role","severity":"warning"}
+{"col":1,"line":167,"message":"Require accessible name","raw":"<menu role=\"listbox\">","ruleId":"require-accessible-name","severity":"error"}
+{"col":1,"line":167,"message":"The child element requires the roles: \"group > option\", \"option\". Or, require aria-busy=\"true\"","raw":"<menu role=\"listbox\">","ruleId":"require-owned-elements","severity":"error"}
+{"col":1,"line":168,"message":"The child element requires the roles: \"group > menuitem\", \"group > menuitemradio\", \"group > menuitemcheckbox\", \"menuitem\", \"menuitemcheckbox\", \"menuitemradio\", \"separator\". Or, require aria-busy=\"true\"","raw":"<menu role=\"menu\">","ruleId":"require-owned-elements","severity":"error"}
+{"col":1,"line":169,"message":"The child element requires the roles: \"group > menuitem\", \"group > menuitemradio\", \"group > menuitemcheckbox\", \"menuitem\", \"menuitemcheckbox\", \"menuitemradio\", \"separator\". Or, require aria-busy=\"true\"","raw":"<menu role=\"menubar\">","ruleId":"require-owned-elements","severity":"error"}
+{"col":1,"line":173,"message":"The child element requires the \"tab\" role. Or, require aria-busy=\"true\"","raw":"<menu role=\"tablist\">","ruleId":"require-owned-elements","severity":"error"}
+{"col":1,"line":175,"message":"Require accessible name","raw":"<menu role=\"tree\">","ruleId":"require-accessible-name","severity":"error"}
+{"col":1,"line":175,"message":"The child element requires the \"treeitem\" role. Or, require aria-busy=\"true\"","raw":"<menu role=\"tree\">","ruleId":"require-owned-elements","severity":"error"}
+{"col":7,"line":176,"message":"The \"directory\" role is deprecated","raw":"role=\"directory\"","ruleId":"no-deprecated-role","severity":"warning"}
+{"col":1,"line":177,"message":"The element should not empty","raw":"<meter role=\"meter\">","ruleId":"no-empty-palpable-content","severity":"warning"}
+{"col":1,"line":177,"message":"Require accessible name","raw":"<meter role=\"meter\">","ruleId":"require-accessible-name","severity":"error"}
+{"col":1,"line":177,"message":"Require the \"aria-valuenow\" ARIA property on the \"meter\" role","raw":"<meter role=\"meter\">","ruleId":"require-aria-prop","severity":"error"}
+{"col":14,"line":177,"message":"The \"meter\" role is the implicit role of the \"meter\" element","raw":"meter","ruleId":"no-redundant-role","severity":"warning"}
+{"col":14,"line":177,"message":"Cannot overwrite the \"meter\" role to the \"meter\" element according to ARIA in HTML specification","raw":"meter","ruleId":"permitted-roles","severity":"error"}
+{"col":1,"line":178,"message":"The element should not empty","raw":"<nav role=\"navigation\">","ruleId":"no-empty-palpable-content","severity":"warning"}
+{"col":1,"line":178,"message":"Require unique accessible name","raw":"<nav role=\"navigation\">","ruleId":"require-landmark-label","severity":"warning"}
+{"col":12,"line":178,"message":"The \"navigation\" role is the implicit role of the \"nav\" element","raw":"navigation","ruleId":"no-redundant-role","severity":"warning"}
+{"col":1,"line":179,"message":"The element should not empty","raw":"<nav role=\"menu\">","ruleId":"no-empty-palpable-content","severity":"warning"}
+{"col":1,"line":179,"message":"Require unique accessible name","raw":"<nav role=\"menu\">","ruleId":"require-landmark-label","severity":"warning"}
+{"col":1,"line":179,"message":"The child element requires the roles: \"group > menuitem\", \"group > menuitemradio\", \"group > menuitemcheckbox\", \"menuitem\", \"menuitemcheckbox\", \"menuitemradio\", \"separator\". Or, require aria-busy=\"true\"","raw":"<nav role=\"menu\">","ruleId":"require-owned-elements","severity":"error"}
+{"col":1,"line":180,"message":"The element should not empty","raw":"<nav role=\"menubar\">","ruleId":"no-empty-palpable-content","severity":"warning"}
+{"col":1,"line":180,"message":"Require unique accessible name","raw":"<nav role=\"menubar\">","ruleId":"require-landmark-label","severity":"warning"}
+{"col":1,"line":180,"message":"The child element requires the roles: \"group > menuitem\", \"group > menuitemradio\", \"group > menuitemcheckbox\", \"menuitem\", \"menuitemcheckbox\", \"menuitemradio\", \"separator\". Or, require aria-busy=\"true\"","raw":"<nav role=\"menubar\">","ruleId":"require-owned-elements","severity":"error"}
+{"col":1,"line":181,"message":"The element should not empty","raw":"<nav role=\"none\">","ruleId":"no-empty-palpable-content","severity":"warning"}
+{"col":1,"line":181,"message":"Require unique accessible name","raw":"<nav role=\"none\">","ruleId":"require-landmark-label","severity":"warning"}
+{"col":1,"line":182,"message":"The element should not empty","raw":"<nav role=\"presentation\">","ruleId":"no-empty-palpable-content","severity":"warning"}
+{"col":1,"line":182,"message":"Require unique accessible name","raw":"<nav role=\"presentation\">","ruleId":"require-landmark-label","severity":"warning"}
+{"col":1,"line":183,"message":"The element should not empty","raw":"<nav role=\"tablist\">","ruleId":"no-empty-palpable-content","severity":"warning"}
+{"col":1,"line":183,"message":"Require unique accessible name","raw":"<nav role=\"tablist\">","ruleId":"require-landmark-label","severity":"warning"}
+{"col":1,"line":183,"message":"The child element requires the \"tab\" role. Or, require aria-busy=\"true\"","raw":"<nav role=\"tablist\">","ruleId":"require-owned-elements","severity":"error"}
+{"col":1,"line":184,"message":"The element should not empty","raw":"<object role=\"application\">","ruleId":"no-empty-palpable-content","severity":"warning"}
+{"col":1,"line":184,"message":"Require accessible name","raw":"<object role=\"application\">","ruleId":"require-accessible-name","severity":"error"}
+{"col":1,"line":184,"message":"The \"object\" element expects the \"data\" or the \"type\" attribute","raw":"<object role=\"application\">","ruleId":"require-attr","severity":"error"}
+{"col":1,"line":185,"message":"The element should not empty","raw":"<object role=\"document\">","ruleId":"no-empty-palpable-content","severity":"warning"}
+{"col":1,"line":185,"message":"The \"object\" element expects the \"data\" or the \"type\" attribute","raw":"<object role=\"document\">","ruleId":"require-attr","severity":"error"}
+{"col":1,"line":186,"message":"The element should not empty","raw":"<object role=\"img\">","ruleId":"no-empty-palpable-content","severity":"warning"}
+{"col":1,"line":186,"message":"Require accessible name","raw":"<object role=\"img\">","ruleId":"require-accessible-name","severity":"error"}
+{"col":1,"line":186,"message":"The \"object\" element expects the \"data\" or the \"type\" attribute","raw":"<object role=\"img\">","ruleId":"require-attr","severity":"error"}
+{"col":1,"line":187,"message":"The child element requires the \"listitem\" role. Or, require aria-busy=\"true\"","raw":"<ol role=\"list\">","ruleId":"require-owned-elements","severity":"error"}
+{"col":11,"line":187,"message":"The \"list\" role is the implicit role of the \"ol\" element","raw":"list","ruleId":"no-redundant-role","severity":"warning"}
+{"col":1,"line":189,"message":"Require accessible name","raw":"<ol role=\"listbox\">","ruleId":"require-accessible-name","severity":"error"}
+{"col":1,"line":189,"message":"The child element requires the roles: \"group > option\", \"option\". Or, require aria-busy=\"true\"","raw":"<ol role=\"listbox\">","ruleId":"require-owned-elements","severity":"error"}
+{"col":1,"line":190,"message":"The child element requires the roles: \"group > menuitem\", \"group > menuitemradio\", \"group > menuitemcheckbox\", \"menuitem\", \"menuitemcheckbox\", \"menuitemradio\", \"separator\". Or, require aria-busy=\"true\"","raw":"<ol role=\"menu\">","ruleId":"require-owned-elements","severity":"error"}
+{"col":1,"line":191,"message":"The child element requires the roles: \"group > menuitem\", \"group > menuitemradio\", \"group > menuitemcheckbox\", \"menuitem\", \"menuitemcheckbox\", \"menuitemradio\", \"separator\". Or, require aria-busy=\"true\"","raw":"<ol role=\"menubar\">","ruleId":"require-owned-elements","severity":"error"}
+{"col":1,"line":195,"message":"The child element requires the \"tab\" role. Or, require aria-busy=\"true\"","raw":"<ol role=\"tablist\">","ruleId":"require-owned-elements","severity":"error"}
+{"col":1,"line":197,"message":"Require accessible name","raw":"<ol role=\"tree\">","ruleId":"require-accessible-name","severity":"error"}
+{"col":1,"line":197,"message":"The child element requires the \"treeitem\" role. Or, require aria-busy=\"true\"","raw":"<ol role=\"tree\">","ruleId":"require-owned-elements","severity":"error"}
+{"col":5,"line":198,"message":"The \"directory\" role is deprecated","raw":"role=\"directory\"","ruleId":"no-deprecated-role","severity":"warning"}
+{"col":1,"line":199,"message":"Require accessible name","raw":"<select>","ruleId":"require-accessible-name","severity":"error"}
+{"col":9,"line":199,"message":"The element should not empty","raw":"<optgroup role=\"group\">","ruleId":"no-empty-palpable-content","severity":"warning"}
+{"col":9,"line":199,"message":"The \"optgroup\" element expects the \"label\" attribute","raw":"<optgroup role=\"group\">","ruleId":"require-attr","severity":"error"}
+{"col":25,"line":199,"message":"The \"group\" role is the implicit role of the \"optgroup\" element","raw":"group","ruleId":"no-redundant-role","severity":"warning"}
+{"col":25,"line":199,"message":"Cannot overwrite the \"group\" role to the \"optgroup\" element according to ARIA in HTML specification","raw":"group","ruleId":"permitted-roles","severity":"error"}
+{"col":15,"line":200,"message":"The \"status\" role is the implicit role of the \"output\" element","raw":"status","ruleId":"no-redundant-role","severity":"warning"}
+{"col":15,"line":200,"message":"Cannot overwrite the \"status\" role to the \"output\" element according to ARIA in HTML specification","raw":"status","ruleId":"permitted-roles","severity":"error"}
+{"col":1,"line":201,"message":"The element should not empty","raw":"<p role=\"paragraph\">","ruleId":"no-empty-palpable-content","severity":"warning"}
+{"col":10,"line":201,"message":"The \"paragraph\" role is the implicit role of the \"p\" element","raw":"paragraph","ruleId":"no-redundant-role","severity":"warning"}
+{"col":1,"line":202,"message":"The element should not empty","raw":"<pre role=\"generic\">","ruleId":"no-empty-palpable-content","severity":"warning"}
+{"col":12,"line":202,"message":"The \"generic\" role is the implicit role of the \"pre\" element","raw":"generic","ruleId":"no-redundant-role","severity":"warning"}
+{"col":1,"line":203,"message":"The element should not empty","raw":"<progress role=\"progressbar\">","ruleId":"no-empty-palpable-content","severity":"warning"}
+{"col":1,"line":203,"message":"Require accessible name","raw":"<progress role=\"progressbar\">","ruleId":"require-accessible-name","severity":"error"}
+{"col":17,"line":203,"message":"The \"progressbar\" role is the implicit role of the \"progress\" element","raw":"progressbar","ruleId":"no-redundant-role","severity":"warning"}
+{"col":17,"line":203,"message":"Cannot overwrite the \"progressbar\" role to the \"progress\" element according to ARIA in HTML specification","raw":"progressbar","ruleId":"permitted-roles","severity":"error"}
+{"col":1,"line":204,"message":"The element should not empty","raw":"<q role=\"generic\">","ruleId":"no-empty-palpable-content","severity":"warning"}
+{"col":10,"line":204,"message":"The \"generic\" role is the implicit role of the \"q\" element","raw":"generic","ruleId":"no-redundant-role","severity":"warning"}
+{"col":1,"line":205,"message":"The element should not empty","raw":"<s role=\"deletion\">","ruleId":"no-empty-palpable-content","severity":"warning"}
+{"col":10,"line":205,"message":"The \"deletion\" role is the implicit role of the \"s\" element","raw":"deletion","ruleId":"no-redundant-role","severity":"warning"}
+{"col":1,"line":206,"message":"The element should not empty","raw":"<samp role=\"generic\">","ruleId":"no-empty-palpable-content","severity":"warning"}
+{"col":13,"line":206,"message":"The \"generic\" role is the implicit role of the \"samp\" element","raw":"generic","ruleId":"no-redundant-role","severity":"warning"}
+{"col":1,"line":207,"message":"The element should not empty","raw":"<search role=\"search\">","ruleId":"no-empty-palpable-content","severity":"warning"}
+{"col":15,"line":207,"message":"The \"search\" role is the implicit role of the \"search\" element","raw":"search","ruleId":"no-redundant-role","severity":"warning"}
+{"col":1,"line":208,"message":"The element should not empty","raw":"<search role=\"form\">","ruleId":"no-empty-palpable-content","severity":"warning"}
+{"col":1,"line":209,"message":"The element should not empty","raw":"<search role=\"group\">","ruleId":"no-empty-palpable-content","severity":"warning"}
+{"col":1,"line":210,"message":"The element should not empty","raw":"<search role=\"none\">","ruleId":"no-empty-palpable-content","severity":"warning"}
+{"col":1,"line":211,"message":"The element should not empty","raw":"<search role=\"presentation\">","ruleId":"no-empty-palpable-content","severity":"warning"}
+{"col":1,"line":212,"message":"The element should not empty","raw":"<search role=\"region\">","ruleId":"no-empty-palpable-content","severity":"warning"}
+{"col":1,"line":212,"message":"Require unique accessible name","raw":"<search role=\"region\">","ruleId":"require-landmark-label","severity":"warning"}
+{"col":1,"line":213,"message":"The element should not empty","raw":"<section role=\"alert\">","ruleId":"no-empty-palpable-content","severity":"warning"}
+{"col":1,"line":214,"message":"The element should not empty","raw":"<section role=\"alertdialog\">","ruleId":"no-empty-palpable-content","severity":"warning"}
+{"col":1,"line":215,"message":"The element should not empty","raw":"<section role=\"application\">","ruleId":"no-empty-palpable-content","severity":"warning"}
+{"col":1,"line":215,"message":"Require accessible name","raw":"<section role=\"application\">","ruleId":"require-accessible-name","severity":"error"}
+{"col":1,"line":216,"message":"The element should not empty","raw":"<section role=\"banner\">","ruleId":"no-empty-palpable-content","severity":"warning"}
+{"col":1,"line":216,"message":"Require unique accessible name","raw":"<section role=\"banner\">","ruleId":"require-landmark-label","severity":"warning"}
+{"col":1,"line":217,"message":"The element should not empty","raw":"<section role=\"complementary\">","ruleId":"no-empty-palpable-content","severity":"warning"}
+{"col":1,"line":217,"message":"Require unique accessible name","raw":"<section role=\"complementary\">","ruleId":"require-landmark-label","severity":"warning"}
+{"col":1,"line":218,"message":"The element should not empty","raw":"<section role=\"contentinfo\">","ruleId":"no-empty-palpable-content","severity":"warning"}
+{"col":1,"line":218,"message":"Require unique accessible name","raw":"<section role=\"contentinfo\">","ruleId":"require-landmark-label","severity":"warning"}
+{"col":1,"line":219,"message":"The element should not empty","raw":"<section role=\"dialog\">","ruleId":"no-empty-palpable-content","severity":"warning"}
+{"col":1,"line":220,"message":"The element should not empty","raw":"<section role=\"document\">","ruleId":"no-empty-palpable-content","severity":"warning"}
+{"col":1,"line":221,"message":"The element should not empty","raw":"<section role=\"feed\">","ruleId":"no-empty-palpable-content","severity":"warning"}
+{"col":1,"line":221,"message":"The child element requires the \"article\" role. Or, require aria-busy=\"true\"","raw":"<section role=\"feed\">","ruleId":"require-owned-elements","severity":"error"}
+{"col":1,"line":222,"message":"The element should not empty","raw":"<section role=\"group\">","ruleId":"no-empty-palpable-content","severity":"warning"}
+{"col":1,"line":223,"message":"The element should not empty","raw":"<section role=\"log\">","ruleId":"no-empty-palpable-content","severity":"warning"}
+{"col":1,"line":224,"message":"The element should not empty","raw":"<section role=\"main\">","ruleId":"no-empty-palpable-content","severity":"warning"}
+{"col":1,"line":224,"message":"Require unique accessible name","raw":"<section role=\"main\">","ruleId":"require-landmark-label","severity":"warning"}
+{"col":1,"line":225,"message":"The element should not empty","raw":"<section role=\"marquee\">","ruleId":"no-empty-palpable-content","severity":"warning"}
+{"col":1,"line":226,"message":"The element should not empty","raw":"<section role=\"navigation\">","ruleId":"no-empty-palpable-content","severity":"warning"}
+{"col":1,"line":226,"message":"Require unique accessible name","raw":"<section role=\"navigation\">","ruleId":"require-landmark-label","severity":"warning"}
+{"col":1,"line":227,"message":"The element should not empty","raw":"<section role=\"none\">","ruleId":"no-empty-palpable-content","severity":"warning"}
+{"col":1,"line":228,"message":"The element should not empty","raw":"<section role=\"note\">","ruleId":"no-empty-palpable-content","severity":"warning"}
+{"col":1,"line":229,"message":"The element should not empty","raw":"<section role=\"presentation\">","ruleId":"no-empty-palpable-content","severity":"warning"}
+{"col":1,"line":230,"message":"The element should not empty","raw":"<section role=\"search\">","ruleId":"no-empty-palpable-content","severity":"warning"}
+{"col":1,"line":231,"message":"The element should not empty","raw":"<section role=\"status\">","ruleId":"no-empty-palpable-content","severity":"warning"}
+{"col":1,"line":232,"message":"The element should not empty","raw":"<section role=\"tabpanel\">","ruleId":"no-empty-palpable-content","severity":"warning"}
+{"col":1,"line":232,"message":"Require accessible name","raw":"<section role=\"tabpanel\">","ruleId":"require-accessible-name","severity":"error"}
+{"col":1,"line":233,"message":"The element should not empty","raw":"<select role=\"combobox\">","ruleId":"no-empty-palpable-content","severity":"warning"}
+{"col":1,"line":233,"message":"Require accessible name","raw":"<select role=\"combobox\">","ruleId":"require-accessible-name","severity":"error"}
+{"col":1,"line":233,"message":"Require the \"aria-expanded\" ARIA state on the \"combobox\" role","raw":"<select role=\"combobox\">","ruleId":"require-aria-prop","severity":"error"}
+{"col":15,"line":233,"message":"The \"combobox\" role is the implicit role of the \"select\" element","raw":"combobox","ruleId":"no-redundant-role","severity":"warning"}
+{"col":1,"line":234,"message":"The element should not empty","raw":"<select role=\"menu\">","ruleId":"no-empty-palpable-content","severity":"warning"}
+{"col":1,"line":234,"message":"The child element requires the roles: \"group > menuitem\", \"group > menuitemradio\", \"group > menuitemcheckbox\", \"menuitem\", \"menuitemcheckbox\", \"menuitemradio\", \"separator\". Or, require aria-busy=\"true\"","raw":"<select role=\"menu\">","ruleId":"require-owned-elements","severity":"error"}
+{"col":1,"line":235,"message":"The element should not empty","raw":"<small role=\"generic\">","ruleId":"no-empty-palpable-content","severity":"warning"}
+{"col":14,"line":235,"message":"The \"generic\" role is the implicit role of the \"small\" element","raw":"generic","ruleId":"no-redundant-role","severity":"warning"}
+{"col":1,"line":236,"message":"The element should not empty","raw":"<span role=\"generic\">","ruleId":"no-empty-palpable-content","severity":"warning"}
+{"col":13,"line":236,"message":"The \"generic\" role is the implicit role of the \"span\" element","raw":"generic","ruleId":"no-redundant-role","severity":"warning"}
+{"col":1,"line":237,"message":"The element should not empty","raw":"<strong role=\"strong\">","ruleId":"no-empty-palpable-content","severity":"warning"}
+{"col":15,"line":237,"message":"The \"strong\" role is the implicit role of the \"strong\" element","raw":"strong","ruleId":"no-redundant-role","severity":"warning"}
+{"col":1,"line":238,"message":"The element should not empty","raw":"<sub role=\"subscript\">","ruleId":"no-empty-palpable-content","severity":"warning"}
+{"col":12,"line":238,"message":"The \"subscript\" role is the implicit role of the \"sub\" element","raw":"subscript","ruleId":"no-redundant-role","severity":"warning"}
+{"col":10,"line":239,"message":"The element should not empty","raw":"<summary role=\"button\">","ruleId":"no-empty-palpable-content","severity":"warning"}
+{"col":10,"line":239,"message":"Require accessible name","raw":"<summary role=\"button\">","ruleId":"require-accessible-name","severity":"error"}
+{"col":25,"line":239,"message":"The \"button\" role is the implicit role of the \"summary\" element","raw":"button","ruleId":"no-redundant-role","severity":"warning"}
+{"col":25,"line":239,"message":"Cannot overwrite the \"button\" role to the \"summary\" element according to ARIA in HTML specification","raw":"button","ruleId":"permitted-roles","severity":"error"}
+{"col":1,"line":240,"message":"The element should not empty","raw":"<sup role=\"superscript\">","ruleId":"no-empty-palpable-content","severity":"warning"}
+{"col":12,"line":240,"message":"The \"superscript\" role is the implicit role of the \"sup\" element","raw":"superscript","ruleId":"no-redundant-role","severity":"warning"}
+{"col":1,"line":241,"message":"The element should not empty","raw":"<table role=\"table\">","ruleId":"no-empty-palpable-content","severity":"warning"}
+{"col":1,"line":241,"message":"The child element requires the roles: \"caption\", \"row\", \"rowgroup > row\". Or, require aria-busy=\"true\"","raw":"<table role=\"table\">","ruleId":"require-owned-elements","severity":"error"}
+{"col":14,"line":241,"message":"The \"table\" role is the implicit role of the \"table\" element","raw":"table","ruleId":"no-redundant-role","severity":"warning"}
+{"col":1,"line":242,"message":"The \"table\" role expects the roles: \"caption\", \"row\", \"rowgroup > row\"","raw":"<table>","ruleId":"require-owned-elements","severity":"error"}
+{"col":8,"line":242,"message":"The element should not empty","raw":"<tbody role=\"rowgroup\">","ruleId":"no-empty-palpable-content","severity":"warning"}
+{"col":8,"line":242,"message":"The child element requires the \"row\" role. Or, require aria-busy=\"true\"","raw":"<tbody role=\"rowgroup\">","ruleId":"require-owned-elements","severity":"error"}
+{"col":21,"line":242,"message":"The \"rowgroup\" role is the implicit role of the \"tbody\" element","raw":"rowgroup","ruleId":"no-redundant-role","severity":"warning"}
+{"col":1,"line":243,"message":"Require accessible name","raw":"<textarea role=\"textbox\">","ruleId":"require-accessible-name","severity":"error"}
+{"col":17,"line":243,"message":"The \"textbox\" role is the implicit role of the \"textarea\" element","raw":"textbox","ruleId":"no-redundant-role","severity":"warning"}
+{"col":17,"line":243,"message":"Cannot overwrite the \"textbox\" role to the \"textarea\" element according to ARIA in HTML specification","raw":"textbox","ruleId":"permitted-roles","severity":"error"}
+{"col":1,"line":244,"message":"The \"table\" role expects the roles: \"caption\", \"row\", \"rowgroup > row\"","raw":"<table>","ruleId":"require-owned-elements","severity":"error"}
+{"col":8,"line":244,"message":"The element should not empty","raw":"<tfoot role=\"rowgroup\">","ruleId":"no-empty-palpable-content","severity":"warning"}
+{"col":8,"line":244,"message":"The child element requires the \"row\" role. Or, require aria-busy=\"true\"","raw":"<tfoot role=\"rowgroup\">","ruleId":"require-owned-elements","severity":"error"}
+{"col":21,"line":244,"message":"The \"rowgroup\" role is the implicit role of the \"tfoot\" element","raw":"rowgroup","ruleId":"no-redundant-role","severity":"warning"}
+{"col":1,"line":245,"message":"The \"table\" role expects the roles: \"caption\", \"row\", \"rowgroup > row\"","raw":"<table>","ruleId":"require-owned-elements","severity":"error"}
+{"col":8,"line":245,"message":"The element should not empty","raw":"<thead role=\"rowgroup\">","ruleId":"no-empty-palpable-content","severity":"warning"}
+{"col":8,"line":245,"message":"The child element requires the \"row\" role. Or, require aria-busy=\"true\"","raw":"<thead role=\"rowgroup\">","ruleId":"require-owned-elements","severity":"error"}
+{"col":21,"line":245,"message":"The \"rowgroup\" role is the implicit role of the \"thead\" element","raw":"rowgroup","ruleId":"no-redundant-role","severity":"warning"}
+{"col":1,"line":246,"message":"The element should not empty","raw":"<time role=\"time\">","ruleId":"no-empty-palpable-content","severity":"warning"}
+{"col":1,"line":246,"message":"Need the \"datetime\" attribute","raw":"<time role=\"time\">","ruleId":"require-datetime","severity":"error"}
+{"col":13,"line":246,"message":"The \"time\" role is the implicit role of the \"time\" element","raw":"time","ruleId":"no-redundant-role","severity":"warning"}
+{"col":8,"line":247,"message":"The element should not empty","raw":"<tr role=\"row\">","ruleId":"no-empty-palpable-content","severity":"warning"}
+{"col":8,"line":247,"message":"One row has no cells beginning in it","raw":"<tr role=\"row\">","ruleId":"no-empty-table-track","severity":"error"}
+{"col":8,"line":247,"message":"The child element requires the roles: \"cell\", \"columnheader\", \"gridcell\", \"rowheader\". Or, require aria-busy=\"true\"","raw":"<tr role=\"row\">","ruleId":"require-owned-elements","severity":"error"}
+{"col":18,"line":247,"message":"The \"row\" role is the implicit role of the \"tr\" element","raw":"row","ruleId":"no-redundant-role","severity":"warning"}
+{"col":18,"line":247,"message":"Cannot overwrite the \"row\" role to the \"tr\" element according to ARIA in HTML specification","raw":"row","ruleId":"permitted-roles","severity":"error"}
+{"col":1,"line":248,"message":"The element should not empty","raw":"<u role=\"generic\">","ruleId":"no-empty-palpable-content","severity":"warning"}
+{"col":10,"line":248,"message":"The \"generic\" role is the implicit role of the \"u\" element","raw":"generic","ruleId":"no-redundant-role","severity":"warning"}
+{"col":1,"line":249,"message":"The child element requires the \"listitem\" role. Or, require aria-busy=\"true\"","raw":"<ul role=\"list\">","ruleId":"require-owned-elements","severity":"error"}
+{"col":11,"line":249,"message":"The \"list\" role is the implicit role of the \"ul\" element","raw":"list","ruleId":"no-redundant-role","severity":"warning"}
+{"col":1,"line":251,"message":"Require accessible name","raw":"<ul role=\"listbox\">","ruleId":"require-accessible-name","severity":"error"}
+{"col":1,"line":251,"message":"The child element requires the roles: \"group > option\", \"option\". Or, require aria-busy=\"true\"","raw":"<ul role=\"listbox\">","ruleId":"require-owned-elements","severity":"error"}
+{"col":1,"line":252,"message":"The child element requires the roles: \"group > menuitem\", \"group > menuitemradio\", \"group > menuitemcheckbox\", \"menuitem\", \"menuitemcheckbox\", \"menuitemradio\", \"separator\". Or, require aria-busy=\"true\"","raw":"<ul role=\"menu\">","ruleId":"require-owned-elements","severity":"error"}
+{"col":1,"line":253,"message":"The child element requires the roles: \"group > menuitem\", \"group > menuitemradio\", \"group > menuitemcheckbox\", \"menuitem\", \"menuitemcheckbox\", \"menuitemradio\", \"separator\". Or, require aria-busy=\"true\"","raw":"<ul role=\"menubar\">","ruleId":"require-owned-elements","severity":"error"}
+{"col":1,"line":257,"message":"The child element requires the \"tab\" role. Or, require aria-busy=\"true\"","raw":"<ul role=\"tablist\">","ruleId":"require-owned-elements","severity":"error"}
+{"col":1,"line":259,"message":"Require accessible name","raw":"<ul role=\"tree\">","ruleId":"require-accessible-name","severity":"error"}
+{"col":1,"line":259,"message":"The child element requires the \"treeitem\" role. Or, require aria-busy=\"true\"","raw":"<ul role=\"tree\">","ruleId":"require-owned-elements","severity":"error"}
+{"col":5,"line":260,"message":"The \"directory\" role is deprecated","raw":"role=\"directory\"","ruleId":"no-deprecated-role","severity":"warning"}
+{"col":1,"line":261,"message":"Require accessible name","raw":"<video role=\"application\">","ruleId":"require-accessible-name","severity":"error"}
+{"col":1,"line":264,"message":"The element should not empty","raw":"<math role=\"math\">","ruleId":"no-empty-palpable-content","severity":"warning"}
+{"col":13,"line":264,"message":"The \"math\" role is the implicit role of the \"math\" element","raw":"math","ruleId":"no-redundant-role","severity":"warning"}
+{"col":13,"line":264,"message":"Cannot overwrite the \"math\" role to the \"math\" element according to ARIA in HTML specification","raw":"math","ruleId":"permitted-roles","severity":"error"}
+{"col":6,"line":265,"message":"The element should not empty","raw":"<a role=\"group\">","ruleId":"no-empty-palpable-content","severity":"warning"}
+{"col":15,"line":265,"message":"The \"group\" role is the implicit role of the \"a\" element","raw":"group","ruleId":"no-redundant-role","severity":"warning"}
+{"col":6,"line":266,"message":"Require accessible name","raw":"<ellipse role=\"graphics-symbol\">","ruleId":"require-accessible-name","severity":"error"}
+{"col":21,"line":266,"message":"The \"graphics-symbol\" role is the implicit role of the \"ellipse\" element","raw":"graphics-symbol","ruleId":"no-redundant-role","severity":"warning"}
+{"col":27,"line":267,"message":"The \"group\" role is the implicit role of the \"foreignObject\" element","raw":"group","ruleId":"no-redundant-role","severity":"warning"}
+{"col":15,"line":268,"message":"The \"group\" role is the implicit role of the \"g\" element","raw":"group","ruleId":"no-redundant-role","severity":"warning"}
+{"col":6,"line":269,"message":"Require accessible name","raw":"<image role=\"img\">","ruleId":"require-accessible-name","severity":"error"}
+{"col":19,"line":269,"message":"The \"img\" role is the implicit role of the \"image\" element","raw":"img","ruleId":"no-redundant-role","severity":"warning"}
+{"col":6,"line":270,"message":"Require accessible name","raw":"<line role=\"graphics-symbol\">","ruleId":"require-accessible-name","severity":"error"}
+{"col":18,"line":270,"message":"The \"graphics-symbol\" role is the implicit role of the \"line\" element","raw":"graphics-symbol","ruleId":"no-redundant-role","severity":"warning"}
+{"col":6,"line":271,"message":"Require accessible name","raw":"<path role=\"graphics-symbol\">","ruleId":"require-accessible-name","severity":"error"}
+{"col":18,"line":271,"message":"The \"graphics-symbol\" role is the implicit role of the \"path\" element","raw":"graphics-symbol","ruleId":"no-redundant-role","severity":"warning"}
+{"col":6,"line":272,"message":"Require accessible name","raw":"<polygon role=\"graphics-symbol\">","ruleId":"require-accessible-name","severity":"error"}
+{"col":21,"line":272,"message":"The \"graphics-symbol\" role is the implicit role of the \"polygon\" element","raw":"graphics-symbol","ruleId":"no-redundant-role","severity":"warning"}
+{"col":6,"line":273,"message":"Require accessible name","raw":"<polyline role=\"graphics-symbol\">","ruleId":"require-accessible-name","severity":"error"}
+{"col":22,"line":273,"message":"The \"graphics-symbol\" role is the implicit role of the \"polyline\" element","raw":"graphics-symbol","ruleId":"no-redundant-role","severity":"warning"}
+{"col":6,"line":274,"message":"Require accessible name","raw":"<rect role=\"graphics-symbol\">","ruleId":"require-accessible-name","severity":"error"}
+{"col":18,"line":274,"message":"The \"graphics-symbol\" role is the implicit role of the \"rect\" element","raw":"graphics-symbol","ruleId":"no-redundant-role","severity":"warning"}
+{"col":1,"line":275,"message":"The element should not empty","raw":"<svg role=\"graphics-document\">","ruleId":"no-empty-palpable-content","severity":"warning"}
+{"col":1,"line":275,"message":"Require accessible name","raw":"<svg role=\"graphics-document\">","ruleId":"require-accessible-name","severity":"error"}
+{"col":12,"line":275,"message":"The \"graphics-document\" role is the implicit role of the \"svg\" element","raw":"graphics-document","ruleId":"no-redundant-role","severity":"warning"}
+{"col":20,"line":276,"message":"The \"graphics-object\" role is the implicit role of the \"symbol\" element","raw":"graphics-object","ruleId":"no-redundant-role","severity":"warning"}
+{"col":18,"line":277,"message":"The \"group\" role is the implicit role of the \"text\" element","raw":"group","ruleId":"no-redundant-role","severity":"warning"}
+{"col":28,"line":278,"message":"The \"group\" role is the implicit role of the \"textPath\" element","raw":"group","ruleId":"no-redundant-role","severity":"warning"}
+{"col":25,"line":279,"message":"The \"group\" role is the implicit role of the \"tspan\" element","raw":"group","ruleId":"no-redundant-role","severity":"warning"}
+{"col":17,"line":280,"message":"The \"graphics-object\" role is the implicit role of the \"use\" element","raw":"graphics-object","ruleId":"no-redundant-role","severity":"warning"}

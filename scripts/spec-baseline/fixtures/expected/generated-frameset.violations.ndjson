@@ -1,0 +1,10 @@
+{"col":1,"line":1,"message":"Require the \"h1\" element","raw":"<","ruleId":"require-h1","severity":"warning"}
+{"col":1,"line":2,"message":"Require an element. (Need \"body\")","raw":"<html lang=\"en\">","ruleId":"permitted-contents","severity":"error"}
+{"col":1,"line":2,"message":"Missing the end tag","raw":"<html lang=\"en\">","ruleId":"require-end-tag","severity":"warning"}
+{"col":1,"line":6,"message":"The \"noframes\" element is obsolete","raw":"<noframes>","ruleId":"no-obsolete-element","severity":"error"}
+{"col":1,"line":6,"message":"The \"noframes\" element is not allowed in the \"head\" element in this context","raw":"<noframes>","ruleId":"permitted-contents","severity":"error"}
+{"col":1,"line":8,"message":"The \"frameset\" element is obsolete","raw":"<frameset cols=\"\" rows=\"\">","ruleId":"no-obsolete-element","severity":"error"}
+{"col":1,"line":9,"message":"The \"frame\" element is obsolete","raw":"<frame datafld=\"\" datasrc=\"\" frameborder=\"\" longdesc=\"\" marginheight=\"\" marginwidth=\"\" name=\"\" noresize=\"\" scrolling=\"\" src=\"\">","ruleId":"no-obsolete-element","severity":"error"}
+{"col":1,"line":9,"message":"Missing the end tag","raw":"<frame datafld=\"\" datasrc=\"\" frameborder=\"\" longdesc=\"\" marginheight=\"\" marginwidth=\"\" name=\"\" noresize=\"\" scrolling=\"\" src=\"\">","ruleId":"require-end-tag","severity":"warning"}
+{"col":8,"line":9,"message":"The \"datafld\" attribute is obsolete","raw":"datafld","ruleId":"no-obsolete-attr","severity":"error"}
+{"col":19,"line":9,"message":"The \"datasrc\" attribute is obsolete","raw":"datasrc","ruleId":"no-obsolete-attr","severity":"error"}

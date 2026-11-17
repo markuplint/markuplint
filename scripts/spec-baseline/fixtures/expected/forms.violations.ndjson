@@ -1,0 +1,163 @@
+{"col":118,"line":9,"message":"\"accept-charset\" should be before \"id\"","raw":"accept-charset","ruleId":"attr-order","severity":"warning"}
+{"col":33,"line":12,"message":"It is the default value","raw":"text","ruleId":"no-default-value","severity":"warning"}
+{"col":16,"line":13,"message":"Missing \"missing\" ID","raw":"missing","ruleId":"no-refer-to-non-existent-id","severity":"error"}
+{"col":16,"line":14,"message":"The \"for\" attribute of the \"label\" element must reference a labelable element","raw":"d","ruleId":"label-for-references-labelable","severity":"error"}
+{"col":4,"line":16,"message":"The \"label\" element should associate with a control","raw":"<label>","ruleId":"label-has-control","severity":"warning"}
+{"col":37,"line":17,"message":"It is the default value","raw":"text","ruleId":"no-default-value","severity":"warning"}
+{"col":43,"line":17,"message":"\"name\" should be before \"type\"","raw":"name","ruleId":"attr-order","severity":"warning"}
+{"col":56,"line":17,"message":"The \"label\" element may contain at most one form-control descendant (button, input, meter, output, progress, select, or textarea)","raw":"<input type=\"text\" name=\"x2\" />","ruleId":"label-no-multiple-controls","severity":"error"}
+{"col":69,"line":17,"message":"It is the default value","raw":"text","ruleId":"no-default-value","severity":"warning"}
+{"col":75,"line":17,"message":"\"name\" should be before \"type\"","raw":"name","ruleId":"attr-order","severity":"warning"}
+{"col":31,"line":19,"message":"It is the default value","raw":"text","ruleId":"no-default-value","severity":"warning"}
+{"col":37,"line":19,"message":"\"name\" should be before \"type\"","raw":"name","ruleId":"attr-order","severity":"warning"}
+{"col":19,"line":20,"message":"Require accessible name","raw":"<input id=\"b\" type=\"text\" name=\"b\" />","ruleId":"require-accessible-name","severity":"error"}
+{"col":39,"line":20,"message":"It is the default value","raw":"text","ruleId":"no-default-value","severity":"warning"}
+{"col":45,"line":20,"message":"\"name\" should be before \"type\"","raw":"name","ruleId":"attr-order","severity":"warning"}
+{"col":16,"line":21,"message":"Missing \"c\" ID","raw":"c","ruleId":"no-refer-to-non-existent-id","severity":"error"}
+{"col":19,"line":21,"message":"Require accessible name","raw":"<input id=\"other\" type=\"text\" name=\"c\" />","ruleId":"require-accessible-name","severity":"error"}
+{"col":43,"line":21,"message":"It is the default value","raw":"text","ruleId":"no-default-value","severity":"warning"}
+{"col":49,"line":21,"message":"\"name\" should be before \"type\"","raw":"name","ruleId":"attr-order","severity":"warning"}
+{"col":4,"line":22,"message":"Require accessible name","raw":"<input type=\"text\" form=\"missing-form\" name=\"y\" />","ruleId":"require-accessible-name","severity":"error"}
+{"col":17,"line":22,"message":"It is the default value","raw":"text","ruleId":"no-default-value","severity":"warning"}
+{"col":23,"line":22,"message":"\"form\" should be before \"type\"","raw":"form","ruleId":"attr-order","severity":"warning"}
+{"col":29,"line":22,"message":"Missing \"missing-form\" ID","raw":"missing-form","ruleId":"no-refer-to-non-existent-id","severity":"error"}
+{"col":4,"line":23,"message":"Require accessible name","raw":"<input type=\"text\" form=\"f1\" name=\"z\" />","ruleId":"require-accessible-name","severity":"error"}
+{"col":17,"line":23,"message":"It is the default value","raw":"text","ruleId":"no-default-value","severity":"warning"}
+{"col":23,"line":23,"message":"\"form\" should be before \"type\"","raw":"form","ruleId":"attr-order","severity":"warning"}
+{"col":4,"line":24,"message":"Require accessible name","raw":"<input type=\"text\" form=\"d\" name=\"z2\" />","ruleId":"require-accessible-name","severity":"error"}
+{"col":17,"line":24,"message":"It is the default value","raw":"text","ruleId":"no-default-value","severity":"warning"}
+{"col":23,"line":24,"message":"\"form\" should be before \"type\"","raw":"form","ruleId":"attr-order","severity":"warning"}
+{"col":29,"line":24,"message":"The \"form\" attribute on a form-associated element must reference a \"form\" element","raw":"d","ruleId":"form-attr-references-form","severity":"error"}
+{"col":17,"line":27,"message":"It is the default value","raw":"text","ruleId":"no-default-value","severity":"warning"}
+{"col":43,"line":27,"message":"\"maxlength\" should be before \"type\"","raw":"maxlength","ruleId":"attr-order","severity":"warning"}
+{"col":4,"line":28,"message":"Require accessible name","raw":"<input type=\"text\" maxlength=\"-1\" minlength=\"x\" size=\"0\" pattern=\"[\" />","ruleId":"require-accessible-name","severity":"error"}
+{"col":17,"line":28,"message":"It is the default value","raw":"text","ruleId":"no-default-value","severity":"warning"}
+{"col":23,"line":28,"message":"\"maxlength\" should be before \"type\"","raw":"maxlength","ruleId":"attr-order","severity":"warning"}
+{"col":34,"line":28,"message":"It includes unexpected characters. the \"maxlength\" attribute expects non-negative integer","raw":"-1","ruleId":"no-invalid-attr-value","severity":"error"}
+{"col":49,"line":28,"message":"It includes unexpected characters. the \"minlength\" attribute expects non-negative integer","raw":"x","ruleId":"no-invalid-attr-value","severity":"error"}
+{"col":58,"line":28,"message":"The \"size\" attribute expects integer greater than 0","raw":"0","ruleId":"no-invalid-attr-value","severity":"error"}
+{"col":70,"line":28,"message":"The \"pattern\" attribute expects regular expression (https://html.spec.whatwg.org/multipage/input.html#compiled-pattern-regular-expression)","raw":"[","ruleId":"no-invalid-attr-value","severity":"error"}
+{"col":4,"line":29,"message":"Require accessible name","raw":"<input type=\"number\" min=\"1\" max=\"10\" step=\"2\" value=\"x\" />","ruleId":"require-accessible-name","severity":"error"}
+{"col":33,"line":29,"message":"\"max\" should be before \"type\"","raw":"max","ruleId":"attr-order","severity":"warning"}
+{"col":58,"line":29,"message":"It includes unexpected characters. the \"value\" attribute expects float","raw":"x","ruleId":"no-invalid-attr-value","severity":"error"}
+{"col":4,"line":30,"message":"Require accessible name","raw":"<input type=\"number\" min=\"x\" max=\"1\" step=\"0\" />","ruleId":"require-accessible-name","severity":"error"}
+{"col":30,"line":30,"message":"It includes unexpected characters. the \"min\" attribute expects float","raw":"x","ruleId":"no-invalid-attr-value","severity":"error"}
+{"col":33,"line":30,"message":"\"max\" should be before \"type\"","raw":"max","ruleId":"attr-order","severity":"warning"}
+{"col":4,"line":31,"message":"Require accessible name","raw":"<input type=\"range\" min=\"0\" max=\"10\" step=\"1\" value=\"5\" list=\"r\" />","ruleId":"require-accessible-name","severity":"error"}
+{"col":60,"line":31,"message":"\"list\" should be before \"type\"","raw":"list","ruleId":"attr-order","severity":"warning"}
+{"col":66,"line":31,"message":"Missing \"r\" ID","raw":"r","ruleId":"no-refer-to-non-existent-id","severity":"error"}
+{"col":4,"line":32,"message":"Require accessible name","raw":"<input type=\"range\" min=\"10\" max=\"0\" value=\"50\" />","ruleId":"require-accessible-name","severity":"error"}
+{"col":33,"line":32,"message":"\"max\" should be before \"type\"","raw":"max","ruleId":"attr-order","severity":"warning"}
+{"col":4,"line":33,"message":"Require accessible name","raw":"<input type=\"email\" multiple value=\"a@example.com\" />","ruleId":"require-accessible-name","severity":"error"}
+{"col":24,"line":33,"message":"\"multiple\" should be before \"type\"","raw":"multiple","ruleId":"attr-order","severity":"warning"}
+{"col":4,"line":34,"message":"Require accessible name","raw":"<input type=\"email\" value=\"not an email\" />","ruleId":"require-accessible-name","severity":"error"}
+{"col":31,"line":34,"message":"The \"value\" attribute expects the email address format (https://html.spec.whatwg.org/multipage/input.html#valid-e-mail-address)","raw":"not an email","ruleId":"no-invalid-attr-value","severity":"error"}
+{"col":4,"line":35,"message":"Require accessible name","raw":"<input type=\"url\" value=\"not a url\" />","ruleId":"require-accessible-name","severity":"error"}
+{"col":29,"line":35,"message":"It includes unexpected characters (https://html.spec.whatwg.org/multipage/input.html#url-state-(type=url))","raw":"not a url","ruleId":"no-invalid-attr-value","severity":"error"}
+{"col":4,"line":36,"message":"Require accessible name","raw":"<input type=\"tel\" pattern=\"[0-9]+\" />","ruleId":"require-accessible-name","severity":"error"}
+{"col":22,"line":36,"message":"\"pattern\" should be before \"type\"","raw":"pattern","ruleId":"attr-order","severity":"warning"}
+{"col":40,"line":37,"message":"\"max\" should be before \"type\"","raw":"max","ruleId":"attr-order","severity":"warning"}
+{"col":69,"line":37,"message":"The month part of the \"value\" attribute expects integer greater than or equal to one less than or equal to 12 (https://html.spec.whatwg.org/multipage/common-microsyntaxes.html#dates)","raw":"13","ruleId":"no-invalid-attr-value","severity":"error"}
+{"col":23,"line":38,"message":"\"step\" should be before \"type\"","raw":"step","ruleId":"attr-order","severity":"warning"}
+{"col":4,"line":39,"message":"Require accessible name","raw":"<input type=\"datetime-local\" value=\"2026-01-01T10:00\" />","ruleId":"require-accessible-name","severity":"error"}
+{"col":4,"line":44,"message":"Require accessible name","raw":"<input type=\"checkbox\" checked value=\"v\" />","ruleId":"require-accessible-name","severity":"error"}
+{"col":27,"line":44,"message":"\"checked\" should be before \"type\"","raw":"checked","ruleId":"attr-order","severity":"warning"}
+{"col":4,"line":45,"message":"Require accessible name","raw":"<input type=\"checkbox\" min=\"1\" size=\"3\" />","ruleId":"require-accessible-name","severity":"error"}
+{"col":27,"line":45,"message":"\"min\" should be before \"type\"","raw":"min","ruleId":"attr-order","severity":"warning"}
+{"col":27,"line":45,"message":"The \"min\" attribute is disallowed","raw":"min","ruleId":"no-disallowed-attr","severity":"error"}
+{"col":35,"line":45,"message":"The \"size\" attribute is disallowed","raw":"size","ruleId":"no-disallowed-attr","severity":"error"}
+{"col":4,"line":46,"message":"Require accessible name","raw":"<input type=\"radio\" name=\"r\" checked />","ruleId":"require-accessible-name","severity":"error"}
+{"col":33,"line":46,"message":"\"checked\" should be before \"type\"","raw":"checked","ruleId":"attr-order","severity":"warning"}
+{"col":4,"line":47,"message":"Require accessible name","raw":"<input type=\"radio\" name=\"r\" checked />","ruleId":"require-accessible-name","severity":"error"}
+{"col":33,"line":47,"message":"\"checked\" should be before \"type\"","raw":"checked","ruleId":"attr-order","severity":"warning"}
+{"col":23,"line":48,"message":"\"accept\" should be before \"type\"","raw":"accept","ruleId":"attr-order","severity":"warning"}
+{"col":23,"line":49,"message":"The \"value\" attribute is disallowed","raw":"value","ruleId":"no-disallowed-attr","severity":"error"}
+{"col":30,"line":49,"message":"The \"value\" attribute on a \"input\" element with \"type=file\" must be the empty string","raw":"not allowed","ruleId":"no-input-file-value","severity":"error"}
+{"col":27,"line":50,"message":"\"autocomplete\" should be before \"type\"","raw":"autocomplete","ruleId":"attr-order","severity":"warning"}
+{"col":27,"line":51,"message":"\"autocomplete\" should be before \"type\"","raw":"autocomplete","ruleId":"attr-order","severity":"warning"}
+{"col":41,"line":51,"message":"It includes unexpected characters. the \"autocomplete\" attribute expects either \"autofill named group\", \"autofill field name\" (https://html.spec.whatwg.org/multipage/form-control-infrastructure.html#autofill-field)","raw":"bogus","ruleId":"no-invalid-attr-value","severity":"error"}
+{"col":4,"line":52,"message":"Require accessible name","raw":"<input type=\"search\" name=\"q\" dirname=\"q.dir\" />","ruleId":"require-accessible-name","severity":"error"}
+{"col":34,"line":52,"message":"\"dirname\" should be before \"type\"","raw":"dirname","ruleId":"attr-order","severity":"warning"}
+{"col":25,"line":53,"message":"\"name\" should be before \"type\"","raw":"name","ruleId":"attr-order","severity":"warning"}
+{"col":44,"line":53,"message":"The \"required\" attribute is disallowed","raw":"required","ruleId":"no-disallowed-attr","severity":"error"}
+{"col":36,"line":54,"message":"\"alt\" should be before \"type\"","raw":"alt","ruleId":"attr-order","severity":"warning"}
+{"col":4,"line":55,"message":"The \"input\" element expects the \"alt\" attribute","raw":"<input type=\"image\" />","ruleId":"require-attr","severity":"error"}
+{"col":38,"line":56,"message":"\"formaction\" should be before \"type\"","raw":"formaction","ruleId":"attr-order","severity":"warning"}
+{"col":4,"line":59,"message":"Require accessible name","raw":"<input type=\"bogus\" />","ruleId":"require-accessible-name","severity":"error"}
+{"col":17,"line":59,"message":"The \"type\" attribute expects either \"hidden\", \"text\", \"search\", \"tel\", \"url\", \"email\", \"password\", \"date\", \"month\", \"week\", \"time\", \"datetime-local\", \"number\", \"range\", \"color\", \"checkbox\", \"radio\", \"file\", \"submit\", \"image\", \"reset\", \"button\"","raw":"bogus","ruleId":"no-invalid-attr-value","severity":"error"}
+{"col":4,"line":60,"message":"Require accessible name","raw":"<input type=\"TEXT\" />","ruleId":"require-accessible-name","severity":"error"}
+{"col":17,"line":60,"message":"It is the default value","raw":"TEXT","ruleId":"no-default-value","severity":"warning"}
+{"col":4,"line":61,"message":"Require accessible name","raw":"<input />","ruleId":"require-accessible-name","severity":"error"}
+{"col":4,"line":62,"message":"Require accessible name","raw":"<input name=\"dup\" />","ruleId":"require-accessible-name","severity":"error"}
+{"col":24,"line":62,"message":"Require accessible name","raw":"<input name=\"dup\" />","ruleId":"require-accessible-name","severity":"error"}
+{"col":4,"line":65,"message":"Require accessible name","raw":"<input list=\"colors\" name=\"c1\" />","ruleId":"require-accessible-name","severity":"error"}
+{"col":4,"line":66,"message":"Require accessible name","raw":"<input list=\"nothing\" name=\"c2\" />","ruleId":"require-accessible-name","severity":"error"}
+{"col":17,"line":66,"message":"Missing \"nothing\" ID","raw":"nothing","ruleId":"no-refer-to-non-existent-id","severity":"error"}
+{"col":4,"line":67,"message":"Require accessible name","raw":"<input list=\"d\" name=\"c3\" />","ruleId":"require-accessible-name","severity":"error"}
+{"col":17,"line":67,"message":"The \"list\" attribute of the \"input\" element must reference a \"datalist\" element","raw":"d","ruleId":"input-list-references-datalist","severity":"error"}
+{"col":4,"line":68,"message":"Require accessible name","raw":"<input list=\"colors\" name=\"c4\" type=\"checkbox\" />","ruleId":"require-accessible-name","severity":"error"}
+{"col":11,"line":68,"message":"The \"list\" attribute is disallowed","raw":"list","ruleId":"no-disallowed-attr","severity":"error"}
+{"col":4,"line":69,"message":"Require accessible name","raw":"<datalist id=\"colors\">","ruleId":"require-accessible-name","severity":"error"}
+{"col":5,"line":70,"message":"The element should not empty","raw":"<option value=\"red\">","ruleId":"no-empty-palpable-content","severity":"warning"}
+{"col":5,"line":70,"message":"Require accessible name","raw":"<option value=\"red\">","ruleId":"require-accessible-name","severity":"error"}
+{"col":5,"line":71,"message":"The element should not empty","raw":"<option value=\"green\" label=\"Green\">","ruleId":"no-empty-palpable-content","severity":"warning"}
+{"col":5,"line":71,"message":"Require accessible name","raw":"<option value=\"green\" label=\"Green\">","ruleId":"require-accessible-name","severity":"error"}
+{"col":27,"line":71,"message":"\"label\" should be before \"value\"","raw":"label","ruleId":"attr-order","severity":"warning"}
+{"col":5,"line":72,"message":"The element should not empty","raw":"<option>","ruleId":"no-empty-palpable-content","severity":"warning"}
+{"col":5,"line":72,"message":"Require accessible name","raw":"<option>","ruleId":"require-accessible-name","severity":"error"}
+{"col":4,"line":74,"message":"Require accessible name","raw":"<select name=\"s1\" required size=\"3\">","ruleId":"require-accessible-name","severity":"error"}
+{"col":23,"line":76,"message":"\"selected\" should be before \"value\"","raw":"selected","ruleId":"attr-order","severity":"warning"}
+{"col":5,"line":77,"message":"The \"select\" element cannot have more than one selected \"option\" descendant unless the \"multiple\" attribute is specified","raw":"<option value=\"b\" selected>","ruleId":"no-extra-selected-options","severity":"error"}
+{"col":23,"line":77,"message":"\"selected\" should be before \"value\"","raw":"selected","ruleId":"attr-order","severity":"warning"}
+{"col":4,"line":79,"message":"Require accessible name","raw":"<select name=\"s2\" multiple size=\"x\">","ruleId":"require-accessible-name","severity":"error"}
+{"col":22,"line":79,"message":"\"multiple\" should be before \"name\"","raw":"multiple","ruleId":"attr-order","severity":"warning"}
+{"col":37,"line":79,"message":"It includes unexpected characters. the \"size\" attribute expects integer greater than 0","raw":"x","ruleId":"no-invalid-attr-value","severity":"error"}
+{"col":23,"line":80,"message":"\"selected\" should be before \"value\"","raw":"selected","ruleId":"attr-order","severity":"warning"}
+{"col":23,"line":81,"message":"\"selected\" should be before \"value\"","raw":"selected","ruleId":"attr-order","severity":"warning"}
+{"col":5,"line":82,"message":"The element disallows contents","raw":"<option value=\"c\" disabled label=\"C\">","ruleId":"permitted-contents","severity":"error"}
+{"col":23,"line":82,"message":"\"disabled\" should be before \"value\"","raw":"disabled","ruleId":"attr-order","severity":"warning"}
+{"col":4,"line":84,"message":"Require accessible name","raw":"<select name=\"s3\">","ruleId":"require-accessible-name","severity":"error"}
+{"col":25,"line":86,"message":"\"disabled\" should be before \"label\"","raw":"disabled","ruleId":"attr-order","severity":"warning"}
+{"col":5,"line":89,"message":"The \"optgroup\" element expects the \"label\" attribute","raw":"<optgroup>","ruleId":"require-attr","severity":"error"}
+{"col":4,"line":93,"message":"Require accessible name","raw":"<select name=\"s4\">","ruleId":"require-accessible-name","severity":"error"}
+{"col":4,"line":96,"message":"Need the placeholder label option","raw":"<select name=\"s5\" required>","ruleId":"placeholder-label-option","severity":"error"}
+{"col":4,"line":96,"message":"Require accessible name","raw":"<select name=\"s5\" required>","ruleId":"require-accessible-name","severity":"error"}
+{"col":4,"line":99,"message":"Require accessible name","raw":"<select name=\"s6\" required multiple>","ruleId":"require-accessible-name","severity":"error"}
+{"col":31,"line":99,"message":"\"multiple\" should be before \"name\"","raw":"multiple","ruleId":"attr-order","severity":"warning"}
+{"col":33,"line":104,"message":"\"cols\" should be before \"name\"","raw":"cols","ruleId":"attr-order","severity":"warning"}
+{"col":39,"line":104,"message":"It is the default value","raw":"20","ruleId":"no-default-value","severity":"warning"}
+{"col":4,"line":105,"message":"Require accessible name","raw":"<textarea name=\"t2\" rows=\"x\" cols=\"0\" wrap=\"bogus\">","ruleId":"require-accessible-name","severity":"error"}
+{"col":30,"line":105,"message":"It includes unexpected characters. the \"rows\" attribute expects integer greater than 0","raw":"x","ruleId":"no-invalid-attr-value","severity":"error"}
+{"col":33,"line":105,"message":"\"cols\" should be before \"name\"","raw":"cols","ruleId":"attr-order","severity":"warning"}
+{"col":39,"line":105,"message":"The \"cols\" attribute expects integer greater than 0","raw":"0","ruleId":"no-invalid-attr-value","severity":"error"}
+{"col":48,"line":105,"message":"The \"wrap\" attribute expects either \"soft\", \"hard\"","raw":"bogus","ruleId":"no-invalid-attr-value","severity":"error"}
+{"col":26,"line":106,"message":"\"form\" should be before \"type\"","raw":"form","ruleId":"attr-order","severity":"warning"}
+{"col":26,"line":107,"message":"\"form\" should be before \"type\"","raw":"form","ruleId":"attr-order","severity":"warning"}
+{"col":32,"line":107,"message":"Missing \"missing-form\" ID","raw":"missing-form","ruleId":"no-refer-to-non-existent-id","severity":"error"}
+{"col":17,"line":109,"message":"Missing \"missing\" ID","raw":"missing","ruleId":"no-refer-to-non-existent-id","severity":"error"}
+{"col":4,"line":110,"message":"The element should not empty","raw":"<meter min=\"0\" max=\"10\" value=\"5\" low=\"2\" high=\"8\" optimum=\"5\">","ruleId":"no-empty-palpable-content","severity":"warning"}
+{"col":4,"line":110,"message":"Require accessible name","raw":"<meter min=\"0\" max=\"10\" value=\"5\" low=\"2\" high=\"8\" optimum=\"5\">","ruleId":"require-accessible-name","severity":"error"}
+{"col":46,"line":110,"message":"\"high\" should be before \"min\"","raw":"high","ruleId":"attr-order","severity":"warning"}
+{"col":4,"line":111,"message":"The element should not empty","raw":"<meter min=\"10\" max=\"0\" value=\"50\" low=\"20\" high=\"5\" optimum=\"500\">","ruleId":"no-empty-palpable-content","severity":"warning"}
+{"col":4,"line":111,"message":"Require accessible name","raw":"<meter min=\"10\" max=\"0\" value=\"50\" low=\"20\" high=\"5\" optimum=\"500\">","ruleId":"require-accessible-name","severity":"error"}
+{"col":16,"line":111,"message":"The value of the \"min\" attribute must be less than or equal to the value of the \"high\" attribute","raw":"10","ruleId":"meter-value-bounds","severity":"error"}
+{"col":16,"line":111,"message":"The value of the \"min\" attribute must be less than or equal to the value of the \"max\" attribute","raw":"10","ruleId":"meter-value-bounds","severity":"error"}
+{"col":35,"line":111,"message":"The value of the \"value\" attribute must be less than or equal to the value of the \"max\" attribute","raw":"50","ruleId":"meter-value-bounds","severity":"error"}
+{"col":44,"line":111,"message":"The value of the \"low\" attribute must be less than or equal to the value of the \"high\" attribute","raw":"20","ruleId":"meter-value-bounds","severity":"error"}
+{"col":44,"line":111,"message":"The value of the \"low\" attribute must be less than or equal to the value of the \"max\" attribute","raw":"20","ruleId":"meter-value-bounds","severity":"error"}
+{"col":48,"line":111,"message":"\"high\" should be before \"min\"","raw":"high","ruleId":"attr-order","severity":"warning"}
+{"col":54,"line":111,"message":"The value of the \"high\" attribute must be less than or equal to the value of the \"max\" attribute","raw":"5","ruleId":"meter-value-bounds","severity":"error"}
+{"col":66,"line":111,"message":"The value of the \"optimum\" attribute must be less than or equal to the value of the \"max\" attribute","raw":"500","ruleId":"meter-value-bounds","severity":"error"}
+{"col":4,"line":112,"message":"The element should not empty","raw":"<progress max=\"100\" value=\"50\">","ruleId":"no-empty-palpable-content","severity":"warning"}
+{"col":4,"line":112,"message":"Require accessible name","raw":"<progress max=\"100\" value=\"50\">","ruleId":"require-accessible-name","severity":"error"}
+{"col":4,"line":113,"message":"The element should not empty","raw":"<progress max=\"0\" value=\"-1\">","ruleId":"no-empty-palpable-content","severity":"warning"}
+{"col":4,"line":113,"message":"Require accessible name","raw":"<progress max=\"0\" value=\"-1\">","ruleId":"require-accessible-name","severity":"error"}
+{"col":19,"line":113,"message":"The \"max\" attribute expects float greater than 0","raw":"0","ruleId":"no-invalid-attr-value","severity":"error"}
+{"col":29,"line":113,"message":"The \"value\" attribute expects float greater than or equal to 0","raw":"-1","ruleId":"no-invalid-attr-value","severity":"error"}
+{"col":33,"line":116,"message":"\"form\" should be before \"name\"","raw":"form","ruleId":"attr-order","severity":"warning"}
+{"col":5,"line":118,"message":"Require accessible name","raw":"<input type=\"text\" name=\"inside\" />","ruleId":"require-accessible-name","severity":"error"}
+{"col":18,"line":118,"message":"It is the default value","raw":"text","ruleId":"no-default-value","severity":"warning"}
+{"col":24,"line":118,"message":"\"name\" should be before \"type\"","raw":"name","ruleId":"attr-order","severity":"warning"}
+{"col":9,"line":121,"message":"The value of the \"id\" attribute is duplicated","raw":"id=\"f1\"","ruleId":"no-duplicate-id","severity":"error"}
+{"col":4,"line":123,"message":"Illegal characters must escape in character reference","raw":"<","ruleId":"no-unescaped-char","severity":"error"}
+{"col":3,"line":124,"message":"Orphaned end tag detected","raw":"</form>","ruleId":"no-orphaned-end-tag","severity":"error"}

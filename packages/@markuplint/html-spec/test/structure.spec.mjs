@@ -436,6 +436,61 @@ test('no selector of the data holds an alias that was not expanded', () => {
 });
 
 /**
+ * `permitted-contents` throws on a `:model()` whose category has no member, and for a category that is not there, so a
+ * content model that names one turns every document that holds the element into a crash of the rule, reported at the
+ * top of the file. A category that is not a member list (`#text`, `#nonEmptyText`, `#custom`) is not looked up.
+ */
+describe('the categories that the data refers to', () => {
+	const NOT_MEMBER_LISTS = new Set(['#text', '#nonemptytext', '#custom']);
+	const categories = new Map(
+		Object.entries(htmlSpec.def['#contentModels']).map(([name, list]) => [name.toLowerCase(), list]),
+	);
+
+	/**
+	 * The categories that a value names: `:model(name)` anywhere in a string, and, where a content model is, `#name` as a
+	 * whole string (`wholeString`).
+	 */
+	function referencesOf(value, wholeString, found = new Set()) {
+		if (typeof value === 'string') {
+			for (const [, name] of value.matchAll(/:model\(([^)]+)\)/g)) {
+				found.add(`#${name}`);
+			}
+			if (wholeString && /^#[\w-]+$/.test(value)) {
+				found.add(value);
+			}
+		} else if (Array.isArray(value)) {
+			for (const item of value) {
+				referencesOf(item, wholeString, found);
+			}
+		} else if (typeof value === 'object' && value !== null) {
+			for (const item of Object.values(value)) {
+				referencesOf(item, wholeString, found);
+			}
+		}
+		return found;
+	}
+
+	// A selector of any field can hold `:model()` (an attribute's `condition`, an ARIA condition), so the whole element is read
+	const references = htmlSpec.specs.flatMap(el =>
+		[...new Set([...referencesOf(el.contentModel, true), ...referencesOf(el, false)])]
+			.filter(name => !NOT_MEMBER_LISTS.has(name.toLowerCase()))
+			.map(name => ({ element: el.name, name })),
+	);
+
+	test('the content models refer to some', () => {
+		expect(references.length).toBeGreaterThan(0);
+	});
+
+	test('every category that a content model refers to is in the data', () => {
+		expect(references.filter(({ name }) => !categories.has(name.toLowerCase()))).toStrictEqual([]);
+	});
+
+	test('every category that a content model refers to has a member', () => {
+		expect(references.filter(({ name }) => categories.get(name.toLowerCase())?.length === 0)).toStrictEqual([]);
+	});
+});
+
+/**
  * Where a specification does not define an attribute, `nonStandard` comes from BCD (`generator/bcd.ts`): an attribute
  * that BCD has for an element and the sources lack is added, and BCD's `standard_track` flags the others. BCD's
  * keys are read by their shape, so a key that is not an attribute would be added as one. The list is pinned, so that

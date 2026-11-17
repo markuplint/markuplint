@@ -1,0 +1,115 @@
+{"line":2,"col":1,"raw":"<html lang=\"en\">","categories":[]}
+{"line":3,"col":2,"raw":"<head>","categories":[]}
+{"line":3,"col":8,"raw":"","categories":[]}
+{"line":4,"col":3,"raw":"<meta charset=\"utf-8\" />","categories":["#metadata"]}
+{"line":5,"col":3,"raw":"<title>","categories":["#metadata"]}
+{"line":6,"col":3,"raw":"<title>","categories":["#metadata"]}
+{"line":7,"col":3,"raw":"<base href=\"https://example.com/\" />","categories":["#metadata"]}
+{"line":8,"col":3,"raw":"<base href=\"https://example.org/\" />","categories":["#metadata"]}
+{"line":9,"col":3,"raw":"<p>","categories":["#flow","#palpable"]}
+{"line":12,"col":3,"raw":"<h1>","categories":["#flow","#heading","#palpable"]}
+{"line":14,"col":3,"raw":"<ul>","categories":["#flow","#palpable"]}
+{"line":15,"col":4,"raw":"<li>","categories":[]}
+{"line":16,"col":4,"raw":"<div>","categories":["#flow","#palpable"]}
+{"line":17,"col":4,"raw":"<span>","categories":["#flow","#palpable","#phrasing"]}
+{"line":19,"col":3,"raw":"<ol>","categories":["#flow","#palpable"]}
+{"line":20,"col":4,"raw":"<p>","categories":["#flow","#palpable"]}
+{"line":21,"col":4,"raw":"<li>","categories":[]}
+{"line":24,"col":3,"raw":"<dl>","categories":["#flow"]}
+{"line":25,"col":4,"raw":"<dt>","categories":[]}
+{"line":26,"col":4,"raw":"<span>","categories":["#flow","#palpable","#phrasing"]}
+{"line":27,"col":4,"raw":"<dd>","categories":[]}
+{"line":29,"col":3,"raw":"<dl>","categories":["#flow"]}
+{"line":30,"col":4,"raw":"<dd>","categories":[]}
+{"line":31,"col":4,"raw":"<dt>","categories":[]}
+{"line":33,"col":3,"raw":"<dl>","categories":["#flow"]}
+{"line":34,"col":4,"raw":"<div>","categories":["#flow","#palpable"]}
+{"line":35,"col":5,"raw":"<span>","categories":["#flow","#palpable","#phrasing"]}
+{"line":39,"col":3,"raw":"<table>","categories":["#flow","#palpable"]}
+{"line":40,"col":4,"raw":"<tbody>","categories":[]}
+{"line":41,"col":5,"raw":"<tr>","categories":[]}
+{"line":42,"col":6,"raw":"<td>","categories":[]}
+{"line":45,"col":4,"raw":"<thead>","categories":[]}
+{"line":46,"col":5,"raw":"<tr>","categories":[]}
+{"line":47,"col":6,"raw":"<th>","categories":[]}
+{"line":50,"col":4,"raw":"<caption>","categories":[]}
+{"line":54,"col":3,"raw":"<table>","categories":["#flow","#palpable"]}
+{"line":55,"col":4,"raw":"","categories":[]}
+{"line":56,"col":5,"raw":"<td>","categories":[]}
+{"line":56,"col":9,"raw":"<p>","categories":["#flow","#palpable"]}
+{"line":58,"col":4,"raw":"<colgroup>","categories":[]}
+{"line":59,"col":5,"raw":"<col />","categories":[]}
+{"line":63,"col":3,"raw":"<hgroup>","categories":["#flow","#heading","#palpable"]}
+{"line":64,"col":4,"raw":"<span>","categories":["#flow","#palpable","#phrasing"]}
+{"line":65,"col":4,"raw":"<h1>","categories":["#flow","#heading","#palpable"]}
+{"line":66,"col":4,"raw":"<h2>","categories":["#flow","#heading","#palpable"]}
+{"line":68,"col":3,"raw":"<hgroup>","categories":["#flow","#palpable"]}
+{"line":69,"col":4,"raw":"<p>","categories":["#flow","#palpable"]}
+{"line":72,"col":3,"raw":"<figure>","categories":["#flow","#palpable"]}
+{"line":73,"col":4,"raw":"<figcaption>","categories":[]}
+{"line":74,"col":4,"raw":"<img src=\"a.png\" alt=\"a\" />","categories":["#embedded","#flow","#palpable","#phrasing"]}
+{"line":75,"col":4,"raw":"<figcaption>","categories":[]}
+{"line":77,"col":3,"raw":"<figure>","categories":["#flow","#palpable"]}
+{"line":78,"col":4,"raw":"<figcaption>","categories":[]}
+{"line":81,"col":3,"raw":"<details>","categories":["#flow","#interactive","#palpable"]}
+{"line":82,"col":4,"raw":"<p>","categories":["#flow","#palpable"]}
+{"line":83,"col":4,"raw":"<summary>","categories":[]}
+{"line":85,"col":3,"raw":"<details>","categories":["#flow","#interactive","#palpable"]}
+{"line":86,"col":4,"raw":"<summary>","categories":[]}
+{"line":87,"col":4,"raw":"<summary>","categories":[]}
+{"line":90,"col":3,"raw":"<fieldset>","categories":["#flow","#palpable"]}
+{"line":91,"col":4,"raw":"<p>","categories":["#flow","#palpable"]}
+{"line":92,"col":4,"raw":"<legend>","categories":[]}
+{"line":95,"col":3,"raw":"<p>","categories":["#flow","#palpable"]}
+{"line":96,"col":4,"raw":"<div>","categories":["#flow","#palpable"]}
+{"line":97,"col":4,"raw":"<h2>","categories":["#flow","#heading","#palpable"]}
+{"line":98,"col":4,"raw":"<table>","categories":["#flow","#palpable"]}
+{"line":99,"col":5,"raw":"","categories":[]}
+{"line":100,"col":6,"raw":"<td>","categories":[]}
+{"line":103,"col":3,"raw":"","categories":["#flow","#palpable"]}
+{"line":106,"col":3,"raw":"<p>","categories":["#flow","#palpable"]}
+{"line":106,"col":6,"raw":"<a href=\"#x\">","categories":["#flow","#interactive","#palpable","#phrasing"]}
+{"line":106,"col":19,"raw":"<div>","categories":["#flow","#palpable"]}
+{"line":106,"col":24,"raw":"","categories":["#flow","#palpable","#phrasing"]}
+{"line":106,"col":60,"raw":"","categories":["#flow","#palpable"]}
+{"line":107,"col":3,"raw":"<p>","categories":["#flow","#palpable"]}
+{"line":107,"col":6,"raw":"<b>","categories":["#flow","#palpable","#phrasing"]}
+{"line":107,"col":14,"raw":"<div>","categories":["#flow","#palpable"]}
+{"line":107,"col":19,"raw":"","categories":["#flow","#palpable","#phrasing"]}
+{"line":107,"col":63,"raw":"","categories":["#flow","#palpable","#phrasing"]}
+{"line":107,"col":63,"raw":"","categories":["#flow","#palpable"]}
+{"line":108,"col":3,"raw":"<b>","categories":["#flow","#palpable","#phrasing"]}
+{"line":108,"col":6,"raw":"<i>","categories":["#flow","#palpable","#phrasing"]}
+{"line":108,"col":38,"raw":"","categories":["#flow","#palpable","#phrasing"]}
+{"line":110,"col":3,"raw":"<button>","categories":["#flow","#interactive","#palpable","#phrasing"]}
+{"line":111,"col":4,"raw":"<a href=\"#\">","categories":["#flow","#interactive","#palpable","#phrasing"]}
+{"line":112,"col":4,"raw":"<input type=\"text\" />","categories":["#flow","#interactive","#palpable","#phrasing"]}
+{"line":113,"col":4,"raw":"<button>","categories":["#flow","#interactive","#palpable","#phrasing"]}
+{"line":115,"col":3,"raw":"<a href=\"#\">","categories":["#flow","#interactive","#palpable","#phrasing"]}
+{"line":115,"col":15,"raw":"<a href=\"#other\">","categories":["#flow","#interactive","#palpable","#phrasing"]}
+{"line":116,"col":3,"raw":"<label>","categories":["#flow","#interactive","#palpable","#phrasing"]}
+{"line":116,"col":16,"raw":"<label>","categories":["#flow","#interactive","#palpable","#phrasing"]}
+{"line":117,"col":3,"raw":"<pre>","categories":["#flow","#palpable"]}
+{"line":117,"col":8,"raw":"<div>","categories":["#flow","#palpable"]}
+{"line":118,"col":3,"raw":"<span>","categories":["#flow","#palpable","#phrasing"]}
+{"line":118,"col":9,"raw":"<p>","categories":["#flow","#palpable"]}
+{"line":119,"col":3,"raw":"<em>","categories":["#flow","#palpable","#phrasing"]}
+{"line":119,"col":7,"raw":"<div>","categories":["#flow","#palpable"]}
+{"line":120,"col":3,"raw":"<select>","categories":["#flow","#interactive","#palpable","#phrasing"]}
+{"line":121,"col":4,"raw":"<option>","categories":[]}
+{"line":122,"col":4,"raw":"<optgroup label=\"Group\">","categories":[]}
+{"line":123,"col":5,"raw":"<option>","categories":[]}
+{"line":124,"col":5,"raw":"<optgroup label=\"Nested\">","categories":[]}
+{"line":125,"col":6,"raw":"<option>","categories":[]}
+{"line":129,"col":3,"raw":"<picture>","categories":["#embedded","#flow","#palpable","#phrasing"]}
+{"line":130,"col":4,"raw":"<source srcset=\"a.avif\" />","categories":[]}
+{"line":132,"col":3,"raw":"<ruby>","categories":["#flow","#palpable","#phrasing"]}
+{"line":133,"col":4,"raw":"<rt>","categories":[]}
+{"line":136,"col":3,"raw":"<audio>","categories":["#embedded","#flow","#phrasing"]}
+{"line":136,"col":10,"raw":"<track kind=\"captions\" src=\"a.vtt\" />","categories":[]}
+{"line":136,"col":47,"raw":"<p>","categories":["#flow","#palpable"]}
+{"line":137,"col":3,"raw":"<textarea>","categories":["#flow","#interactive","#palpable","#phrasing"]}
+{"line":138,"col":3,"raw":"<img src=\"a.png\" alt=\"a\">","categories":["#embedded","#flow","#palpable","#phrasing"]}
+{"line":138,"col":28,"raw":"<p>","categories":["#flow","#palpable"]}
+{"line":139,"col":3,"raw":"<br>","categories":["#flow","#phrasing"]}
+{"line":139,"col":18,"raw":"","categories":["#flow","#phrasing"]}

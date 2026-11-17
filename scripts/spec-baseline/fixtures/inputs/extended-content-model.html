@@ -1,0 +1,84 @@
+<!doctype html>
+<html lang="en">
+	<head>
+		<meta charset="utf-8" />
+		<title>An extended spec: content models and categories that a user changed</title>
+	</head>
+	<body>
+		<h1>Extended</h1>
+
+		<!-- section: the extended model starts with an h2 -->
+		<section>
+			<h2>Valid</h2>
+			<p>An h2 and flow.</p>
+		</section>
+		<section>
+			<p>No heading first</p>
+		</section>
+		<section>
+			<h2>Only a heading</h2>
+		</section>
+		<section>
+			<h3>An h3 first</h3>
+			<p>flow</p>
+		</section>
+		<section>
+			<p>Flow before the heading</p>
+			<h2>The heading is second</h2>
+		</section>
+
+		<!-- aside: the extended model takes phrasing only -->
+		<aside><em>phrasing</em> and text</aside>
+		<aside>
+			<p>flow in an aside</p>
+		</aside>
+		<aside></aside>
+
+		<!-- ul: the extended model takes a div as well as li -->
+		<ul>
+			<li>An item</li>
+			<div>A div in a list</div>
+		</ul>
+		<ul>
+			<span>A span in a list</span>
+		</ul>
+		<ol>
+			<div>A div in an ordered list, which the extension does not touch</div>
+		</ol>
+
+		<!-- blockquote: the extended model takes paragraphs only -->
+		<blockquote>
+			<p>A paragraph</p>
+		</blockquote>
+		<blockquote>text directly</blockquote>
+		<blockquote>
+			<p>A paragraph</p>
+			<div>A div</div>
+		</blockquote>
+
+		<!-- figcaption is flow content in the extended categories -->
+		<div><figcaption>A caption in a div</figcaption></div>
+		<p><figcaption>A caption in a paragraph</figcaption></p>
+		<figure>
+			<figcaption>The caption</figcaption>
+			<div><figcaption>A caption in a div in a figure</figcaption></div>
+		</figure>
+		<section>
+			<h2>Heading</h2>
+			<figcaption>A caption in a section</figcaption>
+		</section>
+
+		<!-- custom elements are not evaluated against their own content models -->
+		<x-card>
+			<p>No title first</p>
+		</x-card>
+		<x-card>
+			<x-title>Title</x-title>
+			<p>flow</p>
+		</x-card>
+		<p>A badge <x-badge tone="info" count="3">b</x-badge> in a paragraph.</p>
+		<p>A badge with bad attributes <x-badge tone="bogus" count="x" legacy preview unknown>b</x-badge>.</p>
+		<x-badge><span>an element in a badge</span></x-badge>
+		<x-unknown>An element that the extended spec does not know</x-unknown>
+	</body>
+</html>

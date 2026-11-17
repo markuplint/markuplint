@@ -1,10 +1,12 @@
 // https://svgwg.org/svg2-draft/interact.html#ScriptElement
 // https://www.w3.org/TR/svg-aam/#role-map-script
 {
+	// @see https://svgwg.org/svg2-draft/interact.html#ScriptElement
+	// > Content model: Character data.
 	"contentModel": {
 		"contents": [
 			{
-				"zeroOrMore": [":model(SVGNeverRendered)", ":model(SVGStructurallyExternal)", "#text"]
+				"zeroOrMore": "#text"
 			}
 		]
 	},
