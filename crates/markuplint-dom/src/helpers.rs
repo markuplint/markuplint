@@ -3,6 +3,17 @@ use markuplint_core::mlast::{AttrNameFold, AttrNameRoute, MLASTAttr, MLASTHTMLAt
 use crate::arena::{DomArena, NodeId};
 use crate::node::ElementData;
 
+/// Whether an element of this name is a raw-text element: its body is CSS or JavaScript, not markup, so TS gives
+/// it no node (`rawTextElements` of `@markuplint/html-parser`, read by `visitChildren` of `parser-utils` by the name
+/// alone, in any namespace), and so does the DOM built from the Rust parser. The body is read from the source
+/// ([`DomArena::element_inner_source`], [`DomArena::source_after_start_tag`]).
+#[must_use]
+pub fn is_raw_text_element_name(name: &str) -> bool {
+    ["script", "style", "xmp"]
+        .iter()
+        .any(|raw| name.eq_ignore_ascii_case(raw))
+}
+
 /// `attr_name` names the attribute as the DOM names it ([`is_named_by`]).
 #[must_use]
 pub fn get_attr_value<'a>(arena: &'a DomArena, node_id: NodeId, attr_name: &str) -> Option<&'a str> {

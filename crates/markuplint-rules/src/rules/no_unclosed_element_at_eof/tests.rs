@@ -12,6 +12,7 @@
 //!   v6_no_unclosed_element_at_eof_002  — Rust-only: the content end follows the last child, a comment included
 //!   v6_no_unclosed_element_at_eof_003  — Rust-only: a self-closing foreign element has no end tag either
 //!   v6_no_unclosed_element_at_eof_004  — Rust-only: an end tag left in the source after the content is not the EOF case
+//!   v6_no_unclosed_element_at_eof_006  — Rust-only: the body of an unclosed `script` or `style` is not the EOF case
 
 use crate::test_util::{Brief, brief, lint_brief};
 use crate::violation::Severity;
@@ -138,4 +139,15 @@ fn v6_no_unclosed_element_at_eof_005() {
     };
     assert_eq!(run_with(EndTagType::Never), []);
     assert_eq!(run_with(EndTagType::Omittable), [unclosed(1, "div", "<div>")]);
+}
+
+/// The body of a raw-text element has no node, as TS reads it, so a `script` or a `style` that the end of the file
+/// closes has its body after its start tag, which is not the EOF case: TS reports neither of them, nor the `div`
+/// that holds one. A `script` that has its end tag leaves the `div` open at the end of the file, and it is reported.
+#[test]
+fn v6_no_unclosed_element_at_eof_006() {
+    assert_eq!(run("<script>var a = 1;"), []);
+    assert_eq!(run("<style>a { }"), []);
+    assert_eq!(run("<div><script>var a = 1;"), []);
+    assert_eq!(run("<div><script>var a = 1;</script>"), [unclosed(1, "div", "<div>")]);
 }

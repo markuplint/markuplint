@@ -353,23 +353,27 @@ fn view(index: &str, iterations: usize) -> Result<Vec<serde_json::Value>, String
     let length = size - size % 4;
     let path = std::env::temp_dir().join(format!("spec-baseline-{}.bin", std::process::id()));
     // `create_new` does not open a file that is there already, nor follow a link that someone put at the name
-    fs::OpenOptions::new()
+    let mut file = fs::OpenOptions::new()
         .write(true)
         .create_new(true)
         .open(&path)
-        .and_then(|mut file| file.write_all(&vec![1_u8; length]))
         .map_err(|error| format!("{}: {error}", path.display()))?;
-    let times = (0..iterations)
-        .map(|_| {
-            let start = Instant::now();
-            let data = fs::read(&path).map_err(|error| error.to_string())?;
-            let word = data.last_chunk::<4>().map_or(0, |chunk| u32::from_le_bytes(*chunk));
-            let elapsed = millis(start);
-            black_box(word);
-            Ok(elapsed)
-        })
-        .collect::<Result<Vec<f64>, String>>();
-    // The file is removed whether the reads went well or not
+    // The file is there from here on, and it is removed whether the write and the reads went well or not
+    let times = (|| {
+        file.write_all(&vec![1_u8; length])
+            .map_err(|error| format!("{}: {error}", path.display()))?;
+        (0..iterations)
+            .map(|_| {
+                let start = Instant::now();
+                let data = fs::read(&path).map_err(|error| error.to_string())?;
+                let word = data.last_chunk::<4>().map_or(0, |chunk| u32::from_le_bytes(*chunk));
+                let elapsed = millis(start);
+                black_box(word);
+                Ok(elapsed)
+            })
+            .collect::<Result<Vec<f64>, String>>()
+    })();
+    drop(file);
     fs::remove_file(&path).map_err(|error| format!("{}: {error}", path.display()))?;
     Ok(vec![measurement("rust-file-read-view", "ms", &times?)])
 }
@@ -442,7 +446,13 @@ fn main() -> Result<(), String> {
 
 #[cfg(test)]
 mod tests {
+    use std::sync::{Mutex, PoisonError};
+
     use super::*;
+
+    /// `view` writes a file whose name is the process, and the tests run on threads of one process: the two that use
+    /// it take this one at a time.
+    static VIEW_FILE: Mutex<()> = Mutex::new(());
 
     const SPEC: &str = r##"{
         "def": {
@@ -633,6 +643,7 @@ mod tests {
 
     #[test]
     fn the_file_of_the_view_scenario_is_not_opened_when_something_is_at_its_name() {
+        let _one_at_a_time = VIEW_FILE.lock().unwrap_or_else(PoisonError::into_inner);
         let index = concat!(
             env!("CARGO_MANIFEST_DIR"),
             "/../../packages/@markuplint/html-spec/index.json"
@@ -665,6 +676,17 @@ mod tests {
         fn drop(&mut self) {
             let _ = fs::remove_file(&self.0);
         }
+    }
+
+    #[test]
+    fn the_view_scenario_reads_a_file_of_the_size_of_the_data_and_removes_it() {
+        let _one_at_a_time = VIEW_FILE.lock().unwrap_or_else(PoisonError::into_inner);
+        let index = Scratch::new("view-ok.json", SPEC);
+        let measurements = view(index.path(), 3).unwrap();
+        assert_eq!(measurements[0]["name"], "rust-file-read-view");
+        assert_eq!(measurements[0]["values"].as_array().unwrap().len(), 3);
+        let path = std::env::temp_dir().join(format!("spec-baseline-{}.bin", std::process::id()));
+        assert!(!path.exists());
     }
 
     #[test]

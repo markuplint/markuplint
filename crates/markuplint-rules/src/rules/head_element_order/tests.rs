@@ -199,22 +199,22 @@ fn v6_head_element_order_007() {
 #[test]
 fn v6_head_element_order_008() {
     let arena = html_arena("<svg><script/></svg><p>after</p>");
-    let (_, svg_script) = arena
+    let (id, svg_script) = arena
         .elements()
         .find(|(_, el)| el.base.node_name.eq_ignore_ascii_case("script"))
         .unwrap();
-    assert!(!has_raw_text_body(&arena, svg_script));
+    assert!(!has_raw_text_body(&arena, id, svg_script));
 
     // `xmp` is not a child of `head`, so it is asked of the function and not of the rule
     for unclosed in ["<script>var a;", "<style>a { }", "<xmp><b>x</b>"] {
         let arena = html_arena(unclosed);
-        let (_, element) = arena.elements().next().unwrap();
-        assert!(has_raw_text_body(&arena, element), "{unclosed}");
+        let (id, element) = arena.elements().next().unwrap();
+        assert!(has_raw_text_body(&arena, id, element), "{unclosed}");
     }
     // nothing after the start tag: no body
     let arena = html_arena("<script>");
-    let (_, element) = arena.elements().next().unwrap();
-    assert!(!has_raw_text_body(&arena, element));
+    let (id, element) = arena.elements().next().unwrap();
+    assert!(!has_raw_text_body(&arena, id, element));
 }
 
 #[test]

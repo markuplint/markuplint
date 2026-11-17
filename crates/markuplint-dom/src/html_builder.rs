@@ -340,7 +340,7 @@ fn convert_parser_node(
             // builder makes elements of what looks like markup (`<svg><script><circle></circle></script></svg>`),
             // which a rule would read as such. The body has no node either way.
             let mut child_ids: Vec<NodeId> = Vec::new();
-            let drops_children = matches!(tag_name.to_ascii_lowercase().as_str(), "script" | "style" | "xmp");
+            let drops_children = crate::helpers::is_raw_text_element_name(tag_name);
             for &child_id in node.children.iter().filter(|_| !drops_children) {
                 convert_into(
                     source,

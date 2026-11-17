@@ -13,7 +13,7 @@ use std::cmp::Ordering;
 use markuplint_core::i18n::Primitive as Kw;
 use markuplint_core::mlast::NamespaceURI;
 use markuplint_dom::arena::{DomArena, NodeId};
-use markuplint_dom::helpers::get_attr_value;
+use markuplint_dom::helpers::{get_attr_value, is_raw_text_element_name};
 use markuplint_dom::node::{DomNode, ElementData};
 use markuplint_selector::matcher;
 use markuplint_types::spec::types::MLMLSpec;
@@ -112,17 +112,13 @@ struct Block<'a> {
 /// Only `script` and `style` can be a child of `head` (the tree builder closes `head` at an `xmp`), so the rule
 /// reaches the other name and the namespace guard through no input of its own: they keep this function true to
 /// what it says, and `v6_head_element_order_008` asks it directly.
-fn has_raw_text_body(arena: &DomArena, el: &ElementData) -> bool {
+fn has_raw_text_body(arena: &DomArena, node_id: NodeId, el: &ElementData) -> bool {
     // An HTML element only: the tokenizer reads the rest of the file as the body, which a self-closing SVG
     // `script` or one that its parent closes does not have.
     el.namespace == NamespaceURI::XHTML
-        && matches!(
-            el.base.node_name.to_ascii_lowercase().as_str(),
-            "script" | "style" | "xmp"
-        )
+        && is_raw_text_element_name(&el.base.node_name)
         && arena
-            .source()
-            .and_then(|source| source.get(el.base.offset + el.base.raw.len()..))
+            .source_after_start_tag(node_id)
             .is_some_and(|rest| !rest.is_empty())
 }
 
@@ -228,7 +224,7 @@ impl Rule for HeadElementOrder {
                     start: el.base.offset,
                     end: element_end(el),
                     open_ended: el.close_tag.is_none()
-                        && (!el.base.children.is_empty() || has_raw_text_body(arena, el)),
+                        && (!el.base.children.is_empty() || has_raw_text_body(arena, node_id, el)),
                 })
             })
             .collect();
