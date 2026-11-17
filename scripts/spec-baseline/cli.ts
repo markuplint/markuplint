@@ -24,26 +24,9 @@
  *
  * @module
  */
-import type { ChildOptions } from './perf-child.ts';
-import {
-	type Result,
-	compareResults,
-	environment,
-	LINT_GENERATED,
-	LINT_ITERATIONS,
-	pickValidatorFiles,
-	renderComparison,
-	renderTable,
-	runPerf,
-	rustBinary,
-	RUST_SCENARIOS,
-	rustVersion,
-	writeQuestionsFile,
-	type RustPlan,
-} from './perf.ts';
+import type { PerfPlan, Result } from './perf.ts';
 
-import { mkdtempSync, readFileSync, rmSync, writeFileSync } from 'node:fs';
-import { tmpdir } from 'node:os';
+import { readFileSync, writeFileSync } from 'node:fs';
 import { join } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { parseArgs } from 'node:util';
@@ -53,7 +36,17 @@ import { assertFullHistory, listRevisions, readBlob, systemGit, uniqueByBlob } f
 import { generateCoverageInputs } from './coverage.ts';
 import { dagStats, fieldStats, stringStats } from './duplication.ts';
 import { INPUTS, readInputs } from './fixtures.ts';
-import type { SpecLike } from './layout.ts';
+import {
+	compareResults,
+	environment,
+	LINT_GENERATED,
+	LINT_ITERATIONS,
+	pickValidatorFiles,
+	renderComparison,
+	renderTable,
+	runPerf,
+} from './perf.ts';
+import { prepareRust } from './rust.ts';
 import { groupBySignature, measure, parseJson, signature } from './size.ts';
 
 const ROOT = fileURLToPath(new URL('../..', import.meta.url));
@@ -64,7 +57,8 @@ const HELP = `Usage: yarn spec-baseline <command> [options]
   size         [--ref <ref>] [--every <n>]
   duplication  [--ref <commit>] [--top <n>]
   perf         [--processes <n>] [--lint-processes <n>] [--iterations <n>] [--files <n>] [--seed <n>] [--out <file>]
-               [--rust] [--no-lint]
+               [--rust] [--no-lint]   (--rust: v6 only, build the program first; --no-lint: no submodule needed,
+                                       and --lint-processes and --files are only checked)
   compare      <before.json> <after.json> [--resamples <n>] [--seed <n>]
   mutation     [--count <n>] [--seed <n>]
   coverage     (writes scripts/spec-baseline/fixtures/inputs/generated-*.html)
@@ -246,17 +240,15 @@ function perf(args: readonly string[]): string {
 	if (withLint && files.length === 0) {
 		throw new Error('No document of the validator: git submodule update --init tests/external/validator');
 	}
-	const rust = values.rust ? prepareRust() : undefined;
+	const rust = values.rust ? prepareRust(ROOT, { specPath: SPEC_PATH, processes, iterations }) : undefined;
 	try {
-		const scenarios: Record<string, { processes: number; options: ChildOptions }> = {
+		const scenarios: Record<string, PerfPlan['scenarios'][string]> = {
 			load: { processes, options: { iterations } },
 			query: { processes, options: { iterations } },
 			file: { processes, options: { iterations } },
 		};
 		if (rust) {
-			for (const name of RUST_SCENARIOS) {
-				scenarios[name] = { processes, options: { iterations } };
-			}
+			Object.assign(scenarios, rust.scenarios);
 		}
 		if (withLint) {
 			scenarios['lint-validator'] = { processes: lintProcesses, options: { iterations: LINT_ITERATIONS, files } };
@@ -265,22 +257,17 @@ function perf(args: readonly string[]): string {
 				options: { iterations: LINT_ITERATIONS, generated: { ...LINT_GENERATED, seed } },
 			};
 		}
-		const result = runPerf(
-			{
-				seed,
-				scenarios,
-				...(rust ? { rust: rust.plan } : {}),
-			},
-			(scenario, index, total) => process.stderr.write(`\r${index + 1}/${total} ${scenario}          `),
+		const result = runPerf({ seed, scenarios }, (scenario, index, total) =>
+			process.stderr.write(`\r${index + 1}/${total} ${scenario}          `),
 		);
 		process.stderr.write('\n');
-		const env = environment(ROOT);
+		const env = { ...environment(ROOT), ...(rust ? { rustc: rust.rustc, rustBuilt: rust.built } : {}) };
 		if (values.out) {
-			writeFileSync(values.out, `${JSON.stringify({ environment: env, rustc: rust?.rustc, result })}\n`);
+			writeFileSync(values.out, `${JSON.stringify({ environment: env, result })}\n`);
 		}
 		return [
 			`${env.commit.slice(0, 9)} on node ${env.node} (v8 ${env.v8}), ${env.platform} ${env.arch}, ${env.cpus} x ${env.cpu}`,
-			...(rust ? [rust.rustc] : []),
+			...(rust ? [`${rust.rustc}; the Rust program was built ${rust.built}`] : []),
 			withLint
 				? `the lint scenarios read ${files.length} documents of the validator and ${LINT_GENERATED.count} generated ones of about ${LINT_GENERATED.elements} elements`
 				: 'the lint scenarios are not run (--no-lint)',
@@ -290,24 +277,6 @@ function perf(args: readonly string[]): string {
 	} finally {
 		rust?.cleanup();
 	}
-}
-
-/**
- * Makes what the scenarios of the Rust program need: the program, which is not built here (it is built with the
- * flags that the addon is built with, and a build is not a measurement), and the file of questions, in a directory
- * of its own that is removed after the run.
- */
-function prepareRust(): { plan: RustPlan; rustc: string; cleanup: () => void } {
-	const binary = rustBinary(ROOT);
-	const index = join(ROOT, SPEC_PATH);
-	const directory = mkdtempSync(join(tmpdir(), 'spec-baseline-rust-'));
-	const questions = join(directory, 'questions.json');
-	writeQuestionsFile(JSON.parse(readFileSync(index, 'utf8')) as SpecLike, questions);
-	return {
-		plan: { binary, index, questions },
-		rustc: rustVersion(),
-		cleanup: () => rmSync(directory, { recursive: true, force: true }),
-	};
 }
 
 function compare(args: readonly string[]): string {
