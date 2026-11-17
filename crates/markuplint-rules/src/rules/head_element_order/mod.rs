@@ -108,6 +108,10 @@ struct Block<'a> {
 /// Whether an element of raw text (`script`, `style`, `xmp`) that has no end tag has a body. The body of such an
 /// element has no node (as TS reads it, `rawTextElements`), and the end of the file closes it, so it is the source
 /// after the start tag.
+///
+/// Only `script` and `style` can be a child of `head` (the tree builder closes `head` at an `xmp`), so the rule
+/// reaches the other name and the namespace guard through no input of its own: they keep this function true to
+/// what it says, and `v6_head_element_order_008` asks it directly.
 fn has_raw_text_body(arena: &DomArena, el: &ElementData) -> bool {
     // An HTML element only: the tokenizer reads the rest of the file as the body, which a self-closing SVG
     // `script` or one that its parent closes does not have.

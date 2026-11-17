@@ -334,17 +334,13 @@ fn convert_parser_node(
 
             // Recursively convert children. The body of a raw-text element (`rawTextElements` of TS: `style`,
             // `script`, `xmp`) is CSS or JavaScript, not markup, so TS gives it no node: the text between the
-            // start tag and the end tag is read from the source (`element_inner_source`). In the HTML namespace
-            // the tokenizer makes one text of it; in an SVG `script` or `style` the tree builder makes elements
-            // of what looks like one (`<svg><script><circle></circle></script></svg>`), which a rule would
-            // read as markup. Either way the body has no node here.
+            // start tag and the end tag is read from the source (`element_inner_source`). TS tells such an element
+            // by its name alone (`visitChildren` of `parser-utils`), whatever its namespace, and so does this: in the
+            // HTML namespace the tokenizer makes one text of the body, and in an SVG `script` or `style` the tree
+            // builder makes elements of what looks like markup (`<svg><script><circle></circle></script></svg>`),
+            // which a rule would read as such. The body has no node either way.
             let mut child_ids: Vec<NodeId> = Vec::new();
-            // `xmp` is an HTML element: in foreign content the tree builder breaks out of the SVG at it.
-            let drops_children = match *namespace {
-                Namespace::Html => matches!(tag_name.to_ascii_lowercase().as_str(), "script" | "style" | "xmp"),
-                Namespace::Svg => matches!(tag_name.to_ascii_lowercase().as_str(), "script" | "style"),
-                Namespace::MathML => false,
-            };
+            let drops_children = matches!(tag_name.to_ascii_lowercase().as_str(), "script" | "style" | "xmp");
             for &child_id in node.children.iter().filter(|_| !drops_children) {
                 convert_into(
                     source,
@@ -738,7 +734,30 @@ mod tests {
     #[test]
     fn the_body_of_an_rcdata_element_is_a_text() {
         let dom = build("<title>a &amp; b</title><textarea>c</textarea>");
-        assert_eq!(texts(&dom).len(), 2);
+        assert_eq!(texts(&dom), [("a &amp; b", false), ("c", false)]);
+    }
+
+    /// TS tells a raw-text element by its name alone (`visitChildren` of `parser-utils`), so the case of the name, the
+    /// end of the file closing the element, and the namespace of the element do not give its body a node: in foreign
+    /// content the tree builder makes elements of what the tokenizer would have read as text, and they are dropped too.
+    #[test]
+    fn the_body_of_a_raw_text_element_has_no_node_whatever_its_case_end_or_namespace() {
+        let cases: [(&str, &[&str]); 6] = [
+            // the tokenizer lower-cases the name of an HTML element
+            ("<SCRIPT>x</SCRIPT>", &["script"]),
+            ("<Style>a { }</Style>", &["style"]),
+            ("<script>a<b>", &["script"]),
+            ("<script>a<b></script>", &["script"]),
+            ("<math><script>x</script></math>", &["math", "script"]),
+            ("<svg><xmp>x</xmp></svg>", &["svg", "xmp"]),
+        ];
+        for (html, expected) in cases {
+            let dom = build(html);
+            let names: Vec<&str> = dom.elements().map(|(_, el)| el.base.node_name.as_str()).collect();
+            assert_eq!(names, expected, "{html}");
+            let kept: Vec<_> = texts(&dom).into_iter().filter(|(_, is_bogus)| !is_bogus).collect();
+            assert!(kept.is_empty(), "{html}: {kept:?}");
+        }
     }
 
     #[test]

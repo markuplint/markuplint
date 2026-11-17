@@ -39,8 +39,11 @@
 //!   v6_head_element_order_004  — Rust-only: only the first violation carries the fix
 //!   v6_head_element_order_005  — Rust-only: non-ASCII text in the head before the reordered children
 //!   v6_head_element_order_006  — Rust-only: a child with content and no end tag gets no fix
+//!   v6_head_element_order_007  — Rust-only: the same for an unclosed `style`, and a `script` with an end tag is fixed
+//!   v6_head_element_order_008  — Rust-only: only an HTML raw-text element has a body that runs to the end of the file
 
-use crate::test_util::{Brief, brief, fixed_code, lint_brief, lint_html};
+use super::has_raw_text_body;
+use crate::test_util::{Brief, brief, fixed_code, html_arena, lint_brief, lint_html};
 use crate::violation::Severity;
 
 const RULE: &str = "head-element-order";
@@ -169,6 +172,49 @@ fn v6_head_element_order_006() {
     );
     assert_eq!(violations.len(), 2, "{violations:?}");
     assert!(violations.iter().all(|v| v.fix.is_none()), "{violations:?}");
+}
+
+/// The body of a raw-text element has no node (as TS reads it), so what makes an element that the end of the file
+/// closes "open ended" is its source: `style` is told as `script` is, and a `script` with an end tag is not, so that
+/// the fix is made for it.
+#[test]
+fn v6_head_element_order_007() {
+    let violations = lint_html(
+        "<html><head><title>T</title><style>a { }",
+        serde_json::json!({ "rules": { RULE: { "value": ["style", "title"] } } }),
+    );
+    assert_eq!(violations.len(), 2, "{violations:?}");
+    assert!(violations.iter().all(|v| v.fix.is_none()), "{violations:?}");
+    assert_eq!(
+        fixed(
+            "<html><head><title>T</title><script>var a = 1;</script></head></html>",
+            serde_json::json!(["script", "title"]),
+        ),
+        "<html><head><script>var a = 1;</script><title>T</title></head></html>"
+    );
+}
+
+/// Only an HTML element runs to the end of the file when it has no end tag: an SVG `script` that is self-closing is
+/// closed by its own tag, and the source after it is not its body.
+#[test]
+fn v6_head_element_order_008() {
+    let arena = html_arena("<svg><script/></svg><p>after</p>");
+    let (_, svg_script) = arena
+        .elements()
+        .find(|(_, el)| el.base.node_name.eq_ignore_ascii_case("script"))
+        .unwrap();
+    assert!(!has_raw_text_body(&arena, svg_script));
+
+    // `xmp` is not a child of `head`, so it is asked of the function and not of the rule
+    for unclosed in ["<script>var a;", "<style>a { }", "<xmp><b>x</b>"] {
+        let arena = html_arena(unclosed);
+        let (_, element) = arena.elements().next().unwrap();
+        assert!(has_raw_text_body(&arena, element), "{unclosed}");
+    }
+    // nothing after the start tag: no body
+    let arena = html_arena("<script>");
+    let (_, element) = arena.elements().next().unwrap();
+    assert!(!has_raw_text_body(&arena, element));
 }
 
 #[test]

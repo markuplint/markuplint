@@ -1,20 +1,26 @@
 //! The Rust half of `yarn spec-baseline perf --rust` (`scripts/spec-baseline/`): what it costs to read the
-//! data of `@markuplint/html-spec` and to ask it the basic questions, measured in the process that does it
-//! today, so that the format of a packed form is chosen from the numbers of both languages.
+//! data of `@markuplint/html-spec` and to ask it the basic questions, measured as the `lint` of v6 does it, so
+//! that the format of a packed form is chosen from the numbers of both languages.
 //!
 //! It measures and decides nothing: it prints one line of JSON, `{"measurements":[{"name","unit","values"}]}`,
 //! that `perf.ts` reads as it reads the line of `perf-child.ts`, and the statistics are those of the TypeScript
-//! side (a process for each sample, the first iteration kept apart, a bootstrap interval). Names and units are the
-//! ones of the TypeScript scenarios with a `rust-` in front, so that a table puts the two side by side.
+//! side (a process for each sample, the first iteration kept apart, a bootstrap interval). Four names are those of a
+//! TypeScript scenario with a `rust-` in front and the same question behind them, so that a table puts the two side by
+//! side: `file-json-read-parse`, `file-read-view`, `query-object` and `query-bits`. `rust-query-crate` is asked the way
+//! `query-today` is (through the functions that the rules call), and the two heap figures count what the allocator of
+//! this process holds, where the TypeScript ones (`heap-after-import`, `heap-after-merge`) are the heap of V8.
 //!
 //! ```text
 //! spec_baseline <scenario> <index.json> <questions.json> <iterations>
 //! ```
 //!
+//! `<index.json>` is the data as the TS side hands it to the Rust engine: minified (`perf.ts` writes that text, and the
+//! file in the package is indented, which would be a larger input than v6 ever parses).
+//!
 //! - `load`: read the file and parse it with `load_spec` (the cost that every call of `lint` in v6 pays: the TS side
 //!   hands the spec over as a JSON string and `load_spec` parses it again, with nothing kept between calls), and the
 //!   bytes that the loaded spec keeps (`rust-heap-after-load`) and the most that were held at once while loading
-//!   (`rust-heap-peak-load`), counted by the allocator of this process.
+//!   (`rust-heap-peak-load`), counted by the allocator of this process in one more load after the timed ones.
 //! - `view`: the floor of a binary of the size of the JSON: read bytes of that size and read a 32-bit word of them,
 //!   never parsing (`rust-file-read-view`). A `u32` of a byte slice is `u32::from_le_bytes` of four bytes, which the
 //!   compiler turns into a load: nothing is copied or allocated for it.
@@ -33,7 +39,8 @@ use std::alloc::{GlobalAlloc, Layout, System};
 use std::collections::HashMap;
 use std::fs;
 use std::hint::black_box;
-use std::sync::atomic::{AtomicUsize, Ordering};
+use std::io::Write;
+use std::sync::atomic::{AtomicBool, AtomicUsize, Ordering};
 use std::time::Instant;
 
 use markuplint_types::spec::load_spec;
@@ -45,8 +52,12 @@ use serde_json::json;
 /// Counts the bytes that are held and the most that were held, so that the memory of the loaded data is a figure of
 /// this process and not of the machine. It answers for what `serde_json` and the structs allocate, which is what
 /// the data costs; the operating system's own accounting (resident size) also counts the code and the stacks.
+///
+/// The addon of v6 has no such allocator, so it counts only while a figure of memory is being taken (`COUNTING`),
+/// and no time is taken then: the timed regions pay one relaxed load of a flag for each allocation, and nothing else.
 struct Counting;
 
+static COUNTING: AtomicBool = AtomicBool::new(false);
 static HELD: AtomicUsize = AtomicUsize::new(0);
 static PEAK: AtomicUsize = AtomicUsize::new(0);
 
@@ -55,7 +66,7 @@ unsafe impl GlobalAlloc for Counting {
     unsafe fn alloc(&self, layout: Layout) -> *mut u8 {
         // SAFETY: the caller upholds the contract of `GlobalAlloc::alloc`, and it is passed on as it is.
         let pointer = unsafe { System.alloc(layout) };
-        if !pointer.is_null() {
+        if !pointer.is_null() && COUNTING.load(Ordering::Relaxed) {
             let held = HELD.fetch_add(layout.size(), Ordering::Relaxed) + layout.size();
             PEAK.fetch_max(held, Ordering::Relaxed);
         }
@@ -65,7 +76,14 @@ unsafe impl GlobalAlloc for Counting {
     unsafe fn dealloc(&self, pointer: *mut u8, layout: Layout) {
         // SAFETY: `pointer` came from `alloc` with this `layout`, as the contract says, and it is passed on as it is.
         unsafe { System.dealloc(pointer, layout) };
-        HELD.fetch_sub(layout.size(), Ordering::Relaxed);
+        if COUNTING.load(Ordering::Relaxed) {
+            // A block that was allocated before the counting began is not in `HELD`: it is not taken off either.
+            // The program has one thread, so a load and a store do not race.
+            HELD.store(
+                HELD.load(Ordering::Relaxed).saturating_sub(layout.size()),
+                Ordering::Relaxed,
+            );
+        }
     }
 }
 
@@ -296,27 +314,30 @@ fn bytes(value: usize) -> f64 {
 }
 
 fn load(index: &str, iterations: usize) -> Result<Vec<serde_json::Value>, String> {
+    // The timed loads run with the counting off, as the addon of v6 has no counter
     let mut times = Vec::with_capacity(iterations);
-    let mut retained = 0;
-    let mut peak = 0;
-    for i in 0..iterations {
-        // What the first load costs in memory is read when nothing else of the data is alive: the arguments and the
-        // list of times are allocated before, nothing is printed until the end, and the only thing freed in between
-        // is the text of the file, so what is left over is what the loaded data holds. (`saturating_sub` is for a
-        // reading that an allocator of another build would put below the baseline: the figure is then 0, not a wrap.)
-        let before = HELD.load(Ordering::Relaxed);
-        PEAK.store(before, Ordering::Relaxed);
+    for _ in 0..iterations {
         let start = Instant::now();
         let text = fs::read_to_string(index).map_err(|error| format!("{index}: {error}"))?;
         let spec = load_spec(&text).map_err(|error| format!("{index}: {error}"))?;
         times.push(millis(start));
-        if i == 0 {
-            peak = PEAK.load(Ordering::Relaxed).saturating_sub(before);
-            drop(text);
-            retained = HELD.load(Ordering::Relaxed).saturating_sub(before);
-        }
         black_box(spec.specs.len());
     }
+
+    // What one load costs in memory is read by one more, when the timing is over and nothing else of the data is alive:
+    // the arguments and the list of times were allocated before the counting began, nothing is printed until the end,
+    // and the only thing freed in between is the text of the file, so what is left over is what the loaded data holds.
+    COUNTING.store(true, Ordering::Relaxed);
+    let before = HELD.load(Ordering::Relaxed);
+    PEAK.store(before, Ordering::Relaxed);
+    let text = fs::read_to_string(index).map_err(|error| format!("{index}: {error}"))?;
+    let spec = load_spec(&text).map_err(|error| format!("{index}: {error}"))?;
+    let peak = PEAK.load(Ordering::Relaxed).saturating_sub(before);
+    drop(text);
+    let retained = HELD.load(Ordering::Relaxed).saturating_sub(before);
+    COUNTING.store(false, Ordering::Relaxed);
+    black_box(spec.specs.len());
+
     Ok(vec![
         measurement("rust-file-json-read-parse", "ms", &times),
         measurement("rust-heap-after-load", "bytes", &[bytes(retained)]),
@@ -325,23 +346,32 @@ fn load(index: &str, iterations: usize) -> Result<Vec<serde_json::Value>, String
 }
 
 fn view(index: &str, iterations: usize) -> Result<Vec<serde_json::Value>, String> {
-    // The size of the data minified, as the TypeScript scenario makes its bytes
-    let text = fs::read_to_string(index).map_err(|error| format!("{index}: {error}"))?;
-    let value: serde_json::Value = serde_json::from_str(&text).map_err(|error| format!("{index}: {error}"))?;
-    let minified = serde_json::to_string(&value).map_err(|error| error.to_string())?.len();
-    let length = minified - minified % 4;
+    // The size of the data as it is read: `perf.ts` gives the minified text to every scenario, as the TypeScript
+    // scenario makes its bytes of the minified text, and as v6 hands the spec over
+    let size = fs::metadata(index).map_err(|error| format!("{index}: {error}"))?.len();
+    let size = usize::try_from(size).map_err(|error| format!("{index}: {error}"))?;
+    let length = size - size % 4;
     let path = std::env::temp_dir().join(format!("spec-baseline-{}.bin", std::process::id()));
-    fs::write(&path, vec![1_u8; length]).map_err(|error| error.to_string())?;
-    let mut times = Vec::with_capacity(iterations);
-    for _ in 0..iterations {
-        let start = Instant::now();
-        let data = fs::read(&path).map_err(|error| error.to_string())?;
-        let word = data.last_chunk::<4>().map_or(0, |chunk| u32::from_le_bytes(*chunk));
-        times.push(millis(start));
-        black_box(word);
-    }
-    fs::remove_file(&path).map_err(|error| error.to_string())?;
-    Ok(vec![measurement("rust-file-read-view", "ms", &times)])
+    // `create_new` does not open a file that is there already, nor follow a link that someone put at the name
+    fs::OpenOptions::new()
+        .write(true)
+        .create_new(true)
+        .open(&path)
+        .and_then(|mut file| file.write_all(&vec![1_u8; length]))
+        .map_err(|error| format!("{}: {error}", path.display()))?;
+    let times = (0..iterations)
+        .map(|_| {
+            let start = Instant::now();
+            let data = fs::read(&path).map_err(|error| error.to_string())?;
+            let word = data.last_chunk::<4>().map_or(0, |chunk| u32::from_le_bytes(*chunk));
+            let elapsed = millis(start);
+            black_box(word);
+            Ok(elapsed)
+        })
+        .collect::<Result<Vec<f64>, String>>();
+    // The file is removed whether the reads went well or not
+    fs::remove_file(&path).map_err(|error| format!("{}: {error}", path.display()))?;
+    Ok(vec![measurement("rust-file-read-view", "ms", &times?)])
 }
 
 fn query(index: &str, file: &QuestionsFile, iterations: usize) -> Result<Vec<serde_json::Value>, String> {
@@ -455,17 +485,16 @@ mod tests {
         let bits = build_bits(&spec, &flag_names()).unwrap();
         let mut questions = Vec::new();
         let mut answers = Vec::new();
-        for element in 0..bits.elements.len() {
-            for flag in 0..FLAGS.len() {
+        for (element, found) in spec.specs.iter().enumerate() {
+            for (flag, name) in FLAGS.iter().enumerate() {
                 questions.extend([0, element, flag]);
-                answers.push(u8::from(flag_of(&spec.specs[element], FLAGS[flag]).unwrap()));
+                answers.push(u8::from(flag_of(found, name).unwrap()));
             }
         }
-        for element in 0..bits.elements.len() {
-            for category in 0..bits.categories.len() {
+        for (element, name) in bits.elements.iter().enumerate() {
+            for (category, category_name) in bits.categories.iter().enumerate() {
                 questions.extend([1, element, category]);
-                let members = &spec.def.content_models[&bits.categories[category]];
-                answers.push(u8::from(members.contains(&bits.elements[element])));
+                answers.push(u8::from(spec.def.content_models[category_name].contains(name)));
             }
         }
         QuestionsFile {
@@ -502,17 +531,39 @@ mod tests {
         assert_eq!(bits.members, [0, 0b10_0011, 0b00_0101]);
     }
 
-    #[test]
-    fn uses_a_second_word_for_the_thirty_third_element() {
-        let mut specs = String::new();
-        for i in 0..33 {
-            specs.push_str(&format!(r#"{}{{"name":"e{i}"}}"#, if i == 0 { "" } else { "," }));
-        }
+    /// `count` elements `e0`, `e1`, …, and one category `#all` that has the last of them as its only member.
+    fn spec_of(count: usize) -> MLMLSpec {
+        let specs = (0..count)
+            .map(|i| format!(r#"{{"name":"e{i}"}}"#))
+            .collect::<Vec<_>>()
+            .join(",");
         let json = SPEC.replace(r#""specs": ["#, &format!(r#""specs": [{specs}],"unused":["#));
-        let spec = load_spec(&json).unwrap();
-        let bits = build_bits(&spec, &flag_names()).unwrap();
-        assert_eq!(bits.words_per_row, 2);
-        assert_eq!(bits.members.len(), 3 * 2);
+        let json = json.replace(
+            r##""#empty": []"##,
+            &format!(r##""#empty": [], "#all": ["e{}"]"##, count - 1),
+        );
+        load_spec(&json).unwrap()
+    }
+
+    #[test]
+    fn puts_the_bit_of_an_element_in_the_word_and_the_place_that_its_position_says() {
+        // (elements, words in a row): the boundary of a word is at 32, 64 and 96
+        for (count, words) in [(31, 1), (32, 1), (33, 2), (63, 2), (64, 2), (65, 3)] {
+            let bits = build_bits(&spec_of(count), &flag_names()).unwrap();
+            assert_eq!(bits.words_per_row, words, "{count} elements");
+            let row = bits.categories.iter().position(|name| name == "#all").unwrap();
+            let last = count - 1;
+            let word = bits.members[row * words + (last >> 5)];
+            assert_eq!(word, 1 << (last & 31), "{count} elements: the bit of e{last}");
+            // no other bit of the row is set
+            let others: u32 = bits.members[row * words..(row + 1) * words]
+                .iter()
+                .enumerate()
+                .filter(|(at, _)| *at != last >> 5)
+                .map(|(_, word)| *word)
+                .sum();
+            assert_eq!(others, 0, "{count} elements");
+        }
     }
 
     #[test]
@@ -581,7 +632,91 @@ mod tests {
     }
 
     #[test]
-    fn the_light_scenarios_report_in_the_shape_that_perf_ts_reads() {
+    fn the_file_of_the_view_scenario_is_not_opened_when_something_is_at_its_name() {
+        let index = concat!(
+            env!("CARGO_MANIFEST_DIR"),
+            "/../../packages/@markuplint/html-spec/index.json"
+        );
+        let path = std::env::temp_dir().join(format!("spec-baseline-{}.bin", std::process::id()));
+        fs::write(&path, b"someone else's").unwrap();
+        let error = view(index, 1).unwrap_err();
+        let kept = fs::read(&path).unwrap();
+        fs::remove_file(&path).unwrap();
+        assert!(error.contains("spec-baseline-"), "{error}");
+        assert_eq!(kept, b"someone else's");
+    }
+
+    /// Writes a file that is gone when the value is dropped, at a name that is the process and the name of the test.
+    struct Scratch(std::path::PathBuf);
+
+    impl Scratch {
+        fn new(name: &str, content: &str) -> Self {
+            let path = std::env::temp_dir().join(format!("spec-baseline-test-{}-{name}", std::process::id()));
+            fs::write(&path, content).unwrap();
+            Self(path)
+        }
+
+        fn path(&self) -> &str {
+            self.0.to_str().unwrap()
+        }
+    }
+
+    impl Drop for Scratch {
+        fn drop(&mut self) {
+            let _ = fs::remove_file(&self.0);
+        }
+    }
+
+    #[test]
+    fn the_query_scenario_times_the_three_ways_when_they_agree_with_the_file() {
+        let index = Scratch::new("query-ok.json", SPEC);
+        let measurements = query(index.path(), &file(), 2).unwrap();
+        let names: Vec<&str> = measurements.iter().map(|m| m["name"].as_str().unwrap()).collect();
+        assert_eq!(names, ["rust-query-crate", "rust-query-object", "rust-query-bits"]);
+        assert!(measurements.iter().all(|m| m["values"].as_array().unwrap().len() == 2));
+    }
+
+    #[test]
+    fn the_query_scenario_stops_before_any_time_when_the_file_is_of_other_data() {
+        let index = Scratch::new("query-other.json", SPEC);
+        let mut other = file();
+        other.elements.reverse();
+        let error = query(index.path(), &other, 2).unwrap_err();
+        assert!(error.contains("not those of the questions"), "{error}");
+
+        let mut other = file();
+        other.category_bits[1] ^= 1;
+        let error = query(index.path(), &other, 2).unwrap_err();
+        assert!(
+            error.contains("not the bits that the questions were made with"),
+            "{error}"
+        );
+
+        let mut other = file();
+        other.answers[0] ^= 1;
+        let error = query(index.path(), &other, 2).unwrap_err();
+        assert!(error.contains("answers differently at question 0"), "{error}");
+    }
+
+    #[test]
+    fn the_load_scenario_reports_the_time_of_each_load_and_what_one_load_holds() {
+        let index = Scratch::new("load.json", SPEC);
+        let measurements = load(index.path(), 3).unwrap();
+        let by_name = |name: &str| measurements.iter().find(|m| m["name"] == name).unwrap();
+        assert_eq!(
+            by_name("rust-file-json-read-parse")["values"].as_array().unwrap().len(),
+            3
+        );
+        // the counting is on for one load only, and what it holds is more than nothing
+        assert!(by_name("rust-heap-after-load")["values"][0].as_f64().unwrap() > 0.0);
+        assert!(
+            by_name("rust-heap-peak-load")["values"][0].as_f64().unwrap()
+                >= by_name("rust-heap-after-load")["values"][0].as_f64().unwrap()
+        );
+    }
+
+    #[test]
+    fn a_measurement_is_written_in_the_shape_that_perf_ts_reads() {
         let value = measurement("rust-x", "ms", &[1.0, 2.0]);
         assert_eq!(value, json!({ "name": "rust-x", "unit": "ms", "values": [1.0, 2.0] }));
     }
