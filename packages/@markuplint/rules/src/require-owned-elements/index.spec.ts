@@ -224,7 +224,7 @@ test('[require-owned-elements-issue-4068-005] content of unknown shape (dynamic)
 test('[require-owned-elements-issue-4068-006] a generic slot wrapper is transparent for ownership in ARIA 1.3', async () => {
 	const { violations } = await mlRuleTest(rule, '<List><li>a</li></List>', {
 		...jsx,
-		rule: { options: { version: '1.3' } },
+		ruleCommonSettings: { ariaVersion: '1.3' },
 		pretenders: [
 			{
 				selector: 'List',
@@ -312,7 +312,7 @@ test('[require-owned-elements-issue-4068-010] a fragment component supplies the 
 test('[require-owned-elements-issue-4068-011] a transparent component whose content is unknown may supply the owned element', async () => {
 	const config = {
 		...jsx,
-		rule: { options: { version: '1.3' as const } },
+		ruleCommonSettings: { ariaVersion: '1.3' as const },
 		pretenders: [
 			{ selector: 'List', as: 'ul' },
 			{ selector: 'Wrap', as: { element: 'div', contents: [{ dynamic: true }] } },

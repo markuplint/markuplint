@@ -1,5 +1,4 @@
 import { isAriaAttr } from '../../helpers.js';
-import type { Options } from '../types.js';
 import type { AttrChecker } from '@markuplint/ml-core';
 import type { ARIAProperty, ARIARole } from '@markuplint/ml-spec';
 
@@ -20,7 +19,7 @@ import { ARIA_RECOMMENDED_VERSION, getARIA } from '@markuplint/ml-spec';
  */
 export const checkingElementSupportsAriaProp: AttrChecker<
 	boolean,
-	Options,
+	undefined,
 	{
 		role: ARIARole | null;
 		propSpecs: readonly ARIAProperty[];
@@ -32,10 +31,7 @@ export const checkingElementSupportsAriaProp: AttrChecker<
 			return;
 		}
 
-		const ariaVersion =
-			attr.rule.options?.version ??
-			attr.ownerMLDocument.ruleCommonSettings?.ariaVersion ??
-			ARIA_RECOMMENDED_VERSION;
+		const ariaVersion = attr.ownerMLDocument.ruleCommonSettings?.ariaVersion ?? ARIA_RECOMMENDED_VERSION;
 		const propSpec = propSpecs.find(p => p.name === attr.nameKey);
 		const elAriaSpec = getARIA(
 			attr.ownerMLDocument.specs,

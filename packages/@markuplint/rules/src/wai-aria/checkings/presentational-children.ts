@@ -6,7 +6,6 @@ import {
 	memoizeByObject,
 	namespaceKeyOf,
 } from '../../helpers.js';
-import type { Options } from '../types.js';
 import type { Attr, AttrChecker, Document, Element } from '@markuplint/ml-core';
 import type { AccnameVisit, ARIAVersion, ARIARole, ComputedRole } from '@markuplint/ml-spec';
 
@@ -63,8 +62,8 @@ import {
  */
 export const checkingPresentationalChildren: AttrChecker<
 	boolean,
-	Options,
-	{ readonly el: Element<boolean, Options> }
+	undefined,
+	{ readonly el: Element<boolean, undefined> }
 > =
 	({ attr, el }) =>
 	t => {
@@ -105,9 +104,8 @@ type Context = {
  */
 const getContext = memoizeByObject(
 	// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
-	(el: Element<boolean, Options>): Context | null => {
-		const ariaVersion =
-			el.rule.options?.version ?? el.ownerMLDocument.ruleCommonSettings?.ariaVersion ?? ARIA_RECOMMENDED_VERSION;
+	(el: Element<boolean, undefined>): Context | null => {
+		const ariaVersion = el.ownerMLDocument.ruleCommonSettings?.ariaVersion ?? ARIA_RECOMMENDED_VERSION;
 		const role = getClosestPresentationalChildrenRole(el, ariaVersion);
 		if (!role) {
 			return null;
@@ -129,10 +127,10 @@ const getContext = memoizeByObject(
  */
 function getClosestPresentationalChildrenRole(
 	// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
-	el: Element<boolean, Options>,
+	el: Element<boolean, undefined>,
 	ariaVersion: ARIAVersion,
 ): ARIARole | null {
-	let current: Element<boolean, Options> | null = getComposedParentElement(el);
+	let current: Element<boolean, undefined> | null = getComposedParentElement(el);
 	while (current) {
 		const role = getComputedRole(el.ownerMLDocument.specs, current, ariaVersion).role;
 		if (role?.childrenPresentational) {
@@ -169,20 +167,20 @@ function getClosestPresentationalChildrenRole(
  */
 function getVisits(
 	// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
-	el: Element<boolean, Options>,
+	el: Element<boolean, undefined>,
 	ariaVersion: ARIAVersion,
 ): readonly AccnameVisit[] {
 	const visits: AccnameVisit[] = [];
 	const add = (
 		// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
-		reader: Element<boolean, Options>,
+		reader: Element<boolean, undefined>,
 		asReferenced = false,
 	) => {
 		visits.push(...(reader.getAccessibleNameVisits(ariaVersion, asReferenced).get(el) ?? []));
 	};
 	const document = el.ownerMLDocument;
 	const referenced = getReferencedIds(document);
-	let current: Element<boolean, Options> | null = el;
+	let current: Element<boolean, undefined> | null = el;
 	while (current) {
 		if (current !== el) {
 			add(current);
@@ -213,7 +211,7 @@ function getVisits(
  */
 const getLabeledControls = memoizeByObject(
 	// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
-	(el: Element<boolean, Options>): readonly Element<boolean, Options>[] => {
+	(el: Element<boolean, undefined>): readonly Element<boolean, undefined>[] => {
 		if (el.localName !== 'label' || el.namespaceURI !== 'http://www.w3.org/1999/xhtml') {
 			return [];
 		}
@@ -229,7 +227,7 @@ const getLabeledControls = memoizeByObject(
  */
 const getReferencedIds = memoizeByObject(
 	// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
-	(document: Document<boolean, Options>): ReadonlyMap<object, ReadonlySet<string>> => {
+	(document: Document<boolean, undefined>): ReadonlyMap<object, ReadonlySet<string>> => {
 		const idsOfTree = new Map<object, Set<string>>();
 		for (const referrer of document.deepQuerySelectorAll('[aria-labelledby], [aria-describedby]')) {
 			const root = referrer.getRootNode();
@@ -291,9 +289,9 @@ const getReferencedIds = memoizeByObject(
  */
 function takesEffect(
 	// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
-	attr: Attr<boolean, Options>,
+	attr: Attr<boolean, undefined>,
 	// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
-	el: Element<boolean, Options>,
+	el: Element<boolean, undefined>,
 	{ ariaVersion, visits }: Context,
 ): boolean {
 	const shown = visits.filter(visit => !visit.hidden);
@@ -355,7 +353,7 @@ function takesEffect(
  */
 function isEmbeddedControl(
 	// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
-	el: Element<boolean, Options>,
+	el: Element<boolean, undefined>,
 	computed: ComputedRole,
 ): boolean {
 	return computed.role ? EMBEDDED_CONTROL_ROLES.has(computed.role.name) : isNativeEmbeddedControl(el);
@@ -367,7 +365,7 @@ function isEmbeddedControl(
  */
 function labelledbyGivesText(
 	// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
-	el: Element<boolean, Options>,
+	el: Element<boolean, undefined>,
 	ariaVersion: ARIAVersion,
 ): boolean {
 	const labelledbyAttr = el.getAttrNode('aria-labelledby');

@@ -14,11 +14,10 @@ export type ChildNode = _ChildNode<TagRule[], Options>;
 
 /**
  * A subset of the full ML spec containing only the fields needed
- * for content model validation: citation references, global definitions,
- * and per-element content model specifications.
+ * for content model validation: global definitions and per-element content model
+ * specifications.
  */
 export type Specs = {
-	readonly cites?: MLMLSpec['cites'];
 	readonly def: MLMLSpec['def'];
 	readonly specs: readonly {
 		readonly name: string;

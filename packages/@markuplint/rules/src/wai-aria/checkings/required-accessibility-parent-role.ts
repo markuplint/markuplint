@@ -1,4 +1,3 @@
-import type { Options } from '../types.js';
 import type { ElementChecker } from '@markuplint/ml-core';
 import type { ComputedRole } from '@markuplint/ml-spec';
 
@@ -27,7 +26,7 @@ import { noTranslate } from '../../no-translate.js';
  */
 export const checkingRequiredAccessibilityParentRole: ElementChecker<
 	boolean,
-	Options,
+	undefined,
 	{
 		computed?: ComputedRole;
 	}
@@ -51,8 +50,7 @@ export const checkingRequiredAccessibilityParentRole: ElementChecker<
 			return;
 		}
 
-		const ariaVersion =
-			el.rule.options?.version ?? el.ownerMLDocument.ruleCommonSettings?.ariaVersion ?? ARIA_RECOMMENDED_VERSION;
+		const ariaVersion = el.ownerMLDocument.ruleCommonSettings?.ariaVersion ?? ARIA_RECOMMENDED_VERSION;
 		const { roles } = ariaSpecs(el.ownerMLDocument.specs, ariaVersion);
 
 		for (const token of roleAttr.tokenList?.allTokens() ?? []) {
@@ -60,11 +58,7 @@ export const checkingRequiredAccessibilityParentRole: ElementChecker<
 			if (!roleSpec) {
 				continue;
 			}
-			// `ariaSpecs().roles` returns raw spec data where the field is always
-			// `requiredContextRole` for all versions. The fallback to
-			// `requiredAccessibilityParentRole` is a defensive guard in case
-			// the generator changes the field name in the future.
-			const parentRoles = roleSpec.requiredContextRole ?? roleSpec.requiredAccessibilityParentRole;
+			const parentRoles = roleSpec.requiredAccessibilityParentRole;
 			if (parentRoles && parentRoles.length > 0) {
 				return {
 					scope: token,

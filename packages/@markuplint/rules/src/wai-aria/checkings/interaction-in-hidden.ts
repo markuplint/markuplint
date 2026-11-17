@@ -1,4 +1,3 @@
-import type { Options } from '../types.js';
 import type { Attr, Element, ElementChecker } from '@markuplint/ml-core';
 
 import { getComposedParentElement, mayBeFocusable } from '@markuplint/ml-spec';
@@ -20,7 +19,7 @@ import { getComposedParentElement, mayBeFocusable } from '@markuplint/ml-spec';
  * @param el - The element node to inspect for focusability within a hidden context.
  * @returns A violation if the element is focusable and has `aria-hidden=true` on itself or an ancestor.
  */
-export const checkingInteractionInHidden: ElementChecker<boolean, Options> =
+export const checkingInteractionInHidden: ElementChecker<boolean, undefined> =
 	({ el }) =>
 	t => {
 		if (!mayBeFocusable(el, el.ownerMLDocument.specs)) {
@@ -54,9 +53,9 @@ export const checkingInteractionInHidden: ElementChecker<boolean, Options> =
  */
 function getClosestAriaHidden(
 	// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
-	el: Element<boolean, Options>,
-): Attr<boolean, Options> | null {
-	let current: Element<boolean, Options> | null = el;
+	el: Element<boolean, undefined>,
+): Attr<boolean, undefined> | null {
+	let current: Element<boolean, undefined> | null = el;
 	while (current) {
 		const ariaHidden = current.getAttrNode('aria-hidden');
 		if (ariaHidden?.value === 'true') {

@@ -31,9 +31,9 @@ test('[attr-check-invalid-001] OneCodePointChar List', () => {
 	]);
 });
 
-test('[attr-check-invalid-002] BrowsingContextNameOrKeyword', () => {
-	expect(valueCheck(t, 'target', '', 'BrowsingContextNameOrKeyword')).toStrictEqual([
-		'the "target" attribute must not be empty. It expects either "_blank", "_self", "_parent", "_top", "browsing context name" (https://html.spec.whatwg.org/multipage/document-sequences.html#valid-browsing-context-name-or-keyword)',
+test('[attr-check-invalid-002] NavigableTargetNameOrKeyword', () => {
+	expect(valueCheck(t, 'target', '', 'NavigableTargetNameOrKeyword')).toStrictEqual([
+		'the "target" attribute must not be empty. It expects either "_blank", "_self", "_parent", "_top", "navigable target name" (https://html.spec.whatwg.org/multipage/document-sequences.html#valid-navigable-target-name-or-keyword)',
 		{
 			col: 0,
 			line: 0,

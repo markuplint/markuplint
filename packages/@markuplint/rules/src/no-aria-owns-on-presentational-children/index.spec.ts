@@ -66,7 +66,7 @@ test('[no-aria-owns-on-presentational-children-invalid-004] reported under WAI-A
 	expect(
 		(
 			await mlRuleTest(rule, '<button type="button" aria-owns="x">Save</button><span id="x"></span>', {
-				rule: { options: { version: '1.2' } },
+				ruleCommonSettings: { ariaVersion: '1.2' },
 			})
 		).violations,
 	).toStrictEqual([

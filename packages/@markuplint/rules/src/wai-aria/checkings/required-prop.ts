@@ -1,4 +1,3 @@
-import type { Options } from '../types.js';
 import type { ElementChecker } from '@markuplint/ml-core';
 
 import {
@@ -28,7 +27,7 @@ import {
  */
 export const checkingRequiredProp: ElementChecker<
 	boolean,
-	Options,
+	undefined,
 	{ role?: (ARIARole & { isImplicit?: boolean }) | null; propSpecs: readonly ARIAProperty[] }
 > =
 	({ el, role, propSpecs }) =>
@@ -54,10 +53,7 @@ export const checkingRequiredProp: ElementChecker<
 			if (!has) {
 				const propSpec = propSpecs.find(p => p.name === requiredProp);
 
-				const ariaVersion =
-					el.rule.options?.version ??
-					el.ownerMLDocument.ruleCommonSettings?.ariaVersion ??
-					ARIA_RECOMMENDED_VERSION;
+				const ariaVersion = el.ownerMLDocument.ruleCommonSettings?.ariaVersion ?? ARIA_RECOMMENDED_VERSION;
 
 				const elAriaSpec = getARIA(
 					el.ownerMLDocument.specs,

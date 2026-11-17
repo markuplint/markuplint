@@ -1,10 +1,7 @@
-import type { Options } from '../wai-aria/types.js';
-
 import { createRule, ariaSpecs, getAttrSpecs, getSpec } from '@markuplint/ml-core';
 import { ARIA_RECOMMENDED_VERSION } from '@markuplint/ml-spec';
 
 import { checkingContradictoryAriaProp } from '../wai-aria/checkings/contradictory-aria-prop.js';
-import { defaultOptions } from '../wai-aria/default-options.js';
 import { getAriaAttrs } from '../helpers.js';
 import meta from './meta.js';
 
@@ -15,9 +12,8 @@ import meta from './meta.js';
  * uses the default `error` severity — contrast `no-redundant-aria-prop`'s
  * should-level `warning`, which the former combined rule used uniformly.
  */
-export default createRule<boolean, Options>({
+export default createRule<boolean>({
 	meta,
-	defaultOptions,
 	async verify({ document, report }) {
 		await document.walkOn('Element', el => {
 			const elSpec = getSpec(el, document.specs.specs);
@@ -25,8 +21,7 @@ export default createRule<boolean, Options>({
 			if (!elSpec.globalAttrs['#ARIAAttrs']) return;
 			const propAttrs = getAriaAttrs(el);
 			if (propAttrs.length === 0) return;
-			const ariaVersion =
-				el.rule.options?.version ?? document.ruleCommonSettings?.ariaVersion ?? ARIA_RECOMMENDED_VERSION;
+			const ariaVersion = document.ruleCommonSettings?.ariaVersion ?? ARIA_RECOMMENDED_VERSION;
 			const { props: propSpecs } = ariaSpecs(document.specs, ariaVersion);
 			const attrSpecs = getAttrSpecs(el, document.specs);
 			for (const attr of propAttrs) {

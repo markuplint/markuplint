@@ -1,4 +1,3 @@
-import type { Options } from '../types.js';
 import type { AttrChecker } from '@markuplint/ml-core';
 
 import { ARIA_RECOMMENDED_VERSION, ariaSpecs } from '@markuplint/ml-spec';
@@ -14,13 +13,10 @@ import { ARIA_RECOMMENDED_VERSION, ariaSpecs } from '@markuplint/ml-spec';
  * @param attr - The `role` attribute node to inspect.
  * @returns A violation if any token does not correspond to a defined ARIA role.
  */
-export const checkingNonExistentRole: AttrChecker<boolean, Options> =
+export const checkingNonExistentRole: AttrChecker<boolean, undefined> =
 	({ attr }) =>
 	t => {
-		const ariaVersion =
-			attr.rule.options?.version ??
-			attr.ownerMLDocument.ruleCommonSettings?.ariaVersion ??
-			ARIA_RECOMMENDED_VERSION;
+		const ariaVersion = attr.ownerMLDocument.ruleCommonSettings?.ariaVersion ?? ARIA_RECOMMENDED_VERSION;
 		const { roles, graphicsRoles, dpubRoles } = ariaSpecs(attr.ownerMLDocument.specs, ariaVersion);
 		const tokens = attr.tokenList?.allTokens();
 		if (!tokens) {

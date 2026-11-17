@@ -1,5 +1,4 @@
 import { isAriaAttr } from '../../helpers.js';
-import type { Options } from '../types.js';
 import type { AttrChecker } from '@markuplint/ml-core';
 import type { ARIAProperty, ARIARole } from '@markuplint/ml-spec';
 
@@ -43,7 +42,7 @@ const NAMING_ATTRS = new Set(['aria-label', 'aria-labelledby', 'aria-braillelabe
  */
 export const checkingProhibitedNaming: AttrChecker<
 	boolean,
-	Options,
+	undefined,
 	{
 		role: ARIARole | null;
 		propSpecs: readonly ARIAProperty[];
@@ -63,10 +62,7 @@ export const checkingProhibitedNaming: AttrChecker<
 			return;
 		}
 
-		const ariaVersion =
-			attr.rule.options?.version ??
-			attr.ownerMLDocument.ruleCommonSettings?.ariaVersion ??
-			ARIA_RECOMMENDED_VERSION;
+		const ariaVersion = attr.ownerMLDocument.ruleCommonSettings?.ariaVersion ?? ARIA_RECOMMENDED_VERSION;
 		const elAriaSpec = getARIA(
 			attr.ownerMLDocument.specs,
 			attr.ownerElement.localName,
