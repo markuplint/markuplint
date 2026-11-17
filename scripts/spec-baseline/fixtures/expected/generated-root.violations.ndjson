@@ -1,0 +1,37 @@
+{"col":1,"line":1,"message":"Require the \"h1\" element","raw":"<","ruleId":"require-h1","severity":"warning"}
+{"col":7,"line":2,"message":"The \"manifest\" attribute is obsolete","raw":"manifest","ruleId":"no-obsolete-attr","severity":"error"}
+{"col":19,"line":2,"message":"The \"version\" attribute is obsolete","raw":"version","ruleId":"no-obsolete-attr","severity":"error"}
+{"col":30,"line":2,"message":"The \"xmlns\" attribute is ineffective. It doesn't need the attribute","raw":"xmlns=\"\"","ruleId":"no-ineffective-attr","severity":"warning"}
+{"col":30,"line":2,"message":"The \"xmlns\" attribute is non-standard","raw":"xmlns","ruleId":"no-nonstandard-features","severity":"warning"}
+{"col":7,"line":3,"message":"The \"profile\" attribute is obsolete","raw":"profile","ruleId":"no-obsolete-attr","severity":"error"}
+{"col":1,"line":7,"message":"The element should not empty","raw":"<body alink=\"\" background=\"\" bgcolor=\"\" bottommargin=\"\" leftmargin=\"\" link=\"\" marginheight=\"\" marginwidth=\"\" onafterprint=\"\" onbeforeprint=\"\" onbeforeunload=\"\" onhashchange=\"\" onlanguagechange=\"\" onmessage=\"\" onmessageerror=\"\" onoffline=\"\" ononline=\"\" onpagehide=\"\" onpagereveal=\"\" onpageshow=\"\" onpageswap=\"\" onpopstate=\"\" onrejectionhandled=\"\" onstorage=\"\" onunhandledrejection=\"\" onunload=\"\" rightmargin=\"\" text=\"\" topmargin=\"\" vlink=\"\">","ruleId":"no-empty-palpable-content","severity":"warning"}
+{"col":7,"line":7,"message":"The \"alink\" attribute is obsolete","raw":"alink","ruleId":"no-obsolete-attr","severity":"error"}
+{"col":16,"line":7,"message":"The \"background\" attribute is obsolete","raw":"background","ruleId":"no-obsolete-attr","severity":"error"}
+{"col":30,"line":7,"message":"The \"bgcolor\" attribute is obsolete","raw":"bgcolor","ruleId":"no-obsolete-attr","severity":"error"}
+{"col":41,"line":7,"message":"The \"bottommargin\" attribute is obsolete","raw":"bottommargin","ruleId":"no-obsolete-attr","severity":"error"}
+{"col":57,"line":7,"message":"The \"leftmargin\" attribute is obsolete","raw":"leftmargin","ruleId":"no-obsolete-attr","severity":"error"}
+{"col":71,"line":7,"message":"The \"link\" attribute is obsolete","raw":"link","ruleId":"no-obsolete-attr","severity":"error"}
+{"col":79,"line":7,"message":"The \"marginheight\" attribute is obsolete","raw":"marginheight","ruleId":"no-obsolete-attr","severity":"error"}
+{"col":95,"line":7,"message":"The \"marginwidth\" attribute is obsolete","raw":"marginwidth","ruleId":"no-obsolete-attr","severity":"error"}
+{"col":110,"line":7,"message":"The \"onafterprint\" attribute is disallowed","raw":"onafterprint=\"\"","ruleId":"no-event-handler-attr","severity":"warning"}
+{"col":126,"line":7,"message":"The \"onbeforeprint\" attribute is disallowed","raw":"onbeforeprint=\"\"","ruleId":"no-event-handler-attr","severity":"warning"}
+{"col":143,"line":7,"message":"The \"onbeforeunload\" attribute is disallowed","raw":"onbeforeunload=\"\"","ruleId":"no-event-handler-attr","severity":"warning"}
+{"col":161,"line":7,"message":"The \"onhashchange\" attribute is disallowed","raw":"onhashchange=\"\"","ruleId":"no-event-handler-attr","severity":"warning"}
+{"col":177,"line":7,"message":"The \"onlanguagechange\" attribute is disallowed","raw":"onlanguagechange=\"\"","ruleId":"no-event-handler-attr","severity":"warning"}
+{"col":197,"line":7,"message":"The \"onmessage\" attribute is disallowed","raw":"onmessage=\"\"","ruleId":"no-event-handler-attr","severity":"warning"}
+{"col":210,"line":7,"message":"The \"onmessageerror\" attribute is disallowed","raw":"onmessageerror=\"\"","ruleId":"no-event-handler-attr","severity":"warning"}
+{"col":228,"line":7,"message":"The \"onoffline\" attribute is disallowed","raw":"onoffline=\"\"","ruleId":"no-event-handler-attr","severity":"warning"}
+{"col":241,"line":7,"message":"The \"ononline\" attribute is disallowed","raw":"ononline=\"\"","ruleId":"no-event-handler-attr","severity":"warning"}
+{"col":253,"line":7,"message":"The \"onpagehide\" attribute is disallowed","raw":"onpagehide=\"\"","ruleId":"no-event-handler-attr","severity":"warning"}
+{"col":267,"line":7,"message":"The \"onpagereveal\" attribute is disallowed","raw":"onpagereveal=\"\"","ruleId":"no-event-handler-attr","severity":"warning"}
+{"col":283,"line":7,"message":"The \"onpageshow\" attribute is disallowed","raw":"onpageshow=\"\"","ruleId":"no-event-handler-attr","severity":"warning"}
+{"col":297,"line":7,"message":"The \"onpageswap\" attribute is disallowed","raw":"onpageswap=\"\"","ruleId":"no-event-handler-attr","severity":"warning"}
+{"col":311,"line":7,"message":"The \"onpopstate\" attribute is disallowed","raw":"onpopstate=\"\"","ruleId":"no-event-handler-attr","severity":"warning"}
+{"col":325,"line":7,"message":"The \"onrejectionhandled\" attribute is disallowed","raw":"onrejectionhandled=\"\"","ruleId":"no-event-handler-attr","severity":"warning"}
+{"col":347,"line":7,"message":"The \"onstorage\" attribute is disallowed","raw":"onstorage=\"\"","ruleId":"no-event-handler-attr","severity":"warning"}
+{"col":360,"line":7,"message":"The \"onunhandledrejection\" attribute is disallowed","raw":"onunhandledrejection=\"\"","ruleId":"no-event-handler-attr","severity":"warning"}
+{"col":384,"line":7,"message":"The \"onunload\" attribute is disallowed","raw":"onunload=\"\"","ruleId":"no-event-handler-attr","severity":"warning"}
+{"col":396,"line":7,"message":"The \"rightmargin\" attribute is obsolete","raw":"rightmargin","ruleId":"no-obsolete-attr","severity":"error"}
+{"col":411,"line":7,"message":"The \"text\" attribute is obsolete","raw":"text","ruleId":"no-obsolete-attr","severity":"error"}
+{"col":419,"line":7,"message":"The \"topmargin\" attribute is obsolete","raw":"topmargin","ruleId":"no-obsolete-attr","severity":"error"}
+{"col":432,"line":7,"message":"The \"vlink\" attribute is obsolete","raw":"vlink","ruleId":"no-obsolete-attr","severity":"error"}

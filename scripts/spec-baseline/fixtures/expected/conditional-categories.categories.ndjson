@@ -1,0 +1,103 @@
+{"line":2,"col":1,"raw":"<html lang=\"en\">","categories":[]}
+{"line":3,"col":2,"raw":"<head>","categories":[]}
+{"line":4,"col":3,"raw":"<meta charset=\"utf-8\" />","categories":["#metadata"]}
+{"line":5,"col":3,"raw":"<title>","categories":["#metadata"]}
+{"line":7,"col":2,"raw":"<body>","categories":[]}
+{"line":8,"col":3,"raw":"<h1>","categories":["#flow","#heading","#palpable"]}
+{"line":10,"col":3,"raw":"<p>","categories":["#flow","#palpable"]}
+{"line":12,"col":4,"raw":"<a href=\"#x\">","categories":["#flow","#interactive","#palpable","#phrasing"]}
+{"line":13,"col":4,"raw":"<a name=\"anchor\">","categories":["#flow","#palpable","#phrasing"]}
+{"line":15,"col":4,"raw":"<audio controls src=\"a.mp3\">","categories":["#embedded","#flow","#interactive","#palpable","#phrasing"]}
+{"line":16,"col":4,"raw":"<audio src=\"a.mp3\">","categories":["#embedded","#flow","#phrasing"]}
+{"line":17,"col":4,"raw":"<video controls src=\"a.mp4\">","categories":["#embedded","#flow","#interactive","#palpable","#phrasing"]}
+{"line":18,"col":4,"raw":"<video src=\"a.mp4\">","categories":["#embedded","#flow","#palpable","#phrasing"]}
+{"line":20,"col":4,"raw":"<img src=\"a.png\" alt=\"with a map\" usemap=\"#m\" />","categories":["#embedded","#flow","#interactive","#palpable","#phrasing"]}
+{"line":21,"col":4,"raw":"<img src=\"a.png\" alt=\"without a map\" />","categories":["#embedded","#flow","#palpable","#phrasing"]}
+{"line":22,"col":4,"raw":"<object data=\"a.svg\" usemap=\"#m\">","categories":["#embedded","#flow","#palpable","#phrasing"]}
+{"line":23,"col":4,"raw":"<object data=\"a.svg\">","categories":["#embedded","#flow","#palpable","#phrasing"]}
+{"line":25,"col":4,"raw":"<input type=\"text\" />","categories":["#flow","#interactive","#palpable","#phrasing"]}
+{"line":26,"col":4,"raw":"<input type=\"hidden\" name=\"h\" />","categories":["#flow","#phrasing"]}
+{"line":27,"col":4,"raw":"<input type=\"checkbox\" />","categories":["#flow","#interactive","#palpable","#phrasing"]}
+{"line":29,"col":4,"raw":"<button type=\"button\">","categories":["#flow","#interactive","#palpable","#phrasing"]}
+{"line":30,"col":4,"raw":"<select>","categories":["#flow","#interactive","#palpable","#phrasing"]}
+{"line":30,"col":12,"raw":"<option>","categories":[]}
+{"line":31,"col":4,"raw":"<textarea>","categories":["#flow","#interactive","#palpable","#phrasing"]}
+{"line":32,"col":4,"raw":"<embed src=\"a.swf\" />","categories":["#embedded","#flow","#interactive","#palpable","#phrasing"]}
+{"line":33,"col":4,"raw":"<iframe src=\"a.html\" title=\"frame\">","categories":["#embedded","#flow","#interactive","#palpable","#phrasing"]}
+{"line":34,"col":4,"raw":"<label>","categories":["#flow","#interactive","#palpable","#phrasing"]}
+{"line":34,"col":19,"raw":"<input type=\"text\" />","categories":["#flow","#interactive","#palpable","#phrasing"]}
+{"line":35,"col":4,"raw":"<details>","categories":["#flow","#interactive","#palpable"]}
+{"line":35,"col":13,"raw":"<summary>","categories":[]}
+{"line":36,"col":3,"raw":"","categories":["#flow","#palpable"]}
+{"line":39,"col":3,"raw":"<button type=\"button\">","categories":["#flow","#interactive","#palpable","#phrasing"]}
+{"line":39,"col":25,"raw":"<a href=\"#x\">","categories":["#flow","#interactive","#palpable","#phrasing"]}
+{"line":40,"col":3,"raw":"<button type=\"button\">","categories":["#flow","#interactive","#palpable","#phrasing"]}
+{"line":40,"col":25,"raw":"<a name=\"anchor2\">","categories":["#flow","#palpable","#phrasing"]}
+{"line":41,"col":3,"raw":"<button type=\"button\">","categories":["#flow","#interactive","#palpable","#phrasing"]}
+{"line":41,"col":25,"raw":"<audio controls src=\"a.mp3\">","categories":["#embedded","#flow","#interactive","#palpable","#phrasing"]}
+{"line":42,"col":3,"raw":"<button type=\"button\">","categories":["#flow","#interactive","#palpable","#phrasing"]}
+{"line":42,"col":25,"raw":"<audio src=\"a.mp3\">","categories":["#embedded","#flow","#phrasing"]}
+{"line":43,"col":3,"raw":"<button type=\"button\">","categories":["#flow","#interactive","#palpable","#phrasing"]}
+{"line":43,"col":25,"raw":"<img src=\"a.png\" alt=\"\" usemap=\"#m\" />","categories":["#embedded","#flow","#interactive","#palpable","#phrasing"]}
+{"line":44,"col":3,"raw":"<button type=\"button\">","categories":["#flow","#interactive","#palpable","#phrasing"]}
+{"line":44,"col":25,"raw":"<img src=\"a.png\" alt=\"\" />","categories":["#embedded","#flow","#palpable","#phrasing"]}
+{"line":45,"col":3,"raw":"<button type=\"button\">","categories":["#flow","#interactive","#palpable","#phrasing"]}
+{"line":45,"col":25,"raw":"<input type=\"hidden\" name=\"h\" />","categories":["#flow","#phrasing"]}
+{"line":46,"col":3,"raw":"<button type=\"button\">","categories":["#flow","#interactive","#palpable","#phrasing"]}
+{"line":46,"col":25,"raw":"<input type=\"text\" />","categories":["#flow","#interactive","#palpable","#phrasing"]}
+{"line":47,"col":3,"raw":"<button type=\"button\">","categories":["#flow","#interactive","#palpable","#phrasing"]}
+{"line":47,"col":25,"raw":"<label>","categories":["#flow","#interactive","#palpable","#phrasing"]}
+{"line":48,"col":3,"raw":"<button type=\"button\">","categories":["#flow","#interactive","#palpable","#phrasing"]}
+{"line":48,"col":25,"raw":"<select>","categories":["#flow","#interactive","#palpable","#phrasing"]}
+{"line":48,"col":33,"raw":"<option>","categories":[]}
+{"line":49,"col":3,"raw":"<button type=\"button\">","categories":["#flow","#interactive","#palpable","#phrasing"]}
+{"line":49,"col":25,"raw":"<textarea>","categories":["#flow","#interactive","#palpable","#phrasing"]}
+{"line":50,"col":3,"raw":"<a href=\"#x\">","categories":["#flow","#interactive","#palpable","#phrasing"]}
+{"line":50,"col":16,"raw":"<button type=\"button\">","categories":["#flow","#interactive","#palpable","#phrasing"]}
+{"line":51,"col":3,"raw":"<a href=\"#x\">","categories":["#flow","#interactive","#palpable","#phrasing"]}
+{"line":51,"col":16,"raw":"<input type=\"text\" />","categories":["#flow","#interactive","#palpable","#phrasing"]}
+{"line":52,"col":3,"raw":"<a href=\"#x\">","categories":["#flow","#interactive","#palpable","#phrasing"]}
+{"line":52,"col":16,"raw":"<input type=\"hidden\" name=\"h\" />","categories":["#flow","#phrasing"]}
+{"line":53,"col":3,"raw":"<a href=\"#x\">","categories":["#flow","#interactive","#palpable","#phrasing"]}
+{"line":53,"col":16,"raw":"<img src=\"a.png\" alt=\"\" usemap=\"#m\" />","categories":["#embedded","#flow","#interactive","#palpable","#phrasing"]}
+{"line":54,"col":3,"raw":"<a href=\"#x\">","categories":["#flow","#interactive","#palpable","#phrasing"]}
+{"line":54,"col":16,"raw":"<img src=\"a.png\" alt=\"\" />","categories":["#embedded","#flow","#palpable","#phrasing"]}
+{"line":55,"col":3,"raw":"<a href=\"#x\">","categories":["#flow","#interactive","#palpable","#phrasing"]}
+{"line":55,"col":16,"raw":"<span tabindex=\"0\">","categories":["#flow","#palpable","#phrasing"]}
+{"line":56,"col":3,"raw":"<a href=\"#x\">","categories":["#flow","#interactive","#palpable","#phrasing"]}
+{"line":56,"col":16,"raw":"<span tabindex=\"-1\">","categories":["#flow","#palpable","#phrasing"]}
+{"line":57,"col":3,"raw":"<a name=\"anchor3\">","categories":["#flow","#palpable","#phrasing"]}
+{"line":57,"col":21,"raw":"<button type=\"button\">","categories":["#flow","#interactive","#palpable","#phrasing"]}
+{"line":58,"col":3,"raw":"<label>","categories":["#flow","#interactive","#palpable","#phrasing"]}
+{"line":58,"col":16,"raw":"<label>","categories":["#flow","#interactive","#palpable","#phrasing"]}
+{"line":61,"col":3,"raw":"<style>","categories":["#metadata"]}
+{"line":66,"col":3,"raw":"<p>","categories":["#flow","#palpable"]}
+{"line":67,"col":3,"raw":"<style>","categories":["#metadata"]}
+{"line":72,"col":3,"raw":"<link rel=\"stylesheet\" href=\"a.css\" />","categories":["#flow","#metadata","#phrasing"]}
+{"line":73,"col":3,"raw":"<link rel=\"dns-prefetch\" href=\"https://example.com/\" />","categories":["#flow","#metadata","#phrasing"]}
+{"line":74,"col":3,"raw":"<link rel=\"canonical\" href=\"https://example.com/\" />","categories":["#metadata"]}
+{"line":75,"col":3,"raw":"<link itemprop=\"url\" href=\"https://example.com/\" />","categories":["#flow","#metadata","#phrasing"]}
+{"line":76,"col":3,"raw":"<meta name=\"description\" content=\"not in the body\" />","categories":["#metadata"]}
+{"line":77,"col":3,"raw":"<meta itemprop=\"name\" content=\"in the body\" />","categories":["#flow","#metadata","#phrasing"]}
+{"line":78,"col":3,"raw":"<noscript>","categories":["#flow","#metadata","#phrasing"]}
+{"line":79,"col":3,"raw":"<template>","categories":["#flow","#metadata","#phrasing","#script-supporting"]}
+{"line":79,"col":13,"raw":"<p>","categories":["#flow","#palpable"]}
+{"line":82,"col":3,"raw":"<hgroup>","categories":["#flow","#heading","#palpable"]}
+{"line":83,"col":4,"raw":"<h2>","categories":["#flow","#heading","#palpable"]}
+{"line":84,"col":4,"raw":"<p>","categories":["#flow","#palpable"]}
+{"line":86,"col":3,"raw":"<ul>","categories":["#flow","#palpable"]}
+{"line":87,"col":4,"raw":"<li>","categories":[]}
+{"line":89,"col":3,"raw":"<menu>","categories":["#flow","#palpable"]}
+{"line":90,"col":4,"raw":"<li>","categories":[]}
+{"line":92,"col":3,"raw":"<p>","categories":["#flow","#palpable"]}
+{"line":92,"col":19,"raw":"<input type=\"hidden\" name=\"h\" />","categories":["#flow","#phrasing"]}
+{"line":93,"col":3,"raw":"<div>","categories":["#flow","#palpable"]}
+{"line":94,"col":3,"raw":"<p>","categories":["#flow","#palpable"]}
+{"line":95,"col":3,"raw":"<div>","categories":["#flow","#palpable"]}
+{"line":96,"col":3,"raw":"<div>","categories":["#flow","#palpable"]}
+{"line":96,"col":8,"raw":"<span>","categories":["#flow","#palpable","#phrasing"]}
+{"line":97,"col":3,"raw":"<ul>","categories":["#flow"]}
+{"line":98,"col":3,"raw":"<table>","categories":["#flow","#palpable"]}
+{"line":99,"col":3,"raw":"<span hidden>","categories":["#flow","#palpable","#phrasing"]}
+{"line":100,"col":3,"raw":"<map name=\"m\">","categories":["#flow","#palpable","#phrasing"]}
+{"line":100,"col":17,"raw":"<area shape=\"rect\" coords=\"0,0,1,1\" href=\"#x\" alt=\"area\" />","categories":["#flow","#phrasing"]}

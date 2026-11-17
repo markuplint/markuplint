@@ -1,0 +1,161 @@
+{"line":2,"col":1,"raw":"<html lang=\"en\">","categories":[]}
+{"line":3,"col":1,"raw":"<head>","categories":[]}
+{"line":5,"col":1,"raw":"<body>","categories":[]}
+{"line":6,"col":1,"raw":"<svg>","categories":["#SVGContainer","#SVGRenderable","#SVGStructural","#embedded","#flow","#palpable","#phrasing"]}
+{"line":6,"col":6,"raw":"<a interestfor=\"\" ping=\"\">","categories":["#SVGContainer","#SVGRenderable","#flow","#palpable","#phrasing"]}
+{"line":7,"col":1,"raw":"<svg>","categories":["#SVGContainer","#SVGRenderable","#SVGStructural","#embedded","#flow","#palpable","#phrasing"]}
+{"line":7,"col":6,"raw":"<animate attributeType=\"\">","categories":["#SVGAnimation"]}
+{"line":8,"col":1,"raw":"<svg>","categories":["#SVGContainer","#SVGRenderable","#SVGStructural","#embedded","#flow","#palpable","#phrasing"]}
+{"line":8,"col":6,"raw":"<animateMotion keyPoints=\"\" origin=\"\" path=\"\" rotate=\"\">","categories":["#SVGAnimation"]}
+{"line":9,"col":1,"raw":"<svg>","categories":["#SVGContainer","#SVGRenderable","#SVGStructural","#embedded","#flow","#palpable","#phrasing"]}
+{"line":9,"col":6,"raw":"<animateTransform type=\"\">","categories":["#SVGAnimation"]}
+{"line":10,"col":1,"raw":"<svg>","categories":["#SVGContainer","#SVGRenderable","#SVGStructural","#embedded","#flow","#palpable","#phrasing"]}
+{"line":10,"col":6,"raw":"<circle pathLength=\"\">","categories":["#SVGBasicShapes","#SVGGraphics","#SVGRenderable","#SVGShape"]}
+{"line":11,"col":1,"raw":"<svg>","categories":["#SVGContainer","#SVGRenderable","#SVGStructural","#embedded","#flow","#palpable","#phrasing"]}
+{"line":11,"col":6,"raw":"<clipPath clipPathUnits=\"\" externalResourcesRequired=\"\">","categories":["#SVGNeverRendered"]}
+{"line":12,"col":1,"raw":"<svg>","categories":["#SVGContainer","#SVGRenderable","#SVGStructural","#embedded","#flow","#palpable","#phrasing"]}
+{"line":12,"col":6,"raw":"<defs systemLanguage=\"\">","categories":["#SVGContainer","#SVGNeverRendered","#SVGStructural"]}
+{"line":13,"col":1,"raw":"<svg>","categories":["#SVGContainer","#SVGRenderable","#SVGStructural","#embedded","#flow","#palpable","#phrasing"]}
+{"line":13,"col":6,"raw":"<desc>","categories":["#SVGDescriptive"]}
+{"line":14,"col":1,"raw":"<svg>","categories":["#SVGContainer","#SVGRenderable","#SVGStructural","#embedded","#flow","#palpable","#phrasing"]}
+{"line":14,"col":6,"raw":"<discard begin=\"\" href=\"\">","categories":["#SVGAnimation"]}
+{"line":15,"col":1,"raw":"<svg>","categories":["#SVGContainer","#SVGRenderable","#SVGStructural","#embedded","#flow","#palpable","#phrasing"]}
+{"line":15,"col":6,"raw":"<ellipse pathLength=\"\">","categories":["#SVGBasicShapes","#SVGGraphics","#SVGRenderable","#SVGShape"]}
+{"line":16,"col":1,"raw":"<svg>","categories":["#SVGContainer","#SVGRenderable","#SVGStructural","#embedded","#flow","#palpable","#phrasing"]}
+{"line":16,"col":6,"raw":"<filter>","categories":[]}
+{"line":16,"col":14,"raw":"<feBlend in2=\"\" mode=\"\">","categories":["#SVGFilterPrimitive"]}
+{"line":17,"col":1,"raw":"<svg>","categories":["#SVGContainer","#SVGRenderable","#SVGStructural","#embedded","#flow","#palpable","#phrasing"]}
+{"line":17,"col":6,"raw":"<filter>","categories":[]}
+{"line":17,"col":14,"raw":"<feColorMatrix type=\"\" values=\"\">","categories":["#SVGFilterPrimitive"]}
+{"line":18,"col":1,"raw":"<svg>","categories":["#SVGContainer","#SVGRenderable","#SVGStructural","#embedded","#flow","#palpable","#phrasing"]}
+{"line":18,"col":6,"raw":"<filter>","categories":[]}
+{"line":18,"col":14,"raw":"<feComponentTransfer>","categories":["#SVGFilterPrimitive"]}
+{"line":19,"col":1,"raw":"<svg>","categories":["#SVGContainer","#SVGRenderable","#SVGStructural","#embedded","#flow","#palpable","#phrasing"]}
+{"line":19,"col":6,"raw":"<filter>","categories":[]}
+{"line":19,"col":14,"raw":"<feComposite in2=\"\" k1=\"\" k2=\"\" k3=\"\" k4=\"\" operator=\"\">","categories":["#SVGFilterPrimitive"]}
+{"line":20,"col":1,"raw":"<svg>","categories":["#SVGContainer","#SVGRenderable","#SVGStructural","#embedded","#flow","#palpable","#phrasing"]}
+{"line":20,"col":6,"raw":"<filter>","categories":[]}
+{"line":20,"col":14,"raw":"<feConvolveMatrix bias=\"\" divisor=\"\" edgeMode=\"\" kernelMatrix=\"\" kernelUnitLength=\"\" order=\"\" preserveAlpha=\"\" targetX=\"\" targetY=\"\">","categories":["#SVGFilterPrimitive"]}
+{"line":21,"col":1,"raw":"<svg>","categories":["#SVGContainer","#SVGRenderable","#SVGStructural","#embedded","#flow","#palpable","#phrasing"]}
+{"line":21,"col":6,"raw":"<filter>","categories":[]}
+{"line":21,"col":14,"raw":"<feDiffuseLighting diffuseConstant=\"\" kernelUnitLength=\"\" surfaceScale=\"\">","categories":["#SVGFilterPrimitive"]}
+{"line":22,"col":1,"raw":"<svg>","categories":["#SVGContainer","#SVGRenderable","#SVGStructural","#embedded","#flow","#palpable","#phrasing"]}
+{"line":22,"col":6,"raw":"<filter>","categories":[]}
+{"line":22,"col":14,"raw":"<feDisplacementMap in2=\"\" scale=\"\" xChannelSelector=\"\" yChannelSelector=\"\">","categories":["#SVGFilterPrimitive"]}
+{"line":23,"col":1,"raw":"<svg>","categories":["#SVGContainer","#SVGRenderable","#SVGStructural","#embedded","#flow","#palpable","#phrasing"]}
+{"line":23,"col":6,"raw":"<filter>","categories":[]}
+{"line":23,"col":14,"raw":"<feDiffuseLighting>","categories":["#SVGFilterPrimitive"]}
+{"line":23,"col":33,"raw":"<feDistantLight azimuth=\"\" elevation=\"\">","categories":["#SVGLightSource"]}
+{"line":24,"col":1,"raw":"<svg>","categories":["#SVGContainer","#SVGRenderable","#SVGStructural","#embedded","#flow","#palpable","#phrasing"]}
+{"line":24,"col":6,"raw":"<filter>","categories":[]}
+{"line":24,"col":14,"raw":"<feDropShadow dx=\"\" dy=\"\" stdDeviation=\"\">","categories":["#SVGFilterPrimitive"]}
+{"line":25,"col":1,"raw":"<svg>","categories":["#SVGContainer","#SVGRenderable","#SVGStructural","#embedded","#flow","#palpable","#phrasing"]}
+{"line":25,"col":6,"raw":"<filter>","categories":[]}
+{"line":25,"col":14,"raw":"<feFlood flood-color=\"\" flood-opacity=\"\">","categories":["#SVGFilterPrimitive"]}
+{"line":26,"col":1,"raw":"<svg>","categories":["#SVGContainer","#SVGRenderable","#SVGStructural","#embedded","#flow","#palpable","#phrasing"]}
+{"line":26,"col":6,"raw":"<filter>","categories":[]}
+{"line":26,"col":14,"raw":"<feFuncA>","categories":["#SVGFilterPrimitive"]}
+{"line":27,"col":1,"raw":"<svg>","categories":["#SVGContainer","#SVGRenderable","#SVGStructural","#embedded","#flow","#palpable","#phrasing"]}
+{"line":27,"col":6,"raw":"<filter>","categories":[]}
+{"line":27,"col":14,"raw":"<feFuncB>","categories":["#SVGFilterPrimitive"]}
+{"line":28,"col":1,"raw":"<svg>","categories":["#SVGContainer","#SVGRenderable","#SVGStructural","#embedded","#flow","#palpable","#phrasing"]}
+{"line":28,"col":6,"raw":"<filter>","categories":[]}
+{"line":28,"col":14,"raw":"<feFuncG>","categories":["#SVGFilterPrimitive"]}
+{"line":29,"col":1,"raw":"<svg>","categories":["#SVGContainer","#SVGRenderable","#SVGStructural","#embedded","#flow","#palpable","#phrasing"]}
+{"line":29,"col":6,"raw":"<filter>","categories":[]}
+{"line":29,"col":14,"raw":"<feFuncR>","categories":["#SVGFilterPrimitive"]}
+{"line":30,"col":1,"raw":"<svg>","categories":["#SVGContainer","#SVGRenderable","#SVGStructural","#embedded","#flow","#palpable","#phrasing"]}
+{"line":30,"col":6,"raw":"<filter>","categories":[]}
+{"line":30,"col":14,"raw":"<feGaussianBlur edgeMode=\"\" stdDeviation=\"\">","categories":["#SVGFilterPrimitive"]}
+{"line":31,"col":1,"raw":"<svg>","categories":["#SVGContainer","#SVGRenderable","#SVGStructural","#embedded","#flow","#palpable","#phrasing"]}
+{"line":31,"col":6,"raw":"<filter>","categories":[]}
+{"line":31,"col":14,"raw":"<feImage crossorigin=\"\" externalResourcesRequired=\"\" fetchpriority=\"\" href=\"\" preserveAspectRatio=\"\" xlink:href=\"\">","categories":["#SVGFilterPrimitive"]}
+{"line":32,"col":1,"raw":"<svg>","categories":["#SVGContainer","#SVGRenderable","#SVGStructural","#embedded","#flow","#palpable","#phrasing"]}
+{"line":32,"col":6,"raw":"<filter>","categories":[]}
+{"line":32,"col":14,"raw":"<feMerge>","categories":["#SVGFilterPrimitive"]}
+{"line":33,"col":1,"raw":"<svg>","categories":["#SVGContainer","#SVGRenderable","#SVGStructural","#embedded","#flow","#palpable","#phrasing"]}
+{"line":33,"col":6,"raw":"<filter>","categories":[]}
+{"line":33,"col":14,"raw":"<feMergeNode>","categories":["#SVGFilterPrimitive"]}
+{"line":34,"col":1,"raw":"<svg>","categories":["#SVGContainer","#SVGRenderable","#SVGStructural","#embedded","#flow","#palpable","#phrasing"]}
+{"line":34,"col":6,"raw":"<filter>","categories":[]}
+{"line":34,"col":14,"raw":"<feMorphology operator=\"\" radius=\"\">","categories":["#SVGFilterPrimitive"]}
+{"line":35,"col":1,"raw":"<svg>","categories":["#SVGContainer","#SVGRenderable","#SVGStructural","#embedded","#flow","#palpable","#phrasing"]}
+{"line":35,"col":6,"raw":"<filter>","categories":[]}
+{"line":35,"col":14,"raw":"<feOffset dx=\"\" dy=\"\">","categories":["#SVGFilterPrimitive"]}
+{"line":36,"col":1,"raw":"<svg>","categories":["#SVGContainer","#SVGRenderable","#SVGStructural","#embedded","#flow","#palpable","#phrasing"]}
+{"line":36,"col":6,"raw":"<filter>","categories":[]}
+{"line":36,"col":14,"raw":"<feDiffuseLighting>","categories":["#SVGFilterPrimitive"]}
+{"line":36,"col":33,"raw":"<fePointLight x=\"\" y=\"\" z=\"\">","categories":["#SVGLightSource"]}
+{"line":37,"col":1,"raw":"<svg>","categories":["#SVGContainer","#SVGRenderable","#SVGStructural","#embedded","#flow","#palpable","#phrasing"]}
+{"line":37,"col":6,"raw":"<filter>","categories":[]}
+{"line":37,"col":14,"raw":"<feSpecularLighting kernelUnitLength=\"\" specularConstant=\"\" specularExponent=\"\" surfaceScale=\"\">","categories":["#SVGFilterPrimitive"]}
+{"line":38,"col":1,"raw":"<svg>","categories":["#SVGContainer","#SVGRenderable","#SVGStructural","#embedded","#flow","#palpable","#phrasing"]}
+{"line":38,"col":6,"raw":"<filter>","categories":[]}
+{"line":38,"col":14,"raw":"<feDiffuseLighting>","categories":["#SVGFilterPrimitive"]}
+{"line":38,"col":33,"raw":"<feSpotLight limitingConeAngle=\"\" pointsAtX=\"\" pointsAtY=\"\" pointsAtZ=\"\" specularExponent=\"\" x=\"\" y=\"\" z=\"\">","categories":["#SVGLightSource"]}
+{"line":39,"col":1,"raw":"<svg>","categories":["#SVGContainer","#SVGRenderable","#SVGStructural","#embedded","#flow","#palpable","#phrasing"]}
+{"line":39,"col":6,"raw":"<filter>","categories":[]}
+{"line":39,"col":14,"raw":"<feTile>","categories":["#SVGFilterPrimitive"]}
+{"line":40,"col":1,"raw":"<svg>","categories":["#SVGContainer","#SVGRenderable","#SVGStructural","#embedded","#flow","#palpable","#phrasing"]}
+{"line":40,"col":6,"raw":"<filter>","categories":[]}
+{"line":40,"col":14,"raw":"<feTurbulence baseFrequency=\"\" numOctaves=\"\" seed=\"\" stitchTiles=\"\" type=\"\">","categories":["#SVGFilterPrimitive"]}
+{"line":41,"col":1,"raw":"<svg>","categories":["#SVGContainer","#SVGRenderable","#SVGStructural","#embedded","#flow","#palpable","#phrasing"]}
+{"line":41,"col":6,"raw":"<filter externalResourcesRequired=\"\" filterRes=\"\" filterUnits=\"\" height=\"\" primitiveUnits=\"\" width=\"\" x=\"\" xlink:href=\"\" y=\"\">","categories":[]}
+{"line":42,"col":1,"raw":"<svg>","categories":["#SVGContainer","#SVGRenderable","#SVGStructural","#embedded","#flow","#palpable","#phrasing"]}
+{"line":42,"col":6,"raw":"<foreignObject>","categories":["#SVGRenderable"]}
+{"line":43,"col":1,"raw":"<svg>","categories":["#SVGContainer","#SVGRenderable","#SVGStructural","#embedded","#flow","#palpable","#phrasing"]}
+{"line":43,"col":6,"raw":"<g>","categories":["#SVGContainer","#SVGRenderable","#SVGStructural"]}
+{"line":44,"col":1,"raw":"<svg>","categories":["#SVGContainer","#SVGRenderable","#SVGStructural","#embedded","#flow","#palpable","#phrasing"]}
+{"line":44,"col":6,"raw":"<image crossorigin=\"\" decoding=\"\" fetchpriority=\"\" href=\"\" preserveAspectRatio=\"\">","categories":["#SVGGraphics","#SVGRenderable"]}
+{"line":45,"col":1,"raw":"<svg>","categories":["#SVGContainer","#SVGRenderable","#SVGStructural","#embedded","#flow","#palpable","#phrasing"]}
+{"line":45,"col":6,"raw":"<line pathLength=\"\" x1=\"\" x2=\"\" y1=\"\" y2=\"\">","categories":["#SVGBasicShapes","#SVGGraphics","#SVGRenderable","#SVGShape"]}
+{"line":46,"col":1,"raw":"<svg>","categories":["#SVGContainer","#SVGRenderable","#SVGStructural","#embedded","#flow","#palpable","#phrasing"]}
+{"line":46,"col":6,"raw":"<linearGradient gradientTransform=\"\" gradientUnits=\"\" href=\"\" spreadMethod=\"\" x1=\"\" x2=\"\" y1=\"\" y2=\"\">","categories":["#SVGGradient","#SVGNeverRendered","#SVGPaintServer"]}
+{"line":47,"col":1,"raw":"<svg>","categories":["#SVGContainer","#SVGRenderable","#SVGStructural","#embedded","#flow","#palpable","#phrasing"]}
+{"line":47,"col":6,"raw":"<marker markerHeight=\"\" markerUnits=\"\" markerWidth=\"\" orient=\"\" preserveAspectRatio=\"\" refX=\"\" refY=\"\" viewBox=\"\">","categories":["#SVGContainer","#SVGNeverRendered"]}
+{"line":48,"col":1,"raw":"<svg>","categories":["#SVGContainer","#SVGRenderable","#SVGStructural","#embedded","#flow","#palpable","#phrasing"]}
+{"line":48,"col":6,"raw":"<mask height=\"\" maskContentUnits=\"\" maskUnits=\"\" width=\"\" x=\"\" y=\"\">","categories":["#SVGContainer","#SVGNeverRendered"]}
+{"line":49,"col":1,"raw":"<svg>","categories":["#SVGContainer","#SVGRenderable","#SVGStructural","#embedded","#flow","#palpable","#phrasing"]}
+{"line":49,"col":6,"raw":"<metadata>","categories":["#SVGDescriptive","#SVGNeverRendered"]}
+{"line":50,"col":1,"raw":"<svg>","categories":["#SVGContainer","#SVGRenderable","#SVGStructural","#embedded","#flow","#palpable","#phrasing"]}
+{"line":50,"col":6,"raw":"<mpath href=\"\">","categories":["#SVGAnimation"]}
+{"line":51,"col":1,"raw":"<svg>","categories":["#SVGContainer","#SVGRenderable","#SVGStructural","#embedded","#flow","#palpable","#phrasing"]}
+{"line":51,"col":6,"raw":"<path pathLength=\"\">","categories":["#SVGGraphics","#SVGRenderable","#SVGShape"]}
+{"line":52,"col":1,"raw":"<svg>","categories":["#SVGContainer","#SVGRenderable","#SVGStructural","#embedded","#flow","#palpable","#phrasing"]}
+{"line":52,"col":6,"raw":"<pattern height=\"\" href=\"\" patternContentUnits=\"\" patternTransform=\"\" patternUnits=\"\" preserveAspectRatio=\"\" systemLanguage=\"\" viewBox=\"\" width=\"\" x=\"\" y=\"\">","categories":["#SVGContainer","#SVGNeverRendered","#SVGPaintServer"]}
+{"line":53,"col":1,"raw":"<svg>","categories":["#SVGContainer","#SVGRenderable","#SVGStructural","#embedded","#flow","#palpable","#phrasing"]}
+{"line":53,"col":6,"raw":"<polygon pathLength=\"\" points=\"\">","categories":["#SVGBasicShapes","#SVGGraphics","#SVGRenderable","#SVGShape"]}
+{"line":54,"col":1,"raw":"<svg>","categories":["#SVGContainer","#SVGRenderable","#SVGStructural","#embedded","#flow","#palpable","#phrasing"]}
+{"line":54,"col":6,"raw":"<polyline pathLength=\"\" points=\"\">","categories":["#SVGBasicShapes","#SVGGraphics","#SVGRenderable","#SVGShape"]}
+{"line":55,"col":1,"raw":"<svg>","categories":["#SVGContainer","#SVGRenderable","#SVGStructural","#embedded","#flow","#palpable","#phrasing"]}
+{"line":55,"col":6,"raw":"<radialGradient cx=\"\" cy=\"\" fr=\"\" fx=\"\" fy=\"\" gradientTransform=\"\" gradientUnits=\"\" href=\"\" r=\"\" spreadMethod=\"\">","categories":["#SVGGradient","#SVGNeverRendered","#SVGPaintServer"]}
+{"line":56,"col":1,"raw":"<svg>","categories":["#SVGContainer","#SVGRenderable","#SVGStructural","#embedded","#flow","#palpable","#phrasing"]}
+{"line":56,"col":6,"raw":"<rect pathLength=\"\">","categories":["#SVGBasicShapes","#SVGGraphics","#SVGRenderable","#SVGShape"]}
+{"line":57,"col":1,"raw":"<svg>","categories":["#SVGContainer","#SVGRenderable","#SVGStructural","#embedded","#flow","#palpable","#phrasing"]}
+{"line":57,"col":6,"raw":"<script async=\"\" crossorigin=\"\" defer=\"\" fetchpriority=\"\" href=\"\" type=\"\">","categories":["#SVGNeverRendered","#flow","#metadata","#phrasing","#script-supporting"]}
+{"line":58,"col":1,"raw":"<svg>","categories":["#SVGContainer","#SVGRenderable","#SVGStructural","#embedded","#flow","#palpable","#phrasing"]}
+{"line":58,"col":6,"raw":"<set to=\"\">","categories":["#SVGAnimation"]}
+{"line":59,"col":1,"raw":"<svg>","categories":["#SVGContainer","#SVGRenderable","#SVGStructural","#embedded","#flow","#palpable","#phrasing"]}
+{"line":59,"col":6,"raw":"<linearGradient>","categories":["#SVGGradient","#SVGNeverRendered","#SVGPaintServer"]}
+{"line":59,"col":22,"raw":"<stop offset=\"\" stop-color=\"\" stop-opacity=\"\">","categories":["#SVGGradient"]}
+{"line":60,"col":1,"raw":"<svg>","categories":["#SVGContainer","#SVGRenderable","#SVGStructural","#embedded","#flow","#palpable","#phrasing"]}
+{"line":60,"col":6,"raw":"<style media=\"\" title=\"\" type=\"\">","categories":["#SVGNeverRendered","#flow","#metadata"]}
+{"line":61,"col":1,"raw":"<svg baseProfile=\"\" contentScriptType=\"\" contentStyleType=\"\" height=\"\" onunload=\"\" preserveAspectRatio=\"\" version=\"\" viewBox=\"\" width=\"\" zoomAndPan=\"\">","categories":["#SVGContainer","#SVGRenderable","#SVGStructural","#embedded","#flow","#palpable","#phrasing"]}
+{"line":62,"col":1,"raw":"<svg>","categories":["#SVGContainer","#SVGRenderable","#SVGStructural","#embedded","#flow","#palpable","#phrasing"]}
+{"line":62,"col":6,"raw":"<switch>","categories":["#SVGContainer","#SVGRenderable"]}
+{"line":63,"col":1,"raw":"<svg>","categories":["#SVGContainer","#SVGRenderable","#SVGStructural","#embedded","#flow","#palpable","#phrasing"]}
+{"line":63,"col":6,"raw":"<symbol preserveAspectRatio=\"\" refX=\"\" refY=\"\" viewBox=\"\">","categories":["#SVGContainer","#SVGNeverRendered","#SVGRenderable","#SVGStructural"]}
+{"line":64,"col":1,"raw":"<svg>","categories":["#SVGContainer","#SVGRenderable","#SVGStructural","#embedded","#flow","#palpable","#phrasing"]}
+{"line":64,"col":6,"raw":"<text dx=\"\" dy=\"\" lengthAdjust=\"\" rotate=\"\" textLength=\"\" x=\"\" y=\"\">","categories":["#SVGGraphics","#SVGRenderable","#SVGTextContent"]}
+{"line":65,"col":1,"raw":"<svg>","categories":["#SVGContainer","#SVGRenderable","#SVGStructural","#embedded","#flow","#palpable","#phrasing"]}
+{"line":65,"col":6,"raw":"<text>","categories":["#SVGGraphics","#SVGRenderable","#SVGTextContent"]}
+{"line":65,"col":12,"raw":"<textPath href=\"\" lengthAdjust=\"\" method=\"\" path=\"\" side=\"\" spacing=\"\" startOffset=\"\" textLength=\"\">","categories":["#SVGRenderable","#SVGTextContent","#SVGTextContentChild"]}
+{"line":66,"col":1,"raw":"<svg>","categories":["#SVGContainer","#SVGRenderable","#SVGStructural","#embedded","#flow","#palpable","#phrasing"]}
+{"line":66,"col":6,"raw":"<title>","categories":["#SVGDescriptive","#SVGNeverRendered","#metadata"]}
+{"line":67,"col":1,"raw":"<svg>","categories":["#SVGContainer","#SVGRenderable","#SVGStructural","#embedded","#flow","#palpable","#phrasing"]}
+{"line":67,"col":6,"raw":"<text>","categories":["#SVGGraphics","#SVGRenderable","#SVGTextContent"]}
+{"line":67,"col":12,"raw":"<tspan dx=\"\" dy=\"\" lengthAdjust=\"\" rotate=\"\" textLength=\"\" x=\"\" y=\"\">","categories":["#SVGRenderable","#SVGTextContent","#SVGTextContentChild"]}
+{"line":68,"col":1,"raw":"<svg>","categories":["#SVGContainer","#SVGRenderable","#SVGStructural","#embedded","#flow","#palpable","#phrasing"]}
+{"line":68,"col":6,"raw":"<use href=\"\">","categories":["#SVGGraphics","#SVGGraphicsReferencing","#SVGRenderable","#SVGStructural"]}
+{"line":69,"col":1,"raw":"<svg>","categories":["#SVGContainer","#SVGRenderable","#SVGStructural","#embedded","#flow","#palpable","#phrasing"]}
+{"line":69,"col":6,"raw":"<view preserveAspectRatio=\"\" svgView=\"\" viewBox=\"\" viewTarget=\"\" zoomAndPan=\"\">","categories":[]}

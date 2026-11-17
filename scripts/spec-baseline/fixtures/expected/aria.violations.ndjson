@@ -1,0 +1,149 @@
+{"col":25,"line":11,"message":"\"role\" should be before \"type\"","raw":"role","ruleId":"attr-order","severity":"warning"}
+{"col":31,"line":11,"message":"The \"button\" role is the implicit role of the \"button\" element","raw":"button","ruleId":"no-redundant-role","severity":"warning"}
+{"col":12,"line":12,"message":"Missing \"x\" ID","raw":"#x","ruleId":"no-broken-fragment-link","severity":"warning"}
+{"col":12,"line":13,"message":"Missing \"x\" ID","raw":"#x","ruleId":"no-broken-fragment-link","severity":"warning"}
+{"col":22,"line":13,"message":"The \"menuitem\" role requires an accessibility parent with one of the roles: \"menu\", \"menubar\", \"menu > group\", \"menubar > group\"","raw":"menuitem","ruleId":"require-parent-role","severity":"error"}
+{"col":3,"line":14,"message":"Require the \"aria-level\" ARIA property on the \"heading\" role","raw":"<a href=\"#x\" role=\"heading\">","ruleId":"require-aria-prop","severity":"error"}
+{"col":12,"line":14,"message":"Missing \"x\" ID","raw":"#x","ruleId":"no-broken-fragment-link","severity":"warning"}
+{"col":22,"line":14,"message":"Cannot overwrite the \"heading\" role to the \"a\" element according to ARIA in HTML specification","raw":"heading","ruleId":"permitted-roles","severity":"error"}
+{"col":6,"line":15,"message":"The \"name\" attribute is deprecated","raw":"name","ruleId":"no-deprecated-attr","severity":"warning"}
+{"col":20,"line":16,"message":"\"alt\" should be before \"src\"","raw":"alt","ruleId":"attr-order","severity":"warning"}
+{"col":33,"line":16,"message":"The \"presentation\" role is the implicit role of the \"img\" element","raw":"presentation","ruleId":"no-redundant-role","severity":"warning"}
+{"col":33,"line":16,"message":"Cannot overwrite the \"presentation\" role to the \"img\" element according to ARIA in HTML specification","raw":"presentation","ruleId":"permitted-roles","severity":"error"}
+{"col":20,"line":17,"message":"\"alt\" should be before \"src\"","raw":"alt","ruleId":"attr-order","severity":"warning"}
+{"col":34,"line":17,"message":"Cannot overwrite the \"presentation\" role to the \"img\" element according to ARIA in HTML specification","raw":"presentation","ruleId":"permitted-roles","severity":"error"}
+{"col":3,"line":18,"message":"Require accessible name","raw":"<img src=\"a.png\" alt=\"\" role=\"img\" />","ruleId":"require-accessible-name","severity":"error"}
+{"col":20,"line":18,"message":"\"alt\" should be before \"src\"","raw":"alt","ruleId":"attr-order","severity":"warning"}
+{"col":33,"line":18,"message":"Cannot overwrite the \"img\" role to the \"img\" element according to ARIA in HTML specification","raw":"img","ruleId":"permitted-roles","severity":"error"}
+{"col":13,"line":22,"message":"The \"list\" role is the implicit role of the \"ul\" element","raw":"list","ruleId":"no-redundant-role","severity":"warning"}
+{"col":14,"line":23,"message":"The \"listitem\" role is the implicit role of the \"li\" element","raw":"listitem","ruleId":"no-redundant-role","severity":"warning"}
+{"col":14,"line":25,"message":"The \"navigation\" role is the implicit role of the \"nav\" element","raw":"navigation","ruleId":"no-redundant-role","severity":"warning"}
+{"col":26,"line":25,"message":"\"aria-label\" should be before \"role\"","raw":"aria-label","ruleId":"attr-order","severity":"warning"}
+{"col":15,"line":26,"message":"The \"main\" role is the implicit role of the \"main\" element","raw":"main","ruleId":"no-redundant-role","severity":"warning"}
+{"col":15,"line":26,"message":"Cannot overwrite the \"main\" role to the \"main\" element according to ARIA in HTML specification","raw":"main","ruleId":"permitted-roles","severity":"error"}
+{"col":3,"line":27,"message":"Require accessible name","raw":"<input type=\"checkbox\" role=\"switch\" />","ruleId":"require-accessible-name","severity":"error"}
+{"col":3,"line":27,"message":"Require the \"aria-checked\" ARIA state on the \"switch\" role","raw":"<input type=\"checkbox\" role=\"switch\" />","ruleId":"require-aria-prop","severity":"error"}
+{"col":26,"line":27,"message":"\"role\" should be before \"type\"","raw":"role","ruleId":"attr-order","severity":"warning"}
+{"col":3,"line":28,"message":"Require accessible name","raw":"<input type=\"checkbox\" role=\"button\" />","ruleId":"require-accessible-name","severity":"error"}
+{"col":26,"line":28,"message":"\"role\" should be before \"type\"","raw":"role","ruleId":"attr-order","severity":"warning"}
+{"col":32,"line":28,"message":"Cannot overwrite the \"button\" role to the \"input\" element according to ARIA in HTML specification","raw":"button","ruleId":"permitted-roles","severity":"error"}
+{"col":14,"line":29,"message":"The \"foo\" role does not exist according to the WAI-ARIA specification.","raw":"foo","ruleId":"no-unknown-role","severity":"error"}
+{"col":14,"line":29,"message":"Cannot overwrite the \"foo\" role to the \"div\" element according to ARIA in HTML specification","raw":"foo","ruleId":"permitted-roles","severity":"error"}
+{"col":14,"line":30,"message":"The \"widget\" role is the abstract role","raw":"widget","ruleId":"no-abstract-role","severity":"error"}
+{"col":14,"line":30,"message":"Cannot overwrite the \"widget\" role to the \"div\" element according to ARIA in HTML specification","raw":"widget","ruleId":"permitted-roles","severity":"error"}
+{"col":8,"line":31,"message":"The \"directory\" role is deprecated","raw":"role=\"directory\"","ruleId":"no-deprecated-role","severity":"warning"}
+{"col":14,"line":34,"message":"The \"BUTTON\" role does not exist according to the WAI-ARIA specification.","raw":"BUTTON","ruleId":"no-unknown-role","severity":"error"}
+{"col":14,"line":34,"message":"Cannot overwrite the \"BUTTON\" role to the \"div\" element according to ARIA in HTML specification","raw":"BUTTON","ruleId":"permitted-roles","severity":"error"}
+{"col":3,"line":37,"message":"Require the \"aria-checked\" ARIA state on the \"checkbox\" role","raw":"<div role=\"checkbox\">","ruleId":"require-aria-prop","severity":"error"}
+{"col":3,"line":38,"message":"The accessible name from \"aria-label\" overrides \"content\"","raw":"<div role=\"checkbox\" aria-checked=\"true\" aria-label=\"checked\">","ruleId":"no-redundant-accessible-name","severity":"warning"}
+{"col":24,"line":38,"message":"\"aria-checked\" should be before \"role\"","raw":"aria-checked","ruleId":"attr-order","severity":"warning"}
+{"col":3,"line":39,"message":"Require the \"aria-valuenow\" ARIA property on the \"slider\" role","raw":"<div role=\"slider\" aria-label=\"s\">","ruleId":"require-aria-prop","severity":"error"}
+{"col":22,"line":39,"message":"\"aria-label\" should be before \"role\"","raw":"aria-label","ruleId":"attr-order","severity":"warning"}
+{"col":3,"line":40,"message":"Require the \"aria-level\" ARIA property on the \"heading\" role","raw":"<div role=\"heading\">","ruleId":"require-aria-prop","severity":"error"}
+{"col":3,"line":41,"message":"The child element requires the \"listitem\" role. Or, require aria-busy=\"true\"","raw":"<div role=\"list\">","ruleId":"require-owned-elements","severity":"error"}
+{"col":14,"line":43,"message":"The \"listitem\" role requires an accessibility parent with one of the roles: \"directory\", \"list\"","raw":"listitem","ruleId":"require-parent-role","severity":"error"}
+{"col":3,"line":44,"message":"The child element requires the roles: \"group > menuitem\", \"group > menuitemradio\", \"group > menuitemcheckbox\", \"menuitem\", \"menuitemcheckbox\", \"menuitemradio\", \"separator\". Or, require aria-busy=\"true\"","raw":"<div role=\"menu\">","ruleId":"require-owned-elements","severity":"error"}
+{"col":14,"line":45,"message":"The \"menuitem\" role requires an accessibility parent with one of the roles: \"menu\", \"menubar\", \"menu > group\", \"menubar > group\"","raw":"menuitem","ruleId":"require-parent-role","severity":"error"}
+{"col":14,"line":46,"message":"The \"tab\" role requires an accessibility parent with the \"tablist\" role","raw":"tab","ruleId":"require-parent-role","severity":"error"}
+{"col":23,"line":47,"message":"An active \"tab\" role requires a corresponding \"tabpanel\" role","raw":"<div role=\"tab\" aria-selected=\"true\">","ruleId":"tab-requires-tabpanel","severity":"error"}
+{"col":39,"line":47,"message":"\"aria-selected\" should be before \"role\"","raw":"aria-selected","ruleId":"attr-order","severity":"warning"}
+{"col":14,"line":48,"message":"The \"row\" role requires an accessibility parent with one of the roles: \"grid\", \"table\", \"treegrid\", \"rowgroup\"","raw":"row","ruleId":"require-parent-role","severity":"error"}
+{"col":20,"line":49,"message":"\"aria-label\" should be before \"role\"","raw":"aria-label","ruleId":"attr-order","severity":"warning"}
+{"col":3,"line":50,"message":"The element should not empty","raw":"<div role=\"combobox\" aria-expanded=\"false\" aria-controls=\"listbox1\" aria-label=\"c\">","ruleId":"no-empty-palpable-content","severity":"warning"}
+{"col":46,"line":50,"message":"\"aria-controls\" should be before \"role\"","raw":"aria-controls","ruleId":"attr-order","severity":"warning"}
+{"col":61,"line":50,"message":"Missing \"listbox1\" ID","raw":"listbox1","ruleId":"no-refer-to-non-existent-id","severity":"error"}
+{"col":22,"line":53,"message":"\"aria-pressed\" should be before \"role\"","raw":"aria-pressed","ruleId":"attr-order","severity":"warning"}
+{"col":22,"line":53,"message":"The \"maybe\" is disallowed on the \"aria-pressed\" ARIA state","raw":"aria-pressed=\"maybe\"","ruleId":"no-invalid-aria-prop-value","severity":"error"}
+{"col":22,"line":54,"message":"\"aria-pressed\" should be before \"role\"","raw":"aria-pressed","ruleId":"attr-order","severity":"warning"}
+{"col":22,"line":55,"message":"The \"abc\" is disallowed on the \"aria-valuenow\" ARIA property","raw":"aria-valuenow=\"abc\"","ruleId":"no-invalid-aria-prop-value","severity":"error"}
+{"col":79,"line":55,"message":"\"aria-label\" should be before \"role\"","raw":"aria-label","ruleId":"attr-order","severity":"warning"}
+{"col":77,"line":56,"message":"\"aria-label\" should be before \"role\"","raw":"aria-label","ruleId":"attr-order","severity":"warning"}
+{"col":8,"line":57,"message":"The \"yes\" is disallowed on the \"aria-hidden\" ARIA state","raw":"aria-hidden=\"yes\"","ruleId":"no-invalid-aria-prop-value","severity":"error"}
+{"col":8,"line":58,"message":"The \"aria-label\" ARIA property is disallowed on the \"generic\" role","raw":"aria-label=\"\"","ruleId":"role-supports-aria-prop","severity":"error"}
+{"col":9,"line":59,"message":"The \"aria-label\" ARIA property is disallowed on the \"generic\" role","raw":"aria-label=\"prohibited on a span\"","ruleId":"role-supports-aria-prop","severity":"error"}
+{"col":6,"line":60,"message":"The \"aria-label\" ARIA property is disallowed on the \"paragraph\" role","raw":"aria-label=\"prohibited on a paragraph\"","ruleId":"role-supports-aria-prop","severity":"error"}
+{"col":8,"line":61,"message":"The \"aria-labelledby\" ARIA property is disallowed on the \"generic\" role","raw":"aria-labelledby=\"missing-id\"","ruleId":"role-supports-aria-prop","severity":"error"}
+{"col":25,"line":61,"message":"Missing \"missing-id\" ID","raw":"missing-id","ruleId":"no-refer-to-non-existent-id","severity":"error"}
+{"col":26,"line":62,"message":"Missing \"a\" ID","raw":"a b","ruleId":"no-refer-to-non-existent-id","severity":"error"}
+{"col":26,"line":62,"message":"Missing \"b\" ID","raw":"a b","ruleId":"no-refer-to-non-existent-id","severity":"error"}
+{"col":22,"line":63,"message":"\"aria-expanded\" should be before \"role\"","raw":"aria-expanded","ruleId":"attr-order","severity":"warning"}
+{"col":20,"line":64,"message":"\"aria-expanded\" should be before \"role\"","raw":"aria-expanded","ruleId":"attr-order","severity":"warning"}
+{"col":20,"line":64,"message":"The \"aria-expanded\" ARIA state is disallowed on the \"note\" role","raw":"aria-expanded=\"true\"","ruleId":"role-supports-aria-prop","severity":"error"}
+{"col":8,"line":65,"message":"The \"aria-pressed\" ARIA state is disallowed on the \"generic\" role","raw":"aria-pressed=\"true\"","ruleId":"role-supports-aria-prop","severity":"error"}
+{"col":22,"line":66,"message":"\"aria-checked\" should be before \"role\"","raw":"aria-checked","ruleId":"attr-order","severity":"warning"}
+{"col":22,"line":66,"message":"The \"aria-checked\" ARIA state is disallowed on the \"button\" role","raw":"aria-checked=\"true\"","ruleId":"role-supports-aria-prop","severity":"error"}
+{"col":3,"line":67,"message":"The element should not empty","raw":"<div role=\"textbox\" aria-multiline=\"true\" aria-label=\"t\">","ruleId":"no-empty-palpable-content","severity":"warning"}
+{"col":45,"line":67,"message":"\"aria-label\" should be before \"role\"","raw":"aria-label","ruleId":"attr-order","severity":"warning"}
+{"col":23,"line":68,"message":"\"aria-level\" should be before \"role\"","raw":"aria-level","ruleId":"attr-order","severity":"warning"}
+{"col":3,"line":70,"message":"Require accessible name","raw":"<input type=\"text\" aria-required=\"true\" required />","ruleId":"require-accessible-name","severity":"error"}
+{"col":16,"line":70,"message":"It is the default value","raw":"text","ruleId":"no-default-value","severity":"warning"}
+{"col":22,"line":70,"message":"\"aria-required\" should be before \"type\"","raw":"aria-required","ruleId":"attr-order","severity":"warning"}
+{"col":22,"line":70,"message":"The \"aria-required\" ARIA property has the same semantics as the current \"required\" attribute or the implicit \"required\" attribute","raw":"aria-required=\"true\"","ruleId":"no-redundant-aria-prop","severity":"warning"}
+{"col":3,"line":71,"message":"Require accessible name","raw":"<input type=\"text\" aria-disabled=\"true\" disabled />","ruleId":"require-accessible-name","severity":"error"}
+{"col":16,"line":71,"message":"It is the default value","raw":"text","ruleId":"no-default-value","severity":"warning"}
+{"col":22,"line":71,"message":"\"aria-disabled\" should be before \"type\"","raw":"aria-disabled","ruleId":"attr-order","severity":"warning"}
+{"col":22,"line":71,"message":"The \"aria-disabled\" ARIA state has the same semantics as the current \"disabled\" attribute or the implicit \"disabled\" attribute","raw":"aria-disabled=\"true\"","ruleId":"no-redundant-aria-prop","severity":"warning"}
+{"col":3,"line":72,"message":"Require accessible name","raw":"<input type=\"checkbox\" aria-checked=\"true\" checked />","ruleId":"require-accessible-name","severity":"error"}
+{"col":26,"line":72,"message":"\"aria-checked\" should be before \"type\"","raw":"aria-checked","ruleId":"attr-order","severity":"warning"}
+{"col":26,"line":72,"message":"The \"aria-checked\" ARIA state must not use on the \"input\" element. As its state is already provided by the \"checked\" attribute","raw":"aria-checked=\"true\"","ruleId":"element-supports-aria-prop","severity":"error"}
+{"col":26,"line":72,"message":"The \"aria-checked\" ARIA state has the same semantics as the current \"checked\" attribute or the implicit \"checked\" attribute","raw":"aria-checked=\"true\"","ruleId":"no-redundant-aria-prop","severity":"warning"}
+{"col":3,"line":73,"message":"Require accessible name","raw":"<input type=\"text\" aria-invalid=\"grammar\" />","ruleId":"require-accessible-name","severity":"error"}
+{"col":16,"line":73,"message":"It is the default value","raw":"text","ruleId":"no-default-value","severity":"warning"}
+{"col":22,"line":73,"message":"\"aria-invalid\" should be before \"type\"","raw":"aria-invalid","ruleId":"attr-order","severity":"warning"}
+{"col":34,"line":74,"message":"\"aria-errormessage\" should be before \"role\"","raw":"aria-errormessage","ruleId":"attr-order","severity":"warning"}
+{"col":34,"line":74,"message":"The \"aria-errormessage\" ARIA property is deprecated on the \"img\" role","raw":"aria-errormessage=\"err\"","ruleId":"no-deprecated-aria-prop","severity":"warning"}
+{"col":53,"line":74,"message":"Missing \"err\" ID","raw":"err","ruleId":"no-refer-to-non-existent-id","severity":"error"}
+{"col":3,"line":78,"message":"The element should not empty","raw":"<div role=\"textbox\" aria-multiline=\"false\" aria-multiline=\"true\" aria-label=\"duplicate\">","ruleId":"no-empty-palpable-content","severity":"warning"}
+{"col":23,"line":78,"message":"It is default value","raw":"aria-multiline=\"false\"","ruleId":"no-default-aria-value","severity":"warning"}
+{"col":46,"line":78,"message":"The attribute name is duplicated","raw":"aria-multiline","ruleId":"no-duplicate-attr","severity":"error"}
+{"col":68,"line":78,"message":"\"aria-label\" should be before \"role\"","raw":"aria-label","ruleId":"attr-order","severity":"warning"}
+{"col":27,"line":81,"message":"It may be focusable in spite of it has the ancestor that has aria-hidden=true","raw":"<a href=\"#x\">","ruleId":"no-focusable-in-aria-hidden","severity":"warning"}
+{"col":36,"line":81,"message":"Missing \"x\" ID","raw":"#x","ruleId":"no-broken-fragment-link","severity":"warning"}
+{"col":27,"line":82,"message":"It may be focusable in spite of it has the ancestor that has aria-hidden=true","raw":"<button type=\"button\" tabindex=\"-1\">","ruleId":"no-focusable-in-aria-hidden","severity":"warning"}
+{"col":49,"line":82,"message":"\"tabindex\" should be before \"type\"","raw":"tabindex","ruleId":"attr-order","severity":"warning"}
+{"col":27,"line":83,"message":"It may be focusable in spite of it has the ancestor that has aria-hidden=true","raw":"<button type=\"button\" disabled>","ruleId":"no-focusable-in-aria-hidden","severity":"warning"}
+{"col":49,"line":83,"message":"\"disabled\" should be before \"type\"","raw":"disabled","ruleId":"attr-order","severity":"warning"}
+{"col":27,"line":84,"message":"It may be focusable in spite of it has the ancestor that has aria-hidden=true","raw":"<span tabindex=\"0\">","ruleId":"no-focusable-in-aria-hidden","severity":"warning"}
+{"col":31,"line":88,"message":"It may be ineffective because it has the \"button\" role as an ancestor that doesn't expose its descendants to the accessibility tree","raw":"role=\"img\"","ruleId":"no-aria-on-presentational-children","severity":"warning"}
+{"col":42,"line":88,"message":"\"aria-label\" should be before \"role\"","raw":"aria-label","ruleId":"attr-order","severity":"warning"}
+{"col":25,"line":89,"message":"\"aria-label\" should be before \"type\"","raw":"aria-label","ruleId":"attr-order","severity":"warning"}
+{"col":57,"line":89,"message":"\"alt\" should be before \"src\"","raw":"alt","ruleId":"attr-order","severity":"warning"}
+{"col":19,"line":90,"message":"\"aria-label\" should be before \"role\"","raw":"aria-label","ruleId":"attr-order","severity":"warning"}
+{"col":40,"line":90,"message":"It may be ineffective because it has the \"img\" role as an ancestor that doesn't expose its descendants to the accessibility tree","raw":"aria-label=\"x\"","ruleId":"no-aria-on-presentational-children","severity":"warning"}
+{"col":40,"line":90,"message":"The \"aria-label\" ARIA property is disallowed on the \"generic\" role","raw":"aria-label=\"x\"","ruleId":"role-supports-aria-prop","severity":"error"}
+{"col":3,"line":91,"message":"The accessible name from \"aria-label\" overrides \"content\"","raw":"<div role=\"checkbox\" aria-checked=\"false\" aria-label=\"c\">","ruleId":"no-redundant-accessible-name","severity":"warning"}
+{"col":24,"line":91,"message":"\"aria-checked\" should be before \"role\"","raw":"aria-checked","ruleId":"attr-order","severity":"warning"}
+{"col":66,"line":91,"message":"It may be ineffective because it has the \"checkbox\" role as an ancestor that doesn't expose its descendants to the accessibility tree","raw":"role=\"button\"","ruleId":"no-aria-on-presentational-children","severity":"warning"}
+{"col":3,"line":94,"message":"The element should not empty","raw":"<div id=\"owner1\" role=\"list\" aria-owns=\"item1 item2\">","ruleId":"no-empty-palpable-content","severity":"warning"}
+{"col":32,"line":94,"message":"\"aria-owns\" should be before \"id\"","raw":"aria-owns","ruleId":"attr-order","severity":"warning"}
+{"col":3,"line":97,"message":"The child element requires the \"listitem\" role. Or, require aria-busy=\"true\"","raw":"<div id=\"owner2\" role=\"list\" aria-owns=\"item1\">","ruleId":"require-owned-elements","severity":"error"}
+{"col":32,"line":97,"message":"\"aria-owns\" should be before \"id\"","raw":"aria-owns","ruleId":"attr-order","severity":"warning"}
+{"col":43,"line":97,"message":"The \"item1\" ID is already referred to by the \"aria-owns\" of another element","raw":"item1","ruleId":"no-duplicate-aria-owns","severity":"error"}
+{"col":19,"line":98,"message":"\"aria-owns\" should be before \"id\"","raw":"aria-owns","ruleId":"attr-order","severity":"warning"}
+{"col":30,"line":98,"message":"Referring to the \"loop2\" ID from \"aria-owns\" makes a cycle","raw":"loop2","ruleId":"no-circular-aria-owns","severity":"error"}
+{"col":19,"line":99,"message":"\"aria-owns\" should be before \"id\"","raw":"aria-owns","ruleId":"attr-order","severity":"warning"}
+{"col":30,"line":99,"message":"Referring to the \"loop1\" ID from \"aria-owns\" makes a cycle","raw":"loop1","ruleId":"no-circular-aria-owns","severity":"error"}
+{"col":18,"line":100,"message":"\"aria-owns\" should be before \"id\"","raw":"aria-owns","ruleId":"attr-order","severity":"warning"}
+{"col":29,"line":100,"message":"Referring to the \"self\" ID from \"aria-owns\" makes a cycle","raw":"self","ruleId":"no-circular-aria-owns","severity":"error"}
+{"col":17,"line":101,"message":"\"aria-owns\" should be before \"id\"","raw":"aria-owns","ruleId":"attr-order","severity":"warning"}
+{"col":28,"line":101,"message":"The \"item1\" ID is already referred to by the \"aria-owns\" of another element","raw":"item1","ruleId":"no-duplicate-aria-owns","severity":"error"}
+{"col":25,"line":102,"message":"\"aria-owns\" should be before \"type\"","raw":"aria-owns","ruleId":"attr-order","severity":"warning"}
+{"col":25,"line":102,"message":"\"aria-owns\" must not be specified on an element with the \"button\" role, whose children are presentational","raw":"aria-owns=\"item1\"","ruleId":"no-aria-owns-on-presentational-children","severity":"error"}
+{"col":36,"line":102,"message":"The \"item1\" ID is already referred to by the \"aria-owns\" of another element","raw":"item1","ruleId":"no-duplicate-aria-owns","severity":"error"}
+{"col":3,"line":105,"message":"The element should not empty","raw":"<a href=\"#x\">","ruleId":"no-empty-palpable-content","severity":"warning"}
+{"col":3,"line":105,"message":"Require accessible name","raw":"<a href=\"#x\">","ruleId":"require-accessible-name","severity":"error"}
+{"col":12,"line":105,"message":"Missing \"x\" ID","raw":"#x","ruleId":"no-broken-fragment-link","severity":"warning"}
+{"col":3,"line":106,"message":"The element should not empty","raw":"<button type=\"button\">","ruleId":"no-empty-palpable-content","severity":"warning"}
+{"col":3,"line":106,"message":"Require accessible name","raw":"<button type=\"button\">","ruleId":"require-accessible-name","severity":"error"}
+{"col":42,"line":107,"message":"\"alt\" should be before \"src\"","raw":"alt","ruleId":"attr-order","severity":"warning"}
+{"col":3,"line":108,"message":"The element should not empty","raw":"<button type=\"button\" title=\"named by title\">","ruleId":"no-empty-palpable-content","severity":"warning"}
+{"col":25,"line":108,"message":"\"title\" should be before \"type\"","raw":"title","ruleId":"attr-order","severity":"warning"}
+{"col":3,"line":109,"message":"Require accessible name","raw":"<input type=\"text\" />","ruleId":"require-accessible-name","severity":"error"}
+{"col":16,"line":109,"message":"It is the default value","raw":"text","ruleId":"no-default-value","severity":"warning"}
+{"col":16,"line":110,"message":"It is the default value","raw":"text","ruleId":"no-default-value","severity":"warning"}
+{"col":22,"line":110,"message":"\"aria-label\" should be before \"type\"","raw":"aria-label","ruleId":"attr-order","severity":"warning"}
+{"col":3,"line":111,"message":"Require accessible name","raw":"<img src=\"a.png\" />","ruleId":"require-accessible-name","severity":"error"}
+{"col":20,"line":112,"message":"\"alt\" should be before \"src\"","raw":"alt","ruleId":"attr-order","severity":"warning"}
+{"col":3,"line":115,"message":"Require unique accessible name","raw":"<div role=\"region\">","ruleId":"require-landmark-label","severity":"warning"}
+{"col":3,"line":124,"message":"The element should not empty","raw":"<svg role=\"img\">","ruleId":"no-empty-palpable-content","severity":"warning"}
+{"col":3,"line":124,"message":"Require accessible name","raw":"<svg role=\"img\">","ruleId":"require-accessible-name","severity":"error"}

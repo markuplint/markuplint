@@ -1,0 +1,71 @@
+{"line":2,"col":1,"raw":"<html lang=\"en\">","categories":[]}
+{"line":3,"col":1,"raw":"<head>","categories":[]}
+{"line":5,"col":1,"raw":"<body>","categories":[]}
+{"line":6,"col":1,"raw":"<math>","categories":["#embedded","#flow","#palpable","#phrasing"]}
+{"line":6,"col":7,"raw":"<maction>","categories":["#MathMLPresentation"]}
+{"line":6,"col":16,"raw":"<annotation encoding=\"\" src=\"\">","categories":[]}
+{"line":7,"col":1,"raw":"<math>","categories":["#embedded","#flow","#palpable","#phrasing"]}
+{"line":7,"col":7,"raw":"<maction>","categories":["#MathMLPresentation"]}
+{"line":7,"col":16,"raw":"<annotation-xml encoding=\"\" src=\"\">","categories":[]}
+{"line":8,"col":1,"raw":"<math>","categories":["#embedded","#flow","#palpable","#phrasing"]}
+{"line":8,"col":7,"raw":"<maction actiontype=\"\" selection=\"\">","categories":["#MathMLPresentation"]}
+{"line":9,"col":1,"raw":"<math alttext=\"\" display=\"\" xmlns=\"\">","categories":["#embedded","#flow","#palpable","#phrasing"]}
+{"line":10,"col":1,"raw":"<math>","categories":["#embedded","#flow","#palpable","#phrasing"]}
+{"line":10,"col":7,"raw":"<menclose notation=\"\">","categories":["#MathMLPresentation"]}
+{"line":11,"col":1,"raw":"<math>","categories":["#embedded","#flow","#palpable","#phrasing"]}
+{"line":11,"col":7,"raw":"<merror>","categories":["#MathMLPresentation"]}
+{"line":12,"col":1,"raw":"<math>","categories":["#embedded","#flow","#palpable","#phrasing"]}
+{"line":12,"col":7,"raw":"<mfenced close=\"\" open=\"\" separators=\"\">","categories":["#MathMLPresentation"]}
+{"line":13,"col":1,"raw":"<math>","categories":["#embedded","#flow","#palpable","#phrasing"]}
+{"line":13,"col":7,"raw":"<mfrac denomalign=\"\" linethickness=\"\" numalign=\"\">","categories":["#MathMLPresentation"]}
+{"line":14,"col":1,"raw":"<math>","categories":["#embedded","#flow","#palpable","#phrasing"]}
+{"line":14,"col":7,"raw":"<mi mathvariant=\"\">","categories":["#MathMLPresentation"]}
+{"line":15,"col":1,"raw":"<math>","categories":["#embedded","#flow","#palpable","#phrasing"]}
+{"line":15,"col":7,"raw":"<mmultiscripts subscriptshift=\"\" superscriptshift=\"\">","categories":["#MathMLPresentation","#MathMLScript"]}
+{"line":16,"col":1,"raw":"<math>","categories":["#embedded","#flow","#palpable","#phrasing"]}
+{"line":16,"col":7,"raw":"<mn>","categories":["#MathMLPresentation"]}
+{"line":17,"col":1,"raw":"<math>","categories":["#embedded","#flow","#palpable","#phrasing"]}
+{"line":17,"col":7,"raw":"<mo accent=\"\" fence=\"\" form=\"\" largeop=\"\" lspace=\"\" maxsize=\"\" minsize=\"\" movablelimits=\"\" rspace=\"\" separator=\"\" stretchy=\"\" symmetric=\"\">","categories":["#MathMLPresentation"]}
+{"line":18,"col":1,"raw":"<math>","categories":["#embedded","#flow","#palpable","#phrasing"]}
+{"line":18,"col":7,"raw":"<mover accent=\"\">","categories":["#MathMLPresentation"]}
+{"line":19,"col":1,"raw":"<math>","categories":["#embedded","#flow","#palpable","#phrasing"]}
+{"line":19,"col":7,"raw":"<mpadded depth=\"\" height=\"\" lspace=\"\" voffset=\"\" width=\"\">","categories":["#MathMLPresentation"]}
+{"line":20,"col":1,"raw":"<math>","categories":["#embedded","#flow","#palpable","#phrasing"]}
+{"line":20,"col":7,"raw":"<mphantom>","categories":["#MathMLPresentation"]}
+{"line":21,"col":1,"raw":"<math>","categories":["#embedded","#flow","#palpable","#phrasing"]}
+{"line":21,"col":7,"raw":"<mmultiscripts>","categories":["#MathMLPresentation","#MathMLScript"]}
+{"line":21,"col":22,"raw":"<mprescripts>","categories":[]}
+{"line":22,"col":1,"raw":"<math>","categories":["#embedded","#flow","#palpable","#phrasing"]}
+{"line":22,"col":7,"raw":"<mroot>","categories":["#MathMLPresentation"]}
+{"line":23,"col":1,"raw":"<math>","categories":["#embedded","#flow","#palpable","#phrasing"]}
+{"line":23,"col":7,"raw":"<mrow>","categories":["#MathMLPresentation"]}
+{"line":24,"col":1,"raw":"<math>","categories":["#embedded","#flow","#palpable","#phrasing"]}
+{"line":24,"col":7,"raw":"<ms>","categories":["#MathMLPresentation"]}
+{"line":25,"col":1,"raw":"<math>","categories":["#embedded","#flow","#palpable","#phrasing"]}
+{"line":25,"col":7,"raw":"<mspace depth=\"\" height=\"\" width=\"\">","categories":["#MathMLPresentation"]}
+{"line":26,"col":1,"raw":"<math>","categories":["#embedded","#flow","#palpable","#phrasing"]}
+{"line":26,"col":7,"raw":"<msqrt>","categories":["#MathMLPresentation"]}
+{"line":27,"col":1,"raw":"<math>","categories":["#embedded","#flow","#palpable","#phrasing"]}
+{"line":27,"col":7,"raw":"<mstyle background=\"\" color=\"\" fontsize=\"\" fontstyle=\"\" fontweight=\"\">","categories":["#MathMLPresentation"]}
+{"line":28,"col":1,"raw":"<math>","categories":["#embedded","#flow","#palpable","#phrasing"]}
+{"line":28,"col":7,"raw":"<msub subscriptshift=\"\">","categories":["#MathMLPresentation","#MathMLScript"]}
+{"line":29,"col":1,"raw":"<math>","categories":["#embedded","#flow","#palpable","#phrasing"]}
+{"line":29,"col":7,"raw":"<msubsup subscriptshift=\"\" superscriptshift=\"\">","categories":["#MathMLPresentation","#MathMLScript"]}
+{"line":30,"col":1,"raw":"<math>","categories":["#embedded","#flow","#palpable","#phrasing"]}
+{"line":30,"col":7,"raw":"<msup superscriptshift=\"\">","categories":["#MathMLPresentation","#MathMLScript"]}
+{"line":31,"col":1,"raw":"<math>","categories":["#embedded","#flow","#palpable","#phrasing"]}
+{"line":31,"col":7,"raw":"<mtable align=\"\" columnalign=\"\" columnlines=\"\" columnspacing=\"\" frame=\"\" framespacing=\"\" rowalign=\"\" rowlines=\"\" rowspacing=\"\" width=\"\">","categories":["#MathMLPresentation","#MathMLTabular"]}
+{"line":32,"col":1,"raw":"<math>","categories":["#embedded","#flow","#palpable","#phrasing"]}
+{"line":32,"col":7,"raw":"<mrow>","categories":["#MathMLPresentation"]}
+{"line":32,"col":13,"raw":"<mtd columnalign=\"\" columnspan=\"\" rowalign=\"\" rowspan=\"\">","categories":["#MathMLTabular"]}
+{"line":33,"col":1,"raw":"<math>","categories":["#embedded","#flow","#palpable","#phrasing"]}
+{"line":33,"col":7,"raw":"<mtext>","categories":["#MathMLPresentation"]}
+{"line":34,"col":1,"raw":"<math>","categories":["#embedded","#flow","#palpable","#phrasing"]}
+{"line":34,"col":7,"raw":"<mrow>","categories":["#MathMLPresentation"]}
+{"line":34,"col":13,"raw":"<mtr columnalign=\"\" rowalign=\"\">","categories":["#MathMLTabular"]}
+{"line":35,"col":1,"raw":"<math>","categories":["#embedded","#flow","#palpable","#phrasing"]}
+{"line":35,"col":7,"raw":"<munder accentunder=\"\">","categories":["#MathMLPresentation"]}
+{"line":36,"col":1,"raw":"<math>","categories":["#embedded","#flow","#palpable","#phrasing"]}
+{"line":36,"col":7,"raw":"<munderover accent=\"\" accentunder=\"\">","categories":["#MathMLPresentation"]}
+{"line":37,"col":1,"raw":"<math>","categories":["#embedded","#flow","#palpable","#phrasing"]}
+{"line":37,"col":7,"raw":"<semantics>","categories":[]}

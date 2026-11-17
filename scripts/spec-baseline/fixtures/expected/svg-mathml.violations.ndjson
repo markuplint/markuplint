@@ -1,0 +1,91 @@
+{"col":3,"line":10,"message":"Missing the end tag","raw":"<svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 100 100\" width=\"100\" height=\"100\" role=\"img\" aria-labelledby=\"t\">","ruleId":"require-end-tag","severity":"warning"}
+{"col":8,"line":10,"message":"The \"xmlns\" attribute is ineffective. It doesn't need the attribute","raw":"xmlns=\"http://www.w3.org/2000/svg\"","ruleId":"no-ineffective-attr","severity":"warning"}
+{"col":101,"line":10,"message":"\"aria-labelledby\" should be before \"xmlns\"","raw":"aria-labelledby","ruleId":"attr-order","severity":"warning"}
+{"col":42,"line":14,"message":"\"x2\" should be before \"y1\"","raw":"x2","ruleId":"attr-order","severity":"warning"}
+{"col":20,"line":15,"message":"It is the default value","raw":"0","ruleId":"no-default-value","severity":"warning"}
+{"col":39,"line":22,"message":"\"height\" should be before \"width\"","raw":"height","ruleId":"attr-order","severity":"warning"}
+{"col":31,"line":24,"message":"\"height\" should be before \"id\"","raw":"height","ruleId":"attr-order","severity":"warning"}
+{"col":88,"line":24,"message":"\"height\" should be before \"width\"","raw":"height","ruleId":"attr-order","severity":"warning"}
+{"col":37,"line":25,"message":"\"markerHeight\" should be before \"markerWidth\"","raw":"markerHeight","ruleId":"attr-order","severity":"warning"}
+{"col":54,"line":26,"message":"\"height\" should be before \"width\"","raw":"height","ruleId":"attr-order","severity":"warning"}
+{"col":14,"line":29,"message":"It is the default value","raw":"0","ruleId":"no-default-value","severity":"warning"}
+{"col":20,"line":29,"message":"It is the default value","raw":"0","ruleId":"no-default-value","severity":"warning"}
+{"col":34,"line":29,"message":"\"height\" should be before \"x\"","raw":"height","ruleId":"attr-order","severity":"warning"}
+{"col":15,"line":32,"message":"It is the default value","raw":"0","ruleId":"no-default-value","severity":"warning"}
+{"col":22,"line":32,"message":"It is the default value","raw":"0","ruleId":"no-default-value","severity":"warning"}
+{"col":43,"line":32,"message":"\"stroke\" should be before \"x1\"","raw":"stroke","ruleId":"attr-order","severity":"warning"}
+{"col":39,"line":33,"message":"\"fill\" should be before \"points\"","raw":"fill","ruleId":"attr-order","severity":"warning"}
+{"col":47,"line":35,"message":"\"stroke-linecap\" should be before \"stroke-width\"","raw":"stroke-linecap","ruleId":"attr-order","severity":"warning"}
+{"col":44,"line":37,"message":"\"height\" should be before \"href\"","raw":"height","ruleId":"attr-order","severity":"warning"}
+{"col":9,"line":38,"message":"The \"xlink:href\" attribute is deprecated","raw":"xlink:href","ruleId":"no-deprecated-attr","severity":"warning"}
+{"col":24,"line":39,"message":"\"font-size\" should be before \"x\"","raw":"font-size","ruleId":"attr-order","severity":"warning"}
+{"col":47,"line":43,"message":"\"decoding\" should be before \"href\"","raw":"decoding","ruleId":"attr-order","severity":"warning"}
+{"col":47,"line":43,"message":"The \"decoding\" attribute is non-standard","raw":"decoding","ruleId":"no-nonstandard-features","severity":"warning"}
+{"col":64,"line":43,"message":"The \"fetchpriority\" attribute is experimental","raw":"fetchpriority","ruleId":"no-experimental-features","severity":"warning"}
+{"col":64,"line":43,"message":"The \"fetchpriority\" attribute is non-standard","raw":"fetchpriority","ruleId":"no-nonstandard-features","severity":"warning"}
+{"col":44,"line":44,"message":"It is the default value","raw":"0","ruleId":"no-default-value","severity":"warning"}
+{"col":50,"line":44,"message":"It is the default value","raw":"0","ruleId":"no-default-value","severity":"warning"}
+{"col":24,"line":48,"message":"\"async\" should be before \"href\"","raw":"async","ruleId":"attr-order","severity":"warning"}
+{"col":24,"line":48,"message":"The \"async\" attribute is experimental","raw":"async","ruleId":"no-experimental-features","severity":"warning"}
+{"col":24,"line":48,"message":"The \"async\" attribute is non-standard","raw":"async","ruleId":"no-nonstandard-features","severity":"warning"}
+{"col":22,"line":56,"message":"It is the default value","raw":"0","ruleId":"no-default-value","severity":"warning"}
+{"col":28,"line":56,"message":"It is the default value","raw":"0","ruleId":"no-default-value","severity":"warning"}
+{"col":42,"line":56,"message":"\"height\" should be before \"x\"","raw":"height","ruleId":"attr-order","severity":"warning"}
+{"col":48,"line":60,"message":"\"dur\" should be before \"from\"","raw":"dur","ruleId":"attr-order","severity":"warning"}
+{"col":80,"line":62,"message":"\"dur\" should be before \"type\"","raw":"dur","ruleId":"attr-order","severity":"warning"}
+{"col":4,"line":64,"message":"The \"rect\" element is not closed at the end of the file","raw":"<rect />","ruleId":"no-unclosed-element-at-eof","severity":"error"}
+{"col":4,"line":64,"message":"The \"rect\" element is not allowed in the \"body\" element in this context","raw":"<rect />","ruleId":"permitted-contents","severity":"error"}
+{"col":4,"line":64,"message":"Missing the end tag","raw":"<rect />","ruleId":"require-end-tag","severity":"warning"}
+{"col":4,"line":65,"message":"The \"circle\" element is not closed at the end of the file","raw":"<circle r=\"-1\" />","ruleId":"no-unclosed-element-at-eof","severity":"error"}
+{"col":4,"line":65,"message":"Missing the end tag","raw":"<circle r=\"-1\" />","ruleId":"require-end-tag","severity":"warning"}
+{"col":4,"line":66,"message":"The \"rect\" element is not closed at the end of the file","raw":"<rect width=\"x\" height=\"1\" foo=\"bar\" />","ruleId":"no-unclosed-element-at-eof","severity":"error"}
+{"col":4,"line":66,"message":"Missing the end tag","raw":"<rect width=\"x\" height=\"1\" foo=\"bar\" />","ruleId":"require-end-tag","severity":"warning"}
+{"col":31,"line":66,"message":"\"foo\" should be before \"width\"","raw":"foo","ruleId":"attr-order","severity":"warning"}
+{"col":4,"line":67,"message":"The \"unknown-svg-element\" element is not closed at the end of the file","raw":"<unknown-svg-element />","ruleId":"no-unclosed-element-at-eof","severity":"error"}
+{"col":4,"line":67,"message":"Missing the end tag","raw":"<unknown-svg-element />","ruleId":"require-end-tag","severity":"warning"}
+{"col":4,"line":68,"message":"Missing the end tag","raw":"<fooBar />","ruleId":"require-end-tag","severity":"warning"}
+{"col":5,"line":68,"message":"Tag names of HTML elements should be lowercase","raw":"fooBar","ruleId":"case-sensitive-tag-name","severity":"warning"}
+{"col":3,"line":70,"message":"Orphaned end tag detected","raw":"</svg>","ruleId":"no-orphaned-end-tag","severity":"error"}
+{"col":3,"line":72,"message":"The element should not empty","raw":"<svg viewBox=\"0 0 1 1\">","ruleId":"no-empty-palpable-content","severity":"warning"}
+{"col":35,"line":77,"message":"\"height\" should be before \"width\"","raw":"height","ruleId":"attr-order","severity":"warning"}
+{"col":60,"line":78,"message":"\"height\" should be before \"width\"","raw":"height","ruleId":"attr-order","severity":"warning"}
+{"col":30,"line":79,"message":"It may be ineffective because it has the \"button\" role as an ancestor that doesn't expose its descendants to the accessibility tree","raw":"role=\"img\"","ruleId":"no-aria-on-presentational-children","severity":"warning"}
+{"col":3,"line":81,"message":"Missing the end tag","raw":"<math display=\"block\" xmlns=\"http://www.w3.org/1998/Math/MathML\">","ruleId":"require-end-tag","severity":"warning"}
+{"col":12,"line":104,"message":"The \"columnalign\" attribute is non-standard","raw":"columnalign","ruleId":"no-nonstandard-features","severity":"warning"}
+{"col":31,"line":104,"message":"The \"rowalign\" attribute is non-standard","raw":"rowalign","ruleId":"no-nonstandard-features","severity":"warning"}
+{"col":46,"line":104,"message":"The \"frame\" attribute is non-standard","raw":"frame","ruleId":"no-nonstandard-features","severity":"warning"}
+{"col":60,"line":104,"message":"The \"rowlines\" attribute is non-standard","raw":"rowlines","ruleId":"no-nonstandard-features","severity":"warning"}
+{"col":77,"line":104,"message":"The \"columnlines\" attribute is non-standard","raw":"columnlines","ruleId":"no-nonstandard-features","severity":"warning"}
+{"col":117,"line":104,"message":"The \"equalrows\" attribute is disallowed","raw":"equalrows","ruleId":"no-unknown-attr","severity":"error"}
+{"col":134,"line":104,"message":"The \"equalcolumns\" attribute is disallowed","raw":"equalcolumns","ruleId":"no-unknown-attr","severity":"error"}
+{"col":154,"line":104,"message":"\"align\" should be before \"columnalign\"","raw":"align","ruleId":"attr-order","severity":"warning"}
+{"col":154,"line":104,"message":"The \"align\" attribute is non-standard","raw":"align","ruleId":"no-nonstandard-features","severity":"warning"}
+{"col":167,"line":104,"message":"The \"side\" attribute is disallowed","raw":"side","ruleId":"no-unknown-attr","severity":"error"}
+{"col":179,"line":104,"message":"The \"width\" attribute is non-standard","raw":"width","ruleId":"no-nonstandard-features","severity":"warning"}
+{"col":192,"line":104,"message":"The \"columnwidth\" attribute is disallowed. Did you mean \"columnlines\"?","raw":"columnwidth","ruleId":"no-unknown-attr","severity":"error"}
+{"col":211,"line":104,"message":"The \"columnspacing\" attribute is non-standard","raw":"columnspacing","ruleId":"no-nonstandard-features","severity":"warning"}
+{"col":231,"line":104,"message":"The \"rowspacing\" attribute is non-standard","raw":"rowspacing","ruleId":"no-nonstandard-features","severity":"warning"}
+{"col":248,"line":104,"message":"The \"framespacing\" attribute is non-standard","raw":"framespacing","ruleId":"no-nonstandard-features","severity":"warning"}
+{"col":267,"line":104,"message":"The \"minlabelspacing\" attribute is disallowed. Did you mean \"framespacing\"?","raw":"minlabelspacing","ruleId":"no-unknown-attr","severity":"error"}
+{"col":10,"line":105,"message":"The \"rowalign\" attribute is non-standard","raw":"rowalign","ruleId":"no-nonstandard-features","severity":"warning"}
+{"col":25,"line":105,"message":"\"columnalign\" should be before \"rowalign\"","raw":"columnalign","ruleId":"attr-order","severity":"warning"}
+{"col":25,"line":105,"message":"The \"columnalign\" attribute is non-standard","raw":"columnalign","ruleId":"no-nonstandard-features","severity":"warning"}
+{"col":38,"line":106,"message":"The \"rowalign\" attribute is non-standard","raw":"rowalign","ruleId":"no-nonstandard-features","severity":"warning"}
+{"col":53,"line":106,"message":"\"columnalign\" should be before \"rowspan\"","raw":"columnalign","ruleId":"attr-order","severity":"warning"}
+{"col":53,"line":106,"message":"The \"columnalign\" attribute is non-standard","raw":"columnalign","ruleId":"no-nonstandard-features","severity":"warning"}
+{"col":4,"line":110,"message":"The \"menclose\" element is non-standard","raw":"<menclose notation=\"box\">","ruleId":"no-nonstandard-features","severity":"warning"}
+{"col":14,"line":110,"message":"The \"notation\" attribute is non-standard","raw":"notation","ruleId":"no-nonstandard-features","severity":"warning"}
+{"col":4,"line":111,"message":"The \"mfenced\" element is deprecated","raw":"<mfenced open=\"[\" close=\"]\" separators=\",\">","ruleId":"no-deprecated-element","severity":"warning"}
+{"col":4,"line":111,"message":"The \"mfenced\" element is non-standard","raw":"<mfenced open=\"[\" close=\"]\" separators=\",\">","ruleId":"no-nonstandard-features","severity":"warning"}
+{"col":22,"line":111,"message":"\"close\" should be before \"open\"","raw":"close","ruleId":"attr-order","severity":"warning"}
+{"col":44,"line":111,"message":"It is the default value","raw":",","ruleId":"no-default-value","severity":"warning"}
+{"col":12,"line":114,"message":"The \"mathvariant\" attribute is disallowed. Did you mean \"mathbackground\"?","raw":"mathvariant","ruleId":"no-unknown-attr","severity":"error"}
+{"col":31,"line":114,"message":"The \"mathsize\" attribute is deprecated","raw":"mathsize","ruleId":"no-deprecated-attr","severity":"warning"}
+{"col":41,"line":114,"message":"The \"mathsize\" attribute expects the CSS Syntax \"<length-percentage>\" (https://csstree.github.io/docs/syntax/#Type:length-percentage)","raw":"2","ruleId":"no-invalid-attr-value","severity":"error"}
+{"col":44,"line":114,"message":"The \"mathcolor\" attribute is deprecated","raw":"mathcolor","ruleId":"no-deprecated-attr","severity":"warning"}
+{"col":60,"line":114,"message":"\"mathbackground\" should be before \"mathvariant\"","raw":"mathbackground","ruleId":"attr-order","severity":"warning"}
+{"col":60,"line":114,"message":"The \"mathbackground\" attribute is deprecated","raw":"mathbackground","ruleId":"no-deprecated-attr","severity":"warning"}
+{"col":8,"line":118,"message":"The \"foo\" attribute is disallowed","raw":"foo","ruleId":"no-unknown-attr","severity":"error"}
+{"col":4,"line":119,"message":"The \"unknown-math\" element is not allowed in the \"math\" element in this context","raw":"<unknown-math />","ruleId":"permitted-contents","severity":"error"}
+{"col":4,"line":121,"message":"Missing the end tag","raw":"<rect />","ruleId":"require-end-tag","severity":"warning"}
+{"col":3,"line":122,"message":"Orphaned end tag detected","raw":"</math>","ruleId":"no-orphaned-end-tag","severity":"error"}

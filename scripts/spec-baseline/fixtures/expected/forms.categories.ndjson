@@ -1,0 +1,106 @@
+{"line":2,"col":1,"raw":"<html lang=\"en\">","categories":[]}
+{"line":3,"col":2,"raw":"<head>","categories":[]}
+{"line":4,"col":3,"raw":"<meta charset=\"utf-8\" />","categories":["#metadata"]}
+{"line":5,"col":3,"raw":"<title>","categories":["#metadata"]}
+{"line":7,"col":2,"raw":"<body>","categories":[]}
+{"line":8,"col":3,"raw":"<h1>","categories":["#flow","#heading","#palpable"]}
+{"line":9,"col":3,"raw":"<form id=\"f1\" action=\"/a\" method=\"get\" enctype=\"multipart/form-data\" novalidate autocomplete=\"off\" target=\"_blank\" accept-charset=\"utf-8\" name=\"f1\">","categories":["#flow","#palpable"]}
+{"line":11,"col":4,"raw":"<label for=\"a\">","categories":["#flow","#interactive","#palpable","#phrasing"]}
+{"line":12,"col":4,"raw":"<input id=\"a\" name=\"a\" type=\"text\" />","categories":["#flow","#interactive","#palpable","#phrasing"]}
+{"line":13,"col":4,"raw":"<label for=\"missing\">","categories":["#flow","#interactive","#palpable","#phrasing"]}
+{"line":14,"col":4,"raw":"<label for=\"d\">","categories":["#flow","#interactive","#palpable","#phrasing"]}
+{"line":15,"col":4,"raw":"<div id=\"d\">","categories":["#flow","#palpable"]}
+{"line":16,"col":4,"raw":"<label>","categories":["#flow","#interactive","#palpable","#phrasing"]}
+{"line":17,"col":4,"raw":"<label>","categories":["#flow","#interactive","#palpable","#phrasing"]}
+{"line":17,"col":24,"raw":"<input type=\"text\" name=\"x1\" />","categories":["#flow","#interactive","#palpable","#phrasing"]}
+{"line":17,"col":56,"raw":"<input type=\"text\" name=\"x2\" />","categories":["#flow","#interactive","#palpable","#phrasing"]}
+{"line":18,"col":4,"raw":"<label for=\"a\">","categories":["#flow","#interactive","#palpable","#phrasing"]}
+{"line":19,"col":4,"raw":"<label>","categories":["#flow","#interactive","#palpable","#phrasing"]}
+{"line":19,"col":18,"raw":"<input type=\"text\" name=\"n\" />","categories":["#flow","#interactive","#palpable","#phrasing"]}
+{"line":20,"col":4,"raw":"<label for=\"b\">","categories":["#flow","#interactive","#palpable","#phrasing"]}
+{"line":20,"col":19,"raw":"<input id=\"b\" type=\"text\" name=\"b\" />","categories":["#flow","#interactive","#palpable","#phrasing"]}
+{"line":21,"col":4,"raw":"<label for=\"c\">","categories":["#flow","#interactive","#palpable","#phrasing"]}
+{"line":21,"col":19,"raw":"<input id=\"other\" type=\"text\" name=\"c\" />","categories":["#flow","#interactive","#palpable","#phrasing"]}
+{"line":22,"col":4,"raw":"<input type=\"text\" form=\"missing-form\" name=\"y\" />","categories":["#flow","#interactive","#palpable","#phrasing"]}
+{"line":23,"col":4,"raw":"<input type=\"text\" form=\"f1\" name=\"z\" />","categories":["#flow","#interactive","#palpable","#phrasing"]}
+{"line":24,"col":4,"raw":"<input type=\"text\" form=\"d\" name=\"z2\" />","categories":["#flow","#interactive","#palpable","#phrasing"]}
+{"line":27,"col":4,"raw":"<input type=\"text\" value=\"v\" size=\"10\" maxlength=\"5\" minlength=\"2\" pattern=\"[a-z]+\" placeholder=\"p\" readonly required />","categories":["#flow","#interactive","#palpable","#phrasing"]}
+{"line":28,"col":4,"raw":"<input type=\"text\" maxlength=\"-1\" minlength=\"x\" size=\"0\" pattern=\"[\" />","categories":["#flow","#interactive","#palpable","#phrasing"]}
+{"line":29,"col":4,"raw":"<input type=\"number\" min=\"1\" max=\"10\" step=\"2\" value=\"x\" />","categories":["#flow","#interactive","#palpable","#phrasing"]}
+{"line":30,"col":4,"raw":"<input type=\"number\" min=\"x\" max=\"1\" step=\"0\" />","categories":["#flow","#interactive","#palpable","#phrasing"]}
+{"line":31,"col":4,"raw":"<input type=\"range\" min=\"0\" max=\"10\" step=\"1\" value=\"5\" list=\"r\" />","categories":["#flow","#interactive","#palpable","#phrasing"]}
+{"line":32,"col":4,"raw":"<input type=\"range\" min=\"10\" max=\"0\" value=\"50\" />","categories":["#flow","#interactive","#palpable","#phrasing"]}
+{"line":33,"col":4,"raw":"<input type=\"email\" multiple value=\"a@example.com\" />","categories":["#flow","#interactive","#palpable","#phrasing"]}
+{"line":34,"col":4,"raw":"<input type=\"email\" value=\"not an email\" />","categories":["#flow","#interactive","#palpable","#phrasing"]}
+{"line":35,"col":4,"raw":"<input type=\"url\" value=\"not a url\" />","categories":["#flow","#interactive","#palpable","#phrasing"]}
+{"line":36,"col":4,"raw":"<input type=\"tel\" pattern=\"[0-9]+\" />","categories":["#flow","#interactive","#palpable","#phrasing"]}
+{"line":37,"col":4,"raw":"<input type=\"date\" min=\"2026-01-01\" max=\"2025-01-01\" value=\"2026-13-01\" />","categories":["#flow","#interactive","#palpable","#phrasing"]}
+{"line":38,"col":4,"raw":"<input type=\"time\" step=\"1\" />","categories":["#flow","#interactive","#palpable","#phrasing"]}
+{"line":39,"col":4,"raw":"<input type=\"datetime-local\" value=\"2026-01-01T10:00\" />","categories":["#flow","#interactive","#palpable","#phrasing"]}
+{"line":40,"col":4,"raw":"<input type=\"month\" value=\"2026-01\" />","categories":["#flow","#interactive","#palpable","#phrasing"]}
+{"line":41,"col":4,"raw":"<input type=\"week\" value=\"2026-W01\" />","categories":["#flow","#interactive","#palpable","#phrasing"]}
+{"line":42,"col":4,"raw":"<input type=\"color\" value=\"#ff0000\" />","categories":["#flow","#interactive","#palpable","#phrasing"]}
+{"line":43,"col":4,"raw":"<input type=\"color\" value=\"red\" />","categories":["#flow","#interactive","#palpable","#phrasing"]}
+{"line":44,"col":4,"raw":"<input type=\"checkbox\" checked value=\"v\" />","categories":["#flow","#interactive","#palpable","#phrasing"]}
+{"line":45,"col":4,"raw":"<input type=\"checkbox\" min=\"1\" size=\"3\" />","categories":["#flow","#interactive","#palpable","#phrasing"]}
+{"line":46,"col":4,"raw":"<input type=\"radio\" name=\"r\" checked />","categories":["#flow","#interactive","#palpable","#phrasing"]}
+{"line":47,"col":4,"raw":"<input type=\"radio\" name=\"r\" checked />","categories":["#flow","#interactive","#palpable","#phrasing"]}
+{"line":48,"col":4,"raw":"<input type=\"file\" accept=\"image/*\" multiple />","categories":["#flow","#interactive","#palpable","#phrasing"]}
+{"line":49,"col":4,"raw":"<input type=\"file\" value=\"not allowed\" />","categories":["#flow","#interactive","#palpable","#phrasing"]}
+{"line":50,"col":4,"raw":"<input type=\"password\" autocomplete=\"current-password\" />","categories":["#flow","#interactive","#palpable","#phrasing"]}
+{"line":51,"col":4,"raw":"<input type=\"password\" autocomplete=\"bogus\" />","categories":["#flow","#interactive","#palpable","#phrasing"]}
+{"line":52,"col":4,"raw":"<input type=\"search\" name=\"q\" dirname=\"q.dir\" />","categories":["#flow","#interactive","#palpable","#phrasing"]}
+{"line":53,"col":4,"raw":"<input type=\"hidden\" name=\"h\" value=\"x\" required />","categories":["#flow","#phrasing"]}
+{"line":54,"col":4,"raw":"<input type=\"image\" src=\"a.png\" alt=\"go\" width=\"10\" height=\"10\" formaction=\"/x\" />","categories":["#flow","#interactive","#palpable","#phrasing"]}
+{"line":55,"col":4,"raw":"<input type=\"image\" />","categories":["#flow","#interactive","#palpable","#phrasing"]}
+{"line":56,"col":4,"raw":"<input type=\"submit\" value=\"Send\" formaction=\"/b\" formmethod=\"post\" />","categories":["#flow","#interactive","#palpable","#phrasing"]}
+{"line":57,"col":4,"raw":"<input type=\"reset\" />","categories":["#flow","#interactive","#palpable","#phrasing"]}
+{"line":58,"col":4,"raw":"<input type=\"button\" value=\"b\" />","categories":["#flow","#interactive","#palpable","#phrasing"]}
+{"line":59,"col":4,"raw":"<input type=\"bogus\" />","categories":["#flow","#interactive","#palpable","#phrasing"]}
+{"line":60,"col":4,"raw":"<input type=\"TEXT\" />","categories":["#flow","#interactive","#palpable","#phrasing"]}
+{"line":61,"col":4,"raw":"<input />","categories":["#flow","#interactive","#palpable","#phrasing"]}
+{"line":62,"col":4,"raw":"<input name=\"dup\" />","categories":["#flow","#interactive","#palpable","#phrasing"]}
+{"line":62,"col":24,"raw":"<input name=\"dup\" />","categories":["#flow","#interactive","#palpable","#phrasing"]}
+{"line":65,"col":4,"raw":"<input list=\"colors\" name=\"c1\" />","categories":["#flow","#interactive","#palpable","#phrasing"]}
+{"line":66,"col":4,"raw":"<input list=\"nothing\" name=\"c2\" />","categories":["#flow","#interactive","#palpable","#phrasing"]}
+{"line":67,"col":4,"raw":"<input list=\"d\" name=\"c3\" />","categories":["#flow","#interactive","#palpable","#phrasing"]}
+{"line":68,"col":4,"raw":"<input list=\"colors\" name=\"c4\" type=\"checkbox\" />","categories":["#flow","#interactive","#palpable","#phrasing"]}
+{"line":69,"col":4,"raw":"<datalist id=\"colors\">","categories":["#flow","#phrasing"]}
+{"line":70,"col":5,"raw":"<option value=\"red\">","categories":[]}
+{"line":71,"col":5,"raw":"<option value=\"green\" label=\"Green\">","categories":[]}
+{"line":72,"col":5,"raw":"<option>","categories":[]}
+{"line":74,"col":4,"raw":"<select name=\"s1\" required size=\"3\">","categories":["#flow","#interactive","#palpable","#phrasing"]}
+{"line":75,"col":5,"raw":"<option value=\"\">","categories":[]}
+{"line":76,"col":5,"raw":"<option value=\"a\" selected>","categories":[]}
+{"line":77,"col":5,"raw":"<option value=\"b\" selected>","categories":[]}
+{"line":79,"col":4,"raw":"<select name=\"s2\" multiple size=\"x\">","categories":["#flow","#interactive","#palpable","#phrasing"]}
+{"line":80,"col":5,"raw":"<option value=\"a\" selected>","categories":[]}
+{"line":81,"col":5,"raw":"<option value=\"b\" selected>","categories":[]}
+{"line":82,"col":5,"raw":"<option value=\"c\" disabled label=\"C\">","categories":[]}
+{"line":84,"col":4,"raw":"<select name=\"s3\">","categories":["#flow","#interactive","#palpable","#phrasing"]}
+{"line":85,"col":5,"raw":"<option>","categories":[]}
+{"line":86,"col":5,"raw":"<optgroup label=\"g\" disabled>","categories":[]}
+{"line":87,"col":6,"raw":"<option>","categories":[]}
+{"line":89,"col":5,"raw":"<optgroup>","categories":[]}
+{"line":90,"col":6,"raw":"<option>","categories":[]}
+{"line":93,"col":4,"raw":"<select name=\"s4\">","categories":["#flow","#interactive","#palpable","#phrasing"]}
+{"line":94,"col":5,"raw":"<option label=\"\">","categories":[]}
+{"line":96,"col":4,"raw":"<select name=\"s5\" required>","categories":["#flow","#interactive","#palpable","#phrasing"]}
+{"line":97,"col":5,"raw":"<option value=\"a\">","categories":[]}
+{"line":99,"col":4,"raw":"<select name=\"s6\" required multiple>","categories":["#flow","#interactive","#palpable","#phrasing"]}
+{"line":100,"col":5,"raw":"<option value=\"a\">","categories":[]}
+{"line":104,"col":4,"raw":"<textarea name=\"t1\" rows=\"3\" cols=\"20\" maxlength=\"10\" minlength=\"1\" wrap=\"hard\" placeholder=\"p\">","categories":["#flow","#interactive","#palpable","#phrasing"]}
+{"line":105,"col":4,"raw":"<textarea name=\"t2\" rows=\"x\" cols=\"0\" wrap=\"bogus\">","categories":["#flow","#interactive","#palpable","#phrasing"]}
+{"line":106,"col":4,"raw":"<button type=\"submit\" form=\"f1\" formaction=\"/c\">","categories":["#flow","#interactive","#palpable","#phrasing"]}
+{"line":107,"col":4,"raw":"<button type=\"submit\" form=\"missing-form\">","categories":["#flow","#interactive","#palpable","#phrasing"]}
+{"line":108,"col":4,"raw":"<output for=\"a b\" name=\"o1\">","categories":["#flow","#palpable","#phrasing"]}
+{"line":109,"col":4,"raw":"<output for=\"missing\" name=\"o2\">","categories":["#flow","#palpable","#phrasing"]}
+{"line":110,"col":4,"raw":"<meter min=\"0\" max=\"10\" value=\"5\" low=\"2\" high=\"8\" optimum=\"5\">","categories":["#flow","#palpable","#phrasing"]}
+{"line":111,"col":4,"raw":"<meter min=\"10\" max=\"0\" value=\"50\" low=\"20\" high=\"5\" optimum=\"500\">","categories":["#flow","#palpable","#phrasing"]}
+{"line":112,"col":4,"raw":"<progress max=\"100\" value=\"50\">","categories":["#flow","#palpable","#phrasing"]}
+{"line":113,"col":4,"raw":"<progress max=\"0\" value=\"-1\">","categories":["#flow","#palpable","#phrasing"]}
+{"line":116,"col":4,"raw":"<fieldset disabled name=\"fs\" form=\"f1\">","categories":["#flow","#palpable"]}
+{"line":117,"col":5,"raw":"<legend>","categories":[]}
+{"line":118,"col":5,"raw":"<input type=\"text\" name=\"inside\" />","categories":["#flow","#interactive","#palpable","#phrasing"]}
+{"line":121,"col":3,"raw":"<form id=\"f1\">","categories":["#flow","#palpable"]}
+{"line":122,"col":3,"raw":"<form>","categories":["#flow","#palpable"]}

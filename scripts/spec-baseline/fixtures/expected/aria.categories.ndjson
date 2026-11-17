@@ -1,0 +1,123 @@
+{"line":2,"col":1,"raw":"<html lang=\"en\">","categories":[]}
+{"line":3,"col":2,"raw":"<head>","categories":[]}
+{"line":4,"col":3,"raw":"<meta charset=\"utf-8\" />","categories":["#metadata"]}
+{"line":5,"col":3,"raw":"<title>","categories":["#metadata"]}
+{"line":7,"col":2,"raw":"<body>","categories":[]}
+{"line":8,"col":3,"raw":"<h1>","categories":["#flow","#heading","#palpable"]}
+{"line":11,"col":3,"raw":"<button type=\"button\" role=\"button\">","categories":["#flow","#interactive","#palpable","#phrasing"]}
+{"line":12,"col":3,"raw":"<a href=\"#x\" role=\"button\">","categories":["#flow","#interactive","#palpable","#phrasing"]}
+{"line":13,"col":3,"raw":"<a href=\"#x\" role=\"menuitem\">","categories":["#flow","#interactive","#palpable","#phrasing"]}
+{"line":14,"col":3,"raw":"<a href=\"#x\" role=\"heading\">","categories":["#flow","#interactive","#palpable","#phrasing"]}
+{"line":15,"col":3,"raw":"<a name=\"n\" role=\"link\">","categories":["#flow","#palpable","#phrasing"]}
+{"line":16,"col":3,"raw":"<img src=\"a.png\" alt=\"\" role=\"presentation\" />","categories":["#embedded","#flow","#palpable","#phrasing"]}
+{"line":17,"col":3,"raw":"<img src=\"a.png\" alt=\"a\" role=\"presentation\" />","categories":["#embedded","#flow","#palpable","#phrasing"]}
+{"line":18,"col":3,"raw":"<img src=\"a.png\" alt=\"\" role=\"img\" />","categories":["#embedded","#flow","#palpable","#phrasing"]}
+{"line":19,"col":3,"raw":"<ul role=\"menu\">","categories":["#flow","#palpable"]}
+{"line":20,"col":4,"raw":"<li role=\"menuitem\">","categories":[]}
+{"line":22,"col":3,"raw":"<ul role=\"list\">","categories":["#flow","#palpable"]}
+{"line":23,"col":4,"raw":"<li role=\"listitem\">","categories":[]}
+{"line":25,"col":3,"raw":"<nav role=\"navigation\" aria-label=\"redundant role\">","categories":["#flow","#palpable","#sectioning"]}
+{"line":26,"col":3,"raw":"<main role=\"main\">","categories":["#flow","#palpable"]}
+{"line":27,"col":3,"raw":"<input type=\"checkbox\" role=\"switch\" />","categories":["#flow","#interactive","#palpable","#phrasing"]}
+{"line":28,"col":3,"raw":"<input type=\"checkbox\" role=\"button\" />","categories":["#flow","#interactive","#palpable","#phrasing"]}
+{"line":29,"col":3,"raw":"<div role=\"foo\">","categories":["#flow","#palpable"]}
+{"line":30,"col":3,"raw":"<div role=\"widget\">","categories":["#flow","#palpable"]}
+{"line":31,"col":3,"raw":"<div role=\"directory\">","categories":["#flow","#palpable"]}
+{"line":32,"col":3,"raw":"<div role=\"button link\">","categories":["#flow","#palpable"]}
+{"line":33,"col":3,"raw":"<span role=\"\">","categories":["#flow","#palpable","#phrasing"]}
+{"line":34,"col":3,"raw":"<div role=\"BUTTON\">","categories":["#flow","#palpable"]}
+{"line":37,"col":3,"raw":"<div role=\"checkbox\">","categories":["#flow","#palpable"]}
+{"line":38,"col":3,"raw":"<div role=\"checkbox\" aria-checked=\"true\" aria-label=\"checked\">","categories":["#flow","#palpable"]}
+{"line":39,"col":3,"raw":"<div role=\"slider\" aria-label=\"s\">","categories":["#flow","#palpable"]}
+{"line":40,"col":3,"raw":"<div role=\"heading\">","categories":["#flow","#palpable"]}
+{"line":41,"col":3,"raw":"<div role=\"list\">","categories":["#flow","#palpable"]}
+{"line":42,"col":3,"raw":"<div role=\"list\">","categories":["#flow","#palpable"]}
+{"line":42,"col":20,"raw":"<div role=\"listitem\">","categories":["#flow","#palpable"]}
+{"line":43,"col":3,"raw":"<div role=\"listitem\">","categories":["#flow","#palpable"]}
+{"line":44,"col":3,"raw":"<div role=\"menu\">","categories":["#flow","#palpable"]}
+{"line":45,"col":3,"raw":"<div role=\"menuitem\">","categories":["#flow","#palpable"]}
+{"line":46,"col":3,"raw":"<div role=\"tab\">","categories":["#flow","#palpable"]}
+{"line":47,"col":3,"raw":"<div role=\"tablist\">","categories":["#flow","#palpable"]}
+{"line":47,"col":23,"raw":"<div role=\"tab\" aria-selected=\"true\">","categories":["#flow","#palpable"]}
+{"line":48,"col":3,"raw":"<div role=\"row\">","categories":["#flow","#palpable"]}
+{"line":48,"col":19,"raw":"<div role=\"cell\">","categories":["#flow","#palpable"]}
+{"line":49,"col":3,"raw":"<div role=\"grid\" aria-label=\"g\">","categories":["#flow","#palpable"]}
+{"line":49,"col":35,"raw":"<div role=\"row\">","categories":["#flow","#palpable"]}
+{"line":49,"col":51,"raw":"<div role=\"gridcell\">","categories":["#flow","#palpable"]}
+{"line":50,"col":3,"raw":"<div role=\"combobox\" aria-expanded=\"false\" aria-controls=\"listbox1\" aria-label=\"c\">","categories":["#flow","#palpable"]}
+{"line":53,"col":3,"raw":"<div role=\"button\" aria-pressed=\"maybe\">","categories":["#flow","#palpable"]}
+{"line":54,"col":3,"raw":"<div role=\"button\" aria-pressed=\"true\">","categories":["#flow","#palpable"]}
+{"line":55,"col":3,"raw":"<div role=\"slider\" aria-valuenow=\"abc\" aria-valuemin=\"0\" aria-valuemax=\"10\" aria-label=\"s\">","categories":["#flow","#palpable"]}
+{"line":56,"col":3,"raw":"<div role=\"slider\" aria-valuenow=\"5\" aria-valuemin=\"0\" aria-valuemax=\"10\" aria-label=\"s\">","categories":["#flow","#palpable"]}
+{"line":57,"col":3,"raw":"<div aria-hidden=\"yes\">","categories":["#flow","#palpable"]}
+{"line":58,"col":3,"raw":"<div aria-label=\"\">","categories":["#flow","#palpable"]}
+{"line":59,"col":3,"raw":"<span aria-label=\"prohibited on a span\">","categories":["#flow","#palpable","#phrasing"]}
+{"line":60,"col":3,"raw":"<p aria-label=\"prohibited on a paragraph\">","categories":["#flow","#palpable"]}
+{"line":61,"col":3,"raw":"<div aria-labelledby=\"missing-id\">","categories":["#flow","#palpable"]}
+{"line":62,"col":3,"raw":"<div aria-describedby=\"a b\">","categories":["#flow","#palpable"]}
+{"line":63,"col":3,"raw":"<div role=\"button\" aria-expanded=\"true\">","categories":["#flow","#palpable"]}
+{"line":64,"col":3,"raw":"<div role=\"note\" aria-expanded=\"true\">","categories":["#flow","#palpable"]}
+{"line":65,"col":3,"raw":"<div aria-pressed=\"true\">","categories":["#flow","#palpable"]}
+{"line":66,"col":3,"raw":"<div role=\"button\" aria-checked=\"true\">","categories":["#flow","#palpable"]}
+{"line":67,"col":3,"raw":"<div role=\"textbox\" aria-multiline=\"true\" aria-label=\"t\">","categories":["#flow","#palpable"]}
+{"line":68,"col":3,"raw":"<div role=\"heading\" aria-level=\"9\">","categories":["#flow","#palpable"]}
+{"line":69,"col":3,"raw":"<h2 aria-level=\"3\">","categories":["#flow","#heading","#palpable"]}
+{"line":70,"col":3,"raw":"<input type=\"text\" aria-required=\"true\" required />","categories":["#flow","#interactive","#palpable","#phrasing"]}
+{"line":71,"col":3,"raw":"<input type=\"text\" aria-disabled=\"true\" disabled />","categories":["#flow","#interactive","#palpable","#phrasing"]}
+{"line":72,"col":3,"raw":"<input type=\"checkbox\" aria-checked=\"true\" checked />","categories":["#flow","#interactive","#palpable","#phrasing"]}
+{"line":73,"col":3,"raw":"<input type=\"text\" aria-invalid=\"grammar\" />","categories":["#flow","#interactive","#palpable","#phrasing"]}
+{"line":74,"col":3,"raw":"<div role=\"img\" aria-label=\"i\" aria-errormessage=\"err\">","categories":["#flow","#palpable"]}
+{"line":75,"col":3,"raw":"<div aria-relevant=\"additions\">","categories":["#flow","#palpable"]}
+{"line":76,"col":3,"raw":"<div aria-grabbed=\"true\">","categories":["#flow","#palpable"]}
+{"line":77,"col":3,"raw":"<div aria-dropeffect=\"copy\">","categories":["#flow","#palpable"]}
+{"line":78,"col":3,"raw":"<div role=\"textbox\" aria-multiline=\"false\" aria-multiline=\"true\" aria-label=\"duplicate\">","categories":["#flow","#palpable"]}
+{"line":81,"col":3,"raw":"<div aria-hidden=\"true\">","categories":["#flow","#palpable"]}
+{"line":81,"col":27,"raw":"<a href=\"#x\">","categories":["#flow","#interactive","#palpable","#phrasing"]}
+{"line":82,"col":3,"raw":"<div aria-hidden=\"true\">","categories":["#flow","#palpable"]}
+{"line":82,"col":27,"raw":"<button type=\"button\" tabindex=\"-1\">","categories":["#flow","#interactive","#palpable","#phrasing"]}
+{"line":83,"col":3,"raw":"<div aria-hidden=\"true\">","categories":["#flow","#palpable"]}
+{"line":83,"col":27,"raw":"<button type=\"button\" disabled>","categories":["#flow","#interactive","#palpable","#phrasing"]}
+{"line":84,"col":3,"raw":"<div aria-hidden=\"true\">","categories":["#flow","#palpable"]}
+{"line":84,"col":27,"raw":"<span tabindex=\"0\">","categories":["#flow","#palpable","#phrasing"]}
+{"line":85,"col":3,"raw":"<div aria-hidden=\"true\">","categories":["#flow","#palpable"]}
+{"line":85,"col":27,"raw":"<input type=\"hidden\" />","categories":["#flow","#phrasing"]}
+{"line":88,"col":3,"raw":"<button type=\"button\">","categories":["#flow","#interactive","#palpable","#phrasing"]}
+{"line":88,"col":25,"raw":"<span role=\"img\" aria-label=\"x\">","categories":["#flow","#palpable","#phrasing"]}
+{"line":89,"col":3,"raw":"<button type=\"button\" aria-label=\"b\">","categories":["#flow","#interactive","#palpable","#phrasing"]}
+{"line":89,"col":40,"raw":"<img src=\"a.png\" alt=\"alt in a button\" />","categories":["#embedded","#flow","#palpable","#phrasing"]}
+{"line":90,"col":3,"raw":"<div role=\"img\" aria-label=\"i\">","categories":["#flow","#palpable"]}
+{"line":90,"col":34,"raw":"<span aria-label=\"x\">","categories":["#flow","#palpable","#phrasing"]}
+{"line":91,"col":3,"raw":"<div role=\"checkbox\" aria-checked=\"false\" aria-label=\"c\">","categories":["#flow","#palpable"]}
+{"line":91,"col":60,"raw":"<span role=\"button\">","categories":["#flow","#palpable","#phrasing"]}
+{"line":94,"col":3,"raw":"<div id=\"owner1\" role=\"list\" aria-owns=\"item1 item2\">","categories":["#flow","#palpable"]}
+{"line":95,"col":3,"raw":"<div id=\"item1\" role=\"listitem\">","categories":["#flow","#palpable"]}
+{"line":96,"col":3,"raw":"<div id=\"item2\" role=\"listitem\">","categories":["#flow","#palpable"]}
+{"line":97,"col":3,"raw":"<div id=\"owner2\" role=\"list\" aria-owns=\"item1\">","categories":["#flow","#palpable"]}
+{"line":98,"col":3,"raw":"<div id=\"loop1\" aria-owns=\"loop2\">","categories":["#flow","#palpable"]}
+{"line":99,"col":3,"raw":"<div id=\"loop2\" aria-owns=\"loop1\">","categories":["#flow","#palpable"]}
+{"line":100,"col":3,"raw":"<div id=\"self\" aria-owns=\"self\">","categories":["#flow","#palpable"]}
+{"line":101,"col":3,"raw":"<div id=\"dup\" aria-owns=\"item1 item1\">","categories":["#flow","#palpable"]}
+{"line":102,"col":3,"raw":"<button type=\"button\" aria-owns=\"item1\">","categories":["#flow","#interactive","#palpable","#phrasing"]}
+{"line":105,"col":3,"raw":"<a href=\"#x\">","categories":["#flow","#interactive","#palpable","#phrasing"]}
+{"line":106,"col":3,"raw":"<button type=\"button\">","categories":["#flow","#interactive","#palpable","#phrasing"]}
+{"line":107,"col":3,"raw":"<button type=\"button\">","categories":["#flow","#interactive","#palpable","#phrasing"]}
+{"line":107,"col":25,"raw":"<img src=\"a.png\" alt=\"named by its image\" />","categories":["#embedded","#flow","#palpable","#phrasing"]}
+{"line":108,"col":3,"raw":"<button type=\"button\" title=\"named by title\">","categories":["#flow","#interactive","#palpable","#phrasing"]}
+{"line":109,"col":3,"raw":"<input type=\"text\" />","categories":["#flow","#interactive","#palpable","#phrasing"]}
+{"line":110,"col":3,"raw":"<input type=\"text\" aria-label=\"named\" />","categories":["#flow","#interactive","#palpable","#phrasing"]}
+{"line":111,"col":3,"raw":"<img src=\"a.png\" />","categories":["#embedded","#flow","#palpable","#phrasing"]}
+{"line":112,"col":3,"raw":"<img src=\"a.png\" alt=\"named\" />","categories":["#embedded","#flow","#palpable","#phrasing"]}
+{"line":113,"col":3,"raw":"<section>","categories":["#flow","#palpable","#sectioning"]}
+{"line":114,"col":3,"raw":"<section aria-label=\"a section\">","categories":["#flow","#palpable","#sectioning"]}
+{"line":115,"col":3,"raw":"<div role=\"region\">","categories":["#flow","#palpable"]}
+{"line":116,"col":3,"raw":"<form>","categories":["#flow","#palpable"]}
+{"line":117,"col":3,"raw":"<table>","categories":["#flow","#palpable"]}
+{"line":118,"col":4,"raw":"","categories":[]}
+{"line":119,"col":5,"raw":"<td>","categories":[]}
+{"line":122,"col":3,"raw":"<iframe src=\"a.html\">","categories":["#embedded","#flow","#interactive","#palpable","#phrasing"]}
+{"line":123,"col":3,"raw":"<svg role=\"img\">","categories":["#SVGContainer","#SVGRenderable","#SVGStructural","#embedded","#flow","#palpable","#phrasing"]}
+{"line":123,"col":19,"raw":"<title>","categories":["#SVGDescriptive","#SVGNeverRendered","#metadata"]}
+{"line":124,"col":3,"raw":"<svg role=\"img\">","categories":["#SVGContainer","#SVGRenderable","#SVGStructural","#embedded","#flow","#palpable","#phrasing"]}
+{"line":125,"col":3,"raw":"<dialog>","categories":["#flow"]}
+{"line":126,"col":3,"raw":"<div role=\"dialog\">","categories":["#flow","#palpable"]}
+{"line":127,"col":3,"raw":"<div role=\"alert\">","categories":["#flow","#palpable"]}

@@ -1,0 +1,20 @@
+{"col":3,"line":15,"message":"Require an element. (Need \"h2\")","raw":"<section>","ruleId":"permitted-contents","severity":"error"}
+{"col":3,"line":21,"message":"Require an element. (Need \"h2\")","raw":"<section>","ruleId":"permitted-contents","severity":"error"}
+{"col":3,"line":25,"message":"Require an element. (Need \"h2\")","raw":"<section>","ruleId":"permitted-contents","severity":"error"}
+{"col":3,"line":31,"message":"Require unique accessible name","raw":"<aside>","ruleId":"require-landmark-label","severity":"warning"}
+{"col":3,"line":32,"message":"Require unique accessible name","raw":"<aside>","ruleId":"require-landmark-label","severity":"warning"}
+{"col":4,"line":33,"message":"The \"p\" element is not allowed in the \"aside\" element in this context","raw":"<p>","ruleId":"permitted-contents","severity":"error"}
+{"col":3,"line":35,"message":"The element should not empty","raw":"<aside>","ruleId":"no-empty-palpable-content","severity":"warning"}
+{"col":3,"line":35,"message":"Require unique accessible name","raw":"<aside>","ruleId":"require-landmark-label","severity":"warning"}
+{"col":3,"line":42,"message":"The \"list\" role expects the \"listitem\" role","raw":"<ul>","ruleId":"require-owned-elements","severity":"error"}
+{"col":4,"line":43,"message":"The \"span\" element is not allowed in the \"ul\" element in this context","raw":"<span>","ruleId":"permitted-contents","severity":"error"}
+{"col":3,"line":45,"message":"The \"list\" role expects the \"listitem\" role","raw":"<ol>","ruleId":"require-owned-elements","severity":"error"}
+{"col":4,"line":46,"message":"The \"div\" element is not allowed in the \"ol\" element in this context","raw":"<div>","ruleId":"permitted-contents","severity":"error"}
+{"col":3,"line":53,"message":"Require one or more elements. (Need \"p\")","raw":"<blockquote>","ruleId":"permitted-contents","severity":"error"}
+{"col":4,"line":56,"message":"The \"div\" element is not allowed in the \"blockquote\" element in this context","raw":"<div>","ruleId":"permitted-contents","severity":"error"}
+{"col":3,"line":61,"message":"The element should not empty","raw":"<p>","ruleId":"no-empty-palpable-content","severity":"warning"}
+{"col":3,"line":61,"message":"Missing the end tag","raw":"<p>","ruleId":"require-end-tag","severity":"warning"}
+{"col":55,"line":61,"message":"The element should not empty","raw":"","ruleId":"no-empty-palpable-content","severity":"warning"}
+{"col":55,"line":61,"message":"Orphaned end tag detected","raw":"</p>","ruleId":"no-orphaned-end-tag","severity":"error"}
+{"col":35,"line":79,"message":"\"count\" should be before \"tone\"","raw":"count","ruleId":"attr-order","severity":"warning"}
+{"col":56,"line":80,"message":"\"count\" should be before \"tone\"","raw":"count","ruleId":"attr-order","severity":"warning"}

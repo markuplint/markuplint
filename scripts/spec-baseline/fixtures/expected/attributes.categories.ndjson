@@ -1,0 +1,83 @@
+{"line":2,"col":1,"raw":"<html lang=\"en_US\" dir=\"sideways\">","categories":[]}
+{"line":3,"col":2,"raw":"<head>","categories":[]}
+{"line":4,"col":3,"raw":"<meta charset=\"utf-8\" />","categories":["#metadata"]}
+{"line":5,"col":3,"raw":"<meta charset=\"iso-8859-1\" />","categories":["#metadata"]}
+{"line":6,"col":3,"raw":"<meta name=\"viewport\" />","categories":["#metadata"]}
+{"line":7,"col":3,"raw":"<meta http-equiv=\"refresh\" content=\"x\" />","categories":["#metadata"]}
+{"line":8,"col":3,"raw":"<meta content=\"no name\" />","categories":["#metadata"]}
+{"line":9,"col":3,"raw":"<link />","categories":["#metadata"]}
+{"line":10,"col":3,"raw":"<link rel=\"stylesheet\" />","categories":["#flow","#metadata","#phrasing"]}
+{"line":11,"col":3,"raw":"<link rel=\"bogus\" href=\"a.css\" />","categories":["#metadata"]}
+{"line":12,"col":3,"raw":"<link rel=\"stylesheet\" href=\"a.css\" blocking=\"render\" fetchpriority=\"high\" />","categories":["#flow","#metadata","#phrasing"]}
+{"line":13,"col":3,"raw":"<title>","categories":["#metadata"]}
+{"line":14,"col":3,"raw":"<script src=\"a.js\" async defer>","categories":["#flow","#metadata","#phrasing","#script-supporting"]}
+{"line":15,"col":3,"raw":"<script src=\"a.js\" type=\"module\" nomodule>","categories":["#flow","#metadata","#phrasing","#script-supporting"]}
+{"line":16,"col":3,"raw":"<script type=\"text/javascript\" language=\"javascript\">","categories":["#flow","#metadata","#phrasing","#script-supporting"]}
+{"line":20,"col":2,"raw":"<body bgcolor=\"red\" text=\"blue\" link=\"green\" onload=\"x()\">","categories":[]}
+{"line":21,"col":3,"raw":"<h1 id=\"dup\" class=\"a b a\" style=\"color: red\" hidden=\"until-found\" tabindex=\"x\" lang=\"xx-yy-zz-aaaaaaaaa\">","categories":["#flow","#heading","#palpable"]}
+{"line":22,"col":3,"raw":"<h2 id=\"dup\" title=\"duplicate id\" foo=\"unknown\" data-ok=\"data\" aria-foo=\"unknown aria\" xml:lang=\"en\" onclick=\"x()\" ONCLICK=\"x()\">","categories":["#flow","#heading","#palpable"]}
+{"line":25,"col":3,"raw":"<p align=\"center\" id=\"a b\" accesskey=\"ab\" contenteditable=\"maybe\" draggable=\"yes\" spellcheck=\"no\" translate=\"maybe\" autocapitalize=\"x\" inputmode=\"x\" enterkeyhint=\"x\" popover=\"x\" is=\"x-y\" nonce=\"n\" slot=\"s\" part=\"p\" exportparts=\"p\" itemscope itemtype=\"https://example.com/t\" itemprop=\"p\" itemid=\"i\" itemref=\"a\">","categories":["#flow","#palpable"]}
+{"line":30,"col":3,"raw":"<a href=\"http://exa mple.com\">","categories":["#flow","#interactive","#palpable","#phrasing"]}
+{"line":31,"col":3,"raw":"<a href=\"https://example.com:99999/\">","categories":["#flow","#interactive","#palpable","#phrasing"]}
+{"line":32,"col":3,"raw":"<a href=\"javascript:void(0)\">","categories":["#flow","#interactive","#palpable","#phrasing"]}
+{"line":33,"col":3,"raw":"<a href=\"\">","categories":["#flow","#interactive","#palpable","#phrasing"]}
+{"line":34,"col":3,"raw":"<a href=\"#x\" target=\"_foo\">","categories":["#flow","#interactive","#palpable","#phrasing"]}
+{"line":35,"col":3,"raw":"<a href=\"#x\" target=\"\">","categories":["#flow","#interactive","#palpable","#phrasing"]}
+{"line":36,"col":3,"raw":"<a href=\"#x\" rel=\"bogus noopener\">","categories":["#flow","#interactive","#palpable","#phrasing"]}
+{"line":37,"col":3,"raw":"<a href=\"#x\" rel=\"noopener noopener\">","categories":["#flow","#interactive","#palpable","#phrasing"]}
+{"line":38,"col":3,"raw":"<a href=\"#x\" download=\"a.txt\" ping=\"https://example.com/p\" hreflang=\"x\" type=\"x\" referrerpolicy=\"bogus\">","categories":["#flow","#interactive","#palpable","#phrasing"]}
+{"line":39,"col":3,"raw":"<a href=\"#x\" charset=\"utf-8\" coords=\"1\" shape=\"rect\" rev=\"x\" name=\"n\">","categories":["#flow","#interactive","#palpable","#phrasing"]}
+{"line":40,"col":3,"raw":"<a href=\"#x\" attributionsrc=\"\" target=\"_blank\">","categories":["#flow","#interactive","#palpable","#phrasing"]}
+{"line":41,"col":3,"raw":"<area shape=\"bogus\" coords=\"x\" href=\"#x\" alt=\"area\" />","categories":["#flow","#phrasing"]}
+{"line":44,"col":3,"raw":"<img />","categories":["#embedded","#flow","#palpable","#phrasing"]}
+{"line":45,"col":3,"raw":"<img src=\"a.png\" />","categories":["#embedded","#flow","#palpable","#phrasing"]}
+{"line":46,"col":3,"raw":"<img src=\"a.png\" alt=\"a\" width=\"abc\" height=\"-1\" />","categories":["#embedded","#flow","#palpable","#phrasing"]}
+{"line":47,"col":3,"raw":"<img src=\"a.png\" alt=\"a\" width=\"10.5\" height=\"10px\" />","categories":["#embedded","#flow","#palpable","#phrasing"]}
+{"line":48,"col":3,"raw":"<img src=\"a.png\" alt=\"a\" srcset=\"b.png 2x\" sizes=\"100vw\" loading=\"eager\" decoding=\"sync\" fetchpriority=\"high\" crossorigin=\"x\" />","categories":["#embedded","#flow","#palpable","#phrasing"]}
+{"line":49,"col":3,"raw":"<img src=\"a.png\" alt=\"a\" srcset=\"b.png 2x, c.png 2x\" />","categories":["#embedded","#flow","#palpable","#phrasing"]}
+{"line":50,"col":3,"raw":"<img src=\"a.png\" alt=\"a\" srcset=\"b.png 100w\" />","categories":["#embedded","#flow","#palpable","#phrasing"]}
+{"line":51,"col":3,"raw":"<img src=\"a.png\" alt=\"a\" sizes=\"100vw\" />","categories":["#embedded","#flow","#palpable","#phrasing"]}
+{"line":52,"col":3,"raw":"<img src=\"a.png\" alt=\"a\" border=\"1\" hspace=\"1\" vspace=\"1\" align=\"left\" longdesc=\"x\" name=\"n\" lowsrc=\"x\" />","categories":["#embedded","#flow","#palpable","#phrasing"]}
+{"line":53,"col":3,"raw":"<img src=\"a.png\" alt=\"a\" ismap />","categories":["#embedded","#flow","#palpable","#phrasing"]}
+{"line":54,"col":3,"raw":"<iframe src=\"a.html\">","categories":["#embedded","#flow","#interactive","#palpable","#phrasing"]}
+{"line":55,"col":3,"raw":"<iframe src=\"a.html\" title=\"t\" sandbox=\"allow-bogus allow-scripts\" allow=\"x\" referrerpolicy=\"x\" loading=\"x\" frameborder=\"0\" scrolling=\"no\" marginwidth=\"0\">","categories":["#embedded","#flow","#interactive","#palpable","#phrasing"]}
+{"line":56,"col":3,"raw":"<video src=\"a.mp4\" autoplay=\"false\" controls=\"controls\" loop=\"\" muted playsinline preload=\"x\" poster=\"p.png\">","categories":["#embedded","#flow","#interactive","#palpable","#phrasing"]}
+{"line":57,"col":3,"raw":"<audio src=\"a.mp3\" autoplay controls preload=\"auto\" crossorigin=\"anonymous\" loop muted>","categories":["#embedded","#flow","#interactive","#palpable","#phrasing"]}
+{"line":58,"col":3,"raw":"<embed src=\"a.swf\" type=\"x\" />","categories":["#embedded","#flow","#interactive","#palpable","#phrasing"]}
+{"line":59,"col":3,"raw":"<object data=\"a.svg\" type=\"image/svg+xml\" codebase=\"x\" classid=\"x\" archive=\"x\">","categories":["#embedded","#flow","#palpable","#phrasing"]}
+{"line":60,"col":3,"raw":"<picture>","categories":["#embedded","#flow","#palpable","#phrasing"]}
+{"line":60,"col":12,"raw":"<source srcset=\"a.avif\" type=\"image/avif\" media=\"(min-width: 10px)\" sizes=\"100vw\" />","categories":[]}
+{"line":60,"col":96,"raw":"<img src=\"a.png\" alt=\"a\" />","categories":["#embedded","#flow","#palpable","#phrasing"]}
+{"line":61,"col":3,"raw":"<picture>","categories":["#embedded","#flow","#palpable","#phrasing"]}
+{"line":61,"col":12,"raw":"<source srcset=\"a.avif\" media=\"bogus\" />","categories":[]}
+{"line":61,"col":52,"raw":"<source type=\"image/avif\" />","categories":[]}
+{"line":61,"col":80,"raw":"<img src=\"a.png\" alt=\"a\" />","categories":["#embedded","#flow","#palpable","#phrasing"]}
+{"line":64,"col":3,"raw":"<table border=\"1\" cellpadding=\"1\" cellspacing=\"1\" width=\"100\" bgcolor=\"red\" summary=\"x\" frame=\"box\" rules=\"all\" align=\"center\">","categories":["#flow","#palpable"]}
+{"line":65,"col":4,"raw":"","categories":[]}
+{"line":66,"col":5,"raw":"<td colspan=\"0\" rowspan=\"x\" headers=\"nope\" width=\"10\" height=\"10\" align=\"left\" valign=\"top\" bgcolor=\"x\" nowrap abbr=\"x\" axis=\"x\" char=\"x\" charoff=\"x\">","categories":[]}
+{"line":67,"col":5,"raw":"<td colspan=\"2000\" rowspan=\"70000\">","categories":[]}
+{"line":68,"col":5,"raw":"<th scope=\"bogus\" colspan=\"1\" abbr=\"a\">","categories":[]}
+{"line":74,"col":3,"raw":"<ol start=\"x\" type=\"1\" reversed=\"reversed\" compact>","categories":["#flow","#palpable"]}
+{"line":74,"col":54,"raw":"<li value=\"y\" type=\"a\">","categories":[]}
+{"line":75,"col":3,"raw":"<ul type=\"disc\" compact>","categories":["#flow","#palpable"]}
+{"line":75,"col":27,"raw":"<li>","categories":[]}
+{"line":76,"col":3,"raw":"<blockquote cite=\"not a url\">","categories":["#flow","#palpable"]}
+{"line":77,"col":3,"raw":"<q cite=\"https://example.com/\">","categories":["#flow","#palpable","#phrasing"]}
+{"line":78,"col":3,"raw":"<time datetime=\"2026-13-45\">","categories":["#flow","#palpable","#phrasing"]}
+{"line":79,"col":3,"raw":"<time datetime=\"2026-11-17T10:00:00Z\">","categories":["#flow","#palpable","#phrasing"]}
+{"line":80,"col":3,"raw":"<data value=\"x\">","categories":["#flow","#palpable","#phrasing"]}
+{"line":81,"col":3,"raw":"<br clear=\"all\" />","categories":["#flow","#phrasing"]}
+{"line":82,"col":3,"raw":"<hr noshade size=\"1\" width=\"1\" align=\"left\" color=\"red\" />","categories":["#flow"]}
+{"line":83,"col":3,"raw":"<pre width=\"80\" wrap>","categories":["#flow","#palpable"]}
+{"line":84,"col":3,"raw":"<font color=\"red\" face=\"x\" size=\"1\">","categories":[]}
+{"line":85,"col":3,"raw":"<center>","categories":[]}
+{"line":86,"col":3,"raw":"<marquee>","categories":[]}
+{"line":87,"col":3,"raw":"<details open=\"open\" name=\"n\">","categories":["#flow","#interactive","#palpable"]}
+{"line":88,"col":3,"raw":"<dialog open closedby=\"any\">","categories":["#flow"]}
+{"line":89,"col":3,"raw":"<div popover=\"auto\" popovertarget=\"x\">","categories":["#flow","#palpable"]}
+{"line":90,"col":3,"raw":"<button popovertarget=\"nope\" popovertargetaction=\"bogus\" command=\"show-modal\" commandfor=\"nope\" type=\"bogus\" formaction=\"a\" formmethod=\"x\" formenctype=\"x\" formtarget=\"x\" formnovalidate=\"x\">","categories":["#flow","#interactive","#palpable","#phrasing"]}
+{"line":91,"col":3,"raw":"<button type=\"submit\" value=\"v\" name=\"n\" disabled=\"disabled\" autofocus>","categories":["#flow","#interactive","#palpable","#phrasing"]}
+{"line":92,"col":3,"raw":"<button type=\"button\" autofocus>","categories":["#flow","#interactive","#palpable","#phrasing"]}
+{"line":93,"col":3,"raw":"<span autofocus>","categories":["#flow","#palpable","#phrasing"]}
+{"line":96,"col":3,"raw":"<svg viewBox=\"0 0 10 10\" width=\"10\" height=\"10\" xmlns=\"http://www.w3.org/2000/svg\" foo=\"bar\">","categories":["#SVGContainer","#SVGRenderable","#SVGStructural","#embedded","#flow","#palpable","#phrasing"]}
+{"line":97,"col":4,"raw":"<rect x=\"0\" y=\"0\" width=\"5\" height=\"5\" fill=\"red\" stroke=\"x\" rx=\"1\" ry=\"1\" bogus=\"x\" />","categories":["#SVGBasicShapes","#SVGGraphics","#SVGRenderable","#SVGShape"]}

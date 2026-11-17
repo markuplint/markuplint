@@ -1,0 +1,9 @@
+{"col":1,"line":1,"message":"Require the \"h1\" element","raw":"<","ruleId":"require-h1","severity":"warning"}
+{"col":111,"line":30,"message":"The \"bdo\" element expects the \"dir\" attribute","raw":"<bdo>","ruleId":"require-attr","severity":"error"}
+{"col":128,"line":30,"message":"Need the \"datetime\" attribute","raw":"<time>","ruleId":"require-datetime","severity":"error"}
+{"col":134,"line":30,"message":"The \"data\" element expects the \"value\" attribute","raw":"<data>","ruleId":"require-attr","severity":"error"}
+{"col":22,"line":33,"message":"The element should not empty","raw":"<p>","ruleId":"no-empty-palpable-content","severity":"warning"}
+{"col":22,"line":33,"message":"Missing the end tag","raw":"<p>","ruleId":"require-end-tag","severity":"warning"}
+{"col":22,"line":35,"message":"The element should not empty","raw":"","ruleId":"no-empty-palpable-content","severity":"warning"}
+{"col":22,"line":35,"message":"Orphaned end tag detected","raw":"</p>","ruleId":"no-orphaned-end-tag","severity":"error"}
+{"col":31,"line":46,"message":"The \"div\" element is not allowed in the \"ul\" element in this context","raw":"<div>","ruleId":"permitted-contents","severity":"error"}

@@ -1,0 +1,26 @@
+{"col":1,"line":4,"message":"Illegal characters must escape in character reference","raw":"<","ruleId":"no-unescaped-char","severity":"error"}
+{"col":11,"line":4,"message":"Illegal characters must escape in character reference","raw":"<","ruleId":"no-unescaped-char","severity":"error"}
+{"col":1,"line":7,"message":"Heading levels must not be skipped","raw":"<h5>","ruleId":"no-skipped-heading-level","severity":"error"}
+{"col":2,"line":11,"message":"Heading levels must not be skipped","raw":"<h4>","ruleId":"no-skipped-heading-level","severity":"error"}
+{"col":2,"line":15,"message":"There must not be more than one visible \"main\" element in a document","raw":"<main>","ruleId":"no-duplicate-visible-main","severity":"error"}
+{"col":9,"line":20,"message":"The \"header\" element must not appear as a descendant of the \"header\" element","raw":"<header>","ruleId":"no-disallowed-ancestor","severity":"error"}
+{"col":9,"line":20,"message":"The \"header\" element is not allowed in the \"header\" element in this context","raw":"<header>","ruleId":"permitted-contents","severity":"error"}
+{"col":9,"line":21,"message":"The \"header\" element must not appear as a descendant of the \"footer\" element","raw":"<header>","ruleId":"no-disallowed-ancestor","severity":"error"}
+{"col":9,"line":21,"message":"The \"header\" element is not allowed in the \"footer\" element in this context","raw":"<header>","ruleId":"permitted-contents","severity":"error"}
+{"col":10,"line":22,"message":"The \"address\" element must not appear as a descendant of the \"address\" element","raw":"<address>","ruleId":"no-disallowed-ancestor","severity":"error"}
+{"col":10,"line":22,"message":"The \"address\" element is not allowed in the \"address\" element in this context","raw":"<address>","ruleId":"permitted-contents","severity":"error"}
+{"col":10,"line":23,"message":"Missing \"x\" ID","raw":"#x","ruleId":"no-broken-fragment-link","severity":"warning"}
+{"col":18,"line":24,"message":"\"alt\" should be before \"src\"","raw":"alt","ruleId":"attr-order","severity":"warning"}
+{"col":1,"line":25,"message":"Require accessible name","raw":"<input type=\"text\" />","ruleId":"require-accessible-name","severity":"error"}
+{"col":14,"line":25,"message":"It is the default value","raw":"text","ruleId":"no-default-value","severity":"warning"}
+{"col":2,"line":29,"message":"Tag names of HTML elements should be lowercase","raw":"UL","ruleId":"case-sensitive-tag-name","severity":"warning"}
+{"col":6,"line":29,"message":"Tag names of HTML elements should be lowercase","raw":"LI","ruleId":"case-sensitive-tag-name","severity":"warning"}
+{"col":23,"line":29,"message":"Tag names of HTML elements should be lowercase","raw":"</LI>","ruleId":"case-sensitive-tag-name","severity":"warning"}
+{"col":28,"line":29,"message":"Tag names of HTML elements should be lowercase","raw":"</UL>","ruleId":"case-sensitive-tag-name","severity":"warning"}
+{"col":1,"line":30,"message":"The \"span\" element is not closed at the end of the file","raw":"<span>","ruleId":"no-unclosed-element-at-eof","severity":"error"}
+{"col":1,"line":30,"message":"Missing the end tag","raw":"<span>","ruleId":"require-end-tag","severity":"warning"}
+{"col":1,"line":31,"message":"The \"div\" element is not closed at the end of the file","raw":"<div>","ruleId":"no-unclosed-element-at-eof","severity":"error"}
+{"col":1,"line":31,"message":"The \"div\" element is not allowed in the \"span\" element in this context","raw":"<div>","ruleId":"permitted-contents","severity":"error"}
+{"col":1,"line":31,"message":"Missing the end tag","raw":"<div>","ruleId":"require-end-tag","severity":"warning"}
+{"col":1,"line":32,"message":"Missing the end tag","raw":"<p>","ruleId":"require-end-tag","severity":"warning"}
+{"col":1,"line":33,"message":"Missing the end tag","raw":"<p>","ruleId":"require-end-tag","severity":"warning"}
