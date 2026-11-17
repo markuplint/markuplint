@@ -79,7 +79,7 @@ export default createRule<Value>({
 					break;
 				}
 			}
-			const entry = groupIndex < entries.length ? entries[groupIndex] : undefined;
+			const entry = entries[groupIndex];
 			let subKey: string | number;
 			if (entry && entry.order === 'alphabetical' && entry.attr) {
 				subKey = el.getAttrValue(entry.attr) ?? '';

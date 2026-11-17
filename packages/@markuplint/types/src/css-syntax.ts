@@ -26,7 +26,7 @@ export function cssSyntaxMatch(value: string, type: CssSyntax | CustomCssSyntax)
 	let defName: `<${string}>`;
 	const typesExtended: Record<string, string> = {};
 	const typesCheckers: Record<string, CssSyntaxTokenizer> = {};
-	let ref: string | undefined = undefined;
+	let ref: string | undefined;
 	let caseSensitive = false;
 
 	if (typeof type === 'string') {
