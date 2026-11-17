@@ -55,7 +55,7 @@ export function order(
 		orderLog('Starts: %s', collection);
 	}
 
-	let result: Result | undefined = undefined;
+	let result: Result | undefined;
 	let backtrackMode = false;
 	let afterBacktrack = false;
 

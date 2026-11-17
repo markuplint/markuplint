@@ -27,7 +27,7 @@ export function cssSyntaxMatch(value: string, type: CssSyntax | CustomCssSyntax)
 	const typesExtended: Record<string, string> = {};
 	const typesCheckers: Record<string, CssSyntaxTokenizer> = {};
 	let propsExtended: Record<string, string>;
-	let ref: string | undefined = undefined;
+	let ref: string | undefined;
 	let caseSensitive = false;
 	let ebnf: Record<string, string | readonly string[]> | null;
 
