@@ -79,7 +79,6 @@ export function getAttrSpecs(localName: string, namespace: NamespaceURI | null, 
 		const current = attrs[attrName];
 
 		attrs[attrName] = {
-			description: '',
 			...current,
 			...attr,
 		};

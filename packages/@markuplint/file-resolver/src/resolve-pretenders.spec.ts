@@ -9,7 +9,6 @@ import { test, expect, describe, beforeEach, afterEach, vi } from 'vitest';
 import {
 	createPretenderResolver,
 	disambiguatePretendersForFile,
-	hasResolvableCollision,
 	invalidatePretenderResolutionCaches,
 	resolvePretenders,
 } from './resolve-pretenders.js';
@@ -271,16 +270,6 @@ test('disambiguatePretendersForFile leaves an unambiguous list untouched (same r
 		pretenders,
 	);
 	expect(result).toBe(pretenders);
-});
-
-test('hasResolvableCollision (deprecated, no longer a gate) keeps reporting a collision whatever the selector name shape', () => {
-	// `disambiguatePretendersForFile` no longer gates on it, but it is public API: its
-	// result stays as it was until it is removed in the next major version.
-	const pretenders = [
-		{ selector: '123-not-a-plain-identifier', as: 'div', filePath: '/a.tsx:1:1' },
-		{ selector: '123-not-a-plain-identifier', as: 'span', filePath: '/b.tsx:1:1' },
-	];
-	expect(hasResolvableCollision(pretenders)).toBe(true);
 });
 
 test('disambiguatePretendersForFile resolves a collision via the target file import', async () => {

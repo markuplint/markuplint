@@ -1,4 +1,3 @@
-import type { Options } from '../types.js';
 import type { AttrChecker } from '@markuplint/ml-core';
 
 import { ARIA_RECOMMENDED_VERSION, getPermittedRoles } from '@markuplint/ml-spec';
@@ -13,13 +12,10 @@ import { ARIA_RECOMMENDED_VERSION, getPermittedRoles } from '@markuplint/ml-spec
  * @param attr - The `role` attribute node to inspect.
  * @returns A violation if the role is not in the element's list of permitted roles.
  */
-export const checkingPermittedRoles: AttrChecker<boolean, Options> =
+export const checkingPermittedRoles: AttrChecker<boolean, undefined> =
 	({ attr }) =>
 	t => {
-		const ariaVersion =
-			attr.rule.options?.version ??
-			attr.ownerMLDocument.ruleCommonSettings?.ariaVersion ??
-			ARIA_RECOMMENDED_VERSION;
+		const ariaVersion = attr.ownerMLDocument.ruleCommonSettings?.ariaVersion ?? ARIA_RECOMMENDED_VERSION;
 		const el = attr.ownerElement;
 		const permittedRoles = getPermittedRoles(el, ariaVersion, attr.ownerMLDocument.specs);
 		const tokens = attr.tokenList?.allTokens();

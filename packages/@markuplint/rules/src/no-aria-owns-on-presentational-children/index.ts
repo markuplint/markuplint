@@ -1,9 +1,6 @@
-import type { Options } from '../wai-aria/types.js';
-
 import { createRule, getComputedRole, getSpec } from '@markuplint/ml-core';
 import { ARIA_RECOMMENDED_VERSION } from '@markuplint/ml-spec';
 
-import { defaultOptions } from '../wai-aria/default-options.js';
 import meta from './meta.js';
 
 /**
@@ -17,10 +14,9 @@ import meta from './meta.js';
  *
  * @see https://w3c.github.io/aria/#childrenArePresentational
  */
-export default createRule<boolean, Options>({
+export default createRule<boolean>({
 	meta,
 	defaultSeverity: 'error',
-	defaultOptions,
 	async verify({ document, report, t }) {
 		await document.walkOn('Element', el => {
 			const attr = el.getAttrNode('aria-owns');
@@ -30,8 +26,7 @@ export default createRule<boolean, Options>({
 			if (!getSpec(el, document.specs.specs)?.globalAttrs['#ARIAAttrs']) {
 				return;
 			}
-			const ariaVersion =
-				el.rule.options?.version ?? document.ruleCommonSettings?.ariaVersion ?? ARIA_RECOMMENDED_VERSION;
+			const ariaVersion = document.ruleCommonSettings?.ariaVersion ?? ARIA_RECOMMENDED_VERSION;
 			const role = getComputedRole(document.specs, el, ariaVersion).role;
 			if (!role?.childrenPresentational) {
 				return;

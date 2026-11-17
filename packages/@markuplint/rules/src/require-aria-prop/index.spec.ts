@@ -61,14 +61,14 @@ test('[require-aria-prop-issue-3682-006] hr with explicit role="separator" is va
 
 test('[require-aria-prop-issue-3682-007] non-focusable separator is valid pinned to ARIA 1.2', async () => {
 	const { violations } = await mlRuleTest(rule, '<div role="separator"></div>', {
-		rule: { options: { version: '1.2' } },
+		ruleCommonSettings: { ariaVersion: '1.2' },
 	});
 	expect(violations).toStrictEqual([]);
 });
 
 test('[require-aria-prop-issue-3682-008] focusable separator pinned to ARIA 1.2 reports missing aria-valuenow', async () => {
 	const { violations } = await mlRuleTest(rule, '<div role="separator" tabindex="0"></div>', {
-		rule: { options: { version: '1.2' } },
+		ruleCommonSettings: { ariaVersion: '1.2' },
 	});
 	expect(violations.length).toBeGreaterThanOrEqual(1);
 	expect(violations.some(v => v.message.includes('aria-valuenow'))).toBe(true);

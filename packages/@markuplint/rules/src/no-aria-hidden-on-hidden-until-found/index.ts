@@ -1,8 +1,5 @@
-import type { Options } from '../wai-aria/types.js';
-
 import { createRule } from '@markuplint/ml-core';
 
-import { defaultOptions } from '../wai-aria/default-options.js';
 import meta from './meta.js';
 
 /**
@@ -17,10 +14,9 @@ import meta from './meta.js';
  *
  * @see https://www.w3.org/TR/html-aria/#att-hidden
  */
-export default createRule<boolean, Options>({
+export default createRule<boolean>({
 	meta,
 	defaultSeverity: 'error',
-	defaultOptions,
 	async verify({ document, report, t }) {
 		await document.walkOn('Element', el => {
 			const ariaHidden = el.getAttrNode('aria-hidden');

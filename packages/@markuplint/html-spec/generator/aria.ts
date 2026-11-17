@@ -1,16 +1,10 @@
 import type * as cheerio from 'cheerio';
 
-import type {
-	ARIAProperty,
-	ARIAAttributeValue,
-	ARIARoleOwnedProperties,
-	ARIAVersion,
-	ARIARoleInSchema,
-	EquivalentHtmlAttr,
-} from '@markuplint/ml-spec';
+import type { ARIAAttributeValue, ARIARoleOwnedProperties, ARIAVersion, EquivalentHtmlAttr } from '@markuplint/ml-spec';
 import type { WritableDeep } from 'type-fest';
 
 import type { Element } from './cheerio-types.ts';
+import type { ScrapedARIAProperty, ScrapedARIARole } from './types.ts';
 
 import { ariaSpecURLByVersion, DPUB_ARIA_URL } from './aria-documents.mts';
 import { fetch } from './fetch.ts';
@@ -65,7 +59,7 @@ export async function getAria() {
 async function getDpubRoles() {
 	const $ = await fetch(DPUB_ARIA_URL);
 	const $roleList = $('#role_definitions section.role');
-	const roles: ARIARoleInSchema[] = [];
+	const roles: ScrapedARIARole[] = [];
 
 	$roleList.each((_, el) => {
 		const $el = $(el);
@@ -147,7 +141,7 @@ function getOwnedProperty(
 async function getRoles(version: ARIAVersion, graphicsAria = false) {
 	const $ = await fetch(ariaSpecURLByVersion(version, graphicsAria));
 	const $roleList = $('#role_definitions section.role');
-	const roles: ARIARoleInSchema[] = [];
+	const roles: ScrapedARIARole[] = [];
 	const getAttr = (
 		// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
 		li: Element,
@@ -183,7 +177,7 @@ async function getRoles(version: ARIAVersion, graphicsAria = false) {
 			.map(getAttr)
 			.map(p => ({ ...p, inherited: true as const }));
 		const ownedProps = $features.find('.role-properties li, .role-properties > a').toArray().map(getAttr);
-		const requiredContextRole = $$($features, ['.role-scope li', '.role-scope a'])
+		const requiredAccessibilityParentRole = $$($features, ['.role-scope li', '.role-scope a'])
 			.toArray()
 			.map(el => {
 				const text = $(el).text().trim();
@@ -195,7 +189,7 @@ async function getRoles(version: ARIAVersion, graphicsAria = false) {
 				}
 				return text;
 			});
-		const requiredOwnedElements = $$($features, ['.role-mustcontain li', '.role-mustcontain a'])
+		const allowedAccessibilityChildRoles = $$($features, ['.role-mustcontain li', '.role-mustcontain a'])
 			.toArray()
 			.map(el =>
 				$(el)
@@ -226,8 +220,8 @@ async function getRoles(version: ARIAVersion, graphicsAria = false) {
 			isAbstract,
 			deprecated,
 			generalization,
-			requiredContextRole,
-			requiredOwnedElements,
+			requiredAccessibilityParentRole,
+			allowedAccessibilityChildRoles,
 			accessibleNameRequired,
 			accessibleNameFromAuthor,
 			accessibleNameFromContent,
@@ -298,7 +292,7 @@ async function getRoles(version: ARIAVersion, graphicsAria = false) {
 	return roles.toSorted(nameCompare);
 }
 
-async function getProps(version: ARIAVersion, roles: readonly ARIARoleInSchema[]) {
+async function getProps(version: ARIAVersion, roles: readonly ScrapedARIARole[]) {
 	const $ = await fetch(ariaSpecURLByVersion(version));
 
 	const ariaNameList: Set<string> = new Set();
@@ -322,7 +316,7 @@ async function getProps(version: ARIAVersion, roles: readonly ARIARoleInSchema[]
 			})
 			.filter((s): s is string => !!s),
 	);
-	const arias = [...ariaNameList].toSorted().map((name): ARIAProperty => {
+	const arias = [...ariaNameList].toSorted().map((name): ScrapedARIAProperty => {
 		const $section = $(`#${name}`);
 		const className = $section.attr('class');
 		const type = className && /property/i.test(className) ? 'property' : 'state';
@@ -375,7 +369,7 @@ async function getProps(version: ARIAVersion, roles: readonly ARIARoleInSchema[]
 			}));
 		}
 
-		const aria: WritableDeep<ARIAProperty> = {
+		const aria: WritableDeep<ScrapedARIAProperty> = {
 			name,
 			type,
 			deprecated,

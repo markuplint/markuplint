@@ -507,6 +507,9 @@ pub fn check_navigable_target_name_or_keyword(value: &str) -> CheckResult {
     if KEYWORDS.contains(&lower.as_str()) {
         return matched();
     }
+    if value.is_empty() {
+        return unmatched(value, Reason::EmptyToken);
+    }
     if value.starts_with('_') {
         return unmatched_with(
             value,
@@ -528,26 +531,6 @@ pub fn check_navigable_target_name_or_keyword(value: &str) -> CheckResult {
             ..Default::default()
         },
     )
-}
-
-/// TS `BrowsingContextNameOrKeyword`.
-#[must_use]
-pub fn check_browsing_context_name_or_keyword(value: &str) -> CheckResult {
-    let lower = value.to_lowercase();
-    if KEYWORDS.contains(&lower.as_str()) {
-        return matched();
-    }
-    if value.starts_with('_') {
-        return unmatched_with(
-            value,
-            Reason::UnexpectedToken,
-            UnmatchedOpts {
-                candidate: get_candidate(&lower, &KEYWORDS),
-                ..Default::default()
-            },
-        );
-    }
-    super::keyword_type::matches(value, is_navigable_target_name(value), None)
 }
 
 #[cfg(test)]

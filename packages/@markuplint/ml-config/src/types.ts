@@ -760,25 +760,6 @@ export type NodeRule = {
 	readonly specConformance?: SpecConformance;
 	readonly selector?: string;
 	readonly regexSelector?: RegexSelector;
-	/**
-	 * Nothing reads it: a `nodeRules` entry is matched by `selector` or `regexSelector` only, and one that sets
-	 * this is not narrowed by it.
-	 *
-	 * @deprecated Delete it and use `selector` or `regexSelector`. Removed in v6.
-	 */
-	readonly categories?: readonly string[];
-	/**
-	 * Nothing reads it (see {@link NodeRule.categories}).
-	 *
-	 * @deprecated Delete it and use `selector` or `regexSelector`. Removed in v6.
-	 */
-	readonly roles?: readonly string[];
-	/**
-	 * Nothing reads it (see {@link NodeRule.categories}).
-	 *
-	 * @deprecated Delete it and use `selector` or `regexSelector`. Removed in v6.
-	 */
-	readonly obsolete?: boolean;
 	/** Base rule settings. Does not accept {@link NamedRuleGroup} entries. */
 	readonly rules?: BaseRules;
 };

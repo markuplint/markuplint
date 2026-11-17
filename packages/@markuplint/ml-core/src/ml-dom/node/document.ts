@@ -410,10 +410,6 @@ export class MLDocument<T extends RuleConfigValue, O extends PlainData = undefin
 		return this.DOCUMENT_NODE;
 	}
 
-	get ownerDocument(): null {
-		return null;
-	}
-
 	get ownerMLDocument(): MLDocument<T, O> {
 		return this;
 	}

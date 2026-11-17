@@ -1,10 +1,7 @@
-import type { Options } from '../wai-aria/types.js';
-
 import { createRule, getComputedRole, ariaSpecs, getSpec } from '@markuplint/ml-core';
 import { ARIA_RECOMMENDED_VERSION } from '@markuplint/ml-spec';
 
 import { checkingElementSupportsAriaProp } from '../wai-aria/checkings/element-supports-aria-prop.js';
-import { defaultOptions } from '../wai-aria/default-options.js';
 import { getAriaAttrs } from '../helpers.js';
 import meta from './meta.js';
 
@@ -17,9 +14,8 @@ import meta from './meta.js';
  * split rule has no such option — disabling this rule entirely is how users
  * opt out.
  */
-export default createRule<boolean, Options>({
+export default createRule<boolean>({
 	meta,
-	defaultOptions,
 	async verify({ document, report }) {
 		await document.walkOn('Element', el => {
 			const elSpec = getSpec(el, document.specs.specs);
@@ -29,8 +25,7 @@ export default createRule<boolean, Options>({
 			if (!elSpec.globalAttrs['#ARIAAttrs']) return;
 			const propAttrs = getAriaAttrs(el);
 			if (propAttrs.length === 0) return;
-			const ariaVersion =
-				el.rule.options?.version ?? document.ruleCommonSettings?.ariaVersion ?? ARIA_RECOMMENDED_VERSION;
+			const ariaVersion = document.ruleCommonSettings?.ariaVersion ?? ARIA_RECOMMENDED_VERSION;
 			const computed = getComputedRole(document.specs, el, ariaVersion);
 			const { props: propSpecs } = ariaSpecs(document.specs, ariaVersion);
 			for (const attr of propAttrs) {

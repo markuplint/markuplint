@@ -1,4 +1,3 @@
-import type { Options } from '../types.js';
 import type { AttrChecker } from '@markuplint/ml-core';
 import type { ARIAProperty } from '@markuplint/ml-spec';
 
@@ -12,7 +11,7 @@ import type { ARIAProperty } from '@markuplint/ml-spec';
  * @param propSpecs - The list of ARIA property specifications for global status lookup.
  * @returns A violation if the property is not a global ARIA property.
  */
-export const checkingNoGlobalProp: AttrChecker<boolean, Options, { propSpecs: readonly ARIAProperty[] }> =
+export const checkingNoGlobalProp: AttrChecker<boolean, undefined, { propSpecs: readonly ARIAProperty[] }> =
 	({ attr, propSpecs }) =>
 	t => {
 		const propSpec = propSpecs.find(prop => prop.name === attr.nameKey);

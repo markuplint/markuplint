@@ -371,30 +371,6 @@ export async function disambiguatePretendersForFile(
 }
 
 /**
- * Whether two or more `filePath`-backed entries share a selector, whatever the
- * selector name shape.
- *
- * @deprecated Nothing in markuplint calls it any more, and it has no replacement:
- *   {@link disambiguatePretendersForFile} decides by itself whether there is anything
- *   to resolve. To be removed in the next major version.
- * @param pretenders - The flat pretender list to check
- * @returns `true` if some `selector` is shared by two or more `filePath`-backed entries
- */
-export function hasResolvableCollision(pretenders: readonly Pretender[]): boolean {
-	const seen = new Set<string>();
-	for (const pretender of pretenders) {
-		if (!pretender.filePath) {
-			continue;
-		}
-		if (seen.has(pretender.selector)) {
-			return true;
-		}
-		seen.add(pretender.selector);
-	}
-	return false;
-}
-
-/**
  * Clears `@markuplint/pretenders`' module-level import/export resolution
  * caches. Call this whenever a lint host re-resolves config without cache
  * (e.g. watch mode after a file change) — otherwise a renamed export or a

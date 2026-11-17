@@ -198,3 +198,16 @@ test('legacy-transform', () => {
 test('var()', () => {
 	expect(cssSyntaxMatch('var(--x)', '<length>').matched).toBe(true);
 });
+
+test('A custom syntax is matched by its own definitions: an `ebnf` that a definition still has is not read', () => {
+	const withEbnf = {
+		ref: 'https://example.com/',
+		syntax: {
+			apply: '<choice>',
+			def: { choice: 'a | b' },
+			ebnf: { choice: 'a' },
+		},
+	} as unknown as CustomCssSyntax;
+	expect(cssSyntaxMatch('b', withEbnf).matched).toBe(true);
+	expect(cssSyntaxMatch('c', withEbnf).matched).toBe(false);
+});

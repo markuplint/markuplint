@@ -1,5 +1,4 @@
-//! Port of `packages/@markuplint/types/src/whatwg/is-navigable-target-name.ts` and
-//! `is-browser-context-name.ts`.
+//! Port of `packages/@markuplint/types/src/whatwg/is-navigable-target-name.ts`.
 //!
 //! <https://html.spec.whatwg.org/multipage/document-sequences.html#navigable-target-names>
 
@@ -20,11 +19,4 @@ pub fn has_tab_or_newline_and_less_than(value: &str) -> bool {
 #[must_use]
 pub fn is_navigable_target_name(value: &str) -> bool {
     !value.is_empty() && !has_tab_or_newline_and_less_than(value) && !value.starts_with('_')
-}
-
-/// TS `isBrowserContextName()`: a deprecated alias of [`is_navigable_target_name`], since the HTML
-/// Standard replaced the valid browsing context name with the valid navigable target name.
-#[must_use]
-pub fn is_browser_context_name(value: &str) -> bool {
-    is_navigable_target_name(value)
 }

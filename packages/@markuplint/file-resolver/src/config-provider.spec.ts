@@ -241,17 +241,6 @@ describe('A config reached through two different `extends` paths is not a circul
 			`Circular reference detected: ${path.resolve(testDir, 'cycle-x.json')}`,
 		]);
 	});
-
-	test('The deprecated `depth` argument does not affect the result', async () => {
-		const provider = new ConfigProvider();
-		const start = path.resolve(testDir, 'main.json');
-		const expected = ['shared.json', 'a.json', 'b.json', 'via-b.json', 'main.json'];
-		for (const depth of [0, 1, 5]) {
-			const result = await provider.recursiveLoad(start, false, 'path/to/index.html', depth);
-			expect([...result.stack].map(f => path.basename(f))).toStrictEqual(expected);
-			expect(result.errs).toStrictEqual([]);
-		}
-	});
 });
 
 test('Import packaged config (Issue: #403)', async () => {

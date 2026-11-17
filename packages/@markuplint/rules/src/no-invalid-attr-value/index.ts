@@ -92,7 +92,6 @@ export default createRule<boolean, Option>({
 				invalid = attrCheck(t, name, value, true, {
 					name,
 					type: allowType,
-					description: '',
 				});
 			}
 

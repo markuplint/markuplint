@@ -4,8 +4,8 @@
 //! A value is matched by css-tree's lexer ([`crate::css::csstree::lexer`]) forked with
 //! markuplint's overrides and, for a custom syntax, its definitions.
 //!
-//! Not ported: the `caseSensitive` mimic of a custom syntax and its `ebnf` form. No definition in
-//! `defs.ts`, `css-defs.ts` or the specs sets either.
+//! Not ported: the `caseSensitive` mimic of a custom syntax. No definition in `defs.ts`,
+//! `css-defs.ts` or the specs sets it.
 
 use std::sync::LazyLock;
 

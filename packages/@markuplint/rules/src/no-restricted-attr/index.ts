@@ -82,7 +82,6 @@ export default createRule<boolean, Option>({
 				: attrCheck(t, name, value, true, {
 						name,
 						type: disallowValue as AttributeType,
-						description: '',
 					});
 			const isMatched = isPattern(disallowValue as Type)
 				? (checkResult as { matched: boolean }).matched

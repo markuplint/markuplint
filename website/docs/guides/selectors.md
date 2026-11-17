@@ -101,7 +101,7 @@ An attribute selector compares the name as the browser's DOM does, so a selector
 
 ### Trees
 
-The content of a `<template>` element and a declarative shadow root (a `<template shadowrootmode>` that is attached to its parent element) are trees of their own, as they are in the DOM. A selector is matched within the tree of the element: `section p` does not match a `<p>` in the content of a `<template>` that is in a `<section>`, and `:has()` and `:closest()` do not cross the boundary either. In React and Vue, the children of a `<template>` without a directive are in the tree of the document, so they are matched as any other children are.
+The content of a `<template>` element and a declarative shadow root (a `<template shadowrootmode>` that is attached to its parent element) are trees of their own, as they are in the DOM. A selector is matched within the tree of the element: `section p` does not match a `<p>` in the content of a `<template>` that is in a `<section>`, and `:has()` does not cross the boundary either. In React and Vue, the children of a `<template>` without a directive are in the tree of the document, so they are matched as any other children are.
 
 ## Specificity
 
@@ -162,7 +162,6 @@ Markuplint supports the **`:where` selector**, which always has zero specificity
 
 Markuplint provides extended pseudo-class-like selectors for HTML-specific matching.
 
-- [~~`:closest`~~](./selectors#ex-selector-closest) (**Deprecated** — use `:is()` instead)
 - [`:aria`](./selectors#ex-selector-aria)
 - [`:role`](./selectors#ex-selector-role)
 - [`:model`](./selectors#ex-selector-model)
@@ -170,7 +169,6 @@ Markuplint provides extended pseudo-class-like selectors for HTML-specific match
 
 | Syntax                | Description                                                                                                                                 |
 | --------------------- | ------------------------------------------------------------------------------------------------------------------------------------------- |
-| `:closest(selectors)` | **Deprecated.** Use `:is(selectors *)` instead. See [migration guide](#ex-selector-closest).                                                |
 | `:aria(has name)`     | [ARIA pseudo-class](https://github.com/markuplint/markuplint/tree/main/packages/%40markuplint/selector#aria-pseudo-class)                   |
 | `:role(heading)`      | [ARIA Role pseudo-class](https://github.com/markuplint/markuplint/tree/main/packages/%40markuplint/selector#aria-pseudo-class)              |
 | `:model(interactive)` | [Content Model pseudo-class](https://github.com/markuplint/markuplint/tree/main/packages/%40markuplint/selector#content-model-pseudo-class) |
@@ -181,28 +179,6 @@ Markuplint provides extended pseudo-class-like selectors for HTML-specific match
 These selectors are **experimental features** and do not guarantee compatibility. They may be removed in the next major version if they conflict with CSS Selectors.
 
 :::
-
-### `:closest` {#ex-selector-closest}
-
-:::caution Deprecated
-`:closest()` is deprecated and will be removed in the next major version. Use the standard `:is()` pseudo-class with the descendant combinator instead.
-:::
-
-**Concept**: [`Element.closest`](https://dom.spec.whatwg.org/#ref-for-dom-element-closest%E2%91%A0) method
-
-```
-:closest(selectors)
-```
-
-Matches elements that have an ancestor matching the given selectors.
-
-**Migration:** Replace `:closest(X)` with `:is(X *)`:
-
-| Before                              | After                         |
-| ----------------------------------- | ----------------------------- |
-| `:closest(nav)`                     | `:is(nav *)`                  |
-| `:closest(.wrapper)`                | `:is(.wrapper *)`             |
-| `div:closest(nav):closest(section)` | `div:is(nav *):is(section *)` |
 
 ### `:aria` {#ex-selector-aria}
 

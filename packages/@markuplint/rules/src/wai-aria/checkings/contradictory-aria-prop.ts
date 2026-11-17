@@ -1,4 +1,3 @@
-import type { Options } from '../types.js';
 import type { AttrChecker } from '@markuplint/ml-core';
 import type { ARIAProperty, Attribute } from '@markuplint/ml-spec';
 
@@ -22,7 +21,7 @@ import { resolveAttrEligibility } from '../../attr-eligibility.js';
  */
 export const checkingContradictoryAriaProp: AttrChecker<
 	boolean,
-	Options,
+	undefined,
 	{ propSpecs: readonly ARIAProperty[]; attrSpecs: readonly Attribute[] | null }
 > =
 	({ attr, propSpecs, attrSpecs }) =>

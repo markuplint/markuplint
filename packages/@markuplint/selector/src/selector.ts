@@ -822,7 +822,6 @@ function assertSupportedPseudo(
 		throw new InvalidSelectorError(selector, unsupportedYetMessage(pseudo));
 	}
 	switch (name) {
-		case ':closest':
 		case ':not':
 		case ':is':
 		case ':has':
@@ -871,34 +870,6 @@ function pseudoMatch(
 	}
 	switch (pseudoName) {
 		//
-
-		/**
-		 * Below, markuplint Specific Selector
-		 */
-		// `:closest()` is a markuplint extension that is not in the W3C Selectors
-		// specification. Deprecated in v5 and will be removed in v6 — use
-		// `:is(selector *)` instead (e.g. `:closest(nav)` → `:is(nav *)`).
-		case ':closest': {
-			const ruleset = new Ruleset(pseudo.nodes, extended, depth + 1);
-			const specificity = getSpecificity(ruleset.match(el, scope));
-			let parent = getParentElement(el);
-			while (parent) {
-				const matched = ruleset.match(parent, scope).filter((r): r is SelectorMatchedResult => r.matched);
-				if (matched.length > 0) {
-					return {
-						specificity,
-						matched: true,
-						nodes: [el],
-						has: matched,
-					};
-				}
-				parent = getParentElement(parent);
-			}
-			return {
-				specificity,
-				matched: false,
-			};
-		}
 
 		/**
 		 * Below, Selector Level 4

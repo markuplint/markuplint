@@ -26,7 +26,7 @@ test('[no-redundant-role-invalid-002] html with role=document is implicit in ARI
 	expect(
 		(
 			await mlRuleTest(rule, '<html role="document"><head></head><body></body></html>', {
-				rule: { options: { version: '1.1' } },
+				ruleCommonSettings: { ariaVersion: '1.1' },
 			})
 		).violations,
 	).toStrictEqual([

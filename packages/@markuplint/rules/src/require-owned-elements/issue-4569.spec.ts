@@ -119,7 +119,7 @@ test('[require-owned-elements-issue-4569-014] a slot in an element that is not t
 	const { violations } = await mlRuleTest(
 		rule,
 		'<div role="list"><template shadowrootmode="open" shadowrootslotassignment="manual"><div><slot></slot></div></template></div>',
-		{ rule: { options: { version: '1.2' as const } } },
+		{ ruleCommonSettings: { ariaVersion: '1.2' as const } },
 	);
 	expect(violations).toStrictEqual([reported()]);
 });

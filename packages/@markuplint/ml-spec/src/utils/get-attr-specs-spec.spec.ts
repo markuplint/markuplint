@@ -55,7 +55,6 @@ describe('getSpec', () => {
 				unique: true,
 				separator: 'space',
 			},
-			description: '',
 		});
 	});
 
@@ -65,7 +64,7 @@ describe('getSpec', () => {
 			specs: [{ name: 'x', globalAttrs: {}, attributes: { foo: {} } }],
 		};
 		const specs = getAttrSpecs('x', null, schema as never);
-		expect(specs).toStrictEqual([{ name: 'foo', type: 'Any', description: '' }]);
+		expect(specs).toStrictEqual([{ name: 'foo', type: 'Any' }]);
 	});
 });
 

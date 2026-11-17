@@ -1,4 +1,4 @@
-import type { ARIARoleInSchema } from '@markuplint/ml-spec';
+import type { ScrapedARIARole } from './types.ts';
 
 type HasName = { readonly name: string };
 
@@ -108,9 +108,9 @@ export function isDeprecatedOwnedProperty(text: string) {
  * @see https://w3c.github.io/aria/
  */
 export function inheritDeprecatedProperties(
-	dpubRoles: readonly ARIARoleInSchema[],
-	ariaRoles: readonly ARIARoleInSchema[],
-): ARIARoleInSchema[] {
+	dpubRoles: readonly ScrapedARIARole[],
+	ariaRoles: readonly ScrapedARIARole[],
+): ScrapedARIARole[] {
 	return dpubRoles.map(role => {
 		const superclasses = (role.generalization ?? [])
 			.map(name => ariaRoles.find(r => r.name === name))

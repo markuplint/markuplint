@@ -1,5 +1,4 @@
 import { isAriaAttr } from '../../helpers.js';
-import type { Options } from '../types.js';
 import type { AttrChecker } from '@markuplint/ml-core';
 import type { ARIAProperty, ARIARole } from '@markuplint/ml-spec';
 
@@ -18,7 +17,7 @@ import type { ARIAProperty, ARIARole } from '@markuplint/ml-spec';
  */
 export const checkingRoleSupportsAriaProp: AttrChecker<
 	boolean,
-	Options,
+	undefined,
 	{
 		role: ARIARole | null;
 		propSpecs: readonly ARIAProperty[];

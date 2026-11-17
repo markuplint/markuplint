@@ -13,6 +13,7 @@ title: 'MLDOM'
 
 - `UnexpectedCallError`を投げるだけだったメンバー（変更、イベント、レイアウト、`before()`・`after()`・`remove()`など）。
 - モノレポのどこからも読まれていなかったメンバー: `getElementsByTagName()`、`getElementsByClassName()`、`firstElementChild`、`lastElementChild`、`assignedNodes()`、`assignedSlot`、`getAttributeNames()`、`hasAttributes()`。代わりに`childElements`、`getAssignedNodes()`、`getFlatTreeSlot()`を読んでください。
+- `MLNode`の`ownerDocument`（`any`を返していました）と、`MLDocument`での上書き（`null`を返していました）。型の付いた`ownerMLDocument`を読んでください。`MLDocument`の`ownerMLDocument`はそのドキュメント自身なので、ドキュメントかどうかを`ownerDocument === null`で調べていたコードは、`node.ownerMLDocument === node`にしてください。
 - `MLNode`の`lastChild`、`MLDocument`の`defaultView`、`MLNode`の`DOCUMENT_POSITION_*`・`ENTITY_NODE`・`ENTITY_REFERENCE_NODE`・`NOTATION_NODE`・`PROCESSING_INSTRUCTION_NODE`の各定数。
 - `@markuplint/shared`の`UnexpectedCallError`。
 - `@markuplint/ml-spec`の`getAccname()`（DOMの`Element`のアクセシブルネームを計算していました）。`MLElement`の`getAccessibleName()`を読んでください。`@markuplint/selector`の`:aria(has name)`はそれを呼びます。

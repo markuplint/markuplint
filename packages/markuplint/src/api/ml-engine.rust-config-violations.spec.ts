@@ -105,6 +105,10 @@ describe.skipIf(!nativeAddonIsBuilt)(
 				'a selector of a child node rule that cannot be read',
 				{ childNodeRules: [{ selector: 'p[', rules: { 'no-duplicate-id': true } }] },
 			],
+			[
+				'a selector of a node rule that has :closest(), an unsupported pseudo-class',
+				{ nodeRules: [{ selector: 'p:closest(section)', rules: { 'no-duplicate-id': true } }] },
+			],
 		] as const)('has the violations that the TypeScript engine has for %s', async (_name, config) => {
 			const expected = await lint(source, config as Config, false);
 			const actual = await lint(source, config as Config, true);
@@ -152,6 +156,19 @@ describe.skipIf(!nativeAddonIsBuilt)(
 
 			expect(withoutReason(summarize(expected))).toStrictEqual([
 				'1:0 error parse-error Invalid selector: "p[" (<reason>) in the configuration',
+			]);
+			expect(summarize(actual)).toStrictEqual(summarize(expected));
+		});
+
+		it('fails the document for a selector that has :closest() as the TypeScript engine does, with no rule run', async () => {
+			const config: Config = {
+				nodeRules: [{ selector: 'p:closest(section)', rules: { 'no-duplicate-id': true } }],
+			};
+			const expected = await lint(source, config, false);
+			const actual = await lint(source, config, true);
+
+			expect(summarize(expected)).toStrictEqual([
+				'1:0 error parse-error Unsupported pseudo :closest(section) selector. in the configuration',
 			]);
 			expect(summarize(actual)).toStrictEqual(summarize(expected));
 		});

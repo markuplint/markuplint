@@ -23,7 +23,6 @@ import { checkMediaQueryList, findGeneralEnclosed } from './whatwg/check-media-q
 import { checkMIMEType } from './whatwg/check-mime-type.js';
 import { checkURL } from './whatwg/check-url.js';
 import { isAbsURL } from './whatwg/is-abs-url.js';
-import { isBrowserContextName } from './whatwg/is-browser-context-name.js';
 import { isCustomElementName } from './whatwg/is-custom-element-name.js';
 import { isItempropName } from './whatwg/is-itemprop-name.js';
 import { hasTabOrNewlineAndLessThan, isNavigableTargetName } from './whatwg/is-navigable-target-name.js';
@@ -597,20 +596,6 @@ export const defs: Defs = {
 		is: matches(isNavigableTargetName()),
 	},
 
-	/**
-	 * @deprecated Use {@link types.NavigableTargetName} instead.
-	 */
-	BrowsingContextName: {
-		ref: 'https://html.spec.whatwg.org/multipage/document-sequences.html#navigable-target-names',
-		expects: [
-			{
-				type: 'common',
-				value: 'browsing context name',
-			},
-		],
-		is: matches(isBrowserContextName()),
-	},
-
 	NavigableTargetNameOrKeyword: {
 		ref: 'https://html.spec.whatwg.org/multipage/document-sequences.html#valid-navigable-target-name-or-keyword',
 		expects: [
@@ -631,6 +616,9 @@ export const defs: Defs = {
 			if (keywords.includes(value.toLowerCase())) {
 				return matched();
 			}
+			if (value === '') {
+				return unmatched(value, 'empty-token');
+			}
 			if (value[0] === '_') {
 				const candidate = getCandidate(value.toLowerCase(), keywords);
 				return unmatched(value, 'unexpected-token', { candidate });
@@ -647,34 +635,6 @@ export const defs: Defs = {
 				);
 			}
 			return res;
-		},
-	},
-
-	/**
-	 * @deprecated Use {@link types.NavigableTargetNameOrKeyword} instead.
-	 */
-	BrowsingContextNameOrKeyword: {
-		ref: 'https://html.spec.whatwg.org/multipage/document-sequences.html#valid-browsing-context-name-or-keyword',
-		expects: [
-			{ type: 'const', value: '_blank' },
-			{ type: 'const', value: '_self' },
-			{ type: 'const', value: '_parent' },
-			{ type: 'const', value: '_top' },
-			{
-				type: 'common',
-				value: 'browsing context name',
-			},
-		],
-		is(value) {
-			const keywords = ['_blank', '_self', '_parent', '_top'];
-			if (keywords.includes(value.toLowerCase())) {
-				return matched();
-			}
-			if (value[0] === '_') {
-				const candidate = getCandidate(value.toLowerCase(), keywords);
-				return unmatched(value, 'unexpected-token', { candidate });
-			}
-			return matches(isBrowserContextName())(value);
 		},
 	},
 

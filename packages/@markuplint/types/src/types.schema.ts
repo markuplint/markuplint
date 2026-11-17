@@ -1252,8 +1252,6 @@ export type ExtendedType =
   | "AutoCompleteNoWebauthn"
   | "BCP47"
   | "BaseURL"
-  | "BrowsingContextName"
-  | "BrowsingContextNameOrKeyword"
   | "ContentSecurityPolicy"
   | "CustomElementName"
   | "DOMID"

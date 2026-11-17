@@ -149,20 +149,16 @@ const spec: ExtendedSpec = {
 			attributes: {
 				'x-for': {
 					type: 'NoEmptyAny',
-					description: 'Renders elements by iterating over arrays, objects, or numeric ranges',
 				},
 				key: {
 					type: 'NoEmptyAny',
-					description: 'A special attribute for list rendering that helps Alpine track changes',
 					condition: '[x-for]',
 				},
 				'x-teleport': {
 					type: 'NoEmptyAny',
-					description: 'Moves the element DOM content to another location in the page',
 				},
 				'x-if': {
 					type: 'NoEmptyAny',
-					description: 'Conditionally adds/removes elements from the DOM entirely',
 				},
 			},
 		},

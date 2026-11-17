@@ -352,14 +352,23 @@ describe('selector matching', () => {
 		expect(createSelector('table:has(~ figcaption)').match(el)).toBeTruthy();
 	});
 
-	test(':closest', () => {
+	test(':closest is not supported', () => {
 		const el = createTestElement('<table><tr><td></td></tr></table>');
 		const td = el.childElements[0].childElements[0].childElements[0];
 		expect(createSelector('td').match(td)).toBeTruthy();
-		expect(createSelector(':closest(table)').match(td)).toBeTruthy();
-		expect(createSelector(':closest(tr)').match(td)).toBeTruthy();
-		expect(createSelector(':closest(tbody)').match(td)).toBeTruthy();
-		expect(createSelector(':closest(div)').match(td)).toBe(false);
+		expect(() => createSelector(':closest(table)')).toThrow(InvalidSelectorError);
+		expect(() => createSelector(':closest(tr)')).toThrow(InvalidSelectorError);
+		expect(() => createSelector(':closest(tbody)')).toThrow(InvalidSelectorError);
+		expect(() => createSelector(':closest(div)')).toThrow(InvalidSelectorError);
+	});
+
+	test(':is(selector *) matches an ancestor', () => {
+		const el = createTestElement('<table><tr><td></td></tr></table>');
+		const td = el.childElements[0].childElements[0].childElements[0];
+		expect(createSelector(':is(table *)').match(td)).toBeTruthy();
+		expect(createSelector(':is(tr *)').match(td)).toBeTruthy();
+		expect(createSelector(':is(tbody *)').match(td)).toBeTruthy();
+		expect(createSelector(':is(div *)').match(td)).toBe(false);
 	});
 
 	test('namespace', () => {

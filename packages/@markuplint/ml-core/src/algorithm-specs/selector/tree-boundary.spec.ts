@@ -1,6 +1,6 @@
 // @ts-nocheck
 
-import { Selector } from '@markuplint/selector';
+import { InvalidSelectorError, Selector } from '@markuplint/selector';
 import { describe, test, expect } from 'vitest';
 
 import { elementOf } from '../element-of.js';
@@ -48,10 +48,14 @@ describe('treeParentElement', () => {
 		expect(new Selector('div > p').match(p)).toBe(false);
 	});
 
-	test(':closest stops where the element has no parent in its tree', () => {
+	test(':closest is not supported', () => {
+		expect(() => new Selector('p:closest(div)')).toThrow(InvalidSelectorError);
+	});
+
+	test('an ancestor through :is() stops where the element has no parent in its tree', () => {
 		const p = withMembers(pOf(html), { treeParentElement: null });
-		expect(new Selector('p:closest(div)').match(p)).toBe(false);
-		expect(new Selector('p:closest(div)').match(pOf(html)) !== false).toBe(true);
+		expect(new Selector('p:is(div *)').match(p)).toBe(false);
+		expect(new Selector('p:is(div *)').match(pOf(html))).not.toBe(false);
 	});
 
 	test('the parent that it names is the one the combinator matches', () => {

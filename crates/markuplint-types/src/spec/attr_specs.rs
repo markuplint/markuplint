@@ -80,15 +80,9 @@ fn build(spec: &MLMLSpec, spec_name: &str) -> Option<Vec<Attribute>> {
     for (name, own) in &el_spec.attributes {
         if let Some(current) = list.iter_mut().find(|attr| attr.name.as_deref() == Some(name)) {
             current.overlay(own);
-            if current.description.is_none() {
-                current.description = Some(String::new());
-            }
         } else {
             let mut attr = own.clone();
             attr.name = Some(name.clone());
-            if attr.description.is_none() {
-                attr.description = Some(String::new());
-            }
             list.push(attr);
         }
     }

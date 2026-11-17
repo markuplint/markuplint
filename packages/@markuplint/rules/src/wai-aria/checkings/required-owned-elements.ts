@@ -1,4 +1,3 @@
-import type { Options } from '../types.js';
 import type { Element, ElementChecker, Block, ChildNode } from '@markuplint/ml-core';
 import type { ARIARole, ARIAVersion } from '@markuplint/ml-spec';
 
@@ -26,8 +25,8 @@ import { noTranslate } from '../../no-translate.js';
  * - `NO_ELEMENT`: the child is not an element node (e.g., text or comment).
  */
 type OwnedElement =
-	| [node: Element<boolean, Options>, type: 'REQUIRED' | 'BUSY' | 'OTHER' | 'UNKNOWN']
-	| [node: Block<boolean, Options>, type: 'PB']
+	| [node: Element<boolean, undefined>, type: 'REQUIRED' | 'BUSY' | 'OTHER' | 'UNKNOWN']
+	| [node: Block<boolean, undefined>, type: 'PB']
 	| [node: null, type: 'NO_ELEMENT'];
 
 /**
@@ -50,7 +49,7 @@ type OwnedElement =
  */
 export const checkingRequiredOwnedElements: ElementChecker<
 	boolean,
-	Options,
+	undefined,
 	{
 		role?: ARIARole | null;
 	}
@@ -77,8 +76,7 @@ export const checkingRequiredOwnedElements: ElementChecker<
 			return;
 		}
 
-		const ariaVersion =
-			el.rule.options?.version ?? el.ownerMLDocument.ruleCommonSettings?.ariaVersion ?? ARIA_RECOMMENDED_VERSION;
+		const ariaVersion = el.ownerMLDocument.ruleCommonSettings?.ariaVersion ?? ARIA_RECOMMENDED_VERSION;
 		const ownedChildNodes = getOwnedChildNodes(el, ariaVersion);
 		const children: OwnedElement[] = classifyChildren(el, ownedChildNodes, role, ariaVersion);
 
@@ -155,7 +153,7 @@ export const checkingRequiredOwnedElements: ElementChecker<
  * @param childNodes - The child nodes the element owns (see `getOwnedChildNodes`).
  * @returns `true` if the nodes are empty or only contain script/template elements.
  */
-function mayBeBeforeCreated(childNodes: readonly ChildNode<boolean, Options>[]) {
+function mayBeBeforeCreated(childNodes: readonly ChildNode<boolean, undefined>[]) {
 	if (childNodes.every(child => child.is(child.TEXT_NODE) && child.textContent?.trim() === '')) {
 		return true;
 	}
@@ -180,8 +178,8 @@ function mayBeBeforeCreated(childNodes: readonly ChildNode<boolean, Options>[]) 
  */
 function classifyChildren(
 	// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
-	el: Element<boolean, Options>,
-	childNodes: readonly ChildNode<boolean, Options>[] | null,
+	el: Element<boolean, undefined>,
+	childNodes: readonly ChildNode<boolean, undefined>[] | null,
 	role: ARIARole,
 	version: ARIAVersion,
 ): OwnedElement[] {
@@ -270,7 +268,7 @@ function classifyChildren(
  */
 function classifySlot(
 	// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
-	slot: Element<boolean, Options>,
+	slot: Element<boolean, undefined>,
 	role: ARIARole,
 	version: ARIAVersion,
 ): OwnedElement[] {
@@ -336,9 +334,9 @@ function classifySlot(
  */
 function getOwnedChildNodes(
 	// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
-	el: Element<boolean, Options>,
+	el: Element<boolean, undefined>,
 	version: ARIAVersion,
-): readonly ChildNode<boolean, Options>[] | null {
+): readonly ChildNode<boolean, undefined>[] | null {
 	const ariaOwns = el.getAttrNode('aria-owns');
 	if (ariaOwns && !ariaOwns.isAbsent && ariaOwns.isDynamicValue) {
 		return null;
@@ -348,7 +346,7 @@ function getOwnedChildNodes(
 		return null;
 	}
 	const specs = el.ownerMLDocument.specs;
-	const resolved = resolveAriaOwnsChildren(el, childNodes, specs, version) as ChildNode<boolean, Options>[];
+	const resolved = resolveAriaOwnsChildren(el, childNodes, specs, version) as ChildNode<boolean, undefined>[];
 	// In a document with a block of template syntax, the element an ID refers to depends on the branch
 	// that is rendered, so what `aria-owns` moves is not known
 	const moved = resolved.length !== childNodes.length || resolved.some((node, i) => node !== childNodes[i]);
@@ -366,8 +364,8 @@ function getOwnedChildNodes(
  */
 function getFlatChildNodes(
 	// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
-	el: Element<boolean, Options>,
-): readonly ChildNode<boolean, Options>[] | null {
+	el: Element<boolean, undefined>,
+): readonly ChildNode<boolean, undefined>[] | null {
 	// The content of the `template` is the shadow root, and holds the same nodes as its children.
 	const shadowRootTemplate = getShadowRootTemplate(el);
 	if (shadowRootTemplate === 'unknown') {
@@ -413,7 +411,7 @@ function getFlatChildNodes(
  */
 function isFlattenedSlot(
 	// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
-	slot: Element<boolean, Options>,
+	slot: Element<boolean, undefined>,
 ): boolean {
 	return slot.isFragment;
 }
@@ -434,7 +432,7 @@ function isFlattenedSlot(
  */
 function isOwnedContentMutable(
 	// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
-	el: Element<boolean, Options>,
+	el: Element<boolean, undefined>,
 ): boolean {
 	const template = getShadowRootTemplate(el);
 	if (template === 'unknown') {
@@ -462,8 +460,8 @@ function isOwnedContentMutable(
  */
 function getShadowRootTemplate(
 	// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
-	host: Element<boolean, Options>,
-): Element<boolean, Options> | 'unknown' | null {
+	host: Element<boolean, undefined>,
+): Element<boolean, undefined> | 'unknown' | null {
 	const shadowRoot = host.declarativeShadowRoot;
 	if (!shadowRoot) {
 		return null;

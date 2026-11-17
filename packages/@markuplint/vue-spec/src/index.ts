@@ -217,12 +217,10 @@ const spec: ExtendedSpec = {
 			'#extends': {
 				key: {
 					type: 'NoEmptyAny',
-					description: 'A special attribute for list rendering',
 					condition: '[v-for]',
 				},
 				ref: {
 					type: 'NoEmptyAny',
-					description: 'A special attribute for accessing child component instances and child elements',
 				},
 			},
 		},

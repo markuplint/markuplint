@@ -1,4 +1,3 @@
-import type { Options } from '../types.js';
 import type { AttrChecker } from '@markuplint/ml-core';
 import type { ARIARole } from '@markuplint/ml-spec';
 
@@ -12,7 +11,7 @@ import type { ARIARole } from '@markuplint/ml-spec';
  * @param role - The computed ARIA role of the element.
  * @returns A violation if the role is marked as deprecated.
  */
-export const checkingDeprecatedRole: AttrChecker<boolean, Options, { role: ARIARole | null }> =
+export const checkingDeprecatedRole: AttrChecker<boolean, undefined, { role: ARIARole | null }> =
 	({ attr, role }) =>
 	t => {
 		if (!role) {

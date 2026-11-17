@@ -6,9 +6,11 @@ import { stripProse } from './strip-prose.ts';
 
 const role = (name: string) => ({ name, description: `The ${name} role.`, isAbstract: false });
 
-function spec(extraAttributes: Record<string, object> = {}): ExtendedSpec {
+/** A top-level key that is not prose: `ExtendedSpec` does not declare it, and `stripProse` leaves it as it is. */
+type SpecWithCites = ExtendedSpec & { readonly cites?: readonly string[] };
+
+function spec(extraAttributes: Record<string, object> = {}): SpecWithCites {
 	return {
-		// `@markuplint/html-spec` writes no `cites`; an extension can still set them, and they pass through
 		cites: ['https://html.spec.whatwg.org/multipage/'],
 		def: {
 			'#globalAttrs': { '#HTMLGlobalAttrs': { id: { type: 'Any', description: 'The unique identifier.' } } },
@@ -96,7 +98,7 @@ describe('stripProse', () => {
 
 	test('keeps what is not prose', () => {
 		const original = spec();
-		const stripped = stripProse(original);
+		const stripped: SpecWithCites = stripProse(original);
 		expect(stripped.cites).toStrictEqual(original.cites);
 		expect(stripped.def?.['#contentModels']).toStrictEqual(original.def?.['#contentModels']);
 		expect(stripped.def?.['#aria']?.['1.3']?.props?.[1]).toStrictEqual({
@@ -114,7 +116,7 @@ describe('stripProse', () => {
 
 	test('shares what it does not touch with its input', () => {
 		const original = spec();
-		const stripped = stripProse(original);
+		const stripped: SpecWithCites = stripProse(original);
 		expect(stripped.cites).toBe(original.cites);
 		expect(stripped.def?.['#contentModels']).toBe(original.def?.['#contentModels']);
 	});

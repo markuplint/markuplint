@@ -1,4 +1,3 @@
-import type { Options } from '../types.js';
 import type { ElementChecker } from '@markuplint/ml-core';
 import type { ARIARole } from '@markuplint/ml-spec';
 
@@ -21,7 +20,7 @@ import { getDOMValue, getElementByIdInTree, querySelectorAllInTree } from '../..
  */
 export const checkingTabRequiresTabpanel: ElementChecker<
 	boolean,
-	Options,
+	undefined,
 	{
 		role?: ARIARole | null;
 	}
@@ -38,8 +37,7 @@ export const checkingTabRequiresTabpanel: ElementChecker<
 		}
 
 		const document = el.ownerMLDocument;
-		const ariaVersion =
-			el.rule.options?.version ?? document.ruleCommonSettings?.ariaVersion ?? ARIA_RECOMMENDED_VERSION;
+		const ariaVersion = document.ruleCommonSettings?.ariaVersion ?? ARIA_RECOMMENDED_VERSION;
 
 		const isTabpanel = (candidate: typeof el) =>
 			getComputedRole(document.specs, candidate, ariaVersion).role?.name === 'tabpanel';

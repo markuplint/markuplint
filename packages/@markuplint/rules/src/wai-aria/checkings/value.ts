@@ -1,4 +1,3 @@
-import type { Options } from '../types.js';
 import type { AttrChecker } from '@markuplint/ml-core';
 import type { ARIAProperty, ARIARole } from '@markuplint/ml-spec';
 
@@ -19,7 +18,7 @@ import { noTranslate } from '../../no-translate.js';
  */
 export const checkingValue: AttrChecker<
 	boolean,
-	Options,
+	undefined,
 	{
 		role?: ARIARole | null;
 		propSpecs: readonly ARIAProperty[];

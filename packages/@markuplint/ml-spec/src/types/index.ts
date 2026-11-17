@@ -10,15 +10,6 @@ import type { ReadonlyDeep } from 'type-fest';
  * markuplint Markup-language spec
  */
 export interface MLMLSpec {
-	/**
-	 * Reference URLs
-	 *
-	 * `@markuplint/html-spec` writes none and nothing in markuplint reads it; `schemaToSpec` appends what an
-	 * extension sets.
-	 *
-	 * @deprecated Delete it; there is no replacement. Removed in v6.
-	 */
-	readonly cites?: Cites;
 	readonly def: SpecDefs;
 	readonly specs: readonly ElementSpec[];
 	readonly directivePatterns?: readonly DirectivePattern[];
@@ -91,12 +82,6 @@ export type ExtendedElementSpec = Partial<Omit<ElementSpec, 'name' | 'attributes
  * Typically provided by parser plugins or framework-specific spec packages (e.g., `@markuplint/vue-spec`).
  */
 export type ExtendedSpec = {
-	/**
-	 * Reference URLs that `schemaToSpec` appends to {@link MLMLSpec.cites}.
-	 *
-	 * @deprecated Delete it; there is no replacement. Removed in v6.
-	 */
-	readonly cites?: Cites;
 	readonly def?: Partial<SpecDefs>;
 	readonly specs?: readonly ExtendedElementSpec[];
 	readonly directivePatterns?: readonly DirectivePattern[];
@@ -240,11 +225,6 @@ export type DirectivePattern = {
 };
 
 /**
- * Reference URLs. Only the deprecated `cites` fields use it (see {@link MLMLSpec.cites}).
- */
-export type Cites = readonly string[];
-
-/**
  * Internal definition data within a markup language spec, containing global attributes,
  * ARIA role/property definitions for each version, and content model category mappings.
  */
@@ -292,16 +272,6 @@ export type ElementSpec = {
 	readonly cite: string;
 
 	/**
-	 * Description
-	 *
-	 * `@markuplint/html-spec` does not fill it: the prose of the specifications is not copied into the data.
-	 * Nothing in markuplint reads it; a spec that an `ExtendedSpec` adds may set it.
-	 *
-	 * @deprecated Delete it; there is no replacement. Removed in v6.
-	 */
-	readonly description?: string;
-
-	/**
 	 * Experimental technology: not yet standardized (proposed or draft;
 	 * subject to change or removal).
 	 */
@@ -331,27 +301,11 @@ export type ElementSpec = {
 	readonly nonStandard?: true;
 
 	/**
-	 * Element categories
-	 *
-	 * `@markuplint/html-spec` writes none and nothing reads it.
-	 *
-	 * @deprecated Use `MLMLSpec.def['#contentModels']`, which holds the categories that the rules use. Removed in v6.
-	 */
-	readonly categories?: readonly Category[];
-
-	/**
 	 * Permitted contents and permitted parents
+	 *
+	 * The content categories that the rules use are `MLMLSpec.def['#contentModels']`.
 	 */
 	readonly contentModel: ReadonlyDeep<ContentModel>;
-
-	/**
-	 * Tag omission
-	 *
-	 * `@markuplint/html-spec` writes none and nothing reads it.
-	 *
-	 * @deprecated Delete it; there is no replacement. Removed in v6.
-	 */
-	readonly omission?: ElementSpecOmission;
 
 	/**
 	 * Global Attributes
@@ -379,19 +333,8 @@ export type ElementSpec = {
 	readonly possibleToAddProperties?: true;
 };
 
-type ElementSpecOmission = false | ElementSpecOmissionTags;
-
-type ElementSpecOmissionTags = {
-	readonly startTag: boolean | ElementCondition;
-	readonly endTag: boolean | ElementCondition;
-};
-
-type ElementCondition = {
-	readonly __WIP__: 'WORK_IN_PROGRESS';
-};
-
 /**
- * Describes a single HTML/SVG attribute with its type, description, and status flags.
+ * Describes a single HTML/SVG attribute with its type and status flags.
  */
 export type Attribute = {
 	readonly name: string;
@@ -399,12 +342,6 @@ export type Attribute = {
 		| ReadonlyDeep<AttributeType>
 		| readonly ReadonlyDeep<AttributeType>[]
 		| readonly ReadonlyDeep<ConditionalAttributeType>[];
-	/**
-	 * Description. Not filled by `@markuplint/html-spec` (see {@link ElementSpec.description}).
-	 *
-	 * @deprecated Delete it; there is no replacement. Removed in v6.
-	 */
-	readonly description?: string;
 	readonly caseSensitive?: true;
 	// Status flags share the semantics documented on `ElementSpec` above:
 	// experimental = not yet standardized; obsolete = removed from the spec;
@@ -426,20 +363,10 @@ export type ARIARole = {
 	readonly name: string;
 	readonly isAbstract: boolean;
 	readonly deprecated: boolean;
-	/** Required Accessibility Parent Role (ARIA 1.3 name) */
+	/** Required Accessibility Parent Role (ARIA 1.3 name; "Required Context Role" in ARIA 1.2) */
 	readonly requiredAccessibilityParentRole: readonly string[];
-	/** Allowed Accessibility Child Roles (ARIA 1.3 name) */
+	/** Allowed Accessibility Child Roles (ARIA 1.3 name; "Required Owned Elements" in ARIA 1.2) */
 	readonly allowedAccessibilityChildRoles: readonly string[];
-	/**
-	 * @deprecated Use {@link ARIARole.requiredAccessibilityParentRole} instead.
-	 * Retained for ARIA 1.2 backward compatibility.
-	 */
-	readonly requiredContextRole: readonly string[];
-	/**
-	 * @deprecated Use {@link ARIARole.allowedAccessibilityChildRoles} instead.
-	 * Retained for ARIA 1.2 backward compatibility.
-	 */
-	readonly requiredOwnedElements: readonly string[];
 	readonly accessibleNameRequired: boolean;
 	readonly accessibleNameFromAuthor: boolean;
 	readonly accessibleNameFromContent: boolean;
@@ -455,12 +382,6 @@ export type ARIARole = {
  */
 export type ARIARoleInSchema = Partial<
 	ARIARole & {
-		/**
-		 * Not filled by `@markuplint/html-spec` (see {@link ElementSpec.description}).
-		 *
-		 * @deprecated Delete it; there is no replacement. Removed in v6.
-		 */
-		readonly description: string;
 		readonly generalization: readonly string[];
 	}
 > & {
@@ -503,12 +424,6 @@ export type ARIAProperty = {
 	readonly enum: readonly string[];
 	readonly defaultValue?: string;
 	readonly equivalentHtmlAttrs?: readonly EquivalentHtmlAttr[];
-	/**
-	 * Not filled by `@markuplint/html-spec` (see {@link ElementSpec.description}).
-	 *
-	 * @deprecated Delete it; there is no replacement. Removed in v6.
-	 */
-	readonly valueDescriptions?: Readonly<Record<string, string>>;
 };
 
 /**

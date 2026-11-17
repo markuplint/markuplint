@@ -259,20 +259,7 @@ export abstract class MLNode<
 	}
 
 	/**
-	 * The `Document` that this node belongs to.
-	 *
-	 * @deprecated
-	 * @implements DOM API: `Node`
-	 * @see https://dom.spec.whatwg.org/#ref-for-dom-node-ownerdocument%E2%91%A0
-	 */
-	get ownerDocument(): any {
-		return this.#ownerDocument;
-	}
-
-	/**
-	 * The owning `MLDocument` instance with proper generic types,
-	 * providing type-safe access to the document without the `any` type
-	 * used by the DOM-named `ownerDocument`.
+	 * The owning `MLDocument` instance with its generic types.
 	 *
 	 * @implements `@markuplint/ml-core` API: `MLNode`
 	 */

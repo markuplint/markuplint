@@ -243,6 +243,8 @@ describe('what the engine does not support is found for any spelling and positio
 		['div::before'],
 		[':is(div, span:hover)'],
 		[':closest(div:hover)'],
+		['span:closest(div)'],
+		[':not(:closest(div))'],
 		[':where(div || span)'],
 		[':ARIA(foo)'],
 	])('%s is an invalid selector when it is created', selector => {
@@ -261,7 +263,6 @@ describe('what the engine supports is accepted when it is created and when it is
 		['span:is(span, div)'],
 		['span:where(span)'],
 		['span:has(> a)'],
-		['span:closest(div)'],
 		[':root'],
 		['span:display-size(= 1)'],
 	])('%s', selector => {

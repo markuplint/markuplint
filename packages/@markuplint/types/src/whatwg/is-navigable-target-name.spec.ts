@@ -12,33 +12,33 @@ describe('NavigableTargetName', () => {
 	});
 });
 
-describe('BrowsingContextName (deprecated alias)', () => {
-	test.each(['frame', 'a\tb', 'a<b'])('valid: %j', name => {
-		expect(check(name, 'BrowsingContextName').matched).toBe(true);
-	});
-
-	test.each(['', '_blank', 'a\t<b', 'a<\nb'])('invalid: %j', name => {
-		expect(check(name, 'BrowsingContextName').matched).toBe(false);
+describe('a name that is not a type (BrowsingContextName, BrowsingContextNameOrKeyword)', () => {
+	test.each(['BrowsingContextName', 'BrowsingContextNameOrKeyword'])('%s matches any value', type => {
+		expect(check('_blank', type as never).matched).toBe(true);
+		expect(check('a\t<b', type as never).matched).toBe(true);
 	});
 });
 
-describe('NavigableTargetNameOrKeyword and BrowsingContextNameOrKeyword', () => {
-	test.each(['NavigableTargetNameOrKeyword', 'BrowsingContextNameOrKeyword'] as const)('%s', type => {
+describe('NavigableTargetNameOrKeyword', () => {
+	const type = 'NavigableTargetNameOrKeyword';
+
+	test(type, () => {
 		expect(check('_blank', type).matched).toBe(true);
 		expect(check('frame', type).matched).toBe(true);
 		expect(check('a\tb', type).matched).toBe(true);
 		expect(check('a\nb<', type).matched).toBe(false);
 	});
 
-	test.each(['NavigableTargetNameOrKeyword', 'BrowsingContextNameOrKeyword'] as const)(
-		'%s: a keyword is case-insensitive, and a value that is reported keeps its case',
-		type => {
-			expect(check('_BLANK', type).matched).toBe(true);
-			expect(check('_Self', type).matched).toBe(true);
-			expect(check('_Unknown', type)).toMatchObject({ matched: false, raw: '_Unknown' });
-			expect(check('Foo\tBar<', type)).toMatchObject({ matched: false, raw: 'Foo\tBar<' });
-		},
-	);
+	test(`${type}: a keyword is case-insensitive, and a value that is reported keeps its case`, () => {
+		expect(check('_BLANK', type).matched).toBe(true);
+		expect(check('_Self', type).matched).toBe(true);
+		expect(check('_Unknown', type)).toMatchObject({ matched: false, raw: '_Unknown' });
+		expect(check('Foo\tBar<', type)).toMatchObject({ matched: false, raw: 'Foo\tBar<' });
+	});
+
+	test('an empty value is reported as an empty token', () => {
+		expect(check('', type)).toMatchObject({ matched: false, reason: 'empty-token' });
+	});
 
 	test('fallbackTo _blank only for a name with both a tab or newline and "<"', () => {
 		expect(check('a\tb<', 'NavigableTargetNameOrKeyword')).toMatchObject({ matched: false, fallbackTo: '_blank' });
