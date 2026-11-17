@@ -33,9 +33,6 @@ export function schemaToSpec(schemas: readonly [MLMLSpec, ...ExtendedSpec[]]) {
 	const [main, ...extendedSpecs] = schemas;
 	const result = { ...main };
 	for (const extendedSpec of extendedSpecs) {
-		if (extendedSpec.cites) {
-			result.cites = [...(result.cites ?? []), ...extendedSpec.cites];
-		}
 		if (extendedSpec.def) {
 			const def = { ...result.def };
 			if (extendedSpec.def['#globalAttrs']?.['#extends']) {
@@ -129,12 +126,6 @@ export function schemaToSpec(schemas: readonly [MLMLSpec, ...ExtendedSpec[]]) {
 					continue;
 				}
 				const exSpec = exSpecs.splice(index, 1)[0];
-				// A base spec that has no categories (`@markuplint/html-spec` writes none) keeps the
-				// key off the element unless an extension sets it
-				const categories =
-					elSpec.categories || exSpec?.categories
-						? mergeArray(elSpec.categories ?? [], exSpec?.categories)
-						: undefined;
 				specs.push({
 					...elSpec,
 					...exSpec,
@@ -143,7 +134,6 @@ export function schemaToSpec(schemas: readonly [MLMLSpec, ...ExtendedSpec[]]) {
 						...exSpec?.globalAttrs,
 					},
 					attributes: mergeAttrSpec(elSpec.attributes, exSpec?.attributes),
-					...(categories && { categories }),
 				});
 			}
 

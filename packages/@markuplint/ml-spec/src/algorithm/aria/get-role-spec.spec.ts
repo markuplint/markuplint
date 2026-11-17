@@ -4,6 +4,29 @@ import { describe, test, expect } from 'vitest';
 import { getRoleSpec } from './get-role-spec.js';
 
 describe('getRoleSpec', () => {
+	test('ignores requiredContextRole and requiredOwnedElements', () => {
+		const aria = specs.def['#aria'];
+		const withOldNames = {
+			...specs,
+			def: {
+				...specs.def,
+				'#aria': {
+					...aria,
+					'1.2': {
+						...aria['1.2'],
+						roles: [
+							...aria['1.2'].roles,
+							{ name: 'x-old', requiredContextRole: ['list'], requiredOwnedElements: ['listitem'] },
+						],
+					},
+				},
+			},
+		} as unknown as typeof specs;
+		const role = getRoleSpec(withOldNames, 'x-old', 'http://www.w3.org/1999/xhtml', '1.2');
+		expect(role?.requiredAccessibilityParentRole).toStrictEqual([]);
+		expect(role?.allowedAccessibilityChildRoles).toStrictEqual([]);
+	});
+
 	test('the button role', () => {
 		const role = getRoleSpec(specs, 'button', 'http://www.w3.org/1999/xhtml', '1.2');
 		const superClassRoles = role?.superClassRoles.map(r => r.name);
