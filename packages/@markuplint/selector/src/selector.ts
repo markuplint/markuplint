@@ -331,7 +331,7 @@ class SelectorTarget {
 				const has: SelectorMatchedResult[] = [];
 				const not: SelectorMatchedResult[] = [];
 				let ancestor: SelectorNode | null = getCombinatorParent(el, scope);
-				let specificity: Specificity | undefined = undefined;
+				let specificity: Specificity | undefined;
 				let combinatorMatched = false;
 				while (ancestor) {
 					const res = matchCombinatorTarget(target, ancestor, scope, count + 1, logEnabled);
@@ -460,7 +460,7 @@ class SelectorTarget {
 				const has: SelectorMatchedResult[] = [];
 				const not: SelectorMatchedResult[] = [];
 				let prev = el.previousElementSibling;
-				let specificity: Specificity | undefined = undefined;
+				let specificity: Specificity | undefined;
 				while (prev) {
 					const res = target.match(prev, scope, count + 1, logEnabled);
 					if (!specificity) {
