@@ -13,6 +13,7 @@ This is not a change for a config. It affects code that reads MLDOM through `@ma
 
 - Every member that only threw `UnexpectedCallError` (mutation, events, layout, `before()` / `after()` / `remove()` and the like).
 - The members that nothing in the monorepo read: `getElementsByTagName()`, `getElementsByClassName()`, `firstElementChild`, `lastElementChild`, `assignedNodes()`, `assignedSlot`, `getAttributeNames()` and `hasAttributes()`. Read `childElements`, `getAssignedNodes()` and `getFlatTreeSlot()` instead.
+- `ownerDocument` of `MLNode`, which returned `any`, and its override in `MLDocument`, which returned `null`. Read `ownerMLDocument`, which is typed. That of an `MLDocument` is the document itself, so a check of `ownerDocument === null` for a document is `node.ownerMLDocument === node`.
 - `lastChild` of `MLNode`, `defaultView` of `MLDocument`, and the `DOCUMENT_POSITION_*`, `ENTITY_NODE`, `ENTITY_REFERENCE_NODE`, `NOTATION_NODE` and `PROCESSING_INSTRUCTION_NODE` constants of `MLNode`.
 - `UnexpectedCallError` of `@markuplint/shared`.
 - `getAccname()` of `@markuplint/ml-spec`, which computed the accessible name of a DOM `Element`. Read `getAccessibleName()` of `MLElement`; `:aria(has name)` of `@markuplint/selector` calls it.

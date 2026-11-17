@@ -109,7 +109,7 @@ Vueのテンプレートには独自の規則があります。Vueはタグを�
 
 ### ツリー
 
-`<template>`要素の内容と宣言的シャドウルート（親要素に付与される`<template shadowrootmode>`）は、DOMと同じく独立したツリーです。セレクタは要素のツリーの中で照合します。`section p`は、`<section>`の中にある`<template>`の内容の`<p>`には一致せず、`:has()`と`:closest()`も境界をまたぎません。ReactとVueでは、ディレクティブのない`<template>`の子要素はドキュメントのツリーにあるため、他の子要素と同じように照合します。
+`<template>`要素の内容と宣言的シャドウルート（親要素に付与される`<template shadowrootmode>`）は、DOMと同じく独立したツリーです。セレクタは要素のツリーの中で照合します。`section p`は、`<section>`の中にある`<template>`の内容の`<p>`には一致せず、`:has()`も境界をまたぎません。ReactとVueでは、ディレクティブのない`<template>`の子要素はドキュメントのツリーにあるため、他の子要素と同じように照合します。
 
 ## 詳細度
 
@@ -173,7 +173,6 @@ Vueのテンプレートには独自の規則があります。Vueはタグを�
 
 Markuplint独自の擬似クラスに似た拡張セレクタをつかうことができます。
 
-- [~~`:closest`~~](./selectors#ex-selector-closest)（**非推奨** — 代わりに `:is()` を使用）
 - [`:aria`](./selectors#ex-selector-aria)
 - [`:role`](./selectors#ex-selector-role)
 - [`:model`](./selectors#ex-selector-model)
@@ -181,7 +180,6 @@ Markuplint独自の擬似クラスに似た拡張セレクタをつかうこと�
 
 | 構文                  | 機能                                                                                                                                        |
 | --------------------- | ------------------------------------------------------------------------------------------------------------------------------------------- |
-| `:closest(selectors)` | **非推奨。** 代わりに `:is(selectors *)` を使用。[移行ガイド](#ex-selector-closest)を参照。                                                 |
 | `:aria(has name)`     | [ARIA擬似クラス](https://github.com/markuplint/markuplint/tree/main/packages/%40markuplint/selector#aria-pseudo-class)                      |
 | `:role(heading)`      | [ARIAロール擬似クラス](https://github.com/markuplint/markuplint/tree/main/packages/%40markuplint/selector#aria-pseudo-class)                |
 | `:model(interactive)` | [コンテンツモデル擬似クラス](https://github.com/markuplint/markuplint/tree/main/packages/%40markuplint/selector#content-model-pseudo-class) |
@@ -192,28 +190,6 @@ Markuplint独自の擬似クラスに似た拡張セレクタをつかうこと�
 このセレクタは**実験的な機能**であり、互換性は保証されません。CSSセレクタと競合した場合は、次のメジャーバージョンで削除される可能性があります。
 
 :::
-
-### `:closest` {#ex-selector-closest}
-
-:::caution 非推奨
-`:closest()` は非推奨です。次のメジャーバージョンで削除されます。代わりに標準の `:is()` 擬似クラスと子孫結合子を使用してください。
-:::
-
-**[`Element.closest`](https://dom.spec.whatwg.org/#ref-for-dom-element-closest%E2%91%A0)メソッドの擬似クラス版**
-
-```
-:closest(selectors)
-```
-
-セレクタにマッチする祖先を持つ要素に適用されます。
-
-**移行方法:** `:closest(X)` を `:is(X *)` に置き換えてください:
-
-| 変更前                              | 変更後                        |
-| ----------------------------------- | ----------------------------- |
-| `:closest(nav)`                     | `:is(nav *)`                  |
-| `:closest(.wrapper)`                | `:is(.wrapper *)`             |
-| `div:closest(nav):closest(section)` | `div:is(nav *):is(section *)` |
 
 ### `:aria` {#ex-selector-aria}
 
