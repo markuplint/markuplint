@@ -250,19 +250,36 @@ fn first_difference(name: &str, got: &[u8], expected: &[u8]) -> Result<(), Strin
     }
 }
 
-/// Reads the arguments after the scenario: the data, the questions and the number of iterations.
-fn read_inputs(args: &[String]) -> Result<(&str, QuestionsFile, usize), String> {
+const USAGE: &str = "Usage: spec_baseline <scenario> <index.json> <questions.json> <iterations>";
+
+/// What the arguments after the scenario name: the data, the questions and the number of iterations.
+struct Inputs<'a> {
+    index: &'a str,
+    questions: &'a str,
+    iterations: usize,
+}
+
+/// Reads the arguments after the scenario. Nothing is opened here: only the scenario that asks the questions reads
+/// their file, and a scenario that is not one is refused before any file is.
+fn read_inputs(args: &[String]) -> Result<Inputs<'_>, String> {
     let [index, questions, iterations] = args else {
-        return Err("Usage: spec_baseline <scenario> <index.json> <questions.json> <iterations>".to_string());
+        return Err(USAGE.to_string());
     };
-    let text = fs::read_to_string(questions).map_err(|error| format!("{questions}: {error}"))?;
-    let file: QuestionsFile = serde_json::from_str(&text).map_err(|error| format!("{questions}: {error}"))?;
     let iterations = iterations
         .parse::<usize>()
         .ok()
         .filter(|count| *count > 0)
         .ok_or_else(|| format!("The number of iterations is a positive integer, not \"{iterations}\""))?;
-    Ok((index.as_str(), file, iterations))
+    Ok(Inputs {
+        index,
+        questions,
+        iterations,
+    })
+}
+
+fn read_questions(path: &str) -> Result<QuestionsFile, String> {
+    let text = fs::read_to_string(path).map_err(|error| format!("{path}: {error}"))?;
+    serde_json::from_str(&text).map_err(|error| format!("{path}: {error}"))
 }
 
 fn millis(start: Instant) -> f64 {
@@ -283,7 +300,10 @@ fn load(index: &str, iterations: usize) -> Result<Vec<serde_json::Value>, String
     let mut retained = 0;
     let mut peak = 0;
     for i in 0..iterations {
-        // What the first load costs in memory is read when nothing else of the data is alive
+        // What the first load costs in memory is read when nothing else of the data is alive: the arguments and the
+        // list of times are allocated before, nothing is printed until the end, and the only thing freed in between
+        // is the text of the file, so what is left over is what the loaded data holds. (`saturating_sub` is for a
+        // reading that an allocator of another build would put below the baseline: the figure is then 0, not a wrap.)
         let before = HELD.load(Ordering::Relaxed);
         PEAK.store(before, Ordering::Relaxed);
         let start = Instant::now();
@@ -291,9 +311,9 @@ fn load(index: &str, iterations: usize) -> Result<Vec<serde_json::Value>, String
         let spec = load_spec(&text).map_err(|error| format!("{index}: {error}"))?;
         times.push(millis(start));
         if i == 0 {
-            peak = PEAK.load(Ordering::Relaxed) - before;
+            peak = PEAK.load(Ordering::Relaxed).saturating_sub(before);
             drop(text);
-            retained = HELD.load(Ordering::Relaxed) - before;
+            retained = HELD.load(Ordering::Relaxed).saturating_sub(before);
         }
         black_box(spec.specs.len());
     }
@@ -369,15 +389,17 @@ fn query(index: &str, file: &QuestionsFile, iterations: usize) -> Result<Vec<ser
 }
 
 fn run(args: &[String]) -> Result<Vec<serde_json::Value>, String> {
-    let (scenario, rest) = args
-        .split_first()
-        .ok_or_else(|| "Usage: spec_baseline <scenario> <index.json> <questions.json> <iterations>".to_string())?;
-    let (index, file, iterations) = read_inputs(rest)?;
+    let (scenario, rest) = args.split_first().ok_or_else(|| USAGE.to_string())?;
+    if !matches!(scenario.as_str(), "load" | "view" | "query") {
+        return Err(format!(
+            "Unknown scenario \"{scenario}\". It is one of: load, view, query"
+        ));
+    }
+    let inputs = read_inputs(rest)?;
     match scenario.as_str() {
-        "load" => load(index, iterations),
-        "view" => view(index, iterations),
-        "query" => query(index, &file, iterations),
-        other => Err(format!("Unknown scenario \"{other}\". It is one of: load, view, query")),
+        "load" => load(inputs.index, inputs.iterations),
+        "view" => view(inputs.index, inputs.iterations),
+        _ => query(inputs.index, &read_questions(inputs.questions)?, inputs.iterations),
     }
 }
 
@@ -533,10 +555,29 @@ mod tests {
     }
 
     #[test]
-    fn the_arguments_are_checked_before_anything_is_read() {
+    fn the_arguments_are_checked_before_any_file_is_opened() {
+        let args = |scenario: &str, iterations: &str| [scenario, "a", "b", iterations].map(String::from).to_vec();
         assert!(read_inputs(&[]).is_err());
-        let error = run(&["load".to_string(), "a".to_string(), "b".to_string(), "0".to_string()]).unwrap_err();
-        assert!(error.contains("b"), "the questions file is read first: {error}");
+        let unknown = run(&args("lint", "1")).unwrap_err();
+        assert!(unknown.contains("Unknown scenario \"lint\""), "{unknown}");
+        let iterations = run(&args("load", "0")).unwrap_err();
+        assert!(iterations.contains("positive integer"), "{iterations}");
+    }
+
+    #[test]
+    fn only_the_scenario_that_asks_the_questions_reads_their_file() {
+        let error = run(&["query", "a", "questions-that-are-not-there.json", "1"].map(String::from)).unwrap_err();
+        assert!(error.contains("questions-that-are-not-there.json"), "{error}");
+        // `load` opens the data first, and says that it is the data that is missing
+        let error = run(&[
+            "load",
+            "data-that-is-not-there.json",
+            "questions-that-are-not-there.json",
+            "1",
+        ]
+        .map(String::from))
+        .unwrap_err();
+        assert!(error.contains("data-that-is-not-there.json"), "{error}");
     }
 
     #[test]

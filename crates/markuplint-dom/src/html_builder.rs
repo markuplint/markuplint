@@ -339,8 +339,12 @@ fn convert_parser_node(
             // of what looks like one (`<svg><script><circle></circle></script></svg>`), which a rule would
             // read as markup. Either way the body has no node here.
             let mut child_ids: Vec<NodeId> = Vec::new();
-            let drops_children = matches!(*namespace, Namespace::Html | Namespace::Svg)
-                && matches!(tag_name.to_ascii_lowercase().as_str(), "script" | "style" | "xmp");
+            // `xmp` is an HTML element: in foreign content the tree builder breaks out of the SVG at it.
+            let drops_children = match *namespace {
+                Namespace::Html => matches!(tag_name.to_ascii_lowercase().as_str(), "script" | "style" | "xmp"),
+                Namespace::Svg => matches!(tag_name.to_ascii_lowercase().as_str(), "script" | "style"),
+                Namespace::MathML => false,
+            };
             for &child_id in node.children.iter().filter(|_| !drops_children) {
                 convert_into(
                     source,
