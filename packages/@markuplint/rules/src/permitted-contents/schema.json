@@ -82,8 +82,8 @@
 				"evaluateConditionalChildNodes": {
 					"type": "boolean",
 					"default": "false",
-					"description": "[Experemental] Evaluate conditional child nodes.",
-					"description:ja": "[実験中の機能] 条件付きの子ノードを評価します。"
+					"description": "[Experemental] Evaluate conditional child nodes: every way that the branches of a block or of `v-if`, `v-else-if` and `v-else` can be rendered.",
+					"description:ja": "[実験中の機能] 条件付きの子ノードを評価します。ブロックや`v-if`・`v-else-if`・`v-else`の分岐が描画されうるすべての場合を調べます。"
 				}
 			}
 		}

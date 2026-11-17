@@ -16,7 +16,9 @@ import { isComment } from './utils.js';
  * are first resolved, then each resulting pattern of child nodes is validated via `order`.
  *
  * When `options.evaluateConditionalChildNodes` is enabled, all conditional branches
- * (e.g., from template directives) are evaluated independently.
+ * (e.g., from template directives) are evaluated independently. Otherwise the elements of a chain of
+ * `v-if`, `v-else-if` and `v-else` are still a choice of one (`MLNode#alternativeChildNodes`), as the
+ * elements of the chain are not siblings that are rendered together; the blocks stay opaque.
  *
  * A component that no pretender resolved (`MLElement#isUnresolvedComponent`) renders something that is
  * not known: it may be the element that the content model asks for, or stand for several. With
@@ -41,9 +43,9 @@ export function start(
 	mode: Mode,
 	ignoreUnresolvedComponents = false,
 ): ContentModelResult[] {
-	const givenPatterns = options.evaluateConditionalChildNodes
-		? el.conditionalChildNodes().map(childNodes => [...childNodes])
-		: [[...el.childNodes]];
+	const givenPatterns = (
+		options.evaluateConditionalChildNodes ? el.conditionalChildNodes() : el.alternativeChildNodes()
+	).map(childNodes => [...childNodes]);
 	// A model that is `false` does not allow a component either: what it renders may be anything
 	const ignoresComponents = ignoreUnresolvedComponents && contents !== false && contents !== true;
 	const isIgnoredComponent = (child: ChildNode) =>

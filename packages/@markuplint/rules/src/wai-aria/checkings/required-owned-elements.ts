@@ -191,6 +191,10 @@ function classifyChildren(
 	const result: OwnedElement[] = [];
 	for (const child of childNodes) {
 		if (child.is(child.ELEMENT_NODE)) {
+			if (child.isRenderedAway) {
+				result.push(...classifyRenderedAway(child, role, version));
+				continue;
+			}
 			if (child.matches('[aria-busy="true" i]')) {
 				result.push([child, 'BUSY']);
 				continue;
@@ -244,6 +248,34 @@ function classifyChildren(
 		}
 	}
 	return result;
+}
+
+/**
+ * Classifies what an element that the framework renders away (Vue's `<template v-if>` and `<template v-slot>`,
+ * see `MLElement#isRenderedAway`) renders in its own place. It is no element of the accessibility tree, so what
+ * is written in it is owned by what is above it, as if it were written there.
+ *
+ * Which of the branches of `v-if` and `v-else` is rendered is not known, as for a block of template syntax:
+ * `UNKNOWN`. A `v-for` is not looked at here: `MLNode#childNodes` flattens its body into the parent, as it does
+ * the body of an `each` block, so the body is owned as it is written. A `v-slot` of a name other than the default one, or of a
+ * dynamic name, is rendered where the component places that slot, which is not known from the markup either.
+ * What is passed to the default slot is what the component renders for its children.
+ *
+ * @param template - The element that is rendered away
+ * @param role - The ARIA role of the owner, which defines allowed child roles.
+ * @param version - The WAI-ARIA version for version-gated transparency behavior.
+ * @returns The classified nodes the element renders in its place.
+ */
+function classifyRenderedAway(
+	// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
+	template: Element<boolean, Options>,
+	role: ARIARole,
+	version: ARIAVersion,
+): OwnedElement[] {
+	if (template.blockBehavior || (template.slotTarget !== undefined && template.slotTarget !== 'default')) {
+		return [[template, 'UNKNOWN']];
+	}
+	return classifyChildren(template, [...template.childNodes], role, version);
 }
 
 /**
