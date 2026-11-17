@@ -175,14 +175,6 @@ export type CustomCssSyntax = {
 	readonly syntax: {
 		readonly apply: `<${string}>`;
 		readonly def: Readonly<Record<string, string | CssSyntaxTokenizer>>;
-		/**
-		 * @deprecated
-		 */
-		readonly ebnf?: Readonly<Record<string, string | readonly string[]>>;
-		/**
-		 * @deprecated
-		 */
-		readonly properties?: Readonly<Record<string, string>>;
 	};
 };
 

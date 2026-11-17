@@ -26,22 +26,13 @@ export function cssSyntaxMatch(value: string, type: CssSyntax | CustomCssSyntax)
 	let defName: `<${string}>`;
 	const typesExtended: Record<string, string> = {};
 	const typesCheckers: Record<string, CssSyntaxTokenizer> = {};
-	let propsExtended: Record<string, string>;
 	let ref: string | undefined = undefined;
 	let caseSensitive = false;
-	let ebnf: Record<string, string | readonly string[]> | null;
 
 	if (typeof type === 'string') {
 		defName = type;
-		propsExtended = {};
 	} else {
 		defName = type.syntax.apply;
-		ebnf = type.syntax.ebnf ?? null;
-
-		if (ebnf) {
-			// Work in progress
-			return matched();
-		}
 
 		const types = {
 			...cssTokenizers,
@@ -55,11 +46,9 @@ export function cssSyntaxMatch(value: string, type: CssSyntax | CustomCssSyntax)
 				typesCheckers[key] = valueOrChecker;
 			}
 		}
-		propsExtended = { ...type.syntax.properties };
 		if (type.caseSensitive) {
 			caseSensitive = true;
 			for (const key of Object.keys(typesExtended)) eachMimicCases(key, typesExtended);
-			for (const key of Object.keys(propsExtended)) eachMimicCases(key, propsExtended);
 			value = mimicCases(value);
 		}
 		ref = type.ref;
@@ -71,7 +60,6 @@ export function cssSyntaxMatch(value: string, type: CssSyntax | CustomCssSyntax)
 			...cssOverrides,
 			...typesExtended,
 		},
-		properties: propsExtended,
 	}).lexer;
 
 	for (const key of Object.keys(typesCheckers)) {
