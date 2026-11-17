@@ -64,10 +64,6 @@ describe('validateSpecs', () => {
 		expect(() => validateSpecs(spec({ specs: withoutDiv }))).toThrow(/Required core elements are missing: div/);
 	});
 
-	test('does not need cites', () => {
-		expect(() => validateSpecs(spec({ cites: [] }))).not.toThrow();
-	});
-
 	test('throws when an ARIA version has no roles', () => {
 		const base = spec();
 		const emptied: ExtendedSpec = {

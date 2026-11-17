@@ -1,4 +1,4 @@
-import type { Attribute as MLAttribute, Cites, ElementSpec, SpecDefs } from '@markuplint/ml-spec';
+import type { Attribute as MLAttribute, ElementSpec, SpecDefs } from '@markuplint/ml-spec';
 
 declare namespace json {
 	/**
@@ -10,12 +10,6 @@ declare namespace json {
 }
 
 declare const json: {
-	/**
-	 * `@markuplint/html-spec` writes no `cites` (see `MLMLSpec.cites` of `@markuplint/ml-spec`).
-	 *
-	 * @deprecated Delete it; there is no replacement. Removed in v6.
-	 */
-	cites?: Cites;
 	def: SpecDefs;
 	specs: ElementSpec[];
 };
