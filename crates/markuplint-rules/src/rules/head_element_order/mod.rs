@@ -104,6 +104,19 @@ struct Block<'a> {
     open_ended: bool,
 }
 
+/// Whether an element of raw text (`script`, `style`, `xmp`) that has no end tag has a body. The body of such an
+/// element has no node (as TS reads it, `rawTextElements`), and the end of the file closes it, so it is the source
+/// after the start tag.
+fn has_raw_text_body(arena: &DomArena, el: &ElementData) -> bool {
+    matches!(
+        el.base.node_name.to_ascii_lowercase().as_str(),
+        "script" | "style" | "xmp"
+    ) && arena
+        .source()
+        .and_then(|source| source.get(el.base.offset + el.base.raw.len()..))
+        .is_some_and(|rest| !rest.is_empty())
+}
+
 /// TS `getElementEndOffset`.
 fn element_end(el: &ElementData) -> usize {
     el.close_tag
@@ -205,7 +218,8 @@ impl Rule for HeadElementOrder {
                     local_name: &el.base.node_name,
                     start: el.base.offset,
                     end: element_end(el),
-                    open_ended: el.close_tag.is_none() && !el.base.children.is_empty(),
+                    open_ended: el.close_tag.is_none()
+                        && (!el.base.children.is_empty() || has_raw_text_body(arena, el)),
                 })
             })
             .collect();
