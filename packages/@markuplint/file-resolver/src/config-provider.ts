@@ -158,26 +158,7 @@ export class ConfigProvider {
 	 * @param referrer - The file path of the config that referenced this key
 	 * @returns A set of loaded config keys and any errors encountered
 	 */
-	recursiveLoad(key: string, cache: boolean, referrer: string): Promise<{ stack: Set<string>; errs: Error[] }>;
-	/**
-	 * @deprecated Remove the `depth` argument: it is ignored, and the overload will be removed in v6.
-	 * @param key - The config file path or module name to load
-	 * @param cache - Whether to use cached results
-	 * @param referrer - The file path of the config that referenced this key
-	 * @param depth - Ignored
-	 */
-	recursiveLoad(
-		key: string,
-		cache: boolean,
-		referrer: string,
-		depth: number,
-	): Promise<{ stack: Set<string>; errs: Error[] }>;
-	async recursiveLoad(
-		key: string,
-		cache: boolean,
-		referrer: string,
-		depth?: number,
-	): Promise<{ stack: Set<string>; errs: Error[] }> {
+	async recursiveLoad(key: string, cache: boolean, referrer: string): Promise<{ stack: Set<string>; errs: Error[] }> {
 		return await this.#recursiveLoad(key, cache, referrer, new Set(), new Set());
 	}
 
