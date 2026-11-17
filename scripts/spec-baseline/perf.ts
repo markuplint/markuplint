@@ -23,12 +23,13 @@
 import type { ChildOptions } from './perf-child.ts';
 
 import { execFileSync } from 'node:child_process';
-import { existsSync, readdirSync, statSync } from 'node:fs';
+import { existsSync, readdirSync, statSync, writeFileSync } from 'node:fs';
 import { cpus, totalmem } from 'node:os';
 import { join, relative } from 'node:path';
 import { fileURLToPath } from 'node:url';
 
 import { compareText } from './fixtures.ts';
+import { askObject, assertQuestions, buildLayout, questionsFile, questionsOf, type SpecLike } from './layout.ts';
 import { bootstrapCI, mulberry32, ratioCI, type BootstrapOptions } from './stats.ts';
 
 /** What a scenario reports for one name: the iterations of one process. */
@@ -308,10 +309,116 @@ export const LINT_ITERATIONS = 3;
 /** The large documents of the lint scenario that generates them. */
 export const LINT_GENERATED = { count: 3, elements: 2000, depth: 30 } as const;
 
+/**
+ * The scenarios that the Rust program runs (`crates/markuplint-types/examples/spec_baseline.rs`), by the name that a
+ * plan gives them. The program's own name for each is the part after `rust-`.
+ */
+export const RUST_SCENARIOS = ['rust-load', 'rust-query', 'rust-view'] as const;
+
+/**
+ * Whether a name of a plan is a scenario of the Rust program and not of `perf-child.ts`.
+ *
+ * @param name - The name of a scenario of a plan
+ * @returns `true` for one of {@link RUST_SCENARIOS}
+ */
+export function isRustScenario(name: string): boolean {
+	return (RUST_SCENARIOS as readonly string[]).includes(name);
+}
+
+/** What the Rust program is given: the program, the data that it reads and the questions that it asks of it. */
+export interface RustPlan {
+	readonly binary: string;
+	readonly index: string;
+	readonly questions: string;
+}
+
+/**
+ * The command that runs a scenario of the Rust program.
+ *
+ * @param scenario - One of {@link RUST_SCENARIOS}
+ * @param rust - The program and its inputs
+ * @param iterations - How many iterations of the series
+ * @returns The program and its arguments
+ */
+export function rustCommand(scenario: string, rust: RustPlan, iterations: number): { file: string; args: string[] } {
+	if (!isRustScenario(scenario)) {
+		throw new Error(
+			`"${scenario}" is not a scenario of the Rust program. It is one of: ${RUST_SCENARIOS.join(', ')}`,
+		);
+	}
+	return {
+		file: rust.binary,
+		args: [scenario.slice('rust-'.length), rust.index, rust.questions, String(iterations)],
+	};
+}
+
+/**
+ * Runs one scenario of the Rust program in a new process, as {@link runChild} does for the TypeScript ones.
+ *
+ * @param scenario - One of {@link RUST_SCENARIOS}
+ * @param rust - The program and its inputs
+ * @param iterations - How many iterations of the series
+ * @returns What it measured
+ */
+export function runRustChild(scenario: string, rust: RustPlan, iterations: number): Measurement[] {
+	const { file, args } = rustCommand(scenario, rust, iterations);
+	const output = execFileSync(file, args, {
+		encoding: 'utf8',
+		maxBuffer: 64 * 1024 * 1024,
+		stdio: ['ignore', 'pipe', 'inherit'],
+	});
+	return parseChildOutput(output);
+}
+
+/**
+ * Finds the Rust program that a `--release` build of the workspace made.
+ *
+ * @param root - The root of the repository
+ * @returns The path of the program
+ */
+export function rustBinary(root: string): string {
+	const binary = join(
+		root,
+		'crates/target/release/examples',
+		process.platform === 'win32' ? 'spec_baseline.exe' : 'spec_baseline',
+	);
+	if (!existsSync(binary)) {
+		throw new Error(
+			`There is no ${binary}. Build it from crates/ with: cargo build --locked --release --workspace --example spec_baseline`,
+		);
+	}
+	return binary;
+}
+
+/**
+ * Writes the file that the Rust program asks its questions from: the questions of `layout.ts`, with what the
+ * data as objects answers to each, and the bits that the program has to build the same way.
+ *
+ * @param spec - The data
+ * @param path - Where to write it
+ */
+export function writeQuestionsFile(spec: SpecLike, path: string): void {
+	const layout = buildLayout(spec);
+	const questions = questionsOf(layout);
+	assertQuestions(layout, questions);
+	writeFileSync(path, JSON.stringify(questionsFile(layout, questions, askObject(spec, layout, questions))));
+}
+
+/**
+ * The version of the Rust compiler, for the record of where a figure was taken.
+ *
+ * @returns The line that `rustc --version` prints
+ */
+export function rustVersion(): string {
+	return execFileSync('rustc', ['--version'], { encoding: 'utf8' }).trim();
+}
+
 /** What {@link runPerf} runs. */
 export interface PerfPlan {
 	readonly scenarios: Readonly<Record<string, { readonly processes: number; readonly options: ChildOptions }>>;
 	readonly seed: number;
+	/** The Rust program, for the scenarios that {@link isRustScenario} says are its. */
+	readonly rust?: RustPlan;
 }
 
 /**
@@ -323,13 +430,20 @@ export interface PerfPlan {
  */
 export function runPerf(plan: PerfPlan, onRun?: (scenario: string, index: number, total: number) => void): Result {
 	const counts = Object.fromEntries(Object.entries(plan.scenarios).map(([name, { processes }]) => [name, processes]));
+	if (!plan.rust && Object.keys(counts).some(name => isRustScenario(name))) {
+		throw new Error('A scenario of the Rust program needs the program: run it with --rust');
+	}
 	const order = interleave(counts, plan.seed);
 	const outputs: Measurement[][] = [];
 	for (const [index, name] of order.entries()) {
 		onRun?.(name, index, order.length);
 		const scenario = plan.scenarios[name];
 		if (scenario) {
-			outputs.push(runChild(name, scenario.options));
+			outputs.push(
+				plan.rust && isRustScenario(name)
+					? runRustChild(name, plan.rust, scenario.options.iterations)
+					: runChild(name, scenario.options),
+			);
 		}
 	}
 	return collect(outputs);

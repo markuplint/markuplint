@@ -11,7 +11,10 @@
  *   (`size.ts`), grouped by the shape of the document, because the shape changed more than once.
  * - `duplication`: what repeats in the data, as strings, as fields and as subtrees (`duplication.ts`).
  * - `perf`: the time and memory of reading the data and of linting, one process for each sample
- *   (`perf.ts`, `perf-child.ts`), and `compare` for two such results measured on one machine.
+ *   (`perf.ts`, `perf-child.ts`), and `compare` for two such results measured on one machine. `--rust` adds the same
+ *   reading and the same questions in the Rust program of `crates/markuplint-types/examples/spec_baseline.rs`, which
+ *   exists on the `v6` line only and is built beforehand with `cargo build --locked --release --workspace --example
+ *   spec_baseline` (from `crates/`); `--no-lint` leaves the lint scenarios out.
  * - `mutation`: whether the records of `diagnostics.ts` notice a change of the data (`mutation.ts`).
  * - `coverage`: writes the generated inputs into `fixtures/inputs/` (`coverage.ts`). The inputs are committed, so this
  *   overwrites files that are in the repository, and the records of `diagnostics.spec.ts` are written again after it.
@@ -21,9 +24,26 @@
  *
  * @module
  */
-import type { Result } from './perf.ts';
+import type { ChildOptions } from './perf-child.ts';
+import {
+	type Result,
+	compareResults,
+	environment,
+	LINT_GENERATED,
+	LINT_ITERATIONS,
+	pickValidatorFiles,
+	renderComparison,
+	renderTable,
+	runPerf,
+	rustBinary,
+	RUST_SCENARIOS,
+	rustVersion,
+	writeQuestionsFile,
+	type RustPlan,
+} from './perf.ts';
 
-import { readFileSync, writeFileSync } from 'node:fs';
+import { mkdtempSync, readFileSync, rmSync, writeFileSync } from 'node:fs';
+import { tmpdir } from 'node:os';
 import { join } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { parseArgs } from 'node:util';
@@ -33,16 +53,7 @@ import { assertFullHistory, listRevisions, readBlob, systemGit, uniqueByBlob } f
 import { generateCoverageInputs } from './coverage.ts';
 import { dagStats, fieldStats, stringStats } from './duplication.ts';
 import { INPUTS, readInputs } from './fixtures.ts';
-import {
-	compareResults,
-	environment,
-	LINT_GENERATED,
-	LINT_ITERATIONS,
-	pickValidatorFiles,
-	renderComparison,
-	renderTable,
-	runPerf,
-} from './perf.ts';
+import type { SpecLike } from './layout.ts';
 import { groupBySignature, measure, parseJson, signature } from './size.ts';
 
 const ROOT = fileURLToPath(new URL('../..', import.meta.url));
@@ -53,6 +64,7 @@ const HELP = `Usage: yarn spec-baseline <command> [options]
   size         [--ref <ref>] [--every <n>]
   duplication  [--ref <commit>] [--top <n>]
   perf         [--processes <n>] [--lint-processes <n>] [--iterations <n>] [--files <n>] [--seed <n>] [--out <file>]
+               [--rust] [--no-lint]
   compare      <before.json> <after.json> [--resamples <n>] [--seed <n>]
   mutation     [--count <n>] [--seed <n>]
   coverage     (writes scripts/spec-baseline/fixtures/inputs/generated-*.html)
@@ -219,43 +231,83 @@ function perf(args: readonly string[]): string {
 			files: { type: 'string', default: '100' },
 			seed: { type: 'string', default: '1' },
 			out: { type: 'string' },
+			rust: { type: 'boolean', default: false },
+			'no-lint': { type: 'boolean', default: false },
 		},
 	});
 	const processes = count('processes', values.processes, 1);
 	const lintProcesses = count('lint-processes', values['lint-processes'], 1);
 	const iterations = count('iterations', values.iterations, 2);
 	const seed = count('seed', values.seed, 0);
-	const files = pickValidatorFiles(join(ROOT, 'tests/external/validator'), count('files', values.files, 1));
-	if (files.length === 0) {
+	const withLint = !values['no-lint'];
+	const files = withLint
+		? pickValidatorFiles(join(ROOT, 'tests/external/validator'), count('files', values.files, 1))
+		: [];
+	if (withLint && files.length === 0) {
 		throw new Error('No document of the validator: git submodule update --init tests/external/validator');
 	}
-	const result = runPerf(
-		{
-			seed,
-			scenarios: {
-				load: { processes, options: { iterations } },
-				query: { processes, options: { iterations } },
-				file: { processes, options: { iterations } },
-				'lint-validator': { processes: lintProcesses, options: { iterations: LINT_ITERATIONS, files } },
-				'lint-generated': {
-					processes: lintProcesses,
-					options: { iterations: LINT_ITERATIONS, generated: { ...LINT_GENERATED, seed } },
-				},
+	const rust = values.rust ? prepareRust() : undefined;
+	try {
+		const scenarios: Record<string, { processes: number; options: ChildOptions }> = {
+			load: { processes, options: { iterations } },
+			query: { processes, options: { iterations } },
+			file: { processes, options: { iterations } },
+		};
+		if (rust) {
+			for (const name of RUST_SCENARIOS) {
+				scenarios[name] = { processes, options: { iterations } };
+			}
+		}
+		if (withLint) {
+			scenarios['lint-validator'] = { processes: lintProcesses, options: { iterations: LINT_ITERATIONS, files } };
+			scenarios['lint-generated'] = {
+				processes: lintProcesses,
+				options: { iterations: LINT_ITERATIONS, generated: { ...LINT_GENERATED, seed } },
+			};
+		}
+		const result = runPerf(
+			{
+				seed,
+				scenarios,
+				...(rust ? { rust: rust.plan } : {}),
 			},
-		},
-		(scenario, index, total) => process.stderr.write(`\r${index + 1}/${total} ${scenario}          `),
-	);
-	process.stderr.write('\n');
-	const env = environment(ROOT);
-	if (values.out) {
-		writeFileSync(values.out, `${JSON.stringify({ environment: env, result })}\n`);
+			(scenario, index, total) => process.stderr.write(`\r${index + 1}/${total} ${scenario}          `),
+		);
+		process.stderr.write('\n');
+		const env = environment(ROOT);
+		if (values.out) {
+			writeFileSync(values.out, `${JSON.stringify({ environment: env, rustc: rust?.rustc, result })}\n`);
+		}
+		return [
+			`${env.commit.slice(0, 9)} on node ${env.node} (v8 ${env.v8}), ${env.platform} ${env.arch}, ${env.cpus} x ${env.cpu}`,
+			...(rust ? [rust.rustc] : []),
+			withLint
+				? `the lint scenarios read ${files.length} documents of the validator and ${LINT_GENERATED.count} generated ones of about ${LINT_GENERATED.elements} elements`
+				: 'the lint scenarios are not run (--no-lint)',
+			'',
+			renderTable(result, { resamples: 10_000, seed }),
+		].join('\n');
+	} finally {
+		rust?.cleanup();
 	}
-	return [
-		`${env.commit.slice(0, 9)} on node ${env.node} (v8 ${env.v8}), ${env.platform} ${env.arch}, ${env.cpus} x ${env.cpu}`,
-		`the lint scenarios read ${files.length} documents of the validator and ${LINT_GENERATED.count} generated ones of about ${LINT_GENERATED.elements} elements`,
-		'',
-		renderTable(result, { resamples: 10_000, seed }),
-	].join('\n');
+}
+
+/**
+ * Makes what the scenarios of the Rust program need: the program, which is not built here (it is built with the
+ * flags that the addon is built with, and a build is not a measurement), and the file of questions, in a directory
+ * of its own that is removed after the run.
+ */
+function prepareRust(): { plan: RustPlan; rustc: string; cleanup: () => void } {
+	const binary = rustBinary(ROOT);
+	const index = join(ROOT, SPEC_PATH);
+	const directory = mkdtempSync(join(tmpdir(), 'spec-baseline-rust-'));
+	const questions = join(directory, 'questions.json');
+	writeQuestionsFile(JSON.parse(readFileSync(index, 'utf8')) as SpecLike, questions);
+	return {
+		plan: { binary, index, questions },
+		rustc: rustVersion(),
+		cleanup: () => rmSync(directory, { recursive: true, force: true }),
+	};
 }
 
 function compare(args: readonly string[]): string {

@@ -1,6 +1,6 @@
 import { describe, expect, test } from 'vitest';
 
-import { FLAG_NAMES, askBits, askObject, assertQuestions, buildLayout, questionsOf } from './layout.ts';
+import { FLAG_NAMES, askBits, askObject, assertQuestions, buildLayout, questionsFile, questionsOf } from './layout.ts';
 
 const spec = {
 	def: {
@@ -108,5 +108,42 @@ describe('the two ways of answering', () => {
 			{ kind: 'flag', element: 3, flag: 1 },
 		]);
 		expect([...answers]).toStrictEqual([1, 0, 1, 0]);
+	});
+});
+
+describe('questionsFile', () => {
+	const layout = buildLayout(spec);
+	const questions = questionsOf(layout);
+	const answers = askObject(spec, layout, questions);
+	const file = questionsFile(layout, questions, answers);
+
+	test('carries the names, the bits and the shape of the layout for a reader in another language', () => {
+		expect(file.flagNames).toStrictEqual([...FLAG_NAMES]);
+		expect(file.elements).toStrictEqual(layout.elements);
+		expect(file.categories).toStrictEqual(layout.categories);
+		expect(file.wordsPerRow).toBe(layout.wordsPerRow);
+		expect(file.flags).toStrictEqual([...layout.flags]);
+		expect(file.categoryBits).toStrictEqual([...layout.categoryBits]);
+	});
+
+	test('writes each question as three numbers (0 for a flag and 1 for a category, the element, the flag or category) and its answer', () => {
+		expect(file.questions).toHaveLength(questions.length * 3);
+		expect(file.answers).toHaveLength(questions.length);
+		expect(file.questions.slice(0, 3)).toStrictEqual([0, 0, 0]);
+		expect(file.questions.slice(-3)).toStrictEqual([1, 4, 2]);
+		expect(file.answers).toStrictEqual([...answers]);
+	});
+
+	test('keeps every word as an unsigned 32-bit integer, so that the other reader sees the bits and not a sign', () => {
+		const high = buildLayout({
+			def: { '#contentModels': { '#flow': ['e31'] } },
+			specs: Array.from({ length: 32 }, (_, index) => ({ name: `e${index}` })),
+		});
+		const written = questionsFile(high, [], new Uint8Array());
+		expect(written.categoryBits).toStrictEqual([2_147_483_648]);
+	});
+
+	test('refuses answers that are not one for each question', () => {
+		expect(() => questionsFile(layout, questions, new Uint8Array(1))).toThrow(/answers/);
 	});
 });

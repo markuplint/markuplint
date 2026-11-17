@@ -1,3 +1,7 @@
+import { mkdtempSync, readFileSync, rmSync } from 'node:fs';
+import { tmpdir } from 'node:os';
+import { join } from 'node:path';
+
 import { describe, expect, test } from 'vitest';
 
 import { scenarios } from './perf-child.ts';
@@ -5,10 +9,16 @@ import {
 	collect,
 	compareResults,
 	interleave,
+	isRustScenario,
 	parseChildOutput,
 	pickValidatorFiles,
 	renderComparison,
 	renderTable,
+	runPerf,
+	rustBinary,
+	rustCommand,
+	RUST_SCENARIOS,
+	writeQuestionsFile,
 } from './perf.ts';
 
 describe('interleave', () => {
@@ -152,6 +162,70 @@ describe('the scenarios', () => {
 			'load',
 			'query',
 		]);
+	});
+});
+
+describe('the Rust scenarios', () => {
+	const rust = {
+		binary: '/target/release/examples/spec_baseline',
+		index: '/data/index.json',
+		questions: '/tmp/q.json',
+	};
+
+	test('are recognized by the name that has `rust-` in front of the scenario of the Rust program', () => {
+		expect(RUST_SCENARIOS).toStrictEqual(['rust-load', 'rust-query', 'rust-view']);
+		expect(isRustScenario('rust-query')).toBe(true);
+		expect(isRustScenario('query')).toBe(false);
+		expect(isRustScenario('rust-lint')).toBe(false);
+	});
+
+	test('start the program with the scenario, the data, the questions and the number of iterations', () => {
+		expect(rustCommand('rust-query', rust, 20)).toStrictEqual({
+			file: rust.binary,
+			args: ['query', rust.index, rust.questions, '20'],
+		});
+	});
+
+	test('refuse a name that is not one of them', () => {
+		expect(() => rustCommand('rust-lint', rust, 20)).toThrow(/rust-load, rust-query, rust-view/);
+	});
+
+	test('cannot be run by a plan that has no Rust program', () => {
+		expect(() =>
+			runPerf({ seed: 1, scenarios: { 'rust-load': { processes: 1, options: { iterations: 2 } } } }),
+		).toThrow(/--rust/);
+	});
+
+	test('say how to build the program when it is not there', () => {
+		expect(() => rustBinary('/this/directory/does/not/exist')).toThrow(
+			/cargo build --locked --release --workspace --example spec_baseline/,
+		);
+	});
+
+	test('read the questions that are written from the data, with the answers of the data as objects', () => {
+		const directory = mkdtempSync(join(tmpdir(), 'spec-baseline-spec-'));
+		try {
+			const path = join(directory, 'questions.json');
+			const spec = {
+				def: { '#contentModels': { '#flow': ['a', 'div'] } },
+				specs: [{ name: 'a' }, { name: 'div', deprecated: true }],
+			};
+			writeQuestionsFile(spec, path);
+			const written = JSON.parse(readFileSync(path, 'utf8')) as {
+				elements: string[];
+				flags: number[];
+				questions: number[];
+				answers: number[];
+			};
+			expect(written.elements).toStrictEqual(['a', 'div']);
+			expect(written.flags).toStrictEqual([0, 0b0010]);
+			// both elements, the 4 flags and the 1 category of each
+			expect(written.questions).toHaveLength(2 * (4 + 1) * 3);
+			// the flags of `a`, the flags of `div` (the second is `deprecated`), then `#flow` for `a` and for `div`
+			expect(written.answers).toStrictEqual([0, 0, 0, 0, 0, 1, 0, 0, 1, 1]);
+		} finally {
+			rmSync(directory, { recursive: true, force: true });
+		}
 	});
 });
 
