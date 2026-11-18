@@ -498,8 +498,7 @@ export function assemble(variant: Variant, strings: StringTable, regions: readon
 	for (const [position, id] of REGIONS.entries()) {
 		sections[id] = regions[position] ?? new Uint32Array(0);
 	}
-	const draft = new PackedSpec(variant, sections);
-	return draft.replace({ [Section.Bits]: draft.computeBits() });
+	return new PackedSpec(variant, sections, { computeBits: true });
 }
 
 /**

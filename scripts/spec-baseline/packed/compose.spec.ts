@@ -184,6 +184,19 @@ describe.each(VARIANTS)('compose (%o)', variant => {
 		},
 	);
 
+	test('has the bits of a composition made once, with the strings compared as bytes and as strings', () => {
+		for (const compare of ['bytes', 'decoded'] as const) {
+			const opened = PackedSpec.open(base.serialize(), { compare });
+			const composed = compose(opened, [USER]);
+			const { elements, categories } = bitsOf(composed.toJson() as SpecLike);
+			expect(composed.elementCount).toBe(elements.length);
+			const div = elements.findIndex(element => element.name === 'div');
+			const flow = categories.findIndex(category => category.name === '#my-category');
+			expect(composed.member(div, flow)).toBe(1);
+			expect(composed.compare).toBe(compare);
+		}
+	});
+
 	test('does not let a composition see what another composition of the same base made', () => {
 		compose(base, [USER]);
 		const only = compose(base, [vue as ExtensionLike]);

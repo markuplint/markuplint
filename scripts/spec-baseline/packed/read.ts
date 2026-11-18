@@ -48,6 +48,11 @@ export interface OpenOptions {
 	readonly compare?: StringCompare;
 	/** The decoded strings of a spec that this one continues (a composed spec has the strings of its base at the start). */
 	readonly decoded?: readonly string[];
+	/**
+	 * Make the section of the bits from the regions, in place of the one that the sections have: a spec whose `specs` or
+	 * `#contentModels` is not the one that its bits were made from is made once, with the bits that its regions give.
+	 */
+	readonly computeBits?: boolean;
 }
 
 const u = (array: Uint32Array, index: number): number => array[index] ?? 0;
@@ -222,7 +227,8 @@ export class PackedSpec {
 			throw new Error(`A packed spec has ${SECTION_COUNT} sections, not ${sections.length}`);
 		}
 		this.variant = variant;
-		this.sections = sections;
+		const own = [...sections];
+		this.sections = own;
 		this.compare = options.compare ?? 'bytes';
 		this.rowEntries = !variant.columns;
 		this.mode = variant.index === 'sorted' ? null : variant.index;
@@ -251,6 +257,9 @@ export class PackedSpec {
 			this.decoded = decoded;
 		} else {
 			this.decoded = null;
+		}
+		if (options.computeBits) {
+			own[Section.Bits] = this.computeBits();
 		}
 	}
 

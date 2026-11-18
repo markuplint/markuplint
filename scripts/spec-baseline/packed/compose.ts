@@ -120,8 +120,6 @@ export function compose(base: PackedSpec, extensions: readonly ExtensionLike[]):
 		changes[Section.StringOffsets] = offsets;
 		changes[Section.StringBytes] = bytes;
 	}
-	const draft = base.replace(changes);
-	return touched[RegionAt.Specs] || touched[RegionAt.ContentModels]
-		? draft.replace({ [Section.Bits]: draft.computeBits() })
-		: draft;
+	// the bits are made from the regions that this has, in the same construction, when `specs` or `#contentModels` is touched
+	return base.replace(changes, { computeBits: Boolean(touched[RegionAt.Specs] || touched[RegionAt.ContentModels]) });
 }
