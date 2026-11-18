@@ -58,10 +58,21 @@ impl<'a> StringTable<'a> {
     }
 
     /// The bytes of a string.
+    ///
+    /// # Panics
+    ///
+    /// For a number that is not the number of a string of the base or of an added one: an encoder that asks for it has a
+    /// defect, and bytes that are not there would write another file.
     pub fn bytes(&self, sid: u32) -> &[u8] {
         match (sid as usize).checked_sub(self.base_count) {
-            None => self.base.map_or(&[][..], |base| base.string_bytes(sid)),
-            Some(position) => self.added.get(position).map_or(&[][..], Vec::as_slice),
+            None => self
+                .base
+                .unwrap_or_else(|| panic!("There is no string {sid}"))
+                .string_bytes(sid),
+            Some(position) => self
+                .added
+                .get(position)
+                .unwrap_or_else(|| panic!("There is no string {sid}")),
         }
     }
 

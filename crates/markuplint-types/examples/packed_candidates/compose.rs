@@ -20,6 +20,21 @@ use crate::encode::{StringTable, Tree, append_region};
 use crate::format::{REGIONS, section, tag};
 use crate::read::PackedSpec;
 
+/// Whether `String.prototype.trim` of JavaScript strips a character: the white space and the line terminators of the language,
+/// which are not those of `char::is_whitespace` (JavaScript strips U+FEFF, and does not strip U+0085).
+fn is_js_white_space(character: char) -> bool {
+    matches!(
+        character,
+        '\u{9}' | '\u{A}' | '\u{B}' | '\u{C}' | '\u{D}' | ' ' | '\u{A0}' | '\u{1680}' | '\u{2000}'
+            ..='\u{200A}' | '\u{2028}' | '\u{2029}' | '\u{202F}' | '\u{205F}' | '\u{3000}' | '\u{FEFF}'
+    )
+}
+
+/// `text.trim()` of JavaScript.
+fn js_trim(text: &str) -> &str {
+    text.trim_matches(is_js_white_space)
+}
+
 /// Whether `if (value)` of JavaScript takes the branch.
 fn truthy(value: &Value) -> bool {
     match value {
@@ -175,7 +190,7 @@ impl Reader<'_> {
                 .map(str::to_string)
                 .ok_or_else(|| "A named definition is a string or an object with a name".to_string())?,
         };
-        Ok(name.to_lowercase().trim().to_string())
+        Ok(js_trim(&name.to_lowercase()).to_string())
     }
 
     /// The name of an element spec in lower case (`spec.name.toLowerCase()` of `schemaToSpec`, which does not trim).

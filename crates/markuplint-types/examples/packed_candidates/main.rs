@@ -503,11 +503,12 @@ fn compose_scenario(stem: &str, directory: &str, iterations: usize) -> Result<Ve
     let extensions = read_json(directory, "extensions.json")?;
     let mut measurements = Vec::new();
     for (name, extension) in extensions.as_object().ok_or("extensions.json is an object")? {
-        // Each extension has a base of its own that is opened and not yet asked anything, so that the table from the strings
-        // to their numbers, which a composition makes and the base keeps, is made in the first iteration of each
-        let base = PackedSpec::open(&file)?;
+        // A composition is made once for a set of extensions and kept, so what is measured is a composition that has nothing
+        // ready: a spec that is opened and not yet asked anything is made for each iteration (and is not timed), so that the
+        // table from the strings to their numbers, which a composition makes and the base keeps, is made in each one
         let mut times = Vec::with_capacity(iterations);
         for _ in 0..iterations {
+            let base = PackedSpec::open(&file)?;
             let start = Instant::now();
             let composed = compose(&base, std::slice::from_ref(extension))?;
             times.push(millis(start));
