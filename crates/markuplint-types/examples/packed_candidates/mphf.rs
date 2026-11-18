@@ -34,10 +34,7 @@ pub struct Mphf {
 /// Reduces a 32-bit number to `[0, range)` by the multiplication of Lemire.
 pub fn reduce(value: u32, range: u32) -> u32 {
     // The product of two 32-bit numbers shifted by 32 bits is below 2^32
-    #[allow(clippy::cast_possible_truncation)]
-    {
-        ((u64::from(value) * u64::from(range)) >> 32) as u32
-    }
+    ((u64::from(value) * u64::from(range)) >> 32) as u32
 }
 
 /// The mix that a pilot brings to the hash of a key.
@@ -74,7 +71,6 @@ pub fn slot_of(hash: u32, pilot: u32, slots: u32, mode: Mode) -> u32 {
 pub fn build_mphf(keys: &[&[u8]], hash: HashFn, mode: Mode) -> Result<Mphf, String> {
     let n = keys.len();
     // A table is a few hundred keys: these counts are far below 2^32
-    #[allow(clippy::cast_possible_truncation)]
     let (buckets, slots) = ((n.div_ceil(BUCKET_SIZE)).max(1) as u32, slot_count(n as u32, mode));
     'seed: for seed in 0..1000_u32 {
         let hashes: Vec<u32> = keys.iter().map(|key| hash(key, seed)).collect();
@@ -117,16 +113,10 @@ pub fn build_mphf(keys: &[&[u8]], hash: HashFn, mode: Mode) -> Result<Mphf, Stri
                 if fits {
                     found = true;
                     // A pilot is below 65,536
-                    #[allow(clippy::cast_possible_truncation)]
-                    {
-                        pilots[id] = pilot as u16;
-                    }
+                    pilots[id] = pilot as u16;
                     for (index, slot) in taken.iter().enumerate() {
                         // A position is below the number of keys
-                        #[allow(clippy::cast_possible_truncation)]
-                        {
-                            slot_entry[*slot as usize] = bucket[index] as u32;
-                        }
+                        slot_entry[*slot as usize] = bucket[index] as u32;
                     }
                     break;
                 }

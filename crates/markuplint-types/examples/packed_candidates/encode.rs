@@ -2,14 +2,14 @@
 //! same bytes as the TypeScript one. The strings are numbered in the order that the regions are encoded (`specs`,
 //! `#globalAttrs`, `#aria`, `#contentModels`, the rest) and, inside a region, in the order that the walk meets them (for
 //! an object a key and then what it holds, for an array each item); a node, a list and an index are numbered when they
-//! are made, which is after what they refer to, and one that is the same as an earlier one is not made again.
+//! are made, which is after what they refer to, and one that is the same as an earlier one is made once.
 //! The order of the keys of an object is the order of the JSON text (`serde_json` has `preserve_order` when the
 //! workspace is built together).
 //!
-//! A region that a composition changes is not made again but appended to (the paragraph "A region that a composition changes
-//! is not made again" of `format.ts`): the encoder then has the region of the base, a [`Tree`] that has a reference
-//! ([`Tree::Ref`]) for what the merge left as it was, new nodes, lists and indexes that are numbered on from those of the
-//! region, and indexes that are the same as one that the region had when their keys are.
+//! A region that a composition changes is appended to (see the paragraph "A region that a composition changes is not made
+//! again" of `format.ts`): the encoder then has the region of the base, a [`Tree`] that has a reference ([`Tree::Ref`]) for
+//! what the merge left as it was, new nodes, lists and indexes that are numbered on from those of the region, and an
+//! index that is the one that the region has when its keys are the same.
 
 use std::borrow::Cow;
 use std::collections::{HashMap, HashSet};
@@ -51,7 +51,6 @@ impl<'a> StringTable<'a> {
             return *known;
         }
         // A table of strings has fewer than 2^32 entries
-        #[allow(clippy::cast_possible_truncation)]
         let sid = (self.base_count + self.added.len()) as u32;
         self.added.push(text.as_bytes().to_vec());
         self.added_ids.insert(text.to_string(), sid);
@@ -78,12 +77,9 @@ impl<'a> StringTable<'a> {
         let mut bytes: Vec<u8> = Vec::new();
         for sid in 0..count {
             // A total of bytes is far below 2^32
-            #[allow(clippy::cast_possible_truncation)]
             offsets.push(bytes.len() as u32);
-            #[allow(clippy::cast_possible_truncation)]
             bytes.extend_from_slice(self.bytes(sid as u32));
         }
-        #[allow(clippy::cast_possible_truncation)]
         offsets.push(bytes.len() as u32);
         while !bytes.len().is_multiple_of(4) {
             bytes.push(0);
@@ -138,7 +134,6 @@ struct RegionEncoder<'s, 'a, 'p> {
 }
 
 /// A count or a position in a region is far below 2^32.
-#[allow(clippy::cast_possible_truncation)]
 fn to_word(value: usize) -> u32 {
     value as u32
 }
@@ -436,7 +431,7 @@ pub fn encode_region(value: &Value, strings: &mut StringTable<'_>, variant: Vari
     Ok(encoder.finish(root))
 }
 
-/// Encodes a region of a spec again by appending to it: what the tree has as a reference is the node that it was, and the new
+/// Encodes a region of a spec by appending to it: what the tree has as a reference is the node that it is, and the new
 /// nodes, lists and indexes go after those of the region.
 ///
 /// # Errors

@@ -1,5 +1,7 @@
 //! The reader of a packed spec, the same as `scripts/spec-baseline/packed/read.ts` and the one that the format is judged
-//! by: it opens the bytes of a file, checks them, and answers from them without copying and without parsing.
+//! by: it opens the bytes of a file, checks them, and answers from them without copying and without parsing. `open` checks
+//! the magic, the version, the table of sections, the checksum, the offsets of the strings and the header of every region;
+//! the nodes, lists and indexes that a region holds are trusted after the checksum.
 //!
 //! A word is read from a byte slice with `u32::from_le_bytes` at a computed offset, which the compiler turns into one
 //! load: that is the reader of a `&[u32]` that does not copy, in safe code, and it needs no alignment (a file that is
@@ -89,9 +91,7 @@ pub fn digest_value(value: &Value) -> Result<u32, String> {
         ),
         Value::String(text) => digest_of(tag::STRING, fnv1a32(text.as_bytes())),
         // A count of items is below 2^32
-        #[allow(clippy::cast_possible_truncation)]
         Value::Array(items) => digest_of(tag::ARRAY, items.len() as u32),
-        #[allow(clippy::cast_possible_truncation)]
         Value::Object(entries) => digest_of(tag::OBJECT, entries.len() as u32),
     })
 }
@@ -171,7 +171,14 @@ impl PackedSpec {
         if offsets.len() < 4 {
             return Err("The table of the offsets of the strings is empty".to_string());
         }
-        let length = word(offsets, offsets.len() / 4 - 1) as usize;
+        if word(offsets, 0) != 0 {
+            return Err("The table of string offsets does not start at 0".to_string());
+        }
+        let offset_count = offsets.len() / 4;
+        if (1..offset_count).any(|index| word(offsets, index) < word(offsets, index - 1)) {
+            return Err("The table of string offsets is not in order".to_string());
+        }
+        let length = word(offsets, offset_count - 1) as usize;
         let string_words = sections[section::STRING_BYTES].bytes().len() / 4;
         if length > string_words * 4 || (string_words > 0 && length <= (string_words - 1) * 4) {
             return Err("The bytes of the strings are not as long as their offsets say".to_string());
@@ -264,22 +271,29 @@ impl PackedSpec {
     }
 
     /// Makes the spec that has these sections in place of the ones it has. A table of strings that is given has to
-    /// continue the one that this spec has (the numbers of the strings it has are the same), because the sections that
-    /// are kept refer to them.
+    /// continue the one that this spec has (the numbers of the strings it has are the same, and so are their bytes),
+    /// because the sections that are kept refer to them.
     ///
     /// # Errors
     ///
-    /// Offsets of strings that do not start with the offsets of the old ones, or sections that are not those of a spec.
+    /// Offsets of strings that do not start with the offsets of the old ones, bytes of strings that do not start with the
+    /// bytes of the old ones, or sections that are not those of a spec.
     pub fn replace(&self, changes: Vec<(usize, Vec<u8>)>) -> Result<Self, String> {
         let mut sections = self.sections.clone();
         for (id, bytes) in changes {
+            let old = self.sections[id].bytes();
             if id == section::STRING_OFFSETS {
-                let old = self.sections[id].bytes();
                 if bytes.len() < old.len() {
                     return Err("The new table of strings is shorter than the one it replaces".to_string());
                 }
                 if bytes[..old.len()] != *old {
                     return Err("The new table of strings does not continue the one it replaces".to_string());
+                }
+            } else if id == section::STRING_BYTES {
+                // The strings end where the last offset says; what follows is the padding to whole words
+                let used = word(self.sections[section::STRING_OFFSETS].bytes(), self.string_count()) as usize;
+                if bytes.len() < used || bytes[..used] != old[..used] {
+                    return Err("The new table of string bytes does not continue the one it replaces".to_string());
                 }
             }
             sections[id] = Section::from_bytes(bytes);
@@ -301,19 +315,16 @@ impl PackedSpec {
         words[1] = VERSION;
         words[2] = self.variant.word();
         // The number of sections, the offsets and the lengths are far below 2^32
-        #[allow(clippy::cast_possible_truncation)]
-        {
-            words[3] = SECTION_COUNT as u32;
-            let mut at = HEADER_WORDS;
-            for (id, section) in self.sections.iter().enumerate() {
-                let length = section.bytes().len() / 4;
-                words[4 + 2 * id] = at as u32;
-                words[5 + 2 * id] = length as u32;
-                for (index, chunk) in section.bytes().as_chunks::<4>().0.iter().enumerate() {
-                    words[at + index] = u32::from_le_bytes(*chunk);
-                }
-                at += length;
+        words[3] = SECTION_COUNT as u32;
+        let mut at = HEADER_WORDS;
+        for (id, section) in self.sections.iter().enumerate() {
+            let length = section.bytes().len() / 4;
+            words[4 + 2 * id] = at as u32;
+            words[5 + 2 * id] = length as u32;
+            for (index, chunk) in section.bytes().as_chunks::<4>().0.iter().enumerate() {
+                words[at + index] = u32::from_le_bytes(*chunk);
             }
+            at += length;
         }
         let bytes = words_to_bytes(&words[..total - 1]);
         let checksum = crc32c_words(&bytes, total - 1);
@@ -325,6 +336,12 @@ impl PackedSpec {
     #[inline]
     fn bytes_of(&self, id: usize) -> &[u8] {
         self.sections[id].bytes()
+    }
+
+    /// The bytes of a section.
+    #[cfg(test)]
+    pub fn section_bytes(&self, id: usize) -> &[u8] {
+        self.bytes_of(id)
     }
 
     /// How many strings the table has.
@@ -346,13 +363,13 @@ impl PackedSpec {
         String::from_utf8_lossy(self.string_bytes(sid)).into_owned()
     }
 
-    /// The number of a string. The table from the strings to the numbers is made the first time it is asked, for what
-    /// makes a spec again (an encoder that adds to the strings of this one), and is kept.
+    /// The number of a string. A composition keeps the numbers of the strings of this spec and adds the new ones after them,
+    /// so it asks for the number of a string that may be here: the table from the strings to the numbers is made the first
+    /// time it is asked, and is kept.
     pub fn string_id(&self, text: &str) -> Option<u32> {
         let mut ids = self.ids.borrow_mut();
         let table = ids.get_or_insert_with(|| {
             // A table of strings has fewer than 2^32 entries
-            #[allow(clippy::cast_possible_truncation)]
             (0..self.string_count())
                 .map(|sid| (self.string_at(sid as u32), sid as u32))
                 .collect()
@@ -403,7 +420,7 @@ impl PackedSpec {
         let mut found = Vec::new();
         let mut at = 0;
         while at < words {
-            if at + 5 > words && self.mode.is_some() || at + 2 > words {
+            if (at + 5 > words && self.mode.is_some()) || at + 2 > words {
                 return Err("An index is cut short".to_string());
             }
             let entries = word(bytes, at) as usize;
@@ -420,7 +437,6 @@ impl PackedSpec {
                 .map(|index| word(bytes, index))
                 .collect();
             // A position among the indexes is below 2^32
-            #[allow(clippy::cast_possible_truncation)]
             found.push((keys, at as u32));
             at += length;
         }
@@ -511,7 +527,6 @@ impl PackedSpec {
             let key = word(bytes, region.lists_at + self.entry_key_at(a, j));
             if self.string_bytes(key) == query {
                 // A position is below the number of entries
-                #[allow(clippy::cast_possible_truncation)]
                 return j as u32;
             }
         }
@@ -569,7 +584,6 @@ impl PackedSpec {
                 && self.string_bytes(region.field(bytes, value, 1)) == query
             {
                 // A position is below the number of items
-                #[allow(clippy::cast_possible_truncation)]
                 return j as u32;
             }
         }
@@ -672,16 +686,12 @@ impl PackedSpec {
         let per_row = elements.div_ceil(32);
         let mut words = vec![0_u32; 3 + elements + categories * per_row];
         // The counts are far below 2^32
-        #[allow(clippy::cast_possible_truncation)]
-        {
-            words[0] = elements as u32;
-            words[1] = categories as u32;
-            words[2] = per_row as u32;
-        }
+        words[0] = elements as u32;
+        words[1] = categories as u32;
+        words[2] = per_row as u32;
         let mut positions: HashMap<Vec<u8>, usize> = HashMap::new();
         for element in 0..elements {
             // A position is below 2^32
-            #[allow(clippy::cast_possible_truncation)]
             let node = self.at(specs, specs_root, element as u32);
             let name = self.get(specs, node, "name");
             if name != NONE && self.tag(specs, name) == tag::STRING {
@@ -700,7 +710,6 @@ impl PackedSpec {
         }
         for category in 0..categories {
             // A position is below 2^32
-            #[allow(clippy::cast_possible_truncation)]
             let list = self.value_at(content, content_root, category as u32);
             let members = if self.tag(content, list) == tag::ARRAY {
                 self.count(content, list)

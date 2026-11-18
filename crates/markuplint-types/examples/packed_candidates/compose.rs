@@ -2,14 +2,14 @@
 //! `scripts/spec-baseline/packed/compose.ts`. There is no `schemaToSpec` in Rust (v6 does the merge in JavaScript), so
 //! the merge of `@markuplint/ml-spec` (`schema-to-spec.ts` and `merge-array.ts`) is ported here, onto a [`Tree`].
 //!
-//! The regions that an extension touches are not decoded and made again: the merge is done on a tree in which what the
-//! base has is a reference to its node ([`Tree::Ref`], for an array or an object, an empty one too) or a value (a number, a
+//! The regions that an extension touches are appended to, not decoded and rebuilt: the merge is done on a tree in which what
+//! the base has is a reference to its node ([`Tree::Ref`], for an array or an object, an empty one too) or a value (a number, a
 //! boolean, null or a string, which are always values), and what the merge makes is new. It is what the TypeScript composition
 //! has, which runs the real `schemaToSpec` on objects that read the nodes of the region when they are asked: a place where
 //! JavaScript makes a new array or object (`{...a}`, `[...a]`, `splice`, an object literal) is a new `Array` or `Object` here, and
-//! a place where it hands over what it was given is the same tree. The regions are then appended to with only the new
-//! nodes, lists and indexes (`encode::append_region`), and the bytes that this makes for an extension are the bytes that the
-//! TypeScript one makes: that is the proof that the port means the same.
+//! a place where it hands over what it was given is the same tree. Only the new nodes, lists and indexes are added to a region
+//! (`encode::append_region`), and the strings of the base keep their numbers. The bytes that this makes for an extension are
+//! the bytes that the TypeScript one makes: that is the proof that the port means the same.
 //!
 //! An object keeps the order of its entries, and a key that is set again keeps its place, as an assignment to a property of a
 //! JavaScript object does (a key that is new goes to the end).

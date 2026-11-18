@@ -33,10 +33,7 @@ pub fn murmur3(bytes: &[u8], seed: u32) -> u32 {
         h ^= k;
     }
     // The length of a key is below 2^32 (a name is a few bytes)
-    #[allow(clippy::cast_possible_truncation)]
-    {
-        h ^= bytes.len() as u32;
-    }
+    h ^= bytes.len() as u32;
     fmix32(h)
 }
 
@@ -89,10 +86,7 @@ pub fn xxhash32(bytes: &[u8], seed: u32) -> u32 {
         h = seed.wrapping_add(P5);
     }
     // The length of a key is below 2^32 (a name is a few bytes)
-    #[allow(clippy::cast_possible_truncation)]
-    {
-        h = h.wrapping_add(length as u32);
-    }
+    h = h.wrapping_add(length as u32);
     while at + 4 <= length {
         h = h
             .wrapping_add(read32(bytes, at).wrapping_mul(P3))

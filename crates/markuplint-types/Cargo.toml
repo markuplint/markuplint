@@ -18,8 +18,12 @@ strsim = "0.11"
 url = "2"
 
 # Only the equivalence tests read the regular expressions that the hand-written matchers replaced.
+# `preserve_order` is for the example `packed_candidates`: the numbers of its strings and nodes follow the order of the keys of
+# the JSON text, so a build of the example without it (the workspace has it on, a build of this package alone does not)
+# would write other bytes. A dev-dependency does not change what the library is built with.
 [dev-dependencies]
 regex = { workspace = true }
+serde_json = { version = "1", features = ["preserve_order"] }
 
 # The Rust half of `yarn spec-baseline perf --rust`. It is a program of its own (the TypeScript side starts it for each
 # sample), and its pure parts have tests that `cargo test` runs.
