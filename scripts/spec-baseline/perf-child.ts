@@ -28,9 +28,9 @@
 import type { Measurement } from './perf.ts';
 
 import { mkdtempSync, readFileSync, rmSync, writeFileSync } from 'node:fs';
+import { createRequire } from 'node:module';
 import { tmpdir } from 'node:os';
 import { basename, join } from 'node:path';
-import { fileURLToPath } from 'node:url';
 import { brotliDecompressSync } from 'node:zlib';
 
 import { isCliEntry } from '../spec-citations/entry.ts';
@@ -38,6 +38,9 @@ import { generateDocument } from './generate.ts';
 import { FLAG_NAMES, askBits, askObject, assertQuestions, buildLayout, questionsOf } from './layout.ts';
 import { LINT_GENERATED } from './perf.ts';
 import { compressors } from './size.ts';
+
+// Deno's import.meta.resolve cannot resolve this package subpath in the Node-compatible test run.
+const require = createRequire(import.meta.url);
 
 /** What the parent passes to a scenario. */
 export interface ChildOptions {
@@ -171,7 +174,7 @@ async function query(options: ChildOptions): Promise<Measurement[]> {
 }
 
 function file(options: ChildOptions): Measurement[] {
-	const source = readFileSync(fileURLToPath(import.meta.resolve('@markuplint/html-spec/json')));
+	const source = readFileSync(require.resolve('@markuplint/html-spec/json'));
 	const minified = Buffer.from(JSON.stringify(JSON.parse(source.toString('utf8'))));
 	const directory = mkdtempSync(join(tmpdir(), 'spec-baseline-'));
 	try {
