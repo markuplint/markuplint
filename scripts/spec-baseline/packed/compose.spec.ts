@@ -9,6 +9,7 @@ import svelte from '@markuplint/svelte-spec';
 import vue from '@markuplint/vue-spec';
 
 import { compose, touchedRegions, type ExtensionLike } from './compose.ts';
+import { USER } from './extensions.ts';
 import { encodeSpec, type SpecLike } from './encode.ts';
 import { NONE, Section, VARIANTS, variantName } from './format.ts';
 import { PackedSpec } from './read.ts';
@@ -20,43 +21,6 @@ const SPEC = JSON.parse(
 /** The JSON that an engine of the other language would be given: what `JSON.stringify` keeps of the merged spec. */
 // eslint-disable-next-line unicorn/prefer-structured-clone -- the text is what is handed over, and it drops an `undefined`
 const asJson = (value: unknown): unknown => JSON.parse(JSON.stringify(value));
-
-/** An extension of a user: one more attribute and element, a category member, a role, and the rest. */
-const USER = {
-	def: {
-		'#globalAttrs': { '#extends': { 'x-user-attr': { type: 'Any', experimental: true } } },
-		'#aria': {
-			'1.1': {
-				roles: [{ name: 'user-role-11', generalization: [] }],
-				props: [],
-				graphicsRoles: [],
-				dpubRoles: [],
-			},
-			'1.2': {
-				roles: [{ name: 'user-role-12', generalization: [] }],
-				props: [],
-				graphicsRoles: [],
-				dpubRoles: [],
-			},
-			'1.3': {
-				roles: [{ name: 'user-role', generalization: ['widget'] }],
-				props: [],
-				graphicsRoles: [],
-				dpubRoles: [],
-			},
-		},
-		'#contentModels': { '#flow': ['my-element'], '#my-category': ['div', 'span'] },
-	},
-	specs: [
-		{ name: 'div', attributes: { 'x-div-attr': { type: 'Boolean' } }, globalAttrs: { '#ARIAAttrs': false } },
-		{ name: 'not-in-the-base', attributes: {} },
-	],
-	directivePatterns: [{ attrName: '^v-', prefix: 'v-', type: 'prefix' }],
-	movedToHead: ['my-head-element'],
-	acceptedAttrNames: ['(user)'],
-	templateContent: false,
-	literalValues: { attrs: { class: { 日: 'x' } } },
-} as unknown as ExtensionLike;
 
 const EXTENSIONS: readonly (readonly [string, readonly ExtensionLike[]])[] = [
 	['vue-spec', [vue as ExtensionLike]],

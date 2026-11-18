@@ -460,6 +460,20 @@ export class PackedSpec {
 	 * @returns The node of the value, or {@link NONE} when the node is not an object or has no such key
 	 */
 	get(region: Region, node: number, name: string): number {
+		const position = this.entry(region, node, name);
+		return position === NONE ? NONE : this.valueAt(region, node, position);
+	}
+
+	/**
+	 * The position of a key among the entries of an object, which is where its value is, and, for `#contentModels`, the row of
+	 * the bits of the category.
+	 *
+	 * @param region - The region
+	 * @param node - The object
+	 * @param name - The key
+	 * @returns The position, or {@link NONE} when the node is not an object or has no such key
+	 */
+	entry(region: Region, node: number, name: string): number {
 		if (region.tag(node) !== Tag.Object) {
 			return NONE;
 		}
@@ -468,12 +482,11 @@ export class PackedSpec {
 		const index = region.c(node);
 		const query = nameBytes(name);
 		if (index !== 0) {
-			const position = this.findEntry(region, index - 1, query, name);
-			return position === NONE ? NONE : u(region.lists, this.entryValueAt(a, b, position));
+			return this.findEntry(region, index - 1, query, name);
 		}
 		for (let j = 0; j < b; j++) {
 			if (this.keyEquals(u(region.lists, this.entryKeyAt(a, j)), query, name)) {
-				return u(region.lists, this.entryValueAt(a, b, j));
+				return j;
 			}
 		}
 		return NONE;
@@ -503,26 +516,36 @@ export class PackedSpec {
 	 * @returns The node of the object, or {@link NONE}
 	 */
 	find(region: Region, node: number, name: string): number {
+		const position = this.position(region, node, name);
+		return position === NONE ? NONE : this.at(region, node, position);
+	}
+
+	/**
+	 * The position of the object of an array that has this name, which is the position of an element in `specs`.
+	 *
+	 * @param region - The region
+	 * @param node - The array
+	 * @param name - The name
+	 * @returns The position of the first object that has it, or {@link NONE}
+	 */
+	position(region: Region, node: number, name: string): number {
 		if (region.tag(node) !== Tag.Array) {
 			return NONE;
 		}
 		const a = region.a(node);
 		const count = region.b(node);
 		const index = region.c(node);
-		const query = nameBytes(name);
 		if (index !== 0) {
-			const position = this.findEntry(region, index - 1, query, name);
-			return position === NONE ? NONE : u(region.lists, a + position);
+			return this.findEntry(region, index - 1, nameBytes(name), name);
 		}
 		for (let j = 0; j < count; j++) {
-			const item = u(region.lists, a + j);
-			const sid = this.get(region, item, 'name');
+			const sid = this.get(region, u(region.lists, a + j), 'name');
 			if (
 				sid !== NONE &&
 				region.tag(sid) === Tag.String &&
 				this.keyEquals(region.a(sid), nameBytes(name), name)
 			) {
-				return item;
+				return j;
 			}
 		}
 		return NONE;
