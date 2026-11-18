@@ -1,3 +1,4 @@
+/* eslint-disable unicorn/number-literal-case -- oxfmt writes the digits of a hexadecimal literal in lower case, and this rule asks for upper case */
 import { describe, expect, test } from 'vitest';
 
 import { NONE } from './format.ts';
@@ -19,7 +20,7 @@ const HASHES = HASH_FUNCTIONS;
 describe('reduce', () => {
 	test('keeps a number in the range and is exact for the largest', () => {
 		expect(reduce(0, 237)).toBe(0);
-		expect(reduce(0xFF_FF_FF_FF, 237)).toBe(236);
+		expect(reduce(0xff_ff_ff_ff, 237)).toBe(236);
 		expect(reduce(0x80_00_00_00, 100)).toBe(50);
 	});
 });

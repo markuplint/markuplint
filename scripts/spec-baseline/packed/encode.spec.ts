@@ -1,3 +1,4 @@
+/* eslint-disable unicorn/number-literal-case -- oxfmt writes the digits of a hexadecimal literal in lower case, and this rule asks for upper case */
 import { readFileSync } from 'node:fs';
 import { describe, expect, test } from 'vitest';
 
@@ -259,7 +260,7 @@ describe('open', () => {
 
 	test('names the section that is not inside the file', () => {
 		const changed = copy();
-		changed[5 + 2 * Section.Aria] = 0x7F_FF_FF_FF;
+		changed[5 + 2 * Section.Aria] = 0x7f_ff_ff_ff;
 		expect(() => PackedSpec.open(changed)).toThrow(`section ${Section.Aria}`);
 	});
 });
@@ -294,7 +295,7 @@ describe('encodeSpec', () => {
 
 describe('wordsOf', () => {
 	test('views bytes that are aligned and copies bytes that are not, to the same words', () => {
-		const words = Uint32Array.from([1, 0x01_02_03_04, 0xFF_FF_FF_FF]);
+		const words = Uint32Array.from([1, 0x01_02_03_04, 0xff_ff_ff_ff]);
 		const aligned = new Uint8Array(words.buffer);
 		expect([...wordsOf(aligned)]).toStrictEqual([...words]);
 		const shifted = new Uint8Array(aligned.length + 1);

@@ -1,3 +1,4 @@
+/* eslint-disable unicorn/number-literal-case -- oxfmt writes the digits of a hexadecimal literal in lower case, and this rule asks for upper case */
 /* eslint-disable unicorn/prefer-math-trunc -- `x | 0` wraps a number to 32 bits, which a hash needs; `Math.trunc` does not */
 
 /**
@@ -58,9 +59,9 @@ export function nameBytes(text: string): Uint8Array {
 export function fmix32(input: number): number {
 	let h = input | 0;
 	h ^= h >>> 16;
-	h = Math.imul(h, 0x85_EB_CA_6B);
+	h = Math.imul(h, 0x85_eb_ca_6b);
 	h ^= h >>> 13;
-	h = Math.imul(h, 0xC2_B2_AE_35);
+	h = Math.imul(h, 0xc2_b2_ae_35);
 	h ^= h >>> 16;
 	return h >>> 0;
 }
@@ -75,8 +76,8 @@ const rotl = (value: number, bits: number): number => (value << bits) | (value >
  * @returns The hash
  */
 export function murmur3(bytes: Uint8Array, seed: number): number {
-	const c1 = 0xCC_9E_2D_51;
-	const c2 = 0x1B_87_35_93;
+	const c1 = 0xcc_9e_2d_51;
+	const c2 = 0x1b_87_35_93;
 	const { length } = bytes;
 	let h = seed | 0;
 	const blocks = length - (length % 4);
@@ -88,7 +89,7 @@ export function murmur3(bytes: Uint8Array, seed: number): number {
 		k = Math.imul(k, c2);
 		h ^= k;
 		h = rotl(h, 13);
-		h = (Math.imul(h, 5) + 0xE6_54_6B_64) | 0;
+		h = (Math.imul(h, 5) + 0xe6_54_6b_64) | 0;
 	}
 	let k = 0;
 	switch (length % 4) {
@@ -112,11 +113,11 @@ export function murmur3(bytes: Uint8Array, seed: number): number {
 	return fmix32(h);
 }
 
-const P1 = 0x9E_37_79_B1;
-const P2 = 0x85_EB_CA_77;
-const P3 = 0xC2_B2_AE_3D;
-const P4 = 0x27_D4_EB_2F;
-const P5 = 0x16_56_67_B1;
+const P1 = 0x9e_37_79_b1;
+const P2 = 0x85_eb_ca_77;
+const P3 = 0xc2_b2_ae_3d;
+const P4 = 0x27_d4_eb_2f;
+const P5 = 0x16_56_67_b1;
 
 const read32 = (bytes: Uint8Array, at: number): number =>
 	(bytes[at] ?? 0) | ((bytes[at + 1] ?? 0) << 8) | ((bytes[at + 2] ?? 0) << 16) | ((bytes[at + 3] ?? 0) << 24) | 0;
@@ -179,7 +180,7 @@ export const HASH_FUNCTIONS: Readonly<Record<HashKind, (bytes: Uint8Array, seed:
  * @returns The hash
  */
 export function fnv1a32(bytes: Uint8Array): number {
-	let h = 0x81_1C_9D_C5;
+	let h = 0x81_1c_9d_c5;
 	for (const byte of bytes) {
 		h ^= byte;
 		h = Math.imul(h, 0x01_00_01_93);
@@ -194,17 +195,17 @@ const TABLES: readonly Uint32Array[] = (() => {
 	for (let i = 0; i < 256; i++) {
 		let crc = i;
 		for (let bit = 0; bit < 8; bit++) {
-			crc = crc & 1 ? (crc >>> 1) ^ 0x82_F6_3B_78 : crc >>> 1;
+			crc = crc & 1 ? (crc >>> 1) ^ 0x82_f6_3b_78 : crc >>> 1;
 		}
 		t0[i] = crc >>> 0;
 	}
 	for (let i = 0; i < 256; i++) {
 		const first = t0[i] ?? 0;
-		t1[i] = ((first >>> 8) ^ (t0[first & 0xFF] ?? 0)) >>> 0;
+		t1[i] = ((first >>> 8) ^ (t0[first & 0xff] ?? 0)) >>> 0;
 		const second = t1[i] ?? 0;
-		t2[i] = ((second >>> 8) ^ (t0[second & 0xFF] ?? 0)) >>> 0;
+		t2[i] = ((second >>> 8) ^ (t0[second & 0xff] ?? 0)) >>> 0;
 		const third = t2[i] ?? 0;
-		t3[i] = ((third >>> 8) ^ (t0[third & 0xFF] ?? 0)) >>> 0;
+		t3[i] = ((third >>> 8) ^ (t0[third & 0xff] ?? 0)) >>> 0;
 	}
 	return tables;
 })();
@@ -217,11 +218,11 @@ const TABLES: readonly Uint32Array[] = (() => {
  */
 export function crc32c(bytes: Uint8Array): number {
 	const [t0] = TABLES as [Uint32Array];
-	let crc = 0xFF_FF_FF_FF;
+	let crc = 0xff_ff_ff_ff;
 	for (const byte of bytes) {
-		crc = (crc >>> 8) ^ (t0[(crc ^ byte) & 0xFF] ?? 0);
+		crc = (crc >>> 8) ^ (t0[(crc ^ byte) & 0xff] ?? 0);
 	}
-	return (crc ^ 0xFF_FF_FF_FF) >>> 0;
+	return (crc ^ 0xff_ff_ff_ff) >>> 0;
 }
 
 /**
@@ -233,14 +234,14 @@ export function crc32c(bytes: Uint8Array): number {
  */
 export function crc32cWords(words: Uint32Array, count: number = words.length): number {
 	const [t0, t1, t2, t3] = TABLES as [Uint32Array, Uint32Array, Uint32Array, Uint32Array];
-	let crc = 0xFF_FF_FF_FF;
+	let crc = 0xff_ff_ff_ff;
 	for (let i = 0; i < count; i++) {
 		crc ^= words[i] ?? 0;
 		crc =
-			(t3[crc & 0xFF] ?? 0) ^
-			(t2[(crc >>> 8) & 0xFF] ?? 0) ^
-			(t1[(crc >>> 16) & 0xFF] ?? 0) ^
+			(t3[crc & 0xff] ?? 0) ^
+			(t2[(crc >>> 8) & 0xff] ?? 0) ^
+			(t1[(crc >>> 16) & 0xff] ?? 0) ^
 			(t0[crc >>> 24] ?? 0);
 	}
-	return (crc ^ 0xFF_FF_FF_FF) >>> 0;
+	return (crc ^ 0xff_ff_ff_ff) >>> 0;
 }

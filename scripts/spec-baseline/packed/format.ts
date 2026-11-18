@@ -1,3 +1,4 @@
+/* eslint-disable unicorn/number-literal-case -- oxfmt writes the digits of a hexadecimal literal in lower case, and this rule asks for upper case */
 /**
  * The layout of the packed candidates: what a file holds, word by word. It is the one description of the format; the
  * encoder (`encode.ts`), the reader (`read.ts`) and the Rust program
@@ -100,7 +101,7 @@
 import { FLAG_NAMES } from '../layout.ts';
 
 /** The first word of a file, the bytes "MLSP". */
-export const MAGIC = 0x50_53_4C_4D;
+export const MAGIC = 0x50_53_4c_4d;
 
 /** The version of the format. */
 export const VERSION = 1;
@@ -144,7 +145,7 @@ export const Tag = {
 export const NODE_WORDS = 4;
 
 /** The marker of a slot that holds no key, and of a position that is not found. */
-export const NONE = 0xFF_FF_FF_FF;
+export const NONE = 0xff_ff_ff_ff;
 
 /** An array of objects with a `name`, and an object, have an index from this many items or keys. */
 export const INDEX_MINIMUM = 8;

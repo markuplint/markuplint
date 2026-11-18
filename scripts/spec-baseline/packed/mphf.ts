@@ -1,3 +1,4 @@
+/* eslint-disable unicorn/number-literal-case -- oxfmt writes the digits of a hexadecimal literal in lower case, and this rule asks for upper case */
 /**
  * The perfect hash of an index: for `n` keys that are known when the file is built, a function that gives each a
  * slot of its own with one hash, one read of a small table and one read of the slot table, and a verdict on a name that
@@ -66,7 +67,7 @@ export function reduce(value: number, range: number): number {
  * @returns A 32-bit number
  */
 export function pilotMix(pilot: number): number {
-	return fmix32(Math.imul(pilot + 1, 0x9E_37_79_B1));
+	return fmix32(Math.imul(pilot + 1, 0x9e_37_79_b1));
 }
 
 /**

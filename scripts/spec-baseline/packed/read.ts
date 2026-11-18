@@ -1,3 +1,4 @@
+/* eslint-disable unicorn/number-literal-case -- oxfmt writes the digits of a hexadecimal literal in lower case, and this rule asks for upper case */
 /**
  * The reader of a packed spec (the layout is in `format.ts`): it opens the words of a file, checks them, and answers
  * from them without copying and without parsing. The Rust reader
@@ -60,7 +61,7 @@ const u = (array: Uint32Array, index: number): number => array[index] ?? 0;
  * @returns A number that is never 0 (0 is "there is no such value")
  */
 export function digestOf(tag: number, payload: number): number {
-	const value = fmix32((Math.imul(tag + 1, 0x9E_37_79_B1) ^ payload) >>> 0);
+	const value = fmix32((Math.imul(tag + 1, 0x9e_37_79_b1) ^ payload) >>> 0);
 	return value === 0 ? 1 : value;
 }
 
@@ -490,7 +491,7 @@ export class PackedSpec {
 		const keysAt = slotsAt + slots;
 		const hash = this.hash(query, seed);
 		const bucket = reduce(hash, buckets);
-		const pilot = (u(words, pilotsAt + (bucket >>> 1)) >>> ((bucket & 1) << 4)) & 0xFF_FF;
+		const pilot = (u(words, pilotsAt + (bucket >>> 1)) >>> ((bucket & 1) << 4)) & 0xff_ff;
 		const position = u(words, slotsAt + slotOf(hash, pilot, slots, this.mode));
 		if (position === NONE || position >= entries) {
 			return NONE;
