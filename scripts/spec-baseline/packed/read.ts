@@ -1,13 +1,14 @@
 /**
  * The reader of a packed spec (the layout is in `format.ts`): it opens the words of a file, checks them, and answers
  * from them without copying and without parsing. The Rust reader
- * (`crates/markuplint-types/examples/packed_candidates/read.rs`) is this, in the same steps, and is the one that the
- * format is judged by (what is read here is a port of it, as the owner of the issue has it).
+ * (`crates/markuplint-types/examples/packed_candidates/read.rs`) does the same in the same steps; the format is chosen
+ * from the Rust figures, and this reader is the same algorithm in TypeScript.
  *
- * Reading never trusts a number that it was not given a way to check: a section, a node, a list and an index are
- * reached through offsets that `open` has seen to be inside the file, and the checksum of the whole file was equal
- * before anything was read. An index into a section that is not there is a thrown error in a language that checks (and in
- * Rust, a panic), never an answer.
+ * What `open` checks is the header, the table of sections (every section is inside the file), the checksum of the whole
+ * file, and the shape of each section (the table of strings and the header of a region). It does not check each node,
+ * list and index that a section holds: a file that has a valid checksum is taken to be what an encoder wrote. A read
+ * outside a section gives 0 here (an unsigned word that is not there) and is a panic in the Rust reader; neither is
+ * an answer that a well-formed file leads to.
  *
  * Two ways of comparing a name with a key are here, for the measurement of the candidates: the strings are
  * decoded when the file is opened and compared as JavaScript strings (`decoded`), or the bytes of the name are compared
@@ -23,6 +24,7 @@ import {
 	MAGIC,
 	NONE,
 	REGIONS,
+	RegionAt,
 	SECTION_COUNT,
 	Section,
 	Tag,
@@ -34,6 +36,7 @@ import { HASH_FUNCTIONS, crc32cWords, fmix32, fnv1a32, nameBytes } from './hash.
 import { reduce, slotOf, type MphfMode } from './mphf.ts';
 
 const decoder = new TextDecoder();
+const ENCODER = new TextEncoder();
 
 /** How a name is compared with a key of the table. */
 export type StringCompare = 'decoded' | 'bytes';
@@ -78,7 +81,7 @@ export function digestJson(value: unknown): number {
 			return digestOf(Tag.Uint, value);
 		}
 		case 'string': {
-			return digestOf(Tag.String, fnv1a32(new TextEncoder().encode(value)));
+			return digestOf(Tag.String, fnv1a32(ENCODER.encode(value)));
 		}
 		case 'object': {
 			return Array.isArray(value)
@@ -91,7 +94,7 @@ export function digestJson(value: unknown): number {
 	}
 }
 
-/** One region: its nodes, lists and indexes, which are views of the section. */
+/** One region: its nodes, lists and indexes, which are views of the section (the layout is in `format.ts`). */
 export class Region {
 	readonly nodes: Uint32Array;
 	readonly lists: Uint32Array;
@@ -102,6 +105,13 @@ export class Region {
 	readonly nodeStride: number;
 	readonly fieldStride: number;
 
+	/**
+	 * Views the words of a region.
+	 *
+	 * @param section - The words of the section: the counts, the root, then the nodes, the lists and the indexes
+	 * @param columns - Whether the nodes are in columns (`true`) or in rows
+	 * @throws When the section is not as long as its counts say, or its root is not one of its nodes
+	 */
 	constructor(section: Uint32Array, columns: boolean) {
 		const count = u(section, 0);
 		const lists = u(section, 1);
@@ -121,18 +131,42 @@ export class Region {
 		}
 	}
 
+	/**
+	 * The tag of a node.
+	 *
+	 * @param node - The node
+	 * @returns One of {@link Tag}
+	 */
 	tag(node: number): number {
 		return this.nodes[node * this.nodeStride] ?? Tag.Null;
 	}
 
+	/**
+	 * The first field of a node: a number, or the number of a string, or the position of a list.
+	 *
+	 * @param node - The node
+	 * @returns The word
+	 */
 	a(node: number): number {
 		return this.nodes[node * this.nodeStride + this.fieldStride] ?? 0;
 	}
 
+	/**
+	 * The second field of a node: how many items or entries it has.
+	 *
+	 * @param node - The node
+	 * @returns The word
+	 */
 	b(node: number): number {
 		return this.nodes[node * this.nodeStride + 2 * this.fieldStride] ?? 0;
 	}
 
+	/**
+	 * The third field of a node: the position of its index plus one, or 0.
+	 *
+	 * @param node - The node
+	 * @returns The word
+	 */
 	c(node: number): number {
 		return this.nodes[node * this.nodeStride + 3 * this.fieldStride] ?? 0;
 	}
@@ -168,7 +202,16 @@ export class PackedSpec {
 	private readonly mode: MphfMode | null;
 	private readonly hash: (bytes: Uint8Array, seed: number) => number;
 	private readonly rowEntries: boolean;
+	private ids: Map<string, number> | null = null;
 
+	/**
+	 * Views the sections of a spec.
+	 *
+	 * @param variant - The candidate
+	 * @param sections - The words of the eight sections
+	 * @param options - How strings are compared
+	 * @throws When the sections are not the sections of a spec: their number, the table of strings, a region
+	 */
 	constructor(variant: Variant, sections: readonly Uint32Array[], options: OpenOptions = {}) {
 		if (!LITTLE_ENDIAN) {
 			throw new Error('A packed spec is little-endian and this machine is not');
@@ -185,6 +228,14 @@ export class PackedSpec {
 		this.offsets = sections[Section.StringOffsets] ?? new Uint32Array(1);
 		const stringWords = sections[Section.StringBytes] ?? new Uint32Array(0);
 		const length = u(this.offsets, this.offsets.length - 1);
+		if (u(this.offsets, 0) !== 0) {
+			throw new Error('The table of string offsets does not start at 0');
+		}
+		for (let sid = 1; sid < this.offsets.length; sid++) {
+			if (u(this.offsets, sid) < u(this.offsets, sid - 1)) {
+				throw new Error('The table of string offsets is not in order');
+			}
+		}
 		if (length > stringWords.length * 4 || length <= (stringWords.length - 1) * 4) {
 			throw new Error('The bytes of the strings are not as long as their offsets say');
 		}
@@ -254,7 +305,7 @@ export class PackedSpec {
 	 * @param changes - The new words of some sections, by section
 	 * @param options - How strings are compared
 	 * @returns A spec that shares the sections that are not changed
-	 * @throws When the offsets of the new strings do not start with the offsets of the old ones
+	 * @throws When the offsets or the bytes of the new strings do not start with those of the old ones
 	 */
 	replace(changes: Readonly<Record<number, Uint32Array>>, options: OpenOptions = {}): PackedSpec {
 		const offsets = changes[Section.StringOffsets];
@@ -268,6 +319,13 @@ export class PackedSpec {
 				}
 			}
 		}
+		const bytes = changes[Section.StringBytes];
+		if (bytes) {
+			const kept = new Uint8Array(bytes.buffer, bytes.byteOffset, this.bytes.length);
+			if (bytes.length * 4 < this.bytes.length || kept.some((byte, at) => byte !== this.bytes[at])) {
+				throw new Error('The new table of string bytes does not continue the one it replaces');
+			}
+		}
 		const sections = this.sections.map((section, id) => changes[id] ?? section);
 		return new PackedSpec(this.variant, sections, {
 			compare: this.compare,
@@ -276,7 +334,11 @@ export class PackedSpec {
 		});
 	}
 
-	/** The words of the file that holds this spec: the header, the sections and the checksum. */
+	/**
+	 * The words of the file that holds this spec: the header, the sections and the checksum.
+	 *
+	 * @returns The words
+	 */
 	serialize(): Uint32Array {
 		const total = HEADER_WORDS + this.sections.reduce((sum, section) => sum + section.length, 0) + 1;
 		const words = new Uint32Array(total);
@@ -295,6 +357,7 @@ export class PackedSpec {
 		return words;
 	}
 
+	/** How many strings the spec has. */
 	get stringCount(): number {
 		return this.offsets.length - 1;
 	}
@@ -332,16 +395,19 @@ export class PackedSpec {
 		return this.decoded?.[sid] ?? this.decode(sid);
 	}
 
-	/** The bytes of the string with this number. */
+	/**
+	 * The bytes of the string with this number.
+	 *
+	 * @param sid - The number
+	 * @returns A view of the bytes
+	 */
 	stringBytes(sid: number): Uint8Array {
 		return this.bytes.subarray(u(this.offsets, sid), u(this.offsets, sid + 1));
 	}
 
-	private ids: Map<string, number> | null = null;
-
 	/**
-	 * The number of a string. The table from the strings to the numbers is made the first time it is asked, for what
-	 * makes a spec again (an encoder that adds to the strings of this one), and is kept.
+	 * The number of a string. The table from the strings to the numbers is made the first time it is asked and is kept: a
+	 * composition keeps the numbers of the strings of the spec that it composes and adds the new ones after them.
 	 *
 	 * @param text - The string
 	 * @returns The number, or `undefined` when the spec does not have it
@@ -538,12 +604,14 @@ export class PackedSpec {
 		if (index !== 0) {
 			return this.findEntry(region, index - 1, nameBytes(name), name);
 		}
+		// `get` uses the shared buffer of `nameBytes` for 'name', so the bytes of this name are kept in a copy
+		const wanted = Uint8Array.from(nameBytes(name));
 		for (let j = 0; j < count; j++) {
-			const sid = this.get(region, u(region.lists, a + j), 'name');
+			const itemName = this.get(region, u(region.lists, a + j), 'name');
 			if (
-				sid !== NONE &&
-				region.tag(sid) === Tag.String &&
-				this.keyEquals(region.a(sid), nameBytes(name), name)
+				itemName !== NONE &&
+				region.tag(itemName) === Tag.String &&
+				this.keyEquals(region.a(itemName), wanted, name)
 			) {
 				return j;
 			}
@@ -653,8 +721,8 @@ export class PackedSpec {
 	 * @returns The words of the section
 	 */
 	computeBits(): Uint32Array {
-		const specs = this.regions[0] as Region;
-		const content = this.regions[3] as Region;
+		const specs = this.regions[RegionAt.Specs] as Region;
+		const content = this.regions[RegionAt.ContentModels] as Region;
 		const elements = specs.tag(specs.root) === Tag.Array ? specs.b(specs.root) : 0;
 		const categories = content.tag(content.root) === Tag.Object ? content.b(content.root) : 0;
 		const perRow = Math.ceil(elements / 32);
@@ -729,14 +797,13 @@ export class PackedSpec {
 				);
 			}
 			case Tag.Object: {
-				const object: Record<string, unknown> = {};
-				for (let j = 0; j < region.b(node); j++) {
-					object[this.stringAt(this.keyAt(region, node, j))] = this.toValue(
-						region,
-						this.valueAt(region, node, j),
-					);
-				}
-				return object;
+				// `Object.fromEntries` makes an own property of a key that is `__proto__`, as the JSON text does
+				return Object.fromEntries(
+					Array.from({ length: region.b(node) }, (_, j) => [
+						this.stringAt(this.keyAt(region, node, j)),
+						this.toValue(region, this.valueAt(region, node, j)),
+					]),
+				);
 			}
 			default: {
 				throw new Error(`There is no tag ${region.tag(node)}`);

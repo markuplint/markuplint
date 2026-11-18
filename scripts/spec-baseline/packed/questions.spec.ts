@@ -44,10 +44,48 @@ describe('elementsOf', () => {
 	});
 });
 
+describe('elementsOf, for the names that the data keeps in camel case', () => {
+	test('gives the name of an element and of an attribute of SVG as the parser gives it, and lowers those of HTML', () => {
+		const elements = elementsOf(
+			'<!DOCTYPE html><DIV CLASS="a"><svg viewBox="0 0 1 1"><clipPath id="c"></clipPath><feBlend in="x"></feBlend></svg></DIV>',
+		);
+		expect(elements.map(element => element.name)).toStrictEqual([
+			'html',
+			'head',
+			'body',
+			'div',
+			'svg:svg',
+			'svg:clipPath',
+			'svg:feBlend',
+		]);
+		expect(elements.find(element => element.name === 'div')?.attributes).toStrictEqual([['class', 'a']]);
+		expect(elements.find(element => element.name === 'svg:svg')?.attributes).toStrictEqual([
+			['viewBox', '0 0 1 1'],
+		]);
+		expect(elements.find(element => element.name === 'svg:feBlend')?.parent).toBe('svg:svg');
+	});
+
+	test('asks the lookups of a camel case name, which the data has, and not those of a lower case one that it lacks', () => {
+		const asked = makeQuestions(SPEC, [elementsOf('<svg><clipPath id="c" viewBox="0 0 1 1"></clipPath></svg>')]);
+		expect(asked.strings).toContain('svg:clipPath');
+		expect(asked.strings).toContain('viewBox');
+		expect(asked.strings).not.toContain('svg:clippath');
+	});
+});
+
+describe('the baseline over objects', () => {
+	test('does not take the name of what every object has for a key of the data', () => {
+		const objects = new ObjectSpec(regionValues(SPEC));
+		const asked = makeQuestions(SPEC, [elementsOf('<div constructor="x" __proto__="y" toString="z"></div>')]);
+		expect([...askStreamObjects(objects, asked)]).toStrictEqual(asked.streamAnswers);
+		expect([...askPathsObjects(objects, asked)]).toStrictEqual(asked.pathAnswers);
+	});
+});
+
 describe('makeQuestions', () => {
 	test('asks the flags and the categories of every element, paths with and without an answer, and the stream', () => {
 		const categories = Object.keys(SPEC.def?.['#contentModels'] ?? {}).length;
-		expect(questions.bitAnswers.length).toBe(237 * (4 + categories));
+		expect(questions.bitAnswers.length).toBe((SPEC.specs as unknown[]).length * (4 + categories));
 		expect(questions.pathAnswers.length).toBeGreaterThan(5000);
 		expect(questions.pathAnswers.some(answer => answer === 0)).toBe(true);
 		expect(questions.pathAnswers.some(answer => answer !== 0)).toBe(true);

@@ -1,17 +1,14 @@
 import { readFileSync } from 'node:fs';
 import { describe, expect, test } from 'vitest';
 
-import alpine from '@markuplint/alpine-spec';
-import htmx from '@markuplint/htmx-spec';
 import { schemaToSpec } from '@markuplint/ml-spec';
-import react from '@markuplint/react-spec';
-import svelte from '@markuplint/svelte-spec';
 import vue from '@markuplint/vue-spec';
 
 import { compose, touchedRegions, type ExtensionLike } from './compose.ts';
-import { USER } from './extensions.ts';
+import { EXTENSIONS as EXTENSION_BY_NAME, USER } from './extensions.ts';
 import { encodeSpec, type SpecLike } from './encode.ts';
 import { NONE, Section, VARIANTS, variantName } from './format.ts';
+import { bitsOf } from './questions.ts';
 import { PackedSpec } from './read.ts';
 
 const SPEC = JSON.parse(
@@ -23,12 +20,7 @@ const SPEC = JSON.parse(
 const asJson = (value: unknown): unknown => JSON.parse(JSON.stringify(value));
 
 const EXTENSIONS: readonly (readonly [string, readonly ExtensionLike[]])[] = [
-	['vue-spec', [vue as ExtensionLike]],
-	['react-spec', [react as ExtensionLike]],
-	['svelte-spec', [svelte as ExtensionLike]],
-	['alpine-spec', [alpine as ExtensionLike]],
-	['htmx-spec', [htmx as ExtensionLike]],
-	['an extension of a user', [USER]],
+	...Object.entries(EXTENSION_BY_NAME).map(([name, extension]) => [name, [extension]] as const),
 	['two extensions', [vue as ExtensionLike, USER]],
 	['an extension that is empty', [{}]],
 	['no extension', []],
@@ -120,7 +112,7 @@ describe.each(VARIANTS)('compose (%o)', variant => {
 		if (!specs || !after) {
 			throw new Error('no region');
 		}
-		// vue-spec changes a few elements of the 237, and none of the roles
+		// vue-spec changes a few of the elements, and none of the roles
 		expect(after.count - specs.count).toBeLessThan(specs.count / 20);
 		expect(composed.sections[Section.Aria]).toBe(base.sections[Section.Aria]);
 	});
@@ -153,21 +145,25 @@ describe.each(VARIANTS)('compose (%o)', variant => {
 		expect(composed.stringAt(composed.stringCount - 1)).not.toBe('');
 	});
 
-	test('gives bits that answer for the composed spec', () => {
-		const composed = compose(base, [USER]);
-		const specs = composed.regions[0];
-		const content = composed.regions[3];
-		if (!specs || !content) {
-			throw new Error('no region');
-		}
-		const div = SPEC.specs ? (SPEC.specs as { name: string }[]).findIndex(element => element.name === 'div') : -1;
-		const flowEntry = [
-			...Object.keys((SPEC.def as Record<string, Record<string, unknown>>)['#contentModels'] ?? {}),
-			'#my-category',
-		].indexOf('#my-category');
-		expect(composed.member(div, flowEntry)).toBe(1);
-		expect(base.elementCount).toBe(composed.elementCount);
-	});
+	test.each(Object.entries(EXTENSION_BY_NAME))(
+		'gives bits that answer as the composed data does, for %s',
+		(_name, extension) => {
+			const composed = compose(base, [extension]);
+			const { elements, categories } = bitsOf(composed.toJson() as SpecLike);
+			expect(composed.elementCount).toBe(elements.length);
+			const differences = elements.flatMap((element, position) => [
+				...element.flags.flatMap((has, flag) =>
+					composed.flag(position, flag) === (has ? 1 : 0) ? [] : [{ position, flag }],
+				),
+				...categories.flatMap((category, row) =>
+					composed.member(position, row) === (category.members.has(element.name) ? 1 : 0)
+						? []
+						: [{ position, row }],
+				),
+			]);
+			expect(differences).toStrictEqual([]);
+		},
+	);
 
 	test('does not let a composition see what another composition of the same base made', () => {
 		compose(base, [USER]);
@@ -190,8 +186,10 @@ describe.each(VARIANTS)('compose (%o)', variant => {
 
 	test('refuses an extension of the ARIA for a base that has none to merge it into, as schemaToSpec does', () => {
 		const empty = encodeSpec({ specs: [] }, variant);
-		expect(() => compose(empty, [USER])).toThrow();
-		expect(() => schemaToSpec([{ def: {}, specs: [] } as never, USER as never])).toThrow();
+		expect(() => compose(empty, [USER])).toThrow(/Cannot read properties of undefined/u);
+		expect(() => schemaToSpec([{ def: {}, specs: [] } as never, USER as never])).toThrow(
+			/Cannot read properties of undefined/u,
+		);
 	});
 
 	test('can be composed again, and opened as a file', () => {

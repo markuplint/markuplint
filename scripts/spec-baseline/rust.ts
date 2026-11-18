@@ -189,12 +189,13 @@ export function newestSource(root: string): { path: string; mtimeMs: number } | 
  *
  * @param root - The root of the repository
  * @param binary - The path of the program
+ * @param example - The name of the example that it was built from, for the command that builds it again
  */
-export function assertFresh(root: string, binary: string): void {
+export function assertFresh(root: string, binary: string, example = 'spec_baseline'): void {
 	const newest = newestSource(root);
 	if (newest && newest.mtimeMs > statSync(binary).mtimeMs) {
 		throw new Error(
-			`${binary} is older than ${newest.path}. Build it again from crates/ with: cargo build --locked --release --workspace --example spec_baseline`,
+			`${binary} is older than ${newest.path}. Build it again from crates/ with: cargo build --locked --release --workspace --example ${example}`,
 		);
 	}
 }

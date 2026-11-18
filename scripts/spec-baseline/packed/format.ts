@@ -4,18 +4,19 @@
  * (`crates/markuplint-types/examples/packed_candidates/`) follow it, and a candidate that this side builds is read there
  * byte for byte.
  *
- * What the candidates are, and what is the same in all of them (issue #4639):
+ * A form of the spec data that a reader queries without parsing it and without copying it: a lookup of an element by
+ * name, a flag, a member of a category, an attribute, a role, are reads of words. What the candidates are, and what is
+ * the same in all of them:
  *
  * - The data is the JSON of `@markuplint/html-spec` as a tree of values (null, booleans, non-negative integers, strings,
  *   arrays, objects) in 32-bit little-endian words that a reader indexes into without copying and without parsing.
- *   A subtree that is identical to another is stored once (the tree of 50,268 nodes of the data is 4,158 distinct
- *   subtrees), and a list of children that is identical to another is stored once.
+ *   A subtree that is identical to another is stored once, and so is a list of children that is identical to another.
  * - Every string is in one table (UTF-8 bytes and the offsets of each), and a node refers to it by number. A string
  *   is added at the end of the table when a spec is composed, so a number never changes.
  * - The tree is cut at the keys of the spec into **regions**: `specs`, `def['#globalAttrs']`, `def['#aria']`,
  *   `def['#contentModels']`, and the rest. A region has its own nodes, lists and indexes, and refers to other regions by
- *   nothing but string numbers. A spec that is composed with an extension makes again the regions that the extension
- *   touches and shares the others as they are.
+ *   nothing but string numbers. A composition with an extension appends to the regions that the extension touches and
+ *   shares the others as they are (below).
  * - An array of at least {@link INDEX_MINIMUM} objects with a `name` (`specs`, the roles, the properties) and an object of
  *   at least that many keys has an **index** from the name to the position, which a lookup ends by comparing the key itself
  *   with the name that was asked, so a lookup is never wrong whatever the hash.
@@ -48,7 +49,8 @@
  * 1 string bytes     UTF-8, padded to whole words with zero bytes
  * 2 bits             elements, categories, wordsPerRow; then one word of flags for each element (bit i is FLAG_NAMES[i]),
  *                    then wordsPerRow words for each category (the bit e of row c is set when the element at position e of
- *                    `specs` is a member of the category at position c of `#contentModels`, by exactly its name)
+ *                    `specs` is a member of the category at position c of `#contentModels`, by exactly its name; when two
+ *                    elements have the same name it is the first of them that is a member)
  * 3..7 regions       specs, #globalAttrs, #aria, #contentModels, rest (see below)
  * ```
  *
@@ -69,8 +71,9 @@
  *   twice is indexed at its first position.
  * - A region that was never written has the empty value in it: a root that is an empty object.
  *
- * **A region that a composition changes** is not made again: what an extension changes is appended to it, and what it does not change is
- * the nodes that were there. The rules, which the TypeScript (`compose.ts`, `lazy.ts`) and the Rust composition follow to the same bytes:
+ * **A region that a composition changes** is appended to: what an extension changes is added to it, and what it does not
+ * change is the nodes that were there. The rules, which the TypeScript (`compose.ts`, `lazy.ts`) and the Rust composition
+ * follow to the same bytes:
  *
  * - The tree that is to be encoded has, for what the merge left as it was, a **reference** to its node in the region, and
  *   for the rest values. Only an array or an object (an empty one too) is a reference; a number, a boolean, null and a string are
@@ -87,13 +90,14 @@
  *   and indexes in its header are those of the region with the new ones. The nodes that the old root had stay where they are.
  * - A region of columns has the columns made again for the new count of nodes (field `f` of node `n` is at `f * count + n`).
  * - The strings of the base keep their numbers and the new ones go after them, in the order that the regions are
- *   made (`specs`, `#globalAttrs`, `#aria`, `#contentModels`, the rest), as before.
+ *   made (`specs`, `#globalAttrs`, `#aria`, `#contentModels`, the rest).
  *
  * What a candidate does not hold: a number that is negative, not an integer, or 2^32 or more (the data has none; the encoder
  * stops for one), and the keys of `def` other than the three that `SpecDefs` has.
  *
  * @module
  */
+import { FLAG_NAMES } from '../layout.ts';
 
 /** The first word of a file, the bytes "MLSP". */
 export const MAGIC = 0x50_53_4C_4D;
@@ -119,6 +123,9 @@ export const Section = {
 /** The sections that are regions, in the order of the sections. */
 export const REGIONS = [Section.Specs, Section.GlobalAttrs, Section.Aria, Section.ContentModels, Section.Rest] as const;
 
+/** The position of each region in {@link REGIONS}, which is how a spec and a question name it. */
+export const RegionAt = { Specs: 0, GlobalAttrs: 1, Aria: 2, ContentModels: 3, Rest: 4 } as const;
+
 /** The words before the first section: the magic, the version, the variant, the count, and the table. */
 export const HEADER_WORDS = 4 + 2 * SECTION_COUNT;
 
@@ -142,8 +149,8 @@ export const NONE = 0xFF_FF_FF_FF;
 /** An array of objects with a `name`, and an object, have an index from this many items or keys. */
 export const INDEX_MINIMUM = 8;
 
-/** The flags of an element, in the order of the bits of a flag word. */
-export const FLAGS = ['obsolete', 'deprecated', 'nonStandard', 'experimental'] as const;
+/** The flags of an element, in the order of the bits of a flag word (the flags of `layout.ts`, which asks the same questions of the bits). */
+export const FLAGS = FLAG_NAMES;
 
 /** How an index finds a position. */
 export type IndexKind = 'sorted' | 'minimal' | 'pow2';

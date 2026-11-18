@@ -13,8 +13,9 @@
  * time is taken, that it makes the same bytes as this side (the packed spec, and the spec composed with each extension), opens them, answers
  * every question as the data does, and refuses a file that was changed: a figure of a program that differs is not a measurement.
  *
- * The names of the figures are `<language>:<candidate>:<how strings are compared, for TypeScript>:<what>` for a candidate and
- * `objects:<what>` or `rust:value-<what>` for the baselines.
+ * The names of the figures are `ts:<candidate>:<how strings are compared>:<what>` and `rust:<candidate>:<what>` for a candidate;
+ * `objects:<what>` (TypeScript) and `rust:value-<what>` for the baselines that read the JSON as objects; and `hash:<function>`
+ * and `rust:hash-<function>` for the hash functions.
  *
  * @module
  */
@@ -159,7 +160,7 @@ export interface PreparedPacked {
  */
 export function preparePacked(root: string, options: PreparePackedOptions): PreparedPacked {
 	const binary = packedBinary(root, options.targetDirectory);
-	assertFresh(root, binary);
+	assertFresh(root, binary, 'packed_candidates');
 	const rustc = (options.version ?? rustVersion)();
 	const built = statSync(binary).mtime.toISOString();
 

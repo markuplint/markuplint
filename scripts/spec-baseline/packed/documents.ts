@@ -25,13 +25,17 @@ export function elementsOf(html: string): DocumentElement[] {
 		if (node.type !== 'starttag') {
 			continue;
 		}
-		const name = `${PREFIX[node.namespace] ?? ''}${node.nodeName}`.toLowerCase();
+		// The data names an element of HTML in lower case, and an element of SVG or MathML as the parser gives it (`svg:clipPath`)
+		const prefix = PREFIX[node.namespace] ?? '';
+		const name = prefix ? `${prefix}${node.nodeName}` : node.nodeName.toLowerCase();
 		names.set(node.uuid, name);
 		elements.push({
 			name,
 			attributes: node.attributes.flatMap(attribute =>
 				// a spread attribute of a framework has no name; the parser of HTML makes none
-				'name' in attribute ? [[attribute.name.raw.toLowerCase(), attribute.value.raw] as const] : [],
+				'name' in attribute
+					? [[prefix ? attribute.name.raw : attribute.name.raw.toLowerCase(), attribute.value.raw] as const]
+					: [],
 			),
 			parent: (node.parentNodeUuid !== null && names.get(node.parentNodeUuid)) || null,
 		});

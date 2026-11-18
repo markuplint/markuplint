@@ -1,6 +1,6 @@
 /**
- * The encoder of a packed spec: the JSON of `html-spec` (or of a spec that an extension was merged into) to the words of
- * `format.ts`. The Rust program has the same encoder (`crates/markuplint-types/examples/packed_candidates/encode.rs`), and a
+ * The encoder of a packed spec: the JSON of `html-spec` to the words of `format.ts`, and a region that a composition
+ * changes to the words that are appended to it. The Rust program has the same encoder (`crates/markuplint-types/examples/packed_candidates/encode.rs`), and a
  * spec that either makes is the same bytes: the order in which strings and nodes are numbered is the order of the walk
  * that is written here, and nothing in it depends on the engine (a `Map` of JavaScript keeps its insertion order, and
  * an object that has a key that looks like an integer is the one case in which the order of the keys would be different
@@ -13,6 +13,10 @@
  *    then what it holds; for an array, each item.
  * 2. A node, a list and an index are numbered when they are made, which is after what they refer to, and one that
  *    is the same as an earlier one is not made again.
+ *
+ * With a base region (a composition), the numbers of the new nodes, lists and indexes go on from the counts of the base, a
+ * value that stands for a node of the base (`lazy.ts`) is that node and makes nothing, and an index that has the keys of one
+ * that the base has is that one (`format.ts` has the rules).
  *
  * @module
  */
@@ -29,6 +33,20 @@ const encoder = new TextEncoder();
 /** What the format holds of the top level of a spec: the keys of `def` that it knows. */
 const DEF_KEYS = ['#globalAttrs', '#aria', '#contentModels'] as const;
 
+/**
+ * Stops for a key of `def` that the format does not hold.
+ *
+ * @param def - The `def` of a spec
+ * @throws For another key than the three of `SpecDefs`
+ */
+export function assertDefKeys(def: Readonly<Record<string, unknown>>): void {
+	for (const key of Object.keys(def)) {
+		if (!(DEF_KEYS as readonly string[]).includes(key)) {
+			throw new Error(`The format holds no "${key}" in def`);
+		}
+	}
+}
+
 /** The strings of a spec: those of a base, which keep their numbers, and the ones that are added after them. */
 export class StringTable {
 	private readonly base: PackedSpec | null;
@@ -37,6 +55,11 @@ export class StringTable {
 	private readonly addedIds = new Map<string, number>();
 	private readonly baseCount: number;
 
+	/**
+	 * Starts a table that continues the strings of a spec.
+	 *
+	 * @param base - The spec whose strings keep their numbers, or `null` for a table that has none
+	 */
 	constructor(base: PackedSpec | null = null) {
 		this.base = base;
 		this.baseCount = base?.stringCount ?? 0;
@@ -67,10 +90,14 @@ export class StringTable {
 	 * @returns The bytes
 	 */
 	bytes(sid: number): Uint8Array {
-		if (sid < this.baseCount) {
-			return (this.base as PackedSpec).stringBytes(sid);
+		if (sid < this.baseCount && this.base) {
+			return this.base.stringBytes(sid);
 		}
-		return this.addedBytes[sid - this.baseCount] ?? new Uint8Array(0);
+		const added = this.addedBytes[sid - this.baseCount];
+		if (!added) {
+			throw new Error(`There is no string ${sid}`);
+		}
+		return added;
 	}
 
 	/** Whether a string was added to those of the base. */
@@ -132,6 +159,13 @@ export function compareBytes(a: Uint8Array, b: Uint8Array): number {
 	return a.length - b.length;
 }
 
+/** Appends numbers to a list, one by one: a spread of a long list is an argument for each, which the call stack bounds. */
+function appendWords(target: number[], words: readonly number[]): void {
+	for (const word of words) {
+		target.push(word);
+	}
+}
+
 function isNamedObject(value: unknown): value is { name: string } {
 	return (
 		typeof value === 'object' &&
@@ -141,7 +175,10 @@ function isNamedObject(value: unknown): value is { name: string } {
 	);
 }
 
-/** The indexes of a region that were walked: a region does not change, and a composition asks for them every time. */
+/**
+ * The indexes of a region that were walked: a region does not change, and a composition asks for them every time. A region
+ * belongs to one spec and so to one variant, which is why the variant is not part of the key.
+ */
 const INDEXES_OF = new WeakMap<Region, Map<string, number>>();
 
 /**
@@ -223,7 +260,7 @@ class RegionEncoder {
 			return known;
 		}
 		const offset = (this.base?.lists.length ?? 0) + this.lists.length;
-		this.lists.push(...words);
+		appendWords(this.lists, words);
 		this.listIds.set(key, offset);
 		return offset;
 	}
@@ -247,7 +284,7 @@ class RegionEncoder {
 		const words: number[] = [keys.length, distinct.length];
 		if (this.variant.index === 'sorted') {
 			const order = distinct.toSorted((x, y) => compareBytes(bytes[x] as Uint8Array, bytes[y] as Uint8Array));
-			words.push(...order);
+			appendWords(words, order);
 		} else {
 			const hash = HASH_FUNCTIONS[this.variant.hash];
 			const mphf = buildMphf(
@@ -263,9 +300,9 @@ class RegionEncoder {
 				words.push(entry === NONE ? NONE : (distinct[entry] ?? NONE));
 			}
 		}
-		words.push(...keys);
+		appendWords(words, keys);
 		const offset = (this.base?.indexes.length ?? 0) + this.indexes.length;
-		this.indexes.push(...words);
+		appendWords(this.indexes, words);
 		this.indexIds.set(key, offset);
 		return offset;
 	}
@@ -440,11 +477,7 @@ export interface SpecLike {
  */
 export function regionValues(spec: SpecLike): unknown[] {
 	const def = spec.def ?? {};
-	for (const key of Object.keys(def)) {
-		if (!(DEF_KEYS as readonly string[]).includes(key)) {
-			throw new Error(`The format holds no "${key}" in def`);
-		}
-	}
+	assertDefKeys(def);
 	const rest = Object.fromEntries(Object.entries(spec).filter(([key]) => key !== 'def' && key !== 'specs'));
 	return [spec.specs ?? [], def['#globalAttrs'] ?? {}, def['#aria'] ?? {}, def['#contentModels'] ?? {}, rest];
 }

@@ -3,7 +3,7 @@
  * and not from a candidate: a reader that answers differently is wrong, however fast.
  *
  * - **bits**: "does this element have this flag", "is this element in this category" for every element
- *   and every flag and category, as `layout.ts` asks them of the bits of Phase 0.
+ *   and every flag and category, as `layout.ts` asks them.
  * - **paths**: a walk from the root of a region by keys of objects, positions of arrays and names of the objects of an
  *   array that a table indexes (the names of the elements, of the roles, of the properties), which ends with the digest
  *   of what it finds or with 0 when it finds nothing. Every few-th value of the data is the end of one, and one in
@@ -13,11 +13,13 @@
  *   the documents. It is not a trace of the engine (the functions of `@markuplint/ml-spec` can be wrapped, but a rule
  *   that searches an array that it was given, such as the properties of ARIA, cannot be seen): it is a model of what the
  *   rules read, one that does not change when a rule is added, and the same for every candidate. For each element:
- *   its flags and its spec by name (`getSpecByTagName`, the rules of `no-deprecated-element` and the like); for each of its attributes,
- *   the attribute among those of the element and, when it is not, the groups of global attributes that the element
- *   selects, in order, until one has it (`getAttrSpecs`); for a `role`, each role that it names, and for an `aria-*`, the
- *   property of that name; and for an element that has a parent, whether it is in `#flow` and in `#phrasing`
- *   (`permitted-contents`).
+ *   its flags and its spec by name (`getSpecByTagName`, the rules of `no-deprecated-element` and the like); for each of its
+ *   attributes, the attribute among those of the element and, when it is not, the groups of global attributes that the
+ *   element selects (a group that is `false` is skipped, and one that is a list has only the attributes that it lists), in
+ *   order, until one has it (`getAttrSpecs`); for a `role`, each role that it names, and for an `aria-*`, the property of that
+ *   name, in the ARIA version that the rules read by default (`ARIA_RECOMMENDED_VERSION`); and for an element that has a
+ *   parent, whether it is in `#flow` and in `#phrasing` (`permitted-contents`). The names are as the data has them: lower
+ *   case for HTML, and as the parser gives them for SVG and MathML (`clipPath`, `viewBox`).
  *
  * The questions are written as numbers and a table of strings, in the file that the Rust program reads.
  *
@@ -26,7 +28,7 @@
 import type { SpecLike } from './encode.ts';
 
 import { regionValues } from './encode.ts';
-import { FLAGS, INDEX_MINIMUM } from './format.ts';
+import { FLAGS, INDEX_MINIMUM, RegionAt } from './format.ts';
 import { digestJson } from './read.ts';
 
 /** The kinds of a step of a path. */
@@ -101,7 +103,13 @@ function isNamed(value: unknown): value is { name: string } {
 	);
 }
 
-/** The digest that the data gives to a path. */
+/**
+ * The digest that the data gives to a path.
+ *
+ * @param regions - The values of the regions, in the order of `REGIONS`
+ * @param path - The walk
+ * @returns The digest of what the walk finds, or 0 when it finds nothing
+ */
 export function answerPath(regions: readonly unknown[], path: PathLike): number {
 	const { found, value } = walk(regions[path.region], path.steps);
 	return found ? digestJson(value) : 0;
@@ -136,6 +144,9 @@ function allPaths(region: number, root: unknown): PathLike[] {
 	visit(root, []);
 	return found;
 }
+
+/** The ARIA version that the questions of the stream ask, which is the one that the rules read when a configuration names none. */
+export const ARIA_VERSION = '1.3';
 
 /** How many questions of paths to make, about. */
 export const PATH_TARGET = 6000;
@@ -194,9 +205,9 @@ export function bitsOf(spec: SpecLike): BitsOf {
 
 /** The parts of a document that the stream is made from. */
 export interface DocumentElement {
-	/** The name as the data names the element: lower case, with `svg:` or `mml:` before an element of those languages. */
+	/** The name as the data names the element: lower case for HTML, and with `svg:` or `mml:` before the name of an element of those languages, in the case that the parser gives it. */
 	readonly name: string;
-	/** The names of the attributes, lower case, with their values. */
+	/** The names of the attributes, lower case for an element of HTML and as written for one of SVG or MathML, with their values. */
 	readonly attributes: readonly (readonly [string, string])[];
 	/** The name of the parent, when it has one that is an element. */
 	readonly parent: string | null;
@@ -247,10 +258,18 @@ class Builder {
 	}
 }
 
-/** The groups of global attributes that an element selects, in the order of the data. */
-function groupsOf(element: Record<string, unknown> | undefined): string[] {
+/**
+ * The groups of global attributes that an element can have an attribute from, in the order of the data, as `getAttrSpecs`
+ * takes them: a group that is `false` has none, a group that is a list has the attributes that it lists, and any other has all of its.
+ */
+function groupsOf(element: Record<string, unknown> | undefined, attribute: string): string[] {
 	const groups = element?.globalAttrs;
-	return typeof groups === 'object' && groups !== null ? Object.keys(groups) : [];
+	if (typeof groups !== 'object' || groups === null) {
+		return [];
+	}
+	return Object.entries(groups)
+		.filter(([, selected]) => selected !== false && (!Array.isArray(selected) || selected.includes(attribute)))
+		.map(([group]) => group);
 }
 
 /**
@@ -260,7 +279,7 @@ function groupsOf(element: Record<string, unknown> | undefined): string[] {
  * @param documents - The elements of the documents of the stream, in order
  * @param options - How many of each
  * @param options.pathTarget - About how many hits among the paths
- * @param options.streamLimit - The most operations that the stream has
+ * @param options.streamLimit - How many operations the stream has at least before it stops: it stops after the element that reaches this
  * @returns The file of the questions
  */
 export function makeQuestions(
@@ -325,10 +344,10 @@ export function makeQuestions(
 			for (let index = 0; index < FLAGS.length; index++) {
 				flag(element.name, index);
 			}
-			path({ region: 0, steps: [[Step.Named, element.name]] });
+			path({ region: RegionAt.Specs, steps: [[Step.Named, element.name]] });
 			for (const [attribute, value] of element.attributes) {
 				const isOwn = path({
-					region: 0,
+					region: RegionAt.Specs,
 					steps: [
 						[Step.Named, element.name],
 						[Step.Key, 'attributes'],
@@ -336,9 +355,9 @@ export function makeQuestions(
 					],
 				});
 				if (isOwn === 0) {
-					for (const group of groupsOf(own)) {
+					for (const group of groupsOf(own, attribute)) {
 						const hit = path({
-							region: 1,
+							region: RegionAt.GlobalAttrs,
 							steps: [
 								[Step.Key, group],
 								[Step.Key, attribute],
@@ -352,9 +371,9 @@ export function makeQuestions(
 				if (attribute === 'role') {
 					for (const role of value.toLowerCase().split(/\s+/u).filter(Boolean)) {
 						path({
-							region: 2,
+							region: RegionAt.Aria,
 							steps: [
-								[Step.Key, '1.2'],
+								[Step.Key, ARIA_VERSION],
 								[Step.Key, 'roles'],
 								[Step.Named, role],
 							],
@@ -362,9 +381,9 @@ export function makeQuestions(
 					}
 				} else if (attribute.startsWith('aria-')) {
 					path({
-						region: 2,
+						region: RegionAt.Aria,
 						steps: [
-							[Step.Key, '1.2'],
+							[Step.Key, ARIA_VERSION],
 							[Step.Key, 'props'],
 							[Step.Named, attribute],
 						],

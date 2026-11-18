@@ -17,8 +17,8 @@
  *   keys that were left over (PtrHash's remap, PHast's bumping).
  * - The `pow2` mode has the slots of the next power of two of one and a half times the keys, so that the slot is the top bits
  *   of a mixed hash and no multiplication by a range is needed; the cost is the slots that no key has.
- * - The range of a number is reduced by the multiplication of Lemire (`floor(x * range / 2^32)`), which a
- *   product below 2^48 keeps exact in a double and which is a 64-bit multiplication in Rust.
+ * - The range of a number is reduced by the multiplication of Lemire (`floor(x * range / 2^32)`), which is exact in a
+ *   double while the range is below 2^21 (the product is then below 2^53) and which is a 64-bit multiplication in Rust.
  * - The buckets are placed in the order of their size, the largest first, and the smallest pilot that fits is taken, so a
  *   build is deterministic: the same keys in the same order give the same table in every language.
  *
@@ -186,7 +186,8 @@ export function buildMphf(
 }
 
 /**
- * Finds the position of a key.
+ * Finds the position of a key in a table that {@link buildMphf} made. The reader of a file takes the same steps on the
+ * words of the index (`read.ts`); this is the one that the specs use to prove that the construction is a perfect hash.
  *
  * @param mphf - The perfect hash
  * @param hash - The hash function

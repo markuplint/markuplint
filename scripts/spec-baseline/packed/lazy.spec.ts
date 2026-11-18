@@ -83,5 +83,45 @@ describe.each(VARIANTS)('a lazy value (%o)', variant => {
 		expect(names[5]).toBeUndefined();
 		expect(1 in names).toBe(true);
 		expect(5 in names).toBe(false);
+		expect(Object.keys(names)).toStrictEqual(['0', '1']);
+		expect([...names]).toStrictEqual(['x', 'y']);
+		const seen: string[] = [];
+		for (const name of names) {
+			seen.push(name);
+		}
+		expect(seen).toStrictEqual(['x', 'y']);
+	});
+
+	test('is an array that cannot be written to by a method either', () => {
+		const rest = packed.regions[4];
+		if (!rest) {
+			throw new Error('no region');
+		}
+		const names = (lazy(packed, rest, rest.root) as { acceptedAttrNames: string[] }).acceptedAttrNames;
+		expect(() => names.push('z')).toThrow('read-only');
+		expect(() => names.splice(0, 1)).toThrow('read-only');
+		expect(() => {
+			names[0] = 'z';
+		}).toThrow('read-only');
+	});
+
+	test('is a plain value for a number, a boolean, null and a string', () => {
+		const packedValues = encodeSpec(
+			{ number: 7, yes: true, no: false, nothing: null, text: 'abc' } as SpecLike,
+			variant,
+		);
+		const rest = packedValues.regions[4];
+		if (!rest) {
+			throw new Error('no region');
+		}
+		const read = (key: string) => lazy(packedValues, rest, packedValues.get(rest, rest.root, key));
+		expect([read('number'), read('yes'), read('no'), read('nothing'), read('text')]).toStrictEqual([
+			7,
+			true,
+			false,
+			null,
+			'abc',
+		]);
+		expect(refOf(read('text'))).toBeUndefined();
 	});
 });

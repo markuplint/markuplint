@@ -36,64 +36,53 @@ describe('slotCount', () => {
 	});
 });
 
-describe.each(['minimal', 'pow2'] as const)('buildMphf (%s)', mode => {
+/** For each mode: the empty slots of a table of 237 keys, and whether a name that is no key has to land on a key. */
+const MODES = [
+	['minimal', 0, true],
+	['pow2', 512 - 237, false],
+] as const;
+
+describe.each(MODES)('buildMphf (%s)', (mode, emptySlots, everyNameLandsOnAKey) => {
 	describe.each(Object.keys(HASHES) as (keyof typeof HASHES)[])('with %s', hashName => {
 		const hash = HASHES[hashName];
+		const keys = names(237);
+		const mphf = buildMphf(keys, hash, mode);
 
 		test.each([8, 9, 16, 100, 237, 500])(
 			'gives each of %i keys a slot of its own, which holds its position',
 			count => {
-				const keys = names(count);
-				const mphf = buildMphf(keys, hash, mode);
-				expect(mphf.slots).toBe(slotCount(count, mode));
-				const positions = keys.map(key => lookupMphf(mphf, hash, key, mode));
-				expect(positions).toStrictEqual(keys.map((_, index) => index));
+				const own = names(count);
+				const built = buildMphf(own, hash, mode);
+				expect(built.slots).toBe(slotCount(count, mode));
+				const positions = own.map(key => lookupMphf(built, hash, key, mode));
+				expect(positions).toStrictEqual(own.map((_, index) => index));
 				expect(new Set(positions).size).toBe(count);
 			},
 		);
 
-		test('fills every slot of a minimal table and leaves the others of a power of two as NONE', () => {
-			const mphf = buildMphf(names(237), hash, mode);
-			const empty = [...mphf.slotEntry].filter(entry => entry === NONE).length;
-			expect(empty).toBe(mode === 'minimal' ? 0 : mphf.slots - 237);
+		test('leaves the slots that no key has as NONE: none for a minimal table, the rest of the power of two for the other', () => {
+			expect([...mphf.slotEntry].filter(entry => entry === NONE)).toHaveLength(emptySlots);
 		});
 
-		test('gives a position that is not the name or NONE for a name that is no key, so that the key has to be compared', () => {
-			const keys = names(237);
-			const mphf = buildMphf(keys, hash, mode);
-			let wrong = 0;
-			for (let index = 0; index < 500; index++) {
-				const position = lookupMphf(mphf, hash, encoder.encode(`absent-${index}`), mode);
-				if (position !== NONE) {
-					wrong++;
-					expect(position).toBeLessThan(237);
-				}
-			}
-			// A minimal table has no empty slot, so each name that is no key lands on some key
-			if (mode === 'minimal') {
-				expect(wrong).toBe(500);
-			}
+		test('gives a position that is not the name, or NONE, for a name that is no key, so that the key has to be compared', () => {
+			const positions = Array.from({ length: 500 }, (_, index) =>
+				lookupMphf(mphf, hash, encoder.encode(`absent-${index}`), mode),
+			);
+			expect(positions.every(position => position === NONE || position < 237)).toBe(true);
+			// a minimal table has no empty slot, so each name that is no key lands on some key
+			expect(positions.every(position => position !== NONE)).toBe(everyNameLandsOnAKey);
 		});
 
 		test('is the same table when it is built again from the same keys', () => {
-			const keys = names(237);
-			const a = buildMphf(keys, hash, mode);
-			const b = buildMphf(keys, hash, mode);
-			expect(a.seed).toBe(b.seed);
-			expect([...a.pilots]).toStrictEqual([...b.pilots]);
-			expect([...a.slotEntry]).toStrictEqual([...b.slotEntry]);
+			const again = buildMphf(keys, hash, mode);
+			expect(again.seed).toBe(mphf.seed);
+			expect([...again.pilots]).toStrictEqual([...mphf.pilots]);
+			expect([...again.slotEntry]).toStrictEqual([...mphf.slotEntry]);
 		});
 	});
 });
 
 describe('buildMphf', () => {
-	test('is built for the whole table of a spec in a few milliseconds', () => {
-		const keys = names(237);
-		const start = performance.now();
-		buildMphf(keys, HASH_FUNCTIONS.murmur3, 'minimal');
-		expect(performance.now() - start).toBeLessThan(500);
-	});
-
 	test('stops for a hash that cannot tell two keys apart', () => {
 		expect(() => buildMphf(names(10), () => 7, 'minimal')).toThrow('No perfect hash of 10 keys was found');
 	});

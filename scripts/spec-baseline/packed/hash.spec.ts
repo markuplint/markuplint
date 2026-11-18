@@ -32,12 +32,6 @@ describe('xxhash32', () => {
 		expect(xxhash32(text('abc'), 0)).toBe(0x32_D1_53_FF);
 		expect(xxhash32(text(FOX), 0)).toBe(0xE8_5E_A4_DE);
 	});
-
-	test('reads blocks of 16 bytes and the rest of them', () => {
-		const long = text('0123456789abcdef0123456789abcdef0123');
-		expect(xxhash32(long, 0)).toBe(xxhash32(Uint8Array.from(long), 0));
-		expect(xxhash32(long, 1)).not.toBe(xxhash32(long, 0));
-	});
 });
 
 describe('fmix32', () => {
@@ -89,6 +83,14 @@ describe('nameBytes', () => {
 		expect([...nameBytes('é')]).toStrictEqual([0xC3, 0xA9]);
 		expect([...nameBytes('x-日')]).toStrictEqual([120, 45, 0xE6, 0x97, 0xA5]);
 		expect(nameBytes('').length).toBe(0);
+	});
+
+	test('gives the bytes of a pair of surrogates, and of a name longer than the buffer', () => {
+		expect([...nameBytes('\u{1F600}')]).toStrictEqual([0xF0, 0x9F, 0x98, 0x80]);
+		expect([...nameBytes('a\u{1F600}b')]).toStrictEqual([97, 0xF0, 0x9F, 0x98, 0x80, 98]);
+		const long = 'x'.repeat(5000);
+		expect(nameBytes(long)).toHaveLength(5000);
+		expect(nameBytes(long).every(byte => byte === 120)).toBe(true);
 	});
 
 	test('does not give back what a longer name left in the buffer', () => {

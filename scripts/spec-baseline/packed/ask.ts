@@ -12,9 +12,24 @@
  */
 import type { QuestionsFile } from './questions.ts';
 
-import { FLAGS, INDEX_MINIMUM, NONE } from './format.ts';
+import { FLAGS, INDEX_MINIMUM, NONE, RegionAt } from './format.ts';
 import { digestJson, type PackedSpec } from './read.ts';
 import { Op, Step } from './questions.ts';
+
+/**
+ * A string of the table of the questions: a number that points at none is an error and not a name that is `''`.
+ *
+ * @param strings - The table
+ * @param index - The number of the string
+ * @returns The string
+ */
+function text(strings: readonly string[], index: number | undefined): string {
+	const found = index === undefined ? undefined : strings[index];
+	if (found === undefined) {
+		throw new Error(`There is no string ${index} in the table of the questions`);
+	}
+	return found;
+}
 
 /**
  * Answers the questions of the bits.
@@ -77,10 +92,10 @@ function walkPacked(
 		}
 		node =
 			kind === Step.Key
-				? packed.get(region, node, strings[argument] ?? '')
+				? packed.get(region, node, text(strings, argument))
 				: kind === Step.Index
 					? packed.at(region, node, argument)
-					: packed.find(region, node, strings[argument] ?? '');
+					: packed.find(region, node, text(strings, argument));
 	}
 	answers[position] = packed.digest(region, node);
 	return at;
@@ -96,8 +111,8 @@ function walkPacked(
 export function askStream(packed: PackedSpec, questions: QuestionsFile): Uint32Array {
 	const { stream, strings } = questions;
 	const answers = new Uint32Array(questions.streamAnswers.length);
-	const specs = packed.regions[0];
-	const content = packed.regions[3];
+	const specs = packed.regions[RegionAt.Specs];
+	const content = packed.regions[RegionAt.ContentModels];
 	if (!specs || !content) {
 		throw new Error('A packed spec has five regions');
 	}
@@ -107,12 +122,12 @@ export function askStream(packed: PackedSpec, questions: QuestionsFile): Uint32A
 		if (op === Op.Path) {
 			at = walkPacked(packed, stream, at + 1, strings, answers, position);
 		} else if (op === Op.Flag) {
-			const element = packed.position(specs, specs.root, strings[stream[at + 1] ?? 0] ?? '');
+			const element = packed.position(specs, specs.root, text(strings, stream[at + 1]));
 			answers[position] = element === NONE ? 2 : packed.flag(element, stream[at + 2] ?? 0);
 			at += 3;
 		} else {
-			const element = packed.position(specs, specs.root, strings[stream[at + 1] ?? 0] ?? '');
-			const row = packed.entry(content, content.root, strings[stream[at + 2] ?? 0] ?? '');
+			const element = packed.position(specs, specs.root, text(strings, stream[at + 1]));
+			const row = packed.entry(content, content.root, text(strings, stream[at + 2]));
 			answers[position] = element === NONE || row === NONE ? 2 : packed.member(element, row);
 			at += 3;
 		}
@@ -145,7 +160,13 @@ export class ObjectSpec {
 		return table;
 	}
 
-	/** The object of an array that has the name, through a table when the array is long, as the code of today does. */
+	/**
+	 * The object of an array that has the name, through a table when the array is long, as the code of today does.
+	 *
+	 * @param array - The array
+	 * @param name - The name
+	 * @returns The first object that has it, or `undefined`
+	 */
 	named(array: unknown, name: string): unknown {
 		if (!Array.isArray(array)) {
 			return undefined;
@@ -158,7 +179,12 @@ export class ObjectSpec {
 		);
 	}
 
-	/** The members of a category as a set. */
+	/**
+	 * The members of a category as a set, which is made the first time and kept.
+	 *
+	 * @param list - The array of the members
+	 * @returns The set
+	 */
 	members(list: unknown): Set<string> {
 		let set = this.sets.get(list as object);
 		if (!set) {
@@ -188,14 +214,18 @@ function walkObjects(
 			continue;
 		}
 		if (kind === Step.Key) {
+			// an own key only: a name such as `constructor` is not a key that the data has
 			value =
-				typeof value === 'object' && value !== null && !Array.isArray(value)
-					? (value as Record<string, unknown>)[strings[argument] ?? '']
+				typeof value === 'object' &&
+				value !== null &&
+				!Array.isArray(value) &&
+				Object.hasOwn(value, text(strings, argument))
+					? (value as Record<string, unknown>)[text(strings, argument)]
 					: undefined;
 		} else if (kind === Step.Index) {
 			value = Array.isArray(value) ? value[argument] : undefined;
 		} else {
-			value = spec.named(value, strings[argument] ?? '');
+			value = spec.named(value, text(strings, argument));
 		}
 	}
 	answers[position] = value === undefined ? 0 : digestJson(value);
@@ -228,23 +258,21 @@ export function askPathsObjects(spec: ObjectSpec, questions: QuestionsFile): Uin
 export function askStreamObjects(spec: ObjectSpec, questions: QuestionsFile): Uint32Array {
 	const { stream, strings } = questions;
 	const answers = new Uint32Array(questions.streamAnswers.length);
-	const specs = spec.regions[0];
-	const content = spec.regions[3] as Record<string, unknown>;
+	const specs = spec.regions[RegionAt.Specs];
+	const content = spec.regions[RegionAt.ContentModels] as Record<string, unknown>;
 	let at = 0;
 	for (let position = 0; position < answers.length; position++) {
 		const op = stream[at];
 		if (op === Op.Path) {
 			at = walkObjects(spec, stream, at + 1, strings, answers, position);
 		} else if (op === Op.Flag) {
-			const element = spec.named(specs, strings[stream[at + 1] ?? 0] ?? '') as
-				| Record<string, unknown>
-				| undefined;
+			const element = spec.named(specs, text(strings, stream[at + 1])) as Record<string, unknown> | undefined;
 			answers[position] = element === undefined ? 2 : element[FLAGS[stream[at + 2] ?? 0] ?? ''] === true ? 1 : 0;
 			at += 3;
 		} else {
-			const name = strings[stream[at + 1] ?? 0] ?? '';
+			const name = text(strings, stream[at + 1]);
 			const element = spec.named(specs, name);
-			const list = content[strings[stream[at + 2] ?? 0] ?? ''];
+			const list = content[text(strings, stream[at + 2])];
 			answers[position] = element === undefined || list === undefined ? 2 : spec.members(list).has(name) ? 1 : 0;
 			at += 3;
 		}
@@ -260,8 +288,8 @@ export function askStreamObjects(spec: ObjectSpec, questions: QuestionsFile): Ui
  * @returns 1 or 0 for each
  */
 export function askBitsObjects(spec: ObjectSpec, questions: QuestionsFile): Uint8Array {
-	const specs = spec.regions[0] as Record<string, unknown>[];
-	const content = Object.values(spec.regions[3] as Record<string, string[]>);
+	const specs = spec.regions[RegionAt.Specs] as Record<string, unknown>[];
+	const content = Object.values(spec.regions[RegionAt.ContentModels] as Record<string, string[]>);
 	const { bits } = questions;
 	const answers = new Uint8Array(questions.bitAnswers.length);
 	for (let position = 0; position < answers.length; position++) {

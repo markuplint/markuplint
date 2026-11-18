@@ -1,7 +1,7 @@
 import { readFileSync } from 'node:fs';
 import { describe, expect, test } from 'vitest';
 
-import { askObject, buildLayout, questionsOf } from '../layout.ts';
+import { FLAG_NAMES, askObject, buildLayout, questionsOf } from '../layout.ts';
 import { encodeSpec, type SpecLike } from './encode.ts';
 import { FLAGS, NONE, REGIONS, Section, VARIANTS, variantName, type Variant } from './format.ts';
 import { PackedSpec, digestJson, wordsOf } from './read.ts';
@@ -82,18 +82,15 @@ describe('the bits', () => {
 	test.each(VARIANTS)('answer the questions of layout.ts as the data does (%o)', variant => {
 		const packed = encodeSpec(SPEC, variant);
 		expect(packed.elementCount).toBe(layout.elements.length);
-		for (const [position, question] of questions.entries()) {
+		const differences = questions.flatMap((question, position) => {
 			const answer =
 				question.kind === 'flag'
 					? packed.flag(question.element, question.flag)
 					: packed.member(question.element, categories.indexOf(layout.categories[question.category] ?? ''));
-			if (answer !== expected[position]) {
-				throw new Error(
-					`question ${position} ${JSON.stringify(question)}: ${answer}, the data says ${expected[position]}`,
-				);
-			}
-		}
-		expect(FLAGS).toStrictEqual(['obsolete', 'deprecated', 'nonStandard', 'experimental']);
+			return answer === expected[position] ? [] : [{ position, question, answer, data: expected[position] }];
+		});
+		expect(differences).toStrictEqual([]);
+		expect(FLAGS).toStrictEqual(FLAG_NAMES);
 	});
 });
 
@@ -187,11 +184,30 @@ describe('a lookup', () => {
 });
 
 describe('the sharing of what is the same', () => {
-	test('stores a subtree that is the same as another once', () => {
-		const packed = encodeSpec(SPEC, SORTED_ROWS);
-		const nodes = REGIONS.reduce((sum, id) => sum + (packed.regions[REGIONS.indexOf(id)]?.count ?? 0), 0);
-		// The tree of the data has 50,268 nodes, and 4,158 of them are different
-		expect(nodes).toBeLessThan(6000);
+	test.each(VARIANTS)(
+		'stores a subtree that is the same as another once: no two nodes of a region are alike (%o)',
+		variant => {
+			for (const region of encodeSpec(SPEC, variant).regions) {
+				const alike = new Set<string>();
+				for (let node = 0; node < region.count; node++) {
+					alike.add(`${region.tag(node)} ${region.a(node)} ${region.b(node)} ${region.c(node)}`);
+				}
+				expect(alike.size).toBe(region.count);
+			}
+		},
+	);
+
+	test('has fewer nodes than the tree of the data', () => {
+		const tree = (value: unknown): number =>
+			1 +
+			(typeof value === 'object' && value !== null
+				? Object.values(value).reduce((sum: number, item) => sum + tree(item), 0)
+				: 0);
+		const nodes = REGIONS.reduce(
+			(sum, id) => sum + (encodeSpec(SPEC, SORTED_ROWS).regions[REGIONS.indexOf(id)]?.count ?? 0),
+			0,
+		);
+		expect(nodes).toBeLessThan(tree(SPEC) / 5);
 	});
 });
 
@@ -199,16 +215,28 @@ describe('open', () => {
 	const words = encodeSpec(small(), SORTED_ROWS).serialize();
 	const copy = () => Uint32Array.from(words);
 
-	test('refuses a file in which any word was changed', () => {
-		for (let at = 0; at < words.length; at += Math.max(1, Math.floor(words.length / 400))) {
+	/** What `open` says for a word that was changed: the part of the file that the word is in, or the checksum. */
+	const REFUSED = /magic|version|variant|sections|section \d|between the last section|checksum|region|string/u;
+
+	test('refuses a file in which any word was changed, by the part of it that the word is in', () => {
+		const accepted: number[] = [];
+		for (let at = 0; at < words.length; at++) {
 			const changed = copy();
 			changed[at] = ((changed[at] ?? 0) ^ 0x00_01_00_00) >>> 0;
-			expect(() => PackedSpec.open(changed), `word ${at}`).toThrow();
+			try {
+				PackedSpec.open(changed);
+				accepted.push(at);
+			} catch (error) {
+				expect((error as Error).message, `word ${at}`).toMatch(REFUSED);
+			}
 		}
+		expect(accepted).toStrictEqual([]);
 	});
 
 	test('refuses a file that is cut short', () => {
-		expect(() => PackedSpec.open(copy().subarray(0, words.length - 1))).toThrow();
+		expect(() => PackedSpec.open(copy().subarray(0, words.length - 1))).toThrow(
+			/not inside the file|between the last section/u,
+		);
 		expect(() => PackedSpec.open(copy().subarray(0, 10))).toThrow('shorter than the header');
 	});
 
@@ -230,13 +258,13 @@ describe('open', () => {
 
 describe('encodeSpec', () => {
 	test.each([
-		['a negative number', { specs: [-1] }],
-		['a number that is not an integer', { specs: [1.5] }],
-		['a number of 2^32 or more', { specs: [2 ** 32] }],
-		['an undefined in an array', { specs: [undefined] }],
-		['a key of def that it does not hold', { def: { '#other': {} } }],
-	] as const)('stops for %s', (_name, spec) => {
-		expect(() => encodeSpec(spec as SpecLike, SORTED_ROWS)).toThrow();
+		['a negative number', { specs: [-1] }, 'non-negative integer below 2^32, not -1'],
+		['a number that is not an integer', { specs: [1.5] }, 'non-negative integer below 2^32, not 1.5'],
+		['a number of 2^32 or more', { specs: [2 ** 32] }, 'non-negative integer below 2^32, not 4294967296'],
+		['an undefined in an array', { specs: [undefined] }, 'no undefined in an array'],
+		['a key of def that it does not hold', { def: { '#other': {} } }, 'holds no "#other" in def'],
+	] as const)('stops for %s', (_name, spec, message) => {
+		expect(() => encodeSpec(spec as SpecLike, SORTED_ROWS)).toThrow(message);
 	});
 
 	test('leaves out a key whose value is undefined, as JSON does', () => {

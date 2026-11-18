@@ -1,16 +1,15 @@
 /**
  * The values of a packed region as the objects and arrays that `schemaToSpec` reads, made when they are read.
  *
- * A composition that decoded the whole region to merge an extension into it paid for everything that the extension
- * does not touch (the elements of `specs`, the roles of the ARIA), which is most of it. Here an array or an object of a region is
- * a `Proxy` over its node: reading a key, an item, the keys (a spread, `Object.keys`) or the length reads that part
- * of the node and no more, and what it gives for an array or an object is a `Proxy` again. A number, a boolean, null and a string are
- * plain values.
+ * An array or an object of a region is a `Proxy` over its node: reading a key, an item, the keys (a spread, `Object.keys`)
+ * or the length reads that part of the node and no more, and what it gives for an array or an object is a `Proxy` again.
+ * A number, a boolean, null and a string are plain values. So a merge that reads a few elements of a region of hundreds
+ * pays for those, and not for the rest.
  *
- * What the merge leaves as it was is then still the `Proxy` when it comes back, and the encoder (`encode.ts`) takes it for the node that
- * it is, without looking into it: that is the sharing of the nodes of the base. What the merge makes (a spread is a new object,
- * `[...a]` a new array) is plain and is encoded as new nodes. The `Proxy` is read-only: the merge never writes to what it
- * is given.
+ * What the merge leaves as it was is still the `Proxy` when it comes back, and the encoder (`encode.ts`) takes it for the
+ * node that it is, without looking into it: that is the sharing of the nodes of the base. What the merge makes (a spread is
+ * a new object, `[...a]` a new array) is plain and is encoded as new nodes. A node is one object however many times it is
+ * read, as it is in a tree of objects, and the `Proxy` is read-only: the merge never writes to what it is given.
  *
  * @module
  */
@@ -99,29 +98,26 @@ export function lazy(spec: PackedSpec, region: Region, node: number): unknown {
 
 function lazyObject(spec: PackedSpec, region: Region, node: number): object {
 	const count = region.b(node);
-	const valueOf = (key: string | symbol): unknown => {
-		if (typeof key !== 'string') {
-			return undefined;
-		}
-		const position = spec.entry(region, node, key);
-		return position === NONE ? undefined : lazy(spec, region, spec.valueAt(region, node, position));
-	};
+	/** The position of an entry among the entries of the object, or `NONE` for a key that the data lacks. */
+	const positionOf = (key: string | symbol): number =>
+		typeof key === 'string' ? spec.entry(region, node, key) : NONE;
+	const valueAt = (position: number): unknown => lazy(spec, region, spec.valueAt(region, node, position));
 	return new Proxy(
 		{},
 		{
 			// what the data has, and then what every object has (`hasOwnProperty`, `toString`)
-			get: (target, key, receiver) =>
-				typeof key === 'string' && spec.entry(region, node, key) !== NONE
-					? valueOf(key)
-					: Reflect.get(target, key, receiver),
-			has: (_target, key) => typeof key === 'string' && spec.entry(region, node, key) !== NONE,
+			get: (target, key, receiver) => {
+				const position = positionOf(key);
+				return position === NONE ? Reflect.get(target, key, receiver) : valueAt(position);
+			},
+			has: (_target, key) => positionOf(key) !== NONE,
 			ownKeys: () =>
 				Array.from({ length: count }, (_, position) => spec.stringAt(spec.keyAt(region, node, position))),
 			getOwnPropertyDescriptor: (_target, key) => {
-				if (typeof key !== 'string' || spec.entry(region, node, key) === NONE) {
-					return;
-				}
-				return { value: valueOf(key), enumerable: true, configurable: true, writable: false };
+				const position = positionOf(key);
+				return position === NONE
+					? undefined
+					: { value: valueAt(position), enumerable: true, configurable: true, writable: false };
 			},
 			set: readOnly,
 			defineProperty: readOnly,
@@ -134,29 +130,29 @@ function lazyArray(spec: PackedSpec, region: Region, node: number): object {
 	const count = region.b(node);
 	const target: unknown[] = [];
 	target.length = count;
-	const itemAt = (key: string | symbol): { found: boolean; value?: unknown } => {
+	/** The position that a key names among the items, or `-1` for a key that is not one of them. */
+	const positionOf = (key: string | symbol): number => {
 		if (typeof key !== 'string' || !INDEX.test(key)) {
-			return { found: false };
+			return -1;
 		}
 		const position = Number(key);
-		return position < count
-			? { found: true, value: lazy(spec, region, spec.at(region, node, position)) }
-			: { found: false };
+		return position < count ? position : -1;
 	};
+	const itemAt = (position: number): unknown => lazy(spec, region, spec.at(region, node, position));
 	return new Proxy(target, {
 		get: (array, key, receiver) => {
 			if (key === 'length') {
 				return count;
 			}
-			const item = itemAt(key);
-			return item.found ? item.value : Reflect.get(array, key, receiver);
+			const position = positionOf(key);
+			return position === -1 ? Reflect.get(array, key, receiver) : itemAt(position);
 		},
-		has: (array, key) => itemAt(key).found || Reflect.has(array, key),
+		has: (array, key) => positionOf(key) !== -1 || Reflect.has(array, key),
 		ownKeys: () => [...Array.from({ length: count }, (_, position) => String(position)), 'length'],
 		getOwnPropertyDescriptor: (array, key) => {
-			const item = itemAt(key);
-			if (item.found) {
-				return { value: item.value, enumerable: true, configurable: true, writable: false };
+			const position = positionOf(key);
+			if (position !== -1) {
+				return { value: itemAt(position), enumerable: true, configurable: true, writable: false };
 			}
 			return Reflect.getOwnPropertyDescriptor(array, key);
 		},

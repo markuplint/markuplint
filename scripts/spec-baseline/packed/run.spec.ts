@@ -1,9 +1,10 @@
-import { existsSync, mkdirSync, mkdtempSync, readFileSync, rmSync, utimesSync, writeFileSync } from 'node:fs';
+import { existsSync, mkdirSync, mkdtempSync, readFileSync, rmSync, statSync, utimesSync, writeFileSync } from 'node:fs';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
 import { afterAll, beforeAll, describe, expect, test } from 'vitest';
 
 import { scenarios } from './child.ts';
+import { EXTENSIONS } from './extensions.ts';
 import { stemOf, writeInputs } from './prepare.ts';
 import { VARIANTS } from './format.ts';
 import { packedBinary, preparePacked, runRustPacked, runTsPacked, rustName } from './run.ts';
@@ -45,7 +46,7 @@ describe('writeInputs', () => {
 		for (const variant of VARIANTS) {
 			const stem = stemOf(variant);
 			expect(existsSync(join(directory, `${stem}.bin`))).toBe(true);
-			for (const extension of ['vue', 'react', 'user']) {
+			for (const extension of Object.keys(EXTENSIONS)) {
 				expect(existsSync(join(directory, `${stem}.${extension}.bin`))).toBe(true);
 			}
 		}
@@ -178,7 +179,7 @@ describe('the scenarios of child.ts', () => {
 			],
 			[
 				'compose',
-				['vue', 'react', 'user'].map(extension => `ts:columns-minimal-murmur3:bytes:compose-${extension}`),
+				Object.keys(EXTENSIONS).map(extension => `ts:columns-minimal-murmur3:bytes:compose-${extension}`),
 			],
 			[
 				'objects',
@@ -188,9 +189,7 @@ describe('the scenarios of child.ts', () => {
 					'objects:bits',
 					'objects:paths',
 					'objects:stream',
-					'objects:compose-vue',
-					'objects:compose-react',
-					'objects:compose-user',
+					...Object.keys(EXTENSIONS).map(extension => `objects:compose-${extension}`),
 				],
 			],
 			['hash', ['hash:murmur3', 'hash:xxhash32']],
@@ -229,6 +228,9 @@ describe('the scenarios of child.ts', () => {
 			'ts:rows-minimal-xxhash32:decoded:crc',
 			'ts:rows-minimal-xxhash32:decoded:heap-after-open',
 		]);
-		expect(measurements[2]?.values[0]).toBeGreaterThan(0);
+		// the words of the file are in a buffer outside the heap of V8, and the figure counts them
+		expect(measurements[2]?.values[0]).toBeGreaterThanOrEqual(
+			statSync(join(directory, 'rows-minimal-xxhash32.bin')).size,
+		);
 	});
 });

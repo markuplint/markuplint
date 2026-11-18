@@ -2,12 +2,12 @@
  * One process of a timing of the packed candidates:
  * `node --expose-gc --experimental-strip-types child.ts <scenario> <options as JSON>`, which prints the measurements as the
  * last line of its output, as `perf-child.ts` does and for the same reasons (a fresh process for each sample, the first
- * iteration reported apart by the parent). It is a file of its own so that `perf-child.ts`, which `dev` has too, does not
- * change.
+ * iteration reported apart by the parent). The scenarios of the candidates are in a file of their own because `perf-child.ts`
+ * is shared with `dev`, which has no packed candidates.
  *
  * What each scenario measures (the directory is what `prepare.ts` wrote):
  *
- * - `open`: reading the file and opening it (the checksum included), the checksum alone, and the heap that the opened spec
+ * - `open`: reading the file and opening it (the checksum included), the checksum alone, and the memory that the opened spec
  *   keeps. With `compare: 'decoded'` the strings are made into JavaScript strings when the file is opened.
  * - `query`: the questions of `questions.ts`, answered from the packed spec: the bits, the paths and the stream. The answers must equal those of the data
  *   before any time is taken.
@@ -45,13 +45,19 @@ export interface ChildOptions {
 
 const gc = (globalThis as { gc?: () => void }).gc;
 
-function heapUsed(): number {
+/**
+ * The memory that what a scenario keeps takes, after a collection: the heap of V8 and the buffers outside it. The words of a packed
+ * file are in a buffer, which `heapUsed` does not count, and the objects of the JSON are in the heap: only the two together are
+ * what a reader keeps in either form (the allocator of the Rust program counts both).
+ */
+function memoryUsed(): number {
 	if (!gc) {
 		throw new Error('Run with --expose-gc: the memory figures need a collection before each reading');
 	}
 	gc();
 	gc();
-	return process.memoryUsage().heapUsed;
+	const { heapUsed, arrayBuffers } = process.memoryUsage();
+	return heapUsed + arrayBuffers;
 }
 
 /** Values that are read so that no step of the timed code can be left out as dead. */
@@ -95,9 +101,9 @@ function time(iterations: number, work: () => number): number[] {
 function open(options: ChildOptions): Measurement[] {
 	const path = join(options.dir, `${stemOf(options)}.bin`);
 	const compare = options.compare ?? 'bytes';
-	const before = heapUsed();
+	const before = memoryUsed();
 	const kept = PackedSpec.open(wordsOf(readFileSync(path)), { compare });
-	const heap = heapUsed() - before;
+	const heap = memoryUsed() - before;
 	sink.push(kept.stringCount);
 
 	const opening = time(
@@ -152,12 +158,16 @@ function query(options: ChildOptions): Measurement[] {
 
 function composition(options: ChildOptions): Measurement[] {
 	const extensions = readExtensions(options.dir);
-	const base = openFile(options);
-	return Object.entries(extensions).map(([extension, value]) => ({
-		name: name(options, `compose-${extension}`),
-		unit: 'ms' as const,
-		values: time(options.iterations, () => compose(base, [value]).stringCount),
-	}));
+	// A spec that is opened for each extension, as the Rust program does: what a composition keeps for a spec (the table of
+	// its strings, the indexes of its regions) is not warm for the extension that comes after another.
+	return Object.entries(extensions).map(([extension, value]) => {
+		const base = openFile(options);
+		return {
+			name: name(options, `compose-${extension}`),
+			unit: 'ms' as const,
+			values: time(options.iterations, () => compose(base, [value]).stringCount),
+		};
+	});
 }
 
 function objects(options: ChildOptions): Measurement[] {
@@ -170,9 +180,9 @@ function objects(options: ChildOptions): Measurement[] {
 	assertSame('paths', askPathsObjects(view, questions), questions.pathAnswers);
 	assertSame('stream', askStreamObjects(view, questions), questions.streamAnswers);
 
-	const before = heapUsed();
+	const before = memoryUsed();
 	const kept = JSON.parse(readFileSync(path, 'utf8')) as { specs: unknown[] };
-	const heap = heapUsed() - before;
+	const heap = memoryUsed() - before;
 	sink.push(kept.specs.length);
 
 	return [

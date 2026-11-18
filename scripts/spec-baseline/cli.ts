@@ -62,9 +62,11 @@ const HELP = `Usage: yarn spec-baseline <command> [options]
   perf         [--processes <n>] [--lint-processes <n>] [--iterations <n>] [--files <n>] [--seed <n>] [--out <file>]
                [--rust] [--no-lint]   (--rust: v6 only, build the program first; --no-lint: no submodule needed,
                                        and --lint-processes and --files are only checked)
-               [--packed]             (v6 only: the candidates of the packed form, in TypeScript and in Rust, and nothing else;
-                                       build crates/ first with cargo build --locked --release --workspace --example
-                                       packed_candidates, and the submodule of the validator is needed)
+               [--packed]             (v6 only: the candidates of the packed form, in TypeScript and in Rust, and nothing else,
+                                       so not with --rust, and no lint scenario is run (--lint-processes and --files are only
+                                       checked); build crates/ first with cargo build --locked --release --workspace --example
+                                       packed_candidates, and the submodule of the validator is needed for the documents that
+                                       the questions are made from)
   compare      <before.json> <after.json> [--resamples <n>] [--seed <n>]
   mutation     [--count <n>] [--seed <n>]
   coverage     (writes scripts/spec-baseline/fixtures/inputs/generated-*.html)
@@ -240,6 +242,11 @@ function perf(args: readonly string[]): string {
 	const lintProcesses = count('lint-processes', values['lint-processes'], 1);
 	const iterations = count('iterations', values.iterations, 2);
 	const seed = count('seed', values.seed, 0);
+	if (values.packed && values.rust) {
+		throw new Error(
+			'--packed measures the candidates of the packed form and nothing else: it does not go with --rust',
+		);
+	}
 	const withLint = !values['no-lint'] && !values.packed;
 	// Checked with `--no-lint` as well: a typo in an option is not left unread because another option is on
 	const fileCount = count('files', values.files, 1);
@@ -278,10 +285,10 @@ function perf(args: readonly string[]): string {
 		}
 		return [
 			`${env.commit.slice(0, 9)} on node ${env.node} (v8 ${env.v8}), ${env.platform} ${env.arch}, ${env.cpus} x ${env.cpu}`,
-			...(rust ? [`${rust.rustc}; the Rust program was built ${rust.built}`] : []),
+			...(compiled ? [`${compiled.rustc}; the Rust program was built ${compiled.built}`] : []),
 			withLint
 				? `the lint scenarios read ${files.length} documents of the validator and ${LINT_GENERATED.count} generated ones of about ${LINT_GENERATED.elements} elements`
-				: 'the lint scenarios are not run (--no-lint)',
+				: `the lint scenarios are not run (${packed ? '--packed' : '--no-lint'})`,
 			'',
 			renderTable(result, { resamples: 10_000, seed }),
 		].join('\n');
