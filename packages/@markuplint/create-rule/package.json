@@ -32,7 +32,7 @@
 		"@markuplint/cli-utils": "5.3.0",
 		"@markuplint/ml-core": "5.6.1",
 		"glob": "^14.0.4",
-		"prettier": "^3.9.10",
+		"prettier": "^3.10.0",
 		"typescript": "~6.0.3"
 	},
 	"devDependencies": {
