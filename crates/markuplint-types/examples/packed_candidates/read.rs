@@ -365,6 +365,68 @@ impl PackedSpec {
         self.regions[region].root
     }
 
+    /// How many nodes, words of lists and words of indexes a region has: what a composition that appends to it goes on from.
+    pub fn region_counts(&self, region: usize) -> (u32, u32, u32) {
+        let bytes = self.bytes_of(self.regions[region].section);
+        (word(bytes, 0), word(bytes, 1), word(bytes, 2))
+    }
+
+    /// The four words of a node of a region (its tag, `a`, `b` and `c`), whatever the arrangement of the region.
+    pub fn node_words(&self, region: usize, node: u32) -> [u32; 4] {
+        let region = &self.regions[region];
+        let bytes = self.bytes_of(region.section);
+        [0, 1, 2, 3].map(|field| region.field(bytes, node, field))
+    }
+
+    /// The bytes of the lists of a region.
+    pub fn region_lists(&self, region: usize) -> &[u8] {
+        let region = &self.regions[region];
+        &self.bytes_of(region.section)[4 * region.lists_at..4 * region.indexes_at]
+    }
+
+    /// The bytes of the indexes of a region.
+    pub fn region_indexes(&self, region: usize) -> &[u8] {
+        let region = &self.regions[region];
+        &self.bytes_of(region.section)[4 * region.indexes_at..]
+    }
+
+    /// The indexes of a region, each with the string numbers of its keys and its position among the indexes: they are walked from
+    /// the start, and a record is `2 + n + entries` words for a sorted index and `5 + ceil(buckets / 2) + slots + entries` for a
+    /// perfect hash, from the counts at its start, and ends with the key of each entry.
+    ///
+    /// # Errors
+    ///
+    /// A record that is not inside the indexes of the region.
+    pub fn region_index_keys(&self, region: usize) -> Result<Vec<(Vec<u32>, u32)>, String> {
+        let bytes = self.region_indexes(region);
+        let words = bytes.len() / 4;
+        let mut found = Vec::new();
+        let mut at = 0;
+        while at < words {
+            if at + 5 > words && self.mode.is_some() || at + 2 > words {
+                return Err("An index is cut short".to_string());
+            }
+            let entries = word(bytes, at) as usize;
+            let distinct = word(bytes, at + 1) as usize;
+            let length = if self.mode.is_none() {
+                2 + distinct + entries
+            } else {
+                5 + (word(bytes, at + 3) as usize).div_ceil(2) + word(bytes, at + 4) as usize + entries
+            };
+            if at + length > words || entries > length {
+                return Err("An index is not inside the indexes of its region".to_string());
+            }
+            let keys = (at + length - entries..at + length)
+                .map(|index| word(bytes, index))
+                .collect();
+            // A position among the indexes is below 2^32
+            #[allow(clippy::cast_possible_truncation)]
+            found.push((keys, at as u32));
+            at += length;
+        }
+        Ok(found)
+    }
+
     #[inline]
     fn entry_key_at(&self, a: usize, j: usize) -> usize {
         if self.rows { a + 2 * j } else { a + j }

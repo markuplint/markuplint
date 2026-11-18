@@ -894,6 +894,130 @@ mod tests {
         assert_eq!(PackedSpec::open(&words(&twice)).unwrap().to_json(), twice.to_json());
     }
 
+    /// An extension that changes two elements of the data of `html-spec`, and nothing else of `specs`.
+    fn small_extension() -> Value {
+        json!({ "specs": [
+            { "name": "input", "attributes": { "x-added": { "type": "Any" } } },
+            { "name": "select", "globalAttrs": { "#ARIAAttrs": false } }
+        ] })
+    }
+
+    #[test]
+    fn a_composition_appends_what_the_extension_changes_and_shares_the_nodes_of_the_rest() {
+        for variant in variants() {
+            let base = encode_spec(&SPEC, variant).unwrap();
+            let composed = compose(&base, &[small_extension()]).unwrap();
+            let (nodes, lists, indexes) = base.region_counts(0);
+            let (more_nodes, more_lists, more_indexes) = composed.region_counts(0);
+            // Two elements of 237 are new, and what is new is them and what is in them
+            assert!(more_nodes > nodes, "{}", variant.stem());
+            assert!(
+                more_nodes - nodes < nodes / 10,
+                "{}: {} new nodes for {nodes}",
+                variant.stem(),
+                more_nodes - nodes
+            );
+            assert!(more_lists - lists < lists / 10, "{}", variant.stem());
+            // The index of the names of `specs` is the one that the region had, and the index of the attributes of `input` is new
+            assert!(more_indexes > indexes);
+            assert_eq!(
+                composed.node_words(0, composed.root(0))[3],
+                base.node_words(0, base.root(0))[3],
+                "{}",
+                variant.stem()
+            );
+            // The regions that the extension does not touch are the same words
+            for region in 1..5 {
+                assert_eq!(composed.region_counts(region), base.region_counts(region));
+                assert_eq!(composed.root(region), base.root(region));
+            }
+            // and what was there is still there, with the two elements merged
+            let json = composed.to_json();
+            let before = base.to_json();
+            let specs = json["specs"].as_array().unwrap();
+            let old = before["specs"].as_array().unwrap();
+            assert_eq!(specs.len(), old.len());
+            for (element, previous) in specs.iter().zip(old) {
+                if element["name"] != json!("input") && element["name"] != json!("select") {
+                    assert_eq!(element, previous);
+                }
+            }
+            let input = specs.iter().find(|element| element["name"] == json!("input")).unwrap();
+            assert_eq!(input["attributes"]["x-added"], json!({ "type": "Any" }));
+            assert_eq!(input["attributes"]["type"], previous_attribute(old, "input", "type"));
+            let select = specs.iter().find(|element| element["name"] == json!("select")).unwrap();
+            assert_eq!(select["globalAttrs"]["#ARIAAttrs"], json!(false));
+        }
+    }
+
+    fn previous_attribute(specs: &[Value], element: &str, attribute: &str) -> Value {
+        specs.iter().find(|spec| spec["name"] == json!(element)).unwrap()["attributes"][attribute].clone()
+    }
+
+    #[test]
+    fn an_index_that_has_the_keys_of_one_that_the_region_had_is_not_made_again() {
+        for variant in variants() {
+            let base = encode_spec(&SPEC, variant).unwrap();
+            // The attributes of `select` are the same names after the merge, and so are the names of `specs`
+            let composed = compose(
+                &base,
+                &[json!({ "specs": [{ "name": "select", "cite": "https://example.test/#select" }] })],
+            )
+            .unwrap();
+            assert_eq!(
+                composed.region_counts(0).2,
+                base.region_counts(0).2,
+                "{}",
+                variant.stem()
+            );
+            assert_eq!(composed.region_indexes(0), base.region_indexes(0));
+            // A table of the base is found by its keys: the walk of the indexes sees every one of them
+            let keys = base.region_index_keys(0).unwrap();
+            assert!(keys.len() > 10);
+            assert!(keys.iter().all(|(keys, _)| !keys.is_empty()));
+        }
+    }
+
+    #[test]
+    fn a_composition_of_every_candidate_opens_as_a_file_and_reads_as_it_was_made() {
+        for variant in variants() {
+            let base = encode_spec(&SPEC, variant).unwrap();
+            for extensions in [
+                vec![small_extension()],
+                vec![extension()],
+                vec![small_extension(), extension()],
+            ] {
+                let composed = compose(&base, &extensions).unwrap();
+                let opened = PackedSpec::open(&words(&composed)).unwrap();
+                assert_eq!(opened.to_json(), composed.to_json(), "{}", variant.stem());
+                assert_eq!(opened.serialize(), composed.serialize(), "{}", variant.stem());
+            }
+        }
+    }
+
+    #[test]
+    fn a_composition_can_be_composed_again_to_what_both_extensions_say_together() {
+        for variant in variants() {
+            let base = encode_spec(&small(), variant).unwrap();
+            let other = json!({
+                "def": { "#contentModels": { "#flow": ["el7"] }, "#globalAttrs": { "#extends": { "x-other": { "type": "Any" } } } },
+                "specs": [{ "name": "el2", "extra": 1, "attributes": { "attr0": { "type": "Boolean" } } }],
+                "movedToHead": ["another"]
+            });
+            let once = compose(&base, &[extension()]).unwrap();
+            let twice = compose(&once, std::slice::from_ref(&other)).unwrap();
+            let together = compose(&base, &[extension(), other.clone()]).unwrap();
+            assert_eq!(twice.to_json(), together.to_json(), "{}", variant.stem());
+            // the bits are those of what was composed
+            for element in 0..twice.element_count() {
+                for flag in 0..4 {
+                    assert_eq!(twice.flag(element, flag), together.flag(element, flag));
+                }
+            }
+            assert_eq!(PackedSpec::open(&words(&twice)).unwrap().to_json(), twice.to_json());
+        }
+    }
+
     #[test]
     fn a_composition_of_an_extension_that_schema_to_spec_would_refuse_is_refused() {
         let base = encode_spec(&small(), variants()[0]).unwrap();

@@ -5,6 +5,11 @@
 //! are made, which is after what they refer to, and one that is the same as an earlier one is not made again.
 //! The order of the keys of an object is the order of the JSON text (`serde_json` has `preserve_order` when the
 //! workspace is built together).
+//!
+//! A region that a composition changes is not made again but appended to (the paragraph "A region that a composition changes
+//! is not made again" of `format.ts`): the encoder then has the region of the base, a [`Tree`] that has a reference
+//! ([`Tree::Ref`]) for what the merge left as it was, new nodes, lists and indexes that are numbered on from those of the
+//! region, and indexes that are the same as one that the region had when their keys are.
 
 use std::borrow::Cow;
 use std::collections::{HashMap, HashSet};
@@ -93,10 +98,37 @@ fn is_named_object(value: &Value) -> bool {
         .is_some_and(|object| object.get("name").is_some_and(Value::is_string))
 }
 
+/// What is encoded when a region is appended to: the value that a merge made, with a reference to the node of the region
+/// for each array and object that it left as it was. A number, a boolean, null and a string are never references, so that
+/// they are made as new nodes.
+#[derive(Clone, Debug, PartialEq)]
+pub enum Tree {
+    /// An array or an object (an empty one too) of the region of the base that has this position in `REGIONS`: its node.
+    Ref(usize, u32),
+    /// A value, whose arrays and objects are new.
+    Json(Value),
+    /// A new array.
+    Array(Vec<Tree>),
+    /// A new object: its entries in order.
+    Object(Vec<(String, Tree)>),
+}
+
+/// The region of a base that is appended to.
+struct Base<'p> {
+    spec: &'p PackedSpec,
+    region: usize,
+    nodes: u32,
+    lists: u32,
+    indexes: u32,
+}
+
 /// Makes the words of one region.
-struct RegionEncoder<'s, 'a> {
+struct RegionEncoder<'s, 'a, 'p> {
     strings: &'s mut StringTable<'a>,
     variant: Variant,
+    base: Option<Base<'p>>,
+    /// Whether the indexes of the base are in `index_ids`.
+    seeded: bool,
     nodes: Vec<u32>,
     node_ids: HashMap<[u32; 4], u32>,
     lists: Vec<u32>,
@@ -111,11 +143,22 @@ fn to_word(value: usize) -> u32 {
     value as u32
 }
 
-impl<'s, 'a> RegionEncoder<'s, 'a> {
-    fn new(strings: &'s mut StringTable<'a>, variant: Variant) -> Self {
+impl<'s, 'a, 'p> RegionEncoder<'s, 'a, 'p> {
+    fn new(strings: &'s mut StringTable<'a>, variant: Variant, base: Option<(&'p PackedSpec, usize)>) -> Self {
         Self {
             strings,
             variant,
+            base: base.map(|(spec, region)| {
+                let (nodes, lists, indexes) = spec.region_counts(region);
+                Base {
+                    spec,
+                    region,
+                    nodes,
+                    lists,
+                    indexes,
+                }
+            }),
+            seeded: false,
             nodes: Vec::new(),
             node_ids: HashMap::new(),
             lists: Vec::new(),
@@ -130,7 +173,7 @@ impl<'s, 'a> RegionEncoder<'s, 'a> {
         if let Some(known) = self.node_ids.get(&key) {
             return *known;
         }
-        let id = to_word(self.nodes.len() / 4);
+        let id = self.base.as_ref().map_or(0, |base| base.nodes) + to_word(self.nodes.len() / 4);
         self.nodes.extend_from_slice(&key);
         self.node_ids.insert(key, id);
         id
@@ -143,7 +186,7 @@ impl<'s, 'a> RegionEncoder<'s, 'a> {
         if let Some(known) = self.list_ids.get(words) {
             return *known;
         }
-        let offset = to_word(self.lists.len());
+        let offset = self.base.as_ref().map_or(0, |base| base.lists) + to_word(self.lists.len());
         self.lists.extend_from_slice(words);
         self.list_ids.insert(words.to_vec(), offset);
         offset
@@ -151,11 +194,20 @@ impl<'s, 'a> RegionEncoder<'s, 'a> {
 
     /// Makes the index of entries with these keys, and gives its position.
     fn index(&mut self, keys: &[u32]) -> Result<u32, String> {
+        if !self.seeded {
+            // The indexes that the region had, for those that have the same keys: the first of them is the one that is used
+            if let Some(base) = &self.base {
+                for (known, at) in base.spec.region_index_keys(base.region)? {
+                    self.index_ids.entry(known).or_insert(at);
+                }
+            }
+            self.seeded = true;
+        }
         if let Some(known) = self.index_ids.get(keys) {
             return Ok(*known);
         }
         let words = index_words(self.strings, self.variant, keys)?;
-        let offset = to_word(self.indexes.len());
+        let offset = self.base.as_ref().map_or(0, |base| base.indexes) + to_word(self.indexes.len());
         self.indexes.extend_from_slice(&words);
         self.index_ids.insert(keys.to_vec(), offset);
         Ok(offset)
@@ -178,7 +230,23 @@ impl<'s, 'a> RegionEncoder<'s, 'a> {
                 let sid = self.strings.intern(text);
                 Ok(self.node(tag::STRING, sid, 0, 0))
             }
-            Value::Array(items) => self.encode_array(items),
+            Value::Array(items) => {
+                let nodes = items
+                    .iter()
+                    .map(|item| self.encode(item))
+                    .collect::<Result<Vec<u32>, String>>()?;
+                let names = if items.len() >= INDEX_MINIMUM && items.iter().all(is_named_object) {
+                    Some(
+                        items
+                            .iter()
+                            .map(|item| item["name"].as_str().unwrap_or_default().to_string())
+                            .collect(),
+                    )
+                } else {
+                    None
+                };
+                self.array_node(&nodes, names)
+            }
             Value::Object(object) => {
                 let mut keys: Vec<u32> = Vec::with_capacity(object.len());
                 let mut values: Vec<u32> = Vec::with_capacity(object.len());
@@ -186,64 +254,126 @@ impl<'s, 'a> RegionEncoder<'s, 'a> {
                     keys.push(self.strings.intern(key));
                     values.push(self.encode(item)?);
                 }
-                let words: Vec<u32> = if self.variant.columns {
-                    keys.iter().chain(values.iter()).copied().collect()
-                } else {
-                    keys.iter()
-                        .zip(values.iter())
-                        .flat_map(|(key, value)| [*key, *value])
-                        .collect()
-                };
-                let index = if keys.len() >= INDEX_MINIMUM {
-                    self.index(&keys)? + 1
-                } else {
-                    0
-                };
-                let list = self.list(&words);
-                Ok(self.node(tag::OBJECT, list, to_word(keys.len()), index))
+                self.object_node(&keys, &values)
             }
         }
     }
 
-    fn encode_array(&mut self, items: &[Value]) -> Result<u32, String> {
-        let nodes = items
-            .iter()
-            .map(|item| self.encode(item))
-            .collect::<Result<Vec<u32>, String>>()?;
-        let named = items.len() >= INDEX_MINIMUM && items.iter().all(is_named_object);
-        let index = if named {
-            let keys: Vec<u32> = items
-                .iter()
-                .map(|item| self.strings.intern(item["name"].as_str().unwrap_or_default()))
-                .collect();
+    /// The node of an array of these nodes, which has an index when `names` (the names of its objects) is given.
+    fn array_node(&mut self, nodes: &[u32], names: Option<Vec<String>>) -> Result<u32, String> {
+        let index = if let Some(names) = names {
+            let keys: Vec<u32> = names.iter().map(|name| self.strings.intern(name)).collect();
             self.index(&keys)? + 1
         } else {
             0
         };
-        let list = self.list(&nodes);
+        let list = self.list(nodes);
         Ok(self.node(tag::ARRAY, list, to_word(nodes.len()), index))
     }
 
-    /// The words of the region.
+    /// The node of an object that has these keys (the numbers of their strings) and these nodes.
+    fn object_node(&mut self, keys: &[u32], values: &[u32]) -> Result<u32, String> {
+        let words: Vec<u32> = if self.variant.columns {
+            keys.iter().chain(values.iter()).copied().collect()
+        } else {
+            keys.iter()
+                .zip(values.iter())
+                .flat_map(|(key, value)| [*key, *value])
+                .collect()
+        };
+        let index = if keys.len() >= INDEX_MINIMUM {
+            self.index(keys)? + 1
+        } else {
+            0
+        };
+        let list = self.list(&words);
+        Ok(self.node(tag::OBJECT, list, to_word(keys.len()), index))
+    }
+
+    /// The name of an object of a tree, when it has one that is a string.
+    fn name_of(&self, tree: &Tree) -> Option<String> {
+        match tree {
+            Tree::Ref(region, node) => {
+                let base = self.base.as_ref().filter(|base| base.region == *region)?;
+                let name = base.spec.get(*region, *node, "name");
+                (name != NONE && base.spec.tag(*region, name) == tag::STRING)
+                    .then(|| base.spec.string_at(base.spec.string_of(*region, name)))
+            }
+            Tree::Json(value) => is_named_object(value).then(|| value["name"].as_str().unwrap_or_default().to_string()),
+            Tree::Object(entries) => entries.iter().find_map(|(key, value)| match (key.as_str(), value) {
+                ("name", Tree::Json(Value::String(name))) => Some(name.clone()),
+                _ => None,
+            }),
+            Tree::Array(_) => None,
+        }
+    }
+
+    /// Encodes a tree, and what is in it: a reference is the node that it is, and makes nothing.
+    fn encode_tree(&mut self, tree: &Tree) -> Result<u32, String> {
+        match tree {
+            Tree::Ref(region, node) => match &self.base {
+                Some(base) if base.region == *region => Ok(*node),
+                _ => Err("A reference is to a node of the region that is appended to".to_string()),
+            },
+            Tree::Json(value) => self.encode(value),
+            Tree::Array(items) => {
+                let nodes = items
+                    .iter()
+                    .map(|item| self.encode_tree(item))
+                    .collect::<Result<Vec<u32>, String>>()?;
+                let names: Option<Vec<String>> = if items.len() >= INDEX_MINIMUM {
+                    items.iter().map(|item| self.name_of(item)).collect()
+                } else {
+                    None
+                };
+                self.array_node(&nodes, names)
+            }
+            Tree::Object(entries) => {
+                let mut keys: Vec<u32> = Vec::with_capacity(entries.len());
+                let mut values: Vec<u32> = Vec::with_capacity(entries.len());
+                for (key, item) in entries {
+                    keys.push(self.strings.intern(key));
+                    values.push(self.encode_tree(item)?);
+                }
+                self.object_node(&keys, &values)
+            }
+        }
+    }
+
+    /// The words of the region: those of the base, if there is one, and then the new ones.
     fn finish(&self, root: u32) -> Vec<u8> {
-        let count = self.nodes.len() / 4;
-        let mut words: Vec<u32> = Vec::with_capacity(4 + self.nodes.len() + self.lists.len() + self.indexes.len());
+        let (base_nodes, base_lists, base_indexes) = self
+            .base
+            .as_ref()
+            .map_or((0, 0, 0), |base| (base.nodes, base.lists, base.indexes));
+        let mut nodes: Vec<[u32; 4]> = Vec::with_capacity((base_nodes as usize) + self.nodes.len() / 4);
+        if let Some(base) = &self.base {
+            nodes.extend((0..base_nodes).map(|node| base.spec.node_words(base.region, node)));
+        }
+        nodes.extend(self.nodes.as_chunks::<4>().0.iter().copied());
+        let count = nodes.len();
+        let mut words: Vec<u32> = Vec::with_capacity(4 + 4 * count);
         words.push(to_word(count));
-        words.push(to_word(self.lists.len()));
-        words.push(to_word(self.indexes.len()));
+        words.push(base_lists + to_word(self.lists.len()));
+        words.push(base_indexes + to_word(self.indexes.len()));
         words.push(root);
         if self.variant.columns {
             for field in 0..4 {
-                for node in 0..count {
-                    words.push(self.nodes[4 * node + field]);
-                }
+                words.extend(nodes.iter().map(|node| node[field]));
             }
         } else {
-            words.extend_from_slice(&self.nodes);
+            words.extend(nodes.iter().flatten());
         }
-        words.extend_from_slice(&self.lists);
-        words.extend_from_slice(&self.indexes);
-        words_to_bytes(&words)
+        let mut bytes = words_to_bytes(&words);
+        if let Some(base) = &self.base {
+            bytes.extend_from_slice(base.spec.region_lists(base.region));
+        }
+        bytes.extend(words_to_bytes(&self.lists));
+        if let Some(base) = &self.base {
+            bytes.extend_from_slice(base.spec.region_indexes(base.region));
+        }
+        bytes.extend(words_to_bytes(&self.indexes));
+        bytes
     }
 }
 
@@ -301,8 +431,25 @@ fn index_words(strings: &StringTable<'_>, variant: Variant, keys: &[u32]) -> Res
 ///
 /// A value that the format does not hold.
 pub fn encode_region(value: &Value, strings: &mut StringTable<'_>, variant: Variant) -> Result<Vec<u8>, String> {
-    let mut encoder = RegionEncoder::new(strings, variant);
+    let mut encoder = RegionEncoder::new(strings, variant, None);
     let root = encoder.encode(value)?;
+    Ok(encoder.finish(root))
+}
+
+/// Encodes a region of a spec again by appending to it: what the tree has as a reference is the node that it was, and the new
+/// nodes, lists and indexes go after those of the region.
+///
+/// # Errors
+///
+/// A value that the format does not hold, or a reference to another region.
+pub fn append_region(
+    tree: &Tree,
+    strings: &mut StringTable<'_>,
+    base: &PackedSpec,
+    region: usize,
+) -> Result<Vec<u8>, String> {
+    let mut encoder = RegionEncoder::new(strings, base.variant, Some((base, region)));
+    let root = encoder.encode_tree(tree)?;
     Ok(encoder.finish(root))
 }
 
