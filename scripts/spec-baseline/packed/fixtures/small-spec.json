@@ -1,0 +1,616 @@
+{
+	"def": {
+		"#globalAttrs": {
+			"#HTMLGlobalAttrs": {
+				"id": {
+					"type": "DOMID"
+				},
+				"class": {
+					"type": "Any"
+				}
+			},
+			"#ARIAAttrs": {
+				"aria-label": {
+					"type": "Any"
+				}
+			}
+		},
+		"#aria": {
+			"1.1": {
+				"roles": [
+					{
+						"name": "button",
+						"generalization": ["command"]
+					},
+					{
+						"name": "link",
+						"generalization": []
+					},
+					{
+						"name": "region",
+						"generalization": []
+					}
+				],
+				"props": [
+					{
+						"name": "aria-label",
+						"type": "property",
+						"value": "string",
+						"enum": []
+					}
+				],
+				"graphicsRoles": [
+					{
+						"name": "graphics-document",
+						"generalization": []
+					}
+				],
+				"dpubRoles": [
+					{
+						"name": "doc-abstract",
+						"generalization": []
+					}
+				]
+			},
+			"1.2": {
+				"roles": [
+					{
+						"name": "button",
+						"generalization": ["command"]
+					},
+					{
+						"name": "link",
+						"generalization": []
+					},
+					{
+						"name": "region",
+						"generalization": []
+					}
+				],
+				"props": [
+					{
+						"name": "aria-label",
+						"type": "property",
+						"value": "string",
+						"enum": []
+					}
+				],
+				"graphicsRoles": [
+					{
+						"name": "graphics-document",
+						"generalization": []
+					}
+				],
+				"dpubRoles": [
+					{
+						"name": "doc-abstract",
+						"generalization": []
+					}
+				]
+			},
+			"1.3": {
+				"roles": [
+					{
+						"name": "button",
+						"generalization": ["command"]
+					},
+					{
+						"name": "link",
+						"generalization": []
+					},
+					{
+						"name": "region",
+						"generalization": []
+					}
+				],
+				"props": [
+					{
+						"name": "aria-label",
+						"type": "property",
+						"value": "string",
+						"enum": []
+					}
+				],
+				"graphicsRoles": [
+					{
+						"name": "graphics-document",
+						"generalization": []
+					}
+				],
+				"dpubRoles": [
+					{
+						"name": "doc-abstract",
+						"generalization": []
+					}
+				]
+			}
+		},
+		"#contentModels": {
+			"#flow": ["el0", "el3", "x-日本", "el3[href]", "#text"],
+			"#phrasing": ["el0"],
+			"#empty": []
+		}
+	},
+	"specs": [
+		{
+			"name": "el0",
+			"cite": "https://example.test/#el0",
+			"obsolete": true,
+			"contentModel": {
+				"contents": [
+					{
+						"zeroOrMore": "#flow"
+					},
+					{
+						"require": ["a", "div"],
+						"min": 2,
+						"max": 3
+					}
+				]
+			},
+			"globalAttrs": {
+				"#HTMLGlobalAttrs": true,
+				"#ARIAAttrs": true
+			},
+			"attributes": {
+				"attr0": {
+					"type": "Any",
+					"required": true
+				},
+				"attr1": {
+					"type": {
+						"enum": ["a", "b"]
+					}
+				},
+				"attr2": {
+					"type": "Any"
+				},
+				"attr3": {
+					"type": {
+						"enum": ["a", "b"]
+					}
+				},
+				"attr4": {
+					"type": "Any"
+				},
+				"attr5": {
+					"type": {
+						"enum": ["a", "b"]
+					}
+				},
+				"attr6": {
+					"type": "Any"
+				},
+				"attr7": {
+					"type": {
+						"enum": ["a", "b"]
+					}
+				},
+				"attr8": {
+					"type": "Any"
+				}
+			},
+			"aria": {
+				"implicitRole": false,
+				"permittedRoles": true
+			}
+		},
+		{
+			"name": "el1",
+			"cite": "https://example.test/#el1",
+			"contentModel": {
+				"contents": false
+			},
+			"globalAttrs": {
+				"#HTMLGlobalAttrs": true,
+				"#ARIAAttrs": true
+			},
+			"attributes": {
+				"attr0": {
+					"type": "Any",
+					"required": true
+				},
+				"attr1": {
+					"type": {
+						"enum": ["a", "b"]
+					}
+				}
+			},
+			"aria": {
+				"implicitRole": "button",
+				"permittedRoles": true
+			}
+		},
+		{
+			"name": "el2",
+			"cite": "https://example.test/#el2",
+			"contentModel": {
+				"contents": [
+					{
+						"zeroOrMore": "#flow"
+					},
+					{
+						"require": ["a", "div"],
+						"min": 2,
+						"max": 3
+					}
+				]
+			},
+			"globalAttrs": {
+				"#HTMLGlobalAttrs": true,
+				"#ARIAAttrs": true
+			},
+			"attributes": {
+				"attr0": {
+					"type": "Any",
+					"required": true
+				},
+				"attr1": {
+					"type": {
+						"enum": ["a", "b"]
+					}
+				}
+			},
+			"aria": {
+				"implicitRole": false,
+				"permittedRoles": true
+			}
+		},
+		{
+			"name": "el3",
+			"cite": "https://example.test/#el3",
+			"deprecated": true,
+			"experimental": true,
+			"contentModel": {
+				"contents": false
+			},
+			"globalAttrs": {
+				"#HTMLGlobalAttrs": true,
+				"#ARIAAttrs": true
+			},
+			"attributes": {
+				"attr0": {
+					"type": "Any",
+					"required": true
+				},
+				"attr1": {
+					"type": {
+						"enum": ["a", "b"]
+					}
+				},
+				"attr2": {
+					"type": "Any"
+				},
+				"attr3": {
+					"type": {
+						"enum": ["a", "b"]
+					}
+				},
+				"attr4": {
+					"type": "Any"
+				},
+				"attr5": {
+					"type": {
+						"enum": ["a", "b"]
+					}
+				},
+				"attr6": {
+					"type": "Any"
+				},
+				"attr7": {
+					"type": {
+						"enum": ["a", "b"]
+					}
+				},
+				"attr8": {
+					"type": "Any"
+				}
+			},
+			"aria": {
+				"implicitRole": false,
+				"permittedRoles": true
+			}
+		},
+		{
+			"name": "el4",
+			"cite": "https://example.test/#el4",
+			"obsolete": true,
+			"contentModel": {
+				"contents": [
+					{
+						"zeroOrMore": "#flow"
+					},
+					{
+						"require": ["a", "div"],
+						"min": 2,
+						"max": 3
+					}
+				]
+			},
+			"globalAttrs": {
+				"#HTMLGlobalAttrs": true,
+				"#ARIAAttrs": true
+			},
+			"attributes": {
+				"attr0": {
+					"type": "Any",
+					"required": true
+				},
+				"attr1": {
+					"type": {
+						"enum": ["a", "b"]
+					}
+				}
+			},
+			"aria": {
+				"implicitRole": false,
+				"permittedRoles": true
+			}
+		},
+		{
+			"name": "el5",
+			"cite": "https://example.test/#el5",
+			"contentModel": {
+				"contents": false
+			},
+			"globalAttrs": {
+				"#HTMLGlobalAttrs": true,
+				"#ARIAAttrs": true
+			},
+			"attributes": {
+				"attr0": {
+					"type": "Any",
+					"required": true
+				},
+				"attr1": {
+					"type": {
+						"enum": ["a", "b"]
+					}
+				}
+			},
+			"aria": {
+				"implicitRole": false,
+				"permittedRoles": true
+			}
+		},
+		{
+			"name": "el6",
+			"cite": "https://example.test/#el6",
+			"contentModel": {
+				"contents": [
+					{
+						"zeroOrMore": "#flow"
+					},
+					{
+						"require": ["a", "div"],
+						"min": 2,
+						"max": 3
+					}
+				]
+			},
+			"globalAttrs": {
+				"#HTMLGlobalAttrs": true,
+				"#ARIAAttrs": true
+			},
+			"attributes": {
+				"attr0": {
+					"type": "Any",
+					"required": true
+				},
+				"attr1": {
+					"type": {
+						"enum": ["a", "b"]
+					}
+				},
+				"attr2": {
+					"type": "Any"
+				},
+				"attr3": {
+					"type": {
+						"enum": ["a", "b"]
+					}
+				},
+				"attr4": {
+					"type": "Any"
+				},
+				"attr5": {
+					"type": {
+						"enum": ["a", "b"]
+					}
+				},
+				"attr6": {
+					"type": "Any"
+				},
+				"attr7": {
+					"type": {
+						"enum": ["a", "b"]
+					}
+				},
+				"attr8": {
+					"type": "Any"
+				}
+			},
+			"aria": {
+				"implicitRole": false,
+				"permittedRoles": true
+			}
+		},
+		{
+			"name": "el7",
+			"cite": "https://example.test/#el7",
+			"contentModel": {
+				"contents": false
+			},
+			"globalAttrs": {
+				"#HTMLGlobalAttrs": true,
+				"#ARIAAttrs": true
+			},
+			"attributes": {
+				"attr0": {
+					"type": "Any",
+					"required": true
+				},
+				"attr1": {
+					"type": {
+						"enum": ["a", "b"]
+					}
+				}
+			},
+			"aria": {
+				"implicitRole": false,
+				"permittedRoles": true
+			}
+		},
+		{
+			"name": "el8",
+			"cite": "https://example.test/#el8",
+			"obsolete": true,
+			"contentModel": {
+				"contents": [
+					{
+						"zeroOrMore": "#flow"
+					},
+					{
+						"require": ["a", "div"],
+						"min": 2,
+						"max": 3
+					}
+				]
+			},
+			"globalAttrs": {
+				"#HTMLGlobalAttrs": true,
+				"#ARIAAttrs": true
+			},
+			"attributes": {
+				"attr0": {
+					"type": "Any",
+					"required": true
+				},
+				"attr1": {
+					"type": {
+						"enum": ["a", "b"]
+					}
+				}
+			},
+			"aria": {
+				"implicitRole": false,
+				"permittedRoles": true
+			}
+		},
+		{
+			"name": "el9",
+			"cite": "https://example.test/#el9",
+			"contentModel": {
+				"contents": false
+			},
+			"globalAttrs": {
+				"#HTMLGlobalAttrs": true,
+				"#ARIAAttrs": true
+			},
+			"attributes": {
+				"attr0": {
+					"type": "Any",
+					"required": true
+				},
+				"attr1": {
+					"type": {
+						"enum": ["a", "b"]
+					}
+				},
+				"attr2": {
+					"type": "Any"
+				},
+				"attr3": {
+					"type": {
+						"enum": ["a", "b"]
+					}
+				},
+				"attr4": {
+					"type": "Any"
+				},
+				"attr5": {
+					"type": {
+						"enum": ["a", "b"]
+					}
+				},
+				"attr6": {
+					"type": "Any"
+				},
+				"attr7": {
+					"type": {
+						"enum": ["a", "b"]
+					}
+				},
+				"attr8": {
+					"type": "Any"
+				}
+			},
+			"aria": {
+				"implicitRole": false,
+				"permittedRoles": true
+			}
+		},
+		{
+			"name": "el10",
+			"cite": "https://example.test/#el10",
+			"contentModel": {
+				"contents": [
+					{
+						"zeroOrMore": "#flow"
+					},
+					{
+						"require": ["a", "div"],
+						"min": 2,
+						"max": 3
+					}
+				]
+			},
+			"globalAttrs": {
+				"#HTMLGlobalAttrs": true,
+				"#ARIAAttrs": true
+			},
+			"attributes": {
+				"attr0": {
+					"type": "Any",
+					"required": true
+				},
+				"attr1": {
+					"type": {
+						"enum": ["a", "b"]
+					}
+				}
+			},
+			"aria": {
+				"implicitRole": false,
+				"permittedRoles": true
+			}
+		},
+		{
+			"name": "x-日本",
+			"cite": "https://example.test/#el11",
+			"contentModel": {
+				"contents": false
+			},
+			"globalAttrs": {
+				"#HTMLGlobalAttrs": true,
+				"#ARIAAttrs": true
+			},
+			"attributes": {
+				"attr0": {
+					"type": "Any",
+					"required": true
+				},
+				"attr1": {
+					"type": {
+						"enum": ["a", "b"]
+					}
+				}
+			},
+			"aria": {
+				"implicitRole": false,
+				"permittedRoles": true
+			}
+		}
+	],
+	"acceptedAttrNames": ["a", "b"]
+}

@@ -25,6 +25,21 @@ describe('run', () => {
 		);
 	});
 
+	test('stops for --packed together with --rust: the candidates are measured and nothing else', async () => {
+		await expect(Promise.resolve().then(() => run(['perf', '--packed', '--rust']))).rejects.toThrow(
+			/--packed .* does not go with --rust/,
+		);
+	});
+
+	test('checks the options of the lint scenarios with --packed as well, which leaves those scenarios out', async () => {
+		await expect(Promise.resolve().then(() => run(['perf', '--packed', '--files', 'abc']))).rejects.toThrow(
+			/--files takes an integer/,
+		);
+		await expect(Promise.resolve().then(() => run(['perf', '--packed', '--lint-processes', '0']))).rejects.toThrow(
+			/--lint-processes takes an integer/,
+		);
+	});
+
 	test('reads the duplication of the data at a revision of git', async () => {
 		const report = await run(['duplication', '--ref', 'HEAD', '--top', '2']);
 		expect(report).toContain('HEAD:');

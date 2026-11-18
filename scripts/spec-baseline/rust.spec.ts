@@ -136,6 +136,8 @@ describe('the freshness of the program', () => {
 			utimesSync(source, later, later);
 			expect(newestSource(root)?.path).toBe(source);
 			expect(() => assertFresh(root, binary)).toThrow(/older than .*lib\.rs.*cargo build --locked --release/);
+			expect(() => assertFresh(root, binary)).toThrow(/--example spec_baseline/);
+			expect(() => assertFresh(root, binary, 'packed_candidates')).toThrow(/--example packed_candidates/);
 		} finally {
 			cleanup();
 		}
