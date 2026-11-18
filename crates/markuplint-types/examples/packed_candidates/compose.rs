@@ -527,11 +527,10 @@ pub fn compose(base: &PackedSpec, extensions: &[Value]) -> Result<PackedSpec, St
         changes.push((section::STRING_OFFSETS, offsets));
         changes.push((section::STRING_BYTES, bytes));
     }
-    let draft = base.replace(changes)?;
+    // The bits are made from the regions that this has, in the same construction, when `specs` or `#contentModels` is touched
     if touched[0] || touched[3] {
-        let bits = crate::read::words_to_bytes(&draft.compute_bits());
-        draft.replace(vec![(section::BITS, bits)])
+        base.replace_with_bits(changes)
     } else {
-        Ok(draft)
+        base.replace(changes)
     }
 }

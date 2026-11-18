@@ -511,9 +511,7 @@ pub fn assemble(variant: Variant, strings: &StringTable<'_>, regions: &[Vec<u8>]
     for (position, id) in REGIONS.iter().enumerate() {
         sections[*id] = Section::from_bytes(regions[position].clone());
     }
-    let draft = PackedSpec::new(variant, sections)?;
-    let bits = words_to_bytes(&draft.compute_bits());
-    draft.replace(vec![(section::BITS, bits)])
+    PackedSpec::with_bits(variant, sections)
 }
 
 /// Encodes a spec.

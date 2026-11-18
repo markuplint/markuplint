@@ -279,6 +279,39 @@ impl PackedSpec {
     /// Offsets of strings that do not start with the offsets of the old ones, bytes of strings that do not start with the
     /// bytes of the old ones, or sections that are not those of a spec.
     pub fn replace(&self, changes: Vec<(usize, Vec<u8>)>) -> Result<Self, String> {
+        Self::new(self.variant, self.changed_sections(changes)?)
+    }
+
+    /// Like [`PackedSpec::replace`], and the section of the bits is made from the regions that the new spec has, in the
+    /// same construction: a spec whose `specs` or `#contentModels` changed is made once, with the bits that its regions give.
+    ///
+    /// # Errors
+    ///
+    /// As [`PackedSpec::replace`].
+    pub fn replace_with_bits(&self, changes: Vec<(usize, Vec<u8>)>) -> Result<Self, String> {
+        let mut spec = Self::new(self.variant, self.changed_sections(changes)?)?;
+        spec.make_bits();
+        Ok(spec)
+    }
+
+    /// Makes a spec of sections, with the bits that its regions give in place of the section of the bits that is given.
+    ///
+    /// # Errors
+    ///
+    /// Sections that are not those of a spec.
+    pub fn with_bits(variant: Variant, sections: Vec<Section>) -> Result<Self, String> {
+        let mut spec = Self::new(variant, sections)?;
+        spec.make_bits();
+        Ok(spec)
+    }
+
+    fn make_bits(&mut self) {
+        let bits = words_to_bytes(&self.compute_bits());
+        self.sections[section::BITS] = Section::from_bytes(bits);
+    }
+
+    /// The sections of this spec with the new words of some, which the table of strings of a new spec has to continue.
+    fn changed_sections(&self, changes: Vec<(usize, Vec<u8>)>) -> Result<Vec<Section>, String> {
         let mut sections = self.sections.clone();
         for (id, bytes) in changes {
             let old = self.sections[id].bytes();
@@ -298,7 +331,7 @@ impl PackedSpec {
             }
             sections[id] = Section::from_bytes(bytes);
         }
-        Self::new(self.variant, sections)
+        Ok(sections)
     }
 
     /// The bytes of the file that holds this spec: the header, the sections and the checksum.
