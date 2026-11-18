@@ -74,9 +74,9 @@ describe.each(VARIANTS)('the candidate %o', variant => {
 });
 
 describe('the bits', () => {
-	const layout = buildLayout(SPEC);
+	const layout = buildLayout(SPEC as never);
 	const questions = questionsOf(layout);
-	const expected = askObject(SPEC, layout, questions);
+	const expected = askObject(SPEC as never, layout, questions);
 	const categories = Object.keys(SPEC.def['#contentModels'] ?? {});
 
 	test.each(VARIANTS)('answer the questions of layout.ts as the data does (%o)', variant => {
@@ -236,6 +236,18 @@ describe('encodeSpec', () => {
 			def: { '#globalAttrs': {}, '#aria': {}, '#contentModels': {} },
 			specs: [],
 		});
+	});
+});
+
+describe('wordsOf', () => {
+	test('views bytes that are aligned and copies bytes that are not, to the same words', () => {
+		const words = Uint32Array.from([1, 0x01_02_03_04, 0xFF_FF_FF_FF]);
+		const aligned = new Uint8Array(words.buffer);
+		expect([...wordsOf(aligned)]).toStrictEqual([...words]);
+		const shifted = new Uint8Array(aligned.length + 1);
+		shifted.set(aligned, 1);
+		expect([...wordsOf(shifted.subarray(1))]).toStrictEqual([...words]);
+		expect(() => wordsOf(new Uint8Array(5))).toThrow('whole words');
 	});
 });
 

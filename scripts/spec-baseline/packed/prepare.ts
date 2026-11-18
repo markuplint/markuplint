@@ -48,6 +48,8 @@ const bytesOf = (words: Uint32Array): Buffer => Buffer.from(words.buffer, words.
 export interface InputOptions {
 	/** How many documents of the validator the stream is made from. */
 	readonly documents?: number;
+	/** The documents to make the stream from, in place of those of the validator (a test has no submodule). */
+	readonly files?: readonly string[];
 	/** The limit of operations of the stream. */
 	readonly streamLimit?: number;
 }
@@ -69,7 +71,7 @@ export function writeInputs(
 	const spec = JSON.parse(readFileSync(join(root, SPEC_PATH), 'utf8')) as SpecLike;
 	writeFileSync(join(directory, 'index.min.json'), JSON.stringify(spec));
 
-	const files = pickValidatorFiles(join(root, 'tests/external/validator'), options.documents ?? 30);
+	const files = options.files ?? pickValidatorFiles(join(root, 'tests/external/validator'), options.documents ?? 30);
 	const documents = [
 		...files.map(path => elementsOf(readFileSync(path, 'utf8'))),
 		elementsOf(generateDocument(spec as never, { seed: 1, elements: 500, depth: 20 })),

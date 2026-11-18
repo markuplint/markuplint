@@ -74,7 +74,7 @@ export function compose(base: PackedSpec, extensions: readonly ExtensionLike[]):
 		return base;
 	}
 	const value = (position: number, empty: unknown) =>
-		touched[position] ? base.regionValue(REGIONS[position] ?? 0) : empty;
+		touched[position] ? base.regionValue(REGIONS[position] as (typeof REGIONS)[number]) : empty;
 	const skeleton = {
 		def: {
 			'#globalAttrs': value(1, {}),

@@ -150,7 +150,7 @@ export function wordsOf(bytes: Uint8Array): Uint32Array {
 	}
 	return bytes.byteOffset % 4 === 0
 		? new Uint32Array(bytes.buffer, bytes.byteOffset, bytes.byteLength / 4)
-		: new Uint32Array([...bytes].buffer);
+		: new Uint32Array(Uint8Array.from(bytes).buffer);
 }
 
 const LITTLE_ENDIAN = new Uint8Array(new Uint32Array([1]).buffer)[0] === 1;
