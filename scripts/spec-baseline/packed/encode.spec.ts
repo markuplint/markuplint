@@ -110,6 +110,14 @@ describe('a lookup', () => {
 		}
 	});
 
+	test.each(VARIANTS)(
+		'reads back a string that starts with U+FEFF, which a decoder takes for the mark of the text (%o)',
+		variant => {
+			const spec = { specs: [{ name: '\uFEFFa', other: ['\uFEFF', 'b\uFEFF'] }] };
+			expect(encodeSpec(spec, variant).toJson().specs).toStrictEqual(spec.specs);
+		},
+	);
+
 	test.each(VARIANTS)('finds a name among fewer than eight, which no index covers, as among more (%o)', variant => {
 		const packed = encodeSpec(
 			{ specs: ['a', 'b', 'c', 'd', 'e'].map(name => ({ name, attributes: { name: { type: 'Any' } } })) },

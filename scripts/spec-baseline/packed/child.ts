@@ -11,7 +11,8 @@
  *   keeps. With `compare: 'decoded'` the strings are made into JavaScript strings when the file is opened.
  * - `query`: the questions of `questions.ts`, answered from the packed spec: the bits, the paths and the stream. The answers must equal those of the data
  *   before any time is taken.
- * - `compose`: composing the packed spec with each extension (`extensions.ts`) which is what `schemaToSpec` does for every document today.
+ * - `compose`: composing the packed spec with each extension (`extensions.ts`), which is what `schemaToSpec` does for every document today,
+ *   with nothing ready from an earlier composition (a spec is opened for each iteration).
  * - `objects`: the baseline, from the JSON as objects: reading and parsing, the same questions, and `schemaToSpec` for each extension.
  * - `hash`: Murmur3 and xxHash32 over every string of the questions, which is what the index of a lookup pays for the name.
  *
@@ -158,15 +159,19 @@ function query(options: ChildOptions): Measurement[] {
 
 function composition(options: ChildOptions): Measurement[] {
 	const extensions = readExtensions(options.dir);
-	// A spec that is opened for each extension, as the Rust program does: what a composition keeps for a spec (the table of
-	// its strings, the indexes of its regions) is not warm for the extension that comes after another.
+	// A composition is made once for a set of extensions and kept, so what is measured is one that has nothing ready: a spec is
+	// opened for each iteration (and that is not timed), so that what a composition keeps for a spec (the table from its strings to
+	// their numbers, the indexes of its regions) is made in each one. The Rust program does the same.
 	return Object.entries(extensions).map(([extension, value]) => {
-		const base = openFile(options);
-		return {
-			name: name(options, `compose-${extension}`),
-			unit: 'ms' as const,
-			values: time(options.iterations, () => compose(base, [value]).stringCount),
-		};
+		const times: number[] = [];
+		for (let i = 0; i < options.iterations; i++) {
+			const base = openFile(options);
+			const start = performance.now();
+			const composed = compose(base, [value]);
+			times.push(performance.now() - start);
+			sink.push(composed.stringCount);
+		}
+		return { name: name(options, `compose-${extension}`), unit: 'ms' as const, values: times };
 	});
 }
 

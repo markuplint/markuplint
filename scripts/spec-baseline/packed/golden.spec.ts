@@ -1,6 +1,8 @@
 import { readFileSync } from 'node:fs';
 import { describe, expect, test } from 'vitest';
 
+import { schemaToSpec } from '@markuplint/ml-spec';
+
 import { compose } from './compose.ts';
 import { encodeSpec } from './encode.ts';
 import { VARIANTS } from './format.ts';
@@ -26,6 +28,12 @@ describe.each(VARIANTS)('the files of the small spec (%o)', variant => {
 		const words = encodeSpec(SPEC, variant).serialize();
 		expect(words.at(-1)).toBe(golden?.base);
 		expect(words.length * 4).toBe(golden?.bytes);
+	});
+
+	test(`${stem}: composes to what schemaToSpec says, for roles whose names JavaScript and Rust trim differently`, () => {
+		// eslint-disable-next-line unicorn/prefer-structured-clone -- the text is what is handed over, and it drops an `undefined`
+		const expected = JSON.parse(JSON.stringify(schemaToSpec([SPEC, EXTENSION]))) as unknown;
+		expect(compose(encodeSpec(SPEC, variant), [EXTENSION]).toJson()).toStrictEqual(expected);
 	});
 
 	test(`${stem}: has the checksum of the composition that the Rust program also writes`, () => {

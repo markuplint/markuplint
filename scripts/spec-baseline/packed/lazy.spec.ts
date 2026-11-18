@@ -2,7 +2,7 @@ import { describe, expect, test } from 'vitest';
 
 import { encodeSpec, type SpecLike } from './encode.ts';
 import { VARIANTS } from './format.ts';
-import { lazy, refOf } from './lazy.ts';
+import { lazyReader, refOf } from './lazy.ts';
 
 const SPEC: SpecLike = {
 	def: {
@@ -20,7 +20,8 @@ describe.each(VARIANTS)('a lazy value (%o)', variant => {
 	if (!region) {
 		throw new Error('no region');
 	}
-	const root = lazy(packed, region, region.root) as Record<string, Record<string, unknown>>;
+	const read = lazyReader(packed);
+	const root = read(region, region.root) as Record<string, Record<string, unknown>>;
 
 	test('reads like the object that it stands for: keys, a spread, JSON', () => {
 		const plain = SPEC.def?.['#globalAttrs'] as Record<string, unknown>;
@@ -45,7 +46,7 @@ describe.each(VARIANTS)('a lazy value (%o)', variant => {
 
 	test('is one object for one node', () => {
 		expect(root['#HTMLGlobalAttrs']).toBe(root['#HTMLGlobalAttrs']);
-		expect(lazy(packed, region, region.root)).toBe(root);
+		expect(read(region, region.root)).toBe(root);
 	});
 
 	test('is a reference to its node, and a number, a boolean, null and a string are not', () => {
@@ -73,7 +74,7 @@ describe.each(VARIANTS)('a lazy value (%o)', variant => {
 		if (!rest) {
 			throw new Error('no region');
 		}
-		const object = lazy(packed, rest, rest.root) as { acceptedAttrNames: string[] };
+		const object = read(rest, rest.root) as { acceptedAttrNames: string[] };
 		const names = object.acceptedAttrNames;
 		expect(Array.isArray(names)).toBe(true);
 		expect(names.length).toBe(2);
@@ -97,7 +98,7 @@ describe.each(VARIANTS)('a lazy value (%o)', variant => {
 		if (!rest) {
 			throw new Error('no region');
 		}
-		const names = (lazy(packed, rest, rest.root) as { acceptedAttrNames: string[] }).acceptedAttrNames;
+		const names = (read(rest, rest.root) as { acceptedAttrNames: string[] }).acceptedAttrNames;
 		expect(() => names.push('z')).toThrow('read-only');
 		expect(() => names.splice(0, 1)).toThrow('read-only');
 		expect(() => {
@@ -114,7 +115,7 @@ describe.each(VARIANTS)('a lazy value (%o)', variant => {
 		if (!rest) {
 			throw new Error('no region');
 		}
-		const read = (key: string) => lazy(packedValues, rest, packedValues.get(rest, rest.root, key));
+		const read = (key: string) => lazyReader(packedValues)(rest, packedValues.get(rest, rest.root, key));
 		expect([read('number'), read('yes'), read('no'), read('nothing'), read('text')]).toStrictEqual([
 			7,
 			true,

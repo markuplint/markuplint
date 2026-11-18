@@ -35,7 +35,8 @@ import {
 import { HASH_FUNCTIONS, crc32cWords, fmix32, fnv1a32, nameBytes } from './hash.ts';
 import { reduce, slotOf, type MphfMode } from './mphf.ts';
 
-const decoder = new TextDecoder();
+// `ignoreBOM` keeps a U+FEFF at the start of a string, which a decoder otherwise takes for the mark of the text and drops
+const decoder = new TextDecoder('utf-8', { ignoreBOM: true });
 const ENCODER = new TextEncoder();
 
 /** How a name is compared with a key of the table. */

@@ -1,4 +1,5 @@
 import { readFileSync } from 'node:fs';
+import { isDeepStrictEqual } from 'node:util';
 import { describe, expect, test } from 'vitest';
 
 import { schemaToSpec } from '@markuplint/ml-spec';
@@ -6,7 +7,7 @@ import vue from '@markuplint/vue-spec';
 
 import { compose, touchedRegions, type ExtensionLike } from './compose.ts';
 import { EXTENSIONS as EXTENSION_BY_NAME, USER } from './extensions.ts';
-import { encodeSpec, type SpecLike } from './encode.ts';
+import { encodeSpec, regionValues, type SpecLike } from './encode.ts';
 import { NONE, Section, VARIANTS, variantName } from './format.ts';
 import { bitsOf } from './questions.ts';
 import { PackedSpec } from './read.ts';
@@ -57,6 +58,24 @@ describe('touchedRegions', () => {
 		// Vue and the others add global attributes and elements, and the markup languages change `templateContent`
 		expect(touchedRegions([vue as ExtensionLike])[0]).toBe(true);
 		expect(touchedRegions([vue as ExtensionLike])[1]).toBe(true);
+	});
+});
+
+describe('touchedRegions, against what schemaToSpec does', () => {
+	test.each(EXTENSIONS)('lists every region that the merge changes, for %s', (_name, extensions) => {
+		const merged = asJson(schemaToSpec([SPEC as never, ...(extensions as never[])])) as SpecLike;
+		const before = regionValues(SPEC);
+		const after = regionValues(merged);
+		const touched = touchedRegions(extensions);
+		const changed = before.map((value, position) => !isDeepStrictEqual(asJson(value), asJson(after[position])));
+		// a region that the merge changes and that is not listed would be shared with the base, and the change lost
+		expect(changed.map((isChanged, position) => isChanged && !touched[position])).toStrictEqual([
+			false,
+			false,
+			false,
+			false,
+			false,
+		]);
 	});
 });
 

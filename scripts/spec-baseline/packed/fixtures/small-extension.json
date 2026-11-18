@@ -49,6 +49,18 @@
 						"name": "new-role-12",
 						"generalization": []
 					},
+					{
+						"name": "﻿region",
+						"generalization": ["landmark"]
+					},
+					{
+						"name": "\u0085region2",
+						"generalization": []
+					},
+					{
+						"name": " Link ",
+						"generalization": ["widget"]
+					},
 					"link"
 				],
 				"props": [

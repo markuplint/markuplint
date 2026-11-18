@@ -25,29 +25,11 @@ export interface Reference {
 
 const REFERENCES = new WeakMap<object, Reference>();
 
-/** The value that was made for a node, so that a node is one object as it is in a tree of objects (`a.b === a.b`). */
-const MADE = new WeakMap<Region, Map<number, object>>();
-
-function remembered(region: Region, node: number, make: () => object): object {
-	let nodes = MADE.get(region);
-	if (!nodes) {
-		nodes = new Map();
-		MADE.set(region, nodes);
-	}
-	let value = nodes.get(node);
-	if (!value) {
-		value = make();
-		REFERENCES.set(value, { region, node });
-		nodes.set(node, value);
-	}
-	return value;
-}
-
 /**
  * The node that a value stands for.
  *
  * @param value - Any value
- * @returns The reference when the value is an array or an object that was made by {@link lazy}, or `undefined`
+ * @returns The reference when the value is an array or an object that a {@link lazyReader} made, or `undefined`
  */
 export function refOf(value: unknown): Reference | undefined {
 	return typeof value === 'object' && value !== null ? REFERENCES.get(value) : undefined;
@@ -59,49 +41,70 @@ function readOnly(): never {
 	throw new TypeError('A value of a packed region is read-only');
 }
 
+/** Gives the value of a node. */
+export type LazyReader = (region: Region, node: number) => unknown;
+
 /**
- * The value of a node.
+ * Makes a reader of the nodes of a spec. A node is one object for as long as the reader is, as it is in a tree of objects
+ * (`a.b === a.b`), and the objects that were made go with the reader: a composition makes one, and when it is done what it
+ * made is no longer reachable.
  *
  * @param spec - The packed spec
- * @param region - The region
- * @param node - The node
- * @returns A plain value for a number, a boolean, null and a string, and a `Proxy` for an array and an object
+ * @returns The reader: for a node, a plain value for a number, a boolean, null and a string, and a `Proxy` for an array and an object
  */
-export function lazy(spec: PackedSpec, region: Region, node: number): unknown {
-	switch (region.tag(node)) {
-		case Tag.Null: {
-			return null;
+export function lazyReader(spec: PackedSpec): LazyReader {
+	const made = new Map<Region, Map<number, object>>();
+	const remembered = (region: Region, node: number, make: () => object): object => {
+		let nodes = made.get(region);
+		if (!nodes) {
+			nodes = new Map();
+			made.set(region, nodes);
 		}
-		case Tag.False: {
-			return false;
+		let value = nodes.get(node);
+		if (!value) {
+			value = make();
+			REFERENCES.set(value, { region, node });
+			nodes.set(node, value);
 		}
-		case Tag.True: {
-			return true;
+		return value;
+	};
+	const read: LazyReader = (region, node) => {
+		switch (region.tag(node)) {
+			case Tag.Null: {
+				return null;
+			}
+			case Tag.False: {
+				return false;
+			}
+			case Tag.True: {
+				return true;
+			}
+			case Tag.Uint: {
+				return region.a(node);
+			}
+			case Tag.String: {
+				return spec.stringAt(region.a(node));
+			}
+			case Tag.Array: {
+				return remembered(region, node, () => lazyArray(spec, region, node, read));
+			}
+			case Tag.Object: {
+				return remembered(region, node, () => lazyObject(spec, region, node, read));
+			}
+			default: {
+				throw new Error(`There is no tag ${region.tag(node)}`);
+			}
 		}
-		case Tag.Uint: {
-			return region.a(node);
-		}
-		case Tag.String: {
-			return spec.stringAt(region.a(node));
-		}
-		case Tag.Array: {
-			return remembered(region, node, () => lazyArray(spec, region, node));
-		}
-		case Tag.Object: {
-			return remembered(region, node, () => lazyObject(spec, region, node));
-		}
-		default: {
-			throw new Error(`There is no tag ${region.tag(node)}`);
-		}
-	}
+	};
+	return read;
 }
 
-function lazyObject(spec: PackedSpec, region: Region, node: number): object {
+function lazyObject(spec: PackedSpec, region: Region, node: number, read: LazyReader): object {
 	const count = region.b(node);
 	/** The position of an entry among the entries of the object, or `NONE` for a key that the data lacks. */
 	const positionOf = (key: string | symbol): number =>
 		typeof key === 'string' ? spec.entry(region, node, key) : NONE;
-	const valueAt = (position: number): unknown => lazy(spec, region, spec.valueAt(region, node, position));
+	const valueAt = (position: number): unknown => read(region, spec.valueAt(region, node, position));
 	return new Proxy(
 		{},
 		{
@@ -126,7 +129,7 @@ function lazyObject(spec: PackedSpec, region: Region, node: number): object {
 	);
 }
 
-function lazyArray(spec: PackedSpec, region: Region, node: number): object {
+function lazyArray(spec: PackedSpec, region: Region, node: number, read: LazyReader): object {
 	const count = region.b(node);
 	const target: unknown[] = [];
 	target.length = count;
@@ -138,7 +141,7 @@ function lazyArray(spec: PackedSpec, region: Region, node: number): object {
 		const position = Number(key);
 		return position < count ? position : -1;
 	};
-	const itemAt = (position: number): unknown => lazy(spec, region, spec.at(region, node, position));
+	const itemAt = (position: number): unknown => read(region, spec.at(region, node, position));
 	return new Proxy(target, {
 		get: (array, key, receiver) => {
 			if (key === 'length') {

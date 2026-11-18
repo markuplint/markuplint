@@ -29,7 +29,7 @@ import { schemaToSpec } from '@markuplint/ml-spec';
 
 import { StringTable, assertDefKeys, encodeRegion } from './encode.ts';
 import { REGIONS, RegionAt, Section } from './format.ts';
-import { lazy } from './lazy.ts';
+import { lazyReader } from './lazy.ts';
 
 /** What an extension that this composes may have: the keys that `schemaToSpec` reads. */
 export interface ExtensionLike {
@@ -83,6 +83,7 @@ export function compose(base: PackedSpec, extensions: readonly ExtensionLike[]):
 	}
 	// What an extension touches is given to `schemaToSpec` as values that are read when it reads them (`lazy.ts`), so that
 	// what it leaves as it was is still a node of the base when it comes back, and is not made again.
+	const read = lazyReader(base);
 	const value = (position: number, empty: unknown) => {
 		if (!touched[position]) {
 			return empty;
@@ -91,7 +92,7 @@ export function compose(base: PackedSpec, extensions: readonly ExtensionLike[]):
 		if (!region) {
 			throw new Error(`The packed spec has no region ${position}`);
 		}
-		return lazy(base, region, region.root);
+		return read(region, region.root);
 	};
 	const skeleton = {
 		def: {
