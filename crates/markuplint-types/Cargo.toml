@@ -23,7 +23,7 @@ url = "2"
 # would write other bytes. A dev-dependency does not change what the library is built with.
 [dev-dependencies]
 regex = { workspace = true }
-serde_json = { version = "1", features = ["preserve_order"] }
+serde_json = { version = "=1.0.154", features = ["preserve_order"] }
 
 # The Rust half of `yarn spec-baseline perf --rust`. It is a program of its own (the TypeScript side starts it for each
 # sample), and its pure parts have tests that `cargo test` runs.
