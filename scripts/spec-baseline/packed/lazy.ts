@@ -26,6 +26,24 @@ export interface Reference {
 
 const REFERENCES = new WeakMap<object, Reference>();
 
+/** The value that was made for a node, so that a node is one object as it is in a tree of objects (`a.b === a.b`). */
+const MADE = new WeakMap<Region, Map<number, object>>();
+
+function remembered(region: Region, node: number, make: () => object): object {
+	let nodes = MADE.get(region);
+	if (!nodes) {
+		nodes = new Map();
+		MADE.set(region, nodes);
+	}
+	let value = nodes.get(node);
+	if (!value) {
+		value = make();
+		REFERENCES.set(value, { region, node });
+		nodes.set(node, value);
+	}
+	return value;
+}
+
 /**
  * The node that a value stands for.
  *
@@ -68,10 +86,10 @@ export function lazy(spec: PackedSpec, region: Region, node: number): unknown {
 			return spec.stringAt(region.a(node));
 		}
 		case Tag.Array: {
-			return lazyArray(spec, region, node);
+			return remembered(region, node, () => lazyArray(spec, region, node));
 		}
 		case Tag.Object: {
-			return lazyObject(spec, region, node);
+			return remembered(region, node, () => lazyObject(spec, region, node));
 		}
 		default: {
 			throw new Error(`There is no tag ${region.tag(node)}`);
@@ -88,10 +106,14 @@ function lazyObject(spec: PackedSpec, region: Region, node: number): object {
 		const position = spec.entry(region, node, key);
 		return position === NONE ? undefined : lazy(spec, region, spec.valueAt(region, node, position));
 	};
-	const proxy = new Proxy(
+	return new Proxy(
 		{},
 		{
-			get: (_target, key) => valueOf(key),
+			// what the data has, and then what every object has (`hasOwnProperty`, `toString`)
+			get: (target, key, receiver) =>
+				typeof key === 'string' && spec.entry(region, node, key) !== NONE
+					? valueOf(key)
+					: Reflect.get(target, key, receiver),
 			has: (_target, key) => typeof key === 'string' && spec.entry(region, node, key) !== NONE,
 			ownKeys: () =>
 				Array.from({ length: count }, (_, position) => spec.stringAt(spec.keyAt(region, node, position))),
@@ -106,8 +128,6 @@ function lazyObject(spec: PackedSpec, region: Region, node: number): object {
 			deleteProperty: readOnly,
 		},
 	);
-	REFERENCES.set(proxy, { region, node });
-	return proxy;
 }
 
 function lazyArray(spec: PackedSpec, region: Region, node: number): object {
@@ -123,7 +143,7 @@ function lazyArray(spec: PackedSpec, region: Region, node: number): object {
 			? { found: true, value: lazy(spec, region, spec.at(region, node, position)) }
 			: { found: false };
 	};
-	const proxy = new Proxy(target, {
+	return new Proxy(target, {
 		get: (array, key, receiver) => {
 			if (key === 'length') {
 				return count;
@@ -144,6 +164,4 @@ function lazyArray(spec: PackedSpec, region: Region, node: number): object {
 		defineProperty: readOnly,
 		deleteProperty: readOnly,
 	});
-	REFERENCES.set(proxy, { region, node });
-	return proxy;
 }

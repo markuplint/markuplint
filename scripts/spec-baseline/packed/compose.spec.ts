@@ -169,6 +169,31 @@ describe.each(VARIANTS)('compose (%o)', variant => {
 		expect(base.elementCount).toBe(composed.elementCount);
 	});
 
+	test('does not let a composition see what another composition of the same base made', () => {
+		compose(base, [USER]);
+		const only = compose(base, [vue as ExtensionLike]);
+		expect(only.toJson()).toStrictEqual(asJson(schemaToSpec([SPEC as never, vue as never])));
+		const global = only.regions[1];
+		if (!global) {
+			throw new Error('no region');
+		}
+		const html = only.get(global, global.root, '#HTMLGlobalAttrs');
+		expect(only.get(global, html, 'x-user-attr')).toBe(NONE);
+		const added = Object.keys(
+			(vue as { def: { '#globalAttrs': { '#extends': object } } }).def['#globalAttrs']['#extends'],
+		);
+		expect(added.length).toBeGreaterThan(0);
+		for (const name of added) {
+			expect(only.get(global, html, name), name).not.toBe(NONE);
+		}
+	});
+
+	test('refuses an extension of the ARIA for a base that has none to merge it into, as schemaToSpec does', () => {
+		const empty = encodeSpec({ specs: [] }, variant);
+		expect(() => compose(empty, [USER])).toThrow();
+		expect(() => schemaToSpec([{ def: {}, specs: [] } as never, USER as never])).toThrow();
+	});
+
 	test('can be composed again, and opened as a file', () => {
 		const once = compose(base, [vue as ExtensionLike]);
 		const twice = compose(once, [USER]);

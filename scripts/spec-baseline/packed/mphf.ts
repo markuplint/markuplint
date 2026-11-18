@@ -98,12 +98,17 @@ export function slotCount(keys: number, mode: MphfMode): number {
  */
 export function slotOf(hash: number, pilot: number, slots: number, mode: MphfMode): number {
 	const mixed = fmix32((hash ^ pilotMix(pilot)) >>> 0);
-	return mode === 'minimal' ? reduce(mixed, slots) : mixed >>> (32 - Math.log2(slots));
+	return mode === 'minimal' ? reduce(mixed, slots) : mixed >>> shiftOf(slots);
 }
 
-/** The bits that {@link slotOf} shifts a hash out of, for a table of this many slots (a power of two). */
+/**
+ * The bits that {@link slotOf} shifts a hash out of, for a table of this many slots (a power of two).
+ *
+ * @param slots - The slots, a power of two of 2 or more
+ * @returns `32 - log2(slots)`
+ */
 export function shiftOf(slots: number): number {
-	return 32 - Math.log2(slots);
+	return Math.clz32(slots) + 1;
 }
 
 /**

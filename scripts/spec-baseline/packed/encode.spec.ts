@@ -113,6 +113,23 @@ describe('a lookup', () => {
 		}
 	});
 
+	test.each(VARIANTS)('finds a name among fewer than eight, which no index covers, as among more (%o)', variant => {
+		const packed = encodeSpec(
+			{ specs: ['a', 'b', 'c', 'd', 'e'].map(name => ({ name, attributes: { name: { type: 'Any' } } })) },
+			variant,
+		);
+		const specs = packed.regions[0];
+		if (!specs) {
+			throw new Error('no region');
+		}
+		expect(specs.c(specs.root)).toBe(0);
+		for (const [position, name] of ['a', 'b', 'c', 'd', 'e'].entries()) {
+			expect(packed.position(specs, specs.root, name)).toBe(position);
+			expect(packed.toValue(specs, packed.find(specs, specs.root, name))).toMatchObject({ name });
+		}
+		expect(packed.find(specs, specs.root, 'f')).toBe(NONE);
+	});
+
 	test.each(VARIANTS)('finds every key of every object of #globalAttrs and #aria (%o)', variant => {
 		const packed = encodeSpec(SPEC, variant);
 		const global = packed.regions[1];

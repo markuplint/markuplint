@@ -30,7 +30,7 @@ import {
 	variantOf,
 	variantWord,
 } from './format.ts';
-import { crc32cWords, fmix32, fnv1a32, murmur3, nameBytes, xxhash32 } from './hash.ts';
+import { HASH_FUNCTIONS, crc32cWords, fmix32, fnv1a32, nameBytes } from './hash.ts';
 import { reduce, slotOf, type MphfMode } from './mphf.ts';
 
 const decoder = new TextDecoder();
@@ -181,7 +181,7 @@ export class PackedSpec {
 		this.compare = options.compare ?? 'bytes';
 		this.rowEntries = !variant.columns;
 		this.mode = variant.index === 'sorted' ? null : variant.index;
-		this.hash = variant.hash === 'murmur3' ? murmur3 : xxhash32;
+		this.hash = HASH_FUNCTIONS[variant.hash];
 		this.offsets = sections[Section.StringOffsets] ?? new Uint32Array(1);
 		const stringWords = sections[Section.StringBytes] ?? new Uint32Array(0);
 		const length = u(this.offsets, this.offsets.length - 1);

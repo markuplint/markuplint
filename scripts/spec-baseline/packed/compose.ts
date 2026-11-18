@@ -77,8 +77,14 @@ export function compose(base: PackedSpec, extensions: readonly ExtensionLike[]):
 	// What an extension touches is given to `schemaToSpec` as values that are read when it reads them (`lazy.ts`), so that
 	// what it leaves as it was is still a node of the base when it comes back, and is not made again.
 	const value = (position: number, empty: unknown) => {
+		if (!touched[position]) {
+			return empty;
+		}
 		const region = base.regions[position];
-		return touched[position] && region ? lazy(base, region, region.root) : empty;
+		if (!region) {
+			throw new Error(`The packed spec has no region ${position}`);
+		}
+		return lazy(base, region, region.root);
 	};
 	const skeleton = {
 		def: {

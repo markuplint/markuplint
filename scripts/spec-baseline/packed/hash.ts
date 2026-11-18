@@ -19,6 +19,8 @@
  * @module
  */
 
+import type { HashKind } from './format.ts';
+
 const encoder = new TextEncoder();
 
 /** A buffer that the bytes of an ASCII name are written to, so that hashing a name allocates nothing. */
@@ -164,11 +166,11 @@ export function xxhash32(bytes: Uint8Array, seed: number): number {
 	return h >>> 0;
 }
 
-/** The hash function of an index, by the number that a header holds. */
-export const HASHES = { 0: murmur3, 1: xxhash32 } as const satisfies Record<
-	number,
-	(bytes: Uint8Array, seed: number) => number
->;
+/** The hash functions of an index, by the name that a candidate has for them (the one table that the encoder and the reader use). */
+export const HASH_FUNCTIONS: Readonly<Record<HashKind, (bytes: Uint8Array, seed: number) => number>> = {
+	murmur3,
+	xxhash32,
+};
 
 /**
  * FNV-1a, 32 bits: the digest of a string that a question's answer is made of (not a hash of an index).

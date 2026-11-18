@@ -1,7 +1,7 @@
 import { describe, expect, test } from 'vitest';
 
 import { NONE } from './format.ts';
-import { murmur3, xxhash32 } from './hash.ts';
+import { HASH_FUNCTIONS } from './hash.ts';
 import { buildMphf, lookupMphf, reduce, slotCount } from './mphf.ts';
 
 const encoder = new TextEncoder();
@@ -14,7 +14,7 @@ function names(count: number): Uint8Array[] {
 	});
 }
 
-const HASHES = { murmur3, xxhash32 } as const;
+const HASHES = HASH_FUNCTIONS;
 
 describe('reduce', () => {
 	test('keeps a number in the range and is exact for the largest', () => {
@@ -90,7 +90,7 @@ describe('buildMphf', () => {
 	test('is built for the whole table of a spec in a few milliseconds', () => {
 		const keys = names(237);
 		const start = performance.now();
-		buildMphf(keys, murmur3, 'minimal');
+		buildMphf(keys, HASH_FUNCTIONS.murmur3, 'minimal');
 		expect(performance.now() - start).toBeLessThan(500);
 	});
 

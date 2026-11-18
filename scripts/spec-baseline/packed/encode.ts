@@ -19,7 +19,7 @@
 import type { Variant } from './format.ts';
 
 import { INDEX_MINIMUM, NONE, REGIONS, SECTION_COUNT, Section, Tag } from './format.ts';
-import { murmur3, xxhash32 } from './hash.ts';
+import { HASH_FUNCTIONS } from './hash.ts';
 import { refOf } from './lazy.ts';
 import { buildMphf } from './mphf.ts';
 import { PackedSpec, type Region } from './read.ts';
@@ -141,6 +141,9 @@ function isNamedObject(value: unknown): value is { name: string } {
 	);
 }
 
+/** The indexes of a region that were walked: a region does not change, and a composition asks for them every time. */
+const INDEXES_OF = new WeakMap<Region, Map<string, number>>();
+
 /**
  * The indexes that a region has, by the string numbers of their keys, which is how an index that is needed again is found: the
  * first of those with the same keys.
@@ -150,6 +153,10 @@ function isNamedObject(value: unknown): value is { name: string } {
  * @returns The position of each index, by its keys
  */
 export function indexesOf(region: Region, variant: Variant): Map<string, number> {
+	const known = INDEXES_OF.get(region);
+	if (known) {
+		return known;
+	}
 	const words = region.indexes;
 	const found = new Map<string, number>();
 	let at = 0;
@@ -166,6 +173,7 @@ export function indexesOf(region: Region, variant: Variant): Map<string, number>
 		}
 		at += length;
 	}
+	INDEXES_OF.set(region, found);
 	return found;
 }
 
@@ -182,13 +190,15 @@ class RegionEncoder {
 	private readonly lists: number[] = [];
 	private readonly listIds = new Map<string, number>();
 	private readonly indexes: number[] = [];
-	private readonly indexIds: Map<string, number>;
+	private readonly indexIds = new Map<string, number>();
+	/** The indexes that the base has: shared by every composition, so never written to. */
+	private readonly baseIndexIds: ReadonlyMap<string, number>;
 
 	constructor(strings: StringTable, variant: Variant, base: Region | null = null) {
 		this.strings = strings;
 		this.variant = variant;
 		this.base = base;
-		this.indexIds = base ? indexesOf(base, variant) : new Map();
+		this.baseIndexIds = base ? indexesOf(base, variant) : new Map();
 	}
 
 	private node(tag: number, a: number, b: number, c: number): number {
@@ -221,7 +231,7 @@ class RegionEncoder {
 	/** Makes the index of entries with these keys, and gives its position. */
 	private index(keys: readonly number[]): number {
 		const key = keys.join(' ');
-		const known = this.indexIds.get(key);
+		const known = this.indexIds.get(key) ?? this.baseIndexIds.get(key);
 		if (known !== undefined) {
 			return known;
 		}
@@ -239,7 +249,7 @@ class RegionEncoder {
 			const order = distinct.toSorted((x, y) => compareBytes(bytes[x] as Uint8Array, bytes[y] as Uint8Array));
 			words.push(...order);
 		} else {
-			const hash = this.variant.hash === 'murmur3' ? murmur3 : xxhash32;
+			const hash = HASH_FUNCTIONS[this.variant.hash];
 			const mphf = buildMphf(
 				distinct.map(position => bytes[position] as Uint8Array),
 				hash,
@@ -349,10 +359,25 @@ class RegionEncoder {
 		section[1] = baseLists + this.lists.length;
 		section[2] = baseIndexes + this.indexes.length;
 		section[3] = root;
-		const field = (node: number, index: number): number =>
-			node < baseCount && base
-				? ([base.tag(node), base.a(node), base.b(node), base.c(node)][index] ?? 0)
-				: (this.nodes[4 * (node - baseCount) + index] ?? 0);
+		const field = (node: number, index: number): number => {
+			if (node >= baseCount || !base) {
+				return this.nodes[4 * (node - baseCount) + index] ?? 0;
+			}
+			switch (index) {
+				case 0: {
+					return base.tag(node);
+				}
+				case 1: {
+					return base.a(node);
+				}
+				case 2: {
+					return base.b(node);
+				}
+				default: {
+					return base.c(node);
+				}
+			}
+		};
 		if (this.variant.columns) {
 			for (let node = 0; node < count; node++) {
 				for (let index = 0; index < 4; index++) {
