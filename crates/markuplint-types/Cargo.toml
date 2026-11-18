@@ -27,5 +27,12 @@ regex = { workspace = true }
 name = "spec_baseline"
 test = true
 
+# The Rust half of the packed candidates of `scripts/spec-baseline/packed/`: it reads, checks, composes and encodes
+# the spec in the layout that `format.ts` describes, byte for byte as the TypeScript side does, and measures them.
+[[example]]
+name = "packed_candidates"
+path = "examples/packed_candidates/main.rs"
+test = true
+
 [lints]
 workspace = true
