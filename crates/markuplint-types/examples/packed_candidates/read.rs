@@ -17,7 +17,9 @@ use std::rc::Rc;
 
 use serde_json::{Map, Value};
 
-use crate::format::{FLAGS, HEADER_WORDS, MAGIC, NONE, REGIONS, SECTION_COUNT, VERSION, Variant, section, tag};
+use crate::format::{
+    BARE_FLAG, FLAGS, HEADER_WORDS, MAGIC, NONE, REGIONS, SECTION_COUNT, VERSION, Variant, section, tag,
+};
 use crate::hash::{HashFn, crc32c_words, fmix32, fnv1a32, murmur3, xxhash32};
 use crate::mphf::{Mode, reduce, slot_of};
 
@@ -31,6 +33,53 @@ pub fn word(bytes: &[u8], index: usize) -> u32 {
 /// The little-endian bytes of words.
 pub fn words_to_bytes(words: &[u32]) -> Vec<u8> {
     words.iter().flat_map(|word| word.to_le_bytes()).collect()
+}
+
+/// The mark that an index of an object has before its keys, in a candidate whose indexes of objects have no keys of their own (a
+/// string number is never this large).
+pub const OBJECT_MARK: u32 = u32::MAX - 1;
+
+/// The mark that an index of an array has before its keys, in the same candidates.
+pub const ARRAY_MARK: u32 = u32::MAX;
+
+/// The keys of an index as the encoder looks it up when it needs one again: the string numbers of the keys, and, for a candidate
+/// whose indexes of objects have no keys, a mark of which kind of index it is (the index of an array and that of an object are
+/// not the same record, since only the first has its keys).
+pub fn indexed_keys(variant: Variant, bare: bool, keys: &[u32]) -> Vec<u32> {
+    let mut lookup = Vec::with_capacity(keys.len() + 1);
+    if variant.bare {
+        lookup.push(if bare { OBJECT_MARK } else { ARRAY_MARK });
+    }
+    lookup.extend_from_slice(keys);
+    lookup
+}
+
+/// The offset of the string `index` in the section of the offsets, which is 32 bits each, or, when it is narrow, the count of
+/// the strings and then 16 bits each (the first of two to a word is in the low half).
+#[inline]
+pub fn offset_at(offsets: &[u8], narrow: bool, index: usize) -> usize {
+    if narrow {
+        let at = 4 + 2 * index;
+        usize::from(u16::from_le_bytes([offsets[at], offsets[at + 1]]))
+    } else {
+        word(offsets, index) as usize
+    }
+}
+
+/// How many offsets the section of the offsets holds (one more than the strings).
+///
+/// # Errors
+///
+/// A narrow section that is not as long as the count of its strings says.
+pub fn offset_count(offsets: &[u8], narrow: bool) -> Result<usize, String> {
+    if !narrow {
+        return Ok(offsets.len() / 4);
+    }
+    let count = word(offsets, 0) as usize + 1;
+    if offsets.len() / 4 != 1 + count.div_ceil(2) {
+        return Err("The table of string offsets is not as long as the count of the strings says".to_string());
+    }
+    Ok(count)
 }
 
 /// A part of a buffer that is shared: a section of a file, or the words that a composition made.
@@ -151,6 +200,8 @@ pub struct PackedSpec {
     mode: Option<Mode>,
     hash: HashFn,
     rows: bool,
+    /// What a slot of a perfect hash holds more than the position of its key: 1 when the position is stored plus one.
+    slot_shift: u32,
     ids: RefCell<Option<HashMap<String, u32>>>,
 }
 
@@ -171,14 +222,15 @@ impl PackedSpec {
         if offsets.len() < 4 {
             return Err("The table of the offsets of the strings is empty".to_string());
         }
-        if word(offsets, 0) != 0 {
+        let narrow = variant.narrow;
+        let offset_count = offset_count(offsets, narrow)?;
+        if offset_at(offsets, narrow, 0) != 0 {
             return Err("The table of string offsets does not start at 0".to_string());
         }
-        let offset_count = offsets.len() / 4;
-        if (1..offset_count).any(|index| word(offsets, index) < word(offsets, index - 1)) {
+        if (1..offset_count).any(|index| offset_at(offsets, narrow, index) < offset_at(offsets, narrow, index - 1)) {
             return Err("The table of string offsets is not in order".to_string());
         }
-        let length = word(offsets, offset_count - 1) as usize;
+        let length = offset_at(offsets, narrow, offset_count - 1);
         let string_words = sections[section::STRING_BYTES].bytes().len() / 4;
         if length > string_words * 4 || (string_words > 0 && length <= (string_words - 1) * 4) {
             return Err("The bytes of the strings are not as long as their offsets say".to_string());
@@ -201,6 +253,7 @@ impl PackedSpec {
                 crate::format::HashKind::Xxhash32 => xxhash32,
             },
             rows: !variant.columns,
+            slot_shift: u32::from(variant.zero),
             ids: RefCell::new(None),
         })
     }
@@ -266,6 +319,7 @@ impl PackedSpec {
             mode: self.mode,
             hash: self.hash,
             rows: self.rows,
+            slot_shift: self.slot_shift,
             ids: RefCell::new(None),
         }
     }
@@ -278,18 +332,29 @@ impl PackedSpec {
     ///
     /// Offsets of strings that do not start with the offsets of the old ones, bytes of strings that do not start with the
     /// bytes of the old ones, or sections that are not those of a spec.
+    #[cfg(test)]
     pub fn replace(&self, changes: Vec<(usize, Vec<u8>)>) -> Result<Self, String> {
-        Self::new(self.variant, self.changed_sections(changes)?)
+        self.replace_as(changes, self.variant)
     }
 
-    /// Like [`PackedSpec::replace`], and the section of the bits is made from the regions that the new spec has, in the
-    /// same construction: a spec whose `specs` or `#contentModels` changed is made once, with the bits that its regions give.
+    /// Like [`PackedSpec::replace`], for sections that belong to another candidate than this spec's (a table of strings that had
+    /// to be widened is written in 32 bits, and its spec says so).
     ///
     /// # Errors
     ///
     /// As [`PackedSpec::replace`].
-    pub fn replace_with_bits(&self, changes: Vec<(usize, Vec<u8>)>) -> Result<Self, String> {
-        let mut spec = Self::new(self.variant, self.changed_sections(changes)?)?;
+    pub fn replace_as(&self, changes: Vec<(usize, Vec<u8>)>, variant: Variant) -> Result<Self, String> {
+        Self::new(variant, self.changed_sections(changes, variant)?)
+    }
+
+    /// Like [`PackedSpec::replace_as`], and the section of the bits is made from the regions that the new spec has, in the
+    /// same construction: a spec whose `specs` or `#contentModels` changed is made once, with the bits that its regions give.
+    ///
+    /// # Errors
+    ///
+    /// As [`PackedSpec::replace_as`].
+    pub fn replace_with_bits_as(&self, changes: Vec<(usize, Vec<u8>)>, variant: Variant) -> Result<Self, String> {
+        let mut spec = Self::new(variant, self.changed_sections(changes, variant)?)?;
         spec.make_bits();
         Ok(spec)
     }
@@ -311,20 +376,28 @@ impl PackedSpec {
     }
 
     /// The sections of this spec with the new words of some, which the table of strings of a new spec has to continue.
-    fn changed_sections(&self, changes: Vec<(usize, Vec<u8>)>) -> Result<Vec<Section>, String> {
+    fn changed_sections(&self, changes: Vec<(usize, Vec<u8>)>, variant: Variant) -> Result<Vec<Section>, String> {
         let mut sections = self.sections.clone();
         for (id, bytes) in changes {
             let old = self.sections[id].bytes();
             if id == section::STRING_OFFSETS {
-                if bytes.len() < old.len() {
+                // The offsets of the new table are read as its candidate has them, which is not always as this one's are
+                let old_count = offset_count(old, self.variant.narrow)?;
+                if offset_count(&bytes, variant.narrow)? < old_count {
                     return Err("The new table of strings is shorter than the one it replaces".to_string());
                 }
-                if bytes[..old.len()] != *old {
+                if (0..old_count)
+                    .any(|index| offset_at(&bytes, variant.narrow, index) != offset_at(old, self.variant.narrow, index))
+                {
                     return Err("The new table of strings does not continue the one it replaces".to_string());
                 }
             } else if id == section::STRING_BYTES {
                 // The strings end where the last offset says; what follows is the padding to whole words
-                let used = word(self.sections[section::STRING_OFFSETS].bytes(), self.string_count()) as usize;
+                let used = offset_at(
+                    self.sections[section::STRING_OFFSETS].bytes(),
+                    self.variant.narrow,
+                    self.string_count(),
+                );
                 if bytes.len() < used || bytes[..used] != old[..used] {
                     return Err("The new table of string bytes does not continue the one it replaces".to_string());
                 }
@@ -379,15 +452,21 @@ impl PackedSpec {
 
     /// How many strings the table has.
     pub fn string_count(&self) -> usize {
-        self.bytes_of(section::STRING_OFFSETS).len() / 4 - 1
+        let offsets = self.bytes_of(section::STRING_OFFSETS);
+        if self.variant.narrow {
+            word(offsets, 0) as usize
+        } else {
+            offsets.len() / 4 - 1
+        }
     }
 
     /// The bytes of the string with this number.
     #[inline]
     pub fn string_bytes(&self, sid: u32) -> &[u8] {
         let offsets = self.bytes_of(section::STRING_OFFSETS);
-        let start = word(offsets, sid as usize) as usize;
-        let end = word(offsets, sid as usize + 1) as usize;
+        let narrow = self.variant.narrow;
+        let start = offset_at(offsets, narrow, sid as usize);
+        let end = offset_at(offsets, narrow, sid as usize + 1);
         &self.bytes_of(section::STRING_BYTES)[start..end]
     }
 
@@ -442,11 +521,12 @@ impl PackedSpec {
 
     /// The indexes of a region, each with the string numbers of its keys and its position among the indexes: they are walked from
     /// the start, and a record is `2 + n + entries` words for a sorted index and `5 + ceil(buckets / 2) + slots + entries` for a
-    /// perfect hash, from the counts at its start, and ends with the key of each entry.
+    /// perfect hash, from the counts at its start, and ends with the key of each entry, or, for an index that has no keys, with
+    /// the position of the list of the first object that has the index, whose keys are those of every object that refers to it.
     ///
     /// # Errors
     ///
-    /// A record that is not inside the indexes of the region.
+    /// A record that is not inside the indexes of the region, or that refers to a list that the region does not have.
     pub fn region_index_keys(&self, region: usize) -> Result<Vec<(Vec<u32>, u32)>, String> {
         let bytes = self.region_indexes(region);
         let words = bytes.len() / 4;
@@ -457,23 +537,54 @@ impl PackedSpec {
                 return Err("An index is cut short".to_string());
             }
             let entries = word(bytes, at) as usize;
-            let distinct = word(bytes, at + 1) as usize;
+            let marked = word(bytes, at + 1);
+            let bare = self.variant.bare && marked & BARE_FLAG != 0;
+            let distinct = (marked & !BARE_FLAG) as usize;
+            let tail = if bare { 1 } else { entries };
             let length = if self.mode.is_none() {
-                2 + distinct + entries
+                2 + distinct + tail
             } else {
-                5 + (word(bytes, at + 3) as usize).div_ceil(2) + word(bytes, at + 4) as usize + entries
+                5 + (word(bytes, at + 3) as usize).div_ceil(2) + word(bytes, at + 4) as usize + tail
             };
-            if at + length > words || entries > length {
+            if at + length > words || tail > length {
                 return Err("An index is not inside the indexes of its region".to_string());
             }
-            let keys = (at + length - entries..at + length)
-                .map(|index| word(bytes, index))
-                .collect();
             // A position among the indexes is below 2^32
-            found.push((keys, at as u32));
+            let position = at as u32;
+            let keys: Vec<u32> = if bare {
+                self.keys_of_list(region, word(bytes, at + length - 1) as usize, entries)?
+            } else {
+                (at + length - tail..at + length)
+                    .map(|index| word(bytes, index))
+                    .collect()
+            };
+            found.push((indexed_keys(self.variant, bare, &keys), position));
             at += length;
         }
         Ok(found)
+    }
+
+    /// The keys of an object that are in its list, for an index without keys of its own that says where the list is.
+    ///
+    /// # Errors
+    ///
+    /// A list that the region does not have.
+    fn keys_of_list(&self, region: usize, list_at: usize, entries: usize) -> Result<Vec<u32>, String> {
+        let region = &self.regions[region];
+        let bytes = self.bytes_of(region.section);
+        let last = if entries == 0 {
+            list_at
+        } else {
+            self.entry_key_at(list_at, entries - 1)
+        };
+        if region.lists_at + last >= region.indexes_at {
+            return Err(format!(
+                "An index without keys refers to a list at {list_at} that the region does not have"
+            ));
+        }
+        Ok((0..entries)
+            .map(|j| word(bytes, region.lists_at + self.entry_key_at(list_at, j)))
+            .collect())
     }
 
     #[inline]
@@ -486,11 +597,13 @@ impl PackedSpec {
         if self.rows { a + 2 * j + 1 } else { a + b + j }
     }
 
-    /// Finds the position of a key in an index.
-    fn find_entry(&self, region: &Region, bytes: &[u8], index: usize, query: &[u8]) -> u32 {
+    /// Finds the position of a key in an index. `list_at` is, for the index of an object that has no keys of its own, the
+    /// position of the list of the object, which holds them.
+    fn find_entry(&self, region: &Region, bytes: &[u8], index: usize, query: &[u8], list_at: Option<usize>) -> u32 {
         let base = region.indexes_at + index;
         let entries = word(bytes, base);
-        let distinct = word(bytes, base + 1) as usize;
+        // The top bit of the word is the flag of an index without keys, which a sorted index never has
+        let distinct = (word(bytes, base + 1) & !BARE_FLAG) as usize;
         let Some(mode) = self.mode else {
             let order_at = base + 2;
             let keys_at = order_at + distinct;
@@ -518,11 +631,16 @@ impl PackedSpec {
         let hash = (self.hash)(query, seed);
         let bucket = reduce(hash, buckets) as usize;
         let pilot = (word(bytes, pilots_at + (bucket >> 1)) >> ((bucket & 1) << 4)) & 0xffff;
-        let position = word(bytes, slots_at + slot_of(hash, pilot, slots, mode) as usize);
+        // A slot that is 0 for none gives NONE here when the position is stored plus one, and NONE is not below `entries`
+        let position = word(bytes, slots_at + slot_of(hash, pilot, slots, mode) as usize).wrapping_sub(self.slot_shift);
         if position == NONE || position >= entries {
             return NONE;
         }
-        if self.string_bytes(word(bytes, keys_at + position as usize)) == query {
+        let key = match list_at {
+            None => word(bytes, keys_at + position as usize),
+            Some(a) => word(bytes, region.lists_at + self.entry_key_at(a, position as usize)),
+        };
+        if self.string_bytes(key) == query {
             position
         } else {
             NONE
@@ -554,7 +672,8 @@ impl PackedSpec {
         let index = region.field(bytes, node, 3) as usize;
         let query = name.as_bytes();
         if index != 0 {
-            return self.find_entry(region, bytes, index - 1, query);
+            let list_at = self.variant.bare.then_some(a);
+            return self.find_entry(region, bytes, index - 1, query, list_at);
         }
         for j in 0..b {
             let key = word(bytes, region.lists_at + self.entry_key_at(a, j));
@@ -607,7 +726,7 @@ impl PackedSpec {
         let index = region.field(bytes, node, 3) as usize;
         let query = name.as_bytes();
         if index != 0 {
-            return self.find_entry(region, bytes, index - 1, query);
+            return self.find_entry(region, bytes, index - 1, query, None);
         }
         for j in 0..count {
             let item = word(bytes, region.lists_at + a + j);

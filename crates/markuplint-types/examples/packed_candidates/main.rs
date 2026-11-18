@@ -1,4 +1,4 @@
-//! The Rust half of the measurement of the packed candidates (`scripts/spec-baseline/packed/`): the ten candidates of a
+//! The Rust half of the measurement of the packed candidates (`scripts/spec-baseline/packed/`): the candidates of a
 //! packed form of the data of `@markuplint/html-spec` that is read without being parsed, read, checked, composed with an
 //! extension and encoded here as the TypeScript side does, byte for byte, and measured.
 //!
@@ -40,6 +40,7 @@
 mod compose;
 mod encode;
 mod format;
+mod group;
 mod hash;
 mod mphf;
 mod questions;

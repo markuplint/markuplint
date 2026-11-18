@@ -16,7 +16,7 @@
 
 use serde_json::Value;
 
-use crate::encode::{StringTable, Tree, append_region};
+use crate::encode::{StringSections, StringTable, Tree, append_region, widened};
 use crate::format::{REGIONS, section, tag};
 use crate::read::PackedSpec;
 
@@ -515,22 +515,25 @@ pub fn compose(base: &PackedSpec, extensions: &[Value]) -> Result<PackedSpec, St
         Tree::Object(rest),
     ];
 
-    let mut strings = StringTable::new(Some(base));
+    let mut strings = StringTable::continuing(base);
     let mut changes: Vec<(usize, Vec<u8>)> = Vec::new();
     for (position, id) in REGIONS.iter().enumerate() {
         if touched[position] {
             changes.push((*id, append_region(&values[position], &mut strings, base, position)?));
         }
     }
+    let mut variant = base.variant;
     if strings.grown() {
-        let (offsets, bytes) = strings.sections();
+        let StringSections { offsets, bytes, narrow } = strings.sections();
         changes.push((section::STRING_OFFSETS, offsets));
         changes.push((section::STRING_BYTES, bytes));
+        // A table of 16-bit offsets that the new strings made too long is written in 32 bits
+        variant = widened(variant, narrow);
     }
     // The bits are made from the regions that this has, in the same construction, when `specs` or `#contentModels` is touched
     if touched[0] || touched[3] {
-        base.replace_with_bits(changes)
+        base.replace_with_bits_as(changes, variant)
     } else {
-        base.replace(changes)
+        base.replace_as(changes, variant)
     }
 }

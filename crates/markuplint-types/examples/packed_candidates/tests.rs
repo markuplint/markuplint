@@ -6,7 +6,7 @@ use std::path::PathBuf;
 use std::sync::LazyLock;
 
 use super::*;
-use crate::format::{INDEX_MINIMUM, MAGIC, NONE, SECTION_COUNT, VERSION, section, variants};
+use crate::format::{INDEX_MINIMUM, MAGIC, NONE, REGIONS, SECTION_COUNT, VERSION, section, variants};
 use crate::hash::crc32c_words;
 use crate::questions::QuestionsFile;
 use crate::read::{digest_value, words_to_bytes};
@@ -1228,4 +1228,547 @@ fn the_scenario_names_and_the_arguments_are_checked_first() {
             .unwrap_err()
             .contains("is not a candidate")
     );
+}
+
+/// The candidate of the adopted form without either choice of the size of the file.
+fn plain_pow2(columns: bool) -> Variant {
+    Variant::plain(
+        columns,
+        crate::format::IndexKind::Pow2,
+        crate::format::HashKind::Murmur3,
+    )
+}
+
+#[test]
+fn the_choices_of_the_size_of_the_file_are_bits_five_and_six_of_the_variant() {
+    let plain = plain_pow2(false);
+    assert_eq!(plain.word(), 0b000_0100);
+    assert_eq!(Variant { grouped: true, ..plain }.word(), 0b010_0100);
+    assert_eq!(Variant { zero: true, ..plain }.word(), 0b100_0100);
+    assert_eq!(
+        Variant {
+            grouped: true,
+            zero: true,
+            ..plain
+        }
+        .word(),
+        0b110_0100
+    );
+    assert!(Variant::from_word(0b001_0100).is_err());
+    assert!(Variant::from_word(0b10_0000_0100).is_err());
+}
+
+#[test]
+fn the_candidates_of_the_choices_of_the_size_of_the_file_have_the_stems_of_their_files() {
+    let stems: Vec<String> = variants().iter().map(|variant| variant.stem()).collect();
+    for expected in [
+        "rows-pow2-murmur3-grouped",
+        "columns-pow2-murmur3-grouped",
+        "rows-pow2-murmur3-zero",
+        "columns-pow2-murmur3-zero",
+        "rows-pow2-murmur3-grouped-zero",
+        "columns-pow2-murmur3-grouped-zero",
+        "columns-pow2-murmur3-grouped-zero-narrow",
+        "columns-pow2-murmur3-grouped-zero-bare",
+        "columns-pow2-murmur3-grouped-zero-narrow-bare",
+    ] {
+        assert!(stems.iter().any(|stem| stem == expected), "{expected}");
+    }
+}
+
+/// The candidate in columns with the nodes grouped and the empty slot 0, with the choices that make the strings and the indexes
+/// smaller.
+fn smaller(narrow: bool, bare: bool) -> Variant {
+    Variant {
+        grouped: true,
+        zero: true,
+        narrow,
+        bare,
+        ..plain_pow2(true)
+    }
+}
+
+#[test]
+fn two_nodes_that_share_a_list_and_do_not_have_the_same_count_are_refused() {
+    // Two arrays in rows, at the same position of the lists, of one and of two items
+    let words = [
+        2,
+        2,
+        0,
+        0,
+        crate::format::tag::ARRAY,
+        0,
+        1,
+        0,
+        crate::format::tag::ARRAY,
+        0,
+        2,
+        0,
+        0,
+        1,
+    ];
+    let error = crate::group::group_region(&words_to_bytes(&words), false, false).unwrap_err();
+    assert!(error.contains("share a list with 1 and 2 items"), "{error}");
+}
+
+#[test]
+fn a_sorted_index_is_not_asked_for_the_empty_slot_or_for_a_bare_index_by_a_header() {
+    let sorted = Variant::plain(
+        false,
+        crate::format::IndexKind::Sorted,
+        crate::format::HashKind::Murmur3,
+    );
+    assert!(Variant::from_word(sorted.word()).is_ok());
+    assert!(Variant::from_word(sorted.word() | 0b0_0100_0000).is_err());
+    assert!(Variant::from_word(sorted.word() | 0b1_0000_0000).is_err());
+}
+
+#[test]
+fn the_choices_of_the_strings_and_the_indexes_are_bits_seven_and_eight_of_the_variant() {
+    assert_eq!(smaller(false, false).word(), 0b0_0110_0101);
+    assert_eq!(smaller(true, false).word(), 0b0_1110_0101);
+    assert_eq!(smaller(false, true).word(), 0b1_0110_0101);
+    assert_eq!(smaller(true, true).word(), 0b1_1110_0101);
+    for variant in [smaller(true, false), smaller(false, true), smaller(true, true)] {
+        assert_eq!(Variant::from_word(variant.word()).unwrap(), variant);
+    }
+}
+
+#[test]
+fn the_offsets_of_the_strings_in_sixteen_bits_are_the_count_and_the_offsets_two_to_a_word() {
+    let wide = encode_spec(&SPEC, smaller(false, false)).unwrap();
+    let narrow = encode_spec(&SPEC, smaller(true, false)).unwrap();
+    let offsets = narrow.section_bytes(section::STRING_OFFSETS);
+    assert_eq!(u64::from(crate::read::word(offsets, 0)), wide.string_count() as u64);
+    assert_eq!(offsets.len() / 4, 1 + (wide.string_count() + 1).div_ceil(2));
+    assert_eq!(narrow.string_count(), wide.string_count());
+    for sid in 0..wide.string_count() {
+        assert_eq!(narrow.string_bytes(sid as u32), wide.string_bytes(sid as u32), "{sid}");
+    }
+    assert_eq!(narrow.to_json(), *SPEC);
+    let file = Rc::new(narrow.serialize());
+    let opened = PackedSpec::open(&file).unwrap();
+    assert_eq!(opened.variant, smaller(true, false));
+    assert_eq!(opened.to_json(), *SPEC);
+}
+
+/// How many bytes the strings of a spec are.
+fn string_bytes_of(packed: &PackedSpec) -> usize {
+    (0..packed.string_count())
+        .map(|sid| packed.string_bytes(sid as u32).len())
+        .sum()
+}
+
+/// A spec whose strings are exactly this many bytes: an element with a `cite` of the length that makes up the difference.
+/// (`schemaToSpec` spreads the attributes of an element and gives it `globalAttrs`, so the element has both, as those of
+/// `html-spec` do.)
+fn spec_with_string_bytes(total: usize) -> Value {
+    let def = json!({ "#globalAttrs": {}, "#aria": {}, "#contentModels": {} });
+    let element = |cite: String| json!({ "name": "a", "cite": cite, "attributes": {}, "globalAttrs": {} });
+    let without = string_bytes_of(
+        &encode_spec(
+            &json!({ "def": def, "specs": [element(String::new())] }),
+            smaller(false, false),
+        )
+        .unwrap(),
+    );
+    json!({ "def": def, "specs": [element("x".repeat(total - without))] })
+}
+
+#[test]
+fn a_spec_whose_strings_are_more_than_65535_bytes_has_its_offsets_in_thirty_two_bits() {
+    let spec = spec_with_string_bytes(crate::format::NARROW_LIMIT + 1);
+    let packed = encode_spec(&spec, smaller(true, false)).unwrap();
+    assert!(!packed.variant.narrow);
+    assert_eq!(packed.to_json(), spec);
+    let file = Rc::new(packed.serialize());
+    let opened = PackedSpec::open(&file).unwrap();
+    assert!(!opened.variant.narrow);
+    assert_eq!(opened.to_json(), spec);
+}
+
+#[test]
+fn a_spec_whose_strings_are_exactly_65535_bytes_has_its_offsets_in_sixteen_bits() {
+    let spec = spec_with_string_bytes(crate::format::NARROW_LIMIT);
+    let packed = encode_spec(&spec, smaller(true, false)).unwrap();
+    assert_eq!(string_bytes_of(&packed), crate::format::NARROW_LIMIT);
+    assert!(packed.variant.narrow);
+    assert_eq!(packed.to_json(), spec);
+}
+
+/// An extension whose strings pass 65,535 bytes with those of a spec that has `string_bytes` (an element that the base lacks is
+/// dropped by `schemaToSpec`, so what it adds goes to an element that the base has).
+fn big_extension(string_bytes: usize) -> Value {
+    let cite = "x".repeat(crate::format::NARROW_LIMIT - string_bytes + 100);
+    json!({ "specs": [{ "name": "div", "attributes": { "x-big-attr": { "type": "Any", "cite": cite } } }] })
+}
+
+#[test]
+fn a_composition_that_lands_on_65535_bytes_stays_in_sixteen_bits_and_one_byte_more_widens_it() {
+    let base = encode_spec(
+        &spec_with_string_bytes(crate::format::NARROW_LIMIT - 10),
+        smaller(true, false),
+    )
+    .unwrap();
+    let adding = |bytes: usize| json!({ "specs": [{ "name": "a", "cite": "y".repeat(bytes), "attributes": {}, "globalAttrs": {} }] });
+    let lands = compose(&base, &[adding(10)]).unwrap();
+    assert_eq!(string_bytes_of(&lands), crate::format::NARROW_LIMIT);
+    assert!(lands.variant.narrow);
+    let passes = compose(&base, &[adding(11)]).unwrap();
+    assert_eq!(string_bytes_of(&passes), crate::format::NARROW_LIMIT + 1);
+    assert!(!passes.variant.narrow);
+}
+
+#[test]
+fn a_composition_whose_strings_pass_that_count_is_widened_and_keeps_the_numbers_of_the_strings() {
+    let base = encode_spec(&SPEC, smaller(true, false)).unwrap();
+    let composed = compose(&base, &[big_extension(string_bytes_of(&base))]).unwrap();
+    assert!(!composed.variant.narrow);
+    for sid in 0..base.string_count() {
+        assert_eq!(
+            composed.string_bytes(sid as u32),
+            base.string_bytes(sid as u32),
+            "{sid}"
+        );
+    }
+    let file = Rc::new(composed.serialize());
+    let opened = PackedSpec::open(&file).unwrap();
+    assert!(!opened.variant.narrow);
+    assert_eq!(opened.to_json(), composed.to_json());
+    let small = compose(
+        &base,
+        &[json!({ "specs": [{ "name": "div", "attributes": { "x-small-attr": { "type": "Boolean" } } }] })],
+    )
+    .unwrap();
+    assert!(small.variant.narrow);
+    assert!(small.string_count() > base.string_count());
+}
+
+#[test]
+fn the_indexes_of_objects_without_keys_find_every_key_and_no_other() {
+    let packed = encode_spec(&SPEC, smaller(false, true)).unwrap();
+    let mut checked = 0;
+    for region in 0..REGIONS.len() {
+        let (count, _, _) = packed.region_counts(region);
+        for node in 0..count {
+            let words = packed.node_words(region, node);
+            if words[0] != crate::format::tag::OBJECT || (words[2] as usize) < INDEX_MINIMUM {
+                continue;
+            }
+            assert_ne!(words[3], 0, "an object of that many keys has an index");
+            for j in 0..words[2] {
+                let key = packed.string_at(packed.key_at(region, node, j));
+                assert_eq!(packed.entry(region, node, &key), j, "{key}");
+                checked += 1;
+            }
+            assert_eq!(packed.entry(region, node, "no-such-key\u{0}"), NONE);
+        }
+    }
+    assert!(checked > 1000);
+    assert_eq!(packed.to_json(), *SPEC);
+}
+
+#[test]
+fn an_index_without_keys_is_refused_for_a_candidate_that_has_no_perfect_hash() {
+    let variant = Variant {
+        bare: true,
+        ..Variant::plain(
+            false,
+            crate::format::IndexKind::Sorted,
+            crate::format::HashKind::Murmur3,
+        )
+    };
+    let error = encode_spec(&SPEC, variant).unwrap_err();
+    assert!(error.contains("perfect hash"), "{error}");
+}
+
+#[test]
+fn the_indexes_that_a_composition_appends_to_a_bare_candidate_find_their_keys() {
+    let base = encode_spec(&SPEC, smaller(false, true)).unwrap();
+    for extension in [
+        json!({ "specs": [{ "name": "div", "attributes": { "x-a": { "type": "Any" } } }] }),
+        small_extension(),
+        fixture_json("small-extension.json"),
+    ] {
+        let composed = compose(&base, &[extension]).unwrap();
+        for region in 0..REGIONS.len() {
+            let (count, _, _) = composed.region_counts(region);
+            for node in 0..count {
+                let words = composed.node_words(region, node);
+                if words[0] != crate::format::tag::OBJECT || words[3] == 0 {
+                    continue;
+                }
+                for j in 0..words[2] {
+                    let key = composed.string_at(composed.key_at(region, node, j));
+                    assert_eq!(composed.entry(region, node, &key), j, "{key}");
+                }
+            }
+        }
+    }
+}
+
+#[test]
+fn a_grouped_candidate_has_the_nodes_in_the_order_of_their_tags_and_the_data_of_the_plain_one() {
+    for variant in variants().into_iter().filter(|variant| variant.grouped) {
+        let plain = encode_spec(
+            &SPEC,
+            Variant {
+                grouped: false,
+                ..variant
+            },
+        )
+        .unwrap();
+        let grouped = encode_spec(&SPEC, variant).unwrap();
+        assert_eq!(grouped.to_json(), *SPEC, "{}", variant.stem());
+        for region in 0..REGIONS.len() {
+            let (count, _, _) = grouped.region_counts(region);
+            assert_eq!(
+                count,
+                plain.region_counts(region).0,
+                "{} region {region}",
+                variant.stem()
+            );
+            let tags: Vec<u32> = (0..count).map(|node| grouped.tag(region, node)).collect();
+            assert!(
+                tags.is_sorted(),
+                "{} region {region}: the tags are in order",
+                variant.stem()
+            );
+            assert_eq!(
+                grouped.digest(region, grouped.root(region)),
+                plain.digest(region, plain.root(region)),
+                "{} region {region}: the root is the node of the whole value",
+                variant.stem()
+            );
+        }
+        for id in [section::STRING_OFFSETS, section::STRING_BYTES, section::BITS] {
+            assert_eq!(grouped.section_bytes(id), plain.section_bytes(id), "{}", variant.stem());
+        }
+    }
+}
+
+/// The slots of the perfect-hash indexes of a region: each record is `[entries, n, seed, buckets, slots, pilots...,
+/// slots..., keys...]` (the keys are not there when the top bit of `n` is set), as `(entries, distinct, slots)`.
+fn slots_of(indexes: &[u8]) -> Vec<(u32, u32, Vec<u32>)> {
+    let words = file_words(indexes);
+    let mut found = Vec::new();
+    let mut at = 0;
+    while at < words.len() {
+        let entries = words[at];
+        let marked = words[at + 1];
+        let slots = words[at + 4] as usize;
+        let slots_at = at + 5 + (words[at + 3] as usize).div_ceil(2);
+        found.push((
+            entries,
+            marked & !crate::format::BARE_FLAG,
+            words[slots_at..slots_at + slots].to_vec(),
+        ));
+        // The keys, or the position of a list in place of them
+        let keys = if marked & crate::format::BARE_FLAG != 0 {
+            1
+        } else {
+            entries as usize
+        };
+        at = slots_at + slots + keys;
+    }
+    found
+}
+
+#[test]
+fn a_candidate_whose_empty_slot_is_zero_holds_the_position_plus_one_in_the_others() {
+    // `specs` is the first of the regions
+    const SPECS: usize = 0;
+    for variant in variants().into_iter().filter(|variant| variant.zero) {
+        let packed = encode_spec(&SPEC, variant).unwrap();
+        for region in 0..REGIONS.len() {
+            for (entries, distinct, slots) in slots_of(packed.region_indexes(region)) {
+                assert!(!slots.contains(&NONE), "{} region {region}", variant.stem());
+                assert!(slots.iter().all(|slot| *slot <= entries), "{}", variant.stem());
+                assert_eq!(
+                    slots.iter().filter(|slot| **slot != 0).count(),
+                    distinct as usize,
+                    "{}",
+                    variant.stem()
+                );
+            }
+        }
+        for (position, element) in SPEC["specs"].as_array().unwrap().iter().enumerate() {
+            let name = element["name"].as_str().unwrap();
+            assert_eq!(
+                packed.position(SPECS, packed.root(SPECS), name),
+                position as u32,
+                "{}: {name}",
+                variant.stem()
+            );
+        }
+        for missing in ["", "nope", "svg:", "DIV", "div "] {
+            assert_eq!(
+                packed.find(SPECS, packed.root(SPECS), missing),
+                NONE,
+                "{}",
+                variant.stem()
+            );
+        }
+    }
+}
+
+#[test]
+fn an_empty_slot_is_a_slot_of_a_perfect_hash_and_a_sorted_index_is_refused_for_it_by_the_encoder() {
+    let variant = Variant {
+        zero: true,
+        ..Variant::plain(
+            false,
+            crate::format::IndexKind::Sorted,
+            crate::format::HashKind::Murmur3,
+        )
+    };
+    let error = encode_spec(&SPEC, variant).unwrap_err();
+    assert!(error.contains("slot of a perfect hash"), "{error}");
+    // A spec that has no index to write is refused as well
+    let error = encode_spec(&json!({ "specs": [] }), variant).unwrap_err();
+    assert!(error.contains("slot of a perfect hash"), "{error}");
+    let bare = Variant {
+        bare: true,
+        zero: false,
+        ..variant
+    };
+    let error = encode_spec(&json!({ "specs": [] }), bare).unwrap_err();
+    assert!(error.contains("perfect hash"), "{error}");
+}
+
+/// How many records the indexes of a region have: each is `[entries, n, seed, buckets, slots, pilots..., slots..., keys...]`,
+/// and the keys are not there when the top bit of `n` is set.
+fn record_count(indexes: &[u8]) -> usize {
+    let words = file_words(indexes);
+    let mut count = 0;
+    let mut at = 0;
+    while at < words.len() {
+        let keys = if words[at + 1] & crate::format::BARE_FLAG != 0 {
+            1
+        } else {
+            words[at] as usize
+        };
+        at += 5 + (words[at + 3] as usize).div_ceil(2) + words[at + 4] as usize + keys;
+        count += 1;
+    }
+    assert_eq!(at, words.len(), "the records end where the indexes end");
+    count
+}
+
+#[test]
+fn an_index_that_a_composition_made_for_an_object_is_found_by_the_next_composition_and_not_made_again() {
+    // `specs` is the first of the regions
+    const SPECS: usize = 0;
+    let base = encode_spec(&SPEC, smaller(false, true)).unwrap();
+    let attributes: Map<String, Value> = (0..=INDEX_MINIMUM)
+        .map(|index| (format!("x-n{index}"), json!({ "type": "Boolean" })))
+        .collect();
+    let extension = json!({ "specs": [{ "name": "div", "attributes": attributes }] });
+    let once = compose(&base, std::slice::from_ref(&extension)).unwrap();
+    let twice = compose(&once, std::slice::from_ref(&extension)).unwrap();
+    // The keys of the attributes of `div` are new, and the second composition has the same keys as the first
+    assert!(record_count(once.region_indexes(SPECS)) > record_count(base.region_indexes(SPECS)));
+    assert_eq!(
+        record_count(twice.region_indexes(SPECS)),
+        record_count(once.region_indexes(SPECS))
+    );
+    assert_eq!(twice.to_json(), once.to_json());
+}
+
+#[test]
+fn a_region_where_an_index_without_keys_refers_to_a_list_that_it_does_not_have_is_refused() {
+    // `#aria` is the third of the regions
+    const ARIA: usize = 2;
+    let packed = encode_spec(&SPEC, smaller(false, true)).unwrap();
+    let words = file_words(&packed.serialize());
+    let (start, length) = span(&words, REGIONS[ARIA]);
+    let mut region = words[start..start + length].to_vec();
+    let (count, list_words) = (region[0] as usize, region[1] as usize);
+    let indexes_at = 4 + 4 * count + list_words;
+    // The first record without keys: the last word of it is the position of a list
+    let mut at = indexes_at;
+    while region[at + 1] & crate::format::BARE_FLAG == 0 {
+        at += 5 + (region[at + 3] as usize).div_ceil(2) + region[at + 4] as usize + region[at] as usize;
+    }
+    let last = at + 5 + (region[at + 3] as usize).div_ceil(2) + region[at + 4] as usize;
+    // A position past the lists
+    region[last] = u32::try_from(list_words).unwrap();
+    let file = rebuilt(&words, REGIONS[ARIA], &region);
+    let opened = PackedSpec::open(&Rc::new(file)).unwrap();
+    let error = opened.region_index_keys(ARIA).unwrap_err();
+    assert!(error.contains("refers to a list at"), "{error}");
+}
+
+#[test]
+fn an_index_without_keys_says_where_the_list_of_an_object_that_has_its_keys_is() {
+    let packed = encode_spec(&SPEC, smaller(false, true)).unwrap();
+    let mut checked = 0;
+    for region in 0..REGIONS.len() {
+        // The keys of each record, by its position: those of the first object that has the index, after the mark of its kind
+        let records: std::collections::HashMap<u32, Vec<u32>> = packed
+            .region_index_keys(region)
+            .unwrap()
+            .into_iter()
+            .map(|(keys, position)| (position, keys[1..].to_vec()))
+            .collect();
+        let (count, _, _) = packed.region_counts(region);
+        for node in 0..count {
+            let words = packed.node_words(region, node);
+            if words[0] != crate::format::tag::OBJECT || words[3] == 0 {
+                continue;
+            }
+            let keys: Vec<u32> = (0..words[2]).map(|j| packed.key_at(region, node, j)).collect();
+            assert_eq!(records[&(words[3] - 1)], keys, "region {region}");
+            checked += keys.len();
+        }
+    }
+    assert!(checked > 1000);
+}
+
+/// The file of the candidate with 16-bit offsets whose section of the offsets is changed, with the checksum that it then has.
+fn narrow_file_with_offsets(change: impl FnOnce(&mut Vec<u32>)) -> Vec<u8> {
+    let packed = encode_spec(&SPEC, smaller(true, false)).unwrap();
+    let words = file_words(&packed.serialize());
+    let (start, length) = span(&words, section::STRING_OFFSETS);
+    let mut offsets = words[start..start + length].to_vec();
+    change(&mut offsets);
+    rebuilt(&words, section::STRING_OFFSETS, &offsets)
+}
+
+#[test]
+fn a_file_whose_count_of_strings_is_more_than_the_16_bit_offsets_that_it_holds_is_refused() {
+    let file = narrow_file_with_offsets(|offsets| offsets[0] += 4);
+    let error = PackedSpec::open(&Rc::new(file)).unwrap_err();
+    assert!(
+        error.contains("not as long as the count of the strings says"),
+        "{error}"
+    );
+}
+
+#[test]
+fn a_file_whose_first_16_bit_offset_is_not_0_is_refused() {
+    // The first offset is the low half of the word after the count
+    let file = narrow_file_with_offsets(|offsets| offsets[1] = (offsets[1] & 0xffff_0000) | 1);
+    let error = PackedSpec::open(&Rc::new(file)).unwrap_err();
+    assert!(error.contains("does not start at 0"), "{error}");
+}
+
+#[test]
+fn a_file_whose_16_bit_offsets_are_not_in_order_is_refused() {
+    // The third offset is the low half of the second word after the count, and the second is the high half of the first
+    let file = narrow_file_with_offsets(|offsets| offsets[2] &= 0xffff_0000);
+    let error = PackedSpec::open(&Rc::new(file)).unwrap_err();
+    assert!(error.contains("is not in order"), "{error}");
+}
+
+#[test]
+fn a_region_that_is_cut_short_or_whose_root_or_lists_are_not_its_own_is_refused_by_the_grouping() {
+    let tag_array = crate::format::tag::ARRAY;
+    let group = |words: &[u32]| crate::group::group_region(&words_to_bytes(words), false, false).unwrap_err();
+    assert!(group(&[1, 0, 0, 0, crate::format::tag::NULL, 0, 0, 0, 0]).contains("not as long as its header says"));
+    assert!(group(&[1, 0, 0, 1, crate::format::tag::NULL, 0, 0, 0]).contains("not as long as its header says"));
+    assert!(group(&[0, 0, 0, 0]).contains("not as long as its header says"));
+    assert!(group(&[1, 0, 0, 0, tag_array, 0, 1, 0]).contains("not inside the lists of its region"));
+    assert!(group(&[1, 1, 0, 0, tag_array, 0, 1, 0, 7]).contains("holds a node that the region lacks"));
+    assert!(group(&[1]).contains("cut short"));
 }

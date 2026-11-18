@@ -9,6 +9,10 @@
  *   --locked --release --workspace --example packed_candidates` (from `crates/`), as `rust.ts` has it for `spec_baseline`, and the run
  *   stops for a program older than the sources.
  *
+ * The bytes of the file of each candidate, raw, gzip and Brotli, are measured from the files that `prepare.ts` wrote
+ * (`sizes.ts`, through {@link PreparedPacked.sizes}) and printed after the figures of the time and the memory; they are
+ * not in the result that `--out` writes.
+ *
  * What the programs are given is written first (`prepare.ts`), and the Rust program checks, for each candidate and before any
  * time is taken, that it makes the same bytes as this side (the packed spec, and the spec composed with each extension), opens them, answers
  * every question as the data does, and refuses a file that was changed: a figure of a program that differs is not a measurement.
@@ -20,6 +24,7 @@
  * @module
  */
 import type { Measurement, PerfScenario } from '../perf.ts';
+import type { Variant } from './format.ts';
 
 import { execFileSync } from 'node:child_process';
 import { existsSync, mkdtempSync, rmSync, statSync } from 'node:fs';
@@ -31,6 +36,7 @@ import { parseChildOutput } from '../perf.ts';
 import { assertFresh, cargoTargetDirectory, rustVersion, type Exec, type TargetDirectory } from '../rust.ts';
 import { VARIANTS } from './format.ts';
 import { stemOf, writeInputs, type InputOptions } from './prepare.ts';
+import { sizesOfDirectory } from './sizes.ts';
 
 const CHILD = fileURLToPath(new URL('child.ts', import.meta.url));
 
@@ -146,6 +152,8 @@ export interface PreparedPacked {
 	readonly rustc: string;
 	/** When the Rust program was built. */
 	readonly built: string;
+	/** Measures the files of the candidates that were written (raw, gzip and Brotli), with the JSON of the spec beside them. */
+	readonly sizes: (variants?: readonly Variant[]) => ReturnType<typeof sizesOfDirectory>;
 	/** Removes the directory that the inputs were written to. */
 	readonly cleanup: () => void;
 }
@@ -204,7 +212,7 @@ export function preparePacked(root: string, options: PreparePackedOptions): Prep
 		for (const phase of ['value', 'hash']) {
 			add(`rust:${phase}`, iterations => runRustPacked(binary, phase, '-', directory, iterations, exec));
 		}
-		return { scenarios, rustc, built, cleanup };
+		return { scenarios, rustc, built, sizes: variants => sizesOfDirectory(directory, variants), cleanup };
 	} catch (error) {
 		cleanup();
 		throw error;

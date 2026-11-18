@@ -36,10 +36,10 @@ const SPEC_PATH = 'packages/@markuplint/html-spec/index.json';
  * The name of a candidate in a file name.
  *
  * @param variant - The candidate
- * @returns For example `rows-sorted-murmur3`
+ * @returns For example `rows-sorted-murmur3`, and `rows-pow2-murmur3-grouped-zero`
  */
 export function stemOf(variant: Variant): string {
-	return variantName(variant).replaceAll('/', '-');
+	return variantName(variant).replaceAll(/[/+]/gu, '-');
 }
 
 const bytesOf = (words: Uint32Array): Buffer => Buffer.from(words.buffer, words.byteOffset, words.byteLength);

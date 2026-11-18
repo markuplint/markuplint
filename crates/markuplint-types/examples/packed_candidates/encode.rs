@@ -16,10 +16,13 @@ use std::collections::{HashMap, HashSet};
 
 use serde_json::Value;
 
-use crate::format::{INDEX_MINIMUM, IndexKind, NONE, REGIONS, SECTION_COUNT, Variant, section, tag};
+use crate::format::{
+    BARE_FLAG, INDEX_MINIMUM, IndexKind, NARROW_LIMIT, NONE, REGIONS, SECTION_COUNT, Variant, section, tag,
+};
+use crate::group::group_region;
 use crate::hash::{HashFn, murmur3, xxhash32};
 use crate::mphf::{Mode, build_mphf};
-use crate::read::{PackedSpec, Section, words_to_bytes};
+use crate::read::{PackedSpec, Section, indexed_keys, words_to_bytes};
 
 /// What the format holds of the top level of a spec: the keys of `def` that it knows.
 const DEF_KEYS: [&str; 3] = ["#globalAttrs", "#aria", "#contentModels"];
@@ -30,15 +33,38 @@ pub struct StringTable<'a> {
     added: Vec<Vec<u8>>,
     added_ids: HashMap<String, u32>,
     base_count: usize,
+    narrow: bool,
+}
+
+/// The sections of the strings that [`StringTable::sections`] makes.
+pub struct StringSections {
+    pub offsets: Vec<u8>,
+    pub bytes: Vec<u8>,
+    /// Whether the offsets are in 16 bits (a table that is asked to have them and that has more than 65,535 bytes has them in
+    /// 32 bits, as every other table does).
+    pub narrow: bool,
 }
 
 impl<'a> StringTable<'a> {
-    pub fn new(base: Option<&'a PackedSpec>) -> Self {
+    /// Starts a table that has no strings: `narrow` is whether it holds its offsets in 16 bits when the strings are few enough.
+    pub fn fresh(narrow: bool) -> Self {
         Self {
-            base,
+            base: None,
             added: Vec::new(),
             added_ids: HashMap::new(),
-            base_count: base.map_or(0, PackedSpec::string_count),
+            base_count: 0,
+            narrow,
+        }
+    }
+
+    /// Starts a table that continues the strings of a spec, which keep their numbers, and holds its offsets as that spec does.
+    pub fn continuing(base: &'a PackedSpec) -> Self {
+        Self {
+            base: Some(base),
+            added: Vec::new(),
+            added_ids: HashMap::new(),
+            base_count: base.string_count(),
+            narrow: base.variant.narrow,
         }
     }
 
@@ -82,7 +108,7 @@ impl<'a> StringTable<'a> {
     }
 
     /// The sections of the strings: the offsets, and the bytes padded to whole words.
-    pub fn sections(&self) -> (Vec<u8>, Vec<u8>) {
+    pub fn sections(&self) -> StringSections {
         let count = self.base_count + self.added.len();
         let mut offsets: Vec<u32> = Vec::with_capacity(count + 1);
         let mut bytes: Vec<u8> = Vec::new();
@@ -91,11 +117,47 @@ impl<'a> StringTable<'a> {
             offsets.push(bytes.len() as u32);
             bytes.extend_from_slice(self.bytes(sid as u32));
         }
-        offsets.push(bytes.len() as u32);
+        let total = bytes.len();
+        offsets.push(total as u32);
         while !bytes.len().is_multiple_of(4) {
             bytes.push(0);
         }
-        (words_to_bytes(&offsets), bytes)
+        let narrow = self.narrow && total <= NARROW_LIMIT;
+        let offsets = if narrow {
+            narrow_offsets(&offsets)
+        } else {
+            words_to_bytes(&offsets)
+        };
+        StringSections { offsets, bytes, narrow }
+    }
+}
+
+/// The section of offsets that are held in 16 bits: the count of the strings, then the offsets two to a word (the first of the
+/// two is in the low half).
+///
+/// # Panics
+///
+/// For an offset that is more than 65,535, which 16 bits do not hold: an encoder that makes one has a defect, and a number that
+/// wraps would write another file.
+pub fn narrow_offsets(offsets: &[u32]) -> Vec<u8> {
+    let mut bytes = words_to_bytes(&[to_word(offsets.len() - 1)]);
+    for offset in offsets {
+        let narrow = u16::try_from(*offset)
+            .unwrap_or_else(|_| panic!("An offset is more than 65535, which 16 bits do not hold"));
+        bytes.extend_from_slice(&narrow.to_le_bytes());
+    }
+    while !bytes.len().is_multiple_of(4) {
+        bytes.push(0);
+    }
+    bytes
+}
+
+/// The candidate that a table of strings that turned out to need 32-bit offsets belongs to: the one that asked for them, or the
+/// same without `narrow` when the table is not narrow.
+pub fn widened(variant: Variant, narrow: bool) -> Variant {
+    Variant {
+        narrow: variant.narrow && narrow,
+        ..variant
     }
 }
 
@@ -198,8 +260,10 @@ impl<'s, 'a, 'p> RegionEncoder<'s, 'a, 'p> {
         offset
     }
 
-    /// Makes the index of entries with these keys, and gives its position.
-    fn index(&mut self, keys: &[u32]) -> Result<u32, String> {
+    /// Makes the index of entries with these keys, and gives its position. `bare` is whether it is the index of an object that
+    /// has no keys of its own (only a candidate that asks for it).
+    fn index(&mut self, keys: &[u32], list_at: Option<u32>) -> Result<u32, String> {
+        let bare = list_at.is_some();
         if !self.seeded {
             // The indexes that the region had, for those that have the same keys: the first of them is the one that is used
             if let Some(base) = &self.base {
@@ -209,13 +273,14 @@ impl<'s, 'a, 'p> RegionEncoder<'s, 'a, 'p> {
             }
             self.seeded = true;
         }
-        if let Some(known) = self.index_ids.get(keys) {
+        let lookup = indexed_keys(self.variant, bare, keys);
+        if let Some(known) = self.index_ids.get(&lookup) {
             return Ok(*known);
         }
-        let words = index_words(self.strings, self.variant, keys)?;
+        let words = index_words(self.strings, self.variant, keys, list_at)?;
         let offset = self.base.as_ref().map_or(0, |base| base.indexes) + to_word(self.indexes.len());
         self.indexes.extend_from_slice(&words);
-        self.index_ids.insert(keys.to_vec(), offset);
+        self.index_ids.insert(lookup, offset);
         Ok(offset)
     }
 
@@ -269,7 +334,7 @@ impl<'s, 'a, 'p> RegionEncoder<'s, 'a, 'p> {
     fn array_node(&mut self, nodes: &[u32], names: Option<Vec<String>>) -> Result<u32, String> {
         let index = if let Some(names) = names {
             let keys: Vec<u32> = names.iter().map(|name| self.strings.intern(name)).collect();
-            self.index(&keys)? + 1
+            self.index(&keys, None)? + 1
         } else {
             0
         };
@@ -287,12 +352,13 @@ impl<'s, 'a, 'p> RegionEncoder<'s, 'a, 'p> {
                 .flat_map(|(key, value)| [*key, *value])
                 .collect()
         };
+        // The list first, since an index without keys says where the list that holds them is
+        let list = self.list(&words);
         let index = if keys.len() >= INDEX_MINIMUM {
-            self.index(keys)? + 1
+            self.index(keys, self.variant.bare.then_some(list))? + 1
         } else {
             0
         };
-        let list = self.list(&words);
         Ok(self.node(tag::OBJECT, list, to_word(keys.len()), index))
     }
 
@@ -391,7 +457,12 @@ fn hash_of(variant: Variant) -> HashFn {
 }
 
 /// The words of the index of entries with these keys (see `format.ts`).
-fn index_words(strings: &StringTable<'_>, variant: Variant, keys: &[u32]) -> Result<Vec<u32>, String> {
+fn index_words(
+    strings: &StringTable<'_>,
+    variant: Variant,
+    keys: &[u32],
+    list_at: Option<u32>,
+) -> Result<Vec<u32>, String> {
     let bytes: Vec<&[u8]> = keys.iter().map(|sid| strings.bytes(*sid)).collect();
     let mut seen: HashSet<u32> = HashSet::new();
     let mut distinct: Vec<usize> = Vec::new();
@@ -400,7 +471,8 @@ fn index_words(strings: &StringTable<'_>, variant: Variant, keys: &[u32]) -> Res
             distinct.push(position);
         }
     }
-    let mut words: Vec<u32> = vec![to_word(keys.len()), to_word(distinct.len())];
+    let marked = to_word(distinct.len()) | if list_at.is_some() { BARE_FLAG } else { 0 };
+    let mut words: Vec<u32> = vec![to_word(keys.len()), marked];
     if variant.index == IndexKind::Sorted {
         let mut order = distinct.clone();
         order.sort_by(|x, y| bytes[*x].cmp(bytes[*y]));
@@ -420,14 +492,19 @@ fn index_words(strings: &StringTable<'_>, variant: Variant, keys: &[u32]) -> Res
             words.push(low | (high << 16));
         }
         for entry in &mphf.slot_entry {
-            words.push(if *entry == NONE {
-                NONE
-            } else {
-                to_word(distinct[*entry as usize])
+            words.push(match (*entry == NONE, variant.zero) {
+                (true, true) => 0,
+                (true, false) => NONE,
+                (false, true) => to_word(distinct[*entry as usize]) + 1,
+                (false, false) => to_word(distinct[*entry as usize]),
             });
         }
     }
-    words.extend_from_slice(keys);
+    // The keys, or where the list of an object that has them is
+    match list_at {
+        Some(list_at) => words.push(list_at),
+        None => words.extend_from_slice(keys),
+    }
     Ok(words)
 }
 
@@ -504,26 +581,32 @@ pub fn region_values(spec: &Value) -> Result<Vec<Cow<'_, Value>>, String> {
 ///
 /// Sections that are not those of a spec.
 pub fn assemble(variant: Variant, strings: &StringTable<'_>, regions: &[Vec<u8>]) -> Result<PackedSpec, String> {
-    let (offsets, bytes) = strings.sections();
+    let StringSections { offsets, bytes, narrow } = strings.sections();
     let mut sections: Vec<Section> = (0..SECTION_COUNT).map(|_| Section::from_words(&[0, 0, 0])).collect();
     sections[section::STRING_OFFSETS] = Section::from_bytes(offsets);
     sections[section::STRING_BYTES] = Section::from_bytes(bytes);
     for (position, id) in REGIONS.iter().enumerate() {
         sections[*id] = Section::from_bytes(regions[position].clone());
     }
-    PackedSpec::with_bits(variant, sections)
+    PackedSpec::with_bits(widened(variant, narrow), sections)
 }
 
 /// Encodes a spec.
 ///
 /// # Errors
 ///
-/// A spec that the format does not hold.
+/// A spec that the format does not hold, or a candidate that no file can have ([`Variant::check`]).
 pub fn encode_spec(spec: &Value, variant: Variant) -> Result<PackedSpec, String> {
-    let mut strings = StringTable::new(None);
+    variant.check()?;
+    let mut strings = StringTable::fresh(variant.narrow);
     let mut regions = Vec::with_capacity(REGIONS.len());
     for value in region_values(spec)? {
-        regions.push(encode_region(&value, &mut strings, variant)?);
+        let region = encode_region(&value, &mut strings, variant)?;
+        regions.push(if variant.grouped {
+            group_region(&region, variant.columns, variant.bare)?
+        } else {
+            region
+        });
     }
     assemble(variant, &strings, &regions)
 }

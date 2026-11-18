@@ -48,5 +48,55 @@
 		"base": 2124247533,
 		"composed": 2160724826,
 		"bytes": 4728
+	},
+	"rows-pow2-murmur3-grouped": {
+		"base": 2113587929,
+		"composed": 2659637252,
+		"bytes": 4728
+	},
+	"columns-pow2-murmur3-grouped": {
+		"base": 3708630632,
+		"composed": 2592211664,
+		"bytes": 4728
+	},
+	"rows-pow2-murmur3-zero": {
+		"base": 2618419855,
+		"composed": 1988650029,
+		"bytes": 4728
+	},
+	"columns-pow2-murmur3-zero": {
+		"base": 1524392479,
+		"composed": 81803668,
+		"bytes": 4728
+	},
+	"rows-pow2-murmur3-grouped-zero": {
+		"base": 3860206010,
+		"composed": 1565556673,
+		"bytes": 4728
+	},
+	"columns-pow2-murmur3-grouped-zero": {
+		"base": 1189211403,
+		"composed": 1498719509,
+		"bytes": 4728
+	},
+	"columns-pow2-murmur3-grouped-zero-narrow": {
+		"base": 906730083,
+		"composed": 2979937021,
+		"bytes": 4560
+	},
+	"columns-pow2-murmur3-grouped-zero-bare": {
+		"base": 1203942302,
+		"composed": 733169570,
+		"bytes": 4668
+	},
+	"columns-pow2-murmur3-grouped-zero-narrow-bare": {
+		"base": 1582530476,
+		"composed": 1608014272,
+		"bytes": 4500
+	},
+	"rows-pow2-murmur3-grouped-zero-bare": {
+		"base": 2369401339,
+		"composed": 2345367936,
+		"bytes": 4668
 	}
 }
