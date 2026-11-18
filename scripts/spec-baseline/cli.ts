@@ -16,7 +16,8 @@
  *   exists on the `v6` line only and is built beforehand with `cargo build --locked --release --workspace --example
  *   spec_baseline` (from `crates/`); `--no-lint` leaves the lint scenarios out. `--packed` measures the candidates of
  *   the packed form in TypeScript and in Rust, and only those (`packed/run.ts`; the Rust program is
- *   `crates/markuplint-types/examples/packed_candidates/`).
+ *   `crates/markuplint-types/examples/packed_candidates/`), and prints the bytes of their files, raw, gzip and Brotli
+ *   (`packed/sizes.ts`).
  * - `mutation`: whether the records of `diagnostics.ts` notice a change of the data (`mutation.ts`).
  * - `coverage`: writes the generated inputs into `fixtures/inputs/` (`coverage.ts`). The inputs are committed, so this
  *   overwrites files that are in the repository, and the records of `diagnostics.spec.ts` are written again after it.
@@ -49,6 +50,7 @@ import {
 	runPerf,
 } from './perf.ts';
 import { preparePacked } from './packed/run.ts';
+import { renderSizes } from './packed/sizes.ts';
 import { prepareRust } from './rust.ts';
 import { groupBySignature, measure, parseJson, signature } from './size.ts';
 
@@ -291,6 +293,7 @@ function perf(args: readonly string[]): string {
 				: `the lint scenarios are not run (${packed ? '--packed' : '--no-lint'})`,
 			'',
 			renderTable(result, { resamples: 10_000, seed }),
+			...(packed ? ['', renderSizes(packed.sizes())] : []),
 		].join('\n');
 	} finally {
 		rust?.cleanup();

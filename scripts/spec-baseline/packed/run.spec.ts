@@ -131,6 +131,32 @@ describe('preparePacked', () => {
 		}
 	});
 
+	test('measures the files that it wrote, raw, gzip and Brotli, with the JSON of the spec beside them', () => {
+		const prepared = preparePacked(ROOT, {
+			processes: 1,
+			iterations: 2,
+			files: [html],
+			streamLimit: 100,
+			version: () => 'rustc test',
+			targetDirectory: () => fakeTarget(),
+			exec: () => `${JSON.stringify({ measurements: [] })}\n`,
+		});
+		try {
+			const [first] = VARIANTS;
+			if (!first) {
+				throw new Error('no candidate');
+			}
+			const { candidates, baseline } = prepared.sizes([first]);
+			expect(candidates.map(size => size.stem)).toStrictEqual([stemOf(first)]);
+			expect(candidates[0]?.raw).toBe(readFileSync(join(directory, `${stemOf(first)}.bin`)).length);
+			expect(candidates[0]?.gzip).toBeGreaterThan(0);
+			expect(candidates[0]?.brotli).toBeGreaterThan(0);
+			expect(baseline.raw).toBeGreaterThan(candidates[0]?.raw ?? 0);
+		} finally {
+			prepared.cleanup();
+		}
+	}, 120_000);
+
 	test('removes what it wrote when the Rust program refuses a candidate', () => {
 		let directoryOfRun = '';
 		expect(() =>

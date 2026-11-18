@@ -29,14 +29,27 @@
  * What differs between the candidates is the **variant** in the header: how the arrays of a region are arranged (a row for
  * each node and a pair for each entry, or a column for each field), how an index finds a position (a binary search over the
  * keys that are sorted, or a minimal perfect hash with a table of as many slots as keys, or one whose table is a power of
- * two so that a lookup needs no division), and which hash function a perfect hash uses.
+ * two so that a lookup needs no division), and which hash function a perfect hash uses. Four choices that make the file
+ * smaller are in the variant too: the nodes numbered by their tag (`grouped`), an empty slot written as 0 (`zero`), the offsets
+ * of the strings in 16 bits (`narrow`), and the indexes of objects without their keys (`bare`).
+ *
+ * The form that is adopted is `rows/pow2/murmur3` with the nodes grouped, the empty slot 0 and the indexes of objects without
+ * their keys. The order of what decides it is the speed of a read, the memory, the CPU, and then the size of the file that is
+ * distributed, which is its gzip (what an npm tarball carries; the Brotli is printed beside it for a reader who sends it over
+ * the web). The candidates with a binary search over sorted keys are slower in the questions, and the offsets of the strings in
+ * 16 bits (`narrow`) are slower in Rust (the questions and the composition), as `yarn spec-baseline perf --packed` measures
+ * them, so neither is adopted. Of the rest, which read, query and compose in the same time, the smallest in memory and then in
+ * gzip is that one (the same command prints the sizes). The other candidates are kept as the record of what was measured.
  *
  * A file, in words (everything is little-endian, and a number is `uint32`):
  *
  * ```text
  * 0       magic            0x50534c4d (the bytes "MLSP")
  * 1       version          1
- * 2       variant          bit 0 columns; bits 1-2 the index (0 sorted, 1 minimal, 2 power of two); bit 3 the hash (0 Murmur3, 1 xxHash32)
+ * 2       variant          bit 0 columns; bits 1-2 the index (0 sorted, 1 minimal, 2 power of two); bit 3 the hash (0 Murmur3, 1 xxHash32);
+ *                         bit 4 is not used; bit 5 the nodes are grouped (what the encoder did, which a reader does not use);
+ *                         bit 6 a slot is 0 for none and the position plus one (see below);
+ *                         bit 7 the offsets of the strings are 16 bits; bit 8 the indexes of objects have no keys (see below)
  * 3       sections         8
  * 4..19   section table    for each section: the offset in words from the start of the file, and the length in words
  * ...     sections
@@ -46,7 +59,9 @@
  * The sections, in the order of the table:
  *
  * ```text
- * 0 string offsets   count + 1 offsets in bytes into section 1 (the first is 0, the last is the length)
+ * 0 string offsets   count + 1 offsets in bytes into section 1 (the first is 0, the last is the length); with bit 7 of the
+ *                    variant, the count of the strings and then the same count + 1 offsets in 16 bits, two to a word (a table whose
+ *                    strings are more than 65,535 bytes is written in 32 bits, and its header says so)
  * 1 string bytes     UTF-8, padded to whole words with zero bytes
  * 2 bits             elements, categories, wordsPerRow; then one word of flags for each element (bit i is FLAG_NAMES[i]),
  *                    then wordsPerRow words for each category (the bit e of row c is set when the element at position e of
@@ -67,10 +82,19 @@
  *   one index is shared by every list that has the same keys. It is, when the candidate is sorted,
  *   `[entries, n, n positions sorted by the bytes of their key, the string number of the key of each entry]`, and, when it is
  *   a perfect hash, `[entries, n, seed, buckets, slots, pilots, slot -> position, the string number of the key of each entry]`
- *   (see `mphf.ts`; the pilots are 16 bits each and two are in a word; a slot that no key has holds {@link NONE}). `n` is the
- *   number of different keys: the keys are the names of an array's objects or the keys of an object, and a name that comes
- *   twice is indexed at its first position.
+ *   (see `mphf.ts`; the pilots are 16 bits each and two are in a word; a slot that no key has holds {@link NONE}, or 0 when
+ *   bit 6 of the variant is set, and then the others hold the position plus one). `n` is the
+ *   number of different keys, in the low 31 bits of its word: the keys are the names of an array's objects or the keys of an object, and a name that comes
+ *   twice is indexed at its first position. With bit 8 of the variant, the index of an object (a perfect hash) has no key of
+ *   each entry, which the list of the object holds at the position that the slot gave, and ends with one word instead: the
+ *   position of the list of the first object that has the index, whose keys are those of every object that refers to it (the lists
+ *   are numbered again by the grouping, which tells the records the new position). The top bit of `n` ({@link BARE_FLAG}) says so
+ *   of a record, since the index of an array has its keys, and the two kinds are separate records even for the same keys.
  * - A region that was never written has the empty value in it: a root that is an empty object.
+ * - When bit 5 of the variant is set, the encoder numbered the nodes of the region by their tag, then by the count in `b`, then
+ *   by `c` and `a` as the walk had them (`group.ts`), and the lists are in the order of the first node that has them. The
+ *   words of a list are the same ones with the numbers of the nodes that moved, and the root is the new number of the root. The
+ *   strings and the indexes are what they were.
  *
  * **A region that a composition changes** is appended to: what an extension changes is added to it, and what it does not
  * change is the nodes that were there. The rules, which the TypeScript (`compose.ts`, `lazy.ts`) and the Rust composition
@@ -85,8 +109,11 @@
  *   new one that was made earlier is not made again; one that is the same as a node or a list of the base is, since the
  *   base does not say which they are. An index is the same as one that the region had when the string numbers of its keys are the same:
  *   the indexes of the region are walked from the start to know them (a record is `2 + n + entries` words for a sorted index and
- *   `5 + ceil(buckets / 2) + slots + entries` for a perfect hash, from the counts at its start), and the first of those that have
- *   the same keys is the one that is used.
+ *   `5 + ceil(buckets / 2) + slots + entries` for a perfect hash, from the counts at its start, and with one word in place of the
+ *   `entries` when its top bit of `n` says it has no keys), and the first of those that have the same keys is the one that is used.
+ *   For a candidate whose indexes of objects have no keys, an index is looked for among those of its own kind (an array or an
+ *   object), the keys of a record without keys are read from the list that its last word names, and the record is the same only
+ *   for the same kind.
  * - The root of the region is the new node of the tree (the node of the reference when the tree is one). The count of the nodes, lists
  *   and indexes in its header are those of the region with the new ones. The nodes that the old root had stay where they are.
  * - A region of columns has the columns made again for the new count of nodes (field `f` of node `n` is at `f * count + n`).
@@ -165,9 +192,49 @@ export interface Variant {
 	readonly columns: boolean;
 	readonly index: IndexKind;
 	readonly hash: HashKind;
+	/**
+	 * The nodes of a region the encoder makes from a spec are numbered by their tag, then by how many items or entries they
+	 * have, instead of in the order of the walk (`group.ts`). Only an encoder is told by this, and a reader does not use it:
+	 * the bit of the header is there so that a file says how it was made. A composition appends, and does not group.
+	 */
+	readonly grouped?: boolean;
+	/**
+	 * A slot of a perfect hash that no key has is 0 and the others are the position of their key plus one, in place of {@link NONE}
+	 * and the position. A reader takes a slot that is 0 for none, and the rest minus one for the position.
+	 */
+	readonly zero?: boolean;
+	/**
+	 * The table of the offsets of the strings holds them in 16 bits, two to a word, after the count of the strings (the strings
+	 * are 65,535 bytes or fewer: a spec that has more is written with 32 bits, and a variant that comes back from a file says
+	 * which). It is a choice of the reader as well as of the encoder.
+	 */
+	readonly narrow?: boolean;
+	/**
+	 * The index of an object has no key of each entry (the index of an array has them): a lookup compares the name that it was
+	 * asked with the key that the list of the object holds at the position that the slot gave. Only a perfect hash has it.
+	 */
+	readonly bare?: boolean;
 }
 
 const INDEX_CODES: readonly IndexKind[] = ['sorted', 'minimal', 'pow2'];
+
+/** The bit of the variant word that says the nodes are grouped (bit 4 is not used). */
+const GROUPED_BIT = 5;
+
+/** The bit of the variant word that says a slot of a perfect hash is 0 for none. */
+const ZERO_BIT = 6;
+
+/** The bit of the variant word that says the offsets of the strings are 16 bits. */
+const NARROW_BIT = 7;
+
+/** The bit of the variant word that says the indexes of objects have no keys. */
+const BARE_BIT = 8;
+
+/** The strings of a table of 16-bit offsets are this many bytes or fewer. */
+export const NARROW_LIMIT = 0xff_ff;
+
+/** The bit of the second word of an index that says it has no keys (the rest of the word is how many different keys it has). */
+export const BARE_FLAG = 0x80_00_00_00;
 
 /**
  * The word of the header that holds a variant.
@@ -179,12 +246,17 @@ export function variantWord(variant: Variant): number {
 	return (
 		(variant.columns ? 1 : 0) |
 		(INDEX_CODES.indexOf(variant.index) << 1) |
-		((variant.hash === 'xxhash32' ? 1 : 0) << 3)
+		((variant.hash === 'xxhash32' ? 1 : 0) << 3) |
+		((variant.grouped ? 1 : 0) << GROUPED_BIT) |
+		((variant.zero ? 1 : 0) << ZERO_BIT) |
+		((variant.narrow ? 1 : 0) << NARROW_BIT) |
+		((variant.bare ? 1 : 0) << BARE_BIT)
 	);
 }
 
 /**
- * The variant that a word of the header holds.
+ * The variant that a word of the header holds. A choice that is not made is not in the variant, so that a variant that
+ * comes back from a word is the one that the word was made from.
  *
  * @param word - The word
  * @returns The variant
@@ -192,30 +264,79 @@ export function variantWord(variant: Variant): number {
  */
 export function variantOf(word: number): Variant {
 	const index = INDEX_CODES[(word >>> 1) & 3];
-	if (index === undefined || word >>> 4 !== 0) {
+	// A sorted index has no slot (zero) and has keys that a lookup compares in the record (bare), as the encoder knows
+	const asksOfPerfectHash = ((word >>> ZERO_BIT) & 1) === 1 || ((word >>> BARE_BIT) & 1) === 1;
+	if (
+		index === undefined ||
+		((word >>> 4) & 1) !== 0 ||
+		word >>> (BARE_BIT + 1) !== 0 ||
+		(index === 'sorted' && asksOfPerfectHash)
+	) {
 		throw new Error(`The variant 0x${word.toString(16)} is not one of the candidates`);
 	}
-	return { columns: (word & 1) === 1, index, hash: ((word >>> 3) & 1) === 1 ? 'xxhash32' : 'murmur3' };
+	return {
+		columns: (word & 1) === 1,
+		index,
+		hash: ((word >>> 3) & 1) === 1 ? 'xxhash32' : 'murmur3',
+		...(((word >>> GROUPED_BIT) & 1) === 1 ? { grouped: true } : {}),
+		...(((word >>> ZERO_BIT) & 1) === 1 ? { zero: true } : {}),
+		...(((word >>> NARROW_BIT) & 1) === 1 ? { narrow: true } : {}),
+		...(((word >>> BARE_BIT) & 1) === 1 ? { bare: true } : {}),
+	};
+}
+
+/**
+ * Stops for a candidate that no file can have: a sorted index has no slot to write as 0 and keeps the keys that a lookup compares
+ * in its own record. The reader refuses a header that asks for either (`variantOf`), so the encoder does not write one.
+ *
+ * @param variant - The candidate
+ * @throws For a sorted index with `zero` or `bare`
+ */
+export function assertCandidate(variant: Variant): void {
+	if (variant.index === 'sorted' && variant.bare) {
+		throw new Error(
+			'An index without keys needs a perfect hash, which gives the position that the key is then read at',
+		);
+	}
+	if (variant.index === 'sorted' && variant.zero) {
+		throw new Error('An empty slot is a slot of a perfect hash, and a sorted index has none');
+	}
 }
 
 /**
  * The name of a variant, for a table.
  *
  * @param variant - The variant
- * @returns For example `columns/minimal/murmur3`
+ * @returns For example `columns/minimal/murmur3`, and `rows/pow2/murmur3+grouped+zero`
  */
 export function variantName(variant: Variant): string {
-	return `${variant.columns ? 'columns' : 'rows'}/${variant.index}/${variant.hash}`;
+	const choices = ['grouped', 'zero', 'narrow', 'bare'] as const;
+	return `${variant.columns ? 'columns' : 'rows'}/${variant.index}/${variant.hash}${choices.map(choice => (variant[choice] ? `+${choice}` : '')).join('')}`;
 }
 
 /**
- * The candidates that are measured: the two arrangements and the three indexes with Murmur3, and the perfect hashes with
- * xxHash32.
+ * The candidates that are measured, in three groups: the two arrangements and the three indexes with Murmur3, and the perfect
+ * hashes with xxHash32 (ten); the two arrangements of a perfect hash of a power of two with Murmur3, with the order of the
+ * nodes and the empty slot chosen in each way (six); and, with the nodes grouped and the empty slot 0, the offsets of the
+ * strings in 16 bits and the indexes of objects without keys, each and both in columns, and the indexes without keys in rows
+ * (four).
  */
-export const VARIANTS: readonly Variant[] = [false, true].flatMap(columns => [
-	{ columns, index: 'sorted', hash: 'murmur3' } as const,
-	{ columns, index: 'minimal', hash: 'murmur3' } as const,
-	{ columns, index: 'pow2', hash: 'murmur3' } as const,
-	{ columns, index: 'minimal', hash: 'xxhash32' } as const,
-	{ columns, index: 'pow2', hash: 'xxhash32' } as const,
-]);
+export const VARIANTS: readonly Variant[] = [
+	...[false, true].flatMap(columns => [
+		{ columns, index: 'sorted', hash: 'murmur3' } as const,
+		{ columns, index: 'minimal', hash: 'murmur3' } as const,
+		{ columns, index: 'pow2', hash: 'murmur3' } as const,
+		{ columns, index: 'minimal', hash: 'xxhash32' } as const,
+		{ columns, index: 'pow2', hash: 'xxhash32' } as const,
+	]),
+	...[{ grouped: true }, { zero: true }, { grouped: true, zero: true }].flatMap(choices =>
+		[false, true].map(columns => ({ columns, index: 'pow2', hash: 'murmur3', ...choices }) as const),
+	),
+	// The third group, with the nodes grouped and the empty slot 0. The first three are in columns, which was the smallest of the
+	// second group by Brotli; the last is the same as the second of them in rows, and it is the form that is adopted (the first
+	// paragraph above).
+	...[{ narrow: true }, { bare: true }, { narrow: true, bare: true }].map(
+		choices => ({ columns: true, index: 'pow2', hash: 'murmur3', grouped: true, zero: true, ...choices }) as const,
+	),
+	{ columns: false, index: 'pow2', hash: 'murmur3', grouped: true, zero: true, bare: true } as const,
+];

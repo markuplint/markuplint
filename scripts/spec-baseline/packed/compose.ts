@@ -27,7 +27,7 @@ import type { PackedSpec } from './read.ts';
 
 import { schemaToSpec } from '@markuplint/ml-spec';
 
-import { StringTable, assertDefKeys, encodeRegion } from './encode.ts';
+import { StringTable, assertDefKeys, encodeRegion, widened } from './encode.ts';
 import { REGIONS, RegionAt, Section } from './format.ts';
 import { lazyReader } from './lazy.ts';
 
@@ -115,11 +115,17 @@ export function compose(base: PackedSpec, extensions: readonly ExtensionLike[]):
 			changes[id] = encodeRegion(values[position], strings, base.variant, base.regions[position] ?? null);
 		}
 	}
+	let variant = base.variant;
 	if (strings.grown) {
-		const { offsets, bytes } = strings.sections();
+		const { offsets, bytes, narrow } = strings.sections();
 		changes[Section.StringOffsets] = offsets;
 		changes[Section.StringBytes] = bytes;
+		// A table of 16-bit offsets that the new strings made too long is written in 32 bits
+		variant = widened(variant, narrow);
 	}
 	// the bits are made from the regions that this has, in the same construction, when `specs` or `#contentModels` is touched
-	return base.replace(changes, { computeBits: Boolean(touched[RegionAt.Specs] || touched[RegionAt.ContentModels]) });
+	return base.replace(changes, {
+		computeBits: Boolean(touched[RegionAt.Specs] || touched[RegionAt.ContentModels]),
+		variant,
+	});
 }

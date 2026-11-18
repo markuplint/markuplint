@@ -20,6 +20,7 @@
 import type { Variant } from './format.ts';
 
 import {
+	BARE_FLAG,
 	FLAGS,
 	HEADER_WORDS,
 	MAGIC,
@@ -53,9 +54,32 @@ export interface OpenOptions {
 	 * `#contentModels` is not the one that its bits were made from is made once, with the bits that its regions give.
 	 */
 	readonly computeBits?: boolean;
+	/** The candidate that the new sections belong to, when it is not the one of the spec that they replace sections of (a table of strings that had to be widened). */
+	readonly variant?: Variant;
 }
 
-const u = (array: Uint32Array, index: number): number => array[index] ?? 0;
+const u = (array: ArrayLike<number>, index: number): number => array[index] ?? 0;
+
+/**
+ * The offsets of the strings of a section, as numbers that are indexed by the number of the string.
+ *
+ * @param section - The words of the section of the offsets
+ * @param narrow - Whether they are 16 bits, two to a word after the count of the strings
+ * @returns A view of the section (nothing is copied). The offsets of a `Uint32Array` are a multiple of 4 bytes from the start of
+ *   its buffer, so the view of 16-bit numbers after the count is aligned, and a big-endian machine does not get here (the
+ *   constructor of a spec refuses it, since a file is little-endian)
+ * @throws When the section is not as long as the count of its strings says
+ */
+export function offsetsOf(section: Uint32Array, narrow: boolean): ArrayLike<number> {
+	if (!narrow) {
+		return section;
+	}
+	const count = u(section, 0);
+	if (section.length !== 1 + Math.ceil((count + 1) / 2)) {
+		throw new Error('The table of string offsets is not as long as the count of the strings says');
+	}
+	return new Uint16Array(section.buffer, section.byteOffset + 4, count + 1);
+}
 
 /**
  * The digest of a value, which is what a question about a path is answered with: the same for the packed tree and for the
@@ -204,11 +228,13 @@ export class PackedSpec {
 	readonly compare: StringCompare;
 	/** The decoded strings, when they are compared as strings. */
 	readonly decoded: readonly string[] | null;
-	private readonly offsets: Uint32Array;
+	private readonly offsets: ArrayLike<number>;
 	private readonly bytes: Uint8Array;
 	private readonly mode: MphfMode | null;
 	private readonly hash: (bytes: Uint8Array, seed: number) => number;
 	private readonly rowEntries: boolean;
+	/** What a slot of a perfect hash holds more than the position of its key: 1 when the position is stored plus one. */
+	private readonly slotShift: number;
 	private ids: Map<string, number> | null = null;
 
 	/**
@@ -231,9 +257,13 @@ export class PackedSpec {
 		this.sections = own;
 		this.compare = options.compare ?? 'bytes';
 		this.rowEntries = !variant.columns;
+		this.slotShift = variant.zero ? 1 : 0;
 		this.mode = variant.index === 'sorted' ? null : variant.index;
 		this.hash = HASH_FUNCTIONS[variant.hash];
-		this.offsets = sections[Section.StringOffsets] ?? new Uint32Array(1);
+		this.offsets = offsetsOf(
+			sections[Section.StringOffsets] ?? new Uint32Array(variant.narrow ? 2 : 1),
+			Boolean(variant.narrow),
+		);
 		const stringWords = sections[Section.StringBytes] ?? new Uint32Array(0);
 		const length = u(this.offsets, this.offsets.length - 1);
 		if (u(this.offsets, 0) !== 0) {
@@ -314,13 +344,15 @@ export class PackedSpec {
 	 * are kept refer to them.
 	 *
 	 * @param changes - The new words of some sections, by section
-	 * @param options - How strings are compared
+	 * @param options - How strings are compared, and the candidate that the new sections belong to when it is not this one
 	 * @returns A spec that shares the sections that are not changed
 	 * @throws When the offsets or the bytes of the new strings do not start with those of the old ones
 	 */
 	replace(changes: Readonly<Record<number, Uint32Array>>, options: OpenOptions = {}): PackedSpec {
-		const offsets = changes[Section.StringOffsets];
-		if (offsets) {
+		const variant = options.variant ?? this.variant;
+		const changedOffsets = changes[Section.StringOffsets];
+		if (changedOffsets) {
+			const offsets = offsetsOf(changedOffsets, Boolean(variant.narrow));
 			if (offsets.length < this.offsets.length) {
 				throw new Error('The new table of strings is shorter than the one it replaces');
 			}
@@ -338,11 +370,25 @@ export class PackedSpec {
 			}
 		}
 		const sections = this.sections.map((section, id) => changes[id] ?? section);
-		return new PackedSpec(this.variant, sections, {
+		return new PackedSpec(variant, sections, {
 			compare: this.compare,
 			decoded: this.decoded ?? undefined,
 			...options,
 		});
+	}
+
+	/**
+	 * The offsets of the strings in bytes, whatever their width in the file.
+	 *
+	 * @returns A view of the offsets (nothing is copied), one more than there are strings
+	 */
+	offsetView(): ArrayLike<number> {
+		return this.offsets;
+	}
+
+	/** How many bytes the strings are: the last offset. */
+	get stringByteLength(): number {
+		return u(this.offsets, this.offsets.length - 1);
 	}
 
 	/**
@@ -466,12 +512,14 @@ export class PackedSpec {
 	 * @param index - The position of the index in the region
 	 * @param query - The bytes of the name
 	 * @param name - The name
+	 * @param listAt - For the index of an object that has no keys of its own, the position of the list of the object, which holds them
 	 * @returns The position of the entry, or {@link NONE}
 	 */
-	private findEntry(region: Region, index: number, query: Uint8Array, name: string): number {
+	private findEntry(region: Region, index: number, query: Uint8Array, name: string, listAt = -1): number {
 		const words = region.indexes;
 		const entries = u(words, index);
-		const distinct = u(words, index + 1);
+		// The top bit of the word is the flag of an index without keys, which a sorted index never has
+		const distinct = u(words, index + 1) & ~BARE_FLAG;
 		if (this.mode === null) {
 			const orderAt = index + 2;
 			const keysAt = orderAt + distinct;
@@ -501,11 +549,13 @@ export class PackedSpec {
 		const hash = this.hash(query, seed);
 		const bucket = reduce(hash, buckets);
 		const pilot = (u(words, pilotsAt + (bucket >>> 1)) >>> ((bucket & 1) << 4)) & 0xff_ff;
-		const position = u(words, slotsAt + slotOf(hash, pilot, slots, this.mode));
+		// A slot that is 0 for none gives NONE here when the position is stored plus one, and NONE is not below `entries`
+		const position = (u(words, slotsAt + slotOf(hash, pilot, slots, this.mode)) - this.slotShift) >>> 0;
 		if (position === NONE || position >= entries) {
 			return NONE;
 		}
-		return this.keyEquals(u(words, keysAt + position), query, name) ? position : NONE;
+		const key = listAt < 0 ? u(words, keysAt + position) : u(region.lists, this.entryKeyAt(listAt, position));
+		return this.keyEquals(key, query, name) ? position : NONE;
 	}
 
 	/** The position in the list of an object of the entry `j`: where its key and its value are. */
@@ -559,7 +609,7 @@ export class PackedSpec {
 		const index = region.c(node);
 		const query = nameBytes(name);
 		if (index !== 0) {
-			return this.findEntry(region, index - 1, query, name);
+			return this.findEntry(region, index - 1, query, name, this.variant.bare ? a : -1);
 		}
 		for (let j = 0; j < b; j++) {
 			if (this.keyEquals(u(region.lists, this.entryKeyAt(a, j)), query, name)) {

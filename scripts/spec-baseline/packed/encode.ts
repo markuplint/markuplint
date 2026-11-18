@@ -14,6 +14,10 @@
  * 2. A node, a list and an index are numbered when they are made, which is after what they refer to, and one that
  *    is the same as an earlier one is not made again.
  *
+ * A candidate that is `grouped` has the nodes of each region of a spec numbered again after the walk, by their tag (`group.ts`):
+ * what is said above is the numbering of the walk, which is what a composition appends to its base with, and a base that was
+ * grouped keeps the numbers that it has.
+ *
  * With a base region (a composition), the numbers of the new nodes, lists and indexes go on from the counts of the base, a
  * value that stands for a node of the base (`lazy.ts`) is that node and makes nothing, and an index that has the keys of one
  * that the base has is that one (`format.ts` has the rules).
@@ -22,7 +26,18 @@
  */
 import type { Variant } from './format.ts';
 
-import { INDEX_MINIMUM, NONE, REGIONS, SECTION_COUNT, Section, Tag } from './format.ts';
+import {
+	BARE_FLAG,
+	INDEX_MINIMUM,
+	NARROW_LIMIT,
+	NONE,
+	REGIONS,
+	SECTION_COUNT,
+	Section,
+	Tag,
+	assertCandidate,
+} from './format.ts';
+import { groupRegion } from './group.ts';
 import { HASH_FUNCTIONS } from './hash.ts';
 import { refOf } from './lazy.ts';
 import { buildMphf } from './mphf.ts';
@@ -54,15 +69,23 @@ export class StringTable {
 	private readonly addedBytes: Uint8Array[] = [];
 	private readonly addedIds = new Map<string, number>();
 	private readonly baseCount: number;
+	private readonly narrow: boolean;
 
 	/**
 	 * Starts a table that continues the strings of a spec.
 	 *
 	 * @param base - The spec whose strings keep their numbers, or `null` for a table that has none
+	 * @param narrow - Whether a table that has no base holds its offsets in 16 bits when the strings are few enough. A table that
+	 *   continues a spec does as that spec does, so the argument is not given with a base
+	 * @throws When both a base and `narrow` are given
 	 */
-	constructor(base: PackedSpec | null = null) {
+	constructor(base: PackedSpec | null = null, narrow?: boolean) {
+		if (base && narrow !== undefined) {
+			throw new Error('A table of strings that continues a spec has the offsets that the spec has');
+		}
 		this.base = base;
 		this.baseCount = base?.stringCount ?? 0;
+		this.narrow = base ? Boolean(base.variant.narrow) : narrow === true;
 	}
 
 	/**
@@ -108,12 +131,14 @@ export class StringTable {
 	/**
 	 * The sections of the strings: the offsets, and the bytes padded to whole words.
 	 *
-	 * @returns The words of the two sections
+	 * @returns The words of the two sections, and whether the offsets are in 16 bits (a table that is asked to have them and that
+	 *   has more than 65,535 bytes has them in 32 bits, as every other table does)
 	 */
-	sections(): { offsets: Uint32Array; bytes: Uint32Array } {
+	sections(): { offsets: Uint32Array; bytes: Uint32Array; narrow: boolean } {
 		const count = this.baseCount + this.added.length;
 		const offsets = new Uint32Array(count + 1);
-		const baseOffsets = this.base?.sections[Section.StringOffsets];
+		// The offsets of the base as numbers, whatever their width, without a copy
+		const baseOffsets = this.base?.offsetView();
 		const baseBytes = this.base?.sections[Section.StringBytes];
 		let total = 0;
 		if (baseOffsets && baseBytes) {
@@ -137,8 +162,29 @@ export class StringTable {
 			view.set(added, at);
 			at += added.length;
 		}
-		return { offsets, bytes };
+		if (this.narrow && total <= NARROW_LIMIT) {
+			return { offsets: narrowOffsets(offsets), bytes, narrow: true };
+		}
+		return { offsets, bytes, narrow: false };
 	}
+}
+
+/**
+ * The section of offsets that are held in 16 bits: the count of the strings, then the offsets two to a word (the first of the
+ * two is in the low half).
+ *
+ * @param offsets - The offsets in bytes, one more than the strings, each 65,535 or less
+ * @returns The words of the section
+ * @throws When an offset is more than 65,535, which a 16-bit number would wrap
+ */
+export function narrowOffsets(offsets: Uint32Array): Uint32Array {
+	if (offsets.some(offset => offset > NARROW_LIMIT)) {
+		throw new Error(`An offset is more than ${NARROW_LIMIT}, which 16 bits do not hold`);
+	}
+	const section = new Uint32Array(1 + Math.ceil(offsets.length / 2));
+	section[0] = offsets.length - 1;
+	new Uint16Array(section.buffer, section.byteOffset + 4, offsets.length).set(offsets);
+	return section;
 }
 
 /**
@@ -199,19 +245,63 @@ export function indexesOf(region: Region, variant: Variant): Map<string, number>
 	let at = 0;
 	while (at < words.length) {
 		const entries = words[at] ?? 0;
-		const distinct = words[at + 1] ?? 0;
+		const marked = words[at + 1] ?? 0;
+		const bare = variant.bare === true && (marked & BARE_FLAG) !== 0;
+		const distinct = marked & ~BARE_FLAG;
 		const length =
 			variant.index === 'sorted'
 				? 2 + distinct + entries
-				: 5 + Math.ceil((words[at + 3] ?? 0) / 2) + (words[at + 4] ?? 0) + entries;
-		const key = [...words.subarray(at + length - entries, at + length)].join(' ');
-		if (!found.has(key)) {
-			found.set(key, at);
+				: 5 + Math.ceil((words[at + 3] ?? 0) / 2) + (words[at + 4] ?? 0) + (bare ? 1 : entries);
+		// A record without keys has, in place of them, the position of the list of the first object that has the index, whose keys
+		// are those of every object that refers to the index
+		const key = bare
+			? keysOfList(region, variant, words[at + length - 1] ?? 0, entries)
+			: [...words.subarray(at + length - entries, at + length)].join(' ');
+		if (at + length > words.length) {
+			throw new Error(`The index at ${at} is not inside the indexes of its region`);
+		}
+		const full = indexKey(variant, bare, key);
+		if (!found.has(full)) {
+			found.set(full, at);
 		}
 		at += length;
 	}
 	INDEXES_OF.set(region, found);
 	return found;
+}
+
+/**
+ * The key of an index in the table of the indexes that a region has: the string numbers of its keys, and, for a candidate whose
+ * indexes of objects have no keys, which kind of index it is (the index of an array and that of an object are not the same record,
+ * since only the first has its keys).
+ *
+ * @param variant - The candidate
+ * @param bare - Whether the index has no keys
+ * @param keys - The string numbers of the keys, joined by a space
+ * @returns The key
+ */
+function indexKey(variant: Variant, bare: boolean, keys: string): string {
+	return variant.bare ? `${bare ? 'o' : 'a'} ${keys}` : keys;
+}
+
+/**
+ * The keys of an object that are in its list.
+ *
+ * @param region - The region
+ * @param variant - The candidate, which says how the keys of an object are arranged
+ * @param listAt - The position of the list of the object
+ * @param entries - How many entries the object has
+ * @returns The string numbers of its keys, joined by a space
+ */
+function keysOfList(region: Region, variant: Variant, listAt: number, entries: number): string {
+	if (listAt + (variant.columns ? entries : 2 * entries) > region.lists.length) {
+		throw new Error(`An index without keys refers to a list at ${listAt} that the region does not have`);
+	}
+	const keys = Array.from(
+		{ length: entries },
+		(_, j) => region.lists[variant.columns ? listAt + j : listAt + 2 * j] ?? 0,
+	);
+	return keys.join(' ');
 }
 
 /**
@@ -232,6 +322,7 @@ class RegionEncoder {
 	private readonly baseIndexIds: ReadonlyMap<string, number>;
 
 	constructor(strings: StringTable, variant: Variant, base: Region | null = null) {
+		assertCandidate(variant);
 		this.strings = strings;
 		this.variant = variant;
 		this.base = base;
@@ -265,9 +356,16 @@ class RegionEncoder {
 		return offset;
 	}
 
-	/** Makes the index of entries with these keys, and gives its position. */
-	private index(keys: readonly number[]): number {
-		const key = keys.join(' ');
+	/**
+	 * Makes the index of entries with these keys, and gives its position.
+	 *
+	 * @param keys - The string numbers of the keys
+	 * @param bare - Whether the index is that of an object and has no keys of its own (only a candidate that asks for it)
+	 * @param listAt - For such an index, the position of the list of the object, which holds the keys that the record does not
+	 * @returns The position of the index among the indexes of the region
+	 */
+	private index(keys: readonly number[], bare = false, listAt = 0): number {
+		const key = indexKey(this.variant, bare, keys.join(' '));
 		const known = this.indexIds.get(key) ?? this.baseIndexIds.get(key);
 		if (known !== undefined) {
 			return known;
@@ -281,7 +379,7 @@ class RegionEncoder {
 				distinct.push(position);
 			}
 		}
-		const words: number[] = [keys.length, distinct.length];
+		const words: number[] = [keys.length, (distinct.length | (bare ? BARE_FLAG : 0)) >>> 0];
 		if (this.variant.index === 'sorted') {
 			const order = distinct.toSorted((x, y) => compareBytes(bytes[x] as Uint8Array, bytes[y] as Uint8Array));
 			appendWords(words, order);
@@ -297,10 +395,15 @@ class RegionEncoder {
 				words.push(((mphf.pilots[2 * pair] ?? 0) | ((mphf.pilots[2 * pair + 1] ?? 0) << 16)) >>> 0);
 			}
 			for (const entry of mphf.slotEntry) {
-				words.push(entry === NONE ? NONE : (distinct[entry] ?? NONE));
+				if (this.variant.zero) {
+					words.push(entry === NONE ? 0 : (distinct[entry] ?? 0) + 1);
+				} else {
+					words.push(entry === NONE ? NONE : (distinct[entry] ?? NONE));
+				}
 			}
 		}
-		appendWords(words, keys);
+		// The keys, or where the list of an object that has them is
+		appendWords(words, bare ? [listAt] : keys);
 		const offset = (this.base?.indexes.length ?? 0) + this.indexes.length;
 		appendWords(this.indexes, words);
 		this.indexIds.set(key, offset);
@@ -373,8 +476,10 @@ class RegionEncoder {
 			values.push(this.encode(value));
 		}
 		const words = this.variant.columns ? [...keys, ...values] : keys.flatMap((key, j) => [key, values[j] ?? 0]);
-		const index = keys.length >= INDEX_MINIMUM ? this.index(keys) + 1 : 0;
-		return this.node(Tag.Object, this.list(words), keys.length, index);
+		// The list first, since an index without keys says where the list that holds them is
+		const list = this.list(words);
+		const index = keys.length >= INDEX_MINIMUM ? this.index(keys, this.variant.bare === true, list) + 1 : 0;
+		return this.node(Tag.Object, list, keys.length, index);
 	}
 
 	/**
@@ -491,14 +596,28 @@ export function regionValues(spec: SpecLike): unknown[] {
  * @returns The spec
  */
 export function assemble(variant: Variant, strings: StringTable, regions: readonly Uint32Array[]): PackedSpec {
-	const { offsets, bytes } = strings.sections();
+	const { offsets, bytes, narrow } = strings.sections();
 	const sections: Uint32Array[] = Array.from({ length: SECTION_COUNT }, () => new Uint32Array(3));
 	sections[Section.StringOffsets] = offsets;
 	sections[Section.StringBytes] = bytes;
 	for (const [position, id] of REGIONS.entries()) {
 		sections[id] = regions[position] ?? new Uint32Array(0);
 	}
-	return new PackedSpec(variant, sections, { computeBits: true });
+	return new PackedSpec(widened(variant, narrow), sections, { computeBits: true });
+}
+
+/**
+ * The candidate that a table of strings that turned out to need 32-bit offsets belongs to.
+ *
+ * @param variant - The candidate that asked for 16-bit offsets, or did not
+ * @param narrow - Whether the table has them
+ * @returns The candidate, as it is when the table is as it asked, and without `narrow` when it is not
+ */
+export function widened(variant: Variant, narrow: boolean): Variant {
+	if (Boolean(variant.narrow) === narrow) {
+		return variant;
+	}
+	return Object.fromEntries(Object.entries(variant).filter(([key]) => key !== 'narrow')) as unknown as Variant;
 }
 
 /**
@@ -509,7 +628,10 @@ export function assemble(variant: Variant, strings: StringTable, regions: readon
  * @returns The packed spec
  */
 export function encodeSpec(spec: SpecLike, variant: Variant): PackedSpec {
-	const strings = new StringTable();
-	const regions = regionValues(spec).map(value => encodeRegion(value, strings, variant));
+	const strings = new StringTable(null, variant.narrow === true);
+	const regions = regionValues(spec).map(value => {
+		const words = encodeRegion(value, strings, variant);
+		return variant.grouped ? groupRegion(words, variant.columns, variant.bare === true) : words;
+	});
 	return assemble(variant, strings, regions);
 }
