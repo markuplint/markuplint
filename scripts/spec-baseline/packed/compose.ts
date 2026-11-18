@@ -27,6 +27,7 @@ import { schemaToSpec } from '@markuplint/ml-spec';
 
 import { StringTable, encodeRegion } from './encode.ts';
 import { REGIONS, Section } from './format.ts';
+import { lazy } from './lazy.ts';
 
 /** What an extension that this composes may have: the keys that `schemaToSpec` reads. */
 export interface ExtensionLike {
@@ -73,8 +74,12 @@ export function compose(base: PackedSpec, extensions: readonly ExtensionLike[]):
 	if (!touched.includes(true)) {
 		return base;
 	}
-	const value = (position: number, empty: unknown) =>
-		touched[position] ? base.regionValue(REGIONS[position] as (typeof REGIONS)[number]) : empty;
+	// What an extension touches is given to `schemaToSpec` as values that are read when it reads them (`lazy.ts`), so that
+	// what it leaves as it was is still a node of the base when it comes back, and is not made again.
+	const value = (position: number, empty: unknown) => {
+		const region = base.regions[position];
+		return touched[position] && region ? lazy(base, region, region.root) : empty;
+	};
 	const skeleton = {
 		def: {
 			'#globalAttrs': value(1, {}),
@@ -98,7 +103,7 @@ export function compose(base: PackedSpec, extensions: readonly ExtensionLike[]):
 	const changes: Record<number, Uint32Array> = {};
 	for (const [position, id] of REGIONS.entries()) {
 		if (touched[position]) {
-			changes[id] = encodeRegion(values[position], strings, base.variant);
+			changes[id] = encodeRegion(values[position], strings, base.variant, base.regions[position] ?? null);
 		}
 	}
 	if (strings.grown) {

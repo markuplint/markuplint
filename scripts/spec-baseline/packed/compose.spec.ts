@@ -90,6 +90,52 @@ describe.each(VARIANTS)('compose (%o)', variant => {
 		expect(compose(base, [{}])).toBe(base);
 	});
 
+	test('appends what an extension changes to the region, and every node, list and index of the base stays as it was', () => {
+		for (const extensions of [[vue as ExtensionLike], [USER]]) {
+			const composed = compose(base, extensions);
+			for (const [position, region] of base.regions.entries()) {
+				const after = composed.regions[position];
+				if (!after || after === region) {
+					continue;
+				}
+				expect(after.count).toBeGreaterThanOrEqual(region.count);
+				for (let node = 0; node < region.count; node++) {
+					expect([after.tag(node), after.a(node), after.b(node), after.c(node)]).toStrictEqual([
+						region.tag(node),
+						region.a(node),
+						region.b(node),
+						region.c(node),
+					]);
+				}
+				expect([...after.lists.subarray(0, region.lists.length)]).toStrictEqual([...region.lists]);
+				expect([...after.indexes.subarray(0, region.indexes.length)]).toStrictEqual([...region.indexes]);
+			}
+		}
+	});
+
+	test('makes new nodes only for what the extension changes', () => {
+		const composed = compose(base, [vue as ExtensionLike]);
+		const specs = base.regions[0];
+		const after = composed.regions[0];
+		if (!specs || !after) {
+			throw new Error('no region');
+		}
+		// vue-spec changes a few elements of the 237, and none of the roles
+		expect(after.count - specs.count).toBeLessThan(specs.count / 20);
+		expect(composed.sections[Section.Aria]).toBe(base.sections[Section.Aria]);
+	});
+
+	test('uses the index of the base for a table that has the same names', () => {
+		const composed = compose(base, [vue as ExtensionLike]);
+		const specs = base.regions[0];
+		const after = composed.regions[0];
+		if (!specs || !after) {
+			throw new Error('no region');
+		}
+		expect(after.c(after.root)).toBe(specs.c(specs.root));
+		expect(after.root).not.toBe(specs.root);
+	});
+
 	test('does not change the base', () => {
 		const before = base.serialize();
 		compose(base, [vue as ExtensionLike, USER]);

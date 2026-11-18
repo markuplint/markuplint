@@ -69,6 +69,26 @@
  *   twice is indexed at its first position.
  * - A region that was never written has the empty value in it: a root that is an empty object.
  *
+ * **A region that a composition changes** is not made again: what an extension changes is appended to it, and what it does not change is
+ * the nodes that were there. The rules, which the TypeScript (`compose.ts`, `lazy.ts`) and the Rust composition follow to the same bytes:
+ *
+ * - The tree that is to be encoded has, for what the merge left as it was, a **reference** to its node in the region, and
+ *   for the rest values. Only an array or an object (an empty one too) is a reference; a number, a boolean, null and a string are
+ *   always values, so that they are made as new nodes.
+ * - A new node, list and index is added at the end of the sections of the region, and its number goes on from the count
+ *   that the region had (`nodes`, `lists`, `indexes`); a reference is the number that it has, and makes nothing. The numbers
+ *   are given in the order of the walk of `encode.ts` (a node after what it refers to). A node and a list that is the same as a
+ *   new one that was made earlier is not made again; one that is the same as a node or a list of the base is, since the
+ *   base does not say which they are. An index is the same as one that the region had when the string numbers of its keys are the same:
+ *   the indexes of the region are walked from the start to know them (a record is `2 + n + entries` words for a sorted index and
+ *   `5 + ceil(buckets / 2) + slots + entries` for a perfect hash, from the counts at its start), and the first of those that have
+ *   the same keys is the one that is used.
+ * - The root of the region is the new node of the tree (the node of the reference when the tree is one). The count of the nodes, lists
+ *   and indexes in its header are those of the region with the new ones. The nodes that the old root had stay where they are.
+ * - A region of columns has the columns made again for the new count of nodes (field `f` of node `n` is at `f * count + n`).
+ * - The strings of the base keep their numbers and the new ones go after them, in the order that the regions are
+ *   made (`specs`, `#globalAttrs`, `#aria`, `#contentModels`, the rest), as before.
+ *
  * What a candidate does not hold: a number that is negative, not an integer, or 2^32 or more (the data has none; the encoder
  * stops for one), and the keys of `def` other than the three that `SpecDefs` has.
  *

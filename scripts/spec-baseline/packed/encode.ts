@@ -20,8 +20,9 @@ import type { Variant } from './format.ts';
 
 import { INDEX_MINIMUM, NONE, REGIONS, SECTION_COUNT, Section, Tag } from './format.ts';
 import { murmur3, xxhash32 } from './hash.ts';
+import { refOf } from './lazy.ts';
 import { buildMphf } from './mphf.ts';
-import { PackedSpec } from './read.ts';
+import { PackedSpec, type Region } from './read.ts';
 
 const encoder = new TextEncoder();
 
@@ -85,16 +86,29 @@ export class StringTable {
 	sections(): { offsets: Uint32Array; bytes: Uint32Array } {
 		const count = this.baseCount + this.added.length;
 		const offsets = new Uint32Array(count + 1);
+		const baseOffsets = this.base?.sections[Section.StringOffsets];
+		const baseBytes = this.base?.sections[Section.StringBytes];
 		let total = 0;
-		for (let sid = 0; sid < count; sid++) {
-			offsets[sid] = total;
-			total += this.bytes(sid).length;
+		if (baseOffsets && baseBytes) {
+			// What the base has is copied as it is, and the new strings go after it
+			offsets.set(baseOffsets);
+			total = baseOffsets[this.baseCount] ?? 0;
+		}
+		for (const [position, bytes] of this.addedBytes.entries()) {
+			offsets[this.baseCount + position] = total;
+			total += bytes.length;
 		}
 		offsets[count] = total;
 		const bytes = new Uint32Array(Math.ceil(total / 4));
 		const view = new Uint8Array(bytes.buffer, bytes.byteOffset, bytes.byteLength);
-		for (let sid = 0; sid < count; sid++) {
-			view.set(this.bytes(sid), offsets[sid]);
+		let at = 0;
+		if (baseOffsets && baseBytes) {
+			at = baseOffsets[this.baseCount] ?? 0;
+			view.set(new Uint8Array(baseBytes.buffer, baseBytes.byteOffset, at));
+		}
+		for (const added of this.addedBytes) {
+			view.set(added, at);
+			at += added.length;
 		}
 		return { offsets, bytes };
 	}
@@ -127,20 +141,54 @@ function isNamedObject(value: unknown): value is { name: string } {
 	);
 }
 
-/** Makes the words of one region. */
+/**
+ * The indexes that a region has, by the string numbers of their keys, which is how an index that is needed again is found: the
+ * first of those with the same keys.
+ *
+ * @param region - The region
+ * @param variant - The candidate, which says how long a record of an index is
+ * @returns The position of each index, by its keys
+ */
+export function indexesOf(region: Region, variant: Variant): Map<string, number> {
+	const words = region.indexes;
+	const found = new Map<string, number>();
+	let at = 0;
+	while (at < words.length) {
+		const entries = words[at] ?? 0;
+		const distinct = words[at + 1] ?? 0;
+		const length =
+			variant.index === 'sorted'
+				? 2 + distinct + entries
+				: 5 + Math.ceil((words[at + 3] ?? 0) / 2) + (words[at + 4] ?? 0) + entries;
+		const key = [...words.subarray(at + length - entries, at + length)].join(' ');
+		if (!found.has(key)) {
+			found.set(key, at);
+		}
+		at += length;
+	}
+	return found;
+}
+
+/**
+ * Makes the words of one region. With a base region it appends to it (see `format.ts`): the numbers of the new nodes, lists and
+ * indexes go on from those of the base, and a reference to a node of the base (`lazy.ts`) is that node.
+ */
 class RegionEncoder {
 	private readonly strings: StringTable;
 	private readonly variant: Variant;
+	private readonly base: Region | null;
 	private readonly nodes: number[] = [];
 	private readonly nodeIds = new Map<string, number>();
 	private readonly lists: number[] = [];
 	private readonly listIds = new Map<string, number>();
 	private readonly indexes: number[] = [];
-	private readonly indexIds = new Map<string, number>();
+	private readonly indexIds: Map<string, number>;
 
-	constructor(strings: StringTable, variant: Variant) {
+	constructor(strings: StringTable, variant: Variant, base: Region | null = null) {
 		this.strings = strings;
 		this.variant = variant;
+		this.base = base;
+		this.indexIds = base ? indexesOf(base, variant) : new Map();
 	}
 
 	private node(tag: number, a: number, b: number, c: number): number {
@@ -149,7 +197,7 @@ class RegionEncoder {
 		if (known !== undefined) {
 			return known;
 		}
-		const id = this.nodes.length / 4;
+		const id = (this.base?.count ?? 0) + this.nodes.length / 4;
 		this.nodes.push(tag, a, b, c);
 		this.nodeIds.set(key, id);
 		return id;
@@ -164,7 +212,7 @@ class RegionEncoder {
 		if (known !== undefined) {
 			return known;
 		}
-		const offset = this.lists.length;
+		const offset = (this.base?.lists.length ?? 0) + this.lists.length;
 		this.lists.push(...words);
 		this.listIds.set(key, offset);
 		return offset;
@@ -206,7 +254,7 @@ class RegionEncoder {
 			}
 		}
 		words.push(...keys);
-		const offset = this.indexes.length;
+		const offset = (this.base?.indexes.length ?? 0) + this.indexes.length;
 		this.indexes.push(...words);
 		this.indexIds.set(key, offset);
 		return offset;
@@ -221,6 +269,13 @@ class RegionEncoder {
 	encode(value: unknown): number {
 		if (value === null) {
 			return this.node(Tag.Null, 0, 0, 0);
+		}
+		const reference = refOf(value);
+		if (reference) {
+			if (reference.region !== this.base) {
+				throw new Error('A reference is to a node of the region that is appended to, and of no other');
+			}
+			return reference.node;
 		}
 		switch (typeof value) {
 			case 'boolean': {
@@ -282,23 +337,44 @@ class RegionEncoder {
 	 * @returns The section
 	 */
 	finish(root: number): Uint32Array {
-		const count = this.nodes.length / 4;
-		const section = new Uint32Array(4 + this.nodes.length + this.lists.length + this.indexes.length);
+		const { base } = this;
+		const baseCount = base?.count ?? 0;
+		const count = baseCount + this.nodes.length / 4;
+		const baseLists = base?.lists.length ?? 0;
+		const baseIndexes = base?.indexes.length ?? 0;
+		const section = new Uint32Array(
+			4 + 4 * count + baseLists + this.lists.length + baseIndexes + this.indexes.length,
+		);
 		section[0] = count;
-		section[1] = this.lists.length;
-		section[2] = this.indexes.length;
+		section[1] = baseLists + this.lists.length;
+		section[2] = baseIndexes + this.indexes.length;
 		section[3] = root;
+		const field = (node: number, index: number): number =>
+			node < baseCount && base
+				? ([base.tag(node), base.a(node), base.b(node), base.c(node)][index] ?? 0)
+				: (this.nodes[4 * (node - baseCount) + index] ?? 0);
 		if (this.variant.columns) {
 			for (let node = 0; node < count; node++) {
-				for (let field = 0; field < 4; field++) {
-					section[4 + field * count + node] = this.nodes[4 * node + field] ?? 0;
+				for (let index = 0; index < 4; index++) {
+					section[4 + index * count + node] = field(node, index);
 				}
 			}
 		} else {
-			section.set(this.nodes, 4);
+			if (base) {
+				section.set(base.nodes, 4);
+			}
+			section.set(this.nodes, 4 + 4 * baseCount);
 		}
-		section.set(this.lists, 4 + this.nodes.length);
-		section.set(this.indexes, 4 + this.nodes.length + this.lists.length);
+		const listsAt = 4 + 4 * count;
+		if (base) {
+			section.set(base.lists, listsAt);
+		}
+		section.set(this.lists, listsAt + baseLists);
+		const indexesAt = listsAt + baseLists + this.lists.length;
+		if (base) {
+			section.set(base.indexes, indexesAt);
+		}
+		section.set(this.indexes, indexesAt + baseIndexes);
 		return section;
 	}
 }
@@ -309,10 +385,16 @@ class RegionEncoder {
  * @param value - The value of the region
  * @param strings - The strings, to which the new ones of the region are added
  * @param variant - The candidate
+ * @param base - The region that this is appended to, whose nodes the references in the value are (`lazy.ts`)
  * @returns The words of the section
  */
-export function encodeRegion(value: unknown, strings: StringTable, variant: Variant): Uint32Array {
-	const regionEncoder = new RegionEncoder(strings, variant);
+export function encodeRegion(
+	value: unknown,
+	strings: StringTable,
+	variant: Variant,
+	base: Region | null = null,
+): Uint32Array {
+	const regionEncoder = new RegionEncoder(strings, variant, base);
 	return regionEncoder.finish(regionEncoder.encode(value));
 }
 
