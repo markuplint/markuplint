@@ -4187,10 +4187,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@tsconfig/strictest@npm:2.0.8":
-  version: 2.0.8
-  resolution: "@tsconfig/strictest@npm:2.0.8"
-  checksum: 10c0/96d7f1c6988c284886e7f2caea87415a6ebc779dc24c3f102cfa83b7d924da1363176b09c4600d11a1205bf2d819f35515c542a4bbcbe2fe13c1d7833376d203
+"@tsconfig/strictest@npm:2.0.9":
+  version: 2.0.9
+  resolution: "@tsconfig/strictest@npm:2.0.9"
+  checksum: 10c0/ac460a8660a79424d971a39501122e7be1824b0002480a0d294735ff0861bc0da17bf0f9e0ed442b7cdb38aef33dda1fafcbb32ca3d4a964047409448643ecc9
   languageName: node
   linkType: hard
 
@@ -9373,7 +9373,7 @@ __metadata:
     "@imgix/js-core": "npm:3.8.0"
     "@octokit/rest": "npm:22.0.1"
     "@playwright/test": "npm:1.65.0"
-    "@tsconfig/strictest": "npm:2.0.8"
+    "@tsconfig/strictest": "npm:2.0.9"
     clsx: "npm:2.1.1"
     dotenv: "npm:18.0.10"
     eslint-plugin-react: "npm:7.37.5"
