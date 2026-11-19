@@ -1949,7 +1949,7 @@ __metadata:
   dependencies:
     "@isaacs/brace-expansion": "npm:5.0.1"
     "@markuplint/rules": "npm:5.6.1"
-    glob: "npm:14.0.5"
+    glob: "npm:14.0.6"
     jsonc-parser: "npm:3.3.1"
     mustache: "npm:4.2.0"
   languageName: unknown
@@ -1963,7 +1963,7 @@ __metadata:
     "@markuplint/ml-core": "npm:5.6.1"
     "@types/fs-extra": "npm:11.0.4"
     fs-extra: "npm:11.4.1"
-    glob: "npm:^14.0.5"
+    glob: "npm:^14.0.6"
     prettier: "npm:^3.10.0"
     typescript: "npm:~6.0.3"
   bin:
@@ -2005,7 +2005,7 @@ __metadata:
     "@types/node": "npm:24.19.2"
     cosmiconfig: "npm:^10.0.1"
     debug: "npm:^4.4.3"
-    glob: "npm:^14.0.5"
+    glob: "npm:^14.0.6"
     ignore: "npm:^7.0.14"
     import-meta-resolve: "npm:^4.2.0"
     jsonc: "npm:^3.0.0"
@@ -2039,7 +2039,7 @@ __metadata:
     "@types/cli-progress": "npm:3.11.6"
     cheerio: "npm:1.2.0"
     cli-progress: "npm:3.12.0"
-    glob: "npm:14.0.5"
+    glob: "npm:14.0.6"
     jsonc-parser: "npm:3.3.1"
     type-fest: "npm:5.10.0"
   languageName: unknown
@@ -2246,7 +2246,7 @@ __metadata:
     "@markuplint/svelte-parser": "npm:5.6.1"
     "@markuplint/vue-parser": "npm:5.6.1"
     es-module-lexer: "npm:^3.0.4"
-    glob: "npm:^14.0.5"
+    glob: "npm:^14.0.6"
     meow: "npm:^14.1.0"
     typescript: "npm:~6.0.3"
   peerDependencies:
@@ -2388,7 +2388,7 @@ __metadata:
     "@vitest/coverage-v8": "npm:5.1.0"
     browser-resolve: "npm:2.0.0"
     execa: "npm:10.2.1"
-    glob: "npm:14.0.5"
+    glob: "npm:14.0.6"
     jsdom: "npm:31.0.0"
     textlint-rule-prh: "npm:6.1.1"
     type-fest: "npm:5.10.0"
@@ -8873,14 +8873,14 @@ __metadata:
   languageName: node
   linkType: hard
 
-"glob@npm:14.0.5, glob@npm:^14.0.5":
-  version: 14.0.5
-  resolution: "glob@npm:14.0.5"
+"glob@npm:14.0.6, glob@npm:^14.0.6":
+  version: 14.0.6
+  resolution: "glob@npm:14.0.6"
   dependencies:
     minimatch: "npm:^11.0.5"
     minipass: "npm:^7.1.3"
     path-scurry: "npm:^3.0.0"
-  checksum: 10c0/42a3400ab2e6877ee0353496dcb2b60eaa6b02e7b7733264557f285372ad692611c3cbb363b856f38d9a6401f8ed56daa960143ba26083a58e8cb95d6c617363
+  checksum: 10c0/5b8621a6a363abc630de0a542f0f8d0a919a0a5e154626b5fdf1e97425e8709783b0b27cc1eb9d65a5ce097db84e904fe50f8f1dc8c0579c49583c0ac30f8ac7
   languageName: node
   linkType: hard
 
@@ -11332,7 +11332,7 @@ __metadata:
     "@vscode/test-electron": "npm:3.1.0"
     "@vscode/vsce": "npm:4.1.0"
     esbuild: "npm:0.28.2"
-    glob: "npm:14.0.5"
+    glob: "npm:14.0.6"
     mocha: "npm:12.0.3"
     typescript: "npm:6.0.3"
     vscode-languageclient: "npm:11.0.0"
