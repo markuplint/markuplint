@@ -30,7 +30,7 @@
 		"browser-resolve": "2.0.0",
 		"execa": "10.2.1",
 		"glob": "14.0.6",
-		"jsdom": "31.0.0",
+		"jsdom": "31.0.1",
 		"textlint-rule-prh": "6.1.1",
 		"type-fest": "5.10.0",
 		"typescript": "6.0.3",
