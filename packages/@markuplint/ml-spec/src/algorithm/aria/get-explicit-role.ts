@@ -4,6 +4,7 @@ import type { ReadonlyDeep } from 'type-fest';
 import { decodeEntities } from '@markuplint/shared';
 
 import { XHTML_NAMESPACE } from '../../const/index.js';
+import { hasElementOfUnknownId, isUnknownValueAttr } from '../dom/has-unknown-id.js';
 import { getRoleSpec } from './get-role-spec.js';
 import { resolveNamespace } from '../../utils/resolve-namespace.js';
 
@@ -176,6 +177,27 @@ function isLandmarkRole(role: ReadonlyDeep<NonNullable<ReturnType<typeof getRole
 	return role?.superClassRoles.some(su => su.name === 'landmark');
 }
 
+/**
+ * Whether a landmark role that requires a name has one from the author: `aria-label`, or an
+ * `aria-labelledby` that refers to an element.
+ *
+ * The specification takes a landmark that the author has not named to be an authoring error. What
+ * is not known until it is rendered is not known to be missing: markuplint does not decide what
+ * it cannot know, and that premise is its own decision, not text of the specification. So the
+ * landmark has a name when
+ *
+ * - the value of `aria-labelledby` is not known (`aria-labelledby={id}`): the ids it refers to
+ *   are not either, or
+ * - a token refers to no element but the tree has an element whose `id` is not known
+ *   (`<h2 id={x}>` and `aria-labelledby="t"`, {@link hasElementOfUnknownId}): it may be the one. An
+ *   id of such an element is not in the map that `getElementById` looks up.
+ *   `no-refer-to-non-existent-id` reports no reference in such a tree either.
+ *
+ * An attribute that the framework does not output (`aria-labelledby={undefined}`) is not returned by
+ * `getAttributeNode` of `@markuplint/ml-core`, so it gives no name: nothing is there to refer.
+ *
+ * @see https://w3c.github.io/aria/#document-handling_author-errors
+ */
 function isValidLandmarkRole(
 	// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
 	el: Element,
@@ -188,19 +210,23 @@ function isValidLandmarkRole(
 		if (el.getAttribute('aria-label')) {
 			return true;
 		}
+		if (isUnknownValueAttr(el.getAttributeNode('aria-labelledby'))) {
+			return true;
+		}
 		// `aria-labelledby` is a list of ids, and each is resolved in the tree of the element: the
 		// content of a `template` element and a shadow root are trees of their own. A DOM has resolved the
 		// character references of a token already, but the markuplint DOM gives it as written in the markup,
 		// so the token is looked for as it is, and then with its character references resolved.
 		const ids = el.getAttribute('aria-labelledby')?.split(/\s+/).filter(Boolean) ?? [];
 		const root = el.getRootNode();
-		if (
-			(root.nodeType === 9 || root.nodeType === 11) &&
-			ids.some(
-				id => (root as Document).getElementById(id) ?? (root as Document).getElementById(decodeEntities(id)),
-			)
-		) {
-			return true;
+		if (root.nodeType === 9 || root.nodeType === 11) {
+			const tree = root as Document;
+			if (ids.some(id => tree.getElementById(id) ?? tree.getElementById(decodeEntities(id)))) {
+				return true;
+			}
+			if (ids.length > 0 && hasElementOfUnknownId(el)) {
+				return true;
+			}
 		}
 	}
 	// The landmark role does not require names from the content

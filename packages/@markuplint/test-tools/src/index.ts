@@ -153,3 +153,25 @@ export function createJSDOMElement(
 	}
 	return fragment.firstChild as Element;
 }
+
+/**
+ * Makes an attribute of a DOM element answer as the one that `@markuplint/ml-core` hands over for a
+ * value that is not known until it is rendered (`id={x}`): `isDynamicValue` is `true`. An `Attr` of
+ * a DOM has no such property, and the specs of `@markuplint/ml-spec` cannot import `@markuplint/ml-core`,
+ * which depends on it.
+ *
+ * @param el - The element that has the attribute
+ * @param name - The name of the attribute
+ * @throws {Error} If the element has no such attribute
+ */
+export function markAttrAsDynamic(
+	// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
+	el: Element,
+	name: string,
+): void {
+	const attr = el.getAttributeNode(name);
+	if (!attr) {
+		throw new Error(`The attribute "${name}" is missing`);
+	}
+	Object.defineProperty(attr, 'isDynamicValue', { value: true });
+}
