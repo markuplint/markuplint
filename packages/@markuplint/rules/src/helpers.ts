@@ -4,6 +4,7 @@ import type { Attribute } from '@markuplint/ml-spec';
 import type { WritableDeep } from 'type-fest';
 
 import { expandConditionalBlocks, getDOMValue, getRenderedChildNodes } from '@markuplint/ml-core';
+import { hasElementOfUnknownId } from '@markuplint/ml-spec';
 import { asciiLowerCase, decodeEntities } from '@markuplint/shared';
 
 export { getDOMValue };
@@ -485,6 +486,12 @@ function isSlotOfUnknownAssignment(
  * `el`, of a pretended descendant among the children the name computation
  * traverses, of an element `aria-labelledby` refers to, or of the owned label.
  *
+ * A token of `aria-labelledby` that refers to no element may refer to one whose `id`
+ * is not known until it is rendered (`<h2 id={x}>`): such an element is not found by
+ * its id, and what it renders is not known either. `no-refer-to-non-existent-id`
+ * reports no reference in such a tree for the same reason. An element whose attribute
+ * the framework does not output (`id={undefined}`, `isAbsent`) has no id to be referred to.
+ *
  * Not folded into {@link accnameMayBeMutable}: a component with an unknown
  * entry and a static name (`aria-label`, static text) is still decidable and
  * must stay checked (and reported as redundant by `no-redundant-accessible-name`).
@@ -506,6 +513,9 @@ export function accnameMayComeFromUnknownContent(
 			.split(/\s+/)
 			.map(id => getElementByIdInTree(el, id, labelledbyAttr.isExpressionValue));
 		if (referenced.some(target => target && hasUnknownContent(target))) {
+			return true;
+		}
+		if (referenced.some(target => !target) && hasElementOfUnknownId(el)) {
 			return true;
 		}
 	}

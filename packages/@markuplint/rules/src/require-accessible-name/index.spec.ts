@@ -1,3 +1,5 @@
+import type { Pretender, PretenderAttr } from '@markuplint/ml-config';
+
 import { mlRuleTest } from 'markuplint';
 import { describe, test, expect } from 'vitest';
 
@@ -1013,6 +1015,169 @@ describe('Issues', () => {
 				})
 			).violations,
 		).toStrictEqual([]);
+	});
+});
+
+describe('an id that is not known until it is rendered', () => {
+	const parser = { '.*': '@markuplint/jsx-parser' };
+	const lines = (...l: readonly string[]) => ['<>', ...l, '</>'].join('\n');
+	const requireName = (raw: string, line: number) => ({
+		severity: 'error',
+		line,
+		col: 1,
+		message: 'Require accessible name',
+		raw,
+	});
+
+	test('[require-accessible-name-issue-4783-001] an aria-labelledby whose value is not known may refer to the name', async () => {
+		expect(
+			(await mlRuleTest(rule, '<button aria-labelledby={id} type="button"></button>', { parser })).violations,
+		).toStrictEqual([]);
+	});
+
+	test('[require-accessible-name-issue-4783-002] a reference may be to an element whose id is not known', async () => {
+		const source = lines('<h2 id={x}>Q</h2>', '<button aria-labelledby="t" type="button"></button>');
+		expect((await mlRuleTest(rule, source, { parser })).violations).toStrictEqual([]);
+	});
+
+	test('[require-accessible-name-issue-4783-003] a landmark whose reference may be to an element whose id is not known has the role and is not reported', async () => {
+		const source = lines('<h2 id={x}>Q</h2>', '<div role="region" aria-labelledby="t">a</div>');
+		expect((await mlRuleTest(rule, source, { parser })).violations).toStrictEqual([]);
+	});
+
+	test('[require-accessible-name-issue-4783-004] a reference in a tree whose ids are all known is reported', async () => {
+		// A landmark that refers to nothing falls back to `generic`, which needs no name, so the control is not a landmark
+		const source = lines('<h2 id="h">Q</h2>', '<button aria-labelledby="t" type="button"></button>');
+		expect((await mlRuleTest(rule, source, { parser })).violations).toStrictEqual([
+			requireName('<button aria-labelledby="t" type="button">', 3),
+		]);
+	});
+
+	test('[require-accessible-name-issue-4783-005] a reference to an element that is known and has no name is reported next to an id that is not known', async () => {
+		const source = lines(
+			'<h2 id={x}>Q</h2>',
+			'<span id="s"></span>',
+			'<button aria-labelledby="s" type="button"></button>',
+		);
+		expect((await mlRuleTest(rule, source, { parser })).violations).toStrictEqual([
+			requireName('<button aria-labelledby="s" type="button">', 4),
+		]);
+	});
+
+	test('[require-accessible-name-issue-4783-006] a list in which a token is known and another refers to nothing may refer to an id that is not known', async () => {
+		const source = lines(
+			'<h2 id={x}>Q</h2>',
+			'<span id="s"></span>',
+			'<button aria-labelledby="s t" type="button"></button>',
+		);
+		expect((await mlRuleTest(rule, source, { parser })).violations).toStrictEqual([]);
+	});
+
+	test('[require-accessible-name-issue-4783-007] an empty aria-labelledby is not a reference that an id that is not known may satisfy', async () => {
+		const source = lines('<h2 id={x}>Q</h2>', '<button aria-labelledby="" type="button"></button>');
+		expect((await mlRuleTest(rule, source, { parser })).violations).toStrictEqual([
+			requireName('<button aria-labelledby="" type="button">', 3),
+		]);
+	});
+
+	test('[require-accessible-name-issue-4783-008] an id that is not output is not an element that a reference may be to', async () => {
+		const source = lines('<h2 id={undefined}>Q</h2>', '<button aria-labelledby="t" type="button"></button>');
+		expect((await mlRuleTest(rule, source, { parser })).violations).toStrictEqual([
+			requireName('<button aria-labelledby="t" type="button">', 3),
+		]);
+	});
+
+	test('[require-accessible-name-issue-4783-009] a reference in the content of a template element reaches an id that is not known in the same content', async () => {
+		const source = lines(
+			'<div><template>',
+			'<h2 id={x}>Q</h2>',
+			'<button aria-labelledby="t" type="button"></button>',
+			'</template></div>',
+		);
+		expect((await mlRuleTest(rule, source, { parser })).violations).toStrictEqual([]);
+	});
+
+	test('[require-accessible-name-issue-4783-010] an id that is not known in the content of a template element is not in the tree of the reference', async () => {
+		const source = lines(
+			'<div><template><h2 id={x}>Q</h2></template></div>',
+			'<button aria-labelledby="t" type="button"></button>',
+		);
+		expect((await mlRuleTest(rule, source, { parser })).violations).toStrictEqual([
+			requireName('<button aria-labelledby="t" type="button">', 3),
+		]);
+	});
+
+	test('[require-accessible-name-issue-4783-011] Vue: a reference may be to an element whose id is not known', async () => {
+		const vue = { parser: { '.*': '@markuplint/vue-parser' }, specs: { '.*': '@markuplint/vue-spec' } };
+		const template = (id: string) =>
+			[
+				'<template>',
+				'<div>',
+				`<h2 ${id}>Q</h2>`,
+				'<button aria-labelledby="t" type="button"></button>',
+				'</div>',
+				'</template>',
+			].join('\n');
+		expect((await mlRuleTest(rule, template(':id="x"'), vue)).violations).toStrictEqual([]);
+
+		// Control: all the ids are known
+		expect((await mlRuleTest(rule, template('id="h"'), vue)).violations).toStrictEqual([
+			requireName('<button aria-labelledby="t" type="button">', 4),
+		]);
+	});
+
+	test('[require-accessible-name-issue-4783-012] Svelte: a reference may be to an element whose id is not known', async () => {
+		const svelte = { parser: { '.*': '@markuplint/svelte-parser' } };
+		const source = (id: string) =>
+			[`<h2 ${id}>Q</h2>`, '<button aria-labelledby="t" type="button"></button>'].join('\n');
+		expect((await mlRuleTest(rule, source('id={x}'), svelte)).violations).toStrictEqual([]);
+
+		// Control: all the ids are known
+		expect((await mlRuleTest(rule, source('id="h"'), svelte)).violations).toStrictEqual([
+			requireName('<button aria-labelledby="t" type="button">', 2),
+		]);
+	});
+
+	describe('pretenders', () => {
+		const buttonMadeBy = (value: PretenderAttr['value']): readonly Pretender[] => [
+			{
+				selector: 'Btn',
+				as: { element: 'button', attrs: [{ name: 'aria-labelledby', value }] },
+			},
+		];
+		const headingMadeBy = (attr: PretenderAttr): readonly Pretender[] => [
+			{ selector: 'Heading', as: { element: 'h2', attrs: [attr] } },
+		];
+		const headingSource = lines('<Heading id={x}>Q</Heading>', '<div role="region" aria-labelledby="t">a</div>');
+
+		test('[require-accessible-name-issue-4783-013] a component whose id is the prop that is forwarded may be what a reference is to', async () => {
+			const pretenders = headingMadeBy({ name: 'id', value: { fromAttr: 'id' } });
+			expect((await mlRuleTest(rule, headingSource, { parser, pretenders })).violations).toStrictEqual([]);
+		});
+
+		test('[require-accessible-name-issue-4783-014] a component whose id is not known may be what a reference is to', async () => {
+			const pretenders = headingMadeBy({ name: 'id', value: { dynamic: true } });
+			expect((await mlRuleTest(rule, headingSource, { parser, pretenders })).violations).toStrictEqual([]);
+		});
+
+		test('[require-accessible-name-issue-4783-015] a component whose aria-labelledby is a known reference may refer to an id that is not known', async () => {
+			const pretenders = buttonMadeBy({ fromAttr: 'labelledBy' });
+			const source = lines('<h2 id={x}>Q</h2>', '<Btn labelledBy="t" />');
+			expect((await mlRuleTest(rule, source, { parser, pretenders })).violations).toStrictEqual([]);
+		});
+
+		test('[require-accessible-name-issue-4783-016] a component whose aria-labelledby is a known reference is reported when all the ids are known', async () => {
+			const pretenders = buttonMadeBy({ fromAttr: 'labelledBy' });
+			const source = lines('<h2 id="h">Q</h2>', '<Btn labelledBy="t" />');
+			expect((await mlRuleTest(rule, source, { parser, pretenders })).violations).toStrictEqual([
+				requireName('<Btn labelledBy="t" />', 3),
+			]);
+		});
+
+		test('[require-accessible-name-issue-4783-017] a component whose aria-labelledby is not known may refer to the name', async () => {
+			const pretenders = buttonMadeBy({ dynamic: true });
+			expect((await mlRuleTest(rule, '<Btn />', { parser, pretenders })).violations).toStrictEqual([]);
+		});
 	});
 });
 
