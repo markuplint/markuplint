@@ -33,7 +33,7 @@
 		"@docusaurus/tsconfig": "3.10.2",
 		"@imgix/js-core": "3.8.0",
 		"@playwright/test": "1.65.1",
-		"@tsconfig/strictest": "2.0.8",
+		"@tsconfig/strictest": "2.0.9",
 		"eslint-plugin-react": "7.37.5",
 		"eslint-plugin-react-hooks": "7.1.1",
 		"glob": "14.0.4",
