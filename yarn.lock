@@ -2317,7 +2317,7 @@ __metadata:
     "@markuplint/shared": "npm:5.6.0"
     "@types/debug": "npm:^4.1.13"
     debug: "npm:^4.4.3"
-    postcss-selector-parser: "npm:^7.1.8"
+    postcss-selector-parser: "npm:^7.2.1"
     type-fest: "npm:^5.10.0"
   languageName: unknown
   linkType: soft
@@ -14419,12 +14419,21 @@ __metadata:
   languageName: node
   linkType: hard
 
-"postcss-selector-parser@npm:^7.0.0, postcss-selector-parser@npm:^7.1.8":
+"postcss-selector-parser@npm:^7.0.0":
   version: 7.1.8
   resolution: "postcss-selector-parser@npm:7.1.8"
   dependencies:
     util-deprecate: "npm:^1.0.2"
   checksum: 10c0/c99d8a5fc8ece3930ff69fbce24dafd1b9dcb31f086658b5cbd1c6b45dfec7a9f0ea9ad00cf14d8c3df9e3170997383a3f47ebb1369e4ba2eeeecfd4ea5fed86
+  languageName: node
+  linkType: hard
+
+"postcss-selector-parser@npm:^7.2.1":
+  version: 7.2.1
+  resolution: "postcss-selector-parser@npm:7.2.1"
+  dependencies:
+    util-deprecate: "npm:^1.0.2"
+  checksum: 10c0/bb82454497a6d2c8ec302cb53fbdc5c4ca36b8874c5c1b61acc6f9a0d6699135b7de6b1852d8d57c0d3404500e14fa9995595cd5d73b3fcdf48d717c2264784c
   languageName: node
   linkType: hard
 
