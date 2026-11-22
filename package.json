@@ -88,7 +88,7 @@
 		"eslint-plugin-regexp": "3.3.3",
 		"husky": "9.1.7",
 		"lerna": "10.1.2",
-		"lint-staged": "17.6.0",
+		"lint-staged": "17.6.1",
 		"npm-run-all2": "9.0.4",
 		"oxfmt": "0.78.0",
 		"oxlint": "1.93.0",
