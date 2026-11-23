@@ -7,6 +7,7 @@ import type { ParserError as Parse5ParserError } from 'parse5';
 import { Parser } from '@markuplint/parser-utils';
 import { parse, parseFragment } from 'parse5';
 
+import { findHtmlEndTagAfterFrameset } from './find-html-end-tag-after-frameset.js';
 import { isDocumentFragment } from './is-document-fragment.js';
 import {
 	optimizeStartsHeadTagOrBodyTagResume,
@@ -209,7 +210,9 @@ export class HtmlParser extends Parser<Node, State> {
 					childNodes,
 					{
 						createEndTagToken: () => {
-							const endTagLoc = 'endTag' in location ? location.endTag : null;
+							const endTagLoc =
+								('endTag' in location ? location.endTag : null) ??
+								findHtmlEndTagAfterFrameset(this.rawCode, originNode);
 							if (!endTagLoc) {
 								return null;
 							}
