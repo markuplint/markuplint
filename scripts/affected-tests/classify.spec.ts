@@ -17,6 +17,7 @@ const files: Record<string, string> = {
 	'packages/@markuplint/rules/src/ja-locale-coverage.spec.ts': "import { glob } from '@markuplint/test-tools';",
 	'packages/@markuplint/language-server/src/ja-locale-coverage.spec.ts':
 		"import { glob } from '@markuplint/test-tools';",
+	'packages/@markuplint/rules/src/test-ids.spec.ts': "import { readdirSync } from 'node:fs';",
 	'packages/@markuplint/rules/src/multi-pass-fix.spec.ts': "const child = spawnSync('node', []);",
 	'packages/@markuplint/shared/src/errors/runtime.spec.ts': "import { execFile } from 'node:child_process';",
 	'packages/@markuplint/vue-parser/src/index.spec.ts': '',
@@ -231,6 +232,23 @@ describe('the locale guard of a package', () => {
 	test('does not run for a source file of another package', () => {
 		expect(affected(modified('packages/@markuplint/ml-core/src/a.ts'))).not.toContain(
 			'packages/@markuplint/rules/src/ja-locale-coverage.spec.ts',
+		);
+	});
+});
+
+describe('the test ID guard of the rules', () => {
+	test('runs for a spec or a source file of the rules, as it reads every spec with `fs`', () => {
+		expect(affected(modified('packages/@markuplint/rules/src/attr-order/index.spec.ts'))).toContain(
+			'packages/@markuplint/rules/src/test-ids.spec.ts',
+		);
+		expect(affected(modified('packages/@markuplint/rules/src/index.ts'))).toContain(
+			'packages/@markuplint/rules/src/test-ids.spec.ts',
+		);
+	});
+
+	test('does not run for a source file of another package', () => {
+		expect(affected(modified('packages/@markuplint/ml-core/src/a.ts'))).not.toContain(
+			'packages/@markuplint/rules/src/test-ids.spec.ts',
 		);
 	});
 });
