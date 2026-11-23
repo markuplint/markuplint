@@ -56,3 +56,26 @@ describe('hasElementOfUnknownId', () => {
 		expect(hasElementOfUnknownId(detached)).toBe(false);
 	});
 });
+
+describe('hasElementOfUnknownId and the tree of ml-core', () => {
+	test('[has-unknown-id-007] is what the tree of ml-core tells, which sees more than an id that code gives', () => {
+		const div = createJSDOMElement('<div><h2></h2></div>');
+		Object.defineProperty(div, 'treeMayHoldUnknownId', { value: () => true, configurable: true });
+		expect(hasElementOfUnknownId(div)).toBe(true);
+		Object.defineProperty(div, 'treeMayHoldUnknownId', { value: () => false, configurable: true });
+		expect(hasElementOfUnknownId(div)).toBe(false);
+	});
+
+	test('[has-unknown-id-008] takes the answer of ml-core as it is: the tree of ml-core has read the id already', () => {
+		const div = createJSDOMElement('<div><h2 id="h"></h2></div>');
+		markAttrAsDynamic(must(div.querySelector('h2')), 'id');
+		Object.defineProperty(div, 'treeMayHoldUnknownId', { value: () => false });
+		expect(hasElementOfUnknownId(div)).toBe(false);
+	});
+
+	test('[has-unknown-id-009] is false for an element that is in no tree, whatever ml-core tells', () => {
+		const detached = createJSDOMElement('<div id="a"></div>').cloneNode(false) as Element;
+		Object.defineProperty(detached, 'treeMayHoldUnknownId', { value: () => true });
+		expect(hasElementOfUnknownId(detached)).toBe(false);
+	});
+});

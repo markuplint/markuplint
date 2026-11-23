@@ -470,6 +470,20 @@ class VueParser extends Parser<ASTNode, State> {
 	}
 
 	/**
+	 * Whether the name is a built-in component of Vue, as written or in kebab-case. They render the slot
+	 * content that they are given (a wrapper that adds no element, as `Transition` and `KeepAlive`, or one
+	 * that has no `id`, as `TransitionGroup`'s), so what the template shows of them is what they hold:
+	 * `Teleport` moves the content in the document, and `Suspense` renders the default slot or the fallback.
+	 *
+	 * @see https://vuejs.org/api/built-in-components.html#built-in-components
+	 * @param name - A tag name as written, case kept
+	 * @returns Whether the name is a built-in component
+	 */
+	isPassThroughComponent(name: string): boolean {
+		return BUILT_IN_COMPONENTS.includes(name);
+	}
+
+	/**
 	 * A name that Vue takes for a component (see {@link detectElementType}) and that names no special
 	 * element: a built-in component as written or in kebab-case (`Transition`, `transition-group`), a capital
 	 * initial (`FooBar`), a capital letter after a lowercase letter or a digit (`fooBar`), or a `.`

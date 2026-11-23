@@ -126,6 +126,7 @@ export class MLDocument<T extends RuleConfigValue, O extends PlainData = undefin
 	readonly #filename?: string;
 
 	readonly #isNativeTagRule?: (name: string) => boolean;
+	readonly #isPassThroughComponentRule?: (name: string) => boolean;
 
 	/**
 	 * Whether this document represents a fragment rather than a complete document.
@@ -242,6 +243,18 @@ export class MLDocument<T extends RuleConfigValue, O extends PlainData = undefin
 	}
 
 	/**
+	 * Whether a component renders what it is given as it is written (`MLParser#isPassThroughComponent`),
+	 * so that the elements that it holds are the ones that the markup shows. `false` for a parser that
+	 * does not say.
+	 *
+	 * @param localName - The name of the tag as the author wrote it
+	 * @returns Whether the component brings nothing into the tree of its own
+	 */
+	isPassThroughComponent(localName: string): boolean {
+		return this.#isPassThroughComponentRule?.(localName) ?? false;
+	}
+
+	/**
 	 * Whether attribute names are JavaScript identifiers in the source language (JSX props such as
 	 * `onClick`), which the `case-sensitive-attr-name` rule does not ask to be lower case.
 	 *
@@ -291,6 +304,7 @@ export class MLDocument<T extends RuleConfigValue, O extends PlainData = undefin
 			readonly componentNameVariants?: boolean;
 			readonly isComponentName?: (name: string) => boolean;
 			readonly isNativeTag?: (name: string) => boolean;
+			readonly isPassThroughComponent?: (name: string) => boolean;
 			readonly attrNameCaseSensitive?: boolean;
 			readonly attrNameRoute?: AttrNameRoute;
 			readonly pretenders?: readonly Pretender[];
@@ -312,6 +326,7 @@ export class MLDocument<T extends RuleConfigValue, O extends PlainData = undefin
 		this.componentNameVariants = options?.componentNameVariants ?? false;
 		this.isComponentName = options?.isComponentName ?? isComponentName;
 		this.#isNativeTagRule = options?.isNativeTag;
+		this.#isPassThroughComponentRule = options?.isPassThroughComponent;
 		this.attrNameCaseSensitive = options?.attrNameCaseSensitive ?? false;
 		this.attrNameRoute = options?.attrNameRoute ?? 'html-parser';
 		this.ruleCommonSettings = ruleCommonSettings;

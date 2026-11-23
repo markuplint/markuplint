@@ -38,6 +38,16 @@ export type DirectiveResolution = {
 	 */
 	readonly isSpread?: true;
 	/**
+	 * Whether the matched pattern says that the spread overrides an attribute wherever it is written
+	 * ({@link DirectivePattern.spreadOverridesWritten}).
+	 */
+	readonly spreadOverridesWritten?: true;
+	/**
+	 * Whether the matched pattern says that the attribute replaces the children with markup that the
+	 * template does not show ({@link DirectivePattern.isInnerHTML}).
+	 */
+	readonly isInnerHTML?: true;
+	/**
 	 * Present only when the matched pattern declares it.
 	 */
 	readonly expressionLanguage?: ExpressionLanguage;
@@ -129,6 +139,8 @@ export function resolveDirective(
 			isDirective: pattern.isDirective,
 			isDynamicValue: pattern.isDynamicValue,
 			...(pattern.isSpread ? { isSpread: true as const } : {}),
+			...(pattern.spreadOverridesWritten ? { spreadOverridesWritten: true as const } : {}),
+			...(pattern.isInnerHTML ? { isInnerHTML: true as const } : {}),
 			valueType: pattern.valueType,
 			isDuplicatable,
 			...(pattern.expressionLanguage ? { expressionLanguage: pattern.expressionLanguage } : {}),

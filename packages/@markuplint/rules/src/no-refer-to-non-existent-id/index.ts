@@ -15,14 +15,17 @@ import meta from './meta.js';
  * and a declarative shadow root are trees of their own. The reference and the id are compared with
  * the character references in the markup resolved.
  *
- * What it cannot tell it does not report: a document with a template-language block is skipped, an id
- * that is not known until it is rendered (a dynamic value) suppresses the report in its tree only, and
- * a `template` that is in no tree (a declarative shadow root is attached to its parent, or may be)
- * refers to nothing.
+ * What it cannot tell it does not report: a tree that may hold an element whose id the markup does not
+ * tell (a dynamic value, a spread attribute, a component that no pretender resolved, content that is not
+ * known) is skipped, and only that tree, and a `template` that is in no tree (a declarative shadow root
+ * is attached to its parent, or may be) refers to nothing. An id that another file may hold is not
+ * looked for: the file is taken to be the whole document.
  *
- * Whether the tree has an id that is not known is `hasElementOfUnknownId` of `@markuplint/ml-spec`, which
+ * Whether the tree may hold such an element is `hasElementOfUnknownId` of `@markuplint/ml-spec`, which
  * `isValidLandmarkRole` of the same package (a landmark that refers to it has a name) and
- * `accnameMayComeFromUnknownContent` of `../helpers.ts` read as well: a change to it belongs to all of them.
+ * `accnameMayComeFromUnknownContent` of `../helpers.ts` read as well, and which asks
+ * `MLElement#treeMayHoldUnknownId` of `@markuplint/ml-core` (what counts is in the module comment of its
+ * `helper/unknown-id.ts`): a change to it belongs to all of them.
  *
  * @see https://html.spec.whatwg.org/multipage/dom.html#the-id-attribute
  */
@@ -35,12 +38,6 @@ export default createRule({
 		// An id is resolved in the tree of the reference: the document, the content of a `template`
 		// element and a declarative shadow root are trees of their own
 		const idListOfTree = new Map<object, Set<string>>();
-
-		const isMutable = document.nodeList.some(node => node.is(node.MARKUPLINT_PREPROCESSOR_BLOCK));
-
-		if (isMutable) {
-			return;
-		}
 
 		for (const el of document.deepQuerySelectorAll('[id]')) {
 			const attr = el.getAttributeNode('id');
@@ -77,7 +74,7 @@ export default createRule({
 			const root = attr.ownerElement.getRootNode();
 
 			// An element in no tree (a `template` that a declarative shadow root is attached to) refers
-			// to nothing, and an id that is not known until it is rendered may be what the reference means
+			// to nothing, and an element whose id the markup does not tell may be what the reference means
 			if (root === attr.ownerElement || hasElementOfUnknownId(attr.ownerElement)) {
 				return;
 			}

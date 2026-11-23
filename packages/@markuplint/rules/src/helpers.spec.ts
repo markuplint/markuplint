@@ -516,6 +516,22 @@ test('isRoleUnknown reads a binding and an object that Vue binds', async () => {
 	expect(isUnknown(':id="a"')).toBe(false);
 });
 
+test('isRoleUnknown takes the object of x-bind of Alpine.js to override a role wherever it is written', async () => {
+	const parser = (await import('@markuplint/alpine-parser')).parser;
+	const specs = schemaToSpec([
+		htmlSpec as unknown as MLMLSpec,
+		(await import('@markuplint/alpine-spec')).default as ExtendedSpec,
+	]);
+	const isUnknown = (attrs: string) => {
+		const el = createTestDocument(`<div ${attrs}></div>`, { parser, specs }).querySelector('div');
+		return el ? isRoleUnknown(el) : null;
+	};
+	expect(isUnknown('x-bind="props"')).toBe(true);
+	expect(isUnknown('role="button" x-bind="props"')).toBe(true);
+	expect(isUnknown('x-bind="props" role="button"')).toBe(true);
+	expect(isUnknown('x-bind:id="a" role="button"')).toBe(false);
+});
+
 test('isRoleUnknown is true for a spread attribute after the role attribute, and false before it', () => {
 	const parser = { parser: jsxParser };
 	expect(isRoleUnknown(createTestElement('<div role="button" {...props} />', parser))).toBe(true);

@@ -246,6 +246,20 @@ const spec: ExtendedSpec = {
 			},
 		},
 	],
+	directivePatterns: [
+		/**
+		 * `dangerouslySetInnerHTML` replaces the children of the element with the markup that its value
+		 * gives, which the template does not show. React rejects it on an element that also has children.
+		 *
+		 * @see https://react.dev/reference/react-dom/components/common#dangerously-setting-the-inner-html
+		 */
+		{
+			pattern: '^dangerouslySetInnerHTML$',
+			flags: '',
+			isDynamicValue: true,
+			isInnerHTML: true,
+		},
+	],
 };
 
 export default spec;

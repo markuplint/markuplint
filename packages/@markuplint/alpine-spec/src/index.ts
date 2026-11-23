@@ -74,12 +74,23 @@ const spec: ExtendedSpec = {
 	},
 	directivePatterns: [
 		/**
-		 * Static directives: x-data, x-init, x-show, x-text, x-html,
+		 * Static directives: x-data, x-init, x-show, x-text,
 		 * x-modelable, x-effect, x-ref, x-id, x-for, x-if, x-teleport
 		 */
 		{
-			pattern: '^x-(?:data|init|show|text|html|modelable|effect|ref|id|for|if|teleport)$',
+			pattern: '^x-(?:data|init|show|text|modelable|effect|ref|id|for|if|teleport)$',
 			isDirective: true,
+		},
+		/**
+		 * `x-html` replaces the children of the element with the markup that its value gives, which the
+		 * template does not show.
+		 *
+		 * @see https://alpinejs.dev/directives/html
+		 */
+		{
+			pattern: '^x-html$',
+			isDirective: true,
+			isInnerHTML: true,
 		},
 		/**
 		 * Boolean directives: x-ignore, x-cloak
@@ -97,6 +108,21 @@ const spec: ExtendedSpec = {
 			pattern: '^x-model(?:$|\\.)',
 			isDirective: true,
 			isDynamicValue: true,
+		},
+		/**
+		 * `x-bind="obj"` (no argument) gives the element the attributes and the directives of an object, under
+		 * names that the template does not show. It is a spread. Alpine applies a binding after the attributes
+		 * of the markup (it would overwrite an existing one, `class` aside), so the attributes of the object
+		 * override the ones that are written before it and after it.
+		 *
+		 * @see https://alpinejs.dev/directives/bind
+		 */
+		{
+			pattern: '^x-bind$',
+			isDirective: true,
+			isDynamicValue: true,
+			isSpread: true,
+			spreadOverridesWritten: true,
 		},
 		/**
 		 * x-bind:attr.modifier or :attr.modifier => potentialName = attr. A modifier (`.camel`) changes

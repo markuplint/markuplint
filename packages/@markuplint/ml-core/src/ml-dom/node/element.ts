@@ -57,6 +57,7 @@ import {
 	isHTMLTemplateElement,
 	isRenderedAwayElement,
 } from '../helper/tree-scope.js';
+import { treeMayHoldUnknownId } from '../helper/unknown-id.js';
 import {
 	after,
 	before,
@@ -1265,7 +1266,9 @@ export class MLElement<T extends RuleConfigValue, O extends PlainData = undefine
 	 * Whether this element has any spread attributes (e.g., `{...props}` in JSX, `v-bind="obj"` in Vue):
 	 * an attribute that gives the element attributes that the markup does not show ({@link MLAttr.isSpread}).
 	 * It reads the attributes that are written on the element itself: for an element that a pretender makes
-	 * stand for a component, it does not follow the pretender (`MLElement#attributes` does).
+	 * stand for a component, it does not follow the pretender (`MLElement#attributes` does). It does not
+	 * read where the spread is: what a spread may override depends on the attributes before it
+	 * (`isRoleUnknown` of `@markuplint/rules` and `helper/unknown-id.ts` read that).
 	 */
 	get hasSpreadAttr() {
 		return this.#attributes.some(attr => attr.isSpread === true);
@@ -4350,6 +4353,19 @@ export class MLElement<T extends RuleConfigValue, O extends PlainData = undefine
 	 */
 	hasMutableChildren(attr = false, isMutableSlot: (slot: MLElement<T, O>) => boolean = () => true): boolean {
 		return hasMutableNodes(this.getPureChildNodes(), attr, isMutableSlot);
+	}
+
+	/**
+	 * Whether the tree of this element ({@link MLElement.getRootNode}) may hold an element whose `id` the
+	 * markup does not tell: an `id` that code gives, a spread attribute, a component that no pretender
+	 * resolved, content that is not known. An id reference that finds no element in such a tree may refer to
+	 * that one. What counts, and why, is in the module comment of `helper/unknown-id.ts`.
+	 *
+	 * @implements `@markuplint/ml-core` API: `MLElement`
+	 * @returns True if the tree may hold such an element
+	 */
+	treeMayHoldUnknownId(): boolean {
+		return treeMayHoldUnknownId(this);
 	}
 
 	/**

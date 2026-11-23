@@ -10,7 +10,7 @@ description: 要素にアクセシブルな名前がなければ警告します�
 
 条件ブロック(Svelteの`{#if}`、Alpine.jsの`<template x-if>`、Vueの`v-if`・`v-else-if`・`v-else`・`v-for`をもつ要素)のどの分岐が描画されるかはマークアップから分からないため、いずれかの分岐にある名前は名前として扱い、その名前を分岐にもつ要素は報告しません。分岐の中にあるコンポーネントや式のような不明な内容は、ブロックの外にある場合と同じく不明として扱います。どの分岐も名前を与えないときは報告します。
 
-値が描画されるまで分からない`aria-labelledby`(JSXの`aria-labelledby={id}`)は、参照先が分からないため報告しません。同じツリーに参照先の要素がない`aria-labelledby`のトークンも、`id`が分からない要素(`<h2 id={x}>`)がツリーにあるときは、それが参照先かもしれないため報告しません。
+値が描画されるまで分からない`aria-labelledby`(JSXの`aria-labelledby={id}`)は、参照先が分からないため報告しません。同じツリーに参照先の要素がない`aria-labelledby`のトークンも、`id`がマークアップから分からない要素(`<h2 id={x}>`、`<h2 {...props}>`、プリテンダーが解決しないコンポーネント、内容が分からないもの)がツリーにあるときは、それが参照先かもしれないため報告しません。何が当てはまるかは[`no-refer-to-non-existent-id`](/docs/rules/no-refer-to-non-existent-id)を参照してください。
 
 <!-- textlint-disable ja-technical-writing/ja-no-mixed-period -->
 
