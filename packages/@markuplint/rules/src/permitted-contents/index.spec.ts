@@ -1,5 +1,5 @@
 import { mlRuleTest } from 'markuplint';
-import { describe, test, expect } from 'vitest';
+import { describe, expect, test } from 'vitest';
 
 import rule from './index.js';
 
@@ -4019,5 +4019,583 @@ describe('an image with a controls attribute is interactive content', () => {
 	test('[permitted-contents-valid-008] an image without a controls attribute is accepted inside a button and a link', async () => {
 		expect((await mlRuleTest(rule, '<button><img src="x" alt=""></button>')).violations).toStrictEqual([]);
 		expect((await mlRuleTest(rule, '<a href="/x"><img src="x" alt=""></a>')).violations).toStrictEqual([]);
+	});
+});
+
+/**
+ * A component that no pretender resolved renders something that is not known: it may render the
+ * required children, and it may stand for the children that an element has, so only what holds whatever
+ * it renders is reported.
+ */
+describe('A component that no pretender resolved', () => {
+	const jsx = {
+		parser: {
+			'.*': '@markuplint/jsx-parser',
+		},
+	};
+
+	test('[permitted-contents-issue-4572-001] the only child of head may render the title', async () => {
+		const { violations } = await mlRuleTest(rule, '<html lang="en"><head><Meta /></head><body></body></html>', jsx);
+		expect(violations).toStrictEqual([]);
+	});
+
+	test('[permitted-contents-issue-4572-002] ignoreHasMutableChildren: false reports the missing title', async () => {
+		const { violations } = await mlRuleTest(rule, '<html lang="en"><head><Meta /></head><body></body></html>', {
+			...jsx,
+			rule: { options: { ignoreHasMutableChildren: false } },
+		});
+		expect(violations).toStrictEqual([
+			{
+				severity: 'error',
+				line: 1,
+				col: 17,
+				raw: '<head>',
+				message: 'Require an element. (Need "title")',
+			},
+		]);
+	});
+
+	test('[permitted-contents-issue-4572-003] a dynamic attribute of a child does not render the title', async () => {
+		const { violations } = await mlRuleTest(
+			rule,
+			'<html lang="en"><head><meta name={name} /></head><body></body></html>',
+			jsx,
+		);
+		expect(violations).toStrictEqual([
+			{
+				severity: 'error',
+				line: 1,
+				col: 17,
+				raw: '<head>',
+				message: 'Require an element. (Need "title")',
+			},
+		]);
+	});
+
+	test('[permitted-contents-issue-4572-004] an expression in a descendant is not a child of the element', async () => {
+		const { violations } = await mlRuleTest(
+			rule,
+			'<html lang="en"><head><noscript>{css}</noscript></head><body></body></html>',
+			jsx,
+		);
+		expect(violations).toStrictEqual([
+			{
+				severity: 'error',
+				line: 1,
+				col: 17,
+				raw: '<head>',
+				message: 'Require an element. (Need "title")',
+			},
+		]);
+	});
+
+	test('[permitted-contents-issue-4572-005] a component in a descendant is not a child of the element', async () => {
+		const { violations } = await mlRuleTest(
+			rule,
+			'<html lang="en"><head><noscript><Css /></noscript></head><body></body></html>',
+			jsx,
+		);
+		expect(violations).toStrictEqual([
+			{
+				severity: 'error',
+				line: 1,
+				col: 17,
+				raw: '<head>',
+				message: 'Require an element. (Need "title")',
+			},
+		]);
+	});
+
+	test('[permitted-contents-issue-4572-006] a component that a pretender resolved is the element that it renders', async () => {
+		const { violations } = await mlRuleTest(rule, '<html lang="en"><head><Meta /></head><body></body></html>', {
+			...jsx,
+			pretenders: [{ selector: 'Meta', as: 'meta' }],
+		});
+		expect(violations).toStrictEqual([
+			{
+				severity: 'error',
+				line: 1,
+				col: 17,
+				raw: '<head>',
+				message: 'Require an element. (Need "title")',
+			},
+		]);
+	});
+
+	test('[permitted-contents-issue-4572-007] a pretender whose target is a component renders something that is not known', async () => {
+		const { violations } = await mlRuleTest(rule, '<html lang="en"><head><Meta /></head><body></body></html>', {
+			...jsx,
+			pretenders: [{ selector: 'Meta', as: 'Foo.Bar' }],
+		});
+		expect(violations).toStrictEqual([]);
+	});
+
+	test('[permitted-contents-issue-4572-008] a component is not reported as an element that the content model does not take', async () => {
+		expect((await mlRuleTest(rule, '<ul><Item /></ul>', jsx)).violations).toStrictEqual([]);
+		expect((await mlRuleTest(rule, '<svg><Icon /></svg>', jsx)).violations).toStrictEqual([]);
+	});
+
+	test('[permitted-contents-issue-4572-009] an element that no entry of the content model takes is reported beside a component', async () => {
+		const { violations } = await mlRuleTest(rule, '<ul><Item /><div></div></ul>', jsx);
+		expect(violations).toStrictEqual([
+			{
+				severity: 'error',
+				line: 1,
+				col: 13,
+				raw: '<div>',
+				message: 'The "div" element is not allowed in the "ul" element in this context',
+			},
+		]);
+	});
+
+	test('[permitted-contents-issue-4572-010] more elements than the content model takes are reported beside a component', async () => {
+		const { violations } = await mlRuleTest(
+			rule,
+			'<math><mfrac><Num /><mi>a</mi><mi>b</mi><mi>c</mi></mfrac></math>',
+			jsx,
+		);
+		expect(violations).toStrictEqual([
+			{
+				severity: 'error',
+				line: 1,
+				col: 41,
+				raw: '<mi>',
+				message: 'There is more content than it needs. The max number of elements required is two',
+			},
+		]);
+	});
+
+	test('[permitted-contents-issue-4572-011] a second title is reported beside a component: no component renders it away', async () => {
+		const { violations } = await mlRuleTest(
+			rule,
+			'<html lang="en"><head><Meta /><title>a</title><title>b</title></head><body></body></html>',
+			jsx,
+		);
+		expect(violations).toStrictEqual([
+			{
+				severity: 'error',
+				line: 1,
+				col: 47,
+				raw: '<title>',
+				message: 'The "title" element is not allowed in the "head" element in this context',
+			},
+		]);
+	});
+
+	test('[permitted-contents-issue-4572-012] the order is not reported beside a component: it may render the element that goes before', async () => {
+		const { violations } = await mlRuleTest(rule, '<dl><Term /><dd>description</dd></dl>', jsx);
+		expect(violations).toStrictEqual([]);
+	});
+
+	test('[permitted-contents-issue-4572-013] a component is checked by its name when a tag rule is written for the element', async () => {
+		const { violations } = await mlRuleTest(rule, '<Tabs><Item /></Tabs>', {
+			...jsx,
+			rule: [{ tag: 'Tabs', contents: [{ require: 'Tab' }] }],
+		});
+		expect(violations).toStrictEqual([
+			{
+				severity: 'error',
+				line: 1,
+				col: 1,
+				raw: '<Tabs>',
+				message: 'Require an element. (Need "Tab")',
+			},
+		]);
+	});
+
+	test('[permitted-contents-issue-4572-014] a component may render the one or more elements that are missing', async () => {
+		expect((await mlRuleTest(rule, '<table><Foo /></table>', jsx)).violations).toStrictEqual([]);
+	});
+
+	test('[permitted-contents-issue-4572-015] ignoreHasMutableChildren: false evaluates a component by its name', async () => {
+		const { violations } = await mlRuleTest(rule, '<table><Foo /></table>', {
+			...jsx,
+			rule: { options: { ignoreHasMutableChildren: false } },
+		});
+		expect(violations).toStrictEqual([
+			{
+				severity: 'error',
+				line: 1,
+				col: 8,
+				raw: '<Foo />',
+				message: 'The "Foo" element is not allowed in the "table" element in this context',
+			},
+		]);
+	});
+
+	test('[permitted-contents-issue-4572-016] ignoreHasMutableChildren: false reports what a component may render', async () => {
+		const { violations } = await mlRuleTest(rule, '<dl><Term /><dd>description</dd></dl>', {
+			...jsx,
+			rule: { options: { ignoreHasMutableChildren: false } },
+		});
+		expect(violations).toStrictEqual([
+			{
+				severity: 'error',
+				line: 1,
+				col: 1,
+				raw: '<dl>',
+				message: 'Require one or more elements. (Need "dt")',
+			},
+		]);
+	});
+
+	test('[permitted-contents-issue-4572-017] a component that the tag rule names is valid', async () => {
+		const { violations } = await mlRuleTest(rule, '<Tabs><Tab /></Tabs>', {
+			...jsx,
+			rule: [{ tag: 'Tabs', contents: [{ require: 'Tab' }] }],
+		});
+		expect(violations).toStrictEqual([]);
+	});
+
+	test('[permitted-contents-issue-4572-018] a slot may render the required element', async () => {
+		const { violations } = await mlRuleTest(rule, '<html lang="en"><head><slot /></head><body></body></html>', jsx);
+		expect(violations).toStrictEqual([]);
+	});
+
+	test('[permitted-contents-issue-4572-019] every conditional branch is evaluated without the component', async () => {
+		const { violations } = await mlRuleTest(
+			rule,
+			'<template><ul><Item v-if="a" /><div v-else></div></ul></template>',
+			{
+				parser: { '.*': '@markuplint/vue-parser' },
+				rule: { options: { evaluateConditionalChildNodes: true } },
+			},
+		);
+		expect(violations).toStrictEqual([
+			{
+				severity: 'error',
+				line: 1,
+				col: 32,
+				raw: '<div v-else>',
+				message: 'The "div" element is not allowed in the "ul" element in this context',
+			},
+		]);
+	});
+
+	test('[permitted-contents-issue-4572-022] a branch without the component is still checked for the missing child', async () => {
+		const { violations } = await mlRuleTest(rule, '<details>{#if a}<Foo />{:else}<p>text</p>{/if}</details>', {
+			parser: { '.*': '@markuplint/svelte-parser' },
+			rule: { options: { evaluateConditionalChildNodes: true } },
+		});
+		expect(violations).toStrictEqual([
+			{
+				severity: 'error',
+				line: 1,
+				col: 1,
+				raw: '<details>',
+				message: 'Require an element. (Need "summary")',
+			},
+		]);
+	});
+
+	test('[permitted-contents-issue-4572-020] a component in a fragment pretender is a child of the element', async () => {
+		const { violations } = await mlRuleTest(
+			rule,
+			'<html lang="en"><head><Fragment><Meta /></Fragment></head><body></body></html>',
+			{
+				...jsx,
+				pretenders: [{ selector: 'Fragment', as: { element: '#fragment' } }],
+			},
+		);
+		expect(violations).toStrictEqual([]);
+	});
+
+	test('[permitted-contents-issue-4572-021] an element that has no content is reported beside a component', async () => {
+		const { violations } = await mlRuleTest(rule, '<br><Foo /></br>', jsx);
+		expect(violations).toStrictEqual([
+			{
+				severity: 'error',
+				line: 1,
+				col: 1,
+				raw: '<br>',
+				message: 'The element disallows contents',
+			},
+		]);
+	});
+});
+
+describe('issue-4744', () => {
+	/**
+	 * What the framework renders away is not an element of the output, so what is written in it is a child of
+	 * what is above it: Vue renders a `<template>` that has `v-for` away and puts its body in place, the way
+	 * the body of an `each` block is. A `<template v-if>` is one of the branches of a condition, as a block is:
+	 * what a branch holds is not read unless the conditional child nodes are evaluated. The elements of a chain
+	 * of `v-if`, `v-else-if` and `v-else` are a choice of one, whichever way they are read.
+	 */
+	const vue = {
+		parser: { '.*': '@markuplint/vue-parser' },
+		specs: { '.*': '@markuplint/vue-spec' },
+		pretenders: [{ selector: 'List', as: 'ul' }],
+	};
+	const vueWithoutSpec = { parser: vue.parser, pretenders: vue.pretenders };
+	const conditional = { rule: { options: { evaluateConditionalChildNodes: true } } };
+
+	const DIV_IN_UL = 'The "div" element is not allowed in the "ul" element in this context';
+	const CAPTION_IN_TABLE = 'The "caption" element is not allowed in the "table" element in this context';
+
+	describe.each([
+		['with @markuplint/vue-spec', vue],
+		['without @markuplint/vue-spec', vueWithoutSpec],
+	])('Vue %s', (_, config) => {
+		test('[permitted-contents-issue-4744-001] the body of v-for is a child of the element above', async () => {
+			const { violations } = await mlRuleTest(
+				rule,
+				'<template><ul><template v-for="i in xs"><div>a</div></template></ul></template>',
+				config,
+			);
+			expect(violations).toStrictEqual([
+				{ severity: 'error', line: 1, col: 41, message: DIV_IN_UL, raw: '<div>' },
+			]);
+		});
+
+		test('[permitted-contents-issue-4744-002] a body of v-for that the element above takes is not reported', async () => {
+			const { violations } = await mlRuleTest(
+				rule,
+				'<template><dl><template v-for="i in xs" :key="i"><dt>t</dt><dd>d</dd></template></dl></template>',
+				config,
+			);
+			expect(violations).toStrictEqual([]);
+		});
+
+		test('[permitted-contents-issue-4744-003] what is in a template of v-if is not read by default, as what is in a block is not (a known limit of the default)', async () => {
+			const { violations } = await mlRuleTest(
+				rule,
+				'<template><ul><template v-if="a"><div>x</div></template></ul></template>',
+				config,
+			);
+			expect(violations).toStrictEqual([]);
+		});
+
+		test('[permitted-contents-issue-4744-004] evaluateConditionalChildNodes reads what is in a template of v-if', async () => {
+			const { violations } = await mlRuleTest(
+				rule,
+				'<template><ul><template v-if="a"><div>x</div></template></ul></template>',
+				{ ...config, ...conditional },
+			);
+			expect(violations).toStrictEqual([
+				{ severity: 'error', line: 1, col: 34, message: DIV_IN_UL, raw: '<div>' },
+			]);
+		});
+
+		test('[permitted-contents-issue-4744-005] the nodes of a template of v-if are rendered together', async () => {
+			const { violations } = await mlRuleTest(
+				rule,
+				'<template><dl><template v-if="a"><dt>t</dt><dd>d</dd></template></dl></template>',
+				{ ...config, ...conditional },
+			);
+			expect(violations).toStrictEqual([]);
+		});
+
+		test('[permitted-contents-issue-4744-006] a chain of templates is a choice of one', async () => {
+			const { violations } = await mlRuleTest(
+				rule,
+				'<template><table><template v-if="a"><caption>A</caption></template><template v-else><caption>B</caption></template><tr><td>1</td></tr></table></template>',
+				{ ...config, ...conditional },
+			);
+			expect(violations).toStrictEqual([]);
+		});
+
+		test.each([
+			['by default', {}],
+			['with evaluateConditionalChildNodes', conditional],
+		])('[permitted-contents-issue-4744-007] a chain of elements is a choice of one %s', async (_, options) => {
+			const { violations } = await mlRuleTest(
+				rule,
+				'<template><table><caption v-if="a">A</caption><caption v-else>B</caption><tr><td>1</td></tr></table></template>',
+				{ ...config, ...options },
+			);
+			expect(violations).toStrictEqual([]);
+		});
+
+		test('[permitted-contents-issue-4744-008] a chain of elements with v-else-if and a space between them is a choice of one', async () => {
+			const { violations } = await mlRuleTest(
+				rule,
+				'<template><table>\n<caption v-if="a">A</caption>\n<caption v-else-if="b">B</caption>\n<caption v-else>C</caption>\n<tr><td>1</td></tr></table></template>',
+				config,
+			);
+			expect(violations).toStrictEqual([]);
+		});
+
+		test('[permitted-contents-issue-4744-009] elements of v-if that are not in one chain are all rendered', async () => {
+			const { violations } = await mlRuleTest(
+				rule,
+				'<template><table><caption v-if="a">A</caption><caption v-if="b">B</caption><tr><td>1</td></tr></table></template>',
+				config,
+			);
+			expect(violations).toStrictEqual([
+				{ severity: 'error', line: 1, col: 47, message: CAPTION_IN_TABLE, raw: '<caption v-if="b">' },
+			]);
+		});
+
+		test('[permitted-contents-issue-4744-010] an element of v-if that the element above does not take is reported', async () => {
+			const { violations } = await mlRuleTest(
+				rule,
+				'<template><ul><div v-if="a">x</div></ul></template>',
+				config,
+			);
+			expect(violations).toStrictEqual([
+				{ severity: 'error', line: 1, col: 15, message: DIV_IN_UL, raw: '<div v-if="a">' },
+			]);
+		});
+
+		test('[permitted-contents-issue-4744-011] an element of v-for that the element above does not take is reported', async () => {
+			const { violations } = await mlRuleTest(
+				rule,
+				'<template><ul><div v-for="i in xs">x</div></ul></template>',
+				config,
+			);
+			expect(violations).toStrictEqual([
+				{ severity: 'error', line: 1, col: 15, message: DIV_IN_UL, raw: '<div v-for="i in xs">' },
+			]);
+		});
+
+		test.each([
+			['by default', {}],
+			['with evaluateConditionalChildNodes', conditional],
+		])(
+			'[permitted-contents-issue-4744-020] a comment between the elements of a chain does not end it %s',
+			async (_, options) => {
+				const { violations } = await mlRuleTest(
+					rule,
+					'<template><table><caption v-if="a">A</caption><!-- c --><caption v-else>B</caption><tr><td>1</td></tr></table></template>',
+					{ ...config, ...options },
+				);
+				expect(violations).toStrictEqual([]);
+			},
+		);
+
+		test('[permitted-contents-issue-4744-021] a v-for template in a v-for template is flattened as well', async () => {
+			const { violations } = await mlRuleTest(
+				rule,
+				'<template><ul><template v-for="i in xs"><template v-for="j in ys"><div>a</div></template></template></ul></template>',
+				config,
+			);
+			expect(violations).toStrictEqual([
+				{ severity: 'error', line: 1, col: 67, message: DIV_IN_UL, raw: '<div>' },
+			]);
+		});
+
+		test('[permitted-contents-issue-4744-022] a v-for template in a template of v-if is flattened into the branch', async () => {
+			const { violations } = await mlRuleTest(
+				rule,
+				'<template><ul><template v-if="x"><template v-for="i in xs"><div>a</div></template></template></ul></template>',
+				{ ...config, ...conditional },
+			);
+			expect(violations).toStrictEqual([
+				{ severity: 'error', line: 1, col: 60, message: DIV_IN_UL, raw: '<div>' },
+			]);
+		});
+
+		test('[permitted-contents-issue-4744-023] many pairs of v-if and v-else are read at once without a limit on the checking time', async () => {
+			const pairs = Array.from({ length: 40 }, (_, i) => `<li v-if="a${i}">a</li><li v-else>b</li>`).join('');
+			const { violations } = await mlRuleTest(rule, `<template><ul>${pairs}</ul></template>`, {
+				...config,
+				...conditional,
+			});
+			expect(violations).toStrictEqual([]);
+		});
+	});
+
+	describe('A component that a pretender resolved', () => {
+		test('[permitted-contents-issue-4744-012] what is passed to the default slot is a child of the component', async () => {
+			const { violations } = await mlRuleTest(
+				rule,
+				'<template><List><template #default><div>a</div></template></List></template>',
+				vue,
+			);
+			expect(violations).toStrictEqual([
+				{ severity: 'error', line: 1, col: 36, message: DIV_IN_UL, raw: '<div>' },
+			]);
+		});
+
+		test('[permitted-contents-issue-4744-013] what the default slot is passed and the component takes is not reported', async () => {
+			const { violations } = await mlRuleTest(
+				rule,
+				'<template><List><template #default><li>a</li></template></List></template>',
+				vue,
+			);
+			expect(violations).toStrictEqual([]);
+		});
+
+		test('[permitted-contents-issue-4744-014] v-slot without a name is the default slot', async () => {
+			const { violations } = await mlRuleTest(
+				rule,
+				'<template><List><template v-slot><div>a</div></template></List></template>',
+				vue,
+			);
+			expect(violations).toStrictEqual([
+				{ severity: 'error', line: 1, col: 34, message: DIV_IN_UL, raw: '<div>' },
+			]);
+		});
+
+		test.each([
+			['a named slot', '<template #item><div>a</div></template>'],
+			['a dynamic slot', '<template #[name]><div>a</div></template>'],
+		])(
+			'[permitted-contents-issue-4744-015] %s is placed where the component says, which is not known',
+			async (_, slot) => {
+				const { violations } = await mlRuleTest(rule, `<template><List>${slot}</List></template>`, vue);
+				expect(violations).toStrictEqual([]);
+			},
+		);
+
+		test('[permitted-contents-issue-4744-016] the default slot of a component that no pretender resolved is not read', async () => {
+			const { violations } = await mlRuleTest(
+				rule,
+				'<template><Foo><template #default><div>a</div></template></Foo></template>',
+				{ parser: vue.parser, specs: vue.specs },
+			);
+			expect(violations).toStrictEqual([]);
+		});
+
+		test('[permitted-contents-issue-4744-017] a default slot with v-if is a conditional branch, so it is not read by default', async () => {
+			const { violations } = await mlRuleTest(
+				rule,
+				'<template><List><template #default v-if="x"><div>a</div></template></List></template>',
+				vue,
+			);
+			expect(violations).toStrictEqual([]);
+		});
+	});
+
+	describe('Svelte', () => {
+		const svelte = { parser: { '.*': '@markuplint/svelte-parser' } };
+
+		test('[permitted-contents-issue-4744-018] blocks that are written side by side are independent', async () => {
+			const { violations } = await mlRuleTest(
+				rule,
+				'<table>{#if a}<caption>A</caption>{/if}{#if b}<caption>B</caption>{/if}<tr><td>1</td></tr></table>',
+				{ ...svelte, ...conditional },
+			);
+			expect(violations).toStrictEqual([
+				{ severity: 'error', line: 1, col: 47, message: CAPTION_IN_TABLE, raw: '<caption>' },
+			]);
+		});
+
+		test('[permitted-contents-issue-4744-019] the nodes of a branch are rendered together', async () => {
+			const { violations } = await mlRuleTest(rule, '<dl>{#if a}<dt>t</dt><dd>d</dd>{/if}</dl>', {
+				...svelte,
+				...conditional,
+			});
+			expect(violations).toStrictEqual([]);
+		});
+
+		test('[permitted-contents-issue-4744-024] the branches of a chain that ends with else are a choice of one', async () => {
+			const { violations } = await mlRuleTest(
+				rule,
+				'<table>{#if a}<caption>A</caption>{:else}<caption>B</caption>{/if}<tr><td>1</td></tr></table>',
+				{ ...svelte, ...conditional },
+			);
+			expect(violations).toStrictEqual([]);
+		});
+
+		test('[permitted-contents-issue-4744-025] a chain that ends with else renders one of its branches', async () => {
+			const { violations } = await mlRuleTest(
+				rule,
+				'<head>{#if a}<title>A</title>{:else}<title>B</title>{/if}</head>',
+				{ ...svelte, ...conditional },
+			);
+			expect(violations).toStrictEqual([]);
+		});
 	});
 });

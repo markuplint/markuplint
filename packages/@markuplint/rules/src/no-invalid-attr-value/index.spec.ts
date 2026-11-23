@@ -1,5 +1,5 @@
 import { mlRuleTest } from 'markuplint';
-import { test, expect } from 'vitest';
+import { describe, expect, test } from 'vitest';
 
 import rule from './index.js';
 
@@ -2927,4 +2927,247 @@ test('[no-invalid-attr-value-valid-055] xml:lang with the same value as lang, in
 test('[no-invalid-attr-value-valid-056] xml:lang is not compared with a lang that is code', async () => {
 	const options = { parser: { '.*': '@markuplint/jsx-parser' } };
 	expect((await mlRuleTest(rule, '<div lang={l} xml:lang="fr" />', options)).violations).toStrictEqual([]);
+});
+
+test('[no-invalid-attr-value-issue-4435-001] a literal in {…} is reported as the string is, at the start of the value that is written', async () => {
+	const { violations } = await mlRuleTest(rule, '<input type={"bogus"} />', {
+		parser: { '.*': '@markuplint/jsx-parser' },
+	});
+	expect(violations).toStrictEqual([
+		{
+			severity: 'error',
+			line: 1,
+			col: 14,
+			message:
+				'The "type" attribute expects either "hidden", "text", "search", "tel", "url", "email", "password", "date", "month", "week", "time", "datetime-local", "number", "range", "color", "checkbox", "radio", "file", "submit", "image", "reset", "button"',
+			raw: '"bogus"',
+		},
+	]);
+});
+
+test('[no-invalid-attr-value-issue-4435-002] a position in a value that has an escape is not an offset of the source', async () => {
+	const { violations } = await mlRuleTest(rule, '<input type={"bo\\u0067us"} />', {
+		parser: { '.*': '@markuplint/jsx-parser' },
+	});
+	expect(violations).toStrictEqual([
+		{
+			severity: 'error',
+			line: 1,
+			col: 14,
+			message:
+				'The "type" attribute expects either "hidden", "text", "search", "tel", "url", "email", "password", "date", "month", "week", "time", "datetime-local", "number", "range", "color", "checkbox", "radio", "file", "submit", "image", "reset", "button"',
+			raw: '"bo\\u0067us"',
+		},
+	]);
+});
+
+test('[no-invalid-attr-value-issue-4435-003] a string is reported as before', async () => {
+	const { violations } = await mlRuleTest(rule, '<input type="bogus" />', {
+		parser: { '.*': '@markuplint/jsx-parser' },
+	});
+	expect(violations).toStrictEqual([
+		{
+			severity: 'error',
+			line: 1,
+			col: 14,
+			message:
+				'The "type" attribute expects either "hidden", "text", "search", "tel", "url", "email", "password", "date", "month", "week", "time", "datetime-local", "number", "range", "color", "checkbox", "radio", "file", "submit", "image", "reset", "button"',
+			raw: 'bogus',
+		},
+	]);
+});
+
+describe('issue-4494', () => {
+	const intersection = 'The "as" attribute expects either "script", "style"';
+
+	test('[no-invalid-attr-value-issue-4494-001] both keywords accept the destinations they share', async () => {
+		for (const dest of ['script', 'style', 'Script']) {
+			expect(
+				(await mlRuleTest(rule, `<link rel="preload modulepreload" href="a.js" as="${dest}">`)).violations,
+				dest,
+			).toStrictEqual([]);
+		}
+	});
+
+	test('[no-invalid-attr-value-issue-4494-002] as=fetch is not a module preload destination', async () => {
+		const { violations } = await mlRuleTest(rule, '<link rel="preload modulepreload" href="a.js" as="fetch">');
+		expect(violations).toStrictEqual([
+			{
+				severity: 'error',
+				line: 1,
+				col: 51,
+				message: intersection,
+				raw: 'fetch',
+			},
+		]);
+	});
+
+	test('[no-invalid-attr-value-issue-4494-003] as=text is not a preload destination', async () => {
+		const { violations } = await mlRuleTest(rule, '<link rel="preload modulepreload" href="a.txt" as="text">');
+		expect(violations).toStrictEqual([
+			{
+				severity: 'error',
+				line: 1,
+				col: 52,
+				message: intersection,
+				raw: 'text',
+			},
+		]);
+	});
+
+	test('[no-invalid-attr-value-issue-4494-004] a destination only one keyword allows is not offered', async () => {
+		for (const dest of ['font', 'image', 'track', 'json', 'worker']) {
+			const { violations } = await mlRuleTest(
+				rule,
+				`<link rel="preload modulepreload" href="a.js" as="${dest}">`,
+			);
+			expect(violations, dest).toStrictEqual([
+				{
+					severity: 'error',
+					line: 1,
+					col: 51,
+					message: intersection,
+					raw: dest,
+				},
+			]);
+		}
+	});
+
+	test('[no-invalid-attr-value-issue-4494-005] keyword order does not change the accepted set', async () => {
+		expect(
+			(await mlRuleTest(rule, '<link rel="modulepreload preload" href="a.js" as="script">')).violations,
+		).toStrictEqual([]);
+		const { violations } = await mlRuleTest(rule, '<link rel="modulepreload preload" href="a.js" as="text">');
+		expect(violations).toStrictEqual([
+			{
+				severity: 'error',
+				line: 1,
+				col: 51,
+				message: intersection,
+				raw: 'text',
+			},
+		]);
+	});
+
+	test('[no-invalid-attr-value-issue-4494-006] another case of both keywords is accepted', async () => {
+		expect(
+			(await mlRuleTest(rule, '<link rel="PRELOAD MODULEPRELOAD" href="a.js" as="SCRIPT">')).violations,
+		).toStrictEqual([]);
+		const { violations } = await mlRuleTest(rule, '<link rel="PRELOAD MODULEPRELOAD" href="a.js" as="FETCH">');
+		expect(violations).toStrictEqual([
+			{
+				severity: 'error',
+				line: 1,
+				col: 51,
+				message: intersection,
+				raw: 'FETCH',
+			},
+		]);
+	});
+
+	test('[no-invalid-attr-value-issue-4494-007] an empty as and surrounding spaces are not in the intersection', async () => {
+		const empty = await mlRuleTest(rule, '<link rel="preload modulepreload" href="a.js" as="">');
+		expect(empty.violations).toStrictEqual([
+			{
+				severity: 'error',
+				line: 1,
+				col: 51,
+				message: intersection,
+				raw: '',
+			},
+		]);
+		const spaced = await mlRuleTest(rule, '<link rel="preload modulepreload" href="a.js" as=" script ">');
+		expect(spaced.violations).toStrictEqual([
+			{
+				severity: 'error',
+				line: 1,
+				col: 51,
+				message: intersection,
+				raw: ' script ',
+			},
+		]);
+	});
+
+	test('[no-invalid-attr-value-issue-4494-008] an enum that allows surrounding spaces reports them in raw', async () => {
+		const { violations } = await mlRuleTest(rule, '<svg><text lengthAdjust=" Bad ">x</text></svg>');
+		expect(violations).toStrictEqual([
+			{
+				severity: 'error',
+				line: 1,
+				col: 26,
+				message: 'The "lengthAdjust" attribute expects either "spacing", "spacingAndGlyphs"',
+				raw: ' Bad ',
+			},
+		]);
+	});
+});
+
+describe('issue-4651', () => {
+	const message =
+		'The "pattern" attribute expects regular expression (https://html.spec.whatwg.org/multipage/input.html#compiled-pattern-regular-expression)';
+
+	const verify = async (value: string, prefix = '') =>
+		(await mlRuleTest(rule, `<input ${prefix}pattern="${value}">`)).violations;
+
+	const reported = (raw: string, col = 17) => [{ severity: 'error', line: 1, col, message, raw }];
+
+	test('[no-invalid-attr-value-issue-4651-001] `[(]` is not compiled with the `v` flag', async () => {
+		expect(await verify('[(]')).toStrictEqual(reported('[(]'));
+	});
+
+	test('[no-invalid-attr-value-issue-4651-002] `a{` is not compiled with the `v` flag', async () => {
+		expect(await verify('a{')).toStrictEqual(reported('a{'));
+	});
+
+	test('[no-invalid-attr-value-issue-4651-003] `{` is not compiled with the `v` flag', async () => {
+		expect(await verify('{')).toStrictEqual(reported('{'));
+	});
+
+	test('[no-invalid-attr-value-issue-4651-004] an escaped hyphen outside a class is not compiled with the `v` flag', async () => {
+		expect(await verify(String.raw`\-`)).toStrictEqual(reported(String.raw`\-`));
+	});
+
+	test('[no-invalid-attr-value-issue-4651-005] a trailing hyphen in a class is not compiled with the `v` flag', async () => {
+		expect(await verify('[a-]')).toStrictEqual(reported('[a-]'));
+	});
+
+	test('[no-invalid-attr-value-issue-4651-006] a trailing hyphen after a class escape is not compiled with the `v` flag', async () => {
+		expect(await verify(String.raw`[\w.-]+`)).toStrictEqual(reported(String.raw`[\w.-]+`));
+	});
+
+	test('[no-invalid-attr-value-issue-4651-007] a negated class of a lone hyphen is not compiled with the `v` flag', async () => {
+		expect(await verify('[^-]')).toStrictEqual(reported('[^-]'));
+	});
+
+	test('[no-invalid-attr-value-issue-4651-008] a reserved double punctuator in a class is not compiled with the `v` flag', async () => {
+		expect(await verify('[a-z&&[aeiou]]')).toStrictEqual(reported('[a-z&&[aeiou]]'));
+	});
+
+	test('[no-invalid-attr-value-issue-4651-009] a value with an unmatched parenthesis is reported although wrapping balances it', async () => {
+		expect(await verify('a)|(b')).toStrictEqual(reported('a)|(b'));
+	});
+
+	test('[no-invalid-attr-value-issue-4651-010] the violation points at the value after another attribute', async () => {
+		expect(await verify('[(]', 'type="text" ')).toStrictEqual(reported('[(]', 29));
+	});
+
+	test('[no-invalid-attr-value-issue-4651-011] set subtraction in a class is compiled with the `v` flag', async () => {
+		expect(await verify(String.raw`[\p{L}--[a-z]]`)).toStrictEqual([]);
+	});
+
+	test('[no-invalid-attr-value-issue-4651-012] set intersection in a class is compiled with the `v` flag', async () => {
+		expect(await verify(String.raw`[\p{L}&&\p{ASCII}]`)).toStrictEqual([]);
+	});
+
+	test('[no-invalid-attr-value-issue-4651-013] a string literal in a class is compiled with the `v` flag', async () => {
+		expect(await verify(String.raw`[\q{abc}]`)).toStrictEqual([]);
+	});
+
+	test('[no-invalid-attr-value-issue-4651-014] a trailing escaped hyphen in a class is accepted', async () => {
+		expect(await verify(String.raw`[\w.\-]+`)).toStrictEqual([]);
+	});
+
+	test('[no-invalid-attr-value-issue-4651-015] a plain pattern is accepted', async () => {
+		expect(await verify(String.raw`\d{3}-\d{4}`)).toStrictEqual([]);
+	});
 });

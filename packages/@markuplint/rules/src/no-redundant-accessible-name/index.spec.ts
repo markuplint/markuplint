@@ -1,5 +1,5 @@
 import { mlRuleTest } from 'markuplint';
-import { describe, test, expect } from 'vitest';
+import { describe, expect, test } from 'vitest';
 
 import rule from './index.js';
 
@@ -577,4 +577,109 @@ test('[no-redundant-accessible-name-issue-4584-002] the names of two attributes 
 			raw: '<div role="button" aria-labelledby="a" aria-label="X">',
 		},
 	]);
+});
+
+test('[no-redundant-accessible-name-issue-4435-001] a component that no pretender resolved renders what is not known', async () => {
+	const { violations } = await mlRuleTest(
+		rule,
+		'<label><input type="checkbox" aria-label="Notifications" /><Chip label="Notifications" /></label>',
+		{ parser: { '.*': '@markuplint/jsx-parser' } },
+	);
+	expect(violations).toStrictEqual([]);
+});
+
+test('[no-redundant-accessible-name-issue-4435-002] the same text in an element that is known is reported', async () => {
+	const { violations } = await mlRuleTest(
+		rule,
+		'<label><input type="checkbox" aria-label="Notifications" /><span>Notifications</span></label>',
+		{ parser: { '.*': '@markuplint/jsx-parser' } },
+	);
+	expect(violations.map(violation => violation.message)).toStrictEqual([
+		'The accessible name from "aria-label" overrides "label"',
+	]);
+});
+
+test('[no-redundant-accessible-name-issue-4538-001] the nodes that a slot of a shadow root takes are the content that aria-label overrides', async () => {
+	const { violations } = await mlRuleTest(
+		rule,
+		'<div role="button" aria-label="X"><template shadowrootmode="open"><slot></slot></template>Save</div>',
+	);
+	expect(violations).toStrictEqual([
+		{
+			severity: 'warning',
+			line: 1,
+			col: 1,
+			raw: '<div role="button" aria-label="X">',
+			message: 'The accessible name from "aria-label" overrides "content"',
+		},
+	]);
+});
+
+test('[no-redundant-accessible-name-issue-4538-002] a slot that is not in a shadow root may render anything, so the element is not reported', async () => {
+	const { violations } = await mlRuleTest(rule, '<div role="button" aria-label="X"><slot></slot></div>');
+	expect(violations).toStrictEqual([]);
+});
+
+describe('issue-4580', () => {
+	const svelte = { parser: { '.*': '@markuplint/svelte-parser' } };
+
+	test('[no-redundant-accessible-name-issue-4580-001] the text in a branch of a conditional block is content that aria-label overrides', async () => {
+		const { violations } = await mlRuleTest(
+			rule,
+			'<div role="button" aria-label="X">{#if a}Save{/if}</div>',
+			svelte,
+		);
+		expect(violations).toStrictEqual([
+			{
+				severity: 'warning',
+				line: 1,
+				col: 1,
+				raw: '<div role="button" aria-label="X">',
+				message: 'The accessible name from "aria-label" overrides "content"',
+			},
+		]);
+	});
+
+	test('[no-redundant-accessible-name-issue-4580-002] no branch has content, so aria-label overrides nothing', async () => {
+		const { violations } = await mlRuleTest(
+			rule,
+			'<div role="button" aria-label="X">{#if a}<span></span>{/if}</div>',
+			svelte,
+		);
+		expect(violations).toStrictEqual([]);
+	});
+
+	test('[no-redundant-accessible-name-issue-4580-003] a legend in a branch of a conditional block is a name that aria-label overrides', async () => {
+		const { violations } = await mlRuleTest(
+			rule,
+			'<fieldset aria-label="X">{#if a}<legend>Name</legend>{/if}</fieldset>',
+			svelte,
+		);
+		expect(violations).toStrictEqual([
+			{
+				severity: 'warning',
+				line: 1,
+				col: 1,
+				raw: '<fieldset aria-label="X">',
+				message: 'The accessible name from "aria-label" overrides "legend"',
+			},
+		]);
+	});
+
+	test('[no-redundant-accessible-name-issue-4580-004] a caption in a branch of a conditional block is a name that aria-label overrides', async () => {
+		const { violations } = await mlRuleTest(
+			rule,
+			'<table aria-label="X">{#if a}<caption>Name</caption>{/if}</table>',
+			svelte,
+		);
+		expect(violations).toStrictEqual([
+			{
+				severity: 'warning',
+				line: 1,
+				col: 1,
+				raw: '<table aria-label="X">',
+				message: 'The accessible name from "aria-label" overrides "caption"',
+			},
+		]);
+	});
 });

@@ -1,5 +1,5 @@
 import { mlRuleTest } from 'markuplint';
-import { test, expect } from 'vitest';
+import { expect, test } from 'vitest';
 
 import rule from './index.js';
 
@@ -112,5 +112,12 @@ test('[no-unescaped-char-parser-002] in EJS', async () => {
 
 test('[no-unescaped-char-issue-1575] #1575: no false positive on orphaned end tag', async () => {
 	const { violations } = await mlRuleTest(rule, '<div></p></div>');
+	expect(violations).toStrictEqual([]);
+});
+
+test('[no-unescaped-char-issue-4435-001] a literal in {…} is code, in which a character is not escaped as markup', async () => {
+	const { violations } = await mlRuleTest(rule, '<div title={"a < b & c"}></div>', {
+		parser: { '.*': '@markuplint/jsx-parser' },
+	});
 	expect(violations).toStrictEqual([]);
 });

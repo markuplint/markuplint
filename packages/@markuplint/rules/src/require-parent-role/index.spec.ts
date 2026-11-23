@@ -1,5 +1,5 @@
 import { mlRuleTest } from 'markuplint';
-import { describe, test, expect } from 'vitest';
+import { describe, expect, test } from 'vitest';
 
 import rule from './index.js';
 
@@ -329,5 +329,194 @@ describe('an ancestor whose role is not known until it is rendered', () => {
 		// Control: the spread comes before the role attribute, so the role is the one written
 		const known = '<div {...props} role="group"><div role="listitem">a</div></div>';
 		expect((await mlRuleTest(rule, known, v13)).violations).toStrictEqual(listitem(41));
+	});
+});
+
+describe('issue-4568', () => {
+	const svelte = { parser: { '.*': '@markuplint/svelte-parser' } };
+
+	const REQUIRES_LIST =
+		'The "listitem" role requires an accessibility parent with one of the roles: "directory", "list"';
+
+	function reportedAt(col: number) {
+		return { severity: 'error', line: 1, col, message: REQUIRES_LIST, raw: 'listitem' };
+	}
+
+	test('[require-parent-role-issue-4568-001] the fallback content of a slot is rendered in the host, which has the required role', async () => {
+		const { violations } = await mlRuleTest(
+			rule,
+			'<div role="list"><template shadowrootmode="open"><slot><div role="listitem">fb</div></slot></template></div>',
+		);
+		expect(violations).toStrictEqual([]);
+	});
+
+	test('[require-parent-role-issue-4568-002] a host that does not have the required role is still reported', async () => {
+		const code =
+			'<div role="group"><template shadowrootmode="open"><slot><div role="listitem">fb</div></slot></template></div>';
+		const { violations } = await mlRuleTest(rule, code);
+		expect(violations).toStrictEqual([reportedAt(68)]);
+	});
+
+	test('[require-parent-role-issue-4568-003] a light child that a slot takes is rendered where the slot is', async () => {
+		const { violations } = await mlRuleTest(
+			rule,
+			'<div role="list"><template shadowrootmode="open"><slot></slot></template><div role="listitem">a</div></div>',
+		);
+		expect(violations).toStrictEqual([]);
+	});
+
+	test('[require-parent-role-issue-4568-004] the parent of a light child is the parent of the slot that takes it', async () => {
+		const code =
+			'<div role="list"><template shadowrootmode="open"><div role="group"><slot></slot></div></template><div role="listitem">a</div></div>';
+		const { violations } = await mlRuleTest(rule, code);
+		expect(violations).toStrictEqual([reportedAt(109)]);
+	});
+
+	test('[require-parent-role-issue-4568-005] a light child that no slot takes is not rendered, so there is no parent to judge', async () => {
+		const { violations } = await mlRuleTest(
+			rule,
+			'<div role="group"><template shadowrootmode="open"><slot name="x"></slot></template><div role="listitem">a</div></div>',
+		);
+		expect(violations).toStrictEqual([]);
+	});
+
+	test('[require-parent-role-issue-4568-006] a slot between the element and the parent is passed through without a shadow root', async () => {
+		const { violations } = await mlRuleTest(
+			rule,
+			'<div role="list"><slot><div role="listitem">fb</div></slot></div>',
+		);
+		expect(violations).toStrictEqual([]);
+	});
+
+	test('[require-parent-role-issue-4568-007] a slot of a framework is passed through too', async () => {
+		const { violations } = await mlRuleTest(
+			rule,
+			'<div role="list"><template shadowrootmode="open"><slot><div role="listitem">fb</div></slot></template></div>',
+			svelte,
+		);
+		expect(violations).toStrictEqual([]);
+	});
+
+	test('[require-parent-role-issue-4568-008] a light child is judged against the host when the assignment is not known', async () => {
+		const code =
+			'<div role="group"><template shadowrootmode="open" shadowrootslotassignment="manual"><slot></slot></template><div role="listitem">a</div></div>';
+		const { violations } = await mlRuleTest(rule, code);
+		expect(violations).toStrictEqual([reportedAt(120)]);
+	});
+});
+
+describe('issue-4744', () => {
+	/**
+	 * What the framework renders away is not an element of the output, so what is written in it has the
+	 * parent that the element above has: Vue renders a `<template>` that has `v-if`, `v-else-if`, `v-else`,
+	 * `v-for` or `v-slot` away, and JSX and Astro a fragment.
+	 */
+	const vue = {
+		parser: { '.*': '@markuplint/vue-parser' },
+		specs: { '.*': '@markuplint/vue-spec' },
+		pretenders: [{ selector: 'Menu', as: { element: 'div', attrs: [{ name: 'role', value: 'menu' }] } }],
+	};
+	const vueWithoutSpec = { parser: vue.parser, pretenders: vue.pretenders };
+
+	const REQUIRES_MENU =
+		'The "menuitem" role requires an accessibility parent with one of the roles: "menu", "menubar", "menu > group", "menubar > group"';
+
+	const item = '<button type="button" role="menuitem">a</button>';
+
+	describe.each([
+		['with @markuplint/vue-spec', vue],
+		['without @markuplint/vue-spec', vueWithoutSpec],
+	])('Vue %s', (_, config) => {
+		test.each([
+			['v-if', `<div role="menu"><template v-if="x">${item}</template></div>`],
+			['v-else-if', `<div role="menu"><template v-else-if="x">${item}</template></div>`],
+			['v-else', `<div role="menu"><template v-else>${item}</template></div>`],
+			['v-for', `<div role="menu"><template v-for="i in xs" :key="i">${item}</template></div>`],
+			['a default slot', `<Menu><template #default>${item}</template></Menu>`],
+			['a named slot', `<Menu><template #item>${item}</template></Menu>`],
+			['v-slot', `<Menu><template v-slot:item="{ a }">${item}</template></Menu>`],
+			[
+				'nested',
+				`<div role="menu"><template v-if="x"><template v-for="i in xs">${item}</template></template></div>`,
+			],
+			['v-if and v-slot', `<Menu><template #default v-if="x">${item}</template></Menu>`],
+			['v-if on the element', `<div role="menu">${item.replace('<button', '<button v-if="x"')}</div>`],
+			['role="none"', `<div role="menu"><div role="none">${item}</div></div>`],
+			['a role on the template', `<div role="menu"><template v-if="x" role="none">${item}</template></div>`],
+		])('[require-parent-role-issue-4744-001] %s does not stop the parent role', async (_, code) => {
+			const { violations } = await mlRuleTest(rule, `<template>${code}</template>`, config);
+			expect(violations).toStrictEqual([]);
+		});
+
+		test('[require-parent-role-issue-4744-002] a group in a template that is rendered away is the parent', async () => {
+			const { violations } = await mlRuleTest(
+				rule,
+				`<template><div role="menu"><template v-if="x"><div role="group"><button type="button" role="menuitemradio" aria-checked="true">g</button></div></template></div></template>`,
+				config,
+			);
+			expect(violations).toStrictEqual([]);
+		});
+
+		test.each([
+			['has no directive', '<template>', 66],
+			['has v-show', '<template v-show="x">', 77],
+			['has a bound attribute', '<template :id="x">', 74],
+		])(
+			'[require-parent-role-issue-4744-003] a template that %s stays an element in the tree',
+			async (_, open, col) => {
+				const { violations } = await mlRuleTest(
+					rule,
+					`<template><div role="menu">${open}${item}</template></div></template>`,
+					config,
+				);
+				expect(violations).toStrictEqual([
+					{ severity: 'error', line: 1, col, message: REQUIRES_MENU, raw: 'menuitem' },
+				]);
+			},
+		);
+
+		test('[require-parent-role-issue-4744-004] what is above the template that is rendered away is still judged', async () => {
+			const { violations } = await mlRuleTest(
+				rule,
+				`<template><div role="group"><template v-if="x">${item}</template></div></template>`,
+				config,
+			);
+			expect(violations).toStrictEqual([
+				{
+					severity: 'error',
+					line: 1,
+					col: 76,
+					message: REQUIRES_MENU,
+					raw: 'menuitem',
+				},
+			]);
+		});
+	});
+
+	describe('Fragments', () => {
+		test('[require-parent-role-issue-4744-005] a fragment of JSX does not stop the parent role', async () => {
+			const { violations } = await mlRuleTest(rule, `const a = <div role="menu"><>${item}</></div>;`, {
+				parser: { '.*': '@markuplint/jsx-parser' },
+			});
+			expect(violations).toStrictEqual([]);
+		});
+
+		test.each([
+			['<Fragment>', `<div role="menu"><Fragment>${item}</Fragment></div>`],
+			['<>', `<div role="menu"><>${item}</></div>`],
+		])(
+			'[require-parent-role-issue-4744-006] a fragment of Astro (%s) does not stop the parent role',
+			async (_, code) => {
+				const { violations } = await mlRuleTest(rule, code, { parser: { '.*': '@markuplint/astro-parser' } });
+				expect(violations).toStrictEqual([]);
+			},
+		);
+
+		test('[require-parent-role-issue-4744-007] a fragment of JSX does not hide a parent that lacks the role', async () => {
+			const { violations } = await mlRuleTest(rule, `const a = <div role="group"><>${item}</></div>;`, {
+				parser: { '.*': '@markuplint/jsx-parser' },
+			});
+			expect(violations.map(v => v.raw)).toStrictEqual(['menuitem']);
+		});
 	});
 });
