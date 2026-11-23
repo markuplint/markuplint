@@ -1,10 +1,13 @@
 import type { Page } from './extract.ts';
+import type { IndexFinding } from './index-tables.ts';
 import type { Citation, Lock, LockEntry, PageResult, Problem, ProblemKind, Quote } from './types.ts';
 
 import { definitionOf } from './definition.ts';
 import { splitSentences, unifiedDiff } from './diff.ts';
 import { extractDeclaration, isSourcePage } from './extract-source.ts';
 import { extractSection, pageText, parsePage } from './extract.ts';
+import { checkIndex } from './index-tables.ts';
+import { INDEX_PAGE, INDEX_SOURCE } from './indices.ts';
 import { containsQuote, hashText, matchesDirective } from './normalize.ts';
 
 export type CheckInput = {
@@ -13,6 +16,11 @@ export type CheckInput = {
 	readonly inlineQuotes: readonly Quote[];
 	/** Fetched pages, keyed by the URL without a fragment. */
 	readonly pages: ReadonlyMap<string, PageResult>;
+	/**
+	 * The text of `@markuplint/html-spec`'s `index.json`, which the tables of the index of the HTML Standard are
+	 * compared with (`index-tables.ts`). Left out, or `null` for a file that is not there, nothing is compared.
+	 */
+	readonly indexJson?: string | null;
 	readonly lock: Lock;
 	/** Stamped on every lock entry that is added or refreshed. */
 	readonly now: string;
@@ -40,6 +48,9 @@ const PRIORITY: readonly ProblemKind[] = [
 	'no-fragment',
 	'directive-missing',
 	'secno-stale',
+	'index-section-unlisted',
+	'index-table-unreadable',
+	'index-data-mismatch',
 	'section-changed',
 	'fetch-failed',
 ];
@@ -232,6 +243,36 @@ export function check(input: CheckInput): CheckResult {
 			quote,
 			message: 'A specification sentence is quoted inline; write it as "> " lines so it can be checked',
 		});
+	}
+
+	// Not a citation: what the tables of the index say about the data, against the section that holds each table
+	// (or, for a section that the page gained, the first one that is listed).
+	const index = loaded.get(INDEX_PAGE);
+	if (input.indexJson !== undefined && index?.kind === 'page' && !index.page.unprocessed) {
+		// The citations of the script come first: a finding is about the index, not about the file of an algorithm
+		// that happens to cite the same section, and that file is where a reader would be sent otherwise.
+		const indexCitations = citations
+			.filter(c => c.page === INDEX_PAGE)
+			.toSorted((a, b) => Number(b.file === INDEX_SOURCE) - Number(a.file === INDEX_SOURCE));
+		// A file that is not there is a broken tree, not something to compare nothing for without a word.
+		const findings: readonly IndexFinding[] =
+			input.indexJson === null
+				? [
+						{
+							kind: 'index-table-unreadable',
+							section: 'index',
+							message:
+								'The data of `@markuplint/html-spec` (`index.json`) is not there, so the index cannot be compared with it',
+						},
+					]
+				: checkIndex(index.page, input.indexJson);
+		for (const finding of findings) {
+			problems.push({
+				kind: finding.kind,
+				citation: indexCitations.find(c => c.fragment === finding.section) ?? indexCitations[0] ?? null,
+				message: finding.message,
+			});
+		}
 	}
 
 	const sections: Record<string, LockEntry> = {};

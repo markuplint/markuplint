@@ -156,6 +156,8 @@ describe('a spec that names a file that the plan takes as unread', () => {
 				!spec.startsWith('scripts/affected-tests/') &&
 				// Reads the configurations that name a branch: `ROOT_INPUTS` in `classify.ts`.
 				!spec.startsWith('scripts/release-lines/') &&
+				// Reads the workflow whose job it holds to the report: `ROOT_INPUTS` in `classify.ts`.
+				spec !== 'scripts/spec-citations/index-check.spec.ts' &&
 				probe
 					.read(spec)
 					.split('\n')

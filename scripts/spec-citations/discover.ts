@@ -8,6 +8,7 @@ import { collectAriaCitations, GENERATED_DATA } from './aria.ts';
 import { collectFromMarkdown, collectFromSource, collectFromText } from './collect.ts';
 import { elementSourcePath, SPEC_DATA } from './definition.ts';
 import { collectElementCitations } from './elements.ts';
+import { collectIndexCitations, INDEX_SOURCE } from './indices.ts';
 
 export type FileKind = 'readme' | 'source' | 'data' | 'doc';
 
@@ -80,9 +81,9 @@ export function listCitingFiles(root: string): { path: string; kind: FileKind }[
 
 /**
  * Every citation that the monitor reads: those written in the tracked files, and the ones that the generated
- * data stands for. The second kind is not part of `collectFiles`: nobody writes it, so the conventions of how a
- * citation is written (`citations-policy.spec.ts`) do not apply to it, and a dated edition of WAI-ARIA is
- * right for it where the READMEs cite the edition-less one.
+ * data stands for and the sections of the index of the HTML Standard (`indices.ts`). The second kind is not part
+ * of `collectFiles`: nobody writes it, so the conventions of how a citation is written (`citations-policy.spec.ts`)
+ * do not apply to it, and a dated edition of WAI-ARIA is right for it where the READMEs cite the edition-less one.
  */
 export function collectAll(root: string): CollectResult {
 	const listed = listCitingFiles(root);
@@ -102,6 +103,8 @@ export function collectAll(root: string): CollectResult {
 			...files.citations,
 			...collectAriaCitations(text, GENERATED_DATA),
 			...collectElementCitations(text, GENERATED_DATA, hasSource),
+			// Not skipped when missing either: this module is the script's own, and the index would go unwatched.
+			...collectIndexCitations(readFileSync(join(root, INDEX_SOURCE), 'utf8'), INDEX_SOURCE),
 		],
 	};
 }

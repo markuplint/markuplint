@@ -4,6 +4,7 @@ import { fileURLToPath } from 'node:url';
 import { describe, expect, test } from 'vitest';
 
 import { classify, collectAll, collectFiles, listCitingFiles } from './discover.ts';
+import { INDEX_SECTIONS, INDEX_SOURCE } from './indices.ts';
 
 describe('classify', () => {
 	test('[discover-001] reads rule READMEs of both languages as READMEs', () => {
@@ -153,7 +154,7 @@ describe('collectAll', () => {
 		const derived = all.citations.filter(c => c.file === 'packages/@markuplint/html-spec/index.json');
 		expect(derived.length).toBeGreaterThan(0);
 		expect(derived.map(c => c.url)).toContain('https://w3c.github.io/aria/#button');
-		expect(all.citations).toHaveLength(files.citations.length + derived.length);
+		expect(all.citations).toHaveLength(files.citations.length + derived.length + INDEX_SECTIONS.length);
 	});
 
 	test('[discover-018] leaves the quotes of the files as they are', () => {
@@ -170,5 +171,13 @@ describe('collectAll', () => {
 	test('[discover-020] reads the cite of the source file of each element, obsolete ones included', () => {
 		const urls = collectAll(root).citations.map(c => c.url);
 		expect(urls).toContain('https://html.spec.whatwg.org/multipage/obsolete.html#non-conforming-features');
+	});
+
+	test('[discover-021] cites every section of the index of the HTML Standard from the module that lists them', () => {
+		const index = collectAll(root).citations.filter(c => c.file === INDEX_SOURCE);
+		expect(index.map(c => c.fragment)).toStrictEqual([...INDEX_SECTIONS]);
+		expect(new Set(index.map(c => c.page))).toStrictEqual(
+			new Set(['https://html.spec.whatwg.org/multipage/indices.html']),
+		);
 	});
 });
