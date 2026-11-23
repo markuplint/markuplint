@@ -255,6 +255,7 @@ pub(crate) mod tests {
                         is_dynamic_value: None,
                         is_expression_value: None,
                         is_absent: None,
+                        is_spread: None,
                         literal_expression: None,
                         is_directive: None,
                         potential_name: None,

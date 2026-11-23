@@ -209,6 +209,14 @@ fn nested_deep_exceeds_default_limit() {
 }
 
 #[test]
+fn v6_document_settings_are_read_from_a_document_nested_deeper_than_the_default_limit() {
+    // The settings sit next to the nodes, and reading them skips the nodes, which are as deep as the document
+    let json = generate_deep_nested_json(130);
+    assert!(mlast::parse_mlast(&json).is_err(), "Expected recursion limit error");
+    mlast::parse_document_settings(&json).expect("Failed to read the settings of a deep document");
+}
+
+#[test]
 fn unknown_fields_are_ignored() {
     // Add an unknown field to a valid document
     let json = r#"{

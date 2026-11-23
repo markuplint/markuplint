@@ -357,6 +357,19 @@ pub enum MLASTAttr {
     Spread(MLASTSpreadAttr),
 }
 
+impl MLASTAttr {
+    /// TS `MLAttr#isSpread`: the attribute is a spread of the syntax tree (`{...props}`), or the spec says that
+    /// a directive is one (`v-bind="obj"`, [`MLASTHTMLAttr::is_spread`]). `MLElement#hasSpreadAttr` is whether an
+    /// element has one.
+    #[must_use]
+    pub fn is_spread(&self) -> bool {
+        match self {
+            Self::Spread(_) => true,
+            Self::HTMLAttr(attr) => attr.is_spread == Some(true),
+        }
+    }
+}
+
 /// Corresponds to `MLASTHTMLAttr` in TS.
 #[derive(Debug, Clone, Deserialize)]
 #[serde(rename_all = "camelCase")]
@@ -392,6 +405,13 @@ pub struct MLASTHTMLAttr {
     /// rule that judges the name sees it, but a lookup by name does not find it, as the DOM does not.
     #[serde(default)]
     pub is_absent: Option<bool>,
+    /// TS `MLAttr#isSpread` of an attribute that is not a spread of the syntax tree: the spec says that
+    /// the directive is one (`DirectivePattern#isSpread`, `v-bind="obj"` of Vue), as it gives the
+    /// element the attributes of an object that the template does not show. The name of the attribute stays as
+    /// written. A spread of the syntax tree is [`MLASTAttr::Spread`]; [`MLASTAttr::is_spread`] is the
+    /// answer for both.
+    #[serde(default)]
+    pub is_spread: Option<bool>,
     /// The code of the value when it is nothing but a literal (TS `literalToExpression` of
     /// `MLAttr#literal`: `false`, `"x"`, `0`). The value of a component's attribute is the string
     /// form of the literal, which a string `"false"` and a boolean `false` share, so the code is what
@@ -583,11 +603,16 @@ pub fn parse_mlast(json: &str) -> Result<MLASTDocument, serde_json::Error> {
 
 /// The settings the parser sent next to the nodes; see [`DocumentSettings`].
 ///
+/// It reads the same text as [`parse_mlast_deep`], so it has no recursion limit either: the nodes that it skips
+/// are as deep as the document.
+///
 /// # Errors
 ///
 /// Returns an error if the JSON string is not valid JSON or a setting has an unknown value.
 pub fn parse_document_settings(json: &str) -> Result<DocumentSettings, serde_json::Error> {
-    serde_json::from_str(json)
+    let mut deserializer = serde_json::Deserializer::from_str(json);
+    deserializer.disable_recursion_limit();
+    serde::Deserialize::deserialize(&mut deserializer)
 }
 
 /// For deeply nested documents that exceed `serde_json`'s default 128-level
