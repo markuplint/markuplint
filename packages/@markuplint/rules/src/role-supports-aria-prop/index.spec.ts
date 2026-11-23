@@ -362,3 +362,153 @@ test('[role-supports-aria-prop-issue-4783-021] Svelte: a reference may be to an 
 		},
 	]);
 });
+
+test('[role-supports-aria-prop-issue-4789-001] JSX: an element whose role is not known until it is rendered is not judged by the implicit role', async () => {
+	const source = [
+		'<>',
+		'<div role={props.role} aria-pressed="true" />',
+		'<div role={props.role} aria-labelledby="t" />',
+		'<input role={props.role} aria-checked="true" />',
+		'</>',
+	].join('\n');
+	expect((await mlRuleTest(rule, source, { parser: jsx })).violations).toStrictEqual([]);
+
+	// Control: a role that the markup tells is judged
+	const { violations } = await mlRuleTest(rule, '<div role="heading" aria-pressed="true" />', { parser: jsx });
+	expect(violations).toStrictEqual([
+		{
+			severity: 'error',
+			line: 1,
+			col: 21,
+			message: 'The "aria-pressed" ARIA state is disallowed on the "heading" role',
+			raw: 'aria-pressed="true"',
+		},
+	]);
+});
+
+test('[role-supports-aria-prop-issue-4789-002] JSX: an attribute that the framework does not output is not a role that is not known', async () => {
+	const { violations } = await mlRuleTest(rule, '<div role={undefined} aria-pressed="true" />', { parser: jsx });
+	expect(violations).toStrictEqual([
+		{
+			severity: 'error',
+			line: 1,
+			col: 23,
+			message: 'The "aria-pressed" ARIA state is disallowed on the "generic" role',
+			raw: 'aria-pressed="true"',
+		},
+	]);
+});
+
+test('[role-supports-aria-prop-issue-4789-003] JSX: a spread attribute may carry the role, so an element without the role attribute is not judged', async () => {
+	expect(
+		(await mlRuleTest(rule, '<div {...props} aria-pressed="true" />', { parser: jsx })).violations,
+	).toStrictEqual([]);
+
+	// Control: the role that the markup tells is judged although a spread attribute is there
+	const { violations } = await mlRuleTest(rule, '<div {...props} role="heading" aria-pressed="true" />', {
+		parser: jsx,
+	});
+	expect(violations).toStrictEqual([
+		{
+			severity: 'error',
+			line: 1,
+			col: 32,
+			message: 'The "aria-pressed" ARIA state is disallowed on the "heading" role',
+			raw: 'aria-pressed="true"',
+		},
+	]);
+});
+
+test('[role-supports-aria-prop-issue-4789-004] Vue: a role that a binding gives is not known until it is rendered', async () => {
+	const source = [
+		'<template>',
+		'<div :role="r" aria-pressed="true">a</div>',
+		'<div v-bind:role="r" aria-pressed="true">b</div>',
+		'<div v-bind="props" aria-pressed="true">c</div>',
+		'<div role="heading" v-bind="props" aria-pressed="true">d</div>',
+		'</template>',
+	].join('\n');
+	expect((await mlRuleTest(rule, source, vue)).violations).toStrictEqual([]);
+
+	// Control: the role that the markup tells is judged, also after an object that is bound before it
+	const control = '<template><div role="heading" aria-pressed="true">a</div></template>';
+	expect((await mlRuleTest(rule, control, vue)).violations).toStrictEqual([
+		{
+			severity: 'error',
+			line: 1,
+			col: 31,
+			message: 'The "aria-pressed" ARIA state is disallowed on the "heading" role',
+			raw: 'aria-pressed="true"',
+		},
+	]);
+	const after = '<template><div v-bind="props" role="heading" aria-pressed="true">a</div></template>';
+	expect((await mlRuleTest(rule, after, vue)).violations).toStrictEqual([
+		{
+			severity: 'error',
+			line: 1,
+			col: 46,
+			message: 'The "aria-pressed" ARIA state is disallowed on the "heading" role',
+			raw: 'aria-pressed="true"',
+		},
+	]);
+});
+
+test('[role-supports-aria-prop-issue-4789-005] Svelte: a role that code gives, and a spread attribute, are not known until they are rendered', async () => {
+	const source = ['<div role={r} aria-pressed="true">a</div>', '<div {...props} aria-pressed="true">b</div>'].join(
+		'\n',
+	);
+	expect((await mlRuleTest(rule, source, svelte)).violations).toStrictEqual([]);
+
+	// Control: the role that the markup tells is judged
+	expect(
+		(await mlRuleTest(rule, '<div role="heading" aria-pressed="true">a</div>', svelte)).violations,
+	).toStrictEqual([
+		{
+			severity: 'error',
+			line: 1,
+			col: 21,
+			message: 'The "aria-pressed" ARIA state is disallowed on the "heading" role',
+			raw: 'aria-pressed="true"',
+		},
+	]);
+});
+
+test('[role-supports-aria-prop-issue-4789-006] Astro: a role that code gives, and a spread attribute, are not known until they are rendered', async () => {
+	const astro = { parser: { '.*': '@markuplint/astro-parser' } };
+	const source = ['<div role={r} aria-pressed="true">a</div>', '<div {...props} aria-pressed="true">b</div>'].join(
+		'\n',
+	);
+	expect((await mlRuleTest(rule, source, astro)).violations).toStrictEqual([]);
+
+	// Control: the role that the markup tells is judged
+	expect((await mlRuleTest(rule, '<div role="heading" aria-pressed="true">a</div>', astro)).violations).toStrictEqual(
+		[
+			{
+				severity: 'error',
+				line: 1,
+				col: 21,
+				message: 'The "aria-pressed" ARIA state is disallowed on the "heading" role',
+				raw: 'aria-pressed="true"',
+			},
+		],
+	);
+});
+
+test('[role-supports-aria-prop-issue-4789-007] JSX: a spread attribute after the role attribute may override it', async () => {
+	expect(
+		(await mlRuleTest(rule, '<div role="heading" {...props} aria-pressed="true" />', { parser: jsx })).violations,
+	).toStrictEqual([]);
+
+	// Control: the spread is before the role attribute, so the role is the one written
+	expect(
+		(await mlRuleTest(rule, '<div {...props} role="heading" aria-pressed="true" />', { parser: jsx })).violations,
+	).toStrictEqual([
+		{
+			severity: 'error',
+			line: 1,
+			col: 32,
+			message: 'The "aria-pressed" ARIA state is disallowed on the "heading" role',
+			raw: 'aria-pressed="true"',
+		},
+	]);
+});

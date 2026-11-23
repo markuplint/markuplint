@@ -200,3 +200,134 @@ test('[require-parent-role-issue-4584-001] the roles are shown as written (`list
 		},
 	]);
 });
+
+test('[require-parent-role-issue-4789-001] JSX: the parent whose role is not known until it is rendered may be the required one', async () => {
+	const parser = { '.*': '@markuplint/jsx-parser' };
+	const source = [
+		'<>',
+		'<div role={props.role}><div role="listitem">a</div></div>',
+		'<div {...props}><div role="listitem">b</div></div>',
+		'<div role={props.role}><div role="presentation"><div role="listitem">c</div></div></div>',
+		'</>',
+	].join('\n');
+	expect((await mlRuleTest(rule, source, { parser })).violations).toStrictEqual([]);
+
+	// Control: the parent whose role the markup tells is not the required one
+	const { violations } = await mlRuleTest(rule, '<div role="group"><div role="listitem">a</div></div>', { parser });
+	expect(violations).toStrictEqual([
+		{
+			severity: 'error',
+			line: 1,
+			col: 30,
+			message: 'The "listitem" role requires an accessibility parent with one of the roles: "directory", "list"',
+			raw: 'listitem',
+		},
+	]);
+});
+
+test('[require-parent-role-issue-4789-002] JSX: an ancestor whose role is not known does not hide the parent that the markup tells', async () => {
+	const { violations } = await mlRuleTest(
+		rule,
+		'<div role={props.role}><div role="group"><div role="listitem">a</div></div></div>',
+		{ parser: { '.*': '@markuplint/jsx-parser' } },
+	);
+	expect(violations).toStrictEqual([
+		{
+			severity: 'error',
+			line: 1,
+			col: 53,
+			message: 'The "listitem" role requires an accessibility parent with one of the roles: "directory", "list"',
+			raw: 'listitem',
+		},
+	]);
+});
+
+describe('an ancestor whose role is not known until it is rendered', () => {
+	const parser = { '.*': '@markuplint/jsx-parser' };
+	const v13 = { parser, rule: { options: { version: '1.3' as const } } };
+	const v12 = { parser, rule: { options: { version: '1.2' as const } } };
+	const menuitem = (col: number) => [
+		{
+			severity: 'error',
+			line: 1,
+			col,
+			message:
+				'The "menuitem" role requires an accessibility parent with one of the roles: "menu", "menubar", "menu > group", "menubar > group"',
+			raw: 'menuitem',
+		},
+	];
+	const listitem = (col: number) => [
+		{
+			severity: 'error',
+			line: 1,
+			col,
+			message: 'The "listitem" role requires an accessibility parent with one of the roles: "directory", "list"',
+			raw: 'listitem',
+		},
+	];
+
+	test('[require-parent-role-issue-4789-003] an unknown ancestor above a group may be the menu of the chain "menu > group"', async () => {
+		const source = '<div role={props.role}><div role="group"><div role="menuitem">a</div></div></div>';
+		expect((await mlRuleTest(rule, source, v13)).violations).toStrictEqual([]);
+
+		// Control: the ancestor above the group is a role that the markup tells, and it is not a menu
+		const known = '<div role="list"><div role="group"><div role="menuitem">a</div></div></div>';
+		expect((await mlRuleTest(rule, known, v13)).violations).toStrictEqual(menuitem(47));
+	});
+
+	test('[require-parent-role-issue-4789-004] the walk past presentational ancestors ends at the top without an unknown one', async () => {
+		const unknown = '<div {...props}><div role="presentation"><div role="listitem">a</div></div></div>';
+		expect((await mlRuleTest(rule, unknown, v13)).violations).toStrictEqual([]);
+
+		// Control: nothing is above the presentational ancestor
+		const known = '<div role="presentation"><div role="listitem">a</div></div>';
+		expect((await mlRuleTest(rule, known, v13)).violations).toStrictEqual(listitem(37));
+	});
+
+	test('[require-parent-role-issue-4789-005] an element that an aria-owns of an unknown element refers to may be its child', async () => {
+		const unknown = '<><div role={props.role} aria-owns="i"></div><div role="listitem" id="i">a</div></>';
+		expect((await mlRuleTest(rule, unknown, v13)).violations).toStrictEqual([]);
+
+		// Control: the owner has a role that the markup tells, and it is not a list
+		const known = '<><div role="group" aria-owns="i"></div><div role="listitem" id="i">a</div></>';
+		expect((await mlRuleTest(rule, known, v13)).violations).toStrictEqual(listitem(52));
+	});
+
+	test('[require-parent-role-issue-4789-006] a generic between the unknown ancestor and the element is transparent in ARIA 1.3 only', async () => {
+		const source = '<div role={props.role}><div><div role="listitem">a</div></div></div>';
+		expect((await mlRuleTest(rule, source, v13)).violations).toStrictEqual([]);
+		expect((await mlRuleTest(rule, source, v12)).violations).toStrictEqual(listitem(40));
+	});
+
+	test('[require-parent-role-issue-4789-007] an unknown ancestor between the group and the element only passes the context through in the chain "menu > group"', async () => {
+		const source =
+			'<div role="menu"><div role="group"><div role={props.role}><div role="menuitem">a</div></div></div></div>';
+		expect((await mlRuleTest(rule, source, v13)).violations).toStrictEqual([]);
+	});
+
+	test('[require-parent-role-issue-4789-008] a long run of unknown ancestors is judged without revisiting them', async () => {
+		const depth = 80;
+		const wrap = (inner: string) => `${'<div {...props}>'.repeat(depth)}${inner}${'</div>'.repeat(depth)}`;
+		// The chain "menu > group" needs two of the unknown ancestors, whichever of them are they
+		const source = `<div role="button">${wrap('<div role="group"><div role="menuitem">a</div></div>')}</div>`;
+		expect((await mlRuleTest(rule, source, v13)).violations).toStrictEqual([]);
+	}, 5000);
+
+	test('[require-parent-role-issue-4789-009] a role that a spread attribute after it may override is not judged on the element itself', async () => {
+		const unknown = '<div><div role="listitem" {...props}>a</div></div>';
+		expect((await mlRuleTest(rule, unknown, v13)).violations).toStrictEqual([]);
+
+		// Control: the spread comes before the role attribute, so the role is the one written
+		const known = '<div><div {...props} role="listitem">a</div></div>';
+		expect((await mlRuleTest(rule, known, v13)).violations).toStrictEqual(listitem(28));
+	});
+
+	test('[require-parent-role-issue-4789-010] a spread attribute after the role attribute of the parent may override the role', async () => {
+		const unknown = '<div role="group" {...props}><div role="listitem">a</div></div>';
+		expect((await mlRuleTest(rule, unknown, v13)).violations).toStrictEqual([]);
+
+		// Control: the spread comes before the role attribute, so the role is the one written
+		const known = '<div {...props} role="group"><div role="listitem">a</div></div>';
+		expect((await mlRuleTest(rule, known, v13)).violations).toStrictEqual(listitem(41));
+	});
+});

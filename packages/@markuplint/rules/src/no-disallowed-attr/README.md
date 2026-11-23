@@ -25,7 +25,7 @@ Whether the attribute name exists at all is [`no-unknown-attr`](/docs/rules/no-u
 
 :::note
 
-This rule doesn't evaluate the element that has the **spread attribute** in some condition. For example, it disallows setting the `target` attribute on the `a` element when it doesn't have the `href` attribute, but Markuplint can't evaluate this when it doesn't know whether the spread attribute includes the `href` property.
+This rule doesn't evaluate the element that has the **spread attribute** (`{...props}` of JSX, `v-bind="obj"` of Vue) in some condition. For example, it disallows setting the `target` attribute on the `a` element when it doesn't have the `href` attribute, but Markuplint can't evaluate this when it doesn't know whether the spread attribute includes the `href` property.
 
 ```jsx
 const Component = (props) => {

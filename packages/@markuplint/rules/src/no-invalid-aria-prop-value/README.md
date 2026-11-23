@@ -9,6 +9,8 @@ Warns when an ARIA property or state value does not conform to its expected type
 
 The names of ARIA attributes are compared as [`no-unknown-attr`](/docs/rules/no-unknown-attr#attribute-name-case) compares names (see its "Attribute name case" section): `ARIA-LABEL` is the same attribute as `aria-label` where the DOM treats attribute names as case-insensitive, such as on an HTML element, and a different one where it does not, such as on an `<svg>` element in JSX.
 
+The role of an element is not known until it is rendered when its `role` attribute has a value that code gives (`role={props.role}`), when it has a spread attribute (`{...props}`) after its `role` attribute, or when it has a spread attribute and no `role` attribute: the spread may bring the role. For a property whose allowed values depend on the role (e.g. `mixed` of `aria-checked`), a value of such an element is reported only if no role allows it.
+
 ❌ Examples of **incorrect** code for this rule
 
 ```html

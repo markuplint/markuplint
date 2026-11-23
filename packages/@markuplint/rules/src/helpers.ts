@@ -1,10 +1,15 @@
 import type { FixToken, IRuleFixer, PlainData, TextEdit } from '@markuplint/ml-config';
 import type { Attr, ChildNode, Element, RuleConfigValue } from '@markuplint/ml-core';
-import type { Attribute } from '@markuplint/ml-spec';
+import type { ARIAVersion, Attribute, MLMLSpec } from '@markuplint/ml-spec';
 import type { WritableDeep } from 'type-fest';
 
 import { expandConditionalBlocks, getDOMValue, getRenderedChildNodes } from '@markuplint/ml-core';
-import { hasElementOfUnknownId } from '@markuplint/ml-spec';
+import {
+	getComputedRole,
+	getOwningParentElement,
+	hasElementOfUnknownId,
+	isTransparentForOwnership,
+} from '@markuplint/ml-spec';
 import { asciiLowerCase, decodeEntities } from '@markuplint/shared';
 
 export { getDOMValue };
@@ -244,6 +249,122 @@ export function isAriaAttr<T extends RuleConfigValue, O extends PlainData>(
 	attr: Attr<T, O>,
 ): boolean {
 	return namespaceKeyOf(attr).startsWith('aria-');
+}
+
+/**
+ * Whether the role of the element is not known until it is rendered: its `role` attribute has a value
+ * that code gives (`role={props.role}`), a spread attribute (`{...props}`) comes after its `role`
+ * attribute, or it has no `role` attribute but a spread attribute: the spread may carry or override one.
+ *
+ * `getComputedRole` takes the code of such a value for a role that does not exist and falls back to
+ * the implicit role, so a rule that judges what the role supports, deprecates or allows would judge
+ * the element by a role that it may not have. That the role is not known is a decision of markuplint,
+ * as it does not decide what it cannot know, and not text of a specification: the specification's
+ * "Handling Author Errors" is about the tokens that the attribute has when it is rendered. The same
+ * premise is at `hasElementOfUnknownId` of `@markuplint/ml-spec`, which lists the code that follows it:
+ * a change to the criterion belongs to all of them.
+ *
+ * An element that has a `role` attribute written in the markup is judged by it when no spread attribute
+ * comes after it: an attribute that a spread brings overrides the one written before it, as the later
+ * one wins for every language that has a spread attribute (`MLAttr#isSpread`: the order is assumed, and is not checked
+ * for each language), so `<div role="button" {...props}>` may have another role, while in
+ * `<div {...props} role="button">` the written role is what the element has. A `role` that the framework
+ * does not output (`role={undefined}`, `MLAttr#isAbsent`) is not returned by `getAttributeNode`, so the
+ * element has no role attribute and is judged by its implicit role. `getAttributeNode` returns the
+ * first `role` attribute, so a second one is not looked at.
+ *
+ * The spread is read from `el.attributes`, as the role is by `getAttributeNode`, so that both follow a
+ * pretender: `MLElement#hasSpreadAttr` reads the attributes that are written on the element itself and
+ * does not, which is why it is not used here.
+ *
+ * @param el - The element
+ * @returns `true` if the role of the element is not known
+ */
+export function isRoleUnknown<T extends RuleConfigValue, O extends PlainData>(
+	// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
+	el: Element<T, O>,
+): boolean {
+	const roleAttr = el.getAttributeNode('role');
+	if (roleAttr?.isDynamicValue === true) {
+		return true;
+	}
+	const attrs = el.attributes;
+	const roleIndex = roleAttr ? attrs.indexOf(roleAttr) : -1;
+	return attrs.some((attr, index) => index > roleIndex && attr.isSpread === true);
+}
+
+/**
+ * Whether the ancestors of the element may satisfy a "Required Accessibility Parent Role" when the
+ * role of an ancestor is not known ({@link isRoleUnknown}): that ancestor may be an element that
+ * only passes the context through (`presentation`, `none`, and `generic` in ARIA 1.3), or the role
+ * that the condition asks for next, and both are tried. An ancestor whose role the markup tells is
+ * compared as `matchesContextRole` of `@markuplint/ml-spec` compares it, and a condition is a chain
+ * (`"menu > group"`), so an unknown ancestor above a `group` may still be the `menu`.
+ *
+ * It mirrors `matchesContextRole` (the chain and the owner that `aria-owns` resolves, else the parent
+ * of the accessibility tree), which cannot take an element that is not known: a change to one belongs
+ * to the other. With no ancestor of an unknown role it returns what `matchesContextRole` returns.
+ *
+ * @param el - The element that has a role that requires a parent
+ * @param conditions - The required parent roles, each a chain separated by ` > ` (`requiredContextRole`)
+ * @param specs - The full markup language specification
+ * @param version - The ARIA specification version
+ * @returns `true` if the ancestors may satisfy any of the conditions
+ */
+export function mayMatchContextRole<T extends RuleConfigValue, O extends PlainData>(
+	// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
+	el: Element<T, O>,
+	conditions: readonly string[],
+	specs: MLMLSpec,
+	version: ARIAVersion,
+): boolean {
+	const parent = getOwningParentElement(el, specs, version) as Element<T, O> | null;
+	return conditions.some(condition => mayMatchChain(condition.split(/\s+>\s+/).toReversed(), parent, specs, version));
+}
+
+function mayMatchChain<T extends RuleConfigValue, O extends PlainData>(
+	chain: readonly string[],
+	// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
+	parent: Element<T, O> | null,
+	specs: MLMLSpec,
+	version: ARIAVersion,
+): boolean {
+	// An unknown ancestor branches in two (it passes the context through, or it is the next role of the
+	// chain), and branches that meet at the same element with the same entries left give the same answer:
+	// each pair is answered once, so a run of unknown ancestors costs the length of the run times the chain.
+	const branched = new Map<Element<T, O>, Map<number, boolean>>();
+	const walk = (next: number, from: Element<T, O> | null): boolean => {
+		let index = next;
+		let current = from;
+		while (index < chain.length) {
+			if (!current) {
+				return false;
+			}
+			const above = getOwningParentElement(current, specs, version) as Element<T, O> | null;
+			if (isRoleUnknown(current)) {
+				const answers = branched.get(current) ?? new Map<number, boolean>();
+				branched.set(current, answers);
+				const known = answers.get(index);
+				if (known !== undefined) {
+					return known;
+				}
+				const answer = walk(index, above) || walk(index + 1, above);
+				answers.set(index, answer);
+				return answer;
+			}
+			// `matchesContextRole` computes the role of an ancestor as a single node, in every version
+			const role = getComputedRole(specs, current, version, true).role;
+			if (!isTransparentForOwnership(role?.name, version)) {
+				if (chain[index] !== role?.name) {
+					return false;
+				}
+				index++;
+			}
+			current = above;
+		}
+		return true;
+	};
+	return walk(0, parent);
 }
 
 /**
