@@ -95,6 +95,17 @@ describe('group', () => {
 		expect(one(withBody('expect(a!).toBe(1 + 2);'))).toBe(one(plain));
 	});
 
+	test('whether an array or an object is broken over lines, as a formatter decides', () => {
+		expect(one(withBody('use([{ a: 1 }]);'))).toBe(one(withBody('use([\n{ a: 1 }\n]);')));
+		expect(one(withBody('use({ a: 1, b: [1, 2] });'))).toBe(one(withBody('use({\na: 1,\nb: [\n1,\n2\n]\n});')));
+	});
+
+	test('a comma that closes a list, and the text of a template literal with a substitution', () => {
+		expect(one(withBody('use([1, 2,], { a: 1, },);'))).toBe(one(withBody('use([1, 2], { a: 1 });')));
+		expect(one(withBody('use(`x${a}y`);'))).not.toBe(one(withBody('use(`x${a}z`);')));
+		expect(one(withBody('use(`x${a}y`);'))).toBe(one(withBody('use(`x${\na\n}y`);')));
+	});
+
 	test('the order of the keys of an object', () => {
 		expect(one(withBody('use({ a: 1, b: 2 });'))).toBe(one(withBody('use({ b: 2, a: 1 });')));
 	});

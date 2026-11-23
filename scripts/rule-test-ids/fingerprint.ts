@@ -317,6 +317,49 @@ function staticKey(property: ts.ObjectLiteralElementLike): string | undefined {
 }
 
 /**
+ * The tokens of printed code, joined by a space, without a comma that closes a list.
+ *
+ * The printer keeps the line breaks that the source has between the elements of a list, and a formatter adds
+ * a comma to a list that it breaks over lines: neither changes what the code does, and a formatter's run over a
+ * spec must not read as a change of its tests.
+ */
+function canonicalize(code: string): string {
+	const scanner = ts.createScanner(ts.ScriptTarget.Latest, false, ts.LanguageVariant.Standard, code);
+	const tokens: { kind: ts.SyntaxKind; text: string }[] = [];
+	// Whether each open `{` is the start of a substitution of a template literal, so that its `}` goes on with the template.
+	const braces: boolean[] = [];
+	for (let kind = scanner.scan(); kind !== ts.SyntaxKind.EndOfFileToken; kind = scanner.scan()) {
+		if (kind === ts.SyntaxKind.CloseBraceToken && braces.at(-1) === true) {
+			braces.pop();
+			kind = scanner.reScanTemplateToken(false);
+		} else if (kind === ts.SyntaxKind.OpenBraceToken) {
+			braces.push(false);
+		} else if (kind === ts.SyntaxKind.CloseBraceToken) {
+			braces.pop();
+		}
+		if (kind === ts.SyntaxKind.TemplateHead || kind === ts.SyntaxKind.TemplateMiddle) {
+			braces.push(true);
+		}
+		if (kind === ts.SyntaxKind.WhitespaceTrivia || kind === ts.SyntaxKind.NewLineTrivia) {
+			continue;
+		}
+		tokens.push({ kind, text: scanner.getTokenText() });
+	}
+	return tokens
+		.filter((token, index) => {
+			const next = tokens[index + 1]?.kind;
+			return !(
+				token.kind === ts.SyntaxKind.CommaToken &&
+				(next === ts.SyntaxKind.CloseBracketToken ||
+					next === ts.SyntaxKind.CloseBraceToken ||
+					next === ts.SyntaxKind.CloseParenToken)
+			);
+		})
+		.map(token => token.text)
+		.join(' ');
+}
+
+/**
  * The text of a node with the comments removed, every reference to a declaration replaced by the hash of that
  * declaration, and the spellings that mean the same written one way.
  */
@@ -384,7 +427,9 @@ function normalize(context: Context, node: ts.Node, scope: Scope | undefined, se
 	const result = ts.transform(node, [transformer]);
 	try {
 		const transformed = result.transformed[0];
-		return transformed ? context.printer.printNode(ts.EmitHint.Unspecified, transformed, context.sourceFile) : '';
+		return transformed
+			? canonicalize(context.printer.printNode(ts.EmitHint.Unspecified, transformed, context.sourceFile))
+			: '';
 	} finally {
 		result.dispose();
 	}
