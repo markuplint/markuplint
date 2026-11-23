@@ -9,6 +9,8 @@ Warns when a deprecated ARIA property or state is used on a role.
 
 The names of ARIA attributes are compared as [`no-unknown-attr`](/docs/rules/no-unknown-attr#attribute-name-case) compares names (see its "Attribute name case" section): `ARIA-LABEL` is the same attribute as `aria-label` where the DOM treats attribute names as case-insensitive, such as on an HTML element, and a different one where it does not, such as on an `<svg>` element in JSX.
 
+The role of an element is not known until it is rendered when its `role` attribute has a value that code gives (`role={props.role}`), when it has a spread attribute (`{...props}`) after its `role` attribute, or when it has a spread attribute and no `role` attribute: the spread may bring the role. markuplint does not judge such an element by its implicit role, so this rule does not report on it.
+
 ❌ Examples of **incorrect** code for this rule
 
 ```html

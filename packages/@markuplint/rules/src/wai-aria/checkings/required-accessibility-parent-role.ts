@@ -4,6 +4,7 @@ import type { ComputedRole } from '@markuplint/ml-spec';
 
 import { ARIA_RECOMMENDED_VERSION, ariaSpecs } from '@markuplint/ml-spec';
 
+import { mayMatchContextRole } from '../../helpers.js';
 import { noTranslate } from '../../no-translate.js';
 
 /**
@@ -66,6 +67,10 @@ export const checkingRequiredAccessibilityParentRole: ElementChecker<
 			// the generator changes the field name in the future.
 			const parentRoles = roleSpec.requiredContextRole ?? roleSpec.requiredAccessibilityParentRole;
 			if (parentRoles && parentRoles.length > 0) {
+				// An ancestor whose role is not known until it is rendered may be the one that is required
+				if (mayMatchContextRole(el, parentRoles, el.ownerMLDocument.specs, ariaVersion)) {
+					return;
+				}
 				return {
 					scope: token,
 					message: t(

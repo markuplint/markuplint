@@ -690,3 +690,84 @@ describe('the ancestor is looked for in the tree of the element', () => {
 		expect(violations).toStrictEqual([]);
 	});
 });
+
+test('[no-aria-on-presentational-children-issue-4789-001] JSX: an ancestor whose role is not known until it is rendered may not have presentational children', async () => {
+	const parser = { '.*': '@markuplint/jsx-parser' };
+	const source = [
+		'<>',
+		'<button role={props.role}><span role="img" aria-label="x">a</span></button>',
+		'<button {...props}><span role="img" aria-label="y">b</span></button>',
+		'</>',
+	].join('\n');
+	expect((await mlRuleTest(rule, source, { parser })).violations).toStrictEqual([]);
+
+	// Control: the ancestor whose role the markup tells has presentational children
+	const { violations } = await mlRuleTest(rule, '<button><span role="img" aria-label="x">a</span></button>', {
+		parser,
+	});
+	expect(violations).toStrictEqual([
+		{
+			severity: 'warning',
+			line: 1,
+			col: 15,
+			message: ineffective('button'),
+			raw: 'role="img"',
+		},
+	]);
+});
+
+test('[no-aria-on-presentational-children-issue-4789-002] JSX: the search goes on above an ancestor whose role is not known', async () => {
+	const { violations } = await mlRuleTest(
+		rule,
+		'<button><div role={props.role}><span role="img" aria-label="x">a</span></div></button>',
+		{ parser: { '.*': '@markuplint/jsx-parser' } },
+	);
+	// The known `button` above the unknown ancestor leaves out both of its descendants
+	expect(violations).toStrictEqual([
+		{
+			severity: 'warning',
+			line: 1,
+			col: 14,
+			message: ineffective('button'),
+			raw: 'role={props.role}',
+		},
+		{
+			severity: 'warning',
+			line: 1,
+			col: 38,
+			message: ineffective('button'),
+			raw: 'role="img"',
+		},
+	]);
+});
+
+test('[no-aria-on-presentational-children-issue-4789-003] JSX: a spread attribute after the role attribute of the ancestor may override the role; one before it may not', async () => {
+	const parser = { '.*': '@markuplint/jsx-parser' };
+	expect(
+		(
+			await mlRuleTest(
+				rule,
+				'<button role="button" {...props}><span role="img" aria-label="x">a</span></button>',
+				{
+					parser,
+				},
+			)
+		).violations,
+	).toStrictEqual([]);
+
+	// Control: the role is the one written
+	const { violations } = await mlRuleTest(
+		rule,
+		'<button {...props} role="button"><span role="img" aria-label="x">a</span></button>',
+		{ parser },
+	);
+	expect(violations).toStrictEqual([
+		{
+			severity: 'warning',
+			line: 1,
+			col: 40,
+			message: ineffective('button'),
+			raw: 'role="img"',
+		},
+	]);
+});

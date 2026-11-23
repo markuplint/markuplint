@@ -1,8 +1,10 @@
 import type { Translator } from '@markuplint/i18n';
-import type { Attribute } from '@markuplint/ml-spec';
+import type { Attribute, ExtendedSpec, MLMLSpec } from '@markuplint/ml-spec';
 
+import htmlSpec from '@markuplint/html-spec';
 import { translator } from '@markuplint/i18n';
-import { createTestElement } from '@markuplint/ml-core';
+import { ariaSpecs, createTestDocument, createTestElement, getComputedRole } from '@markuplint/ml-core';
+import { schemaToSpec } from '@markuplint/ml-spec';
 import { i18n } from 'markuplint';
 import { test, expect, beforeAll } from 'vitest';
 
@@ -17,6 +19,8 @@ import {
 	findAttrSpec,
 	isAriaAttr,
 	isFlagCheckedElement,
+	isRoleUnknown,
+	mayMatchContextRole,
 	memoizeByContent,
 	memoizeByObject,
 } from './helpers.js';
@@ -468,4 +472,108 @@ test('[helpers-issue-4701-002] isFlagCheckedElement looks at a component that a 
 			createTestElement('<Formula />', { ...parser, pretenders: [{ selector: 'Formula', as: 'mfenced' }] }),
 		),
 	).toBe(true);
+});
+
+test('[helpers-issue-4789-001] isRoleUnknown is true for a role that code gives, and for a spread attribute without a role', () => {
+	const parser = { parser: jsxParser };
+	expect(isRoleUnknown(createTestElement('<div role={props.role} />', parser))).toBe(true);
+	expect(isRoleUnknown(createTestElement('<div {...props} />', parser))).toBe(true);
+});
+
+test('[helpers-issue-4789-002] isRoleUnknown is false for a role that the markup tells, and for a role that the framework does not output', () => {
+	const parser = { parser: jsxParser };
+	expect(isRoleUnknown(createTestElement('<div />', parser))).toBe(false);
+	expect(isRoleUnknown(createTestElement('<div role="button" />', parser))).toBe(false);
+	expect(isRoleUnknown(createTestElement('<div {...props} role="button" />', parser))).toBe(false);
+	expect(isRoleUnknown(createTestElement('<div role={undefined} />', parser))).toBe(false);
+	expect(isRoleUnknown(createTestElement('<div role="button"></div>'))).toBe(false);
+});
+
+test('[helpers-issue-4789-006] isRoleUnknown scans the whole attribute list where the role is not output', () => {
+	const parser = { parser: jsxParser };
+	expect(isRoleUnknown(createTestElement('<div role={undefined} {...props} />', parser))).toBe(true);
+	expect(isRoleUnknown(createTestElement('<div {...props} role={undefined} />', parser))).toBe(true);
+});
+
+test('[helpers-issue-4789-007] isRoleUnknown reads a binding and an object that Vue binds', async () => {
+	const parser = (await import('@markuplint/vue-parser')).parser;
+	const specs = schemaToSpec([
+		htmlSpec as unknown as MLMLSpec,
+		(await import('@markuplint/vue-spec')).default as ExtendedSpec,
+	]);
+	const isUnknown = (attrs: string) => {
+		const el = createTestDocument(`<template><div ${attrs}></div></template>`, { parser, specs }).querySelector(
+			'div',
+		);
+		return el ? isRoleUnknown(el) : null;
+	};
+	expect(isUnknown(':role="r"')).toBe(true);
+	expect(isUnknown('v-bind:role="r"')).toBe(true);
+	expect(isUnknown('v-bind="props"')).toBe(true);
+	expect(isUnknown('role="button" v-bind="props"')).toBe(true);
+	expect(isUnknown('v-bind="props" role="button"')).toBe(false);
+	expect(isUnknown('role="button" :id="a"')).toBe(false);
+	expect(isUnknown(':id="a"')).toBe(false);
+});
+
+test('[helpers-issue-4789-003] isRoleUnknown is true for a spread attribute after the role attribute, and false before it', () => {
+	const parser = { parser: jsxParser };
+	expect(isRoleUnknown(createTestElement('<div role="button" {...props} />', parser))).toBe(true);
+	expect(isRoleUnknown(createTestElement('<div {...props} role="button" />', parser))).toBe(false);
+});
+
+test('[helpers-issue-4789-004] isRoleUnknown reads the attributes of the element that a pretender makes stand for the component', () => {
+	const parser = { parser: jsxParser };
+	const as = { element: 'div', inheritAttrs: true };
+	// The spread is an attribute of the pretended element only where it inherits the attributes
+	expect(
+		isRoleUnknown(createTestElement('<X {...props} />', { ...parser, pretenders: [{ selector: 'X', as }] })),
+	).toBe(true);
+	expect(
+		isRoleUnknown(createTestElement('<X {...props} />', { ...parser, pretenders: [{ selector: 'X', as: 'div' }] })),
+	).toBe(false);
+	expect(
+		isRoleUnknown(createTestElement('<X role="button" />', { ...parser, pretenders: [{ selector: 'X', as }] })),
+	).toBe(false);
+});
+
+test('[helpers-issue-4789-005] mayMatchContextRole agrees with getComputedRole where no ancestor has a role that is not known', () => {
+	const sources = [
+		'<div><div role="listitem"></div></div>',
+		'<div role="list"><div role="listitem"></div></div>',
+		'<div role="list"><div role="presentation"><div role="listitem"></div></div></div>',
+		'<div role="list"><div><div role="listitem"></div></div></div>',
+		'<div role="group"><div role="menuitem"></div></div>',
+		'<div role="menu"><div role="group"><div role="menuitem"></div></div></div>',
+		'<div role="menubar"><div role="menuitem"></div></div>',
+		'<div role="list"><div role="group"><div role="menuitem"></div></div></div>',
+		'<div role="listbox"><div role="group"><div role="option"></div></div></div>',
+		'<div role="tree"><div role="treeitem"></div></div>',
+	];
+	const compare = (version: '1.1' | '1.2' | '1.3') =>
+		sources.flatMap(source => {
+			const document = createTestDocument(source);
+			const { roles } = ariaSpecs(document.specs, version);
+			return [...document.querySelectorAll('[role]')].flatMap(el => {
+				const required = roles.find(r => r.name === el.getAttribute('role'))?.requiredContextRole ?? [];
+				if (required.length === 0) {
+					return [];
+				}
+				return [
+					{
+						source,
+						matches: mayMatchContextRole(el, required, document.specs, version),
+						accepted: getComputedRole(document.specs, el, version).role !== null,
+					},
+				];
+			});
+		});
+	for (const version of ['1.1', '1.2', '1.3'] as const) {
+		const results = compare(version);
+		// The trees give both answers, so that all-true or all-false cannot pass
+		expect(new Set(results.map(r => r.accepted))).toStrictEqual(new Set([true, false]));
+		expect(results.map(({ source, matches }) => ({ source, matches }))).toStrictEqual(
+			results.map(({ source, accepted }) => ({ source, matches: accepted })),
+		);
+	}
 });

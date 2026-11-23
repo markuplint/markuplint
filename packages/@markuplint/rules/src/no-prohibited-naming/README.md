@@ -7,6 +7,8 @@ description: Warns when aria-label, aria-labelledby, or aria-braillelabel is use
 
 Warns when `aria-label`, `aria-labelledby`, or `aria-braillelabel` is used on an element where [ARIA in HTML](https://www.w3.org/TR/html-aria/#dfn-naming-prohibited) prohibits naming: elements without an implicit role (`<cite>`, `<abbr>`, `<figcaption>`, etc.) and autonomous custom elements (`<my-widget>`, etc.) must not use these attributes unless an explicit naming-supported role is set. Customised-built-in elements (`<button is="x-y">`) inherit the host element's spec data and follow the regular path.
 
+The role of an element is not known until it is rendered when its `role` attribute has a value that code gives (`role={props.role}`), when it has a spread attribute (`{...props}`) after its `role` attribute, or when it has a spread attribute and no `role` attribute: the spread may bring the role. markuplint does not report such an element as one without a role, as the role may be one that can be named.
+
 The names of ARIA attributes are compared as [`no-unknown-attr`](/docs/rules/no-unknown-attr#attribute-name-case) compares names (see its "Attribute name case" section): `ARIA-LABEL` is the same attribute as `aria-label` where the DOM treats attribute names as case-insensitive, such as on an HTML element, and a different one where it does not, such as on an `<svg>` element in JSX.
 
 Split out of the former `wai-aria-disallowed-props` rule, alongside [`element-supports-aria-prop`](/docs/rules/element-supports-aria-prop) and [`role-supports-aria-prop`](/docs/rules/role-supports-aria-prop).

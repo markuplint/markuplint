@@ -6,6 +6,7 @@ import { ARIA_RECOMMENDED_VERSION } from '@markuplint/ml-spec';
 import { getContentOwner } from '../permitted-contents/slot-content.js';
 import { checkingRequiredOwnedElements } from '../wai-aria/checkings/required-owned-elements.js';
 import { defaultOptions } from '../wai-aria/default-options.js';
+import { isRoleUnknown } from '../helpers.js';
 import meta from './meta.js';
 
 export default createRule<boolean, Options>({
@@ -19,7 +20,10 @@ export default createRule<boolean, Options>({
 			const ariaVersion =
 				el.rule.options?.version ?? document.ruleCommonSettings?.ariaVersion ?? ARIA_RECOMMENDED_VERSION;
 			const computed = getComputedRole(document.specs, el, ariaVersion);
-			report(checkingRequiredOwnedElements({ el, role: computed.role }));
+			// What the element owns is judged by its role, which is not known until it is rendered
+			if (!isRoleUnknown(el)) {
+				report(checkingRequiredOwnedElements({ el, role: computed.role }));
+			}
 
 			/**
 			 * The slot wrapper of a pretended component is a virtual element that is not in

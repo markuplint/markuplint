@@ -350,6 +350,22 @@ test('[require-attr-parser-002] Vue', async () => {
 	).toBe(0);
 });
 
+test('[require-attr-issue-4789-001] Vue: v-bind="obj" may bring the attributes, as a spread attribute of JSX does', async () => {
+	const options = { parser: { '.*': '@markuplint/vue-parser' }, specs: { '.*': '@markuplint/vue-spec' } };
+	expect((await mlRuleTest(rule, '<template><img v-bind="attrs"></template>', options)).violations).toStrictEqual([]);
+
+	// Control: a binding with an argument brings one attribute, and the others are still required
+	expect((await mlRuleTest(rule, '<template><img :alt="alt"></template>', options)).violations).toStrictEqual([
+		{
+			severity: 'error',
+			line: 1,
+			col: 11,
+			message: 'The "img" element expects the "src" or the "srcset" attribute',
+			raw: '<img :alt="alt">',
+		},
+	]);
+});
+
 test('[require-attr-parser-003] React', async () => {
 	expect(
 		(

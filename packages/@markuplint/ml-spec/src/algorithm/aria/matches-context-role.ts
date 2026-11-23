@@ -17,6 +17,10 @@ import { getComputedRole } from './get-computed-role.js';
  * > If the list is not empty, authors MUST ensure that an element with the current role is an
  * > accessibility child of an element with a role from this list.
  *
+ * `mayMatchContextRole` of `@markuplint/rules` mirrors this walk for ancestors whose role is not known
+ * until it is rendered, which this cannot take: a change to the chain, the transparent roles or the
+ * owner that `aria-owns` resolves belongs to both.
+ *
  * @see https://w3c.github.io/aria/#scope
  */
 export function matchesContextRole(

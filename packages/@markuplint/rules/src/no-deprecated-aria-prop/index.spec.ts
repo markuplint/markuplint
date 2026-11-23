@@ -1,3 +1,4 @@
+import { ariaSpecs, createTestDocument } from '@markuplint/ml-core';
 import { mlRuleTest } from 'markuplint';
 import { test, expect } from 'vitest';
 
@@ -91,4 +92,63 @@ test('[no-deprecated-aria-prop-issue-4309-004] JSX: an upper-case aria-* on an s
 			raw: 'aria-errormessage="x"',
 		},
 	]);
+});
+
+test('[no-deprecated-aria-prop-issue-4789-001] JSX: an element whose role is not known until it is rendered is not judged by the implicit role', async () => {
+	const parser = { '.*': '@markuplint/jsx-parser' };
+	const source = [
+		'<>',
+		'<div role={props.role} aria-disabled="true" />',
+		'<div {...props} aria-disabled="true" />',
+		'</>',
+	].join('\n');
+	expect((await mlRuleTest(rule, source, { parser })).violations).toStrictEqual([]);
+
+	// Control: a role that the markup tells is judged
+	const { violations } = await mlRuleTest(rule, '<div role="button" aria-errormessage="x" />', { parser });
+	expect(violations).toStrictEqual([
+		{
+			severity: 'warning',
+			line: 1,
+			col: 20,
+			message: 'The "aria-errormessage" ARIA property is deprecated on the "button" role',
+			raw: 'aria-errormessage="x"',
+		},
+	]);
+});
+
+test('[no-deprecated-aria-prop-issue-4789-002] JSX: a spread attribute after the role attribute may override it; one before it may not', async () => {
+	const parser = { '.*': '@markuplint/jsx-parser' };
+	expect(
+		(await mlRuleTest(rule, '<div role="button" {...props} aria-errormessage="x" />', { parser })).violations,
+	).toStrictEqual([]);
+
+	// Control: the role is the one written
+	const { violations } = await mlRuleTest(rule, '<div {...props} role="button" aria-errormessage="x" />', { parser });
+	expect(violations).toStrictEqual([
+		{
+			severity: 'warning',
+			line: 1,
+			col: 31,
+			message: 'The "aria-errormessage" ARIA property is deprecated on the "button" role',
+			raw: 'aria-errormessage="x"',
+		},
+	]);
+});
+
+test('[no-deprecated-aria-prop-issue-4789-003] no ARIA property is deprecated on every role that owns it, so an element whose role is not known is not judged', () => {
+	const { specs } = createTestDocument('<div></div>');
+	const deprecatedOnEveryRole: string[] = [];
+	for (const version of ['1.1', '1.2', '1.3'] as const) {
+		const owners = new Map<string, boolean[]>();
+		for (const role of ariaSpecs(specs, version).roles.filter(r => !r.isAbstract)) {
+			for (const prop of role.ownedProperties ?? []) {
+				owners.set(prop.name, [...(owners.get(prop.name) ?? []), prop.deprecated === true]);
+			}
+		}
+		deprecatedOnEveryRole.push(
+			...[...owners].filter(([, deprecated]) => deprecated.every(Boolean)).map(([name]) => `${version} ${name}`),
+		);
+	}
+	expect(deprecatedOnEveryRole).toStrictEqual([]);
 });

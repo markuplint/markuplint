@@ -33,7 +33,7 @@ The `<img>` element's `src` attribute is required by the [HTML Living Standard](
 
 :::note
 
-This rule doesn't evaluate the element that has the **spread attribute**. In the below code, it doesn't evaluate whether the `img` element includes the `src` attribute. Because Markuplint can't know whether the spread attribute includes the `src` property.
+This rule doesn't evaluate the element that has the **spread attribute** (`{...props}` of JSX, `v-bind="obj"` of Vue). In the below code, it doesn't evaluate whether the `img` element includes the `src` attribute. Because Markuplint can't know whether the spread attribute includes the `src` property.
 
 ```jsx
 const Component = (props) => {
