@@ -51,6 +51,8 @@ Every test that ports a TS test has `const _ID: &str = "rule-name-NNN";` as the 
 - The function name is the ID with underscores (`require-doctype-001` → `require_doctype_001`)
 - A TS test that is removed has its Rust test removed, and its number is not given to another test
 - Rust-only tests (no TS counterpart) use `v6_<rule_name>_NNN` prefix
+- A Rust test that ports a TS test with another input (a custom element that stands in for a framework's component, for example) is a `v6_` test too: it names the TS test in `/// TS \`[rule-name-NNN]\`` and has no `_ID`, as a shared ID means the same input and the same violations (`crates/CLAUDE.md`)
+- `scripts/rust-rule-parity/test-ids.spec.ts` (in `yarn test`) checks that every `_ID` and every `/// TS:` ID names a TS test, that the function name and the comment agree with `_ID`, and that an `_ID` is not repeated
 - Each test file has a header comment listing the ID mapping:
 
 ```rust

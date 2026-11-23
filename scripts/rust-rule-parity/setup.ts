@@ -23,13 +23,13 @@ const RULES_SRC = path.resolve('packages', '@markuplint', 'rules', 'src');
  * (relative to the rules' `src`) and the ID in the test name (`[rule-name-NNN]`, unique within the
  * rule across all of its spec files).
  *
- * `permitted-contents/index.spec.ts` `[permitted-contents-010]` (a `<div>` inside a
- * `<select>`): the TS engine reads the
- * markup with parse5 8.1, which still has the "in select" insertion mode and drops the `div`
- * into the text of the `select`, so the TS rule reports a text node. The Rust HTML parser follows
- * the current HTML Living Standard, where that mode is gone and the `div` stays an element of the
- * `select` (https://html.spec.whatwg.org/multipage/parsing.html#parsing-main-inbody, the rules for
- * the `select` and `option` start tags), and the html5lib-tests conformance suite that
+ * `permitted-contents/index.spec.ts` `[permitted-contents-010]` (a `<div>` inside a `<select>`):
+ * the TS engine reads the markup with parse5 8.1, which still has the "in select" insertion mode
+ * and drops the `div` into the text of the `select`, so the TS rule reports a text node. The Rust
+ * HTML parser follows the current HTML Living Standard, where that mode is gone and the `div` stays
+ * an element of the `select`
+ * (https://html.spec.whatwg.org/multipage/parsing.html#parsing-main-inbody, the rules for the
+ * `select` and `option` start tags), and the html5lib-tests conformance suite that
  * `markuplint-html-parser` runs says the same (`tree-construction/webkit02.dat`). Matching parse5
  * would take a parser mode that contradicts that suite. The expectation of the TS spec flips when
  * the TS engine is removed.
