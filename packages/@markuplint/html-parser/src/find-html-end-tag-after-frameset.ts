@@ -6,21 +6,22 @@ import { html, Tokenizer, TokenizerMode } from 'parse5';
 /**
  * Finds the `</html>` that closes the `html` element of a document whose body is a `frameset`.
  *
- * parse5 sets `sourceCodeLocation.endTag` of `html` when it reads `</html>` in the "after body" insertion mode
- * (`endTagAfterBody` calls `_setEndLocation`), but not when it reads it in the "after frameset" insertion mode
+ * parse5 sets `sourceCodeLocation.endTag` of `html` when it reads `</html>` in the after body insertion mode
+ * (`endTagAfterBody` calls `_setEndLocation`), but not when it reads it in the after frameset insertion mode
  * (`endTagAfterFrameset` only switches the mode), so the end tag has to be found in the source. The caller uses
- * this only when parse5 gives no `endTag`; once parse5 sets it in "after frameset" too, this function and its call
- * in `HtmlParser#nodeize` can be removed.
+ * this only when parse5 gives no `endTag`; once parse5 sets it in the after frameset insertion mode too, this
+ * function and its call in `HtmlParser#nodeize` can be removed.
  *
- * The outermost `frameset` is popped only by its own end tag, and that switches the insertion mode to
- * "after frameset"; before that, `</html>` is ignored. In "after frameset" the first `</html>` switches to
- * "after after frameset", which ignores every later one. So the end tag is the first `</html>` token after
- * the end tag of the outermost `frameset`.
+ * The outermost `frameset` is popped only by its own end tag, and that switches to the after frameset insertion
+ * mode; before that, `</html>` is ignored. In that mode the first `</html>` switches to the after after frameset
+ * insertion mode, which ignores every later one. So the end tag is the first `</html>` token after the end tag of
+ * the outermost `frameset`.
  *
  * Between the end tag of the outermost `frameset` and `</html>`, the tree construction changes the state of the
- * tokenizer for `<noframes>` only (processed using the rules for "in head", which parse it as raw text); every
- * other start tag is ignored or, for `<html>`, only adds attributes. The tokenizer here follows the same switch so
- * that `</html>` in the text of `noframes`, in a comment, or in an attribute value is not taken for the end tag.
+ * tokenizer for `<noframes>` only (processed using the rules for the in head insertion mode, which parse it as raw
+ * text); every other start tag is ignored or, for `<html>`, only adds attributes. The tokenizer here follows the
+ * same switch so that `</html>` in the text of `noframes`, in a comment, or in an attribute value is not taken for
+ * the end tag.
  *
  * Only the root `html` of a document is looked at: an `html` and a `frameset` in `<svg>` or `<math>` are foreign
  * elements, closed without the insertion modes above, and the `</html>` after them belongs to the root (or, in a
@@ -29,7 +30,7 @@ import { html, Tokenizer, TokenizerMode } from 'parse5';
  * `Tokenizer` and `TokenizerMode` are `@internal` exports of parse5, which its semver does not cover; that is why
  * `package.json` takes parse5 with a tilde range. The range still accepts patch releases, on purpose: an exact
  * pin would keep the fixes of parse5 from consumers until markuplint is released again. A parse5 update that
- * changes them fails the specs of "the end tag of html in a frameset document" in `index.spec.ts`.
+ * changes them fails the specs of `the end tag of html in a frameset document` in `index.spec.ts`.
  *
  * @see https://html.spec.whatwg.org/multipage/parsing.html#parsing-main-inframeset
  * @see https://html.spec.whatwg.org/multipage/parsing.html#parsing-main-afterframeset
