@@ -555,7 +555,8 @@ test('mayMatchContextRole agrees with getComputedRole where no ancestor has a ro
 			const document = createTestDocument(source);
 			const { roles } = ariaSpecs(document.specs, version);
 			return [...document.querySelectorAll('[role]')].flatMap(el => {
-				const required = roles.find(r => r.name === el.getAttrValue('role'))?.requiredAccessibilityParentRole ?? [];
+				const required =
+					roles.find(r => r.name === el.getAttrValue('role'))?.requiredAccessibilityParentRole ?? [];
 				if (required.length === 0) {
 					return [];
 				}
