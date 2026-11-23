@@ -43,7 +43,7 @@ test('[no-orphaned-end-tag-002] an orphaned end tag after a newline is reported 
 	]);
 });
 
-test('[no-orphaned-end-tag-issue-4755-001] the end tag of html in a frameset document is not orphaned', async () => {
+test('[no-orphaned-end-tag-003] the end tag of html in a frameset document is not orphaned', async () => {
 	const { violations } = await mlRuleTest(
 		rule,
 		'<!doctype html><html lang="en"><head><title>t</title></head><frameset cols=""><frame src=""></frameset></html>',
@@ -51,7 +51,7 @@ test('[no-orphaned-end-tag-issue-4755-001] the end tag of html in a frameset doc
 	expect(violations).toStrictEqual([]);
 });
 
-test('[no-orphaned-end-tag-issue-4755-002] `</html>` before the outermost frameset is closed is orphaned', async () => {
+test('[no-orphaned-end-tag-004] `</html>` before the outermost frameset is closed is orphaned', async () => {
 	const { violations } = await mlRuleTest(
 		rule,
 		'<!doctype html><html><head></head><frameset><frameset></frameset></html></frameset></html>',
@@ -68,12 +68,12 @@ test('[no-orphaned-end-tag-issue-4755-002] `</html>` before the outermost frames
 });
 
 describe('fix', () => {
-	test('[no-orphaned-end-tag-003] remove orphaned end tag', async () => {
+	test('[no-orphaned-end-tag-005] remove orphaned end tag', async () => {
 		const { fixedCode } = await mlRuleTest(rule, '<div></div></span>', undefined, true);
 		expect(fixedCode).toBe('<div></div>');
 	});
 
-	test('[no-orphaned-end-tag-004] remove multiple orphaned end tags', async () => {
+	test('[no-orphaned-end-tag-006] remove multiple orphaned end tags', async () => {
 		const { fixedCode } = await mlRuleTest(rule, '<div></p></br><p></span></p></div>', undefined, true);
 		expect(fixedCode).toBe('<div><p></p></div>');
 	});
