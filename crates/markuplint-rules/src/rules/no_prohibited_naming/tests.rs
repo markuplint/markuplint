@@ -23,6 +23,7 @@
 //!   v6_no_prohibited_naming_004  — Rust-only: a blank `role` does not lift the prohibition
 //!   v6_no_prohibited_naming_005  — Rust-only: a computed role lifts it, and elements without a naming prohibition
 //!   v6_no_prohibited_naming_006  — Rust-only: severity and `rules: false`
+//!   v6_no_prohibited_naming_007  — Rust-only: an element whose role is not known until it is rendered is not judged
 //!
 //! `no-prohibited-naming-016` names `aria-prop-requires-role` in its config too; that
 //! rule is ported separately, so here the config enables it and it is simply not registered yet.
@@ -455,4 +456,46 @@ fn v6_no_prohibited_naming_006() {
 
     let violations = run_rule(r#"<abbr aria-label="x">y</abbr>"#, serde_json::json!(false));
     assert_violations(&violations, &[]);
+}
+
+/// The MLAST of a `div` with these attributes, linted by `no-prohibited-naming`: `(name, value, what the TS engine worked out)`.
+fn lint_div(attrs: &[(&str, &str, serde_json::Value)]) -> Vec<crate::test_util::Brief> {
+    crate::test_util::lint_mlast_brief(
+        "no-prohibited-naming",
+        &crate::test_util::mlast_element("div", attrs, &serde_json::json!({})),
+        serde_json::json!({ "rules": { "no-prohibited-naming": true } }),
+    )
+}
+
+fn code() -> serde_json::Value {
+    serde_json::json!({ "isDynamicValue": true })
+}
+
+fn spread() -> serde_json::Value {
+    serde_json::json!({ "isDirective": true, "isSpread": true, "isDynamicValue": true })
+}
+
+fn plain() -> serde_json::Value {
+    serde_json::json!({})
+}
+
+/// Rust-only: whether the element has no role to name is not known where the role is not known until it is
+/// rendered (`cite` prohibits naming, and a `cite` with a role that code gives may not be one).
+#[test]
+fn v6_no_prohibited_naming_007() {
+    let lint_cite = |attrs: &[(&str, &str, serde_json::Value)]| {
+        crate::test_util::lint_mlast_brief(
+            "no-prohibited-naming",
+            &crate::test_util::mlast_element("cite", attrs, &serde_json::json!({})),
+            serde_json::json!({ "rules": { "no-prohibited-naming": true } }),
+        )
+    };
+    let label = || ("aria-label", "x", plain());
+    assert_eq!(lint_cite(&[label()]).len(), 1);
+    assert_eq!(lint_cite(&[("role", "props.role", code()), label()]), []);
+    assert_eq!(lint_cite(&[label(), ("v-bind", "props", spread())]), []);
+    assert_eq!(
+        lint_cite(&[("role", "foo", plain()), ("v-bind", "props", spread()), label()]),
+        []
+    );
 }

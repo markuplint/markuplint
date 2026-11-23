@@ -29,6 +29,7 @@ use markuplint_types::spec::types::MLMLSpec;
 use crate::aria_check::{
     ElementContext, ElementGate, PermittedRoles as ElementPermittedRoles, role_attr, role_tokens, walk_elements,
 };
+use crate::helpers::is_role_unknown;
 use crate::rule::{Rule, RuleConfigSet};
 use crate::violation::Violation;
 
@@ -78,6 +79,11 @@ fn check(ctx: &ElementContext<'_>, violations: &mut Vec<Violation>) {
     let Some(attr) = role_attr(ctx.el) else {
         return;
     };
+    // The tokens of a value that code gives, or of one that a spread attribute after it may override, are not
+    // the roles that the element has when it is rendered
+    if is_role_unknown(ctx.el) {
+        return;
+    }
     let permitted = permitted_role_names(ctx);
     let tokens = role_tokens(attr);
     let el_name = &ctx.local_name();

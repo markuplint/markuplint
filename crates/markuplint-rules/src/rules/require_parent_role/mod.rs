@@ -20,6 +20,7 @@ use markuplint_types::spec::types::MLMLSpec;
 
 use crate::aria::computed_role::{RoleComputationError, get_computed_role};
 use crate::aria_check::{ElementContext, ElementGate, role_attr, role_tokens, walk_elements};
+use crate::helpers::{is_role_unknown, may_match_context_role};
 use crate::rule::{Rule, RuleConfigSet};
 use crate::violation::Violation;
 
@@ -48,6 +49,10 @@ impl Rule for RequireParentRole {
 
 fn check(ctx: &ElementContext<'_>) -> Option<Violation> {
     let role_attr = role_attr(ctx.el)?;
+    // A role that a spread attribute after it may override is not the role that the element has
+    if is_role_unknown(ctx.el) {
+        return None;
+    }
 
     let computed = get_computed_role(ctx.spec, ctx.arena, ctx.node_id, ctx.version, false);
     let context_missing = match computed.error_type {
@@ -65,6 +70,12 @@ fn check(ctx: &ElementContext<'_>) -> Option<Violation> {
             continue;
         };
         let parent_roles = &role_spec.required_accessibility_parent_role;
+        // An ancestor whose role is not known until it is rendered may be the one that is required
+        if !parent_roles.is_empty()
+            && may_match_context_role(ctx.arena, ctx.spec, ctx.node_id, parent_roles, ctx.version)
+        {
+            return None;
+        }
         let tr = ctx.tr;
         let requirement = match parent_roles.as_slice() {
             [] => continue,

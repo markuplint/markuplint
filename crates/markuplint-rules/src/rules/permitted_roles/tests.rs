@@ -25,6 +25,7 @@
 //!   v6_permitted_roles_008     — Rust-only: the implicit role is permitted, conditions applied (`a[href]`)
 //!   v6_permitted_roles_009     — Rust-only: severity and `rules: false`
 //!   v6_permitted_roles_010     — Rust-only: `div` permits `button` in ARIA 1.1 and 1.2, by option and by `ruleCommonSettings`
+//!   v6_permitted_roles_011     — Rust-only: the tokens of a role that code gives, or that a later spread may override, are not judged
 
 use crate::lint::{LintConfig, lint};
 use crate::violation::{Severity, Violation};
@@ -370,4 +371,43 @@ fn permitted_roles_014() {
             "button"
         )]
     );
+}
+
+/// The MLAST of a `div` with these attributes, linted by `permitted-roles`: `(name, value, what the TS engine worked out)`.
+fn lint_div(attrs: &[(&str, &str, serde_json::Value)]) -> Vec<crate::test_util::Brief> {
+    crate::test_util::lint_mlast_brief(
+        "permitted-roles",
+        &crate::test_util::mlast_element("div", attrs, &serde_json::json!({})),
+        serde_json::json!({ "rules": { "permitted-roles": true } }),
+    )
+}
+
+fn code() -> serde_json::Value {
+    serde_json::json!({ "isDynamicValue": true })
+}
+
+fn spread() -> serde_json::Value {
+    serde_json::json!({ "isDirective": true, "isSpread": true, "isDynamicValue": true })
+}
+
+fn plain() -> serde_json::Value {
+    serde_json::json!({})
+}
+
+/// Rust-only: the tokens of a value that code gives, or of one that a spread attribute after it may override, are not
+/// the roles that the element has when it is rendered.
+#[test]
+fn v6_permitted_roles_011() {
+    // `foo-bar` is not a role that any element permits
+    assert_eq!(lint_div(&[("role", "props.role", code())]), []);
+    assert_eq!(
+        lint_div(&[("role", "foo-bar", plain()), ("v-bind", "props", spread())]),
+        []
+    );
+    // The role that the markup tells, with no spread after it, is judged
+    assert_eq!(
+        lint_div(&[("v-bind", "props", spread()), ("role", "foo-bar", plain())]).len(),
+        1
+    );
+    assert_eq!(lint_div(&[("role", "foo-bar", plain())]).len(), 1);
 }

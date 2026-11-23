@@ -18,6 +18,7 @@
 //!   v6_no_aria_on_presentational_children_005  — Rust-only: other roles, role tokens and ARIA version
 //!   v6_no_aria_on_presentational_children_006  — Rust-only: severity, multi-line position and `rules: false`, for an `aria-label` that takes no effect
 //!   v6_no_aria_on_presentational_children_007  — Rust-only: severity option and `rules: false`
+//!   v6_no_aria_on_presentational_children_008  — Rust-only: an ancestor whose role is not known until it is rendered is passed over
 
 use crate::lint::{LintConfig, lint};
 use crate::violation::{Severity, Violation};
@@ -869,4 +870,39 @@ fn v6_no_aria_on_presentational_children_007() {
     assert_eq!(violations.len(), 1, "violations: {violations:?}");
     assert_eq!(violations[0].severity, Severity::Error);
     assert_eq!(run_rule(html, serde_json::json!(false)).len(), 0);
+}
+
+/// Rust-only: an ancestor whose role is not known until it is rendered (a spread attribute after its `role`) is not
+/// taken to have presentational children; the search goes on above it.
+#[test]
+fn v6_no_aria_on_presentational_children_008() {
+    let lint = |arena: &markuplint_dom::arena::DomArena| {
+        crate::test_util::lint_arena_brief(
+            "no-aria-on-presentational-children",
+            arena,
+            serde_json::json!({ "rules": { "no-aria-on-presentational-children": true } }),
+        )
+    };
+    let html = r#"<div id="p" role="button"><span id="c" role="presentation"></span></div>"#;
+    assert_eq!(lint(&crate::test_util::html_arena(html)).len(), 1);
+
+    let mut arena = crate::test_util::html_arena(html);
+    let parent = crate::test_util::element_with_attr(&arena, "id", "p");
+    crate::test_util::insert_spread_attr(&mut arena, parent, 2);
+    assert_eq!(lint(&arena), []);
+
+    // A spread attribute before the `role` does not override it
+    let mut arena = crate::test_util::html_arena(html);
+    let parent = crate::test_util::element_with_attr(&arena, "id", "p");
+    crate::test_util::insert_spread_attr(&mut arena, parent, 0);
+    assert_eq!(lint(&arena).len(), 1);
+
+    // The search goes on above the unknown ancestor, where a known role with presentational children excludes the
+    // descendants
+    let html = r#"<div role="button"><div id="p" role="group"><span id="c" role="presentation"></span></div></div>"#;
+    let mut arena = crate::test_util::html_arena(html);
+    let parent = crate::test_util::element_with_attr(&arena, "id", "p");
+    crate::test_util::insert_spread_attr(&mut arena, parent, 2);
+    // The `group` that may be anything is itself below the `button`, and so is the `presentation`
+    assert_eq!(lint(&arena).len(), 2);
 }

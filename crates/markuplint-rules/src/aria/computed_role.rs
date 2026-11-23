@@ -5,13 +5,14 @@ use std::collections::HashSet;
 use markuplint_core::mlast::NamespaceURI;
 use markuplint_dom::arena::{DomArena, NodeId};
 use markuplint_dom::helpers;
-use markuplint_dom::node::ElementData;
+use markuplint_dom::node::{DomNode, ElementData};
 use markuplint_types::spec::aria::{self, ARIAVersion};
 use markuplint_types::spec::types::{ARIARoleInSchema, MLMLSpec};
 
 use super::may_be_focusable;
 use super::owns::{get_owned_child_elements, get_owning_parent_element};
 use crate::slot_assignment::{composed_ancestors_inclusive, composed_parent_element};
+use crate::tree_scope::{TreeRoot, element_by_id_of, has_element_of_unknown_id, is_unknown_value_attr, root_of};
 
 // ============================================================
 // Public types
@@ -597,7 +598,7 @@ fn matches_context_role(
                     all_matched = false;
                     break;
                 };
-                let cr = compute_role(spec, arena, id, version, false, visited);
+                let cr = compute_role(spec, arena, id, version, true, visited);
                 current_id = get_owning_parent_element(arena, spec, id, version);
 
                 if let Some(ref role) = cr.role {
@@ -671,7 +672,7 @@ pub(crate) fn is_presentational(role_name: &str) -> bool {
     role_name == "presentation" || role_name == "none"
 }
 
-fn is_transparent_for_ownership(role_name: &str, version: ARIAVersion) -> bool {
+pub(crate) fn is_transparent_for_ownership(role_name: &str, version: ARIAVersion) -> bool {
     if is_presentational(role_name) {
         return true;
     }
@@ -687,8 +688,21 @@ fn is_landmark_role(spec: &MLMLSpec, role_name: &str, version: ARIAVersion) -> b
 }
 
 /// TS `isValidLandmarkRole()`: a landmark that requires a name has one from its author, a
-/// non-empty `aria-label` or an `aria-labelledby` whose id (as written, or with its character
-/// references resolved) is in the document.
+/// non-empty `aria-label` or an `aria-labelledby` that refers to an element.
+///
+/// The specification takes a landmark that the author has not named to be an authoring error. What is not known
+/// until it is rendered is not known to be missing: markuplint does not decide what it cannot know, and that
+/// premise is its own decision, not text of the specification. So the landmark has a name when
+///
+/// - the value of `aria-labelledby` is not known (`aria-labelledby={id}`): the ids it refers to are not either, or
+/// - a token refers to no element but the tree has an element whose `id` is not known (`<h2 id={x}>` and
+///   `aria-labelledby="t"`, [`has_element_of_unknown_id`]): it may be the one.
+///
+/// Each token is resolved in the tree of the element (the content of a `template` element and a shadow root are
+/// trees of their own), as it is written and then with its character references resolved. An attribute that the
+/// framework does not output (`aria-labelledby={undefined}`) is not found by name, so it gives no name.
+///
+/// <https://w3c.github.io/aria/#document-handling_author-errors>
 fn is_valid_landmark_role(
     arena: &DomArena,
     node_id: NodeId,
@@ -706,13 +720,27 @@ fn is_valid_landmark_role(
         if helpers::get_attr_value(arena, node_id, "aria-label").is_some_and(|label| !label.is_empty()) {
             return true;
         }
-        let ids = helpers::get_attr_value(arena, node_id, "aria-labelledby").unwrap_or_default();
-        if ids.split_whitespace().any(|id| {
-            helpers::find_element_by_id(arena, id).is_some()
-                || crate::decode::decode_entities(id)
-                    .is_some_and(|decoded| helpers::find_element_by_id(arena, &decoded).is_some())
-        }) {
+        let labelledby = arena
+            .get(node_id)
+            .and_then(DomNode::as_element)
+            .and_then(|el| helpers::get_attr_node_from_el(el, "aria-labelledby"));
+        if is_unknown_value_attr(labelledby) {
             return true;
+        }
+        let ids: Vec<&str> =
+            labelledby.map_or_else(Vec::new, |attr| helpers::attr_value(attr).split_whitespace().collect());
+        let root = root_of(arena, spec, node_id);
+        if !matches!(root, TreeRoot::NoTree(_)) {
+            if ids.iter().any(|id| {
+                element_by_id_of(arena, spec, root, id).is_some()
+                    || crate::decode::decode_entities(id)
+                        .is_some_and(|decoded| element_by_id_of(arena, spec, root, &decoded).is_some())
+            }) {
+                return true;
+            }
+            if !ids.is_empty() && has_element_of_unknown_id(arena, spec, node_id) {
+                return true;
+            }
         }
     }
     false
@@ -781,6 +809,87 @@ mod tests {
         // is empty, so the element is unnamed and has no implicit role.
         let cr = get_computed_role(&s, &arena, id, ARIAVersion::V1_2, false);
         assert!(cr.role.is_none());
+    }
+
+    /// `getExplicitRole` of TS: a landmark that refers to what is not known is named, as markuplint does not
+    /// decide what it cannot know. `role` is `region` on a `div`, with the reference given by `labelledby`.
+    fn region_role(html: &str, dynamic_id: Option<&str>, reference_id: &str) -> Option<String> {
+        let s = spec();
+        let mut arena = crate::test_util::html_arena(html);
+        if let Some(id) = dynamic_id {
+            crate::test_util::make_id_dynamic(&mut arena, id);
+        }
+        let id = arena
+            .elements()
+            .find(|(_, el)| helpers::get_attr_value_from_el(el, "id") == Some(reference_id))
+            .map(|(id, _)| id)
+            .unwrap();
+        get_computed_role(&s, &arena, id, ARIAVersion::V1_2, false)
+            .role
+            .map(|r| r.name)
+    }
+
+    #[test]
+    fn v6_landmark_that_refers_to_nothing_is_not_named() {
+        let html = r#"<h2 id="h">Q</h2><div id="d" role="region" aria-labelledby="t">a</div>"#;
+        assert_eq!(region_role(html, None, "d").as_deref(), Some("generic"));
+    }
+
+    #[test]
+    fn v6_landmark_that_refers_to_nothing_may_refer_to_an_id_that_is_not_known() {
+        let html = r#"<h2 id="h">Q</h2><div id="d" role="region" aria-labelledby="t">a</div>"#;
+        assert_eq!(region_role(html, Some("h"), "d").as_deref(), Some("region"));
+        // The landmark itself may be the element that its reference is to
+        let html = r#"<div id="d" role="region" aria-labelledby="t">a</div>"#;
+        assert_eq!(region_role(html, Some("d"), "d").as_deref(), Some("region"));
+    }
+
+    #[test]
+    fn v6_landmark_without_a_reference_is_not_named_by_an_id_that_is_not_known() {
+        let html = r#"<h2 id="h">Q</h2><div id="d" role="region" aria-labelledby="">a</div>"#;
+        assert_eq!(region_role(html, Some("h"), "d").as_deref(), Some("generic"));
+    }
+
+    #[test]
+    fn v6_landmark_reference_is_resolved_in_its_own_tree() {
+        // The id that is not known is in the content of a `template` element, which is a tree of its own
+        let html =
+            r#"<div><template><h2 id="h">Q</h2></template></div><div id="d" role="region" aria-labelledby="t">a</div>"#;
+        assert_eq!(region_role(html, Some("h"), "d").as_deref(), Some("generic"));
+        let html =
+            r#"<div><template><h2 id="h">Q</h2><div id="d" role="region" aria-labelledby="t">a</div></template></div>"#;
+        assert_eq!(region_role(html, Some("h"), "d").as_deref(), Some("region"));
+        // A known id of the other tree is not a reference either
+        let html =
+            r#"<div><template><h2 id="t">Q</h2></template></div><div id="d" role="region" aria-labelledby="t">a</div>"#;
+        assert_eq!(region_role(html, None, "d").as_deref(), Some("generic"));
+    }
+
+    #[test]
+    fn v6_landmark_whose_labelledby_is_not_known_is_named() {
+        let s = spec();
+        let (mut arena, id) = make_arena("div", &[("role", "region"), ("aria-labelledby", "x")]);
+        assert_eq!(
+            get_computed_role(&s, &arena, id, ARIAVersion::V1_2, false)
+                .role
+                .map(|r| r.name)
+                .as_deref(),
+            Some("generic")
+        );
+        for attr in &mut arena.element_mut(id).unwrap().attributes {
+            if let markuplint_core::mlast::MLASTAttr::HTMLAttr(a) = attr
+                && helpers::attr_name(a) == "aria-labelledby"
+            {
+                a.is_dynamic_value = Some(true);
+            }
+        }
+        assert_eq!(
+            get_computed_role(&s, &arena, id, ARIAVersion::V1_2, false)
+                .role
+                .map(|r| r.name)
+                .as_deref(),
+            Some("region")
+        );
     }
 
     #[test]

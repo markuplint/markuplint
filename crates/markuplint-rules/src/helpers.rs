@@ -1,18 +1,23 @@
+use std::collections::HashMap;
+
 use markuplint_core::mlast::{MLASTAttr, SlotTarget};
 use markuplint_dom::arena::{DomArena, NodeId};
 use markuplint_dom::helpers::{get_attr_node_from_el, get_attr_value, get_attr_value_from_el, has_attr};
 use markuplint_dom::node::{DomNode, ElementData};
 use markuplint_types::check::js_regex::{JsRegex, split_literal};
+use markuplint_types::spec::aria::ARIAVersion;
 use markuplint_types::spec::types::MLMLSpec;
 
 use crate::aria::accname::resolver::rendered_child_nodes;
+use crate::aria::computed_role::{get_computed_role, is_transparent_for_ownership};
+use crate::aria::owns::get_owning_parent_element;
 use crate::aria_check::element_local_name;
 use crate::conditional_block::expand_conditional_blocks;
 use crate::slot_assignment::{get_assigned_nodes, shadow_root_template};
 use crate::slot_content::slot_content;
 use crate::tree_scope::{
     ShadowRootAttachment, TreeRoot, declarative_shadow_root_attachment, decode_or_keep, dom_value, element_by_id_of,
-    is_expression, root_of,
+    has_element_of_unknown_id, is_expression, root_of,
 };
 
 /// If the pattern is wrapped in `/` (e.g. `/^[a-z]+$/i`), it is treated
@@ -52,6 +57,130 @@ pub fn has_mutable_attributes(el: &ElementData) -> bool {
         MLASTAttr::Spread(_) => true,
         MLASTAttr::HTMLAttr(attr) => attr.is_dynamic_value == Some(true) && attr.is_absent != Some(true),
     })
+}
+
+/// TS `isRoleUnknown`: the role of the element is not known until it is rendered. Its `role` attribute has a
+/// value that code gives (`role={props.role}`), a spread attribute (`{...props}`, `v-bind="obj"`, [`MLASTAttr::is_spread`])
+/// comes after its `role` attribute, or it has no `role` attribute but a spread attribute: the spread may carry or
+/// override one.
+///
+/// The computed role takes the code of such a value for a role that does not exist and falls back to the implicit
+/// role, so a rule that judges what the role supports, deprecates or allows would judge the element by a role that it
+/// may not have. That the role is not known is a decision of markuplint, as it does not decide what it cannot know,
+/// and not text of a specification. The same premise is at [`crate::tree_scope::has_element_of_unknown_id`]: a
+/// change to the criterion belongs to both.
+///
+/// An element that has a `role` attribute written in the markup is judged by it when no spread attribute comes
+/// after it: an attribute that a spread brings overrides the one written before it (the later one wins for every
+/// language that has a spread attribute, the order is assumed and is not checked for each language), so
+/// `<div role="button" {...props}>` may have another role, while in `<div {...props} role="button">` the written
+/// role is what the element has. A `role` that the framework does not output (`role={undefined}`,
+/// `MLAttr#isAbsent`) is not found by [`get_attr_node_from_el`], so the element has no role attribute and is
+/// judged by its implicit role. The first `role` attribute is the one that is read, so a second one is not looked
+/// at.
+///
+/// The spread is read from the effective attributes of the element, as the role is, so that both follow a
+/// pretender (`has_spread_attr` of [`ElementData`] reads the attributes that are written on the element itself
+/// and does not, which is why it is not used here).
+#[must_use]
+pub fn is_role_unknown(el: &ElementData) -> bool {
+    let role_index = el.attributes.iter().position(|attr| match attr {
+        MLASTAttr::HTMLAttr(html_attr) => {
+            !markuplint_dom::helpers::is_absent(html_attr)
+                && markuplint_dom::helpers::is_named_by(el, html_attr, "role")
+        }
+        MLASTAttr::Spread(_) => false,
+    });
+    if let Some(MLASTAttr::HTMLAttr(role_attr)) = role_index.map(|index| &el.attributes[index])
+        && role_attr.is_dynamic_value == Some(true)
+    {
+        return true;
+    }
+    el.attributes
+        .iter()
+        .enumerate()
+        .any(|(index, attr)| role_index.is_none_or(|role| index > role) && attr.is_spread())
+}
+
+/// TS `mayMatchContextRole`: whether the ancestors of the element may satisfy a "Required Accessibility Parent
+/// Role" when the role of an ancestor is not known ([`is_role_unknown`]): that ancestor may be an element that only
+/// passes the context through (`presentation`, `none`, and `generic` in ARIA 1.3), or the role that the condition
+/// asks for next, and both are tried. An ancestor whose role the markup tells is compared as `matches_context_role`
+/// of the computed role compares it, and a condition is a chain (`"menu > group"`), so an unknown ancestor above a
+/// `group` may still be the `menu`.
+///
+/// It mirrors `matches_context_role` (the chain and the owner that `aria-owns` resolves, else the parent of the
+/// accessibility tree), which cannot take an element that is not known: a change to one belongs to the other. With
+/// no ancestor of an unknown role it returns what `matches_context_role` returns.
+///
+/// `conditions` are the required parent roles, each a chain separated by ` > ` (`requiredContextRole`).
+#[must_use]
+pub fn may_match_context_role(
+    arena: &DomArena,
+    spec: &MLMLSpec,
+    node_id: NodeId,
+    conditions: &[String],
+    version: ARIAVersion,
+) -> bool {
+    let parent = get_owning_parent_element(arena, spec, node_id, version);
+    conditions.iter().any(|condition| {
+        let mut chain: Vec<&str> = condition.split(" > ").collect();
+        chain.reverse();
+        may_match_chain(arena, spec, &chain, parent, version)
+    })
+}
+
+fn may_match_chain(
+    arena: &DomArena,
+    spec: &MLMLSpec,
+    chain: &[&str],
+    parent: Option<NodeId>,
+    version: ARIAVersion,
+) -> bool {
+    // An unknown ancestor branches in two (it passes the context through, or it is the next role of the chain), and
+    // branches that meet at the same element with the same entries left give the same answer: each pair is answered
+    // once, so a run of unknown ancestors costs the length of the run times the chain.
+    let mut branched: HashMap<(NodeId, usize), bool> = HashMap::new();
+    walk_context_chain(arena, spec, chain, 0, parent, version, &mut branched)
+}
+
+fn walk_context_chain(
+    arena: &DomArena,
+    spec: &MLMLSpec,
+    chain: &[&str],
+    next: usize,
+    from: Option<NodeId>,
+    version: ARIAVersion,
+    branched: &mut HashMap<(NodeId, usize), bool>,
+) -> bool {
+    let mut index = next;
+    let mut current = from;
+    while index < chain.len() {
+        let Some(id) = current else {
+            return false;
+        };
+        let above = get_owning_parent_element(arena, spec, id, version);
+        if arena.get(id).and_then(DomNode::as_element).is_some_and(is_role_unknown) {
+            if let Some(&known) = branched.get(&(id, index)) {
+                return known;
+            }
+            let answer = walk_context_chain(arena, spec, chain, index, above, version, branched)
+                || walk_context_chain(arena, spec, chain, index + 1, above, version, branched);
+            branched.insert((id, index), answer);
+            return answer;
+        }
+        // `matches_context_role` computes the role of an ancestor as a single node, in every version
+        let role = get_computed_role(spec, arena, id, version, true).role;
+        let role_name = role.as_ref().map(|role| role.name.as_str());
+        if !role_name.is_some_and(|name| is_transparent_for_ownership(name, version)) {
+            if Some(chain[index]) != role_name {
+                return false;
+            }
+            index += 1;
+        }
+        current = above;
+    }
+    true
 }
 
 /// TS `el.hasMutableChildren(attr)`: below the element there is a preprocessor block without a
@@ -149,6 +278,11 @@ pub fn accname_may_be_mutable(arena: &DomArena, spec: &MLMLSpec, node_id: NodeId
 /// the `contents` of the element, of a pretended descendant among the children the name
 /// computation traverses, of an element `aria-labelledby` refers to, or of the owned label.
 ///
+/// A token of `aria-labelledby` that refers to no element may refer to one whose `id` is not known until it is
+/// rendered (`<h2 id={x}>`, [`has_element_of_unknown_id`]); `no-refer-to-non-existent-id` reports no reference in such
+/// a tree for the same reason. An element whose attribute the framework does not output (`id={undefined}`) has no id
+/// to be referred to.
+///
 /// A component with an unknown entry and a static name (`aria-label`, static text) is still
 /// decidable, so call this only once the static name has been computed and found empty.
 pub fn accname_may_come_from_unknown_content(arena: &DomArena, spec: &MLMLSpec, node_id: NodeId) -> bool {
@@ -163,9 +297,16 @@ pub fn accname_may_come_from_unknown_content(arena: &DomArena, spec: &MLMLSpec, 
         .and_then(|el| get_attr_node_from_el(el, "aria-labelledby"))
     {
         let root = root_of(arena, spec, node_id);
-        let found = markuplint_dom::helpers::attr_value(labelledby)
-            .split_whitespace()
-            .filter_map(|id| {
+        let value = markuplint_dom::helpers::attr_value(labelledby);
+        // JS `value.trim().split(/\s+/)`: a value of nothing but whitespace is one token, the empty string, which
+        // refers to nothing
+        let mut tokens: Vec<&str> = value.split_whitespace().collect();
+        if tokens.is_empty() && !value.is_empty() {
+            tokens.push("");
+        }
+        let referenced: Vec<Option<NodeId>> = tokens
+            .into_iter()
+            .map(|id| {
                 let id = if is_expression(labelledby) {
                     id.to_owned()
                 } else {
@@ -173,8 +314,17 @@ pub fn accname_may_come_from_unknown_content(arena: &DomArena, spec: &MLMLSpec, 
                 };
                 element_by_id_of(arena, spec, root, &id)
             })
-            .any(|target| has_unknown_content(arena, spec, target));
-        if found {
+            .collect();
+        if referenced
+            .iter()
+            .flatten()
+            .any(|&target| has_unknown_content(arena, spec, target))
+        {
+            return true;
+        }
+        // A token that refers to no element may refer to one whose `id` is not known until it is rendered
+        // (`<h2 id={x}>`): such an element is not found by its id, and what it renders is not known either
+        if referenced.iter().any(Option::is_none) && has_element_of_unknown_id(arena, spec, node_id) {
             return true;
         }
     }
@@ -446,5 +596,253 @@ mod tests {
     fn positive_lookahead() {
         assert!(pattern_match("foobar", "/foo(?=bar)/"));
         assert!(!pattern_match("foobaz", "/foo(?=bar)/"));
+    }
+}
+
+/// Tests of the helpers that read what is not known until it is rendered: [`is_role_unknown`] and
+/// [`may_match_context_role`]. They port the unit tests of `helpers.spec.ts` (`isRoleUnknown`, `mayMatchContextRole`),
+/// which have no ID, as the DOM of TS is built there by a framework parser and here by the MLAST that the parser sends.
+#[cfg(test)]
+mod unknown_tests {
+    use markuplint_core::mlast::MLASTSpreadAttr;
+    use markuplint_dom::arena::DomArena;
+    use markuplint_types::spec::aria::ARIAVersion;
+
+    use super::*;
+
+    /// One attribute of the element of [`div_of`].
+    enum Attr {
+        /// `name="value"` with what the TS engine worked out about it (`isDynamicValue`, `isSpread`, `isAbsent`).
+        Html(&'static str, &'static str, serde_json::Value),
+        /// A spread of the syntax tree (`{...props}`).
+        Spread,
+    }
+
+    /// The `div` that a framework parser sends, with `attrs` in this order.
+    fn div_of(attrs: &[Attr]) -> DomArena {
+        let html_attrs: Vec<(&str, &str, serde_json::Value)> = attrs
+            .iter()
+            .filter_map(|attr| match attr {
+                Attr::Html(name, value, resolved) => Some((*name, *value, resolved.clone())),
+                Attr::Spread => None,
+            })
+            .collect();
+        let mut mlast: serde_json::Value = serde_json::from_str(&crate::test_util::mlast_element(
+            "div",
+            &html_attrs,
+            &serde_json::json!({}),
+        ))
+        .unwrap();
+        let mut written = mlast["nodeList"][0]["attributes"]
+            .as_array()
+            .unwrap()
+            .clone()
+            .into_iter();
+        let ordered: Vec<serde_json::Value> = attrs
+            .iter()
+            .map(|attr| match attr {
+                Attr::Html(..) => written.next().unwrap(),
+                Attr::Spread => serde_json::json!({
+                    "type": "spread", "uuid": "spread", "raw": "{...props}", "offset": 5, "line": 1, "col": 6,
+                    "nodeName": "#spread"
+                }),
+            })
+            .collect();
+        mlast["nodeList"][0]["attributes"] = ordered.into();
+        markuplint_dom::builder::build_from_json(&mlast.to_string()).unwrap()
+    }
+
+    fn role_unknown(attrs: &[Attr]) -> bool {
+        let arena = div_of(attrs);
+        let (_, el) = arena.elements().next().unwrap();
+        is_role_unknown(el)
+    }
+
+    fn none() -> serde_json::Value {
+        serde_json::json!({})
+    }
+
+    fn absent() -> serde_json::Value {
+        serde_json::json!({ "isDynamicValue": true, "isAbsent": true })
+    }
+
+    /// TS `isRoleUnknown` is true for a role that code gives, and for a spread attribute without a role.
+    #[test]
+    fn is_role_unknown_for_code_and_for_a_spread_without_a_role() {
+        let code = serde_json::json!({ "isDynamicValue": true });
+        assert!(role_unknown(&[Attr::Html("role", "props.role", code)]));
+        assert!(role_unknown(&[Attr::Spread]));
+    }
+
+    /// TS `isRoleUnknown` is false for a role that the markup tells, and for a role that the framework does not
+    /// output.
+    #[test]
+    fn is_not_role_unknown_for_a_role_the_markup_tells() {
+        assert!(!role_unknown(&[]));
+        assert!(!role_unknown(&[Attr::Html("role", "button", none())]));
+        assert!(!role_unknown(&[Attr::Spread, Attr::Html("role", "button", none())]));
+        assert!(!role_unknown(&[Attr::Html("role", "undefined", absent())]));
+    }
+
+    /// TS `isRoleUnknown` is true for a spread attribute after the role attribute, and false before it.
+    #[test]
+    fn is_role_unknown_for_a_spread_after_the_role_only() {
+        assert!(role_unknown(&[Attr::Html("role", "button", none()), Attr::Spread]));
+        assert!(!role_unknown(&[Attr::Spread, Attr::Html("role", "button", none())]));
+    }
+
+    /// TS `isRoleUnknown` scans the whole attribute list where the role is not output: that attribute does not stand
+    /// for the `role` attribute.
+    #[test]
+    fn is_role_unknown_scans_the_whole_list_where_the_role_is_not_output() {
+        assert!(role_unknown(&[Attr::Html("role", "undefined", absent()), Attr::Spread]));
+        assert!(role_unknown(&[Attr::Spread, Attr::Html("role", "undefined", absent())]));
+    }
+
+    /// TS `isRoleUnknown` reads a binding and an object that Vue binds: a directive that the spec says is a spread
+    /// (`v-bind="obj"`, `isSpread`) is one.
+    #[test]
+    fn is_role_unknown_reads_a_directive_that_is_a_spread() {
+        let spread = || serde_json::json!({ "isDirective": true, "isSpread": true, "isDynamicValue": true });
+        let bound = serde_json::json!({ "isDirective": true, "potentialName": "role", "isDynamicValue": true });
+        assert!(role_unknown(&[Attr::Html(":role", "r", bound)]));
+        assert!(role_unknown(&[Attr::Html("v-bind", "props", spread())]));
+        assert!(role_unknown(&[
+            Attr::Html("role", "button", none()),
+            Attr::Html("v-bind", "props", spread())
+        ]));
+        assert!(!role_unknown(&[
+            Attr::Html("v-bind", "props", spread()),
+            Attr::Html("role", "button", none())
+        ]));
+        let id = serde_json::json!({ "isDirective": true, "potentialName": "id", "isDynamicValue": true });
+        assert!(!role_unknown(&[
+            Attr::Html("role", "button", none()),
+            Attr::Html(":id", "a", id)
+        ]));
+    }
+
+    /// The element has a spread attribute as TS `MLElement#hasSpreadAttr` has it: a directive that the spec says is
+    /// one is among them.
+    #[test]
+    fn v6_has_spread_attr_reads_a_directive_that_is_a_spread() {
+        let arena = div_of(&[Attr::Html(
+            "v-bind",
+            "props",
+            serde_json::json!({ "isDirective": true, "isSpread": true }),
+        )]);
+        assert!(arena.elements().next().unwrap().1.has_spread_attr);
+        let arena = div_of(&[Attr::Html("role", "button", none())]);
+        assert!(!arena.elements().next().unwrap().1.has_spread_attr);
+    }
+
+    fn element_with_role(arena: &DomArena, role: &str) -> markuplint_dom::arena::NodeId {
+        arena
+            .elements()
+            .find(|(_, el)| get_attr_value_from_el(el, "role") == Some(role))
+            .map(|(id, _)| id)
+            .unwrap()
+    }
+
+    /// TS `mayMatchContextRole` agrees with `getComputedRole` where no ancestor has a role that is not known.
+    #[test]
+    fn may_match_context_role_agrees_with_the_computed_role_where_no_role_is_unknown() {
+        let sources = [
+            r#"<div><div role="listitem"></div></div>"#,
+            r#"<div role="list"><div role="listitem"></div></div>"#,
+            r#"<div role="list"><div role="presentation"><div role="listitem"></div></div></div>"#,
+            r#"<div role="list"><div><div role="listitem"></div></div></div>"#,
+            r#"<div role="group"><div role="menuitem"></div></div>"#,
+            r#"<div role="menu"><div role="group"><div role="menuitem"></div></div></div>"#,
+            r#"<div role="menubar"><div role="menuitem"></div></div>"#,
+            r#"<div role="list"><div role="group"><div role="menuitem"></div></div></div>"#,
+            r#"<div role="listbox"><div role="group"><div role="option"></div></div></div>"#,
+            r#"<div role="tree"><div role="treeitem"></div></div>"#,
+        ];
+        let spec = crate::test_util::spec();
+        for version in [ARIAVersion::V1_1, ARIAVersion::V1_2, ARIAVersion::V1_3] {
+            let roles = &markuplint_types::spec::aria::get_aria_spec(&spec, version).roles;
+            let mut answers = std::collections::HashSet::new();
+            for source in sources {
+                let arena = crate::test_util::html_arena(source);
+                for (id, el) in arena.elements() {
+                    let Some(role) = get_attr_value_from_el(el, "role") else {
+                        continue;
+                    };
+                    let required = roles
+                        .iter()
+                        .find(|r| r.name == role)
+                        .map_or(&[][..], |r| r.required_accessibility_parent_role.as_slice());
+                    if required.is_empty() {
+                        continue;
+                    }
+                    let accepted = get_computed_role(&spec, &arena, id, version, false).role.is_some();
+                    assert_eq!(
+                        may_match_context_role(&arena, &spec, id, required, version),
+                        accepted,
+                        "{source} at ARIA {version:?}"
+                    );
+                    answers.insert(accepted);
+                }
+            }
+            // The trees give both answers, so that all-true or all-false cannot pass
+            assert_eq!(answers.len(), 2, "ARIA {version:?}");
+        }
+    }
+
+    /// TS `[require-parent-role-017]`: an unknown ancestor above a `group` may be the `menu` of the chain
+    /// `menu > group`, and it is one only where its role is not known.
+    #[test]
+    fn v6_may_match_context_role_walks_a_chain_past_an_unknown_ancestor() {
+        let spec = crate::test_util::spec();
+        let conditions = vec!["menu > group".to_owned()];
+        let mut arena = crate::test_util::html_arena(
+            r#"<div role="button"><div id="u"><div role="group"><div role="menuitem"></div></div></div></div>"#,
+        );
+        let item = element_with_role(&arena, "menuitem");
+        assert!(!may_match_context_role(
+            &arena,
+            &spec,
+            item,
+            &conditions,
+            ARIAVersion::V1_3
+        ));
+        let unknown = arena
+            .elements()
+            .find(|(_, el)| get_attr_value_from_el(el, "id") == Some("u"))
+            .map(|(id, _)| id)
+            .unwrap();
+        arena
+            .element_mut(unknown)
+            .unwrap()
+            .attributes
+            .push(MLASTAttr::Spread(MLASTSpreadAttr {
+                uuid: "s".to_owned(),
+                raw: "{...props}".to_owned(),
+                offset: 0,
+                line: 1,
+                col: 1,
+                node_name: "#spread".to_owned(),
+            }));
+        // The `group` has no `menu` above it, but the element above the `group` may be one
+        assert!(may_match_context_role(
+            &arena,
+            &spec,
+            item,
+            &conditions,
+            ARIAVersion::V1_3
+        ));
+        // Where the unknown element and the `button` above it are both in the way, the `menu` is missing
+        let arena = crate::test_util::html_arena(
+            r#"<div role="button"><div role="group"><div role="menuitem"></div></div></div>"#,
+        );
+        let item = element_with_role(&arena, "menuitem");
+        assert!(!may_match_context_role(
+            &arena,
+            &spec,
+            item,
+            &conditions,
+            ARIAVersion::V1_3
+        ));
     }
 }

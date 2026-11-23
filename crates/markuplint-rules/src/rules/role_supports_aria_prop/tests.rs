@@ -8,6 +8,7 @@
 //!   v6_role_supports_aria_prop_003  — Rust-only: implicit roles, including `generic`, and an invalid `role`
 //!   v6_role_supports_aria_prop_004  — Rust-only: no computed role, no check
 //!   v6_role_supports_aria_prop_005  — Rust-only: severity and `rules: false`
+//!   v6_role_supports_aria_prop_006  — Rust-only: an element whose role is not known until it is rendered is not judged
 
 use crate::lint::{LintConfig, lint};
 use crate::violation::{Severity, Violation};
@@ -223,4 +224,50 @@ fn v6_role_supports_aria_prop_005() {
         serde_json::json!(false),
     );
     assert_violations(&violations, &[]);
+}
+
+/// The MLAST of a `div` with these attributes, linted by `role-supports-aria-prop`: `(name, value, what the TS engine worked out)`.
+fn lint_div(attrs: &[(&str, &str, serde_json::Value)]) -> Vec<crate::test_util::Brief> {
+    crate::test_util::lint_mlast_brief(
+        "role-supports-aria-prop",
+        &crate::test_util::mlast_element("div", attrs, &serde_json::json!({})),
+        serde_json::json!({ "rules": { "role-supports-aria-prop": true } }),
+    )
+}
+
+fn code() -> serde_json::Value {
+    serde_json::json!({ "isDynamicValue": true })
+}
+
+fn spread() -> serde_json::Value {
+    serde_json::json!({ "isDirective": true, "isSpread": true, "isDynamicValue": true })
+}
+
+fn plain() -> serde_json::Value {
+    serde_json::json!({})
+}
+
+/// Rust-only: the role is not known where code gives it, where a spread attribute comes after it, or where there is a
+/// spread and no `role` attribute (TS `isRoleUnknown`), so the element is not judged by the role it falls back to.
+#[test]
+fn v6_role_supports_aria_prop_006() {
+    let pressed = || ("aria-pressed", "true", plain());
+    assert_eq!(lint_div(&[("role", "props.role", code()), pressed()]), []);
+    assert_eq!(lint_div(&[pressed(), ("v-bind", "props", spread())]), []);
+    assert_eq!(
+        lint_div(&[("role", "heading", plain()), ("v-bind", "props", spread()), pressed()]),
+        []
+    );
+    // A role that the markup tells, with no spread after it, is judged
+    for attrs in [
+        vec![("role", "heading", plain()), pressed()],
+        vec![("v-bind", "props", spread()), ("role", "heading", plain()), pressed()],
+    ] {
+        let violations = lint_div(&attrs);
+        assert_eq!(violations.len(), 1, "{violations:?}");
+        assert_eq!(
+            violations[0].3,
+            "The \"aria-pressed\" ARIA state is disallowed on the \"heading\" role"
+        );
+    }
 }

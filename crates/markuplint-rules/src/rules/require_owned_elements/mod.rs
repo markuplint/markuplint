@@ -41,7 +41,7 @@ use markuplint_types::spec::types::MLMLSpec;
 use crate::aria::computed_role::{ResolvedRole, get_computed_role};
 use crate::aria::owns::{has_preprocessor_block, resolve_aria_owns_children};
 use crate::aria_check::{ElementContext, ElementGate, element_local_name, is_js_whitespace, walk_elements};
-use crate::helpers::{has_mutable_attributes, has_mutable_children_with};
+use crate::helpers::{has_mutable_attributes, has_mutable_children_with, is_role_unknown};
 use crate::rule::{Rule, RuleConfigSet};
 use crate::slot_assignment::{composed_parent_element, get_assigned_nodes, is_slot_element, shadow_root_template};
 use crate::slot_content::{content_owner, expand_children, is_content_mutable, slot_content};
@@ -66,8 +66,11 @@ impl Rule for RequireOwnedElements {
             ElementGate::Supported,
             |_| (),
             |(), ctx, violations| {
-                let role = get_computed_role(ctx.spec, ctx.arena, ctx.node_id, ctx.version, false).role;
-                violations.extend(check(ctx, ctx.node_id, role.as_ref()));
+                // What the element owns is judged by its role, which is not known until it is rendered
+                if !is_role_unknown(ctx.el) {
+                    let role = get_computed_role(ctx.spec, ctx.arena, ctx.node_id, ctx.version, false).role;
+                    violations.extend(check(ctx, ctx.node_id, role.as_ref()));
+                }
                 // The slot wrapper of a pretended component is not in the document, so the walk
                 // never reaches it, yet it owns the children given to the component. The
                 // component places it, so no context is asked of its parent.

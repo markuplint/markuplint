@@ -277,6 +277,50 @@ fn ids_of(arena: &DomArena) -> std::sync::Arc<HashMap<String, Vec<NodeId>>> {
     })
 }
 
+/// TS `isUnknownValueAttr` (`ml-spec/src/algorithm/dom/has-unknown-id.ts`): the attribute is there and its
+/// value is not known until it is rendered (`aria-labelledby={id}`). An attribute that the framework does not
+/// output (`id={undefined}`) is not found by [`get_attr_node_from_el`], so it is not counted either.
+#[must_use]
+pub fn is_unknown_value_attr(attr: Option<&MLASTHTMLAttr>) -> bool {
+    attr.is_some_and(|attr| attr.is_dynamic_value == Some(true))
+}
+
+/// TS `hasElementOfUnknownId` (`ml-spec/src/algorithm/dom/has-unknown-id.ts`): whether the tree that the element
+/// is in (the document, the content of a `template` element or a shadow root, each a tree of its own) has an
+/// element whose `id` is not known until it is rendered (`<h2 id={x}>`). An element whose `id` is not known is not
+/// found by its id, and a reference to an id that no element has may be a reference to it. A rule that reports a
+/// reference to nothing, or an algorithm that decides from the element that a reference finds, takes such a tree to
+/// be undecidable instead.
+///
+/// That is a decision of markuplint, as it does not decide what it cannot know, and not text of a specification:
+/// the specifications define an id and an id reference, and not an id that is not known yet.
+///
+/// `false` for an element that is in no tree ([`TreeRoot::NoTree`]). The answer is the same for every element of
+/// the tree, so the trees that have such an element are found once per arena.
+///
+/// @see <https://html.spec.whatwg.org/multipage/dom.html#the-id-attribute>
+#[must_use]
+pub fn has_element_of_unknown_id(arena: &DomArena, spec: &MLMLSpec, node_id: NodeId) -> bool {
+    let root = root_of(arena, spec, node_id);
+    if matches!(root, TreeRoot::NoTree(_)) {
+        return false;
+    }
+    roots_of_unknown_id(arena, spec).contains(&root)
+}
+
+/// The trees that have an element whose `id` is not known ([`has_element_of_unknown_id`]), computed once per
+/// arena.
+fn roots_of_unknown_id(arena: &DomArena, spec: &MLMLSpec) -> std::sync::Arc<std::collections::HashSet<TreeRoot>> {
+    arena.memoize("roots-of-unknown-id", WHOLE_ARENA, || {
+        arena
+            .elements()
+            .filter(|(_, el)| is_unknown_value_attr(get_attr_node_from_el(el, "id")))
+            .map(|(node_id, _)| root_of(arena, spec, node_id))
+            .filter(|root| !matches!(root, TreeRoot::NoTree(_)))
+            .collect()
+    })
+}
+
 /// TS `MLAttr#isExpressionValue`: the value is written as code, a string with no character reference
 /// in it.
 #[must_use]

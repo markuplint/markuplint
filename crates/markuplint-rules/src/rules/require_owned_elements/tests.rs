@@ -34,6 +34,7 @@
 //!   require-owned-elements-026  — v6_require_owned_elements_021 (a `<slot>` for the JSX expression)
 //!   require-owned-elements-027  — v6_require_owned_elements_022
 //!   v6_require_owned_elements_023  — Rust-only: a child placed in a slot wrapper is resolved on its own
+//!   v6_require_owned_elements_024  — Rust-only: an element whose role is not known until it is rendered does not need what its implicit role needs
 //!
 //!   require-owned-elements-087 and -006 — v6_require_owned_elements_issue_4744_001 (the Vue
 //!   parser's MLAST by hand; the specs of TS run on this engine through `yarn test:rust-rules` as well)
@@ -573,4 +574,36 @@ fn v6_require_owned_elements_issue_4744_001() {
     assert_eq!(lint(&of("p", Some("if"), None)), []);
     assert_eq!(lint(&of("p", None, Some(Some("header")))), []);
     assert_eq!(lint(&of("p", None, Some(None))), []);
+}
+
+/// The MLAST of a `div` with these attributes, linted by `require-owned-elements`: `(name, value, what the TS engine worked out)`.
+fn lint_div(attrs: &[(&str, &str, serde_json::Value)]) -> Vec<crate::test_util::Brief> {
+    crate::test_util::lint_mlast_brief(
+        "require-owned-elements",
+        &crate::test_util::mlast_element("div", attrs, &serde_json::json!({})),
+        serde_json::json!({ "rules": { "require-owned-elements": true } }),
+    )
+}
+
+fn code() -> serde_json::Value {
+    serde_json::json!({ "isDynamicValue": true })
+}
+
+fn spread() -> serde_json::Value {
+    serde_json::json!({ "isDirective": true, "isSpread": true, "isDynamicValue": true })
+}
+
+fn plain() -> serde_json::Value {
+    serde_json::json!({})
+}
+
+/// Rust-only: what the element owns is judged by its role, which is not known where code gives it or a spread attribute
+/// after it may override it, so the element does not need what its role needs.
+#[test]
+fn v6_require_owned_elements_024() {
+    let list = || ("role", "list", plain());
+    assert_eq!(lint_div(&[list()]).len(), 1);
+    assert_eq!(lint_div(&[("role", "props.role", code())]), []);
+    assert_eq!(lint_div(&[list(), ("v-bind", "props", spread())]), []);
+    assert_eq!(lint_div(&[("v-bind", "props", spread()), list()]).len(), 1);
 }

@@ -8,6 +8,7 @@
 //!   require-accessible-name-061         — v6_require_accessible_name_002
 //!   require-accessible-name-079..015 — v6_require_accessible_name_003..017
 //!   (Rust-only) v6_require_accessible_name_018 — an element with a dynamic attribute is skipped (TS `accnameMayBeMutable`)
+//!   (Rust-only) v6_require_accessible_name_019 — a reference may be to an element whose id is not known until it is rendered
 
 use super::*;
 use crate::aria::may_be_focusable::tests::make_arena;
@@ -451,4 +452,33 @@ fn v6_require_accessible_name_018() {
         ),
         []
     );
+}
+
+/// Rust-only: a token of `aria-labelledby` that refers to no element may refer to an element whose `id` is not known
+/// until it is rendered (`<h2 id={x}>`), in the tree of the element (TS `accnameMayComeFromUnknownContent`).
+#[test]
+fn v6_require_accessible_name_019() {
+    let lint = |html: &str, dynamic: Option<&str>| {
+        let mut arena = crate::test_util::html_arena(html);
+        if let Some(id) = dynamic {
+            crate::test_util::make_id_dynamic(&mut arena, id);
+        }
+        crate::test_util::lint_arena_brief(
+            "require-accessible-name",
+            &arena,
+            serde_json::json!({ "rules": { "require-accessible-name": true } }),
+        )
+    };
+    let html = r#"<h2 id="h">Q</h2><button aria-labelledby="t"></button>"#;
+    assert_eq!(lint(html, None).len(), 1);
+    assert_eq!(lint(html, Some("h")), []);
+    // A list in which a token is known and another refers to nothing
+    let html = r#"<h2 id="h">Q</h2><i id="e"></i><button aria-labelledby="e t"></button>"#;
+    assert_eq!(lint(html, None).len(), 1);
+    assert_eq!(lint(html, Some("h")), []);
+    // The content of a `template` element is a tree of its own
+    let html = r#"<div><template><h2 id="h">Q</h2></template></div><button aria-labelledby="t"></button>"#;
+    assert_eq!(lint(html, Some("h")).len(), 1);
+    let html = r#"<div><template><h2 id="h">Q</h2><button aria-labelledby="t"></button></template></div>"#;
+    assert_eq!(lint(html, Some("h")), []);
 }

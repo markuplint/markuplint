@@ -23,6 +23,59 @@ pub(crate) fn html_arena(html: &str) -> DomArena {
     markuplint_dom::html_builder::build_from_html_arena(html, &parser_arena, !as_doc)
 }
 
+/// Makes the `id` of the element whose `id` is `id` not known until it is rendered (`<h2 id={x}>`), as the TS engine
+/// does for the attribute of a framework parser's AST: its value is code that is not a literal.
+pub(crate) fn make_id_dynamic(arena: &mut DomArena, id: &str) {
+    let target = arena
+        .elements()
+        .find(|(_, el)| markuplint_dom::helpers::get_attr_value_from_el(el, "id") == Some(id))
+        .map(|(node_id, _)| node_id)
+        .unwrap_or_else(|| panic!("no element has the id {id}"));
+    for attr in &mut arena.element_mut(target).unwrap().attributes {
+        if let markuplint_core::mlast::MLASTAttr::HTMLAttr(html_attr) = attr
+            && markuplint_dom::helpers::attr_name(html_attr) == "id"
+        {
+            html_attr.is_dynamic_value = Some(true);
+            html_attr.is_expression_value = Some(true);
+        }
+    }
+}
+
+/// Puts a spread attribute (`{...props}`) of the syntax tree on the element, at `index` of its attributes.
+pub(crate) fn insert_spread_attr(arena: &mut DomArena, el: markuplint_dom::arena::NodeId, index: usize) {
+    let spread = markuplint_core::mlast::MLASTAttr::Spread(markuplint_core::mlast::MLASTSpreadAttr {
+        uuid: "spread".to_owned(),
+        raw: "{...props}".to_owned(),
+        offset: 0,
+        line: 1,
+        col: 1,
+        node_name: "#spread".to_owned(),
+    });
+    arena.element_mut(el).unwrap().attributes.insert(index, spread);
+}
+
+/// The first element of the arena with the attribute `name` of this `value`.
+pub(crate) fn element_with_attr(arena: &DomArena, name: &str, value: &str) -> markuplint_dom::arena::NodeId {
+    arena
+        .elements()
+        .find(|(_, el)| markuplint_dom::helpers::get_attr_value_from_el(el, name) == Some(value))
+        .map(|(id, _)| id)
+        .unwrap_or_else(|| panic!("no element has {name}=\"{value}\""))
+}
+
+/// [`lint_brief`] for an arena that a test has changed after it was built.
+pub(crate) fn lint_arena_brief(rule_id: &str, arena: &DomArena, config: serde_json::Value) -> Vec<Brief> {
+    let config: LintConfig = serde_json::from_value(config).unwrap();
+    lint(arena, &spec(), &config)
+        .violations
+        .into_iter()
+        .map(|v| {
+            assert_eq!(v.rule_id, rule_id, "{v:?}");
+            (v.severity, v.line, v.col, v.message, v.raw)
+        })
+        .collect()
+}
+
 /// Lints `html` with `config` (a `LintConfig` as JSON: `rules`, `nodeRules`,
 /// `pretenders`, ...).
 pub(crate) fn lint_html(html: &str, config: serde_json::Value) -> Vec<Violation> {

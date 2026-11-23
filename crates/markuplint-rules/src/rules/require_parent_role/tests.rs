@@ -10,6 +10,7 @@
 //!   v6_require_parent_role_005  — Rust-only: tokens are matched case-sensitively against the core roles only
 //!   v6_require_parent_role_006  — Rust-only: severity, multi-line position and `rules: false`
 //!   v6_require_parent_role_007  — Rust-only: `listitem` outside a list, explicit on `div` and on `li`; not at a fragment root
+//!   v6_require_parent_role_008  — Rust-only: an element whose role may be overridden is skipped, and an ancestor whose role is not known may be the required parent
 
 use crate::lint::{LintConfig, lint};
 use crate::violation::{Severity, Violation};
@@ -220,4 +221,38 @@ fn v6_require_parent_role_007() {
         &[],
     );
     assert_violations(&run_rule(r#"<li role="listitem">x</li>"#, serde_json::json!(true)), &[]);
+}
+
+/// Rust-only: `listitem` in a `div` is reported; it is not where a spread attribute after its `role` may override it,
+/// nor where the `div` is an element whose role is not known until it is rendered (it may be the list).
+#[test]
+fn v6_require_parent_role_008() {
+    let lint = |arena: &markuplint_dom::arena::DomArena| {
+        crate::test_util::lint_arena_brief(
+            "require-parent-role",
+            arena,
+            serde_json::json!({ "rules": { "require-parent-role": true } }),
+        )
+    };
+    let html = r#"<div id="p"><div id="c" role="listitem">a</div></div>"#;
+    let arena = crate::test_util::html_arena(html);
+    assert_eq!(lint(&arena).len(), 1);
+
+    // A spread attribute after the role of the element itself
+    let mut arena = crate::test_util::html_arena(html);
+    let child = crate::test_util::element_with_attr(&arena, "id", "c");
+    crate::test_util::insert_spread_attr(&mut arena, child, 2);
+    assert_eq!(lint(&arena), []);
+
+    // A spread attribute before it does not override it
+    let mut arena = crate::test_util::html_arena(html);
+    let child = crate::test_util::element_with_attr(&arena, "id", "c");
+    crate::test_util::insert_spread_attr(&mut arena, child, 0);
+    assert_eq!(lint(&arena).len(), 1);
+
+    // A spread attribute on the parent: it may be the list
+    let mut arena = crate::test_util::html_arena(html);
+    let parent = crate::test_util::element_with_attr(&arena, "id", "p");
+    crate::test_util::insert_spread_attr(&mut arena, parent, 1);
+    assert_eq!(lint(&arena), []);
 }
