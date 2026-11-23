@@ -1,5 +1,5 @@
 import { mlRuleTest } from 'markuplint';
-import { test, expect, describe } from 'vitest';
+import { test, expect } from 'vitest';
 
 import rule from './index.js';
 
@@ -109,31 +109,29 @@ test('[no-pseudo-list-invalid-006] emoji (surrogate pair character)', async () =
 	).toBe(3);
 });
 
-describe('Issues', () => {
-	test('[no-pseudo-list-issue-957] #957', async () => {
-		expect(
-			(
-				await mlRuleTest(rule, '<p>{count} * 2 = {doubled}</p>', {
-					parser: {
-						'.*': '@markuplint/svelte-parser',
-					},
-				})
-			).violations.length,
-		).toBe(0);
+test('[no-pseudo-list-issue-957] #957', async () => {
+	expect(
+		(
+			await mlRuleTest(rule, '<p>{count} * 2 = {doubled}</p>', {
+				parser: {
+					'.*': '@markuplint/svelte-parser',
+				},
+			})
+		).violations.length,
+	).toBe(0);
 
-		expect(
-			(
-				await mlRuleTest(rule, '<p>{count} * 2 = {doubled}</p>', {
-					rule: {
-						options: {
-							prevCodeBlock: true,
-						},
+	expect(
+		(
+			await mlRuleTest(rule, '<p>{count} * 2 = {doubled}</p>', {
+				rule: {
+					options: {
+						prevCodeBlock: true,
 					},
-					parser: {
-						'.*': '@markuplint/svelte-parser',
-					},
-				})
-			).violations.length,
-		).toBe(1);
-	});
+				},
+				parser: {
+					'.*': '@markuplint/svelte-parser',
+				},
+			})
+		).violations.length,
+	).toBe(1);
 });

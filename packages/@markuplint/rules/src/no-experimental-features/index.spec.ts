@@ -40,18 +40,16 @@ describe('default severity', () => {
 	});
 });
 
-describe('pretender gap (issue #3740)', () => {
-	test('[no-experimental-features-issue-3740-001] web-component pretendered to experimental HTML reports', async () => {
-		const { violations } = await mlRuleTest(rule, '<x-iframe credentialless></x-iframe>', {
-			pretenders: [{ selector: 'x-iframe', as: { element: 'iframe', inheritAttrs: true } }],
-			rule: true,
-		});
-		expect(violations.length).toBe(1);
-		expect(violations[0]?.severity).toBe('warning');
-		expect(violations[0]?.message).toContain('"credentialless"');
-		expect(violations[0]?.message).toContain('experimental');
-		expect(violations[0]?.raw).toBe('credentialless');
+test('[no-experimental-features-issue-3740-001] web-component pretendered to experimental HTML reports', async () => {
+	const { violations } = await mlRuleTest(rule, '<x-iframe credentialless></x-iframe>', {
+		pretenders: [{ selector: 'x-iframe', as: { element: 'iframe', inheritAttrs: true } }],
+		rule: true,
 	});
+	expect(violations.length).toBe(1);
+	expect(violations[0]?.severity).toBe('warning');
+	expect(violations[0]?.message).toContain('"credentialless"');
+	expect(violations[0]?.message).toContain('experimental');
+	expect(violations[0]?.raw).toBe('credentialless');
 });
 
 describe('attribute name case', () => {

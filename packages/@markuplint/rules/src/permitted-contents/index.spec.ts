@@ -1798,13 +1798,12 @@ dl
 	});
 });
 
-describe('Issues', () => {
-	test('[permitted-contents-issue-396] #396', async () => {
-		expect(
-			(
-				await mlRuleTest(
-					rule,
-					`
+test('[permitted-contents-issue-396] #396', async () => {
+	expect(
+		(
+			await mlRuleTest(
+				rule,
+				`
 					<table>
 						<tbody>
 						<tr>
@@ -1817,17 +1816,17 @@ describe('Issues', () => {
 						</tr>
 						</tbody>
 					</table>`,
-				)
-			).violations,
-		).toStrictEqual([]);
-	});
+			)
+		).violations,
+	).toStrictEqual([]);
+});
 
-	test('[permitted-contents-issue-398] #398', async () => {
-		expect(
-			(
-				await mlRuleTest(
-					rule,
-					`<table>
+test('[permitted-contents-issue-398] #398', async () => {
+	expect(
+		(
+			await mlRuleTest(
+				rule,
+				`<table>
 						<colgroup></colgroup><!-- ← error -->
 						<colgroup><col /></colgroup><!-- ← no errors -->
 						<colgroup span="1"></colgroup><!-- ← no errors -->
@@ -1839,543 +1838,528 @@ describe('Issues', () => {
 							</tr>
 						</tbody>
 					</table>`,
-				)
-			).violations,
-		).toStrictEqual([]);
-	});
+			)
+		).violations,
+	).toStrictEqual([]);
+});
 
-	test('[permitted-contents-issue-491] #491', async () => {
-		expect((await mlRuleTest(rule, '<hgroup><p>HEADING</p></hgroup>')).violations.length).toBe(1);
-		expect((await mlRuleTest(rule, '<hgroup><h1>HEADING</h1></hgroup>')).violations.length).toBe(0);
-		expect((await mlRuleTest(rule, '<hgroup><h2>HEADING</h1></hgroup>')).violations.length).toBe(0);
-		expect(
-			(await mlRuleTest(rule, '<hgroup><p>SUB</p><h1>HEADING</h1><p>SUB</p></hgroup>')).violations.length,
-		).toBe(0);
-	});
+test('[permitted-contents-issue-491] #491', async () => {
+	expect((await mlRuleTest(rule, '<hgroup><p>HEADING</p></hgroup>')).violations.length).toBe(1);
+	expect((await mlRuleTest(rule, '<hgroup><h1>HEADING</h1></hgroup>')).violations.length).toBe(0);
+	expect((await mlRuleTest(rule, '<hgroup><h2>HEADING</h1></hgroup>')).violations.length).toBe(0);
+	expect((await mlRuleTest(rule, '<hgroup><p>SUB</p><h1>HEADING</h1><p>SUB</p></hgroup>')).violations.length).toBe(0);
+});
 
-	test('[permitted-contents-issue-566] #566', async () => {
-		expect(
-			(
-				await mlRuleTest(
-					rule,
-					`<hgroup>
+test('[permitted-contents-issue-566] #566', async () => {
+	expect(
+		(
+			await mlRuleTest(
+				rule,
+				`<hgroup>
 						<h1></h1>
 						<h2></h2>
 					</hgroup>`,
-				)
-			).violations,
-		).toStrictEqual([
-			{
-				severity: 'error',
-				line: 3,
-				col: 7,
-				message: 'The "h2" element is not allowed in the "hgroup" element in this context',
-				raw: '<h2>',
-			},
-		]);
-	});
+			)
+		).violations,
+	).toStrictEqual([
+		{
+			severity: 'error',
+			line: 3,
+			col: 7,
+			message: 'The "h2" element is not allowed in the "hgroup" element in this context',
+			raw: '<h2>',
+		},
+	]);
+});
 
-	test('[permitted-contents-issue-606] #606', async () => {
-		// The dt and dd are the content of the template, not children of the dl, and a dl that has
-		// only script-supporting elements is valid.
-		expect(
-			(
-				await mlRuleTest(
-					rule,
-					`<dl>
+test('[permitted-contents-issue-606] #606', async () => {
+	// The dt and dd are the content of the template, not children of the dl, and a dl that has
+	// only script-supporting elements is valid.
+	expect(
+		(
+			await mlRuleTest(
+				rule,
+				`<dl>
 					<template>
 						<dt></dt>
 						<dd></dd>
 					</template>
 				</dl>`,
-				)
-			).violations,
-		).toStrictEqual([]);
-	});
+			)
+		).violations,
+	).toStrictEqual([]);
+});
 
-	test('[permitted-contents-issue-617] #617', async () => {
-		expect(
-			(
-				await mlRuleTest(
-					rule,
-					`<head>
+test('[permitted-contents-issue-617] #617', async () => {
+	expect(
+		(
+			await mlRuleTest(
+				rule,
+				`<head>
 				<title>Title</title>
 				<noscript>
 					<style>
 						.selector {}
 					</style>
 				</noscript></head>`,
-				)
-			).violations,
-		).toStrictEqual([]);
-		expect(
-			(
-				await mlRuleTest(
-					rule,
-					`<noscript>
+			)
+		).violations,
+	).toStrictEqual([]);
+	expect(
+		(
+			await mlRuleTest(
+				rule,
+				`<noscript>
 					<style>
 						.selector {}
 					</style>
 				</noscript>`,
-				)
-			).violations,
-		).toStrictEqual([]);
-		expect(
-			(
-				await mlRuleTest(
-					rule,
-					`<div><noscript>
+			)
+		).violations,
+	).toStrictEqual([]);
+	expect(
+		(
+			await mlRuleTest(
+				rule,
+				`<div><noscript>
 					<style>
 						.selector {}
 					</style>
 				</noscript></div>`,
-				)
-			).violations,
-		).toStrictEqual([]);
-		expect(
-			(
-				await mlRuleTest(
-					rule,
-					`<span><noscript>
+			)
+		).violations,
+	).toStrictEqual([]);
+	expect(
+		(
+			await mlRuleTest(
+				rule,
+				`<span><noscript>
 					<div>
 					</div>
 				</noscript></span>`,
-				)
-			).violations,
-		).toStrictEqual([
-			{
-				severity: 'error',
-				line: 2,
-				col: 6,
-				message:
-					'The "div" element is not allowed in the "span" element through the transparent model in this context',
-				raw: '<div>',
-			},
-		]);
-		expect(
-			(
-				await mlRuleTest(
-					rule,
-					`mixin meta(title)
+			)
+		).violations,
+	).toStrictEqual([
+		{
+			severity: 'error',
+			line: 2,
+			col: 6,
+			message:
+				'The "div" element is not allowed in the "span" element through the transparent model in this context',
+			raw: '<div>',
+		},
+	]);
+	expect(
+		(
+			await mlRuleTest(
+				rule,
+				`mixin meta(title)
 	meta(charset="UTF-8")
 	meta(name="viewport" content="width=device-width")
 	title= title
 	noscript
 		style`,
-					{
-						parser: {
-							'.*': '@markuplint/pug-parser',
-						},
-					},
-				)
-			).violations,
-		).toStrictEqual([]);
-	});
-
-	test('[permitted-contents-issue-637] #637', async () => {
-		expect(
-			(
-				await mlRuleTest(
-					rule,
-					'<ruby>漢<rp>（</rp><rt>かん</rt><rp>）</rp>字<rp>（</rp><rt>じ</rt><rp>）</rp></ruby>',
-				)
-			).violations,
-		).toStrictEqual([]);
-
-		expect(
-			(await mlRuleTest(rule, '<ruby>A<rp></rp><rt></rt><rp></rp>B<rp></rp><rt></rt><rp></rp></ruby>'))
-				.violations,
-		).toStrictEqual([]);
-	});
-
-	test('[permitted-contents-issue-1046] #1046', async () => {
-		const sourceCode = '<span><div></div></span>';
-		expect(
-			(
-				await mlRuleTest(rule, sourceCode, {
-					rule: {
-						severity: 'warning',
-					},
+				{
 					parser: {
-						'.*': '@markuplint/jsx-parser',
+						'.*': '@markuplint/pug-parser',
 					},
-				})
-			).violations,
-		).toStrictEqual([
-			{
-				severity: 'warning',
-				line: 1,
-				col: 7,
-				message: 'The "div" element is not allowed in the "span" element in this context',
-				raw: '<div>',
-			},
-		]);
-	});
+				},
+			)
+		).violations,
+	).toStrictEqual([]);
+});
 
-	test('[permitted-contents-issue-1146] #1146', async () => {
-		const sourceCode = '<datalist><option></option></datalist>';
-		expect((await mlRuleTest(rule, sourceCode)).violations).toStrictEqual([]);
-	});
+test('[permitted-contents-issue-637] #637', async () => {
+	expect(
+		(
+			await mlRuleTest(
+				rule,
+				'<ruby>漢<rp>（</rp><rt>かん</rt><rp>）</rp>字<rp>（</rp><rt>じ</rt><rp>）</rp></ruby>',
+			)
+		).violations,
+	).toStrictEqual([]);
 
-	test('[permitted-contents-issue-1023] #1023', async () => {
-		const sourceCode = `<body>
+	expect(
+		(await mlRuleTest(rule, '<ruby>A<rp></rp><rt></rt><rp></rp>B<rp></rp><rt></rt><rp></rp></ruby>')).violations,
+	).toStrictEqual([]);
+});
+
+test('[permitted-contents-issue-1046] #1046', async () => {
+	const sourceCode = '<span><div></div></span>';
+	expect(
+		(
+			await mlRuleTest(rule, sourceCode, {
+				rule: {
+					severity: 'warning',
+				},
+				parser: {
+					'.*': '@markuplint/jsx-parser',
+				},
+			})
+		).violations,
+	).toStrictEqual([
+		{
+			severity: 'warning',
+			line: 1,
+			col: 7,
+			message: 'The "div" element is not allowed in the "span" element in this context',
+			raw: '<div>',
+		},
+	]);
+});
+
+test('[permitted-contents-issue-1146] #1146', async () => {
+	const sourceCode = '<datalist><option></option></datalist>';
+	expect((await mlRuleTest(rule, sourceCode)).violations).toStrictEqual([]);
+});
+
+test('[permitted-contents-issue-1023] #1023', async () => {
+	const sourceCode = `<body>
 	<h1>Reproduction</h1>
 	<!-- There're typos. The intended element is x-item, not x-itm -->
 	<x-container><x-itm></x-itm></x-container>
 </body>`;
-		expect(
-			(
-				await mlRuleTest(rule, sourceCode, {
-					rule: [
-						{
-							tag: 'x-container',
-							contents: [
-								{
-									require: 'x-item',
-								},
-							],
-						},
-					],
-				})
-			).violations,
-		).toStrictEqual([
-			{
-				severity: 'error',
-				line: 4,
-				col: 2,
-				raw: '<x-container>',
-				message: 'Require an element. (Need "x-item")',
-			},
-		]);
-	});
+	expect(
+		(
+			await mlRuleTest(rule, sourceCode, {
+				rule: [
+					{
+						tag: 'x-container',
+						contents: [
+							{
+								require: 'x-item',
+							},
+						],
+					},
+				],
+			})
+		).violations,
+	).toStrictEqual([
+		{
+			severity: 'error',
+			line: 4,
+			col: 2,
+			raw: '<x-container>',
+			message: 'Require an element. (Need "x-item")',
+		},
+	]);
+});
 
-	test('[permitted-contents-issue-1359] #1359', async () => {
-		const sourceCode = '<svg><text><tspan>Text</tspan></text></svg>';
-		expect((await mlRuleTest(rule, sourceCode)).violations).toStrictEqual([]);
-	});
+test('[permitted-contents-issue-1359] #1359', async () => {
+	const sourceCode = '<svg><text><tspan>Text</tspan></text></svg>';
+	expect((await mlRuleTest(rule, sourceCode)).violations).toStrictEqual([]);
+});
 
-	test('[permitted-contents-issue-1451] #1451', async () => {
-		const astro = { parser: { '.*': '@markuplint/astro-parser' } };
-		const jsx = { parser: { '.*': '@markuplint/jsx-parser' } };
-		const pug = { parser: { '.*': '@markuplint/pug-parser' } };
-		const svelte = { parser: { '.*': '@markuplint/svelte-parser' } };
-		const vue = { parser: { '.*': '@markuplint/vue-parser' } };
+test('[permitted-contents-issue-1451] #1451', async () => {
+	const astro = { parser: { '.*': '@markuplint/astro-parser' } };
+	const jsx = { parser: { '.*': '@markuplint/jsx-parser' } };
+	const pug = { parser: { '.*': '@markuplint/pug-parser' } };
+	const svelte = { parser: { '.*': '@markuplint/svelte-parser' } };
+	const vue = { parser: { '.*': '@markuplint/vue-parser' } };
 
-		expect((await mlRuleTest(rule, '<span><div></div></span>')).violations.length).toBe(1);
-		expect((await mlRuleTest(rule, '<span><Div></Div></span>')).violations.length).toBe(1);
-		expect((await mlRuleTest(rule, '<span><div></div></span>', astro)).violations.length).toBe(1);
-		expect((await mlRuleTest(rule, '<span><Div></Div></span>', astro)).violations.length).toBe(0);
-		expect((await mlRuleTest(rule, '<span><div></div></span>', jsx)).violations.length).toBe(1);
-		expect((await mlRuleTest(rule, '<span><Div></Div></span>', jsx)).violations.length).toBe(0);
-		expect((await mlRuleTest(rule, 'span: div', pug)).violations.length).toBe(1);
-		expect((await mlRuleTest(rule, 'span: Div', pug)).violations.length).toBe(1);
-		expect((await mlRuleTest(rule, '<span><div></div></span>', svelte)).violations.length).toBe(1);
-		expect((await mlRuleTest(rule, '<span><Div></Div></span>', svelte)).violations.length).toBe(0);
-		expect((await mlRuleTest(rule, '<template><span><div></div></span></template>', vue)).violations.length).toBe(
-			1,
-		);
-		expect((await mlRuleTest(rule, '<template><span><Div></Div></span></template>', vue)).violations.length).toBe(
-			0,
-		);
-	});
+	expect((await mlRuleTest(rule, '<span><div></div></span>')).violations.length).toBe(1);
+	expect((await mlRuleTest(rule, '<span><Div></Div></span>')).violations.length).toBe(1);
+	expect((await mlRuleTest(rule, '<span><div></div></span>', astro)).violations.length).toBe(1);
+	expect((await mlRuleTest(rule, '<span><Div></Div></span>', astro)).violations.length).toBe(0);
+	expect((await mlRuleTest(rule, '<span><div></div></span>', jsx)).violations.length).toBe(1);
+	expect((await mlRuleTest(rule, '<span><Div></Div></span>', jsx)).violations.length).toBe(0);
+	expect((await mlRuleTest(rule, 'span: div', pug)).violations.length).toBe(1);
+	expect((await mlRuleTest(rule, 'span: Div', pug)).violations.length).toBe(1);
+	expect((await mlRuleTest(rule, '<span><div></div></span>', svelte)).violations.length).toBe(1);
+	expect((await mlRuleTest(rule, '<span><Div></Div></span>', svelte)).violations.length).toBe(0);
+	expect((await mlRuleTest(rule, '<template><span><div></div></span></template>', vue)).violations.length).toBe(1);
+	expect((await mlRuleTest(rule, '<template><span><Div></Div></span></template>', vue)).violations.length).toBe(0);
+});
 
-	test('[permitted-contents-issue-1502] #1502', async () => {
-		const sourceCode = `<svg>
+test('[permitted-contents-issue-1502] #1502', async () => {
+	const sourceCode = `<svg>
 	<defs>
 		<filter>
 			<feTurbulence />
 		</filter>
 	</defs>
 </svg>`;
-		expect((await mlRuleTest(rule, sourceCode)).violations).toStrictEqual([]);
-	});
+	expect((await mlRuleTest(rule, sourceCode)).violations).toStrictEqual([]);
+});
 
-	test('[permitted-contents-issue-1767] #1767', async () => {
-		const parser = {
-			parser: {
-				'.*': '@markuplint/jsx-parser',
-			},
-		} as const;
-		expect((await mlRuleTest(rule, '<div><><span></span></></div>', parser)).violations.length).toBe(0);
-		expect((await mlRuleTest(rule, '<ul><><li></li></></ul>', parser)).violations.length).toBe(0);
-		expect((await mlRuleTest(rule, '<ul><><div></div></></ul>', parser)).violations.length).toBe(1);
-	});
+test('[permitted-contents-issue-1767] #1767', async () => {
+	const parser = {
+		parser: {
+			'.*': '@markuplint/jsx-parser',
+		},
+	} as const;
+	expect((await mlRuleTest(rule, '<div><><span></span></></div>', parser)).violations.length).toBe(0);
+	expect((await mlRuleTest(rule, '<ul><><li></li></></ul>', parser)).violations.length).toBe(0);
+	expect((await mlRuleTest(rule, '<ul><><div></div></></ul>', parser)).violations.length).toBe(1);
+});
 
-	test('[permitted-contents-issue-1848] #1848', async () => {
-		const sourceCode = '<XComponent></XComponent>';
-		expect(
-			(
-				await mlRuleTest(rule, sourceCode, {
-					parser: {
-						'.*': '@markuplint/jsx-parser',
+test('[permitted-contents-issue-1848] #1848', async () => {
+	const sourceCode = '<XComponent></XComponent>';
+	expect(
+		(
+			await mlRuleTest(rule, sourceCode, {
+				parser: {
+					'.*': '@markuplint/jsx-parser',
+				},
+				pretenders: [
+					{
+						selector: 'XComponent',
+						as: 'Head',
 					},
-					pretenders: [
-						{
-							selector: 'XComponent',
-							as: 'Head',
-						},
-					],
-				})
-			).violations,
-		).toStrictEqual([]);
-	});
+				],
+			})
+		).violations,
+	).toStrictEqual([]);
+});
 
-	test('[permitted-contents-issue-2302] #2302', async () => {
-		const sourceCode = `
+test('[permitted-contents-issue-2302] #2302', async () => {
+	const sourceCode = `
 <svg>
 	{list.map(item => (
 		<path />
 	))}
 </svg>
 `;
-		expect(
-			(
-				await mlRuleTest(rule, sourceCode, {
-					parser: {
-						'.*': '@markuplint/jsx-parser',
-					},
-				})
-			).violations,
-		).toStrictEqual([]);
-	});
+	expect(
+		(
+			await mlRuleTest(rule, sourceCode, {
+				parser: {
+					'.*': '@markuplint/jsx-parser',
+				},
+			})
+		).violations,
+	).toStrictEqual([]);
+});
 
-	// Timeout: 5s — the old Cartesian-product algorithm took 30s+ for this case;
-	// the incremental algorithm completes in <100ms.
-	test('[permitted-contents-issue-3249] #3249 - many transparent siblings should not cause exponential slowdown', async () => {
-		const anchors = Array.from({ length: 12 }, (_, i) => `<a><span>link${i}</span><em>text${i}</em></a>`).join(
-			'\n',
-		);
-		const sourceCode = `<div>${anchors}</div>`;
+// Timeout: 5s — the old Cartesian-product algorithm took 30s+ for this case;
+// the incremental algorithm completes in <100ms.
+test('[permitted-contents-issue-3249] #3249 - many transparent siblings should not cause exponential slowdown', async () => {
+	const anchors = Array.from({ length: 12 }, (_, i) => `<a><span>link${i}</span><em>text${i}</em></a>`).join('\n');
+	const sourceCode = `<div>${anchors}</div>`;
 
-		const { violations } = await mlRuleTest(rule, sourceCode);
-		expect(violations).toStrictEqual([]);
-	}, 5000);
+	const { violations } = await mlRuleTest(rule, sourceCode);
+	expect(violations).toStrictEqual([]);
+}, 5000);
 
-	test('[permitted-contents-issue-3635-001] empty title is invalid', async () => {
-		const { violations } = await mlRuleTest(rule, '<html><head><title></title></head><body></body></html>');
-		expect(violations).toContainEqual(
-			expect.objectContaining({
-				severity: 'error',
-				raw: '<title>',
-				message: 'Require an element. (Need "#nonEmptyText")',
-			}),
-		);
-	});
+test('[permitted-contents-issue-3635-001] empty title is invalid', async () => {
+	const { violations } = await mlRuleTest(rule, '<html><head><title></title></head><body></body></html>');
+	expect(violations).toContainEqual(
+		expect.objectContaining({
+			severity: 'error',
+			raw: '<title>',
+			message: 'Require an element. (Need "#nonEmptyText")',
+		}),
+	);
+});
 
-	test('[permitted-contents-issue-3635-002] whitespace-only title is invalid', async () => {
-		const { violations } = await mlRuleTest(rule, '<html><head><title>  </title></head><body></body></html>');
-		expect(violations).toContainEqual(
-			expect.objectContaining({
-				severity: 'error',
-				raw: '<title>',
-				message: 'Require an element. (Need "#nonEmptyText")',
-			}),
-		);
-	});
+test('[permitted-contents-issue-3635-002] whitespace-only title is invalid', async () => {
+	const { violations } = await mlRuleTest(rule, '<html><head><title>  </title></head><body></body></html>');
+	expect(violations).toContainEqual(
+		expect.objectContaining({
+			severity: 'error',
+			raw: '<title>',
+			message: 'Require an element. (Need "#nonEmptyText")',
+		}),
+	);
+});
 
-	test('[permitted-contents-issue-3635-003] non-empty title is valid', async () => {
-		const { violations } = await mlRuleTest(
-			rule,
-			'<html><head><title>Page Title</title></head><body></body></html>',
-		);
-		const titleViolations = violations.filter(v => v.raw?.includes('title'));
-		expect(titleViolations).toStrictEqual([]);
-	});
+test('[permitted-contents-issue-3635-003] non-empty title is valid', async () => {
+	const { violations } = await mlRuleTest(rule, '<html><head><title>Page Title</title></head><body></body></html>');
+	const titleViolations = violations.filter(v => v.raw?.includes('title'));
+	expect(titleViolations).toStrictEqual([]);
+});
 
-	test('[permitted-contents-issue-3635-004] empty option without label is invalid', async () => {
-		const { violations } = await mlRuleTest(rule, '<select><option></option></select>');
-		expect(violations).toContainEqual(
-			expect.objectContaining({
-				severity: 'error',
-				raw: '<option>',
-				message: 'Require an element. (Need "#nonEmptyText")',
-			}),
-		);
-	});
+test('[permitted-contents-issue-3635-004] empty option without label is invalid', async () => {
+	const { violations } = await mlRuleTest(rule, '<select><option></option></select>');
+	expect(violations).toContainEqual(
+		expect.objectContaining({
+			severity: 'error',
+			raw: '<option>',
+			message: 'Require an element. (Need "#nonEmptyText")',
+		}),
+	);
+});
 
-	test('[permitted-contents-issue-3635-005] option with label can be empty', async () => {
-		const { violations } = await mlRuleTest(rule, '<select><option label="x" value="v"></option></select>');
-		expect(violations).toStrictEqual([]);
-	});
+test('[permitted-contents-issue-3635-005] option with label can be empty', async () => {
+	const { violations } = await mlRuleTest(rule, '<select><option label="x" value="v"></option></select>');
+	expect(violations).toStrictEqual([]);
+});
 
-	test('[permitted-contents-issue-3635-006] option with text content is valid', async () => {
-		const { violations } = await mlRuleTest(rule, '<select><option>Text</option></select>');
-		const optionViolations = violations.filter(v => v.raw?.includes('option'));
-		expect(optionViolations).toStrictEqual([]);
-	});
+test('[permitted-contents-issue-3635-006] option with text content is valid', async () => {
+	const { violations } = await mlRuleTest(rule, '<select><option>Text</option></select>');
+	const optionViolations = violations.filter(v => v.raw?.includes('option'));
+	expect(optionViolations).toStrictEqual([]);
+});
 
-	// #3592: empty dl is valid (zero or more groups)
-	test('[permitted-contents-issue-3592-001] empty dl is valid', async () => {
-		expect((await mlRuleTest(rule, '<dl></dl>')).violations).toStrictEqual([]);
-	});
+// #3592: empty dl is valid (zero or more groups)
+test('[permitted-contents-issue-3592-001] empty dl is valid', async () => {
+	expect((await mlRuleTest(rule, '<dl></dl>')).violations).toStrictEqual([]);
+});
 
-	test('[permitted-contents-issue-3592-002] dl with dt+dd is still valid', async () => {
-		expect((await mlRuleTest(rule, '<dl><dt>term</dt><dd>def</dd></dl>')).violations).toStrictEqual([]);
-	});
+test('[permitted-contents-issue-3592-002] dl with dt+dd is still valid', async () => {
+	expect((await mlRuleTest(rule, '<dl><dt>term</dt><dd>def</dd></dl>')).violations).toStrictEqual([]);
+});
 
-	test('[permitted-contents-issue-3592-003] dl with div is still valid', async () => {
-		expect((await mlRuleTest(rule, '<dl><div><dt>term</dt><dd>def</dd></div></dl>')).violations).toStrictEqual([]);
-	});
+test('[permitted-contents-issue-3592-003] dl with div is still valid', async () => {
+	expect((await mlRuleTest(rule, '<dl><div><dt>term</dt><dd>def</dd></div></dl>')).violations).toStrictEqual([]);
+});
 
-	test('[permitted-contents-issue-3592-004] dl with only dt is still invalid', async () => {
-		const { violations } = await mlRuleTest(rule, '<dl><dt>term</dt></dl>');
-		expect(violations).toStrictEqual([
-			{
-				severity: 'error',
-				line: 1,
-				col: 1,
-				message: 'Require one or more elements. (Need "dd")',
-				raw: '<dl>',
-			},
-		]);
-	});
+test('[permitted-contents-issue-3592-004] dl with only dt is still invalid', async () => {
+	const { violations } = await mlRuleTest(rule, '<dl><dt>term</dt></dl>');
+	expect(violations).toStrictEqual([
+		{
+			severity: 'error',
+			line: 1,
+			col: 1,
+			message: 'Require one or more elements. (Need "dd")',
+			raw: '<dl>',
+		},
+	]);
+});
 
-	test('[permitted-contents-issue-3592-005] dl with only dd is still invalid', async () => {
-		const { violations } = await mlRuleTest(rule, '<dl><dd>def</dd></dl>');
-		expect(violations).toStrictEqual([
-			{
-				severity: 'error',
-				line: 1,
-				col: 1,
-				message: 'Require one or more elements. (Need "dt")',
-				raw: '<dl>',
-			},
-		]);
-	});
+test('[permitted-contents-issue-3592-005] dl with only dd is still invalid', async () => {
+	const { violations } = await mlRuleTest(rule, '<dl><dd>def</dd></dl>');
+	expect(violations).toStrictEqual([
+		{
+			severity: 'error',
+			line: 1,
+			col: 1,
+			message: 'Require one or more elements. (Need "dt")',
+			raw: '<dl>',
+		},
+	]);
+});
 
-	test('[permitted-contents-issue-3592-006] dl with multiple dt+dd groups is valid', async () => {
-		expect((await mlRuleTest(rule, '<dl><dt>a</dt><dd>b</dd><dt>c</dt><dd>d</dd></dl>')).violations).toStrictEqual(
-			[],
-		);
-	});
+test('[permitted-contents-issue-3592-006] dl with multiple dt+dd groups is valid', async () => {
+	expect((await mlRuleTest(rule, '<dl><dt>a</dt><dd>b</dd><dt>c</dt><dd>d</dd></dl>')).violations).toStrictEqual([]);
+});
 
-	// HTML LS §4.4.9: div inside dl allows exactly one group (dt+ dd+),
-	// not repeated groups. Group repetition is expressed at the dl level.
-	test('[permitted-contents-invalid-034] div in dl with multiple dt+dd groups is invalid', async () => {
-		const { violations } = await mlRuleTest(rule, '<dl><div><dt>a</dt><dd>b</dd><dt>c</dt><dd>d</dd></div></dl>');
-		expect(violations).toStrictEqual([
-			{
-				severity: 'error',
-				line: 1,
-				col: 30,
-				message: 'The "dt" element is not allowed in the "div" element in this context',
-				raw: '<dt>',
-			},
-		]);
-	});
+// HTML LS §4.4.9: div inside dl allows exactly one group (dt+ dd+),
+// not repeated groups. Group repetition is expressed at the dl level.
+test('[permitted-contents-invalid-034] div in dl with multiple dt+dd groups is invalid', async () => {
+	const { violations } = await mlRuleTest(rule, '<dl><div><dt>a</dt><dd>b</dd><dt>c</dt><dd>d</dd></div></dl>');
+	expect(violations).toStrictEqual([
+		{
+			severity: 'error',
+			line: 1,
+			col: 30,
+			message: 'The "dt" element is not allowed in the "div" element in this context',
+			raw: '<dt>',
+		},
+	]);
+});
 
-	test('[permitted-contents-valid-003] div in dl with single dt+dd group is valid', async () => {
-		expect(
-			(await mlRuleTest(rule, '<dl><div><dt>a</dt><dt>b</dt><dd>c</dd><dd>d</dd></div></dl>')).violations,
-		).toStrictEqual([]);
-	});
+test('[permitted-contents-valid-003] div in dl with single dt+dd group is valid', async () => {
+	expect(
+		(await mlRuleTest(rule, '<dl><div><dt>a</dt><dt>b</dt><dd>c</dd><dd>d</dd></div></dl>')).violations,
+	).toStrictEqual([]);
+});
 
-	// #3928: a transparent-content-model element (e.g. <a>, <audio>, <ins>) must
-	// still be evaluated against the parent's own content model at its own
-	// position — the transparent flattening that lets its children pass through
-	// must not make the element itself disappear from that check.
-	test('[permitted-contents-issue-3928-001] a[href] (interactive) directly inside button is invalid', async () => {
-		const { violations } = await mlRuleTest(rule, '<button><a href="/x"><span>text</span></a></button>');
-		expect(violations).toStrictEqual([
-			{
-				severity: 'error',
-				line: 1,
-				col: 9,
-				raw: '<a href="/x">',
-				message: 'The "a" element is not allowed in the "button" element in this context',
-			},
-		]);
-	});
+// #3928: a transparent-content-model element (e.g. <a>, <audio>, <ins>) must
+// still be evaluated against the parent's own content model at its own
+// position — the transparent flattening that lets its children pass through
+// must not make the element itself disappear from that check.
+test('[permitted-contents-issue-3928-001] a[href] (interactive) directly inside button is invalid', async () => {
+	const { violations } = await mlRuleTest(rule, '<button><a href="/x"><span>text</span></a></button>');
+	expect(violations).toStrictEqual([
+		{
+			severity: 'error',
+			line: 1,
+			col: 9,
+			raw: '<a href="/x">',
+			message: 'The "a" element is not allowed in the "button" element in this context',
+		},
+	]);
+});
 
-	test('[permitted-contents-issue-3928-002] audio[controls] (interactive) directly inside button is invalid', async () => {
-		const { violations } = await mlRuleTest(rule, '<button><audio controls></audio></button>');
-		expect(violations).toStrictEqual([
-			{
-				severity: 'error',
-				line: 1,
-				col: 9,
-				raw: '<audio controls>',
-				message: 'The "audio" element is not allowed in the "button" element in this context',
-			},
-		]);
-	});
+test('[permitted-contents-issue-3928-002] audio[controls] (interactive) directly inside button is invalid', async () => {
+	const { violations } = await mlRuleTest(rule, '<button><audio controls></audio></button>');
+	expect(violations).toStrictEqual([
+		{
+			severity: 'error',
+			line: 1,
+			col: 9,
+			raw: '<audio controls>',
+			message: 'The "audio" element is not allowed in the "button" element in this context',
+		},
+	]);
+});
 
-	test('[permitted-contents-issue-3928-003] video directly inside picture is invalid', async () => {
-		const { violations } = await mlRuleTest(rule, '<picture><video></video><img src="x" alt=""></picture>');
-		expect(violations).toStrictEqual([
-			{
-				severity: 'error',
-				line: 1,
-				col: 1,
-				raw: '<picture>',
-				message: 'Require an element. (Need "img")',
-			},
-		]);
-	});
+test('[permitted-contents-issue-3928-003] video directly inside picture is invalid', async () => {
+	const { violations } = await mlRuleTest(rule, '<picture><video></video><img src="x" alt=""></picture>');
+	expect(violations).toStrictEqual([
+		{
+			severity: 'error',
+			line: 1,
+			col: 1,
+			raw: '<picture>',
+			message: 'Require an element. (Need "img")',
+		},
+	]);
+});
 
-	test('[permitted-contents-issue-3928-004] audio directly inside picture is invalid', async () => {
-		const { violations } = await mlRuleTest(rule, '<picture><audio></audio><img src="x" alt=""></picture>');
-		expect(violations).toStrictEqual([
-			{
-				severity: 'error',
-				line: 1,
-				col: 1,
-				raw: '<picture>',
-				message: 'Require an element. (Need "img")',
-			},
-		]);
-	});
+test('[permitted-contents-issue-3928-004] audio directly inside picture is invalid', async () => {
+	const { violations } = await mlRuleTest(rule, '<picture><audio></audio><img src="x" alt=""></picture>');
+	expect(violations).toStrictEqual([
+		{
+			severity: 'error',
+			line: 1,
+			col: 1,
+			raw: '<picture>',
+			message: 'Require an element. (Need "img")',
+		},
+	]);
+});
 
-	test('[permitted-contents-issue-3928-005] canvas directly inside picture is invalid', async () => {
-		const { violations } = await mlRuleTest(rule, '<picture><canvas></canvas><img src="x" alt=""></picture>');
-		expect(violations).toStrictEqual([
-			{
-				severity: 'error',
-				line: 1,
-				col: 1,
-				raw: '<picture>',
-				message: 'Require an element. (Need "img")',
-			},
-		]);
-	});
+test('[permitted-contents-issue-3928-005] canvas directly inside picture is invalid', async () => {
+	const { violations } = await mlRuleTest(rule, '<picture><canvas></canvas><img src="x" alt=""></picture>');
+	expect(violations).toStrictEqual([
+		{
+			severity: 'error',
+			line: 1,
+			col: 1,
+			raw: '<picture>',
+			message: 'Require an element. (Need "img")',
+		},
+	]);
+});
 
-	test('[permitted-contents-issue-3928-006] a wrapping img directly inside picture is invalid', async () => {
-		const { violations } = await mlRuleTest(rule, '<picture><a><img src="x" alt=""></a></picture>');
-		expect(violations).toStrictEqual([
-			{
-				severity: 'error',
-				line: 1,
-				col: 1,
-				raw: '<picture>',
-				message: 'Require an element. (Need "img")',
-			},
-		]);
-	});
+test('[permitted-contents-issue-3928-006] a wrapping img directly inside picture is invalid', async () => {
+	const { violations } = await mlRuleTest(rule, '<picture><a><img src="x" alt=""></a></picture>');
+	expect(violations).toStrictEqual([
+		{
+			severity: 'error',
+			line: 1,
+			col: 1,
+			raw: '<picture>',
+			message: 'Require an element. (Need "img")',
+		},
+	]);
+});
 
-	test('[permitted-contents-issue-3928-007] ins directly inside picture is invalid', async () => {
-		const { violations } = await mlRuleTest(rule, '<picture><ins></ins><img src="x" alt=""></picture>');
-		expect(violations).toStrictEqual([
-			{
-				severity: 'error',
-				line: 1,
-				col: 1,
-				raw: '<picture>',
-				message: 'Require an element. (Need "img")',
-			},
-		]);
-	});
+test('[permitted-contents-issue-3928-007] ins directly inside picture is invalid', async () => {
+	const { violations } = await mlRuleTest(rule, '<picture><ins></ins><img src="x" alt=""></picture>');
+	expect(violations).toStrictEqual([
+		{
+			severity: 'error',
+			line: 1,
+			col: 1,
+			raw: '<picture>',
+			message: 'Require an element. (Need "img")',
+		},
+	]);
+});
 
-	test('[permitted-contents-issue-3928-008] non-interactive a inside button stays valid', async () => {
-		// <a> without href is not interactive content, so it remains permitted
-		// phrasing content — the fix must not flag benign transparent usage.
-		const { violations } = await mlRuleTest(rule, '<button><a>text</a></button>');
-		expect(violations).toStrictEqual([]);
-	});
+test('[permitted-contents-issue-3928-008] non-interactive a inside button stays valid', async () => {
+	// <a> without href is not interactive content, so it remains permitted
+	// phrasing content — the fix must not flag benign transparent usage.
+	const { violations } = await mlRuleTest(rule, '<button><a>text</a></button>');
+	expect(violations).toStrictEqual([]);
+});
 
-	test('[permitted-contents-issue-3928-009] a[href] wrapping phrasing content inside p stays valid', async () => {
-		const { violations } = await mlRuleTest(rule, '<p><a href="#">text</a></p>');
-		expect(violations).toStrictEqual([]);
-	});
+test('[permitted-contents-issue-3928-009] a[href] wrapping phrasing content inside p stays valid', async () => {
+	const { violations } = await mlRuleTest(rule, '<p><a href="#">text</a></p>');
+	expect(violations).toStrictEqual([]);
 });
 
 describe('#3739 (pretender + user tag rule)', () => {
@@ -3705,259 +3689,257 @@ describe('the canvas element and the interactive content it allows', () => {
 	});
 });
 
-describe('script-supporting elements in table sections, colgroup and dl (#4492)', () => {
-	test('[permitted-contents-issue-4492-001] script in thead and script/template around tr in tbody are valid', async () => {
-		const { violations } = await mlRuleTest(
-			rule,
-			'<table><thead><script></script></thead><tbody><script></script><tr><td>c</td></tr><template></template></tbody></table>',
-		);
-		expect(violations).toStrictEqual([]);
-	});
+test('[permitted-contents-issue-4492-001] script in thead and script/template around tr in tbody are valid', async () => {
+	const { violations } = await mlRuleTest(
+		rule,
+		'<table><thead><script></script></thead><tbody><script></script><tr><td>c</td></tr><template></template></tbody></table>',
+	);
+	expect(violations).toStrictEqual([]);
+});
 
-	test('[permitted-contents-issue-4492-002] template in thead and script-supporting elements in tfoot are valid', async () => {
-		const { violations } = await mlRuleTest(
-			rule,
-			'<table><thead><template></template></thead><tbody><tr><td>c</td></tr></tbody><tfoot><template></template><tr><td>c</td></tr><script></script></tfoot></table>',
-		);
-		expect(violations).toStrictEqual([]);
-	});
+test('[permitted-contents-issue-4492-002] template in thead and script-supporting elements in tfoot are valid', async () => {
+	const { violations } = await mlRuleTest(
+		rule,
+		'<table><thead><template></template></thead><tbody><tr><td>c</td></tr></tbody><tfoot><template></template><tr><td>c</td></tr><script></script></tfoot></table>',
+	);
+	expect(violations).toStrictEqual([]);
+});
 
-	test('[permitted-contents-issue-4492-003] template in colgroup without span is valid', async () => {
-		const { violations } = await mlRuleTest(
-			rule,
-			'<table><colgroup><template></template></colgroup><tr><td>c</td></tr></table>',
-		);
-		expect(violations).toStrictEqual([]);
-	});
+test('[permitted-contents-issue-4492-003] template in colgroup without span is valid', async () => {
+	const { violations } = await mlRuleTest(
+		rule,
+		'<table><colgroup><template></template></colgroup><tr><td>c</td></tr></table>',
+	);
+	expect(violations).toStrictEqual([]);
+});
 
-	test('[permitted-contents-issue-4492-004] template between col elements is valid', async () => {
-		const { violations } = await mlRuleTest(
-			rule,
-			'<table><colgroup><col><template></template><col></colgroup><tr><td>c</td></tr></table>',
-		);
-		expect(violations).toStrictEqual([]);
-	});
+test('[permitted-contents-issue-4492-004] template between col elements is valid', async () => {
+	const { violations } = await mlRuleTest(
+		rule,
+		'<table><colgroup><col><template></template><col></colgroup><tr><td>c</td></tr></table>',
+	);
+	expect(violations).toStrictEqual([]);
+});
 
-	test('[permitted-contents-issue-4492-005] template in colgroup with span is invalid', async () => {
-		const { violations } = await mlRuleTest(
-			rule,
-			'<table><colgroup span="2"><template></template></colgroup><tr><td>c</td></tr></table>',
-		);
-		expect(violations).toStrictEqual([
-			{
-				severity: 'error',
-				line: 1,
-				col: 8,
-				message: 'The element disallows contents',
-				raw: '<colgroup span="2">',
-			},
-		]);
-	});
+test('[permitted-contents-issue-4492-005] template in colgroup with span is invalid', async () => {
+	const { violations } = await mlRuleTest(
+		rule,
+		'<table><colgroup span="2"><template></template></colgroup><tr><td>c</td></tr></table>',
+	);
+	expect(violations).toStrictEqual([
+		{
+			severity: 'error',
+			line: 1,
+			col: 8,
+			message: 'The element disallows contents',
+			raw: '<colgroup span="2">',
+		},
+	]);
+});
 
-	test('[permitted-contents-issue-4492-006] dl containing only script is valid', async () => {
-		expect((await mlRuleTest(rule, '<dl><script></script></dl>')).violations).toStrictEqual([]);
-	});
+test('[permitted-contents-issue-4492-006] dl containing only script is valid', async () => {
+	expect((await mlRuleTest(rule, '<dl><script></script></dl>')).violations).toStrictEqual([]);
+});
 
-	test('[permitted-contents-issue-4492-007] dl containing only template is valid', async () => {
-		expect((await mlRuleTest(rule, '<dl><template></template></dl>')).violations).toStrictEqual([]);
-	});
+test('[permitted-contents-issue-4492-007] dl containing only template is valid', async () => {
+	expect((await mlRuleTest(rule, '<dl><template></template></dl>')).violations).toStrictEqual([]);
+});
 
-	test('[permitted-contents-issue-4492-008] script before, between and after the dt and dd of dl is valid', async () => {
-		const { violations } = await mlRuleTest(
-			rule,
-			'<dl><script></script><dt>a</dt><script></script><dt>b</dt><script></script><dd>c</dd><script></script><dd>d</dd><script></script></dl>',
-		);
-		expect(violations).toStrictEqual([]);
-	});
+test('[permitted-contents-issue-4492-008] script before, between and after the dt and dd of dl is valid', async () => {
+	const { violations } = await mlRuleTest(
+		rule,
+		'<dl><script></script><dt>a</dt><script></script><dt>b</dt><script></script><dd>c</dd><script></script><dd>d</dd><script></script></dl>',
+	);
+	expect(violations).toStrictEqual([]);
+});
 
-	test('[permitted-contents-issue-4492-009] script-supporting element between groups of dl is valid', async () => {
-		const { violations } = await mlRuleTest(
-			rule,
-			'<dl><dt>a</dt><dd>b</dd><template></template><dt>c</dt><dd>d</dd></dl>',
-		);
-		expect(violations).toStrictEqual([]);
-	});
+test('[permitted-contents-issue-4492-009] script-supporting element between groups of dl is valid', async () => {
+	const { violations } = await mlRuleTest(
+		rule,
+		'<dl><dt>a</dt><dd>b</dd><template></template><dt>c</dt><dd>d</dd></dl>',
+	);
+	expect(violations).toStrictEqual([]);
+});
 
-	test('[permitted-contents-issue-4492-010] script-supporting elements around and between div elements of dl are valid', async () => {
-		const { violations } = await mlRuleTest(
-			rule,
-			'<dl><script></script><div><dt>a</dt><dd>b</dd></div><script></script><div><dt>c</dt><dd>d</dd></div><template></template></dl>',
-		);
-		expect(violations).toStrictEqual([]);
-	});
+test('[permitted-contents-issue-4492-010] script-supporting elements around and between div elements of dl are valid', async () => {
+	const { violations } = await mlRuleTest(
+		rule,
+		'<dl><script></script><div><dt>a</dt><dd>b</dd></div><script></script><div><dt>c</dt><dd>d</dd></div><template></template></dl>',
+	);
+	expect(violations).toStrictEqual([]);
+});
 
-	test('[permitted-contents-issue-4492-011] script-supporting elements between dt and dd inside div of dl are valid', async () => {
-		const { violations } = await mlRuleTest(
-			rule,
-			'<dl><div><script></script><dt>a</dt><script></script><dt>b</dt><script></script><dd>c</dd><template></template><dd>d</dd><script></script></div></dl>',
-		);
-		expect(violations).toStrictEqual([]);
-	});
+test('[permitted-contents-issue-4492-011] script-supporting elements between dt and dd inside div of dl are valid', async () => {
+	const { violations } = await mlRuleTest(
+		rule,
+		'<dl><div><script></script><dt>a</dt><script></script><dt>b</dt><script></script><dd>c</dd><template></template><dd>d</dd><script></script></div></dl>',
+	);
+	expect(violations).toStrictEqual([]);
+});
 
-	test('[permitted-contents-issue-4492-012] dl with dt and script but no dd is invalid', async () => {
-		const { violations } = await mlRuleTest(rule, '<dl><dt>a</dt><script></script></dl>');
-		expect(violations).toStrictEqual([
-			{
-				severity: 'error',
-				line: 1,
-				col: 1,
-				message: 'Require one or more elements. (Need "dd")',
-				raw: '<dl>',
-			},
-		]);
-	});
+test('[permitted-contents-issue-4492-012] dl with dt and script but no dd is invalid', async () => {
+	const { violations } = await mlRuleTest(rule, '<dl><dt>a</dt><script></script></dl>');
+	expect(violations).toStrictEqual([
+		{
+			severity: 'error',
+			line: 1,
+			col: 1,
+			message: 'Require one or more elements. (Need "dd")',
+			raw: '<dl>',
+		},
+	]);
+});
 
-	test('[permitted-contents-issue-4492-013] dl with script and dd but no dt is invalid', async () => {
-		const { violations } = await mlRuleTest(rule, '<dl><script></script><dd>a</dd></dl>');
-		expect(violations).toStrictEqual([
-			{
-				severity: 'error',
-				line: 1,
-				col: 1,
-				message: 'Require one or more elements. (Need "dt")',
-				raw: '<dl>',
-			},
-		]);
-	});
+test('[permitted-contents-issue-4492-013] dl with script and dd but no dt is invalid', async () => {
+	const { violations } = await mlRuleTest(rule, '<dl><script></script><dd>a</dd></dl>');
+	expect(violations).toStrictEqual([
+		{
+			severity: 'error',
+			line: 1,
+			col: 1,
+			message: 'Require one or more elements. (Need "dt")',
+			raw: '<dl>',
+		},
+	]);
+});
 
-	// A dt can match either the required `dt` or the optional `dt` / script-supporting alternation of the
-	// group, so a long run is the input where a regression in matching would show up as a timeout.
-	test('[permitted-contents-issue-4492-014] dl with 400 dt, dd and script elements in a row is valid', async () => {
-		const dts = '<dt>t</dt><script></script>'.repeat(100);
-		const dds = '<dd>d</dd><script></script>'.repeat(100);
-		const { violations } = await mlRuleTest(rule, `<dl>${dts}${dds}${dts}${dds}</dl>`);
-		expect(violations).toStrictEqual([]);
-	});
+// A dt can match either the required `dt` or the optional `dt` / script-supporting alternation of the
+// group, so a long run is the input where a regression in matching would show up as a timeout.
+test('[permitted-contents-issue-4492-014] dl with 400 dt, dd and script elements in a row is valid', async () => {
+	const dts = '<dt>t</dt><script></script>'.repeat(100);
+	const dds = '<dd>d</dd><script></script>'.repeat(100);
+	const { violations } = await mlRuleTest(rule, `<dl>${dts}${dds}${dts}${dds}</dl>`);
+	expect(violations).toStrictEqual([]);
+});
 
-	test('[permitted-contents-issue-4492-015] dl with 300 dt and script elements and no dd is invalid', async () => {
-		const { violations } = await mlRuleTest(rule, `<dl>${'<dt>t</dt><script></script>'.repeat(300)}</dl>`);
-		expect(violations).toStrictEqual([
-			{
-				severity: 'error',
-				line: 1,
-				col: 1,
-				message: 'Require one or more elements. (Need "dd")',
-				raw: '<dl>',
-			},
-		]);
-	});
+test('[permitted-contents-issue-4492-015] dl with 300 dt and script elements and no dd is invalid', async () => {
+	const { violations } = await mlRuleTest(rule, `<dl>${'<dt>t</dt><script></script>'.repeat(300)}</dl>`);
+	expect(violations).toStrictEqual([
+		{
+			severity: 'error',
+			line: 1,
+			col: 1,
+			message: 'Require one or more elements. (Need "dd")',
+			raw: '<dl>',
+		},
+	]);
+});
 
-	test('[permitted-contents-issue-4492-016] a p after the groups of dl is reported', async () => {
-		const { violations } = await mlRuleTest(rule, '<dl><dt>a</dt><dd>b</dd><script></script><p></p></dl>');
-		expect(violations).toStrictEqual([
-			{
-				severity: 'error',
-				line: 1,
-				col: 42,
-				message: 'The "p" element is not allowed in the "dl" element in this context',
-				raw: '<p>',
-			},
-		]);
-	});
+test('[permitted-contents-issue-4492-016] a p after the groups of dl is reported', async () => {
+	const { violations } = await mlRuleTest(rule, '<dl><dt>a</dt><dd>b</dd><script></script><p></p></dl>');
+	expect(violations).toStrictEqual([
+		{
+			severity: 'error',
+			line: 1,
+			col: 42,
+			message: 'The "p" element is not allowed in the "dl" element in this context',
+			raw: '<p>',
+		},
+	]);
+});
 
-	test('[permitted-contents-issue-4492-017] div before dt and dd in dl is reported', async () => {
-		const { violations } = await mlRuleTest(rule, '<dl><div><dt>a</dt><dd>b</dd></div><dt>c</dt><dd>d</dd></dl>');
-		expect(violations).toStrictEqual([
-			{
-				severity: 'error',
-				line: 1,
-				col: 36,
-				message: 'The "dt" element is not allowed in the "dl" element in this context',
-				raw: '<dt>',
-			},
-		]);
-	});
+test('[permitted-contents-issue-4492-017] div before dt and dd in dl is reported', async () => {
+	const { violations } = await mlRuleTest(rule, '<dl><div><dt>a</dt><dd>b</dd></div><dt>c</dt><dd>d</dd></dl>');
+	expect(violations).toStrictEqual([
+		{
+			severity: 'error',
+			line: 1,
+			col: 36,
+			message: 'The "dt" element is not allowed in the "dl" element in this context',
+			raw: '<dt>',
+		},
+	]);
+});
 
-	// The HTML parser moves a script out of a colgroup, so the tree is made by the JSX parser.
-	test('[permitted-contents-issue-4492-018] script in colgroup is invalid', async () => {
-		const { violations } = await mlRuleTest(rule, '<table><colgroup><script></script></colgroup></table>', {
-			parser: { '.*': '@markuplint/jsx-parser' },
-		});
-		expect(violations).toStrictEqual([
-			{
-				severity: 'error',
-				line: 1,
-				col: 18,
-				message: 'The "script" element is not allowed in the "colgroup" element in this context',
-				raw: '<script>',
-			},
-		]);
+// The HTML parser moves a script out of a colgroup, so the tree is made by the JSX parser.
+test('[permitted-contents-issue-4492-018] script in colgroup is invalid', async () => {
+	const { violations } = await mlRuleTest(rule, '<table><colgroup><script></script></colgroup></table>', {
+		parser: { '.*': '@markuplint/jsx-parser' },
 	});
+	expect(violations).toStrictEqual([
+		{
+			severity: 'error',
+			line: 1,
+			col: 18,
+			message: 'The "script" element is not allowed in the "colgroup" element in this context',
+			raw: '<script>',
+		},
+	]);
+});
 
-	test('[permitted-contents-issue-4492-019] div of dl with two groups and a script between them is invalid', async () => {
-		const { violations } = await mlRuleTest(
-			rule,
-			'<dl><div><dt>a</dt><dd>b</dd><script></script><dt>c</dt><dd>d</dd></div></dl>',
-		);
-		expect(violations).toStrictEqual([
-			{
-				severity: 'error',
-				line: 1,
-				col: 47,
-				message: 'The "dt" element is not allowed in the "div" element in this context',
-				raw: '<dt>',
-			},
-		]);
-	});
+test('[permitted-contents-issue-4492-019] div of dl with two groups and a script between them is invalid', async () => {
+	const { violations } = await mlRuleTest(
+		rule,
+		'<dl><div><dt>a</dt><dd>b</dd><script></script><dt>c</dt><dd>d</dd></div></dl>',
+	);
+	expect(violations).toStrictEqual([
+		{
+			severity: 'error',
+			line: 1,
+			col: 47,
+			message: 'The "dt" element is not allowed in the "div" element in this context',
+			raw: '<dt>',
+		},
+	]);
+});
 
-	test('[permitted-contents-issue-4492-020] div of dl with only a script is invalid', async () => {
-		const { violations } = await mlRuleTest(rule, '<dl><div><script></script></div></dl>');
-		expect(violations).toStrictEqual([
-			{
-				severity: 'error',
-				line: 1,
-				col: 5,
-				message: 'Require one or more elements. (Need "dt")',
-				raw: '<div>',
-			},
-		]);
-	});
+test('[permitted-contents-issue-4492-020] div of dl with only a script is invalid', async () => {
+	const { violations } = await mlRuleTest(rule, '<dl><div><script></script></div></dl>');
+	expect(violations).toStrictEqual([
+		{
+			severity: 'error',
+			line: 1,
+			col: 5,
+			message: 'Require one or more elements. (Need "dt")',
+			raw: '<div>',
+		},
+	]);
+});
 
-	// The HTML parser moves anything but tr out of a table section, so the tree is made by the JSX parser.
-	test('[permitted-contents-issue-4492-021] style in thead is invalid', async () => {
-		const { violations } = await mlRuleTest(rule, '<table><thead><style></style></thead></table>', {
-			parser: { '.*': '@markuplint/jsx-parser' },
-		});
-		expect(violations).toStrictEqual([
-			{
-				severity: 'error',
-				line: 1,
-				col: 15,
-				message: 'The "style" element is not allowed in the "thead" element in this context',
-				raw: '<style>',
-			},
-		]);
+// The HTML parser moves anything but tr out of a table section, so the tree is made by the JSX parser.
+test('[permitted-contents-issue-4492-021] style in thead is invalid', async () => {
+	const { violations } = await mlRuleTest(rule, '<table><thead><style></style></thead></table>', {
+		parser: { '.*': '@markuplint/jsx-parser' },
 	});
+	expect(violations).toStrictEqual([
+		{
+			severity: 'error',
+			line: 1,
+			col: 15,
+			message: 'The "style" element is not allowed in the "thead" element in this context',
+			raw: '<style>',
+		},
+	]);
+});
 
-	test('[permitted-contents-issue-4492-022] style in tbody is invalid', async () => {
-		const { violations } = await mlRuleTest(rule, '<table><tbody><style></style></tbody></table>', {
-			parser: { '.*': '@markuplint/jsx-parser' },
-		});
-		expect(violations).toStrictEqual([
-			{
-				severity: 'error',
-				line: 1,
-				col: 15,
-				message: 'The "style" element is not allowed in the "tbody" element in this context',
-				raw: '<style>',
-			},
-		]);
+test('[permitted-contents-issue-4492-022] style in tbody is invalid', async () => {
+	const { violations } = await mlRuleTest(rule, '<table><tbody><style></style></tbody></table>', {
+		parser: { '.*': '@markuplint/jsx-parser' },
 	});
+	expect(violations).toStrictEqual([
+		{
+			severity: 'error',
+			line: 1,
+			col: 15,
+			message: 'The "style" element is not allowed in the "tbody" element in this context',
+			raw: '<style>',
+		},
+	]);
+});
 
-	test('[permitted-contents-issue-4492-023] style in tfoot is invalid', async () => {
-		const { violations } = await mlRuleTest(rule, '<table><tfoot><style></style></tfoot></table>', {
-			parser: { '.*': '@markuplint/jsx-parser' },
-		});
-		expect(violations).toStrictEqual([
-			{
-				severity: 'error',
-				line: 1,
-				col: 15,
-				message: 'The "style" element is not allowed in the "tfoot" element in this context',
-				raw: '<style>',
-			},
-		]);
+test('[permitted-contents-issue-4492-023] style in tfoot is invalid', async () => {
+	const { violations } = await mlRuleTest(rule, '<table><tfoot><style></style></tfoot></table>', {
+		parser: { '.*': '@markuplint/jsx-parser' },
 	});
+	expect(violations).toStrictEqual([
+		{
+			severity: 'error',
+			line: 1,
+			col: 15,
+			message: 'The "style" element is not allowed in the "tfoot" element in this context',
+			raw: '<style>',
+		},
+	]);
 });
 
 test('[permitted-contents-issue-4584-001] the name of the element is shown as written (`time` is also a keyword) with locale ja', async () => {

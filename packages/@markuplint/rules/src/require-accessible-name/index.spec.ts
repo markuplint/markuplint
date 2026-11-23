@@ -794,228 +794,223 @@ describe('Markdown parser', () => {
 	});
 });
 
-describe('Issues', () => {
-	// https://github.com/markuplint/markuplint/issues/536
-	test('[require-accessible-name-issue-536] #536', async () => {
-		expect(
-			(await mlRuleTest(rule, '<h2 id="h">Heading</h2><div role="region" aria-labelledby="h">...</div>'))
-				.violations,
-		).toStrictEqual([]);
-		expect(
-			(
-				await mlRuleTest(
-					rule,
-					'<h2 id="h">Heading</h2><div role="region" aria-labelledby="h" aria-hidden="true">...</div>',
-				)
-			).violations,
-		).toStrictEqual([]);
-	});
+// https://github.com/markuplint/markuplint/issues/536
+test('[require-accessible-name-issue-536] #536', async () => {
+	expect(
+		(await mlRuleTest(rule, '<h2 id="h">Heading</h2><div role="region" aria-labelledby="h">...</div>')).violations,
+	).toStrictEqual([]);
+	expect(
+		(
+			await mlRuleTest(
+				rule,
+				'<h2 id="h">Heading</h2><div role="region" aria-labelledby="h" aria-hidden="true">...</div>',
+			)
+		).violations,
+	).toStrictEqual([]);
+});
 
-	// https://github.com/markuplint/markuplint/issues/592
-	test('[require-accessible-name-issue-592] #592', async () => {
-		expect(
-			(await mlRuleTest(rule, '<svg aria-label="i-have-name"><path /><rect><path /></rect></svg>')).violations,
-		).toStrictEqual([]);
-		expect(
-			(await mlRuleTest(rule, '<svg role="img" aria-label="i-have-name"><path /><rect><path /></rect></svg>'))
-				.violations,
-		).toStrictEqual([]);
-		expect(
-			(
-				await mlRuleTest(
-					rule,
-					'<svg aria-label="i-have-name"><path aria-label="i-have-name" /><rect><path /></rect></svg>',
-				)
-			).violations,
-		).toStrictEqual([]);
-		expect(
-			(
-				await mlRuleTest(
-					rule,
-					'<svg aria-label="i-have-name"><path aria-label="i-have-name" /><rect aria-label="i-have-name"><path /></rect></svg>',
-				)
-			).violations,
-		).toStrictEqual([]);
-	});
+// https://github.com/markuplint/markuplint/issues/592
+test('[require-accessible-name-issue-592] #592', async () => {
+	expect(
+		(await mlRuleTest(rule, '<svg aria-label="i-have-name"><path /><rect><path /></rect></svg>')).violations,
+	).toStrictEqual([]);
+	expect(
+		(await mlRuleTest(rule, '<svg role="img" aria-label="i-have-name"><path /><rect><path /></rect></svg>'))
+			.violations,
+	).toStrictEqual([]);
+	expect(
+		(
+			await mlRuleTest(
+				rule,
+				'<svg aria-label="i-have-name"><path aria-label="i-have-name" /><rect><path /></rect></svg>',
+			)
+		).violations,
+	).toStrictEqual([]);
+	expect(
+		(
+			await mlRuleTest(
+				rule,
+				'<svg aria-label="i-have-name"><path aria-label="i-have-name" /><rect aria-label="i-have-name"><path /></rect></svg>',
+			)
+		).violations,
+	).toStrictEqual([]);
+});
 
-	// https://github.com/markuplint/markuplint/issues/658
-	test('[require-accessible-name-issue-658] #658', async () => {
-		// ARIA 1.3: dialog no longer requires an accessible name
-		expect((await mlRuleTest(rule, '<dialog></dialog>')).violations.length).toBe(0);
-		expect((await mlRuleTest(rule, '<div role="dialog"></div>')).violations.length).toBe(0);
-	});
+// https://github.com/markuplint/markuplint/issues/658
+test('[require-accessible-name-issue-658] #658', async () => {
+	// ARIA 1.3: dialog no longer requires an accessible name
+	expect((await mlRuleTest(rule, '<dialog></dialog>')).violations.length).toBe(0);
+	expect((await mlRuleTest(rule, '<div role="dialog"></div>')).violations.length).toBe(0);
+});
 
-	test('[require-accessible-name-issue-1018] #1018', async () => {
-		expect(
-			(
-				await mlRuleTest(rule, '<button><slot /></button>', {
-					parser: {
-						'.*': '@markuplint/svelte-parser',
-					},
-				})
-			).violations.length,
-		).toBe(0);
-		expect(
-			(
-				await mlRuleTest(rule, '<button></button>', {
-					parser: {
-						'.*': '@markuplint/svelte-parser',
-					},
-				})
-			).violations.length,
-		).toBe(1);
-	});
+test('[require-accessible-name-issue-1018] #1018', async () => {
+	expect(
+		(
+			await mlRuleTest(rule, '<button><slot /></button>', {
+				parser: {
+					'.*': '@markuplint/svelte-parser',
+				},
+			})
+		).violations.length,
+	).toBe(0);
+	expect(
+		(
+			await mlRuleTest(rule, '<button></button>', {
+				parser: {
+					'.*': '@markuplint/svelte-parser',
+				},
+			})
+		).violations.length,
+	).toBe(1);
+});
 
-	test('[require-accessible-name-issue-1147] #1147', async () => {
-		expect(
-			(
-				await mlRuleTest(
-					rule,
-					`
+test('[require-accessible-name-issue-1147] #1147', async () => {
+	expect(
+		(
+			await mlRuleTest(
+				rule,
+				`
 					<body>
 						<label for="cheese">Do you like cheese?</label>
 						<input type="checkbox" id="cheese">
 						<% pp "anything" %>
 					</body>
 				`,
+				{
+					parser: {
+						'.*': '@markuplint/erb-parser',
+					},
+				},
+			)
+		).violations,
+	).toStrictEqual([]);
+});
+
+// https://github.com/markuplint/markuplint/issues/3283
+test('[require-accessible-name-issue-3283] #3283', async () => {
+	// Implicit label with text only inside child elements
+	expect((await mlRuleTest(rule, '<label><span>label</span> <input /></label>')).violations).toStrictEqual([]);
+
+	// Explicit label with text only inside child elements
+	expect(
+		(await mlRuleTest(rule, '<label for="label"><span>label</span></label> <input id="label" />')).violations,
+	).toStrictEqual([]);
+
+	// These should still work (direct text nodes)
+	expect((await mlRuleTest(rule, '<label>label <input /></label>')).violations).toStrictEqual([]);
+	expect((await mlRuleTest(rule, '<label>label <span>label</span> <input /></label>')).violations).toStrictEqual([]);
+});
+
+test('[require-accessible-name-issue-2394] #2394', async () => {
+	expect(
+		(
+			await mlRuleTest(rule, '<MyComponent href="https://markuplint.dev/" />', {
+				parser: {
+					'.*': '@markuplint/jsx-parser',
+				},
+				pretenders: [
 					{
-						parser: {
-							'.*': '@markuplint/erb-parser',
+						selector: 'MyComponent',
+						as: {
+							element: 'a',
+							inheritAttrs: true,
 						},
 					},
-				)
-			).violations,
-		).toStrictEqual([]);
-	});
+				],
+			})
+		).violations,
+	).toStrictEqual([
+		{
+			severity: 'error',
+			line: 1,
+			col: 1,
+			message: 'Require accessible name',
+			raw: '<MyComponent href="https://markuplint.dev/" />',
+		},
+	]);
 
-	// https://github.com/markuplint/markuplint/issues/3283
-	test('[require-accessible-name-issue-3283] #3283', async () => {
-		// Implicit label with text only inside child elements
-		expect((await mlRuleTest(rule, '<label><span>label</span> <input /></label>')).violations).toStrictEqual([]);
-
-		// Explicit label with text only inside child elements
-		expect(
-			(await mlRuleTest(rule, '<label for="label"><span>label</span></label> <input id="label" />')).violations,
-		).toStrictEqual([]);
-
-		// These should still work (direct text nodes)
-		expect((await mlRuleTest(rule, '<label>label <input /></label>')).violations).toStrictEqual([]);
-		expect((await mlRuleTest(rule, '<label>label <span>label</span> <input /></label>')).violations).toStrictEqual(
-			[],
-		);
-	});
-
-	test('[require-accessible-name-issue-2394] #2394', async () => {
-		expect(
-			(
-				await mlRuleTest(rule, '<MyComponent href="https://markuplint.dev/" />', {
-					parser: {
-						'.*': '@markuplint/jsx-parser',
+	expect(
+		(
+			await mlRuleTest(rule, '<MyComponent href="https://markuplint.dev/" />', {
+				parser: {
+					'.*': '@markuplint/jsx-parser',
+				},
+				pretenders: [
+					{
+						selector: 'MyComponent',
+						as: {
+							element: 'a',
+							inheritAttrs: true,
+						},
 					},
-					pretenders: [
-						{
-							selector: 'MyComponent',
-							as: {
-								element: 'a',
-								inheritAttrs: true,
-							},
-						},
-					],
-				})
-			).violations,
-		).toStrictEqual([
-			{
-				severity: 'error',
-				line: 1,
-				col: 1,
-				message: 'Require accessible name',
-				raw: '<MyComponent href="https://markuplint.dev/" />',
-			},
-		]);
-
-		expect(
-			(
-				await mlRuleTest(rule, '<MyComponent href="https://markuplint.dev/" />', {
-					parser: {
-						'.*': '@markuplint/jsx-parser',
+				],
+				nodeRule: [
+					{
+						selector: 'a',
+						rule: false,
 					},
-					pretenders: [
-						{
-							selector: 'MyComponent',
-							as: {
-								element: 'a',
-								inheritAttrs: true,
-							},
-						},
-					],
-					nodeRule: [
-						{
-							selector: 'a',
-							rule: false,
-						},
-					],
-				})
-			).violations,
-		).toStrictEqual([]);
+				],
+			})
+		).violations,
+	).toStrictEqual([]);
 
-		expect(
-			(
-				await mlRuleTest(rule, '<MyComponent href="https://markuplint.dev/" />', {
-					parser: {
-						'.*': '@markuplint/jsx-parser',
+	expect(
+		(
+			await mlRuleTest(rule, '<MyComponent href="https://markuplint.dev/" />', {
+				parser: {
+					'.*': '@markuplint/jsx-parser',
+				},
+				pretenders: [
+					{
+						selector: 'MyComponent',
+						as: {
+							element: 'a',
+							inheritAttrs: true,
+						},
 					},
-					pretenders: [
-						{
-							selector: 'MyComponent',
-							as: {
-								element: 'a',
-								inheritAttrs: true,
-							},
-						},
-					],
-					nodeRule: [
-						{
-							selector: 'MyComponent',
-							rule: true,
-						},
-					],
-				})
-			).violations,
-		).toStrictEqual([
-			{
-				severity: 'error',
-				line: 1,
-				col: 1,
-				message: 'Require accessible name',
-				raw: '<MyComponent href="https://markuplint.dev/" />',
-			},
-		]);
+				],
+				nodeRule: [
+					{
+						selector: 'MyComponent',
+						rule: true,
+					},
+				],
+			})
+		).violations,
+	).toStrictEqual([
+		{
+			severity: 'error',
+			line: 1,
+			col: 1,
+			message: 'Require accessible name',
+			raw: '<MyComponent href="https://markuplint.dev/" />',
+		},
+	]);
 
-		expect(
-			(
-				await mlRuleTest(rule, '<MyComponent href="https://markuplint.dev/" />', {
-					parser: {
-						'.*': '@markuplint/jsx-parser',
+	expect(
+		(
+			await mlRuleTest(rule, '<MyComponent href="https://markuplint.dev/" />', {
+				parser: {
+					'.*': '@markuplint/jsx-parser',
+				},
+				pretenders: [
+					{
+						selector: 'MyComponent',
+						as: {
+							element: 'a',
+							inheritAttrs: true,
+						},
 					},
-					pretenders: [
-						{
-							selector: 'MyComponent',
-							as: {
-								element: 'a',
-								inheritAttrs: true,
-							},
-						},
-					],
-					nodeRule: [
-						{
-							selector: 'MyComponent',
-							rule: false,
-						},
-					],
-				})
-			).violations,
-		).toStrictEqual([]);
-	});
+				],
+				nodeRule: [
+					{
+						selector: 'MyComponent',
+						rule: false,
+					},
+				],
+			})
+		).violations,
+	).toStrictEqual([]);
 });
 
 describe('an id that is not known until it is rendered', () => {

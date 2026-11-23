@@ -1,5 +1,5 @@
 import { mlRuleTest } from 'markuplint';
-import { describe, test, expect } from 'vitest';
+import { test, expect } from 'vitest';
 
 import rule from './index.js';
 
@@ -97,23 +97,21 @@ test('[no-empty-palpable-content-valid-005] Ignore aria-busy', async () => {
 	]);
 });
 
-describe('Issues', () => {
-	test('[no-empty-palpable-content-issue-593] #593', async () => {
-		expect((await mlRuleTest(rule, '<iframe></iframe>')).violations).toStrictEqual([]);
-	});
+test('[no-empty-palpable-content-issue-593] #593', async () => {
+	expect((await mlRuleTest(rule, '<iframe></iframe>')).violations).toStrictEqual([]);
+});
 
-	test('[no-empty-palpable-content-issue-775] #775', async () => {
-		expect((await mlRuleTest(rule, '<pre>text</pre>')).violations).toStrictEqual([]);
-		expect((await mlRuleTest(rule, '<pre>\n\ttext</pre>')).violations).toStrictEqual([]);
-		expect((await mlRuleTest(rule, '<pre>text\ntext</pre>')).violations).toStrictEqual([]);
-		expect((await mlRuleTest(rule, '<pre>\ntext</pre>')).violations).toStrictEqual([]);
-	});
+test('[no-empty-palpable-content-issue-775] #775', async () => {
+	expect((await mlRuleTest(rule, '<pre>text</pre>')).violations).toStrictEqual([]);
+	expect((await mlRuleTest(rule, '<pre>\n\ttext</pre>')).violations).toStrictEqual([]);
+	expect((await mlRuleTest(rule, '<pre>text\ntext</pre>')).violations).toStrictEqual([]);
+	expect((await mlRuleTest(rule, '<pre>\ntext</pre>')).violations).toStrictEqual([]);
+});
 
-	test('[no-empty-palpable-content-issue-1948] #1948', async () => {
-		expect((await mlRuleTest(rule, '<audio></audio>')).violations).toStrictEqual([]);
-		expect((await mlRuleTest(rule, '<canvas></canvas>')).violations).toStrictEqual([]);
-		expect((await mlRuleTest(rule, '<video></video>')).violations).toStrictEqual([]);
-		expect((await mlRuleTest(rule, '<textarea></textarea>')).violations).toStrictEqual([]);
-		expect((await mlRuleTest(rule, '<output></output>')).violations).toStrictEqual([]);
-	});
+test('[no-empty-palpable-content-issue-1948] #1948', async () => {
+	expect((await mlRuleTest(rule, '<audio></audio>')).violations).toStrictEqual([]);
+	expect((await mlRuleTest(rule, '<canvas></canvas>')).violations).toStrictEqual([]);
+	expect((await mlRuleTest(rule, '<video></video>')).violations).toStrictEqual([]);
+	expect((await mlRuleTest(rule, '<textarea></textarea>')).violations).toStrictEqual([]);
+	expect((await mlRuleTest(rule, '<output></output>')).violations).toStrictEqual([]);
 });

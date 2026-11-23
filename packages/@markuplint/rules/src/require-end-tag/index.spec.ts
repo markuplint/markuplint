@@ -1,5 +1,5 @@
 import { mlRuleTest } from 'markuplint';
-import { test, expect, describe } from 'vitest';
+import { test, expect } from 'vitest';
 
 import rule from './index.js';
 
@@ -164,13 +164,12 @@ test('[require-end-tag-parser-005] Astro', async () => {
 	]);
 });
 
-describe('Issues', () => {
-	test('[require-end-tag-issue-1349] #1349', async () => {
-		expect(
-			(
-				await mlRuleTest(
-					rule,
-					`<tag1>
+test('[require-end-tag-issue-1349] #1349', async () => {
+	expect(
+		(
+			await mlRuleTest(
+				rule,
+				`<tag1>
 	<tag2>
 		{% SYNTAX %}
 		<tag3>
@@ -181,13 +180,12 @@ describe('Issues', () => {
 		{% SYNTAX %}
 	</tag2>
 </tag1>`,
-					{
-						parser: {
-							'.*': '@markuplint/nunjucks-parser',
-						},
+				{
+					parser: {
+						'.*': '@markuplint/nunjucks-parser',
 					},
-				)
-			).violations,
-		).toStrictEqual([]);
-	});
+				},
+			)
+		).violations,
+	).toStrictEqual([]);
 });

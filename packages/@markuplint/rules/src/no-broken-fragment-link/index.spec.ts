@@ -144,34 +144,33 @@ test('[no-broken-fragment-link-invalid-001] fragment', async () => {
 	).toStrictEqual([]);
 });
 
-describe('Issues', () => {
-	test('[no-broken-fragment-link-issue-748] #748', async () => {
-		expect(
-			(
-				await mlRuleTest(
-					rule,
-					`
+test('[no-broken-fragment-link-issue-748] #748', async () => {
+	expect(
+		(
+			await mlRuleTest(
+				rule,
+				`
 	<main>
 		<?php foo() ?>
 		<a href="#foo">link</a>
 		<div id="foo"></div>
 	</main>`,
-					{
-						parser: {
-							'.*': '@markuplint/php-parser',
-						},
+				{
+					parser: {
+						'.*': '@markuplint/php-parser',
 					},
-				)
-			).violations,
-		).toStrictEqual([]);
-	});
+				},
+			)
+		).violations,
+	).toStrictEqual([]);
+});
 
-	test('[no-broken-fragment-link-issue-776] #776', async () => {
-		expect(
-			(
-				await mlRuleTest(
-					rule,
-					`
+test('[no-broken-fragment-link-issue-776] #776', async () => {
+	expect(
+		(
+			await mlRuleTest(
+				rule,
+				`
 						<a href="#apple%3Aorange">apple:orange</a>
 						<p id="apple:orange">apple:orange</p>
 
@@ -181,15 +180,14 @@ describe('Issues', () => {
 						<a href="#apple%26lemon">apple&amp;lemon</a>
 						<p id="apple&lemon">apple&amp;lemon</p>
 					`,
-					{
-						parser: {
-							'.*': '@markuplint/php-parser',
-						},
+				{
+					parser: {
+						'.*': '@markuplint/php-parser',
 					},
-				)
-			).violations,
-		).toStrictEqual([]);
-	});
+				},
+			)
+		).violations,
+	).toStrictEqual([]);
 });
 
 test('[no-broken-fragment-link-issue-4435-001] the id that is a literal is the id the element has, a character reference of it is not decoded', async () => {

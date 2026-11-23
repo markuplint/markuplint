@@ -1,5 +1,5 @@
 import { mlRuleTest } from 'markuplint';
-import { test, expect, describe } from 'vitest';
+import { test, expect } from 'vitest';
 
 import rule from './index.js';
 
@@ -470,11 +470,10 @@ section.Card
 	]);
 });
 
-describe('Issues', () => {
-	test('[class-naming-issue-1263] #1263', async () => {
-		const { violations } = await mlRuleTest(
-			rule,
-			`
+test('[class-naming-issue-1263] #1263', async () => {
+	const { violations } = await mlRuleTest(
+		rule,
+		`
 			<div class="Carousel">
 				<div class="Carousel__slides" aria-live="off" >
 					<div class="Carousel__slide">
@@ -483,57 +482,56 @@ describe('Issues', () => {
 				</div>
 			</div>
 		`,
-			{
-				rule: '/.+/',
-				childNodeRule: [
-					{
-						regexSelector: {
-							attrName: 'class',
-							attrValue: '/^(?<BlockName>[A-Z][a-z0-9]+)(?:__[a-z][a-z0-9-]+)?$/',
-						},
-						rule: {
-							value: ['/^{{BlockName}}__[a-z][a-z0-9-]+$/', '/^([A-Z][a-z0-9]+)$/'],
-						},
-					},
-				],
-			},
-		);
-		expect(violations).toStrictEqual([]);
-	});
-
-	test('[class-naming-issue-4202-001] enabled without a pattern is a no-op', async () => {
-		const { violations } = await mlRuleTest(rule, '<img class="a">', { rule: true });
-		expect(violations).toStrictEqual([]);
-	});
-
-	test('[class-naming-issue-4202-002] empty pattern array is a no-op', async () => {
-		const { violations } = await mlRuleTest(rule, '<img class="a">', { rule: { value: [] } });
-		expect(violations).toStrictEqual([]);
-	});
-
-	test('[class-naming-issue-4202-004] null value is a no-op', async () => {
-		const { violations } = await mlRuleTest(rule, '<img class="a">', { rule: { value: null } });
-		expect(violations).toStrictEqual([]);
-	});
-
-	test('[class-naming-issue-4202-003] a pattern set only by childNodeRule still applies', async () => {
-		const { violations } = await mlRuleTest(rule, '<div class="a"><p class="b"></p></div>', {
-			rule: true,
+		{
+			rule: '/.+/',
 			childNodeRule: [
 				{
-					selector: 'div',
-					rule: { value: 'a' },
+					regexSelector: {
+						attrName: 'class',
+						attrValue: '/^(?<BlockName>[A-Z][a-z0-9]+)(?:__[a-z][a-z0-9-]+)?$/',
+					},
+					rule: {
+						value: ['/^{{BlockName}}__[a-z][a-z0-9-]+$/', '/^([A-Z][a-z0-9]+)$/'],
+					},
 				},
 			],
-		});
-		expect(violations).toStrictEqual([
+		},
+	);
+	expect(violations).toStrictEqual([]);
+});
+
+test('[class-naming-issue-4202-001] enabled without a pattern is a no-op', async () => {
+	const { violations } = await mlRuleTest(rule, '<img class="a">', { rule: true });
+	expect(violations).toStrictEqual([]);
+});
+
+test('[class-naming-issue-4202-002] empty pattern array is a no-op', async () => {
+	const { violations } = await mlRuleTest(rule, '<img class="a">', { rule: { value: [] } });
+	expect(violations).toStrictEqual([]);
+});
+
+test('[class-naming-issue-4202-004] null value is a no-op', async () => {
+	const { violations } = await mlRuleTest(rule, '<img class="a">', { rule: { value: null } });
+	expect(violations).toStrictEqual([]);
+});
+
+test('[class-naming-issue-4202-003] a pattern set only by childNodeRule still applies', async () => {
+	const { violations } = await mlRuleTest(rule, '<div class="a"><p class="b"></p></div>', {
+		rule: true,
+		childNodeRule: [
 			{
-				severity: 'warning',
-				line: 1,
-				col: 26,
-				message: 'The "b" class name is unmatched with the below patterns: "a"',
-				raw: 'b',
+				selector: 'div',
+				rule: { value: 'a' },
 			},
-		]);
+		],
 	});
+	expect(violations).toStrictEqual([
+		{
+			severity: 'warning',
+			line: 1,
+			col: 26,
+			message: 'The "b" class name is unmatched with the below patterns: "a"',
+			raw: 'b',
+		},
+	]);
 });

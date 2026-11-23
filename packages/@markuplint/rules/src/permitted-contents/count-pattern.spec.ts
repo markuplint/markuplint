@@ -1,6 +1,6 @@
 import specs from '@markuplint/html-spec';
 import { createTestElement } from '@markuplint/ml-core';
-import { test, expect, describe } from 'vitest';
+import { test, expect } from 'vitest';
 
 import { countPattern } from './count-pattern.js';
 import type { Options } from './types.js';
@@ -318,91 +318,89 @@ test('[permitted-contents-invalid-014] part of the ruby element #3', () => {
 	expect(c(models, '<rt></rt><rp></rp><rt></rt><rp></rp>').type).toBe('MATCHED');
 });
 
-describe('Issues', () => {
-	// #3592: verify min=0 guard doesn't break optional with nested require
-	test('[permitted-contents-issue-3592-001] optional with nested require — empty is valid', () => {
-		expect(c({ optional: [{ require: 'dt' }, { require: 'dd' }] }, '').type).toBe('MATCHED_ZERO');
-	});
+// #3592: verify min=0 guard doesn't break optional with nested require
+test('[permitted-contents-issue-3592-001] optional with nested require — empty is valid', () => {
+	expect(c({ optional: [{ require: 'dt' }, { require: 'dd' }] }, '').type).toBe('MATCHED_ZERO');
+});
 
-	test('[permitted-contents-issue-3592-002] optional with nested require — partial is invalid', () => {
-		expect(c({ optional: [{ require: 'dt' }, { require: 'dd' }] }, '<dt></dt>').type).toBe('MISSING_NODE_REQUIRED');
-	});
+test('[permitted-contents-issue-3592-002] optional with nested require — partial is invalid', () => {
+	expect(c({ optional: [{ require: 'dt' }, { require: 'dd' }] }, '<dt></dt>').type).toBe('MISSING_NODE_REQUIRED');
+});
 
-	test('[permitted-contents-issue-3592-003] zeroOrMore with nested sequence — empty is valid', () => {
-		// This is the actual pattern used by the dl element fix
-		expect(
-			c(
-				{
-					zeroOrMore: [{ oneOrMore: 'dt' }, { oneOrMore: 'dd' }],
-				},
-				'',
-			).type,
-		).toBe('MATCHED_ZERO');
-	});
+test('[permitted-contents-issue-3592-003] zeroOrMore with nested sequence — empty is valid', () => {
+	// This is the actual pattern used by the dl element fix
+	expect(
+		c(
+			{
+				zeroOrMore: [{ oneOrMore: 'dt' }, { oneOrMore: 'dd' }],
+			},
+			'',
+		).type,
+	).toBe('MATCHED_ZERO');
+});
 
-	test('[permitted-contents-issue-3592-004] zeroOrMore with nested sequence — match is valid', () => {
-		expect(
-			c(
-				{
-					zeroOrMore: [{ oneOrMore: 'dt' }, { oneOrMore: 'dd' }],
-				},
-				'<dt></dt><dd></dd>',
-			).type,
-		).toBe('MATCHED');
-	});
+test('[permitted-contents-issue-3592-004] zeroOrMore with nested sequence — match is valid', () => {
+	expect(
+		c(
+			{
+				zeroOrMore: [{ oneOrMore: 'dt' }, { oneOrMore: 'dd' }],
+			},
+			'<dt></dt><dd></dd>',
+		).type,
+	).toBe('MATCHED');
+});
 
-	test('[permitted-contents-issue-1146-001] #1146 1/2', () => {
-		const models = {
-			oneOrMore: [
-				{
-					choice: [
-						[
-							{
-								require: 'b',
-							},
-						],
+test('[permitted-contents-issue-1146-001] #1146 1/2', () => {
+	const models = {
+		oneOrMore: [
+			{
+				choice: [
+					[
+						{
+							require: 'b',
+						},
 					],
-				},
-			],
-		};
+				],
+			},
+		],
+	};
 
-		expect(c(models, '<b></b>').type).toBe('MATCHED');
-		expect(c(models, '<b></b><b></b>').type).toBe('MATCHED');
-	});
+	expect(c(models, '<b></b>').type).toBe('MATCHED');
+	expect(c(models, '<b></b><b></b>').type).toBe('MATCHED');
+});
 
-	test('[permitted-contents-issue-1146-002] #1146 2/2', () => {
-		const models = {
-			oneOrMore: [
-				{
-					optional: 'a',
-				},
-				{
-					choice: [
-						[
-							{
-								optional: 'b',
-							},
-						],
-						[
-							{
-								require: 'c',
-							},
-						],
+test('[permitted-contents-issue-1146-002] #1146 2/2', () => {
+	const models = {
+		oneOrMore: [
+			{
+				optional: 'a',
+			},
+			{
+				choice: [
+					[
+						{
+							optional: 'b',
+						},
 					],
-				},
-			],
-		};
+					[
+						{
+							require: 'c',
+						},
+					],
+				],
+			},
+		],
+	};
 
-		expect(c(models, '<a></a>').type).toBe('MATCHED');
-		expect(c(models, '<a></a><a></a><a></a>').type).toBe('MATCHED');
-		expect(c(models, '<a></a><b></b>').type).toBe('MATCHED');
-		expect(c(models, '<a></a><c></c>').type).toBe('MATCHED');
-		expect(c(models, '<b></b>').type).toBe('MATCHED');
-		expect(c(models, '<b></b><b></b>').type).toBe('MATCHED');
-		expect(c(models, '<b></b><c></c>').type).toBe('MATCHED');
-		expect(c(models, '<c></c><c></c>').type).toBe('MATCHED');
-		expect(c(models, '<a></a><b></b><c></c>').type).toBe('MATCHED');
-		expect(c(models, '<a></a><c></c><c></c>').type).toBe('MATCHED');
-		expect(c(models, '<c></c><b></b><a></a>').type).toBe('MATCHED');
-	});
+	expect(c(models, '<a></a>').type).toBe('MATCHED');
+	expect(c(models, '<a></a><a></a><a></a>').type).toBe('MATCHED');
+	expect(c(models, '<a></a><b></b>').type).toBe('MATCHED');
+	expect(c(models, '<a></a><c></c>').type).toBe('MATCHED');
+	expect(c(models, '<b></b>').type).toBe('MATCHED');
+	expect(c(models, '<b></b><b></b>').type).toBe('MATCHED');
+	expect(c(models, '<b></b><c></c>').type).toBe('MATCHED');
+	expect(c(models, '<c></c><c></c>').type).toBe('MATCHED');
+	expect(c(models, '<a></a><b></b><c></c>').type).toBe('MATCHED');
+	expect(c(models, '<a></a><c></c><c></c>').type).toBe('MATCHED');
+	expect(c(models, '<c></c><b></b><a></a>').type).toBe('MATCHED');
 });
