@@ -20,10 +20,10 @@ const RULES_SRC = path.resolve('packages', '@markuplint', 'rules', 'src');
 
 /**
  * Tests whose expectation the Rust engine deliberately does not meet, keyed by the spec file
- * (relative to the rules' `src`) and the ID in the test name: an ID is unique per spec file, not per
- * rule (`permitted-contents-invalid-011` is also in `count-pattern.spec.ts` and `order.spec.ts`).
+ * (relative to the rules' `src`) and the ID in the test name (`[rule-name-NNN]`, unique within the
+ * rule across all of its spec files).
  *
- * `permitted-contents/index.spec.ts` `[permitted-contents-invalid-011]` (a `<div>` inside a
+ * `permitted-contents/index.spec.ts` `[permitted-contents-010]` (a `<div>` inside a
  * `<select>`): the TS engine reads the
  * markup with parse5 8.1, which still has the "in select" insertion mode and drops the `div`
  * into the text of the `select`, so the TS rule reports a text node. The Rust HTML parser follows
@@ -36,7 +36,7 @@ const RULES_SRC = path.resolve('packages', '@markuplint', 'rules', 'src');
  */
 const KNOWN_DIVERGENCES: ReadonlyMap<string, string> = new Map([
 	[
-		'permitted-contents/index.spec.ts [permitted-contents-invalid-011]',
+		'permitted-contents/index.spec.ts [permitted-contents-010]',
 		'the Rust HTML parser keeps a div inside a select; parse5 drops it',
 	],
 ]);
