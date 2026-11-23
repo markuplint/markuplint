@@ -62,7 +62,7 @@ What each role receives (dependency updates, release reminders) and how the role
 
 # Rule Test ID Convention
 
-Every `test()` in rule spec files under `packages/@markuplint/rules/src/<rule-name>/` has a unique `[rule-name-category-NNN]` prefix. See [`packages/@markuplint/rules/CLAUDE.md`](packages/@markuplint/rules/CLAUDE.md) for the full convention.
+Every behavior test of a rule (a `test()` of a spec under `packages/@markuplint/rules/src/<rule-name>/` that goes through the testing API) has a `[rule-name-NNN]` prefix, unique within the rule; no other test has one. See [`packages/@markuplint/rules/CLAUDE.md`](packages/@markuplint/rules/CLAUDE.md) for the full convention.
 
 # Branch & Worktree Policy
 

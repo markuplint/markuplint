@@ -11,34 +11,23 @@
 
 ## Test ID Convention
 
-Every `test()` block in rule spec files — `src/<rule-name>/**/*.spec.ts` — has a unique ID prefix:
+A behavior test starts with an ID:
 
 ```
-[rule-name-category-NNN] description
+[rule-name-NNN] description
 ```
 
-Repo-wide meta specs directly under `src/` (e.g. `mirrors-parse-error-codes.spec.ts`) are NOT rule specs and are exempt.
+A behavior test is a `test()` / `test.each()` of a spec in a registered rule's directory (`src/<rule-name>/`, a directory that `src/index.ts` imports) that goes through the testing API (`mlRuleTest`, `mlTest`, `mlTestFile`). These are the contract that another implementation of the rules is matched against (the Rust engine of the v6 line names them by this ID in its `tests.rs`), so the ID is the number of a behavior, not of a file or of the issue it came from.
 
-### Categories
-
-| Category     | When to use                                                       |
-| ------------ | ----------------------------------------------------------------- |
-| `valid`      | Test expects 0 violations                                         |
-| `invalid`    | Test expects 1+ violations                                        |
-| `fix`        | Test checks `fixedCode` or auto-fix behavior                      |
-| `parser`     | Test uses a non-default parser (Vue, React, Pug, etc.)            |
-| `debug`      | Test checks only debug-logging behavior (not `valid` / `invalid`) |
-| `issue-NNNN` | Regression test for a GitHub issue (use the issue number)         |
+Every other test has no ID: tests of an internal function, of the bundled spec data, of a helper, the repo-wide meta specs directly under `src/` (e.g. `mirrors-parse-error-codes.spec.ts`) and the specs of directories that are not registered rules (`wai-aria/`, `srcset-sizes-constraint/`, …). A rule's spec that mixes both keeps the behavior tests in `index.spec.ts` (or a file named for the behavior) and moves the others to a file named for what they test.
 
 ### Rules
 
-- IDs go on `test()` blocks only (not `describe()`)
-- Numbers are sequential per category per file, starting at `001`
-- Multiple tests for the same issue: `[rule-name-issue-NNNN-001]`, `[rule-name-issue-NNNN-002]`
-- The number is that of the issue whose behavior the test guards. A test added later for that behavior — by an issue that only asks for tests, or with a fix found while writing them — continues its numbers, next to its earlier tests
-- When adding a new test, assign the next available number in the appropriate category
-- An existing test whose assertion was flipped keeps its ID, category included (`.claude/rules/spec-files.md`)
-- Run `/list-rule-test` (or `node .claude/skills/list-rule-test/scripts/list-rule-test.mjs --no-id`) to check for missing IDs — the only expected hits are the exempt meta specs noted above
+- The number is unique within the rule, across all of its spec files, has at least three digits, and starts at `001`. There is no category (`valid`, `invalid`, …) and no issue number: what a test expects is in its body, and a category goes stale when an assertion is flipped
+- IDs go on `test()` and `test.each()` only (one ID for the whole table), not on `describe()`
+- A new test takes the highest number of its rule plus one (`node .claude/skills/list-rule-test/scripts/list-rule-test.mjs --next <rule-name>`). The number of a removed test is not given to another, and a gap is not filled, as the other implementation matches by number
+- An existing test whose assertion was flipped keeps its ID (`.claude/rules/spec-files.md`)
+- `src/test-ids.spec.ts` enforces this in `yarn test`; `node .claude/skills/list-rule-test/scripts/list-rule-test.mjs --no-id` lists the behavior tests that lack an ID and prints nothing when there are none
 
 ## Writing a rule's README and `schema.json` description
 

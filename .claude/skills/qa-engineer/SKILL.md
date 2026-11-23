@@ -105,7 +105,7 @@ Test names should state the spec ("calling sort on an empty list does not throw"
 
 ### 9a. Rule Test ID Convention (markuplint-specific)
 
-Every `test()` in rule spec files — `packages/@markuplint/rules/src/<rule-name>/**/*.spec.ts` — has a unique `[rule-name-category-NNN]` ID prefix (categories: `valid`, `invalid`, `fix`, `parser`, `issue-NNNN`). Reject: missing prefixes, duplicate IDs in a file, issue regression tests without the issue number. Verify with `node .claude/skills/list-rule-test/scripts/list-rule-test.mjs --no-id` — the only expected hits are repo-wide meta specs directly under `src/` (e.g. `mirrors-parse-error-codes.spec.ts`), which are exempt.
+Every behavior test of a rule — a `test()` / `test.each()` of a spec under `packages/@markuplint/rules/src/<rule-name>/` that goes through the testing API (`mlRuleTest`, `mlTest`, `mlTestFile`) — has a `[rule-name-NNN]` ID prefix, unique within the rule across its files. No other test has one (internal functions, spec data, helpers, meta specs). Reject: a missing prefix, a duplicate ID in a rule, a category or an issue number in an ID, a number given again to a removed test, an ID on a test that does not go through the testing API. `src/test-ids.spec.ts` enforces the first, second and last in `yarn test`; verify the rest with `node .claude/skills/list-rule-test/scripts/list-rule-test.mjs --no-id`, which prints nothing when every behavior test has an ID.
 
 ### 10. Cross-Platform and Cross-Runtime Compatibility
 
