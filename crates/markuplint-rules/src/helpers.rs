@@ -606,7 +606,6 @@ mod tests {
 /// which have no ID, as the DOM of TS is built there by a framework parser and here by the MLAST that the parser sends.
 #[cfg(test)]
 mod unknown_tests {
-    use markuplint_core::mlast::MLASTSpreadAttr;
     use markuplint_dom::arena::DomArena;
     use markuplint_types::spec::aria::ARIAVersion;
 
@@ -739,11 +738,7 @@ mod unknown_tests {
     }
 
     fn element_with_role(arena: &DomArena, role: &str) -> markuplint_dom::arena::NodeId {
-        arena
-            .elements()
-            .find(|(_, el)| get_attr_value_from_el(el, "role") == Some(role))
-            .map(|(id, _)| id)
-            .unwrap()
+        crate::test_util::element_with_attr(arena, "role", role)
     }
 
     /// TS `mayMatchContextRole` agrees with `getComputedRole` where no ancestor has a role that is not known.
@@ -809,23 +804,9 @@ mod unknown_tests {
             &conditions,
             ARIAVersion::V1_3
         ));
-        let unknown = arena
-            .elements()
-            .find(|(_, el)| get_attr_value_from_el(el, "id") == Some("u"))
-            .map(|(id, _)| id)
-            .unwrap();
-        arena
-            .element_mut(unknown)
-            .unwrap()
-            .attributes
-            .push(MLASTAttr::Spread(MLASTSpreadAttr {
-                uuid: "s".to_owned(),
-                raw: "{...props}".to_owned(),
-                offset: 0,
-                line: 1,
-                col: 1,
-                node_name: "#spread".to_owned(),
-            }));
+        let unknown = crate::test_util::element_with_attr(&arena, "id", "u");
+        let last = arena.element_mut(unknown).unwrap().attributes.len();
+        crate::test_util::insert_spread_attr(&mut arena, unknown, last);
         // The `group` has no `menu` above it, but the element above the `group` may be one
         assert!(may_match_context_role(
             &arena,
