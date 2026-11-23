@@ -174,6 +174,15 @@ describe('a file that no spec reads', () => {
 	);
 });
 
+describe('a file that more than one row of the root inputs names', () => {
+	test('.github/workflows/spec-citation-watch.yml selects the release-line check and the spec that reads its job', () => {
+		expect(affected(modified('.github/workflows/spec-citation-watch.yml')).toSorted()).toStrictEqual([
+			'scripts/release-lines/consistency.spec.ts',
+			'scripts/spec-citations/index-check.spec.ts',
+		]);
+	});
+});
+
 describe('a source file of a package', () => {
 	test('is passed with its build output, and the specs that spawn a process run', () => {
 		const targets = affected(modified('packages/@markuplint/ml-core/src/a.ts'));

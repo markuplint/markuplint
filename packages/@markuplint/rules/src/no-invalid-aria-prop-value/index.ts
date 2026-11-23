@@ -5,7 +5,7 @@ import { ARIA_RECOMMENDED_VERSION } from '@markuplint/ml-spec';
 
 import { checkingValue } from '../wai-aria/checkings/value.js';
 import { defaultOptions } from '../wai-aria/default-options.js';
-import { getAriaAttrs } from '../helpers.js';
+import { getAriaAttrs, isRoleUnknown } from '../helpers.js';
 import meta from './meta.js';
 
 export default createRule<boolean, Options>({
@@ -21,9 +21,10 @@ export default createRule<boolean, Options>({
 			const ariaVersion =
 				el.rule.options?.version ?? document.ruleCommonSettings?.ariaVersion ?? ARIA_RECOMMENDED_VERSION;
 			const computed = getComputedRole(document.specs, el, ariaVersion);
+			const roleUnknown = isRoleUnknown(el);
 			const { props: propSpecs } = ariaSpecs(document.specs, ariaVersion);
 			for (const attr of propAttrs) {
-				report(checkingValue({ attr, role: computed.role, propSpecs }));
+				report(checkingValue({ attr, role: computed.role, roleUnknown, propSpecs }));
 			}
 		});
 	},

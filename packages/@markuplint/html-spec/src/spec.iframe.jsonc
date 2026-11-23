@@ -9,7 +9,7 @@
 		"#GlobalEventAttrs": true,
 		"#ARIAAttrs": true,
 		"#HTMLEmbededAndMediaContentAttrs": ["src", "height", "width"],
-		"#HTMLLinkAndFetchingAttrs": ["referrerpolicy", "loading", "fetchpriority"]
+		"#HTMLLinkAndFetchingAttrs": ["referrerpolicy", "loading"]
 	},
 	"attributes": {
 		// https://html.spec.whatwg.org/multipage/iframe-embed-object.html#attr-iframe-src
@@ -60,7 +60,7 @@
 		"allowfullscreen": {
 			"type": "Boolean"
 		},
-		// https://developer.mozilla.org/en-US/docs/Web/API/HTMLIFrameElement/privateToken
+		// https://wicg.github.io/trust-token-api/#iframe-private-token
 		"privateToken": {
 			"type": "Any"
 		},

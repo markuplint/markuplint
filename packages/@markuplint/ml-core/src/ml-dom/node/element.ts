@@ -1262,10 +1262,13 @@ export class MLElement<T extends RuleConfigValue, O extends PlainData = undefine
 	}
 
 	/**
-	 * Whether this element has any spread attributes (e.g., `{...props}` in JSX).
+	 * Whether this element has any spread attributes (e.g., `{...props}` in JSX, `v-bind="obj"` in Vue):
+	 * an attribute that gives the element attributes that the markup does not show ({@link MLAttr.isSpread}).
+	 * It reads the attributes that are written on the element itself: for an element that a pretender makes
+	 * stand for a component, it does not follow the pretender (`MLElement#attributes` does).
 	 */
 	get hasSpreadAttr() {
-		return this.#attributes.some(attr => attr.localName === '#spread');
+		return this.#attributes.some(attr => attr.isSpread === true);
 	}
 
 	/**

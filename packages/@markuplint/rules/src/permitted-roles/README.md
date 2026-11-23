@@ -7,6 +7,8 @@ description: Warns when a role is not permitted on the element according to ARIA
 
 Warns when a role is not permitted on the element according to ARIA in HTML.
 
+A `role` attribute whose value is given by code (`role={props.role}`), or that has a spread attribute (`{...props}`) after it, is not judged: the roles that the element has are not known until it is rendered.
+
 ❌ Examples of **incorrect** code for this rule
 
 ```html

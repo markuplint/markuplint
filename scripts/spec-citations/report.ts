@@ -31,6 +31,9 @@ const HEADINGS: Readonly<Record<ProblemKind, string>> = {
 	'no-fragment': 'Citation without a fragment',
 	'directive-missing': 'Text fragment no longer matches',
 	'secno-stale': 'Section number is out of date',
+	'index-section-unlisted': 'Section of the index that is not watched',
+	'index-table-unreadable': 'Table of the index that cannot be read',
+	'index-data-mismatch': 'Index and data of html-spec differ',
 	'section-changed': 'Cited section changed',
 	'fetch-failed': 'Page could not be fetched',
 };

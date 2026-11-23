@@ -5,7 +5,7 @@ import { ARIA_RECOMMENDED_VERSION } from '@markuplint/ml-spec';
 
 import { checkingProhibitedNaming } from '../wai-aria/checkings/prohibited-naming.js';
 import { defaultOptions } from '../wai-aria/default-options.js';
-import { getAriaAttrs } from '../helpers.js';
+import { getAriaAttrs, isRoleUnknown } from '../helpers.js';
 import meta from './meta.js';
 
 /**
@@ -27,6 +27,8 @@ export default createRule<boolean, Options>({
 			if (elSpec && !elSpec.globalAttrs['#ARIAAttrs']) return;
 			const propAttrs = getAriaAttrs(el);
 			if (propAttrs.length === 0) return;
+			// Whether the element has no role to name is not known where the role is not known until it is rendered.
+			if (isRoleUnknown(el)) return;
 			const ariaVersion =
 				el.rule.options?.version ?? document.ruleCommonSettings?.ariaVersion ?? ARIA_RECOMMENDED_VERSION;
 			const computed = getComputedRole(document.specs, el, ariaVersion);

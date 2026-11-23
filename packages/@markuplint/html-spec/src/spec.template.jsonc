@@ -10,6 +10,11 @@
 		"#ARIAAttrs": true
 	},
 	"attributes": {
+		// https://html.spec.whatwg.org/multipage/scripting.html#attr-template-for
+		"for": {
+			// The name of a `<?marker>` or `<?start>` processing instruction in the same tree.
+			"type": "Any"
+		},
 		// https://html.spec.whatwg.org/multipage/scripting.html#attr-template-shadowrootmode
 		"shadowrootmode": {
 			"type": {

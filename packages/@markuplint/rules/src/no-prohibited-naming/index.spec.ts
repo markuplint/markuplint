@@ -229,3 +229,25 @@ test('[no-prohibited-naming-issue-4309-004] JSX: an upper-case aria-label on an 
 		},
 	]);
 });
+
+test('[no-prohibited-naming-issue-4789-001] JSX: an element whose role is not known until it is rendered may have a role that can be named', async () => {
+	const parser = { '.*': '@markuplint/jsx-parser' };
+	const source = [
+		'<>',
+		'<abbr role={props.role} aria-label="x">a</abbr>',
+		'<abbr {...props} aria-label="x">b</abbr>',
+		// `foo` is no role, so the element has none unless the spread after it brings one
+		'<abbr role="foo" {...props} aria-label="x">c</abbr>',
+		'</>',
+	].join('\n');
+	expect((await mlRuleTest(rule, source, { parser })).violations).toStrictEqual([]);
+
+	// Controls: an element that has no role is judged, also where the spread is before the `role` attribute
+	const message = 'The "aria-label" ARIA property is prohibited on the "abbr" element';
+	expect((await mlRuleTest(rule, '<abbr aria-label="x">a</abbr>', { parser })).violations).toStrictEqual([
+		{ severity: 'error', line: 1, col: 7, message, raw: 'aria-label="x"' },
+	]);
+	expect(
+		(await mlRuleTest(rule, '<abbr {...props} role="foo" aria-label="x">a</abbr>', { parser })).violations,
+	).toStrictEqual([{ severity: 'error', line: 1, col: 29, message, raw: 'aria-label="x"' }]);
+});

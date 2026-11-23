@@ -7,8 +7,9 @@
  * and a reference to an id that no element has may be a reference to it. A rule that reports a
  * reference to nothing, or an algorithm that decides from the element that a reference finds,
  * takes the tree to be undecidable instead (`no-refer-to-non-existent-id` does the same, and
- * `isValidLandmarkRole` and `accnameMayComeFromUnknownContent` of `@markuplint/rules` follow it:
- * a change to the criterion belongs to all of them).
+ * `isValidLandmarkRole` and `accnameMayComeFromUnknownContent` of `@markuplint/rules` follow it, as
+ * does `isRoleUnknown` of `@markuplint/rules` for a `role` that code gives: a change to the criterion
+ * belongs to all of them).
  *
  * That is a decision of markuplint, as it does not decide what it cannot know, and not text of a
  * specification: the specifications define an id and an id reference, and not an id that is not

@@ -5,6 +5,7 @@ import { ARIA_RECOMMENDED_VERSION, getFirstAriaOwnsReferrer } from '@markuplint/
 
 import { checkingRequiredAccessibilityParentRole } from '../wai-aria/checkings/required-accessibility-parent-role.js';
 import { defaultOptions } from '../wai-aria/default-options.js';
+import { isRoleUnknown } from '../helpers.js';
 import meta from './meta.js';
 
 /**
@@ -21,6 +22,8 @@ export default createRule<boolean, Options>({
 		await document.walkOn('Element', el => {
 			const roleAttr = el.getAttributeNode('role');
 			if (!roleAttr) return;
+			// A role that a spread attribute after it may override is not the role that the element has
+			if (isRoleUnknown(el)) return;
 			const elSpec = getSpec(el, document.specs.specs);
 			if (!elSpec) return;
 			if (!elSpec.globalAttrs['#ARIAAttrs']) return;
