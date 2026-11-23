@@ -246,8 +246,23 @@ describe('the test ID guard of the rules', () => {
 		);
 	});
 
-	test('does not run for a source file of another package', () => {
+	test('runs for a spec of the rules that was deleted, which may have taken a test with it', () => {
+		expect(affected({ status: 'D', path: 'packages/@markuplint/rules/src/attr-order/index.spec.ts' })).toContain(
+			'packages/@markuplint/rules/src/test-ids.spec.ts',
+		);
+	});
+
+	test('runs with the whole package for a file that is not source', () => {
+		expect(affected(modified('packages/@markuplint/rules/src/attr-order/fixture.html'))).toContain(
+			'packages/@markuplint/rules/src/test-ids.spec.ts',
+		);
+	});
+
+	test('does not run for a source file or a spec of another package, which has no such guard', () => {
 		expect(affected(modified('packages/@markuplint/ml-core/src/a.ts'))).not.toContain(
+			'packages/@markuplint/rules/src/test-ids.spec.ts',
+		);
+		expect(affected(modified('packages/@markuplint/ml-core/src/a.spec.ts'))).not.toContain(
 			'packages/@markuplint/rules/src/test-ids.spec.ts',
 		);
 	});

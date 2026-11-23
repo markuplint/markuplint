@@ -18,7 +18,7 @@ describe('the browsers that a feature is not supported in', () => {
 		);
 	});
 
-	test('added, removed and never supported are as before in English', () => {
+	test('added, removed and never supported are in English with locale en', () => {
 		const t = translator(i18n('en'));
 		expect(__formatUnsupportedMessage(t, 'dialog', 'element', unsupported)).toBe(
 			'the "dialog" element is not supported in Chrome (added in 37, target: 30), Firefox (removed in 4), Internet Explorer (not supported)',

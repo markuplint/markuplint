@@ -7,24 +7,45 @@
  * the testing API (`mlRuleTest`, `mlTest`, `mlTestFile`). The tests of any other spec have no ID and are not
  * listed.
  *
- * Usage:
+ * What a behavior test is, and the registry, are read as `src/test-ids.spec.ts` of the rules reads them (it is
+ * the one that `yarn test` runs, and it asserts that the registry it reads is the set of the rule directories):
+ * keep the two in step.
+ *
+ * Usage, from any directory:
  *   node .claude/skills/list-rule-test/scripts/list-rule-test.mjs [options]
  *
  * Options:
  *   --rule <name>   Only the tests of this rule (e.g., --rule label-has-control)
- *   --next <name>   Print the ID to give the next test of this rule: the highest number of the rule plus one
- *   --no-id         Only the behavior tests that have no ID (the convention requires one)
+ *   --next <name>   Print the ID to give the next test of this rule: the highest number present plus one. A
+ *                   number that a removed test had and no test has now is not known to it: when the removed
+ *                   test had the highest number, take the number after it from the history of the file.
+ *   --no-id         Only the behavior tests that have no ID of their rule (`[<rule-name>-NNN]`, three digits
+ *                   or more); exits with 1 when there is one
  *   --stats         Show summary statistics
  *   --json          Output as JSON
+ *
+ * An option that is not listed, or one of `--rule` and `--next` without a value, is an error.
  */
 
 import { readdirSync, readFileSync } from 'node:fs';
-import { join, relative } from 'node:path';
+import { join, relative, sep } from 'node:path';
+import { fileURLToPath } from 'node:url';
+import { parseArgs } from 'node:util';
 
 import ts from 'typescript';
 
-const RULES_DIR = 'packages/@markuplint/rules/src';
+// The script is at `.claude/skills/list-rule-test/scripts/`: four levels below the root of the repository.
+const ROOT = fileURLToPath(new URL('../../../../', import.meta.url));
+const RULES_DIR = join(ROOT, 'packages/@markuplint/rules/src');
 const TESTING_API = new Set(['mlRuleTest', 'mlTest', 'mlTestFile']);
+
+function toPosix(path) {
+	return path.split(sep).join('/');
+}
+
+function escapeRegExp(text) {
+	return text.replaceAll(/[.*+?^${}()|[\]\\]/g, String.raw`\$&`);
+}
 
 function findSpecFiles(dir) {
 	const results = [];
@@ -50,20 +71,26 @@ function leadingText(node) {
 	return undefined;
 }
 
-function isTestCall(call) {
+/** `test`, `it` and their members; whether the call is `.todo(...)`, which has no callback. */
+function testCall(call) {
 	let expression = call.expression;
 	while (ts.isCallExpression(expression) || ts.isTaggedTemplateExpression(expression)) {
 		expression = ts.isCallExpression(expression) ? expression.expression : expression.tag;
 	}
-	while (ts.isPropertyAccessExpression(expression)) expression = expression.expression;
-	return ts.isIdentifier(expression) && (expression.text === 'test' || expression.text === 'it');
+	let todo = false;
+	while (ts.isPropertyAccessExpression(expression)) {
+		todo ||= expression.name.text === 'todo';
+		expression = expression.expression;
+	}
+	return ts.isIdentifier(expression) && (expression.text === 'test' || expression.text === 'it') ? { todo } : undefined;
 }
 
 /** The tests of a behavior spec, or none for any other spec. */
 function parseBehaviorTests(filePath, rules) {
-	const [rule, ...rest] = relative(RULES_DIR, filePath).split('/');
+	const [rule, ...rest] = toPosix(relative(RULES_DIR, filePath)).split('/');
 	if (rest.length === 0 || !rules.has(rule)) return [];
 	const sourceFile = ts.createSourceFile(filePath, readFileSync(filePath, 'utf8'), ts.ScriptTarget.Latest, true);
+	const idPattern = new RegExp(`^\\[(${escapeRegExp(rule)}-\\d{3,})\\]\\s*(.*)`, 's');
 	let usesTestingApi = false;
 	const results = [];
 	const visit = node => {
@@ -73,11 +100,12 @@ function parseBehaviorTests(filePath, rules) {
 				usesTestingApi ||= bindings.elements.some(element => TESTING_API.has((element.propertyName ?? element.name).text));
 			}
 		}
-		if (ts.isCallExpression(node) && isTestCall(node) && node.arguments[0] && node.arguments.some(a => ts.isFunctionLike(a))) {
+		const kind = ts.isCallExpression(node) ? testCall(node) : undefined;
+		if (kind && node.arguments[0] && (kind.todo || node.arguments.some(a => ts.isFunctionLike(a)))) {
 			const fullName = leadingText(node.arguments[0]) ?? '';
-			const idMatch = fullName.match(/^\[([^\]]+)\]\s*(.*)/s);
+			const idMatch = fullName.match(idPattern);
 			results.push({
-				file: relative('.', filePath),
+				file: toPosix(relative(ROOT, filePath)),
 				line: sourceFile.getLineAndCharacterOfPosition(node.getStart(sourceFile)).line + 1,
 				rule,
 				id: idMatch ? idMatch[1] : null,
@@ -90,27 +118,38 @@ function parseBehaviorTests(filePath, rules) {
 	return usesTestingApi ? results : [];
 }
 
-// Parse args
-const args = process.argv.slice(2);
-const valueOf = flag => (args.includes(flag) ? args[args.indexOf(flag) + 1] : null);
-const filterRule = valueOf('--rule');
-const nextRule = valueOf('--next');
-const showNoId = args.includes('--no-id');
-const showStats = args.includes('--stats');
-const outputJson = args.includes('--json');
+let values;
+try {
+	({ values } = parseArgs({
+		options: {
+			rule: { type: 'string' },
+			next: { type: 'string' },
+			'no-id': { type: 'boolean' },
+			stats: { type: 'boolean' },
+			json: { type: 'boolean' },
+		},
+		strict: true,
+		allowPositionals: false,
+	}));
+} catch (error) {
+	console.error(`${error.message}\nOptions: --rule <name>, --next <name>, --no-id, --stats, --json`);
+	process.exit(1);
+}
 
 // Collect
 const rules = registeredRules();
 let allTests = findSpecFiles(RULES_DIR).flatMap(file => parseBehaviorTests(file, rules));
 
-if (nextRule) {
+if (values.next !== undefined) {
+	const nextRule = values.next;
 	if (!rules.has(nextRule)) {
-		console.error(`${nextRule} is not a registered rule (a directory that ${RULES_DIR}/index.ts imports)`);
+		console.error(`${nextRule} is not a registered rule (a directory that packages/@markuplint/rules/src/index.ts imports)`);
 		process.exit(1);
 	}
+	const numberOf = new RegExp(`^${escapeRegExp(nextRule)}-(\\d+)$`);
 	const numbers = allTests
 		.filter(t => t.rule === nextRule && t.id)
-		.map(t => new RegExp(`^${nextRule}-(\\d+)$`).exec(t.id)?.[1])
+		.map(t => numberOf.exec(t.id)?.[1])
 		.filter(Boolean)
 		.map(Number);
 	console.log(`[${nextRule}-${String(Math.max(0, ...numbers) + 1).padStart(3, '0')}]`);
@@ -118,11 +157,11 @@ if (nextRule) {
 }
 
 // Filter
-if (filterRule) allTests = allTests.filter(t => t.rule === filterRule);
-if (showNoId) allTests = allTests.filter(t => !t.id);
+if (values.rule !== undefined) allTests = allTests.filter(t => t.rule === values.rule);
+if (values['no-id']) allTests = allTests.filter(t => !t.id);
 
 // Output
-if (showStats) {
+if (values.stats) {
 	const byRule = {};
 	let withId = 0;
 	let withoutId = 0;
@@ -136,10 +175,13 @@ if (showStats) {
 	for (const [rule, count] of Object.entries(byRule).sort((a, b) => a[0].localeCompare(b[0]))) {
 		console.log(`  ${rule}: ${count}`);
 	}
-} else if (outputJson) {
+} else if (values.json) {
 	console.log(JSON.stringify(allTests, null, 2));
 } else {
 	for (const t of allTests) {
 		console.log(`${t.id || '(no-id)'}\t${t.file}:${t.line}\t${t.name}`);
 	}
 }
+
+// `--no-id` is a check: a test that lacks an ID fails it.
+if (values['no-id'] && allTests.length > 0) process.exitCode = 1;

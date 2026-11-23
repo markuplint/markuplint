@@ -2,32 +2,42 @@
  * Renumbers the test IDs of the rule specs, and writes the table that maps the IDs of the base to the new ones.
  *
  * ```sh
- * node --experimental-strip-types scripts/rule-test-ids/renumber.ts --base <ref> [--write]
+ * node --experimental-strip-types scripts/rule-test-ids/renumber.ts --base <ref> [--write] [--map <file>]
  * ```
  *
+ * Without `--write` it only reports what it would write. `--map` names another ID map than `id-map.json`.
+ *
  * Why it exists: the tests of the v6 engine (`crates/**\/tests.rs`, `_ID`) and its known divergences
- * (`scripts/rust-rule-parity/setup.ts`) name the tests of these specs by ID, and the convention of the specs
- * changed from `[rule-category-NNN]` (per file, with the issue number in the category) to `[rule-NNN]` (per
- * rule, behavior tests only: `packages/@markuplint/rules/CLAUDE.md`). The v6 line ports its IDs through the
- * table in `id-map.json` (`renamed` and `unnumbered`, besides the `merged` entries of the earlier
- * reorganization), and deletes this directory once it has.
+ * (`scripts/rust-rule-parity/setup.ts`) name the tests of these specs by ID. The IDs of a test of a registered
+ * rule that goes through the testing API are `[rule-NNN]`, per rule (`packages/@markuplint/rules/CLAUDE.md`),
+ * and the base the table is made against has `[rule-category-NNN]`, per file, with the issue number in the
+ * category. The v6 line ports its IDs through the table in `id-map.json`: after `dev` is merged into `v6`,
+ * each `_ID` of `tests.rs` and each key of `KNOWN_DIVERGENCES` is rewritten by `renamed`, a test that
+ * `merged.removed` lists is deleted there too, and one in `unnumbered` has no ID any more. This directory is
+ * deleted once that is done.
  *
  * What it does: every test of a registered rule's spec that goes through the testing API takes the next number
  * of its rule (the `index.spec.ts` first, then the other files by path, in source order inside a file) and
  * writes it as the `[rule-NNN]` prefix of its name, whatever prefix it had (the non-standard ones too). Every
  * other test (an internal function, a meta spec, a directory that is not a registered rule, and the two specs
  * outside the rules that had IDs of the same kind) loses its prefix. An ID that a comment names follows the
- * test in the same file; one that names a test without an ID, or none in the file, is an error to write by
- * hand. Only names and comments change.
+ * test in the same file; a new ID that some test has is left as it is; one that names a test without an ID,
+ * or none in the file, is an error to write by hand. Only names and comments change. The specs that the ID
+ * map lists under `policy` are left out of the head: they have no counterpart in the base.
  *
  * It is made to be run again: the numbers come from the order alone, and the table from pairing the tests of
  * the head with those of `--base` by what they pin (`fingerprint.ts`: a test may have moved between the files
- * of its rule and the base's file and ID are what the table records), so a test that moved after a run is
- * numbered and mapped by running it once more. It writes nothing unless the tests of every file pin what they
- * did before (the fingerprints are the same), and every test of the base has a counterpart in the head, which
- * is what `verify-equivalence.ts` checks of the whole change.
+ * of its rule, and the table records the file and the ID that the base has), so a test that moved after a run
+ * is numbered and mapped by running it once more, and so is a run that stopped between writing the specs and
+ * writing the table. It writes nothing unless the tests of every file pin what they did before (the
+ * fingerprints are the same), and every test of the base has a counterpart in the head, which is what
+ * `verify-equivalence.ts` checks of the whole change; that script does not read the two specs outside the
+ * rules, so for them the first check is all there is.
  *
  * `file` in the table is a path from the root of the repository, as the base has it.
+ *
+ * What a behavior test is, and the registry it reads, are read here as `src/test-ids.spec.ts` of the rules
+ * reads them: keep the two in step.
  *
  * @module
  */
@@ -41,6 +51,7 @@ import ts from 'typescript';
 import { scopeOf } from './compare.ts';
 import { fingerprintSource } from './fingerprint.ts';
 import { parseIdMap } from './id-map.ts';
+import type { Renamed, Unnumbered } from './id-map.ts';
 
 const SRC = 'packages/@markuplint/rules/src';
 /** Specs outside the rules whose tests carried IDs of the same kind. */
@@ -51,19 +62,6 @@ const OUTSIDE = [
 const TESTING_API = new Set(['mlRuleTest', 'mlTest', 'mlTestFile']);
 const PREFIX = /^\[([^\]]+)\]/;
 const ID_LIKE = /^[a-z0-9]+(?:-[a-z0-9]+)*-\d{3,}$/;
-
-/** An ID of the base and the new one of the test that took its place. */
-export interface Renamed {
-	readonly file: string;
-	readonly id: string;
-	readonly to: string;
-}
-
-/** An ID of the base whose test has none now. */
-export interface Unnumbered {
-	readonly file: string;
-	readonly id: string;
-}
 
 export interface RenumberInput {
 	/** The specs of the base, by path from the root of the repository. */
@@ -358,8 +356,9 @@ function main() {
 	const idMap = parseIdMap(readFileSync(mapFile, 'utf8'));
 	const policy = new Set((idMap.policy ?? []).map(file => `${SRC}/${file}`));
 
-	const baseFiles = git(['ls-tree', '-r', '--name-only', values.base, '--', SRC, ...OUTSIDE])
-		.split('\n')
+	// `-z`: git quotes a path that has a character beyond ASCII, which would no longer end in `.spec.ts`.
+	const baseFiles = git(['ls-tree', '-r', '-z', '--name-only', values.base, '--', SRC, ...OUTSIDE])
+		.split('\0')
 		.filter(name => name.endsWith('.spec.ts'));
 	const base = new Map(baseFiles.map(name => [name, git(['show', `${values.base}:${name}`])]));
 	const headFiles = [

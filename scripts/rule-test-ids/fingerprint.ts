@@ -18,8 +18,9 @@
  *   table of an enclosing group, and what a loop or an `if` around the test iterates or tests.
  *
  * The comments, the name of the test, the kind of quotes, redundant parentheses, type assertions, the order of
- * the keys of an object and the line ends are out of it, as a formatter or a tidy-up rewrites them. The reader
- * is syntactic, not the type checker: an identifier that the code binds itself (a parameter, a local) is kept
+ * the keys of an object and the line ends are out of it, as a formatter or a tidy-up rewrites them; so are
+ * the line breaks between the elements of a list and the comma that a formatter adds after the last one
+ * (`canonicalize`), while a hole at the end of an array (`[1,,]`) counts. The reader is syntactic, not the type checker: an identifier that the code binds itself (a parameter, a local) is kept
  * as written, and shadows the scope only where that binding is visible. What it cannot see is listed in the
  * module comment of `verify-equivalence.ts`.
  *
@@ -316,13 +317,6 @@ function staticKey(property: ts.ObjectLiteralElementLike): string | undefined {
 	return ts.isIdentifier(name) || ts.isStringLiteral(name) || ts.isNumericLiteral(name) ? name.text : undefined;
 }
 
-/**
- * The tokens of printed code, joined by a space, without a comma that closes a list.
- *
- * The printer keeps the line breaks that the source has between the elements of a list, and a formatter adds
- * a comma to a list that it breaks over lines: neither changes what the code does, and a formatter's run over a
- * spec must not read as a change of its tests.
- */
 /** The tokens after which a `/` divides, so that it does not start a regular expression. */
 const ENDS_OPERAND: ReadonlySet<ts.SyntaxKind> = new Set([
 	ts.SyntaxKind.Identifier,
@@ -345,16 +339,24 @@ const ENDS_OPERAND: ReadonlySet<ts.SyntaxKind> = new Set([
 	ts.SyntaxKind.NullKeyword,
 ]);
 
+/**
+ * The tokens of printed code, joined by a space, without a comma that closes a list.
+ *
+ * The printer keeps the line breaks that the source has between the elements of a list, and a formatter adds
+ * a comma to a list that it breaks over lines: neither changes what the code does, and a formatter's run over a
+ * spec must not read as a change of its tests.
+ */
 function canonicalize(code: string): string {
 	const scanner = ts.createScanner(ts.ScriptTarget.Latest, false, ts.LanguageVariant.Standard, code);
 	const tokens: { kind: ts.SyntaxKind; text: string }[] = [];
 	// Whether each open `{` is the start of a substitution of a template literal, so that its `}` goes on with the template.
 	const braces: boolean[] = [];
 	for (let kind = scanner.scan(); kind !== ts.SyntaxKind.EndOfFileToken; kind = scanner.scan()) {
+		const last = tokens.at(-1);
 		// A `/` after something that does not end an operand starts a regular expression, which may hold a brace or a quote.
 		if (
 			(kind === ts.SyntaxKind.SlashToken || kind === ts.SyntaxKind.SlashEqualsToken) &&
-			!ENDS_OPERAND.has(tokens.at(-1)?.kind as ts.SyntaxKind)
+			!(last !== undefined && ENDS_OPERAND.has(last.kind))
 		) {
 			kind = scanner.reScanSlashToken();
 		}

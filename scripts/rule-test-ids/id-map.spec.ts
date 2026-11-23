@@ -67,6 +67,10 @@ describe('parseIdMap', () => {
 		});
 		expect(() => parseIdMap(JSON.stringify({ policy: 'test-ids.spec.ts' }))).toThrow(/policy/);
 		expect(() => parseIdMap(JSON.stringify({ policy: [1] }))).toThrow(/policy/);
+		// Not in the form that the verifier compares: it would be ignored without a word
+		for (const file of ['rule-a\\index.spec.ts', './test-ids.spec.ts', '/test-ids.spec.ts', 'test-ids.ts']) {
+			expect(() => parseIdMap(JSON.stringify({ policy: [file] }))).toThrow(/policy/);
+		}
 	});
 
 	test('rejects a key that it does not know, as a typo would drop the entries without a word', () => {

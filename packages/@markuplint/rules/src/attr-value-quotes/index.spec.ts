@@ -211,7 +211,7 @@ test('[attr-value-quotes-014] a value of Pug is code and is not judged', async (
 	expect(violations).toStrictEqual([]);
 });
 
-test('[attr-value-quotes-015] a string of HTML is judged as before', async () => {
+test('[attr-value-quotes-015] an attribute value in single quotes is reported in a plain HTML string', async () => {
 	const { violations } = await mlRuleTest(rule, "<div title='x'></div>");
 	expect(violations).toStrictEqual([
 		{

@@ -361,7 +361,8 @@ export function plan(changes: readonly Change[], probe: Probe): Plan {
 			if (status !== 'D') {
 				targets.add(path);
 			}
-			// The test ID guard reads every spec of its package, one of them being the changed one.
+			// The test ID guard reads every spec of its package, one of them being the changed one. Only the
+			// rules have one: for any other package nothing matches.
 			add(probe.specs.filter(spec => spec === `${root}/src/${TEST_IDS_GUARD}`));
 			continue;
 		}

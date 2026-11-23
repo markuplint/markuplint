@@ -68,7 +68,7 @@ test('[no-ineffective-attr-004] an HTML element in JSX folds the name', async ()
 describe('an attribute that the framework outputs or does not output', () => {
 	const jsx = { parser: { '.*': '@markuplint/jsx-parser' } };
 
-	test('[no-ineffective-attr-005] an attribute that the framework renders is judged as before', async () => {
+	test('[no-ineffective-attr-005] an attribute that the framework renders is reported', async () => {
 		const { violations } = await mlRuleTest(rule, '<script defer={true}>const foo = "foo";</script>', jsx);
 		expect(violations).toStrictEqual([
 			{
@@ -81,7 +81,7 @@ describe('an attribute that the framework outputs or does not output', () => {
 		]);
 	});
 
-	test('[no-ineffective-attr-006] code that is not a literal may be rendered, and is judged as before', async () => {
+	test('[no-ineffective-attr-006] code that is not a literal may be rendered, so the attribute is reported', async () => {
 		const { violations } = await mlRuleTest(rule, '<script defer={cond}>const foo = "foo";</script>', jsx);
 		expect(violations).toStrictEqual([
 			{

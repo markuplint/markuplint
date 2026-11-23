@@ -10,12 +10,12 @@ description: >
 argument-hint: "[--rule <name>] [--next <name>] [--no-id] [--stats] [--json]"
 ---
 
-List the test IDs of the behavior tests of `packages/@markuplint/rules/src/**/*.spec.ts` (what a behavior test is: `packages/@markuplint/rules/CLAUDE.md`). Run from the repository root — the script resolves `packages/@markuplint/rules/src` relative to the working directory. Pass the user's arguments (`$ARGUMENTS`) as the options — only the documented flags, nothing else:
+List the test IDs of the behavior tests of `packages/@markuplint/rules/src/**/*.spec.ts` (what a behavior test is: `packages/@markuplint/rules/CLAUDE.md`). The script finds the repository from its own location, so it runs from any directory. Pass the user's arguments (`$ARGUMENTS`) as the options — only the documented flags, nothing else:
 
 ```bash
 node .claude/skills/list-rule-test/scripts/list-rule-test.mjs $ARGUMENTS
 ```
 
-Options (`--rule`, `--next`, `--no-id`, `--stats`, `--json`) are documented in the script's header comment — read it before choosing flags. `--next <rule>` prints the ID to give the next test of a rule: the highest number plus one, so the ID of a removed test is not given again.
+Options (`--rule`, `--next`, `--no-id`, `--stats`, `--json`) are documented in the script's header comment — read it before choosing flags. `--next <rule>` prints the ID to give the next test of a rule: the highest number present plus one. When the test that had the highest number was removed, take the number after it from the history of the file: the script cannot know it.
 
-`--no-id` output must be empty: any hit is a behavior test missing its mandatory `[rule-name-NNN]` ID prefix. (`src/test-ids.spec.ts` enforces this in `yarn test`, and also that no other test has an ID.)
+`--no-id` output must be empty, and its exit code is 0: any hit is a behavior test missing its mandatory `[rule-name-NNN]` ID prefix (a prefix of another form counts as missing), and makes it exit with 1. (`src/test-ids.spec.ts` enforces this in `yarn test`, and also that no other test has an ID.) An option that the script does not list, or `--rule` / `--next` without a value, is an error: nothing is listed.

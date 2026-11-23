@@ -196,7 +196,7 @@ test('[no-unsupported-browser-features-014] JSX with object inheritAttrs pretend
 });
 
 test('[no-unsupported-browser-features-015] HTML→HTML pretender ignored: original element checked', async () => {
-	// `pretenders` config is now no-op for HTML element selectors, so the
+	// A `pretenders` config is a no-op for HTML element selectors, so the
 	// original `<dialog>` is still evaluated against the browserslist target.
 	const { violations } = await mlRuleTest(rule, '<dialog>x</dialog>', {
 		pretenders: [{ selector: 'dialog', as: 'div' }],

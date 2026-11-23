@@ -210,7 +210,7 @@ test('[no-boolean-attr-value-021] a single expression in quotes of Svelte is an 
 	expect(violations).toStrictEqual([]);
 });
 
-test('[no-boolean-attr-value-022] a value that is written is reported as before', async () => {
+test('[no-boolean-attr-value-022] a boolean attribute that is written with a value is reported', async () => {
 	const { violations } = await mlRuleTest(rule, '<button disabled="disabled"></button>');
 	expect(violations).toStrictEqual([
 		{

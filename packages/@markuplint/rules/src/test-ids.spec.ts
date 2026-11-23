@@ -1,10 +1,3 @@
-import { existsSync, readdirSync, readFileSync } from 'node:fs';
-import path from 'node:path';
-import { fileURLToPath } from 'node:url';
-
-import ts from 'typescript';
-import { describe, expect, test } from 'vitest';
-
 /**
  * The test ID convention of `packages/@markuplint/rules/CLAUDE.md`, enforced.
  *
@@ -14,12 +7,30 @@ import { describe, expect, test } from 'vitest';
  * directory that is not a registered rule) has no such ID: the other implementation does not port it one to
  * one, and an ID on it would be a promise nobody keeps.
  *
- * A behavior spec is a spec of a registered rule (a directory that `src/index.ts` imports) that goes through
- * the testing API (`mlRuleTest`, `mlTest`, `mlTestFile`).
+ * A behavior spec is a spec of a registered rule (a directory that `src/index.ts` imports) that imports the
+ * testing API (`mlRuleTest`, `mlTest`, `mlTestFile`), and every test in it goes through the API, directly or
+ * through a helper of the file: a test that does not is a unit test and goes to a spec of its own, as the
+ * convention says. `.claude/skills/list-rule-test/scripts/list-rule-test.mjs` (and, while it exists,
+ * `scripts/rule-test-ids/renumber.ts`) reads the registry and the tests as this does: keep them in step.
+ *
+ * @module
  */
+import { existsSync, readdirSync, readFileSync } from 'node:fs';
+import path from 'node:path';
+import { fileURLToPath } from 'node:url';
+
+import ts from 'typescript';
+import { describe, expect, test } from 'vitest';
+
 const SRC = path.dirname(fileURLToPath(import.meta.url));
 const TESTING_API = new Set(['mlRuleTest', 'mlTest', 'mlTestFile']);
 const ID_PREFIX = /^\[([^\]]*)\]/;
+/** The registry and the specs of a real run are far more than this: it only shows that something was read. */
+const LEAST_SPECS = 100;
+
+function escapeRegExp(text: string): string {
+	return text.replaceAll(/[$()*+.?[\\\]^{|}]/g, String.raw`\$&`);
+}
 
 function specsUnder(directory: string): string[] {
 	return readdirSync(directory, { withFileTypes: true }).flatMap(entry => {
@@ -53,22 +64,40 @@ function leadingText(node: ts.Expression): string | undefined {
 	return undefined;
 }
 
-/** Whether the callee is `test`, `it`, or one of their members (`test.each(table)`, `test.skip`, ...). */
-function isTestCall(call: ts.CallExpression): boolean {
+/**
+ * @param call - A call expression
+ * @returns Whether the callee is `test`, `it`, or one of their members (`test.each(table)`, `test.skip`, ...)
+ *   (`todo` says it is `.todo`, which has no callback), and undefined when it is not a test
+ */
+function testCall(call: ts.CallExpression): { todo: boolean } | undefined {
 	let expression: ts.Expression = call.expression;
 	while (ts.isCallExpression(expression) || ts.isTaggedTemplateExpression(expression)) {
 		expression = ts.isCallExpression(expression) ? expression.expression : expression.tag;
 	}
+	let todo = false;
 	while (ts.isPropertyAccessExpression(expression)) {
+		todo ||= expression.name.text === 'todo';
 		expression = expression.expression;
 	}
-	return ts.isIdentifier(expression) && (expression.text === 'test' || expression.text === 'it');
+	return ts.isIdentifier(expression) && (expression.text === 'test' || expression.text === 'it')
+		? { todo }
+		: undefined;
+}
+
+/** Whether a node mentions the testing API, or one of the names given. */
+function mentions(node: ts.Node, names: ReadonlySet<string>): boolean {
+	if (ts.isIdentifier(node) && names.has(node.text)) {
+		return true;
+	}
+	return ts.forEachChild(node, child => mentions(child, names) || undefined) ?? false;
 }
 
 interface Case {
 	readonly line: number;
 	/** The start of the name; undefined when it cannot be read from the source. */
 	readonly name: string | undefined;
+	/** Whether the callback runs the testing API, directly or through a function of the file (a todo has none). */
+	readonly goesThroughApi: boolean;
 }
 
 interface Spec {
@@ -81,6 +110,27 @@ interface Spec {
 function read(file: string): Spec {
 	const sourceFile = ts.createSourceFile(file, readFileSync(file, 'utf8'), ts.ScriptTarget.Latest, true);
 	let usesTestingApi = false;
+
+	// The functions of the file that run the testing API, so that a test that calls one goes through the API.
+	const helpers = new Set<string>();
+	const collect = (node: ts.Node) => {
+		if (ts.isFunctionDeclaration(node) && node.name && mentions(node, TESTING_API)) {
+			helpers.add(node.name.text);
+		}
+		if (
+			ts.isVariableDeclaration(node) &&
+			ts.isIdentifier(node.name) &&
+			node.initializer &&
+			ts.isFunctionLike(node.initializer) &&
+			mentions(node.initializer, TESTING_API)
+		) {
+			helpers.add(node.name.text);
+		}
+		ts.forEachChild(node, collect);
+	};
+	collect(sourceFile);
+	const entry = new Set([...TESTING_API, ...helpers]);
+
 	const cases: Case[] = [];
 	const visit = (node: ts.Node) => {
 		if (ts.isImportDeclaration(node)) {
@@ -91,14 +141,16 @@ function read(file: string): Spec {
 				);
 			}
 		}
-		if (ts.isCallExpression(node) && isTestCall(node) && node.arguments[0]) {
+		const kind = ts.isCallExpression(node) ? testCall(node) : undefined;
+		if (ts.isCallExpression(node) && kind && node.arguments[0]) {
 			// `test.each(table)` takes its table in the callee, so the name is always the first argument of the call
-			// that has a callback; the callee of the table call is itself a `test` call that is skipped below.
-			const hasCallback = node.arguments.some(argument => ts.isFunctionLike(argument));
-			if (hasCallback) {
+			// that has a callback; the callee of the table call is itself a `test` call that is skipped here.
+			const callback = node.arguments.find(argument => ts.isFunctionLike(argument));
+			if (callback || kind.todo) {
 				cases.push({
 					line: sourceFile.getLineAndCharacterOfPosition(node.getStart(sourceFile)).line + 1,
 					name: leadingText(node.arguments[0]),
+					goesThroughApi: callback ? mentions(callback, entry) : true,
 				});
 			}
 		}
@@ -127,7 +179,7 @@ describe('the rule spec test IDs', () => {
 			.filter(entry => entry.isDirectory() && existsSync(path.join(SRC, entry.name, 'meta.ts')))
 			.map(entry => entry.name);
 		expect([...rules].toSorted()).toStrictEqual(withMeta.toSorted());
-		expect(specs.length).toBeGreaterThan(100);
+		expect(specs.length).toBeGreaterThan(LEAST_SPECS);
 	});
 
 	test('every test of a behavior spec starts with an ID of its rule', () => {
@@ -137,7 +189,7 @@ describe('the rule spec test IDs', () => {
 			if (!rule || !spec.usesTestingApi) {
 				continue;
 			}
-			const pattern = new RegExp(String.raw`^\[${rule}-\d{3,}\]`);
+			const pattern = new RegExp(String.raw`^\[${escapeRegExp(rule)}-\d{3,}\]`);
 			for (const { line, name } of spec.cases) {
 				if (name === undefined || !pattern.test(name)) {
 					violations.push(`${spec.file}:${line} ${JSON.stringify(name?.slice(0, 60))}`);
@@ -169,6 +221,21 @@ describe('the rule spec test IDs', () => {
 			}
 		}
 		expect(duplicates).toStrictEqual([]);
+	});
+
+	test('a test of a behavior spec goes through the testing API, so that a unit test is in a spec of its own', () => {
+		const violations: string[] = [];
+		for (const spec of specs) {
+			if (!ruleOf(spec) || !spec.usesTestingApi) {
+				continue;
+			}
+			for (const { line, name, goesThroughApi } of spec.cases) {
+				if (!goesThroughApi) {
+					violations.push(`${spec.file}:${line} ${JSON.stringify(name?.slice(0, 60))}`);
+				}
+			}
+		}
+		expect(violations).toStrictEqual([]);
 	});
 
 	test('a test of any other spec has no ID', () => {

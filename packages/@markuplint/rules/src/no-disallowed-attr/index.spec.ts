@@ -711,13 +711,11 @@ test('[no-disallowed-attr-058] link[disabled] with no rel attribute is rejected'
 });
 
 test('[no-disallowed-attr-059] referrerpolicy without href is disallowed', async () => {
-	// Split off invalid-attr's original combined test — the unknown-name half
-	// (the literal "invalid-attr" attribute) lives in no-unknown-attr's
-	// sibling test. Pre-split, this fixture's referrerpolicy value ("invalid-value")
-	// also failed the value check, but the old single rule's value-then-condition
-	// pipeline reported only the value error (see the note on that ordering in
-	// [no-invalid-attr-value-219]). Post-split, no-disallowed-attr
-	// independently reports the unmet condition regardless of the value.
+	// The unknown-name half (the literal "invalid-attr" attribute) of this fixture is in no-unknown-attr's
+	// sibling test. The referrerpolicy value ("invalid-value") also fails the value check, but a rule that
+	// ran the value before the condition would report only the value error (see the note on that ordering
+	// in [no-invalid-attr-value-219]); no-disallowed-attr independently reports the unmet condition
+	// regardless of the value.
 	const { violations } = await mlRuleTest(
 		rule,
 		'<a invalid-attr referrerpolicy="invalid-value"><img src=":::::"></a>',
@@ -1208,7 +1206,7 @@ test('[no-disallowed-attr-089] img: controls is allowed on an image with a non-e
 	expect((await mlRuleTest(rule, '<img src="a.png" alt="photo" controls>')).violations).toStrictEqual([]);
 });
 
-test('[no-disallowed-attr-090] input: capture applies to type=file with an accept attribute', async () => {
+test('[no-disallowed-attr-090] input: capture on type=file is disallowed without an accept attribute', async () => {
 	// https://www.w3.org/TR/html-media-capture/#the-capture-attribute
 	const { violations } = await mlRuleTest(rule, '<input type="file" capture="user">');
 	expect(violations).toStrictEqual([
@@ -1247,12 +1245,12 @@ describe('an attribute that the framework outputs or does not output', () => {
 		raw: 'async',
 	};
 
-	test('[no-disallowed-attr-093] an attribute that the framework renders is judged as before', async () => {
+	test('[no-disallowed-attr-093] an attribute that the framework renders is reported', async () => {
 		const { violations } = await mlRuleTest(rule, '<script async={true}></script>', jsx);
 		expect(violations).toStrictEqual([disallowed]);
 	});
 
-	test('[no-disallowed-attr-094] code that is not a literal may be rendered, and is judged as before', async () => {
+	test('[no-disallowed-attr-094] code that is not a literal may be rendered, so the attribute is reported', async () => {
 		const { violations } = await mlRuleTest(rule, '<script async={cond}></script>', jsx);
 		expect(violations).toStrictEqual([disallowed]);
 	});

@@ -748,7 +748,7 @@ test('[require-attr-033] still reports non-ignored spec-required attributes', as
 	]);
 });
 
-test('[require-attr-034] no option behaves the same as before (backward compatibility)', async () => {
+test('[require-attr-034] without an option an img expects src or srcset', async () => {
 	const { violations } = await mlRuleTest(rule, '<img>');
 	expect(violations).toStrictEqual([
 		{

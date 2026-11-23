@@ -191,7 +191,7 @@ test('[no-invalid-aria-prop-value-012] a literal in {…} that is not a value of
 	]);
 });
 
-test('[no-invalid-aria-prop-value-013] the same value as a string is reported as before', async () => {
+test('[no-invalid-aria-prop-value-013] the same value written as a string is reported', async () => {
 	const { violations } = await mlRuleTest(rule, '<div aria-busy="not-a-value"></div>', {
 		parser: { '.*': '@markuplint/jsx-parser' },
 	});

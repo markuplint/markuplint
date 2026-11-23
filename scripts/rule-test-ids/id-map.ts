@@ -4,23 +4,35 @@
  * verifier exists to catch.
  *
  * `removed` and `added` are the entries that the verifier checks against the base it is given. `merged` keeps
- * the entries of a reorganization that has been merged, in the same shape: they are no longer true against the
- * new base, and the v6 line ports its IDs from them. The ID of a removed test is not given to another test, as
- * the v6 line would take the new one for the old: a new test takes the highest number of its file or rule plus
- * one.
+ * the entries of such a list once its base contains them, in the same shape: they are no longer true against
+ * that base, and the v6 line ports its IDs from them. The ID of a removed test is not given to another test,
+ * as the v6 line would take the new one for the old: a new test takes the highest number of its file or rule
+ * plus one.
  *
  * `renamed` and `unnumbered` are written by `renumber.ts` (which says what they are for) and are not checked by
  * the verifier.
  *
- * `policy` lists specs under the rules' `src` that the change adds to enforce the convention that it
+ * `policy` lists specs under the rules' `src` that enforce the convention that the reorganization
  * establishes (a spec about the specs, with no counterpart in the base): the verifier leaves their tests and
- * cases out of the head, as it would report each as a test that appeared. It is true only until the change
- * has merged, like `removed` and `added`.
+ * cases out of the head, as it would report each as a test that appeared. It is true only against a base that
+ * predates them, like `removed` and `added`, so it is emptied when the base contains them.
  *
  * @module
  */
 import type { Addition, Removal } from './compare.ts';
-import type { Renamed, Unnumbered } from './renumber.ts';
+
+/** An ID of the base and the new one of the test that took its place. `file` is a path from the root of the repository. */
+export interface Renamed {
+	readonly file: string;
+	readonly id: string;
+	readonly to: string;
+}
+
+/** An ID of the base whose test has none now. `file` is a path from the root of the repository. */
+export interface Unnumbered {
+	readonly file: string;
+	readonly id: string;
+}
 
 export interface IdMap {
 	readonly removed: readonly Removal[];
@@ -82,6 +94,15 @@ export function parseIdMap(text: string): IdMap {
 	const policy = value.policy;
 	if (policy !== undefined && !(Array.isArray(policy) && policy.every(item => typeof item === 'string'))) {
 		throw new TypeError('id-map: policy must be an array of strings');
+	}
+	// A path that is not in the form that the verifier compares (`/`, relative to `src`) would be ignored without a word.
+	const malformed = (policy as string[] | undefined)?.find(
+		file => !file.endsWith('.spec.ts') || file.includes('\\') || file.startsWith('./') || file.startsWith('/'),
+	);
+	if (malformed !== undefined) {
+		throw new TypeError(
+			`id-map: policy "${malformed}" must be a *.spec.ts path with \`/\`, relative to the rules' src`,
+		);
 	}
 	return {
 		removed: entries<Removal>(value.removed, 'removed', REMOVAL_FIELDS),

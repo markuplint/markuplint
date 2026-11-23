@@ -2961,7 +2961,7 @@ test('[no-invalid-attr-value-283] a position in a value that has an escape is no
 	]);
 });
 
-test('[no-invalid-attr-value-284] a string is reported as before', async () => {
+test('[no-invalid-attr-value-284] a string value is reported in JSX', async () => {
 	const { violations } = await mlRuleTest(rule, '<input type="bogus" />', {
 		parser: { '.*': '@markuplint/jsx-parser' },
 	});

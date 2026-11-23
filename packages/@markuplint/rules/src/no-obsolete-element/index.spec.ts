@@ -75,7 +75,7 @@ test('[no-obsolete-element-005] JSX component pretendered with inheritAttrs obje
 });
 
 test('[no-obsolete-element-006] HTML→HTML pretender ignored: original deprecation surfaces', async () => {
-	// `pretenders` config now no-ops when the selector matches an HTML element,
+	// A `pretenders` config is a no-op when the selector matches an HTML element,
 	// so `<marquee as="div">` keeps marquee identity and the obsolete check fires.
 	const { violations } = await mlRuleTest(rule, '<marquee>x</marquee>', {
 		pretenders: [{ selector: 'marquee', as: 'div' }],

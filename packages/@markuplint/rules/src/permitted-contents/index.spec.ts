@@ -706,7 +706,7 @@ describe('verify', () => {
 		// violation is INCIDENTAL — it falls out of how the engine surfaces
 		// children of a transparent-rejected node, and may shift if that
 		// propagation logic changes. Treat only the first entry as the
-		// load-bearing assertion for this PR.
+		// assertion that this test is about.
 		const { violations: violations4 } = await mlRuleTest(
 			rule,
 			'<svg><a href="#"><g><a href="#">nested</a></g></a></svg>',
@@ -721,7 +721,7 @@ describe('verify', () => {
 	});
 
 	test('[permitted-contents-017] svg:a wrapping <g> without nested <a>', async () => {
-		// Regression guard: the `:has(svg|a)` constraint added for
+		// Regression guard: the `:has(svg|a)` constraint of
 		// [permitted-contents-016] must not over-fire on wrappers that legitimately do
 		// not contain another <a>.
 		const { violations } = await mlRuleTest(
@@ -820,8 +820,8 @@ describe('verify', () => {
 		]);
 
 		// NG: 1 child (MathML Core §3.3.2 — mfrac requires exactly two children).
-		// The previous spec used `oneOrMore` with `max: 2`, which silently
-		// allowed a single child. Locks down the require/min:2 fix.
+		// A `oneOrMore` with `max: 2` would silently allow a single child; this locks down the require with
+		// `min: 2`.
 		const { violations: v3 } = await mlRuleTest(rule, '<math><mfrac><mi>a</mi></mfrac></math>');
 		expect(v3).toStrictEqual([
 			{
@@ -2131,8 +2131,8 @@ test('[permitted-contents-063] an element in the callback of map in an svg is va
 	).toStrictEqual([]);
 });
 
-// Timeout: 5s — the old Cartesian-product algorithm took 30s+ for this case;
-// the incremental algorithm completes in <100ms.
+// Timeout: 5s — a Cartesian product of the transparent siblings takes 30s+ for this case; the incremental
+// algorithm completes in <100ms.
 test('[permitted-contents-064] many transparent siblings do not slow the check down exponentially', async () => {
 	const anchors = Array.from({ length: 12 }, (_, i) => `<a><span>link${i}</span><em>text${i}</em></a>`).join('\n');
 	const sourceCode = `<div>${anchors}</div>`;
@@ -2399,8 +2399,8 @@ describe('the rule of a user tag that applies to a pretender', () => {
 		// `optional` slot and then expects `<BreadcrumbList>` next. `<div>` breaks
 		// the sequence so the violation is reported as a missing required element
 		// on `<Breadcrumbs>` — the same wording produced for the non-pretendered
-		// path. The critical regression guard is that *some* violation is now
-		// reported (previously the rule was silently bypassed).
+		// path. The critical regression guard is that *some* violation is
+		// reported (the rule is not silently bypassed).
 		const source =
 			'<Breadcrumbs>' +
 			'<BreadcrumbsLabel>Label</BreadcrumbsLabel>' +
@@ -3637,7 +3637,7 @@ describe('the canvas element and the interactive content it allows', () => {
 		expect(violations).toStrictEqual([]);
 	});
 
-	test('[permitted-contents-191] what is not interactive content is accepted, as it was before', async () => {
+	test('[permitted-contents-191] what is not interactive content is accepted', async () => {
 		const { violations } = await mlRuleTest(
 			rule,
 			'<canvas><input type="hidden"><a name="x">l</a><img src="x" alt=""><span>text</span></canvas>',

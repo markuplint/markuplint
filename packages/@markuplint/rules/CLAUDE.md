@@ -2,7 +2,7 @@
 
 ## Adding a New Rule (checklist — steps 2–4 have NO enforcing test; forgetting them fails silently)
 
-1. `src/<rule-name>/`: `index.ts`, `meta.ts`, `schema.json`, spec file(s), `README.md` **and** `README.ja.md` — both languages are website source and must stay in sync; updating only one is a recurring mistake
+1. `src/<rule-name>/`: `index.ts`, `meta.ts`, `schema.json`, spec file(s) whose tests carry `[<rule-name>-NNN]` IDs (see Test ID Convention below; `src/test-ids.spec.ts` fails when a behavior test lacks one, but passes for a rule that has no behavior test at all), `README.md` **and** `README.ja.md` — both languages are website source and must stay in sync; updating only one is a recurring mistake
    - `meta.ts`'s `category` must be one of the v5 9-category scheme: `syntax`, `structure`, `attributes`, `references`, `forms`, `a11y`, `style`, `maintainability`, `compat` (see the [Categories section](https://markuplint.dev/docs/migration/v4-to-v5/rules/rule-names#categories) of the website's rule-names guide for what each covers)
    - `meta.ts` should also declare `specConformance` (`sources`/`level`/`cites`) once you know the rule's governing spec and requirement strength — `level: 'must'` or `'should'` requires a non-empty `cites`. The rollout across pre-existing rules is incremental and partial by design (enforced only for rules that declare it — see `spec-conformance.spec.ts` and `@markuplint/config-presets`'s `html-standard-entries.spec.ts`), but a **new** rule should declare it from the start
 2. Register the rule in `src/index.ts` (import + registry entry)
@@ -17,17 +17,17 @@ A behavior test starts with an ID:
 [rule-name-NNN] description
 ```
 
-A behavior test is a `test()` / `test.each()` of a spec in a registered rule's directory (`src/<rule-name>/`, a directory that `src/index.ts` imports) that goes through the testing API (`mlRuleTest`, `mlTest`, `mlTestFile`). These are the contract that another implementation of the rules is matched against (the Rust engine of the v6 line names them by this ID in its `tests.rs`), so the ID is the number of a behavior, not of a file or of the issue it came from.
+A behavior test is a `test()` / `test.each()` of a spec in a registered rule's directory (`src/<rule-name>/`, a directory that `src/index.ts` imports) that goes through the testing API (`mlRuleTest`, `mlTest`, `mlTestFile`). The spec decides: a spec that imports the testing API is a behavior spec, and each of its tests must go through it, directly or through a helper of the file. These are the contract that another implementation of the rules is matched against (the Rust engine of the v6 line names them by this ID in its `tests.rs`), so the ID is the number of a behavior, not of a file or of the issue it came from.
 
-Every other test has no ID: tests of an internal function, of the bundled spec data, of a helper, the repo-wide meta specs directly under `src/` (e.g. `mirrors-parse-error-codes.spec.ts`) and the specs of directories that are not registered rules (`wai-aria/`, `srcset-sizes-constraint/`, …). A rule's spec that mixes both keeps the behavior tests in `index.spec.ts` (or a file named for the behavior) and moves the others to a file named for what they test.
+Every other test has no ID: tests of an internal function, of the bundled spec data, of a helper, the repo-wide meta specs directly under `src/` (e.g. `mirrors-parse-error-codes.spec.ts`) and the specs of directories that are not registered rules (`wai-aria/`, `srcset-sizes-constraint/`, …). A test that does not go through the testing API is a unit test: it goes to a spec of its own, named for what it tests, not to a behavior spec.
 
 ### Rules
 
 - The number is unique within the rule, across all of its spec files, has at least three digits, and starts at `001`. There is no category (`valid`, `invalid`, …) and no issue number: what a test expects is in its body, and a category goes stale when an assertion is flipped
 - IDs go on `test()` and `test.each()` only (one ID for the whole table), not on `describe()`
-- A new test takes the highest number of its rule plus one (`node .claude/skills/list-rule-test/scripts/list-rule-test.mjs --next <rule-name>`). The number of a removed test is not given to another, and a gap is not filled, as the other implementation matches by number
+- A new test takes the highest number of its rule plus one (`node .claude/skills/list-rule-test/scripts/list-rule-test.mjs --next <rule-name>`). The number of a removed test is not given to another, and a gap is not filled, as the other implementation matches by number. `--next` knows only the numbers that are present: when the removed test had the highest number, take the number after it from the history of the file
 - An existing test whose assertion was flipped keeps its ID (`.claude/rules/spec-files.md`)
-- `src/test-ids.spec.ts` enforces this in `yarn test`; `node .claude/skills/list-rule-test/scripts/list-rule-test.mjs --no-id` lists the behavior tests that lack an ID and prints nothing when there are none
+- `src/test-ids.spec.ts` enforces this in `yarn test`: every test of a behavior spec has an ID of its rule that is unique in the rule and goes through the testing API, and no other test has an ID. `node .claude/skills/list-rule-test/scripts/list-rule-test.mjs --no-id` lists the behavior tests that lack an ID of their rule (`[<rule-name>-NNN]`) and prints nothing, with exit 0, when there are none. Reusing the number of a removed test is checked by neither: review it against the base
 
 ## Writing a rule's README and `schema.json` description
 

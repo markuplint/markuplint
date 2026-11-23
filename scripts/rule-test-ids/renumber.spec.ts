@@ -179,3 +179,77 @@ describe('the references in comments', () => {
 		expect(run(files, files).files.get(`${SRC}/rule-a/index.spec.ts`)).toContain('// the list [a, b] and [x]');
 	});
 });
+
+describe('what it refuses', () => {
+	test('a comment that names an ID that several tests of the file have', () => {
+		const files = {
+			[`${SRC}/rule-a/index.spec.ts`]:
+				spec([
+					['[rule-a-valid-001] one', '<one>'],
+					['[rule-a-valid-001] two', '<two>'],
+				]) + '\n// see [rule-a-valid-001]\n',
+		};
+		expect(() => run(files, files)).toThrow(/several tests/);
+	});
+
+	test('a behavior test whose name does not start with a literal', () => {
+		const code = `${API}\nconst name = 'x';\ntest(name, async () => {\n\tawait mlRuleTest(rule, '<a>');\n});\n`;
+		const files = { [`${SRC}/rule-a/index.spec.ts`]: code };
+		expect(() => run(files, files)).toThrow(/no prefix/);
+	});
+
+	test('a test of the head that the base does not have, and one of the base that the head has lost', () => {
+		const one = spec([['[rule-a-valid-001] one', '<one>']]);
+		const two = spec([
+			['[rule-a-valid-001] one', '<one>'],
+			['[rule-a-valid-002] two', '<two>'],
+		]);
+		expect(() => run({ [`${SRC}/rule-a/index.spec.ts`]: one }, { [`${SRC}/rule-a/index.spec.ts`]: two })).toThrow(
+			/no counterpart/,
+		);
+		expect(() => run({ [`${SRC}/rule-a/index.spec.ts`]: two }, { [`${SRC}/rule-a/index.spec.ts`]: one })).toThrow(
+			/no counterpart/,
+		);
+	});
+});
+
+describe('a source with CRLF line ends', () => {
+	test('is renumbered as one with LF, and keeps its line ends', () => {
+		const lf = spec([
+			['[rule-a-valid-004] one', '<one>'],
+			['[rule-a-valid-005] two', '<two>'],
+		]);
+		const files = { [`${SRC}/rule-a/index.spec.ts`]: lf.replaceAll('\n', '\r\n') };
+		const text = run(files, files).files.get(`${SRC}/rule-a/index.spec.ts`) ?? '';
+		expect(text).toContain("test('[rule-a-001] one'");
+		expect(text).toContain("test('[rule-a-002] two'");
+		expect(text.replaceAll('\r\n', '')).not.toContain('\n');
+	});
+});
+
+describe('tests that moved between the files of a rule', () => {
+	test('are mapped from the file and the ID that the base has, with several moves at once', () => {
+		const base = {
+			[`${SRC}/rule-a/index.spec.ts`]: spec([['[rule-a-valid-001] one', '<one>']]),
+			[`${SRC}/rule-a/b.spec.ts`]: spec([
+				['[rule-a-issue-1-001] two', '<two>'],
+				['[rule-a-issue-1-002] three', '<three>'],
+			]),
+			[`${SRC}/rule-a/c.spec.ts`]: spec([['[rule-a-issue-2-001] four', '<four>']]),
+		};
+		const head = {
+			[`${SRC}/rule-a/index.spec.ts`]: spec([
+				['[rule-a-valid-001] one', '<one>'],
+				['[rule-a-issue-2-001] four', '<four>'],
+				['[rule-a-issue-1-002] three', '<three>'],
+				['[rule-a-issue-1-001] two', '<two>'],
+			]),
+		};
+		expect(run(base, head).renamed).toStrictEqual([
+			{ file: `${SRC}/rule-a/b.spec.ts`, id: 'rule-a-issue-1-001', to: 'rule-a-004' },
+			{ file: `${SRC}/rule-a/b.spec.ts`, id: 'rule-a-issue-1-002', to: 'rule-a-003' },
+			{ file: `${SRC}/rule-a/c.spec.ts`, id: 'rule-a-issue-2-001', to: 'rule-a-002' },
+			{ file: `${SRC}/rule-a/index.spec.ts`, id: 'rule-a-valid-001', to: 'rule-a-001' },
+		]);
+	});
+});

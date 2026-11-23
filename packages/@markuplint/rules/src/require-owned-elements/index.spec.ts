@@ -990,7 +990,7 @@ describe('a template that Vue renders away', () => {
 	});
 
 	describe('Svelte', () => {
-		test('[require-owned-elements-091] a block is not reported, as before', async () => {
+		test('[require-owned-elements-091] a block of Svelte is not reported', async () => {
 			const { violations } = await mlRuleTest(rule, '<ul>{#if a}<li>1</li>{/if}</ul>', {
 				parser: { '.*': '@markuplint/svelte-parser' },
 			});

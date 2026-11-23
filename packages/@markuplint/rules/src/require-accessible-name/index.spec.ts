@@ -835,7 +835,7 @@ test('[require-accessible-name-056] an svg that has aria-label is accepted, whet
 });
 
 test('[require-accessible-name-057] a dialog does not require an accessible name', async () => {
-	// ARIA 1.3: dialog no longer requires an accessible name
+	// ARIA 1.3: dialog does not require an accessible name
 	expect((await mlRuleTest(rule, '<dialog></dialog>')).violations.length).toBe(0);
 	expect((await mlRuleTest(rule, '<div role="dialog"></div>')).violations.length).toBe(0);
 });

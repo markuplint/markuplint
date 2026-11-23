@@ -308,7 +308,7 @@ describe('an ancestor whose role is not known until it is rendered', () => {
 	test('[require-parent-role-022] a long run of unknown ancestors is judged without revisiting them', async () => {
 		const depth = 80;
 		const wrap = (inner: string) => `${'<div {...props}>'.repeat(depth)}${inner}${'</div>'.repeat(depth)}`;
-		// The chain "menu > group" needs two of the unknown ancestors, whichever of them are they
+		// The chain "menu > group" needs two of the unknown ancestors, whichever of them they are
 		const source = `<div role="button">${wrap('<div role="group"><div role="menuitem">a</div></div>')}</div>`;
 		expect((await mlRuleTest(rule, source, v13)).violations).toStrictEqual([]);
 	}, 5000);

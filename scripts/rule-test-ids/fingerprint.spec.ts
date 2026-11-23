@@ -108,12 +108,19 @@ describe('group', () => {
 
 	test('a regular expression that has a brace or a quote does not upset the reading of a template literal after it', () => {
 		const code = (pattern: string, tail: string) => withBody('use(' + pattern + ', `x${a}' + tail + '`);');
-		expect(one(code('/[{]/', 'y'))).toBe(one(code('/[{]/', 'y')));
+		expect(one(code('/[{]/', 'y'))).toBe(one(withBody('use(/[{]/,   `x${ a }y`);')));
 		expect(one(code('/[{]/', 'y'))).not.toBe(one(code('/[{]/', 'z')));
 		expect(one(code('/`/', 'y'))).not.toBe(one(code('/`/', 'z')));
 		expect(one(code('/[{]/', 'y'))).not.toBe(one(code('/[}]/', 'y')));
 		// A `}` of a regular expression inside a substitution does not end the substitution
 		expect(one(withBody('use(`x${/}/.test(a)}y`);'))).toBe(one(withBody('use(`x${ /}/.test(a) }y`);')));
+	});
+
+	test('a division is told from a regular expression, so that a template literal after it is read whole', () => {
+		const divided = (tail: string) => withBody('use((a) / 2 + `x${a}' + tail + '`);');
+		expect(one(divided('y'))).toBe(one(withBody('use((a)/2+`x${ a }y`);')));
+		expect(one(divided('y'))).not.toBe(one(divided('z')));
+		expect(one(withBody('use(a.type / 2);'))).not.toBe(one(withBody('use(a.type / 3);')));
 	});
 
 	test('a hole at the end of an array is not a trailing comma', () => {
