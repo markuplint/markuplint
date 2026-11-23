@@ -168,7 +168,7 @@ fn no_invalid_attr_value_001() {
     assert_eq!(result.violations[0].raw, "");
 }
 
-/// TS: `[no-invalid-attr-value-004]` — disable (same HTML as invalid-001 but rule=false)
+/// TS: `[no-invalid-attr-value-004]` — disable (an unknown attribute and an invalid value, with the rule off)
 #[test]
 fn no_invalid_attr_value_004() {
     const _ID: &str = "no-invalid-attr-value-004";

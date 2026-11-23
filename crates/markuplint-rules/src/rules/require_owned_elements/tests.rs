@@ -36,7 +36,7 @@
 //!   v6_require_owned_elements_023  — Rust-only: a child placed in a slot wrapper is resolved on its own
 //!   v6_require_owned_elements_024  — Rust-only: an element whose role is not known until it is rendered does not need what its implicit role needs
 //!
-//!   require-owned-elements-087 and -006 — v6_require_owned_elements_issue_4744_001 (the Vue
+//!   require-owned-elements-087 and 088 — v6_require_owned_elements_025 (the Vue
 //!   parser's MLAST by hand; the specs of TS run on this engine through `yarn test:rust-rules` as well)
 
 use crate::lint::{LintConfig, lint};
@@ -551,7 +551,7 @@ fn v6_require_owned_elements_023() {
 /// branch of `v-if` or a slot other than the default one may be rendered anywhere, or not at all, so it is
 /// not judged; what is passed to the default slot is.
 #[test]
-fn v6_require_owned_elements_issue_4744_001() {
+fn v6_require_owned_elements_025() {
     use crate::test_util::{lint_mlast_brief, mlast_vue, vue_element, vue_leaf};
 
     let of = |item: &str, behavior: Option<&str>, target: Option<Option<&str>>| {

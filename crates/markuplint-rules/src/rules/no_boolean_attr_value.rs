@@ -155,8 +155,8 @@ mod tests {
     }
 
     /// TS: `[no-boolean-attr-value-009]` — unquoted value
-    /// (`-006` to `-009` are Pug, JSX, Vue and Markdown parser cases, which the Rust engine
-    /// does not have.)
+    /// (`[no-boolean-attr-value-010]` to `[no-boolean-attr-value-013]` are Pug, JSX, Vue and Markdown
+    /// parser cases, which the Rust engine does not have.)
     #[test]
     fn no_boolean_attr_value_009() {
         const _ID: &str = "no-boolean-attr-value-009";

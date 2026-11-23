@@ -4,12 +4,12 @@
 //!   no-obsolete-element-001      → no_obsolete_element_001
 //!   no-obsolete-element-002      → no_obsolete_element_002
 //!   no-obsolete-element-003      → no_obsolete_element_003
-//!   no-obsolete-element-004      — SKIP: JSX parser (issue-3740-004 is the same scenario in HTML)
-//!   no-obsolete-element-005      — SKIP: JSX parser (issue-3740-004 is the same scenario in HTML)
+//!   no-obsolete-element-004      — SKIP: JSX parser (`[no-obsolete-element-007]` is the same scenario in HTML)
+//!   no-obsolete-element-005      — SKIP: JSX parser (`[no-obsolete-element-007]` is the same scenario in HTML)
 //!   no-obsolete-element-006      → no_obsolete_element_006
 //!   no-obsolete-element-007      → no_obsolete_element_007
-//!   no-obsolete-element-008      — SKIP: Vue parser (issue-3740-004 is the same scenario in HTML)
-//!   v6_no_obsolete_element_001   — Rust-only: `<marquee>x</marquee>`, the input of issue-3740-003 without pretenders
+//!   no-obsolete-element-008      — SKIP: Vue parser (`[no-obsolete-element-007]` is the same scenario in HTML)
+//!   v6_no_obsolete_element_001   — Rust-only: `<marquee>x</marquee>`, the input of `[no-obsolete-element-006]` without pretenders
 //!   v6_no_obsolete_element_002   — Rust-only: an upper-case tag reports the lower-case local name
 //!   v6_no_obsolete_element_003   — Rust-only: an SVG element is looked up in the SVG spec, not the HTML one
 //!   v6_no_obsolete_element_004   — Rust-only: a custom element with no pretender is not looked up

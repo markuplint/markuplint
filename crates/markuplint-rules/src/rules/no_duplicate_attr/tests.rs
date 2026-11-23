@@ -5,7 +5,7 @@
 //!   no-duplicate-attr-002       → no_duplicate_attr_002
 //!   no-duplicate-attr-003       → no_duplicate_attr_003
 //!   no-duplicate-attr-004       → no_duplicate_attr_004
-//!   no-duplicate-attr-parser-*  — SKIP: framework parsers stay in TS (`v6_attr_duplication_008` checks the resolved names;
+//!   no-duplicate-attr-005..010  — SKIP: framework parsers stay in TS (`v6_attr_duplication_008` checks the resolved names;
 //!                                    `ml-engine.rust-framework.spec.ts` compares whole files)
 //!   no-duplicate-attr-011      → no_duplicate_attr_011
 //!   no-duplicate-attr-012      → no_duplicate_attr_012
@@ -20,7 +20,7 @@
 //!   v6_attr_duplication_006       — Rust-only: pretender attributes, and names compared as the DOM names them on a custom element
 //!   v6_attr_duplication_007       — Rust-only: whitespace around the equal sign, non-ASCII text before the fix
 //!   v6_attr_duplication_008       — Rust-only: names are the ones the parser resolved (`:href` is `href`), `isDuplicatable`
-//!   v6_attr_duplication_009       — Rust-only: a directive is compared by what the framework keeps of its name (`directiveKey`; TS `[no-duplicate-attr-issue-4612-*]`, `[no-duplicate-attr-issue-4613-*]`)
+//!   v6_attr_duplication_009       — Rust-only: a directive is compared by what the framework keeps of its name (`directiveKey`; TS `[no-duplicate-attr-022]` to `[no-duplicate-attr-048]`)
 
 use markuplint_core::mlast::{ElementType, MLASTAttr, MLASTHTMLAttr, MLASTToken, NamespaceURI};
 use markuplint_dom::arena::{DomArena, DomArenaBuilder};
@@ -139,7 +139,6 @@ fn no_duplicate_attr_002() {
     assert_eq!(result.violations[1].raw, "data-attR");
 }
 
-/// TS: `[no-duplicate-attr-004]` — nodeRules disable
 /// TS: `[no-duplicate-attr-003]` Japanese message
 #[test]
 fn no_duplicate_attr_003() {
@@ -156,6 +155,7 @@ fn no_duplicate_attr_003() {
     assert_eq!(messages, ["属性名が重複しています"]);
 }
 
+/// TS: `[no-duplicate-attr-004]` — nodeRules disable
 /// Input: `<div><span attr attr></span></div>` with nodeRule disabling span
 /// Expect: 0 violations
 #[test]
@@ -399,7 +399,8 @@ fn v6_attr_duplication_006() {
 /// Rust-only: the name an attribute goes by is the one the parser resolved (`potentialName`), as
 /// TS `attr.name` is: Vue's `:href` is `href`, so it and a written `href` are duplicates, unless
 /// the parser says the attribute may repeat (`:class` beside `class`). TS:
-/// `[no-duplicate-attr-parser-*]` and `[no-duplicate-attr-015]` run the Vue parser.
+/// `[no-duplicate-attr-005]`, `[no-duplicate-attr-006]`, `[no-duplicate-attr-015]` and
+/// `[no-duplicate-attr-021]` run the Vue parser.
 #[test]
 fn v6_attr_duplication_008() {
     let run = |attrs: &[(&str, &str, serde_json::Value)]| {
@@ -435,7 +436,7 @@ fn v6_attr_duplication_008() {
 /// TS `MLAttr#duplicateKey`: `@keydown.enter` and `@keydown.space` are `onkeydown` to the DOM but two
 /// listeners to the framework, so what is compared is the key the pattern declares, else the name
 /// as written, folded only when the HTML parser of the browser reads the name. TS:
-/// `[no-duplicate-attr-issue-4612-*]`, `[no-duplicate-attr-issue-4613-*]`, `[no-duplicate-attr-parser-*]`.
+/// `[no-duplicate-attr-022]` to `[no-duplicate-attr-048]`.
 #[test]
 fn v6_attr_duplication_009() {
     let run = |settings: serde_json::Value, attrs: &[(&str, serde_json::Value)]| {

@@ -2,16 +2,14 @@
 //!
 //! The data is a hand-made BCD fixture (`fixture`), the shape that TS extracts from the installed
 //! `@mdn/browser-compat-data`; the targets are what `browserslist` resolves the queries of the TS
-//! specs to. The TS specs of `compat-data.spec.ts` and `resolve-browsers.spec.ts` reuse the IDs of
-//! `index.spec.ts` (`invalid-001`…), so the logic they test, which moved here, is covered by the
-//! Rust-only `v6_` tests.
+//! specs to. The TS specs of `compat-data.spec.ts` and `resolve-browsers.spec.ts` carry no test ID,
+//! so the logic they test, which moved here, is covered by the Rust-only `v6_` tests.
 //!
 //! Test ID mapping (TS → Rust), all of `index.spec.ts`:
-//!   no-unsupported-browser-features-001..006  → no_unsupported_browser_features_001..006
-//!   no-unsupported-browser-features-002..006    → no_unsupported_browser_features_002..006
+//!   no-unsupported-browser-features-001..012  → no_unsupported_browser_features_001..012
 //!   no-unsupported-browser-features-015    → no_unsupported_browser_features_015
-//!   no-unsupported-browser-features-016..003  → no_unsupported_browser_features_016..003
-//!   no-unsupported-browser-features-013, -002, issue-4309-004, -005  — SKIP: they need the
+//!   no-unsupported-browser-features-016..018  → no_unsupported_browser_features_016..018
+//!   no-unsupported-browser-features-013, 014, 019, 020  — SKIP: they need the
 //!     JSX / Svelte parser, which runs in TS; `yarn test:rust-rules` runs them against this rule
 //!   v6_no_unsupported_browser_features_001..  — Rust-only: parseVersion, isVersionSatisfied, checkSupport,
 //!     the message, the targets and the gate of the element

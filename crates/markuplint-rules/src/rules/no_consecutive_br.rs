@@ -109,7 +109,7 @@ mod tests {
     }
 
     /// TS: `[no-consecutive-br-006]` — consecutive br with whitespace between
-    /// (`-004` and `-005` are Pug and Markdown parser cases, which the Rust engine does not have.)
+    /// (`[no-consecutive-br-007]` and `[no-consecutive-br-008]` are Pug and Markdown parser cases, which the Rust engine does not have.)
     #[test]
     fn no_consecutive_br_006() {
         const _ID: &str = "no-consecutive-br-006";

@@ -16,6 +16,7 @@
 //!   no-disallowed-attr-012  → no_disallowed_attr_012  (was invalid-attr-issue-3631-009)
 //!   no-disallowed-attr-013  → no_disallowed_attr_013  (was invalid-attr-issue-3631-010)
 //!   no-disallowed-attr-003  → no_disallowed_attr_003  (was invalid-attr-issue-2455)
+//!   no-disallowed-attr-059  → no_disallowed_attr_059  (was invalid-attr-invalid-001)
 //!   no-disallowed-attr-060  — SKIP: Framework parser tests (Pug, Vue, React, Svelte, MDX) (was invalid-attr-parser-004)
 //!   no-unknown-attr-032, no-disallowed-attr-061  — SKIP: Framework parser tests (Pug, Vue, React, Svelte, MDX) (was invalid-attr-parser-011)
 //!   no-unknown-attr-033, no-disallowed-attr-062  — SKIP: Framework parser tests (Pug, Vue, React, Svelte, MDX) (was invalid-attr-parser-012)
@@ -312,9 +313,10 @@ fn no_disallowed_attr_003() {
 
 /// TS: `[no-disallowed-attr-059]` — referrerpolicy without href is disallowed
 ///
-/// The second half of the pre-split `[invalid-attr-invalid-001]`. The old rule reported the
-/// value error of `referrerpolicy="invalid-value"` here; `no-disallowed-attr` reports the
-/// unmet condition independently of the value.
+/// The `invalid-attr` rule, which this rule and `no-unknown-attr` were split out of, reported two
+/// problems for this HTML; this is the `referrerpolicy` half, `[no-unknown-attr-031]` the other.
+/// `invalid-attr` reported the value error of `referrerpolicy="invalid-value"` here;
+/// `no-disallowed-attr` reports the unmet condition independently of the value.
 #[test]
 fn no_disallowed_attr_059() {
     const _ID: &str = "no-disallowed-attr-059";

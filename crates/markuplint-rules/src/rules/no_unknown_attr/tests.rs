@@ -15,13 +15,14 @@
 //!   no-unknown-attr-028  → no_unknown_attr_028  (was invalid-attr-issue-1487-001)
 //!   no-unknown-attr-029  → no_unknown_attr_029  (was invalid-attr-issue-1487-002)
 //!   no-unknown-attr-030  → no_unknown_attr_030  (was invalid-attr-issue-1487-003)
+//!   no-unknown-attr-031  → no_unknown_attr_031  (was invalid-attr-invalid-001)
 //!   no-unknown-attr-007  → no_unknown_attr_007  (was invalid-attr-invalid-020)
 //!   no-unknown-attr-017  — JSX parser; ported as v6_no_unknown_attr_002 (was invalid-attr-invalid-023)
 //!   no-unknown-attr-022  → no_unknown_attr_022  (was invalid-attr-valid-013)
 //!   v6_no_unknown_attr_002  — Rust-only: no-unknown-attr-017 with a custom element
 //!   no-unknown-attr-018  — SKIP: Svelte parser + spec (was invalid-attr-issue-525-001)
 //!   no-unknown-attr-019  — SKIP: Svelte parser + spec (was invalid-attr-issue-525-002)
-//!   no-unknown-attr-020  — SKIP: Svelte parser + spec (listed by the `issue-525-*` wildcard; old test is `describe` contentEditable "inherit") (was invalid-attr-issue-525-003)
+//!   no-unknown-attr-020  — SKIP: Svelte parser + spec (the old test is `describe` contentEditable "inherit") (was invalid-attr-issue-525-003)
 //!   no-unknown-attr-025  — SKIP: Vue parser + spec (was invalid-attr-issue-678)
 //!   no-unknown-attr-026  — SKIP: Vue parser + spec (was invalid-attr-issue-783)
 //!   no-unknown-attr-027  — SKIP: Pug parser (was invalid-attr-issue-800)
@@ -565,7 +566,8 @@ fn no_unknown_attr_007() {
 
 /// TS: `[no-unknown-attr-031]` — unknown attr next to a referrerpolicy whose condition is unmet
 ///
-/// The first half of the pre-split `[invalid-attr-invalid-001]`; the `referrerpolicy` half is
+/// The `invalid-attr` rule, which this rule and `no-disallowed-attr` were split out of, reported
+/// two problems for this HTML; this is the unknown-attribute half, and the `referrerpolicy` half is
 /// `[no-disallowed-attr-059]`.
 #[test]
 fn no_unknown_attr_031() {
@@ -662,7 +664,8 @@ fn v6_no_unknown_attr_002() {
 /// Rust-only: the name checked is the one the parser resolved (`potentialName`), as TS
 /// `attr.name` is: Vue's `:href` is `href` and is known on `a`, `:foo` is `foo` and is not,
 /// and a directive (`v-if`) is not checked at all. The report points at the name as written.
-/// TS: `[no-unknown-attr-parser-*]` run the Vue parser.
+/// TS: `[no-unknown-attr-010]`, `[no-unknown-attr-011]`, `[no-unknown-attr-025]`,
+/// `[no-unknown-attr-026]`, `[no-unknown-attr-043]` and `[no-unknown-attr-044]` run the Vue parser.
 #[test]
 fn v6_no_unknown_attr_003() {
     let run = |attrs: &[(&str, &str, serde_json::Value)]| {

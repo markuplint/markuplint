@@ -61,7 +61,7 @@ fn no_duplicate_sibling_attr_002() {
 
 /// TS: `[no-duplicate-sibling-attr-003]` — multiple track default in audio is invalid
 ///
-/// Line and col asserted as in `issue_3640_001`.
+/// Line and col asserted as in `no_duplicate_sibling_attr_001`.
 #[test]
 fn no_duplicate_sibling_attr_003() {
     const _ID: &str = "no-duplicate-sibling-attr-003";

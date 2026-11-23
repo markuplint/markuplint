@@ -150,8 +150,9 @@ fn no_malformed_character_reference_009() {
     ));
 }
 
-/// Rust-only: the full violation of each invalid-00N input, which the TS tests check
-/// only by message. Expected values from the TS rule.
+/// Rust-only: the full violation of the input of each of `[no-malformed-character-reference-002]`
+/// to `[no-malformed-character-reference-009]`, which the TS tests check only by message.
+/// Expected values from the TS rule.
 #[test]
 fn v6_no_malformed_character_reference_001() {
     let cases: [(&str, &str, u32, &str); 8] = [

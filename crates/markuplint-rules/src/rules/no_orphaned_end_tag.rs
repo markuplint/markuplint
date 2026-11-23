@@ -66,6 +66,15 @@ impl Rule for NoOrphanedEndTag {
 
 #[cfg(test)]
 mod tests {
+    //! Test ID mapping (TS → Rust):
+    //!   no-orphaned-end-tag-003  → no_orphaned_end_tag_003
+    //!   no-orphaned-end-tag-004  → no_orphaned_end_tag_004
+    //!   no-orphaned-end-tag-005  → no_orphaned_end_tag_005
+    //!   no-orphaned-end-tag-006  → no_orphaned_end_tag_006
+    //!   v6_no_orphaned_end_tag_001  — Rust-only: a text node that holds a start tag is kept whole
+    //!   v6_no_orphaned_end_tag_002  — Rust-only: non-ASCII text before the removed end tag
+    //!   v6_no_orphaned_end_tag_003  — Rust-only: only the first `</html>` after the outermost frameset closes html
+
     use super::*;
     use crate::rule::{RuleConfig, RuleConfigSet};
     use crate::rules::no_duplicate_attr::tests::make_element_with_attrs;
@@ -182,6 +191,11 @@ mod tests {
         );
     }
 
+    #[test]
+    fn v6_no_orphaned_end_tag_002() {
+        assert_eq!(fixed("<p>日本語😀</p></span>"), "<p>日本語😀</p>");
+    }
+
     /// Rust-only: only the first `</html>` after the outermost frameset closes html, as in "after after frameset" the
     /// later ones are ignored, and so is any other end tag after the frameset (TS reads the same from parse5).
     #[test]
@@ -220,11 +234,6 @@ mod tests {
     fn no_orphaned_end_tag_006() {
         const _ID: &str = "no-orphaned-end-tag-006";
         assert_eq!(fixed("<div></p></br><p></span></p></div>"), "<div><p></p></div>");
-    }
-
-    #[test]
-    fn v6_no_orphaned_end_tag_002() {
-        assert_eq!(fixed("<p>日本語😀</p></span>"), "<p>日本語😀</p>");
     }
 
     #[test]

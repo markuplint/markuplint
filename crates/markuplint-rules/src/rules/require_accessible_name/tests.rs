@@ -6,7 +6,7 @@
 //! The pretender tests use the JSX parser; each is ported with custom elements in HTML:
 //!   require-accessible-name-045        — v6_require_accessible_name_001
 //!   require-accessible-name-061         — v6_require_accessible_name_002
-//!   require-accessible-name-079..015 — v6_require_accessible_name_003..017
+//!   require-accessible-name-079..093 — v6_require_accessible_name_003..017
 //!   (Rust-only) v6_require_accessible_name_018 — an element with a dynamic attribute is skipped (TS `accnameMayBeMutable`)
 //!   (Rust-only) v6_require_accessible_name_019 — a reference may be to an element whose id is not known until it is rendered
 
@@ -88,7 +88,7 @@ fn hidden_element_skipped() {
 }
 
 // ============================================================
-// Pretenders. The TS tests other than `valid-009` use the JSX parser; these are the
+// Pretenders. The TS tests other than `[require-accessible-name-046]` use the JSX parser; these are the
 // same scenarios with custom elements parsed as HTML (`<MyButton />` →
 // `<x-button>`), expected values from the TS engine run on the HTML input.
 // ============================================================

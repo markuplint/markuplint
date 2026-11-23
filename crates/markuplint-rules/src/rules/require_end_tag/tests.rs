@@ -6,7 +6,7 @@
 //!   require-end-tag-003    → require_end_tag_003
 //!   require-end-tag-004  → require_end_tag_004
 //!   require-end-tag-005   → v6_require_end_tag_002 (Pug: `endTag` of the document is `never`)
-//!   require-end-tag-007..005 → v6_require_end_tag_003 (Vue/Svelte/Astro: `endTag` is `xml`)
+//!   require-end-tag-007..009 → v6_require_end_tag_003 (Vue/Svelte/Astro: `endTag` is `xml`)
 //!   require-end-tag-006   — SKIP: the JSX parser itself rejects the input (the `parse-error` is TS's)
 //!   require-end-tag-010   — SKIP: Nunjucks parser
 //!     (the framework parsers stay in TS; `ml-engine.rust-framework.spec.ts` compares whole files)

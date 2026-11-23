@@ -20,6 +20,7 @@
 //!   attr-order-017   → attr_order_017
 //!   attr-order-018   → attr_order_018
 //!   attr-order-019   → attr_order_019
+//!   attr-order-020   → attr_order_020
 //!   attr-order-021   → attr_order_021
 //!   attr-order-022   → attr_order_022
 //!   attr-order-023   → attr_order_023
@@ -31,21 +32,29 @@
 //!   attr-order-029   → attr_order_029
 //!   attr-order-030   → attr_order_030
 //!   attr-order-031   → attr_order_031
+//!   attr-order-032   → attr_order_032
+//!   attr-order-033   → attr_order_033
+//!   attr-order-034   → attr_order_034
+//!   attr-order-035   → attr_order_035
+//!   attr-order-036   → attr_order_036
+//!   attr-order-037   → attr_order_037
+//!   attr-order-038   → attr_order_038
+//!   attr-order-039/040/046 — SKIP: Vue/JSX parsers not available in Rust; see v6_attr_order_016
 //!   attr-order-041   → attr_order_041
 //!   attr-order-042   → attr_order_042
+//!   attr-order-043   → attr_order_043
 //!   attr-order-044   — SKIP: JSX parser (spread attribute) not available in Rust
 //!   attr-order-045   — SKIP: JSX parser (spread attribute) not available in Rust; see v6_attr_order_005
 //!   attr-order-047   — SKIP: JSX parser (spread attribute) not available in Rust; see v6_attr_order_006
 //!   attr-order-048   → attr_order_048
 //!   attr-order-049   → attr_order_049
+//!   attr-order-050   → attr_order_050
 //!   attr-order-051   → attr_order_051
 //!   attr-order-052   — SKIP: JSX parser not available in Rust; see v6_attr_order_002
 //!   attr-order-053   → attr_order_053
 //!   attr-order-054   → attr_order_054
 //!   attr-order-055   → attr_order_055
 //!   attr-order-056   → attr_order_056
-//!   attr-order-032 … fix-007, fix-010, fix-012, fix-013 → attr_order_fix_NNN
-//!   attr-order-039/fix-009/fix-011 — SKIP: Vue/JSX parsers not available in Rust; see v6_attr_order_016
 //!   v6_attr_order_001  — Rust-only: whitespace before `=` is not part of the reported name
 //!   v6_attr_order_002  — Rust-only: names keep the case they are written in
 //!   v6_attr_order_003  — Rust-only: names compare by UTF-16 code unit, as JavaScript strings do
@@ -167,7 +176,7 @@ fn attr_order_037() {
 }
 
 /// TS: `[attr-order-038]` — options.alphabetical false: unmatched preserve source order
-/// (`-008` and `-009` are Vue and JSX parser cases, which the Rust engine does not have.)
+/// (`[attr-order-039]` and `[attr-order-040]` are Vue and JSX parser cases, which the Rust engine does not have.)
 #[test]
 fn attr_order_038() {
     const _ID: &str = "attr-order-038";
@@ -194,7 +203,7 @@ fn attr_order_043() {
 }
 
 /// TS: `[attr-order-050]` — unlisted attributes within a group sorted alphabetically
-/// (`-011` is a JSX spread case; see `v6_attr_order_016` for the Rust-engine counterpart.)
+/// (`[attr-order-046]` is a JSX spread case; see `v6_attr_order_016` for the Rust-engine counterpart.)
 #[test]
 fn attr_order_050() {
     const _ID: &str = "attr-order-050";

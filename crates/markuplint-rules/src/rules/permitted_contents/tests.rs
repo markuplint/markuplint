@@ -1,14 +1,15 @@
 //! Tests for `permitted-contents` rule.
 //!
 //! The pretender tests use the JSX parser; each is ported with custom elements in HTML:
-//!   permitted-contents-279..019  — v6_permitted_contents_001..019
+//!   permitted-contents-279..297  — v6_permitted_contents_001..019
 //!   permitted-contents-033          — v6_permitted_contents_020
 //!   permitted-contents-034          — v6_permitted_contents_021
 //!   permitted-contents-062           — v6_permitted_contents_022
 //!   v6_permitted_contents_023               — Rust-only: the children are the TS `childNodes` (`{#each}` blocks read through)
-//!   permitted-contents-067/002/006 — v6_permitted_contents_024..026 (`#nonEmptyText`)
-//!   permitted-contents-065/004/005 — v6_permitted_contents_027..029
+//!   permitted-contents-067/066/070 — v6_permitted_contents_024..026 (`#nonEmptyText`)
+//!   permitted-contents-065/068/069 — v6_permitted_contents_027..029
 //!   v6_permitted_contents_030               — Rust-only: U+3000 is text for `#nonEmptyText`
+//!   permitted-contents-251                  — v6_permitted_contents_031 (the Vue parser's MLAST by hand)
 //!   permitted-contents-026            — permitted_contents_026 (the DOM keeps `<image>` as written)
 //!   permitted-contents-129       — permitted_contents_129
 
@@ -1748,7 +1749,7 @@ fn permitted_contents_129() {
 /// of one even without `evaluateConditionalChildNodes`, so the `table` has one `caption` as the content
 /// model asks; two `caption`s that are both rendered are one too many.
 #[test]
-fn v6_permitted_contents_issue_4744_007() {
+fn v6_permitted_contents_031() {
     use crate::test_util::{lint_mlast_brief, mlast_vue, vue_element, vue_leaf};
 
     let table = |first: Option<&str>, second: Option<&str>| {

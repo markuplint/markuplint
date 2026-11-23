@@ -15,7 +15,7 @@
 //!   permitted-roles-012        → permitted_roles_012
 //!   permitted-roles-013        → permitted_roles_013
 //!   permitted-roles-014        → permitted_roles_014
-//!   v6_permitted_roles_001     — Rust-only: `<h1 role="button">`, the input of issue-3740-001 without pretenders
+//!   v6_permitted_roles_001     — Rust-only: `<h1 role="button">`, the input of `[permitted-roles-014]` without pretenders
 //!   v6_permitted_roles_002     — Rust-only: only the first non-permitted token is reported, at its own position
 //!   v6_permitted_roles_003     — Rust-only: an empty list reports the first token; no token reports the attribute
 //!   v6_permitted_roles_004     — Rust-only: the lookup is case-sensitive; the implicit role is permitted

@@ -17,6 +17,7 @@
 //!   no-restricted-attr-009  → no_restricted_attr_009  (was invalid-attr-issue-716-003)
 //!   no-restricted-attr-012  → no_restricted_attr_012  (was invalid-attr-issue-716-006)
 //!   no-restricted-attr-013  → no_restricted_attr_013  (was invalid-attr-issue-716-007)
+//!   no-restricted-attr-018  → no_restricted_attr_018  (the JSX parser is stood in for by `attrNameRoute`)
 //!   v6_no_restricted_attr_001  — Rust-only: a pattern that is not `/…/` is the value itself, as TS `checkPattern` has it
 
 use super::*;

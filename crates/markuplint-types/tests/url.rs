@@ -492,7 +492,7 @@ fn rule_spec_values() {
     assert!(!kw("[61:24:74]:98", "URL").is_matched());
     assert!(!kw("data:/example.com/", "URL").is_matched());
     assert!(!kw("/relative", "AbsoluteURLOrEmpty").is_matched());
-    // [no-invalid-attr-value-096] … 008
+    // [no-invalid-attr-value-096] … 103
     assert!(!kw("http://example.com/\u{0080}", "URL").is_matched());
     assert!(!kw("http://example.com/\u{009F}", "URL").is_matched());
     assert!(!kw("http://example.com/\u{FDD0}", "URL").is_matched());

@@ -12,8 +12,8 @@
 //!   v6_case_sensitive_attr_name_001  — Rust-only: non-ASCII text before the fixed name
 //!   v6_case_sensitive_attr_name_002  — Rust-only: a resolved name (JSX `tabIndex`) and a non-HTML element have no case to enforce
 //!   case-sensitive-attr-name-012     → case_sensitive_attr_name_012
-//!   case-sensitive-attr-name-007     → v6_case_sensitive_attr_name_003 (the JSX and MDX parsers stay in TS; their `attrNameCaseSensitive` is set on the document, and so does `-parser-002` and `-003`)
-//!   case-sensitive-attr-name-010     → v6_case_sensitive_attr_name_003 (Svelte and Astro leave it unset, as does `-parser-005`)
+//!   case-sensitive-attr-name-007     → v6_case_sensitive_attr_name_003 (the JSX and MDX parsers stay in TS; their `attrNameCaseSensitive` is set on the document, and so do `[case-sensitive-attr-name-008]` and `[case-sensitive-attr-name-009]`)
+//!   case-sensitive-attr-name-010     → v6_case_sensitive_attr_name_003 (Svelte and Astro leave it unset, as does `[case-sensitive-attr-name-011]`)
 
 use crate::lint::{LintConfig, lint};
 use crate::test_util::fixed_code;

@@ -32,7 +32,8 @@
 //!   v6_consistent_table_row_length_004  — Rust-only: a row without an anchored cell is left to `no-empty-table-track`
 //!   v6_consistent_table_row_length_005  — Rust-only: severity override and `rules: false`
 //!
-//! The pre-split `rowspan_overflow_in_thead_section` maps to `no-table-span-overflow-001`.
+//! `table-row-column-alignment` is four rules now; its test `rowspan_overflow_in_thead_section`
+//! is `no-table-span-overflow-001`.
 
 use crate::lint::{LintConfig, lint};
 use crate::violation::{Severity, Violation};

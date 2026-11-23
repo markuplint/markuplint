@@ -3,7 +3,7 @@
 //! Test ID mapping (TS → Rust):
 //!   no-skipped-heading-level-001       → no_skipped_heading_level_001
 //!   no-skipped-heading-level-007       → no_skipped_heading_level_007
-//!   no-skipped-heading-level-parser-*  — SKIP: Markdown/MDX parsers not available in Rust
+//!   no-skipped-heading-level-010..017  — SKIP: Markdown/MDX parsers not available in Rust
 
 use crate::lint::{LintConfig, lint};
 use crate::violation::Severity;

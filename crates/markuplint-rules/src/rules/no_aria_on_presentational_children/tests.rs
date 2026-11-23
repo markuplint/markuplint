@@ -1,23 +1,22 @@
 //! Tests for `no-aria-on-presentational-children` rule.
 //!
 //! Test ID mapping (TS → Rust):
-//!   no-aria-on-presentational-children-001  → no_aria_on_presentational_children_001
-//!   no-aria-on-presentational-children-003  → no_aria_on_presentational_children_003
-//!   no-aria-on-presentational-children-004  → no_aria_on_presentational_children_004
-//!   the other `no-aria-on-presentational-children-<category>-NNN` of `index.spec.ts` that take HTML
-//!     → `no_aria_on_presentational_children_<category>_NNN`, with the same input and the same
-//!     violations. The ones that take the JSX parser or a pretender (`issue-4309-003`, `-004`, `-006`,
-//!     `-007`, `issue-4408-002`, `-014`, `-020`) are run against the Rust engine by the parity run of
-//!     the TS specs only, as the Rust tests parse HTML.
-//!   `invalid-001` keeps the input of the earlier TS spec (an `aria-label` on a child of a button),
-//!     which the TS rule no longer reports; the TS spec's own input is in `v6_..._007`.
+//!   no-aria-on-presentational-children-001..006  → no_aria_on_presentational_children_001..006
+//!   no-aria-on-presentational-children-009       → no_aria_on_presentational_children_009
+//!   no-aria-on-presentational-children-012       → no_aria_on_presentational_children_012
+//!   no-aria-on-presentational-children-014..024  → no_aria_on_presentational_children_014..024
+//!   no-aria-on-presentational-children-026..032  → no_aria_on_presentational_children_026..032
+//!   no-aria-on-presentational-children-034..053  → no_aria_on_presentational_children_034..053
+//!   no-aria-on-presentational-children-007, 008, 010, 011, 013, 025, 033, 054..056  — SKIP: they take the JSX parser or a pretender;
+//!     the parity run of the TS specs (`yarn test:rust-rules`) runs them against the Rust engine, as the Rust
+//!     tests parse HTML
 //!   v6_no_aria_on_presentational_children_001  — Rust-only: message, position and scope (the attribute) of the report
 //!   v6_no_aria_on_presentational_children_002  — Rust-only: an implicit role counts; `aria-hidden` is not reported
 //!   v6_no_aria_on_presentational_children_003  — Rust-only: the closest such ancestor is named
 //!   v6_no_aria_on_presentational_children_004  — Rust-only: which attributes and elements count
 //!   v6_no_aria_on_presentational_children_005  — Rust-only: other roles, role tokens and ARIA version
 //!   v6_no_aria_on_presentational_children_006  — Rust-only: severity, multi-line position and `rules: false`, for an `aria-label` that takes no effect
-//!   v6_no_aria_on_presentational_children_007  — Rust-only: severity option and `rules: false`
+//!   v6_no_aria_on_presentational_children_007  — Rust-only: severity option and `rules: false`, on the input of `[no-aria-on-presentational-children-003]`
 //!   v6_no_aria_on_presentational_children_008  — Rust-only: an ancestor whose role is not known until it is rendered is passed over
 
 use crate::lint::{LintConfig, lint};
@@ -126,10 +125,11 @@ fn no_aria_on_presentational_children_002() {
 fn no_aria_on_presentational_children_003() {
     const _ID: &str = "no-aria-on-presentational-children-003";
     let violations = run_rule(
-        r#"<div role="button"><span aria-label="text"></span></div>"#,
+        r#"<div role="button"><span aria-describedby="d"></span></div><p id="d">d</p>"#,
         serde_json::json!(true),
     );
-    assert_eq!(violations.len(), 0, "violations: {violations:?}");
+    assert_eq!(violations.len(), 1, "violations: {violations:?}");
+    assert_eq!(violations[0].severity, Severity::Warning);
 }
 
 /// TS: `[no-aria-on-presentational-children-004]`

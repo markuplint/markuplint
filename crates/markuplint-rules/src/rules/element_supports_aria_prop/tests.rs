@@ -28,8 +28,6 @@
 //!   v6_element_supports_aria_prop_006  — Rust-only: an attribute name written in upper case is checked against the whitelist
 //!   v6_element_supports_aria_prop_007  — Rust-only: an element without a spec is skipped
 //!   v6_element_supports_aria_prop_008  — Rust-only: severity and `rules: false`
-//!
-//! TS test numbers are as in the TS spec file: there is no `issue-3630-004`.
 
 use crate::lint::{LintConfig, lint};
 use crate::violation::{Severity, Violation};
