@@ -362,3 +362,11 @@ test('[no-nonstandard-features-valid-002] HTML: `async` and `defer` of `script` 
 	const { violations } = await mlRuleTest(rule, '<script async defer src="a.js"></script>');
 	expect(violations).toStrictEqual([]);
 });
+
+test('[no-nonstandard-features-valid-003] HTML: `switch` of `input` and `for` of `template` are standard', async () => {
+	// https://html.spec.whatwg.org/multipage/input.html#attr-input-switch
+	// https://html.spec.whatwg.org/multipage/scripting.html#attr-template-for
+	const html = '<input type="checkbox" switch><template for="a"></template>';
+	const { violations } = await mlRuleTest(rule, html);
+	expect(violations).toStrictEqual([]);
+});

@@ -219,7 +219,8 @@ function dynamicPackage(name: string): DynamicPackage | null {
 export const CONFIGURATION_CONSUMERS = ['packages/markuplint/', 'packages/@markuplint/language-server/'];
 
 /**
- * Root files that a spec reads by a path, and what runs for each of them.
+ * Root files that a spec reads by a path, and what runs for each of them. A file that more than one
+ * pattern names runs what each of them gives.
  *
  * Each row comes from a spec that builds the path from `import.meta.dirname` or the root: the
  * pattern names the file, the specs read it. `completeness.spec.ts` fails when a spec names a file
@@ -243,6 +244,11 @@ const ROOT_INPUTS: readonly {
 		pattern:
 			/^(?:\.github\/(?:renovate\.json|labeler\.yml|workflows\/[^/]+\.ya?ml)|\.husky\/pre-commit|CLAUDE\.md|SECURITY\.md|website\/community\/support-policy\.mdx|website\/i18n\/ja\/docusaurus-plugin-content-docs-community\/current\/support-policy\.mdx)$/,
 		specs: () => ['scripts/release-lines/consistency.spec.ts'],
+	},
+	{
+		// The workflow whose pull request job greps the report for the heading of a table that cannot be read.
+		pattern: /^\.github\/workflows\/spec-citation-watch\.yml$/,
+		specs: () => ['scripts/spec-citations/index-check.spec.ts'],
 	},
 	{
 		pattern: /^config\.schema\.json$/,
@@ -316,14 +322,15 @@ export function plan(changes: readonly Change[], probe: Probe): Plan {
 			add(specsUnder(probe, 'scripts/spec-citations'));
 		}
 
-		const input = ROOT_INPUTS.find(({ pattern }) => pattern.test(path));
-		if (input) {
+		// Every row that names the file: one file can be read by specs of more than one kind.
+		const inputs = ROOT_INPUTS.filter(({ pattern }) => pattern.test(path));
+		for (const input of inputs) {
 			add(input.specs(probe));
 		}
 
 		const match = PACKAGE_PATH.exec(path);
 		if (!match?.groups) {
-			if (input || IGNORED.some(pattern => pattern.test(path)) || classifyCitation(path) !== null) {
+			if (inputs.length > 0 || IGNORED.some(pattern => pattern.test(path)) || classifyCitation(path) !== null) {
 				continue;
 			}
 			const outside = planOutsidePackages(status, path, probe);
