@@ -188,9 +188,10 @@ function isLandmarkRole(role: ReadonlyDeep<NonNullable<ReturnType<typeof getRole
  *
  * - the value of `aria-labelledby` is not known (`aria-labelledby={id}`): the ids it refers to
  *   are not either, or
- * - a token refers to no element but the tree has an element whose `id` is not known
- *   (`<h2 id={x}>` and `aria-labelledby="t"`, {@link hasElementOfUnknownId}): it may be the one. An
- *   id of such an element is not in the map that `getElementById` looks up.
+ * - a token refers to no element but the tree may have an element whose `id` the markup does not tell
+ *   ({@link hasElementOfUnknownId} says which: `<h2 id={x}>`, `<h2 {...props}>`, a component that no
+ *   pretender resolved, content that is not known): it may be the one. An id of such an element is not
+ *   in the map that `getElementById` looks up.
  *   `no-refer-to-non-existent-id` reports no reference in such a tree either.
  *
  * An attribute that the framework does not output (`aria-labelledby={undefined}`) is not returned by
