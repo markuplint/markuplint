@@ -87,7 +87,7 @@ export function renderAttrs<T extends RuleConfigValue, O extends PlainData>(
  * ported, and this goes with them).
  *
  * What the TS engine does after parsing is done here, so that the Rust rules, which read
- * `potentialName`, `potentialValue`, `isDynamicValue`, `isDirective` and `candidate` off the
+ * `potentialName`, `potentialValue`, `isDynamicValue`, `isDirective`, `isSpread` and `candidate` off the
  * attribute, see what the TS rules see:
  *
  * - The name an attribute goes by, and whether it is a directive, are resolved from the spec.
@@ -119,6 +119,7 @@ export function mlastForRust(ast: MLASTDocument, { spec, parser, renderings }: M
 			candidate,
 			isDynamicValue,
 			isDirective,
+			isSpread,
 			isDuplicatable,
 			valueType,
 			matchedDirectivePattern,
@@ -139,6 +140,9 @@ export function mlastForRust(ast: MLASTDocument, { spec, parser, renderings }: M
 				rendering.value !== written &&
 				!rendering.isDynamicValue && { potentialValue: rendering.value }),
 			isDirective,
+			// `MLAttr#isSpread` of a directive that the spec says is a spread (`v-bind="obj"`): a spread of the
+			// syntax tree is a node of its own, which `MLElement#hasSpreadAttr` and the rules read as one
+			...(isSpread && { isSpread }),
 			isDuplicatable,
 			...(valueType && { valueType }),
 			// What the matching pattern says of a repeat, which `MLAttr#duplicateKey` is built from
