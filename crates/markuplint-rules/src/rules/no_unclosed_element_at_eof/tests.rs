@@ -1,13 +1,13 @@
 //! Tests for `no-unclosed-element-at-eof` rule.
 //!
 //! Test ID mapping (TS → Rust):
-//!   no-unclosed-element-at-eof-invalid-001    → no_unclosed_element_at_eof_invalid_001
-//!   no-unclosed-element-at-eof-invalid-002    → no_unclosed_element_at_eof_invalid_002
-//!   no-unclosed-element-at-eof-valid-001      → no_unclosed_element_at_eof_valid_001
-//!   no-unclosed-element-at-eof-valid-002      → no_unclosed_element_at_eof_valid_002
-//!   no-unclosed-element-at-eof-valid-003      → no_unclosed_element_at_eof_valid_003
-//!   no-unclosed-element-at-eof-valid-004      → no_unclosed_element_at_eof_valid_004
-//!   no-unclosed-element-at-eof-issue-4022-001 → v6_no_unclosed_element_at_eof_005 (the Pug parser stays in TS; its `endTag` is set on the document)
+//!   no-unclosed-element-at-eof-001    → no_unclosed_element_at_eof_001
+//!   no-unclosed-element-at-eof-002    → no_unclosed_element_at_eof_002
+//!   no-unclosed-element-at-eof-003      → no_unclosed_element_at_eof_003
+//!   no-unclosed-element-at-eof-004      → no_unclosed_element_at_eof_004
+//!   no-unclosed-element-at-eof-005      → no_unclosed_element_at_eof_005
+//!   no-unclosed-element-at-eof-006      → no_unclosed_element_at_eof_006
+//!   no-unclosed-element-at-eof-007 → v6_no_unclosed_element_at_eof_005 (the Pug parser stays in TS; its `endTag` is set on the document)
 //!   v6_no_unclosed_element_at_eof_001  — Rust-only: `iframe` and `param` are not void elements for this rule
 //!   v6_no_unclosed_element_at_eof_002  — Rust-only: the content end follows the last child, a comment included
 //!   v6_no_unclosed_element_at_eof_003  — Rust-only: a self-closing foreign element has no end tag either
@@ -33,53 +33,53 @@ fn unclosed(col: u32, name: &str, raw: &str) -> Brief {
     )
 }
 
-/// TS: `[no-unclosed-element-at-eof-invalid-001]` picture left open at the end of the file
+/// TS: `[no-unclosed-element-at-eof-001]` picture left open at the end of the file
 #[test]
-fn no_unclosed_element_at_eof_invalid_001() {
-    const _ID: &str = "no-unclosed-element-at-eof-invalid-001";
+fn no_unclosed_element_at_eof_001() {
+    const _ID: &str = "no-unclosed-element-at-eof-001";
     assert_eq!(
         run(r#"<picture><img src="x" alt="">"#),
         [unclosed(1, "picture", "<picture>")]
     );
 }
 
-/// TS: `[no-unclosed-element-at-eof-invalid-002]` nested elements both left open at the end of the file
+/// TS: `[no-unclosed-element-at-eof-002]` nested elements both left open at the end of the file
 #[test]
-fn no_unclosed_element_at_eof_invalid_002() {
-    const _ID: &str = "no-unclosed-element-at-eof-invalid-002";
+fn no_unclosed_element_at_eof_002() {
+    const _ID: &str = "no-unclosed-element-at-eof-002";
     assert_eq!(
         run("<section><div>text"),
         [unclosed(1, "section", "<section>"), unclosed(10, "div", "<div>")]
     );
 }
 
-/// TS: `[no-unclosed-element-at-eof-valid-001]` properly closed picture
+/// TS: `[no-unclosed-element-at-eof-003]` properly closed picture
 #[test]
-fn no_unclosed_element_at_eof_valid_001() {
-    const _ID: &str = "no-unclosed-element-at-eof-valid-001";
+fn no_unclosed_element_at_eof_003() {
+    const _ID: &str = "no-unclosed-element-at-eof-003";
     assert_eq!(run(r#"<picture><img src="x" alt=""></picture>"#), []);
 }
 
-/// TS: `[no-unclosed-element-at-eof-valid-002]` optional-tag-omission elements left open at EOF are exempt
+/// TS: `[no-unclosed-element-at-eof-004]` optional-tag-omission elements left open at EOF are exempt
 #[test]
-fn no_unclosed_element_at_eof_valid_002() {
-    const _ID: &str = "no-unclosed-element-at-eof-valid-002";
+fn no_unclosed_element_at_eof_004() {
+    const _ID: &str = "no-unclosed-element-at-eof-004";
     assert_eq!(run("<ul><li>one<li>two</ul>"), []);
     assert_eq!(run("<li>orphan list item"), []);
     assert_eq!(run("<p>last paragraph"), []);
 }
 
-/// TS: `[no-unclosed-element-at-eof-valid-003]` void elements are never flagged
+/// TS: `[no-unclosed-element-at-eof-005]` void elements are never flagged
 #[test]
-fn no_unclosed_element_at_eof_valid_003() {
-    const _ID: &str = "no-unclosed-element-at-eof-valid-003";
+fn no_unclosed_element_at_eof_005() {
+    const _ID: &str = "no-unclosed-element-at-eof-005";
     assert_eq!(run(r#"<img src="x" alt="">"#), []);
 }
 
-/// TS: `[no-unclosed-element-at-eof-valid-004]` an element autoclosed mid-document by a sibling is not an EOF case
+/// TS: `[no-unclosed-element-at-eof-006]` an element autoclosed mid-document by a sibling is not an EOF case
 #[test]
-fn no_unclosed_element_at_eof_valid_004() {
-    const _ID: &str = "no-unclosed-element-at-eof-valid-004";
+fn no_unclosed_element_at_eof_006() {
+    const _ID: &str = "no-unclosed-element-at-eof-006";
     assert_eq!(run("<p>one<div>two</div>"), []);
 }
 
@@ -122,7 +122,7 @@ fn v6_no_unclosed_element_at_eof_004() {
 
 /// A parser that never records end tags (Pug) leaves every element without one, which says
 /// nothing about the source, so the rule is exempt for the whole document.
-/// TS: `[no-unclosed-element-at-eof-issue-4022-001]`.
+/// TS: `[no-unclosed-element-at-eof-007]`.
 #[test]
 fn v6_no_unclosed_element_at_eof_005() {
     use markuplint_core::mlast::{DocumentSettings, EndTagType};

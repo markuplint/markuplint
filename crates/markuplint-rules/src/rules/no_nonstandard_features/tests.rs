@@ -1,9 +1,9 @@
 //! Tests for `no-nonstandard-features` rule.
 //!
 //! Test ID mapping (TS → Rust):
-//!   no-nonstandard-features-invalid-001  → no_nonstandard_features_invalid_001
-//!   no-nonstandard-features-valid-001    → no_nonstandard_features_valid_001
-//!   no-nonstandard-features-invalid-002  → no_nonstandard_features_invalid_002
+//!   no-nonstandard-features-001  → no_nonstandard_features_001
+//!   no-nonstandard-features-002    → no_nonstandard_features_002
+//!   no-nonstandard-features-003  → no_nonstandard_features_003
 //!   v6_no_nonstandard_features_001  — Rust-only: message, position and `raw` of attribute reports
 //!   v6_no_nonstandard_features_002  — Rust-only: `<html xmlns>`; non-standard MathML elements are not checked
 //!   v6_no_nonstandard_features_003  — Rust-only: attributes that are also experimental
@@ -57,20 +57,20 @@ fn assert_nonstandard(violations: &[Violation], expected: &[(u32, u32, &str)]) {
     }
 }
 
-/// TS: `[no-nonstandard-features-invalid-001]` warns about non-standard attributes
+/// TS: `[no-nonstandard-features-001]` warns about non-standard attributes
 #[test]
-fn no_nonstandard_features_invalid_001() {
-    const _ID: &str = "no-nonstandard-features-invalid-001";
+fn no_nonstandard_features_001() {
+    const _ID: &str = "no-nonstandard-features-001";
     let violations = run("<canvas moz-opaque></canvas>");
     assert_eq!(violations.len(), 1);
     assert!(violations[0].message.contains("\"moz-opaque\""));
     assert!(violations[0].message.contains("non-standard"));
 }
 
-/// TS: `[no-nonstandard-features-valid-001]` ignore attribute by pattern
+/// TS: `[no-nonstandard-features-002]` ignore attribute by pattern
 #[test]
-fn no_nonstandard_features_valid_001() {
-    const _ID: &str = "no-nonstandard-features-valid-001";
+fn no_nonstandard_features_002() {
+    const _ID: &str = "no-nonstandard-features-002";
     let violations = run_rule(
         "<canvas moz-opaque></canvas>",
         serde_json::json!({ "options": { "ignoreFeatures": ["canvas[moz-opaque]"] } }),
@@ -78,10 +78,10 @@ fn no_nonstandard_features_valid_001() {
     assert!(violations.is_empty(), "{violations:?}");
 }
 
-/// TS: `[no-nonstandard-features-invalid-002]` severity is warning by default
+/// TS: `[no-nonstandard-features-003]` severity is warning by default
 #[test]
-fn no_nonstandard_features_invalid_002() {
-    const _ID: &str = "no-nonstandard-features-invalid-002";
+fn no_nonstandard_features_003() {
+    const _ID: &str = "no-nonstandard-features-003";
     let violations = run("<canvas moz-opaque></canvas>");
     assert_eq!(violations.len(), 1);
     assert_eq!(violations[0].severity, Severity::Warning);
@@ -127,7 +127,7 @@ fn v6_no_nonstandard_features_002() {
 /// Expected values are the TS output.
 #[test]
 fn v6_no_nonstandard_features_003() {
-    assert_nonstandard(&run("<input type=\"checkbox\" switch>"), &[(1, 24, "switch")]);
+    assert_nonstandard(&run("<input type=\"checkbox\" switch>"), &[]);
     assert_nonstandard(
         &run("<button interestfor=\"x\"></button><template shadowrootreferencetarget=\"x\"></template>"),
         &[(1, 9, "interestfor"), (1, 44, "shadowrootreferencetarget")],

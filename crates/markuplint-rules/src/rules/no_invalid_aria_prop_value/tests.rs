@@ -1,8 +1,8 @@
 //! Tests for `no-invalid-aria-prop-value` rule.
 //!
 //! Test ID mapping (TS → Rust):
-//!   no-invalid-aria-prop-value-valid-001    → no_invalid_aria_prop_value_valid_001
-//!   no-invalid-aria-prop-value-invalid-001  → no_invalid_aria_prop_value_invalid_001
+//!   no-invalid-aria-prop-value-001    → no_invalid_aria_prop_value_001
+//!   no-invalid-aria-prop-value-002  → no_invalid_aria_prop_value_002
 //!   v6_no_invalid_aria_prop_value_001  — Rust-only: token with the allowed values in the message
 //!   v6_no_invalid_aria_prop_value_002  — Rust-only: token list
 //!   v6_no_invalid_aria_prop_value_003  — Rust-only: empty values
@@ -58,10 +58,10 @@ fn violation(line: u32, col: u32, message: &str, raw: &str) -> (Severity, u32, u
     (Severity::Error, line, col, message.to_string(), raw.to_string())
 }
 
-/// TS: `[no-invalid-aria-prop-value-valid-001]`
+/// TS: `[no-invalid-aria-prop-value-001]`
 #[test]
-fn no_invalid_aria_prop_value_valid_001() {
-    const _ID: &str = "no-invalid-aria-prop-value-valid-001";
+fn no_invalid_aria_prop_value_001() {
+    const _ID: &str = "no-invalid-aria-prop-value-001";
     assert_eq!(
         run(
             r#"<div role="button" aria-pressed="true"></div>"#,
@@ -71,10 +71,10 @@ fn no_invalid_aria_prop_value_valid_001() {
     );
 }
 
-/// TS: `[no-invalid-aria-prop-value-invalid-001]`
+/// TS: `[no-invalid-aria-prop-value-002]`
 #[test]
-fn no_invalid_aria_prop_value_invalid_001() {
-    const _ID: &str = "no-invalid-aria-prop-value-invalid-001";
+fn no_invalid_aria_prop_value_002() {
+    const _ID: &str = "no-invalid-aria-prop-value-002";
     assert_eq!(
         run(
             r#"<div role="button" aria-pressed="hoge"></div>"#,

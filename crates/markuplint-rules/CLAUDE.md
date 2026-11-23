@@ -17,16 +17,15 @@ Tests do not go inline in `mod.rs`, and a rule is not a single `<rule_name>.rs` 
 
 ## Test ID Convention
 
-Every `#[test]` function uses an ID that matches the TS test suite (`packages/@markuplint/rules/`).
+Every `#[test]` function that ports a TS test (`packages/@markuplint/rules/`) carries the ID of that test: `[rule-name-NNN]`, a number that is unique within the rule across all of its spec files. Which TS tests have an ID, and how a number is given, is in `packages/@markuplint/rules/CLAUDE.md`.
 
 ### Naming format
 
 ```rust
-// Matches TS test ID [require-doctype-valid-001]
-/// TS: `[require-doctype-valid-001]`
+/// TS: `[require-doctype-001]`
 #[test]
-fn require_doctype_valid_001() {
-    const _ID: &str = "require-doctype-valid-001";
+fn require_doctype_001() {
+    const _ID: &str = "require-doctype-001";
     // ...
 }
 
@@ -40,35 +39,25 @@ fn v6_require_doctype_001() {
 
 ### `_ID` constant (TS-mapped tests)
 
-Every test that corresponds to a TS test has `const _ID: &str = "rule-name-category-NNN";` as the first line of the function body. This enables `grep` to find TS IDs (which use hyphens) in Rust code (which uses underscores in function names).
+Every test that ports a TS test has `const _ID: &str = "rule-name-NNN";` as the first line of the function body. This enables `grep` to find TS IDs (which use hyphens) in Rust code (which uses underscores in function names).
 
-- `_ID` is for TS-mapped tests only — `v6_*` tests do not need it
+- `_ID` is for TS-mapped tests only — `v6_*` tests do not need it, and neither does a Rust test of a TS test that has no ID (a unit test of an internal function, of the spec data or of a helper)
 - The `_` prefix suppresses unused-variable warnings
 - `cargo fmt` and `cargo clippy` do not touch or warn about it (verified)
 
-### Categories
-
-Same as TS side:
-
-| Category     | When to use                                            |
-| ------------ | ------------------------------------------------------ |
-| `valid`      | Test expects 0 violations                              |
-| `invalid`    | Test expects 1+ violations                             |
-| `fix`        | Test checks fix behavior                               |
-| `parser`     | Test uses a non-default parser input                   |
-| `issue_NNNN` | Regression test for a GitHub issue (use issue number)  |
-
 ### Rules
 
-- Numbers are sequential per category, starting at `001` — must match TS numbering
+- The ID is the one of the TS test, so the Rust test follows when the TS side renumbers. The number belongs to a behavior: it has no category (`valid`, `invalid`, …) and no issue number
+- The function name is the ID with underscores (`require-doctype-001` → `require_doctype_001`)
+- A TS test that is removed has its Rust test removed, and its number is not given to another test
 - Rust-only tests (no TS counterpart) use `v6_<rule_name>_NNN` prefix
 - Each test file has a header comment listing the ID mapping:
 
 ```rust
 //! Test ID mapping (TS → Rust):
-//!   require-doctype-valid-001    → require_doctype_valid_001
-//!   require-doctype-invalid-001  → require_doctype_invalid_001
-//!   v6_require_doctype_001       — Rust-only: description
+//!   require-doctype-001     → require_doctype_001
+//!   require-doctype-002     → require_doctype_002
+//!   v6_require_doctype_001  — Rust-only: description
 ```
 
 ## Test Pattern
@@ -105,10 +94,10 @@ When a test has the same ID as a TS test, it uses:
 - **Hardcoded assertion values** — no computed expectations
 
 ```rust
-/// TS: `[require-doctype-invalid-001]`
+/// TS: `[require-doctype-002]`
 #[test]
-fn require_doctype_invalid_001() {
-    const _ID: &str = "require-doctype-invalid-001";
+fn require_doctype_002() {
+    const _ID: &str = "require-doctype-002";
     let arena = html_arena("<html></html>");  // Same HTML as TS
     let spec = spec();
     let config: LintConfig = serde_json::from_value(serde_json::json!({

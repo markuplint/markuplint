@@ -1,20 +1,20 @@
 //! Tests for `progress-value-bounds` rule.
 //!
 //! Test ID mapping (TS → Rust):
-//!   progress-value-bounds-valid-001    → progress_value_bounds_valid_001
-//!   progress-value-bounds-valid-002    → progress_value_bounds_valid_002
-//!   progress-value-bounds-valid-003    → progress_value_bounds_valid_003
-//!   progress-value-bounds-valid-004    → progress_value_bounds_valid_004
-//!   progress-value-bounds-valid-005    → progress_value_bounds_valid_005
-//!   progress-value-bounds-invalid-001  → progress_value_bounds_invalid_001
-//!   progress-value-bounds-invalid-002  → progress_value_bounds_invalid_002
-//!   progress-value-bounds-valid-006    → progress_value_bounds_valid_006
-//!   progress-value-bounds-valid-007    → progress_value_bounds_valid_007
-//!   progress-value-bounds-valid-008    → progress_value_bounds_valid_008
-//!   progress-value-bounds-valid-009    → progress_value_bounds_valid_009
-//!   progress-value-bounds-parser-001   — SKIPPED: needs `@markuplint/jsx-parser` (`<MyProgress>`);
+//!   progress-value-bounds-001  → progress_value_bounds_001
+//!   progress-value-bounds-002  → progress_value_bounds_002
+//!   progress-value-bounds-003  → progress_value_bounds_003
+//!   progress-value-bounds-004  → progress_value_bounds_004
+//!   progress-value-bounds-005  → progress_value_bounds_005
+//!   progress-value-bounds-006  → progress_value_bounds_006
+//!   progress-value-bounds-007  → progress_value_bounds_007
+//!   progress-value-bounds-008  → progress_value_bounds_008
+//!   progress-value-bounds-009  → progress_value_bounds_009
+//!   progress-value-bounds-010  → progress_value_bounds_010
+//!   progress-value-bounds-011  → progress_value_bounds_011
+//!   progress-value-bounds-012  — SKIPPED: needs `@markuplint/jsx-parser` (`<MyProgress>`);
 //!                                        the same pretender case runs on HTML in v6_..._003
-//!   progress-value-bounds-parser-002   — SKIPPED: needs `@markuplint/jsx-parser` (`<MyProgress as>`);
+//!   progress-value-bounds-013   — SKIPPED: needs `@markuplint/jsx-parser` (`<MyProgress as>`);
 //!                                        the same `as` case runs on HTML in v6_..._003
 //!   v6_progress_value_bounds_001       — Rust-only: values are read with JS `Number()` semantics
 //!   v6_progress_value_bounds_002       — Rust-only: attribute names are matched as the DOM names them
@@ -38,87 +38,87 @@ const VALUE_LE_MAX: &str =
 const VALUE_LE_ONE: &str =
     "The value of the \"value\" attribute must be less than or equal to one when the \"max\" attribute is absent";
 
-/// TS: `[progress-value-bounds-valid-001]` — progress without any attributes
+/// TS: `[progress-value-bounds-001]` — progress without any attributes
 #[test]
-fn progress_value_bounds_valid_001() {
-    const _ID: &str = "progress-value-bounds-valid-001";
+fn progress_value_bounds_001() {
+    const _ID: &str = "progress-value-bounds-001";
     assert_eq!(run("<progress>50%</progress>"), []);
 }
 
-/// TS: `[progress-value-bounds-valid-002]` — progress with value within default max (1)
+/// TS: `[progress-value-bounds-002]` — progress with value within default max (1)
 #[test]
-fn progress_value_bounds_valid_002() {
-    const _ID: &str = "progress-value-bounds-valid-002";
+fn progress_value_bounds_002() {
+    const _ID: &str = "progress-value-bounds-002";
     assert_eq!(run(r#"<progress value="0.5">half</progress>"#), []);
 }
 
-/// TS: `[progress-value-bounds-valid-003]` — progress with value equal to default max (1)
+/// TS: `[progress-value-bounds-003]` — progress with value equal to default max (1)
 #[test]
-fn progress_value_bounds_valid_003() {
-    const _ID: &str = "progress-value-bounds-valid-003";
+fn progress_value_bounds_003() {
+    const _ID: &str = "progress-value-bounds-003";
     assert_eq!(run(r#"<progress value="1">done</progress>"#), []);
 }
 
-/// TS: `[progress-value-bounds-valid-004]` — progress with value within explicit max
+/// TS: `[progress-value-bounds-004]` — progress with value within explicit max
 #[test]
-fn progress_value_bounds_valid_004() {
-    const _ID: &str = "progress-value-bounds-valid-004";
+fn progress_value_bounds_004() {
+    const _ID: &str = "progress-value-bounds-004";
     assert_eq!(run(r#"<progress value="30" max="100">30%</progress>"#), []);
 }
 
-/// TS: `[progress-value-bounds-valid-005]` — progress with value equal to explicit max
+/// TS: `[progress-value-bounds-005]` — progress with value equal to explicit max
 #[test]
-fn progress_value_bounds_valid_005() {
-    const _ID: &str = "progress-value-bounds-valid-005";
+fn progress_value_bounds_005() {
+    const _ID: &str = "progress-value-bounds-005";
     assert_eq!(run(r#"<progress value="100" max="100">done</progress>"#), []);
 }
 
-/// TS: `[progress-value-bounds-invalid-001]` — value exceeds explicit max
+/// TS: `[progress-value-bounds-006]` — value exceeds explicit max
 #[test]
-fn progress_value_bounds_invalid_001() {
-    const _ID: &str = "progress-value-bounds-invalid-001";
+fn progress_value_bounds_006() {
+    const _ID: &str = "progress-value-bounds-006";
     assert_eq!(
         run(r#"<progress value="10" max="5">10 of 5</progress>"#),
         [brief(Severity::Error, 1, 18, VALUE_LE_MAX, "10")]
     );
 }
 
-/// TS: `[progress-value-bounds-invalid-002]` — value exceeds default max (1)
+/// TS: `[progress-value-bounds-007]` — value exceeds default max (1)
 #[test]
-fn progress_value_bounds_invalid_002() {
-    const _ID: &str = "progress-value-bounds-invalid-002";
+fn progress_value_bounds_007() {
+    const _ID: &str = "progress-value-bounds-007";
     assert_eq!(
         run(r#"<progress value="1.5">150%</progress>"#),
         [brief(Severity::Error, 1, 18, VALUE_LE_ONE, "1.5")]
     );
 }
 
-/// TS: `[progress-value-bounds-valid-006]` — non-numeric literal value is left to
+/// TS: `[progress-value-bounds-008]` — non-numeric literal value is left to
 /// no-invalid-attr-value
 #[test]
-fn progress_value_bounds_valid_006() {
-    const _ID: &str = "progress-value-bounds-valid-006";
+fn progress_value_bounds_008() {
+    const _ID: &str = "progress-value-bounds-008";
     assert_eq!(run(r#"<progress value="{{ v }}" max="10">{{ v }}</progress>"#), []);
 }
 
-/// TS: `[progress-value-bounds-valid-007]` — unparsable value is left to no-invalid-attr-value
+/// TS: `[progress-value-bounds-009]` — unparsable value is left to no-invalid-attr-value
 #[test]
-fn progress_value_bounds_valid_007() {
-    const _ID: &str = "progress-value-bounds-valid-007";
+fn progress_value_bounds_009() {
+    const _ID: &str = "progress-value-bounds-009";
     assert_eq!(run(r#"<progress value="abc" max="10">abc</progress>"#), []);
 }
 
-/// TS: `[progress-value-bounds-valid-008]` — unparsable max is left to no-invalid-attr-value
+/// TS: `[progress-value-bounds-010]` — unparsable max is left to no-invalid-attr-value
 #[test]
-fn progress_value_bounds_valid_008() {
-    const _ID: &str = "progress-value-bounds-valid-008";
+fn progress_value_bounds_010() {
+    const _ID: &str = "progress-value-bounds-010";
     assert_eq!(run(r#"<progress value="0.5" max="abc">50%</progress>"#), []);
 }
 
-/// TS: `[progress-value-bounds-valid-009]` — progress with only max attribute (no value)
+/// TS: `[progress-value-bounds-011]` — progress with only max attribute (no value)
 #[test]
-fn progress_value_bounds_valid_009() {
-    const _ID: &str = "progress-value-bounds-valid-009";
+fn progress_value_bounds_011() {
+    const _ID: &str = "progress-value-bounds-011";
     assert_eq!(run(r#"<progress max="50">unknown</progress>"#), []);
 }
 
@@ -151,7 +151,7 @@ fn v6_progress_value_bounds_002() {
     assert_eq!(run(r#"<progress value="5" MAX="10">x</progress>"#), []);
 }
 
-/// TS `[progress-value-bounds-parser-001]` / `[progress-value-bounds-parser-002]` on HTML: a
+/// TS `[progress-value-bounds-012]` / `[progress-value-bounds-013]` on HTML: a
 /// progress a pretender makes has unknown attributes, unless the `as` attribute pins it.
 #[test]
 fn v6_progress_value_bounds_003() {

@@ -7,11 +7,11 @@
 //! Rust-only `v6_` tests.
 //!
 //! Test ID mapping (TS → Rust), all of `index.spec.ts`:
-//!   no-unsupported-browser-features-invalid-001..006  → no_unsupported_browser_features_invalid_001..006
-//!   no-unsupported-browser-features-valid-001..006    → no_unsupported_browser_features_valid_001..006
-//!   no-unsupported-browser-features-issue-3740-003    → no_unsupported_browser_features_issue_3740_003
-//!   no-unsupported-browser-features-issue-4309-001..003  → no_unsupported_browser_features_issue_4309_001..003
-//!   no-unsupported-browser-features-issue-3740-001, -002, issue-4309-004, -005  — SKIP: they need the
+//!   no-unsupported-browser-features-001..006  → no_unsupported_browser_features_001..006
+//!   no-unsupported-browser-features-002..006    → no_unsupported_browser_features_002..006
+//!   no-unsupported-browser-features-015    → no_unsupported_browser_features_015
+//!   no-unsupported-browser-features-016..003  → no_unsupported_browser_features_016..003
+//!   no-unsupported-browser-features-013, -002, issue-4309-004, -005  — SKIP: they need the
 //!     JSX / Svelte parser, which runs in TS; `yarn test:rust-rules` runs them against this rule
 //!   v6_no_unsupported_browser_features_001..  — Rust-only: parseVersion, isVersionSatisfied, checkSupport,
 //!     the message, the targets and the gate of the element
@@ -128,25 +128,25 @@ fn attr_violation(col: u32, raw: &str, name: &str) -> Brief {
     )
 }
 
-/// TS: `[no-unsupported-browser-features-invalid-001]` element not supported in IE 11
+/// TS: `[no-unsupported-browser-features-001]` element not supported in IE 11
 #[test]
-fn no_unsupported_browser_features_invalid_001() {
-    const _ID: &str = "no-unsupported-browser-features-invalid-001";
+fn no_unsupported_browser_features_001() {
+    const _ID: &str = "no-unsupported-browser-features-001";
     let violations = run("<dialog></dialog>", &[ie11()], serde_json::json!(true));
     assert_eq!(violations, [element_violation(1, "<dialog>")]);
 }
 
-/// TS: `[no-unsupported-browser-features-valid-001]` common element supported everywhere
+/// TS: `[no-unsupported-browser-features-002]` common element supported everywhere
 #[test]
-fn no_unsupported_browser_features_valid_001() {
-    const _ID: &str = "no-unsupported-browser-features-valid-001";
+fn no_unsupported_browser_features_002() {
+    const _ID: &str = "no-unsupported-browser-features-002";
     assert_eq!(run("<div></div>", &[ie11()], serde_json::json!(true)), []);
 }
 
-/// TS: `[no-unsupported-browser-features-invalid-002]` attribute not supported in old browsers
+/// TS: `[no-unsupported-browser-features-003]` attribute not supported in old browsers
 #[test]
-fn no_unsupported_browser_features_invalid_002() {
-    const _ID: &str = "no-unsupported-browser-features-invalid-002";
+fn no_unsupported_browser_features_003() {
+    const _ID: &str = "no-unsupported-browser-features-003";
     let violations = run("<dialog open></dialog>", &[ie11()], serde_json::json!(true));
     // 2 violations: one for the element, one for the attribute
     assert_eq!(
@@ -155,30 +155,30 @@ fn no_unsupported_browser_features_invalid_002() {
     );
 }
 
-/// TS: `[no-unsupported-browser-features-valid-002]` common attribute supported everywhere
+/// TS: `[no-unsupported-browser-features-004]` common attribute supported everywhere
 #[test]
-fn no_unsupported_browser_features_valid_002() {
-    const _ID: &str = "no-unsupported-browser-features-valid-002";
+fn no_unsupported_browser_features_004() {
+    const _ID: &str = "no-unsupported-browser-features-004";
     assert_eq!(
         run("<input type=\"text\">", &[chrome("130")], serde_json::json!(true)),
         []
     );
 }
 
-/// TS: `[no-unsupported-browser-features-invalid-003]` multiple browsers - only unsupported ones
+/// TS: `[no-unsupported-browser-features-005]` multiple browsers - only unsupported ones
 /// reported
 #[test]
-fn no_unsupported_browser_features_invalid_003() {
-    const _ID: &str = "no-unsupported-browser-features-invalid-003";
+fn no_unsupported_browser_features_005() {
+    const _ID: &str = "no-unsupported-browser-features-005";
     let violations = run("<dialog></dialog>", &[chrome("130"), ie11()], serde_json::json!(true));
     assert_eq!(violations, [element_violation(1, "<dialog>")]);
     assert!(!violations[0].3.contains("Chrome"));
 }
 
-/// TS: `[no-unsupported-browser-features-invalid-004]` element supported but attribute unsupported
+/// TS: `[no-unsupported-browser-features-006]` element supported but attribute unsupported
 #[test]
-fn no_unsupported_browser_features_invalid_004() {
-    const _ID: &str = "no-unsupported-browser-features-invalid-004";
+fn no_unsupported_browser_features_006() {
+    const _ID: &str = "no-unsupported-browser-features-006";
     // <video> is supported since Chrome 3, but "controlslist" was added in Chrome 58.
     let violations = run(
         "<video controlslist=\"nodownload\"></video>",
@@ -209,84 +209,84 @@ fn no_unsupported_browser_features_invalid_004() {
     );
 }
 
-/// TS: `[no-unsupported-browser-features-valid-003]` no error without browserslist config
+/// TS: `[no-unsupported-browser-features-007]` no error without browserslist config
 #[test]
-fn no_unsupported_browser_features_valid_003() {
-    const _ID: &str = "no-unsupported-browser-features-valid-003";
+fn no_unsupported_browser_features_007() {
+    const _ID: &str = "no-unsupported-browser-features-007";
     let violations = run_rule("<dialog></dialog>", serde_json::json!(true));
     assert!(violations.is_empty(), "{violations:?}");
 }
 
-/// TS: `[no-unsupported-browser-features-valid-004]` no error with empty options
+/// TS: `[no-unsupported-browser-features-008]` no error with empty options
 #[test]
-fn no_unsupported_browser_features_valid_004() {
-    const _ID: &str = "no-unsupported-browser-features-valid-004";
+fn no_unsupported_browser_features_008() {
+    const _ID: &str = "no-unsupported-browser-features-008";
     let violations = run_rule("<dialog></dialog>", serde_json::json!({ "options": {} }));
     assert!(violations.is_empty(), "{violations:?}");
 }
 
-/// TS: `[no-unsupported-browser-features-valid-005]` ignore element by name
+/// TS: `[no-unsupported-browser-features-009]` ignore element by name
 #[test]
-fn no_unsupported_browser_features_valid_005() {
-    const _ID: &str = "no-unsupported-browser-features-valid-005";
+fn no_unsupported_browser_features_009() {
+    const _ID: &str = "no-unsupported-browser-features-009";
     let rule = options(serde_json::json!({ "browserslist": "ie 11", "ignoreFeatures": ["dialog"] }));
     assert_eq!(run("<dialog></dialog>", &[ie11()], rule), []);
 }
 
-/// TS: `[no-unsupported-browser-features-valid-006]` ignore attribute by pattern
+/// TS: `[no-unsupported-browser-features-010]` ignore attribute by pattern
 #[test]
-fn no_unsupported_browser_features_valid_006() {
-    const _ID: &str = "no-unsupported-browser-features-valid-006";
+fn no_unsupported_browser_features_010() {
+    const _ID: &str = "no-unsupported-browser-features-010";
     let rule = options(serde_json::json!({ "browserslist": "ie 11", "ignoreFeatures": ["dialog", "dialog[open]"] }));
     // Both element and attribute are ignored
     assert_eq!(run("<dialog open></dialog>", &[ie11()], rule), []);
 }
 
-/// TS: `[no-unsupported-browser-features-invalid-005]` severity is warning by default
+/// TS: `[no-unsupported-browser-features-011]` severity is warning by default
 #[test]
-fn no_unsupported_browser_features_invalid_005() {
-    const _ID: &str = "no-unsupported-browser-features-invalid-005";
+fn no_unsupported_browser_features_011() {
+    const _ID: &str = "no-unsupported-browser-features-011";
     let violations = run("<dialog></dialog>", &[ie11()], serde_json::json!(true));
     assert_eq!(violations.len(), 1);
     assert_eq!(violations[0].0, Severity::Warning);
 }
 
-/// TS: `[no-unsupported-browser-features-invalid-006]` SVG content is not checked
+/// TS: `[no-unsupported-browser-features-012]` SVG content is not checked
 #[test]
-fn no_unsupported_browser_features_invalid_006() {
-    const _ID: &str = "no-unsupported-browser-features-invalid-006";
+fn no_unsupported_browser_features_012() {
+    const _ID: &str = "no-unsupported-browser-features-012";
     let violations = run("<svg><circle></circle></svg>", &[ie11()], serde_json::json!(true));
     // SVG child elements should not be checked
     assert!(!violations.iter().any(|v| v.3.contains("\"circle\"")));
 }
 
-/// TS: `[no-unsupported-browser-features-issue-3740-003]` HTML→HTML pretender ignored: original
+/// TS: `[no-unsupported-browser-features-015]` HTML→HTML pretender ignored: original
 /// element checked
 #[test]
-fn no_unsupported_browser_features_issue_3740_003() {
-    const _ID: &str = "no-unsupported-browser-features-issue-3740-003";
+fn no_unsupported_browser_features_015() {
+    const _ID: &str = "no-unsupported-browser-features-015";
     let mut config = config(&[ie11()], serde_json::json!(true));
     config["pretenders"] = serde_json::json!([{ "selector": "dialog", "as": "div" }]);
     let violations = lint_brief("no-unsupported-browser-features", "<dialog>x</dialog>", config);
     assert_eq!(violations, [element_violation(1, "<dialog>")]);
 }
 
-/// TS: `[no-unsupported-browser-features-issue-4309-001]` HTML: an attribute written in upper case
+/// TS: `[no-unsupported-browser-features-016]` HTML: an attribute written in upper case
 /// is the one of BCD
 #[test]
-fn no_unsupported_browser_features_issue_4309_001() {
-    const _ID: &str = "no-unsupported-browser-features-issue-4309-001";
+fn no_unsupported_browser_features_016() {
+    const _ID: &str = "no-unsupported-browser-features-016";
     assert_eq!(
         run("<dialog OPEN></dialog>", &[ie11()], serde_json::json!(true)),
         [element_violation(1, "<dialog OPEN>"), attr_violation(9, "OPEN", "OPEN")]
     );
 }
 
-/// TS: `[no-unsupported-browser-features-issue-4309-002]` HTML: ignoreFeatures keys match in any
+/// TS: `[no-unsupported-browser-features-017]` HTML: ignoreFeatures keys match in any
 /// spelling
 #[test]
-fn no_unsupported_browser_features_issue_4309_002() {
-    const _ID: &str = "no-unsupported-browser-features-issue-4309-002";
+fn no_unsupported_browser_features_017() {
+    const _ID: &str = "no-unsupported-browser-features-017";
     let ignoring = |html: &str, features: serde_json::Value| {
         run(
             html,
@@ -308,11 +308,11 @@ fn no_unsupported_browser_features_issue_4309_002() {
     );
 }
 
-/// TS: `[no-unsupported-browser-features-issue-4309-003]` HTML: the ignoreFeatures of an element
+/// TS: `[no-unsupported-browser-features-018]` HTML: the ignoreFeatures of an element
 /// replaces that of the rule, each element keeping its own
 #[test]
-fn no_unsupported_browser_features_issue_4309_003() {
-    const _ID: &str = "no-unsupported-browser-features-issue-4309-003";
+fn no_unsupported_browser_features_018() {
+    const _ID: &str = "no-unsupported-browser-features-018";
     let mut config = config(
         &[ie11()],
         options(serde_json::json!({ "browserslist": "ie 11", "ignoreFeatures": ["dialog", "dialog[open]"] })),

@@ -3,39 +3,39 @@
 //! Split out of the tests of the pre-split `invalid-attr` rule; each test keeps the
 //! TypeScript test it mirrors under that test's new id (old id in parentheses).
 //!
-//!   no-unknown-attr-valid-001  → no_unknown_attr_valid_001  (was invalid-attr-valid-002)
-//!   no-unknown-attr-valid-002  → no_unknown_attr_valid_002  (was invalid-attr-valid-005)
-//!   no-unknown-attr-invalid-001  → no_unknown_attr_invalid_001  (was invalid-attr-invalid-005)
-//!   no-unknown-attr-invalid-002  → no_unknown_attr_invalid_002  (was invalid-attr-invalid-015)
-//!   no-unknown-attr-valid-003  → no_unknown_attr_valid_003  (was invalid-attr-valid-006)
-//!   no-unknown-attr-valid-004  → no_unknown_attr_valid_004  (was invalid-attr-valid-008)
-//!   no-unknown-attr-valid-005  → no_unknown_attr_valid_005  (was invalid-attr-valid-011)
-//!   no-unknown-attr-issue-553  → no_unknown_attr_issue_553  (was invalid-attr-issue-553)
-//!   no-unknown-attr-issue-564  → no_unknown_attr_issue_564  (was invalid-attr-issue-564)
-//!   no-unknown-attr-issue-1487-001  → no_unknown_attr_issue_1487_001  (was invalid-attr-issue-1487-001)
-//!   no-unknown-attr-issue-1487-002  → no_unknown_attr_issue_1487_002  (was invalid-attr-issue-1487-002)
-//!   no-unknown-attr-issue-1487-003  → no_unknown_attr_issue_1487_003  (was invalid-attr-issue-1487-003)
-//!   no-unknown-attr-invalid-003  → no_unknown_attr_invalid_003  (was invalid-attr-invalid-020)
-//!   no-unknown-attr-invalid-004  — JSX parser; ported as v6_no_unknown_attr_002 (was invalid-attr-invalid-023)
-//!   no-unknown-attr-valid-006  → no_unknown_attr_valid_006  (was invalid-attr-valid-013)
-//!   v6_no_unknown_attr_002  — Rust-only: no-unknown-attr-invalid-004 with a custom element
-//!   no-unknown-attr-issue-525-001  — SKIP: Svelte parser + spec (was invalid-attr-issue-525-001)
-//!   no-unknown-attr-issue-525-002  — SKIP: Svelte parser + spec (was invalid-attr-issue-525-002)
-//!   no-unknown-attr-issue-525-003  — SKIP: Svelte parser + spec (listed by the `issue-525-*` wildcard; old test is `describe` contentEditable "inherit") (was invalid-attr-issue-525-003)
-//!   no-unknown-attr-issue-678  — SKIP: Vue parser + spec (was invalid-attr-issue-678)
-//!   no-unknown-attr-issue-783  — SKIP: Vue parser + spec (was invalid-attr-issue-783)
-//!   no-unknown-attr-issue-800  — SKIP: Pug parser (was invalid-attr-issue-800)
-//!   no-unknown-attr-parser-001  — SKIP: Framework parser tests (Pug, Vue, React, Svelte, MDX) (was invalid-attr-parser-001)
-//!   no-unknown-attr-parser-002  — SKIP: Framework parser tests (Pug, Vue, React, Svelte, MDX) (was invalid-attr-parser-002)
-//!   no-unknown-attr-parser-003  — SKIP: Framework parser tests (Pug, Vue, React, Svelte, MDX) (was invalid-attr-parser-005)
-//!   no-unknown-attr-parser-004  — SKIP: Framework parser tests (Pug, Vue, React, Svelte, MDX) (was invalid-attr-parser-006)
-//!   no-unknown-attr-parser-005  — SKIP: Framework parser tests (Pug, Vue, React, Svelte, MDX) (was invalid-attr-parser-007)
-//!   no-unknown-attr-parser-006  — SKIP: Framework parser tests (Pug, Vue, React, Svelte, MDX) (was invalid-attr-parser-008)
-//!   no-unknown-attr-parser-007  — SKIP: Framework parser tests (Pug, Vue, React, Svelte, MDX) (was invalid-attr-parser-009)
-//!   no-unknown-attr-parser-008  — SKIP: Framework parser tests (Pug, Vue, React, Svelte, MDX) (was invalid-attr-parser-010)
-//!   no-unknown-attr-parser-010, no-disallowed-attr-parser-005  — SKIP: Framework parser tests (Pug, Vue, React, Svelte, MDX) (was invalid-attr-parser-011)
-//!   no-unknown-attr-parser-011, no-disallowed-attr-parser-006  — SKIP: Framework parser tests (Pug, Vue, React, Svelte, MDX) (was invalid-attr-parser-012)
-//!   no-unknown-attr-parser-009  — SKIP: Framework parser tests (Pug, Vue, React, Svelte, MDX) (was invalid-attr-parser-013)
+//!   no-unknown-attr-001  → no_unknown_attr_001  (was invalid-attr-valid-002)
+//!   no-unknown-attr-003  → no_unknown_attr_003  (was invalid-attr-valid-005)
+//!   no-unknown-attr-002  → no_unknown_attr_002  (was invalid-attr-invalid-005)
+//!   no-unknown-attr-004  → no_unknown_attr_004  (was invalid-attr-invalid-015)
+//!   no-unknown-attr-005  → no_unknown_attr_005  (was invalid-attr-valid-006)
+//!   no-unknown-attr-006  → no_unknown_attr_006  (was invalid-attr-valid-008)
+//!   no-unknown-attr-021  → no_unknown_attr_021  (was invalid-attr-valid-011)
+//!   no-unknown-attr-023  → no_unknown_attr_023  (was invalid-attr-issue-553)
+//!   no-unknown-attr-024  → no_unknown_attr_024  (was invalid-attr-issue-564)
+//!   no-unknown-attr-028  → no_unknown_attr_028  (was invalid-attr-issue-1487-001)
+//!   no-unknown-attr-029  → no_unknown_attr_029  (was invalid-attr-issue-1487-002)
+//!   no-unknown-attr-030  → no_unknown_attr_030  (was invalid-attr-issue-1487-003)
+//!   no-unknown-attr-007  → no_unknown_attr_007  (was invalid-attr-invalid-020)
+//!   no-unknown-attr-017  — JSX parser; ported as v6_no_unknown_attr_002 (was invalid-attr-invalid-023)
+//!   no-unknown-attr-022  → no_unknown_attr_022  (was invalid-attr-valid-013)
+//!   v6_no_unknown_attr_002  — Rust-only: no-unknown-attr-017 with a custom element
+//!   no-unknown-attr-018  — SKIP: Svelte parser + spec (was invalid-attr-issue-525-001)
+//!   no-unknown-attr-019  — SKIP: Svelte parser + spec (was invalid-attr-issue-525-002)
+//!   no-unknown-attr-020  — SKIP: Svelte parser + spec (listed by the `issue-525-*` wildcard; old test is `describe` contentEditable "inherit") (was invalid-attr-issue-525-003)
+//!   no-unknown-attr-025  — SKIP: Vue parser + spec (was invalid-attr-issue-678)
+//!   no-unknown-attr-026  — SKIP: Vue parser + spec (was invalid-attr-issue-783)
+//!   no-unknown-attr-027  — SKIP: Pug parser (was invalid-attr-issue-800)
+//!   no-unknown-attr-008  — SKIP: Framework parser tests (Pug, Vue, React, Svelte, MDX) (was invalid-attr-parser-001)
+//!   no-unknown-attr-009  — SKIP: Framework parser tests (Pug, Vue, React, Svelte, MDX) (was invalid-attr-parser-002)
+//!   no-unknown-attr-010  — SKIP: Framework parser tests (Pug, Vue, React, Svelte, MDX) (was invalid-attr-parser-005)
+//!   no-unknown-attr-011  — SKIP: Framework parser tests (Pug, Vue, React, Svelte, MDX) (was invalid-attr-parser-006)
+//!   no-unknown-attr-012  — SKIP: Framework parser tests (Pug, Vue, React, Svelte, MDX) (was invalid-attr-parser-007)
+//!   no-unknown-attr-013  — SKIP: Framework parser tests (Pug, Vue, React, Svelte, MDX) (was invalid-attr-parser-008)
+//!   no-unknown-attr-014  — SKIP: Framework parser tests (Pug, Vue, React, Svelte, MDX) (was invalid-attr-parser-009)
+//!   no-unknown-attr-015  — SKIP: Framework parser tests (Pug, Vue, React, Svelte, MDX) (was invalid-attr-parser-010)
+//!   no-unknown-attr-032, no-disallowed-attr-061  — SKIP: Framework parser tests (Pug, Vue, React, Svelte, MDX) (was invalid-attr-parser-011)
+//!   no-unknown-attr-033, no-disallowed-attr-062  — SKIP: Framework parser tests (Pug, Vue, React, Svelte, MDX) (was invalid-attr-parser-012)
+//!   no-unknown-attr-016  — SKIP: Framework parser tests (Pug, Vue, React, Svelte, MDX) (was invalid-attr-parser-013)
 //!   (the framework parsers stay in TS: `v6_no_unknown_attr_003` checks the attribute names they resolve, and
 //!    `ml-engine.rust-framework.spec.ts` compares whole files of each parser)
 
@@ -268,10 +268,10 @@ fn uppercase_role_is_bypassed() {
     );
 }
 
-/// TS: `[no-unknown-attr-valid-001]` — global attribute (title on a and abbr)
+/// TS: `[no-unknown-attr-001]` — global attribute (title on a and abbr)
 #[test]
-fn no_unknown_attr_valid_001() {
-    const _ID: &str = "no-unknown-attr-valid-001";
+fn no_unknown_attr_001() {
+    const _ID: &str = "no-unknown-attr-001";
     let arena = html_arena(r#"<a title="the a element"><abbr title="the abbr element">text</abbr></a>"#);
     let spec = spec();
     let config: LintConfig = serde_json::from_value(serde_json::json!({
@@ -282,10 +282,10 @@ fn no_unknown_attr_valid_001() {
     assert_eq!(result.violations.len(), 0);
 }
 
-/// TS: `[no-unknown-attr-valid-002]` — custom element allows any attrs
+/// TS: `[no-unknown-attr-003]` — custom element allows any attrs
 #[test]
-fn no_unknown_attr_valid_002() {
-    const _ID: &str = "no-unknown-attr-valid-002";
+fn no_unknown_attr_003() {
+    const _ID: &str = "no-unknown-attr-003";
     let arena = html_arena("<custom-element any-attr></custom-element>");
     let spec = spec();
     let config: LintConfig = serde_json::from_value(serde_json::json!({
@@ -296,10 +296,10 @@ fn no_unknown_attr_valid_002() {
     assert_eq!(result.violations.len(), 0);
 }
 
-/// TS: `[no-unknown-attr-invalid-001]` — unknown attr, allow via options
+/// TS: `[no-unknown-attr-002]` — unknown attr, allow via options
 #[test]
-fn no_unknown_attr_invalid_001() {
-    const _ID: &str = "no-unknown-attr-invalid-001";
+fn no_unknown_attr_002() {
+    const _ID: &str = "no-unknown-attr-002";
     let spec = spec();
     // Without allowAttrs: violation
     let config1: LintConfig = serde_json::from_value(serde_json::json!({
@@ -322,13 +322,13 @@ fn no_unknown_attr_invalid_001() {
     assert_eq!(result2.violations.len(), 0);
 }
 
-/// TS: `[no-unknown-attr-invalid-002]` — prefix attribute (v-bind:, :, @)
+/// TS: `[no-unknown-attr-004]` — prefix attribute (v-bind:, :, @)
 /// Note: TS reports "Did you mean" for `:class`→`class` and `@click`→`onclick`
 /// via parser candidate, which is framework-parser functionality not available
 /// in the Rust HTML parser. Rust only checks disallowed.
 #[test]
-fn no_unknown_attr_invalid_002() {
-    const _ID: &str = "no-unknown-attr-invalid-002";
+fn no_unknown_attr_004() {
+    const _ID: &str = "no-unknown-attr-004";
     let spec = spec();
     let config: LintConfig = serde_json::from_value(serde_json::json!({
         "rules": { "no-unknown-attr": true }
@@ -361,10 +361,10 @@ fn no_unknown_attr_invalid_002() {
     assert_eq!(result.violations[2].raw, "@click");
 }
 
-/// TS: `[no-unknown-attr-valid-003]` — ignore prefix attribute
+/// TS: `[no-unknown-attr-005]` — ignore prefix attribute
 #[test]
-fn no_unknown_attr_valid_003() {
-    const _ID: &str = "no-unknown-attr-valid-003";
+fn no_unknown_attr_005() {
+    const _ID: &str = "no-unknown-attr-005";
     let spec = spec();
     let config: LintConfig = serde_json::from_value(serde_json::json!({
         "rules": { "no-unknown-attr": { "options": { "ignoreAttrNamePrefix": ["v-bind:", ":", "@"] } } }
@@ -382,10 +382,10 @@ fn no_unknown_attr_valid_003() {
     );
 }
 
-/// TS: `[no-unknown-attr-valid-004]` — Foreign element (SVG)
+/// TS: `[no-unknown-attr-006]` — Foreign element (SVG)
 #[test]
-fn no_unknown_attr_valid_004() {
-    const _ID: &str = "no-unknown-attr-valid-004";
+fn no_unknown_attr_006() {
+    const _ID: &str = "no-unknown-attr-006";
     let spec = spec();
     let config: LintConfig = serde_json::from_value(serde_json::json!({
         "rules": { "no-unknown-attr": true }
@@ -403,10 +403,10 @@ fn no_unknown_attr_valid_004() {
     );
 }
 
-/// TS: `[no-unknown-attr-valid-005]` — WAI-Adapt attributes
+/// TS: `[no-unknown-attr-021]` — WAI-Adapt attributes
 #[test]
-fn no_unknown_attr_valid_005() {
-    const _ID: &str = "no-unknown-attr-valid-005";
+fn no_unknown_attr_021() {
+    const _ID: &str = "no-unknown-attr-021";
     let spec = spec();
     let config: LintConfig = serde_json::from_value(serde_json::json!({
         "rules": { "no-unknown-attr": true }
@@ -437,10 +437,10 @@ fn no_unknown_attr_valid_005() {
     ), &spec, &config).violations.len(), 0);
 }
 
-/// TS: `[no-unknown-attr-issue-553]` — link preload
+/// TS: `[no-unknown-attr-023]` — link preload
 #[test]
-fn no_unknown_attr_issue_553() {
-    const _ID: &str = "no-unknown-attr-issue-553";
+fn no_unknown_attr_023() {
+    const _ID: &str = "no-unknown-attr-023";
     let spec = spec();
     let config: LintConfig = serde_json::from_value(serde_json::json!({
         "rules": { "no-unknown-attr": true }
@@ -458,10 +458,10 @@ fn no_unknown_attr_issue_553() {
     );
 }
 
-/// TS: `[no-unknown-attr-issue-564]` — class with colon (Tailwind)
+/// TS: `[no-unknown-attr-024]` — class with colon (Tailwind)
 #[test]
-fn no_unknown_attr_issue_564() {
-    const _ID: &str = "no-unknown-attr-issue-564";
+fn no_unknown_attr_024() {
+    const _ID: &str = "no-unknown-attr-024";
     let spec = spec();
     let config: LintConfig = serde_json::from_value(serde_json::json!({
         "rules": { "no-unknown-attr": true }
@@ -481,10 +481,10 @@ fn no_unknown_attr_issue_564() {
     );
 }
 
-/// TS: `[no-unknown-attr-issue-1487-001]` — typo suggestion (nama → name)
+/// TS: `[no-unknown-attr-028]` — typo suggestion (nama → name)
 #[test]
-fn no_unknown_attr_issue_1487_001() {
-    const _ID: &str = "no-unknown-attr-issue-1487-001";
+fn no_unknown_attr_028() {
+    const _ID: &str = "no-unknown-attr-028";
     let spec = spec();
     let config: LintConfig = serde_json::from_value(serde_json::json!({
         "rules": { "no-unknown-attr": true }
@@ -502,10 +502,10 @@ fn no_unknown_attr_issue_1487_001() {
     assert_eq!(result.violations[0].raw, "nama");
 }
 
-/// TS: `[no-unknown-attr-issue-1487-002]` — typo suggestion (clss → class)
+/// TS: `[no-unknown-attr-029]` — typo suggestion (clss → class)
 #[test]
-fn no_unknown_attr_issue_1487_002() {
-    const _ID: &str = "no-unknown-attr-issue-1487-002";
+fn no_unknown_attr_029() {
+    const _ID: &str = "no-unknown-attr-029";
     let spec = spec();
     let config: LintConfig = serde_json::from_value(serde_json::json!({
         "rules": { "no-unknown-attr": true }
@@ -523,10 +523,10 @@ fn no_unknown_attr_issue_1487_002() {
     assert_eq!(result.violations[0].raw, "clss");
 }
 
-/// TS: `[no-unknown-attr-issue-1487-003]` — no suggestion for unrelated attr
+/// TS: `[no-unknown-attr-030]` — no suggestion for unrelated attr
 #[test]
-fn no_unknown_attr_issue_1487_003() {
-    const _ID: &str = "no-unknown-attr-issue-1487-003";
+fn no_unknown_attr_030() {
+    const _ID: &str = "no-unknown-attr-030";
     let spec = spec();
     let config: LintConfig = serde_json::from_value(serde_json::json!({
         "rules": { "no-unknown-attr": true }
@@ -541,10 +541,10 @@ fn no_unknown_attr_issue_1487_003() {
     assert_eq!(result.violations[0].raw, "xyz");
 }
 
-/// TS: `[no-unknown-attr-invalid-003]` — SVG unknown attr (cz on circle)
+/// TS: `[no-unknown-attr-007]` — SVG unknown attr (cz on circle)
 #[test]
-fn no_unknown_attr_invalid_003() {
-    const _ID: &str = "no-unknown-attr-invalid-003";
+fn no_unknown_attr_007() {
+    const _ID: &str = "no-unknown-attr-007";
     let spec = spec();
     let config: LintConfig = serde_json::from_value(serde_json::json!({
         "rules": { "no-unknown-attr": true }
@@ -563,13 +563,13 @@ fn no_unknown_attr_invalid_003() {
     assert_eq!(result.violations[0].raw, "cz");
 }
 
-/// TS: `[no-unknown-attr-invalid-005]` — unknown attr next to a referrerpolicy whose condition is unmet
+/// TS: `[no-unknown-attr-031]` — unknown attr next to a referrerpolicy whose condition is unmet
 ///
 /// The first half of the pre-split `[invalid-attr-invalid-001]`; the `referrerpolicy` half is
-/// `[no-disallowed-attr-invalid-004]`.
+/// `[no-disallowed-attr-059]`.
 #[test]
-fn no_unknown_attr_invalid_005() {
-    const _ID: &str = "no-unknown-attr-invalid-005";
+fn no_unknown_attr_031() {
+    const _ID: &str = "no-unknown-attr-031";
     let arena = html_arena(r#"<a invalid-attr referrerpolicy="invalid-value"><img src=":::::"></a>"#);
     let spec = spec();
     let config: LintConfig = serde_json::from_value(serde_json::json!({
@@ -589,7 +589,7 @@ fn no_unknown_attr_invalid_005() {
 }
 
 /// The HTML parser restores the case of an SVG attribute name, so `viewbox` on an `<svg>` it
-/// reads is `viewBox` (as in TS `[no-unknown-attr-issue-4309-002]`).
+/// reads is `viewBox` (as in TS `[no-unknown-attr-036]`).
 #[test]
 fn v6_no_unknown_attr_001() {
     let arena = html_arena(r#"<svg viewbox="0 0 1 1"></svg>"#);
@@ -610,10 +610,10 @@ fn run_pretended(html: &str, rule: serde_json::Value, pretenders: serde_json::Va
     )
 }
 
-/// TS: `[no-unknown-attr-valid-006]` — The `as` attribute (was invalid-attr-valid-013)
+/// TS: `[no-unknown-attr-022]` — The `as` attribute (was invalid-attr-valid-013)
 #[test]
-fn no_unknown_attr_valid_006() {
-    const _ID: &str = "no-unknown-attr-valid-006";
+fn no_unknown_attr_022() {
+    const _ID: &str = "no-unknown-attr-022";
     assert_eq!(
         run_pretended(r#"<a as="span"></a>"#, serde_json::json!(true), serde_json::json!([])),
         [crate::test_util::brief(
@@ -634,7 +634,7 @@ fn no_unknown_attr_valid_006() {
     );
 }
 
-/// TS `[no-unknown-attr-invalid-004]` (JSX): a pretended component may take attributes the
+/// TS `[no-unknown-attr-017]` (JSX): a pretended component may take attributes the
 /// element it pretends to be does not define, unless `allowToAddPropertiesForPretender` is
 /// `false`.
 #[test]

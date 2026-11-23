@@ -1,26 +1,26 @@
 //! Tests for `sizes-auto-requires-lazy-loading` rule.
 //!
 //! Test ID mapping (TS → Rust):
-//!   sizes-auto-requires-lazy-loading-valid-001    → sizes_auto_requires_lazy_loading_valid_001
-//!   sizes-auto-requires-lazy-loading-valid-002    → sizes_auto_requires_lazy_loading_valid_002
-//!   sizes-auto-requires-lazy-loading-valid-003    → sizes_auto_requires_lazy_loading_valid_003 (was `sizes_auto_with_loading_lazy`)
-//!   sizes-auto-requires-lazy-loading-valid-004    → sizes_auto_requires_lazy_loading_valid_004 (was `sizes_auto_comma_with_loading_lazy`)
-//!   sizes-auto-requires-lazy-loading-valid-005    → sizes_auto_requires_lazy_loading_valid_005 (was `source_sizes_auto_with_sibling_img_lazy`)
-//!   sizes-auto-requires-lazy-loading-valid-006    → sizes_auto_requires_lazy_loading_valid_006
-//!   sizes-auto-requires-lazy-loading-invalid-001  → sizes_auto_requires_lazy_loading_invalid_001 (was `check3_sizes_auto_without_loading`)
-//!   sizes-auto-requires-lazy-loading-invalid-002  → sizes_auto_requires_lazy_loading_invalid_002 (was `check3_sizes_auto_with_loading_eager`)
-//!   sizes-auto-requires-lazy-loading-valid-007    → sizes_auto_requires_lazy_loading_valid_007
-//!   sizes-auto-requires-lazy-loading-invalid-003  → sizes_auto_requires_lazy_loading_invalid_003 (was `check3_sizes_auto_comma_without_loading`)
-//!   sizes-auto-requires-lazy-loading-valid-008    → sizes_auto_requires_lazy_loading_valid_008
-//!   sizes-auto-requires-lazy-loading-invalid-004  → sizes_auto_requires_lazy_loading_invalid_004 (was `check3_sizes_uppercase_auto_without_loading`)
-//!   sizes-auto-requires-lazy-loading-valid-009    → sizes_auto_requires_lazy_loading_valid_009 (was `check3_sizes_auto_whitespace_with_lazy`)
-//!   sizes-auto-requires-lazy-loading-invalid-005  → sizes_auto_requires_lazy_loading_invalid_005 (was `check4_source_sizes_auto_img_no_loading`)
-//!   sizes-auto-requires-lazy-loading-invalid-006  → sizes_auto_requires_lazy_loading_invalid_006 (was `check4_source_sizes_auto_img_eager`)
-//!   sizes-auto-requires-lazy-loading-valid-010    → sizes_auto_requires_lazy_loading_valid_010 (was `check4_source_sizes_auto_img_lazy`)
-//!   sizes-auto-requires-lazy-loading-invalid-007  → sizes_auto_requires_lazy_loading_invalid_007 (was `check4_source_sizes_auto_no_following_img`)
-//!   sizes-auto-requires-lazy-loading-valid-011    → sizes_auto_requires_lazy_loading_valid_011
-//!   sizes-auto-requires-lazy-loading-invalid-008  → sizes_auto_requires_lazy_loading_invalid_008
-//!   sizes-auto-requires-lazy-loading-invalid-009  → sizes_auto_requires_lazy_loading_invalid_009
+//!   sizes-auto-requires-lazy-loading-001    → sizes_auto_requires_lazy_loading_001
+//!   sizes-auto-requires-lazy-loading-002    → sizes_auto_requires_lazy_loading_002
+//!   sizes-auto-requires-lazy-loading-003    → sizes_auto_requires_lazy_loading_003 (was `sizes_auto_with_loading_lazy`)
+//!   sizes-auto-requires-lazy-loading-004    → sizes_auto_requires_lazy_loading_004 (was `sizes_auto_comma_with_loading_lazy`)
+//!   sizes-auto-requires-lazy-loading-005    → sizes_auto_requires_lazy_loading_005 (was `source_sizes_auto_with_sibling_img_lazy`)
+//!   sizes-auto-requires-lazy-loading-006    → sizes_auto_requires_lazy_loading_006
+//!   sizes-auto-requires-lazy-loading-007  → sizes_auto_requires_lazy_loading_007 (was `check3_sizes_auto_without_loading`)
+//!   sizes-auto-requires-lazy-loading-008  → sizes_auto_requires_lazy_loading_008 (was `check3_sizes_auto_with_loading_eager`)
+//!   sizes-auto-requires-lazy-loading-009    → sizes_auto_requires_lazy_loading_009
+//!   sizes-auto-requires-lazy-loading-010  → sizes_auto_requires_lazy_loading_010 (was `check3_sizes_auto_comma_without_loading`)
+//!   sizes-auto-requires-lazy-loading-011    → sizes_auto_requires_lazy_loading_011
+//!   sizes-auto-requires-lazy-loading-012  → sizes_auto_requires_lazy_loading_012 (was `check3_sizes_uppercase_auto_without_loading`)
+//!   sizes-auto-requires-lazy-loading-013    → sizes_auto_requires_lazy_loading_013 (was `check3_sizes_auto_whitespace_with_lazy`)
+//!   sizes-auto-requires-lazy-loading-014  → sizes_auto_requires_lazy_loading_014 (was `check4_source_sizes_auto_img_no_loading`)
+//!   sizes-auto-requires-lazy-loading-015  → sizes_auto_requires_lazy_loading_015 (was `check4_source_sizes_auto_img_eager`)
+//!   sizes-auto-requires-lazy-loading-016    → sizes_auto_requires_lazy_loading_016 (was `check4_source_sizes_auto_img_lazy`)
+//!   sizes-auto-requires-lazy-loading-017  → sizes_auto_requires_lazy_loading_017 (was `check4_source_sizes_auto_no_following_img`)
+//!   sizes-auto-requires-lazy-loading-018    → sizes_auto_requires_lazy_loading_018
+//!   sizes-auto-requires-lazy-loading-019  → sizes_auto_requires_lazy_loading_019
+//!   sizes-auto-requires-lazy-loading-020  → sizes_auto_requires_lazy_loading_020
 //!   v6_sizes_auto_requires_lazy_loading_001  — Rust-only: `auto` followed by a tab is not auto
 //!   v6_sizes_auto_requires_lazy_loading_002  — Rust-only: without `srcset` there is nothing to check
 //!   v6_sizes_auto_requires_lazy_loading_003  — Rust-only: `autox` is not `auto`
@@ -76,24 +76,24 @@ fn assert_violations(actual: &[Violation], expected: &[Expected<'_>]) {
     }
 }
 
-/// TS: `[sizes-auto-requires-lazy-loading-valid-001]`
+/// TS: `[sizes-auto-requires-lazy-loading-001]`
 #[test]
-fn sizes_auto_requires_lazy_loading_valid_001() {
-    const _ID: &str = "sizes-auto-requires-lazy-loading-valid-001";
+fn sizes_auto_requires_lazy_loading_001() {
+    const _ID: &str = "sizes-auto-requires-lazy-loading-001";
     assert_violations(&run(r#"<img src="image.png" alt="photo">"#), &[]);
 }
 
-/// TS: `[sizes-auto-requires-lazy-loading-valid-002]`
+/// TS: `[sizes-auto-requires-lazy-loading-002]`
 #[test]
-fn sizes_auto_requires_lazy_loading_valid_002() {
-    const _ID: &str = "sizes-auto-requires-lazy-loading-valid-002";
+fn sizes_auto_requires_lazy_loading_002() {
+    const _ID: &str = "sizes-auto-requires-lazy-loading-002";
     assert_violations(&run(r#"<video><source src="video.mp4" type="video/mp4"></video>"#), &[]);
 }
 
-/// TS: `[sizes-auto-requires-lazy-loading-valid-003]`
+/// TS: `[sizes-auto-requires-lazy-loading-003]`
 #[test]
-fn sizes_auto_requires_lazy_loading_valid_003() {
-    const _ID: &str = "sizes-auto-requires-lazy-loading-valid-003";
+fn sizes_auto_requires_lazy_loading_003() {
+    const _ID: &str = "sizes-auto-requires-lazy-loading-003";
     assert_violations(
         &run(
             r#"<img srcset="small.png 480w, large.png 1024w" sizes="auto" loading="lazy" src="large.png" alt="photo">"#,
@@ -102,10 +102,10 @@ fn sizes_auto_requires_lazy_loading_valid_003() {
     );
 }
 
-/// TS: `[sizes-auto-requires-lazy-loading-valid-004]`
+/// TS: `[sizes-auto-requires-lazy-loading-004]`
 #[test]
-fn sizes_auto_requires_lazy_loading_valid_004() {
-    const _ID: &str = "sizes-auto-requires-lazy-loading-valid-004";
+fn sizes_auto_requires_lazy_loading_004() {
+    const _ID: &str = "sizes-auto-requires-lazy-loading-004";
     assert_violations(
         &run(
             r#"<img srcset="small.png 480w, large.png 1024w" sizes="auto, 100vw" loading="lazy" src="large.png" alt="photo">"#,
@@ -114,10 +114,10 @@ fn sizes_auto_requires_lazy_loading_valid_004() {
     );
 }
 
-/// TS: `[sizes-auto-requires-lazy-loading-valid-005]`
+/// TS: `[sizes-auto-requires-lazy-loading-005]`
 #[test]
-fn sizes_auto_requires_lazy_loading_valid_005() {
-    const _ID: &str = "sizes-auto-requires-lazy-loading-valid-005";
+fn sizes_auto_requires_lazy_loading_005() {
+    const _ID: &str = "sizes-auto-requires-lazy-loading-005";
     assert_violations(
         &run(
             r#"<picture><source srcset="s.webp 480w, l.webp 1024w" sizes="auto"><img src="l.jpg" loading="lazy" alt="photo"></picture>"#,
@@ -126,10 +126,10 @@ fn sizes_auto_requires_lazy_loading_valid_005() {
     );
 }
 
-/// TS: `[sizes-auto-requires-lazy-loading-valid-006]`
+/// TS: `[sizes-auto-requires-lazy-loading-006]`
 #[test]
-fn sizes_auto_requires_lazy_loading_valid_006() {
-    const _ID: &str = "sizes-auto-requires-lazy-loading-valid-006";
+fn sizes_auto_requires_lazy_loading_006() {
+    const _ID: &str = "sizes-auto-requires-lazy-loading-006";
     assert_violations(
         &run(
             r#"<picture><source srcset="a.webp 480w" sizes="auto" type="image/webp"><source srcset="a.jpg 480w" sizes="100vw"><img src="a.jpg" loading="lazy" alt="p"></picture>"#,
@@ -138,92 +138,92 @@ fn sizes_auto_requires_lazy_loading_valid_006() {
     );
 }
 
-/// TS: `[sizes-auto-requires-lazy-loading-invalid-001]`
+/// TS: `[sizes-auto-requires-lazy-loading-007]`
 #[test]
-fn sizes_auto_requires_lazy_loading_invalid_001() {
-    const _ID: &str = "sizes-auto-requires-lazy-loading-invalid-001";
+fn sizes_auto_requires_lazy_loading_007() {
+    const _ID: &str = "sizes-auto-requires-lazy-loading-007";
     let violations = run(r#"<img srcset="s.png 480w, l.png 1024w" sizes="auto" src="l.png" alt="p">"#);
     assert_eq!(violations.len(), 1, "violations: {violations:?}");
     assert_eq!(violations[0].raw, "auto");
 }
 
-/// TS: `[sizes-auto-requires-lazy-loading-invalid-002]`
+/// TS: `[sizes-auto-requires-lazy-loading-008]`
 #[test]
-fn sizes_auto_requires_lazy_loading_invalid_002() {
-    const _ID: &str = "sizes-auto-requires-lazy-loading-invalid-002";
+fn sizes_auto_requires_lazy_loading_008() {
+    const _ID: &str = "sizes-auto-requires-lazy-loading-008";
     let violations = run(r#"<img srcset="s.png 480w, l.png 1024w" sizes="auto" loading="eager" src="l.png" alt="p">"#);
     assert_eq!(violations.len(), 1, "violations: {violations:?}");
 }
 
-/// TS: `[sizes-auto-requires-lazy-loading-valid-007]`
+/// TS: `[sizes-auto-requires-lazy-loading-009]`
 #[test]
-fn sizes_auto_requires_lazy_loading_valid_007() {
-    const _ID: &str = "sizes-auto-requires-lazy-loading-valid-007";
+fn sizes_auto_requires_lazy_loading_009() {
+    const _ID: &str = "sizes-auto-requires-lazy-loading-009";
     assert_violations(
         &run(r#"<img srcset="s.png 480w, l.png 1024w" sizes="auto" loading="lazy" src="l.png" alt="p">"#),
         &[],
     );
 }
 
-/// TS: `[sizes-auto-requires-lazy-loading-invalid-003]`
+/// TS: `[sizes-auto-requires-lazy-loading-010]`
 #[test]
-fn sizes_auto_requires_lazy_loading_invalid_003() {
-    const _ID: &str = "sizes-auto-requires-lazy-loading-invalid-003";
+fn sizes_auto_requires_lazy_loading_010() {
+    const _ID: &str = "sizes-auto-requires-lazy-loading-010";
     let violations = run(r#"<img srcset="s.png 480w" sizes="auto, 100vw" src="s.png" alt="p">"#);
     assert_eq!(violations.len(), 1, "violations: {violations:?}");
 }
 
-/// TS: `[sizes-auto-requires-lazy-loading-valid-008]`
+/// TS: `[sizes-auto-requires-lazy-loading-011]`
 #[test]
-fn sizes_auto_requires_lazy_loading_valid_008() {
-    const _ID: &str = "sizes-auto-requires-lazy-loading-valid-008";
+fn sizes_auto_requires_lazy_loading_011() {
+    const _ID: &str = "sizes-auto-requires-lazy-loading-011";
     assert_violations(
         &run(r#"<img srcset="s.png 480w" sizes="100vw, auto" loading="lazy" src="s.png" alt="p">"#),
         &[],
     );
 }
 
-/// TS: `[sizes-auto-requires-lazy-loading-invalid-004]`
+/// TS: `[sizes-auto-requires-lazy-loading-012]`
 #[test]
-fn sizes_auto_requires_lazy_loading_invalid_004() {
-    const _ID: &str = "sizes-auto-requires-lazy-loading-invalid-004";
+fn sizes_auto_requires_lazy_loading_012() {
+    const _ID: &str = "sizes-auto-requires-lazy-loading-012";
     let violations = run(r#"<img srcset="s.png 480w" sizes="AUTO" src="s.png" alt="p">"#);
     assert_eq!(violations.len(), 1, "violations: {violations:?}");
 }
 
-/// TS: `[sizes-auto-requires-lazy-loading-valid-009]`
+/// TS: `[sizes-auto-requires-lazy-loading-013]`
 #[test]
-fn sizes_auto_requires_lazy_loading_valid_009() {
-    const _ID: &str = "sizes-auto-requires-lazy-loading-valid-009";
+fn sizes_auto_requires_lazy_loading_013() {
+    const _ID: &str = "sizes-auto-requires-lazy-loading-013";
     assert_violations(
         &run(r#"<img srcset="s.png 480w" sizes=" auto " loading="lazy" src="s.png" alt="p">"#),
         &[],
     );
 }
 
-/// TS: `[sizes-auto-requires-lazy-loading-invalid-005]`
+/// TS: `[sizes-auto-requires-lazy-loading-014]`
 #[test]
-fn sizes_auto_requires_lazy_loading_invalid_005() {
-    const _ID: &str = "sizes-auto-requires-lazy-loading-invalid-005";
+fn sizes_auto_requires_lazy_loading_014() {
+    const _ID: &str = "sizes-auto-requires-lazy-loading-014";
     let violations = run(r#"<picture><source srcset="s.webp 480w" sizes="auto"><img src="s.jpg" alt="p"></picture>"#);
     assert_eq!(violations.len(), 1, "violations: {violations:?}");
     assert_eq!(violations[0].raw, "auto");
 }
 
-/// TS: `[sizes-auto-requires-lazy-loading-invalid-006]`
+/// TS: `[sizes-auto-requires-lazy-loading-015]`
 #[test]
-fn sizes_auto_requires_lazy_loading_invalid_006() {
-    const _ID: &str = "sizes-auto-requires-lazy-loading-invalid-006";
+fn sizes_auto_requires_lazy_loading_015() {
+    const _ID: &str = "sizes-auto-requires-lazy-loading-015";
     let violations = run(
         r#"<picture><source srcset="s.webp 480w" sizes="auto"><img src="s.jpg" loading="eager" alt="p"></picture>"#,
     );
     assert_eq!(violations.len(), 1, "violations: {violations:?}");
 }
 
-/// TS: `[sizes-auto-requires-lazy-loading-valid-010]`
+/// TS: `[sizes-auto-requires-lazy-loading-016]`
 #[test]
-fn sizes_auto_requires_lazy_loading_valid_010() {
-    const _ID: &str = "sizes-auto-requires-lazy-loading-valid-010";
+fn sizes_auto_requires_lazy_loading_016() {
+    const _ID: &str = "sizes-auto-requires-lazy-loading-016";
     assert_violations(
         &run(
             r#"<picture><source srcset="s.webp 480w" sizes="auto"><img src="s.jpg" loading="lazy" alt="p"></picture>"#,
@@ -232,18 +232,18 @@ fn sizes_auto_requires_lazy_loading_valid_010() {
     );
 }
 
-/// TS: `[sizes-auto-requires-lazy-loading-invalid-007]`
+/// TS: `[sizes-auto-requires-lazy-loading-017]`
 #[test]
-fn sizes_auto_requires_lazy_loading_invalid_007() {
-    const _ID: &str = "sizes-auto-requires-lazy-loading-invalid-007";
+fn sizes_auto_requires_lazy_loading_017() {
+    const _ID: &str = "sizes-auto-requires-lazy-loading-017";
     let violations = run(r#"<picture><source srcset="s.webp 480w" sizes="auto"></picture>"#);
     assert_eq!(violations.len(), 1, "violations: {violations:?}");
 }
 
-/// TS: `[sizes-auto-requires-lazy-loading-valid-011]`
+/// TS: `[sizes-auto-requires-lazy-loading-018]`
 #[test]
-fn sizes_auto_requires_lazy_loading_valid_011() {
-    const _ID: &str = "sizes-auto-requires-lazy-loading-valid-011";
+fn sizes_auto_requires_lazy_loading_018() {
+    const _ID: &str = "sizes-auto-requires-lazy-loading-018";
     assert_violations(
         &run(
             r#"<picture><source srcset="a.webp 480w" sizes="auto" media="(min-width: 600px)"><source srcset="b.jpg 480w"><img src="b.jpg" loading="lazy" alt="p"></picture>"#,
@@ -252,18 +252,18 @@ fn sizes_auto_requires_lazy_loading_valid_011() {
     );
 }
 
-/// TS: `[sizes-auto-requires-lazy-loading-invalid-008]`
+/// TS: `[sizes-auto-requires-lazy-loading-019]`
 #[test]
-fn sizes_auto_requires_lazy_loading_invalid_008() {
-    const _ID: &str = "sizes-auto-requires-lazy-loading-invalid-008";
+fn sizes_auto_requires_lazy_loading_019() {
+    const _ID: &str = "sizes-auto-requires-lazy-loading-019";
     let violations = run(r#"<img srcset="s.png 480w, l.png 2x" sizes="auto" src="l.png" alt="p">"#);
     assert_eq!(violations.len(), 1, "violations: {violations:?}");
 }
 
-/// TS: `[sizes-auto-requires-lazy-loading-invalid-009]`
+/// TS: `[sizes-auto-requires-lazy-loading-020]`
 #[test]
-fn sizes_auto_requires_lazy_loading_invalid_009() {
-    const _ID: &str = "sizes-auto-requires-lazy-loading-invalid-009";
+fn sizes_auto_requires_lazy_loading_020() {
+    const _ID: &str = "sizes-auto-requires-lazy-loading-020";
     assert_violations(
         &run_rule(
             r#"<img srcset="s.png 480w" sizes="auto" src="l.png" alt="p">"#,

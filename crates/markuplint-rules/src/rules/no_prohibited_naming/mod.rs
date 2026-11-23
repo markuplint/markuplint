@@ -12,7 +12,7 @@
 //! author gives it a role. The computed role is `None` for a custom element even with a `role`
 //! attribute, so a non-empty `role` value is taken as "a role that supports naming is set" without
 //! validating it: `role="presentation"` lifts the prohibition too. That is permissive on purpose
-//! (pinned by the TS test `no-prohibited-naming-issue-3630-013`).
+//! (pinned by the TS test `no-prohibited-naming-014`).
 
 use markuplint_core::i18n::Primitive as Kw;
 use markuplint_core::mlast::ElementType;

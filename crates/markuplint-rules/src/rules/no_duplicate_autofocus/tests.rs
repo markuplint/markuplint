@@ -1,20 +1,20 @@
 //! Tests for `no-duplicate-autofocus` rule.
 //!
 //! Test ID mapping (TS → Rust):
-//!   no-duplicate-autofocus-valid-001    → no_duplicate_autofocus_valid_001
-//!   no-duplicate-autofocus-valid-002    → no_duplicate_autofocus_valid_002
-//!   no-duplicate-autofocus-invalid-001  → no_duplicate_autofocus_invalid_001
-//!   no-duplicate-autofocus-invalid-002  → no_duplicate_autofocus_invalid_002
-//!   no-duplicate-autofocus-valid-003    → no_duplicate_autofocus_valid_003
-//!   no-duplicate-autofocus-valid-004    → no_duplicate_autofocus_valid_004
-//!   no-duplicate-autofocus-valid-005    → no_duplicate_autofocus_valid_005
-//!   no-duplicate-autofocus-invalid-003  → no_duplicate_autofocus_invalid_003
-//!   no-duplicate-autofocus-invalid-004  → no_duplicate_autofocus_invalid_004
-//!   v6_no_duplicate_autofocus_001       — Rust-only: attribute names are case-insensitive
-//!   v6_no_duplicate_autofocus_002       — Rust-only: the nearest dialog or popover is the scoping root
-//!   v6_no_duplicate_autofocus_003       — Rust-only: pretended elements count as what they pretend to be
-//!   v6_no_duplicate_autofocus_004       — Rust-only: a whole document is one scope
-//!   v6_no_duplicate_autofocus_005       — Rust-only: an element the rule is disabled on is not counted
+//!   no-duplicate-autofocus-001     → no_duplicate_autofocus_001
+//!   no-duplicate-autofocus-002     → no_duplicate_autofocus_002
+//!   no-duplicate-autofocus-003     → no_duplicate_autofocus_003
+//!   no-duplicate-autofocus-004     → no_duplicate_autofocus_004
+//!   no-duplicate-autofocus-005     → no_duplicate_autofocus_005
+//!   no-duplicate-autofocus-006     → no_duplicate_autofocus_006
+//!   no-duplicate-autofocus-007     → no_duplicate_autofocus_007
+//!   no-duplicate-autofocus-008     → no_duplicate_autofocus_008
+//!   no-duplicate-autofocus-009     → no_duplicate_autofocus_009
+//!   v6_no_duplicate_autofocus_001  — Rust-only: attribute names are case-insensitive
+//!   v6_no_duplicate_autofocus_002  — Rust-only: the nearest dialog or popover is the scoping root
+//!   v6_no_duplicate_autofocus_003  — Rust-only: pretended elements count as what they pretend to be
+//!   v6_no_duplicate_autofocus_004  — Rust-only: a whole document is one scope
+//!   v6_no_duplicate_autofocus_005  — Rust-only: an element the rule is disabled on is not counted
 //!
 //! Expected values of the `v6_*` tests come from running the TS rule.
 
@@ -35,34 +35,34 @@ fn run_with(html: &str, pretenders: serde_json::Value) -> Vec<Brief> {
 
 const MESSAGE: &str = "The \"autofocus\" attribute must be unique in the document";
 
-/// TS: `[no-duplicate-autofocus-valid-001]` — single autofocus
+/// TS: `[no-duplicate-autofocus-001]` — single autofocus
 #[test]
-fn no_duplicate_autofocus_valid_001() {
-    const _ID: &str = "no-duplicate-autofocus-valid-001";
+fn no_duplicate_autofocus_001() {
+    const _ID: &str = "no-duplicate-autofocus-001";
     assert_eq!(run("<div><input autofocus><input></div>"), []);
 }
 
-/// TS: `[no-duplicate-autofocus-valid-002]` — no autofocus
+/// TS: `[no-duplicate-autofocus-002]` — no autofocus
 #[test]
-fn no_duplicate_autofocus_valid_002() {
-    const _ID: &str = "no-duplicate-autofocus-valid-002";
+fn no_duplicate_autofocus_002() {
+    const _ID: &str = "no-duplicate-autofocus-002";
     assert_eq!(run("<div><input><input></div>"), []);
 }
 
-/// TS: `[no-duplicate-autofocus-invalid-001]` — two autofocus
+/// TS: `[no-duplicate-autofocus-003]` — two autofocus
 #[test]
-fn no_duplicate_autofocus_invalid_001() {
-    const _ID: &str = "no-duplicate-autofocus-invalid-001";
+fn no_duplicate_autofocus_003() {
+    const _ID: &str = "no-duplicate-autofocus-003";
     assert_eq!(
         run("<div><input autofocus><input autofocus></div>"),
         [brief(Severity::Error, 1, 23, MESSAGE, "<input autofocus>")]
     );
 }
 
-/// TS: `[no-duplicate-autofocus-invalid-002]` — three autofocus
+/// TS: `[no-duplicate-autofocus-004]` — three autofocus
 #[test]
-fn no_duplicate_autofocus_invalid_002() {
-    const _ID: &str = "no-duplicate-autofocus-invalid-002";
+fn no_duplicate_autofocus_004() {
+    const _ID: &str = "no-duplicate-autofocus-004";
     assert_eq!(
         run("<div><input autofocus><button autofocus>x</button><textarea autofocus></textarea></div>"),
         [
@@ -72,53 +72,53 @@ fn no_duplicate_autofocus_invalid_002() {
     );
 }
 
-/// TS: `[no-duplicate-autofocus-valid-003]` — each dialog has its own autofocus scoping root
+/// TS: `[no-duplicate-autofocus-005]` — each dialog has its own autofocus scoping root
 #[test]
-fn no_duplicate_autofocus_valid_003() {
-    const _ID: &str = "no-duplicate-autofocus-valid-003";
+fn no_duplicate_autofocus_005() {
+    const _ID: &str = "no-duplicate-autofocus-005";
     assert_eq!(
         run("<dialog><input autofocus></dialog><dialog><button autofocus>x</button></dialog>"),
         []
     );
 }
 
-/// TS: `[no-duplicate-autofocus-valid-004]` — each popover has its own autofocus scoping root
+/// TS: `[no-duplicate-autofocus-006]` — each popover has its own autofocus scoping root
 #[test]
-fn no_duplicate_autofocus_valid_004() {
-    const _ID: &str = "no-duplicate-autofocus-valid-004";
+fn no_duplicate_autofocus_006() {
+    const _ID: &str = "no-duplicate-autofocus-006";
     assert_eq!(
         run("<div popover><input autofocus></div><div popover><button autofocus>x</button></div>"),
         []
     );
 }
 
-/// TS: `[no-duplicate-autofocus-valid-005]` — a dialog-scoped autofocus does not conflict with a
+/// TS: `[no-duplicate-autofocus-007]` — a dialog-scoped autofocus does not conflict with a
 /// document-level autofocus
 #[test]
-fn no_duplicate_autofocus_valid_005() {
-    const _ID: &str = "no-duplicate-autofocus-valid-005";
+fn no_duplicate_autofocus_007() {
+    const _ID: &str = "no-duplicate-autofocus-007";
     assert_eq!(
         run("<input autofocus><dialog><button autofocus>x</button></dialog>"),
         []
     );
 }
 
-/// TS: `[no-duplicate-autofocus-invalid-003]` — two autofocus elements sharing the same dialog
+/// TS: `[no-duplicate-autofocus-008]` — two autofocus elements sharing the same dialog
 /// scoping root
 #[test]
-fn no_duplicate_autofocus_invalid_003() {
-    const _ID: &str = "no-duplicate-autofocus-invalid-003";
+fn no_duplicate_autofocus_008() {
+    const _ID: &str = "no-duplicate-autofocus-008";
     assert_eq!(
         run("<dialog><input autofocus><button autofocus>x</button></dialog>"),
         [brief(Severity::Error, 1, 26, MESSAGE, "<button autofocus>")]
     );
 }
 
-/// TS: `[no-duplicate-autofocus-invalid-004]` — a dialog with autofocus and an inner autofocus
+/// TS: `[no-duplicate-autofocus-009]` — a dialog with autofocus and an inner autofocus
 /// target share the dialog as their scoping root
 #[test]
-fn no_duplicate_autofocus_invalid_004() {
-    const _ID: &str = "no-duplicate-autofocus-invalid-004";
+fn no_duplicate_autofocus_009() {
+    const _ID: &str = "no-duplicate-autofocus-009";
     assert_eq!(
         run("<dialog autofocus><input autofocus></dialog>"),
         [brief(Severity::Error, 1, 19, MESSAGE, "<input autofocus>")]

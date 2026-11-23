@@ -1,13 +1,13 @@
 //! Tests for `no-table-span-overflow` rule.
 //!
 //! Test ID mapping (TS → Rust):
-//!   no-table-span-overflow-invalid-001  → no_table_span_overflow_invalid_001 (was `rowspan_overflow_in_thead_section`)
-//!   no-table-span-overflow-invalid-002  → no_table_span_overflow_invalid_002
-//!   no-table-span-overflow-valid-001    → no_table_span_overflow_valid_001 (was `empty_table_no_violation`)
-//!   no-table-span-overflow-valid-002    → no_table_span_overflow_valid_002
-//!   no-table-span-overflow-valid-003    → no_table_span_overflow_valid_003 (was `rowspan_valid`)
-//!   no-table-span-overflow-valid-004    → no_table_span_overflow_valid_004
-//!   no-table-span-overflow-valid-005    → no_table_span_overflow_valid_005
+//!   no-table-span-overflow-001  → no_table_span_overflow_001 (was `rowspan_overflow_in_thead_section`)
+//!   no-table-span-overflow-002  → no_table_span_overflow_002
+//!   no-table-span-overflow-004    → no_table_span_overflow_004 (was `empty_table_no_violation`)
+//!   no-table-span-overflow-005    → no_table_span_overflow_005
+//!   no-table-span-overflow-006    → no_table_span_overflow_006 (was `rowspan_valid`)
+//!   no-table-span-overflow-007    → no_table_span_overflow_007
+//!   no-table-span-overflow-008    → no_table_span_overflow_008
 //!   v6_no_table_span_overflow_001  — Rust-only: `rowspan="0"` grows to the end of its group and never overflows
 //!   v6_no_table_span_overflow_002  — Rust-only: each of `<thead>` / `<tbody>` / `<tfoot>` is its own row group
 //!   v6_no_table_span_overflow_003  — Rust-only: an overflow in a table with an overlap is not reported
@@ -56,10 +56,10 @@ fn assert_violations(actual: &[Violation], expected: &[Expected<'_>]) {
     }
 }
 
-/// TS: `[no-table-span-overflow-invalid-001]`
+/// TS: `[no-table-span-overflow-001]`
 #[test]
-fn no_table_span_overflow_invalid_001() {
-    const _ID: &str = "no-table-span-overflow-invalid-001";
+fn no_table_span_overflow_001() {
+    const _ID: &str = "no-table-span-overflow-001";
     let violations = run(r#"
 <table>
   <thead class="overflow">
@@ -89,10 +89,10 @@ fn no_table_span_overflow_invalid_001() {
     assert_violations(&violations, &[(Severity::Error, 5, 11, MESSAGE, "rowspan=\"3\"")]);
 }
 
-/// TS: `[no-table-span-overflow-invalid-002]`
+/// TS: `[no-table-span-overflow-002]`
 #[test]
-fn no_table_span_overflow_invalid_002() {
-    const _ID: &str = "no-table-span-overflow-invalid-002";
+fn no_table_span_overflow_002() {
+    const _ID: &str = "no-table-span-overflow-002";
     let violations = run(r#"
 <table>
   <tbody>
@@ -104,10 +104,10 @@ fn no_table_span_overflow_invalid_002() {
     assert_violations(&violations, &[(Severity::Error, 4, 13, MESSAGE, "rowspan=\"3\"")]);
 }
 
-/// TS: `[no-table-span-overflow-valid-001]`
+/// TS: `[no-table-span-overflow-004]`
 #[test]
-fn no_table_span_overflow_valid_001() {
-    const _ID: &str = "no-table-span-overflow-valid-001";
+fn no_table_span_overflow_004() {
+    const _ID: &str = "no-table-span-overflow-004";
     let violations = run("
 <table>
 </table>
@@ -115,10 +115,10 @@ fn no_table_span_overflow_valid_001() {
     assert_violations(&violations, &[]);
 }
 
-/// TS: `[no-table-span-overflow-valid-002]`
+/// TS: `[no-table-span-overflow-005]`
 #[test]
-fn no_table_span_overflow_valid_002() {
-    const _ID: &str = "no-table-span-overflow-valid-002";
+fn no_table_span_overflow_005() {
+    const _ID: &str = "no-table-span-overflow-005";
     let violations = run(r"
 <table>
   <thead>
@@ -147,10 +147,10 @@ fn no_table_span_overflow_valid_002() {
     assert_violations(&violations, &[]);
 }
 
-/// TS: `[no-table-span-overflow-valid-003]`
+/// TS: `[no-table-span-overflow-006]`
 #[test]
-fn no_table_span_overflow_valid_003() {
-    const _ID: &str = "no-table-span-overflow-valid-003";
+fn no_table_span_overflow_006() {
+    const _ID: &str = "no-table-span-overflow-006";
     let violations = run(r#"
 <table>
   <tr>
@@ -167,10 +167,10 @@ fn no_table_span_overflow_valid_003() {
     assert_violations(&violations, &[]);
 }
 
-/// TS: `[no-table-span-overflow-valid-004]`
+/// TS: `[no-table-span-overflow-007]`
 #[test]
-fn no_table_span_overflow_valid_004() {
-    const _ID: &str = "no-table-span-overflow-valid-004";
+fn no_table_span_overflow_007() {
+    const _ID: &str = "no-table-span-overflow-007";
     let violations = run(r#"
 <table>
   <thead>
@@ -195,10 +195,10 @@ fn no_table_span_overflow_valid_004() {
     assert_violations(&violations, &[]);
 }
 
-/// TS: `[no-table-span-overflow-valid-005]`
+/// TS: `[no-table-span-overflow-008]`
 #[test]
-fn no_table_span_overflow_valid_005() {
-    const _ID: &str = "no-table-span-overflow-valid-005";
+fn no_table_span_overflow_008() {
+    const _ID: &str = "no-table-span-overflow-008";
     let violations = run(r#"
 <table>
 <tr>

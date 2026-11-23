@@ -1,10 +1,10 @@
 //! Tests for `no-experimental-features` rule.
 //!
 //! Test ID mapping (TS → Rust):
-//!   no-experimental-features-invalid-001         → no_experimental_features_invalid_001
-//!   no-experimental-features-valid-001           → no_experimental_features_valid_001
-//!   no-experimental-features-invalid-002         → no_experimental_features_invalid_002
-//!   no-experimental-features-issue-3740-001      → no_experimental_features_issue_3740_001
+//!   no-experimental-features-001         → no_experimental_features_001
+//!   no-experimental-features-002           → no_experimental_features_002
+//!   no-experimental-features-003         → no_experimental_features_003
+//!   no-experimental-features-004      → no_experimental_features_004
 //!   v6_no_experimental_features_001  — Rust-only: message, position and `raw` of an attribute report
 //!   v6_no_experimental_features_002  — Rust-only: global attributes and element attributes merged over them
 //!   v6_no_experimental_features_003  — Rust-only: the attribute name is matched as the DOM names it, the element name lower-cased
@@ -69,28 +69,28 @@ fn assert_experimental(violations: &[Violation], expected: &[(u32, u32, &str)]) 
     }
 }
 
-/// TS: `[no-experimental-features-invalid-001]` warns about experimental attributes
+/// TS: `[no-experimental-features-001]` warns about experimental attributes
 #[test]
-fn no_experimental_features_invalid_001() {
-    const _ID: &str = "no-experimental-features-invalid-001";
+fn no_experimental_features_001() {
+    const _ID: &str = "no-experimental-features-001";
     let violations = run("<iframe credentialless></iframe>");
     assert_eq!(violations.len(), 1);
     assert!(violations[0].message.contains("experimental"));
     assert!(violations[0].message.contains("\"credentialless\""));
 }
 
-/// TS: `[no-experimental-features-valid-001]` ignore attribute by pattern
+/// TS: `[no-experimental-features-002]` ignore attribute by pattern
 #[test]
-fn no_experimental_features_valid_001() {
-    const _ID: &str = "no-experimental-features-valid-001";
+fn no_experimental_features_002() {
+    const _ID: &str = "no-experimental-features-002";
     let violations = ignoring("<iframe credentialless></iframe>", &["iframe[credentialless]"]);
     assert!(violations.is_empty(), "{violations:?}");
 }
 
-/// TS: `[no-experimental-features-invalid-002]` severity is warning by default
+/// TS: `[no-experimental-features-003]` severity is warning by default
 #[test]
-fn no_experimental_features_invalid_002() {
-    const _ID: &str = "no-experimental-features-invalid-002";
+fn no_experimental_features_003() {
+    const _ID: &str = "no-experimental-features-003";
     let violations = run("<iframe credentialless></iframe>");
     assert_eq!(violations.len(), 1);
     assert_eq!(violations[0].severity, Severity::Warning);
@@ -218,11 +218,11 @@ fn credentialless(col: u32) -> Vec<crate::test_util::Brief> {
     )]
 }
 
-/// TS: `[no-experimental-features-issue-3740-001]` — web-component pretendered to
+/// TS: `[no-experimental-features-004]` — web-component pretendered to
 /// experimental HTML reports
 #[test]
-fn no_experimental_features_issue_3740_001() {
-    const _ID: &str = "no-experimental-features-issue-3740-001";
+fn no_experimental_features_004() {
+    const _ID: &str = "no-experimental-features-004";
     assert_eq!(
         run_pretended(
             "<x-iframe credentialless></x-iframe>",

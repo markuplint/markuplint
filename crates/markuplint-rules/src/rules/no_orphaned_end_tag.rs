@@ -146,17 +146,17 @@ mod tests {
         crate::test_util::fixed_code(html, &serde_json::json!({ "rules": { "no-orphaned-end-tag": true } }))
     }
 
-    /// TS: `[no-orphaned-end-tag-fix-001]` — remove orphaned end tag
+    /// TS: `[no-orphaned-end-tag-005]` — remove orphaned end tag
     #[test]
-    fn no_orphaned_end_tag_fix_001() {
-        const _ID: &str = "no-orphaned-end-tag-fix-001";
+    fn no_orphaned_end_tag_005() {
+        const _ID: &str = "no-orphaned-end-tag-005";
         assert_eq!(fixed("<div></div></span>"), "<div></div>");
     }
 
-    /// TS: `[no-orphaned-end-tag-fix-002]` — remove multiple orphaned end tags
+    /// TS: `[no-orphaned-end-tag-006]` — remove multiple orphaned end tags
     #[test]
-    fn no_orphaned_end_tag_fix_002() {
-        const _ID: &str = "no-orphaned-end-tag-fix-002";
+    fn no_orphaned_end_tag_006() {
+        const _ID: &str = "no-orphaned-end-tag-006";
         assert_eq!(fixed("<div></p></br><p></span></p></div>"), "<div><p></p></div>");
     }
 

@@ -1,12 +1,12 @@
 //! Tests for `form-attr-references-form` rule.
 //!
 //! Test ID mapping (TS → Rust):
-//!   form-attr-references-form-valid-001    → form_attr_references_form_valid_001
-//!   form-attr-references-form-valid-002    → form_attr_references_form_valid_002
-//!   form-attr-references-form-valid-003    → form_attr_references_form_valid_003
-//!   form-attr-references-form-valid-004    → form_attr_references_form_valid_004
-//!   form-attr-references-form-invalid-001  → form_attr_references_form_invalid_001
-//!   form-attr-references-form-invalid-002  → form_attr_references_form_invalid_002
+//!   form-attr-references-form-001    → form_attr_references_form_001
+//!   form-attr-references-form-002    → form_attr_references_form_002
+//!   form-attr-references-form-003    → form_attr_references_form_003
+//!   form-attr-references-form-004    → form_attr_references_form_004
+//!   form-attr-references-form-005  → form_attr_references_form_005
+//!   form-attr-references-form-006  → form_attr_references_form_006
 //!   v6_form_attr_references_form_001  — Rust-only: `label` and `object` are form-associated too
 //!   v6_form_attr_references_form_002  — Rust-only: a duplicated ID resolves to the first element in tree order
 //!   v6_form_attr_references_form_003  — Rust-only: an empty `form` matches an empty `id`
@@ -31,48 +31,48 @@ fn run_with(html: &str, pretenders: serde_json::Value) -> Vec<Brief> {
     )
 }
 
-/// TS: `[form-attr-references-form-valid-001]` — form attribute references actual form element
+/// TS: `[form-attr-references-form-001]` — form attribute references actual form element
 #[test]
-fn form_attr_references_form_valid_001() {
-    const _ID: &str = "form-attr-references-form-valid-001";
+fn form_attr_references_form_001() {
+    const _ID: &str = "form-attr-references-form-001";
     assert_eq!(run(r#"<form id="form1"></form><input type="text" form="form1">"#), []);
 }
 
-/// TS: `[form-attr-references-form-valid-002]` — no form attribute on form-associated element
+/// TS: `[form-attr-references-form-002]` — no form attribute on form-associated element
 #[test]
-fn form_attr_references_form_valid_002() {
-    const _ID: &str = "form-attr-references-form-valid-002";
+fn form_attr_references_form_002() {
+    const _ID: &str = "form-attr-references-form-002";
     assert_eq!(run(r#"<input type="text">"#), []);
 }
 
-/// TS: `[form-attr-references-form-valid-003]` — form attribute on non form-associated element ignored
+/// TS: `[form-attr-references-form-003]` — form attribute on non form-associated element ignored
 #[test]
-fn form_attr_references_form_valid_003() {
-    const _ID: &str = "form-attr-references-form-valid-003";
+fn form_attr_references_form_003() {
+    const _ID: &str = "form-attr-references-form-003";
     assert_eq!(run(r#"<div form="anything">x</div>"#), []);
 }
 
-/// TS: `[form-attr-references-form-valid-004]` — missing target id is left to no-refer-to-non-existent-id
+/// TS: `[form-attr-references-form-004]` — missing target id is left to no-refer-to-non-existent-id
 #[test]
-fn form_attr_references_form_valid_004() {
-    const _ID: &str = "form-attr-references-form-valid-004";
+fn form_attr_references_form_004() {
+    const _ID: &str = "form-attr-references-form-004";
     assert_eq!(run(r#"<input type="text" form="missing">"#), []);
 }
 
-/// TS: `[form-attr-references-form-invalid-001]` — form attribute references non-form element
+/// TS: `[form-attr-references-form-005]` — form attribute references non-form element
 #[test]
-fn form_attr_references_form_invalid_001() {
-    const _ID: &str = "form-attr-references-form-invalid-001";
+fn form_attr_references_form_005() {
+    const _ID: &str = "form-attr-references-form-005";
     assert_eq!(
         run(r#"<div id="notaform">Not a form</div><input type="text" form="notaform">"#),
         [brief(Severity::Error, 1, 61, MESSAGE, "notaform")]
     );
 }
 
-/// TS: `[form-attr-references-form-invalid-002]` — applies to all form-associated elements
+/// TS: `[form-attr-references-form-006]` — applies to all form-associated elements
 #[test]
-fn form_attr_references_form_invalid_002() {
-    const _ID: &str = "form-attr-references-form-invalid-002";
+fn form_attr_references_form_006() {
+    const _ID: &str = "form-attr-references-form-006";
     let cases = [
         ("button", r#"<div id="x">x</div><button form="x">b</button>"#),
         ("fieldset", r#"<div id="x">x</div><fieldset form="x"></fieldset>"#),

@@ -1,11 +1,11 @@
 //! Tests for `no-duplicate-id` rule.
 //!
 //! Test ID mapping (TS → Rust):
-//!   no-duplicate-id-invalid-001  → no_duplicate_id_invalid_001
-//!   no-duplicate-id-valid-001    → no_duplicate_id_valid_001
-//!   no-duplicate-id-invalid-002  → no_duplicate_id_invalid_002
-//!   no-duplicate-id-valid-002    → no_duplicate_id_valid_002
-//!   no-duplicate-id-parser-001   — SKIP: Vue parser not available in Rust
+//!   no-duplicate-id-001  → no_duplicate_id_001
+//!   no-duplicate-id-002  → no_duplicate_id_002
+//!   no-duplicate-id-003  → no_duplicate_id_003
+//!   no-duplicate-id-004  → no_duplicate_id_004
+//!   no-duplicate-id-005  — SKIP: Vue parser not available in Rust
 
 use crate::lint::{LintConfig, lint};
 use crate::violation::Severity;
@@ -28,10 +28,10 @@ fn spec() -> MLMLSpec {
     load_spec(include_str!("../../../../../packages/@markuplint/html-spec/index.json")).unwrap()
 }
 
-/// TS: `[no-duplicate-id-invalid-001]`
+/// TS: `[no-duplicate-id-001]`
 #[test]
-fn no_duplicate_id_invalid_001() {
-    const _ID: &str = "no-duplicate-id-invalid-001";
+fn no_duplicate_id_001() {
+    const _ID: &str = "no-duplicate-id-001";
     let arena = html_arena(r#"<div id="a"><p id="a"></p></div>"#);
     let spec = spec();
     let config: LintConfig = serde_json::from_value(serde_json::json!({
@@ -50,10 +50,10 @@ fn no_duplicate_id_invalid_001() {
     assert_eq!(result.violations[0].raw, r#"id="a""#);
 }
 
-/// TS: `[no-duplicate-id-valid-001]`
+/// TS: `[no-duplicate-id-002]`
 #[test]
-fn no_duplicate_id_valid_001() {
-    const _ID: &str = "no-duplicate-id-valid-001";
+fn no_duplicate_id_002() {
+    const _ID: &str = "no-duplicate-id-002";
     let arena = html_arena(r#"<div id="a"></div>"#);
     let spec = spec();
     let config: LintConfig = serde_json::from_value(serde_json::json!({
@@ -64,10 +64,10 @@ fn no_duplicate_id_valid_001() {
     assert_eq!(result.violations.len(), 0);
 }
 
-/// TS: `[no-duplicate-id-invalid-002]`
+/// TS: `[no-duplicate-id-003]`
 #[test]
-fn no_duplicate_id_invalid_002() {
-    const _ID: &str = "no-duplicate-id-invalid-002";
+fn no_duplicate_id_003() {
+    const _ID: &str = "no-duplicate-id-003";
     let arena = html_arena(r#"<div id="a"></div><div id="a"></div><div id="a"></div>"#);
     let spec = spec();
     let config: LintConfig = serde_json::from_value(serde_json::json!({
@@ -94,10 +94,10 @@ fn no_duplicate_id_invalid_002() {
     assert_eq!(result.violations[1].raw, r#"id="a""#);
 }
 
-/// TS: `[no-duplicate-id-valid-002]`
+/// TS: `[no-duplicate-id-004]`
 #[test]
-fn no_duplicate_id_valid_002() {
-    const _ID: &str = "no-duplicate-id-valid-002";
+fn no_duplicate_id_004() {
+    const _ID: &str = "no-duplicate-id-004";
     let arena = html_arena(r#"<div id="a"></div><div id="b"></div><div id="c"></div>"#);
     let spec = spec();
     let config: LintConfig = serde_json::from_value(serde_json::json!({

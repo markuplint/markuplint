@@ -1,9 +1,9 @@
 //! Tests for `no-focusable-in-aria-hidden` rule.
 //!
 //! Test ID mapping (TS → Rust):
-//!   no-focusable-in-aria-hidden-valid-001    → no_focusable_in_aria_hidden_valid_001
-//!   no-focusable-in-aria-hidden-valid-002    → no_focusable_in_aria_hidden_valid_002
-//!   no-focusable-in-aria-hidden-invalid-001  → no_focusable_in_aria_hidden_invalid_001
+//!   no-focusable-in-aria-hidden-001    → no_focusable_in_aria_hidden_001
+//!   no-focusable-in-aria-hidden-002    → no_focusable_in_aria_hidden_002
+//!   no-focusable-in-aria-hidden-008  → no_focusable_in_aria_hidden_008
 //!   v6_no_focusable_in_aria_hidden_001  — Rust-only: the two messages, position and scope
 //!   v6_no_focusable_in_aria_hidden_002  — Rust-only: what counts as focusable
 //!   v6_no_focusable_in_aria_hidden_003  — Rust-only: the `aria-hidden` name and value are matched exactly
@@ -57,17 +57,17 @@ fn assert_violations(actual: &[Violation], expected: &[Expected<'_>]) {
 const SELF_MESSAGE: &str = "It may be focusable in spite of it has aria-hidden=true";
 const ANCESTOR_MESSAGE: &str = "It may be focusable in spite of it has the ancestor that has aria-hidden=true";
 
-/// TS: `[no-focusable-in-aria-hidden-valid-001]`
+/// TS: `[no-focusable-in-aria-hidden-001]`
 #[test]
-fn no_focusable_in_aria_hidden_valid_001() {
-    const _ID: &str = "no-focusable-in-aria-hidden-valid-001";
+fn no_focusable_in_aria_hidden_001() {
+    const _ID: &str = "no-focusable-in-aria-hidden-001";
     assert_violations(&run_rule("<button>click</button>", serde_json::json!(true)), &[]);
 }
 
-/// TS: `[no-focusable-in-aria-hidden-valid-002]`
+/// TS: `[no-focusable-in-aria-hidden-002]`
 #[test]
-fn no_focusable_in_aria_hidden_valid_002() {
-    const _ID: &str = "no-focusable-in-aria-hidden-valid-002";
+fn no_focusable_in_aria_hidden_002() {
+    const _ID: &str = "no-focusable-in-aria-hidden-002";
     assert_violations(
         &run_rule(
             r#"<div aria-hidden="true"><span>text</span></div>"#,
@@ -77,10 +77,10 @@ fn no_focusable_in_aria_hidden_valid_002() {
     );
 }
 
-/// TS: `[no-focusable-in-aria-hidden-invalid-001]`
+/// TS: `[no-focusable-in-aria-hidden-008]`
 #[test]
-fn no_focusable_in_aria_hidden_invalid_001() {
-    const _ID: &str = "no-focusable-in-aria-hidden-invalid-001";
+fn no_focusable_in_aria_hidden_008() {
+    const _ID: &str = "no-focusable-in-aria-hidden-008";
     let violations = run_rule(
         r#"<div aria-hidden="true"><button>click</button></div>"#,
         serde_json::json!(true),

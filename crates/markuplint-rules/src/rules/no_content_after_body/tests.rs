@@ -1,11 +1,11 @@
 //! Tests for `no-content-after-body` rule.
 //!
 //! Test ID mapping (TS → Rust):
-//!   no-content-after-body-invalid-001  → no_content_after_body_invalid_001
-//!   no-content-after-body-invalid-002  → no_content_after_body_invalid_002
-//!   no-content-after-body-valid-001    → no_content_after_body_valid_001
-//!   no-content-after-body-valid-002    → no_content_after_body_valid_002
-//!   no-content-after-body-valid-003    → no_content_after_body_valid_003
+//!   no-content-after-body-001  → no_content_after_body_001
+//!   no-content-after-body-002  → no_content_after_body_002
+//!   no-content-after-body-003    → no_content_after_body_003
+//!   no-content-after-body-004    → no_content_after_body_004
+//!   no-content-after-body-005    → no_content_after_body_005
 //!   v6_no_content_after_body_001  — Rust-only: elements after `</body>` and after `</html>` are reported, a comment is not
 //!   v6_no_content_after_body_002  — Rust-only: a text node that starts before `</body>` is not reported
 //!   v6_no_content_after_body_003  — Rust-only: the whitespace around `</html>` after `</body>` is not content
@@ -24,44 +24,44 @@ fn run(html: &str) -> Vec<Brief> {
     lint_brief(RULE, html, serde_json::json!({ "rules": { RULE: true } }))
 }
 
-/// TS: `[no-content-after-body-invalid-001]` a start tag after the body end tag
+/// TS: `[no-content-after-body-001]` a start tag after the body end tag
 #[test]
-fn no_content_after_body_invalid_001() {
-    const _ID: &str = "no-content-after-body-invalid-001";
+fn no_content_after_body_001() {
+    const _ID: &str = "no-content-after-body-001";
     assert_eq!(
         run("<!doctype html>\n<body>\n</body>\n<p>stray paragraph</p>\n"),
         [brief(Severity::Error, 4, 1, MESSAGE, "<p>")]
     );
 }
 
-/// TS: `[no-content-after-body-invalid-002]` non-whitespace text after the body end tag
+/// TS: `[no-content-after-body-002]` non-whitespace text after the body end tag
 #[test]
-fn no_content_after_body_invalid_002() {
-    const _ID: &str = "no-content-after-body-invalid-002";
+fn no_content_after_body_002() {
+    const _ID: &str = "no-content-after-body-002";
     assert_eq!(
         run("<!doctype html>\n<body></body>text\n"),
         [brief(Severity::Error, 2, 14, MESSAGE, "text\n")]
     );
 }
 
-/// TS: `[no-content-after-body-valid-001]` trailing whitespace after the body end tag is allowed
+/// TS: `[no-content-after-body-003]` trailing whitespace after the body end tag is allowed
 #[test]
-fn no_content_after_body_valid_001() {
-    const _ID: &str = "no-content-after-body-valid-001";
+fn no_content_after_body_003() {
+    const _ID: &str = "no-content-after-body-003";
     assert_eq!(run("<!doctype html>\n<body></body>\n\n"), []);
 }
 
-/// TS: `[no-content-after-body-valid-002]` no explicit body end tag
+/// TS: `[no-content-after-body-004]` no explicit body end tag
 #[test]
-fn no_content_after_body_valid_002() {
-    const _ID: &str = "no-content-after-body-valid-002";
+fn no_content_after_body_004() {
+    const _ID: &str = "no-content-after-body-004";
     assert_eq!(run("<!doctype html>\n<body><p>only paragraph</p>"), []);
 }
 
-/// TS: `[no-content-after-body-valid-003]` content nested inside the body element
+/// TS: `[no-content-after-body-005]` content nested inside the body element
 #[test]
-fn no_content_after_body_valid_003() {
-    const _ID: &str = "no-content-after-body-valid-003";
+fn no_content_after_body_005() {
+    const _ID: &str = "no-content-after-body-005";
     assert_eq!(run("<!doctype html>\n<body><p>inside body</p></body>"), []);
 }
 

@@ -1,15 +1,15 @@
 //! Tests for `no-deprecated-attr` rule.
 //!
 //! Test ID mapping (TS → Rust):
-//!   no-deprecated-attr-invalid-001  → no_deprecated_attr_invalid_001
-//!   no-deprecated-attr-invalid-002  → no_deprecated_attr_invalid_002
-//!   no-deprecated-attr-invalid-003  → no_deprecated_attr_invalid_003
-//!   no-deprecated-attr-valid-001    → no_deprecated_attr_valid_001
-//!   v6_no_deprecated_attr_001       — Rust-only: an ordinary attribute is not reported
-//!   v6_no_deprecated_attr_002       — Rust-only: a `data-*` attribute is not reported
-//!   v6_no_deprecated_attr_003       — Rust-only: a camelCase SVG attribute is matched in its own case
-//!   v6_no_deprecated_attr_004       — Rust-only: an attribute both deprecated and obsolete is reported here too
-//!   v6_no_deprecated_attr_005       — Rust-only: a deprecated MathML global attribute
+//!   no-deprecated-attr-001     → no_deprecated_attr_001
+//!   no-deprecated-attr-002     → no_deprecated_attr_002
+//!   no-deprecated-attr-003     → no_deprecated_attr_003
+//!   no-deprecated-attr-004     → no_deprecated_attr_004
+//!   v6_no_deprecated_attr_001  — Rust-only: an ordinary attribute is not reported
+//!   v6_no_deprecated_attr_002  — Rust-only: a `data-*` attribute is not reported
+//!   v6_no_deprecated_attr_003  — Rust-only: a camelCase SVG attribute is matched in its own case
+//!   v6_no_deprecated_attr_004  — Rust-only: an attribute both deprecated and obsolete is reported here too
+//!   v6_no_deprecated_attr_005  — Rust-only: a deprecated MathML global attribute
 
 use crate::lint::{LintConfig, lint};
 use crate::violation::Severity;
@@ -42,26 +42,26 @@ fn run(html: &str) -> Vec<crate::violation::Violation> {
     lint(&arena, &spec, &config).violations
 }
 
-/// TS: `[no-deprecated-attr-invalid-001]`
+/// TS: `[no-deprecated-attr-001]`
 #[test]
-fn no_deprecated_attr_invalid_001() {
-    const _ID: &str = "no-deprecated-attr-invalid-001";
+fn no_deprecated_attr_001() {
+    const _ID: &str = "no-deprecated-attr-001";
     let violations = run(r#"<img align="top">"#);
     assert_eq!(violations.len(), 0);
 }
 
-/// TS: `[no-deprecated-attr-invalid-002]`
+/// TS: `[no-deprecated-attr-002]`
 #[test]
-fn no_deprecated_attr_invalid_002() {
-    const _ID: &str = "no-deprecated-attr-invalid-002";
+fn no_deprecated_attr_002() {
+    const _ID: &str = "no-deprecated-attr-002";
     let violations = run(r#"<img xml:lang="en-US">"#);
     assert_eq!(violations.len(), 0);
 }
 
-/// TS: `[no-deprecated-attr-invalid-003]`
+/// TS: `[no-deprecated-attr-003]`
 #[test]
-fn no_deprecated_attr_invalid_003() {
-    const _ID: &str = "no-deprecated-attr-invalid-003";
+fn no_deprecated_attr_003() {
+    const _ID: &str = "no-deprecated-attr-003";
     let violations = run(
         "<svg viewBox=\"0 0 160 40\" xmlns=\"http://www.w3.org/2000/svg\">\n          <a xlink:href=\"https://developer.mozilla.org/\">\n          <text x=\"10\" y=\"25\">MDN Web Docs</text></a>\n        </svg>",
     );
@@ -73,10 +73,10 @@ fn no_deprecated_attr_invalid_003() {
     assert_eq!(violations[0].raw, "xlink:href");
 }
 
-/// TS: `[no-deprecated-attr-valid-001]`
+/// TS: `[no-deprecated-attr-004]`
 #[test]
-fn no_deprecated_attr_valid_001() {
-    const _ID: &str = "no-deprecated-attr-valid-001";
+fn no_deprecated_attr_004() {
+    const _ID: &str = "no-deprecated-attr-004";
     let violations = run(r#"<img src="path/to" alt="any picture">"#);
     assert_eq!(violations.len(), 0);
 }

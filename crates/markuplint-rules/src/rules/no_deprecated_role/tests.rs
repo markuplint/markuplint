@@ -1,12 +1,12 @@
 //! Tests for `no-deprecated-role` rule.
 //!
 //! Test ID mapping (TS → Rust):
-//!   no-deprecated-role-valid-001    → no_deprecated_role_valid_001
-//!   no-deprecated-role-invalid-001  → no_deprecated_role_invalid_001
-//!   v6_no_deprecated_role_001       — Rust-only: the default severity is a warning, and it can be raised
-//!   v6_no_deprecated_role_002       — Rust-only: a deprecated role not computed (a valid one comes first) is not reported
-//!   v6_no_deprecated_role_003       — Rust-only: the whole attribute value is quoted when the deprecated role is computed
-//!   v6_no_deprecated_role_004       — Rust-only: `rules: false`
+//!   no-deprecated-role-001     → no_deprecated_role_001
+//!   no-deprecated-role-002     → no_deprecated_role_002
+//!   v6_no_deprecated_role_001  — Rust-only: the default severity is a warning, and it can be raised
+//!   v6_no_deprecated_role_002  — Rust-only: a deprecated role not computed (a valid one comes first) is not reported
+//!   v6_no_deprecated_role_003  — Rust-only: the whole attribute value is quoted when the deprecated role is computed
+//!   v6_no_deprecated_role_004  — Rust-only: `rules: false`
 
 use crate::lint::{LintConfig, lint};
 use crate::violation::Severity;
@@ -33,19 +33,19 @@ fn config(value: serde_json::Value) -> LintConfig {
     serde_json::from_value(serde_json::json!({ "rules": { "no-deprecated-role": value } })).unwrap()
 }
 
-/// TS: `[no-deprecated-role-valid-001]`
+/// TS: `[no-deprecated-role-001]`
 #[test]
-fn no_deprecated_role_valid_001() {
-    const _ID: &str = "no-deprecated-role-valid-001";
+fn no_deprecated_role_001() {
+    const _ID: &str = "no-deprecated-role-001";
     let arena = html_arena(r#"<div role="button"></div>"#);
     let result = lint(&arena, &spec(), &config(serde_json::json!(true)));
     assert!(result.violations.is_empty());
 }
 
-/// TS: `[no-deprecated-role-invalid-001]`
+/// TS: `[no-deprecated-role-002]`
 #[test]
-fn no_deprecated_role_invalid_001() {
-    const _ID: &str = "no-deprecated-role-invalid-001";
+fn no_deprecated_role_002() {
+    const _ID: &str = "no-deprecated-role-002";
     let arena = html_arena(r#"<div role="directory"></div>"#);
     // `true` takes the rule's default severity, a warning.
     let result = lint(&arena, &spec(), &config(serde_json::json!(true)));

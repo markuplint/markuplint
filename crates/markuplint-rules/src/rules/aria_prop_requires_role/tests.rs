@@ -1,8 +1,8 @@
 //! Tests for `aria-prop-requires-role` rule.
 //!
 //! Test ID mapping (TS → Rust):
-//!   aria-prop-requires-role-valid-001  → aria_prop_requires_role_valid_001
-//!   aria-prop-requires-role-valid-002  → aria_prop_requires_role_valid_002
+//!   aria-prop-requires-role-001  → aria_prop_requires_role_001
+//!   aria-prop-requires-role-002  → aria_prop_requires_role_002
 //!   v6_aria_prop_requires_role_001  — Rust-only: a non-global state on an element without a role
 //!   v6_aria_prop_requires_role_002  — Rust-only: only non-global properties are reported
 //!   v6_aria_prop_requires_role_003  — Rust-only: an element with an implicit role is skipped
@@ -58,17 +58,17 @@ fn violation(line: u32, col: u32, message: &str, raw: &str) -> (Severity, u32, u
     (Severity::Error, line, col, message.to_string(), raw.to_string())
 }
 
-/// TS: `[aria-prop-requires-role-valid-001]`
+/// TS: `[aria-prop-requires-role-001]`
 #[test]
-fn aria_prop_requires_role_valid_001() {
-    const _ID: &str = "aria-prop-requires-role-valid-001";
+fn aria_prop_requires_role_001() {
+    const _ID: &str = "aria-prop-requires-role-001";
     assert_eq!(run(r#"<div aria-label="text"></div>"#, serde_json::json!(true)), vec![]);
 }
 
-/// TS: `[aria-prop-requires-role-valid-002]`
+/// TS: `[aria-prop-requires-role-002]`
 #[test]
-fn aria_prop_requires_role_valid_002() {
-    const _ID: &str = "aria-prop-requires-role-valid-002";
+fn aria_prop_requires_role_002() {
+    const _ID: &str = "aria-prop-requires-role-002";
     assert_eq!(
         run(
             r#"<div role="button" aria-pressed="true"></div>"#,

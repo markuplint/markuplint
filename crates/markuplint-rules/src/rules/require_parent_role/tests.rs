@@ -1,8 +1,8 @@
 //! Tests for `require-parent-role` rule.
 //!
 //! Test ID mapping (TS → Rust):
-//!   require-parent-role-valid-001  → require_parent_role_valid_001
-//!   require-parent-role-valid-002  → require_parent_role_valid_002
+//!   require-parent-role-001  → require_parent_role_001
+//!   require-parent-role-002  → require_parent_role_002
 //!   v6_require_parent_role_001  — Rust-only: a missing context is reported at the role token, one or several roles
 //!   v6_require_parent_role_002  — Rust-only: the first token naming a role with parent roles is reported
 //!   v6_require_parent_role_003  — Rust-only: transparent ancestors, by ARIA version
@@ -56,10 +56,10 @@ fn assert_violations(actual: &[Violation], expected: &[Expected<'_>]) {
 const OPTION_MESSAGE: &str =
     "The \"option\" role requires an accessibility parent with one of the roles: \"listbox\", \"listbox > group\"";
 
-/// TS: `[require-parent-role-valid-001]`
+/// TS: `[require-parent-role-001]`
 #[test]
-fn require_parent_role_valid_001() {
-    const _ID: &str = "require-parent-role-valid-001";
+fn require_parent_role_001() {
+    const _ID: &str = "require-parent-role-001";
     let violations = run_rule(
         r#"<div role="listbox"><div role="option"></div></div>"#,
         serde_json::json!(true),
@@ -67,10 +67,10 @@ fn require_parent_role_valid_001() {
     assert_violations(&violations, &[]);
 }
 
-/// TS: `[require-parent-role-valid-002]`
+/// TS: `[require-parent-role-002]`
 #[test]
-fn require_parent_role_valid_002() {
-    const _ID: &str = "require-parent-role-valid-002";
+fn require_parent_role_002() {
+    const _ID: &str = "require-parent-role-002";
     assert_violations(&run_rule("<div></div>", serde_json::json!(true)), &[]);
 }
 

@@ -1,21 +1,21 @@
 //! Tests for `no-unescaped-char` rule.
 //!
 //! Test ID mapping (TS → Rust):
-//!   no-unescaped-char-invalid-001  → no_unescaped_char_invalid_001
-//!   no-unescaped-char-valid-001    → no_unescaped_char_valid_001
-//!   no-unescaped-char-valid-002    → no_unescaped_char_valid_002
-//!   no-unescaped-char-strict-001   → no_unescaped_char_strict_001
-//!   no-unescaped-char-strict-002   → no_unescaped_char_strict_002
-//!   no-unescaped-char-issue-1074   → no_unescaped_char_issue_1074
-//!   no-unescaped-char-valid-003    → no_unescaped_char_valid_003
-//!   no-unescaped-char-parser-001   — SKIP: Vue parser and spec (the Rust engine has neither)
-//!   no-unescaped-char-parser-002   — SKIP: EJS parser (the Rust engine has none)
-//!   no-unescaped-char-issue-1575   → no_unescaped_char_issue_1575
-//!   v6_no_unescaped_char_001       — Rust-only: a non-error severity says "should"
-//!   v6_no_unescaped_char_002       — Rust-only: `<` in an attribute value, RCDATA and on a later line; not in `style`
-//!   v6_no_unescaped_char_003       — Rust-only: escaped `<` is not reported
-//!   v6_no_unescaped_char_004       — Rust-only: strict mode masks entity-shaped sequences, known or not
-//!   v6_no_unescaped_char_005       — Rust-only: the hand-written masking is the regular expression TS has
+//!   no-unescaped-char-001     → no_unescaped_char_001
+//!   no-unescaped-char-002     → no_unescaped_char_002
+//!   no-unescaped-char-003     → no_unescaped_char_003
+//!   no-unescaped-char-004     → no_unescaped_char_004
+//!   no-unescaped-char-005     → no_unescaped_char_005
+//!   no-unescaped-char-006     → no_unescaped_char_006
+//!   no-unescaped-char-007     → no_unescaped_char_007
+//!   no-unescaped-char-008     — SKIP: Vue parser and spec (the Rust engine has neither)
+//!   no-unescaped-char-009     — SKIP: EJS parser (the Rust engine has none)
+//!   no-unescaped-char-010     → no_unescaped_char_010
+//!   v6_no_unescaped_char_001  — Rust-only: a non-error severity says "should"
+//!   v6_no_unescaped_char_002  — Rust-only: `<` in an attribute value, RCDATA and on a later line; not in `style`
+//!   v6_no_unescaped_char_003  — Rust-only: escaped `<` is not reported
+//!   v6_no_unescaped_char_004  — Rust-only: strict mode masks entity-shaped sequences, known or not
+//!   v6_no_unescaped_char_005  — Rust-only: the hand-written masking is the regular expression TS has
 
 use crate::lint::{LintConfig, lint};
 use crate::violation::{Severity, Violation};
@@ -58,10 +58,10 @@ fn run_strict(html: &str) -> Vec<Violation> {
 
 const MESSAGE: &str = "Illegal characters must escape in character reference";
 
-/// TS: `[no-unescaped-char-invalid-001]`
+/// TS: `[no-unescaped-char-001]`
 #[test]
-fn no_unescaped_char_invalid_001() {
-    const _ID: &str = "no-unescaped-char-invalid-001";
+fn no_unescaped_char_001() {
+    const _ID: &str = "no-unescaped-char-001";
     let violations = run(r#"<div id="a"> > < & " ' &amp;</div>"#);
     assert_eq!(violations.len(), 1);
     assert_eq!(violations[0].rule_id, "no-unescaped-char");
@@ -72,26 +72,26 @@ fn no_unescaped_char_invalid_001() {
     assert_eq!(violations[0].raw, "<");
 }
 
-/// TS: `[no-unescaped-char-valid-001]`
+/// TS: `[no-unescaped-char-002]`
 #[test]
-fn no_unescaped_char_valid_001() {
-    const _ID: &str = "no-unescaped-char-valid-001";
+fn no_unescaped_char_002() {
+    const _ID: &str = "no-unescaped-char-002";
     let violations = run(r#"<div id="a"> > & " ' &amp;</div>"#);
     assert_eq!(violations.len(), 0);
 }
 
-/// TS: `[no-unescaped-char-valid-002]`
+/// TS: `[no-unescaped-char-003]`
 #[test]
-fn no_unescaped_char_valid_002() {
-    const _ID: &str = "no-unescaped-char-valid-002";
+fn no_unescaped_char_003() {
+    const _ID: &str = "no-unescaped-char-003";
     let violations = run(r#"<img src="path/to?a=b&c=d">"#);
     assert_eq!(violations.len(), 0);
 }
 
-/// TS: `[no-unescaped-char-strict-001]`
+/// TS: `[no-unescaped-char-004]`
 #[test]
-fn no_unescaped_char_strict_001() {
-    const _ID: &str = "no-unescaped-char-strict-001";
+fn no_unescaped_char_004() {
+    const _ID: &str = "no-unescaped-char-004";
     let violations = run_strict(r#"<div id="a"> > < & " ' &amp;</div>"#);
     assert_eq!(violations.len(), 4);
     assert_eq!(violations[0].severity, Severity::Error);
@@ -107,10 +107,10 @@ fn no_unescaped_char_strict_001() {
     assert_eq!(violations[3].raw, "\"");
 }
 
-/// TS: `[no-unescaped-char-strict-002]`
+/// TS: `[no-unescaped-char-005]`
 #[test]
-fn no_unescaped_char_strict_002() {
-    const _ID: &str = "no-unescaped-char-strict-002";
+fn no_unescaped_char_005() {
+    const _ID: &str = "no-unescaped-char-005";
     let violations = run_strict(r#"<img src="path/to?a=b&c=d">"#);
     assert_eq!(violations.len(), 1);
     assert_eq!(violations[0].severity, Severity::Error);
@@ -120,10 +120,10 @@ fn no_unescaped_char_strict_002() {
     assert_eq!(violations[0].raw, "&");
 }
 
-/// TS: `[no-unescaped-char-issue-1074]`
+/// TS: `[no-unescaped-char-006]`
 #[test]
-fn no_unescaped_char_issue_1074() {
-    const _ID: &str = "no-unescaped-char-issue-1074";
+fn no_unescaped_char_006() {
+    const _ID: &str = "no-unescaped-char-006";
     let violations = run_strict("<span>&#9660;</span><span>&#x25BC;</span><span>&x25BC;</span>");
     assert_eq!(violations.len(), 1);
     assert_eq!(violations[0].severity, Severity::Error);
@@ -133,18 +133,18 @@ fn no_unescaped_char_issue_1074() {
     assert_eq!(violations[0].raw, "&");
 }
 
-/// TS: `[no-unescaped-char-valid-003]`
+/// TS: `[no-unescaped-char-007]`
 #[test]
-fn no_unescaped_char_valid_003() {
-    const _ID: &str = "no-unescaped-char-valid-003";
+fn no_unescaped_char_007() {
+    const _ID: &str = "no-unescaped-char-007";
     let violations = run_strict(r#"<script>if (i < 0) console.log("<markuplint>");</script>"#);
     assert_eq!(violations.len(), 0);
 }
 
-/// TS: `[no-unescaped-char-issue-1575]`
+/// TS: `[no-unescaped-char-010]`
 #[test]
-fn no_unescaped_char_issue_1575() {
-    const _ID: &str = "no-unescaped-char-issue-1575";
+fn no_unescaped_char_010() {
+    const _ID: &str = "no-unescaped-char-010";
     let violations = run("<div></p></div>");
     assert_eq!(violations.len(), 0);
 }

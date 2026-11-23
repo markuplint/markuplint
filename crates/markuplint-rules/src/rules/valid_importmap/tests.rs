@@ -1,35 +1,35 @@
 //! Tests for `valid-importmap` rule.
 //!
 //! Test ID mapping (TS → Rust):
-//!   valid-importmap-valid-001                    → valid_importmap_valid_001
-//!   valid-importmap-valid-002                    → valid_importmap_valid_002
-//!   valid-importmap-valid-003                    → valid_importmap_valid_003
-//!   valid-importmap-valid-004                    → valid_importmap_valid_004
-//!   valid-importmap-valid-005                    → valid_importmap_valid_005
-//!   valid-importmap-valid-006                    → valid_importmap_valid_006
-//!   valid-importmap-valid-007                    → valid_importmap_valid_007
-//!   valid-importmap-invalid-001                  → valid_importmap_invalid_001
-//!   valid-importmap-invalid-002                  → valid_importmap_invalid_002
-//!   valid-importmap-invalid-003                  → valid_importmap_invalid_003
-//!   valid-importmap-invalid-004                  → valid_importmap_invalid_004
-//!   valid-importmap-invalid-005                  → valid_importmap_invalid_005
-//!   valid-importmap-invalid-006                  → valid_importmap_invalid_006
-//!   valid-importmap-invalid-007                  → valid_importmap_invalid_007
-//!   valid-importmap-invalid-008                  → valid_importmap_invalid_008
-//!   valid-importmap-invalid-009                  → valid_importmap_invalid_009
-//!   valid-importmap-invalid-010                  → valid_importmap_invalid_010
-//!   valid-importmap-invalid-011                  → valid_importmap_invalid_011
-//!   valid-importmap-invalid-012                  → valid_importmap_invalid_012
-//!   valid-importmap-invalid-013                  → valid_importmap_invalid_013
-//!   valid-importmap-invalid-014                  → valid_importmap_invalid_014
-//!   valid-importmap-invalid-015                  → valid_importmap_invalid_015
-//!   valid-importmap-invalid-016                  → valid_importmap_invalid_016
-//!   valid-importmap-invalid-017                  → valid_importmap_invalid_017
-//!   valid-importmap-invalid-018                  → valid_importmap_invalid_018
-//!   valid-importmap-invalid-019                  → valid_importmap_invalid_019
-//!   valid-importmap-invalid-020                  → valid_importmap_invalid_020
-//!   valid-importmap-invalid-021                  → valid_importmap_invalid_021
-//!   valid-importmap-invalid-022                  → valid_importmap_invalid_022
+//!   valid-importmap-001                    → valid_importmap_001
+//!   valid-importmap-002                    → valid_importmap_002
+//!   valid-importmap-003                    → valid_importmap_003
+//!   valid-importmap-004                    → valid_importmap_004
+//!   valid-importmap-005                    → valid_importmap_005
+//!   valid-importmap-006                    → valid_importmap_006
+//!   valid-importmap-007                    → valid_importmap_007
+//!   valid-importmap-008                  → valid_importmap_008
+//!   valid-importmap-009                  → valid_importmap_009
+//!   valid-importmap-010                  → valid_importmap_010
+//!   valid-importmap-011                  → valid_importmap_011
+//!   valid-importmap-012                  → valid_importmap_012
+//!   valid-importmap-013                  → valid_importmap_013
+//!   valid-importmap-014                  → valid_importmap_014
+//!   valid-importmap-015                  → valid_importmap_015
+//!   valid-importmap-016                  → valid_importmap_016
+//!   valid-importmap-017                  → valid_importmap_017
+//!   valid-importmap-018                  → valid_importmap_018
+//!   valid-importmap-019                  → valid_importmap_019
+//!   valid-importmap-020                  → valid_importmap_020
+//!   valid-importmap-021                  → valid_importmap_021
+//!   valid-importmap-022                  → valid_importmap_022
+//!   valid-importmap-023                  → valid_importmap_023
+//!   valid-importmap-024                  → valid_importmap_024
+//!   valid-importmap-025                  → valid_importmap_025
+//!   valid-importmap-026                  → valid_importmap_026
+//!   valid-importmap-027                  → valid_importmap_027
+//!   valid-importmap-028                  → valid_importmap_028
+//!   valid-importmap-029                  → valid_importmap_029
 //!   v6_valid_importmap_001  — Rust-only: keys are visited in JavaScript property order (array indices first)
 //!   v6_valid_importmap_002  — Rust-only: a repeated key keeps the last value
 //!   v6_valid_importmap_003  — Rust-only: absolute URLs as the WHATWG URL parser accepts them
@@ -83,34 +83,34 @@ fn not_url_like(value: &str, key: &str) -> Brief {
     )
 }
 
-/// TS: `[valid-importmap-valid-001]` script without type attribute is ignored
+/// TS: `[valid-importmap-001]` script without type attribute is ignored
 #[test]
-fn valid_importmap_valid_001() {
-    const _ID: &str = "valid-importmap-valid-001";
+fn valid_importmap_001() {
+    const _ID: &str = "valid-importmap-001";
     assert_eq!(run(r#"<script>console.log("ok");</script>"#), []);
 }
 
-/// TS: `[valid-importmap-valid-002]` script type=module is ignored
+/// TS: `[valid-importmap-002]` script type=module is ignored
 #[test]
-fn valid_importmap_valid_002() {
-    const _ID: &str = "valid-importmap-valid-002";
+fn valid_importmap_002() {
+    const _ID: &str = "valid-importmap-002";
     assert_eq!(run(r#"<script type="module">import "./a.js";</script>"#), []);
 }
 
-/// TS: `[valid-importmap-valid-003]` minimal valid importmap
+/// TS: `[valid-importmap-003]` minimal valid importmap
 #[test]
-fn valid_importmap_valid_003() {
-    const _ID: &str = "valid-importmap-valid-003";
+fn valid_importmap_003() {
+    const _ID: &str = "valid-importmap-003";
     assert_eq!(
         run(r#"<script type="importmap">{"imports":{"app":"/path/to/app.js"}}</script>"#),
         []
     );
 }
 
-/// TS: `[valid-importmap-valid-004]` full valid importmap with scopes
+/// TS: `[valid-importmap-004]` full valid importmap with scopes
 #[test]
-fn valid_importmap_valid_004() {
-    const _ID: &str = "valid-importmap-valid-004";
+fn valid_importmap_004() {
+    const _ID: &str = "valid-importmap-004";
     assert_eq!(
         run(
             r#"<script type="importmap">{"imports":{"app":"/a.js","dir/":"/d/"},"scopes":{"/path/":{"x":"./y.js"}}}</script>"#
@@ -119,90 +119,90 @@ fn valid_importmap_valid_004() {
     );
 }
 
-/// TS: `[valid-importmap-valid-005]` integrity is an allowed top-level key
+/// TS: `[valid-importmap-005]` integrity is an allowed top-level key
 #[test]
-fn valid_importmap_valid_005() {
-    const _ID: &str = "valid-importmap-valid-005";
+fn valid_importmap_005() {
+    const _ID: &str = "valid-importmap-005";
     assert_eq!(
         run(r#"<script type="importmap">{"integrity":{"/a.mjs":"sha384-abc"}}</script>"#),
         []
     );
 }
 
-/// TS: `[valid-importmap-valid-006]` importmap with absolute URL specifier address
+/// TS: `[valid-importmap-006]` importmap with absolute URL specifier address
 #[test]
-fn valid_importmap_valid_006() {
-    const _ID: &str = "valid-importmap-valid-006";
+fn valid_importmap_006() {
+    const _ID: &str = "valid-importmap-006";
     assert_eq!(
         run(r#"<script type="importmap">{"imports":{"lib":"https://cdn.example.com/lib.js"}}</script>"#),
         []
     );
 }
 
-/// TS: `[valid-importmap-valid-007]` type attribute matching is case-insensitive
+/// TS: `[valid-importmap-007]` type attribute matching is case-insensitive
 #[test]
-fn valid_importmap_valid_007() {
-    const _ID: &str = "valid-importmap-valid-007";
+fn valid_importmap_007() {
+    const _ID: &str = "valid-importmap-007";
     assert_eq!(
         run(r#"<script type="ImportMap">{"imports":{"a":"/a.js"}}</script>"#),
         []
     );
 }
 
-/// TS: `[valid-importmap-invalid-001]` empty content
+/// TS: `[valid-importmap-008]` empty content
 #[test]
-fn valid_importmap_invalid_001() {
-    const _ID: &str = "valid-importmap-invalid-001";
+fn valid_importmap_008() {
+    const _ID: &str = "valid-importmap-008";
     assert_eq!(
         run(r#"<script type="importmap"></script>"#),
         [err(r#"Import map must contain a JSON object"#),]
     );
 }
 
-/// TS: `[valid-importmap-invalid-002]` whitespace-only content
+/// TS: `[valid-importmap-009]` whitespace-only content
 #[test]
-fn valid_importmap_invalid_002() {
-    const _ID: &str = "valid-importmap-invalid-002";
+fn valid_importmap_009() {
+    const _ID: &str = "valid-importmap-009";
     assert_eq!(
         run("<script type=\"importmap\">   \n   </script>"),
         [err(r#"Import map must contain a JSON object"#),]
     );
 }
 
-/// TS: `[valid-importmap-invalid-003]` content is not JSON
+/// TS: `[valid-importmap-010]` content is not JSON
 #[test]
-fn valid_importmap_invalid_003() {
-    const _ID: &str = "valid-importmap-invalid-003";
+fn valid_importmap_010() {
+    const _ID: &str = "valid-importmap-010";
     assert_eq!(
         run(r#"<script type="importmap">alert("not json")</script>"#),
         [err(r#"Import map must be valid JSON"#),]
     );
 }
 
-/// TS: `[valid-importmap-invalid-004]` top-level value is an array
+/// TS: `[valid-importmap-011]` top-level value is an array
 #[test]
-fn valid_importmap_invalid_004() {
-    const _ID: &str = "valid-importmap-invalid-004";
+fn valid_importmap_011() {
+    const _ID: &str = "valid-importmap-011";
     assert_eq!(
         run(r#"<script type="importmap">["imports"]</script>"#),
         [err(r#"Import map must be a JSON object"#),]
     );
 }
 
-/// TS: `[valid-importmap-invalid-005]` top-level value is a string
+/// TS: `[valid-importmap-012]` top-level value is a string
 #[test]
-fn valid_importmap_invalid_005() {
-    const _ID: &str = "valid-importmap-invalid-005";
+fn valid_importmap_012() {
+    const _ID: &str = "valid-importmap-012";
     assert_eq!(
         run(r#"<script type="importmap">"hello"</script>"#),
         [err(r#"Import map must be a JSON object"#),]
     );
 }
 
-/// TS: `[valid-importmap-invalid-006]` forbidden top-level property
+/// TS: `[valid-importmap-013]` forbidden top-level property
 #[test]
-fn valid_importmap_invalid_006() {
-    const _ID: &str = "valid-importmap-invalid-006";
+fn valid_importmap_013() {
+    const _ID: &str = "valid-importmap-013";
     assert_eq!(
         run(r#"<script type="importmap">{"forbidden":{}}</script>"#),
         [err(
@@ -211,10 +211,10 @@ fn valid_importmap_invalid_006() {
     );
 }
 
-/// TS: `[valid-importmap-invalid-007]` imports value is not an object
+/// TS: `[valid-importmap-014]` imports value is not an object
 #[test]
-fn valid_importmap_invalid_007() {
-    const _ID: &str = "valid-importmap-invalid-007";
+fn valid_importmap_014() {
+    const _ID: &str = "valid-importmap-014";
     assert_eq!(
         run(r#"<script type="importmap">{"imports":"not an object"}</script>"#),
         [err(
@@ -223,30 +223,30 @@ fn valid_importmap_invalid_007() {
     );
 }
 
-/// TS: `[valid-importmap-invalid-008]` imports has an empty specifier key
+/// TS: `[valid-importmap-015]` imports has an empty specifier key
 #[test]
-fn valid_importmap_invalid_008() {
-    const _ID: &str = "valid-importmap-invalid-008";
+fn valid_importmap_015() {
+    const _ID: &str = "valid-importmap-015";
     assert_eq!(
         run(r#"<script type="importmap">{"imports":{"":"/path/app.js"}}</script>"#),
         [err(r#"The specifier key in "imports" must not be empty"#),]
     );
 }
 
-/// TS: `[valid-importmap-invalid-009]` imports value is not a string
+/// TS: `[valid-importmap-016]` imports value is not a string
 #[test]
-fn valid_importmap_invalid_009() {
-    const _ID: &str = "valid-importmap-invalid-009";
+fn valid_importmap_016() {
+    const _ID: &str = "valid-importmap-016";
     assert_eq!(
         run(r#"<script type="importmap">{"imports":{"app":123}}</script>"#),
         [err(r#"The value of "app" in "imports" must be a string"#),]
     );
 }
 
-/// TS: `[valid-importmap-invalid-010]` imports slash-mismatch
+/// TS: `[valid-importmap-017]` imports slash-mismatch
 #[test]
-fn valid_importmap_invalid_010() {
-    const _ID: &str = "valid-importmap-invalid-010";
+fn valid_importmap_017() {
+    const _ID: &str = "valid-importmap-017";
     assert_eq!(
         run(r#"<script type="importmap">{"imports":{"dir/":"/path/to/dir"}}</script>"#),
         [err(
@@ -255,10 +255,10 @@ fn valid_importmap_invalid_010() {
     );
 }
 
-/// TS: `[valid-importmap-invalid-011]` imports address is not a URL-like specifier
+/// TS: `[valid-importmap-018]` imports address is not a URL-like specifier
 #[test]
-fn valid_importmap_invalid_011() {
-    const _ID: &str = "valid-importmap-invalid-011";
+fn valid_importmap_018() {
+    const _ID: &str = "valid-importmap-018";
     assert_eq!(
         run(r#"<script type="importmap">{"imports":{"lib":"bare-specifier"}}</script>"#),
         [err(
@@ -267,10 +267,10 @@ fn valid_importmap_invalid_011() {
     );
 }
 
-/// TS: `[valid-importmap-invalid-012]` scopes value is not an object
+/// TS: `[valid-importmap-019]` scopes value is not an object
 #[test]
-fn valid_importmap_invalid_012() {
-    const _ID: &str = "valid-importmap-invalid-012";
+fn valid_importmap_019() {
+    const _ID: &str = "valid-importmap-019";
     assert_eq!(
         run(r#"<script type="importmap">{"scopes":"not an object"}</script>"#),
         [err(
@@ -279,20 +279,20 @@ fn valid_importmap_invalid_012() {
     );
 }
 
-/// TS: `[valid-importmap-invalid-013]` scopes inner value is not an object
+/// TS: `[valid-importmap-020]` scopes inner value is not an object
 #[test]
-fn valid_importmap_invalid_013() {
-    const _ID: &str = "valid-importmap-invalid-013";
+fn valid_importmap_020() {
+    const _ID: &str = "valid-importmap-020";
     assert_eq!(
         run(r#"<script type="importmap">{"scopes":{"/path/":"not an object"}}</script>"#),
         [err(r#"The value of the scope "/path/" must be a JSON object"#),]
     );
 }
 
-/// TS: `[valid-importmap-invalid-014]` scopes inner specifier address is not URL-like
+/// TS: `[valid-importmap-021]` scopes inner specifier address is not URL-like
 #[test]
-fn valid_importmap_invalid_014() {
-    const _ID: &str = "valid-importmap-invalid-014";
+fn valid_importmap_021() {
+    const _ID: &str = "valid-importmap-021";
     assert_eq!(
         run(r#"<script type="importmap">{"scopes":{"/path/":{"x":"..."}}}</script>"#),
         [err(
@@ -301,10 +301,10 @@ fn valid_importmap_invalid_014() {
     );
 }
 
-/// TS: `[valid-importmap-invalid-015]` integrity is not an object
+/// TS: `[valid-importmap-022]` integrity is not an object
 #[test]
-fn valid_importmap_invalid_015() {
-    const _ID: &str = "valid-importmap-invalid-015";
+fn valid_importmap_022() {
+    const _ID: &str = "valid-importmap-022";
     assert_eq!(
         run(r#"<script type="importmap">{"integrity":"not object"}</script>"#),
         [err(
@@ -313,10 +313,10 @@ fn valid_importmap_invalid_015() {
     );
 }
 
-/// TS: `[valid-importmap-invalid-016]` integrity key is a bare specifier (not URL-like)
+/// TS: `[valid-importmap-023]` integrity key is a bare specifier (not URL-like)
 #[test]
-fn valid_importmap_invalid_016() {
-    const _ID: &str = "valid-importmap-invalid-016";
+fn valid_importmap_023() {
+    const _ID: &str = "valid-importmap-023";
     assert_eq!(
         run(r#"<script type="importmap">{"integrity":{"bare":"sha384-abc"}}</script>"#),
         [err(
@@ -325,20 +325,20 @@ fn valid_importmap_invalid_016() {
     );
 }
 
-/// TS: `[valid-importmap-invalid-017]` integrity value is not a string
+/// TS: `[valid-importmap-024]` integrity value is not a string
 #[test]
-fn valid_importmap_invalid_017() {
-    const _ID: &str = "valid-importmap-invalid-017";
+fn valid_importmap_024() {
+    const _ID: &str = "valid-importmap-024";
     assert_eq!(
         run(r#"<script type="importmap">{"integrity":{"/a.mjs":123}}</script>"#),
         [err(r#"The value of "/a.mjs" in "integrity" must be a string"#),]
     );
 }
 
-/// TS: `[valid-importmap-invalid-018]` integrity key is empty string
+/// TS: `[valid-importmap-025]` integrity key is empty string
 #[test]
-fn valid_importmap_invalid_018() {
-    const _ID: &str = "valid-importmap-invalid-018";
+fn valid_importmap_025() {
+    const _ID: &str = "valid-importmap-025";
     assert_eq!(
         run(r#"<script type="importmap">{"integrity":{"":"sha384-abc"}}</script>"#),
         [err(
@@ -347,30 +347,30 @@ fn valid_importmap_invalid_018() {
     );
 }
 
-/// TS: `[valid-importmap-invalid-019]` scopes inner specifier with empty key
+/// TS: `[valid-importmap-026]` scopes inner specifier with empty key
 #[test]
-fn valid_importmap_invalid_019() {
-    const _ID: &str = "valid-importmap-invalid-019";
+fn valid_importmap_026() {
+    const _ID: &str = "valid-importmap-026";
     assert_eq!(
         run(r#"<script type="importmap">{"scopes":{"/p/":{"":"/a.js"}}}</script>"#),
         [err(r#"The specifier key in "scopes["/p/"]" must not be empty"#),]
     );
 }
 
-/// TS: `[valid-importmap-invalid-020]` scopes inner specifier value not a string
+/// TS: `[valid-importmap-027]` scopes inner specifier value not a string
 #[test]
-fn valid_importmap_invalid_020() {
-    const _ID: &str = "valid-importmap-invalid-020";
+fn valid_importmap_027() {
+    const _ID: &str = "valid-importmap-027";
     assert_eq!(
         run(r#"<script type="importmap">{"scopes":{"/p/":{"k":1}}}</script>"#),
         [err(r#"The value of "k" in "scopes["/p/"]" must be a string"#),]
     );
 }
 
-/// TS: `[valid-importmap-invalid-021]` scopes inner specifier slash mismatch
+/// TS: `[valid-importmap-028]` scopes inner specifier slash mismatch
 #[test]
-fn valid_importmap_invalid_021() {
-    const _ID: &str = "valid-importmap-invalid-021";
+fn valid_importmap_028() {
+    const _ID: &str = "valid-importmap-028";
     assert_eq!(
         run(r#"<script type="importmap">{"scopes":{"/p/":{"dir/":"/x"}}}</script>"#),
         [err(
@@ -379,10 +379,10 @@ fn valid_importmap_invalid_021() {
     );
 }
 
-/// TS: `[valid-importmap-invalid-022]` multiple violations are all reported
+/// TS: `[valid-importmap-029]` multiple violations are all reported
 #[test]
-fn valid_importmap_invalid_022() {
-    const _ID: &str = "valid-importmap-invalid-022";
+fn valid_importmap_029() {
+    const _ID: &str = "valid-importmap-029";
     assert_eq!(
         run(r#"<script type="importmap">{"forbidden":1,"imports":{"":"/a.js","b":42}}</script>"#),
         [

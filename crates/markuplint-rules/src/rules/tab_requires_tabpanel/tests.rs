@@ -1,14 +1,14 @@
 //! Tests for `tab-requires-tabpanel` rule.
 //!
 //! Test ID mapping (TS → Rust):
-//!   tab-requires-tabpanel-valid-001    → tab_requires_tabpanel_valid_001
-//!   tab-requires-tabpanel-valid-002    → tab_requires_tabpanel_valid_002
-//!   tab-requires-tabpanel-valid-003    → tab_requires_tabpanel_valid_003
-//!   tab-requires-tabpanel-valid-004    → tab_requires_tabpanel_valid_004
-//!   tab-requires-tabpanel-valid-005    → tab_requires_tabpanel_valid_005
-//!   tab-requires-tabpanel-invalid-001  → tab_requires_tabpanel_invalid_001
-//!   tab-requires-tabpanel-invalid-002  → tab_requires_tabpanel_invalid_002
-//!   tab-requires-tabpanel-invalid-003  → tab_requires_tabpanel_invalid_003
+//!   tab-requires-tabpanel-001    → tab_requires_tabpanel_001
+//!   tab-requires-tabpanel-002    → tab_requires_tabpanel_002
+//!   tab-requires-tabpanel-003    → tab_requires_tabpanel_003
+//!   tab-requires-tabpanel-004    → tab_requires_tabpanel_004
+//!   tab-requires-tabpanel-005    → tab_requires_tabpanel_005
+//!   tab-requires-tabpanel-006  → tab_requires_tabpanel_006
+//!   tab-requires-tabpanel-007  → tab_requires_tabpanel_007
+//!   tab-requires-tabpanel-012  → tab_requires_tabpanel_012
 //!   v6_tab_requires_tabpanel_001  — Rust-only: `aria-selected` must be exactly `true`
 //!   v6_tab_requires_tabpanel_002  — Rust-only: `aria-controls` is an ID list, resolved to the first element of each ID
 //!   v6_tab_requires_tabpanel_003  — Rust-only: an `aria-labelledby` back-reference counts only from a tabpanel
@@ -59,10 +59,10 @@ fn assert_violations(actual: &[Violation], expected: &[Expected<'_>]) {
 
 const MESSAGE: &str = "An active \"tab\" role requires a corresponding \"tabpanel\" role";
 
-/// TS: `[tab-requires-tabpanel-valid-001]`
+/// TS: `[tab-requires-tabpanel-001]`
 #[test]
-fn tab_requires_tabpanel_valid_001() {
-    const _ID: &str = "tab-requires-tabpanel-valid-001";
+fn tab_requires_tabpanel_001() {
+    const _ID: &str = "tab-requires-tabpanel-001";
     let violations = run_rule(
         r#"<div role="tablist"><button role="tab" aria-selected="true" aria-controls="panel">Tab</button></div><div id="panel" role="tabpanel">Content</div>"#,
         serde_json::json!(true),
@@ -70,10 +70,10 @@ fn tab_requires_tabpanel_valid_001() {
     assert_violations(&violations, &[]);
 }
 
-/// TS: `[tab-requires-tabpanel-valid-002]`
+/// TS: `[tab-requires-tabpanel-002]`
 #[test]
-fn tab_requires_tabpanel_valid_002() {
-    const _ID: &str = "tab-requires-tabpanel-valid-002";
+fn tab_requires_tabpanel_002() {
+    const _ID: &str = "tab-requires-tabpanel-002";
     let violations = run_rule(
         r#"<div role="tablist"><button id="tab1" role="tab" aria-selected="true">Tab</button></div><div role="tabpanel" aria-labelledby="tab1">Content</div>"#,
         serde_json::json!(true),
@@ -81,10 +81,10 @@ fn tab_requires_tabpanel_valid_002() {
     assert_violations(&violations, &[]);
 }
 
-/// TS: `[tab-requires-tabpanel-valid-003]`
+/// TS: `[tab-requires-tabpanel-003]`
 #[test]
-fn tab_requires_tabpanel_valid_003() {
-    const _ID: &str = "tab-requires-tabpanel-valid-003";
+fn tab_requires_tabpanel_003() {
+    const _ID: &str = "tab-requires-tabpanel-003";
     let violations = run_rule(
         r#"<div role="tablist"><button role="tab" aria-selected="false">Tab</button></div>"#,
         serde_json::json!(true),
@@ -92,10 +92,10 @@ fn tab_requires_tabpanel_valid_003() {
     assert_violations(&violations, &[]);
 }
 
-/// TS: `[tab-requires-tabpanel-valid-004]`
+/// TS: `[tab-requires-tabpanel-004]`
 #[test]
-fn tab_requires_tabpanel_valid_004() {
-    const _ID: &str = "tab-requires-tabpanel-valid-004";
+fn tab_requires_tabpanel_004() {
+    const _ID: &str = "tab-requires-tabpanel-004";
     let violations = run_rule(
         r#"<div role="tablist"><button role="tab">Tab</button></div>"#,
         serde_json::json!(true),
@@ -103,10 +103,10 @@ fn tab_requires_tabpanel_valid_004() {
     assert_violations(&violations, &[]);
 }
 
-/// TS: `[tab-requires-tabpanel-valid-005]`
+/// TS: `[tab-requires-tabpanel-005]`
 #[test]
-fn tab_requires_tabpanel_valid_005() {
-    const _ID: &str = "tab-requires-tabpanel-valid-005";
+fn tab_requires_tabpanel_005() {
+    const _ID: &str = "tab-requires-tabpanel-005";
     let violations = run_rule(
         r#"<button aria-selected="true">Not a tab</button>"#,
         serde_json::json!(true),
@@ -114,10 +114,10 @@ fn tab_requires_tabpanel_valid_005() {
     assert_violations(&violations, &[]);
 }
 
-/// TS: `[tab-requires-tabpanel-invalid-001]`
+/// TS: `[tab-requires-tabpanel-006]`
 #[test]
-fn tab_requires_tabpanel_invalid_001() {
-    const _ID: &str = "tab-requires-tabpanel-invalid-001";
+fn tab_requires_tabpanel_006() {
+    const _ID: &str = "tab-requires-tabpanel-006";
     let violations = run_rule(
         "<div role=\"tablist\">\n  <button role=\"tab\" aria-selected=\"false\">foo</button>\n  <button role=\"tab\" aria-selected=\"true\">bar</button>\n</div>",
         serde_json::json!(true),
@@ -134,10 +134,10 @@ fn tab_requires_tabpanel_invalid_001() {
     );
 }
 
-/// TS: `[tab-requires-tabpanel-invalid-002]`
+/// TS: `[tab-requires-tabpanel-007]`
 #[test]
-fn tab_requires_tabpanel_invalid_002() {
-    const _ID: &str = "tab-requires-tabpanel-invalid-002";
+fn tab_requires_tabpanel_007() {
+    const _ID: &str = "tab-requires-tabpanel-007";
     let violations = run_rule(
         r#"<div role="tablist"><button role="tab" aria-selected="true" aria-controls="notpanel">Tab</button></div><div id="notpanel">Not a panel</div>"#,
         serde_json::json!(true),
@@ -154,10 +154,10 @@ fn tab_requires_tabpanel_invalid_002() {
     );
 }
 
-/// TS: `[tab-requires-tabpanel-invalid-003]`
+/// TS: `[tab-requires-tabpanel-012]`
 #[test]
-fn tab_requires_tabpanel_invalid_003() {
-    const _ID: &str = "tab-requires-tabpanel-invalid-003";
+fn tab_requires_tabpanel_012() {
+    const _ID: &str = "tab-requires-tabpanel-012";
     let violations = run_rule(
         r#"<div role="tablist"><button id="tab1" role="tab" aria-selected="true">Tab</button></div><div role="tabpanel" aria-labelledby="othertab">Content</div>"#,
         serde_json::json!(true),

@@ -1,9 +1,9 @@
 //! Tests for `no-aria-on-presentational-children` rule.
 //!
 //! Test ID mapping (TS → Rust):
-//!   no-aria-on-presentational-children-valid-001    → no_aria_on_presentational_children_valid_001
-//!   no-aria-on-presentational-children-invalid-001  → no_aria_on_presentational_children_invalid_001
-//!   no-aria-on-presentational-children-valid-002    → no_aria_on_presentational_children_valid_002
+//!   no-aria-on-presentational-children-001  → no_aria_on_presentational_children_001
+//!   no-aria-on-presentational-children-003  → no_aria_on_presentational_children_003
+//!   no-aria-on-presentational-children-004  → no_aria_on_presentational_children_004
 //!   the other `no-aria-on-presentational-children-<category>-NNN` of `index.spec.ts` that take HTML
 //!     → `no_aria_on_presentational_children_<category>_NNN`, with the same input and the same
 //!     violations. The ones that take the JSX parser or a pretender (`issue-4309-003`, `-004`, `-006`,
@@ -94,10 +94,10 @@ fn message_for(role: &str) -> String {
     )
 }
 
-/// TS: `[no-aria-on-presentational-children-valid-001]`
+/// TS: `[no-aria-on-presentational-children-001]`
 #[test]
-fn no_aria_on_presentational_children_valid_001() {
-    const _ID: &str = "no-aria-on-presentational-children-valid-001";
+fn no_aria_on_presentational_children_001() {
+    const _ID: &str = "no-aria-on-presentational-children-001";
     assert_violations(
         &run_rule(
             r#"<div role="group"><span aria-label="text"></span></div>"#,
@@ -107,10 +107,10 @@ fn no_aria_on_presentational_children_valid_001() {
     );
 }
 
-/// TS: `[no-aria-on-presentational-children-valid-003]` aria-label on a child of a role named from content is not reported
+/// TS: `[no-aria-on-presentational-children-002]` aria-label on a child of a role named from content is not reported
 #[test]
-fn no_aria_on_presentational_children_valid_003() {
-    const _ID: &str = "no-aria-on-presentational-children-valid-003";
+fn no_aria_on_presentational_children_002() {
+    const _ID: &str = "no-aria-on-presentational-children-002";
     assert_attr_violations(
         &run_rule(
             r#"<div role="button"><span aria-label="text"></span></div>"#,
@@ -120,10 +120,10 @@ fn no_aria_on_presentational_children_valid_003() {
     );
 }
 
-/// TS: `[no-aria-on-presentational-children-invalid-001]`
+/// TS: `[no-aria-on-presentational-children-003]`
 #[test]
-fn no_aria_on_presentational_children_invalid_001() {
-    const _ID: &str = "no-aria-on-presentational-children-invalid-001";
+fn no_aria_on_presentational_children_003() {
+    const _ID: &str = "no-aria-on-presentational-children-003";
     let violations = run_rule(
         r#"<div role="button"><span aria-label="text"></span></div>"#,
         serde_json::json!(true),
@@ -131,20 +131,20 @@ fn no_aria_on_presentational_children_invalid_001() {
     assert_eq!(violations.len(), 0, "violations: {violations:?}");
 }
 
-/// TS: `[no-aria-on-presentational-children-valid-002]`
+/// TS: `[no-aria-on-presentational-children-004]`
 #[test]
-fn no_aria_on_presentational_children_valid_002() {
-    const _ID: &str = "no-aria-on-presentational-children-valid-002";
+fn no_aria_on_presentational_children_004() {
+    const _ID: &str = "no-aria-on-presentational-children-004";
     assert_violations(
         &run_rule(r#"<div role="img"><span>text</span></div>"#, serde_json::json!(true)),
         &[],
     );
 }
 
-/// TS: `[no-aria-on-presentational-children-issue-4309-001]` an upper-case aria-label on a child of a button is not reported, like the lower-case one
+/// TS: `[no-aria-on-presentational-children-005]` an upper-case aria-label on a child of a button is not reported, like the lower-case one
 #[test]
-fn no_aria_on_presentational_children_issue_4309_001() {
-    const _ID: &str = "no-aria-on-presentational-children-issue-4309-001";
+fn no_aria_on_presentational_children_005() {
+    const _ID: &str = "no-aria-on-presentational-children-005";
     assert_attr_violations(
         &run_rule(
             r#"<div role="button"><span ARIA-LABEL="text"></span></div>"#,
@@ -154,10 +154,10 @@ fn no_aria_on_presentational_children_issue_4309_001() {
     );
 }
 
-/// TS: `[no-aria-on-presentational-children-issue-4309-002]` an upper-case role on a child is reported like the lower-case one
+/// TS: `[no-aria-on-presentational-children-006]` an upper-case role on a child is reported like the lower-case one
 #[test]
-fn no_aria_on_presentational_children_issue_4309_002() {
-    const _ID: &str = "no-aria-on-presentational-children-issue-4309-002";
+fn no_aria_on_presentational_children_006() {
+    const _ID: &str = "no-aria-on-presentational-children-006";
     assert_attr_violations(
         &run_rule(
             r#"<div role="button"><span ROLE="img"></span></div>"#,
@@ -167,10 +167,10 @@ fn no_aria_on_presentational_children_issue_4309_002() {
     );
 }
 
-/// TS: `[no-aria-on-presentational-children-issue-4309-005]` an upper-case aria-describedby on a child is reported like the lower-case one
+/// TS: `[no-aria-on-presentational-children-009]` an upper-case aria-describedby on a child is reported like the lower-case one
 #[test]
-fn no_aria_on_presentational_children_issue_4309_005() {
-    const _ID: &str = "no-aria-on-presentational-children-issue-4309-005";
+fn no_aria_on_presentational_children_009() {
+    const _ID: &str = "no-aria-on-presentational-children-009";
     assert_attr_violations(
         &run_rule(
             r#"<div role="button"><span ARIA-DESCRIBEDBY="d"></span></div><p id="d">d</p>"#,
@@ -180,10 +180,10 @@ fn no_aria_on_presentational_children_issue_4309_005() {
     );
 }
 
-/// TS: `[no-aria-on-presentational-children-issue-4408-001]` aria-hidden="true" on a decorative svg in a button is not reported
+/// TS: `[no-aria-on-presentational-children-012]` aria-hidden="true" on a decorative svg in a button is not reported
 #[test]
-fn no_aria_on_presentational_children_issue_4408_001() {
-    const _ID: &str = "no-aria-on-presentational-children-issue-4408-001";
+fn no_aria_on_presentational_children_012() {
+    const _ID: &str = "no-aria-on-presentational-children-012";
     assert_attr_violations(
         &run_rule(
             r#"<button type="button"><svg aria-hidden="true" focusable="false" viewBox="0 0 1 1"><path d="M0 0" /></svg>Click</button>"#,
@@ -193,10 +193,10 @@ fn no_aria_on_presentational_children_issue_4408_001() {
     );
 }
 
-/// TS: `[no-aria-on-presentational-children-issue-4408-003]` aria-label and aria-labelledby on a child of a button are not reported
+/// TS: `[no-aria-on-presentational-children-014]` aria-label and aria-labelledby on a child of a button are not reported
 #[test]
-fn no_aria_on_presentational_children_issue_4408_003() {
-    const _ID: &str = "no-aria-on-presentational-children-issue-4408-003";
+fn no_aria_on_presentational_children_014() {
+    const _ID: &str = "no-aria-on-presentational-children-014";
     assert_attr_violations(
         &run_rule(
             r#"<button type="button"><span aria-label="Save">x</span><span aria-labelledby="file">y</span></button><span id="file">report.pdf</span>"#,
@@ -206,10 +206,10 @@ fn no_aria_on_presentational_children_issue_4408_003() {
     );
 }
 
-/// TS: `[no-aria-on-presentational-children-issue-4408-004]` aria-hidden="true" on a child of a role whose name comes from content only is not reported
+/// TS: `[no-aria-on-presentational-children-015]` aria-hidden="true" on a child of a role whose name comes from content only is not reported
 #[test]
-fn no_aria_on_presentational_children_issue_4408_004() {
-    const _ID: &str = "no-aria-on-presentational-children-issue-4408-004";
+fn no_aria_on_presentational_children_015() {
+    const _ID: &str = "no-aria-on-presentational-children-015";
     assert_attr_violations(
         &run_rule(
             r#"<div role="tab"><span aria-hidden="true">★</span>Settings</div>"#,
@@ -219,10 +219,10 @@ fn no_aria_on_presentational_children_issue_4408_004() {
     );
 }
 
-/// TS: `[no-aria-on-presentational-children-issue-4408-005]` aria-hidden="true" on a child of a role that is not named from content is reported
+/// TS: `[no-aria-on-presentational-children-016]` aria-hidden="true" on a child of a role that is not named from content is reported
 #[test]
-fn no_aria_on_presentational_children_issue_4408_005() {
-    const _ID: &str = "no-aria-on-presentational-children-issue-4408-005";
+fn no_aria_on_presentational_children_016() {
+    const _ID: &str = "no-aria-on-presentational-children-016";
     assert_attr_violations(
         &run_rule(
             r#"<div role="img"><span aria-hidden="true">deco</span></div>"#,
@@ -232,10 +232,10 @@ fn no_aria_on_presentational_children_issue_4408_005() {
     );
 }
 
-/// TS: `[no-aria-on-presentational-children-issue-4408-006]` aria-hidden="true" in a button named by aria-label is reported
+/// TS: `[no-aria-on-presentational-children-017]` aria-hidden="true" in a button named by aria-label is reported
 #[test]
-fn no_aria_on_presentational_children_issue_4408_006() {
-    const _ID: &str = "no-aria-on-presentational-children-issue-4408-006";
+fn no_aria_on_presentational_children_017() {
+    const _ID: &str = "no-aria-on-presentational-children-017";
     assert_attr_violations(
         &run_rule(
             r#"<button type="button" aria-label="Save"><svg aria-hidden="true"></svg></button>"#,
@@ -245,10 +245,10 @@ fn no_aria_on_presentational_children_issue_4408_006() {
     );
 }
 
-/// TS: `[no-aria-on-presentational-children-issue-4408-007]` aria-hidden="true" under a child named by aria-label is reported
+/// TS: `[no-aria-on-presentational-children-018]` aria-hidden="true" under a child named by aria-label is reported
 #[test]
-fn no_aria_on_presentational_children_issue_4408_007() {
-    const _ID: &str = "no-aria-on-presentational-children-issue-4408-007";
+fn no_aria_on_presentational_children_018() {
+    const _ID: &str = "no-aria-on-presentational-children-018";
     assert_attr_violations(
         &run_rule(
             r#"<button type="button"><span aria-label="Save"><svg aria-hidden="true"></svg></span></button>"#,
@@ -258,10 +258,10 @@ fn no_aria_on_presentational_children_issue_4408_007() {
     );
 }
 
-/// TS: `[no-aria-on-presentational-children-issue-4408-008]` aria-label under a hidden child is reported
+/// TS: `[no-aria-on-presentational-children-019]` aria-label under a hidden child is reported
 #[test]
-fn no_aria_on_presentational_children_issue_4408_008() {
-    const _ID: &str = "no-aria-on-presentational-children-issue-4408-008";
+fn no_aria_on_presentational_children_019() {
+    const _ID: &str = "no-aria-on-presentational-children-019";
     assert_attr_violations(
         &run_rule(
             r#"<button type="button"><span aria-hidden="true"><span aria-label="Save">x</span></span>Click</button>"#,
@@ -271,10 +271,10 @@ fn no_aria_on_presentational_children_issue_4408_008() {
     );
 }
 
-/// TS: `[no-aria-on-presentational-children-issue-4408-009]` aria-label on an element that is itself hidden is reported
+/// TS: `[no-aria-on-presentational-children-020]` aria-label on an element that is itself hidden is reported
 #[test]
-fn no_aria_on_presentational_children_issue_4408_009() {
-    const _ID: &str = "no-aria-on-presentational-children-issue-4408-009";
+fn no_aria_on_presentational_children_020() {
+    const _ID: &str = "no-aria-on-presentational-children-020";
     assert_attr_violations(
         &run_rule(
             r#"<button type="button"><span aria-hidden="true" aria-label="Save">x</span>Click</button>"#,
@@ -284,10 +284,10 @@ fn no_aria_on_presentational_children_issue_4408_009() {
     );
 }
 
-/// TS: `[no-aria-on-presentational-children-issue-4408-010]` attributes that do not reach the name of a button are still reported
+/// TS: `[no-aria-on-presentational-children-021]` attributes that do not reach the name of a button are still reported
 #[test]
-fn no_aria_on_presentational_children_issue_4408_010() {
-    const _ID: &str = "no-aria-on-presentational-children-issue-4408-010";
+fn no_aria_on_presentational_children_021() {
+    const _ID: &str = "no-aria-on-presentational-children-021";
     assert_attr_violations(
         &run_rule(
             r#"<button type="button"><span aria-hidden="false">a</span><span aria-label="">b</span><span aria-describedby="d">c</span><span role="img">d</span></button><span id="d">desc</span>"#,
@@ -302,10 +302,10 @@ fn no_aria_on_presentational_children_issue_4408_010() {
     );
 }
 
-/// TS: `[no-aria-on-presentational-children-issue-4408-011]` role="none" that drops the title of an svg from the name of a button is not reported
+/// TS: `[no-aria-on-presentational-children-022]` role="none" that drops the title of an svg from the name of a button is not reported
 #[test]
-fn no_aria_on_presentational_children_issue_4408_011() {
-    const _ID: &str = "no-aria-on-presentational-children-issue-4408-011";
+fn no_aria_on_presentational_children_022() {
+    const _ID: &str = "no-aria-on-presentational-children-022";
     assert_attr_violations(
         &run_rule(
             r#"<button type="button"><svg role="none"><title>Save</title></svg><svg role="presentation"><title>Open</title></svg>Click</button>"#,
@@ -315,10 +315,10 @@ fn no_aria_on_presentational_children_issue_4408_011() {
     );
 }
 
-/// TS: `[no-aria-on-presentational-children-issue-4408-012]` role="none" that does not change the name of a button is reported
+/// TS: `[no-aria-on-presentational-children-023]` role="none" that does not change the name of a button is reported
 #[test]
-fn no_aria_on_presentational_children_issue_4408_012() {
-    const _ID: &str = "no-aria-on-presentational-children-issue-4408-012";
+fn no_aria_on_presentational_children_023() {
+    const _ID: &str = "no-aria-on-presentational-children-023";
     assert_attr_violations(
         &run_rule(
             r#"<div role="button"><img src="s.svg" alt="" role="none"><span role="none">Save</span><img src="o.svg" alt="Open" role="none" tabindex="0"></div>"#,
@@ -332,10 +332,10 @@ fn no_aria_on_presentational_children_issue_4408_012() {
     );
 }
 
-/// TS: `[no-aria-on-presentational-children-issue-4408-013]` role="none" that drops the alt of an image from the name of a button is not reported, though ARIA in HTML does not permit it
+/// TS: `[no-aria-on-presentational-children-024]` role="none" that drops the alt of an image from the name of a button is not reported, though ARIA in HTML does not permit it
 #[test]
-fn no_aria_on_presentational_children_issue_4408_013() {
-    const _ID: &str = "no-aria-on-presentational-children-issue-4408-013";
+fn no_aria_on_presentational_children_024() {
+    const _ID: &str = "no-aria-on-presentational-children-024";
     assert_attr_violations(
         &run_rule(
             r#"<button type="button"><img src="s.svg" alt="Save" role="none"><img src="o.svg" alt="Open" role="presentation"></button>"#,
@@ -345,10 +345,10 @@ fn no_aria_on_presentational_children_issue_4408_013() {
     );
 }
 
-/// TS: `[no-aria-on-presentational-children-issue-4408-015]` aria-label under an element named by its own host language label is reported
+/// TS: `[no-aria-on-presentational-children-026]` aria-label under an element named by its own host language label is reported
 #[test]
-fn no_aria_on_presentational_children_issue_4408_015() {
-    const _ID: &str = "no-aria-on-presentational-children-issue-4408-015";
+fn no_aria_on_presentational_children_026() {
+    const _ID: &str = "no-aria-on-presentational-children-026";
     assert_attr_violations(
         &run_rule(
             r#"<div role="button"><fieldset title="t"><span aria-label="x">y</span></fieldset></div>"#,
@@ -358,10 +358,10 @@ fn no_aria_on_presentational_children_issue_4408_015() {
     );
 }
 
-/// TS: `[no-aria-on-presentational-children-issue-4408-016]` aria-label in a hidden button is reported
+/// TS: `[no-aria-on-presentational-children-027]` aria-label in a hidden button is reported
 #[test]
-fn no_aria_on_presentational_children_issue_4408_016() {
-    const _ID: &str = "no-aria-on-presentational-children-issue-4408-016";
+fn no_aria_on_presentational_children_027() {
+    const _ID: &str = "no-aria-on-presentational-children-027";
     assert_attr_violations(
         &run_rule(
             r#"<div role="button" aria-hidden="true"><span aria-label="x"></span></div>"#,
@@ -371,10 +371,10 @@ fn no_aria_on_presentational_children_issue_4408_016() {
     );
 }
 
-/// TS: `[no-aria-on-presentational-children-issue-4408-017]` aria-label on an embedded control is reported
+/// TS: `[no-aria-on-presentational-children-028]` aria-label on an embedded control is reported
 #[test]
-fn no_aria_on_presentational_children_issue_4408_017() {
-    const _ID: &str = "no-aria-on-presentational-children-issue-4408-017";
+fn no_aria_on_presentational_children_028() {
+    const _ID: &str = "no-aria-on-presentational-children-028";
     assert_attr_violations(
         &run_rule(
             r#"<div role="checkbox" aria-checked="false"><input type="text" aria-label="x" value="v"></div>"#,
@@ -384,10 +384,10 @@ fn no_aria_on_presentational_children_issue_4408_017() {
     );
 }
 
-/// TS: `[no-aria-on-presentational-children-issue-4408-018]` aria-labelledby that refers to no element is reported
+/// TS: `[no-aria-on-presentational-children-029]` aria-labelledby that refers to no element is reported
 #[test]
-fn no_aria_on_presentational_children_issue_4408_018() {
-    const _ID: &str = "no-aria-on-presentational-children-issue-4408-018";
+fn no_aria_on_presentational_children_029() {
+    const _ID: &str = "no-aria-on-presentational-children-029";
     assert_attr_violations(
         &run_rule(
             r#"<div role="button"><span aria-labelledby="missing">Save</span></div>"#,
@@ -397,10 +397,10 @@ fn no_aria_on_presentational_children_issue_4408_018() {
     );
 }
 
-/// TS: `[no-aria-on-presentational-children-issue-4489-001]` aria-labelledby that refers to an element of the same template is not reported
+/// TS: `[no-aria-on-presentational-children-030]` aria-labelledby that refers to an element of the same template is not reported
 #[test]
-fn no_aria_on_presentational_children_issue_4489_001() {
-    const _ID: &str = "no-aria-on-presentational-children-issue-4489-001";
+fn no_aria_on_presentational_children_030() {
+    const _ID: &str = "no-aria-on-presentational-children-030";
     assert_attr_violations(
         &run_rule(
             r#"<template><div role="button"><span aria-labelledby="file">y</span></div><span id="file">report.pdf</span></template>"#,
@@ -410,10 +410,10 @@ fn no_aria_on_presentational_children_issue_4489_001() {
     );
 }
 
-/// TS: `[no-aria-on-presentational-children-issue-4489-002]` aria-labelledby that refers to an element of another tree is reported
+/// TS: `[no-aria-on-presentational-children-031]` aria-labelledby that refers to an element of another tree is reported
 #[test]
-fn no_aria_on_presentational_children_issue_4489_002() {
-    const _ID: &str = "no-aria-on-presentational-children-issue-4489-002";
+fn no_aria_on_presentational_children_031() {
+    const _ID: &str = "no-aria-on-presentational-children-031";
     assert_attr_violations(
         &run_rule(
             r#"<template><div role="button"><span aria-labelledby="file">y</span></div></template><span id="file">report.pdf</span>"#,
@@ -423,10 +423,10 @@ fn no_aria_on_presentational_children_issue_4489_002() {
     );
 }
 
-/// TS: `[no-aria-on-presentational-children-issue-4408-019]` aria-hidden="true" on an element hidden by the hidden attribute is reported
+/// TS: `[no-aria-on-presentational-children-032]` aria-hidden="true" on an element hidden by the hidden attribute is reported
 #[test]
-fn no_aria_on_presentational_children_issue_4408_019() {
-    const _ID: &str = "no-aria-on-presentational-children-issue-4408-019";
+fn no_aria_on_presentational_children_032() {
+    const _ID: &str = "no-aria-on-presentational-children-032";
     assert_attr_violations(
         &run_rule(
             r#"<div role="button"><span hidden aria-hidden="true">x</span>Save</div>"#,
@@ -436,10 +436,10 @@ fn no_aria_on_presentational_children_issue_4408_019() {
     );
 }
 
-/// TS: `[no-aria-on-presentational-children-issue-4408-021]` aria-hidden="true" in a role named from author that aria-labelledby refers to is not reported
+/// TS: `[no-aria-on-presentational-children-034]` aria-hidden="true" in a role named from author that aria-labelledby refers to is not reported
 #[test]
-fn no_aria_on_presentational_children_issue_4408_021() {
-    const _ID: &str = "no-aria-on-presentational-children-issue-4408-021";
+fn no_aria_on_presentational_children_034() {
+    const _ID: &str = "no-aria-on-presentational-children-034";
     assert_attr_violations(
         &run_rule(
             r#"<div role="img" id="pic"><span aria-hidden="true">decor</span>Chart</div><figure aria-labelledby="pic"></figure>"#,
@@ -449,10 +449,10 @@ fn no_aria_on_presentational_children_issue_4408_021() {
     );
 }
 
-/// TS: `[no-aria-on-presentational-children-issue-4408-022]` aria-label under a hidden element of a node aria-labelledby refers to is reported
+/// TS: `[no-aria-on-presentational-children-035]` aria-label under a hidden element of a node aria-labelledby refers to is reported
 #[test]
-fn no_aria_on_presentational_children_issue_4408_022() {
-    const _ID: &str = "no-aria-on-presentational-children-issue-4408-022";
+fn no_aria_on_presentational_children_035() {
+    const _ID: &str = "no-aria-on-presentational-children-035";
     assert_attr_violations(
         &run_rule(
             r#"<div role="img" id="pic"><span aria-hidden="true"><span aria-label="x">y</span></span>Chart</div><figure aria-labelledby="pic"></figure>"#,
@@ -462,10 +462,10 @@ fn no_aria_on_presentational_children_issue_4408_022() {
     );
 }
 
-/// TS: `[no-aria-on-presentational-children-issue-4408-023]` aria-labelledby on an embedded control is not reported
+/// TS: `[no-aria-on-presentational-children-036]` aria-labelledby on an embedded control is not reported
 #[test]
-fn no_aria_on_presentational_children_issue_4408_023() {
-    const _ID: &str = "no-aria-on-presentational-children-issue-4408-023";
+fn no_aria_on_presentational_children_036() {
+    const _ID: &str = "no-aria-on-presentational-children-036";
     assert_attr_violations(
         &run_rule(
             r#"<div role="checkbox" aria-checked="false">Flash <input type="text" value="5" aria-labelledby="n"> times</div><span id="n">five</span>"#,
@@ -475,10 +475,10 @@ fn no_aria_on_presentational_children_issue_4408_023() {
     );
 }
 
-/// TS: `[no-aria-on-presentational-children-issue-4408-024]` aria-hidden="true" that an outer button reads through an inner img is not reported
+/// TS: `[no-aria-on-presentational-children-037]` aria-hidden="true" that an outer button reads through an inner img is not reported
 #[test]
-fn no_aria_on_presentational_children_issue_4408_024() {
-    const _ID: &str = "no-aria-on-presentational-children-issue-4408-024";
+fn no_aria_on_presentational_children_037() {
+    const _ID: &str = "no-aria-on-presentational-children-037";
     assert_attr_violations(
         &run_rule(
             r#"<div role="button"><div role="img"><span aria-hidden="true">x</span>Y</div></div>"#,
@@ -488,10 +488,10 @@ fn no_aria_on_presentational_children_issue_4408_024() {
     );
 }
 
-/// TS: `[no-aria-on-presentational-children-issue-4408-025]` aria-hidden="true" that the name of a labeled control reads is not reported
+/// TS: `[no-aria-on-presentational-children-038]` aria-hidden="true" that the name of a labeled control reads is not reported
 #[test]
-fn no_aria_on_presentational_children_issue_4408_025() {
-    const _ID: &str = "no-aria-on-presentational-children-issue-4408-025";
+fn no_aria_on_presentational_children_038() {
+    const _ID: &str = "no-aria-on-presentational-children-038";
     assert_attr_violations(
         &run_rule(
             r#"<input id="i" type="text"><label for="i"><span role="img"><span aria-hidden="true">x</span>Y</span></label>"#,
@@ -501,10 +501,10 @@ fn no_aria_on_presentational_children_issue_4408_025() {
     );
 }
 
-/// TS: `[no-aria-on-presentational-children-issue-4408-026]` aria-label that an aria-labelledby of the same element overrides is reported
+/// TS: `[no-aria-on-presentational-children-039]` aria-label that an aria-labelledby of the same element overrides is reported
 #[test]
-fn no_aria_on_presentational_children_issue_4408_026() {
-    const _ID: &str = "no-aria-on-presentational-children-issue-4408-026";
+fn no_aria_on_presentational_children_039() {
+    const _ID: &str = "no-aria-on-presentational-children-039";
     assert_attr_violations(
         &run_rule(
             r#"<div role="button"><span aria-labelledby="x" aria-label="y">z</span></div><p id="x">x</p>"#,
@@ -514,10 +514,10 @@ fn no_aria_on_presentational_children_issue_4408_026() {
     );
 }
 
-/// TS: `[no-aria-on-presentational-children-issue-4408-027]` aria-labelledby that refers only to elements without text is reported
+/// TS: `[no-aria-on-presentational-children-040]` aria-labelledby that refers only to elements without text is reported
 #[test]
-fn no_aria_on_presentational_children_issue_4408_027() {
-    const _ID: &str = "no-aria-on-presentational-children-issue-4408-027";
+fn no_aria_on_presentational_children_040() {
+    const _ID: &str = "no-aria-on-presentational-children-040";
     assert_attr_violations(
         &run_rule(
             r#"<div role="button"><span aria-labelledby="e">Save</span></div><span id="e"></span>"#,
@@ -527,10 +527,10 @@ fn no_aria_on_presentational_children_issue_4408_027() {
     );
 }
 
-/// TS: `[no-aria-on-presentational-children-issue-4408-028]` only the attribute that takes no effect is reported
+/// TS: `[no-aria-on-presentational-children-041]` only the attribute that takes no effect is reported
 #[test]
-fn no_aria_on_presentational_children_issue_4408_028() {
-    const _ID: &str = "no-aria-on-presentational-children-issue-4408-028";
+fn no_aria_on_presentational_children_041() {
+    const _ID: &str = "no-aria-on-presentational-children-041";
     assert_attr_violations(
         &run_rule(
             r#"<div role="button"><span aria-hidden="true" aria-describedby="d">x</span>Save</div><p id="d">d</p>"#,
@@ -540,10 +540,10 @@ fn no_aria_on_presentational_children_issue_4408_028() {
     );
 }
 
-/// TS: `[no-aria-on-presentational-children-issue-4408-029]` aria-hidden="true" in a hidden node that aria-labelledby refers to is reported
+/// TS: `[no-aria-on-presentational-children-042]` aria-hidden="true" in a hidden node that aria-labelledby refers to is reported
 #[test]
-fn no_aria_on_presentational_children_issue_4408_029() {
-    const _ID: &str = "no-aria-on-presentational-children-issue-4408-029";
+fn no_aria_on_presentational_children_042() {
+    const _ID: &str = "no-aria-on-presentational-children-042";
     assert_attr_violations(
         &run_rule(
             r#"<div role="img" id="pic" hidden><span aria-hidden="true">x</span>Chart</div><figure aria-labelledby="pic"></figure>"#,
@@ -553,10 +553,10 @@ fn no_aria_on_presentational_children_issue_4408_029() {
     );
 }
 
-/// TS: `[no-aria-on-presentational-children-issue-4408-030]` aria-hidden="true" on an embedded control is not reported
+/// TS: `[no-aria-on-presentational-children-043]` aria-hidden="true" on an embedded control is not reported
 #[test]
-fn no_aria_on_presentational_children_issue_4408_030() {
-    const _ID: &str = "no-aria-on-presentational-children-issue-4408-030";
+fn no_aria_on_presentational_children_043() {
+    const _ID: &str = "no-aria-on-presentational-children-043";
     assert_attr_violations(
         &run_rule(
             r#"<div role="checkbox" aria-checked="false"><input type="text" aria-hidden="true" value="v">Flash</div>"#,
@@ -566,10 +566,10 @@ fn no_aria_on_presentational_children_issue_4408_030() {
     );
 }
 
-/// TS: `[no-aria-on-presentational-children-issue-4408-031]` aria-hidden="true" in a role named from author that aria-describedby refers to is not reported
+/// TS: `[no-aria-on-presentational-children-044]` aria-hidden="true" in a role named from author that aria-describedby refers to is not reported
 #[test]
-fn no_aria_on_presentational_children_issue_4408_031() {
-    const _ID: &str = "no-aria-on-presentational-children-issue-4408-031";
+fn no_aria_on_presentational_children_044() {
+    const _ID: &str = "no-aria-on-presentational-children-044";
     assert_attr_violations(
         &run_rule(
             r#"<div role="img" id="pic"><span aria-hidden="true">decor</span>Chart</div><figure aria-describedby="pic"></figure>"#,
@@ -579,10 +579,10 @@ fn no_aria_on_presentational_children_issue_4408_031() {
     );
 }
 
-/// TS: `[no-aria-on-presentational-children-issue-4408-032]` aria-label that a link outside the img reads is not reported
+/// TS: `[no-aria-on-presentational-children-045]` aria-label that a link outside the img reads is not reported
 #[test]
-fn no_aria_on_presentational_children_issue_4408_032() {
-    const _ID: &str = "no-aria-on-presentational-children-issue-4408-032";
+fn no_aria_on_presentational_children_045() {
+    const _ID: &str = "no-aria-on-presentational-children-045";
     assert_attr_violations(
         &run_rule(
             r##"<a href="#"><span role="img"><span aria-label="Home"></span></span></a>"##,
@@ -592,10 +592,10 @@ fn no_aria_on_presentational_children_issue_4408_032() {
     );
 }
 
-/// TS: `[no-aria-on-presentational-children-issue-4408-033]` a role that makes a child of a button a range control, and its value, are not reported
+/// TS: `[no-aria-on-presentational-children-046]` a role that makes a child of a button a range control, and its value, are not reported
 #[test]
-fn no_aria_on_presentational_children_issue_4408_033() {
-    const _ID: &str = "no-aria-on-presentational-children-issue-4408-033";
+fn no_aria_on_presentational_children_046() {
+    const _ID: &str = "no-aria-on-presentational-children-046";
     assert_attr_violations(
         &run_rule(
             r#"<button><span role="slider" aria-valuenow="5" aria-valuemin="0" aria-valuemax="10">volume</span></button>"#,
@@ -608,10 +608,10 @@ fn no_aria_on_presentational_children_issue_4408_033() {
     );
 }
 
-/// TS: `[no-aria-on-presentational-children-issue-4408-034]` aria-label that an aria-labelledby referring to its own element reads is not reported
+/// TS: `[no-aria-on-presentational-children-047]` aria-label that an aria-labelledby referring to its own element reads is not reported
 #[test]
-fn no_aria_on_presentational_children_issue_4408_034() {
-    const _ID: &str = "no-aria-on-presentational-children-issue-4408-034";
+fn no_aria_on_presentational_children_047() {
+    const _ID: &str = "no-aria-on-presentational-children-047";
     assert_attr_violations(
         &run_rule(
             r#"<button><span id="s" aria-labelledby="s" aria-label="Close"></span></button>"#,
@@ -621,10 +621,10 @@ fn no_aria_on_presentational_children_issue_4408_034() {
     );
 }
 
-/// TS: `[no-aria-on-presentational-children-issue-4408-035]` aria-hidden="true" that a control nested in the label reads is not reported
+/// TS: `[no-aria-on-presentational-children-048]` aria-hidden="true" that a control nested in the label reads is not reported
 #[test]
-fn no_aria_on_presentational_children_issue_4408_035() {
-    const _ID: &str = "no-aria-on-presentational-children-issue-4408-035";
+fn no_aria_on_presentational_children_048() {
+    const _ID: &str = "no-aria-on-presentational-children-048";
     assert_attr_violations(
         &run_rule(
             r#"<label for="x"><input id="a" type="checkbox"><span role="img"><svg aria-hidden="true"></svg>Text</span></label><input id="x">"#,
@@ -634,10 +634,10 @@ fn no_aria_on_presentational_children_issue_4408_035() {
     );
 }
 
-/// TS: `[no-aria-on-presentational-children-issue-4506-001]` a presentational ancestor outside of the content of a template is not an ancestor
+/// TS: `[no-aria-on-presentational-children-049]` a presentational ancestor outside of the content of a template is not an ancestor
 #[test]
-fn no_aria_on_presentational_children_issue_4506_001() {
-    const _ID: &str = "no-aria-on-presentational-children-issue-4506-001";
+fn no_aria_on_presentational_children_049() {
+    const _ID: &str = "no-aria-on-presentational-children-049";
     assert_attr_violations(
         &run_rule(
             r#"<div role="button"><template><span aria-describedby="d"></span></template></div><p id="d">d</p>"#,
@@ -647,10 +647,10 @@ fn no_aria_on_presentational_children_issue_4506_001() {
     );
 }
 
-/// TS: `[no-aria-on-presentational-children-issue-4506-002]` a presentational ancestor in the content of a template is an ancestor
+/// TS: `[no-aria-on-presentational-children-050]` a presentational ancestor in the content of a template is an ancestor
 #[test]
-fn no_aria_on_presentational_children_issue_4506_002() {
-    const _ID: &str = "no-aria-on-presentational-children-issue-4506-002";
+fn no_aria_on_presentational_children_050() {
+    const _ID: &str = "no-aria-on-presentational-children-050";
     assert_attr_violations(
         &run_rule(
             r#"<template><div role="button"><span aria-describedby="d"></span></div><p id="d">d</p></template>"#,
@@ -660,10 +660,10 @@ fn no_aria_on_presentational_children_issue_4506_002() {
     );
 }
 
-/// TS: `[no-aria-on-presentational-children-issue-4506-003]` the host of a declarative shadow root is an ancestor
+/// TS: `[no-aria-on-presentational-children-051]` the host of a declarative shadow root is an ancestor
 #[test]
-fn no_aria_on_presentational_children_issue_4506_003() {
-    const _ID: &str = "no-aria-on-presentational-children-issue-4506-003";
+fn no_aria_on_presentational_children_051() {
+    const _ID: &str = "no-aria-on-presentational-children-051";
     assert_attr_violations(
         &run_rule(
             r#"<div role="button"><template shadowrootmode="open"><span aria-describedby="d"></span></template></div>"#,
@@ -673,10 +673,10 @@ fn no_aria_on_presentational_children_issue_4506_003() {
     );
 }
 
-/// TS: `[no-aria-on-presentational-children-issue-4506-004]` a name reader outside of the content of a template does not read it
+/// TS: `[no-aria-on-presentational-children-052]` a name reader outside of the content of a template does not read it
 #[test]
-fn no_aria_on_presentational_children_issue_4506_004() {
-    const _ID: &str = "no-aria-on-presentational-children-issue-4506-004";
+fn no_aria_on_presentational_children_052() {
+    const _ID: &str = "no-aria-on-presentational-children-052";
     assert_attr_violations(
         &run_rule(
             r##"<a href="#"><template><div role="img"><span aria-label="x">y</span></div></template></a>"##,
@@ -686,10 +686,10 @@ fn no_aria_on_presentational_children_issue_4506_004() {
     );
 }
 
-/// TS: `[no-aria-on-presentational-children-issue-4506-005]` a name reader in the content of a template reads it
+/// TS: `[no-aria-on-presentational-children-053]` a name reader in the content of a template reads it
 #[test]
-fn no_aria_on_presentational_children_issue_4506_005() {
-    const _ID: &str = "no-aria-on-presentational-children-issue-4506-005";
+fn no_aria_on_presentational_children_053() {
+    const _ID: &str = "no-aria-on-presentational-children-053";
     assert_attr_violations(
         &run_rule(
             r##"<template><a href="#"><div role="img"><span aria-label="x">y</span></div></a></template>"##,

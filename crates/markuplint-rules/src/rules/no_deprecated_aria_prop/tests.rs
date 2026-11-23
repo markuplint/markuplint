@@ -1,8 +1,8 @@
 //! Tests for `no-deprecated-aria-prop` rule.
 //!
 //! Test ID mapping (TS → Rust):
-//!   no-deprecated-aria-prop-valid-001  → no_deprecated_aria_prop_valid_001
-//!   no-deprecated-aria-prop-valid-002  → no_deprecated_aria_prop_valid_002
+//!   no-deprecated-aria-prop-001  → no_deprecated_aria_prop_001
+//!   no-deprecated-aria-prop-002  → no_deprecated_aria_prop_002
 //!   v6_no_deprecated_aria_prop_001  — Rust-only: a property deprecated on the explicit role; default severity is warning
 //!   v6_no_deprecated_aria_prop_002  — Rust-only: a property deprecated on the implicit role (`article`)
 //!   v6_no_deprecated_aria_prop_003  — Rust-only: the computed role of `div` is `generic`
@@ -55,10 +55,10 @@ fn violation(
     (severity, line, col, message.to_string(), raw.to_string())
 }
 
-/// TS: `[no-deprecated-aria-prop-valid-001]`
+/// TS: `[no-deprecated-aria-prop-001]`
 #[test]
-fn no_deprecated_aria_prop_valid_001() {
-    const _ID: &str = "no-deprecated-aria-prop-valid-001";
+fn no_deprecated_aria_prop_001() {
+    const _ID: &str = "no-deprecated-aria-prop-001";
     assert_eq!(
         run(
             r#"<div role="button" aria-pressed="true"></div>"#,
@@ -68,10 +68,10 @@ fn no_deprecated_aria_prop_valid_001() {
     );
 }
 
-/// TS: `[no-deprecated-aria-prop-valid-002]`
+/// TS: `[no-deprecated-aria-prop-002]`
 #[test]
-fn no_deprecated_aria_prop_valid_002() {
-    const _ID: &str = "no-deprecated-aria-prop-valid-002";
+fn no_deprecated_aria_prop_002() {
+    const _ID: &str = "no-deprecated-aria-prop-002";
     assert_eq!(run("<div></div>", serde_json::json!(true)), vec![]);
 }
 

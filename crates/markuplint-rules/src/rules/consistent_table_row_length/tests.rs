@@ -1,38 +1,38 @@
 //! Tests for `consistent-table-row-length` rule.
 //!
 //! Test ID mapping (TS → Rust):
-//!   consistent-table-row-length-invalid-001  → consistent_table_row_length_invalid_001 (was `extra_columns_in_row`, `find_unexpected_cell_reports_at_td_position`)
-//!   consistent-table-row-length-invalid-002  → consistent_table_row_length_invalid_002
-//!   consistent-table-row-length-invalid-003  → consistent_table_row_length_invalid_003 (was `mismatched_column_count`)
-//!   consistent-table-row-length-invalid-004  → consistent_table_row_length_invalid_004
-//!   consistent-table-row-length-invalid-005  → consistent_table_row_length_invalid_005
-//!   consistent-table-row-length-invalid-006  → consistent_table_row_length_invalid_006
-//!   consistent-table-row-length-invalid-007  → consistent_table_row_length_invalid_007
-//!   consistent-table-row-length-invalid-008  → consistent_table_row_length_invalid_008
-//!   consistent-table-row-length-invalid-009  → consistent_table_row_length_invalid_009 (was `table_with_thead_tbody`, `thead_defines_base_column_count_over_tbody`)
-//!   consistent-table-row-length-invalid-010  → consistent_table_row_length_invalid_010
-//!   consistent-table-row-length-invalid-011  → consistent_table_row_length_invalid_011
-//!   consistent-table-row-length-invalid-012  → consistent_table_row_length_invalid_012
-//!   consistent-table-row-length-valid-001    → consistent_table_row_length_valid_001 (was `empty_table_no_violation`)
-//!   consistent-table-row-length-valid-002    → consistent_table_row_length_valid_002
-//!   consistent-table-row-length-valid-003    → consistent_table_row_length_valid_003
-//!   consistent-table-row-length-valid-004    → consistent_table_row_length_valid_004 (was `colspan_correct_count`)
-//!   consistent-table-row-length-valid-005    → consistent_table_row_length_valid_005 (was `rowspan_valid`)
-//!   consistent-table-row-length-valid-006    → consistent_table_row_length_valid_006
-//!   consistent-table-row-length-valid-007    → consistent_table_row_length_valid_007
-//!   consistent-table-row-length-valid-008    → consistent_table_row_length_valid_008 (was `valid_table_no_violations`)
-//!   consistent-table-row-length-valid-009    → consistent_table_row_length_valid_009
-//!   consistent-table-row-length-valid-010    → consistent_table_row_length_valid_010
-//!   consistent-table-row-length-valid-011    → consistent_table_row_length_valid_011
-//!   consistent-table-row-length-valid-012    → consistent_table_row_length_valid_012
-//!   consistent-table-row-length-valid-013    → consistent_table_row_length_valid_013
+//!   consistent-table-row-length-003  → consistent_table_row_length_003 (was `extra_columns_in_row`, `find_unexpected_cell_reports_at_td_position`)
+//!   consistent-table-row-length-004  → consistent_table_row_length_004
+//!   consistent-table-row-length-005  → consistent_table_row_length_005 (was `mismatched_column_count`)
+//!   consistent-table-row-length-006  → consistent_table_row_length_006
+//!   consistent-table-row-length-007  → consistent_table_row_length_007
+//!   consistent-table-row-length-008  → consistent_table_row_length_008
+//!   consistent-table-row-length-009  → consistent_table_row_length_009
+//!   consistent-table-row-length-010  → consistent_table_row_length_010
+//!   consistent-table-row-length-013  → consistent_table_row_length_013 (was `table_with_thead_tbody`, `thead_defines_base_column_count_over_tbody`)
+//!   consistent-table-row-length-021  → consistent_table_row_length_021
+//!   consistent-table-row-length-024  → consistent_table_row_length_024
+//!   consistent-table-row-length-025  → consistent_table_row_length_025
+//!   consistent-table-row-length-011    → consistent_table_row_length_011 (was `empty_table_no_violation`)
+//!   consistent-table-row-length-012    → consistent_table_row_length_012
+//!   consistent-table-row-length-014    → consistent_table_row_length_014
+//!   consistent-table-row-length-015    → consistent_table_row_length_015 (was `colspan_correct_count`)
+//!   consistent-table-row-length-016    → consistent_table_row_length_016 (was `rowspan_valid`)
+//!   consistent-table-row-length-017    → consistent_table_row_length_017
+//!   consistent-table-row-length-018    → consistent_table_row_length_018
+//!   consistent-table-row-length-019    → consistent_table_row_length_019 (was `valid_table_no_violations`)
+//!   consistent-table-row-length-020    → consistent_table_row_length_020
+//!   consistent-table-row-length-022    → consistent_table_row_length_022
+//!   consistent-table-row-length-023    → consistent_table_row_length_023
+//!   consistent-table-row-length-026    → consistent_table_row_length_026
+//!   consistent-table-row-length-027    → consistent_table_row_length_027
 //!   v6_consistent_table_row_length_001  — Rust-only: 3+ rows take the width closest to the average (was `three_rows_averaging_logic`)
 //!   v6_consistent_table_row_length_002  — Rust-only: `<tfoot>` decides the base width over `<tbody>`
 //!   v6_consistent_table_row_length_003  — Rust-only: an unparsable `colspan` counts as 1
 //!   v6_consistent_table_row_length_004  — Rust-only: a row without an anchored cell is left to `no-empty-table-track`
 //!   v6_consistent_table_row_length_005  — Rust-only: severity override and `rules: false`
 //!
-//! The pre-split `rowspan_overflow_in_thead_section` maps to `no-table-span-overflow-invalid-001`.
+//! The pre-split `rowspan_overflow_in_thead_section` maps to `no-table-span-overflow-001`.
 
 use crate::lint::{LintConfig, lint};
 use crate::violation::{Severity, Violation};
@@ -84,10 +84,10 @@ fn assert_violations(actual: &[Violation], expected: &[Expected<'_>]) {
     }
 }
 
-/// TS: `[consistent-table-row-length-invalid-001]`
+/// TS: `[consistent-table-row-length-003]`
 #[test]
-fn consistent_table_row_length_invalid_001() {
-    const _ID: &str = "consistent-table-row-length-invalid-001";
+fn consistent_table_row_length_003() {
+    const _ID: &str = "consistent-table-row-length-003";
     let violations = run(r#"
 <table>
   <tr>
@@ -105,10 +105,10 @@ fn consistent_table_row_length_invalid_001() {
     );
 }
 
-/// TS: `[consistent-table-row-length-invalid-002]`
+/// TS: `[consistent-table-row-length-004]`
 #[test]
-fn consistent_table_row_length_invalid_002() {
-    const _ID: &str = "consistent-table-row-length-invalid-002";
+fn consistent_table_row_length_004() {
+    const _ID: &str = "consistent-table-row-length-004";
     let violations = run(r#"
 <table>
   <tr>
@@ -133,10 +133,10 @@ fn consistent_table_row_length_invalid_002() {
     );
 }
 
-/// TS: `[consistent-table-row-length-invalid-003]`
+/// TS: `[consistent-table-row-length-005]`
 #[test]
-fn consistent_table_row_length_invalid_003() {
-    const _ID: &str = "consistent-table-row-length-invalid-003";
+fn consistent_table_row_length_005() {
+    const _ID: &str = "consistent-table-row-length-005";
     let violations = run(r#"
 <table>
   <tr>
@@ -161,10 +161,10 @@ fn consistent_table_row_length_invalid_003() {
     );
 }
 
-/// TS: `[consistent-table-row-length-invalid-004]`
+/// TS: `[consistent-table-row-length-006]`
 #[test]
-fn consistent_table_row_length_invalid_004() {
-    const _ID: &str = "consistent-table-row-length-invalid-004";
+fn consistent_table_row_length_006() {
+    const _ID: &str = "consistent-table-row-length-006";
     let violations = run(r#"
 <table>
   <tr>
@@ -196,10 +196,10 @@ fn consistent_table_row_length_invalid_004() {
     );
 }
 
-/// TS: `[consistent-table-row-length-invalid-005]`
+/// TS: `[consistent-table-row-length-007]`
 #[test]
-fn consistent_table_row_length_invalid_005() {
-    const _ID: &str = "consistent-table-row-length-invalid-005";
+fn consistent_table_row_length_007() {
+    const _ID: &str = "consistent-table-row-length-007";
     let violations = run(r#"
 <table>
   <tr>
@@ -224,10 +224,10 @@ fn consistent_table_row_length_invalid_005() {
     );
 }
 
-/// TS: `[consistent-table-row-length-invalid-006]`
+/// TS: `[consistent-table-row-length-008]`
 #[test]
-fn consistent_table_row_length_invalid_006() {
-    const _ID: &str = "consistent-table-row-length-invalid-006";
+fn consistent_table_row_length_008() {
+    const _ID: &str = "consistent-table-row-length-008";
     let violations = run(r#"
 <table>
   <tr class="missing1">
@@ -259,10 +259,10 @@ fn consistent_table_row_length_invalid_006() {
     );
 }
 
-/// TS: `[consistent-table-row-length-invalid-007]`
+/// TS: `[consistent-table-row-length-009]`
 #[test]
-fn consistent_table_row_length_invalid_007() {
-    const _ID: &str = "consistent-table-row-length-invalid-007";
+fn consistent_table_row_length_009() {
+    const _ID: &str = "consistent-table-row-length-009";
     let violations = run(r#"
 <table>
   <tr class="missing">
@@ -293,10 +293,10 @@ fn consistent_table_row_length_invalid_007() {
     );
 }
 
-/// TS: `[consistent-table-row-length-invalid-008]`
+/// TS: `[consistent-table-row-length-010]`
 #[test]
-fn consistent_table_row_length_invalid_008() {
-    const _ID: &str = "consistent-table-row-length-invalid-008";
+fn consistent_table_row_length_010() {
+    const _ID: &str = "consistent-table-row-length-010";
     let violations = run(r#"
 <table>
   <thead class="overflow">
@@ -339,10 +339,10 @@ fn consistent_table_row_length_invalid_008() {
     );
 }
 
-/// TS: `[consistent-table-row-length-valid-001]`
+/// TS: `[consistent-table-row-length-011]`
 #[test]
-fn consistent_table_row_length_valid_001() {
-    const _ID: &str = "consistent-table-row-length-valid-001";
+fn consistent_table_row_length_011() {
+    const _ID: &str = "consistent-table-row-length-011";
     let violations = run("
 <table>
 </table>
@@ -350,10 +350,10 @@ fn consistent_table_row_length_valid_001() {
     assert_violations(&violations, &[]);
 }
 
-/// TS: `[consistent-table-row-length-valid-002]`
+/// TS: `[consistent-table-row-length-012]`
 #[test]
-fn consistent_table_row_length_valid_002() {
-    const _ID: &str = "consistent-table-row-length-valid-002";
+fn consistent_table_row_length_012() {
+    const _ID: &str = "consistent-table-row-length-012";
     let violations = run(r"
 <table>
   <thead>
@@ -382,10 +382,10 @@ fn consistent_table_row_length_valid_002() {
     assert_violations(&violations, &[]);
 }
 
-/// TS: `[consistent-table-row-length-invalid-009]`
+/// TS: `[consistent-table-row-length-013]`
 #[test]
-fn consistent_table_row_length_invalid_009() {
-    const _ID: &str = "consistent-table-row-length-invalid-009";
+fn consistent_table_row_length_013() {
+    const _ID: &str = "consistent-table-row-length-013";
     let violations = run(r#"
 <table>
   <thead>
@@ -409,10 +409,10 @@ fn consistent_table_row_length_invalid_009() {
     );
 }
 
-/// TS: `[consistent-table-row-length-valid-003]`
+/// TS: `[consistent-table-row-length-014]`
 #[test]
-fn consistent_table_row_length_valid_003() {
-    const _ID: &str = "consistent-table-row-length-valid-003";
+fn consistent_table_row_length_014() {
+    const _ID: &str = "consistent-table-row-length-014";
     let violations = run(r#"
 <table>
   <tr>
@@ -432,10 +432,10 @@ fn consistent_table_row_length_valid_003() {
     assert_violations(&violations, &[]);
 }
 
-/// TS: `[consistent-table-row-length-valid-004]`
+/// TS: `[consistent-table-row-length-015]`
 #[test]
-fn consistent_table_row_length_valid_004() {
-    const _ID: &str = "consistent-table-row-length-valid-004";
+fn consistent_table_row_length_015() {
+    const _ID: &str = "consistent-table-row-length-015";
     let violations = run(r#"
 <table>
   <tr>
@@ -451,10 +451,10 @@ fn consistent_table_row_length_valid_004() {
     assert_violations(&violations, &[]);
 }
 
-/// TS: `[consistent-table-row-length-valid-005]`
+/// TS: `[consistent-table-row-length-016]`
 #[test]
-fn consistent_table_row_length_valid_005() {
-    const _ID: &str = "consistent-table-row-length-valid-005";
+fn consistent_table_row_length_016() {
+    const _ID: &str = "consistent-table-row-length-016";
     let violations = run(r#"
 <table>
   <tr>
@@ -471,10 +471,10 @@ fn consistent_table_row_length_valid_005() {
     assert_violations(&violations, &[]);
 }
 
-/// TS: `[consistent-table-row-length-valid-006]`
+/// TS: `[consistent-table-row-length-017]`
 #[test]
-fn consistent_table_row_length_valid_006() {
-    const _ID: &str = "consistent-table-row-length-valid-006";
+fn consistent_table_row_length_017() {
+    const _ID: &str = "consistent-table-row-length-017";
     let violations = run(r#"
 <table>
   <tr>
@@ -495,10 +495,10 @@ fn consistent_table_row_length_valid_006() {
     assert_violations(&violations, &[]);
 }
 
-/// TS: `[consistent-table-row-length-valid-007]`
+/// TS: `[consistent-table-row-length-018]`
 #[test]
-fn consistent_table_row_length_valid_007() {
-    const _ID: &str = "consistent-table-row-length-valid-007";
+fn consistent_table_row_length_018() {
+    const _ID: &str = "consistent-table-row-length-018";
     let violations = run(r#"
 <table>
   <tr>
@@ -514,10 +514,10 @@ fn consistent_table_row_length_valid_007() {
     assert_violations(&violations, &[]);
 }
 
-/// TS: `[consistent-table-row-length-valid-008]`
+/// TS: `[consistent-table-row-length-019]`
 #[test]
-fn consistent_table_row_length_valid_008() {
-    const _ID: &str = "consistent-table-row-length-valid-008";
+fn consistent_table_row_length_019() {
+    const _ID: &str = "consistent-table-row-length-019";
     let violations = run(r"
 <table>
   <tr>
@@ -555,10 +555,10 @@ fn consistent_table_row_length_valid_008() {
     assert_violations(&violations, &[]);
 }
 
-/// TS: `[consistent-table-row-length-valid-009]`
+/// TS: `[consistent-table-row-length-020]`
 #[test]
-fn consistent_table_row_length_valid_009() {
-    const _ID: &str = "consistent-table-row-length-valid-009";
+fn consistent_table_row_length_020() {
+    const _ID: &str = "consistent-table-row-length-020";
     let violations = run(r#"
 <table>
   <thead>
@@ -583,10 +583,10 @@ fn consistent_table_row_length_valid_009() {
     assert_violations(&violations, &[]);
 }
 
-/// TS: `[consistent-table-row-length-invalid-010]`
+/// TS: `[consistent-table-row-length-021]`
 #[test]
-fn consistent_table_row_length_invalid_010() {
-    const _ID: &str = "consistent-table-row-length-invalid-010";
+fn consistent_table_row_length_021() {
+    const _ID: &str = "consistent-table-row-length-021";
     let violations = run(r#"
 <table>
   <tr>
@@ -613,10 +613,10 @@ fn consistent_table_row_length_invalid_010() {
     assert_violations(&violations, &[(Severity::Warning, 20, 5, ONE_EXTRA, "<td>")]);
 }
 
-/// TS: `[consistent-table-row-length-valid-010]`
+/// TS: `[consistent-table-row-length-022]`
 #[test]
-fn consistent_table_row_length_valid_010() {
-    const _ID: &str = "consistent-table-row-length-valid-010";
+fn consistent_table_row_length_022() {
+    const _ID: &str = "consistent-table-row-length-022";
     let violations = run(r"
 <table>
   <tr>
@@ -627,10 +627,10 @@ fn consistent_table_row_length_valid_010() {
     assert_violations(&violations, &[]);
 }
 
-/// TS: `[consistent-table-row-length-valid-011]`
+/// TS: `[consistent-table-row-length-023]`
 #[test]
-fn consistent_table_row_length_valid_011() {
-    const _ID: &str = "consistent-table-row-length-valid-011";
+fn consistent_table_row_length_023() {
+    const _ID: &str = "consistent-table-row-length-023";
     let violations = run(r#"
 <table>
   <tr>
@@ -641,10 +641,10 @@ fn consistent_table_row_length_valid_011() {
     assert_violations(&violations, &[]);
 }
 
-/// TS: `[consistent-table-row-length-invalid-011]`
+/// TS: `[consistent-table-row-length-024]`
 #[test]
-fn consistent_table_row_length_invalid_011() {
-    const _ID: &str = "consistent-table-row-length-invalid-011";
+fn consistent_table_row_length_024() {
+    const _ID: &str = "consistent-table-row-length-024";
     let violations = run(r#"
 <table>
   <tr>
@@ -659,10 +659,10 @@ fn consistent_table_row_length_invalid_011() {
     assert_violations(&violations, &[(Severity::Warning, 8, 9, EXCEEDS, "colspan=\"2\"")]);
 }
 
-/// TS: `[consistent-table-row-length-invalid-012]`
+/// TS: `[consistent-table-row-length-025]`
 #[test]
-fn consistent_table_row_length_invalid_012() {
-    const _ID: &str = "consistent-table-row-length-invalid-012";
+fn consistent_table_row_length_025() {
+    const _ID: &str = "consistent-table-row-length-025";
     let violations = run(r#"
 <table>
   <tbody>
@@ -674,10 +674,10 @@ fn consistent_table_row_length_invalid_012() {
     assert_violations(&violations, &[(Severity::Warning, 5, 9, ONE_EXTRA, "<td>")]);
 }
 
-/// TS: `[consistent-table-row-length-valid-012]`
+/// TS: `[consistent-table-row-length-026]`
 #[test]
-fn consistent_table_row_length_valid_012() {
-    const _ID: &str = "consistent-table-row-length-valid-012";
+fn consistent_table_row_length_026() {
+    const _ID: &str = "consistent-table-row-length-026";
     let violations = run(r#"
 <table>
 <tr>
@@ -694,10 +694,10 @@ fn consistent_table_row_length_valid_012() {
     assert_violations(&violations, &[]);
 }
 
-/// TS: `[consistent-table-row-length-valid-013]`
+/// TS: `[consistent-table-row-length-027]`
 #[test]
-fn consistent_table_row_length_valid_013() {
-    const _ID: &str = "consistent-table-row-length-valid-013";
+fn consistent_table_row_length_027() {
+    const _ID: &str = "consistent-table-row-length-027";
     let violations = run(r"
 <table>
   <colgroup>

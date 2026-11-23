@@ -1,12 +1,12 @@
 //! Tests for `label-has-control` rule.
 //!
 //! Test ID mapping (TS → Rust):
-//!   label-has-control-invalid-001  → label_has_control_invalid_001
-//!   label-has-control-valid-002    → label_has_control_valid_002
-//!   label-has-control-valid-003    → label_has_control_valid_003
-//!   label-has-control-valid-004    → label_has_control_valid_004
-//!   v6_label_has_control_001       — Rust-only: label-has-control-issue-2392 (JSX) with custom elements
-//!   v6_label_has_control_002       — Rust-only: an empty label with the `as` attribute is reported
+//!   label-has-control-001     → label_has_control_001
+//!   label-has-control-003     → label_has_control_003
+//!   label-has-control-004     → label_has_control_004
+//!   label-has-control-005     → label_has_control_005
+//!   v6_label_has_control_001  — Rust-only: label-has-control-015 (JSX) with custom elements
+//!   v6_label_has_control_002  — Rust-only: an empty label with the `as` attribute is reported
 
 use crate::lint::{LintConfig, lint};
 use crate::violation::Severity;
@@ -29,10 +29,10 @@ fn spec() -> MLMLSpec {
     load_spec(include_str!("../../../../../packages/@markuplint/html-spec/index.json")).unwrap()
 }
 
-/// TS: `[label-has-control-invalid-001]` — No control
+/// TS: `[label-has-control-001]` — No control
 #[test]
-fn label_has_control_invalid_001() {
-    const _ID: &str = "label-has-control-invalid-001";
+fn label_has_control_001() {
+    const _ID: &str = "label-has-control-001";
     let arena = html_arena("<label>foo</label>");
     let spec = spec();
     // a11y category → default severity warning
@@ -52,11 +52,11 @@ fn label_has_control_invalid_001() {
     );
 }
 
-/// TS: `[label-has-control-valid-002]` — Multiple controls are still associated (excess controls
+/// TS: `[label-has-control-003]` — Multiple controls are still associated (excess controls
 /// are `label-no-multiple-controls`'s responsibility)
 #[test]
-fn label_has_control_valid_002() {
-    const _ID: &str = "label-has-control-valid-002";
+fn label_has_control_003() {
+    const _ID: &str = "label-has-control-003";
     let arena = html_arena("<label><input><select></select></label>");
     let spec = spec();
     let config: LintConfig = serde_json::from_value(serde_json::json!({
@@ -66,11 +66,11 @@ fn label_has_control_valid_002() {
     assert!(lint(&arena, &spec, &config).violations.is_empty());
 }
 
-/// TS: `[label-has-control-valid-003]` — The `for` attribute counts as an association even
+/// TS: `[label-has-control-004]` — The `for` attribute counts as an association even
 /// without descendants
 #[test]
-fn label_has_control_valid_003() {
-    const _ID: &str = "label-has-control-valid-003";
+fn label_has_control_004() {
+    const _ID: &str = "label-has-control-004";
     let arena = html_arena(r#"<label for="x">foo</label><input id="x">"#);
     let spec = spec();
     let config: LintConfig = serde_json::from_value(serde_json::json!({
@@ -88,18 +88,18 @@ fn run_pretended(html: &str, pretenders: serde_json::Value) -> Vec<crate::test_u
     )
 }
 
-/// TS: `[label-has-control-valid-004]` — The `as` attribute makes descendants known, and a
+/// TS: `[label-has-control-005]` — The `as` attribute makes descendants known, and a
 /// single control is associated
 #[test]
-fn label_has_control_valid_004() {
-    const _ID: &str = "label-has-control-valid-004";
+fn label_has_control_005() {
+    const _ID: &str = "label-has-control-005";
     assert_eq!(
         run_pretended(r#"<x-label as="label"><input></x-label>"#, serde_json::json!([])),
         []
     );
 }
 
-/// TS `[label-has-control-issue-2392]`: a label pretended by a pretender (no `as`
+/// TS `[label-has-control-015]`: a label pretended by a pretender (no `as`
 /// attribute) has unknown descendants, so it is not checked.
 #[test]
 fn v6_label_has_control_001() {

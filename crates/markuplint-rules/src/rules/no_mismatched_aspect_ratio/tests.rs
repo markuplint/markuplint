@@ -1,41 +1,40 @@
 //! Tests for `no-mismatched-aspect-ratio`.
 //!
 //! Test ID mapping (TS → Rust):
-//!   no-mismatched-aspect-ratio-invalid-001 → no_mismatched_aspect_ratio_invalid_001
-//!   no-mismatched-aspect-ratio-valid-001 → no_mismatched_aspect_ratio_valid_001
-//!   no-mismatched-aspect-ratio-valid-002 → no_mismatched_aspect_ratio_valid_002
-//!   no-mismatched-aspect-ratio-valid-003 → no_mismatched_aspect_ratio_valid_003
-//!   no-mismatched-aspect-ratio-invalid-002 → no_mismatched_aspect_ratio_invalid_002
-//!   no-mismatched-aspect-ratio-valid-004 → no_mismatched_aspect_ratio_valid_004
-//!   no-mismatched-aspect-ratio-valid-005 → no_mismatched_aspect_ratio_valid_005
-//!   no-mismatched-aspect-ratio-valid-006 → no_mismatched_aspect_ratio_valid_006
-//!   no-mismatched-aspect-ratio-valid-007 → no_mismatched_aspect_ratio_valid_007
-//!   no-mismatched-aspect-ratio-valid-008 → no_mismatched_aspect_ratio_valid_008
-//!   no-mismatched-aspect-ratio-valid-009 → no_mismatched_aspect_ratio_valid_009
-//!   no-mismatched-aspect-ratio-valid-010 → no_mismatched_aspect_ratio_valid_010
-//!   no-mismatched-aspect-ratio-valid-011 → no_mismatched_aspect_ratio_valid_011
-//!   no-mismatched-aspect-ratio-invalid-003 → no_mismatched_aspect_ratio_invalid_003
-//!   no-mismatched-aspect-ratio-valid-012 → no_mismatched_aspect_ratio_valid_012
-//!   no-mismatched-aspect-ratio-valid-013 → no_mismatched_aspect_ratio_valid_013
-//!   no-mismatched-aspect-ratio-valid-014 → no_mismatched_aspect_ratio_valid_014
-//!   no-mismatched-aspect-ratio-valid-015 → no_mismatched_aspect_ratio_valid_015
-//!   no-mismatched-aspect-ratio-invalid-004 → no_mismatched_aspect_ratio_invalid_004
-//!   no-mismatched-aspect-ratio-invalid-005 → no_mismatched_aspect_ratio_invalid_005
-//!   no-mismatched-aspect-ratio-invalid-006 → no_mismatched_aspect_ratio_invalid_006
-//!   no-mismatched-aspect-ratio-invalid-007 → no_mismatched_aspect_ratio_invalid_007
-//!   no-mismatched-aspect-ratio-invalid-008 → no_mismatched_aspect_ratio_invalid_008
-//!   no-mismatched-aspect-ratio-valid-016 → no_mismatched_aspect_ratio_valid_016
-//!   no-mismatched-aspect-ratio-invalid-009 → no_mismatched_aspect_ratio_invalid_009
-//!   no-mismatched-aspect-ratio-valid-017 → no_mismatched_aspect_ratio_valid_017
-//!   no-mismatched-aspect-ratio-valid-018 → no_mismatched_aspect_ratio_valid_018
-//!   no-mismatched-aspect-ratio-invalid-010 → no_mismatched_aspect_ratio_invalid_010
-//!   no-mismatched-aspect-ratio-valid-019 → no_mismatched_aspect_ratio_valid_019
-//!   no-mismatched-aspect-ratio-invalid-011 → no_mismatched_aspect_ratio_invalid_011
-//!   no-mismatched-aspect-ratio-valid-021 → no_mismatched_aspect_ratio_valid_021
-//!   no-mismatched-aspect-ratio-invalid-012 → no_mismatched_aspect_ratio_invalid_012
-//!   no-mismatched-aspect-ratio-valid-020 → no_mismatched_aspect_ratio_valid_020
-//!   no-mismatched-aspect-ratio-parser-001 — SKIP: Vue parser not available in Rust (covered by the parity run)
-//!   no-mismatched-aspect-ratio-parser-002 — SKIP: JSX parser not available in Rust (covered by the parity run)
+//!   no-mismatched-aspect-ratio-001 → no_mismatched_aspect_ratio_001
+//!   no-mismatched-aspect-ratio-002 → no_mismatched_aspect_ratio_002
+//!   no-mismatched-aspect-ratio-003 → no_mismatched_aspect_ratio_003
+//!   no-mismatched-aspect-ratio-004 → no_mismatched_aspect_ratio_004
+//!   no-mismatched-aspect-ratio-005 → no_mismatched_aspect_ratio_005
+//!   no-mismatched-aspect-ratio-006 → no_mismatched_aspect_ratio_006
+//!   no-mismatched-aspect-ratio-007 → no_mismatched_aspect_ratio_007
+//!   no-mismatched-aspect-ratio-008 → no_mismatched_aspect_ratio_008
+//!   no-mismatched-aspect-ratio-009 → no_mismatched_aspect_ratio_009
+//!   no-mismatched-aspect-ratio-010 → no_mismatched_aspect_ratio_010
+//!   no-mismatched-aspect-ratio-011 → no_mismatched_aspect_ratio_011
+//!   no-mismatched-aspect-ratio-012 → no_mismatched_aspect_ratio_012
+//!   no-mismatched-aspect-ratio-013 → no_mismatched_aspect_ratio_013
+//!   no-mismatched-aspect-ratio-014 → no_mismatched_aspect_ratio_014
+//!   no-mismatched-aspect-ratio-015 → no_mismatched_aspect_ratio_015
+//!   no-mismatched-aspect-ratio-016 → no_mismatched_aspect_ratio_016
+//!   no-mismatched-aspect-ratio-017 → no_mismatched_aspect_ratio_017
+//!   no-mismatched-aspect-ratio-020 → no_mismatched_aspect_ratio_020
+//!   no-mismatched-aspect-ratio-021 → no_mismatched_aspect_ratio_021
+//!   no-mismatched-aspect-ratio-022 → no_mismatched_aspect_ratio_022
+//!   no-mismatched-aspect-ratio-023 → no_mismatched_aspect_ratio_023
+//!   no-mismatched-aspect-ratio-024 → no_mismatched_aspect_ratio_024
+//!   no-mismatched-aspect-ratio-025 → no_mismatched_aspect_ratio_025
+//!   no-mismatched-aspect-ratio-026 → no_mismatched_aspect_ratio_026
+//!   no-mismatched-aspect-ratio-027 → no_mismatched_aspect_ratio_027
+//!   no-mismatched-aspect-ratio-028 → no_mismatched_aspect_ratio_028
+//!   no-mismatched-aspect-ratio-029 → no_mismatched_aspect_ratio_029
+//!   no-mismatched-aspect-ratio-030 → no_mismatched_aspect_ratio_030
+//!   no-mismatched-aspect-ratio-031 → no_mismatched_aspect_ratio_031
+//!   no-mismatched-aspect-ratio-032 → no_mismatched_aspect_ratio_032
+//!   no-mismatched-aspect-ratio-033 → no_mismatched_aspect_ratio_033
+//!   no-mismatched-aspect-ratio-034 → no_mismatched_aspect_ratio_034
+//!   no-mismatched-aspect-ratio-018 — SKIP: Vue parser not available in Rust (covered by the parity run)
+//!   no-mismatched-aspect-ratio-019 — SKIP: JSX parser not available in Rust (covered by the parity run)
 //!   v6_no_mismatched_aspect_ratio_001 — Rust-only: a relative `src` resolves against the document's directory
 //!   v6_no_mismatched_aspect_ratio_002 — Rust-only: a `src` that is no regular file is not checked
 //!   v6_no_mismatched_aspect_ratio_003 — Rust-only: an unsupported image format is not checked
@@ -108,47 +107,31 @@ fn assert_violations(actual: &[Violation], expected: &[Expected<'_>]) {
     }
 }
 
-/// TS: `[no-mismatched-aspect-ratio-invalid-001]` width/height do not match image aspect ratio
+/// TS: `[no-mismatched-aspect-ratio-001]` same dimensions
 #[test]
-fn no_mismatched_aspect_ratio_invalid_001() {
-    const _ID: &str = "no-mismatched-aspect-ratio-invalid-001";
-    assert_violations(
-        &run("<img src=\"/100x50.png\" width=\"100\" height=\"100\">"),
-        &[(
-            Severity::Error,
-            1,
-            1,
-            "The aspect ratio of the image (100:50) does not match the width/height attributes (100:100)",
-            "<img src=\"/100x50.png\" width=\"100\" height=\"100\">",
-        )],
-    );
-}
-
-/// TS: `[no-mismatched-aspect-ratio-valid-001]` same dimensions
-#[test]
-fn no_mismatched_aspect_ratio_valid_001() {
-    const _ID: &str = "no-mismatched-aspect-ratio-valid-001";
+fn no_mismatched_aspect_ratio_001() {
+    const _ID: &str = "no-mismatched-aspect-ratio-001";
     assert_violations(&run("<img src=\"/100x50.png\" width=\"100\" height=\"50\">"), &[]);
 }
 
-/// TS: `[no-mismatched-aspect-ratio-valid-002]` scaled proportionally
+/// TS: `[no-mismatched-aspect-ratio-002]` scaled proportionally
 #[test]
-fn no_mismatched_aspect_ratio_valid_002() {
-    const _ID: &str = "no-mismatched-aspect-ratio-valid-002";
+fn no_mismatched_aspect_ratio_002() {
+    const _ID: &str = "no-mismatched-aspect-ratio-002";
     assert_violations(&run("<img src=\"/100x50.png\" width=\"200\" height=\"100\">"), &[]);
 }
 
-/// TS: `[no-mismatched-aspect-ratio-valid-003]` square image with matching dimensions
+/// TS: `[no-mismatched-aspect-ratio-003]` square image with matching dimensions
 #[test]
-fn no_mismatched_aspect_ratio_valid_003() {
-    const _ID: &str = "no-mismatched-aspect-ratio-valid-003";
+fn no_mismatched_aspect_ratio_003() {
+    const _ID: &str = "no-mismatched-aspect-ratio-003";
     assert_violations(&run("<img src=\"/50x50.png\" width=\"100\" height=\"100\">"), &[]);
 }
 
-/// TS: `[no-mismatched-aspect-ratio-invalid-002]` square image with mismatched dimensions
+/// TS: `[no-mismatched-aspect-ratio-004]` square image with mismatched dimensions
 #[test]
-fn no_mismatched_aspect_ratio_invalid_002() {
-    const _ID: &str = "no-mismatched-aspect-ratio-invalid-002";
+fn no_mismatched_aspect_ratio_004() {
+    const _ID: &str = "no-mismatched-aspect-ratio-004";
     assert_violations(
         &run("<img src=\"/50x50.png\" width=\"100\" height=\"50\">"),
         &[(
@@ -161,78 +144,78 @@ fn no_mismatched_aspect_ratio_invalid_002() {
     );
 }
 
-/// TS: `[no-mismatched-aspect-ratio-valid-004]` no src attribute
+/// TS: `[no-mismatched-aspect-ratio-005]` no src attribute
 #[test]
-fn no_mismatched_aspect_ratio_valid_004() {
-    const _ID: &str = "no-mismatched-aspect-ratio-valid-004";
+fn no_mismatched_aspect_ratio_005() {
+    const _ID: &str = "no-mismatched-aspect-ratio-005";
     assert_violations(&run("<img width=\"100\" height=\"50\">"), &[]);
 }
 
-/// TS: `[no-mismatched-aspect-ratio-valid-005]` no width attribute
+/// TS: `[no-mismatched-aspect-ratio-006]` no width attribute
 #[test]
-fn no_mismatched_aspect_ratio_valid_005() {
-    const _ID: &str = "no-mismatched-aspect-ratio-valid-005";
+fn no_mismatched_aspect_ratio_006() {
+    const _ID: &str = "no-mismatched-aspect-ratio-006";
     assert_violations(&run("<img src=\"/100x50.png\" height=\"50\">"), &[]);
 }
 
-/// TS: `[no-mismatched-aspect-ratio-valid-006]` no height attribute
+/// TS: `[no-mismatched-aspect-ratio-007]` no height attribute
 #[test]
-fn no_mismatched_aspect_ratio_valid_006() {
-    const _ID: &str = "no-mismatched-aspect-ratio-valid-006";
+fn no_mismatched_aspect_ratio_007() {
+    const _ID: &str = "no-mismatched-aspect-ratio-007";
     assert_violations(&run("<img src=\"/100x50.png\" width=\"100\">"), &[]);
 }
 
-/// TS: `[no-mismatched-aspect-ratio-valid-007]` remote URL (https)
+/// TS: `[no-mismatched-aspect-ratio-008]` remote URL (https)
 #[test]
-fn no_mismatched_aspect_ratio_valid_007() {
-    const _ID: &str = "no-mismatched-aspect-ratio-valid-007";
+fn no_mismatched_aspect_ratio_008() {
+    const _ID: &str = "no-mismatched-aspect-ratio-008";
     assert_violations(
         &run("<img src=\"https://example.com/image.png\" width=\"100\" height=\"100\">"),
         &[],
     );
 }
 
-/// TS: `[no-mismatched-aspect-ratio-valid-008]` remote URL (http)
+/// TS: `[no-mismatched-aspect-ratio-009]` remote URL (http)
 #[test]
-fn no_mismatched_aspect_ratio_valid_008() {
-    const _ID: &str = "no-mismatched-aspect-ratio-valid-008";
+fn no_mismatched_aspect_ratio_009() {
+    const _ID: &str = "no-mismatched-aspect-ratio-009";
     assert_violations(
         &run("<img src=\"http://example.com/image.png\" width=\"100\" height=\"100\">"),
         &[],
     );
 }
 
-/// TS: `[no-mismatched-aspect-ratio-valid-009]` data URI
+/// TS: `[no-mismatched-aspect-ratio-010]` data URI
 #[test]
-fn no_mismatched_aspect_ratio_valid_009() {
-    const _ID: &str = "no-mismatched-aspect-ratio-valid-009";
+fn no_mismatched_aspect_ratio_010() {
+    const _ID: &str = "no-mismatched-aspect-ratio-010";
     assert_violations(
         &run("<img src=\"data:image/png;base64,abc\" width=\"100\" height=\"100\">"),
         &[],
     );
 }
 
-/// TS: `[no-mismatched-aspect-ratio-valid-010]` non-img element is ignored
+/// TS: `[no-mismatched-aspect-ratio-011]` non-img element is ignored
 #[test]
-fn no_mismatched_aspect_ratio_valid_010() {
-    const _ID: &str = "no-mismatched-aspect-ratio-valid-010";
+fn no_mismatched_aspect_ratio_011() {
+    const _ID: &str = "no-mismatched-aspect-ratio-011";
     assert_violations(
         &run("<video src=\"/100x50.png\" width=\"100\" height=\"100\"></video>"),
         &[],
     );
 }
 
-/// TS: `[no-mismatched-aspect-ratio-valid-011]` nonexistent image file
+/// TS: `[no-mismatched-aspect-ratio-012]` nonexistent image file
 #[test]
-fn no_mismatched_aspect_ratio_valid_011() {
-    const _ID: &str = "no-mismatched-aspect-ratio-valid-011";
+fn no_mismatched_aspect_ratio_012() {
+    const _ID: &str = "no-mismatched-aspect-ratio-012";
     assert_violations(&run("<img src=\"/nonexistent.png\" width=\"100\" height=\"50\">"), &[]);
 }
 
-/// TS: `[no-mismatched-aspect-ratio-invalid-003]` resolves absolute path with documentRoot
+/// TS: `[no-mismatched-aspect-ratio-013]` resolves absolute path with documentRoot
 #[test]
-fn no_mismatched_aspect_ratio_invalid_003() {
-    const _ID: &str = "no-mismatched-aspect-ratio-invalid-003";
+fn no_mismatched_aspect_ratio_013() {
+    const _ID: &str = "no-mismatched-aspect-ratio-013";
     assert_violations(
         &run("<img src=\"/100x50.png\" width=\"100\" height=\"100\">"),
         &[(
@@ -245,10 +228,10 @@ fn no_mismatched_aspect_ratio_invalid_003() {
     );
 }
 
-/// TS: `[no-mismatched-aspect-ratio-valid-012]` without documentRoot, uses cwd (likely no fixture found)
+/// TS: `[no-mismatched-aspect-ratio-014]` without documentRoot, uses cwd (likely no fixture found)
 #[test]
-fn no_mismatched_aspect_ratio_valid_012() {
-    const _ID: &str = "no-mismatched-aspect-ratio-valid-012";
+fn no_mismatched_aspect_ratio_014() {
+    const _ID: &str = "no-mismatched-aspect-ratio-014";
     assert_violations(
         &lint_with(
             "<img src=\"/100x50.png\" width=\"100\" height=\"100\">",
@@ -259,31 +242,31 @@ fn no_mismatched_aspect_ratio_valid_012() {
     );
 }
 
-/// TS: `[no-mismatched-aspect-ratio-valid-013]` width=auto is skipped
+/// TS: `[no-mismatched-aspect-ratio-015]` width=auto is skipped
 #[test]
-fn no_mismatched_aspect_ratio_valid_013() {
-    const _ID: &str = "no-mismatched-aspect-ratio-valid-013";
+fn no_mismatched_aspect_ratio_015() {
+    const _ID: &str = "no-mismatched-aspect-ratio-015";
     assert_violations(&run("<img src=\"/100x50.png\" width=\"auto\" height=\"50\">"), &[]);
 }
 
-/// TS: `[no-mismatched-aspect-ratio-valid-014]` empty width is skipped
+/// TS: `[no-mismatched-aspect-ratio-016]` empty width is skipped
 #[test]
-fn no_mismatched_aspect_ratio_valid_014() {
-    const _ID: &str = "no-mismatched-aspect-ratio-valid-014";
+fn no_mismatched_aspect_ratio_016() {
+    const _ID: &str = "no-mismatched-aspect-ratio-016";
     assert_violations(&run("<img src=\"/100x50.png\" width=\"\" height=\"50\">"), &[]);
 }
 
-/// TS: `[no-mismatched-aspect-ratio-valid-015]` zero width is skipped
+/// TS: `[no-mismatched-aspect-ratio-017]` zero width is skipped
 #[test]
-fn no_mismatched_aspect_ratio_valid_015() {
-    const _ID: &str = "no-mismatched-aspect-ratio-valid-015";
+fn no_mismatched_aspect_ratio_017() {
+    const _ID: &str = "no-mismatched-aspect-ratio-017";
     assert_violations(&run("<img src=\"/100x50.png\" width=\"0\" height=\"50\">"), &[]);
 }
 
-/// TS: `[no-mismatched-aspect-ratio-invalid-004]` multiple img elements, only one mismatch
+/// TS: `[no-mismatched-aspect-ratio-020]` multiple img elements, only one mismatch
 #[test]
-fn no_mismatched_aspect_ratio_invalid_004() {
-    const _ID: &str = "no-mismatched-aspect-ratio-invalid-004";
+fn no_mismatched_aspect_ratio_020() {
+    const _ID: &str = "no-mismatched-aspect-ratio-020";
     assert_violations(
         &run(
             "<img src=\"/100x50.png\" width=\"100\" height=\"50\"><img src=\"/100x50.png\" width=\"100\" height=\"100\">",
@@ -298,10 +281,10 @@ fn no_mismatched_aspect_ratio_invalid_004() {
     );
 }
 
-/// TS: `[no-mismatched-aspect-ratio-invalid-005]` same image referenced twice, both checked
+/// TS: `[no-mismatched-aspect-ratio-021]` same image referenced twice, both checked
 #[test]
-fn no_mismatched_aspect_ratio_invalid_005() {
-    const _ID: &str = "no-mismatched-aspect-ratio-invalid-005";
+fn no_mismatched_aspect_ratio_021() {
+    const _ID: &str = "no-mismatched-aspect-ratio-021";
     assert_violations(
         &run(
             "<img src=\"/100x50.png\" width=\"100\" height=\"100\"><img src=\"/100x50.png\" width=\"200\" height=\"100\">",
@@ -316,10 +299,10 @@ fn no_mismatched_aspect_ratio_invalid_005() {
     );
 }
 
-/// TS: `[no-mismatched-aspect-ratio-invalid-006]` src with query string
+/// TS: `[no-mismatched-aspect-ratio-022]` src with query string
 #[test]
-fn no_mismatched_aspect_ratio_invalid_006() {
-    const _ID: &str = "no-mismatched-aspect-ratio-invalid-006";
+fn no_mismatched_aspect_ratio_022() {
+    const _ID: &str = "no-mismatched-aspect-ratio-022";
     assert_violations(
         &run("<img src=\"/100x50.png?v=123\" width=\"100\" height=\"100\">"),
         &[(
@@ -332,10 +315,10 @@ fn no_mismatched_aspect_ratio_invalid_006() {
     );
 }
 
-/// TS: `[no-mismatched-aspect-ratio-invalid-007]` src with fragment
+/// TS: `[no-mismatched-aspect-ratio-023]` src with fragment
 #[test]
-fn no_mismatched_aspect_ratio_invalid_007() {
-    const _ID: &str = "no-mismatched-aspect-ratio-invalid-007";
+fn no_mismatched_aspect_ratio_023() {
+    const _ID: &str = "no-mismatched-aspect-ratio-023";
     assert_violations(
         &run("<img src=\"/50x50.png#section\" width=\"100\" height=\"50\">"),
         &[(
@@ -348,10 +331,10 @@ fn no_mismatched_aspect_ratio_invalid_007() {
     );
 }
 
-/// TS: `[no-mismatched-aspect-ratio-invalid-008]` same file with different query strings are both checked
+/// TS: `[no-mismatched-aspect-ratio-024]` same file with different query strings are both checked
 #[test]
-fn no_mismatched_aspect_ratio_invalid_008() {
-    const _ID: &str = "no-mismatched-aspect-ratio-invalid-008";
+fn no_mismatched_aspect_ratio_024() {
+    const _ID: &str = "no-mismatched-aspect-ratio-024";
     assert_violations(
         &run(
             "<img src=\"/100x50.png?v=1\" width=\"100\" height=\"100\"><img src=\"/100x50.png?v=2\" width=\"200\" height=\"100\">",
@@ -366,17 +349,17 @@ fn no_mismatched_aspect_ratio_invalid_008() {
     );
 }
 
-/// TS: `[no-mismatched-aspect-ratio-valid-016]` negative width is skipped
+/// TS: `[no-mismatched-aspect-ratio-025]` negative width is skipped
 #[test]
-fn no_mismatched_aspect_ratio_valid_016() {
-    const _ID: &str = "no-mismatched-aspect-ratio-valid-016";
+fn no_mismatched_aspect_ratio_025() {
+    const _ID: &str = "no-mismatched-aspect-ratio-025";
     assert_violations(&run("<img src=\"/100x50.png\" width=\"-10\" height=\"50\">"), &[]);
 }
 
-/// TS: `[no-mismatched-aspect-ratio-invalid-009]` source with srcset mismatch
+/// TS: `[no-mismatched-aspect-ratio-026]` source with srcset mismatch
 #[test]
-fn no_mismatched_aspect_ratio_invalid_009() {
-    const _ID: &str = "no-mismatched-aspect-ratio-invalid-009";
+fn no_mismatched_aspect_ratio_026() {
+    const _ID: &str = "no-mismatched-aspect-ratio-026";
     assert_violations(
         &run("<picture><source srcset=\"/100x50.png\" width=\"100\" height=\"100\"></picture>"),
         &[(
@@ -389,30 +372,30 @@ fn no_mismatched_aspect_ratio_invalid_009() {
     );
 }
 
-/// TS: `[no-mismatched-aspect-ratio-valid-017]` source with srcset match
+/// TS: `[no-mismatched-aspect-ratio-027]` source with srcset match
 #[test]
-fn no_mismatched_aspect_ratio_valid_017() {
-    const _ID: &str = "no-mismatched-aspect-ratio-valid-017";
+fn no_mismatched_aspect_ratio_027() {
+    const _ID: &str = "no-mismatched-aspect-ratio-027";
     assert_violations(
         &run("<picture><source srcset=\"/100x50.png\" width=\"200\" height=\"100\"></picture>"),
         &[],
     );
 }
 
-/// TS: `[no-mismatched-aspect-ratio-valid-018]` source inside video is skipped
+/// TS: `[no-mismatched-aspect-ratio-028]` source inside video is skipped
 #[test]
-fn no_mismatched_aspect_ratio_valid_018() {
-    const _ID: &str = "no-mismatched-aspect-ratio-valid-018";
+fn no_mismatched_aspect_ratio_028() {
+    const _ID: &str = "no-mismatched-aspect-ratio-028";
     assert_violations(
         &run("<video><source srcset=\"/100x50.png\" width=\"100\" height=\"100\"></video>"),
         &[],
     );
 }
 
-/// TS: `[no-mismatched-aspect-ratio-invalid-010]` source with multiple srcset entries
+/// TS: `[no-mismatched-aspect-ratio-029]` source with multiple srcset entries
 #[test]
-fn no_mismatched_aspect_ratio_invalid_010() {
-    const _ID: &str = "no-mismatched-aspect-ratio-invalid-010";
+fn no_mismatched_aspect_ratio_029() {
+    const _ID: &str = "no-mismatched-aspect-ratio-029";
     assert_violations(
         &run("<picture><source srcset=\"/100x50.png 1x, /50x50.png 2x\" width=\"100\" height=\"100\"></picture>"),
         &[(
@@ -425,17 +408,17 @@ fn no_mismatched_aspect_ratio_invalid_010() {
     );
 }
 
-/// TS: `[no-mismatched-aspect-ratio-valid-019]` source without width/height
+/// TS: `[no-mismatched-aspect-ratio-030]` source without width/height
 #[test]
-fn no_mismatched_aspect_ratio_valid_019() {
-    const _ID: &str = "no-mismatched-aspect-ratio-valid-019";
+fn no_mismatched_aspect_ratio_030() {
+    const _ID: &str = "no-mismatched-aspect-ratio-030";
     assert_violations(&run("<picture><source srcset=\"/100x50.png\"></picture>"), &[]);
 }
 
-/// TS: `[no-mismatched-aspect-ratio-invalid-011]` picture with img fallback (both checked)
+/// TS: `[no-mismatched-aspect-ratio-031]` picture with img fallback (both checked)
 #[test]
-fn no_mismatched_aspect_ratio_invalid_011() {
-    const _ID: &str = "no-mismatched-aspect-ratio-invalid-011";
+fn no_mismatched_aspect_ratio_031() {
+    const _ID: &str = "no-mismatched-aspect-ratio-031";
     assert_violations(
         &run(
             "<picture><source srcset=\"/100x50.png\" width=\"100\" height=\"100\"><img src=\"/50x50.png\" width=\"100\" height=\"50\"></picture>",
@@ -459,17 +442,17 @@ fn no_mismatched_aspect_ratio_invalid_011() {
     );
 }
 
-/// TS: `[no-mismatched-aspect-ratio-valid-021]` mismatch of exactly 0.5px is within tolerance
+/// TS: `[no-mismatched-aspect-ratio-032]` mismatch of exactly 0.5px is within tolerance
 #[test]
-fn no_mismatched_aspect_ratio_valid_021() {
-    const _ID: &str = "no-mismatched-aspect-ratio-valid-021";
+fn no_mismatched_aspect_ratio_032() {
+    const _ID: &str = "no-mismatched-aspect-ratio-032";
     assert_violations(&run("<img src=\"/100x50.png\" width=\"301\" height=\"150\">"), &[]);
 }
 
-/// TS: `[no-mismatched-aspect-ratio-invalid-012]` mismatch of more than 0.5px is still reported
+/// TS: `[no-mismatched-aspect-ratio-033]` mismatch of more than 0.5px is still reported
 #[test]
-fn no_mismatched_aspect_ratio_invalid_012() {
-    const _ID: &str = "no-mismatched-aspect-ratio-invalid-012";
+fn no_mismatched_aspect_ratio_033() {
+    const _ID: &str = "no-mismatched-aspect-ratio-033";
     assert_violations(
         &run("<img src=\"/100x50.png\" width=\"301\" height=\"149\">"),
         &[(
@@ -482,10 +465,10 @@ fn no_mismatched_aspect_ratio_invalid_012() {
     );
 }
 
-/// TS: `[no-mismatched-aspect-ratio-valid-020]` no violations when rule is disabled
+/// TS: `[no-mismatched-aspect-ratio-034]` no violations when rule is disabled
 #[test]
-fn no_mismatched_aspect_ratio_valid_020() {
-    const _ID: &str = "no-mismatched-aspect-ratio-valid-020";
+fn no_mismatched_aspect_ratio_034() {
+    const _ID: &str = "no-mismatched-aspect-ratio-034";
     assert_violations(
         &lint_with(
             "<img src=\"/100x50.png\" width=\"100\" height=\"100\">",

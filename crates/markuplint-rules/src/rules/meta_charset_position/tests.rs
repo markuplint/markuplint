@@ -1,10 +1,10 @@
 //! Tests for `meta-charset-position` rule.
 //!
 //! Test ID mapping (TS → Rust):
-//!   meta-charset-position-invalid-001  → meta_charset_position_invalid_001
-//!   meta-charset-position-invalid-002  → meta_charset_position_invalid_002
-//!   meta-charset-position-valid-001    → meta_charset_position_valid_001
-//!   meta-charset-position-valid-002    → meta_charset_position_valid_002
+//!   meta-charset-position-001  → meta_charset_position_001
+//!   meta-charset-position-002  → meta_charset_position_002
+//!   meta-charset-position-003    → meta_charset_position_003
+//!   meta-charset-position-004    → meta_charset_position_004
 //!   v6_meta_charset_position_001  — Rust-only: the limit counts UTF-8 bytes, not characters
 //!   v6_meta_charset_position_002  — Rust-only: a declaration that starts within the limit is not reported
 //!   v6_meta_charset_position_003  — Rust-only: `http-equiv` matches `content-type` case-insensitively only
@@ -19,10 +19,10 @@ fn run(html: &str) -> Vec<Brief> {
     lint_brief(RULE, html, serde_json::json!({ "rules": { RULE: true } }))
 }
 
-/// TS: `[meta-charset-position-invalid-001]` meta charset serialized after the first 1024 bytes
+/// TS: `[meta-charset-position-001]` meta charset serialized after the first 1024 bytes
 #[test]
-fn meta_charset_position_invalid_001() {
-    const _ID: &str = "meta-charset-position-invalid-001";
+fn meta_charset_position_001() {
+    const _ID: &str = "meta-charset-position-001";
     let padding = "#".repeat(1002);
     let code = format!("<!doctype html><!--{padding}--><meta charset=utf-8>");
     let meta_offset = u32::try_from(code.find("<meta").unwrap()).unwrap();
@@ -38,10 +38,10 @@ fn meta_charset_position_invalid_001() {
     );
 }
 
-/// TS: `[meta-charset-position-invalid-002]` meta http-equiv content-type serialized after the first 1024 bytes
+/// TS: `[meta-charset-position-002]` meta http-equiv content-type serialized after the first 1024 bytes
 #[test]
-fn meta_charset_position_invalid_002() {
-    const _ID: &str = "meta-charset-position-invalid-002";
+fn meta_charset_position_002() {
+    const _ID: &str = "meta-charset-position-002";
     let padding = "#".repeat(1002);
     let code = format!(
         r#"<!doctype html><!--{padding}--><meta http-equiv="Content-Type" content="text/html; charset=utf-8">"#
@@ -58,19 +58,19 @@ fn meta_charset_position_invalid_002() {
     );
 }
 
-/// TS: `[meta-charset-position-valid-001]` meta charset within the first 1024 bytes
+/// TS: `[meta-charset-position-003]` meta charset within the first 1024 bytes
 #[test]
-fn meta_charset_position_valid_001() {
-    const _ID: &str = "meta-charset-position-valid-001";
+fn meta_charset_position_003() {
+    const _ID: &str = "meta-charset-position-003";
     let padding = "#".repeat(1001);
     let code = format!("<!doctype html><!--{padding}--><meta charset=utf-8>");
     assert_eq!(run(&code), []);
 }
 
-/// TS: `[meta-charset-position-valid-002]` no character encoding declaration present
+/// TS: `[meta-charset-position-004]` no character encoding declaration present
 #[test]
-fn meta_charset_position_valid_002() {
-    const _ID: &str = "meta-charset-position-valid-002";
+fn meta_charset_position_004() {
+    const _ID: &str = "meta-charset-position-004";
     assert_eq!(run("<!doctype html><title>no charset</title>"), []);
 }
 

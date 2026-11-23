@@ -1,22 +1,22 @@
 //! Tests for `no-prohibited-naming` rule.
 //!
 //! Test ID mapping (TS → Rust):
-//!   no-prohibited-naming-valid-001          → no_prohibited_naming_valid_001
-//!   no-prohibited-naming-issue-3630-001     → no_prohibited_naming_issue_3630_001
-//!   no-prohibited-naming-issue-3630-002     → no_prohibited_naming_issue_3630_002
-//!   no-prohibited-naming-issue-3630-003     → no_prohibited_naming_issue_3630_003
-//!   no-prohibited-naming-issue-3630-004     → no_prohibited_naming_issue_3630_004
-//!   no-prohibited-naming-issue-3630-005     → no_prohibited_naming_issue_3630_005
-//!   no-prohibited-naming-issue-3630-006     → no_prohibited_naming_issue_3630_006
-//!   no-prohibited-naming-issue-3630-007     → no_prohibited_naming_issue_3630_007
-//!   no-prohibited-naming-issue-3630-008     → no_prohibited_naming_issue_3630_008
-//!   no-prohibited-naming-issue-3630-009     → no_prohibited_naming_issue_3630_009
-//!   no-prohibited-naming-issue-3630-010     → no_prohibited_naming_issue_3630_010
-//!   no-prohibited-naming-issue-3630-011     → no_prohibited_naming_issue_3630_011
-//!   no-prohibited-naming-issue-3630-012     → no_prohibited_naming_issue_3630_012
-//!   no-prohibited-naming-issue-3630-013     → no_prohibited_naming_issue_3630_013
-//!   no-prohibited-naming-issue-3630-014     → no_prohibited_naming_issue_3630_014
-//!   no-prohibited-naming-issue-3630-015     → no_prohibited_naming_issue_3630_015
+//!   no-prohibited-naming-001          → no_prohibited_naming_001
+//!   no-prohibited-naming-002     → no_prohibited_naming_002
+//!   no-prohibited-naming-003     → no_prohibited_naming_003
+//!   no-prohibited-naming-004     → no_prohibited_naming_004
+//!   no-prohibited-naming-005     → no_prohibited_naming_005
+//!   no-prohibited-naming-006     → no_prohibited_naming_006
+//!   no-prohibited-naming-007     → no_prohibited_naming_007
+//!   no-prohibited-naming-008     → no_prohibited_naming_008
+//!   no-prohibited-naming-009     → no_prohibited_naming_009
+//!   no-prohibited-naming-010     → no_prohibited_naming_010
+//!   no-prohibited-naming-011     → no_prohibited_naming_011
+//!   no-prohibited-naming-012     → no_prohibited_naming_012
+//!   no-prohibited-naming-013     → no_prohibited_naming_013
+//!   no-prohibited-naming-014     → no_prohibited_naming_014
+//!   no-prohibited-naming-015     → no_prohibited_naming_015
+//!   no-prohibited-naming-016     → no_prohibited_naming_016
 //!   v6_no_prohibited_naming_001  — Rust-only: every naming attribute on one element is reported
 //!   v6_no_prohibited_naming_002  — Rust-only: the element name is reported in lower case
 //!   v6_no_prohibited_naming_003  — Rust-only: a naming attribute written in upper case is checked
@@ -24,7 +24,7 @@
 //!   v6_no_prohibited_naming_005  — Rust-only: a computed role lifts it, and elements without a naming prohibition
 //!   v6_no_prohibited_naming_006  — Rust-only: severity and `rules: false`
 //!
-//! `no-prohibited-naming-issue-3630-015` names `aria-prop-requires-role` in its config too; that
+//! `no-prohibited-naming-016` names `aria-prop-requires-role` in its config too; that
 //! rule is ported separately, so here the config enables it and it is simply not registered yet.
 //! The assertion (no violation at all) is the TS one.
 
@@ -73,18 +73,18 @@ fn assert_violations(actual: &[Violation], expected: &[Expected<'_>]) {
     }
 }
 
-/// TS: `[no-prohibited-naming-valid-001]`
+/// TS: `[no-prohibited-naming-001]`
 #[test]
-fn no_prohibited_naming_valid_001() {
-    const _ID: &str = "no-prohibited-naming-valid-001";
+fn no_prohibited_naming_001() {
+    const _ID: &str = "no-prohibited-naming-001";
     let violations = run_rule(r#"<div aria-label="x">y</div>"#, serde_json::json!(true));
     assert_violations(&violations, &[]);
 }
 
-/// TS: `[no-prohibited-naming-issue-3630-001]`
+/// TS: `[no-prohibited-naming-002]`
 #[test]
-fn no_prohibited_naming_issue_3630_001() {
-    const _ID: &str = "no-prohibited-naming-issue-3630-001";
+fn no_prohibited_naming_002() {
+    const _ID: &str = "no-prohibited-naming-002";
     let violations = run_rule(r#"<cite aria-label="x">y</cite>"#, serde_json::json!(true));
     assert_violations(
         &violations,
@@ -98,10 +98,10 @@ fn no_prohibited_naming_issue_3630_001() {
     );
 }
 
-/// TS: `[no-prohibited-naming-issue-3630-002]`
+/// TS: `[no-prohibited-naming-003]`
 #[test]
-fn no_prohibited_naming_issue_3630_002() {
-    const _ID: &str = "no-prohibited-naming-issue-3630-002";
+fn no_prohibited_naming_003() {
+    const _ID: &str = "no-prohibited-naming-003";
     let violations = run_rule(r#"<abbr aria-labelledby="x">y</abbr>"#, serde_json::json!(true));
     assert_violations(
         &violations,
@@ -115,10 +115,10 @@ fn no_prohibited_naming_issue_3630_002() {
     );
 }
 
-/// TS: `[no-prohibited-naming-issue-3630-003]`
+/// TS: `[no-prohibited-naming-004]`
 #[test]
-fn no_prohibited_naming_issue_3630_003() {
-    const _ID: &str = "no-prohibited-naming-issue-3630-003";
+fn no_prohibited_naming_004() {
+    const _ID: &str = "no-prohibited-naming-004";
     let violations = run_rule(
         r#"<figcaption aria-braillelabel="x">y</figcaption>"#,
         serde_json::json!(true),
@@ -135,10 +135,10 @@ fn no_prohibited_naming_issue_3630_003() {
     );
 }
 
-/// TS: `[no-prohibited-naming-issue-3630-004]`
+/// TS: `[no-prohibited-naming-005]`
 #[test]
-fn no_prohibited_naming_issue_3630_004() {
-    const _ID: &str = "no-prohibited-naming-issue-3630-004";
+fn no_prohibited_naming_005() {
+    const _ID: &str = "no-prohibited-naming-005";
     let violations = run_rule(
         r#"<cite role="button" aria-label="x">y</cite>"#,
         serde_json::json!(true),
@@ -146,18 +146,18 @@ fn no_prohibited_naming_issue_3630_004() {
     assert_violations(&violations, &[]);
 }
 
-/// TS: `[no-prohibited-naming-issue-3630-005]`
+/// TS: `[no-prohibited-naming-006]`
 #[test]
-fn no_prohibited_naming_issue_3630_005() {
-    const _ID: &str = "no-prohibited-naming-issue-3630-005";
+fn no_prohibited_naming_006() {
+    const _ID: &str = "no-prohibited-naming-006";
     let violations = run_rule(r#"<cite aria-hidden="true">y</cite>"#, serde_json::json!(true));
     assert_violations(&violations, &[]);
 }
 
-/// TS: `[no-prohibited-naming-issue-3630-006]`
+/// TS: `[no-prohibited-naming-007]`
 #[test]
-fn no_prohibited_naming_issue_3630_006() {
-    const _ID: &str = "no-prohibited-naming-issue-3630-006";
+fn no_prohibited_naming_007() {
+    const _ID: &str = "no-prohibited-naming-007";
     // The TS test loops over the nine elements; each `col` is `name.length + 3`.
     let cases: [(&str, u32); 9] = [
         ("abbr", 7),
@@ -180,10 +180,10 @@ fn no_prohibited_naming_issue_3630_006() {
     }
 }
 
-/// TS: `[no-prohibited-naming-issue-3630-007]`
+/// TS: `[no-prohibited-naming-008]`
 #[test]
-fn no_prohibited_naming_issue_3630_007() {
-    const _ID: &str = "no-prohibited-naming-issue-3630-007";
+fn no_prohibited_naming_008() {
+    const _ID: &str = "no-prohibited-naming-008";
     let violations = run_rule(r#"<label aria-label="x">text</label>"#, serde_json::json!(true));
     assert_violations(
         &violations,
@@ -197,10 +197,10 @@ fn no_prohibited_naming_issue_3630_007() {
     );
 }
 
-/// TS: `[no-prohibited-naming-issue-3630-008]`
+/// TS: `[no-prohibited-naming-009]`
 #[test]
-fn no_prohibited_naming_issue_3630_008() {
-    const _ID: &str = "no-prohibited-naming-issue-3630-008";
+fn no_prohibited_naming_009() {
+    const _ID: &str = "no-prohibited-naming-009";
     let violations = run_rule(
         r#"<cite role="invalid-role" aria-label="x">y</cite>"#,
         serde_json::json!(true),
@@ -217,10 +217,10 @@ fn no_prohibited_naming_issue_3630_008() {
     );
 }
 
-/// TS: `[no-prohibited-naming-issue-3630-009]`
+/// TS: `[no-prohibited-naming-010]`
 #[test]
-fn no_prohibited_naming_issue_3630_009() {
-    const _ID: &str = "no-prohibited-naming-issue-3630-009";
+fn no_prohibited_naming_010() {
+    const _ID: &str = "no-prohibited-naming-010";
     let violations = run_rule(r#"<cite role="" aria-label="x">y</cite>"#, serde_json::json!(true));
     assert_violations(
         &violations,
@@ -234,10 +234,10 @@ fn no_prohibited_naming_issue_3630_009() {
     );
 }
 
-/// TS: `[no-prohibited-naming-issue-3630-010]`
+/// TS: `[no-prohibited-naming-011]`
 #[test]
-fn no_prohibited_naming_issue_3630_010() {
-    const _ID: &str = "no-prohibited-naming-issue-3630-010";
+fn no_prohibited_naming_011() {
+    const _ID: &str = "no-prohibited-naming-011";
     let violations = run_rule(r#"<my-widget aria-label="x">y</my-widget>"#, serde_json::json!(true));
     assert_violations(
         &violations,
@@ -251,10 +251,10 @@ fn no_prohibited_naming_issue_3630_010() {
     );
 }
 
-/// TS: `[no-prohibited-naming-issue-3630-011]`
+/// TS: `[no-prohibited-naming-012]`
 #[test]
-fn no_prohibited_naming_issue_3630_011() {
-    const _ID: &str = "no-prohibited-naming-issue-3630-011";
+fn no_prohibited_naming_012() {
+    const _ID: &str = "no-prohibited-naming-012";
     let violations = run_rule(
         r#"<my-widget role="button" aria-label="x">y</my-widget>"#,
         serde_json::json!(true),
@@ -262,10 +262,10 @@ fn no_prohibited_naming_issue_3630_011() {
     assert_violations(&violations, &[]);
 }
 
-/// TS: `[no-prohibited-naming-issue-3630-012]`
+/// TS: `[no-prohibited-naming-013]`
 #[test]
-fn no_prohibited_naming_issue_3630_012() {
-    const _ID: &str = "no-prohibited-naming-issue-3630-012";
+fn no_prohibited_naming_013() {
+    const _ID: &str = "no-prohibited-naming-013";
     let violations = run_rule(
         r#"<my-widget aria-hidden="true">y</my-widget>"#,
         serde_json::json!(true),
@@ -273,10 +273,10 @@ fn no_prohibited_naming_issue_3630_012() {
     assert_violations(&violations, &[]);
 }
 
-/// TS: `[no-prohibited-naming-issue-3630-013]`
+/// TS: `[no-prohibited-naming-014]`
 #[test]
-fn no_prohibited_naming_issue_3630_013() {
-    const _ID: &str = "no-prohibited-naming-issue-3630-013";
+fn no_prohibited_naming_014() {
+    const _ID: &str = "no-prohibited-naming-014";
     let violations = run_rule(
         r#"<my-widget role="presentation" aria-label="x">y</my-widget>"#,
         serde_json::json!(true),
@@ -284,18 +284,18 @@ fn no_prohibited_naming_issue_3630_013() {
     assert_violations(&violations, &[]);
 }
 
-/// TS: `[no-prohibited-naming-issue-3630-014]`
+/// TS: `[no-prohibited-naming-015]`
 #[test]
-fn no_prohibited_naming_issue_3630_014() {
-    const _ID: &str = "no-prohibited-naming-issue-3630-014";
+fn no_prohibited_naming_015() {
+    const _ID: &str = "no-prohibited-naming-015";
     let violations = run_rule(r#"<button is="x-y" aria-label="x">y</button>"#, serde_json::json!(true));
     assert_violations(&violations, &[]);
 }
 
-/// TS: `[no-prohibited-naming-issue-3630-015]`
+/// TS: `[no-prohibited-naming-016]`
 #[test]
-fn no_prohibited_naming_issue_3630_015() {
-    const _ID: &str = "no-prohibited-naming-issue-3630-015";
+fn no_prohibited_naming_016() {
+    const _ID: &str = "no-prohibited-naming-016";
     let violations = run(
         r#"<my-widget aria-controls="x">y</my-widget>"#,
         serde_json::json!({

@@ -3,20 +3,20 @@
 //! Split out of the tests of the pre-split `invalid-attr` rule; each test keeps the
 //! TypeScript test it mirrors under that test's new id (old id in parentheses).
 //!
-//!   no-restricted-attr-valid-001  → no_restricted_attr_valid_001  (was invalid-attr-valid-004)
-//!   no-restricted-attr-invalid-001  → no_restricted_attr_invalid_001  (was invalid-attr-invalid-006)
-//!   no-restricted-attr-invalid-002  → no_restricted_attr_invalid_002  (was invalid-attr-invalid-007)
-//!   no-restricted-attr-invalid-003  → no_restricted_attr_invalid_003  (was invalid-attr-invalid-008)
-//!   no-restricted-attr-invalid-004  → no_restricted_attr_invalid_004  (was invalid-attr-invalid-009)
-//!   no-restricted-attr-invalid-005  → no_restricted_attr_invalid_005  (was invalid-attr-invalid-018)
-//!   no-restricted-attr-issue-716-001  → no_restricted_attr_issue_716_001  (was invalid-attr-issue-716-001)
-//!   no-restricted-attr-issue-716-004  → no_restricted_attr_issue_716_004  (was invalid-attr-issue-716-004)
-//!   no-restricted-attr-issue-716-005  → no_restricted_attr_issue_716_005  (was invalid-attr-issue-716-005)
-//!   no-restricted-attr-issue-716-008  → no_restricted_attr_issue_716_008  (was invalid-attr-issue-716-008)
-//!   no-restricted-attr-issue-716-002  → no_restricted_attr_issue_716_002  (was invalid-attr-issue-716-002)
-//!   no-restricted-attr-issue-716-003  → no_restricted_attr_issue_716_003  (was invalid-attr-issue-716-003)
-//!   no-restricted-attr-issue-716-006  → no_restricted_attr_issue_716_006  (was invalid-attr-issue-716-006)
-//!   no-restricted-attr-issue-716-007  → no_restricted_attr_issue_716_007  (was invalid-attr-issue-716-007)
+//!   no-restricted-attr-001  → no_restricted_attr_001  (was invalid-attr-valid-004)
+//!   no-restricted-attr-002  → no_restricted_attr_002  (was invalid-attr-invalid-006)
+//!   no-restricted-attr-003  → no_restricted_attr_003  (was invalid-attr-invalid-007)
+//!   no-restricted-attr-004  → no_restricted_attr_004  (was invalid-attr-invalid-008)
+//!   no-restricted-attr-005  → no_restricted_attr_005  (was invalid-attr-invalid-009)
+//!   no-restricted-attr-006  → no_restricted_attr_006  (was invalid-attr-invalid-018)
+//!   no-restricted-attr-007  → no_restricted_attr_007  (was invalid-attr-issue-716-001)
+//!   no-restricted-attr-010  → no_restricted_attr_010  (was invalid-attr-issue-716-004)
+//!   no-restricted-attr-011  → no_restricted_attr_011  (was invalid-attr-issue-716-005)
+//!   no-restricted-attr-014  → no_restricted_attr_014  (was invalid-attr-issue-716-008)
+//!   no-restricted-attr-008  → no_restricted_attr_008  (was invalid-attr-issue-716-002)
+//!   no-restricted-attr-009  → no_restricted_attr_009  (was invalid-attr-issue-716-003)
+//!   no-restricted-attr-012  → no_restricted_attr_012  (was invalid-attr-issue-716-006)
+//!   no-restricted-attr-013  → no_restricted_attr_013  (was invalid-attr-issue-716-007)
 //!   v6_no_restricted_attr_001  — Rust-only: a pattern that is not `/…/` is the value itself, as TS `checkPattern` has it
 
 use super::*;
@@ -175,10 +175,10 @@ fn disallow_attrs_with_enum_not_matched() {
     }
 }
 
-/// TS: `[no-restricted-attr-valid-001]` — disallow attr on custom element
+/// TS: `[no-restricted-attr-001]` — disallow attr on custom element
 #[test]
-fn no_restricted_attr_valid_001() {
-    const _ID: &str = "no-restricted-attr-valid-001";
+fn no_restricted_attr_001() {
+    const _ID: &str = "no-restricted-attr-001";
     let spec = spec();
     // No config: custom element allows any attr
     let config1: LintConfig = serde_json::from_value(serde_json::json!({
@@ -205,10 +205,10 @@ fn no_restricted_attr_valid_001() {
     assert_eq!(result2.violations[0].raw, "x-attr");
 }
 
-/// TS: `[no-restricted-attr-invalid-001]` — disallow attr with enum constraint
+/// TS: `[no-restricted-attr-002]` — disallow attr with enum constraint
 #[test]
-fn no_restricted_attr_invalid_001() {
-    const _ID: &str = "no-restricted-attr-invalid-001";
+fn no_restricted_attr_002() {
+    const _ID: &str = "no-restricted-attr-002";
     let spec = spec();
     // Value "a" not in disallowed enum ["b"] — no violation
     let config: LintConfig = serde_json::from_value(serde_json::json!({
@@ -238,10 +238,10 @@ fn no_restricted_attr_invalid_001() {
     assert_eq!(result2.violations[0].raw, "b");
 }
 
-/// TS: `[no-restricted-attr-invalid-002]` — disallow attr with pattern constraint
+/// TS: `[no-restricted-attr-003]` — disallow attr with pattern constraint
 #[test]
-fn no_restricted_attr_invalid_002() {
-    const _ID: &str = "no-restricted-attr-invalid-002";
+fn no_restricted_attr_003() {
+    const _ID: &str = "no-restricted-attr-003";
     let spec = spec();
     // Value "a" doesn't match pattern /^a{2,}$/ — no violation
     let config: LintConfig = serde_json::from_value(serde_json::json!({
@@ -267,10 +267,10 @@ fn no_restricted_attr_invalid_002() {
     assert_eq!(result.violations[0].raw, "aa");
 }
 
-/// TS: `[no-restricted-attr-invalid-003]` — disallow attr with pattern (object form)
+/// TS: `[no-restricted-attr-004]` — disallow attr with pattern (object form)
 #[test]
-fn no_restricted_attr_invalid_003() {
-    const _ID: &str = "no-restricted-attr-invalid-003";
+fn no_restricted_attr_004() {
+    const _ID: &str = "no-restricted-attr-004";
     let spec = spec();
     // Object form: { "x-attr": { "pattern": ... } }
     let config: LintConfig = serde_json::from_value(serde_json::json!({
@@ -295,10 +295,10 @@ fn no_restricted_attr_invalid_003() {
     assert_eq!(result.violations[0].raw, "aa");
 }
 
-/// TS: `[no-restricted-attr-invalid-004]` — disallow attr with type constraint
+/// TS: `[no-restricted-attr-005]` — disallow attr with type constraint
 #[test]
-fn no_restricted_attr_invalid_004() {
-    const _ID: &str = "no-restricted-attr-invalid-004";
+fn no_restricted_attr_005() {
+    const _ID: &str = "no-restricted-attr-005";
     let spec = spec();
     let config: LintConfig = serde_json::from_value(serde_json::json!({
         "rules": { "no-restricted-attr": { "options": { "disallowAttrs": [{ "name": "x-attr", "value": "Int" }] } } }
@@ -324,10 +324,10 @@ fn no_restricted_attr_invalid_004() {
     assert_eq!(result.violations[0].raw, "1");
 }
 
-/// TS: `[no-restricted-attr-invalid-005]` — custom rule: disallowed
+/// TS: `[no-restricted-attr-006]` — custom rule: disallowed
 #[test]
-fn no_restricted_attr_invalid_005() {
-    const _ID: &str = "no-restricted-attr-invalid-005";
+fn no_restricted_attr_006() {
+    const _ID: &str = "no-restricted-attr-006";
     let spec = spec();
     let config: LintConfig = serde_json::from_value(serde_json::json!({
         "rules": { "no-restricted-attr": { "options": { "disallowAttrs": ["onclick"] } } }
@@ -342,10 +342,10 @@ fn no_restricted_attr_invalid_005() {
     assert_eq!(result.violations[0].raw, "onclick");
 }
 
-/// TS: `[no-restricted-attr-issue-716-001]` — viewport user-scalable=no violation
+/// TS: `[no-restricted-attr-007]` — viewport user-scalable=no violation
 #[test]
-fn no_restricted_attr_issue_716_001() {
-    const _ID: &str = "no-restricted-attr-issue-716-001";
+fn no_restricted_attr_007() {
+    const _ID: &str = "no-restricted-attr-007";
     let spec = spec();
     let config: LintConfig = serde_json::from_value(serde_json::json!({
         "rules": { "no-restricted-attr": true },
@@ -376,10 +376,10 @@ fn no_restricted_attr_issue_716_001() {
     );
 }
 
-/// TS: `[no-restricted-attr-issue-716-004]` — violation: spaces around = sign
+/// TS: `[no-restricted-attr-010]` — violation: spaces around = sign
 #[test]
-fn no_restricted_attr_issue_716_004() {
-    const _ID: &str = "no-restricted-attr-issue-716-004";
+fn no_restricted_attr_010() {
+    const _ID: &str = "no-restricted-attr-010";
     let spec = spec();
     let config: LintConfig = serde_json::from_value(serde_json::json!({
         "rules": { "no-restricted-attr": true },
@@ -407,10 +407,10 @@ fn no_restricted_attr_issue_716_004() {
     assert_eq!(result.violations[0].raw, "width=device-width, user-scalable = no");
 }
 
-/// TS: `[no-restricted-attr-issue-716-005]` — no violation: normal viewport
+/// TS: `[no-restricted-attr-011]` — no violation: normal viewport
 #[test]
-fn no_restricted_attr_issue_716_005() {
-    const _ID: &str = "no-restricted-attr-issue-716-005";
+fn no_restricted_attr_011() {
+    const _ID: &str = "no-restricted-attr-011";
     let spec = spec();
     let config: LintConfig = serde_json::from_value(serde_json::json!({
         "rules": { "no-restricted-attr": true },
@@ -434,10 +434,10 @@ fn no_restricted_attr_issue_716_005() {
     );
 }
 
-/// TS: `[no-restricted-attr-issue-716-008]` — non-viewport meta is not affected
+/// TS: `[no-restricted-attr-014]` — non-viewport meta is not affected
 #[test]
-fn no_restricted_attr_issue_716_008() {
-    const _ID: &str = "no-restricted-attr-issue-716-008";
+fn no_restricted_attr_014() {
+    const _ID: &str = "no-restricted-attr-014";
     let spec = spec();
     let config: LintConfig = serde_json::from_value(serde_json::json!({
         "rules": { "no-restricted-attr": true },
@@ -461,10 +461,10 @@ fn no_restricted_attr_issue_716_008() {
     );
 }
 
-/// TS: `[no-restricted-attr-issue-716-002]` — viewport user-scalable=0 violation
+/// TS: `[no-restricted-attr-008]` — viewport user-scalable=0 violation
 #[test]
-fn no_restricted_attr_issue_716_002() {
-    const _ID: &str = "no-restricted-attr-issue-716-002";
+fn no_restricted_attr_008() {
+    const _ID: &str = "no-restricted-attr-008";
     let spec = spec();
     let config: LintConfig = serde_json::from_value(serde_json::json!({
         "rules": { "no-restricted-attr": true },
@@ -490,10 +490,10 @@ fn no_restricted_attr_issue_716_002() {
     assert_eq!(result.violations[0].raw, "width=device-width, user-scalable=0");
 }
 
-/// TS: `[no-restricted-attr-issue-716-003]` — viewport user-scalable=NO (case insensitive)
+/// TS: `[no-restricted-attr-009]` — viewport user-scalable=NO (case insensitive)
 #[test]
-fn no_restricted_attr_issue_716_003() {
-    const _ID: &str = "no-restricted-attr-issue-716-003";
+fn no_restricted_attr_009() {
+    const _ID: &str = "no-restricted-attr-009";
     let spec = spec();
     let config: LintConfig = serde_json::from_value(serde_json::json!({
         "rules": { "no-restricted-attr": true },
@@ -518,10 +518,10 @@ fn no_restricted_attr_issue_716_003() {
     assert_eq!(result.violations[0].raw, "width=device-width, user-scalable=NO");
 }
 
-/// TS: `[no-restricted-attr-issue-716-006]` — no violation: user-scalable=yes
+/// TS: `[no-restricted-attr-012]` — no violation: user-scalable=yes
 #[test]
-fn no_restricted_attr_issue_716_006() {
-    const _ID: &str = "no-restricted-attr-issue-716-006";
+fn no_restricted_attr_012() {
+    const _ID: &str = "no-restricted-attr-012";
     let spec = spec();
     let config: LintConfig = serde_json::from_value(serde_json::json!({
         "rules": { "no-restricted-attr": true },
@@ -545,10 +545,10 @@ fn no_restricted_attr_issue_716_006() {
     );
 }
 
-/// TS: `[no-restricted-attr-issue-716-007]` — no violation: user-scalable=1
+/// TS: `[no-restricted-attr-013]` — no violation: user-scalable=1
 #[test]
-fn no_restricted_attr_issue_716_007() {
-    const _ID: &str = "no-restricted-attr-issue-716-007";
+fn no_restricted_attr_013() {
+    const _ID: &str = "no-restricted-attr-013";
     let spec = spec();
     let config: LintConfig = serde_json::from_value(serde_json::json!({
         "rules": { "no-restricted-attr": true },
@@ -572,11 +572,11 @@ fn no_restricted_attr_issue_716_007() {
     );
 }
 
-/// TS: `[no-restricted-attr-issue-4309-004]` JSX: an HTML element folds the name, an SVG element
+/// TS: `[no-restricted-attr-018]` JSX: an HTML element folds the name, an SVG element
 /// keeps it as written. The JSX parser is stood in for by its `attrNameRoute` setting.
 #[test]
-fn no_restricted_attr_issue_4309_004() {
-    const _ID: &str = "no-restricted-attr-issue-4309-004";
+fn no_restricted_attr_018() {
+    const _ID: &str = "no-restricted-attr-018";
     use markuplint_core::mlast::{AttrNameRoute, DocumentSettings};
     let run = |html: &str, name: &str| {
         crate::test_util::lint_brief_with_settings(

@@ -682,7 +682,7 @@ pub mod tests {
 
     #[test]
     fn default_apple_touch_icon_allowed() {
-        // TS `defaultOptions: { allowMicroformats: true }` (`link-types-valid-018`)
+        // TS `defaultOptions: { allowMicroformats: true }` (`link-types-015`)
         assert!(run(r#"<link rel="apple-touch-icon">"#).is_empty());
         let v = run_with_options(
             r#"<link rel="apple-touch-icon">"#,

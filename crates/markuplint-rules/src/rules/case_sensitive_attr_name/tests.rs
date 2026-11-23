@@ -1,19 +1,19 @@
 //! Tests for `case-sensitive-attr-name` rule.
 //!
 //! Test ID mapping (TS → Rust):
-//!   case-sensitive-attr-name-valid-001    → case_sensitive_attr_name_valid_001
-//!   case-sensitive-attr-name-invalid-001  → case_sensitive_attr_name_invalid_001
-//!   case-sensitive-attr-name-invalid-002  → case_sensitive_attr_name_invalid_002
-//!   case-sensitive-attr-name-invalid-003  → case_sensitive_attr_name_invalid_003
-//!   case-sensitive-attr-name-valid-002    → case_sensitive_attr_name_valid_002
-//!   case-sensitive-attr-name-valid-003    → case_sensitive_attr_name_valid_003
-//!   case-sensitive-attr-name-fix-001      → case_sensitive_attr_name_fix_001
-//!   case-sensitive-attr-name-fix-002      → case_sensitive_attr_name_fix_002
-//!   v6_case_sensitive_attr_name_001       — Rust-only: non-ASCII text before the fixed name
-//!   v6_case_sensitive_attr_name_002       — Rust-only: a resolved name (JSX `tabIndex`) and a non-HTML element have no case to enforce
-//!   case-sensitive-attr-name-invalid-004  → case_sensitive_attr_name_invalid_004
-//!   case-sensitive-attr-name-parser-001   → v6_case_sensitive_attr_name_003 (the JSX and MDX parsers stay in TS; their `attrNameCaseSensitive` is set on the document, and so does `-parser-002` and `-003`)
-//!   case-sensitive-attr-name-parser-004   → v6_case_sensitive_attr_name_003 (Svelte and Astro leave it unset, as does `-parser-005`)
+//!   case-sensitive-attr-name-001     → case_sensitive_attr_name_001
+//!   case-sensitive-attr-name-002     → case_sensitive_attr_name_002
+//!   case-sensitive-attr-name-003     → case_sensitive_attr_name_003
+//!   case-sensitive-attr-name-004     → case_sensitive_attr_name_004
+//!   case-sensitive-attr-name-005     → case_sensitive_attr_name_005
+//!   case-sensitive-attr-name-006     → case_sensitive_attr_name_006
+//!   case-sensitive-attr-name-013     → case_sensitive_attr_name_013
+//!   case-sensitive-attr-name-014     → case_sensitive_attr_name_014
+//!   v6_case_sensitive_attr_name_001  — Rust-only: non-ASCII text before the fixed name
+//!   v6_case_sensitive_attr_name_002  — Rust-only: a resolved name (JSX `tabIndex`) and a non-HTML element have no case to enforce
+//!   case-sensitive-attr-name-012     → case_sensitive_attr_name_012
+//!   case-sensitive-attr-name-007     → v6_case_sensitive_attr_name_003 (the JSX and MDX parsers stay in TS; their `attrNameCaseSensitive` is set on the document, and so does `-parser-002` and `-003`)
+//!   case-sensitive-attr-name-010     → v6_case_sensitive_attr_name_003 (Svelte and Astro leave it unset, as does `-parser-005`)
 
 use crate::lint::{LintConfig, lint};
 use crate::test_util::fixed_code;
@@ -37,10 +37,10 @@ fn spec() -> MLMLSpec {
     load_spec(include_str!("../../../../../packages/@markuplint/html-spec/index.json")).unwrap()
 }
 
-/// TS: `[case-sensitive-attr-name-valid-001]` — lower case
+/// TS: `[case-sensitive-attr-name-001]` — lower case
 #[test]
-fn case_sensitive_attr_name_valid_001() {
-    const _ID: &str = "case-sensitive-attr-name-valid-001";
+fn case_sensitive_attr_name_001() {
+    const _ID: &str = "case-sensitive-attr-name-001";
     let arena = html_arena("<div data-lowercase></div>");
     let spec = spec();
     // TS default severity for style rules is warning
@@ -52,10 +52,10 @@ fn case_sensitive_attr_name_valid_001() {
     assert_eq!(result.violations.len(), 0);
 }
 
-/// TS: `[case-sensitive-attr-name-invalid-001]` — upper case attr
+/// TS: `[case-sensitive-attr-name-002]` — upper case attr
 #[test]
-fn case_sensitive_attr_name_invalid_001() {
-    const _ID: &str = "case-sensitive-attr-name-invalid-001";
+fn case_sensitive_attr_name_002() {
+    const _ID: &str = "case-sensitive-attr-name-002";
     let arena = html_arena(r#"<div data-UPPERCASE="value"></div>"#);
     let spec = spec();
     let config: LintConfig = serde_json::from_value(serde_json::json!({
@@ -72,10 +72,10 @@ fn case_sensitive_attr_name_invalid_001() {
     assert_eq!(result.violations[0].raw, "data-UPPERCASE");
 }
 
-/// TS: `[case-sensitive-attr-name-invalid-002]` — upper case with value=upper, severity=error
+/// TS: `[case-sensitive-attr-name-003]` — upper case with value=upper, severity=error
 #[test]
-fn case_sensitive_attr_name_invalid_002() {
-    const _ID: &str = "case-sensitive-attr-name-invalid-002";
+fn case_sensitive_attr_name_003() {
+    const _ID: &str = "case-sensitive-attr-name-003";
     let arena = html_arena(r#"<div data-UPPERCASE="value"></div>"#);
     let spec = spec();
     let config: LintConfig = serde_json::from_value(serde_json::json!({
@@ -101,10 +101,10 @@ fn case_sensitive_attr_name_invalid_002() {
     );
 }
 
-/// TS: `[case-sensitive-attr-name-invalid-003]` — lowercase attr with value=upper
+/// TS: `[case-sensitive-attr-name-004]` — lowercase attr with value=upper
 #[test]
-fn case_sensitive_attr_name_invalid_003() {
-    const _ID: &str = "case-sensitive-attr-name-invalid-003";
+fn case_sensitive_attr_name_004() {
+    const _ID: &str = "case-sensitive-attr-name-004";
     let arena = html_arena(r#"<div data-uppercase="value"></div>"#);
     let spec = spec();
     let config: LintConfig = serde_json::from_value(serde_json::json!({
@@ -125,10 +125,10 @@ fn case_sensitive_attr_name_invalid_003() {
     );
 }
 
-/// TS: `[case-sensitive-attr-name-valid-002]` — all uppercase with value=upper
+/// TS: `[case-sensitive-attr-name-005]` — all uppercase with value=upper
 #[test]
-fn case_sensitive_attr_name_valid_002() {
-    const _ID: &str = "case-sensitive-attr-name-valid-002";
+fn case_sensitive_attr_name_005() {
+    const _ID: &str = "case-sensitive-attr-name-005";
     let arena = html_arena(r#"<div DATA-UPPERCASE="value"></div>"#);
     let spec = spec();
     let config: LintConfig = serde_json::from_value(serde_json::json!({
@@ -145,10 +145,10 @@ fn case_sensitive_attr_name_valid_002() {
     assert_eq!(result.violations.len(), 0);
 }
 
-/// TS: `[case-sensitive-attr-name-valid-003]` — svg viewBox (case-sensitive per spec)
+/// TS: `[case-sensitive-attr-name-006]` — svg viewBox (case-sensitive per spec)
 #[test]
-fn case_sensitive_attr_name_valid_003() {
-    const _ID: &str = "case-sensitive-attr-name-valid-003";
+fn case_sensitive_attr_name_006() {
+    const _ID: &str = "case-sensitive-attr-name-006";
     let arena = html_arena(r#"<svg viewBox="0 0 100 100"></svg>"#);
     let spec = spec();
     let config: LintConfig = serde_json::from_value(serde_json::json!({
@@ -159,10 +159,10 @@ fn case_sensitive_attr_name_valid_003() {
     assert_eq!(result.violations.len(), 0);
 }
 
-/// TS: `[case-sensitive-attr-name-fix-001]` — upper case
+/// TS: `[case-sensitive-attr-name-013]` — upper case
 #[test]
-fn case_sensitive_attr_name_fix_001() {
-    const _ID: &str = "case-sensitive-attr-name-fix-001";
+fn case_sensitive_attr_name_013() {
+    const _ID: &str = "case-sensitive-attr-name-013";
     let config = serde_json::json!({ "rules": { "case-sensitive-attr-name": true } });
     assert_eq!(
         fixed_code("<DIV DATA-LOWERCASE></DIV>", &config),
@@ -170,10 +170,10 @@ fn case_sensitive_attr_name_fix_001() {
     );
 }
 
-/// TS: `[case-sensitive-attr-name-fix-002]` — upper case
+/// TS: `[case-sensitive-attr-name-014]` — upper case
 #[test]
-fn case_sensitive_attr_name_fix_002() {
-    const _ID: &str = "case-sensitive-attr-name-fix-002";
+fn case_sensitive_attr_name_014() {
+    const _ID: &str = "case-sensitive-attr-name-014";
     let config = serde_json::json!({ "rules": { "case-sensitive-attr-name": { "value": "upper" } } });
     assert_eq!(
         fixed_code("<DIV data-lowercase></DIV>", &config),
@@ -215,10 +215,10 @@ fn v6_case_sensitive_attr_name_002() {
     assert_eq!(run_mlast("html", "tabIndex", serde_json::json!({})).len(), 1);
 }
 
-/// TS: `[case-sensitive-attr-name-invalid-004]` — an inline handler spelled in camelCase in HTML
+/// TS: `[case-sensitive-attr-name-012]` — an inline handler spelled in camelCase in HTML
 #[test]
-fn case_sensitive_attr_name_invalid_004() {
-    const _ID: &str = "case-sensitive-attr-name-invalid-004";
+fn case_sensitive_attr_name_012() {
+    const _ID: &str = "case-sensitive-attr-name-012";
     let arena = html_arena(r#"<button onClick="onPress()"></button>"#);
     let spec = spec();
     let config: LintConfig = serde_json::from_value(serde_json::json!({

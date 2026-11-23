@@ -1,21 +1,21 @@
 //! Tests for `no-malformed-character-reference` rule.
 //!
 //! Test ID mapping (TS → Rust):
-//!   no-malformed-character-reference-issue-1074    → no_malformed_character_reference_issue_1074
-//!   no-malformed-character-reference-invalid-001   → no_malformed_character_reference_invalid_001
-//!   no-malformed-character-reference-invalid-002   → no_malformed_character_reference_invalid_002
-//!   no-malformed-character-reference-invalid-003   → no_malformed_character_reference_invalid_003
-//!   no-malformed-character-reference-invalid-004   → no_malformed_character_reference_invalid_004
-//!   no-malformed-character-reference-invalid-005   → no_malformed_character_reference_invalid_005
-//!   no-malformed-character-reference-invalid-006   → no_malformed_character_reference_invalid_006
-//!   no-malformed-character-reference-invalid-007   → no_malformed_character_reference_invalid_007
-//!   no-malformed-character-reference-invalid-008   → no_malformed_character_reference_invalid_008
-//!   v6_no_malformed_character_reference_001        — Rust-only: every field of each code's violation
-//!   v6_no_malformed_character_reference_002        — Rust-only: an unknown name in an attribute value is not reported
-//!   v6_no_malformed_character_reference_003        — Rust-only: two errors at one position, in parse5's order
-//!   v6_no_malformed_character_reference_004        — Rust-only: RCDATA is checked, script data is not
-//!   v6_no_malformed_character_reference_005        — Rust-only: positions across lines
-//!   v6_no_malformed_character_reference_006        — Rust-only: well-formed references are not reported
+//!   no-malformed-character-reference-001      → no_malformed_character_reference_001
+//!   no-malformed-character-reference-002      → no_malformed_character_reference_002
+//!   no-malformed-character-reference-003      → no_malformed_character_reference_003
+//!   no-malformed-character-reference-004      → no_malformed_character_reference_004
+//!   no-malformed-character-reference-005      → no_malformed_character_reference_005
+//!   no-malformed-character-reference-006      → no_malformed_character_reference_006
+//!   no-malformed-character-reference-007      → no_malformed_character_reference_007
+//!   no-malformed-character-reference-008      → no_malformed_character_reference_008
+//!   no-malformed-character-reference-009      → no_malformed_character_reference_009
+//!   v6_no_malformed_character_reference_001   — Rust-only: every field of each code's violation
+//!   v6_no_malformed_character_reference_002   — Rust-only: an unknown name in an attribute value is not reported
+//!   v6_no_malformed_character_reference_003   — Rust-only: two errors at one position, in parse5's order
+//!   v6_no_malformed_character_reference_004   — Rust-only: RCDATA is checked, script data is not
+//!   v6_no_malformed_character_reference_005   — Rust-only: positions across lines
+//!   v6_no_malformed_character_reference_006   — Rust-only: well-formed references are not reported
 
 use crate::lint::{LintConfig, lint};
 use crate::violation::{Severity, Violation};
@@ -60,10 +60,10 @@ fn has_message_containing(violations: &[Violation], code: &str) -> bool {
     violations.iter().any(|v| v.message.contains(code))
 }
 
-/// TS: `[no-malformed-character-reference-issue-1074]`
+/// TS: `[no-malformed-character-reference-001]`
 #[test]
-fn no_malformed_character_reference_issue_1074() {
-    const _ID: &str = "no-malformed-character-reference-issue-1074";
+fn no_malformed_character_reference_001() {
+    const _ID: &str = "no-malformed-character-reference-001";
     let violations = run("<span>&#9660;</span><span>&#x25BC;</span><span>&x25BC;</span>");
     assert_eq!(violations.len(), 1);
     assert_eq!(violations[0].rule_id, "no-malformed-character-reference");
@@ -77,18 +77,18 @@ fn no_malformed_character_reference_issue_1074() {
     );
 }
 
-/// TS: `[no-malformed-character-reference-invalid-001]`
+/// TS: `[no-malformed-character-reference-002]`
 #[test]
-fn no_malformed_character_reference_invalid_001() {
-    const _ID: &str = "no-malformed-character-reference-invalid-001";
+fn no_malformed_character_reference_002() {
+    const _ID: &str = "no-malformed-character-reference-002";
     let violations = run("<p>&xyz;</p>");
     assert!(has_message_containing(&violations, "unknown-named-character-reference"));
 }
 
-/// TS: `[no-malformed-character-reference-invalid-002]`
+/// TS: `[no-malformed-character-reference-003]`
 #[test]
-fn no_malformed_character_reference_invalid_002() {
-    const _ID: &str = "no-malformed-character-reference-invalid-002";
+fn no_malformed_character_reference_003() {
+    const _ID: &str = "no-malformed-character-reference-003";
     let violations = run("<p>&amp text</p>");
     assert!(has_message_containing(
         &violations,
@@ -96,10 +96,10 @@ fn no_malformed_character_reference_invalid_002() {
     ));
 }
 
-/// TS: `[no-malformed-character-reference-invalid-003]`
+/// TS: `[no-malformed-character-reference-004]`
 #[test]
-fn no_malformed_character_reference_invalid_003() {
-    const _ID: &str = "no-malformed-character-reference-invalid-003";
+fn no_malformed_character_reference_004() {
+    const _ID: &str = "no-malformed-character-reference-004";
     let violations = run("<p>&#;</p>");
     assert!(has_message_containing(
         &violations,
@@ -107,42 +107,42 @@ fn no_malformed_character_reference_invalid_003() {
     ));
 }
 
-/// TS: `[no-malformed-character-reference-invalid-004]`
+/// TS: `[no-malformed-character-reference-005]`
 #[test]
-fn no_malformed_character_reference_invalid_004() {
-    const _ID: &str = "no-malformed-character-reference-invalid-004";
+fn no_malformed_character_reference_005() {
+    const _ID: &str = "no-malformed-character-reference-005";
     let violations = run("<p>&#x0;</p>");
     assert!(has_message_containing(&violations, "null-character-reference"));
 }
 
-/// TS: `[no-malformed-character-reference-invalid-005]`
+/// TS: `[no-malformed-character-reference-006]`
 #[test]
-fn no_malformed_character_reference_invalid_005() {
-    const _ID: &str = "no-malformed-character-reference-invalid-005";
+fn no_malformed_character_reference_006() {
+    const _ID: &str = "no-malformed-character-reference-006";
     let violations = run("<p>&#xD800;</p>");
     assert!(has_message_containing(&violations, "surrogate-character-reference"));
 }
 
-/// TS: `[no-malformed-character-reference-invalid-006]`
+/// TS: `[no-malformed-character-reference-007]`
 #[test]
-fn no_malformed_character_reference_invalid_006() {
-    const _ID: &str = "no-malformed-character-reference-invalid-006";
+fn no_malformed_character_reference_007() {
+    const _ID: &str = "no-malformed-character-reference-007";
     let violations = run("<p>&#x1;</p>");
     assert!(has_message_containing(&violations, "control-character-reference"));
 }
 
-/// TS: `[no-malformed-character-reference-invalid-007]`
+/// TS: `[no-malformed-character-reference-008]`
 #[test]
-fn no_malformed_character_reference_invalid_007() {
-    const _ID: &str = "no-malformed-character-reference-invalid-007";
+fn no_malformed_character_reference_008() {
+    const _ID: &str = "no-malformed-character-reference-008";
     let violations = run("<p>&#xFFFE;</p>");
     assert!(has_message_containing(&violations, "noncharacter-character-reference"));
 }
 
-/// TS: `[no-malformed-character-reference-invalid-008]`
+/// TS: `[no-malformed-character-reference-009]`
 #[test]
-fn no_malformed_character_reference_invalid_008() {
-    const _ID: &str = "no-malformed-character-reference-invalid-008";
+fn no_malformed_character_reference_009() {
+    const _ID: &str = "no-malformed-character-reference-009";
     let violations = run("<p>&#x110000;</p>");
     assert!(has_message_containing(
         &violations,

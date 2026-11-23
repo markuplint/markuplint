@@ -1,12 +1,12 @@
 //! Tests for `no-aria-owns-on-presentational-children` rule.
 //!
 //! Test ID mapping (TS → Rust):
-//!   no-aria-owns-on-presentational-children-valid-001    → no_aria_owns_on_presentational_children_valid_001
-//!   no-aria-owns-on-presentational-children-invalid-001  → no_aria_owns_on_presentational_children_invalid_001
-//!   no-aria-owns-on-presentational-children-invalid-002  → no_aria_owns_on_presentational_children_invalid_002
-//!   no-aria-owns-on-presentational-children-invalid-003  → no_aria_owns_on_presentational_children_invalid_003
-//!   no-aria-owns-on-presentational-children-invalid-004  → no_aria_owns_on_presentational_children_invalid_004
-//!   no-aria-owns-on-presentational-children-invalid-005  → no_aria_owns_on_presentational_children_invalid_005
+//!   no-aria-owns-on-presentational-children-001  → no_aria_owns_on_presentational_children_001
+//!   no-aria-owns-on-presentational-children-002  → no_aria_owns_on_presentational_children_002
+//!   no-aria-owns-on-presentational-children-003  → no_aria_owns_on_presentational_children_003
+//!   no-aria-owns-on-presentational-children-004  → no_aria_owns_on_presentational_children_004
+//!   no-aria-owns-on-presentational-children-005  → no_aria_owns_on_presentational_children_005
+//!   no-aria-owns-on-presentational-children-006  → no_aria_owns_on_presentational_children_006
 
 use crate::test_util::{brief, lint_brief};
 use crate::violation::Severity;
@@ -23,40 +23,40 @@ fn message(role: &str) -> String {
     )
 }
 
-/// TS: `[no-aria-owns-on-presentational-children-valid-001]` aria-owns on a role whose children are
+/// TS: `[no-aria-owns-on-presentational-children-001]` aria-owns on a role whose children are
 /// not presentational
 #[test]
-fn no_aria_owns_on_presentational_children_valid_001() {
-    const _ID: &str = "no-aria-owns-on-presentational-children-valid-001";
+fn no_aria_owns_on_presentational_children_001() {
+    const _ID: &str = "no-aria-owns-on-presentational-children-001";
     assert!(run(r#"<div role="listbox" aria-owns="o"></div><div id="o" role="option"></div>"#).is_empty());
 }
 
-/// TS: `[no-aria-owns-on-presentational-children-invalid-001]` an implicit role whose children are
+/// TS: `[no-aria-owns-on-presentational-children-002]` an implicit role whose children are
 /// presentational
 #[test]
-fn no_aria_owns_on_presentational_children_invalid_001() {
-    const _ID: &str = "no-aria-owns-on-presentational-children-invalid-001";
+fn no_aria_owns_on_presentational_children_002() {
+    const _ID: &str = "no-aria-owns-on-presentational-children-002";
     assert_eq!(
         run(r#"<button type="button" aria-owns="x">Save</button><span id="x"></span>"#),
         [brief(Severity::Error, 1, 23, &message("button"), r#"aria-owns="x""#)]
     );
 }
 
-/// TS: `[no-aria-owns-on-presentational-children-invalid-002]` an explicit role whose children are
+/// TS: `[no-aria-owns-on-presentational-children-003]` an explicit role whose children are
 /// presentational
 #[test]
-fn no_aria_owns_on_presentational_children_invalid_002() {
-    const _ID: &str = "no-aria-owns-on-presentational-children-invalid-002";
+fn no_aria_owns_on_presentational_children_003() {
+    const _ID: &str = "no-aria-owns-on-presentational-children-003";
     assert_eq!(
         run(r#"<div role="img" aria-label="Logo" aria-owns="x"></div><span id="x"></span>"#),
         [brief(Severity::Error, 1, 35, &message("img"), r#"aria-owns="x""#)]
     );
 }
 
-/// TS: `[no-aria-owns-on-presentational-children-invalid-003]` with locale ja
+/// TS: `[no-aria-owns-on-presentational-children-004]` with locale ja
 #[test]
-fn no_aria_owns_on_presentational_children_invalid_003() {
-    const _ID: &str = "no-aria-owns-on-presentational-children-invalid-003";
+fn no_aria_owns_on_presentational_children_004() {
+    const _ID: &str = "no-aria-owns-on-presentational-children-004";
     let violations = lint_brief(
         RULE,
         r#"<button type="button" aria-owns="x">Save</button><span id="x"></span>"#,
@@ -74,10 +74,10 @@ fn no_aria_owns_on_presentational_children_invalid_003() {
     );
 }
 
-/// TS: `[no-aria-owns-on-presentational-children-invalid-004]` reported under WAI-ARIA 1.2 as well
+/// TS: `[no-aria-owns-on-presentational-children-005]` reported under WAI-ARIA 1.2 as well
 #[test]
-fn no_aria_owns_on_presentational_children_invalid_004() {
-    const _ID: &str = "no-aria-owns-on-presentational-children-invalid-004";
+fn no_aria_owns_on_presentational_children_005() {
+    const _ID: &str = "no-aria-owns-on-presentational-children-005";
     let violations = lint_brief(
         RULE,
         r#"<button type="button" aria-owns="x">Save</button><span id="x"></span>"#,
@@ -89,10 +89,10 @@ fn no_aria_owns_on_presentational_children_invalid_004() {
     );
 }
 
-/// TS: `[no-aria-owns-on-presentational-children-invalid-005]` an empty aria-owns is still specified
+/// TS: `[no-aria-owns-on-presentational-children-006]` an empty aria-owns is still specified
 #[test]
-fn no_aria_owns_on_presentational_children_invalid_005() {
-    const _ID: &str = "no-aria-owns-on-presentational-children-invalid-005";
+fn no_aria_owns_on_presentational_children_006() {
+    const _ID: &str = "no-aria-owns-on-presentational-children-006";
     assert_eq!(
         run(r#"<button type="button" aria-owns="">Save</button>"#),
         [brief(Severity::Error, 1, 23, &message("button"), r#"aria-owns="""#)]

@@ -1,12 +1,12 @@
 //! Tests for `no-nested-top-level-landmark` rule.
 //!
 //! Test ID mapping (TS → Rust):
-//!   no-nested-top-level-landmark-valid-001    → no_nested_top_level_landmark_valid_001
-//!   no-nested-top-level-landmark-valid-002    → no_nested_top_level_landmark_valid_002
-//!   no-nested-top-level-landmark-valid-003    → no_nested_top_level_landmark_valid_003
-//!   no-nested-top-level-landmark-valid-004    → no_nested_top_level_landmark_valid_004
-//!   no-nested-top-level-landmark-invalid-001  → no_nested_top_level_landmark_invalid_001
-//!   no-nested-top-level-landmark-valid-005    → no_nested_top_level_landmark_valid_005
+//!   no-nested-top-level-landmark-001  → no_nested_top_level_landmark_001
+//!   no-nested-top-level-landmark-002  → no_nested_top_level_landmark_002
+//!   no-nested-top-level-landmark-003  → no_nested_top_level_landmark_003
+//!   no-nested-top-level-landmark-004  → no_nested_top_level_landmark_004
+//!   no-nested-top-level-landmark-007  → no_nested_top_level_landmark_007
+//!   no-nested-top-level-landmark-008  → no_nested_top_level_landmark_008
 //!     (the Rust DOM has no `as` resolution, but `complementary` is not a checked role, so the
 //!     expectation holds whether or not `<x-aside as="aside">` resolves to `<aside>`)
 //!   v6_no_nested_top_level_landmark_001  — Rust-only: a nested `[role="banner"]` is reported, a top-level `[role="contentinfo"]` is not
@@ -67,30 +67,30 @@ fn assert_nested(violations: &[Violation], expected: &[(u32, u32, &str, &str)]) 
 
 const NESTED_ASIDE: &str = "\n<html>\n<body>\n\t<header></header>\n\t<nav></nav>\n\t<main>\n\t\t<header></header>\n\t\t<footer></footer>\n\t\t<aside></aside>\n\t</main>\n\t<footer></footer>\n</body>\n</html>\n";
 
-/// TS: `[no-nested-top-level-landmark-valid-001]` No warning
+/// TS: `[no-nested-top-level-landmark-001]` No warning
 #[test]
-fn no_nested_top_level_landmark_valid_001() {
-    const _ID: &str = "no-nested-top-level-landmark-valid-001";
+fn no_nested_top_level_landmark_001() {
+    const _ID: &str = "no-nested-top-level-landmark-001";
     let violations = run(
         "\n<html>\n<body>\n\t<header></header>\n\t<nav></nav>\n\t<main>\n\t\t<header></header>\n\t\t<footer></footer>\n\t</main>\n\t<aside></aside>\n\t<footer></footer>\n</body>\n</html>\n",
     );
     assert!(violations.is_empty(), "{violations:?}");
 }
 
-/// TS: `[no-nested-top-level-landmark-valid-002]` Top level landmarks
+/// TS: `[no-nested-top-level-landmark-002]` Top level landmarks
 #[test]
-fn no_nested_top_level_landmark_valid_002() {
-    const _ID: &str = "no-nested-top-level-landmark-valid-002";
+fn no_nested_top_level_landmark_002() {
+    const _ID: &str = "no-nested-top-level-landmark-002";
     // `complementary` is deliberately not one of this rule's checked top-level roles, so a
     // nested `<aside>` here is not reported.
     let violations = run(NESTED_ASIDE);
     assert!(violations.is_empty(), "{violations:?}");
 }
 
-/// TS: `[no-nested-top-level-landmark-valid-003]` Top level landmarks: disabled
+/// TS: `[no-nested-top-level-landmark-003]` Top level landmarks: disabled
 #[test]
-fn no_nested_top_level_landmark_valid_003() {
-    const _ID: &str = "no-nested-top-level-landmark-valid-003";
+fn no_nested_top_level_landmark_003() {
+    const _ID: &str = "no-nested-top-level-landmark-003";
     let violations = run_config(
         NESTED_ASIDE,
         serde_json::json!({
@@ -101,10 +101,10 @@ fn no_nested_top_level_landmark_valid_003() {
     assert!(violations.is_empty(), "{violations:?}");
 }
 
-/// TS: `[no-nested-top-level-landmark-valid-004]` Top level landmarks: ignoreRoles option
+/// TS: `[no-nested-top-level-landmark-004]` Top level landmarks: ignoreRoles option
 #[test]
-fn no_nested_top_level_landmark_valid_004() {
-    const _ID: &str = "no-nested-top-level-landmark-valid-004";
+fn no_nested_top_level_landmark_004() {
+    const _ID: &str = "no-nested-top-level-landmark-004";
     let violations = run_config(
         NESTED_ASIDE,
         serde_json::json!({
@@ -114,20 +114,20 @@ fn no_nested_top_level_landmark_valid_004() {
     assert!(violations.is_empty(), "{violations:?}");
 }
 
-/// TS: `[no-nested-top-level-landmark-invalid-001]` nested main is flagged
+/// TS: `[no-nested-top-level-landmark-007]` nested main is flagged
 #[test]
-fn no_nested_top_level_landmark_invalid_001() {
-    const _ID: &str = "no-nested-top-level-landmark-invalid-001";
+fn no_nested_top_level_landmark_007() {
+    const _ID: &str = "no-nested-top-level-landmark-007";
     let violations = run(
         "\n<html>\n<body>\n\t<header></header>\n\t<nav></nav>\n\t<main>\n\t\t<header></header>\n\t\t<footer></footer>\n\t\t<main></main>\n\t</main>\n</body>\n</html>\n",
     );
     assert_nested(&violations, &[(9, 3, "main", "<main>")]);
 }
 
-/// TS: `[no-nested-top-level-landmark-valid-005]` The `as` attribute
+/// TS: `[no-nested-top-level-landmark-008]` The `as` attribute
 #[test]
-fn no_nested_top_level_landmark_valid_005() {
-    const _ID: &str = "no-nested-top-level-landmark-valid-005";
+fn no_nested_top_level_landmark_008() {
+    const _ID: &str = "no-nested-top-level-landmark-008";
     let violations =
         run("\n<html>\n<body>\n\t<main>\n\t\t<x-aside as=\"aside\"></x-aside>\n\t</main>\n</body>\n</html>\n");
     assert!(violations.is_empty(), "{violations:?}");

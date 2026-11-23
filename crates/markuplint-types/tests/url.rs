@@ -368,7 +368,7 @@ fn non_empty_url_type() {
     assert_unmatched(&kw("", "NonEmptyURL"), "", REF_NON_EMPTY_URL, &[]);
     assert_unmatched(&kw("   ", "NonEmptyURL"), "   ", REF_NON_EMPTY_URL, &[]);
     assert_unmatched(&kw("\t\n", "NonEmptyURL"), "\t\n", REF_NON_EMPTY_URL, &[]);
-    // [no-invalid-attr-value-invalid-048]
+    // [no-invalid-attr-value-181]
     assert_unmatched(&kw("\t \n", "NonEmptyURL"), "\t \n", REF_NON_EMPTY_URL, &[]);
     assert!(kw("https://example.com", "NonEmptyURL").is_matched());
     assert!(kw("/relative/path", "NonEmptyURL").is_matched());
@@ -459,7 +459,7 @@ fn srcset_url_step() {
 
 #[test]
 fn rule_spec_values() {
-    // [no-invalid-attr-value-valid-003]
+    // [no-invalid-attr-value-011]
     for v in [
         "https://example.com/path/to",
         "//example.com/path/to",
@@ -476,7 +476,7 @@ fn rule_spec_values() {
         assert!(kw(v, "NonEmptyURL").is_matched(), "{v}");
     }
     assert!(!kw("//user:pass@example.com/path/to", "NonEmptyURL").is_matched());
-    // [no-invalid-attr-value-invalid-009]
+    // [no-invalid-attr-value-012]
     for v in [
         "http://@example.com",
         "http:foo",
@@ -488,11 +488,11 @@ fn rule_spec_values() {
     ] {
         assert!(!kw(v, "URL").is_matched(), "{v}");
     }
-    // [no-invalid-attr-value-invalid-010]
+    // [no-invalid-attr-value-013]
     assert!(!kw("[61:24:74]:98", "URL").is_matched());
     assert!(!kw("data:/example.com/", "URL").is_matched());
     assert!(!kw("/relative", "AbsoluteURLOrEmpty").is_matched());
-    // [no-invalid-attr-value-issue-3629-001] … 008
+    // [no-invalid-attr-value-096] … 008
     assert!(!kw("http://example.com/\u{0080}", "URL").is_matched());
     assert!(!kw("http://example.com/\u{009F}", "URL").is_matched());
     assert!(!kw("http://example.com/\u{FDD0}", "URL").is_matched());

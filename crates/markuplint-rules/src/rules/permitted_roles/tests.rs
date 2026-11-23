@@ -1,30 +1,30 @@
 //! Tests for `permitted-roles` rule.
 //!
 //! Test ID mapping (TS → Rust):
-//!   permitted-roles-valid-001          → permitted_roles_valid_001
-//!   permitted-roles-invalid-001        → permitted_roles_invalid_001
-//!   permitted-roles-issue-3641-001     → permitted_roles_issue_3641_001
-//!   permitted-roles-issue-3641-002     → permitted_roles_issue_3641_002
-//!   permitted-roles-issue-3641-003     → permitted_roles_issue_3641_003
-//!   permitted-roles-issue-3641-004     → permitted_roles_issue_3641_004
-//!   permitted-roles-issue-3641-005     → permitted_roles_issue_3641_005
-//!   permitted-roles-issue-3641-006     → permitted_roles_issue_3641_006
-//!   permitted-roles-valid-002          → permitted_roles_valid_002
-//!   permitted-roles-valid-003          → permitted_roles_valid_003
-//!   permitted-roles-valid-004          → permitted_roles_valid_004
-//!   permitted-roles-issue-3735-001     → permitted_roles_issue_3735_001
-//!   permitted-roles-issue-3735-002     → permitted_roles_issue_3735_002
-//!   permitted-roles-issue-3740-001     → permitted_roles_issue_3740_001
-//!   v6_permitted_roles_001             — Rust-only: `<h1 role="button">`, the input of issue-3740-001 without pretenders
-//!   v6_permitted_roles_002             — Rust-only: only the first non-permitted token is reported, at its own position
-//!   v6_permitted_roles_003             — Rust-only: an empty list reports the first token; no token reports the attribute
-//!   v6_permitted_roles_004             — Rust-only: the lookup is case-sensitive; the implicit role is permitted
-//!   v6_permitted_roles_005             — Rust-only: `permittedRoles: true` is every non-abstract role plus DPub roles, not graphics roles
-//!   v6_permitted_roles_006             — Rust-only: `{ "graphics-aam": true }` permits the graphics roles on SVG elements
-//!   v6_permitted_roles_007             — Rust-only: `<meta>` permits no role
-//!   v6_permitted_roles_008             — Rust-only: the implicit role is permitted, conditions applied (`a[href]`)
-//!   v6_permitted_roles_009             — Rust-only: severity and `rules: false`
-//!   v6_permitted_roles_010             — Rust-only: `div` permits `button` in ARIA 1.1 and 1.2, by option and by `ruleCommonSettings`
+//!   permitted-roles-001        → permitted_roles_001
+//!   permitted-roles-002        → permitted_roles_002
+//!   permitted-roles-003        → permitted_roles_003
+//!   permitted-roles-004        → permitted_roles_004
+//!   permitted-roles-005        → permitted_roles_005
+//!   permitted-roles-006        → permitted_roles_006
+//!   permitted-roles-007        → permitted_roles_007
+//!   permitted-roles-008        → permitted_roles_008
+//!   permitted-roles-009        → permitted_roles_009
+//!   permitted-roles-010        → permitted_roles_010
+//!   permitted-roles-011        → permitted_roles_011
+//!   permitted-roles-012        → permitted_roles_012
+//!   permitted-roles-013        → permitted_roles_013
+//!   permitted-roles-014        → permitted_roles_014
+//!   v6_permitted_roles_001     — Rust-only: `<h1 role="button">`, the input of issue-3740-001 without pretenders
+//!   v6_permitted_roles_002     — Rust-only: only the first non-permitted token is reported, at its own position
+//!   v6_permitted_roles_003     — Rust-only: an empty list reports the first token; no token reports the attribute
+//!   v6_permitted_roles_004     — Rust-only: the lookup is case-sensitive; the implicit role is permitted
+//!   v6_permitted_roles_005     — Rust-only: `permittedRoles: true` is every non-abstract role plus DPub roles, not graphics roles
+//!   v6_permitted_roles_006     — Rust-only: `{ "graphics-aam": true }` permits the graphics roles on SVG elements
+//!   v6_permitted_roles_007     — Rust-only: `<meta>` permits no role
+//!   v6_permitted_roles_008     — Rust-only: the implicit role is permitted, conditions applied (`a[href]`)
+//!   v6_permitted_roles_009     — Rust-only: severity and `rules: false`
+//!   v6_permitted_roles_010     — Rust-only: `div` permits `button` in ARIA 1.1 and 1.2, by option and by `ruleCommonSettings`
 
 use crate::lint::{LintConfig, lint};
 use crate::violation::{Severity, Violation};
@@ -66,17 +66,17 @@ fn assert_single(violations: &[Violation], line: u32, col: u32, message: &str, r
     assert_eq!(violations[0].raw, raw);
 }
 
-/// TS: `[permitted-roles-valid-001]`
+/// TS: `[permitted-roles-001]`
 #[test]
-fn permitted_roles_valid_001() {
-    const _ID: &str = "permitted-roles-valid-001";
+fn permitted_roles_001() {
+    const _ID: &str = "permitted-roles-001";
     assert!(violations(r#"<a href="path/to" role="button">text</a>"#).is_empty());
 }
 
-/// TS: `[permitted-roles-invalid-001]`
+/// TS: `[permitted-roles-002]`
 #[test]
-fn permitted_roles_invalid_001() {
-    const _ID: &str = "permitted-roles-invalid-001";
+fn permitted_roles_002() {
+    const _ID: &str = "permitted-roles-002";
     assert_single(
         &violations(r#"<select role="textbox"></select>"#),
         1,
@@ -86,10 +86,10 @@ fn permitted_roles_invalid_001() {
     );
 }
 
-/// TS: `[permitted-roles-issue-3641-001]`
+/// TS: `[permitted-roles-003]`
 #[test]
-fn permitted_roles_issue_3641_001() {
-    const _ID: &str = "permitted-roles-issue-3641-001";
+fn permitted_roles_003() {
+    const _ID: &str = "permitted-roles-003";
     assert_single(
         &violations(r#"<img src="x.png" alt="" role="presentation">"#),
         1,
@@ -99,10 +99,10 @@ fn permitted_roles_issue_3641_001() {
     );
 }
 
-/// TS: `[permitted-roles-issue-3641-002]`
+/// TS: `[permitted-roles-004]`
 #[test]
-fn permitted_roles_issue_3641_002() {
-    const _ID: &str = "permitted-roles-issue-3641-002";
+fn permitted_roles_004() {
+    const _ID: &str = "permitted-roles-004";
     assert_single(
         &violations(r#"<img src="x.png" alt="" role="none">"#),
         1,
@@ -112,10 +112,10 @@ fn permitted_roles_issue_3641_002() {
     );
 }
 
-/// TS: `[permitted-roles-issue-3641-003]`
+/// TS: `[permitted-roles-005]`
 #[test]
-fn permitted_roles_issue_3641_003() {
-    const _ID: &str = "permitted-roles-issue-3641-003";
+fn permitted_roles_005() {
+    const _ID: &str = "permitted-roles-005";
     assert_single(
         &violations(r#"<img src="x.png" alt="" role="img">"#),
         1,
@@ -125,10 +125,10 @@ fn permitted_roles_issue_3641_003() {
     );
 }
 
-/// TS: `[permitted-roles-issue-3641-004]`
+/// TS: `[permitted-roles-006]`
 #[test]
-fn permitted_roles_issue_3641_004() {
-    const _ID: &str = "permitted-roles-issue-3641-004";
+fn permitted_roles_006() {
+    const _ID: &str = "permitted-roles-006";
     assert_single(
         &violations(r#"<img src="x.png" alt="" role="button">"#),
         1,
@@ -138,10 +138,10 @@ fn permitted_roles_issue_3641_004() {
     );
 }
 
-/// TS: `[permitted-roles-issue-3641-005]`
+/// TS: `[permitted-roles-007]`
 #[test]
-fn permitted_roles_issue_3641_005() {
-    const _ID: &str = "permitted-roles-issue-3641-005";
+fn permitted_roles_007() {
+    const _ID: &str = "permitted-roles-007";
     assert_single(
         &violations(r#"<img src="x.png" alt="" role="link">"#),
         1,
@@ -151,10 +151,10 @@ fn permitted_roles_issue_3641_005() {
     );
 }
 
-/// TS: `[permitted-roles-issue-3641-006]`
+/// TS: `[permitted-roles-008]`
 #[test]
-fn permitted_roles_issue_3641_006() {
-    const _ID: &str = "permitted-roles-issue-3641-006";
+fn permitted_roles_008() {
+    const _ID: &str = "permitted-roles-008";
     assert_single(
         &violations(r#"<img src="x.png" role="presentation">"#),
         1,
@@ -164,31 +164,31 @@ fn permitted_roles_issue_3641_006() {
     );
 }
 
-/// TS: `[permitted-roles-valid-002]`
+/// TS: `[permitted-roles-009]`
 #[test]
-fn permitted_roles_valid_002() {
-    const _ID: &str = "permitted-roles-valid-002";
+fn permitted_roles_009() {
+    const _ID: &str = "permitted-roles-009";
     assert!(violations(r#"<img src="x.png" alt="">"#).is_empty());
 }
 
-/// TS: `[permitted-roles-valid-003]`
+/// TS: `[permitted-roles-010]`
 #[test]
-fn permitted_roles_valid_003() {
-    const _ID: &str = "permitted-roles-valid-003";
+fn permitted_roles_010() {
+    const _ID: &str = "permitted-roles-010";
     assert!(violations(r#"<img src="x.png" alt="photo" role="button">"#).is_empty());
 }
 
-/// TS: `[permitted-roles-valid-004]`
+/// TS: `[permitted-roles-011]`
 #[test]
-fn permitted_roles_valid_004() {
-    const _ID: &str = "permitted-roles-valid-004";
+fn permitted_roles_011() {
+    const _ID: &str = "permitted-roles-011";
     assert!(violations(r#"<img src="x.png" aria-label="foo" role="img">"#).is_empty());
 }
 
-/// TS: `[permitted-roles-issue-3735-001]`
+/// TS: `[permitted-roles-012]`
 #[test]
-fn permitted_roles_issue_3735_001() {
-    const _ID: &str = "permitted-roles-issue-3735-001";
+fn permitted_roles_012() {
+    const _ID: &str = "permitted-roles-012";
     assert_single(
         &violations(r#"<details><summary role="button">x</summary><p>y</p></details>"#),
         1,
@@ -198,10 +198,10 @@ fn permitted_roles_issue_3735_001() {
     );
 }
 
-/// TS: `[permitted-roles-issue-3735-002]`
+/// TS: `[permitted-roles-013]`
 #[test]
-fn permitted_roles_issue_3735_002() {
-    const _ID: &str = "permitted-roles-issue-3735-002";
+fn permitted_roles_013() {
+    const _ID: &str = "permitted-roles-013";
     assert_single(
         &violations(r#"<details><summary role="generic">x</summary><p>y</p></details>"#),
         1,
@@ -351,11 +351,11 @@ fn v6_permitted_roles_010() {
     }
 }
 
-/// TS: `[permitted-roles-issue-3740-001]` — HTML→HTML pretender no-ops: original h1 role
+/// TS: `[permitted-roles-014]` — HTML→HTML pretender no-ops: original h1 role
 /// restriction still fires
 #[test]
-fn permitted_roles_issue_3740_001() {
-    const _ID: &str = "permitted-roles-issue-3740-001";
+fn permitted_roles_014() {
+    const _ID: &str = "permitted-roles-014";
     assert_eq!(
         crate::test_util::lint_brief(
             "permitted-roles",

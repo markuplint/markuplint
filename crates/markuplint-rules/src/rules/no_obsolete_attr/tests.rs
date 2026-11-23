@@ -1,11 +1,11 @@
 //! Tests for `no-obsolete-attr` rule.
 //!
 //! Test ID mapping (TS → Rust):
-//!   no-obsolete-attr-invalid-001  → no_obsolete_attr_invalid_001
-//!   no-obsolete-attr-invalid-002  → no_obsolete_attr_invalid_002
-//!   no-obsolete-attr-valid-001    → no_obsolete_attr_valid_001
-//!   no-obsolete-attr-valid-002    → no_obsolete_attr_valid_002
-//!   v6_no_obsolete_attr_001       — Rust-only: an obsolete attribute written in another case is the attribute, named as the spec spells it
+//!   no-obsolete-attr-001     → no_obsolete_attr_001
+//!   no-obsolete-attr-002     → no_obsolete_attr_002
+//!   no-obsolete-attr-005     → no_obsolete_attr_005
+//!   no-obsolete-attr-006     → no_obsolete_attr_006
+//!   v6_no_obsolete_attr_001  — Rust-only: an obsolete attribute written in another case is the attribute, named as the spec spells it
 
 use crate::lint::{LintConfig, lint};
 use crate::violation::Severity;
@@ -38,10 +38,10 @@ fn run(html: &str) -> Vec<crate::violation::Violation> {
     lint(&arena, &spec, &config).violations
 }
 
-/// TS: `[no-obsolete-attr-invalid-001]`
+/// TS: `[no-obsolete-attr-001]`
 #[test]
-fn no_obsolete_attr_invalid_001() {
-    const _ID: &str = "no-obsolete-attr-invalid-001";
+fn no_obsolete_attr_001() {
+    const _ID: &str = "no-obsolete-attr-001";
     let violations = run(r#"<link rel="alternate" href="/feed" charset="utf-8">"#);
     assert_eq!(violations.len(), 1);
     assert_eq!(violations[0].rule_id, "no-obsolete-attr");
@@ -52,10 +52,10 @@ fn no_obsolete_attr_invalid_001() {
     assert_eq!(violations[0].message, "The \"charset\" attribute is obsolete");
 }
 
-/// TS: `[no-obsolete-attr-invalid-002]`
+/// TS: `[no-obsolete-attr-002]`
 #[test]
-fn no_obsolete_attr_invalid_002() {
-    const _ID: &str = "no-obsolete-attr-invalid-002";
+fn no_obsolete_attr_002() {
+    const _ID: &str = "no-obsolete-attr-002";
     let violations = run(r#"<link rel="made" href="/author" rev="made">"#);
     assert_eq!(violations.len(), 1);
     assert_eq!(violations[0].severity, Severity::Error);
@@ -65,18 +65,18 @@ fn no_obsolete_attr_invalid_002() {
     assert_eq!(violations[0].message, "The \"rev\" attribute is obsolete");
 }
 
-/// TS: `[no-obsolete-attr-valid-001]`
+/// TS: `[no-obsolete-attr-005]`
 #[test]
-fn no_obsolete_attr_valid_001() {
-    const _ID: &str = "no-obsolete-attr-valid-001";
+fn no_obsolete_attr_005() {
+    const _ID: &str = "no-obsolete-attr-005";
     let violations = run(r#"<link rel="alternate" href="/feed">"#);
     assert_eq!(violations.len(), 0);
 }
 
-/// TS: `[no-obsolete-attr-valid-002]`
+/// TS: `[no-obsolete-attr-006]`
 #[test]
-fn no_obsolete_attr_valid_002() {
-    const _ID: &str = "no-obsolete-attr-valid-002";
+fn no_obsolete_attr_006() {
+    const _ID: &str = "no-obsolete-attr-006";
     let violations = run(r#"<img align="top">"#);
     assert_eq!(violations.len(), 1);
     assert_eq!(violations[0].severity, Severity::Error);

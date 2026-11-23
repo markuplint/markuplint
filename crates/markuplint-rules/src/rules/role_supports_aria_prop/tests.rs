@@ -1,8 +1,8 @@
 //! Tests for `role-supports-aria-prop` rule.
 //!
 //! Test ID mapping (TS → Rust):
-//!   role-supports-aria-prop-valid-001    → role_supports_aria_prop_valid_001
-//!   role-supports-aria-prop-invalid-001  → role_supports_aria_prop_invalid_001
+//!   role-supports-aria-prop-001    → role_supports_aria_prop_001
+//!   role-supports-aria-prop-002  → role_supports_aria_prop_002
 //!   v6_role_supports_aria_prop_001  — Rust-only: every unsupported attribute is reported, with its type
 //!   v6_role_supports_aria_prop_002  — Rust-only: an attribute name written in upper case is the owned property it names
 //!   v6_role_supports_aria_prop_003  — Rust-only: implicit roles, including `generic`, and an invalid `role`
@@ -51,10 +51,10 @@ fn assert_violations(actual: &[Violation], expected: &[Expected<'_>]) {
     }
 }
 
-/// TS: `[role-supports-aria-prop-valid-001]`
+/// TS: `[role-supports-aria-prop-001]`
 #[test]
-fn role_supports_aria_prop_valid_001() {
-    const _ID: &str = "role-supports-aria-prop-valid-001";
+fn role_supports_aria_prop_001() {
+    const _ID: &str = "role-supports-aria-prop-001";
     let violations = run_rule(
         r#"<div role="button" aria-pressed="true"></div>"#,
         serde_json::json!(true),
@@ -62,10 +62,10 @@ fn role_supports_aria_prop_valid_001() {
     assert_violations(&violations, &[]);
 }
 
-/// TS: `[role-supports-aria-prop-invalid-001]`
+/// TS: `[role-supports-aria-prop-002]`
 #[test]
-fn role_supports_aria_prop_invalid_001() {
-    const _ID: &str = "role-supports-aria-prop-invalid-001";
+fn role_supports_aria_prop_002() {
+    const _ID: &str = "role-supports-aria-prop-002";
     let violations = run_rule(
         r#"<div role="heading" aria-pressed="true"></div>"#,
         serde_json::json!(true),

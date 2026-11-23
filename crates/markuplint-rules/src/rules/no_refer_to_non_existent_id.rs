@@ -259,11 +259,11 @@ fn check_space_separated_ids(
 mod tests {
     use super::*;
 
-    /// TS: `[no-refer-to-non-existent-id-invalid-002]` td[headers]. TS runs it with the JSX parser;
+    /// TS: `[no-refer-to-non-existent-id-002]` td[headers]. TS runs it with the JSX parser;
     /// the markup is the same for the HTML parser, as it is no component.
     #[test]
-    fn no_refer_to_non_existent_id_invalid_002() {
-        const _ID: &str = "no-refer-to-non-existent-id-invalid-002";
+    fn no_refer_to_non_existent_id_002() {
+        const _ID: &str = "no-refer-to-non-existent-id-002";
         let violations = crate::test_util::lint_brief(
             "no-refer-to-non-existent-id",
             "<table>\n  <tr>\n    <th id=\"a\"></th>\n    <th id=\"b\"></th>\n    <td headers=\"a c\"></td>\n  </tr>\n</table>",

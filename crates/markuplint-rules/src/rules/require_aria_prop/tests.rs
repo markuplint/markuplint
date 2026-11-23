@@ -1,18 +1,18 @@
 //! Tests for `require-aria-prop` rule.
 //!
 //! Test ID mapping (TS → Rust):
-//!   require-aria-prop-valid-001        → require_aria_prop_valid_001
-//!   require-aria-prop-valid-002        → require_aria_prop_valid_002
-//!   require-aria-prop-invalid-001      → require_aria_prop_invalid_001
-//!   require-aria-prop-issue-3682-001   → require_aria_prop_issue_3682_001
-//!   require-aria-prop-issue-3682-002   → require_aria_prop_issue_3682_002
-//!   require-aria-prop-issue-3682-003   → require_aria_prop_issue_3682_003
-//!   require-aria-prop-issue-3682-004   → require_aria_prop_issue_3682_004
-//!   require-aria-prop-issue-3682-005   → require_aria_prop_issue_3682_005
-//!   require-aria-prop-issue-3682-006   → require_aria_prop_issue_3682_006
-//!   require-aria-prop-issue-3682-007   → require_aria_prop_issue_3682_007
-//!   require-aria-prop-issue-3682-008   → require_aria_prop_issue_3682_008
-//!   require-aria-prop-issue-3682-009   → require_aria_prop_issue_3682_009
+//!   require-aria-prop-001        → require_aria_prop_001
+//!   require-aria-prop-002        → require_aria_prop_002
+//!   require-aria-prop-003      → require_aria_prop_003
+//!   require-aria-prop-004   → require_aria_prop_004
+//!   require-aria-prop-005   → require_aria_prop_005
+//!   require-aria-prop-006   → require_aria_prop_006
+//!   require-aria-prop-007   → require_aria_prop_007
+//!   require-aria-prop-008   → require_aria_prop_008
+//!   require-aria-prop-009   → require_aria_prop_009
+//!   require-aria-prop-010   → require_aria_prop_010
+//!   require-aria-prop-011   → require_aria_prop_011
+//!   require-aria-prop-012   → require_aria_prop_012
 //!   v6_require_aria_prop_001  — Rust-only: the message names the property type (state / property)
 //!   v6_require_aria_prop_002  — Rust-only: the attribute name is matched case-insensitively
 //!   v6_require_aria_prop_003  — Rust-only: the computed role decides (first valid token, unknown role)
@@ -66,17 +66,17 @@ fn version(version: &str) -> serde_json::Value {
     serde_json::json!({ "options": { "version": version } })
 }
 
-/// TS: `[require-aria-prop-valid-001]`
+/// TS: `[require-aria-prop-001]`
 #[test]
-fn require_aria_prop_valid_001() {
-    const _ID: &str = "require-aria-prop-valid-001";
+fn require_aria_prop_001() {
+    const _ID: &str = "require-aria-prop-001";
     assert_violations(&run_rule("<div></div>", serde_json::json!(true)), &[]);
 }
 
-/// TS: `[require-aria-prop-valid-002]`
+/// TS: `[require-aria-prop-002]`
 #[test]
-fn require_aria_prop_valid_002() {
-    const _ID: &str = "require-aria-prop-valid-002";
+fn require_aria_prop_002() {
+    const _ID: &str = "require-aria-prop-002";
     let violations = run_rule(
         r#"<div role="slider" aria-valuenow="50" aria-valuemin="0" aria-valuemax="100"></div>"#,
         serde_json::json!(true),
@@ -84,29 +84,29 @@ fn require_aria_prop_valid_002() {
     assert_violations(&violations, &[]);
 }
 
-/// TS: `[require-aria-prop-invalid-001]`
+/// TS: `[require-aria-prop-003]`
 #[test]
-fn require_aria_prop_invalid_001() {
-    const _ID: &str = "require-aria-prop-invalid-001";
+fn require_aria_prop_003() {
+    const _ID: &str = "require-aria-prop-003";
     let violations = run_rule(r#"<div role="slider"></div>"#, serde_json::json!(true));
     assert!(!violations.is_empty(), "violations: {violations:?}");
     assert_eq!(violations[0].severity, Severity::Error);
 }
 
-/// TS: `[require-aria-prop-issue-3682-001]`
+/// TS: `[require-aria-prop-004]`
 #[test]
-fn require_aria_prop_issue_3682_001() {
-    const _ID: &str = "require-aria-prop-issue-3682-001";
+fn require_aria_prop_004() {
+    const _ID: &str = "require-aria-prop-004";
     assert_violations(
         &run_rule(r#"<div role="separator"></div>"#, serde_json::json!(true)),
         &[],
     );
 }
 
-/// TS: `[require-aria-prop-issue-3682-002]`
+/// TS: `[require-aria-prop-005]`
 #[test]
-fn require_aria_prop_issue_3682_002() {
-    const _ID: &str = "require-aria-prop-issue-3682-002";
+fn require_aria_prop_005() {
+    const _ID: &str = "require-aria-prop-005";
     let violations = run_rule(r#"<div role="separator" tabindex="0"></div>"#, serde_json::json!(true));
     assert_violations(
         &violations,
@@ -120,10 +120,10 @@ fn require_aria_prop_issue_3682_002() {
     );
 }
 
-/// TS: `[require-aria-prop-issue-3682-003]`
+/// TS: `[require-aria-prop-006]`
 #[test]
-fn require_aria_prop_issue_3682_003() {
-    const _ID: &str = "require-aria-prop-issue-3682-003";
+fn require_aria_prop_006() {
+    const _ID: &str = "require-aria-prop-006";
     let violations = run_rule(
         r#"<div role="separator" tabindex="0" aria-valuenow="50"></div>"#,
         serde_json::json!(true),
@@ -131,51 +131,51 @@ fn require_aria_prop_issue_3682_003() {
     assert_violations(&violations, &[]);
 }
 
-/// TS: `[require-aria-prop-issue-3682-004]`
+/// TS: `[require-aria-prop-007]`
 #[test]
-fn require_aria_prop_issue_3682_004() {
-    const _ID: &str = "require-aria-prop-issue-3682-004";
+fn require_aria_prop_007() {
+    const _ID: &str = "require-aria-prop-007";
     let violations = run_rule(r#"<button role="separator">Drag</button>"#, serde_json::json!(true));
     assert!(!violations.is_empty(), "violations: {violations:?}");
     assert!(violations[0].message.contains("aria-valuenow"));
 }
 
-/// TS: `[require-aria-prop-issue-3682-005]`
+/// TS: `[require-aria-prop-008]`
 #[test]
-fn require_aria_prop_issue_3682_005() {
-    const _ID: &str = "require-aria-prop-issue-3682-005";
+fn require_aria_prop_008() {
+    const _ID: &str = "require-aria-prop-008";
     let violations = run_rule(r#"<div role="separator" tabindex="-1"></div>"#, serde_json::json!(true));
     assert!(!violations.is_empty(), "violations: {violations:?}");
     assert!(violations[0].message.contains("aria-valuenow"));
 }
 
-/// TS: `[require-aria-prop-issue-3682-006]`
+/// TS: `[require-aria-prop-009]`
 #[test]
-fn require_aria_prop_issue_3682_006() {
-    const _ID: &str = "require-aria-prop-issue-3682-006";
+fn require_aria_prop_009() {
+    const _ID: &str = "require-aria-prop-009";
     assert_violations(&run_rule(r#"<hr role="separator">"#, serde_json::json!(true)), &[]);
 }
 
-/// TS: `[require-aria-prop-issue-3682-007]`
+/// TS: `[require-aria-prop-010]`
 #[test]
-fn require_aria_prop_issue_3682_007() {
-    const _ID: &str = "require-aria-prop-issue-3682-007";
+fn require_aria_prop_010() {
+    const _ID: &str = "require-aria-prop-010";
     assert_violations(&run_rule(r#"<div role="separator"></div>"#, version("1.2")), &[]);
 }
 
-/// TS: `[require-aria-prop-issue-3682-008]`
+/// TS: `[require-aria-prop-011]`
 #[test]
-fn require_aria_prop_issue_3682_008() {
-    const _ID: &str = "require-aria-prop-issue-3682-008";
+fn require_aria_prop_011() {
+    const _ID: &str = "require-aria-prop-011";
     let violations = run_rule(r#"<div role="separator" tabindex="0"></div>"#, version("1.2"));
     assert!(!violations.is_empty(), "violations: {violations:?}");
     assert!(violations.iter().any(|v| v.message.contains("aria-valuenow")));
 }
 
-/// TS: `[require-aria-prop-issue-3682-009]`
+/// TS: `[require-aria-prop-012]`
 #[test]
-fn require_aria_prop_issue_3682_009() {
-    const _ID: &str = "require-aria-prop-issue-3682-009";
+fn require_aria_prop_012() {
+    const _ID: &str = "require-aria-prop-012";
     let violations = run_rule(
         r#"<div role="separator" contenteditable>x</div>"#,
         serde_json::json!(true),

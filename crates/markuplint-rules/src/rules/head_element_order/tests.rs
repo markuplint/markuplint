@@ -1,38 +1,38 @@
 //! Tests for `head-element-order` rule.
 //!
 //! Test ID mapping (TS → Rust):
-//!   head-element-order-valid-001    → head_element_order_valid_001
-//!   head-element-order-invalid-001  → head_element_order_invalid_001
-//!   head-element-order-valid-002    → head_element_order_valid_002
-//!   head-element-order-valid-003    → head_element_order_valid_003
-//!   head-element-order-valid-004    → head_element_order_valid_004
-//!   head-element-order-valid-005    → head_element_order_valid_005
-//!   head-element-order-invalid-002  → head_element_order_invalid_002
-//!   head-element-order-valid-006    → head_element_order_valid_006
-//!   head-element-order-valid-007    → head_element_order_valid_007
-//!   head-element-order-invalid-003  → head_element_order_invalid_003
-//!   head-element-order-valid-008    → head_element_order_valid_008
-//!   head-element-order-invalid-004  → head_element_order_invalid_004
-//!   head-element-order-valid-009    → head_element_order_valid_009
-//!   head-element-order-invalid-005  → head_element_order_invalid_005
-//!   head-element-order-valid-010    → head_element_order_valid_010
-//!   head-element-order-invalid-006  → head_element_order_invalid_006
-//!   head-element-order-invalid-007  → head_element_order_invalid_007
-//!   head-element-order-valid-011    → head_element_order_valid_011
-//!   head-element-order-valid-012    → head_element_order_valid_012
-//!   head-element-order-invalid-008  → head_element_order_invalid_008
-//!   head-element-order-valid-013    → head_element_order_valid_013
-//!   head-element-order-valid-014    → head_element_order_valid_014
-//!   head-element-order-valid-015    → head_element_order_valid_015
-//!   head-element-order-invalid-009  → head_element_order_invalid_009
-//!   head-element-order-invalid-010  → head_element_order_invalid_010
-//!   head-element-order-fix-001      → head_element_order_fix_001
-//!   head-element-order-fix-002      → head_element_order_fix_002
-//!   head-element-order-fix-003      → head_element_order_fix_003
-//!   head-element-order-fix-004      → head_element_order_fix_004
-//!   head-element-order-fix-005      → head_element_order_fix_005
-//!   head-element-order-fix-006      → head_element_order_fix_006
-//!   head-element-order-fix-007      → head_element_order_fix_007
+//!   head-element-order-001    → head_element_order_001
+//!   head-element-order-002  → head_element_order_002
+//!   head-element-order-003    → head_element_order_003
+//!   head-element-order-004    → head_element_order_004
+//!   head-element-order-005    → head_element_order_005
+//!   head-element-order-006    → head_element_order_006
+//!   head-element-order-007  → head_element_order_007
+//!   head-element-order-008    → head_element_order_008
+//!   head-element-order-009    → head_element_order_009
+//!   head-element-order-010  → head_element_order_010
+//!   head-element-order-011    → head_element_order_011
+//!   head-element-order-012  → head_element_order_012
+//!   head-element-order-013    → head_element_order_013
+//!   head-element-order-014  → head_element_order_014
+//!   head-element-order-015    → head_element_order_015
+//!   head-element-order-016  → head_element_order_016
+//!   head-element-order-017  → head_element_order_017
+//!   head-element-order-018    → head_element_order_018
+//!   head-element-order-019    → head_element_order_019
+//!   head-element-order-020  → head_element_order_020
+//!   head-element-order-021    → head_element_order_021
+//!   head-element-order-022    → head_element_order_022
+//!   head-element-order-023    → head_element_order_023
+//!   head-element-order-024  → head_element_order_024
+//!   head-element-order-025  → head_element_order_025
+//!   head-element-order-026      → head_element_order_026
+//!   head-element-order-027      → head_element_order_027
+//!   head-element-order-028      → head_element_order_028
+//!   head-element-order-029      → head_element_order_029
+//!   head-element-order-030      → head_element_order_030
+//!   head-element-order-031      → head_element_order_031
+//!   head-element-order-032      → head_element_order_032
 //!   v6_head_element_order_001  — Rust-only: every out-of-place child is reported where it stands
 //!   v6_head_element_order_002  — Rust-only: alphabetical order reports each misplaced `meta`
 //!   v6_head_element_order_003  — Rust-only: `true` uses the default order
@@ -64,10 +64,10 @@ fn fixed(html: &str, value: serde_json::Value) -> String {
     fixed_code(html, &serde_json::json!({ "rules": { RULE: { "value": value } } }))
 }
 
-/// TS: `[head-element-order-fix-001]` — basic swap: title and meta[charset]
+/// TS: `[head-element-order-026]` — basic swap: title and meta[charset]
 #[test]
-fn head_element_order_fix_001() {
-    const _ID: &str = "head-element-order-fix-001";
+fn head_element_order_026() {
+    const _ID: &str = "head-element-order-026";
     assert_eq!(
         fixed(
             r#"<html><head><title>Title</title><meta charset="UTF-8"></head><body></body></html>"#,
@@ -77,10 +77,10 @@ fn head_element_order_fix_001() {
     );
 }
 
-/// TS: `[head-element-order-fix-002]` — multiple elements reorder
+/// TS: `[head-element-order-027]` — multiple elements reorder
 #[test]
-fn head_element_order_fix_002() {
-    const _ID: &str = "head-element-order-fix-002";
+fn head_element_order_027() {
+    const _ID: &str = "head-element-order-027";
     assert_eq!(
         fixed(
             r#"<html><head><script src="app.js"></script><title>Title</title><meta charset="UTF-8"></head><body></body></html>"#,
@@ -90,10 +90,10 @@ fn head_element_order_fix_002() {
     );
 }
 
-/// TS: `[head-element-order-fix-003]` — preserve indentation
+/// TS: `[head-element-order-028]` — preserve indentation
 #[test]
-fn head_element_order_fix_003() {
-    const _ID: &str = "head-element-order-fix-003";
+fn head_element_order_028() {
+    const _ID: &str = "head-element-order-028";
     assert_eq!(
         fixed(
             "<html>\n<head>\n\t<title>Title</title>\n\t<meta charset=\"UTF-8\">\n</head>\n<body></body>\n</html>",
@@ -103,10 +103,10 @@ fn head_element_order_fix_003() {
     );
 }
 
-/// TS: `[head-element-order-fix-004]` — alphabetical sort fix
+/// TS: `[head-element-order-029]` — alphabetical sort fix
 #[test]
-fn head_element_order_fix_004() {
-    const _ID: &str = "head-element-order-fix-004";
+fn head_element_order_029() {
+    const _ID: &str = "head-element-order-029";
     assert_eq!(
         fixed(
             r#"<html><head><meta name="viewport" content="width=device-width"><meta name="author" content="Test"><meta name="description" content="Desc"></head><body></body></html>"#,
@@ -116,18 +116,18 @@ fn head_element_order_fix_004() {
     );
 }
 
-/// TS: `[head-element-order-fix-005]` — already correct order: no change
+/// TS: `[head-element-order-030]` — already correct order: no change
 #[test]
-fn head_element_order_fix_005() {
-    const _ID: &str = "head-element-order-fix-005";
+fn head_element_order_030() {
+    const _ID: &str = "head-element-order-030";
     let source = r#"<html><head><meta charset="UTF-8"><title>Title</title></head><body></body></html>"#;
     assert_eq!(fixed(source, serde_json::json!(["meta[charset]", "title"])), source);
 }
 
-/// TS: `[head-element-order-fix-006]` — reorder elements with child content (script/style)
+/// TS: `[head-element-order-031]` — reorder elements with child content (script/style)
 #[test]
-fn head_element_order_fix_006() {
-    const _ID: &str = "head-element-order-fix-006";
+fn head_element_order_031() {
+    const _ID: &str = "head-element-order-031";
     assert_eq!(
         fixed(
             r#"<html><head><script>console.log("hello")</script><meta charset="UTF-8"></head><body></body></html>"#,
@@ -137,10 +137,10 @@ fn head_element_order_fix_006() {
     );
 }
 
-/// TS: `[head-element-order-fix-007]` — fix: head without explicit close tag
+/// TS: `[head-element-order-032]` — fix: head without explicit close tag
 #[test]
-fn head_element_order_fix_007() {
-    const _ID: &str = "head-element-order-fix-007";
+fn head_element_order_032() {
+    const _ID: &str = "head-element-order-032";
     assert_eq!(
         fixed(
             r#"<html><head><title>Title</title><meta charset="UTF-8"><body></body></html>"#,
@@ -228,10 +228,10 @@ fn v6_head_element_order_005() {
     );
 }
 
-/// TS: `[head-element-order-valid-001]` correct order: no violations
+/// TS: `[head-element-order-001]` correct order: no violations
 #[test]
-fn head_element_order_valid_001() {
-    const _ID: &str = "head-element-order-valid-001";
+fn head_element_order_001() {
+    const _ID: &str = "head-element-order-001";
     let v = run_value(
         r#"<html><head><meta charset="UTF-8"><title>Title</title><link rel="stylesheet" href="style.css"></head><body></body></html>"#,
         serde_json::json!(["meta[charset]", "title", "link"]),
@@ -239,10 +239,10 @@ fn head_element_order_valid_001() {
     assert_eq!(v.len(), 0, "{v:?}");
 }
 
-/// TS: `[head-element-order-invalid-001]` wrong order: title before meta[charset]
+/// TS: `[head-element-order-002]` wrong order: title before meta[charset]
 #[test]
-fn head_element_order_invalid_001() {
-    const _ID: &str = "head-element-order-invalid-001";
+fn head_element_order_002() {
+    const _ID: &str = "head-element-order-002";
     let v = run_value(
         r#"<html><head><title>Title</title><meta charset="UTF-8"></head><body></body></html>"#,
         serde_json::json!(["meta[charset]", "title", "link"]),
@@ -250,10 +250,10 @@ fn head_element_order_invalid_001() {
     assert_eq!(v.len(), 2, "{v:?}");
 }
 
-/// TS: `[head-element-order-valid-002]` empty head: no violations
+/// TS: `[head-element-order-003]` empty head: no violations
 #[test]
-fn head_element_order_valid_002() {
-    const _ID: &str = "head-element-order-valid-002";
+fn head_element_order_003() {
+    const _ID: &str = "head-element-order-003";
     let v = run_value(
         "<html><head></head><body></body></html>",
         serde_json::json!(["meta[charset]", "title"]),
@@ -261,10 +261,10 @@ fn head_element_order_valid_002() {
     assert_eq!(v.len(), 0, "{v:?}");
 }
 
-/// TS: `[head-element-order-valid-003]` no head: no violations
+/// TS: `[head-element-order-004]` no head: no violations
 #[test]
-fn head_element_order_valid_003() {
-    const _ID: &str = "head-element-order-valid-003";
+fn head_element_order_004() {
+    const _ID: &str = "head-element-order-004";
     let v = run_value(
         "<html><body></body></html>",
         serde_json::json!(["meta[charset]", "title"]),
@@ -272,10 +272,10 @@ fn head_element_order_valid_003() {
     assert_eq!(v.len(), 0, "{v:?}");
 }
 
-/// TS: `[head-element-order-valid-004]` single child: no violations
+/// TS: `[head-element-order-005]` single child: no violations
 #[test]
-fn head_element_order_valid_004() {
-    const _ID: &str = "head-element-order-valid-004";
+fn head_element_order_005() {
+    const _ID: &str = "head-element-order-005";
     let v = run_value(
         "<html><head><title>Title</title></head><body></body></html>",
         serde_json::json!(["meta[charset]", "title"]),
@@ -283,10 +283,10 @@ fn head_element_order_valid_004() {
     assert_eq!(v.len(), 0, "{v:?}");
 }
 
-/// TS: `[head-element-order-valid-005]` unmatched elements go to the end
+/// TS: `[head-element-order-006]` unmatched elements go to the end
 #[test]
-fn head_element_order_valid_005() {
-    const _ID: &str = "head-element-order-valid-005";
+fn head_element_order_006() {
+    const _ID: &str = "head-element-order-006";
     let v = run_value(
         r#"<html><head><meta charset="UTF-8"><title>Title</title><base href="/"></head><body></body></html>"#,
         serde_json::json!(["meta[charset]", "title"]),
@@ -294,10 +294,10 @@ fn head_element_order_valid_005() {
     assert_eq!(v.len(), 0, "{v:?}");
 }
 
-/// TS: `[head-element-order-invalid-002]` unmatched element before matched: violation
+/// TS: `[head-element-order-007]` unmatched element before matched: violation
 #[test]
-fn head_element_order_invalid_002() {
-    const _ID: &str = "head-element-order-invalid-002";
+fn head_element_order_007() {
+    const _ID: &str = "head-element-order-007";
     let v = run_value(
         r#"<html><head><base href="/"><meta charset="UTF-8"><title>Title</title></head><body></body></html>"#,
         serde_json::json!(["meta[charset]", "title"]),
@@ -305,10 +305,10 @@ fn head_element_order_invalid_002() {
     assert_eq!(v.len(), 3, "{v:?}");
 }
 
-/// TS: `[head-element-order-valid-006]` same group preserves source order
+/// TS: `[head-element-order-008]` same group preserves source order
 #[test]
-fn head_element_order_valid_006() {
-    const _ID: &str = "head-element-order-valid-006";
+fn head_element_order_008() {
+    const _ID: &str = "head-element-order-008";
     let v = run_value(
         r#"<html><head><link rel="stylesheet" href="a.css"><link rel="stylesheet" href="b.css"></head><body></body></html>"#,
         serde_json::json!(["link"]),
@@ -316,10 +316,10 @@ fn head_element_order_valid_006() {
     assert_eq!(v.len(), 0, "{v:?}");
 }
 
-/// TS: `[head-element-order-valid-007]` selector conflict: more specific selector wins by position
+/// TS: `[head-element-order-009]` selector conflict: more specific selector wins by position
 #[test]
-fn head_element_order_valid_007() {
-    const _ID: &str = "head-element-order-valid-007";
+fn head_element_order_009() {
+    const _ID: &str = "head-element-order-009";
     let v = run_value(
         r#"<html><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width"></head><body></body></html>"#,
         serde_json::json!(["meta[charset]", "meta"]),
@@ -327,10 +327,10 @@ fn head_element_order_valid_007() {
     assert_eq!(v.len(), 0, "{v:?}");
 }
 
-/// TS: `[head-element-order-invalid-003]` selector conflict: meta[charset] matched before meta
+/// TS: `[head-element-order-010]` selector conflict: meta[charset] matched before meta
 #[test]
-fn head_element_order_invalid_003() {
-    const _ID: &str = "head-element-order-invalid-003";
+fn head_element_order_010() {
+    const _ID: &str = "head-element-order-010";
     let v = run_value(
         r#"<html><head><meta name="viewport" content="width=device-width"><meta charset="UTF-8"></head><body></body></html>"#,
         serde_json::json!(["meta[charset]", "meta"]),
@@ -338,10 +338,10 @@ fn head_element_order_invalid_003() {
     assert_eq!(v.len(), 2, "{v:?}");
 }
 
-/// TS: `[head-element-order-valid-008]` custom order setting
+/// TS: `[head-element-order-011]` custom order setting
 #[test]
-fn head_element_order_valid_008() {
-    const _ID: &str = "head-element-order-valid-008";
+fn head_element_order_011() {
+    const _ID: &str = "head-element-order-011";
     let v = run_value(
         r#"<html><head><title>Title</title><meta charset="UTF-8"></head><body></body></html>"#,
         serde_json::json!(["title", "meta[charset]"]),
@@ -349,10 +349,10 @@ fn head_element_order_valid_008() {
     assert_eq!(v.len(), 0, "{v:?}");
 }
 
-/// TS: `[head-element-order-invalid-004]` severity setting
+/// TS: `[head-element-order-012]` severity setting
 #[test]
-fn head_element_order_invalid_004() {
-    const _ID: &str = "head-element-order-invalid-004";
+fn head_element_order_012() {
+    const _ID: &str = "head-element-order-012";
     let v = run(
         r#"<html><head><title>Title</title><meta charset="UTF-8"></head><body></body></html>"#,
         serde_json::json!({ "severity": "error", "value": ["meta[charset]", "title"] }),
@@ -362,10 +362,10 @@ fn head_element_order_invalid_004() {
     assert_eq!(v[0].3, "The \"meta\" element must be before the \"title\" element");
 }
 
-/// TS: `[head-element-order-valid-009]` correct order with default value
+/// TS: `[head-element-order-013]` correct order with default value
 #[test]
-fn head_element_order_valid_009() {
-    const _ID: &str = "head-element-order-valid-009";
+fn head_element_order_013() {
+    const _ID: &str = "head-element-order-013";
     let v = run(
         r#"<html><head><meta charset="UTF-8"><meta http-equiv="X-UA-Compatible" content="IE=edge"><meta name="viewport" content="width=device-width"><title>Title</title><meta name="description" content="Desc"><link rel="stylesheet" href="style.css"></head><body></body></html>"#,
         serde_json::json!(true),
@@ -373,10 +373,10 @@ fn head_element_order_valid_009() {
     assert_eq!(v.len(), 0, "{v:?}");
 }
 
-/// TS: `[head-element-order-invalid-005]` wrong order with default value
+/// TS: `[head-element-order-014]` wrong order with default value
 #[test]
-fn head_element_order_invalid_005() {
-    const _ID: &str = "head-element-order-invalid-005";
+fn head_element_order_014() {
+    const _ID: &str = "head-element-order-014";
     let v = run(
         r#"<html><head><title>Title</title><meta charset="UTF-8"></head><body></body></html>"#,
         serde_json::json!(true),
@@ -384,10 +384,10 @@ fn head_element_order_invalid_005() {
     assert!(!v.is_empty(), "{v:?}");
 }
 
-/// TS: `[head-element-order-valid-010]` link[rel="stylesheet"] and link: specific selector wins
+/// TS: `[head-element-order-015]` link[rel="stylesheet"] and link: specific selector wins
 #[test]
-fn head_element_order_valid_010() {
-    const _ID: &str = "head-element-order-valid-010";
+fn head_element_order_015() {
+    const _ID: &str = "head-element-order-015";
     let v = run_value(
         r#"<html><head><link rel="stylesheet" href="a.css"><link rel="icon" href="favicon.ico"></head><body></body></html>"#,
         serde_json::json!(["link[rel=\"stylesheet\"]", "link"]),
@@ -395,10 +395,10 @@ fn head_element_order_valid_010() {
     assert_eq!(v.len(), 0, "{v:?}");
 }
 
-/// TS: `[head-element-order-invalid-006]` link[rel="stylesheet"] and link: wrong order
+/// TS: `[head-element-order-016]` link[rel="stylesheet"] and link: wrong order
 #[test]
-fn head_element_order_invalid_006() {
-    const _ID: &str = "head-element-order-invalid-006";
+fn head_element_order_016() {
+    const _ID: &str = "head-element-order-016";
     let v = run_value(
         r#"<html><head><link rel="icon" href="favicon.ico"><link rel="stylesheet" href="a.css"></head><body></body></html>"#,
         serde_json::json!(["link[rel=\"stylesheet\"]", "link"]),
@@ -406,10 +406,10 @@ fn head_element_order_invalid_006() {
     assert_eq!(v.len(), 2, "{v:?}");
 }
 
-/// TS: `[head-element-order-invalid-007]` object entry and string entry coexistence
+/// TS: `[head-element-order-017]` object entry and string entry coexistence
 #[test]
-fn head_element_order_invalid_007() {
-    const _ID: &str = "head-element-order-invalid-007";
+fn head_element_order_017() {
+    const _ID: &str = "head-element-order-017";
     let v = run_value(
         r#"<html><head><meta name="author" content="Test"><meta name="description" content="Desc"><meta charset="UTF-8"></head><body></body></html>"#,
         serde_json::json!(["meta[charset]", { "selector": "meta", "order": "alphabetical", "attr": "name" }]),
@@ -417,10 +417,10 @@ fn head_element_order_invalid_007() {
     assert_eq!(v.len(), 3, "{v:?}");
 }
 
-/// TS: `[head-element-order-valid-011]` elements matching no selector go to the end
+/// TS: `[head-element-order-018]` elements matching no selector go to the end
 #[test]
-fn head_element_order_valid_011() {
-    const _ID: &str = "head-element-order-valid-011";
+fn head_element_order_018() {
+    const _ID: &str = "head-element-order-018";
     let v = run_value(
         r#"<html><head><meta charset="UTF-8"><title>Title</title><base href="/"><noscript>No JS</noscript></head><body></body></html>"#,
         serde_json::json!(["meta[charset]", "title"]),
@@ -428,10 +428,10 @@ fn head_element_order_valid_011() {
     assert_eq!(v.len(), 0, "{v:?}");
 }
 
-/// TS: `[head-element-order-valid-012]` correct alphabetical order
+/// TS: `[head-element-order-019]` correct alphabetical order
 #[test]
-fn head_element_order_valid_012() {
-    const _ID: &str = "head-element-order-valid-012";
+fn head_element_order_019() {
+    const _ID: &str = "head-element-order-019";
     let v = run_value(
         r#"<html><head><meta name="author" content="Test"><meta name="description" content="Desc"><meta name="viewport" content="width=device-width"></head><body></body></html>"#,
         serde_json::json!([{ "selector": "meta", "order": "alphabetical", "attr": "name" }]),
@@ -439,10 +439,10 @@ fn head_element_order_valid_012() {
     assert_eq!(v.len(), 0, "{v:?}");
 }
 
-/// TS: `[head-element-order-invalid-008]` wrong alphabetical order
+/// TS: `[head-element-order-020]` wrong alphabetical order
 #[test]
-fn head_element_order_invalid_008() {
-    const _ID: &str = "head-element-order-invalid-008";
+fn head_element_order_020() {
+    const _ID: &str = "head-element-order-020";
     let v = run_value(
         r#"<html><head><meta name="viewport" content="width=device-width"><meta name="author" content="Test"><meta name="description" content="Desc"></head><body></body></html>"#,
         serde_json::json!([{ "selector": "meta", "order": "alphabetical", "attr": "name" }]),
@@ -450,10 +450,10 @@ fn head_element_order_invalid_008() {
     assert_eq!(v.len(), 3, "{v:?}");
 }
 
-/// TS: `[head-element-order-valid-013]` elements without attr come first
+/// TS: `[head-element-order-021]` elements without attr come first
 #[test]
-fn head_element_order_valid_013() {
-    const _ID: &str = "head-element-order-valid-013";
+fn head_element_order_021() {
+    const _ID: &str = "head-element-order-021";
     let v = run_value(
         r#"<html><head><meta charset="UTF-8"><meta name="author" content="Test"><meta name="description" content="Desc"></head><body></body></html>"#,
         serde_json::json!([{ "selector": "meta", "order": "alphabetical", "attr": "name" }]),
@@ -461,10 +461,10 @@ fn head_element_order_valid_013() {
     assert_eq!(v.len(), 0, "{v:?}");
 }
 
-/// TS: `[head-element-order-valid-014]` stable sort: same attr value preserves source order
+/// TS: `[head-element-order-022]` stable sort: same attr value preserves source order
 #[test]
-fn head_element_order_valid_014() {
-    const _ID: &str = "head-element-order-valid-014";
+fn head_element_order_022() {
+    const _ID: &str = "head-element-order-022";
     let v = run_value(
         r#"<html><head><meta name="author" content="Alice"><meta name="author" content="Bob"></head><body></body></html>"#,
         serde_json::json!([{ "selector": "meta", "order": "alphabetical", "attr": "name" }]),
@@ -472,10 +472,10 @@ fn head_element_order_valid_014() {
     assert_eq!(v.len(), 0, "{v:?}");
 }
 
-/// TS: `[head-element-order-valid-015]` alphabetical without attr: falls back to source order
+/// TS: `[head-element-order-023]` alphabetical without attr: falls back to source order
 #[test]
-fn head_element_order_valid_015() {
-    const _ID: &str = "head-element-order-valid-015";
+fn head_element_order_023() {
+    const _ID: &str = "head-element-order-023";
     let v = run_value(
         r#"<html><head><meta name="b"><meta name="a"></head><body></body></html>"#,
         serde_json::json!([{ "selector": "meta", "order": "alphabetical" }]),
@@ -483,10 +483,10 @@ fn head_element_order_valid_015() {
     assert_eq!(v.len(), 0, "{v:?}");
 }
 
-/// TS: `[head-element-order-invalid-009]` English message
+/// TS: `[head-element-order-024]` English message
 #[test]
-fn head_element_order_invalid_009() {
-    const _ID: &str = "head-element-order-invalid-009";
+fn head_element_order_024() {
+    const _ID: &str = "head-element-order-024";
     let v = run_value(
         r#"<html><head><title>Title</title><meta charset="UTF-8"></head><body></body></html>"#,
         serde_json::json!(["meta[charset]", "title"]),
@@ -494,10 +494,10 @@ fn head_element_order_invalid_009() {
     assert_eq!(v[0].3, "The \"meta\" element should be before the \"title\" element");
 }
 
-/// TS: `[head-element-order-invalid-010]` Japanese message
+/// TS: `[head-element-order-025]` Japanese message
 #[test]
-fn head_element_order_invalid_010() {
-    const _ID: &str = "head-element-order-invalid-010";
+fn head_element_order_025() {
+    const _ID: &str = "head-element-order-025";
     let v = lint_brief(
         RULE,
         r#"<html><head><title>Title</title><meta charset="UTF-8"></head><body></body></html>"#,

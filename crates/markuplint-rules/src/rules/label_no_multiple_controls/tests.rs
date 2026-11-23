@@ -1,20 +1,20 @@
 //! Tests for `label-no-multiple-controls` rule.
 //!
 //! Test ID mapping (TS → Rust):
-//!   label-no-multiple-controls-valid-001    → label_no_multiple_controls_valid_001
-//!   label-no-multiple-controls-valid-002    → label_no_multiple_controls_valid_002
-//!   label-no-multiple-controls-valid-003    → label_no_multiple_controls_valid_003
-//!   label-no-multiple-controls-valid-004    → label_no_multiple_controls_valid_004
-//!   label-no-multiple-controls-valid-005    → label_no_multiple_controls_valid_005
-//!   label-no-multiple-controls-valid-006    → label_no_multiple_controls_valid_006
-//!   label-no-multiple-controls-valid-007    → label_no_multiple_controls_valid_007
-//!   label-no-multiple-controls-invalid-001  → label_no_multiple_controls_invalid_001
-//!   label-no-multiple-controls-invalid-002  → label_no_multiple_controls_invalid_002
-//!   label-no-multiple-controls-invalid-003  → label_no_multiple_controls_invalid_003
-//!   label-no-multiple-controls-invalid-004  → label_no_multiple_controls_invalid_004
-//!   label-no-multiple-controls-invalid-005  → label_no_multiple_controls_invalid_005
-//!   label-no-multiple-controls-parser-001   — SKIPPED: needs the Vue parser (`:for` binding)
-//!   label-no-multiple-controls-parser-002   — SKIPPED: needs the JSX parser (unresolved `<Label>` pretender);
+//!   label-no-multiple-controls-001  → label_no_multiple_controls_001
+//!   label-no-multiple-controls-002  → label_no_multiple_controls_002
+//!   label-no-multiple-controls-003  → label_no_multiple_controls_003
+//!   label-no-multiple-controls-007  → label_no_multiple_controls_007
+//!   label-no-multiple-controls-010  → label_no_multiple_controls_010
+//!   label-no-multiple-controls-011  → label_no_multiple_controls_011
+//!   label-no-multiple-controls-012  → label_no_multiple_controls_012
+//!   label-no-multiple-controls-004  → label_no_multiple_controls_004
+//!   label-no-multiple-controls-005  → label_no_multiple_controls_005
+//!   label-no-multiple-controls-006  → label_no_multiple_controls_006
+//!   label-no-multiple-controls-008  → label_no_multiple_controls_008
+//!   label-no-multiple-controls-009  → label_no_multiple_controls_009
+//!   label-no-multiple-controls-013  — SKIPPED: needs the Vue parser (`:for` binding)
+//!   label-no-multiple-controls-014  — SKIPPED: needs the JSX parser (unresolved `<Label>` pretender);
 //!                                             the HTML equivalent is v6_label_no_multiple_controls_001
 //!   v6_label_no_multiple_controls_001  — Rust-only: a label pretended by a pretender is skipped, one with the `as` attribute is checked
 //!   v6_label_no_multiple_controls_002  — Rust-only: a pretended descendant counts as the control it pretends to be
@@ -41,34 +41,34 @@ fn run_with(html: &str, pretenders: serde_json::Value) -> Vec<Brief> {
     )
 }
 
-/// TS: `[label-no-multiple-controls-valid-001]` — empty label
+/// TS: `[label-no-multiple-controls-001]` — empty label
 #[test]
-fn label_no_multiple_controls_valid_001() {
-    const _ID: &str = "label-no-multiple-controls-valid-001";
+fn label_no_multiple_controls_001() {
+    const _ID: &str = "label-no-multiple-controls-001";
     assert_eq!(run("<label>Name</label>").len(), 0);
 }
 
-/// TS: `[label-no-multiple-controls-valid-002]` — one input
+/// TS: `[label-no-multiple-controls-002]` — one input
 #[test]
-fn label_no_multiple_controls_valid_002() {
-    const _ID: &str = "label-no-multiple-controls-valid-002";
+fn label_no_multiple_controls_002() {
+    const _ID: &str = "label-no-multiple-controls-002";
     assert_eq!(run(r#"<label>Name <input type="text"></label>"#).len(), 0);
 }
 
-/// TS: `[label-no-multiple-controls-valid-003]` — meter alone
+/// TS: `[label-no-multiple-controls-003]` — meter alone
 #[test]
-fn label_no_multiple_controls_valid_003() {
-    const _ID: &str = "label-no-multiple-controls-valid-003";
+fn label_no_multiple_controls_003() {
+    const _ID: &str = "label-no-multiple-controls-003";
     assert_eq!(
         run(r#"<label>Score <meter value="3" max="10">3</meter></label>"#).len(),
         0
     );
 }
 
-/// TS: `[label-no-multiple-controls-invalid-001]` — two inputs
+/// TS: `[label-no-multiple-controls-004]` — two inputs
 #[test]
-fn label_no_multiple_controls_invalid_001() {
-    const _ID: &str = "label-no-multiple-controls-invalid-001";
+fn label_no_multiple_controls_004() {
+    const _ID: &str = "label-no-multiple-controls-004";
     assert_eq!(
         run(r#"<label>Name: <input type="text" name="first"> <input type="text" name="last"></label>"#),
         [brief(
@@ -81,46 +81,46 @@ fn label_no_multiple_controls_invalid_001() {
     );
 }
 
-/// TS: `[label-no-multiple-controls-invalid-002]` — mixed control types
+/// TS: `[label-no-multiple-controls-005]` — mixed control types
 #[test]
-fn label_no_multiple_controls_invalid_002() {
-    const _ID: &str = "label-no-multiple-controls-invalid-002";
+fn label_no_multiple_controls_005() {
+    const _ID: &str = "label-no-multiple-controls-005";
     let violations = run(r#"<label>Score <progress value="50" max="100">50</progress> <input type="number"></label>"#);
     assert_eq!(violations.len(), 1);
     assert_eq!(violations[0].1, 1);
     assert_eq!(violations[0].2, 59);
 }
 
-/// TS: `[label-no-multiple-controls-invalid-003]` — three controls reports two excess
+/// TS: `[label-no-multiple-controls-006]` — three controls reports two excess
 #[test]
-fn label_no_multiple_controls_invalid_003() {
-    const _ID: &str = "label-no-multiple-controls-invalid-003";
+fn label_no_multiple_controls_006() {
+    const _ID: &str = "label-no-multiple-controls-006";
     let violations = run("<label><input> <select><option>x</option></select> <textarea></textarea></label>");
     assert_eq!(violations.len(), 2);
     assert_eq!(violations.iter().map(|v| v.2).collect::<Vec<_>>(), [16, 52]);
 }
 
-/// TS: `[label-no-multiple-controls-valid-004]` — for references external labelable, no descendant control
+/// TS: `[label-no-multiple-controls-007]` — for references external labelable, no descendant control
 #[test]
-fn label_no_multiple_controls_valid_004() {
-    const _ID: &str = "label-no-multiple-controls-valid-004";
+fn label_no_multiple_controls_007() {
+    const _ID: &str = "label-no-multiple-controls-007";
     assert_eq!(run(r#"<input id="x"><label for="x">Name</label>"#).len(), 0);
 }
 
-/// TS: `[label-no-multiple-controls-invalid-004]` — for external labelable with descendant control
+/// TS: `[label-no-multiple-controls-008]` — for external labelable with descendant control
 #[test]
-fn label_no_multiple_controls_invalid_004() {
-    const _ID: &str = "label-no-multiple-controls-invalid-004";
+fn label_no_multiple_controls_008() {
+    const _ID: &str = "label-no-multiple-controls-008";
     assert_eq!(
         run(r#"<input id="x"><label for="x"><input></label>"#),
         [brief(Severity::Error, 1, 30, EXTERNAL, "<input>")]
     );
 }
 
-/// TS: `[label-no-multiple-controls-invalid-005]` — for external labelable with multiple descendant controls reports all
+/// TS: `[label-no-multiple-controls-009]` — for external labelable with multiple descendant controls reports all
 #[test]
-fn label_no_multiple_controls_invalid_005() {
-    const _ID: &str = "label-no-multiple-controls-invalid-005";
+fn label_no_multiple_controls_009() {
+    const _ID: &str = "label-no-multiple-controls-009";
     let violations = run(r#"<input id="x"><label for="x"><input><textarea></textarea></label>"#);
     assert_eq!(violations.len(), 2);
     assert_eq!(
@@ -129,29 +129,29 @@ fn label_no_multiple_controls_invalid_005() {
     );
 }
 
-/// TS: `[label-no-multiple-controls-valid-005]` — for target is non-labelable falls back to internal rule
+/// TS: `[label-no-multiple-controls-010]` — for target is non-labelable falls back to internal rule
 #[test]
-fn label_no_multiple_controls_valid_005() {
-    const _ID: &str = "label-no-multiple-controls-valid-005";
+fn label_no_multiple_controls_010() {
+    const _ID: &str = "label-no-multiple-controls-010";
     assert_eq!(run(r#"<div id="x"></div><label for="x"><input></label>"#).len(), 0);
 }
 
-/// TS: `[label-no-multiple-controls-valid-006]` — for target is missing falls back to internal rule
+/// TS: `[label-no-multiple-controls-011]` — for target is missing falls back to internal rule
 #[test]
-fn label_no_multiple_controls_valid_006() {
-    const _ID: &str = "label-no-multiple-controls-valid-006";
+fn label_no_multiple_controls_011() {
+    const _ID: &str = "label-no-multiple-controls-011";
     assert_eq!(run(r#"<label for="missing"><input></label>"#).len(), 0);
 }
 
-/// TS: `[label-no-multiple-controls-valid-007]` — for target is a descendant with matching id
+/// TS: `[label-no-multiple-controls-012]` — for target is a descendant with matching id
 #[test]
-fn label_no_multiple_controls_valid_007() {
-    const _ID: &str = "label-no-multiple-controls-valid-007";
+fn label_no_multiple_controls_012() {
+    const _ID: &str = "label-no-multiple-controls-012";
     assert_eq!(run(r#"<label for="x"><input id="x"></label>"#).len(), 0);
 }
 
 /// A label pretended by a pretender (no `as` attribute) has unknown descendants and is
-/// skipped, as TS `[label-no-multiple-controls-parser-002]` pins for an unresolved JSX
+/// skipped, as TS `[label-no-multiple-controls-014]` pins for an unresolved JSX
 /// `<Label>`; with the `as` attribute the descendants are the ones written.
 #[test]
 fn v6_label_no_multiple_controls_001() {

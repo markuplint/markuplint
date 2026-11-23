@@ -1,21 +1,21 @@
 //! Tests for `case-sensitive-tag-name` rule.
 //!
 //! Test ID mapping (TS → Rust):
-//!   case-sensitive-tag-name-valid-001    → case_sensitive_tag_name_valid_001
-//!   case-sensitive-tag-name-invalid-001  → case_sensitive_tag_name_invalid_001
-//!   case-sensitive-tag-name-invalid-002  → case_sensitive_tag_name_invalid_002
-//!   case-sensitive-tag-name-valid-002    → case_sensitive_tag_name_valid_002
-//!   case-sensitive-tag-name-invalid-003  → case_sensitive_tag_name_invalid_003
-//!   case-sensitive-tag-name-invalid-004  → case_sensitive_tag_name_invalid_004
-//!   case-sensitive-tag-name-valid-003    → case_sensitive_tag_name_valid_003
-//!   case-sensitive-tag-name-valid-004    → case_sensitive_tag_name_valid_004
-//!   case-sensitive-tag-name-invalid-005  → case_sensitive_tag_name_invalid_005
-//!   case-sensitive-tag-name-valid-005    → v6_case_sensitive_tag_name_004 (the Astro parser stays in TS; its `tagNameCaseSensitive` is set on the document)
-//!   case-sensitive-tag-name-fix-001      → case_sensitive_tag_name_fix_001
-//!   v6_case_sensitive_tag_name_001       — Rust-only: a pretender is gated by the namespace of the element written
-//!   v6_case_sensitive_tag_name_002       — Rust-only: `value: upper` fixes both tags
-//!   v6_case_sensitive_tag_name_003       — Rust-only: non-ASCII text before the fixed names
-//!   v6_case_sensitive_tag_name_005       — Rust-only: only an element the parser takes for an HTML element has a case to enforce
+//!   case-sensitive-tag-name-001     → case_sensitive_tag_name_001
+//!   case-sensitive-tag-name-002     → case_sensitive_tag_name_002
+//!   case-sensitive-tag-name-003     → case_sensitive_tag_name_003
+//!   case-sensitive-tag-name-004     → case_sensitive_tag_name_004
+//!   case-sensitive-tag-name-005     → case_sensitive_tag_name_005
+//!   case-sensitive-tag-name-006     → case_sensitive_tag_name_006
+//!   case-sensitive-tag-name-007     → case_sensitive_tag_name_007
+//!   case-sensitive-tag-name-008     → case_sensitive_tag_name_008
+//!   case-sensitive-tag-name-009     → case_sensitive_tag_name_009
+//!   case-sensitive-tag-name-010     → v6_case_sensitive_tag_name_004 (the Astro parser stays in TS; its `tagNameCaseSensitive` is set on the document)
+//!   case-sensitive-tag-name-011     → case_sensitive_tag_name_011
+//!   v6_case_sensitive_tag_name_001  — Rust-only: a pretender is gated by the namespace of the element written
+//!   v6_case_sensitive_tag_name_002  — Rust-only: `value: upper` fixes both tags
+//!   v6_case_sensitive_tag_name_003  — Rust-only: non-ASCII text before the fixed names
+//!   v6_case_sensitive_tag_name_005  — Rust-only: only an element the parser takes for an HTML element has a case to enforce
 
 use crate::lint::{LintConfig, lint};
 use crate::violation::Severity;
@@ -38,10 +38,10 @@ fn spec() -> MLMLSpec {
     load_spec(include_str!("../../../../../packages/@markuplint/html-spec/index.json")).unwrap()
 }
 
-/// TS: `[case-sensitive-tag-name-valid-001]` — lower case
+/// TS: `[case-sensitive-tag-name-001]` — lower case
 #[test]
-fn case_sensitive_tag_name_valid_001() {
-    const _ID: &str = "case-sensitive-tag-name-valid-001";
+fn case_sensitive_tag_name_001() {
+    const _ID: &str = "case-sensitive-tag-name-001";
     let arena = html_arena("<div data-lowercase></div>");
     let spec = spec();
     let config: LintConfig = serde_json::from_value(serde_json::json!({
@@ -52,10 +52,10 @@ fn case_sensitive_tag_name_valid_001() {
     assert_eq!(result.violations.len(), 0);
 }
 
-/// TS: `[case-sensitive-tag-name-invalid-001]` — upper case tag
+/// TS: `[case-sensitive-tag-name-002]` — upper case tag
 #[test]
-fn case_sensitive_tag_name_invalid_001() {
-    const _ID: &str = "case-sensitive-tag-name-invalid-001";
+fn case_sensitive_tag_name_002() {
+    const _ID: &str = "case-sensitive-tag-name-002";
     let arena = html_arena("<DIV data-lowercase></DIV>");
     let spec = spec();
     let config: LintConfig = serde_json::from_value(serde_json::json!({
@@ -71,10 +71,10 @@ fn case_sensitive_tag_name_invalid_001() {
     assert_eq!(result.violations[0].raw, "DIV");
 }
 
-/// TS: `[case-sensitive-tag-name-invalid-002]` — lower tag with value=upper
+/// TS: `[case-sensitive-tag-name-003]` — lower tag with value=upper
 #[test]
-fn case_sensitive_tag_name_invalid_002() {
-    const _ID: &str = "case-sensitive-tag-name-invalid-002";
+fn case_sensitive_tag_name_003() {
+    const _ID: &str = "case-sensitive-tag-name-003";
     let arena = html_arena(r#"<div data-UPPERCASE="value"></div>"#);
     let spec = spec();
     let config: LintConfig = serde_json::from_value(serde_json::json!({
@@ -91,10 +91,10 @@ fn case_sensitive_tag_name_invalid_002() {
     );
 }
 
-/// TS: `[case-sensitive-tag-name-valid-002]` — upper tag with value=upper
+/// TS: `[case-sensitive-tag-name-004]` — upper tag with value=upper
 #[test]
-fn case_sensitive_tag_name_valid_002() {
-    const _ID: &str = "case-sensitive-tag-name-valid-002";
+fn case_sensitive_tag_name_004() {
+    const _ID: &str = "case-sensitive-tag-name-004";
     let arena = html_arena(r#"<DIV data-uppercase="value"></DIV>"#);
     let spec = spec();
     let config: LintConfig = serde_json::from_value(serde_json::json!({
@@ -107,10 +107,10 @@ fn case_sensitive_tag_name_valid_002() {
     assert_eq!(result.violations.len(), 0);
 }
 
-/// TS: `[case-sensitive-tag-name-invalid-003]` — upper open, lower close, value=upper
+/// TS: `[case-sensitive-tag-name-005]` — upper open, lower close, value=upper
 #[test]
-fn case_sensitive_tag_name_invalid_003() {
-    const _ID: &str = "case-sensitive-tag-name-invalid-003";
+fn case_sensitive_tag_name_005() {
+    const _ID: &str = "case-sensitive-tag-name-005";
     let arena = html_arena(r#"<DIV DATA-UPPERCASE="value"></div>"#);
     let spec = spec();
     let config: LintConfig = serde_json::from_value(serde_json::json!({
@@ -131,10 +131,10 @@ fn case_sensitive_tag_name_invalid_003() {
     assert_eq!(result.violations[0].raw, "</div>");
 }
 
-/// TS: `[case-sensitive-tag-name-invalid-004]` — lower open, upper close, value=upper
+/// TS: `[case-sensitive-tag-name-006]` — lower open, upper close, value=upper
 #[test]
-fn case_sensitive_tag_name_invalid_004() {
-    const _ID: &str = "case-sensitive-tag-name-invalid-004";
+fn case_sensitive_tag_name_006() {
+    const _ID: &str = "case-sensitive-tag-name-006";
     let arena = html_arena(r#"<div DATA-UPPERCASE="value"></DIV>"#);
     let spec = spec();
     let config: LintConfig = serde_json::from_value(serde_json::json!({
@@ -155,10 +155,10 @@ fn case_sensitive_tag_name_invalid_004() {
     assert_eq!(result.violations[0].raw, "div");
 }
 
-/// TS: `[case-sensitive-tag-name-valid-003]` — svg (non-XHTML namespace skipped)
+/// TS: `[case-sensitive-tag-name-007]` — svg (non-XHTML namespace skipped)
 #[test]
-fn case_sensitive_tag_name_valid_003() {
-    const _ID: &str = "case-sensitive-tag-name-valid-003";
+fn case_sensitive_tag_name_007() {
+    const _ID: &str = "case-sensitive-tag-name-007";
     let arena = html_arena(r#"<svg viewBox="0 0 100 100"><textPath></textPath></svg>"#);
     let spec = spec();
     let config: LintConfig = serde_json::from_value(serde_json::json!({
@@ -169,10 +169,10 @@ fn case_sensitive_tag_name_valid_003() {
     assert_eq!(result.violations.len(), 0);
 }
 
-/// TS: `[case-sensitive-tag-name-valid-004]` — custom elements
+/// TS: `[case-sensitive-tag-name-008]` — custom elements
 #[test]
-fn case_sensitive_tag_name_valid_004() {
-    const _ID: &str = "case-sensitive-tag-name-valid-004";
+fn case_sensitive_tag_name_008() {
+    const _ID: &str = "case-sensitive-tag-name-008";
     let arena = html_arena("<xxx-hoge>lorem</xxx-hoge>");
     let spec = spec();
     let config: LintConfig = serde_json::from_value(serde_json::json!({
@@ -183,10 +183,10 @@ fn case_sensitive_tag_name_valid_004() {
     assert_eq!(result.violations.len(), 0);
 }
 
-/// TS: `[case-sensitive-tag-name-invalid-005]` — non-custom element (uppercase start)
+/// TS: `[case-sensitive-tag-name-009]` — non-custom element (uppercase start)
 #[test]
-fn case_sensitive_tag_name_invalid_005() {
-    const _ID: &str = "case-sensitive-tag-name-invalid-005";
+fn case_sensitive_tag_name_009() {
+    const _ID: &str = "case-sensitive-tag-name-009";
     let arena = html_arena("<XXX-hoge>lorem</XXX-hoge>");
     let spec = spec();
     let config: LintConfig = serde_json::from_value(serde_json::json!({
@@ -244,10 +244,10 @@ fn v6_case_sensitive_tag_name_001() {
     );
 }
 
-/// TS: `[case-sensitive-tag-name-fix-001]` — upper case
+/// TS: `[case-sensitive-tag-name-011]` — upper case
 #[test]
-fn case_sensitive_tag_name_fix_001() {
-    const _ID: &str = "case-sensitive-tag-name-fix-001";
+fn case_sensitive_tag_name_011() {
+    const _ID: &str = "case-sensitive-tag-name-011";
     let config = serde_json::json!({ "rules": { "case-sensitive-tag-name": true } });
     assert_eq!(
         crate::test_util::fixed_code("<DIV data-lowercase></DIV>", &config),
@@ -286,7 +286,7 @@ fn v6_case_sensitive_tag_name_004() {
 
 /// Only an element the parser takes for an HTML element has a case to enforce: `<MyComponent>`
 /// (Vue, Astro, Svelte) is an authored component, whatever the parser says about case.
-/// TS: `[case-sensitive-tag-name-valid-005]` (the Astro parser) and the Vue parser's.
+/// TS: `[case-sensitive-tag-name-010]` (the Astro parser) and the Vue parser's.
 #[test]
 fn v6_case_sensitive_tag_name_005() {
     let run_mlast = |element_type: &str| {

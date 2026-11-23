@@ -1,30 +1,30 @@
 //! Tests for `no-always-matching-source` rule.
 //!
 //! Test ID mapping (TS → Rust):
-//!   no-always-matching-source-valid-001    → no_always_matching_source_valid_001
-//!   no-always-matching-source-valid-002    → no_always_matching_source_valid_002
-//!   no-always-matching-source-invalid-001  → no_always_matching_source_invalid_001
-//!   no-always-matching-source-invalid-002  → no_always_matching_source_invalid_002
-//!   no-always-matching-source-invalid-003  → no_always_matching_source_invalid_003
-//!   no-always-matching-source-invalid-004  → no_always_matching_source_invalid_004
-//!   no-always-matching-source-invalid-005  → no_always_matching_source_invalid_005
-//!   no-always-matching-source-invalid-006  → no_always_matching_source_invalid_006
-//!   no-always-matching-source-invalid-007  → no_always_matching_source_invalid_007
-//!   no-always-matching-source-invalid-008  → no_always_matching_source_invalid_008
-//!   no-always-matching-source-invalid-009  → no_always_matching_source_invalid_009
-//!   no-always-matching-source-valid-003    → no_always_matching_source_valid_003
-//!   no-always-matching-source-valid-004    → no_always_matching_source_valid_004
-//!   no-always-matching-source-valid-005    → no_always_matching_source_valid_005
-//!   no-always-matching-source-valid-006    → no_always_matching_source_valid_006
-//!   no-always-matching-source-invalid-010  → no_always_matching_source_invalid_010
-//!   no-always-matching-source-invalid-011  → no_always_matching_source_invalid_011
-//!   no-always-matching-source-valid-007    → no_always_matching_source_valid_007
-//!   no-always-matching-source-valid-008    → no_always_matching_source_valid_008
-//!   no-always-matching-source-valid-009    → no_always_matching_source_valid_009
-//!   no-always-matching-source-invalid-012  → no_always_matching_source_invalid_012
-//!   no-always-matching-source-invalid-013  → no_always_matching_source_invalid_013
-//!   no-always-matching-source-parser-001   — SKIP: Vue parser not available in Rust
-//!   no-always-matching-source-parser-002   — SKIP: Vue parser not available in Rust
+//!   no-always-matching-source-001    → no_always_matching_source_001
+//!   no-always-matching-source-002    → no_always_matching_source_002
+//!   no-always-matching-source-003  → no_always_matching_source_003
+//!   no-always-matching-source-004  → no_always_matching_source_004
+//!   no-always-matching-source-005  → no_always_matching_source_005
+//!   no-always-matching-source-006  → no_always_matching_source_006
+//!   no-always-matching-source-007  → no_always_matching_source_007
+//!   no-always-matching-source-008  → no_always_matching_source_008
+//!   no-always-matching-source-009  → no_always_matching_source_009
+//!   no-always-matching-source-010  → no_always_matching_source_010
+//!   no-always-matching-source-011  → no_always_matching_source_011
+//!   no-always-matching-source-012    → no_always_matching_source_012
+//!   no-always-matching-source-013    → no_always_matching_source_013
+//!   no-always-matching-source-014    → no_always_matching_source_014
+//!   no-always-matching-source-015    → no_always_matching_source_015
+//!   no-always-matching-source-016  → no_always_matching_source_016
+//!   no-always-matching-source-017  → no_always_matching_source_017
+//!   no-always-matching-source-018    → no_always_matching_source_018
+//!   no-always-matching-source-019    → no_always_matching_source_019
+//!   no-always-matching-source-020    → no_always_matching_source_020
+//!   no-always-matching-source-021  → no_always_matching_source_021
+//!   no-always-matching-source-022  → no_always_matching_source_022
+//!   no-always-matching-source-023   — SKIP: Vue parser not available in Rust
+//!   no-always-matching-source-024   — SKIP: Vue parser not available in Rust
 //!   v6_no_always_matching_source_001  — Rust-only: text and comment nodes between the siblings are skipped
 //!   v6_no_always_matching_source_002  — Rust-only: an empty `type` still distinguishes the source
 //!   v6_no_always_matching_source_003  — Rust-only: a `<source>` outside `<picture>` is not checked
@@ -79,67 +79,67 @@ fn assert_violations(actual: &[Violation], expected: &[Expected<'_>]) {
     }
 }
 
-/// TS: `[no-always-matching-source-valid-001]`
+/// TS: `[no-always-matching-source-001]`
 #[test]
-fn no_always_matching_source_valid_001() {
-    const _ID: &str = "no-always-matching-source-valid-001";
+fn no_always_matching_source_001() {
+    const _ID: &str = "no-always-matching-source-001";
     assert_violations(&run(r#"<video><source src="video.mp4" type="video/mp4"></video>"#), &[]);
 }
 
-/// TS: `[no-always-matching-source-valid-002]`
+/// TS: `[no-always-matching-source-002]`
 #[test]
-fn no_always_matching_source_valid_002() {
-    const _ID: &str = "no-always-matching-source-valid-002";
+fn no_always_matching_source_002() {
+    const _ID: &str = "no-always-matching-source-002";
     assert_violations(
         &run(r#"<img srcset="image-1x.png 1x, image-2x.png 2x" src="image-1x.png" alt="photo">"#),
         &[],
     );
 }
 
-/// TS: `[no-always-matching-source-invalid-001]`
+/// TS: `[no-always-matching-source-003]`
 #[test]
-fn no_always_matching_source_invalid_001() {
-    const _ID: &str = "no-always-matching-source-invalid-001";
+fn no_always_matching_source_003() {
+    const _ID: &str = "no-always-matching-source-003";
     assert_violations(
         &run(r#"<picture><source srcset="x"><source srcset="y"><img src="z" alt=""></picture>"#),
         &[(Severity::Error, 1, 10, MESSAGE, r#"<source srcset="x">"#)],
     );
 }
 
-/// TS: `[no-always-matching-source-invalid-002]`
+/// TS: `[no-always-matching-source-004]`
 #[test]
-fn no_always_matching_source_invalid_002() {
-    const _ID: &str = "no-always-matching-source-invalid-002";
+fn no_always_matching_source_004() {
+    const _ID: &str = "no-always-matching-source-004";
     assert_violations(
         &run(r#"<picture><source srcset="x"><source srcset="y" media="screen"><img src="z" alt=""></picture>"#),
         &[(Severity::Error, 1, 10, MESSAGE, r#"<source srcset="x">"#)],
     );
 }
 
-/// TS: `[no-always-matching-source-invalid-003]`
+/// TS: `[no-always-matching-source-005]`
 #[test]
-fn no_always_matching_source_invalid_003() {
-    const _ID: &str = "no-always-matching-source-invalid-003";
+fn no_always_matching_source_005() {
+    const _ID: &str = "no-always-matching-source-005";
     assert_violations(
         &run(r#"<picture><source srcset="x"><source srcset="y" type="image/gif"><img src="z" alt=""></picture>"#),
         &[(Severity::Error, 1, 10, MESSAGE, r#"<source srcset="x">"#)],
     );
 }
 
-/// TS: `[no-always-matching-source-invalid-004]`
+/// TS: `[no-always-matching-source-006]`
 #[test]
-fn no_always_matching_source_invalid_004() {
-    const _ID: &str = "no-always-matching-source-invalid-004";
+fn no_always_matching_source_006() {
+    const _ID: &str = "no-always-matching-source-006";
     assert_violations(
         &run(r#"<picture><source srcset="x"><img src="z" srcset="y" alt=""></picture>"#),
         &[(Severity::Error, 1, 10, MESSAGE, r#"<source srcset="x">"#)],
     );
 }
 
-/// TS: `[no-always-matching-source-invalid-005]`
+/// TS: `[no-always-matching-source-007]`
 #[test]
-fn no_always_matching_source_invalid_005() {
-    const _ID: &str = "no-always-matching-source-invalid-005";
+fn no_always_matching_source_007() {
+    const _ID: &str = "no-always-matching-source-007";
     assert_violations(
         &run(r#"<picture><source srcset="x 100w" sizes="50vw"><source srcset="y"><img src="z" alt=""></picture>"#),
         &[(
@@ -152,50 +152,50 @@ fn no_always_matching_source_invalid_005() {
     );
 }
 
-/// TS: `[no-always-matching-source-invalid-006]`
+/// TS: `[no-always-matching-source-008]`
 #[test]
-fn no_always_matching_source_invalid_006() {
-    const _ID: &str = "no-always-matching-source-invalid-006";
+fn no_always_matching_source_008() {
+    const _ID: &str = "no-always-matching-source-008";
     assert_violations(
         &run(r#"<picture><source srcset="x" media="all"><source srcset="y"><img src="z" alt=""></picture>"#),
         &[(Severity::Error, 1, 10, MESSAGE, r#"<source srcset="x" media="all">"#)],
     );
 }
 
-/// TS: `[no-always-matching-source-invalid-007]`
+/// TS: `[no-always-matching-source-009]`
 #[test]
-fn no_always_matching_source_invalid_007() {
-    const _ID: &str = "no-always-matching-source-invalid-007";
+fn no_always_matching_source_009() {
+    const _ID: &str = "no-always-matching-source-009";
     assert_violations(
         &run(r#"<picture><source srcset="x" media="ALL"><source srcset="y"><img src="z" alt=""></picture>"#),
         &[(Severity::Error, 1, 10, MESSAGE, r#"<source srcset="x" media="ALL">"#)],
     );
 }
 
-/// TS: `[no-always-matching-source-invalid-008]`
+/// TS: `[no-always-matching-source-010]`
 #[test]
-fn no_always_matching_source_invalid_008() {
-    const _ID: &str = "no-always-matching-source-invalid-008";
+fn no_always_matching_source_010() {
+    const _ID: &str = "no-always-matching-source-010";
     assert_violations(
         &run(r#"<picture><source srcset="x" media=" all "><source srcset="y"><img src="z" alt=""></picture>"#),
         &[(Severity::Error, 1, 10, MESSAGE, r#"<source srcset="x" media=" all ">"#)],
     );
 }
 
-/// TS: `[no-always-matching-source-invalid-009]`
+/// TS: `[no-always-matching-source-011]`
 #[test]
-fn no_always_matching_source_invalid_009() {
-    const _ID: &str = "no-always-matching-source-invalid-009";
+fn no_always_matching_source_011() {
+    const _ID: &str = "no-always-matching-source-011";
     assert_violations(
         &run(r#"<picture><source srcset="x" media=""><source srcset="y"><img src="z" alt=""></picture>"#),
         &[(Severity::Error, 1, 10, MESSAGE, r#"<source srcset="x" media="">"#)],
     );
 }
 
-/// TS: `[no-always-matching-source-valid-003]`
+/// TS: `[no-always-matching-source-012]`
 #[test]
-fn no_always_matching_source_valid_003() {
-    const _ID: &str = "no-always-matching-source-valid-003";
+fn no_always_matching_source_012() {
+    const _ID: &str = "no-always-matching-source-012";
     assert_violations(
         &run(
             r#"<picture><source srcset="x" media="(min-width: 600px)"><source srcset="y"><img src="z" alt=""></picture>"#,
@@ -204,30 +204,30 @@ fn no_always_matching_source_valid_003() {
     );
 }
 
-/// TS: `[no-always-matching-source-valid-004]`
+/// TS: `[no-always-matching-source-013]`
 #[test]
-fn no_always_matching_source_valid_004() {
-    const _ID: &str = "no-always-matching-source-valid-004";
+fn no_always_matching_source_013() {
+    const _ID: &str = "no-always-matching-source-013";
     assert_violations(
         &run(r#"<picture><source srcset="x" type="image/webp"><img src="z" srcset="y" alt=""></picture>"#),
         &[],
     );
 }
 
-/// TS: `[no-always-matching-source-valid-005]`
+/// TS: `[no-always-matching-source-014]`
 #[test]
-fn no_always_matching_source_valid_005() {
-    const _ID: &str = "no-always-matching-source-valid-005";
+fn no_always_matching_source_014() {
+    const _ID: &str = "no-always-matching-source-014";
     assert_violations(
         &run(r#"<picture><source srcset="x"><img src="z" alt=""></picture>"#),
         &[],
     );
 }
 
-/// TS: `[no-always-matching-source-valid-006]`
+/// TS: `[no-always-matching-source-015]`
 #[test]
-fn no_always_matching_source_valid_006() {
-    const _ID: &str = "no-always-matching-source-valid-006";
+fn no_always_matching_source_015() {
+    const _ID: &str = "no-always-matching-source-015";
     assert_violations(
         &run(
             r#"<picture><source srcset="x" media="(min-width: 600px)"><source srcset="y" media="(min-width: 400px)"><img src="z" alt=""></picture>"#,
@@ -236,10 +236,10 @@ fn no_always_matching_source_valid_006() {
     );
 }
 
-/// TS: `[no-always-matching-source-invalid-010]`
+/// TS: `[no-always-matching-source-016]`
 #[test]
-fn no_always_matching_source_invalid_010() {
-    const _ID: &str = "no-always-matching-source-invalid-010";
+fn no_always_matching_source_016() {
+    const _ID: &str = "no-always-matching-source-016";
     assert_violations(
         &run("<picture><source srcset=\"x\" media=\"\tall\t\"><source srcset=\"y\"><img src=\"z\" alt=\"\"></picture>"),
         &[(
@@ -252,20 +252,20 @@ fn no_always_matching_source_invalid_010() {
     );
 }
 
-/// TS: `[no-always-matching-source-invalid-011]`
+/// TS: `[no-always-matching-source-017]`
 #[test]
-fn no_always_matching_source_invalid_011() {
-    const _ID: &str = "no-always-matching-source-invalid-011";
+fn no_always_matching_source_017() {
+    const _ID: &str = "no-always-matching-source-017";
     let violations = run(r#"<picture><source srcset="x"><source srcset="y"><img src="z" srcset="w" alt=""></picture>"#);
     assert_eq!(violations.len(), 2, "violations: {violations:?}");
     let raws: Vec<&str> = violations.iter().map(|v| v.raw.as_str()).collect();
     assert_eq!(raws, [r#"<source srcset="x">"#, r#"<source srcset="y">"#]);
 }
 
-/// TS: `[no-always-matching-source-valid-007]`
+/// TS: `[no-always-matching-source-018]`
 #[test]
-fn no_always_matching_source_valid_007() {
-    const _ID: &str = "no-always-matching-source-valid-007";
+fn no_always_matching_source_018() {
+    const _ID: &str = "no-always-matching-source-018";
     assert_violations(
         &run(
             r#"<picture><source srcset="x" media="all" type="image/webp"><source srcset="y"><img src="z" alt=""></picture>"#,
@@ -274,20 +274,20 @@ fn no_always_matching_source_valid_007() {
     );
 }
 
-/// TS: `[no-always-matching-source-valid-008]`
+/// TS: `[no-always-matching-source-019]`
 #[test]
-fn no_always_matching_source_valid_008() {
-    const _ID: &str = "no-always-matching-source-valid-008";
+fn no_always_matching_source_019() {
+    const _ID: &str = "no-always-matching-source-019";
     assert_violations(
         &run(r#"<picture><source srcset="x"><source media="screen"><img src="z" alt=""></picture>"#),
         &[],
     );
 }
 
-/// TS: `[no-always-matching-source-valid-009]`
+/// TS: `[no-always-matching-source-020]`
 #[test]
-fn no_always_matching_source_valid_009() {
-    const _ID: &str = "no-always-matching-source-valid-009";
+fn no_always_matching_source_020() {
+    const _ID: &str = "no-always-matching-source-020";
     // The padding is U+00A0 NO-BREAK SPACE, as in the TS spec.
     assert_violations(
         &run(
@@ -297,20 +297,20 @@ fn no_always_matching_source_valid_009() {
     );
 }
 
-/// TS: `[no-always-matching-source-invalid-012]`
+/// TS: `[no-always-matching-source-021]`
 #[test]
-fn no_always_matching_source_invalid_012() {
-    const _ID: &str = "no-always-matching-source-invalid-012";
+fn no_always_matching_source_021() {
+    const _ID: &str = "no-always-matching-source-021";
     assert_violations(
         &run(r#"<picture><source><source srcset="y"><img src="z" alt=""></picture>"#),
         &[(Severity::Error, 1, 10, MESSAGE, "<source>")],
     );
 }
 
-/// TS: `[no-always-matching-source-invalid-013]`
+/// TS: `[no-always-matching-source-022]`
 #[test]
-fn no_always_matching_source_invalid_013() {
-    const _ID: &str = "no-always-matching-source-invalid-013";
+fn no_always_matching_source_022() {
+    const _ID: &str = "no-always-matching-source-022";
     assert_violations(
         &run_rule(
             r#"<picture><source srcset="x"><source srcset="y"><img src="z" alt=""></picture>"#,

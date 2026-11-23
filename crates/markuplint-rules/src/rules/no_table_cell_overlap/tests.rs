@@ -1,13 +1,13 @@
 //! Tests for `no-table-cell-overlap` rule.
 //!
 //! Test ID mapping (TS → Rust):
-//!   no-table-cell-overlap-invalid-001  → no_table_cell_overlap_invalid_001
-//!   no-table-cell-overlap-invalid-002  → no_table_cell_overlap_invalid_002
-//!   no-table-cell-overlap-valid-001    → no_table_cell_overlap_valid_001
-//!   no-table-cell-overlap-valid-002    → no_table_cell_overlap_valid_002 (was `empty_table_no_violation`)
-//!   no-table-cell-overlap-valid-003    → no_table_cell_overlap_valid_003
-//!   no-table-cell-overlap-valid-004    → no_table_cell_overlap_valid_004 (was `rowspan_valid`)
-//!   no-table-cell-overlap-valid-005    → no_table_cell_overlap_valid_005
+//!   no-table-cell-overlap-001  → no_table_cell_overlap_001
+//!   no-table-cell-overlap-003  → no_table_cell_overlap_003
+//!   no-table-cell-overlap-004    → no_table_cell_overlap_004
+//!   no-table-cell-overlap-005    → no_table_cell_overlap_005 (was `empty_table_no_violation`)
+//!   no-table-cell-overlap-006    → no_table_cell_overlap_006
+//!   no-table-cell-overlap-007    → no_table_cell_overlap_007 (was `rowspan_valid`)
+//!   no-table-cell-overlap-008    → no_table_cell_overlap_008
 //!   v6_no_table_cell_overlap_001  — Rust-only: only the overlapping table of several is reported
 //!   v6_no_table_cell_overlap_002  — Rust-only: severity override and `rules: false`
 
@@ -59,10 +59,10 @@ fn assert_violations(actual: &[Violation], expected: &[Expected<'_>]) {
     }
 }
 
-/// TS: `[no-table-cell-overlap-invalid-001]`
+/// TS: `[no-table-cell-overlap-001]`
 #[test]
-fn no_table_cell_overlap_invalid_001() {
-    const _ID: &str = "no-table-cell-overlap-invalid-001";
+fn no_table_cell_overlap_001() {
+    const _ID: &str = "no-table-cell-overlap-001";
     let violations = run(r#"
 <table>
   <tr>
@@ -98,10 +98,10 @@ fn no_table_cell_overlap_invalid_001() {
     assert_violations(&violations, &[(Severity::Error, 2, 1, MESSAGE, "<table>")]);
 }
 
-/// TS: `[no-table-cell-overlap-invalid-002]`
+/// TS: `[no-table-cell-overlap-003]`
 #[test]
-fn no_table_cell_overlap_invalid_002() {
-    const _ID: &str = "no-table-cell-overlap-invalid-002";
+fn no_table_cell_overlap_003() {
+    const _ID: &str = "no-table-cell-overlap-003";
     let violations = run(r#"
 <table>
 <tr>
@@ -118,10 +118,10 @@ fn no_table_cell_overlap_invalid_002() {
     assert_violations(&violations, &[(Severity::Error, 2, 1, MESSAGE, "<table>")]);
 }
 
-/// TS: `[no-table-cell-overlap-valid-001]`
+/// TS: `[no-table-cell-overlap-004]`
 #[test]
-fn no_table_cell_overlap_valid_001() {
-    const _ID: &str = "no-table-cell-overlap-valid-001";
+fn no_table_cell_overlap_004() {
+    const _ID: &str = "no-table-cell-overlap-004";
     let violations = run(r#"
 <table aria-label="テーブルのテストです">
   <tr>
@@ -137,10 +137,10 @@ fn no_table_cell_overlap_valid_001() {
     assert_violations(&violations, &[]);
 }
 
-/// TS: `[no-table-cell-overlap-valid-002]`
+/// TS: `[no-table-cell-overlap-005]`
 #[test]
-fn no_table_cell_overlap_valid_002() {
-    const _ID: &str = "no-table-cell-overlap-valid-002";
+fn no_table_cell_overlap_005() {
+    const _ID: &str = "no-table-cell-overlap-005";
     let violations = run("
 <table>
 </table>
@@ -148,10 +148,10 @@ fn no_table_cell_overlap_valid_002() {
     assert_violations(&violations, &[]);
 }
 
-/// TS: `[no-table-cell-overlap-valid-003]`
+/// TS: `[no-table-cell-overlap-006]`
 #[test]
-fn no_table_cell_overlap_valid_003() {
-    const _ID: &str = "no-table-cell-overlap-valid-003";
+fn no_table_cell_overlap_006() {
+    const _ID: &str = "no-table-cell-overlap-006";
     let violations = run(r#"
 <table>
   <tr>
@@ -171,10 +171,10 @@ fn no_table_cell_overlap_valid_003() {
     assert_violations(&violations, &[]);
 }
 
-/// TS: `[no-table-cell-overlap-valid-004]`
+/// TS: `[no-table-cell-overlap-007]`
 #[test]
-fn no_table_cell_overlap_valid_004() {
-    const _ID: &str = "no-table-cell-overlap-valid-004";
+fn no_table_cell_overlap_007() {
+    const _ID: &str = "no-table-cell-overlap-007";
     let violations = run(r#"
 <table>
   <tr>
@@ -191,10 +191,10 @@ fn no_table_cell_overlap_valid_004() {
     assert_violations(&violations, &[]);
 }
 
-/// TS: `[no-table-cell-overlap-valid-005]`
+/// TS: `[no-table-cell-overlap-008]`
 #[test]
-fn no_table_cell_overlap_valid_005() {
-    const _ID: &str = "no-table-cell-overlap-valid-005";
+fn no_table_cell_overlap_008() {
+    const _ID: &str = "no-table-cell-overlap-008";
     let violations = run(r#"
 <table>
   <thead>

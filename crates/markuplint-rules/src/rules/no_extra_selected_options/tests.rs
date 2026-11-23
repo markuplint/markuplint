@@ -1,16 +1,16 @@
 //! Tests for `no-extra-selected-options` rule.
 //!
 //! Test ID mapping (TS → Rust):
-//!   no-extra-selected-options-valid-001    → no_extra_selected_options_valid_001
-//!   no-extra-selected-options-valid-002    → no_extra_selected_options_valid_002
-//!   no-extra-selected-options-valid-003    → no_extra_selected_options_valid_003
-//!   no-extra-selected-options-valid-004    → no_extra_selected_options_valid_004
-//!   no-extra-selected-options-invalid-001  → no_extra_selected_options_invalid_001
-//!   no-extra-selected-options-invalid-002  → no_extra_selected_options_invalid_002
-//!   no-extra-selected-options-invalid-003  → no_extra_selected_options_invalid_003
-//!   v6_no_extra_selected_options_001       — Rust-only: attribute names are case-insensitive
-//!   v6_no_extra_selected_options_002       — Rust-only: what the parser leaves directly in the select
-//!   v6_no_extra_selected_options_003       — Rust-only: a pretender select is skipped unless `as` pins it
+//!   no-extra-selected-options-001     → no_extra_selected_options_001
+//!   no-extra-selected-options-002     → no_extra_selected_options_002
+//!   no-extra-selected-options-003     → no_extra_selected_options_003
+//!   no-extra-selected-options-004     → no_extra_selected_options_004
+//!   no-extra-selected-options-005     → no_extra_selected_options_005
+//!   no-extra-selected-options-006     → no_extra_selected_options_006
+//!   no-extra-selected-options-007     → no_extra_selected_options_007
+//!   v6_no_extra_selected_options_001  — Rust-only: attribute names are case-insensitive
+//!   v6_no_extra_selected_options_002  — Rust-only: what the parser leaves directly in the select
+//!   v6_no_extra_selected_options_003  — Rust-only: a pretender select is skipped unless `as` pins it
 //!
 //! Expected values of the `v6_*` tests come from running the TS rule.
 
@@ -27,57 +27,57 @@ fn run(html: &str) -> Vec<Brief> {
 
 const MESSAGE: &str = "The \"select\" element cannot have more than one selected \"option\" descendant unless the \"multiple\" attribute is specified";
 
-/// TS: `[no-extra-selected-options-valid-001]` — zero selected options
+/// TS: `[no-extra-selected-options-001]` — zero selected options
 #[test]
-fn no_extra_selected_options_valid_001() {
-    const _ID: &str = "no-extra-selected-options-valid-001";
+fn no_extra_selected_options_001() {
+    const _ID: &str = "no-extra-selected-options-001";
     assert_eq!(run("<select><option>a</option><option>b</option></select>"), []);
 }
 
-/// TS: `[no-extra-selected-options-valid-002]` — exactly one selected option
+/// TS: `[no-extra-selected-options-002]` — exactly one selected option
 #[test]
-fn no_extra_selected_options_valid_002() {
-    const _ID: &str = "no-extra-selected-options-valid-002";
+fn no_extra_selected_options_002() {
+    const _ID: &str = "no-extra-selected-options-002";
     assert_eq!(
         run("<select><option selected>a</option><option>b</option></select>"),
         []
     );
 }
 
-/// TS: `[no-extra-selected-options-valid-003]` — multiple selected with multiple attribute
+/// TS: `[no-extra-selected-options-003]` — multiple selected with multiple attribute
 #[test]
-fn no_extra_selected_options_valid_003() {
-    const _ID: &str = "no-extra-selected-options-valid-003";
+fn no_extra_selected_options_003() {
+    const _ID: &str = "no-extra-selected-options-003";
     assert_eq!(
         run("<select multiple><option selected>a</option><option selected>b</option></select>"),
         []
     );
 }
 
-/// TS: `[no-extra-selected-options-valid-004]` — selected options inside optgroup respected
+/// TS: `[no-extra-selected-options-004]` — selected options inside optgroup respected
 #[test]
-fn no_extra_selected_options_valid_004() {
-    const _ID: &str = "no-extra-selected-options-valid-004";
+fn no_extra_selected_options_004() {
+    const _ID: &str = "no-extra-selected-options-004";
     assert_eq!(
         run(r#"<select><optgroup label="g"><option selected>a</option><option>b</option></optgroup></select>"#),
         []
     );
 }
 
-/// TS: `[no-extra-selected-options-invalid-001]` — two selected options without multiple
+/// TS: `[no-extra-selected-options-005]` — two selected options without multiple
 #[test]
-fn no_extra_selected_options_invalid_001() {
-    const _ID: &str = "no-extra-selected-options-invalid-001";
+fn no_extra_selected_options_005() {
+    const _ID: &str = "no-extra-selected-options-005";
     assert_eq!(
         run("<select><option selected>a</option><option selected>b</option></select>"),
         [brief(Severity::Error, 1, 36, MESSAGE, "<option selected>")]
     );
 }
 
-/// TS: `[no-extra-selected-options-invalid-002]` — selected spans select and optgroup descendants
+/// TS: `[no-extra-selected-options-006]` — selected spans select and optgroup descendants
 #[test]
-fn no_extra_selected_options_invalid_002() {
-    const _ID: &str = "no-extra-selected-options-invalid-002";
+fn no_extra_selected_options_006() {
+    const _ID: &str = "no-extra-selected-options-006";
     let violations = run(
         r#"<select><option selected>a</option><optgroup label="g"><option selected>b</option></optgroup></select>"#,
     );
@@ -86,10 +86,10 @@ fn no_extra_selected_options_invalid_002() {
     assert_eq!(violations[0].2, 56);
 }
 
-/// TS: `[no-extra-selected-options-invalid-003]` — three selected reports two excess
+/// TS: `[no-extra-selected-options-007]` — three selected reports two excess
 #[test]
-fn no_extra_selected_options_invalid_003() {
-    const _ID: &str = "no-extra-selected-options-invalid-003";
+fn no_extra_selected_options_007() {
+    const _ID: &str = "no-extra-selected-options-007";
     let violations =
         run("<select><option selected>a</option><option selected>b</option><option selected>c</option></select>");
     assert_eq!(violations.len(), 2);

@@ -1,25 +1,25 @@
 //! Tests for `element-supports-aria-prop` rule.
 //!
 //! Test ID mapping (TS → Rust):
-//!   element-supports-aria-prop-valid-001          → element_supports_aria_prop_valid_001
-//!   element-supports-aria-prop-valid-002          → element_supports_aria_prop_valid_002
-//!   element-supports-aria-prop-valid-003          → element_supports_aria_prop_valid_003
-//!   element-supports-aria-prop-valid-004          → element_supports_aria_prop_valid_004
-//!   element-supports-aria-prop-valid-005          → element_supports_aria_prop_valid_005
-//!   element-supports-aria-prop-valid-006          → element_supports_aria_prop_valid_006
-//!   element-supports-aria-prop-invalid-001        → element_supports_aria_prop_invalid_001
-//!   element-supports-aria-prop-invalid-002        → element_supports_aria_prop_invalid_002
-//!   element-supports-aria-prop-issue-3630-001     → element_supports_aria_prop_issue_3630_001
-//!   element-supports-aria-prop-issue-3630-002     → element_supports_aria_prop_issue_3630_002
-//!   element-supports-aria-prop-issue-3630-003     → element_supports_aria_prop_issue_3630_003
-//!   element-supports-aria-prop-issue-3630-005     → element_supports_aria_prop_issue_3630_005
-//!   element-supports-aria-prop-issue-3735-001     → element_supports_aria_prop_issue_3735_001
-//!   element-supports-aria-prop-issue-3735-002     → element_supports_aria_prop_issue_3735_002
-//!   element-supports-aria-prop-issue-3735-003     → element_supports_aria_prop_issue_3735_003
-//!   element-supports-aria-prop-issue-3735-004     → element_supports_aria_prop_issue_3735_004
-//!   element-supports-aria-prop-issue-3735-005     → element_supports_aria_prop_issue_3735_005
-//!   element-supports-aria-prop-issue-3830-001     → element_supports_aria_prop_issue_3830_001
-//!   element-supports-aria-prop-issue-3830-002     → element_supports_aria_prop_issue_3830_002
+//!   element-supports-aria-prop-001          → element_supports_aria_prop_001
+//!   element-supports-aria-prop-015          → element_supports_aria_prop_015
+//!   element-supports-aria-prop-016          → element_supports_aria_prop_016
+//!   element-supports-aria-prop-017          → element_supports_aria_prop_017
+//!   element-supports-aria-prop-018          → element_supports_aria_prop_018
+//!   element-supports-aria-prop-019          → element_supports_aria_prop_019
+//!   element-supports-aria-prop-013        → element_supports_aria_prop_013
+//!   element-supports-aria-prop-014        → element_supports_aria_prop_014
+//!   element-supports-aria-prop-003     → element_supports_aria_prop_003
+//!   element-supports-aria-prop-004     → element_supports_aria_prop_004
+//!   element-supports-aria-prop-005     → element_supports_aria_prop_005
+//!   element-supports-aria-prop-002     → element_supports_aria_prop_002
+//!   element-supports-aria-prop-006     → element_supports_aria_prop_006
+//!   element-supports-aria-prop-007     → element_supports_aria_prop_007
+//!   element-supports-aria-prop-010     → element_supports_aria_prop_010
+//!   element-supports-aria-prop-011     → element_supports_aria_prop_011
+//!   element-supports-aria-prop-012     → element_supports_aria_prop_012
+//!   element-supports-aria-prop-008     → element_supports_aria_prop_008
+//!   element-supports-aria-prop-009     → element_supports_aria_prop_009
 //!   v6_element_supports_aria_prop_001  — Rust-only: every restricted attribute on an element is reported
 //!   v6_element_supports_aria_prop_002  — Rust-only: `without` messages (not-recommended, should-not, must-not)
 //!   v6_element_supports_aria_prop_003  — Rust-only: native attribute present or absent changes the hint
@@ -73,18 +73,18 @@ fn assert_violations(actual: &[Violation], expected: &[Expected<'_>]) {
     }
 }
 
-/// TS: `[element-supports-aria-prop-valid-001]`
+/// TS: `[element-supports-aria-prop-001]`
 #[test]
-fn element_supports_aria_prop_valid_001() {
-    const _ID: &str = "element-supports-aria-prop-valid-001";
+fn element_supports_aria_prop_001() {
+    const _ID: &str = "element-supports-aria-prop-001";
     let violations = run_rule(r#"<div aria-pressed="true">y</div>"#, serde_json::json!(true));
     assert_violations(&violations, &[]);
 }
 
-/// TS: `[element-supports-aria-prop-issue-3630-005]`
+/// TS: `[element-supports-aria-prop-002]`
 #[test]
-fn element_supports_aria_prop_issue_3630_005() {
-    const _ID: &str = "element-supports-aria-prop-issue-3630-005";
+fn element_supports_aria_prop_002() {
+    const _ID: &str = "element-supports-aria-prop-002";
     let violations = run_rule(r#"<img src="x.png" aria-relevant="all">"#, serde_json::json!(true));
     assert_violations(
         &violations,
@@ -98,10 +98,10 @@ fn element_supports_aria_prop_issue_3630_005() {
     );
 }
 
-/// TS: `[element-supports-aria-prop-issue-3630-001]`
+/// TS: `[element-supports-aria-prop-003]`
 #[test]
-fn element_supports_aria_prop_issue_3630_001() {
-    const _ID: &str = "element-supports-aria-prop-issue-3630-001";
+fn element_supports_aria_prop_003() {
+    const _ID: &str = "element-supports-aria-prop-003";
     let violations = run_rule(r#"<br aria-atomic="true">"#, serde_json::json!(true));
     assert_violations(
         &violations,
@@ -115,18 +115,18 @@ fn element_supports_aria_prop_issue_3630_001() {
     );
 }
 
-/// TS: `[element-supports-aria-prop-issue-3630-002]`
+/// TS: `[element-supports-aria-prop-004]`
 #[test]
-fn element_supports_aria_prop_issue_3630_002() {
-    const _ID: &str = "element-supports-aria-prop-issue-3630-002";
+fn element_supports_aria_prop_004() {
+    const _ID: &str = "element-supports-aria-prop-004";
     let violations = run_rule(r#"<br aria-hidden="true">"#, serde_json::json!(true));
     assert_violations(&violations, &[]);
 }
 
-/// TS: `[element-supports-aria-prop-issue-3630-003]`
+/// TS: `[element-supports-aria-prop-005]`
 #[test]
-fn element_supports_aria_prop_issue_3630_003() {
-    const _ID: &str = "element-supports-aria-prop-issue-3630-003";
+fn element_supports_aria_prop_005() {
+    const _ID: &str = "element-supports-aria-prop-005";
     let violations = run_rule(r#"<wbr aria-atomic="true">"#, serde_json::json!(true));
     assert_violations(
         &violations,
@@ -140,10 +140,10 @@ fn element_supports_aria_prop_issue_3630_003() {
     );
 }
 
-/// TS: `[element-supports-aria-prop-issue-3735-001]`
+/// TS: `[element-supports-aria-prop-006]`
 #[test]
-fn element_supports_aria_prop_issue_3735_001() {
-    const _ID: &str = "element-supports-aria-prop-issue-3735-001";
+fn element_supports_aria_prop_006() {
+    const _ID: &str = "element-supports-aria-prop-006";
     let violations = run_rule(
         r#"<button popovertarget="p" aria-expanded="false">x</button>"#,
         serde_json::json!(true),
@@ -160,18 +160,18 @@ fn element_supports_aria_prop_issue_3735_001() {
     );
 }
 
-/// TS: `[element-supports-aria-prop-issue-3735-002]`
+/// TS: `[element-supports-aria-prop-007]`
 #[test]
-fn element_supports_aria_prop_issue_3735_002() {
-    const _ID: &str = "element-supports-aria-prop-issue-3735-002";
+fn element_supports_aria_prop_007() {
+    const _ID: &str = "element-supports-aria-prop-007";
     let violations = run_rule(r#"<button aria-expanded="false">x</button>"#, serde_json::json!(true));
     assert_violations(&violations, &[]);
 }
 
-/// TS: `[element-supports-aria-prop-issue-3830-001]`
+/// TS: `[element-supports-aria-prop-008]`
 #[test]
-fn element_supports_aria_prop_issue_3830_001() {
-    const _ID: &str = "element-supports-aria-prop-issue-3830-001";
+fn element_supports_aria_prop_008() {
+    const _ID: &str = "element-supports-aria-prop-008";
     let violations = run_rule(
         r#"<button command="toggle-popover" commandfor="p" aria-expanded="false">x</button>"#,
         serde_json::json!(true),
@@ -188,10 +188,10 @@ fn element_supports_aria_prop_issue_3830_001() {
     );
 }
 
-/// TS: `[element-supports-aria-prop-issue-3830-002]`
+/// TS: `[element-supports-aria-prop-009]`
 #[test]
-fn element_supports_aria_prop_issue_3830_002() {
-    const _ID: &str = "element-supports-aria-prop-issue-3830-002";
+fn element_supports_aria_prop_009() {
+    const _ID: &str = "element-supports-aria-prop-009";
     let violations = run_rule(
         r#"<button command="toggle-popover" aria-expanded="false">x</button>"#,
         serde_json::json!(true),
@@ -199,10 +199,10 @@ fn element_supports_aria_prop_issue_3830_002() {
     assert_violations(&violations, &[]);
 }
 
-/// TS: `[element-supports-aria-prop-issue-3735-003]`
+/// TS: `[element-supports-aria-prop-010]`
 #[test]
-fn element_supports_aria_prop_issue_3735_003() {
-    const _ID: &str = "element-supports-aria-prop-issue-3735-003";
+fn element_supports_aria_prop_010() {
+    const _ID: &str = "element-supports-aria-prop-010";
     let violations = run_rule(r#"<input type="hidden" aria-hidden="true">"#, serde_json::json!(true));
     assert_violations(
         &violations,
@@ -216,10 +216,10 @@ fn element_supports_aria_prop_issue_3735_003() {
     );
 }
 
-/// TS: `[element-supports-aria-prop-issue-3735-004]`
+/// TS: `[element-supports-aria-prop-011]`
 #[test]
-fn element_supports_aria_prop_issue_3735_004() {
-    const _ID: &str = "element-supports-aria-prop-issue-3735-004";
+fn element_supports_aria_prop_011() {
+    const _ID: &str = "element-supports-aria-prop-011";
     let violations = run_rule(r#"<input type="hidden" aria-label="x">"#, serde_json::json!(true));
     assert_violations(
         &violations,
@@ -233,18 +233,18 @@ fn element_supports_aria_prop_issue_3735_004() {
     );
 }
 
-/// TS: `[element-supports-aria-prop-issue-3735-005]`
+/// TS: `[element-supports-aria-prop-012]`
 #[test]
-fn element_supports_aria_prop_issue_3735_005() {
-    const _ID: &str = "element-supports-aria-prop-issue-3735-005";
+fn element_supports_aria_prop_012() {
+    const _ID: &str = "element-supports-aria-prop-012";
     let violations = run_rule(r#"<input type="text" aria-hidden="true">"#, serde_json::json!(true));
     assert_violations(&violations, &[]);
 }
 
-/// TS: `[element-supports-aria-prop-invalid-001]`
+/// TS: `[element-supports-aria-prop-013]`
 #[test]
-fn element_supports_aria_prop_invalid_001() {
-    const _ID: &str = "element-supports-aria-prop-invalid-001";
+fn element_supports_aria_prop_013() {
+    const _ID: &str = "element-supports-aria-prop-013";
     let violations = run_rule(
         r#"<details><summary aria-expanded="false">s</summary></details>"#,
         serde_json::json!(true),
@@ -261,10 +261,10 @@ fn element_supports_aria_prop_invalid_001() {
     );
 }
 
-/// TS: `[element-supports-aria-prop-invalid-002]`
+/// TS: `[element-supports-aria-prop-014]`
 #[test]
-fn element_supports_aria_prop_invalid_002() {
-    const _ID: &str = "element-supports-aria-prop-invalid-002";
+fn element_supports_aria_prop_014() {
+    const _ID: &str = "element-supports-aria-prop-014";
     let violations = run_rule(
         r#"<details><summary aria-pressed="true">s</summary></details>"#,
         serde_json::json!(true),
@@ -281,10 +281,10 @@ fn element_supports_aria_prop_invalid_002() {
     );
 }
 
-/// TS: `[element-supports-aria-prop-valid-002]`
+/// TS: `[element-supports-aria-prop-015]`
 #[test]
-fn element_supports_aria_prop_valid_002() {
-    const _ID: &str = "element-supports-aria-prop-valid-002";
+fn element_supports_aria_prop_015() {
+    const _ID: &str = "element-supports-aria-prop-015";
     let violations = run_rule(
         r#"<details><summary aria-disabled="true">s</summary></details>"#,
         serde_json::json!(true),
@@ -292,10 +292,10 @@ fn element_supports_aria_prop_valid_002() {
     assert_violations(&violations, &[]);
 }
 
-/// TS: `[element-supports-aria-prop-valid-003]`
+/// TS: `[element-supports-aria-prop-016]`
 #[test]
-fn element_supports_aria_prop_valid_003() {
-    const _ID: &str = "element-supports-aria-prop-valid-003";
+fn element_supports_aria_prop_016() {
+    const _ID: &str = "element-supports-aria-prop-016";
     let violations = run_rule(
         r#"<details><summary aria-haspopup="true">s</summary></details>"#,
         serde_json::json!(true),
@@ -303,26 +303,26 @@ fn element_supports_aria_prop_valid_003() {
     assert_violations(&violations, &[]);
 }
 
-/// TS: `[element-supports-aria-prop-valid-004]`
+/// TS: `[element-supports-aria-prop-017]`
 #[test]
-fn element_supports_aria_prop_valid_004() {
-    const _ID: &str = "element-supports-aria-prop-valid-004";
+fn element_supports_aria_prop_017() {
+    const _ID: &str = "element-supports-aria-prop-017";
     let violations = run_rule(r#"<summary aria-expanded="false">s</summary>"#, serde_json::json!(true));
     assert_violations(&violations, &[]);
 }
 
-/// TS: `[element-supports-aria-prop-valid-005]`
+/// TS: `[element-supports-aria-prop-018]`
 #[test]
-fn element_supports_aria_prop_valid_005() {
-    const _ID: &str = "element-supports-aria-prop-valid-005";
+fn element_supports_aria_prop_018() {
+    const _ID: &str = "element-supports-aria-prop-018";
     let violations = run_rule(r#"<summary aria-pressed="true">s</summary>"#, serde_json::json!(true));
     assert_violations(&violations, &[]);
 }
 
-/// TS: `[element-supports-aria-prop-valid-006]`
+/// TS: `[element-supports-aria-prop-019]`
 #[test]
-fn element_supports_aria_prop_valid_006() {
-    const _ID: &str = "element-supports-aria-prop-valid-006";
+fn element_supports_aria_prop_019() {
+    const _ID: &str = "element-supports-aria-prop-019";
     let violations = run_rule(
         r#"<details><summary>first</summary><summary aria-expanded="false">s</summary></details>"#,
         serde_json::json!(true),

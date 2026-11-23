@@ -1,9 +1,9 @@
 //! Tests for `no-aria-on-unsupported-element` rule.
 //!
 //! Test ID mapping (TS → Rust):
-//!   no-aria-on-unsupported-element-valid-001  → no_aria_on_unsupported_element_valid_001
-//!   no-aria-on-unsupported-element-valid-002  → no_aria_on_unsupported_element_valid_002
-//!   no-aria-on-unsupported-element-valid-003  → no_aria_on_unsupported_element_valid_003
+//!   no-aria-on-unsupported-element-001  → no_aria_on_unsupported_element_001
+//!   no-aria-on-unsupported-element-002  → no_aria_on_unsupported_element_002
+//!   no-aria-on-unsupported-element-003  → no_aria_on_unsupported_element_003
 //!   v6_no_aria_on_unsupported_element_001  — Rust-only: `role` and `aria-*` on an element flagged unsupported
 //!   v6_no_aria_on_unsupported_element_002  — Rust-only: only the flagged element is reported
 //!   v6_no_aria_on_unsupported_element_003  — Rust-only: an element without a spec is skipped
@@ -46,28 +46,28 @@ fn config(value: serde_json::Value) -> LintConfig {
     serde_json::from_value(serde_json::json!({ "rules": { "no-aria-on-unsupported-element": value } })).unwrap()
 }
 
-/// TS: `[no-aria-on-unsupported-element-valid-001]`
+/// TS: `[no-aria-on-unsupported-element-001]`
 #[test]
-fn no_aria_on_unsupported_element_valid_001() {
-    const _ID: &str = "no-aria-on-unsupported-element-valid-001";
+fn no_aria_on_unsupported_element_001() {
+    const _ID: &str = "no-aria-on-unsupported-element-001";
     let arena = html_arena(r#"<div role="button" aria-pressed="false"></div>"#);
     let result = lint(&arena, &spec(), &config(serde_json::json!(true)));
     assert!(result.violations.is_empty());
 }
 
-/// TS: `[no-aria-on-unsupported-element-valid-002]`
+/// TS: `[no-aria-on-unsupported-element-002]`
 #[test]
-fn no_aria_on_unsupported_element_valid_002() {
-    const _ID: &str = "no-aria-on-unsupported-element-valid-002";
+fn no_aria_on_unsupported_element_002() {
+    const _ID: &str = "no-aria-on-unsupported-element-002";
     let arena = html_arena(r#"<svg role="img" aria-label="A chart"></svg>"#);
     let result = lint(&arena, &spec(), &config(serde_json::json!(true)));
     assert!(result.violations.is_empty());
 }
 
-/// TS: `[no-aria-on-unsupported-element-valid-003]`
+/// TS: `[no-aria-on-unsupported-element-003]`
 #[test]
-fn no_aria_on_unsupported_element_valid_003() {
-    const _ID: &str = "no-aria-on-unsupported-element-valid-003";
+fn no_aria_on_unsupported_element_003() {
+    const _ID: &str = "no-aria-on-unsupported-element-003";
     let arena = html_arena("<div></div>");
     let result = lint(&arena, &spec(), &config(serde_json::json!(true)));
     assert!(result.violations.is_empty());
