@@ -11812,7 +11812,7 @@ __metadata:
     renovate: "npm:44.241.0"
     textlint: "npm:15.8.0"
     textlint-filter-rule-comments: "npm:1.3.0"
-    textlint-rule-preset-ja-spacing: "npm:3.0.4"
+    textlint-rule-preset-ja-spacing: "npm:3.1.0"
     textlint-rule-preset-ja-technical-writing: "npm:12.0.2"
     textlint-rule-preset-japanese: "npm:10.0.4"
     textlint-rule-preset-jtf-style: "npm:3.0.3"
@@ -16432,7 +16432,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"textlint-rule-ja-nakaguro-or-halfwidth-space-between-katakana@npm:^3.0.4":
+"textlint-rule-ja-nakaguro-or-halfwidth-space-between-katakana@npm:^3.1.0":
   version: 3.1.0
   resolution: "textlint-rule-ja-nakaguro-or-halfwidth-space-between-katakana@npm:3.1.0"
   dependencies:
@@ -16476,7 +16476,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"textlint-rule-ja-no-space-around-parentheses@npm:^3.0.4":
+"textlint-rule-ja-no-space-around-parentheses@npm:^3.1.0":
   version: 3.1.0
   resolution: "textlint-rule-ja-no-space-around-parentheses@npm:3.1.0"
   dependencies:
@@ -16485,7 +16485,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"textlint-rule-ja-no-space-around-slash@npm:^3.0.4":
+"textlint-rule-ja-no-space-around-slash@npm:^3.1.0":
   version: 3.1.0
   resolution: "textlint-rule-ja-no-space-around-slash@npm:3.1.0"
   dependencies:
@@ -16494,7 +16494,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"textlint-rule-ja-no-space-between-full-width@npm:^3.0.4":
+"textlint-rule-ja-no-space-between-full-width@npm:^3.1.0":
   version: 3.1.0
   resolution: "textlint-rule-ja-no-space-between-full-width@npm:3.1.0"
   dependencies:
@@ -16525,7 +16525,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"textlint-rule-ja-space-after-exclamation@npm:^3.0.4":
+"textlint-rule-ja-space-after-exclamation@npm:^3.1.0":
   version: 3.1.0
   resolution: "textlint-rule-ja-space-after-exclamation@npm:3.1.0"
   dependencies:
@@ -16534,7 +16534,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"textlint-rule-ja-space-after-question@npm:^3.0.4":
+"textlint-rule-ja-space-after-question@npm:^3.1.0":
   version: 3.1.0
   resolution: "textlint-rule-ja-space-after-question@npm:3.1.0"
   dependencies:
@@ -16543,7 +16543,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"textlint-rule-ja-space-around-code@npm:^3.0.4":
+"textlint-rule-ja-space-around-code@npm:^3.1.0":
   version: 3.1.0
   resolution: "textlint-rule-ja-space-around-code@npm:3.1.0"
   dependencies:
@@ -16552,7 +16552,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"textlint-rule-ja-space-around-emphasis@npm:^3.0.4":
+"textlint-rule-ja-space-around-emphasis@npm:^3.1.0":
   version: 3.1.0
   resolution: "textlint-rule-ja-space-around-emphasis@npm:3.1.0"
   dependencies:
@@ -16561,7 +16561,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"textlint-rule-ja-space-around-link@npm:^3.0.4":
+"textlint-rule-ja-space-around-link@npm:^3.1.0":
   version: 3.1.0
   resolution: "textlint-rule-ja-space-around-link@npm:3.1.0"
   dependencies:
@@ -16570,7 +16570,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"textlint-rule-ja-space-around-strong@npm:^3.0.4":
+"textlint-rule-ja-space-around-strong@npm:^3.1.0":
   version: 3.1.0
   resolution: "textlint-rule-ja-space-around-strong@npm:3.1.0"
   dependencies:
@@ -16579,7 +16579,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"textlint-rule-ja-space-between-half-and-full-width@npm:^3.0.4":
+"textlint-rule-ja-space-between-half-and-full-width@npm:^3.1.0":
   version: 3.1.0
   resolution: "textlint-rule-ja-space-between-half-and-full-width@npm:3.1.0"
   dependencies:
@@ -16743,22 +16743,22 @@ __metadata:
   languageName: node
   linkType: hard
 
-"textlint-rule-preset-ja-spacing@npm:3.0.4":
-  version: 3.0.4
-  resolution: "textlint-rule-preset-ja-spacing@npm:3.0.4"
+"textlint-rule-preset-ja-spacing@npm:3.1.0":
+  version: 3.1.0
+  resolution: "textlint-rule-preset-ja-spacing@npm:3.1.0"
   dependencies:
-    textlint-rule-ja-nakaguro-or-halfwidth-space-between-katakana: "npm:^3.0.4"
-    textlint-rule-ja-no-space-around-parentheses: "npm:^3.0.4"
-    textlint-rule-ja-no-space-around-slash: "npm:^3.0.4"
-    textlint-rule-ja-no-space-between-full-width: "npm:^3.0.4"
-    textlint-rule-ja-space-after-exclamation: "npm:^3.0.4"
-    textlint-rule-ja-space-after-question: "npm:^3.0.4"
-    textlint-rule-ja-space-around-code: "npm:^3.0.4"
-    textlint-rule-ja-space-around-emphasis: "npm:^3.0.4"
-    textlint-rule-ja-space-around-link: "npm:^3.0.4"
-    textlint-rule-ja-space-around-strong: "npm:^3.0.4"
-    textlint-rule-ja-space-between-half-and-full-width: "npm:^3.0.4"
-  checksum: 10c0/251970b5bad6f02c24882b4d88eaa0c06393ef57c3c21ef8be4b6a6bd13a4aeae1f395c44846410123e9ba65c92cd4c25570af77c3a6b391589908d0fa30bb58
+    textlint-rule-ja-nakaguro-or-halfwidth-space-between-katakana: "npm:^3.1.0"
+    textlint-rule-ja-no-space-around-parentheses: "npm:^3.1.0"
+    textlint-rule-ja-no-space-around-slash: "npm:^3.1.0"
+    textlint-rule-ja-no-space-between-full-width: "npm:^3.1.0"
+    textlint-rule-ja-space-after-exclamation: "npm:^3.1.0"
+    textlint-rule-ja-space-after-question: "npm:^3.1.0"
+    textlint-rule-ja-space-around-code: "npm:^3.1.0"
+    textlint-rule-ja-space-around-emphasis: "npm:^3.1.0"
+    textlint-rule-ja-space-around-link: "npm:^3.1.0"
+    textlint-rule-ja-space-around-strong: "npm:^3.1.0"
+    textlint-rule-ja-space-between-half-and-full-width: "npm:^3.1.0"
+  checksum: 10c0/8a6001f07fef7528a1a69fe350bca1d4c27a7fc8262a92296fd34c9a3619e798527bff36b344d8aa72e03e15d61c50090d139e87ed04e5c8ba69107ce9f1a257
   languageName: node
   linkType: hard
 
