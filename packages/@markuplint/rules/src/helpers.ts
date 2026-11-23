@@ -266,9 +266,11 @@ export function isAriaAttr<T extends RuleConfigValue, O extends PlainData>(
  *
  * An element that has a `role` attribute written in the markup is judged by it when no spread attribute
  * comes after it: an attribute that a spread brings overrides the one written before it, as the later
- * one wins for every language that has a spread attribute (`MLAttr#isSpread`: the order is assumed, and is not checked
- * for each language), so `<div role="button" {...props}>` may have another role, while in
- * `<div {...props} role="button">` the written role is what the element has. A `role` that the framework
+ * one wins for every language that has a spread attribute (`MLAttr#isSpread`: the order is assumed, and is
+ * not checked for each language), so `<div role="button" {...props}>` may have another role, while in
+ * `<div {...props} role="button">` the written role is what the element has. The exception is a spread that
+ * declares `MLAttr#spreadOverridesWritten` (`x-bind="obj"` of Alpine.js): it overrides the attributes
+ * before it and after it, so it makes the role unknown wherever it is. A `role` that the framework
  * does not output (`role={undefined}`, `MLAttr#isAbsent`) is not returned by `getAttributeNode`, so the
  * element has no role attribute and is judged by its implicit role. `getAttributeNode` returns the
  * first `role` attribute, so a second one is not looked at.
@@ -290,7 +292,9 @@ export function isRoleUnknown<T extends RuleConfigValue, O extends PlainData>(
 	}
 	const attrs = el.attributes;
 	const roleIndex = roleAttr ? attrs.indexOf(roleAttr) : -1;
-	return attrs.some((attr, index) => index > roleIndex && attr.isSpread === true);
+	return attrs.some(
+		(attr, index) => attr.isSpread === true && (index > roleIndex || attr.spreadOverridesWritten === true),
+	);
 }
 
 /**
@@ -608,10 +612,12 @@ function isSlotOfUnknownAssignment(
  * traverses, of an element `aria-labelledby` refers to, or of the owned label.
  *
  * A token of `aria-labelledby` that refers to no element may refer to one whose `id`
- * is not known until it is rendered (`<h2 id={x}>`): such an element is not found by
- * its id, and what it renders is not known either. `no-refer-to-non-existent-id`
- * reports no reference in such a tree for the same reason. An element whose attribute
- * the framework does not output (`id={undefined}`, `isAbsent`) has no id to be referred to.
+ * the markup does not tell (`hasElementOfUnknownId` of `@markuplint/ml-spec` says which: `<h2 id={x}>`,
+ * `<h2 {...props}>`, a component that no pretender resolved, content that is not known): such an
+ * element is not found by an id, and what it renders is not known either.
+ * `no-refer-to-non-existent-id` reports no reference in such a tree for the same reason. An
+ * element whose attribute the framework does not output (`id={undefined}`, `isAbsent`) has no id
+ * to be referred to.
  *
  * Not folded into {@link accnameMayBeMutable}: a component with an unknown
  * entry and a static name (`aria-label`, static text) is still decidable and
