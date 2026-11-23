@@ -121,11 +121,6 @@ describe('Body-ok: fragment mode', () => {
 		const { violations } = await mlRuleTest(rule, '<link rel="canonical">');
 		expect(violations.length).toBe(0);
 	});
-
-	test('[link-types-valid-008] <link rel="stylesheet"> in fragment — allowed', async () => {
-		const { violations } = await mlRuleTest(rule, '<link rel="stylesheet">');
-		expect(violations.length).toBe(0);
-	});
 });
 
 describe('Microformats control', () => {

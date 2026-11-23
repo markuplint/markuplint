@@ -51,14 +51,19 @@ describe('dynamic', () => {
 		expect(violations.length).toBe(0);
 	});
 
-	test('[require-element-valid-002] specifies to node rule', async () => {
+	test('[require-element-valid-005] specifies to node rule: a head with dynamic content is not checked', async () => {
 		const { violations } = await mlRuleTest(rule, '<html><head>{variable}</head></html>', {
-			rule: ['meta[charset="UTF-8"]'],
+			nodeRule: [
+				{
+					selector: 'head',
+					rule: ['meta[charset="UTF-8"]'],
+				},
+			],
 			parser: {
 				'.*': '@markuplint/jsx-parser',
 			},
 		});
-		expect(violations.length).toBe(0);
+		expect(violations).toStrictEqual([]);
 	});
 });
 
