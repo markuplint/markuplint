@@ -43,6 +43,30 @@ test('[no-orphaned-end-tag-002] an orphaned end tag after a newline is reported 
 	]);
 });
 
+test('[no-orphaned-end-tag-issue-4755-001] the end tag of html in a frameset document is not orphaned', async () => {
+	const { violations } = await mlRuleTest(
+		rule,
+		'<!doctype html><html lang="en"><head><title>t</title></head><frameset cols=""><frame src=""></frameset></html>',
+	);
+	expect(violations).toStrictEqual([]);
+});
+
+test('[no-orphaned-end-tag-issue-4755-002] `</html>` before the outermost frameset is closed is orphaned', async () => {
+	const { violations } = await mlRuleTest(
+		rule,
+		'<!doctype html><html><head></head><frameset><frameset></frameset></html></frameset></html>',
+	);
+	expect(violations).toStrictEqual([
+		{
+			severity: 'error',
+			line: 1,
+			col: 66,
+			raw: '</html>',
+			message: 'Orphaned end tag detected',
+		},
+	]);
+});
+
 describe('fix', () => {
 	test('[no-orphaned-end-tag-003] remove orphaned end tag', async () => {
 		const { fixedCode } = await mlRuleTest(rule, '<div></div></span>', undefined, true);
