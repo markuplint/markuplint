@@ -229,18 +229,23 @@ fn v6_a_document_nested_more_than_the_limit_is_refused_before_it_is_read() {
         mlast::parse_mlast_deep(&too_deep).map(|_| ()).unwrap_err(),
         mlast::parse_document_settings(&too_deep).map(|_| ()).unwrap_err(),
     ] {
-        assert!(error.to_string().contains("nested more than 512 levels"), "{error}");
+        assert!(
+            error
+                .to_string()
+                .contains("nested too deeply to be read: more than 512 levels"),
+            "{error}"
+        );
     }
     // At the limit the text is read, and fails for what it is
     let at_limit = nested_arrays(mlast::MAX_JSON_DEPTH);
     let error = mlast::parse_mlast_deep(&at_limit).map(|_| ()).unwrap_err();
-    assert!(!error.to_string().contains("nested more than"), "{error}");
+    assert!(!error.to_string().contains("nested too deeply"), "{error}");
 }
 
 #[test]
 fn v6_brackets_in_a_string_are_not_levels_of_the_document() {
     // The raw text of a document is code that has brackets, and a quote can be escaped in it
-    let brackets = "[".repeat(mlast::MAX_JSON_DEPTH * 2);
+    let brackets = "[{]}".repeat(mlast::MAX_JSON_DEPTH);
     let json = format!(r#"{{"raw":"\"{brackets}\\","nodeList":[],"isFragment":true}}"#);
     mlast::parse_mlast_deep(&json).expect("Failed to read brackets in a string");
     mlast::parse_document_settings(&json).expect("Failed to read the settings next to brackets in a string");

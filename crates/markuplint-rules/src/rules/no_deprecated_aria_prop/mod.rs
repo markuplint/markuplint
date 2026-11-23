@@ -56,7 +56,8 @@ fn check(ctx: &ElementContext<'_>, violations: &mut Vec<Violation>) {
     // What the role deprecates is not known where the role is not known until it is rendered. The checker reads
     // only the role's `ownedProperties`, and no property is deprecated on every role in the ARIA data of any
     // version, so "deprecated on every role that could apply" never holds and skipping the element loses no
-    // report (the TS spec that asserts the data fails when that changes).
+    // report (`no-deprecated-aria-prop/spec-data.spec.ts` of `@markuplint/rules` asserts the data, and fails when
+    // that changes; the Rust engine reads the same data, so it is the guard of this early return too).
     if is_role_unknown(ctx.el) {
         return;
     }

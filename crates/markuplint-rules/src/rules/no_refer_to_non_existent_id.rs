@@ -4,7 +4,8 @@
 //! `template` element and a declarative shadow root are trees of their own. The reference and the
 //! id are compared with the character references in the markup resolved. An id that is not known
 //! until it is rendered (a dynamic value) suppresses the report in its tree only, and a `template`
-//! that is in no tree refers to nothing.
+//! that is in no tree refers to nothing. Whether the tree has such an id is [`has_element_of_unknown_id`],
+//! which the landmark and the accessible name helpers read as well: a change to it belongs to all of them.
 //!
 //! @see <https://html.spec.whatwg.org/multipage/dom.html#the-id-attribute>
 
@@ -18,7 +19,7 @@ use markuplint_types::spec::types::{ARIAAttributeValue, MLMLSpec};
 
 use crate::attr_name_key::{attr_specs_of, find_attr_spec};
 use crate::rule::{Rule, RuleConfig, RuleConfigSet};
-use crate::tree_scope::{TreeRoot, Trees, dom_value, dom_value_of};
+use crate::tree_scope::{TreeRoot, Trees, dom_value, dom_value_of, has_element_of_unknown_id};
 use crate::violation::Violation;
 
 pub struct NoReferToNonExistentId;
@@ -55,7 +56,7 @@ impl Rule for NoReferToNonExistentId {
 
         let tr = config.translator();
         let trees = Trees::new(arena, spec);
-        let (ids_of_tree, trees_with_dynamic_id) = collect_ids(arena, config, &trees);
+        let ids_of_tree = collect_ids(arena, &trees);
         let no_ids = HashSet::new();
 
         for (node_id, el) in arena.elements() {
@@ -89,7 +90,7 @@ impl Rule for NoReferToNonExistentId {
                 // refers to nothing, and an id that is not known until it is rendered may be what the
                 // reference means
                 let root = trees.root_of(node_id);
-                if matches!(root, TreeRoot::NoTree(_)) || trees_with_dynamic_id.contains(&root) {
+                if matches!(root, TreeRoot::NoTree(_)) || has_element_of_unknown_id(arena, spec, node_id) {
                     continue;
                 }
                 let id_set = ids_of_tree.get(&root).unwrap_or(&no_ids);
@@ -179,29 +180,17 @@ fn classify_domid_type(type_val: &serde_json::Value) -> DomIdType {
     DomIdType::None
 }
 
-/// The ids of each tree, and the trees that have an id that is not known until it is rendered.
-fn collect_ids(
-    arena: &DomArena,
-    config: &RuleConfigSet,
-    trees: &Trees<'_>,
-) -> (HashMap<TreeRoot, HashSet<String>>, HashSet<TreeRoot>) {
+/// The ids of each tree. As TS does, every element of the tree is read, whatever the node rules say about it.
+fn collect_ids(arena: &DomArena, trees: &Trees<'_>) -> HashMap<TreeRoot, HashSet<String>> {
     let mut ids_of_tree: HashMap<TreeRoot, HashSet<String>> = HashMap::new();
-    let mut trees_with_dynamic_id = HashSet::new();
 
     for (node_id, el) in arena.elements() {
-        let rule_config = config.get(node_id);
-        if rule_config.disabled {
-            continue;
-        }
         // TS `getAttrNode('id')`: an attribute that the framework does not output is not one
         let Some(html_attr) = markuplint_dom::helpers::get_attr_node_from_el(el, "id") else {
             continue;
         };
 
         let root = trees.root_of(node_id);
-        if html_attr.is_dynamic_value == Some(true) {
-            trees_with_dynamic_id.insert(root);
-        }
 
         // TS `attr.valueType === 'code'`, which a value the framework resolves is not
         if html_attr.value_type.as_deref() == Some("code") && html_attr.potential_value.is_none() {
@@ -214,7 +203,7 @@ fn collect_ids(
         }
     }
 
-    (ids_of_tree, trees_with_dynamic_id)
+    ids_of_tree
 }
 
 /// TS `t('Missing {0}', t('"{0*}" ID', id))`, through `finish`.
@@ -278,6 +267,31 @@ mod tests {
                 "Missing \"c\" ID",
                 "a c"
             )]
+        );
+    }
+
+    /// TS reads the `id` of every element of the tree, whatever the node rules say about the element: an `id` that
+    /// is not known suppresses the reports of its tree where a node rule disables this rule for that element.
+    #[test]
+    fn v6_an_id_that_is_not_known_suppresses_the_reports_where_a_node_rule_disables_the_rule_for_it() {
+        let html = r#"<h2 id="h">Q</h2><p aria-labelledby="t">a</p>"#;
+        let config = serde_json::json!({
+            "rules": { "no-refer-to-non-existent-id": true },
+            "nodeRules": [{ "selector": "h2", "rules": { "no-refer-to-non-existent-id": false } }]
+        });
+
+        // The reference is to nothing in a tree whose ids are all known
+        let arena = crate::test_util::html_arena(html);
+        assert_eq!(
+            crate::test_util::lint_arena_brief("no-refer-to-non-existent-id", &arena, config.clone()).len(),
+            1
+        );
+
+        let mut arena = crate::test_util::html_arena(html);
+        crate::test_util::make_id_dynamic(&mut arena, "h");
+        assert_eq!(
+            crate::test_util::lint_arena_brief("no-refer-to-non-existent-id", &arena, config),
+            []
         );
     }
 

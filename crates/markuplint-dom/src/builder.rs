@@ -422,11 +422,13 @@ fn resolve_parents_and_siblings(arena: &mut DomArena, child_ids: &[NodeId], pare
 
 /// # Errors
 ///
-/// Returns an error if the JSON cannot be parsed as an `MLASTDocument`.
+/// Returns an error if the JSON cannot be parsed as an `MLASTDocument`, or it is nested more than
+/// [`markuplint_core::mlast::MAX_JSON_DEPTH`] levels: a document that deep is refused before it is read, as the
+/// native stack does not survive it.
 pub fn build_from_json(json: &str) -> Result<DomArena, markuplint_core::ParseError> {
     // An element is two levels of JSON (the node and its `childNodes`), so the default limit of 128 refuses a
     // document that is nested 64 elements deep, which the rules can judge. `parse_mlast_deep` reads up to
-    // `MAX_JSON_DEPTH` levels (256 elements), and refuses what is deeper than a native stack survives
+    // `MAX_JSON_DEPTH` levels (about 256 elements), and refuses what is deeper than a native stack survives
     let doc = markuplint_core::mlast::parse_mlast_deep(json)?;
     // A second read of the same text, for three fields next to the nodes. It skips every node
     // without building one, which costs far less than the pass above, and keeps `MLASTDocument`

@@ -671,11 +671,22 @@ fn nested_divs(depth: usize) -> String {
 }
 
 /// The default recursion limit of `serde_json` is 128 levels, which is 64 elements deep: a document that the rules
-/// can judge is not refused by how deep it is.
+/// can judge is not refused by how deep it is. The thread has the stack that a debug build needs (about 12 KB per
+/// element), which the test thread of 2 MB may lack on a platform whose frames are larger.
 #[test]
 fn v6_build_from_json_reads_a_document_nested_deeper_than_the_default_limit() {
-    let arena = builder::build_from_json(&nested_divs(100)).expect("Failed to build a deeply nested DOM");
-    assert_eq!(arena.elements().count(), 100);
+    let count = std::thread::Builder::new()
+        .stack_size(32 << 20)
+        .spawn(|| {
+            builder::build_from_json(&nested_divs(100))
+                .expect("Failed to build a deeply nested DOM")
+                .elements()
+                .count()
+        })
+        .unwrap()
+        .join()
+        .unwrap();
+    assert_eq!(count, 100);
 }
 
 /// The document and its `nodeList` are two levels, and each element is two more: 255 elements are 512 levels, which
@@ -696,5 +707,5 @@ fn v6_build_from_json_reads_a_document_up_to_the_limit_and_refuses_a_deeper_one(
         .unwrap();
     assert_eq!(built.expect("Failed to build a document at the limit"), deepest);
     let error = refused.unwrap_err();
-    assert!(error.to_string().contains("nested more than"), "{error}");
+    assert!(error.to_string().contains("nested too deeply"), "{error}");
 }

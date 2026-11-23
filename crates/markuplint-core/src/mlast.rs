@@ -358,7 +358,7 @@ pub enum MLASTAttr {
 }
 
 impl MLASTAttr {
-    /// TS `MLAttr#isSpread`: the attribute is a spread of the syntax tree (`{...props}`), or the spec says that
+    /// TS `MLAttr#isSpread` (`packages/@markuplint/ml-core/src/ml-dom/node/attr.ts`): the attribute is a spread of the syntax tree (`{...props}`), or the spec says that
     /// a directive is one (`v-bind="obj"`, [`MLASTHTMLAttr::is_spread`]). `MLElement#hasSpreadAttr` is whether an
     /// element has one.
     #[must_use]
@@ -405,7 +405,7 @@ pub struct MLASTHTMLAttr {
     /// rule that judges the name sees it, but a lookup by name does not find it, as the DOM does not.
     #[serde(default)]
     pub is_absent: Option<bool>,
-    /// TS `MLAttr#isSpread` of an attribute that is not a spread of the syntax tree: the spec says that
+    /// TS `MLAttr#isSpread` (`packages/@markuplint/ml-core/src/ml-dom/node/attr.ts`) of an attribute that is not a spread of the syntax tree: the spec says that
     /// the directive is one (`DirectivePattern#isSpread`, `v-bind="obj"` of Vue), as it gives the
     /// element the attributes of an object that the template does not show. The name of the attribute stays as
     /// written. A spread of the syntax tree is [`MLASTAttr::Spread`]; [`MLASTAttr::is_spread`] is the
@@ -603,7 +603,8 @@ pub fn parse_mlast(json: &str) -> Result<MLASTDocument, serde_json::Error> {
 
 /// How many levels of JSON the engine reads when it reads without the limit of `serde_json`
 /// ([`parse_mlast_deep`], [`parse_document_settings`]). An element is two levels (its node and its
-/// `childNodes`), so a document can nest 256 elements.
+/// `childNodes`), so a document can nest about 256 elements: the levels around the nodes and the structures
+/// inside a node (`attributes`) are counted too.
 ///
 /// Without the limit (128 levels, which is 64 elements) the depth of the JSON is the depth of the native
 /// stack: reading, building the DOM and a rule that walks the ancestors recurse once per element, which is
@@ -636,7 +637,7 @@ fn check_json_depth(json: &str) -> Result<(), serde_json::Error> {
                 depth += 1;
                 if depth > MAX_JSON_DEPTH {
                     return Err(serde::de::Error::custom(format!(
-                        "the document is nested more than {MAX_JSON_DEPTH} levels of JSON ({} elements)",
+                        "the document is nested too deeply to be read: more than {MAX_JSON_DEPTH} levels of its syntax tree (about {} elements deep)",
                         MAX_JSON_DEPTH / 2
                     )));
                 }

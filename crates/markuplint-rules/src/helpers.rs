@@ -9,7 +9,7 @@ use markuplint_types::spec::aria::ARIAVersion;
 use markuplint_types::spec::types::MLMLSpec;
 
 use crate::aria::accname::resolver::rendered_child_nodes;
-use crate::aria::computed_role::{get_computed_role, is_transparent_for_ownership};
+use crate::aria::computed_role::{get_computed_role, is_transparent_for_ownership, split_context_chain};
 use crate::aria::owns::get_owning_parent_element;
 use crate::aria_check::element_local_name;
 use crate::conditional_block::expand_conditional_blocks;
@@ -59,7 +59,7 @@ pub fn has_mutable_attributes(el: &ElementData) -> bool {
     })
 }
 
-/// TS `isRoleUnknown`: the role of the element is not known until it is rendered. Its `role` attribute has a
+/// TS `isRoleUnknown` (`packages/@markuplint/rules/src/helpers.ts`): the role of the element is not known until it is rendered. Its `role` attribute has a
 /// value that code gives (`role={props.role}`), a spread attribute (`{...props}`, `v-bind="obj"`, [`MLASTAttr::is_spread`])
 /// comes after its `role` attribute, or it has no `role` attribute but a spread attribute: the spread may carry or
 /// override one.
@@ -102,7 +102,7 @@ pub fn is_role_unknown(el: &ElementData) -> bool {
         .any(|(index, attr)| role_index.is_none_or(|role| index > role) && attr.is_spread())
 }
 
-/// TS `mayMatchContextRole`: whether the ancestors of the element may satisfy a "Required Accessibility Parent
+/// TS `mayMatchContextRole` (`packages/@markuplint/rules/src/helpers.ts`): whether the ancestors of the element may satisfy a "Required Accessibility Parent
 /// Role" when the role of an ancestor is not known ([`is_role_unknown`]): that ancestor may be an element that only
 /// passes the context through (`presentation`, `none`, and `generic` in ARIA 1.3), or the role that the condition
 /// asks for next, and both are tried. An ancestor whose role the markup tells is compared as `matches_context_role`
@@ -124,7 +124,7 @@ pub fn may_match_context_role(
 ) -> bool {
     let parent = get_owning_parent_element(arena, spec, node_id, version);
     conditions.iter().any(|condition| {
-        let mut chain: Vec<&str> = condition.split(" > ").collect();
+        let mut chain = split_context_chain(condition);
         chain.reverse();
         may_match_chain(arena, spec, &chain, parent, version)
     })
@@ -277,6 +277,8 @@ pub fn accname_may_be_mutable(arena: &DomArena, spec: &MLMLSpec, node_id: NodeId
 /// rendered by content the pretender does not know — an unknown entry (`{ dynamic: true }`) in
 /// the `contents` of the element, of a pretended descendant among the children the name
 /// computation traverses, of an element `aria-labelledby` refers to, or of the owned label.
+///
+/// TS `accnameMayComeFromUnknownContent` (`packages/@markuplint/rules/src/helpers.ts`).
 ///
 /// A token of `aria-labelledby` that refers to no element may refer to one whose `id` is not known until it is
 /// rendered (`<h2 id={x}>`, [`has_element_of_unknown_id`]); `no-refer-to-non-existent-id` reports no reference in such

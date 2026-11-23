@@ -577,6 +577,31 @@ fn get_non_presentational_ancestor(
     }
 }
 
+/// TS `condition.split(/\s+>\s+/)` of `matchesContextRole`: the chain of a "Required Accessibility Parent Role"
+/// (`menu > group`), whatever the white space around the `>` is. A `>` without white space on both sides is not a
+/// separator.
+pub(crate) fn split_context_chain(condition: &str) -> Vec<&str> {
+    let mut parts = Vec::new();
+    let mut start = 0;
+    let mut search = 0;
+    while let Some(offset) = condition[search..].find('>') {
+        let gt = search + offset;
+        let before = condition[start..gt].trim_end_matches(char::is_whitespace);
+        let after = condition[gt + 1..].trim_start_matches(char::is_whitespace);
+        let has_space_before = before.len() < condition[start..gt].len();
+        let has_space_after = after.len() < condition[gt + 1..].len();
+        if has_space_before && has_space_after {
+            parts.push(&condition[start..start + before.len()]);
+            start = condition.len() - after.len();
+            search = start;
+        } else {
+            search = gt + 1;
+        }
+    }
+    parts.push(&condition[start..]);
+    parts
+}
+
 fn matches_context_role(
     conditions: &[String],
     spec: &MLMLSpec,
@@ -586,7 +611,7 @@ fn matches_context_role(
     visited: &mut HashSet<NodeId>,
 ) -> bool {
     for condition in conditions {
-        let chain: Vec<&str> = condition.split(" > ").collect();
+        let chain = split_context_chain(condition);
         let reversed: Vec<&str> = chain.into_iter().rev().collect();
 
         let mut current_id = get_owning_parent_element(arena, spec, owned_el_id, version);
@@ -598,6 +623,8 @@ fn matches_context_role(
                     all_matched = false;
                     break;
                 };
+                // TS `matchesContextRole` computes an ancestor as a single node (`getComputedRole(.., true)`): the
+                // context that the ancestor itself requires is not asked, only the role it has
                 let cr = compute_role(spec, arena, id, version, true, visited);
                 current_id = get_owning_parent_element(arena, spec, id, version);
 
@@ -687,7 +714,7 @@ fn is_landmark_role(spec: &MLMLSpec, role_name: &str, version: ARIAVersion) -> b
     supers.iter().any(|r| r.name == "landmark")
 }
 
-/// TS `isValidLandmarkRole()`: a landmark that requires a name has one from its author, a
+/// TS `isValidLandmarkRole()` (`ml-spec/src/algorithm/aria/get-explicit-role.ts`): a landmark that requires a name has one from its author, a
 /// non-empty `aria-label` or an `aria-labelledby` that refers to an element.
 ///
 /// The specification takes a landmark that the author has not named to be an authoring error. What is not known
