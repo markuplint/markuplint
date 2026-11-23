@@ -45,7 +45,10 @@ describe('hasElementOfUnknownId', () => {
 	});
 
 	test('[has-unknown-id-006] is false for an element that is in no tree', async () => {
-		const el = Object.assign(await jsx('<div id={x}></div>'), { getRootNode: () => ({ nodeType: 1 }) });
-		expect(hasElementOfUnknownId(el as never)).toBe(false);
+		// The `template` element that a declarative shadow root is attached to is in no tree
+		const div = await jsx('<div><template shadowrootmode="open" id={x}></template></div>');
+		const template = div.deepQuerySelectorAll('template')[0]!;
+		expect(template.getRootNode()).toBe(template);
+		expect(hasElementOfUnknownId(template)).toBe(false);
 	});
 });
