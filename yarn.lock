@@ -11295,7 +11295,7 @@ __metadata:
     textlint-rule-preset-ja-spacing: "npm:3.1.0"
     textlint-rule-preset-ja-technical-writing: "npm:12.0.2"
     textlint-rule-preset-japanese: "npm:10.0.4"
-    textlint-rule-preset-jtf-style: "npm:3.0.3"
+    textlint-rule-preset-jtf-style: "npm:3.1.0"
     ts-node: "npm:10.9.2"
     tsx: "npm:4.23.15"
     typescript: "npm:6.0.3"
@@ -16256,7 +16256,21 @@ __metadata:
   languageName: node
   linkType: hard
 
-"textlint-rule-preset-jtf-style@npm:3.0.3, textlint-rule-preset-jtf-style@npm:^3.0.1":
+"textlint-rule-preset-jtf-style@npm:3.1.0":
+  version: 3.1.0
+  resolution: "textlint-rule-preset-jtf-style@npm:3.1.0"
+  dependencies:
+    analyze-desumasu-dearu: "npm:^2.1.2"
+    japanese-numerals-to-number: "npm:^1.0.2"
+    match-index: "npm:^1.0.3"
+    moji: "npm:^0.5.1"
+    regexp.prototype.flags: "npm:^1.5.3"
+    textlint-rule-helper: "npm:^2.3.1"
+  checksum: 10c0/9f78672f20fb8e6a4863a0a419b4a3c41ed0468400a3e64fa89f59d65da69bcd964ceb2058165e3f1a1110cf751125ce148bdd404ef093c7aa8f414db28f19ff
+  languageName: node
+  linkType: hard
+
+"textlint-rule-preset-jtf-style@npm:^3.0.1":
   version: 3.0.3
   resolution: "textlint-rule-preset-jtf-style@npm:3.0.3"
   dependencies:
