@@ -19,8 +19,11 @@ import fs from 'node:fs';
 
 import { describe, expect, test } from 'vitest';
 
+/** The tracked files under the path that are on the disk: one that is deleted and not staged yet is not read. */
 const listFiles = (pathspec: string) =>
-	execFileSync('git', ['ls-files', pathspec], { encoding: 'utf8' }).split('\n').filter(Boolean);
+	execFileSync('git', ['ls-files', pathspec], { encoding: 'utf8' })
+		.split('\n')
+		.filter(file => file && fs.existsSync(file));
 
 /** The IDs of the tests of the rules' specs. */
 const tsIds = new Set(
@@ -47,9 +50,13 @@ const rustTests: readonly RustTest[] = listFiles('crates')
 			if (!id) {
 				return [];
 			}
-			// The attributes and the comments above the function, which is the line above `_ID`
+			// The function that holds `_ID` is the nearest `fn` above it, and the attributes and the comments are above that
+			let fnLine = index - 1;
+			while (fnLine >= 0 && !/^\s*(?:pub(?:\([a-z]+\))? )?fn [a-z0-9_]+\(/.test(lines[fnLine]!)) {
+				fnLine--;
+			}
 			const cited: string[] = [];
-			for (let above = index - 2; above >= 0 && /^\s*(?:#\[|\/\/)/.test(lines[above]!); above--) {
+			for (let above = fnLine - 1; above >= 0 && /^\s*(?:#\[|\/\/)/.test(lines[above]!); above--) {
 				const comment = /TS:? `\[([a-z0-9-]+)\]`/.exec(lines[above]!)?.[1];
 				if (comment) {
 					cited.push(comment);
@@ -59,7 +66,7 @@ const rustTests: readonly RustTest[] = listFiles('crates')
 				{
 					location: `${file}:${index + 1}`,
 					id,
-					fn: /fn ([a-z0-9_]+)\(/.exec(lines[index - 1] ?? '')?.[1],
+					fn: /fn ([a-z0-9_]+)\(/.exec(lines[fnLine] ?? '')?.[1],
 					cited,
 				},
 			];
