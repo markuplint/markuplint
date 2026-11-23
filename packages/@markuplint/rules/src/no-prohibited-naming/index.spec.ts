@@ -7,7 +7,7 @@ test('[no-prohibited-naming-001] non-naming-prohibited element with aria-label i
 	expect((await mlRuleTest(rule, '<div aria-label="x">y</div>')).violations).toStrictEqual([]);
 });
 
-// #3630: naming prohibition on elements without role
+// Naming prohibition on elements without role
 test('[no-prohibited-naming-002] aria-label on cite is prohibited', async () => {
 	const { violations } = await mlRuleTest(rule, '<cite aria-label="x">y</cite>');
 	expect(violations).toStrictEqual([

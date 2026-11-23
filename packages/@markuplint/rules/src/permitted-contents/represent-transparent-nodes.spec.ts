@@ -40,7 +40,7 @@ test('<div>', () => {
 });
 
 test('<audio>', () => {
-	// The transparent element itself is kept in the flattened list (#3928) so
+	// The transparent element itself is kept in the flattened list so
 	// the parent's content model can still evaluate its own placement.
 	expect(c('<audio></audio>')).toStrictEqual([['audio']]);
 	expect(c('<audio><span></span></audio>')).toStrictEqual([['audio', 'span*']]);
@@ -74,7 +74,7 @@ describe('MAX_PATTERNS cap', () => {
 		const tags = Array.from({ length: 10 }, () => '<a href>{#if x}<span>s</span>{/if}</a>').join('');
 		const result = svelteC(tags);
 		expect(result).toHaveLength(1024);
-		// First pattern: every branch taken — each <a> keeps itself (#3928) plus its span
+		// First pattern: every branch taken — each <a> keeps itself plus its span
 		expect(result[0]).toStrictEqual(Array.from({ length: 10 }, () => ['a', 'span*']).flat());
 		// Last pattern: no branch taken — branch distinction is preserved, but each <a> itself remains
 		expect(result.at(-1)).toStrictEqual(Array.from({ length: 10 }, () => 'a'));

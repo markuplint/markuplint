@@ -342,7 +342,7 @@ describe('Invoker Commands API (commandfor + command)', () => {
 	});
 });
 
-describe('issue-4580', () => {
+describe('a branch of a conditional block between the trigger and the popover', () => {
 	const svelte = { parser: { '.*': '@markuplint/svelte-parser' } };
 
 	test('[require-adjacent-popover-020] the text in a branch of a conditional block between the trigger and the popover is reported itself', async () => {

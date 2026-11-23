@@ -36,7 +36,7 @@ test('[label-has-control-005] The `as` attribute makes descendants known, and a 
 	expect(violations).toStrictEqual([]);
 });
 
-describe('issues', () => {
+describe('a control that a template block or a component renders', () => {
 	const svelte = { parser: { '.*': '@markuplint/svelte-parser' } };
 
 	test('[label-has-control-006] a control in one branch of a conditional block associates the label', async () => {
@@ -100,7 +100,7 @@ describe('issues', () => {
 		]);
 	});
 
-	test('[label-has-control-015] #2392', async () => {
+	test('[label-has-control-015] a component pretended as a label is not reported, as its control may be inside it', async () => {
 		const { violations } = await mlRuleTest(rule, '<Component></Component>', {
 			parser: {
 				'.*': '@markuplint/jsx-parser',

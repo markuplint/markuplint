@@ -107,7 +107,7 @@ test('[no-refer-to-non-existent-id-006] The `as` attribute', async () => {
 	]);
 });
 
-test('[no-refer-to-non-existent-id-007] #1611', async () => {
+test('[no-refer-to-non-existent-id-007] the for attribute of an output refers to more than one ID, all of which must exist', async () => {
 	expect(
 		(
 			await mlRuleTest(

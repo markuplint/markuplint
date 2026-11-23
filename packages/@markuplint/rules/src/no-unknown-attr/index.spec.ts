@@ -412,7 +412,7 @@ test('[no-unknown-attr-022] The `as` attribute', async () => {
 	expect((await mlRuleTest(rule, '<x-link as="a" foo></x-link>')).violations).toStrictEqual([]);
 });
 
-test('[no-unknown-attr-023] #553', async () => {
+test('[no-unknown-attr-023] imagesrcset and imagesizes of a link are known, and so are imageSrcSet and imageSizes in JSX', async () => {
 	expect(
 		(await mlRuleTest(rule, '<link rel="preload" imagesrcset="path/to" as="image" imagesizes="100vw" />', {}))
 			.violations,
@@ -432,12 +432,12 @@ test('[no-unknown-attr-023] #553', async () => {
 	).toStrictEqual([]);
 });
 
-test('[no-unknown-attr-024] #564', async () => {
+test('[no-unknown-attr-024] a class name with a colon is valid on an HTML and an SVG element', async () => {
 	expect((await mlRuleTest(rule, '<div class="md:flex"></div>')).violations).toStrictEqual([]);
 	expect((await mlRuleTest(rule, '<svg><rect class="md:flex"/></svg>')).violations).toStrictEqual([]);
 });
 
-test('[no-unknown-attr-025] #678', async () => {
+test('[no-unknown-attr-025] the # shorthand of v-slot is not an unknown attribute in Vue', async () => {
 	const vue = {
 		parser: {
 			'.*': '@markuplint/vue-parser',
@@ -452,7 +452,7 @@ test('[no-unknown-attr-025] #678', async () => {
 	).toStrictEqual([]);
 });
 
-test('[no-unknown-attr-026] #783', async () => {
+test('[no-unknown-attr-026] an event handler with a modifier through the @ shorthand is not an unknown attribute in Vue', async () => {
 	const vue = {
 		parser: {
 			'.*': '@markuplint/vue-parser',
@@ -467,7 +467,7 @@ test('[no-unknown-attr-026] #783', async () => {
 	).toStrictEqual([]);
 });
 
-test('[no-unknown-attr-027] #800', async () => {
+test('[no-unknown-attr-027] the microdata attributes of the elements of a Pug template are known', async () => {
 	const pug = {
 		parser: {
 			'.*': '@markuplint/pug-parser',

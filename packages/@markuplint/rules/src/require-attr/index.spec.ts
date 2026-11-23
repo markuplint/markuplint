@@ -470,7 +470,7 @@ test('[require-attr-018] The `as` attribute', async () => {
 	expect((await mlRuleTest(rule, '<x-img as="img" src="/path/to/image.png"></x-img>')).violations).toStrictEqual([]);
 });
 
-test('[require-attr-019] #2223', async () => {
+test('[require-attr-019] httpEquiv of a meta in React is read as http-equiv', async () => {
 	const { violations } = await mlRuleTest(rule, '<meta httpEquiv="x-ua-compatible" content="ie=edge" />', {
 		parser: {
 			'.*': '@markuplint/jsx-parser',
@@ -482,7 +482,7 @@ test('[require-attr-019] #2223', async () => {
 	expect(violations).toStrictEqual([]);
 });
 
-test('[require-attr-020] #2455', async () => {
+test('[require-attr-020] a source in a picture expects srcset, and one in a video or an audio expects src', async () => {
 	const sourceCode = `<picture>
   <source src="path/to" media="(query: value)">
   <source srcset="path/to" media="(query: value)">

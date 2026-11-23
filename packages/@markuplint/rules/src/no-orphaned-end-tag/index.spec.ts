@@ -30,7 +30,7 @@ test('[no-orphaned-end-tag-001] It is test', async () => {
 	]);
 });
 
-test('[no-orphaned-end-tag-002] #1575: orphaned end tag with newlines', async () => {
+test('[no-orphaned-end-tag-002] an orphaned end tag after a newline is reported at its own line and column', async () => {
 	const { violations } = await mlRuleTest(rule, '<div>\n  </p>\n</div>');
 	expect(violations).toStrictEqual([
 		{

@@ -65,7 +65,7 @@ test('conditional transparent: <audio>', () => {
 });
 
 test('transparent: <audio> with <audio>', () => {
-	// The inner <audio> itself is now kept in the flattened list (#3928), so the
+	// The inner <audio> itself is kept in the flattened list, so the
 	// outer model's own `transparent` pattern slot absorbs it as a plain match;
 	// the disallow is still reported separately via TRANSPARENT_MODEL_DISALLOWS.
 	expect(c('<audio><audio></audio></audio>')[0]?.type).toBe('MATCHED');

@@ -614,7 +614,7 @@ test('[require-ancestor-065] the message is in Japanese with locale ja', async (
 	]);
 });
 
-describe('issue-4744', () => {
+describe('an element in a template that Vue renders away', () => {
 	/**
 	 * Vue renders a `<template>` that has `v-if`, `v-else-if`, `v-else`, `v-for` or `v-slot` away, and leaves
 	 * the one that has any other directive (`v-show`, `:id`) a `template` element: it is what the area at the

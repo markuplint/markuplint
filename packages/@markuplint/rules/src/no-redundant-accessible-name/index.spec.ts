@@ -168,7 +168,7 @@ describe('Violations (override detected)', () => {
 			rule,
 			'<h2 id="h" aria-labelledby="h foo">Meeting</h2><span id="foo">Notes</span>',
 		);
-		// Flipped for #4217: accname 2B is skipped on self-reference, so the node's own content is
+		// accname 2B is skipped on self-reference, so the node's own content is
 		// composed into the name rather than overridden.
 		// expect(violations.length).toBe(1);
 		// expect(violations[0]?.message).toContain('aria-labelledby');
@@ -208,7 +208,7 @@ describe('aria-labelledby self-reference (accname 2B is skipped for the node its
 			rule,
 			'<span id="label-target">Delete</span><button id="button1" aria-label="Item 1" aria-labelledby="button1 label-target">×</button>',
 		);
-		// Restored after #4251: aria-label (2D) still wins over content (2F) inside the
+		// aria-label (2D) still wins over content (2F) inside the
 		// self-referencing traversal, the same as on a button without aria-labelledby.
 		expect(violations).toStrictEqual([
 			{
@@ -271,7 +271,7 @@ describe('aria-labelledby self-reference (accname 2B is skipped for the node its
 			rule,
 			'<span id="note">Note</span><input id="field" type="checkbox" aria-label="Item 1" aria-labelledby="field note"><label for="field">Label</label>',
 		);
-		// Restored after #4251: same reason as 4217-002.
+		// Same reason as [no-redundant-accessible-name-026]: aria-label (2D) still wins over content (2F).
 		expect(violations).toStrictEqual([
 			{
 				severity: 'warning',
@@ -288,7 +288,7 @@ describe('aria-labelledby self-reference (accname 2B is skipped for the node its
 			rule,
 			'<button id="button1" aria-label="Item 1" aria-labelledby="button1">×</button>',
 		);
-		// Flipped after #4251: a bare self-reference must not silence the warning that
+		// A bare self-reference must not silence the warning that
 		// `<button aria-label="Item 1">×</button>` gets.
 		// expect(violations).toStrictEqual([]);
 		expect(violations).toStrictEqual([
@@ -620,7 +620,7 @@ test('[no-redundant-accessible-name-064] a slot that is not in a shadow root may
 	expect(violations).toStrictEqual([]);
 });
 
-describe('issue-4580', () => {
+describe('the content in a branch of a conditional block', () => {
 	const svelte = { parser: { '.*': '@markuplint/svelte-parser' } };
 
 	test('[no-redundant-accessible-name-065] the text in a branch of a conditional block is content that aria-label overrides', async () => {

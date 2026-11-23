@@ -304,7 +304,7 @@ describe('finalPassViolations', () => {
 		// tag-name case (start and end tags) + attr-name case + quote style
 		expect(violations).toHaveLength(4);
 		// The fixed code has no remaining violations — the accurate signal
-		// for CI pipelines checking post-fix results (issue #3890)
+		// for CI pipelines checking post-fix results
 		expect(fixSummary?.finalPassViolations).toStrictEqual([]);
 	});
 
@@ -419,7 +419,7 @@ describe('cycle detection', () => {
 		);
 		expect(fixedCode).toBe(sourceCode);
 		// Detected at the pass that reproduces the original code,
-		// NOT by exhausting MAX_FIX_PASSES (issue #3891)
+		// NOT by exhausting MAX_FIX_PASSES
 		expect(fixSummary?.passCount).toBe(3);
 		expect(fixSummary?.reachedMaxPasses).toBe(false);
 		// The oscillating violations are still present in the final code,

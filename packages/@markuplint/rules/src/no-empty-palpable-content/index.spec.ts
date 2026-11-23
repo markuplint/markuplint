@@ -97,18 +97,18 @@ test('[no-empty-palpable-content-005] Ignore aria-busy', async () => {
 	]);
 });
 
-test('[no-empty-palpable-content-006] #593', async () => {
+test('[no-empty-palpable-content-006] an iframe is not reported when it is empty', async () => {
 	expect((await mlRuleTest(rule, '<iframe></iframe>')).violations).toStrictEqual([]);
 });
 
-test('[no-empty-palpable-content-007] #775', async () => {
+test('[no-empty-palpable-content-007] a pre that has text is not empty, whether the text starts on a new line or not', async () => {
 	expect((await mlRuleTest(rule, '<pre>text</pre>')).violations).toStrictEqual([]);
 	expect((await mlRuleTest(rule, '<pre>\n\ttext</pre>')).violations).toStrictEqual([]);
 	expect((await mlRuleTest(rule, '<pre>text\ntext</pre>')).violations).toStrictEqual([]);
 	expect((await mlRuleTest(rule, '<pre>\ntext</pre>')).violations).toStrictEqual([]);
 });
 
-test('[no-empty-palpable-content-008] #1948', async () => {
+test('[no-empty-palpable-content-008] audio, canvas, video, textarea and output are not reported when they are empty', async () => {
 	expect((await mlRuleTest(rule, '<audio></audio>')).violations).toStrictEqual([]);
 	expect((await mlRuleTest(rule, '<canvas></canvas>')).violations).toStrictEqual([]);
 	expect((await mlRuleTest(rule, '<video></video>')).violations).toStrictEqual([]);

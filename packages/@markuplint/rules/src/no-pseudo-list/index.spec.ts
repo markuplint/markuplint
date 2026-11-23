@@ -109,7 +109,7 @@ test('[no-pseudo-list-008] emoji (surrogate pair character)', async () => {
 	).toBe(3);
 });
 
-test('[no-pseudo-list-009] #957', async () => {
+test('[no-pseudo-list-009] braces of Svelte are not the mark of a list, unless prevCodeBlock is on', async () => {
 	expect(
 		(
 			await mlRuleTest(rule, '<p>{count} * 2 = {doubled}</p>', {

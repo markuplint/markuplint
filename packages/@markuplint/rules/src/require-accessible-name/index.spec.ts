@@ -794,8 +794,7 @@ describe('Markdown parser', () => {
 	});
 });
 
-// https://github.com/markuplint/markuplint/issues/536
-test('[require-accessible-name-055] #536', async () => {
+test('[require-accessible-name-055] a region named by aria-labelledby is accepted, hidden or not', async () => {
 	expect(
 		(await mlRuleTest(rule, '<h2 id="h">Heading</h2><div role="region" aria-labelledby="h">...</div>')).violations,
 	).toStrictEqual([]);
@@ -809,8 +808,7 @@ test('[require-accessible-name-055] #536', async () => {
 	).toStrictEqual([]);
 });
 
-// https://github.com/markuplint/markuplint/issues/592
-test('[require-accessible-name-056] #592', async () => {
+test('[require-accessible-name-056] an svg that has aria-label is accepted, whether or not the elements in it have a name', async () => {
 	expect(
 		(await mlRuleTest(rule, '<svg aria-label="i-have-name"><path /><rect><path /></rect></svg>')).violations,
 	).toStrictEqual([]);
@@ -836,14 +834,13 @@ test('[require-accessible-name-056] #592', async () => {
 	).toStrictEqual([]);
 });
 
-// https://github.com/markuplint/markuplint/issues/658
-test('[require-accessible-name-057] #658', async () => {
+test('[require-accessible-name-057] a dialog does not require an accessible name', async () => {
 	// ARIA 1.3: dialog no longer requires an accessible name
 	expect((await mlRuleTest(rule, '<dialog></dialog>')).violations.length).toBe(0);
 	expect((await mlRuleTest(rule, '<div role="dialog"></div>')).violations.length).toBe(0);
 });
 
-test('[require-accessible-name-058] #1018', async () => {
+test('[require-accessible-name-058] a button with a slot of Svelte has a name, and an empty one has none', async () => {
 	expect(
 		(
 			await mlRuleTest(rule, '<button><slot /></button>', {
@@ -864,7 +861,7 @@ test('[require-accessible-name-058] #1018', async () => {
 	).toBe(1);
 });
 
-test('[require-accessible-name-059] #1147', async () => {
+test('[require-accessible-name-059] a label and its input before an ERB block are associated', async () => {
 	expect(
 		(
 			await mlRuleTest(
@@ -886,8 +883,7 @@ test('[require-accessible-name-059] #1147', async () => {
 	).toStrictEqual([]);
 });
 
-// https://github.com/markuplint/markuplint/issues/3283
-test('[require-accessible-name-060] #3283', async () => {
+test('[require-accessible-name-060] a label whose text is only in its child elements gives the name', async () => {
 	// Implicit label with text only inside child elements
 	expect((await mlRuleTest(rule, '<label><span>label</span> <input /></label>')).violations).toStrictEqual([]);
 
@@ -901,7 +897,7 @@ test('[require-accessible-name-060] #3283', async () => {
 	expect((await mlRuleTest(rule, '<label>label <span>label</span> <input /></label>')).violations).toStrictEqual([]);
 });
 
-test('[require-accessible-name-061] #2394', async () => {
+test('[require-accessible-name-061] a component pretended as a link that inherits its attributes is checked for its accessible name', async () => {
 	expect(
 		(
 			await mlRuleTest(rule, '<MyComponent href="https://markuplint.dev/" />', {
@@ -1176,7 +1172,7 @@ describe('an id that is not known until it is rendered', () => {
 	});
 });
 
-describe('#4069', () => {
+describe('a pretended component whose contents may be the name', () => {
 	const jsx = { '.*': '@markuplint/jsx-parser' };
 
 	test('[require-accessible-name-079] the unknown content of the component may be its name', async () => {
@@ -1570,7 +1566,7 @@ test('[require-accessible-name-098] an element without a name is reported', asyn
 	]);
 });
 
-describe('issue-4527', () => {
+describe('the declarative shadow root of a pretended host', () => {
 	const pretendedHost = { pretenders: [{ selector: 'x-btn', as: { element: 'div', inheritAttrs: true } }] };
 
 	test('[require-accessible-name-099] a pretended host takes its name from its declarative shadow root', async () => {
@@ -1653,7 +1649,7 @@ describe('issue-4527', () => {
 	});
 });
 
-describe('issue-4538', () => {
+describe('the nodes assigned to a slot', () => {
 	const nunjucks = { parser: { '.*': '@markuplint/nunjucks-parser' } };
 	const svelte = { parser: { '.*': '@markuplint/svelte-parser' } };
 	const alpine = { parser: { '.*': '@markuplint/alpine-parser' } };
@@ -1806,7 +1802,7 @@ describe('issue-4538', () => {
 	});
 });
 
-describe('issue-4580', () => {
+describe('a branch of a conditional block', () => {
 	const svelte = { parser: { '.*': '@markuplint/svelte-parser' } };
 	const alpine = { parser: { '.*': '@markuplint/alpine-parser' } };
 	const astro = { parser: { '.*': '@markuplint/astro-parser' } };

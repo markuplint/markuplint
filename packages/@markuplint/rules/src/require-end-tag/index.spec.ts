@@ -164,7 +164,7 @@ test('[require-end-tag-009] Astro', async () => {
 	]);
 });
 
-test('[require-end-tag-010] #1349', async () => {
+test('[require-end-tag-010] template syntax between the tags does not make an end tag missing in Nunjucks', async () => {
 	expect(
 		(
 			await mlRuleTest(

@@ -61,7 +61,7 @@ test('[element-supports-aria-prop-005] wbr aria-atomic is disallowed (same prope
 	]);
 });
 
-// #3735 P1: button[popovertarget] must not have aria-expanded. The popover API
+// button[popovertarget] must not have aria-expanded. The popover API
 // manages the expanded/collapsed state automatically, so a manual aria-expanded
 // is redundant and may drift from the actual state.
 test('[element-supports-aria-prop-006] button[popovertarget] aria-expanded is must-not', async () => {
@@ -83,7 +83,7 @@ test('[element-supports-aria-prop-007] button without popovertarget allows aria-
 	expect((await mlRuleTest(rule, '<button aria-expanded="false">x</button>')).violations).toStrictEqual([]);
 });
 
-// #3830: button[commandfor] must not have aria-expanded. The Invoker Commands
+// button[commandfor] must not have aria-expanded. The Invoker Commands
 // API manages the expanded state automatically (same reasoning as popovertarget),
 // so a manual aria-expanded is redundant and may drift from the actual state.
 test('[element-supports-aria-prop-008] button[commandfor] aria-expanded is must-not', async () => {
@@ -110,10 +110,10 @@ test('[element-supports-aria-prop-009] button without commandfor allows aria-exp
 	).toStrictEqual([]);
 });
 
-// #3735 P2: input[type=hidden] sets `properties: false` in spec data, meaning
+// input[type=hidden] sets `properties: false` in spec data, meaning
 // any aria-* attribute is disallowed. The check must fire even though the
-// element has no implicit role and no explicit role (same root cause as #3630
-// naming prohibition, but element-specific rather than naming-specific).
+// element has no implicit role and no explicit role (same root cause as the naming
+// prohibition on elements without a role, but element-specific rather than naming-specific).
 test('[element-supports-aria-prop-010] aria-hidden on input[type=hidden] is disallowed', async () => {
 	const { violations } = await mlRuleTest(rule, '<input type="hidden" aria-hidden="true">');
 	expect(violations).toStrictEqual([

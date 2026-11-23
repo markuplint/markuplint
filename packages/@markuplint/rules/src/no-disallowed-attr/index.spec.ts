@@ -29,7 +29,7 @@ test('[no-disallowed-attr-002] noUse flag with allowAttrs (allowAttrs overrides 
 	expect(violations).toStrictEqual([]);
 });
 
-test('[no-disallowed-attr-003] #2455', async () => {
+test('[no-disallowed-attr-003] src is disallowed on a source in a picture, and srcset on a source in a video or an audio', async () => {
 	const sourceCode = `<picture>
   <source src="path/to" media="(query: value)">
   <source srcset="path/to" media="(query: value)">
@@ -715,8 +715,8 @@ test('[no-disallowed-attr-059] referrerpolicy without href is disallowed', async
 	// (the literal "invalid-attr" attribute) lives in no-unknown-attr's
 	// sibling test. Pre-split, this fixture's referrerpolicy value ("invalid-value")
 	// also failed the value check, but the old single rule's value-then-condition
-	// pipeline reported only the value error (see the no-invalid-attr-value /
-	// issue-3733-008 note on that ordering). Post-split, no-disallowed-attr
+	// pipeline reported only the value error (see the note on that ordering in
+	// [no-invalid-attr-value-219]). Post-split, no-disallowed-attr
 	// independently reports the unmet condition regardless of the value.
 	const { violations } = await mlRuleTest(
 		rule,
@@ -1236,7 +1236,7 @@ test('[no-disallowed-attr-092] xml:lang is allowed only where lang is specified'
 	]);
 });
 
-describe('issue-4435', () => {
+describe('an attribute that the framework outputs or does not output', () => {
 	const jsx = { parser: { '.*': '@markuplint/jsx-parser' } };
 
 	const disallowed = {

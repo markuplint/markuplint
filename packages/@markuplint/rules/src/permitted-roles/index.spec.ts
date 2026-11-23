@@ -20,7 +20,7 @@ test('[permitted-roles-002] non-permitted role on select', async () => {
 	]);
 });
 
-// Issue #3641: <img alt=""> must not have any role attribute — including role="none" / "presentation"
+// <img alt=""> must not have any role attribute — including role="none" / "presentation"
 // which match the implicit role. Per ARIA in HTML §3.4, "No role permitted".
 test('[permitted-roles-003] img with alt="" must not have role=presentation', async () => {
 	expect((await mlRuleTest(rule, '<img src="x.png" alt="" role="presentation">')).violations).toStrictEqual([
@@ -59,7 +59,7 @@ test('[permitted-roles-005] img with alt="" must not have role=img', async () =>
 	]);
 });
 
-// Issue #3641 comment case 4: explicit non-presentational role on <img alt="">
+// Explicit non-presentational role on <img alt="">
 test('[permitted-roles-006] img with alt="" must not have role=button', async () => {
 	expect((await mlRuleTest(rule, '<img src="x.png" alt="" role="button">')).violations).toStrictEqual([
 		{
@@ -84,7 +84,7 @@ test('[permitted-roles-007] img with alt="" must not have role=link', async () =
 	]);
 });
 
-// Issue #3641 comment case 7: <img> without alt and without accessible name still forbids explicit role
+// <img> without alt and without accessible name still forbids explicit role
 test('[permitted-roles-008] img without alt must not have role=presentation', async () => {
 	expect((await mlRuleTest(rule, '<img src="x.png" role="presentation">')).violations).toStrictEqual([
 		{
@@ -113,7 +113,7 @@ test('[permitted-roles-011] img with aria-label and role=img is valid', async ()
 	expect((await mlRuleTest(rule, '<img src="x.png" aria-label="foo" role="img">')).violations).toStrictEqual([]);
 });
 
-// #3735 P3 regression: <summary> sets permittedRoles=false in html-spec, so
+// Regression pin: <summary> sets permittedRoles=false in html-spec, so
 // any explicit role is rejected — including the implicit "button" role. Pin
 // this so future spec updates do not silently start permitting role on summary.
 test('[permitted-roles-012] role=button on summary inside details is rejected', async () => {
@@ -145,7 +145,7 @@ test('[permitted-roles-013] non-implicit role on summary is also rejected', asyn
 });
 
 test('[permitted-roles-014] HTML→HTML pretender no-ops: original h1 role restriction still fires', async () => {
-	// Issue #3740: `pretenders` config with an HTML element selector is now ignored,
+	// A `pretenders` config with an HTML element selector is ignored,
 	// so `<h1 role="button">` is checked against h1's permitted roles even when the
 	// user attempted to mask it with `as: 'div'`.
 	const { violations } = await mlRuleTest(rule, '<h1 role="button">x</h1>', {
@@ -162,7 +162,7 @@ test('[permitted-roles-014] HTML→HTML pretender no-ops: original h1 role restr
 	]);
 });
 
-describe('issue-4789', () => {
+describe('a role that code gives in JSX', () => {
 	const parser = { '.*': '@markuplint/jsx-parser' };
 
 	test('[permitted-roles-015] JSX: the tokens of a role that code gives are not the roles that the element has', async () => {

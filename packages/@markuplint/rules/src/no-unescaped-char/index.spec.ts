@@ -61,7 +61,7 @@ test('[no-unescaped-char-005] strict flags a bare "&" in an attribute value', as
 	]);
 });
 
-test('[no-unescaped-char-006] #1074: a well-formed numeric reference is exempt even in strict mode', async () => {
+test('[no-unescaped-char-006] a well-formed numeric reference is exempt even in strict mode', async () => {
 	// `&#9660;` / `&#x25BC;` are well-formed numeric references, exempt in
 	// strict mode. `&x25BC;` (the missed-`#` typo) mixes a letter and digits,
 	// so it doesn't match the entity-shape mask (letters-only or numeric) and
@@ -110,7 +110,7 @@ test('[no-unescaped-char-009] in EJS', async () => {
 	expect(violations.length).toBe(0);
 });
 
-test('[no-unescaped-char-010] #1575: no false positive on orphaned end tag', async () => {
+test('[no-unescaped-char-010] an orphaned end tag is not reported as an unescaped character', async () => {
 	const { violations } = await mlRuleTest(rule, '<div></p></div>');
 	expect(violations).toStrictEqual([]);
 });

@@ -59,7 +59,7 @@ function checkValue(
 }
 
 /*
- * #3685 / #3598 — Integration tests for `resolveAttrEligibility` with ConditionalAttributeType[].
+ * Integration tests for `resolveAttrEligibility` with ConditionalAttributeType[].
  *
  * These exercise the boundary where the spec-validating rules (`no-unknown-attr`,
  * `no-disallowed-attr`, `no-invalid-attr-value`) meet the attribute spec data.
@@ -113,7 +113,7 @@ test('does not crash when attribute is absent from a conditional spec', () => {
 });
 
 /*
- * #3598 — Conditional type resolution tests.
+ * Conditional type resolution tests.
  */
 test('resolves condition and validates: valid simple color', () => {
 	const el = createTestElement('<input type="color" value="#ff0000">');

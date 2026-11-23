@@ -101,7 +101,7 @@ test('[require-owned-elements-009] an aria-owns whose value is not known until i
 	).toStrictEqual([]);
 });
 
-// #3589: empty containers warn with busy suggestion (not error)
+// Empty containers warn with busy suggestion (not error)
 test('[require-owned-elements-010] empty ul warns with busy suggestion', async () => {
 	const { violations } = await mlRuleTest(rule, '<ul></ul>');
 	expect(violations).toStrictEqual([
@@ -145,7 +145,7 @@ test('[require-owned-elements-013] ul with aria-busy="true" is valid', async () 
 	expect((await mlRuleTest(rule, '<ul aria-busy="true"></ul>')).violations).toStrictEqual([]);
 });
 
-// #4068: a pretended component renders owned elements itself (`contents` / `slots`)
+// A pretended component renders owned elements itself (`contents` / `slots`)
 const jsx = { parser: { '.*': '@markuplint/jsx-parser' } };
 
 const EXPECTS_LISTITEM = 'The "list" role expects the "listitem" role';
@@ -499,7 +499,7 @@ test('[require-owned-elements-037] an element that is not the owned element is r
 	]);
 });
 
-describe('issue-4527', () => {
+describe('the declarative shadow root of a host', () => {
 	const REQUIRES_LISTITEM = 'The child element requires the "listitem" role. Or, require aria-busy="true"';
 	const EXPECTS_LISTITEM = 'The "list" role expects the "listitem" role';
 
@@ -726,7 +726,7 @@ describe('issue-4527', () => {
 	});
 });
 
-describe('issue-4569', () => {
+describe('a slot among the descendants of a host', () => {
 	const EXPECTS_LISTITEM = 'The "list" role expects the "listitem" role';
 
 	const nunjucks = { parser: { '.*': '@markuplint/nunjucks-parser' } };
@@ -901,7 +901,7 @@ describe('issue-4569', () => {
 	});
 });
 
-describe('issue-4580', () => {
+describe('a branch of a conditional block', () => {
 	const svelte = { parser: { '.*': '@markuplint/svelte-parser' } };
 
 	test('[require-owned-elements-083] an expression in a branch of a conditional block may render the owned element', async () => {
@@ -929,7 +929,7 @@ describe('issue-4580', () => {
 	});
 });
 
-describe('issue-4744', () => {
+describe('a template that Vue renders away', () => {
 	/**
 	 * What the framework renders away is not an element of the output, so what is written in it is owned by
 	 * what is above it: Vue renders a `<template>` that has `v-if`, `v-else-if`, `v-else`, `v-for` or `v-slot` away.
@@ -1015,7 +1015,7 @@ describe('issue-4744', () => {
 	});
 });
 
-describe('issue-4748', () => {
+describe('a loop block that may render nothing', () => {
 	/**
 	 * Whether a loop renders anything is known only at run time, so the body of a loop is owned as it is written:
 	 * a list whose items are all in a loop is not reported, though it owns none when the loop has no items.
@@ -1060,7 +1060,7 @@ describe('issue-4748', () => {
 	});
 });
 
-describe('issue-4789', () => {
+describe('a role that code gives in JSX', () => {
 	const parser = { '.*': '@markuplint/jsx-parser' };
 
 	test('[require-owned-elements-097] JSX: an element whose role is not known until it is rendered does not need what its implicit role needs', async () => {

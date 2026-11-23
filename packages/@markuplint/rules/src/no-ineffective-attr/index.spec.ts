@@ -65,7 +65,7 @@ test('[no-ineffective-attr-004] an HTML element in JSX folds the name', async ()
 	]);
 });
 
-describe('issue-4435', () => {
+describe('an attribute that the framework outputs or does not output', () => {
 	const jsx = { parser: { '.*': '@markuplint/jsx-parser' } };
 
 	test('[no-ineffective-attr-005] an attribute that the framework renders is judged as before', async () => {

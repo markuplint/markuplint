@@ -136,7 +136,7 @@ describe('A component that no pretender resolved', () => {
 	});
 });
 
-describe('issue-4580', () => {
+describe('an expression, a component or a loop block that may render the date and time', () => {
 	const svelte = { parser: { '.*': '@markuplint/svelte-parser' } };
 
 	test('[require-datetime-012] an expression in a branch of a conditional block may render the date and time', async () => {

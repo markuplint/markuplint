@@ -318,7 +318,7 @@ test('part of the ruby element #3', () => {
 	expect(c(models, '<rt></rt><rp></rp><rt></rt><rp></rp>').type).toBe('MATCHED');
 });
 
-// #3592: verify min=0 guard doesn't break optional with nested require
+// The guard on a minimum of zero must not break an optional group that has a nested require.
 test('optional with nested require — empty is valid', () => {
 	expect(c({ optional: [{ require: 'dt' }, { require: 'dd' }] }, '').type).toBe('MATCHED_ZERO');
 });
@@ -350,7 +350,7 @@ test('zeroOrMore with nested sequence — match is valid', () => {
 	).toBe('MATCHED');
 });
 
-test('#1146 1/2', () => {
+test('a oneOrMore of a choice of one sequence matches each repetition', () => {
 	const models = {
 		oneOrMore: [
 			{
@@ -369,7 +369,7 @@ test('#1146 1/2', () => {
 	expect(c(models, '<b></b><b></b>').type).toBe('MATCHED');
 });
 
-test('#1146 2/2', () => {
+test('a oneOrMore of an optional and a choice of sequences matches any mix of them', () => {
 	const models = {
 		oneOrMore: [
 			{

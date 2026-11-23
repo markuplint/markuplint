@@ -352,7 +352,7 @@ test('part of the ruby element', () => {
 	expect(c(models, '<rt></rt><rp></rp>').type).toBe('MATCHED');
 });
 
-test('#1146', () => {
+test('a choice of one sequence takes the element once, and a second one is an unexpected extra node', () => {
 	const models = [
 		{
 			choice: [

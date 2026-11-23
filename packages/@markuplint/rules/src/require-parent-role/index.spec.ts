@@ -332,7 +332,7 @@ describe('an ancestor whose role is not known until it is rendered', () => {
 	});
 });
 
-describe('issue-4568', () => {
+describe('the slot of a declarative shadow root', () => {
 	const svelte = { parser: { '.*': '@markuplint/svelte-parser' } };
 
 	const REQUIRES_LIST =
@@ -405,7 +405,7 @@ describe('issue-4568', () => {
 	});
 });
 
-describe('issue-4744', () => {
+describe('a template that Vue renders away', () => {
 	/**
 	 * What the framework renders away is not an element of the output, so what is written in it has the
 	 * parent that the element above has: Vue renders a `<template>` that has `v-if`, `v-else-if`, `v-else`,

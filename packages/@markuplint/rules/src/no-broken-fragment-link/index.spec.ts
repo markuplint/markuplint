@@ -144,7 +144,7 @@ test('[no-broken-fragment-link-004] fragment', async () => {
 	).toStrictEqual([]);
 });
 
-test('[no-broken-fragment-link-005] #748', async () => {
+test('[no-broken-fragment-link-005] a fragment that refers to an ID next to a PHP block is not broken', async () => {
 	expect(
 		(
 			await mlRuleTest(
@@ -165,7 +165,7 @@ test('[no-broken-fragment-link-005] #748', async () => {
 	).toStrictEqual([]);
 });
 
-test('[no-broken-fragment-link-006] #776', async () => {
+test('[no-broken-fragment-link-006] a fragment is compared with the ID after its percent-encoding and its character references are decoded', async () => {
 	expect(
 		(
 			await mlRuleTest(

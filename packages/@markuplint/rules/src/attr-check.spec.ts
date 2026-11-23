@@ -93,8 +93,8 @@ test('Directive', () => {
 });
 
 /*
- * #3685 — ConditionalAttributeType[] ships as a type-only extension in v5.0.
- * Until follow-ups #3598 / #3189 implement value-conditional validation,
+ * ConditionalAttributeType[] ships as a type-only extension in v5.0.
+ * Until value-conditional validation is implemented,
  * attrCheck must short-circuit to "valid" when a spec declares such a type.
  * These tests lock the guard in place so a regression cannot silently remove it.
  */

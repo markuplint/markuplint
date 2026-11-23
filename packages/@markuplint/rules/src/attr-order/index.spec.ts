@@ -780,7 +780,7 @@ describe('attribute name case', () => {
 	});
 });
 
-describe('issue-4435', () => {
+describe('attributes that a pretender makes or takes over', () => {
 	const config = {
 		parser: { '.*': '@markuplint/jsx-parser' },
 		rule: { options: { order: ['id', 'class', 'type'] }, severity: 'warning' },

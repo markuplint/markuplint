@@ -633,7 +633,7 @@ test('[no-invalid-attr-value-027] CSS Functions', async () => {
 	expect((await mlRuleTest(rule, '<div style="prop: var(--x)"></div>')).violations).toStrictEqual([]);
 });
 
-test('[no-invalid-attr-value-028] #1987', async () => {
+test('[no-invalid-attr-value-028] the destinations that as accepts depend on whether rel is preload or modulepreload', async () => {
 	// Valid preload destinations
 	expect((await mlRuleTest(rule, '<link rel="preload" as="fetch" href="/api" />')).violations).toStrictEqual([]);
 	expect((await mlRuleTest(rule, '<link rel="preload" as="font" href="/font.woff2" />')).violations).toStrictEqual(
@@ -663,7 +663,7 @@ test('[no-invalid-attr-value-028] #1987', async () => {
 		(await mlRuleTest(rule, '<link rel="modulepreload" as="text" href="/data.txt" />')).violations,
 	).toStrictEqual([]);
 
-	// Invalid: values not valid for preload (condition-specific enum after #3189)
+	// Invalid: values not valid for preload (condition-specific enum)
 	expect((await mlRuleTest(rule, '<link rel="preload" as="audio" href="/audio.mp3" />')).violations).toStrictEqual([
 		{
 			severity: 'error',
@@ -693,7 +693,7 @@ test('[no-invalid-attr-value-028] #1987', async () => {
 	]);
 });
 
-test('[no-invalid-attr-value-029] #1078', async () => {
+test('[no-invalid-attr-value-029] referrerpolicy is valid on a script and on an img', async () => {
 	expect(
 		(await mlRuleTest(rule, '<script src="foo.js" referrerpolicy="no-referrer"></script>')).violations,
 	).toStrictEqual([]);
@@ -702,7 +702,7 @@ test('[no-invalid-attr-value-029] #1078', async () => {
 	);
 });
 
-test('[no-invalid-attr-value-030] #1357', async () => {
+test('[no-invalid-attr-value-030] the transform attribute of an SVG element in the legacy syntax, a list of functions, is valid', async () => {
 	expect(
 		(await mlRuleTest(rule, '<svg><rect transform="translate(300 300) rotate(180)" /></svg>')).violations,
 	).toStrictEqual([]);
@@ -846,7 +846,7 @@ test('[no-invalid-attr-value-051] script type="speculationrules" is valid', asyn
 	).toStrictEqual([]);
 });
 
-test('[no-invalid-attr-value-052] crossorigin enum value is still validated (regression pin for #3648)', async () => {
+test('[no-invalid-attr-value-052] crossorigin enum value is still validated when a condition overrides the global attribute', async () => {
 	// Overriding a global category attribute with a condition must not drop
 	// the enum type definition.
 	const { violations } = await mlRuleTest(rule, '<script src="app.js" crossorigin="unknown"></script>');
@@ -861,7 +861,7 @@ test('[no-invalid-attr-value-052] crossorigin enum value is still validated (reg
 	]);
 });
 
-test('[no-invalid-attr-value-053] fetchpriority enum value is still validated (regression pin for #3648)', async () => {
+test('[no-invalid-attr-value-053] fetchpriority enum value is still validated when a condition overrides the global attribute', async () => {
 	const { violations } = await mlRuleTest(rule, '<script src="app.js" fetchpriority="urgent"></script>');
 	expect(violations).toStrictEqual([
 		{
@@ -1693,7 +1693,7 @@ test('[no-invalid-attr-value-159] progress max="0.5" is accepted', async () => {
 test('[no-invalid-attr-value-160] itemref token list rejects duplicate ids (HTML LS §5.2.2 Items)', async () => {
 	// Mirrors html/microdata/itemref-redundant-novalid.html. Locks down the
 	// `unique: true` flag added to the itemref token spec.
-	// Uses substring-only `.some(...)` (matches the invalid-039 pattern)
+	// Uses substring-only `.some(...)` (matches the pattern of [no-invalid-attr-value-167])
 	// so the test stays stable when invalid-attr's surrounding wording is
 	// tuned elsewhere.
 	const { violations } = await mlRuleTest(
@@ -1708,7 +1708,7 @@ test('[no-invalid-attr-value-160] itemref token list rejects duplicate ids (HTML
 test('[no-invalid-attr-value-161] itemtype="" rejects empty token set (HTML LS §5.2.2 Items)', async () => {
 	// Mirrors html/microdata/itemtype-empty-novalid.html. Locks down the
 	// `allowEmpty: false` flag added to the itemtype token spec.
-	// Uses substring-only match (see invalid-040 for rationale).
+	// Uses substring-only match (see [no-invalid-attr-value-168] for rationale).
 	const { violations } = await mlRuleTest(rule, '<div itemtype="" itemscope></div>');
 	expect(
 		violations.some(
@@ -1975,7 +1975,7 @@ test('[no-invalid-attr-value-202] srcset with explicit "1x, 1x" duplicate is rej
 
 test('[no-invalid-attr-value-203] srcset with decimal-only duplicate density is rejected', async () => {
 	// Pins the decimal-equality branch independently from the
-	// integer-vs-decimal normalisation case (invalid-072).
+	// integer-vs-decimal normalisation case ([no-invalid-attr-value-200]).
 	const { violations } = await mlRuleTest(rule, '<img srcset="a.jpg 0.5x, b.jpg 0.5x" src="a.jpg" alt="">');
 	expect(violations.length).toBeGreaterThan(0);
 });
@@ -2125,7 +2125,7 @@ test('[no-invalid-attr-value-218] select autocomplete="name" stays valid', async
 });
 
 test('[no-invalid-attr-value-219] a value is never checked for an attribute disallowed for other reasons', async () => {
-	// Complement of no-disallowed-attr's issue-3733-008: itemtype without
+	// Complement of [no-disallowed-attr-053]: itemtype without
 	// itemscope is disallowed by an unmet condition regardless of its own
 	// value, and this rule only ever checks a value once
 	// resolveAttrEligibility resolves to 'ok' — which never happens here, so
@@ -2977,7 +2977,7 @@ test('[no-invalid-attr-value-284] a string is reported as before', async () => {
 	]);
 });
 
-describe('issue-4494', () => {
+describe('as of a link that has both preload and modulepreload', () => {
 	const intersection = 'The "as" attribute expects either "script", "style"';
 
 	test('[no-invalid-attr-value-285] both keywords accept the destinations they share', async () => {
@@ -3102,7 +3102,7 @@ describe('issue-4494', () => {
 	});
 });
 
-describe('issue-4651', () => {
+describe('the pattern attribute and the v flag', () => {
 	const message =
 		'The "pattern" attribute expects regular expression (https://html.spec.whatwg.org/multipage/input.html#compiled-pattern-regular-expression)';
 

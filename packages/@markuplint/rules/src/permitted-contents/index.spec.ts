@@ -722,7 +722,7 @@ describe('verify', () => {
 
 	test('[permitted-contents-017] svg:a wrapping <g> without nested <a>', async () => {
 		// Regression guard: the `:has(svg|a)` constraint added for
-		// invalid-017 must not over-fire on wrappers that legitimately do
+		// [permitted-contents-016] must not over-fire on wrappers that legitimately do
 		// not contain another <a>.
 		const { violations } = await mlRuleTest(
 			rule,
@@ -895,7 +895,7 @@ describe('verify', () => {
 		// fixture) is NOT covered here. The HTML5 parser auto-corrects the
 		// `<math>` element out of `<head>` into `<body>` before rule
 		// evaluation, so a content-model fix at the `<head>` spec data level
-		// cannot reach it. Tracked under #3844 (parser-level error gap).
+		// cannot reach it. It is a parser-level error.
 	});
 
 	test('[permitted-contents-024] mml:msubsup arity (exactly 3 children)', async () => {
@@ -1798,7 +1798,7 @@ dl
 	});
 });
 
-test('[permitted-contents-048] #396', async () => {
+test('[permitted-contents-048] a table accepts more than one tbody', async () => {
 	expect(
 		(
 			await mlRuleTest(
@@ -1821,7 +1821,7 @@ test('[permitted-contents-048] #396', async () => {
 	).toStrictEqual([]);
 });
 
-test('[permitted-contents-049] #398', async () => {
+test('[permitted-contents-049] a colgroup that has neither span nor col is reported, and one that has either is valid', async () => {
 	expect(
 		(
 			await mlRuleTest(
@@ -1843,14 +1843,14 @@ test('[permitted-contents-049] #398', async () => {
 	).toStrictEqual([]);
 });
 
-test('[permitted-contents-050] #491', async () => {
+test('[permitted-contents-050] an hgroup needs a heading, and a paragraph may come before and after it', async () => {
 	expect((await mlRuleTest(rule, '<hgroup><p>HEADING</p></hgroup>')).violations.length).toBe(1);
 	expect((await mlRuleTest(rule, '<hgroup><h1>HEADING</h1></hgroup>')).violations.length).toBe(0);
 	expect((await mlRuleTest(rule, '<hgroup><h2>HEADING</h1></hgroup>')).violations.length).toBe(0);
 	expect((await mlRuleTest(rule, '<hgroup><p>SUB</p><h1>HEADING</h1><p>SUB</p></hgroup>')).violations.length).toBe(0);
 });
 
-test('[permitted-contents-051] #566', async () => {
+test('[permitted-contents-051] more than one heading in an hgroup is reported', async () => {
 	expect(
 		(
 			await mlRuleTest(
@@ -1872,7 +1872,7 @@ test('[permitted-contents-051] #566', async () => {
 	]);
 });
 
-test('[permitted-contents-052] #606', async () => {
+test('[permitted-contents-052] the content of a template in a dl is not a child of the dl', async () => {
 	// The dt and dd are the content of the template, not children of the dl, and a dl that has
 	// only script-supporting elements is valid.
 	expect(
@@ -1890,7 +1890,7 @@ test('[permitted-contents-052] #606', async () => {
 	).toStrictEqual([]);
 });
 
-test('[permitted-contents-053] #617', async () => {
+test('[permitted-contents-053] a style in a noscript of a head is valid', async () => {
 	expect(
 		(
 			await mlRuleTest(
@@ -1969,7 +1969,7 @@ test('[permitted-contents-053] #617', async () => {
 	).toStrictEqual([]);
 });
 
-test('[permitted-contents-054] #637', async () => {
+test('[permitted-contents-054] rp in a ruby is valid, empty or not', async () => {
 	expect(
 		(
 			await mlRuleTest(
@@ -1984,7 +1984,7 @@ test('[permitted-contents-054] #637', async () => {
 	).toStrictEqual([]);
 });
 
-test('[permitted-contents-055] #1046', async () => {
+test('[permitted-contents-055] the severity of the rule applies with the JSX parser', async () => {
 	const sourceCode = '<span><div></div></span>';
 	expect(
 		(
@@ -2008,12 +2008,12 @@ test('[permitted-contents-055] #1046', async () => {
 	]);
 });
 
-test('[permitted-contents-056] #1146', async () => {
+test('[permitted-contents-056] an option in a datalist is valid', async () => {
 	const sourceCode = '<datalist><option></option></datalist>';
 	expect((await mlRuleTest(rule, sourceCode)).violations).toStrictEqual([]);
 });
 
-test('[permitted-contents-057] #1023', async () => {
+test('[permitted-contents-057] the contents option of a custom element reports a child that is not the required one', async () => {
 	const sourceCode = `<body>
 	<h1>Reproduction</h1>
 	<!-- There're typos. The intended element is x-item, not x-itm -->
@@ -2045,12 +2045,12 @@ test('[permitted-contents-057] #1023', async () => {
 	]);
 });
 
-test('[permitted-contents-058] #1359', async () => {
+test('[permitted-contents-058] a tspan in a text of an svg is valid', async () => {
 	const sourceCode = '<svg><text><tspan>Text</tspan></text></svg>';
 	expect((await mlRuleTest(rule, sourceCode)).violations).toStrictEqual([]);
 });
 
-test('[permitted-contents-059] #1451', async () => {
+test('[permitted-contents-059] a component is told from the native element that differs from it only in the case of the tag name, in each parser', async () => {
 	const astro = { parser: { '.*': '@markuplint/astro-parser' } };
 	const jsx = { parser: { '.*': '@markuplint/jsx-parser' } };
 	const pug = { parser: { '.*': '@markuplint/pug-parser' } };
@@ -2071,7 +2071,7 @@ test('[permitted-contents-059] #1451', async () => {
 	expect((await mlRuleTest(rule, '<template><span><Div></Div></span></template>', vue)).violations.length).toBe(0);
 });
 
-test('[permitted-contents-060] #1502', async () => {
+test('[permitted-contents-060] a feTurbulence in a filter of an svg is valid', async () => {
 	const sourceCode = `<svg>
 	<defs>
 		<filter>
@@ -2082,7 +2082,7 @@ test('[permitted-contents-060] #1502', async () => {
 	expect((await mlRuleTest(rule, sourceCode)).violations).toStrictEqual([]);
 });
 
-test('[permitted-contents-061] #1767', async () => {
+test('[permitted-contents-061] a JSX fragment is transparent: its children are checked against the parent of the fragment', async () => {
 	const parser = {
 		parser: {
 			'.*': '@markuplint/jsx-parser',
@@ -2093,7 +2093,7 @@ test('[permitted-contents-061] #1767', async () => {
 	expect((await mlRuleTest(rule, '<ul><><div></div></></ul>', parser)).violations.length).toBe(1);
 });
 
-test('[permitted-contents-062] #1848', async () => {
+test('[permitted-contents-062] a pretender whose element name is written with a capital letter is read as that element', async () => {
 	const sourceCode = '<XComponent></XComponent>';
 	expect(
 		(
@@ -2112,7 +2112,7 @@ test('[permitted-contents-062] #1848', async () => {
 	).toStrictEqual([]);
 });
 
-test('[permitted-contents-063] #2302', async () => {
+test('[permitted-contents-063] an element in the callback of map in an svg is valid with the JSX parser', async () => {
 	const sourceCode = `
 <svg>
 	{list.map(item => (
@@ -2133,7 +2133,7 @@ test('[permitted-contents-063] #2302', async () => {
 
 // Timeout: 5s — the old Cartesian-product algorithm took 30s+ for this case;
 // the incremental algorithm completes in <100ms.
-test('[permitted-contents-064] #3249 - many transparent siblings should not cause exponential slowdown', async () => {
+test('[permitted-contents-064] many transparent siblings do not slow the check down exponentially', async () => {
 	const anchors = Array.from({ length: 12 }, (_, i) => `<a><span>link${i}</span><em>text${i}</em></a>`).join('\n');
 	const sourceCode = `<div>${anchors}</div>`;
 
@@ -2191,7 +2191,7 @@ test('[permitted-contents-070] option with text content is valid', async () => {
 	expect(optionViolations).toStrictEqual([]);
 });
 
-// #3592: empty dl is valid (zero or more groups)
+// An empty dl is valid (zero or more groups)
 test('[permitted-contents-071] empty dl is valid', async () => {
 	expect((await mlRuleTest(rule, '<dl></dl>')).violations).toStrictEqual([]);
 });
@@ -2255,7 +2255,7 @@ test('[permitted-contents-078] div in dl with single dt+dd group is valid', asyn
 	).toStrictEqual([]);
 });
 
-// #3928: a transparent-content-model element (e.g. <a>, <audio>, <ins>) must
+// A transparent-content-model element (e.g. <a>, <audio>, <ins>) must
 // still be evaluated against the parent's own content model at its own
 // position — the transparent flattening that lets its children pass through
 // must not make the element itself disappear from that check.
@@ -2362,7 +2362,7 @@ test('[permitted-contents-087] a[href] wrapping phrasing content inside p stays 
 	expect(violations).toStrictEqual([]);
 });
 
-describe('#3739 (pretender + user tag rule)', () => {
+describe('the rule of a user tag that applies to a pretender', () => {
 	const breadcrumbsConfig = {
 		parser: {
 			'.*': '@markuplint/jsx-parser',
@@ -2587,7 +2587,7 @@ describe('#3739 (pretender + user tag rule)', () => {
 	});
 });
 
-describe('#4099 (pretender inside a content model that includes #custom)', () => {
+describe('a pretender in a content model that includes #custom', () => {
 	const jsxConfig = {
 		parser: { '.*': '@markuplint/jsx-parser' },
 	};
@@ -4296,7 +4296,7 @@ describe('A component that no pretender resolved', () => {
 	});
 });
 
-describe('issue-4744', () => {
+describe('what a framework renders away', () => {
 	/**
 	 * What the framework renders away is not an element of the output, so what is written in it is a child of
 	 * what is above it: Vue renders a `<template>` that has `v-for` away and puts its body in place, the way

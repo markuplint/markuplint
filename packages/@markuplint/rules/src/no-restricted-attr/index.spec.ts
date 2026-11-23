@@ -217,7 +217,7 @@ test('[no-restricted-attr-006] custom rule: disallowed', async () => {
 	]);
 });
 
-describe('Disallow user-scalable=no in viewport meta (#716)', () => {
+describe('user-scalable=no in a viewport meta', () => {
 	const viewportConfig = {
 		nodeRule: [
 			{

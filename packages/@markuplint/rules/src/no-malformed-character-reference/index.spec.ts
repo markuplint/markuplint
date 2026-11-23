@@ -3,7 +3,7 @@ import { test, expect } from 'vitest';
 
 import rule from './index.js';
 
-test('[no-malformed-character-reference-001] #1074: reports the malformed named reference, not the well-formed numeric ones', async () => {
+test('[no-malformed-character-reference-001] reports the malformed named reference, not the well-formed numeric ones', async () => {
 	const { violations } = await mlRuleTest(rule, '<span>&#9660;</span><span>&#x25BC;</span><span>&x25BC;</span>');
 	expect(violations).toStrictEqual([
 		{

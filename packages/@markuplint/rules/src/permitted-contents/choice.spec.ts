@@ -203,7 +203,7 @@ test('part of the ruby element', () => {
 	expect(c(models, '<rt></rt><rp></rp>').query).toBe('rt');
 });
 
-test('#1146', () => {
+test('a choice of an optional sequence and a required one takes one of them, and a second element is an unexpected extra node', () => {
 	const models = {
 		choice: [
 			[

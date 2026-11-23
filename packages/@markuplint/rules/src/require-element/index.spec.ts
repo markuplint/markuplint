@@ -422,7 +422,7 @@ describe('A component that no pretender resolved', () => {
 	});
 });
 
-describe('issue-4580', () => {
+describe('an expression or a branch that may render the required element', () => {
 	const svelte = { parser: { '.*': '@markuplint/svelte-parser' } };
 
 	test('[require-element-026] an expression in a branch of a conditional block may render the required element', async () => {

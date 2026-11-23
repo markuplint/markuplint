@@ -31,7 +31,7 @@ describe('ordinary elements permit ARIA attributes', () => {
 	});
 });
 
-describe('issue-4435', () => {
+describe('an attribute that the framework outputs or does not output', () => {
 	/**
 	 * A spec of its own is what makes this rule report (see `custom-spec.spec.ts`), and a spec passed to
 	 * `mlRuleTest` takes effect only for the first run of a test file: the first call here passes `specs`.

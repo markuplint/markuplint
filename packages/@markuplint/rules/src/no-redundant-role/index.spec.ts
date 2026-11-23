@@ -19,7 +19,7 @@ test('[no-redundant-role-002] same as implicit role', async () => {
 	]);
 });
 
-// S2 regression: Issue #3641 reshaped wai-aria's implicit-vs-permitted interaction,
+// S2 regression: the implicit-vs-permitted interaction of wai-aria was reshaped,
 // but this standalone rule must still fire for elements where the implicit role and
 // the element's permittedRoles combination previously masked the duplication.
 test('[no-redundant-role-003] html with role=document is implicit in ARIA 1.1', async () => {

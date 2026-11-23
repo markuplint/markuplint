@@ -725,8 +725,8 @@ describe('Table model errors', () => {
 		);
 		// HTML LS §4.9.12.1 Step 7 grows xwidth to fit the row, so exceeding the column markup is
 		// not a table model error. nu-validator disagrees; that report is recorded as an
-		// over-detection in `tests/external/snapshots/excluded-ids.json` (Issue #3916). A
-		// single-row table also always compares a row against its own width (see valid-011),
+		// over-detection in `tests/external/snapshots/excluded-ids.json`. A
+		// single-row table also always compares a row against its own width (see [consistent-table-row-length-023]),
 		// so this could never fire here regardless.
 		expect(violations).toStrictEqual([]);
 	});

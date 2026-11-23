@@ -470,7 +470,7 @@ section.Card
 	]);
 });
 
-test('[class-naming-012] #1263', async () => {
+test('[class-naming-012] the block name that a child node rule captures from the parent class is applied to the element names under it', async () => {
 	const { violations } = await mlRuleTest(
 		rule,
 		`

@@ -115,7 +115,7 @@ test('[label-no-multiple-controls-013] Vue dynamic :for binding is skipped for t
 test('[label-no-multiple-controls-014] unresolved JSX pretender label is skipped', async () => {
 	// A JSX component named like an HTML tag but without an `as` prop is an unresolved pretender —
 	// its localName does not become `label`, so the rule's localName check short-circuits. Mirrors
-	// the sibling `label-for-references-labelable-parser-002` fixture.
+	// the sibling `[label-for-references-labelable-020]` fixture.
 	const { violations } = await mlRuleTest(rule, '<div><input id="x"/><Label htmlFor="x"><input/></Label></div>', {
 		parser: { '.*': '@markuplint/jsx-parser' },
 	});

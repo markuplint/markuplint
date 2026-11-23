@@ -3,7 +3,7 @@ import { describe, test, expect } from 'vitest';
 
 import rule from './index.js';
 
-describe('Pretender slot content (issue #4054)', () => {
+describe('Pretender slot content', () => {
 	const jsxRuleOn = {
 		parser: {
 			'.*': '@markuplint/jsx-parser',
@@ -280,7 +280,7 @@ describe('Pretender slot content (issue #4054)', () => {
 	});
 });
 
-describe('Pretender slot content: review follow-ups (issue #4054)', () => {
+describe('Pretender slot content: elements of other namespaces and fragments', () => {
 	const jsxRuleOn = {
 		parser: {
 			'.*': '@markuplint/jsx-parser',
@@ -325,7 +325,7 @@ describe('Pretender slot content: review follow-ups (issue #4054)', () => {
 	});
 });
 
-describe('Pretender slot content: parent-side evaluation (issue #4054)', () => {
+describe('Pretender slot content: evaluation on the side of the parent', () => {
 	const jsxRuleOn = {
 		parser: {
 			'.*': '@markuplint/jsx-parser',

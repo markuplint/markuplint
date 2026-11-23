@@ -62,7 +62,7 @@ test('[aria-prop-requires-role-006] JSX: an upper-case aria-* on an svg element 
 	]);
 });
 
-describe('issue-4744', () => {
+describe('an element in a template that Vue renders away', () => {
 	/**
 	 * Vue renders a `<template v-if>` away, so the `menuitemradio` in a `group` in it has the `menu` above as the
 	 * parent that it requires, and its `aria-checked` is a property of its role, not a global one.
