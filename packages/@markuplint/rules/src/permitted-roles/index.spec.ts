@@ -1,13 +1,13 @@
 import { mlRuleTest } from 'markuplint';
-import { test, expect } from 'vitest';
+import { describe, expect, test } from 'vitest';
 
 import rule from './index.js';
 
-test('[permitted-roles-valid-001] permitted role', async () => {
+test('[permitted-roles-001] permitted role', async () => {
 	expect((await mlRuleTest(rule, '<a href="path/to" role="button">text</a>')).violations).toStrictEqual([]);
 });
 
-test('[permitted-roles-invalid-001] non-permitted role on select', async () => {
+test('[permitted-roles-002] non-permitted role on select', async () => {
 	expect((await mlRuleTest(rule, '<select role="textbox"></select>')).violations).toStrictEqual([
 		{
 			severity: 'error',
@@ -20,9 +20,9 @@ test('[permitted-roles-invalid-001] non-permitted role on select', async () => {
 	]);
 });
 
-// Issue #3641: <img alt=""> must not have any role attribute — including role="none" / "presentation"
+// <img alt=""> must not have any role attribute — including role="none" / "presentation"
 // which match the implicit role. Per ARIA in HTML §3.4, "No role permitted".
-test('[permitted-roles-issue-3641-001] img with alt="" must not have role=presentation', async () => {
+test('[permitted-roles-003] img with alt="" must not have role=presentation', async () => {
 	expect((await mlRuleTest(rule, '<img src="x.png" alt="" role="presentation">')).violations).toStrictEqual([
 		{
 			severity: 'error',
@@ -35,7 +35,7 @@ test('[permitted-roles-issue-3641-001] img with alt="" must not have role=presen
 	]);
 });
 
-test('[permitted-roles-issue-3641-002] img with alt="" must not have role=none', async () => {
+test('[permitted-roles-004] img with alt="" must not have role=none', async () => {
 	expect((await mlRuleTest(rule, '<img src="x.png" alt="" role="none">')).violations).toStrictEqual([
 		{
 			severity: 'error',
@@ -47,7 +47,7 @@ test('[permitted-roles-issue-3641-002] img with alt="" must not have role=none',
 	]);
 });
 
-test('[permitted-roles-issue-3641-003] img with alt="" must not have role=img', async () => {
+test('[permitted-roles-005] img with alt="" must not have role=img', async () => {
 	expect((await mlRuleTest(rule, '<img src="x.png" alt="" role="img">')).violations).toStrictEqual([
 		{
 			severity: 'error',
@@ -59,8 +59,8 @@ test('[permitted-roles-issue-3641-003] img with alt="" must not have role=img', 
 	]);
 });
 
-// Issue #3641 comment case 4: explicit non-presentational role on <img alt="">
-test('[permitted-roles-issue-3641-004] img with alt="" must not have role=button', async () => {
+// Explicit non-presentational role on <img alt="">
+test('[permitted-roles-006] img with alt="" must not have role=button', async () => {
 	expect((await mlRuleTest(rule, '<img src="x.png" alt="" role="button">')).violations).toStrictEqual([
 		{
 			severity: 'error',
@@ -72,7 +72,7 @@ test('[permitted-roles-issue-3641-004] img with alt="" must not have role=button
 	]);
 });
 
-test('[permitted-roles-issue-3641-005] img with alt="" must not have role=link', async () => {
+test('[permitted-roles-007] img with alt="" must not have role=link', async () => {
 	expect((await mlRuleTest(rule, '<img src="x.png" alt="" role="link">')).violations).toStrictEqual([
 		{
 			severity: 'error',
@@ -84,8 +84,8 @@ test('[permitted-roles-issue-3641-005] img with alt="" must not have role=link',
 	]);
 });
 
-// Issue #3641 comment case 7: <img> without alt and without accessible name still forbids explicit role
-test('[permitted-roles-issue-3641-006] img without alt must not have role=presentation', async () => {
+// <img> without alt and without accessible name still forbids explicit role
+test('[permitted-roles-008] img without alt must not have role=presentation', async () => {
 	expect((await mlRuleTest(rule, '<img src="x.png" role="presentation">')).violations).toStrictEqual([
 		{
 			severity: 'error',
@@ -98,25 +98,25 @@ test('[permitted-roles-issue-3641-006] img without alt must not have role=presen
 	]);
 });
 
-test('[permitted-roles-valid-002] img with alt="" and no role attribute is valid', async () => {
+test('[permitted-roles-009] img with alt="" and no role attribute is valid', async () => {
 	expect((await mlRuleTest(rule, '<img src="x.png" alt="">')).violations).toStrictEqual([]);
 });
 
 // Positive regression: role must still be permitted when alt provides an accessible name.
-test('[permitted-roles-valid-003] img with alt text and permitted role is valid', async () => {
+test('[permitted-roles-010] img with alt text and permitted role is valid', async () => {
 	expect((await mlRuleTest(rule, '<img src="x.png" alt="photo" role="button">')).violations).toStrictEqual([]);
 });
 
 // Positive regression: aria-label provides accname → conditional :not([alt]):aria(has no name)
 // does NOT match, so top-level permittedRoles list applies and role="img" is allowed.
-test('[permitted-roles-valid-004] img with aria-label and role=img is valid', async () => {
+test('[permitted-roles-011] img with aria-label and role=img is valid', async () => {
 	expect((await mlRuleTest(rule, '<img src="x.png" aria-label="foo" role="img">')).violations).toStrictEqual([]);
 });
 
-// #3735 P3 regression: <summary> sets permittedRoles=false in html-spec, so
+// Regression pin: <summary> sets permittedRoles=false in html-spec, so
 // any explicit role is rejected — including the implicit "button" role. Pin
 // this so future spec updates do not silently start permitting role on summary.
-test('[permitted-roles-issue-3735-001] role=button on summary inside details is rejected', async () => {
+test('[permitted-roles-012] role=button on summary inside details is rejected', async () => {
 	const { violations } = await mlRuleTest(rule, '<details><summary role="button">x</summary><p>y</p></details>');
 	expect(violations).toStrictEqual([
 		{
@@ -130,7 +130,7 @@ test('[permitted-roles-issue-3735-001] role=button on summary inside details is 
 	]);
 });
 
-test('[permitted-roles-issue-3735-002] non-implicit role on summary is also rejected', async () => {
+test('[permitted-roles-013] non-implicit role on summary is also rejected', async () => {
 	const { violations } = await mlRuleTest(rule, '<details><summary role="generic">x</summary><p>y</p></details>');
 	expect(violations).toStrictEqual([
 		{
@@ -144,8 +144,8 @@ test('[permitted-roles-issue-3735-002] non-implicit role on summary is also reje
 	]);
 });
 
-test('[permitted-roles-issue-3740-001] HTML→HTML pretender no-ops: original h1 role restriction still fires', async () => {
-	// Issue #3740: `pretenders` config with an HTML element selector is now ignored,
+test('[permitted-roles-014] HTML→HTML pretender no-ops: original h1 role restriction still fires', async () => {
+	// A `pretenders` config with an HTML element selector is ignored,
 	// so `<h1 role="button">` is checked against h1's permitted roles even when the
 	// user attempted to mask it with `as: 'div'`.
 	const { violations } = await mlRuleTest(rule, '<h1 role="button">x</h1>', {
@@ -160,4 +160,35 @@ test('[permitted-roles-issue-3740-001] HTML→HTML pretender no-ops: original h1
 			raw: 'button',
 		},
 	]);
+});
+
+describe('a role that code gives in JSX', () => {
+	const parser = { '.*': '@markuplint/jsx-parser' };
+
+	test('[permitted-roles-015] JSX: the tokens of a role that code gives are not the roles that the element has', async () => {
+		const source = [
+			'<>',
+			'<img role={props.role} src="a.png" alt="" />',
+			'<img role="button" src="a.png" alt="" {...props} />',
+			'</>',
+		].join('\n');
+		expect((await mlRuleTest(rule, source, { parser })).violations).toStrictEqual([]);
+
+		// Control: the role that the markup tells is judged, also where a spread attribute is before it
+		const message =
+			'Cannot overwrite the "button" role to the "img" element according to ARIA in HTML specification';
+		expect(
+			(await mlRuleTest(rule, '<img role="button" src="a.png" alt="" />', { parser })).violations,
+		).toStrictEqual([{ severity: 'error', line: 1, col: 12, message, raw: 'button' }]);
+		expect(
+			(await mlRuleTest(rule, '<img {...props} role="button" src="a.png" alt="" />', { parser })).violations,
+		).toStrictEqual([{ severity: 'error', line: 1, col: 23, message, raw: 'button' }]);
+	});
+
+	test('[permitted-roles-016] JSX: a literal that is written as code is a role that the markup tells', async () => {
+		const { violations } = await mlRuleTest(rule, '<img role={"button"} src="a.png" alt="" />', { parser });
+		expect(violations.map(v => v.message)).toStrictEqual([
+			'Cannot overwrite the "button" role to the "img" element according to ARIA in HTML specification',
+		]);
+	});
 });

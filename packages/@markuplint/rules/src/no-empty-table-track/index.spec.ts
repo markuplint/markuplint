@@ -4,7 +4,7 @@ import { test, expect, describe } from 'vitest';
 import rule from './index.js';
 
 describe('Basic', () => {
-	test('[no-empty-table-track-invalid-001] Missing columns (with colspan)', async () => {
+	test('[no-empty-table-track-001] Missing columns (with colspan)', async () => {
 		const { violations } = await mlRuleTest(
 			rule,
 			`
@@ -34,7 +34,7 @@ describe('Basic', () => {
 		]);
 	});
 
-	test('[no-empty-table-track-issue-4489-001] a table in the content of a template is checked', async () => {
+	test('[no-empty-table-track-002] a table in the content of a template is checked', async () => {
 		const { violations } = await mlRuleTest(
 			rule,
 			'<template><table><tr><th></th><th colspan="3"></th><th></th></tr><tr class="missing"><td></td></tr></table></template>',
@@ -50,7 +50,7 @@ describe('Basic', () => {
 		]);
 	});
 
-	test('[no-empty-table-track-invalid-002] Overflow', async () => {
+	test('[no-empty-table-track-003] Overflow', async () => {
 		const { violations } = await mlRuleTest(
 			rule,
 			`
@@ -96,7 +96,7 @@ describe('Basic', () => {
 });
 
 describe('Table model errors', () => {
-	test('[no-empty-table-track-invalid-003] Colspan anchored past a rowspan continuation', async () => {
+	test('[no-empty-table-track-004] Colspan anchored past a rowspan continuation', async () => {
 		const { violations } = await mlRuleTest(
 			rule,
 			`
@@ -122,7 +122,7 @@ describe('Table model errors', () => {
 		]);
 	});
 
-	test('[no-empty-table-track-invalid-004] Colspan reaching past the last anchored column', async () => {
+	test('[no-empty-table-track-005] Colspan reaching past the last anchored column', async () => {
 		const { violations } = await mlRuleTest(
 			rule,
 			`
@@ -145,7 +145,7 @@ describe('Table model errors', () => {
 		]);
 	});
 
-	test('[no-empty-table-track-invalid-005] Column markup declaring a column no cell starts in', async () => {
+	test('[no-empty-table-track-006] Column markup declaring a column no cell starts in', async () => {
 		const { violations } = await mlRuleTest(
 			rule,
 			`
@@ -168,7 +168,7 @@ describe('Table model errors', () => {
 		]);
 	});
 
-	test('[no-empty-table-track-invalid-006] Row without cells', async () => {
+	test('[no-empty-table-track-007] Row without cells', async () => {
 		const { violations } = await mlRuleTest(
 			rule,
 			`
@@ -189,7 +189,7 @@ describe('Table model errors', () => {
 		]);
 	});
 
-	test('[no-empty-table-track-invalid-007] Single row with colspan', async () => {
+	test('[no-empty-table-track-008] Single row with colspan', async () => {
 		const { violations } = await mlRuleTest(
 			rule,
 			`
@@ -217,7 +217,7 @@ describe('Table model errors', () => {
 });
 
 describe('Valid', () => {
-	test('[no-empty-table-track-valid-001] Empty table', async () => {
+	test('[no-empty-table-track-009] Empty table', async () => {
 		const { violations } = await mlRuleTest(
 			rule,
 			`
@@ -228,7 +228,7 @@ describe('Valid', () => {
 		expect(violations).toStrictEqual([]);
 	});
 
-	test('[no-empty-table-track-valid-002] Table with thead/tbody/tfoot sections', async () => {
+	test('[no-empty-table-track-010] Table with thead/tbody/tfoot sections', async () => {
 		const { violations } = await mlRuleTest(
 			rule,
 			`
@@ -260,7 +260,7 @@ describe('Valid', () => {
 		expect(violations).toStrictEqual([]);
 	});
 
-	test('[no-empty-table-track-valid-003] Complex nested rowspan/colspan without overlap', async () => {
+	test('[no-empty-table-track-011] Complex nested rowspan/colspan without overlap', async () => {
 		const { violations } = await mlRuleTest(
 			rule,
 			`
@@ -283,7 +283,7 @@ describe('Valid', () => {
 		expect(violations).toStrictEqual([]);
 	});
 
-	test('[no-empty-table-track-valid-004] Colspan only table', async () => {
+	test('[no-empty-table-track-012] Colspan only table', async () => {
 		const { violations } = await mlRuleTest(
 			rule,
 			`
@@ -302,7 +302,7 @@ describe('Valid', () => {
 		expect(violations).toStrictEqual([]);
 	});
 
-	test('[no-empty-table-track-valid-005] Table with tbody rowspan/colspan combinations', async () => {
+	test('[no-empty-table-track-013] Table with tbody rowspan/colspan combinations', async () => {
 		const { violations } = await mlRuleTest(
 			rule,
 			`
@@ -330,7 +330,7 @@ describe('Valid', () => {
 		expect(violations).toStrictEqual([]);
 	});
 
-	test('[no-empty-table-track-valid-006] Row wider than the column markup', async () => {
+	test('[no-empty-table-track-014] Row wider than the column markup', async () => {
 		const { violations } = await mlRuleTest(
 			rule,
 			`
@@ -346,7 +346,7 @@ describe('Valid', () => {
 		expect(violations).toStrictEqual([]);
 	});
 
-	test('[no-empty-table-track-valid-007] Overlap suppresses the other checks of the same table', async () => {
+	test('[no-empty-table-track-015] Overlap suppresses the other checks of the same table', async () => {
 		const { violations } = await mlRuleTest(
 			rule,
 			`

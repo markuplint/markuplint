@@ -59,7 +59,7 @@ function checkValue(
 }
 
 /*
- * #3685 / #3598 — Integration tests for `resolveAttrEligibility` with ConditionalAttributeType[].
+ * Integration tests for `resolveAttrEligibility` with ConditionalAttributeType[].
  *
  * These exercise the boundary where the spec-validating rules (`no-unknown-attr`,
  * `no-disallowed-attr`, `no-invalid-attr-value`) meet the attribute spec data.
@@ -68,7 +68,7 @@ function checkValue(
  * intersection. Any other overlap is validated against the first match. If no
  * condition matches, it falls back to `Any`.
  */
-test('[helpers-issue-3685-001] falls back to Any when no condition matches', () => {
+test('falls back to Any when no condition matches', () => {
 	const el = createTestElement('<custom-el value="not-a-url-or-color"></custom-el>');
 	const attrSpecs: readonly Attribute[] = [
 		{
@@ -84,7 +84,7 @@ test('[helpers-issue-3685-001] falls back to Any when no condition matches', () 
 	expect(result).toBe(false);
 });
 
-test('[helpers-issue-3685-002] still reports violations for regular AttributeType[] specs', () => {
+test('still reports violations for regular AttributeType[] specs', () => {
 	const el = createTestElement('<custom-el autocomplete="bogus"></custom-el>');
 	const attrSpecs: readonly Attribute[] = [
 		{
@@ -97,7 +97,7 @@ test('[helpers-issue-3685-002] still reports violations for regular AttributeTyp
 	expect(result).not.toBe(false);
 });
 
-test('[helpers-issue-3685-003] does not crash when attribute is absent from a conditional spec', () => {
+test('does not crash when attribute is absent from a conditional spec', () => {
 	const el = createTestElement('<custom-el></custom-el>');
 	const attrSpecs: readonly Attribute[] = [
 		{
@@ -113,9 +113,9 @@ test('[helpers-issue-3685-003] does not crash when attribute is absent from a co
 });
 
 /*
- * #3598 — Conditional type resolution tests.
+ * Conditional type resolution tests.
  */
-test('[helpers-issue-3598-001] resolves condition and validates: valid simple color', () => {
+test('resolves condition and validates: valid simple color', () => {
 	const el = createTestElement('<input type="color" value="#ff0000">');
 	const attrSpecs: readonly Attribute[] = [
 		{
@@ -130,7 +130,7 @@ test('[helpers-issue-3598-001] resolves condition and validates: valid simple co
 	expect(result).toBe(false);
 });
 
-test('[helpers-issue-3598-002] resolves condition and validates: a CSS color keyword', () => {
+test('resolves condition and validates: a CSS color keyword', () => {
 	const el = createTestElement('<input type="color" value="red">');
 	const attrSpecs: readonly Attribute[] = [
 		{
@@ -145,7 +145,7 @@ test('[helpers-issue-3598-002] resolves condition and validates: a CSS color key
 	expect(result).toBe(false);
 });
 
-test('[helpers-issue-3598-003] resolves second condition: valid URL', () => {
+test('resolves second condition: valid URL', () => {
 	const el = createTestElement('<input type="url" value="https://example.com">');
 	const attrSpecs: readonly Attribute[] = [
 		{
@@ -160,7 +160,7 @@ test('[helpers-issue-3598-003] resolves second condition: valid URL', () => {
 	expect(result).toBe(false);
 });
 
-test('[helpers-issue-3598-004] resolves second condition: invalid URL', () => {
+test('resolves second condition: invalid URL', () => {
 	const el = createTestElement('<input type="url" value="http://example.com/a b">');
 	const attrSpecs: readonly Attribute[] = [
 		{
@@ -176,7 +176,7 @@ test('[helpers-issue-3598-004] resolves second condition: invalid URL', () => {
 	expect(result).not.toBe(false);
 });
 
-test('[helpers-issue-3598-005] unmatched type falls back to Any', () => {
+test('unmatched type falls back to Any', () => {
 	const el = createTestElement('<input type="text" value="anything">');
 	const attrSpecs: readonly Attribute[] = [
 		{
@@ -192,7 +192,7 @@ test('[helpers-issue-3598-005] unmatched type falls back to Any', () => {
 	expect(result).toBe(false);
 });
 
-test('[helpers-issue-3598-006] case-insensitive condition matching', () => {
+test('case-insensitive condition matching', () => {
 	const el = createTestElement('<input type="COLOR" value="red">');
 	const attrSpecs: readonly Attribute[] = [
 		{
@@ -205,7 +205,7 @@ test('[helpers-issue-3598-006] case-insensitive condition matching', () => {
 	expect(result).toBe(false);
 });
 
-test('[helpers-issue-3598-007] array condition (OR logic)', () => {
+test('array condition (OR logic)', () => {
 	const el = createTestElement('<input type="number" value="42">');
 	const attrSpecs: readonly Attribute[] = [
 		{
@@ -222,7 +222,7 @@ test('[helpers-issue-3598-007] array condition (OR logic)', () => {
 	expect(result).toBe(false);
 });
 
-test('[helpers-issue-3598-008] isDynamicValue suppresses invalid-value after conditional resolution', () => {
+test('isDynamicValue suppresses invalid-value after conditional resolution', () => {
 	const el = createTestElement('<input type="color" value="red">');
 	const attrSpecs: readonly Attribute[] = [
 		{
@@ -230,12 +230,12 @@ test('[helpers-issue-3598-008] isDynamicValue suppresses invalid-value after con
 			type: [{ condition: "[type='color' i]", type: 'SimpleColor' }],
 		},
 	];
-	// "red" is a valid CSS color, so this no longer exercises the suppression: [helpers-issue-3598-010] does.
+	// "red" is a valid CSS color, so this no longer exercises the suppression: the test "isDynamicValue suppresses invalid-value for a value that is no CSS color" does.
 	const result = checkValue('value', 'red', true, el, attrSpecs);
 	expect(result).toBe(false);
 });
 
-test('[helpers-issue-3598-009] a value that is no CSS color is invalid for type=color', () => {
+test('a value that is no CSS color is invalid for type=color', () => {
 	const el = createTestElement('<input type="color" value="not-a-color">');
 	const attrSpecs: readonly Attribute[] = [
 		{
@@ -246,7 +246,7 @@ test('[helpers-issue-3598-009] a value that is no CSS color is invalid for type=
 	expect(checkValue('value', 'not-a-color', false, el, attrSpecs)).not.toBe(false);
 });
 
-test('[helpers-issue-3598-010] isDynamicValue suppresses invalid-value for a value that is no CSS color', () => {
+test('isDynamicValue suppresses invalid-value for a value that is no CSS color', () => {
 	const el = createTestElement('<input type="color" value="not-a-color">');
 	const attrSpecs: readonly Attribute[] = [
 		{
@@ -262,7 +262,7 @@ const attrsOf = (code: string, jsx = false) => {
 	return el.getAttributeTokens();
 };
 
-test('[helpers-issue-4309-001] findAttrSpec prefers the exact name and asks the attribute for another spelling', () => {
+test('findAttrSpec prefers the exact name and asks the attribute for another spelling', () => {
 	const viewBox: Attribute = { name: 'viewBox', type: 'Any' };
 	const klass: Attribute = { name: 'class', type: 'Any' };
 	const specs = [klass, viewBox];
@@ -279,14 +279,14 @@ test('[helpers-issue-4309-001] findAttrSpec prefers the exact name and asks the 
 	expect(findAttrSpec([defaultValue], attrsOf('<input defaultvalue />', true)[0]!)).toBeUndefined();
 });
 
-test('[helpers-issue-4309-002] isAriaAttr reads the name that the DOM gives', () => {
+test('isAriaAttr reads the name that the DOM gives', () => {
 	expect(isAriaAttr(attrsOf('<div ARIA-LABEL></div>')[0]!)).toBe(true);
 	expect(isAriaAttr(attrsOf('<div ARIA-LABEL />', true)[0]!)).toBe(true);
 	expect(isAriaAttr(attrsOf('<svg ARIA-LABEL />', true)[0]!)).toBe(false);
 	expect(isAriaAttr(attrsOf('<div role></div>')[0]!)).toBe(false);
 });
 
-test('[helpers-issue-4309-003] createNameOptionLookup asks the attribute, and a later entry of a name wins', () => {
+test('createNameOptionLookup asks the attribute, and a later entry of a name wins', () => {
 	const lookup = createNameOptionLookup<string>('Any');
 	const upper = attrsOf('<div X-ATTR></div>')[0]!;
 	const svg = attrsOf('<svg X-ATTR />', true)[0]!;
@@ -302,7 +302,7 @@ test('[helpers-issue-4309-003] createNameOptionLookup asks the attribute, and a 
 	expect(lookup(['X-ATTR'], svg)).toBe('Any');
 });
 
-test('[helpers-issue-4309-004] createPrefixMatcher asks the attribute', () => {
+test('createPrefixMatcher asks the attribute', () => {
 	const matches = createPrefixMatcher();
 	const upper = attrsOf('<div DATA-X></div>')[0]!;
 	const svg = attrsOf('<svg DATA-X />', true)[0]!;
@@ -313,7 +313,7 @@ test('[helpers-issue-4309-004] createPrefixMatcher asks the attribute', () => {
 	expect(matches('data-', svg)).toBe(false);
 });
 
-test('[helpers-issue-4309-005] memoizeByObject and memoizeByContent build a value once', () => {
+test('memoizeByObject and memoizeByContent build a value once', () => {
 	let calls = 0;
 	const byObject = memoizeByObject((names: readonly string[]) => {
 		calls++;
@@ -339,7 +339,7 @@ test('[helpers-issue-4309-005] memoizeByObject and memoizeByContent build a valu
 	expect(contentCalls).toBe(2);
 });
 
-test('[helpers-issue-4309-006] createIgnoreFeaturesLookup reads the element part by the case of tag names and the attribute part by the attribute', () => {
+test('createIgnoreFeaturesLookup reads the element part by the case of tag names and the attribute part by the attribute', () => {
 	const folding = createIgnoreFeaturesLookup(false, ['dialog', 'IMG[LOADING]', 'Input[list]']);
 	const div = attrsOf('<div LOADING OPEN></div>');
 	expect(folding.isElementIgnored(undefined, 'dialog')).toBe(true);
@@ -370,7 +370,7 @@ test('[helpers-issue-4309-006] createIgnoreFeaturesLookup reads the element part
 	expect(exact.isAttrIgnored(undefined, 'DIALOG', attrsOf('<dialog OPEN></dialog>')[0]!)).toBe(false);
 });
 
-test('[helpers-issue-4309-007] createIgnoreFeaturesLookup asks the attribute whether its name is the key', () => {
+test('createIgnoreFeaturesLookup asks the attribute whether its name is the key', () => {
 	const lookup = createIgnoreFeaturesLookup(true, ['svg[viewBox]', 'svg[ROLE]', 'div[defaultValue]']);
 	const svg = attrsOf('<svg viewBox ROLE role />', true);
 	expect(lookup.isAttrIgnored(undefined, 'svg', svg[0]!)).toBe(true);
@@ -386,7 +386,7 @@ test('[helpers-issue-4309-007] createIgnoreFeaturesLookup asks the attribute whe
 	expect(parsed.isAttrIgnored(undefined, 'svg', attrsOf('<svg VIEWBOX></svg>')[0]!)).toBe(true);
 });
 
-test('[helpers-issue-4309-008] createIgnoreFeaturesLookup gives a copy of an option the answer of the option', () => {
+test('createIgnoreFeaturesLookup gives a copy of an option the answer of the option', () => {
 	const lookup = createIgnoreFeaturesLookup(false, ['dialog']);
 	const attr = attrsOf('<div OPEN></div>')[0]!;
 	// The options of the elements of a `nodeRule` arrive as a copy for each element
@@ -396,7 +396,7 @@ test('[helpers-issue-4309-008] createIgnoreFeaturesLookup gives a copy of an opt
 	expect(lookup.isAttrIgnored(['div[open]'], 'div', attr)).toBe(true);
 });
 
-test('[helpers-issue-4309-009] createIgnoreFeaturesLookup parses the option once for every copy of its content', () => {
+test('createIgnoreFeaturesLookup parses the option once for every copy of its content', () => {
 	let parsed = 0;
 	// The parser walks the option with `for...of`, so the count is the number of times an option is read
 	const copyOf = (features: readonly string[]) => {
@@ -420,7 +420,7 @@ test('[helpers-issue-4309-009] createIgnoreFeaturesLookup parses the option once
 	expect(parsed).toBe(2);
 });
 
-test('[helpers-issue-4309-010] findAttrSpec takes the first spec of a name that is listed twice', () => {
+test('findAttrSpec takes the first spec of a name that is listed twice', () => {
 	const first: Attribute = { name: 'viewBox', type: 'Any' };
 	const second: Attribute = { name: 'viewBox', type: 'Int' };
 	const klassFirst: Attribute = { name: 'class', type: 'Any' };
@@ -434,7 +434,7 @@ test('[helpers-issue-4309-010] findAttrSpec takes the first spec of a name that 
 	expect(findAttrSpec(specs, attrsOf('<div CLASS></div>')[0]!)).toBe(klassFirst);
 });
 
-test('[helpers-issue-4309-011] createNameOptionLookup prefers the entry written as the attribute and otherwise the last one', () => {
+test('createNameOptionLookup prefers the entry written as the attribute and otherwise the last one', () => {
 	const lookup = createNameOptionLookup<string>('Any');
 	const upper = attrsOf('<div X-ATTR></div>')[0]!;
 	// The entry spelled as the attribute wins, whichever side of the other spelling it stands
@@ -445,7 +445,7 @@ test('[helpers-issue-4309-011] createNameOptionLookup prefers the entry written 
 	expect(lookup([{ name: 'X-Attr', value: 'Int' }, 'x-attr'], upper)).toBe('Any');
 });
 
-test('[helpers-issue-4701-001] isFlagCheckedElement looks at an element of HTML, SVG and MathML, and not at a component that no pretender stands for', () => {
+test('isFlagCheckedElement looks at an element of HTML, SVG and MathML, and not at a component that no pretender stands for', () => {
 	expect(isFlagCheckedElement(createTestElement('<div></div>'))).toBe(true);
 	expect(isFlagCheckedElement(createTestElement('<svg></svg>'))).toBe(true);
 	expect(isFlagCheckedElement(createTestElement('<math></math>'))).toBe(true);
@@ -459,7 +459,7 @@ test('[helpers-issue-4701-001] isFlagCheckedElement looks at an element of HTML,
 	).toBe(true);
 });
 
-test('[helpers-issue-4701-002] isFlagCheckedElement looks at a component that a pretender makes stand for an SVG or a MathML element', () => {
+test('isFlagCheckedElement looks at a component that a pretender makes stand for an SVG or a MathML element', () => {
 	const parser = { parser: jsxParser };
 	expect(isFlagCheckedElement(createTestElement('<Icon />', parser))).toBe(false);
 	expect(
@@ -474,13 +474,13 @@ test('[helpers-issue-4701-002] isFlagCheckedElement looks at a component that a 
 	).toBe(true);
 });
 
-test('[helpers-issue-4789-001] isRoleUnknown is true for a role that code gives, and for a spread attribute without a role', () => {
+test('isRoleUnknown is true for a role that code gives, and for a spread attribute without a role', () => {
 	const parser = { parser: jsxParser };
 	expect(isRoleUnknown(createTestElement('<div role={props.role} />', parser))).toBe(true);
 	expect(isRoleUnknown(createTestElement('<div {...props} />', parser))).toBe(true);
 });
 
-test('[helpers-issue-4789-002] isRoleUnknown is false for a role that the markup tells, and for a role that the framework does not output', () => {
+test('isRoleUnknown is false for a role that the markup tells, and for a role that the framework does not output', () => {
 	const parser = { parser: jsxParser };
 	expect(isRoleUnknown(createTestElement('<div />', parser))).toBe(false);
 	expect(isRoleUnknown(createTestElement('<div role="button" />', parser))).toBe(false);
@@ -489,13 +489,13 @@ test('[helpers-issue-4789-002] isRoleUnknown is false for a role that the markup
 	expect(isRoleUnknown(createTestElement('<div role="button"></div>'))).toBe(false);
 });
 
-test('[helpers-issue-4789-006] isRoleUnknown scans the whole attribute list where the role is not output', () => {
+test('isRoleUnknown scans the whole attribute list where the role is not output', () => {
 	const parser = { parser: jsxParser };
 	expect(isRoleUnknown(createTestElement('<div role={undefined} {...props} />', parser))).toBe(true);
 	expect(isRoleUnknown(createTestElement('<div {...props} role={undefined} />', parser))).toBe(true);
 });
 
-test('[helpers-issue-4789-007] isRoleUnknown reads a binding and an object that Vue binds', async () => {
+test('isRoleUnknown reads a binding and an object that Vue binds', async () => {
 	const parser = (await import('@markuplint/vue-parser')).parser;
 	const specs = schemaToSpec([
 		htmlSpec as unknown as MLMLSpec,
@@ -516,13 +516,13 @@ test('[helpers-issue-4789-007] isRoleUnknown reads a binding and an object that 
 	expect(isUnknown(':id="a"')).toBe(false);
 });
 
-test('[helpers-issue-4789-003] isRoleUnknown is true for a spread attribute after the role attribute, and false before it', () => {
+test('isRoleUnknown is true for a spread attribute after the role attribute, and false before it', () => {
 	const parser = { parser: jsxParser };
 	expect(isRoleUnknown(createTestElement('<div role="button" {...props} />', parser))).toBe(true);
 	expect(isRoleUnknown(createTestElement('<div {...props} role="button" />', parser))).toBe(false);
 });
 
-test('[helpers-issue-4789-004] isRoleUnknown reads the attributes of the element that a pretender makes stand for the component', () => {
+test('isRoleUnknown reads the attributes of the element that a pretender makes stand for the component', () => {
 	const parser = { parser: jsxParser };
 	const as = { element: 'div', inheritAttrs: true };
 	// The spread is an attribute of the pretended element only where it inherits the attributes
@@ -537,7 +537,7 @@ test('[helpers-issue-4789-004] isRoleUnknown reads the attributes of the element
 	).toBe(false);
 });
 
-test('[helpers-issue-4789-005] mayMatchContextRole agrees with getComputedRole where no ancestor has a role that is not known', () => {
+test('mayMatchContextRole agrees with getComputedRole where no ancestor has a role that is not known', () => {
 	const sources = [
 		'<div><div role="listitem"></div></div>',
 		'<div role="list"><div role="listitem"></div></div>',

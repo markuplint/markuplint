@@ -31,20 +31,20 @@ function searchedTable(): WeakRef<object> {
 }
 
 describe('findChildren', () => {
-	test('[table-row-column-alignment-valid-001] gives the children of an element that match a selector', () => {
+	test('gives the children of an element that match a selector', () => {
 		const document = createTestDocument(TABLE);
 		const row = document.querySelector('tr');
 		expect(findChildren(row!, 'td').map(cell => cell.textContent)).toStrictEqual(['a', 'b']);
 		expect(findChildren(row!, 'th')).toStrictEqual([]);
 	});
 
-	test('[table-row-column-alignment-valid-002] gives the same answer to the same question', () => {
+	test('gives the same answer to the same question', () => {
 		const document = createTestDocument(TABLE);
 		const row = document.querySelector('tr');
 		expect(findChildren(row!, 'td')).toBe(findChildren(row!, 'td'));
 	});
 
-	test('[table-row-column-alignment-valid-003] does not keep a document alive after the document is gone', async () => {
+	test('does not keep a document alive after the document is gone', async () => {
 		const table = searchedTable();
 		await forceGc();
 		expect(table.deref() === undefined).toBe(true);

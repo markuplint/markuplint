@@ -3,7 +3,7 @@ import { test, expect } from 'vitest';
 
 import rule from './index.js';
 
-test('[no-restricted-element-invalid-001] specifies to global rule', async () => {
+test('[no-restricted-element-001] specifies to global rule', async () => {
 	const { violations } = await mlRuleTest(rule, '<div><hgroup><h1>Heading</h1></hgroup></div>', {
 		rule: ['hgroup'],
 	});
@@ -18,7 +18,7 @@ test('[no-restricted-element-invalid-001] specifies to global rule', async () =>
 	]);
 });
 
-test('[no-restricted-element-issue-4489-001] an element in the content of a template is restricted', async () => {
+test('[no-restricted-element-002] an element in the content of a template is restricted', async () => {
 	const { violations } = await mlRuleTest(rule, '<template><div><hgroup><h1>Heading</h1></hgroup></div></template>', {
 		rule: ['hgroup'],
 	});
@@ -33,7 +33,7 @@ test('[no-restricted-element-issue-4489-001] an element in the content of a temp
 	]);
 });
 
-test('[no-restricted-element-issue-4489-002] an element in a declarative shadow root is restricted', async () => {
+test('[no-restricted-element-003] an element in a declarative shadow root is restricted', async () => {
 	const { violations } = await mlRuleTest(
 		rule,
 		'<div><template shadowrootmode="open"><hgroup><h1>Heading</h1></hgroup></template></div>',
@@ -52,7 +52,7 @@ test('[no-restricted-element-issue-4489-002] an element in a declarative shadow 
 	]);
 });
 
-test('[no-restricted-element-issue-4489-003] the template element that a declarative shadow root is attached to is restricted too', async () => {
+test('[no-restricted-element-004] the template element that a declarative shadow root is attached to is restricted too', async () => {
 	const { violations } = await mlRuleTest(rule, '<div><template shadowrootmode="open"></template></div>', {
 		rule: ['template'],
 	});
@@ -67,7 +67,7 @@ test('[no-restricted-element-issue-4489-003] the template element that a declara
 	]);
 });
 
-test('[no-restricted-element-issue-4489-004] a node rule restricts what is in the content of a template in the element', async () => {
+test('[no-restricted-element-005] a node rule restricts what is in the content of a template in the element', async () => {
 	const { violations } = await mlRuleTest(rule, '<h1><template><small>Sub-title</small></template></h1>', {
 		nodeRule: [
 			{
@@ -87,7 +87,7 @@ test('[no-restricted-element-issue-4489-004] a node rule restricts what is in th
 	]);
 });
 
-test('[no-restricted-element-issue-4489-005] an element is reported once when elements that the node rule applies to are nested', async () => {
+test('[no-restricted-element-006] an element is reported once when elements that the node rule applies to are nested', async () => {
 	const { violations } = await mlRuleTest(rule, '<div><div><template><p></p></template></div></div>', {
 		nodeRule: [
 			{
@@ -107,7 +107,7 @@ test('[no-restricted-element-issue-4489-005] an element is reported once when el
 	]);
 });
 
-test('[no-restricted-element-invalid-002] specifies to node rule', async () => {
+test('[no-restricted-element-007] specifies to node rule', async () => {
 	const { violations } = await mlRuleTest(rule, '<h1><span>Title</span><small>Sub-title</small></h1>', {
 		nodeRule: [
 			{
@@ -127,7 +127,7 @@ test('[no-restricted-element-invalid-002] specifies to node rule', async () => {
 	]);
 });
 
-test('[no-restricted-element-invalid-003] Recommend', async () => {
+test('[no-restricted-element-008] Recommend', async () => {
 	expect(
 		(
 			await mlRuleTest(
@@ -179,7 +179,7 @@ test('[no-restricted-element-invalid-003] Recommend', async () => {
 	]);
 });
 
-test('[no-restricted-element-invalid-004] base after link via sibling selector', async () => {
+test('[no-restricted-element-009] base after link via sibling selector', async () => {
 	const { violations } = await mlRuleTest(
 		rule,
 		'<head><meta charset="UTF-8"><link rel="stylesheet" href="a.css"><base href="/"></head>',
@@ -196,7 +196,7 @@ test('[no-restricted-element-invalid-004] base after link via sibling selector',
 	]);
 });
 
-test('[no-restricted-element-invalid-005] base after script via sibling selector', async () => {
+test('[no-restricted-element-010] base after script via sibling selector', async () => {
 	const { violations } = await mlRuleTest(
 		rule,
 		'<head><meta charset="UTF-8"><script src="a.js"></script><base href="/"></head>',
@@ -213,7 +213,7 @@ test('[no-restricted-element-invalid-005] base after script via sibling selector
 	]);
 });
 
-test('[no-restricted-element-invalid-006] base after link on a later line reports the base line/col', async () => {
+test('[no-restricted-element-011] base after link on a later line reports the base line/col', async () => {
 	const { violations } = await mlRuleTest(
 		rule,
 		'<head>\n  <meta charset="UTF-8">\n  <link rel="stylesheet" href="a.css">\n  <base href="/">\n</head>',
@@ -230,7 +230,7 @@ test('[no-restricted-element-invalid-006] base after link on a later line report
 	]);
 });
 
-test('[no-restricted-element-invalid-007] base after script[type="module"] via sibling selector', async () => {
+test('[no-restricted-element-012] base after script[type="module"] via sibling selector', async () => {
 	const { violations } = await mlRuleTest(
 		rule,
 		'<head><meta charset="UTF-8"><script type="module" src="a.js"></script><base href="/"></head>',
@@ -247,7 +247,7 @@ test('[no-restricted-element-invalid-007] base after script[type="module"] via s
 	]);
 });
 
-test('[no-restricted-element-invalid-008] base after script[type="importmap"] via sibling selector', async () => {
+test('[no-restricted-element-013] base after script[type="importmap"] via sibling selector', async () => {
 	const { violations } = await mlRuleTest(
 		rule,
 		'<head><meta charset="UTF-8"><script type="importmap">{}</script><base href="/"></head>',
@@ -264,7 +264,7 @@ test('[no-restricted-element-invalid-008] base after script[type="importmap"] vi
 	]);
 });
 
-test('[no-restricted-element-valid-001] base before link and script is valid', async () => {
+test('[no-restricted-element-014] base before link and script is valid', async () => {
 	const { violations } = await mlRuleTest(
 		rule,
 		'<head><meta charset="UTF-8"><base href="/"><link rel="stylesheet" href="a.css"><script src="a.js"></script></head>',
@@ -273,7 +273,7 @@ test('[no-restricted-element-valid-001] base before link and script is valid', a
 	expect(violations).toStrictEqual([]);
 });
 
-test('[no-restricted-element-valid-002] base after non-URL-taking elements (title, style, meta) is valid', async () => {
+test('[no-restricted-element-015] base after non-URL-taking elements (title, style, meta) is valid', async () => {
 	const { violations } = await mlRuleTest(
 		rule,
 		'<head><meta charset="UTF-8"><title>t</title><style>p{color:red}</style><base href="/"></head>',
@@ -282,7 +282,7 @@ test('[no-restricted-element-valid-002] base after non-URL-taking elements (titl
 	expect(violations).toStrictEqual([]);
 });
 
-test('[no-restricted-element-issue-3634-001] duplicate meta charset via sibling selector', async () => {
+test('[no-restricted-element-016] duplicate meta charset via sibling selector', async () => {
 	const { violations } = await mlRuleTest(rule, '<head><meta charset="UTF-8"><meta charset="UTF-8"></head>', {
 		rule: ['meta[charset] ~ meta[charset]'],
 	});
@@ -296,14 +296,14 @@ test('[no-restricted-element-issue-3634-001] duplicate meta charset via sibling 
 	]);
 });
 
-test('[no-restricted-element-issue-3634-002] single meta charset is valid', async () => {
+test('[no-restricted-element-017] single meta charset is valid', async () => {
 	const { violations } = await mlRuleTest(rule, '<head><meta charset="UTF-8"><title>test</title></head>', {
 		rule: ['meta[charset] ~ meta[charset]'],
 	});
 	expect(violations).toStrictEqual([]);
 });
 
-test('[no-restricted-element-issue-3634-003] duplicate meta description via sibling selector', async () => {
+test('[no-restricted-element-018] duplicate meta description via sibling selector', async () => {
 	const { violations } = await mlRuleTest(
 		rule,
 		'<head><meta name="description" content="a"><meta name="description" content="b"></head>',
@@ -317,7 +317,7 @@ test('[no-restricted-element-issue-3634-003] duplicate meta description via sibl
 	]);
 });
 
-test('[no-restricted-element-issue-3634-004] single meta description is valid', async () => {
+test('[no-restricted-element-019] single meta description is valid', async () => {
 	const { violations } = await mlRuleTest(
 		rule,
 		'<head><meta name="description" content="page desc"><title>test</title></head>',
@@ -326,7 +326,7 @@ test('[no-restricted-element-issue-3634-004] single meta description is valid', 
 	expect(violations).toStrictEqual([]);
 });
 
-test('[no-restricted-element-issue-3634-005] meta charset and http-equiv content-type coexistence', async () => {
+test('[no-restricted-element-020] meta charset and http-equiv content-type coexistence', async () => {
 	const { violations } = await mlRuleTest(
 		rule,
 		'<head><meta charset="UTF-8"><meta http-equiv="content-type" content="text/html; charset=UTF-8"></head>',
@@ -345,7 +345,7 @@ test('[no-restricted-element-issue-3634-005] meta charset and http-equiv content
 	]);
 });
 
-test('[no-restricted-element-issue-3634-008] http-equiv content-type before charset coexistence', async () => {
+test('[no-restricted-element-021] http-equiv content-type before charset coexistence', async () => {
 	const { violations } = await mlRuleTest(
 		rule,
 		'<head><meta http-equiv="content-type" content="text/html; charset=UTF-8"><meta charset="UTF-8"></head>',
@@ -364,7 +364,7 @@ test('[no-restricted-element-issue-3634-008] http-equiv content-type before char
 	]);
 });
 
-test('[no-restricted-element-issue-3634-006] meta charset alone without http-equiv is valid', async () => {
+test('[no-restricted-element-022] meta charset alone without http-equiv is valid', async () => {
 	const { violations } = await mlRuleTest(rule, '<head><meta charset="UTF-8"><title>test</title></head>', {
 		rule: [
 			'meta[charset] ~ meta[http-equiv="content-type" i]',
@@ -374,7 +374,7 @@ test('[no-restricted-element-issue-3634-006] meta charset alone without http-equ
 	expect(violations).toStrictEqual([]);
 });
 
-test('[no-restricted-element-issue-3634-007] meta description case insensitive match', async () => {
+test('[no-restricted-element-023] meta description case insensitive match', async () => {
 	const { violations } = await mlRuleTest(
 		rule,
 		'<head><meta name="Description" content="a"><meta name="description" content="b"></head>',
@@ -388,7 +388,7 @@ test('[no-restricted-element-issue-3634-007] meta description case insensitive m
 	]);
 });
 
-test('[no-restricted-element-issue-3815-001] reasonOnly replaces the selector-based message with reason', async () => {
+test('[no-restricted-element-024] reasonOnly replaces the selector-based message with reason', async () => {
 	const { violations } = await mlRuleTest(rule, '<head><meta charset="UTF-8"><meta charset="UTF-8"></head>', {
 		rule: {
 			value: ['meta[charset] ~ meta[charset]'],
@@ -407,7 +407,7 @@ test('[no-restricted-element-issue-3815-001] reasonOnly replaces the selector-ba
 	]);
 });
 
-test('[no-restricted-element-issue-3815-002] reason without reasonOnly still appends to the selector-based message', async () => {
+test('[no-restricted-element-025] reason without reasonOnly still appends to the selector-based message', async () => {
 	const { violations } = await mlRuleTest(rule, '<head><meta charset="UTF-8"><meta charset="UTF-8"></head>', {
 		rule: {
 			value: ['meta[charset] ~ meta[charset]'],
@@ -426,7 +426,7 @@ test('[no-restricted-element-issue-3815-002] reason without reasonOnly still app
 	]);
 });
 
-test('[no-restricted-element-issue-3815-003] node-level severity override on a globally-matched element is respected', async () => {
+test('[no-restricted-element-026] node-level severity override on a globally-matched element is respected', async () => {
 	const { violations } = await mlRuleTest(rule, '<div><h1><small>Sub-title</small></h1></div>', {
 		rule: ['small'],
 		nodeRule: [
@@ -449,7 +449,7 @@ test('[no-restricted-element-issue-3815-003] node-level severity override on a g
 	]);
 });
 
-test('[no-restricted-element-issue-3815-004] reasonOnly without reason falls back to the selector-based message', async () => {
+test('[no-restricted-element-027] reasonOnly without reason falls back to the selector-based message', async () => {
 	const { violations } = await mlRuleTest(rule, '<head><meta charset="UTF-8"><meta charset="UTF-8"></head>', {
 		rule: {
 			value: ['meta[charset] ~ meta[charset]'],
@@ -467,7 +467,7 @@ test('[no-restricted-element-issue-3815-004] reasonOnly without reason falls bac
 	]);
 });
 
-test('[no-restricted-element-issue-4225-001] :model(flow) selects a custom element', async () => {
+test('[no-restricted-element-028] :model(flow) selects a custom element', async () => {
 	const { violations } = await mlRuleTest(rule, '<x-foo></x-foo>', {
 		rule: [':model(flow)'],
 	});
@@ -482,7 +482,7 @@ test('[no-restricted-element-issue-4225-001] :model(flow) selects a custom eleme
 	]);
 });
 
-test('[no-restricted-element-issue-4225-002] :model(phrasing) selects a custom element and a phrasing element, not a flow-only one', async () => {
+test('[no-restricted-element-029] :model(phrasing) selects a custom element and a phrasing element, not a flow-only one', async () => {
 	const { violations } = await mlRuleTest(rule, '<div></div><x-foo></x-foo><span></span>', {
 		rule: [':model(phrasing)'],
 	});
@@ -504,7 +504,7 @@ test('[no-restricted-element-issue-4225-002] :model(phrasing) selects a custom e
 	]);
 });
 
-test('[no-restricted-element-issue-4225-003] :model(interactive) does not select a custom element', async () => {
+test('[no-restricted-element-030] :model(interactive) does not select a custom element', async () => {
 	const { violations } = await mlRuleTest(rule, '<x-foo></x-foo>', {
 		rule: [':model(interactive)'],
 	});

@@ -14,17 +14,17 @@ const document = (svg: string) =>
  * @see https://svgwg.org/svg2-draft/interact.html#ScriptElement
  */
 describe('the script element of SVG', () => {
-	test('[permitted-contents-valid-001] holds character data', async () => {
+	test('[permitted-contents-298] holds character data', async () => {
 		const { violations } = await mlRuleTest(rule, document('<svg><script>var a = 1;</script></svg>'));
 		expect(violations).toStrictEqual([]);
 	});
 
-	test('[permitted-contents-valid-002] is empty', async () => {
+	test('[permitted-contents-299] is empty', async () => {
 		const { violations } = await mlRuleTest(rule, document('<svg><script href="a.js"></script></svg>'));
 		expect(violations).toStrictEqual([]);
 	});
 
-	test('[permitted-contents-valid-003] holds what looks like an element as the text that it is', async () => {
+	test('[permitted-contents-300] holds what looks like an element as the text that it is', async () => {
 		const { violations } = await mlRuleTest(rule, document('<svg><script><circle r="1"></circle></script></svg>'));
 		expect(violations).toStrictEqual([]);
 	});

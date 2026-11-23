@@ -15,7 +15,7 @@ import rule from './index.js';
  */
 const specs = { '.*': fileURLToPath(new URL('naming-prohibited-fixture.mjs', import.meta.url)) };
 
-test('[no-prohibited-naming-issue-4309-005] an upper-case aria-label on an svg element is not a naming attribute in JSX, and is in HTML', async () => {
+test('[no-prohibited-naming-022] an upper-case aria-label on an svg element is not a naming attribute in JSX, and is in HTML', async () => {
 	const parser = { '.*': '@markuplint/jsx-parser' };
 	expect((await mlRuleTest(rule, '<svg ARIA-LABEL="x" />', { parser, specs })).violations).toStrictEqual([]);
 

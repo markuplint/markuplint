@@ -95,6 +95,45 @@ describe('group', () => {
 		expect(one(withBody('expect(a!).toBe(1 + 2);'))).toBe(one(plain));
 	});
 
+	test('whether an array or an object is broken over lines, as a formatter decides', () => {
+		expect(one(withBody('use([{ a: 1 }]);'))).toBe(one(withBody('use([\n{ a: 1 }\n]);')));
+		expect(one(withBody('use({ a: 1, b: [1, 2] });'))).toBe(one(withBody('use({\na: 1,\nb: [\n1,\n2\n]\n});')));
+	});
+
+	test('a comma that closes a list, and the text of a template literal with a substitution', () => {
+		expect(one(withBody('use([1, 2,], { a: 1, },);'))).toBe(one(withBody('use([1, 2], { a: 1 });')));
+		expect(one(withBody('use(`x${a}y`);'))).not.toBe(one(withBody('use(`x${a}z`);')));
+		expect(one(withBody('use(`x${a}y`);'))).toBe(one(withBody('use(`x${\na\n}y`);')));
+	});
+
+	test('a regular expression that has a brace or a quote does not upset the reading of a template literal after it', () => {
+		const code = (pattern: string, tail: string) => withBody('use(' + pattern + ', `x${a}' + tail + '`);');
+		expect(one(code('/[{]/', 'y'))).toBe(one(withBody('use(/[{]/,   `x${ a }y`);')));
+		expect(one(code('/[{]/', 'y'))).not.toBe(one(code('/[{]/', 'z')));
+		expect(one(code('/`/', 'y'))).not.toBe(one(code('/`/', 'z')));
+		expect(one(code('/[{]/', 'y'))).not.toBe(one(code('/[}]/', 'y')));
+		// A `}` of a regular expression inside a substitution does not end the substitution
+		expect(one(withBody('use(`x${/}/.test(a)}y`);'))).toBe(one(withBody('use(`x${ /}/.test(a) }y`);')));
+	});
+
+	test('a division is told from a regular expression, so that a template literal after it is read whole', () => {
+		const divided = (tail: string) => withBody('use((a) / 2 + `x${a}' + tail + '`);');
+		expect(one(divided('y'))).toBe(one(withBody('use((a)/2+`x${ a }y`);')));
+		expect(one(divided('y'))).not.toBe(one(divided('z')));
+		expect(one(withBody('use(a.type / 2);'))).not.toBe(one(withBody('use(a.type / 3);')));
+	});
+
+	test('a regular expression that follows a parenthesis directly and holds a brace is refused, not misread', () => {
+		expect(() => one(withBody('if (a) /{/.test(b);'))).toThrow(/canonicalize/);
+		expect(() => one(withBody('if (a) /}/.test(b);'))).toThrow(/canonicalize/);
+	});
+
+	test('a hole at the end of an array is not a trailing comma', () => {
+		expect(one(withBody('use([1,,]);'))).not.toBe(one(withBody('use([1,]);')));
+		expect(one(withBody('use([,]);'))).not.toBe(one(withBody('use([]);')));
+		expect(one(withBody('use([1,]);'))).toBe(one(withBody('use([1]);')));
+	});
+
 	test('the order of the keys of an object', () => {
 		expect(one(withBody('use({ a: 1, b: 2 });'))).toBe(one(withBody('use({ b: 2, a: 1 });')));
 	});

@@ -1,19 +1,19 @@
 import { mlRuleTest } from 'markuplint';
-import { test, expect } from 'vitest';
+import { expect, test } from 'vitest';
 
 import rule from './index.js';
 
-test('[no-invalid-aria-prop-value-valid-001] valid aria value', async () => {
+test('[no-invalid-aria-prop-value-001] valid aria value', async () => {
 	expect((await mlRuleTest(rule, '<div role="button" aria-pressed="true"></div>')).violations).toStrictEqual([]);
 });
 
-test('[no-invalid-aria-prop-value-invalid-001] invalid aria value', async () => {
+test('[no-invalid-aria-prop-value-002] invalid aria value', async () => {
 	const { violations } = await mlRuleTest(rule, '<div role="button" aria-pressed="hoge"></div>');
 	expect(violations.length).toBe(1);
 	expect(violations[0]!.severity).toBe('error');
 });
 
-test('[no-invalid-aria-prop-value-issue-4309-001] the lower-case spelling is reported (baseline of the upper-case one)', async () => {
+test('[no-invalid-aria-prop-value-003] the lower-case spelling is reported (baseline of the upper-case one)', async () => {
 	const { violations } = await mlRuleTest(rule, '<div role="button" aria-pressed="hoge"></div>');
 	expect(violations).toStrictEqual([
 		{
@@ -26,7 +26,7 @@ test('[no-invalid-aria-prop-value-issue-4309-001] the lower-case spelling is rep
 	]);
 });
 
-test('[no-invalid-aria-prop-value-issue-4309-002] an upper-case aria-* is reported like the lower-case one', async () => {
+test('[no-invalid-aria-prop-value-004] an upper-case aria-* is reported like the lower-case one', async () => {
 	const { violations } = await mlRuleTest(rule, '<div role="button" ARIA-PRESSED="hoge"></div>');
 	expect(violations).toStrictEqual([
 		{
@@ -39,7 +39,7 @@ test('[no-invalid-aria-prop-value-issue-4309-002] an upper-case aria-* is report
 	]);
 });
 
-test('[no-invalid-aria-prop-value-issue-4309-003] JSX: an upper-case aria-* on an HTML element is reported', async () => {
+test('[no-invalid-aria-prop-value-005] JSX: an upper-case aria-* on an HTML element is reported', async () => {
 	const { violations } = await mlRuleTest(rule, '<div role="button" ARIA-PRESSED="hoge" />', {
 		parser: { '.*': '@markuplint/jsx-parser' },
 	});
@@ -54,7 +54,7 @@ test('[no-invalid-aria-prop-value-issue-4309-003] JSX: an upper-case aria-* on a
 	]);
 });
 
-test('[no-invalid-aria-prop-value-issue-4309-004] JSX: an upper-case aria-* on an svg element is not an ARIA attribute', async () => {
+test('[no-invalid-aria-prop-value-006] JSX: an upper-case aria-* on an svg element is not an ARIA attribute', async () => {
 	const parser = { '.*': '@markuplint/jsx-parser' };
 	expect((await mlRuleTest(rule, '<svg role="button" ARIA-PRESSED="hoge" />', { parser })).violations).toStrictEqual(
 		[],
@@ -73,7 +73,7 @@ test('[no-invalid-aria-prop-value-issue-4309-004] JSX: an upper-case aria-* on a
 	]);
 });
 
-test('[no-invalid-aria-prop-value-issue-4584-001] the allowed values are shown as written (`list` is also a keyword) with locale ja', async () => {
+test('[no-invalid-aria-prop-value-007] the allowed values are shown as written (`list` is also a keyword) with locale ja', async () => {
 	const { violations } = await mlRuleTest(
 		rule,
 		'<input type="text" role="combobox" aria-autocomplete="foo">',
@@ -94,7 +94,7 @@ test('[no-invalid-aria-prop-value-issue-4584-001] the allowed values are shown a
 	]);
 });
 
-test('[no-invalid-aria-prop-value-issue-4789-001] JSX: a value that only some roles allow is not judged where the role is not known until it is rendered', async () => {
+test('[no-invalid-aria-prop-value-008] JSX: a value that only some roles allow is not judged where the role is not known until it is rendered', async () => {
 	const parser = { '.*': '@markuplint/jsx-parser' };
 	const source = [
 		'<>',
@@ -117,7 +117,7 @@ test('[no-invalid-aria-prop-value-issue-4789-001] JSX: a value that only some ro
 	]);
 });
 
-test('[no-invalid-aria-prop-value-issue-4789-002] JSX: a value that no role allows is reported where the role is not known until it is rendered', async () => {
+test('[no-invalid-aria-prop-value-009] JSX: a value that no role allows is reported where the role is not known until it is rendered', async () => {
 	const parser = { '.*': '@markuplint/jsx-parser' };
 	const { violations } = await mlRuleTest(rule, '<div role={props.role} aria-hidden="foo" />', { parser });
 	expect(violations).toStrictEqual([
@@ -131,7 +131,7 @@ test('[no-invalid-aria-prop-value-issue-4789-002] JSX: a value that no role allo
 	]);
 });
 
-test('[no-invalid-aria-prop-value-issue-4789-003] JSX: where the role is not known, a value is valid if the base type or any role-specific type allows it', async () => {
+test('[no-invalid-aria-prop-value-010] JSX: where the role is not known, a value is valid if the base type or any role-specific type allows it', async () => {
 	const parser = { '.*': '@markuplint/jsx-parser' };
 	const allowed = [
 		'<>',
@@ -157,7 +157,7 @@ test('[no-invalid-aria-prop-value-issue-4789-003] JSX: where the role is not kno
 	}
 });
 
-test('[no-invalid-aria-prop-value-issue-4789-004] JSX: a spread attribute after the role attribute may override it; one before it may not', async () => {
+test('[no-invalid-aria-prop-value-011] JSX: a spread attribute after the role attribute may override it; one before it may not', async () => {
 	const parser = { '.*': '@markuplint/jsx-parser' };
 	expect(
 		(await mlRuleTest(rule, '<div role="radio" {...props} aria-checked="mixed" />', { parser })).violations,
@@ -172,6 +172,125 @@ test('[no-invalid-aria-prop-value-issue-4789-004] JSX: a spread attribute after 
 			col: 30,
 			message: 'The "mixed" is disallowed on the "aria-checked" ARIA state',
 			raw: 'aria-checked="mixed"',
+		},
+	]);
+});
+
+test('[no-invalid-aria-prop-value-012] a literal in {…} that is not a value of the state is reported as the string is', async () => {
+	const { violations } = await mlRuleTest(rule, '<div aria-busy={"not-a-value"}></div>', {
+		parser: { '.*': '@markuplint/jsx-parser' },
+	});
+	expect(violations).toStrictEqual([
+		{
+			severity: 'error',
+			line: 1,
+			col: 6,
+			message: 'The "not-a-value" is disallowed on the "aria-busy" ARIA state',
+			raw: 'aria-busy={"not-a-value"}',
+		},
+	]);
+});
+
+test('[no-invalid-aria-prop-value-013] the same value written as a string is reported', async () => {
+	const { violations } = await mlRuleTest(rule, '<div aria-busy="not-a-value"></div>', {
+		parser: { '.*': '@markuplint/jsx-parser' },
+	});
+	expect(violations).toStrictEqual([
+		{
+			severity: 'error',
+			line: 1,
+			col: 6,
+			message: 'The "not-a-value" is disallowed on the "aria-busy" ARIA state',
+			raw: 'aria-busy="not-a-value"',
+		},
+	]);
+});
+
+test('[no-invalid-aria-prop-value-014] a literal that is a value of the state is valid', async () => {
+	const { violations } = await mlRuleTest(
+		rule,
+		'<><div aria-busy={true}></div><div aria-busy={"true"}></div><div aria-busy={false}></div></>',
+		{ parser: { '.*': '@markuplint/jsx-parser' } },
+	);
+	expect(violations).toStrictEqual([]);
+});
+
+test('[no-invalid-aria-prop-value-015] the shorthand of JSX is `true`', async () => {
+	const { violations } = await mlRuleTest(rule, '<div aria-hidden></div>', {
+		parser: { '.*': '@markuplint/jsx-parser' },
+	});
+	expect(violations).toStrictEqual([]);
+});
+
+test('[no-invalid-aria-prop-value-016] the empty string that is written is not the shorthand', async () => {
+	const { violations } = await mlRuleTest(rule, '<div aria-hidden=""></div>', {
+		parser: { '.*': '@markuplint/jsx-parser' },
+	});
+	expect(violations).toStrictEqual([
+		{
+			severity: 'error',
+			line: 1,
+			col: 6,
+			message: 'The "" is disallowed on the "aria-hidden" ARIA state',
+			raw: 'aria-hidden=""',
+		},
+	]);
+});
+
+test('[no-invalid-aria-prop-value-017] a literal of the empty string is reported', async () => {
+	const { violations } = await mlRuleTest(rule, '<div aria-hidden={""}></div>', {
+		parser: { '.*': '@markuplint/jsx-parser' },
+	});
+	expect(violations).toStrictEqual([
+		{
+			severity: 'error',
+			line: 1,
+			col: 6,
+			message: 'The "" is disallowed on the "aria-hidden" ARIA state',
+			raw: 'aria-hidden={""}',
+		},
+	]);
+});
+
+test('[no-invalid-aria-prop-value-018] null and code that is not a literal are not judged', async () => {
+	const { violations } = await mlRuleTest(rule, '<><div aria-busy={null}></div><div aria-busy={cond}></div></>', {
+		parser: { '.*': '@markuplint/jsx-parser' },
+	});
+	expect(violations).toStrictEqual([]);
+});
+
+test('[no-invalid-aria-prop-value-019] a number is judged as the string of it is', async () => {
+	const parser = { '.*': '@markuplint/jsx-parser' };
+	const { violations } = await mlRuleTest(rule, '<div aria-busy={5}></div>', { parser });
+	expect(violations).toStrictEqual([
+		{
+			severity: 'error',
+			line: 1,
+			col: 6,
+			message: 'The "5" is disallowed on the "aria-busy" ARIA state',
+			raw: 'aria-busy={5}',
+		},
+	]);
+
+	// Control: a number that the property accepts is not reported
+	expect(
+		(await mlRuleTest(rule, '<div role="slider" aria-valuenow={5}></div>', { parser })).violations,
+	).toStrictEqual([]);
+});
+
+test('[no-invalid-aria-prop-value-020] a prop of a component is not rendered here', async () => {
+	const parser = { '.*': '@markuplint/jsx-parser' };
+	expect((await mlRuleTest(rule, '<Btn aria-busy={"x"} />', { parser })).violations).toStrictEqual([]);
+
+	// Control: the same attribute on an element is reported
+	const { violations } = await mlRuleTest(rule, '<div aria-busy={"x"}></div>', { parser });
+	expect(violations).toStrictEqual([
+		{
+			severity: 'error',
+			line: 1,
+			col: 6,
+			message: 'The "x" is disallowed on the "aria-busy" ARIA state',
+			raw: 'aria-busy={"x"}',
 		},
 	]);
 });

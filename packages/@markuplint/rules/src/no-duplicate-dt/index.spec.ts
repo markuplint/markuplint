@@ -3,7 +3,7 @@ import { test, expect } from 'vitest';
 
 import rule from './index.js';
 
-test('[no-duplicate-dt-issue-4489-001] a dl in the content of a template is checked', async () => {
+test('[no-duplicate-dt-001] a dl in the content of a template is checked', async () => {
 	const { violations } = await mlRuleTest(
 		rule,
 		'<template><dl><dt>name1</dt><dd>d1</dd><dt>name1</dt><dd>d2</dd></dl></template>',
@@ -19,7 +19,7 @@ test('[no-duplicate-dt-issue-4489-001] a dl in the content of a template is chec
 	]);
 });
 
-test('[no-duplicate-dt-invalid-001] Duplicate in content', async () => {
+test('[no-duplicate-dt-002] Duplicate in content', async () => {
 	expect(
 		(
 			await mlRuleTest(
@@ -45,7 +45,7 @@ test('[no-duplicate-dt-invalid-001] Duplicate in content', async () => {
 	]);
 });
 
-test('[no-duplicate-dt-invalid-002] Duplicate with <div>', async () => {
+test('[no-duplicate-dt-003] Duplicate with <div>', async () => {
 	expect(
 		(
 			await mlRuleTest(
@@ -75,7 +75,7 @@ test('[no-duplicate-dt-invalid-002] Duplicate with <div>', async () => {
 	]);
 });
 
-test('[no-duplicate-dt-invalid-003] Nested', async () => {
+test('[no-duplicate-dt-004] Nested', async () => {
 	expect(
 		(
 			await mlRuleTest(
@@ -99,7 +99,7 @@ test('[no-duplicate-dt-invalid-003] Nested', async () => {
 	).toStrictEqual([]);
 });
 
-test('[no-duplicate-dt-issue-4584-001] the message is in Japanese with locale ja', async () => {
+test('[no-duplicate-dt-005] the message is in Japanese with locale ja', async () => {
 	const { violations } = await mlRuleTest(rule, '<dl><dt>a</dt><dt>a</dt><dd></dd></dl>', undefined, false, 'ja');
 
 	expect(violations).toStrictEqual([

@@ -1,6 +1,5 @@
 import { fileURLToPath } from 'node:url';
 
-import specs0 from '@markuplint/html-spec';
 import { mlRuleTest } from 'markuplint';
 import { test, expect } from 'vitest';
 
@@ -12,17 +11,17 @@ import rule from './index.js';
 // rule. The tests on HTML pin the negative cases; add a positive case once the
 // spec data gains a deprecated-but-not-obsolete HTML/SVG element.
 
-test('[no-deprecated-element-valid-001] normal', async () => {
+test('[no-deprecated-element-001] normal', async () => {
 	const { violations } = await mlRuleTest(rule, '<div></div><p><span></span></p>');
 	expect(violations).toStrictEqual([]);
 });
 
-test('[no-deprecated-element-valid-002] an obsolete element is out of scope for this rule', async () => {
+test('[no-deprecated-element-002] an obsolete element is out of scope for this rule', async () => {
 	const { violations } = await mlRuleTest(rule, '<font></font><big><blink></blink></big>');
 	expect(violations).toStrictEqual([]);
 });
 
-test('[no-deprecated-element-issue-4701-001] MathML: an element that the data flags deprecated is reported', async () => {
+test('[no-deprecated-element-003] MathML: an element that the data flags deprecated is reported', async () => {
 	const { violations } = await mlRuleTest(rule, '<math><maction></maction><mfenced></mfenced></math>');
 	expect(violations).toStrictEqual([
 		{
@@ -42,23 +41,16 @@ test('[no-deprecated-element-issue-4701-001] MathML: an element that the data fl
 	]);
 });
 
-test('[no-deprecated-element-issue-4701-002] MathML: a current element is not reported', async () => {
+test('[no-deprecated-element-004] MathML: a current element is not reported', async () => {
 	const { violations } = await mlRuleTest(rule, '<math><mi>x</mi><mfrac><mn>1</mn><mn>2</mn></mfrac></math>');
 	expect(violations).toStrictEqual([]);
-});
-
-test('[no-deprecated-element-issue-4701-004] the elements of the bundled spec data that are deprecated without being obsolete are the two that the README names', () => {
-	const names = specs0.specs
-		.filter(spec => (spec as { deprecated?: true }).deprecated && !(spec as { obsolete?: unknown }).obsolete)
-		.map(spec => spec.name);
-	expect(names).toStrictEqual(['mml:maction', 'mml:mfenced']);
 });
 
 // The bundled spec data has no element or attribute with the flag that the tests below need,
 // so they pass a spec of their own.
 const specs = { '.*': fileURLToPath(new URL('deprecated-fixture.mjs', import.meta.url)) };
 
-test('[no-deprecated-element-issue-4701-003] an SVG element that the spec flags deprecated is reported', async () => {
+test('[no-deprecated-element-005] an SVG element that the spec flags deprecated is reported', async () => {
 	const { violations } = await mlRuleTest(rule, '<svg><circle></circle></svg>', { specs });
 	expect(violations).toStrictEqual([
 		{

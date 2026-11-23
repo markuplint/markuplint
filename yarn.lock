@@ -2309,6 +2309,7 @@ __metadata:
     debug: "npm:^4.4.3"
     image-size: "npm:^2.1.0"
     type-fest: "npm:^5.10.0"
+    typescript: "npm:6.0.3"
   languageName: unknown
   linkType: soft
 

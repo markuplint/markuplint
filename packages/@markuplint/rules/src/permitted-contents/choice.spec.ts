@@ -1,6 +1,6 @@
 import specs from '@markuplint/html-spec';
 import { createTestElement } from '@markuplint/ml-core';
-import { test, expect, describe } from 'vitest';
+import { test, expect } from 'vitest';
 
 import { choice } from './choice.js';
 import type { Options } from './types.js';
@@ -10,7 +10,7 @@ function c(models: any, innerHtml: string) {
 	return choice(models, [...el.childNodes], [], specs, { ignoreHasMutableChildren: true } as Options, 0, 'pretended');
 }
 
-test('[permitted-contents-invalid-001] ordered requires', () => {
+test('ordered requires', () => {
 	const models = {
 		choice: [
 			//
@@ -29,7 +29,7 @@ test('[permitted-contents-invalid-001] ordered requires', () => {
 	expect(c(models, '<d></d>').type).toBe('MISSING_NODE_REQUIRED');
 });
 
-test('[permitted-contents-invalid-002] optional', () => {
+test('optional', () => {
 	const models = {
 		choice: [
 			[
@@ -57,7 +57,7 @@ test('[permitted-contents-invalid-002] optional', () => {
 	expect(c(models, '<d></d>').type).toBe('UNEXPECTED_EXTRA_NODE');
 });
 
-test('[permitted-contents-invalid-003] interleave', () => {
+test('interleave', () => {
 	const models = {
 		choice: [
 			[
@@ -87,7 +87,7 @@ test('[permitted-contents-invalid-003] interleave', () => {
 	expect(c(models, '<b></b><a></a><a></a>').type).toBe('UNEXPECTED_EXTRA_NODE');
 });
 
-test('[permitted-contents-invalid-004] the dl element', () => {
+test('the dl element', () => {
 	const models = {
 		choice: [
 			[
@@ -134,7 +134,7 @@ test('[permitted-contents-invalid-004] the dl element', () => {
 	expect(c(models, '<dt></dt><dd></dd><dt></dt>').type).toBe('MISSING_NODE_ONE_OR_MORE');
 });
 
-test('[permitted-contents-issue-3592-001] dl with zeroOrMore groups — empty is valid', () => {
+test('dl with zeroOrMore groups — empty is valid', () => {
 	const models = {
 		choice: [
 			[
@@ -162,7 +162,7 @@ test('[permitted-contents-issue-3592-001] dl with zeroOrMore groups — empty is
 	expect(c(models, '<dt></dt>').type).toBe('MISSING_NODE_ONE_OR_MORE');
 });
 
-test('[permitted-contents-invalid-005] part of the ruby element', () => {
+test('part of the ruby element', () => {
 	const models = {
 		// 2. One or the other of the following:
 		choice: [
@@ -203,26 +203,24 @@ test('[permitted-contents-invalid-005] part of the ruby element', () => {
 	expect(c(models, '<rt></rt><rp></rp>').query).toBe('rt');
 });
 
-describe('Issues', () => {
-	test('[permitted-contents-issue-1146] #1146', () => {
-		const models = {
-			choice: [
-				[
-					{
-						optional: 'b',
-					},
-				],
-				[
-					{
-						require: 'c',
-					},
-				],
+test('a choice of an optional sequence and a required one takes one of them, and a second element is an unexpected extra node', () => {
+	const models = {
+		choice: [
+			[
+				{
+					optional: 'b',
+				},
 			],
-		};
+			[
+				{
+					require: 'c',
+				},
+			],
+		],
+	};
 
-		expect(c(models, '<b></b>').type).toBe('MATCHED');
-		expect(c(models, '<b></b><b></b>').type).toBe('UNEXPECTED_EXTRA_NODE');
-		expect(c(models, '<c></c>').type).toBe('MATCHED');
-		expect(c(models, '<c></c><c></c>').type).toBe('UNEXPECTED_EXTRA_NODE');
-	});
+	expect(c(models, '<b></b>').type).toBe('MATCHED');
+	expect(c(models, '<b></b><b></b>').type).toBe('UNEXPECTED_EXTRA_NODE');
+	expect(c(models, '<c></c>').type).toBe('MATCHED');
+	expect(c(models, '<c></c><c></c>').type).toBe('UNEXPECTED_EXTRA_NODE');
 });

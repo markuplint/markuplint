@@ -15,7 +15,7 @@ import rule from './index.js';
  */
 const specs = { '.*': fileURLToPath(new URL('ineffective-fixture.mjs', import.meta.url)) };
 
-test('[no-ineffective-attr-issue-4309-003] an upper-case name on an svg element is not the ineffective attribute in JSX, and is in HTML', async () => {
+test('[no-ineffective-attr-008] an upper-case name on an svg element is not the ineffective attribute in JSX, and is in HTML', async () => {
 	const parser = { '.*': '@markuplint/jsx-parser' };
 	expect((await mlRuleTest(rule, '<svg FLAG="x" />', { parser, specs })).violations).toStrictEqual([]);
 

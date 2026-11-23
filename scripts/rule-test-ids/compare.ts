@@ -83,7 +83,7 @@ export function scopeOf(file: string): string {
 
 /**
  * @param name - The name of a test
- * @returns The ID at the start of it: `[rule-valid-001] text` is `rule-valid-001`; none if it has no `[id]`
+ * @returns The ID at the start of it: `[rule-001] text` is `rule-001`; none if it has no `[id]`
  */
 export function idOf(name: string): string | undefined {
 	return /^\[([^\]]+)\]/.exec(name)?.[1];
