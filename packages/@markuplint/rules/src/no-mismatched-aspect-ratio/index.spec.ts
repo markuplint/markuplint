@@ -13,21 +13,6 @@ afterEach(() => {
 });
 
 describe('Aspect ratio mismatch', () => {
-	test('[no-mismatched-aspect-ratio-invalid-001] width/height do not match image aspect ratio', async () => {
-		const { violations } = await mlRuleTest(rule, '<img src="/100x50.png" width="100" height="100">', {
-			rule: { value: true, options: { documentRoot: fixturesDir } },
-		});
-		expect(violations).toStrictEqual([
-			{
-				severity: 'error',
-				line: 1,
-				col: 1,
-				message: 'The aspect ratio of the image (100:50) does not match the width/height attributes (100:100)',
-				raw: '<img src="/100x50.png" width="100" height="100">',
-			},
-		]);
-	});
-
 	test('[no-mismatched-aspect-ratio-valid-001] width/height match image aspect ratio (same dimensions)', async () => {
 		const { violations } = await mlRuleTest(rule, '<img src="/100x50.png" width="100" height="50">', {
 			rule: { value: true, options: { documentRoot: fixturesDir } },

@@ -69,11 +69,6 @@ test('[no-empty-palpable-content-valid-002] Has content', async () => {
 	expect((await mlRuleTest(rule, '<div><img /></div>')).violations).toStrictEqual([]);
 });
 
-test('[no-empty-palpable-content-valid-003] Has content', async () => {
-	expect((await mlRuleTest(rule, '<div>\n\ttext\n\n</div>')).violations).toStrictEqual([]);
-	expect((await mlRuleTest(rule, '<div><img /></div>')).violations).toStrictEqual([]);
-});
-
 test('[no-empty-palpable-content-valid-004] Element exception', async () => {
 	expect((await mlRuleTest(rule, '<textarea></textarea>')).violations).toStrictEqual([]);
 });
