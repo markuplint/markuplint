@@ -90,7 +90,7 @@
 		"lerna": "10.1.2",
 		"lint-staged": "17.6.1",
 		"npm-run-all2": "9.0.4",
-		"oxfmt": "0.78.0",
+		"oxfmt": "0.79.0",
 		"oxlint": "1.93.0",
 		"renovate": "44.242.0",
 		"textlint": "16.0.0",
