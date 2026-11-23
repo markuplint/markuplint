@@ -601,27 +601,77 @@ pub fn parse_mlast(json: &str) -> Result<MLASTDocument, serde_json::Error> {
     serde_json::from_str(json)
 }
 
+/// How many levels of JSON the engine reads when it reads without the limit of `serde_json`
+/// ([`parse_mlast_deep`], [`parse_document_settings`]). An element is two levels (its node and its
+/// `childNodes`), so a document can nest 256 elements.
+///
+/// Without the limit (128 levels, which is 64 elements) the depth of the JSON is the depth of the native
+/// stack: reading, building the DOM and a rule that walks the ancestors recurse once per element, which is
+/// about 12 KB per element in a debug build. A thread of 2 MB overflows at 170 elements, one of 4 MB (the
+/// default of a Node.js worker) at 340 and one of 8 MB at 680, measured on `lint_from_json` with twelve rules
+/// that walk the tree. A stack overflow aborts the process instead of returning an error, so a document that
+/// is deeper than this is refused before it is read. A release build, which uses less stack, was not measured.
+pub const MAX_JSON_DEPTH: usize = 512;
+
+/// Refuses JSON that nests more than [`MAX_JSON_DEPTH`] levels, without reading it: the text is scanned for
+/// its brackets, and the ones in a string are skipped.
+fn check_json_depth(json: &str) -> Result<(), serde_json::Error> {
+    let mut depth = 0_usize;
+    let mut in_string = false;
+    let mut escaped = false;
+    for &byte in json.as_bytes() {
+        if in_string {
+            if escaped {
+                escaped = false;
+            } else if byte == b'\\' {
+                escaped = true;
+            } else if byte == b'"' {
+                in_string = false;
+            }
+            continue;
+        }
+        match byte {
+            b'"' => in_string = true,
+            b'[' | b'{' => {
+                depth += 1;
+                if depth > MAX_JSON_DEPTH {
+                    return Err(serde::de::Error::custom(format!(
+                        "the document is nested more than {MAX_JSON_DEPTH} levels of JSON ({} elements)",
+                        MAX_JSON_DEPTH / 2
+                    )));
+                }
+            }
+            b']' | b'}' => depth = depth.saturating_sub(1),
+            _ => {}
+        }
+    }
+    Ok(())
+}
+
 /// The settings the parser sent next to the nodes; see [`DocumentSettings`].
 ///
-/// It reads the same text as [`parse_mlast_deep`], so it has no recursion limit either: the nodes that it skips
-/// are as deep as the document.
+/// It reads the same text as [`parse_mlast_deep`], so it has the same limit ([`MAX_JSON_DEPTH`]): the nodes
+/// that it skips are as deep as the document.
 ///
 /// # Errors
 ///
-/// Returns an error if the JSON string is not valid JSON or a setting has an unknown value.
+/// Returns an error if the JSON string is not valid JSON, it is nested more than [`MAX_JSON_DEPTH`] levels,
+/// or a setting has an unknown value.
 pub fn parse_document_settings(json: &str) -> Result<DocumentSettings, serde_json::Error> {
+    check_json_depth(json)?;
     let mut deserializer = serde_json::Deserializer::from_str(json);
     deserializer.disable_recursion_limit();
     serde::Deserialize::deserialize(&mut deserializer)
 }
 
 /// For deeply nested documents that exceed `serde_json`'s default 128-level
-/// recursion limit.
+/// recursion limit, up to [`MAX_JSON_DEPTH`] levels.
 ///
 /// # Errors
 ///
-/// Returns an error if the JSON string is not valid MLAST.
+/// Returns an error if the JSON string is not valid MLAST or it is nested more than [`MAX_JSON_DEPTH`] levels.
 pub fn parse_mlast_deep(json: &str) -> Result<MLASTDocument, serde_json::Error> {
+    check_json_depth(json)?;
     let mut deserializer = serde_json::Deserializer::from_str(json);
     deserializer.disable_recursion_limit();
     serde::Deserialize::deserialize(&mut deserializer)
