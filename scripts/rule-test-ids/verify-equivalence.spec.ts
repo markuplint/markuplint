@@ -92,6 +92,15 @@ describe('verify-equivalence', { timeout: 30_000 }, () => {
 		expect(result.status, result.err).toBe(0);
 	});
 
+	test('leaves out a spec that the map lists as a policy spec, and reports the same spec when it is not listed', () => {
+		write('policy.spec.ts', `test('a policy', () => {\n\texpect(1).toBe(1);\n});\n`);
+		const unlisted = run(['--base', 'HEAD', '--map', writeMap({})]);
+		expect(unlisted.status).toBe(1);
+		expect(unlisted.err).toContain('appeared');
+		const listed = run(['--base', 'HEAD', '--map', writeMap({ policy: ['policy.spec.ts'] })]);
+		expect(listed.status, listed.err).toBe(0);
+	});
+
 	test('fails when an assertion is flipped', () => {
 		const map = writeMap({});
 		write('rule-a/index.spec.ts', SPEC.replace('toStrictEqual([])', 'not.toStrictEqual([])'));

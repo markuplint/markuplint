@@ -40,6 +40,16 @@ describe('parseIdMap', () => {
 		expect(parseIdMap('{}')).toStrictEqual({ removed: [], added: [] });
 	});
 
+	test('reads the specs that the change adds about the specs themselves', () => {
+		expect(parseIdMap(JSON.stringify({ policy: ['test-ids.spec.ts'] }))).toStrictEqual({
+			removed: [],
+			added: [],
+			policy: ['test-ids.spec.ts'],
+		});
+		expect(() => parseIdMap(JSON.stringify({ policy: 'test-ids.spec.ts' }))).toThrow(/policy/);
+		expect(() => parseIdMap(JSON.stringify({ policy: [1] }))).toThrow(/policy/);
+	});
+
 	test('rejects a key that it does not know, as a typo would drop the entries without a word', () => {
 		expect(() => parseIdMap(JSON.stringify({ remove: [removal] }))).toThrow(/remove/);
 	});

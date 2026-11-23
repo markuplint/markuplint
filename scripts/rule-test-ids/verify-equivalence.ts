@@ -108,6 +108,16 @@ function readJson<T>(file: string): T {
 	return JSON.parse(readFileSync(file, 'utf8')) as T;
 }
 
+/** The head report without the cases of the specs that the ID map lists under `policy`. */
+function withoutPolicy(report: CaseReport, policy: readonly string[]): CaseReport {
+	return {
+		...report,
+		testResults: report.testResults.filter(
+			result => !policy.some(file => result.name.replaceAll('\\', '/').endsWith(`/${SRC}/${file}`)),
+		),
+	};
+}
+
 const { values } = parseArgs({
 	options: {
 		base: { type: 'string' },
@@ -135,9 +145,10 @@ if (Boolean(baseReport) !== Boolean(headReport)) {
 }
 process.chdir(git(['rev-parse', '--show-toplevel']).trim());
 
-const { removed, added } = parseIdMap(readFileSync(mapFile, 'utf8'));
+const { removed, added, policy = [] } = parseIdMap(readFileSync(mapFile, 'utf8'));
 const base = readBase(values.base);
-const head = readHead();
+// The specs that the change adds to enforce its own convention have no counterpart in the base.
+const head = readHead().filter(test => !policy.includes(test.file));
 // An empty side compares equal to an empty side, which would pass without having read anything.
 if (base.length === 0 || head.length === 0) {
 	throw new Error(`no tests were read (base: ${base.length}, working tree: ${head.length}) from ${SRC}`);
@@ -145,7 +156,14 @@ if (base.length === 0 || head.length === 0) {
 
 const problems = compare(base, head, removed, added).map(problem => `${problem.kind}: ${problem.message}`);
 if (baseReport && headReport) {
-	problems.push(...compareCases(readJson<CaseReport>(baseReport), readJson<CaseReport>(headReport), removed, added));
+	problems.push(
+		...compareCases(
+			readJson<CaseReport>(baseReport),
+			withoutPolicy(readJson<CaseReport>(headReport), policy),
+			removed,
+			added,
+		),
+	);
 }
 
 process.stdout.write(

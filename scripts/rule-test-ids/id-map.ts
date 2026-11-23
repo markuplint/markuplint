@@ -9,6 +9,11 @@
  * the v6 line would take the new one for the old: a new test takes the highest number of its file or rule plus
  * one.
  *
+ * `policy` lists specs under the rules' `src` that the change adds to enforce the convention that it
+ * establishes (a spec about the specs, with no counterpart in the base): the verifier leaves their tests and
+ * cases out of the head, as it would report each as a test that appeared. It is true only until the change
+ * has merged, like `removed` and `added`.
+ *
  * @module
  */
 import type { Addition, Removal } from './compare.ts';
@@ -16,10 +21,12 @@ import type { Addition, Removal } from './compare.ts';
 export interface IdMap {
 	readonly removed: readonly Removal[];
 	readonly added: readonly Addition[];
+	/** Paths relative to the rules' `src`. */
+	readonly policy?: readonly string[];
 	readonly merged?: { readonly removed: readonly Removal[]; readonly added: readonly Addition[] };
 }
 
-const KNOWN_KEYS = ['removed', 'added', 'merged'];
+const KNOWN_KEYS = ['removed', 'added', 'policy', 'merged'];
 const REMOVAL_FIELDS = ['file', 'id', 'keptIn', 'keptId'];
 const ADDITION_FIELDS = ['file', 'id'];
 
@@ -65,9 +72,14 @@ export function parseIdMap(text: string): IdMap {
 	if (merged !== undefined && !isRecord(merged)) {
 		throw new TypeError('id-map: merged must be an object');
 	}
+	const policy = value.policy;
+	if (policy !== undefined && !(Array.isArray(policy) && policy.every(item => typeof item === 'string'))) {
+		throw new TypeError('id-map: policy must be an array of strings');
+	}
 	return {
 		removed: entries<Removal>(value.removed, 'removed', REMOVAL_FIELDS),
 		added: entries<Addition>(value.added, 'added', ADDITION_FIELDS),
+		...(policy ? { policy: policy as string[] } : {}),
 		...(merged
 			? {
 					merged: {
