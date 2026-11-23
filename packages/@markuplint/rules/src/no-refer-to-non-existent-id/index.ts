@@ -1,7 +1,7 @@
 import type { ARIAVersion } from '@markuplint/ml-spec';
 
 import { createRule, getAttrSpecs, ariaSpecs } from '@markuplint/ml-core';
-import { ARIA_RECOMMENDED_VERSION } from '@markuplint/ml-spec';
+import { ARIA_RECOMMENDED_VERSION, hasElementOfUnknownId } from '@markuplint/ml-spec';
 
 import { findAttrSpec, getDOMValue } from '../helpers.js';
 
@@ -20,6 +20,10 @@ import meta from './meta.js';
  * a `template` that is in no tree (a declarative shadow root is attached to its parent, or may be)
  * refers to nothing.
  *
+ * Whether the tree has an id that is not known is `hasElementOfUnknownId` of `@markuplint/ml-spec`, which
+ * `isValidLandmarkRole` of the same package (a landmark that refers to it has a name) and
+ * `accnameMayComeFromUnknownContent` of `../helpers.ts` read as well: a change to it belongs to all of them.
+ *
  * @see https://html.spec.whatwg.org/multipage/dom.html#the-id-attribute
  */
 export default createRule({
@@ -31,7 +35,6 @@ export default createRule({
 		// An id is resolved in the tree of the reference: the document, the content of a `template`
 		// element and a declarative shadow root are trees of their own
 		const idListOfTree = new Map<object, Set<string>>();
-		const treesWithDynamicId = new Set<object>();
 
 		const isMutable = document.nodeList.some(node => node.is(node.MARKUPLINT_PREPROCESSOR_BLOCK));
 
@@ -45,9 +48,6 @@ export default createRule({
 				continue;
 			}
 			const root = el.getRootNode();
-			if (attr.isDynamicValue) {
-				treesWithDynamicId.add(root);
-			}
 			const id = attr.valueType === 'code' ? null : getDOMValue(attr);
 			if (id != null) {
 				let idList = idListOfTree.get(root);
@@ -78,7 +78,7 @@ export default createRule({
 
 			// An element in no tree (a `template` that a declarative shadow root is attached to) refers
 			// to nothing, and an id that is not known until it is rendered may be what the reference means
-			if (root === attr.ownerElement || treesWithDynamicId.has(root)) {
+			if (root === attr.ownerElement || hasElementOfUnknownId(attr.ownerElement)) {
 				return;
 			}
 

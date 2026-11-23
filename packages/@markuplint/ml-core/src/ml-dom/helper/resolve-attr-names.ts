@@ -12,6 +12,8 @@ export type ResolvedAttr = {
 	readonly candidate?: string;
 	readonly isDynamicValue?: true;
 	readonly isDirective?: true;
+	/** Whether the matching directive pattern says the attribute is a spread (`DirectivePattern#isSpread`). */
+	readonly isSpread?: true;
 	readonly isDuplicatable: boolean;
 	/** Only a matching directive pattern sets it; otherwise the attribute is a `string`. */
 	readonly valueType?: 'string' | 'number' | 'boolean' | 'code';
@@ -93,6 +95,7 @@ export function resolveAttrNames(
 		candidate,
 		isDynamicValue: resolution ? resolution.isDynamicValue : ast.isDynamicValue,
 		isDirective,
+		isSpread: resolution?.isSpread,
 		isDuplicatable: (resolution ? resolution.isDuplicatable : undefined) ?? ast.isDuplicatable,
 		valueType: resolution?.valueType,
 		expressionLanguage: resolution ? resolution.expressionLanguage : 'inherit',

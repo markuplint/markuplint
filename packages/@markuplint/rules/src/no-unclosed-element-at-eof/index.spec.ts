@@ -3,7 +3,7 @@ import { test, expect } from 'vitest';
 
 import rule from './index.js';
 
-test('[no-unclosed-element-at-eof-invalid-001] picture left open at the end of the file', async () => {
+test('[no-unclosed-element-at-eof-001] picture left open at the end of the file', async () => {
 	expect((await mlRuleTest(rule, '<picture><img src="x" alt="">')).violations).toStrictEqual([
 		{
 			severity: 'error',
@@ -15,7 +15,7 @@ test('[no-unclosed-element-at-eof-invalid-001] picture left open at the end of t
 	]);
 });
 
-test('[no-unclosed-element-at-eof-invalid-002] nested elements both left open at the end of the file', async () => {
+test('[no-unclosed-element-at-eof-002] nested elements both left open at the end of the file', async () => {
 	expect((await mlRuleTest(rule, '<section><div>text')).violations).toStrictEqual([
 		{
 			severity: 'error',
@@ -34,11 +34,11 @@ test('[no-unclosed-element-at-eof-invalid-002] nested elements both left open at
 	]);
 });
 
-test('[no-unclosed-element-at-eof-valid-001] properly closed picture', async () => {
+test('[no-unclosed-element-at-eof-003] properly closed picture', async () => {
 	expect((await mlRuleTest(rule, '<picture><img src="x" alt=""></picture>')).violations).toStrictEqual([]);
 });
 
-test('[no-unclosed-element-at-eof-valid-002] optional-tag-omission elements left open at EOF are exempt', async () => {
+test('[no-unclosed-element-at-eof-004] optional-tag-omission elements left open at EOF are exempt', async () => {
 	// `</ul>` implicitly closes the still-open `<li>` (generate implied end tags);
 	// only elements outside the exempt list must have an explicit end tag.
 	expect((await mlRuleTest(rule, '<ul><li>one<li>two</ul>')).violations).toStrictEqual([]);
@@ -46,15 +46,15 @@ test('[no-unclosed-element-at-eof-valid-002] optional-tag-omission elements left
 	expect((await mlRuleTest(rule, '<p>last paragraph')).violations).toStrictEqual([]);
 });
 
-test('[no-unclosed-element-at-eof-valid-003] void elements are never flagged', async () => {
+test('[no-unclosed-element-at-eof-005] void elements are never flagged', async () => {
 	expect((await mlRuleTest(rule, '<img src="x" alt="">')).violations).toStrictEqual([]);
 });
 
-test('[no-unclosed-element-at-eof-valid-004] an element autoclosed mid-document by a sibling is not an EOF case', async () => {
+test('[no-unclosed-element-at-eof-006] an element autoclosed mid-document by a sibling is not an EOF case', async () => {
 	expect((await mlRuleTest(rule, '<p>one<div>two</div>')).violations).toStrictEqual([]);
 });
 
-test('[no-unclosed-element-at-eof-issue-4022-001] a parser that never emits close tags (Pug) is exempt entirely', async () => {
+test('[no-unclosed-element-at-eof-007] a parser that never emits close tags (Pug) is exempt entirely', async () => {
 	expect(
 		(
 			await mlRuleTest(
@@ -76,7 +76,7 @@ html(lang="ja")
 	).toStrictEqual([]);
 });
 
-test('[no-unclosed-element-at-eof-issue-4584-001] the name of the element is shown as written (`time` is also a keyword) with locale ja', async () => {
+test('[no-unclosed-element-at-eof-008] the name of the element is shown as written (`time` is also a keyword) with locale ja', async () => {
 	const { violations } = await mlRuleTest(rule, '<div><time>', undefined, false, 'ja');
 
 	expect(violations).toStrictEqual([

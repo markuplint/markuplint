@@ -6,6 +6,8 @@ description: ARIA in HTMLの仕様において要素に許可されていない�
 
 ARIA in HTMLの仕様において要素に許可されていないロールが指定された場合に警告します。
 
+`role` 属性の値をコードが与える場合(`role={props.role}`)や、`role` 属性より後ろにスプレッド属性(`{...props}`)がある場合は判定しません。要素が持つロールは描画されるまで分かりません。
+
 <!-- textlint-disable ja-technical-writing/ja-no-mixed-period -->
 
 ❌ 間違ったコード例

@@ -1,9 +1,9 @@
 import { mlRuleTest } from 'markuplint';
-import { describe, test, expect } from 'vitest';
+import { describe, expect, test } from 'vitest';
 
 import rule from './index.js';
 
-test('[no-ineffective-attr-invalid-001] script[defer]', async () => {
+test('[no-ineffective-attr-001] script[defer]', async () => {
 	const { violations } = await mlRuleTest(rule, '<script defer>const foo = "foo";</script>');
 
 	expect(violations).toStrictEqual([
@@ -17,20 +17,18 @@ test('[no-ineffective-attr-invalid-001] script[defer]', async () => {
 	]);
 });
 
-// Note: `[no-ineffective-attr-invalid-002]` and `[no-ineffective-attr-fix-002]` (defer on
-// type=module) were removed when HTML LS § 4.12.1 ("Module scripts must not specify
-// the defer attribute") was reflected in spec.script.jsonc — module+defer is now
-// disallowed by `no-disallowed-attr`, not flagged as ineffective. The numbering gap is
-// intentional; do not renumber later tests.
+// There are no tests of `defer` on `type=module`: HTML LS § 4.12.1 ("Module scripts must not specify
+// the defer attribute") is reflected in spec.script.jsonc, so module+defer is disallowed by
+// `no-disallowed-attr` and is not flagged as ineffective.
 
 describe('fix', () => {
-	test('[no-ineffective-attr-fix-001] remove ineffective defer from inline script', async () => {
+	test('[no-ineffective-attr-002] remove ineffective defer from inline script', async () => {
 		const { fixedCode } = await mlRuleTest(rule, '<script defer>const foo = "foo";</script>', undefined, true);
 		expect(fixedCode).toBe('<script>const foo = "foo";</script>');
 	});
 });
 
-test('[no-ineffective-attr-issue-4309-001] an upper-case name is the attribute in HTML', async () => {
+test('[no-ineffective-attr-003] an upper-case name is the attribute in HTML', async () => {
 	const { violations } = await mlRuleTest(rule, '<script DEFER>const foo = "foo";</script>');
 	expect(violations).toStrictEqual([
 		{
@@ -43,7 +41,7 @@ test('[no-ineffective-attr-issue-4309-001] an upper-case name is the attribute i
 	]);
 });
 
-test('[no-ineffective-attr-issue-4309-002] an HTML element in JSX folds the name', async () => {
+test('[no-ineffective-attr-004] an HTML element in JSX folds the name', async () => {
 	const options = { parser: { '.*': '@markuplint/jsx-parser' } };
 	const upper = await mlRuleTest(rule, '<script DEFER></script>', options);
 	expect(upper.violations).toStrictEqual([
@@ -65,4 +63,43 @@ test('[no-ineffective-attr-issue-4309-002] an HTML element in JSX folds the name
 			raw: 'defer',
 		},
 	]);
+});
+
+describe('an attribute that the framework outputs or does not output', () => {
+	const jsx = { parser: { '.*': '@markuplint/jsx-parser' } };
+
+	test('[no-ineffective-attr-005] an attribute that the framework renders is reported', async () => {
+		const { violations } = await mlRuleTest(rule, '<script defer={true}>const foo = "foo";</script>', jsx);
+		expect(violations).toStrictEqual([
+			{
+				severity: 'warning',
+				line: 1,
+				col: 9,
+				message: 'The "defer" attribute is ineffective. It doesn\'t need the attribute',
+				raw: 'defer={true}',
+			},
+		]);
+	});
+
+	test('[no-ineffective-attr-006] code that is not a literal may be rendered, so the attribute is reported', async () => {
+		const { violations } = await mlRuleTest(rule, '<script defer={cond}>const foo = "foo";</script>', jsx);
+		expect(violations).toStrictEqual([
+			{
+				severity: 'warning',
+				line: 1,
+				col: 9,
+				message: 'The "defer" attribute is ineffective. It doesn\'t need the attribute',
+				raw: 'defer={cond}',
+			},
+		]);
+	});
+
+	test('[no-ineffective-attr-007] an attribute that the framework does not output is not an attribute of the element', async () => {
+		const { violations } = await mlRuleTest(
+			rule,
+			'<><script defer={false}>const foo = "foo";</script><script defer={null}>const foo = "foo";</script></>',
+			jsx,
+		);
+		expect(violations).toStrictEqual([]);
+	});
 });

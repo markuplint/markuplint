@@ -21,7 +21,7 @@ describe('hasSizesAuto', () => {
 		['auto\t', false],
 		['100vw, auto', false],
 		['', false],
-	])('[srcset-sizes-constraint-valid-001] hasSizesAuto(%j) is %s', (value, expected) => {
+	])('hasSizesAuto(%j) is %s', (value, expected) => {
 		expect(hasSizesAuto(value)).toBe(expected);
 	});
 });
@@ -51,7 +51,7 @@ describe('isLazyLoading / isAutoSizes / allowsAutoSizes', () => {
 		['<img src="a" loading=" lazy">', false],
 		['<img src="a" loading="eager">', false],
 		['<img src="a">', false],
-	])('[srcset-sizes-constraint-valid-002] isLazyLoading(%s) is %s', (html, expected) => {
+	])('isLazyLoading(%s) is %s', (html, expected) => {
 		expect(run(html, isLazyLoading)).toStrictEqual([expected]);
 	});
 
@@ -60,7 +60,7 @@ describe('isLazyLoading / isAutoSizes / allowsAutoSizes', () => {
 		['<img src="a" sizes="auto, 100vw">', true],
 		['<img src="a" sizes="auto 100vw">', false],
 		['<img src="a">', false],
-	])('[srcset-sizes-constraint-valid-003] isAutoSizes(%s) is %s', (html, expected) => {
+	])('isAutoSizes(%s) is %s', (html, expected) => {
 		expect(run(html, isAutoSizes)).toStrictEqual([expected]);
 	});
 
@@ -69,11 +69,11 @@ describe('isLazyLoading / isAutoSizes / allowsAutoSizes', () => {
 		['<img src="a" loading="lazy" sizes="100vw">', false],
 		['<img src="a" loading="eager" sizes="auto">', false],
 		['<img src="a" sizes="auto">', false],
-	])('[srcset-sizes-constraint-valid-004] allowsAutoSizes(%s) is %s', (html, expected) => {
+	])('allowsAutoSizes(%s) is %s', (html, expected) => {
 		expect(run(html, allowsAutoSizes)).toStrictEqual([expected]);
 	});
 
-	test('[srcset-sizes-constraint-valid-005] spread attributes make loading and sizes unknown, unless the attribute is written', () => {
+	test('spread attributes make loading and sizes unknown, unless the attribute is written', () => {
 		const jsx = { parser: jsxParser };
 		expect(run('<img {...p} />', isLazyLoading, jsx)).toStrictEqual([null]);
 		expect(run('<img {...p} />', isAutoSizes, jsx)).toStrictEqual([null]);

@@ -2,7 +2,7 @@ import { createRule, getComputedRole, ariaSpecs, getSpec } from '@markuplint/ml-
 import { ARIA_RECOMMENDED_VERSION } from '@markuplint/ml-spec';
 
 import { checkingRoleSupportsAriaProp } from '../wai-aria/checkings/role-supports-aria-prop.js';
-import { getAriaAttrs } from '../helpers.js';
+import { getAriaAttrs, isRoleUnknown } from '../helpers.js';
 import meta from './meta.js';
 
 /**
@@ -21,6 +21,8 @@ export default createRule<boolean>({
 			if (elSpec && !elSpec.globalAttrs['#ARIAAttrs']) return;
 			const propAttrs = getAriaAttrs(el);
 			if (propAttrs.length === 0) return;
+			// What the role supports is not known where the role is not known until it is rendered.
+			if (isRoleUnknown(el)) return;
 			const ariaVersion = document.ruleCommonSettings?.ariaVersion ?? ARIA_RECOMMENDED_VERSION;
 			const computed = getComputedRole(document.specs, el, ariaVersion);
 			const { props: propSpecs } = ariaSpecs(document.specs, ariaVersion);

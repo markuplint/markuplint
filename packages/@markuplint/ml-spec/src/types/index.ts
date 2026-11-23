@@ -155,6 +155,19 @@ export type DirectivePattern = {
 	readonly isDynamicValue?: true;
 
 	/**
+	 * Whether this attribute gives the element the attributes of an object that the template does not
+	 * show (`v-bind="obj"` of Vue), as `{...props}` of JSX does. It is the source of `MLAttr#isSpread`,
+	 * which `MLElement#hasSpreadAttr` reads. The name of the attribute is the one that is written: it is
+	 * not the name that `MLAttr` gives a spread attribute of the syntax tree.
+	 *
+	 * What a rule makes of it is that the attributes of the object come at the place where the spread is
+	 * written, and the later of two of a name wins (`isRoleUnknown` of `@markuplint/rules`). That holds for
+	 * the framework that a spec describes (Vue 3), not for one where an explicit attribute always wins
+	 * (Vue 2): do not declare it for such a framework without telling the rules.
+	 */
+	readonly isSpread?: true;
+
+	/**
 	 * The language of the code that the value is written in. A value that is nothing but a literal is
 	 * rendered as the framework renders it (see {@link MLMLSpec.literalValues}), which needs the
 	 * attribute to be the one the pattern names (`potentialName`) and the value to be what the attribute

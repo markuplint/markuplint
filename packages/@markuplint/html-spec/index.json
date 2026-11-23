@@ -50079,7 +50079,7 @@
 				"#GlobalEventAttrs": true,
 				"#HTMLEmbededAndMediaContentAttrs": ["src", "height", "width"],
 				"#HTMLGlobalAttrs": true,
-				"#HTMLLinkAndFetchingAttrs": ["referrerpolicy", "loading", "fetchpriority"]
+				"#HTMLLinkAndFetchingAttrs": ["referrerpolicy", "loading"]
 			},
 			"attributes": {
 				"align": {
@@ -51346,8 +51346,8 @@
 				"switch": {
 					"type": "Boolean",
 					"condition": "[type='checkbox' i]",
-					"nonStandard": true,
-					"experimental": true
+					"experimental": true,
+					"nonStandard": false
 				},
 				"type": {
 					"type": {
@@ -53891,8 +53891,8 @@
 			},
 			"attributes": {
 				"for": {
-					"experimental": true,
-					"nonStandard": true
+					"type": "Any",
+					"experimental": true
 				},
 				"shadowrootclonable": {
 					"type": "Boolean"

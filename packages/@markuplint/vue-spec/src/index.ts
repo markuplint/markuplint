@@ -95,6 +95,24 @@ const spec: ExtendedSpec = {
 				foldedWithoutPrefix: true,
 			},
 		},
+		/**
+		 * `v-bind="obj"` (no argument) gives the element the attributes of an object, any of them (`role`
+		 * too) under a name that the template does not show. It is a spread attribute, as `{...props}` of
+		 * JSX is: `MLAttr#isSpread` is true, so `MLElement#hasSpreadAttr` is, and a rule that reads what an
+		 * attribute is, or whether it is there, takes the attributes of the object into account. The name
+		 * stays `v-bind`, as the catch-all `^v-` below gives it, which this differs from only in `isSpread`.
+		 *
+		 * In Vue 3, which this spec describes, the later of two bindings of a name wins, as in a spread of
+		 * JSX, so what the spread brings is told by where it is written, which `MLElement#attributes` keeps.
+		 *
+		 * @see https://vuejs.org/guide/essentials/template-syntax.html#dynamically-binding-multiple-attributes
+		 */
+		{
+			pattern: '^v-bind$',
+			isDirective: true,
+			isDynamicValue: true,
+			isSpread: true,
+		},
 		// v-bind:attr or :attr (no modifier) → potentialName=attr, isDynamicValue
 		{
 			pattern: '^(?:v-bind:|:)([^.]+)$',

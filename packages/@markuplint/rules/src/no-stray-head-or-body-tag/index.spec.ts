@@ -12,7 +12,7 @@ const MATH_IN_HEAD = `<!doctype html>
 <body></body>
 `;
 
-test('[no-stray-head-or-body-tag-invalid-001] disallowed head content leaves a stray end tag and a duplicate body start tag', async () => {
+test('[no-stray-head-or-body-tag-001] disallowed head content leaves a stray end tag and a duplicate body start tag', async () => {
 	expect((await mlRuleTest(rule, MATH_IN_HEAD)).violations).toStrictEqual([
 		{
 			severity: 'error',
@@ -31,28 +31,28 @@ test('[no-stray-head-or-body-tag-invalid-001] disallowed head content leaves a s
 	]);
 });
 
-test('[no-stray-head-or-body-tag-valid-001] a normal document has no stray tags', async () => {
+test('[no-stray-head-or-body-tag-002] a normal document has no stray tags', async () => {
 	expect(
 		(await mlRuleTest(rule, '<!doctype html><head><title>ok</title></head><body><p>hi</p></body>')).violations,
 	).toStrictEqual([]);
 });
 
-test('[no-stray-head-or-body-tag-issue-4180-001] tag-shaped text inside xmp is not flagged', async () => {
+test('[no-stray-head-or-body-tag-003] tag-shaped text inside xmp is not flagged', async () => {
 	const code = '<!doctype html><head><title>t</title></head><body><xmp></head></xmp></body>';
 	expect((await mlRuleTest(rule, code)).violations).toStrictEqual([]);
 });
 
-test('[no-stray-head-or-body-tag-issue-4180-002] tag-shaped text inside iframe is not flagged', async () => {
+test('[no-stray-head-or-body-tag-004] tag-shaped text inside iframe is not flagged', async () => {
 	const code = '<!doctype html><head><title>t</title></head><body><iframe><body></iframe></body>';
 	expect((await mlRuleTest(rule, code)).violations).toStrictEqual([]);
 });
 
-test('[no-stray-head-or-body-tag-valid-002] tag-shaped text inside script/style/title is not flagged', async () => {
+test('[no-stray-head-or-body-tag-005] tag-shaped text inside script/style/title is not flagged', async () => {
 	const code = `<!doctype html><head><title><body></title><script>const s = '<body>';</script></head><body></body>`;
 	expect((await mlRuleTest(rule, code)).violations).toStrictEqual([]);
 });
 
-test('[no-stray-head-or-body-tag-invalid-002] the messages are translated into Japanese', async () => {
+test('[no-stray-head-or-body-tag-006] the messages are translated into Japanese', async () => {
 	const { violations } = await mlRuleTest(rule, MATH_IN_HEAD, undefined, false, 'ja');
 	expect(violations.map(v => v.message)).toStrictEqual([
 		'迷子の「head」終了タグが検出されました',
@@ -60,7 +60,7 @@ test('[no-stray-head-or-body-tag-invalid-002] the messages are translated into J
 	]);
 });
 
-test('[no-stray-head-or-body-tag-issue-4584-001] the message is in Japanese with locale ja', async () => {
+test('[no-stray-head-or-body-tag-007] the message is in Japanese with locale ja', async () => {
 	const { violations } = await mlRuleTest(rule, '<div>x</div></head>', undefined, false, 'ja');
 
 	expect(violations).toStrictEqual([

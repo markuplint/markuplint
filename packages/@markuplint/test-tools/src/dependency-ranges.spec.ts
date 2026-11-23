@@ -13,8 +13,11 @@ import { describe, test, expect } from 'vitest';
 
 const packagesDir = path.resolve(import.meta.dirname, '../../..');
 
-/** Ships breaking API changes in minor releases. */
-const TILDE = new Set(['typescript']);
+/**
+ * Ships breaking API changes in minor releases, or is used through an API that its semver does not cover:
+ * `@markuplint/html-parser` reads the source with the `Tokenizer` of parse5, an `@internal` export.
+ */
+const TILDE = new Set(['parse5', 'typescript']);
 
 /** Must resolve to the same version as each other. */
 const EXACT = new Set(['@typescript-eslint/types', '@typescript-eslint/typescript-estree']);

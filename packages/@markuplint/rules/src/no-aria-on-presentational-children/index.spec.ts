@@ -6,18 +6,18 @@ import rule from './index.js';
 const ineffective = (role: string) =>
 	`It may be ineffective because it has the "${role}" role as an ancestor that doesn't expose its descendants to the accessibility tree`;
 
-test('[no-aria-on-presentational-children-valid-001] no presentational role ancestor', async () => {
+test('[no-aria-on-presentational-children-001] no presentational role ancestor', async () => {
 	expect(
 		(await mlRuleTest(rule, '<div role="group"><span aria-label="text"></span></div>')).violations,
 	).toStrictEqual([]);
 });
 
-test('[no-aria-on-presentational-children-valid-003] aria-label on a child of a role named from content is not reported', async () => {
+test('[no-aria-on-presentational-children-002] aria-label on a child of a role named from content is not reported', async () => {
 	const { violations } = await mlRuleTest(rule, '<div role="button"><span aria-label="text"></span></div>');
 	expect(violations).toStrictEqual([]);
 });
 
-test('[no-aria-on-presentational-children-invalid-001] aria attr on child of presentational children role', async () => {
+test('[no-aria-on-presentational-children-003] aria attr on child of presentational children role', async () => {
 	const { violations } = await mlRuleTest(
 		rule,
 		'<div role="button"><span aria-describedby="d"></span></div><p id="d">d</p>',
@@ -26,16 +26,16 @@ test('[no-aria-on-presentational-children-invalid-001] aria attr on child of pre
 	expect(violations[0]!.severity).toBe('warning');
 });
 
-test('[no-aria-on-presentational-children-valid-002] no aria on children', async () => {
+test('[no-aria-on-presentational-children-004] no aria on children', async () => {
 	expect((await mlRuleTest(rule, '<div role="img"><span>text</span></div>')).violations).toStrictEqual([]);
 });
 
-test('[no-aria-on-presentational-children-issue-4309-001] an upper-case aria-label on a child of a button is not reported, like the lower-case one', async () => {
+test('[no-aria-on-presentational-children-005] an upper-case aria-label on a child of a button is not reported, like the lower-case one', async () => {
 	const { violations } = await mlRuleTest(rule, '<div role="button"><span ARIA-LABEL="text"></span></div>');
 	expect(violations).toStrictEqual([]);
 });
 
-test('[no-aria-on-presentational-children-issue-4309-002] an upper-case role on a child is reported like the lower-case one', async () => {
+test('[no-aria-on-presentational-children-006] an upper-case role on a child is reported like the lower-case one', async () => {
 	const { violations } = await mlRuleTest(rule, '<div role="button"><span ROLE="img"></span></div>');
 	expect(violations).toStrictEqual([
 		{
@@ -49,14 +49,14 @@ test('[no-aria-on-presentational-children-issue-4309-002] an upper-case role on 
 	]);
 });
 
-test('[no-aria-on-presentational-children-issue-4309-003] JSX: an upper-case aria-label on an HTML child of a button is not reported', async () => {
+test('[no-aria-on-presentational-children-007] JSX: an upper-case aria-label on an HTML child of a button is not reported', async () => {
 	const { violations } = await mlRuleTest(rule, '<div role="button"><span ARIA-LABEL="text" /></div>', {
 		parser: { '.*': '@markuplint/jsx-parser' },
 	});
 	expect(violations).toStrictEqual([]);
 });
 
-test('[no-aria-on-presentational-children-issue-4309-004] JSX: an upper-case aria-* on an svg child is not an ARIA attribute', async () => {
+test('[no-aria-on-presentational-children-008] JSX: an upper-case aria-* on an svg child is not an ARIA attribute', async () => {
 	const parser = { '.*': '@markuplint/jsx-parser' };
 	expect(
 		(await mlRuleTest(rule, '<div role="button"><svg ARIA-LABEL="text" /></div>', { parser })).violations,
@@ -67,7 +67,7 @@ test('[no-aria-on-presentational-children-issue-4309-004] JSX: an upper-case ari
 	expect(violations).toStrictEqual([]);
 });
 
-test('[no-aria-on-presentational-children-issue-4309-005] an upper-case aria-describedby on a child is reported like the lower-case one', async () => {
+test('[no-aria-on-presentational-children-009] an upper-case aria-describedby on a child is reported like the lower-case one', async () => {
 	const { violations } = await mlRuleTest(
 		rule,
 		'<div role="button"><span ARIA-DESCRIBEDBY="d"></span></div><p id="d">d</p>',
@@ -84,7 +84,7 @@ test('[no-aria-on-presentational-children-issue-4309-005] an upper-case aria-des
 	]);
 });
 
-test('[no-aria-on-presentational-children-issue-4309-006] JSX: an upper-case aria-describedby on an HTML child is reported', async () => {
+test('[no-aria-on-presentational-children-010] JSX: an upper-case aria-describedby on an HTML child is reported', async () => {
 	const { violations } = await mlRuleTest(
 		rule,
 		'<><div role="button"><span ARIA-DESCRIBEDBY="d" /></div><p id="d">d</p></>',
@@ -104,7 +104,7 @@ test('[no-aria-on-presentational-children-issue-4309-006] JSX: an upper-case ari
 	]);
 });
 
-test('[no-aria-on-presentational-children-issue-4309-007] JSX: an upper-case aria-describedby on an svg child is not an ARIA attribute', async () => {
+test('[no-aria-on-presentational-children-011] JSX: an upper-case aria-describedby on an svg child is not an ARIA attribute', async () => {
 	const parser = { '.*': '@markuplint/jsx-parser' };
 	expect(
 		(await mlRuleTest(rule, '<div role="button"><svg ARIA-DESCRIBEDBY="d" /></div>', { parser })).violations,
@@ -124,7 +124,7 @@ test('[no-aria-on-presentational-children-issue-4309-007] JSX: an upper-case ari
 	]);
 });
 
-test('[no-aria-on-presentational-children-issue-4408-001] aria-hidden="true" on a decorative svg in a button is not reported', async () => {
+test('[no-aria-on-presentational-children-012] aria-hidden="true" on a decorative svg in a button is not reported', async () => {
 	expect(
 		(
 			await mlRuleTest(
@@ -135,7 +135,7 @@ test('[no-aria-on-presentational-children-issue-4408-001] aria-hidden="true" on 
 	).toStrictEqual([]);
 });
 
-test('[no-aria-on-presentational-children-issue-4408-002] JSX: aria-hidden="true" on a decorative svg in a button is not reported', async () => {
+test('[no-aria-on-presentational-children-013] JSX: aria-hidden="true" on a decorative svg in a button is not reported', async () => {
 	expect(
 		(
 			await mlRuleTest(
@@ -147,7 +147,7 @@ test('[no-aria-on-presentational-children-issue-4408-002] JSX: aria-hidden="true
 	).toStrictEqual([]);
 });
 
-test('[no-aria-on-presentational-children-issue-4408-003] aria-label and aria-labelledby on a child of a button are not reported', async () => {
+test('[no-aria-on-presentational-children-014] aria-label and aria-labelledby on a child of a button are not reported', async () => {
 	expect(
 		(
 			await mlRuleTest(
@@ -158,13 +158,13 @@ test('[no-aria-on-presentational-children-issue-4408-003] aria-label and aria-la
 	).toStrictEqual([]);
 });
 
-test('[no-aria-on-presentational-children-issue-4408-004] aria-hidden="true" on a child of a role whose name comes from content only is not reported', async () => {
+test('[no-aria-on-presentational-children-015] aria-hidden="true" on a child of a role whose name comes from content only is not reported', async () => {
 	expect(
 		(await mlRuleTest(rule, '<div role="tab"><span aria-hidden="true">★</span>Settings</div>')).violations,
 	).toStrictEqual([]);
 });
 
-test('[no-aria-on-presentational-children-issue-4408-005] aria-hidden="true" on a child of a role that is not named from content is reported', async () => {
+test('[no-aria-on-presentational-children-016] aria-hidden="true" on a child of a role that is not named from content is reported', async () => {
 	const { violations } = await mlRuleTest(rule, '<div role="img"><span aria-hidden="true">deco</span></div>');
 	expect(violations).toStrictEqual([
 		{
@@ -177,7 +177,7 @@ test('[no-aria-on-presentational-children-issue-4408-005] aria-hidden="true" on 
 	]);
 });
 
-test('[no-aria-on-presentational-children-issue-4408-006] aria-hidden="true" in a button named by aria-label is reported', async () => {
+test('[no-aria-on-presentational-children-017] aria-hidden="true" in a button named by aria-label is reported', async () => {
 	const { violations } = await mlRuleTest(
 		rule,
 		'<button type="button" aria-label="Save"><svg aria-hidden="true"></svg></button>',
@@ -193,7 +193,7 @@ test('[no-aria-on-presentational-children-issue-4408-006] aria-hidden="true" in 
 	]);
 });
 
-test('[no-aria-on-presentational-children-issue-4408-007] aria-hidden="true" under a child named by aria-label is reported', async () => {
+test('[no-aria-on-presentational-children-018] aria-hidden="true" under a child named by aria-label is reported', async () => {
 	const { violations } = await mlRuleTest(
 		rule,
 		'<button type="button"><span aria-label="Save"><svg aria-hidden="true"></svg></span></button>',
@@ -209,7 +209,7 @@ test('[no-aria-on-presentational-children-issue-4408-007] aria-hidden="true" und
 	]);
 });
 
-test('[no-aria-on-presentational-children-issue-4408-008] aria-label under a hidden child is reported', async () => {
+test('[no-aria-on-presentational-children-019] aria-label under a hidden child is reported', async () => {
 	const { violations } = await mlRuleTest(
 		rule,
 		'<button type="button"><span aria-hidden="true"><span aria-label="Save">x</span></span>Click</button>',
@@ -225,7 +225,7 @@ test('[no-aria-on-presentational-children-issue-4408-008] aria-label under a hid
 	]);
 });
 
-test('[no-aria-on-presentational-children-issue-4408-009] aria-label on an element that is itself hidden is reported', async () => {
+test('[no-aria-on-presentational-children-020] aria-label on an element that is itself hidden is reported', async () => {
 	const { violations } = await mlRuleTest(
 		rule,
 		'<button type="button"><span aria-hidden="true" aria-label="Save">x</span>Click</button>',
@@ -241,7 +241,7 @@ test('[no-aria-on-presentational-children-issue-4408-009] aria-label on an eleme
 	]);
 });
 
-test('[no-aria-on-presentational-children-issue-4408-010] attributes that do not reach the name of a button are still reported', async () => {
+test('[no-aria-on-presentational-children-021] attributes that do not reach the name of a button are still reported', async () => {
 	const { violations } = await mlRuleTest(
 		rule,
 		'<button type="button"><span aria-hidden="false">a</span><span aria-label="">b</span><span aria-describedby="d">c</span><span role="img">d</span></button><span id="d">desc</span>',
@@ -278,7 +278,7 @@ test('[no-aria-on-presentational-children-issue-4408-010] attributes that do not
 	]);
 });
 
-test('[no-aria-on-presentational-children-issue-4408-011] role="none" that drops the title of an svg from the name of a button is not reported', async () => {
+test('[no-aria-on-presentational-children-022] role="none" that drops the title of an svg from the name of a button is not reported', async () => {
 	expect(
 		(
 			await mlRuleTest(
@@ -289,7 +289,7 @@ test('[no-aria-on-presentational-children-issue-4408-011] role="none" that drops
 	).toStrictEqual([]);
 });
 
-test('[no-aria-on-presentational-children-issue-4408-012] role="none" that does not change the name of a button is reported', async () => {
+test('[no-aria-on-presentational-children-023] role="none" that does not change the name of a button is reported', async () => {
 	const { violations } = await mlRuleTest(
 		rule,
 		'<div role="button"><img src="s.svg" alt="" role="none"><span role="none">Save</span><img src="o.svg" alt="Open" role="none" tabindex="0"></div>',
@@ -319,7 +319,7 @@ test('[no-aria-on-presentational-children-issue-4408-012] role="none" that does 
 	]);
 });
 
-test('[no-aria-on-presentational-children-issue-4408-013] role="none" that drops the alt of an image from the name of a button is not reported, though ARIA in HTML does not permit it', async () => {
+test('[no-aria-on-presentational-children-024] role="none" that drops the alt of an image from the name of a button is not reported, though ARIA in HTML does not permit it', async () => {
 	expect(
 		(
 			await mlRuleTest(
@@ -330,7 +330,7 @@ test('[no-aria-on-presentational-children-issue-4408-013] role="none" that drops
 	).toStrictEqual([]);
 });
 
-test('[no-aria-on-presentational-children-issue-4408-014] a component pretending a decorative svg in a button is not reported', async () => {
+test('[no-aria-on-presentational-children-025] a component pretending a decorative svg in a button is not reported', async () => {
 	const pretend = (name: string, value: string) => ({
 		parser: { '.*': '@markuplint/jsx-parser' },
 		pretenders: [{ selector: 'Icon', as: { element: 'svg', attrs: [{ name, value }] } }],
@@ -357,7 +357,7 @@ test('[no-aria-on-presentational-children-issue-4408-014] a component pretending
 	]);
 });
 
-test('[no-aria-on-presentational-children-issue-4408-015] aria-label under an element named by its own host language label is reported', async () => {
+test('[no-aria-on-presentational-children-026] aria-label under an element named by its own host language label is reported', async () => {
 	const { violations } = await mlRuleTest(
 		rule,
 		'<div role="button"><fieldset title="t"><span aria-label="x">y</span></fieldset></div>',
@@ -367,7 +367,7 @@ test('[no-aria-on-presentational-children-issue-4408-015] aria-label under an el
 	]);
 });
 
-test('[no-aria-on-presentational-children-issue-4408-016] aria-label in a hidden button is reported', async () => {
+test('[no-aria-on-presentational-children-027] aria-label in a hidden button is reported', async () => {
 	const { violations } = await mlRuleTest(
 		rule,
 		'<div role="button" aria-hidden="true"><span aria-label="x"></span></div>',
@@ -377,7 +377,7 @@ test('[no-aria-on-presentational-children-issue-4408-016] aria-label in a hidden
 	]);
 });
 
-test('[no-aria-on-presentational-children-issue-4408-017] aria-label on an embedded control is reported', async () => {
+test('[no-aria-on-presentational-children-028] aria-label on an embedded control is reported', async () => {
 	const { violations } = await mlRuleTest(
 		rule,
 		'<div role="checkbox" aria-checked="false"><input type="text" aria-label="x" value="v"></div>',
@@ -393,7 +393,7 @@ test('[no-aria-on-presentational-children-issue-4408-017] aria-label on an embed
 	]);
 });
 
-test('[no-aria-on-presentational-children-issue-4408-018] aria-labelledby that refers to no element is reported', async () => {
+test('[no-aria-on-presentational-children-029] aria-labelledby that refers to no element is reported', async () => {
 	const { violations } = await mlRuleTest(
 		rule,
 		'<div role="button"><span aria-labelledby="missing">Save</span></div>',
@@ -409,7 +409,7 @@ test('[no-aria-on-presentational-children-issue-4408-018] aria-labelledby that r
 	]);
 });
 
-test('[no-aria-on-presentational-children-issue-4489-001] aria-labelledby that refers to an element of the same template is not reported', async () => {
+test('[no-aria-on-presentational-children-030] aria-labelledby that refers to an element of the same template is not reported', async () => {
 	const { violations } = await mlRuleTest(
 		rule,
 		'<template><div role="button"><span aria-labelledby="file">y</span></div><span id="file">report.pdf</span></template>',
@@ -417,7 +417,7 @@ test('[no-aria-on-presentational-children-issue-4489-001] aria-labelledby that r
 	expect(violations).toStrictEqual([]);
 });
 
-test('[no-aria-on-presentational-children-issue-4489-002] aria-labelledby that refers to an element of another tree is reported', async () => {
+test('[no-aria-on-presentational-children-031] aria-labelledby that refers to an element of another tree is reported', async () => {
 	const { violations } = await mlRuleTest(
 		rule,
 		'<template><div role="button"><span aria-labelledby="file">y</span></div></template><span id="file">report.pdf</span>',
@@ -433,7 +433,7 @@ test('[no-aria-on-presentational-children-issue-4489-002] aria-labelledby that r
 	]);
 });
 
-test('[no-aria-on-presentational-children-issue-4408-019] aria-hidden="true" on an element hidden by the hidden attribute is reported', async () => {
+test('[no-aria-on-presentational-children-032] aria-hidden="true" on an element hidden by the hidden attribute is reported', async () => {
 	const { violations } = await mlRuleTest(
 		rule,
 		'<div role="button"><span hidden aria-hidden="true">x</span>Save</div>',
@@ -449,7 +449,7 @@ test('[no-aria-on-presentational-children-issue-4408-019] aria-hidden="true" on 
 	]);
 });
 
-test('[no-aria-on-presentational-children-issue-4408-020] aria-label inside a component that does not render it into the name is reported', async () => {
+test('[no-aria-on-presentational-children-033] aria-label inside a component that does not render it into the name is reported', async () => {
 	const parser = { '.*': '@markuplint/jsx-parser' };
 	const named = await mlRuleTest(rule, '<button type="button"><Wrap><span aria-label="x">y</span></Wrap></button>', {
 		parser,
@@ -473,7 +473,7 @@ test('[no-aria-on-presentational-children-issue-4408-020] aria-label inside a co
 	expect([named.violations, childless.violations]).toStrictEqual([[violation], [violation]]);
 });
 
-test('[no-aria-on-presentational-children-issue-4408-021] aria-hidden="true" in a role named from author that aria-labelledby refers to is not reported', async () => {
+test('[no-aria-on-presentational-children-034] aria-hidden="true" in a role named from author that aria-labelledby refers to is not reported', async () => {
 	expect(
 		(
 			await mlRuleTest(
@@ -484,7 +484,7 @@ test('[no-aria-on-presentational-children-issue-4408-021] aria-hidden="true" in 
 	).toStrictEqual([]);
 });
 
-test('[no-aria-on-presentational-children-issue-4408-022] aria-label under a hidden element of a node aria-labelledby refers to is reported', async () => {
+test('[no-aria-on-presentational-children-035] aria-label under a hidden element of a node aria-labelledby refers to is reported', async () => {
 	const { violations } = await mlRuleTest(
 		rule,
 		'<div role="img" id="pic"><span aria-hidden="true"><span aria-label="x">y</span></span>Chart</div><figure aria-labelledby="pic"></figure>',
@@ -494,7 +494,7 @@ test('[no-aria-on-presentational-children-issue-4408-022] aria-label under a hid
 	]);
 });
 
-test('[no-aria-on-presentational-children-issue-4408-023] aria-labelledby on an embedded control is not reported', async () => {
+test('[no-aria-on-presentational-children-036] aria-labelledby on an embedded control is not reported', async () => {
 	expect(
 		(
 			await mlRuleTest(
@@ -505,7 +505,7 @@ test('[no-aria-on-presentational-children-issue-4408-023] aria-labelledby on an 
 	).toStrictEqual([]);
 });
 
-test('[no-aria-on-presentational-children-issue-4408-024] aria-hidden="true" that an outer button reads through an inner img is not reported', async () => {
+test('[no-aria-on-presentational-children-037] aria-hidden="true" that an outer button reads through an inner img is not reported', async () => {
 	const { violations } = await mlRuleTest(
 		rule,
 		'<div role="button"><div role="img"><span aria-hidden="true">x</span>Y</div></div>',
@@ -516,7 +516,7 @@ test('[no-aria-on-presentational-children-issue-4408-024] aria-hidden="true" tha
 	]);
 });
 
-test('[no-aria-on-presentational-children-issue-4408-025] aria-hidden="true" that the name of a labeled control reads is not reported', async () => {
+test('[no-aria-on-presentational-children-038] aria-hidden="true" that the name of a labeled control reads is not reported', async () => {
 	expect(
 		(
 			await mlRuleTest(
@@ -527,7 +527,7 @@ test('[no-aria-on-presentational-children-issue-4408-025] aria-hidden="true" tha
 	).toStrictEqual([]);
 });
 
-test('[no-aria-on-presentational-children-issue-4408-026] aria-label that an aria-labelledby of the same element overrides is reported', async () => {
+test('[no-aria-on-presentational-children-039] aria-label that an aria-labelledby of the same element overrides is reported', async () => {
 	const { violations } = await mlRuleTest(
 		rule,
 		'<div role="button"><span aria-labelledby="x" aria-label="y">z</span></div><p id="x">x</p>',
@@ -537,7 +537,7 @@ test('[no-aria-on-presentational-children-issue-4408-026] aria-label that an ari
 	]);
 });
 
-test('[no-aria-on-presentational-children-issue-4408-027] aria-labelledby that refers only to elements without text is reported', async () => {
+test('[no-aria-on-presentational-children-040] aria-labelledby that refers only to elements without text is reported', async () => {
 	const { violations } = await mlRuleTest(
 		rule,
 		'<div role="button"><span aria-labelledby="e">Save</span></div><span id="e"></span>',
@@ -547,7 +547,7 @@ test('[no-aria-on-presentational-children-issue-4408-027] aria-labelledby that r
 	]);
 });
 
-test('[no-aria-on-presentational-children-issue-4408-028] only the attribute that takes no effect is reported', async () => {
+test('[no-aria-on-presentational-children-041] only the attribute that takes no effect is reported', async () => {
 	const { violations } = await mlRuleTest(
 		rule,
 		'<div role="button"><span aria-hidden="true" aria-describedby="d">x</span>Save</div><p id="d">d</p>',
@@ -557,7 +557,7 @@ test('[no-aria-on-presentational-children-issue-4408-028] only the attribute tha
 	]);
 });
 
-test('[no-aria-on-presentational-children-issue-4408-029] aria-hidden="true" in a hidden node that aria-labelledby refers to is reported', async () => {
+test('[no-aria-on-presentational-children-042] aria-hidden="true" in a hidden node that aria-labelledby refers to is reported', async () => {
 	const { violations } = await mlRuleTest(
 		rule,
 		'<div role="img" id="pic" hidden><span aria-hidden="true">x</span>Chart</div><figure aria-labelledby="pic"></figure>',
@@ -567,7 +567,7 @@ test('[no-aria-on-presentational-children-issue-4408-029] aria-hidden="true" in 
 	]);
 });
 
-test('[no-aria-on-presentational-children-issue-4408-030] aria-hidden="true" on an embedded control is not reported', async () => {
+test('[no-aria-on-presentational-children-043] aria-hidden="true" on an embedded control is not reported', async () => {
 	expect(
 		(
 			await mlRuleTest(
@@ -578,7 +578,7 @@ test('[no-aria-on-presentational-children-issue-4408-030] aria-hidden="true" on 
 	).toStrictEqual([]);
 });
 
-test('[no-aria-on-presentational-children-issue-4408-031] aria-hidden="true" in a role named from author that aria-describedby refers to is not reported', async () => {
+test('[no-aria-on-presentational-children-044] aria-hidden="true" in a role named from author that aria-describedby refers to is not reported', async () => {
 	expect(
 		(
 			await mlRuleTest(
@@ -589,13 +589,13 @@ test('[no-aria-on-presentational-children-issue-4408-031] aria-hidden="true" in 
 	).toStrictEqual([]);
 });
 
-test('[no-aria-on-presentational-children-issue-4408-032] aria-label that a link outside the img reads is not reported', async () => {
+test('[no-aria-on-presentational-children-045] aria-label that a link outside the img reads is not reported', async () => {
 	expect(
 		(await mlRuleTest(rule, '<a href="#"><span role="img"><span aria-label="Home"></span></span></a>')).violations,
 	).toStrictEqual([]);
 });
 
-test('[no-aria-on-presentational-children-issue-4408-033] a role that makes a child of a button a range control, and its value, are not reported', async () => {
+test('[no-aria-on-presentational-children-046] a role that makes a child of a button a range control, and its value, are not reported', async () => {
 	const { violations } = await mlRuleTest(
 		rule,
 		'<button><span role="slider" aria-valuenow="5" aria-valuemin="0" aria-valuemax="10">volume</span></button>',
@@ -607,14 +607,14 @@ test('[no-aria-on-presentational-children-issue-4408-033] a role that makes a ch
 	]);
 });
 
-test('[no-aria-on-presentational-children-issue-4408-034] aria-label that an aria-labelledby referring to its own element reads is not reported', async () => {
+test('[no-aria-on-presentational-children-047] aria-label that an aria-labelledby referring to its own element reads is not reported', async () => {
 	expect(
 		(await mlRuleTest(rule, '<button><span id="s" aria-labelledby="s" aria-label="Close"></span></button>'))
 			.violations,
 	).toStrictEqual([]);
 });
 
-test('[no-aria-on-presentational-children-issue-4408-035] aria-hidden="true" that a control nested in the label reads is not reported', async () => {
+test('[no-aria-on-presentational-children-048] aria-hidden="true" that a control nested in the label reads is not reported', async () => {
 	expect(
 		(
 			await mlRuleTest(
@@ -626,7 +626,7 @@ test('[no-aria-on-presentational-children-issue-4408-035] aria-hidden="true" tha
 });
 
 describe('the ancestor is looked for in the tree of the element', () => {
-	test('[no-aria-on-presentational-children-issue-4506-001] a presentational ancestor outside of the content of a template is not an ancestor', async () => {
+	test('[no-aria-on-presentational-children-049] a presentational ancestor outside of the content of a template is not an ancestor', async () => {
 		const { violations } = await mlRuleTest(
 			rule,
 			'<div role="button"><template><span aria-describedby="d"></span></template></div><p id="d">d</p>',
@@ -634,7 +634,7 @@ describe('the ancestor is looked for in the tree of the element', () => {
 		expect(violations).toStrictEqual([]);
 	});
 
-	test('[no-aria-on-presentational-children-issue-4506-002] a presentational ancestor in the content of a template is an ancestor', async () => {
+	test('[no-aria-on-presentational-children-050] a presentational ancestor in the content of a template is an ancestor', async () => {
 		const { violations } = await mlRuleTest(
 			rule,
 			'<template><div role="button"><span aria-describedby="d"></span></div><p id="d">d</p></template>',
@@ -650,7 +650,7 @@ describe('the ancestor is looked for in the tree of the element', () => {
 		]);
 	});
 
-	test('[no-aria-on-presentational-children-issue-4506-003] the host of a declarative shadow root is an ancestor', async () => {
+	test('[no-aria-on-presentational-children-051] the host of a declarative shadow root is an ancestor', async () => {
 		const { violations } = await mlRuleTest(
 			rule,
 			'<div role="button"><template shadowrootmode="open"><span aria-describedby="d"></span></template></div>',
@@ -666,7 +666,7 @@ describe('the ancestor is looked for in the tree of the element', () => {
 		]);
 	});
 
-	test('[no-aria-on-presentational-children-issue-4506-004] a name reader outside of the content of a template does not read it', async () => {
+	test('[no-aria-on-presentational-children-052] a name reader outside of the content of a template does not read it', async () => {
 		const { violations } = await mlRuleTest(
 			rule,
 			'<a href="#"><template><div role="img"><span aria-label="x">y</span></div></template></a>',
@@ -682,11 +682,92 @@ describe('the ancestor is looked for in the tree of the element', () => {
 		]);
 	});
 
-	test('[no-aria-on-presentational-children-issue-4506-005] a name reader in the content of a template reads it', async () => {
+	test('[no-aria-on-presentational-children-053] a name reader in the content of a template reads it', async () => {
 		const { violations } = await mlRuleTest(
 			rule,
 			'<template><a href="#"><div role="img"><span aria-label="x">y</span></div></a></template>',
 		);
 		expect(violations).toStrictEqual([]);
 	});
+});
+
+test('[no-aria-on-presentational-children-054] JSX: an ancestor whose role is not known until it is rendered may not have presentational children', async () => {
+	const parser = { '.*': '@markuplint/jsx-parser' };
+	const source = [
+		'<>',
+		'<button role={props.role}><span role="img" aria-label="x">a</span></button>',
+		'<button {...props}><span role="img" aria-label="y">b</span></button>',
+		'</>',
+	].join('\n');
+	expect((await mlRuleTest(rule, source, { parser })).violations).toStrictEqual([]);
+
+	// Control: the ancestor whose role the markup tells has presentational children
+	const { violations } = await mlRuleTest(rule, '<button><span role="img" aria-label="x">a</span></button>', {
+		parser,
+	});
+	expect(violations).toStrictEqual([
+		{
+			severity: 'warning',
+			line: 1,
+			col: 15,
+			message: ineffective('button'),
+			raw: 'role="img"',
+		},
+	]);
+});
+
+test('[no-aria-on-presentational-children-055] JSX: the search goes on above an ancestor whose role is not known', async () => {
+	const { violations } = await mlRuleTest(
+		rule,
+		'<button><div role={props.role}><span role="img" aria-label="x">a</span></div></button>',
+		{ parser: { '.*': '@markuplint/jsx-parser' } },
+	);
+	// The known `button` above the unknown ancestor leaves out both of its descendants
+	expect(violations).toStrictEqual([
+		{
+			severity: 'warning',
+			line: 1,
+			col: 14,
+			message: ineffective('button'),
+			raw: 'role={props.role}',
+		},
+		{
+			severity: 'warning',
+			line: 1,
+			col: 38,
+			message: ineffective('button'),
+			raw: 'role="img"',
+		},
+	]);
+});
+
+test('[no-aria-on-presentational-children-056] JSX: a spread attribute after the role attribute of the ancestor may override the role; one before it may not', async () => {
+	const parser = { '.*': '@markuplint/jsx-parser' };
+	expect(
+		(
+			await mlRuleTest(
+				rule,
+				'<button role="button" {...props}><span role="img" aria-label="x">a</span></button>',
+				{
+					parser,
+				},
+			)
+		).violations,
+	).toStrictEqual([]);
+
+	// Control: the role is the one written
+	const { violations } = await mlRuleTest(
+		rule,
+		'<button {...props} role="button"><span role="img" aria-label="x">a</span></button>',
+		{ parser },
+	);
+	expect(violations).toStrictEqual([
+		{
+			severity: 'warning',
+			line: 1,
+			col: 40,
+			message: ineffective('button'),
+			raw: 'role="img"',
+		},
+	]);
 });

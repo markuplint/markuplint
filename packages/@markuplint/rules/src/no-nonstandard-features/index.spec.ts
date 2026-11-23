@@ -6,7 +6,7 @@ import { describe, test, expect } from 'vitest';
 import rule from './index.js';
 
 describe('non-standard elements/attributes', () => {
-	test('[no-nonstandard-features-invalid-001] warns about non-standard attributes', async () => {
+	test('[no-nonstandard-features-001] warns about non-standard attributes', async () => {
 		// "moz-opaque" on canvas is nonStandard in spec data
 		const { violations } = await mlRuleTest(rule, '<canvas moz-opaque></canvas>', {
 			rule: true,
@@ -18,7 +18,7 @@ describe('non-standard elements/attributes', () => {
 });
 
 describe('ignoreFeatures', () => {
-	test('[no-nonstandard-features-valid-001] ignore attribute by pattern', async () => {
+	test('[no-nonstandard-features-002] ignore attribute by pattern', async () => {
 		const { violations } = await mlRuleTest(rule, '<canvas moz-opaque></canvas>', {
 			rule: {
 				options: {
@@ -31,7 +31,7 @@ describe('ignoreFeatures', () => {
 });
 
 describe('default severity', () => {
-	test('[no-nonstandard-features-invalid-002] severity is warning by default', async () => {
+	test('[no-nonstandard-features-003] severity is warning by default', async () => {
 		const { violations } = await mlRuleTest(rule, '<canvas moz-opaque></canvas>', {
 			rule: true,
 		});
@@ -43,7 +43,7 @@ describe('default severity', () => {
 describe('attribute name case', () => {
 	const message = 'The "MOZ-OPAQUE" attribute is non-standard';
 
-	test('[no-nonstandard-features-issue-4309-001] HTML: an attribute written in upper case is the non-standard one', async () => {
+	test('[no-nonstandard-features-004] HTML: an attribute written in upper case is the non-standard one', async () => {
 		const { violations } = await mlRuleTest(rule, '<canvas MOZ-OPAQUE></canvas>', { rule: true });
 		expect(violations).toStrictEqual([
 			{
@@ -56,7 +56,7 @@ describe('attribute name case', () => {
 		]);
 	});
 
-	test('[no-nonstandard-features-issue-4309-002] HTML: ignoreFeatures keys match in any spelling', async () => {
+	test('[no-nonstandard-features-005] HTML: ignoreFeatures keys match in any spelling', async () => {
 		const attrUpper = await mlRuleTest(rule, '<canvas moz-opaque></canvas>', {
 			rule: { options: { ignoreFeatures: ['canvas[MOZ-OPAQUE]'] } },
 		});
@@ -83,7 +83,7 @@ describe('attribute name case', () => {
 		]);
 	});
 
-	test('[no-nonstandard-features-issue-4309-003] HTML: the ignoreFeatures of an element replaces that of the rule, each element keeping its own', async () => {
+	test('[no-nonstandard-features-006] HTML: the ignoreFeatures of an element replaces that of the rule, each element keeping its own', async () => {
 		const { violations } = await mlRuleTest(
 			rule,
 			'<canvas class="a" MOZ-OPAQUE></canvas><canvas class="b" MOZ-OPAQUE></canvas><canvas class="c" MOZ-OPAQUE></canvas>',
@@ -112,7 +112,7 @@ describe('attribute name case', () => {
 		]);
 	});
 
-	test('[no-nonstandard-features-issue-4309-004] Svelte: the element part is exact and the attribute part folds', async () => {
+	test('[no-nonstandard-features-007] Svelte: the element part is exact and the attribute part folds', async () => {
 		const parser = { '.*': '@markuplint/svelte-parser' };
 		const elementUpper = await mlRuleTest(rule, '<canvas MOZ-OPAQUE></canvas>', {
 			parser,
@@ -134,7 +134,7 @@ describe('attribute name case', () => {
 		expect(attrUpper.violations).toStrictEqual([]);
 	});
 
-	test('[no-nonstandard-features-issue-4309-005] JSX: an HTML element folds the attribute names', async () => {
+	test('[no-nonstandard-features-008] JSX: an HTML element folds the attribute names', async () => {
 		const parser = { '.*': '@markuplint/jsx-parser' };
 		const reported = await mlRuleTest(rule, '<canvas MOZ-OPAQUE />', { parser, rule: true });
 		expect(reported.violations).toStrictEqual([
@@ -158,7 +158,7 @@ describe('SVG and MathML', () => {
 	const svgImage = '<svg><image href="a.png" fetchpriority="high"></image></svg>';
 	const mathTable = '<math><mtable columnalign="left"><mtr><mtd></mtd></mtr></mtable></math>';
 
-	test('[no-nonstandard-features-issue-4701-001] SVG: an attribute that the data flags non-standard is reported', async () => {
+	test('[no-nonstandard-features-009] SVG: an attribute that the data flags non-standard is reported', async () => {
 		const { violations } = await mlRuleTest(rule, svgImage, { rule: true });
 		expect(violations).toStrictEqual([
 			{
@@ -171,7 +171,7 @@ describe('SVG and MathML', () => {
 		]);
 	});
 
-	test('[no-nonstandard-features-issue-4701-002] MathML: an attribute that the data flags non-standard is reported', async () => {
+	test('[no-nonstandard-features-010] MathML: an attribute that the data flags non-standard is reported', async () => {
 		const { violations } = await mlRuleTest(rule, mathTable, { rule: true });
 		expect(violations).toStrictEqual([
 			{
@@ -184,7 +184,7 @@ describe('SVG and MathML', () => {
 		]);
 	});
 
-	test('[no-nonstandard-features-issue-4701-003] MathML: an element that the data flags non-standard is reported', async () => {
+	test('[no-nonstandard-features-011] MathML: an element that the data flags non-standard is reported', async () => {
 		const { violations } = await mlRuleTest(rule, '<math><mfenced></mfenced></math>', { rule: true });
 		expect(violations).toStrictEqual([
 			{
@@ -197,14 +197,14 @@ describe('SVG and MathML', () => {
 		]);
 	});
 
-	test('[no-nonstandard-features-issue-4701-004] a standard feature of SVG and MathML is not reported', async () => {
+	test('[no-nonstandard-features-012] a standard feature of SVG and MathML is not reported', async () => {
 		const svg = await mlRuleTest(rule, '<svg><image href="a.png" width="10"></image></svg>', { rule: true });
 		expect(svg.violations).toStrictEqual([]);
 		const math = await mlRuleTest(rule, '<math><mi mathvariant="normal">x</mi></math>', { rule: true });
 		expect(math.violations).toStrictEqual([]);
 	});
 
-	test('[no-nonstandard-features-issue-4701-005] SVG: ignoreFeatures names the attribute by the local name of the element', async () => {
+	test('[no-nonstandard-features-013] SVG: ignoreFeatures names the attribute by the local name of the element', async () => {
 		const ignored = await mlRuleTest(rule, svgImage, {
 			rule: { options: { ignoreFeatures: ['image[fetchpriority]'] } },
 		});
@@ -215,14 +215,14 @@ describe('SVG and MathML', () => {
 		expect(other.violations.map(v => v.raw)).toStrictEqual(['fetchpriority']);
 	});
 
-	test('[no-nonstandard-features-issue-4701-006] MathML: ignoreFeatures names the element by its local name', async () => {
+	test('[no-nonstandard-features-014] MathML: ignoreFeatures names the element by its local name', async () => {
 		const ignored = await mlRuleTest(rule, '<math><mfenced></mfenced></math>', {
 			rule: { options: { ignoreFeatures: ['mfenced'] } },
 		});
 		expect(ignored.violations).toStrictEqual([]);
 	});
 
-	test('[no-nonstandard-features-issue-4701-007] MathML: ignoreFeatures names the attribute by the local name of the element', async () => {
+	test('[no-nonstandard-features-015] MathML: ignoreFeatures names the attribute by the local name of the element', async () => {
 		const ignored = await mlRuleTest(rule, mathTable, {
 			rule: { options: { ignoreFeatures: ['mtable[columnalign]'] } },
 		});
@@ -233,7 +233,7 @@ describe('SVG and MathML', () => {
 		expect(other.violations.map(v => v.raw)).toStrictEqual(['columnalign']);
 	});
 
-	test('[no-nonstandard-features-issue-4701-008] a name of ignoreFeatures covers the element of that name in every namespace', async () => {
+	test('[no-nonstandard-features-016] a name of ignoreFeatures covers the element of that name in every namespace', async () => {
 		// `interestfor` is non-standard on both the HTML `a` and the SVG `a`.
 		const html = '<a href="#x" interestfor="y"></a><svg><a href="#x" interestfor="y"></a></svg>';
 		const reported = await mlRuleTest(rule, html, { rule: true });
@@ -259,7 +259,7 @@ describe('SVG and MathML', () => {
 		expect(ignored.violations).toStrictEqual([]);
 	});
 
-	test('[no-nonstandard-features-issue-4701-009] ignoreFeatures of a nodeRule applies to an SVG or MathML element it selects', async () => {
+	test('[no-nonstandard-features-017] ignoreFeatures of a nodeRule applies to an SVG or MathML element it selects', async () => {
 		const { violations } = await mlRuleTest(
 			rule,
 			'<math><mfenced class="a"></mfenced><mfenced class="b"></mfenced></math>',
@@ -279,7 +279,7 @@ describe('SVG and MathML', () => {
 		]);
 	});
 
-	test('[no-nonstandard-features-issue-4701-010] an authored element in MathML is reported when a pretender makes it stand for a flagged element, and not otherwise', async () => {
+	test('[no-nonstandard-features-018] an authored element in MathML is reported when a pretender makes it stand for a flagged element, and not otherwise', async () => {
 		const parser = { '.*': '@markuplint/jsx-parser' };
 		const pretended = await mlRuleTest(rule, '<math><Formula /></math>', {
 			parser,
@@ -304,7 +304,7 @@ describe('SVG and MathML', () => {
 // so they pass a spec of their own.
 const specs = { '.*': fileURLToPath(new URL('flagged-fixture.mjs', import.meta.url)) };
 
-test('[no-nonstandard-features-issue-4701-011] an SVG element that the spec flags non-standard is reported', async () => {
+test('[no-nonstandard-features-019] an SVG element that the spec flags non-standard is reported', async () => {
 	const { violations } = await mlRuleTest(rule, '<svg><circle></circle></svg>', { rule: true, specs });
 	expect(violations).toStrictEqual([
 		{
@@ -317,7 +317,7 @@ test('[no-nonstandard-features-issue-4701-011] an SVG element that the spec flag
 	]);
 });
 
-test('[no-nonstandard-features-invalid-003] an attribute that BCD has and no specification defines (BCD-derived: bumping BCD can change this)', async () => {
+test('[no-nonstandard-features-020] an attribute that BCD has and no specification defines (BCD-derived: bumping BCD can change this)', async () => {
 	const { violations } = await mlRuleTest(rule, '<a href="/" hreftranslate="true">A</a>');
 	expect(violations).toStrictEqual([
 		{
@@ -330,7 +330,7 @@ test('[no-nonstandard-features-invalid-003] an attribute that BCD has and no spe
 	]);
 });
 
-test('[no-nonstandard-features-invalid-004] the attributes that BCD has on SVG elements and no specification defines for them', async () => {
+test('[no-nonstandard-features-021] the attributes that BCD has on SVG elements and no specification defines for them', async () => {
 	// BCD-derived: SVG 2 gives `defs` and `pattern` no conditional processing attributes
 	const svg =
 		'<svg xmlns="http://www.w3.org/2000/svg"><defs systemLanguage="ja"></defs><pattern systemLanguage="ja"></pattern></svg>';
@@ -338,7 +338,7 @@ test('[no-nonstandard-features-invalid-004] the attributes that BCD has on SVG e
 	expect(violations.map(v => v.raw)).toStrictEqual(['systemLanguage', 'systemLanguage']);
 });
 
-test('[no-nonstandard-features-invalid-005] SVG: `async` and `defer` of `script` that no specification defines for it (SVG 2 lists `type`, `href` and `crossorigin`; BCD cites the HTML definition)', async () => {
+test('[no-nonstandard-features-022] SVG: `async` and `defer` of `script` that no specification defines for it (SVG 2 lists `type`, `href` and `crossorigin`; BCD cites the HTML definition)', async () => {
 	const { violations } = await mlRuleTest(rule, '<svg><script async defer href="a.js"></script></svg>');
 	expect(violations).toStrictEqual([
 		{
@@ -358,7 +358,15 @@ test('[no-nonstandard-features-invalid-005] SVG: `async` and `defer` of `script`
 	]);
 });
 
-test('[no-nonstandard-features-valid-002] HTML: `async` and `defer` of `script` are standard', async () => {
+test('[no-nonstandard-features-023] HTML: `async` and `defer` of `script` are standard', async () => {
 	const { violations } = await mlRuleTest(rule, '<script async defer src="a.js"></script>');
+	expect(violations).toStrictEqual([]);
+});
+
+test('[no-nonstandard-features-024] HTML: `switch` of `input` and `for` of `template` are standard', async () => {
+	// https://html.spec.whatwg.org/multipage/input.html#attr-input-switch
+	// https://html.spec.whatwg.org/multipage/scripting.html#attr-template-for
+	const html = '<input type="checkbox" switch><template for="a"></template>';
+	const { violations } = await mlRuleTest(rule, html);
 	expect(violations).toStrictEqual([]);
 });

@@ -3,7 +3,7 @@ import { test, expect } from 'vitest';
 
 import rule from './index.js';
 
-test('[input-list-references-datalist-valid-001] list attribute references actual datalist element', async () => {
+test('[input-list-references-datalist-001] list attribute references actual datalist element', async () => {
 	const { violations } = await mlRuleTest(
 		rule,
 		'<input type="text" list="colors"><datalist id="colors"><option value="Red"></option></datalist>',
@@ -11,23 +11,23 @@ test('[input-list-references-datalist-valid-001] list attribute references actua
 	expect(violations).toStrictEqual([]);
 });
 
-test('[input-list-references-datalist-valid-002] no list attribute on input', async () => {
+test('[input-list-references-datalist-002] no list attribute on input', async () => {
 	const { violations } = await mlRuleTest(rule, '<input type="text">');
 	expect(violations).toStrictEqual([]);
 });
 
-test('[input-list-references-datalist-valid-003] list attribute on non-input element ignored', async () => {
+test('[input-list-references-datalist-003] list attribute on non-input element ignored', async () => {
 	// `<div list="x">` is not a valid target for this rule; `no-unknown-attr` handles it.
 	const { violations } = await mlRuleTest(rule, '<div list="anything">x</div>');
 	expect(violations).toStrictEqual([]);
 });
 
-test('[input-list-references-datalist-valid-004] missing target id is left to no-refer-to-non-existent-id', async () => {
+test('[input-list-references-datalist-004] missing target id is left to no-refer-to-non-existent-id', async () => {
 	const { violations } = await mlRuleTest(rule, '<input type="text" list="missing">');
 	expect(violations).toStrictEqual([]);
 });
 
-test('[input-list-references-datalist-invalid-001] list attribute references non-datalist element (following div)', async () => {
+test('[input-list-references-datalist-005] list attribute references non-datalist element (following div)', async () => {
 	// Mirrors tests/external/validator/tests/html/elements/input/list-not-datalist-novalid.html
 	const { violations } = await mlRuleTest(
 		rule,
@@ -44,7 +44,7 @@ test('[input-list-references-datalist-invalid-001] list attribute references non
 	]);
 });
 
-test('[input-list-references-datalist-invalid-002] list attribute references non-datalist element (preceding div)', async () => {
+test('[input-list-references-datalist-006] list attribute references non-datalist element (preceding div)', async () => {
 	// Mirrors tests/external/validator/tests/html/elements/input/list-references-nondatalist-novalid.html
 	const { violations } = await mlRuleTest(
 		rule,
@@ -61,7 +61,7 @@ test('[input-list-references-datalist-invalid-002] list attribute references non
 	]);
 });
 
-test('[input-list-references-datalist-invalid-003] list attribute references span element', async () => {
+test('[input-list-references-datalist-007] list attribute references span element', async () => {
 	const { violations } = await mlRuleTest(
 		rule,
 		'<input type="text" list="target"><span id="target">not datalist</span>',
@@ -77,7 +77,7 @@ test('[input-list-references-datalist-invalid-003] list attribute references spa
 	]);
 });
 
-test('[input-list-references-datalist-invalid-004] fires independently for each input sharing a non-datalist target', async () => {
+test('[input-list-references-datalist-008] fires independently for each input sharing a non-datalist target', async () => {
 	const { violations } = await mlRuleTest(
 		rule,
 		'<div id="notdatalist"></div><input type="text" list="notdatalist"><input type="text" list="notdatalist">',
@@ -100,7 +100,7 @@ test('[input-list-references-datalist-invalid-004] fires independently for each 
 	]);
 });
 
-test('[input-list-references-datalist-invalid-005] list on input[type=hidden] still requires a datalist target', async () => {
+test('[input-list-references-datalist-009] list on input[type=hidden] still requires a datalist target', async () => {
 	// HTML LS §4.10.5.2 states the value MUST be a datalist ID whenever the attribute is present.
 	// The "list attribute does not apply if type is Hidden, Password, ..." note removes the runtime
 	// effect but does not override the value-shape MUST.
@@ -119,7 +119,7 @@ test('[input-list-references-datalist-invalid-005] list on input[type=hidden] st
 	]);
 });
 
-test('[input-list-references-datalist-valid-005] list on input[type=hidden] pointing at a datalist is accepted', async () => {
+test('[input-list-references-datalist-010] list on input[type=hidden] pointing at a datalist is accepted', async () => {
 	const { violations } = await mlRuleTest(
 		rule,
 		'<input type="hidden" list="colors"><datalist id="colors"><option value="Red"></option></datalist>',
@@ -127,7 +127,7 @@ test('[input-list-references-datalist-valid-005] list on input[type=hidden] poin
 	expect(violations).toStrictEqual([]);
 });
 
-test('[input-list-references-datalist-parser-001] Vue dynamic :list binding is skipped', async () => {
+test('[input-list-references-datalist-011] Vue dynamic :list binding is skipped', async () => {
 	// The `isDynamicValue` guard prevents false positives on framework-parsed attributes whose
 	// value is a template expression rather than a static ID reference.
 	const { violations } = await mlRuleTest(rule, '<input type="text" :list="listId"><div id="listId">x</div>', {
@@ -136,7 +136,7 @@ test('[input-list-references-datalist-parser-001] Vue dynamic :list binding is s
 	expect(violations).toStrictEqual([]);
 });
 
-test('[input-list-references-datalist-issue-4489-001] the target is looked for in the tree of the input', async () => {
+test('[input-list-references-datalist-012] the target is looked for in the tree of the input', async () => {
 	const { violations } = await mlRuleTest(rule, '<template><div id="x"></div><input list="x"></template>');
 	expect(violations).toStrictEqual([
 		{
@@ -149,12 +149,12 @@ test('[input-list-references-datalist-issue-4489-001] the target is looked for i
 	]);
 });
 
-test('[input-list-references-datalist-issue-4489-002] an id in another tree is not the target', async () => {
+test('[input-list-references-datalist-013] an id in another tree is not the target', async () => {
 	const { violations } = await mlRuleTest(rule, '<div id="x"></div><template><input list="x"></template>');
 	expect(violations).toStrictEqual([]);
 });
 
-test('[input-list-references-datalist-issue-4584-001] the name of the attribute is shown as written (`list` is also a keyword) with locale ja', async () => {
+test('[input-list-references-datalist-014] the name of the attribute is shown as written (`list` is also a keyword) with locale ja', async () => {
 	const { violations } = await mlRuleTest(rule, '<div id="x"></div><input list="x">', undefined, false, 'ja');
 
 	expect(violations).toStrictEqual([

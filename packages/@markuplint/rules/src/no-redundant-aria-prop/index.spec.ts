@@ -3,11 +3,11 @@ import { test, expect } from 'vitest';
 
 import rule from './index.js';
 
-test('[no-redundant-aria-prop-valid-001] no redundant prop conflict', async () => {
+test('[no-redundant-aria-prop-001] no redundant prop conflict', async () => {
 	expect((await mlRuleTest(rule, '<div role="button" aria-pressed="true"></div>')).violations).toStrictEqual([]);
 });
 
-test('[no-redundant-aria-prop-invalid-001] implicit prop same as native attr', async () => {
+test('[no-redundant-aria-prop-002] implicit prop same as native attr', async () => {
 	const { violations } = await mlRuleTest(rule, '<input type="checkbox" aria-checked="true" checked />');
 	expect(violations).toStrictEqual([
 		{
@@ -21,7 +21,7 @@ test('[no-redundant-aria-prop-invalid-001] implicit prop same as native attr', a
 	]);
 });
 
-test('[no-redundant-aria-prop-issue-4309-001] an upper-case aria-* is reported like the lower-case one', async () => {
+test('[no-redundant-aria-prop-003] an upper-case aria-* is reported like the lower-case one', async () => {
 	const { violations } = await mlRuleTest(rule, '<input type="checkbox" ARIA-CHECKED="true" checked />');
 	expect(violations).toStrictEqual([
 		{
@@ -35,7 +35,7 @@ test('[no-redundant-aria-prop-issue-4309-001] an upper-case aria-* is reported l
 	]);
 });
 
-test('[no-redundant-aria-prop-issue-4309-002] JSX: an upper-case aria-* on an HTML element is reported', async () => {
+test('[no-redundant-aria-prop-004] JSX: an upper-case aria-* on an HTML element is reported', async () => {
 	const { violations } = await mlRuleTest(rule, '<input type="checkbox" ARIA-CHECKED="true" checked />', {
 		parser: { '.*': '@markuplint/jsx-parser' },
 	});
@@ -51,7 +51,7 @@ test('[no-redundant-aria-prop-issue-4309-002] JSX: an upper-case aria-* on an HT
 	]);
 });
 
-test('[no-redundant-aria-prop-issue-4584-001] the message is in Japanese with locale ja', async () => {
+test('[no-redundant-aria-prop-005] the message is in Japanese with locale ja', async () => {
 	const { violations } = await mlRuleTest(rule, '<input required aria-required="true">', undefined, false, 'ja');
 
 	expect(violations).toStrictEqual([

@@ -4,13 +4,13 @@ import { applyRuleAliases, applyRuleAliasesToConfig } from './rule-aliases.js';
 
 import type { RuleAliasTable } from './rule-aliases.js';
 
-test('[rule-aliases-valid-001] a rule name absent from the table passes through unchanged', () => {
+test('a rule name absent from the table passes through unchanged', () => {
 	const { rules, warnings } = applyRuleAliases({ 'no-duplicate-attr': true }, {});
 	expect(rules).toStrictEqual({ 'no-duplicate-attr': true });
 	expect(warnings).toStrictEqual([]);
 });
 
-test('[rule-aliases-valid-002] named rule groups (keys containing "/") are never looked up in the table', () => {
+test('named rule groups (keys containing "/") are never looked up in the table', () => {
 	const table: RuleAliasTable = {
 		'old-rule/sub': { expand: () => ({ 'new-rule': true }), targets: ['new-rule'] },
 	};
@@ -19,7 +19,7 @@ test('[rule-aliases-valid-002] named rule groups (keys containing "/") are never
 	expect(warnings).toStrictEqual([]);
 });
 
-test('[rule-aliases-invalid-001] a 1:1 rename expands to the new name and reports a warning', () => {
+test('a 1:1 rename expands to the new name and reports a warning', () => {
 	const table: RuleAliasTable = {
 		'old-name': { expand: rule => ({ 'new-name': rule }), targets: ['new-name'] },
 	};
@@ -28,7 +28,7 @@ test('[rule-aliases-invalid-001] a 1:1 rename expands to the new name and report
 	expect(warnings).toStrictEqual([{ deprecatedName: 'old-name', replacedBy: ['new-name'] }]);
 });
 
-test('[rule-aliases-invalid-002] a 1:N split copies the resolved configuration to every replacement', () => {
+test('a 1:N split copies the resolved configuration to every replacement', () => {
 	const table: RuleAliasTable = {
 		'old-compound-rule': {
 			expand: rule => ({
@@ -43,7 +43,7 @@ test('[rule-aliases-invalid-002] a 1:N split copies the resolved configuration t
 	expect(warnings).toStrictEqual([{ deprecatedName: 'old-compound-rule', replacedBy: ['new-rule-a', 'new-rule-b'] }]);
 });
 
-test('[rule-aliases-invalid-003] a split can conditionally omit a replacement based on the old configuration', () => {
+test('a split can conditionally omit a replacement based on the old configuration', () => {
 	const table: RuleAliasTable = {
 		'old-rule-with-suboption': {
 			expand: (rule): Record<string, true> => {
@@ -64,7 +64,7 @@ test('[rule-aliases-invalid-003] a split can conditionally omit a replacement ba
 	expect(disabled.rules).toStrictEqual({ 'main-check': true });
 });
 
-test('[rule-aliases-invalid-004] an explicit setting under the new name wins over the alias-derived one', () => {
+test('an explicit setting under the new name wins over the alias-derived one', () => {
 	const table: RuleAliasTable = {
 		'old-name': { expand: () => ({ 'new-name': { severity: 'warning' } }), targets: ['new-name'] },
 	};
@@ -74,7 +74,7 @@ test('[rule-aliases-invalid-004] an explicit setting under the new name wins ove
 	expect(warnings).toStrictEqual([{ deprecatedName: 'old-name', replacedBy: ['new-name'] }]);
 });
 
-test('[rule-aliases-invalid-005] two deprecated names that both expand into the same replacement are merged, later wins per key', () => {
+test('two deprecated names that both expand into the same replacement are merged, later wins per key', () => {
 	const table: RuleAliasTable = {
 		'old-name-a': {
 			expand: () => ({ 'shared-target': { severity: 'warning', options: { fromA: true } } }),
@@ -90,7 +90,7 @@ test('[rule-aliases-invalid-005] two deprecated names that both expand into the 
 	]);
 });
 
-test('[rule-aliases-valid-003] `undefined` rules passes through as `undefined` with no warnings', () => {
+test('`undefined` rules passes through as `undefined` with no warnings', () => {
 	const { rules, warnings } = applyRuleAliases(undefined, {
 		'old-name': { expand: () => ({ 'new-name': true }), targets: ['new-name'] },
 	});
@@ -98,7 +98,7 @@ test('[rule-aliases-valid-003] `undefined` rules passes through as `undefined` w
 	expect(warnings).toStrictEqual([]);
 });
 
-test('[rule-aliases-invalid-006] applyRuleAliasesToConfig rewrites a deprecated name inside a nodeRules entry', () => {
+test('applyRuleAliasesToConfig rewrites a deprecated name inside a nodeRules entry', () => {
 	const table: RuleAliasTable = {
 		'old-name': { expand: rule => ({ 'new-name': rule }), targets: ['new-name'] },
 	};
@@ -112,7 +112,7 @@ test('[rule-aliases-invalid-006] applyRuleAliasesToConfig rewrites a deprecated 
 	expect(warnings).toStrictEqual([{ deprecatedName: 'old-name', replacedBy: ['new-name'] }]);
 });
 
-test('[rule-aliases-invalid-007] applyRuleAliasesToConfig rewrites a deprecated name inside a childNodeRules entry', () => {
+test('applyRuleAliasesToConfig rewrites a deprecated name inside a childNodeRules entry', () => {
 	const table: RuleAliasTable = {
 		'old-name': { expand: rule => ({ 'new-name': rule }), targets: ['new-name'] },
 	};
@@ -126,7 +126,7 @@ test('[rule-aliases-invalid-007] applyRuleAliasesToConfig rewrites a deprecated 
 	expect(warnings).toStrictEqual([{ deprecatedName: 'old-name', replacedBy: ['new-name'] }]);
 });
 
-test('[rule-aliases-invalid-008] applyRuleAliasesToConfig combines warnings from all three locations', () => {
+test('applyRuleAliasesToConfig combines warnings from all three locations', () => {
 	const table: RuleAliasTable = {
 		'old-name': { expand: rule => ({ 'new-name': rule }), targets: ['new-name'] },
 	};
@@ -143,7 +143,7 @@ test('[rule-aliases-invalid-008] applyRuleAliasesToConfig combines warnings from
 	]);
 });
 
-test('[rule-aliases-valid-004] applyRuleAliasesToConfig leaves nodeRules without a deprecated name untouched', () => {
+test('applyRuleAliasesToConfig leaves nodeRules without a deprecated name untouched', () => {
 	const { config, warnings } = applyRuleAliasesToConfig(
 		{
 			nodeRules: [{ selector: 'img', rules: { 'no-duplicate-attr': true } }],

@@ -3,11 +3,11 @@ import { test, expect } from 'vitest';
 
 import rule from './index.js';
 
-test('[no-deprecated-role-valid-001] non-deprecated role', async () => {
+test('[no-deprecated-role-001] non-deprecated role', async () => {
 	expect((await mlRuleTest(rule, '<div role="button"></div>')).violations).toStrictEqual([]);
 });
 
-test('[no-deprecated-role-invalid-001] deprecated role', async () => {
+test('[no-deprecated-role-002] deprecated role', async () => {
 	expect((await mlRuleTest(rule, '<div role="directory"></div>')).violations).toStrictEqual([
 		{
 			severity: 'warning',
@@ -19,7 +19,7 @@ test('[no-deprecated-role-invalid-001] deprecated role', async () => {
 	]);
 });
 
-test('[no-deprecated-role-invalid-002] deprecated DPUB-ARIA role', async () => {
+test('[no-deprecated-role-003] deprecated DPUB-ARIA role', async () => {
 	expect((await mlRuleTest(rule, '<div role="doc-biblioentry"></div>')).violations).toStrictEqual([
 		{
 			severity: 'warning',

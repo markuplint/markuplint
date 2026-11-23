@@ -3,7 +3,7 @@ import { test, expect } from 'vitest';
 
 import rule from './index.js';
 
-test('[no-event-handler-attr-invalid-001] disallows onclick', async () => {
+test('[no-event-handler-attr-001] disallows onclick', async () => {
 	const { violations } = await mlRuleTest(rule, '<div onclick="e => e"></div>');
 	expect(violations).toStrictEqual([
 		{
@@ -16,7 +16,7 @@ test('[no-event-handler-attr-invalid-001] disallows onclick', async () => {
 	]);
 });
 
-test('[no-event-handler-attr-valid-001] allows onclick because ignores it', async () => {
+test('[no-event-handler-attr-002] allows onclick because ignores it', async () => {
 	const { violations } = await mlRuleTest(rule, '<div onclick="e => e"></div>', {
 		rule: {
 			options: {
@@ -27,7 +27,7 @@ test('[no-event-handler-attr-valid-001] allows onclick because ignores it', asyn
 	expect(violations).toStrictEqual([]);
 });
 
-test('[no-event-handler-attr-invalid-002] ✔ onclick, ✘ onmouseleave', async () => {
+test('[no-event-handler-attr-003] ✔ onclick, ✘ onmouseleave', async () => {
 	const { violations } = await mlRuleTest(rule, '<div onclick="e => e" onmouseleave="e => e"></div>', {
 		rule: {
 			options: {
@@ -46,7 +46,7 @@ test('[no-event-handler-attr-invalid-002] ✔ onclick, ✘ onmouseleave', async 
 	]);
 });
 
-test('[no-event-handler-attr-valid-002] ignore by regex', async () => {
+test('[no-event-handler-attr-004] ignore by regex', async () => {
 	const { violations } = await mlRuleTest(rule, '<div onclick="e => e"></div>', {
 		rule: {
 			options: {
@@ -57,7 +57,7 @@ test('[no-event-handler-attr-valid-002] ignore by regex', async () => {
 	expect(violations).toStrictEqual([]);
 });
 
-test('[no-event-handler-attr-invalid-003] value: ["click"] reports only click', async () => {
+test('[no-event-handler-attr-005] value: ["click"] reports only click', async () => {
 	const { violations } = await mlRuleTest(rule, '<div onclick="fn()" onmouseover="fn()"></div>', {
 		rule: { value: ['click'] },
 	});
@@ -72,7 +72,7 @@ test('[no-event-handler-attr-invalid-003] value: ["click"] reports only click', 
 	]);
 });
 
-test('[no-event-handler-attr-invalid-004] value: ["click", "keydown"] reports matching events', async () => {
+test('[no-event-handler-attr-006] value: ["click", "keydown"] reports matching events', async () => {
 	const { violations } = await mlRuleTest(rule, '<div onclick="fn()" onkeydown="fn()" onmouseover="fn()"></div>', {
 		rule: { value: ['click', 'keydown'] },
 	});
@@ -94,7 +94,7 @@ test('[no-event-handler-attr-invalid-004] value: ["click", "keydown"] reports ma
 	]);
 });
 
-test('[no-event-handler-attr-invalid-005] value: ["Click"] is case-insensitive', async () => {
+test('[no-event-handler-attr-007] value: ["Click"] is case-insensitive', async () => {
 	const { violations } = await mlRuleTest(rule, '<div onclick="fn()"></div>', { rule: { value: ['Click'] } });
 	expect(violations).toStrictEqual([
 		{
@@ -107,7 +107,7 @@ test('[no-event-handler-attr-invalid-005] value: ["Click"] is case-insensitive',
 	]);
 });
 
-test('[no-event-handler-attr-invalid-006] value: ["/^mouse/"] regex pattern', async () => {
+test('[no-event-handler-attr-008] value: ["/^mouse/"] regex pattern', async () => {
 	const { violations } = await mlRuleTest(rule, '<div onclick="fn()" onmousedown="fn()" onmouseover="fn()"></div>', {
 		rule: { value: ['/^mouse/'] },
 	});
@@ -129,7 +129,7 @@ test('[no-event-handler-attr-invalid-006] value: ["/^mouse/"] regex pattern', as
 	]);
 });
 
-test('[no-event-handler-attr-invalid-007] value: ["click"] with ignore: "onclick" — ignore takes priority', async () => {
+test('[no-event-handler-attr-009] value: ["click"] with ignore: "onclick" — ignore takes priority', async () => {
 	const { violations } = await mlRuleTest(rule, '<div onclick="fn()" onmousedown="fn()"></div>', {
 		rule: { value: ['click', 'mousedown'], options: { ignore: 'onclick' } },
 	});
@@ -144,7 +144,7 @@ test('[no-event-handler-attr-invalid-007] value: ["click"] with ignore: "onclick
 	]);
 });
 
-test('[no-event-handler-attr-parser-001] value: ["click"] with JSX onClick', async () => {
+test('[no-event-handler-attr-010] value: ["click"] with JSX onClick', async () => {
 	const { violations } = await mlRuleTest(rule, '<div onClick={fn}></div>', {
 		rule: { value: ['click'] },
 		parser: { '.*': '@markuplint/jsx-parser' },
@@ -160,7 +160,7 @@ test('[no-event-handler-attr-parser-001] value: ["click"] with JSX onClick', asy
 	]);
 });
 
-test('[no-event-handler-attr-parser-002] value: ["mousedown"] does not report JSX onClick', async () => {
+test('[no-event-handler-attr-011] value: ["mousedown"] does not report JSX onClick', async () => {
 	const { violations } = await mlRuleTest(rule, '<div onClick={fn}></div>', {
 		rule: { value: ['mousedown'] },
 		parser: { '.*': '@markuplint/jsx-parser' },
@@ -168,22 +168,22 @@ test('[no-event-handler-attr-parser-002] value: ["mousedown"] does not report JS
 	expect(violations).toStrictEqual([]);
 });
 
-test('[no-event-handler-attr-valid-003] non-event attributes are not affected', async () => {
+test('[no-event-handler-attr-012] non-event attributes are not affected', async () => {
 	const { violations } = await mlRuleTest(rule, '<div class="foo" id="bar"></div>', { rule: { value: ['click'] } });
 	expect(violations).toStrictEqual([]);
 });
 
-test('[no-event-handler-attr-valid-004] value: false disables the rule', async () => {
+test('[no-event-handler-attr-013] value: false disables the rule', async () => {
 	const { violations } = await mlRuleTest(rule, '<div onclick="fn()"></div>', { rule: { value: false } });
 	expect(violations).toStrictEqual([]);
 });
 
-test('[no-event-handler-attr-valid-005] "on" attribute alone is not treated as an event handler', async () => {
+test('[no-event-handler-attr-014] "on" attribute alone is not treated as an event handler', async () => {
 	const { violations } = await mlRuleTest(rule, '<div on="handler"></div>');
 	expect(violations).toStrictEqual([]);
 });
 
-test('[no-event-handler-attr-parser-003] value: ["click"] does not report Vue @click', async () => {
+test('[no-event-handler-attr-015] value: ["click"] does not report Vue @click', async () => {
 	const { violations } = await mlRuleTest(rule, '<template><div @click="fn()"></div></template>', {
 		rule: { value: ['click'] },
 		parser: { '.*': '@markuplint/vue-parser' },
@@ -192,7 +192,7 @@ test('[no-event-handler-attr-parser-003] value: ["click"] does not report Vue @c
 	expect(violations).toStrictEqual([]);
 });
 
-test('[no-event-handler-attr-invalid-008] value: ["click"] with regex ignore — ignore takes priority', async () => {
+test('[no-event-handler-attr-016] value: ["click"] with regex ignore — ignore takes priority', async () => {
 	const { violations } = await mlRuleTest(rule, '<div onclick="fn()" onmousedown="fn()"></div>', {
 		rule: { value: ['click', 'mousedown'], options: { ignore: '/^onclick$/' } },
 	});
@@ -207,7 +207,7 @@ test('[no-event-handler-attr-invalid-008] value: ["click"] with regex ignore —
 	]);
 });
 
-test('[no-event-handler-attr-issue-4044-001] does not report Vue @click directive', async () => {
+test('[no-event-handler-attr-017] does not report Vue @click directive', async () => {
 	const { violations } = await mlRuleTest(rule, '<template><div @click="fn()"></div></template>', {
 		parser: { '.*': '@markuplint/vue-parser' },
 		specs: { '.*': '@markuplint/vue-spec' },
@@ -215,7 +215,7 @@ test('[no-event-handler-attr-issue-4044-001] does not report Vue @click directiv
 	expect(violations).toStrictEqual([]);
 });
 
-test('[no-event-handler-attr-issue-4044-002] does not report Alpine.js @click directive', async () => {
+test('[no-event-handler-attr-018] does not report Alpine.js @click directive', async () => {
 	const { violations } = await mlRuleTest(rule, '<div @click="fn()"></div>', {
 		parser: { '.*': '@markuplint/alpine-parser' },
 		specs: { '.*': '@markuplint/alpine-spec' },
@@ -223,14 +223,14 @@ test('[no-event-handler-attr-issue-4044-002] does not report Alpine.js @click di
 	expect(violations).toStrictEqual([]);
 });
 
-test('[no-event-handler-attr-issue-4044-003] does not report htmx hx-on:click directive', async () => {
+test('[no-event-handler-attr-019] does not report htmx hx-on:click directive', async () => {
 	const { violations } = await mlRuleTest(rule, '<div hx-on:click="fn()"></div>', {
 		specs: { '.*': '@markuplint/htmx-spec' },
 	});
 	expect(violations).toStrictEqual([]);
 });
 
-test('[no-event-handler-attr-issue-4044-004] does not report Svelte on:click directive', async () => {
+test('[no-event-handler-attr-020] does not report Svelte on:click directive', async () => {
 	const { violations } = await mlRuleTest(rule, '<div on:click={fn}></div>', {
 		parser: { '.*': '@markuplint/svelte-parser' },
 		specs: { '.*': '@markuplint/svelte-spec' },
@@ -238,7 +238,7 @@ test('[no-event-handler-attr-issue-4044-004] does not report Svelte on:click dir
 	expect(violations).toStrictEqual([]);
 });
 
-test('[no-event-handler-attr-issue-4044-005] still reports a literal onclick attribute in a Vue template', async () => {
+test('[no-event-handler-attr-021] still reports a literal onclick attribute in a Vue template', async () => {
 	const { violations } = await mlRuleTest(rule, '<template><div onclick="fn()"></div></template>', {
 		parser: { '.*': '@markuplint/vue-parser' },
 		specs: { '.*': '@markuplint/vue-spec' },
@@ -254,7 +254,7 @@ test('[no-event-handler-attr-issue-4044-005] still reports a literal onclick att
 	]);
 });
 
-test('[no-event-handler-attr-issue-4044-006] does not report Vue v-on:click directive (long form)', async () => {
+test('[no-event-handler-attr-022] does not report Vue v-on:click directive (long form)', async () => {
 	const { violations } = await mlRuleTest(rule, '<template><div v-on:click="fn()"></div></template>', {
 		parser: { '.*': '@markuplint/vue-parser' },
 		specs: { '.*': '@markuplint/vue-spec' },
@@ -262,7 +262,7 @@ test('[no-event-handler-attr-issue-4044-006] does not report Vue v-on:click dire
 	expect(violations).toStrictEqual([]);
 });
 
-test('[no-event-handler-attr-issue-4044-007] does not report Alpine.js x-on:click directive (long form)', async () => {
+test('[no-event-handler-attr-023] does not report Alpine.js x-on:click directive (long form)', async () => {
 	const { violations } = await mlRuleTest(rule, '<div x-on:click="fn()"></div>', {
 		parser: { '.*': '@markuplint/alpine-parser' },
 		specs: { '.*': '@markuplint/alpine-spec' },
