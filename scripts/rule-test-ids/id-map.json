@@ -1,0 +1,34 @@
+{
+	"removed": [
+		{
+			"file": "link-types/index.spec.ts",
+			"id": "link-types-valid-008",
+			"keptIn": "link-types/index.spec.ts",
+			"keptId": "link-types-valid-001"
+		},
+		{
+			"file": "no-empty-palpable-content/index.spec.ts",
+			"id": "no-empty-palpable-content-valid-003",
+			"keptIn": "no-empty-palpable-content/index.spec.ts",
+			"keptId": "no-empty-palpable-content-valid-002"
+		},
+		{
+			"file": "no-mismatched-aspect-ratio/index.spec.ts",
+			"id": "no-mismatched-aspect-ratio-invalid-001",
+			"keptIn": "no-mismatched-aspect-ratio/index.spec.ts",
+			"keptId": "no-mismatched-aspect-ratio-invalid-003"
+		},
+		{
+			"file": "require-element/index.spec.ts",
+			"id": "require-element-valid-002",
+			"keptIn": "require-element/index.spec.ts",
+			"keptId": "require-element-valid-001"
+		}
+	],
+	"added": [
+		{
+			"file": "require-element/index.spec.ts",
+			"id": "require-element-valid-005"
+		}
+	]
+}
