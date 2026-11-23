@@ -182,6 +182,24 @@ export type DirectivePattern = {
 	readonly isSpread?: true;
 
 	/**
+	 * Whether the attributes of the object of a spread ({@link DirectivePattern.isSpread}) override an
+	 * attribute of the same name wherever that one is written, as `x-bind="obj"` of Alpine.js does: a binding
+	 * is applied after the attributes of the markup. A rule that reads what a spread overrides by its place
+	 * (`isRoleUnknown` of `@markuplint/rules`, `helper/unknown-id.ts` of `@markuplint/ml-core`) takes such a
+	 * spread to override the attributes before it and after it. It is the source of
+	 * `MLAttr#spreadOverridesWritten`.
+	 */
+	readonly spreadOverridesWritten?: true;
+
+	/**
+	 * Whether this attribute replaces the children of the element with markup that the template does not
+	 * show (`v-html` of Vue, `x-html` of Alpine.js, `dangerouslySetInnerHTML` of React). It is the source of
+	 * `MLAttr#isInnerHTML`: the elements that the markup holds are not all that the element has, so an id
+	 * that a reference refers to may be one of them (`hasElementOfUnknownId`).
+	 */
+	readonly isInnerHTML?: true;
+
+	/**
 	 * The language of the code that the value is written in. A value that is nothing but a literal is
 	 * rendered as the framework renders it (see {@link MLMLSpec.literalValues}), which needs the
 	 * attribute to be the one the pattern names (`potentialName`) and the value to be what the attribute
