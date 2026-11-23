@@ -9,6 +9,9 @@
  * the v6 line would take the new one for the old: a new test takes the highest number of its file or rule plus
  * one.
  *
+ * `renamed` and `unnumbered` are written by `renumber.ts` (which says what they are for) and are not checked by
+ * the verifier.
+ *
  * `policy` lists specs under the rules' `src` that the change adds to enforce the convention that it
  * establishes (a spec about the specs, with no counterpart in the base): the verifier leaves their tests and
  * cases out of the head, as it would report each as a test that appeared. It is true only until the change
@@ -17,18 +20,22 @@
  * @module
  */
 import type { Addition, Removal } from './compare.ts';
+import type { Renamed, Unnumbered } from './renumber.ts';
 
 export interface IdMap {
 	readonly removed: readonly Removal[];
 	readonly added: readonly Addition[];
 	/** Paths relative to the rules' `src`. */
 	readonly policy?: readonly string[];
+	readonly renamed?: readonly Renamed[];
+	readonly unnumbered?: readonly Unnumbered[];
 	readonly merged?: { readonly removed: readonly Removal[]; readonly added: readonly Addition[] };
 }
 
-const KNOWN_KEYS = ['removed', 'added', 'policy', 'merged'];
+const KNOWN_KEYS = ['removed', 'added', 'policy', 'renamed', 'unnumbered', 'merged'];
 const REMOVAL_FIELDS = ['file', 'id', 'keptIn', 'keptId'];
 const ADDITION_FIELDS = ['file', 'id'];
+const RENAMED_FIELDS = ['file', 'id', 'to'];
 
 function isRecord(value: unknown): value is Record<string, unknown> {
 	return typeof value === 'object' && value !== null && !Array.isArray(value);
@@ -80,6 +87,10 @@ export function parseIdMap(text: string): IdMap {
 		removed: entries<Removal>(value.removed, 'removed', REMOVAL_FIELDS),
 		added: entries<Addition>(value.added, 'added', ADDITION_FIELDS),
 		...(policy ? { policy: policy as string[] } : {}),
+		...(value.renamed === undefined ? {} : { renamed: entries<Renamed>(value.renamed, 'renamed', RENAMED_FIELDS) }),
+		...(value.unnumbered === undefined
+			? {}
+			: { unnumbered: entries<Unnumbered>(value.unnumbered, 'unnumbered', ADDITION_FIELDS) }),
 		...(merged
 			? {
 					merged: {

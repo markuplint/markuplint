@@ -40,6 +40,25 @@ describe('parseIdMap', () => {
 		expect(parseIdMap('{}')).toStrictEqual({ removed: [], added: [] });
 	});
 
+	test('reads the renamed and unnumbered IDs that the renumbering writes', () => {
+		const renamed = {
+			file: 'packages/@markuplint/rules/src/rule-a/index.spec.ts',
+			id: 'rule-a-valid-001',
+			to: 'rule-a-001',
+		};
+		const unnumbered = { file: 'packages/@markuplint/rules/src/rule-a/x.spec.ts', id: 'rule-a-valid-002' };
+		expect(parseIdMap(JSON.stringify({ renamed: [renamed], unnumbered: [unnumbered] }))).toStrictEqual({
+			removed: [],
+			added: [],
+			renamed: [renamed],
+			unnumbered: [unnumbered],
+		});
+		expect(() => parseIdMap(JSON.stringify({ renamed: [{ file: 'a', id: 'b' }] }))).toThrow(/renamed\[0\]/);
+		expect(() => parseIdMap(JSON.stringify({ unnumbered: [{ file: 'a', id: 'b', to: 'c' }] }))).toThrow(
+			/unnumbered\[0\]/,
+		);
+	});
+
 	test('reads the specs that the change adds about the specs themselves', () => {
 		expect(parseIdMap(JSON.stringify({ policy: ['test-ids.spec.ts'] }))).toStrictEqual({
 			removed: [],
