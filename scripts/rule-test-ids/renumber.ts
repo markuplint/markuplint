@@ -248,6 +248,8 @@ export function renumber(input: RenumberInput): RenumberResult {
 		}
 	}
 
+	// A comment may name the new ID of a test of another file, which is left as it is: this is how a run's own result reads.
+	const issued = new Set([...newIds.values()].filter((id): id is string => id !== undefined));
 	const files = new Map<string, string>();
 	for (const spec of specs) {
 		const edits: { start: number; end: number; text: string }[] = [];
@@ -269,7 +271,7 @@ export function renumber(input: RenumberInput): RenumberResult {
 			const comment = spec.text.slice(range.pos, range.end);
 			for (const match of comment.matchAll(/\[([a-z0-9][a-z0-9-]*)\]/g)) {
 				const named = byId.get(match[1] ?? '') ?? [];
-				if (named.length === 0 && !ID_LIKE.test(match[1] ?? '')) {
+				if (named.length === 0 && (!ID_LIKE.test(match[1] ?? '') || issued.has(match[1] ?? ''))) {
 					continue;
 				}
 				const [only] = named;
@@ -288,7 +290,7 @@ export function renumber(input: RenumberInput): RenumberResult {
 			text = text.slice(0, edit.start) + edit.text + text.slice(edit.end);
 		}
 		const after = read(spec.file, text);
-		if (after.cases.map(test => test.hash).join(",") !== spec.cases.map(test => test.hash).join(",")) {
+		if (after.cases.map(test => test.hash).join(',') !== spec.cases.map(test => test.hash).join(',')) {
 			throw new Error(`${spec.file}: the rewrite changed what a test pins`);
 		}
 		files.set(spec.file, text);

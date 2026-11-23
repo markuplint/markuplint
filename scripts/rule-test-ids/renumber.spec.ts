@@ -159,6 +159,18 @@ describe('the references in comments', () => {
 		expect(() => run(files, files)).toThrow(/rule-a-valid-001/);
 	});
 
+	test('a new ID that a comment names, in this file or another, is left alone, so that a run can be repeated', () => {
+		const files = {
+			[`${SRC}/rule-a/index.spec.ts`]:
+				spec([['[rule-a-valid-001] one', '<one>']]) + '\n// see [rule-b-001] and [rule-a-001]\n',
+			[`${SRC}/rule-b/index.spec.ts`]: spec([['[rule-b-valid-007] b', '<b>']]),
+		};
+		const first = run(files, files);
+		expect(first.files.get(`${SRC}/rule-a/index.spec.ts`)).toContain('// see [rule-b-001] and [rule-a-001]');
+		const again = run(files, Object.fromEntries(first.files));
+		expect(Object.fromEntries(again.files)).toStrictEqual(Object.fromEntries(first.files));
+	});
+
 	test('a bracket that is not an ID of a test is left alone', () => {
 		const files = {
 			[`${SRC}/rule-a/index.spec.ts`]:
