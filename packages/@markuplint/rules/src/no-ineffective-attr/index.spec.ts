@@ -17,11 +17,9 @@ test('[no-ineffective-attr-invalid-001] script[defer]', async () => {
 	]);
 });
 
-// Note: `[no-ineffective-attr-invalid-002]` and `[no-ineffective-attr-fix-002]` (defer on
-// type=module) were removed when HTML LS § 4.12.1 ("Module scripts must not specify
-// the defer attribute") was reflected in spec.script.jsonc — module+defer is now
-// disallowed by `no-disallowed-attr`, not flagged as ineffective. The numbering gap is
-// intentional; do not renumber later tests.
+// There are no tests of `defer` on `type=module`: HTML LS § 4.12.1 ("Module scripts must not specify
+// the defer attribute") is reflected in spec.script.jsonc, so module+defer is disallowed by
+// `no-disallowed-attr` and is not flagged as ineffective.
 
 describe('fix', () => {
 	test('[no-ineffective-attr-fix-001] remove ineffective defer from inline script', async () => {

@@ -230,7 +230,7 @@ test('[helpers-issue-3598-008] isDynamicValue suppresses invalid-value after con
 			type: [{ condition: "[type='color' i]", type: 'SimpleColor' }],
 		},
 	];
-	// "red" is a valid CSS color, so this no longer exercises the suppression: [helpers-issue-3598-010] does.
+	// "red" is a valid CSS color, so this no longer exercises the suppression: the test "isDynamicValue suppresses invalid-value for a value that is no CSS color" does.
 	const result = checkValue('value', 'red', true, el, attrSpecs);
 	expect(result).toBe(false);
 });

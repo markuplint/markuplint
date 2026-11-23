@@ -380,7 +380,7 @@ describe('verify', () => {
 		expect(violations4).toStrictEqual([]);
 	});
 
-	// test('[permitted-contents-invalid-008] area', async () => {
+	// test('area', async () => {
 	// 	const { violations: violations1 } = await mlRuleTest(rule, '<div><area></div>');
 	// 	expect(violations1).toStrictEqual([
 	// 		{
