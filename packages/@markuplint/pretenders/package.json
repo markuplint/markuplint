@@ -33,7 +33,7 @@
 		"@markuplint/ml-config": "5.6.1",
 		"@markuplint/parser-utils": "5.6.1",
 		"@markuplint/shared": "5.6.0",
-		"es-module-lexer": "^3.0.4",
+		"es-module-lexer": "^3.0.5",
 		"glob": "^14.0.6",
 		"meow": "^14.1.0",
 		"typescript": "~6.0.3"
