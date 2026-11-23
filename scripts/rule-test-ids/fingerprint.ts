@@ -323,12 +323,41 @@ function staticKey(property: ts.ObjectLiteralElementLike): string | undefined {
  * a comma to a list that it breaks over lines: neither changes what the code does, and a formatter's run over a
  * spec must not read as a change of its tests.
  */
+/** The tokens after which a `/` divides, so that it does not start a regular expression. */
+const ENDS_OPERAND: ReadonlySet<ts.SyntaxKind> = new Set([
+	ts.SyntaxKind.Identifier,
+	ts.SyntaxKind.PrivateIdentifier,
+	ts.SyntaxKind.NumericLiteral,
+	ts.SyntaxKind.BigIntLiteral,
+	ts.SyntaxKind.StringLiteral,
+	ts.SyntaxKind.NoSubstitutionTemplateLiteral,
+	ts.SyntaxKind.TemplateTail,
+	ts.SyntaxKind.RegularExpressionLiteral,
+	ts.SyntaxKind.CloseParenToken,
+	ts.SyntaxKind.CloseBracketToken,
+	ts.SyntaxKind.CloseBraceToken,
+	ts.SyntaxKind.PlusPlusToken,
+	ts.SyntaxKind.MinusMinusToken,
+	ts.SyntaxKind.ThisKeyword,
+	ts.SyntaxKind.SuperKeyword,
+	ts.SyntaxKind.TrueKeyword,
+	ts.SyntaxKind.FalseKeyword,
+	ts.SyntaxKind.NullKeyword,
+]);
+
 function canonicalize(code: string): string {
 	const scanner = ts.createScanner(ts.ScriptTarget.Latest, false, ts.LanguageVariant.Standard, code);
 	const tokens: { kind: ts.SyntaxKind; text: string }[] = [];
 	// Whether each open `{` is the start of a substitution of a template literal, so that its `}` goes on with the template.
 	const braces: boolean[] = [];
 	for (let kind = scanner.scan(); kind !== ts.SyntaxKind.EndOfFileToken; kind = scanner.scan()) {
+		// A `/` after something that does not end an operand starts a regular expression, which may hold a brace or a quote.
+		if (
+			(kind === ts.SyntaxKind.SlashToken || kind === ts.SyntaxKind.SlashEqualsToken) &&
+			!ENDS_OPERAND.has(tokens.at(-1)?.kind as ts.SyntaxKind)
+		) {
+			kind = scanner.reScanSlashToken();
+		}
 		if (kind === ts.SyntaxKind.CloseBraceToken && braces.at(-1) === true) {
 			braces.pop();
 			kind = scanner.reScanTemplateToken(false);
@@ -347,9 +376,13 @@ function canonicalize(code: string): string {
 	}
 	return tokens
 		.filter((token, index) => {
+			const previous = tokens[index - 1]?.kind;
 			const next = tokens[index + 1]?.kind;
+			// The comma after another comma or an `[` is a hole of an array (`[1,,]`, `[,]`), which counts.
 			return !(
 				token.kind === ts.SyntaxKind.CommaToken &&
+				previous !== ts.SyntaxKind.CommaToken &&
+				previous !== ts.SyntaxKind.OpenBracketToken &&
 				(next === ts.SyntaxKind.CloseBracketToken ||
 					next === ts.SyntaxKind.CloseBraceToken ||
 					next === ts.SyntaxKind.CloseParenToken)

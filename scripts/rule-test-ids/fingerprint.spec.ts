@@ -106,6 +106,22 @@ describe('group', () => {
 		expect(one(withBody('use(`x${a}y`);'))).toBe(one(withBody('use(`x${\na\n}y`);')));
 	});
 
+	test('a regular expression that has a brace or a quote does not upset the reading of a template literal after it', () => {
+		const code = (pattern: string, tail: string) => withBody('use(' + pattern + ', `x${a}' + tail + '`);');
+		expect(one(code('/[{]/', 'y'))).toBe(one(code('/[{]/', 'y')));
+		expect(one(code('/[{]/', 'y'))).not.toBe(one(code('/[{]/', 'z')));
+		expect(one(code('/`/', 'y'))).not.toBe(one(code('/`/', 'z')));
+		expect(one(code('/[{]/', 'y'))).not.toBe(one(code('/[}]/', 'y')));
+		// A `}` of a regular expression inside a substitution does not end the substitution
+		expect(one(withBody('use(`x${/}/.test(a)}y`);'))).toBe(one(withBody('use(`x${ /}/.test(a) }y`);')));
+	});
+
+	test('a hole at the end of an array is not a trailing comma', () => {
+		expect(one(withBody('use([1,,]);'))).not.toBe(one(withBody('use([1,]);')));
+		expect(one(withBody('use([,]);'))).not.toBe(one(withBody('use([]);')));
+		expect(one(withBody('use([1,]);'))).toBe(one(withBody('use([1]);')));
+	});
+
 	test('the order of the keys of an object', () => {
 		expect(one(withBody('use({ a: 1, b: 2 });'))).toBe(one(withBody('use({ b: 2, a: 1 });')));
 	});

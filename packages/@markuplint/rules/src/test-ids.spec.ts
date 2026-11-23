@@ -1,4 +1,4 @@
-import { readdirSync, readFileSync } from 'node:fs';
+import { existsSync, readdirSync, readFileSync } from 'node:fs';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 
@@ -91,12 +91,7 @@ function read(file: string): Spec {
 				);
 			}
 		}
-		if (
-			ts.isCallExpression(node) &&
-			isTestCall(node) &&
-			node.arguments[0] &&
-			!ts.isNumericLiteral(node.arguments[0])
-		) {
+		if (ts.isCallExpression(node) && isTestCall(node) && node.arguments[0]) {
 			// `test.each(table)` takes its table in the callee, so the name is always the first argument of the call
 			// that has a callback; the callee of the table call is itself a `test` call that is skipped below.
 			const hasCallback = node.arguments.some(argument => ts.isFunctionLike(argument));
@@ -126,8 +121,12 @@ function ruleOf(spec: Spec): string | undefined {
 }
 
 describe('the rule spec test IDs', () => {
-	test('the registry names rule directories', () => {
-		expect(rules.size).toBeGreaterThan(100);
+	test('the registry that this reads is the set of the rule directories, so that no rule is left out of the check', () => {
+		// A rule has a `meta.ts`; a registry line that this does not recognize would shrink the set without a word.
+		const withMeta = readdirSync(SRC, { withFileTypes: true })
+			.filter(entry => entry.isDirectory() && existsSync(path.join(SRC, entry.name, 'meta.ts')))
+			.map(entry => entry.name);
+		expect([...rules].toSorted()).toStrictEqual(withMeta.toSorted());
 		expect(specs.length).toBeGreaterThan(100);
 	});
 
