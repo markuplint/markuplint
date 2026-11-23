@@ -14,7 +14,7 @@ beforeAll(() => {
 	t = translator(locale);
 });
 
-test('[attr-check-invalid-001] OneCodePointChar List', () => {
+test('OneCodePointChar List', () => {
 	expect(
 		valueCheck(t, 'accesskey', '@ 12', {
 			token: 'OneCodePointChar',
@@ -31,7 +31,7 @@ test('[attr-check-invalid-001] OneCodePointChar List', () => {
 	]);
 });
 
-test('[attr-check-invalid-002] BrowsingContextNameOrKeyword', () => {
+test('BrowsingContextNameOrKeyword', () => {
 	expect(valueCheck(t, 'target', '', 'BrowsingContextNameOrKeyword')).toStrictEqual([
 		'the "target" attribute must not be empty. It expects either "_blank", "_self", "_parent", "_top", "browsing context name" (https://html.spec.whatwg.org/multipage/document-sequences.html#valid-browsing-context-name-or-keyword)',
 		{
@@ -42,14 +42,14 @@ test('[attr-check-invalid-002] BrowsingContextNameOrKeyword', () => {
 	]);
 });
 
-test('[attr-check-invalid-003] BCP47', () => {
+test('BCP47', () => {
 	// Empty string is valid per HTML LS (language set to unknown)
 	expect(valueCheck(t, 'lang', '', 'BCP47')).toBe(false);
 	// Invalid BCP47 should return error
 	expect(valueCheck(t, 'lang', ':::', 'BCP47')).not.toBe(false);
 });
 
-test('[attr-check-invalid-004] DateTime', () => {
+test('DateTime', () => {
 	expect(valueCheck(t, 'datetime', '200-1-1', 'DateTime')).toStrictEqual([
 		'the year part of the "datetime" attribute expects four or more digits (https://html.spec.whatwg.org/multipage/text-level-semantics.html#datetime-value)',
 		{
@@ -76,7 +76,7 @@ test('[attr-check-invalid-004] DateTime', () => {
 	]);
 });
 
-test('[attr-check-invalid-005] Directive', () => {
+test('Directive', () => {
 	const directive = {
 		directive: ['find '],
 		token: '<complex-selector-list>',
@@ -98,7 +98,7 @@ test('[attr-check-invalid-005] Directive', () => {
  * attrCheck must short-circuit to "valid" when a spec declares such a type.
  * These tests lock the guard in place so a regression cannot silently remove it.
  */
-test('[attr-check-issue-3685-001] ConditionalAttributeType[] short-circuits to valid', () => {
+test('ConditionalAttributeType[] short-circuits to valid', () => {
 	const spec: AttrSpec = {
 		name: 'value',
 		type: [
@@ -111,7 +111,7 @@ test('[attr-check-issue-3685-001] ConditionalAttributeType[] short-circuits to v
 	expect(attrCheck(t, 'value', '', true, spec)).toBe(false);
 });
 
-test('[attr-check-issue-3685-002] array of Enum is NOT treated as conditional (falls through)', () => {
+test('array of Enum is NOT treated as conditional (falls through)', () => {
 	const spec: AttrSpec = {
 		name: 'autocomplete',
 		type: [{ enum: ['on', 'off'] }],
@@ -124,13 +124,13 @@ test('[attr-check-issue-3685-002] array of Enum is NOT treated as conditional (f
 	expect((invalid as readonly unknown[]).length).toBeGreaterThan(0);
 });
 
-test('[attr-check-issue-3685-003] empty type array falls through to normal path', () => {
+test('empty type array falls through to normal path', () => {
 	const spec: AttrSpec = { name: 'x-attr', type: [] };
 	// Empty types array → guard returns false (length 0) → normal loop doesn't run → empty violations.
 	expect(attrCheck(t, 'x-attr', 'anything', true, spec)).toStrictEqual([]);
 });
 
-test('[attr-check-issue-3685-004] array of Number is NOT treated as conditional', () => {
+test('array of Number is NOT treated as conditional', () => {
 	const spec: AttrSpec = {
 		name: 'count',
 		type: [{ type: 'integer', gte: 0 }],

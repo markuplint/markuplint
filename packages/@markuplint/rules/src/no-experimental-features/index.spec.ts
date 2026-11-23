@@ -6,7 +6,7 @@ import { describe, test, expect } from 'vitest';
 import rule from './index.js';
 
 describe('experimental elements/attributes', () => {
-	test('[no-experimental-features-invalid-001] warns about experimental attributes', async () => {
+	test('[no-experimental-features-001] warns about experimental attributes', async () => {
 		// "credentialless" on <iframe> is experimental in spec data
 		const { violations } = await mlRuleTest(rule, '<iframe credentialless></iframe>', {
 			rule: true,
@@ -18,7 +18,7 @@ describe('experimental elements/attributes', () => {
 });
 
 describe('ignoreFeatures', () => {
-	test('[no-experimental-features-valid-001] ignore attribute by pattern', async () => {
+	test('[no-experimental-features-002] ignore attribute by pattern', async () => {
 		const { violations } = await mlRuleTest(rule, '<iframe credentialless></iframe>', {
 			rule: {
 				options: {
@@ -31,7 +31,7 @@ describe('ignoreFeatures', () => {
 });
 
 describe('default severity', () => {
-	test('[no-experimental-features-invalid-002] severity is warning by default', async () => {
+	test('[no-experimental-features-003] severity is warning by default', async () => {
 		const { violations } = await mlRuleTest(rule, '<iframe credentialless></iframe>', {
 			rule: true,
 		});
@@ -40,7 +40,7 @@ describe('default severity', () => {
 	});
 });
 
-test('[no-experimental-features-issue-3740-001] web-component pretendered to experimental HTML reports', async () => {
+test('[no-experimental-features-004] web-component pretendered to experimental HTML reports', async () => {
 	const { violations } = await mlRuleTest(rule, '<x-iframe credentialless></x-iframe>', {
 		pretenders: [{ selector: 'x-iframe', as: { element: 'iframe', inheritAttrs: true } }],
 		rule: true,
@@ -53,7 +53,7 @@ test('[no-experimental-features-issue-3740-001] web-component pretendered to exp
 });
 
 describe('attribute name case', () => {
-	test('[no-experimental-features-issue-4309-001] HTML: an attribute written in upper case is the experimental one', async () => {
+	test('[no-experimental-features-005] HTML: an attribute written in upper case is the experimental one', async () => {
 		const { violations } = await mlRuleTest(rule, '<iframe CREDENTIALLESS></iframe>', { rule: true });
 		expect(violations).toStrictEqual([
 			{
@@ -66,7 +66,7 @@ describe('attribute name case', () => {
 		]);
 	});
 
-	test('[no-experimental-features-issue-4309-002] HTML: ignoreFeatures keys match in any spelling', async () => {
+	test('[no-experimental-features-006] HTML: ignoreFeatures keys match in any spelling', async () => {
 		const attrUpper = await mlRuleTest(rule, '<iframe credentialless></iframe>', {
 			rule: { options: { ignoreFeatures: ['iframe[CREDENTIALLESS]'] } },
 		});
@@ -93,7 +93,7 @@ describe('attribute name case', () => {
 		]);
 	});
 
-	test('[no-experimental-features-issue-4309-003] HTML: the ignoreFeatures of an element replaces that of the rule, each element keeping its own', async () => {
+	test('[no-experimental-features-007] HTML: the ignoreFeatures of an element replaces that of the rule, each element keeping its own', async () => {
 		const { violations } = await mlRuleTest(
 			rule,
 			'<iframe class="a" CREDENTIALLESS></iframe><iframe class="b" CREDENTIALLESS></iframe><iframe class="c" CREDENTIALLESS></iframe>',
@@ -122,7 +122,7 @@ describe('attribute name case', () => {
 		]);
 	});
 
-	test('[no-experimental-features-issue-4309-004] Svelte: the element part is exact and the attribute part folds', async () => {
+	test('[no-experimental-features-008] Svelte: the element part is exact and the attribute part folds', async () => {
 		const parser = { '.*': '@markuplint/svelte-parser' };
 		const elementUpper = await mlRuleTest(rule, '<iframe CREDENTIALLESS></iframe>', {
 			parser,
@@ -144,7 +144,7 @@ describe('attribute name case', () => {
 		expect(attrUpper.violations).toStrictEqual([]);
 	});
 
-	test('[no-experimental-features-issue-4309-005] JSX: an HTML element folds the attribute names', async () => {
+	test('[no-experimental-features-009] JSX: an HTML element folds the attribute names', async () => {
 		const parser = { '.*': '@markuplint/jsx-parser' };
 		const reported = await mlRuleTest(rule, '<iframe CREDENTIALLESS />', { parser, rule: true });
 		expect(reported.violations).toStrictEqual([
@@ -164,7 +164,7 @@ describe('attribute name case', () => {
 	});
 });
 
-test('[no-experimental-features-issue-4584-001] the message is in Japanese with locale ja', async () => {
+test('[no-experimental-features-010] the message is in Japanese with locale ja', async () => {
 	const { violations } = await mlRuleTest(rule, '<iframe credentialless></iframe>', { rule: true }, false, 'ja');
 
 	expect(violations).toStrictEqual([
@@ -181,7 +181,7 @@ test('[no-experimental-features-issue-4584-001] the message is in Japanese with 
 describe('SVG', () => {
 	const textPath = '<svg><textPath href="#p" side="left"></textPath></svg>';
 
-	test('[no-experimental-features-issue-4701-001] an attribute that the data flags experimental is reported', async () => {
+	test('[no-experimental-features-011] an attribute that the data flags experimental is reported', async () => {
 		const { violations } = await mlRuleTest(rule, textPath, { rule: true });
 		expect(violations).toStrictEqual([
 			{
@@ -194,7 +194,7 @@ describe('SVG', () => {
 		]);
 	});
 
-	test('[no-experimental-features-issue-4701-002] a stable feature is not reported', async () => {
+	test('[no-experimental-features-012] a stable feature is not reported', async () => {
 		const { violations } = await mlRuleTest(rule, '<svg><textPath href="#p" startOffset="10"></textPath></svg>', {
 			rule: true,
 		});
@@ -202,14 +202,14 @@ describe('SVG', () => {
 	});
 
 	test.each(['textPath[side]', 'textpath[side]', 'textPath[SIDE]'])(
-		'[no-experimental-features-issue-4701-003] ignoreFeatures names the feature by the local name, in any spelling in HTML: %s',
+		'[no-experimental-features-013] ignoreFeatures names the feature by the local name, in any spelling in HTML: %s',
 		async key => {
 			const { violations } = await mlRuleTest(rule, textPath, { rule: { options: { ignoreFeatures: [key] } } });
 			expect(violations).toStrictEqual([]);
 		},
 	);
 
-	test('[no-experimental-features-issue-4701-004] ignoreFeatures of another attribute of the element does not ignore it', async () => {
+	test('[no-experimental-features-014] ignoreFeatures of another attribute of the element does not ignore it', async () => {
 		const { violations } = await mlRuleTest(rule, textPath, {
 			rule: { options: { ignoreFeatures: ['textPath[startOffset]'] } },
 		});
@@ -217,7 +217,7 @@ describe('SVG', () => {
 	});
 
 	test.each(['textpath', 'TEXTPATH'])(
-		'[no-experimental-features-issue-4701-006] the HTML parser restores the case of the element, so <%s> in an <svg> is textPath',
+		'[no-experimental-features-015] the HTML parser restores the case of the element, so <%s> in an <svg> is textPath',
 		async tag => {
 			const { violations } = await mlRuleTest(rule, `<svg><${tag} href="#p" side="left"></${tag}></svg>`, {
 				rule: true,
@@ -234,7 +234,7 @@ describe('SVG', () => {
 		},
 	);
 
-	test('[no-experimental-features-issue-4701-007] a language that keeps the case of a tag name does not take <textpath> for textPath', async () => {
+	test('[no-experimental-features-016] a language that keeps the case of a tag name does not take <textpath> for textPath', async () => {
 		const { violations } = await mlRuleTest(rule, '<svg><textpath href="#p" side="left" /></svg>', {
 			parser: { '.*': '@markuplint/jsx-parser' },
 			rule: true,
@@ -247,7 +247,7 @@ describe('SVG', () => {
 // so they pass a spec of their own.
 const specs = { '.*': fileURLToPath(new URL('flagged-fixture.mjs', import.meta.url)) };
 
-test('[no-experimental-features-issue-4701-005] an SVG or MathML element and a MathML attribute that the spec flags experimental are reported', async () => {
+test('[no-experimental-features-017] an SVG or MathML element and a MathML attribute that the spec flags experimental are reported', async () => {
 	const { violations } = await mlRuleTest(rule, '<svg><circle></circle></svg><math><mi flag="x">x</mi></math>', {
 		rule: true,
 		specs,
@@ -277,7 +277,7 @@ test('[no-experimental-features-issue-4701-005] an SVG or MathML element and a M
 	]);
 });
 
-test("[no-experimental-features-invalid-003] the experimental flag of an attribute is BCD's (BCD-derived: bumping BCD can change this)", async () => {
+test("[no-experimental-features-018] the experimental flag of an attribute is BCD's (BCD-derived: bumping BCD can change this)", async () => {
 	const { violations } = await mlRuleTest(rule, '<div headingoffset="1"></div>');
 	expect(violations).toStrictEqual([
 		{

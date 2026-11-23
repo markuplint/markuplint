@@ -3,19 +3,19 @@ import { describe, expect, test } from 'vitest';
 
 import rule from './index.js';
 
-test('[aria-prop-requires-role-valid-001] global prop without role', async () => {
+test('[aria-prop-requires-role-001] global prop without role', async () => {
 	expect((await mlRuleTest(rule, '<div aria-label="text"></div>')).violations).toStrictEqual([]);
 });
 
-test('[aria-prop-requires-role-valid-002] any prop with role', async () => {
+test('[aria-prop-requires-role-002] any prop with role', async () => {
 	expect((await mlRuleTest(rule, '<div role="button" aria-pressed="true"></div>')).violations).toStrictEqual([]);
 });
 
-test('[aria-prop-requires-role-issue-4309-001] a global prop in upper case without role is valid', async () => {
+test('[aria-prop-requires-role-003] a global prop in upper case without role is valid', async () => {
 	expect((await mlRuleTest(rule, '<div ARIA-LABEL="text"></div>')).violations).toStrictEqual([]);
 });
 
-test('[aria-prop-requires-role-issue-4309-002] a non-global prop in upper case without role is reported by the spelling written', async () => {
+test('[aria-prop-requires-role-004] a non-global prop in upper case without role is reported by the spelling written', async () => {
 	const { violations } = await mlRuleTest(rule, '<cite ARIA-PRESSED="true"></cite>');
 	expect(violations).toStrictEqual([
 		{
@@ -28,7 +28,7 @@ test('[aria-prop-requires-role-issue-4309-002] a non-global prop in upper case w
 	]);
 });
 
-test('[aria-prop-requires-role-issue-4309-003] JSX: an upper-case aria-* on an HTML element is checked like the lower-case one', async () => {
+test('[aria-prop-requires-role-005] JSX: an upper-case aria-* on an HTML element is checked like the lower-case one', async () => {
 	const { violations } = await mlRuleTest(rule, '<cite ARIA-PRESSED="true" />', {
 		parser: { '.*': '@markuplint/jsx-parser' },
 	});
@@ -43,7 +43,7 @@ test('[aria-prop-requires-role-issue-4309-003] JSX: an upper-case aria-* on an H
 	]);
 });
 
-test('[aria-prop-requires-role-issue-4309-004] JSX: an upper-case aria-* on an svg element is not an ARIA attribute', async () => {
+test('[aria-prop-requires-role-006] JSX: an upper-case aria-* on an svg element is not an ARIA attribute', async () => {
 	const parser = { '.*': '@markuplint/jsx-parser' };
 	expect((await mlRuleTest(rule, '<svg><circle ARIA-PRESSED="true" /></svg>', { parser })).violations).toStrictEqual(
 		[],
@@ -70,7 +70,7 @@ describe('issue-4744', () => {
 	const code =
 		'<template><div role="menu"><template v-if="x"><div role="group"><button type="button" role="menuitemradio" aria-checked="true">g</button></div></template></div></template>';
 
-	test('[aria-prop-requires-role-issue-4744-001] the role of an element in a template that is rendered away is kept', async () => {
+	test('[aria-prop-requires-role-007] the role of an element in a template that is rendered away is kept', async () => {
 		const { violations } = await mlRuleTest(rule, code, {
 			parser: { '.*': '@markuplint/vue-parser' },
 			specs: { '.*': '@markuplint/vue-spec' },
@@ -78,7 +78,7 @@ describe('issue-4744', () => {
 		expect(violations).toStrictEqual([]);
 	});
 
-	test('[aria-prop-requires-role-issue-4744-002] it is kept without @markuplint/vue-spec as well', async () => {
+	test('[aria-prop-requires-role-008] it is kept without @markuplint/vue-spec as well', async () => {
 		const { violations } = await mlRuleTest(rule, code, { parser: { '.*': '@markuplint/vue-parser' } });
 		expect(violations).toStrictEqual([]);
 	});

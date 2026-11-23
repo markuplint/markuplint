@@ -3,22 +3,22 @@ import { test, expect } from 'vitest';
 
 import rule from './index.js';
 
-test('[no-input-file-value-valid-001] no value attribute', async () => {
+test('[no-input-file-value-001] no value attribute', async () => {
 	const { violations } = await mlRuleTest(rule, '<input type="file">');
 	expect(violations.length).toBe(0);
 });
 
-test('[no-input-file-value-valid-002] empty value attribute', async () => {
+test('[no-input-file-value-002] empty value attribute', async () => {
 	const { violations } = await mlRuleTest(rule, '<input type="file" value="">');
 	expect(violations.length).toBe(0);
 });
 
-test('[no-input-file-value-valid-003] non-file type with value', async () => {
+test('[no-input-file-value-003] non-file type with value', async () => {
 	const { violations } = await mlRuleTest(rule, '<input type="text" value="anything">');
 	expect(violations.length).toBe(0);
 });
 
-test('[no-input-file-value-invalid-001] non-empty value on type=file', async () => {
+test('[no-input-file-value-004] non-empty value on type=file', async () => {
 	const { violations } = await mlRuleTest(rule, '<input type="file" value="document.pdf">');
 	expect(violations).toStrictEqual([
 		{
@@ -31,13 +31,13 @@ test('[no-input-file-value-invalid-001] non-empty value on type=file', async () 
 	]);
 });
 
-test('[no-input-file-value-invalid-002] case-insensitive type matching', async () => {
+test('[no-input-file-value-005] case-insensitive type matching', async () => {
 	const { violations } = await mlRuleTest(rule, '<input type="FILE" value="x">');
 	expect(violations.length).toBe(1);
 	expect(violations[0]?.raw).toBe('x');
 });
 
-test('[no-input-file-value-issue-4584-001] the names of the attributes are shown as written (`type` and `value` are also keywords) with locale ja', async () => {
+test('[no-input-file-value-006] the names of the attributes are shown as written (`type` and `value` are also keywords) with locale ja', async () => {
 	const { violations } = await mlRuleTest(rule, '<input type="file" value="x">', undefined, false, 'ja');
 
 	expect(violations).toStrictEqual([

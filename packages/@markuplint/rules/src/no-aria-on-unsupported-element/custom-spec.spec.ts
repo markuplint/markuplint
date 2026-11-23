@@ -15,7 +15,7 @@ import rule from './index.js';
  */
 const specs = { '.*': fileURLToPath(new URL('no-aria-fixture.mjs', import.meta.url)) };
 
-test('[no-aria-on-unsupported-element-invalid-001] aria-* and role are reported', async () => {
+test('[no-aria-on-unsupported-element-006] aria-* and role are reported', async () => {
 	const { violations } = await mlRuleTest(rule, '<div role="button" aria-label="x"></div>', { specs });
 	expect(violations).toStrictEqual([
 		{
@@ -35,7 +35,7 @@ test('[no-aria-on-unsupported-element-invalid-001] aria-* and role are reported'
 	]);
 });
 
-test('[no-aria-on-unsupported-element-issue-4309-001] an upper-case aria-* is reported like the lower-case one', async () => {
+test('[no-aria-on-unsupported-element-007] an upper-case aria-* is reported like the lower-case one', async () => {
 	const { violations } = await mlRuleTest(rule, '<div ARIA-LABEL="x"></div>', { specs });
 	expect(violations).toStrictEqual([
 		{
@@ -48,7 +48,7 @@ test('[no-aria-on-unsupported-element-issue-4309-001] an upper-case aria-* is re
 	]);
 });
 
-test('[no-aria-on-unsupported-element-issue-4309-002] JSX: an upper-case aria-* on an HTML element is reported', async () => {
+test('[no-aria-on-unsupported-element-008] JSX: an upper-case aria-* on an HTML element is reported', async () => {
 	const { violations } = await mlRuleTest(rule, '<div ARIA-LABEL="x" />', {
 		parser: { '.*': '@markuplint/jsx-parser' },
 		specs,
@@ -64,7 +64,7 @@ test('[no-aria-on-unsupported-element-issue-4309-002] JSX: an upper-case aria-* 
 	]);
 });
 
-test('[no-aria-on-unsupported-element-issue-4309-003] JSX: an upper-case aria-* on an svg element is not an ARIA attribute', async () => {
+test('[no-aria-on-unsupported-element-009] JSX: an upper-case aria-* on an svg element is not an ARIA attribute', async () => {
 	const parser = { '.*': '@markuplint/jsx-parser' };
 	expect((await mlRuleTest(rule, '<svg ARIA-LABEL="x" />', { parser, specs })).violations).toStrictEqual([]);
 

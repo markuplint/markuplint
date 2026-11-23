@@ -3,22 +3,22 @@ import { test, expect } from 'vitest';
 
 import rule from './index.js';
 
-test('[no-circular-aria-owns-valid-001] a chain that is not a cycle', async () => {
+test('[no-circular-aria-owns-001] a chain that is not a cycle', async () => {
 	expect(
 		(await mlRuleTest(rule, '<div id="a" aria-owns="b"></div><div id="b" aria-owns="c"></div><div id="c"></div>'))
 			.violations,
 	).toStrictEqual([]);
 });
 
-test('[no-circular-aria-owns-valid-002] an element that lists its own child', async () => {
+test('[no-circular-aria-owns-002] an element that lists its own child', async () => {
 	expect((await mlRuleTest(rule, '<div aria-owns="c"><span id="c"></span></div>')).violations).toStrictEqual([]);
 });
 
-test('[no-circular-aria-owns-valid-003] an ID that no element has', async () => {
+test('[no-circular-aria-owns-003] an ID that no element has', async () => {
 	expect((await mlRuleTest(rule, '<div aria-owns="missing"></div>')).violations).toStrictEqual([]);
 });
 
-test('[no-circular-aria-owns-invalid-001] an element that lists its own ID', async () => {
+test('[no-circular-aria-owns-004] an element that lists its own ID', async () => {
 	expect((await mlRuleTest(rule, '<div id="a" aria-owns="a"></div>')).violations).toStrictEqual([
 		{
 			severity: 'error',
@@ -30,7 +30,7 @@ test('[no-circular-aria-owns-invalid-001] an element that lists its own ID', asy
 	]);
 });
 
-test('[no-circular-aria-owns-invalid-002] an element that lists its ancestor', async () => {
+test('[no-circular-aria-owns-005] an element that lists its ancestor', async () => {
 	expect((await mlRuleTest(rule, '<div id="a"><span aria-owns="a"></span></div>')).violations).toStrictEqual([
 		{
 			severity: 'error',
@@ -42,7 +42,7 @@ test('[no-circular-aria-owns-invalid-002] an element that lists its ancestor', a
 	]);
 });
 
-test('[no-circular-aria-owns-invalid-003] every reference of a cycle is reported', async () => {
+test('[no-circular-aria-owns-006] every reference of a cycle is reported', async () => {
 	expect(
 		(await mlRuleTest(rule, '<div id="a" aria-owns="b"></div><div id="b" aria-owns="a"></div>')).violations,
 	).toStrictEqual([
@@ -63,7 +63,7 @@ test('[no-circular-aria-owns-invalid-003] every reference of a cycle is reported
 	]);
 });
 
-test('[no-circular-aria-owns-invalid-004] with locale ja', async () => {
+test('[no-circular-aria-owns-007] with locale ja', async () => {
 	expect(
 		(await mlRuleTest(rule, '<div id="a" aria-owns="a"></div>', undefined, false, 'ja')).violations,
 	).toStrictEqual([
@@ -77,7 +77,7 @@ test('[no-circular-aria-owns-invalid-004] with locale ja', async () => {
 	]);
 });
 
-test('[no-circular-aria-owns-invalid-005] reported under WAI-ARIA 1.2 as well', async () => {
+test('[no-circular-aria-owns-008] reported under WAI-ARIA 1.2 as well', async () => {
 	expect(
 		(
 			await mlRuleTest(rule, '<div id="a" aria-owns="a"></div>', {
@@ -95,7 +95,7 @@ test('[no-circular-aria-owns-invalid-005] reported under WAI-ARIA 1.2 as well', 
 	]);
 });
 
-test('[no-circular-aria-owns-invalid-006] a reference that closes a cycle once another cycle is broken', async () => {
+test('[no-circular-aria-owns-009] a reference that closes a cycle once another cycle is broken', async () => {
 	expect(
 		(await mlRuleTest(rule, '<div id="x"><div id="o" aria-owns="x"><span id="z" aria-owns="o"></span></div></div>'))
 			.violations,

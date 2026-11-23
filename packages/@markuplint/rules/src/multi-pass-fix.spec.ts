@@ -86,7 +86,7 @@ const breakRule = new MLRule<RuleConfigValue, PlainData>({
 });
 
 describe('multi-pass fix', () => {
-	test('[multi-pass-fix-fix-001] no overlap (single pass resolves all)', async () => {
+	test('no overlap (single pass resolves all)', async () => {
 		const { fixedCode } = await mlTest(
 			"<DIV CLASS='a'></DIV>",
 			{
@@ -102,7 +102,7 @@ describe('multi-pass fix', () => {
 		expect(fixedCode).toBe('<div CLASS="a"></div>');
 	});
 
-	test('[multi-pass-fix-fix-002] overlap resolved in multi-pass', async () => {
+	test('overlap resolved in multi-pass', async () => {
 		const { fixedCode } = await mlTest(
 			"<DIV DATA-FOO='val'></DIV>",
 			{
@@ -119,7 +119,7 @@ describe('multi-pass fix', () => {
 		expect(fixedCode).toBe('<div data-foo="val"></div>');
 	});
 
-	test('[multi-pass-fix-fix-003] fix produces no changes on valid code', async () => {
+	test('fix produces no changes on valid code', async () => {
 		const { fixedCode } = await mlTest(
 			'<div></div>',
 			{
@@ -136,7 +136,7 @@ describe('multi-pass fix', () => {
 		expect(fixedCode).toBe('<div></div>');
 	});
 
-	test('[multi-pass-fix-fix-004] 5+ rules applied together (overlap only, no cascading)', async () => {
+	test('5+ rules applied together (overlap only, no cascading)', async () => {
 		const { fixedCode } = await mlTest(
 			"<DIV CLASS='a' CLASS='b' DATA-FOO='val'></DIV>",
 			{
@@ -157,7 +157,7 @@ describe('multi-pass fix', () => {
 });
 
 describe('multi-pass fix with parsers', () => {
-	test('[multi-pass-fix-fix-005] Pug: attr-value-quotes + no-boolean-attr-value', async () => {
+	test('Pug: attr-value-quotes + no-boolean-attr-value', async () => {
 		const { fixedCode } = await mlTest(
 			"input(disabled='disabled' type='text')",
 			{
@@ -175,7 +175,7 @@ describe('multi-pass fix with parsers', () => {
 		expect(fixedCode).toBe("input(disabled='disabled' type='text')");
 	});
 
-	test('[multi-pass-fix-fix-006] Pug: attr-value-quotes + no-default-value', async () => {
+	test('Pug: attr-value-quotes + no-default-value', async () => {
 		const { fixedCode } = await mlTest(
 			"input(type='text' placeholder='enter')",
 			{
@@ -194,7 +194,7 @@ describe('multi-pass fix with parsers', () => {
 		expect(fixedCode).toBe("input( placeholder='enter')");
 	});
 
-	test('[multi-pass-fix-fix-007] Vue: attr-value-quotes + no-boolean-attr-value', async () => {
+	test('Vue: attr-value-quotes + no-boolean-attr-value', async () => {
 		const { fixedCode } = await mlTest(
 			"<template><input disabled='disabled' data-foo='bar' /></template>",
 			{
@@ -211,7 +211,7 @@ describe('multi-pass fix with parsers', () => {
 		expect(fixedCode).toBe('<template><input disabled data-foo="bar" /></template>');
 	});
 
-	test('[multi-pass-fix-fix-008] Vue: attr-value-quotes + no-duplicate-attr', async () => {
+	test('Vue: attr-value-quotes + no-duplicate-attr', async () => {
 		const { fixedCode } = await mlTest(
 			"<template><div class='a' class='b'></div></template>",
 			{
@@ -229,7 +229,7 @@ describe('multi-pass fix with parsers', () => {
 		expect(fixedCode).toBe('<template><div class="a"></div></template>');
 	});
 
-	test('[multi-pass-fix-fix-009] JSX: no-boolean-attr-value on element with multiple attrs', async () => {
+	test('JSX: no-boolean-attr-value on element with multiple attrs', async () => {
 		const { fixedCode } = await mlTest(
 			'<><input disabled="disabled" required="required" /></>',
 			{
@@ -245,7 +245,7 @@ describe('multi-pass fix with parsers', () => {
 		expect(fixedCode).toBe('<><input disabled required /></>');
 	});
 
-	test('[multi-pass-fix-fix-010] Markdown: attr-value-quotes + no-boolean-attr-value on raw HTML', async () => {
+	test('Markdown: attr-value-quotes + no-boolean-attr-value on raw HTML', async () => {
 		const { fixedCode } = await mlTest(
 			"Some text\n\n<input disabled='disabled' data-foo='bar' />\n",
 			{
@@ -264,7 +264,7 @@ describe('multi-pass fix with parsers', () => {
 });
 
 describe('finalPassViolations', () => {
-	test('[multi-pass-fix-issue-3890-001] non-fixable violations remain after re-verification of the fixed code', async () => {
+	test('non-fixable violations remain after re-verification of the fixed code', async () => {
 		const { violations, fixedCode, fixSummary } = await mlTest(
 			"<img src='x' foo='bar'>",
 			{
@@ -286,7 +286,7 @@ describe('finalPassViolations', () => {
 		expect(fixSummary?.finalPassViolations?.map(v => v.ruleId)).toStrictEqual(['no-unknown-attr']);
 	});
 
-	test('[multi-pass-fix-issue-3890-002] empty when every violation is fixed', async () => {
+	test('empty when every violation is fixed', async () => {
 		const { violations, fixedCode, fixSummary } = await mlTest(
 			"<DIV DATA-FOO='val'></DIV>",
 			{
@@ -308,7 +308,7 @@ describe('finalPassViolations', () => {
 		expect(fixSummary?.finalPassViolations).toStrictEqual([]);
 	});
 
-	test('[multi-pass-fix-issue-3890-003] undefined when no fixes are applied', async () => {
+	test('undefined when no fixes are applied', async () => {
 		const { fixSummary } = await mlTest(
 			'<div></div>',
 			{
@@ -325,7 +325,7 @@ describe('finalPassViolations', () => {
 		expect(fixSummary?.finalPassViolations).toBeUndefined();
 	});
 
-	test('[multi-pass-fix-issue-3890-004] config-error violations are kept in finalPassViolations', async () => {
+	test('config-error violations are kept in finalPassViolations', async () => {
 		const { fixedCode, fixSummary } = await mlTest(
 			"<img src='x'>",
 			{
@@ -343,7 +343,7 @@ describe('finalPassViolations', () => {
 		expect(fixSummary?.finalPassViolations?.map(v => v.ruleId)).toStrictEqual(['config-error']);
 	});
 
-	test('[multi-pass-fix-issue-3890-005] reflects the final code when the pass limit is reached', async () => {
+	test('reflects the final code when the pass limit is reached', async () => {
 		// Non-converging, non-cycling fixes: a → b → … → k (10 passes, no repeat)
 		const { fixedCode, fixSummary } = await mlTest(
 			'<div data-x="a"></div>',
@@ -382,7 +382,7 @@ describe('finalPassViolations', () => {
 });
 
 describe('cycle detection', () => {
-	test('[multi-pass-fix-issue-3891-001] 2-pass oscillation (A → B → A) stops early', async () => {
+	test('2-pass oscillation (A → B → A) stops early', async () => {
 		const sourceCode = '<div data-x="a"></div>';
 		const { fixedCode, fixSummary } = await mlTest(
 			sourceCode,
@@ -403,7 +403,7 @@ describe('cycle detection', () => {
 		expect(fixSummary?.finalPassViolations).toHaveLength(2);
 	});
 
-	test('[multi-pass-fix-issue-3891-002] 3-pass oscillation (A → B → C → A) is detected', async () => {
+	test('3-pass oscillation (A → B → C → A) is detected', async () => {
 		const sourceCode = '<div data-x="a"></div>';
 		const { fixedCode, fixSummary } = await mlTest(
 			sourceCode,
@@ -430,7 +430,7 @@ describe('cycle detection', () => {
 });
 
 describe('unparsable fix output', () => {
-	test('[multi-pass-fix-fix-011] multi-pass: pass producing unparsable code is rolled back', async () => {
+	test('multi-pass: pass producing unparsable code is rolled back', async () => {
 		const sourceCode = '<><div data-x="a"></div></>';
 		const { fixedCode, fixSummary } = await mlTest(
 			sourceCode,
@@ -453,7 +453,7 @@ describe('unparsable fix output', () => {
 		expect(fixSummary?.finalPassViolations).toBeUndefined();
 	});
 
-	test('[multi-pass-fix-fix-012] single pass: unparsable output is rolled back, not written', async () => {
+	test('single pass: unparsable output is rolled back, not written', async () => {
 		const sourceCode = '<><div data-x="a"></div></>';
 		const { fixedCode, fixSummary } = await mlTest(
 			sourceCode,

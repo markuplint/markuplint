@@ -4,7 +4,7 @@ import { test, expect, describe } from 'vitest';
 import rule from './index.js';
 
 describe('Basic', () => {
-	test('[no-table-cell-overlap-invalid-001] Overlap', async () => {
+	test('[no-table-cell-overlap-001] Overlap', async () => {
 		const { violations } = await mlRuleTest(
 			rule,
 			`
@@ -51,7 +51,7 @@ describe('Basic', () => {
 		]);
 	});
 
-	test('[no-table-cell-overlap-issue-4489-001] a table in the content of a template is checked', async () => {
+	test('[no-table-cell-overlap-002] a table in the content of a template is checked', async () => {
 		const { violations } = await mlRuleTest(
 			rule,
 			'<template><table><tr><td></td><td rowspan="2"></td></tr><tr><td colspan="2"></td></tr></table></template>',
@@ -67,7 +67,7 @@ describe('Basic', () => {
 		]);
 	});
 
-	test('[no-table-cell-overlap-invalid-002] Overlap suppresses the other checks of the same table', async () => {
+	test('[no-table-cell-overlap-003] Overlap suppresses the other checks of the same table', async () => {
 		const { violations } = await mlRuleTest(
 			rule,
 			`
@@ -97,7 +97,7 @@ describe('Basic', () => {
 });
 
 describe('Valid', () => {
-	test('[no-table-cell-overlap-valid-001] User reported case - table with rowspan and colspan', async () => {
+	test('[no-table-cell-overlap-004] User reported case - table with rowspan and colspan', async () => {
 		const { violations } = await mlRuleTest(
 			rule,
 			`
@@ -116,7 +116,7 @@ describe('Valid', () => {
 		expect(violations).toStrictEqual([]);
 	});
 
-	test('[no-table-cell-overlap-valid-002] Empty table', async () => {
+	test('[no-table-cell-overlap-005] Empty table', async () => {
 		const { violations } = await mlRuleTest(
 			rule,
 			`
@@ -127,7 +127,7 @@ describe('Valid', () => {
 		expect(violations).toStrictEqual([]);
 	});
 
-	test('[no-table-cell-overlap-valid-003] Complex nested rowspan/colspan without overlap', async () => {
+	test('[no-table-cell-overlap-006] Complex nested rowspan/colspan without overlap', async () => {
 		const { violations } = await mlRuleTest(
 			rule,
 			`
@@ -150,7 +150,7 @@ describe('Valid', () => {
 		expect(violations).toStrictEqual([]);
 	});
 
-	test('[no-table-cell-overlap-valid-004] Rowspan only table - valid structure', async () => {
+	test('[no-table-cell-overlap-007] Rowspan only table - valid structure', async () => {
 		const { violations } = await mlRuleTest(
 			rule,
 			`
@@ -170,7 +170,7 @@ describe('Valid', () => {
 		expect(violations).toStrictEqual([]);
 	});
 
-	test('[no-table-cell-overlap-valid-005] Table with tbody rowspan/colspan combinations', async () => {
+	test('[no-table-cell-overlap-008] Table with tbody rowspan/colspan combinations', async () => {
 		const { violations } = await mlRuleTest(
 			rule,
 			`
@@ -199,7 +199,7 @@ describe('Valid', () => {
 	});
 });
 
-test('[no-table-cell-overlap-issue-4584-001] the names of the attributes are shown as written with locale ja', async () => {
+test('[no-table-cell-overlap-009] the names of the attributes are shown as written with locale ja', async () => {
 	const { violations } = await mlRuleTest(
 		rule,
 		'<template><table><tr><td></td><td rowspan="2"></td></tr><tr><td colspan="2"></td></tr></table></template>',

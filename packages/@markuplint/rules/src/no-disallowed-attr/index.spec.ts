@@ -3,7 +3,7 @@ import { describe, expect, test } from 'vitest';
 
 import rule from './index.js';
 
-test('[no-disallowed-attr-invalid-001] noUse flag', async () => {
+test('[no-disallowed-attr-001] noUse flag', async () => {
 	const { violations } = await mlRuleTest(rule, '<dialog tabindex="-1"></dialog>');
 	expect(violations).toStrictEqual([
 		{
@@ -16,7 +16,7 @@ test('[no-disallowed-attr-invalid-001] noUse flag', async () => {
 	]);
 });
 
-test('[no-disallowed-attr-valid-001] noUse flag with allowAttrs (allowAttrs overrides noUse)', async () => {
+test('[no-disallowed-attr-002] noUse flag with allowAttrs (allowAttrs overrides noUse)', async () => {
 	const { violations } = await mlRuleTest(rule, '<dialog tabindex="0"></dialog>', {
 		rule: {
 			options: {
@@ -29,7 +29,7 @@ test('[no-disallowed-attr-valid-001] noUse flag with allowAttrs (allowAttrs over
 	expect(violations).toStrictEqual([]);
 });
 
-test('[no-disallowed-attr-issue-2455] #2455', async () => {
+test('[no-disallowed-attr-003] #2455', async () => {
 	const sourceCode = `<picture>
   <source src="path/to" media="(query: value)">
   <source srcset="path/to" media="(query: value)">
@@ -71,7 +71,7 @@ test('[no-disallowed-attr-issue-2455] #2455', async () => {
 	]);
 });
 
-test('[no-disallowed-attr-issue-3631-001] importmap must not have src', async () => {
+test('[no-disallowed-attr-004] importmap must not have src', async () => {
 	const { violations } = await mlRuleTest(rule, '<script type="importmap" src="map.json"></script>');
 	expect(violations).toStrictEqual([
 		{
@@ -84,7 +84,7 @@ test('[no-disallowed-attr-issue-3631-001] importmap must not have src', async ()
 	]);
 });
 
-test('[no-disallowed-attr-issue-3631-002] speculationrules must not have src', async () => {
+test('[no-disallowed-attr-005] speculationrules must not have src', async () => {
 	const { violations } = await mlRuleTest(rule, '<script type="speculationrules" src="rules.json"></script>');
 	expect(violations).toStrictEqual([
 		{
@@ -97,7 +97,7 @@ test('[no-disallowed-attr-issue-3631-002] speculationrules must not have src', a
 	]);
 });
 
-test('[no-disallowed-attr-issue-3631-003] importmap must not have async', async () => {
+test('[no-disallowed-attr-006] importmap must not have async', async () => {
 	const { violations } = await mlRuleTest(rule, '<script type="importmap" async></script>');
 	expect(violations).toStrictEqual([
 		{
@@ -110,7 +110,7 @@ test('[no-disallowed-attr-issue-3631-003] importmap must not have async', async 
 	]);
 });
 
-test('[no-disallowed-attr-issue-3631-004] importmap must not have defer', async () => {
+test('[no-disallowed-attr-007] importmap must not have defer', async () => {
 	const { violations } = await mlRuleTest(rule, '<script type="importmap" defer></script>');
 	expect(violations).toStrictEqual([
 		{
@@ -123,7 +123,7 @@ test('[no-disallowed-attr-issue-3631-004] importmap must not have defer', async 
 	]);
 });
 
-test('[no-disallowed-attr-issue-3631-005] importmap must not have nomodule', async () => {
+test('[no-disallowed-attr-008] importmap must not have nomodule', async () => {
 	const { violations } = await mlRuleTest(rule, '<script type="importmap" nomodule></script>');
 	expect(violations).toStrictEqual([
 		{
@@ -136,7 +136,7 @@ test('[no-disallowed-attr-issue-3631-005] importmap must not have nomodule', asy
 	]);
 });
 
-test('[no-disallowed-attr-issue-3631-006] module with defer is disallowed', async () => {
+test('[no-disallowed-attr-009] module with defer is disallowed', async () => {
 	// HTML LS §4.12.1: "Module scripts may specify the async attribute, but must not
 	// specify the defer attribute." Applies whether or not src is present.
 	expect((await mlRuleTest(rule, '<script type="module" src="m.js" defer></script>')).violations).toStrictEqual([
@@ -150,7 +150,7 @@ test('[no-disallowed-attr-issue-3631-006] module with defer is disallowed', asyn
 	]);
 });
 
-test('[no-disallowed-attr-issue-3631-007] charset requires src', async () => {
+test('[no-disallowed-attr-010] charset requires src', async () => {
 	const { violations } = await mlRuleTest(rule, '<script charset="utf-8">x</script>');
 	expect(violations).toStrictEqual([
 		{
@@ -163,19 +163,19 @@ test('[no-disallowed-attr-issue-3631-007] charset requires src', async () => {
 	]);
 });
 
-test('[no-disallowed-attr-issue-3631-008] valid: module with async', async () => {
+test('[no-disallowed-attr-011] valid: module with async', async () => {
 	expect((await mlRuleTest(rule, '<script type="module" async>x</script>')).violations).toStrictEqual([]);
 });
 
-test('[no-disallowed-attr-issue-3631-009] valid: classic with src and defer', async () => {
+test('[no-disallowed-attr-012] valid: classic with src and defer', async () => {
 	expect((await mlRuleTest(rule, '<script src="app.js" defer></script>')).violations).toStrictEqual([]);
 });
 
-test('[no-disallowed-attr-issue-3631-010] valid: classic with src and async', async () => {
+test('[no-disallowed-attr-013] valid: classic with src and async', async () => {
 	expect((await mlRuleTest(rule, '<script src="app.js" async></script>')).violations).toStrictEqual([]);
 });
 
-test('[no-disallowed-attr-issue-3631-011] module without src + defer is disallowed', async () => {
+test('[no-disallowed-attr-014] module without src + defer is disallowed', async () => {
 	// HTML LS §4.12.1: module + defer is disallowed regardless of src
 	const { violations } = await mlRuleTest(rule, '<script type="module" defer>x</script>');
 	expect(violations).toStrictEqual([
@@ -189,7 +189,7 @@ test('[no-disallowed-attr-issue-3631-011] module without src + defer is disallow
 	]);
 });
 
-test('[no-disallowed-attr-issue-3631-012] classic without src + blocking is disallowed', async () => {
+test('[no-disallowed-attr-015] classic without src + blocking is disallowed', async () => {
 	// HTML LS §6.7.3: blocking must be omitted unless src is present
 	const { violations } = await mlRuleTest(rule, '<script blocking="render">x</script>');
 	expect(violations).toStrictEqual([
@@ -203,7 +203,7 @@ test('[no-disallowed-attr-issue-3631-012] classic without src + blocking is disa
 	]);
 });
 
-test('[no-disallowed-attr-issue-3631-013] module without src + blocking is disallowed', async () => {
+test('[no-disallowed-attr-016] module without src + blocking is disallowed', async () => {
 	const { violations } = await mlRuleTest(rule, '<script type="module" blocking="render">x</script>');
 	expect(violations).toStrictEqual([
 		{
@@ -216,7 +216,7 @@ test('[no-disallowed-attr-issue-3631-013] module without src + blocking is disal
 	]);
 });
 
-test('[no-disallowed-attr-issue-3631-014] data block (application/json) without src + blocking is disallowed', async () => {
+test('[no-disallowed-attr-017] data block (application/json) without src + blocking is disallowed', async () => {
 	const { violations } = await mlRuleTest(rule, '<script type="application/json" blocking="render">{"k":1}</script>');
 	expect(violations).toStrictEqual([
 		{
@@ -229,17 +229,17 @@ test('[no-disallowed-attr-issue-3631-014] data block (application/json) without 
 	]);
 });
 
-test('[no-disallowed-attr-issue-3631-015] valid: classic with src + blocking', async () => {
+test('[no-disallowed-attr-018] valid: classic with src + blocking', async () => {
 	expect((await mlRuleTest(rule, '<script src="app.js" blocking="render"></script>')).violations).toStrictEqual([]);
 });
 
-test('[no-disallowed-attr-issue-3631-016] valid: module with src + blocking', async () => {
+test('[no-disallowed-attr-019] valid: module with src + blocking', async () => {
 	expect(
 		(await mlRuleTest(rule, '<script type="module" src="m.js" blocking="render"></script>')).violations,
 	).toStrictEqual([]);
 });
 
-test('[no-disallowed-attr-issue-3631-017] importmap must not have crossorigin', async () => {
+test('[no-disallowed-attr-020] importmap must not have crossorigin', async () => {
 	const { violations } = await mlRuleTest(rule, '<script type="importmap" crossorigin="anonymous">{}</script>');
 	expect(violations).toStrictEqual([
 		{
@@ -252,7 +252,7 @@ test('[no-disallowed-attr-issue-3631-017] importmap must not have crossorigin', 
 	]);
 });
 
-test('[no-disallowed-attr-issue-3631-018] speculationrules must not have crossorigin', async () => {
+test('[no-disallowed-attr-021] speculationrules must not have crossorigin', async () => {
 	const { violations } = await mlRuleTest(
 		rule,
 		'<script type="speculationrules" crossorigin="anonymous">{}</script>',
@@ -268,7 +268,7 @@ test('[no-disallowed-attr-issue-3631-018] speculationrules must not have crossor
 	]);
 });
 
-test('[no-disallowed-attr-issue-3631-019] data block must not have crossorigin', async () => {
+test('[no-disallowed-attr-022] data block must not have crossorigin', async () => {
 	const { violations } = await mlRuleTest(
 		rule,
 		'<script type="application/json" crossorigin="anonymous">{"k":1}</script>',
@@ -284,7 +284,7 @@ test('[no-disallowed-attr-issue-3631-019] data block must not have crossorigin',
 	]);
 });
 
-test('[no-disallowed-attr-issue-3631-020] importmap must not have fetchpriority', async () => {
+test('[no-disallowed-attr-023] importmap must not have fetchpriority', async () => {
 	const { violations } = await mlRuleTest(rule, '<script type="importmap" fetchpriority="high">{}</script>');
 	expect(violations).toStrictEqual([
 		{
@@ -297,7 +297,7 @@ test('[no-disallowed-attr-issue-3631-020] importmap must not have fetchpriority'
 	]);
 });
 
-test('[no-disallowed-attr-issue-3631-021] speculationrules must not have fetchpriority', async () => {
+test('[no-disallowed-attr-024] speculationrules must not have fetchpriority', async () => {
 	const { violations } = await mlRuleTest(rule, '<script type="speculationrules" fetchpriority="high">{}</script>');
 	expect(violations).toStrictEqual([
 		{
@@ -310,7 +310,7 @@ test('[no-disallowed-attr-issue-3631-021] speculationrules must not have fetchpr
 	]);
 });
 
-test('[no-disallowed-attr-issue-3631-022] data block must not have fetchpriority', async () => {
+test('[no-disallowed-attr-025] data block must not have fetchpriority', async () => {
 	const { violations } = await mlRuleTest(
 		rule,
 		'<script type="application/json" fetchpriority="high">{"k":1}</script>',
@@ -326,7 +326,7 @@ test('[no-disallowed-attr-issue-3631-022] data block must not have fetchpriority
 	]);
 });
 
-test('[no-disallowed-attr-issue-3631-023] inline classic script must not have fetchpriority', async () => {
+test('[no-disallowed-attr-026] inline classic script must not have fetchpriority', async () => {
 	// HTML LS §4.12.1 table: fetchpriority is "Yes" only for external classic
 	// and external module scripts; inline scripts are "·" (not applicable).
 	const { violations } = await mlRuleTest(rule, '<script fetchpriority="high">x</script>');
@@ -341,7 +341,7 @@ test('[no-disallowed-attr-issue-3631-023] inline classic script must not have fe
 	]);
 });
 
-test('[no-disallowed-attr-issue-3631-024] inline module script must not have fetchpriority', async () => {
+test('[no-disallowed-attr-027] inline module script must not have fetchpriority', async () => {
 	const { violations } = await mlRuleTest(rule, '<script type="module" fetchpriority="high">x</script>');
 	expect(violations).toStrictEqual([
 		{
@@ -354,7 +354,7 @@ test('[no-disallowed-attr-issue-3631-024] inline module script must not have fet
 	]);
 });
 
-test('[no-disallowed-attr-issue-3631-025] data block must not have src', async () => {
+test('[no-disallowed-attr-028] data block must not have src', async () => {
 	// HTML LS: "It must only be specified for classic scripts and JavaScript
 	// module scripts."
 	const { violations } = await mlRuleTest(rule, '<script type="application/json" src="data.json">{"k":1}</script>');
@@ -369,7 +369,7 @@ test('[no-disallowed-attr-issue-3631-025] data block must not have src', async (
 	]);
 });
 
-test('[no-disallowed-attr-issue-3631-026] data block must not have nomodule', async () => {
+test('[no-disallowed-attr-029] data block must not have nomodule', async () => {
 	const { violations } = await mlRuleTest(rule, '<script type="application/json" nomodule>{"k":1}</script>');
 	expect(violations).toStrictEqual([
 		{
@@ -382,7 +382,7 @@ test('[no-disallowed-attr-issue-3631-026] data block must not have nomodule', as
 	]);
 });
 
-test('[no-disallowed-attr-issue-3631-027] importmap must not have referrerpolicy', async () => {
+test('[no-disallowed-attr-030] importmap must not have referrerpolicy', async () => {
 	const { violations } = await mlRuleTest(rule, '<script type="importmap" referrerpolicy="no-referrer">{}</script>');
 	expect(violations).toStrictEqual([
 		{
@@ -395,7 +395,7 @@ test('[no-disallowed-attr-issue-3631-027] importmap must not have referrerpolicy
 	]);
 });
 
-test('[no-disallowed-attr-issue-3631-028] valid: inline classic script with crossorigin', async () => {
+test('[no-disallowed-attr-031] valid: inline classic script with crossorigin', async () => {
 	// HTML LS §4.12.1 table footnote: "Although inline scripts have no initial
 	// fetches, the crossorigin and referrerpolicy attribute on inline scripts
 	// affects the credentials mode and referrer policy used by module imports,
@@ -403,7 +403,7 @@ test('[no-disallowed-attr-issue-3631-028] valid: inline classic script with cros
 	expect((await mlRuleTest(rule, '<script crossorigin="anonymous">x</script>')).violations).toStrictEqual([]);
 });
 
-test('[no-disallowed-attr-issue-3631-029] valid: inline module script with crossorigin and referrerpolicy', async () => {
+test('[no-disallowed-attr-032] valid: inline module script with crossorigin and referrerpolicy', async () => {
 	expect(
 		(
 			await mlRuleTest(
@@ -414,7 +414,7 @@ test('[no-disallowed-attr-issue-3631-029] valid: inline module script with cross
 	).toStrictEqual([]);
 });
 
-test('[no-disallowed-attr-issue-3631-030] valid: external classic script with crossorigin, referrerpolicy, and fetchpriority', async () => {
+test('[no-disallowed-attr-033] valid: external classic script with crossorigin, referrerpolicy, and fetchpriority', async () => {
 	expect(
 		(
 			await mlRuleTest(
@@ -425,13 +425,13 @@ test('[no-disallowed-attr-issue-3631-030] valid: external classic script with cr
 	).toStrictEqual([]);
 });
 
-test('[no-disallowed-attr-issue-3631-031] valid: external module script with fetchpriority', async () => {
+test('[no-disallowed-attr-034] valid: external module script with fetchpriority', async () => {
 	expect(
 		(await mlRuleTest(rule, '<script type="module" src="m.js" fetchpriority="low"></script>')).violations,
 	).toStrictEqual([]);
 });
 
-test('[no-disallowed-attr-issue-3631-032] valid: explicit JavaScript MIME type is a classic script', async () => {
+test('[no-disallowed-attr-035] valid: explicit JavaScript MIME type is a classic script', async () => {
 	// mimesniff: "A string is a JavaScript MIME type essence match if it is an
 	// ASCII case-insensitive match for one of the JavaScript MIME type essence
 	// strings."
@@ -440,7 +440,7 @@ test('[no-disallowed-attr-issue-3631-032] valid: explicit JavaScript MIME type i
 	).toStrictEqual([]);
 });
 
-test('[no-disallowed-attr-issue-3631-033] data block with src and async reports both', async () => {
+test('[no-disallowed-attr-036] data block with src and async reports both', async () => {
 	const { violations } = await mlRuleTest(rule, '<script type="application/json" src="data.json" async></script>');
 	expect(violations).toStrictEqual([
 		{
@@ -460,7 +460,7 @@ test('[no-disallowed-attr-issue-3631-033] data block with src and async reports 
 	]);
 });
 
-test('[no-disallowed-attr-issue-3631-034] valid: type value is matched ASCII case-insensitively', async () => {
+test('[no-disallowed-attr-037] valid: type value is matched ASCII case-insensitively', async () => {
 	// HTML LS: 'Setting the attribute to an ASCII case-insensitive match for
 	// "module"...' — the conditions rely on the attribute selector i flag.
 	expect(
@@ -468,7 +468,7 @@ test('[no-disallowed-attr-issue-3631-034] valid: type value is matched ASCII cas
 	).toStrictEqual([]);
 });
 
-test('[no-disallowed-attr-issue-3631-035] data block must not have referrerpolicy', async () => {
+test('[no-disallowed-attr-038] data block must not have referrerpolicy', async () => {
 	const { violations } = await mlRuleTest(
 		rule,
 		'<script type="application/json" referrerpolicy="no-referrer">{"k":1}</script>',
@@ -484,7 +484,7 @@ test('[no-disallowed-attr-issue-3631-035] data block must not have referrerpolic
 	]);
 });
 
-test('[no-disallowed-attr-issue-3631-036] valid: every JavaScript MIME type essence denotes a classic script', async () => {
+test('[no-disallowed-attr-039] valid: every JavaScript MIME type essence denotes a classic script', async () => {
 	// Spot-check a second essence string besides text/javascript so a typo in
 	// the enumerated alternatives cannot survive unnoticed.
 	expect(
@@ -492,7 +492,7 @@ test('[no-disallowed-attr-issue-3631-036] valid: every JavaScript MIME type esse
 	).toStrictEqual([]);
 });
 
-test('[no-disallowed-attr-parser-001] JSX: dynamic type leaves the script kind indeterminate, defer is not flagged', async () => {
+test('[no-disallowed-attr-040] JSX: dynamic type leaves the script kind indeterminate, defer is not flagged', async () => {
 	// The applicability conditions are positive lists keyed on the type
 	// attribute. A dynamic type value cannot be resolved statically, so the
 	// condition check must be skipped instead of reporting "disallowed".
@@ -508,7 +508,7 @@ test('[no-disallowed-attr-parser-001] JSX: dynamic type leaves the script kind i
 	expect(violations).toStrictEqual([]);
 });
 
-test('[no-disallowed-attr-parser-002] JSX: static importmap type still flags src', async () => {
+test('[no-disallowed-attr-041] JSX: static importmap type still flags src', async () => {
 	// The dynamic-value skip must not suppress detection when every
 	// attribute the condition references has a static value.
 	const { violations } = await mlRuleTest(rule, '<script type="importmap" src="map.json" />', {
@@ -530,7 +530,7 @@ test('[no-disallowed-attr-parser-002] JSX: static importmap type still flags src
 	]);
 });
 
-test('[no-disallowed-attr-parser-003] Vue: dynamic :type leaves the script kind indeterminate, defer is not flagged', async () => {
+test('[no-disallowed-attr-042] Vue: dynamic :type leaves the script kind indeterminate, defer is not flagged', async () => {
 	const { violations } = await mlRuleTest(
 		rule,
 		'<template><script :type="scriptType" src="app.js" defer></script></template>',
@@ -546,7 +546,7 @@ test('[no-disallowed-attr-parser-003] Vue: dynamic :type leaves the script kind 
 	expect(violations).toStrictEqual([]);
 });
 
-test('[no-disallowed-attr-issue-3639-001] is attribute on autonomous custom element is disallowed', async () => {
+test('[no-disallowed-attr-043] is attribute on autonomous custom element is disallowed', async () => {
 	const { violations } = await mlRuleTest(rule, '<my-element is="my-other"></my-element>');
 	expect(violations).toStrictEqual([
 		expect.objectContaining({
@@ -557,29 +557,29 @@ test('[no-disallowed-attr-issue-3639-001] is attribute on autonomous custom elem
 	]);
 });
 
-test('[no-disallowed-attr-issue-3639-002] is attribute on built-in element is valid', async () => {
+test('[no-disallowed-attr-044] is attribute on built-in element is valid', async () => {
 	const { violations } = await mlRuleTest(rule, '<button is="fancy-button">Click</button>');
 	const isViolations = violations.filter(v => v.message?.includes('"is"'));
 	expect(isViolations).toStrictEqual([]);
 });
 
-test('[no-disallowed-attr-issue-3639-003] autonomous custom element without is attribute is valid', async () => {
+test('[no-disallowed-attr-045] autonomous custom element without is attribute is valid', async () => {
 	const { violations } = await mlRuleTest(rule, '<my-element data-foo="bar"></my-element>');
 	const isViolations = violations.filter(v => v.message?.includes('"is"'));
 	expect(isViolations).toStrictEqual([]);
 });
 
-test('[no-disallowed-attr-issue-3733-001] itemscope alone is valid', async () => {
+test('[no-disallowed-attr-046] itemscope alone is valid', async () => {
 	const { violations } = await mlRuleTest(rule, '<div itemscope></div>');
 	expect(violations).toStrictEqual([]);
 });
 
-test('[no-disallowed-attr-issue-3733-002] itemscope + itemtype is valid', async () => {
+test('[no-disallowed-attr-047] itemscope + itemtype is valid', async () => {
 	const { violations } = await mlRuleTest(rule, '<div itemscope itemtype="https://schema.org/Thing"></div>');
 	expect(violations).toStrictEqual([]);
 });
 
-test('[no-disallowed-attr-issue-3733-003] itemscope + itemtype + itemid is valid', async () => {
+test('[no-disallowed-attr-048] itemscope + itemtype + itemid is valid', async () => {
 	const { violations } = await mlRuleTest(
 		rule,
 		'<div itemscope itemtype="https://schema.org/Thing" itemid="https://example.com/r"></div>',
@@ -587,7 +587,7 @@ test('[no-disallowed-attr-issue-3733-003] itemscope + itemtype + itemid is valid
 	expect(violations).toStrictEqual([]);
 });
 
-test('[no-disallowed-attr-issue-3733-004] itemid without itemscope/itemtype is disallowed', async () => {
+test('[no-disallowed-attr-049] itemid without itemscope/itemtype is disallowed', async () => {
 	const { violations } = await mlRuleTest(rule, '<div itemid="https://example.com/r"></div>');
 	expect(violations).toStrictEqual([
 		{
@@ -600,7 +600,7 @@ test('[no-disallowed-attr-issue-3733-004] itemid without itemscope/itemtype is d
 	]);
 });
 
-test('[no-disallowed-attr-issue-3733-005] itemid with itemscope but without itemtype is disallowed', async () => {
+test('[no-disallowed-attr-050] itemid with itemscope but without itemtype is disallowed', async () => {
 	const { violations } = await mlRuleTest(rule, '<div itemscope itemid="https://example.com/r"></div>');
 	expect(violations).toStrictEqual([
 		{
@@ -613,7 +613,7 @@ test('[no-disallowed-attr-issue-3733-005] itemid with itemscope but without item
 	]);
 });
 
-test('[no-disallowed-attr-issue-3733-006] itemid with itemtype but without itemscope is disallowed (both itemid and itemtype reported)', async () => {
+test('[no-disallowed-attr-051] itemid with itemtype but without itemscope is disallowed (both itemid and itemtype reported)', async () => {
 	const { violations } = await mlRuleTest(
 		rule,
 		'<div itemtype="https://schema.org/Thing" itemid="https://example.com/r"></div>',
@@ -636,7 +636,7 @@ test('[no-disallowed-attr-issue-3733-006] itemid with itemtype but without items
 	]);
 });
 
-test('[no-disallowed-attr-issue-3733-007] itemtype without itemscope is disallowed', async () => {
+test('[no-disallowed-attr-052] itemtype without itemscope is disallowed', async () => {
 	const { violations } = await mlRuleTest(rule, '<div itemtype="https://schema.org/Thing"></div>');
 	expect(violations).toStrictEqual([
 		{
@@ -649,7 +649,7 @@ test('[no-disallowed-attr-issue-3733-007] itemtype without itemscope is disallow
 	]);
 });
 
-test('[no-disallowed-attr-issue-3733-008] itemtype without itemscope is disallowed regardless of its own value', async () => {
+test('[no-disallowed-attr-053] itemtype without itemscope is disallowed regardless of its own value', async () => {
 	// Pre-split, `invalid-attr`'s single value-then-condition pipeline
 	// skipped the condition check once attrCheck already reported an
 	// invalid-value for the same attribute (helpers.ts isValidAttr: the
@@ -673,12 +673,12 @@ test('[no-disallowed-attr-issue-3733-008] itemtype without itemscope is disallow
 	]);
 });
 
-test('[no-disallowed-attr-valid-002] link rel="stylesheet" with disabled is accepted', async () => {
+test('[no-disallowed-attr-054] link rel="stylesheet" with disabled is accepted', async () => {
 	const { violations } = await mlRuleTest(rule, '<link rel="stylesheet" href="style.css" disabled>');
 	expect(violations).toStrictEqual([]);
 });
 
-test('[no-disallowed-attr-invalid-002] link[disabled] without rel="stylesheet" is rejected', async () => {
+test('[no-disallowed-attr-055] link[disabled] without rel="stylesheet" is rejected', async () => {
 	// Mirrors html/elements/link/disabled-without-stylesheet-novalid.html.
 	// Spec: "The content attribute, if present, must only be specified on
 	// link elements that have a rel attribute that contains the stylesheet
@@ -687,14 +687,14 @@ test('[no-disallowed-attr-invalid-002] link[disabled] without rel="stylesheet" i
 	expect(violations.length).toBeGreaterThan(0);
 });
 
-test('[no-disallowed-attr-valid-003] case-insensitive rel still accepts disabled', async () => {
+test('[no-disallowed-attr-056] case-insensitive rel still accepts disabled', async () => {
 	// `~=` selector uses ASCII case-insensitive matching with the ` i` flag,
 	// so `StyleSheet` is treated the same as `stylesheet`.
 	const { violations } = await mlRuleTest(rule, '<link rel="StyleSheet" href="style.css" disabled>');
 	expect(violations).toStrictEqual([]);
 });
 
-test('[no-disallowed-attr-valid-004] reversed rel token order still accepts disabled', async () => {
+test('[no-disallowed-attr-057] reversed rel token order still accepts disabled', async () => {
 	const { violations } = await mlRuleTest(
 		rule,
 		'<link rel="alternate stylesheet" href="style.css" title="Print" disabled>',
@@ -702,7 +702,7 @@ test('[no-disallowed-attr-valid-004] reversed rel token order still accepts disa
 	expect(violations).toStrictEqual([]);
 });
 
-test('[no-disallowed-attr-invalid-003] link[disabled] with no rel attribute is rejected', async () => {
+test('[no-disallowed-attr-058] link[disabled] with no rel attribute is rejected', async () => {
 	// rel is itself required (or itemprop fallback), but the relevant rule
 	// pin here is the disabled-on-non-stylesheet branch — `disabled` itself
 	// should not be accepted when no stylesheet rel is asserted.
@@ -710,7 +710,7 @@ test('[no-disallowed-attr-invalid-003] link[disabled] with no rel attribute is r
 	expect(violations.some(v => typeof v.message === 'string' && v.message.includes('disabled'))).toBe(true);
 });
 
-test('[no-disallowed-attr-invalid-004] referrerpolicy without href is disallowed', async () => {
+test('[no-disallowed-attr-059] referrerpolicy without href is disallowed', async () => {
 	// Split off invalid-attr's original combined test — the unknown-name half
 	// (the literal "invalid-attr" attribute) lives in no-unknown-attr's
 	// sibling test. Pre-split, this fixture's referrerpolicy value ("invalid-value")
@@ -733,7 +733,7 @@ test('[no-disallowed-attr-invalid-004] referrerpolicy without href is disallowed
 	]);
 });
 
-test('[no-disallowed-attr-parser-004] Vue iterator: key is disallowed without v-for', async () => {
+test('[no-disallowed-attr-060] Vue iterator: key is disallowed without v-for', async () => {
 	const { violations: violations1 } = await mlRuleTest(
 		rule,
 		'<template><ul ref="ul"><li key="key"></li></ul></template>',
@@ -763,7 +763,7 @@ test('[no-disallowed-attr-parser-004] Vue iterator: key is disallowed without v-
 	expect(violations2.length).toBe(0);
 });
 
-test('[no-disallowed-attr-parser-005] React with spread attribute: condition half', async () => {
+test('[no-disallowed-attr-061] React with spread attribute: condition half', async () => {
 	// Split off invalid-attr's original combined test — the unknown-name half
 	// lives in no-unknown-attr's sibling test.
 	expect(
@@ -795,7 +795,7 @@ test('[no-disallowed-attr-parser-005] React with spread attribute: condition hal
 	).toStrictEqual([]);
 });
 
-test('[no-disallowed-attr-parser-006] React spec: noUse half of the controlled-component check', async () => {
+test('[no-disallowed-attr-062] React spec: noUse half of the controlled-component check', async () => {
 	// Split off invalid-attr's original combined test — the unknown-name half
 	// (the div value/defaultValue pair, in every combination) lives in
 	// no-unknown-attr's sibling test.
@@ -818,14 +818,14 @@ test('[no-disallowed-attr-parser-006] React spec: noUse half of the controlled-c
 	]);
 });
 
-test('[no-disallowed-attr-issue-3189] no rel: as attribute is disallowed (condition check)', async () => {
+test('[no-disallowed-attr-063] no rel: as attribute is disallowed (condition check)', async () => {
 	const { violations } = await mlRuleTest(rule, '<link href="/a.css" as="style">');
 	// `as` has condition=["[rel~='preload' i]","[rel~='modulepreload' i]"],
 	// so without rel=preload/modulepreload, the attribute itself is disallowed.
 	expect(violations.some(v => v.message.includes('"as"'))).toBe(true);
 });
 
-test('[no-disallowed-attr-invalid-005] usemap without a valid hash-name reference is disallowed', async () => {
+test('[no-disallowed-attr-064] usemap without a valid hash-name reference is disallowed', async () => {
 	// Moved from no-invalid-attr-value: "#" alone fails the HashName type in
 	// the pre-split rule, but `usemap`'s own condition (a matching `<map>` by
 	// name) is what actually fails here — resolveAttrEligibility never
@@ -834,21 +834,21 @@ test('[no-disallowed-attr-invalid-005] usemap without a valid hash-name referenc
 	expect(violations.some(v => v.raw === 'usemap')).toBe(true);
 });
 
-test('[no-disallowed-attr-invalid-006] img[sizes] without srcset is disallowed', async () => {
+test('[no-disallowed-attr-065] img[sizes] without srcset is disallowed', async () => {
 	// Moved from no-invalid-attr-value: `sizes` on img/source requires
 	// `srcset` (HTML LS §4.8.4.4.4) — a condition, not a value constraint.
 	const { violations } = await mlRuleTest(rule, '<img src="image.jpg" sizes="100vw" alt="Image">');
 	expect(violations.some(v => typeof v.message === 'string' && v.message.includes('sizes'))).toBe(true);
 });
 
-test('[no-disallowed-attr-invalid-007] picture > source[sizes] without srcset is disallowed', async () => {
+test('[no-disallowed-attr-066] picture > source[sizes] without srcset is disallowed', async () => {
 	const { violations } = await mlRuleTest(rule, '<picture><source sizes="100vw"><img src="x.jpg" alt="x"></picture>');
 	expect(violations.some(v => typeof v.message === 'string' && v.message.includes('sizes'))).toBe(true);
 });
 
 // https://html.spec.whatwg.org/multipage/input.html#file-upload-state-(type=file)
 // > The element's value attribute must be omitted.
-test('[no-disallowed-attr-invalid-008] input[type=file] must omit the value attribute, even an empty one', async () => {
+test('[no-disallowed-attr-067] input[type=file] must omit the value attribute, even an empty one', async () => {
 	const { violations } = await mlRuleTest(rule, '<input type="file" value="">');
 	expect(violations).toStrictEqual([
 		{
@@ -863,7 +863,7 @@ test('[no-disallowed-attr-invalid-008] input[type=file] must omit the value attr
 
 // https://html.spec.whatwg.org/multipage/input.html#image-button-state-(type=image)
 // > The element's value attribute must be omitted.
-test('[no-disallowed-attr-invalid-009] input[type=image] must omit the value attribute', async () => {
+test('[no-disallowed-attr-068] input[type=image] must omit the value attribute', async () => {
 	const { violations } = await mlRuleTest(rule, '<input type="image" value="go">');
 	expect(violations).toStrictEqual([
 		{
@@ -879,7 +879,7 @@ test('[no-disallowed-attr-invalid-009] input[type=image] must omit the value att
 // https://html.spec.whatwg.org/multipage/input.html#hidden-state-(type=hidden)
 // > If the name attribute is present and has a value that is an ASCII case-insensitive match for "_charset_",
 // > then the element's value attribute must be omitted.
-test('[no-disallowed-attr-invalid-010] input[type=hidden][name=_charset_] must omit the value attribute, whatever the case', async () => {
+test('[no-disallowed-attr-069] input[type=hidden][name=_charset_] must omit the value attribute, whatever the case', async () => {
 	const { violations } = await mlRuleTest(rule, '<input type="hidden" name="_charset_" value="x">');
 	expect(violations).toStrictEqual([
 		{
@@ -894,7 +894,7 @@ test('[no-disallowed-attr-invalid-010] input[type=hidden][name=_charset_] must o
 	expect(upper.violations.map(v => v.raw)).toStrictEqual(['VALUE']);
 });
 
-test('[no-disallowed-attr-valid-005] input accepts value everywhere else, and a file input without it', async () => {
+test('[no-disallowed-attr-070] input accepts value everywhere else, and a file input without it', async () => {
 	for (const html of [
 		'<input type="file">',
 		'<input type="text" value="x">',
@@ -909,7 +909,7 @@ test('[no-disallowed-attr-valid-005] input accepts value everywhere else, and a 
 	}
 });
 
-test('[no-disallowed-attr-invalid-011] the type of an input is matched without regard to case', async () => {
+test('[no-disallowed-attr-071] the type of an input is matched without regard to case', async () => {
 	for (const type of ['IMAGE', 'File']) {
 		const { violations } = await mlRuleTest(rule, `<input type="${type}" value="x">`);
 		expect(
@@ -919,7 +919,7 @@ test('[no-disallowed-attr-invalid-011] the type of an input is matched without r
 	}
 });
 
-test('[no-disallowed-attr-parser-007] Vue: a type that is an expression does not decide whether value is allowed', async () => {
+test('[no-disallowed-attr-072] Vue: a type that is an expression does not decide whether value is allowed', async () => {
 	const { violations } = await mlRuleTest(rule, '<template><input :type="t" value="x"></template>', {
 		parser: {
 			'.*': '@markuplint/vue-parser',
@@ -931,7 +931,7 @@ test('[no-disallowed-attr-parser-007] Vue: a type that is an expression does not
 	expect(violations).toStrictEqual([]);
 });
 
-test('[no-disallowed-attr-parser-008] JSX: a type that is an expression does not decide whether value is allowed', async () => {
+test('[no-disallowed-attr-073] JSX: a type that is an expression does not decide whether value is allowed', async () => {
 	const { violations } = await mlRuleTest(rule, '<input type={t} value="x" />', {
 		parser: {
 			'.*': '@markuplint/jsx-parser',
@@ -940,7 +940,7 @@ test('[no-disallowed-attr-parser-008] JSX: a type that is an expression does not
 	expect(violations).toStrictEqual([]);
 });
 
-test('[no-disallowed-attr-issue-4309-001] HTML: an upper-case data-*, aria-*, role and viewBox are not reported', async () => {
+test('[no-disallowed-attr-074] HTML: an upper-case data-*, aria-*, role and viewBox are not reported', async () => {
 	expect(
 		(await mlRuleTest(rule, '<div DATA-VALUE="1" ARIA-LABEL="label" ROLE="button"></div>')).violations,
 	).toStrictEqual([]);
@@ -956,7 +956,7 @@ test('[no-disallowed-attr-issue-4309-001] HTML: an upper-case data-*, aria-*, ro
 	]);
 });
 
-test('[no-disallowed-attr-issue-4309-002] JSX: an HTML element folds the name, so TABINDEX is tabindex', async () => {
+test('[no-disallowed-attr-075] JSX: an HTML element folds the name, so TABINDEX is tabindex', async () => {
 	const parser = { '.*': '@markuplint/jsx-parser' };
 	expect((await mlRuleTest(rule, '<div DATA-VALUE="1" />', { parser })).violations).toStrictEqual([]);
 	expect((await mlRuleTest(rule, '<dialog TABINDEX="-1" />', { parser })).violations).toStrictEqual([
@@ -970,7 +970,7 @@ test('[no-disallowed-attr-issue-4309-002] JSX: an HTML element folds the name, s
 	]);
 });
 
-test('[no-disallowed-attr-issue-4309-003] HTML: the is attribute on an autonomous custom element in any spelling', async () => {
+test('[no-disallowed-attr-076] HTML: the is attribute on an autonomous custom element in any spelling', async () => {
 	expect((await mlRuleTest(rule, '<x-el is="x-el2"></x-el>')).violations).toStrictEqual([
 		{
 			severity: 'error',
@@ -991,7 +991,7 @@ test('[no-disallowed-attr-issue-4309-003] HTML: the is attribute on an autonomou
 	]);
 });
 
-test('[no-disallowed-attr-issue-4309-004] HTML: allowAttrs matches the name in any spelling the DOM makes the same', async () => {
+test('[no-disallowed-attr-077] HTML: allowAttrs matches the name in any spelling the DOM makes the same', async () => {
 	expect(
 		(await mlRuleTest(rule, '<dialog TABINDEX="0"></dialog>', { rule: { options: { allowAttrs: ['tabindex'] } } }))
 			.violations,
@@ -1028,7 +1028,7 @@ test('[no-disallowed-attr-issue-4309-004] HTML: allowAttrs matches the name in a
 	]);
 });
 
-test('[no-disallowed-attr-issue-4309-005] HTML: ignoreAttrNamePrefix matches the name in any spelling the DOM makes the same', async () => {
+test('[no-disallowed-attr-078] HTML: ignoreAttrNamePrefix matches the name in any spelling the DOM makes the same', async () => {
 	expect(
 		(
 			await mlRuleTest(rule, '<dialog TABINDEX="0"></dialog>', {
@@ -1060,7 +1060,7 @@ test('[no-disallowed-attr-issue-4309-005] HTML: ignoreAttrNamePrefix matches the
 	]);
 });
 
-test('[no-disallowed-attr-issue-4309-006] JSX: allowAttrs folds the name on an HTML element', async () => {
+test('[no-disallowed-attr-079] JSX: allowAttrs folds the name on an HTML element', async () => {
 	const parser = { '.*': '@markuplint/jsx-parser' };
 	expect(
 		(
@@ -1091,7 +1091,7 @@ test('[no-disallowed-attr-issue-4309-006] JSX: allowAttrs folds the name on an H
 // https://html.spec.whatwg.org/multipage/embedded-content.html#attr-img-sizes
 // > If the srcset attribute is not specified, and the loading attribute is in the Lazy state, the
 // > sizes attribute may be specified with the value "auto" (ASCII case-insensitive).
-test('[no-disallowed-attr-issue-4481-001] img: sizes="auto" without srcset is allowed on a lazily loaded image', async () => {
+test('[no-disallowed-attr-080] img: sizes="auto" without srcset is allowed on a lazily loaded image', async () => {
 	expect((await mlRuleTest(rule, '<img src="a.png" alt="" loading="lazy" sizes="auto">')).violations).toStrictEqual(
 		[],
 	);
@@ -1100,7 +1100,7 @@ test('[no-disallowed-attr-issue-4481-001] img: sizes="auto" without srcset is al
 	);
 });
 
-test('[no-disallowed-attr-issue-4481-002] img: sizes="auto" without srcset is disallowed unless the image is lazily loaded', async () => {
+test('[no-disallowed-attr-081] img: sizes="auto" without srcset is disallowed unless the image is lazily loaded', async () => {
 	expect((await mlRuleTest(rule, '<img src="a.png" alt="" sizes="auto">')).violations).toStrictEqual([
 		{
 			severity: 'error',
@@ -1131,7 +1131,7 @@ test('[no-disallowed-attr-issue-4481-002] img: sizes="auto" without srcset is di
 	]);
 });
 
-test('[no-disallowed-attr-issue-4481-003] JSX: a dynamic sizes without srcset is disallowed unless the image is lazily loaded', async () => {
+test('[no-disallowed-attr-082] JSX: a dynamic sizes without srcset is disallowed unless the image is lazily loaded', async () => {
 	const parser = { '.*': '@markuplint/jsx-parser' };
 	expect((await mlRuleTest(rule, '<img src="a.png" alt="" sizes={sizes} />', { parser })).violations).toStrictEqual([
 		{
@@ -1144,20 +1144,20 @@ test('[no-disallowed-attr-issue-4481-003] JSX: a dynamic sizes without srcset is
 	]);
 });
 
-test('[no-disallowed-attr-issue-4481-004] JSX: sizes="auto" without srcset is not reported when loading is dynamic', async () => {
+test('[no-disallowed-attr-083] JSX: sizes="auto" without srcset is not reported when loading is dynamic', async () => {
 	const parser = { '.*': '@markuplint/jsx-parser' };
 	expect(
 		(await mlRuleTest(rule, '<img src="a.png" alt="" loading={loading} sizes="auto" />', { parser })).violations,
 	).toStrictEqual([]);
 });
 
-test('[no-disallowed-attr-issue-4481-005] img: a sizes value other than "auto" on a lazily loaded image without srcset is left to no-invalid-attr-value', async () => {
+test('[no-disallowed-attr-084] img: a sizes value other than "auto" on a lazily loaded image without srcset is left to no-invalid-attr-value', async () => {
 	expect((await mlRuleTest(rule, '<img src="a.png" alt="" loading="lazy" sizes="100vw">')).violations).toStrictEqual(
 		[],
 	);
 });
 
-test('[no-disallowed-attr-issue-4584-001] the message is in Japanese with locale ja', async () => {
+test('[no-disallowed-attr-085] the message is in Japanese with locale ja', async () => {
 	const { violations } = await mlRuleTest(rule, '<my-element is="my-other"></my-element>', undefined, false, 'ja');
 
 	expect(violations).toStrictEqual([
@@ -1171,7 +1171,7 @@ test('[no-disallowed-attr-issue-4584-001] the message is in Japanese with locale
 	]);
 });
 
-test('[no-disallowed-attr-invalid-012] input: capture and webkitdirectory apply to type=file only', async () => {
+test('[no-disallowed-attr-086] input: capture and webkitdirectory apply to type=file only', async () => {
 	// https://www.w3.org/TR/html-media-capture/#the-capture-attribute
 	// https://wicg.github.io/entries-api/#dom-htmlinputelement-webkitdirectory
 	const { violations } = await mlRuleTest(rule, '<input type="text" capture webkitdirectory>');
@@ -1187,13 +1187,13 @@ test('[no-disallowed-attr-invalid-012] input: capture and webkitdirectory apply 
 	]);
 });
 
-test('[no-disallowed-attr-valid-006] input: capture and webkitdirectory are allowed on type=file', async () => {
+test('[no-disallowed-attr-087] input: capture and webkitdirectory are allowed on type=file', async () => {
 	expect(
 		(await mlRuleTest(rule, '<input type="file" accept="image/*" capture webkitdirectory>')).violations,
 	).toStrictEqual([]);
 });
 
-test('[no-disallowed-attr-invalid-013] img: controls must not be specified on an image without alt or with an empty alt', async () => {
+test('[no-disallowed-attr-088] img: controls must not be specified on an image without alt or with an empty alt', async () => {
 	// https://html.spec.whatwg.org/multipage/embedded-content.html#attr-img-controls
 	for (const html of ['<img src="a.png" alt="" controls>', '<img src="a.png" controls>']) {
 		const { violations } = await mlRuleTest(rule, html);
@@ -1204,11 +1204,11 @@ test('[no-disallowed-attr-invalid-013] img: controls must not be specified on an
 	}
 });
 
-test('[no-disallowed-attr-valid-007] img: controls is allowed on an image with a non-empty alt', async () => {
+test('[no-disallowed-attr-089] img: controls is allowed on an image with a non-empty alt', async () => {
 	expect((await mlRuleTest(rule, '<img src="a.png" alt="photo" controls>')).violations).toStrictEqual([]);
 });
 
-test('[no-disallowed-attr-invalid-014] input: capture applies to type=file with an accept attribute', async () => {
+test('[no-disallowed-attr-090] input: capture applies to type=file with an accept attribute', async () => {
 	// https://www.w3.org/TR/html-media-capture/#the-capture-attribute
 	const { violations } = await mlRuleTest(rule, '<input type="file" capture="user">');
 	expect(violations).toStrictEqual([
@@ -1216,13 +1216,13 @@ test('[no-disallowed-attr-invalid-014] input: capture applies to type=file with 
 	]);
 });
 
-test('[no-disallowed-attr-valid-008] input: capture is allowed on type=file with an accept attribute', async () => {
+test('[no-disallowed-attr-091] input: capture is allowed on type=file with an accept attribute', async () => {
 	expect((await mlRuleTest(rule, '<input type="file" accept="image/*" capture="user">')).violations).toStrictEqual(
 		[],
 	);
 });
 
-test('[no-disallowed-attr-invalid-015] xml:lang is allowed only where lang is specified', async () => {
+test('[no-disallowed-attr-092] xml:lang is allowed only where lang is specified', async () => {
 	// https://html.spec.whatwg.org/multipage/dom.html#the-lang-and-xml:lang-attributes
 	const { violations } = await mlRuleTest(rule, '<div xml:lang="en"></div>');
 	expect(violations).toStrictEqual([
@@ -1247,17 +1247,17 @@ describe('issue-4435', () => {
 		raw: 'async',
 	};
 
-	test('[no-disallowed-attr-issue-4435-001] an attribute that the framework renders is judged as before', async () => {
+	test('[no-disallowed-attr-093] an attribute that the framework renders is judged as before', async () => {
 		const { violations } = await mlRuleTest(rule, '<script async={true}></script>', jsx);
 		expect(violations).toStrictEqual([disallowed]);
 	});
 
-	test('[no-disallowed-attr-issue-4435-002] code that is not a literal may be rendered, and is judged as before', async () => {
+	test('[no-disallowed-attr-094] code that is not a literal may be rendered, and is judged as before', async () => {
 		const { violations } = await mlRuleTest(rule, '<script async={cond}></script>', jsx);
 		expect(violations).toStrictEqual([disallowed]);
 	});
 
-	test('[no-disallowed-attr-issue-4435-003] an attribute that the framework does not output is not an attribute of the element', async () => {
+	test('[no-disallowed-attr-095] an attribute that the framework does not output is not an attribute of the element', async () => {
 		const { violations } = await mlRuleTest(
 			rule,
 			'<><script async={false}></script><script async={null}></script></>',

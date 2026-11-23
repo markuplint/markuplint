@@ -1,7 +1,7 @@
 import { ariaSpecs, createTestDocument } from '@markuplint/ml-core';
 import { test, expect } from 'vitest';
 
-test('[no-deprecated-aria-prop-issue-4789-003] no ARIA property is deprecated on every role that owns it, so an element whose role is not known is not judged', () => {
+test('no ARIA property is deprecated on every role that owns it, so an element whose role is not known is not judged', () => {
 	const { specs } = createTestDocument('<div></div>');
 	const deprecatedOnEveryRole: string[] = [];
 	for (const version of ['1.1', '1.2', '1.3'] as const) {

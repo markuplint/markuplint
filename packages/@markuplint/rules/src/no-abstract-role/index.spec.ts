@@ -3,11 +3,11 @@ import { test, expect } from 'vitest';
 
 import rule from './index.js';
 
-test('[no-abstract-role-valid-001] concrete role', async () => {
+test('[no-abstract-role-001] concrete role', async () => {
 	expect((await mlRuleTest(rule, '<div role="button"></div>')).violations).toStrictEqual([]);
 });
 
-test('[no-abstract-role-invalid-001] abstract role', async () => {
+test('[no-abstract-role-002] abstract role', async () => {
 	expect((await mlRuleTest(rule, '<div role="roletype"></div>')).violations).toStrictEqual([
 		{
 			severity: 'error',

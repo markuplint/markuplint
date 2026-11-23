@@ -10,7 +10,7 @@ describe('a tag rule of a component in a Vue template', () => {
 	const tagRule = { tag: 'FooBar', contents: [{ require: 'x-item' }] };
 
 	test.each(['FooBar', 'fooBar', 'foo-bar'])(
-		'[permitted-contents-issue-4314-001] the rule of FooBar applies to <%s>',
+		'[permitted-contents-270] the rule of FooBar applies to <%s>',
 		async tag => {
 			const { violations } = await mlRuleTest(rule, `<template><div><${tag}></${tag}></div></template>`, {
 				...vue,
@@ -29,7 +29,7 @@ describe('a tag rule of a component in a Vue template', () => {
 	);
 
 	test.each(['FooBar', 'fooBar', 'foo-bar'])(
-		'[permitted-contents-issue-4314-002] <%s> that has what the rule requires is valid',
+		'[permitted-contents-271] <%s> that has what the rule requires is valid',
 		async tag => {
 			const { violations } = await mlRuleTest(
 				rule,
@@ -40,7 +40,7 @@ describe('a tag rule of a component in a Vue template', () => {
 		},
 	);
 
-	test('[permitted-contents-issue-4314-003] the rule of FooBar does not apply to <foobar>, which is an unknown element', async () => {
+	test('[permitted-contents-272] the rule of FooBar does not apply to <foobar>, which is an unknown element', async () => {
 		const { violations } = await mlRuleTest(rule, '<template><div><foobar></foobar></div></template>', {
 			...vue,
 			rule: [tagRule],
@@ -56,7 +56,7 @@ describe('a tag rule of a component in a Vue template', () => {
 		]);
 	});
 
-	test('[permitted-contents-issue-4314-004] the rule of FooBar is checked for the component a pretender is made of', async () => {
+	test('[permitted-contents-273] the rule of FooBar is checked for the component a pretender is made of', async () => {
 		const { violations } = await mlRuleTest(rule, '<template><div><foo-bar></foo-bar></div></template>', {
 			...vue,
 			pretenders: [{ selector: 'FooBar', as: 'section' }],
@@ -73,7 +73,7 @@ describe('a tag rule of a component in a Vue template', () => {
 		]);
 	});
 
-	test('[permitted-contents-issue-4314-005] a required child is matched by the name of the component, whichever way it is written', async () => {
+	test('[permitted-contents-274] a required child is matched by the name of the component, whichever way it is written', async () => {
 		const { violations } = await mlRuleTest(rule, '<template><div><Tabs><tab-item /></Tabs></div></template>', {
 			...vue,
 			rule: [{ tag: 'Tabs', contents: [{ require: 'TabItem' }] }],
@@ -87,7 +87,7 @@ describe('a tag rule of a component in a Vue template', () => {
 	};
 
 	test.each(['FooBar', 'fooBar', 'foo-bar'])(
-		'[permitted-contents-issue-4314-006] the conditional contents of the rule of FooBar apply to <%s> that meets the condition',
+		'[permitted-contents-275] the conditional contents of the rule of FooBar apply to <%s> that meets the condition',
 		async tag => {
 			const { violations } = await mlRuleTest(
 				rule,
@@ -107,7 +107,7 @@ describe('a tag rule of a component in a Vue template', () => {
 	);
 
 	test.each(['FooBar', 'fooBar', 'foo-bar'])(
-		'[permitted-contents-issue-4314-007] <%s> that meets the condition and has what the conditional contents require is valid',
+		'[permitted-contents-276] <%s> that meets the condition and has what the conditional contents require is valid',
 		async tag => {
 			const { violations } = await mlRuleTest(
 				rule,
@@ -119,7 +119,7 @@ describe('a tag rule of a component in a Vue template', () => {
 	);
 
 	test.each(['FooBar', 'fooBar', 'foo-bar'])(
-		'[permitted-contents-issue-4314-008] the conditional contents of the rule of FooBar apply to <%s> that a pretender is made of',
+		'[permitted-contents-277] the conditional contents of the rule of FooBar apply to <%s> that a pretender is made of',
 		async tag => {
 			const { violations } = await mlRuleTest(
 				rule,
@@ -131,7 +131,7 @@ describe('a tag rule of a component in a Vue template', () => {
 	);
 
 	test.each(['FooBar', 'fooBar', 'foo-bar'])(
-		'[permitted-contents-issue-4314-009] <%s> that does not meet the condition is checked against the contents of the rule',
+		'[permitted-contents-278] <%s> that does not meet the condition is checked against the contents of the rule',
 		async tag => {
 			const { violations } = await mlRuleTest(
 				rule,

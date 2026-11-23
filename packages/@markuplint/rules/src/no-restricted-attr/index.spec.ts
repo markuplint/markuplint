@@ -3,7 +3,7 @@ import { describe, test, expect } from 'vitest';
 
 import rule from './index.js';
 
-test('[no-restricted-attr-valid-001] Add disallow attr', async () => {
+test('[no-restricted-attr-001] Add disallow attr', async () => {
 	expect((await mlRuleTest(rule, '<x-div x-attr></x-div>')).violations).toStrictEqual([]);
 
 	expect(
@@ -27,7 +27,7 @@ test('[no-restricted-attr-valid-001] Add disallow attr', async () => {
 	]);
 });
 
-test('[no-restricted-attr-invalid-001] Add disallow attr', async () => {
+test('[no-restricted-attr-002] Add disallow attr', async () => {
 	expect(
 		(
 			await mlRuleTest(rule, '<x-div x-attr="a"></x-div>', {
@@ -71,7 +71,7 @@ test('[no-restricted-attr-invalid-001] Add disallow attr', async () => {
 	]);
 });
 
-test('[no-restricted-attr-invalid-002] Add disallow attr', async () => {
+test('[no-restricted-attr-003] Add disallow attr', async () => {
 	expect(
 		(
 			await mlRuleTest(rule, '<x-div x-attr="a"></x-div>', {
@@ -115,7 +115,7 @@ test('[no-restricted-attr-invalid-002] Add disallow attr', async () => {
 	]);
 });
 
-test('[no-restricted-attr-invalid-003] Add disallow attr', async () => {
+test('[no-restricted-attr-004] Add disallow attr', async () => {
 	expect(
 		(
 			await mlRuleTest(rule, '<x-div x-attr="a"></x-div>', {
@@ -153,7 +153,7 @@ test('[no-restricted-attr-invalid-003] Add disallow attr', async () => {
 	]);
 });
 
-test('[no-restricted-attr-invalid-004] Add disallow attr', async () => {
+test('[no-restricted-attr-005] Add disallow attr', async () => {
 	expect(
 		(
 			await mlRuleTest(rule, '<x-div x-attr="1.1"></x-div>', {
@@ -197,7 +197,7 @@ test('[no-restricted-attr-invalid-004] Add disallow attr', async () => {
 	]);
 });
 
-test('[no-restricted-attr-invalid-005] custom rule: disallowed', async () => {
+test('[no-restricted-attr-006] custom rule: disallowed', async () => {
 	const { violations } = await mlRuleTest(rule, '<a onclick="fn()"></>', {
 		rule: {
 			options: {
@@ -241,7 +241,7 @@ describe('Disallow user-scalable=no in viewport meta (#716)', () => {
 	const expectedMessage =
 		'The "content" attribute is matched with the below disallowed patterns: /user-scalable\\s*=\\s*(no|0)\\b/i';
 
-	test('[no-restricted-attr-issue-716-001] violation: user-scalable=no', async () => {
+	test('[no-restricted-attr-007] violation: user-scalable=no', async () => {
 		const { violations } = await mlRuleTest(
 			rule,
 			'<meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no">',
@@ -258,7 +258,7 @@ describe('Disallow user-scalable=no in viewport meta (#716)', () => {
 		]);
 	});
 
-	test('[no-restricted-attr-issue-716-002] violation: user-scalable=0', async () => {
+	test('[no-restricted-attr-008] violation: user-scalable=0', async () => {
 		const { violations } = await mlRuleTest(
 			rule,
 			'<meta name="viewport" content="width=device-width, user-scalable=0">',
@@ -275,7 +275,7 @@ describe('Disallow user-scalable=no in viewport meta (#716)', () => {
 		]);
 	});
 
-	test('[no-restricted-attr-issue-716-003] violation: user-scalable=NO (case insensitive)', async () => {
+	test('[no-restricted-attr-009] violation: user-scalable=NO (case insensitive)', async () => {
 		const { violations } = await mlRuleTest(
 			rule,
 			'<meta name="viewport" content="width=device-width, user-scalable=NO">',
@@ -292,7 +292,7 @@ describe('Disallow user-scalable=no in viewport meta (#716)', () => {
 		]);
 	});
 
-	test('[no-restricted-attr-issue-716-004] violation: spaces around = sign', async () => {
+	test('[no-restricted-attr-010] violation: spaces around = sign', async () => {
 		const { violations } = await mlRuleTest(
 			rule,
 			'<meta name="viewport" content="width=device-width, user-scalable = no">',
@@ -309,7 +309,7 @@ describe('Disallow user-scalable=no in viewport meta (#716)', () => {
 		]);
 	});
 
-	test('[no-restricted-attr-issue-716-005] no violation: normal viewport', async () => {
+	test('[no-restricted-attr-011] no violation: normal viewport', async () => {
 		const { violations } = await mlRuleTest(
 			rule,
 			'<meta name="viewport" content="width=device-width, initial-scale=1">',
@@ -318,7 +318,7 @@ describe('Disallow user-scalable=no in viewport meta (#716)', () => {
 		expect(violations).toStrictEqual([]);
 	});
 
-	test('[no-restricted-attr-issue-716-006] no violation: user-scalable=yes', async () => {
+	test('[no-restricted-attr-012] no violation: user-scalable=yes', async () => {
 		const { violations } = await mlRuleTest(
 			rule,
 			'<meta name="viewport" content="width=device-width, user-scalable=yes">',
@@ -327,7 +327,7 @@ describe('Disallow user-scalable=no in viewport meta (#716)', () => {
 		expect(violations).toStrictEqual([]);
 	});
 
-	test('[no-restricted-attr-issue-716-007] no violation: user-scalable=1', async () => {
+	test('[no-restricted-attr-013] no violation: user-scalable=1', async () => {
 		const { violations } = await mlRuleTest(
 			rule,
 			'<meta name="viewport" content="width=device-width, user-scalable=1">',
@@ -336,7 +336,7 @@ describe('Disallow user-scalable=no in viewport meta (#716)', () => {
 		expect(violations).toStrictEqual([]);
 	});
 
-	test('[no-restricted-attr-issue-716-008] no violation: non-viewport meta is not affected', async () => {
+	test('[no-restricted-attr-014] no violation: non-viewport meta is not affected', async () => {
 		const { violations } = await mlRuleTest(
 			rule,
 			'<meta name="description" content="user-scalable=no">',
@@ -346,7 +346,7 @@ describe('Disallow user-scalable=no in viewport meta (#716)', () => {
 	});
 });
 
-test('[no-restricted-attr-issue-4309-001] HTML: a bare name of disallowAttrs matches the name in any spelling the DOM makes the same', async () => {
+test('[no-restricted-attr-015] HTML: a bare name of disallowAttrs matches the name in any spelling the DOM makes the same', async () => {
 	expect(
 		(await mlRuleTest(rule, '<div X-ATTR></div>', { rule: { options: { disallowAttrs: ['x-attr'] } } })).violations,
 	).toStrictEqual([
@@ -375,7 +375,7 @@ test('[no-restricted-attr-issue-4309-001] HTML: a bare name of disallowAttrs mat
 	).toStrictEqual([]);
 });
 
-test('[no-restricted-attr-issue-4309-002] HTML: a { name, value } entry matches the name in any spelling the DOM makes the same', async () => {
+test('[no-restricted-attr-016] HTML: a { name, value } entry matches the name in any spelling the DOM makes the same', async () => {
 	expect(
 		(
 			await mlRuleTest(rule, '<div X-ATTR="b"></div>', {
@@ -415,7 +415,7 @@ test('[no-restricted-attr-issue-4309-002] HTML: a { name, value } entry matches 
 	).toStrictEqual([]);
 });
 
-test('[no-restricted-attr-issue-4309-003] HTML: the record form matches the name in any spelling the DOM makes the same', async () => {
+test('[no-restricted-attr-017] HTML: the record form matches the name in any spelling the DOM makes the same', async () => {
 	expect(
 		(
 			await mlRuleTest(rule, '<div X-ATTR="b"></div>', {
@@ -440,7 +440,7 @@ test('[no-restricted-attr-issue-4309-003] HTML: the record form matches the name
 	).toStrictEqual([]);
 });
 
-test('[no-restricted-attr-issue-4309-004] JSX: an HTML element folds the name, an SVG element keeps it as written', async () => {
+test('[no-restricted-attr-018] JSX: an HTML element folds the name, an SVG element keeps it as written', async () => {
 	const parser = { '.*': '@markuplint/jsx-parser' };
 	expect(
 		(await mlRuleTest(rule, '<div X-ATTR />', { parser, rule: { options: { disallowAttrs: ['x-attr'] } } }))
@@ -472,7 +472,7 @@ test('[no-restricted-attr-issue-4309-004] JSX: an HTML element folds the name, a
 	]);
 });
 
-test('[no-restricted-attr-issue-4584-001] the disallowed values are shown as written (`list` is also a keyword) with locale ja', async () => {
+test('[no-restricted-attr-019] the disallowed values are shown as written (`list` is also a keyword) with locale ja', async () => {
 	const { violations } = await mlRuleTest(
 		rule,
 		'<div x-attr="a"></div>',

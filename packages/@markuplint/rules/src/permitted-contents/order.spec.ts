@@ -10,7 +10,7 @@ function c(models: any, innerHtml: string) {
 	return order(models, [...el.childNodes], [], specs, { ignoreHasMutableChildren: true } as Options, 0, 'pretended');
 }
 
-test('[permitted-contents-invalid-001] ordered requires', () => {
+test('ordered requires', () => {
 	const models = [
 		//
 		{ require: 'a' },
@@ -24,7 +24,7 @@ test('[permitted-contents-invalid-001] ordered requires', () => {
 	expect(c(models, '<a></a><b></b><c></c><d></d>').type).toBe('UNEXPECTED_EXTRA_NODE');
 });
 
-test('[permitted-contents-invalid-002] ordered requires with #flow', () => {
+test('ordered requires with #flow', () => {
 	const models = [
 		//
 		{ require: '#flow' },
@@ -39,7 +39,7 @@ test('[permitted-contents-invalid-002] ordered requires with #flow', () => {
 	expect(c(models, '<a></a><b></b><c></c>').type).toBe('UNEXPECTED_EXTRA_NODE');
 });
 
-test('[permitted-contents-invalid-003] ordered requires and optionals', () => {
+test('ordered requires and optionals', () => {
 	const models = [
 		//
 		{ require: 'a' },
@@ -55,7 +55,7 @@ test('[permitted-contents-invalid-003] ordered requires and optionals', () => {
 	expect(c(models, '<a></a><c></c><b></b>').type).toBe('UNEXPECTED_EXTRA_NODE');
 });
 
-test('[permitted-contents-invalid-004] ordered requires and optionals with #flow', () => {
+test('ordered requires and optionals with #flow', () => {
 	const models = [
 		//
 		{ require: 'a' },
@@ -72,7 +72,7 @@ test('[permitted-contents-invalid-004] ordered requires and optionals with #flow
 	expect(c(models, '<a></a><c></c><b></b>').type).toBe('MATCHED');
 });
 
-test('[permitted-contents-invalid-005] ordered zeroOrMore combination', () => {
+test('ordered zeroOrMore combination', () => {
 	const models = [
 		//
 		{ zeroOrMore: 'a' },
@@ -86,7 +86,7 @@ test('[permitted-contents-invalid-005] ordered zeroOrMore combination', () => {
 	expect(c(models, '<b></b><c></c>').type).toBe('MATCHED');
 });
 
-test('[permitted-contents-invalid-006] the dl element', () => {
+test('the dl element', () => {
 	const models = [
 		{
 			zeroOrMore: ':model(script-supporting)',
@@ -112,7 +112,7 @@ test('[permitted-contents-invalid-006] the dl element', () => {
 	expect(c(models, '<dt></dt><dd></dd><dt></dt>').type).toBe('UNEXPECTED_EXTRA_NODE');
 });
 
-test('[permitted-contents-invalid-007] the dl element', () => {
+test('the dl element', () => {
 	const models = [
 		{
 			oneOrMore: [
@@ -144,7 +144,7 @@ test('[permitted-contents-invalid-007] the dl element', () => {
 	expect(c(models, '<dt></dt><dd></dd><dt></dt><dd></dd><dd></dd><dt></dt>').type).toBe('MISSING_NODE_ONE_OR_MORE');
 });
 
-test('[permitted-contents-invalid-008] the dl element', () => {
+test('the dl element', () => {
 	const models = [
 		{
 			choice: [
@@ -196,7 +196,7 @@ test('[permitted-contents-invalid-008] the dl element', () => {
 	expect(c(models, '<div></div><div></div>').type).toBe('MATCHED');
 });
 
-test('[permitted-contents-invalid-009] the ruby element', () => {
+test('the ruby element', () => {
 	const models = [
 		{
 			oneOrMore: [
@@ -242,7 +242,7 @@ test('[permitted-contents-invalid-009] the ruby element', () => {
 	expect(c(models, '<span></span><rp></rp><rt></rt>').query).toBe('rp');
 });
 
-test('[permitted-contents-invalid-010] part of the ruby element', () => {
+test('part of the ruby element', () => {
 	const models = [
 		{
 			require: ':model(phrasing):not(ruby, :has(ruby))',
@@ -284,7 +284,7 @@ test('[permitted-contents-invalid-010] part of the ruby element', () => {
 	expect(c(models, '<span></span><rp></rp><rt></rt>').query).toBe('rp');
 });
 
-test('[permitted-contents-invalid-011] part of the ruby element', () => {
+test('part of the ruby element', () => {
 	const models = [
 		{
 			oneOrMore: [
@@ -315,7 +315,7 @@ test('[permitted-contents-invalid-011] part of the ruby element', () => {
 	expect(c(models, '<rp></rp><rt></rt><rp></rp><rt></rt><rp></rp>').type).toBe('MATCHED');
 });
 
-test('[permitted-contents-invalid-012] part of the ruby element', () => {
+test('part of the ruby element', () => {
 	const models = [
 		{
 			oneOrMore: [
@@ -337,7 +337,7 @@ test('[permitted-contents-invalid-012] part of the ruby element', () => {
 	expect(c(models, '<rt></rt><rp></rp><rt></rt><rp></rp>').type).toBe('MATCHED');
 });
 
-test('[permitted-contents-invalid-013] part of the ruby element', () => {
+test('part of the ruby element', () => {
 	const models = [
 		{
 			require: 'rt',
@@ -352,7 +352,7 @@ test('[permitted-contents-invalid-013] part of the ruby element', () => {
 	expect(c(models, '<rt></rt><rp></rp>').type).toBe('MATCHED');
 });
 
-test('[permitted-contents-issue-1146] #1146', () => {
+test('#1146', () => {
 	const models = [
 		{
 			choice: [

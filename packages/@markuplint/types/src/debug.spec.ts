@@ -24,12 +24,12 @@ beforeEach(() => {
 	mocks.child.enabled = false;
 });
 
-test('[types-debug-001] a disabled logger is never called', () => {
+test('a disabled logger is never called', () => {
 	expect(cssSyntaxMatch('10px', '<length>').matched).toBe(true);
 	expect(mocks.log).not.toHaveBeenCalled();
 });
 
-test('[types-debug-002] `enabled` is read at call time, so enabling later emits messages', () => {
+test('`enabled` is read at call time, so enabling later emits messages', () => {
 	cssSyntaxMatch('10px', '<length>');
 	expect(mocks.log).not.toHaveBeenCalled();
 
@@ -38,7 +38,7 @@ test('[types-debug-002] `enabled` is read at call time, so enabling later emits 
 	expect(mocks.log).toHaveBeenCalledWith('Search CSS Syntax: "%s"', '<length>');
 });
 
-test('[types-debug-003] the not-found branch logs only while the logger is enabled', () => {
+test('the not-found branch logs only while the logger is enabled', () => {
 	// @ts-expect-error An unknown CSS syntax name is passed on purpose
 	expect(() => cssSyntaxMatch('x', '<no-such-type>')).toThrow('MARKUPLINT_TYPE_NO_EXIST');
 	expect(mocks.log).not.toHaveBeenCalled();
@@ -49,7 +49,7 @@ test('[types-debug-003] the not-found branch logs only while the logger is enabl
 	expect(mocks.log).toHaveBeenCalledWith('"%s" CSS syntax not found', '<no-such-type>');
 });
 
-test('[types-debug-004] a disabled logger is never called by the datetime and autocomplete checkers', () => {
+test('a disabled logger is never called by the datetime and autocomplete checkers', () => {
 	const results = [
 		checkDateTime()('2020-01-01T10:00:00Z'),
 		checkDateTime()('not-a-datetime'),
@@ -190,7 +190,7 @@ const guardedEntryPoints: readonly (readonly [name: string, accept: () => Verdic
 ];
 
 test.each(guardedEntryPoints)(
-	'[types-debug-005] a disabled logger is never called by %s, and its verdicts hold',
+	'a disabled logger is never called by %s, and its verdicts hold',
 	(_name, accept, reject) => {
 		expect([accept().matched, reject().matched]).toStrictEqual([true, false]);
 
@@ -199,24 +199,18 @@ test.each(guardedEntryPoints)(
 	},
 );
 
-test.each(guardedEntryPoints)(
-	'[types-debug-006] an enabled logger is called by %s for an accepted input',
-	(_name, accept) => {
-		mocks.log.enabled = true;
+test.each(guardedEntryPoints)('an enabled logger is called by %s for an accepted input', (_name, accept) => {
+	mocks.log.enabled = true;
 
-		expect(accept().matched).toBe(true);
+	expect(accept().matched).toBe(true);
 
-		expect(mocks.log).toHaveBeenCalled();
-	},
-);
+	expect(mocks.log).toHaveBeenCalled();
+});
 
-test.each(guardedEntryPoints)(
-	'[types-debug-007] an enabled logger is called by %s for a rejected input',
-	(_name, _accept, reject) => {
-		mocks.log.enabled = true;
+test.each(guardedEntryPoints)('an enabled logger is called by %s for a rejected input', (_name, _accept, reject) => {
+	mocks.log.enabled = true;
 
-		expect(reject().matched).toBe(false);
+	expect(reject().matched).toBe(false);
 
-		expect(mocks.log).toHaveBeenCalled();
-	},
-);
+	expect(mocks.log).toHaveBeenCalled();
+});

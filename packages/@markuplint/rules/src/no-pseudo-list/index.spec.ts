@@ -3,7 +3,7 @@ import { test, expect } from 'vitest';
 
 import rule from './index.js';
 
-test('[no-pseudo-list-invalid-001] use bullets', async () => {
+test('[no-pseudo-list-001] use bullets', async () => {
 	expect(
 		(
 			await mlRuleTest(
@@ -18,7 +18,7 @@ test('[no-pseudo-list-invalid-001] use bullets', async () => {
 	).toBe(3);
 });
 
-test('[no-pseudo-list-invalid-002] use bullets (character reference)', async () => {
+test('[no-pseudo-list-002] use bullets (character reference)', async () => {
 	expect(
 		(
 			await mlRuleTest(
@@ -33,7 +33,7 @@ test('[no-pseudo-list-invalid-002] use bullets (character reference)', async () 
 	).toBe(3);
 });
 
-test('[no-pseudo-list-invalid-003] use katakana middle', async () => {
+test('[no-pseudo-list-003] use katakana middle', async () => {
 	expect(
 		(
 			await mlRuleTest(
@@ -48,7 +48,7 @@ test('[no-pseudo-list-invalid-003] use katakana middle', async () => {
 	).toBe(3);
 });
 
-test('[no-pseudo-list-invalid-004] Markdown like', async () => {
+test('[no-pseudo-list-004] Markdown like', async () => {
 	expect(
 		(
 			await mlRuleTest(
@@ -63,15 +63,15 @@ test('[no-pseudo-list-invalid-004] Markdown like', async () => {
 	).toBe(3);
 });
 
-test('[no-pseudo-list-valid-001] Markdown list marker character with no space', async () => {
+test('[no-pseudo-list-005] Markdown list marker character with no space', async () => {
 	expect((await mlRuleTest(rule, '<div>-MINUS</div>')).violations.length).toBe(0);
 });
 
-test('[no-pseudo-list-valid-002] Character only', async () => {
+test('[no-pseudo-list-006] Character only', async () => {
 	expect((await mlRuleTest(rule, '<div>●</div>')).violations.length).toBe(0);
 });
 
-test('[no-pseudo-list-invalid-005] continuous', async () => {
+test('[no-pseudo-list-007] continuous', async () => {
 	expect(
 		(
 			await mlRuleTest(
@@ -84,7 +84,7 @@ test('[no-pseudo-list-invalid-005] continuous', async () => {
 	).toBe(0);
 });
 
-test('[no-pseudo-list-invalid-006] emoji (surrogate pair character)', async () => {
+test('[no-pseudo-list-008] emoji (surrogate pair character)', async () => {
 	/**
 	 * surrogate pair character
 	 */
@@ -109,7 +109,7 @@ test('[no-pseudo-list-invalid-006] emoji (surrogate pair character)', async () =
 	).toBe(3);
 });
 
-test('[no-pseudo-list-issue-957] #957', async () => {
+test('[no-pseudo-list-009] #957', async () => {
 	expect(
 		(
 			await mlRuleTest(rule, '<p>{count} * 2 = {doubled}</p>', {

@@ -3,7 +3,7 @@ import { expect, test } from 'vitest';
 
 import rule from './index.js';
 
-test('[no-unescaped-char-invalid-001] a literal "<" is always flagged', async () => {
+test('[no-unescaped-char-001] a literal "<" is always flagged', async () => {
 	const { violations } = await mlRuleTest(rule, '<div id="a"> > < & " \' &amp;</div>');
 	expect(violations).toStrictEqual([
 		{
@@ -16,17 +16,17 @@ test('[no-unescaped-char-invalid-001] a literal "<" is always flagged', async ()
 	]);
 });
 
-test('[no-unescaped-char-valid-001] ">", a bare "&", and """ are conforming by default', async () => {
+test('[no-unescaped-char-002] ">", a bare "&", and """ are conforming by default', async () => {
 	const { violations } = await mlRuleTest(rule, '<div id="a"> > & " \' &amp;</div>');
 	expect(violations).toStrictEqual([]);
 });
 
-test('[no-unescaped-char-valid-002] a bare "&" in an attribute value is conforming by default', async () => {
+test('[no-unescaped-char-003] a bare "&" in an attribute value is conforming by default', async () => {
 	const { violations } = await mlRuleTest(rule, '<img src="path/to?a=b&c=d">');
 	expect(violations).toStrictEqual([]);
 });
 
-test('[no-unescaped-char-strict-001] strict flags ">", """, and a bare "&" too', async () => {
+test('[no-unescaped-char-004] strict flags ">", """, and a bare "&" too', async () => {
 	const { violations } = await mlRuleTest(rule, '<div id="a"> > < & " \' &amp;</div>', {
 		rule: { options: { strict: true } },
 	});
@@ -46,7 +46,7 @@ test('[no-unescaped-char-strict-001] strict flags ">", """, and a bare "&" too',
 	expect(violations[3]?.raw).toBe('"');
 });
 
-test('[no-unescaped-char-strict-002] strict flags a bare "&" in an attribute value', async () => {
+test('[no-unescaped-char-005] strict flags a bare "&" in an attribute value', async () => {
 	const { violations } = await mlRuleTest(rule, '<img src="path/to?a=b&c=d">', {
 		rule: { options: { strict: true } },
 	});
@@ -61,7 +61,7 @@ test('[no-unescaped-char-strict-002] strict flags a bare "&" in an attribute val
 	]);
 });
 
-test('[no-unescaped-char-issue-1074] #1074: a well-formed numeric reference is exempt even in strict mode', async () => {
+test('[no-unescaped-char-006] #1074: a well-formed numeric reference is exempt even in strict mode', async () => {
 	// `&#9660;` / `&#x25BC;` are well-formed numeric references, exempt in
 	// strict mode. `&x25BC;` (the missed-`#` typo) mixes a letter and digits,
 	// so it doesn't match the entity-shape mask (letters-only or numeric) and
@@ -82,14 +82,14 @@ test('[no-unescaped-char-issue-1074] #1074: a well-formed numeric reference is e
 	]);
 });
 
-test('[no-unescaped-char-valid-003] script content is exempt', async () => {
+test('[no-unescaped-char-007] script content is exempt', async () => {
 	const { violations } = await mlRuleTest(rule, '<script>if (i < 0) console.log("<markuplint>");</script>', {
 		rule: { options: { strict: true } },
 	});
 	expect(violations.length).toBe(0);
 });
 
-test('[no-unescaped-char-parser-001] in Vue', async () => {
+test('[no-unescaped-char-008] in Vue', async () => {
 	const { violations } = await mlRuleTest(rule, '<template><div v-if="a < b"></div></template>', {
 		parser: {
 			'.*': '@markuplint/vue-parser',
@@ -101,7 +101,7 @@ test('[no-unescaped-char-parser-001] in Vue', async () => {
 	expect(violations.length).toBe(0);
 });
 
-test('[no-unescaped-char-parser-002] in EJS', async () => {
+test('[no-unescaped-char-009] in EJS', async () => {
 	const { violations } = await mlRuleTest(rule, '<title><%- "title" _%></title>', {
 		parser: {
 			'.*': '@markuplint/ejs-parser',
@@ -110,12 +110,12 @@ test('[no-unescaped-char-parser-002] in EJS', async () => {
 	expect(violations.length).toBe(0);
 });
 
-test('[no-unescaped-char-issue-1575] #1575: no false positive on orphaned end tag', async () => {
+test('[no-unescaped-char-010] #1575: no false positive on orphaned end tag', async () => {
 	const { violations } = await mlRuleTest(rule, '<div></p></div>');
 	expect(violations).toStrictEqual([]);
 });
 
-test('[no-unescaped-char-issue-4435-001] a literal in {…} is code, in which a character is not escaped as markup', async () => {
+test('[no-unescaped-char-011] a literal in {…} is code, in which a character is not escaped as markup', async () => {
 	const { violations } = await mlRuleTest(rule, '<div title={"a < b & c"}></div>', {
 		parser: { '.*': '@markuplint/jsx-parser' },
 	});

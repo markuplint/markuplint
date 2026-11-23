@@ -3,7 +3,7 @@ import { describe, expect, test } from 'vitest';
 
 import rule from './index.js';
 
-test('[no-default-value-invalid-001] canvas', async () => {
+test('[no-default-value-001] canvas', async () => {
 	const { violations } = await mlRuleTest(rule, '<canvas width="300" height="150"></canvas>');
 	expect(violations).toStrictEqual([
 		{
@@ -23,7 +23,7 @@ test('[no-default-value-invalid-001] canvas', async () => {
 	]);
 });
 
-test('[no-default-value-invalid-002] svg|image', async () => {
+test('[no-default-value-002] svg|image', async () => {
 	const { violations } = await mlRuleTest(
 		rule,
 		`<svg>
@@ -67,14 +67,14 @@ test('[no-default-value-invalid-002] svg|image', async () => {
 	]);
 });
 
-test('[no-default-value-valid-001] Updated the hidden attribute type to Enum form Boolean', async () => {
+test('[no-default-value-003] Updated the hidden attribute type to Enum form Boolean', async () => {
 	expect((await mlRuleTest(rule, '<div hidden></div>')).violations.length).toBe(0);
 	expect((await mlRuleTest(rule, '<div hidden=""></div>')).violations.length).toBe(0);
 	expect((await mlRuleTest(rule, '<div hidden="hidden"></div>')).violations.length).toBe(0);
 	expect((await mlRuleTest(rule, '<div hidden="until-found"></div>')).violations.length).toBe(0);
 });
 
-test('[no-default-value-invalid-003] The `as` attribute', async () => {
+test('[no-default-value-004] The `as` attribute', async () => {
 	const { violations } = await mlRuleTest(rule, '<x-canvas as="canvas" width="300" height="150"></x-canvas>');
 	expect(violations).toStrictEqual([
 		{
@@ -95,14 +95,14 @@ test('[no-default-value-invalid-003] The `as` attribute', async () => {
 });
 
 describe('fix', () => {
-	test('[no-default-value-fix-001] remove default value attribute', async () => {
+	test('[no-default-value-005] remove default value attribute', async () => {
 		const { fixedCode } = await mlRuleTest(rule, '<canvas width="300" height="150"></canvas>', undefined, true);
 		expect(fixedCode).toBe('<canvas></canvas>');
 	});
 });
 
 describe('fix with parsers', () => {
-	test('[no-default-value-fix-002] fix: Pug remove default value', async () => {
+	test('[no-default-value-006] fix: Pug remove default value', async () => {
 		const { fixedCode } = await mlRuleTest(
 			rule,
 			'input(type="text")',
@@ -114,7 +114,7 @@ describe('fix with parsers', () => {
 	});
 });
 
-test('[no-default-value-issue-4309-001] an upper-case name is the attribute in HTML', async () => {
+test('[no-default-value-007] an upper-case name is the attribute in HTML', async () => {
 	const { violations } = await mlRuleTest(rule, '<canvas WIDTH="300"></canvas>');
 	expect(violations).toStrictEqual([
 		{
@@ -127,7 +127,7 @@ test('[no-default-value-issue-4309-001] an upper-case name is the attribute in H
 	]);
 });
 
-test('[no-default-value-issue-4309-002] an HTML element in JSX folds the name', async () => {
+test('[no-default-value-008] an HTML element in JSX folds the name', async () => {
 	const options = { parser: { '.*': '@markuplint/jsx-parser' } };
 	const upper = await mlRuleTest(rule, '<canvas WIDTH="300" />', options);
 	expect(upper.violations).toStrictEqual([
@@ -151,7 +151,7 @@ test('[no-default-value-issue-4309-002] an HTML element in JSX folds the name', 
 	]);
 });
 
-test('[no-default-value-issue-4309-003] an SVG attribute that the HTML parser reads gets its case back', async () => {
+test('[no-default-value-009] an SVG attribute that the HTML parser reads gets its case back', async () => {
 	const { violations } = await mlRuleTest(rule, '<svg><image PRESERVEASPECTRATIO="xMidYMid meet" /></svg>');
 	expect(violations).toStrictEqual([
 		{
@@ -164,7 +164,7 @@ test('[no-default-value-issue-4309-003] an SVG attribute that the HTML parser re
 	]);
 });
 
-test('[no-default-value-issue-4309-004] an SVG element in JSX keeps the name as written', async () => {
+test('[no-default-value-010] an SVG element in JSX keeps the name as written', async () => {
 	const { violations } = await mlRuleTest(
 		rule,
 		'<svg><image PRESERVEASPECTRATIO="xMidYMid meet" /><image preserveAspectRatio="xMidYMid meet" /></svg>',
@@ -181,7 +181,7 @@ test('[no-default-value-issue-4309-004] an SVG element in JSX keeps the name as 
 	]);
 });
 
-test('[no-default-value-issue-4435-001] a literal that is the default value is reported', async () => {
+test('[no-default-value-011] a literal that is the default value is reported', async () => {
 	const { violations } = await mlRuleTest(rule, '<input type={"text"} />', {
 		parser: { '.*': '@markuplint/jsx-parser' },
 	});
@@ -190,14 +190,14 @@ test('[no-default-value-issue-4435-001] a literal that is the default value is r
 	]);
 });
 
-test('[no-default-value-issue-4435-002] code that is not a literal is not the default value', async () => {
+test('[no-default-value-012] code that is not a literal is not the default value', async () => {
 	const { violations } = await mlRuleTest(rule, '<input type={cond} />', {
 		parser: { '.*': '@markuplint/jsx-parser' },
 	});
 	expect(violations).toStrictEqual([]);
 });
 
-test('[no-default-value-issue-4435-003] an attribute that the framework does not output is not the default value', async () => {
+test('[no-default-value-013] an attribute that the framework does not output is not the default value', async () => {
 	const { violations } = await mlRuleTest(rule, '<input type={null} />', {
 		parser: { '.*': '@markuplint/jsx-parser' },
 	});

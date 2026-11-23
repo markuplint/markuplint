@@ -3,15 +3,15 @@ import { test, expect } from 'vitest';
 
 import rule from './index.js';
 
-test('[no-default-aria-value-valid-001] no aria props', async () => {
+test('[no-default-aria-value-001] no aria props', async () => {
 	expect((await mlRuleTest(rule, '<div></div>')).violations).toStrictEqual([]);
 });
 
-test('[no-default-aria-value-valid-002] non-default value', async () => {
+test('[no-default-aria-value-002] non-default value', async () => {
 	expect((await mlRuleTest(rule, '<div role="button" aria-pressed="true"></div>')).violations).toStrictEqual([]);
 });
 
-test('[no-default-aria-value-issue-4309-001] the lower-case spelling is reported (baseline of the upper-case one)', async () => {
+test('[no-default-aria-value-003] the lower-case spelling is reported (baseline of the upper-case one)', async () => {
 	const { violations } = await mlRuleTest(rule, '<div aria-expanded="undefined"></div>');
 	expect(violations).toStrictEqual([
 		{
@@ -24,7 +24,7 @@ test('[no-default-aria-value-issue-4309-001] the lower-case spelling is reported
 	]);
 });
 
-test('[no-default-aria-value-issue-4309-002] an upper-case aria-* is reported like the lower-case one', async () => {
+test('[no-default-aria-value-004] an upper-case aria-* is reported like the lower-case one', async () => {
 	const { violations } = await mlRuleTest(rule, '<div ARIA-EXPANDED="undefined"></div>');
 	expect(violations).toStrictEqual([
 		{
@@ -37,7 +37,7 @@ test('[no-default-aria-value-issue-4309-002] an upper-case aria-* is reported li
 	]);
 });
 
-test('[no-default-aria-value-issue-4309-003] JSX: an upper-case aria-* on an HTML element is reported', async () => {
+test('[no-default-aria-value-005] JSX: an upper-case aria-* on an HTML element is reported', async () => {
 	const { violations } = await mlRuleTest(rule, '<div ARIA-EXPANDED="undefined" />', {
 		parser: { '.*': '@markuplint/jsx-parser' },
 	});
@@ -52,7 +52,7 @@ test('[no-default-aria-value-issue-4309-003] JSX: an upper-case aria-* on an HTM
 	]);
 });
 
-test('[no-default-aria-value-issue-4309-004] JSX: an upper-case aria-* on an svg element is not an ARIA attribute', async () => {
+test('[no-default-aria-value-006] JSX: an upper-case aria-* on an svg element is not an ARIA attribute', async () => {
 	const parser = { '.*': '@markuplint/jsx-parser' };
 	expect((await mlRuleTest(rule, '<svg ARIA-EXPANDED="undefined" />', { parser })).violations).toStrictEqual([]);
 

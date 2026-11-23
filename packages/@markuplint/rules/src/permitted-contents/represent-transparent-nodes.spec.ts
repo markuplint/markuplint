@@ -35,11 +35,11 @@ function svelteC(html: string) {
 	return patterns.map(({ nodes }) => nodes.map(n => n.nodeName.toLowerCase() + (transparentMode.has(n) ? '*' : '')));
 }
 
-test('[permitted-contents-invalid-001] <div>', () => {
+test('<div>', () => {
 	expect(c('<div></div>')).toStrictEqual([['div']]);
 });
 
-test('[permitted-contents-invalid-002] <audio>', () => {
+test('<audio>', () => {
 	// The transparent element itself is kept in the flattened list (#3928) so
 	// the parent's content model can still evaluate its own placement.
 	expect(c('<audio></audio>')).toStrictEqual([['audio']]);
@@ -49,17 +49,17 @@ test('[permitted-contents-invalid-002] <audio>', () => {
 });
 
 describe('non-conditional mode', () => {
-	test('[permitted-contents-invalid-003] <a> with multiple children produces single pattern', () => {
+	test('<a> with multiple children produces single pattern', () => {
 		const result = c('<a><span></span><em></em></a>', false);
 		expect(result).toStrictEqual([['a', 'span*', 'em*']]);
 	});
 
-	test('[permitted-contents-invalid-004] multiple sibling <a> elements produce single pattern', () => {
+	test('multiple sibling <a> elements produce single pattern', () => {
 		const result = c('<a><span></span></a><a><em></em></a>', false);
 		expect(result).toStrictEqual([['a', 'span*', 'a', 'em*']]);
 	});
 
-	test('[permitted-contents-invalid-005] 12 sibling <a> elements with 2 children each produce single pattern', () => {
+	test('12 sibling <a> elements with 2 children each produce single pattern', () => {
 		const tags = Array.from({ length: 12 }, (_, i) => '<a><span></span><em></em></a>').join('');
 		const result = c(tags, false);
 		expect(result).toHaveLength(1);
@@ -69,7 +69,7 @@ describe('non-conditional mode', () => {
 });
 
 describe('MAX_PATTERNS cap', () => {
-	test('[permitted-contents-issue-3895-001] 10 conditional siblings stay below the cap (exact cross-product)', () => {
+	test('10 conditional siblings stay below the cap (exact cross-product)', () => {
 		// Each <a> has 2 branches ({#if} taken / not taken) → 2^10 = 1024 patterns
 		const tags = Array.from({ length: 10 }, () => '<a href>{#if x}<span>s</span>{/if}</a>').join('');
 		const result = svelteC(tags);
@@ -80,7 +80,7 @@ describe('MAX_PATTERNS cap', () => {
 		expect(result.at(-1)).toStrictEqual(Array.from({ length: 10 }, () => 'a'));
 	});
 
-	test('[permitted-contents-issue-3895-002] 11th conditional sibling exceeds the cap and merges branches', () => {
+	test('11th conditional sibling exceeds the cap and merges branches', () => {
 		// 1024 patterns x 2 branches > MAX_PATTERNS (1024): the 11th sibling's
 		// branches are merged into every existing pattern instead of doubling
 		// them (documented over-approximation; false negatives are possible)

@@ -10,7 +10,7 @@ describe('Pretender slot content (issue #4054)', () => {
 		},
 	};
 
-	test('[permitted-contents-issue-4054-001] static-only content with slots: null satisfies the required child', async () => {
+	test('[permitted-contents-279] static-only content with slots: null satisfies the required child', async () => {
 		const { violations } = await mlRuleTest(rule, '<Picture />', {
 			...jsxRuleOn,
 			pretenders: [
@@ -35,7 +35,7 @@ describe('Pretender slot content (issue #4054)', () => {
 		expect(violations).toStrictEqual([]);
 	});
 
-	test('[permitted-contents-issue-4054-002] children given to a component with slots: null are still reported', async () => {
+	test('[permitted-contents-280] children given to a component with slots: null are still reported', async () => {
 		const { violations } = await mlRuleTest(rule, '<Picture><div></div></Picture>', {
 			...jsxRuleOn,
 			pretenders: [
@@ -69,7 +69,7 @@ describe('Pretender slot content (issue #4054)', () => {
 		},
 	};
 
-	test('[permitted-contents-issue-4054-003] static content after the slot completes what the given children lack', async () => {
+	test('[permitted-contents-281] static content after the slot completes what the given children lack', async () => {
 		const { violations } = await mlRuleTest(rule, '<Pic><source srcSet="a.webp" /></Pic>', {
 			...jsxRuleOn,
 			pretenders: [pic],
@@ -77,7 +77,7 @@ describe('Pretender slot content (issue #4054)', () => {
 		expect(violations).toStrictEqual([]);
 	});
 
-	test('[permitted-contents-issue-4054-004] an element given at the slot that duplicates static content is reported', async () => {
+	test('[permitted-contents-282] an element given at the slot that duplicates static content is reported', async () => {
 		const { violations } = await mlRuleTest(rule, '<Pic><img src="b.gif" /></Pic>', {
 			...jsxRuleOn,
 			pretenders: [pic],
@@ -98,7 +98,7 @@ describe('Pretender slot content (issue #4054)', () => {
 		as: { element: 'details', slots: true as const, contents: [{ slot: true as const }] },
 	};
 
-	test('[permitted-contents-issue-4054-005] a missing required child is still reported when the slot is the whole content', async () => {
+	test('[permitted-contents-283] a missing required child is still reported when the slot is the whole content', async () => {
 		const { violations } = await mlRuleTest(rule, '<Details></Details>', {
 			...jsxRuleOn,
 			pretenders: [details],
@@ -114,7 +114,7 @@ describe('Pretender slot content (issue #4054)', () => {
 		]);
 	});
 
-	test('[permitted-contents-issue-4054-006] a required child given at the slot is accepted', async () => {
+	test('[permitted-contents-284] a required child given at the slot is accepted', async () => {
 		const { violations } = await mlRuleTest(rule, '<Details><summary>t</summary></Details>', {
 			...jsxRuleOn,
 			pretenders: [details],
@@ -122,7 +122,7 @@ describe('Pretender slot content (issue #4054)', () => {
 		expect(violations).toStrictEqual([]);
 	});
 
-	test('[permitted-contents-issue-4054-007] a required child rendered by the component itself is accepted', async () => {
+	test('[permitted-contents-285] a required child rendered by the component itself is accepted', async () => {
 		const { violations } = await mlRuleTest(rule, '<Details></Details>', {
 			...jsxRuleOn,
 			pretenders: [
@@ -139,7 +139,7 @@ describe('Pretender slot content (issue #4054)', () => {
 		expect(violations).toStrictEqual([]);
 	});
 
-	test('[permitted-contents-issue-4054-008] a dynamic entry in contents skips the missing-child report', async () => {
+	test('[permitted-contents-286] a dynamic entry in contents skips the missing-child report', async () => {
 		const { violations } = await mlRuleTest(rule, '<Details></Details>', {
 			...jsxRuleOn,
 			pretenders: [
@@ -164,7 +164,7 @@ describe('Pretender slot content (issue #4054)', () => {
 		},
 	};
 
-	test('[permitted-contents-issue-4054-009] given children are evaluated against the slot wrapper, not the outer element', async () => {
+	test('[permitted-contents-287] given children are evaluated against the slot wrapper, not the outer element', async () => {
 		const { violations } = await mlRuleTest(rule, '<Card><div></div></Card>', {
 			...jsxRuleOn,
 			pretenders: [card],
@@ -180,7 +180,7 @@ describe('Pretender slot content (issue #4054)', () => {
 		]);
 	});
 
-	test('[permitted-contents-issue-4054-010] children allowed by the slot wrapper are accepted', async () => {
+	test('[permitted-contents-288] children allowed by the slot wrapper are accepted', async () => {
 		const { violations } = await mlRuleTest(rule, '<Card><span>x</span></Card>', {
 			...jsxRuleOn,
 			pretenders: [card],
@@ -188,7 +188,7 @@ describe('Pretender slot content (issue #4054)', () => {
 		expect(violations).toStrictEqual([]);
 	});
 
-	test('[permitted-contents-issue-4054-011] the outer element still governs the component as a child', async () => {
+	test('[permitted-contents-289] the outer element still governs the component as a child', async () => {
 		const { violations } = await mlRuleTest(rule, '<ul><Card></Card></ul>', {
 			...jsxRuleOn,
 			pretenders: [card],
@@ -204,7 +204,7 @@ describe('Pretender slot content (issue #4054)', () => {
 		]);
 	});
 
-	test('[permitted-contents-issue-4054-012] children are not validated when several slot wrappers exist', async () => {
+	test('[permitted-contents-290] children are not validated when several slot wrappers exist', async () => {
 		const { violations } = await mlRuleTest(rule, '<Card><div></div></Card>', {
 			...jsxRuleOn,
 			pretenders: [
@@ -223,7 +223,7 @@ describe('Pretender slot content (issue #4054)', () => {
 		expect(violations).toStrictEqual([]);
 	});
 
-	test('[permitted-contents-issue-4054-013] the attrs of a slot wrapper select its conditional content model (colgroup[span] is empty)', async () => {
+	test('[permitted-contents-291] the attrs of a slot wrapper select its conditional content model (colgroup[span] is empty)', async () => {
 		const { violations } = await mlRuleTest(rule, '<Cols><div></div></Cols>', {
 			...jsxRuleOn,
 			pretenders: [
@@ -249,7 +249,7 @@ describe('Pretender slot content (issue #4054)', () => {
 		]);
 	});
 
-	test('[permitted-contents-issue-4054-014] a fragment pretender contributes its contents to the parent', async () => {
+	test('[permitted-contents-292] a fragment pretender contributes its contents to the parent', async () => {
 		const fragment = {
 			selector: 'Field',
 			as: {
@@ -287,7 +287,7 @@ describe('Pretender slot content: review follow-ups (issue #4054)', () => {
 		},
 	};
 
-	test('[permitted-contents-issue-4054-015] svg, math and custom elements the component renders are allowed where they are in the markup', async () => {
+	test('[permitted-contents-293] svg, math and custom elements the component renders are allowed where they are in the markup', async () => {
 		const { violations } = await mlRuleTest(rule, '<IconButton>Label</IconButton>', {
 			...jsxRuleOn,
 			pretenders: [
@@ -304,7 +304,7 @@ describe('Pretender slot content: review follow-ups (issue #4054)', () => {
 		expect(violations).toStrictEqual([]);
 	});
 
-	test('[permitted-contents-issue-4054-016] an unknown content in a fragment stands in the parent too', async () => {
+	test('[permitted-contents-294] an unknown content in a fragment stands in the parent too', async () => {
 		const { violations } = await mlRuleTest(rule, '<picture><Sources /></picture>', {
 			...jsxRuleOn,
 			pretenders: [
@@ -332,7 +332,7 @@ describe('Pretender slot content: parent-side evaluation (issue #4054)', () => {
 		},
 	};
 
-	test('[permitted-contents-issue-4054-017] a transparent component whose children sit in an inner wrapper is not looked through', async () => {
+	test('[permitted-contents-295] a transparent component whose children sit in an inner wrapper is not looked through', async () => {
 		// Looked through as `a`, the `div` would be reported as disallowed by the `p` around it.
 		// Only the wrapper (`span`) decides what the given children may be.
 		const { violations } = await mlRuleTest(rule, '<p><Link><div></div></Link></p>', {
@@ -355,7 +355,7 @@ describe('Pretender slot content: parent-side evaluation (issue #4054)', () => {
 		]);
 	});
 
-	test('[permitted-contents-issue-4054-018] static content of a transparent component is looked through and reported on the component', async () => {
+	test('[permitted-contents-296] static content of a transparent component is looked through and reported on the component', async () => {
 		const { violations } = await mlRuleTest(rule, '<p><Link></Link></p>', {
 			...jsxRuleOn,
 			pretenders: [
@@ -377,7 +377,7 @@ describe('Pretender slot content: parent-side evaluation (issue #4054)', () => {
 		]);
 	});
 
-	test('[permitted-contents-issue-4054-019] the static content applies when the conditional child nodes are evaluated', async () => {
+	test('[permitted-contents-297] the static content applies when the conditional child nodes are evaluated', async () => {
 		const options = { evaluateConditionalChildNodes: true };
 		const pretenders = [
 			{

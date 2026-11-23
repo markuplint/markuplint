@@ -3,7 +3,7 @@ import { test, expect } from 'vitest';
 
 import rule from './index.js';
 
-test('[class-naming-valid-001] pass class name', async () => {
+test('[class-naming-001] pass class name', async () => {
 	const { violations } = await mlRuleTest(
 		rule,
 		`
@@ -22,7 +22,7 @@ test('[class-naming-valid-001] pass class name', async () => {
 	expect(violations.length).toBe(0);
 });
 
-test('[class-naming-invalid-001] unmatched class name', async () => {
+test('[class-naming-002] unmatched class name', async () => {
 	const { violations } = await mlRuleTest(
 		rule,
 		`
@@ -58,7 +58,7 @@ test('[class-naming-invalid-001] unmatched class name', async () => {
 	]);
 });
 
-test('[class-naming-invalid-002] childNodeRules', async () => {
+test('[class-naming-003] childNodeRules', async () => {
 	const { violations } = await mlRuleTest(
 		rule,
 		`
@@ -93,7 +93,7 @@ test('[class-naming-invalid-002] childNodeRules', async () => {
 	]);
 });
 
-test('[class-naming-invalid-003] unmatched class name (2)', async () => {
+test('[class-naming-004] unmatched class name (2)', async () => {
 	const { violations } = await mlRuleTest(
 		rule,
 		`
@@ -124,7 +124,7 @@ test('[class-naming-invalid-003] unmatched class name (2)', async () => {
 	]);
 });
 
-test('[class-naming-valid-002] multi pattern', async () => {
+test('[class-naming-005] multi pattern', async () => {
 	const { violations } = await mlRuleTest(
 		rule,
 		`
@@ -143,7 +143,7 @@ test('[class-naming-valid-002] multi pattern', async () => {
 	expect(violations.length).toBe(0);
 });
 
-test('[class-naming-invalid-004] childNodeRules multi selectors', async () => {
+test('[class-naming-006] childNodeRules multi selectors', async () => {
 	const { violations } = await mlRuleTest(
 		rule,
 		`
@@ -192,7 +192,7 @@ test('[class-naming-invalid-004] childNodeRules multi selectors', async () => {
 	]);
 });
 
-test('[class-naming-valid-003] childNodeRules multi selectors (No error)', async () => {
+test('[class-naming-007] childNodeRules multi selectors (No error)', async () => {
 	const { violations } = await mlRuleTest(
 		rule,
 		`
@@ -233,7 +233,7 @@ test('[class-naming-valid-003] childNodeRules multi selectors (No error)', async
 	expect(violations.length).toBe(0);
 });
 
-test('[class-naming-valid-004] Dynamic value', async () => {
+test('[class-naming-008] Dynamic value', async () => {
 	const { violations } = await mlRuleTest(rule, '<div className={style}></div>', {
 		rule: {
 			value: '/^c-[a-z]+/',
@@ -245,7 +245,7 @@ test('[class-naming-valid-004] Dynamic value', async () => {
 	expect(violations.length).toBe(0);
 });
 
-test('[class-naming-invalid-005] regexSelector', async () => {
+test('[class-naming-009] regexSelector', async () => {
 	const { violations } = await mlRuleTest(
 		rule,
 		`<section class="Card">
@@ -334,7 +334,7 @@ test('[class-naming-invalid-005] regexSelector', async () => {
 	]);
 });
 
-test('[class-naming-invalid-006] regexSelector inheritance', async () => {
+test('[class-naming-010] regexSelector inheritance', async () => {
 	const { violations } = await mlRuleTest(
 		rule,
 		`<html>
@@ -389,7 +389,7 @@ test('[class-naming-invalid-006] regexSelector inheritance', async () => {
 	]);
 });
 
-test('[class-naming-parser-001] pug + regexSelector', async () => {
+test('[class-naming-011] pug + regexSelector', async () => {
 	const { violations } = await mlRuleTest(
 		rule,
 		`section.Card
@@ -470,7 +470,7 @@ section.Card
 	]);
 });
 
-test('[class-naming-issue-1263] #1263', async () => {
+test('[class-naming-012] #1263', async () => {
 	const { violations } = await mlRuleTest(
 		rule,
 		`
@@ -500,22 +500,22 @@ test('[class-naming-issue-1263] #1263', async () => {
 	expect(violations).toStrictEqual([]);
 });
 
-test('[class-naming-issue-4202-001] enabled without a pattern is a no-op', async () => {
+test('[class-naming-013] enabled without a pattern is a no-op', async () => {
 	const { violations } = await mlRuleTest(rule, '<img class="a">', { rule: true });
 	expect(violations).toStrictEqual([]);
 });
 
-test('[class-naming-issue-4202-002] empty pattern array is a no-op', async () => {
+test('[class-naming-014] empty pattern array is a no-op', async () => {
 	const { violations } = await mlRuleTest(rule, '<img class="a">', { rule: { value: [] } });
 	expect(violations).toStrictEqual([]);
 });
 
-test('[class-naming-issue-4202-004] null value is a no-op', async () => {
+test('[class-naming-015] null value is a no-op', async () => {
 	const { violations } = await mlRuleTest(rule, '<img class="a">', { rule: { value: null } });
 	expect(violations).toStrictEqual([]);
 });
 
-test('[class-naming-issue-4202-003] a pattern set only by childNodeRule still applies', async () => {
+test('[class-naming-016] a pattern set only by childNodeRule still applies', async () => {
 	const { violations } = await mlRuleTest(rule, '<div class="a"><p class="b"></p></div>', {
 		rule: true,
 		childNodeRule: [

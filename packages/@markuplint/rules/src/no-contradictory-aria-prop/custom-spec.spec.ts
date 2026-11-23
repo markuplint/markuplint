@@ -16,7 +16,7 @@ import rule from './index.js';
  */
 const specs = { '.*': fileURLToPath(new URL('checked-fixture.mjs', import.meta.url)) };
 
-test('[no-contradictory-aria-prop-issue-4309-003] an upper-case aria-* on an svg element is not an ARIA property in JSX, and is in HTML', async () => {
+test('[no-contradictory-aria-prop-007] an upper-case aria-* on an svg element is not an ARIA property in JSX, and is in HTML', async () => {
 	const parser = { '.*': '@markuplint/jsx-parser' };
 	expect(
 		(await mlRuleTest(rule, '<svg checked ARIA-CHECKED="false" />', { parser, specs })).violations,

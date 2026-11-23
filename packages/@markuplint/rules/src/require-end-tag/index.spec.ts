@@ -3,7 +3,7 @@ import { test, expect } from 'vitest';
 
 import rule from './index.js';
 
-test('[require-end-tag-valid-001] basic', async () => {
+test('[require-end-tag-001] basic', async () => {
 	expect((await mlRuleTest(rule, '<html><body></body></html>')).violations.length).toBe(0);
 	expect((await mlRuleTest(rule, '<html><body></body>')).violations).toStrictEqual([
 		{
@@ -16,7 +16,7 @@ test('[require-end-tag-valid-001] basic', async () => {
 	]);
 });
 
-test('[require-end-tag-invalid-001] HTML', async () => {
+test('[require-end-tag-002] HTML', async () => {
 	expect((await mlRuleTest(rule, '<div><span><span /></div>')).violations).toStrictEqual([
 		{
 			severity: 'warning',
@@ -35,11 +35,11 @@ test('[require-end-tag-invalid-001] HTML', async () => {
 	]);
 });
 
-test('[require-end-tag-valid-002] HTML', async () => {
+test('[require-end-tag-003] HTML', async () => {
 	expect((await mlRuleTest(rule, '<div><img><img /></div>')).violations).toStrictEqual([]);
 });
 
-test('[require-end-tag-invalid-002] SVG', async () => {
+test('[require-end-tag-004] SVG', async () => {
 	expect(
 		(
 			await mlRuleTest(
@@ -57,7 +57,7 @@ test('[require-end-tag-invalid-002] SVG', async () => {
 	).toStrictEqual([]);
 });
 
-test('[require-end-tag-parser-001] pug', async () => {
+test('[require-end-tag-005] pug', async () => {
 	expect(
 		(
 			await mlRuleTest(
@@ -75,7 +75,7 @@ test('[require-end-tag-parser-001] pug', async () => {
 	).toBe(0);
 });
 
-test('[require-end-tag-parser-002] React', async () => {
+test('[require-end-tag-006] React', async () => {
 	expect(
 		(
 			await mlRuleTest(rule, '<div><span><span /></div>', {
@@ -95,7 +95,7 @@ test('[require-end-tag-parser-002] React', async () => {
 	]);
 });
 
-test('[require-end-tag-parser-003] Vue', async () => {
+test('[require-end-tag-007] Vue', async () => {
 	expect(
 		(
 			await mlRuleTest(rule, '<template><div><span><span /></div></template>', {
@@ -115,7 +115,7 @@ test('[require-end-tag-parser-003] Vue', async () => {
 	]);
 });
 
-test('[require-end-tag-parser-004] Svelte', async () => {
+test('[require-end-tag-008] Svelte', async () => {
 	expect(
 		(
 			await mlRuleTest(rule, '<div><span><span /></div>', {
@@ -135,7 +135,7 @@ test('[require-end-tag-parser-004] Svelte', async () => {
 	]);
 });
 
-test('[require-end-tag-parser-005] Astro', async () => {
+test('[require-end-tag-009] Astro', async () => {
 	expect(
 		(
 			await mlRuleTest(rule, '<div><span><span /></div>', {
@@ -164,7 +164,7 @@ test('[require-end-tag-parser-005] Astro', async () => {
 	]);
 });
 
-test('[require-end-tag-issue-1349] #1349', async () => {
+test('[require-end-tag-010] #1349', async () => {
 	expect(
 		(
 			await mlRuleTest(

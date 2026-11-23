@@ -15,7 +15,7 @@ import rule from './index.js';
  */
 const specs = { '.*': fileURLToPath(new URL('boolean-fixture.mjs', import.meta.url)) };
 
-test('[no-boolean-attr-value-issue-4309-003] an upper-case name on an svg element is not the Boolean attribute in JSX, and is in HTML', async () => {
+test('[no-boolean-attr-value-023] an upper-case name on an svg element is not the Boolean attribute in JSX, and is in HTML', async () => {
 	const parser = { '.*': '@markuplint/jsx-parser' };
 	expect((await mlRuleTest(rule, '<svg FLAG="flag" />', { parser, specs })).violations).toStrictEqual([]);
 

@@ -4,7 +4,7 @@ import { describe, expect, test } from 'vitest';
 import rule from './index.js';
 
 describe('Trees', () => {
-	test('[require-dialog-autofocus-issue-4489-001] a trigger and a dialog in the same template', async () => {
+	test('[require-dialog-autofocus-001] a trigger and a dialog in the same template', async () => {
 		const { violations } = await mlRuleTest(
 			rule,
 			'<template><button command="show-modal" commandfor="d">Open</button><dialog id="d"><p>Content</p></dialog></template>',
@@ -21,7 +21,7 @@ describe('Trees', () => {
 		]);
 	});
 
-	test('[require-dialog-autofocus-issue-4489-002] a dialog in another tree is not the target', async () => {
+	test('[require-dialog-autofocus-002] a dialog in another tree is not the target', async () => {
 		const { violations } = await mlRuleTest(
 			rule,
 			'<button command="show-modal" commandfor="d">Open</button><template><dialog id="d"><p>Content</p></dialog></template>',
@@ -29,7 +29,7 @@ describe('Trees', () => {
 		expect(violations).toStrictEqual([]);
 	});
 
-	test('[require-dialog-autofocus-issue-4489-003] an autofocus in the content of a template in the dialog does not count', async () => {
+	test('[require-dialog-autofocus-003] an autofocus in the content of a template in the dialog does not count', async () => {
 		const { violations } = await mlRuleTest(
 			rule,
 			'<button command="show-modal" commandfor="d">Open</button><dialog id="d"><template><button autofocus>x</button></template></dialog>',
@@ -48,7 +48,7 @@ describe('Trees', () => {
 });
 
 describe('Dialogs of one id', () => {
-	test('[require-dialog-autofocus-issue-4489-004] a dialog is reported for each tree that has its id', async () => {
+	test('[require-dialog-autofocus-004] a dialog is reported for each tree that has its id', async () => {
 		const { violations } = await mlRuleTest(
 			rule,
 			'<button command="show-modal" commandfor="d">O</button><dialog id="d"></dialog><template><button command="show-modal" commandfor="d">O</button><dialog id="d"></dialog></template>',
@@ -75,7 +75,7 @@ describe('Dialogs of one id', () => {
 });
 
 describe('Violations', () => {
-	test('[require-dialog-autofocus-invalid-001] dialog without autofocus descendant', async () => {
+	test('[require-dialog-autofocus-005] dialog without autofocus descendant', async () => {
 		expect(
 			(
 				await mlRuleTest(
@@ -95,7 +95,7 @@ describe('Violations', () => {
 		]);
 	});
 
-	test('[require-dialog-autofocus-invalid-002] case-insensitive: SHOW-MODAL', async () => {
+	test('[require-dialog-autofocus-006] case-insensitive: SHOW-MODAL', async () => {
 		expect(
 			(
 				await mlRuleTest(
@@ -106,7 +106,7 @@ describe('Violations', () => {
 		).toBe(1);
 	});
 
-	test('[require-dialog-autofocus-invalid-003] multiple dialogs: one with autofocus, one without', async () => {
+	test('[require-dialog-autofocus-007] multiple dialogs: one with autofocus, one without', async () => {
 		const { violations } = await mlRuleTest(
 			rule,
 			`
@@ -120,7 +120,7 @@ describe('Violations', () => {
 		expect(violations[0]?.raw).toBe('<dialog id="d2">');
 	});
 
-	test('[require-dialog-autofocus-invalid-004] case-insensitive: Show-Modal (mixed case)', async () => {
+	test('[require-dialog-autofocus-008] case-insensitive: Show-Modal (mixed case)', async () => {
 		expect(
 			(
 				await mlRuleTest(
@@ -131,7 +131,7 @@ describe('Violations', () => {
 		).toBe(1);
 	});
 
-	test('[require-dialog-autofocus-invalid-005] empty dialog without any children', async () => {
+	test('[require-dialog-autofocus-009] empty dialog without any children', async () => {
 		expect(
 			(
 				await mlRuleTest(
@@ -144,7 +144,7 @@ describe('Violations', () => {
 });
 
 describe('No violations', () => {
-	test('[require-dialog-autofocus-invalid-006] dialog descendant has autofocus', async () => {
+	test('[require-dialog-autofocus-010] dialog descendant has autofocus', async () => {
 		expect(
 			(
 				await mlRuleTest(
@@ -155,7 +155,7 @@ describe('No violations', () => {
 		).toBe(0);
 	});
 
-	test('[require-dialog-autofocus-invalid-007] dialog itself has autofocus', async () => {
+	test('[require-dialog-autofocus-011] dialog itself has autofocus', async () => {
 		expect(
 			(
 				await mlRuleTest(
@@ -166,11 +166,11 @@ describe('No violations', () => {
 		).toBe(0);
 	});
 
-	test('[require-dialog-autofocus-valid-001] dialog not referenced by show-modal', async () => {
+	test('[require-dialog-autofocus-012] dialog not referenced by show-modal', async () => {
 		expect((await mlRuleTest(rule, '<dialog id="d"><p>Content</p></dialog>')).violations.length).toBe(0);
 	});
 
-	test('[require-dialog-autofocus-invalid-008] command is close (not show-modal)', async () => {
+	test('[require-dialog-autofocus-013] command is close (not show-modal)', async () => {
 		expect(
 			(
 				await mlRuleTest(
@@ -181,7 +181,7 @@ describe('No violations', () => {
 		).toBe(0);
 	});
 
-	test('[require-dialog-autofocus-invalid-009] command is toggle-popover (not show-modal)', async () => {
+	test('[require-dialog-autofocus-014] command is toggle-popover (not show-modal)', async () => {
 		expect(
 			(
 				await mlRuleTest(
@@ -192,7 +192,7 @@ describe('No violations', () => {
 		).toBe(0);
 	});
 
-	test('[require-dialog-autofocus-invalid-010] commandfor references non-dialog element', async () => {
+	test('[require-dialog-autofocus-015] commandfor references non-dialog element', async () => {
 		expect(
 			(
 				await mlRuleTest(
@@ -203,7 +203,7 @@ describe('No violations', () => {
 		).toBe(0);
 	});
 
-	test('[require-dialog-autofocus-invalid-011] commandfor references non-existent id', async () => {
+	test('[require-dialog-autofocus-016] commandfor references non-existent id', async () => {
 		expect(
 			(
 				await mlRuleTest(
@@ -214,7 +214,7 @@ describe('No violations', () => {
 		).toBe(0);
 	});
 
-	test('[require-dialog-autofocus-invalid-012] deeply nested autofocus descendant', async () => {
+	test('[require-dialog-autofocus-017] deeply nested autofocus descendant', async () => {
 		expect(
 			(
 				await mlRuleTest(
@@ -225,7 +225,7 @@ describe('No violations', () => {
 		).toBe(0);
 	});
 
-	test('[require-dialog-autofocus-invalid-013] autofocus with empty string value (boolean attribute)', async () => {
+	test('[require-dialog-autofocus-018] autofocus with empty string value (boolean attribute)', async () => {
 		expect(
 			(
 				await mlRuleTest(
@@ -236,7 +236,7 @@ describe('No violations', () => {
 		).toBe(0);
 	});
 
-	test('[require-dialog-autofocus-invalid-014] autofocus with redundant value', async () => {
+	test('[require-dialog-autofocus-019] autofocus with redundant value', async () => {
 		expect(
 			(
 				await mlRuleTest(
@@ -247,7 +247,7 @@ describe('No violations', () => {
 		).toBe(0);
 	});
 
-	test('[require-dialog-autofocus-invalid-015] duplicate triggers for same dialog report only once', async () => {
+	test('[require-dialog-autofocus-020] duplicate triggers for same dialog report only once', async () => {
 		const { violations } = await mlRuleTest(
 			rule,
 			`
@@ -259,14 +259,14 @@ describe('No violations', () => {
 		expect(violations.length).toBe(1);
 	});
 
-	test('[require-dialog-autofocus-invalid-016] command without commandfor is ignored', async () => {
+	test('[require-dialog-autofocus-021] command without commandfor is ignored', async () => {
 		expect(
 			(await mlRuleTest(rule, '<button command="show-modal">Open</button><dialog id="d"><p>Content</p></dialog>'))
 				.violations.length,
 		).toBe(0);
 	});
 
-	test('[require-dialog-autofocus-invalid-017] commandfor without command is ignored', async () => {
+	test('[require-dialog-autofocus-022] commandfor without command is ignored', async () => {
 		expect(
 			(await mlRuleTest(rule, '<button commandfor="d">Open</button><dialog id="d"><p>Content</p></dialog>'))
 				.violations.length,
@@ -274,7 +274,7 @@ describe('No violations', () => {
 	});
 });
 
-test('[require-dialog-autofocus-issue-4584-001] the message is in Japanese with locale ja', async () => {
+test('[require-dialog-autofocus-023] the message is in Japanese with locale ja', async () => {
 	const { violations } = await mlRuleTest(
 		rule,
 		'<template><button command="show-modal" commandfor="d">Open</button><dialog id="d"><p>Content</p></dialog></template>',

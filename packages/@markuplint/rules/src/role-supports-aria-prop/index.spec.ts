@@ -7,11 +7,11 @@ import rule from './index.js';
 
 const jsx = { '.*': '@markuplint/jsx-parser' };
 
-test('[role-supports-aria-prop-valid-001] allowed prop on role', async () => {
+test('[role-supports-aria-prop-001] allowed prop on role', async () => {
 	expect((await mlRuleTest(rule, '<div role="button" aria-pressed="true"></div>')).violations).toStrictEqual([]);
 });
 
-test('[role-supports-aria-prop-invalid-001] disallowed prop on role', async () => {
+test('[role-supports-aria-prop-002] disallowed prop on role', async () => {
 	const { violations } = await mlRuleTest(rule, '<div role="heading" aria-pressed="true"></div>');
 	expect(violations).toStrictEqual([
 		{
@@ -24,11 +24,11 @@ test('[role-supports-aria-prop-invalid-001] disallowed prop on role', async () =
 	]);
 });
 
-test('[role-supports-aria-prop-issue-4309-001] an upper-case aria-* that the role supports is not reported', async () => {
+test('[role-supports-aria-prop-003] an upper-case aria-* that the role supports is not reported', async () => {
 	expect((await mlRuleTest(rule, '<button ARIA-LABEL="x"></button>')).violations).toStrictEqual([]);
 });
 
-test('[role-supports-aria-prop-issue-4309-002] an upper-case aria-* that the role does not support is reported by the spelling written', async () => {
+test('[role-supports-aria-prop-004] an upper-case aria-* that the role does not support is reported by the spelling written', async () => {
 	const { violations } = await mlRuleTest(rule, '<div role="heading" ARIA-PRESSED="true"></div>');
 	expect(violations).toStrictEqual([
 		{
@@ -41,7 +41,7 @@ test('[role-supports-aria-prop-issue-4309-002] an upper-case aria-* that the rol
 	]);
 });
 
-test('[role-supports-aria-prop-issue-4309-003] JSX: an upper-case aria-* on an HTML element is checked like the lower-case one', async () => {
+test('[role-supports-aria-prop-005] JSX: an upper-case aria-* on an HTML element is checked like the lower-case one', async () => {
 	const parser = { '.*': '@markuplint/jsx-parser' };
 	expect((await mlRuleTest(rule, '<button ARIA-LABEL="x" />', { parser })).violations).toStrictEqual([]);
 
@@ -58,7 +58,7 @@ test('[role-supports-aria-prop-issue-4309-003] JSX: an upper-case aria-* on an H
 	]);
 });
 
-test('[role-supports-aria-prop-issue-4309-004] JSX: an upper-case aria-* on an svg element is not an ARIA attribute', async () => {
+test('[role-supports-aria-prop-006] JSX: an upper-case aria-* on an svg element is not an ARIA attribute', async () => {
 	const parser = { '.*': '@markuplint/jsx-parser' };
 	expect((await mlRuleTest(rule, '<svg role="heading" ARIA-PRESSED="true" />', { parser })).violations).toStrictEqual(
 		[],
@@ -81,7 +81,7 @@ const lines = (...l: readonly string[]) => ['<>', ...l, '</>'].join('\n');
 
 const genericMessage = (name: string) => `The "${name}" ARIA property is disallowed on the "generic" role`;
 
-test('[role-supports-aria-prop-issue-4783-001] JSX: a landmark whose aria-labelledby is not known until it is rendered has a name', async () => {
+test('[role-supports-aria-prop-007] JSX: a landmark whose aria-labelledby is not known until it is rendered has a name', async () => {
 	const source = lines(
 		'<button id={id} type="button">Q1</button>',
 		'<div role="region" aria-labelledby={id}>a</div>',
@@ -91,7 +91,7 @@ test('[role-supports-aria-prop-issue-4783-001] JSX: a landmark whose aria-labell
 	expect((await mlRuleTest(rule, source, { parser: jsx })).violations).toStrictEqual([]);
 });
 
-test('[role-supports-aria-prop-issue-4783-002] JSX: an aria-labelledby that is not output does not name a landmark', async () => {
+test('[role-supports-aria-prop-008] JSX: an aria-labelledby that is not output does not name a landmark', async () => {
 	// An attribute that the framework does not output is not judged itself, so `aria-roledescription`
 	// (prohibited on `generic`, supported on `region`) shows which role the element has
 	const { violations } = await mlRuleTest(
@@ -110,7 +110,7 @@ test('[role-supports-aria-prop-issue-4783-002] JSX: an aria-labelledby that is n
 	]);
 });
 
-test('[role-supports-aria-prop-issue-4783-003] JSX: an aria-labelledby that refers to nothing does not name a landmark', async () => {
+test('[role-supports-aria-prop-009] JSX: an aria-labelledby that refers to nothing does not name a landmark', async () => {
 	const { violations } = await mlRuleTest(rule, '<div role="region" aria-labelledby="missing">a</div>', {
 		parser: jsx,
 	});
@@ -125,12 +125,12 @@ test('[role-supports-aria-prop-issue-4783-003] JSX: an aria-labelledby that refe
 	]);
 });
 
-test('[role-supports-aria-prop-issue-4783-004] JSX: a reference may be to an element whose id is not known until it is rendered', async () => {
+test('[role-supports-aria-prop-010] JSX: a reference may be to an element whose id is not known until it is rendered', async () => {
 	const source = lines('<h2 id={x}>Q</h2>', '<div role="region" aria-labelledby="t">a</div>');
 	expect((await mlRuleTest(rule, source, { parser: jsx })).violations).toStrictEqual([]);
 });
 
-test('[role-supports-aria-prop-issue-4783-005] JSX: a reference in a tree whose ids are all known is reported', async () => {
+test('[role-supports-aria-prop-011] JSX: a reference in a tree whose ids are all known is reported', async () => {
 	const source = lines('<h2 id="h">Q</h2>', '<div role="region" aria-labelledby="t">a</div>');
 	expect((await mlRuleTest(rule, source, { parser: jsx })).violations).toStrictEqual([
 		{
@@ -143,7 +143,7 @@ test('[role-supports-aria-prop-issue-4783-005] JSX: a reference in a tree whose 
 	]);
 });
 
-test('[role-supports-aria-prop-issue-4783-006] JSX: an id that is not output is not an element that a reference may be to', async () => {
+test('[role-supports-aria-prop-012] JSX: an id that is not output is not an element that a reference may be to', async () => {
 	const source = lines('<h2 id={undefined}>Q</h2>', '<div role="region" aria-labelledby="t">a</div>');
 	expect((await mlRuleTest(rule, source, { parser: jsx })).violations).toStrictEqual([
 		{
@@ -156,7 +156,7 @@ test('[role-supports-aria-prop-issue-4783-006] JSX: an id that is not output is 
 	]);
 });
 
-test('[role-supports-aria-prop-issue-4783-007] JSX: an empty aria-labelledby is not a reference that an id that is not known may satisfy', async () => {
+test('[role-supports-aria-prop-013] JSX: an empty aria-labelledby is not a reference that an id that is not known may satisfy', async () => {
 	const source = lines(
 		'<h2 id={x}>Q</h2>',
 		'<div role="region" aria-labelledby="">a</div>',
@@ -180,7 +180,7 @@ test('[role-supports-aria-prop-issue-4783-007] JSX: an empty aria-labelledby is 
 	]);
 });
 
-test('[role-supports-aria-prop-issue-4783-008] JSX: a reference in the content of a template element reaches an id that is not known in the same content', async () => {
+test('[role-supports-aria-prop-014] JSX: a reference in the content of a template element reaches an id that is not known in the same content', async () => {
 	const source = lines(
 		'<div><template>',
 		'<h2 id={x}>Q</h2>',
@@ -190,7 +190,7 @@ test('[role-supports-aria-prop-issue-4783-008] JSX: a reference in the content o
 	expect((await mlRuleTest(rule, source, { parser: jsx })).violations).toStrictEqual([]);
 });
 
-test('[role-supports-aria-prop-issue-4783-009] JSX: an id that is not known in the content of a template element is not in the tree of the reference', async () => {
+test('[role-supports-aria-prop-015] JSX: an id that is not known in the content of a template element is not in the tree of the reference', async () => {
 	const source = lines(
 		'<div><template><h2 id={x}>Q</h2></template></div>',
 		'<div role="region" aria-labelledby="t">a</div>',
@@ -206,19 +206,19 @@ test('[role-supports-aria-prop-issue-4783-009] JSX: an id that is not known in t
 	]);
 });
 
-test('[role-supports-aria-prop-issue-4783-010] JSX: the landmark itself may be the element that its aria-labelledby refers to', async () => {
+test('[role-supports-aria-prop-016] JSX: the landmark itself may be the element that its aria-labelledby refers to', async () => {
 	expect(
 		(await mlRuleTest(rule, '<div role="region" id={x} aria-labelledby="t">a</div>', { parser: jsx })).violations,
 	).toStrictEqual([]);
 });
 
-test('[role-supports-aria-prop-issue-4783-011] JSX: an element whose implicit role is a landmark has the role by the presence of aria-labelledby, not by what it refers to', async () => {
+test('[role-supports-aria-prop-017] JSX: an element whose implicit role is a landmark has the role by the presence of aria-labelledby, not by what it refers to', async () => {
 	// `aria-roledescription` (prohibited on `generic`, supported on `region`) shows which role the element has
 	const source = lines('<h2 id="h">Q</h2>', '<section aria-labelledby="t" aria-roledescription="x">a</section>');
 	expect((await mlRuleTest(rule, source, { parser: jsx })).violations).toStrictEqual([]);
 });
 
-test('[role-supports-aria-prop-issue-4783-012] JSX pretenders: a landmark component that takes over the aria-labelledby of its usage', async () => {
+test('[role-supports-aria-prop-018] JSX pretenders: a landmark component that takes over the aria-labelledby of its usage', async () => {
 	const pretenders = [
 		{
 			selector: 'Region',
@@ -243,19 +243,19 @@ const regionMadeBy = (value: PretenderAttr['value']): readonly Pretender[] => [
 	},
 ];
 
-test('[role-supports-aria-prop-issue-4783-013] JSX pretenders: a landmark component whose aria-labelledby is the prop that is forwarded', async () => {
+test('[role-supports-aria-prop-019] JSX pretenders: a landmark component whose aria-labelledby is the prop that is forwarded', async () => {
 	const pretenders = regionMadeBy({ fromAttr: 'labelledBy' });
 	expect(
 		(await mlRuleTest(rule, '<Region labelledBy={id}>a</Region>', { parser: jsx, pretenders })).violations,
 	).toStrictEqual([]);
 });
 
-test('[role-supports-aria-prop-issue-4783-014] JSX pretenders: a landmark component whose aria-labelledby is not known', async () => {
+test('[role-supports-aria-prop-020] JSX pretenders: a landmark component whose aria-labelledby is not known', async () => {
 	const pretenders = regionMadeBy({ dynamic: true });
 	expect((await mlRuleTest(rule, '<Region>a</Region>', { parser: jsx, pretenders })).violations).toStrictEqual([]);
 });
 
-test('[role-supports-aria-prop-issue-4783-015] JSX pretenders: a landmark component whose aria-labelledby refers to nothing', async () => {
+test('[role-supports-aria-prop-021] JSX pretenders: a landmark component whose aria-labelledby refers to nothing', async () => {
 	const pretenders = regionMadeBy({ fromAttr: 'labelledBy' });
 	const { violations } = await mlRuleTest(rule, '<Region labelledBy="missing">a</Region>', {
 		parser: jsx,
@@ -277,23 +277,23 @@ const headingMadeBy = (attr: PretenderAttr): readonly Pretender[] => [
 ];
 const headingSource = lines('<Heading id={x}>Q</Heading>', '<div role="region" aria-labelledby="t">a</div>');
 
-test('[role-supports-aria-prop-issue-4783-016] JSX pretenders: a component whose id is the prop that is forwarded may be what a reference is to', async () => {
+test('[role-supports-aria-prop-022] JSX pretenders: a component whose id is the prop that is forwarded may be what a reference is to', async () => {
 	const pretenders = headingMadeBy({ name: 'id', value: { fromAttr: 'id' } });
 	expect((await mlRuleTest(rule, headingSource, { parser: jsx, pretenders })).violations).toStrictEqual([]);
 });
 
-test('[role-supports-aria-prop-issue-4783-017] JSX pretenders: a component whose id is not known may be what a reference is to', async () => {
+test('[role-supports-aria-prop-023] JSX pretenders: a component whose id is not known may be what a reference is to', async () => {
 	const pretenders = headingMadeBy({ name: 'id', value: { dynamic: true } });
 	expect((await mlRuleTest(rule, headingSource, { parser: jsx, pretenders })).violations).toStrictEqual([]);
 });
 
-test('[role-supports-aria-prop-issue-4783-018] JSX pretenders: an id that a component forwards from its usage names the landmark', async () => {
+test('[role-supports-aria-prop-024] JSX pretenders: an id that a component forwards from its usage names the landmark', async () => {
 	const pretenders = headingMadeBy({ name: 'id', value: { fromAttr: 'headingId' } });
 	const source = lines('<Heading headingId="t">Q</Heading>', '<div role="region" aria-labelledby="t">a</div>');
 	expect((await mlRuleTest(rule, source, { parser: jsx, pretenders })).violations).toStrictEqual([]);
 });
 
-test('[role-supports-aria-prop-issue-4783-019] JSX pretenders: a reference to another id than the one a component forwards is reported', async () => {
+test('[role-supports-aria-prop-025] JSX pretenders: a reference to another id than the one a component forwards is reported', async () => {
 	const pretenders = headingMadeBy({ name: 'id', value: { fromAttr: 'headingId' } });
 	const source = lines('<Heading headingId="t">Q</Heading>', '<div role="region" aria-labelledby="other">a</div>');
 	expect((await mlRuleTest(rule, source, { parser: jsx, pretenders })).violations).toStrictEqual([
@@ -310,7 +310,7 @@ test('[role-supports-aria-prop-issue-4783-019] JSX pretenders: a reference to an
 const vue = { parser: { '.*': '@markuplint/vue-parser' }, specs: { '.*': '@markuplint/vue-spec' } };
 const svelte = { parser: { '.*': '@markuplint/svelte-parser' } };
 
-test('[role-supports-aria-prop-issue-4783-020] Vue: a reference may be to an element whose id is not known until it is rendered', async () => {
+test('[role-supports-aria-prop-026] Vue: a reference may be to an element whose id is not known until it is rendered', async () => {
 	const source = [
 		'<template>',
 		'<div>',
@@ -342,7 +342,7 @@ test('[role-supports-aria-prop-issue-4783-020] Vue: a reference may be to an ele
 	]);
 });
 
-test('[role-supports-aria-prop-issue-4783-021] Svelte: a reference may be to an element whose id is not known until it is rendered', async () => {
+test('[role-supports-aria-prop-027] Svelte: a reference may be to an element whose id is not known until it is rendered', async () => {
 	const source = [
 		'<h2 id={x}>Q</h2>',
 		'<div role="region" aria-labelledby="t">a</div>',
@@ -363,7 +363,7 @@ test('[role-supports-aria-prop-issue-4783-021] Svelte: a reference may be to an 
 	]);
 });
 
-test('[role-supports-aria-prop-issue-4789-001] JSX: an element whose role is not known until it is rendered is not judged by the implicit role', async () => {
+test('[role-supports-aria-prop-028] JSX: an element whose role is not known until it is rendered is not judged by the implicit role', async () => {
 	const source = [
 		'<>',
 		'<div role={props.role} aria-pressed="true" />',
@@ -386,7 +386,7 @@ test('[role-supports-aria-prop-issue-4789-001] JSX: an element whose role is not
 	]);
 });
 
-test('[role-supports-aria-prop-issue-4789-002] JSX: an attribute that the framework does not output is not a role that is not known', async () => {
+test('[role-supports-aria-prop-029] JSX: an attribute that the framework does not output is not a role that is not known', async () => {
 	const { violations } = await mlRuleTest(rule, '<div role={undefined} aria-pressed="true" />', { parser: jsx });
 	expect(violations).toStrictEqual([
 		{
@@ -399,7 +399,7 @@ test('[role-supports-aria-prop-issue-4789-002] JSX: an attribute that the framew
 	]);
 });
 
-test('[role-supports-aria-prop-issue-4789-003] JSX: a spread attribute may carry the role, so an element without the role attribute is not judged', async () => {
+test('[role-supports-aria-prop-030] JSX: a spread attribute may carry the role, so an element without the role attribute is not judged', async () => {
 	expect(
 		(await mlRuleTest(rule, '<div {...props} aria-pressed="true" />', { parser: jsx })).violations,
 	).toStrictEqual([]);
@@ -419,7 +419,7 @@ test('[role-supports-aria-prop-issue-4789-003] JSX: a spread attribute may carry
 	]);
 });
 
-test('[role-supports-aria-prop-issue-4789-004] Vue: a role that a binding gives is not known until it is rendered', async () => {
+test('[role-supports-aria-prop-031] Vue: a role that a binding gives is not known until it is rendered', async () => {
 	const source = [
 		'<template>',
 		'<div :role="r" aria-pressed="true">a</div>',
@@ -453,7 +453,7 @@ test('[role-supports-aria-prop-issue-4789-004] Vue: a role that a binding gives 
 	]);
 });
 
-test('[role-supports-aria-prop-issue-4789-005] Svelte: a role that code gives, and a spread attribute, are not known until they are rendered', async () => {
+test('[role-supports-aria-prop-032] Svelte: a role that code gives, and a spread attribute, are not known until they are rendered', async () => {
 	const source = ['<div role={r} aria-pressed="true">a</div>', '<div {...props} aria-pressed="true">b</div>'].join(
 		'\n',
 	);
@@ -473,7 +473,7 @@ test('[role-supports-aria-prop-issue-4789-005] Svelte: a role that code gives, a
 	]);
 });
 
-test('[role-supports-aria-prop-issue-4789-006] Astro: a role that code gives, and a spread attribute, are not known until they are rendered', async () => {
+test('[role-supports-aria-prop-033] Astro: a role that code gives, and a spread attribute, are not known until they are rendered', async () => {
 	const astro = { parser: { '.*': '@markuplint/astro-parser' } };
 	const source = ['<div role={r} aria-pressed="true">a</div>', '<div {...props} aria-pressed="true">b</div>'].join(
 		'\n',
@@ -494,7 +494,7 @@ test('[role-supports-aria-prop-issue-4789-006] Astro: a role that code gives, an
 	);
 });
 
-test('[role-supports-aria-prop-issue-4789-007] JSX: a spread attribute after the role attribute may override it', async () => {
+test('[role-supports-aria-prop-034] JSX: a spread attribute after the role attribute may override it', async () => {
 	expect(
 		(await mlRuleTest(rule, '<div role="heading" {...props} aria-pressed="true" />', { parser: jsx })).violations,
 	).toStrictEqual([]);
