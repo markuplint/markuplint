@@ -20,9 +20,10 @@
  * The comments, the name of the test, the kind of quotes, redundant parentheses, type assertions, the order of
  * the keys of an object and the line ends are out of it, as a formatter or a tidy-up rewrites them; so are
  * the line breaks between the elements of a list and the comma that a formatter adds after the last one
- * (`canonicalize`), while a hole at the end of an array (`[1,,]`) counts. The reader is syntactic, not the type checker: an identifier that the code binds itself (a parameter, a local) is kept
- * as written, and shadows the scope only where that binding is visible. What it cannot see is listed in the
- * module comment of `verify-equivalence.ts`.
+ * (`canonicalize`), while a hole at the end of an array (`[1,,]`) counts. The reader is syntactic, not the
+ * type checker: an identifier that the code binds itself (a parameter, a local) is kept as written, and
+ * shadows the scope only where that binding is visible. What it cannot see is listed in the module comment of
+ * `verify-equivalence.ts`.
  *
  * @module
  */
@@ -345,6 +346,12 @@ const ENDS_OPERAND: ReadonlySet<ts.SyntaxKind> = new Set([
  * The printer keeps the line breaks that the source has between the elements of a list, and a formatter adds
  * a comma to a list that it breaks over lines: neither changes what the code does, and a formatter's run over a
  * spec must not read as a change of its tests.
+ *
+ * A `/` is a regular expression unless the token before it can end an operand, so one that follows a `)`
+ * directly (`if (x) /re/.test(y)`) is read as a division. That is only seen when it holds a brace, which makes
+ * the braces of the code not balance, and then this throws instead of returning a text that is wrong.
+ *
+ * @throws When the braces of the code do not balance as a reading of it
  */
 function canonicalize(code: string): string {
 	const scanner = ts.createScanner(ts.ScriptTarget.Latest, false, ts.LanguageVariant.Standard, code);
@@ -365,8 +372,10 @@ function canonicalize(code: string): string {
 			kind = scanner.reScanTemplateToken(false);
 		} else if (kind === ts.SyntaxKind.OpenBraceToken) {
 			braces.push(false);
-		} else if (kind === ts.SyntaxKind.CloseBraceToken) {
-			braces.pop();
+		} else if (kind === ts.SyntaxKind.CloseBraceToken && braces.pop() === undefined) {
+			throw new Error(
+				'canonicalize: a "}" that closes nothing, as a reading of a regular expression that follows a ")"',
+			);
 		}
 		if (kind === ts.SyntaxKind.TemplateHead || kind === ts.SyntaxKind.TemplateMiddle) {
 			braces.push(true);
@@ -375,6 +384,11 @@ function canonicalize(code: string): string {
 			continue;
 		}
 		tokens.push({ kind, text: scanner.getTokenText() });
+	}
+	if (braces.length > 0) {
+		throw new Error(
+			'canonicalize: a "{" that is not closed, as a reading of a regular expression that follows a ")"',
+		);
 	}
 	return tokens
 		.filter((token, index) => {

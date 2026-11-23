@@ -123,6 +123,11 @@ describe('group', () => {
 		expect(one(withBody('use(a.type / 2);'))).not.toBe(one(withBody('use(a.type / 3);')));
 	});
 
+	test('a regular expression that follows a parenthesis directly and holds a brace is refused, not misread', () => {
+		expect(() => one(withBody('if (a) /{/.test(b);'))).toThrow(/canonicalize/);
+		expect(() => one(withBody('if (a) /}/.test(b);'))).toThrow(/canonicalize/);
+	});
+
 	test('a hole at the end of an array is not a trailing comma', () => {
 		expect(one(withBody('use([1,,]);'))).not.toBe(one(withBody('use([1,]);')));
 		expect(one(withBody('use([,]);'))).not.toBe(one(withBody('use([]);')));

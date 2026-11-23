@@ -27,6 +27,31 @@ const TESTING_API = new Set(['mlRuleTest', 'mlTest', 'mlTestFile']);
 const ID_PREFIX = /^\[([^\]]*)\]/;
 /** The registry and the specs of a real run are far more than this: it only shows that something was read. */
 const LEAST_SPECS = 100;
+/**
+ * The specs in the directory of a registered rule that do not go through the testing API: they test an
+ * internal function or the bundled spec data, and have no IDs. A spec of a rule that reaches the API in a way
+ * this does not read (a helper module, a re-export) would be taken for one of these and lose its IDs without a
+ * word, so a spec that is not on this list and does not import the API fails the test below. Add a new unit
+ * spec here.
+ */
+const UNIT_SPECS: ReadonlySet<string> = new Set([
+	'no-deprecated-aria-prop/spec-data.spec.ts',
+	'no-deprecated-element/spec-data.spec.ts',
+	'no-unsupported-browser-features/compat-data.spec.ts',
+	'no-unsupported-browser-features/format-unsupported-message.spec.ts',
+	'no-unsupported-browser-features/resolve-browsers.spec.ts',
+	'permitted-contents/choice.spec.ts',
+	'permitted-contents/content-model.cache.spec.ts',
+	'permitted-contents/count-pattern.spec.ts',
+	'permitted-contents/debug.spec.ts',
+	'permitted-contents/matches-selector.spec.ts',
+	'permitted-contents/order.spec.ts',
+	'permitted-contents/recursive-branch.spec.ts',
+	'permitted-contents/represent-transparent-nodes.spec.ts',
+	'permitted-contents/start.spec.ts',
+	'permitted-contents/utils.spec.ts',
+	'require-datetime/utils.spec.ts',
+]);
 
 function escapeRegExp(text: string): string {
 	return text.replaceAll(/[$()*+.?[\\\]^{|}]/g, String.raw`\$&`);
@@ -236,6 +261,16 @@ describe('the rule spec test IDs', () => {
 			}
 		}
 		expect(violations).toStrictEqual([]);
+	});
+
+	test('a spec of a registered rule that does not import the testing API is a known unit spec', () => {
+		const unknown = specs
+			.filter(spec => ruleOf(spec) && !spec.usesTestingApi && !UNIT_SPECS.has(spec.file))
+			.map(spec => spec.file);
+		expect(unknown).toStrictEqual([]);
+		// A name on the list that no spec has any more, or a spec that came to use the API, is stale
+		const present = new Set(specs.filter(spec => !spec.usesTestingApi).map(spec => spec.file));
+		expect([...UNIT_SPECS].filter(file => !present.has(file))).toStrictEqual([]);
 	});
 
 	test('a test of any other spec has no ID', () => {

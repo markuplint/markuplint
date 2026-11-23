@@ -144,12 +144,9 @@ function read(file: string, text: string): Spec {
 			}
 		}
 		const [nameNode] = ts.isCallExpression(node) ? node.arguments : [];
-		if (
-			ts.isCallExpression(node) &&
-			nameNode &&
-			isTestCall(node) &&
-			node.arguments.some(argument => ts.isFunctionLike(argument))
-		) {
+		// As the fingerprint reads it: a call of `test` or `it` (or a member) is a test, whatever it is given to run,
+		// and what is inside it is not read for more tests.
+		if (ts.isCallExpression(node) && nameNode && isTestCall(node)) {
 			const literal = leadingLiteral(nameNode);
 			const start = literal ? literal.getStart(sourceFile) + 1 : -1;
 			const match = literal ? PREFIX.exec(text.slice(start)) : null;
@@ -158,13 +155,20 @@ function read(file: string, text: string): Spec {
 				name: literal?.text ?? '',
 				prefix: match?.[1] === undefined ? undefined : { id: match[1], start, end: start + match[0].length },
 			});
+			return;
 		}
 		ts.forEachChild(node, visit);
 	};
 	visit(sourceFile);
 	const hashes = fingerprintSource(srcRelative(file), text);
 	if (hashes.length !== located.length) {
-		throw new Error(`${file}: read ${located.length} tests but fingerprinted ${hashes.length}`);
+		const here = new Set(located.map(test => test.line));
+		const there = new Set(hashes.map(test => test.line));
+		const onlyHere = [...here].filter(line => !there.has(line));
+		const onlyThere = [...there].filter(line => !here.has(line));
+		throw new Error(
+			`${file}: read ${located.length} tests but fingerprinted ${hashes.length} (only read here: line ${onlyHere.join(', ') || '-'}; only fingerprinted: line ${onlyThere.join(', ') || '-'})`,
+		);
 	}
 	const cases = located.map((test, index) => {
 		const fingerprint = hashes[index];
