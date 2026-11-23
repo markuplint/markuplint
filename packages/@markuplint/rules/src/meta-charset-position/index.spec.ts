@@ -3,7 +3,7 @@ import { test, expect } from 'vitest';
 
 import rule from './index.js';
 
-test('[meta-charset-position-invalid-001] meta charset serialized after the first 1024 bytes', async () => {
+test('[meta-charset-position-001] meta charset serialized after the first 1024 bytes', async () => {
 	const padding = '#'.repeat(1002);
 	const code = `<!doctype html><!--${padding}--><meta charset=utf-8>`;
 	const metaOffset = code.indexOf('<meta');
@@ -19,7 +19,7 @@ test('[meta-charset-position-invalid-001] meta charset serialized after the firs
 	]);
 });
 
-test('[meta-charset-position-invalid-002] meta http-equiv content-type serialized after the first 1024 bytes', async () => {
+test('[meta-charset-position-002] meta http-equiv content-type serialized after the first 1024 bytes', async () => {
 	const padding = '#'.repeat(1002);
 	const code = `<!doctype html><!--${padding}--><meta http-equiv="Content-Type" content="text/html; charset=utf-8">`;
 
@@ -34,18 +34,18 @@ test('[meta-charset-position-invalid-002] meta http-equiv content-type serialize
 	]);
 });
 
-test('[meta-charset-position-valid-001] meta charset within the first 1024 bytes', async () => {
+test('[meta-charset-position-003] meta charset within the first 1024 bytes', async () => {
 	const padding = '#'.repeat(1001);
 	const code = `<!doctype html><!--${padding}--><meta charset=utf-8>`;
 
 	expect((await mlRuleTest(rule, code)).violations).toStrictEqual([]);
 });
 
-test('[meta-charset-position-valid-002] no character encoding declaration present', async () => {
+test('[meta-charset-position-004] no character encoding declaration present', async () => {
 	expect((await mlRuleTest(rule, '<!doctype html><title>no charset</title>')).violations).toStrictEqual([]);
 });
 
-test('[meta-charset-position-issue-4584-001] the message is in Japanese with locale ja', async () => {
+test('[meta-charset-position-005] the message is in Japanese with locale ja', async () => {
 	const padding = '#'.repeat(1002);
 	const code = `<!doctype html><!--${padding}--><meta charset=utf-8>`;
 

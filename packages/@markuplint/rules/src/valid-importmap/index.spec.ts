@@ -7,17 +7,17 @@ function wrap(content: string): string {
 	return `<!doctype html><html><head><title>t</title>${content}</head><body></body></html>`;
 }
 
-test('[valid-importmap-valid-001] script without type attribute is ignored', async () => {
+test('[valid-importmap-001] script without type attribute is ignored', async () => {
 	const { violations } = await mlRuleTest(rule, wrap('<script>console.log("ok");</script>'));
 	expect(violations.length).toBe(0);
 });
 
-test('[valid-importmap-valid-002] script type=module is ignored', async () => {
+test('[valid-importmap-002] script type=module is ignored', async () => {
 	const { violations } = await mlRuleTest(rule, wrap('<script type="module">import "./a.js";</script>'));
 	expect(violations.length).toBe(0);
 });
 
-test('[valid-importmap-valid-003] minimal valid importmap', async () => {
+test('[valid-importmap-003] minimal valid importmap', async () => {
 	const { violations } = await mlRuleTest(
 		rule,
 		wrap('<script type="importmap">{"imports":{"app":"/path/to/app.js"}}</script>'),
@@ -25,7 +25,7 @@ test('[valid-importmap-valid-003] minimal valid importmap', async () => {
 	expect(violations.length).toBe(0);
 });
 
-test('[valid-importmap-valid-004] full valid importmap with scopes', async () => {
+test('[valid-importmap-004] full valid importmap with scopes', async () => {
 	const { violations } = await mlRuleTest(
 		rule,
 		wrap(
@@ -35,7 +35,7 @@ test('[valid-importmap-valid-004] full valid importmap with scopes', async () =>
 	expect(violations.length).toBe(0);
 });
 
-test('[valid-importmap-valid-005] integrity is an allowed top-level key', async () => {
+test('[valid-importmap-005] integrity is an allowed top-level key', async () => {
 	const { violations } = await mlRuleTest(
 		rule,
 		wrap('<script type="importmap">{"integrity":{"/a.mjs":"sha384-abc"}}</script>'),
@@ -43,7 +43,7 @@ test('[valid-importmap-valid-005] integrity is an allowed top-level key', async 
 	expect(violations.length).toBe(0);
 });
 
-test('[valid-importmap-valid-006] importmap with absolute URL specifier address', async () => {
+test('[valid-importmap-006] importmap with absolute URL specifier address', async () => {
 	const { violations } = await mlRuleTest(
 		rule,
 		wrap('<script type="importmap">{"imports":{"lib":"https://cdn.example.com/lib.js"}}</script>'),
@@ -51,12 +51,12 @@ test('[valid-importmap-valid-006] importmap with absolute URL specifier address'
 	expect(violations.length).toBe(0);
 });
 
-test('[valid-importmap-valid-007] type attribute matching is case-insensitive', async () => {
+test('[valid-importmap-007] type attribute matching is case-insensitive', async () => {
 	const { violations } = await mlRuleTest(rule, wrap('<script type="ImportMap">{"imports":{"a":"/a.js"}}</script>'));
 	expect(violations.length).toBe(0);
 });
 
-test('[valid-importmap-invalid-001] empty content', async () => {
+test('[valid-importmap-008] empty content', async () => {
 	const { violations } = await mlRuleTest(rule, wrap('<script type="importmap"></script>'));
 	expect(violations).toStrictEqual([
 		{
@@ -69,7 +69,7 @@ test('[valid-importmap-invalid-001] empty content', async () => {
 	]);
 });
 
-test('[valid-importmap-invalid-002] whitespace-only content', async () => {
+test('[valid-importmap-009] whitespace-only content', async () => {
 	const { violations } = await mlRuleTest(rule, wrap('<script type="importmap">   \n   </script>'));
 	expect(violations).toStrictEqual([
 		{
@@ -82,7 +82,7 @@ test('[valid-importmap-invalid-002] whitespace-only content', async () => {
 	]);
 });
 
-test('[valid-importmap-invalid-003] content is not JSON', async () => {
+test('[valid-importmap-010] content is not JSON', async () => {
 	const { violations } = await mlRuleTest(rule, wrap('<script type="importmap">alert("not json")</script>'));
 	expect(violations).toStrictEqual([
 		{
@@ -95,7 +95,7 @@ test('[valid-importmap-invalid-003] content is not JSON', async () => {
 	]);
 });
 
-test('[valid-importmap-invalid-004] top-level value is an array', async () => {
+test('[valid-importmap-011] top-level value is an array', async () => {
 	const { violations } = await mlRuleTest(rule, wrap('<script type="importmap">["imports"]</script>'));
 	expect(violations).toStrictEqual([
 		{
@@ -108,7 +108,7 @@ test('[valid-importmap-invalid-004] top-level value is an array', async () => {
 	]);
 });
 
-test('[valid-importmap-invalid-005] top-level value is a string', async () => {
+test('[valid-importmap-012] top-level value is a string', async () => {
 	const { violations } = await mlRuleTest(rule, wrap('<script type="importmap">"hello"</script>'));
 	expect(violations).toStrictEqual([
 		{
@@ -121,7 +121,7 @@ test('[valid-importmap-invalid-005] top-level value is a string', async () => {
 	]);
 });
 
-test('[valid-importmap-invalid-006] forbidden top-level property', async () => {
+test('[valid-importmap-013] forbidden top-level property', async () => {
 	const { violations } = await mlRuleTest(rule, wrap('<script type="importmap">{"forbidden":{}}</script>'));
 	expect(violations).toStrictEqual([
 		{
@@ -135,7 +135,7 @@ test('[valid-importmap-invalid-006] forbidden top-level property', async () => {
 	]);
 });
 
-test('[valid-importmap-invalid-007] imports value is not an object', async () => {
+test('[valid-importmap-014] imports value is not an object', async () => {
 	const { violations } = await mlRuleTest(
 		rule,
 		wrap('<script type="importmap">{"imports":"not an object"}</script>'),
@@ -151,7 +151,7 @@ test('[valid-importmap-invalid-007] imports value is not an object', async () =>
 	]);
 });
 
-test('[valid-importmap-invalid-008] imports has an empty specifier key', async () => {
+test('[valid-importmap-015] imports has an empty specifier key', async () => {
 	const { violations } = await mlRuleTest(
 		rule,
 		wrap('<script type="importmap">{"imports":{"":"/path/app.js"}}</script>'),
@@ -167,7 +167,7 @@ test('[valid-importmap-invalid-008] imports has an empty specifier key', async (
 	]);
 });
 
-test('[valid-importmap-invalid-009] imports value is not a string', async () => {
+test('[valid-importmap-016] imports value is not a string', async () => {
 	const { violations } = await mlRuleTest(rule, wrap('<script type="importmap">{"imports":{"app":123}}</script>'));
 	expect(violations).toStrictEqual([
 		{
@@ -180,7 +180,7 @@ test('[valid-importmap-invalid-009] imports value is not a string', async () => 
 	]);
 });
 
-test('[valid-importmap-invalid-010] imports slash-mismatch', async () => {
+test('[valid-importmap-017] imports slash-mismatch', async () => {
 	const { violations } = await mlRuleTest(
 		rule,
 		wrap('<script type="importmap">{"imports":{"dir/":"/path/to/dir"}}</script>'),
@@ -197,7 +197,7 @@ test('[valid-importmap-invalid-010] imports slash-mismatch', async () => {
 	]);
 });
 
-test('[valid-importmap-invalid-011] imports address is not a URL-like specifier', async () => {
+test('[valid-importmap-018] imports address is not a URL-like specifier', async () => {
 	const { violations } = await mlRuleTest(
 		rule,
 		wrap('<script type="importmap">{"imports":{"lib":"bare-specifier"}}</script>'),
@@ -214,7 +214,7 @@ test('[valid-importmap-invalid-011] imports address is not a URL-like specifier'
 	]);
 });
 
-test('[valid-importmap-invalid-012] scopes value is not an object', async () => {
+test('[valid-importmap-019] scopes value is not an object', async () => {
 	const { violations } = await mlRuleTest(rule, wrap('<script type="importmap">{"scopes":"not an object"}</script>'));
 	expect(violations).toStrictEqual([
 		{
@@ -227,7 +227,7 @@ test('[valid-importmap-invalid-012] scopes value is not an object', async () => 
 	]);
 });
 
-test('[valid-importmap-invalid-013] scopes inner value is not an object', async () => {
+test('[valid-importmap-020] scopes inner value is not an object', async () => {
 	const { violations } = await mlRuleTest(
 		rule,
 		wrap('<script type="importmap">{"scopes":{"/path/":"not an object"}}</script>'),
@@ -243,7 +243,7 @@ test('[valid-importmap-invalid-013] scopes inner value is not an object', async 
 	]);
 });
 
-test('[valid-importmap-invalid-014] scopes inner specifier address is not URL-like', async () => {
+test('[valid-importmap-021] scopes inner specifier address is not URL-like', async () => {
 	const { violations } = await mlRuleTest(
 		rule,
 		wrap('<script type="importmap">{"scopes":{"/path/":{"x":"..."}}}</script>'),
@@ -260,7 +260,7 @@ test('[valid-importmap-invalid-014] scopes inner specifier address is not URL-li
 	]);
 });
 
-test('[valid-importmap-invalid-015] integrity is not an object', async () => {
+test('[valid-importmap-022] integrity is not an object', async () => {
 	const { violations } = await mlRuleTest(rule, wrap('<script type="importmap">{"integrity":"not object"}</script>'));
 	expect(violations).toStrictEqual([
 		{
@@ -273,7 +273,7 @@ test('[valid-importmap-invalid-015] integrity is not an object', async () => {
 	]);
 });
 
-test('[valid-importmap-invalid-016] integrity key is a bare specifier (not URL-like)', async () => {
+test('[valid-importmap-023] integrity key is a bare specifier (not URL-like)', async () => {
 	const { violations } = await mlRuleTest(
 		rule,
 		wrap('<script type="importmap">{"integrity":{"bare":"sha384-abc"}}</script>'),
@@ -290,7 +290,7 @@ test('[valid-importmap-invalid-016] integrity key is a bare specifier (not URL-l
 	]);
 });
 
-test('[valid-importmap-invalid-017] integrity value is not a string', async () => {
+test('[valid-importmap-024] integrity value is not a string', async () => {
 	const { violations } = await mlRuleTest(
 		rule,
 		wrap('<script type="importmap">{"integrity":{"/a.mjs":123}}</script>'),
@@ -306,7 +306,7 @@ test('[valid-importmap-invalid-017] integrity value is not a string', async () =
 	]);
 });
 
-test('[valid-importmap-invalid-018] integrity key is empty string', async () => {
+test('[valid-importmap-025] integrity key is empty string', async () => {
 	const { violations } = await mlRuleTest(
 		rule,
 		wrap('<script type="importmap">{"integrity":{"":"sha384-abc"}}</script>'),
@@ -323,7 +323,7 @@ test('[valid-importmap-invalid-018] integrity key is empty string', async () => 
 	]);
 });
 
-test('[valid-importmap-invalid-019] scopes inner specifier with empty key', async () => {
+test('[valid-importmap-026] scopes inner specifier with empty key', async () => {
 	const { violations } = await mlRuleTest(
 		rule,
 		wrap('<script type="importmap">{"scopes":{"/p/":{"":"/a.js"}}}</script>'),
@@ -339,7 +339,7 @@ test('[valid-importmap-invalid-019] scopes inner specifier with empty key', asyn
 	]);
 });
 
-test('[valid-importmap-invalid-020] scopes inner specifier value not a string', async () => {
+test('[valid-importmap-027] scopes inner specifier value not a string', async () => {
 	const { violations } = await mlRuleTest(rule, wrap('<script type="importmap">{"scopes":{"/p/":{"k":1}}}</script>'));
 	expect(violations).toStrictEqual([
 		{
@@ -352,7 +352,7 @@ test('[valid-importmap-invalid-020] scopes inner specifier value not a string', 
 	]);
 });
 
-test('[valid-importmap-invalid-021] scopes inner specifier slash mismatch', async () => {
+test('[valid-importmap-028] scopes inner specifier slash mismatch', async () => {
 	const { violations } = await mlRuleTest(
 		rule,
 		wrap('<script type="importmap">{"scopes":{"/p/":{"dir/":"/x"}}}</script>'),
@@ -369,7 +369,7 @@ test('[valid-importmap-invalid-021] scopes inner specifier slash mismatch', asyn
 	]);
 });
 
-test('[valid-importmap-invalid-022] multiple violations are all reported', async () => {
+test('[valid-importmap-029] multiple violations are all reported', async () => {
 	const { violations } = await mlRuleTest(
 		rule,
 		wrap('<script type="importmap">{"forbidden":1,"imports":{"":"/a.js","b":42}}</script>'),
@@ -400,7 +400,7 @@ test('[valid-importmap-invalid-022] multiple violations are all reported', async
 	]);
 });
 
-test('[valid-importmap-issue-4584-001] an empty import map is in Japanese with locale ja', async () => {
+test('[valid-importmap-030] an empty import map is in Japanese with locale ja', async () => {
 	const { violations } = await mlRuleTest(rule, '<script type="importmap"></script>', undefined, false, 'ja');
 
 	expect(violations).toStrictEqual([
@@ -414,7 +414,7 @@ test('[valid-importmap-issue-4584-001] an empty import map is in Japanese with l
 	]);
 });
 
-test('[valid-importmap-issue-4584-002] a top-level key that is not allowed is in Japanese with locale ja', async () => {
+test('[valid-importmap-031] a top-level key that is not allowed is in Japanese with locale ja', async () => {
 	const { violations } = await mlRuleTest(
 		rule,
 		'<script type="importmap">{"foo":{}}</script>',
@@ -435,7 +435,7 @@ test('[valid-importmap-issue-4584-002] a top-level key that is not allowed is in
 	]);
 });
 
-test('[valid-importmap-issue-4584-003] the trailing slash of the specifier is in Japanese with locale ja', async () => {
+test('[valid-importmap-032] the trailing slash of the specifier is in Japanese with locale ja', async () => {
 	const { violations } = await mlRuleTest(
 		rule,
 		'<script type="importmap">{"imports":{"a/":"/b"}}</script>',
@@ -456,7 +456,7 @@ test('[valid-importmap-issue-4584-003] the trailing slash of the specifier is in
 	]);
 });
 
-test('[valid-importmap-issue-4584-004] the integrity key is in Japanese with locale ja', async () => {
+test('[valid-importmap-033] the integrity key is in Japanese with locale ja', async () => {
 	const { violations } = await mlRuleTest(
 		rule,
 		'<script type="importmap">{"integrity":{"x":"y"}}</script>',

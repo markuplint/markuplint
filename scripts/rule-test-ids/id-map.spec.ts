@@ -40,6 +40,39 @@ describe('parseIdMap', () => {
 		expect(parseIdMap('{}')).toStrictEqual({ removed: [], added: [] });
 	});
 
+	test('reads the renamed and unnumbered IDs that the renumbering writes', () => {
+		const renamed = {
+			file: 'packages/@markuplint/rules/src/rule-a/index.spec.ts',
+			id: 'rule-a-valid-001',
+			to: 'rule-a-001',
+		};
+		const unnumbered = { file: 'packages/@markuplint/rules/src/rule-a/x.spec.ts', id: 'rule-a-valid-002' };
+		expect(parseIdMap(JSON.stringify({ renamed: [renamed], unnumbered: [unnumbered] }))).toStrictEqual({
+			removed: [],
+			added: [],
+			renamed: [renamed],
+			unnumbered: [unnumbered],
+		});
+		expect(() => parseIdMap(JSON.stringify({ renamed: [{ file: 'a', id: 'b' }] }))).toThrow(/renamed\[0\]/);
+		expect(() => parseIdMap(JSON.stringify({ unnumbered: [{ file: 'a', id: 'b', to: 'c' }] }))).toThrow(
+			/unnumbered\[0\]/,
+		);
+	});
+
+	test('reads the specs that the change adds about the specs themselves', () => {
+		expect(parseIdMap(JSON.stringify({ policy: ['test-ids.spec.ts'] }))).toStrictEqual({
+			removed: [],
+			added: [],
+			policy: ['test-ids.spec.ts'],
+		});
+		expect(() => parseIdMap(JSON.stringify({ policy: 'test-ids.spec.ts' }))).toThrow(/policy/);
+		expect(() => parseIdMap(JSON.stringify({ policy: [1] }))).toThrow(/policy/);
+		// Not in the form that the verifier compares: it would be ignored without a word
+		for (const file of ['rule-a\\index.spec.ts', './test-ids.spec.ts', '/test-ids.spec.ts', 'test-ids.ts']) {
+			expect(() => parseIdMap(JSON.stringify({ policy: [file] }))).toThrow(/policy/);
+		}
+	});
+
 	test('rejects a key that it does not know, as a typo would drop the entries without a word', () => {
 		expect(() => parseIdMap(JSON.stringify({ remove: [removal] }))).toThrow(/remove/);
 	});

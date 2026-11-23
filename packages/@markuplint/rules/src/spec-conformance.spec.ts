@@ -4,8 +4,7 @@ import { describe, expect, test } from 'vitest';
 import rules from './index.js';
 
 /**
- * Meta-test for the `meta.specConformance` rollout (v5 rule-system redesign,
- * PR #3989). Every built-in rule is meant to eventually declare
+ * Meta-test for the `meta.specConformance` rollout (the v5 rule-system redesign). Every built-in rule is meant to eventually declare
  * `specConformance`, but the rollout happens rule-by-rule across many
  * commits, so this only enforces the invariants below on rules that have
  * already declared it — not "every rule has one" (that gate lands once the

@@ -3,29 +3,29 @@ import { test, expect } from 'vitest';
 
 import rule from './index.js';
 
-test('[form-attr-references-form-valid-001] form attribute references actual form element', async () => {
+test('[form-attr-references-form-001] form attribute references actual form element', async () => {
 	const { violations } = await mlRuleTest(rule, '<form id="form1"></form><input type="text" form="form1">');
 	expect(violations).toStrictEqual([]);
 });
 
-test('[form-attr-references-form-valid-002] no form attribute on form-associated element', async () => {
+test('[form-attr-references-form-002] no form attribute on form-associated element', async () => {
 	const { violations } = await mlRuleTest(rule, '<input type="text">');
 	expect(violations).toStrictEqual([]);
 });
 
-test('[form-attr-references-form-valid-003] form attribute on non form-associated element ignored', async () => {
+test('[form-attr-references-form-003] form attribute on non form-associated element ignored', async () => {
 	// `<div form="x">` is not a form-associated element; the attribute is non-conforming
 	// per the HTML spec but that is no-unknown-attr's concern, not this rule's.
 	const { violations } = await mlRuleTest(rule, '<div form="anything">x</div>');
 	expect(violations).toStrictEqual([]);
 });
 
-test('[form-attr-references-form-valid-004] missing target id is left to no-refer-to-non-existent-id', async () => {
+test('[form-attr-references-form-004] missing target id is left to no-refer-to-non-existent-id', async () => {
 	const { violations } = await mlRuleTest(rule, '<input type="text" form="missing">');
 	expect(violations).toStrictEqual([]);
 });
 
-test('[form-attr-references-form-invalid-001] form attribute references non-form element', async () => {
+test('[form-attr-references-form-005] form attribute references non-form element', async () => {
 	// Mirrors tests/external/validator/tests/html/attributes/form-not-referencing-form-novalid.html
 	const { violations } = await mlRuleTest(
 		rule,
@@ -42,7 +42,7 @@ test('[form-attr-references-form-invalid-001] form attribute references non-form
 	]);
 });
 
-test('[form-attr-references-form-invalid-002] applies to all form-associated elements', async () => {
+test('[form-attr-references-form-006] applies to all form-associated elements', async () => {
 	const cases: [string, string][] = [
 		['button', '<div id="x">x</div><button form="x">b</button>'],
 		['fieldset', '<div id="x">x</div><fieldset form="x"></fieldset>'],
@@ -58,7 +58,7 @@ test('[form-attr-references-form-invalid-002] applies to all form-associated ele
 	}
 });
 
-test('[form-attr-references-form-issue-4489-001] the target is looked for in the tree of the element', async () => {
+test('[form-attr-references-form-007] the target is looked for in the tree of the element', async () => {
 	const { violations } = await mlRuleTest(rule, '<template><div id="x"></div><input form="x"></template>');
 	expect(violations).toStrictEqual([
 		{
@@ -71,12 +71,12 @@ test('[form-attr-references-form-issue-4489-001] the target is looked for in the
 	]);
 });
 
-test('[form-attr-references-form-issue-4489-002] an id in another tree is not the target', async () => {
+test('[form-attr-references-form-008] an id in another tree is not the target', async () => {
 	const { violations } = await mlRuleTest(rule, '<div id="x"></div><template><input form="x"></template>');
 	expect(violations).toStrictEqual([]);
 });
 
-test('[form-attr-references-form-issue-4584-001] the message is in Japanese with locale ja', async () => {
+test('[form-attr-references-form-009] the message is in Japanese with locale ja', async () => {
 	const { violations } = await mlRuleTest(rule, '<div id="x"></div><input form="x">', undefined, false, 'ja');
 
 	expect(violations).toStrictEqual([

@@ -25,9 +25,12 @@
  *
  * The ID map (`id-map.json`, shape in `id-map.ts`; `--map` names another): `removed` lists a test that was
  * deleted because an identical one stays, and `added` a test that was put in because a behavior had none.
- * Both are true only against a base that predates them. Once the change has merged, move its entries under
+ * Both are true only against a base that predates them. Once the base contains them, move the entries under
  * `merged`, which this script does not check, so that the record that the v6 line ports its IDs from is kept
- * and the next run against the new base is not told that a removed test is unknown.
+ * and the next run against the new base is not told that a removed test is unknown. `policy` lists specs of
+ * the rules that enforce the convention that the reorganization establishes and that the base does not have:
+ * their tests and cases are left out of the head, as each would be a test that appeared, and the entry goes
+ * with the others once the base has the spec.
  *
  * What it cannot see:
  *
@@ -35,8 +38,10 @@
  *   module it names. The same goes for a file on disk that a test reads.
  * - Anything that is not in the text of the test and of what it reads in its own file: mutable state that
  *   several tests share, and globals. The reader is syntactic.
- * - A name or an ID: they are out of the hash on purpose, so a malformed or duplicated ID is
- *   `list-rule-test`'s to find.
+ * - A name or an ID: they are out of the hash on purpose, so a malformed or duplicated ID is the concern of
+ *   `src/test-ids.spec.ts` of the rules.
+ * - The specs outside the rules' `src` (`renumber.ts` rewrites two of them): only the check of `renumber.ts`
+ *   itself stands for them.
  * - How many times a helper that defines tests is called: it is fingerprinted once, so a call that was
  *   removed shows only in the counts of the reports (`cases.ts`), which is why they are worth passing.
  *
@@ -93,7 +98,7 @@ function specsOf(names: readonly string[]): string[] {
 }
 
 function readBase(ref: string): Fingerprinted[] {
-	const files = specsOf(git(['ls-tree', '-r', '--name-only', ref, '--', SRC]).split('\n'));
+	const files = specsOf(git(['ls-tree', '-r', '-z', '--name-only', ref, '--', SRC]).split('\0'));
 	return files.flatMap(name => fingerprints(name.slice(SRC.length + 1), git(['show', `${ref}:${name}`])));
 }
 
@@ -106,6 +111,16 @@ function readHead(): Fingerprinted[] {
 
 function readJson<T>(file: string): T {
 	return JSON.parse(readFileSync(file, 'utf8')) as T;
+}
+
+/** The head report without the cases of the specs that the ID map lists under `policy`. */
+function withoutPolicy(report: CaseReport, policy: readonly string[]): CaseReport {
+	return {
+		...report,
+		testResults: report.testResults.filter(
+			result => !policy.some(file => result.name.replaceAll('\\', '/').endsWith(`/${SRC}/${file}`)),
+		),
+	};
 }
 
 const { values } = parseArgs({
@@ -135,9 +150,10 @@ if (Boolean(baseReport) !== Boolean(headReport)) {
 }
 process.chdir(git(['rev-parse', '--show-toplevel']).trim());
 
-const { removed, added } = parseIdMap(readFileSync(mapFile, 'utf8'));
+const { removed, added, policy = [] } = parseIdMap(readFileSync(mapFile, 'utf8'));
 const base = readBase(values.base);
-const head = readHead();
+// The specs that the change adds to enforce its own convention have no counterpart in the base.
+const head = readHead().filter(test => !policy.includes(test.file));
 // An empty side compares equal to an empty side, which would pass without having read anything.
 if (base.length === 0 || head.length === 0) {
 	throw new Error(`no tests were read (base: ${base.length}, working tree: ${head.length}) from ${SRC}`);
@@ -145,7 +161,14 @@ if (base.length === 0 || head.length === 0) {
 
 const problems = compare(base, head, removed, added).map(problem => `${problem.kind}: ${problem.message}`);
 if (baseReport && headReport) {
-	problems.push(...compareCases(readJson<CaseReport>(baseReport), readJson<CaseReport>(headReport), removed, added));
+	problems.push(
+		...compareCases(
+			readJson<CaseReport>(baseReport),
+			withoutPolicy(readJson<CaseReport>(headReport), policy),
+			removed,
+			added,
+		),
+	);
 }
 
 process.stdout.write(

@@ -3,17 +3,17 @@ import { test, expect } from 'vitest';
 
 import rule from './index.js';
 
-test('[no-extra-selected-options-valid-001] zero selected options', async () => {
+test('[no-extra-selected-options-001] zero selected options', async () => {
 	const { violations } = await mlRuleTest(rule, '<select><option>a</option><option>b</option></select>');
 	expect(violations.length).toBe(0);
 });
 
-test('[no-extra-selected-options-valid-002] exactly one selected option', async () => {
+test('[no-extra-selected-options-002] exactly one selected option', async () => {
 	const { violations } = await mlRuleTest(rule, '<select><option selected>a</option><option>b</option></select>');
 	expect(violations.length).toBe(0);
 });
 
-test('[no-extra-selected-options-valid-003] multiple selected with multiple attribute', async () => {
+test('[no-extra-selected-options-003] multiple selected with multiple attribute', async () => {
 	const { violations } = await mlRuleTest(
 		rule,
 		'<select multiple><option selected>a</option><option selected>b</option></select>',
@@ -21,7 +21,7 @@ test('[no-extra-selected-options-valid-003] multiple selected with multiple attr
 	expect(violations.length).toBe(0);
 });
 
-test('[no-extra-selected-options-valid-004] selected options inside optgroup respected', async () => {
+test('[no-extra-selected-options-004] selected options inside optgroup respected', async () => {
 	const { violations } = await mlRuleTest(
 		rule,
 		'<select><optgroup label="g"><option selected>a</option><option>b</option></optgroup></select>',
@@ -29,7 +29,7 @@ test('[no-extra-selected-options-valid-004] selected options inside optgroup res
 	expect(violations.length).toBe(0);
 });
 
-test('[no-extra-selected-options-invalid-001] two selected options without multiple', async () => {
+test('[no-extra-selected-options-005] two selected options without multiple', async () => {
 	const { violations } = await mlRuleTest(
 		rule,
 		'<select><option selected>a</option><option selected>b</option></select>',
@@ -46,7 +46,7 @@ test('[no-extra-selected-options-invalid-001] two selected options without multi
 	]);
 });
 
-test('[no-extra-selected-options-invalid-002] selected spans select and optgroup descendants', async () => {
+test('[no-extra-selected-options-006] selected spans select and optgroup descendants', async () => {
 	const { violations } = await mlRuleTest(
 		rule,
 		'<select><option selected>a</option><optgroup label="g"><option selected>b</option></optgroup></select>',
@@ -56,7 +56,7 @@ test('[no-extra-selected-options-invalid-002] selected spans select and optgroup
 	expect(violations[0]?.col).toBe(56);
 });
 
-test('[no-extra-selected-options-invalid-003] three selected reports two excess', async () => {
+test('[no-extra-selected-options-007] three selected reports two excess', async () => {
 	const { violations } = await mlRuleTest(
 		rule,
 		'<select><option selected>a</option><option selected>b</option><option selected>c</option></select>',
@@ -65,7 +65,7 @@ test('[no-extra-selected-options-invalid-003] three selected reports two excess'
 	expect(violations.map(v => v.col)).toStrictEqual([36, 63]);
 });
 
-test('[no-extra-selected-options-issue-4584-001] the message is in Japanese with locale ja', async () => {
+test('[no-extra-selected-options-008] the message is in Japanese with locale ja', async () => {
 	const { violations } = await mlRuleTest(
 		rule,
 		'<select><option selected></option><option selected></option></select>',

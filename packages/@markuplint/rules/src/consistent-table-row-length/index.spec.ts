@@ -4,7 +4,7 @@ import { test, expect, describe } from 'vitest';
 import rule from './index.js';
 
 describe('Basic', () => {
-	test('[consistent-table-row-length-issue-4489-001] a table in the content of a template is checked', async () => {
+	test('[consistent-table-row-length-001] a table in the content of a template is checked', async () => {
 		const { violations } = await mlRuleTest(
 			rule,
 			'<template><table><tr><th></th></tr><tr><td></td><td class="extra"></td></tr></table></template>',
@@ -20,7 +20,7 @@ describe('Basic', () => {
 		]);
 	});
 
-	test('[consistent-table-row-length-issue-4489-002] the rows in a template that is a child of the table are not rows of the table', async () => {
+	test('[consistent-table-row-length-002] the rows in a template that is a child of the table are not rows of the table', async () => {
 		const { violations } = await mlRuleTest(
 			rule,
 			'<table><template><tr><td></td></tr></template><tr><td></td><td></td></tr></table>',
@@ -28,7 +28,7 @@ describe('Basic', () => {
 		expect(violations).toStrictEqual([]);
 	});
 
-	test('[consistent-table-row-length-invalid-001] An extra column', async () => {
+	test('[consistent-table-row-length-003] An extra column', async () => {
 		const { violations } = await mlRuleTest(
 			rule,
 			`
@@ -54,7 +54,7 @@ describe('Basic', () => {
 		]);
 	});
 
-	test('[consistent-table-row-length-invalid-002] Extra columns', async () => {
+	test('[consistent-table-row-length-004] Extra columns', async () => {
 		const { violations } = await mlRuleTest(
 			rule,
 			`
@@ -81,7 +81,7 @@ describe('Basic', () => {
 		]);
 	});
 
-	test('[consistent-table-row-length-invalid-003] A missing column', async () => {
+	test('[consistent-table-row-length-005] A missing column', async () => {
 		const { violations } = await mlRuleTest(
 			rule,
 			`
@@ -114,7 +114,7 @@ describe('Basic', () => {
 		]);
 	});
 
-	test('[consistent-table-row-length-invalid-004] Missing columns', async () => {
+	test('[consistent-table-row-length-006] Missing columns', async () => {
 		const { violations } = await mlRuleTest(
 			rule,
 			`
@@ -148,7 +148,7 @@ describe('Basic', () => {
 		]);
 	});
 
-	test('[consistent-table-row-length-invalid-005] Missing columns (with colspan)', async () => {
+	test('[consistent-table-row-length-007] Missing columns (with colspan)', async () => {
 		const { violations } = await mlRuleTest(
 			rule,
 			`
@@ -177,7 +177,7 @@ describe('Basic', () => {
 });
 
 describe('Complex', () => {
-	test('[consistent-table-row-length-invalid-006] [rowspan]', async () => {
+	test('[consistent-table-row-length-008] [rowspan]', async () => {
 		const { violations } = await mlRuleTest(
 			rule,
 			`
@@ -221,7 +221,7 @@ describe('Complex', () => {
 		]);
 	});
 
-	test('[consistent-table-row-length-invalid-007] [colspan][rowspan]', async () => {
+	test('[consistent-table-row-length-009] [colspan][rowspan]', async () => {
 		const { violations } = await mlRuleTest(
 			rule,
 			`
@@ -260,7 +260,7 @@ describe('Complex', () => {
 		]);
 	});
 
-	test('[consistent-table-row-length-invalid-008] Overflow', async () => {
+	test('[consistent-table-row-length-010] Overflow', async () => {
 		const { violations } = await mlRuleTest(
 			rule,
 			`
@@ -317,7 +317,7 @@ describe('Complex', () => {
 });
 
 describe('Edge Cases', () => {
-	test('[consistent-table-row-length-valid-001] Empty table', async () => {
+	test('[consistent-table-row-length-011] Empty table', async () => {
 		const { violations } = await mlRuleTest(
 			rule,
 			`
@@ -328,7 +328,7 @@ describe('Edge Cases', () => {
 		expect(violations).toStrictEqual([]);
 	});
 
-	test('[consistent-table-row-length-valid-002] Table with thead/tbody/tfoot sections', async () => {
+	test('[consistent-table-row-length-012] Table with thead/tbody/tfoot sections', async () => {
 		const { violations } = await mlRuleTest(
 			rule,
 			`
@@ -360,7 +360,7 @@ describe('Edge Cases', () => {
 		expect(violations).toStrictEqual([]);
 	});
 
-	test('[consistent-table-row-length-invalid-009] Table sections with mismatched columns', async () => {
+	test('[consistent-table-row-length-013] Table sections with mismatched columns', async () => {
 		const { violations } = await mlRuleTest(
 			rule,
 			`
@@ -392,7 +392,7 @@ describe('Edge Cases', () => {
 		]);
 	});
 
-	test('[consistent-table-row-length-valid-003] Complex nested rowspan/colspan without overlap', async () => {
+	test('[consistent-table-row-length-014] Complex nested rowspan/colspan without overlap', async () => {
 		const { violations } = await mlRuleTest(
 			rule,
 			`
@@ -415,7 +415,7 @@ describe('Edge Cases', () => {
 		expect(violations).toStrictEqual([]);
 	});
 
-	test('[consistent-table-row-length-valid-004] Colspan only table', async () => {
+	test('[consistent-table-row-length-015] Colspan only table', async () => {
 		const { violations } = await mlRuleTest(
 			rule,
 			`
@@ -434,7 +434,7 @@ describe('Edge Cases', () => {
 		expect(violations).toStrictEqual([]);
 	});
 
-	test('[consistent-table-row-length-valid-005] Rowspan only table - valid structure', async () => {
+	test('[consistent-table-row-length-016] Rowspan only table - valid structure', async () => {
 		const { violations } = await mlRuleTest(
 			rule,
 			`
@@ -454,7 +454,7 @@ describe('Edge Cases', () => {
 		expect(violations).toStrictEqual([]);
 	});
 
-	test('[consistent-table-row-length-valid-006] Rowspan only table - invalid structure', async () => {
+	test('[consistent-table-row-length-017] Rowspan only table - invalid structure', async () => {
 		const { violations } = await mlRuleTest(
 			rule,
 			`
@@ -482,7 +482,7 @@ describe('Edge Cases', () => {
 		expect(violations).toStrictEqual([]);
 	});
 
-	test('[consistent-table-row-length-valid-007] Explicit default values (rowspan=1, colspan=1)', async () => {
+	test('[consistent-table-row-length-018] Explicit default values (rowspan=1, colspan=1)', async () => {
 		const { violations } = await mlRuleTest(
 			rule,
 			`
@@ -501,7 +501,7 @@ describe('Edge Cases', () => {
 		expect(violations).toStrictEqual([]);
 	});
 
-	test('[consistent-table-row-length-valid-008] Large table with consistent structure', async () => {
+	test('[consistent-table-row-length-019] Large table with consistent structure', async () => {
 		const { violations } = await mlRuleTest(
 			rule,
 			`
@@ -542,7 +542,7 @@ describe('Edge Cases', () => {
 		expect(violations).toStrictEqual([]);
 	});
 
-	test('[consistent-table-row-length-valid-009] Table with tbody rowspan/colspan combinations', async () => {
+	test('[consistent-table-row-length-020] Table with tbody rowspan/colspan combinations', async () => {
 		const { violations } = await mlRuleTest(
 			rule,
 			`
@@ -570,7 +570,7 @@ describe('Edge Cases', () => {
 		expect(violations).toStrictEqual([]);
 	});
 
-	test('[consistent-table-row-length-invalid-010] Mixed valid and invalid rows', async () => {
+	test('[consistent-table-row-length-021] Mixed valid and invalid rows', async () => {
 		const { violations } = await mlRuleTest(
 			rule,
 			`
@@ -608,7 +608,7 @@ describe('Edge Cases', () => {
 		]);
 	});
 
-	test('[consistent-table-row-length-valid-010] Single cell table', async () => {
+	test('[consistent-table-row-length-022] Single cell table', async () => {
 		const { violations } = await mlRuleTest(
 			rule,
 			`
@@ -622,7 +622,7 @@ describe('Edge Cases', () => {
 		expect(violations).toStrictEqual([]);
 	});
 
-	test('[consistent-table-row-length-valid-011] Single row with colspan', async () => {
+	test('[consistent-table-row-length-023] Single row with colspan', async () => {
 		const { violations } = await mlRuleTest(
 			rule,
 			`
@@ -642,7 +642,7 @@ describe('Edge Cases', () => {
 });
 
 describe('Table model errors', () => {
-	test('[consistent-table-row-length-invalid-011] Colspan anchored past a rowspan continuation', async () => {
+	test('[consistent-table-row-length-024] Colspan anchored past a rowspan continuation', async () => {
 		const { violations } = await mlRuleTest(
 			rule,
 			`
@@ -668,7 +668,7 @@ describe('Table model errors', () => {
 		]);
 	});
 
-	test('[consistent-table-row-length-invalid-012] Rowspan reaching past the end of its row group', async () => {
+	test('[consistent-table-row-length-025] Rowspan reaching past the end of its row group', async () => {
 		const { violations } = await mlRuleTest(
 			rule,
 			`
@@ -691,7 +691,7 @@ describe('Table model errors', () => {
 		]);
 	});
 
-	test('[consistent-table-row-length-valid-012] Overlap suppresses the other checks of the same table', async () => {
+	test('[consistent-table-row-length-026] Overlap suppresses the other checks of the same table', async () => {
 		const { violations } = await mlRuleTest(
 			rule,
 			`
@@ -711,7 +711,7 @@ describe('Table model errors', () => {
 		expect(violations).toStrictEqual([]);
 	});
 
-	test('[consistent-table-row-length-valid-013] Row wider than the column markup', async () => {
+	test('[consistent-table-row-length-027] Row wider than the column markup', async () => {
 		const { violations } = await mlRuleTest(
 			rule,
 			`
@@ -725,8 +725,8 @@ describe('Table model errors', () => {
 		);
 		// HTML LS §4.9.12.1 Step 7 grows xwidth to fit the row, so exceeding the column markup is
 		// not a table model error. nu-validator disagrees; that report is recorded as an
-		// over-detection in `tests/external/snapshots/excluded-ids.json` (Issue #3916). A
-		// single-row table also always compares a row against its own width (see valid-011),
+		// over-detection in `tests/external/snapshots/excluded-ids.json`. A
+		// single-row table also always compares a row against its own width (see [consistent-table-row-length-023]),
 		// so this could never fire here regardless.
 		expect(violations).toStrictEqual([]);
 	});

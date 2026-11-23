@@ -3,17 +3,17 @@ import { test, expect } from 'vitest';
 
 import rule from './index.js';
 
-test('[no-duplicate-autofocus-valid-001] single autofocus', async () => {
+test('[no-duplicate-autofocus-001] single autofocus', async () => {
 	const { violations } = await mlRuleTest(rule, '<div><input autofocus><input></div>');
 	expect(violations).toStrictEqual([]);
 });
 
-test('[no-duplicate-autofocus-valid-002] no autofocus', async () => {
+test('[no-duplicate-autofocus-002] no autofocus', async () => {
 	const { violations } = await mlRuleTest(rule, '<div><input><input></div>');
 	expect(violations).toStrictEqual([]);
 });
 
-test('[no-duplicate-autofocus-invalid-001] two autofocus', async () => {
+test('[no-duplicate-autofocus-003] two autofocus', async () => {
 	const { violations } = await mlRuleTest(rule, '<div><input autofocus><input autofocus></div>');
 	expect(violations).toStrictEqual([
 		{
@@ -26,7 +26,7 @@ test('[no-duplicate-autofocus-invalid-001] two autofocus', async () => {
 	]);
 });
 
-test('[no-duplicate-autofocus-invalid-002] three autofocus', async () => {
+test('[no-duplicate-autofocus-004] three autofocus', async () => {
 	const { violations } = await mlRuleTest(
 		rule,
 		'<div><input autofocus><button autofocus>x</button><textarea autofocus></textarea></div>',
@@ -49,7 +49,7 @@ test('[no-duplicate-autofocus-invalid-002] three autofocus', async () => {
 	]);
 });
 
-test('[no-duplicate-autofocus-valid-003] each dialog has its own autofocus scoping root', async () => {
+test('[no-duplicate-autofocus-005] each dialog has its own autofocus scoping root', async () => {
 	const { violations } = await mlRuleTest(
 		rule,
 		'<dialog><input autofocus></dialog><dialog><button autofocus>x</button></dialog>',
@@ -57,7 +57,7 @@ test('[no-duplicate-autofocus-valid-003] each dialog has its own autofocus scopi
 	expect(violations).toStrictEqual([]);
 });
 
-test('[no-duplicate-autofocus-valid-004] each popover has its own autofocus scoping root', async () => {
+test('[no-duplicate-autofocus-006] each popover has its own autofocus scoping root', async () => {
 	const { violations } = await mlRuleTest(
 		rule,
 		'<div popover><input autofocus></div><div popover><button autofocus>x</button></div>',
@@ -65,12 +65,12 @@ test('[no-duplicate-autofocus-valid-004] each popover has its own autofocus scop
 	expect(violations).toStrictEqual([]);
 });
 
-test('[no-duplicate-autofocus-valid-005] a dialog-scoped autofocus does not conflict with a document-level autofocus', async () => {
+test('[no-duplicate-autofocus-007] a dialog-scoped autofocus does not conflict with a document-level autofocus', async () => {
 	const { violations } = await mlRuleTest(rule, '<input autofocus><dialog><button autofocus>x</button></dialog>');
 	expect(violations).toStrictEqual([]);
 });
 
-test('[no-duplicate-autofocus-invalid-003] two autofocus elements sharing the same dialog scoping root', async () => {
+test('[no-duplicate-autofocus-008] two autofocus elements sharing the same dialog scoping root', async () => {
 	const { violations } = await mlRuleTest(rule, '<dialog><input autofocus><button autofocus>x</button></dialog>');
 	expect(violations).toStrictEqual([
 		{
@@ -83,7 +83,7 @@ test('[no-duplicate-autofocus-invalid-003] two autofocus elements sharing the sa
 	]);
 });
 
-test('[no-duplicate-autofocus-invalid-004] a dialog with autofocus and an inner autofocus target share the dialog as their scoping root', async () => {
+test('[no-duplicate-autofocus-009] a dialog with autofocus and an inner autofocus target share the dialog as their scoping root', async () => {
 	const { violations } = await mlRuleTest(rule, '<dialog autofocus><input autofocus></dialog>');
 	expect(violations).toStrictEqual([
 		{
@@ -96,7 +96,7 @@ test('[no-duplicate-autofocus-invalid-004] a dialog with autofocus and an inner 
 	]);
 });
 
-test('[no-duplicate-autofocus-issue-4584-001] the message is in Japanese with locale ja', async () => {
+test('[no-duplicate-autofocus-010] the message is in Japanese with locale ja', async () => {
 	const { violations } = await mlRuleTest(rule, '<input autofocus><input autofocus>', undefined, false, 'ja');
 
 	expect(violations).toStrictEqual([

@@ -7,17 +7,17 @@ function wrap(content: string): string {
 	return `<!doctype html><html><head><title>t</title>${content}</head><body></body></html>`;
 }
 
-test('[valid-speculation-rules-valid-001] script without type attribute is ignored', async () => {
+test('[valid-speculation-rules-001] script without type attribute is ignored', async () => {
 	const { violations } = await mlRuleTest(rule, wrap('<script>console.log("ok");</script>'));
 	expect(violations.length).toBe(0);
 });
 
-test('[valid-speculation-rules-valid-002] script type=module is ignored', async () => {
+test('[valid-speculation-rules-002] script type=module is ignored', async () => {
 	const { violations } = await mlRuleTest(rule, wrap('<script type="module">import "./a.js";</script>'));
 	expect(violations.length).toBe(0);
 });
 
-test('[valid-speculation-rules-valid-003] minimal valid list rule', async () => {
+test('[valid-speculation-rules-003] minimal valid list rule', async () => {
 	const { violations } = await mlRuleTest(
 		rule,
 		wrap(
@@ -27,7 +27,7 @@ test('[valid-speculation-rules-valid-003] minimal valid list rule', async () => 
 	expect(violations.length).toBe(0);
 });
 
-test('[valid-speculation-rules-valid-004] minimal valid document rule', async () => {
+test('[valid-speculation-rules-004] minimal valid document rule', async () => {
 	const { violations } = await mlRuleTest(
 		rule,
 		wrap(
@@ -37,7 +37,7 @@ test('[valid-speculation-rules-valid-004] minimal valid document rule', async ()
 	expect(violations.length).toBe(0);
 });
 
-test('[valid-speculation-rules-valid-005] both prefetch and prerender rule sets', async () => {
+test('[valid-speculation-rules-005] both prefetch and prerender rule sets', async () => {
 	const { violations } = await mlRuleTest(
 		rule,
 		wrap(
@@ -47,7 +47,7 @@ test('[valid-speculation-rules-valid-005] both prefetch and prerender rule sets'
 	expect(violations.length).toBe(0);
 });
 
-test('[valid-speculation-rules-valid-006] source inferred as list from urls', async () => {
+test('[valid-speculation-rules-006] source inferred as list from urls', async () => {
 	const { violations } = await mlRuleTest(
 		rule,
 		wrap('<script type="speculationrules">{"prefetch":[{"urls":["/page1.html"]}]}</script>'),
@@ -55,7 +55,7 @@ test('[valid-speculation-rules-valid-006] source inferred as list from urls', as
 	expect(violations.length).toBe(0);
 });
 
-test('[valid-speculation-rules-valid-007] source inferred as document from where', async () => {
+test('[valid-speculation-rules-007] source inferred as document from where', async () => {
 	const { violations } = await mlRuleTest(
 		rule,
 		wrap(
@@ -65,7 +65,7 @@ test('[valid-speculation-rules-valid-007] source inferred as document from where
 	expect(violations.length).toBe(0);
 });
 
-test('[valid-speculation-rules-valid-008] href_matches accepts an array of strings', async () => {
+test('[valid-speculation-rules-008] href_matches accepts an array of strings', async () => {
 	const { violations } = await mlRuleTest(
 		rule,
 		wrap(
@@ -75,7 +75,7 @@ test('[valid-speculation-rules-valid-008] href_matches accepts an array of strin
 	expect(violations.length).toBe(0);
 });
 
-test('[valid-speculation-rules-valid-009] nested and / or / not predicates', async () => {
+test('[valid-speculation-rules-009] nested and / or / not predicates', async () => {
 	const { violations } = await mlRuleTest(
 		rule,
 		wrap(
@@ -85,7 +85,7 @@ test('[valid-speculation-rules-valid-009] nested and / or / not predicates', asy
 	expect(violations.length).toBe(0);
 });
 
-test('[valid-speculation-rules-valid-010] type matching is case-insensitive', async () => {
+test('[valid-speculation-rules-010] type matching is case-insensitive', async () => {
 	const { violations } = await mlRuleTest(
 		rule,
 		wrap('<script type="SpeculationRules">{"prefetch":[{"source":"list","urls":["/a"]}]}</script>'),
@@ -93,12 +93,12 @@ test('[valid-speculation-rules-valid-010] type matching is case-insensitive', as
 	expect(violations.length).toBe(0);
 });
 
-test('[valid-speculation-rules-valid-011] empty rule set array is allowed', async () => {
+test('[valid-speculation-rules-011] empty rule set array is allowed', async () => {
 	const { violations } = await mlRuleTest(rule, wrap('<script type="speculationrules">{"prefetch":[]}</script>'));
 	expect(violations.length).toBe(0);
 });
 
-test('[valid-speculation-rules-valid-012] eagerness "immediate" is allowed (HTML LS §7.6)', async () => {
+test('[valid-speculation-rules-012] eagerness "immediate" is allowed (HTML LS §7.6)', async () => {
 	const { violations } = await mlRuleTest(
 		rule,
 		wrap(
@@ -108,7 +108,7 @@ test('[valid-speculation-rules-valid-012] eagerness "immediate" is allowed (HTML
 	expect(violations.length).toBe(0);
 });
 
-test('[valid-speculation-rules-valid-013] additional spec rule keys are allowed (HTML LS §7.6.1.2)', async () => {
+test('[valid-speculation-rules-013] additional spec rule keys are allowed (HTML LS §7.6.1.2)', async () => {
 	const { violations } = await mlRuleTest(
 		rule,
 		wrap(
@@ -118,7 +118,7 @@ test('[valid-speculation-rules-valid-013] additional spec rule keys are allowed 
 	expect(violations.length).toBe(0);
 });
 
-test('[valid-speculation-rules-valid-014] top-level "tag" is allowed alongside a rule set', async () => {
+test('[valid-speculation-rules-014] top-level "tag" is allowed alongside a rule set', async () => {
 	const { violations } = await mlRuleTest(
 		rule,
 		wrap('<script type="speculationrules">{"tag":"my-tag","prefetch":[{"source":"list","urls":["/a"]}]}</script>'),
@@ -126,7 +126,7 @@ test('[valid-speculation-rules-valid-014] top-level "tag" is allowed alongside a
 	expect(violations.length).toBe(0);
 });
 
-test('[valid-speculation-rules-invalid-001] empty content', async () => {
+test('[valid-speculation-rules-015] empty content', async () => {
 	const { violations } = await mlRuleTest(rule, wrap('<script type="speculationrules"></script>'));
 	expect(violations).toStrictEqual([
 		{
@@ -139,7 +139,7 @@ test('[valid-speculation-rules-invalid-001] empty content', async () => {
 	]);
 });
 
-test('[valid-speculation-rules-invalid-002] content is not JSON', async () => {
+test('[valid-speculation-rules-016] content is not JSON', async () => {
 	const { violations } = await mlRuleTest(rule, wrap('<script type="speculationrules">{ invalid json</script>'));
 	expect(violations).toStrictEqual([
 		{
@@ -152,7 +152,7 @@ test('[valid-speculation-rules-invalid-002] content is not JSON', async () => {
 	]);
 });
 
-test('[valid-speculation-rules-invalid-003] top-level value is an array', async () => {
+test('[valid-speculation-rules-017] top-level value is an array', async () => {
 	const { violations } = await mlRuleTest(rule, wrap('<script type="speculationrules">["a","b"]</script>'));
 	expect(violations).toStrictEqual([
 		{
@@ -165,7 +165,7 @@ test('[valid-speculation-rules-invalid-003] top-level value is an array', async 
 	]);
 });
 
-test('[valid-speculation-rules-invalid-004] missing both prefetch and prerender', async () => {
+test('[valid-speculation-rules-018] missing both prefetch and prerender', async () => {
 	const { violations } = await mlRuleTest(rule, wrap('<script type="speculationrules">{}</script>'));
 	expect(violations).toStrictEqual([
 		{
@@ -178,7 +178,7 @@ test('[valid-speculation-rules-invalid-004] missing both prefetch and prerender'
 	]);
 });
 
-test('[valid-speculation-rules-invalid-005] forbidden top-level key', async () => {
+test('[valid-speculation-rules-019] forbidden top-level key', async () => {
 	const { violations } = await mlRuleTest(
 		rule,
 		wrap('<script type="speculationrules">{"prefetch":[],"unknownProp":true}</script>'),
@@ -195,7 +195,7 @@ test('[valid-speculation-rules-invalid-005] forbidden top-level key', async () =
 	]);
 });
 
-test('[valid-speculation-rules-invalid-006] rule set is not an array', async () => {
+test('[valid-speculation-rules-020] rule set is not an array', async () => {
 	const { violations } = await mlRuleTest(
 		rule,
 		wrap('<script type="speculationrules">{"prefetch":"not-array"}</script>'),
@@ -211,7 +211,7 @@ test('[valid-speculation-rules-invalid-006] rule set is not an array', async () 
 	]);
 });
 
-test('[valid-speculation-rules-invalid-007] rule is not an object', async () => {
+test('[valid-speculation-rules-021] rule is not an object', async () => {
 	const { violations } = await mlRuleTest(
 		rule,
 		wrap('<script type="speculationrules">{"prefetch":["not-an-object"]}</script>'),
@@ -227,7 +227,7 @@ test('[valid-speculation-rules-invalid-007] rule is not an object', async () => 
 	]);
 });
 
-test('[valid-speculation-rules-invalid-008] forbidden rule key', async () => {
+test('[valid-speculation-rules-022] forbidden rule key', async () => {
 	const { violations } = await mlRuleTest(
 		rule,
 		wrap(
@@ -246,7 +246,7 @@ test('[valid-speculation-rules-invalid-008] forbidden rule key', async () => {
 	]);
 });
 
-test('[valid-speculation-rules-invalid-009] source is not a string', async () => {
+test('[valid-speculation-rules-023] source is not a string', async () => {
 	const { violations } = await mlRuleTest(
 		rule,
 		wrap('<script type="speculationrules">{"prefetch":[{"source":123}]}</script>'),
@@ -262,7 +262,7 @@ test('[valid-speculation-rules-invalid-009] source is not a string', async () =>
 	]);
 });
 
-test('[valid-speculation-rules-invalid-010] source has an invalid value', async () => {
+test('[valid-speculation-rules-024] source has an invalid value', async () => {
 	const { violations } = await mlRuleTest(
 		rule,
 		wrap('<script type="speculationrules">{"prefetch":[{"source":"invalid"}]}</script>'),
@@ -278,7 +278,7 @@ test('[valid-speculation-rules-invalid-010] source has an invalid value', async 
 	]);
 });
 
-test('[valid-speculation-rules-invalid-011] list rule is missing urls', async () => {
+test('[valid-speculation-rules-025] list rule is missing urls', async () => {
 	const { violations } = await mlRuleTest(
 		rule,
 		wrap('<script type="speculationrules">{"prefetch":[{"source":"list"}]}</script>'),
@@ -294,7 +294,7 @@ test('[valid-speculation-rules-invalid-011] list rule is missing urls', async ()
 	]);
 });
 
-test('[valid-speculation-rules-invalid-012] list rule has a where', async () => {
+test('[valid-speculation-rules-026] list rule has a where', async () => {
 	const { violations } = await mlRuleTest(
 		rule,
 		wrap(
@@ -312,7 +312,7 @@ test('[valid-speculation-rules-invalid-012] list rule has a where', async () => 
 	]);
 });
 
-test('[valid-speculation-rules-invalid-013] document rule is missing where', async () => {
+test('[valid-speculation-rules-027] document rule is missing where', async () => {
 	const { violations } = await mlRuleTest(
 		rule,
 		wrap('<script type="speculationrules">{"prefetch":[{"source":"document"}]}</script>'),
@@ -328,7 +328,7 @@ test('[valid-speculation-rules-invalid-013] document rule is missing where', asy
 	]);
 });
 
-test('[valid-speculation-rules-invalid-014] document rule has urls', async () => {
+test('[valid-speculation-rules-028] document rule has urls', async () => {
 	const { violations } = await mlRuleTest(
 		rule,
 		wrap(
@@ -346,7 +346,7 @@ test('[valid-speculation-rules-invalid-014] document rule has urls', async () =>
 	]);
 });
 
-test('[valid-speculation-rules-invalid-015] rule has neither source, urls, nor where', async () => {
+test('[valid-speculation-rules-029] rule has neither source, urls, nor where', async () => {
 	const { violations } = await mlRuleTest(
 		rule,
 		wrap('<script type="speculationrules">{"prefetch":[{"eagerness":"moderate"}]}</script>'),
@@ -362,7 +362,7 @@ test('[valid-speculation-rules-invalid-015] rule has neither source, urls, nor w
 	]);
 });
 
-test('[valid-speculation-rules-invalid-016] rule has both urls and where without source', async () => {
+test('[valid-speculation-rules-030] rule has both urls and where without source', async () => {
 	const { violations } = await mlRuleTest(
 		rule,
 		wrap('<script type="speculationrules">{"prefetch":[{"urls":["/a"],"where":{"href_matches":"/*"}}]}</script>'),
@@ -378,7 +378,7 @@ test('[valid-speculation-rules-invalid-016] rule has both urls and where without
 	]);
 });
 
-test('[valid-speculation-rules-invalid-017] urls is not an array', async () => {
+test('[valid-speculation-rules-031] urls is not an array', async () => {
 	const { violations } = await mlRuleTest(
 		rule,
 		wrap('<script type="speculationrules">{"prefetch":[{"source":"list","urls":"not-array"}]}</script>'),
@@ -394,7 +394,7 @@ test('[valid-speculation-rules-invalid-017] urls is not an array', async () => {
 	]);
 });
 
-test('[valid-speculation-rules-invalid-018] urls is empty', async () => {
+test('[valid-speculation-rules-032] urls is empty', async () => {
 	const { violations } = await mlRuleTest(
 		rule,
 		wrap('<script type="speculationrules">{"prefetch":[{"source":"list","urls":[]}]}</script>'),
@@ -410,7 +410,7 @@ test('[valid-speculation-rules-invalid-018] urls is empty', async () => {
 	]);
 });
 
-test('[valid-speculation-rules-invalid-019] a url item is not a string', async () => {
+test('[valid-speculation-rules-033] a url item is not a string', async () => {
 	const { violations } = await mlRuleTest(
 		rule,
 		wrap('<script type="speculationrules">{"prefetch":[{"source":"list","urls":[123]}]}</script>'),
@@ -426,7 +426,7 @@ test('[valid-speculation-rules-invalid-019] a url item is not a string', async (
 	]);
 });
 
-test('[valid-speculation-rules-invalid-020] a url item is an empty string', async () => {
+test('[valid-speculation-rules-034] a url item is an empty string', async () => {
 	const { violations } = await mlRuleTest(
 		rule,
 		wrap('<script type="speculationrules">{"prefetch":[{"source":"list","urls":[""]}]}</script>'),
@@ -442,7 +442,7 @@ test('[valid-speculation-rules-invalid-020] a url item is an empty string', asyn
 	]);
 });
 
-test('[valid-speculation-rules-invalid-021] eagerness is not a string', async () => {
+test('[valid-speculation-rules-035] eagerness is not a string', async () => {
 	const { violations } = await mlRuleTest(
 		rule,
 		wrap('<script type="speculationrules">{"prefetch":[{"source":"list","urls":["/a"],"eagerness":123}]}</script>'),
@@ -458,7 +458,7 @@ test('[valid-speculation-rules-invalid-021] eagerness is not a string', async ()
 	]);
 });
 
-test('[valid-speculation-rules-invalid-022] eagerness has an invalid value', async () => {
+test('[valid-speculation-rules-036] eagerness has an invalid value', async () => {
 	const { violations } = await mlRuleTest(
 		rule,
 		wrap(
@@ -477,7 +477,7 @@ test('[valid-speculation-rules-invalid-022] eagerness has an invalid value', asy
 	]);
 });
 
-test('[valid-speculation-rules-invalid-023] where is not an object', async () => {
+test('[valid-speculation-rules-037] where is not an object', async () => {
 	const { violations } = await mlRuleTest(
 		rule,
 		wrap('<script type="speculationrules">{"prefetch":[{"source":"document","where":"not-object"}]}</script>'),
@@ -493,7 +493,7 @@ test('[valid-speculation-rules-invalid-023] where is not an object', async () =>
 	]);
 });
 
-test('[valid-speculation-rules-invalid-024] where has no predicate', async () => {
+test('[valid-speculation-rules-038] where has no predicate', async () => {
 	const { violations } = await mlRuleTest(
 		rule,
 		wrap('<script type="speculationrules">{"prefetch":[{"source":"document","where":{}}]}</script>'),
@@ -510,7 +510,7 @@ test('[valid-speculation-rules-invalid-024] where has no predicate', async () =>
 	]);
 });
 
-test('[valid-speculation-rules-invalid-025] where has multiple predicates', async () => {
+test('[valid-speculation-rules-039] where has multiple predicates', async () => {
 	const { violations } = await mlRuleTest(
 		rule,
 		wrap(
@@ -528,7 +528,7 @@ test('[valid-speculation-rules-invalid-025] where has multiple predicates', asyn
 	]);
 });
 
-test('[valid-speculation-rules-invalid-026] and predicate is empty', async () => {
+test('[valid-speculation-rules-040] and predicate is empty', async () => {
 	const { violations } = await mlRuleTest(
 		rule,
 		wrap('<script type="speculationrules">{"prefetch":[{"source":"document","where":{"and":[]}}]}</script>'),
@@ -544,7 +544,7 @@ test('[valid-speculation-rules-invalid-026] and predicate is empty', async () =>
 	]);
 });
 
-test('[valid-speculation-rules-invalid-027] and predicate is not an array', async () => {
+test('[valid-speculation-rules-041] and predicate is not an array', async () => {
 	const { violations } = await mlRuleTest(
 		rule,
 		wrap(
@@ -562,7 +562,7 @@ test('[valid-speculation-rules-invalid-027] and predicate is not an array', asyn
 	]);
 });
 
-test('[valid-speculation-rules-invalid-028] href_matches is an empty string', async () => {
+test('[valid-speculation-rules-042] href_matches is an empty string', async () => {
 	const { violations } = await mlRuleTest(
 		rule,
 		wrap(
@@ -580,7 +580,7 @@ test('[valid-speculation-rules-invalid-028] href_matches is an empty string', as
 	]);
 });
 
-test('[valid-speculation-rules-invalid-029] href_matches is an empty array', async () => {
+test('[valid-speculation-rules-043] href_matches is an empty array', async () => {
 	const { violations } = await mlRuleTest(
 		rule,
 		wrap(
@@ -598,7 +598,7 @@ test('[valid-speculation-rules-invalid-029] href_matches is an empty array', asy
 	]);
 });
 
-test('[valid-speculation-rules-invalid-030] href_matches is not a string', async () => {
+test('[valid-speculation-rules-044] href_matches is not a string', async () => {
 	const { violations } = await mlRuleTest(
 		rule,
 		wrap(
@@ -616,7 +616,7 @@ test('[valid-speculation-rules-invalid-030] href_matches is not a string', async
 	]);
 });
 
-test('[valid-speculation-rules-invalid-031] selector_matches is an empty string', async () => {
+test('[valid-speculation-rules-045] selector_matches is an empty string', async () => {
 	const { violations } = await mlRuleTest(
 		rule,
 		wrap(
@@ -634,7 +634,7 @@ test('[valid-speculation-rules-invalid-031] selector_matches is an empty string'
 	]);
 });
 
-test('[valid-speculation-rules-invalid-032] selector_matches is not a string', async () => {
+test('[valid-speculation-rules-046] selector_matches is not a string', async () => {
 	const { violations } = await mlRuleTest(
 		rule,
 		wrap(
@@ -652,7 +652,7 @@ test('[valid-speculation-rules-invalid-032] selector_matches is not a string', a
 	]);
 });
 
-test('[valid-speculation-rules-invalid-033] unknown predicate key', async () => {
+test('[valid-speculation-rules-047] unknown predicate key', async () => {
 	const { violations } = await mlRuleTest(
 		rule,
 		wrap('<script type="speculationrules">{"prefetch":[{"source":"document","where":{"unknown":"x"}}]}</script>'),
@@ -669,7 +669,7 @@ test('[valid-speculation-rules-invalid-033] unknown predicate key', async () => 
 	]);
 });
 
-test('[valid-speculation-rules-invalid-034] a pattern array item is not a string', async () => {
+test('[valid-speculation-rules-048] a pattern array item is not a string', async () => {
 	const { violations } = await mlRuleTest(
 		rule,
 		wrap(
@@ -687,7 +687,7 @@ test('[valid-speculation-rules-invalid-034] a pattern array item is not a string
 	]);
 });
 
-test('[valid-speculation-rules-invalid-035] a pattern array item is an empty string', async () => {
+test('[valid-speculation-rules-049] a pattern array item is an empty string', async () => {
 	const { violations } = await mlRuleTest(
 		rule,
 		wrap(
@@ -705,7 +705,7 @@ test('[valid-speculation-rules-invalid-035] a pattern array item is an empty str
 	]);
 });
 
-test('[valid-speculation-rules-invalid-036] a not predicate value is not an object', async () => {
+test('[valid-speculation-rules-050] a not predicate value is not an object', async () => {
 	const { violations } = await mlRuleTest(
 		rule,
 		wrap('<script type="speculationrules">{"prefetch":[{"source":"document","where":{"not":"x"}}]}</script>'),
@@ -721,7 +721,7 @@ test('[valid-speculation-rules-invalid-036] a not predicate value is not an obje
 	]);
 });
 
-test('[valid-speculation-rules-invalid-037] prerender rule set is validated like prefetch', async () => {
+test('[valid-speculation-rules-051] prerender rule set is validated like prefetch', async () => {
 	const { violations } = await mlRuleTest(
 		rule,
 		wrap('<script type="speculationrules">{"prerender":[{"source":"list"}]}</script>'),
@@ -737,7 +737,7 @@ test('[valid-speculation-rules-invalid-037] prerender rule set is validated like
 	]);
 });
 
-test('[valid-speculation-rules-invalid-038] or predicate is not an array', async () => {
+test('[valid-speculation-rules-052] or predicate is not an array', async () => {
 	const { violations } = await mlRuleTest(
 		rule,
 		wrap(
@@ -755,7 +755,7 @@ test('[valid-speculation-rules-invalid-038] or predicate is not an array', async
 	]);
 });
 
-test('[valid-speculation-rules-invalid-039] or predicate is empty', async () => {
+test('[valid-speculation-rules-053] or predicate is empty', async () => {
 	const { violations } = await mlRuleTest(
 		rule,
 		wrap('<script type="speculationrules">{"prefetch":[{"source":"document","where":{"or":[]}}]}</script>'),
@@ -771,7 +771,7 @@ test('[valid-speculation-rules-invalid-039] or predicate is empty', async () => 
 	]);
 });
 
-test('[valid-speculation-rules-invalid-040] a nested predicate inside and is invalid', async () => {
+test('[valid-speculation-rules-054] a nested predicate inside and is invalid', async () => {
 	const { violations } = await mlRuleTest(
 		rule,
 		wrap(
@@ -790,7 +790,7 @@ test('[valid-speculation-rules-invalid-040] a nested predicate inside and is inv
 	]);
 });
 
-test('[valid-speculation-rules-issue-4584-001] a top-level key that is not allowed is in Japanese with locale ja', async () => {
+test('[valid-speculation-rules-055] a top-level key that is not allowed is in Japanese with locale ja', async () => {
 	const { violations } = await mlRuleTest(
 		rule,
 		'<script type="speculationrules">{"foo":[]}</script>',
@@ -818,7 +818,7 @@ test('[valid-speculation-rules-issue-4584-001] a top-level key that is not allow
 	]);
 });
 
-test('[valid-speculation-rules-issue-4584-002] a list rule without urls is in Japanese with locale ja', async () => {
+test('[valid-speculation-rules-056] a list rule without urls is in Japanese with locale ja', async () => {
 	const { violations } = await mlRuleTest(
 		rule,
 		'<script type="speculationrules">{"prefetch":[{"source":"list"}]}</script>',
@@ -838,7 +838,7 @@ test('[valid-speculation-rules-issue-4584-002] a list rule without urls is in Ja
 	]);
 });
 
-test('[valid-speculation-rules-issue-4584-003] the eagerness value is in Japanese with locale ja', async () => {
+test('[valid-speculation-rules-057] the eagerness value is in Japanese with locale ja', async () => {
 	const { violations } = await mlRuleTest(
 		rule,
 		'<script type="speculationrules">{"prefetch":[{"source":"list","eagerness":"x"}]}</script>',
@@ -866,7 +866,7 @@ test('[valid-speculation-rules-issue-4584-003] the eagerness value is in Japanes
 	]);
 });
 
-test('[valid-speculation-rules-issue-4584-004] a pattern is in Japanese with locale ja', async () => {
+test('[valid-speculation-rules-058] a pattern is in Japanese with locale ja', async () => {
 	const { violations } = await mlRuleTest(
 		rule,
 		'<script type="speculationrules">{"prefetch":[{"where":{"and":[{"href_matches":1}]}}]}</script>',

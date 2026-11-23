@@ -20,7 +20,7 @@ function getPretendedElement() {
 	return el;
 }
 
-test('[permitted-contents-issue-3739-008] matches() restores pretenderContext after the selector engine throws', () => {
+test('matches() restores pretenderContext after the selector engine throws', () => {
 	// An invalid combinator-leading selector (`> span`) forces
 	// `createSelector(...).search(node)` to throw `InvalidSelectorError`.
 	// The `matches()` helper temporarily nulls `pretenderContext` in `'origin'`
@@ -38,7 +38,7 @@ test('[permitted-contents-issue-3739-008] matches() restores pretenderContext af
 	expect(el.pretenderContext).toBe(savedCtx);
 });
 
-test('[permitted-contents-issue-3739-009] matches() leaves pretenderContext untouched in pretended mode', () => {
+test('matches() leaves pretenderContext untouched in pretended mode', () => {
 	// Pretended mode does not touch `pretenderContext` at all; guards against
 	// an accidental future refactor that starts mutating the context for both
 	// modes.

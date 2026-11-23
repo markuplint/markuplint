@@ -3,7 +3,7 @@ import { test, expect } from 'vitest';
 
 import rule from './index.js';
 
-test('[require-doctype-valid-001] valid', async () => {
+test('[require-doctype-001] valid', async () => {
 	const { violations } = await mlRuleTest(
 		rule,
 		`
@@ -14,7 +14,7 @@ test('[require-doctype-valid-001] valid', async () => {
 	expect(violations.length).toBe(0);
 });
 
-test('[require-doctype-invalid-001] missing doctype', async () => {
+test('[require-doctype-002] missing doctype', async () => {
 	const { violations } = await mlRuleTest(rule, '<html></html>');
 	expect(violations).toStrictEqual([
 		{
@@ -27,12 +27,12 @@ test('[require-doctype-invalid-001] missing doctype', async () => {
 	]);
 });
 
-test('[require-doctype-valid-002] document fragment', async () => {
+test('[require-doctype-003] document fragment', async () => {
 	const { violations } = await mlRuleTest(rule, '<div></div>');
 	expect(violations.length).toBe(0);
 });
 
-test('[require-doctype-valid-003] an obsolete doctype still counts as present', async () => {
+test('[require-doctype-004] an obsolete doctype still counts as present', async () => {
 	const { violations } = await mlRuleTest(
 		rule,
 		`

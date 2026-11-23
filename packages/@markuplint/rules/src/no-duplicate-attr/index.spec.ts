@@ -3,7 +3,7 @@ import { describe, test, expect } from 'vitest';
 
 import rule from './index.js';
 
-test('[no-duplicate-attr-invalid-001] is test 1', async () => {
+test('[no-duplicate-attr-001] is test 1', async () => {
 	const { violations } = await mlRuleTest(
 		rule,
 		`
@@ -32,7 +32,7 @@ test('[no-duplicate-attr-invalid-001] is test 1', async () => {
 	]);
 });
 
-test('[no-duplicate-attr-invalid-002] is test 2', async () => {
+test('[no-duplicate-attr-002] is test 2', async () => {
 	const { violations } = await mlRuleTest(
 		rule,
 		`
@@ -64,13 +64,13 @@ test('[no-duplicate-attr-invalid-002] is test 2', async () => {
 	]);
 });
 
-test('[no-duplicate-attr-invalid-003] is test 3', async () => {
+test('[no-duplicate-attr-003] is test 3', async () => {
 	const { violations } = await mlRuleTest(rule, '<img src="/" SRC="/" >', undefined, false, 'ja');
 
 	expect(violations.map(_ => _.message)).toStrictEqual(['属性名が重複しています']);
 });
 
-test('[no-duplicate-attr-invalid-004] nodeRules disable', async () => {
+test('[no-duplicate-attr-004] nodeRules disable', async () => {
 	const { violations } = await mlRuleTest(rule, '<div><span attr attr></span></div>', {
 		nodeRule: [
 			{
@@ -83,7 +83,7 @@ test('[no-duplicate-attr-invalid-004] nodeRules disable', async () => {
 	expect(violations.length).toStrictEqual(0);
 });
 
-test('[no-duplicate-attr-parser-001] Vue', async () => {
+test('[no-duplicate-attr-005] Vue', async () => {
 	const { violations } = await mlRuleTest(rule, '<template><div attr v-bind:attr /></template>', {
 		parser: {
 			'.*': '@markuplint/vue-parser',
@@ -104,7 +104,7 @@ test('[no-duplicate-attr-parser-001] Vue', async () => {
 	]);
 });
 
-test('[no-duplicate-attr-parser-002] Vue (exception)', async () => {
+test('[no-duplicate-attr-006] Vue (exception)', async () => {
 	const { violations } = await mlRuleTest(
 		rule,
 		'<template><div class="foo" v-bind:class="bar" style="a: b;" :style="{c: d}" /></template>',
@@ -121,7 +121,7 @@ test('[no-duplicate-attr-parser-002] Vue (exception)', async () => {
 	expect(violations.length).toBe(0);
 });
 
-test('[no-duplicate-attr-parser-003] React', async () => {
+test('[no-duplicate-attr-007] React', async () => {
 	const { violations } = await mlRuleTest(rule, '<div tabindex tabIndex />', {
 		parser: {
 			'.*': '@markuplint/vue-parser',
@@ -131,7 +131,7 @@ test('[no-duplicate-attr-parser-003] React', async () => {
 	expect(violations).toStrictEqual([]);
 });
 
-test('[no-duplicate-attr-parser-004] Pug', async () => {
+test('[no-duplicate-attr-008] Pug', async () => {
 	expect(
 		(
 			await mlRuleTest(rule, '.hoge.hoge2.hoge3', {
@@ -152,7 +152,7 @@ test('[no-duplicate-attr-parser-004] Pug', async () => {
 	).toBe(0);
 });
 
-test('[no-duplicate-attr-parser-005] Svelte', async () => {
+test('[no-duplicate-attr-009] Svelte', async () => {
 	const { violations } = await mlRuleTest(
 		rule,
 		'<div class:selected="{isSelected}" class:focused="{isFocused}"></div>',
@@ -166,7 +166,7 @@ test('[no-duplicate-attr-parser-005] Svelte', async () => {
 	expect(violations.length).toBe(0);
 });
 
-test('[no-duplicate-attr-parser-006] Astro', async () => {
+test('[no-duplicate-attr-010] Astro', async () => {
 	const { violations } = await mlRuleTest(rule, '<div class:list="a" class="b"></div>', {
 		parser: {
 			'.*': '@markuplint/astro-parser',
@@ -177,17 +177,17 @@ test('[no-duplicate-attr-parser-006] Astro', async () => {
 });
 
 describe('fix', () => {
-	test('[no-duplicate-attr-fix-001] remove duplicate attribute', async () => {
+	test('[no-duplicate-attr-011] remove duplicate attribute', async () => {
 		const { fixedCode } = await mlRuleTest(rule, '<div class="a" class="b"></div>', undefined, true);
 		expect(fixedCode).toBe('<div class="a"></div>');
 	});
 
-	test('[no-duplicate-attr-fix-002] remove duplicate boolean attribute', async () => {
+	test('[no-duplicate-attr-012] remove duplicate boolean attribute', async () => {
 		const { fixedCode } = await mlRuleTest(rule, '<input disabled disabled />', undefined, true);
 		expect(fixedCode).toBe('<input disabled />');
 	});
 
-	test('[no-duplicate-attr-fix-003] remove third duplicate attribute', async () => {
+	test('[no-duplicate-attr-013] remove third duplicate attribute', async () => {
 		const { fixedCode } = await mlRuleTest(
 			rule,
 			'<div data-attr="value" data-Attr=\'db\' data-attR=tr></div>',
@@ -199,7 +199,7 @@ describe('fix', () => {
 });
 
 describe('fix with parsers', () => {
-	test('[no-duplicate-attr-fix-004] fix: Pug duplicate attr (no fix — Pug merges class attributes)', async () => {
+	test('[no-duplicate-attr-014] fix: Pug duplicate attr (no fix — Pug merges class attributes)', async () => {
 		const { fixedCode } = await mlRuleTest(
 			rule,
 			'div(class="a" class="b")',
@@ -210,7 +210,7 @@ describe('fix with parsers', () => {
 		expect(fixedCode).toBe('div(class="a" class="b")');
 	});
 
-	test('[no-duplicate-attr-fix-005] fix: Vue remove duplicate attr', async () => {
+	test('[no-duplicate-attr-015] fix: Vue remove duplicate attr', async () => {
 		const { fixedCode } = await mlRuleTest(
 			rule,
 			'<template><div class="a" class="b"></div></template>',
@@ -221,7 +221,7 @@ describe('fix with parsers', () => {
 	});
 });
 
-test('[no-duplicate-attr-issue-4309-001] names that differ in case are one attribute in HTML', async () => {
+test('[no-duplicate-attr-016] names that differ in case are one attribute in HTML', async () => {
 	const { violations } = await mlRuleTest(rule, '<div id ID></div>');
 	expect(violations).toStrictEqual([
 		{
@@ -234,7 +234,7 @@ test('[no-duplicate-attr-issue-4309-001] names that differ in case are one attri
 	]);
 });
 
-test('[no-duplicate-attr-issue-4309-002] a custom element folds the name too', async () => {
+test('[no-duplicate-attr-017] a custom element folds the name too', async () => {
 	const { violations } = await mlRuleTest(rule, '<x-foo ID id></x-foo>');
 	expect(violations).toStrictEqual([
 		{
@@ -247,7 +247,7 @@ test('[no-duplicate-attr-issue-4309-002] a custom element folds the name too', a
 	]);
 });
 
-test('[no-duplicate-attr-issue-4309-003] an HTML element in JSX folds the name, an SVG element does not', async () => {
+test('[no-duplicate-attr-018] an HTML element in JSX folds the name, an SVG element does not', async () => {
 	const options = { parser: { '.*': '@markuplint/jsx-parser' } };
 	const html = await mlRuleTest(rule, '<div id ID />', options);
 	expect(html.violations).toStrictEqual([
@@ -273,7 +273,7 @@ test('[no-duplicate-attr-issue-4309-003] an HTML element in JSX folds the name, 
 	expect(svgDifferent.violations).toStrictEqual([]);
 });
 
-test('[no-duplicate-attr-issue-4309-004] a prop of a component keeps its spelling', async () => {
+test('[no-duplicate-attr-019] a prop of a component keeps its spelling', async () => {
 	const options = { parser: { '.*': '@markuplint/jsx-parser' } };
 	const same = await mlRuleTest(rule, '<Foo fooBar fooBar />', options);
 	expect(same.violations).toStrictEqual([
@@ -289,7 +289,7 @@ test('[no-duplicate-attr-issue-4309-004] a prop of a component keeps its spellin
 	expect(different.violations).toStrictEqual([]);
 });
 
-test('[no-duplicate-attr-issue-4309-005] U+212A KELVIN SIGN is not the letter k', async () => {
+test('[no-duplicate-attr-020] U+212A KELVIN SIGN is not the letter k', async () => {
 	const same = await mlRuleTest(rule, '<div k K></div>');
 	expect(same.violations).toStrictEqual([
 		{
@@ -305,7 +305,7 @@ test('[no-duplicate-attr-issue-4309-005] U+212A KELVIN SIGN is not the letter k'
 	expect(different.violations).toStrictEqual([]);
 });
 
-test('[no-duplicate-attr-issue-4309-006] Vue: class and :class are not duplicates, id and :id are', async () => {
+test('[no-duplicate-attr-021] Vue: class and :class are not duplicates, id and :id are', async () => {
 	const options = { parser: { '.*': '@markuplint/vue-parser' }, specs: { '.*': '@markuplint/vue-spec' } };
 	expect(
 		(await mlRuleTest(rule, '<template><div class="a" :class="b"></div></template>', options)).violations,
@@ -345,7 +345,7 @@ function duplicated(col: number, raw: string) {
  * parser of the browser makes.
  */
 describe('directives are compared by the name that the framework keeps', () => {
-	test('[no-duplicate-attr-issue-4612-001] Vue: listeners that differ in a modifier are two listeners', async () => {
+	test('[no-duplicate-attr-022] Vue: listeners that differ in a modifier are two listeners', async () => {
 		const html = [
 			'<button type="button" @keydown.enter="a" @keydown.space="b">x</button>',
 			'<button type="button" @click.stop="a" @keydown.enter="a" @keydown.space="b">y</button>',
@@ -354,7 +354,7 @@ describe('directives are compared by the name that the framework keeps', () => {
 		expect((await mlRuleTest(rule, `<template>${html}</template>`, vue)).violations).toStrictEqual([]);
 	});
 
-	test('[no-duplicate-attr-issue-4612-002] Vue: v-on and @, and the order of modifiers, are not repeats', async () => {
+	test('[no-duplicate-attr-023] Vue: v-on and @, and the order of modifiers, are not repeats', async () => {
 		expect(
 			(
 				await mlRuleTest(
@@ -379,7 +379,7 @@ describe('directives are compared by the name that the framework keeps', () => {
 		).toStrictEqual([]);
 	});
 
-	test('[no-duplicate-attr-issue-4612-003] Vue: the same spelling of a listener is a repeat', async () => {
+	test('[no-duplicate-attr-024] Vue: the same spelling of a listener is a repeat', async () => {
 		const { violations } = await mlRuleTest(
 			rule,
 			'<template><button @keydown.enter.stop="a" @keydown.enter.stop="b">x</button></template>',
@@ -388,7 +388,7 @@ describe('directives are compared by the name that the framework keeps', () => {
 		expect(violations).toStrictEqual([duplicated(43, '@keydown.enter.stop')]);
 	});
 
-	test('[no-duplicate-attr-issue-4612-004] Alpine: listeners that differ in a modifier or a spelling are two', async () => {
+	test('[no-duplicate-attr-025] Alpine: listeners that differ in a modifier or a spelling are two', async () => {
 		for (const html of [
 			'<button @keydown.enter="a" @keydown.space="b">x</button>',
 			'<button @click="a" x-on:click="b">x</button>',
@@ -398,7 +398,7 @@ describe('directives are compared by the name that the framework keeps', () => {
 		}
 	});
 
-	test('[no-duplicate-attr-issue-4612-005] htmx: hx-on:click and hx-on-click are two listeners', async () => {
+	test('[no-duplicate-attr-026] htmx: hx-on:click and hx-on-click are two listeners', async () => {
 		for (const html of [
 			'<button hx-on:click="a" hx-on-click="b">x</button>',
 			'<button onclick="a" hx-on:click="b">x</button>',
@@ -407,7 +407,7 @@ describe('directives are compared by the name that the framework keeps', () => {
 		}
 	});
 
-	test('[no-duplicate-attr-issue-4612-006] Alpine and htmx: the same spelling of a listener is a repeat', async () => {
+	test('[no-duplicate-attr-027] Alpine and htmx: the same spelling of a listener is a repeat', async () => {
 		expect(
 			(await mlRuleTest(rule, '<button @keydown.enter="a" @keydown.enter="b">x</button>', alpine)).violations,
 		).toStrictEqual([duplicated(28, '@keydown.enter')]);
@@ -416,32 +416,32 @@ describe('directives are compared by the name that the framework keeps', () => {
 		).toStrictEqual([duplicated(25, 'hx-on:click')]);
 	});
 
-	test('[no-duplicate-attr-issue-4613-001] Vue: the case of a listener is kept', async () => {
+	test('[no-duplicate-attr-028] Vue: the case of a listener is kept', async () => {
 		expect(
 			(await mlRuleTest(rule, '<template><button @keydown="a" @KEYDOWN="b">x</button></template>', vue))
 				.violations,
 		).toStrictEqual([]);
 	});
 
-	test('[no-duplicate-attr-issue-4613-002] Vue: my-event and myEvent of a component are not a repeat', async () => {
+	test('[no-duplicate-attr-029] Vue: my-event and myEvent of a component are not a repeat', async () => {
 		expect(
 			(await mlRuleTest(rule, '<template><Foo @my-event="a" @myEvent="b" /></template>', vue)).violations,
 		).toStrictEqual([]);
 	});
 
-	test('[no-duplicate-attr-issue-4613-003] Svelte: the case of a listener is kept', async () => {
+	test('[no-duplicate-attr-030] Svelte: the case of a listener is kept', async () => {
 		expect(
 			(await mlRuleTest(rule, '<button on:click={a} on:CLICK={b}>x</button>', svelte)).violations,
 		).toStrictEqual([]);
 	});
 
-	test('[no-duplicate-attr-issue-4613-004] Alpine: the HTML parser folds the case, so it is a repeat', async () => {
+	test('[no-duplicate-attr-031] Alpine: the HTML parser folds the case, so it is a repeat', async () => {
 		expect((await mlRuleTest(rule, '<button @click="a" @CLICK="b">x</button>', alpine)).violations).toStrictEqual([
 			duplicated(20, '@CLICK'),
 		]);
 	});
 
-	test('[no-duplicate-attr-parser-007] Svelte: any number of the same on: or use:', async () => {
+	test('[no-duplicate-attr-032] Svelte: any number of the same on: or use:', async () => {
 		for (const html of [
 			'<button on:click={a} on:click={b}>x</button>',
 			'<div use:tooltip={a} use:tooltip={b}>x</div>',
@@ -450,7 +450,7 @@ describe('directives are compared by the name that the framework keeps', () => {
 		}
 	});
 
-	test('[no-duplicate-attr-parser-008] Svelte: class: and style: are not a repeat of another name or of the attribute', async () => {
+	test('[no-duplicate-attr-033] Svelte: class: and style: are not a repeat of another name or of the attribute', async () => {
 		for (const html of [
 			'<div class:foo class:bar></div>',
 			'<div class="a" class:foo></div>',
@@ -461,7 +461,7 @@ describe('directives are compared by the name that the framework keeps', () => {
 		}
 	});
 
-	test('[no-duplicate-attr-parser-009] Vue: :class twice is a repeat, :class and v-bind:class are not', async () => {
+	test('[no-duplicate-attr-034] Vue: :class twice is a repeat, :class and v-bind:class are not', async () => {
 		expect(
 			(await mlRuleTest(rule, '<template><div :class="a" :class="b"></div></template>', vue)).violations,
 		).toStrictEqual([duplicated(27, ':class')]);
@@ -470,7 +470,7 @@ describe('directives are compared by the name that the framework keeps', () => {
 		).toStrictEqual([]);
 	});
 
-	test('[no-duplicate-attr-parser-010] Vue: .prop and .attr bind a different key from the attribute', async () => {
+	test('[no-duplicate-attr-035] Vue: .prop and .attr bind a different key from the attribute', async () => {
 		expect(
 			(await mlRuleTest(rule, '<template><div .id="a" :id.prop="b" v-bind:id.prop="c"></div></template>', vue))
 				.violations,
@@ -489,7 +489,7 @@ describe('directives are compared by the name that the framework keeps', () => {
 		).toStrictEqual([duplicated(31, ':id.prop'), duplicated(44, ':id')]);
 	});
 
-	test('[no-duplicate-attr-parser-011] Vue: .camel binds the camelCase name, and a modifier it does not know is dropped', async () => {
+	test('[no-duplicate-attr-036] Vue: .camel binds the camelCase name, and a modifier it does not know is dropped', async () => {
 		expect(
 			(await mlRuleTest(rule, '<template><svg :view-box.camel="a" :viewBox="b"></svg></template>', vue))
 				.violations,
@@ -502,19 +502,19 @@ describe('directives are compared by the name that the framework keeps', () => {
 		).toStrictEqual([duplicated(28, ':id.foo')]);
 	});
 
-	test('[no-duplicate-attr-parser-012] Alpine: :class twice is a repeat, as the HTML parser keeps the first', async () => {
+	test('[no-duplicate-attr-037] Alpine: :class twice is a repeat, as the HTML parser keeps the first', async () => {
 		expect((await mlRuleTest(rule, '<div :class="a" :class="b"></div>', alpine)).violations).toStrictEqual([
 			duplicated(17, ':class'),
 		]);
 	});
 
-	test('[no-duplicate-attr-parser-013] Svelte: any number of bind:this', async () => {
+	test('[no-duplicate-attr-038] Svelte: any number of bind:this', async () => {
 		expect((await mlRuleTest(rule, '<div bind:this={a} bind:this={b}>x</div>', svelte)).violations).toStrictEqual(
 			[],
 		);
 	});
 
-	test('[no-duplicate-attr-parser-015] Vue: class and style that Vue merges stay merged with a modifier', async () => {
+	test('[no-duplicate-attr-039] Vue: class and style that Vue merges stay merged with a modifier', async () => {
 		for (const html of [
 			'<div class="a" :class.foo="b"></div>',
 			'<div style="a" :style.camel="b"></div>',
@@ -529,7 +529,7 @@ describe('directives are compared by the name that the framework keeps', () => {
 		).toStrictEqual([duplicated(31, ':class.foo')]);
 	});
 
-	test('[no-duplicate-attr-parser-016] Vue: a dynamic argument is never keyed by the name that it resolves to', async () => {
+	test('[no-duplicate-attr-040] Vue: a dynamic argument is never keyed by the name that it resolves to', async () => {
 		for (const html of [
 			'<div .[x]="a" :[x].prop="b"></div>',
 			'<div :[a]="x" :[b]="y"></div>',
@@ -542,7 +542,7 @@ describe('directives are compared by the name that the framework keeps', () => {
 		).toStrictEqual([duplicated(25, '.[x]')]);
 	});
 
-	test('[no-duplicate-attr-parser-017] Vue: an empty modifier is no modifier', async () => {
+	test('[no-duplicate-attr-041] Vue: an empty modifier is no modifier', async () => {
 		expect(
 			(await mlRuleTest(rule, '<template><div :id.="a" :id="b"></div></template>', vue)).violations,
 		).toStrictEqual([duplicated(25, ':id')]);
@@ -557,13 +557,13 @@ describe('directives are compared by the name that the framework keeps', () => {
 		).toStrictEqual([]);
 	});
 
-	test('[no-duplicate-attr-parser-018] Vue: a component folds .camel to the prop that the other spelling is', async () => {
+	test('[no-duplicate-attr-042] Vue: a component folds .camel to the prop that the other spelling is', async () => {
 		expect(
 			(await mlRuleTest(rule, '<template><Foo :my-prop.camel="a" :myProp="b" /></template>', vue)).violations,
 		).toStrictEqual([duplicated(35, ':myProp')]);
 	});
 
-	test('[no-duplicate-attr-parser-019] Vue: the generic directives and dynamic names are keyed by the written name', async () => {
+	test('[no-duplicate-attr-043] Vue: the generic directives and dynamic names are keyed by the written name', async () => {
 		expect(
 			(await mlRuleTest(rule, '<template><input v-model="a" v-model="b"></template>', vue)).violations,
 		).toStrictEqual([duplicated(30, 'v-model')]);
@@ -578,20 +578,20 @@ describe('directives are compared by the name that the framework keeps', () => {
 		).toStrictEqual([duplicated(27, ':style')]);
 	});
 
-	test('[no-duplicate-attr-parser-020] htmx: the spellings of an event are each their own', async () => {
+	test('[no-duplicate-attr-044] htmx: the spellings of an event are each their own', async () => {
 		expect(
 			(await mlRuleTest(rule, '<button hx-on::foo="a" hx-on:htmx:foo="b" hx-on-htmx-foo="c">x</button>', htmx))
 				.violations,
 		).toStrictEqual([]);
 	});
 
-	test('[no-duplicate-attr-parser-021] Svelte: a modifier of on: does not make another event', async () => {
+	test('[no-duplicate-attr-045] Svelte: a modifier of on: does not make another event', async () => {
 		expect(
 			(await mlRuleTest(rule, '<button on:click={a} on:click|once={b}>x</button>', svelte)).violations,
 		).toStrictEqual([]);
 	});
 
-	test('[no-duplicate-attr-parser-022] Astro: a directive that the parser makes is a repeat by its name', async () => {
+	test('[no-duplicate-attr-046] Astro: a directive that the parser makes is a repeat by its name', async () => {
 		const astro = { parser: { '.*': '@markuplint/astro-parser' } };
 		expect((await mlRuleTest(rule, '<Foo client:load client:load />', astro)).violations).toStrictEqual([
 			duplicated(18, 'client:load'),
@@ -599,7 +599,7 @@ describe('directives are compared by the name that the framework keeps', () => {
 		expect((await mlRuleTest(rule, '<Foo client:load client:idle />', astro)).violations).toStrictEqual([]);
 	});
 
-	test('[no-duplicate-attr-parser-023] Vue: a directive without an argument is a repeat by its name, and the case of a listener is kept', async () => {
+	test('[no-duplicate-attr-047] Vue: a directive without an argument is a repeat by its name, and the case of a listener is kept', async () => {
 		expect(
 			(await mlRuleTest(rule, '<template><div v-bind="a" v-bind="b"></div></template>', vue)).violations,
 		).toStrictEqual([duplicated(27, 'v-bind')]);
@@ -614,7 +614,7 @@ describe('directives are compared by the name that the framework keeps', () => {
 		).toStrictEqual([]);
 	});
 
-	test('[no-duplicate-attr-parser-014] Vue: the key of .camel is folded as an attribute on an HTML element, the key of .prop is not', async () => {
+	test('[no-duplicate-attr-048] Vue: the key of .camel is folded as an attribute on an HTML element, the key of .prop is not', async () => {
 		expect(
 			(await mlRuleTest(rule, '<template><div :view-box.camel="a" :viewBox="b"></div></template>', vue))
 				.violations,

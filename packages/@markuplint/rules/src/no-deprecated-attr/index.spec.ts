@@ -3,17 +3,17 @@ import { test, expect } from 'vitest';
 
 import rule from './index.js';
 
-test("[no-deprecated-attr-invalid-001] an attribute of the HTML Standard's non-conforming features is obsolete, not deprecated", async () => {
+test("[no-deprecated-attr-001] an attribute of the HTML Standard's non-conforming features is obsolete, not deprecated", async () => {
 	const { violations } = await mlRuleTest(rule, '<img align="top">');
 	expect(violations).toStrictEqual([]);
 });
 
-test('[no-deprecated-attr-invalid-002] xml:lang is conforming in the HTML Standard, so it is not deprecated', async () => {
+test('[no-deprecated-attr-002] xml:lang is conforming in the HTML Standard, so it is not deprecated', async () => {
 	const { violations } = await mlRuleTest(rule, '<img xml:lang="en-US">');
 	expect(violations).toStrictEqual([]);
 });
 
-test('[no-deprecated-attr-invalid-003] svg', async () => {
+test('[no-deprecated-attr-003] svg', async () => {
 	const { violations } = await mlRuleTest(
 		rule,
 		`<svg viewBox="0 0 160 40" xmlns="http://www.w3.org/2000/svg">
@@ -32,17 +32,17 @@ test('[no-deprecated-attr-invalid-003] svg', async () => {
 	]);
 });
 
-test('[no-deprecated-attr-valid-001] no deprecated attribute', async () => {
+test('[no-deprecated-attr-004] no deprecated attribute', async () => {
 	const { violations } = await mlRuleTest(rule, '<img src="path/to" alt="any picture">');
 	expect(violations).toStrictEqual([]);
 });
 
-test('[no-deprecated-attr-issue-4309-001] an upper-case name is the attribute in HTML (here an obsolete one, which is not deprecated)', async () => {
+test('[no-deprecated-attr-005] an upper-case name is the attribute in HTML (here an obsolete one, which is not deprecated)', async () => {
 	const { violations } = await mlRuleTest(rule, '<img ALIGN="top">');
 	expect(violations).toStrictEqual([]);
 });
 
-test('[no-deprecated-attr-issue-4309-002] an HTML element in JSX folds the name (here an obsolete attribute, which is not deprecated)', async () => {
+test('[no-deprecated-attr-006] an HTML element in JSX folds the name (here an obsolete attribute, which is not deprecated)', async () => {
 	const options = { parser: { '.*': '@markuplint/jsx-parser' } };
 	const upper = await mlRuleTest(rule, '<img ALIGN="top" />', options);
 	expect(upper.violations).toStrictEqual([]);
@@ -50,7 +50,7 @@ test('[no-deprecated-attr-issue-4309-002] an HTML element in JSX folds the name 
 	expect(lower.violations).toStrictEqual([]);
 });
 
-test('[no-deprecated-attr-issue-4309-003] an SVG element in JSX keeps the name as written', async () => {
+test('[no-deprecated-attr-007] an SVG element in JSX keeps the name as written', async () => {
 	const options = { parser: { '.*': '@markuplint/jsx-parser' } };
 	const exact = await mlRuleTest(rule, '<svg><a xlink:href="/" /></svg>', options);
 	expect(exact.violations).toStrictEqual([
@@ -66,7 +66,7 @@ test('[no-deprecated-attr-issue-4309-003] an SVG element in JSX keeps the name a
 	expect(upper.violations).toStrictEqual([]);
 });
 
-test('[no-deprecated-attr-issue-4701-001] MathML: an attribute that the data flags deprecated is reported', async () => {
+test('[no-deprecated-attr-008] MathML: an attribute that the data flags deprecated is reported', async () => {
 	const { violations } = await mlRuleTest(rule, '<math><mfrac numalign="left"><mn>1</mn><mn>2</mn></mfrac></math>');
 	expect(violations).toStrictEqual([
 		{
@@ -79,7 +79,7 @@ test('[no-deprecated-attr-issue-4701-001] MathML: an attribute that the data fla
 	]);
 });
 
-test('[no-deprecated-attr-invalid-004] the obsolete but conforming features of the HTML Standard are deprecated', async () => {
+test('[no-deprecated-attr-009] the obsolete but conforming features of the HTML Standard are deprecated', async () => {
 	// https://html.spec.whatwg.org/multipage/obsolete.html#obsolete-but-conforming-features
 	const { violations } = await mlRuleTest(
 		rule,
@@ -110,12 +110,12 @@ test('[no-deprecated-attr-invalid-004] the obsolete but conforming features of t
 	]);
 });
 
-test('[no-deprecated-attr-invalid-005] script: charset and language are deprecated', async () => {
+test('[no-deprecated-attr-010] script: charset and language are deprecated', async () => {
 	const { violations } = await mlRuleTest(rule, '<script src="a.js" charset="utf-8" language="JavaScript"></script>');
 	expect(violations.map(v => v.raw)).toStrictEqual(['charset', 'language']);
 });
 
-test('[no-deprecated-attr-issue-4309-004] an upper-case name is the attribute in HTML', async () => {
+test('[no-deprecated-attr-011] an upper-case name is the attribute in HTML', async () => {
 	const { violations } = await mlRuleTest(rule, '<a NAME="top">Top</a>');
 	expect(violations).toStrictEqual([
 		{
@@ -128,7 +128,7 @@ test('[no-deprecated-attr-issue-4309-004] an upper-case name is the attribute in
 	]);
 });
 
-test('[no-deprecated-attr-issue-4309-005] an HTML element in JSX folds the name', async () => {
+test('[no-deprecated-attr-012] an HTML element in JSX folds the name', async () => {
 	const options = { parser: { '.*': '@markuplint/jsx-parser' } };
 	const upper = await mlRuleTest(rule, '<a NAME="top" />', options);
 	expect(upper.violations).toStrictEqual([
@@ -152,7 +152,7 @@ test('[no-deprecated-attr-issue-4309-005] an HTML element in JSX folds the name'
 	]);
 });
 
-test('[no-deprecated-attr-invalid-006] script: type is deprecated when it is the empty string or a JavaScript MIME type essence match', async () => {
+test('[no-deprecated-attr-013] script: type is deprecated when it is the empty string or a JavaScript MIME type essence match', async () => {
 	// https://html.spec.whatwg.org/multipage/obsolete.html#obsolete-but-conforming-features
 	const html = '<script type="text/javascript"></script><script type=""></script><script type="module"></script>';
 	const { violations } = await mlRuleTest(rule, html);
@@ -174,7 +174,7 @@ test('[no-deprecated-attr-invalid-006] script: type is deprecated when it is the
 	]);
 });
 
-test('[no-deprecated-attr-invalid-007] input: maxlength and size are deprecated on the Number state only', async () => {
+test('[no-deprecated-attr-014] input: maxlength and size are deprecated on the Number state only', async () => {
 	// https://html.spec.whatwg.org/multipage/obsolete.html#obsolete-but-conforming-features
 	const number = await mlRuleTest(rule, '<input type="number" maxlength="3" size="4">');
 	expect(number.violations).toStrictEqual([
@@ -197,30 +197,30 @@ test('[no-deprecated-attr-invalid-007] input: maxlength and size are deprecated 
 	expect(text.violations).toStrictEqual([]);
 });
 
-test('[no-deprecated-attr-valid-002] script: type that is not an essence match of a JavaScript MIME type is not deprecated', async () => {
+test('[no-deprecated-attr-015] script: type that is not an essence match of a JavaScript MIME type is not deprecated', async () => {
 	// https://mimesniff.spec.whatwg.org/#javascript-mime-type-essence-match: the whole string is the essence
 	const html =
 		'<script></script><script type="text/javascript; charset=utf-8"></script><script type="importmap"></script>';
 	expect((await mlRuleTest(rule, html)).violations).toStrictEqual([]);
 });
 
-test('[no-deprecated-attr-invalid-008] script: the match of the type is ASCII case-insensitive, and a type with no value is the empty string', async () => {
+test('[no-deprecated-attr-016] script: the match of the type is ASCII case-insensitive, and a type with no value is the empty string', async () => {
 	const { violations } = await mlRuleTest(rule, '<script type="Text/JavaScript"></script><script type></script>');
 	expect(violations.map(v => v.raw)).toStrictEqual(['type', 'type']);
 });
 
-test('[no-deprecated-attr-invalid-009] input: the Number state is matched ASCII case-insensitive', async () => {
+test('[no-deprecated-attr-017] input: the Number state is matched ASCII case-insensitive', async () => {
 	const { violations } = await mlRuleTest(rule, '<input type="NUMBER" maxlength="3" size="4">');
 	expect(violations.map(v => v.raw)).toStrictEqual(['maxlength', 'size']);
 });
 
-test('[no-deprecated-attr-valid-003] input: maxlength and size are not deprecated when the type is not the Number state', async () => {
+test('[no-deprecated-attr-018] input: maxlength and size are not deprecated when the type is not the Number state', async () => {
 	const html = '<input maxlength="3" size="4"><input type="range" size="4">';
 	expect((await mlRuleTest(rule, html)).violations.filter(v => v.raw === 'maxlength')).toStrictEqual([]);
 	expect((await mlRuleTest(rule, '<input maxlength="3" size="4">')).violations).toStrictEqual([]);
 });
 
-test('[no-deprecated-attr-valid-004] deprecatedWhen does not judge an attribute whose value is code that is not a literal', async () => {
+test('[no-deprecated-attr-019] deprecatedWhen does not judge an attribute whose value is code that is not a literal', async () => {
 	const options = { parser: { '.*': '@markuplint/jsx-parser' } };
 	expect((await mlRuleTest(rule, '<input type={t} maxlength="3" />', options)).violations).toStrictEqual([]);
 	expect((await mlRuleTest(rule, '<script type={t} />', options)).violations).toStrictEqual([]);

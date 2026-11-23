@@ -4,7 +4,7 @@ import { test, expect, describe } from 'vitest';
 import rule from './index.js';
 
 describe('Basic', () => {
-	test('[no-table-span-overflow-invalid-001] Overflow', async () => {
+	test('[no-table-span-overflow-001] Overflow', async () => {
 		const { violations } = await mlRuleTest(
 			rule,
 			`
@@ -45,7 +45,7 @@ describe('Basic', () => {
 		]);
 	});
 
-	test('[no-table-span-overflow-invalid-002] Rowspan reaching past the end of its row group', async () => {
+	test('[no-table-span-overflow-002] Rowspan reaching past the end of its row group', async () => {
 		const { violations } = await mlRuleTest(
 			rule,
 			`
@@ -70,7 +70,7 @@ describe('Basic', () => {
 });
 
 describe('Trees', () => {
-	test('[no-table-span-overflow-issue-4489-001] a table in the content of a template is checked', async () => {
+	test('[no-table-span-overflow-003] a table in the content of a template is checked', async () => {
 		const { violations } = await mlRuleTest(
 			rule,
 			`
@@ -97,7 +97,7 @@ describe('Trees', () => {
 });
 
 describe('Valid', () => {
-	test('[no-table-span-overflow-valid-001] Empty table', async () => {
+	test('[no-table-span-overflow-004] Empty table', async () => {
 		const { violations } = await mlRuleTest(
 			rule,
 			`
@@ -108,7 +108,7 @@ describe('Valid', () => {
 		expect(violations).toStrictEqual([]);
 	});
 
-	test('[no-table-span-overflow-valid-002] Table with thead/tbody/tfoot sections', async () => {
+	test('[no-table-span-overflow-005] Table with thead/tbody/tfoot sections', async () => {
 		const { violations } = await mlRuleTest(
 			rule,
 			`
@@ -140,7 +140,7 @@ describe('Valid', () => {
 		expect(violations).toStrictEqual([]);
 	});
 
-	test('[no-table-span-overflow-valid-003] Rowspan only table - valid structure', async () => {
+	test('[no-table-span-overflow-006] Rowspan only table - valid structure', async () => {
 		const { violations } = await mlRuleTest(
 			rule,
 			`
@@ -160,7 +160,7 @@ describe('Valid', () => {
 		expect(violations).toStrictEqual([]);
 	});
 
-	test('[no-table-span-overflow-valid-004] Table with tbody rowspan/colspan combinations', async () => {
+	test('[no-table-span-overflow-007] Table with tbody rowspan/colspan combinations', async () => {
 		const { violations } = await mlRuleTest(
 			rule,
 			`
@@ -188,7 +188,7 @@ describe('Valid', () => {
 		expect(violations).toStrictEqual([]);
 	});
 
-	test('[no-table-span-overflow-valid-005] Overlap suppresses the other checks of the same table', async () => {
+	test('[no-table-span-overflow-008] Overlap suppresses the other checks of the same table', async () => {
 		const { violations } = await mlRuleTest(
 			rule,
 			`

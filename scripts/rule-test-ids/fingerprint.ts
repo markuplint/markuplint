@@ -18,10 +18,12 @@
  *   table of an enclosing group, and what a loop or an `if` around the test iterates or tests.
  *
  * The comments, the name of the test, the kind of quotes, redundant parentheses, type assertions, the order of
- * the keys of an object and the line ends are out of it, as a formatter or a tidy-up rewrites them. The reader
- * is syntactic, not the type checker: an identifier that the code binds itself (a parameter, a local) is kept
- * as written, and shadows the scope only where that binding is visible. What it cannot see is listed in the
- * module comment of `verify-equivalence.ts`.
+ * the keys of an object and the line ends are out of it, as a formatter or a tidy-up rewrites them; so are
+ * the line breaks between the elements of a list and the comma that a formatter adds after the last one
+ * (`canonicalize`), while a hole at the end of an array (`[1,,]`) counts. The reader is syntactic, not the
+ * type checker: an identifier that the code binds itself (a parameter, a local) is kept as written, and
+ * shadows the scope only where that binding is visible. What it cannot see is listed in the module comment of
+ * `verify-equivalence.ts`.
  *
  * @module
  */
@@ -316,6 +318,96 @@ function staticKey(property: ts.ObjectLiteralElementLike): string | undefined {
 	return ts.isIdentifier(name) || ts.isStringLiteral(name) || ts.isNumericLiteral(name) ? name.text : undefined;
 }
 
+/** The tokens after which a `/` divides, so that it does not start a regular expression. */
+const ENDS_OPERAND: ReadonlySet<ts.SyntaxKind> = new Set([
+	ts.SyntaxKind.Identifier,
+	ts.SyntaxKind.PrivateIdentifier,
+	ts.SyntaxKind.NumericLiteral,
+	ts.SyntaxKind.BigIntLiteral,
+	ts.SyntaxKind.StringLiteral,
+	ts.SyntaxKind.NoSubstitutionTemplateLiteral,
+	ts.SyntaxKind.TemplateTail,
+	ts.SyntaxKind.RegularExpressionLiteral,
+	ts.SyntaxKind.CloseParenToken,
+	ts.SyntaxKind.CloseBracketToken,
+	ts.SyntaxKind.CloseBraceToken,
+	ts.SyntaxKind.PlusPlusToken,
+	ts.SyntaxKind.MinusMinusToken,
+	ts.SyntaxKind.ThisKeyword,
+	ts.SyntaxKind.SuperKeyword,
+	ts.SyntaxKind.TrueKeyword,
+	ts.SyntaxKind.FalseKeyword,
+	ts.SyntaxKind.NullKeyword,
+]);
+
+/**
+ * The tokens of printed code, joined by a space, without a comma that closes a list.
+ *
+ * The printer keeps the line breaks that the source has between the elements of a list, and a formatter adds
+ * a comma to a list that it breaks over lines: neither changes what the code does, and a formatter's run over a
+ * spec must not read as a change of its tests.
+ *
+ * A `/` is a regular expression unless the token before it can end an operand, so one that follows a `)`
+ * directly (`if (x) /re/.test(y)`) is read as a division. That is only seen when it holds a brace, which makes
+ * the braces of the code not balance, and then this throws instead of returning a text that is wrong.
+ *
+ * @throws When the braces of the code do not balance as a reading of it
+ */
+function canonicalize(code: string): string {
+	const scanner = ts.createScanner(ts.ScriptTarget.Latest, false, ts.LanguageVariant.Standard, code);
+	const tokens: { kind: ts.SyntaxKind; text: string }[] = [];
+	// Whether each open `{` is the start of a substitution of a template literal, so that its `}` goes on with the template.
+	const braces: boolean[] = [];
+	for (let kind = scanner.scan(); kind !== ts.SyntaxKind.EndOfFileToken; kind = scanner.scan()) {
+		const last = tokens.at(-1);
+		// A `/` after something that does not end an operand starts a regular expression, which may hold a brace or a quote.
+		if (
+			(kind === ts.SyntaxKind.SlashToken || kind === ts.SyntaxKind.SlashEqualsToken) &&
+			!(last !== undefined && ENDS_OPERAND.has(last.kind))
+		) {
+			kind = scanner.reScanSlashToken();
+		}
+		if (kind === ts.SyntaxKind.CloseBraceToken && braces.at(-1) === true) {
+			braces.pop();
+			kind = scanner.reScanTemplateToken(false);
+		} else if (kind === ts.SyntaxKind.OpenBraceToken) {
+			braces.push(false);
+		} else if (kind === ts.SyntaxKind.CloseBraceToken && braces.pop() === undefined) {
+			throw new Error(
+				'canonicalize: a "}" that closes nothing, as a reading of a regular expression that follows a ")"',
+			);
+		}
+		if (kind === ts.SyntaxKind.TemplateHead || kind === ts.SyntaxKind.TemplateMiddle) {
+			braces.push(true);
+		}
+		if (kind === ts.SyntaxKind.WhitespaceTrivia || kind === ts.SyntaxKind.NewLineTrivia) {
+			continue;
+		}
+		tokens.push({ kind, text: scanner.getTokenText() });
+	}
+	if (braces.length > 0) {
+		throw new Error(
+			'canonicalize: a "{" that is not closed, as a reading of a regular expression that follows a ")"',
+		);
+	}
+	return tokens
+		.filter((token, index) => {
+			const previous = tokens[index - 1]?.kind;
+			const next = tokens[index + 1]?.kind;
+			// The comma after another comma or an `[` is a hole of an array (`[1,,]`, `[,]`), which counts.
+			return !(
+				token.kind === ts.SyntaxKind.CommaToken &&
+				previous !== ts.SyntaxKind.CommaToken &&
+				previous !== ts.SyntaxKind.OpenBracketToken &&
+				(next === ts.SyntaxKind.CloseBracketToken ||
+					next === ts.SyntaxKind.CloseBraceToken ||
+					next === ts.SyntaxKind.CloseParenToken)
+			);
+		})
+		.map(token => token.text)
+		.join(' ');
+}
+
 /**
  * The text of a node with the comments removed, every reference to a declaration replaced by the hash of that
  * declaration, and the spellings that mean the same written one way.
@@ -384,7 +476,9 @@ function normalize(context: Context, node: ts.Node, scope: Scope | undefined, se
 	const result = ts.transform(node, [transformer]);
 	try {
 		const transformed = result.transformed[0];
-		return transformed ? context.printer.printNode(ts.EmitHint.Unspecified, transformed, context.sourceFile) : '';
+		return transformed
+			? canonicalize(context.printer.printNode(ts.EmitHint.Unspecified, transformed, context.sourceFile))
+			: '';
 	} finally {
 		result.dispose();
 	}

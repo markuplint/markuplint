@@ -3,7 +3,7 @@ import { test, expect } from 'vitest';
 
 import rule from './index.js';
 
-test('[require-landmark-label-valid-001] Duplicated area: has-label', async () => {
+test('[require-landmark-label-001] Duplicated area: has-label', async () => {
 	const { violations } = await mlRuleTest(
 		rule,
 		`
@@ -25,7 +25,7 @@ test('[require-landmark-label-valid-001] Duplicated area: has-label', async () =
 	expect(violations).toStrictEqual([]);
 });
 
-test('[require-landmark-label-issue-4489-001] a landmark in the content of a template is not counted with the ones of the document', async () => {
+test('[require-landmark-label-002] a landmark in the content of a template is not counted with the ones of the document', async () => {
 	const { violations } = await mlRuleTest(
 		rule,
 		'<html><body><nav></nav><template><nav></nav></template></body></html>',
@@ -33,7 +33,7 @@ test('[require-landmark-label-issue-4489-001] a landmark in the content of a tem
 	expect(violations).toStrictEqual([]);
 });
 
-test('[require-landmark-label-issue-4489-002] the landmarks in the content of a template are counted by themselves', async () => {
+test('[require-landmark-label-003] the landmarks in the content of a template are counted by themselves', async () => {
 	const { violations } = await mlRuleTest(
 		rule,
 		'<html><body><template><nav></nav><nav></nav></template></body></html>',
@@ -56,7 +56,7 @@ test('[require-landmark-label-issue-4489-002] the landmarks in the content of a 
 	]);
 });
 
-test('[require-landmark-label-issue-4489-003] the landmarks in a declarative shadow root are counted by themselves', async () => {
+test('[require-landmark-label-004] the landmarks in a declarative shadow root are counted by themselves', async () => {
 	const { violations } = await mlRuleTest(
 		rule,
 		'<html><body><nav></nav><div><template shadowrootmode="open"><nav></nav><nav></nav></template></div></body></html>',
@@ -79,7 +79,7 @@ test('[require-landmark-label-issue-4489-003] the landmarks in a declarative sha
 	]);
 });
 
-test('[require-landmark-label-issue-4489-004] the landmarks in a template in a template are counted by themselves', async () => {
+test('[require-landmark-label-005] the landmarks in a template in a template are counted by themselves', async () => {
 	const { violations } = await mlRuleTest(
 		rule,
 		'<html><body><template><nav></nav><template><nav></nav><nav></nav></template></template></body></html>',
@@ -102,17 +102,17 @@ test('[require-landmark-label-issue-4489-004] the landmarks in a template in a t
 	]);
 });
 
-test('[require-landmark-label-issue-4180-001] a single banner with an explicit role is not duplicated', async () => {
+test('[require-landmark-label-006] a single banner with an explicit role is not duplicated', async () => {
 	const { violations } = await mlRuleTest(rule, '<html><body><header role="banner"></header></body></html>');
 	expect(violations).toStrictEqual([]);
 });
 
-test('[require-landmark-label-issue-4180-002] a single contentinfo with an explicit role is not duplicated', async () => {
+test('[require-landmark-label-007] a single contentinfo with an explicit role is not duplicated', async () => {
 	const { violations } = await mlRuleTest(rule, '<html><body><footer role="contentinfo"></footer></body></html>');
 	expect(violations).toStrictEqual([]);
 });
 
-test('[require-landmark-label-invalid-001] Duplicated area: no-label', async () => {
+test('[require-landmark-label-008] Duplicated area: no-label', async () => {
 	const { violations } = await mlRuleTest(
 		rule,
 		`
