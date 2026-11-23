@@ -707,6 +707,18 @@ export interface MLParser {
 	isNativeTag?(name: string): boolean;
 
 	/**
+	 * Whether the language takes a component for one that renders what it is given as it is written, and
+	 * brings nothing of its own into the tree (Vue's built-in components, `<transition>` and
+	 * `<keep-alive>`). Name as written, case kept.
+	 *
+	 * A component that no pretender resolved renders what the markup does not tell, so what depends on the
+	 * elements that the tree holds (an id that a reference refers to) cannot decide on it. A component
+	 * that this says renders its children, which the markup shows. A parser without it takes every
+	 * component for one of unknown output.
+	 */
+	isPassThroughComponent?(name: string): boolean;
+
+	/**
 	 * Whether attribute names should be treated as case-sensitive (e.g. JSX props such as `onClick`).
 	 * Currently consumed only by the `case-sensitive-attr-name` rule.
 	 */
