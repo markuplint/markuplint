@@ -23,6 +23,7 @@ const vueSpec: ExtendedSpec = {
 			isDuplicatable: ['class', 'style'],
 		},
 		{ pattern: '^(?:v-on:|@)([^.]+)(?:\\..+)?$', potentialName: 'on$1', isDirective: true, isDynamicValue: true },
+		{ pattern: '^v-bind$', isDirective: true, isDynamicValue: true, isSpread: true },
 		{ pattern: '^v-', isDirective: true, isDynamicValue: true },
 	],
 };
@@ -79,6 +80,17 @@ describe('mlastForRust', () => {
 		const a = p.childNodes[0] as MLASTElement;
 
 		expect(a.attributes[0]).toMatchObject({ potentialName: 'href', isDynamicValue: true });
+	});
+
+	test('[rust-mlast-directive-005] hands over a directive that the spec says is a spread', () => {
+		const attrs = attrsOf(
+			mlastForRust(html('<a v-bind="props" :href="url" v-show="shown"></a>'), { spec: vueSpec, parser: {} }),
+		);
+
+		// `v-bind="obj"` keeps its name, and only it is a spread: a binding with an argument is not
+		expect(attrs['v-bind']).toMatchObject({ potentialName: 'v-bind', isDirective: true, isSpread: true });
+		expect(attrs[':href']).not.toHaveProperty('isSpread');
+		expect(attrs['v-show']).not.toHaveProperty('isSpread');
 	});
 
 	test('[rust-mlast-idl-001] maps the IDL name to the content attribute as the spec asks (`idl`: React)', () => {
