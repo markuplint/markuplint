@@ -3,13 +3,19 @@ name: Spec citation watch
 # Checks the passages that the sources of the packages, the rule READMEs, the
 # spec data and the website cite, and the sections of ARIA that the generated
 # data defines (derived from it), against the live specifications, the
-# documentation of the frameworks and their source files, and opens an Issue
-# when one changed (see the module comment of `scripts/spec-citations/cli.ts`).
+# documentation of the frameworks and their source files, compares the tables
+# of the index of the HTML Standard (elements, attributes, event handler content
+# attributes, element content categories) with the data of
+# `@markuplint/html-spec`, and opens an Issue when one changed or differs (see
+# the module comment of `scripts/spec-citations/cli.ts`).
 # Nothing is fixed automatically: a maintainer decides whether the code that
 # cites the passage (a rule and its README in both languages,
 # `@markuplint/html-spec`, an algorithm, a value grammar, the table of a
 # framework) has to follow. The one Issue is titled and labelled for
 # specifications, whatever the finding was cited from.
+#
+# A difference between the index and the data is reported on every run until
+# the data answers it, not only when the page changed since the lock.
 #
 # The same run refreshes `spec-citations.lock.json` through a pull request.
 # Merging it is what accepts the changed passages, so that the next run
@@ -19,9 +25,10 @@ name: Spec citation watch
 # data (`index.json`, and the ARIA documents of the generator), runs the check
 # read-only, which proves that the runner can install, run the script and reach
 # the hosts that it fetches (the specifications, the documentation and the
-# sources of the frameworks), and that the sections that the data stands for
-# exist.
-# Findings do not fail it: the specs move on their own.
+# sources of the frameworks), that the sections that the data stands for
+# exist, and that the script still reads the tables of the index on the live page.
+# Findings do not fail it, except a table of the index that cannot be read: the
+# specs move on their own.
 
 on:
     schedule:
@@ -83,7 +90,8 @@ jobs:
                       fi
                       sleep 300
                   done
-                  # 0: nothing to report, 1: findings. Neither is this pull request's fault.
+                  # 0: nothing to report, 1: findings (a difference between the index of the HTML Standard and the
+                  #    data included). Neither is this pull request's fault, but for the table below.
                   # 2: a page still could not be fetched. This job exists to show that the runner can reach the
                   #    hosts that the script fetches, so it fails. The script fetches the pages that every
                   #    package cites (the standards of WHATWG, W3C, IETF, ECMAScript and the others), so a slow
@@ -93,6 +101,12 @@ jobs:
                       exit 1
                   fi
                   cat report.md >> "$GITHUB_STEP_SUMMARY"
+                  # A table of the index that cannot be read is the parser not reading the page that it was written
+                  # for, which a change of the script can break, so it fails this job as a page that cannot be
+                  # fetched does. The heading is the one that report.ts gives it (index-check.spec.ts holds the two).
+                  if grep -q "Table of the index that cannot be read" report.md; then
+                      exit 1
+                  fi
 
     watch:
         if: github.event_name != 'pull_request'

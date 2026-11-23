@@ -289,10 +289,10 @@
 			},
 			"condition": ["[type='button' i]", "[type='image' i]", "[type='reset' i]", "[type='submit' i]"]
 		},
-		// Not in the HTML Standard yet; proposed in https://github.com/whatwg/html/pull/9546.
-		// The citation check does not read a pull request, so cite the HTML Standard here once
-		// it lands.
+		// https://html.spec.whatwg.org/multipage/input.html#attr-input-switch
 		"switch": {
+			// BCD marks this as non-standard, but it is defined in the HTML Living Standard.
+			"nonStandard": false,
 			"type": "Boolean",
 			"condition": "[type='checkbox' i]"
 		},

@@ -104,6 +104,9 @@ export type ProblemKind =
 	| 'no-fragment'
 	| 'directive-missing'
 	| 'secno-stale'
+	| 'index-section-unlisted'
+	| 'index-table-unreadable'
+	| 'index-data-mismatch'
 	| 'section-changed'
 	| 'fetch-failed';
 

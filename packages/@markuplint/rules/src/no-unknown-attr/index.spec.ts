@@ -1152,6 +1152,20 @@ test('[no-unknown-attr-invalid-007] audio: disablepictureinpicture is defined fo
 	]);
 });
 
+test('[no-unknown-attr-invalid-008] iframe: fetchpriority is defined for img, link and script only', async () => {
+	// https://html.spec.whatwg.org/multipage/indices.html#attributes-3
+	const { violations } = await mlRuleTest(rule, '<iframe fetchpriority="high"></iframe>');
+	expect(violations).toStrictEqual([
+		{
+			severity: 'error',
+			line: 1,
+			col: 9,
+			message: 'The "fetchpriority" attribute is disallowed',
+			raw: 'fetchpriority',
+		},
+	]);
+});
+
 test('[no-unknown-attr-valid-010] an obsolete element takes the global attributes of HTML', async () => {
 	// https://html.spec.whatwg.org/multipage/dom.html#global-attributes
 	const { violations } = await mlRuleTest(rule, '<acronym class="a" title="t"></acronym>');

@@ -11,7 +11,8 @@
  * workflow (`.github/workflows/spec-citation-watch.yml`) runs it weekly and
  * opens an Issue; a maintainer decides what follows. Nothing is fixed
  * automatically, and no model is involved: every verdict is a string
- * comparison against the fetched page.
+ * comparison against the fetched page, or, for the index of the HTML Standard
+ * (below), against the data of `@markuplint/html-spec`.
  *
  * The same workflow refreshes the lock (below) through a pull request that
  * names the Issue; merging that pull request is what accepts the changed
@@ -55,6 +56,14 @@
  * whose first line does not name a section that this monitor reads. What nobody writes as a citation is read from
  * `index.json`: the `cite` of an element whose source file is not tracked yet (`elements.ts`), and one section for
  * each role and property of ARIA (`aria.ts`).
+ *
+ * The index of the HTML Standard is the one page that is watched whole. Every one of its sections is cited by the
+ * script itself (`indices.ts`), so that nothing depends on what the code happens to cite, and a section that the page
+ * gains is reported. Its tables of elements, attributes, event handler content attributes and element content
+ * categories are also compared with the data of `@markuplint/html-spec` (`index-tables.ts`), which is how an element
+ * or an event handler that nothing cites yet is noticed. That is the one kind of finding that is not a passage that
+ * changed: it is reported on every run until the data, or an entry of `INDEX_EXCEPTIONS` with the specification that
+ * defines the feature, answers it, so merging the lock pull request does not silence it.
  */
 import type { CollectResult, PageResult } from './types.ts';
 
@@ -63,6 +72,7 @@ import { join } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { parseArgs } from 'node:util';
 
+import { GENERATED_DATA } from './aria.ts';
 import { check } from './check.ts';
 import { collectAll } from './discover.ts';
 import { isCliEntry } from './entry.ts';
@@ -91,7 +101,8 @@ export type CliDeps = {
 const USAGE = `Usage: yarn spec-citations [options]
 
 Checks the passages that rules and framework declarations cite against the live specifications,
-framework documentation and framework sources.
+framework documentation and framework sources, and compares the tables of the index of the HTML Standard
+with the data of @markuplint/html-spec.
 
 Options:
   --update              Rewrite the lock file with the sections as they are now
@@ -139,7 +150,9 @@ export async function run(options: CliOptions, deps: CliDeps): Promise<number> {
 	const lockText = deps.readText(options.lock);
 	const lock = lockText === null ? EMPTY_LOCK : parseLock(lockText);
 	const now = deps.now();
-	const { problems, lock: next } = check({ ...collected, pages, lock, now });
+	// Forward slashes on every platform, as the lock path is: what `readText` is asked for must not depend on it.
+	const indexJson = deps.readText(join(options.root, GENERATED_DATA).replaceAll('\\', '/'));
+	const { problems, lock: next } = check({ ...collected, pages, lock, now, indexJson });
 
 	for (const problem of problems) {
 		const place = problem.citation ?? problem.quote;
