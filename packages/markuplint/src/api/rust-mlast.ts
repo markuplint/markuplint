@@ -1,5 +1,5 @@
 import type { Document } from '@markuplint/ml-core';
-import type { AttrNameRoute, MLASTDocument, MLASTHTMLAttr } from '@markuplint/ml-ast';
+import type { AttrNameRoute, MLASTDocument, MLASTElement, MLASTHTMLAttr } from '@markuplint/ml-ast';
 import type { PlainData, RuleConfigValue } from '@markuplint/ml-config';
 import type { ExtendedSpec, MLMLSpec } from '@markuplint/ml-spec';
 
@@ -22,6 +22,7 @@ type MLASTForRustOptions = {
 		readonly componentNameVariants?: boolean;
 		readonly slotElement?: 'html' | 'framework';
 		readonly templateContent?: 'separate-tree' | 'in-place';
+		isPassThroughComponent?(name: string): boolean;
 	};
 	/**
 	 * What the framework renders each attribute as, by the `uuid` of its token ({@link renderAttrs}).
@@ -96,6 +97,9 @@ export function renderAttrs<T extends RuleConfigValue, O extends PlainData>(
  *   when it is not the one written, and the fields of the attribute mean what they mean on
  *   `MLAttr`: `isDynamicValue` that the value is not known, `isExpressionValue` that it is written
  *   as code (what the parser calls `isDynamicValue`), `isAbsent` that it is not output.
+ * - `isPassThroughComponent` of the parser is a function, so it is asked here of every component and the
+ *   answer is sent on the element (`isPassThroughComponent`), as `MLDocument#isPassThroughComponent` asks it
+ *   of the name as written.
  * - `endTag`, `booleanish`, `tagNameCaseSensitive`, `attrNameCaseSensitive`, `attrNameRoute` and
  *   `componentNameVariants` and `slotElement` of the parser are sent next to the nodes (`DocumentSettings` on the
  *   Rust side), as `MLCore` hands them to `Document`.
@@ -120,6 +124,8 @@ export function mlastForRust(ast: MLASTDocument, { spec, parser, renderings }: M
 			isDynamicValue,
 			isDirective,
 			isSpread,
+			spreadOverridesWritten,
+			isInnerHTML,
 			isDuplicatable,
 			valueType,
 			matchedDirectivePattern,
@@ -143,6 +149,8 @@ export function mlastForRust(ast: MLASTDocument, { spec, parser, renderings }: M
 			// `MLAttr#isSpread` of a directive that the spec says is a spread (`v-bind="obj"`): a spread of the
 			// syntax tree is a node of its own, which `MLElement#hasSpreadAttr` and the rules read as one
 			...(isSpread && { isSpread }),
+			...(spreadOverridesWritten && { spreadOverridesWritten }),
+			...(isInnerHTML && { isInnerHTML }),
 			isDuplicatable,
 			...(valueType && { valueType }),
 			// What the matching pattern says of a repeat, which `MLAttr#duplicateKey` is built from
@@ -158,6 +166,22 @@ export function mlastForRust(ast: MLASTDocument, { spec, parser, renderings }: M
 		return result;
 	};
 
+	// The same element is in `nodeList` and in its parent's `childNodes`, so it is asked once
+	const resolvedElements = new WeakMap<MLASTElement, MLASTElement>();
+
+	const resolveElement = (el: MLASTElement): MLASTElement => {
+		if (el.elementType !== 'authored' || !parser.isPassThroughComponent?.(el.nodeName)) {
+			return el;
+		}
+		const cached = resolvedElements.get(el);
+		if (cached) {
+			return cached;
+		}
+		const result = { ...el, isPassThroughComponent: true };
+		resolvedElements.set(el, result);
+		return result;
+	};
+
 	return JSON.stringify(
 		{
 			...ast,
@@ -170,10 +194,19 @@ export function mlastForRust(ast: MLASTDocument, { spec, parser, renderings }: M
 			slotElement: parser.slotElement,
 			templateContent: parser.templateContent,
 		},
-		(_key, value: unknown) => (isHTMLAttr(value) ? resolveAttr(value) : value),
+		(_key, value: unknown) => {
+			if (isHTMLAttr(value)) {
+				return resolveAttr(value);
+			}
+			return isElement(value) ? resolveElement(value) : value;
+		},
 	);
 }
 
 function isHTMLAttr(value: unknown): value is MLASTHTMLAttr {
 	return typeof value === 'object' && value !== null && 'type' in value && value.type === 'attr';
+}
+
+function isElement(value: unknown): value is MLASTElement {
+	return typeof value === 'object' && value !== null && 'type' in value && value.type === 'starttag';
 }
