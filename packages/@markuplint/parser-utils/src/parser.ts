@@ -782,9 +782,13 @@ export abstract class Parser<Node extends {} = {}, State extends unknown = null>
 	 * and recursively traversed child nodes. Handles ghost elements (empty raw),
 	 * self-closing tags, and nameless fragments (e.g., JSX `<>`).
 	 *
+	 * A ghost element is paired with the end tag that `options.createEndTagToken` finds, as any element is: the
+	 * source may write the end tag of an element whose start tag it omits (`</body>`).
+	 *
 	 * @param token - The child token with the element's node name; namespace is auto-detected from tag name and parent node
 	 * @param childNodes - The language-specific child AST nodes to traverse
 	 * @param options - Controls end tag creation, fragment handling, and property overrides
+	 *   (`createEndTagToken` is called for a ghost element too)
 	 * @returns An array of AST nodes including the start tag, optional end tag, and any sibling nodes
 	 */
 	visitElement(
@@ -827,7 +831,7 @@ export abstract class Parser<Node extends {} = {}, State extends unknown = null>
 
 			const siblings = this.visitChildren(childNodes, startTag);
 
-			return [startTag, ...siblings];
+			return this.#pairWithEndTag(startTag, siblings, createEndTagToken, namelessFragment);
 		}
 
 		const startTag = {
@@ -842,16 +846,35 @@ export abstract class Parser<Node extends {} = {}, State extends unknown = null>
 
 		const siblings = this.visitChildren(childNodes, startTag);
 
-		if (createEndTagToken) {
-			const endTagToken = createEndTagToken(startTag);
+		return this.#pairWithEndTag(startTag, siblings, createEndTagToken, namelessFragment);
+	}
 
-			if (endTagToken) {
-				const endTag = this.#parseEndTag(endTagToken, namelessFragment);
+	/**
+	 * Pairs a start tag with the end tag that `createEndTagToken` finds, if it finds one. A ghost start tag (no
+	 * source of its own, an element that the language's tree construction inserted) takes part too: the source may
+	 * write the end tag of an element whose start tag it omits (`</body>`), and without the pair that end tag would
+	 * be an orphaned end tag (`#orphanEndTagToBogusMark`).
+	 *
+	 * @param startTag - The start tag, ghost or not
+	 * @param siblings - The nodes that the children of the element made
+	 * @param createEndTagToken - Finds the end tag of the start tag in the source
+	 * @param namelessFragment - Whether the element is a nameless fragment (JSX `<>`)
+	 * @returns The start tag, the end tag when there is one, and the siblings
+	 */
+	#pairWithEndTag(
+		startTag: MLASTElement,
+		siblings: readonly MLASTNodeTreeItem[],
+		createEndTagToken: ((startTag: MLASTElement) => ChildToken | null) | undefined,
+		namelessFragment: boolean,
+	): readonly MLASTNodeTreeItem[] {
+		const endTagToken = createEndTagToken?.(startTag);
 
-				this.#pairing(startTag, endTag);
+		if (endTagToken) {
+			const endTag = this.#parseEndTag(endTagToken, namelessFragment);
 
-				return [startTag, endTag, ...siblings];
-			}
+			this.#pairing(startTag, endTag);
+
+			return [startTag, endTag, ...siblings];
 		}
 
 		return [startTag, ...siblings];
@@ -1726,13 +1749,17 @@ export abstract class Parser<Node extends {} = {}, State extends unknown = null>
 		return false;
 	}
 
+	/**
+	 * An end tag that no start tag is paired with closes nothing. A ghost start tag can own an end tag (the source
+	 * writes `</body>` for an omitted `<body>`), so it is looked at like any other.
+	 */
 	#orphanEndTagToBogusMark(nodeList: readonly MLASTNodeTreeItem[]) {
 		const newNodeList: MLASTNodeTreeItem[] = [];
 		for (let node of nodeList) {
 			if (node.type === 'endtag') {
 				const endTagUUID = node.uuid;
 				const openTag = newNodeList.findLast<MLASTElement>((n): n is MLASTElement =>
-					n.type === 'starttag' && !n.isGhost ? n.pairNodeUuid === endTagUUID : false,
+					n.type === 'starttag' ? n.pairNodeUuid === endTagUUID : false,
 				);
 				if (!openTag) {
 					node = this.#convertIntoInvalidNode(node);

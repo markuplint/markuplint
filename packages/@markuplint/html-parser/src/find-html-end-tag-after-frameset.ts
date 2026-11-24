@@ -1,4 +1,4 @@
-import type { Element, Node } from './types.js';
+import type { Element, Node, SourceRange } from './types.js';
 import type { Token } from 'parse5';
 
 import { html, Tokenizer, TokenizerMode } from 'parse5';
@@ -10,7 +10,8 @@ import { html, Tokenizer, TokenizerMode } from 'parse5';
  * (`endTagAfterBody` calls `_setEndLocation`), but not when it reads it in the after frameset insertion mode
  * (`endTagAfterFrameset` only switches the mode), so the end tag has to be found in the source. The caller uses
  * this only when parse5 gives no `endTag`; once parse5 sets it in the after frameset insertion mode too, this
- * function and its call in `HtmlParser#nodeize` can be removed.
+ * function and its calls in `HtmlParser#nodeize` and `HtmlParser#visitGhostElement` (for a document that omits
+ * `<html>`) can be removed.
  *
  * The outermost `frameset` is popped only by its own end tag, and that switches to the after frameset insertion
  * mode; before that, `</html>` is ignored. In that mode the first `</html>` switches to the after after frameset
@@ -45,7 +46,7 @@ export function findHtmlEndTagAfterFrameset(
 	rawCode: string,
 	// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
 	node: Node,
-): { readonly startOffset: number; readonly endOffset: number } | null {
+): SourceRange | null {
 	if (
 		node.nodeName !== 'html' ||
 		!('namespaceURI' in node) ||

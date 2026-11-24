@@ -18,14 +18,14 @@ test('[no-stray-head-or-body-tag-001] disallowed head content leaves a stray end
 			severity: 'error',
 			line: 5,
 			col: 24,
-			raw: '\n</head>\n<body></body>\n',
+			raw: '\n</head>\n<body>',
 			message: 'A stray "head" end tag detected',
 		},
 		{
 			severity: 'error',
 			line: 5,
 			col: 24,
-			raw: '\n</head>\n<body></body>\n',
+			raw: '\n</head>\n<body>',
 			message: 'A duplicate "body" start tag detected',
 		},
 	]);
@@ -72,4 +72,9 @@ test('[no-stray-head-or-body-tag-007] the message is in Japanese with locale ja'
 			raw: '</head>',
 		},
 	]);
+});
+
+test('[no-stray-head-or-body-tag-008] tag-shaped text inside plaintext is not flagged', async () => {
+	const code = '<!doctype html><head><title>t</title></head><body><plaintext><body></head>';
+	expect((await mlRuleTest(rule, code)).violations).toStrictEqual([]);
 });

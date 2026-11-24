@@ -56,6 +56,19 @@ export class MLAttr<T extends RuleConfigValue, O extends PlainData = undefined> 
 	readonly isSpread?: true;
 
 	/**
+	 * Whether this spread overrides an attribute of the same name wherever that one is written
+	 * (`DirectivePattern#spreadOverridesWritten`: `x-bind="obj"` of Alpine.js), not only the ones before it.
+	 */
+	readonly spreadOverridesWritten?: true;
+
+	/**
+	 * Whether this attribute replaces the children of the element with markup that the template does not
+	 * show (`v-html`, `x-html`, `dangerouslySetInnerHTML`: `DirectivePattern#isInnerHTML`). The elements
+	 * that the markup holds are not all that the element has.
+	 */
+	readonly isInnerHTML?: true;
+
+	/**
 	 * Whether this attribute is not a repeat of an attribute of the same name on the same element (`:class`
 	 * beside `class`, which Vue merges): it is not compared by {@link MLAttr.nameKey}. Whether the same one
 	 * written twice is a repeat is told by {@link MLAttr.duplicateKey}.
@@ -171,6 +184,8 @@ export class MLAttr<T extends RuleConfigValue, O extends PlainData = undefined> 
 		this.isExpressionValue = resolved.isDynamicValue;
 		this.isDirective = resolved.isDirective;
 		this.isSpread = resolved.isSpread;
+		this.spreadOverridesWritten = resolved.spreadOverridesWritten;
+		this.isInnerHTML = resolved.isInnerHTML;
 		this.isDuplicatable = resolved.isDuplicatable;
 		this.#matchedDirectivePattern = resolved.matchedDirectivePattern === true;
 		this.#declaredDuplicateKey = resolved.duplicateKey;

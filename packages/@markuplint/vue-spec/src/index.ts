@@ -159,7 +159,19 @@ const spec: ExtendedSpec = {
 			isDirective: true,
 			isDynamicValue: true,
 		},
-		// Other v-* directives (v-show, v-if, v-for, v-text, v-html, etc.)
+		/**
+		 * `v-html` replaces the children of the element with the markup that its value gives, which the
+		 * template does not show.
+		 *
+		 * @see https://vuejs.org/api/built-in-directives.html#v-html
+		 */
+		{
+			pattern: '^v-html$',
+			isDirective: true,
+			isDynamicValue: true,
+			isInnerHTML: true,
+		},
+		// Other v-* directives (v-show, v-if, v-for, v-text, etc.)
 		{
 			pattern: '^v-',
 			isDirective: true,

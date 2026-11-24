@@ -14,6 +14,10 @@ export type ResolvedAttr = {
 	readonly isDirective?: true;
 	/** Whether the matching directive pattern says the attribute is a spread (`DirectivePattern#isSpread`). */
 	readonly isSpread?: true;
+	/** Whether the spread overrides an attribute wherever it is written (`DirectivePattern#spreadOverridesWritten`). */
+	readonly spreadOverridesWritten?: true;
+	/** Whether the attribute replaces the children with markup the template does not show (`DirectivePattern#isInnerHTML`). */
+	readonly isInnerHTML?: true;
 	readonly isDuplicatable: boolean;
 	/** Only a matching directive pattern sets it; otherwise the attribute is a `string`. */
 	readonly valueType?: 'string' | 'number' | 'boolean' | 'code';
@@ -96,6 +100,8 @@ export function resolveAttrNames(
 		isDynamicValue: resolution ? resolution.isDynamicValue : ast.isDynamicValue,
 		isDirective,
 		isSpread: resolution?.isSpread,
+		spreadOverridesWritten: resolution?.spreadOverridesWritten,
+		isInnerHTML: resolution?.isInnerHTML,
 		isDuplicatable: (resolution ? resolution.isDuplicatable : undefined) ?? ast.isDuplicatable,
 		valueType: resolution?.valueType,
 		expressionLanguage: resolution ? resolution.expressionLanguage : 'inherit',

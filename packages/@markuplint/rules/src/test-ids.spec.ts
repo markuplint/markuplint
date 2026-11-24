@@ -10,8 +10,8 @@
  * A behavior spec is a spec of a registered rule (a directory that `src/index.ts` imports) that imports the
  * testing API (`mlRuleTest`, `mlTest`, `mlTestFile`), and every test in it goes through the API, directly or
  * through a helper of the file: a test that does not is a unit test and goes to a spec of its own, as the
- * convention says. `.claude/skills/list-rule-test/scripts/list-rule-test.mjs` (and, while it exists,
- * `scripts/rule-test-ids/renumber.ts`) reads the registry and the tests as this does: keep them in step.
+ * convention says. `.claude/skills/list-rule-test/scripts/list-rule-test.mjs` reads the registry and the
+ * tests as this does: keep them in step.
  *
  * @module
  */

@@ -437,6 +437,7 @@ export class MLCore {
 				// The parser's own rule, called on the parser: a method of a class that reads its own state
 				isComponentName: this.#parser.isComponentName?.bind(this.#parser),
 				isNativeTag: this.#parser.isNativeTag?.bind(this.#parser),
+				isPassThroughComponent: this.#parser.isPassThroughComponent?.bind(this.#parser),
 				attrNameCaseSensitive: this.#parser.attrNameCaseSensitive,
 				attrNameRoute: this.#parser.attrNameRoute,
 				pretenders: this.#pretenders,

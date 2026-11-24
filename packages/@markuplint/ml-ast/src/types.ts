@@ -202,7 +202,11 @@ export interface MLASTElement extends MLASTAbstractNode {
 	readonly tagOpenChar: string;
 	/** The characters that close this tag (usually `">"`) */
 	readonly tagCloseChar: string;
-	/** Whether this element is a ghost node (omitted tag inferred by the parser, e.g. an implicit `<tbody>`); ghost nodes have an empty `raw` */
+	/**
+	 * Whether this element is a ghost node (omitted tag inferred by the parser, e.g. an implicit `<tbody>`); ghost nodes have an empty `raw`.
+	 * An element whose start tag is omitted is paired with its end tag when the source has one (`</tbody>` after an
+	 * omitted `<tbody>`); an element that the parser makes again for a misnested formatting element has none.
+	 */
 	readonly isGhost: boolean;
 }
 
@@ -705,6 +709,18 @@ export interface MLParser {
 	 * gives (`as`) is the element itself and is judged by the specification.
 	 */
 	isNativeTag?(name: string): boolean;
+
+	/**
+	 * Whether the language takes a component for one that renders what it is given as it is written, and
+	 * brings nothing of its own into the tree (Vue's built-in components, `<transition>` and
+	 * `<keep-alive>`). Name as written, case kept.
+	 *
+	 * A component that no pretender resolved renders what the markup does not tell, so what depends on the
+	 * elements that the tree holds (an id that a reference refers to) cannot decide on it. A component
+	 * that this says renders its children, which the markup shows. A parser without it takes every
+	 * component for one of unknown output.
+	 */
+	isPassThroughComponent?(name: string): boolean;
 
 	/**
 	 * Whether attribute names should be treated as case-sensitive (e.g. JSX props such as `onClick`).

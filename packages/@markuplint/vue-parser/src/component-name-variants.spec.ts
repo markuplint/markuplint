@@ -73,6 +73,32 @@ describe('isNativeTag', () => {
 	);
 });
 
+// The built-in components render the slot content that they are given, as written or in kebab-case
+// (`isBuiltInType(tag, name)` of Vue is `tag === name || tag === hyphenate(name)`).
+describe('isPassThroughComponent', () => {
+	test.each([
+		'Transition',
+		'transition',
+		'TransitionGroup',
+		'transition-group',
+		'KeepAlive',
+		'keep-alive',
+		'Teleport',
+		'teleport',
+		'Suspense',
+		'suspense',
+	])('"%s" is a built-in component', name => {
+		expect(parser.isPassThroughComponent(name)).toBe(true);
+	});
+
+	test.each(['FooBar', 'foo-bar', 'div', 'component', 'slot', 'Foo.Transition', 'TRANSITION'])(
+		'"%s" is not',
+		name => {
+			expect(parser.isPassThroughComponent(name)).toBe(false);
+		},
+	);
+});
+
 describe('elementType of a tag that Vue resolves to a component', () => {
 	test.each([
 		// A name of more than one word is a component in camelCase and kebab-case too

@@ -48,4 +48,9 @@ export interface SpecElement extends AccnameElement {
 	 * slot takes (not rendered), `undefined` for an element that is not one or whose assignment is not known.
 	 */
 	getFlatTreeSlot(): SpecElement | null | undefined;
+	/**
+	 * Whether the tree of the element may hold an element whose `id` the markup does not tell (see
+	 * `hasElementOfUnknownId`).
+	 */
+	treeMayHoldUnknownId(): boolean;
 }

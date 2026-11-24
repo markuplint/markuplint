@@ -3,16 +3,23 @@ import { createRule } from '@markuplint/ml-core';
 import meta from './meta.js';
 
 /**
- * Content whose element is one of these has RAWTEXT/RCDATA parsing (HTML LS
- * "generic raw text element parsing algorithm" / "generic RCDATA element
- * parsing algorithm"): the parser never re-tokenizes tag-shaped substrings
- * inside it, so a literal `<body` or `</head` there is ordinary text, not a
- * candidate for either check below. `iframe`, `noembed` and `noframes` are
- * RAWTEXT too but `@markuplint/parser-utils` still tokenizes their content
- * as markup (`permitted-contents` relies on that), so they are skipped here
- * rather than in the parser (#4180).
+ * Content whose element is one of these has RAWTEXT, RCDATA or PLAINTEXT parsing
+ * (HTML LS "generic raw text element parsing algorithm", "generic RCDATA element
+ * parsing algorithm", and the PLAINTEXT state of `plaintext`): the tokenizer never
+ * reads tag-shaped substrings inside it as tags, so a literal `<body` or `</head`
+ * there is ordinary text, not a candidate for either check below.
  */
-const RAW_TEXT_CONTAINERS = new Set(['script', 'style', 'title', 'textarea', 'xmp', 'iframe', 'noembed', 'noframes']);
+const RAW_TEXT_CONTAINERS = new Set([
+	'script',
+	'style',
+	'title',
+	'textarea',
+	'xmp',
+	'iframe',
+	'noembed',
+	'noframes',
+	'plaintext',
+]);
 
 const STRAY_HEAD_END_TAG = /<\/head(?=[\s/>])/i;
 const DUPLICATE_BODY_START_TAG = /<body(?=[\s/>])/i;
