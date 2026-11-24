@@ -164,6 +164,21 @@ export type PretenderSlotContent<
 	readonly mutable: boolean;
 
 	/**
+	 * The elements the pretender declares: the slot wrappers and the static entries of `contents`,
+	 * as virtual elements, in the order they are rendered. They are in no `nodeList`, so a lookup of
+	 * the tree reads them through this (`getPretenderDeclaredElements`).
+	 *
+	 * `before` is what comes before the children given at the usage site, and `after` what comes
+	 * after them. The children are placed at the first `{ slot: true }` entry, or after every entry
+	 * when there is none; with several slots, where they go is not known and every element is in
+	 * `before`.
+	 */
+	readonly declared: {
+		readonly before: readonly N[];
+		readonly after: readonly N[];
+	};
+
+	/**
 	 * Builds the children of {@link wrapper} from the nodes given at the usage
 	 * site: the static entries of `contents` as virtual elements, with the given
 	 * nodes placed at the slot position (appended when there is no slot entry).
@@ -187,6 +202,12 @@ export type PretenderContextPretended<
 > = {
 	readonly type: 'origin';
 	readonly origin: N;
+
+	/**
+	 * `true` for a slot wrapper or an entry of `contents` that the pretender declares
+	 * (`PretenderSlotContent#declared`), and not for the element `as` that stands for the pretended element.
+	 */
+	readonly declared?: true;
 };
 
 /**

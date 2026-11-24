@@ -2,6 +2,7 @@ import type { MLElement } from './element.js';
 import type { MLASTNode } from '@markuplint/ml-ast';
 import type { PlainData, RuleConfigValue } from '@markuplint/ml-config';
 
+import { withPretenderDeclaredElements } from '../helper/declared-elements.js';
 import { getDOMValue } from '../helper/tree-scope.js';
 import { walkTree } from '../helper/walkers.js';
 import { getChildren } from '../manipulations/get-children.js';
@@ -175,11 +176,14 @@ export abstract class MLParentNode<
 	protected _getElementById(elementId: string): MLElement<T, O> | null {
 		if (!this.#idMap) {
 			const idMap = new Map<string, MLElement<T, O>>();
-			for (const el of this._descendantsToArray<MLElement<T, O>>(node => {
-				if (node.is(node.ELEMENT_NODE)) {
-					return node;
-				}
-			})) {
+			// The elements that a pretender declares are rendered in this tree too (see `declared-elements.ts`)
+			for (const el of withPretenderDeclaredElements(
+				this._descendantsToArray<MLElement<T, O>>(node => {
+					if (node.is(node.ELEMENT_NODE)) {
+						return node;
+					}
+				}),
+			)) {
 				const id = getDOMValue(el.getAttributeNode('id'));
 				if (id != null && id !== '' && !idMap.has(id)) {
 					idMap.set(id, el);
