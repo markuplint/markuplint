@@ -93,6 +93,17 @@ describe('selector matching', () => {
 		expect(createSelector('[f="f"]').match(el)).toBe(false);
 	});
 
+	test('[att~=val] splits the value on ASCII white space only', () => {
+		const el = createTestElement('<div a=" x\u00A0y\tz " b=" x"></div>');
+
+		expect(createSelector('[a~=z]').match(el)).toBeTruthy();
+		expect(createSelector('[a~="x\u00A0y"]').match(el)).toBeTruthy();
+		expect(createSelector('[a~=x]').match(el)).toBe(false);
+		expect(createSelector('[a~=y]').match(el)).toBe(false);
+		expect(createSelector('[b~=""]').match(el)).toBe(false);
+		expect(createSelector('[a~="x z"]').match(el)).toBe(false);
+	});
+
 	test('attribute names are matched ASCII case-insensitively on HTML elements', () => {
 		// HTML LS / Selectors L4: attribute names are ASCII case-insensitive
 		// when the element is in the HTML namespace. The parser preserves the
