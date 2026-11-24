@@ -14,5 +14,3 @@ When a change makes an existing test fail, stop and present to the user which te
 3. Add a new test for the new behavior under the highest number of its rule plus one, leaving the old test alone.
 
 "It is a minimal change" is not a reason to skip the question — where the minimum lies is the user's call.
-
-A reorganization of the rule specs that the user has decided on (renumbering, merging files, removing duplicates) is checked against its base with `scripts/rule-test-ids/verify-equivalence.ts`: it fails when a test vanished, appeared or changed without the ID map recording it. Its module comment says what it cannot see and when it is deleted.
