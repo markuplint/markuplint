@@ -3,7 +3,9 @@ import { test, expect } from 'vitest';
 
 import rule from './index.js';
 
-test('It is test', async () => {
+// A behavior test of a rule starts with an ID unique within the rule: see the Test ID Convention of
+// packages/@markuplint/rules/CLAUDE.md
+test('[__ruleName__-001] It is test', async () => {
 	const { violations } = await mlRuleTest(rule, '<x-foo></x-foo>');
 	expect(violations.length).toBe(1);
 	// expect(violations).toStrictEqual([
