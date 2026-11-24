@@ -6,6 +6,8 @@ import {
 	branchesToPatterns,
 	regexParser,
 	asciiLowerCase,
+	splitOnAsciiWhitespace,
+	trimAsciiWhitespace,
 } from './functions.js';
 
 test('toArrayFromStringOrArray', () => {
@@ -112,4 +114,24 @@ test('asciiLowerCase', () => {
 	const kelvin = String.fromCodePoint(8490);
 	expect(asciiLowerCase(`x-${kelvin}`)).toBe(`x-${kelvin}`);
 	expect(asciiLowerCase('\u00C9A')).toBe('\u00C9a');
+});
+
+test('splitOnAsciiWhitespace', () => {
+	expect(splitOnAsciiWhitespace('a b')).toStrictEqual(['a', 'b']);
+	expect(splitOnAsciiWhitespace(' \t\n\f\r a \t\n\f\r b \t\n\f\r ')).toStrictEqual(['a', 'b']);
+	expect(splitOnAsciiWhitespace('')).toStrictEqual([]);
+	expect(splitOnAsciiWhitespace(' \t ')).toStrictEqual([]);
+	// U+000B (vertical tab) is not ASCII white space
+	expect(splitOnAsciiWhitespace('a\u000Bb')).toStrictEqual(['a\u000Bb']);
+	// Only the five ASCII white space characters separate: U+00A0, U+2028 and U+FEFF stay in a token
+	expect(splitOnAsciiWhitespace('a\u00A0b c')).toStrictEqual(['a\u00A0b', 'c']);
+	expect(splitOnAsciiWhitespace('\u00A0a\u2028 \uFEFFb')).toStrictEqual(['\u00A0a\u2028', '\uFEFFb']);
+});
+
+test('trimAsciiWhitespace', () => {
+	const nbsp = String.fromCodePoint(160);
+	expect(trimAsciiWhitespace(' \t\n\f\ra b\r\f\n\t ')).toBe('a b');
+	expect(trimAsciiWhitespace('')).toBe('');
+	// `String#trim` removes U+00A0, which is part of the value as the HTML syntax reads it
+	expect(trimAsciiWhitespace(`${nbsp}a${nbsp}`)).toBe(`${nbsp}a${nbsp}`);
 });

@@ -182,3 +182,31 @@ export function asciiLowerCase(name: string): string {
 	// Most names are lower case already, so skip the replace (and its allocation) for them.
 	return /[A-Z]/.test(name) ? name.replaceAll(/[A-Z]/g, c => c.toLowerCase()) : name;
 }
+
+/**
+ * Splits a string into its tokens on ASCII white space only (U+0009, U+000A, U+000C, U+000D, U+0020),
+ * dropping the empty ones.
+ * `split(/\s+/)` also splits on U+00A0, U+2028, U+FEFF and the other non-ASCII white space, which
+ * turns one token of a space-separated list (an ID reference list, `class`, `role`) into several.
+ *
+ * @see https://infra.spec.whatwg.org/#split-on-ascii-whitespace
+ * @see https://infra.spec.whatwg.org/#ascii-whitespace
+ * @param value - A string as written
+ * @returns The tokens; `[]` for a string that is white space only
+ */
+export function splitOnAsciiWhitespace(value: string): string[] {
+	return value.split(/[\t\n\f\r ]+/).filter(Boolean);
+}
+
+/**
+ * Trims ASCII white space only (U+0009, U+000A, U+000C, U+000D, U+0020).
+ * `String#trim` also removes U+00A0, U+FEFF and the other non-ASCII white space, which are part of a
+ * value as the HTML syntax reads it.
+ *
+ * @see https://infra.spec.whatwg.org/#strip-leading-and-trailing-ascii-whitespace
+ * @param value - A string as written
+ * @returns The string without the ASCII white space at both ends
+ */
+export function trimAsciiWhitespace(value: string): string {
+	return value.replaceAll(/^[\t\n\f\r ]+|[\t\n\f\r ]+$/g, '');
+}
