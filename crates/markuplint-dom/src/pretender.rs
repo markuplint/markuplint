@@ -231,6 +231,7 @@ mod tests {
             block_behavior: None,
             rendered_away: None,
             slot_target: None,
+            is_pass_through_component: false,
             pair_node_id: None,
             tag_open_char: "<".to_owned(),
             tag_close_char: ">".to_owned(),

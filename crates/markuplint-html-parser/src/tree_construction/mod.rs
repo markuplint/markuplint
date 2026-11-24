@@ -226,6 +226,17 @@ impl<'a> TreeBuilder<'a> {
             return;
         }
 
+        self.process_in_current_mode(token);
+    }
+
+    /// Processes the token by the rules of the current insertion mode in HTML content, not asking whether it is
+    /// foreign content: what the rules for foreign content reprocess a token with (§13.2.6.5, "reprocess the token
+    /// according to the rules given in the section corresponding to the current insertion mode in HTML content").
+    pub(super) fn process_in_current_mode(&mut self, token: Token) {
+        self.reprocess_depth += 1;
+        if self.reprocess_depth > 50 {
+            return;
+        }
         match self.mode {
             InsertionMode::Initial => self.process_initial(token),
             InsertionMode::BeforeHtml => self.process_before_html(token),

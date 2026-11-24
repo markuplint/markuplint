@@ -357,10 +357,13 @@ impl TreeBuilder<'_> {
                         }
                         self.open_elements.pop();
                     }
+                    // The current node is now an HTML element or an integration point, and the token is
+                    // reprocessed by the current insertion mode: through the dispatcher an end tag at an HTML
+                    // integration point (`</p>` in `<svg><title>`) would come back here
                     if hit_fragment_root {
                         self.process_in_body(token);
                     } else {
-                        self.process_token(token);
+                        self.process_in_current_mode(token);
                     }
                     return;
                 }

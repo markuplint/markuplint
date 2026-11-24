@@ -59,17 +59,17 @@ impl Rule for CaseSensitiveTagName {
                 ],
             ));
 
-            // Use the raw source name so original case is preserved for the comparison.
-            let Some(raw_name) = get_raw_tag_name(el) else {
-                continue;
-            };
-
-            let is_correct = match case {
+            // Use the raw source name so original case is preserved for the comparison. An element that the parser
+            // inserted (`<html>` omitted) has no start tag, though it may have its end tag (`</HTML>`).
+            let raw_name = get_raw_tag_name(el);
+            let is_correct = raw_name.is_none_or(|raw_name| match case {
                 "upper" => raw_name == raw_name.to_ascii_uppercase(),
                 _ => raw_name == raw_name.to_ascii_lowercase(),
-            };
+            });
 
-            if !is_correct {
+            if let Some(raw_name) = raw_name
+                && !is_correct
+            {
                 // Report at tag name position (after '<'), with raw = tag name only
                 #[allow(clippy::cast_possible_truncation)]
                 let name_col = el.base.col + el.tag_open_char.len() as u32;
@@ -101,8 +101,9 @@ impl Rule for CaseSensitiveTagName {
                     _ => close_raw_name == close_raw_name.to_ascii_lowercase(),
                 };
                 if !pair_correct {
-                    // `</` precedes the name; the open tag's `<` is the same width as the `tag_open_char`.
-                    let close_name_start = ct.offset + el.tag_open_char.len() + '/'.len_utf8();
+                    // Read from the end tag itself: the start tag of an element that the parser inserted has no
+                    // `tag_open_char`, though its end tag is written as `</html>`. The name as written is in `raw`.
+                    let close_name_start = ct.offset + ct.raw.find(close_raw_name).unwrap_or(0);
                     violations.push(Violation {
                         spec_conformance: None,
                         rule_id: self.id().to_string(),

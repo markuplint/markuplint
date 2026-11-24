@@ -127,6 +127,7 @@ pub struct DocumentData {
 }
 
 #[derive(Debug, Clone)]
+#[allow(clippy::struct_excessive_bools)] // one flag per field of the TS `MLElement` it mirrors
 pub struct ElementData {
     pub base: NodeBase,
     pub namespace: NamespaceURI,
@@ -141,6 +142,8 @@ pub struct ElementData {
     /// TS `MLElement#slotTarget`: the slot of the parent component that the children of a `v-slot` template
     /// are passed to.
     pub slot_target: Option<SlotTarget>,
+    /// TS `MLDocument#isPassThroughComponent` of the name as written (see `MLASTElement::is_pass_through_component`).
+    pub is_pass_through_component: bool,
     pub pair_node_id: Option<NodeId>,
     pub tag_open_char: String,
     pub tag_close_char: String,

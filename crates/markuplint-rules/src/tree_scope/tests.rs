@@ -3,7 +3,7 @@
 use markuplint_dom::arena::{DomArena, NodeId};
 use markuplint_dom::tree::{descendant_elements, tree_parent_element};
 
-use crate::test_util::{html_arena, make_id_dynamic, spec};
+use crate::test_util::{html_arena, insert_spread_attr, make_id_dynamic, spec};
 use crate::tree_scope::{has_element_of_unknown_id, is_unknown_value_attr};
 
 /// The first element of the arena with this local name.
@@ -132,4 +132,112 @@ fn v6_is_unknown_value_attr_needs_an_attribute() {
         el, "title"
     )));
     assert!(!is_unknown_value_attr(None));
+}
+
+/// Sets what `set` does on the attribute `name` of the element.
+fn set_attr(arena: &mut DomArena, el: NodeId, name: &str, set: impl Fn(&mut markuplint_core::mlast::MLASTHTMLAttr)) {
+    for attr in &mut arena.element_mut(el).unwrap().attributes {
+        if let markuplint_core::mlast::MLASTAttr::HTMLAttr(html_attr) = attr
+            && markuplint_dom::helpers::attr_name(html_attr) == name
+        {
+            set(html_attr);
+        }
+    }
+}
+
+/// TS `mayBringUnknownId` (`helper/unknown-id.ts` of `ml-core`): a spread after the last `id`, or on an element
+/// without an `id`, may carry the id; one before the `id` is overridden by it.
+#[test]
+fn v6_has_element_of_unknown_id_reads_where_a_spread_is() {
+    let spec = spec();
+
+    let mut arena = html_arena("<h2></h2><p></p>");
+    let h2 = element(&arena, "h2");
+    insert_spread_attr(&mut arena, h2, 0);
+    assert!(has_element_of_unknown_id(&arena, &spec, element(&arena, "p")));
+
+    let mut arena = html_arena("<h2 id=\"a\"></h2><p></p>");
+    let h2 = element(&arena, "h2");
+    insert_spread_attr(&mut arena, h2, 1);
+    assert!(has_element_of_unknown_id(&arena, &spec, element(&arena, "p")));
+
+    let mut arena = html_arena("<h2 id=\"a\"></h2><p></p>");
+    let h2 = element(&arena, "h2");
+    insert_spread_attr(&mut arena, h2, 0);
+    assert!(!has_element_of_unknown_id(&arena, &spec, element(&arena, "p")));
+}
+
+/// TS `mayBringUnknownId`: a spread that overrides the attributes wherever they are written (`x-bind="obj"` of
+/// Alpine.js, `MLAttr#spreadOverridesWritten`) may carry the id even before the `id`.
+#[test]
+fn v6_has_element_of_unknown_id_counts_a_spread_that_overrides_what_is_written() {
+    let spec = spec();
+
+    let mut arena = html_arena("<h2 x-bind=\"o\" id=\"a\"></h2><p></p>");
+    let h2 = element(&arena, "h2");
+    set_attr(&mut arena, h2, "x-bind", |attr| attr.is_spread = Some(true));
+    assert!(!has_element_of_unknown_id(&arena, &spec, element(&arena, "p")));
+
+    let mut arena = html_arena("<h2 x-bind=\"o\" id=\"a\"></h2><p></p>");
+    set_attr(&mut arena, h2, "x-bind", |attr| {
+        attr.is_spread = Some(true);
+        attr.spread_overrides_written = Some(true);
+    });
+    assert!(has_element_of_unknown_id(&arena, &spec, element(&arena, "p")));
+}
+
+/// TS `mayBringUnknownId`: an attribute that replaces the children with markup that the template does not show
+/// (`MLAttr#isInnerHTML`), unless the framework does not output it.
+#[test]
+fn v6_has_element_of_unknown_id_counts_an_attribute_that_replaces_the_children() {
+    let spec = spec();
+
+    let arena = html_arena("<div v-html=\"h\"></div><p></p>");
+    assert!(!has_element_of_unknown_id(&arena, &spec, element(&arena, "p")));
+
+    let mut arena = html_arena("<div v-html=\"h\"></div><p></p>");
+    let div = element(&arena, "div");
+    set_attr(&mut arena, div, "v-html", |attr| attr.is_inner_html = Some(true));
+    assert!(has_element_of_unknown_id(&arena, &spec, element(&arena, "p")));
+
+    let mut arena = html_arena("<div v-html=\"h\"></div><p></p>");
+    set_attr(&mut arena, div, "v-html", |attr| {
+        attr.is_inner_html = Some(true);
+        attr.is_absent = Some(true);
+    });
+    assert!(!has_element_of_unknown_id(&arena, &spec, element(&arena, "p")));
+}
+
+/// TS `mayBringUnknownId`: a component that no pretender resolved, unless the language says that it renders what it
+/// is given (`MLParser#isPassThroughComponent`).
+#[test]
+fn v6_has_element_of_unknown_id_counts_a_component_unless_it_passes_its_children_through() {
+    let spec = spec();
+
+    let mut arena = html_arena("<transition></transition><p></p>");
+    let component = element(&arena, "transition");
+    arena.element_mut(component).unwrap().element_type = markuplint_core::mlast::ElementType::Authored;
+    assert!(has_element_of_unknown_id(&arena, &spec, element(&arena, "p")));
+
+    let mut arena = html_arena("<transition></transition><p></p>");
+    let el = arena.element_mut(component).unwrap();
+    el.element_type = markuplint_core::mlast::ElementType::Authored;
+    el.is_pass_through_component = true;
+    assert!(!has_element_of_unknown_id(&arena, &spec, element(&arena, "p")));
+}
+
+/// TS `mayBringUnknownId`: the `slot` of a framework renders what the component is given; the HTML `slot` brings
+/// none into its own tree.
+#[test]
+fn v6_has_element_of_unknown_id_counts_the_slot_of_a_framework() {
+    let spec = spec();
+
+    let arena = html_arena("<slot></slot><p></p>");
+    assert!(!has_element_of_unknown_id(&arena, &spec, element(&arena, "p")));
+
+    let mut arena = html_arena("<slot></slot><p></p>");
+    let mut settings = arena.settings();
+    settings.slot_element = markuplint_core::mlast::SlotElement::Framework;
+    arena.set_settings(settings);
+    assert!(has_element_of_unknown_id(&arena, &spec, element(&arena, "p")));
 }

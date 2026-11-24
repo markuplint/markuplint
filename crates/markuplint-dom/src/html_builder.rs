@@ -39,6 +39,7 @@ pub fn build_from_html_arena(source: &str, parser_arena: &ParserArena, is_fragme
     let mut top_level_ids = Vec::new();
     let mut text_tags = TextTags::new(parser_arena);
 
+    let mut lifted = Vec::new();
     for &child_id in &parser_doc.children {
         convert_into(
             source,
@@ -49,8 +50,12 @@ pub fn build_from_html_arena(source: &str, parser_arena: &ParserArena, is_fragme
             &mut text_tags,
             as_fragment_of_ts,
             &mut top_level_ids,
+            &mut lifted,
         );
     }
+    // A text after the end tag of an element that was not converted (an implied element skipped for a fragment)
+    // stays where it is
+    top_level_ids.extend(lifted.into_iter().map(|(_, id)| id));
 
     if let Some(DomNode::Document(doc_data)) = dom.get_mut(0) {
         doc_data.children.clone_from(&top_level_ids);
@@ -61,7 +66,7 @@ pub fn build_from_html_arena(source: &str, parser_arena: &ParserArena, is_fragme
     // Add orphaned end tags as bogus Text nodes (matching TS behavior where
     // orphaned end tags become text nodes with isBogus=true). An orphaned end tag
     // inside a text node kept whole stays part of that text, as in TS.
-    for (tag_name, span) in &parser_arena.orphaned_end_tags {
+    for (tag_name, span) in &orphaned_end_tags(parser_arena) {
         if text_tags.is_kept_in_text(span.start.offset, span.end.offset) {
             continue;
         }
@@ -102,6 +107,66 @@ pub fn build_from_html_arena(source: &str, parser_arena: &ParserArena, is_fragme
         .collect();
 
     dom
+}
+
+/// The elements whose start tag the HTML Standard lets the author omit, and which the tree builder inserts when it is
+/// omitted (TS `ELEMENTS_WITH_OPTIONAL_START_TAG` of `@markuplint/html-parser`). The end tag that the source writes for
+/// such an element closes it, so it belongs to it. An element that the tree builder inserts and whose start tag the
+/// Standard does not let be omitted (`tr` for a bare `td`, `p` for `</p>`, a formatting element made again) keeps no
+/// end tag: its end tag stays orphaned.
+///
+/// @see <https://html.spec.whatwg.org/multipage/syntax.html#optional-tags>
+const ELEMENTS_WITH_OPTIONAL_START_TAG: [&str; 5] = ["html", "head", "body", "tbody", "colgroup"];
+
+/// The end tag of the element, when the element keeps it: an element written in the source, or one that the tree
+/// builder inserted for an omitted start tag ([`ELEMENTS_WITH_OPTIONAL_START_TAG`]).
+fn kept_end_tag_span(
+    node: &markuplint_html_parser::tree::node::TreeNode,
+) -> Option<markuplint_html_parser::input::Span> {
+    let span = node.end_tag_span?;
+    if !node.is_implicit
+        || ELEMENTS_WITH_OPTIONAL_START_TAG
+            .iter()
+            .any(|name| node.is_html_element(name))
+    {
+        Some(span)
+    } else {
+        None
+    }
+}
+
+/// The end tags that close nothing: the orphaned ones of the tree builder, and the end tags of the implied elements
+/// that keep none ([`kept_end_tag_span`]), in the order of the source.
+fn orphaned_end_tags(parser_arena: &ParserArena) -> Vec<(String, markuplint_html_parser::input::Span)> {
+    let mut tags: Vec<(String, markuplint_html_parser::input::Span)> = parser_arena.orphaned_end_tags.clone();
+    for (_, node) in parser_arena.iter() {
+        if let (Some(span), None, Some(name)) = (node.end_tag_span, kept_end_tag_span(node), node.tag_name()) {
+            tags.push((name.to_owned(), span));
+        }
+    }
+    // The tree builder records some of them twice (`</p>` with no `p` open makes a `p` and is orphaned too)
+    tags.sort_by_key(|(_, span)| span.start.offset);
+    tags.dedup_by_key(|(_, span)| span.start.offset);
+    tags
+}
+
+/// The line and the column of the byte offset `offset`, counted from `from` (a position at or before it) as the
+/// tokenizer counts them (`input.rs` of `markuplint-html-parser`: CR and CRLF are one line break).
+fn position_at(source: &str, from: markuplint_html_parser::input::Position, offset: usize) -> (u32, u32) {
+    let (mut line, mut col) = (from.line, from.col);
+    let mut chars = source[from.offset..offset].chars().peekable();
+    while let Some(ch) = chars.next() {
+        if ch == '\r' && chars.peek() == Some(&'\n') {
+            chars.next();
+        }
+        if ch == '\n' || ch == '\r' {
+            line += 1;
+            col = 1;
+        } else {
+            col += 1;
+        }
+    }
+    (line, col)
 }
 
 /// Port of TS `extractRawForParseError` (`@markuplint/html-parser`). parse5 reports
@@ -147,14 +212,54 @@ fn convert_into(
     text_tags: &mut TextTags,
     skip_implied: bool,
     out: &mut Vec<NodeId>,
+    lifted: &mut Vec<(ParserNodeId, NodeId)>,
 ) {
     let node = parser_arena.get(parser_id);
-    if skip_implied && matches!(node.kind, NodeKind::Element { .. }) && node.is_implicit {
-        for &child_id in &node.children {
-            convert_into(source, parser_arena, child_id, dom, depth, text_tags, skip_implied, out);
+    if matches!(node.kind, NodeKind::Text { .. }) {
+        for (start, end, closed) in text_tags.segments(node.span.start.offset, node.span.end.offset) {
+            let dom_id = dom.len();
+            let uuid = dom_id.to_string();
+            let mut base = make_base(dom_id, &uuid, source, node, depth);
+            let start_pos = position_at(source, node.span.start, start);
+            base.offset = start;
+            base.line = start_pos.0;
+            base.col = start_pos.1;
+            base.raw = text_tags.text_raw(&source[start..end], start);
+            let text_id = dom.push(DomNode::Text(TextData { base, is_bogus: false }));
+            // The part after the end tag of an ancestor is not in it (TS makes a node of the end tag, and the text
+            // after it is a node of the level of the element that it closes)
+            match closed.filter(|&element| is_ancestor(parser_arena, element, parser_id)) {
+                Some(element) => lifted.push((element, text_id)),
+                None => out.push(text_id),
+            }
         }
         return;
     }
+    if skip_implied && matches!(node.kind, NodeKind::Element { .. }) && node.is_implicit {
+        let mut child_lifted = Vec::new();
+        for &child_id in &node.children {
+            convert_into(
+                source,
+                parser_arena,
+                child_id,
+                dom,
+                depth,
+                text_tags,
+                skip_implied,
+                out,
+                &mut child_lifted,
+            );
+        }
+        for (element, id) in child_lifted {
+            if element == parser_id {
+                out.push(id);
+            } else {
+                lifted.push((element, id));
+            }
+        }
+        return;
+    }
+    let mut after = Vec::new();
     out.push(convert_parser_node(
         source,
         parser_arena,
@@ -163,10 +268,32 @@ fn convert_into(
         depth,
         text_tags,
         skip_implied,
+        &mut after,
+        lifted,
     ));
+    out.extend(after);
 }
 
-#[allow(clippy::too_many_lines)]
+/// Whether `ancestor` is an ancestor of `node` in the tree of the parser.
+fn is_ancestor(parser_arena: &ParserArena, ancestor: ParserNodeId, node: ParserNodeId) -> bool {
+    let mut current = parser_arena.get(node).parent;
+    while let Some(id) = current {
+        if id == ancestor {
+            return true;
+        }
+        current = parser_arena.get(id).parent;
+    }
+    false
+}
+
+/// Sets the depth of a node that is moved to another level.
+fn set_depth(dom: &mut DomArena, id: NodeId, depth: u32) {
+    if let Some(DomNode::Text(text)) = dom.get_mut(id) {
+        text.base.depth = depth;
+    }
+}
+
+#[allow(clippy::too_many_lines, clippy::too_many_arguments)]
 fn convert_parser_node(
     source: &str,
     parser_arena: &ParserArena,
@@ -175,6 +302,8 @@ fn convert_parser_node(
     depth: u32,
     text_tags: &mut TextTags,
     skip_implied: bool,
+    after: &mut Vec<NodeId>,
+    lifted: &mut Vec<(ParserNodeId, NodeId)>,
 ) -> NodeId {
     let node = parser_arena.get(parser_id);
 
@@ -296,6 +425,8 @@ fn convert_parser_node(
                         is_expression_value: None,
                         is_absent: None,
                         is_spread: None,
+                        spread_overrides_written: None,
+                        is_inner_html: None,
                         literal_expression: None,
                         is_directive: None,
                         potential_name: None,
@@ -320,11 +451,12 @@ fn convert_parser_node(
                 block_behavior: None,
                 rendered_away: None,
                 slot_target: None,
+                is_pass_through_component: false,
                 pair_node_id: None,
                 tag_open_char: "<".to_owned(),
                 tag_close_char: if *self_closing { "/>".to_owned() } else { ">".to_owned() },
                 is_ghost: node.is_implicit,
-                close_tag: node.end_tag_span.map(|s| crate::node::CloseTagInfo {
+                close_tag: kept_end_tag_span(node).map(|s| crate::node::CloseTagInfo {
                     raw: slice_span(source, s.start.offset, s.end.offset),
                     offset: s.start.offset,
                     line: s.start.line,
@@ -341,6 +473,7 @@ fn convert_parser_node(
             // builder makes elements of what looks like markup (`<svg><script><circle></circle></script></svg>`),
             // which a rule would read as such. The body has no node either way.
             let mut child_ids: Vec<NodeId> = Vec::new();
+            let mut child_lifted = Vec::new();
             let drops_children = crate::helpers::is_raw_text_element_name(tag_name);
             for &child_id in node.children.iter().filter(|_| !drops_children) {
                 convert_into(
@@ -352,7 +485,24 @@ fn convert_parser_node(
                     text_tags,
                     skip_implied,
                     &mut child_ids,
+                    &mut child_lifted,
                 );
+            }
+            // A text after the end tag of this element follows it in its parent element; after the end tag of the
+            // root element, which has no parent element, it stays in it (where TS puts it)
+            let has_parent_element = node
+                .parent
+                .is_some_and(|parent| matches!(parser_arena.get(parent).kind, NodeKind::Element { .. }));
+            for (element, id) in child_lifted {
+                if element != parser_id {
+                    lifted.push((element, id));
+                } else if has_parent_element {
+                    set_depth(dom, id, depth);
+                    after.push(id);
+                } else {
+                    set_depth(dom, id, depth + 1);
+                    child_ids.push(id);
+                }
             }
 
             if let Some(DomNode::Element(data)) = dom.get_mut(dom_id) {
@@ -362,11 +512,7 @@ fn convert_parser_node(
             dom_id
         }
         NodeKind::Text { .. } => {
-            let dom_id = dom.len();
-            let uuid = dom_id.to_string();
-            let mut base = make_base(dom_id, &uuid, source, node, depth);
-            base.raw = text_tags.text_raw(&base.raw, node.span.start.offset);
-            dom.push(DomNode::Text(TextData { base, is_bogus: false }))
+            unreachable!("a text node is converted by convert_into")
         }
         NodeKind::Comment { .. } => {
             let dom_id = dom.len();
@@ -477,6 +623,9 @@ struct TextTags {
     end_tags: Vec<(usize, usize)>,
     /// `(start, end)` byte offsets of the text nodes kept whole.
     kept_whole: Vec<(usize, usize)>,
+    /// `(start, end)` byte offsets of the end tags that an element keeps ([`kept_end_tag_span`]), sorted. TS makes
+    /// a node of each, so a text that the tree builder made across one is two texts.
+    element_end_tags: Vec<(usize, usize, ParserNodeId)>,
 }
 
 impl TextTags {
@@ -490,10 +639,41 @@ impl TextTags {
             .collect();
         end_tags.sort_unstable();
         end_tags.dedup();
+        let mut element_end_tags: Vec<(usize, usize, ParserNodeId)> = parser_arena
+            .iter()
+            .filter_map(|(id, node)| kept_end_tag_span(node).map(|span| (span.start.offset, span.end.offset, id)))
+            .collect();
+        element_end_tags.sort_unstable();
+        element_end_tags.dedup_by_key(|&mut (start, _, _)| start);
         Self {
             end_tags,
             kept_whole: Vec::new(),
+            element_end_tags,
         }
+    }
+
+    /// The parts of the text at `start..end` between the end tags of elements that lie in it (TS splits the text at
+    /// each, as each is a node of its own), the empty ones left out, each with the element whose end tag is the last
+    /// one before it.
+    fn segments(&self, start: usize, end: usize) -> Vec<(usize, usize, Option<ParserNodeId>)> {
+        let mut segments = Vec::new();
+        let mut pos = start;
+        let mut closed = None;
+        let first = self.element_end_tags.partition_point(|&(s, _, _)| s < start);
+        for &(s, e, element) in &self.element_end_tags[first..] {
+            if e > end {
+                break;
+            }
+            if s > pos {
+                segments.push((pos, s, closed));
+            }
+            pos = e;
+            closed = Some(element);
+        }
+        if end > pos {
+            segments.push((pos, end, closed));
+        }
+        segments
     }
 
     /// The raw of the text node whose source span is `raw`, starting at `start`.
@@ -668,21 +848,40 @@ mod tests {
             .collect()
     }
 
-    /// `</html>` after `</body>` is consumed by the tree builder; the whitespace around it
-    /// is one text node in `<body>`, without the end tag.
+    /// `</html>` after `</body>` closes the `html` element whose start tag is omitted; the tree
+    /// builder makes one text node in `<body>` of the whitespace around it, which is two texts on
+    /// either side of the end tag.
     #[test]
     fn text_raw_leaves_out_a_consumed_end_tag() {
         let dom = build_document("<!doctype html><body><p>x</p></body>\n</html>\n");
-        assert_eq!(texts(&dom), [("x", false), ("\n\n", false)]);
+        assert_eq!(texts(&dom), [("x", false), ("\n", false), ("\n", false)]);
     }
 
-    /// The text after `</math>` spans a stray `</head>` (orphaned) and an ignored second
-    /// `<body>`. It contains a start tag, so it is kept whole and the orphaned end tag is
-    /// not a bogus node of its own.
+    /// The text after `</math>` spans a stray `</head>` (orphaned), an ignored second `<body>`
+    /// and the `</body>` of the `body` whose start tag is omitted. The part before `</body>`
+    /// contains a start tag, so it is kept whole and the orphaned end tag is not a bogus node of
+    /// its own.
     #[test]
     fn text_raw_is_kept_whole_when_it_contains_a_start_tag() {
         let dom = build_document("<!doctype html><head><math></math>\n</head>\n<body></body>\n");
-        assert_eq!(texts(&dom), [("\n</head>\n<body></body>\n", false)]);
+        assert_eq!(texts(&dom), [("\n</head>\n<body>", false), ("\n", false)]);
+    }
+
+    /// The end tag of an element that the tree builder inserted and whose start tag the Standard
+    /// does not let be omitted (`tr` for a bare `td`) is orphaned; the one of an element whose
+    /// start tag may be omitted (`tbody`) belongs to it.
+    #[test]
+    fn v6_an_implied_element_keeps_its_end_tag_only_when_its_start_tag_may_be_omitted() {
+        let dom = build_document("<!doctype html><table><td>x</td></tr></tbody></table>");
+        assert_eq!(texts(&dom), [("x", false), ("</tr>", true)]);
+        let close = |name: &str| {
+            dom.elements()
+                .find(|(_, el)| el.base.node_name == name)
+                .and_then(|(_, el)| el.close_tag.as_ref())
+                .map(|close| close.raw.clone())
+        };
+        assert_eq!(close("tr"), None);
+        assert_eq!(close("tbody").as_deref(), Some("</tbody>"));
     }
 
     /// An orphaned end tag in a text without a start tag is left out of the text and becomes

@@ -96,10 +96,9 @@ pub fn is_role_unknown(el: &ElementData) -> bool {
     {
         return true;
     }
-    el.attributes
-        .iter()
-        .enumerate()
-        .any(|(index, attr)| role_index.is_none_or(|role| index > role) && attr.is_spread())
+    el.attributes.iter().enumerate().any(|(index, attr)| {
+        attr.is_spread() && (role_index.is_none_or(|role| index > role) || attr.spread_overrides_written())
+    })
 }
 
 /// TS `mayMatchContextRole` (`packages/@markuplint/rules/src/helpers.ts`): whether the ancestors of the element may satisfy a "Required Accessibility Parent
@@ -300,14 +299,10 @@ pub fn accname_may_come_from_unknown_content(arena: &DomArena, spec: &MLMLSpec, 
     {
         let root = root_of(arena, spec, node_id);
         let value = markuplint_dom::helpers::attr_value(labelledby);
-        // JS `value.trim().split(/\s+/)`: a value of nothing but whitespace is one token, the empty string, which
-        // refers to nothing
-        let mut tokens: Vec<&str> = value.split_whitespace().collect();
-        if tokens.is_empty() && !value.is_empty() {
-            tokens.push("");
-        }
-        let referenced: Vec<Option<NodeId>> = tokens
-            .into_iter()
+        // JS `value.split(/\s+/).filter(Boolean)`: a value of nothing but white space has no token, so it refers to
+        // no element and is not a reference that an element whose id is not known may satisfy
+        let referenced: Vec<Option<NodeId>> = value
+            .split_whitespace()
             .map(|id| {
                 let id = if is_expression(labelledby) {
                     id.to_owned()

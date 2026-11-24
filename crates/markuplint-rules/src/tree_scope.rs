@@ -19,14 +19,17 @@
 
 use std::collections::HashMap;
 
-use markuplint_core::mlast::MLASTHTMLAttr;
+use markuplint_core::mlast::{MLASTAttr, MLASTHTMLAttr, SlotElement};
 use markuplint_dom::arena::{DomArena, NodeId};
-use markuplint_dom::helpers::{attr_value, get_attr_node_from_el};
+use markuplint_dom::helpers::{attr_value, get_attr_node_from_el, is_absent, is_named_by};
 use markuplint_dom::node::DomNode;
+use markuplint_dom::pretender::PretenderContext;
+use markuplint_dom::tree::element_local_name;
 use markuplint_types::spec::types::MLMLSpec;
 
 use crate::decode::decode_entities;
-use crate::helpers::is_html_template_element;
+use crate::helpers::{is_html_template_element, is_unresolved_component};
+use crate::slot_assignment::shadow_root_template;
 
 pub use markuplint_dom::tree::{
     ShadowRootAttachment, declarative_shadow_root_attachment, is_in_no_tree, is_transparent, shadow_host,
@@ -285,15 +288,15 @@ pub fn is_unknown_value_attr(attr: Option<&MLASTHTMLAttr>) -> bool {
     attr.is_some_and(|attr| attr.is_dynamic_value == Some(true))
 }
 
-/// TS `hasElementOfUnknownId` (`ml-spec/src/algorithm/dom/has-unknown-id.ts`): whether the tree that the element
-/// is in (the document, the content of a `template` element or a shadow root, each a tree of its own) has an
-/// element whose `id` is not known until it is rendered (`<h2 id={x}>`). An element whose `id` is not known is not
-/// found by its id, and a reference to an id that no element has may be a reference to it. A rule that reports a
-/// reference to nothing, or an algorithm that decides from the element that a reference finds, takes such a tree to
-/// be undecidable instead. `no-refer-to-non-existent-id`, `is_valid_landmark_role` (`aria/computed_role.rs`: a
-/// landmark that refers to it has a name) and `accname_may_come_from_unknown_content` (`helpers.rs`) read it, and
-/// `is_role_unknown` follows the same decision for a `role` that code gives: a change to the criterion belongs to
-/// all of them.
+/// TS `hasElementOfUnknownId` (`ml-spec/src/algorithm/dom/has-unknown-id.ts`), which answers from
+/// `MLElement#treeMayHoldUnknownId`: whether the tree that the element is in (the document, the content of a
+/// `template` element or a shadow root, each a tree of its own) may hold an element whose `id` the markup does not
+/// tell. Such an element is not found by its id, and a reference to an id that no element has may be a reference to
+/// it. A rule that reports a reference to nothing, or an algorithm that decides from the element that a reference
+/// finds, takes such a tree to be undecidable instead. `no-refer-to-non-existent-id`, `is_valid_landmark_role`
+/// (`aria/computed_role.rs`: a landmark that refers to it has a name) and `accname_may_come_from_unknown_content`
+/// (`helpers.rs`) read it, and `is_role_unknown` rests on the same premise for a `role` that code gives: a change to
+/// the criterion belongs to all of them. What counts is [`may_bring_unknown_id`].
 ///
 /// That is a decision of markuplint, as it does not decide what it cannot know, and not text of a specification:
 /// the specifications define an id and an id reference, and not an id that is not known yet.
@@ -311,17 +314,83 @@ pub fn has_element_of_unknown_id(arena: &DomArena, spec: &MLMLSpec, node_id: Nod
     roots_of_unknown_id(arena, spec).contains(&root)
 }
 
-/// The trees that have an element whose `id` is not known ([`has_element_of_unknown_id`]), computed once per
-/// arena.
+/// The trees that may hold an element whose `id` the markup does not tell ([`has_element_of_unknown_id`]), computed
+/// once per arena (TS `collectTrees` of `ml-core/src/ml-dom/helper/unknown-id.ts`).
 fn roots_of_unknown_id(arena: &DomArena, spec: &MLMLSpec) -> std::sync::Arc<std::collections::HashSet<TreeRoot>> {
     arena.memoize("roots-of-unknown-id", WHOLE_ARENA, || {
-        arena
-            .elements()
-            .filter(|(_, el)| is_unknown_value_attr(get_attr_node_from_el(el, "id")))
-            .map(|(node_id, _)| root_of(arena, spec, node_id))
+        (0..arena.len())
+            .filter(|&node_id| may_bring_unknown_id(arena, spec, node_id))
+            .map(|node_id| root_of(arena, spec, node_id))
             .filter(|root| !matches!(root, TreeRoot::NoTree(_)))
             .collect()
     })
+}
+
+/// TS `mayBringUnknownId` (`ml-core/src/ml-dom/helper/unknown-id.ts`, whose module comment says why each counts):
+/// whether the node may put an element whose `id` the markup does not tell into its tree:
+///
+/// - a block of a template language or an expression that has no behavior;
+/// - an element whose `id` is a value that code gives, or a later `id` of the same element that is;
+/// - a spread after the last `id` attribute, or one without an `id` attribute; a spread that overrides the
+///   attributes wherever they are written (`x-bind="obj"` of Alpine.js) wherever it is;
+/// - an attribute that replaces the children with markup that the template does not show (`v-html`);
+/// - a component that no pretender resolved, unless the language says that it renders what it is given (Vue's
+///   built-in components) and no pretender stands for it;
+/// - a pretender whose content is not known, which has no declarative shadow root in its place;
+/// - the `slot` of a framework.
+fn may_bring_unknown_id(arena: &DomArena, spec: &MLMLSpec, node_id: NodeId) -> bool {
+    let el = match arena.get(node_id) {
+        Some(DomNode::PSBlock(block)) => return block.block_behavior.is_none(),
+        Some(DomNode::Element(el)) => el,
+        _ => return false,
+    };
+
+    // The attributes follow a pretender, so the spread is the one of the element that the id would be on. An
+    // element can write `id` twice (`id="a" :id="x"`): the later one wins in the languages that have a spread
+    // attribute, so a dynamic one among them is not known, and a spread is overridden only by the last one
+    let mut last_id_index = None;
+    for (index, attr) in el.attributes.iter().enumerate() {
+        if let MLASTAttr::HTMLAttr(html_attr) = attr
+            && !is_absent(html_attr)
+            && is_named_by(el, html_attr, "id")
+        {
+            if html_attr.is_dynamic_value == Some(true) {
+                return true;
+            }
+            last_id_index = Some(index);
+        }
+    }
+    if el.attributes.iter().enumerate().any(|(index, attr)| {
+        attr.is_spread() && (last_id_index.is_none_or(|last| index > last) || attr.spread_overrides_written())
+    }) {
+        return true;
+    }
+
+    if el.attributes.iter().any(|attr| {
+        matches!(attr, MLASTAttr::HTMLAttr(html_attr) if html_attr.is_inner_html == Some(true) && !is_absent(html_attr))
+    }) {
+        return true;
+    }
+
+    let pretended = match &el.pretender_context {
+        Some(PretenderContext::Pretender(pretended)) => Some(pretended),
+        _ => None,
+    };
+
+    // The name of an element that a pretender stands for is the pretender's, so only the name written is asked
+    if is_unresolved_component(el) && (pretended.is_some() || !el.is_pass_through_component) {
+        return true;
+    }
+
+    if pretended
+        .and_then(|pretended| pretended.slot_content.as_ref())
+        .is_some_and(|content| content.mutable)
+        && shadow_root_template(arena, spec, node_id).is_none()
+    {
+        return true;
+    }
+
+    element_local_name(el) == "slot" && arena.settings().slot_element == SlotElement::Framework
 }
 
 /// TS `MLAttr#isExpressionValue`: the value is written as code, a string with no character reference

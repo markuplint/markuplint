@@ -25,11 +25,19 @@ mod tests;
 
 pub struct NoStrayHeadOrBodyTag;
 
-/// TS `RAW_TEXT_CONTAINERS`: elements whose content the tokenizer never reads as tags. `iframe`,
-/// `noembed` and `noframes` are RAWTEXT too; the TS parser still tokenizes their content as markup,
-/// and the rule skips them instead (#4180).
-const RAW_TEXT_CONTAINERS: [&str; 8] = [
-    "script", "style", "title", "textarea", "xmp", "iframe", "noembed", "noframes",
+/// TS `RAW_TEXT_CONTAINERS`: elements whose content has RAWTEXT, RCDATA or PLAINTEXT parsing (the PLAINTEXT state of
+/// `plaintext`): the tokenizer never reads tag-shaped substrings inside it as tags, so a literal `<body` or `</head`
+/// there is ordinary text.
+const RAW_TEXT_CONTAINERS: [&str; 9] = [
+    "script",
+    "style",
+    "title",
+    "textarea",
+    "xmp",
+    "iframe",
+    "noembed",
+    "noframes",
+    "plaintext",
 ];
 
 /// TS `/<\/head(?=[\s/>])/i` and `/<body(?=[\s/>])/i`: `prefix` (ASCII, matched

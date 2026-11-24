@@ -154,6 +154,11 @@ pub struct MLASTElement {
     /// template are passed to. Absent for an element that is not a `v-slot` template.
     #[serde(default, deserialize_with = "deserialize_slot_target")]
     pub slot_target: Option<SlotTarget>,
+    /// TS `MLParser#isPassThroughComponent` of the name as written: the language takes the component for one that
+    /// renders what it is given and brings nothing of its own into the tree (Vue's built-in components). The parser
+    /// rule is a function, so the TS side asks it and sends the answer on the element.
+    #[serde(default)]
+    pub is_pass_through_component: bool,
     pub pair_node_uuid: Option<String>,
     pub tag_open_char: String,
     pub tag_close_char: String,
@@ -368,6 +373,16 @@ impl MLASTAttr {
             Self::HTMLAttr(attr) => attr.is_spread == Some(true),
         }
     }
+
+    /// TS `MLAttr#spreadOverridesWritten`: a spread that overrides the attributes wherever they are written. A
+    /// spread of the syntax tree (`{...props}`) overrides only the ones before it.
+    #[must_use]
+    pub fn spread_overrides_written(&self) -> bool {
+        match self {
+            Self::Spread(_) => false,
+            Self::HTMLAttr(attr) => attr.is_spread == Some(true) && attr.spread_overrides_written == Some(true),
+        }
+    }
 }
 
 /// Corresponds to `MLASTHTMLAttr` in TS.
@@ -412,6 +427,15 @@ pub struct MLASTHTMLAttr {
     /// answer for both.
     #[serde(default)]
     pub is_spread: Option<bool>,
+    /// TS `MLAttr#spreadOverridesWritten` (`DirectivePattern#spreadOverridesWritten`): the spread overrides an
+    /// attribute of the same name wherever that one is written (`x-bind="obj"` of Alpine.js), not only the ones
+    /// before it. [`MLASTAttr::spread_overrides_written`] is the answer for every attribute.
+    #[serde(default)]
+    pub spread_overrides_written: Option<bool>,
+    /// TS `MLAttr#isInnerHTML` (`DirectivePattern#isInnerHTML`): the attribute replaces the children of the element
+    /// with markup that the template does not show (`v-html`, `x-html`, `dangerouslySetInnerHTML`).
+    #[serde(default, rename = "isInnerHTML")]
+    pub is_inner_html: Option<bool>,
     /// The code of the value when it is nothing but a literal (TS `literalToExpression` of
     /// `MLAttr#literal`: `false`, `"x"`, `0`). The value of a component's attribute is the string
     /// form of the literal, which a string `"false"` and a boolean `false` share, so the code is what

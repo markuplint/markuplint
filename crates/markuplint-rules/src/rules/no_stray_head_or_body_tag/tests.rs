@@ -44,8 +44,8 @@ fn no_stray_head_or_body_tag_001() {
     assert_eq!(
         run(MATH_IN_HEAD),
         [
-            brief(Severity::Error, 5, 24, STRAY_HEAD, "\n</head>\n<body></body>\n"),
-            brief(Severity::Error, 5, 24, DUPLICATE_BODY, "\n</head>\n<body></body>\n"),
+            brief(Severity::Error, 5, 24, STRAY_HEAD, "\n</head>\n<body>"),
+            brief(Severity::Error, 5, 24, DUPLICATE_BODY, "\n</head>\n<body>"),
         ]
     );
 }
