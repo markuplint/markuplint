@@ -1,17 +1,17 @@
 //! Tests for `input-list-references-datalist` rule.
 //!
 //! Test ID mapping (TS → Rust):
-//!   input-list-references-datalist-valid-001    → input_list_references_datalist_valid_001
-//!   input-list-references-datalist-valid-002    → input_list_references_datalist_valid_002
-//!   input-list-references-datalist-valid-003    → input_list_references_datalist_valid_003
-//!   input-list-references-datalist-valid-004    → input_list_references_datalist_valid_004
-//!   input-list-references-datalist-valid-005    → input_list_references_datalist_valid_005
-//!   input-list-references-datalist-invalid-001  → input_list_references_datalist_invalid_001
-//!   input-list-references-datalist-invalid-002  → input_list_references_datalist_invalid_002
-//!   input-list-references-datalist-invalid-003  → input_list_references_datalist_invalid_003
-//!   input-list-references-datalist-invalid-004  → input_list_references_datalist_invalid_004
-//!   input-list-references-datalist-invalid-005  → input_list_references_datalist_invalid_005
-//!   input-list-references-datalist-parser-001   — SKIPPED: needs the Vue parser (`:list` binding)
+//!   input-list-references-datalist-001    → input_list_references_datalist_001
+//!   input-list-references-datalist-002    → input_list_references_datalist_002
+//!   input-list-references-datalist-003    → input_list_references_datalist_003
+//!   input-list-references-datalist-004    → input_list_references_datalist_004
+//!   input-list-references-datalist-010    → input_list_references_datalist_010
+//!   input-list-references-datalist-005  → input_list_references_datalist_005
+//!   input-list-references-datalist-006  → input_list_references_datalist_006
+//!   input-list-references-datalist-007  → input_list_references_datalist_007
+//!   input-list-references-datalist-008  → input_list_references_datalist_008
+//!   input-list-references-datalist-009  → input_list_references_datalist_009
+//!   input-list-references-datalist-011   — SKIPPED: needs the Vue parser (`:list` binding)
 //!   v6_input_list_references_datalist_001  — Rust-only: a duplicated ID resolves to the first element in tree order
 //!   v6_input_list_references_datalist_002  — Rust-only: the attribute node is looked up by its source name (`LIST` is not `list`)
 //!   v6_input_list_references_datalist_003  — Rust-only: only `input` is checked
@@ -35,71 +35,71 @@ fn run_with(html: &str, pretenders: serde_json::Value) -> Vec<Brief> {
     )
 }
 
-/// TS: `[input-list-references-datalist-valid-001]` — list attribute references actual datalist element
+/// TS: `[input-list-references-datalist-001]` — list attribute references actual datalist element
 #[test]
-fn input_list_references_datalist_valid_001() {
-    const _ID: &str = "input-list-references-datalist-valid-001";
+fn input_list_references_datalist_001() {
+    const _ID: &str = "input-list-references-datalist-001";
     assert_eq!(
         run(r#"<input type="text" list="colors"><datalist id="colors"><option value="Red"></option></datalist>"#),
         []
     );
 }
 
-/// TS: `[input-list-references-datalist-valid-002]` — no list attribute on input
+/// TS: `[input-list-references-datalist-002]` — no list attribute on input
 #[test]
-fn input_list_references_datalist_valid_002() {
-    const _ID: &str = "input-list-references-datalist-valid-002";
+fn input_list_references_datalist_002() {
+    const _ID: &str = "input-list-references-datalist-002";
     assert_eq!(run(r#"<input type="text">"#), []);
 }
 
-/// TS: `[input-list-references-datalist-valid-003]` — list attribute on non-input element ignored
+/// TS: `[input-list-references-datalist-003]` — list attribute on non-input element ignored
 #[test]
-fn input_list_references_datalist_valid_003() {
-    const _ID: &str = "input-list-references-datalist-valid-003";
+fn input_list_references_datalist_003() {
+    const _ID: &str = "input-list-references-datalist-003";
     assert_eq!(run(r#"<div list="anything">x</div>"#), []);
 }
 
-/// TS: `[input-list-references-datalist-valid-004]` — missing target id is left to no-refer-to-non-existent-id
+/// TS: `[input-list-references-datalist-004]` — missing target id is left to no-refer-to-non-existent-id
 #[test]
-fn input_list_references_datalist_valid_004() {
-    const _ID: &str = "input-list-references-datalist-valid-004";
+fn input_list_references_datalist_004() {
+    const _ID: &str = "input-list-references-datalist-004";
     assert_eq!(run(r#"<input type="text" list="missing">"#), []);
 }
 
-/// TS: `[input-list-references-datalist-invalid-001]` — list attribute references non-datalist element (following div)
+/// TS: `[input-list-references-datalist-005]` — list attribute references non-datalist element (following div)
 #[test]
-fn input_list_references_datalist_invalid_001() {
-    const _ID: &str = "input-list-references-datalist-invalid-001";
+fn input_list_references_datalist_005() {
+    const _ID: &str = "input-list-references-datalist-005";
     assert_eq!(
         run(r#"<input type="text" list="notdatalist"><div id="notdatalist">Not a datalist</div>"#),
         [brief(Severity::Error, 1, 26, MESSAGE, "notdatalist")]
     );
 }
 
-/// TS: `[input-list-references-datalist-invalid-002]` — list attribute references non-datalist element (preceding div)
+/// TS: `[input-list-references-datalist-006]` — list attribute references non-datalist element (preceding div)
 #[test]
-fn input_list_references_datalist_invalid_002() {
-    const _ID: &str = "input-list-references-datalist-invalid-002";
+fn input_list_references_datalist_006() {
+    const _ID: &str = "input-list-references-datalist-006";
     assert_eq!(
         run(r#"<div id="target-1">Not a datalist</div><input type="text" list="target-1">"#),
         [brief(Severity::Error, 1, 65, MESSAGE, "target-1")]
     );
 }
 
-/// TS: `[input-list-references-datalist-invalid-003]` — list attribute references span element
+/// TS: `[input-list-references-datalist-007]` — list attribute references span element
 #[test]
-fn input_list_references_datalist_invalid_003() {
-    const _ID: &str = "input-list-references-datalist-invalid-003";
+fn input_list_references_datalist_007() {
+    const _ID: &str = "input-list-references-datalist-007";
     assert_eq!(
         run(r#"<input type="text" list="target"><span id="target">not datalist</span>"#),
         [brief(Severity::Error, 1, 26, MESSAGE, "target")]
     );
 }
 
-/// TS: `[input-list-references-datalist-invalid-004]` — fires independently for each input sharing a non-datalist target
+/// TS: `[input-list-references-datalist-008]` — fires independently for each input sharing a non-datalist target
 #[test]
-fn input_list_references_datalist_invalid_004() {
-    const _ID: &str = "input-list-references-datalist-invalid-004";
+fn input_list_references_datalist_008() {
+    const _ID: &str = "input-list-references-datalist-008";
     assert_eq!(
         run(
             r#"<div id="notdatalist"></div><input type="text" list="notdatalist"><input type="text" list="notdatalist">"#
@@ -111,20 +111,20 @@ fn input_list_references_datalist_invalid_004() {
     );
 }
 
-/// TS: `[input-list-references-datalist-invalid-005]` — list on input[type=hidden] still requires a datalist target
+/// TS: `[input-list-references-datalist-009]` — list on input[type=hidden] still requires a datalist target
 #[test]
-fn input_list_references_datalist_invalid_005() {
-    const _ID: &str = "input-list-references-datalist-invalid-005";
+fn input_list_references_datalist_009() {
+    const _ID: &str = "input-list-references-datalist-009";
     assert_eq!(
         run(r#"<input type="hidden" list="notdatalist"><div id="notdatalist"></div>"#),
         [brief(Severity::Error, 1, 28, MESSAGE, "notdatalist")]
     );
 }
 
-/// TS: `[input-list-references-datalist-valid-005]` — list on input[type=hidden] pointing at a datalist is accepted
+/// TS: `[input-list-references-datalist-010]` — list on input[type=hidden] pointing at a datalist is accepted
 #[test]
-fn input_list_references_datalist_valid_005() {
-    const _ID: &str = "input-list-references-datalist-valid-005";
+fn input_list_references_datalist_010() {
+    const _ID: &str = "input-list-references-datalist-010";
     assert_eq!(
         run(r#"<input type="hidden" list="colors"><datalist id="colors"><option value="Red"></option></datalist>"#),
         []

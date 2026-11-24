@@ -1,14 +1,14 @@
 //! Tests for `no-input-file-value` rule.
 //!
 //! Test ID mapping (TS → Rust):
-//!   no-input-file-value-valid-001    → no_input_file_value_valid_001
-//!   no-input-file-value-valid-002    → no_input_file_value_valid_002
-//!   no-input-file-value-valid-003    → no_input_file_value_valid_003
-//!   no-input-file-value-invalid-001  → no_input_file_value_invalid_001
-//!   no-input-file-value-invalid-002  → no_input_file_value_invalid_002
-//!   v6_no_input_file_value_001       — Rust-only: only an exact empty string passes; position follows the value
-//!   v6_no_input_file_value_002       — Rust-only: attribute names are matched as the DOM names them, the type value is not trimmed
-//!   v6_no_input_file_value_003       — Rust-only: a pretender input is skipped unless `as` pins it
+//!   no-input-file-value-001     → no_input_file_value_001
+//!   no-input-file-value-002     → no_input_file_value_002
+//!   no-input-file-value-003     → no_input_file_value_003
+//!   no-input-file-value-004     → no_input_file_value_004
+//!   no-input-file-value-005     → no_input_file_value_005
+//!   v6_no_input_file_value_001  — Rust-only: only an exact empty string passes; position follows the value
+//!   v6_no_input_file_value_002  — Rust-only: attribute names are matched as the DOM names them, the type value is not trimmed
+//!   v6_no_input_file_value_003  — Rust-only: a pretender input is skipped unless `as` pins it
 //!
 //! Expected values of the `v6_*` tests come from running the TS rule.
 
@@ -25,41 +25,41 @@ fn run(html: &str) -> Vec<Brief> {
 
 const MESSAGE: &str = "The \"value\" attribute on a \"input\" element with \"type=file\" must be the empty string";
 
-/// TS: `[no-input-file-value-valid-001]` — no value attribute
+/// TS: `[no-input-file-value-001]` — no value attribute
 #[test]
-fn no_input_file_value_valid_001() {
-    const _ID: &str = "no-input-file-value-valid-001";
+fn no_input_file_value_001() {
+    const _ID: &str = "no-input-file-value-001";
     assert_eq!(run(r#"<input type="file">"#), []);
 }
 
-/// TS: `[no-input-file-value-valid-002]` — empty value attribute
+/// TS: `[no-input-file-value-002]` — empty value attribute
 #[test]
-fn no_input_file_value_valid_002() {
-    const _ID: &str = "no-input-file-value-valid-002";
+fn no_input_file_value_002() {
+    const _ID: &str = "no-input-file-value-002";
     assert_eq!(run(r#"<input type="file" value="">"#), []);
 }
 
-/// TS: `[no-input-file-value-valid-003]` — non-file type with value
+/// TS: `[no-input-file-value-003]` — non-file type with value
 #[test]
-fn no_input_file_value_valid_003() {
-    const _ID: &str = "no-input-file-value-valid-003";
+fn no_input_file_value_003() {
+    const _ID: &str = "no-input-file-value-003";
     assert_eq!(run(r#"<input type="text" value="anything">"#), []);
 }
 
-/// TS: `[no-input-file-value-invalid-001]` — non-empty value on type=file
+/// TS: `[no-input-file-value-004]` — non-empty value on type=file
 #[test]
-fn no_input_file_value_invalid_001() {
-    const _ID: &str = "no-input-file-value-invalid-001";
+fn no_input_file_value_004() {
+    const _ID: &str = "no-input-file-value-004";
     assert_eq!(
         run(r#"<input type="file" value="document.pdf">"#),
         [brief(Severity::Error, 1, 27, MESSAGE, "document.pdf")]
     );
 }
 
-/// TS: `[no-input-file-value-invalid-002]` — case-insensitive type matching
+/// TS: `[no-input-file-value-005]` — case-insensitive type matching
 #[test]
-fn no_input_file_value_invalid_002() {
-    const _ID: &str = "no-input-file-value-invalid-002";
+fn no_input_file_value_005() {
+    const _ID: &str = "no-input-file-value-005";
     let violations = run(r#"<input type="FILE" value="x">"#);
     assert_eq!(violations.len(), 1);
     assert_eq!(violations[0].4, "x");

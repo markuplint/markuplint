@@ -68,7 +68,7 @@ function run(depth: number) {
 	);
 }
 
-test('[permitted-contents-debug-001] depthLog returns one logger per name and depth', () => {
+test('depthLog returns one logger per name and depth', () => {
 	const first = depthLog('order', 7);
 
 	expect(depthLog('order', 7)).toBe(first);
@@ -77,7 +77,7 @@ test('[permitted-contents-debug-001] depthLog returns one logger per name and de
 	expect(first.namespace).toBe('ml-rules:content-model:order#7');
 });
 
-test('[permitted-contents-debug-002] a disabled logger does not build its arguments', () => {
+test('a disabled logger does not build its arguments', () => {
 	const depth = 90;
 	depthLog('order', depth).enabled = false;
 	const toString = vi.spyOn(Collection.prototype, 'toString');
@@ -86,7 +86,7 @@ test('[permitted-contents-debug-002] a disabled logger does not build its argume
 	expect(toString).not.toHaveBeenCalled();
 });
 
-test('[permitted-contents-debug-003] an enabled logger still emits its output', () => {
+test('an enabled logger still emits its output', () => {
 	const depth = 91;
 	const orderLog = depthLog('order', depth);
 	orderLog.enabled = true;
@@ -116,7 +116,7 @@ function runBacktrack(depth: number) {
 	);
 }
 
-test('[permitted-contents-debug-007] an enabled backtrack logger still emits when order() backtracks', () => {
+test('an enabled backtrack logger still emits when order() backtracks', () => {
 	const depth = 92;
 	const out = pin(depthLog('backtrack', depth), true);
 
@@ -125,7 +125,7 @@ test('[permitted-contents-debug-007] an enabled backtrack logger still emits whe
 	expect(String(out.mock.calls[0]?.[0])).toContain('🔙◀BACK');
 });
 
-test('[permitted-contents-debug-008] a disabled backtrack logger writes nothing when order() backtracks', () => {
+test('a disabled backtrack logger writes nothing when order() backtracks', () => {
 	const depth = 93;
 	const out = pin(depthLog('backtrack', depth), false);
 
@@ -133,7 +133,7 @@ test('[permitted-contents-debug-008] a disabled backtrack logger writes nothing 
 	expect(out).not.toHaveBeenCalled();
 });
 
-test('[permitted-contents-debug-004] the browser depthLog returns one logger per name and depth', () => {
+test('the browser depthLog returns one logger per name and depth', () => {
 	const first = browserDepthLog('order', 7);
 
 	expect(browserDepthLog('order', 7)).toBe(first);
@@ -142,7 +142,7 @@ test('[permitted-contents-debug-004] the browser depthLog returns one logger per
 	expect(first.namespace).toBe('ml-rules:content-model:order#7');
 });
 
-test('[permitted-contents-debug-005] the pattern cap writes nothing while cmLog is disabled', () => {
+test('the pattern cap writes nothing while cmLog is disabled', () => {
 	const out = vi.fn();
 	cmLog.enabled = false;
 	cmLog.log = out;
@@ -151,7 +151,7 @@ test('[permitted-contents-debug-005] the pattern cap writes nothing while cmLog 
 	expect(out).not.toHaveBeenCalled();
 });
 
-test('[permitted-contents-debug-006] the pattern cap still logs once cmLog is enabled', () => {
+test('the pattern cap still logs once cmLog is enabled', () => {
 	const out = vi.fn();
 	cmLog.enabled = true;
 	cmLog.log = out;

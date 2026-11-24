@@ -95,11 +95,11 @@ mod tests {
         crate::test_util::fixed_code(html, &serde_json::json!({ "rules": { "no-default-value": true } }))
     }
 
-    /// TS: `[no-default-value-fix-001]` — remove default value attribute
-    /// (`no-default-value-fix-002` is a Pug parser case, which the Rust engine does not have.)
+    /// TS: `[no-default-value-005]` — remove default value attribute
+    /// (`no-default-value-006` is a Pug parser case, which the Rust engine does not have.)
     #[test]
-    fn no_default_value_fix_001() {
-        const _ID: &str = "no-default-value-fix-001";
+    fn no_default_value_005() {
+        const _ID: &str = "no-default-value-005";
         assert_eq!(
             fixed(r#"<canvas width="300" height="150"></canvas>"#),
             "<canvas></canvas>"
@@ -114,10 +114,10 @@ mod tests {
         );
     }
 
-    /// TS: `[no-default-value-invalid-001]` — a violation points at the value, not the attribute
+    /// TS: `[no-default-value-001]` — a violation points at the value, not the attribute
     #[test]
-    fn no_default_value_invalid_001() {
-        const _ID: &str = "no-default-value-invalid-001";
+    fn no_default_value_001() {
+        const _ID: &str = "no-default-value-001";
         assert_eq!(
             crate::test_util::lint_brief(
                 "no-default-value",
@@ -131,10 +131,10 @@ mod tests {
         );
     }
 
-    /// TS: `[no-default-value-valid-001]` — `hidden` has no default value to be reported
+    /// TS: `[no-default-value-003]` — `hidden` has no default value to be reported
     #[test]
-    fn no_default_value_valid_001() {
-        const _ID: &str = "no-default-value-valid-001";
+    fn no_default_value_003() {
+        const _ID: &str = "no-default-value-003";
         for html in [
             "<div hidden></div>",
             r#"<div hidden=""></div>"#,

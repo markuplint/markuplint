@@ -174,10 +174,10 @@ mod tests {
         }
     }
 
-    /// TS: `[no-duplicate-dt-invalid-002]` Duplicate with <div>
+    /// TS: `[no-duplicate-dt-003]` Duplicate with <div>
     #[test]
-    fn no_duplicate_dt_invalid_002() {
-        const _ID: &str = "no-duplicate-dt-invalid-002";
+    fn no_duplicate_dt_003() {
+        const _ID: &str = "no-duplicate-dt-003";
         let violations = crate::test_util::lint_brief(
             "no-duplicate-dt",
             "\n<dl>\n  <div>\n    <dt>name1</dt>\n    <dd>description1</dd>\n  </div>\n  <div>\n    <dt>name1</dt>\n    <dd>description2</dd>\n  </div>\n</dl>\n",
@@ -195,10 +195,10 @@ mod tests {
         );
     }
 
-    /// TS: `[no-duplicate-dt-invalid-003]` Nested
+    /// TS: `[no-duplicate-dt-004]` Nested
     #[test]
-    fn no_duplicate_dt_invalid_003() {
-        const _ID: &str = "no-duplicate-dt-invalid-003";
+    fn no_duplicate_dt_004() {
+        const _ID: &str = "no-duplicate-dt-004";
         let violations = crate::test_util::lint_brief(
             "no-duplicate-dt",
             "\n<dl>\n  <div>\n    <dt>name1</dt>\n    <dd>description1</dd>\n  </div>\n  <dd>\n    <dl>\n      <dt>name1</dt>\n      <dd>description2</dd>\n    </dl>\n  </dd>\n</dl>\n",

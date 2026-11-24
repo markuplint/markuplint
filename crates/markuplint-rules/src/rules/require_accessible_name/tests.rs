@@ -1,13 +1,14 @@
 //! Tests for `require-accessible-name` rule.
 //!
 //! Test ID mapping (TS → Rust), for the tests ported so far:
-//!   require-accessible-name-valid-009  → require_accessible_name_valid_009
+//!   require-accessible-name-046  → require_accessible_name_046
 //!
 //! The pretender tests use the JSX parser; each is ported with custom elements in HTML:
-//!   require-accessible-name-invalid-013        — v6_require_accessible_name_001
-//!   require-accessible-name-issue-2394         — v6_require_accessible_name_002
-//!   require-accessible-name-issue-4069-001..015 — v6_require_accessible_name_003..017
+//!   require-accessible-name-045        — v6_require_accessible_name_001
+//!   require-accessible-name-061         — v6_require_accessible_name_002
+//!   require-accessible-name-079..093 — v6_require_accessible_name_003..017
 //!   (Rust-only) v6_require_accessible_name_018 — an element with a dynamic attribute is skipped (TS `accnameMayBeMutable`)
+//!   (Rust-only) v6_require_accessible_name_019 — a reference may be to an element whose id is not known until it is rendered
 
 use super::*;
 use crate::aria::may_be_focusable::tests::make_arena;
@@ -87,7 +88,7 @@ fn hidden_element_skipped() {
 }
 
 // ============================================================
-// Pretenders. The TS tests other than `valid-009` use the JSX parser; these are the
+// Pretenders. The TS tests other than `[require-accessible-name-046]` use the JSX parser; these are the
 // same scenarios with custom elements parsed as HTML (`<MyButton />` →
 // `<x-button>`), expected values from the TS engine run on the HTML input.
 // ============================================================
@@ -109,10 +110,10 @@ fn at(col: u32, raw: &str) -> Vec<Brief> {
     vec![brief(Severity::Error, 1, col, REQUIRE, raw)]
 }
 
-/// TS `[require-accessible-name-valid-009]`: the `as` attribute.
+/// TS `[require-accessible-name-046]`: the `as` attribute.
 #[test]
-fn require_accessible_name_valid_009() {
-    const _ID: &str = "require-accessible-name-valid-009";
+fn require_accessible_name_046() {
+    const _ID: &str = "require-accessible-name-046";
     let none = serde_json::json!([]);
     assert_eq!(
         run(r#"<x-button as="button"></x-button>"#, none.clone()),
@@ -127,7 +128,7 @@ fn require_accessible_name_valid_009() {
     assert_eq!(run(r#"<x-image as="img" alt="Name"></x-image>"#, none), []);
 }
 
-/// TS `[require-accessible-name-invalid-013]`: a pretended child names its parent by
+/// TS `[require-accessible-name-045]`: a pretended child names its parent by
 /// its `alt` and by the pretender's `aria.name`.
 #[test]
 fn v6_require_accessible_name_001() {
@@ -164,7 +165,7 @@ fn v6_require_accessible_name_001() {
     );
 }
 
-/// TS `[require-accessible-name-issue-2394]`: `nodeRules` match a pretended element by
+/// TS `[require-accessible-name-061]`: `nodeRules` match a pretended element by
 /// its pretender name and by its own.
 #[test]
 fn v6_require_accessible_name_002() {
@@ -197,7 +198,7 @@ fn dynamic_span(selector: &str, inherit: bool) -> serde_json::Value {
     serde_json::json!({ "selector": selector, "as": { "element": "span", "inheritAttrs": inherit, "contents": [{ "dynamic": true }] } })
 }
 
-/// TS `[require-accessible-name-issue-4069-001]`: the unknown content of the component
+/// TS `[require-accessible-name-079]`: the unknown content of the component
 /// may be its name.
 #[test]
 fn v6_require_accessible_name_003() {
@@ -210,7 +211,7 @@ fn v6_require_accessible_name_003() {
     );
 }
 
-/// TS `[require-accessible-name-issue-4069-002]`: a static content is still reported.
+/// TS `[require-accessible-name-080]`: a static content is still reported.
 #[test]
 fn v6_require_accessible_name_004() {
     assert_eq!(
@@ -222,7 +223,7 @@ fn v6_require_accessible_name_004() {
     );
 }
 
-/// TS `[require-accessible-name-issue-4069-003]`: a static name beside the unknown
+/// TS `[require-accessible-name-081]`: a static name beside the unknown
 /// content is still used.
 #[test]
 fn v6_require_accessible_name_005() {
@@ -239,7 +240,7 @@ fn v6_require_accessible_name_005() {
     );
 }
 
-/// TS `[require-accessible-name-issue-4069-004]`: the unknown content of a single slot
+/// TS `[require-accessible-name-082]`: the unknown content of a single slot
 /// wrapper may be the name.
 #[test]
 fn v6_require_accessible_name_006() {
@@ -254,7 +255,7 @@ fn v6_require_accessible_name_006() {
     );
 }
 
-/// TS `[require-accessible-name-issue-4069-005]`: the unknown content of a pretended
+/// TS `[require-accessible-name-083]`: the unknown content of a pretended
 /// child may be the name.
 #[test]
 fn v6_require_accessible_name_007() {
@@ -267,7 +268,7 @@ fn v6_require_accessible_name_007() {
     );
 }
 
-/// TS `[require-accessible-name-issue-4069-006]`: the unknown content of a pretended
+/// TS `[require-accessible-name-084]`: the unknown content of a pretended
 /// child placed in the contents may be the name.
 #[test]
 fn v6_require_accessible_name_008() {
@@ -283,7 +284,7 @@ fn v6_require_accessible_name_008() {
     );
 }
 
-/// TS `[require-accessible-name-issue-4069-007]`: the unknown content of a pretended
+/// TS `[require-accessible-name-085]`: the unknown content of a pretended
 /// child of the owned label may be the name.
 #[test]
 fn v6_require_accessible_name_009() {
@@ -296,7 +297,7 @@ fn v6_require_accessible_name_009() {
     );
 }
 
-/// TS `[require-accessible-name-issue-4069-008]`: the unknown content of one of several
+/// TS `[require-accessible-name-086]`: the unknown content of one of several
 /// slot wrappers may be the name.
 #[test]
 fn v6_require_accessible_name_010() {
@@ -312,7 +313,7 @@ fn v6_require_accessible_name_010() {
     );
 }
 
-/// TS `[require-accessible-name-issue-4069-009]`: a hidden pretended child is not read by
+/// TS `[require-accessible-name-087]`: a hidden pretended child is not read by
 /// the name computation and is still reported.
 #[test]
 fn v6_require_accessible_name_011() {
@@ -325,7 +326,7 @@ fn v6_require_accessible_name_011() {
     );
 }
 
-/// TS `[require-accessible-name-issue-4069-010]`: the unknown content of the element
+/// TS `[require-accessible-name-088]`: the unknown content of the element
 /// `aria-labelledby` refers to may be the name.
 #[test]
 fn v6_require_accessible_name_012() {
@@ -338,7 +339,7 @@ fn v6_require_accessible_name_012() {
     );
 }
 
-/// TS `[require-accessible-name-issue-4069-011]`: a pretended child with a static content
+/// TS `[require-accessible-name-089]`: a pretended child with a static content
 /// is still reported.
 #[test]
 fn v6_require_accessible_name_013() {
@@ -351,7 +352,7 @@ fn v6_require_accessible_name_013() {
     );
 }
 
-/// TS `[require-accessible-name-issue-4069-012]`: a pretended child with the `hidden`
+/// TS `[require-accessible-name-090]`: a pretended child with the `hidden`
 /// attribute is not read by the name computation and is still reported.
 #[test]
 fn v6_require_accessible_name_014() {
@@ -364,7 +365,7 @@ fn v6_require_accessible_name_014() {
     );
 }
 
-/// TS `[require-accessible-name-issue-4069-013]`: `aria-labelledby` with a missing id and
+/// TS `[require-accessible-name-091]`: `aria-labelledby` with a missing id and
 /// a reference to unknown content is not reported.
 #[test]
 fn v6_require_accessible_name_015() {
@@ -377,7 +378,7 @@ fn v6_require_accessible_name_015() {
     );
 }
 
-/// TS `[require-accessible-name-issue-4069-014]`: `aria-labelledby` referring only to
+/// TS `[require-accessible-name-092]`: `aria-labelledby` referring only to
 /// static content is still reported.
 #[test]
 fn v6_require_accessible_name_016() {
@@ -390,7 +391,7 @@ fn v6_require_accessible_name_016() {
     );
 }
 
-/// TS `[require-accessible-name-issue-4069-015]`: the unknown content of a pretended
+/// TS `[require-accessible-name-093]`: the unknown content of a pretended
 /// child of the label referred to by `for` may be the name.
 #[test]
 fn v6_require_accessible_name_017() {
@@ -451,4 +452,33 @@ fn v6_require_accessible_name_018() {
         ),
         []
     );
+}
+
+/// Rust-only: a token of `aria-labelledby` that refers to no element may refer to an element whose `id` is not known
+/// until it is rendered (`<h2 id={x}>`), in the tree of the element (TS `accnameMayComeFromUnknownContent`).
+#[test]
+fn v6_require_accessible_name_019() {
+    let lint = |html: &str, dynamic: Option<&str>| {
+        let mut arena = crate::test_util::html_arena(html);
+        if let Some(id) = dynamic {
+            crate::test_util::make_id_dynamic(&mut arena, id);
+        }
+        crate::test_util::lint_arena_brief(
+            "require-accessible-name",
+            &arena,
+            serde_json::json!({ "rules": { "require-accessible-name": true } }),
+        )
+    };
+    let html = r#"<h2 id="h">Q</h2><button aria-labelledby="t"></button>"#;
+    assert_eq!(lint(html, None).len(), 1);
+    assert_eq!(lint(html, Some("h")), []);
+    // A list in which a token is known and another refers to nothing
+    let html = r#"<h2 id="h">Q</h2><i id="e"></i><button aria-labelledby="e t"></button>"#;
+    assert_eq!(lint(html, None).len(), 1);
+    assert_eq!(lint(html, Some("h")), []);
+    // The content of a `template` element is a tree of its own
+    let html = r#"<div><template><h2 id="h">Q</h2></template></div><button aria-labelledby="t"></button>"#;
+    assert_eq!(lint(html, Some("h")).len(), 1);
+    let html = r#"<div><template><h2 id="h">Q</h2><button aria-labelledby="t"></button></template></div>"#;
+    assert_eq!(lint(html, Some("h")), []);
 }

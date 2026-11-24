@@ -2,6 +2,7 @@ import { createRule, getComputedRole, getSpec } from '@markuplint/ml-core';
 import { ARIA_RECOMMENDED_VERSION, getFirstAriaOwnsReferrer } from '@markuplint/ml-spec';
 
 import { checkingRequiredAccessibilityParentRole } from '../wai-aria/checkings/required-accessibility-parent-role.js';
+import { isRoleUnknown } from '../helpers.js';
 import meta from './meta.js';
 
 /**
@@ -17,6 +18,8 @@ export default createRule<boolean>({
 		await document.walkOn('Element', el => {
 			const roleAttr = el.getAttrNode('role');
 			if (!roleAttr) return;
+			// A role that a spread attribute after it may override is not the role that the element has
+			if (isRoleUnknown(el)) return;
 			const elSpec = getSpec(el, document.specs.specs);
 			if (!elSpec) return;
 			if (!elSpec.globalAttrs['#ARIAAttrs']) return;

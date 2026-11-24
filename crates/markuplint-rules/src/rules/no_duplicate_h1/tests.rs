@@ -1,12 +1,12 @@
 //! Tests for `no-duplicate-h1` rule.
 //!
 //! Test ID mapping (TS → Rust):
-//!   no-duplicate-h1-invalid-001  → no_duplicate_h1_invalid_001
-//!   no-duplicate-h1-valid-001    → no_duplicate_h1_valid_001
-//!   no-duplicate-h1-valid-002    → no_duplicate_h1_valid_002
-//!   no-duplicate-h1-valid-003    → no_duplicate_h1_valid_003
-//!   no-duplicate-h1-invalid-002  → no_duplicate_h1_invalid_002
-//!   no-duplicate-h1-valid-004    → no_duplicate_h1_valid_004
+//!   no-duplicate-h1-001  → no_duplicate_h1_001
+//!   no-duplicate-h1-005    → no_duplicate_h1_005
+//!   no-duplicate-h1-006    → no_duplicate_h1_006
+//!   no-duplicate-h1-007    → no_duplicate_h1_007
+//!   no-duplicate-h1-008  → no_duplicate_h1_008
+//!   no-duplicate-h1-009    → no_duplicate_h1_009
 //!   v6_no_duplicate_h1_001  — Rust-only: only the second `<h1>` is reported, however many follow
 //!   v6_no_duplicate_h1_002  — Rust-only: tag case is ignored; a missing `<h1>` is not this rule's concern
 
@@ -51,10 +51,10 @@ fn assert_duplicated(violations: &[Violation], line: u32, col: u32) {
     assert_eq!(violations[0].raw, "<h1>");
 }
 
-/// TS: `[no-duplicate-h1-invalid-001]` h1
+/// TS: `[no-duplicate-h1-001]` h1
 #[test]
-fn no_duplicate_h1_invalid_001() {
-    const _ID: &str = "no-duplicate-h1-invalid-001";
+fn no_duplicate_h1_001() {
+    const _ID: &str = "no-duplicate-h1-001";
     let violations = run(
         "<html><body><h1>text</h1><h1>text</h1></body></html>",
         serde_json::json!(true),
@@ -62,18 +62,18 @@ fn no_duplicate_h1_invalid_001() {
     assert_duplicated(&violations, 1, 26);
 }
 
-/// TS: `[no-duplicate-h1-valid-001]` h1
+/// TS: `[no-duplicate-h1-005]` h1
 #[test]
-fn no_duplicate_h1_valid_001() {
-    const _ID: &str = "no-duplicate-h1-valid-001";
+fn no_duplicate_h1_005() {
+    const _ID: &str = "no-duplicate-h1-005";
     let violations = run("<html><body><h1>text</h1></body></html>", serde_json::json!(true));
     assert_eq!(violations.len(), 0);
 }
 
-/// TS: `[no-duplicate-h1-valid-002]` rule disabled
+/// TS: `[no-duplicate-h1-006]` rule disabled
 #[test]
-fn no_duplicate_h1_valid_002() {
-    const _ID: &str = "no-duplicate-h1-valid-002";
+fn no_duplicate_h1_006() {
+    const _ID: &str = "no-duplicate-h1-006";
     let violations = run(
         "<html><body><h1>text</h1><h1>text</h1></body></html>",
         serde_json::json!(false),
@@ -81,18 +81,18 @@ fn no_duplicate_h1_valid_002() {
     assert_eq!(violations.len(), 0);
 }
 
-/// TS: `[no-duplicate-h1-valid-003]` fragment without in-document-fragment option
+/// TS: `[no-duplicate-h1-007]` fragment without in-document-fragment option
 #[test]
-fn no_duplicate_h1_valid_003() {
-    const _ID: &str = "no-duplicate-h1-valid-003";
+fn no_duplicate_h1_007() {
+    const _ID: &str = "no-duplicate-h1-007";
     let violations = run("<div><h1>text</h1><h1>text</h1></div>", serde_json::json!(true));
     assert_eq!(violations.len(), 0);
 }
 
-/// TS: `[no-duplicate-h1-invalid-002]` enable option "in-document-fragment"
+/// TS: `[no-duplicate-h1-008]` enable option "in-document-fragment"
 #[test]
-fn no_duplicate_h1_invalid_002() {
-    const _ID: &str = "no-duplicate-h1-invalid-002";
+fn no_duplicate_h1_008() {
+    const _ID: &str = "no-duplicate-h1-008";
     let violations = run(
         "<div><h1>text</h1><h1>text</h1></div>",
         serde_json::json!({ "options": { "in-document-fragment": true } }),
@@ -100,10 +100,10 @@ fn no_duplicate_h1_invalid_002() {
     assert_eq!(violations.len(), 1);
 }
 
-/// TS: `[no-duplicate-h1-valid-004]` Issue #57
+/// TS: `[no-duplicate-h1-009]` Issue #57
 #[test]
-fn no_duplicate_h1_valid_004() {
-    const _ID: &str = "no-duplicate-h1-valid-004";
+fn no_duplicate_h1_009() {
+    const _ID: &str = "no-duplicate-h1-009";
     let violations = run("", serde_json::json!(true));
     assert_eq!(violations.len(), 0);
 }

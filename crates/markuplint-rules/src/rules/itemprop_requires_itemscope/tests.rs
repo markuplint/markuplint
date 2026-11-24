@@ -1,14 +1,14 @@
 //! Tests for `itemprop-requires-itemscope` rule.
 //!
 //! Test ID mapping (TS → Rust):
-//!   itemprop-requires-itemscope-valid-001    → itemprop_requires_itemscope_valid_001
-//!   itemprop-requires-itemscope-valid-002    → itemprop_requires_itemscope_valid_002
-//!   itemprop-requires-itemscope-valid-003    → itemprop_requires_itemscope_valid_003
-//!   itemprop-requires-itemscope-valid-004    → itemprop_requires_itemscope_valid_004
-//!   itemprop-requires-itemscope-invalid-001  → itemprop_requires_itemscope_invalid_001
-//!   itemprop-requires-itemscope-invalid-002  → itemprop_requires_itemscope_invalid_002
-//!   itemprop-requires-itemscope-invalid-003  → itemprop_requires_itemscope_invalid_003
-//!   itemprop-requires-itemscope-invalid-004  → itemprop_requires_itemscope_invalid_004
+//!   itemprop-requires-itemscope-001    → itemprop_requires_itemscope_001
+//!   itemprop-requires-itemscope-002    → itemprop_requires_itemscope_002
+//!   itemprop-requires-itemscope-003    → itemprop_requires_itemscope_003
+//!   itemprop-requires-itemscope-004    → itemprop_requires_itemscope_004
+//!   itemprop-requires-itemscope-005  → itemprop_requires_itemscope_005
+//!   itemprop-requires-itemscope-006  → itemprop_requires_itemscope_006
+//!   itemprop-requires-itemscope-007  → itemprop_requires_itemscope_007
+//!   itemprop-requires-itemscope-008  → itemprop_requires_itemscope_008
 //!   v6_itemprop_requires_itemscope_001  — Rust-only: `itemref` tokens are split on JS `\s` (tab, newline, NBSP; not U+0085)
 //!   v6_itemprop_requires_itemscope_002  — Rust-only: `itemref` counts only on an `itemscope` element; any ancestor depth counts
 //!   v6_itemprop_requires_itemscope_003  — Rust-only: attribute names match case-insensitively, an empty `itemprop` counts
@@ -32,37 +32,37 @@ fn run_with(html: &str, pretenders: serde_json::Value) -> Vec<Brief> {
     )
 }
 
-/// TS: `[itemprop-requires-itemscope-valid-001]` — itemprop inside an itemscope ancestor
+/// TS: `[itemprop-requires-itemscope-001]` — itemprop inside an itemscope ancestor
 #[test]
-fn itemprop_requires_itemscope_valid_001() {
-    const _ID: &str = "itemprop-requires-itemscope-valid-001";
+fn itemprop_requires_itemscope_001() {
+    const _ID: &str = "itemprop-requires-itemscope-001";
     assert_eq!(run(r#"<div itemscope><span itemprop="name">x</span></div>"#), []);
 }
 
-/// TS: `[itemprop-requires-itemscope-valid-002]` — itemprop reachable via itemref
+/// TS: `[itemprop-requires-itemscope-002]` — itemprop reachable via itemref
 #[test]
-fn itemprop_requires_itemscope_valid_002() {
-    const _ID: &str = "itemprop-requires-itemscope-valid-002";
+fn itemprop_requires_itemscope_002() {
+    const _ID: &str = "itemprop-requires-itemscope-002";
     assert_eq!(
         run(r#"<div itemscope itemref="ref-name"></div><span id="ref-name" itemprop="name">y</span>"#),
         []
     );
 }
 
-/// TS: `[itemprop-requires-itemscope-valid-003]` — element with both itemscope and itemprop is valid (self-as-scope)
+/// TS: `[itemprop-requires-itemscope-003]` — element with both itemscope and itemprop is valid (self-as-scope)
 #[test]
-fn itemprop_requires_itemscope_valid_003() {
-    const _ID: &str = "itemprop-requires-itemscope-valid-003";
+fn itemprop_requires_itemscope_003() {
+    const _ID: &str = "itemprop-requires-itemscope-003";
     assert_eq!(
         run(r#"<div itemscope><div itemscope itemprop="address">x</div></div>"#),
         []
     );
 }
 
-/// TS: `[itemprop-requires-itemscope-valid-004]` — whitespace-only itemref contributes no entries; would-be target stays orphan
+/// TS: `[itemprop-requires-itemscope-004]` — whitespace-only itemref contributes no entries; would-be target stays orphan
 #[test]
-fn itemprop_requires_itemscope_valid_004() {
-    const _ID: &str = "itemprop-requires-itemscope-valid-004";
+fn itemprop_requires_itemscope_004() {
+    const _ID: &str = "itemprop-requires-itemscope-004";
     assert_eq!(
         run(r#"<div itemscope itemref="  "></div><span id="ref-name" itemprop="name">y</span>"#),
         [brief(
@@ -75,20 +75,20 @@ fn itemprop_requires_itemscope_valid_004() {
     );
 }
 
-/// TS: `[itemprop-requires-itemscope-invalid-001]` — orphan itemprop with no ancestor itemscope and no itemref
+/// TS: `[itemprop-requires-itemscope-005]` — orphan itemprop with no ancestor itemscope and no itemref
 #[test]
-fn itemprop_requires_itemscope_invalid_001() {
-    const _ID: &str = "itemprop-requires-itemscope-invalid-001";
+fn itemprop_requires_itemscope_005() {
+    const _ID: &str = "itemprop-requires-itemscope-005";
     assert_eq!(
         run(r#"<span itemprop="name">orphan</span>"#),
         [brief(Severity::Error, 1, 1, MESSAGE, r#"<span itemprop="name">"#)]
     );
 }
 
-/// TS: `[itemprop-requires-itemscope-invalid-002]` — itemref token does not match the orphan element id
+/// TS: `[itemprop-requires-itemscope-006]` — itemref token does not match the orphan element id
 #[test]
-fn itemprop_requires_itemscope_invalid_002() {
-    const _ID: &str = "itemprop-requires-itemscope-invalid-002";
+fn itemprop_requires_itemscope_006() {
+    const _ID: &str = "itemprop-requires-itemscope-006";
     assert_eq!(
         run(r#"<div itemscope itemref="ref-other"></div><span id="ref-name" itemprop="name">orphan</span>"#),
         [brief(
@@ -101,10 +101,10 @@ fn itemprop_requires_itemscope_invalid_002() {
     );
 }
 
-/// TS: `[itemprop-requires-itemscope-invalid-003]` — each orphan in a sequence fires independently
+/// TS: `[itemprop-requires-itemscope-007]` — each orphan in a sequence fires independently
 #[test]
-fn itemprop_requires_itemscope_invalid_003() {
-    const _ID: &str = "itemprop-requires-itemscope-invalid-003";
+fn itemprop_requires_itemscope_007() {
+    const _ID: &str = "itemprop-requires-itemscope-007";
     assert_eq!(
         run(r#"<span itemprop="name">a</span><span itemprop="email">b</span>"#),
         [
@@ -114,10 +114,10 @@ fn itemprop_requires_itemscope_invalid_003() {
     );
 }
 
-/// TS: `[itemprop-requires-itemscope-invalid-004]` — explicit empty id falls into the orphan branch
+/// TS: `[itemprop-requires-itemscope-008]` — explicit empty id falls into the orphan branch
 #[test]
-fn itemprop_requires_itemscope_invalid_004() {
-    const _ID: &str = "itemprop-requires-itemscope-invalid-004";
+fn itemprop_requires_itemscope_008() {
+    const _ID: &str = "itemprop-requires-itemscope-008";
     assert_eq!(
         run(r#"<span id="" itemprop="name">orphan</span>"#),
         [brief(Severity::Error, 1, 1, MESSAGE, r#"<span id="" itemprop="name">"#)]

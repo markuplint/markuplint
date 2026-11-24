@@ -1,14 +1,14 @@
 //! Tests for `require-end-tag` rule.
 //!
 //! Test ID mapping (TS → Rust):
-//!   require-end-tag-valid-001    → require_end_tag_valid_001
-//!   require-end-tag-invalid-001  → require_end_tag_invalid_001
-//!   require-end-tag-valid-002    → require_end_tag_valid_002
-//!   require-end-tag-invalid-002  → require_end_tag_invalid_002
-//!   require-end-tag-parser-001   → v6_require_end_tag_002 (Pug: `endTag` of the document is `never`)
-//!   require-end-tag-parser-003..005 → v6_require_end_tag_003 (Vue/Svelte/Astro: `endTag` is `xml`)
-//!   require-end-tag-parser-002   — SKIP: the JSX parser itself rejects the input (the `parse-error` is TS's)
-//!   require-end-tag-issue-1349   — SKIP: Nunjucks parser
+//!   require-end-tag-001    → require_end_tag_001
+//!   require-end-tag-002  → require_end_tag_002
+//!   require-end-tag-003    → require_end_tag_003
+//!   require-end-tag-004  → require_end_tag_004
+//!   require-end-tag-005   → v6_require_end_tag_002 (Pug: `endTag` of the document is `never`)
+//!   require-end-tag-007..009 → v6_require_end_tag_003 (Vue/Svelte/Astro: `endTag` is `xml`)
+//!   require-end-tag-006   — SKIP: the JSX parser itself rejects the input (the `parse-error` is TS's)
+//!   require-end-tag-010   — SKIP: Nunjucks parser
 //!     (the framework parsers stay in TS; `ml-engine.rust-framework.spec.ts` compares whole files)
 //!   v6_require_end_tag_001       — Rust-only: a pretender is foreign by the namespace of the element written
 
@@ -33,10 +33,10 @@ fn spec() -> MLMLSpec {
     load_spec(include_str!("../../../../../packages/@markuplint/html-spec/index.json")).unwrap()
 }
 
-/// TS: `[require-end-tag-valid-001]` — basic (two sub-tests)
+/// TS: `[require-end-tag-001]` — basic (two sub-tests)
 #[test]
-fn require_end_tag_valid_001() {
-    const _ID: &str = "require-end-tag-valid-001";
+fn require_end_tag_001() {
+    const _ID: &str = "require-end-tag-001";
     // Sub-test 1: complete tags → no violations
     let arena = html_arena("<html><body></body></html>");
     let spec = spec();
@@ -58,10 +58,10 @@ fn require_end_tag_valid_001() {
     assert_eq!(result2.violations[0].raw, "<html>");
 }
 
-/// TS: `[require-end-tag-invalid-001]` — missing end tags on span
+/// TS: `[require-end-tag-002]` — missing end tags on span
 #[test]
-fn require_end_tag_invalid_001() {
-    const _ID: &str = "require-end-tag-invalid-001";
+fn require_end_tag_002() {
+    const _ID: &str = "require-end-tag-002";
     let arena = html_arena("<div><span><span /></div>");
     let spec = spec();
     let config: LintConfig = serde_json::from_value(serde_json::json!({
@@ -82,10 +82,10 @@ fn require_end_tag_invalid_001() {
     assert_eq!(result.violations[1].raw, "<span />");
 }
 
-/// TS: `[require-end-tag-valid-002]` — void elements (img)
+/// TS: `[require-end-tag-003]` — void elements (img)
 #[test]
-fn require_end_tag_valid_002() {
-    const _ID: &str = "require-end-tag-valid-002";
+fn require_end_tag_003() {
+    const _ID: &str = "require-end-tag-003";
     let arena = html_arena("<div><img><img /></div>");
     let spec = spec();
     let config: LintConfig = serde_json::from_value(serde_json::json!({
@@ -96,10 +96,10 @@ fn require_end_tag_valid_002() {
     assert_eq!(result.violations.len(), 0);
 }
 
-/// TS: `[require-end-tag-invalid-002]` — SVG self-closing is OK
+/// TS: `[require-end-tag-004]` — SVG self-closing is OK
 #[test]
-fn require_end_tag_invalid_002() {
-    const _ID: &str = "require-end-tag-invalid-002";
+fn require_end_tag_004() {
+    const _ID: &str = "require-end-tag-004";
     // SVG with self-closing <circle /> and <circle></circle> — both OK
     let arena = html_arena(
         "<svg>\n\t<defs>\n\t\t<clipPath>\n\t\t\t<circle />\n\t\t\t<circle></circle>\n\t\t</clipPath>\n\t</defs>\n</svg>",
@@ -145,7 +145,7 @@ fn v6_require_end_tag_001() {
 }
 
 /// Rust-only: `endTag` is what the parser says about the markup, and `never` (Pug) means no
-/// element has an end tag, so none is missing. TS: `[require-end-tag-parser-001]`.
+/// element has an end tag, so none is missing. TS: `[require-end-tag-005]`.
 #[test]
 fn v6_require_end_tag_002() {
     use markuplint_core::mlast::{DocumentSettings, EndTagType};
@@ -175,7 +175,7 @@ fn v6_require_end_tag_002() {
 
 /// Rust-only: with `xml` (JSX, Vue, Svelte, Astro), `<span />` closes itself, as it does for a
 /// foreign element. The MLAST of `<span />` is what a TS parser sends, `endTag` beside the
-/// nodes. TS: `[require-end-tag-parser-003]`.
+/// nodes. TS: `[require-end-tag-007]`.
 #[test]
 fn v6_require_end_tag_003() {
     let lint_mlast = |extra: serde_json::Value| {

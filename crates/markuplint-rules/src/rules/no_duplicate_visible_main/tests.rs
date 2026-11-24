@@ -1,11 +1,11 @@
 //! Tests for `no-duplicate-visible-main` rule.
 //!
 //! Test ID mapping (TS → Rust):
-//!   no-duplicate-visible-main-valid-001    → no_duplicate_visible_main_valid_001
-//!   no-duplicate-visible-main-valid-002    → no_duplicate_visible_main_valid_002
-//!   no-duplicate-visible-main-valid-003    → no_duplicate_visible_main_valid_003
-//!   no-duplicate-visible-main-invalid-001  → no_duplicate_visible_main_invalid_001
-//!   no-duplicate-visible-main-invalid-002  → no_duplicate_visible_main_invalid_002
+//!   no-duplicate-visible-main-001    → no_duplicate_visible_main_001
+//!   no-duplicate-visible-main-002    → no_duplicate_visible_main_002
+//!   no-duplicate-visible-main-003    → no_duplicate_visible_main_003
+//!   no-duplicate-visible-main-004  → no_duplicate_visible_main_004
+//!   no-duplicate-visible-main-005  → no_duplicate_visible_main_005
 //!   v6_no_duplicate_visible_main_001  — Rust-only: every visible `main` after the first is reported, by local name
 //!   v6_no_duplicate_visible_main_002  — Rust-only: a pretender reads `hidden` from the `as` element, which lacks it
 
@@ -19,34 +19,34 @@ fn run(html: &str) -> Vec<Brief> {
     lint_brief(RULE, html, serde_json::json!({ "rules": { RULE: true } }))
 }
 
-/// TS: `[no-duplicate-visible-main-valid-001]` single main
+/// TS: `[no-duplicate-visible-main-001]` single main
 #[test]
-fn no_duplicate_visible_main_valid_001() {
-    const _ID: &str = "no-duplicate-visible-main-valid-001";
+fn no_duplicate_visible_main_001() {
+    const _ID: &str = "no-duplicate-visible-main-001";
     assert_eq!(run("<body><main>content</main></body>"), []);
 }
 
-/// TS: `[no-duplicate-visible-main-valid-002]` main with hidden main
+/// TS: `[no-duplicate-visible-main-002]` main with hidden main
 #[test]
-fn no_duplicate_visible_main_valid_002() {
-    const _ID: &str = "no-duplicate-visible-main-valid-002";
+fn no_duplicate_visible_main_002() {
+    const _ID: &str = "no-duplicate-visible-main-002";
     assert_eq!(
         run("<body><main>content</main><main hidden>hidden content</main></body>"),
         []
     );
 }
 
-/// TS: `[no-duplicate-visible-main-valid-003]` no main
+/// TS: `[no-duplicate-visible-main-003]` no main
 #[test]
-fn no_duplicate_visible_main_valid_003() {
-    const _ID: &str = "no-duplicate-visible-main-valid-003";
+fn no_duplicate_visible_main_003() {
+    const _ID: &str = "no-duplicate-visible-main-003";
     assert_eq!(run("<body><div>content</div></body>"), []);
 }
 
-/// TS: `[no-duplicate-visible-main-invalid-001]` two visible mains
+/// TS: `[no-duplicate-visible-main-004]` two visible mains
 #[test]
-fn no_duplicate_visible_main_invalid_001() {
-    const _ID: &str = "no-duplicate-visible-main-invalid-001";
+fn no_duplicate_visible_main_004() {
+    const _ID: &str = "no-duplicate-visible-main-004";
     let v = lint_html(
         "<body><main>first</main><main>second</main></body>",
         serde_json::json!({ "rules": { RULE: true } }),
@@ -57,10 +57,10 @@ fn no_duplicate_visible_main_invalid_001() {
     assert_eq!(v[0].message, MESSAGE);
 }
 
-/// TS: `[no-duplicate-visible-main-invalid-002]` three mains one hidden
+/// TS: `[no-duplicate-visible-main-005]` three mains one hidden
 #[test]
-fn no_duplicate_visible_main_invalid_002() {
-    const _ID: &str = "no-duplicate-visible-main-invalid-002";
+fn no_duplicate_visible_main_005() {
+    const _ID: &str = "no-duplicate-visible-main-005";
     let v = lint_html(
         "<body><main>first</main><main hidden>hidden</main><main>third</main></body>",
         serde_json::json!({ "rules": { RULE: true } }),

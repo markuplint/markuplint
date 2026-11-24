@@ -1,12 +1,12 @@
 //! Tests for `usemap-references-map` rule.
 //!
 //! Test ID mapping (TS → Rust):
-//!   usemap-references-map-valid-001    → usemap_references_map_valid_001
-//!   usemap-references-map-valid-002    → usemap_references_map_valid_002
-//!   usemap-references-map-valid-003    — SKIPPED: needs the Mustache parser (`{{mapRef}}` dynamic value)
-//!   usemap-references-map-invalid-001  → usemap_references_map_invalid_001
-//!   usemap-references-map-invalid-002  → usemap_references_map_invalid_002
-//!   usemap-references-map-invalid-003  → usemap_references_map_invalid_003
+//!   usemap-references-map-001    → usemap_references_map_001
+//!   usemap-references-map-002    → usemap_references_map_002
+//!   usemap-references-map-003    — SKIPPED: needs the Mustache parser (`{{mapRef}}` dynamic value)
+//!   usemap-references-map-004  → usemap_references_map_004
+//!   usemap-references-map-005  → usemap_references_map_005
+//!   usemap-references-map-006  → usemap_references_map_006
 //!   v6_usemap_references_map_001  — Rust-only: a value that is not a hash-name reference is not checked
 //!   v6_usemap_references_map_002  — Rust-only: an img pretended by a pretender is skipped, one with the `as` attribute is checked
 //!   v6_usemap_references_map_003  — Rust-only: a pretended map is found by the `name` it carries
@@ -31,47 +31,47 @@ fn run_with(html: &str, pretenders: serde_json::Value) -> Vec<Brief> {
     )
 }
 
-/// TS: `[usemap-references-map-valid-001]` — resolves to a map element
+/// TS: `[usemap-references-map-001]` — resolves to a map element
 #[test]
-fn usemap_references_map_valid_001() {
-    const _ID: &str = "usemap-references-map-valid-001";
+fn usemap_references_map_001() {
+    const _ID: &str = "usemap-references-map-001";
     assert_eq!(
         run(r##"<img src="shapes.png" alt="" usemap="#shapes"><map name="shapes"></map>"##),
         []
     );
 }
 
-/// TS: `[usemap-references-map-valid-002]` — no usemap attribute
+/// TS: `[usemap-references-map-002]` — no usemap attribute
 #[test]
-fn usemap_references_map_valid_002() {
-    const _ID: &str = "usemap-references-map-valid-002";
+fn usemap_references_map_002() {
+    const _ID: &str = "usemap-references-map-002";
     assert_eq!(run(r#"<img src="shapes.png" alt="">"#), []);
 }
 
-/// TS: `[usemap-references-map-invalid-001]` — no map element in the document
+/// TS: `[usemap-references-map-004]` — no map element in the document
 #[test]
-fn usemap_references_map_invalid_001() {
-    const _ID: &str = "usemap-references-map-invalid-001";
+fn usemap_references_map_004() {
+    const _ID: &str = "usemap-references-map-004";
     assert_eq!(
         run(r##"<img src="shapes.png" alt="" usemap="#nonexistent">"##),
         [brief(Severity::Error, 1, 38, MESSAGE, "#nonexistent")]
     );
 }
 
-/// TS: `[usemap-references-map-invalid-002]` — map element exists but with a different name
+/// TS: `[usemap-references-map-005]` — map element exists but with a different name
 #[test]
-fn usemap_references_map_invalid_002() {
-    const _ID: &str = "usemap-references-map-invalid-002";
+fn usemap_references_map_005() {
+    const _ID: &str = "usemap-references-map-005";
     assert_eq!(
         run(r##"<img src="shapes.png" alt="" usemap="#shapes"><map name="other-shapes"></map>"##).len(),
         1
     );
 }
 
-/// TS: `[usemap-references-map-invalid-003]` — the reference resolves only via id, not name
+/// TS: `[usemap-references-map-006]` — the reference resolves only via id, not name
 #[test]
-fn usemap_references_map_invalid_003() {
-    const _ID: &str = "usemap-references-map-invalid-003";
+fn usemap_references_map_006() {
+    const _ID: &str = "usemap-references-map-006";
     assert_eq!(
         run(r##"<img src="shapes.png" alt="" usemap="#shapes"><map id="shapes"></map>"##).len(),
         1

@@ -1,21 +1,21 @@
 //! Tests for `attr-value-quotes` rule.
 //!
 //! Test ID mapping (TS → Rust):
-//!   attr-value-quotes-invalid-001  → attr_value_quotes_invalid_001
-//!   attr-value-quotes-invalid-002  → attr_value_quotes_invalid_002
-//!   attr-value-quotes-invalid-003  → attr_value_quotes_invalid_003
-//!   attr-value-quotes-valid-001    → attr_value_quotes_valid_001
-//!   attr-value-quotes-fix-001      → attr_value_quotes_fix_001
-//!   attr-value-quotes-fix-002      → attr_value_quotes_fix_002
-//!   attr-value-quotes-fix-003      — SKIP: Pug parser not available in Rust
-//!   attr-value-quotes-fix-004      — SKIP: Vue parser not available in Rust
-//!   attr-value-quotes-fix-005      — SKIP: Markdown parser not available in Rust
-//!   v6_attr_value_quotes_001       — Rust-only: boolean attr skipped
-//!   v6_attr_value_quotes_002       — Rust-only: no-quote attr reported
-//!   v6_attr_value_quotes_003       — Rust-only: non-ASCII text before the fixed quotes
-//!   v6_attr_value_quotes_004       — Rust-only: whitespace between the equal sign and an unquoted value
-//!   v6_attr_value_quotes_005       — Rust-only: a directive is not a quoted string
-//!   v6_attr_value_quotes_006       — Rust-only: a value written as code is not a quoted string
+//!   attr-value-quotes-001     → attr_value_quotes_001
+//!   attr-value-quotes-002     → attr_value_quotes_002
+//!   attr-value-quotes-003     → attr_value_quotes_003
+//!   attr-value-quotes-004     → attr_value_quotes_004
+//!   attr-value-quotes-005     → attr_value_quotes_005
+//!   attr-value-quotes-006     → attr_value_quotes_006
+//!   attr-value-quotes-007     — SKIP: Pug parser not available in Rust
+//!   attr-value-quotes-008     — SKIP: Vue parser not available in Rust
+//!   attr-value-quotes-009     — SKIP: Markdown parser not available in Rust
+//!   v6_attr_value_quotes_001  — Rust-only: boolean attr skipped
+//!   v6_attr_value_quotes_002  — Rust-only: no-quote attr reported
+//!   v6_attr_value_quotes_003  — Rust-only: non-ASCII text before the fixed quotes
+//!   v6_attr_value_quotes_004  — Rust-only: whitespace between the equal sign and an unquoted value
+//!   v6_attr_value_quotes_005  — Rust-only: a directive is not a quoted string
+//!   v6_attr_value_quotes_006  — Rust-only: a value written as code is not a quoted string
 
 use crate::lint::{LintConfig, lint};
 use crate::test_util::fixed_code;
@@ -39,10 +39,10 @@ fn spec() -> MLMLSpec {
     load_spec(include_str!("../../../../../packages/@markuplint/html-spec/index.json")).unwrap()
 }
 
-/// TS: `[attr-value-quotes-fix-001]` — empty
+/// TS: `[attr-value-quotes-005]` — empty
 #[test]
-fn attr_value_quotes_fix_001() {
-    const _ID: &str = "attr-value-quotes-fix-001";
+fn attr_value_quotes_005() {
+    const _ID: &str = "attr-value-quotes-005";
     let config = serde_json::json!({ "rules": { "attr-value-quotes": true } });
     assert_eq!(
         fixed_code(r#"<div attr noop=noop foo="bar" hoge='fuga'>"#, &config),
@@ -50,10 +50,10 @@ fn attr_value_quotes_fix_001() {
     );
 }
 
-/// TS: `[attr-value-quotes-fix-002]` — empty
+/// TS: `[attr-value-quotes-006]` — empty
 #[test]
-fn attr_value_quotes_fix_002() {
-    const _ID: &str = "attr-value-quotes-fix-002";
+fn attr_value_quotes_006() {
+    const _ID: &str = "attr-value-quotes-006";
     let config = serde_json::json!({ "rules": { "attr-value-quotes": { "value": "single" } } });
     assert_eq!(
         fixed_code(r#"<div attr noop=noop foo="bar" hoge='fuga'>"#, &config),
@@ -79,10 +79,10 @@ fn v6_attr_value_quotes_003() {
     );
 }
 
-/// TS: `[attr-value-quotes-invalid-001]` — default (double)
+/// TS: `[attr-value-quotes-001]` — default (double)
 #[test]
-fn attr_value_quotes_invalid_001() {
-    const _ID: &str = "attr-value-quotes-invalid-001";
+fn attr_value_quotes_001() {
+    const _ID: &str = "attr-value-quotes-001";
     // Exact TS template literal bytes (tab indentation = \t\t)
     let arena = html_arena(
         "\n\t\t<div data-attr=\"value\" data-Attr='db' data-attR=tr>\n\t\t\tlorem\n\t\t\t<p>ipsam</p>\n\t\t</div>\n\t\t",
@@ -116,10 +116,10 @@ fn attr_value_quotes_invalid_001() {
     assert_eq!(result.violations[1].raw, "data-attR=tr");
 }
 
-/// TS: `[attr-value-quotes-invalid-002]` — double with error severity
+/// TS: `[attr-value-quotes-002]` — double with error severity
 #[test]
-fn attr_value_quotes_invalid_002() {
-    const _ID: &str = "attr-value-quotes-invalid-002";
+fn attr_value_quotes_002() {
+    const _ID: &str = "attr-value-quotes-002";
     let arena = html_arena(
         "\n\t\t<div data-attr=\"value\" data-Attr='db' data-attR=tr>\n\t\t\tlorem\n\t\t\t<p>ipsam</p>\n\t\t</div>\n\t\t",
     );
@@ -149,10 +149,10 @@ fn attr_value_quotes_invalid_002() {
     assert_eq!(result.violations[1].raw, "data-attR=tr");
 }
 
-/// TS: `[attr-value-quotes-invalid-003]` — single
+/// TS: `[attr-value-quotes-003]` — single
 #[test]
-fn attr_value_quotes_invalid_003() {
-    const _ID: &str = "attr-value-quotes-invalid-003";
+fn attr_value_quotes_003() {
+    const _ID: &str = "attr-value-quotes-003";
     let arena = html_arena(
         "\n\t\t<div data-attr=\"value\" data-Attr='db' data-attR=tr>\n\t\t\tlorem\n\t\t\t<p>ipsam</p>\n\t\t</div>\n\t\t",
     );
@@ -182,10 +182,10 @@ fn attr_value_quotes_invalid_003() {
     assert_eq!(result.violations[1].raw, "data-attR=tr");
 }
 
-/// TS: `[attr-value-quotes-valid-001]` — boolean attr (no value)
+/// TS: `[attr-value-quotes-004]` — boolean attr (no value)
 #[test]
-fn attr_value_quotes_valid_001() {
-    const _ID: &str = "attr-value-quotes-valid-001";
+fn attr_value_quotes_004() {
+    const _ID: &str = "attr-value-quotes-004";
     let arena = html_arena("\n\t\t<div data-attr>\n\t\t\tlorem\n\t\t\t<p>ipsam</p>\n\t\t</div>\n\t\t");
     let spec = spec();
     let config: LintConfig = serde_json::from_value(serde_json::json!({

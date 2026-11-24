@@ -1,13 +1,13 @@
 //! Tests for `no-broken-fragment-link` rule.
 //!
 //! Test ID mapping (TS → Rust):
-//!   no-broken-fragment-link-invalid-001    → no_broken_fragment_link_invalid_001
+//!   no-broken-fragment-link-004    → no_broken_fragment_link_004
 //!                                             (its six JSX-parser assertions are SKIPPED:
 //!                                             JSX parser not available in Rust)
-//!   no-broken-fragment-link-issue-748      — SKIP: PHP parser (preprocessor block) not available in Rust
-//!   no-broken-fragment-link-issue-776      — SKIP: PHP parser not available in Rust; the same
+//!   no-broken-fragment-link-005      — SKIP: PHP parser (preprocessor block) not available in Rust
+//!   no-broken-fragment-link-006      — SKIP: PHP parser not available in Rust; the same
 //!                                             markup through the HTML parser is v6_no_broken_fragment_link_002
-//!   no-broken-fragment-link-issue-4435-001 → no_broken_fragment_link_issue_4435_001 (the MLAST of the JSX parser)
+//!   no-broken-fragment-link-007 → no_broken_fragment_link_007 (the MLAST of the JSX parser)
 //!   v6_no_broken_fragment_link_001  — Rust-only: the `href` is not entity-decoded, the ID is
 //!   v6_no_broken_fragment_link_002  — Rust-only: percent-decoded fragments against entity-decoded IDs
 //!   v6_no_broken_fragment_link_003  — Rust-only: a fragment that does not percent-decode is compared as written
@@ -38,10 +38,10 @@ fn missing(line: u32, col: u32, id: &str, raw: &str) -> Brief {
     brief(Severity::Warning, line, col, &format!("Missing \"{id}\" ID"), raw)
 }
 
-/// TS: `[no-broken-fragment-link-invalid-001]` fragment (its HTML-parser assertions)
+/// TS: `[no-broken-fragment-link-004]` fragment (its HTML-parser assertions)
 #[test]
-fn no_broken_fragment_link_invalid_001() {
-    const _ID: &str = "no-broken-fragment-link-invalid-001";
+fn no_broken_fragment_link_004() {
+    const _ID: &str = "no-broken-fragment-link-004";
     assert_eq!(run(r##"<a href="#foo"></a>"##), [missing(1, 10, "foo", "#foo")]);
     assert_eq!(run(r##"<a href="#"></a>"##), []);
     assert_eq!(run(r##"<a href="#top"></a>"##), []);
@@ -62,7 +62,7 @@ fn v6_no_broken_fragment_link_001() {
     );
 }
 
-/// The markup of TS `[no-broken-fragment-link-issue-776]`, which TS also passes with
+/// The markup of TS `[no-broken-fragment-link-006]`, which TS also passes with
 /// its HTML parser.
 #[test]
 fn v6_no_broken_fragment_link_002() {
@@ -174,12 +174,12 @@ fn v6_no_broken_fragment_link_010() {
     );
 }
 
-/// TS: `[no-broken-fragment-link-issue-4435-001]` the id that is a literal is the id the element
+/// TS: `[no-broken-fragment-link-007]` the id that is a literal is the id the element
 /// has, a character reference of it is not decoded. The MLAST is what the JSX parser sends for
 /// `<><div id={"a&amp;b"}></div><a href={"#a&amp;b"}></a></>`: an expression value.
 #[test]
-fn no_broken_fragment_link_issue_4435_001() {
-    const _ID: &str = "no-broken-fragment-link-issue-4435-001";
+fn no_broken_fragment_link_007() {
+    const _ID: &str = "no-broken-fragment-link-007";
     let violations_of = |href: &str| {
         let expression = serde_json::json!({ "isExpressionValue": true });
         let document = serde_json::json!({});

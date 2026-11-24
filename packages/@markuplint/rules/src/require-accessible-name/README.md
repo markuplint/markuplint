@@ -11,6 +11,8 @@ Whether an element is hidden is judged along the accessibility tree, and the `la
 
 Which branch of a conditional block (`{#if}` of Svelte, `<template x-if>` of Alpine.js, and the element that has `v-if`, `v-else-if`, `v-else` or `v-for` of Vue) is rendered is not known from the markup, so a name in any branch is a name, and the rule does not report an element whose name is in one. Unknown content in a branch, such as a component or an expression, is as unknown as one outside of the block. The rule reports when no branch gives a name.
 
+An `aria-labelledby` whose value is not known until it is rendered (`aria-labelledby={id}` in JSX) is not reported, as the element it refers to is not known. A token of `aria-labelledby` that refers to no element in the same tree is not reported either when the tree has an element whose `id` is not known (`<h2 id={x}>`): it may be the one.
+
 ❌ Examples of **incorrect** code for this rule
 
 ```html

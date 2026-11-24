@@ -1,10 +1,10 @@
 //! Tests for `require-landmark-label` rule.
 //!
 //! Test ID mapping (TS → Rust):
-//!   require-landmark-label-valid-001    → require_landmark_label_valid_001
-//!   require-landmark-label-invalid-001  → require_landmark_label_invalid_001
-//!   require-landmark-label-issue-4180-001  → require_landmark_label_issue_4180_001
-//!   require-landmark-label-issue-4180-002  → require_landmark_label_issue_4180_002
+//!   require-landmark-label-001    → require_landmark_label_001
+//!   require-landmark-label-008  → require_landmark_label_008
+//!   require-landmark-label-006  → require_landmark_label_006
+//!   require-landmark-label-007  → require_landmark_label_007
 //!   v6_require_landmark_label_001  — Rust-only: a header with an explicit banner role is one banner
 //!   v6_require_landmark_label_002  — Rust-only: what counts as a label
 //!   v6_require_landmark_label_003  — Rust-only: which elements are landmarks of each role
@@ -61,38 +61,38 @@ fn assert_unlabelled(violations: &[Violation], expected: &[(u32, u32, &str)]) {
     }
 }
 
-/// TS: `[require-landmark-label-valid-001]` Duplicated area: has-label
+/// TS: `[require-landmark-label-001]` Duplicated area: has-label
 #[test]
-fn require_landmark_label_valid_001() {
-    const _ID: &str = "require-landmark-label-valid-001";
+fn require_landmark_label_001() {
+    const _ID: &str = "require-landmark-label-001";
     let violations = run(
         "\n<html>\n<body>\n\t<header></header>\n\t<nav aria-label=\"main\"></nav>\n\t<main>\n\t\t<header></header>\n\t\t<nav aria-label=\"sub\"></nav>\n\t\t<footer></footer>\n\t</main>\n\t<footer></footer>\n</body>\n</html>\n",
     );
     assert!(violations.is_empty(), "{violations:?}");
 }
 
-/// TS: `[require-landmark-label-invalid-001]` Duplicated area: no-label
+/// TS: `[require-landmark-label-008]` Duplicated area: no-label
 #[test]
-fn require_landmark_label_invalid_001() {
-    const _ID: &str = "require-landmark-label-invalid-001";
+fn require_landmark_label_008() {
+    const _ID: &str = "require-landmark-label-008";
     let violations = run(
         "\n<html>\n<body>\n\t<header></header>\n\t<nav></nav>\n\t<main>\n\t\t<header></header>\n\t\t<nav></nav>\n\t\t<footer></footer>\n\t</main>\n\t<footer></footer>\n</body>\n</html>\n",
     );
     assert_unlabelled(&violations, &[(5, 2, "<nav>"), (8, 3, "<nav>")]);
 }
 
-/// TS: `[require-landmark-label-issue-4180-001]` a single banner with an explicit role is not duplicated
+/// TS: `[require-landmark-label-006]` a single banner with an explicit role is not duplicated
 #[test]
-fn require_landmark_label_issue_4180_001() {
-    const _ID: &str = "require-landmark-label-issue-4180-001";
+fn require_landmark_label_006() {
+    const _ID: &str = "require-landmark-label-006";
     let violations = run("<html><body><header role=\"banner\"></header></body></html>");
     assert!(violations.is_empty(), "{violations:?}");
 }
 
-/// TS: `[require-landmark-label-issue-4180-002]` a single contentinfo with an explicit role is not duplicated
+/// TS: `[require-landmark-label-007]` a single contentinfo with an explicit role is not duplicated
 #[test]
-fn require_landmark_label_issue_4180_002() {
-    const _ID: &str = "require-landmark-label-issue-4180-002";
+fn require_landmark_label_007() {
+    const _ID: &str = "require-landmark-label-007";
     let violations = run("<html><body><footer role=\"contentinfo\"></footer></body></html>");
     assert!(violations.is_empty(), "{violations:?}");
 }

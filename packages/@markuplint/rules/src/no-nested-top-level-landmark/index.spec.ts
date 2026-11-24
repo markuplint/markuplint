@@ -3,7 +3,7 @@ import { test, expect } from 'vitest';
 
 import rule from './index.js';
 
-test('[no-nested-top-level-landmark-valid-001] No warning', async () => {
+test('[no-nested-top-level-landmark-001] No warning', async () => {
 	const { violations } = await mlRuleTest(
 		rule,
 		`
@@ -25,7 +25,7 @@ test('[no-nested-top-level-landmark-valid-001] No warning', async () => {
 	expect(violations).toStrictEqual([]);
 });
 
-test('[no-nested-top-level-landmark-valid-002] Top level landmarks', async () => {
+test('[no-nested-top-level-landmark-002] Top level landmarks', async () => {
 	// `complementary` is deliberately not one of this rule's checked top-level roles (see the
 	// module JSDoc), so a nested `<aside>` here is not reported.
 	const { violations } = await mlRuleTest(
@@ -49,7 +49,7 @@ test('[no-nested-top-level-landmark-valid-002] Top level landmarks', async () =>
 	expect(violations).toStrictEqual([]);
 });
 
-test('[no-nested-top-level-landmark-valid-003] Top level landmarks: disabled', async () => {
+test('[no-nested-top-level-landmark-003] Top level landmarks: disabled', async () => {
 	const { violations } = await mlRuleTest(
 		rule,
 		`
@@ -79,7 +79,7 @@ test('[no-nested-top-level-landmark-valid-003] Top level landmarks: disabled', a
 	expect(violations).toStrictEqual([]);
 });
 
-test('[no-nested-top-level-landmark-valid-004] Top level landmarks: ignoreRoles option', async () => {
+test('[no-nested-top-level-landmark-004] Top level landmarks: ignoreRoles option', async () => {
 	const { violations } = await mlRuleTest(
 		rule,
 		`
@@ -108,7 +108,7 @@ test('[no-nested-top-level-landmark-valid-004] Top level landmarks: ignoreRoles 
 	expect(violations).toStrictEqual([]);
 });
 
-test('[no-nested-top-level-landmark-issue-4489-001] a landmark outside of a template does not make what is in its content nested', async () => {
+test('[no-nested-top-level-landmark-005] a landmark outside of a template does not make what is in its content nested', async () => {
 	const { violations } = await mlRuleTest(
 		rule,
 		'<html><body><main><template><main></main></template></main></body></html>',
@@ -116,7 +116,7 @@ test('[no-nested-top-level-landmark-issue-4489-001] a landmark outside of a temp
 	expect(violations).toStrictEqual([]);
 });
 
-test('[no-nested-top-level-landmark-issue-4489-002] a landmark in the content of a template makes what is in the same content nested', async () => {
+test('[no-nested-top-level-landmark-006] a landmark in the content of a template makes what is in the same content nested', async () => {
 	const { violations } = await mlRuleTest(
 		rule,
 		'<html><body><template><main><main></main></main></template></body></html>',
@@ -132,7 +132,7 @@ test('[no-nested-top-level-landmark-issue-4489-002] a landmark in the content of
 	]);
 });
 
-test('[no-nested-top-level-landmark-invalid-001] nested main is flagged', async () => {
+test('[no-nested-top-level-landmark-007] nested main is flagged', async () => {
 	const { violations } = await mlRuleTest(
 		rule,
 		`
@@ -161,7 +161,7 @@ test('[no-nested-top-level-landmark-invalid-001] nested main is flagged', async 
 	]);
 });
 
-test('[no-nested-top-level-landmark-valid-005] The `as` attribute', async () => {
+test('[no-nested-top-level-landmark-008] The `as` attribute', async () => {
 	expect(
 		(
 			await mlRuleTest(

@@ -1,12 +1,12 @@
 //! Tests for `require-h1` rule.
 //!
 //! Test ID mapping (TS → Rust):
-//!   require-h1-invalid-001  → require_h1_invalid_001
-//!   require-h1-valid-001    → require_h1_valid_001
-//!   require-h1-valid-002    → require_h1_valid_002
-//!   require-h1-invalid-002  → require_h1_invalid_002
-//!   require-h1-invalid-003  → require_h1_invalid_003
-//!   require-h1-valid-003    → require_h1_valid_003
+//!   require-h1-001  → require_h1_001
+//!   require-h1-004    → require_h1_004
+//!   require-h1-005    → require_h1_005
+//!   require-h1-006  → require_h1_006
+//!   require-h1-007  → require_h1_007
+//!   require-h1-008    → require_h1_008
 //!   v6_require_h1_001  — Rust-only: `raw` is the first character of the first node, whatever it is
 //!   v6_require_h1_002  — Rust-only: an `<H1>` and an `<h1>` inside `<svg>` both count
 //!   v6_require_h1_003  — Rust-only: a leading comment makes the input a fragment, so nothing is reported
@@ -52,34 +52,34 @@ fn assert_missing(violations: &[Violation], raw: &str) {
     assert_eq!(violations[0].raw, raw);
 }
 
-/// TS: `[require-h1-invalid-001]` h1
+/// TS: `[require-h1-001]` h1
 #[test]
-fn require_h1_invalid_001() {
-    const _ID: &str = "require-h1-invalid-001";
+fn require_h1_001() {
+    const _ID: &str = "require-h1-001";
     let violations = run("<html><body>text</body></html>", serde_json::json!(true));
     assert_missing(&violations, "<");
 }
 
-/// TS: `[require-h1-valid-001]` h1
+/// TS: `[require-h1-004]` h1
 #[test]
-fn require_h1_valid_001() {
-    const _ID: &str = "require-h1-valid-001";
+fn require_h1_004() {
+    const _ID: &str = "require-h1-004";
     let violations = run("<html><body><h1>text</h1></body></html>", serde_json::json!(true));
     assert_eq!(violations.len(), 0);
 }
 
-/// TS: `[require-h1-valid-002]` h1
+/// TS: `[require-h1-005]` h1
 #[test]
-fn require_h1_valid_002() {
-    const _ID: &str = "require-h1-valid-002";
+fn require_h1_005() {
+    const _ID: &str = "require-h1-005";
     let violations = run("<div><h2>text</h2></div>", serde_json::json!(true));
     assert_eq!(violations.len(), 0);
 }
 
-/// TS: `[require-h1-invalid-002]` enable option "in-document-fragment"
+/// TS: `[require-h1-006]` enable option "in-document-fragment"
 #[test]
-fn require_h1_invalid_002() {
-    const _ID: &str = "require-h1-invalid-002";
+fn require_h1_006() {
+    const _ID: &str = "require-h1-006";
     let violations = run(
         "<div><h2>text</h2></div>",
         serde_json::json!({ "options": { "in-document-fragment": true } }),
@@ -87,10 +87,10 @@ fn require_h1_invalid_002() {
     assert_eq!(violations.len(), 1);
 }
 
-/// TS: `[require-h1-valid-003]` Issue #57
+/// TS: `[require-h1-008]` Issue #57
 #[test]
-fn require_h1_valid_003() {
-    const _ID: &str = "require-h1-valid-003";
+fn require_h1_008() {
+    const _ID: &str = "require-h1-008";
     let violations = run("", serde_json::json!(true));
     assert_eq!(violations.len(), 0);
 }
@@ -153,10 +153,10 @@ fn v6_require_h1_004() {
     );
 }
 
-/// TS: `[require-h1-invalid-003]` — The `as` attribute
+/// TS: `[require-h1-007]` — The `as` attribute
 #[test]
-fn require_h1_invalid_003() {
-    const _ID: &str = "require-h1-invalid-003";
+fn require_h1_007() {
+    const _ID: &str = "require-h1-007";
     let run = |html: &str| {
         crate::test_util::lint_brief(
             "require-h1",

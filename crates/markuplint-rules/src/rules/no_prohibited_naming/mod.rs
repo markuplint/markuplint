@@ -12,7 +12,7 @@
 //! author gives it a role. The computed role is `None` for a custom element even with a `role`
 //! attribute, so a non-empty `role` value is taken as "a role that supports naming is set" without
 //! validating it: `role="presentation"` lifts the prohibition too. That is permissive on purpose
-//! (pinned by the TS test `no-prohibited-naming-issue-3630-013`).
+//! (pinned by the TS test `no-prohibited-naming-014`).
 
 use markuplint_core::i18n::Primitive as Kw;
 use markuplint_core::mlast::ElementType;
@@ -23,6 +23,7 @@ use crate::aria_check::{
     ElementContext, ElementGate, aria_prop_attrs, attr_name, find_attr, name_key, role_attr, walk_elements,
 };
 use crate::attr_check::get_clean_value;
+use crate::helpers::is_role_unknown;
 use crate::rule::{Rule, RuleConfigSet};
 use crate::violation::Violation;
 
@@ -56,7 +57,8 @@ fn check(ctx: &ElementContext<'_>, violations: &mut Vec<Violation>) {
         .into_iter()
         .filter(|attr| NAMING_ATTRS.contains(&name_key(ctx.el, attr).as_str()))
         .collect();
-    if naming_attrs.is_empty() || ctx.computed_role().is_some() {
+    // Whether the element has no role to name is not known where the role is not known until it is rendered
+    if naming_attrs.is_empty() || is_role_unknown(ctx.el) || ctx.computed_role().is_some() {
         return;
     }
 

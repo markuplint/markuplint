@@ -83,3 +83,17 @@ describe('directivePatterns: the key of a repeat', () => {
 		expect(resolution).not.toHaveProperty('duplicateKey');
 	});
 });
+
+describe('directivePatterns: v-bind without an argument', () => {
+	test('v-bind="obj" is a spread attribute, as {...props} of JSX is, and keeps its name', () => {
+		const resolution = resolveDirective('v-bind', patterns);
+		expect(resolution?.isSpread).toBe(true);
+		expect(resolution?.potentialName).toBeUndefined();
+		expect(resolution?.isDirective).toBe(true);
+		expect(resolution?.isDynamicValue).toBe(true);
+	});
+
+	test.each(['v-bind:id', ':id', 'v-bind.prop', 'v-show', 'v-model'])('%s is not a spread attribute', name => {
+		expect(resolveDirective(name, patterns)?.isSpread).toBeUndefined();
+	});
+});

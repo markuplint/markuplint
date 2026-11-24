@@ -1,10 +1,10 @@
 //! Tests for `no-stray-head-or-body-tag` rule.
 //!
 //! Test ID mapping (TS → Rust):
-//!   no-stray-head-or-body-tag-invalid-001  → no_stray_head_or_body_tag_invalid_001
-//!   no-stray-head-or-body-tag-valid-001    → no_stray_head_or_body_tag_valid_001
-//!   no-stray-head-or-body-tag-valid-002    → no_stray_head_or_body_tag_valid_002
-//!   no-stray-head-or-body-tag-issue-4180-002 → no_stray_head_or_body_tag_issue_4180_002
+//!   no-stray-head-or-body-tag-001  → no_stray_head_or_body_tag_001
+//!   no-stray-head-or-body-tag-002    → no_stray_head_or_body_tag_002
+//!   no-stray-head-or-body-tag-005    → no_stray_head_or_body_tag_005
+//!   no-stray-head-or-body-tag-004 → no_stray_head_or_body_tag_004
 //!   v6_no_stray_head_or_body_tag_001  — Rust-only: an orphaned `</head>` between text is its own (bogus) text node
 //!   v6_no_stray_head_or_body_tag_002  — Rust-only: a duplicate `<body>` between whitespace stays in that text
 //!   v6_no_stray_head_or_body_tag_003  — Rust-only: tag names match case-insensitively, before whitespace, `/` or `>`
@@ -37,10 +37,10 @@ const MATH_IN_HEAD: &str = "<!doctype html>
 <body></body>
 ";
 
-/// TS: `[no-stray-head-or-body-tag-invalid-001]` disallowed head content leaves a stray end tag and a duplicate body start tag
+/// TS: `[no-stray-head-or-body-tag-001]` disallowed head content leaves a stray end tag and a duplicate body start tag
 #[test]
-fn no_stray_head_or_body_tag_invalid_001() {
-    const _ID: &str = "no-stray-head-or-body-tag-invalid-001";
+fn no_stray_head_or_body_tag_001() {
+    const _ID: &str = "no-stray-head-or-body-tag-001";
     assert_eq!(
         run(MATH_IN_HEAD),
         [
@@ -50,20 +50,20 @@ fn no_stray_head_or_body_tag_invalid_001() {
     );
 }
 
-/// TS: `[no-stray-head-or-body-tag-valid-001]` a normal document has no stray tags
+/// TS: `[no-stray-head-or-body-tag-002]` a normal document has no stray tags
 #[test]
-fn no_stray_head_or_body_tag_valid_001() {
-    const _ID: &str = "no-stray-head-or-body-tag-valid-001";
+fn no_stray_head_or_body_tag_002() {
+    const _ID: &str = "no-stray-head-or-body-tag-002";
     assert_eq!(
         run("<!doctype html><head><title>ok</title></head><body><p>hi</p></body>"),
         []
     );
 }
 
-/// TS: `[no-stray-head-or-body-tag-valid-002]` tag-shaped text inside script/style/title is not flagged
+/// TS: `[no-stray-head-or-body-tag-005]` tag-shaped text inside script/style/title is not flagged
 #[test]
-fn no_stray_head_or_body_tag_valid_002() {
-    const _ID: &str = "no-stray-head-or-body-tag-valid-002";
+fn no_stray_head_or_body_tag_005() {
+    const _ID: &str = "no-stray-head-or-body-tag-005";
     assert_eq!(
         run("<!doctype html><head><title><body></title><script>const s = '<body>';</script></head><body></body>"),
         []
@@ -100,10 +100,10 @@ fn v6_no_stray_head_or_body_tag_003() {
     );
 }
 
-/// TS: `[no-stray-head-or-body-tag-issue-4180-002]` tag-shaped text inside iframe is not flagged
+/// TS: `[no-stray-head-or-body-tag-004]` tag-shaped text inside iframe is not flagged
 #[test]
-fn no_stray_head_or_body_tag_issue_4180_002() {
-    const _ID: &str = "no-stray-head-or-body-tag-issue-4180-002";
+fn no_stray_head_or_body_tag_004() {
+    const _ID: &str = "no-stray-head-or-body-tag-004";
     assert_eq!(
         run("<!doctype html><head><title>t</title></head><body><iframe><body></iframe></body>"),
         []

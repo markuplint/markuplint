@@ -1,10 +1,10 @@
 import { mlRuleTest } from 'markuplint';
-import { describe, test, expect } from 'vitest';
+import { describe, expect, test } from 'vitest';
 
 import rule from './index.js';
 
 describe('trees', () => {
-	test('[no-broken-fragment-link-issue-4489-001] the target of a link is an id of the document, not one in the content of a template', async () => {
+	test('[no-broken-fragment-link-001] the target of a link is an id of the document, not one in the content of a template', async () => {
 		const { violations } = await mlRuleTest(rule, '<a href="#x"></a><template><div id="x"></div></template>');
 		expect(violations).toStrictEqual([
 			{
@@ -17,12 +17,12 @@ describe('trees', () => {
 		]);
 	});
 
-	test('[no-broken-fragment-link-issue-4489-002] a link in the content of a template is checked against the ids of the document', async () => {
+	test('[no-broken-fragment-link-002] a link in the content of a template is checked against the ids of the document', async () => {
 		const { violations } = await mlRuleTest(rule, '<div id="x"></div><template><a href="#x"></a></template>');
 		expect(violations).toStrictEqual([]);
 	});
 
-	test('[no-broken-fragment-link-issue-4489-003] a link in the content of a template to a missing id is reported', async () => {
+	test('[no-broken-fragment-link-003] a link in the content of a template to a missing id is reported', async () => {
 		const { violations } = await mlRuleTest(rule, '<template><a href="#x"></a></template>');
 		expect(violations).toStrictEqual([
 			{
@@ -36,7 +36,7 @@ describe('trees', () => {
 	});
 });
 
-test('[no-broken-fragment-link-invalid-001] fragment', async () => {
+test('[no-broken-fragment-link-004] fragment', async () => {
 	expect((await mlRuleTest(rule, '<a href="#foo"></a>')).violations).toStrictEqual([
 		{
 			severity: 'warning',
@@ -144,34 +144,33 @@ test('[no-broken-fragment-link-invalid-001] fragment', async () => {
 	).toStrictEqual([]);
 });
 
-describe('Issues', () => {
-	test('[no-broken-fragment-link-issue-748] #748', async () => {
-		expect(
-			(
-				await mlRuleTest(
-					rule,
-					`
+test('[no-broken-fragment-link-005] a fragment that refers to an ID next to a PHP block is not broken', async () => {
+	expect(
+		(
+			await mlRuleTest(
+				rule,
+				`
 	<main>
 		<?php foo() ?>
 		<a href="#foo">link</a>
 		<div id="foo"></div>
 	</main>`,
-					{
-						parser: {
-							'.*': '@markuplint/php-parser',
-						},
+				{
+					parser: {
+						'.*': '@markuplint/php-parser',
 					},
-				)
-			).violations,
-		).toStrictEqual([]);
-	});
+				},
+			)
+		).violations,
+	).toStrictEqual([]);
+});
 
-	test('[no-broken-fragment-link-issue-776] #776', async () => {
-		expect(
-			(
-				await mlRuleTest(
-					rule,
-					`
+test('[no-broken-fragment-link-006] a fragment is compared with the ID after its percent-encoding and its character references are decoded', async () => {
+	expect(
+		(
+			await mlRuleTest(
+				rule,
+				`
 						<a href="#apple%3Aorange">apple:orange</a>
 						<p id="apple:orange">apple:orange</p>
 
@@ -181,13 +180,26 @@ describe('Issues', () => {
 						<a href="#apple%26lemon">apple&amp;lemon</a>
 						<p id="apple&lemon">apple&amp;lemon</p>
 					`,
-					{
-						parser: {
-							'.*': '@markuplint/php-parser',
-						},
+				{
+					parser: {
+						'.*': '@markuplint/php-parser',
 					},
-				)
-			).violations,
-		).toStrictEqual([]);
+				},
+			)
+		).violations,
+	).toStrictEqual([]);
+});
+
+test('[no-broken-fragment-link-007] the id that is a literal is the id the element has, a character reference of it is not decoded', async () => {
+	const { violations } = await mlRuleTest(rule, '<><div id={"a&amp;b"}></div><a href={"#a&amp;b"}></a></>', {
+		parser: { '.*': '@markuplint/jsx-parser' },
 	});
+	expect(violations).toStrictEqual([]);
+});
+
+test('[no-broken-fragment-link-008] an id that the framework does not output is not an id', async () => {
+	const { violations } = await mlRuleTest(rule, '<><div id={null}></div><a href="#x"></a></>', {
+		parser: { '.*': '@markuplint/jsx-parser' },
+	});
+	expect(violations).toStrictEqual([{ severity: 'warning', line: 1, col: 33, message: 'Missing "x" ID', raw: '#x' }]);
 });

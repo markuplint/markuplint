@@ -1,60 +1,60 @@
 //! Tests for `valid-speculation-rules` rule.
 //!
 //! Test ID mapping (TS → Rust):
-//!   valid-speculation-rules-valid-001            → valid_speculation_rules_valid_001
-//!   valid-speculation-rules-valid-002            → valid_speculation_rules_valid_002
-//!   valid-speculation-rules-valid-003            → valid_speculation_rules_valid_003
-//!   valid-speculation-rules-valid-004            → valid_speculation_rules_valid_004
-//!   valid-speculation-rules-valid-005            → valid_speculation_rules_valid_005
-//!   valid-speculation-rules-valid-006            → valid_speculation_rules_valid_006
-//!   valid-speculation-rules-valid-007            → valid_speculation_rules_valid_007
-//!   valid-speculation-rules-valid-008            → valid_speculation_rules_valid_008
-//!   valid-speculation-rules-valid-009            → valid_speculation_rules_valid_009
-//!   valid-speculation-rules-valid-010            → valid_speculation_rules_valid_010
-//!   valid-speculation-rules-valid-011            → valid_speculation_rules_valid_011
-//!   valid-speculation-rules-valid-012            → valid_speculation_rules_valid_012
-//!   valid-speculation-rules-valid-013            → valid_speculation_rules_valid_013
-//!   valid-speculation-rules-valid-014            → valid_speculation_rules_valid_014
-//!   valid-speculation-rules-invalid-001          → valid_speculation_rules_invalid_001
-//!   valid-speculation-rules-invalid-002          → valid_speculation_rules_invalid_002
-//!   valid-speculation-rules-invalid-003          → valid_speculation_rules_invalid_003
-//!   valid-speculation-rules-invalid-004          → valid_speculation_rules_invalid_004
-//!   valid-speculation-rules-invalid-005          → valid_speculation_rules_invalid_005
-//!   valid-speculation-rules-invalid-006          → valid_speculation_rules_invalid_006
-//!   valid-speculation-rules-invalid-007          → valid_speculation_rules_invalid_007
-//!   valid-speculation-rules-invalid-008          → valid_speculation_rules_invalid_008
-//!   valid-speculation-rules-invalid-009          → valid_speculation_rules_invalid_009
-//!   valid-speculation-rules-invalid-010          → valid_speculation_rules_invalid_010
-//!   valid-speculation-rules-invalid-011          → valid_speculation_rules_invalid_011
-//!   valid-speculation-rules-invalid-012          → valid_speculation_rules_invalid_012
-//!   valid-speculation-rules-invalid-013          → valid_speculation_rules_invalid_013
-//!   valid-speculation-rules-invalid-014          → valid_speculation_rules_invalid_014
-//!   valid-speculation-rules-invalid-015          → valid_speculation_rules_invalid_015
-//!   valid-speculation-rules-invalid-016          → valid_speculation_rules_invalid_016
-//!   valid-speculation-rules-invalid-017          → valid_speculation_rules_invalid_017
-//!   valid-speculation-rules-invalid-018          → valid_speculation_rules_invalid_018
-//!   valid-speculation-rules-invalid-019          → valid_speculation_rules_invalid_019
-//!   valid-speculation-rules-invalid-020          → valid_speculation_rules_invalid_020
-//!   valid-speculation-rules-invalid-021          → valid_speculation_rules_invalid_021
-//!   valid-speculation-rules-invalid-022          → valid_speculation_rules_invalid_022
-//!   valid-speculation-rules-invalid-023          → valid_speculation_rules_invalid_023
-//!   valid-speculation-rules-invalid-024          → valid_speculation_rules_invalid_024
-//!   valid-speculation-rules-invalid-025          → valid_speculation_rules_invalid_025
-//!   valid-speculation-rules-invalid-026          → valid_speculation_rules_invalid_026
-//!   valid-speculation-rules-invalid-027          → valid_speculation_rules_invalid_027
-//!   valid-speculation-rules-invalid-028          → valid_speculation_rules_invalid_028
-//!   valid-speculation-rules-invalid-029          → valid_speculation_rules_invalid_029
-//!   valid-speculation-rules-invalid-030          → valid_speculation_rules_invalid_030
-//!   valid-speculation-rules-invalid-031          → valid_speculation_rules_invalid_031
-//!   valid-speculation-rules-invalid-032          → valid_speculation_rules_invalid_032
-//!   valid-speculation-rules-invalid-033          → valid_speculation_rules_invalid_033
-//!   valid-speculation-rules-invalid-034          → valid_speculation_rules_invalid_034
-//!   valid-speculation-rules-invalid-035          → valid_speculation_rules_invalid_035
-//!   valid-speculation-rules-invalid-036          → valid_speculation_rules_invalid_036
-//!   valid-speculation-rules-invalid-037          → valid_speculation_rules_invalid_037
-//!   valid-speculation-rules-invalid-038          → valid_speculation_rules_invalid_038
-//!   valid-speculation-rules-invalid-039          → valid_speculation_rules_invalid_039
-//!   valid-speculation-rules-invalid-040          → valid_speculation_rules_invalid_040
+//!   valid-speculation-rules-001            → valid_speculation_rules_001
+//!   valid-speculation-rules-002            → valid_speculation_rules_002
+//!   valid-speculation-rules-003            → valid_speculation_rules_003
+//!   valid-speculation-rules-004            → valid_speculation_rules_004
+//!   valid-speculation-rules-005            → valid_speculation_rules_005
+//!   valid-speculation-rules-006            → valid_speculation_rules_006
+//!   valid-speculation-rules-007            → valid_speculation_rules_007
+//!   valid-speculation-rules-008            → valid_speculation_rules_008
+//!   valid-speculation-rules-009            → valid_speculation_rules_009
+//!   valid-speculation-rules-010            → valid_speculation_rules_010
+//!   valid-speculation-rules-011            → valid_speculation_rules_011
+//!   valid-speculation-rules-012            → valid_speculation_rules_012
+//!   valid-speculation-rules-013            → valid_speculation_rules_013
+//!   valid-speculation-rules-014            → valid_speculation_rules_014
+//!   valid-speculation-rules-015          → valid_speculation_rules_015
+//!   valid-speculation-rules-016          → valid_speculation_rules_016
+//!   valid-speculation-rules-017          → valid_speculation_rules_017
+//!   valid-speculation-rules-018          → valid_speculation_rules_018
+//!   valid-speculation-rules-019          → valid_speculation_rules_019
+//!   valid-speculation-rules-020          → valid_speculation_rules_020
+//!   valid-speculation-rules-021          → valid_speculation_rules_021
+//!   valid-speculation-rules-022          → valid_speculation_rules_022
+//!   valid-speculation-rules-023          → valid_speculation_rules_023
+//!   valid-speculation-rules-024          → valid_speculation_rules_024
+//!   valid-speculation-rules-025          → valid_speculation_rules_025
+//!   valid-speculation-rules-026          → valid_speculation_rules_026
+//!   valid-speculation-rules-027          → valid_speculation_rules_027
+//!   valid-speculation-rules-028          → valid_speculation_rules_028
+//!   valid-speculation-rules-029          → valid_speculation_rules_029
+//!   valid-speculation-rules-030          → valid_speculation_rules_030
+//!   valid-speculation-rules-031          → valid_speculation_rules_031
+//!   valid-speculation-rules-032          → valid_speculation_rules_032
+//!   valid-speculation-rules-033          → valid_speculation_rules_033
+//!   valid-speculation-rules-034          → valid_speculation_rules_034
+//!   valid-speculation-rules-035          → valid_speculation_rules_035
+//!   valid-speculation-rules-036          → valid_speculation_rules_036
+//!   valid-speculation-rules-037          → valid_speculation_rules_037
+//!   valid-speculation-rules-038          → valid_speculation_rules_038
+//!   valid-speculation-rules-039          → valid_speculation_rules_039
+//!   valid-speculation-rules-040          → valid_speculation_rules_040
+//!   valid-speculation-rules-041          → valid_speculation_rules_041
+//!   valid-speculation-rules-042          → valid_speculation_rules_042
+//!   valid-speculation-rules-043          → valid_speculation_rules_043
+//!   valid-speculation-rules-044          → valid_speculation_rules_044
+//!   valid-speculation-rules-045          → valid_speculation_rules_045
+//!   valid-speculation-rules-046          → valid_speculation_rules_046
+//!   valid-speculation-rules-047          → valid_speculation_rules_047
+//!   valid-speculation-rules-048          → valid_speculation_rules_048
+//!   valid-speculation-rules-049          → valid_speculation_rules_049
+//!   valid-speculation-rules-050          → valid_speculation_rules_050
+//!   valid-speculation-rules-051          → valid_speculation_rules_051
+//!   valid-speculation-rules-052          → valid_speculation_rules_052
+//!   valid-speculation-rules-053          → valid_speculation_rules_053
+//!   valid-speculation-rules-054          → valid_speculation_rules_054
 //!   v6_valid_speculation_rules_001  — Rust-only: a `urls` index is locale-formatted, as the TS translator does
 //!   v6_valid_speculation_rules_002  — Rust-only: a rule label index is not (it is a template literal in TS)
 //!   v6_valid_speculation_rules_003  — Rust-only: a message repeated within one script is reported once
@@ -103,24 +103,24 @@ fn err1(message: &str) -> Brief {
     brief(Severity::Error, 1, 1, message, r#"<script type="speculationrules">"#)
 }
 
-/// TS: `[valid-speculation-rules-valid-001]` script without type attribute is ignored
+/// TS: `[valid-speculation-rules-001]` script without type attribute is ignored
 #[test]
-fn valid_speculation_rules_valid_001() {
-    const _ID: &str = "valid-speculation-rules-valid-001";
+fn valid_speculation_rules_001() {
+    const _ID: &str = "valid-speculation-rules-001";
     assert_eq!(run(r#"<script>console.log("ok");</script>"#), []);
 }
 
-/// TS: `[valid-speculation-rules-valid-002]` script type=module is ignored
+/// TS: `[valid-speculation-rules-002]` script type=module is ignored
 #[test]
-fn valid_speculation_rules_valid_002() {
-    const _ID: &str = "valid-speculation-rules-valid-002";
+fn valid_speculation_rules_002() {
+    const _ID: &str = "valid-speculation-rules-002";
     assert_eq!(run(r#"<script type="module">import "./a.js";</script>"#), []);
 }
 
-/// TS: `[valid-speculation-rules-valid-003]` minimal valid list rule
+/// TS: `[valid-speculation-rules-003]` minimal valid list rule
 #[test]
-fn valid_speculation_rules_valid_003() {
-    const _ID: &str = "valid-speculation-rules-valid-003";
+fn valid_speculation_rules_003() {
+    const _ID: &str = "valid-speculation-rules-003";
     assert_eq!(
         run(
             r#"<script type="speculationrules">{"prefetch":[{"source":"list","urls":["https://example.com"]}]}</script>"#
@@ -129,10 +129,10 @@ fn valid_speculation_rules_valid_003() {
     );
 }
 
-/// TS: `[valid-speculation-rules-valid-004]` minimal valid document rule
+/// TS: `[valid-speculation-rules-004]` minimal valid document rule
 #[test]
-fn valid_speculation_rules_valid_004() {
-    const _ID: &str = "valid-speculation-rules-valid-004";
+fn valid_speculation_rules_004() {
+    const _ID: &str = "valid-speculation-rules-004";
     assert_eq!(
         run(
             r#"<script type="speculationrules">{"prefetch":[{"source":"document","where":{"href_matches":"/*"}}]}</script>"#
@@ -141,10 +141,10 @@ fn valid_speculation_rules_valid_004() {
     );
 }
 
-/// TS: `[valid-speculation-rules-valid-005]` both prefetch and prerender rule sets
+/// TS: `[valid-speculation-rules-005]` both prefetch and prerender rule sets
 #[test]
-fn valid_speculation_rules_valid_005() {
-    const _ID: &str = "valid-speculation-rules-valid-005";
+fn valid_speculation_rules_005() {
+    const _ID: &str = "valid-speculation-rules-005";
     assert_eq!(
         run(
             r#"<script type="speculationrules">{"prefetch":[{"source":"list","urls":["/a"]}],"prerender":[{"source":"document","where":{"href_matches":"/*"}}]}</script>"#
@@ -153,20 +153,20 @@ fn valid_speculation_rules_valid_005() {
     );
 }
 
-/// TS: `[valid-speculation-rules-valid-006]` source inferred as list from urls
+/// TS: `[valid-speculation-rules-006]` source inferred as list from urls
 #[test]
-fn valid_speculation_rules_valid_006() {
-    const _ID: &str = "valid-speculation-rules-valid-006";
+fn valid_speculation_rules_006() {
+    const _ID: &str = "valid-speculation-rules-006";
     assert_eq!(
         run(r#"<script type="speculationrules">{"prefetch":[{"urls":["/page1.html"]}]}</script>"#),
         []
     );
 }
 
-/// TS: `[valid-speculation-rules-valid-007]` source inferred as document from where
+/// TS: `[valid-speculation-rules-007]` source inferred as document from where
 #[test]
-fn valid_speculation_rules_valid_007() {
-    const _ID: &str = "valid-speculation-rules-valid-007";
+fn valid_speculation_rules_007() {
+    const _ID: &str = "valid-speculation-rules-007";
     assert_eq!(
         run(
             r#"<script type="speculationrules">{"prefetch":[{"eagerness":"moderate","where":{"href_matches":"/*"}}]}</script>"#
@@ -175,10 +175,10 @@ fn valid_speculation_rules_valid_007() {
     );
 }
 
-/// TS: `[valid-speculation-rules-valid-008]` href_matches accepts an array of strings
+/// TS: `[valid-speculation-rules-008]` href_matches accepts an array of strings
 #[test]
-fn valid_speculation_rules_valid_008() {
-    const _ID: &str = "valid-speculation-rules-valid-008";
+fn valid_speculation_rules_008() {
+    const _ID: &str = "valid-speculation-rules-008";
     assert_eq!(
         run(
             r#"<script type="speculationrules">{"prefetch":[{"source":"document","where":{"href_matches":["/blog/*","/news/*"]}}]}</script>"#
@@ -187,10 +187,10 @@ fn valid_speculation_rules_valid_008() {
     );
 }
 
-/// TS: `[valid-speculation-rules-valid-009]` nested and / or / not predicates
+/// TS: `[valid-speculation-rules-009]` nested and / or / not predicates
 #[test]
-fn valid_speculation_rules_valid_009() {
-    const _ID: &str = "valid-speculation-rules-valid-009";
+fn valid_speculation_rules_009() {
+    const _ID: &str = "valid-speculation-rules-009";
     assert_eq!(
         run(
             r#"<script type="speculationrules">{"prefetch":[{"source":"document","where":{"and":[{"or":[{"href_matches":"/articles/*"},{"href_matches":"/blog/*"}]},{"not":{"selector_matches":[".no-prefetch","a[rel~=nofollow]"]}}]},"eagerness":"conservative"}]}</script>"#
@@ -199,27 +199,27 @@ fn valid_speculation_rules_valid_009() {
     );
 }
 
-/// TS: `[valid-speculation-rules-valid-010]` type matching is case-insensitive
+/// TS: `[valid-speculation-rules-010]` type matching is case-insensitive
 #[test]
-fn valid_speculation_rules_valid_010() {
-    const _ID: &str = "valid-speculation-rules-valid-010";
+fn valid_speculation_rules_010() {
+    const _ID: &str = "valid-speculation-rules-010";
     assert_eq!(
         run(r#"<script type="SpeculationRules">{"prefetch":[{"source":"list","urls":["/a"]}]}</script>"#),
         []
     );
 }
 
-/// TS: `[valid-speculation-rules-valid-011]` empty rule set array is allowed
+/// TS: `[valid-speculation-rules-011]` empty rule set array is allowed
 #[test]
-fn valid_speculation_rules_valid_011() {
-    const _ID: &str = "valid-speculation-rules-valid-011";
+fn valid_speculation_rules_011() {
+    const _ID: &str = "valid-speculation-rules-011";
     assert_eq!(run(r#"<script type="speculationrules">{"prefetch":[]}</script>"#), []);
 }
 
-/// TS: `[valid-speculation-rules-valid-012]` eagerness "immediate" is allowed (HTML LS §7.6)
+/// TS: `[valid-speculation-rules-012]` eagerness "immediate" is allowed (HTML LS §7.6)
 #[test]
-fn valid_speculation_rules_valid_012() {
-    const _ID: &str = "valid-speculation-rules-valid-012";
+fn valid_speculation_rules_012() {
+    const _ID: &str = "valid-speculation-rules-012";
     assert_eq!(
         run(
             r#"<script type="speculationrules">{"prefetch":[{"source":"list","urls":["/a"],"eagerness":"immediate"}]}</script>"#
@@ -228,10 +228,10 @@ fn valid_speculation_rules_valid_012() {
     );
 }
 
-/// TS: `[valid-speculation-rules-valid-013]` additional spec rule keys are allowed (HTML LS §7.6.1.2)
+/// TS: `[valid-speculation-rules-013]` additional spec rule keys are allowed (HTML LS §7.6.1.2)
 #[test]
-fn valid_speculation_rules_valid_013() {
-    const _ID: &str = "valid-speculation-rules-valid-013";
+fn valid_speculation_rules_013() {
+    const _ID: &str = "valid-speculation-rules-013";
     assert_eq!(
         run(
             r#"<script type="speculationrules">{"prefetch":[{"source":"list","urls":["/a"],"relative_to":"document","referrer_policy":"no-referrer","requires":["anonymous-client-ip-when-cross-origin"],"expects_no_vary_search":"params=(\"a\")","target_hint":"_blank","tag":"my-tag"}]}</script>"#
@@ -240,10 +240,10 @@ fn valid_speculation_rules_valid_013() {
     );
 }
 
-/// TS: `[valid-speculation-rules-valid-014]` top-level "tag" is allowed alongside a rule set
+/// TS: `[valid-speculation-rules-014]` top-level "tag" is allowed alongside a rule set
 #[test]
-fn valid_speculation_rules_valid_014() {
-    const _ID: &str = "valid-speculation-rules-valid-014";
+fn valid_speculation_rules_014() {
+    const _ID: &str = "valid-speculation-rules-014";
     assert_eq!(
         run(
             r#"<script type="speculationrules">{"tag":"my-tag","prefetch":[{"source":"list","urls":["/a"]}]}</script>"#
@@ -252,40 +252,40 @@ fn valid_speculation_rules_valid_014() {
     );
 }
 
-/// TS: `[valid-speculation-rules-invalid-001]` empty content
+/// TS: `[valid-speculation-rules-015]` empty content
 #[test]
-fn valid_speculation_rules_invalid_001() {
-    const _ID: &str = "valid-speculation-rules-invalid-001";
+fn valid_speculation_rules_015() {
+    const _ID: &str = "valid-speculation-rules-015";
     assert_eq!(
         run(r#"<script type="speculationrules"></script>"#),
         [err(r#"Speculation rules must contain a JSON object"#),]
     );
 }
 
-/// TS: `[valid-speculation-rules-invalid-002]` content is not JSON
+/// TS: `[valid-speculation-rules-016]` content is not JSON
 #[test]
-fn valid_speculation_rules_invalid_002() {
-    const _ID: &str = "valid-speculation-rules-invalid-002";
+fn valid_speculation_rules_016() {
+    const _ID: &str = "valid-speculation-rules-016";
     assert_eq!(
         run(r#"<script type="speculationrules">{ invalid json</script>"#),
         [err(r#"Speculation rules must be valid JSON"#),]
     );
 }
 
-/// TS: `[valid-speculation-rules-invalid-003]` top-level value is an array
+/// TS: `[valid-speculation-rules-017]` top-level value is an array
 #[test]
-fn valid_speculation_rules_invalid_003() {
-    const _ID: &str = "valid-speculation-rules-invalid-003";
+fn valid_speculation_rules_017() {
+    const _ID: &str = "valid-speculation-rules-017";
     assert_eq!(
         run(r#"<script type="speculationrules">["a","b"]</script>"#),
         [err(r#"Speculation rules must be a JSON object"#),]
     );
 }
 
-/// TS: `[valid-speculation-rules-invalid-004]` missing both prefetch and prerender
+/// TS: `[valid-speculation-rules-018]` missing both prefetch and prerender
 #[test]
-fn valid_speculation_rules_invalid_004() {
-    const _ID: &str = "valid-speculation-rules-invalid-004";
+fn valid_speculation_rules_018() {
+    const _ID: &str = "valid-speculation-rules-018";
     assert_eq!(
         run(r#"<script type="speculationrules">{}</script>"#),
         [err(
@@ -294,10 +294,10 @@ fn valid_speculation_rules_invalid_004() {
     );
 }
 
-/// TS: `[valid-speculation-rules-invalid-005]` forbidden top-level key
+/// TS: `[valid-speculation-rules-019]` forbidden top-level key
 #[test]
-fn valid_speculation_rules_invalid_005() {
-    const _ID: &str = "valid-speculation-rules-invalid-005";
+fn valid_speculation_rules_019() {
+    const _ID: &str = "valid-speculation-rules-019";
     assert_eq!(
         run(r#"<script type="speculationrules">{"prefetch":[],"unknownProp":true}</script>"#),
         [err(
@@ -306,10 +306,10 @@ fn valid_speculation_rules_invalid_005() {
     );
 }
 
-/// TS: `[valid-speculation-rules-invalid-006]` rule set is not an array
+/// TS: `[valid-speculation-rules-020]` rule set is not an array
 #[test]
-fn valid_speculation_rules_invalid_006() {
-    const _ID: &str = "valid-speculation-rules-invalid-006";
+fn valid_speculation_rules_020() {
+    const _ID: &str = "valid-speculation-rules-020";
     assert_eq!(
         run(r#"<script type="speculationrules">{"prefetch":"not-array"}</script>"#),
         [err(
@@ -318,20 +318,20 @@ fn valid_speculation_rules_invalid_006() {
     );
 }
 
-/// TS: `[valid-speculation-rules-invalid-007]` rule is not an object
+/// TS: `[valid-speculation-rules-021]` rule is not an object
 #[test]
-fn valid_speculation_rules_invalid_007() {
-    const _ID: &str = "valid-speculation-rules-invalid-007";
+fn valid_speculation_rules_021() {
+    const _ID: &str = "valid-speculation-rules-021";
     assert_eq!(
         run(r#"<script type="speculationrules">{"prefetch":["not-an-object"]}</script>"#),
         [err(r#"The speculation rule prefetch[0] must be a JSON object"#),]
     );
 }
 
-/// TS: `[valid-speculation-rules-invalid-008]` forbidden rule key
+/// TS: `[valid-speculation-rules-022]` forbidden rule key
 #[test]
-fn valid_speculation_rules_invalid_008() {
-    const _ID: &str = "valid-speculation-rules-invalid-008";
+fn valid_speculation_rules_022() {
+    const _ID: &str = "valid-speculation-rules-022";
     assert_eq!(
         run(
             r#"<script type="speculationrules">{"prefetch":[{"source":"list","urls":["/a"],"unknownProp":true}]}</script>"#
@@ -342,20 +342,20 @@ fn valid_speculation_rules_invalid_008() {
     );
 }
 
-/// TS: `[valid-speculation-rules-invalid-009]` source is not a string
+/// TS: `[valid-speculation-rules-023]` source is not a string
 #[test]
-fn valid_speculation_rules_invalid_009() {
-    const _ID: &str = "valid-speculation-rules-invalid-009";
+fn valid_speculation_rules_023() {
+    const _ID: &str = "valid-speculation-rules-023";
     assert_eq!(
         run(r#"<script type="speculationrules">{"prefetch":[{"source":123}]}</script>"#),
         [err(r#"The "source" of prefetch[0] must be a string"#),]
     );
 }
 
-/// TS: `[valid-speculation-rules-invalid-010]` source has an invalid value
+/// TS: `[valid-speculation-rules-024]` source has an invalid value
 #[test]
-fn valid_speculation_rules_invalid_010() {
-    const _ID: &str = "valid-speculation-rules-invalid-010";
+fn valid_speculation_rules_024() {
+    const _ID: &str = "valid-speculation-rules-024";
     assert_eq!(
         run(r#"<script type="speculationrules">{"prefetch":[{"source":"invalid"}]}</script>"#),
         [err(
@@ -364,20 +364,20 @@ fn valid_speculation_rules_invalid_010() {
     );
 }
 
-/// TS: `[valid-speculation-rules-invalid-011]` list rule is missing urls
+/// TS: `[valid-speculation-rules-025]` list rule is missing urls
 #[test]
-fn valid_speculation_rules_invalid_011() {
-    const _ID: &str = "valid-speculation-rules-invalid-011";
+fn valid_speculation_rules_025() {
+    const _ID: &str = "valid-speculation-rules-025";
     assert_eq!(
         run(r#"<script type="speculationrules">{"prefetch":[{"source":"list"}]}</script>"#),
         [err(r#"The list rule prefetch[0] must have a "urls" property"#),]
     );
 }
 
-/// TS: `[valid-speculation-rules-invalid-012]` list rule has a where
+/// TS: `[valid-speculation-rules-026]` list rule has a where
 #[test]
-fn valid_speculation_rules_invalid_012() {
-    const _ID: &str = "valid-speculation-rules-invalid-012";
+fn valid_speculation_rules_026() {
+    const _ID: &str = "valid-speculation-rules-026";
     assert_eq!(
         run(
             r#"<script type="speculationrules">{"prefetch":[{"source":"list","urls":["/a"],"where":{"href_matches":"*"}}]}</script>"#
@@ -386,20 +386,20 @@ fn valid_speculation_rules_invalid_012() {
     );
 }
 
-/// TS: `[valid-speculation-rules-invalid-013]` document rule is missing where
+/// TS: `[valid-speculation-rules-027]` document rule is missing where
 #[test]
-fn valid_speculation_rules_invalid_013() {
-    const _ID: &str = "valid-speculation-rules-invalid-013";
+fn valid_speculation_rules_027() {
+    const _ID: &str = "valid-speculation-rules-027";
     assert_eq!(
         run(r#"<script type="speculationrules">{"prefetch":[{"source":"document"}]}</script>"#),
         [err(r#"The document rule prefetch[0] must have a "where" property"#),]
     );
 }
 
-/// TS: `[valid-speculation-rules-invalid-014]` document rule has urls
+/// TS: `[valid-speculation-rules-028]` document rule has urls
 #[test]
-fn valid_speculation_rules_invalid_014() {
-    const _ID: &str = "valid-speculation-rules-invalid-014";
+fn valid_speculation_rules_028() {
+    const _ID: &str = "valid-speculation-rules-028";
     assert_eq!(
         run(
             r#"<script type="speculationrules">{"prefetch":[{"source":"document","where":{"href_matches":"*"},"urls":["/a"]}]}</script>"#
@@ -408,10 +408,10 @@ fn valid_speculation_rules_invalid_014() {
     );
 }
 
-/// TS: `[valid-speculation-rules-invalid-015]` rule has neither source, urls, nor where
+/// TS: `[valid-speculation-rules-029]` rule has neither source, urls, nor where
 #[test]
-fn valid_speculation_rules_invalid_015() {
-    const _ID: &str = "valid-speculation-rules-invalid-015";
+fn valid_speculation_rules_029() {
+    const _ID: &str = "valid-speculation-rules-029";
     assert_eq!(
         run(r#"<script type="speculationrules">{"prefetch":[{"eagerness":"moderate"}]}</script>"#),
         [err(
@@ -420,10 +420,10 @@ fn valid_speculation_rules_invalid_015() {
     );
 }
 
-/// TS: `[valid-speculation-rules-invalid-016]` rule has both urls and where without source
+/// TS: `[valid-speculation-rules-030]` rule has both urls and where without source
 #[test]
-fn valid_speculation_rules_invalid_016() {
-    const _ID: &str = "valid-speculation-rules-invalid-016";
+fn valid_speculation_rules_030() {
+    const _ID: &str = "valid-speculation-rules-030";
     assert_eq!(
         run(r#"<script type="speculationrules">{"prefetch":[{"urls":["/a"],"where":{"href_matches":"/*"}}]}</script>"#),
         [err(
@@ -432,50 +432,50 @@ fn valid_speculation_rules_invalid_016() {
     );
 }
 
-/// TS: `[valid-speculation-rules-invalid-017]` urls is not an array
+/// TS: `[valid-speculation-rules-031]` urls is not an array
 #[test]
-fn valid_speculation_rules_invalid_017() {
-    const _ID: &str = "valid-speculation-rules-invalid-017";
+fn valid_speculation_rules_031() {
+    const _ID: &str = "valid-speculation-rules-031";
     assert_eq!(
         run(r#"<script type="speculationrules">{"prefetch":[{"source":"list","urls":"not-array"}]}</script>"#),
         [err(r#"The "urls" of prefetch[0] must be a JSON array"#),]
     );
 }
 
-/// TS: `[valid-speculation-rules-invalid-018]` urls is empty
+/// TS: `[valid-speculation-rules-032]` urls is empty
 #[test]
-fn valid_speculation_rules_invalid_018() {
-    const _ID: &str = "valid-speculation-rules-invalid-018";
+fn valid_speculation_rules_032() {
+    const _ID: &str = "valid-speculation-rules-032";
     assert_eq!(
         run(r#"<script type="speculationrules">{"prefetch":[{"source":"list","urls":[]}]}</script>"#),
         [err(r#"The "urls" of prefetch[0] must not be empty"#),]
     );
 }
 
-/// TS: `[valid-speculation-rules-invalid-019]` a url item is not a string
+/// TS: `[valid-speculation-rules-033]` a url item is not a string
 #[test]
-fn valid_speculation_rules_invalid_019() {
-    const _ID: &str = "valid-speculation-rules-invalid-019";
+fn valid_speculation_rules_033() {
+    const _ID: &str = "valid-speculation-rules-033";
     assert_eq!(
         run(r#"<script type="speculationrules">{"prefetch":[{"source":"list","urls":[123]}]}</script>"#),
         [err(r#"The URL at index 0 in "urls" must be a string"#),]
     );
 }
 
-/// TS: `[valid-speculation-rules-invalid-020]` a url item is an empty string
+/// TS: `[valid-speculation-rules-034]` a url item is an empty string
 #[test]
-fn valid_speculation_rules_invalid_020() {
-    const _ID: &str = "valid-speculation-rules-invalid-020";
+fn valid_speculation_rules_034() {
+    const _ID: &str = "valid-speculation-rules-034";
     assert_eq!(
         run(r#"<script type="speculationrules">{"prefetch":[{"source":"list","urls":[""]}]}</script>"#),
         [err(r#"The URL at index 0 in "urls" must not be empty"#),]
     );
 }
 
-/// TS: `[valid-speculation-rules-invalid-021]` eagerness is not a string
+/// TS: `[valid-speculation-rules-035]` eagerness is not a string
 #[test]
-fn valid_speculation_rules_invalid_021() {
-    const _ID: &str = "valid-speculation-rules-invalid-021";
+fn valid_speculation_rules_035() {
+    const _ID: &str = "valid-speculation-rules-035";
     assert_eq!(
         run(
             r#"<script type="speculationrules">{"prefetch":[{"source":"list","urls":["/a"],"eagerness":123}]}</script>"#
@@ -484,10 +484,10 @@ fn valid_speculation_rules_invalid_021() {
     );
 }
 
-/// TS: `[valid-speculation-rules-invalid-022]` eagerness has an invalid value
+/// TS: `[valid-speculation-rules-036]` eagerness has an invalid value
 #[test]
-fn valid_speculation_rules_invalid_022() {
-    const _ID: &str = "valid-speculation-rules-invalid-022";
+fn valid_speculation_rules_036() {
+    const _ID: &str = "valid-speculation-rules-036";
     assert_eq!(
         run(
             r#"<script type="speculationrules">{"prefetch":[{"source":"list","urls":["/a"],"eagerness":"invalid"}]}</script>"#
@@ -498,20 +498,20 @@ fn valid_speculation_rules_invalid_022() {
     );
 }
 
-/// TS: `[valid-speculation-rules-invalid-023]` where is not an object
+/// TS: `[valid-speculation-rules-037]` where is not an object
 #[test]
-fn valid_speculation_rules_invalid_023() {
-    const _ID: &str = "valid-speculation-rules-invalid-023";
+fn valid_speculation_rules_037() {
+    const _ID: &str = "valid-speculation-rules-037";
     assert_eq!(
         run(r#"<script type="speculationrules">{"prefetch":[{"source":"document","where":"not-object"}]}</script>"#),
         [err(r#"The "where" condition of prefetch[0] must be a JSON object"#),]
     );
 }
 
-/// TS: `[valid-speculation-rules-invalid-024]` where has no predicate
+/// TS: `[valid-speculation-rules-038]` where has no predicate
 #[test]
-fn valid_speculation_rules_invalid_024() {
-    const _ID: &str = "valid-speculation-rules-invalid-024";
+fn valid_speculation_rules_038() {
+    const _ID: &str = "valid-speculation-rules-038";
     assert_eq!(
         run(r#"<script type="speculationrules">{"prefetch":[{"source":"document","where":{}}]}</script>"#),
         [err(
@@ -520,10 +520,10 @@ fn valid_speculation_rules_invalid_024() {
     );
 }
 
-/// TS: `[valid-speculation-rules-invalid-025]` where has multiple predicates
+/// TS: `[valid-speculation-rules-039]` where has multiple predicates
 #[test]
-fn valid_speculation_rules_invalid_025() {
-    const _ID: &str = "valid-speculation-rules-invalid-025";
+fn valid_speculation_rules_039() {
+    const _ID: &str = "valid-speculation-rules-039";
     assert_eq!(
         run(
             r#"<script type="speculationrules">{"prefetch":[{"source":"document","where":{"href_matches":"*","selector_matches":"a"}}]}</script>"#
@@ -534,20 +534,20 @@ fn valid_speculation_rules_invalid_025() {
     );
 }
 
-/// TS: `[valid-speculation-rules-invalid-026]` and predicate is empty
+/// TS: `[valid-speculation-rules-040]` and predicate is empty
 #[test]
-fn valid_speculation_rules_invalid_026() {
-    const _ID: &str = "valid-speculation-rules-invalid-026";
+fn valid_speculation_rules_040() {
+    const _ID: &str = "valid-speculation-rules-040";
     assert_eq!(
         run(r#"<script type="speculationrules">{"prefetch":[{"source":"document","where":{"and":[]}}]}</script>"#),
         [err(r#"The "and" predicate must not be empty"#),]
     );
 }
 
-/// TS: `[valid-speculation-rules-invalid-027]` and predicate is not an array
+/// TS: `[valid-speculation-rules-041]` and predicate is not an array
 #[test]
-fn valid_speculation_rules_invalid_027() {
-    const _ID: &str = "valid-speculation-rules-invalid-027";
+fn valid_speculation_rules_041() {
+    const _ID: &str = "valid-speculation-rules-041";
     assert_eq!(
         run(
             r#"<script type="speculationrules">{"prefetch":[{"source":"document","where":{"and":"not-array"}}]}</script>"#
@@ -556,10 +556,10 @@ fn valid_speculation_rules_invalid_027() {
     );
 }
 
-/// TS: `[valid-speculation-rules-invalid-028]` href_matches is an empty string
+/// TS: `[valid-speculation-rules-042]` href_matches is an empty string
 #[test]
-fn valid_speculation_rules_invalid_028() {
-    const _ID: &str = "valid-speculation-rules-invalid-028";
+fn valid_speculation_rules_042() {
+    const _ID: &str = "valid-speculation-rules-042";
     assert_eq!(
         run(
             r#"<script type="speculationrules">{"prefetch":[{"source":"document","where":{"href_matches":""}}]}</script>"#
@@ -568,10 +568,10 @@ fn valid_speculation_rules_invalid_028() {
     );
 }
 
-/// TS: `[valid-speculation-rules-invalid-029]` href_matches is an empty array
+/// TS: `[valid-speculation-rules-043]` href_matches is an empty array
 #[test]
-fn valid_speculation_rules_invalid_029() {
-    const _ID: &str = "valid-speculation-rules-invalid-029";
+fn valid_speculation_rules_043() {
+    const _ID: &str = "valid-speculation-rules-043";
     assert_eq!(
         run(
             r#"<script type="speculationrules">{"prefetch":[{"source":"document","where":{"href_matches":[]}}]}</script>"#
@@ -580,10 +580,10 @@ fn valid_speculation_rules_invalid_029() {
     );
 }
 
-/// TS: `[valid-speculation-rules-invalid-030]` href_matches is not a string
+/// TS: `[valid-speculation-rules-044]` href_matches is not a string
 #[test]
-fn valid_speculation_rules_invalid_030() {
-    const _ID: &str = "valid-speculation-rules-invalid-030";
+fn valid_speculation_rules_044() {
+    const _ID: &str = "valid-speculation-rules-044";
     assert_eq!(
         run(
             r#"<script type="speculationrules">{"prefetch":[{"source":"document","where":{"href_matches":123}}]}</script>"#
@@ -594,10 +594,10 @@ fn valid_speculation_rules_invalid_030() {
     );
 }
 
-/// TS: `[valid-speculation-rules-invalid-031]` selector_matches is an empty string
+/// TS: `[valid-speculation-rules-045]` selector_matches is an empty string
 #[test]
-fn valid_speculation_rules_invalid_031() {
-    const _ID: &str = "valid-speculation-rules-invalid-031";
+fn valid_speculation_rules_045() {
+    const _ID: &str = "valid-speculation-rules-045";
     assert_eq!(
         run(
             r#"<script type="speculationrules">{"prefetch":[{"source":"document","where":{"selector_matches":""}}]}</script>"#
@@ -606,10 +606,10 @@ fn valid_speculation_rules_invalid_031() {
     );
 }
 
-/// TS: `[valid-speculation-rules-invalid-032]` selector_matches is not a string
+/// TS: `[valid-speculation-rules-046]` selector_matches is not a string
 #[test]
-fn valid_speculation_rules_invalid_032() {
-    const _ID: &str = "valid-speculation-rules-invalid-032";
+fn valid_speculation_rules_046() {
+    const _ID: &str = "valid-speculation-rules-046";
     assert_eq!(
         run(
             r#"<script type="speculationrules">{"prefetch":[{"source":"document","where":{"selector_matches":123}}]}</script>"#
@@ -620,10 +620,10 @@ fn valid_speculation_rules_invalid_032() {
     );
 }
 
-/// TS: `[valid-speculation-rules-invalid-033]` unknown predicate key
+/// TS: `[valid-speculation-rules-047]` unknown predicate key
 #[test]
-fn valid_speculation_rules_invalid_033() {
-    const _ID: &str = "valid-speculation-rules-invalid-033";
+fn valid_speculation_rules_047() {
+    const _ID: &str = "valid-speculation-rules-047";
     assert_eq!(
         run(r#"<script type="speculationrules">{"prefetch":[{"source":"document","where":{"unknown":"x"}}]}</script>"#),
         [err(
@@ -632,10 +632,10 @@ fn valid_speculation_rules_invalid_033() {
     );
 }
 
-/// TS: `[valid-speculation-rules-invalid-034]` a pattern array item is not a string
+/// TS: `[valid-speculation-rules-048]` a pattern array item is not a string
 #[test]
-fn valid_speculation_rules_invalid_034() {
-    const _ID: &str = "valid-speculation-rules-invalid-034";
+fn valid_speculation_rules_048() {
+    const _ID: &str = "valid-speculation-rules-048";
     assert_eq!(
         run(
             r#"<script type="speculationrules">{"prefetch":[{"source":"document","where":{"href_matches":["/ok/*",123]}}]}</script>"#
@@ -644,10 +644,10 @@ fn valid_speculation_rules_invalid_034() {
     );
 }
 
-/// TS: `[valid-speculation-rules-invalid-035]` a pattern array item is an empty string
+/// TS: `[valid-speculation-rules-049]` a pattern array item is an empty string
 #[test]
-fn valid_speculation_rules_invalid_035() {
-    const _ID: &str = "valid-speculation-rules-invalid-035";
+fn valid_speculation_rules_049() {
+    const _ID: &str = "valid-speculation-rules-049";
     assert_eq!(
         run(
             r#"<script type="speculationrules">{"prefetch":[{"source":"document","where":{"selector_matches":["a",""]}}]}</script>"#
@@ -656,30 +656,30 @@ fn valid_speculation_rules_invalid_035() {
     );
 }
 
-/// TS: `[valid-speculation-rules-invalid-036]` a not predicate value is not an object
+/// TS: `[valid-speculation-rules-050]` a not predicate value is not an object
 #[test]
-fn valid_speculation_rules_invalid_036() {
-    const _ID: &str = "valid-speculation-rules-invalid-036";
+fn valid_speculation_rules_050() {
+    const _ID: &str = "valid-speculation-rules-050";
     assert_eq!(
         run(r#"<script type="speculationrules">{"prefetch":[{"source":"document","where":{"not":"x"}}]}</script>"#),
         [err(r#"The "not" predicate must be a JSON object"#),]
     );
 }
 
-/// TS: `[valid-speculation-rules-invalid-037]` prerender rule set is validated like prefetch
+/// TS: `[valid-speculation-rules-051]` prerender rule set is validated like prefetch
 #[test]
-fn valid_speculation_rules_invalid_037() {
-    const _ID: &str = "valid-speculation-rules-invalid-037";
+fn valid_speculation_rules_051() {
+    const _ID: &str = "valid-speculation-rules-051";
     assert_eq!(
         run(r#"<script type="speculationrules">{"prerender":[{"source":"list"}]}</script>"#),
         [err(r#"The list rule prerender[0] must have a "urls" property"#),]
     );
 }
 
-/// TS: `[valid-speculation-rules-invalid-038]` or predicate is not an array
+/// TS: `[valid-speculation-rules-052]` or predicate is not an array
 #[test]
-fn valid_speculation_rules_invalid_038() {
-    const _ID: &str = "valid-speculation-rules-invalid-038";
+fn valid_speculation_rules_052() {
+    const _ID: &str = "valid-speculation-rules-052";
     assert_eq!(
         run(
             r#"<script type="speculationrules">{"prefetch":[{"source":"document","where":{"or":"not-array"}}]}</script>"#
@@ -688,20 +688,20 @@ fn valid_speculation_rules_invalid_038() {
     );
 }
 
-/// TS: `[valid-speculation-rules-invalid-039]` or predicate is empty
+/// TS: `[valid-speculation-rules-053]` or predicate is empty
 #[test]
-fn valid_speculation_rules_invalid_039() {
-    const _ID: &str = "valid-speculation-rules-invalid-039";
+fn valid_speculation_rules_053() {
+    const _ID: &str = "valid-speculation-rules-053";
     assert_eq!(
         run(r#"<script type="speculationrules">{"prefetch":[{"source":"document","where":{"or":[]}}]}</script>"#),
         [err(r#"The "or" predicate must not be empty"#),]
     );
 }
 
-/// TS: `[valid-speculation-rules-invalid-040]` a nested predicate inside and is invalid
+/// TS: `[valid-speculation-rules-054]` a nested predicate inside and is invalid
 #[test]
-fn valid_speculation_rules_invalid_040() {
-    const _ID: &str = "valid-speculation-rules-invalid-040";
+fn valid_speculation_rules_054() {
+    const _ID: &str = "valid-speculation-rules-054";
     assert_eq!(
         run(
             r#"<script type="speculationrules">{"prefetch":[{"source":"document","where":{"and":[{"href_matches":"/ok/*"},{"unknown":"x"}]}}]}</script>"#

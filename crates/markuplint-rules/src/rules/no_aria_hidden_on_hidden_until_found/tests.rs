@@ -1,12 +1,12 @@
 //! Tests for `no-aria-hidden-on-hidden-until-found` rule.
 //!
 //! Test ID mapping (TS → Rust):
-//!   no-aria-hidden-on-hidden-until-found-valid-001    → no_aria_hidden_on_hidden_until_found_valid_001
-//!   no-aria-hidden-on-hidden-until-found-valid-002    → no_aria_hidden_on_hidden_until_found_valid_002
-//!   no-aria-hidden-on-hidden-until-found-valid-003    → no_aria_hidden_on_hidden_until_found_valid_003
-//!   no-aria-hidden-on-hidden-until-found-invalid-001  → no_aria_hidden_on_hidden_until_found_invalid_001
-//!   no-aria-hidden-on-hidden-until-found-invalid-002  → no_aria_hidden_on_hidden_until_found_invalid_002
-//!   no-aria-hidden-on-hidden-until-found-parser-001   — SKIP: Vue parser (dynamic `:aria-hidden`) not available in Rust
+//!   no-aria-hidden-on-hidden-until-found-001    → no_aria_hidden_on_hidden_until_found_001
+//!   no-aria-hidden-on-hidden-until-found-002    → no_aria_hidden_on_hidden_until_found_002
+//!   no-aria-hidden-on-hidden-until-found-003    → no_aria_hidden_on_hidden_until_found_003
+//!   no-aria-hidden-on-hidden-until-found-004  → no_aria_hidden_on_hidden_until_found_004
+//!   no-aria-hidden-on-hidden-until-found-006  → no_aria_hidden_on_hidden_until_found_006
+//!   no-aria-hidden-on-hidden-until-found-007   — SKIP: Vue parser (dynamic `:aria-hidden`) not available in Rust
 //!   v6_no_aria_hidden_on_hidden_until_found_001  — Rust-only: the report is on the attribute, across lines, with tab/newline padding
 //!   v6_no_aria_hidden_on_hidden_until_found_002  — Rust-only: `aria-hidden` and `hidden` are looked up as the DOM names them
 //!   v6_no_aria_hidden_on_hidden_until_found_003  — Rust-only: the first of duplicate `aria-hidden` attributes counts
@@ -21,44 +21,44 @@ fn run(html: &str) -> Vec<Brief> {
     lint_brief(RULE, html, serde_json::json!({ "rules": { RULE: true } }))
 }
 
-/// TS: `[no-aria-hidden-on-hidden-until-found-valid-001]` hidden=until-found without aria-hidden
+/// TS: `[no-aria-hidden-on-hidden-until-found-001]` hidden=until-found without aria-hidden
 #[test]
-fn no_aria_hidden_on_hidden_until_found_valid_001() {
-    const _ID: &str = "no-aria-hidden-on-hidden-until-found-valid-001";
+fn no_aria_hidden_on_hidden_until_found_001() {
+    const _ID: &str = "no-aria-hidden-on-hidden-until-found-001";
     assert_eq!(run(r#"<div hidden="until-found">Hidden content</div>"#), []);
 }
 
-/// TS: `[no-aria-hidden-on-hidden-until-found-valid-002]` aria-hidden=true with a plain hidden attribute
+/// TS: `[no-aria-hidden-on-hidden-until-found-002]` aria-hidden=true with a plain hidden attribute
 #[test]
-fn no_aria_hidden_on_hidden_until_found_valid_002() {
-    const _ID: &str = "no-aria-hidden-on-hidden-until-found-valid-002";
+fn no_aria_hidden_on_hidden_until_found_002() {
+    const _ID: &str = "no-aria-hidden-on-hidden-until-found-002";
     assert_eq!(run(r#"<div hidden aria-hidden="true">Hidden content</div>"#), []);
 }
 
-/// TS: `[no-aria-hidden-on-hidden-until-found-valid-003]` aria-hidden=false with hidden=until-found
+/// TS: `[no-aria-hidden-on-hidden-until-found-003]` aria-hidden=false with hidden=until-found
 #[test]
-fn no_aria_hidden_on_hidden_until_found_valid_003() {
-    const _ID: &str = "no-aria-hidden-on-hidden-until-found-valid-003";
+fn no_aria_hidden_on_hidden_until_found_003() {
+    const _ID: &str = "no-aria-hidden-on-hidden-until-found-003";
     assert_eq!(
         run(r#"<div hidden="until-found" aria-hidden="false">Hidden content</div>"#),
         []
     );
 }
 
-/// TS: `[no-aria-hidden-on-hidden-until-found-invalid-001]` aria-hidden=true with hidden=until-found
+/// TS: `[no-aria-hidden-on-hidden-until-found-004]` aria-hidden=true with hidden=until-found
 #[test]
-fn no_aria_hidden_on_hidden_until_found_invalid_001() {
-    const _ID: &str = "no-aria-hidden-on-hidden-until-found-invalid-001";
+fn no_aria_hidden_on_hidden_until_found_004() {
+    const _ID: &str = "no-aria-hidden-on-hidden-until-found-004";
     assert_eq!(
         run(r#"<div hidden="until-found" aria-hidden="true">Hidden content</div>"#),
         [brief(Severity::Error, 1, 27, MESSAGE, r#"aria-hidden="true""#)]
     );
 }
 
-/// TS: `[no-aria-hidden-on-hidden-until-found-invalid-002]` case-insensitive and whitespace-padded values still match
+/// TS: `[no-aria-hidden-on-hidden-until-found-006]` case-insensitive and whitespace-padded values still match
 #[test]
-fn no_aria_hidden_on_hidden_until_found_invalid_002() {
-    const _ID: &str = "no-aria-hidden-on-hidden-until-found-invalid-002";
+fn no_aria_hidden_on_hidden_until_found_006() {
+    const _ID: &str = "no-aria-hidden-on-hidden-until-found-006";
     assert_eq!(
         run(r#"<div hidden=" UNTIL-FOUND " aria-hidden=" TRUE ">Hidden content</div>"#),
         [brief(Severity::Error, 1, 29, MESSAGE, r#"aria-hidden=" TRUE ""#)]

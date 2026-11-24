@@ -1,20 +1,20 @@
 //! Tests for `no-empty-table-track` rule.
 //!
 //! Test ID mapping (TS → Rust):
-//!   no-empty-table-track-invalid-001  → no_empty_table_track_invalid_001
-//!   no-empty-table-track-invalid-002  → no_empty_table_track_invalid_002
-//!   no-empty-table-track-invalid-003  → no_empty_table_track_invalid_003
-//!   no-empty-table-track-invalid-004  → no_empty_table_track_invalid_004
-//!   no-empty-table-track-invalid-005  → no_empty_table_track_invalid_005
-//!   no-empty-table-track-invalid-006  → no_empty_table_track_invalid_006
-//!   no-empty-table-track-invalid-007  → no_empty_table_track_invalid_007
-//!   no-empty-table-track-valid-001    → no_empty_table_track_valid_001 (was `empty_table_no_violation`)
-//!   no-empty-table-track-valid-002    → no_empty_table_track_valid_002
-//!   no-empty-table-track-valid-003    → no_empty_table_track_valid_003
-//!   no-empty-table-track-valid-004    → no_empty_table_track_valid_004 (was `colspan_correct_count`)
-//!   no-empty-table-track-valid-005    → no_empty_table_track_valid_005
-//!   no-empty-table-track-valid-006    → no_empty_table_track_valid_006
-//!   no-empty-table-track-valid-007    → no_empty_table_track_valid_007
+//!   no-empty-table-track-001  → no_empty_table_track_001
+//!   no-empty-table-track-003  → no_empty_table_track_003
+//!   no-empty-table-track-004  → no_empty_table_track_004
+//!   no-empty-table-track-005  → no_empty_table_track_005
+//!   no-empty-table-track-006  → no_empty_table_track_006
+//!   no-empty-table-track-007  → no_empty_table_track_007
+//!   no-empty-table-track-008  → no_empty_table_track_008
+//!   no-empty-table-track-009    → no_empty_table_track_009 (was `empty_table_no_violation`)
+//!   no-empty-table-track-010    → no_empty_table_track_010
+//!   no-empty-table-track-011    → no_empty_table_track_011
+//!   no-empty-table-track-012    → no_empty_table_track_012 (was `colspan_correct_count`)
+//!   no-empty-table-track-013    → no_empty_table_track_013
+//!   no-empty-table-track-014    → no_empty_table_track_014
+//!   no-empty-table-track-015    → no_empty_table_track_015
 //!   v6_no_empty_table_track_001  — Rust-only: a `<colgroup span>` without `<col>` children is the column source
 //!   v6_no_empty_table_track_002  — Rust-only: each `<col>` is its own column source, `span` included
 //!   v6_no_empty_table_track_003  — Rust-only: every row without an anchored cell is reported
@@ -66,10 +66,10 @@ fn assert_violations(actual: &[Violation], expected: &[Expected<'_>]) {
     }
 }
 
-/// TS: `[no-empty-table-track-invalid-001]`
+/// TS: `[no-empty-table-track-001]`
 #[test]
-fn no_empty_table_track_invalid_001() {
-    const _ID: &str = "no-empty-table-track-invalid-001";
+fn no_empty_table_track_001() {
+    const _ID: &str = "no-empty-table-track-001";
     let violations = run(r#"
 <table>
   <tr>
@@ -94,10 +94,10 @@ fn no_empty_table_track_invalid_001() {
     );
 }
 
-/// TS: `[no-empty-table-track-invalid-002]`
+/// TS: `[no-empty-table-track-003]`
 #[test]
-fn no_empty_table_track_invalid_002() {
-    const _ID: &str = "no-empty-table-track-invalid-002";
+fn no_empty_table_track_003() {
+    const _ID: &str = "no-empty-table-track-003";
     let violations = run(r#"
 <table>
   <thead class="overflow">
@@ -127,10 +127,10 @@ fn no_empty_table_track_invalid_002() {
     assert_violations(&violations, &[(Severity::Error, 12, 9, FOUR_COLUMNS, "colspan=\"8\"")]);
 }
 
-/// TS: `[no-empty-table-track-invalid-003]`
+/// TS: `[no-empty-table-track-004]`
 #[test]
-fn no_empty_table_track_invalid_003() {
-    const _ID: &str = "no-empty-table-track-invalid-003";
+fn no_empty_table_track_004() {
+    const _ID: &str = "no-empty-table-track-004";
     let violations = run(r#"
 <table>
   <tr>
@@ -145,10 +145,10 @@ fn no_empty_table_track_invalid_003() {
     assert_violations(&violations, &[(Severity::Error, 8, 9, ONE_COLUMN, "colspan=\"2\"")]);
 }
 
-/// TS: `[no-empty-table-track-invalid-004]`
+/// TS: `[no-empty-table-track-005]`
 #[test]
-fn no_empty_table_track_invalid_004() {
-    const _ID: &str = "no-empty-table-track-invalid-004";
+fn no_empty_table_track_005() {
+    const _ID: &str = "no-empty-table-track-005";
     let violations = run(r#"
 <table>
   <tr>
@@ -160,10 +160,10 @@ fn no_empty_table_track_invalid_004() {
     assert_violations(&violations, &[(Severity::Error, 5, 9, FOUR_COLUMNS, "colspan=\"5\"")]);
 }
 
-/// TS: `[no-empty-table-track-invalid-005]`
+/// TS: `[no-empty-table-track-006]`
 #[test]
-fn no_empty_table_track_invalid_005() {
-    const _ID: &str = "no-empty-table-track-invalid-005";
+fn no_empty_table_track_006() {
+    const _ID: &str = "no-empty-table-track-006";
     let violations = run(r"
 <table>
   <colgroup>
@@ -175,10 +175,10 @@ fn no_empty_table_track_invalid_005() {
     assert_violations(&violations, &[(Severity::Error, 4, 15, ONE_COLUMN, "<col>")]);
 }
 
-/// TS: `[no-empty-table-track-invalid-006]`
+/// TS: `[no-empty-table-track-007]`
 #[test]
-fn no_empty_table_track_invalid_006() {
-    const _ID: &str = "no-empty-table-track-invalid-006";
+fn no_empty_table_track_007() {
+    const _ID: &str = "no-empty-table-track-007";
     let violations = run(r"
 <table>
   <tr><td>Cell</td></tr>
@@ -188,10 +188,10 @@ fn no_empty_table_track_invalid_006() {
     assert_violations(&violations, &[(Severity::Error, 4, 3, ONE_ROW, "<tr>")]);
 }
 
-/// TS: `[no-empty-table-track-invalid-007]`
+/// TS: `[no-empty-table-track-008]`
 #[test]
-fn no_empty_table_track_invalid_007() {
-    const _ID: &str = "no-empty-table-track-invalid-007";
+fn no_empty_table_track_008() {
+    const _ID: &str = "no-empty-table-track-008";
     let violations = run(r#"
 <table>
   <tr>
@@ -202,10 +202,10 @@ fn no_empty_table_track_invalid_007() {
     assert_violations(&violations, &[(Severity::Error, 4, 9, FOUR_COLUMNS, "colspan=\"5\"")]);
 }
 
-/// TS: `[no-empty-table-track-valid-001]`
+/// TS: `[no-empty-table-track-009]`
 #[test]
-fn no_empty_table_track_valid_001() {
-    const _ID: &str = "no-empty-table-track-valid-001";
+fn no_empty_table_track_009() {
+    const _ID: &str = "no-empty-table-track-009";
     let violations = run("
 <table>
 </table>
@@ -213,10 +213,10 @@ fn no_empty_table_track_valid_001() {
     assert_violations(&violations, &[]);
 }
 
-/// TS: `[no-empty-table-track-valid-002]`
+/// TS: `[no-empty-table-track-010]`
 #[test]
-fn no_empty_table_track_valid_002() {
-    const _ID: &str = "no-empty-table-track-valid-002";
+fn no_empty_table_track_010() {
+    const _ID: &str = "no-empty-table-track-010";
     let violations = run(r"
 <table>
   <thead>
@@ -245,10 +245,10 @@ fn no_empty_table_track_valid_002() {
     assert_violations(&violations, &[]);
 }
 
-/// TS: `[no-empty-table-track-valid-003]`
+/// TS: `[no-empty-table-track-011]`
 #[test]
-fn no_empty_table_track_valid_003() {
-    const _ID: &str = "no-empty-table-track-valid-003";
+fn no_empty_table_track_011() {
+    const _ID: &str = "no-empty-table-track-011";
     let violations = run(r#"
 <table>
   <tr>
@@ -268,10 +268,10 @@ fn no_empty_table_track_valid_003() {
     assert_violations(&violations, &[]);
 }
 
-/// TS: `[no-empty-table-track-valid-004]`
+/// TS: `[no-empty-table-track-012]`
 #[test]
-fn no_empty_table_track_valid_004() {
-    const _ID: &str = "no-empty-table-track-valid-004";
+fn no_empty_table_track_012() {
+    const _ID: &str = "no-empty-table-track-012";
     let violations = run(r#"
 <table>
   <tr>
@@ -287,10 +287,10 @@ fn no_empty_table_track_valid_004() {
     assert_violations(&violations, &[]);
 }
 
-/// TS: `[no-empty-table-track-valid-005]`
+/// TS: `[no-empty-table-track-013]`
 #[test]
-fn no_empty_table_track_valid_005() {
-    const _ID: &str = "no-empty-table-track-valid-005";
+fn no_empty_table_track_013() {
+    const _ID: &str = "no-empty-table-track-013";
     let violations = run(r#"
 <table>
   <thead>
@@ -315,10 +315,10 @@ fn no_empty_table_track_valid_005() {
     assert_violations(&violations, &[]);
 }
 
-/// TS: `[no-empty-table-track-valid-006]`
+/// TS: `[no-empty-table-track-014]`
 #[test]
-fn no_empty_table_track_valid_006() {
-    const _ID: &str = "no-empty-table-track-valid-006";
+fn no_empty_table_track_014() {
+    const _ID: &str = "no-empty-table-track-014";
     let violations = run(r"
 <table>
   <colgroup>
@@ -330,10 +330,10 @@ fn no_empty_table_track_valid_006() {
     assert_violations(&violations, &[]);
 }
 
-/// TS: `[no-empty-table-track-valid-007]`
+/// TS: `[no-empty-table-track-015]`
 #[test]
-fn no_empty_table_track_valid_007() {
-    const _ID: &str = "no-empty-table-track-valid-007";
+fn no_empty_table_track_015() {
+    const _ID: &str = "no-empty-table-track-015";
     let violations = run(r#"
 <table>
 <tr>

@@ -1,14 +1,15 @@
 //! Tests for `no-deprecated-aria-prop` rule.
 //!
 //! Test ID mapping (TS → Rust):
-//!   no-deprecated-aria-prop-valid-001  → no_deprecated_aria_prop_valid_001
-//!   no-deprecated-aria-prop-valid-002  → no_deprecated_aria_prop_valid_002
+//!   no-deprecated-aria-prop-001  → no_deprecated_aria_prop_001
+//!   no-deprecated-aria-prop-002  → no_deprecated_aria_prop_002
 //!   v6_no_deprecated_aria_prop_001  — Rust-only: a property deprecated on the explicit role; default severity is warning
 //!   v6_no_deprecated_aria_prop_002  — Rust-only: a property deprecated on the implicit role (`article`)
 //!   v6_no_deprecated_aria_prop_003  — Rust-only: the computed role of `div` is `generic`
 //!   v6_no_deprecated_aria_prop_004  — Rust-only: `version` option (1.1 does not deprecate them)
 //!   v6_no_deprecated_aria_prop_005  — Rust-only: a property name in upper case is the property; positions over lines
 //!   v6_no_deprecated_aria_prop_006  — Rust-only: `rules: false`, `severity` override
+//!   v6_no_deprecated_aria_prop_007  — Rust-only: an element whose role is not known until it is rendered is not judged
 
 use crate::lint::{LintConfig, lint};
 use crate::violation::Severity;
@@ -55,10 +56,10 @@ fn violation(
     (severity, line, col, message.to_string(), raw.to_string())
 }
 
-/// TS: `[no-deprecated-aria-prop-valid-001]`
+/// TS: `[no-deprecated-aria-prop-001]`
 #[test]
-fn no_deprecated_aria_prop_valid_001() {
-    const _ID: &str = "no-deprecated-aria-prop-valid-001";
+fn no_deprecated_aria_prop_001() {
+    const _ID: &str = "no-deprecated-aria-prop-001";
     assert_eq!(
         run(
             r#"<div role="button" aria-pressed="true"></div>"#,
@@ -68,10 +69,10 @@ fn no_deprecated_aria_prop_valid_001() {
     );
 }
 
-/// TS: `[no-deprecated-aria-prop-valid-002]`
+/// TS: `[no-deprecated-aria-prop-002]`
 #[test]
-fn no_deprecated_aria_prop_valid_002() {
-    const _ID: &str = "no-deprecated-aria-prop-valid-002";
+fn no_deprecated_aria_prop_002() {
+    const _ID: &str = "no-deprecated-aria-prop-002";
     assert_eq!(run("<div></div>", serde_json::json!(true)), vec![]);
 }
 
@@ -176,5 +177,41 @@ fn v6_no_deprecated_aria_prop_006() {
             "The \"aria-disabled\" ARIA state is deprecated on the \"article\" role",
             "aria-disabled=\"true\""
         )]
+    );
+}
+
+/// The MLAST of a `div` with these attributes, linted by `no-deprecated-aria-prop`: `(name, value, what the TS engine worked out)`.
+fn lint_div(attrs: &[(&str, &str, serde_json::Value)]) -> Vec<crate::test_util::Brief> {
+    crate::test_util::lint_mlast_brief(
+        "no-deprecated-aria-prop",
+        &crate::test_util::mlast_element("div", attrs, &serde_json::json!({})),
+        serde_json::json!({ "rules": { "no-deprecated-aria-prop": true } }),
+    )
+}
+
+fn code() -> serde_json::Value {
+    serde_json::json!({ "isDynamicValue": true })
+}
+
+fn spread() -> serde_json::Value {
+    serde_json::json!({ "isDirective": true, "isSpread": true, "isDynamicValue": true })
+}
+
+fn plain() -> serde_json::Value {
+    serde_json::json!({})
+}
+
+/// Rust-only: `aria-disabled` is deprecated on `banner` and not known to be on a role that is not known yet.
+#[test]
+fn v6_no_deprecated_aria_prop_007() {
+    let disabled = || ("aria-disabled", "true", plain());
+    let banner = || ("role", "banner", plain());
+    let judged = lint_div(&[banner(), disabled()]);
+    assert_eq!(judged.len(), 1, "{judged:?}");
+    assert_eq!(lint_div(&[("role", "props.role", code()), disabled()]), []);
+    assert_eq!(lint_div(&[banner(), ("v-bind", "props", spread()), disabled()]), []);
+    assert_eq!(
+        lint_div(&[("v-bind", "props", spread()), banner(), disabled()]).len(),
+        1
     );
 }

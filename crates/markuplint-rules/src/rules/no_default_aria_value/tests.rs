@@ -1,8 +1,8 @@
 //! Tests for `no-default-aria-value` rule.
 //!
 //! Test ID mapping (TS → Rust):
-//!   no-default-aria-value-valid-001  → no_default_aria_value_valid_001
-//!   no-default-aria-value-valid-002  → no_default_aria_value_valid_002
+//!   no-default-aria-value-001  → no_default_aria_value_001
+//!   no-default-aria-value-002  → no_default_aria_value_002
 //!   v6_no_default_aria_value_001  — Rust-only: a default value; default severity is warning
 //!   v6_no_default_aria_value_002  — Rust-only: the value is trimmed and lower-cased; positions over lines
 //!   v6_no_default_aria_value_003  — Rust-only: property names are matched case-sensitively
@@ -50,17 +50,17 @@ fn violation(severity: Severity, line: u32, col: u32, raw: &str) -> (Severity, u
     (severity, line, col, "It is default value".to_string(), raw.to_string())
 }
 
-/// TS: `[no-default-aria-value-valid-001]`
+/// TS: `[no-default-aria-value-001]`
 #[test]
-fn no_default_aria_value_valid_001() {
-    const _ID: &str = "no-default-aria-value-valid-001";
+fn no_default_aria_value_001() {
+    const _ID: &str = "no-default-aria-value-001";
     assert_eq!(run("<div></div>", serde_json::json!(true)), vec![]);
 }
 
-/// TS: `[no-default-aria-value-valid-002]`
+/// TS: `[no-default-aria-value-002]`
 #[test]
-fn no_default_aria_value_valid_002() {
-    const _ID: &str = "no-default-aria-value-valid-002";
+fn no_default_aria_value_002() {
+    const _ID: &str = "no-default-aria-value-002";
     assert_eq!(
         run(
             r#"<div role="button" aria-pressed="true"></div>"#,

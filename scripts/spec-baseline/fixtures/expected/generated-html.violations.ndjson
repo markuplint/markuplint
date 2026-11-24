@@ -274,7 +274,6 @@
 {"col":392,"line":65,"message":"The \"step\" attribute is disallowed","raw":"step","ruleId":"no-disallowed-attr","severity":"error"}
 {"col":400,"line":65,"message":"The \"switch\" attribute is disallowed","raw":"switch","ruleId":"no-disallowed-attr","severity":"error"}
 {"col":400,"line":65,"message":"The \"switch\" attribute is experimental","raw":"switch","ruleId":"no-experimental-features","severity":"warning"}
-{"col":400,"line":65,"message":"The \"switch\" attribute is non-standard","raw":"switch","ruleId":"no-nonstandard-features","severity":"warning"}
 {"col":406,"line":65,"message":"The \"switch\" attribute is a boolean attribute. It doesn't need the value","raw":"=\"\"","ruleId":"no-boolean-attr-value","severity":"warning"}
 {"col":416,"line":65,"message":"The \"type\" attribute expects either \"hidden\", \"text\", \"search\", \"tel\", \"url\", \"email\", \"password\", \"date\", \"month\", \"week\", \"time\", \"datetime-local\", \"number\", \"range\", \"color\", \"checkbox\", \"radio\", \"file\", \"submit\", \"image\", \"reset\", \"button\"","raw":"","ruleId":"no-invalid-attr-value","severity":"error"}
 {"col":418,"line":65,"message":"The \"usemap\" attribute is obsolete","raw":"usemap","ruleId":"no-obsolete-attr","severity":"error"}
@@ -504,7 +503,6 @@
 {"col":114,"line":124,"message":"The \"valign\" attribute is obsolete","raw":"valign","ruleId":"no-obsolete-attr","severity":"error"}
 {"col":124,"line":124,"message":"The \"width\" attribute is obsolete","raw":"width","ruleId":"no-obsolete-attr","severity":"error"}
 {"col":11,"line":125,"message":"The \"for\" attribute is experimental","raw":"for","ruleId":"no-experimental-features","severity":"warning"}
-{"col":11,"line":125,"message":"The \"for\" attribute is non-standard","raw":"for","ruleId":"no-nonstandard-features","severity":"warning"}
 {"col":36,"line":125,"message":"The \"shadowrootclonable\" attribute is a boolean attribute. It doesn't need the value","raw":"=\"\"","ruleId":"no-boolean-attr-value","severity":"warning"}
 {"col":71,"line":125,"message":"The \"shadowrootcustomelementregistry\" attribute is a boolean attribute. It doesn't need the value","raw":"=\"\"","ruleId":"no-boolean-attr-value","severity":"warning"}
 {"col":99,"line":125,"message":"The \"shadowrootdelegatesfocus\" attribute is a boolean attribute. It doesn't need the value","raw":"=\"\"","ruleId":"no-boolean-attr-value","severity":"warning"}

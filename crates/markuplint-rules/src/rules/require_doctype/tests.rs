@@ -1,10 +1,10 @@
 //! Tests for `require-doctype` rule.
 //!
 //! Test ID mapping (TS → Rust):
-//!   require-doctype-valid-001    → require_doctype_valid_001
-//!   require-doctype-invalid-001  → require_doctype_invalid_001
-//!   require-doctype-valid-002    → require_doctype_valid_002
-//!   require-doctype-valid-003    → require_doctype_valid_003
+//!   require-doctype-001  → require_doctype_001
+//!   require-doctype-002  → require_doctype_002
+//!   require-doctype-003  → require_doctype_003
+//!   require-doctype-004  → require_doctype_004
 
 use crate::lint::{LintConfig, lint};
 use crate::violation::Severity;
@@ -37,18 +37,18 @@ fn run(html: &str) -> Vec<crate::violation::Violation> {
     lint(&arena, &spec, &config).violations
 }
 
-/// TS: `[require-doctype-valid-001]`
+/// TS: `[require-doctype-001]`
 #[test]
-fn require_doctype_valid_001() {
-    const _ID: &str = "require-doctype-valid-001";
+fn require_doctype_001() {
+    const _ID: &str = "require-doctype-001";
     let violations = run("\n\t\t<!doctype html>\n\t\t<html></html>\n\t\t");
     assert_eq!(violations.len(), 0);
 }
 
-/// TS: `[require-doctype-invalid-001]`
+/// TS: `[require-doctype-002]`
 #[test]
-fn require_doctype_invalid_001() {
-    const _ID: &str = "require-doctype-invalid-001";
+fn require_doctype_002() {
+    const _ID: &str = "require-doctype-002";
     let violations = run("<html></html>");
     assert_eq!(violations.len(), 1);
     assert_eq!(violations[0].rule_id, "require-doctype");
@@ -59,18 +59,18 @@ fn require_doctype_invalid_001() {
     assert_eq!(violations[0].raw, "");
 }
 
-/// TS: `[require-doctype-valid-002]`
+/// TS: `[require-doctype-003]`
 #[test]
-fn require_doctype_valid_002() {
-    const _ID: &str = "require-doctype-valid-002";
+fn require_doctype_003() {
+    const _ID: &str = "require-doctype-003";
     let violations = run("<div></div>");
     assert_eq!(violations.len(), 0);
 }
 
-/// TS: `[require-doctype-valid-003]`
+/// TS: `[require-doctype-004]`
 #[test]
-fn require_doctype_valid_003() {
-    const _ID: &str = "require-doctype-valid-003";
+fn require_doctype_004() {
+    const _ID: &str = "require-doctype-004";
     let violations = run(
         "\n\t\t<!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 4.01//EN\" \"http://www.w3.org/TR/html4/strict.dtd\">\n\t\t<div></div>\n\t\t",
     );

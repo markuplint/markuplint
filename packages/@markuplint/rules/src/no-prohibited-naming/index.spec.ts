@@ -3,12 +3,12 @@ import { test, expect } from 'vitest';
 
 import rule from './index.js';
 
-test('[no-prohibited-naming-valid-001] non-naming-prohibited element with aria-label is allowed', async () => {
+test('[no-prohibited-naming-001] non-naming-prohibited element with aria-label is allowed', async () => {
 	expect((await mlRuleTest(rule, '<div aria-label="x">y</div>')).violations).toStrictEqual([]);
 });
 
-// #3630: naming prohibition on elements without role
-test('[no-prohibited-naming-issue-3630-001] aria-label on cite is prohibited', async () => {
+// Naming prohibition on elements without role
+test('[no-prohibited-naming-002] aria-label on cite is prohibited', async () => {
 	const { violations } = await mlRuleTest(rule, '<cite aria-label="x">y</cite>');
 	expect(violations).toStrictEqual([
 		{
@@ -21,7 +21,7 @@ test('[no-prohibited-naming-issue-3630-001] aria-label on cite is prohibited', a
 	]);
 });
 
-test('[no-prohibited-naming-issue-3630-002] aria-labelledby on abbr is prohibited', async () => {
+test('[no-prohibited-naming-003] aria-labelledby on abbr is prohibited', async () => {
 	const { violations } = await mlRuleTest(rule, '<abbr aria-labelledby="x">y</abbr>');
 	expect(violations).toStrictEqual([
 		{
@@ -34,7 +34,7 @@ test('[no-prohibited-naming-issue-3630-002] aria-labelledby on abbr is prohibite
 	]);
 });
 
-test('[no-prohibited-naming-issue-3630-003] aria-braillelabel on figcaption is prohibited', async () => {
+test('[no-prohibited-naming-004] aria-braillelabel on figcaption is prohibited', async () => {
 	const { violations } = await mlRuleTest(rule, '<figcaption aria-braillelabel="x">y</figcaption>');
 	expect(violations).toStrictEqual([
 		{
@@ -47,19 +47,19 @@ test('[no-prohibited-naming-issue-3630-003] aria-braillelabel on figcaption is p
 	]);
 });
 
-test('[no-prohibited-naming-issue-3630-004] aria-label on cite with explicit role is allowed', async () => {
+test('[no-prohibited-naming-005] aria-label on cite with explicit role is allowed', async () => {
 	// When an explicit role that supports naming is set, prohibition does not apply
 	expect((await mlRuleTest(rule, '<cite role="button" aria-label="x">y</cite>')).violations).toStrictEqual([]);
 });
 
-test('[no-prohibited-naming-issue-3630-005] aria-hidden on cite is allowed (not a naming attribute)', async () => {
+test('[no-prohibited-naming-006] aria-hidden on cite is allowed (not a naming attribute)', async () => {
 	// aria-hidden is not a naming attribute; naming prohibition does not affect it
 	expect((await mlRuleTest(rule, '<cite aria-hidden="true">y</cite>')).violations).toStrictEqual([]);
 });
 
 // All 9 elements with implicitRole=false + namingProhibited=true should be
 // detected consistently. Confirms the spec-data assumption holds across elements.
-test('[no-prohibited-naming-issue-3630-006] all namingProhibited elements detect aria-label', async () => {
+test('[no-prohibited-naming-007] all namingProhibited elements detect aria-label', async () => {
 	for (const el of ['abbr', 'cite', 'figcaption', 'kbd', 'label', 'legend', 'mark', 'rt', 'var']) {
 		const { violations } = await mlRuleTest(rule, `<${el} aria-label="x">y</${el}>`);
 		expect(violations, `element: ${el}`).toStrictEqual([
@@ -74,7 +74,7 @@ test('[no-prohibited-naming-issue-3630-006] all namingProhibited elements detect
 	}
 });
 
-test('[no-prohibited-naming-issue-3630-007] label with aria-label is prohibited (no role)', async () => {
+test('[no-prohibited-naming-008] label with aria-label is prohibited (no role)', async () => {
 	// <label> has labelable-element semantics but no implicit ARIA role;
 	// naming prohibition applies the same way as other 8 elements
 	const { violations } = await mlRuleTest(rule, '<label aria-label="x">text</label>');
@@ -89,7 +89,7 @@ test('[no-prohibited-naming-issue-3630-007] label with aria-label is prohibited 
 	]);
 });
 
-test('[no-prohibited-naming-issue-3630-008] cite with invalid role attribute still prohibited', async () => {
+test('[no-prohibited-naming-009] cite with invalid role attribute still prohibited', async () => {
 	// Invalid role → computed role falls back to null (cite has no implicit role)
 	// → naming prohibition still applies
 	const { violations } = await mlRuleTest(rule, '<cite role="invalid-role" aria-label="x">y</cite>');
@@ -104,7 +104,7 @@ test('[no-prohibited-naming-issue-3630-008] cite with invalid role attribute sti
 	]);
 });
 
-test('[no-prohibited-naming-issue-3630-009] cite with empty role attribute still prohibited', async () => {
+test('[no-prohibited-naming-010] cite with empty role attribute still prohibited', async () => {
 	// Empty role value → treated as no role → naming prohibition still applies
 	const { violations } = await mlRuleTest(rule, '<cite role="" aria-label="x">y</cite>');
 	expect(violations).toStrictEqual([
@@ -118,7 +118,7 @@ test('[no-prohibited-naming-issue-3630-009] cite with empty role attribute still
 	]);
 });
 
-test('[no-prohibited-naming-issue-3630-010] autonomous custom element with aria-label is prohibited', async () => {
+test('[no-prohibited-naming-011] autonomous custom element with aria-label is prohibited', async () => {
 	// Mirrors html-aria/misc/aria-label-autonomous-custom-element-novalid.html
 	// Per ARIA in HTML §4.4 / §6.4, autonomous custom elements have no implicit role.
 	// Naming attrs (aria-label / aria-labelledby / aria-braillelabel) are prohibited
@@ -136,19 +136,19 @@ test('[no-prohibited-naming-issue-3630-010] autonomous custom element with aria-
 	]);
 });
 
-test('[no-prohibited-naming-issue-3630-011] autonomous custom element with role + aria-label is allowed', async () => {
+test('[no-prohibited-naming-012] autonomous custom element with role + aria-label is allowed', async () => {
 	// Mirrors html-aria/misc/aria-label-autonomous-custom-element-novalid.html (positive case)
 	// Setting an explicit role that supports naming lifts the prohibition.
 	const { violations } = await mlRuleTest(rule, '<my-widget role="button" aria-label="x">y</my-widget>');
 	expect(violations).toStrictEqual([]);
 });
 
-test('[no-prohibited-naming-issue-3630-012] autonomous custom element with non-naming aria attr is allowed', async () => {
+test('[no-prohibited-naming-013] autonomous custom element with non-naming aria attr is allowed', async () => {
 	// aria-hidden is not a naming attribute; the prohibition does not apply.
 	expect((await mlRuleTest(rule, '<my-widget aria-hidden="true">y</my-widget>')).violations).toStrictEqual([]);
 });
 
-test('[no-prohibited-naming-issue-3630-013] custom element role="presentation" + aria-label currently allowed', async () => {
+test('[no-prohibited-naming-014] custom element role="presentation" + aria-label currently allowed', async () => {
 	// `getComputedRole` cannot validate `role=` on unknown elements, so the
 	// branch reads the raw attribute and treats any non-empty value as "an
 	// explicit role is set". This is permissive — `role="presentation"` /
@@ -160,14 +160,14 @@ test('[no-prohibited-naming-issue-3630-013] custom element role="presentation" +
 	expect(violations).toStrictEqual([]);
 });
 
-test('[no-prohibited-naming-issue-3630-014] customised-built-in (`<button is="x-y">`) is unaffected', async () => {
+test('[no-prohibited-naming-015] customised-built-in (`<button is="x-y">`) is unaffected', async () => {
 	// `is=` makes the element a customised built-in; the spec.<el>.jsonc path
 	// drives the check (here: `<button>` supports aria-label). The
 	// autonomous-custom-element branch must skip this case.
 	expect((await mlRuleTest(rule, '<button is="x-y" aria-label="x">y</button>')).violations).toStrictEqual([]);
 });
 
-test('[no-prohibited-naming-issue-3630-015] custom element + non-naming aria does NOT double-fire with aria-prop-requires-role', async () => {
+test('[no-prohibited-naming-016] custom element + non-naming aria does NOT double-fire with aria-prop-requires-role', async () => {
 	// Boundary check: no-prohibited-naming handles autonomous custom elements
 	// only for naming attrs. Non-naming aria-* on a custom element without role
 	// goes to neither rule (aria-prop-requires-role early-returns when no
@@ -183,7 +183,7 @@ test('[no-prohibited-naming-issue-3630-015] custom element + non-naming aria doe
 	expect(r.violations).toStrictEqual([]);
 });
 
-test('[no-prohibited-naming-issue-4309-001] an upper-case aria-label on cite is prohibited like the lower-case one', async () => {
+test('[no-prohibited-naming-017] an upper-case aria-label on cite is prohibited like the lower-case one', async () => {
 	const { violations } = await mlRuleTest(rule, '<cite ARIA-LABEL="x">y</cite>');
 	expect(violations).toStrictEqual([
 		{
@@ -196,11 +196,11 @@ test('[no-prohibited-naming-issue-4309-001] an upper-case aria-label on cite is 
 	]);
 });
 
-test('[no-prohibited-naming-issue-4309-002] an upper-case aria-hidden on cite is allowed (not a naming attribute)', async () => {
+test('[no-prohibited-naming-018] an upper-case aria-hidden on cite is allowed (not a naming attribute)', async () => {
 	expect((await mlRuleTest(rule, '<cite ARIA-HIDDEN="true">y</cite>')).violations).toStrictEqual([]);
 });
 
-test('[no-prohibited-naming-issue-4309-003] JSX: an upper-case aria-label on an HTML element is prohibited', async () => {
+test('[no-prohibited-naming-019] JSX: an upper-case aria-label on an HTML element is prohibited', async () => {
 	const { violations } = await mlRuleTest(rule, '<cite ARIA-LABEL="x">y</cite>', {
 		parser: { '.*': '@markuplint/jsx-parser' },
 	});
@@ -215,7 +215,7 @@ test('[no-prohibited-naming-issue-4309-003] JSX: an upper-case aria-label on an 
 	]);
 });
 
-test('[no-prohibited-naming-issue-4309-004] JSX: an upper-case aria-label on an autonomous custom element is checked as the lower-case one', async () => {
+test('[no-prohibited-naming-020] JSX: an upper-case aria-label on an autonomous custom element is checked as the lower-case one', async () => {
 	const { violations } = await mlRuleTest(rule, '<my-widget ARIA-LABEL="x">y</my-widget>', {
 		parser: { '.*': '@markuplint/jsx-parser' },
 	});
@@ -228,4 +228,26 @@ test('[no-prohibited-naming-issue-4309-004] JSX: an upper-case aria-label on an 
 			raw: 'ARIA-LABEL="x"',
 		},
 	]);
+});
+
+test('[no-prohibited-naming-021] JSX: an element whose role is not known until it is rendered may have a role that can be named', async () => {
+	const parser = { '.*': '@markuplint/jsx-parser' };
+	const source = [
+		'<>',
+		'<abbr role={props.role} aria-label="x">a</abbr>',
+		'<abbr {...props} aria-label="x">b</abbr>',
+		// `foo` is no role, so the element has none unless the spread after it brings one
+		'<abbr role="foo" {...props} aria-label="x">c</abbr>',
+		'</>',
+	].join('\n');
+	expect((await mlRuleTest(rule, source, { parser })).violations).toStrictEqual([]);
+
+	// Controls: an element that has no role is judged, also where the spread is before the `role` attribute
+	const message = 'The "aria-label" ARIA property is prohibited on the "abbr" element';
+	expect((await mlRuleTest(rule, '<abbr aria-label="x">a</abbr>', { parser })).violations).toStrictEqual([
+		{ severity: 'error', line: 1, col: 7, message, raw: 'aria-label="x"' },
+	]);
+	expect(
+		(await mlRuleTest(rule, '<abbr {...props} role="foo" aria-label="x">a</abbr>', { parser })).violations,
+	).toStrictEqual([{ severity: 'error', line: 1, col: 29, message, raw: 'aria-label="x"' }]);
 });

@@ -3,7 +3,7 @@ import { test, expect } from 'vitest';
 
 import rule from './index.js';
 
-test('[no-obsolete-doctype-valid-001] modern doctype', async () => {
+test('[no-obsolete-doctype-001] modern doctype', async () => {
 	const { violations } = await mlRuleTest(
 		rule,
 		`
@@ -14,17 +14,17 @@ test('[no-obsolete-doctype-valid-001] modern doctype', async () => {
 	expect(violations.length).toBe(0);
 });
 
-test('[no-obsolete-doctype-valid-002] document fragment', async () => {
+test('[no-obsolete-doctype-002] document fragment', async () => {
 	const { violations } = await mlRuleTest(rule, '<div></div>');
 	expect(violations.length).toBe(0);
 });
 
-test('[no-obsolete-doctype-valid-003] missing doctype is not this rule’s concern', async () => {
+test('[no-obsolete-doctype-003] missing doctype is not this rule’s concern', async () => {
 	const { violations } = await mlRuleTest(rule, '<html></html>');
 	expect(violations.length).toBe(0);
 });
 
-test('[no-obsolete-doctype-invalid-001] obsolete doctype', async () => {
+test('[no-obsolete-doctype-004] obsolete doctype', async () => {
 	const { violations } = await mlRuleTest(
 		rule,
 		`
@@ -41,7 +41,7 @@ test('[no-obsolete-doctype-invalid-001] obsolete doctype', async () => {
 	});
 });
 
-test('[no-obsolete-doctype-valid-004] legacy-compat system identifier is a conforming exception (HTML LS)', async () => {
+test('[no-obsolete-doctype-005] legacy-compat system identifier is a conforming exception (HTML LS)', async () => {
 	const { violations } = await mlRuleTest(
 		rule,
 		`

@@ -1,33 +1,32 @@
 //! Tests for `no-empty-palpable-content` rule.
 //!
 //! Test ID mapping (TS → Rust):
-//!   no-empty-palpable-content-valid-001    → no_empty_palpable_content_valid_001
-//!   no-empty-palpable-content-invalid-001  → no_empty_palpable_content_invalid_001
-//!   no-empty-palpable-content-valid-002    → no_empty_palpable_content_valid_002
-//!   no-empty-palpable-content-valid-003    → no_empty_palpable_content_valid_003
-//!   no-empty-palpable-content-valid-004    → no_empty_palpable_content_valid_004
-//!   no-empty-palpable-content-valid-005    → no_empty_palpable_content_valid_005
-//!   no-empty-palpable-content-issue-593    → no_empty_palpable_content_issue_593
-//!   no-empty-palpable-content-issue-775    → no_empty_palpable_content_issue_775
-//!   no-empty-palpable-content-issue-1948   → no_empty_palpable_content_issue_1948
-//!   v6_no_empty_palpable_content_001       — Rust-only: `img` and the other self-palpable elements are exempt
-//!   v6_no_empty_palpable_content_002       — Rust-only: elements of the "nothing" content model are exempt
-//!   v6_no_empty_palpable_content_003       — Rust-only: a comment is content; only direct children decide
-//!   v6_no_empty_palpable_content_004       — Rust-only: the exemptions ignore the case of the tag name
-//!   v6_no_empty_palpable_content_005       — Rust-only: whitespace is what a JS `\s` matches
-//!   v6_no_empty_palpable_content_006       — Rust-only: `sup ` (trailing space) in `#palpable` still matches
-//!   v6_no_empty_palpable_content_007       — Rust-only: the exposable elements TS has and Rust lacked
-//!   v6_no_empty_palpable_content_008       — Rust-only: `caption` is not exposable
-//!   v6_no_empty_palpable_content_009       — Rust-only: `ul:has(>li)` and the like need their condition
-//!   v6_no_empty_palpable_content_010       — Rust-only: `extendsExposableElements: false` drops the whole list
-//!   v6_no_empty_palpable_content_011       — Rust-only: namespaced and conditional entries are evaluated
-//!   v6_no_empty_palpable_content_012       — Rust-only: the implicit `body` is exposable
-//!   v6_no_empty_palpable_content_013       — Rust-only: the exposable list has the same members as the TS one
-//!   v6_no_empty_palpable_content_014       — Rust-only: every `#palpable` entry of the spec parses as a selector
-//!   v6_no_empty_palpable_content_015       — Rust-only: a fragment block is transparent, so its `li` is empty
-//!   v6_no_empty_palpable_content_016       — Rust-only: a non-fragment block without `each`/`end` is content
-//!   v6_no_empty_palpable_content_017       — Rust-only: an `each` block is replaced by its children
-//!   v6_no_empty_palpable_content_018       — Rust-only: a rejected `#palpable` entry is reported (#4222)
+//!   no-empty-palpable-content-001     → no_empty_palpable_content_001
+//!   no-empty-palpable-content-002     → no_empty_palpable_content_002
+//!   no-empty-palpable-content-003     → no_empty_palpable_content_003
+//!   no-empty-palpable-content-004     → no_empty_palpable_content_004
+//!   no-empty-palpable-content-005     → no_empty_palpable_content_005
+//!   no-empty-palpable-content-006     → no_empty_palpable_content_006
+//!   no-empty-palpable-content-007     → no_empty_palpable_content_007
+//!   no-empty-palpable-content-008     → no_empty_palpable_content_008
+//!   v6_no_empty_palpable_content_001  — Rust-only: `img` and the other self-palpable elements are exempt
+//!   v6_no_empty_palpable_content_002  — Rust-only: elements of the "nothing" content model are exempt
+//!   v6_no_empty_palpable_content_003  — Rust-only: a comment is content; only direct children decide
+//!   v6_no_empty_palpable_content_004  — Rust-only: the exemptions ignore the case of the tag name
+//!   v6_no_empty_palpable_content_005  — Rust-only: whitespace is what a JS `\s` matches
+//!   v6_no_empty_palpable_content_006  — Rust-only: `sup ` (trailing space) in `#palpable` still matches
+//!   v6_no_empty_palpable_content_007  — Rust-only: the exposable elements TS has and Rust lacked
+//!   v6_no_empty_palpable_content_008  — Rust-only: `caption` is not exposable
+//!   v6_no_empty_palpable_content_009  — Rust-only: `ul:has(>li)` and the like need their condition
+//!   v6_no_empty_palpable_content_010  — Rust-only: `extendsExposableElements: false` drops the whole list
+//!   v6_no_empty_palpable_content_011  — Rust-only: namespaced and conditional entries are evaluated
+//!   v6_no_empty_palpable_content_012  — Rust-only: the implicit `body` is exposable
+//!   v6_no_empty_palpable_content_013  — Rust-only: the exposable list has the same members as the TS one
+//!   v6_no_empty_palpable_content_014  — Rust-only: every `#palpable` entry of the spec parses as a selector
+//!   v6_no_empty_palpable_content_015  — Rust-only: a fragment block is transparent, so its `li` is empty
+//!   v6_no_empty_palpable_content_016  — Rust-only: a non-fragment block without `each`/`end` is content
+//!   v6_no_empty_palpable_content_017  — Rust-only: an `each` block is replaced by its children
+//!   v6_no_empty_palpable_content_018  — Rust-only: a rejected `#palpable` entry is reported (#4222)
 
 use super::*;
 use crate::rule::{RuleConfig, RuleConfigSet};
@@ -392,10 +391,10 @@ fn warning(raw: &str) -> Brief {
     brief(Severity::Warning, 1, 1, MESSAGE, raw)
 }
 
-/// TS: `[no-empty-palpable-content-valid-001]` no space
+/// TS: `[no-empty-palpable-content-001]` no space
 #[test]
-fn no_empty_palpable_content_valid_001() {
-    const _ID: &str = "no-empty-palpable-content-valid-001";
+fn no_empty_palpable_content_001() {
+    const _ID: &str = "no-empty-palpable-content-001";
     assert_eq!(run("<div></div>"), [warning("<div>")]);
     assert_eq!(run("<p></p>"), [warning("<p>")]);
     assert_eq!(run("<span></span>"), [warning("<span>")]);
@@ -403,41 +402,33 @@ fn no_empty_palpable_content_valid_001() {
     assert_eq!(run("<svg><rect /></svg>"), []);
 }
 
-/// TS: `[no-empty-palpable-content-invalid-001]` white space
+/// TS: `[no-empty-palpable-content-002]` white space
 #[test]
-fn no_empty_palpable_content_invalid_001() {
-    const _ID: &str = "no-empty-palpable-content-invalid-001";
+fn no_empty_palpable_content_002() {
+    const _ID: &str = "no-empty-palpable-content-002";
     assert_eq!(run("<div> </div>"), [warning("<div>")]);
     assert_eq!(run("<div>\n\t   \n\n</div>"), [warning("<div>")]);
 }
 
-/// TS: `[no-empty-palpable-content-valid-002]` has content
+/// TS: `[no-empty-palpable-content-003]` has content
 #[test]
-fn no_empty_palpable_content_valid_002() {
-    const _ID: &str = "no-empty-palpable-content-valid-002";
+fn no_empty_palpable_content_003() {
+    const _ID: &str = "no-empty-palpable-content-003";
     assert_eq!(run("<div>\n\ttext\n\n</div>"), []);
     assert_eq!(run("<div><img /></div>"), []);
 }
 
-/// TS: `[no-empty-palpable-content-valid-003]` has content
+/// TS: `[no-empty-palpable-content-004]` element exception
 #[test]
-fn no_empty_palpable_content_valid_003() {
-    const _ID: &str = "no-empty-palpable-content-valid-003";
-    assert_eq!(run("<div>\n\ttext\n\n</div>"), []);
-    assert_eq!(run("<div><img /></div>"), []);
-}
-
-/// TS: `[no-empty-palpable-content-valid-004]` element exception
-#[test]
-fn no_empty_palpable_content_valid_004() {
-    const _ID: &str = "no-empty-palpable-content-valid-004";
+fn no_empty_palpable_content_004() {
+    const _ID: &str = "no-empty-palpable-content-004";
     assert_eq!(run("<textarea></textarea>"), []);
 }
 
-/// TS: `[no-empty-palpable-content-valid-005]` ignore aria-busy
+/// TS: `[no-empty-palpable-content-005]` ignore aria-busy
 #[test]
-fn no_empty_palpable_content_valid_005() {
-    const _ID: &str = "no-empty-palpable-content-valid-005";
+fn no_empty_palpable_content_005() {
+    const _ID: &str = "no-empty-palpable-content-005";
     assert_eq!(run(r#"<div aria-busy="true"></div>"#), []);
     assert_eq!(run("<div aria-busy=\"true\">\n\t\n\n</div>"), []);
     assert_eq!(
@@ -449,27 +440,27 @@ fn no_empty_palpable_content_valid_005() {
     );
 }
 
-/// TS: `[no-empty-palpable-content-issue-593]` `iframe` is of the "nothing" content model
+/// TS: `[no-empty-palpable-content-006]` `iframe` is of the "nothing" content model
 #[test]
-fn no_empty_palpable_content_issue_593() {
-    const _ID: &str = "no-empty-palpable-content-issue-593";
+fn no_empty_palpable_content_006() {
+    const _ID: &str = "no-empty-palpable-content-006";
     assert_eq!(run("<iframe></iframe>"), []);
 }
 
-/// TS: `[no-empty-palpable-content-issue-775]` text in `pre`
+/// TS: `[no-empty-palpable-content-007]` text in `pre`
 #[test]
-fn no_empty_palpable_content_issue_775() {
-    const _ID: &str = "no-empty-palpable-content-issue-775";
+fn no_empty_palpable_content_007() {
+    const _ID: &str = "no-empty-palpable-content-007";
     assert_eq!(run("<pre>text</pre>"), []);
     assert_eq!(run("<pre>\n\ttext</pre>"), []);
     assert_eq!(run("<pre>text\ntext</pre>"), []);
     assert_eq!(run("<pre>\ntext</pre>"), []);
 }
 
-/// TS: `[no-empty-palpable-content-issue-1948]` elements filled by interaction or palpable by themselves
+/// TS: `[no-empty-palpable-content-008]` elements filled by interaction or palpable by themselves
 #[test]
-fn no_empty_palpable_content_issue_1948() {
-    const _ID: &str = "no-empty-palpable-content-issue-1948";
+fn no_empty_palpable_content_008() {
+    const _ID: &str = "no-empty-palpable-content-008";
     assert_eq!(run("<audio></audio>"), []);
     assert_eq!(run("<canvas></canvas>"), []);
     assert_eq!(run("<video></video>"), []);

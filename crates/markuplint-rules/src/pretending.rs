@@ -533,6 +533,7 @@ fn create_pretender_attrs(
                 is_dynamic_value: (is_dynamic || is_absent).then_some(true),
                 is_expression_value: (is_dynamic || is_expression).then_some(true),
                 is_absent: is_absent.then_some(true),
+                is_spread: None,
                 literal_expression: None,
                 is_directive: None,
                 potential_name: None,

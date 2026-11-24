@@ -28,6 +28,7 @@ use crate::aria::computed_role::get_computed_role;
 use crate::aria_check::{
     ElementContext, ElementGate, aria_prop_attrs, attr_name, is_js_whitespace, name_key, prop_type_label, walk_elements,
 };
+use crate::helpers::is_role_unknown;
 use crate::rule::{Rule, RuleConfigSet};
 use crate::violation::Violation;
 
@@ -60,13 +61,20 @@ fn check(ctx: &ElementContext<'_>, violations: &mut Vec<Violation>) {
         return;
     }
 
-    let role_name = get_computed_role(ctx.spec, ctx.arena, ctx.node_id, ctx.version, false)
-        .role
-        .map(|role| role.name);
+    // The computed role of an element whose role is not known is the fallback one, which is not the role it has
+    let role_unknown = is_role_unknown(ctx.el);
+    let role_name = if role_unknown {
+        None
+    } else {
+        get_computed_role(ctx.spec, ctx.arena, ctx.node_id, ctx.version, false)
+            .role
+            .map(|role| role.name)
+    };
     let props = &aria::get_aria_spec(ctx.spec, ctx.version).props;
 
     for attr in attrs {
-        if let Some(message) = invalid_value_message_in(ctx.tr, ctx.el, attr, props, role_name.as_deref()) {
+        if let Some(message) = invalid_value_message_in(ctx.tr, ctx.el, attr, props, role_name.as_deref(), role_unknown)
+        {
             violations.push(ctx.attr_violation(attr, message));
         }
     }
@@ -101,17 +109,20 @@ fn invalid_value_message(
     props: &[ARIAProperty],
     role_name: Option<&str>,
 ) -> Option<String> {
-    invalid_value_message_in(Translator::new(None), el, attr, props, role_name)
+    invalid_value_message_in(Translator::new(None), el, attr, props, role_name, false)
 }
 
 /// The message for `attr` when its value does not fit the property, `None` when it does, when the
-/// property is unknown, or when the value is dynamic.
+/// property is unknown, or when the value is dynamic. With `role_unknown` (TS `isRoleUnknown`: the role is not
+/// known until it is rendered) the value is valid if the base value type of the property, or the value type of any
+/// role that has its own, allows it, as the role that decides which type applies is not the computed one.
 fn invalid_value_message_in(
     tr: Translator<'static>,
     el: &ElementData,
     attr: &MLASTHTMLAttr,
     props: &[ARIAProperty],
     role_name: Option<&str>,
+    role_unknown: bool,
 ) -> Option<String> {
     if attr.is_dynamic_value == Some(true) {
         return None;
@@ -120,6 +131,15 @@ fn invalid_value_message_in(
     let (prop, value_type) = resolve_value_type(el, attr, props, role_name)?;
 
     let value = markuplint_dom::helpers::attr_value(attr);
+    if role_unknown
+        && prop
+            .conditional_value
+            .iter()
+            .flatten()
+            .any(|cond| check_aria_value(&cond.value, value, &prop.enum_values))
+    {
+        return None;
+    }
     if check_aria_value(value_type, value, &prop.enum_values) {
         return None;
     }

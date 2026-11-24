@@ -34,6 +34,10 @@ export type DirectiveResolution = {
 	 */
 	readonly isDynamicValue?: true;
 	/**
+	 * Whether the matched pattern says that the attribute is a spread ({@link DirectivePattern.isSpread}).
+	 */
+	readonly isSpread?: true;
+	/**
 	 * Present only when the matched pattern declares it.
 	 */
 	readonly expressionLanguage?: ExpressionLanguage;
@@ -124,6 +128,7 @@ export function resolveDirective(
 			potentialName,
 			isDirective: pattern.isDirective,
 			isDynamicValue: pattern.isDynamicValue,
+			...(pattern.isSpread ? { isSpread: true as const } : {}),
 			valueType: pattern.valueType,
 			isDuplicatable,
 			...(pattern.expressionLanguage ? { expressionLanguage: pattern.expressionLanguage } : {}),

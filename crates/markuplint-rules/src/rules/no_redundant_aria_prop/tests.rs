@@ -1,8 +1,8 @@
 //! Tests for `no-redundant-aria-prop` rule.
 //!
 //! Test ID mapping (TS → Rust):
-//!   no-redundant-aria-prop-valid-001    → no_redundant_aria_prop_valid_001
-//!   no-redundant-aria-prop-invalid-001  → no_redundant_aria_prop_invalid_001
+//!   no-redundant-aria-prop-001    → no_redundant_aria_prop_001
+//!   no-redundant-aria-prop-002  → no_redundant_aria_prop_002
 //!   v6_no_redundant_aria_prop_001  — Rust-only: default severity is a warning, config can raise or disable it
 //!   v6_no_redundant_aria_prop_002  — Rust-only: each equivalent attribute (`required`, `colspan`, `hidden`, ...)
 //!   v6_no_redundant_aria_prop_003  — Rust-only: values are compared trimmed and lower-cased on the ARIA side
@@ -52,10 +52,10 @@ fn assert_violations(actual: &[Violation], expected: &[Expected<'_>]) {
     }
 }
 
-/// TS: `[no-redundant-aria-prop-valid-001]`
+/// TS: `[no-redundant-aria-prop-001]`
 #[test]
-fn no_redundant_aria_prop_valid_001() {
-    const _ID: &str = "no-redundant-aria-prop-valid-001";
+fn no_redundant_aria_prop_001() {
+    const _ID: &str = "no-redundant-aria-prop-001";
     let violations = run_rule(
         r#"<div role="button" aria-pressed="true"></div>"#,
         serde_json::json!(true),
@@ -63,10 +63,10 @@ fn no_redundant_aria_prop_valid_001() {
     assert_violations(&violations, &[]);
 }
 
-/// TS: `[no-redundant-aria-prop-invalid-001]`
+/// TS: `[no-redundant-aria-prop-002]`
 #[test]
-fn no_redundant_aria_prop_invalid_001() {
-    const _ID: &str = "no-redundant-aria-prop-invalid-001";
+fn no_redundant_aria_prop_002() {
+    const _ID: &str = "no-redundant-aria-prop-002";
     let violations = run_rule(
         r#"<input type="checkbox" aria-checked="true" checked />"#,
         serde_json::json!(true),

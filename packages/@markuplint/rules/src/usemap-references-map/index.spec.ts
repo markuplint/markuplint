@@ -3,7 +3,7 @@ import { test, expect } from 'vitest';
 
 import rule from './index.js';
 
-test('[usemap-references-map-valid-001] resolves to a map element', async () => {
+test('[usemap-references-map-001] resolves to a map element', async () => {
 	const { violations } = await mlRuleTest(
 		rule,
 		'<img src="shapes.png" alt="" usemap="#shapes"><map name="shapes"></map>',
@@ -11,12 +11,12 @@ test('[usemap-references-map-valid-001] resolves to a map element', async () => 
 	expect(violations).toStrictEqual([]);
 });
 
-test('[usemap-references-map-valid-002] no usemap attribute', async () => {
+test('[usemap-references-map-002] no usemap attribute', async () => {
 	const { violations } = await mlRuleTest(rule, '<img src="shapes.png" alt="">');
 	expect(violations).toStrictEqual([]);
 });
 
-test('[usemap-references-map-valid-003] dynamic value is skipped', async () => {
+test('[usemap-references-map-003] dynamic value is skipped', async () => {
 	const { violations } = await mlRuleTest(rule, '<img src="shapes.png" alt="" usemap="{{mapRef}}">', {
 		parser: {
 			'.*': '@markuplint/mustache-parser',
@@ -25,7 +25,7 @@ test('[usemap-references-map-valid-003] dynamic value is skipped', async () => {
 	expect(violations).toStrictEqual([]);
 });
 
-test('[usemap-references-map-invalid-001] no map element in the document', async () => {
+test('[usemap-references-map-004] no map element in the document', async () => {
 	const { violations } = await mlRuleTest(rule, '<img src="shapes.png" alt="" usemap="#nonexistent">');
 	expect(violations).toStrictEqual([
 		{
@@ -39,7 +39,7 @@ test('[usemap-references-map-invalid-001] no map element in the document', async
 	]);
 });
 
-test('[usemap-references-map-invalid-002] map element exists but with a different name', async () => {
+test('[usemap-references-map-005] map element exists but with a different name', async () => {
 	const { violations } = await mlRuleTest(
 		rule,
 		'<img src="shapes.png" alt="" usemap="#shapes"><map name="other-shapes"></map>',
@@ -47,7 +47,7 @@ test('[usemap-references-map-invalid-002] map element exists but with a differen
 	expect(violations.length).toBe(1);
 });
 
-test('[usemap-references-map-invalid-003] the reference resolves only via id, not name', async () => {
+test('[usemap-references-map-006] the reference resolves only via id, not name', async () => {
 	// A hash-name reference is defined in terms of the `name` attribute; a
 	// same-valued `id` on an unrelated element must not satisfy it.
 	const { violations } = await mlRuleTest(
@@ -57,7 +57,7 @@ test('[usemap-references-map-invalid-003] the reference resolves only via id, no
 	expect(violations.length).toBe(1);
 });
 
-test('[usemap-references-map-issue-4489-001] the map is looked for in the tree of the image', async () => {
+test('[usemap-references-map-007] the map is looked for in the tree of the image', async () => {
 	const { violations } = await mlRuleTest(
 		rule,
 		'<template><img src="a.png" alt="" usemap="#m"><map name="m"></map></template>',
@@ -65,7 +65,7 @@ test('[usemap-references-map-issue-4489-001] the map is looked for in the tree o
 	expect(violations).toStrictEqual([]);
 });
 
-test('[usemap-references-map-issue-4489-002] a map in another tree is not the target', async () => {
+test('[usemap-references-map-008] a map in another tree is not the target', async () => {
 	const { violations } = await mlRuleTest(
 		rule,
 		'<map name="m"></map><template><img src="a.png" alt="" usemap="#m"></template>',
@@ -82,19 +82,19 @@ test('[usemap-references-map-issue-4489-002] a map in another tree is not the ta
 	]);
 });
 
-test('[usemap-references-map-issue-4489-003] the name is compared after the character references are resolved', async () => {
+test('[usemap-references-map-009] the name is compared after the character references are resolved', async () => {
 	const { violations } = await mlRuleTest(rule, '<img src="a.png" alt="" usemap="#&#109;"><map name="m"></map>');
 	expect(violations).toStrictEqual([]);
 });
 
-test('[usemap-references-map-issue-4489-004] a map whose name is not known until it is rendered may be the target', async () => {
+test('[usemap-references-map-010] a map whose name is not known until it is rendered may be the target', async () => {
 	const { violations } = await mlRuleTest(rule, '<img src="a.png" alt="" usemap="#m"><map name="{{x}}"></map>', {
 		parser: { '.*': '@markuplint/mustache-parser' },
 	});
 	expect(violations).toStrictEqual([]);
 });
 
-test('[usemap-references-map-issue-4584-001] the message is in Japanese with locale ja', async () => {
+test('[usemap-references-map-011] the message is in Japanese with locale ja', async () => {
 	const { violations } = await mlRuleTest(rule, '<img usemap="#x" src="a.png" alt="">', undefined, false, 'ja');
 
 	expect(violations).toStrictEqual([

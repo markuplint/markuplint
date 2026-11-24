@@ -55,6 +55,7 @@ Generated TypeScript types (do not edit directly):
 **DOM Tree Algorithms**:
 
 - Parent element in a tree and in the accessibility tree (`getTreeParentElement`, `getComposedParentElement`, `isShadowRoot` in `src/algorithm/dom/tree-boundary.ts`)
+- Whether a tree has an element whose `id` is not known until it is rendered (`hasElementOfUnknownId` in `src/algorithm/dom/has-unknown-id.ts`)
 
 **WAI-ARIA Specification Algorithms**:
 

@@ -2,6 +2,7 @@ import {
 	getDOMValue,
 	getElementByIdInTree,
 	isAriaAttr,
+	isRoleUnknown,
 	labelable,
 	memoizeByObject,
 	namespaceKeyOf,
@@ -121,6 +122,11 @@ const getContext = memoizeByObject(
  * The ancestors are those of the accessibility tree ({@link getComposedParentElement}): the search ends at the
  * top of the content of an ordinary `template` element, and it goes on from a declarative shadow root to its host.
  *
+ * An ancestor whose role is not known until it is rendered ({@link isRoleUnknown}) is not taken to have
+ * the role that `getComputedRole` falls back to: it is passed over, as markuplint does not decide what
+ * it cannot know. The search goes on above it, where a known role with presentational children still
+ * excludes the descendants.
+ *
  * @param el - The element to start searching from (exclusive, starts from parent).
  * @param ariaVersion - The ARIA version to compute the roles with.
  * @returns The role of that ancestor, or `null` if none is found.
@@ -132,7 +138,9 @@ function getClosestPresentationalChildrenRole(
 ): ARIARole | null {
 	let current: Element<boolean, undefined> | null = getComposedParentElement(el);
 	while (current) {
-		const role = getComputedRole(el.ownerMLDocument.specs, current, ariaVersion).role;
+		const role = isRoleUnknown(current)
+			? null
+			: getComputedRole(el.ownerMLDocument.specs, current, ariaVersion).role;
 		if (role?.childrenPresentational) {
 			return role;
 		}

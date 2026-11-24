@@ -3,25 +3,26 @@
 //! Split out of the tests of the pre-split `invalid-attr` rule; each test keeps the
 //! TypeScript test it mirrors under that test's new id (old id in parentheses).
 //!
-//!   no-disallowed-attr-invalid-001  → no_disallowed_attr_invalid_001  (was invalid-attr-invalid-019)
-//!   no-disallowed-attr-valid-001  → no_disallowed_attr_valid_001  (was invalid-attr-valid-009)
-//!   no-disallowed-attr-issue-3631-001  → no_disallowed_attr_issue_3631_001  (was invalid-attr-issue-3631-001)
-//!   no-disallowed-attr-issue-3631-002  → no_disallowed_attr_issue_3631_002  (was invalid-attr-issue-3631-002)
-//!   no-disallowed-attr-issue-3631-003  → no_disallowed_attr_issue_3631_003  (was invalid-attr-issue-3631-003)
-//!   no-disallowed-attr-issue-3631-004  → no_disallowed_attr_issue_3631_004  (was invalid-attr-issue-3631-004)
-//!   no-disallowed-attr-issue-3631-005  → no_disallowed_attr_issue_3631_005  (was invalid-attr-issue-3631-005)
-//!   no-disallowed-attr-issue-3631-006  → no_disallowed_attr_issue_3631_006  (was invalid-attr-issue-3631-006)
-//!   no-disallowed-attr-issue-3631-007  → no_disallowed_attr_issue_3631_007  (was invalid-attr-issue-3631-007)
-//!   no-disallowed-attr-issue-3631-008  → no_disallowed_attr_issue_3631_008  (was invalid-attr-issue-3631-008)
-//!   no-disallowed-attr-issue-3631-009  → no_disallowed_attr_issue_3631_009  (was invalid-attr-issue-3631-009)
-//!   no-disallowed-attr-issue-3631-010  → no_disallowed_attr_issue_3631_010  (was invalid-attr-issue-3631-010)
-//!   no-disallowed-attr-issue-2455  → no_disallowed_attr_issue_2455  (was invalid-attr-issue-2455)
-//!   no-disallowed-attr-parser-004  — SKIP: Framework parser tests (Pug, Vue, React, Svelte, MDX) (was invalid-attr-parser-004)
-//!   no-unknown-attr-parser-010, no-disallowed-attr-parser-005  — SKIP: Framework parser tests (Pug, Vue, React, Svelte, MDX) (was invalid-attr-parser-011)
-//!   no-unknown-attr-parser-011, no-disallowed-attr-parser-006  — SKIP: Framework parser tests (Pug, Vue, React, Svelte, MDX) (was invalid-attr-parser-012)
-//!   no-disallowed-attr-parser-001  — SKIP: Framework parser tests (Pug, Vue, React, Svelte, MDX) (was invalid-attr-parser-018)
-//!   no-disallowed-attr-parser-002  — SKIP: Framework parser tests (Pug, Vue, React, Svelte, MDX) (was invalid-attr-parser-019)
-//!   no-disallowed-attr-parser-003  — SKIP: Framework parser tests (Pug, Vue, React, Svelte, MDX) (was invalid-attr-parser-020)
+//!   no-disallowed-attr-001  → no_disallowed_attr_001  (was invalid-attr-invalid-019)
+//!   no-disallowed-attr-002  → no_disallowed_attr_002  (was invalid-attr-valid-009)
+//!   no-disallowed-attr-004  → no_disallowed_attr_004  (was invalid-attr-issue-3631-001)
+//!   no-disallowed-attr-005  → no_disallowed_attr_005  (was invalid-attr-issue-3631-002)
+//!   no-disallowed-attr-006  → no_disallowed_attr_006  (was invalid-attr-issue-3631-003)
+//!   no-disallowed-attr-007  → no_disallowed_attr_007  (was invalid-attr-issue-3631-004)
+//!   no-disallowed-attr-008  → no_disallowed_attr_008  (was invalid-attr-issue-3631-005)
+//!   no-disallowed-attr-009  → no_disallowed_attr_009  (was invalid-attr-issue-3631-006)
+//!   no-disallowed-attr-010  → no_disallowed_attr_010  (was invalid-attr-issue-3631-007)
+//!   no-disallowed-attr-011  → no_disallowed_attr_011  (was invalid-attr-issue-3631-008)
+//!   no-disallowed-attr-012  → no_disallowed_attr_012  (was invalid-attr-issue-3631-009)
+//!   no-disallowed-attr-013  → no_disallowed_attr_013  (was invalid-attr-issue-3631-010)
+//!   no-disallowed-attr-003  → no_disallowed_attr_003  (was invalid-attr-issue-2455)
+//!   no-disallowed-attr-059  → no_disallowed_attr_059  (was invalid-attr-invalid-001)
+//!   no-disallowed-attr-060  — SKIP: Framework parser tests (Pug, Vue, React, Svelte, MDX) (was invalid-attr-parser-004)
+//!   no-unknown-attr-032, no-disallowed-attr-061  — SKIP: Framework parser tests (Pug, Vue, React, Svelte, MDX) (was invalid-attr-parser-011)
+//!   no-unknown-attr-033, no-disallowed-attr-062  — SKIP: Framework parser tests (Pug, Vue, React, Svelte, MDX) (was invalid-attr-parser-012)
+//!   no-disallowed-attr-040  — SKIP: Framework parser tests (Pug, Vue, React, Svelte, MDX) (was invalid-attr-parser-018)
+//!   no-disallowed-attr-041  — SKIP: Framework parser tests (Pug, Vue, React, Svelte, MDX) (was invalid-attr-parser-019)
+//!   no-disallowed-attr-042  — SKIP: Framework parser tests (Pug, Vue, React, Svelte, MDX) (was invalid-attr-parser-020)
 
 use super::*;
 use crate::lint::{LintConfig, lint};
@@ -44,10 +45,10 @@ fn html_arena(html: &str) -> markuplint_dom::arena::DomArena {
     html_builder::build_from_html_arena(html, &parser_arena, is_fragment)
 }
 
-/// TS: `[no-disallowed-attr-invalid-001]` — noUse flag (dialog tabindex)
+/// TS: `[no-disallowed-attr-001]` — noUse flag (dialog tabindex)
 #[test]
-fn no_disallowed_attr_invalid_001() {
-    const _ID: &str = "no-disallowed-attr-invalid-001";
+fn no_disallowed_attr_001() {
+    const _ID: &str = "no-disallowed-attr-001";
     let spec = spec();
     let config: LintConfig = serde_json::from_value(serde_json::json!({
         "rules": { "no-disallowed-attr": true }
@@ -62,10 +63,10 @@ fn no_disallowed_attr_invalid_001() {
     assert_eq!(result.violations[0].raw, "tabindex=\"-1\"");
 }
 
-/// TS: `[no-disallowed-attr-valid-001]` — noUse flag with allowAttrs override
+/// TS: `[no-disallowed-attr-002]` — noUse flag with allowAttrs override
 #[test]
-fn no_disallowed_attr_valid_001() {
-    const _ID: &str = "no-disallowed-attr-valid-001";
+fn no_disallowed_attr_002() {
+    const _ID: &str = "no-disallowed-attr-002";
     let spec = spec();
     let config: LintConfig = serde_json::from_value(serde_json::json!({
         "rules": { "no-disallowed-attr": { "options": { "allowAttrs": [{ "name": "tabindex", "value": { "enum": ["-1", "0"] } }] } } }
@@ -79,10 +80,10 @@ fn no_disallowed_attr_valid_001() {
     );
 }
 
-/// TS: `[no-disallowed-attr-issue-3631-001]` — importmap must not have src
+/// TS: `[no-disallowed-attr-004]` — importmap must not have src
 #[test]
-fn no_disallowed_attr_issue_3631_001() {
-    const _ID: &str = "no-disallowed-attr-issue-3631-001";
+fn no_disallowed_attr_004() {
+    const _ID: &str = "no-disallowed-attr-004";
     let spec = spec();
     let config: LintConfig = serde_json::from_value(serde_json::json!({
         "rules": { "no-disallowed-attr": true }
@@ -100,10 +101,10 @@ fn no_disallowed_attr_issue_3631_001() {
     assert_eq!(result.violations[0].message, "The \"src\" attribute is disallowed");
 }
 
-/// TS: `[no-disallowed-attr-issue-3631-002]` — speculationrules must not have src
+/// TS: `[no-disallowed-attr-005]` — speculationrules must not have src
 #[test]
-fn no_disallowed_attr_issue_3631_002() {
-    const _ID: &str = "no-disallowed-attr-issue-3631-002";
+fn no_disallowed_attr_005() {
+    const _ID: &str = "no-disallowed-attr-005";
     let spec = spec();
     let config: LintConfig = serde_json::from_value(serde_json::json!({
         "rules": { "no-disallowed-attr": true }
@@ -119,10 +120,10 @@ fn no_disallowed_attr_issue_3631_002() {
     assert_eq!(result.violations[0].message, "The \"src\" attribute is disallowed");
 }
 
-/// TS: `[no-disallowed-attr-issue-3631-003]` — importmap must not have async
+/// TS: `[no-disallowed-attr-006]` — importmap must not have async
 #[test]
-fn no_disallowed_attr_issue_3631_003() {
-    const _ID: &str = "no-disallowed-attr-issue-3631-003";
+fn no_disallowed_attr_006() {
+    const _ID: &str = "no-disallowed-attr-006";
     let spec = spec();
     let config: LintConfig = serde_json::from_value(serde_json::json!({
         "rules": { "no-disallowed-attr": true }
@@ -138,10 +139,10 @@ fn no_disallowed_attr_issue_3631_003() {
     assert_eq!(result.violations[0].message, "The \"async\" attribute is disallowed");
 }
 
-/// TS: `[no-disallowed-attr-issue-3631-004]` — importmap must not have defer
+/// TS: `[no-disallowed-attr-007]` — importmap must not have defer
 #[test]
-fn no_disallowed_attr_issue_3631_004() {
-    const _ID: &str = "no-disallowed-attr-issue-3631-004";
+fn no_disallowed_attr_007() {
+    const _ID: &str = "no-disallowed-attr-007";
     let spec = spec();
     let config: LintConfig = serde_json::from_value(serde_json::json!({
         "rules": { "no-disallowed-attr": true }
@@ -157,10 +158,10 @@ fn no_disallowed_attr_issue_3631_004() {
     assert_eq!(result.violations[0].message, "The \"defer\" attribute is disallowed");
 }
 
-/// TS: `[no-disallowed-attr-issue-3631-005]` — importmap must not have nomodule
+/// TS: `[no-disallowed-attr-008]` — importmap must not have nomodule
 #[test]
-fn no_disallowed_attr_issue_3631_005() {
-    const _ID: &str = "no-disallowed-attr-issue-3631-005";
+fn no_disallowed_attr_008() {
+    const _ID: &str = "no-disallowed-attr-008";
     let spec = spec();
     let config: LintConfig = serde_json::from_value(serde_json::json!({
         "rules": { "no-disallowed-attr": true }
@@ -176,14 +177,14 @@ fn no_disallowed_attr_issue_3631_005() {
     assert_eq!(result.violations[0].message, "The \"nomodule\" attribute is disallowed");
 }
 
-/// TS: `[no-disallowed-attr-issue-3631-006]` — module with defer is disallowed
+/// TS: `[no-disallowed-attr-009]` — module with defer is disallowed
 ///
 /// HTML LS §4.12.1: "Module scripts may specify the async attribute, but must not
 /// specify the defer attribute." Applies whether or not `src` is present. Matches
-/// `[no-disallowed-attr-issue-3631-006]` on the TS side.
+/// `[no-disallowed-attr-009]` on the TS side.
 #[test]
-fn no_disallowed_attr_issue_3631_006() {
-    const _ID: &str = "no-disallowed-attr-issue-3631-006";
+fn no_disallowed_attr_009() {
+    const _ID: &str = "no-disallowed-attr-009";
     let spec = spec();
     let config: LintConfig = serde_json::from_value(serde_json::json!({
         "rules": { "no-disallowed-attr": true }
@@ -200,10 +201,10 @@ fn no_disallowed_attr_issue_3631_006() {
     assert_eq!(result.violations[0].raw, "defer");
 }
 
-/// TS: `[no-disallowed-attr-issue-3631-007]` — charset requires src
+/// TS: `[no-disallowed-attr-010]` — charset requires src
 #[test]
-fn no_disallowed_attr_issue_3631_007() {
-    const _ID: &str = "no-disallowed-attr-issue-3631-007";
+fn no_disallowed_attr_010() {
+    const _ID: &str = "no-disallowed-attr-010";
     let spec = spec();
     let config: LintConfig = serde_json::from_value(serde_json::json!({
         "rules": { "no-disallowed-attr": true }
@@ -215,10 +216,10 @@ fn no_disallowed_attr_issue_3631_007() {
     assert_eq!(result.violations[0].message, "The \"charset\" attribute is disallowed");
 }
 
-/// TS: `[no-disallowed-attr-issue-3631-008]` — valid: module with async
+/// TS: `[no-disallowed-attr-011]` — valid: module with async
 #[test]
-fn no_disallowed_attr_issue_3631_008() {
-    const _ID: &str = "no-disallowed-attr-issue-3631-008";
+fn no_disallowed_attr_011() {
+    const _ID: &str = "no-disallowed-attr-011";
     let spec = spec();
     let config: LintConfig = serde_json::from_value(serde_json::json!({
         "rules": { "no-disallowed-attr": true }
@@ -232,10 +233,10 @@ fn no_disallowed_attr_issue_3631_008() {
     );
 }
 
-/// TS: `[no-disallowed-attr-issue-3631-009]` — valid: classic with src and defer
+/// TS: `[no-disallowed-attr-012]` — valid: classic with src and defer
 #[test]
-fn no_disallowed_attr_issue_3631_009() {
-    const _ID: &str = "no-disallowed-attr-issue-3631-009";
+fn no_disallowed_attr_012() {
+    const _ID: &str = "no-disallowed-attr-012";
     let spec = spec();
     let config: LintConfig = serde_json::from_value(serde_json::json!({
         "rules": { "no-disallowed-attr": true }
@@ -249,10 +250,10 @@ fn no_disallowed_attr_issue_3631_009() {
     );
 }
 
-/// TS: `[no-disallowed-attr-issue-3631-010]` — valid: classic with src and async
+/// TS: `[no-disallowed-attr-013]` — valid: classic with src and async
 #[test]
-fn no_disallowed_attr_issue_3631_010() {
-    const _ID: &str = "no-disallowed-attr-issue-3631-010";
+fn no_disallowed_attr_013() {
+    const _ID: &str = "no-disallowed-attr-013";
     let spec = spec();
     let config: LintConfig = serde_json::from_value(serde_json::json!({
         "rules": { "no-disallowed-attr": true }
@@ -266,10 +267,10 @@ fn no_disallowed_attr_issue_3631_010() {
     );
 }
 
-/// TS: `[no-disallowed-attr-issue-2455]` — source element conditional attrs
+/// TS: `[no-disallowed-attr-003]` — source element conditional attrs
 #[test]
-fn no_disallowed_attr_issue_2455() {
-    const _ID: &str = "no-disallowed-attr-issue-2455";
+fn no_disallowed_attr_003() {
+    const _ID: &str = "no-disallowed-attr-003";
     let spec = spec();
     let config: LintConfig = serde_json::from_value(serde_json::json!({
         "rules": { "no-disallowed-attr": true }
@@ -310,14 +311,15 @@ fn no_disallowed_attr_issue_2455() {
     assert_eq!(result.violations[2].raw, "srcset");
 }
 
-/// TS: `[no-disallowed-attr-invalid-004]` — referrerpolicy without href is disallowed
+/// TS: `[no-disallowed-attr-059]` — referrerpolicy without href is disallowed
 ///
-/// The second half of the pre-split `[invalid-attr-invalid-001]`. The old rule reported the
-/// value error of `referrerpolicy="invalid-value"` here; `no-disallowed-attr` reports the
-/// unmet condition independently of the value.
+/// The `invalid-attr` rule, which this rule and `no-unknown-attr` were split out of, reported two
+/// problems for this HTML; this is the `referrerpolicy` half, `[no-unknown-attr-031]` the other.
+/// `invalid-attr` reported the value error of `referrerpolicy="invalid-value"` here;
+/// `no-disallowed-attr` reports the unmet condition independently of the value.
 #[test]
-fn no_disallowed_attr_invalid_004() {
-    const _ID: &str = "no-disallowed-attr-invalid-004";
+fn no_disallowed_attr_059() {
+    const _ID: &str = "no-disallowed-attr-059";
     let arena = html_arena(r#"<a invalid-attr referrerpolicy="invalid-value"><img src=":::::"></a>"#);
     let spec = spec();
     let config: LintConfig = serde_json::from_value(serde_json::json!({

@@ -1,13 +1,13 @@
 //! Tests for `no-abstract-role` rule.
 //!
 //! Test ID mapping (TS → Rust):
-//!   no-abstract-role-valid-001    → no_abstract_role_valid_001
-//!   no-abstract-role-invalid-001  → no_abstract_role_invalid_001
-//!   v6_no_abstract_role_001       — Rust-only: the lookup is case-sensitive
-//!   v6_no_abstract_role_002       — Rust-only: only the abstract token of several is reported, at its own position
-//!   v6_no_abstract_role_003       — Rust-only: an unknown token is not this rule's business
-//!   v6_no_abstract_role_004       — Rust-only: severity and `rules: false`
-//!   v6_no_abstract_role_005       — Rust-only: `role="button"` is not abstract in ARIA 1.1 and 1.2, by option and by `ruleCommonSettings`
+//!   no-abstract-role-001     → no_abstract_role_001
+//!   no-abstract-role-002     → no_abstract_role_002
+//!   v6_no_abstract_role_001  — Rust-only: the lookup is case-sensitive
+//!   v6_no_abstract_role_002  — Rust-only: only the abstract token of several is reported, at its own position
+//!   v6_no_abstract_role_003  — Rust-only: an unknown token is not this rule's business
+//!   v6_no_abstract_role_004  — Rust-only: severity and `rules: false`
+//!   v6_no_abstract_role_005  — Rust-only: `role="button"` is not abstract in ARIA 1.1 and 1.2, by option and by `ruleCommonSettings`
 
 use crate::lint::{LintConfig, lint};
 use crate::violation::Severity;
@@ -34,19 +34,19 @@ fn config(value: serde_json::Value) -> LintConfig {
     serde_json::from_value(serde_json::json!({ "rules": { "no-abstract-role": value } })).unwrap()
 }
 
-/// TS: `[no-abstract-role-valid-001]`
+/// TS: `[no-abstract-role-001]`
 #[test]
-fn no_abstract_role_valid_001() {
-    const _ID: &str = "no-abstract-role-valid-001";
+fn no_abstract_role_001() {
+    const _ID: &str = "no-abstract-role-001";
     let arena = html_arena(r#"<div role="button"></div>"#);
     let result = lint(&arena, &spec(), &config(serde_json::json!(true)));
     assert!(result.violations.is_empty());
 }
 
-/// TS: `[no-abstract-role-invalid-001]`
+/// TS: `[no-abstract-role-002]`
 #[test]
-fn no_abstract_role_invalid_001() {
-    const _ID: &str = "no-abstract-role-invalid-001";
+fn no_abstract_role_002() {
+    const _ID: &str = "no-abstract-role-002";
     let arena = html_arena(r#"<div role="roletype"></div>"#);
     let result = lint(&arena, &spec(), &config(serde_json::json!(true)));
 

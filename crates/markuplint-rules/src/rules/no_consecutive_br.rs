@@ -94,25 +94,25 @@ mod tests {
         crate::test_util::fixed_code(html, &serde_json::json!({ "rules": { "no-consecutive-br": true } }))
     }
 
-    /// TS: `[no-consecutive-br-fix-001]` — remove second consecutive br
+    /// TS: `[no-consecutive-br-004]` — remove second consecutive br
     #[test]
-    fn no_consecutive_br_fix_001() {
-        const _ID: &str = "no-consecutive-br-fix-001";
+    fn no_consecutive_br_004() {
+        const _ID: &str = "no-consecutive-br-004";
         assert_eq!(fixed("<p>text<br><br></p>"), "<p>text<br></p>");
     }
 
-    /// TS: `[no-consecutive-br-fix-002]` — three consecutive br elements
+    /// TS: `[no-consecutive-br-005]` — three consecutive br elements
     #[test]
-    fn no_consecutive_br_fix_002() {
-        const _ID: &str = "no-consecutive-br-fix-002";
+    fn no_consecutive_br_005() {
+        const _ID: &str = "no-consecutive-br-005";
         assert_eq!(fixed("<p>text<br><br><br></p>"), "<p>text<br></p>");
     }
 
-    /// TS: `[no-consecutive-br-fix-003]` — consecutive br with whitespace between
-    /// (`-004` and `-005` are Pug and Markdown parser cases, which the Rust engine does not have.)
+    /// TS: `[no-consecutive-br-006]` — consecutive br with whitespace between
+    /// (`[no-consecutive-br-007]` and `[no-consecutive-br-008]` are Pug and Markdown parser cases, which the Rust engine does not have.)
     #[test]
-    fn no_consecutive_br_fix_003() {
-        const _ID: &str = "no-consecutive-br-fix-003";
+    fn no_consecutive_br_006() {
+        const _ID: &str = "no-consecutive-br-006";
         assert_eq!(fixed("<p>text<br>  \n  <br></p>"), "<p>text<br>  \n  </p>");
     }
 

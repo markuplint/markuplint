@@ -15,6 +15,7 @@ use markuplint_dom::arena::DomArena;
 use markuplint_types::spec::types::MLMLSpec;
 
 use crate::aria_check::{ElementContext, ElementGate, aria_prop_attrs, attr_name, name_key, walk_elements};
+use crate::helpers::is_role_unknown;
 use crate::rule::{Rule, RuleConfigSet};
 use crate::violation::Violation;
 
@@ -44,6 +45,10 @@ impl Rule for RoleSupportsAriaProp {
 fn check(ctx: &ElementContext<'_>, violations: &mut Vec<Violation>) {
     let attrs = aria_prop_attrs(ctx.el);
     if attrs.is_empty() {
+        return;
+    }
+    // What the role supports is not known where the role is not known until it is rendered
+    if is_role_unknown(ctx.el) {
         return;
     }
     let Some(role) = ctx.computed_role() else {

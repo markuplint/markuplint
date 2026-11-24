@@ -1,16 +1,16 @@
 //! Tests for `no-restricted-element` rule.
 //!
 //! Test ID mapping (TS → Rust):
-//!   no-restricted-element-invalid-001  → no_restricted_element_invalid_001
-//!   no-restricted-element-invalid-002  → no_restricted_element_invalid_002
-//!   no-restricted-element-invalid-003  → no_restricted_element_invalid_003
-//!   v6_no_restricted_element_001       — Rust-only: `:model(palpable)` evaluates conditional entries
-//!   v6_no_restricted_element_002       — Rust-only: the same entries without their condition
-//!   v6_no_restricted_element_003       — Rust-only: `#custom` covers a custom element
-//!   v6_no_restricted_element_004       — Rust-only: `:model(custom)` selects nothing
-//!   v6_no_restricted_element_005       — Rust-only: a category is found case-insensitively
-//!   v6_no_restricted_element_006       — Rust-only: `#custom` and `#text` are not id selectors
-//!   v6_no_restricted_element_007       — Rust-only: a category the spec does not define fails the file
+//!   no-restricted-element-001     → no_restricted_element_001
+//!   no-restricted-element-007     → no_restricted_element_007
+//!   no-restricted-element-008     → no_restricted_element_008
+//!   v6_no_restricted_element_001  — Rust-only: `:model(palpable)` evaluates conditional entries
+//!   v6_no_restricted_element_002  — Rust-only: the same entries without their condition
+//!   v6_no_restricted_element_003  — Rust-only: `#custom` covers a custom element
+//!   v6_no_restricted_element_004  — Rust-only: `:model(custom)` selects nothing
+//!   v6_no_restricted_element_005  — Rust-only: a category is found case-insensitively
+//!   v6_no_restricted_element_006  — Rust-only: `#custom` and `#text` are not id selectors
+//!   v6_no_restricted_element_007  — Rust-only: a category the spec does not define fails the file
 
 use crate::lint::{LintConfig, lint};
 use crate::violation::Severity;
@@ -33,10 +33,10 @@ fn spec() -> MLMLSpec {
     load_spec(include_str!("../../../../../packages/@markuplint/html-spec/index.json")).unwrap()
 }
 
-/// TS: `[no-restricted-element-invalid-001]` — global rule
+/// TS: `[no-restricted-element-001]` — global rule
 #[test]
-fn no_restricted_element_invalid_001() {
-    const _ID: &str = "no-restricted-element-invalid-001";
+fn no_restricted_element_001() {
+    const _ID: &str = "no-restricted-element-001";
     let arena = html_arena("<div><hgroup><h1>Heading</h1></hgroup></div>");
     let spec = spec();
     let config: LintConfig = serde_json::from_value(serde_json::json!({
@@ -54,10 +54,10 @@ fn no_restricted_element_invalid_001() {
     assert_eq!(result.violations[0].message, "The \"hgroup\" element is disallowed");
 }
 
-/// TS: `[no-restricted-element-invalid-002]` — node rule (check children)
+/// TS: `[no-restricted-element-007]` — node rule (check children)
 #[test]
-fn no_restricted_element_invalid_002() {
-    const _ID: &str = "no-restricted-element-invalid-002";
+fn no_restricted_element_007() {
+    const _ID: &str = "no-restricted-element-007";
     let arena = html_arena("<h1><span>Title</span><small>Sub-title</small></h1>");
     let spec = spec();
     let config: LintConfig = serde_json::from_value(serde_json::json!({
@@ -83,10 +83,10 @@ fn no_restricted_element_invalid_002() {
     assert_eq!(result.violations[0].message, "The \"small\" element is disallowed");
 }
 
-/// TS: `[no-restricted-element-invalid-003]` — Recommend (label + :model(interactive))
+/// TS: `[no-restricted-element-008]` — Recommend (label + :model(interactive))
 #[test]
-fn no_restricted_element_invalid_003() {
-    const _ID: &str = "no-restricted-element-invalid-003";
+fn no_restricted_element_008() {
+    const _ID: &str = "no-restricted-element-008";
 
     // Sub-test 1: nodeRule with ['label'] selector
     let arena = html_arena(r#"<details><summary><label id="foo">foo</label></summary><input id="foo"/></details>"#);

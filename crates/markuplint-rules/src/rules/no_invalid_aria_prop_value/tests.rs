@@ -1,8 +1,8 @@
 //! Tests for `no-invalid-aria-prop-value` rule.
 //!
 //! Test ID mapping (TS → Rust):
-//!   no-invalid-aria-prop-value-valid-001    → no_invalid_aria_prop_value_valid_001
-//!   no-invalid-aria-prop-value-invalid-001  → no_invalid_aria_prop_value_invalid_001
+//!   no-invalid-aria-prop-value-001    → no_invalid_aria_prop_value_001
+//!   no-invalid-aria-prop-value-002  → no_invalid_aria_prop_value_002
 //!   v6_no_invalid_aria_prop_value_001  — Rust-only: token with the allowed values in the message
 //!   v6_no_invalid_aria_prop_value_002  — Rust-only: token list
 //!   v6_no_invalid_aria_prop_value_003  — Rust-only: empty values
@@ -16,6 +16,7 @@
 //!   v6_check_aria_value_*  — Rust-only: unit tests of `check_aria_value`; expectations are the results of the TS
 //!                            `checkAriaValue` for the same inputs
 //!   v6_no_invalid_aria_prop_value_011  — Rust-only: an empty value is invalid with the `booleanish` setting of the document (JSX parser) too
+//!   v6_no_invalid_aria_prop_value_012  — Rust-only: where the role is not known, a value is valid if the base type or any role-specific type allows it
 
 use super::*;
 use crate::aria_check::html_attrs;
@@ -58,10 +59,10 @@ fn violation(line: u32, col: u32, message: &str, raw: &str) -> (Severity, u32, u
     (Severity::Error, line, col, message.to_string(), raw.to_string())
 }
 
-/// TS: `[no-invalid-aria-prop-value-valid-001]`
+/// TS: `[no-invalid-aria-prop-value-001]`
 #[test]
-fn no_invalid_aria_prop_value_valid_001() {
-    const _ID: &str = "no-invalid-aria-prop-value-valid-001";
+fn no_invalid_aria_prop_value_001() {
+    const _ID: &str = "no-invalid-aria-prop-value-001";
     assert_eq!(
         run(
             r#"<div role="button" aria-pressed="true"></div>"#,
@@ -71,10 +72,10 @@ fn no_invalid_aria_prop_value_valid_001() {
     );
 }
 
-/// TS: `[no-invalid-aria-prop-value-invalid-001]`
+/// TS: `[no-invalid-aria-prop-value-002]`
 #[test]
-fn no_invalid_aria_prop_value_invalid_001() {
-    const _ID: &str = "no-invalid-aria-prop-value-invalid-001";
+fn no_invalid_aria_prop_value_002() {
+    const _ID: &str = "no-invalid-aria-prop-value-002";
     assert_eq!(
         run(
             r#"<div role="button" aria-pressed="hoge"></div>"#,
@@ -541,4 +542,48 @@ fn v6_no_invalid_aria_prop_value_011() {
     ] {
         assert_eq!(run_with(html, true), 1, "{html}");
     }
+}
+
+/// The MLAST of a `div` with these attributes, linted by `no-invalid-aria-prop-value`: `(name, value, what the TS engine worked out)`.
+fn lint_div(attrs: &[(&str, &str, serde_json::Value)]) -> Vec<crate::test_util::Brief> {
+    crate::test_util::lint_mlast_brief(
+        "no-invalid-aria-prop-value",
+        &crate::test_util::mlast_element("div", attrs, &serde_json::json!({})),
+        serde_json::json!({ "rules": { "no-invalid-aria-prop-value": true } }),
+    )
+}
+
+fn code() -> serde_json::Value {
+    serde_json::json!({ "isDynamicValue": true })
+}
+
+fn spread() -> serde_json::Value {
+    serde_json::json!({ "isDirective": true, "isSpread": true, "isDynamicValue": true })
+}
+
+fn plain() -> serde_json::Value {
+    serde_json::json!({})
+}
+
+/// Rust-only: `mixed` is a value of `aria-checked` for some roles only (`checkbox`, not `radio`), so where the role
+/// is not known until it is rendered the value is judged by every type of the property, and a value that no type
+/// allows is still invalid.
+#[test]
+fn v6_no_invalid_aria_prop_value_012() {
+    let checked = |value: &'static str| ("aria-checked", value, plain());
+    assert_eq!(lint_div(&[("role", "props.role", code()), checked("mixed")]), []);
+    assert_eq!(lint_div(&[("role", "props.role", code()), checked("true")]), []);
+    assert_eq!(lint_div(&[checked("mixed"), ("v-bind", "props", spread())]), []);
+    assert_eq!(
+        lint_div(&[
+            ("role", "radio", plain()),
+            ("v-bind", "props", spread()),
+            checked("mixed")
+        ]),
+        []
+    );
+    assert_eq!(lint_div(&[("role", "props.role", code()), checked("foo")]).len(), 1);
+    // The role that the markup tells decides the type
+    assert_eq!(lint_div(&[("role", "radio", plain()), checked("mixed")]).len(), 1);
+    assert_eq!(lint_div(&[("role", "checkbox", plain()), checked("mixed")]), []);
 }

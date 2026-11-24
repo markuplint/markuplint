@@ -1,16 +1,17 @@
 //! Tests for `permitted-contents` rule.
 //!
 //! The pretender tests use the JSX parser; each is ported with custom elements in HTML:
-//!   permitted-contents-issue-4054-001..019  — v6_permitted_contents_001..019
-//!   permitted-contents-invalid-024          — v6_permitted_contents_020
-//!   permitted-contents-invalid-025          — v6_permitted_contents_021
-//!   permitted-contents-issue-1848           — v6_permitted_contents_022
+//!   permitted-contents-279..297  — v6_permitted_contents_001..019
+//!   permitted-contents-033          — v6_permitted_contents_020
+//!   permitted-contents-034          — v6_permitted_contents_021
+//!   permitted-contents-062           — v6_permitted_contents_022
 //!   v6_permitted_contents_023               — Rust-only: the children are the TS `childNodes` (`{#each}` blocks read through)
-//!   permitted-contents-issue-3635-003/002/006 — v6_permitted_contents_024..026 (`#nonEmptyText`)
-//!   permitted-contents-issue-3635-001/004/005 — v6_permitted_contents_027..029
+//!   permitted-contents-067/066/070 — v6_permitted_contents_024..026 (`#nonEmptyText`)
+//!   permitted-contents-065/068/069 — v6_permitted_contents_027..029
 //!   v6_permitted_contents_030               — Rust-only: U+3000 is text for `#nonEmptyText`
-//!   permitted-contents-valid-001            — permitted_contents_valid_001 (the DOM keeps `<image>` as written)
-//!   permitted-contents-issue-4475-019       — permitted_contents_issue_4475_019
+//!   permitted-contents-251                  — v6_permitted_contents_031 (the Vue parser's MLAST by hand)
+//!   permitted-contents-026            — permitted_contents_026 (the DOM keeps `<image>` as written)
+//!   permitted-contents-129       — permitted_contents_129
 
 use super::*;
 use crate::rule::{RuleConfig, RuleConfigSet};
@@ -521,7 +522,7 @@ fn pc(html: &str, pretenders: serde_json::Value) -> Vec<(u32, u32, String, Strin
     lint_pretended(html, serde_json::json!(true), pretenders)
 }
 
-/// TS `[permitted-contents-issue-4054-001]`: static-only content with `slots: null`
+/// TS `[permitted-contents-279]`: static-only content with `slots: null`
 /// satisfies the required child.
 #[test]
 fn v6_permitted_contents_001() {
@@ -531,7 +532,7 @@ fn v6_permitted_contents_001() {
     assert_eq!(pc("<x-picture></x-picture>", pretenders), []);
 }
 
-/// TS `[permitted-contents-issue-4054-002]`: children given to a component with
+/// TS `[permitted-contents-280]`: children given to a component with
 /// `slots: null` are still reported.
 #[test]
 fn v6_permitted_contents_002() {
@@ -555,14 +556,14 @@ fn pic() -> serde_json::Value {
     ] } }])
 }
 
-/// TS `[permitted-contents-issue-4054-003]`: static content after the slot completes
+/// TS `[permitted-contents-281]`: static content after the slot completes
 /// what the given children lack.
 #[test]
 fn v6_permitted_contents_003() {
     assert_eq!(pc(r#"<x-pic><source srcset="a.webp"></x-pic>"#, pic()), []);
 }
 
-/// TS `[permitted-contents-issue-4054-004]`: an element given at the slot that
+/// TS `[permitted-contents-282]`: an element given at the slot that
 /// duplicates static content is reported, on the component (the static `img` does
 /// not exist in the source).
 #[test]
@@ -582,7 +583,7 @@ fn details(contents: serde_json::Value) -> serde_json::Value {
     serde_json::json!([{ "selector": "x-details", "as": { "element": "details", "slots": true, "contents": contents } }])
 }
 
-/// TS `[permitted-contents-issue-4054-005]`: a missing required child is still
+/// TS `[permitted-contents-283]`: a missing required child is still
 /// reported when the slot is the whole content.
 #[test]
 fn v6_permitted_contents_005() {
@@ -595,7 +596,7 @@ fn v6_permitted_contents_005() {
     );
 }
 
-/// TS `[permitted-contents-issue-4054-006]`: a required child given at the slot is accepted.
+/// TS `[permitted-contents-284]`: a required child given at the slot is accepted.
 #[test]
 fn v6_permitted_contents_006() {
     assert_eq!(
@@ -607,7 +608,7 @@ fn v6_permitted_contents_006() {
     );
 }
 
-/// TS `[permitted-contents-issue-4054-007]`: a required child rendered by the
+/// TS `[permitted-contents-285]`: a required child rendered by the
 /// component itself is accepted.
 #[test]
 fn v6_permitted_contents_007() {
@@ -620,7 +621,7 @@ fn v6_permitted_contents_007() {
     );
 }
 
-/// TS `[permitted-contents-issue-4054-008]`: a dynamic entry in `contents` skips the
+/// TS `[permitted-contents-286]`: a dynamic entry in `contents` skips the
 /// missing-child report.
 #[test]
 fn v6_permitted_contents_008() {
@@ -637,7 +638,7 @@ fn card() -> serde_json::Value {
     serde_json::json!([{ "selector": "x-card", "as": { "element": "div", "slots": [{ "element": "p", "contents": [{ "slot": true }] }] } }])
 }
 
-/// TS `[permitted-contents-issue-4054-009]`: given children are evaluated against the
+/// TS `[permitted-contents-287]`: given children are evaluated against the
 /// slot wrapper, not the outer element.
 #[test]
 fn v6_permitted_contents_009() {
@@ -652,13 +653,13 @@ fn v6_permitted_contents_009() {
     );
 }
 
-/// TS `[permitted-contents-issue-4054-010]`: children allowed by the slot wrapper are accepted.
+/// TS `[permitted-contents-288]`: children allowed by the slot wrapper are accepted.
 #[test]
 fn v6_permitted_contents_010() {
     assert_eq!(pc("<x-card><span>x</span></x-card>", card()), []);
 }
 
-/// TS `[permitted-contents-issue-4054-011]`: the outer element still governs the
+/// TS `[permitted-contents-289]`: the outer element still governs the
 /// component as a child.
 #[test]
 fn v6_permitted_contents_011() {
@@ -673,7 +674,7 @@ fn v6_permitted_contents_011() {
     );
 }
 
-/// TS `[permitted-contents-issue-4054-012]`: children are not validated when several
+/// TS `[permitted-contents-290]`: children are not validated when several
 /// slot wrappers exist.
 #[test]
 fn v6_permitted_contents_012() {
@@ -684,7 +685,7 @@ fn v6_permitted_contents_012() {
     assert_eq!(pc("<x-card><div></div></x-card>", pretenders), []);
 }
 
-/// TS `[permitted-contents-issue-4054-013]`: the attrs of a slot wrapper select its
+/// TS `[permitted-contents-291]`: the attrs of a slot wrapper select its
 /// conditional content model (`colgroup[span]` is empty).
 #[test]
 fn v6_permitted_contents_013() {
@@ -697,7 +698,7 @@ fn v6_permitted_contents_013() {
     );
 }
 
-/// TS `[permitted-contents-issue-4054-014]`: a fragment pretender contributes its
+/// TS `[permitted-contents-292]`: a fragment pretender contributes its
 /// contents to the parent.
 #[test]
 fn v6_permitted_contents_014() {
@@ -714,7 +715,7 @@ fn v6_permitted_contents_014() {
     );
 }
 
-/// TS `[permitted-contents-issue-4054-015]`: svg, math and custom elements the
+/// TS `[permitted-contents-293]`: svg, math and custom elements the
 /// component renders are allowed where they are in the markup.
 #[test]
 fn v6_permitted_contents_015() {
@@ -724,7 +725,7 @@ fn v6_permitted_contents_015() {
     assert_eq!(pc("<x-icon-button>Label</x-icon-button>", pretenders), []);
 }
 
-/// TS `[permitted-contents-issue-4054-016]`: an unknown content in a fragment stands
+/// TS `[permitted-contents-294]`: an unknown content in a fragment stands
 /// in the parent too.
 #[test]
 fn v6_permitted_contents_016() {
@@ -734,7 +735,7 @@ fn v6_permitted_contents_016() {
     assert_eq!(pc("<picture><x-sources></x-sources></picture>", pretenders), []);
 }
 
-/// TS `[permitted-contents-issue-4054-017]`: a transparent component whose children
+/// TS `[permitted-contents-295]`: a transparent component whose children
 /// sit in an inner wrapper is not looked through. The TS test puts the component in
 /// a `p`; the HTML parser closes that `p` at the `div`, so the outer element here is
 /// a `span`, where looking through would add "through the transparent model" (the
@@ -767,7 +768,7 @@ fn v6_permitted_contents_017() {
     );
 }
 
-/// TS `[permitted-contents-issue-4054-018]`: static content of a transparent component
+/// TS `[permitted-contents-296]`: static content of a transparent component
 /// is looked through and reported on the component.
 #[test]
 fn v6_permitted_contents_018() {
@@ -785,7 +786,7 @@ fn v6_permitted_contents_018() {
     );
 }
 
-/// TS `[permitted-contents-issue-4054-019]`: the static content applies when the
+/// TS `[permitted-contents-297]`: the static content applies when the
 /// conditional child nodes are evaluated.
 #[test]
 fn v6_permitted_contents_019() {
@@ -806,7 +807,7 @@ fn v6_permitted_contents_019() {
     );
 }
 
-/// TS `[permitted-contents-invalid-024]`: a pretended element is checked as what it
+/// TS `[permitted-contents-033]`: a pretended element is checked as what it
 /// pretends to be, as a child and as a transparent parent.
 #[test]
 fn v6_permitted_contents_020() {
@@ -850,7 +851,7 @@ fn v6_permitted_contents_020() {
     );
 }
 
-/// TS `[permitted-contents-invalid-025]`: the attributes of the pretender take part
+/// TS `[permitted-contents-034]`: the attributes of the pretender take part
 /// in the transparent constraint.
 #[test]
 fn v6_permitted_contents_021() {
@@ -868,7 +869,7 @@ fn v6_permitted_contents_021() {
     );
 }
 
-/// TS `[permitted-contents-issue-1848]`: a pretender named in upper case. In HTML the
+/// TS `[permitted-contents-062]`: a pretender named in upper case. In HTML the
 /// name is lower-cased, so the component is a `head` and needs a `title` (the JSX
 /// test keeps `Head` as a component name and reports nothing).
 #[test]
@@ -902,7 +903,7 @@ fn v6_permitted_contents_023() {
     );
 }
 
-/// TS `[permitted-contents-issue-3635-003]`: a `title` with text satisfies `#nonEmptyText`.
+/// TS `[permitted-contents-067]`: a `title` with text satisfies `#nonEmptyText`.
 #[test]
 fn v6_permitted_contents_024() {
     assert_eq!(
@@ -915,7 +916,7 @@ fn v6_permitted_contents_024() {
     );
 }
 
-/// TS `[permitted-contents-issue-3635-002]`: a whitespace-only `title` is rejected.
+/// TS `[permitted-contents-066]`: a whitespace-only `title` is rejected.
 #[test]
 fn v6_permitted_contents_025() {
     assert_eq!(
@@ -928,7 +929,7 @@ fn v6_permitted_contents_025() {
     );
 }
 
-/// TS `[permitted-contents-issue-3635-001]`: an empty `title` is rejected.
+/// TS `[permitted-contents-065]`: an empty `title` is rejected.
 #[test]
 fn v6_permitted_contents_027() {
     assert_eq!(
@@ -941,7 +942,7 @@ fn v6_permitted_contents_027() {
     );
 }
 
-/// TS `[permitted-contents-issue-3635-004]`: an empty `option` without `label` is rejected.
+/// TS `[permitted-contents-068]`: an empty `option` without `label` is rejected.
 #[test]
 fn v6_permitted_contents_028() {
     assert_eq!(
@@ -954,7 +955,7 @@ fn v6_permitted_contents_028() {
     );
 }
 
-/// TS `[permitted-contents-issue-3635-005]`: an empty `option` with `label` is valid.
+/// TS `[permitted-contents-069]`: an empty `option` with `label` is valid.
 #[test]
 fn v6_permitted_contents_029() {
     assert_eq!(
@@ -981,7 +982,7 @@ fn v6_permitted_contents_030() {
     );
 }
 
-/// TS `[permitted-contents-issue-3635-006]`: an `option` with text is valid.
+/// TS `[permitted-contents-070]`: an `option` with text is valid.
 #[test]
 fn v6_permitted_contents_026() {
     assert_eq!(
@@ -1716,10 +1717,10 @@ fn permitted_contents_brief(html: &str) -> Vec<crate::test_util::Brief> {
     )
 }
 
-/// TS: `[permitted-contents-valid-001]` The SVG <image> element and the HTML obsolete <image> element
+/// TS: `[permitted-contents-026]` The SVG <image> element and the HTML obsolete <image> element
 #[test]
-fn permitted_contents_valid_001() {
-    const _ID: &str = "permitted-contents-valid-001";
+fn permitted_contents_026() {
+    const _ID: &str = "permitted-contents-026";
     assert_eq!(
         permitted_contents_brief(r#"<svg><g><image width="100" height="100" xlink:href="path/to"/></g></svg>"#),
         []
@@ -1736,19 +1737,19 @@ fn permitted_contents_valid_001() {
     );
 }
 
-/// TS: `[permitted-contents-issue-4475-019]` a decimal character reference to a line feed without a
+/// TS: `[permitted-contents-129]` a decimal character reference to a line feed without a
 /// semicolon before a style element is inter-element whitespace
 #[test]
-fn permitted_contents_issue_4475_019() {
-    const _ID: &str = "permitted-contents-issue-4475-019";
+fn permitted_contents_129() {
+    const _ID: &str = "permitted-contents-129";
     assert_eq!(permitted_contents_brief("<div>&#10<style></style></div>"), []);
 }
 
-/// TS `[permitted-contents-issue-4744-007]`: the elements of a chain of `v-if` and `v-else` are a choice
+/// TS `[permitted-contents-251]`: the elements of a chain of `v-if` and `v-else` are a choice
 /// of one even without `evaluateConditionalChildNodes`, so the `table` has one `caption` as the content
 /// model asks; two `caption`s that are both rendered are one too many.
 #[test]
-fn v6_permitted_contents_issue_4744_007() {
+fn v6_permitted_contents_031() {
     use crate::test_util::{lint_mlast_brief, mlast_vue, vue_element, vue_leaf};
 
     let table = |first: Option<&str>, second: Option<&str>| {

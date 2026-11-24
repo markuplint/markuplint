@@ -1,10 +1,10 @@
 //! Tests for `no-deprecated-element` rule.
 //!
 //! Test ID mapping (TS → Rust):
-//!   no-deprecated-element-valid-001  → no_deprecated_element_valid_001
-//!   no-deprecated-element-valid-002  → no_deprecated_element_valid_002
-//!   v6_no_deprecated_element_001     — Rust-only: an element the spec marks deprecated is reported
-//!   v6_no_deprecated_element_002     — Rust-only: deprecated MathML elements are outside the namespace guard
+//!   no-deprecated-element-001     → no_deprecated_element_001
+//!   no-deprecated-element-002     → no_deprecated_element_002
+//!   v6_no_deprecated_element_001  — Rust-only: an element the spec marks deprecated is reported
+//!   v6_no_deprecated_element_002  — Rust-only: deprecated MathML elements are outside the namespace guard
 
 use crate::lint::{LintConfig, lint};
 use crate::violation::Severity;
@@ -40,18 +40,18 @@ fn run(html: &str) -> Vec<crate::violation::Violation> {
     run_with_spec(html, &spec())
 }
 
-/// TS: `[no-deprecated-element-valid-001]`
+/// TS: `[no-deprecated-element-001]`
 #[test]
-fn no_deprecated_element_valid_001() {
-    const _ID: &str = "no-deprecated-element-valid-001";
+fn no_deprecated_element_001() {
+    const _ID: &str = "no-deprecated-element-001";
     let violations = run("<div></div><p><span></span></p>");
     assert_eq!(violations.len(), 0);
 }
 
-/// TS: `[no-deprecated-element-valid-002]`
+/// TS: `[no-deprecated-element-002]`
 #[test]
-fn no_deprecated_element_valid_002() {
-    const _ID: &str = "no-deprecated-element-valid-002";
+fn no_deprecated_element_002() {
+    const _ID: &str = "no-deprecated-element-002";
     let violations = run("<font></font><big><blink></blink></big>");
     assert_eq!(violations.len(), 0);
 }

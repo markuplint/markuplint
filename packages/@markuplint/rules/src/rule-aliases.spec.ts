@@ -4,7 +4,7 @@ import rules from './index.js';
 import { ruleAliasTable } from './rule-aliases.js';
 
 /**
- * Meta-test for `ruleAliasTable` (v5 rule-system redesign, PR #3989). See
+ * Meta-test for `ruleAliasTable` (the v5 rule-system redesign). See
  * `@markuplint/ml-config`'s `rule-aliases.spec.ts` for the engine mechanics
  * this table feeds into — this file only checks the table's own data is
  * internally consistent with the current registry.

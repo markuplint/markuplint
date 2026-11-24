@@ -3,7 +3,7 @@ import { describe, expect, test } from 'vitest';
 import rules from './index.js';
 
 /**
- * Meta-test for the parse-error dedupe contract (#3844 follow-up).
+ * Meta-test for the parse-error dedupe contract.
  *
  * Each rule may declare `meta.mirrorsParseErrorCodes` to opt into ml-core's
  * automatic suppression of overlapping parse5 events. Two failure modes

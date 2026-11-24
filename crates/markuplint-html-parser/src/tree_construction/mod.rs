@@ -2285,6 +2285,11 @@ impl<'a> TreeBuilder<'a> {
             Token::StartTag { tag_name, .. } if tag_name == "noframes" => {
                 self.process_in_head(token);
             }
+            Token::EndTag { tag_name, span, .. } => {
+                // Parse error. Ignore. Record as orphaned: `</html>` is ignored until the outermost `frameset` is
+                // closed, and the one after it pairs with `html` in "after frameset"
+                self.arena.orphaned_end_tags.push((tag_name.clone(), *span));
+            }
             _ => {}
         }
     }
@@ -2297,11 +2302,18 @@ impl<'a> TreeBuilder<'a> {
             Token::Comment { data, span } => {
                 self.insert_comment(data, *span);
             }
-            Token::EndTag { tag_name, .. } if tag_name == "html" => {
+            // The end tag of the root `html`, as "after body" has it: the first `</html>` after the end tag of the
+            // outermost `frameset` pairs with `html`, and a later one is ignored in "after after frameset"
+            Token::EndTag { tag_name, span, .. } if tag_name == "html" => {
+                self.set_end_tag_span("html", *span);
                 self.mode = InsertionMode::AfterAfterFrameset;
             }
             Token::StartTag { tag_name, .. } if tag_name == "noframes" => {
                 self.process_in_head(token);
+            }
+            Token::EndTag { tag_name, span, .. } => {
+                // Parse error. Ignore. Record as orphaned.
+                self.arena.orphaned_end_tags.push((tag_name.clone(), *span));
             }
             _ => {}
         }
@@ -2344,6 +2356,10 @@ impl<'a> TreeBuilder<'a> {
             }
             Token::StartTag { tag_name, .. } if tag_name == "noframes" => {
                 self.process_in_head(token);
+            }
+            Token::EndTag { tag_name, span, .. } => {
+                // Parse error. Ignore. Record as orphaned: the first `</html>` closed `html` in "after frameset"
+                self.arena.orphaned_end_tags.push((tag_name.clone(), *span));
             }
             _ => {}
         }

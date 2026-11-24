@@ -665,3 +665,55 @@ fn parse_document_with_doctype() {
     assert!(maps.iter().any(|m| m.contains("p: <p>")), "missing p: {maps:?}");
     assert!(maps.iter().any(|m| m.contains("#text: hi")), "missing text: {maps:?}");
 }
+
+// ============================================================================
+// The end tag of html in a frameset document (the TS suite "the end tag of html in a frameset document")
+// ============================================================================
+
+#[test]
+fn frameset_document_html_end_tag_after_the_frameset_closes_html() {
+    let maps = debug_maps_document(
+        r#"<!doctype html><html lang="en"><head><title>t</title></head><frameset cols=""><frame src=""></frameset></html>"#,
+    );
+    assert_eq!(
+        maps.last().map(String::as_str),
+        Some("[1:104]>[1:111](103,110)html: </html>")
+    );
+    assert!(maps.iter().all(|map| !map.contains("#invalid")), "{maps:#?}");
+}
+
+/// The names and offsets of the end tags that no element took.
+fn orphaned(html: &str) -> Vec<(String, usize)> {
+    parse_document(html)
+        .orphaned_end_tags
+        .iter()
+        .map(|(name, span)| (name.clone(), span.start.offset))
+        .collect()
+}
+
+#[test]
+fn frameset_document_html_end_tag_before_the_outermost_frameset_is_closed_is_ignored() {
+    // The first `</html>` is ignored while the outermost frameset is open; the one after it closes html
+    assert_eq!(
+        orphaned("<!doctype html><html><head></head><frameset><frameset></frameset></html></frameset></html>"),
+        [("html".to_owned(), 65)]
+    );
+    // A frameset that is not closed leaves html without an end tag
+    assert_eq!(
+        orphaned("<!doctype html><html><head></head><frameset></html>"),
+        [("html".to_owned(), 44)]
+    );
+}
+
+#[test]
+fn frameset_document_only_the_first_html_end_tag_closes_html() {
+    assert_eq!(
+        orphaned("<!doctype html><html><head></head><frameset></frameset></html></html>"),
+        [("html".to_owned(), 62)]
+    );
+    // Any other end tag after the frameset is ignored too
+    assert_eq!(
+        orphaned("<!doctype html><html><head></head><frameset></frameset></div></html>"),
+        [("div".to_owned(), 55)]
+    );
+}

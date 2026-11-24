@@ -272,10 +272,10 @@ mod tests {
         assert!(violations.is_empty());
     }
 
-    /// TS: `[require-element-invalid-008]` — The `as` attribute
+    /// TS: `[require-element-014]` — The `as` attribute
     #[test]
-    fn require_element_invalid_008() {
-        const _ID: &str = "require-element-invalid-008";
+    fn require_element_014() {
+        const _ID: &str = "require-element-014";
         assert_eq!(
             crate::test_util::lint_brief(
                 "require-element",

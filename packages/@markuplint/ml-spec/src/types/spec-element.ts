@@ -27,6 +27,8 @@ export interface SpecRoot {
 	readonly nodeType: number;
 	readonly childElements: Iterable<SpecElement>;
 	findElementById?(id: string): SpecElement | null;
+	/** The elements of this tree that the selector matches, not those in the content of a `template` element. */
+	querySelectorAll(selectors: string): Iterable<SpecElement>;
 }
 
 /**

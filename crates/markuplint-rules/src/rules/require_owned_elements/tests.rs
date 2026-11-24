@@ -1,13 +1,13 @@
 //! Tests for `require-owned-elements` rule.
 //!
 //! Test ID mapping (TS → Rust):
-//!   require-owned-elements-valid-001       → require_owned_elements_valid_001
-//!   require-owned-elements-valid-002       → require_owned_elements_valid_002
-//!   require-owned-elements-invalid-001     → require_owned_elements_invalid_001
-//!   require-owned-elements-issue-3589-001  → require_owned_elements_issue_3589_001
-//!   require-owned-elements-issue-3589-002  → require_owned_elements_issue_3589_002
-//!   require-owned-elements-issue-3589-003  → require_owned_elements_issue_3589_003
-//!   require-owned-elements-issue-3589-004  → require_owned_elements_issue_3589_004
+//!   require-owned-elements-001       → require_owned_elements_001
+//!   require-owned-elements-002       → require_owned_elements_002
+//!   require-owned-elements-005     → require_owned_elements_005
+//!   require-owned-elements-010  → require_owned_elements_010
+//!   require-owned-elements-011  → require_owned_elements_011
+//!   require-owned-elements-012  → require_owned_elements_012
+//!   require-owned-elements-013  → require_owned_elements_013
 //!   v6_require_owned_elements_001  — Rust-only: several allowed child roles are listed
 //!   v6_require_owned_elements_002  — Rust-only: content that may be created later (text, comment, script, template)
 //!   v6_require_owned_elements_003  — Rust-only: `aria-busy="true"` on the element or a child, any case
@@ -19,23 +19,24 @@
 //!
 //!
 //! The pretender tests use the JSX parser; each is ported with custom elements in HTML:
-//!   require-owned-elements-issue-4068-001  — v6_require_owned_elements_009
-//!   require-owned-elements-issue-4068-002  — v6_require_owned_elements_010
-//!   require-owned-elements-issue-4068-003  — v6_require_owned_elements_011
-//!   require-owned-elements-issue-4068-004  — v6_require_owned_elements_012
-//!   require-owned-elements-issue-4068-005  — v6_require_owned_elements_013
-//!   require-owned-elements-issue-4068-006  — v6_require_owned_elements_014
-//!   require-owned-elements-issue-4068-007  — v6_require_owned_elements_015
-//!   require-owned-elements-issue-4068-008  — v6_require_owned_elements_016
-//!   require-owned-elements-issue-4068-009  — v6_require_owned_elements_017
-//!   require-owned-elements-issue-4068-010  — v6_require_owned_elements_018
-//!   require-owned-elements-issue-4068-011  — v6_require_owned_elements_019
-//!   require-owned-elements-issue-4068-012  — v6_require_owned_elements_020
-//!   require-owned-elements-issue-4068-013  — v6_require_owned_elements_021 (a `<slot>` for the JSX expression)
-//!   require-owned-elements-issue-4068-014  — v6_require_owned_elements_022
+//!   require-owned-elements-014  — v6_require_owned_elements_009
+//!   require-owned-elements-015  — v6_require_owned_elements_010
+//!   require-owned-elements-016  — v6_require_owned_elements_011
+//!   require-owned-elements-017  — v6_require_owned_elements_012
+//!   require-owned-elements-018  — v6_require_owned_elements_013
+//!   require-owned-elements-019  — v6_require_owned_elements_014
+//!   require-owned-elements-020  — v6_require_owned_elements_015
+//!   require-owned-elements-021  — v6_require_owned_elements_016
+//!   require-owned-elements-022  — v6_require_owned_elements_017
+//!   require-owned-elements-023  — v6_require_owned_elements_018
+//!   require-owned-elements-024  — v6_require_owned_elements_019
+//!   require-owned-elements-025  — v6_require_owned_elements_020
+//!   require-owned-elements-026  — v6_require_owned_elements_021 (a `<slot>` for the JSX expression)
+//!   require-owned-elements-027  — v6_require_owned_elements_022
 //!   v6_require_owned_elements_023  — Rust-only: a child placed in a slot wrapper is resolved on its own
+//!   v6_require_owned_elements_024  — Rust-only: an element whose role is not known until it is rendered does not need what its implicit role needs
 //!
-//!   require-owned-elements-issue-4744-001 and -006 — v6_require_owned_elements_issue_4744_001 (the Vue
+//!   require-owned-elements-087 and 088 — v6_require_owned_elements_025 (the Vue
 //!   parser's MLAST by hand; the specs of TS run on this engine through `yarn test:rust-rules` as well)
 
 use crate::lint::{LintConfig, lint};
@@ -83,10 +84,10 @@ fn assert_violations(actual: &[Violation], expected: &[Expected<'_>]) {
 const REQUIRES_LISTITEM: &str = "The child element requires the \"listitem\" role. Or, require aria-busy=\"true\"";
 const EXPECTS_LISTITEM: &str = "The \"list\" role expects the \"listitem\" role";
 
-/// TS: `[require-owned-elements-valid-001]`
+/// TS: `[require-owned-elements-001]`
 #[test]
-fn require_owned_elements_valid_001() {
-    const _ID: &str = "require-owned-elements-valid-001";
+fn require_owned_elements_001() {
+    const _ID: &str = "require-owned-elements-001";
     let violations = run_rule(
         r#"<div role="list"><div role="listitem">item</div></div>"#,
         serde_json::json!(true),
@@ -94,17 +95,17 @@ fn require_owned_elements_valid_001() {
     assert_violations(&violations, &[]);
 }
 
-/// TS: `[require-owned-elements-valid-002]`
+/// TS: `[require-owned-elements-002]`
 #[test]
-fn require_owned_elements_valid_002() {
-    const _ID: &str = "require-owned-elements-valid-002";
+fn require_owned_elements_002() {
+    const _ID: &str = "require-owned-elements-002";
     assert_violations(&run_rule("<div></div>", serde_json::json!(true)), &[]);
 }
 
-/// TS: `[require-owned-elements-invalid-001]`
+/// TS: `[require-owned-elements-005]`
 #[test]
-fn require_owned_elements_invalid_001() {
-    const _ID: &str = "require-owned-elements-invalid-001";
+fn require_owned_elements_005() {
+    const _ID: &str = "require-owned-elements-005";
     let violations = run_rule(
         r#"<div role="list"><div>not a listitem</div></div>"#,
         serde_json::json!(true),
@@ -113,40 +114,40 @@ fn require_owned_elements_invalid_001() {
     assert_eq!(violations[0].severity, Severity::Error);
 }
 
-/// TS: `[require-owned-elements-issue-3589-001]`
+/// TS: `[require-owned-elements-010]`
 #[test]
-fn require_owned_elements_issue_3589_001() {
-    const _ID: &str = "require-owned-elements-issue-3589-001";
+fn require_owned_elements_010() {
+    const _ID: &str = "require-owned-elements-010";
     assert_violations(
         &run_rule("<ul></ul>", serde_json::json!(true)),
         &[(Severity::Error, 1, 1, REQUIRES_LISTITEM, "<ul>")],
     );
 }
 
-/// TS: `[require-owned-elements-issue-3589-002]`
+/// TS: `[require-owned-elements-011]`
 #[test]
-fn require_owned_elements_issue_3589_002() {
-    const _ID: &str = "require-owned-elements-issue-3589-002";
+fn require_owned_elements_011() {
+    const _ID: &str = "require-owned-elements-011";
     assert_violations(
         &run_rule(r#"<div role="list"></div>"#, serde_json::json!(true)),
         &[(Severity::Error, 1, 1, REQUIRES_LISTITEM, "<div role=\"list\">")],
     );
 }
 
-/// TS: `[require-owned-elements-issue-3589-003]`
+/// TS: `[require-owned-elements-012]`
 #[test]
-fn require_owned_elements_issue_3589_003() {
-    const _ID: &str = "require-owned-elements-issue-3589-003";
+fn require_owned_elements_012() {
+    const _ID: &str = "require-owned-elements-012";
     assert_violations(
         &run_rule("<menu></menu>", serde_json::json!(true)),
         &[(Severity::Error, 1, 1, REQUIRES_LISTITEM, "<menu>")],
     );
 }
 
-/// TS: `[require-owned-elements-issue-3589-004]`
+/// TS: `[require-owned-elements-013]`
 #[test]
-fn require_owned_elements_issue_3589_004() {
-    const _ID: &str = "require-owned-elements-issue-3589-004";
+fn require_owned_elements_013() {
+    const _ID: &str = "require-owned-elements-013";
     assert_violations(&run_rule(r#"<ul aria-busy="true"></ul>"#, serde_json::json!(true)), &[]);
 }
 
@@ -321,7 +322,7 @@ fn pretended(html: &str, pretenders: serde_json::Value) -> Vec<Violation> {
     run_pretended(html, serde_json::json!(true), pretenders)
 }
 
-/// TS `[require-owned-elements-issue-4068-001]`: the owned element the component
+/// TS `[require-owned-elements-014]`: the owned element the component
 /// renders itself satisfies the role.
 #[test]
 fn v6_require_owned_elements_009() {
@@ -334,7 +335,7 @@ fn v6_require_owned_elements_009() {
     );
 }
 
-/// TS `[require-owned-elements-issue-4068-002]`: rendered elements that are not owned
+/// TS `[require-owned-elements-015]`: rendered elements that are not owned
 /// elements do not satisfy the role.
 #[test]
 fn v6_require_owned_elements_010() {
@@ -347,7 +348,7 @@ fn v6_require_owned_elements_010() {
     );
 }
 
-/// TS `[require-owned-elements-issue-4068-003]`: children given at the usage site still
+/// TS `[require-owned-elements-016]`: children given at the usage site still
 /// count next to the rendered elements.
 #[test]
 fn v6_require_owned_elements_011() {
@@ -361,7 +362,7 @@ fn v6_require_owned_elements_011() {
     );
 }
 
-/// TS `[require-owned-elements-issue-4068-004]`: children written inside a component
+/// TS `[require-owned-elements-017]`: children written inside a component
 /// that never renders them are not owned.
 #[test]
 fn v6_require_owned_elements_012() {
@@ -374,7 +375,7 @@ fn v6_require_owned_elements_012() {
     );
 }
 
-/// TS `[require-owned-elements-issue-4068-005]`: content of unknown shape (dynamic) may
+/// TS `[require-owned-elements-018]`: content of unknown shape (dynamic) may
 /// be the owned element.
 #[test]
 fn v6_require_owned_elements_013() {
@@ -387,7 +388,7 @@ fn v6_require_owned_elements_013() {
     );
 }
 
-/// TS `[require-owned-elements-issue-4068-006]`: a generic slot wrapper is transparent
+/// TS `[require-owned-elements-019]`: a generic slot wrapper is transparent
 /// for ownership in ARIA 1.3.
 #[test]
 fn v6_require_owned_elements_014() {
@@ -405,7 +406,7 @@ fn v6_require_owned_elements_014() {
     );
 }
 
-/// TS `[require-owned-elements-issue-4068-007]`: a slot wrapper that has a role requiring
+/// TS `[require-owned-elements-020]`: a slot wrapper that has a role requiring
 /// owned elements is checked and reported on the component.
 #[test]
 fn v6_require_owned_elements_015() {
@@ -422,7 +423,7 @@ fn v6_require_owned_elements_015() {
     );
 }
 
-/// TS `[require-owned-elements-issue-4068-008]`: an explicit role on a slot wrapper owns
+/// TS `[require-owned-elements-021]`: an explicit role on a slot wrapper owns
 /// the children given at the usage site.
 #[test]
 fn v6_require_owned_elements_016() {
@@ -437,7 +438,7 @@ fn v6_require_owned_elements_016() {
     );
 }
 
-/// TS `[require-owned-elements-issue-4068-009]`: several slot wrappers leave the owner of
+/// TS `[require-owned-elements-022]`: several slot wrappers leave the owner of
 /// the children unknown.
 #[test]
 fn v6_require_owned_elements_017() {
@@ -457,7 +458,7 @@ fn v6_require_owned_elements_017() {
     );
 }
 
-/// TS `[require-owned-elements-issue-4068-010]`: a fragment component supplies the owned
+/// TS `[require-owned-elements-023]`: a fragment component supplies the owned
 /// element in place.
 #[test]
 fn v6_require_owned_elements_018() {
@@ -473,7 +474,7 @@ fn v6_require_owned_elements_018() {
     );
 }
 
-/// TS `[require-owned-elements-issue-4068-011]`: a transparent component whose content is
+/// TS `[require-owned-elements-024]`: a transparent component whose content is
 /// unknown may supply the owned element.
 #[test]
 fn v6_require_owned_elements_019() {
@@ -490,7 +491,7 @@ fn v6_require_owned_elements_019() {
     );
 }
 
-/// TS `[require-owned-elements-issue-4068-012]`: a fragment component whose content is
+/// TS `[require-owned-elements-025]`: a fragment component whose content is
 /// unknown may supply the owned element.
 #[test]
 fn v6_require_owned_elements_020() {
@@ -506,7 +507,7 @@ fn v6_require_owned_elements_020() {
     );
 }
 
-/// TS `[require-owned-elements-issue-4068-013]`: an expression given to a slot wrapper may
+/// TS `[require-owned-elements-026]`: an expression given to a slot wrapper may
 /// be the owned element. HTML has no expression; a `<slot>` is its counterpart (mutable
 /// children).
 #[test]
@@ -520,7 +521,7 @@ fn v6_require_owned_elements_021() {
     );
 }
 
-/// TS `[require-owned-elements-issue-4068-014]`: a component that renders none of its
+/// TS `[require-owned-elements-027]`: a component that renders none of its
 /// own still depends on the usage site.
 #[test]
 fn v6_require_owned_elements_022() {
@@ -545,12 +546,12 @@ fn v6_require_owned_elements_023() {
     );
 }
 
-/// TS `[require-owned-elements-issue-4744-001]` and `[require-owned-elements-issue-4744-006]`: what is
+/// TS `[require-owned-elements-087]` and `[require-owned-elements-088]`: what is
 /// in a `template` that Vue renders away is owned by what is above it, as if it were written there. The
 /// branch of `v-if` or a slot other than the default one may be rendered anywhere, or not at all, so it is
 /// not judged; what is passed to the default slot is.
 #[test]
-fn v6_require_owned_elements_issue_4744_001() {
+fn v6_require_owned_elements_025() {
     use crate::test_util::{lint_mlast_brief, mlast_vue, vue_element, vue_leaf};
 
     let of = |item: &str, behavior: Option<&str>, target: Option<Option<&str>>| {
@@ -573,4 +574,36 @@ fn v6_require_owned_elements_issue_4744_001() {
     assert_eq!(lint(&of("p", Some("if"), None)), []);
     assert_eq!(lint(&of("p", None, Some(Some("header")))), []);
     assert_eq!(lint(&of("p", None, Some(None))), []);
+}
+
+/// The MLAST of a `div` with these attributes, linted by `require-owned-elements`: `(name, value, what the TS engine worked out)`.
+fn lint_div(attrs: &[(&str, &str, serde_json::Value)]) -> Vec<crate::test_util::Brief> {
+    crate::test_util::lint_mlast_brief(
+        "require-owned-elements",
+        &crate::test_util::mlast_element("div", attrs, &serde_json::json!({})),
+        serde_json::json!({ "rules": { "require-owned-elements": true } }),
+    )
+}
+
+fn code() -> serde_json::Value {
+    serde_json::json!({ "isDynamicValue": true })
+}
+
+fn spread() -> serde_json::Value {
+    serde_json::json!({ "isDirective": true, "isSpread": true, "isDynamicValue": true })
+}
+
+fn plain() -> serde_json::Value {
+    serde_json::json!({})
+}
+
+/// Rust-only: what the element owns is judged by its role, which is not known where code gives it or a spread attribute
+/// after it may override it, so the element does not need what its role needs.
+#[test]
+fn v6_require_owned_elements_024() {
+    let list = || ("role", "list", plain());
+    assert_eq!(lint_div(&[list()]).len(), 1);
+    assert_eq!(lint_div(&[("role", "props.role", code())]), []);
+    assert_eq!(lint_div(&[list(), ("v-bind", "props", spread())]), []);
+    assert_eq!(lint_div(&[("v-bind", "props", spread()), list()]).len(), 1);
 }

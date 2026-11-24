@@ -1,19 +1,19 @@
 //! Tests for `no-obsolete-element` rule.
 //!
 //! Test ID mapping (TS → Rust):
-//!   no-obsolete-element-valid-001        → no_obsolete_element_valid_001
-//!   no-obsolete-element-valid-002        → no_obsolete_element_valid_002
-//!   no-obsolete-element-invalid-001      → no_obsolete_element_invalid_001
-//!   no-obsolete-element-issue-3740-001   — SKIP: JSX parser (issue-3740-004 is the same scenario in HTML)
-//!   no-obsolete-element-issue-3740-002   — SKIP: JSX parser (issue-3740-004 is the same scenario in HTML)
-//!   no-obsolete-element-issue-3740-003   → no_obsolete_element_issue_3740_003
-//!   no-obsolete-element-issue-3740-004   → no_obsolete_element_issue_3740_004
-//!   no-obsolete-element-issue-3740-005   — SKIP: Vue parser (issue-3740-004 is the same scenario in HTML)
-//!   v6_no_obsolete_element_001           — Rust-only: `<marquee>x</marquee>`, the input of issue-3740-003 without pretenders
-//!   v6_no_obsolete_element_002           — Rust-only: an upper-case tag reports the lower-case local name
-//!   v6_no_obsolete_element_003           — Rust-only: an SVG element is looked up in the SVG spec, not the HTML one
-//!   v6_no_obsolete_element_004           — Rust-only: a custom element with no pretender is not looked up
-//!   v6_no_obsolete_element_005           — Rust-only: a pretender is looked up in the namespace of the element it pretends to be
+//!   no-obsolete-element-001      → no_obsolete_element_001
+//!   no-obsolete-element-002      → no_obsolete_element_002
+//!   no-obsolete-element-003      → no_obsolete_element_003
+//!   no-obsolete-element-004      — SKIP: JSX parser (`[no-obsolete-element-007]` is the same scenario in HTML)
+//!   no-obsolete-element-005      — SKIP: JSX parser (`[no-obsolete-element-007]` is the same scenario in HTML)
+//!   no-obsolete-element-006      → no_obsolete_element_006
+//!   no-obsolete-element-007      → no_obsolete_element_007
+//!   no-obsolete-element-008      — SKIP: Vue parser (`[no-obsolete-element-007]` is the same scenario in HTML)
+//!   v6_no_obsolete_element_001   — Rust-only: `<marquee>x</marquee>`, the input of `[no-obsolete-element-006]` without pretenders
+//!   v6_no_obsolete_element_002   — Rust-only: an upper-case tag reports the lower-case local name
+//!   v6_no_obsolete_element_003   — Rust-only: an SVG element is looked up in the SVG spec, not the HTML one
+//!   v6_no_obsolete_element_004   — Rust-only: a custom element with no pretender is not looked up
+//!   v6_no_obsolete_element_005   — Rust-only: a pretender is looked up in the namespace of the element it pretends to be
 
 use crate::lint::{LintConfig, lint};
 use crate::violation::Severity;
@@ -46,26 +46,26 @@ fn run(html: &str) -> Vec<crate::violation::Violation> {
     lint(&arena, &spec, &config).violations
 }
 
-/// TS: `[no-obsolete-element-valid-001]`
+/// TS: `[no-obsolete-element-001]`
 #[test]
-fn no_obsolete_element_valid_001() {
-    const _ID: &str = "no-obsolete-element-valid-001";
+fn no_obsolete_element_001() {
+    const _ID: &str = "no-obsolete-element-001";
     let violations = run("<div></div><p><span></span></p>");
     assert_eq!(violations.len(), 0);
 }
 
-/// TS: `[no-obsolete-element-valid-002]`
+/// TS: `[no-obsolete-element-002]`
 #[test]
-fn no_obsolete_element_valid_002() {
-    const _ID: &str = "no-obsolete-element-valid-002";
+fn no_obsolete_element_002() {
+    const _ID: &str = "no-obsolete-element-002";
     let violations = run("<hgroup></hgroup>");
     assert_eq!(violations.len(), 0);
 }
 
-/// TS: `[no-obsolete-element-invalid-001]`
+/// TS: `[no-obsolete-element-003]`
 #[test]
-fn no_obsolete_element_invalid_001() {
-    const _ID: &str = "no-obsolete-element-invalid-001";
+fn no_obsolete_element_003() {
+    const _ID: &str = "no-obsolete-element-003";
     let violations = run("<font></font><big><blink></blink></big>");
     assert_eq!(violations.len(), 3);
     assert_eq!(violations[0].rule_id, "no-obsolete-element");
@@ -86,7 +86,7 @@ fn no_obsolete_element_invalid_001() {
     assert_eq!(violations[2].raw, "<blink>");
 }
 
-/// Rust-only: the input of `[no-obsolete-element-issue-3740-003]` without its HTML→HTML
+/// Rust-only: the input of `[no-obsolete-element-006]` without its HTML→HTML
 /// pretender (which TS ignores). Expected values from the TS rule.
 #[test]
 fn v6_no_obsolete_element_001() {
@@ -135,11 +135,11 @@ fn run_pretended(html: &str, pretenders: serde_json::Value) -> Vec<crate::test_u
     )
 }
 
-/// TS: `[no-obsolete-element-issue-3740-003]` — HTML→HTML pretender ignored: original
+/// TS: `[no-obsolete-element-006]` — HTML→HTML pretender ignored: original
 /// deprecation surfaces
 #[test]
-fn no_obsolete_element_issue_3740_003() {
-    const _ID: &str = "no-obsolete-element-issue-3740-003";
+fn no_obsolete_element_006() {
+    const _ID: &str = "no-obsolete-element-006";
     assert_eq!(
         run_pretended(
             "<marquee>x</marquee>",
@@ -155,11 +155,11 @@ fn no_obsolete_element_issue_3740_003() {
     );
 }
 
-/// TS: `[no-obsolete-element-issue-3740-004]` — web-component pretendered to obsolete HTML
+/// TS: `[no-obsolete-element-007]` — web-component pretendered to obsolete HTML
 /// reports
 #[test]
-fn no_obsolete_element_issue_3740_004() {
-    const _ID: &str = "no-obsolete-element-issue-3740-004";
+fn no_obsolete_element_007() {
+    const _ID: &str = "no-obsolete-element-007";
     assert_eq!(
         run_pretended(
             "<x-marquee>x</x-marquee>",

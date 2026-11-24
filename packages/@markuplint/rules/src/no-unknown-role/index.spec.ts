@@ -3,15 +3,15 @@ import { test, expect } from 'vitest';
 
 import rule from './index.js';
 
-test('[no-unknown-role-valid-001] valid role', async () => {
+test('[no-unknown-role-001] valid role', async () => {
 	expect((await mlRuleTest(rule, '<div role="button"></div>')).violations).toStrictEqual([]);
 });
 
-test('[no-unknown-role-valid-002] no role attr', async () => {
+test('[no-unknown-role-002] no role attr', async () => {
 	expect((await mlRuleTest(rule, '<div></div>')).violations).toStrictEqual([]);
 });
 
-test('[no-unknown-role-invalid-001] non-existent role', async () => {
+test('[no-unknown-role-003] non-existent role', async () => {
 	expect((await mlRuleTest(rule, '<div role="hoge"></div>')).violations).toStrictEqual([
 		{
 			severity: 'error',
@@ -23,7 +23,7 @@ test('[no-unknown-role-invalid-001] non-existent role', async () => {
 	]);
 });
 
-test('[no-unknown-role-issue-4584-001] the message is in Japanese with locale ja', async () => {
+test('[no-unknown-role-004] the message is in Japanese with locale ja', async () => {
 	const { violations } = await mlRuleTest(rule, '<div role="foo"></div>', undefined, false, 'ja');
 
 	expect(violations).toStrictEqual([

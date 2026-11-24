@@ -1,24 +1,24 @@
 //! Tests for `no-mixed-srcset-descriptors` rule.
 //!
 //! Test ID mapping (TS → Rust):
-//!   no-mixed-srcset-descriptors-valid-001    → no_mixed_srcset_descriptors_valid_001
-//!   no-mixed-srcset-descriptors-valid-002    → no_mixed_srcset_descriptors_valid_002
-//!   no-mixed-srcset-descriptors-valid-003    → no_mixed_srcset_descriptors_valid_003
-//!   no-mixed-srcset-descriptors-valid-004    → no_mixed_srcset_descriptors_valid_004
-//!   no-mixed-srcset-descriptors-invalid-001  → no_mixed_srcset_descriptors_invalid_001 (was `check2_w_plus_x_mixing`, mixing half)
-//!   no-mixed-srcset-descriptors-invalid-002  → no_mixed_srcset_descriptors_invalid_002 (was `check2_w_plus_no_descriptor_mixing`, mixing half)
-//!   no-mixed-srcset-descriptors-invalid-003  → no_mixed_srcset_descriptors_invalid_003
-//!   no-mixed-srcset-descriptors-valid-005    → no_mixed_srcset_descriptors_valid_005 (was `check2_all_w_no_violation`)
-//!   no-mixed-srcset-descriptors-valid-006    → no_mixed_srcset_descriptors_valid_006 (was `check2_all_x_no_violation`)
-//!   no-mixed-srcset-descriptors-valid-007    → no_mixed_srcset_descriptors_valid_007 (was `check2_x_plus_no_descriptor_no_violation`)
-//!   no-mixed-srcset-descriptors-valid-008    → no_mixed_srcset_descriptors_valid_008
-//!   no-mixed-srcset-descriptors-invalid-004  → no_mixed_srcset_descriptors_invalid_004
-//!   no-mixed-srcset-descriptors-valid-009    → no_mixed_srcset_descriptors_valid_009
-//!   no-mixed-srcset-descriptors-valid-010    → no_mixed_srcset_descriptors_valid_010
-//!   no-mixed-srcset-descriptors-invalid-005  → no_mixed_srcset_descriptors_invalid_005
-//!   no-mixed-srcset-descriptors-parser-001   — SKIP: Vue parser not available in Rust
-//!   no-mixed-srcset-descriptors-parser-002   — SKIP: JSX parser not available in Rust
-//!   no-mixed-srcset-descriptors-parser-003   — SKIP: JSX parser not available in Rust
+//!   no-mixed-srcset-descriptors-001    → no_mixed_srcset_descriptors_001
+//!   no-mixed-srcset-descriptors-002    → no_mixed_srcset_descriptors_002
+//!   no-mixed-srcset-descriptors-003    → no_mixed_srcset_descriptors_003
+//!   no-mixed-srcset-descriptors-004    → no_mixed_srcset_descriptors_004
+//!   no-mixed-srcset-descriptors-005  → no_mixed_srcset_descriptors_005 (was `check2_w_plus_x_mixing`, mixing half)
+//!   no-mixed-srcset-descriptors-006  → no_mixed_srcset_descriptors_006 (was `check2_w_plus_no_descriptor_mixing`, mixing half)
+//!   no-mixed-srcset-descriptors-007  → no_mixed_srcset_descriptors_007
+//!   no-mixed-srcset-descriptors-008    → no_mixed_srcset_descriptors_008 (was `check2_all_w_no_violation`)
+//!   no-mixed-srcset-descriptors-009    → no_mixed_srcset_descriptors_009 (was `check2_all_x_no_violation`)
+//!   no-mixed-srcset-descriptors-010    → no_mixed_srcset_descriptors_010 (was `check2_x_plus_no_descriptor_no_violation`)
+//!   no-mixed-srcset-descriptors-011    → no_mixed_srcset_descriptors_011
+//!   no-mixed-srcset-descriptors-012  → no_mixed_srcset_descriptors_012
+//!   no-mixed-srcset-descriptors-013    → no_mixed_srcset_descriptors_013
+//!   no-mixed-srcset-descriptors-014    → no_mixed_srcset_descriptors_014
+//!   no-mixed-srcset-descriptors-015  → no_mixed_srcset_descriptors_015
+//!   no-mixed-srcset-descriptors-016   — SKIP: Vue parser not available in Rust
+//!   no-mixed-srcset-descriptors-017   — SKIP: JSX parser not available in Rust
+//!   no-mixed-srcset-descriptors-018   — SKIP: JSX parser not available in Rust
 //!   v6_no_mixed_srcset_descriptors_001  — Rust-only: the report is at the `srcset` value, multi-line
 //!   v6_no_mixed_srcset_descriptors_002  — Rust-only: a `<source>` in `<picture>` is checked too
 
@@ -70,122 +70,122 @@ fn assert_violations(actual: &[Violation], expected: &[Expected<'_>]) {
     }
 }
 
-/// TS: `[no-mixed-srcset-descriptors-valid-001]`
+/// TS: `[no-mixed-srcset-descriptors-001]`
 #[test]
-fn no_mixed_srcset_descriptors_valid_001() {
-    const _ID: &str = "no-mixed-srcset-descriptors-valid-001";
+fn no_mixed_srcset_descriptors_001() {
+    const _ID: &str = "no-mixed-srcset-descriptors-001";
     assert_violations(&run(r#"<img src="image.png" alt="photo">"#), &[]);
 }
 
-/// TS: `[no-mixed-srcset-descriptors-valid-002]`
+/// TS: `[no-mixed-srcset-descriptors-002]`
 #[test]
-fn no_mixed_srcset_descriptors_valid_002() {
-    const _ID: &str = "no-mixed-srcset-descriptors-valid-002";
+fn no_mixed_srcset_descriptors_002() {
+    const _ID: &str = "no-mixed-srcset-descriptors-002";
     assert_violations(&run(r#"<video><source src="video.mp4" type="video/mp4"></video>"#), &[]);
 }
 
-/// TS: `[no-mixed-srcset-descriptors-valid-003]`
+/// TS: `[no-mixed-srcset-descriptors-003]`
 #[test]
-fn no_mixed_srcset_descriptors_valid_003() {
-    const _ID: &str = "no-mixed-srcset-descriptors-valid-003";
+fn no_mixed_srcset_descriptors_003() {
+    const _ID: &str = "no-mixed-srcset-descriptors-003";
     assert_violations(
         &run(r#"<img srcset="image-1x.png 1x, image-2x.png 2x" src="image-1x.png" alt="photo">"#),
         &[],
     );
 }
 
-/// TS: `[no-mixed-srcset-descriptors-valid-004]`
+/// TS: `[no-mixed-srcset-descriptors-004]`
 #[test]
-fn no_mixed_srcset_descriptors_valid_004() {
-    const _ID: &str = "no-mixed-srcset-descriptors-valid-004";
+fn no_mixed_srcset_descriptors_004() {
+    const _ID: &str = "no-mixed-srcset-descriptors-004";
     assert_violations(&run(r#"<img srcset="image.png" src="image.png" alt="photo">"#), &[]);
 }
 
-/// TS: `[no-mixed-srcset-descriptors-invalid-001]`
+/// TS: `[no-mixed-srcset-descriptors-005]`
 #[test]
-fn no_mixed_srcset_descriptors_invalid_001() {
-    const _ID: &str = "no-mixed-srcset-descriptors-invalid-001";
+fn no_mixed_srcset_descriptors_005() {
+    const _ID: &str = "no-mixed-srcset-descriptors-005";
     let violations = run(r#"<img srcset="small.png 480w, large.png 2x" src="small.png" alt="photo">"#);
     assert_eq!(violations.len(), 1, "violations: {violations:?}");
     assert_eq!(violations[0].raw, "small.png 480w, large.png 2x");
 }
 
-/// TS: `[no-mixed-srcset-descriptors-invalid-002]`
+/// TS: `[no-mixed-srcset-descriptors-006]`
 #[test]
-fn no_mixed_srcset_descriptors_invalid_002() {
-    const _ID: &str = "no-mixed-srcset-descriptors-invalid-002";
+fn no_mixed_srcset_descriptors_006() {
+    const _ID: &str = "no-mixed-srcset-descriptors-006";
     let violations = run(r#"<img srcset="small.png 480w, large.png" src="small.png" alt="photo">"#);
     assert_eq!(violations.len(), 1, "violations: {violations:?}");
 }
 
-/// TS: `[no-mixed-srcset-descriptors-invalid-003]`
+/// TS: `[no-mixed-srcset-descriptors-007]`
 #[test]
-fn no_mixed_srcset_descriptors_invalid_003() {
-    const _ID: &str = "no-mixed-srcset-descriptors-invalid-003";
+fn no_mixed_srcset_descriptors_007() {
+    const _ID: &str = "no-mixed-srcset-descriptors-007";
     let violations = run(r#"<img srcset="small.png 480w, large.png" sizes="100vw" src="large.png" alt="photo">"#);
     assert_eq!(violations.len(), 1, "violations: {violations:?}");
 }
 
-/// TS: `[no-mixed-srcset-descriptors-valid-005]`
+/// TS: `[no-mixed-srcset-descriptors-008]`
 #[test]
-fn no_mixed_srcset_descriptors_valid_005() {
-    const _ID: &str = "no-mixed-srcset-descriptors-valid-005";
+fn no_mixed_srcset_descriptors_008() {
+    const _ID: &str = "no-mixed-srcset-descriptors-008";
     assert_violations(
         &run(r#"<img srcset="s.png 480w, l.png 1024w" sizes="100vw" src="s.png" alt="p">"#),
         &[],
     );
 }
 
-/// TS: `[no-mixed-srcset-descriptors-valid-006]`
+/// TS: `[no-mixed-srcset-descriptors-009]`
 #[test]
-fn no_mixed_srcset_descriptors_valid_006() {
-    const _ID: &str = "no-mixed-srcset-descriptors-valid-006";
+fn no_mixed_srcset_descriptors_009() {
+    const _ID: &str = "no-mixed-srcset-descriptors-009";
     assert_violations(&run(r#"<img srcset="s.png 1x, l.png 2x" src="s.png" alt="p">"#), &[]);
 }
 
-/// TS: `[no-mixed-srcset-descriptors-valid-007]`
+/// TS: `[no-mixed-srcset-descriptors-010]`
 #[test]
-fn no_mixed_srcset_descriptors_valid_007() {
-    const _ID: &str = "no-mixed-srcset-descriptors-valid-007";
+fn no_mixed_srcset_descriptors_010() {
+    const _ID: &str = "no-mixed-srcset-descriptors-010";
     assert_violations(
         &run(r#"<img srcset="small.png, large.png 2x" src="small.png" alt="p">"#),
         &[],
     );
 }
 
-/// TS: `[no-mixed-srcset-descriptors-valid-008]`
+/// TS: `[no-mixed-srcset-descriptors-011]`
 #[test]
-fn no_mixed_srcset_descriptors_valid_008() {
-    const _ID: &str = "no-mixed-srcset-descriptors-valid-008";
+fn no_mixed_srcset_descriptors_011() {
+    const _ID: &str = "no-mixed-srcset-descriptors-011";
     assert_violations(&run(r#"<img srcset="image.png" src="image.png" alt="p">"#), &[]);
 }
 
-/// TS: `[no-mixed-srcset-descriptors-invalid-004]`
+/// TS: `[no-mixed-srcset-descriptors-012]`
 #[test]
-fn no_mixed_srcset_descriptors_invalid_004() {
-    const _ID: &str = "no-mixed-srcset-descriptors-invalid-004";
+fn no_mixed_srcset_descriptors_012() {
+    const _ID: &str = "no-mixed-srcset-descriptors-012";
     let violations = run(r#"<img srcset="s.png 480w, l.png 2x" sizes="auto" src="l.png" alt="p">"#);
     assert_eq!(violations.len(), 1, "violations: {violations:?}");
 }
 
-/// TS: `[no-mixed-srcset-descriptors-valid-009]`
+/// TS: `[no-mixed-srcset-descriptors-013]`
 #[test]
-fn no_mixed_srcset_descriptors_valid_009() {
-    const _ID: &str = "no-mixed-srcset-descriptors-valid-009";
+fn no_mixed_srcset_descriptors_013() {
+    const _ID: &str = "no-mixed-srcset-descriptors-013";
     assert_violations(&run(r#"<img srcset="" src="image.png" alt="p">"#), &[]);
 }
 
-/// TS: `[no-mixed-srcset-descriptors-valid-010]`
+/// TS: `[no-mixed-srcset-descriptors-014]`
 #[test]
-fn no_mixed_srcset_descriptors_valid_010() {
-    const _ID: &str = "no-mixed-srcset-descriptors-valid-010";
+fn no_mixed_srcset_descriptors_014() {
+    const _ID: &str = "no-mixed-srcset-descriptors-014";
     assert_violations(&run(r#"<img srcset="   " src="image.png" alt="p">"#), &[]);
 }
 
-/// TS: `[no-mixed-srcset-descriptors-invalid-005]`
+/// TS: `[no-mixed-srcset-descriptors-015]`
 #[test]
-fn no_mixed_srcset_descriptors_invalid_005() {
-    const _ID: &str = "no-mixed-srcset-descriptors-invalid-005";
+fn no_mixed_srcset_descriptors_015() {
+    const _ID: &str = "no-mixed-srcset-descriptors-015";
     assert_violations(
         &run_rule(
             r#"<img srcset="s.png 480w, l.png 2x" sizes="auto" src="l.png" alt="p">"#,

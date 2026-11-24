@@ -1,9 +1,9 @@
 //! Tests for `no-contradictory-aria-prop` rule.
 //!
 //! Test ID mapping (TS → Rust):
-//!   no-contradictory-aria-prop-valid-001    → no_contradictory_aria_prop_valid_001
-//!   no-contradictory-aria-prop-valid-002    → no_contradictory_aria_prop_valid_002
-//!   no-contradictory-aria-prop-invalid-001  → no_contradictory_aria_prop_invalid_001
+//!   no-contradictory-aria-prop-001    → no_contradictory_aria_prop_001
+//!   no-contradictory-aria-prop-002    → no_contradictory_aria_prop_002
+//!   no-contradictory-aria-prop-003  → no_contradictory_aria_prop_003
 //!   v6_no_contradictory_aria_prop_001  — Rust-only: default severity is an error, config can lower or disable it
 //!   v6_no_contradictory_aria_prop_002  — Rust-only: the native attribute is present with another value
 //!   v6_no_contradictory_aria_prop_003  — Rust-only: the native attribute is absent, "implicit" contradiction
@@ -53,10 +53,10 @@ fn assert_violations(actual: &[Violation], expected: &[Expected<'_>]) {
     }
 }
 
-/// TS: `[no-contradictory-aria-prop-valid-001]`
+/// TS: `[no-contradictory-aria-prop-001]`
 #[test]
-fn no_contradictory_aria_prop_valid_001() {
-    const _ID: &str = "no-contradictory-aria-prop-valid-001";
+fn no_contradictory_aria_prop_001() {
+    const _ID: &str = "no-contradictory-aria-prop-001";
     let violations = run_rule(
         r#"<div role="button" aria-pressed="true"></div>"#,
         serde_json::json!(true),
@@ -64,10 +64,10 @@ fn no_contradictory_aria_prop_valid_001() {
     assert_violations(&violations, &[]);
 }
 
-/// TS: `[no-contradictory-aria-prop-valid-002]`
+/// TS: `[no-contradictory-aria-prop-002]`
 #[test]
-fn no_contradictory_aria_prop_valid_002() {
-    const _ID: &str = "no-contradictory-aria-prop-valid-002";
+fn no_contradictory_aria_prop_002() {
+    const _ID: &str = "no-contradictory-aria-prop-002";
     let violations = run_rule(
         r#"<input type="checkbox" aria-checked="true" checked />"#,
         serde_json::json!(true),
@@ -75,10 +75,10 @@ fn no_contradictory_aria_prop_valid_002() {
     assert_violations(&violations, &[]);
 }
 
-/// TS: `[no-contradictory-aria-prop-invalid-001]`
+/// TS: `[no-contradictory-aria-prop-003]`
 #[test]
-fn no_contradictory_aria_prop_invalid_001() {
-    const _ID: &str = "no-contradictory-aria-prop-invalid-001";
+fn no_contradictory_aria_prop_003() {
+    const _ID: &str = "no-contradictory-aria-prop-003";
     let violations = run_rule(
         r#"<input type="checkbox" checked aria-checked="false" />"#,
         serde_json::json!(true),

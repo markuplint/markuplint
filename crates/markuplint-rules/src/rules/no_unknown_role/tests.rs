@@ -1,17 +1,17 @@
 //! Tests for `no-unknown-role` rule.
 //!
 //! Test ID mapping (TS → Rust):
-//!   no-unknown-role-valid-001    → no_unknown_role_valid_001
-//!   no-unknown-role-valid-002    → no_unknown_role_valid_002
-//!   no-unknown-role-invalid-001  → no_unknown_role_invalid_001
-//!   v6_no_unknown_role_001       — Rust-only: the lookup is case-sensitive
-//!   v6_no_unknown_role_002       — Rust-only: graphics roles exist on SVG elements only
-//!   v6_no_unknown_role_003       — Rust-only: DPub roles exist on every element
-//!   v6_no_unknown_role_004       — Rust-only: only the first unknown token is reported, at its own position
-//!   v6_no_unknown_role_005       — Rust-only: independent of `no-abstract-role` for `role="widget hoge"`
-//!   v6_no_unknown_role_006       — Rust-only: severity and `rules: false`
-//!   v6_no_unknown_role_007       — Rust-only: an unknown first token before known ones is reported once
-//!   v6_no_unknown_role_008       — Rust-only: `role="button"` is known in ARIA 1.1 and 1.2, by option and by `ruleCommonSettings`
+//!   no-unknown-role-001     → no_unknown_role_001
+//!   no-unknown-role-002     → no_unknown_role_002
+//!   no-unknown-role-003     → no_unknown_role_003
+//!   v6_no_unknown_role_001  — Rust-only: the lookup is case-sensitive
+//!   v6_no_unknown_role_002  — Rust-only: graphics roles exist on SVG elements only
+//!   v6_no_unknown_role_003  — Rust-only: DPub roles exist on every element
+//!   v6_no_unknown_role_004  — Rust-only: only the first unknown token is reported, at its own position
+//!   v6_no_unknown_role_005  — Rust-only: independent of `no-abstract-role` for `role="widget hoge"`
+//!   v6_no_unknown_role_006  — Rust-only: severity and `rules: false`
+//!   v6_no_unknown_role_007  — Rust-only: an unknown first token before known ones is reported once
+//!   v6_no_unknown_role_008  — Rust-only: `role="button"` is known in ARIA 1.1 and 1.2, by option and by `ruleCommonSettings`
 
 use crate::lint::{LintConfig, lint};
 use crate::violation::Severity;
@@ -38,28 +38,28 @@ fn config(value: serde_json::Value) -> LintConfig {
     serde_json::from_value(serde_json::json!({ "rules": { "no-unknown-role": value } })).unwrap()
 }
 
-/// TS: `[no-unknown-role-valid-001]`
+/// TS: `[no-unknown-role-001]`
 #[test]
-fn no_unknown_role_valid_001() {
-    const _ID: &str = "no-unknown-role-valid-001";
+fn no_unknown_role_001() {
+    const _ID: &str = "no-unknown-role-001";
     let arena = html_arena(r#"<div role="button"></div>"#);
     let result = lint(&arena, &spec(), &config(serde_json::json!(true)));
     assert!(result.violations.is_empty());
 }
 
-/// TS: `[no-unknown-role-valid-002]`
+/// TS: `[no-unknown-role-002]`
 #[test]
-fn no_unknown_role_valid_002() {
-    const _ID: &str = "no-unknown-role-valid-002";
+fn no_unknown_role_002() {
+    const _ID: &str = "no-unknown-role-002";
     let arena = html_arena("<div></div>");
     let result = lint(&arena, &spec(), &config(serde_json::json!(true)));
     assert!(result.violations.is_empty());
 }
 
-/// TS: `[no-unknown-role-invalid-001]`
+/// TS: `[no-unknown-role-003]`
 #[test]
-fn no_unknown_role_invalid_001() {
-    const _ID: &str = "no-unknown-role-invalid-001";
+fn no_unknown_role_003() {
+    const _ID: &str = "no-unknown-role-003";
     let arena = html_arena(r#"<div role="hoge"></div>"#);
     let result = lint(&arena, &spec(), &config(serde_json::json!(true)));
 

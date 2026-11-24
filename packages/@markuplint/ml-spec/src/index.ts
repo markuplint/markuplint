@@ -38,6 +38,7 @@ export { EMBEDDED_CONTROL_ROLES, isNativeEmbeddedControl } from './const/index.j
 export * from './algorithm/aria/accname/index.js';
 export * from './algorithm/aria/get-computed-aria-props.js';
 export * from './algorithm/aria/get-computed-role.js';
+export { getExplicitRole } from './algorithm/aria/get-explicit-role.js';
 export * from './algorithm/aria/get-implicit-role.js';
 export { getImplicitRole as getImplicitRoleByTagName } from './algorithm/aria/get-implicit-role-spec.js';
 export * from './algorithm/aria/get-permitted-roles.js';
@@ -52,6 +53,7 @@ export * from './algorithm/aria/get-role-spec.js';
 export * from './algorithm/aria/is-presentational.js';
 
 // DOM algorithms
+export { hasElementOfUnknownId, isUnknownValueAttr } from './algorithm/dom/has-unknown-id.js';
 export * from './algorithm/dom/tree-boundary.js';
 
 // HTML algorithms

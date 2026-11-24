@@ -49,6 +49,13 @@ export class MLAttr<T extends RuleConfigValue, O extends PlainData = undefined> 
 	readonly isDirective?: true;
 
 	/**
+	 * Whether this attribute gives the element attributes that the markup does not show: a spread of the
+	 * syntax tree (`{...props}`), or a directive that the spec says is one (`v-bind="obj"`,
+	 * `DirectivePattern#isSpread`). `MLElement#hasSpreadAttr` is whether an element has one.
+	 */
+	readonly isSpread?: true;
+
+	/**
 	 * Whether this attribute is not a repeat of an attribute of the same name on the same element (`:class`
 	 * beside `class`, which Vue merges): it is not compared by {@link MLAttr.nameKey}. Whether the same one
 	 * written twice is a repeat is told by {@link MLAttr.duplicateKey}.
@@ -141,6 +148,7 @@ export class MLAttr<T extends RuleConfigValue, O extends PlainData = undefined> 
 			this.#potentialName = '#spread';
 			this.#potentialValue = this._astToken.raw;
 			this.isDirective = true;
+			this.isSpread = true;
 			this.isExpressionValue = true;
 			this.isDuplicatable = true;
 			return;
@@ -162,6 +170,7 @@ export class MLAttr<T extends RuleConfigValue, O extends PlainData = undefined> 
 		this.candidate = resolved.candidate;
 		this.isExpressionValue = resolved.isDynamicValue;
 		this.isDirective = resolved.isDirective;
+		this.isSpread = resolved.isSpread;
 		this.isDuplicatable = resolved.isDuplicatable;
 		this.#matchedDirectivePattern = resolved.matchedDirectivePattern === true;
 		this.#declaredDuplicateKey = resolved.duplicateKey;

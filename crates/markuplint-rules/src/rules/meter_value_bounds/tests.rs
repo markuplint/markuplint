@@ -1,25 +1,25 @@
 //! Tests for `meter-value-bounds` rule.
 //!
 //! Test ID mapping (TS → Rust):
-//!   meter-value-bounds-valid-001    → meter_value_bounds_valid_001
-//!   meter-value-bounds-valid-002    → meter_value_bounds_valid_002
-//!   meter-value-bounds-valid-003    → meter_value_bounds_valid_003
-//!   meter-value-bounds-valid-004    → meter_value_bounds_valid_004
-//!   meter-value-bounds-invalid-001  → meter_value_bounds_invalid_001
-//!   meter-value-bounds-invalid-002  → meter_value_bounds_invalid_002
-//!   meter-value-bounds-invalid-003  → meter_value_bounds_invalid_003
-//!   meter-value-bounds-invalid-004  → meter_value_bounds_invalid_004
-//!   meter-value-bounds-invalid-005  → meter_value_bounds_invalid_005
-//!   meter-value-bounds-invalid-006  → meter_value_bounds_invalid_006
-//!   meter-value-bounds-invalid-007  → meter_value_bounds_invalid_007
-//!   meter-value-bounds-invalid-008  → meter_value_bounds_invalid_008
-//!   meter-value-bounds-valid-005    → meter_value_bounds_valid_005
-//!   meter-value-bounds-valid-006    → meter_value_bounds_valid_006
-//!   v6_meter_value_bounds_001       — Rust-only: values are read with JS `Number()` semantics
-//!   v6_meter_value_bounds_002       — Rust-only: every inequality reported, at the lower attribute
-//!   v6_meter_value_bounds_003       — Rust-only: an implied value is reported at the element
-//!   v6_meter_value_bounds_004       — Rust-only: attribute names are matched as the DOM names them
-//!   v6_meter_value_bounds_005       — Rust-only: a pretender meter is skipped unless `as` pins it
+//!   meter-value-bounds-001     → meter_value_bounds_001
+//!   meter-value-bounds-002     → meter_value_bounds_002
+//!   meter-value-bounds-003     → meter_value_bounds_003
+//!   meter-value-bounds-004     → meter_value_bounds_004
+//!   meter-value-bounds-005     → meter_value_bounds_005
+//!   meter-value-bounds-006     → meter_value_bounds_006
+//!   meter-value-bounds-007     → meter_value_bounds_007
+//!   meter-value-bounds-008     → meter_value_bounds_008
+//!   meter-value-bounds-009     → meter_value_bounds_009
+//!   meter-value-bounds-010     → meter_value_bounds_010
+//!   meter-value-bounds-011     → meter_value_bounds_011
+//!   meter-value-bounds-012     → meter_value_bounds_012
+//!   meter-value-bounds-013     → meter_value_bounds_013
+//!   meter-value-bounds-014     → meter_value_bounds_014
+//!   v6_meter_value_bounds_001  — Rust-only: values are read with JS `Number()` semantics
+//!   v6_meter_value_bounds_002  — Rust-only: every inequality reported, at the lower attribute
+//!   v6_meter_value_bounds_003  — Rust-only: an implied value is reported at the element
+//!   v6_meter_value_bounds_004  — Rust-only: attribute names are matched as the DOM names them
+//!   v6_meter_value_bounds_005  — Rust-only: a pretender meter is skipped unless `as` pins it
 //!
 //! Expected values of the `v6_*` tests come from running the TS rule. TS lists violations in
 //! the order the rule reports them, and so does the Rust engine, so where a test has several,
@@ -49,61 +49,61 @@ const VALUE_LE_MAX: &str =
 const VALUE_LE_ONE: &str =
     "The value of the \"value\" attribute must be less than or equal to one when the \"max\" attribute is absent";
 
-/// TS: `[meter-value-bounds-valid-001]` — meter without any attributes
+/// TS: `[meter-value-bounds-001]` — meter without any attributes
 #[test]
-fn meter_value_bounds_valid_001() {
-    const _ID: &str = "meter-value-bounds-valid-001";
+fn meter_value_bounds_001() {
+    const _ID: &str = "meter-value-bounds-001";
     assert_eq!(run("<meter>5</meter>"), []);
 }
 
-/// TS: `[meter-value-bounds-valid-002]` — meter with value within default bounds
+/// TS: `[meter-value-bounds-002]` — meter with value within default bounds
 #[test]
-fn meter_value_bounds_valid_002() {
-    const _ID: &str = "meter-value-bounds-valid-002";
+fn meter_value_bounds_002() {
+    const _ID: &str = "meter-value-bounds-002";
     assert_eq!(run(r#"<meter value="0.5">half</meter>"#), []);
 }
 
-/// TS: `[meter-value-bounds-valid-003]` — meter with all attributes consistent
+/// TS: `[meter-value-bounds-003]` — meter with all attributes consistent
 #[test]
-fn meter_value_bounds_valid_003() {
-    const _ID: &str = "meter-value-bounds-valid-003";
+fn meter_value_bounds_003() {
+    const _ID: &str = "meter-value-bounds-003";
     assert_eq!(
         run(r#"<meter value="5" min="0" max="10" low="3" high="7" optimum="6">5</meter>"#),
         []
     );
 }
 
-/// TS: `[meter-value-bounds-valid-004]` — meter with negative range
+/// TS: `[meter-value-bounds-004]` — meter with negative range
 #[test]
-fn meter_value_bounds_valid_004() {
-    const _ID: &str = "meter-value-bounds-valid-004";
+fn meter_value_bounds_004() {
+    const _ID: &str = "meter-value-bounds-004";
     assert_eq!(run(r#"<meter value="-5" min="-10" max="0">-5</meter>"#), []);
 }
 
-/// TS: `[meter-value-bounds-invalid-001]` — value exceeds max
+/// TS: `[meter-value-bounds-005]` — value exceeds max
 #[test]
-fn meter_value_bounds_invalid_001() {
-    const _ID: &str = "meter-value-bounds-invalid-001";
+fn meter_value_bounds_005() {
+    const _ID: &str = "meter-value-bounds-005";
     assert_eq!(
         run(r#"<meter value="10" max="5">10 out of 5</meter>"#),
         [brief(Severity::Error, 1, 15, VALUE_LE_MAX, "10")]
     );
 }
 
-/// TS: `[meter-value-bounds-invalid-002]` — value exceeds default max (1)
+/// TS: `[meter-value-bounds-006]` — value exceeds default max (1)
 #[test]
-fn meter_value_bounds_invalid_002() {
-    const _ID: &str = "meter-value-bounds-invalid-002";
+fn meter_value_bounds_006() {
+    const _ID: &str = "meter-value-bounds-006";
     assert_eq!(
         run(r#"<meter value="2">2</meter>"#),
         [brief(Severity::Error, 1, 15, VALUE_LE_ONE, "2")]
     );
 }
 
-/// TS: `[meter-value-bounds-invalid-003]` — value below min
+/// TS: `[meter-value-bounds-007]` — value below min
 #[test]
-fn meter_value_bounds_invalid_003() {
-    const _ID: &str = "meter-value-bounds-invalid-003";
+fn meter_value_bounds_007() {
+    const _ID: &str = "meter-value-bounds-007";
     let messages = messages(r#"<meter value="0" min="5">0 out of 10</meter>"#);
     // TS: /min.+less than or equal to one when the "max"/ and
     // /min.+less than or equal to the value of the "value"/.
@@ -117,10 +117,10 @@ fn meter_value_bounds_invalid_003() {
     );
 }
 
-/// TS: `[meter-value-bounds-invalid-004]` — min exceeds max
+/// TS: `[meter-value-bounds-008]` — min exceeds max
 #[test]
-fn meter_value_bounds_invalid_004() {
-    const _ID: &str = "meter-value-bounds-invalid-004";
+fn meter_value_bounds_008() {
+    const _ID: &str = "meter-value-bounds-008";
     let messages = messages(r#"<meter value="5" min="10" max="5">5</meter>"#);
     // TS: /min.+less than or equal to the value of the "max"/ and
     // /min.+less than or equal to the value of the "value"/.
@@ -134,10 +134,10 @@ fn meter_value_bounds_invalid_004() {
     );
 }
 
-/// TS: `[meter-value-bounds-invalid-005]` — high exceeds max
+/// TS: `[meter-value-bounds-009]` — high exceeds max
 #[test]
-fn meter_value_bounds_invalid_005() {
-    const _ID: &str = "meter-value-bounds-invalid-005";
+fn meter_value_bounds_009() {
+    const _ID: &str = "meter-value-bounds-009";
     assert_eq!(
         run(r#"<meter value="5" max="10" high="15">5</meter>"#),
         [brief(
@@ -150,10 +150,10 @@ fn meter_value_bounds_invalid_005() {
     );
 }
 
-/// TS: `[meter-value-bounds-invalid-006]` — low exceeds high (both specified, max default)
+/// TS: `[meter-value-bounds-010]` — low exceeds high (both specified, max default)
 #[test]
-fn meter_value_bounds_invalid_006() {
-    const _ID: &str = "meter-value-bounds-invalid-006";
+fn meter_value_bounds_010() {
+    const _ID: &str = "meter-value-bounds-010";
     let messages = messages(r#"<meter value="5" low="8" high="3">5</meter>"#);
     for expected in [
         VALUE_LE_ONE,
@@ -165,10 +165,10 @@ fn meter_value_bounds_invalid_006() {
     }
 }
 
-/// TS: `[meter-value-bounds-invalid-007]` — optimum exceeds max
+/// TS: `[meter-value-bounds-011]` — optimum exceeds max
 #[test]
-fn meter_value_bounds_invalid_007() {
-    const _ID: &str = "meter-value-bounds-invalid-007";
+fn meter_value_bounds_011() {
+    const _ID: &str = "meter-value-bounds-011";
     assert_eq!(
         run(r#"<meter value="5" max="10" optimum="15">5</meter>"#),
         [brief(
@@ -181,10 +181,10 @@ fn meter_value_bounds_invalid_007() {
     );
 }
 
-/// TS: `[meter-value-bounds-invalid-008]` — optimum below min
+/// TS: `[meter-value-bounds-012]` — optimum below min
 #[test]
-fn meter_value_bounds_invalid_008() {
-    const _ID: &str = "meter-value-bounds-invalid-008";
+fn meter_value_bounds_012() {
+    const _ID: &str = "meter-value-bounds-012";
     let messages = messages(r#"<meter value="5" min="3" optimum="1">5</meter>"#);
     assert_has(
         &messages,
@@ -193,20 +193,20 @@ fn meter_value_bounds_invalid_008() {
     assert_has(&messages, VALUE_LE_ONE);
 }
 
-/// TS: `[meter-value-bounds-valid-005]` — dynamic value attributes are skipped
+/// TS: `[meter-value-bounds-013]` — dynamic value attributes are skipped
 ///
 /// With the HTML parser `{{ score }}` is not dynamic; it is skipped because it is not a number.
 #[test]
-fn meter_value_bounds_valid_005() {
-    const _ID: &str = "meter-value-bounds-valid-005";
+fn meter_value_bounds_013() {
+    const _ID: &str = "meter-value-bounds-013";
     assert_eq!(run(r#"<meter value="{{ score }}" max="10">{{ score }}</meter>"#), []);
 }
 
-/// TS: `[meter-value-bounds-valid-006]` — unparsable specified value is left to
+/// TS: `[meter-value-bounds-014]` — unparsable specified value is left to
 /// no-invalid-attr-value
 #[test]
-fn meter_value_bounds_valid_006() {
-    const _ID: &str = "meter-value-bounds-valid-006";
+fn meter_value_bounds_014() {
+    const _ID: &str = "meter-value-bounds-014";
     assert_eq!(run(r#"<meter value="abc" max="10">abc</meter>"#), []);
 }
 

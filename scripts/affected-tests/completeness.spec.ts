@@ -159,6 +159,8 @@ describe('a spec that names a file that the plan takes as unread', () => {
 				!spec.startsWith('scripts/release-lines/') &&
 				// v6 line only. Reads the workflows that gate a pull request: `ROOT_INPUTS` in `classify.ts`.
 				!spec.startsWith('scripts/ci-gate/') &&
+				// Reads the workflow whose job it holds to the report: `ROOT_INPUTS` in `classify.ts`.
+				spec !== 'scripts/spec-citations/index-check.spec.ts' &&
 				probe
 					.read(spec)
 					.split('\n')

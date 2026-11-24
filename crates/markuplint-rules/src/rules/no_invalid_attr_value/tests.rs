@@ -3,60 +3,60 @@
 //! Split out of the tests of the pre-split `invalid-attr` rule; each test keeps the
 //! TypeScript test it mirrors under that test's new id (old id in parentheses).
 //!
-//!   no-invalid-attr-value-invalid-001  → no_invalid_attr_value_invalid_001  (was invalid-attr-invalid-002)
-//!   no-invalid-attr-value-valid-001  → no_invalid_attr_value_valid_001  (was invalid-attr-valid-001)
-//!   no-invalid-attr-value-invalid-002  → no_invalid_attr_value_invalid_002  (was invalid-attr-invalid-003)
-//!   no-invalid-attr-value-valid-002  → no_invalid_attr_value_valid_002  (was invalid-attr-valid-003)
-//!   no-invalid-attr-value-invalid-004  → no_invalid_attr_value_invalid_004  (was invalid-attr-invalid-010)
-//!   no-invalid-attr-value-invalid-005  → no_invalid_attr_value_invalid_005  (was invalid-attr-invalid-011)
-//!   no-invalid-attr-value-invalid-006  → no_invalid_attr_value_invalid_006  (was invalid-attr-invalid-012)
-//!   no-invalid-attr-value-valid-003  → no_invalid_attr_value_valid_003  (was invalid-attr-valid-007)
-//!   no-invalid-attr-value-valid-004  → no_invalid_attr_value_valid_004  (was invalid-attr-valid-010)
-//!   no-invalid-attr-value-invalid-017  → no_invalid_attr_value_invalid_017  (was invalid-attr-invalid-026)
-//!   no-invalid-attr-value-valid-006  → no_invalid_attr_value_valid_006  (was invalid-attr-valid-014)
-//!   no-invalid-attr-value-issue-1078  → no_invalid_attr_value_issue_1078  (was invalid-attr-issue-1078)
-//!   no-invalid-attr-value-issue-1357  → no_invalid_attr_value_issue_1357  (was invalid-attr-issue-1357)
-//!   no-invalid-attr-value-valid-013  → no_invalid_attr_value_valid_013  (was invalid-attr-valid-021)
-//!   no-invalid-attr-value-invalid-020  → no_invalid_attr_value_invalid_020  (was invalid-attr-invalid-029)
-//!   no-invalid-attr-value-invalid-003  → no_invalid_attr_value_invalid_003  (was invalid-attr-invalid-004)
-//!   no-invalid-attr-value-valid-005  → no_invalid_attr_value_valid_005  (was invalid-attr-valid-012)
-//!   no-invalid-attr-value-valid-007  → no_invalid_attr_value_valid_007  (was invalid-attr-valid-015)
-//!   no-invalid-attr-value-valid-008  → no_invalid_attr_value_valid_008  (was invalid-attr-valid-016)
-//!   no-invalid-attr-value-invalid-018  → no_invalid_attr_value_invalid_018  (was invalid-attr-invalid-027)
-//!   no-invalid-attr-value-valid-009  → no_invalid_attr_value_valid_009  (was invalid-attr-valid-017)
-//!   no-invalid-attr-value-valid-010  → no_invalid_attr_value_valid_010  (was invalid-attr-valid-018)
-//!   no-invalid-attr-value-valid-011  → no_invalid_attr_value_valid_011  (was invalid-attr-valid-019)
-//!   no-invalid-attr-value-invalid-019  → no_invalid_attr_value_invalid_019  (was invalid-attr-invalid-028)
-//!   no-invalid-attr-value-valid-012  → no_invalid_attr_value_valid_012  (was invalid-attr-valid-020)
-//!   no-invalid-attr-value-issue-3384-001  → no_invalid_attr_value_issue_3384_001  (was invalid-attr-issue-3384-001)
-//!   no-invalid-attr-value-issue-3384-002  → no_invalid_attr_value_issue_3384_002  (was invalid-attr-issue-3384-002)
-//!   no-invalid-attr-value-issue-3384-003  → no_invalid_attr_value_issue_3384_003  (was invalid-attr-issue-3384-003)
-//!   no-invalid-attr-value-issue-3384-004  → no_invalid_attr_value_issue_3384_004  (was invalid-attr-issue-3384-004)
-//!   no-invalid-attr-value-issue-3384-006  → no_invalid_attr_value_issue_3384_006  (was invalid-attr-issue-3384-006)
-//!   no-invalid-attr-value-issue-3384-009  → no_invalid_attr_value_issue_3384_009  (was invalid-attr-issue-3384-009)
-//!   no-invalid-attr-value-issue-3384-010  → no_invalid_attr_value_issue_3384_010  (was invalid-attr-issue-3384-010)
-//!   no-invalid-attr-value-issue-3384-011  → no_invalid_attr_value_issue_3384_011  (was invalid-attr-issue-3384-011)
-//!   no-invalid-attr-value-issue-3599-001  → no_invalid_attr_value_issue_3599_001  (was invalid-attr-issue-3599-001)
-//!   no-invalid-attr-value-issue-3599-002  → no_invalid_attr_value_issue_3599_002  (was invalid-attr-issue-3599-002)
-//!   no-invalid-attr-value-issue-3599-003  → no_invalid_attr_value_issue_3599_003  (was invalid-attr-issue-3599-003)
-//!   no-invalid-attr-value-issue-3626-002  → no_invalid_attr_value_issue_3626_002  (was invalid-attr-issue-3626-002)
-//!   no-invalid-attr-value-invalid-007  → no_invalid_attr_value_invalid_007  (was invalid-attr-invalid-013)
-//!   no-invalid-attr-value-invalid-008  → no_invalid_attr_value_invalid_008  (was invalid-attr-invalid-014)
-//!   no-invalid-attr-value-issue-1987  → no_invalid_attr_value_issue_1987  (was invalid-attr-issue-1987)
-//!   no-invalid-attr-value-issue-3384-005  → no_invalid_attr_value_issue_3384_005  (was invalid-attr-issue-3384-005)
-//!   no-invalid-attr-value-issue-3384-007  → no_invalid_attr_value_issue_3384_007  (was invalid-attr-issue-3384-007)
-//!   no-invalid-attr-value-issue-3384-008  → no_invalid_attr_value_issue_3384_008  (was invalid-attr-issue-3384-008)
-//!   no-invalid-attr-value-invalid-013  → no_invalid_attr_value_invalid_013  (was invalid-attr-invalid-021)
-//!   no-invalid-attr-value-invalid-014  → no_invalid_attr_value_invalid_014  (was invalid-attr-invalid-022)
-//!   no-invalid-attr-value-invalid-011  → no_invalid_attr_value_invalid_011  (was invalid-attr-invalid-016)
-//!   no-invalid-attr-value-invalid-012  → no_invalid_attr_value_invalid_012  (was invalid-attr-invalid-017)
-//!   no-invalid-attr-value-invalid-015  → no_invalid_attr_value_invalid_015  (was invalid-attr-invalid-024)
-//!   no-invalid-attr-value-invalid-016  → no_invalid_attr_value_invalid_016  (was invalid-attr-invalid-025)
-//!   no-invalid-attr-value-issue-3626-001  → no_invalid_attr_value_issue_3626_001  (was invalid-attr-issue-3626-001)
-//!   no-invalid-attr-value-parser-001  — SKIP: Framework parser tests (Pug, Vue, React, Svelte, MDX) (was invalid-attr-parser-014)
-//!   no-invalid-attr-value-parser-002  — SKIP: Framework parser tests (Pug, Vue, React, Svelte, MDX) (was invalid-attr-parser-015)
-//!   no-invalid-attr-value-parser-003  — SKIP: Framework parser tests (Pug, Vue, React, Svelte, MDX) (was invalid-attr-parser-016)
-//!   no-invalid-attr-value-parser-004  — SKIP: Framework parser tests (Pug, Vue, React, Svelte, MDX) (was invalid-attr-parser-017)
+//!   no-invalid-attr-value-001  → no_invalid_attr_value_001  (was invalid-attr-invalid-002)
+//!   no-invalid-attr-value-004  → no_invalid_attr_value_004  (was invalid-attr-valid-001)
+//!   no-invalid-attr-value-002  → no_invalid_attr_value_002  (was invalid-attr-invalid-003)
+//!   no-invalid-attr-value-005  → no_invalid_attr_value_005  (was invalid-attr-valid-003)
+//!   no-invalid-attr-value-006  → no_invalid_attr_value_006  (was invalid-attr-invalid-010)
+//!   no-invalid-attr-value-007  → no_invalid_attr_value_007  (was invalid-attr-invalid-011)
+//!   no-invalid-attr-value-008  → no_invalid_attr_value_008  (was invalid-attr-invalid-012)
+//!   no-invalid-attr-value-011  → no_invalid_attr_value_011  (was invalid-attr-valid-007)
+//!   no-invalid-attr-value-020  → no_invalid_attr_value_020  (was invalid-attr-valid-010)
+//!   no-invalid-attr-value-021  → no_invalid_attr_value_021  (was invalid-attr-invalid-026)
+//!   no-invalid-attr-value-027  → no_invalid_attr_value_027  (was invalid-attr-valid-014)
+//!   no-invalid-attr-value-029  → no_invalid_attr_value_029  (was invalid-attr-issue-1078)
+//!   no-invalid-attr-value-030  → no_invalid_attr_value_030  (was invalid-attr-issue-1357)
+//!   no-invalid-attr-value-050  → no_invalid_attr_value_050  (was invalid-attr-valid-021)
+//!   no-invalid-attr-value-051  → no_invalid_attr_value_051  (was invalid-attr-invalid-029)
+//!   no-invalid-attr-value-003  → no_invalid_attr_value_003  (was invalid-attr-invalid-004)
+//!   no-invalid-attr-value-026  → no_invalid_attr_value_026  (was invalid-attr-valid-012)
+//!   no-invalid-attr-value-031  → no_invalid_attr_value_031  (was invalid-attr-valid-015)
+//!   no-invalid-attr-value-032  → no_invalid_attr_value_032  (was invalid-attr-valid-016)
+//!   no-invalid-attr-value-033  → no_invalid_attr_value_033  (was invalid-attr-invalid-027)
+//!   no-invalid-attr-value-034  → no_invalid_attr_value_034  (was invalid-attr-valid-017)
+//!   no-invalid-attr-value-035  → no_invalid_attr_value_035  (was invalid-attr-valid-018)
+//!   no-invalid-attr-value-036  → no_invalid_attr_value_036  (was invalid-attr-valid-019)
+//!   no-invalid-attr-value-037  → no_invalid_attr_value_037  (was invalid-attr-invalid-028)
+//!   no-invalid-attr-value-038  → no_invalid_attr_value_038  (was invalid-attr-valid-020)
+//!   no-invalid-attr-value-039  → no_invalid_attr_value_039  (was invalid-attr-issue-3384-001)
+//!   no-invalid-attr-value-040  → no_invalid_attr_value_040  (was invalid-attr-issue-3384-002)
+//!   no-invalid-attr-value-041  → no_invalid_attr_value_041  (was invalid-attr-issue-3384-003)
+//!   no-invalid-attr-value-042  → no_invalid_attr_value_042  (was invalid-attr-issue-3384-004)
+//!   no-invalid-attr-value-044  → no_invalid_attr_value_044  (was invalid-attr-issue-3384-006)
+//!   no-invalid-attr-value-047  → no_invalid_attr_value_047  (was invalid-attr-issue-3384-009)
+//!   no-invalid-attr-value-048  → no_invalid_attr_value_048  (was invalid-attr-issue-3384-010)
+//!   no-invalid-attr-value-049  → no_invalid_attr_value_049  (was invalid-attr-issue-3384-011)
+//!   no-invalid-attr-value-055  → no_invalid_attr_value_055  (was invalid-attr-issue-3599-001)
+//!   no-invalid-attr-value-056  → no_invalid_attr_value_056  (was invalid-attr-issue-3599-002)
+//!   no-invalid-attr-value-057  → no_invalid_attr_value_057  (was invalid-attr-issue-3599-003)
+//!   no-invalid-attr-value-059  → no_invalid_attr_value_059  (was invalid-attr-issue-3626-002)
+//!   no-invalid-attr-value-009  → no_invalid_attr_value_009  (was invalid-attr-invalid-013)
+//!   no-invalid-attr-value-010  → no_invalid_attr_value_010  (was invalid-attr-invalid-014)
+//!   no-invalid-attr-value-028  → no_invalid_attr_value_028  (was invalid-attr-issue-1987)
+//!   no-invalid-attr-value-043  → no_invalid_attr_value_043  (was invalid-attr-issue-3384-005)
+//!   no-invalid-attr-value-045  → no_invalid_attr_value_045  (was invalid-attr-issue-3384-007)
+//!   no-invalid-attr-value-046  → no_invalid_attr_value_046  (was invalid-attr-issue-3384-008)
+//!   no-invalid-attr-value-016  → no_invalid_attr_value_016  (was invalid-attr-invalid-021)
+//!   no-invalid-attr-value-017  → no_invalid_attr_value_017  (was invalid-attr-invalid-022)
+//!   no-invalid-attr-value-014  → no_invalid_attr_value_014  (was invalid-attr-invalid-016)
+//!   no-invalid-attr-value-015  → no_invalid_attr_value_015  (was invalid-attr-invalid-017)
+//!   no-invalid-attr-value-018  → no_invalid_attr_value_018  (was invalid-attr-invalid-024)
+//!   no-invalid-attr-value-019  → no_invalid_attr_value_019  (was invalid-attr-invalid-025)
+//!   no-invalid-attr-value-058  → no_invalid_attr_value_058  (was invalid-attr-issue-3626-001)
+//!   no-invalid-attr-value-022  — SKIP: Framework parser tests (Pug, Vue, React, Svelte, MDX) (was invalid-attr-parser-014)
+//!   no-invalid-attr-value-023  — SKIP: Framework parser tests (Pug, Vue, React, Svelte, MDX) (was invalid-attr-parser-015)
+//!   no-invalid-attr-value-024  — SKIP: Framework parser tests (Pug, Vue, React, Svelte, MDX) (was invalid-attr-parser-016)
+//!   no-invalid-attr-value-025  — SKIP: Framework parser tests (Pug, Vue, React, Svelte, MDX) (was invalid-attr-parser-017)
 
 use super::*;
 use crate::lint::{LintConfig, lint};
@@ -149,10 +149,10 @@ fn allow_attrs_with_no_empty_any_type_empty_value() {
     );
 }
 
-/// TS: `[no-invalid-attr-value-invalid-001]` — Type check (empty name attr on form)
+/// TS: `[no-invalid-attr-value-001]` — Type check (empty name attr on form)
 #[test]
-fn no_invalid_attr_value_invalid_001() {
-    const _ID: &str = "no-invalid-attr-value-invalid-001";
+fn no_invalid_attr_value_001() {
+    const _ID: &str = "no-invalid-attr-value-001";
     let arena = html_arena(r#"<form name=""></form>"#);
     let spec = spec();
     let config: LintConfig = serde_json::from_value(serde_json::json!({
@@ -168,10 +168,10 @@ fn no_invalid_attr_value_invalid_001() {
     assert_eq!(result.violations[0].raw, "");
 }
 
-/// TS: `[no-invalid-attr-value-valid-001]` — disable (same HTML as invalid-001 but rule=false)
+/// TS: `[no-invalid-attr-value-004]` — disable (an unknown attribute and an invalid value, with the rule off)
 #[test]
-fn no_invalid_attr_value_valid_001() {
-    const _ID: &str = "no-invalid-attr-value-valid-001";
+fn no_invalid_attr_value_004() {
+    const _ID: &str = "no-invalid-attr-value-004";
     let arena = html_arena(r#"<a invalid-attr referrerpolicy="invalid-value"><img src=":::::"></a>"#);
     let spec = spec();
     let config: LintConfig = serde_json::from_value(serde_json::json!({
@@ -182,10 +182,10 @@ fn no_invalid_attr_value_valid_001() {
     assert_eq!(result.violations.len(), 0);
 }
 
-/// TS: `[no-invalid-attr-value-invalid-002]` — hidden attribute enum
+/// TS: `[no-invalid-attr-value-002]` — hidden attribute enum
 #[test]
-fn no_invalid_attr_value_invalid_002() {
-    const _ID: &str = "no-invalid-attr-value-invalid-002";
+fn no_invalid_attr_value_002() {
+    const _ID: &str = "no-invalid-attr-value-002";
     let spec = spec();
     let mk_config = || -> LintConfig {
         serde_json::from_value(serde_json::json!({
@@ -227,10 +227,10 @@ fn no_invalid_attr_value_invalid_002() {
     );
 }
 
-/// TS: `[no-invalid-attr-value-valid-002]` — input type case-insensitive
+/// TS: `[no-invalid-attr-value-005]` — input type case-insensitive
 #[test]
-fn no_invalid_attr_value_valid_002() {
-    const _ID: &str = "no-invalid-attr-value-valid-002";
+fn no_invalid_attr_value_005() {
+    const _ID: &str = "no-invalid-attr-value-005";
     let spec = spec();
     let config: LintConfig = serde_json::from_value(serde_json::json!({
         "rules": { "no-invalid-attr-value": true }
@@ -250,10 +250,10 @@ fn no_invalid_attr_value_valid_002() {
     );
 }
 
-/// TS: `[no-invalid-attr-value-invalid-004]` — custom rule: allow with pattern
+/// TS: `[no-invalid-attr-value-006]` — custom rule: allow with pattern
 #[test]
-fn no_invalid_attr_value_invalid_004() {
-    const _ID: &str = "no-invalid-attr-value-invalid-004";
+fn no_invalid_attr_value_006() {
+    const _ID: &str = "no-invalid-attr-value-006";
     let spec = spec();
     let config: LintConfig = serde_json::from_value(serde_json::json!({
         "rules": { "no-invalid-attr-value": { "options": { "allowAttrs": { "x-attr": { "pattern": "/[a-z]+/" } } } } }
@@ -275,10 +275,10 @@ fn no_invalid_attr_value_invalid_004() {
     assert_eq!(result.violations[0].raw, "123");
 }
 
-/// TS: `[no-invalid-attr-value-invalid-005]` — custom rule: allow with pattern (array form)
+/// TS: `[no-invalid-attr-value-007]` — custom rule: allow with pattern (array form)
 #[test]
-fn no_invalid_attr_value_invalid_005() {
-    const _ID: &str = "no-invalid-attr-value-invalid-005";
+fn no_invalid_attr_value_007() {
+    const _ID: &str = "no-invalid-attr-value-007";
     let spec = spec();
     let config: LintConfig = serde_json::from_value(serde_json::json!({
         "rules": { "no-invalid-attr-value": { "options": { "allowAttrs": [{ "name": "x-attr", "value": { "pattern": "/[a-z]+/" } }] } } }
@@ -300,10 +300,10 @@ fn no_invalid_attr_value_invalid_005() {
     assert_eq!(result.violations[0].raw, "123");
 }
 
-/// TS: `[no-invalid-attr-value-invalid-006]` — custom rule: type constraint
+/// TS: `[no-invalid-attr-value-008]` — custom rule: type constraint
 #[test]
-fn no_invalid_attr_value_invalid_006() {
-    const _ID: &str = "no-invalid-attr-value-invalid-006";
+fn no_invalid_attr_value_008() {
+    const _ID: &str = "no-invalid-attr-value-008";
     let spec = spec();
     let config: LintConfig = serde_json::from_value(serde_json::json!({
         "rules": { "no-invalid-attr-value": { "options": { "allowAttrs": { "x-attr": "Int" } } } }
@@ -325,10 +325,10 @@ fn no_invalid_attr_value_invalid_006() {
     assert_eq!(result.violations[0].raw, "abc");
 }
 
-/// TS: `[no-invalid-attr-value-valid-003]` — URL attribute
+/// TS: `[no-invalid-attr-value-011]` — URL attribute
 #[test]
-fn no_invalid_attr_value_valid_003() {
-    const _ID: &str = "no-invalid-attr-value-valid-003";
+fn no_invalid_attr_value_011() {
+    const _ID: &str = "no-invalid-attr-value-011";
     let spec = spec();
     let config: LintConfig = serde_json::from_value(serde_json::json!({
         "rules": { "no-invalid-attr-value": true }
@@ -412,10 +412,10 @@ fn no_invalid_attr_value_valid_003() {
     );
 }
 
-/// TS: `[no-invalid-attr-value-valid-004]` — Booleanish (contenteditable)
+/// TS: `[no-invalid-attr-value-020]` — Booleanish (contenteditable)
 #[test]
-fn no_invalid_attr_value_valid_004() {
-    const _ID: &str = "no-invalid-attr-value-valid-004";
+fn no_invalid_attr_value_020() {
+    const _ID: &str = "no-invalid-attr-value-020";
     let spec = spec();
     let config: LintConfig = serde_json::from_value(serde_json::json!({
         "rules": { "no-invalid-attr-value": true }
@@ -429,10 +429,10 @@ fn no_invalid_attr_value_valid_004() {
     );
 }
 
-/// TS: `[no-invalid-attr-value-invalid-017]` — contenteditable="inherit" is invalid
+/// TS: `[no-invalid-attr-value-021]` — contenteditable="inherit" is invalid
 #[test]
-fn no_invalid_attr_value_invalid_017() {
-    const _ID: &str = "no-invalid-attr-value-invalid-017";
+fn no_invalid_attr_value_021() {
+    const _ID: &str = "no-invalid-attr-value-021";
     let spec = spec();
     let config: LintConfig = serde_json::from_value(serde_json::json!({
         "rules": { "no-invalid-attr-value": true }
@@ -444,10 +444,10 @@ fn no_invalid_attr_value_invalid_017() {
     assert!(result.violations[0].message.contains("contenteditable"));
 }
 
-/// TS: `[no-invalid-attr-value-valid-006]` — CSS Functions in style
+/// TS: `[no-invalid-attr-value-027]` — CSS Functions in style
 #[test]
-fn no_invalid_attr_value_valid_006() {
-    const _ID: &str = "no-invalid-attr-value-valid-006";
+fn no_invalid_attr_value_027() {
+    const _ID: &str = "no-invalid-attr-value-027";
     let spec = spec();
     let config: LintConfig = serde_json::from_value(serde_json::json!({
         "rules": { "no-invalid-attr-value": true }
@@ -461,10 +461,10 @@ fn no_invalid_attr_value_valid_006() {
     );
 }
 
-/// TS: `[no-invalid-attr-value-issue-1078]` — referrerpolicy on script and img
+/// TS: `[no-invalid-attr-value-029]` — referrerpolicy on script and img
 #[test]
-fn no_invalid_attr_value_issue_1078() {
-    const _ID: &str = "no-invalid-attr-value-issue-1078";
+fn no_invalid_attr_value_029() {
+    const _ID: &str = "no-invalid-attr-value-029";
     let spec = spec();
     let config: LintConfig = serde_json::from_value(serde_json::json!({
         "rules": { "no-invalid-attr-value": true }
@@ -492,10 +492,10 @@ fn no_invalid_attr_value_issue_1078() {
     );
 }
 
-/// TS: `[no-invalid-attr-value-issue-1357]` — SVG rect transform
+/// TS: `[no-invalid-attr-value-030]` — SVG rect transform
 #[test]
-fn no_invalid_attr_value_issue_1357() {
-    const _ID: &str = "no-invalid-attr-value-issue-1357";
+fn no_invalid_attr_value_030() {
+    const _ID: &str = "no-invalid-attr-value-030";
     let spec = spec();
     let config: LintConfig = serde_json::from_value(serde_json::json!({
         "rules": { "no-invalid-attr-value": true }
@@ -513,10 +513,10 @@ fn no_invalid_attr_value_issue_1357() {
     );
 }
 
-/// TS: `[no-invalid-attr-value-valid-013]` — empty lang attribute is valid
+/// TS: `[no-invalid-attr-value-050]` — empty lang attribute is valid
 #[test]
-fn no_invalid_attr_value_valid_013() {
-    const _ID: &str = "no-invalid-attr-value-valid-013";
+fn no_invalid_attr_value_050() {
+    const _ID: &str = "no-invalid-attr-value-050";
     let spec = spec();
     let config: LintConfig = serde_json::from_value(serde_json::json!({
         "rules": { "no-invalid-attr-value": true }
@@ -543,10 +543,10 @@ fn no_invalid_attr_value_valid_013() {
     );
 }
 
-/// TS: `[no-invalid-attr-value-invalid-020]` — script type="speculationrules" is valid
+/// TS: `[no-invalid-attr-value-051]` — script type="speculationrules" is valid
 #[test]
-fn no_invalid_attr_value_invalid_020() {
-    const _ID: &str = "no-invalid-attr-value-invalid-020";
+fn no_invalid_attr_value_051() {
+    const _ID: &str = "no-invalid-attr-value-051";
     let spec = spec();
     let config: LintConfig = serde_json::from_value(serde_json::json!({
         "rules": { "no-invalid-attr-value": true }
@@ -564,10 +564,10 @@ fn no_invalid_attr_value_invalid_020() {
     );
 }
 
-/// TS: `[no-invalid-attr-value-invalid-003]` — complex type (autocomplete)
+/// TS: `[no-invalid-attr-value-003]` — complex type (autocomplete)
 #[test]
-fn no_invalid_attr_value_invalid_003() {
-    const _ID: &str = "no-invalid-attr-value-invalid-003";
+fn no_invalid_attr_value_003() {
+    const _ID: &str = "no-invalid-attr-value-003";
     let spec = spec();
     let config: LintConfig = serde_json::from_value(serde_json::json!({
         "rules": { "no-invalid-attr-value": true }
@@ -585,10 +585,10 @@ fn no_invalid_attr_value_invalid_003() {
     assert_eq!(result.violations[0].raw, "section-b");
 }
 
-/// TS: `[no-invalid-attr-value-valid-005]` — Multiple Type (command attribute)
+/// TS: `[no-invalid-attr-value-026]` — Multiple Type (command attribute)
 #[test]
-fn no_invalid_attr_value_valid_005() {
-    const _ID: &str = "no-invalid-attr-value-valid-005";
+fn no_invalid_attr_value_026() {
+    const _ID: &str = "no-invalid-attr-value-026";
     let spec = spec();
     let config: LintConfig = serde_json::from_value(serde_json::json!({
         "rules": { "no-invalid-attr-value": true }
@@ -620,10 +620,10 @@ fn no_invalid_attr_value_valid_005() {
     );
 }
 
-/// TS: `[no-invalid-attr-value-valid-007]` — command="request-close" is valid
+/// TS: `[no-invalid-attr-value-031]` — command="request-close" is valid
 #[test]
-fn no_invalid_attr_value_valid_007() {
-    const _ID: &str = "no-invalid-attr-value-valid-007";
+fn no_invalid_attr_value_031() {
+    const _ID: &str = "no-invalid-attr-value-031";
     let spec = spec();
     let config: LintConfig = serde_json::from_value(serde_json::json!({
         "rules": { "no-invalid-attr-value": true }
@@ -641,10 +641,10 @@ fn no_invalid_attr_value_valid_007() {
     );
 }
 
-/// TS: `[no-invalid-attr-value-valid-008]` — command="close" is valid
+/// TS: `[no-invalid-attr-value-032]` — command="close" is valid
 #[test]
-fn no_invalid_attr_value_valid_008() {
-    const _ID: &str = "no-invalid-attr-value-valid-008";
+fn no_invalid_attr_value_032() {
+    const _ID: &str = "no-invalid-attr-value-032";
     let spec = spec();
     let config: LintConfig = serde_json::from_value(serde_json::json!({
         "rules": { "no-invalid-attr-value": true }
@@ -662,10 +662,10 @@ fn no_invalid_attr_value_valid_008() {
     );
 }
 
-/// TS: `[no-invalid-attr-value-invalid-018]` — command="invalid-value" is invalid
+/// TS: `[no-invalid-attr-value-033]` — command="invalid-value" is invalid
 #[test]
-fn no_invalid_attr_value_invalid_018() {
-    const _ID: &str = "no-invalid-attr-value-invalid-018";
+fn no_invalid_attr_value_033() {
+    const _ID: &str = "no-invalid-attr-value-033";
     let spec = spec();
     let config: LintConfig = serde_json::from_value(serde_json::json!({
         "rules": { "no-invalid-attr-value": true }
@@ -687,10 +687,10 @@ fn no_invalid_attr_value_invalid_018() {
     );
 }
 
-/// TS: `[no-invalid-attr-value-valid-009]` — headingoffset with valid value
+/// TS: `[no-invalid-attr-value-034]` — headingoffset with valid value
 #[test]
-fn no_invalid_attr_value_valid_009() {
-    const _ID: &str = "no-invalid-attr-value-valid-009";
+fn no_invalid_attr_value_034() {
+    const _ID: &str = "no-invalid-attr-value-034";
     let spec = spec();
     let config: LintConfig = serde_json::from_value(serde_json::json!({
         "rules": { "no-invalid-attr-value": true }
@@ -708,10 +708,10 @@ fn no_invalid_attr_value_valid_009() {
     );
 }
 
-/// TS: `[no-invalid-attr-value-valid-010]` — headingoffset="0" is valid
+/// TS: `[no-invalid-attr-value-035]` — headingoffset="0" is valid
 #[test]
-fn no_invalid_attr_value_valid_010() {
-    const _ID: &str = "no-invalid-attr-value-valid-010";
+fn no_invalid_attr_value_035() {
+    const _ID: &str = "no-invalid-attr-value-035";
     let spec = spec();
     let config: LintConfig = serde_json::from_value(serde_json::json!({
         "rules": { "no-invalid-attr-value": true }
@@ -729,10 +729,10 @@ fn no_invalid_attr_value_valid_010() {
     );
 }
 
-/// TS: `[no-invalid-attr-value-valid-011]` — headingoffset="8" is valid (max)
+/// TS: `[no-invalid-attr-value-036]` — headingoffset="8" is valid (max)
 #[test]
-fn no_invalid_attr_value_valid_011() {
-    const _ID: &str = "no-invalid-attr-value-valid-011";
+fn no_invalid_attr_value_036() {
+    const _ID: &str = "no-invalid-attr-value-036";
     let spec = spec();
     let config: LintConfig = serde_json::from_value(serde_json::json!({
         "rules": { "no-invalid-attr-value": true }
@@ -750,10 +750,10 @@ fn no_invalid_attr_value_valid_011() {
     );
 }
 
-/// TS: `[no-invalid-attr-value-invalid-019]` — headingoffset with non-integer value
+/// TS: `[no-invalid-attr-value-037]` — headingoffset with non-integer value
 #[test]
-fn no_invalid_attr_value_invalid_019() {
-    const _ID: &str = "no-invalid-attr-value-invalid-019";
+fn no_invalid_attr_value_037() {
+    const _ID: &str = "no-invalid-attr-value-037";
     let spec = spec();
     let config: LintConfig = serde_json::from_value(serde_json::json!({
         "rules": { "no-invalid-attr-value": true }
@@ -775,10 +775,10 @@ fn no_invalid_attr_value_invalid_019() {
     );
 }
 
-/// TS: `[no-invalid-attr-value-valid-012]` — headingreset is valid
+/// TS: `[no-invalid-attr-value-038]` — headingreset is valid
 #[test]
-fn no_invalid_attr_value_valid_012() {
-    const _ID: &str = "no-invalid-attr-value-valid-012";
+fn no_invalid_attr_value_038() {
+    const _ID: &str = "no-invalid-attr-value-038";
     let spec = spec();
     let config: LintConfig = serde_json::from_value(serde_json::json!({
         "rules": { "no-invalid-attr-value": true }
@@ -792,10 +792,10 @@ fn no_invalid_attr_value_valid_012() {
     );
 }
 
-/// TS: `[no-invalid-attr-value-issue-3384-001]` — focusgroup with valid behavior keyword
+/// TS: `[no-invalid-attr-value-039]` — focusgroup with valid behavior keyword
 #[test]
-fn no_invalid_attr_value_issue_3384_001() {
-    const _ID: &str = "no-invalid-attr-value-issue-3384-001";
+fn no_invalid_attr_value_039() {
+    const _ID: &str = "no-invalid-attr-value-039";
     let spec = spec();
     let config: LintConfig = serde_json::from_value(serde_json::json!({
         "rules": { "no-invalid-attr-value": true }
@@ -809,10 +809,10 @@ fn no_invalid_attr_value_issue_3384_001() {
     );
 }
 
-/// TS: `[no-invalid-attr-value-issue-3384-002]` — focusgroup with multiple valid tokens
+/// TS: `[no-invalid-attr-value-040]` — focusgroup with multiple valid tokens
 #[test]
-fn no_invalid_attr_value_issue_3384_002() {
-    const _ID: &str = "no-invalid-attr-value-issue-3384-002";
+fn no_invalid_attr_value_040() {
+    const _ID: &str = "no-invalid-attr-value-040";
     let spec = spec();
     let config: LintConfig = serde_json::from_value(serde_json::json!({
         "rules": { "no-invalid-attr-value": true }
@@ -830,10 +830,10 @@ fn no_invalid_attr_value_issue_3384_002() {
     );
 }
 
-/// TS: `[no-invalid-attr-value-issue-3384-003]` — focusgroup with all valid tokens
+/// TS: `[no-invalid-attr-value-041]` — focusgroup with all valid tokens
 #[test]
-fn no_invalid_attr_value_issue_3384_003() {
-    const _ID: &str = "no-invalid-attr-value-issue-3384-003";
+fn no_invalid_attr_value_041() {
+    const _ID: &str = "no-invalid-attr-value-041";
     let spec = spec();
     let config: LintConfig = serde_json::from_value(serde_json::json!({
         "rules": { "no-invalid-attr-value": true }
@@ -851,10 +851,10 @@ fn no_invalid_attr_value_issue_3384_003() {
     );
 }
 
-/// TS: `[no-invalid-attr-value-issue-3384-004]` — focusgroup with invalid token
+/// TS: `[no-invalid-attr-value-042]` — focusgroup with invalid token
 #[test]
-fn no_invalid_attr_value_issue_3384_004() {
-    const _ID: &str = "no-invalid-attr-value-issue-3384-004";
+fn no_invalid_attr_value_042() {
+    const _ID: &str = "no-invalid-attr-value-042";
     let spec = spec();
     let config: LintConfig = serde_json::from_value(serde_json::json!({
         "rules": { "no-invalid-attr-value": true }
@@ -868,10 +868,10 @@ fn no_invalid_attr_value_issue_3384_004() {
     assert_eq!(result.violations[0].raw, "invalid");
 }
 
-/// TS: `[no-invalid-attr-value-issue-3384-006]` — focusgroup="none" is valid
+/// TS: `[no-invalid-attr-value-044]` — focusgroup="none" is valid
 #[test]
-fn no_invalid_attr_value_issue_3384_006() {
-    const _ID: &str = "no-invalid-attr-value-issue-3384-006";
+fn no_invalid_attr_value_044() {
+    const _ID: &str = "no-invalid-attr-value-044";
     let spec = spec();
     let config: LintConfig = serde_json::from_value(serde_json::json!({
         "rules": { "no-invalid-attr-value": true }
@@ -885,10 +885,10 @@ fn no_invalid_attr_value_issue_3384_006() {
     );
 }
 
-/// TS: `[no-invalid-attr-value-issue-3384-009]` — focusgroup with empty value is valid
+/// TS: `[no-invalid-attr-value-047]` — focusgroup with empty value is valid
 #[test]
-fn no_invalid_attr_value_issue_3384_009() {
-    const _ID: &str = "no-invalid-attr-value-issue-3384-009";
+fn no_invalid_attr_value_047() {
+    const _ID: &str = "no-invalid-attr-value-047";
     let spec = spec();
     let config: LintConfig = serde_json::from_value(serde_json::json!({
         "rules": { "no-invalid-attr-value": true }
@@ -902,10 +902,10 @@ fn no_invalid_attr_value_issue_3384_009() {
     );
 }
 
-/// TS: `[no-invalid-attr-value-issue-3384-010]` — focusgroupstart boolean attribute is valid
+/// TS: `[no-invalid-attr-value-048]` — focusgroupstart boolean attribute is valid
 #[test]
-fn no_invalid_attr_value_issue_3384_010() {
-    const _ID: &str = "no-invalid-attr-value-issue-3384-010";
+fn no_invalid_attr_value_048() {
+    const _ID: &str = "no-invalid-attr-value-048";
     let spec = spec();
     let config: LintConfig = serde_json::from_value(serde_json::json!({
         "rules": { "no-invalid-attr-value": true }
@@ -919,10 +919,10 @@ fn no_invalid_attr_value_issue_3384_010() {
     );
 }
 
-/// TS: `[no-invalid-attr-value-issue-3384-011]` — focusgroup on any element (global attribute)
+/// TS: `[no-invalid-attr-value-049]` — focusgroup on any element (global attribute)
 #[test]
-fn no_invalid_attr_value_issue_3384_011() {
-    const _ID: &str = "no-invalid-attr-value-issue-3384-011";
+fn no_invalid_attr_value_049() {
+    const _ID: &str = "no-invalid-attr-value-049";
     let spec = spec();
     let config: LintConfig = serde_json::from_value(serde_json::json!({
         "rules": { "no-invalid-attr-value": true }
@@ -942,10 +942,10 @@ fn no_invalid_attr_value_issue_3384_011() {
     );
 }
 
-/// TS: `[no-invalid-attr-value-issue-3599-001]` — srcset rejects zero width descriptor
+/// TS: `[no-invalid-attr-value-055]` — srcset rejects zero width descriptor
 #[test]
-fn no_invalid_attr_value_issue_3599_001() {
-    const _ID: &str = "no-invalid-attr-value-issue-3599-001";
+fn no_invalid_attr_value_055() {
+    const _ID: &str = "no-invalid-attr-value-055";
     let spec = spec();
     let config: LintConfig = serde_json::from_value(serde_json::json!({
         "rules": { "no-invalid-attr-value": true }
@@ -959,10 +959,10 @@ fn no_invalid_attr_value_issue_3599_001() {
     assert!(result.violations.len() > 0, "srcset zero width should be invalid");
 }
 
-/// TS: `[no-invalid-attr-value-issue-3599-002]` — srcset rejects zero density descriptor
+/// TS: `[no-invalid-attr-value-056]` — srcset rejects zero density descriptor
 #[test]
-fn no_invalid_attr_value_issue_3599_002() {
-    const _ID: &str = "no-invalid-attr-value-issue-3599-002";
+fn no_invalid_attr_value_056() {
+    const _ID: &str = "no-invalid-attr-value-056";
     let spec = spec();
     let config: LintConfig = serde_json::from_value(serde_json::json!({
         "rules": { "no-invalid-attr-value": true }
@@ -976,10 +976,10 @@ fn no_invalid_attr_value_issue_3599_002() {
     );
 }
 
-/// TS: `[no-invalid-attr-value-issue-3599-003]` — srcset accepts valid width descriptor
+/// TS: `[no-invalid-attr-value-057]` — srcset accepts valid width descriptor
 #[test]
-fn no_invalid_attr_value_issue_3599_003() {
-    const _ID: &str = "no-invalid-attr-value-issue-3599-003";
+fn no_invalid_attr_value_057() {
+    const _ID: &str = "no-invalid-attr-value-057";
     let spec = spec();
     let config: LintConfig = serde_json::from_value(serde_json::json!({
         "rules": { "no-invalid-attr-value": true }
@@ -997,10 +997,10 @@ fn no_invalid_attr_value_issue_3599_003() {
     );
 }
 
-/// TS: `[no-invalid-attr-value-issue-3626-002]` — integrity accepts sha256 hash
+/// TS: `[no-invalid-attr-value-059]` — integrity accepts sha256 hash
 #[test]
-fn no_invalid_attr_value_issue_3626_002() {
-    const _ID: &str = "no-invalid-attr-value-issue-3626-002";
+fn no_invalid_attr_value_059() {
+    const _ID: &str = "no-invalid-attr-value-059";
     let spec = spec();
     let config: LintConfig = serde_json::from_value(serde_json::json!({
         "rules": { "no-invalid-attr-value": true }
@@ -1018,10 +1018,10 @@ fn no_invalid_attr_value_issue_3626_002() {
     );
 }
 
-/// TS: `[no-invalid-attr-value-invalid-007]` — custom element and custom rule (nodeRule)
+/// TS: `[no-invalid-attr-value-009]` — custom element and custom rule (nodeRule)
 #[test]
-fn no_invalid_attr_value_invalid_007() {
-    const _ID: &str = "no-invalid-attr-value-invalid-007";
+fn no_invalid_attr_value_009() {
+    const _ID: &str = "no-invalid-attr-value-009";
     let spec = spec();
     let config: LintConfig = serde_json::from_value(serde_json::json!({
         "rules": { "no-invalid-attr-value": true },
@@ -1039,10 +1039,10 @@ fn no_invalid_attr_value_invalid_007() {
     assert_eq!(result.violations.len(), 1, "violations: {:#?}", result.violations);
 }
 
-/// TS: `[no-invalid-attr-value-invalid-008]` — custom element and custom rule (nodeRule, array form)
+/// TS: `[no-invalid-attr-value-010]` — custom element and custom rule (nodeRule, array form)
 #[test]
-fn no_invalid_attr_value_invalid_008() {
-    const _ID: &str = "no-invalid-attr-value-invalid-008";
+fn no_invalid_attr_value_010() {
+    const _ID: &str = "no-invalid-attr-value-010";
     let spec = spec();
     let config: LintConfig = serde_json::from_value(serde_json::json!({
         "rules": { "no-invalid-attr-value": true },
@@ -1060,10 +1060,10 @@ fn no_invalid_attr_value_invalid_008() {
     assert_eq!(result.violations.len(), 1, "violations: {:#?}", result.violations);
 }
 
-/// TS: `[no-invalid-attr-value-issue-1987]` — preload as destinations
+/// TS: `[no-invalid-attr-value-028]` — preload as destinations
 #[test]
-fn no_invalid_attr_value_issue_1987() {
-    const _ID: &str = "no-invalid-attr-value-issue-1987";
+fn no_invalid_attr_value_028() {
+    const _ID: &str = "no-invalid-attr-value-028";
     let spec = spec();
     let config: LintConfig = serde_json::from_value(serde_json::json!({
         "rules": { "no-invalid-attr-value": true }
@@ -1203,10 +1203,10 @@ fn no_invalid_attr_value_issue_1987() {
     assert_eq!(r3.violations[0].raw, "document");
 }
 
-/// TS: `[no-invalid-attr-value-issue-3384-005]` — focusgroup with valid and invalid tokens mixed
+/// TS: `[no-invalid-attr-value-043]` — focusgroup with valid and invalid tokens mixed
 #[test]
-fn no_invalid_attr_value_issue_3384_005() {
-    const _ID: &str = "no-invalid-attr-value-issue-3384-005";
+fn no_invalid_attr_value_043() {
+    const _ID: &str = "no-invalid-attr-value-043";
     let spec = spec();
     let config: LintConfig = serde_json::from_value(serde_json::json!({
         "rules": { "no-invalid-attr-value": true }
@@ -1221,10 +1221,10 @@ fn no_invalid_attr_value_issue_3384_005() {
     assert_eq!(result.violations[0].raw, "invalidmod");
 }
 
-/// TS: `[no-invalid-attr-value-issue-3384-007]` — focusgroup is case-insensitive
+/// TS: `[no-invalid-attr-value-045]` — focusgroup is case-insensitive
 #[test]
-fn no_invalid_attr_value_issue_3384_007() {
-    const _ID: &str = "no-invalid-attr-value-issue-3384-007";
+fn no_invalid_attr_value_045() {
+    const _ID: &str = "no-invalid-attr-value-045";
     let spec = spec();
     let config: LintConfig = serde_json::from_value(serde_json::json!({
         "rules": { "no-invalid-attr-value": true }
@@ -1248,10 +1248,10 @@ fn no_invalid_attr_value_issue_3384_007() {
     );
 }
 
-/// TS: `[no-invalid-attr-value-issue-3384-008]` — focusgroup rejects duplicate tokens
+/// TS: `[no-invalid-attr-value-046]` — focusgroup rejects duplicate tokens
 #[test]
-fn no_invalid_attr_value_issue_3384_008() {
-    const _ID: &str = "no-invalid-attr-value-issue-3384-008";
+fn no_invalid_attr_value_046() {
+    const _ID: &str = "no-invalid-attr-value-046";
     let spec = spec();
     let config: LintConfig = serde_json::from_value(serde_json::json!({
         "rules": { "no-invalid-attr-value": true }
@@ -1269,10 +1269,10 @@ fn no_invalid_attr_value_issue_3384_008() {
     );
 }
 
-/// TS: `[no-invalid-attr-value-invalid-013]` — SVG rect mask invalid CSS
+/// TS: `[no-invalid-attr-value-016]` — SVG rect mask invalid CSS
 #[test]
-fn no_invalid_attr_value_invalid_013() {
-    const _ID: &str = "no-invalid-attr-value-invalid-013";
+fn no_invalid_attr_value_016() {
+    const _ID: &str = "no-invalid-attr-value-016";
     let spec = spec();
     let config: LintConfig = serde_json::from_value(serde_json::json!({
         "rules": { "no-invalid-attr-value": true }
@@ -1291,10 +1291,10 @@ fn no_invalid_attr_value_invalid_013() {
     assert_eq!(result.violations[0].raw, "hogehoge");
 }
 
-/// TS: `[no-invalid-attr-value-invalid-014]` — SVG rect transform valid
+/// TS: `[no-invalid-attr-value-017]` — SVG rect transform valid
 #[test]
-fn no_invalid_attr_value_invalid_014() {
-    const _ID: &str = "no-invalid-attr-value-invalid-014";
+fn no_invalid_attr_value_017() {
+    const _ID: &str = "no-invalid-attr-value-017";
     let spec = spec();
     let config: LintConfig = serde_json::from_value(serde_json::json!({
         "rules": { "no-invalid-attr-value": true }
@@ -1315,10 +1315,10 @@ fn no_invalid_attr_value_invalid_014() {
     );
 }
 
-/// TS: `[no-invalid-attr-value-invalid-011]` — Overwrite type (object form allowAttrs)
+/// TS: `[no-invalid-attr-value-014]` — Overwrite type (object form allowAttrs)
 #[test]
-fn no_invalid_attr_value_invalid_011() {
-    const _ID: &str = "no-invalid-attr-value-invalid-011";
+fn no_invalid_attr_value_014() {
+    const _ID: &str = "no-invalid-attr-value-014";
     let spec = spec();
     // With allowAttrs overwriting datetime to enum ["overwrite-type"]
     let config1: LintConfig = serde_json::from_value(serde_json::json!({
@@ -1364,10 +1364,10 @@ fn no_invalid_attr_value_invalid_011() {
     assert_eq!(result2.violations[0].raw, "overwrite");
 }
 
-/// TS: `[no-invalid-attr-value-invalid-012]` — Overwrite type (array form allowAttrs)
+/// TS: `[no-invalid-attr-value-015]` — Overwrite type (array form allowAttrs)
 #[test]
-fn no_invalid_attr_value_invalid_012() {
-    const _ID: &str = "no-invalid-attr-value-invalid-012";
+fn no_invalid_attr_value_015() {
+    const _ID: &str = "no-invalid-attr-value-015";
     let spec = spec();
     let config1: LintConfig = serde_json::from_value(serde_json::json!({
         "rules": { "no-invalid-attr-value": { "options": { "allowAttrs": [{ "name": "datetime", "value": { "enum": ["overwrite-type"] } }] } } }
@@ -1408,10 +1408,10 @@ fn no_invalid_attr_value_invalid_012() {
     assert_eq!(result2.violations[0].raw, "overwrite");
 }
 
-/// TS: `[no-invalid-attr-value-invalid-015]` — regexSelector
+/// TS: `[no-invalid-attr-value-018]` — regexSelector
 #[test]
-fn no_invalid_attr_value_invalid_015() {
-    const _ID: &str = "no-invalid-attr-value-invalid-015";
+fn no_invalid_attr_value_018() {
+    const _ID: &str = "no-invalid-attr-value-018";
     let spec = spec();
     let config: LintConfig = serde_json::from_value(serde_json::json!({
         "rules": { "no-invalid-attr-value": true },
@@ -1449,10 +1449,10 @@ fn no_invalid_attr_value_invalid_015() {
     assert_eq!(result.violations[1].raw, "logo-2x.png 2x");
 }
 
-/// TS: `[no-invalid-attr-value-invalid-016]` — regexSelector (array form)
+/// TS: `[no-invalid-attr-value-019]` — regexSelector (array form)
 #[test]
-fn no_invalid_attr_value_invalid_016() {
-    const _ID: &str = "no-invalid-attr-value-invalid-016";
+fn no_invalid_attr_value_019() {
+    const _ID: &str = "no-invalid-attr-value-019";
     let spec = spec();
     let config: LintConfig = serde_json::from_value(serde_json::json!({
         "rules": { "no-invalid-attr-value": true },
@@ -1488,10 +1488,10 @@ fn no_invalid_attr_value_invalid_016() {
     assert_eq!(result.violations[1].raw, "logo-2x.png 2x");
 }
 
-/// TS: `[no-invalid-attr-value-issue-3626-001]` integrity rejects md5 hash
+/// TS: `[no-invalid-attr-value-058]` integrity rejects md5 hash
 #[test]
-fn no_invalid_attr_value_issue_3626_001() {
-    const _ID: &str = "no-invalid-attr-value-issue-3626-001";
+fn no_invalid_attr_value_058() {
+    const _ID: &str = "no-invalid-attr-value-058";
     let spec = spec();
     let config: LintConfig = serde_json::from_value(serde_json::json!({
         "rules": { "no-invalid-attr-value": true }

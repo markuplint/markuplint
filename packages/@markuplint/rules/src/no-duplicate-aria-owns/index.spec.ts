@@ -3,22 +3,22 @@ import { test, expect } from 'vitest';
 
 import rule from './index.js';
 
-test('[no-duplicate-aria-owns-valid-001] each element has one owner', async () => {
+test('[no-duplicate-aria-owns-001] each element has one owner', async () => {
 	expect(
 		(await mlRuleTest(rule, '<div aria-owns="a"></div><div aria-owns="b"></div><p id="a"></p><p id="b"></p>'))
 			.violations,
 	).toStrictEqual([]);
 });
 
-test('[no-duplicate-aria-owns-valid-002] an ID listed twice in one aria-owns is one owner', async () => {
+test('[no-duplicate-aria-owns-002] an ID listed twice in one aria-owns is one owner', async () => {
 	expect((await mlRuleTest(rule, '<div aria-owns="a a"></div><p id="a"></p>')).violations).toStrictEqual([]);
 });
 
-test('[no-duplicate-aria-owns-valid-003] an ID that no element has is left to no-refer-to-non-existent-id', async () => {
+test('[no-duplicate-aria-owns-003] an ID that no element has is left to no-refer-to-non-existent-id', async () => {
 	expect((await mlRuleTest(rule, '<div aria-owns="a"></div><div aria-owns="a"></div>')).violations).toStrictEqual([]);
 });
 
-test('[no-duplicate-aria-owns-valid-004] an ID is resolved in the tree of the aria-owns', async () => {
+test('[no-duplicate-aria-owns-004] an ID is resolved in the tree of the aria-owns', async () => {
 	expect(
 		(
 			await mlRuleTest(
@@ -29,7 +29,7 @@ test('[no-duplicate-aria-owns-valid-004] an ID is resolved in the tree of the ar
 	).toStrictEqual([]);
 });
 
-test('[no-duplicate-aria-owns-valid-005] a dynamic value is not judged', async () => {
+test('[no-duplicate-aria-owns-005] a dynamic value is not judged', async () => {
 	expect(
 		(
 			await mlRuleTest(rule, '<><div aria-owns="a"></div><div aria-owns={owns}></div><p id="a"></p></>', {
@@ -39,7 +39,7 @@ test('[no-duplicate-aria-owns-valid-005] a dynamic value is not judged', async (
 	).toStrictEqual([]);
 });
 
-test('[no-duplicate-aria-owns-invalid-001] a later aria-owns that lists an ID an earlier one lists', async () => {
+test('[no-duplicate-aria-owns-006] a later aria-owns that lists an ID an earlier one lists', async () => {
 	expect(
 		(await mlRuleTest(rule, '<div aria-owns="a"></div><div aria-owns="b a"></div><p id="a"></p><p id="b"></p>'))
 			.violations,
@@ -54,7 +54,7 @@ test('[no-duplicate-aria-owns-invalid-001] a later aria-owns that lists an ID an
 	]);
 });
 
-test('[no-duplicate-aria-owns-invalid-002] with locale ja', async () => {
+test('[no-duplicate-aria-owns-007] with locale ja', async () => {
 	expect(
 		(
 			await mlRuleTest(
@@ -76,7 +76,7 @@ test('[no-duplicate-aria-owns-invalid-002] with locale ja', async () => {
 	]);
 });
 
-test('[no-duplicate-aria-owns-valid-006] an element that lists its own ID is not an owner of it', async () => {
+test('[no-duplicate-aria-owns-008] an element that lists its own ID is not an owner of it', async () => {
 	expect(
 		(await mlRuleTest(rule, '<div id="a" aria-owns="a"></div><div aria-owns="a"></div>')).violations,
 	).toStrictEqual([]);

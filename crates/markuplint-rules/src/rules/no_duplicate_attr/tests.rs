@@ -1,17 +1,17 @@
 //! Tests for `no-duplicate-attr` rule.
 //!
 //! Test ID mapping (TS → Rust):
-//!   no-duplicate-attr-invalid-001  → no_duplicate_attr_invalid_001
-//!   no-duplicate-attr-invalid-002  → no_duplicate_attr_invalid_002
-//!   no-duplicate-attr-invalid-003  → no_duplicate_attr_invalid_003
-//!   no-duplicate-attr-invalid-004  → no_duplicate_attr_invalid_004
-//!   no-duplicate-attr-parser-*     — SKIP: framework parsers stay in TS (`v6_attr_duplication_008` checks the resolved names;
+//!   no-duplicate-attr-001       → no_duplicate_attr_001
+//!   no-duplicate-attr-002       → no_duplicate_attr_002
+//!   no-duplicate-attr-003       → no_duplicate_attr_003
+//!   no-duplicate-attr-004       → no_duplicate_attr_004
+//!   no-duplicate-attr-005..010  — SKIP: framework parsers stay in TS (`v6_attr_duplication_008` checks the resolved names;
 //!                                    `ml-engine.rust-framework.spec.ts` compares whole files)
-//!   no-duplicate-attr-fix-001      → no_duplicate_attr_fix_001
-//!   no-duplicate-attr-fix-002      → no_duplicate_attr_fix_002
-//!   no-duplicate-attr-fix-003      → no_duplicate_attr_fix_003
-//!   no-duplicate-attr-fix-004      — SKIP: Pug parser not available in Rust
-//!   no-duplicate-attr-fix-005      — SKIP: Vue parser not available in Rust
+//!   no-duplicate-attr-011      → no_duplicate_attr_011
+//!   no-duplicate-attr-012      → no_duplicate_attr_012
+//!   no-duplicate-attr-013      → no_duplicate_attr_013
+//!   no-duplicate-attr-014      — SKIP: Pug parser not available in Rust
+//!   no-duplicate-attr-015      — SKIP: Vue parser not available in Rust
 //!   v6_attr_duplication_001       — Rust-only: no duplicate attrs (valid)
 //!   v6_attr_duplication_002       — Rust-only: case-insensitive duplicate
 //!   v6_attr_duplication_003       — Rust-only: triple duplicate
@@ -20,7 +20,7 @@
 //!   v6_attr_duplication_006       — Rust-only: pretender attributes, and names compared as the DOM names them on a custom element
 //!   v6_attr_duplication_007       — Rust-only: whitespace around the equal sign, non-ASCII text before the fix
 //!   v6_attr_duplication_008       — Rust-only: names are the ones the parser resolved (`:href` is `href`), `isDuplicatable`
-//!   v6_attr_duplication_009       — Rust-only: a directive is compared by what the framework keeps of its name (`directiveKey`; TS `[no-duplicate-attr-issue-4612-*]`, `[no-duplicate-attr-issue-4613-*]`)
+//!   v6_attr_duplication_009       — Rust-only: a directive is compared by what the framework keeps of its name (`directiveKey`; TS `[no-duplicate-attr-022]` to `[no-duplicate-attr-048]`)
 
 use markuplint_core::mlast::{ElementType, MLASTAttr, MLASTHTMLAttr, MLASTToken, NamespaceURI};
 use markuplint_dom::arena::{DomArena, DomArenaBuilder};
@@ -51,24 +51,24 @@ fn fixed(html: &str) -> String {
     crate::test_util::fixed_code(html, &serde_json::json!({ "rules": { "no-duplicate-attr": true } }))
 }
 
-/// TS: `[no-duplicate-attr-fix-001]` — remove duplicate attribute
+/// TS: `[no-duplicate-attr-011]` — remove duplicate attribute
 #[test]
-fn no_duplicate_attr_fix_001() {
-    const _ID: &str = "no-duplicate-attr-fix-001";
+fn no_duplicate_attr_011() {
+    const _ID: &str = "no-duplicate-attr-011";
     assert_eq!(fixed(r#"<div class="a" class="b"></div>"#), r#"<div class="a"></div>"#);
 }
 
-/// TS: `[no-duplicate-attr-fix-002]` — remove duplicate boolean attribute
+/// TS: `[no-duplicate-attr-012]` — remove duplicate boolean attribute
 #[test]
-fn no_duplicate_attr_fix_002() {
-    const _ID: &str = "no-duplicate-attr-fix-002";
+fn no_duplicate_attr_012() {
+    const _ID: &str = "no-duplicate-attr-012";
     assert_eq!(fixed("<input disabled disabled />"), "<input disabled />");
 }
 
-/// TS: `[no-duplicate-attr-fix-003]` — remove third duplicate attribute
+/// TS: `[no-duplicate-attr-013]` — remove third duplicate attribute
 #[test]
-fn no_duplicate_attr_fix_003() {
-    const _ID: &str = "no-duplicate-attr-fix-003";
+fn no_duplicate_attr_013() {
+    const _ID: &str = "no-duplicate-attr-013";
     assert_eq!(
         fixed(r#"<div data-attr="value" data-Attr='db' data-attR=tr></div>"#),
         r#"<div data-attr="value"></div>"#
@@ -83,11 +83,11 @@ fn v6_attr_duplication_007() {
     );
 }
 
-/// TS: `[no-duplicate-attr-invalid-001]`
+/// TS: `[no-duplicate-attr-001]`
 /// Same HTML as TS template literal (with leading newline + tab indentation)
 #[test]
-fn no_duplicate_attr_invalid_001() {
-    const _ID: &str = "no-duplicate-attr-invalid-001";
+fn no_duplicate_attr_001() {
+    const _ID: &str = "no-duplicate-attr-001";
     // Exact TS template literal bytes: \n\t\t<div ...>\n\t\t\tlorem\n\t\t\t<p>ipsam</p>\n\t\t</div>\n\t\t
     let arena = html_arena(
         "\n\t\t<div data-attr=\"value\" data-Attr='db' data-attR=tr>\n\t\t\tlorem\n\t\t\t<p>ipsam</p>\n\t\t</div>\n\t\t",
@@ -111,11 +111,11 @@ fn no_duplicate_attr_invalid_001() {
     assert_eq!(result.violations[1].raw, "data-attR");
 }
 
-/// TS: `[no-duplicate-attr-invalid-002]`
+/// TS: `[no-duplicate-attr-002]`
 /// Same HTML as TS template literal (multi-line with tab indentation)
 #[test]
-fn no_duplicate_attr_invalid_002() {
-    const _ID: &str = "no-duplicate-attr-invalid-002";
+fn no_duplicate_attr_002() {
+    const _ID: &str = "no-duplicate-attr-002";
     // Exact TS template literal bytes: \n\t\t<div\n\t\t\tdata-attr="value"\n\t\t\tdata-Attr='db'\n\t\t\tdata-attR=tr>\n\t\t\tlorem\n\t\t\t<p>ipsam</p>\n\t\t</div>\n\t\t
     let arena = html_arena(
         "\n\t\t<div\n\t\t\tdata-attr=\"value\"\n\t\t\tdata-Attr='db'\n\t\t\tdata-attR=tr>\n\t\t\tlorem\n\t\t\t<p>ipsam</p>\n\t\t</div>\n\t\t",
@@ -139,11 +139,10 @@ fn no_duplicate_attr_invalid_002() {
     assert_eq!(result.violations[1].raw, "data-attR");
 }
 
-/// TS: `[no-duplicate-attr-invalid-004]` — nodeRules disable
-/// TS: `[no-duplicate-attr-invalid-003]` Japanese message
+/// TS: `[no-duplicate-attr-003]` Japanese message
 #[test]
-fn no_duplicate_attr_invalid_003() {
-    const _ID: &str = "no-duplicate-attr-invalid-003";
+fn no_duplicate_attr_003() {
+    const _ID: &str = "no-duplicate-attr-003";
     let arena = html_arena("<img src=\"/\" SRC=\"/\" >");
     let spec = spec();
     let config: LintConfig = serde_json::from_value(serde_json::json!({
@@ -156,11 +155,12 @@ fn no_duplicate_attr_invalid_003() {
     assert_eq!(messages, ["属性名が重複しています"]);
 }
 
+/// TS: `[no-duplicate-attr-004]` — nodeRules disable
 /// Input: `<div><span attr attr></span></div>` with nodeRule disabling span
 /// Expect: 0 violations
 #[test]
-fn no_duplicate_attr_invalid_004() {
-    const _ID: &str = "no-duplicate-attr-invalid-004";
+fn no_duplicate_attr_004() {
+    const _ID: &str = "no-duplicate-attr-004";
     let arena = html_arena("<div><span attr attr></span></div>");
     let spec = spec();
     let config: LintConfig = serde_json::from_value(serde_json::json!({
@@ -230,6 +230,7 @@ pub(crate) fn make_element_with_attrs(tag: &str, attrs: &[(&str, &str)]) -> DomA
                 is_dynamic_value: None,
                 is_expression_value: None,
                 is_absent: None,
+                is_spread: None,
                 literal_expression: None,
                 is_directive: None,
                 potential_name: None,
@@ -398,7 +399,8 @@ fn v6_attr_duplication_006() {
 /// Rust-only: the name an attribute goes by is the one the parser resolved (`potentialName`), as
 /// TS `attr.name` is: Vue's `:href` is `href`, so it and a written `href` are duplicates, unless
 /// the parser says the attribute may repeat (`:class` beside `class`). TS:
-/// `[no-duplicate-attr-parser-*]` and `[no-duplicate-attr-fix-005]` run the Vue parser.
+/// `[no-duplicate-attr-005]`, `[no-duplicate-attr-006]`, `[no-duplicate-attr-015]` and
+/// `[no-duplicate-attr-021]` run the Vue parser.
 #[test]
 fn v6_attr_duplication_008() {
     let run = |attrs: &[(&str, &str, serde_json::Value)]| {
@@ -434,7 +436,7 @@ fn v6_attr_duplication_008() {
 /// TS `MLAttr#duplicateKey`: `@keydown.enter` and `@keydown.space` are `onkeydown` to the DOM but two
 /// listeners to the framework, so what is compared is the key the pattern declares, else the name
 /// as written, folded only when the HTML parser of the browser reads the name. TS:
-/// `[no-duplicate-attr-issue-4612-*]`, `[no-duplicate-attr-issue-4613-*]`, `[no-duplicate-attr-parser-*]`.
+/// `[no-duplicate-attr-022]` to `[no-duplicate-attr-048]`.
 #[test]
 fn v6_attr_duplication_009() {
     let run = |settings: serde_json::Value, attrs: &[(&str, serde_json::Value)]| {
@@ -449,7 +451,7 @@ fn v6_attr_duplication_009() {
     let vue = serde_json::json!({ "endTag": "xml", "attrNameRoute": "dom-api" });
     let alpine = serde_json::json!({ "endTag": "xml" });
 
-    // Modifiers that differ are two listeners (`[no-duplicate-attr-issue-4612-001]`).
+    // Modifiers that differ are two listeners (`[no-duplicate-attr-022]`).
     assert_eq!(
         run(
             vue.clone(),
@@ -457,7 +459,7 @@ fn v6_attr_duplication_009() {
         ),
         []
     );
-    // The same spelling twice is a repeat (`[no-duplicate-attr-issue-4612-002]`).
+    // The same spelling twice is a repeat (`[no-duplicate-attr-023]`).
     assert_eq!(
         run(
             vue.clone(),

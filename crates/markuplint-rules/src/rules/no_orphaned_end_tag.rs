@@ -66,6 +66,15 @@ impl Rule for NoOrphanedEndTag {
 
 #[cfg(test)]
 mod tests {
+    //! Test ID mapping (TS → Rust):
+    //!   no-orphaned-end-tag-003  → no_orphaned_end_tag_003
+    //!   no-orphaned-end-tag-004  → no_orphaned_end_tag_004
+    //!   no-orphaned-end-tag-005  → no_orphaned_end_tag_005
+    //!   no-orphaned-end-tag-006  → no_orphaned_end_tag_006
+    //!   v6_no_orphaned_end_tag_001  — Rust-only: a text node that holds a start tag is kept whole
+    //!   v6_no_orphaned_end_tag_002  — Rust-only: non-ASCII text before the removed end tag
+    //!   v6_no_orphaned_end_tag_003  — Rust-only: only the first `</html>` after the outermost frameset closes html
+
     use super::*;
     use crate::rule::{RuleConfig, RuleConfigSet};
     use crate::rules::no_duplicate_attr::tests::make_element_with_attrs;
@@ -146,23 +155,85 @@ mod tests {
         crate::test_util::fixed_code(html, &serde_json::json!({ "rules": { "no-orphaned-end-tag": true } }))
     }
 
-    /// TS: `[no-orphaned-end-tag-fix-001]` — remove orphaned end tag
-    #[test]
-    fn no_orphaned_end_tag_fix_001() {
-        const _ID: &str = "no-orphaned-end-tag-fix-001";
-        assert_eq!(fixed("<div></div></span>"), "<div></div>");
+    fn lint_orphans(html: &str) -> Vec<crate::test_util::Brief> {
+        crate::test_util::lint_brief(
+            "no-orphaned-end-tag",
+            html,
+            serde_json::json!({ "rules": { "no-orphaned-end-tag": true } }),
+        )
     }
 
-    /// TS: `[no-orphaned-end-tag-fix-002]` — remove multiple orphaned end tags
+    /// TS: `[no-orphaned-end-tag-003]` — the end tag of html in a frameset document is not orphaned
     #[test]
-    fn no_orphaned_end_tag_fix_002() {
-        const _ID: &str = "no-orphaned-end-tag-fix-002";
-        assert_eq!(fixed("<div></p></br><p></span></p></div>"), "<div><p></p></div>");
+    fn no_orphaned_end_tag_003() {
+        const _ID: &str = "no-orphaned-end-tag-003";
+        assert_eq!(
+            lint_orphans(
+                r#"<!doctype html><html lang="en"><head><title>t</title></head><frameset cols=""><frame src=""></frameset></html>"#
+            ),
+            []
+        );
+    }
+
+    /// TS: `[no-orphaned-end-tag-004]` — `</html>` before the outermost frameset is closed is orphaned
+    #[test]
+    fn no_orphaned_end_tag_004() {
+        const _ID: &str = "no-orphaned-end-tag-004";
+        assert_eq!(
+            lint_orphans("<!doctype html><html><head></head><frameset><frameset></frameset></html></frameset></html>"),
+            [crate::test_util::brief(
+                crate::violation::Severity::Error,
+                1,
+                66,
+                "Orphaned end tag detected",
+                "</html>"
+            )]
+        );
     }
 
     #[test]
     fn v6_no_orphaned_end_tag_002() {
         assert_eq!(fixed("<p>日本語😀</p></span>"), "<p>日本語😀</p>");
+    }
+
+    /// Rust-only: only the first `</html>` after the outermost frameset closes html, as in "after after frameset" the
+    /// later ones are ignored, and so is any other end tag after the frameset (TS reads the same from parse5).
+    #[test]
+    fn v6_no_orphaned_end_tag_003() {
+        assert_eq!(
+            lint_orphans("<!doctype html><html><head></head><frameset></frameset></html></html>"),
+            [crate::test_util::brief(
+                crate::violation::Severity::Error,
+                1,
+                63,
+                "Orphaned end tag detected",
+                "</html>"
+            )]
+        );
+        assert_eq!(
+            lint_orphans("<!doctype html><html><head></head><frameset></frameset></div></html>"),
+            [crate::test_util::brief(
+                crate::violation::Severity::Error,
+                1,
+                56,
+                "Orphaned end tag detected",
+                "</div>"
+            )]
+        );
+    }
+
+    /// TS: `[no-orphaned-end-tag-005]` — remove orphaned end tag
+    #[test]
+    fn no_orphaned_end_tag_005() {
+        const _ID: &str = "no-orphaned-end-tag-005";
+        assert_eq!(fixed("<div></div></span>"), "<div></div>");
+    }
+
+    /// TS: `[no-orphaned-end-tag-006]` — remove multiple orphaned end tags
+    #[test]
+    fn no_orphaned_end_tag_006() {
+        const _ID: &str = "no-orphaned-end-tag-006";
+        assert_eq!(fixed("<div></p></br><p></span></p></div>"), "<div><p></p></div>");
     }
 
     #[test]

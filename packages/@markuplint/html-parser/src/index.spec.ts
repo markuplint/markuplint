@@ -1391,3 +1391,150 @@ describe('a leading BOM', () => {
 		expect(doc.nodeList.map(n => n.raw)).toStrictEqual(['\uFEFFtext']);
 	});
 });
+
+describe('the end tag of html in a frameset document', () => {
+	test('`</html>` after the frameset closes html', () => {
+		const doc = parse(
+			'<!doctype html><html lang="en"><head><title>t</title></head><frameset cols=""><frame src=""></frameset></html>',
+		);
+		expect(nodeListToDebugMaps(doc.nodeList)).toStrictEqual([
+			'[1:1]>[1:16](0,15)#doctype: <!doctype\u2423html>',
+			'[1:16]>[1:32](15,31)html: <html\u2423lang="en">',
+			'[1:32]>[1:38](31,37)head: <head>',
+			'[1:38]>[1:45](37,44)title: <title>',
+			'[1:45]>[1:46](44,45)#text: t',
+			'[1:46]>[1:54](45,53)title: </title>',
+			'[1:54]>[1:61](53,60)head: </head>',
+			'[1:61]>[1:79](60,78)frameset: <frameset\u2423cols="">',
+			'[1:79]>[1:93](78,92)frame: <frame\u2423src="">',
+			'[1:93]>[1:104](92,103)frameset: </frameset>',
+			'[1:104]>[1:111](103,110)html: </html>',
+		]);
+	});
+
+	test('whitespace and a comment around `</html>` stay text and a comment, and `</html>` closes html', () => {
+		const doc = parse('<!doctype html><html><head></head><frameset></frameset>\n</html>\n<!--c-->');
+		expect(nodeListToDebugMaps(doc.nodeList)).toStrictEqual([
+			'[1:1]>[1:16](0,15)#doctype: <!doctype\u2423html>',
+			'[1:16]>[1:22](15,21)html: <html>',
+			'[1:22]>[1:28](21,27)head: <head>',
+			'[1:28]>[1:35](27,34)head: </head>',
+			'[1:35]>[1:45](34,44)frameset: <frameset>',
+			'[1:45]>[1:56](44,55)frameset: </frameset>',
+			'[1:56]>[2:1](55,56)#text: \u23CE',
+			'[2:1]>[2:8](56,63)html: </html>',
+			'[2:8]>[3:1](63,64)#text: \u23CE',
+			'[3:1]>[3:9](64,72)#comment: <!--c-->',
+		]);
+	});
+
+	test('the name of the end tag is case-insensitive', () => {
+		const doc = parse('<!doctype html><html><head></head><frameset></frameset></HTML >');
+		expect(nodeListToDebugMaps(doc.nodeList).at(-1)).toBe('[1:56]>[1:64](55,63)HTML: </HTML\u2423>');
+		const html = doc.nodeList.find((n): n is MLASTElement => n.type === 'starttag' && n.nodeName === 'html');
+		expect(html?.pairNodeUuid).toBe(doc.nodeList.at(-1)?.uuid);
+	});
+
+	test('`</html>` before the outermost frameset is closed is ignored, and the one after it closes html', () => {
+		const doc = parse('<!doctype html><html><head></head><frameset><frameset></frameset></html></frameset></html>');
+		expect(nodeListToDebugMaps(doc.nodeList).slice(-4)).toStrictEqual([
+			'[1:55]>[1:66](54,65)frameset: </frameset>',
+			'[1:66]>[1:73](65,72)#invalid(\uD83D\uDC7F): </html>',
+			'[1:73]>[1:84](72,83)frameset: </frameset>',
+			'[1:84]>[1:91](83,90)html: </html>',
+		]);
+	});
+
+	test('a frameset that is not closed leaves html without an end tag', () => {
+		const doc = parse('<!doctype html><html><head></head><frameset></html>');
+		expect(nodeListToDebugMaps(doc.nodeList).at(-1)).toBe('[1:45]>[1:52](44,51)#invalid(\uD83D\uDC7F): </html>');
+	});
+
+	test('only the first `</html>` closes html', () => {
+		const doc = parse('<!doctype html><html><head></head><frameset></frameset></html></html>');
+		expect(nodeListToDebugMaps(doc.nodeList).slice(-2)).toStrictEqual([
+			'[1:56]>[1:63](55,62)html: </html>',
+			'[1:63]>[1:70](62,69)#invalid(\uD83D\uDC7F): </html>',
+		]);
+	});
+
+	test('`</html>` in the text of noframes does not close html', () => {
+		expect(
+			endTagOfHtml('<!doctype html><html><head></head><frameset></frameset><noframes></html></noframes></html>'),
+		).toBe('[1:84]>[1:91](83,90)html: </html>');
+	});
+
+	test('the end tag of noframes is case-insensitive', () => {
+		expect(
+			endTagOfHtml('<!doctype html><html><head></head><frameset></frameset><NOFRAMES></html></NOFRAMES></html>'),
+		).toBe('[1:84]>[1:91](83,90)html: </html>');
+	});
+
+	test('`</html>` in a comment does not close html', () => {
+		expect(endTagOfHtml('<!doctype html><html><head></head><frameset></frameset><!--</html>--></html>')).toBe(
+			'[1:70]>[1:77](69,76)html: </html>',
+		);
+	});
+
+	test('`</html>` in an attribute value does not close html', () => {
+		expect(
+			endTagOfHtml('<!doctype html><html><head></head><frameset></frameset><div title="</html>"></html>'),
+		).toBe('[1:77]>[1:84](76,83)html: </html>');
+	});
+
+	test('script after the frameset is ignored, so `</html>` in it closes html', () => {
+		expect(
+			endTagOfHtml('<!doctype html><html><head></head><frameset></frameset><script></html></script></html>'),
+		).toBe('[1:64]>[1:71](63,70)html: </html>');
+	});
+
+	test('the position of `</html>` counts CRLF line breaks', () => {
+		expect(
+			endTagOfHtml('<!doctype html>\r\n<html>\r\n<head></head>\r\n<frameset>\r\n</frameset>\r\n</html>\r\n'),
+		).toBe('[6:1]>[6:8](65,72)html: </html>');
+	});
+
+	test('html and frameset in svg do not take `</html>` of the document', () => {
+		const doc = parse(
+			'<!doctype html><html><head></head><body><svg><html><frameset></frameset></svg></body></html>',
+		);
+		const htmlElements = doc.nodeList.filter(
+			(n): n is MLASTElement => n.type === 'starttag' && n.nodeName.toLowerCase() === 'html',
+		);
+		expect(htmlElements.map(n => nodeListToDebugMaps([n])[0])).toStrictEqual([
+			'[1:16]>[1:22](15,21)html: <html>',
+			'[1:46]>[1:52](45,51)html: <html>',
+		]);
+		const endTags = htmlElements.map(n => doc.nodeList.find(e => e.uuid === n.pairNodeUuid)?.offset ?? null);
+		expect(endTags).toStrictEqual([85, null]);
+	});
+
+	test('`</html>` after svg that has html and frameset in a fragment is orphaned', () => {
+		const doc = parse('<svg><html><frameset></frameset></svg></html>');
+		expect(nodeListToDebugMaps(doc.nodeList).at(-1)).toBe('[1:39]>[1:46](38,45)#invalid(👿): </html>');
+	});
+
+	test('a closed frameset with no `</html>` after it leaves html without an end tag', () => {
+		const doc = parse('<!doctype html><html><head></head><frameset></frameset>');
+		expect(nodeListToDebugMaps(doc.nodeList)).toStrictEqual([
+			'[1:1]>[1:16](0,15)#doctype: <!doctype␣html>',
+			'[1:16]>[1:22](15,21)html: <html>',
+			'[1:22]>[1:28](21,27)head: <head>',
+			'[1:28]>[1:35](27,34)head: </head>',
+			'[1:35]>[1:45](34,44)frameset: <frameset>',
+			'[1:45]>[1:56](44,55)frameset: </frameset>',
+		]);
+		expect(endTagOfHtml('<!doctype html><html><head></head><frameset></frameset>')).toBeNull();
+	});
+
+	/**
+	 * @param code - The source of a document
+	 * @returns The debug map of the end tag paired with the `html` element, or `null` when it has none
+	 */
+	function endTagOfHtml(code: string) {
+		const { nodeList } = parse(code);
+		const html = nodeList.find((n): n is MLASTElement => n.type === 'starttag' && n.nodeName === 'html');
+		const endTag = nodeList.find(n => n.uuid === html?.pairNodeUuid);
+		return endTag ? (nodeListToDebugMaps([endTag])[0] ?? null) : null;
+	}
+});

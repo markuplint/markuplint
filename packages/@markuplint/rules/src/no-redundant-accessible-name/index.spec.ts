@@ -1,52 +1,52 @@
 import { mlRuleTest } from 'markuplint';
-import { describe, test, expect } from 'vitest';
+import { describe, expect, test } from 'vitest';
 
 import rule from './index.js';
 
 describe('No violations (single source)', () => {
-	test('[no-redundant-accessible-name-valid-001] label only (explicit)', async () => {
+	test('[no-redundant-accessible-name-001] label only (explicit)', async () => {
 		const { violations } = await mlRuleTest(rule, '<input id="x" type="text"><label for="x">Label</label>');
 		expect(violations).toStrictEqual([]);
 	});
 
-	test('[no-redundant-accessible-name-valid-002] content only (button)', async () => {
+	test('[no-redundant-accessible-name-002] content only (button)', async () => {
 		const { violations } = await mlRuleTest(rule, '<button>Click</button>');
 		expect(violations).toStrictEqual([]);
 	});
 
-	test('[no-redundant-accessible-name-valid-003] alt only (img)', async () => {
+	test('[no-redundant-accessible-name-003] alt only (img)', async () => {
 		const { violations } = await mlRuleTest(rule, '<img alt="Photo">');
 		expect(violations).toStrictEqual([]);
 	});
 
-	test('[no-redundant-accessible-name-valid-004] aria-label only', async () => {
+	test('[no-redundant-accessible-name-004] aria-label only', async () => {
 		const { violations } = await mlRuleTest(rule, '<input type="text" aria-label="X">');
 		expect(violations).toStrictEqual([]);
 	});
 
-	test('[no-redundant-accessible-name-valid-005] aria-labelledby only', async () => {
+	test('[no-redundant-accessible-name-005] aria-labelledby only', async () => {
 		const { violations } = await mlRuleTest(rule, '<input type="text" aria-labelledby="y"><span id="y">Y</span>');
 		expect(violations).toStrictEqual([]);
 	});
 
-	test('[no-redundant-accessible-name-valid-006] hidden input is skipped', async () => {
+	test('[no-redundant-accessible-name-006] hidden input is skipped', async () => {
 		const { violations } = await mlRuleTest(rule, '<input type="hidden">');
 		expect(violations).toStrictEqual([]);
 	});
 
-	test('[no-redundant-accessible-name-valid-007] aria-hidden element is skipped', async () => {
+	test('[no-redundant-accessible-name-007] aria-hidden element is skipped', async () => {
 		const { violations } = await mlRuleTest(rule, '<div aria-hidden="true" aria-label="X">Text</div>');
 		expect(violations).toStrictEqual([]);
 	});
 
-	test('[no-redundant-accessible-name-valid-008] no accessible name at all', async () => {
+	test('[no-redundant-accessible-name-008] no accessible name at all', async () => {
 		const { violations } = await mlRuleTest(rule, '<input type="text">');
 		expect(violations).toStrictEqual([]);
 	});
 });
 
 describe('Violations (override detected)', () => {
-	test('[no-redundant-accessible-name-invalid-001] aria-labelledby + explicit label', async () => {
+	test('[no-redundant-accessible-name-009] aria-labelledby + explicit label', async () => {
 		const { violations } = await mlRuleTest(
 			rule,
 			'<input id="x" type="text" aria-labelledby="y"><label for="x">L</label><span id="y">Y</span>',
@@ -57,7 +57,7 @@ describe('Violations (override detected)', () => {
 		expect(violations[0]?.message).toContain('label');
 	});
 
-	test('[no-redundant-accessible-name-invalid-002] aria-labelledby + implicit label', async () => {
+	test('[no-redundant-accessible-name-010] aria-labelledby + implicit label', async () => {
 		const { violations } = await mlRuleTest(
 			rule,
 			'<label><input type="text" aria-labelledby="y">L</label><span id="y">Y</span>',
@@ -67,7 +67,7 @@ describe('Violations (override detected)', () => {
 		expect(violations[0]?.message).toContain('label');
 	});
 
-	test('[no-redundant-accessible-name-invalid-003] aria-label + explicit label', async () => {
+	test('[no-redundant-accessible-name-011] aria-label + explicit label', async () => {
 		const { violations } = await mlRuleTest(
 			rule,
 			'<input id="x" type="text" aria-label="X"><label for="x">L</label>',
@@ -77,14 +77,14 @@ describe('Violations (override detected)', () => {
 		expect(violations[0]?.message).toContain('label');
 	});
 
-	test('[no-redundant-accessible-name-invalid-004] aria-label + implicit label', async () => {
+	test('[no-redundant-accessible-name-012] aria-label + implicit label', async () => {
 		const { violations } = await mlRuleTest(rule, '<label><input type="text" aria-label="X">L</label>');
 		expect(violations.length).toBe(1);
 		expect(violations[0]?.message).toContain('aria-label');
 		expect(violations[0]?.message).toContain('label');
 	});
 
-	test('[no-redundant-accessible-name-invalid-005] aria-label + content (button) — full match', async () => {
+	test('[no-redundant-accessible-name-013] aria-label + content (button) — full match', async () => {
 		const { violations } = await mlRuleTest(rule, '<button aria-label="X">Click</button>');
 		expect(violations).toStrictEqual([
 			{
@@ -97,7 +97,7 @@ describe('Violations (override detected)', () => {
 		]);
 	});
 
-	test('[no-redundant-accessible-name-invalid-006] aria-labelledby + content (button)', async () => {
+	test('[no-redundant-accessible-name-014] aria-labelledby + content (button)', async () => {
 		const { violations } = await mlRuleTest(
 			rule,
 			'<button aria-labelledby="y">Click</button><span id="y">Y</span>',
@@ -107,21 +107,21 @@ describe('Violations (override detected)', () => {
 		expect(violations[0]?.message).toContain('content');
 	});
 
-	test('[no-redundant-accessible-name-invalid-007] aria-label + alt (img)', async () => {
+	test('[no-redundant-accessible-name-015] aria-label + alt (img)', async () => {
 		const { violations } = await mlRuleTest(rule, '<img alt="Photo" aria-label="X">');
 		expect(violations.length).toBe(1);
 		expect(violations[0]?.message).toContain('aria-label');
 		expect(violations[0]?.message).toContain('alt');
 	});
 
-	test('[no-redundant-accessible-name-invalid-008] aria-labelledby + alt (img)', async () => {
+	test('[no-redundant-accessible-name-016] aria-labelledby + alt (img)', async () => {
 		const { violations } = await mlRuleTest(rule, '<img alt="Photo" aria-labelledby="y"><span id="y">Y</span>');
 		expect(violations.length).toBe(1);
 		expect(violations[0]?.message).toContain('aria-labelledby');
 		expect(violations[0]?.message).toContain('alt');
 	});
 
-	test('[no-redundant-accessible-name-invalid-009] aria-labelledby + aria-label', async () => {
+	test('[no-redundant-accessible-name-017] aria-labelledby + aria-label', async () => {
 		const { violations } = await mlRuleTest(
 			rule,
 			'<input type="text" aria-labelledby="y" aria-label="X"><span id="y">Y</span>',
@@ -131,7 +131,7 @@ describe('Violations (override detected)', () => {
 		expect(violations[0]?.message).toContain('aria-label');
 	});
 
-	test('[no-redundant-accessible-name-invalid-010] aria-labelledby + aria-label + content (3 sources)', async () => {
+	test('[no-redundant-accessible-name-018] aria-labelledby + aria-label + content (3 sources)', async () => {
 		const { violations } = await mlRuleTest(
 			rule,
 			'<button aria-labelledby="y" aria-label="X">Click</button><span id="y">Y</span>',
@@ -139,14 +139,14 @@ describe('Violations (override detected)', () => {
 		expect(violations.length).toBe(2);
 	});
 
-	test('[no-redundant-accessible-name-invalid-011] aria-label + legend (fieldset)', async () => {
+	test('[no-redundant-accessible-name-019] aria-label + legend (fieldset)', async () => {
 		const { violations } = await mlRuleTest(rule, '<fieldset aria-label="X"><legend>Group</legend></fieldset>');
 		expect(violations.length).toBe(1);
 		expect(violations[0]?.message).toContain('aria-label');
 		expect(violations[0]?.message).toContain('legend');
 	});
 
-	test('[no-redundant-accessible-name-invalid-012] aria-label + caption (table)', async () => {
+	test('[no-redundant-accessible-name-020] aria-label + caption (table)', async () => {
 		const { violations } = await mlRuleTest(
 			rule,
 			'<table aria-label="X"><caption>Title</caption><tr><td>Data</td></tr></table>',
@@ -156,19 +156,19 @@ describe('Violations (override detected)', () => {
 		expect(violations[0]?.message).toContain('caption');
 	});
 
-	test('[no-redundant-accessible-name-invalid-013] aria-label + value (input[type=submit])', async () => {
+	test('[no-redundant-accessible-name-021] aria-label + value (input[type=submit])', async () => {
 		const { violations } = await mlRuleTest(rule, '<input type="submit" value="Go" aria-label="X">');
 		expect(violations.length).toBe(1);
 		expect(violations[0]?.message).toContain('aria-label');
 		expect(violations[0]?.message).toContain('value');
 	});
 
-	test('[no-redundant-accessible-name-invalid-014] aria-labelledby self-reference + content (heading)', async () => {
+	test('[no-redundant-accessible-name-022] aria-labelledby self-reference + content (heading)', async () => {
 		const { violations } = await mlRuleTest(
 			rule,
 			'<h2 id="h" aria-labelledby="h foo">Meeting</h2><span id="foo">Notes</span>',
 		);
-		// Flipped for #4217: accname 2B is skipped on self-reference, so the node's own content is
+		// accname 2B is skipped on self-reference, so the node's own content is
 		// composed into the name rather than overridden.
 		// expect(violations.length).toBe(1);
 		// expect(violations[0]?.message).toContain('aria-labelledby');
@@ -176,7 +176,7 @@ describe('Violations (override detected)', () => {
 		expect(violations.length).toBe(0);
 	});
 
-	test('[no-redundant-accessible-name-invalid-015] aria-labelledby referencing label ID + extra context', async () => {
+	test('[no-redundant-accessible-name-023] aria-labelledby referencing label ID + extra context', async () => {
 		const { violations } = await mlRuleTest(
 			rule,
 			'<label for="x" id="lbl">Name</label><input id="x" aria-labelledby="lbl extra"><span id="extra">(required)</span>',
@@ -186,7 +186,7 @@ describe('Violations (override detected)', () => {
 		expect(violations[0]?.message).toContain('label');
 	});
 
-	test('[no-redundant-accessible-name-invalid-016] summary + aria-label', async () => {
+	test('[no-redundant-accessible-name-024] summary + aria-label', async () => {
 		const { violations } = await mlRuleTest(rule, '<details><summary aria-label="X">Details</summary></details>');
 		expect(violations.length).toBe(1);
 		expect(violations[0]?.message).toContain('aria-label');
@@ -195,7 +195,7 @@ describe('Violations (override detected)', () => {
 });
 
 describe('aria-labelledby self-reference (accname 2B is skipped for the node itself)', () => {
-	test('[no-redundant-accessible-name-issue-4217-001] self + other reference with aria-label does not report aria-labelledby overriding aria-label', async () => {
+	test('[no-redundant-accessible-name-025] self + other reference with aria-label does not report aria-labelledby overriding aria-label', async () => {
 		const { violations } = await mlRuleTest(
 			rule,
 			'<span id="label-target">Delete</span><button id="button1" aria-label="Item 1" aria-labelledby="button1 label-target"></button>',
@@ -203,12 +203,12 @@ describe('aria-labelledby self-reference (accname 2B is skipped for the node its
 		expect(violations).toStrictEqual([]);
 	});
 
-	test('[no-redundant-accessible-name-issue-4217-002] self + other reference on a button still reports aria-label overriding content', async () => {
+	test('[no-redundant-accessible-name-026] self + other reference on a button still reports aria-label overriding content', async () => {
 		const { violations } = await mlRuleTest(
 			rule,
 			'<span id="label-target">Delete</span><button id="button1" aria-label="Item 1" aria-labelledby="button1 label-target">×</button>',
 		);
-		// Restored after #4251: aria-label (2D) still wins over content (2F) inside the
+		// aria-label (2D) still wins over content (2F) inside the
 		// self-referencing traversal, the same as on a button without aria-labelledby.
 		expect(violations).toStrictEqual([
 			{
@@ -221,7 +221,7 @@ describe('aria-labelledby self-reference (accname 2B is skipped for the node its
 		]);
 	});
 
-	test('[no-redundant-accessible-name-issue-4217-003] self-reference composes content with another reference, nothing is overridden', async () => {
+	test('[no-redundant-accessible-name-027] self-reference composes content with another reference, nothing is overridden', async () => {
 		const { violations } = await mlRuleTest(
 			rule,
 			'<h2 id="heading" aria-labelledby="heading note">Meeting</h2><span id="note">Notes</span>',
@@ -229,7 +229,7 @@ describe('aria-labelledby self-reference (accname 2B is skipped for the node its
 		expect(violations).toStrictEqual([]);
 	});
 
-	test('[no-redundant-accessible-name-issue-4217-004] other-only reference with aria-label is still reported', async () => {
+	test('[no-redundant-accessible-name-028] other-only reference with aria-label is still reported', async () => {
 		const { violations } = await mlRuleTest(
 			rule,
 			'<span id="label-target">Delete</span><input id="field" type="text" aria-label="Item 1" aria-labelledby="label-target">',
@@ -245,7 +245,7 @@ describe('aria-labelledby self-reference (accname 2B is skipped for the node its
 		]);
 	});
 
-	test('[no-redundant-accessible-name-issue-4217-005] duplicate id: a reference resolving to another element is not a self-reference', async () => {
+	test('[no-redundant-accessible-name-029] duplicate id: a reference resolving to another element is not a self-reference', async () => {
 		const { violations } = await mlRuleTest(
 			rule,
 			'<span id="dup1">Delete</span><input id="dup1" type="text" aria-label="Item 1" aria-labelledby="dup1">',
@@ -261,17 +261,17 @@ describe('aria-labelledby self-reference (accname 2B is skipped for the node its
 		]);
 	});
 
-	test('[no-redundant-accessible-name-issue-4217-006] self-reference only (no other id) does not report against content', async () => {
+	test('[no-redundant-accessible-name-030] self-reference only (no other id) does not report against content', async () => {
 		const { violations } = await mlRuleTest(rule, '<h2 id="heading" aria-labelledby="heading">Meeting</h2>');
 		expect(violations).toStrictEqual([]);
 	});
 
-	test('[no-redundant-accessible-name-issue-4217-007] self-reference with aria-label and explicit label reports aria-label overriding label', async () => {
+	test('[no-redundant-accessible-name-031] self-reference with aria-label and explicit label reports aria-label overriding label', async () => {
 		const { violations } = await mlRuleTest(
 			rule,
 			'<span id="note">Note</span><input id="field" type="checkbox" aria-label="Item 1" aria-labelledby="field note"><label for="field">Label</label>',
 		);
-		// Restored after #4251: same reason as 4217-002.
+		// Same reason as [no-redundant-accessible-name-026]: aria-label (2D) still wins over content (2F).
 		expect(violations).toStrictEqual([
 			{
 				severity: 'warning',
@@ -283,12 +283,12 @@ describe('aria-labelledby self-reference (accname 2B is skipped for the node its
 		]);
 	});
 
-	test('[no-redundant-accessible-name-issue-4217-008] self-reference only with aria-label and content reports aria-label overriding content', async () => {
+	test('[no-redundant-accessible-name-032] self-reference only with aria-label and content reports aria-label overriding content', async () => {
 		const { violations } = await mlRuleTest(
 			rule,
 			'<button id="button1" aria-label="Item 1" aria-labelledby="button1">×</button>',
 		);
-		// Flipped after #4251: a bare self-reference must not silence the warning that
+		// A bare self-reference must not silence the warning that
 		// `<button aria-label="Item 1">×</button>` gets.
 		// expect(violations).toStrictEqual([]);
 		expect(violations).toStrictEqual([
@@ -304,7 +304,7 @@ describe('aria-labelledby self-reference (accname 2B is skipped for the node its
 });
 
 describe('Options: checkTitleFallback / checkPlaceholderFallback', () => {
-	test('[no-redundant-accessible-name-valid-009] title + label, option false (default) — no violation', async () => {
+	test('[no-redundant-accessible-name-033] title + label, option false (default) — no violation', async () => {
 		const { violations } = await mlRuleTest(
 			rule,
 			'<input id="x" type="text" title="Hint"><label for="x">L</label>',
@@ -312,7 +312,7 @@ describe('Options: checkTitleFallback / checkPlaceholderFallback', () => {
 		expect(violations).toStrictEqual([]);
 	});
 
-	test('[no-redundant-accessible-name-invalid-017] title + label, option true — violation', async () => {
+	test('[no-redundant-accessible-name-034] title + label, option true — violation', async () => {
 		const { violations } = await mlRuleTest(
 			rule,
 			'<input id="x" type="text" title="Hint"><label for="x">L</label>',
@@ -323,7 +323,7 @@ describe('Options: checkTitleFallback / checkPlaceholderFallback', () => {
 		expect(violations.length).toBe(1);
 	});
 
-	test('[no-redundant-accessible-name-valid-010] placeholder + label, option false (default) — no violation', async () => {
+	test('[no-redundant-accessible-name-035] placeholder + label, option false (default) — no violation', async () => {
 		const { violations } = await mlRuleTest(
 			rule,
 			'<input id="x" type="text" placeholder="Hint"><label for="x">L</label>',
@@ -331,7 +331,7 @@ describe('Options: checkTitleFallback / checkPlaceholderFallback', () => {
 		expect(violations).toStrictEqual([]);
 	});
 
-	test('[no-redundant-accessible-name-invalid-018] placeholder + label, option true — violation', async () => {
+	test('[no-redundant-accessible-name-036] placeholder + label, option true — violation', async () => {
 		const { violations } = await mlRuleTest(
 			rule,
 			'<input id="x" type="text" placeholder="Hint"><label for="x">L</label>',
@@ -344,29 +344,29 @@ describe('Options: checkTitleFallback / checkPlaceholderFallback', () => {
 });
 
 describe('Edge cases', () => {
-	test('[no-redundant-accessible-name-valid-011] empty aria-label="" does not count as a source', async () => {
+	test('[no-redundant-accessible-name-037] empty aria-label="" does not count as a source', async () => {
 		const { violations } = await mlRuleTest(rule, '<button aria-label="">Click</button>');
 		expect(violations).toStrictEqual([]);
 	});
 
-	test('[no-redundant-accessible-name-valid-012] empty aria-labelledby="" does not count as a source', async () => {
+	test('[no-redundant-accessible-name-038] empty aria-labelledby="" does not count as a source', async () => {
 		const { violations } = await mlRuleTest(rule, '<button aria-labelledby="">Click</button>');
 		expect(violations).toStrictEqual([]);
 	});
 
-	test('[no-redundant-accessible-name-valid-013] aria-labelledby referencing non-existent ID does not count', async () => {
+	test('[no-redundant-accessible-name-039] aria-labelledby referencing non-existent ID does not count', async () => {
 		const { violations } = await mlRuleTest(rule, '<button aria-labelledby="nonexistent">Click</button>');
 		expect(violations).toStrictEqual([]);
 	});
 
-	test('[no-redundant-accessible-name-parser-001] mutable attribute (JSX) is skipped', async () => {
+	test('[no-redundant-accessible-name-040] mutable attribute (JSX) is skipped', async () => {
 		const { violations } = await mlRuleTest(rule, '<button aria-label={label}>Click</button>', {
 			parser: { '.*': '@markuplint/jsx-parser' },
 		});
 		expect(violations).toStrictEqual([]);
 	});
 
-	test('[no-redundant-accessible-name-parser-002] mutable attribute (Vue) is skipped', async () => {
+	test('[no-redundant-accessible-name-041] mutable attribute (Vue) is skipped', async () => {
 		const { violations } = await mlRuleTest(
 			rule,
 			'<template><button :aria-label="label">Click</button></template>',
@@ -377,29 +377,29 @@ describe('Edge cases', () => {
 		expect(violations).toStrictEqual([]);
 	});
 
-	test('[no-redundant-accessible-name-parser-003] mutable attribute (Svelte) is skipped', async () => {
+	test('[no-redundant-accessible-name-042] mutable attribute (Svelte) is skipped', async () => {
 		const { violations } = await mlRuleTest(rule, '<button aria-label={label}>Click</button>', {
 			parser: { '.*': '@markuplint/svelte-parser' },
 		});
 		expect(violations).toStrictEqual([]);
 	});
 
-	test('[no-redundant-accessible-name-valid-014] nameFrom prohibited role (generic) is skipped', async () => {
+	test('[no-redundant-accessible-name-043] nameFrom prohibited role (generic) is skipped', async () => {
 		const { violations } = await mlRuleTest(rule, '<div role="generic" aria-label="X">Text</div>');
 		expect(violations).toStrictEqual([]);
 	});
 
-	test('[no-redundant-accessible-name-valid-015] nameFrom prohibited role (presentation) is skipped', async () => {
+	test('[no-redundant-accessible-name-044] nameFrom prohibited role (presentation) is skipped', async () => {
 		const { violations } = await mlRuleTest(rule, '<div role="presentation" aria-label="X">Text</div>');
 		expect(violations).toStrictEqual([]);
 	});
 
-	test('[no-redundant-accessible-name-valid-016] nameFrom prohibited role (none) is skipped', async () => {
+	test('[no-redundant-accessible-name-045] nameFrom prohibited role (none) is skipped', async () => {
 		const { violations } = await mlRuleTest(rule, '<div role="none" aria-label="X">Text</div>');
 		expect(violations).toStrictEqual([]);
 	});
 
-	test('[no-redundant-accessible-name-valid-017] nested fieldset — legend belongs to inner fieldset, not outer', async () => {
+	test('[no-redundant-accessible-name-046] nested fieldset — legend belongs to inner fieldset, not outer', async () => {
 		const { violations } = await mlRuleTest(
 			rule,
 			'<fieldset aria-label="X"><fieldset><legend>Inner</legend></fieldset></fieldset>',
@@ -408,12 +408,12 @@ describe('Edge cases', () => {
 		expect(violations).toStrictEqual([]);
 	});
 
-	test('[no-redundant-accessible-name-valid-019] a comment is not content that aria-label overrides', async () => {
+	test('[no-redundant-accessible-name-047] a comment is not content that aria-label overrides', async () => {
 		const { violations } = await mlRuleTest(rule, '<button aria-label="Close"><!-- Close --></button>');
 		expect(violations).toStrictEqual([]);
 	});
 
-	test('[no-redundant-accessible-name-valid-018] nested table — caption belongs to inner table, not outer', async () => {
+	test('[no-redundant-accessible-name-048] nested table — caption belongs to inner table, not outer', async () => {
 		const { violations } = await mlRuleTest(
 			rule,
 			'<table aria-label="X"><tr><td><table><caption>Inner</caption><tr><td>D</td></tr></table></td></tr></table>',
@@ -424,7 +424,7 @@ describe('Edge cases', () => {
 });
 
 describe('the sources are looked for in the tree of the element', () => {
-	test('[no-redundant-accessible-name-issue-4489-001] aria-labelledby that refers to an element of the same template is a source', async () => {
+	test('[no-redundant-accessible-name-049] aria-labelledby that refers to an element of the same template is a source', async () => {
 		const { violations } = await mlRuleTest(
 			rule,
 			'<template><input type="text" aria-label="X" aria-labelledby="y"><span id="y">Y</span></template>',
@@ -440,7 +440,7 @@ describe('the sources are looked for in the tree of the element', () => {
 		]);
 	});
 
-	test('[no-redundant-accessible-name-issue-4489-002] aria-labelledby that refers to an element of another tree is not a source', async () => {
+	test('[no-redundant-accessible-name-050] aria-labelledby that refers to an element of another tree is not a source', async () => {
 		const { violations } = await mlRuleTest(
 			rule,
 			'<span id="y">Y</span><template><input type="text" aria-label="X" aria-labelledby="y"></template>',
@@ -448,7 +448,7 @@ describe('the sources are looked for in the tree of the element', () => {
 		expect(violations).toStrictEqual([]);
 	});
 
-	test('[no-redundant-accessible-name-issue-4489-003] a label of another tree is not a source', async () => {
+	test('[no-redundant-accessible-name-051] a label of another tree is not a source', async () => {
 		const { violations } = await mlRuleTest(
 			rule,
 			'<label for="x">L</label><template><input id="x" type="text" aria-label="X"></template>',
@@ -456,7 +456,7 @@ describe('the sources are looked for in the tree of the element', () => {
 		expect(violations).toStrictEqual([]);
 	});
 
-	test('[no-redundant-accessible-name-issue-4489-004] a label of the same template is a source', async () => {
+	test('[no-redundant-accessible-name-052] a label of the same template is a source', async () => {
 		const { violations } = await mlRuleTest(
 			rule,
 			'<template><label for="x">L</label><input id="x" type="text" aria-label="X"></template>',
@@ -472,7 +472,7 @@ describe('the sources are looked for in the tree of the element', () => {
 		]);
 	});
 
-	test('[no-redundant-accessible-name-issue-4489-005] a value written as code has no character reference to resolve', async () => {
+	test('[no-redundant-accessible-name-053] a value written as code has no character reference to resolve', async () => {
 		const { violations } = await mlRuleTest(
 			rule,
 			'<><label htmlFor={"a&b"}>L</label><input id={"a&amp;b"} type="text" aria-label="X" /></>',
@@ -491,7 +491,7 @@ describe('the ancestors are those of the tree of the element', () => {
 		message: 'The accessible name from "aria-label" overrides "label"',
 	});
 
-	test('[no-redundant-accessible-name-issue-4506-001] a label that wraps a template is not a source of a control in its content', async () => {
+	test('[no-redundant-accessible-name-054] a label that wraps a template is not a source of a control in its content', async () => {
 		const { violations } = await mlRuleTest(
 			rule,
 			'<label>L<template><input type="text" aria-label="X"></template></label>',
@@ -499,7 +499,7 @@ describe('the ancestors are those of the tree of the element', () => {
 		expect(violations).toStrictEqual([]);
 	});
 
-	test('[no-redundant-accessible-name-issue-4506-002] a label that wraps a control in the same template is a source', async () => {
+	test('[no-redundant-accessible-name-055] a label that wraps a control in the same template is a source', async () => {
 		const { violations } = await mlRuleTest(
 			rule,
 			'<template><label>L<input type="text" aria-label="X"></label></template>',
@@ -507,7 +507,7 @@ describe('the ancestors are those of the tree of the element', () => {
 		expect(violations).toStrictEqual([violation(19)]);
 	});
 
-	test('[no-redundant-accessible-name-issue-4506-003] aria-hidden outside of the content of a template does not hide the control in it', async () => {
+	test('[no-redundant-accessible-name-056] aria-hidden outside of the content of a template does not hide the control in it', async () => {
 		const { violations } = await mlRuleTest(
 			rule,
 			'<div aria-hidden="true"><template><label>L<input type="text" aria-label="X"></label></template></div>',
@@ -515,7 +515,7 @@ describe('the ancestors are those of the tree of the element', () => {
 		expect(violations).toStrictEqual([violation(43)]);
 	});
 
-	test('[no-redundant-accessible-name-issue-4506-004] hidden outside of the content of a template does not hide the control in it', async () => {
+	test('[no-redundant-accessible-name-057] hidden outside of the content of a template does not hide the control in it', async () => {
 		const { violations } = await mlRuleTest(
 			rule,
 			'<div hidden><template><label>L<input type="text" aria-label="X"></label></template></div>',
@@ -523,7 +523,7 @@ describe('the ancestors are those of the tree of the element', () => {
 		expect(violations).toStrictEqual([violation(31)]);
 	});
 
-	test('[no-redundant-accessible-name-issue-4506-005] aria-hidden of the host hides the control in a declarative shadow root', async () => {
+	test('[no-redundant-accessible-name-058] aria-hidden of the host hides the control in a declarative shadow root', async () => {
 		const { violations } = await mlRuleTest(
 			rule,
 			'<div aria-hidden="true"><template shadowrootmode="open"><label>L<input type="text" aria-label="X"></label></template></div>',
@@ -532,7 +532,7 @@ describe('the ancestors are those of the tree of the element', () => {
 	});
 });
 
-test('[no-redundant-accessible-name-issue-4584-001] the content is a word and is translated, the attribute is shown as written with locale ja', async () => {
+test('[no-redundant-accessible-name-059] the content is a word and is translated, the attribute is shown as written with locale ja', async () => {
 	const { violations } = await mlRuleTest(
 		rule,
 		'<div role="button" aria-label="X"><template shadowrootmode="open"><slot></slot></template>Save</div>',
@@ -552,7 +552,7 @@ test('[no-redundant-accessible-name-issue-4584-001] the content is a word and is
 	]);
 });
 
-test('[no-redundant-accessible-name-issue-4584-002] the names of two attributes are shown as written with locale ja', async () => {
+test('[no-redundant-accessible-name-060] the names of two attributes are shown as written with locale ja', async () => {
 	const { violations } = await mlRuleTest(
 		rule,
 		'<div id="a">A</div><div role="button" aria-labelledby="a" aria-label="X">Save</div>',
@@ -577,4 +577,109 @@ test('[no-redundant-accessible-name-issue-4584-002] the names of two attributes 
 			raw: '<div role="button" aria-labelledby="a" aria-label="X">',
 		},
 	]);
+});
+
+test('[no-redundant-accessible-name-061] a component that no pretender resolved renders what is not known', async () => {
+	const { violations } = await mlRuleTest(
+		rule,
+		'<label><input type="checkbox" aria-label="Notifications" /><Chip label="Notifications" /></label>',
+		{ parser: { '.*': '@markuplint/jsx-parser' } },
+	);
+	expect(violations).toStrictEqual([]);
+});
+
+test('[no-redundant-accessible-name-062] the same text in an element that is known is reported', async () => {
+	const { violations } = await mlRuleTest(
+		rule,
+		'<label><input type="checkbox" aria-label="Notifications" /><span>Notifications</span></label>',
+		{ parser: { '.*': '@markuplint/jsx-parser' } },
+	);
+	expect(violations.map(violation => violation.message)).toStrictEqual([
+		'The accessible name from "aria-label" overrides "label"',
+	]);
+});
+
+test('[no-redundant-accessible-name-063] the nodes that a slot of a shadow root takes are the content that aria-label overrides', async () => {
+	const { violations } = await mlRuleTest(
+		rule,
+		'<div role="button" aria-label="X"><template shadowrootmode="open"><slot></slot></template>Save</div>',
+	);
+	expect(violations).toStrictEqual([
+		{
+			severity: 'warning',
+			line: 1,
+			col: 1,
+			raw: '<div role="button" aria-label="X">',
+			message: 'The accessible name from "aria-label" overrides "content"',
+		},
+	]);
+});
+
+test('[no-redundant-accessible-name-064] a slot that is not in a shadow root may render anything, so the element is not reported', async () => {
+	const { violations } = await mlRuleTest(rule, '<div role="button" aria-label="X"><slot></slot></div>');
+	expect(violations).toStrictEqual([]);
+});
+
+describe('the content in a branch of a conditional block', () => {
+	const svelte = { parser: { '.*': '@markuplint/svelte-parser' } };
+
+	test('[no-redundant-accessible-name-065] the text in a branch of a conditional block is content that aria-label overrides', async () => {
+		const { violations } = await mlRuleTest(
+			rule,
+			'<div role="button" aria-label="X">{#if a}Save{/if}</div>',
+			svelte,
+		);
+		expect(violations).toStrictEqual([
+			{
+				severity: 'warning',
+				line: 1,
+				col: 1,
+				raw: '<div role="button" aria-label="X">',
+				message: 'The accessible name from "aria-label" overrides "content"',
+			},
+		]);
+	});
+
+	test('[no-redundant-accessible-name-066] no branch has content, so aria-label overrides nothing', async () => {
+		const { violations } = await mlRuleTest(
+			rule,
+			'<div role="button" aria-label="X">{#if a}<span></span>{/if}</div>',
+			svelte,
+		);
+		expect(violations).toStrictEqual([]);
+	});
+
+	test('[no-redundant-accessible-name-067] a legend in a branch of a conditional block is a name that aria-label overrides', async () => {
+		const { violations } = await mlRuleTest(
+			rule,
+			'<fieldset aria-label="X">{#if a}<legend>Name</legend>{/if}</fieldset>',
+			svelte,
+		);
+		expect(violations).toStrictEqual([
+			{
+				severity: 'warning',
+				line: 1,
+				col: 1,
+				raw: '<fieldset aria-label="X">',
+				message: 'The accessible name from "aria-label" overrides "legend"',
+			},
+		]);
+	});
+
+	test('[no-redundant-accessible-name-068] a caption in a branch of a conditional block is a name that aria-label overrides', async () => {
+		const { violations } = await mlRuleTest(
+			rule,
+			'<table aria-label="X">{#if a}<caption>Name</caption>{/if}</table>',
+			svelte,
+		);
+		expect(violations).toStrictEqual([
+			{
+				severity: 'warning',
+				line: 1,
+				col: 1,
+				raw: '<table aria-label="X">',
+				message: 'The accessible name from "aria-label" overrides "caption"',
+			},
+		]);
+	});
 });

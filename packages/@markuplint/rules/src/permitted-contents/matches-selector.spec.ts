@@ -35,7 +35,7 @@ function c(model: any, innerHtml: string) {
 	return matchesSelector(model, child, specs, 0, 'pretended');
 }
 
-test('[permitted-contents-invalid-001] a', () => {
+test('a', () => {
 	expect(c('a', '<a></a>').type).toBe('MATCHED');
 	expect(c('a', '<b></b>').type).toBe('UNMATCHED_SELECTORS');
 	expect(c('a', '<c></c>').type).toBe('UNMATCHED_SELECTORS');
@@ -43,7 +43,7 @@ test('[permitted-contents-invalid-001] a', () => {
 	expect(c('a', '').type).toBe('MISSING_NODE');
 });
 
-test('[permitted-contents-invalid-002] #flow', () => {
+test('#flow', () => {
 	expect(c('#flow', '<a></a>').type).toBe('MATCHED');
 	expect(c('#flow', '<b></b>').type).toBe('MATCHED');
 	expect(c('#flow', '<c></c>').type).toBe('UNMATCHED_SELECTOR_BUT_MAY_EMPTY');
@@ -51,7 +51,7 @@ test('[permitted-contents-invalid-002] #flow', () => {
 	expect(c('#flow', '').type).toBe('MATCHED_ZERO');
 });
 
-test('[permitted-contents-invalid-003] :model(flow)', () => {
+test(':model(flow)', () => {
 	expect(c(':model(flow)', '<a></a>').type).toBe('MATCHED');
 	expect(c(':model(flow)', '<b></b>').type).toBe('MATCHED');
 	expect(c(':model(flow)', '<c></c>').type).toBe('UNMATCHED_SELECTOR_BUT_MAY_EMPTY');
@@ -62,7 +62,7 @@ test('[permitted-contents-invalid-003] :model(flow)', () => {
 // The condition cache is keyed by the specs object, and every parsed document
 // brings its own, so a strong cache would retain one entry per document for the
 // life of a long-running process (language server, watch mode).
-test('[permitted-contents-issue-4088-001] specs of a dropped document are collectible', async () => {
+test('specs of a dropped document are collectible', async () => {
 	expect(globalThis.gc, 'run Vitest with --expose-gc').toBeTypeOf('function');
 
 	const refs = Array.from({ length: 5 }, () => warmCacheWithFreshSpecs());
@@ -73,7 +73,7 @@ test('[permitted-contents-issue-4088-001] specs of a dropped document are collec
 	expect(stillAlive).toHaveLength(0);
 });
 
-test('[permitted-contents-invalid-004] #text', () => {
+test('#text', () => {
 	expect(c('#text', '<a></a>').type).toBe('UNMATCHED_SELECTOR_BUT_MAY_EMPTY');
 	expect(c('#text', '<b></b>').type).toBe('UNMATCHED_SELECTOR_BUT_MAY_EMPTY');
 	expect(c('#text', '<c></c>').type).toBe('UNMATCHED_SELECTOR_BUT_MAY_EMPTY');

@@ -3,7 +3,7 @@ import { test, expect } from 'vitest';
 
 import rule from './index.js';
 
-test('[no-unknown-attr-valid-001] global attribute', async () => {
+test('[no-unknown-attr-001] global attribute', async () => {
 	const { violations } = await mlRuleTest(
 		rule,
 		'<a title="the a element"><abbr title="the abbr element">text</abbr></a>',
@@ -12,7 +12,7 @@ test('[no-unknown-attr-valid-001] global attribute', async () => {
 	expect(violations).toStrictEqual([]);
 });
 
-test('[no-unknown-attr-invalid-001] Add allow attr', async () => {
+test('[no-unknown-attr-002] Add allow attr', async () => {
 	expect((await mlRuleTest(rule, '<div x-attr></div>')).violations).toStrictEqual([
 		{
 			severity: 'error',
@@ -36,13 +36,13 @@ test('[no-unknown-attr-invalid-001] Add allow attr', async () => {
 	).toStrictEqual([]);
 });
 
-test('[no-unknown-attr-valid-002] custom element', async () => {
+test('[no-unknown-attr-003] custom element', async () => {
 	const { violations } = await mlRuleTest(rule, '<custom-element any-attr></custom-element>');
 
 	expect(violations.length).toBe(0);
 });
 
-test('[no-unknown-attr-invalid-002] prefix attribute', async () => {
+test('[no-unknown-attr-004] prefix attribute', async () => {
 	const { violations } = await mlRuleTest(rule, '<div v-bind:title="title" :class="classes" @click="click"></div>');
 
 	expect(violations).toStrictEqual([
@@ -70,7 +70,7 @@ test('[no-unknown-attr-invalid-002] prefix attribute', async () => {
 	]);
 });
 
-test('[no-unknown-attr-valid-003] ignore prefix attribute', async () => {
+test('[no-unknown-attr-005] ignore prefix attribute', async () => {
 	const { violations } = await mlRuleTest(rule, '<div v-bind:title="title" :class="classes" @click="click"></div>', {
 		rule: {
 			options: {
@@ -82,7 +82,7 @@ test('[no-unknown-attr-valid-003] ignore prefix attribute', async () => {
 	expect(violations.length).toBe(0);
 });
 
-test('[no-unknown-attr-valid-004] Foreign element', async () => {
+test('[no-unknown-attr-006] Foreign element', async () => {
 	const { violations } = await mlRuleTest(
 		rule,
 		'<div><svg width="10px" height="10px" viewBox="0 0 10 10"></svg></div>',
@@ -91,7 +91,7 @@ test('[no-unknown-attr-valid-004] Foreign element', async () => {
 	expect(violations.length).toBe(0);
 });
 
-test('[no-unknown-attr-invalid-003] svg', async () => {
+test('[no-unknown-attr-007] svg', async () => {
 	expect(
 		(
 			await mlRuleTest(
@@ -117,7 +117,7 @@ test('[no-unknown-attr-invalid-003] svg', async () => {
 	]);
 });
 
-test('[no-unknown-attr-parser-001] Pug', async () => {
+test('[no-unknown-attr-008] Pug', async () => {
 	const { violations } = await mlRuleTest(rule, 'button(type=buttonType)', {
 		parser: {
 			'.*': '@markuplint/pug-parser',
@@ -127,7 +127,7 @@ test('[no-unknown-attr-parser-001] Pug', async () => {
 	expect(violations.length).toBe(0);
 });
 
-test('[no-unknown-attr-parser-002] Pug class', async () => {
+test('[no-unknown-attr-009] Pug class', async () => {
 	const { violations } = await mlRuleTest(rule, 'div.className', {
 		parser: {
 			'.*': '@markuplint/pug-parser',
@@ -137,7 +137,7 @@ test('[no-unknown-attr-parser-002] Pug class', async () => {
 	expect(violations.length).toBe(0);
 });
 
-test('[no-unknown-attr-parser-003] Vue slot', async () => {
+test('[no-unknown-attr-010] Vue slot', async () => {
 	const { violations } = await mlRuleTest(
 		rule,
 		'<template><div><slot v-bind:foo="foo">{{ foo.bar }}</slot></div></template>',
@@ -154,7 +154,7 @@ test('[no-unknown-attr-parser-003] Vue slot', async () => {
 	expect(violations.length).toBe(0);
 });
 
-test('[no-unknown-attr-parser-004] Vue (.prop shorthand)', async () => {
+test('[no-unknown-attr-011] Vue (.prop shorthand)', async () => {
 	const { violations } = await mlRuleTest(rule, '<template><div .someProp="value"></div></template>', {
 		parser: {
 			'.*': '@markuplint/vue-parser',
@@ -166,7 +166,7 @@ test('[no-unknown-attr-parser-004] Vue (.prop shorthand)', async () => {
 	expect(violations.length).toBe(0);
 });
 
-test('[no-unknown-attr-parser-005] MDX with react-spec (className is valid via IDL resolution)', async () => {
+test('[no-unknown-attr-012] MDX with react-spec (className is valid via IDL resolution)', async () => {
 	const { violations } = await mlRuleTest(rule, '<div className="test">text</div>\n', {
 		parser: {
 			'.*': '@markuplint/mdx-parser',
@@ -178,7 +178,7 @@ test('[no-unknown-attr-parser-005] MDX with react-spec (className is valid via I
 	expect(violations).toStrictEqual([]);
 });
 
-test('[no-unknown-attr-parser-006] React Component', async () => {
+test('[no-unknown-attr-013] React Component', async () => {
 	const { violations } = await mlRuleTest(
 		rule,
 		'<Component className="foo" tabIndex="-1" tabindex="-1" aria-label="accname" htmlFor="bar" />',
@@ -195,7 +195,7 @@ test('[no-unknown-attr-parser-006] React Component', async () => {
 	expect(violations).toStrictEqual([]);
 });
 
-test('[no-unknown-attr-parser-007] React HTML', async () => {
+test('[no-unknown-attr-014] React HTML', async () => {
 	const { violations } = await mlRuleTest(
 		rule,
 		'<img className="foo" tabIndex="-1" tabindex="-1" aria-label="accname" htmlFor="bar" />',
@@ -227,7 +227,7 @@ test('[no-unknown-attr-parser-007] React HTML', async () => {
 	]);
 });
 
-test('[no-unknown-attr-parser-008] React', async () => {
+test('[no-unknown-attr-015] React', async () => {
 	const { violations } = await mlRuleTest(rule, '<a href={href} target={target} invalidAttr={invalidAttr} />', {
 		parser: {
 			'.*': '@markuplint/jsx-parser',
@@ -248,7 +248,7 @@ test('[no-unknown-attr-parser-008] React', async () => {
 	]);
 });
 
-test('[no-unknown-attr-parser-009] React: a custom rule and a mutable attribute', async () => {
+test('[no-unknown-attr-016] React: a custom rule and a mutable attribute', async () => {
 	const { violations } = await mlRuleTest(rule, '<a href={href} target={target} invalidAttr={invalidAttr} />', {
 		parser: {
 			'.*': '@markuplint/jsx-parser',
@@ -280,7 +280,7 @@ test('[no-unknown-attr-parser-009] React: a custom rule and a mutable attribute'
 	]);
 });
 
-test('[no-unknown-attr-invalid-004] Pretenders', async () => {
+test('[no-unknown-attr-017] Pretenders', async () => {
 	expect(
 		(
 			await mlRuleTest(rule, '<Image objectFit alt />', {
@@ -343,7 +343,7 @@ test('[no-unknown-attr-invalid-004] Pretenders', async () => {
 	]);
 });
 
-test('[no-unknown-attr-issue-525-001] Svelte: class="foo" is valid (content attribute name accepted)', async () => {
+test('[no-unknown-attr-018] Svelte: class="foo" is valid (content attribute name accepted)', async () => {
 	const { violations } = await mlRuleTest(rule, '<div class="foo"></div>', {
 		parser: {
 			'.*': '@markuplint/svelte-parser',
@@ -355,7 +355,7 @@ test('[no-unknown-attr-issue-525-001] Svelte: class="foo" is valid (content attr
 	expect(violations).toStrictEqual([]);
 });
 
-test('[no-unknown-attr-issue-525-002] Svelte: className="foo" is valid (IDL attribute name accepted in both mode)', async () => {
+test('[no-unknown-attr-019] Svelte: className="foo" is valid (IDL attribute name accepted in both mode)', async () => {
 	const { violations } = await mlRuleTest(rule, '<div className="foo"></div>', {
 		parser: {
 			'.*': '@markuplint/svelte-parser',
@@ -367,7 +367,7 @@ test('[no-unknown-attr-issue-525-002] Svelte: className="foo" is valid (IDL attr
 	expect(violations).toStrictEqual([]);
 });
 
-test('[no-unknown-attr-issue-525-003] Svelte: tabIndex is valid (IDL name accepted in both mode)', async () => {
+test('[no-unknown-attr-020] Svelte: tabIndex is valid (IDL name accepted in both mode)', async () => {
 	const { violations } = await mlRuleTest(rule, '<div tabIndex="0"></div>', {
 		parser: {
 			'.*': '@markuplint/svelte-parser',
@@ -379,7 +379,7 @@ test('[no-unknown-attr-issue-525-003] Svelte: tabIndex is valid (IDL name accept
 	expect(violations).toStrictEqual([]);
 });
 
-test('[no-unknown-attr-valid-005] WAI-Adapt', async () => {
+test('[no-unknown-attr-021] WAI-Adapt', async () => {
 	expect((await mlRuleTest(rule, '<p adapt-simplification="critical"></p>')).violations).toStrictEqual([]);
 
 	expect(
@@ -399,7 +399,7 @@ test('[no-unknown-attr-valid-005] WAI-Adapt', async () => {
 	).toStrictEqual([]);
 });
 
-test('[no-unknown-attr-valid-006] The `as` attribute', async () => {
+test('[no-unknown-attr-022] The `as` attribute', async () => {
 	expect((await mlRuleTest(rule, '<a as="span"></a>')).violations).toStrictEqual([
 		{
 			severity: 'error',
@@ -412,7 +412,7 @@ test('[no-unknown-attr-valid-006] The `as` attribute', async () => {
 	expect((await mlRuleTest(rule, '<x-link as="a" foo></x-link>')).violations).toStrictEqual([]);
 });
 
-test('[no-unknown-attr-issue-553] #553', async () => {
+test('[no-unknown-attr-023] imagesrcset and imagesizes of a link are known, and so are imageSrcSet and imageSizes in JSX', async () => {
 	expect(
 		(await mlRuleTest(rule, '<link rel="preload" imagesrcset="path/to" as="image" imagesizes="100vw" />', {}))
 			.violations,
@@ -432,12 +432,12 @@ test('[no-unknown-attr-issue-553] #553', async () => {
 	).toStrictEqual([]);
 });
 
-test('[no-unknown-attr-issue-564] #564', async () => {
+test('[no-unknown-attr-024] a class name with a colon is valid on an HTML and an SVG element', async () => {
 	expect((await mlRuleTest(rule, '<div class="md:flex"></div>')).violations).toStrictEqual([]);
 	expect((await mlRuleTest(rule, '<svg><rect class="md:flex"/></svg>')).violations).toStrictEqual([]);
 });
 
-test('[no-unknown-attr-issue-678] #678', async () => {
+test('[no-unknown-attr-025] the # shorthand of v-slot is not an unknown attribute in Vue', async () => {
 	const vue = {
 		parser: {
 			'.*': '@markuplint/vue-parser',
@@ -452,7 +452,7 @@ test('[no-unknown-attr-issue-678] #678', async () => {
 	).toStrictEqual([]);
 });
 
-test('[no-unknown-attr-issue-783] #783', async () => {
+test('[no-unknown-attr-026] an event handler with a modifier through the @ shorthand is not an unknown attribute in Vue', async () => {
 	const vue = {
 		parser: {
 			'.*': '@markuplint/vue-parser',
@@ -467,7 +467,7 @@ test('[no-unknown-attr-issue-783] #783', async () => {
 	).toStrictEqual([]);
 });
 
-test('[no-unknown-attr-issue-800] #800', async () => {
+test('[no-unknown-attr-027] the microdata attributes of the elements of a Pug template are known', async () => {
 	const pug = {
 		parser: {
 			'.*': '@markuplint/pug-parser',
@@ -501,7 +501,7 @@ ol(itemscope itemtype="https://schema.org/BreadcrumbList")
 	).toStrictEqual([]);
 });
 
-test('[no-unknown-attr-issue-1487-001] suggests similar attribute name for typo', async () => {
+test('[no-unknown-attr-028] suggests similar attribute name for typo', async () => {
 	const { violations } = await mlRuleTest(rule, '<input nama="test">');
 	expect(violations).toStrictEqual([
 		{
@@ -514,7 +514,7 @@ test('[no-unknown-attr-issue-1487-001] suggests similar attribute name for typo'
 	]);
 });
 
-test('[no-unknown-attr-issue-1487-002] suggests similar attribute name for class typo', async () => {
+test('[no-unknown-attr-029] suggests similar attribute name for class typo', async () => {
 	const { violations } = await mlRuleTest(rule, '<div clss="test"></div>');
 	expect(violations).toStrictEqual([
 		{
@@ -527,7 +527,7 @@ test('[no-unknown-attr-issue-1487-002] suggests similar attribute name for class
 	]);
 });
 
-test('[no-unknown-attr-issue-1487-003] no suggestion for completely unrelated attribute', async () => {
+test('[no-unknown-attr-030] no suggestion for completely unrelated attribute', async () => {
 	const { violations } = await mlRuleTest(rule, '<div xyz="test"></div>');
 	expect(violations).toStrictEqual([
 		{
@@ -540,7 +540,7 @@ test('[no-unknown-attr-issue-1487-003] no suggestion for completely unrelated at
 	]);
 });
 
-test('[no-unknown-attr-invalid-005] a completely unknown attribute name is disallowed', async () => {
+test('[no-unknown-attr-031] a completely unknown attribute name is disallowed', async () => {
 	// Split off invalid-attr's original combined test (an unknown attribute
 	// name plus an invalid attribute value in the same fixture) — the value
 	// half lives in no-invalid-attr-value's sibling test.
@@ -559,7 +559,7 @@ test('[no-unknown-attr-invalid-005] a completely unknown attribute name is disal
 	]);
 });
 
-test('[no-unknown-attr-parser-010] React with spread attribute: unknown-name half', async () => {
+test('[no-unknown-attr-032] React with spread attribute: unknown-name half', async () => {
 	// Split off invalid-attr's original combined test — the condition-based
 	// "target requires href" half lives in no-disallowed-attr's sibling test.
 	expect(
@@ -599,7 +599,7 @@ test('[no-unknown-attr-parser-010] React with spread attribute: unknown-name hal
 	]);
 });
 
-test('[no-unknown-attr-parser-011] React spec: unknown-name half of the controlled-component check', async () => {
+test('[no-unknown-attr-033] React spec: unknown-name half of the controlled-component check', async () => {
 	// Split off invalid-attr's original combined test. Without react-spec,
 	// `value`/`defaultValue`/`defaultChecked` are unrecognized on every
 	// element that appears here — none of them are native HTML attributes on
@@ -737,7 +737,7 @@ test('[no-unknown-attr-parser-011] React spec: unknown-name half of the controll
 	]);
 });
 
-test('[no-unknown-attr-issue-3803] base rule still flags unknown attributes on meta[property]', async () => {
+test('[no-unknown-attr-034] base rule still flags unknown attributes on meta[property]', async () => {
 	// The nodeRule extends what is allowed but does not silence spec-fallback
 	// for other attributes. `bogus` is not a valid meta attribute and must
 	// still be reported by the base rule.
@@ -759,7 +759,7 @@ test('[no-unknown-attr-issue-3803] base rule still flags unknown attributes on m
 	expect(violations.some(v => v.raw === 'bogus')).toBe(true);
 });
 
-test('[no-unknown-attr-issue-4309-001] HTML: an upper-case data-*, aria-* and role are exempt as their lower-case spellings are', async () => {
+test('[no-unknown-attr-035] HTML: an upper-case data-*, aria-* and role are exempt as their lower-case spellings are', async () => {
 	expect(
 		(await mlRuleTest(rule, '<div DATA-VALUE="1" ARIA-LABEL="label" ROLE="button"></div>')).violations,
 	).toStrictEqual([]);
@@ -774,7 +774,7 @@ test('[no-unknown-attr-issue-4309-001] HTML: an upper-case data-*, aria-* and ro
 	]);
 });
 
-test('[no-unknown-attr-issue-4309-002] HTML: VIEWBOX and viewbox are viewBox on an SVG element', async () => {
+test('[no-unknown-attr-036] HTML: VIEWBOX and viewbox are viewBox on an SVG element', async () => {
 	expect((await mlRuleTest(rule, '<svg VIEWBOX="0 0 1 1" viewbox="0 0 1 1"></svg>')).violations).toStrictEqual([]);
 	expect((await mlRuleTest(rule, '<svg VIEWBOX="0 0 1 1" BOGUS></svg>')).violations).toStrictEqual([
 		{
@@ -787,7 +787,7 @@ test('[no-unknown-attr-issue-4309-002] HTML: VIEWBOX and viewbox are viewBox on 
 	]);
 });
 
-test('[no-unknown-attr-issue-4309-003] JSX: an HTML element folds an upper-case data-*', async () => {
+test('[no-unknown-attr-037] JSX: an HTML element folds an upper-case data-*', async () => {
 	const parser = { '.*': '@markuplint/jsx-parser' };
 	expect((await mlRuleTest(rule, '<div DATA-VALUE="1" />', { parser })).violations).toStrictEqual([]);
 	expect((await mlRuleTest(rule, '<div DATA-VALUE="1" BOGUS />', { parser })).violations).toStrictEqual([
@@ -801,7 +801,7 @@ test('[no-unknown-attr-issue-4309-003] JSX: an HTML element folds an upper-case 
 	]);
 });
 
-test('[no-unknown-attr-issue-4309-004] JSX: an SVG element keeps the name as written, so ROLE is not role', async () => {
+test('[no-unknown-attr-038] JSX: an SVG element keeps the name as written, so ROLE is not role', async () => {
 	expect(
 		(await mlRuleTest(rule, '<svg ROLE="img" />', { parser: { '.*': '@markuplint/jsx-parser' } })).violations,
 	).toStrictEqual([
@@ -815,7 +815,7 @@ test('[no-unknown-attr-issue-4309-004] JSX: an SVG element keeps the name as wri
 	]);
 });
 
-test('[no-unknown-attr-issue-4309-005] JSX: an SVG element keeps the name as written, so VIEWBOX is not viewBox', async () => {
+test('[no-unknown-attr-039] JSX: an SVG element keeps the name as written, so VIEWBOX is not viewBox', async () => {
 	const parser = { '.*': '@markuplint/jsx-parser' };
 	expect((await mlRuleTest(rule, '<svg viewBox="0 0 1 1" />', { parser })).violations).toStrictEqual([]);
 	expect((await mlRuleTest(rule, '<svg VIEWBOX="0 0 1 1" />', { parser })).violations).toStrictEqual([
@@ -829,7 +829,7 @@ test('[no-unknown-attr-issue-4309-005] JSX: an SVG element keeps the name as wri
 	]);
 });
 
-test('[no-unknown-attr-issue-4309-006] HTML: allowAttrs matches the name in any spelling the DOM makes the same', async () => {
+test('[no-unknown-attr-040] HTML: allowAttrs matches the name in any spelling the DOM makes the same', async () => {
 	expect(
 		(await mlRuleTest(rule, '<div X-ATTR></div>', { rule: { options: { allowAttrs: ['x-attr'] } } })).violations,
 	).toStrictEqual([]);
@@ -860,7 +860,7 @@ test('[no-unknown-attr-issue-4309-006] HTML: allowAttrs matches the name in any 
 	]);
 });
 
-test('[no-unknown-attr-issue-4309-007] HTML: ignoreAttrNamePrefix matches the name in any spelling the DOM makes the same', async () => {
+test('[no-unknown-attr-041] HTML: ignoreAttrNamePrefix matches the name in any spelling the DOM makes the same', async () => {
 	expect(
 		(
 			await mlRuleTest(rule, '<div V-BIND:TITLE="a"></div>', {
@@ -892,7 +892,7 @@ test('[no-unknown-attr-issue-4309-007] HTML: ignoreAttrNamePrefix matches the na
 	]);
 });
 
-test('[no-unknown-attr-issue-4309-008] JSX: the options keep the name as written on an SVG element', async () => {
+test('[no-unknown-attr-042] JSX: the options keep the name as written on an SVG element', async () => {
 	const parser = { '.*': '@markuplint/jsx-parser' };
 	expect(
 		(
@@ -927,7 +927,7 @@ test('[no-unknown-attr-issue-4309-008] JSX: the options keep the name as written
 	]);
 });
 
-test('[no-unknown-attr-issue-4309-009] Vue: an HTML element folds an upper-case data-*', async () => {
+test('[no-unknown-attr-043] Vue: an HTML element folds an upper-case data-*', async () => {
 	const options = { parser: { '.*': '@markuplint/vue-parser' }, specs: { '.*': '@markuplint/vue-spec' } };
 	expect((await mlRuleTest(rule, '<template><div DATA-X="1"></div></template>', options)).violations).toStrictEqual(
 		[],
@@ -944,7 +944,7 @@ test('[no-unknown-attr-issue-4309-009] Vue: an HTML element folds an upper-case 
 	]);
 });
 
-test('[no-unknown-attr-issue-4309-010] Vue: an SVG element keeps the name as written, so ROLE is not role', async () => {
+test('[no-unknown-attr-044] Vue: an SVG element keeps the name as written, so ROLE is not role', async () => {
 	const options = { parser: { '.*': '@markuplint/vue-parser' }, specs: { '.*': '@markuplint/vue-spec' } };
 	expect((await mlRuleTest(rule, '<template><svg ROLE="img"></svg></template>', options)).violations).toStrictEqual([
 		{
@@ -957,7 +957,7 @@ test('[no-unknown-attr-issue-4309-010] Vue: an SVG element keeps the name as wri
 	]);
 });
 
-test('[no-unknown-attr-issue-4309-011] Svelte: a static name is read by the HTML parser, a dynamic one is set by code', async () => {
+test('[no-unknown-attr-045] Svelte: a static name is read by the HTML parser, a dynamic one is set by code', async () => {
 	const options = { parser: { '.*': '@markuplint/svelte-parser' }, specs: { '.*': '@markuplint/svelte-spec' } };
 	// Static: `VIEWBOX` is `viewBox`
 	expect((await mlRuleTest(rule, '<svg VIEWBOX="0 0 1 1"></svg>', options)).violations).toStrictEqual([]);
@@ -973,7 +973,7 @@ test('[no-unknown-attr-issue-4309-011] Svelte: a static name is read by the HTML
 	]);
 });
 
-test('[no-unknown-attr-issue-4309-012] the suggested name of a property is an attribute name and is not translated', async () => {
+test('[no-unknown-attr-046] the suggested name of a property is an attribute name and is not translated', async () => {
 	const { violations } = await mlRuleTest(
 		rule,
 		'<svg ROLE="img"></svg>',
@@ -998,7 +998,7 @@ test('[no-unknown-attr-issue-4309-012] the suggested name of a property is an at
 // React moves a `<style>` that has `href` and `precedence`, and a `<link rel="stylesheet">` that has
 // `precedence`, to the `<head>` (https://react.dev/reference/react-dom/components/style), so these are
 // the attributes of a React that does.
-test('[no-unknown-attr-issue-4484-001] React: href and precedence of a style element, and precedence of a link element', async () => {
+test('[no-unknown-attr-047] React: href and precedence of a style element, and precedence of a link element', async () => {
 	const react = { parser: { '.*': '@markuplint/jsx-parser' }, specs: { '.*': '@markuplint/react-spec' } };
 	expect((await mlRuleTest(rule, '<style href="a" precedence="b"></style>', react)).violations).toStrictEqual([]);
 	expect(
@@ -1006,7 +1006,7 @@ test('[no-unknown-attr-issue-4484-001] React: href and precedence of a style ele
 	).toStrictEqual([]);
 });
 
-test('[no-unknown-attr-issue-4484-002] the spec for a React that does not move elements does not have them', async () => {
+test('[no-unknown-attr-048] the spec for a React that does not move elements does not have them', async () => {
 	const react18 = {
 		parser: { '.*': '@markuplint/jsx-parser' },
 		specs: { '.*': '@markuplint/react-spec/react-18' },
@@ -1026,14 +1026,14 @@ test('[no-unknown-attr-issue-4484-002] the spec for a React that does not move e
 
 // The IDL attribute `acceptCharset` reflects the `accept-charset` content attribute
 // (https://html.spec.whatwg.org/multipage/forms.html#htmlformelement), as `httpEquiv` reflects `http-equiv`.
-test('[no-unknown-attr-issue-4571-001] React: acceptCharset is the accept-charset attribute of a form element', async () => {
+test('[no-unknown-attr-049] React: acceptCharset is the accept-charset attribute of a form element', async () => {
 	const react = { parser: { '.*': '@markuplint/jsx-parser' }, specs: { '.*': '@markuplint/react-spec' } };
 	expect(
 		(await mlRuleTest(rule, '<form action="/submit" acceptCharset="utf-8"></form>', react)).violations,
 	).toStrictEqual([]);
 });
 
-test('[no-unknown-attr-issue-4571-002] React: accept-charset suggests the property', async () => {
+test('[no-unknown-attr-050] React: accept-charset suggests the property', async () => {
 	const react = { parser: { '.*': '@markuplint/jsx-parser' }, specs: { '.*': '@markuplint/react-spec' } };
 	expect(
 		(await mlRuleTest(rule, '<form action="/submit" accept-charset="utf-8"></form>', react)).violations,
@@ -1048,7 +1048,7 @@ test('[no-unknown-attr-issue-4571-002] React: accept-charset suggests the proper
 	]);
 });
 
-test('[no-unknown-attr-issue-4571-003] React: httpEquiv is the http-equiv attribute of a meta element, and the content spelling suggests it', async () => {
+test('[no-unknown-attr-051] React: httpEquiv is the http-equiv attribute of a meta element, and the content spelling suggests it', async () => {
 	const react = { parser: { '.*': '@markuplint/jsx-parser' }, specs: { '.*': '@markuplint/react-spec' } };
 	expect(
 		(await mlRuleTest(rule, '<meta httpEquiv="X-UA-Compatible" content="ie=edge" />', react)).violations,
@@ -1066,7 +1066,7 @@ test('[no-unknown-attr-issue-4571-003] React: httpEquiv is the http-equiv attrib
 	]);
 });
 
-test('[no-unknown-attr-issue-4571-004] HTML: accept-charset of a form element is allowed, and acceptcharset is not', async () => {
+test('[no-unknown-attr-052] HTML: accept-charset of a form element is allowed, and acceptcharset is not', async () => {
 	expect((await mlRuleTest(rule, '<form action="/submit" accept-charset="utf-8"></form>')).violations).toStrictEqual(
 		[],
 	);
@@ -1081,7 +1081,7 @@ test('[no-unknown-attr-issue-4571-004] HTML: accept-charset of a form element is
 	]);
 });
 
-test('[no-unknown-attr-issue-4571-005] Svelte: acceptCharset and accept-charset are both the attribute of a form element', async () => {
+test('[no-unknown-attr-053] Svelte: acceptCharset and accept-charset are both the attribute of a form element', async () => {
 	const svelte = { parser: { '.*': '@markuplint/svelte-parser' }, specs: { '.*': '@markuplint/svelte-spec' } };
 	expect(
 		(await mlRuleTest(rule, '<form action="/submit" acceptCharset="utf-8"></form>', svelte)).violations,
@@ -1091,7 +1091,7 @@ test('[no-unknown-attr-issue-4571-005] Svelte: acceptCharset and accept-charset 
 	).toStrictEqual([]);
 });
 
-test('[no-unknown-attr-valid-007] HTML: the attributes that specifications other than the HTML Standard define are known', async () => {
+test('[no-unknown-attr-054] HTML: the attributes that specifications other than the HTML Standard define are known', async () => {
 	// Remote Playback, Picture-in-Picture, WICG controls-list, HTML Media Capture and the Entries API
 	for (const html of [
 		'<audio controlslist="nodownload" disableremoteplayback></audio>',
@@ -1103,7 +1103,7 @@ test('[no-unknown-attr-valid-007] HTML: the attributes that specifications other
 	}
 });
 
-test('[no-unknown-attr-valid-008] SVG: pattern x and y, mask-type of mask and in of feDisplacementMap are known', async () => {
+test('[no-unknown-attr-055] SVG: pattern x and y, mask-type of mask and in of feDisplacementMap are known', async () => {
 	// https://svgwg.org/svg2-draft/pservers.html#PatternElementXAttribute
 	// https://drafts.csswg.org/css-masking-1/#propdef-mask-type
 	// https://drafts.csswg.org/filter-effects-1/#feDisplacementMapElement
@@ -1115,7 +1115,7 @@ test('[no-unknown-attr-valid-008] SVG: pattern x and y, mask-type of mask and in
 	expect((await mlRuleTest(rule, svg)).violations).toStrictEqual([]);
 });
 
-test('[no-unknown-attr-invalid-006] SVG: an attribute that no specification defines for the element is known by its status flag', async () => {
+test('[no-unknown-attr-056] SVG: an attribute that no specification defines for the element is known by its status flag', async () => {
 	// SVG Animations: the attributeType attribute is not supported by SVG (obsolete), and SVG 2 gives defs and
 	// pattern no conditional processing attributes (non-standard, as BCD has them).
 	const svg = `<svg xmlns="http://www.w3.org/2000/svg">
@@ -1127,7 +1127,7 @@ test('[no-unknown-attr-invalid-006] SVG: an attribute that no specification defi
 	expect(violations).toStrictEqual([]);
 });
 
-test('[no-unknown-attr-valid-009] SVG: decoding of the image element is known, though no specification defines it for the element', async () => {
+test('[no-unknown-attr-057] SVG: decoding of the image element is known, though no specification defines it for the element', async () => {
 	expect(
 		(
 			await mlRuleTest(
@@ -1138,7 +1138,7 @@ test('[no-unknown-attr-valid-009] SVG: decoding of the image element is known, t
 	).toStrictEqual([]);
 });
 
-test('[no-unknown-attr-invalid-007] audio: disablepictureinpicture is defined for the video element only', async () => {
+test('[no-unknown-attr-058] audio: disablepictureinpicture is defined for the video element only', async () => {
 	// https://w3c.github.io/picture-in-picture/#disable-pip
 	const { violations } = await mlRuleTest(rule, '<audio disablepictureinpicture></audio>');
 	expect(violations).toStrictEqual([
@@ -1152,13 +1152,27 @@ test('[no-unknown-attr-invalid-007] audio: disablepictureinpicture is defined fo
 	]);
 });
 
-test('[no-unknown-attr-valid-010] an obsolete element takes the global attributes of HTML', async () => {
+test('[no-unknown-attr-059] iframe: fetchpriority is defined for img, link and script only', async () => {
+	// https://html.spec.whatwg.org/multipage/indices.html#attributes-3
+	const { violations } = await mlRuleTest(rule, '<iframe fetchpriority="high"></iframe>');
+	expect(violations).toStrictEqual([
+		{
+			severity: 'error',
+			line: 1,
+			col: 9,
+			message: 'The "fetchpriority" attribute is disallowed',
+			raw: 'fetchpriority',
+		},
+	]);
+});
+
+test('[no-unknown-attr-060] an obsolete element takes the global attributes of HTML', async () => {
 	// https://html.spec.whatwg.org/multipage/dom.html#global-attributes
 	const { violations } = await mlRuleTest(rule, '<acronym class="a" title="t"></acronym>');
 	expect(violations).toStrictEqual([]);
 });
 
-test('[no-unknown-attr-valid-011] part and exportparts are known on HTML, SVG and MathML elements', async () => {
+test('[no-unknown-attr-061] part and exportparts are known on HTML, SVG and MathML elements', async () => {
 	// https://drafts.csswg.org/css-shadow-1/#part-attr
 	const html = `<div part="a b" exportparts="a, b : c"></div>
 <svg xmlns="http://www.w3.org/2000/svg"><rect part="a" exportparts="b"></rect><circle part="a"></circle></svg>

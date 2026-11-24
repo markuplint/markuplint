@@ -1,23 +1,23 @@
 //! Tests for `class-naming` rule.
 //!
 //! Test ID mapping (TS → Rust):
-//!   class-naming-valid-001    → class_naming_valid_001
-//!   class-naming-invalid-001  → class_naming_invalid_001
-//!   class-naming-invalid-002  → class_naming_invalid_002
-//!   class-naming-invalid-003  → class_naming_invalid_003
-//!   class-naming-valid-002    → class_naming_valid_002
-//!   class-naming-invalid-004  → class_naming_invalid_004
-//!   class-naming-valid-003    → class_naming_valid_003
-//!   class-naming-invalid-005  → class_naming_invalid_005
-//!   class-naming-invalid-006  → class_naming_invalid_006
-//!   class-naming-invalid-007  → class_naming_invalid_007
-//!   class-naming-issue-1263   → class_naming_issue_1263
-//!   class-naming-issue-4202-001 → class_naming_issue_4202_001
-//!   class-naming-issue-4202-002 → class_naming_issue_4202_002
-//!   class-naming-issue-4202-003 → class_naming_issue_4202_003
-//!   class-naming-issue-4202-004 → class_naming_issue_4202_004
-//!   class-naming-valid-004    — SKIP: dynamic value (JSX parser)
-//!   class-naming-parser-001   — SKIP: Pug parser
+//!   class-naming-001    → class_naming_001
+//!   class-naming-002  → class_naming_002
+//!   class-naming-003  → class_naming_003
+//!   class-naming-004  → class_naming_004
+//!   class-naming-005    → class_naming_005
+//!   class-naming-006  → class_naming_006
+//!   class-naming-007    → class_naming_007
+//!   class-naming-009  → class_naming_009
+//!   class-naming-010  → class_naming_010
+//!   class-naming-017  → class_naming_017
+//!   class-naming-012   → class_naming_012
+//!   class-naming-013 → class_naming_013
+//!   class-naming-014 → class_naming_014
+//!   class-naming-016 → class_naming_016
+//!   class-naming-015 → class_naming_015
+//!   class-naming-008    — SKIP: dynamic value (JSX parser)
+//!   class-naming-011   — SKIP: Pug parser
 //!   v6_class_naming_001       — Rust-only: an empty-string pattern is a no-op
 //!   v6_class_naming_002       — Rust-only: the attribute is read by its resolved name; dynamic values are skipped
 //!   v6_class_naming_003       — Rust-only: a directive is not the `class` attribute
@@ -45,10 +45,10 @@ fn spec() -> MLMLSpec {
     load_spec(include_str!("../../../../../packages/@markuplint/html-spec/index.json")).unwrap()
 }
 
-/// TS: `[class-naming-valid-001]` — pass class name
+/// TS: `[class-naming-001]` — pass class name
 #[test]
-fn class_naming_valid_001() {
-    const _ID: &str = "class-naming-valid-001";
+fn class_naming_001() {
+    const _ID: &str = "class-naming-001";
     let arena = html_arena(
         "\n\t\t<div class=\"c-root\">\n\t\t\t<div class=\"c-root__el\"></div>\n\t\t\t<div class=\"c-root__el2\"></div>\n\t\t</div>\n\t\t",
     );
@@ -66,10 +66,10 @@ fn class_naming_valid_001() {
     assert_eq!(result.violations.len(), 0);
 }
 
-/// TS: `[class-naming-invalid-001]` — unmatched with nodeRule override
+/// TS: `[class-naming-002]` — unmatched with nodeRule override
 #[test]
-fn class_naming_invalid_001() {
-    const _ID: &str = "class-naming-invalid-001";
+fn class_naming_002() {
+    const _ID: &str = "class-naming-002";
     let arena = html_arena(
         "\n\t\t<div class=\"c-root\">\n\t\t\t<div class=\"c-root__el\"></div>\n\t\t\t<div class=\"c-root__el2\"></div>\n\t\t</div>\n\t\t",
     );
@@ -106,10 +106,10 @@ fn class_naming_invalid_001() {
     assert_eq!(result.violations[0].raw, "c-root");
 }
 
-/// TS: `[class-naming-invalid-002]` — childNodeRules
+/// TS: `[class-naming-003]` — childNodeRules
 #[test]
-fn class_naming_invalid_002() {
-    const _ID: &str = "class-naming-invalid-002";
+fn class_naming_003() {
+    const _ID: &str = "class-naming-003";
     let arena = html_arena("\n\t\t<div class=\"c-root\">\n\t\t\t<div class=\"c-root_x\"></div>\n\t\t</div>\n\t\t");
     let spec = spec();
     let config: LintConfig = serde_json::from_value(serde_json::json!({
@@ -144,10 +144,10 @@ fn class_naming_invalid_002() {
     assert_eq!(result.violations[0].raw, "c-root_x");
 }
 
-/// TS: `[class-naming-invalid-003]` — unmatched class name (2)
+/// TS: `[class-naming-004]` — unmatched class name (2)
 #[test]
-fn class_naming_invalid_003() {
-    const _ID: &str = "class-naming-invalid-003";
+fn class_naming_004() {
+    const _ID: &str = "class-naming-004";
     let arena = html_arena(
         "\n\t\t<div class=\"c-root\">\n\t\t\t<div class=\"c-root__x\">\n\t\t\t\t<div class=\"c-root__y\"></div>\n\t\t\t\t<main>\n\t\t\t\t\t<div class=\"hoge\"></div>\n\t\t\t\t</main>\n\t\t\t</div>\n\t\t</div>\n\t\t",
     );
@@ -173,10 +173,10 @@ fn class_naming_invalid_003() {
     assert_eq!(result.violations[0].raw, "hoge");
 }
 
-/// TS: `[class-naming-valid-002]` — multi pattern
+/// TS: `[class-naming-005]` — multi pattern
 #[test]
-fn class_naming_valid_002() {
-    const _ID: &str = "class-naming-valid-002";
+fn class_naming_005() {
+    const _ID: &str = "class-naming-005";
     let arena = html_arena(
         "\n\t\t<div class=\"c-root\">\n\t\t\t<div class=\"c-root__el\"></div>\n\t\t\t<div class=\"exceptional\"></div>\n\t\t</div>\n\t\t",
     );
@@ -194,10 +194,10 @@ fn class_naming_valid_002() {
     assert_eq!(result.violations.len(), 0);
 }
 
-/// TS: `[class-naming-invalid-004]` — childNodeRules multi selectors
+/// TS: `[class-naming-006]` — childNodeRules multi selectors
 #[test]
-fn class_naming_invalid_004() {
-    const _ID: &str = "class-naming-invalid-004";
+fn class_naming_006() {
+    const _ID: &str = "class-naming-006";
     // Exact TS template literal bytes
     let arena = html_arena(
         "\n\t\t<div class=\"c-root\">\n\t\t\t<div class=\"c-root__x\">\n\t\t\t\t<div class=\"c-root__y\"></div>\n\t\t\t\t<main>\n\t\t\t\t\t<div class=\"hoge\"></div>\n\t\t\t\t</main>\n\t\t\t</div>\n\t\t</div>\n\t\t",
@@ -246,10 +246,10 @@ fn class_naming_invalid_004() {
     assert_eq!(result.violations[0].raw, "hoge");
 }
 
-/// TS: `[class-naming-valid-003]` — childNodeRules multi selectors (No error)
+/// TS: `[class-naming-007]` — childNodeRules multi selectors (No error)
 #[test]
-fn class_naming_valid_003() {
-    const _ID: &str = "class-naming-valid-003";
+fn class_naming_007() {
+    const _ID: &str = "class-naming-007";
     let arena = html_arena(
         "\n\t\t<div class=\"c-root\">\n\t\t\t<div class=\"c-root__x\">\n\t\t\t\t<div class=\"c-root__y\"></div>\n\t\t\t\t<main>\n\t\t\t\t\t<div class=\"hoge\"></div>\n\t\t\t\t</main>\n\t\t\t</div>\n\t\t</div>\n\t\t",
     );
@@ -289,10 +289,10 @@ fn class_naming_valid_003() {
     assert_eq!(result.violations.len(), 0);
 }
 
-/// TS: `[class-naming-invalid-005]` — regexSelector
+/// TS: `[class-naming-009]` — regexSelector
 #[test]
-fn class_naming_invalid_005() {
-    const _ID: &str = "class-naming-invalid-005";
+fn class_naming_009() {
+    const _ID: &str = "class-naming-009";
     let arena = html_arena(
         "<section class=\"Card\">\n\t<div class=\"Card__header\">\n\t\t<div class=\"Heading\"><h3 class=\"Heading__lv3\">Title</h3></div>\n\t</div>\n\t<div class=\"Card__body\">\n\t\t<div class=\"List\">\n\t\t\t<ul class=\"List__group\">\n\t\t\t\t<li>...</li>\n\t\t\t\t<li>...</li>\n\t\t\t\t<li>...</li>\n\t\t\t</ul>\n\t\t</div>\n\t</div>\n</section>\n\n<section class=\"Card\">\n\t<div class=\"Card__header\">\n\t\t<!-- 👎 It is \"Card\" scope, Don't use the element owned \"Heading\" -->\n\t\t<h3 class=\"Heading__lv3\">Title</h3>\n\t</div>\n\t<div class=\"Card__body\">\n\t\t<div class=\"Card__body-el\">...</div>\n\t\t<!-- 👎 It is \"Card\" scope, Don't use the element owned \"List\" -->\n\t\t<ul class=\"List__group\">\n\t\t\t<li>...</li>\n\t\t\t<li>...</li>\n\t\t\t<li>...</li>\n\t\t</ul>\n\t\t<div class=\"List\">\n\t\t\t<!-- 👎 It is not \"Card\" scope instead of \"List\" scope here -->\n\t\t\t<ul class=\"Card__list\">\n\t\t\t\t<li>...</li>\n\t\t\t\t<li>...</li>\n\t\t\t\t<li>...</li>\n\t\t\t</ul>\n\t\t</div>\n\t</div>\n</section>\n",
     );
@@ -355,10 +355,10 @@ fn class_naming_invalid_005() {
     );
 }
 
-/// TS: `[class-naming-invalid-006]` — regexSelector inheritance
+/// TS: `[class-naming-010]` — regexSelector inheritance
 #[test]
-fn class_naming_invalid_006() {
-    const _ID: &str = "class-naming-invalid-006";
+fn class_naming_010() {
+    const _ID: &str = "class-naming-010";
     let arena = html_arena(
         "<html>\n<body class=\"Card\">\n\t<div class=\"Card__heading\">\n\t\t<div class=\"Heading\">\n\t\t\t<div class=\"Heading__text\"></div>\n\t\t</div>\n\t</div>\n\t<div class=\"Card__text\"></div>\n\t<div class=\"Heading_text\"></div>\n\t<div class=\"Card_text\"></div>\n</body>\n</html>\n",
     );
@@ -410,10 +410,10 @@ fn class_naming_invalid_006() {
     );
 }
 
-/// TS: `[class-naming-issue-1263]` — regexSelector + childNodeRule (valid)
+/// TS: `[class-naming-012]` — regexSelector + childNodeRule (valid)
 #[test]
-fn class_naming_issue_1263() {
-    const _ID: &str = "class-naming-issue-1263";
+fn class_naming_012() {
+    const _ID: &str = "class-naming-012";
     let arena = html_arena(
         "\n\t\t\t<div class=\"Carousel\">\n\t\t\t\t<div class=\"Carousel__slides\" aria-live=\"off\" >\n\t\t\t\t\t<div class=\"Carousel__slide\">\n\t\t\t\t\t<p class=\"Carousel__label\">slide 1</p>\n\t\t\t\t\t</div>\n\t\t\t\t</div>\n\t\t\t</div>\n\t\t",
     );
@@ -439,10 +439,10 @@ fn class_naming_issue_1263() {
     assert_eq!(result.violations.len(), 0, "violations: {:#?}", result.violations);
 }
 
-/// TS: `[class-naming-issue-4202-001]` — enabled without a pattern is a no-op
+/// TS: `[class-naming-013]` — enabled without a pattern is a no-op
 #[test]
-fn class_naming_issue_4202_001() {
-    const _ID: &str = "class-naming-issue-4202-001";
+fn class_naming_013() {
+    const _ID: &str = "class-naming-013";
     let arena = html_arena(r#"<img class="a">"#);
     let spec = spec();
     let config: LintConfig = serde_json::from_value(serde_json::json!({
@@ -453,10 +453,10 @@ fn class_naming_issue_4202_001() {
     assert_eq!(result.violations.len(), 0, "violations: {:#?}", result.violations);
 }
 
-/// TS: `[class-naming-issue-4202-002]` — empty pattern array is a no-op
+/// TS: `[class-naming-014]` — empty pattern array is a no-op
 #[test]
-fn class_naming_issue_4202_002() {
-    const _ID: &str = "class-naming-issue-4202-002";
+fn class_naming_014() {
+    const _ID: &str = "class-naming-014";
     let arena = html_arena(r#"<img class="a">"#);
     let spec = spec();
     let config: LintConfig = serde_json::from_value(serde_json::json!({
@@ -467,10 +467,10 @@ fn class_naming_issue_4202_002() {
     assert_eq!(result.violations.len(), 0, "violations: {:#?}", result.violations);
 }
 
-/// TS: `[class-naming-issue-4202-003]` — a pattern set only by childNodeRules still applies
+/// TS: `[class-naming-016]` — a pattern set only by childNodeRules still applies
 #[test]
-fn class_naming_issue_4202_003() {
-    const _ID: &str = "class-naming-issue-4202-003";
+fn class_naming_016() {
+    const _ID: &str = "class-naming-016";
     let arena = html_arena(r#"<div class="a"><p class="b"></p></div>"#);
     let spec = spec();
     let config: LintConfig = serde_json::from_value(serde_json::json!({
@@ -495,10 +495,10 @@ fn class_naming_issue_4202_003() {
     assert_eq!(result.violations[0].raw, "b");
 }
 
-/// TS: `[class-naming-issue-4202-004]` — null value is a no-op
+/// TS: `[class-naming-015]` — null value is a no-op
 #[test]
-fn class_naming_issue_4202_004() {
-    const _ID: &str = "class-naming-issue-4202-004";
+fn class_naming_015() {
+    const _ID: &str = "class-naming-015";
     let arena = html_arena(r#"<img class="a">"#);
     let spec = spec();
     let config: LintConfig = serde_json::from_value(serde_json::json!({
@@ -536,12 +536,12 @@ fn v6_class_naming_004() {
     assert_eq!(result.violations.len(), 0, "violations: {:#?}", result.violations);
 }
 
-/// TS: `[class-naming-invalid-007]` — every unmatched class of an attribute is reported at the
+/// TS: `[class-naming-017]` — every unmatched class of an attribute is reported at the
 /// start of the attribute value with the whole value as `raw` (#4248); the position and `raw` do
 /// not tell the classes apart, the message does.
 #[test]
-fn class_naming_invalid_007() {
-    const _ID: &str = "class-naming-invalid-007";
+fn class_naming_017() {
+    const _ID: &str = "class-naming-017";
     use crate::test_util::{brief, lint_brief};
 
     let run = |pattern: &str| {

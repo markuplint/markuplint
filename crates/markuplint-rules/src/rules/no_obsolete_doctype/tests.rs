@@ -1,15 +1,15 @@
 //! Tests for `no-obsolete-doctype` rule.
 //!
 //! Test ID mapping (TS → Rust):
-//!   no-obsolete-doctype-valid-001    → no_obsolete_doctype_valid_001
-//!   no-obsolete-doctype-valid-002    → no_obsolete_doctype_valid_002
-//!   no-obsolete-doctype-valid-003    → no_obsolete_doctype_valid_003
-//!   no-obsolete-doctype-invalid-001  → no_obsolete_doctype_invalid_001
-//!   no-obsolete-doctype-valid-004    → no_obsolete_doctype_valid_004
-//!   v6_no_obsolete_doctype_001       — Rust-only: a system identifier alone is obsolete
-//!   v6_no_obsolete_doctype_002       — Rust-only: a public identifier on a non-`html` name is not reported
-//!   v6_no_obsolete_doctype_003       — Rust-only: `about:legacy-compat` with a public identifier is still obsolete
-//!   v6_no_obsolete_doctype_004       — Rust-only: only the first doctype is examined
+//!   no-obsolete-doctype-001     → no_obsolete_doctype_001
+//!   no-obsolete-doctype-002     → no_obsolete_doctype_002
+//!   no-obsolete-doctype-003     → no_obsolete_doctype_003
+//!   no-obsolete-doctype-004     → no_obsolete_doctype_004
+//!   no-obsolete-doctype-005     → no_obsolete_doctype_005
+//!   v6_no_obsolete_doctype_001  — Rust-only: a system identifier alone is obsolete
+//!   v6_no_obsolete_doctype_002  — Rust-only: a public identifier on a non-`html` name is not reported
+//!   v6_no_obsolete_doctype_003  — Rust-only: `about:legacy-compat` with a public identifier is still obsolete
+//!   v6_no_obsolete_doctype_004  — Rust-only: only the first doctype is examined
 
 use crate::lint::{LintConfig, lint};
 use crate::violation::Severity;
@@ -42,34 +42,34 @@ fn run(html: &str) -> Vec<crate::violation::Violation> {
     lint(&arena, &spec, &config).violations
 }
 
-/// TS: `[no-obsolete-doctype-valid-001]`
+/// TS: `[no-obsolete-doctype-001]`
 #[test]
-fn no_obsolete_doctype_valid_001() {
-    const _ID: &str = "no-obsolete-doctype-valid-001";
+fn no_obsolete_doctype_001() {
+    const _ID: &str = "no-obsolete-doctype-001";
     let violations = run("\n\t\t<!doctype html>\n\t\t<html></html>\n\t\t");
     assert_eq!(violations.len(), 0);
 }
 
-/// TS: `[no-obsolete-doctype-valid-002]`
+/// TS: `[no-obsolete-doctype-002]`
 #[test]
-fn no_obsolete_doctype_valid_002() {
-    const _ID: &str = "no-obsolete-doctype-valid-002";
+fn no_obsolete_doctype_002() {
+    const _ID: &str = "no-obsolete-doctype-002";
     let violations = run("<div></div>");
     assert_eq!(violations.len(), 0);
 }
 
-/// TS: `[no-obsolete-doctype-valid-003]`
+/// TS: `[no-obsolete-doctype-003]`
 #[test]
-fn no_obsolete_doctype_valid_003() {
-    const _ID: &str = "no-obsolete-doctype-valid-003";
+fn no_obsolete_doctype_003() {
+    const _ID: &str = "no-obsolete-doctype-003";
     let violations = run("<html></html>");
     assert_eq!(violations.len(), 0);
 }
 
-/// TS: `[no-obsolete-doctype-invalid-001]`
+/// TS: `[no-obsolete-doctype-004]`
 #[test]
-fn no_obsolete_doctype_invalid_001() {
-    const _ID: &str = "no-obsolete-doctype-invalid-001";
+fn no_obsolete_doctype_004() {
+    const _ID: &str = "no-obsolete-doctype-004";
     let violations = run(
         "\n\t\t<!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 4.01//EN\" \"http://www.w3.org/TR/html4/strict.dtd\">\n\t\t<div></div>\n\t\t",
     );
@@ -85,10 +85,10 @@ fn no_obsolete_doctype_invalid_001() {
     assert_eq!(violations[0].message, "Never declare obsolete doctype");
 }
 
-/// TS: `[no-obsolete-doctype-valid-004]`
+/// TS: `[no-obsolete-doctype-005]`
 #[test]
-fn no_obsolete_doctype_valid_004() {
-    const _ID: &str = "no-obsolete-doctype-valid-004";
+fn no_obsolete_doctype_005() {
+    const _ID: &str = "no-obsolete-doctype-005";
     let violations = run("\n\t\t<!DOCTYPE html SYSTEM \"about:legacy-compat\">\n\t\t<div></div>\n\t\t");
     assert_eq!(violations.len(), 0);
 }

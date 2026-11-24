@@ -1,9 +1,8 @@
 //! Tests for `no-ineffective-attr` rule.
 //!
 //! Test ID mapping (TS → Rust):
-//!   no-ineffective-attr-invalid-001  → no_ineffective_attr_invalid_001
-//!   no-ineffective-attr-invalid-002  — removed on both sides (see the note below)
-//!   no-ineffective-attr-fix-001      → no_ineffective_attr_fix_001
+//!   no-ineffective-attr-001          → no_ineffective_attr_001
+//!   no-ineffective-attr-002          → no_ineffective_attr_002
 //!   v6_no_ineffective_attr_001       — Rust-only: non-ASCII text before the removed attribute
 
 use crate::lint::{LintConfig, lint};
@@ -31,10 +30,10 @@ fn fixed(html: &str) -> String {
     crate::test_util::fixed_code(html, &serde_json::json!({ "rules": { "no-ineffective-attr": true } }))
 }
 
-/// TS: `[no-ineffective-attr-fix-001]` — remove ineffective defer from inline script
+/// TS: `[no-ineffective-attr-002]` — remove ineffective defer from inline script
 #[test]
-fn no_ineffective_attr_fix_001() {
-    const _ID: &str = "no-ineffective-attr-fix-001";
+fn no_ineffective_attr_002() {
+    const _ID: &str = "no-ineffective-attr-002";
     assert_eq!(
         fixed(r#"<script defer>const foo = "foo";</script>"#),
         r#"<script>const foo = "foo";</script>"#
@@ -49,10 +48,10 @@ fn v6_no_ineffective_attr_001() {
     );
 }
 
-/// TS: `[no-ineffective-attr-invalid-001]` — script[defer] without src
+/// TS: `[no-ineffective-attr-001]` — script[defer] without src
 #[test]
-fn no_ineffective_attr_invalid_001() {
-    const _ID: &str = "no-ineffective-attr-invalid-001";
+fn no_ineffective_attr_001() {
+    const _ID: &str = "no-ineffective-attr-001";
     let arena = html_arena(r#"<script defer>const foo = "foo";</script>"#);
     let spec = spec();
     let config: LintConfig = serde_json::from_value(serde_json::json!({
@@ -71,8 +70,6 @@ fn no_ineffective_attr_invalid_001() {
     assert_eq!(result.violations[0].raw, "defer");
 }
 
-// `no-ineffective-attr-invalid-002` (defer on type=module) was removed here for the same
-// reason as on the TS side: HTML LS §4.12.1 ("Module scripts ... must not specify the
-// defer attribute") landed in `spec.script.jsonc`, so module+defer is disallowed rather
-// than ineffective, and `no_disallowed_attr_issue_3631_006` covers it. The numbering gap is
-// intentional; do not renumber later tests.
+// `defer` on `type=module` is not tested here, as on the TS side: HTML LS §4.12.1 ("Module
+// scripts ... must not specify the defer attribute") is in `spec.script.jsonc`, so module+defer
+// is disallowed rather than ineffective, and `[no-disallowed-attr-009]` covers it.

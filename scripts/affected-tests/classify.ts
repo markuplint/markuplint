@@ -130,6 +130,12 @@ const DECLARATION_FILE = /\.d\.ts$/;
 const LOCALE_GUARD = 'ja-locale-coverage.spec.ts';
 
 /**
+ * The spec of the rules that reads every spec of the package with `fs` to check the convention of the test
+ * IDs. A change to a spec or to the registry is a change to its input that no import shows.
+ */
+const TEST_IDS_GUARD = 'test-ids.spec.ts';
+
+/**
  * A spec that starts a process. The process loads built output, which no import links to the spec,
  * so a change to the code that the process runs has to select it by another way. Found by reading
  * the specs, so that a new one is picked up without an edit here. The names are those of the
@@ -225,7 +231,8 @@ function dynamicPackage(name: string): DynamicPackage | null {
 export const CONFIGURATION_CONSUMERS = ['packages/markuplint/', 'packages/@markuplint/language-server/'];
 
 /**
- * Root files that a spec reads by a path, and what runs for each of them.
+ * Root files that a spec reads by a path, and what runs for each of them. A file that more than one
+ * pattern names runs what each of them gives.
  *
  * Each row comes from a spec that builds the path from `import.meta.dirname` or the root: the
  * pattern names the file, the specs read it. `completeness.spec.ts` fails when a spec names a file
@@ -250,6 +257,11 @@ const ROOT_INPUTS: readonly {
 		pattern:
 			/^(?:\.github\/(?:renovate\.json|labeler\.yml|workflows\/[^/]+\.ya?ml)|\.husky\/pre-commit|CLAUDE\.md|SECURITY\.md|website\/community\/support-policy\.mdx|website\/i18n\/ja\/docusaurus-plugin-content-docs-community\/current\/support-policy\.mdx)$/,
 		specs: probe => ['scripts/release-lines/consistency.spec.ts', ...specsUnder(probe, 'scripts/ci-gate')],
+	},
+	{
+		// The workflow whose pull request job greps the report for the heading of a table that cannot be read.
+		pattern: /^\.github\/workflows\/spec-citation-watch\.yml$/,
+		specs: () => ['scripts/spec-citations/index-check.spec.ts'],
 	},
 	{
 		pattern: /^config\.schema\.json$/,
@@ -323,14 +335,15 @@ export function plan(changes: readonly Change[], probe: Probe): Plan {
 			add(specsUnder(probe, 'scripts/spec-citations'));
 		}
 
-		const input = ROOT_INPUTS.find(({ pattern }) => pattern.test(path));
-		if (input) {
+		// Every row that names the file: one file can be read by specs of more than one kind.
+		const inputs = ROOT_INPUTS.filter(({ pattern }) => pattern.test(path));
+		for (const input of inputs) {
 			add(input.specs(probe));
 		}
 
 		const match = PACKAGE_PATH.exec(path);
 		if (!match?.groups) {
-			if (input || IGNORED.some(pattern => pattern.test(path)) || classifyCitation(path) !== null) {
+			if (inputs.length > 0 || IGNORED.some(pattern => pattern.test(path)) || classifyCitation(path) !== null) {
 				continue;
 			}
 			const outside = planOutsidePackages(status, path, probe);
@@ -355,6 +368,9 @@ export function plan(changes: readonly Change[], probe: Probe): Plan {
 			if (status !== 'D') {
 				targets.add(path);
 			}
+			// The test ID guard reads every spec of its package, one of them being the changed one. Only the
+			// rules have one: for any other package nothing matches.
+			add(probe.specs.filter(spec => spec === `${root}/src/${TEST_IDS_GUARD}`));
 			continue;
 		}
 
@@ -388,8 +404,12 @@ export function plan(changes: readonly Change[], probe: Probe): Plan {
 		const outputs = builtOutputs(probe, root, rel);
 		if (rel.startsWith('src/') && SOURCE_FILE.test(rel)) {
 			targets.add(path);
-			// The guard reads the sources of its package with `fs`, so no import reaches it
-			add(probe.specs.filter(spec => spec === `${root}/src/${LOCALE_GUARD}`));
+			// The guards read the sources of their package with `fs`, so no import reaches them
+			add(
+				probe.specs.filter(
+					spec => spec === `${root}/src/${LOCALE_GUARD}` || spec === `${root}/src/${TEST_IDS_GUARD}`,
+				),
+			);
 			if (DECLARATION_FILE.test(rel)) {
 				// Nothing is emitted for a declaration, so no spec of another package reaches it, and what
 				// it types is checked by `yarn test:types`; the specs of the package run with it.

@@ -1,11 +1,10 @@
-import { translator } from '@markuplint/i18n';
-import { i18n, mlRuleTest } from 'markuplint';
+import { mlRuleTest } from 'markuplint';
 import { describe, test, expect } from 'vitest';
 
-import rule, { __formatUnsupportedMessage } from './index.js';
+import rule from './index.js';
 
 describe('browser support (BCD-based)', () => {
-	test('[no-unsupported-browser-features-invalid-001] element not supported in IE 11', async () => {
+	test('[no-unsupported-browser-features-001] element not supported in IE 11', async () => {
 		const { violations } = await mlRuleTest(rule, '<dialog></dialog>', {
 			rule: {
 				options: {
@@ -20,7 +19,7 @@ describe('browser support (BCD-based)', () => {
 		expect(violations[0]?.message).toContain('Internet Explorer');
 	});
 
-	test('[no-unsupported-browser-features-valid-001] common element supported everywhere', async () => {
+	test('[no-unsupported-browser-features-002] common element supported everywhere', async () => {
 		const { violations } = await mlRuleTest(rule, '<div></div>', {
 			rule: {
 				options: {
@@ -31,7 +30,7 @@ describe('browser support (BCD-based)', () => {
 		expect(violations).toStrictEqual([]);
 	});
 
-	test('[no-unsupported-browser-features-invalid-002] attribute not supported in old browsers', async () => {
+	test('[no-unsupported-browser-features-003] attribute not supported in old browsers', async () => {
 		// <dialog> element and its "open" attribute are both unsupported in IE
 		const { violations } = await mlRuleTest(rule, '<dialog open></dialog>', {
 			rule: {
@@ -48,7 +47,7 @@ describe('browser support (BCD-based)', () => {
 		expect(violations[1]?.message).toContain('attribute');
 	});
 
-	test('[no-unsupported-browser-features-valid-002] common attribute supported everywhere', async () => {
+	test('[no-unsupported-browser-features-004] common attribute supported everywhere', async () => {
 		const { violations } = await mlRuleTest(rule, '<input type="text">', {
 			rule: {
 				options: {
@@ -59,7 +58,7 @@ describe('browser support (BCD-based)', () => {
 		expect(violations).toStrictEqual([]);
 	});
 
-	test('[no-unsupported-browser-features-invalid-003] multiple browsers - only unsupported ones reported', async () => {
+	test('[no-unsupported-browser-features-005] multiple browsers - only unsupported ones reported', async () => {
 		const { violations } = await mlRuleTest(rule, '<dialog></dialog>', {
 			rule: {
 				options: {
@@ -74,7 +73,7 @@ describe('browser support (BCD-based)', () => {
 });
 
 describe('attribute-only unsupported (element is supported)', () => {
-	test('[no-unsupported-browser-features-invalid-004] element supported but attribute unsupported', async () => {
+	test('[no-unsupported-browser-features-006] element supported but attribute unsupported', async () => {
 		// <video> is supported since Chrome 3, but "controlslist" was added in Chrome 58.
 		// Target Chrome 50 so the element is supported but the attribute is not.
 		const { violations } = await mlRuleTest(rule, '<video controlslist="nodownload"></video>', {
@@ -96,12 +95,12 @@ describe('attribute-only unsupported (element is supported)', () => {
 });
 
 describe('no-op without browserslist', () => {
-	test('[no-unsupported-browser-features-valid-003] no error without browserslist config', async () => {
+	test('[no-unsupported-browser-features-007] no error without browserslist config', async () => {
 		const { violations } = await mlRuleTest(rule, '<dialog></dialog>');
 		expect(violations).toStrictEqual([]);
 	});
 
-	test('[no-unsupported-browser-features-valid-004] no error with empty options', async () => {
+	test('[no-unsupported-browser-features-008] no error with empty options', async () => {
 		const { violations } = await mlRuleTest(rule, '<dialog></dialog>', {
 			rule: {
 				options: {},
@@ -112,7 +111,7 @@ describe('no-op without browserslist', () => {
 });
 
 describe('ignoreFeatures', () => {
-	test('[no-unsupported-browser-features-valid-005] ignore element by name', async () => {
+	test('[no-unsupported-browser-features-009] ignore element by name', async () => {
 		const { violations } = await mlRuleTest(rule, '<dialog></dialog>', {
 			rule: {
 				options: {
@@ -124,7 +123,7 @@ describe('ignoreFeatures', () => {
 		expect(violations).toStrictEqual([]);
 	});
 
-	test('[no-unsupported-browser-features-valid-006] ignore attribute by pattern', async () => {
+	test('[no-unsupported-browser-features-010] ignore attribute by pattern', async () => {
 		const { violations } = await mlRuleTest(rule, '<dialog open></dialog>', {
 			rule: {
 				options: {
@@ -139,7 +138,7 @@ describe('ignoreFeatures', () => {
 });
 
 describe('default severity', () => {
-	test('[no-unsupported-browser-features-invalid-005] severity is warning by default', async () => {
+	test('[no-unsupported-browser-features-011] severity is warning by default', async () => {
 		const { violations } = await mlRuleTest(rule, '<dialog></dialog>', {
 			rule: {
 				options: {
@@ -153,7 +152,7 @@ describe('default severity', () => {
 });
 
 describe('SVG elements are skipped', () => {
-	test('[no-unsupported-browser-features-invalid-006] SVG content is not checked', async () => {
+	test('[no-unsupported-browser-features-012] SVG content is not checked', async () => {
 		const { violations } = await mlRuleTest(rule, '<svg><circle></circle></svg>', {
 			rule: {
 				options: {
@@ -167,49 +166,47 @@ describe('SVG elements are skipped', () => {
 	});
 });
 
-describe('pretender gap (issue #3740)', () => {
-	test('[no-unsupported-browser-features-issue-3740-001] JSX component pretendered to old HTML reports against browserslist', async () => {
-		const { violations } = await mlRuleTest(rule, '<Dialog>x</Dialog>', {
-			parser: { '.*': '@markuplint/jsx-parser' },
-			pretenders: [{ selector: 'Dialog', as: 'dialog' }],
-			rule: { options: { browserslist: 'ie 11' } },
-		});
-		expect(violations.length).toBe(1);
-		expect(violations[0]?.severity).toBe('warning');
-		expect(violations[0]?.message).toContain('"dialog"');
-		expect(violations[0]?.message).toContain('element');
-		expect(violations[0]?.message).toContain('Internet Explorer');
-		expect(violations[0]?.line).toBe(1);
-		expect(violations[0]?.col).toBe(1);
-		expect(violations[0]?.raw).toBe('<Dialog>');
+test('[no-unsupported-browser-features-013] JSX component pretendered to old HTML reports against browserslist', async () => {
+	const { violations } = await mlRuleTest(rule, '<Dialog>x</Dialog>', {
+		parser: { '.*': '@markuplint/jsx-parser' },
+		pretenders: [{ selector: 'Dialog', as: 'dialog' }],
+		rule: { options: { browserslist: 'ie 11' } },
 	});
+	expect(violations.length).toBe(1);
+	expect(violations[0]?.severity).toBe('warning');
+	expect(violations[0]?.message).toContain('"dialog"');
+	expect(violations[0]?.message).toContain('element');
+	expect(violations[0]?.message).toContain('Internet Explorer');
+	expect(violations[0]?.line).toBe(1);
+	expect(violations[0]?.col).toBe(1);
+	expect(violations[0]?.raw).toBe('<Dialog>');
+});
 
-	test('[no-unsupported-browser-features-issue-3740-002] JSX with object inheritAttrs pretender reports', async () => {
-		const { violations } = await mlRuleTest(rule, '<Dialog>x</Dialog>', {
-			parser: { '.*': '@markuplint/jsx-parser' },
-			pretenders: [{ selector: 'Dialog', as: { element: 'dialog', inheritAttrs: true } }],
-			rule: { options: { browserslist: 'ie 11' } },
-		});
-		expect(violations.length).toBe(1);
-		expect(violations[0]?.severity).toBe('warning');
-		expect(violations[0]?.message).toContain('"dialog"');
-		expect(violations[0]?.message).toContain('Internet Explorer');
-		expect(violations[0]?.raw).toBe('<Dialog>');
+test('[no-unsupported-browser-features-014] JSX with object inheritAttrs pretender reports', async () => {
+	const { violations } = await mlRuleTest(rule, '<Dialog>x</Dialog>', {
+		parser: { '.*': '@markuplint/jsx-parser' },
+		pretenders: [{ selector: 'Dialog', as: { element: 'dialog', inheritAttrs: true } }],
+		rule: { options: { browserslist: 'ie 11' } },
 	});
+	expect(violations.length).toBe(1);
+	expect(violations[0]?.severity).toBe('warning');
+	expect(violations[0]?.message).toContain('"dialog"');
+	expect(violations[0]?.message).toContain('Internet Explorer');
+	expect(violations[0]?.raw).toBe('<Dialog>');
+});
 
-	test('[no-unsupported-browser-features-issue-3740-003] HTML→HTML pretender ignored: original element checked', async () => {
-		// `pretenders` config is now no-op for HTML element selectors, so the
-		// original `<dialog>` is still evaluated against the browserslist target.
-		const { violations } = await mlRuleTest(rule, '<dialog>x</dialog>', {
-			pretenders: [{ selector: 'dialog', as: 'div' }],
-			rule: { options: { browserslist: 'ie 11' } },
-		});
-		expect(violations.length).toBe(1);
-		expect(violations[0]?.severity).toBe('warning');
-		expect(violations[0]?.message).toContain('"dialog"');
-		expect(violations[0]?.message).toContain('Internet Explorer');
-		expect(violations[0]?.raw).toBe('<dialog>');
+test('[no-unsupported-browser-features-015] HTML→HTML pretender ignored: original element checked', async () => {
+	// A `pretenders` config is a no-op for HTML element selectors, so the
+	// original `<dialog>` is still evaluated against the browserslist target.
+	const { violations } = await mlRuleTest(rule, '<dialog>x</dialog>', {
+		pretenders: [{ selector: 'dialog', as: 'div' }],
+		rule: { options: { browserslist: 'ie 11' } },
 	});
+	expect(violations.length).toBe(1);
+	expect(violations[0]?.severity).toBe('warning');
+	expect(violations[0]?.message).toContain('"dialog"');
+	expect(violations[0]?.message).toContain('Internet Explorer');
+	expect(violations[0]?.raw).toBe('<dialog>');
 });
 
 describe('attribute name case', () => {
@@ -229,12 +226,12 @@ describe('attribute name case', () => {
 		message: `The "${name}" attribute is not supported in Internet Explorer (not supported)`,
 	});
 
-	test('[no-unsupported-browser-features-issue-4309-001] HTML: an attribute written in upper case is the one of BCD', async () => {
+	test('[no-unsupported-browser-features-016] HTML: an attribute written in upper case is the one of BCD', async () => {
 		const { violations } = await mlRuleTest(rule, '<dialog OPEN></dialog>', { rule: { options } });
 		expect(violations).toStrictEqual([elementViolation(1, '<dialog OPEN>'), attrViolation(9, 'OPEN', 'OPEN')]);
 	});
 
-	test('[no-unsupported-browser-features-issue-4309-002] HTML: ignoreFeatures keys match in any spelling', async () => {
+	test('[no-unsupported-browser-features-017] HTML: ignoreFeatures keys match in any spelling', async () => {
 		const attrUpper = await mlRuleTest(rule, '<dialog open></dialog>', {
 			rule: { options: { ...options, ignoreFeatures: ['dialog', 'dialog[OPEN]'] } },
 		});
@@ -249,7 +246,7 @@ describe('attribute name case', () => {
 		expect(control.violations).toStrictEqual([attrViolation(9, 'OPEN', 'OPEN')]);
 	});
 
-	test('[no-unsupported-browser-features-issue-4309-003] HTML: the ignoreFeatures of an element replaces that of the rule, each element keeping its own', async () => {
+	test('[no-unsupported-browser-features-018] HTML: the ignoreFeatures of an element replaces that of the rule, each element keeping its own', async () => {
 		const { violations } = await mlRuleTest(
 			rule,
 			'<dialog class="a" OPEN></dialog><dialog class="b" OPEN></dialog><dialog class="c" OPEN></dialog>',
@@ -270,7 +267,7 @@ describe('attribute name case', () => {
 		expect(violations).toStrictEqual([attrViolation(51, 'OPEN', 'OPEN')]);
 	});
 
-	test('[no-unsupported-browser-features-issue-4309-004] Svelte: the element part is exact and the attribute part folds', async () => {
+	test('[no-unsupported-browser-features-019] Svelte: the element part is exact and the attribute part folds', async () => {
 		const parser = { '.*': '@markuplint/svelte-parser' };
 		const { violations } = await mlRuleTest(rule, '<dialog OPEN></dialog>', {
 			parser,
@@ -285,7 +282,7 @@ describe('attribute name case', () => {
 		expect(reported.violations).toStrictEqual([attrViolation(9, 'OPEN', 'OPEN')]);
 	});
 
-	test('[no-unsupported-browser-features-issue-4309-005] JSX: an HTML element folds the attribute names', async () => {
+	test('[no-unsupported-browser-features-020] JSX: an HTML element folds the attribute names', async () => {
 		const parser = { '.*': '@markuplint/jsx-parser' };
 		const reported = await mlRuleTest(rule, '<dialog OPEN />', { parser, rule: { options } });
 		expect(reported.violations).toStrictEqual([
@@ -300,7 +297,7 @@ describe('attribute name case', () => {
 	});
 });
 
-test('[no-unsupported-browser-features-issue-4584-001] the support of the browser is in Japanese with locale ja', async () => {
+test('[no-unsupported-browser-features-021] the support of the browser is in Japanese with locale ja', async () => {
 	const { violations } = await mlRuleTest(
 		rule,
 		'<dialog></dialog>',
@@ -318,26 +315,4 @@ test('[no-unsupported-browser-features-issue-4584-001] the support of the browse
 			raw: '<dialog>',
 		},
 	]);
-});
-
-describe('the browsers that a feature is not supported in', () => {
-	const unsupported = [
-		{ browser: 'chrome', displayName: 'Chrome', targetVersion: '30', addedVersion: '37' },
-		{ browser: 'firefox', displayName: 'Firefox', targetVersion: '100', addedVersion: false, removedVersion: '4' },
-		{ browser: 'ie', displayName: 'Internet Explorer', targetVersion: '11', addedVersion: false },
-	] as const;
-
-	test('[no-unsupported-browser-features-issue-4584-002] added, removed and never supported are in Japanese with locale ja', () => {
-		const t = translator(i18n('ja'));
-		expect(__formatUnsupportedMessage(t, 'dialog', 'element', unsupported)).toBe(
-			'要素「dialog」はChrome(37で追加、対象: 30), Firefox(4で削除済み), Internet Explorer(未サポート)ではサポートされていません',
-		);
-	});
-
-	test('[no-unsupported-browser-features-issue-4584-003] added, removed and never supported are as before in English', () => {
-		const t = translator(i18n('en'));
-		expect(__formatUnsupportedMessage(t, 'dialog', 'element', unsupported)).toBe(
-			'the "dialog" element is not supported in Chrome (added in 37, target: 30), Firefox (removed in 4), Internet Explorer (not supported)',
-		);
-	});
 });

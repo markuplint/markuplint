@@ -1,37 +1,37 @@
 //! Tests for `no-disallowed-ancestor` rule.
 //!
 //! Test ID mapping (TS → Rust):
-//!   no-disallowed-ancestor-invalid-001     → no_disallowed_ancestor_invalid_001
-//!   no-disallowed-ancestor-issue-3632-001  → no_disallowed_ancestor_issue_3632_001
-//!   no-disallowed-ancestor-issue-3632-002  → no_disallowed_ancestor_issue_3632_002
-//!   no-disallowed-ancestor-issue-3632-003  → no_disallowed_ancestor_issue_3632_003
-//!   no-disallowed-ancestor-issue-3632-004  → no_disallowed_ancestor_issue_3632_004
-//!   no-disallowed-ancestor-issue-4482-001  → no_disallowed_ancestor_issue_4482_001
-//!   no-disallowed-ancestor-issue-4482-002  → no_disallowed_ancestor_issue_4482_002
-//!   no-disallowed-ancestor-issue-4482-003  → no_disallowed_ancestor_issue_4482_003
-//!   no-disallowed-ancestor-issue-4482-004  → no_disallowed_ancestor_issue_4482_004
-//!   no-disallowed-ancestor-issue-4482-005  → no_disallowed_ancestor_issue_4482_005
-//!   no-disallowed-ancestor-issue-4482-006  → no_disallowed_ancestor_issue_4482_006
-//!   no-disallowed-ancestor-issue-4482-007  → no_disallowed_ancestor_issue_4482_007
-//!   no-disallowed-ancestor-issue-4482-008  → no_disallowed_ancestor_issue_4482_008
-//!   no-disallowed-ancestor-issue-4482-009  → no_disallowed_ancestor_issue_4482_009
-//!   no-disallowed-ancestor-issue-4482-010  → no_disallowed_ancestor_issue_4482_010
-//!   no-disallowed-ancestor-issue-4482-011  → no_disallowed_ancestor_issue_4482_011
-//!   no-disallowed-ancestor-issue-4482-012  → no_disallowed_ancestor_issue_4482_012
-//!   no-disallowed-ancestor-issue-4482-013  → no_disallowed_ancestor_issue_4482_013
-//!   no-disallowed-ancestor-issue-4482-014  → no_disallowed_ancestor_issue_4482_014
-//!   no-disallowed-ancestor-issue-4482-015  → no_disallowed_ancestor_issue_4482_015
-//!   no-disallowed-ancestor-issue-4482-016  → no_disallowed_ancestor_issue_4482_016
-//!   no-disallowed-ancestor-issue-4482-017  → no_disallowed_ancestor_issue_4482_017
-//!   no-disallowed-ancestor-issue-4482-018  → no_disallowed_ancestor_issue_4482_018
-//!   no-disallowed-ancestor-issue-4482-019  → no_disallowed_ancestor_issue_4482_019
-//!   no-disallowed-ancestor-issue-4482-020  → no_disallowed_ancestor_issue_4482_020
-//!   no-disallowed-ancestor-issue-4482-021  → no_disallowed_ancestor_issue_4482_021
-//!   no-disallowed-ancestor-issue-4482-022  → no_disallowed_ancestor_issue_4482_022
-//!   no-disallowed-ancestor-issue-4482-043  → no_disallowed_ancestor_issue_4482_043
-//!   no-disallowed-ancestor-issue-4482-023  → no_disallowed_ancestor_issue_4482_023
-//!   no-disallowed-ancestor-issue-4482-024  → no_disallowed_ancestor_issue_4482_024
-//!   no-disallowed-ancestor-issue-4482-025  → no_disallowed_ancestor_issue_4482_025
+//!   no-disallowed-ancestor-001     → no_disallowed_ancestor_001
+//!   no-disallowed-ancestor-002  → no_disallowed_ancestor_002
+//!   no-disallowed-ancestor-003  → no_disallowed_ancestor_003
+//!   no-disallowed-ancestor-004  → no_disallowed_ancestor_004
+//!   no-disallowed-ancestor-005  → no_disallowed_ancestor_005
+//!   no-disallowed-ancestor-006  → no_disallowed_ancestor_006
+//!   no-disallowed-ancestor-007  → no_disallowed_ancestor_007
+//!   no-disallowed-ancestor-008  → no_disallowed_ancestor_008
+//!   no-disallowed-ancestor-009  → no_disallowed_ancestor_009
+//!   no-disallowed-ancestor-010  → no_disallowed_ancestor_010
+//!   no-disallowed-ancestor-011  → no_disallowed_ancestor_011
+//!   no-disallowed-ancestor-012  → no_disallowed_ancestor_012
+//!   no-disallowed-ancestor-013  → no_disallowed_ancestor_013
+//!   no-disallowed-ancestor-014  → no_disallowed_ancestor_014
+//!   no-disallowed-ancestor-015  → no_disallowed_ancestor_015
+//!   no-disallowed-ancestor-016  → no_disallowed_ancestor_016
+//!   no-disallowed-ancestor-017  → no_disallowed_ancestor_017
+//!   no-disallowed-ancestor-018  → no_disallowed_ancestor_018
+//!   no-disallowed-ancestor-019  → no_disallowed_ancestor_019
+//!   no-disallowed-ancestor-020  → no_disallowed_ancestor_020
+//!   no-disallowed-ancestor-021  → no_disallowed_ancestor_021
+//!   no-disallowed-ancestor-022  → no_disallowed_ancestor_022
+//!   no-disallowed-ancestor-023  → no_disallowed_ancestor_023
+//!   no-disallowed-ancestor-024  → no_disallowed_ancestor_024
+//!   no-disallowed-ancestor-025  → no_disallowed_ancestor_025
+//!   no-disallowed-ancestor-026  → no_disallowed_ancestor_026
+//!   no-disallowed-ancestor-027  → no_disallowed_ancestor_027
+//!   no-disallowed-ancestor-048  → no_disallowed_ancestor_048
+//!   no-disallowed-ancestor-028  → no_disallowed_ancestor_028
+//!   no-disallowed-ancestor-029  → no_disallowed_ancestor_029
+//!   no-disallowed-ancestor-030  → no_disallowed_ancestor_030
 //!   v6_no_disallowed_ancestor_001  — Rust-only: each element names its nearest forbidden ancestor
 //!   v6_no_disallowed_ancestor_002  — Rust-only: HTML inside `foreignObject` is checked too
 //!   v6_no_disallowed_ancestor_003  — Rust-only: a pretender is checked as the element it pretends to be
@@ -53,10 +53,10 @@ fn contains_message(violations: &[Brief], expected: &str) -> bool {
     violations.iter().any(|v| v.3 == expected)
 }
 
-/// TS: `[no-disallowed-ancestor-invalid-001]` address inside address
+/// TS: `[no-disallowed-ancestor-001]` address inside address
 #[test]
-fn no_disallowed_ancestor_invalid_001() {
-    const _ID: &str = "no-disallowed-ancestor-invalid-001";
+fn no_disallowed_ancestor_001() {
+    const _ID: &str = "no-disallowed-ancestor-001";
     assert_eq!(
         run("<address><address></address></address>"),
         [brief(
@@ -79,33 +79,33 @@ fn no_disallowed_ancestor_invalid_001() {
     );
 }
 
-/// TS: `[no-disallowed-ancestor-issue-3632-001]` main must not be descendant of article
+/// TS: `[no-disallowed-ancestor-002]` main must not be descendant of article
 #[test]
-fn no_disallowed_ancestor_issue_3632_001() {
-    const _ID: &str = "no-disallowed-ancestor-issue-3632-001";
+fn no_disallowed_ancestor_002() {
+    const _ID: &str = "no-disallowed-ancestor-002";
     let v = run("<article><main>x</main></article>");
     assert!(contains_message(&v, &message("main", "article")), "{v:?}");
 }
 
-/// TS: `[no-disallowed-ancestor-issue-3632-002]` main standalone is valid
+/// TS: `[no-disallowed-ancestor-003]` main standalone is valid
 #[test]
-fn no_disallowed_ancestor_issue_3632_002() {
-    const _ID: &str = "no-disallowed-ancestor-issue-3632-002";
+fn no_disallowed_ancestor_003() {
+    const _ID: &str = "no-disallowed-ancestor-003";
     assert_eq!(run("<main>x</main>"), []);
 }
 
-/// TS: `[no-disallowed-ancestor-issue-3632-003]` main in deeply nested nav
+/// TS: `[no-disallowed-ancestor-004]` main in deeply nested nav
 #[test]
-fn no_disallowed_ancestor_issue_3632_003() {
-    const _ID: &str = "no-disallowed-ancestor-issue-3632-003";
+fn no_disallowed_ancestor_004() {
+    const _ID: &str = "no-disallowed-ancestor-004";
     let v = run("<nav><div><div><main>x</main></div></div></nav>");
     assert!(contains_message(&v, &message("main", "nav")), "{v:?}");
 }
 
-/// TS: `[no-disallowed-ancestor-issue-3632-004]` footer in header
+/// TS: `[no-disallowed-ancestor-005]` footer in header
 #[test]
-fn no_disallowed_ancestor_issue_3632_004() {
-    const _ID: &str = "no-disallowed-ancestor-issue-3632-004";
+fn no_disallowed_ancestor_005() {
+    const _ID: &str = "no-disallowed-ancestor-005";
     let v = run("<header><footer>x</footer></header>");
     assert!(contains_message(&v, &message("footer", "header")), "{v:?}");
 }
@@ -153,10 +153,10 @@ fn v6_no_disallowed_ancestor_003() {
     );
 }
 
-/// TS: `[no-disallowed-ancestor-issue-4482-001]` main in section
+/// TS: `[no-disallowed-ancestor-006]` main in section
 #[test]
-fn no_disallowed_ancestor_issue_4482_001() {
-    const _ID: &str = "no-disallowed-ancestor-issue-4482-001";
+fn no_disallowed_ancestor_006() {
+    const _ID: &str = "no-disallowed-ancestor-006";
     assert_eq!(
         run("<section><main>text</main></section>"),
         [brief(
@@ -169,10 +169,10 @@ fn no_disallowed_ancestor_issue_4482_001() {
     );
 }
 
-/// TS: `[no-disallowed-ancestor-issue-4482-002]` the nearest ancestor that is not permitted is named
+/// TS: `[no-disallowed-ancestor-007]` the nearest ancestor that is not permitted is named
 #[test]
-fn no_disallowed_ancestor_issue_4482_002() {
-    const _ID: &str = "no-disallowed-ancestor-issue-4482-002";
+fn no_disallowed_ancestor_007() {
+    const _ID: &str = "no-disallowed-ancestor-007";
     assert_eq!(
         run("<div><section><div><main>text</main></div></section></div>"),
         [brief(
@@ -185,10 +185,10 @@ fn no_disallowed_ancestor_issue_4482_002() {
     );
 }
 
-/// TS: `[no-disallowed-ancestor-issue-4482-003]` main in a form that has an accessible name
+/// TS: `[no-disallowed-ancestor-008]` main in a form that has an accessible name
 #[test]
-fn no_disallowed_ancestor_issue_4482_003() {
-    const _ID: &str = "no-disallowed-ancestor-issue-4482-003";
+fn no_disallowed_ancestor_008() {
+    const _ID: &str = "no-disallowed-ancestor-008";
     assert_eq!(
         run("<form aria-label=\"Search\"><main>text</main></form>"),
         [brief(
@@ -201,10 +201,10 @@ fn no_disallowed_ancestor_issue_4482_003() {
     );
 }
 
-/// TS: `[no-disallowed-ancestor-issue-4482-004]` main in a form named by aria-labelledby
+/// TS: `[no-disallowed-ancestor-009]` main in a form named by aria-labelledby
 #[test]
-fn no_disallowed_ancestor_issue_4482_004() {
-    const _ID: &str = "no-disallowed-ancestor-issue-4482-004";
+fn no_disallowed_ancestor_009() {
+    const _ID: &str = "no-disallowed-ancestor-009";
     assert_eq!(
         run("<span id=\"l\">Search</span><form aria-labelledby=\"l\"><main>text</main></form>"),
         [brief(
@@ -217,10 +217,10 @@ fn no_disallowed_ancestor_issue_4482_004() {
     );
 }
 
-/// TS: `[no-disallowed-ancestor-issue-4482-005]` main in a form named by title
+/// TS: `[no-disallowed-ancestor-010]` main in a form named by title
 #[test]
-fn no_disallowed_ancestor_issue_4482_005() {
-    const _ID: &str = "no-disallowed-ancestor-issue-4482-005";
+fn no_disallowed_ancestor_010() {
+    const _ID: &str = "no-disallowed-ancestor-010";
     assert_eq!(
         run("<form title=\"Search\"><main>text</main></form>"),
         [brief(
@@ -233,10 +233,10 @@ fn no_disallowed_ancestor_issue_4482_005() {
     );
 }
 
-/// TS: `[no-disallowed-ancestor-issue-4482-006]` main in a list item
+/// TS: `[no-disallowed-ancestor-011]` main in a list item
 #[test]
-fn no_disallowed_ancestor_issue_4482_006() {
-    const _ID: &str = "no-disallowed-ancestor-issue-4482-006";
+fn no_disallowed_ancestor_011() {
+    const _ID: &str = "no-disallowed-ancestor-011";
     assert_eq!(
         run("<ul><li><main>text</main></li></ul>"),
         [brief(
@@ -249,10 +249,10 @@ fn no_disallowed_ancestor_issue_4482_006() {
     );
 }
 
-/// TS: `[no-disallowed-ancestor-issue-4482-007]` main in article, which the allow list does not name
+/// TS: `[no-disallowed-ancestor-012]` main in article, which the allow list does not name
 #[test]
-fn no_disallowed_ancestor_issue_4482_007() {
-    const _ID: &str = "no-disallowed-ancestor-issue-4482-007";
+fn no_disallowed_ancestor_012() {
+    const _ID: &str = "no-disallowed-ancestor-012";
     assert_eq!(
         run("<article><main>text</main></article>"),
         [brief(
@@ -265,10 +265,10 @@ fn no_disallowed_ancestor_issue_4482_007() {
     );
 }
 
-/// TS: `[no-disallowed-ancestor-issue-4482-008]` main in main
+/// TS: `[no-disallowed-ancestor-013]` main in main
 #[test]
-fn no_disallowed_ancestor_issue_4482_008() {
-    const _ID: &str = "no-disallowed-ancestor-issue-4482-008";
+fn no_disallowed_ancestor_013() {
+    const _ID: &str = "no-disallowed-ancestor-013";
     assert_eq!(
         run("<main><main>text</main></main>"),
         [brief(
@@ -281,10 +281,10 @@ fn no_disallowed_ancestor_issue_4482_008() {
     );
 }
 
-/// TS: `[no-disallowed-ancestor-issue-4482-009]` a custom element does not hide an ancestor that is not permitted
+/// TS: `[no-disallowed-ancestor-014]` a custom element does not hide an ancestor that is not permitted
 #[test]
-fn no_disallowed_ancestor_issue_4482_009() {
-    const _ID: &str = "no-disallowed-ancestor-issue-4482-009";
+fn no_disallowed_ancestor_014() {
+    const _ID: &str = "no-disallowed-ancestor-014";
     assert_eq!(
         run("<x-a><article><main>text</main></article></x-a>"),
         [brief(
@@ -297,10 +297,10 @@ fn no_disallowed_ancestor_issue_4482_009() {
     );
 }
 
-/// TS: `[no-disallowed-ancestor-issue-4482-010]` main in an unknown HTML element, which is not a custom element
+/// TS: `[no-disallowed-ancestor-015]` main in an unknown HTML element, which is not a custom element
 #[test]
-fn no_disallowed_ancestor_issue_4482_010() {
-    const _ID: &str = "no-disallowed-ancestor-issue-4482-010";
+fn no_disallowed_ancestor_015() {
+    const _ID: &str = "no-disallowed-ancestor-015";
     assert_eq!(
         run("<foobar><main>text</main></foobar>"),
         [brief(
@@ -313,10 +313,10 @@ fn no_disallowed_ancestor_issue_4482_010() {
     );
 }
 
-/// TS: `[no-disallowed-ancestor-issue-4482-011]` main in dialog
+/// TS: `[no-disallowed-ancestor-016]` main in dialog
 #[test]
-fn no_disallowed_ancestor_issue_4482_011() {
-    const _ID: &str = "no-disallowed-ancestor-issue-4482-011";
+fn no_disallowed_ancestor_016() {
+    const _ID: &str = "no-disallowed-ancestor-016";
     assert_eq!(
         run("<dialog><main>text</main></dialog>"),
         [brief(
@@ -329,10 +329,10 @@ fn no_disallowed_ancestor_issue_4482_011() {
     );
 }
 
-/// TS: `[no-disallowed-ancestor-issue-4482-012]` main in slot, even in a custom element
+/// TS: `[no-disallowed-ancestor-017]` main in slot, even in a custom element
 #[test]
-fn no_disallowed_ancestor_issue_4482_012() {
-    const _ID: &str = "no-disallowed-ancestor-issue-4482-012";
+fn no_disallowed_ancestor_017() {
+    const _ID: &str = "no-disallowed-ancestor-017";
     assert_eq!(
         run("<x-a><slot><main>text</main></slot></x-a>"),
         [brief(
@@ -345,10 +345,10 @@ fn no_disallowed_ancestor_issue_4482_012() {
     );
 }
 
-/// TS: `[no-disallowed-ancestor-issue-4482-013]` main in foreignObject of svg
+/// TS: `[no-disallowed-ancestor-018]` main in foreignObject of svg
 #[test]
-fn no_disallowed_ancestor_issue_4482_013() {
-    const _ID: &str = "no-disallowed-ancestor-issue-4482-013";
+fn no_disallowed_ancestor_018() {
+    const _ID: &str = "no-disallowed-ancestor-018";
     assert_eq!(
         run("<div><svg><foreignObject><main>text</main></foreignObject></svg></div>"),
         [brief(
@@ -361,103 +361,103 @@ fn no_disallowed_ancestor_issue_4482_013() {
     );
 }
 
-/// TS: `[no-disallowed-ancestor-issue-4482-014]` main under html, body, div and form
+/// TS: `[no-disallowed-ancestor-019]` main under html, body, div and form
 #[test]
-fn no_disallowed_ancestor_issue_4482_014() {
-    const _ID: &str = "no-disallowed-ancestor-issue-4482-014";
+fn no_disallowed_ancestor_019() {
+    const _ID: &str = "no-disallowed-ancestor-019";
     assert_eq!(
         run("<html><body><div><form><main>text</main></form></div></body></html>"),
         []
     );
 }
 
-/// TS: `[no-disallowed-ancestor-issue-4482-015]` main in nested div
+/// TS: `[no-disallowed-ancestor-020]` main in nested div
 #[test]
-fn no_disallowed_ancestor_issue_4482_015() {
-    const _ID: &str = "no-disallowed-ancestor-issue-4482-015";
+fn no_disallowed_ancestor_020() {
+    const _ID: &str = "no-disallowed-ancestor-020";
     assert_eq!(run("<div><div><main>text</main></div></div>"), []);
 }
 
-/// TS: `[no-disallowed-ancestor-issue-4482-016]` main in a form without an accessible name
+/// TS: `[no-disallowed-ancestor-021]` main in a form without an accessible name
 #[test]
-fn no_disallowed_ancestor_issue_4482_016() {
-    const _ID: &str = "no-disallowed-ancestor-issue-4482-016";
+fn no_disallowed_ancestor_021() {
+    const _ID: &str = "no-disallowed-ancestor-021";
     assert_eq!(run("<form><main>text</main></form>"), []);
 }
 
-/// TS: `[no-disallowed-ancestor-issue-4482-017]` main in a form whose accessible name is empty
+/// TS: `[no-disallowed-ancestor-022]` main in a form whose accessible name is empty
 #[test]
-fn no_disallowed_ancestor_issue_4482_017() {
-    const _ID: &str = "no-disallowed-ancestor-issue-4482-017";
+fn no_disallowed_ancestor_022() {
+    const _ID: &str = "no-disallowed-ancestor-022";
     assert_eq!(run("<form aria-label=\"\"><main>text</main></form>"), []);
 }
 
-/// TS: `[no-disallowed-ancestor-issue-4482-018]` main in a form whose accessible name is only whitespace
+/// TS: `[no-disallowed-ancestor-023]` main in a form whose accessible name is only whitespace
 #[test]
-fn no_disallowed_ancestor_issue_4482_018() {
-    const _ID: &str = "no-disallowed-ancestor-issue-4482-018";
+fn no_disallowed_ancestor_023() {
+    const _ID: &str = "no-disallowed-ancestor-023";
     assert_eq!(run("<form aria-label=\"  \"><main>text</main></form>"), []);
 }
 
-/// TS: `[no-disallowed-ancestor-issue-4482-019]` main in a form whose name from aria-labelledby is empty
+/// TS: `[no-disallowed-ancestor-024]` main in a form whose name from aria-labelledby is empty
 #[test]
-fn no_disallowed_ancestor_issue_4482_019() {
-    const _ID: &str = "no-disallowed-ancestor-issue-4482-019";
+fn no_disallowed_ancestor_024() {
+    const _ID: &str = "no-disallowed-ancestor-024";
     assert_eq!(
         run("<span id=\"l\"></span><form aria-labelledby=\"l\"><main>text</main></form>"),
         []
     );
 }
 
-/// TS: `[no-disallowed-ancestor-issue-4482-020]` main in a form that aria-labelledby points to a missing id
+/// TS: `[no-disallowed-ancestor-025]` main in a form that aria-labelledby points to a missing id
 #[test]
-fn no_disallowed_ancestor_issue_4482_020() {
-    const _ID: &str = "no-disallowed-ancestor-issue-4482-020";
+fn no_disallowed_ancestor_025() {
+    const _ID: &str = "no-disallowed-ancestor-025";
     assert_eq!(run("<form aria-labelledby=\"none\"><main>text</main></form>"), []);
 }
 
-/// TS: `[no-disallowed-ancestor-issue-4482-021]` main in an autonomous custom element
+/// TS: `[no-disallowed-ancestor-026]` main in an autonomous custom element
 #[test]
-fn no_disallowed_ancestor_issue_4482_021() {
-    const _ID: &str = "no-disallowed-ancestor-issue-4482-021";
+fn no_disallowed_ancestor_026() {
+    const _ID: &str = "no-disallowed-ancestor-026";
     assert_eq!(run("<x-layout><main>text</main></x-layout>"), []);
 }
 
-/// TS: `[no-disallowed-ancestor-issue-4482-022]` a main element in the SVG namespace is not the HTML main element
+/// TS: `[no-disallowed-ancestor-027]` a main element in the SVG namespace is not the HTML main element
 #[test]
-fn no_disallowed_ancestor_issue_4482_022() {
-    const _ID: &str = "no-disallowed-ancestor-issue-4482-022";
+fn no_disallowed_ancestor_027() {
+    const _ID: &str = "no-disallowed-ancestor-027";
     assert_eq!(run("<svg><main>text</main></svg>"), []);
 }
 
-/// TS: `[no-disallowed-ancestor-issue-4482-043]` a member expression component is a custom element
+/// TS: `[no-disallowed-ancestor-048]` a member expression component is a custom element
 #[test]
-fn no_disallowed_ancestor_issue_4482_043() {
-    const _ID: &str = "no-disallowed-ancestor-issue-4482-043";
+fn no_disallowed_ancestor_048() {
+    const _ID: &str = "no-disallowed-ancestor-048";
     assert_eq!(run("<svg><footer><footer></footer></footer></svg>"), []);
 }
 
-/// TS: `[no-disallowed-ancestor-issue-4482-023]` main in the content of a template has no ancestor
+/// TS: `[no-disallowed-ancestor-028]` main in the content of a template has no ancestor
 #[test]
-fn no_disallowed_ancestor_issue_4482_023() {
-    const _ID: &str = "no-disallowed-ancestor-issue-4482-023";
+fn no_disallowed_ancestor_028() {
+    const _ID: &str = "no-disallowed-ancestor-028";
     assert_eq!(run("<section><template><main>text</main></template></section>"), []);
 }
 
-/// TS: `[no-disallowed-ancestor-issue-4482-024]` a template nested in a template is a boundary too
+/// TS: `[no-disallowed-ancestor-029]` a template nested in a template is a boundary too
 #[test]
-fn no_disallowed_ancestor_issue_4482_024() {
-    const _ID: &str = "no-disallowed-ancestor-issue-4482-024";
+fn no_disallowed_ancestor_029() {
+    const _ID: &str = "no-disallowed-ancestor-029";
     assert_eq!(
         run("<section><template><template><main>text</main></template></template></section>"),
         []
     );
 }
 
-/// TS: `[no-disallowed-ancestor-issue-4482-025]` a forbidden ancestor beyond a template does not count
+/// TS: `[no-disallowed-ancestor-030]` a forbidden ancestor beyond a template does not count
 #[test]
-fn no_disallowed_ancestor_issue_4482_025() {
-    const _ID: &str = "no-disallowed-ancestor-issue-4482-025";
+fn no_disallowed_ancestor_030() {
+    const _ID: &str = "no-disallowed-ancestor-030";
     assert_eq!(
         run("<address><template><address>text</address></template></address>"),
         []

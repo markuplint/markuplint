@@ -43,7 +43,7 @@ use crate::aria_check::{
     walk_elements,
 };
 use crate::attr_name_key::namespace_key_of;
-use crate::helpers::is_labelable;
+use crate::helpers::{is_labelable, is_role_unknown};
 use crate::rule::{Rule, RuleConfigSet};
 use crate::slot_assignment::composed_parent_element;
 use crate::tree_scope::{TreeRoot, Trees, dom_value, dom_value_of, is_expression, root_of};
@@ -161,12 +161,22 @@ fn get_context(env: &Env<'_>, ctx: &ElementContext<'_>) -> Option<Context> {
 /// TS `getClosestPresentationalChildrenRole`: the role of the closest ancestor whose computed role has
 /// the `childrenArePresentational` characteristic. The ancestors are those of the accessibility tree
 /// ([`composed_parent_element`]).
+///
+/// An ancestor whose role is not known until it is rendered ([`is_role_unknown`]) is not taken to have the role that
+/// the computed role falls back to: it is passed over, as markuplint does not decide what it cannot know. The search
+/// goes on above it, where a known role with presentational children still excludes the descendants.
 fn get_closest_presentational_children_role(env: &Env<'_>, ctx: &ElementContext<'_>) -> Option<String> {
     let mut current = composed_parent_element(env.arena, env.spec, ctx.node_id);
     while let Some(id) = current {
-        if let Some(role) = get_computed_role(env.spec, env.arena, id, ctx.version, false)
-            .role
-            .filter(|role| role.children_presentational)
+        let unknown = env
+            .arena
+            .get(id)
+            .and_then(|node| node.as_element())
+            .is_some_and(is_role_unknown);
+        if !unknown
+            && let Some(role) = get_computed_role(env.spec, env.arena, id, ctx.version, false)
+                .role
+                .filter(|role| role.children_presentational)
         {
             return Some(role.name);
         }

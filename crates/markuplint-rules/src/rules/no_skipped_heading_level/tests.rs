@@ -1,9 +1,9 @@
 //! Tests for `no-skipped-heading-level` rule.
 //!
 //! Test ID mapping (TS → Rust):
-//!   no-skipped-heading-level-valid-001    → no_skipped_heading_level_valid_001
-//!   no-skipped-heading-level-invalid-001  → no_skipped_heading_level_invalid_001
-//!   no-skipped-heading-level-parser-*     — SKIP: Markdown/MDX parsers not available in Rust
+//!   no-skipped-heading-level-001       → no_skipped_heading_level_001
+//!   no-skipped-heading-level-007       → no_skipped_heading_level_007
+//!   no-skipped-heading-level-010..017  — SKIP: Markdown/MDX parsers not available in Rust
 
 use crate::lint::{LintConfig, lint};
 use crate::violation::Severity;
@@ -26,10 +26,10 @@ fn spec() -> MLMLSpec {
     load_spec(include_str!("../../../../../packages/@markuplint/html-spec/index.json")).unwrap()
 }
 
-/// TS: `[no-skipped-heading-level-valid-001]` — no skipped levels
+/// TS: `[no-skipped-heading-level-001]` — no skipped levels
 #[test]
-fn no_skipped_heading_level_valid_001() {
-    const _ID: &str = "no-skipped-heading-level-valid-001";
+fn no_skipped_heading_level_001() {
+    const _ID: &str = "no-skipped-heading-level-001";
     let arena = html_arena(
         "\n<h1>...</h1>\n<p>...</p>\n<h2>...</h2>\n<p>...</p>\n<h3>...</h3>\n<p>...</p>\n<h2>...</h2>\n<p>...</p>\n<h3>...</h3>\n<p>...</p>\n<h4>...</h4>\n<p>...</p>\n<h2>...</h2>\n<p>...</p>\n",
     );
@@ -42,10 +42,10 @@ fn no_skipped_heading_level_valid_001() {
     assert_eq!(result.violations.len(), 0);
 }
 
-/// TS: `[no-skipped-heading-level-invalid-001]` — skipped levels
+/// TS: `[no-skipped-heading-level-007]` — skipped levels
 #[test]
-fn no_skipped_heading_level_invalid_001() {
-    const _ID: &str = "no-skipped-heading-level-invalid-001";
+fn no_skipped_heading_level_007() {
+    const _ID: &str = "no-skipped-heading-level-007";
     let arena = html_arena(
         "\n<h1>...</h1>\n<p>...</p>\n<h2>...</h2>\n<p>...</p>\n<h4>...</h4>\n<p>...</p>\n<h2>...</h2>\n<p>...</p>\n<h5>...</h5>\n<p>...</p>\n",
     );

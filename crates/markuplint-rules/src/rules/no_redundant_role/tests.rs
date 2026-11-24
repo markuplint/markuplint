@@ -1,14 +1,14 @@
 //! Tests for `no-redundant-role` rule.
 //!
 //! Test ID mapping (TS → Rust):
-//!   no-redundant-role-valid-001    → no_redundant_role_valid_001
-//!   no-redundant-role-invalid-001  → no_redundant_role_invalid_001
-//!   no-redundant-role-invalid-002  → no_redundant_role_invalid_002
-//!   v6_no_redundant_role_001       — Rust-only: the implicit role depends on the element's conditions (`a` with / without `href`)
-//!   v6_no_redundant_role_002       — Rust-only: only the first matching token is reported, at its own position
-//!   v6_no_redundant_role_003       — Rust-only: the comparison is case-sensitive; an uppercase tag is quoted in lower case
-//!   v6_no_redundant_role_004       — Rust-only: `generic` on `div`, and `rules: false`
-//!   v6_no_redundant_role_005       — Rust-only: `heading` on `h1` and `button` on `button`
+//!   no-redundant-role-001     → no_redundant_role_001
+//!   no-redundant-role-002     → no_redundant_role_002
+//!   no-redundant-role-003     → no_redundant_role_003
+//!   v6_no_redundant_role_001  — Rust-only: the implicit role depends on the element's conditions (`a` with / without `href`)
+//!   v6_no_redundant_role_002  — Rust-only: only the first matching token is reported, at its own position
+//!   v6_no_redundant_role_003  — Rust-only: the comparison is case-sensitive; an uppercase tag is quoted in lower case
+//!   v6_no_redundant_role_004  — Rust-only: `generic` on `div`, and `rules: false`
+//!   v6_no_redundant_role_005  — Rust-only: `heading` on `h1` and `button` on `button`
 
 use crate::lint::{LintConfig, lint};
 use crate::violation::Severity;
@@ -35,19 +35,19 @@ fn config(value: serde_json::Value) -> LintConfig {
     serde_json::from_value(serde_json::json!({ "rules": { "no-redundant-role": value } })).unwrap()
 }
 
-/// TS: `[no-redundant-role-valid-001]`
+/// TS: `[no-redundant-role-001]`
 #[test]
-fn no_redundant_role_valid_001() {
-    const _ID: &str = "no-redundant-role-valid-001";
+fn no_redundant_role_001() {
+    const _ID: &str = "no-redundant-role-001";
     let arena = html_arena(r#"<nav role="menu"></nav>"#);
     let result = lint(&arena, &spec(), &config(serde_json::json!(true)));
     assert!(result.violations.is_empty());
 }
 
-/// TS: `[no-redundant-role-invalid-001]`
+/// TS: `[no-redundant-role-002]`
 #[test]
-fn no_redundant_role_invalid_001() {
-    const _ID: &str = "no-redundant-role-invalid-001";
+fn no_redundant_role_002() {
+    const _ID: &str = "no-redundant-role-002";
     let arena = html_arena(r#"<nav role="navigation"></nav>"#);
     // `true` takes the rule's default severity, a warning.
     let result = lint(&arena, &spec(), &config(serde_json::json!(true)));
@@ -64,10 +64,10 @@ fn no_redundant_role_invalid_001() {
     assert_eq!(result.violations[0].raw, "navigation");
 }
 
-/// TS: `[no-redundant-role-invalid-002]`
+/// TS: `[no-redundant-role-003]`
 #[test]
-fn no_redundant_role_invalid_002() {
-    const _ID: &str = "no-redundant-role-invalid-002";
+fn no_redundant_role_003() {
+    const _ID: &str = "no-redundant-role-003";
     let arena = html_arena(r#"<html role="document"><head></head><body></body></html>"#);
     let result = lint(
         &arena,

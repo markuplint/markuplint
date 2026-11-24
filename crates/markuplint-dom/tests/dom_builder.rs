@@ -651,3 +651,61 @@ fn document_settings_read_the_slot_element_from_the_json() {
     assert_eq!(read(Some("html")), SlotElement::Html);
     assert_eq!(read(Some("framework")), SlotElement::Framework);
 }
+
+// --- Deeply nested document ---
+
+/// `<div>` nested `depth` elements deep, as a framework parser's AST nests it: an element is two levels of JSON, the node
+/// and its `childNodes`.
+fn nested_divs(depth: usize) -> String {
+    let mut inner = serde_json::json!([]);
+    for level in (0..depth).rev() {
+        inner = serde_json::json!([{
+            "type": "starttag", "uuid": format!("el-{level}"), "raw": "<div>", "offset": level * 5, "line": 1,
+            "col": level * 5 + 1, "nodeName": "div", "depth": level,
+            "namespace": "http://www.w3.org/1999/xhtml", "elementType": "html", "isFragment": false,
+            "attributes": [], "childNodes": inner, "blockBehavior": null, "pairNodeUuid": null,
+            "tagOpenChar": "<", "tagCloseChar": ">", "isGhost": false, "parentNodeUuid": null
+        }]);
+    }
+    serde_json::json!({ "raw": "", "nodeList": inner, "isFragment": true }).to_string()
+}
+
+/// The default recursion limit of `serde_json` is 128 levels, which is 64 elements deep: a document that the rules
+/// can judge is not refused by how deep it is. The thread has the stack that a debug build needs (about 12 KB per
+/// element), which the test thread of 2 MB may lack on a platform whose frames are larger.
+#[test]
+fn v6_build_from_json_reads_a_document_nested_deeper_than_the_default_limit() {
+    let count = std::thread::Builder::new()
+        .stack_size(32 << 20)
+        .spawn(|| {
+            builder::build_from_json(&nested_divs(100))
+                .expect("Failed to build a deeply nested DOM")
+                .elements()
+                .count()
+        })
+        .unwrap()
+        .join()
+        .unwrap();
+    assert_eq!(count, 100);
+}
+
+/// The document and its `nodeList` are two levels, and each element is two more: 255 elements are 512 levels, which
+/// `MAX_JSON_DEPTH` allows, and one more is refused instead of overflowing the stack. The thread has the stack that
+/// a debug build needs for the deepest document (about 12 KB per element), which the test thread of 2 MB lacks.
+#[test]
+fn v6_build_from_json_reads_a_document_up_to_the_limit_and_refuses_a_deeper_one() {
+    let deepest = (markuplint_core::mlast::MAX_JSON_DEPTH - 2) / 2;
+    let (built, refused) = std::thread::Builder::new()
+        .stack_size(32 << 20)
+        .spawn(move || {
+            let built = builder::build_from_json(&nested_divs(deepest)).map(|arena| arena.elements().count());
+            let refused = builder::build_from_json(&nested_divs(deepest + 1)).map(|_| ());
+            (built, refused)
+        })
+        .unwrap()
+        .join()
+        .unwrap();
+    assert_eq!(built.expect("Failed to build a document at the limit"), deepest);
+    let error = refused.unwrap_err();
+    assert!(error.to_string().contains("nested too deeply"), "{error}");
+}

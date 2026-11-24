@@ -1,8 +1,8 @@
 //! Tests for `require-parent-role` rule.
 //!
 //! Test ID mapping (TS → Rust):
-//!   require-parent-role-valid-001  → require_parent_role_valid_001
-//!   require-parent-role-valid-002  → require_parent_role_valid_002
+//!   require-parent-role-001  → require_parent_role_001
+//!   require-parent-role-002  → require_parent_role_002
 //!   v6_require_parent_role_001  — Rust-only: a missing context is reported at the role token, one or several roles
 //!   v6_require_parent_role_002  — Rust-only: the first token naming a role with parent roles is reported
 //!   v6_require_parent_role_003  — Rust-only: transparent ancestors, by ARIA version
@@ -10,6 +10,7 @@
 //!   v6_require_parent_role_005  — Rust-only: tokens are matched case-sensitively against the core roles only
 //!   v6_require_parent_role_006  — Rust-only: severity, multi-line position and `rules: false`
 //!   v6_require_parent_role_007  — Rust-only: `listitem` outside a list, explicit on `div` and on `li`; not at a fragment root
+//!   v6_require_parent_role_008  — Rust-only: an element whose role may be overridden is skipped, and an ancestor whose role is not known may be the required parent
 
 use crate::lint::{LintConfig, lint};
 use crate::violation::{Severity, Violation};
@@ -56,10 +57,10 @@ fn assert_violations(actual: &[Violation], expected: &[Expected<'_>]) {
 const OPTION_MESSAGE: &str =
     "The \"option\" role requires an accessibility parent with one of the roles: \"listbox\", \"listbox > group\"";
 
-/// TS: `[require-parent-role-valid-001]`
+/// TS: `[require-parent-role-001]`
 #[test]
-fn require_parent_role_valid_001() {
-    const _ID: &str = "require-parent-role-valid-001";
+fn require_parent_role_001() {
+    const _ID: &str = "require-parent-role-001";
     let violations = run_rule(
         r#"<div role="listbox"><div role="option"></div></div>"#,
         serde_json::json!(true),
@@ -67,10 +68,10 @@ fn require_parent_role_valid_001() {
     assert_violations(&violations, &[]);
 }
 
-/// TS: `[require-parent-role-valid-002]`
+/// TS: `[require-parent-role-002]`
 #[test]
-fn require_parent_role_valid_002() {
-    const _ID: &str = "require-parent-role-valid-002";
+fn require_parent_role_002() {
+    const _ID: &str = "require-parent-role-002";
     assert_violations(&run_rule("<div></div>", serde_json::json!(true)), &[]);
 }
 
@@ -220,4 +221,38 @@ fn v6_require_parent_role_007() {
         &[],
     );
     assert_violations(&run_rule(r#"<li role="listitem">x</li>"#, serde_json::json!(true)), &[]);
+}
+
+/// Rust-only: `listitem` in a `div` is reported; it is not where a spread attribute after its `role` may override it,
+/// nor where the `div` is an element whose role is not known until it is rendered (it may be the list).
+#[test]
+fn v6_require_parent_role_008() {
+    let lint = |arena: &markuplint_dom::arena::DomArena| {
+        crate::test_util::lint_arena_brief(
+            "require-parent-role",
+            arena,
+            serde_json::json!({ "rules": { "require-parent-role": true } }),
+        )
+    };
+    let html = r#"<div id="p"><div id="c" role="listitem">a</div></div>"#;
+    let arena = crate::test_util::html_arena(html);
+    assert_eq!(lint(&arena).len(), 1);
+
+    // A spread attribute after the role of the element itself
+    let mut arena = crate::test_util::html_arena(html);
+    let child = crate::test_util::element_with_attr(&arena, "id", "c");
+    crate::test_util::insert_spread_attr(&mut arena, child, 2);
+    assert_eq!(lint(&arena), []);
+
+    // A spread attribute before it does not override it
+    let mut arena = crate::test_util::html_arena(html);
+    let child = crate::test_util::element_with_attr(&arena, "id", "c");
+    crate::test_util::insert_spread_attr(&mut arena, child, 0);
+    assert_eq!(lint(&arena).len(), 1);
+
+    // A spread attribute on the parent: it may be the list
+    let mut arena = crate::test_util::html_arena(html);
+    let parent = crate::test_util::element_with_attr(&arena, "id", "p");
+    crate::test_util::insert_spread_attr(&mut arena, parent, 1);
+    assert_eq!(lint(&arena), []);
 }

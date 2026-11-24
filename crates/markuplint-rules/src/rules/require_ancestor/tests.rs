@@ -1,15 +1,15 @@
 //! Tests for `require-ancestor` rule.
 //!
 //! Test ID mapping (TS → Rust):
-//!   require-ancestor-issue-3670-001  → require_ancestor_issue_3670_001
-//!   require-ancestor-issue-3670-002  → require_ancestor_issue_3670_002
-//!   require-ancestor-issue-3670-003  → require_ancestor_issue_3670_003
-//!   require-ancestor-issue-4528-001  → require_ancestor_issue_4528_001
-//!   require-ancestor-issue-4528-002  → require_ancestor_issue_4528_002
-//!   require-ancestor-issue-4528-033  → require_ancestor_issue_4528_033
-//!   require-ancestor-issue-4506-002  → require_ancestor_issue_4506_002
-//!   require-ancestor-issue-4506-006  → require_ancestor_issue_4506_006
-//!   require-ancestor-issue-4506-008  → require_ancestor_issue_4506_008
+//!   require-ancestor-001  → require_ancestor_001
+//!   require-ancestor-002  → require_ancestor_002
+//!   require-ancestor-003  → require_ancestor_003
+//!   require-ancestor-004  → require_ancestor_004
+//!   require-ancestor-005  → require_ancestor_005
+//!   require-ancestor-036  → require_ancestor_036
+//!   require-ancestor-038  → require_ancestor_038
+//!   require-ancestor-042  → require_ancestor_042
+//!   require-ancestor-044  → require_ancestor_044
 //!   v6_require_ancestor_001  — Rust-only: an `area` at the top of a partial is not reported
 //!   v6_require_ancestor_002  — Rust-only: a pretender is checked as the element it pretends to be
 //!   v6_require_ancestor_003  — Rust-only: position and raw of the report; an `area` below an ordinary element of a partial is reported
@@ -24,10 +24,10 @@ fn run(html: &str) -> Vec<Brief> {
     lint_brief(RULE, html, serde_json::json!({ "rules": { RULE: true } }))
 }
 
-/// TS: `[require-ancestor-issue-3670-001]` area outside map is invalid
+/// TS: `[require-ancestor-001]` area outside map is invalid
 #[test]
-fn require_ancestor_issue_3670_001() {
-    const _ID: &str = "require-ancestor-issue-3670-001";
+fn require_ancestor_001() {
+    const _ID: &str = "require-ancestor-001";
     let v = lint_html(
         r##"<div><area alt="x" href="#"></div>"##,
         serde_json::json!({ "rules": { RULE: true } }),
@@ -37,17 +37,17 @@ fn require_ancestor_issue_3670_001() {
     assert_eq!(v[0].message, MESSAGE);
 }
 
-/// TS: `[require-ancestor-issue-3670-002]` area inside map is valid
+/// TS: `[require-ancestor-002]` area inside map is valid
 #[test]
-fn require_ancestor_issue_3670_002() {
-    const _ID: &str = "require-ancestor-issue-3670-002";
+fn require_ancestor_002() {
+    const _ID: &str = "require-ancestor-002";
     assert_eq!(run(r##"<map name="m"><area alt="x" href="#"></map>"##), []);
 }
 
-/// TS: `[require-ancestor-issue-3670-003]` area inside deeply nested map has no descendantOf violation
+/// TS: `[require-ancestor-003]` area inside deeply nested map has no descendantOf violation
 #[test]
-fn require_ancestor_issue_3670_003() {
-    const _ID: &str = "require-ancestor-issue-3670-003";
+fn require_ancestor_003() {
+    const _ID: &str = "require-ancestor-003";
     assert_eq!(
         run(r##"<map name="m"><div><p><area alt="x" href="#"></p></div></map>"##),
         []
@@ -72,48 +72,48 @@ fn v6_require_ancestor_003() {
     );
 }
 
-/// TS: `[require-ancestor-issue-4528-001]` area at the top of a partial is not reported
+/// TS: `[require-ancestor-004]` area at the top of a partial is not reported
 #[test]
-fn require_ancestor_issue_4528_001() {
-    const _ID: &str = "require-ancestor-issue-4528-001";
+fn require_ancestor_004() {
+    const _ID: &str = "require-ancestor-004";
     assert_eq!(run(r##"<area alt="x" href="#">"##), []);
 }
 
-/// TS: `[require-ancestor-issue-4528-002]` area at the top of a partial after another element is not reported
+/// TS: `[require-ancestor-005]` area at the top of a partial after another element is not reported
 #[test]
-fn require_ancestor_issue_4528_002() {
-    const _ID: &str = "require-ancestor-issue-4528-002";
+fn require_ancestor_005() {
+    const _ID: &str = "require-ancestor-005";
     assert_eq!(run(r##"<p>a</p><area alt="x" href="#">"##), []);
 }
 
-/// TS: `[require-ancestor-issue-4528-033]` an area element in the SVG namespace is not the HTML area element
+/// TS: `[require-ancestor-036]` an area element in the SVG namespace is not the HTML area element
 #[test]
-fn require_ancestor_issue_4528_033() {
-    const _ID: &str = "require-ancestor-issue-4528-033";
+fn require_ancestor_036() {
+    const _ID: &str = "require-ancestor-036";
     assert_eq!(run("<div><svg><area /></svg></div>"), []);
 }
 
-/// TS: `[require-ancestor-issue-4506-002]` area in the content of a template is not reported without a map outside
+/// TS: `[require-ancestor-038]` area in the content of a template is not reported without a map outside
 #[test]
-fn require_ancestor_issue_4506_002() {
-    const _ID: &str = "require-ancestor-issue-4506-002";
+fn require_ancestor_038() {
+    const _ID: &str = "require-ancestor-038";
     assert_eq!(run(r##"<div><template><area alt="x" href="#"></template></div>"##), []);
 }
 
-/// TS: `[require-ancestor-issue-4506-006]` area in a declarative shadow root under a map outside is reported
+/// TS: `[require-ancestor-042]` area in a declarative shadow root under a map outside is reported
 #[test]
-fn require_ancestor_issue_4506_006() {
-    const _ID: &str = "require-ancestor-issue-4506-006";
+fn require_ancestor_042() {
+    const _ID: &str = "require-ancestor-042";
     assert_eq!(
         run(r##"<map name="m"><div><template shadowrootmode="open"><area alt="x" href="#"></template></div></map>"##),
         [brief(Severity::Error, 1, 52, MESSAGE, r##"<area alt="x" href="#">"##)]
     );
 }
 
-/// TS: `[require-ancestor-issue-4506-008]` area in a template that fails to attach a shadow root is not reported
+/// TS: `[require-ancestor-044]` area in a template that fails to attach a shadow root is not reported
 #[test]
-fn require_ancestor_issue_4506_008() {
-    const _ID: &str = "require-ancestor-issue-4506-008";
+fn require_ancestor_044() {
+    const _ID: &str = "require-ancestor-044";
     assert_eq!(
         run(r##"<ul><template shadowrootmode="open"><area alt="x" href="#"></template></ul>"##),
         []

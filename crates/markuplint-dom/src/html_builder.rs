@@ -295,6 +295,7 @@ fn convert_parser_node(
                         is_dynamic_value: None,
                         is_expression_value: None,
                         is_absent: None,
+                        is_spread: None,
                         literal_expression: None,
                         is_directive: None,
                         potential_name: None,
@@ -708,7 +709,7 @@ mod tests {
         assert_eq!(inner("em"), None);
     }
 
-    /// TS `[permitted-contents-valid-003]` (`svg-script.spec.ts`): the tree builder of the HTML standard makes
+    /// TS `[permitted-contents-300]` (`svg-script.spec.ts`): the tree builder of the HTML standard makes
     /// an element of what looks like one in an SVG `script`, and TS leaves the body of a raw-text element out
     /// (`rawTextElements`: `style`, `script`, `xmp`), so the DOM of such an element has no child node, in the
     /// HTML namespace as in the SVG one. The body is read from the source (`element_inner_source`).

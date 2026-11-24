@@ -3,7 +3,7 @@ import { test, expect } from 'vitest';
 
 import rule from './index.js';
 
-test('[tab-requires-tabpanel-valid-001] active tab with aria-controls pointing to a tabpanel', async () => {
+test('[tab-requires-tabpanel-001] active tab with aria-controls pointing to a tabpanel', async () => {
 	const { violations } = await mlRuleTest(
 		rule,
 		'<div role="tablist"><button role="tab" aria-selected="true" aria-controls="panel">Tab</button></div><div id="panel" role="tabpanel">Content</div>',
@@ -11,7 +11,7 @@ test('[tab-requires-tabpanel-valid-001] active tab with aria-controls pointing t
 	expect(violations).toStrictEqual([]);
 });
 
-test('[tab-requires-tabpanel-valid-002] active tab referenced by a tabpanel via aria-labelledby', async () => {
+test('[tab-requires-tabpanel-002] active tab referenced by a tabpanel via aria-labelledby', async () => {
 	const { violations } = await mlRuleTest(
 		rule,
 		'<div role="tablist"><button id="tab1" role="tab" aria-selected="true">Tab</button></div><div role="tabpanel" aria-labelledby="tab1">Content</div>',
@@ -19,7 +19,7 @@ test('[tab-requires-tabpanel-valid-002] active tab referenced by a tabpanel via 
 	expect(violations).toStrictEqual([]);
 });
 
-test('[tab-requires-tabpanel-valid-003] inactive tab does not require a tabpanel', async () => {
+test('[tab-requires-tabpanel-003] inactive tab does not require a tabpanel', async () => {
 	const { violations } = await mlRuleTest(
 		rule,
 		'<div role="tablist"><button role="tab" aria-selected="false">Tab</button></div>',
@@ -27,17 +27,17 @@ test('[tab-requires-tabpanel-valid-003] inactive tab does not require a tabpanel
 	expect(violations).toStrictEqual([]);
 });
 
-test('[tab-requires-tabpanel-valid-004] tab without aria-selected does not require a tabpanel', async () => {
+test('[tab-requires-tabpanel-004] tab without aria-selected does not require a tabpanel', async () => {
 	const { violations } = await mlRuleTest(rule, '<div role="tablist"><button role="tab">Tab</button></div>');
 	expect(violations).toStrictEqual([]);
 });
 
-test('[tab-requires-tabpanel-valid-005] non-tab role is ignored', async () => {
+test('[tab-requires-tabpanel-005] non-tab role is ignored', async () => {
 	const { violations } = await mlRuleTest(rule, '<button aria-selected="true">Not a tab</button>');
 	expect(violations).toStrictEqual([]);
 });
 
-test('[tab-requires-tabpanel-invalid-001] active tab with no tabpanel anywhere in the document', async () => {
+test('[tab-requires-tabpanel-006] active tab with no tabpanel anywhere in the document', async () => {
 	// Mirrors tests/external/validator/tests/html-aria/misc/role-tab-with-no-role-tabpanel-novalid.html
 	const { violations } = await mlRuleTest(
 		rule,
@@ -54,7 +54,7 @@ test('[tab-requires-tabpanel-invalid-001] active tab with no tabpanel anywhere i
 	]);
 });
 
-test('[tab-requires-tabpanel-invalid-002] aria-controls points to a non-tabpanel element', async () => {
+test('[tab-requires-tabpanel-007] aria-controls points to a non-tabpanel element', async () => {
 	const { violations } = await mlRuleTest(
 		rule,
 		'<div role="tablist"><button role="tab" aria-selected="true" aria-controls="notpanel">Tab</button></div><div id="notpanel">Not a panel</div>',
@@ -70,7 +70,7 @@ test('[tab-requires-tabpanel-invalid-002] aria-controls points to a non-tabpanel
 	]);
 });
 
-test('[tab-requires-tabpanel-issue-4489-001] a tabpanel in the same template as the tab', async () => {
+test('[tab-requires-tabpanel-008] a tabpanel in the same template as the tab', async () => {
 	const { violations } = await mlRuleTest(
 		rule,
 		'<template><div role="tablist"><button role="tab" aria-selected="true" aria-controls="panel">Tab</button></div><div id="panel" role="tabpanel">Content</div></template>',
@@ -78,7 +78,7 @@ test('[tab-requires-tabpanel-issue-4489-001] a tabpanel in the same template as 
 	expect(violations).toStrictEqual([]);
 });
 
-test('[tab-requires-tabpanel-issue-4489-002] a tabpanel in another tree does not correspond to the tab', async () => {
+test('[tab-requires-tabpanel-009] a tabpanel in another tree does not correspond to the tab', async () => {
 	const { violations } = await mlRuleTest(
 		rule,
 		'<div role="tablist"><button role="tab" aria-selected="true" aria-controls="panel">Tab</button></div><template><div id="panel" role="tabpanel">Content</div></template>',
@@ -94,7 +94,7 @@ test('[tab-requires-tabpanel-issue-4489-002] a tabpanel in another tree does not
 	]);
 });
 
-test('[tab-requires-tabpanel-issue-4489-003] the id of the tab is compared after the character references are resolved', async () => {
+test('[tab-requires-tabpanel-010] the id of the tab is compared after the character references are resolved', async () => {
 	const { violations } = await mlRuleTest(
 		rule,
 		'<div role="tablist"><button id="&#116;ab1" role="tab" aria-selected="true">Tab</button></div><div role="tabpanel" aria-labelledby="tab1">Content</div>',
@@ -102,7 +102,7 @@ test('[tab-requires-tabpanel-issue-4489-003] the id of the tab is compared after
 	expect(violations).toStrictEqual([]);
 });
 
-test('[tab-requires-tabpanel-issue-4489-004] aria-controls written as a string in code resolves as it is', async () => {
+test('[tab-requires-tabpanel-011] aria-controls written as a string in code resolves as it is', async () => {
 	const { violations } = await mlRuleTest(
 		rule,
 		'<><div role="tablist"><button role="tab" aria-selected="true" aria-controls={"p&amp;1"}>Tab</button></div><div id="p&amp;amp;1" role="tabpanel">Content</div></>',
@@ -111,7 +111,7 @@ test('[tab-requires-tabpanel-issue-4489-004] aria-controls written as a string i
 	expect(violations).toStrictEqual([]);
 });
 
-test('[tab-requires-tabpanel-invalid-003] tabpanel aria-labelledby references a different tab', async () => {
+test('[tab-requires-tabpanel-012] tabpanel aria-labelledby references a different tab', async () => {
 	const { violations } = await mlRuleTest(
 		rule,
 		'<div role="tablist"><button id="tab1" role="tab" aria-selected="true">Tab</button></div><div role="tabpanel" aria-labelledby="othertab">Content</div>',
@@ -120,7 +120,7 @@ test('[tab-requires-tabpanel-invalid-003] tabpanel aria-labelledby references a 
 	expect(violations[0]!.message).toBe('An active "tab" role requires a corresponding "tabpanel" role');
 });
 
-test('[tab-requires-tabpanel-issue-4584-001] the message is in Japanese with locale ja', async () => {
+test('[tab-requires-tabpanel-013] the message is in Japanese with locale ja', async () => {
 	const { violations } = await mlRuleTest(
 		rule,
 		'<div role="tablist"><div role="tab" aria-selected="true">a</div></div>',

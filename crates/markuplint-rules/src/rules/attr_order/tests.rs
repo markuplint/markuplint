@@ -1,51 +1,60 @@
 //! Tests for `attr-order` rule.
 //!
 //! Test ID mapping (TS → Rust):
-//!   attr-order-valid-001        → attr_order_valid_001
-//!   attr-order-invalid-001      → attr_order_invalid_001
-//!   attr-order-valid-002        → attr_order_valid_002
-//!   attr-order-valid-003        → attr_order_valid_003
-//!   attr-order-valid-004        → attr_order_valid_004
-//!   attr-order-invalid-002      → attr_order_invalid_002
-//!   attr-order-valid-005        → attr_order_valid_005
-//!   attr-order-invalid-003      → attr_order_invalid_003
-//!   attr-order-invalid-004      → attr_order_invalid_004
-//!   attr-order-invalid-005      → attr_order_invalid_005
-//!   attr-order-invalid-006      → attr_order_invalid_006
-//!   attr-order-invalid-007      → attr_order_invalid_007
-//!   attr-order-valid-006        → attr_order_valid_006
-//!   attr-order-invalid-008      → attr_order_invalid_008
-//!   attr-order-invalid-009      → attr_order_invalid_009
-//!   attr-order-invalid-021      → attr_order_invalid_021
-//!   attr-order-valid-019        → attr_order_valid_019
-//!   attr-order-valid-020        → attr_order_valid_020
-//!   attr-order-valid-021        → attr_order_valid_021
-//!   attr-order-issue-4033-001   → attr_order_issue_4033_001
-//!   attr-order-invalid-010      → attr_order_invalid_010
-//!   attr-order-valid-007        → attr_order_valid_007
-//!   attr-order-valid-008        → attr_order_valid_008
-//!   attr-order-invalid-011      → attr_order_invalid_011
-//!   attr-order-valid-009        → attr_order_valid_009
-//!   attr-order-valid-010        → attr_order_valid_010
-//!   attr-order-invalid-012      → attr_order_invalid_012
-//!   attr-order-valid-011        → attr_order_valid_011
-//!   attr-order-invalid-013      → attr_order_invalid_013
-//!   attr-order-valid-012        → attr_order_valid_012
-//!   attr-order-invalid-014      → attr_order_invalid_014
-//!   attr-order-valid-013        → attr_order_valid_013
-//!   attr-order-valid-014        — SKIP: JSX parser (spread attribute) not available in Rust
-//!   attr-order-invalid-015      — SKIP: JSX parser (spread attribute) not available in Rust; see v6_attr_order_005
-//!   attr-order-valid-015        — SKIP: JSX parser (spread attribute) not available in Rust; see v6_attr_order_006
-//!   attr-order-valid-016        → attr_order_valid_016
-//!   attr-order-invalid-016      → attr_order_invalid_016
-//!   attr-order-valid-017        → attr_order_valid_017
-//!   attr-order-invalid-017      — SKIP: JSX parser not available in Rust; see v6_attr_order_002
-//!   attr-order-invalid-018      → attr_order_invalid_018
-//!   attr-order-valid-018        → attr_order_valid_018
-//!   attr-order-invalid-019      → attr_order_invalid_019
-//!   attr-order-invalid-020      → attr_order_invalid_020
-//!   attr-order-fix-001 … fix-007, fix-010, fix-012, fix-013 → attr_order_fix_NNN
-//!   attr-order-fix-008/fix-009/fix-011 — SKIP: Vue/JSX parsers not available in Rust; see v6_attr_order_016
+//!   attr-order-001   → attr_order_001
+//!   attr-order-002   → attr_order_002
+//!   attr-order-003   → attr_order_003
+//!   attr-order-004   → attr_order_004
+//!   attr-order-005   → attr_order_005
+//!   attr-order-006   → attr_order_006
+//!   attr-order-007   → attr_order_007
+//!   attr-order-008   → attr_order_008
+//!   attr-order-009   → attr_order_009
+//!   attr-order-010   → attr_order_010
+//!   attr-order-011   → attr_order_011
+//!   attr-order-012   → attr_order_012
+//!   attr-order-013   → attr_order_013
+//!   attr-order-014   → attr_order_014
+//!   attr-order-015   → attr_order_015
+//!   attr-order-016   → attr_order_016
+//!   attr-order-017   → attr_order_017
+//!   attr-order-018   → attr_order_018
+//!   attr-order-019   → attr_order_019
+//!   attr-order-020   → attr_order_020
+//!   attr-order-021   → attr_order_021
+//!   attr-order-022   → attr_order_022
+//!   attr-order-023   → attr_order_023
+//!   attr-order-024   → attr_order_024
+//!   attr-order-025   → attr_order_025
+//!   attr-order-026   → attr_order_026
+//!   attr-order-027   → attr_order_027
+//!   attr-order-028   → attr_order_028
+//!   attr-order-029   → attr_order_029
+//!   attr-order-030   → attr_order_030
+//!   attr-order-031   → attr_order_031
+//!   attr-order-032   → attr_order_032
+//!   attr-order-033   → attr_order_033
+//!   attr-order-034   → attr_order_034
+//!   attr-order-035   → attr_order_035
+//!   attr-order-036   → attr_order_036
+//!   attr-order-037   → attr_order_037
+//!   attr-order-038   → attr_order_038
+//!   attr-order-039/040/046 — SKIP: Vue/JSX parsers not available in Rust; see v6_attr_order_016
+//!   attr-order-041   → attr_order_041
+//!   attr-order-042   → attr_order_042
+//!   attr-order-043   → attr_order_043
+//!   attr-order-044   — SKIP: JSX parser (spread attribute) not available in Rust
+//!   attr-order-045   — SKIP: JSX parser (spread attribute) not available in Rust; see v6_attr_order_005
+//!   attr-order-047   — SKIP: JSX parser (spread attribute) not available in Rust; see v6_attr_order_006
+//!   attr-order-048   → attr_order_048
+//!   attr-order-049   → attr_order_049
+//!   attr-order-050   → attr_order_050
+//!   attr-order-051   → attr_order_051
+//!   attr-order-052   — SKIP: JSX parser not available in Rust; see v6_attr_order_002
+//!   attr-order-053   → attr_order_053
+//!   attr-order-054   → attr_order_054
+//!   attr-order-055   → attr_order_055
+//!   attr-order-056   → attr_order_056
 //!   v6_attr_order_001  — Rust-only: whitespace before `=` is not part of the reported name
 //!   v6_attr_order_002  — Rust-only: names keep the case they are written in
 //!   v6_attr_order_003  — Rust-only: names compare by UTF-16 code unit, as JavaScript strings do
@@ -58,8 +67,8 @@
 //!   v6_attr_order_010  — Rust-only: `source-order` group with `alphabetical: false`
 //!   v6_attr_order_011  — Rust-only: unlisted names of a fixed order follow the listed ones
 //!   v6_attr_order_012  — Rust-only: a pattern may use lookbehind, as JavaScript allows
-//!   attr-order-issue-4435-001   → attr_order_issue_4435_001 (the JSX parser is stood in for by a custom element)
-//!   attr-order-issue-4435-002   → attr_order_issue_4435_002
+//!   attr-order-069   → attr_order_069 (the JSX parser is stood in for by a custom element)
+//!   attr-order-070   → attr_order_070
 //!   v6_attr_order_013  — Rust-only: a pretended element is checked by the attributes of what it pretends to be
 //!   v6_attr_order_014  — Rust-only: `info` severity says "should"
 //!   v6_attr_order_015  — Rust-only: each position keeps its whitespace; non-ASCII text before the fix
@@ -103,30 +112,30 @@ fn fixed_with(html: &str, rule: serde_json::Value) -> String {
     fixed_code(html, &serde_json::json!({ "rules": { "attr-order": rule } }))
 }
 
-/// TS: `[attr-order-fix-001]` — alphabetical sort
+/// TS: `[attr-order-032]` — alphabetical sort
 #[test]
-fn attr_order_fix_001() {
-    const _ID: &str = "attr-order-fix-001";
+fn attr_order_032() {
+    const _ID: &str = "attr-order-032";
     assert_eq!(
         fixed(r#"<div style="x" class="a"></div>"#),
         r#"<div class="a" style="x"></div>"#
     );
 }
 
-/// TS: `[attr-order-fix-002]` — three attributes alphabetical
+/// TS: `[attr-order-033]` — three attributes alphabetical
 #[test]
-fn attr_order_fix_002() {
-    const _ID: &str = "attr-order-fix-002";
+fn attr_order_033() {
+    const _ID: &str = "attr-order-033";
     assert_eq!(
         fixed(r#"<div style="x" class="a" id="b"></div>"#),
         r#"<div class="a" id="b" style="x"></div>"#
     );
 }
 
-/// TS: `[attr-order-fix-003]` — priority list
+/// TS: `[attr-order-034]` — priority list
 #[test]
-fn attr_order_fix_003() {
-    const _ID: &str = "attr-order-fix-003";
+fn attr_order_034() {
+    const _ID: &str = "attr-order-034";
     assert_eq!(
         fixed_with(
             r#"<div class="a" id="b"></div>"#,
@@ -136,27 +145,27 @@ fn attr_order_fix_003() {
     );
 }
 
-/// TS: `[attr-order-fix-004]` — multiline attributes preserve spacing
+/// TS: `[attr-order-035]` — multiline attributes preserve spacing
 #[test]
-fn attr_order_fix_004() {
-    const _ID: &str = "attr-order-fix-004";
+fn attr_order_035() {
+    const _ID: &str = "attr-order-035";
     assert_eq!(
         fixed("<div\n  style=\"x\"\n  class=\"a\"\n></div>"),
         "<div\n  class=\"a\"\n  style=\"x\"\n></div>"
     );
 }
 
-/// TS: `[attr-order-fix-005]` — boolean attributes
+/// TS: `[attr-order-036]` — boolean attributes
 #[test]
-fn attr_order_fix_005() {
-    const _ID: &str = "attr-order-fix-005";
+fn attr_order_036() {
+    const _ID: &str = "attr-order-036";
     assert_eq!(fixed("<input readonly disabled />"), "<input disabled readonly />");
 }
 
-/// TS: `[attr-order-fix-006]` — group order
+/// TS: `[attr-order-037]` — group order
 #[test]
-fn attr_order_fix_006() {
-    const _ID: &str = "attr-order-fix-006";
+fn attr_order_037() {
+    const _ID: &str = "attr-order-037";
     assert_eq!(
         fixed_with(
             r#"<div data-x="1" class="a" id="b"></div>"#,
@@ -166,11 +175,11 @@ fn attr_order_fix_006() {
     );
 }
 
-/// TS: `[attr-order-fix-007]` — options.alphabetical false: unmatched preserve source order
-/// (`-008` and `-009` are Vue and JSX parser cases, which the Rust engine does not have.)
+/// TS: `[attr-order-038]` — options.alphabetical false: unmatched preserve source order
+/// (`[attr-order-039]` and `[attr-order-040]` are Vue and JSX parser cases, which the Rust engine does not have.)
 #[test]
-fn attr_order_fix_007() {
-    const _ID: &str = "attr-order-fix-007";
+fn attr_order_038() {
+    const _ID: &str = "attr-order-038";
     assert_eq!(
         fixed_with(
             r#"<div data-z="z" id="b" data-a="a"></div>"#,
@@ -180,10 +189,10 @@ fn attr_order_fix_007() {
     );
 }
 
-/// TS: `[attr-order-fix-010]` — `{ name }` form
+/// TS: `[attr-order-043]` — `{ name }` form
 #[test]
-fn attr_order_fix_010() {
-    const _ID: &str = "attr-order-fix-010";
+fn attr_order_043() {
+    const _ID: &str = "attr-order-043";
     assert_eq!(
         fixed_with(
             r#"<div class="a" id="b"></div>"#,
@@ -193,11 +202,11 @@ fn attr_order_fix_010() {
     );
 }
 
-/// TS: `[attr-order-fix-012]` — unlisted attributes within a group sorted alphabetically
-/// (`-011` is a JSX spread case; see `v6_attr_order_016` for the Rust-engine counterpart.)
+/// TS: `[attr-order-050]` — unlisted attributes within a group sorted alphabetically
+/// (`[attr-order-046]` is a JSX spread case; see `v6_attr_order_016` for the Rust-engine counterpart.)
 #[test]
-fn attr_order_fix_012() {
-    const _ID: &str = "attr-order-fix-012";
+fn attr_order_050() {
+    const _ID: &str = "attr-order-050";
     assert_eq!(
         fixed_with(
             r#"<div aria-hidden="y" aria-describedby="x" aria-label="z"></div>"#,
@@ -207,10 +216,10 @@ fn attr_order_fix_012() {
     );
 }
 
-/// TS: `[attr-order-fix-013]` — role group placed before aria group
+/// TS: `[attr-order-020]` — role group placed before aria group
 #[test]
-fn attr_order_fix_013() {
-    const _ID: &str = "attr-order-fix-013";
+fn attr_order_020() {
+    const _ID: &str = "attr-order-020";
     assert_eq!(
         fixed_with(
             r#"<ul aria-label="x" role="radiogroup"></ul>"#,
@@ -238,7 +247,7 @@ fn v6_attr_order_017() {
     );
 }
 
-/// The Rust-engine counterpart of TS `[attr-order-fix-011]`: a spread attribute has no tokens
+/// The Rust-engine counterpart of TS `[attr-order-046]`: a spread attribute has no tokens
 /// to measure the range from, so the violation is reported with no fix.
 #[test]
 fn v6_attr_order_016() {
@@ -266,66 +275,66 @@ fn v6_attr_order_016() {
     assert_eq!(violations[0].fix, None);
 }
 
-/// TS: `[attr-order-valid-001]` no violation - already sorted
+/// TS: `[attr-order-001]` no violation - already sorted
 #[test]
-fn attr_order_valid_001() {
-    const _ID: &str = "attr-order-valid-001";
+fn attr_order_001() {
+    const _ID: &str = "attr-order-001";
     assert_eq!(run(r#"<div class="a" id="b" style="c"></div>"#).len(), 0);
 }
 
-/// TS: `[attr-order-invalid-001]` violation - not sorted
+/// TS: `[attr-order-002]` violation - not sorted
 #[test]
-fn attr_order_invalid_001() {
-    const _ID: &str = "attr-order-invalid-001";
+fn attr_order_002() {
+    const _ID: &str = "attr-order-002";
     assert_eq!(
         run(r#"<div style="x" class="a"></div>"#),
         [warning(1, 16, r#""class" should be before "style""#, "class")]
     );
 }
 
-/// TS: `[attr-order-valid-002]` no violation - single attribute
+/// TS: `[attr-order-003]` no violation - single attribute
 #[test]
-fn attr_order_valid_002() {
-    const _ID: &str = "attr-order-valid-002";
+fn attr_order_003() {
+    const _ID: &str = "attr-order-003";
     assert_eq!(run(r#"<div class="a"></div>"#).len(), 0);
 }
 
-/// TS: `[attr-order-valid-003]` no violation - no attributes
+/// TS: `[attr-order-004]` no violation - no attributes
 #[test]
-fn attr_order_valid_003() {
-    const _ID: &str = "attr-order-valid-003";
+fn attr_order_004() {
+    const _ID: &str = "attr-order-004";
     assert_eq!(run("<div></div>").len(), 0);
 }
 
-/// TS: `[attr-order-valid-004]` no violation - boolean attributes sorted
+/// TS: `[attr-order-005]` no violation - boolean attributes sorted
 #[test]
-fn attr_order_valid_004() {
-    const _ID: &str = "attr-order-valid-004";
+fn attr_order_005() {
+    const _ID: &str = "attr-order-005";
     assert_eq!(run("<input disabled readonly />").len(), 0);
 }
 
-/// TS: `[attr-order-invalid-002]` violation - boolean attributes not sorted
+/// TS: `[attr-order-006]` violation - boolean attributes not sorted
 #[test]
-fn attr_order_invalid_002() {
-    const _ID: &str = "attr-order-invalid-002";
+fn attr_order_006() {
+    const _ID: &str = "attr-order-006";
     assert_eq!(
         run("<input readonly disabled />"),
         [warning(1, 17, r#""disabled" should be before "readonly""#, "disabled")]
     );
 }
 
-/// TS: `[attr-order-valid-005]` no violation - matches priority order
+/// TS: `[attr-order-007]` no violation - matches priority order
 #[test]
-fn attr_order_valid_005() {
-    const _ID: &str = "attr-order-valid-005";
+fn attr_order_007() {
+    const _ID: &str = "attr-order-007";
     let rule = serde_json::json!({ "value": ["id", "class", "style"] });
     assert_eq!(run_with(r#"<div id="a" class="b" style="c"></div>"#, rule).len(), 0);
 }
 
-/// TS: `[attr-order-invalid-003]` violation - class before id
+/// TS: `[attr-order-008]` violation - class before id
 #[test]
-fn attr_order_invalid_003() {
-    const _ID: &str = "attr-order-invalid-003";
+fn attr_order_008() {
+    const _ID: &str = "attr-order-008";
     let rule = serde_json::json!({ "value": ["id", "class"] });
     assert_eq!(
         run_with(r#"<div class="a" id="b"></div>"#, rule),
@@ -333,10 +342,10 @@ fn attr_order_invalid_003() {
     );
 }
 
-/// TS: `[attr-order-invalid-004]` unmatched attributes go to the end alphabetically
+/// TS: `[attr-order-009]` unmatched attributes go to the end alphabetically
 #[test]
-fn attr_order_invalid_004() {
-    const _ID: &str = "attr-order-invalid-004";
+fn attr_order_009() {
+    const _ID: &str = "attr-order-009";
     let rule = serde_json::json!({ "value": ["id", "class"] });
     assert_eq!(
         run_with(r#"<div id="a" data-z="z" class="b" data-a="a"></div>"#, rule).len(),
@@ -344,10 +353,10 @@ fn attr_order_invalid_004() {
     );
 }
 
-/// TS: `[attr-order-invalid-005]` unmatched attributes preserve source order when alphabetical: false
+/// TS: `[attr-order-010]` unmatched attributes preserve source order when alphabetical: false
 #[test]
-fn attr_order_invalid_005() {
-    const _ID: &str = "attr-order-invalid-005";
+fn attr_order_010() {
+    const _ID: &str = "attr-order-010";
     let rule = serde_json::json!({ "value": ["id", "class"], "options": { "alphabetical": false } });
     assert_eq!(
         run_with(r#"<div id="a" data-z="z" class="b" data-a="a"></div>"#, rule).len(),
@@ -355,10 +364,10 @@ fn attr_order_invalid_005() {
     );
 }
 
-/// TS: `[attr-order-invalid-006]` global group - class and id should precede data-x
+/// TS: `[attr-order-011]` global group - class and id should precede data-x
 #[test]
-fn attr_order_invalid_006() {
-    const _ID: &str = "attr-order-invalid-006";
+fn attr_order_011() {
+    const _ID: &str = "attr-order-011";
     let rule = serde_json::json!({ "value": [{ "group": "global" }] });
     assert_eq!(
         run_with(r#"<div data-x="1" class="a" id="b"></div>"#, rule),
@@ -366,18 +375,18 @@ fn attr_order_invalid_006() {
     );
 }
 
-/// TS: `[attr-order-invalid-007]` global → aria order
+/// TS: `[attr-order-012]` global → aria order
 #[test]
-fn attr_order_invalid_007() {
-    const _ID: &str = "attr-order-invalid-007";
+fn attr_order_012() {
+    const _ID: &str = "attr-order-012";
     let rule = serde_json::json!({ "value": [{ "group": "global" }, { "group": "aria" }] });
     assert_eq!(run_with(r#"<div aria-label="x" class="a"></div>"#, rule).len(), 1);
 }
 
-/// TS: `[attr-order-valid-006]` no violation - global → aria → data correct order
+/// TS: `[attr-order-013]` no violation - global → aria → data correct order
 #[test]
-fn attr_order_valid_006() {
-    const _ID: &str = "attr-order-valid-006";
+fn attr_order_013() {
+    const _ID: &str = "attr-order-013";
     let rule = serde_json::json!({ "value": [{ "group": "global" }, { "group": "aria" }, { "group": "data" }] });
     assert_eq!(
         run_with(r#"<div class="a" id="b" aria-label="x" data-x="1"></div>"#, rule).len(),
@@ -385,26 +394,26 @@ fn attr_order_valid_006() {
     );
 }
 
-/// TS: `[attr-order-invalid-008]` event group
+/// TS: `[attr-order-014]` event group
 #[test]
-fn attr_order_invalid_008() {
-    const _ID: &str = "attr-order-invalid-008";
+fn attr_order_014() {
+    const _ID: &str = "attr-order-014";
     let rule = serde_json::json!({ "value": [{ "group": "global" }, { "group": "event" }] });
     assert_eq!(run_with(r#"<div onclick="x" class="a"></div>"#, rule).len(), 1);
 }
 
-/// TS: `[attr-order-invalid-009]` data group
+/// TS: `[attr-order-015]` data group
 #[test]
-fn attr_order_invalid_009() {
-    const _ID: &str = "attr-order-invalid-009";
+fn attr_order_015() {
+    const _ID: &str = "attr-order-015";
     let rule = serde_json::json!({ "value": [{ "group": "global" }, { "group": "data" }] });
     assert_eq!(run_with(r#"<div data-a="1" class="a"></div>"#, rule).len(), 1);
 }
 
-/// TS: `[attr-order-invalid-021]` role group - role should be before aria group
+/// TS: `[attr-order-016]` role group - role should be before aria group
 #[test]
-fn attr_order_invalid_021() {
-    const _ID: &str = "attr-order-invalid-021";
+fn attr_order_016() {
+    const _ID: &str = "attr-order-016";
     let rule = serde_json::json!({ "value": [{ "group": "global" }, { "group": "role" }, { "group": "aria" }] });
     assert_eq!(
         run_with(r#"<ul aria-label="x" role="radiogroup"></ul>"#, rule),
@@ -412,26 +421,26 @@ fn attr_order_invalid_021() {
     );
 }
 
-/// TS: `[attr-order-valid-019]` no violation - role before aria matches configured order
+/// TS: `[attr-order-017]` no violation - role before aria matches configured order
 #[test]
-fn attr_order_valid_019() {
-    const _ID: &str = "attr-order-valid-019";
+fn attr_order_017() {
+    const _ID: &str = "attr-order-017";
     let rule = serde_json::json!({ "value": [{ "group": "global" }, { "group": "role" }, { "group": "aria" }] });
     assert_eq!(run_with(r#"<ul role="radiogroup" aria-label="x"></ul>"#, rule).len(), 0);
 }
 
-/// TS: `[attr-order-valid-020]` no violation - aria before role matches configured order
+/// TS: `[attr-order-018]` no violation - aria before role matches configured order
 #[test]
-fn attr_order_valid_020() {
-    const _ID: &str = "attr-order-valid-020";
+fn attr_order_018() {
+    const _ID: &str = "attr-order-018";
     let rule = serde_json::json!({ "value": [{ "group": "aria" }, { "group": "role" }] });
     assert_eq!(run_with(r#"<ul aria-label="x" role="radiogroup"></ul>"#, rule).len(), 0);
 }
 
-/// TS: `[attr-order-valid-021]` role group does not match aria-* attributes with similar names
+/// TS: `[attr-order-019]` role group does not match aria-* attributes with similar names
 #[test]
-fn attr_order_valid_021() {
-    const _ID: &str = "attr-order-valid-021";
+fn attr_order_019() {
+    const _ID: &str = "attr-order-019";
     let rule = serde_json::json!({ "value": [{ "group": "aria" }, { "group": "role" }] });
     assert_eq!(
         run_with(r#"<div aria-roledescription="x" role="y"></div>"#, rule).len(),
@@ -439,10 +448,10 @@ fn attr_order_valid_021() {
     );
 }
 
-/// TS: `[attr-order-issue-4033-001]` role placed before aria-* via an explicit role group
+/// TS: `[attr-order-021]` role placed before aria-* via an explicit role group
 #[test]
-fn attr_order_issue_4033_001() {
-    const _ID: &str = "attr-order-issue-4033-001";
+fn attr_order_021() {
+    const _ID: &str = "attr-order-021";
     let rule = serde_json::json!({ "value": [
         { "group": "global", "order": "source-order" },
         { "group": "role", "order": "source-order" },
@@ -454,42 +463,42 @@ fn attr_order_issue_4033_001() {
     );
 }
 
-/// TS: `[attr-order-invalid-010]` data- pattern first
+/// TS: `[attr-order-022]` data- pattern first
 #[test]
-fn attr_order_invalid_010() {
-    const _ID: &str = "attr-order-invalid-010";
+fn attr_order_022() {
+    const _ID: &str = "attr-order-022";
     let rule = serde_json::json!({ "value": [{ "pattern": "^data-" }] });
     assert_eq!(run_with(r#"<div class="a" data-x="1"></div>"#, rule).len(), 1);
 }
 
-/// TS: `[attr-order-valid-007]` no violation - data- pattern first, already sorted
+/// TS: `[attr-order-023]` no violation - data- pattern first, already sorted
 #[test]
-fn attr_order_valid_007() {
-    const _ID: &str = "attr-order-valid-007";
+fn attr_order_023() {
+    const _ID: &str = "attr-order-023";
     let rule = serde_json::json!({ "value": [{ "pattern": "^data-" }] });
     assert_eq!(run_with(r#"<div data-x="1" class="a"></div>"#, rule).len(), 0);
 }
 
-/// TS: `[attr-order-valid-008]` explicit name vs global group - explicit wins
+/// TS: `[attr-order-024]` explicit name vs global group - explicit wins
 #[test]
-fn attr_order_valid_008() {
-    const _ID: &str = "attr-order-valid-008";
+fn attr_order_024() {
+    const _ID: &str = "attr-order-024";
     let rule = serde_json::json!({ "value": ["id", { "group": "global" }] });
     assert_eq!(run_with(r#"<div id="b" class="a"></div>"#, rule).len(), 0);
 }
 
-/// TS: `[attr-order-invalid-011]` explicit name vs global group - id should come before class
+/// TS: `[attr-order-025]` explicit name vs global group - id should come before class
 #[test]
-fn attr_order_invalid_011() {
-    const _ID: &str = "attr-order-invalid-011";
+fn attr_order_025() {
+    const _ID: &str = "attr-order-025";
     let rule = serde_json::json!({ "value": ["id", { "group": "global" }] });
     assert_eq!(run_with(r#"<div class="a" id="b"></div>"#, rule).len(), 1);
 }
 
-/// TS: `[attr-order-valid-009]` overlapping patterns - first pattern wins
+/// TS: `[attr-order-026]` overlapping patterns - first pattern wins
 #[test]
-fn attr_order_valid_009() {
-    const _ID: &str = "attr-order-valid-009";
+fn attr_order_026() {
+    const _ID: &str = "attr-order-026";
     let rule = serde_json::json!({ "value": [{ "pattern": "^d" }, { "pattern": "^data-" }] });
     assert_eq!(
         run_with(r#"<div data-bar="2" data-foo="1" class="a"></div>"#, rule).len(),
@@ -497,34 +506,34 @@ fn attr_order_valid_009() {
     );
 }
 
-/// TS: `[attr-order-valid-010]` aria pattern vs aria group - first match wins
+/// TS: `[attr-order-027]` aria pattern vs aria group - first match wins
 #[test]
-fn attr_order_valid_010() {
-    const _ID: &str = "attr-order-valid-010";
+fn attr_order_027() {
+    const _ID: &str = "attr-order-027";
     let rule = serde_json::json!({ "value": [{ "pattern": "^aria-label" }, { "group": "aria" }] });
     assert_eq!(run_with(r#"<div aria-label="x" aria-hidden="y"></div>"#, rule).len(), 0);
 }
 
-/// TS: `[attr-order-invalid-012]` alphabetical order within group (default)
+/// TS: `[attr-order-028]` alphabetical order within group (default)
 #[test]
-fn attr_order_invalid_012() {
-    const _ID: &str = "attr-order-invalid-012";
+fn attr_order_028() {
+    const _ID: &str = "attr-order-028";
     let rule = serde_json::json!({ "value": [{ "group": "global", "order": "alphabetical" }] });
     assert_eq!(run_with(r#"<div id="b" class="a"></div>"#, rule).len(), 1);
 }
 
-/// TS: `[attr-order-valid-011]` source-order within group
+/// TS: `[attr-order-029]` source-order within group
 #[test]
-fn attr_order_valid_011() {
-    const _ID: &str = "attr-order-valid-011";
+fn attr_order_029() {
+    const _ID: &str = "attr-order-029";
     let rule = serde_json::json!({ "value": [{ "group": "global", "order": "source-order" }] });
     assert_eq!(run_with(r#"<div id="b" class="a"></div>"#, rule).len(), 0);
 }
 
-/// TS: `[attr-order-invalid-013]` fixed order array within group
+/// TS: `[attr-order-030]` fixed order array within group
 #[test]
-fn attr_order_invalid_013() {
-    const _ID: &str = "attr-order-invalid-013";
+fn attr_order_030() {
+    const _ID: &str = "attr-order-030";
     let rule = serde_json::json!({ "value": [{ "group": "aria", "order": ["aria-label", "aria-describedby"] }] });
     assert_eq!(
         run_with(r#"<div aria-describedby="x" aria-label="y"></div>"#, rule).len(),
@@ -532,10 +541,10 @@ fn attr_order_invalid_013() {
     );
 }
 
-/// TS: `[attr-order-valid-012]` no violation - fixed order array correct
+/// TS: `[attr-order-031]` no violation - fixed order array correct
 #[test]
-fn attr_order_valid_012() {
-    const _ID: &str = "attr-order-valid-012";
+fn attr_order_031() {
+    const _ID: &str = "attr-order-031";
     let rule = serde_json::json!({ "value": [{ "group": "aria", "order": ["aria-label", "aria-describedby"] }] });
     assert_eq!(
         run_with(r#"<div aria-label="y" aria-describedby="x"></div>"#, rule).len(),
@@ -543,10 +552,10 @@ fn attr_order_valid_012() {
     );
 }
 
-/// TS: `[attr-order-invalid-014]` object form { name: "id" } works like string "id"
+/// TS: `[attr-order-041]` object form { name: "id" } works like string "id"
 #[test]
-fn attr_order_invalid_014() {
-    const _ID: &str = "attr-order-invalid-014";
+fn attr_order_041() {
+    const _ID: &str = "attr-order-041";
     let rule = serde_json::json!({ "value": [{ "name": "id" }, { "name": "class" }] });
     assert_eq!(
         run_with(r#"<div class="a" id="b"></div>"#, rule),
@@ -554,26 +563,26 @@ fn attr_order_invalid_014() {
     );
 }
 
-/// TS: `[attr-order-valid-013]` no violation - { name } form correct order
+/// TS: `[attr-order-042]` no violation - { name } form correct order
 #[test]
-fn attr_order_valid_013() {
-    const _ID: &str = "attr-order-valid-013";
+fn attr_order_042() {
+    const _ID: &str = "attr-order-042";
     let rule = serde_json::json!({ "value": [{ "name": "id" }, { "name": "class" }] });
     assert_eq!(run_with(r#"<div id="b" class="a"></div>"#, rule).len(), 0);
 }
 
-/// TS: `[attr-order-valid-016]` invalid pattern does not crash
+/// TS: `[attr-order-048]` invalid pattern does not crash
 #[test]
-fn attr_order_valid_016() {
-    const _ID: &str = "attr-order-valid-016";
+fn attr_order_048() {
+    const _ID: &str = "attr-order-048";
     let rule = serde_json::json!({ "value": [{ "pattern": "[invalid" }] });
     assert_eq!(run_with(r#"<div class="a" id="b"></div>"#, rule).len(), 0);
 }
 
-/// TS: `[attr-order-invalid-016]` unlisted attributes within group fall back to alphabetical
+/// TS: `[attr-order-049]` unlisted attributes within group fall back to alphabetical
 #[test]
-fn attr_order_invalid_016() {
-    const _ID: &str = "attr-order-invalid-016";
+fn attr_order_049() {
+    const _ID: &str = "attr-order-049";
     let rule = serde_json::json!({ "value": [{ "group": "aria", "order": ["aria-label"] }] });
     assert_eq!(
         run_with(
@@ -585,43 +594,43 @@ fn attr_order_invalid_016() {
     );
 }
 
-/// TS: `[attr-order-valid-017]` value: true with single element
+/// TS: `[attr-order-051]` value: true with single element
 #[test]
-fn attr_order_valid_017() {
-    const _ID: &str = "attr-order-valid-017";
+fn attr_order_051() {
+    const _ID: &str = "attr-order-051";
     assert_eq!(run(r#"<input type="text" />"#).len(), 0);
 }
 
-/// TS: `[attr-order-invalid-018]` empty value array treated as alphabetical
+/// TS: `[attr-order-053]` empty value array treated as alphabetical
 #[test]
-fn attr_order_invalid_018() {
-    const _ID: &str = "attr-order-invalid-018";
+fn attr_order_053() {
+    const _ID: &str = "attr-order-053";
     let rule = serde_json::json!({ "value": [] });
     assert_eq!(run_with(r#"<div style="x" class="a"></div>"#, rule).len(), 1);
 }
 
-/// TS: `[attr-order-valid-018]` empty value with alphabetical: false is a no-op
+/// TS: `[attr-order-054]` empty value with alphabetical: false is a no-op
 #[test]
-fn attr_order_valid_018() {
-    const _ID: &str = "attr-order-valid-018";
+fn attr_order_054() {
+    const _ID: &str = "attr-order-054";
     let rule = serde_json::json!({ "value": [], "options": { "alphabetical": false } });
     assert_eq!(run_with(r#"<div style="x" class="a"></div>"#, rule).len(), 0);
 }
 
-/// TS: `[attr-order-invalid-019]` multiple elements sorted independently
+/// TS: `[attr-order-055]` multiple elements sorted independently
 #[test]
-fn attr_order_invalid_019() {
-    const _ID: &str = "attr-order-invalid-019";
+fn attr_order_055() {
+    const _ID: &str = "attr-order-055";
     assert_eq!(
         run(r#"<div class="a" id="b"></div><span style="x" class="y"></span>"#).len(),
         1
     );
 }
 
-/// TS: `[attr-order-invalid-020]` severity error uses "must" in message
+/// TS: `[attr-order-056]` severity error uses "must" in message
 #[test]
-fn attr_order_invalid_020() {
-    const _ID: &str = "attr-order-invalid-020";
+fn attr_order_056() {
+    const _ID: &str = "attr-order-056";
     let rule = serde_json::json!({ "severity": "error" });
     assert_eq!(
         run_with(r#"<div style="x" class="a"></div>"#, rule),
@@ -645,7 +654,7 @@ fn v6_attr_order_001() {
 }
 
 /// Expected values from the TS rule on the same input (the TS HTML parser keeps the
-/// case, so TS `[attr-order-invalid-017]` does not need JSX to see it).
+/// case, so TS `[attr-order-052]` does not need JSX to see it).
 #[test]
 fn v6_attr_order_002() {
     assert_eq!(
@@ -699,7 +708,7 @@ fn run_with_leading_spread(html: &str, rule: serde_json::Value) -> Vec<Brief> {
         .collect()
 }
 
-/// The JSX counterpart is TS `[attr-order-invalid-015]`
+/// The JSX counterpart is TS `[attr-order-045]`
 /// (`<div {...props} id="a" className="b"></div>`), for which TS reports
 /// `"id" should be before "#spread"` at the `id` attribute.
 #[test]
@@ -860,11 +869,11 @@ fn v6_attr_order_020() {
     assert_eq!(run_dom_api("<div role ROLE></div>"), []);
 }
 
-/// TS: `[attr-order-issue-4435-001]` attributes that a pretender made are not in the source, so
+/// TS: `[attr-order-069]` attributes that a pretender made are not in the source, so
 /// their order is not checked
 #[test]
-fn attr_order_issue_4435_001() {
-    const _ID: &str = "attr-order-issue-4435-001";
+fn attr_order_069() {
+    const _ID: &str = "attr-order-069";
     assert_eq!(
         lint_brief(
             "attr-order",
@@ -884,11 +893,11 @@ fn attr_order_issue_4435_001() {
     );
 }
 
-/// TS: `[attr-order-issue-4435-002]` attributes that a pretender takes over from the source are
+/// TS: `[attr-order-070]` attributes that a pretender takes over from the source are
 /// still checked
 #[test]
-fn attr_order_issue_4435_002() {
-    const _ID: &str = "attr-order-issue-4435-002";
+fn attr_order_070() {
+    const _ID: &str = "attr-order-070";
     assert_eq!(
         lint_brief(
             "attr-order",

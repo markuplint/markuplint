@@ -16,6 +16,7 @@ use crate::aria::computed_role::get_computed_role;
 use crate::aria_check::{
     ElementContext, ElementGate, aria_prop_attrs, attr_name, name_key, prop_type_label, walk_elements,
 };
+use crate::helpers::is_role_unknown;
 use crate::rule::{Rule, RuleConfigSet};
 use crate::violation::{Severity, Violation};
 
@@ -52,6 +53,14 @@ fn check(ctx: &ElementContext<'_>, violations: &mut Vec<Violation>) {
         return;
     }
 
+    // What the role deprecates is not known where the role is not known until it is rendered. The checker reads
+    // only the role's `ownedProperties`, and no property is deprecated on every role in the ARIA data of any
+    // version, so "deprecated on every role that could apply" never holds and skipping the element loses no
+    // report (`no-deprecated-aria-prop/spec-data.spec.ts` of `@markuplint/rules` asserts the data, and fails when
+    // that changes; the Rust engine reads the same data, so it is the guard of this early return too).
+    if is_role_unknown(ctx.el) {
+        return;
+    }
     let computed = get_computed_role(ctx.spec, ctx.arena, ctx.node_id, ctx.version, false);
     let Some(role) = computed.role else {
         return;

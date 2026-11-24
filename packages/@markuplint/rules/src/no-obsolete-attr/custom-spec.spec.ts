@@ -15,7 +15,7 @@ import rule from './index.js';
  */
 const specs = { '.*': fileURLToPath(new URL('obsolete-fixture.mjs', import.meta.url)) };
 
-test('[no-obsolete-attr-issue-4309-002] an upper-case name on an svg element is not the obsolete attribute in JSX, and is in HTML', async () => {
+test('[no-obsolete-attr-013] an upper-case name on an svg element is not the obsolete attribute in JSX, and is in HTML', async () => {
 	const parser = { '.*': '@markuplint/jsx-parser' };
 	expect((await mlRuleTest(rule, '<svg FLAG="x" />', { parser, specs })).violations).toStrictEqual([]);
 
@@ -44,7 +44,7 @@ test('[no-obsolete-attr-issue-4309-002] an upper-case name on an svg element is 
 	]);
 });
 
-test('[no-obsolete-attr-issue-4701-001] an attribute of a MathML element that the spec flags obsolete is reported', async () => {
+test('[no-obsolete-attr-014] an attribute of a MathML element that the spec flags obsolete is reported', async () => {
 	const { violations } = await mlRuleTest(rule, '<math><mi flag="x">x</mi></math>', { specs });
 	expect(violations).toStrictEqual([
 		{

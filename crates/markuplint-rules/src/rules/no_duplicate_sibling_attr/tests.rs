@@ -1,13 +1,13 @@
 //! Tests for `no-duplicate-sibling-attr` rule.
 //!
 //! Test ID mapping (TS → Rust):
-//!   no-duplicate-sibling-attr-issue-3640-001  → no_duplicate_sibling_attr_issue_3640_001
-//!   no-duplicate-sibling-attr-issue-3640-002  → no_duplicate_sibling_attr_issue_3640_002
-//!   no-duplicate-sibling-attr-issue-3640-003  → no_duplicate_sibling_attr_issue_3640_003
-//!   v6_no_duplicate_sibling_attr_001          — Rust-only: positions, case, and every later sibling reported
-//!   v6_no_duplicate_sibling_attr_002          — Rust-only: only siblings under a parent element are compared
-//!   v6_no_duplicate_sibling_attr_003          — Rust-only: a pretended sibling counts as what it pretends to be
-//!   v6_no_duplicate_sibling_attr_004          — Rust-only: a sibling the rule is disabled on still counts
+//!   no-duplicate-sibling-attr-001     → no_duplicate_sibling_attr_001
+//!   no-duplicate-sibling-attr-002     → no_duplicate_sibling_attr_002
+//!   no-duplicate-sibling-attr-003     → no_duplicate_sibling_attr_003
+//!   v6_no_duplicate_sibling_attr_001  — Rust-only: positions, case, and every later sibling reported
+//!   v6_no_duplicate_sibling_attr_002  — Rust-only: only siblings under a parent element are compared
+//!   v6_no_duplicate_sibling_attr_003  — Rust-only: a pretended sibling counts as what it pretends to be
+//!   v6_no_duplicate_sibling_attr_004  — Rust-only: a sibling the rule is disabled on still counts
 //!
 //! Expected values of the `v6_*` tests come from running the TS rule.
 
@@ -28,13 +28,13 @@ fn run_with(html: &str, config: serde_json::Value) -> Vec<Brief> {
 const MESSAGE: &str =
     "The \"default\" attribute must not appear on more than one \"track\" element within the same parent";
 
-/// TS: `[no-duplicate-sibling-attr-issue-3640-001]` — multiple track default is invalid
+/// TS: `[no-duplicate-sibling-attr-001]` — multiple track default is invalid
 ///
 /// TS asserts `expect.objectContaining({ severity, raw, message })`; line and col are asserted
 /// too, with the values TS reports.
 #[test]
-fn no_duplicate_sibling_attr_issue_3640_001() {
-    const _ID: &str = "no-duplicate-sibling-attr-issue-3640-001";
+fn no_duplicate_sibling_attr_001() {
+    const _ID: &str = "no-duplicate-sibling-attr-001";
     assert_eq!(
         run(
             r#"<video><track kind="subtitles" src="a.vtt" default><track kind="captions" src="b.vtt" default></video>"#
@@ -49,22 +49,22 @@ fn no_duplicate_sibling_attr_issue_3640_001() {
     );
 }
 
-/// TS: `[no-duplicate-sibling-attr-issue-3640-002]` — single track default is valid
+/// TS: `[no-duplicate-sibling-attr-002]` — single track default is valid
 #[test]
-fn no_duplicate_sibling_attr_issue_3640_002() {
-    const _ID: &str = "no-duplicate-sibling-attr-issue-3640-002";
+fn no_duplicate_sibling_attr_002() {
+    const _ID: &str = "no-duplicate-sibling-attr-002";
     assert_eq!(
         run(r#"<video><track kind="subtitles" src="a.vtt" default><track kind="captions" src="b.vtt"></video>"#),
         []
     );
 }
 
-/// TS: `[no-duplicate-sibling-attr-issue-3640-003]` — multiple track default in audio is invalid
+/// TS: `[no-duplicate-sibling-attr-003]` — multiple track default in audio is invalid
 ///
-/// Line and col asserted as in `issue_3640_001`.
+/// Line and col asserted as in `no_duplicate_sibling_attr_001`.
 #[test]
-fn no_duplicate_sibling_attr_issue_3640_003() {
-    const _ID: &str = "no-duplicate-sibling-attr-issue-3640-003";
+fn no_duplicate_sibling_attr_003() {
+    const _ID: &str = "no-duplicate-sibling-attr-003";
     assert_eq!(
         run(
             r#"<audio><track kind="subtitles" src="a.vtt" default><track kind="captions" src="b.vtt" default></audio>"#
