@@ -39,7 +39,10 @@ export default createRule<Value>({
 			}
 			const closeTag = el.closeTag;
 			if (closeTag && deny.test(closeTag.rawName)) {
-				const closeNameOffset = closeTag.startOffset + el.tagOpenChar.length + '/'.length;
+				// Read from the end tag itself: the start tag of an element that the parser inserted (`<html>` omitted)
+				// has no `tagOpenChar`, though its end tag is written as `</html>`. `rawName` is the name as written, so
+				// it is in `raw`.
+				const closeNameOffset = closeTag.startOffset + closeTag.raw.indexOf(closeTag.rawName);
 				const fixedCloseName =
 					el.rule.value === 'lower' ? closeTag.rawName.toLowerCase() : closeTag.rawName.toUpperCase();
 				report({

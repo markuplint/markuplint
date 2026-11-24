@@ -54,3 +54,16 @@ test('[no-content-after-body-006] the message is in Japanese with locale ja', as
 		},
 	]);
 });
+
+test('[no-content-after-body-007] the body whose start tag is omitted is closed by its end tag', async () => {
+	const { violations } = await mlRuleTest(rule, '<!doctype html><title>t</title><p>x</p></body><p>y</p>');
+	expect(violations).toStrictEqual([
+		{
+			severity: 'error',
+			line: 1,
+			col: 47,
+			message: 'Content after the end tag of the "body" element is not allowed',
+			raw: '<p>',
+		},
+	]);
+});

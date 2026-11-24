@@ -1,13 +1,14 @@
 import type { Replacements } from './optimize-starts-head-or-body.js';
-import type { Node } from './types.js';
+import type { Node, SourceRange } from './types.js';
 import type { MLASTNodeTreeItem, MLASTParentNode, MLASTParseError } from '@markuplint/ml-ast';
 import type { ChildToken, ParseOptions, ParserOptions } from '@markuplint/parser-utils';
 import type { ParserError as Parse5ParserError } from 'parse5';
 
 import { Parser } from '@markuplint/parser-utils';
-import { parse, parseFragment } from 'parse5';
+import { html } from 'parse5';
 
 import { findHtmlEndTagAfterFrameset } from './find-html-end-tag-after-frameset.js';
+import { parseWithImplicitEndTags } from './implicit-end-tags.js';
 import { isDocumentFragment } from './is-document-fragment.js';
 import {
 	optimizeStartsHeadTagOrBodyTagResume,
@@ -19,6 +20,8 @@ type State = {
 	startsHeadTagOrBodyTag: Replacements | null;
 	/** The offsets of the start tags that an element of this parse was made from. */
 	startTagOffsets: Set<number>;
+	/** Reads the end tag that parse5 processed for an element it inserted without a start tag (set by `tokenize`). */
+	implicitEndTag: ((node: Node) => SourceRange | null) | null;
 	afterPosition: {
 		endOffset: number;
 		endLine: number;
@@ -26,6 +29,19 @@ type State = {
 		depth: number;
 	};
 };
+
+/**
+ * The elements of the HTML namespace whose content the tokenizer reads as text (`style`, `script` and `xmp` are in
+ * `rawTextElements` instead).
+ */
+const TEXT_ONLY_ELEMENTS: ReadonlySet<string> = new Set([
+	'iframe',
+	'noembed',
+	'noframes',
+	'plaintext',
+	'textarea',
+	'title',
+]);
 
 type ExtendsOptions = Pick<ParserOptions, 'ignoreTags' | 'maskChar'>;
 
@@ -50,6 +66,7 @@ export class HtmlParser extends Parser<Node, State> {
 			{
 				startsHeadTagOrBodyTag: null,
 				startTagOffsets: new Set(),
+				implicitEndTag: null,
 				afterPosition: {
 					endOffset: 0,
 					endLine: 1,
@@ -80,10 +97,9 @@ export class HtmlParser extends Parser<Node, State> {
 	tokenize(options?: ParseOptions): { ast: Node[]; isFragment: boolean; parseErrors: readonly MLASTParseError[] } {
 		const mode = options?.documentMode ?? 'auto';
 		const isFragment = mode === 'document' ? false : mode === 'fragment' ? true : isDocumentFragment(this.rawCode);
-		const parseFn = isFragment ? parseFragment : parse;
 		const collected: MLASTParseError[] = [];
 		const rawCode = this.rawCode;
-		const doc = parseFn(rawCode, {
+		const { root: doc, getImplicitEndTag } = parseWithImplicitEndTags(rawCode, isFragment, {
 			scriptingEnabled: false,
 			sourceCodeLocationInfo: true,
 			onParseError(error: Parse5ParserError) {
@@ -101,6 +117,7 @@ export class HtmlParser extends Parser<Node, State> {
 				});
 			},
 		});
+		this.state.implicitEndTag = getImplicitEndTag;
 		const childNodes = doc.childNodes;
 
 		return {
@@ -231,16 +248,19 @@ export class HtmlParser extends Parser<Node, State> {
 	}
 
 	/**
-	 * Makes an element that has no counterpart in the source: its `raw` is empty, and its position is where the previous
+	 * Makes an element that has no start tag in the source: its `raw` is empty, and its position is where the previous
 	 * sibling ends (or the end of the start tag of its parent), so that the source mapping of the real elements stays intact.
 	 *
 	 * Two kinds of element come here. One is an element that parse5 inserts implicitly, following the tree
-	 * construction of the HTML Standard (`<html>`, `<head>`, `<body>`, `<tbody>`), which has no `sourceCodeLocation`. The other
-	 * is an element that the parser makes again where a formatting element is misnested (`<p><a href><div>`: the `div`
-	 * closes the `p`, and the `a` is made again inside the `div`), which has the location of the start tag that it repeats.
-	 * It is in the tree that the HTML Standard builds, so it is in the tree here. It has no start tag to read, so it
-	 * has no attributes: the `href` of the repeated `a` is on the first `a` only, and a rule that reads the attributes
-	 * reports the first and not this one, as it would otherwise report each twice.
+	 * construction of the HTML Standard (`<html>`, `<head>`, `<body>`, `<tbody>`, `<colgroup>`, …), which has no
+	 * `sourceCodeLocation`. The end tag of such an element that the source does have (`</body>` after an omitted
+	 * `<body>`) is paired with it, as parse5 processed it (see `parseWithImplicitEndTags`).
+	 *
+	 * The other is an element that the parser makes again where a formatting element is misnested (`<p><a href><div>`:
+	 * the `div` closes the `p`, and the `a` is made again inside the `div`), which has the location of the start tag
+	 * that it repeats. It is in the tree that the HTML Standard builds, so it is in the tree here. It has neither a
+	 * start tag to read nor an end tag, so it has no attributes: the `href` of the repeated `a` is on the first `a` only,
+	 * and a rule that reads the attributes reports the first and not this one, as it would otherwise report each twice.
 	 *
 	 * @see https://html.spec.whatwg.org/multipage/parsing.html#reconstruct-the-active-formatting-elements
 	 *
@@ -278,6 +298,21 @@ export class HtmlParser extends Parser<Node, State> {
 				nodeName: originNode.nodeName,
 			},
 			childNodes,
+			{
+				createEndTagToken: () => {
+					const endTagLoc =
+						this.state.implicitEndTag?.(originNode) ??
+						findHtmlEndTagAfterFrameset(this.rawCode, originNode);
+					if (!endTagLoc) {
+						return null;
+					}
+					return {
+						...this.sliceFragment(endTagLoc.startOffset, endTagLoc.endOffset),
+						depth,
+						parentNode,
+					};
+				},
+			},
 		);
 	}
 
@@ -296,9 +331,33 @@ export class HtmlParser extends Parser<Node, State> {
 		return after;
 	}
 
+	/**
+	 * The tokenizer emits no tags in the content of these elements (up to the end tag of the element itself, which
+	 * is not in the text), so `</p>` in `<noframes></p></noframes>` is a part of the text. Searching the text for tags
+	 * would split it into an end tag node, which `Parser` then turns into an `#invalid` node and
+	 * `no-orphaned-end-tag` reports.
+	 *
+	 * `rawTextElements` does not serve here: it drops the children of the element, and the text of `title` and
+	 * `textarea` is needed (character references in RCDATA are not decoded on that path, see
+	 * `Parser#parseCodeFragment`). `style`, `script` and `xmp` are listed there for their own reasons.
+	 *
+	 * Only the HTML namespace: `title` in `<svg>` is an ordinary element whose content is markup.
+	 *
+	 * @see https://html.spec.whatwg.org/multipage/parsing.html#generic-raw-text-element-parsing-algorithm
+	 * @see https://html.spec.whatwg.org/multipage/parsing.html#generic-rcdata-element-parsing-algorithm
+	 * @see https://html.spec.whatwg.org/multipage/parsing.html#parsing-main-inbody (`plaintext` switches the tokenizer to the PLAINTEXT state)
+	 *
+	 * @param token - The text and its parent
+	 * @returns The text node, or the nodes that the text holds when it is searched for tags
+	 */
 	visitText(token: ChildToken) {
+		const parent = token.parentNode;
+		const isTextOnly =
+			parent?.type === 'starttag' &&
+			parent.namespace === html.NS.HTML &&
+			TEXT_ONLY_ELEMENTS.has(parent.nodeName.toLowerCase());
 		return super.visitText(token, {
-			researchTags: true,
+			researchTags: !isTextOnly,
 			invalidTagAsText: true,
 		});
 	}

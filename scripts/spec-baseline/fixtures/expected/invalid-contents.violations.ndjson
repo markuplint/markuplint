@@ -63,4 +63,3 @@
 {"col":20,"line":138,"message":"\"alt\" should be before \"src\"","raw":"alt","ruleId":"attr-order","severity":"warning"}
 {"col":53,"line":138,"message":"Orphaned end tag detected","raw":"</img>","ruleId":"no-orphaned-end-tag","severity":"error"}
 {"col":18,"line":139,"message":"Orphaned end tag detected","raw":"</br>","ruleId":"no-orphaned-end-tag","severity":"error"}
-{"col":2,"line":140,"message":"Orphaned end tag detected","raw":"</body>","ruleId":"no-orphaned-end-tag","severity":"error"}

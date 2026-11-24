@@ -438,4 +438,18 @@ describe('fix', () => {
 		);
 		expect(fixedCode).toBe('<html><head><meta charset="UTF-8"><title>Title</title><body></body></html>');
 	});
+
+	test('[head-element-order-033] fix: the end tag of a head whose start tag is omitted stays where it is', async () => {
+		const { fixedCode } = await mlRuleTest(
+			rule,
+			'<!doctype html><title>Title</title><meta charset="UTF-8"></head><body></body>',
+			{
+				rule: {
+					value: ['meta[charset]', 'title'],
+				},
+			},
+			true,
+		);
+		expect(fixedCode).toBe('<!doctype html><meta charset="UTF-8"><title>Title</title></head><body></body>');
+	});
 });

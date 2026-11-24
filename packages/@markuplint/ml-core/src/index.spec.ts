@@ -34,6 +34,15 @@ describe('AST', () => {
 		expect(nodeList[0].closeTag.raw).toBe('</div>');
 	});
 
+	test('the end tag of an element whose start tag is omitted is its close tag', () => {
+		const document = createTestDocument('<!doctype html><head></head><body></body></html>');
+		const html = document.querySelector('html');
+		expect(html.isOmitted).toBe(true);
+		expect(html.raw).toBe('');
+		expect(html.closeTag.raw).toBe('</html>');
+		expect(document.nodeList.filter(node => node.isBogus)).toStrictEqual([]);
+	});
+
 	test('raw', () => {
 		const tokens = createTestTokenList(`
 <div>

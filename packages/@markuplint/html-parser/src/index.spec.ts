@@ -1,4 +1,4 @@
-import type { MLASTElement, MLASTElementCloseTag, MLASTInvalid } from '@markuplint/ml-ast';
+import type { MLASTElement, MLASTElementCloseTag } from '@markuplint/ml-ast';
 
 import { nodeListToDebugMaps, attributesToDebugMaps } from '@markuplint/parser-utils';
 import { describe, test, expect } from 'vitest';
@@ -227,12 +227,11 @@ describe('parser', () => {
 		expect(doc.nodeList[0]?.nodeName).toBe('html');
 		expect(doc.nodeList[1]?.nodeName).toBe('head');
 		expect(doc.nodeList[2]?.nodeName).toBe('body');
-		const invalidNode = doc.nodeList[3] as MLASTInvalid;
-		expect(invalidNode.type).toBe('invalid');
-		expect(invalidNode.kind).toBe('endtag');
-		expect(invalidNode.nodeName).toBe('#invalid');
-		expect(invalidNode.raw).toBe('</body>');
-		expect(invalidNode.isBogus).toBeTruthy();
+		const endTag = doc.nodeList[3] as MLASTElementCloseTag;
+		expect(endTag.type).toBe('endtag');
+		expect(endTag.nodeName).toBe('body');
+		expect(endTag.raw).toBe('</body>');
+		expect(endTag.pairNodeUuid).toBe(doc.nodeList[2]?.uuid);
 		expect(doc.nodeList.length).toBe(4);
 	});
 
@@ -249,8 +248,10 @@ describe('parser', () => {
 		expect(doc.nodeList[1]?.nodeName).toBe('head');
 		expect(doc.nodeList[2]?.nodeName).toBe('body');
 		expect(doc.nodeList[3]?.nodeName).toBe('#text');
-		expect(doc.nodeList[4]?.nodeName).toBe('html');
-		expect(doc.nodeList.length).toBe(5);
+		expect(doc.nodeList[4]?.nodeName).toBe('body');
+		expect(doc.nodeList[5]?.nodeName).toBe('#text');
+		expect(doc.nodeList[6]?.nodeName).toBe('html');
+		expect(doc.nodeList.length).toBe(7);
 	});
 
 	test('a element', () => {

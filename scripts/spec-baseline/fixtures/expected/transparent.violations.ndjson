@@ -43,4 +43,3 @@
 {"col":22,"line":68,"message":"\"height\" should be before \"width\"","raw":"height","ruleId":"attr-order","severity":"warning"}
 {"col":43,"line":68,"message":"Missing \"x\" ID","raw":"#x","ruleId":"no-broken-fragment-link","severity":"warning"}
 {"col":19,"line":70,"message":"The \"div\" element is not allowed in the \"span\" element through the transparent model in this context","raw":"<div>","ruleId":"permitted-contents","severity":"error"}
-{"col":2,"line":71,"message":"Orphaned end tag detected","raw":"</body>","ruleId":"no-orphaned-end-tag","severity":"error"}
