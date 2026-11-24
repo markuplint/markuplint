@@ -141,3 +141,11 @@ describe('Dynamic values', () => {
 		).toStrictEqual([]);
 	});
 });
+
+describe('The candidates are split on ASCII white space only', () => {
+	const nbsp = String.fromCodePoint(160);
+
+	test('[no-mixed-srcset-descriptors-019] a URL that holds U+00A0 is one URL with its descriptor', async () => {
+		expect((await mlRuleTest(rule, `<img srcset="a${nbsp}b 2x, c 1x" alt="photo">`)).violations).toStrictEqual([]);
+	});
+});

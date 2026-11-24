@@ -35,13 +35,3 @@ export function getQueryableRoot(
 	}
 	return null;
 }
-
-/**
- * The tokens of an ID reference list.
- *
- * @param value - The value of the attribute
- * @returns The IDs
- */
-export function splitIdReferences(value: string | null): string[] {
-	return (value ?? '').split(/[\t\n\f\r ]+/).filter(Boolean);
-}

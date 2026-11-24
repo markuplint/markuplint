@@ -5,6 +5,8 @@
  * `srcset` at all).
  */
 
+import { splitOnAsciiWhitespace, trimAsciiWhitespace } from '@markuplint/shared';
+
 /**
  * Descriptor type for an image candidate in a srcset attribute.
  * - `width`: ends with `w` (e.g., `480w`)
@@ -37,7 +39,7 @@ type ParseResult = {
  */
 
 export function parseSrcset(value: string): ParseResult {
-	const raw = value.trim();
+	const raw = trimAsciiWhitespace(value);
 	if (raw === '') {
 		return { candidates: [], hasWidth: false, hasDensity: false, hasImplied: false };
 	}
@@ -48,7 +50,7 @@ export function parseSrcset(value: string): ParseResult {
 	let hasImplied = false;
 
 	for (const segment of raw.split(',')) {
-		const tokens = segment.trim().split(/\s+/);
+		const tokens = splitOnAsciiWhitespace(segment);
 		const url = tokens[0];
 		if (!url) {
 			continue;

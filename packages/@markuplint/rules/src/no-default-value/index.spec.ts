@@ -203,3 +203,21 @@ test('[no-default-value-013] an attribute that the framework does not output is 
 	});
 	expect(violations).toStrictEqual([]);
 });
+
+test('[no-default-value-014] ASCII white space between the tokens of the default value is not told from a space', async () => {
+	const { violations } = await mlRuleTest(rule, '<svg><image preserveAspectRatio="xMidYMid\t meet" /></svg>');
+	expect(violations).toStrictEqual([
+		{
+			severity: 'warning',
+			line: 1,
+			col: 34,
+			raw: 'xMidYMid\t meet',
+			message: 'It is the default value',
+		},
+	]);
+});
+
+test('[no-default-value-015] U+00A0 between the tokens of the default value is not a separator', async () => {
+	const { violations } = await mlRuleTest(rule, '<svg><image preserveAspectRatio="xMidYMid\u00A0meet" /></svg>');
+	expect(violations).toStrictEqual([]);
+});

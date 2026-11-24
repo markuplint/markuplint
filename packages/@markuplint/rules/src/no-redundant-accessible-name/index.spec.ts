@@ -711,3 +711,75 @@ describe('an element that a pretender declares', () => {
 		]);
 	});
 });
+
+describe('an aria-labelledby that gives no text', () => {
+	const jsx = { parser: { '.*': '@markuplint/jsx-parser' } };
+
+	test('[no-redundant-accessible-name-070] a reference to an element with no text is not a source', async () => {
+		const { violations } = await mlRuleTest(
+			rule,
+			'<span id="t"></span><button aria-label="Save" aria-labelledby="t" type="button"></button>',
+		);
+		expect(violations).toStrictEqual([]);
+	});
+
+	test('[no-redundant-accessible-name-071] one reference that gives text among the ones that give none is a source', async () => {
+		const { violations } = await mlRuleTest(
+			rule,
+			'<span id="t"></span><span id="u">Name</span><button aria-label="Save" aria-labelledby="t u" type="button"></button>',
+		);
+		expect(violations.map(v => v.message)).toStrictEqual([
+			'The accessible name from "aria-labelledby" overrides "aria-label"',
+		]);
+	});
+
+	test('[no-redundant-accessible-name-072] a reference to an element whose text is not known is not a source', async () => {
+		const { violations } = await mlRuleTest(
+			rule,
+			'<><span id="t">{x}</span><button aria-label="Save" aria-labelledby="t" type="button" /></>',
+			jsx,
+		);
+		expect(violations).toStrictEqual([]);
+	});
+
+	test('[no-redundant-accessible-name-073] an id that holds U+00A0 is one token', async () => {
+		const { violations } = await mlRuleTest(
+			rule,
+			'<span id="a\u00A0b">Name</span><button aria-label="Save" aria-labelledby="a\u00A0b" type="button"></button>',
+		);
+		expect(violations.map(v => v.message)).toStrictEqual([
+			'The accessible name from "aria-labelledby" overrides "aria-label"',
+		]);
+	});
+});
+
+describe('an aria-labelledby with references that give a text by other means', () => {
+	test('[no-redundant-accessible-name-074] a reference to an element named by its aria-label is a source', async () => {
+		const { violations } = await mlRuleTest(
+			rule,
+			'<span id="t" aria-label="Name" role="img"></span><button aria-label="Save" aria-labelledby="t" type="button"></button>',
+		);
+		expect(violations.map(v => v.message)).toStrictEqual([
+			'The accessible name from "aria-labelledby" overrides "aria-label"',
+		]);
+	});
+
+	test('[no-redundant-accessible-name-075] a reference to a hidden element that has text is a source', async () => {
+		const { violations } = await mlRuleTest(
+			rule,
+			'<span id="t" hidden>Name</span><button aria-label="Save" aria-labelledby="t" type="button"></button>',
+		);
+		expect(violations.map(v => v.message)).toStrictEqual([
+			'The accessible name from "aria-labelledby" overrides "aria-label"',
+		]);
+	});
+
+	test('[no-redundant-accessible-name-076] a value of U+00A0 only is one id that refers to no element', async () => {
+		const nbsp = String.fromCodePoint(160);
+		const { violations } = await mlRuleTest(
+			rule,
+			`<button aria-label="Save" aria-labelledby="${nbsp}" type="button"></button>`,
+		);
+		expect(violations).toStrictEqual([]);
+	});
+});

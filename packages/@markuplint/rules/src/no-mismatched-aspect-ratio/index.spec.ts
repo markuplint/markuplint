@@ -403,3 +403,12 @@ describe('Rule disabled', () => {
 		expect(violations).toStrictEqual([]);
 	});
 });
+
+test('[no-mismatched-aspect-ratio-035] the first URL of srcset is split on ASCII white space only', async () => {
+	const nbsp = String.fromCodePoint(160);
+	const { violations } = await mlRuleTest(
+		rule,
+		`<picture><source srcset="/100x50.png${nbsp}2x" width="100" height="100"></picture>`,
+	);
+	expect(violations).toStrictEqual([]);
+});

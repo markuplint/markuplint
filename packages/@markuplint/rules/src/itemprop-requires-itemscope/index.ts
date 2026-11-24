@@ -1,4 +1,5 @@
 import { createRule } from '@markuplint/ml-core';
+import { splitOnAsciiWhitespace } from '@markuplint/shared';
 
 import { getDOMValue } from '../helpers.js';
 
@@ -51,8 +52,8 @@ export default createRule<boolean, null>({
 			if (itemref?.isDynamicValue) {
 				treesWithDynamicItemref.add(root);
 			}
-			for (const token of itemref?.value.split(/\s+/) ?? []) {
-				const id = token ? getDOMValue(itemref, token) : null;
+			for (const token of splitOnAsciiWhitespace(itemref?.value ?? '')) {
+				const id = getDOMValue(itemref, token);
 				if (id != null) itemrefIds.add(id);
 			}
 		}

@@ -2,6 +2,8 @@
 
 import type { AccnameComputeFn, AccnameElement, AccnameResolver, AccnameResult } from './types.js';
 
+import { splitOnAsciiWhitespace } from '@markuplint/shared';
+
 import { XHTML_NAMESPACE } from '../../../const/index.js';
 
 import { flattenText, makeResult } from './result.js';
@@ -31,11 +33,10 @@ export function resolveAriaLabelledby(
 	computeFn: AccnameComputeFn,
 ): AccnameResult | null {
 	const labelledbyAttr = el.getAttribute('aria-labelledby');
-	if (!labelledbyAttr?.trim()) {
+	const ids = splitOnAsciiWhitespace(labelledbyAttr ?? '');
+	if (ids.length === 0) {
 		return null;
 	}
-
-	const ids = labelledbyAttr.trim().split(/\s+/);
 	const parts: string[] = [];
 	const newVisited = new Set(visited);
 

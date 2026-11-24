@@ -2,6 +2,8 @@
 
 import type { AccnameComputeFn, AccnameElement, AccnameNode, AccnameResolver } from './types.js';
 
+import { asciiLowerCase, splitOnAsciiWhitespace } from '@markuplint/shared';
+
 import { ELEMENT_NODE, SVG_NAMESPACE, TEXT_NODE, TEXT_LIKE_INPUT_TYPES } from '../../../const/index.js';
 import { getTreeParentElement } from '../../dom/tree-boundary.js';
 import { resolveAriaLabelledby } from './aria-steps.js';
@@ -164,7 +166,7 @@ export function embeddedControlText(
  * @see https://w3c.github.io/accname/#comp_embedded_control — AccName 1.2 §4.3.2 Step 2C
  */
 function getEmbeddedControlValue(el: AccnameElement, resolver: AccnameResolver): string {
-	const role = el.getAttribute('role')?.trim().split(/\s+/)[0];
+	const role = splitOnAsciiWhitespace(asciiLowerCase(el.getAttribute('role') ?? ''))[0];
 
 	// Range controls: slider, spinbutton, input[type=range]
 	if (role === 'slider' || role === 'spinbutton' || (el.localName === 'input' && getInputType(el) === 'range')) {

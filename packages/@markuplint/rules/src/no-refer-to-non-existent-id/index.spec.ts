@@ -686,3 +686,34 @@ describe('an element that a pretender declares', () => {
 		expect(violations).toStrictEqual([missing('t', 71)]);
 	});
 });
+
+describe('an ID reference list is split on ASCII white space only', () => {
+	test('[no-refer-to-non-existent-id-047] an id that holds U+00A0 is one token of an ARIA ID reference list', async () => {
+		const { violations } = await mlRuleTest(
+			rule,
+			'<span id="a\u00A0b"></span><div aria-describedby="a\u00A0b"></div>',
+		);
+		expect(violations).toStrictEqual([]);
+	});
+
+	test('[no-refer-to-non-existent-id-048] an id that holds U+00A0 is one token of an ID reference list of HTML', async () => {
+		const { violations } = await mlRuleTest(
+			rule,
+			'<table><tr><th id="a\u00A0b"></th><td headers="a\u00A0b"></td></tr></table>',
+		);
+		expect(violations).toStrictEqual([]);
+	});
+
+	test('[no-refer-to-non-existent-id-049] a token that holds U+00A0 is reported as one id', async () => {
+		const { violations } = await mlRuleTest(rule, '<span id="a"></span><div aria-describedby="a\u00A0b"></div>');
+		expect(violations).toStrictEqual([
+			{
+				severity: 'error',
+				line: 1,
+				col: 44,
+				raw: 'a\u00A0b',
+				message: 'Missing "a\u00A0b" ID',
+			},
+		]);
+	});
+});

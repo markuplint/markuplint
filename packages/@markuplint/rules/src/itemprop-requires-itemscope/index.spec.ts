@@ -214,3 +214,11 @@ test('[itemprop-requires-itemscope-016] the message is in Japanese with locale j
 		},
 	]);
 });
+
+test('[itemprop-requires-itemscope-017] an id that holds U+00A0 is one token of itemref', async () => {
+	const { violations } = await mlRuleTest(
+		rule,
+		'<div itemscope itemref="a\u00A0b"></div><span id="a\u00A0b" itemprop="name">y</span>',
+	);
+	expect(violations).toStrictEqual([]);
+});

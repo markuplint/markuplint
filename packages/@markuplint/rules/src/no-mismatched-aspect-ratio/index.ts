@@ -1,4 +1,5 @@
 import { createRule } from '@markuplint/ml-core';
+import { splitOnAsciiWhitespace, trimAsciiWhitespace } from '@markuplint/shared';
 
 import meta from './meta.js';
 import { getImageDimensions } from './resolve-image-size.js';
@@ -100,9 +101,9 @@ export default createRule<boolean, Options>({
 });
 
 function extractFirstSrcsetUrl(srcset: string): string | null {
-	const first = srcset.trim().split(',')[0]?.trim();
+	const first = trimAsciiWhitespace(trimAsciiWhitespace(srcset).split(',')[0] ?? '');
 	if (!first) {
 		return null;
 	}
-	return first.split(/\s+/)[0] ?? null;
+	return splitOnAsciiWhitespace(first)[0] ?? null;
 }

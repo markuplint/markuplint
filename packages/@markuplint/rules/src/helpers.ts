@@ -15,7 +15,7 @@ import {
 	hasElementOfUnknownId,
 	isTransparentForOwnership,
 } from '@markuplint/ml-spec';
-import { asciiLowerCase, decodeEntities } from '@markuplint/shared';
+import { asciiLowerCase, decodeEntities, splitOnAsciiWhitespace, trimAsciiWhitespace } from '@markuplint/shared';
 
 export { getDOMValue };
 
@@ -498,28 +498,28 @@ export function toNormalizedValue(value: string, spec: Attribute) {
 	let normalized = value;
 
 	if (!spec.caseSensitive) {
-		normalized = normalized.toLowerCase();
+		normalized = asciiLowerCase(normalized);
 	}
 
 	// When spec.type is an array (AttributeType[] or ConditionalAttributeType[]),
 	// type-specific normalization is skipped — only caseSensitive applies above.
 	if (typeof spec.type === 'string') {
 		if (spec.type[0] === '<') {
-			normalized = normalized.toLowerCase().trim().replaceAll(/\s+/g, ' ');
+			normalized = trimAsciiWhitespace(asciiLowerCase(normalized)).replaceAll(/[\t\n\f\r ]+/g, ' ');
 		}
 	} else {
 		if ('separator' in spec.type) {
 			if (spec.type.caseInsensitive) {
-				normalized = normalized.toLowerCase();
+				normalized = asciiLowerCase(normalized);
 			}
 			if (!spec.type.disallowToSurroundBySpaces) {
-				normalized = normalized.trim();
+				normalized = trimAsciiWhitespace(normalized);
 			}
 			if (spec.type.separator === 'space') {
-				normalized = normalized.replaceAll(/\s+/g, ' ');
+				normalized = normalized.replaceAll(/[\t\n\f\r ]+/g, ' ');
 			}
 			if (spec.type.separator === 'comma') {
-				normalized = normalized.replaceAll(/\s*,\s*/g, ',');
+				normalized = normalized.replaceAll(/[\t\n\f\r ]*,[\t\n\f\r ]*/g, ',');
 			}
 		}
 	}
@@ -596,6 +596,34 @@ export function accnameMayBeMutable(
 }
 
 /**
+ * Whether an element that an `aria-labelledby` refers to gives a text, as far as the markup tells.
+ *
+ * > Return the accumulated text if it is not the empty string ("").
+ *
+ * It returns `false` for an element whose text is not known until it is rendered (a mutable attribute or
+ * child, unknown content of a component, an element that a pretender declares, which has no content
+ * declared), and for one whose computation of the text failed: markuplint does not decide what it cannot
+ * know, so the caller counts neither a name nor an empty one. `labelledbyGivesText` of
+ * `wai-aria/checkings/presentational-children.ts` asks the same question of the text alone, with no such
+ * guard.
+ *
+ * @see https://w3c.github.io/accname/#comp_labelledby
+ * @param target - The element that a token of `aria-labelledby` refers to
+ * @param ariaVersion - The ARIA version
+ * @returns `true` if the text that `target` gives is known and not empty
+ */
+export function labelledbyTargetGivesKnownText(
+	// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
+	target: Element<any, any>,
+	ariaVersion: ARIAVersion,
+): boolean {
+	if (isPretenderDeclaredElement(target) || accnameMayBeMutable(target) || hasUnknownContent(target)) {
+		return false;
+	}
+	return target.getReferencedTextAlternative(ariaVersion) !== '';
+}
+
+/**
  * Whether a `slot` renders what the markup does not tell: the nodes assigned to it, or its children, are
  * not known (`MLElement#getAssignedNodes` is `null`). A slot whose assignment is known renders them, which
  * the rule reads itself.
@@ -634,6 +662,10 @@ function isSlotOfUnknownAssignment(
  * entry and a static name (`aria-label`, static text) is still decidable and
  * must stay checked (and reported as redundant by `no-redundant-accessible-name`).
  * Call it only once the static name has been computed and found empty.
+ *
+ * It asks whether the name of `el` may come from what the markup does not tell. `labelledbyTargetGivesKnownText`
+ * asks, of one referenced element, whether the text it gives is known and not empty, so it also reads the
+ * mutable attributes and children of that element (`accnameMayBeMutable`), which this one does not.
  */
 export function accnameMayComeFromUnknownContent(
 	// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
@@ -646,10 +678,9 @@ export function accnameMayComeFromUnknownContent(
 	const labelledbyAttr = el.getAttributeNode('aria-labelledby');
 	const labelledby = labelledbyAttr?.value;
 	if (labelledby) {
-		const referenced = labelledby
-			.split(/\s+/)
-			.filter(Boolean)
-			.map(id => getElementByIdInTree(el, id, labelledbyAttr.isExpressionValue));
+		const referenced = splitOnAsciiWhitespace(labelledby).map(id =>
+			getElementByIdInTree(el, id, labelledbyAttr.isExpressionValue),
+		);
 		// What a pretender declares has no content declared (a heading declared as `h2` renders its text),
 		// so the name that a reference to it gives is not known
 		if (referenced.some(target => target && (isPretenderDeclaredElement(target) || hasUnknownContent(target)))) {

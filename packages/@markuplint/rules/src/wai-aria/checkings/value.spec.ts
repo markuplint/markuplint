@@ -18,6 +18,15 @@ describe('checkAriaValue', () => {
 		expect(checkAriaValue('token list', 'a b d', ['a', 'b', 'c'])).toBe(false);
 	});
 
+	test('token list is split on ASCII white space only', () => {
+		expect(checkAriaValue('token list', 'a\tb\nc', ['a', 'b', 'c'])).toBe(true);
+		expect(checkAriaValue('token list', ' a ', ['a'])).toBe(true);
+		expect(checkAriaValue('token list', '', ['a'])).toBe(false);
+		expect(checkAriaValue('token list', ' ', ['a'])).toBe(false);
+		expect(checkAriaValue('token list', 'a\u00A0b', ['a', 'b'])).toBe(false);
+		expect(checkAriaValue('token list', 'a\u00A0b', ['a\u00A0b'])).toBe(true);
+	});
+
 	test('integer', () => {
 		expect(checkAriaValue('integer', '1', [])).toBe(true);
 		expect(checkAriaValue('integer', '-1', [])).toBe(true);

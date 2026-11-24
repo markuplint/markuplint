@@ -1,11 +1,13 @@
 import type { QueryableRoot } from './id-reference.js';
 import type { ARIAVersion, MLMLSpec } from '../../types/index.js';
 
+import { splitOnAsciiWhitespace } from '@markuplint/shared';
+
 import { hasDisplayNoneOrVisibilityHiddenStyle } from '../dom/inline-style.js';
 import { getAccessibilityParentElement, getComposedParentElement, isNotRendered } from '../dom/tree-boundary.js';
 import { getExplicitRole } from './get-explicit-role.js';
 import { getImplicitRole } from './get-implicit-role.js';
-import { getQueryableRoot, splitIdReferences } from './id-reference.js';
+import { getQueryableRoot } from './id-reference.js';
 import { isPresentational } from './is-presentational.js';
 
 /**
@@ -330,7 +332,7 @@ function computeWrittenReferences(root: QueryableRoot): WrittenReferences {
 
 	const writtenOwnerOf = new Map<Element, Element>();
 	for (const referrer of referrers) {
-		for (const id of splitIdReferences(referrer.getAttribute('aria-owns'))) {
+		for (const id of splitOnAsciiWhitespace(referrer.getAttribute('aria-owns') ?? '')) {
 			const target = elementById.get(id);
 			if (target && target !== referrer && !writtenOwnerOf.has(target)) {
 				writtenOwnerOf.set(target, referrer);
@@ -351,7 +353,7 @@ function computeOwnership(written: WrittenReferences, specs: MLMLSpec, version: 
 		if (isExcludedOwner(referrer, specs, version)) {
 			continue;
 		}
-		for (const id of splitIdReferences(referrer.getAttribute('aria-owns'))) {
+		for (const id of splitOnAsciiWhitespace(referrer.getAttribute('aria-owns') ?? '')) {
 			const target = written.elementById.get(id);
 			if (!target || target === referrer || ownerOf.has(target) || isHiddenFromAllUsers(target)) {
 				continue;
@@ -364,7 +366,7 @@ function computeOwnership(written: WrittenReferences, specs: MLMLSpec, version: 
 
 	const ownedBy = new Map<Element, Element[]>();
 	for (const referrer of written.referrers) {
-		for (const id of splitIdReferences(referrer.getAttribute('aria-owns'))) {
+		for (const id of splitOnAsciiWhitespace(referrer.getAttribute('aria-owns') ?? '')) {
 			const target = written.elementById.get(id);
 			if (!target || ownerOf.get(target) !== referrer) {
 				continue;

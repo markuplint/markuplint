@@ -2190,3 +2190,21 @@ describe('an id that the markup does not tell', () => {
 		]);
 	});
 });
+
+describe('an ID reference list is split on ASCII white space only', () => {
+	test('[require-accessible-name-146] an id that holds U+00A0 is one token', async () => {
+		const { violations } = await mlRuleTest(
+			rule,
+			'<span id="a\u00A0b">Name</span> <button aria-labelledby="a\u00A0b" type="button"></button>',
+		);
+		expect(violations).toStrictEqual([]);
+	});
+
+	test('[require-accessible-name-147] a token separated by ASCII white space names the control', async () => {
+		const { violations } = await mlRuleTest(
+			rule,
+			'<span id="a">Name</span> <button aria-labelledby="x\ta" type="button"></button>',
+		);
+		expect(violations).toStrictEqual([]);
+	});
+});

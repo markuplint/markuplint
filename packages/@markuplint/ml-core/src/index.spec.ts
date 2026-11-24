@@ -105,6 +105,11 @@ describe('AST', () => {
 		expect([...el.classList]).toStrictEqual(['a', 'b', 'c']);
 	});
 
+	test('classList is split on ASCII white space only', () => {
+		const el = createTestElement('<div class=" a\u00A0b\tc\nd "></div>');
+		expect([...el.classList]).toStrictEqual(['a\u00A0b', 'c', 'd']);
+	});
+
 	test('namespace', () => {
 		const tokens = createTestTokenList(`<div>
 	<svg>

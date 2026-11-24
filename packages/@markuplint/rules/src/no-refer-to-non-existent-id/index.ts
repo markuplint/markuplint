@@ -3,6 +3,7 @@ import type { ARIAVersion } from '@markuplint/ml-spec';
 
 import { createRule, getAttrSpecs, ariaSpecs, withPretenderDeclaredElements } from '@markuplint/ml-core';
 import { ARIA_RECOMMENDED_VERSION, hasElementOfUnknownId } from '@markuplint/ml-spec';
+import { splitOnAsciiWhitespace, trimAsciiWhitespace } from '@markuplint/shared';
 
 import { findAttrSpec, getDOMValue } from '../helpers.js';
 
@@ -113,11 +114,14 @@ export default createRule({
 				}
 
 				if (typeof spec.type !== 'string' && 'separator' in spec.type && spec.type.token === 'DOMID') {
-					const refs = attr.value
-						.split(spec.type.separator === 'space' ? /\s/ : ',')
-						.map(id => id.trim())
-						.filter(Boolean)
-						.map(id => decode(id));
+					const tokens =
+						spec.type.separator === 'space'
+							? splitOnAsciiWhitespace(attr.value)
+							: attr.value
+									.split(',')
+									.map(id => trimAsciiWhitespace(id))
+									.filter(Boolean);
+					const refs = tokens.map(id => decode(id));
 
 					for (const ref of refs) {
 						if (!idList.has(ref)) {
@@ -149,11 +153,7 @@ export default createRule({
 						message: t('Missing {0}', t('"{0*}" ID', value)),
 					});
 				} else if (aria.value === 'ID reference list') {
-					const refs = attr.value
-						.split(/\s/)
-						.map(id => id.trim())
-						.filter(Boolean)
-						.map(id => decode(id));
+					const refs = splitOnAsciiWhitespace(attr.value).map(id => decode(id));
 
 					for (const ref of refs) {
 						if (!idList.has(ref)) {

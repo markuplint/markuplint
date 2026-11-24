@@ -2,7 +2,7 @@ import type { SelectorElement, SelectorMatchedResult, SelectorNode, SelectorResu
 import type { ReadonlyDeep, Writable } from 'type-fest';
 
 import { resolveNamespace } from '@markuplint/ml-spec';
-import { asciiLowerCase, vuePropKey } from '@markuplint/shared';
+import { asciiLowerCase, splitOnAsciiWhitespace, vuePropKey } from '@markuplint/shared';
 import debug from 'debug';
 import parser from 'postcss-selector-parser';
 
@@ -684,7 +684,7 @@ function attrMatch(
 					break;
 				}
 				case '~=': {
-					if (!valueOfEl.split(/\s+/).includes(value)) {
+					if (!splitOnAsciiWhitespace(valueOfEl).includes(value)) {
 						return false;
 					}
 					break;
