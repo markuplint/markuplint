@@ -94,6 +94,13 @@ test('SRIHash', () => {
 	expect(check('', 'SRIHash').matched).toBe(false);
 });
 
+test('SRIHash is split on ASCII white space only', () => {
+	const nbsp = String.fromCodePoint(160);
+	expect(check(' sha256-abc123\tsha384-def456\n', 'SRIHash').matched).toBe(true);
+	expect(check(`sha256-abc123${nbsp}sha384-def456`, 'SRIHash').matched).toBe(false);
+	expect(check(`sha256-abc123${nbsp}`, 'SRIHash').matched).toBe(false);
+});
+
 test('Srcset', () => {
 	expect(check('a/bb/ccc/dddd', 'Srcset').matched).toBe(true);
 	expect(check('a/bb/ccc/dddd 200w', 'Srcset').matched).toBe(true);

@@ -1,5 +1,7 @@
 import type { Defs } from './types.js';
 
+import { splitOnAsciiWhitespace } from '@markuplint/shared';
+
 import { checkMultiTypes } from './check-multi-types.js';
 import { cssSyntaxMatch } from './css-syntax.js';
 import { getCandidate } from './get-candidate.js';
@@ -500,8 +502,8 @@ export const defs: Defs = {
 			},
 		],
 		is(value) {
-			const tokens = value.trim().split(/\s+/);
-			if (tokens.length === 0 || (tokens.length === 1 && tokens[0] === '')) {
+			const tokens = splitOnAsciiWhitespace(value);
+			if (tokens.length === 0) {
 				return unmatched(value, 'empty-token');
 			}
 			for (const token of tokens) {
