@@ -444,6 +444,13 @@ export type OriginalNode = {
 	 * `require-accessible-name` does not report it because the expression may
 	 * be the name.
 	 *
+	 * The id of an element declared here (and of a slot wrapper) is resolved as the id of an element
+	 * of the tree the component is in, and `no-duplicate-id` counts it: a reference to it is not
+	 * reported by `no-refer-to-non-existent-id`, and a landmark that refers to it has a name. What the
+	 * element holds is not declared, so `require-accessible-name` does not report a name that comes
+	 * from a reference to it, and `require-adjacent-popover`, `require-dialog-autofocus` and
+	 * `no-redundant-accessible-name` do not judge against it.
+	 *
 	 * @experimental
 	 */
 	readonly contents?: readonly PretenderContent[];
