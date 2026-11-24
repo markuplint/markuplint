@@ -1071,6 +1071,26 @@ describe('an id that is not known until it is rendered', () => {
 		]);
 	});
 
+	test.each([' ', '\t', ' \t '])(
+		'[require-accessible-name-142] a white-space-only aria-labelledby (%j) is not a reference that an id that is not known may satisfy',
+		async value => {
+			const tag = `<button aria-labelledby="${value}" type="button">`;
+			const source = lines('<h2 id={x}>Q</h2>', `${tag}</button>`);
+			expect((await mlRuleTest(rule, source, { parser })).violations).toStrictEqual([requireName(tag, 3)]);
+		},
+	);
+
+	test('[require-accessible-name-143] white space around a known reference is not a token that an id that is not known may satisfy', async () => {
+		const source = lines(
+			'<h2 id={x}>Q</h2>',
+			'<span id="s"></span>',
+			'<button aria-labelledby="  s  " type="button"></button>',
+		);
+		expect((await mlRuleTest(rule, source, { parser })).violations).toStrictEqual([
+			requireName('<button aria-labelledby="  s  " type="button">', 4),
+		]);
+	});
+
 	test('[require-accessible-name-069] an id that is not output is not an element that a reference may be to', async () => {
 		const source = lines('<h2 id={undefined}>Q</h2>', '<button aria-labelledby="t" type="button"></button>');
 		expect((await mlRuleTest(rule, source, { parser })).violations).toStrictEqual([

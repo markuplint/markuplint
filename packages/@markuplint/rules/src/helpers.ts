@@ -622,7 +622,9 @@ function isSlotOfUnknownAssignment(
  * element is not found by an id, and what it renders is not known either.
  * `no-refer-to-non-existent-id` reports no reference in such a tree for the same reason. An
  * element whose attribute the framework does not output (`id={undefined}`, `isAbsent`) has no id
- * to be referred to.
+ * to be referred to. A value of nothing but white space has no token (`isValidLandmarkRole` of
+ * `@markuplint/ml-spec` reads the same tokens), so it refers to no element and is not a reference that
+ * such an element may satisfy.
  *
  * An element that a pretender declares (`isPretenderDeclaredElement`) is found by its id, but it declares
  * no content (a heading declared as `h2` renders its text), so the name that a reference to it gives is
@@ -645,8 +647,8 @@ export function accnameMayComeFromUnknownContent(
 	const labelledby = labelledbyAttr?.value;
 	if (labelledby) {
 		const referenced = labelledby
-			.trim()
 			.split(/\s+/)
+			.filter(Boolean)
 			.map(id => getElementByIdInTree(el, id, labelledbyAttr.isExpressionValue));
 		// What a pretender declares has no content declared (a heading declared as `h2` renders its text),
 		// so the name that a reference to it gives is not known
