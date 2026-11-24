@@ -20,6 +20,12 @@ function x(html: string, selector?: string, version: ARIAVersion = '1.2') {
 }
 
 describe('isExposed', () => {
+	test('the first role token is matched ASCII case-insensitively and split on ASCII white space', () => {
+		expect(x('<div role="PRESENTATION"></div>')).toBe(false);
+		expect(x('<div role="\tNone button"></div>')).toBe(false);
+		expect(x(`<div role="presentation${String.fromCodePoint(160)}button"></div>`)).toBe(true);
+	});
+
 	test('Basic', () => {
 		expect(x('<div></div>')).toBe(true);
 		expect(x('<div aria-hidden="true"></div>')).toBe(false);

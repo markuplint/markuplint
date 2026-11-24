@@ -2,6 +2,8 @@
 
 import type { AccnameElement, AccnameNode, AccnameResolver } from '../types.js';
 
+import { splitOnAsciiWhitespace } from '@markuplint/shared';
+
 import {
 	ELEMENT_NODE,
 	TEXT_NODE,
@@ -143,7 +145,7 @@ export function createTestResolver(options: ResolverOptions = {}): AccnameResolv
 				return options.isEmbeddedControlFn(el);
 			}
 			// Check explicit role
-			const role = el.getAttribute('role')?.trim().split(/\s+/)[0];
+			const role = splitOnAsciiWhitespace(el.getAttribute('role') ?? '')[0];
 			if (role && embeddedControlRoles.has(role)) {
 				return true;
 			}

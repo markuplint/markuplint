@@ -58,4 +58,39 @@ describe('a landmark role that requires a name', () => {
 		markAttrAsDynamic(must(container.querySelector('h2')), 'id');
 		expect(getExplicitRole(specs, el, '1.2').errorType).toBe('INVALID_LANDMARK');
 	});
+
+	test('[get-explicit-role-landmark-008] is exposed by an aria-labelledby whose one token holds U+00A0', () => {
+		const { region: el } = region('<h2 id="a\u00A0b">T</h2><div role="region" aria-labelledby="a\u00A0b"></div>');
+		expect(getExplicitRole(specs, el, '1.2').role?.name).toBe('region');
+	});
+});
+
+describe('the tokens of the role attribute', () => {
+	const nbsp = String.fromCodePoint(160);
+	const kelvin = String.fromCodePoint(8490);
+
+	test('[get-explicit-role-tokens-001] are split on ASCII white space', () => {
+		const el = must(createJSDOMElement('<div><div role=" foo\tbutton"></div></div>').querySelector('[role]'));
+		expect(getExplicitRole(specs, el, '1.2').role?.name).toBe('button');
+	});
+
+	test('[get-explicit-role-tokens-002] fold only the ASCII letters: U+212A KELVIN SIGN is not a K', () => {
+		const el = must(createJSDOMElement(`<div><div role="lin${kelvin}"></div></div>`).querySelector('[role]'));
+		expect(getExplicitRole(specs, el, '1.2').role).toBeNull();
+	});
+
+	test('[get-explicit-role-tokens-003] are matched ASCII case-insensitively', () => {
+		const el = must(createJSDOMElement('<div><div role="LINK"></div></div>').querySelector('[role]'));
+		expect(getExplicitRole(specs, el, '1.2').role?.name).toBe('link');
+	});
+
+	test('[get-explicit-role-tokens-004] none is a role attribute that names no role', () => {
+		const el = must(createJSDOMElement('<div><div role=" "></div></div>').querySelector('[role]'));
+		expect(getExplicitRole(specs, el, '1.2').errorType).toBe('ROLE_NO_EXISTS');
+	});
+
+	test('[get-explicit-role-tokens-005] are not split on U+00A0', () => {
+		const el = must(createJSDOMElement(`<div><div role="button${nbsp}link"></div></div>`).querySelector('[role]'));
+		expect(getExplicitRole(specs, el, '1.2').role).toBeNull();
+	});
 });

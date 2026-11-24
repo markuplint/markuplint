@@ -1,5 +1,7 @@
 import type { ARIAVersion, MLMLSpec } from '../../types/index.js';
 
+import { asciiLowerCase, splitOnAsciiWhitespace } from '@markuplint/shared';
+
 import { ariaSpecs } from './aria-specs.js';
 import { hasDisplayNoneOrVisibilityHiddenStyle } from '../dom/inline-style.js';
 import { getComposedParentElement, isNotRendered } from '../dom/tree-boundary.js';
@@ -113,7 +115,7 @@ function isExcluding(
 	 *   These exceptions and conditions are documented in the presentation (role)
 	 *   section.
 	 */
-	if (isPresentational((el.getAttribute('role') ?? '').split(/\s+/)[0])) {
+	if (isPresentational(splitOnAsciiWhitespace(asciiLowerCase(el.getAttribute('role') ?? ''))[0])) {
 		return true;
 	}
 

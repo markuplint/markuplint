@@ -1,7 +1,7 @@
 import type { ARIAVersion, ComputedRole, MLMLSpec, RoleComputationError } from '../../types/index.js';
 import type { ReadonlyDeep } from 'type-fest';
 
-import { decodeEntities } from '@markuplint/shared';
+import { asciiLowerCase, decodeEntities, splitOnAsciiWhitespace } from '@markuplint/shared';
 
 import { XHTML_NAMESPACE } from '../../const/index.js';
 import { hasElementOfUnknownId, isUnknownValueAttr } from '../dom/has-unknown-id.js';
@@ -28,11 +28,12 @@ export function getExplicitRole(
 	version: ARIAVersion,
 ): ComputedRole {
 	const roleValue = el.getAttribute('role');
-	const roleNames = roleValue?.toLowerCase().trim().split(/\s+/) ?? [];
+	const roleNames = splitOnAsciiWhitespace(asciiLowerCase(roleValue ?? ''));
 	const permittedRoles = getPermittedRoles(el, version, specs);
 	const { namespaceURI } = resolveNamespace(el.localName, el.namespaceURI);
 
-	let error: RoleComputationError = 'NO_EXPLICIT';
+	// A `role` attribute with no token (`role=""`) is still a `role` that names no role that exists
+	let error: RoleComputationError = roleValue != null && roleNames.length === 0 ? 'ROLE_NO_EXISTS' : 'NO_EXPLICIT';
 
 	/**
 	 * Resolve from values and **Handling Author Errors**
@@ -218,7 +219,7 @@ function isValidLandmarkRole(
 		// content of a `template` element and a shadow root are trees of their own. A DOM has resolved the
 		// character references of a token already, but the markuplint DOM gives it as written in the markup,
 		// so the token is looked for as it is, and then with its character references resolved.
-		const ids = el.getAttribute('aria-labelledby')?.split(/\s+/).filter(Boolean) ?? [];
+		const ids = splitOnAsciiWhitespace(el.getAttribute('aria-labelledby') ?? '');
 		const root = el.getRootNode();
 		if (root.nodeType === 9 || root.nodeType === 11) {
 			const tree = root as Document;
