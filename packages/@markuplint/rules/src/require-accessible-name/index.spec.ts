@@ -2138,4 +2138,55 @@ describe('an id that the markup does not tell', () => {
 			},
 		]);
 	});
+
+	test('[require-accessible-name-144] a list of a reference to what a component declares and one to a written element is not known either', async () => {
+		const { violations } = await mlRuleTest(
+			rule,
+			'<><Heading>Q</Heading><span id="u"></span><button aria-labelledby="t u" type="button" /></>',
+			{
+				parser,
+				pretenders: [
+					{
+						selector: 'Heading',
+						as: {
+							element: 'div',
+							contents: [{ element: 'h2', attrs: [{ name: 'id', value: 't' }] }, { slot: true }],
+						},
+					},
+				],
+			},
+		);
+		expect(violations).toStrictEqual([]);
+	});
+
+	test('[require-accessible-name-145] a reference to an element that a pretender declares gives a name that is not known', async () => {
+		const heading: Pretender = {
+			selector: 'Heading',
+			as: { element: 'div', contents: [{ element: 'h2', attrs: [{ name: 'id', value: 't' }] }, { slot: true }] },
+		};
+		expect(
+			(
+				await mlRuleTest(rule, '<><Heading>Q</Heading><button aria-labelledby="t" type="button" /></>', {
+					parser,
+					pretenders: [heading],
+				})
+			).violations,
+		).toStrictEqual([]);
+		expect(
+			(
+				await mlRuleTest(rule, '<><Heading>Q</Heading><button aria-labelledby="u" type="button" /></>', {
+					parser,
+					pretenders: [heading],
+				})
+			).violations,
+		).toStrictEqual([
+			{
+				severity: 'error',
+				line: 1,
+				col: 23,
+				message: 'Require accessible name',
+				raw: '<button aria-labelledby="u" type="button" />',
+			},
+		]);
+	});
 });

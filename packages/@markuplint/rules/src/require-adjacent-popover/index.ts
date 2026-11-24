@@ -1,4 +1,4 @@
-import { createRule } from '@markuplint/ml-core';
+import { createRule, isPretenderDeclaredElement } from '@markuplint/ml-core';
 import { ARIA_RECOMMENDED_VERSION, mayBeFocusable } from '@markuplint/ml-spec';
 
 import { getElementByIdInTree } from '../helpers.js';
@@ -11,6 +11,11 @@ import meta from './meta.js';
  */
 const POPOVER_COMMANDS = new Set(['toggle-popover', 'show-popover', 'hide-popover']);
 
+/**
+ * A popover that a pretender declares (`isPretenderDeclaredElement` of `@markuplint/ml-core`) is not
+ * judged: it is in no list of the nodes that follow the trigger, and where the component renders it
+ * among them is not known.
+ */
 export default createRule({
 	meta: meta,
 	defaultSeverity: 'warning',
@@ -40,7 +45,9 @@ export default createRule({
 				targetId,
 				trigger.getAttributeNode(popovertarget ? 'popovertarget' : 'commandfor')?.isExpressionValue,
 			);
-			if (!target) {
+			// What a pretender declares is in no list of subsequent nodes, and where the component renders it
+			// among them is not known, so adjacency is not decided against it
+			if (!target || isPretenderDeclaredElement(target)) {
 				continue;
 			}
 			if (!target.hasAttribute('popover')) {

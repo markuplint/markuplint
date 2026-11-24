@@ -21,6 +21,8 @@ This rule uses the [Invoker Commands API](https://open-ui.org/components/invoker
 > [!NOTE]
 > This rule relies on the [Invoker Commands API](https://developer.mozilla.org/en-US/docs/Web/API/Invoker_Commands_API) (`command`/`commandfor` attributes). If your project does not use this API (e.g., you open dialogs via `dialog.showModal()` in JavaScript), this rule will not detect any violations. The Invoker Commands API reached [Baseline support](https://developer.mozilla.org/en-US/docs/Web/API/Invoker_Commands_API) in early 2026.
 
+A `<dialog>` that a pretender declares in `contents` (or in a slot wrapper) is not judged: what it holds is not declared, so an element with `autofocus` may be in it.
+
 ## Rule Details
 
 ### :x: Incorrect

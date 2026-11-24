@@ -3,7 +3,12 @@ import type { Attr, ChildNode, Element, RuleConfigValue } from '@markuplint/ml-c
 import type { ARIAVersion, Attribute, MLMLSpec } from '@markuplint/ml-spec';
 import type { WritableDeep } from 'type-fest';
 
-import { expandConditionalBlocks, getDOMValue, getRenderedChildNodes } from '@markuplint/ml-core';
+import {
+	expandConditionalBlocks,
+	getDOMValue,
+	getRenderedChildNodes,
+	isPretenderDeclaredElement,
+} from '@markuplint/ml-core';
 import {
 	getComputedRole,
 	getOwningParentElement,
@@ -621,6 +626,10 @@ function isSlotOfUnknownAssignment(
  * `@markuplint/ml-spec` reads the same tokens), so it refers to no element and is not a reference that
  * such an element may satisfy.
  *
+ * An element that a pretender declares (`isPretenderDeclaredElement`) is found by its id, but it declares
+ * no content (a heading declared as `h2` renders its text), so the name that a reference to it gives is
+ * not known.
+ *
  * Not folded into {@link accnameMayBeMutable}: a component with an unknown
  * entry and a static name (`aria-label`, static text) is still decidable and
  * must stay checked (and reported as redundant by `no-redundant-accessible-name`).
@@ -641,7 +650,9 @@ export function accnameMayComeFromUnknownContent(
 			.split(/\s+/)
 			.filter(Boolean)
 			.map(id => getElementByIdInTree(el, id, labelledbyAttr.isExpressionValue));
-		if (referenced.some(target => target && hasUnknownContent(target))) {
+		// What a pretender declares has no content declared (a heading declared as `h2` renders its text),
+		// so the name that a reference to it gives is not known
+		if (referenced.some(target => target && (isPretenderDeclaredElement(target) || hasUnknownContent(target)))) {
 			return true;
 		}
 		if (referenced.some(target => !target) && hasElementOfUnknownId(el)) {

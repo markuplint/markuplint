@@ -4,8 +4,10 @@
  * What an id reference may refer to when the markup does not tell the id.
  *
  * An element whose `id` is not known until it is rendered (`<h2 id={x}>`), an element whose spread
- * attribute may carry one (`<h2 {...props}>`), a component that no pretender resolved, and content that is
- * not known (`{children}`, a pretender whose `contents` has an unknown entry) may be the element that a
+ * attribute may carry one (`<h2 {...props}>`), a component that no pretender resolved, content that is
+ * not known (`{children}`, a pretender whose `contents` has an unknown entry), and an element that a
+ * pretender declares (a slot wrapper, an entry of `contents`) that is one of those (an `id` that is
+ * `{ dynamic: true }`, a spread taken over from the usage site, a component name), may be the element that a
  * reference refers to. A rule that reports a reference to nothing, or an algorithm that decides from the
  * element that a reference finds, takes the tree to be undecidable instead (`no-refer-to-non-existent-id`
  * does the same, and `isValidLandmarkRole` of `get-explicit-role.ts` in this package and

@@ -1,4 +1,4 @@
-import { createRule } from '@markuplint/ml-core';
+import { createRule, isPretenderDeclaredElement } from '@markuplint/ml-core';
 
 import { getElementByIdInTree } from '../helpers.js';
 
@@ -9,6 +9,9 @@ import meta from './meta.js';
  * `<dialog>` element itself, which is not ideal for accessibility — screen
  * reader users may miss the dialog content, and keyboard users may need
  * extra tab presses to reach interactive elements.
+ *
+ * A `dialog` that a pretender declares (`isPretenderDeclaredElement` of `@markuplint/ml-core`) is not
+ * judged: its content is not declared, so an element with `autofocus` may be in it.
  *
  * @see https://html.spec.whatwg.org/multipage/interactive-elements.html#dialog-focusing-steps
  * @see https://html.spec.whatwg.org/multipage/interactive-elements.html#the-dialog-element
@@ -38,7 +41,8 @@ export default createRule({
 				targetId,
 				trigger.getAttributeNode('commandfor')?.isExpressionValue,
 			);
-			if (!target) {
+			// What a pretender declares has no content declared, so an element with `autofocus` may be in it
+			if (!target || isPretenderDeclaredElement(target)) {
 				continue;
 			}
 

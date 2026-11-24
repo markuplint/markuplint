@@ -236,3 +236,26 @@ test('[label-for-references-labelable-024] the message is in Japanese with local
 		},
 	]);
 });
+
+test('[label-for-references-labelable-025] the element that a pretender declares is judged by what it is declared as', async () => {
+	const options = (element: string) => ({
+		parser: { '.*': '@markuplint/jsx-parser' },
+		pretenders: [
+			{
+				selector: 'Field',
+				as: { element: 'div', contents: [{ element, attrs: [{ name: 'id', value: 'x' }] }] },
+			},
+		],
+	});
+	const source = '<><Field /><label for="x">a</label></>';
+	expect((await mlRuleTest(rule, source, options('textarea'))).violations).toStrictEqual([]);
+	expect((await mlRuleTest(rule, source, options('div'))).violations).toStrictEqual([
+		{
+			severity: 'error',
+			line: 1,
+			col: 24,
+			message: 'The "for" attribute of the "label" element must reference a labelable element',
+			raw: 'x',
+		},
+	]);
+});

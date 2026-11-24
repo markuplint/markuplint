@@ -24,7 +24,6 @@ import type {
 	RegexSelector,
 	RuleConfigValue,
 	RuleInfo,
-	Slot,
 } from '@markuplint/ml-config';
 import type { AccnameSource, AccnameVisit, ARIAVersion } from '@markuplint/ml-spec';
 
@@ -4563,10 +4562,7 @@ export class MLElement<T extends RuleConfigValue, O extends PlainData = undefine
 	 */
 	#sharedWrapper: MLElement<T, O> | null = null;
 
-	#findSharedWrapper(slots: readonly Slot[], as: MLElement<T, O>): MLElement<T, O> | null {
-		const wrappers = slots.map((slot, i) =>
-			this.#createVirtualElement(slot, `${this.uuid}_pretender_slot_${i}`, this.uuid, as),
-		);
+	#findSharedWrapper(wrappers: readonly MLElement<T, O>[]): MLElement<T, O> | null {
 		const [first] = wrappers;
 		if (!first) {
 			return null;
@@ -4911,7 +4907,7 @@ export class MLElement<T extends RuleConfigValue, O extends PlainData = undefine
 		virtual.resetChildren(toNodeList([]));
 		// Like the pretender element `as`, it stands for this element, so that a report
 		// on it can be moved to where the user wrote the component.
-		virtual.pretenderContext = { type: 'origin', origin: this };
+		virtual.pretenderContext = { type: 'origin', origin: this, declared: true };
 		return virtual;
 	}
 
@@ -4934,10 +4930,36 @@ export class MLElement<T extends RuleConfigValue, O extends PlainData = undefine
 			if (slots.length > 1 || !slot) {
 				// The wrapper of each child is unknown, so the children are not validated,
 				// but a slot may still render unknown content (which may be a name).
-				this.#sharedWrapper = this.#findSharedWrapper(slots, as);
+				const wrappers = slots.map((s, i) =>
+					this.#createVirtualElement(s, `${this.uuid}_pretender_slot_${i}`, this.uuid, as),
+				);
+				this.#sharedWrapper = this.#findSharedWrapper(wrappers);
+				// Where the given children go among them is not known: every element the slots declare
+				// is taken to come before them.
+				const slotsDeclared = slots.flatMap((s, i) => {
+					const slotWrapper = wrappers[i];
+					return slotWrapper
+						? [
+								slotWrapper,
+								...(s.contents ?? []).flatMap((entry, j) =>
+									'element' in entry
+										? [
+												this.#createVirtualElement(
+													entry,
+													`${this.uuid}_pretender_slot_${i}_content_${j}`,
+													slotWrapper.uuid,
+													slotWrapper,
+												),
+											]
+										: [],
+								),
+							]
+						: [];
+				});
 				return {
 					wrapper: null,
 					mutable: slots.some(s => s.contents?.some(entry => 'dynamic' in entry) ?? false),
+					declared: { before: slotsDeclared, after: [] },
 					fill: <C>(given: readonly C[]) => given,
 				};
 			}
@@ -4962,8 +4984,21 @@ export class MLElement<T extends RuleConfigValue, O extends PlainData = undefine
 				: entry,
 		);
 
+		// The elements the component renders, split at the position of the children given at the usage
+		// site: `fill` puts them at the first `slot` entry, and after every entry when there is none.
+		const slotIndex = entries.findIndex(entry => !(entry instanceof MLElement) && 'slot' in entry);
+		const declaredEntries = entries.filter((entry): entry is MLElement<T, O> => entry instanceof MLElement);
+		const declaredBefore = (slotIndex === -1 ? entries : entries.slice(0, slotIndex)).filter(
+			(entry): entry is MLElement<T, O> => entry instanceof MLElement,
+		);
+		const declaredAfter = declaredEntries.slice(declaredBefore.length);
+
 		return {
 			wrapper,
+			declared: {
+				before: wrapper === as ? declaredBefore : [wrapper, ...declaredBefore],
+				after: declaredAfter,
+			},
 			mutable: entries.some(entry => !(entry instanceof MLElement) && 'dynamic' in entry),
 			fill: <C>(given: readonly C[]) => {
 				const filled: (C | MLElement<T, O>)[] = [];

@@ -2,6 +2,8 @@ import type { MLDocument } from '../node/document.js';
 import type { MLNode } from '../node/node.js';
 import type { PlainData, RuleConfigValue } from '@markuplint/ml-config';
 
+import { getPretenderDeclaredElements } from './declared-elements.js';
+
 /**
  * @module
  *
@@ -22,7 +24,11 @@ import type { PlainData, RuleConfigValue } from '@markuplint/ml-config';
  *   known. A component that the language says renders what it is given (`MLParser#isPassThroughComponent`,
  *   Vue's built-in components) holds the elements that the markup shows, so it is not counted;
  * - a pretender whose content is not known (`PretenderSlotContent#mutable`), which has no declarative shadow
- *   root in its place: the content that a pretender declares is known, so what it declares stays decidable;
+ *   root in its place: the entries of `contents` that are elements are known, so what they declare stays
+ *   decidable (see the next item for an entry that is not);
+ * - an element that a pretender declares (`getPretenderDeclaredElements`: a slot wrapper, an entry of
+ *   `contents`) that is one of the above: an `id` that is `{ dynamic: true }`, an attribute taken over from the
+ *   usage site (`inheritAttrs`) that is a spread, a component name;
  * - a block of a template language or an expression (`{children}`, `{cond && <i />}`) that has no
  *   `blockBehavior`, which can output any element. What a block that has one holds is a node of the tree
  *   itself, so it is read as any other;
@@ -132,6 +138,12 @@ function mayBringUnknownId<T extends RuleConfigValue, O extends PlainData>(
 
 	const context = node.pretenderContext;
 	if (context?.type === 'pretender' && context.slotContent?.mutable && !node.declarativeShadowRoot) {
+		return true;
+	}
+
+	// What a pretender declares is in the tree as well, and what it brings is read as any other element
+	const declared = getPretenderDeclaredElements(node);
+	if (declared && [...declared.before, ...declared.after].some(el => mayBringUnknownId(el))) {
 		return true;
 	}
 

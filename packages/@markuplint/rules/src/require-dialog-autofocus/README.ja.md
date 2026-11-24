@@ -22,6 +22,8 @@ description: show-modal コマンドで表示される dialog 要素に autofocu
 > [!NOTE]
 > このルールは [Invoker Commands API](https://developer.mozilla.org/en-US/docs/Web/API/Invoker_Commands_API)（`command`/`commandfor` 属性）に依存しています。この API を使用していない場合（例: JavaScript で `dialog.showModal()` を呼び出してダイアログを開く場合）、このルールは違反を検出しません。Invoker Commands API は2026年初頭に [Baseline サポート](https://developer.mozilla.org/en-US/docs/Web/API/Invoker_Commands_API)を達成しました。
 
+プリテンダーが `contents`（またはスロットのラッパー要素）で宣言した `<dialog>` は判定しません。中身が宣言されていないため、`autofocus` を持つ要素が含まれているかもしれないからです。
+
 ## ルール詳細
 
 ### :x: 不正

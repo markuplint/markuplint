@@ -173,6 +173,7 @@ The accessible name is "Delete Documentation.pdf" ([Example 5](https://w3c.githu
 - **CSS generated content**: Content from `::before` / `::after` pseudo-elements is not detectable by static analysis and is not included in the naming source check.
 - **SVG `<title>`**: The `<title>` child element of SVG provides an accessible name for SVG elements, but this is distinct from the HTML `title` attribute and is not currently covered by this rule.
 - **Self-referencing embedded controls**: [Step 2C (Embedded Control)](https://w3c.github.io/accname/#comp_embedded_control) is not modeled, so a self-referencing `aria-labelledby` on a `textbox`, `combobox`, `listbox` or range widget is treated like any other element.
+- **A pretender's declared elements**: An element that a pretender declares in `contents`, and a slot wrapper, has no declared content, so whether an `aria-labelledby` that refers to it gives a name is not known. That reference is not counted as a naming source.
 - **`aria-describedby`**: This rule only checks accessible _name_ sources. The accessible _description_ (`aria-describedby`) is a separate concept and is not in scope.
 
 ## See Also

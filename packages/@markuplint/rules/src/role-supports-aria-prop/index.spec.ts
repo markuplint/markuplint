@@ -572,4 +572,28 @@ describe('an id that the markup does not tell', () => {
 			},
 		]);
 	});
+
+	test('[role-supports-aria-prop-038] a landmark that refers to an element that a pretender declares has the role', async () => {
+		const source = '<><Heading>Q</Heading><div role="region" aria-labelledby="t">a</div></>';
+		const heading = (id: string | { readonly dynamic: true }): Pretender => ({
+			selector: 'Heading',
+			as: {
+				element: 'div',
+				contents: [{ element: 'h2', attrs: [{ name: 'id', value: id }] }, { slot: true }],
+			},
+		});
+		expect((await mlRuleTest(rule, source, { ...jsx, pretenders: [heading('t')] })).violations).toStrictEqual([]);
+		expect(
+			(await mlRuleTest(rule, source, { ...jsx, pretenders: [heading({ dynamic: true })] })).violations,
+		).toStrictEqual([]);
+		expect((await mlRuleTest(rule, source, { ...jsx, pretenders: [heading('u')] })).violations).toStrictEqual([
+			{
+				severity: 'error',
+				line: 1,
+				col: 42,
+				message: 'The "aria-labelledby" ARIA property is disallowed on the "generic" role',
+				raw: 'aria-labelledby="t"',
+			},
+		]);
+	});
 });
