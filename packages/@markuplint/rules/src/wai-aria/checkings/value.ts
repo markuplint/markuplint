@@ -2,6 +2,8 @@ import type { Options } from '../types.js';
 import type { AttrChecker } from '@markuplint/ml-core';
 import type { ARIAProperty, ARIARole } from '@markuplint/ml-spec';
 
+import { splitOnAsciiWhitespace } from '@markuplint/shared';
+
 import { noTranslate } from '../../no-translate.js';
 
 /**
@@ -118,8 +120,10 @@ export function checkAriaValue(type: string, value: string, tokenEnum: readonly 
 			return tokenEnum.includes(value);
 		}
 		case 'token list': {
-			const list = value.split(/\s+/).map(s => s.trim());
-			return list.every(token => tokenEnum.includes(token));
+			const list = splitOnAsciiWhitespace(value);
+			// `splitOnAsciiWhitespace` drops the empty tokens, so a value with none is checked here:
+			// `every` of an empty list would make it valid
+			return list.length > 0 && list.every(token => tokenEnum.includes(token));
 		}
 		case 'string':
 		case 'ID reference':

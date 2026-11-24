@@ -32,7 +32,7 @@ The AccName algorithm resolves the accessible name in this priority order:
 
 \* Only checked when the corresponding option is enabled.
 
-> **Note:** This table reflects the detection priority used by this rule. Sources at the same AccName step (e.g., `label`, `alt`, `legend`, and `caption` are all Step 2E) are ordered by their typical applicability scope, not by strict algorithm precedence.
+> **Note:** This table reflects the detection priority used by this rule. Sources at the same AccName step (e.g., `label`, `alt`, `legend`, and `caption` are all Step 2E) are ordered by their typical applicability scope, not by strict algorithm precedence. `aria-labelledby` counts as a source only when a referenced element gives a text that is known and not empty (see [`aria-labelledby` That Gives No Text](#aria-labelledby-that-gives-no-text)).
 
 ## Rule Details
 
@@ -168,12 +168,26 @@ When `aria-labelledby` includes the element's own `id`, the accessible name comp
 
 The accessible name is "Delete Documentation.pdf" ([Example 5](https://w3c.github.io/accname/#comp_label) of the specification), so nothing is reported. Only `aria-labelledby` is left out of the check; the element's other sources are still ranked as usual. If the button above had text content, `aria-label` overriding that content would be reported, exactly as on a button without `aria-labelledby`.
 
+### `aria-labelledby` That Gives No Text
+
+[Step 2B](https://w3c.github.io/accname/#comp_labelledby) returns the text of the referenced elements only when it is not empty. Otherwise the computation goes on to the next step, so an `aria-labelledby` whose references give no text is not a naming source and overrides nothing:
+
+> Return the accumulated text if it is not the empty string ("").
+
+Cite: [Accessible Name and Description Computation – Computation steps](https://w3c.github.io/accname/#comp_labelledby)
+
+```html
+<span id="t"></span> <button aria-label="Save" aria-labelledby="t" type="button"></button>
+```
+
+The accessible name of the button is "Save", so nothing is reported.
+
 ## Known Limitations
 
 - **CSS generated content**: Content from `::before` / `::after` pseudo-elements is not detectable by static analysis and is not included in the naming source check.
 - **SVG `<title>`**: The `<title>` child element of SVG provides an accessible name for SVG elements, but this is distinct from the HTML `title` attribute and is not currently covered by this rule.
 - **Self-referencing embedded controls**: [Step 2C (Embedded Control)](https://w3c.github.io/accname/#comp_embedded_control) is not modeled, so a self-referencing `aria-labelledby` on a `textbox`, `combobox`, `listbox` or range widget is treated like any other element.
-- **A pretender's declared elements**: An element that a pretender declares in `contents`, and a slot wrapper, has no declared content, so whether an `aria-labelledby` that refers to it gives a name is not known. That reference is not counted as a naming source.
+- **Elements whose text is not known**: An element that a pretender declares in `contents`, and a slot wrapper, has no declared content, so whether an `aria-labelledby` that refers to it gives a name is not known. The same holds for an element whose text is rendered later (for example, `<span id="t">{x}</span>` in JSX). Such a reference is not counted as a naming source.
 - **`aria-describedby`**: This rule only checks accessible _name_ sources. The accessible _description_ (`aria-describedby`) is a separate concept and is not in scope.
 
 ## See Also

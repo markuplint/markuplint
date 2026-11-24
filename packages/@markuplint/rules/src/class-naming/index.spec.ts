@@ -535,3 +535,10 @@ test('[class-naming-016] a pattern set only by childNodeRule still applies', asy
 		},
 	]);
 });
+
+test('[class-naming-017] a class name that holds U+00A0 is one class name', async () => {
+	const { violations } = await mlRuleTest(rule, '<div class="a\u00A0b"></div>', {
+		rule: { value: 'a\u00A0b' },
+	});
+	expect(violations).toStrictEqual([]);
+});

@@ -3,6 +3,7 @@ import type { ElementChecker } from '@markuplint/ml-core';
 import type { ARIARole } from '@markuplint/ml-spec';
 
 import { ARIA_RECOMMENDED_VERSION, getComputedRole } from '@markuplint/ml-spec';
+import { splitOnAsciiWhitespace } from '@markuplint/shared';
 import { getDOMValue, getElementByIdInTree, querySelectorAllInTree } from '../../helpers.js';
 
 /**
@@ -46,13 +47,10 @@ export const checkingTabRequiresTabpanel: ElementChecker<
 
 		const controlsAttr = el.getAttributeNode('aria-controls');
 		if (controlsAttr && !controlsAttr.isDynamicValue) {
-			const hasControlledTabpanel = controlsAttr.value
-				.split(/\s+/)
-				.filter(Boolean)
-				.some(id => {
-					const target = getElementByIdInTree(el, id, controlsAttr.isExpressionValue);
-					return !!target && isTabpanel(target);
-				});
+			const hasControlledTabpanel = splitOnAsciiWhitespace(controlsAttr.value).some(id => {
+				const target = getElementByIdInTree(el, id, controlsAttr.isExpressionValue);
+				return !!target && isTabpanel(target);
+			});
 			if (hasControlledTabpanel) {
 				return;
 			}
@@ -65,8 +63,7 @@ export const checkingTabRequiresTabpanel: ElementChecker<
 				const labelledbyAttr = candidate.getAttributeNode('aria-labelledby');
 				if (!labelledbyAttr || labelledbyAttr.isDynamicValue) return false;
 				return (
-					labelledbyAttr.value
-						.split(/\s+/)
+					splitOnAsciiWhitespace(labelledbyAttr.value)
 						.map(id => getDOMValue(labelledbyAttr, id))
 						.includes(tabId) && isTabpanel(candidate)
 				);

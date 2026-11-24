@@ -1,5 +1,5 @@
 import { createRule } from '@markuplint/ml-core';
-import { toNoEmptyStringArrayFromStringOrArray } from '@markuplint/shared';
+import { splitOnAsciiWhitespace, toNoEmptyStringArrayFromStringOrArray } from '@markuplint/shared';
 
 import { match } from '../helpers.js';
 
@@ -29,10 +29,7 @@ export default createRule<Value>({
 					continue;
 				}
 				const classAttr = attr.valueNode;
-				const classList = attr.value
-					.split(/\s+/)
-					.map(c => c.trim())
-					.filter(Boolean);
+				const classList = splitOnAsciiWhitespace(attr.value);
 				for (const className of classList) {
 					if (!classPatterns.some(pattern => match(className, pattern))) {
 						report({

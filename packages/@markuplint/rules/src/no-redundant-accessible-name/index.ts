@@ -3,10 +3,17 @@ import type { PlainData } from '@markuplint/ml-config';
 import type { Element, RuleConfigValue, Document } from '@markuplint/ml-core';
 import type { ComputedRole } from '@markuplint/ml-spec';
 
-import { createRule, expandConditionalBlocks, getComputedRole, isPretenderDeclaredElement } from '@markuplint/ml-core';
+import { createRule, expandConditionalBlocks, getComputedRole } from '@markuplint/ml-core';
 import { ARIA_RECOMMENDED_VERSION, isExposed } from '@markuplint/ml-spec';
+import { splitOnAsciiWhitespace } from '@markuplint/shared';
 
-import { accnameMayBeMutable, getElementByIdInTree, getOwnedLabel, textContentOfEveryBranch } from '../helpers.js';
+import {
+	accnameMayBeMutable,
+	getElementByIdInTree,
+	getOwnedLabel,
+	labelledbyTargetGivesKnownText,
+	textContentOfEveryBranch,
+} from '../helpers.js';
 
 import meta from './meta.js';
 
@@ -22,9 +29,10 @@ function showLabel(t: Translator, label: string) {
 }
 
 /**
- * An `aria-labelledby` that refers to an element that a pretender declares
- * (`isPretenderDeclaredElement` of `@markuplint/ml-core`) is not counted as a naming source: its content is
- * not declared, so whether it gives a name is not known.
+ * An `aria-labelledby` is a naming source only when a reference gives a text that is known and not empty
+ * (`labelledbyTargetGivesKnownText`): a reference to an element with no text gives no name, and one to an
+ * element whose text is not known (an element that a pretender declares, which has no content declared, or
+ * one with content that is rendered later) may or may not, so neither is counted.
  */
 export default createRule({
 	meta,
@@ -102,20 +110,21 @@ function collectNamingSources<V extends RuleConfigValue, O extends PlainData>(
 	// Known limitation: step 2C (Embedded Control) is not modeled, so a self-referencing
 	// textbox, combobox, listbox or range is treated like any other element.
 	const ariaLabelledbyAttr = el.getAttributeNode('aria-labelledby');
-	const ariaLabelledby = ariaLabelledbyAttr?.value;
-	if (ariaLabelledbyAttr && ariaLabelledby && ariaLabelledby.trim()) {
-		const ids = ariaLabelledby.trim().split(/\s+/);
+	const ids = splitOnAsciiWhitespace(ariaLabelledbyAttr?.value ?? '');
+	if (ariaLabelledbyAttr && ids.length > 0) {
 		// An IDREF resolves to the first element with that id, so with duplicate ids a
 		// reference only counts as self-referencing when this element is that first match.
 		const isSelfReferencing = ids.some(
 			id => getElementByIdInTree(el, id, ariaLabelledbyAttr.isExpressionValue) === el,
 		);
-		// What a pretender declares has no text declared, so whether the reference gives a name is not known
-		const hasResolvableId = ids.some(id => {
+		// Step 2B goes on to the next step when the text of the references is empty, so a reference that gives
+		// no text is not a source; what a pretender declares, or any other element whose text is not known,
+		// is not counted either
+		const givesText = ids.some(id => {
 			const target = getElementByIdInTree(el, id, ariaLabelledbyAttr.isExpressionValue);
-			return !!target && !isPretenderDeclaredElement(target);
+			return !!target && labelledbyTargetGivesKnownText(target, ARIA_RECOMMENDED_VERSION);
 		});
-		if (hasResolvableId && !isSelfReferencing) {
+		if (givesText && !isSelfReferencing) {
 			sources.push({ label: 'aria-labelledby' });
 		}
 	}

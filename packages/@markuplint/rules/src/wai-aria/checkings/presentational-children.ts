@@ -20,6 +20,7 @@ import {
 	isExposedAsPresentational,
 	isNativeEmbeddedControl,
 } from '@markuplint/ml-spec';
+import { asciiLowerCase, splitOnAsciiWhitespace } from '@markuplint/shared';
 
 /**
  * Checks whether an ARIA attribute or `role` is applied to a descendant of an
@@ -248,8 +249,8 @@ const getReferencedIds = memoizeByObject(
 			}
 			for (const name of ['aria-labelledby', 'aria-describedby']) {
 				const attr = referrer.getAttributeNode(name);
-				for (const id of attr?.value.split(/\s+/) ?? []) {
-					const domId = id === '' ? null : getDOMValue(attr, id);
+				for (const id of splitOnAsciiWhitespace(attr?.value ?? '')) {
+					const domId = getDOMValue(attr, id);
 					if (domId != null) {
 						ids.add(domId);
 					}
@@ -315,7 +316,7 @@ function takesEffect(
 		case 'aria-label': {
 			const overridden =
 				labelledbyGivesText(el, ariaVersion) &&
-				!(el.id !== '' && el.getAttribute('aria-labelledby')?.split(/\s+/).includes(el.id));
+				!(el.id !== '' && splitOnAsciiWhitespace(el.getAttribute('aria-labelledby') ?? '').includes(el.id));
 			return (
 				attr.value.trim() !== '' &&
 				shown.some(visit => !visit.embeddedControl && (visit.inLabelledbyTraversal || !overridden))
@@ -325,8 +326,10 @@ function takesEffect(
 		case 'aria-valuenow': {
 			// The value of a range embedded control: `aria-valuetext`, else `aria-valuenow`
 			const isRange =
-				['slider', 'spinbutton'].includes(el.getAttribute('role')?.trim().split(/\s+/)[0] ?? '') ||
-				(el.localName === 'input' && el.getAttribute('type')?.trim().toLowerCase() === 'range');
+				['slider', 'spinbutton'].includes(
+					splitOnAsciiWhitespace(asciiLowerCase(el.getAttribute('role') ?? ''))[0] ?? '',
+				) ||
+				(el.localName === 'input' && asciiLowerCase(el.getAttribute('type') ?? '') === 'range');
 			const valuetext = el.getAttribute('aria-valuetext')?.trim() ?? '';
 			const shadowed = namespaceKeyOf(attr) === 'aria-valuenow' && valuetext !== '';
 			// Step 2B comes first outside an ongoing aria-labelledby traversal
@@ -372,6 +375,8 @@ function isEmbeddedControl(
 /**
  * Whether the `aria-labelledby` of the element gives a text: Step 2B returns the
  * accumulated text of the elements it refers to only when that text is not empty.
+ * It reads the text as the markup has it; `labelledbyTargetGivesKnownText` of `../../helpers.ts` also
+ * answers `false` for an element whose text is not known.
  */
 function labelledbyGivesText(
 	// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
@@ -379,10 +384,7 @@ function labelledbyGivesText(
 	ariaVersion: ARIAVersion,
 ): boolean {
 	const labelledbyAttr = el.getAttributeNode('aria-labelledby');
-	return (labelledbyAttr?.value.split(/\s+/) ?? []).some(id => {
-		if (id === '') {
-			return false;
-		}
+	return splitOnAsciiWhitespace(labelledbyAttr?.value ?? '').some(id => {
 		const referenced = getElementByIdInTree(el, id, labelledbyAttr?.isExpressionValue);
 		return referenced != null && referenced.getReferencedTextAlternative(ariaVersion) !== '';
 	});
