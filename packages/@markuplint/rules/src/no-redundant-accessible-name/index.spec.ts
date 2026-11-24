@@ -683,3 +683,31 @@ describe('the content in a branch of a conditional block', () => {
 		]);
 	});
 });
+
+describe('an element that a pretender declares', () => {
+	const jsx = { parser: { '.*': '@markuplint/jsx-parser' } };
+	const heading = {
+		selector: 'Heading',
+		as: { element: 'div', contents: [{ element: 'h2', attrs: [{ name: 'id', value: 't' }] }] },
+	};
+
+	test('[no-redundant-accessible-name-069] whether a reference to what a component renders gives a name is not known, so it is not a source', async () => {
+		const declared = await mlRuleTest(
+			rule,
+			'<><Heading /><button aria-label="Save" aria-labelledby="t" type="button" /></>',
+			{
+				...jsx,
+				pretenders: [heading],
+			},
+		);
+		expect(declared.violations).toStrictEqual([]);
+		const written = await mlRuleTest(
+			rule,
+			'<><h2 id="t">Save</h2><button aria-label="Save" aria-labelledby="t" type="button" /></>',
+			jsx,
+		);
+		expect(written.violations.map(v => v.message)).toStrictEqual([
+			'The accessible name from "aria-labelledby" overrides "aria-label"',
+		]);
+	});
+});

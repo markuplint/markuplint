@@ -561,3 +561,128 @@ describe('an id that the markup does not tell', () => {
 		]);
 	});
 });
+
+/**
+ * What a pretender declares (the slot wrappers and the static entries of `contents`) is rendered by the
+ * component, so a reference may refer to its id.
+ */
+describe('an element that a pretender declares', () => {
+	const jsx = { '.*': '@markuplint/jsx-parser' };
+	const idOf = (id: string | { readonly dynamic: true }) => [{ name: 'id', value: id }];
+	const heading = (element: Record<string, unknown>) => ({
+		selector: 'Heading',
+		as: { element: 'div', ...element },
+	});
+	const missing = (raw: string, col: number) => ({
+		severity: 'error',
+		line: 1,
+		col,
+		raw,
+		message: `Missing "${raw}" ID`,
+	});
+
+	test('[no-refer-to-non-existent-id-039] the id of an element in `contents` is resolved', async () => {
+		const { violations } = await mlRuleTest(rule, '<><Heading>Q</Heading><label for="t" /></>', {
+			parser: jsx,
+			pretenders: [heading({ contents: [{ element: 'h2', attrs: idOf('t') }, { slot: true }] })],
+		});
+		expect(violations).toStrictEqual([]);
+	});
+
+	test('[no-refer-to-non-existent-id-040] an id that no declared element has is still reported', async () => {
+		const { violations } = await mlRuleTest(rule, '<><Heading>Q</Heading><label for="u" /></>', {
+			parser: jsx,
+			pretenders: [heading({ contents: [{ element: 'h2', attrs: idOf('t') }, { slot: true }] })],
+		});
+		expect(violations).toStrictEqual([missing('u', 35)]);
+	});
+
+	test('[no-refer-to-non-existent-id-041] the id of an element that comes after the children given at the usage site is resolved', async () => {
+		const { violations } = await mlRuleTest(rule, '<><Heading>Q</Heading><label for="t" /></>', {
+			parser: jsx,
+			pretenders: [heading({ contents: [{ slot: true }, { element: 'h2', attrs: idOf('t') }] })],
+		});
+		expect(violations).toStrictEqual([]);
+	});
+
+	test('[no-refer-to-non-existent-id-042] the id of the element that wraps the single slot, and of an element in it, is resolved', async () => {
+		const { violations } = await mlRuleTest(rule, '<><Heading>Q</Heading><label for="w" /><label for="t" /></>', {
+			parser: jsx,
+			pretenders: [
+				heading({
+					slots: [
+						{
+							element: 'p',
+							attrs: idOf('w'),
+							contents: [{ element: 'h2', attrs: idOf('t') }, { slot: true }],
+						},
+					],
+				}),
+			],
+		});
+		expect(violations).toStrictEqual([]);
+	});
+
+	test('[no-refer-to-non-existent-id-043] the id of an element of any of several slots is resolved', async () => {
+		const { violations } = await mlRuleTest(
+			rule,
+			'<><Heading>Q</Heading><label for="a" /><label for="b" /><label for="c" /><label for="d" /></>',
+			{
+				parser: jsx,
+				pretenders: [
+					heading({
+						slots: [
+							{
+								element: 'p',
+								attrs: idOf('a'),
+								contents: [{ element: 'i', attrs: idOf('b') }, { slot: true }],
+							},
+							{ element: 'section', attrs: idOf('c'), contents: [{ element: 'b', attrs: idOf('d') }] },
+						],
+					}),
+				],
+			},
+		);
+		expect(violations).toStrictEqual([]);
+	});
+
+	test('[no-refer-to-non-existent-id-044] a declared element whose id is not known may be the one that a reference means', async () => {
+		const { violations } = await mlRuleTest(rule, '<><Heading>Q</Heading><label for="u" /></>', {
+			parser: jsx,
+			pretenders: [heading({ contents: [{ element: 'h2', attrs: idOf({ dynamic: true }) }, { slot: true }] })],
+		});
+		expect(violations).toStrictEqual([]);
+	});
+
+	test('[no-refer-to-non-existent-id-045] a declared element is in the tree of the pretended element, not of the document', async () => {
+		const { violations } = await mlRuleTest(
+			rule,
+			'<div><template><Heading>Q</Heading></template></div><label for="t"></label>',
+			{
+				pretenders: [heading({ contents: [{ element: 'h2', attrs: idOf('t') }, { slot: true }] })],
+			},
+		);
+		expect(violations).toStrictEqual([missing('t', 65)]);
+		// The pretender applies to `Heading` of this parser: the same markup outside the template resolves
+		const outside = await mlRuleTest(rule, '<div><Heading>Q</Heading></div><label for="t"></label>', {
+			pretenders: [heading({ contents: [{ element: 'h2', attrs: idOf('t') }, { slot: true }] })],
+		});
+		expect(outside.violations).toStrictEqual([]);
+	});
+
+	test('[no-refer-to-non-existent-id-046] what a declarative shadow root replaces is not rendered, so its id is not resolved', async () => {
+		const { violations } = await mlRuleTest(
+			rule,
+			'<x-btn><template shadowrootmode="open"></template></x-btn><label for="t"></label>',
+			{
+				pretenders: [
+					{
+						selector: 'x-btn',
+						as: { element: 'div', inheritAttrs: true, contents: [{ element: 'h2', attrs: idOf('t') }] },
+					},
+				],
+			},
+		);
+		expect(violations).toStrictEqual([missing('t', 71)]);
+	});
+});

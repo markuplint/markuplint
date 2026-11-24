@@ -3,7 +3,7 @@ import type { PlainData } from '@markuplint/ml-config';
 import type { Element, RuleConfigValue, Document } from '@markuplint/ml-core';
 import type { ComputedRole } from '@markuplint/ml-spec';
 
-import { createRule, expandConditionalBlocks, getComputedRole } from '@markuplint/ml-core';
+import { createRule, expandConditionalBlocks, getComputedRole, isPretenderDeclaredElement } from '@markuplint/ml-core';
 import { ARIA_RECOMMENDED_VERSION, isExposed } from '@markuplint/ml-spec';
 
 import { accnameMayBeMutable, getElementByIdInTree, getOwnedLabel, textContentOfEveryBranch } from '../helpers.js';
@@ -21,6 +21,11 @@ function showLabel(t: Translator, label: string) {
 	return label === 'content' ? t('content') : label;
 }
 
+/**
+ * An `aria-labelledby` that refers to an element that a pretender declares
+ * (`isPretenderDeclaredElement` of `@markuplint/ml-core`) is not counted as a naming source: its content is
+ * not declared, so whether it gives a name is not known.
+ */
 export default createRule({
 	meta,
 	defaultSeverity: 'warning',
@@ -105,7 +110,11 @@ function collectNamingSources<V extends RuleConfigValue, O extends PlainData>(
 		const isSelfReferencing = ids.some(
 			id => getElementByIdInTree(el, id, ariaLabelledbyAttr.isExpressionValue) === el,
 		);
-		const hasResolvableId = ids.some(id => getElementByIdInTree(el, id, ariaLabelledbyAttr.isExpressionValue));
+		// What a pretender declares has no text declared, so whether the reference gives a name is not known
+		const hasResolvableId = ids.some(id => {
+			const target = getElementByIdInTree(el, id, ariaLabelledbyAttr.isExpressionValue);
+			return !!target && !isPretenderDeclaredElement(target);
+		});
 		if (hasResolvableId && !isSelfReferencing) {
 			sources.push({ label: 'aria-labelledby' });
 		}

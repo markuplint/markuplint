@@ -293,3 +293,37 @@ test('[require-dialog-autofocus-023] the message is in Japanese with locale ja',
 		},
 	]);
 });
+
+test('[require-dialog-autofocus-024] a dialog that a component renders may hold an element with autofocus, so it is not reported', async () => {
+	const { violations } = await mlRuleTest(
+		rule,
+		'<><button command="show-modal" commandfor="dlg">Open</button><Dlg /></>',
+		{
+			parser: { '.*': '@markuplint/jsx-parser' },
+			pretenders: [
+				{
+					selector: 'Dlg',
+					as: { element: 'div', contents: [{ element: 'dialog', attrs: [{ name: 'id', value: 'dlg' }] }] },
+				},
+			],
+		},
+	);
+	expect(violations).toStrictEqual([]);
+});
+
+test('[require-dialog-autofocus-025] a dialog that is written before the component with the same id is still the target', async () => {
+	const { violations } = await mlRuleTest(
+		rule,
+		'<><button command="show-modal" commandfor="dlg">Open</button><dialog id="dlg" /><Dlg /></>',
+		{
+			parser: { '.*': '@markuplint/jsx-parser' },
+			pretenders: [
+				{
+					selector: 'Dlg',
+					as: { element: 'div', contents: [{ element: 'dialog', attrs: [{ name: 'id', value: 'dlg' }] }] },
+				},
+			],
+		},
+	);
+	expect(violations.map(v => v.raw)).toStrictEqual(['<dialog id="dlg" />']);
+});

@@ -1,6 +1,7 @@
+import type { Element } from '@markuplint/ml-core';
 import type { ARIAVersion } from '@markuplint/ml-spec';
 
-import { createRule, getAttrSpecs, ariaSpecs } from '@markuplint/ml-core';
+import { createRule, getAttrSpecs, ariaSpecs, withPretenderDeclaredElements } from '@markuplint/ml-core';
 import { ARIA_RECOMMENDED_VERSION, hasElementOfUnknownId } from '@markuplint/ml-spec';
 
 import { findAttrSpec, getDOMValue } from '../helpers.js';
@@ -13,7 +14,9 @@ import meta from './meta.js';
  *
  * An id is resolved in the tree of the reference: the document, the content of a `template` element
  * and a declarative shadow root are trees of their own. The reference and the id are compared with
- * the character references in the markup resolved.
+ * the character references in the markup resolved. What a pretender declares (the slot wrappers and the
+ * static entries of `contents`) is rendered by the component, so its ids are the ids of the tree the
+ * component is in (`getPretenderDeclaredElements` of `@markuplint/ml-core`).
  *
  * What it cannot tell it does not report: a tree that may hold an element whose id the markup does not
  * tell (a dynamic value, a spread attribute, a component that no pretender resolved, content that is not
@@ -39,10 +42,10 @@ export default createRule({
 		// element and a declarative shadow root are trees of their own
 		const idListOfTree = new Map<object, Set<string>>();
 
-		for (const el of document.deepQuerySelectorAll('[id]')) {
+		const collectId = (el: Element<any, any>) => {
 			const attr = el.getAttributeNode('id');
 			if (!attr) {
-				continue;
+				return;
 			}
 			const root = el.getRootNode();
 			const id = attr.valueType === 'code' ? null : getDOMValue(attr);
@@ -54,6 +57,12 @@ export default createRule({
 				}
 				idList.add(id);
 			}
+		};
+
+		// What a pretender declares is rendered in the tree of the pretended element, and is in no `nodeList`.
+		// Every element is read, as an element that has no `id` may be a pretender that declares one.
+		for (const el of withPretenderDeclaredElements(document.deepQuerySelectorAll('*'))) {
+			collectId(el);
 		}
 
 		await document.walkOn('Attr', attr => {

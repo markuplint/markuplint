@@ -10,7 +10,7 @@ description: 要素にアクセシブルな名前がなければ警告します�
 
 条件ブロック(Svelteの`{#if}`、Alpine.jsの`<template x-if>`、Vueの`v-if`・`v-else-if`・`v-else`・`v-for`をもつ要素)のどの分岐が描画されるかはマークアップから分からないため、いずれかの分岐にある名前は名前として扱い、その名前を分岐にもつ要素は報告しません。分岐の中にあるコンポーネントや式のような不明な内容は、ブロックの外にある場合と同じく不明として扱います。どの分岐も名前を与えないときは報告します。
 
-値が描画されるまで分からない`aria-labelledby`(JSXの`aria-labelledby={id}`)は、参照先が分からないため報告しません。同じツリーに参照先の要素がない`aria-labelledby`のトークンも、`id`がマークアップから分からない要素(`<h2 id={x}>`、`<h2 {...props}>`、プリテンダーが解決しないコンポーネント、内容が分からないもの)がツリーにあるときは、それが参照先かもしれないため報告しません。何が当てはまるかは[`no-refer-to-non-existent-id`](/docs/rules/no-refer-to-non-existent-id)を参照してください。
+値が描画されるまで分からない`aria-labelledby`(JSXの`aria-labelledby={id}`)は、参照先が分からないため報告しません。同じツリーに参照先の要素がない`aria-labelledby`のトークンも、`id`がマークアップから分からない要素(`<h2 id={x}>`、`<h2 {...props}>`、プリテンダーが解決しないコンポーネント、内容が分からないもの)がツリーにあるときは、それが参照先かもしれないため報告しません。何が当てはまるかは[`no-refer-to-non-existent-id`](/docs/rules/no-refer-to-non-existent-id)を参照してください。空白だけの値にトークンはないため、空の値と同じように判断します。プリテンダーが`contents`で宣言した要素やスロットのラッパー要素は、中身が宣言されていないため、それらを参照して得られる名前は分からないものとして、報告しません。
 
 <!-- textlint-disable ja-technical-writing/ja-no-mixed-period -->
 

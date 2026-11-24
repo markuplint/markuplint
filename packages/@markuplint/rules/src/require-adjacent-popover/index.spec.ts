@@ -371,3 +371,52 @@ describe('a branch of a conditional block between the trigger and the popover', 
 		expect(violations).toStrictEqual([]);
 	});
 });
+
+describe('an element that a pretender declares', () => {
+	const jsx = { parser: { '.*': '@markuplint/jsx-parser' } };
+	const pop = (selector: string) => ({
+		selector,
+		as: {
+			element: 'div',
+			contents: [
+				{
+					element: 'div',
+					attrs: [{ name: 'id', value: 'foo' }, { name: 'popover' }],
+				},
+				{ slot: true as const },
+			],
+		},
+	});
+
+	test('[require-adjacent-popover-022] adjacency is not decided against a popover that a component renders', async () => {
+		const { violations } = await mlRuleTest(
+			rule,
+			'<><button popovertarget="foo">Trigger</button><Pop>Text</Pop></>',
+			{
+				...jsx,
+				pretenders: [pop('Pop')],
+			},
+		);
+		expect(violations).toStrictEqual([]);
+	});
+
+	test('[require-adjacent-popover-023] a popover that is written before the component with the same id is still the target', async () => {
+		const { violations } = await mlRuleTest(
+			rule,
+			'<><button popovertarget="foo">Trigger</button><p>Text</p><div id="foo" popover>Popover</div><Pop /></>',
+			{
+				...jsx,
+				pretenders: [pop('Pop')],
+			},
+		);
+		expect(violations).toStrictEqual([
+			{
+				severity: 'warning',
+				line: 1,
+				col: 50,
+				message: 'Detected perceptible nodes between the trigger and corresponding target',
+				raw: 'Text',
+			},
+		]);
+	});
+});

@@ -17,6 +17,8 @@ description: ポップオーバートリガーと対応するターゲットが�
 - `popovertarget`属性
 - [Invoker Commands API](https://open-ui.org/components/invokers.explainer/)（ポップオーバー関連の`command`値（`toggle-popover`、`show-popover`、`hide-popover`）を持つ`commandfor`属性）
 
+プリテンダーが`contents`（またはスロットのラッパー要素）で宣言したポップオーバーは判定しません。コンポーネントがそれをトリガーの後ろのノードのどこにレンダリングするかが分からないためです。
+
 ❌ 間違ったコード例
 
 ```html

@@ -16,6 +16,8 @@ This rule detects popover triggers using both:
 - The `popovertarget` attribute
 - The [Invoker Commands API](https://open-ui.org/components/invokers.explainer/) (`commandfor` attribute with a popover-related `command` value: `toggle-popover`, `show-popover`, or `hide-popover`)
 
+A popover that a pretender declares in `contents` (or in a slot wrapper) is not judged: where the component renders it among the nodes after the trigger is not known.
+
 ❌ Examples of **incorrect** code for this rule
 
 ```html

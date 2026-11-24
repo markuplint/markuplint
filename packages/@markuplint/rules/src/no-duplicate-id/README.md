@@ -15,6 +15,8 @@ The document is one tree. The content of a `template` element is a tree of its o
 
 In React and Vue, the children of a `template` element without a directive are in the tree of the document, as these frameworks append them to the element, so they are the same tree.
 
+The elements that a pretender declares in `contents`, and its slot wrappers, are rendered by the component, so their ids count in the tree the component is in, in the order the component renders them (a declared id is compared with the children given to the component in that order). An id of a declared element that is a dynamic value is not counted. These elements are not in the source, so a repeated id is reported on the start tag of the component.
+
 ❌ Examples of **incorrect** code for this rule
 
 ```html
