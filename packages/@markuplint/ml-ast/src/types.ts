@@ -202,7 +202,11 @@ export interface MLASTElement extends MLASTAbstractNode {
 	readonly tagOpenChar: string;
 	/** The characters that close this tag (usually `">"`) */
 	readonly tagCloseChar: string;
-	/** Whether this element is a ghost node (omitted tag inferred by the parser, e.g. an implicit `<tbody>`); ghost nodes have an empty `raw` */
+	/**
+	 * Whether this element is a ghost node (omitted tag inferred by the parser, e.g. an implicit `<tbody>`); ghost nodes have an empty `raw`.
+	 * An element whose start tag is omitted is paired with its end tag when the source has one (`</tbody>` after an
+	 * omitted `<tbody>`); an element that the parser makes again for a misnested formatting element has none.
+	 */
 	readonly isGhost: boolean;
 }
 

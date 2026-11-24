@@ -114,3 +114,19 @@ test('[case-sensitive-tag-name-012] an element in a foreign namespace is left to
 	const { violations } = await mlRuleTest(rule, '<svg><FOREIGNOBJECT></FOREIGNOBJECT><textPath></textPath></svg>');
 	expect(violations).toStrictEqual([]);
 });
+
+test('[case-sensitive-tag-name-016] the end tag of an element whose start tag is omitted is fixed at its own name', async () => {
+	const code = '<!doctype html><head></head><body></body></HTML>';
+	const { violations, fixedCode } = await mlRuleTest(rule, code, undefined, true);
+	expect(violations).toStrictEqual([
+		{
+			severity: 'warning',
+			line: 1,
+			col: 42,
+			raw: '</HTML>',
+			message: 'Tag names of HTML elements should be lowercase',
+			fix: { edits: [{ range: [43, 47], text: 'html' }] },
+		},
+	]);
+	expect(fixedCode).toBe('<!doctype html><head></head><body></body></html>');
+});

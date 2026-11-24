@@ -94,7 +94,9 @@ export class MLElement<T extends RuleConfigValue, O extends PlainData = undefine
 	#attributes: MLAttr<T, O>[];
 
 	/**
-	 * The closing tag for this element, or null if the element is self-closing or void.
+	 * The closing tag for this element, or null if the element has none in the source (self-closing, void, or
+	 * closed by the end of its parent or of the file). An element whose start tag is omitted ({@link isOmitted})
+	 * has one when the source writes its end tag.
 	 */
 	readonly closeTag: MLElementCloseTag<T, O> | null;
 
@@ -271,7 +273,8 @@ export class MLElement<T extends RuleConfigValue, O extends PlainData = undefine
 	}
 
 	/**
-	 * Whether this element was implicitly created (e.g., an omitted `<body>` tag in HTML).
+	 * Whether this element has no start tag in the source: the parser inserted it (e.g., an omitted `<body>` tag in
+	 * HTML). It can still have a {@link closeTag}, when the source writes the end tag (`</body>`).
 	 */
 	readonly isOmitted: boolean;
 	#localName: string;
