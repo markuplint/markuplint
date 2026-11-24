@@ -617,7 +617,9 @@ function isSlotOfUnknownAssignment(
  * element is not found by an id, and what it renders is not known either.
  * `no-refer-to-non-existent-id` reports no reference in such a tree for the same reason. An
  * element whose attribute the framework does not output (`id={undefined}`, `isAbsent`) has no id
- * to be referred to.
+ * to be referred to. A value of nothing but white space has no token (`isValidLandmarkRole` of
+ * `@markuplint/ml-spec` reads the same tokens), so it refers to no element and is not a reference that
+ * such an element may satisfy.
  *
  * Not folded into {@link accnameMayBeMutable}: a component with an unknown
  * entry and a static name (`aria-label`, static text) is still decidable and
@@ -636,8 +638,8 @@ export function accnameMayComeFromUnknownContent(
 	const labelledby = labelledbyAttr?.value;
 	if (labelledby) {
 		const referenced = labelledby
-			.trim()
 			.split(/\s+/)
+			.filter(Boolean)
 			.map(id => getElementByIdInTree(el, id, labelledbyAttr.isExpressionValue));
 		if (referenced.some(target => target && hasUnknownContent(target))) {
 			return true;

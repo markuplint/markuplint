@@ -8,8 +8,9 @@
  * not known (`{children}`, a pretender whose `contents` has an unknown entry) may be the element that a
  * reference refers to. A rule that reports a reference to nothing, or an algorithm that decides from the
  * element that a reference finds, takes the tree to be undecidable instead (`no-refer-to-non-existent-id`
- * does the same, and `isValidLandmarkRole` and `accnameMayComeFromUnknownContent` of `@markuplint/rules`
- * follow it: a change to the criterion belongs to all of them).
+ * does the same, and `isValidLandmarkRole` of `get-explicit-role.ts` in this package and
+ * `accnameMayComeFromUnknownContent` of `@markuplint/rules` follow it: a change to the criterion
+ * belongs to all of them).
  *
  * `isRoleUnknown` of `@markuplint/rules` rests on the same premise for a `role` that code gives, with a
  * criterion of its own. What counts here, and why, is in the module comment of `helper/unknown-id.ts` of
