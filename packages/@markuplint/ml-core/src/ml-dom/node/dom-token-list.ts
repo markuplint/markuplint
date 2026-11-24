@@ -3,7 +3,7 @@ import type { RuleInfo } from '@markuplint/ml-config';
 
 import { getPosition } from '@markuplint/parser-utils/location';
 
-import { UnexpectedCallError } from '@markuplint/shared';
+import { splitOnAsciiWhitespace, UnexpectedCallError } from '@markuplint/shared';
 
 type Scope = {
 	raw: string;
@@ -27,10 +27,7 @@ export class MLDomTokenList extends Array<string> implements DOMTokenList {
 		// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
 		ownerAttrs: MLAttr<any, any>[],
 	) {
-		const list = tokens
-			.split(/\s+/)
-			.map(t => t.trim())
-			.filter(t => !!t);
+		const list = splitOnAsciiWhitespace(tokens);
 		super(...list);
 		this.#origin = tokens;
 		this.#ownerAttrs = ownerAttrs;
@@ -131,7 +128,7 @@ export class MLDomTokenList extends Array<string> implements DOMTokenList {
 	}
 
 	#pick(token: string, _offset = 0): (Scope & { _searchedIndex: number }) | null {
-		token = token.trim().split(/\s+/)[0] ?? '';
+		token = splitOnAsciiWhitespace(token)[0] ?? '';
 		if (!token) {
 			return null;
 		}

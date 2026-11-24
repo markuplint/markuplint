@@ -47,7 +47,7 @@ import { sequentialWalker, syncWalk } from '../helper/walkers.js';
 import { nodeListToHTMLCollection, toHTMLCollection } from './node-list.js';
 import { MLParentNode } from './parent-node.js';
 import { RuleMapper } from './rule-mapper.js';
-import { UnexpectedCallError } from '@markuplint/shared';
+import { splitOnAsciiWhitespace, UnexpectedCallError } from '@markuplint/shared';
 
 const log = coreLog.extend('ml-dom');
 const docLog = log.extend('document');
@@ -3305,7 +3305,7 @@ export class MLDocument<T extends RuleConfigValue, O extends PlainData = undefin
 	 * @see https://dom.spec.whatwg.org/#concept-getelementsbyclassname
 	 */
 	getElementsByClassName(classNames: string): HTMLCollectionOf<MLElement<T, O>> {
-		const names = classNames.split(/[\t\n\f\r ]+/).filter(Boolean);
+		const names = splitOnAsciiWhitespace(classNames);
 		return toHTMLCollection(
 			names.length === 0
 				? []
