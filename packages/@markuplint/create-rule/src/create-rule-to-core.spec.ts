@@ -1,4 +1,4 @@
-import { mkdir, mkdtemp, readdir, realpath, rm } from 'node:fs/promises';
+import { mkdir, mkdtemp, readdir, readFile, realpath, rm } from 'node:fs/promises';
 import os from 'node:os';
 import path from 'node:path';
 
@@ -67,6 +67,27 @@ test('create', async () => {
 			'schema.json',
 		]);
 		expect(await fsExists(path.resolve(repositoryRulesDir, sandboxDirName))).toBe(false);
+	} finally {
+		vi.mocked(searchCoreRepository).mockReset();
+	}
+});
+
+test('the behavior test of a new rule carries the first ID of the rule', async () => {
+	vi.mocked(searchCoreRepository).mockResolvedValue(sandboxRoot);
+	try {
+		await createRuleToCore({
+			pluginName: '',
+			ruleName: '__bar',
+			lang: 'TYPESCRIPT',
+			needTest: true,
+			core: { description: 'Desc', category: 'cat', severity: 'error' },
+		});
+		const spec = await readFile(
+			path.resolve(sandboxRoot, 'packages', '@markuplint', 'rules', 'src', '__bar', 'index.spec.ts'),
+			{ encoding: 'utf8' },
+		);
+		// The output is formatted by Prettier, which picks the quote
+		expect(spec).toMatch(/test\(["']\[__bar-001\] /);
 	} finally {
 		vi.mocked(searchCoreRepository).mockReset();
 	}
