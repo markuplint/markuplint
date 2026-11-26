@@ -26,7 +26,7 @@
 		"clean": "tsc --build --clean tsconfig.build.json"
 	},
 	"dependencies": {
-		"@vitest/coverage-v8": "5.1.0",
+		"@vitest/coverage-v8": "5.1.1",
 		"browser-resolve": "2.0.0",
 		"execa": "10.2.1",
 		"glob": "14.0.6",
@@ -35,7 +35,7 @@
 		"type-fest": "5.10.0",
 		"typescript": "6.0.3",
 		"vite": "8.3.8",
-		"vitest": "5.1.0"
+		"vitest": "5.1.1"
 	},
 	"optionalDependencies": {
 		"@esbuild/linux-x64": "0.28.2",
