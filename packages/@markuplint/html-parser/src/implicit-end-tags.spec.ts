@@ -160,6 +160,51 @@ describe('the end tag of an element whose start tag is omitted', () => {
 	});
 });
 
+describe('the first end tag that closes `body` or `html`', () => {
+	test.each([
+		['body', '<!doctype html><html><head></head><body><p>x</p></body></body></html>', 48, [['</body>', 55]]],
+		['html', '<!doctype html><html><head></head><body></body></html></html>', 47, [['</html>', 54]]],
+		[
+			'body',
+			'<!doctype html><html><head></head><body></body></body></body></html>',
+			40,
+			[
+				['</body>', 47],
+				['</body>', 54],
+			],
+		],
+		['body', '<!doctype html><title>t</title><p>x</p></body></body>', 39, [['</body>', 46]]],
+		['html', '<!doctype html><title>t</title><p>x</p></html></html>', 39, [['</html>', 46]]],
+		['body', '<!doctype html><body><svg></body></body>', 26, [['</body>', 33]]],
+		['body', '<!doctype html><body><template></body></template></body>', 49, [['</body>', 31]]],
+		['body', '<!doctype html><body><table></body></table></body>', 43, [['</body>', 28]]],
+	])('is the end tag of %s, and a later one is orphaned: %j', (name, code, endOffset, orphans) => {
+		expect(pairOf(code, name).end?.offset).toBe(endOffset);
+		expect(invalidNodes(parse(code).nodeList).map(n => [n.raw, n.offset])).toStrictEqual(orphans);
+	});
+
+	test.each([
+		['<!doctype html><html><head></head><body><p>x</p></html></body>', 48, [['</body>', 55]]],
+		['<!doctype html><html><head></head><body></body></html></body>', 47, [['</body>', 54]]],
+	])(
+		'of `html` closes `body` that has no end tag before it, and a later `</body>` is orphaned: %j',
+		(code, htmlEnd, orphans) => {
+			expect(pairOf(code, 'html').end?.offset).toBe(htmlEnd);
+			expect(invalidNodes(parse(code).nodeList).map(n => [n.raw, n.offset])).toStrictEqual(orphans);
+		},
+	);
+
+	test.each(['<div></div></body></body>', '<div></div></html></html>'])(
+		'is not taken from a source that has no `body` or `html` of its own: %j',
+		code => {
+			expect(invalidNodes(parse(code).nodeList).map(n => [n.raw, n.offset])).toStrictEqual([
+				[code.slice(11, 18), 11],
+				[code.slice(18), 18],
+			]);
+		},
+	);
+});
+
 describe('the parse of parse5 that records the end tag of an implicit element', () => {
 	test.each([
 		'<!doctype html><head></head><body></body></html>',

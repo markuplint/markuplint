@@ -534,12 +534,14 @@ describe('parser', () => {
 			'[33:3]>[33:24](536,557)img: <img␣src="path/to"␣/>',
 			'[33:24]>[36:3](557,580)#text: ⏎→→→→invalid-indent⏎⏎→→',
 			'[36:3]>[37:31](580,629)#comment(👿): <?template␣engine;⏎→→→$var␣=␣\'<html␣attr="value">',
-			"[37:31]>[45:3](629,734)#text: text</html>'⏎→→?>⏎⏎→→<%template␣engine;⏎→→→$var␣=␣'<html␣attr=\"value\">text</html>'⏎→→%>⏎⏎→→</expected>⏎→→",
+			'[37:31]>[37:35](629,633)#text: text',
+			'[37:35]>[37:42](633,640)html: </html>',
+			"[37:42]>[45:3](640,734)#text: '⏎→→?>⏎⏎→→<%template␣engine;⏎→→→$var␣=␣'<html␣attr=\"value\">text</html>'⏎→→%>⏎⏎→→</expected>⏎→→",
 			'[45:3]>[45:8](734,739)div: <div>',
 			'[45:8]>[47:2](739,752)#text: ⏎→text-node⏎→',
-			'[47:2]>[47:9](752,759)body: </body>',
+			'[47:2]>[47:9](752,759)#invalid(👿): </body>',
 			'[47:9]>[48:2](759,761)#text: ⏎→',
-			'[48:2]>[48:9](761,768)html: </html>',
+			'[48:2]>[48:9](761,768)#invalid(👿): </html>',
 			'[48:9]>[49:2](768,770)#text: ⏎→',
 		]);
 	});
