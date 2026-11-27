@@ -9,6 +9,8 @@ import {
 	splitOnAsciiWhitespace,
 	trimAsciiWhitespace,
 	hasText,
+	isValidInteger,
+	isValidFloatingPointNumber,
 } from './functions.js';
 
 test('toArrayFromStringOrArray', () => {
@@ -151,4 +153,49 @@ test('hasText', () => {
 	// `String#trim` takes these for white space, but they are characters of the value
 	expect(hasText(nonAscii)).toBe(true);
 	expect(hasText('\u000B')).toBe(true);
+});
+
+test.each(['0', '1', '-1', '05', '1234567890123456789012'])('isValidInteger: %j is valid', value => {
+	expect(isValidInteger(value)).toBe(true);
+});
+
+test.each(['', '-', '+1', '1.0', '1.', '.5', '1e2', '1a', 'a1', ' 1', '1 ', '1\n', '\u00A01', '1\u00A0', '１', '0x10'])(
+	'isValidInteger: %j is not valid',
+	value => {
+		expect(isValidInteger(value)).toBe(false);
+	},
+);
+
+test.each(['0', '1', '-1', '05', '1.5', '5.0', '.5', '-.5', '1e2', '1E+2', '1.5e-3', '.5e1'])(
+	'isValidFloatingPointNumber: %j is valid',
+	value => {
+		expect(isValidFloatingPointNumber(value)).toBe(true);
+	},
+);
+
+test.each([
+	'',
+	'-',
+	'--1',
+	'+1',
+	'1.',
+	'.',
+	'-.',
+	'1e',
+	'1e+',
+	'1e2.5',
+	'1.5.5',
+	'1a',
+	'a1',
+	' 1',
+	'1 ',
+	'1\n',
+	'\u00A01',
+	'1\u00A0',
+	'１',
+	'0x10',
+	'NaN',
+	'Infinity',
+])('isValidFloatingPointNumber: %j is not valid', value => {
+	expect(isValidFloatingPointNumber(value)).toBe(false);
 });

@@ -240,3 +240,38 @@ export function trimAsciiWhitespace(value: string): string {
 export function hasText(value?: string | null): boolean {
 	return value != null && trimAsciiWhitespace(value) !== '';
 }
+
+/**
+ * Whether the whole of a string is a valid integer.
+ * `Number.parseInt` and `Number.parseFloat` skip leading non-ASCII white space (U+00A0, …) and ignore what
+ * follows the number, so they take `\u00A05` and `5abc` for 5.
+ *
+ * WAI-ARIA defines no syntax for its `integer` value type. The HTML microsyntax stands in for it, as it does
+ * for the numbers of HTML attributes, so `+5` and `5.0` are not integers.
+ *
+ * > A string is a valid integer if it consists of one or more ASCII digits, optionally prefixed with a U+002D HYPHEN-MINUS character (-).
+ *
+ * @see https://html.spec.whatwg.org/multipage/common-microsyntaxes.html#signed-integers
+ * @see https://w3c.github.io/aria/#valuetype_integer
+ * @param value - A string as written; it is not trimmed
+ * @returns `true` if the string is a valid integer
+ */
+export function isValidInteger(value: string): boolean {
+	return /^-?\d+$/.test(value);
+}
+
+/**
+ * Whether the whole of a string is a valid floating-point number: `5.0`, `05` and `.5` are, `5.` and `+5` are not.
+ * WAI-ARIA defines no syntax for its `number` value type. The HTML microsyntax stands in for it, as it does
+ * for the numbers of HTML attributes.
+ *
+ * > A string is a valid floating-point number if it consists of:
+ *
+ * @see https://html.spec.whatwg.org/multipage/common-microsyntaxes.html#valid-floating-point-number
+ * @see https://w3c.github.io/aria/#valuetype_number
+ * @param value - A string as written; it is not trimmed
+ * @returns `true` if the string is a valid floating-point number
+ */
+export function isValidFloatingPointNumber(value: string): boolean {
+	return /^-?(?:\d+|\d*\.\d+)(?:E[+-]?\d+)?$/i.test(value);
+}
