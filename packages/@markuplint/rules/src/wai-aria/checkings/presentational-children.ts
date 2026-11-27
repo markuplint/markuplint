@@ -20,7 +20,7 @@ import {
 	isExposedAsPresentational,
 	isNativeEmbeddedControl,
 } from '@markuplint/ml-spec';
-import { asciiLowerCase, splitOnAsciiWhitespace } from '@markuplint/shared';
+import { asciiLowerCase, hasText, splitOnAsciiWhitespace } from '@markuplint/shared';
 
 /**
  * Checks whether an ARIA attribute or `role` is applied to a descendant of an
@@ -318,7 +318,7 @@ function takesEffect(
 				labelledbyGivesText(el, ariaVersion) &&
 				!(el.id !== '' && splitOnAsciiWhitespace(el.getAttribute('aria-labelledby') ?? '').includes(el.id));
 			return (
-				attr.value.trim() !== '' &&
+				hasText(attr.value) &&
 				shown.some(visit => !visit.embeddedControl && (visit.inLabelledbyTraversal || !overridden))
 			);
 		}
@@ -330,13 +330,13 @@ function takesEffect(
 					splitOnAsciiWhitespace(asciiLowerCase(el.getAttribute('role') ?? ''))[0] ?? '',
 				) ||
 				(el.localName === 'input' && asciiLowerCase(el.getAttribute('type') ?? '') === 'range');
-			const valuetext = el.getAttribute('aria-valuetext')?.trim() ?? '';
-			const shadowed = namespaceKeyOf(attr) === 'aria-valuenow' && valuetext !== '';
+			const valuetext = hasText(el.getAttribute('aria-valuetext'));
+			const shadowed = namespaceKeyOf(attr) === 'aria-valuenow' && valuetext;
 			// Step 2B comes first outside an ongoing aria-labelledby traversal
 			const labelledby = labelledbyGivesText(el, ariaVersion);
 			return (
 				isRange &&
-				attr.value.trim() !== '' &&
+				hasText(attr.value) &&
 				!shadowed &&
 				shown.some(visit => visit.embeddedControl && (visit.inLabelledbyTraversal || !labelledby))
 			);

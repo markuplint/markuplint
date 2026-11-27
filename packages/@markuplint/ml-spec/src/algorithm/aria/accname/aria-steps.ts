@@ -2,7 +2,7 @@
 
 import type { AccnameComputeFn, AccnameElement, AccnameResolver, AccnameResult } from './types.js';
 
-import { splitOnAsciiWhitespace } from '@markuplint/shared';
+import { hasText, splitOnAsciiWhitespace } from '@markuplint/shared';
 
 import { XHTML_NAMESPACE } from '../../../const/index.js';
 
@@ -126,7 +126,7 @@ export function resolveAriaLabel(el: AccnameElement): AccnameResult | null {
 		return null;
 	}
 	const label = el.getAttribute('aria-label');
-	if (label?.trim()) {
+	if (label != null && hasText(label)) {
 		return makeResult(label, 'aria-label');
 	}
 	return null;

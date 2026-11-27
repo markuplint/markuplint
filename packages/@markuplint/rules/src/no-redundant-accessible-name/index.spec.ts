@@ -783,3 +783,41 @@ describe('an aria-labelledby with references that give a text by other means', (
 		expect(violations).toStrictEqual([]);
 	});
 });
+
+describe('a text that holds non-ASCII white space only is a text', () => {
+	test('[no-redundant-accessible-name-077] an aria-labelledby that refers to a text of U+00A0 only overrides aria-label', async () => {
+		const { violations } = await mlRuleTest(
+			rule,
+			'<span id="t">\u00A0</span> <button aria-label="Save" aria-labelledby="t" type="button"></button>',
+		);
+		expect(violations.map(v => v.message)).toStrictEqual([
+			'The accessible name from "aria-labelledby" overrides "aria-label"',
+		]);
+	});
+
+	test('[no-redundant-accessible-name-078] an aria-label of U+00A0 only is a source beside the content', async () => {
+		const { violations } = await mlRuleTest(rule, '<button aria-label="\u00A0" type="button">Save</button>');
+		expect(violations.map(v => v.message)).toStrictEqual([
+			'The accessible name from "aria-label" overrides "content"',
+		]);
+	});
+});
+
+describe('every source of U+00A0 only is a source', () => {
+	test.each([
+		['content', '<button aria-label="Save" type="button">\u00A0</button>'],
+		['alt', '<img aria-label="Save" alt="\u00A0">'],
+		['value', '<input aria-label="Save" type="button" value="\u00A0">'],
+		['title', '<button aria-label="Save" type="button" title="\u00A0"></button>'],
+		['placeholder', '<input aria-label="Save" type="text" placeholder="\u00A0">'],
+		['legend', '<fieldset aria-label="Save"><legend>\u00A0</legend></fieldset>'],
+		['caption', '<table aria-label="Save"><caption>\u00A0</caption></table>'],
+	])('[no-redundant-accessible-name-079] %s', async (source, code) => {
+		const { violations } = await mlRuleTest(rule, code, {
+			rule: { options: { checkTitleFallback: true, checkPlaceholderFallback: true } },
+		});
+		expect(violations.map(v => v.message)).toStrictEqual([
+			`The accessible name from "aria-label" overrides "${source}"`,
+		]);
+	});
+});
