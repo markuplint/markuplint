@@ -11,8 +11,8 @@ import meta from './meta.js';
 /**
  * Split from the former `wai-aria-implicit-props` rule (#3989): the
  * "redundant" half. See `checkingRedundantAriaProp`'s JSDoc for the full
- * spec citation. Should-level (ARIA in HTML §6 recommends the native
- * attribute), so this rule keeps the former rule's `warning` default —
+ * spec citation. Should-level (ARIA in HTML §4.2: authors SHOULD NOT
+ * specify both the native attribute and the equivalent `aria-*` attribute), so this rule keeps the former rule's `warning` default —
  * contrast `no-contradictory-aria-prop`'s `error`.
  */
 export default createRule<boolean, Options>({
