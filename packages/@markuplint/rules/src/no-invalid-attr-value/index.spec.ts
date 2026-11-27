@@ -3192,3 +3192,24 @@ describe('the pattern attribute and the v flag', () => {
 		expect(await verify(String.raw`\d{3}-\d{4}`)).toStrictEqual([]);
 	});
 });
+
+test('[no-invalid-attr-value-308] customelementregistry is a boolean attribute', async () => {
+	// https://html.spec.whatwg.org/multipage/custom-elements.html#the-customelementregistry-attribute
+	for (const html of [
+		'<div customelementregistry></div>',
+		'<section customelementregistry=""></section>',
+		'<p customelementregistry="customelementregistry"></p>',
+	]) {
+		expect((await mlRuleTest(rule, html)).violations, html).toStrictEqual([]);
+	}
+	const { violations } = await mlRuleTest(rule, '<div customelementregistry="scoped"></div>');
+	expect(violations).toStrictEqual([
+		{
+			severity: 'error',
+			line: 1,
+			col: 29,
+			message: 'The "customelementregistry" attribute expects either "", "customelementregistry"',
+			raw: 'scoped',
+		},
+	]);
+});

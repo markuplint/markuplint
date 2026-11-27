@@ -51,6 +51,9 @@
 				"contextmenu": {
 					"obsolete": true
 				},
+				"customelementregistry": {
+					"type": "Boolean"
+				},
 				"dir": {
 					"type": {
 						"enum": ["ltr", "rtl", "auto"]

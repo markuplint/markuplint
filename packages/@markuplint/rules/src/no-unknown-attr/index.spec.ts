@@ -1179,3 +1179,10 @@ test('[no-unknown-attr-061] part and exportparts are known on HTML, SVG and Math
 <math><mi part="a" exportparts="b"></mi></math>`;
 	expect((await mlRuleTest(rule, html)).violations).toStrictEqual([]);
 });
+
+test('[no-unknown-attr-062] customelementregistry is known on every HTML element', async () => {
+	// https://html.spec.whatwg.org/multipage/custom-elements.html#the-customelementregistry-attribute
+	const html =
+		'<div customelementregistry><span customelementregistry></span><my-element customelementregistry></my-element></div>';
+	expect((await mlRuleTest(rule, html)).violations).toStrictEqual([]);
+});

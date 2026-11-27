@@ -39,6 +39,7 @@ export const ASTRO_LITERAL_VALUES: LiteralValueDeclaration = {
 		hidden: { '0': '0' },
 		// Boolean attributes of the spec that Astro does not render as boolean
 		alpha: AS_STRING,
+		customelementregistry: AS_STRING,
 		focusgroupstart: AS_STRING,
 		headingreset: AS_STRING,
 		ismap: AS_STRING,
