@@ -1,6 +1,9 @@
+import type { ARIAVersion } from '../../types/index.js';
+
 /**
- * The value that a role gives a state or property in place of its default: the "Implicit Value for Role" of the role,
- * which the element has when the author does not set the attribute.
+ * The value that a role gives a state or property in place of its default: the Implicit Value for Role of the role in
+ * each edition, which the element has when the author does not set the attribute. A row that names no value (the
+ * minimum of `spinbutton`, the `aria-valuenow` of `slider` half way between its minimum and maximum) is left out.
  *
  * > Roles that require a state or property to have a non-standard default value indicate this in the "Implicit Value for Role".
  *
@@ -36,9 +39,10 @@
  *
  * > Elements with the role tree have an implicit aria-orientation value of vertical.
  *
- * The values of `aria-valuemin` and `aria-valuemax` are those of `meter`, `progressbar`, `scrollbar`, `separator`
- * and `slider`; that of `aria-selected`, of `tab`. The defaults of `spinbutton` ("that there is no minimum value")
- * are no value. The table is that of the editor's draft, whose implicit values the earlier editions have as well.
+ * The rows of ARIA 1.1 and 1.2 are those of their Recommendations (1.1 also gives `aria-checked` of the checkable
+ * roles, `aria-expanded` of `combobox`, `aria-level` of `heading`, and `aria-valuenow` of `separator` and
+ * `spinbutton`; 1.2 `aria-selected` of `option` and `aria-valuenow` of `spinbutton`), which the citations of this
+ * package do not check, as they cite the editor's draft.
  *
  * @see https://w3c.github.io/aria/#implictValueForRole
  * @see https://w3c.github.io/aria/#alert
@@ -57,15 +61,13 @@
  * @see https://w3c.github.io/aria/#toolbar
  * @see https://w3c.github.io/aria/#tree
  */
-const IMPLICIT_VALUES: Readonly<Record<string, Readonly<Record<string, string>>>> = {
+const COMMON: Readonly<Record<string, Readonly<Record<string, string>>>> = {
 	alert: { 'aria-live': 'assertive', 'aria-atomic': 'true' },
 	combobox: { 'aria-haspopup': 'listbox' },
 	listbox: { 'aria-orientation': 'vertical' },
 	log: { 'aria-live': 'polite' },
 	menu: { 'aria-orientation': 'vertical' },
 	menubar: { 'aria-orientation': 'horizontal' },
-	meter: { 'aria-valuemin': '0', 'aria-valuemax': '100' },
-	progressbar: { 'aria-valuemin': '0', 'aria-valuemax': '100' },
 	scrollbar: { 'aria-orientation': 'vertical', 'aria-valuemin': '0', 'aria-valuemax': '100' },
 	separator: { 'aria-orientation': 'horizontal', 'aria-valuemin': '0', 'aria-valuemax': '100' },
 	slider: { 'aria-orientation': 'horizontal', 'aria-valuemin': '0', 'aria-valuemax': '100' },
@@ -76,14 +78,83 @@ const IMPLICIT_VALUES: Readonly<Record<string, Readonly<Record<string, string>>>
 	tree: { 'aria-orientation': 'vertical' },
 };
 
+const IMPLICIT_VALUES: Readonly<Record<ARIAVersion, Readonly<Record<string, Readonly<Record<string, string>>>>>> = {
+	'1.1': {
+		...COMMON,
+		checkbox: { 'aria-checked': 'false' },
+		combobox: { 'aria-expanded': 'false', 'aria-haspopup': 'listbox' },
+		heading: { 'aria-level': '2' },
+		menuitemcheckbox: { 'aria-checked': 'false' },
+		menuitemradio: { 'aria-checked': 'false' },
+		option: { 'aria-selected': 'false' },
+		radio: { 'aria-checked': 'false' },
+		separator: { ...COMMON.separator, 'aria-valuenow': '50' },
+		spinbutton: { 'aria-valuenow': '0' },
+		switch: { 'aria-checked': 'false' },
+	},
+	'1.2': {
+		...COMMON,
+		meter: { 'aria-valuemin': '0', 'aria-valuemax': '100' },
+		option: { 'aria-selected': 'false' },
+		progressbar: { 'aria-valuemin': '0', 'aria-valuemax': '100' },
+		spinbutton: { 'aria-valuenow': '0' },
+	},
+	'1.3': {
+		...COMMON,
+		meter: { 'aria-valuemin': '0', 'aria-valuemax': '100' },
+		progressbar: { 'aria-valuemin': '0', 'aria-valuemax': '100' },
+	},
+};
+
+/**
+ * The value that a native `progress` or `meter` gives in place of the implicit value of its role: the default of its
+ * `max` is 1.0 and the minimum is 0, which its value range maps to.
+ *
+ * @see https://w3c.github.io/html-aam/#el-progress
+ * @see https://html.spec.whatwg.org/multipage/form-elements.html#attr-progress-max
+ */
+const NATIVE_RANGE: Readonly<Record<string, string>> = { 'aria-valuemin': '0', 'aria-valuemax': '1' };
+
 /**
  * The value that an element of a role has for a state or property when the author does not set it: the implicit value
- * of the role, if the role gives one.
+ * of its role, if the role gives one, for a native `progress` or `meter` the range of the element, and for a heading
+ * element its rank. The value of a native attribute that the element has (`min`, `max`, `checked`) comes before it,
+ * which this does not read.
  *
+ * @example
+ * getImplicitValueOfRole(null, 'alert', 'aria-live', '1.3'); // 'assertive'
+ *
+ * @param el - The element, or null when only the role is known
  * @param role - The name of the role
  * @param property - The name of the state or property
+ * @param version - The ARIA version
  * @returns The implicit value, or null when the role gives none (the default of the property applies)
  */
-export function getImplicitValueOfRole(role: string, property: string): string | null {
-	return IMPLICIT_VALUES[role]?.[property] ?? null;
+export function getImplicitValueOfRole(
+	// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
+	el: Element | null,
+	role: string,
+	property: string,
+	version: ARIAVersion,
+): string | null {
+	if (el?.namespaceURI === 'http://www.w3.org/1999/xhtml') {
+		if ((el.localName === 'progress' || el.localName === 'meter') && property in NATIVE_RANGE) {
+			return NATIVE_RANGE[property] ?? null;
+		}
+		// The level of a heading element is its rank
+		// @see https://www.w3.org/TR/html-aria/#el-h1-h6
+		if (property === 'aria-level' && /^h[1-6]$/.test(el.localName)) {
+			return el.localName.slice(1);
+		}
+	}
+	return IMPLICIT_VALUES[version][role]?.[property] ?? null;
+}
+
+/**
+ * @param property - The name of a state or property
+ * @param version - The ARIA version
+ * @returns Whether some role gives it an implicit value, so that what an element has without it depends on the role
+ */
+export function hasImplicitValueOfSomeRole(property: string, version: ARIAVersion): boolean {
+	return Object.values(IMPLICIT_VALUES[version]).some(values => property in values);
 }

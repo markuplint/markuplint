@@ -96,7 +96,7 @@ export function getComputedAriaProps(
 		}
 
 		// The implicit value of the role takes the place of the default of the property
-		let defaultValue = getImplicitValueOfRole(role.name, spec.name) ?? spec.defaultValue;
+		let defaultValue = getImplicitValueOfRole(el, role.name, spec.name, version) ?? spec.defaultValue;
 
 		/**
 		 * @see https://www.w3.org/TR/html-aria/#el-h1-h6

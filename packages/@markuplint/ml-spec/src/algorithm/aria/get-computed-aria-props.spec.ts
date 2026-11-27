@@ -832,3 +832,15 @@ describe('the white space of a value', () => {
 		expect(prop?.from).toBe('default');
 	});
 });
+
+describe('the default of a property that the role gives an implicit value', () => {
+	test('is the implicit value of the role', () => {
+		expect(c('<div role="separator"></div>', '1.3', 'div')['aria-orientation']).toStrictEqual({
+			name: 'aria-orientation',
+			value: 'horizontal',
+			deprecated: false,
+			required: false,
+			from: 'default',
+		});
+	});
+});

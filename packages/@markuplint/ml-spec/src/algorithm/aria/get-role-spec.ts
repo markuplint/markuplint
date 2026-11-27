@@ -100,11 +100,19 @@ function inheritRequired(
 	ownedProperties: NonNullable<ARIARoleInSchema['ownedProperties']>,
 	superClassRoles: readonly ARIARoleInSchema[],
 ): NonNullable<ARIARoleInSchema['ownedProperties']> {
-	return ownedProperties.map(prop =>
-		prop.inherited &&
-		!prop.required &&
-		superClassRoles.some(sup => sup.ownedProperties?.some(p => p.name === prop.name && p.required))
-			? { ...prop, required: true }
-			: prop,
-	);
+	return ownedProperties.map(prop => {
+		if (!prop.inherited || prop.required) {
+			return prop;
+		}
+		const requiring = superClassRoles.flatMap(
+			sup => sup.ownedProperties?.filter(p => p.name === prop.name && p.required) ?? [],
+		);
+		if (requiring.length === 0) {
+			return prop;
+		}
+		// The condition of the superclass goes with it (`aria-valuenow` of `separator` only when it is focusable); a
+		// superclass that requires it without one makes it required without one
+		const condition = requiring.every(p => p.requiredCondition) ? requiring[0]?.requiredCondition : undefined;
+		return { ...prop, required: true, ...(condition ? { requiredCondition: condition } : {}) };
+	});
 }
