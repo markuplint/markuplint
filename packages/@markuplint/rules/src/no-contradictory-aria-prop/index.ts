@@ -21,8 +21,8 @@ export default createRule<boolean, Options>({
 	async verify({ document, report }) {
 		await document.walkOn('Element', el => {
 			const elSpec = getSpec(el, document.specs.specs);
-			if (!elSpec) return;
-			if (!elSpec.globalAttrs['#ARIAAttrs']) return;
+			// An element without a spec (a custom element) has the ARIA attributes, as every HTML element has
+			if (elSpec && !elSpec.globalAttrs['#ARIAAttrs']) return;
 			const propAttrs = getAriaAttrs(el);
 			if (propAttrs.length === 0) return;
 			const ariaVersion =

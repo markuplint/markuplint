@@ -2,6 +2,7 @@ import type { Options } from '../types.js';
 import type { AttrChecker } from '@markuplint/ml-core';
 
 import { ARIA_RECOMMENDED_VERSION, ariaSpecs } from '@markuplint/ml-spec';
+import { asciiLowerCase } from '@markuplint/shared';
 
 /**
  * Checks whether the `role` attribute value refers to a role that does not exist
@@ -27,12 +28,14 @@ export const checkingNonExistentRole: AttrChecker<boolean, Options> =
 			return;
 		}
 		for (const token of tokens) {
-			let role = roles.find(r => r.name === token.value);
+			// A role is a keyword: ASCII case-insensitively, as `getExplicitRole` reads it
+			const name = asciiLowerCase(token.value);
+			let role = roles.find(r => r.name === name);
 			if (!role && attr.ownerElement.namespaceURI === 'http://www.w3.org/2000/svg') {
-				role = graphicsRoles.find(r => r.name === token.value);
+				role = graphicsRoles.find(r => r.name === name);
 			}
 			if (!role) {
-				role = dpubRoles.find(r => r.name === token.value);
+				role = dpubRoles.find(r => r.name === name);
 			}
 			if (!role) {
 				return {

@@ -64,7 +64,7 @@ describe('checkAriaValue', () => {
 
 describe('checkAriaValue reads a value as the computed ARIA props read it', () => {
 	test.each([
-		['true/false', ' TRUE ', true],
+		['true/false', ' TRUE ', false],
 		['integer', ' 5 ', true],
 		['URI', '', false],
 		['ID reference', 'a b', false],

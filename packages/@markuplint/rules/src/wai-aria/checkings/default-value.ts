@@ -2,7 +2,7 @@ import type { Options } from '../types.js';
 import type { AttrChecker } from '@markuplint/ml-core';
 import type { ARIAProperty } from '@markuplint/ml-spec';
 
-import { trimAsciiWhitespace } from '@markuplint/shared';
+import { asciiLowerCase } from '@markuplint/shared';
 
 /**
  * Checks whether an ARIA property is explicitly set to its spec-defined default value.
@@ -22,7 +22,8 @@ export const checkingDefaultValue: AttrChecker<boolean, Options, { propSpecs: re
 			return;
 		}
 		const propSpec = propSpecs.find(p => p.name === attr.nameKey);
-		const value = trimAsciiWhitespace(attr.value).toLowerCase();
+		// A keyword as browsers read it: ASCII case-insensitively, not trimmed (`isAriaTrue` of `@markuplint/ml-spec`)
+		const value = asciiLowerCase(attr.value);
 		if (propSpec?.defaultValue != null && propSpec.defaultValue === value) {
 			return {
 				scope: attr,

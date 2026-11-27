@@ -5,7 +5,7 @@ description: Warns when an ARIA property redundantly restates the same semantics
 
 # `no-redundant-aria-prop`
 
-Warns when an ARIA property has the same value as (or the same implicit default as) an equivalent native HTML attribute, per [ARIA in HTML §4](https://www.w3.org/TR/html-aria/#docconformance)'s recommendation to prefer the native attribute.
+Warns when an ARIA property has the same value as (or the same implicit default as) an equivalent native HTML attribute, per [ARIA in HTML §4](https://www.w3.org/TR/html-aria/#docconformance)'s recommendation to prefer the native attribute. Values are compared as the value type of the native attribute reads them: a number as a number (`max="10.0"` and `aria-valuemax="10"` are the same value), a keyword ASCII case-insensitively, and any other value as written.
 
 The names of ARIA attributes are compared as [`no-unknown-attr`](/docs/rules/no-unknown-attr#attribute-name-case) compares names (see its "Attribute name case" section): `ARIA-LABEL` is the same attribute as `aria-label` where the DOM treats attribute names as case-insensitive, such as on an HTML element, and a different one where it does not, such as on an `<svg>` element in JSX.
 

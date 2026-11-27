@@ -7,7 +7,7 @@ description: Warns when an ARIA property or state value does not conform to its 
 
 Warns when an ARIA property or state value does not conform to its expected type.
 
-A value is read as the computed ARIA properties read it: ASCII white space around it is ignored, a keyword (`true`, `mixed`, a token of `aria-live`, …) is compared without regard to ASCII case, a number is the whole value, and an ID reference is one id, with no white space in it. An empty value is the absent attribute and is not reported, except for a property that the element requires by its explicit role (`aria-checked` of `role="checkbox"`; an implicit role is satisfied by the element itself):
+A value is read as the computed ARIA properties read it: a keyword (`true`, `mixed`, a token of `aria-live`, …) is compared without regard to ASCII case and with no white space around it, as browsers compare it (`" true "` is not `true`), a number is the whole value with ASCII white space around it ignored, and an ID reference is one id, with no white space in it. An empty value is the absent attribute and is not reported, except for a property that the element requires by its explicit role (`aria-checked` of `role="checkbox"`; an implicit role is satisfied by the element itself):
 
 > Authors MAY specify a zero-length string ("") for any supported (but not required) state or property.
 

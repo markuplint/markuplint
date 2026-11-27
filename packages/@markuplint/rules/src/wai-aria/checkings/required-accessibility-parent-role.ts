@@ -6,6 +6,7 @@ import { ARIA_RECOMMENDED_VERSION, ariaSpecs } from '@markuplint/ml-spec';
 
 import { mayMatchContextRole } from '../../helpers.js';
 import { noTranslate } from '../../no-translate.js';
+import { asciiLowerCase } from '@markuplint/shared';
 
 /**
  * Checks whether an element with an explicit role satisfies its
@@ -57,7 +58,7 @@ export const checkingRequiredAccessibilityParentRole: ElementChecker<
 		const { roles } = ariaSpecs(el.ownerMLDocument.specs, ariaVersion);
 
 		for (const token of roleAttr.tokenList?.allTokens() ?? []) {
-			const roleSpec = roles.find(r => r.name === token.value);
+			const roleSpec = roles.find(r => r.name === asciiLowerCase(token.value));
 			if (!roleSpec) {
 				continue;
 			}

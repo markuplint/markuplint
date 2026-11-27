@@ -152,32 +152,115 @@ test.each([
 	},
 );
 
-test('[no-contradictory-aria-prop-016] the value is compared trimmed and case-insensitively', async () => {
+test('[no-contradictory-aria-prop-016] the value is not trimmed, as browsers read it: " TRUE " is not true', async () => {
 	const { violations } = await mlRuleTest(rule, '<input type="checkbox" aria-checked=" TRUE " />');
-	expect(violations).toStrictEqual([
-		{
-			severity: 'error',
-			line: 1,
-			col: 24,
-			message: 'The "aria-checked" ARIA state contradicts the implicit "checked" attribute',
-			raw: 'aria-checked=" TRUE "',
-		},
-	]);
+	expect(violations).toStrictEqual([]);
 });
 
-test('[no-contradictory-aria-prop-017] a value is trimmed of ASCII white space only: U+00A0 is a character of it', async () => {
+test('[no-contradictory-aria-prop-017] a value with white space around it is not the keyword, ASCII or U+00A0', async () => {
 	expect(
 		(await mlRuleTest(rule, '<input type="checkbox" checked aria-checked=" false " />')).violations,
+	).toStrictEqual([]);
+	expect(
+		(await mlRuleTest(rule, '<input type="checkbox" checked aria-checked="false\u00A0" />')).violations,
+	).toStrictEqual([]);
+});
+
+test('[no-contradictory-aria-prop-018] a number is compared as a number, and another string as written', async () => {
+	expect(
+		(await mlRuleTest(rule, '<input type="range" max="10.0" aria-valuemax="10" aria-label="b">')).violations,
+	).toStrictEqual([]);
+	expect(
+		(await mlRuleTest(rule, '<input type="range" max="11" aria-valuemax="10" aria-label="b">')).violations,
 	).toStrictEqual([
 		{
 			severity: 'error',
 			line: 1,
-			col: 32,
-			message: 'The "aria-checked" ARIA state contradicts the current "checked" attribute',
-			raw: 'aria-checked=" false "',
+			col: 30,
+			message: 'The "aria-valuemax" ARIA property contradicts the current "max" attribute',
+			raw: 'aria-valuemax="10"',
 		},
 	]);
 	expect(
-		(await mlRuleTest(rule, '<input type="checkbox" checked aria-checked="false\u00A0" />')).violations,
-	).toStrictEqual([]);
+		(await mlRuleTest(rule, '<input placeholder="Name" aria-placeholder="name" aria-label="x">')).violations,
+	).toStrictEqual([
+		{
+			severity: 'error',
+			line: 1,
+			col: 27,
+			message: 'The "aria-placeholder" ARIA property contradicts the current "placeholder" attribute',
+			raw: 'aria-placeholder="name"',
+		},
+	]);
+});
+
+test.each([
+	['<div contenteditable="true" aria-readonly="true"></div>', 29, 'aria-readonly="true"'],
+	['<div contenteditable="" aria-readonly="TRUE"></div>', 25, 'aria-readonly="TRUE"'],
+	['<div contenteditable="plaintext-only" aria-readonly="true"></div>', 39, 'aria-readonly="true"'],
+])('[no-contradictory-aria-prop-019] aria-readonly="true" on an editable element: %s', async (code, col, raw) => {
+	expect((await mlRuleTest(rule, code)).violations).toStrictEqual([
+		{
+			severity: 'error',
+			line: 1,
+			col,
+			message: 'The "aria-readonly" ARIA property contradicts the current "contenteditable" attribute',
+			raw,
+		},
+	]);
+});
+
+test.each([
+	'<div contenteditable="true"><p contenteditable="false" aria-readonly="true">a</p></div>',
+	'<div contenteditable="bogus" aria-readonly="true"></div>',
+	'<div contenteditable="true" aria-readonly="false"></div>',
+	'<div aria-readonly="true"></div>',
+])('[no-contradictory-aria-prop-020] aria-readonly on an element that is not editable, or not true: %s', async code => {
+	expect((await mlRuleTest(rule, code)).violations).toStrictEqual([]);
+});
+
+test.each([
+	'<div hidden aria-hidden=" true "></div>',
+	'<div hidden aria-hidden="undefined"></div>',
+	'<input type="range" max="10" aria-valuemax="" aria-label="x">',
+	'<input type="range" max="10" aria-valuemax="10abc" aria-label="x">',
+	'<table><tr><td colspan="0" aria-colspan="1">a</td></tr></table>',
+	'<div contenteditable><template><p aria-readonly="true">a</p></template></div>',
+])('[no-contradictory-aria-prop-021] a value that opposes nothing is not reported: %s', async code => {
+	expect((await mlRuleTest(rule, code)).violations).toStrictEqual([]);
+});
+
+test('[no-contradictory-aria-prop-022] only "false" contradicts a native attribute that stands for a keyword', async () => {
+	expect((await mlRuleTest(rule, '<div hidden aria-hidden="false"></div>')).violations).toStrictEqual([
+		{
+			severity: 'error',
+			line: 1,
+			col: 13,
+			message: 'The "aria-hidden" ARIA state contradicts the current "hidden" attribute',
+			raw: 'aria-hidden="false"',
+		},
+	]);
+});
+
+test('[no-contradictory-aria-prop-023] aria-readonly on an editable custom element, and on a descendant of an editing host', async () => {
+	expect((await mlRuleTest(rule, '<x-a contenteditable aria-readonly="true"></x-a>')).violations).toStrictEqual([
+		{
+			severity: 'error',
+			line: 1,
+			col: 22,
+			message: 'The "aria-readonly" ARIA property contradicts the current "contenteditable" attribute',
+			raw: 'aria-readonly="true"',
+		},
+	]);
+	expect(
+		(await mlRuleTest(rule, '<div contenteditable><p aria-readonly="true">a</p></div>')).violations,
+	).toStrictEqual([
+		{
+			severity: 'error',
+			line: 1,
+			col: 25,
+			message: 'The "aria-readonly" ARIA property contradicts the "contenteditable" attribute',
+			raw: 'aria-readonly="true"',
+		},
+	]);
 });

@@ -2,9 +2,9 @@ import type { Options } from '../types.js';
 import type { AttrChecker } from '@markuplint/ml-core';
 import type { ARIAProperty, Attribute } from '@markuplint/ml-spec';
 
-import { trimAsciiWhitespace } from '@markuplint/shared';
-
 import { resolveAttrEligibility } from '../../attr-eligibility.js';
+
+import { isSameAsNative } from './equivalent-value.js';
 
 /**
  * Checks whether an ARIA property is redundant because an equivalent native
@@ -39,6 +39,10 @@ export const checkingRedundantAriaProp: AttrChecker<
 		if (!propSpec?.equivalentHtmlAttrs) {
 			return;
 		}
+		// The zero-length string is the absent attribute, which restates nothing
+		if (attr.value === '') {
+			return;
+		}
 		for (const equivalentHtmlAttr of propSpec.equivalentHtmlAttrs) {
 			const eligibility = resolveAttrEligibility(equivalentHtmlAttr.htmlAttrName, attr.ownerElement, attrSpecs);
 			// Skip only when the native attribute doesn't apply to this element at all
@@ -54,9 +58,19 @@ export const checkingRedundantAriaProp: AttrChecker<
 				continue;
 			}
 
-			const value = trimAsciiWhitespace(attr.value).toLowerCase();
-			const targetAttrValue = attr.ownerElement.getAttribute(equivalentHtmlAttr.htmlAttrName);
-			if ((equivalentHtmlAttr.value == null && targetAttrValue === value) || equivalentHtmlAttr.value === value) {
+			const nativeType =
+				eligibility.status === 'ok'
+					? eligibility.spec.type
+					: attrSpecs.find(a => a.name === equivalentHtmlAttr.htmlAttrName)?.type;
+			if (
+				isSameAsNative(
+					attr.value,
+					attr.ownerElement.getAttribute(equivalentHtmlAttr.htmlAttrName),
+					nativeType,
+					equivalentHtmlAttr.htmlAttrName,
+					equivalentHtmlAttr.value,
+				)
+			) {
 				return {
 					scope: attr,
 					message: t(

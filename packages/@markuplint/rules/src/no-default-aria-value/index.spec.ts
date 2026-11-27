@@ -69,16 +69,8 @@ test('[no-default-aria-value-006] JSX: an upper-case aria-* on an svg element is
 	]);
 });
 
-test('[no-default-aria-value-007] a value is trimmed of ASCII white space only: U+00A0 is a character of it', async () => {
-	expect((await mlRuleTest(rule, '<div aria-expanded=" undefined\n"></div>')).violations).toStrictEqual([
-		{
-			severity: 'warning',
-			line: 1,
-			col: 6,
-			message: 'It is default value',
-			raw: 'aria-expanded=" undefined\n"',
-		},
-	]);
+test('[no-default-aria-value-007] a value with white space around it is not the keyword, ASCII or U+00A0', async () => {
+	expect((await mlRuleTest(rule, '<div aria-expanded=" undefined\n"></div>')).violations).toStrictEqual([]);
 	expect((await mlRuleTest(rule, '<div aria-expanded="undefined\u00A0"></div>')).violations).toStrictEqual([]);
 	expect((await mlRuleTest(rule, '<div aria-expanded="\u00A0undefined"></div>')).violations).toStrictEqual([]);
 });

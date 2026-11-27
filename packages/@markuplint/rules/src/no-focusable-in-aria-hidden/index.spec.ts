@@ -134,3 +134,24 @@ test.each([
 	const { violations } = await mlRuleTest(rule, `<div aria-hidden="${value}"><button>a</button></div>`);
 	expect(violations).toStrictEqual(expected);
 });
+
+test.each([
+	['<div aria-hidden="true"><span contenteditable="bogus">a</span></div>', []],
+	[
+		'<div aria-hidden="true"><span contenteditable="plaintext-only">a</span></div>',
+		[
+			{
+				severity: 'warning',
+				line: 1,
+				col: 25,
+				message: 'It may be focusable in spite of it has the ancestor that has aria-hidden=true',
+				raw: '<span contenteditable="plaintext-only">',
+			},
+		],
+	],
+])(
+	'[no-focusable-in-aria-hidden-012] only an editing host is focusable by contenteditable: %s',
+	async (code, expected) => {
+		expect((await mlRuleTest(rule, code)).violations).toStrictEqual(expected);
+	},
+);

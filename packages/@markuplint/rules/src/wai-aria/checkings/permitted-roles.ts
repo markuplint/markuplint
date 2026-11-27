@@ -2,6 +2,7 @@ import type { Options } from '../types.js';
 import type { AttrChecker } from '@markuplint/ml-core';
 
 import { ARIA_RECOMMENDED_VERSION, getPermittedRoles } from '@markuplint/ml-spec';
+import { asciiLowerCase } from '@markuplint/shared';
 
 /**
  * Checks whether the explicit `role` attribute value is permitted on the element
@@ -61,7 +62,10 @@ export const checkingPermittedRoles: AttrChecker<boolean, Options> =
 			return;
 		}
 		for (const token of tokens) {
-			if (Array.isArray(permittedRoles) && !permittedRoles.map(r => r.name).includes(token.value)) {
+			if (
+				Array.isArray(permittedRoles) &&
+				!permittedRoles.map(r => r.name).includes(asciiLowerCase(token.value))
+			) {
 				return {
 					scope: token,
 					message: t(
