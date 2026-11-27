@@ -142,7 +142,7 @@ test('trimAsciiWhitespace', () => {
 });
 
 test('hasText', () => {
-	const nonAscii = [0xA0, 0x20_28, 0xFE_FF].map(code => String.fromCodePoint(code)).join('');
+	const nonAscii = '\u00A0\u2028\uFEFF';
 	expect(hasText(null)).toBe(false);
 	expect(hasText()).toBe(false);
 	expect(hasText('')).toBe(false);

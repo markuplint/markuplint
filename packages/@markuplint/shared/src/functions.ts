@@ -199,6 +199,13 @@ export function splitOnAsciiWhitespace(value: string): string[] {
 }
 
 /**
+ * ASCII white space: U+0009, U+000A, U+000C, U+000D and U+0020.
+ *
+ * @see https://infra.spec.whatwg.org/#ascii-whitespace
+ */
+const ASCII_WHITESPACE: ReadonlySet<string> = new Set(['\t', '\n', '\f', '\r', ' ']);
+
+/**
  * Trims ASCII white space only (U+0009, U+000A, U+000C, U+000D, U+0020).
  * `String#trim` also removes U+00A0, U+FEFF and the other non-ASCII white space, which are part of a
  * value as the HTML syntax reads it.
@@ -212,24 +219,13 @@ export function trimAsciiWhitespace(value: string): string {
 	// a long run of white space in the middle of the string again from each of its positions.
 	let start = 0;
 	let end = value.length;
-	while (start < end && isAsciiWhitespace(value.codePointAt(start))) {
+	while (start < end && ASCII_WHITESPACE.has(value.charAt(start))) {
 		start++;
 	}
-	while (end > start && isAsciiWhitespace(value.codePointAt(end - 1))) {
+	while (end > start && ASCII_WHITESPACE.has(value.charAt(end - 1))) {
 		end--;
 	}
 	return value.slice(start, end);
-}
-
-/**
- * Whether a code point is ASCII white space: U+0009, U+000A, U+000C, U+000D or U+0020.
- *
- * @see https://infra.spec.whatwg.org/#ascii-whitespace
- * @param code - A code point, or `undefined` for a position outside the string
- * @returns `true` for ASCII white space
- */
-function isAsciiWhitespace(code: number | undefined): boolean {
-	return code === 0x20 || code === 0x09 || code === 0x0A || code === 0x0C || code === 0x0D;
 }
 
 /**
