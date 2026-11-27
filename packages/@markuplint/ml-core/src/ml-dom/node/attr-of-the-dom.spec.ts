@@ -201,4 +201,12 @@ describe('MLElement#isContentEditable', () => {
 		const code = createTestDocument('<div contenteditable={editable}><p>a</p></div>', { parser });
 		expect(element(code, 'p').isContentEditable).toBe(false);
 	});
+
+	test('a spread after contenteditable may override it, one before it is overridden', async () => {
+		const parser = await parserOf('jsx');
+		const after = createTestDocument('<div contentEditable="true" {...props}>a</div>', { parser });
+		expect(element(after, 'div').isContentEditable).toBe(false);
+		const before = createTestDocument('<div {...props} contentEditable="true">a</div>', { parser });
+		expect(element(before, 'div').isContentEditable).toBe(true);
+	});
 });

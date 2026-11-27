@@ -5390,9 +5390,14 @@ function isEditable(
 	let current: MLElement<any, any> | null = el;
 	while (current) {
 		const attr = current.namespaceURI === HTML_NAMESPACE ? current.getAttributeNode('contenteditable') : null;
-		// A spread may set `contenteditable` (to `false`), so what the element is is not known
-		if (!attr && current.hasSpreadAttr) {
-			return false;
+		// A spread may set `contenteditable` (to `false`), so what the element is is not known: one where the element
+		// has no `contenteditable`, or one after it, which the later attribute overrides it with
+		if (current.hasSpreadAttr) {
+			const attrs = [...current.attributes];
+			const index = attr ? attrs.indexOf(attr) : -1;
+			if (attrs.some((a, i) => a.isSpread === true && (i > index || a.spreadOverridesWritten === true))) {
+				return false;
+			}
 		}
 		if (attr) {
 			if (attr.isDynamicValue) {
