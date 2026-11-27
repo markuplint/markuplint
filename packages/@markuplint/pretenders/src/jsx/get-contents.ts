@@ -6,6 +6,7 @@ import type { PretenderContent, Slot } from '@markuplint/ml-config';
 import type { JsxChild, JsxElement, JsxOpeningElement, JsxTagNameExpression, Node, SourceFile } from 'typescript';
 
 import { uriToPretenderNamespace } from '@markuplint/ml-config';
+import type { NamespaceSubject } from '@markuplint/parser-utils';
 import { getNamespaceBelow } from '@markuplint/parser-utils';
 import ts from 'typescript';
 
@@ -16,12 +17,15 @@ import { getAttributes, toPretenderAttrs } from './get-attributes.js';
 const {
 	forEachChild,
 	isIdentifier,
+	isJsxAttribute,
 	isJsxAttributes,
 	isJsxElement,
 	isJsxExpression,
 	isJsxFragment,
 	isJsxSelfClosingElement,
 	isJsxText,
+	isNoSubstitutionTemplateLiteral,
+	isStringLiteral,
 } = ts;
 
 /**
@@ -45,8 +49,7 @@ export function getSlotInfo(
 
 	const rootElement = root.type === 'element' ? (root.element as JsxOpeningElement) : undefined;
 	const children = root.type === 'element' ? (root.element.parent as JsxElement).children : root.children;
-	const rootName =
-		rootElement && isIntrinsicTag(rootElement.tagName) ? rootElement.tagName.getText(sourceFile) : null;
+	const rootSubject = rootElement ? namespaceSubjectOf(rootElement, sourceFile) : null;
 
 	const wrappers = findWrappers(children, sourceFile, isFragmentTag);
 	const others = [...wrappers.keys()].filter((wrapper): wrapper is JsxOpeningElement => wrapper !== null);
@@ -71,7 +74,7 @@ export function getSlotInfo(
 				sourceFile,
 				isFragmentTag,
 				resolveProp,
-				getNamespaceBelow(rootName, wrappers.get(wrapper) ?? []) ?? undefined,
+				getNamespaceBelow(rootSubject, wrappers.get(wrapper) ?? []) ?? undefined,
 			),
 		),
 	];
@@ -90,14 +93,14 @@ function findWrappers(
 	children: readonly JsxChild[],
 	sourceFile: SourceFile,
 	isFragmentTag: (tag: string) => boolean,
-): Map<JsxOpeningElement | null, readonly (string | null)[]> {
-	const wrappers = new Map<JsxOpeningElement | null, readonly (string | null)[]>();
+): Map<JsxOpeningElement | null, readonly NamespaceSubject[]> {
+	const wrappers = new Map<JsxOpeningElement | null, readonly NamespaceSubject[]>();
 
 	const walk = (
 		// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
 		node: Node,
 		wrapper: JsxOpeningElement | null,
-		path: readonly (string | null)[],
+		path: readonly NamespaceSubject[],
 	) => {
 		if (isJsxAttributes(node) || isJsxSelfClosingElement(node)) {
 			return;
@@ -110,7 +113,7 @@ function findWrappers(
 				}
 				return;
 			}
-			const childPath = [...path, isIntrinsicTag(node.openingElement.tagName) ? tagName : null];
+			const childPath = [...path, namespaceSubjectOf(node.openingElement, sourceFile)];
 			for (const child of node.children) {
 				walk(child, node.openingElement, childPath);
 			}
@@ -127,6 +130,33 @@ function findWrappers(
 		walk(child, null, []);
 	}
 	return wrappers;
+}
+
+/**
+ * An element for `getNamespaceBelow`: its name and its `encoding` (which decides whether an `annotation-xml` is an
+ * HTML integration point), or `null` for a component, which does not enter a namespace by its name.
+ */
+function namespaceSubjectOf(
+	// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
+	el: JsxOpeningElement,
+	// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
+	sourceFile: SourceFile,
+): NamespaceSubject {
+	if (!isIntrinsicTag(el.tagName)) {
+		return null;
+	}
+	let encoding: string | null = null;
+	for (const attr of el.attributes.properties) {
+		if (isJsxAttribute(attr) && attr.name.getText(sourceFile).toLowerCase() === 'encoding' && attr.initializer) {
+			// `encoding="text/html"`, or a string that an expression container holds (`encoding={'text/html'}`)
+			const value =
+				isJsxExpression(attr.initializer) && attr.initializer.expression
+					? attr.initializer.expression
+					: attr.initializer;
+			encoding = isStringLiteral(value) || isNoSubstitutionTemplateLiteral(value) ? value.text : null;
+		}
+	}
+	return { name: el.tagName.getText(sourceFile), encoding };
 }
 
 function isChildrenReference(
