@@ -54,6 +54,8 @@ class MDXParser extends MarkdownAwareParser {
 			// A string attribute is decoded with the HTML set of names and a semicolon
 			// @see https://github.com/syntax-tree/mdast-util-mdx-jsx/blob/main/lib/index.js#exitMdxJsxTagAttributeValueLiteral
 			attrValueDecoding: 'mdx',
+			// The JSX of MDX is rendered by React or another JSX runtime, which follows `foreignObject` only
+			integrationPoints: 'foreign-object',
 			// remark strips a leading BOM itself and counts from the next character
 			leadingBom: 'strip',
 		});

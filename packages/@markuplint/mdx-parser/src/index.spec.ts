@@ -34,6 +34,10 @@ describe('MDXParser', () => {
 			expect(parser.attrValueDecoding).toBe('mdx');
 		});
 
+		test('says that only `foreignObject` puts what is in it in the HTML namespace', () => {
+			expect(parser.integrationPoints).toBe('foreign-object');
+		});
+
 		test('self-closing component', () => {
 			const doc = parse('<MyComponent prop="value" />');
 			const maps = nodeListToDebugMaps(doc.nodeList);

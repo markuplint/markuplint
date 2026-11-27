@@ -354,7 +354,11 @@ function scanSlotContent(doc: MLASTDocument): Pick<ComponentScanResult, 'slotWra
 		slotWrappers: [...wrappers.values()].map(wrapper => {
 			const isNative = wrapper.elementType === 'html';
 			const namespace = isNative
-				? getNamespaceBelow(getNamespaceSubject(root), getNamesBelow(wrapper, root, nodes))
+				? getNamespaceBelow(
+						getNamespaceSubject(root),
+						getNamesBelow(wrapper, root, nodes),
+						parser.integrationPoints,
+					)
 				: null;
 			return {
 				element: wrapper.nodeName,

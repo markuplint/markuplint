@@ -45,6 +45,9 @@ export class SvelteParser extends Parser<SvelteNode> {
 			// A static attribute is in the HTML string that the compiler hands to the browser's parser,
 			// and a dynamic one is set by `set_attribute` under the name as written.
 			attrNameRoute: 'dom-api-when-dynamic',
+			// The compiler makes an element in the namespace of its parent, and one in `foreignObject` in the HTML
+			// namespace
+			integrationPoints: 'foreign-object',
 			// `<slot>` is replaced with what the parent component passes to it, not the HTML `slot` element
 			// of a shadow tree
 			// @see https://svelte.dev/docs/svelte/legacy-slots

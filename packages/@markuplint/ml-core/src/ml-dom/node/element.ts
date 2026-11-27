@@ -4585,6 +4585,7 @@ export class MLElement<T extends RuleConfigValue, O extends PlainData = undefine
 			this.#namespaceURI,
 			this.elementType === 'authored' ? null : this._astToken.nodeName,
 			this.getAttributePretended('encoding'),
+			this.ownerMLDocument.integrationPoints,
 		);
 	}
 

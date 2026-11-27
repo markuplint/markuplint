@@ -1,4 +1,4 @@
-import type { MLASTParentNode, NamespaceURI } from '@markuplint/ml-ast';
+import type { IntegrationPoints, MLASTParentNode, NamespaceURI } from '@markuplint/ml-ast';
 
 import { asciiLowerCase, decodeAttrValue } from '@markuplint/shared';
 
@@ -10,9 +10,14 @@ import { asciiLowerCase, decodeAttrValue } from '@markuplint/shared';
  * @param currentNodeName - The tag name of the current node, or null for anonymous nodes and
  *   for an authored element (a component), which does not enter a namespace by its name
  * @param parentNode - The parent node in the AST, or null for root-level nodes
+ * @param integrationPoints - Which integration points the language follows (see {@link getChildNamespace})
  * @returns The resolved namespace URI for the node
  */
-export function getNamespace(currentNodeName: string | null, parentNode: MLASTParentNode | null): NamespaceURI {
+export function getNamespace(
+	currentNodeName: string | null,
+	parentNode: MLASTParentNode | null,
+	integrationPoints: IntegrationPoints = 'html',
+): NamespaceURI {
 	return getChildNamespace(
 		currentNodeName,
 		getParentNamespace(parentNode),
@@ -21,6 +26,7 @@ export function getNamespace(currentNodeName: string | null, parentNode: MLASTPa
 			? null
 			: (parentNode?.nodeName ?? null),
 		getEncoding(parentNode),
+		integrationPoints,
 	);
 }
 
@@ -60,6 +66,8 @@ export function getNamespace(currentNodeName: string | null, parentNode: MLASTPa
  * @param parentNodeName - The tag name of the parent element, or null at the top level
  * @param parentEncoding - The `encoding` attribute of the parent element, which decides whether an `annotation-xml`
  *   is an HTML integration point (absent: it is not)
+ * @param integrationPoints - Which integration points the language follows: those of the HTML parser, or only
+ *   `foreignObject`, as the DOM builders of React and Svelte (see `IntegrationPoints`)
  * @returns The resolved namespace URI for the element
  */
 export function getChildNamespace(
@@ -67,11 +75,17 @@ export function getChildNamespace(
 	parentNamespace: NamespaceURI,
 	parentNodeName: string | null,
 	parentEncoding?: string | null,
+	integrationPoints: IntegrationPoints = 'html',
 ): NamespaceURI {
 	const name = currentNodeName?.toLowerCase();
 	const parent = parentNodeName?.toLowerCase() ?? '';
 	let namespace = parentNamespace;
-	if (parentNamespace === 'http://www.w3.org/2000/svg' && SVG_HTML_INTEGRATION_POINTS.has(parent)) {
+	if (integrationPoints === 'foreign-object') {
+		// The name as the code writes it: `foreignObject` of the SVG namespace
+		if (parentNamespace === 'http://www.w3.org/2000/svg' && parentNodeName === 'foreignObject') {
+			namespace = 'http://www.w3.org/1999/xhtml';
+		}
+	} else if (parentNamespace === 'http://www.w3.org/2000/svg' && SVG_HTML_INTEGRATION_POINTS.has(parent)) {
 		namespace = 'http://www.w3.org/1999/xhtml';
 	} else if (parentNamespace === 'http://www.w3.org/1998/Math/MathML') {
 		if (MATHML_TEXT_INTEGRATION_POINTS.has(parent) && name !== 'mglyph' && name !== 'malignmark') {
@@ -134,20 +148,27 @@ export type NamespaceSubject = string | null | { readonly name: string | null; r
  *
  * @param ancestor - The ancestor (its tag name, or null for a component or fragment)
  * @param names - The elements from the child of the ancestor down to the element
+ * @param integrationPoints - Which integration points the language follows (see {@link getChildNamespace})
  * @returns The namespace URI of the element, or null when it depends on where the ancestor is
  */
-export function getNamespaceBelow(ancestor: NamespaceSubject, names: readonly NamespaceSubject[]): NamespaceURI | null {
+export function getNamespaceBelow(
+	ancestor: NamespaceSubject,
+	names: readonly NamespaceSubject[],
+	integrationPoints: IntegrationPoints = 'html',
+): NamespaceURI | null {
 	let namespace = getEnteredNamespace(nameOf(ancestor));
 	let parent: NamespaceSubject = ancestor;
 	for (const subject of names) {
 		const name = nameOf(subject);
 		const parentName = nameOf(parent);
 		if (namespace) {
-			namespace = getChildNamespace(name, namespace, parentName, encodingOf(parent));
+			namespace = getChildNamespace(name, namespace, parentName, encodingOf(parent), integrationPoints);
 		} else {
 			namespace =
 				getEnteredNamespace(name) ??
-				(isHtmlBelowAnywhere(name, parentName, encodingOf(parent)) ? 'http://www.w3.org/1999/xhtml' : null);
+				(isHtmlBelowAnywhere(name, parentName, encodingOf(parent), integrationPoints)
+					? 'http://www.w3.org/1999/xhtml'
+					: null);
 		}
 		parent = subject;
 	}
@@ -165,7 +186,15 @@ function encodingOf(subject: NamespaceSubject): string | null {
 /**
  * Whether an element is HTML below a parent of this name in HTML, in SVG and in MathML alike.
  */
-function isHtmlBelowAnywhere(name: string | null, parentName: string | null, parentEncoding: string | null): boolean {
+function isHtmlBelowAnywhere(
+	name: string | null,
+	parentName: string | null,
+	parentEncoding: string | null,
+	integrationPoints: IntegrationPoints,
+): boolean {
+	if (integrationPoints === 'foreign-object') {
+		return parentName === 'foreignObject';
+	}
 	const parent = parentName?.toLowerCase() ?? '';
 	if (SVG_HTML_INTEGRATION_POINTS.has(parent)) {
 		return true;

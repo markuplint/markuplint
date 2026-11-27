@@ -540,6 +540,7 @@ export class MLCore {
 				componentDuplicateAttrPrecedence: this.#parser.componentDuplicateAttrPrecedence,
 				attrValueDecoding: this.#parser.attrValueDecoding,
 				componentAttrValueDecoding: this.#parser.componentAttrValueDecoding,
+				integrationPoints: this.#parser.integrationPoints,
 				pretenders: this.#pretenders,
 			});
 			// Collect errors from rule mapping (e.g., invalid wildcard usage).

@@ -3,6 +3,7 @@ import type {
 	AttrValueDecoding,
 	DuplicateAttrPrecedence,
 	EndTagType,
+	IntegrationPoints,
 	ExpressionLanguage,
 	LiteralValueDeclaration,
 	MLASTParentNode,
@@ -31,6 +32,7 @@ export type ParserOptions = {
 	readonly componentDuplicateAttrPrecedence?: DuplicateAttrPrecedence;
 	readonly attrValueDecoding?: AttrValueDecoding;
 	readonly componentAttrValueDecoding?: AttrValueDecoding;
+	readonly integrationPoints?: IntegrationPoints;
 	readonly selfCloseType?: SelfCloseType;
 	readonly spaceChars?: readonly string[];
 	readonly rawTextElements?: readonly string[];

@@ -17,15 +17,12 @@ import { getAttributes, toPretenderAttrs } from './get-attributes.js';
 const {
 	forEachChild,
 	isIdentifier,
-	isJsxAttribute,
 	isJsxAttributes,
 	isJsxElement,
 	isJsxExpression,
 	isJsxFragment,
 	isJsxSelfClosingElement,
 	isJsxText,
-	isNoSubstitutionTemplateLiteral,
-	isStringLiteral,
 } = ts;
 
 /**
@@ -74,7 +71,7 @@ export function getSlotInfo(
 				sourceFile,
 				isFragmentTag,
 				resolveProp,
-				getNamespaceBelow(rootSubject, wrappers.get(wrapper) ?? []) ?? undefined,
+				getNamespaceBelow(rootSubject, wrappers.get(wrapper) ?? [], 'foreign-object') ?? undefined,
 			),
 		),
 	];
@@ -133,8 +130,8 @@ function findWrappers(
 }
 
 /**
- * An element for `getNamespaceBelow`: its name and its `encoding` (which decides whether an `annotation-xml` is an
- * HTML integration point), or `null` for a component, which does not enter a namespace by its name.
+ * An element for `getNamespaceBelow`: its name, or `null` for a component, which does not enter a namespace by its
+ * name. React follows `foreignObject` only, so no `encoding` is read.
  */
 function namespaceSubjectOf(
 	// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
@@ -142,21 +139,7 @@ function namespaceSubjectOf(
 	// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
 	sourceFile: SourceFile,
 ): NamespaceSubject {
-	if (!isIntrinsicTag(el.tagName)) {
-		return null;
-	}
-	let encoding: string | null = null;
-	for (const attr of el.attributes.properties) {
-		if (isJsxAttribute(attr) && attr.name.getText(sourceFile).toLowerCase() === 'encoding' && attr.initializer) {
-			// `encoding="text/html"`, or a string that an expression container holds (`encoding={'text/html'}`)
-			const value =
-				isJsxExpression(attr.initializer) && attr.initializer.expression
-					? attr.initializer.expression
-					: attr.initializer;
-			encoding = isStringLiteral(value) || isNoSubstitutionTemplateLiteral(value) ? value.text : null;
-		}
-	}
-	return { name: el.tagName.getText(sourceFile), encoding };
+	return isIntrinsicTag(el.tagName) ? el.tagName.getText(sourceFile) : null;
 }
 
 function isChildrenReference(

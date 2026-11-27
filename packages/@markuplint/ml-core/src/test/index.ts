@@ -69,6 +69,7 @@ export function createTestDocument<T extends RuleConfigValue = any, O extends Pl
 			componentDuplicateAttrPrecedence: usedParser.componentDuplicateAttrPrecedence,
 			attrValueDecoding: usedParser.attrValueDecoding,
 			componentAttrValueDecoding: usedParser.componentAttrValueDecoding,
+			integrationPoints: usedParser.integrationPoints,
 			...(options?.pretenders ? { pretenders: options.pretenders } : {}),
 		},
 	);

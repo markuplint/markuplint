@@ -9,10 +9,10 @@ import { jsxScanner } from './index.js';
 const fixture = path.resolve(import.meta.dirname, '..', '..', 'test', 'fixtures', '013-integration-points.tsx');
 
 /**
- * A slot wrapper in an integration point of SVG or MathML is in the namespace that the tree construction gives what is
- * in the integration point.
+ * React makes an element in the namespace of its parent, and an element in `foreignObject` in the HTML namespace: the
+ * other integration points of the HTML parser (`desc`, `mi`, `annotation-xml`) are not followed.
  */
-describe('the namespace of a slot wrapper in an integration point', () => {
+describe('the namespace of a slot wrapper in what the HTML parser takes for an integration point', () => {
 	let asOf: (selector: string) => Pretender['as'] | undefined;
 
 	beforeAll(async () => {
@@ -20,17 +20,14 @@ describe('the namespace of a slot wrapper in an integration point', () => {
 		asOf = (selector: string) => pretenders.find(p => p.selector === selector)?.as;
 	});
 
-	test('in an annotation-xml whose encoding is HTML, it is HTML', () => {
+	test('in an annotation-xml whose encoding is HTML, it is MathML', () => {
 		expect(asOf('AnnotationHtmlSlot')).toStrictEqual({
 			element: 'math',
-			slots: [{ element: 'div', namespace: 'html' }],
+			slots: [{ element: 'div', namespace: 'math' }],
 		});
-	});
-
-	test('in an annotation-xml whose encoding is a string in an expression, it is HTML', () => {
 		expect(asOf('AnnotationExpressionSlot')).toStrictEqual({
 			element: 'math',
-			slots: [{ element: 'div', namespace: 'html' }],
+			slots: [{ element: 'div', namespace: 'math' }],
 		});
 	});
 
@@ -41,17 +38,17 @@ describe('the namespace of a slot wrapper in an integration point', () => {
 		});
 	});
 
-	test('in a MathML text integration point, it is HTML', () => {
+	test('in a MathML text integration point, it is MathML', () => {
 		expect(asOf('TextIntegrationSlot')).toStrictEqual({
 			element: 'math',
-			slots: [{ element: 'span', namespace: 'html' }],
+			slots: [{ element: 'span', namespace: 'math' }],
 		});
 	});
 
-	test('in the desc of SVG, it is HTML', () => {
+	test('in the desc of SVG, it is SVG', () => {
 		expect(asOf('DescSlot')).toStrictEqual({
 			element: 'svg',
-			slots: [{ element: 'span', namespace: 'html' }],
+			slots: [{ element: 'span', namespace: 'svg' }],
 		});
 	});
 });

@@ -14,6 +14,7 @@ import type {
 	AttrNameRoute,
 	DuplicateAttrPrecedence,
 	AttrValueDecoding,
+	IntegrationPoints,
 	EndTagType,
 	ExpressionLanguage,
 	LiteralValueDeclaration,
@@ -304,6 +305,12 @@ export class MLDocument<T extends RuleConfigValue, O extends PlainData = undefin
 	readonly componentAttrValueDecoding: AttrValueDecoding;
 
 	/**
+	 * Which integration points of SVG and MathML the language follows (`MLParser#integrationPoints`, see
+	 * `IntegrationPoints`). `"html"` when the parser does not say.
+	 */
+	readonly integrationPoints: IntegrationPoints;
+
+	/**
 	 * Common settings applied globally to all rules, such as the ARIA version.
 	 * Rules use this as a fallback when their own options do not specify a value.
 	 */
@@ -340,6 +347,7 @@ export class MLDocument<T extends RuleConfigValue, O extends PlainData = undefin
 			readonly componentDuplicateAttrPrecedence?: DuplicateAttrPrecedence;
 			readonly attrValueDecoding?: AttrValueDecoding;
 			readonly componentAttrValueDecoding?: AttrValueDecoding;
+			readonly integrationPoints?: IntegrationPoints;
 			readonly pretenders?: readonly Pretender[];
 		},
 	) {
@@ -367,6 +375,7 @@ export class MLDocument<T extends RuleConfigValue, O extends PlainData = undefin
 			options?.componentDuplicateAttrPrecedence ?? this.duplicateAttrPrecedence;
 		this.attrValueDecoding = options?.attrValueDecoding ?? 'html';
 		this.componentAttrValueDecoding = options?.componentAttrValueDecoding ?? this.attrValueDecoding;
+		this.integrationPoints = options?.integrationPoints ?? 'html';
 		this.ruleCommonSettings = ruleCommonSettings;
 
 		// Build UUID → AST node map for cross-reference lookups (e.g., pairNodeUuid)

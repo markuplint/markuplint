@@ -13,6 +13,7 @@ import type {
 	AttrNameRoute,
 	DuplicateAttrPrecedence,
 	AttrValueDecoding,
+	IntegrationPoints,
 	EndTagType,
 	ExpressionLanguage,
 	MLASTDocument,
@@ -131,6 +132,7 @@ export abstract class Parser<Node extends {} = {}, State extends unknown = null>
 	readonly #componentDuplicateAttrPrecedence: DuplicateAttrPrecedence | undefined;
 	readonly #attrValueDecoding: AttrValueDecoding = 'html';
 	readonly #componentAttrValueDecoding: AttrValueDecoding | undefined;
+	readonly #integrationPoints: IntegrationPoints = 'html';
 	readonly #selfCloseType: SelfCloseType = 'html';
 	readonly #spaceChars: readonly string[] = defaultSpaces;
 	readonly #rawTextElements: readonly string[] = ['style', 'script'];
@@ -192,6 +194,7 @@ export abstract class Parser<Node extends {} = {}, State extends unknown = null>
 		this.#componentDuplicateAttrPrecedence = options?.componentDuplicateAttrPrecedence;
 		this.#attrValueDecoding = options?.attrValueDecoding ?? this.#attrValueDecoding;
 		this.#componentAttrValueDecoding = options?.componentAttrValueDecoding;
+		this.#integrationPoints = options?.integrationPoints ?? this.#integrationPoints;
 		this.#selfCloseType = options?.selfCloseType ?? this.#selfCloseType;
 		this.#spaceChars = options?.spaceChars ?? this.#spaceChars;
 		this.#rawTextElements = options?.rawTextElements ?? this.#rawTextElements;
@@ -340,6 +343,14 @@ export abstract class Parser<Node extends {} = {}, State extends unknown = null>
 	 */
 	get componentAttrValueDecoding(): AttrValueDecoding {
 		return this.#componentAttrValueDecoding ?? this.#attrValueDecoding;
+	}
+
+	/**
+	 * Which integration points of SVG and MathML the language follows (see `IntegrationPoints`). Those of the HTML
+	 * parser by default.
+	 */
+	get integrationPoints(): IntegrationPoints {
+		return this.#integrationPoints;
 	}
 
 	/**
@@ -874,7 +885,7 @@ export abstract class Parser<Node extends {} = {}, State extends unknown = null>
 				tagOpenChar: '',
 				isGhost: true,
 				isFragment: false,
-				namespace: getNamespace(null, token.parentNode),
+				namespace: getNamespace(null, token.parentNode, this.#integrationPoints),
 				...overwriteProps,
 			};
 
@@ -1194,6 +1205,8 @@ export abstract class Parser<Node extends {} = {}, State extends unknown = null>
 		// is in the namespace that the open element of the fragment around it gives, not the one of the text's parent
 		const openElements: {
 			readonly name: string;
+			// A component is no integration point, whatever its name
+			readonly isComponent: boolean;
 			readonly namespace: NamespaceURI;
 			readonly encoding: string | null;
 		}[] = [];
@@ -1261,10 +1274,15 @@ export abstract class Parser<Node extends {} = {}, State extends unknown = null>
 					const namespace = getChildNamespace(
 						tag.elementType === 'authored' ? null : tag.nodeName,
 						parent.namespace,
-						parent.name,
+						parent.isComponent ? null : parent.name,
 						parent.encoding,
+						this.#integrationPoints,
 					);
 					this.#setNamespace(tag, namespace);
+				}
+				// In foreign content `/>` closes the element (a self-closing flag that is acknowledged)
+				if (tag.namespace !== 'http://www.w3.org/1999/xhtml' && tag.tagCloseChar.startsWith('/')) {
+					isSelfClose = true;
 				}
 				if (!isSelfClose) {
 					depthStack.set(tag.nodeName, depth);
@@ -1272,8 +1290,8 @@ export abstract class Parser<Node extends {} = {}, State extends unknown = null>
 				// A void element of HTML has no content, whatever its tag says
 				if (!isSelfClose && !(isVoidElement && tag.namespace === 'http://www.w3.org/1999/xhtml')) {
 					openElements.push({
-						// A component is no integration point, whatever its name
-						name: tag.elementType === 'authored' ? '' : tag.nodeName,
+						name: tag.nodeName,
+						isComponent: tag.elementType === 'authored',
 						namespace: tag.namespace,
 						encoding: getEncoding(tag),
 					});
@@ -2152,7 +2170,11 @@ export abstract class Parser<Node extends {} = {}, State extends unknown = null>
 					namespace:
 						'namespace' in token
 							? (token.namespace as NamespaceURI)
-							: getNamespace(elementType === 'authored' ? null : tagName, token.parentNode),
+							: getNamespace(
+									elementType === 'authored' ? null : tagName,
+									token.parentNode,
+									this.#integrationPoints,
+								),
 					attributes: attrs,
 					childNodes: [],
 					pairNode: null,
