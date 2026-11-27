@@ -17,17 +17,17 @@ import {
  * (`conditionalValue`). When the role is not known until it is rendered (`roleUnknown`), the value is valid if the
  * type of the property or the type of any role that has its own allows it, as the role that decides is not known.
  *
- * An empty value (`""`, or ASCII white space only) is valid for a property that the role does not require: user
+ * An empty value (`""`, the zero-length string) is valid for a property that the role does not require: user
  * agents treat it as the absent attribute. For a required one it is an author error:
  *
  * > Authors MAY specify a zero-length string ("") for any supported (but not required) state or property.
  *
  * WAI-ARIA defines the value types and says nothing of the case of a value or of the white space around it, and
- * user agents differ on the case (the ACT rule 6a7281, ARIA state or property has valid value, notes so). The reading here
- * is the one of the other readers of a value of HTML in markuplint: ASCII white space around the value is trimmed,
- * a keyword (`true/false`, `tristate`, `true/false/undefined`, `token`, the tokens of `token list`) is compared
- * ASCII case-insensitively, and an `integer` or a `number` is the whole of the trimmed value (see
- * {@link isValidAriaValueType}). Of the value types that the property declares for roles (`conditionalValue`), the
+ * user agents differ on the case (the ACT rule 6a7281, ARIA state or property has valid value, notes so). A keyword
+ * (`true/false`, `tristate`, `true/false/undefined`, `token`, the tokens of `token list`) is read as the browsers read
+ * it: ASCII case-insensitively (WebKit; Gecko compares the case too) and not trimmed, as neither engine trims it
+ * (`isAriaTrue`), so `" true "` is not `true`. An `integer` or a `number` is the whole of the value with ASCII white
+ * space around it trimmed (see {@link isValidAriaValueType}). Of the value types that the property declares for roles (`conditionalValue`), the
  * first one whose roles include the role is the type.
  *
  * @see https://w3c.github.io/aria/#state_property_processing
@@ -47,7 +47,8 @@ export function isValidAriaValue(
 	roleUnknown = false,
 	required = false,
 ): boolean {
-	if (trimAsciiWhitespace(value) === '') {
+	// The zero-length string; white space is a value, which is not a keyword
+	if (value === '') {
 		return !required;
 	}
 	if (roleUnknown) {
@@ -105,20 +106,20 @@ export function isValidAriaValueType(type: ARIAAttributeValue, value: string, to
 			return isValidFloatingPointNumber(trimmed);
 		}
 		case 'token': {
-			return tokens.includes(asciiLowerCase(trimmed));
+			return tokens.includes(asciiLowerCase(value));
 		}
 		case 'token list': {
 			const list = splitOnAsciiWhitespace(value);
 			return list.length > 0 && list.every(token => tokens.includes(asciiLowerCase(token)));
 		}
 		case 'true/false': {
-			return ['true', 'false'].includes(asciiLowerCase(trimmed));
+			return ['true', 'false'].includes(asciiLowerCase(value));
 		}
 		case 'tristate': {
-			return ['true', 'false', 'mixed', 'undefined'].includes(asciiLowerCase(trimmed));
+			return ['true', 'false', 'mixed', 'undefined'].includes(asciiLowerCase(value));
 		}
 		case 'true/false/undefined': {
-			return ['true', 'false', 'undefined'].includes(asciiLowerCase(trimmed));
+			return ['true', 'false', 'undefined'].includes(asciiLowerCase(value));
 		}
 		default: {
 			// A value type of spec data that this does not know is not checked

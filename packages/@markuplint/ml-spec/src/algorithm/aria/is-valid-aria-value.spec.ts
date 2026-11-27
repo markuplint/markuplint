@@ -28,9 +28,9 @@ const table: readonly (readonly [
 	from: 'aria-attr' | 'default',
 ])[] = [
 	['checkbox', 'aria-checked', 'true', true, 'aria-attr'],
-	['checkbox', 'aria-checked', ' TRUE ', true, 'aria-attr'],
+	['checkbox', 'aria-checked', ' TRUE ', false, 'default'],
 	['checkbox', 'aria-checked', 'TRUE', true, 'aria-attr'],
-	['checkbox', 'aria-checked', ' true ', true, 'aria-attr'],
+	['checkbox', 'aria-checked', ' true ', false, 'default'],
 	['checkbox', 'aria-checked', ' true', false, 'default'],
 	['checkbox', 'aria-checked', 'mixed', true, 'aria-attr'],
 	['slider', 'aria-valuenow', ' 5 ', true, 'aria-attr'],
@@ -68,10 +68,10 @@ describe('isValidAriaValue', () => {
 
 	test.each([
 		['', false, true],
-		[' ', false, true],
+		[' ', false, false],
 		['', true, false],
 		[' ', true, false],
-	])('of the empty value %j, required %j, is %j', (value, required, valid) => {
+	])('of the zero-length value or white space %j, required %j, is %j', (value, required, valid) => {
 		expect(isValidAriaValue(propSpec('aria-checked'), value, 'checkbox', false, required)).toBe(valid);
 	});
 
@@ -153,11 +153,11 @@ describe('the computed ARIA props of the same table', () => {
 	});
 
 	test.each([
-		['button', 'aria-pressed', ''],
-		['slider', 'aria-valuetext', ''],
-		['slider', 'aria-valuetext', ' '],
-		['checkbox', 'aria-checked', ''],
-	])('of an empty value is the default, as the absent attribute: %s %s=%j', (role, attr, value) => {
-		expect(propOf(role, attr, value)?.from).toBe('default');
+		['button', 'aria-pressed', '', 'default'],
+		['slider', 'aria-valuetext', '', 'default'],
+		['slider', 'aria-valuetext', ' ', 'aria-attr'],
+		['checkbox', 'aria-checked', '', 'default'],
+	])('of the zero-length value is the default, as the absent attribute: %s %s=%j (%s)', (role, attr, value, from) => {
+		expect(propOf(role, attr, value)?.from).toBe(from);
 	});
 });

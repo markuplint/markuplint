@@ -1,7 +1,5 @@
 import type { ARIAVersion, MLMLSpec } from '../../types/index.js';
 
-import { trimAsciiWhitespace } from '@markuplint/shared';
-
 import { ariaSpecs as _ariaSpecs } from './aria-specs.js';
 
 import { getComputedRole } from './get-computed-role.js';
@@ -66,11 +64,7 @@ export function getComputedAriaProps(
 		if (el.hasAttribute(spec.name)) {
 			const attrValue = el.getAttribute(spec.name);
 			// An empty value is the absent attribute (see `isValidAriaValue`)
-			if (
-				attrValue != null &&
-				trimAsciiWhitespace(attrValue) !== '' &&
-				isValidAriaValue(spec, attrValue, role.name)
-			) {
+			if (attrValue != null && attrValue !== '' && isValidAriaValue(spec, attrValue, role.name)) {
 				props[ownedProp.name] = {
 					name: ownedProp.name,
 					value: attrValue,

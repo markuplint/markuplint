@@ -17,19 +17,38 @@ export function mayBeFocusable(
 	el: Element,
 	specs: MLMLSpec,
 ): boolean {
-	return [
-		/**
-		 * Interactive content
-		 *
-		 * @see  https://html.spec.whatwg.org/multipage/dom.html#interactive-content
-		 */
-		...getSelectorsByContentModelCategory(specs, '#interactive'),
-		/**
-		 * Interaction
-		 *
-		 * @see  https://html.spec.whatwg.org/multipage/interaction.html
-		 */
-		'[tabindex]',
-		'[contenteditable]:not([contenteditable="false" i])',
-	].some(selector => el.matches(selector));
+	return (
+		[
+			/**
+			 * Interactive content
+			 *
+			 * @see  https://html.spec.whatwg.org/multipage/dom.html#interactive-content
+			 */
+			...getSelectorsByContentModelCategory(specs, '#interactive'),
+			/**
+			 * Interaction
+			 *
+			 * @see  https://html.spec.whatwg.org/multipage/interaction.html
+			 */
+			'[tabindex]',
+			// An editing host: the True and the Plaintext-Only state (the empty value is the True state); an invalid value
+			// is the Inherit state, which makes no editing host
+			// @see https://html.spec.whatwg.org/multipage/interaction.html#attr-contenteditable
+			'[contenteditable=""]',
+			'[contenteditable="true" i]',
+			'[contenteditable="plaintext-only" i]',
+		].some(selector => el.matches(selector)) || hasDynamicContentEditable(el)
+	);
+}
+
+/**
+ * @param el - An element
+ * @returns Whether its `contenteditable` is not known until it is rendered, which may make it an editing host
+ */
+function hasDynamicContentEditable(
+	// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
+	el: Element,
+): boolean {
+	const attr = el.getAttributeNode('contenteditable') as (Attr & { readonly isDynamicValue?: boolean }) | null;
+	return !!attr?.isDynamicValue;
 }
