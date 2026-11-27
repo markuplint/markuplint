@@ -51725,7 +51725,7 @@
 					"requiredEither": ["imagesrcset"]
 				},
 				"imagesizes": {
-					"type": "SourceSizeList",
+					"type": "SourceSizeListWithoutAuto",
 					"condition": "[imagesrcset][rel~='preload' i][as='image' i]",
 					"required": "[imagesrcset]"
 				},

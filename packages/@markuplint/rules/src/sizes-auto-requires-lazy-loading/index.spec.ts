@@ -481,4 +481,43 @@ describe('auto read by the <source-size-list> grammar; the img needs the literal
 			{ severity: 'error', line: 1, col: 111, message: LITERAL, raw: ' auto' },
 		]);
 	});
+
+	test('[sizes-auto-requires-lazy-loading-044] img sizes with an escaped auto is auto, not the literal form → violation', async () => {
+		// CSS Syntax § consume an escaped code point: `\61 uto` is the ident "auto".
+		const { violations } = await mlRuleTest(
+			rule,
+			String.raw`<img srcset="s.png 480w" sizes="\61 uto, 100vw" loading="lazy" src="s.png" alt="p">`,
+		);
+		expect(violations).toStrictEqual([
+			{ severity: 'error', line: 1, col: 33, message: LITERAL, raw: String.raw`\61 uto, 100vw` },
+		]);
+	});
+
+	test('[sizes-auto-requires-lazy-loading-045] an escaped auto on the source requires the img to allow auto-sizes', async () => {
+		const { violations } = await mlRuleTest(
+			rule,
+			String.raw`<picture><source srcset="s.webp 480w" sizes="a\75 to, 100vw"><img src="s.jpg" alt="p"></picture>`,
+		);
+		expect(violations).toStrictEqual([
+			{
+				severity: 'error',
+				line: 1,
+				col: 46,
+				message:
+					'The "source" element with sizes="auto" requires the following sibling "img" element to have loading="lazy" and sizes="auto"',
+				raw: String.raw`a\75 to, 100vw`,
+			},
+		]);
+	});
+
+	test('[sizes-auto-requires-lazy-loading-046] an escaped auto on the source with an img that allows auto-sizes → no violation', async () => {
+		expect(
+			(
+				await mlRuleTest(
+					rule,
+					String.raw`<picture><source srcset="s.webp 480w" sizes="\41 UTO"><img src="s.jpg" srcset="s.jpg 480w" loading="lazy" sizes="auto" alt="p"></picture>`,
+				)
+			).violations,
+		).toStrictEqual([]);
+	});
 });

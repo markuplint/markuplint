@@ -62,8 +62,13 @@
 			"required": "[imagesizes]"
 		},
 		// https://html.spec.whatwg.org/multipage/semantics.html#attr-link-imagesizes
+		// @see https://html.spec.whatwg.org/multipage/images.html#sizes-attributes
+		// > The auto keyword may be specified in the sizes attribute of source elements and sizes
+		// > attribute of img elements, if the following conditions are met. Otherwise, auto must not
+		// > be specified.
+		// imagesizes is a sizes attribute of neither, so it must not have auto.
 		"imagesizes": {
-			"type": "SourceSizeList",
+			"type": "SourceSizeListWithoutAuto",
 			"condition": "[imagesrcset][rel~='preload' i][as='image' i]",
 			"required": "[imagesrcset]"
 		},

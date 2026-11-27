@@ -2244,6 +2244,27 @@ test('[no-invalid-attr-value-224] JSX: allowAttrs keeps the name as written on a
 	]);
 });
 
+// https://html.spec.whatwg.org/multipage/images.html#sizes-attributes
+// > The auto keyword may be specified in the sizes attribute of source elements and sizes
+// > attribute of img elements, if the following conditions are met. Otherwise, auto must not be
+// > specified.
+test('[no-invalid-attr-value-308] link: imagesizes does not accept "auto"', async () => {
+	const link = (sizes: string) =>
+		`<link rel="preload" as="image" href="a.png" imagesrcset="a.png 480w" imagesizes="${sizes}">`;
+	const message =
+		'It includes unexpected characters. the "imagesizes" attribute expects the source size list without "auto" format (https://html.spec.whatwg.org/multipage/images.html#sizes-attributes)';
+	expect((await mlRuleTest(rule, link('100vw'))).violations).toStrictEqual([]);
+	expect((await mlRuleTest(rule, link('auto'))).violations).toStrictEqual([
+		{ severity: 'error', line: 1, col: 82, message, raw: 'auto' },
+	]);
+	expect((await mlRuleTest(rule, link('auto, 100vw'))).violations).toStrictEqual([
+		{ severity: 'error', line: 1, col: 82, message, raw: 'auto' },
+	]);
+	expect((await mlRuleTest(rule, link(String.raw` \61 uto, 100vw`))).violations).toStrictEqual([
+		{ severity: 'error', line: 1, col: 83, message, raw: String.raw`\61 uto` },
+	]);
+});
+
 // https://html.spec.whatwg.org/multipage/embedded-content.html#attr-img-sizes
 // > If the srcset attribute is not specified, and the loading attribute is in the Lazy state, the
 // > sizes attribute may be specified with the value "auto" (ASCII case-insensitive).

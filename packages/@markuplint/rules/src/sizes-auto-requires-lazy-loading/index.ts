@@ -1,6 +1,7 @@
 import { createRule } from '@markuplint/ml-core';
+import { specifiesSourceSizeAuto } from '@markuplint/types';
 
-import { hasSizesAuto, specifiesSizesAuto } from '../srcset-sizes-constraint/parse-srcset.js';
+import { hasSizesAuto } from '../srcset-sizes-constraint/parse-srcset.js';
 import { findFollowingImg, isAutoSizes, isLazyLoading } from '../srcset-sizes-constraint/sibling-helpers.js';
 
 import meta from './meta.js';
@@ -16,7 +17,8 @@ import meta from './meta.js';
  * `auto` (`allowsAutoSizes`), not `loading="lazy"` alone.
  *
  * Whether `auto` is specified is read by the `<source-size-list>` grammar
- * (`specifiesSizesAuto`), as comments and whitespace around it are allowed
+ * (`specifiesSourceSizeAuto` of `@markuplint/types`, which also decodes CSS
+ * escapes), as comments and whitespace around it are allowed
  * on a `<source>`. Whether an `<img>` allows auto-sizes is read from its
  * literal value (`hasSizesAuto`), so an `<img>` whose `sizes` specifies
  * `auto` in any other form is reported as well:
@@ -66,7 +68,7 @@ export default createRule<boolean>({
 			// img[sizes=auto] → the literal form and loading=lazy required.
 			// The keyword is matched ASCII case-insensitively; a dynamic
 			// `loading` is not known and is not reported.
-			if (localName === 'img' && sizesValue != null && !sizesIsDynamic && specifiesSizesAuto(sizesValue)) {
+			if (localName === 'img' && sizesValue != null && !sizesIsDynamic && specifiesSourceSizeAuto(sizesValue)) {
 				if (!hasSizesAuto(sizesValue)) {
 					report({
 						scope: el,
@@ -91,7 +93,12 @@ export default createRule<boolean>({
 			// source[sizes=auto] → the following sibling img must allow
 			// auto-sizes: loading=lazy and sizes=auto (HTML LS §
 			// allows-auto-sizes, see `allowsAutoSizes`). A dynamic loading / sizes on the img is not known.
-			if (localName === 'source' && sizesValue != null && !sizesIsDynamic && specifiesSizesAuto(sizesValue)) {
+			if (
+				localName === 'source' &&
+				sizesValue != null &&
+				!sizesIsDynamic &&
+				specifiesSourceSizeAuto(sizesValue)
+			) {
 				const img = findFollowingImg(el);
 				const lazy = img ? isLazyLoading(img) : false;
 				const auto = img ? isAutoSizes(img) : false;
