@@ -264,3 +264,8 @@ test('[no-contradictory-aria-prop-023] aria-readonly on an editable custom eleme
 		},
 	]);
 });
+
+test('[no-contradictory-aria-prop-024] aria-readonly on an SVG element in an editing host is not compared with isContentEditable', async () => {
+	const code = '<div contenteditable><svg role="textbox" aria-readonly="true"></svg></div>';
+	expect((await mlRuleTest(rule, code)).violations).toStrictEqual([]);
+});

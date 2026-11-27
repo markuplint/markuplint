@@ -179,7 +179,8 @@ describe('MLElement#isContentEditable', () => {
 		['<div contenteditable="false"><p contenteditable="bogus">a</p></div>', 'p', false],
 		['<div contenteditable="true"><p contenteditable="bogus">a</p></div>', 'p', true],
 		['<div><p>a</p></div>', 'p', false],
-		['<div contenteditable="true"><svg><g></g></svg></div>', 'g', true],
+		// `isContentEditable` is of `HTMLElement`
+		['<div contenteditable="true"><svg><g></g></svg></div>', 'g', false],
 	])('of %s (%s) is %j', (code, selector, editable) => {
 		expect(element(createTestDocument(code), selector).isContentEditable).toBe(editable);
 	});
