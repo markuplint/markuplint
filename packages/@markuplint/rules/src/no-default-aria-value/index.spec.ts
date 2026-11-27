@@ -167,3 +167,7 @@ test.each([
 		expect(violations).toStrictEqual([]);
 	},
 );
+
+test('[no-default-aria-value-017] the rank of a heading element is not the level of another role', async () => {
+	expect((await mlRuleTest(rule, '<h2 role="treeitem" aria-level="2">a</h2>')).violations).toStrictEqual([]);
+});
