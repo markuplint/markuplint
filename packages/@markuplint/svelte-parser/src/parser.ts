@@ -101,11 +101,13 @@ export class SvelteParser extends Parser<SvelteNode> {
 
 		switch (originNode.type) {
 			case 'Text': {
+				// The text as the compiler of Svelte reads it (`data`, with the character references decoded), which
+				// differs from the tokenizer of HTML (in `iframe`, `noembed`, …)
 				return this.visitText({
 					...token,
 					depth,
 					parentNode,
-				});
+				}).map(node => (node.type === 'text' ? Object.assign(node, { data: originNode.data }) : node));
 			}
 			case 'Comment': {
 				// The mask of a top-level `<style>`, the CSS of the component (see `svelteParseComponent`)
