@@ -30,6 +30,10 @@ describe('MDXParser', () => {
 			expect(parser.duplicateAttrPrecedence).toBe('last');
 		});
 
+		test('says that a string attribute is decoded by the rules of MDX', () => {
+			expect(parser.attrValueDecoding).toBe('mdx');
+		});
+
 		test('self-closing component', () => {
 			const doc = parse('<MyComponent prop="value" />');
 			const maps = nodeListToDebugMaps(doc.nodeList);

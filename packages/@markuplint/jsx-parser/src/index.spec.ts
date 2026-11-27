@@ -33,6 +33,10 @@ describe('parse', () => {
 		expect(parser.duplicateAttrPrecedence).toBe('last');
 	});
 
+	test('says that a string attribute is decoded by the rules of JSX', () => {
+		expect(parser.attrValueDecoding).toBe('jsx');
+	});
+
 	test('Element only', () => {
 		const ast = parse('<div></div>');
 		const maps = nodeListToDebugMaps(ast.nodeList);

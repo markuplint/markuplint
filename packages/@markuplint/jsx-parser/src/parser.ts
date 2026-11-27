@@ -39,6 +39,8 @@ class JSXParser extends Parser<JSXNode, State> {
 				attrNameRoute: 'dom-api',
 				// The attributes are the props object of the element, where a later key replaces an earlier one
 				duplicateAttrPrecedence: 'last',
+				// A string attribute is decoded by the rules of JSX
+				attrValueDecoding: 'jsx',
 			},
 			{
 				comments: [],
