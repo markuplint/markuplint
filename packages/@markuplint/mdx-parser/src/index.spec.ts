@@ -26,6 +26,10 @@ describe('MDXParser', () => {
 			expect(parser.attrNameRoute).toBe('dom-api');
 		});
 
+		test('says that the last of two attributes of one key is kept, as a key of the props object', () => {
+			expect(parser.duplicateAttrPrecedence).toBe('last');
+		});
+
 		test('self-closing component', () => {
 			const doc = parse('<MyComponent prop="value" />');
 			const maps = nodeListToDebugMaps(doc.nodeList);
