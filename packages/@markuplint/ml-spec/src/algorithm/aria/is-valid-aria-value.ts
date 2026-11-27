@@ -23,7 +23,7 @@ import {
  * > Authors MAY specify a zero-length string ("") for any supported (but not required) state or property.
  *
  * WAI-ARIA defines the value types and says nothing of the case of a value or of the white space around it, and
- * user agents differ on the case (the ACT rule "ARIA state or property has valid value" notes so). The reading here
+ * user agents differ on the case (the ACT rule 6a7281, ARIA state or property has valid value, notes so). The reading here
  * is the one of the other readers of a value of HTML in markuplint: ASCII white space around the value is trimmed,
  * a keyword (`true/false`, `tristate`, `true/false/undefined`, `token`, the tokens of `token list`) is compared
  * ASCII case-insensitively, and an `integer` or a `number` is the whole of the trimmed value (see
@@ -64,8 +64,8 @@ export function isValidAriaValue(
 /**
  * Whether a value is a valid one of an ARIA value type, read as {@link isValidAriaValue} says.
  *
- * - `true/false`: `true`, `false`. `tristate`: `true`, `false`, `mixed`, `undefined` ("Value representing true,
- *   false, mixed, or undefined values"). `true/false/undefined`: `true`, `false`, `undefined`.
+ * - `true/false`: `true`, `false`. `tristate`: `true`, `false`, `mixed`, `undefined` (quoted below).
+ *   `true/false/undefined`: `true`, `false`, `undefined`.
  * - `token`: one of the allowed values; `token list`: a list of them separated by ASCII white space, at least one.
  * - `integer` / `number`: the whole value against the grammar of HTML (`isValidInteger`,
  *   `isValidFloatingPointNumber` of `@markuplint/shared`), as WAI-ARIA defines no syntax of its own.
@@ -75,6 +75,8 @@ export function isValidAriaValue(
  * An empty value is not valid for a type that needs a value; whether the property may be empty is
  * {@link isValidAriaValue}'s to say. A `token` or `token list` whose list of allowed values is empty (spec data
  * without one) allows no value.
+ *
+ * > Value representing true, false, mixed, or undefined values.
  *
  * @see https://w3c.github.io/aria/#valuetype_tristate
  * @param type - The ARIA value type
