@@ -121,6 +121,15 @@ describe('of two attributes of one name', () => {
 		expect(element(vue, 'div').matches('.a')).toBe(true);
 	});
 
+	test('a class that the framework merges overrides nothing, and decides where it is written first', async () => {
+		const vue = createTestDocument('<template><div :class="x" class="y"></div></template>', {
+			parser: await parserOf('vue'),
+		});
+		expect([...element(vue, 'div').attributes].map(attr => attr.overridden)).toStrictEqual([false, false]);
+		const astro = createTestDocument('<div class:list={[x]} class="a"></div>', { parser: await parserOf('astro') });
+		expect(element(astro, 'div').getAttributeNode('class')?.isDynamicValue).toBe(true);
+	});
+
 	test('an attribute selector matches the attribute that the element has', async () => {
 		const html = element(createTestDocument('<div role="a" role="b"></div>'), 'div');
 		expect([html.matches('[role=a]'), html.matches('[role=b]')]).toStrictEqual([true, false]);
