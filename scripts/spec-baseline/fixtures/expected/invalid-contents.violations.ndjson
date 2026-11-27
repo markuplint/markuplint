@@ -33,11 +33,9 @@
 {"col":64,"line":106,"message":"Orphaned end tag detected","raw":"</p>","ruleId":"no-orphaned-end-tag","severity":"error"}
 {"col":3,"line":107,"message":"Missing the end tag","raw":"<p>","ruleId":"require-end-tag","severity":"warning"}
 {"col":6,"line":107,"message":"Missing the end tag","raw":"<b>","ruleId":"require-end-tag","severity":"warning"}
-{"col":63,"line":107,"message":"The element should not empty","raw":"","ruleId":"no-empty-palpable-content","severity":"warning"}
-{"col":69,"line":107,"message":"Orphaned end tag detected","raw":"</b>","ruleId":"no-orphaned-end-tag","severity":"error"}
+{"col":73,"line":107,"message":"The element should not empty","raw":"","ruleId":"no-empty-palpable-content","severity":"warning"}
 {"col":73,"line":107,"message":"Orphaned end tag detected","raw":"</p>","ruleId":"no-orphaned-end-tag","severity":"error"}
 {"col":6,"line":108,"message":"Missing the end tag","raw":"<i>","ruleId":"require-end-tag","severity":"warning"}
-{"col":44,"line":108,"message":"Orphaned end tag detected","raw":"</i>","ruleId":"no-orphaned-end-tag","severity":"error"}
 {"col":3,"line":110,"message":"Missing the end tag","raw":"<button>","ruleId":"require-end-tag","severity":"warning"}
 {"col":4,"line":111,"message":"The \"a\" element is not allowed in the \"button\" element in this context","raw":"<a href=\"#\">","ruleId":"permitted-contents","severity":"error"}
 {"col":17,"line":112,"message":"It is the default value","raw":"text","ruleId":"no-default-value","severity":"warning"}

@@ -43,6 +43,7 @@
 {"line":45,"col":4,"raw":"<script>","categories":["#SVGNeverRendered","#flow","#metadata","#phrasing","#script-supporting"]}
 {"line":48,"col":4,"raw":"<script href=\"a.js\" async>","categories":["#SVGNeverRendered","#flow","#metadata","#phrasing","#script-supporting"]}
 {"line":49,"col":4,"raw":"<script>","categories":["#SVGNeverRendered","#flow","#metadata","#phrasing","#script-supporting"]}
+{"line":49,"col":12,"raw":"<circle r=\"1\" />","categories":["#SVGBasicShapes","#SVGGraphics","#SVGRenderable","#SVGShape"]}
 {"line":50,"col":4,"raw":"<style>","categories":["#SVGNeverRendered","#metadata"]}
 {"line":55,"col":4,"raw":"<switch>","categories":["#SVGContainer","#SVGRenderable"]}
 {"line":55,"col":12,"raw":"<g systemLanguage=\"en\">","categories":["#SVGContainer","#SVGRenderable","#SVGStructural"]}
