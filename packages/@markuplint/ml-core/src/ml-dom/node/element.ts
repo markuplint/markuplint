@@ -4575,7 +4575,14 @@ export class MLElement<T extends RuleConfigValue, O extends PlainData = undefine
 	 * `null` takes the namespace this element gives any element.
 	 */
 	#getChildNamespace(name: string | null): NamespaceURI {
-		return getChildNamespace(name, this.#namespaceURI, this._astToken.nodeName, this.getAttribute('encoding'));
+		// The name and the `encoding` of this element itself, not of what it pretends to be; a component is no
+		// integration point, whatever its name
+		return getChildNamespace(
+			name,
+			this.#namespaceURI,
+			this.elementType === 'authored' ? null : this._astToken.nodeName,
+			this.getAttributePretended('encoding'),
+		);
 	}
 
 	/**

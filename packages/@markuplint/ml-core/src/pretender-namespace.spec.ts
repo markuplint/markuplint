@@ -225,6 +225,14 @@ describe('pretender namespace', () => {
 		expect(pretendedNamespace(doc.querySelector('x-icon'))).toBe(HTML);
 	});
 
+	test('a component named like an integration point is not one', async () => {
+		const doc = createTestDocument('<svg><Title><path d="" /></Title></svg>', {
+			...(await jsx()),
+			pretenders: [{ selector: 'Title', as: { element: 'g', slots: true } }],
+		});
+		expect(doc.querySelector('path')?.namespaceURI).toBe(SVG);
+	});
+
 	test('a component in an annotation-xml has the namespace that its encoding gives', () => {
 		const html = createTestDocument(
 			'<math><annotation-xml encoding="text/html"><x-label></x-label></annotation-xml></math>',
