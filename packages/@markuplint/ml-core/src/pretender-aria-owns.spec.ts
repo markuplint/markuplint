@@ -4,6 +4,7 @@ import specs from '@markuplint/html-spec';
 import { getAriaOwnedElements, getAriaOwner } from '@markuplint/ml-spec';
 import { describe, test, expect } from 'vitest';
 
+import { isPretenderDeclaredElement } from './ml-dom/index.js';
 import { createTestElement } from './test/index.js';
 
 const jsxOptions = async () => ({
@@ -64,5 +65,63 @@ describe('aria-owns and the elements that a pretender declares', () => {
 		const owner = getAriaOwner(item, specs, '1.3');
 		expect(owner?.getAttribute('role')).toBe('list');
 		expect(owner?.getAttribute('aria-owns')).toBe('i');
+		expect(isPretenderDeclaredElement(owner)).toBe(true);
+	});
+});
+
+describe('the order of the elements that a pretender declares', () => {
+	const item = {
+		selector: 'Item',
+		as: {
+			element: 'div',
+			slots: true,
+			contents: [
+				{
+					element: 'div',
+					attrs: [
+						{ name: 'id', value: 'b' },
+						{ name: 'aria-owns', value: 'x' },
+					],
+				},
+				{ slot: true },
+				{
+					element: 'div',
+					attrs: [
+						{ name: 'id', value: 'a' },
+						{ name: 'aria-owns', value: 'x' },
+					],
+				},
+			],
+		},
+	};
+
+	test('the first aria-owns in the order the component renders owns the element', async () => {
+		const root = createTestElement('<div><Item><div id="c" aria-owns="x"></div></Item><div id="x"></div></div>', {
+			...(await jsxOptions()),
+			pretenders: [item],
+		});
+		const owner = getAriaOwner(root.querySelector('#x'), specs, '1.3');
+		expect(isPretenderDeclaredElement(owner)).toBe(true);
+		expect(owner?.getAttribute('id')).toBe('b');
+	});
+
+	test('of two elements with one id, the first in that order is the one an aria-owns refers to', async () => {
+		const declared = {
+			selector: 'Item',
+			as: { element: 'div', contents: [{ element: 'div', attrs: [{ name: 'id', value: 'i' }] }] },
+		};
+		const writtenFirst = createTestElement('<div><div aria-owns="i"></div><span id="i"></span><Item /></div>', {
+			...(await jsxOptions()),
+			pretenders: [declared],
+		});
+		const [ownedFirst] = getAriaOwnedElements(writtenFirst.querySelector('[aria-owns]'), specs, '1.3');
+		expect(ownedFirst?.localName).toBe('span');
+
+		const declaredFirst = createTestElement('<div><div aria-owns="i"></div><Item /><span id="i"></span></div>', {
+			...(await jsxOptions()),
+			pretenders: [declared],
+		});
+		const [ownedSecond] = getAriaOwnedElements(declaredFirst.querySelector('[aria-owns]'), specs, '1.3');
+		expect(isPretenderDeclaredElement(ownedSecond)).toBe(true);
 	});
 });
