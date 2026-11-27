@@ -57,7 +57,7 @@ describe('MLElement#hasMutableChildren(true) and a component that no pretender r
 			parser: await jsxParser(),
 			pretenders: [{ selector: 'Icon', as: { element: 'span', contents: [{ dynamic: true }] } }],
 		});
-		// `hasMutableChildren` is about the usage site: what the pretender renders is read by the rules (`hasUnknownContent`)
+		// `hasMutableChildren` is about the usage site: what the pretender renders is read by `hasUnknownContent` and `MLElement#referencedTextMayBeUnknown`
 		expect(document.querySelector('div')?.hasMutableChildren(true)).toBe(false);
 	});
 

@@ -56,6 +56,7 @@ import {
 	isHTMLTemplateElement,
 	isRenderedAwayElement,
 } from '../helper/tree-scope.js';
+import { referencedTextMayBeUnknown } from '../helper/unknown-content.js';
 import { treeMayHoldUnknownId } from '../helper/unknown-id.js';
 import {
 	after,
@@ -346,6 +347,7 @@ export class MLElement<T extends RuleConfigValue, O extends PlainData = undefine
 	#referencedTextAlternativeCache: Map<ARIAVersion, string> = new Map();
 	#normalizedAttrs: Map<MLAttr<T, O>[], MLNamedNodeMap<T, O>> = new Map();
 	#normalizedString: string | null = null;
+	#referencedTextMayBeUnknown: boolean | undefined;
 
 	readonly ontouchcancel?:
 		| ((
@@ -3901,8 +3903,9 @@ export class MLElement<T extends RuleConfigValue, O extends PlainData = undefine
 	 * (`AccnameResolver#mayBeAbsentWith`).
 	 *
 	 * An element whose `aria-labelledby` may refer to an element that the markup does not tell
-	 * (`labelledbyMayReferToUnknownId` of `@markuplint/ml-spec`: `aria-labelledby={id}`, or a token that
-	 * refers to no element in a tree that has `<p id={id}>`) is not unnamed either: markuplint does not
+	 * (`labelledbyMayReferToUnknownId` of `@markuplint/ml-spec`: `aria-labelledby={id}`, a token that
+	 * refers to no element in a tree that has `<p id={id}>`, or a token that refers to an element whose text is not
+	 * known, {@link referencedTextMayBeUnknown}) is not unnamed either: markuplint does not
 	 * decide what it cannot know. That answer does not read a branch, so it holds with or without a
 	 * conditional block in the document.
 	 *
@@ -3919,7 +3922,8 @@ export class MLElement<T extends RuleConfigValue, O extends PlainData = undefine
 	 * @see https://vuejs.org/guide/essentials/conditional.html
 	 * @param version - The ARIA specification version to use for computation
 	 * @returns `true` if the accessible name is not empty, or is not empty in some branch, or may come from
-	 * an element that the `aria-labelledby` refers to and the markup does not tell. A name of
+	 * an element that the `aria-labelledby` refers to and the markup does not tell, or whose text it does not
+	 * tell. A name of
 	 * non-ASCII white space only, such as U+00A0, is not empty.
 	 */
 	mayHaveAccessibleName(version: ARIAVersion): boolean {
@@ -4374,6 +4378,22 @@ export class MLElement<T extends RuleConfigValue, O extends PlainData = undefine
 	 */
 	treeMayHoldUnknownId(): boolean {
 		return treeMayHoldUnknownId(this);
+	}
+
+	/**
+	 * Whether the text that this element gives as the target of a reference (`aria-labelledby`) is not known from
+	 * the markup: it is an element that a pretender declares, or it renders content that the markup does not tell.
+	 * `labelledbyMayReferToUnknownId` of `@markuplint/ml-spec` reads it, so `mayHaveAccessibleName`, `:aria()` and
+	 * the rules follow one criterion.
+	 *
+	 * Computed once, as the tree does not change while it is linted, and every element that refers to this one asks it.
+	 *
+	 * @implements `@markuplint/ml-core` API: `MLElement`
+	 * @returns True if the text it gives is not known
+	 */
+	referencedTextMayBeUnknown(): boolean {
+		this.#referencedTextMayBeUnknown ??= referencedTextMayBeUnknown(this);
+		return this.#referencedTextMayBeUnknown;
 	}
 
 	/**

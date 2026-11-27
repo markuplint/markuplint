@@ -31,6 +31,8 @@ export abstract class MLParentNode<
 
 	#idMap: Map<string, MLElement<T, O>> | null = null;
 
+	#elementsInTreeOrder: readonly MLElement<T, O>[] | null = null;
+
 	/**
 	 * @implements DOM API: `Element`, `Document`, `DocumentFragment`
 	 * @see https://dom.spec.whatwg.org/#dom-parentnode-childelementcount
@@ -166,6 +168,30 @@ export abstract class MLParentNode<
 	}
 
 	/**
+	 * The descendant elements in tree order, within the tree of this node, with the elements that a pretender
+	 * declares put in where the component renders them (`withPretenderDeclaredElements`): what an algorithm that
+	 * looks the tree up by an id reads (`getElementById`, the ownership of `aria-owns` of `@markuplint/ml-spec`).
+	 * Computed once, as the tree does not change while it is linted.
+	 *
+	 * @implements `@markuplint/ml-core` API: `MLParentNode`
+	 * @returns The elements
+	 */
+	elementsInTreeOrder(): readonly MLElement<T, O>[] {
+		if (!this.#elementsInTreeOrder) {
+			this.#elementsInTreeOrder = Object.freeze(
+				withPretenderDeclaredElements(
+					this._descendantsToArray<MLElement<T, O>>(node => {
+						if (node.is(node.ELEMENT_NODE)) {
+							return node;
+						}
+					}),
+				),
+			);
+		}
+		return this.#elementsInTreeOrder;
+	}
+
+	/**
 	 * The first element of the tree whose `id` is `elementId` (the string that the DOM has, with
 	 * character references resolved), found through a map that is built once: a rule resolves one
 	 * reference per attribute.
@@ -176,14 +202,7 @@ export abstract class MLParentNode<
 	protected _getElementById(elementId: string): MLElement<T, O> | null {
 		if (!this.#idMap) {
 			const idMap = new Map<string, MLElement<T, O>>();
-			// The elements that a pretender declares are rendered in this tree too (see `declared-elements.ts`)
-			for (const el of withPretenderDeclaredElements(
-				this._descendantsToArray<MLElement<T, O>>(node => {
-					if (node.is(node.ELEMENT_NODE)) {
-						return node;
-					}
-				}),
-			)) {
+			for (const el of this.elementsInTreeOrder()) {
 				const id = getDOMValue(el.getAttributeNode('id'));
 				if (id != null && id !== '' && !idMap.has(id)) {
 					idMap.set(id, el);

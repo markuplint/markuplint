@@ -7,7 +7,8 @@ import type { PlainData, RuleConfigValue } from '@markuplint/ml-config';
  * The elements that a pretender declares (the slot wrappers and the static entries of `contents`)
  * are rendered by the component, so they are elements of the tree the component is in. They are
  * virtual: `MLElement` makes them, and they are in no `nodeList`, so a walk of the syntax tree does
- * not meet them. What looks the tree up by an element (an id) reads them here, in the order the
+ * not meet them. What looks the tree up by an element reads them here (`MLParentNode#elementsInTreeOrder`, which
+ * `getElementById` and the ownership of `aria-owns` of `@markuplint/ml-spec` read), in the order the
  * component renders them: right after the pretended element, and for what comes after the
  * children given at the usage site (`PretenderSlotContent#declared`), after the last descendant
  * of the pretended element.
