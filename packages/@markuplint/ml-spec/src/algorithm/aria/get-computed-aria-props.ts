@@ -1,10 +1,11 @@
-import type { ARIAAttributeValue, ARIAProperty, ARIAVersion, MLMLSpec } from '../../types/index.js';
+import type { ARIAVersion, MLMLSpec } from '../../types/index.js';
 
-import { isValidFloatingPointNumber, isValidInteger, trimAsciiWhitespace } from '@markuplint/shared';
+import { trimAsciiWhitespace } from '@markuplint/shared';
 
 import { ariaSpecs as _ariaSpecs } from './aria-specs.js';
 
 import { getComputedRole } from './get-computed-role.js';
+import { isValidAriaValue } from './is-valid-aria-value.js';
 
 /**
  * A record mapping ARIA property names to their computed property details.
@@ -64,7 +65,12 @@ export function getComputedAriaProps(
 
 		if (el.hasAttribute(spec.name)) {
 			const attrValue = el.getAttribute(spec.name);
-			if (attrValue && isValidAriaValue(spec, role.name, attrValue, spec.enum)) {
+			// An empty value is the absent attribute (see `isValidAriaValue`)
+			if (
+				attrValue != null &&
+				trimAsciiWhitespace(attrValue) !== '' &&
+				isValidAriaValue(spec, attrValue, role.name)
+			) {
 				props[ownedProp.name] = {
 					name: ownedProp.name,
 					value: attrValue,
@@ -113,68 +119,4 @@ export function getComputedAriaProps(
 	}
 
 	return props;
-}
-
-/**
- * Whether the value of an ARIA attribute is a valid one for the value type of its property, which decides if
- * the attribute or the default of the property is the computed one.
- *
- * The value is trimmed of ASCII white space only, so U+00A0 and the other non-ASCII white space are
- * characters of it. `integer` and `number` take the whole of the value: see `isValidInteger` and
- * `isValidFloatingPointNumber` of `@markuplint/shared`.
- *
- * Known limitation: `checkAriaValue` of `@markuplint/rules` (the `no-invalid-aria-prop-value` rule) reads the
- * same value types differently: it does not trim, does not fold the case, and its `tristate` has `undefined`.
- * A value such as ` TRUE ` is valid here and disallowed there.
- *
- * @param spec - The ARIA property specification
- * @param role - The name of the computed role, used to resolve conditional value types
- * @param value - The attribute value as written, or `undefined` for an absent one
- * @param enumList - The allowed values of a token or a token list
- * @returns `true` if the value is valid for the value type
- */
-function isValidAriaValue(spec: ARIAProperty, role: string, value: string | undefined, enumList: readonly string[]) {
-	let type: ARIAAttributeValue = spec.value;
-	if (spec.conditionalValue) {
-		for (const cond of spec.conditionalValue) {
-			if (cond.role.includes(role)) {
-				type = cond.value;
-			}
-		}
-	}
-
-	// ASCII white space only: U+00A0 and the other non-ASCII white space are characters of the value
-	value = trimAsciiWhitespace(value ?? '');
-	switch (type) {
-		case 'string': {
-			return true;
-		}
-		case 'ID reference':
-		case 'ID reference list':
-		case 'URI': {
-			return !!value;
-		}
-		case 'integer': {
-			return isValidInteger(value);
-		}
-		case 'number': {
-			return isValidFloatingPointNumber(value);
-		}
-		case 'token':
-		case 'token list': {
-			if (enumList.length === 0) {
-				throw new Error('Need an enum list in token and token list types');
-			}
-			return enumList.includes(value.toLowerCase());
-		}
-		case 'tristate': {
-			return ['true', 'false', 'mixed'].includes(value.toLowerCase());
-		}
-		case 'true/false': {
-			return ['true', 'false'].includes(value.toLowerCase());
-		}
-		case 'true/false/undefined': {
-			return ['true', 'false', 'undefined'].includes(value.toLowerCase());
-		}
-	}
 }

@@ -47,6 +47,7 @@ export * from './algorithm/aria/aria-specs.js';
 export * from './algorithm/aria/get-aria.js';
 export * from './algorithm/aria/get-role-spec.js';
 export * from './algorithm/aria/is-presentational.js';
+export * from './algorithm/aria/is-valid-aria-value.js';
 
 // DOM algorithms
 export { hasElementOfUnknownId, labelledbyMayReferToUnknownId } from './algorithm/dom/has-unknown-id.js';

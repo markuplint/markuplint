@@ -88,7 +88,7 @@ Generated TypeScript types (do not edit directly):
 
 - **Spec Resolution**: `getSpecByTagName`, `getAttrSpecs`, `getRoleSpec`
 - **Content Model Utilities**: `getContentModel`, `isPalpableElements`, `isVoidElement`
-- **ARIA Utilities**: `getAria`, `getPermittedRoles`, `hasRequiredOwnedElements`
+- **ARIA Utilities**: `getAria`, `getPermittedRoles`, `hasRequiredOwnedElements`, `isValidAriaValue`, `isValidAriaValueType`
 - **Accessibility Utilities**: `getAccname`, `isExposed`, `mayBeFocusable`
 - **Schema Utilities**: `schemaToSpec`, `resolveNamespace`, `validateAriaVersion`
 - **Framework Extension**: Merges base HTML specs with framework-specific extensions
