@@ -32,6 +32,12 @@ export interface SelectorAttr {
 	 * Absent means that it is output.
 	 */
 	readonly absent?: boolean;
+	/**
+	 * Whether another attribute of the same name is the one that the element has: of two attributes of one name the
+	 * HTML parser keeps the first, and a props object the last, so the other is no attribute of the DOM and no
+	 * selector matches it. Absent means that it is the one.
+	 */
+	readonly overridden?: boolean;
 }
 
 /**
