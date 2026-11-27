@@ -244,8 +244,8 @@ test('[no-invalid-attr-value-012] URL Living Standard validation errors', async 
 	const { violations: reverseSolidus } = await mlRuleTest(rule, '<a href="http://example.com\\foo"></a>');
 	expect(reverseSolidus.length).toBe(1);
 
-	// file-invalid-Windows-drive-letter — `C|` instead of `C:`.
-	// https://url.spec.whatwg.org/#file-invalid-windows-drive-letter
+	// invalid-URL-unit — `|` is not a URL code point.
+	// https://url.spec.whatwg.org/#invalid-url-unit
 	const { violations: windowsDrive } = await mlRuleTest(rule, '<a href="file:///C|/foo"></a>');
 	expect(windowsDrive.length).toBe(1);
 

@@ -8,7 +8,7 @@ description: select要素にプレースホルダーラベルオプションが�
 
 `select`要素に**プレースホルダーラベルオプション**が必要か確認します。
 
-> If a select element has a required attribute specified, and has a display size of 1; and if the value of the first option element in the select element's list of options (if any) is the empty string, and that option element does not have an ancestor optgroup in between itself and the select element, then that option is the select element's placeholder label option.
+> select要素にrequired属性が指定されており、かつ表示サイズが1である場合、および、select要素のオプションリスト（存在する場合）の最初のoption要素の値が空の文字列であり、かつそのoption要素が、その要素自体とselect要素との間に祖先optgroupを持たない場合、そのoptionは、select要素のプレースホルダーラベルオプションである。
 >
 > select要素がrequired属性を指定され、multiple属性を指定されず、1である表示サイズを持つ場合、そのselect要素は、プレースホルダーのラベルオプションを持たなければならない。
 
