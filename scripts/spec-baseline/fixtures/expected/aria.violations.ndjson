@@ -54,7 +54,9 @@
 {"col":22,"line":53,"message":"The \"maybe\" is disallowed on the \"aria-pressed\" ARIA state","raw":"aria-pressed=\"maybe\"","ruleId":"no-invalid-aria-prop-value","severity":"error"}
 {"col":22,"line":54,"message":"\"aria-pressed\" should be before \"role\"","raw":"aria-pressed","ruleId":"attr-order","severity":"warning"}
 {"col":22,"line":55,"message":"The \"abc\" is disallowed on the \"aria-valuenow\" ARIA property","raw":"aria-valuenow=\"abc\"","ruleId":"no-invalid-aria-prop-value","severity":"error"}
+{"col":42,"line":55,"message":"It is default value","raw":"aria-valuemin=\"0\"","ruleId":"no-default-aria-value","severity":"warning"}
 {"col":79,"line":55,"message":"\"aria-label\" should be before \"role\"","raw":"aria-label","ruleId":"attr-order","severity":"warning"}
+{"col":40,"line":56,"message":"It is default value","raw":"aria-valuemin=\"0\"","ruleId":"no-default-aria-value","severity":"warning"}
 {"col":77,"line":56,"message":"\"aria-label\" should be before \"role\"","raw":"aria-label","ruleId":"attr-order","severity":"warning"}
 {"col":8,"line":57,"message":"The \"yes\" is disallowed on the \"aria-hidden\" ARIA state","raw":"aria-hidden=\"yes\"","ruleId":"no-invalid-aria-prop-value","severity":"error"}
 {"col":8,"line":58,"message":"The \"aria-label\" ARIA property is disallowed on the \"generic\" role","raw":"aria-label=\"\"","ruleId":"role-supports-aria-prop","severity":"error"}
