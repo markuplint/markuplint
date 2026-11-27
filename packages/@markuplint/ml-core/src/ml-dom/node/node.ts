@@ -762,7 +762,7 @@ export abstract class MLNode<
 	 * so that an element without `v-else` is as written.
 	 *
 	 * What reads the children as the markup writes them takes it, since the elements of a chain are not
-	 * siblings that are rendered together. Whitespace text nodes stay in the patterns, which
+	 * siblings that are rendered together. ASCII white space text nodes stay in the patterns, which
 	 * {@link MLNode.conditionalChildNodes} drops: a caller that ignores them filters them itself. A chain of
 	 * more patterns than a limit is read as written (see `MAX_ALTERNATIVE_PATTERNS`).
 	 *
@@ -797,14 +797,14 @@ export abstract class MLNode<
 		const branches: (Branch | (Branch | null)[])[] = [];
 		let mode: 'if' | 'switch' | null = null;
 		let openConditional = false;
-		// What the open group is made of: whitespace between elements does not end it, as `v-else` may be on the next line
+		// What the open group is made of: ASCII white space between elements does not end it, as `v-else` may be on the next line
 		let openIsElements = false;
 		// The kind of the open group: `if` (with `else-if` and `else`), `switch`, `await` or `each`
 		let family = '';
 		// A chain that ends with `else` or `default` renders one of its branches
 		let exhaustive = false;
 		let alternatives: (Branch | null)[] = [];
-		// Whitespace and comments between the elements of a chain are not rendered, and are nodes if the chain ends before them
+		// ASCII white space and comments between the elements of a chain are not rendered, and are nodes if the chain ends before them
 		const pendingText: MLChildNode<T, O>[] = [];
 		// The elements of the open group, to read as written when the chains make too many patterns
 		const openMembers: MLChildNode<T, O>[] = [];

@@ -104,6 +104,14 @@ describe('MLNode#conditionalChildNodes', () => {
 		expect(shape(must(loose.querySelector('table')).conditionalChildNodes())).toStrictEqual(expected);
 	});
 
+	test('a text of U+00A0 between the elements of a chain is content that ends the chain, not white space', async () => {
+		const doc = await vue('<template><ul><li v-if="a">1</li>\u00A0<li v-else>2</li></ul></template>');
+		expect(shape(must(doc.querySelector('ul')).conditionalChildNodes())).toStrictEqual([
+			['li:1', '\u00A0', 'li:2'],
+			['\u00A0', 'li:2'],
+		]);
+	});
+
 	test('the branches of a chain with v-else-if are a choice of one, or of none without v-else', async () => {
 		const open = await vue('<template><ul><li v-if="a">1</li><li v-else-if="b">2</li></ul></template>');
 		expect(shape(must(open.querySelector('ul')).conditionalChildNodes())).toStrictEqual([['li:1'], ['li:2'], []]);
