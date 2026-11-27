@@ -1,10 +1,10 @@
 import type { ARIAVersion, ComputedRole, MLMLSpec, RoleComputationError } from '../../types/index.js';
 import type { ReadonlyDeep } from 'type-fest';
 
-import { asciiLowerCase, decodeEntities, splitOnAsciiWhitespace } from '@markuplint/shared';
+import { asciiLowerCase, splitOnAsciiWhitespace } from '@markuplint/shared';
 
 import { XHTML_NAMESPACE } from '../../const/index.js';
-import { hasElementOfUnknownId, isUnknownValueAttr } from '../dom/has-unknown-id.js';
+import { labelledbyMayReferToUnknownId, labelledbyRefersToElement } from '../dom/has-unknown-id.js';
 import { getRoleSpec } from './get-role-spec.js';
 import { resolveNamespace } from '../../utils/resolve-namespace.js';
 
@@ -190,9 +190,9 @@ function isLandmarkRole(role: ReadonlyDeep<NonNullable<ReturnType<typeof getRole
  * - the value of `aria-labelledby` is not known (`aria-labelledby={id}`): the ids it refers to
  *   are not either, or
  * - a token refers to no element but the tree may have an element whose `id` the markup does not tell
- *   ({@link hasElementOfUnknownId} says which: `<h2 id={x}>`, `<h2 {...props}>`, a component that no
- *   pretender resolved, content that is not known): it may be the one. An id of such an element is not
- *   in the map that `getElementById` looks up.
+ *   (`<h2 id={x}>`, `<h2 {...props}>`, a component that no pretender resolved, content that is not
+ *   known: {@link labelledbyMayReferToUnknownId} asks it): it may be the one. An id of such an element
+ *   is not in the map that `getElementById` looks up.
  *   `no-refer-to-non-existent-id` reports no reference in such a tree either.
  *
  * An attribute that the framework does not output (`aria-labelledby={undefined}`) is not returned by
@@ -212,23 +212,8 @@ function isValidLandmarkRole(
 		if (el.getAttribute('aria-label')) {
 			return true;
 		}
-		if (isUnknownValueAttr(el.getAttributeNode('aria-labelledby'))) {
+		if (labelledbyRefersToElement(el) || labelledbyMayReferToUnknownId(el)) {
 			return true;
-		}
-		// `aria-labelledby` is a list of ids, and each is resolved in the tree of the element: the
-		// content of a `template` element and a shadow root are trees of their own. A DOM has resolved the
-		// character references of a token already, but the markuplint DOM gives it as written in the markup,
-		// so the token is looked for as it is, and then with its character references resolved.
-		const ids = splitOnAsciiWhitespace(el.getAttribute('aria-labelledby') ?? '');
-		const root = el.getRootNode();
-		if (root.nodeType === 9 || root.nodeType === 11) {
-			const tree = root as Document;
-			if (ids.some(id => tree.getElementById(id) ?? tree.getElementById(decodeEntities(id)))) {
-				return true;
-			}
-			if (ids.length > 0 && hasElementOfUnknownId(el)) {
-				return true;
-			}
 		}
 	}
 	// The landmark role does not require names from the content

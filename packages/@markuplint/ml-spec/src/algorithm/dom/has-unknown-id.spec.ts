@@ -1,7 +1,7 @@
 import { createJSDOMElement, markAttrAsDynamic } from '@markuplint/test-tools';
 import { describe, test, expect } from 'vitest';
 
-import { hasElementOfUnknownId, isUnknownValueAttr } from './has-unknown-id.js';
+import { hasElementOfUnknownId, isUnknownValueAttr, labelledbyMayReferToUnknownId } from './has-unknown-id.js';
 
 function must<T>(value: T | null | undefined): T {
 	if (value == null) {
@@ -77,5 +77,79 @@ describe('hasElementOfUnknownId and the tree of ml-core', () => {
 		const detached = createJSDOMElement('<div id="a"></div>').cloneNode(false) as Element;
 		Object.defineProperty(detached, 'treeMayHoldUnknownId', { value: () => true });
 		expect(hasElementOfUnknownId(detached)).toBe(false);
+	});
+});
+
+describe('labelledbyMayReferToUnknownId', () => {
+	const tree = '<div><h2 id="h"></h2><img aria-labelledby="t"></div>';
+
+	test('[has-unknown-id-010] is false for an element with no aria-labelledby', () => {
+		const div = createJSDOMElement('<div><h2 id="h"></h2><img></div>');
+		markAttrAsDynamic(must(div.querySelector('h2')), 'id');
+		expect(labelledbyMayReferToUnknownId(must(div.querySelector('img')))).toBe(false);
+	});
+
+	test('[has-unknown-id-011] is true for a value that is not known until it is rendered', () => {
+		const div = createJSDOMElement(tree);
+		const img = must(div.querySelector('img'));
+		markAttrAsDynamic(img, 'aria-labelledby');
+		expect(labelledbyMayReferToUnknownId(img)).toBe(true);
+	});
+
+	test('[has-unknown-id-012] is true for a token that refers to no element while the tree has an element of unknown id', () => {
+		const div = createJSDOMElement(tree);
+		markAttrAsDynamic(must(div.querySelector('h2')), 'id');
+		expect(labelledbyMayReferToUnknownId(must(div.querySelector('img')))).toBe(true);
+	});
+
+	test('[has-unknown-id-013] is false for a token that refers to no element in a tree whose ids are all known', () => {
+		const div = createJSDOMElement(tree);
+		expect(labelledbyMayReferToUnknownId(must(div.querySelector('img')))).toBe(false);
+	});
+
+	test('[has-unknown-id-014] is false when every token refers to an element, even in a tree that has an element of unknown id', () => {
+		const div = createJSDOMElement('<div><h2 id="h"></h2><p id="p"></p><img aria-labelledby="p"></div>');
+		markAttrAsDynamic(must(div.querySelector('h2')), 'id');
+		expect(labelledbyMayReferToUnknownId(must(div.querySelector('img')))).toBe(false);
+	});
+
+	test('[has-unknown-id-015] is false for a value of nothing but white space, which has no token', () => {
+		const div = createJSDOMElement('<div><h2 id="h"></h2><img aria-labelledby=" "></div>');
+		markAttrAsDynamic(must(div.querySelector('h2')), 'id');
+		expect(labelledbyMayReferToUnknownId(must(div.querySelector('img')))).toBe(false);
+	});
+
+	test('[has-unknown-id-016] is true when one of the tokens refers to no element, and false when each refers to one', () => {
+		const html = (value: string) =>
+			`<div><h2 id="a"></h2><h3 id="b"></h3><p id="x"></p><img aria-labelledby="${value}"></div>`;
+		const mixed = createJSDOMElement(html('a missing'));
+		markAttrAsDynamic(must(mixed.querySelector('p')), 'id');
+		expect(labelledbyMayReferToUnknownId(must(mixed.querySelector('img')))).toBe(true);
+
+		const resolved = createJSDOMElement(html('a b'));
+		markAttrAsDynamic(must(resolved.querySelector('p')), 'id');
+		expect(labelledbyMayReferToUnknownId(must(resolved.querySelector('img')))).toBe(false);
+	});
+
+	test('[has-unknown-id-017] resolves a token in the tree of the element: the content of a template element is a tree of its own', () => {
+		const html = '<div><h2 id="h"></h2><template><img aria-labelledby="h"><p id="x"></p></template></div>';
+
+		// `h` is in the outer tree, so in the tree of the `img` the token refers to no element: the element
+		// of unknown id in the same tree may be the one, and one in the outer tree may not
+		const inContent = must(createJSDOMElement(html).querySelector('template')).content;
+		markAttrAsDynamic(must(inContent.querySelector('p')), 'id');
+		expect(labelledbyMayReferToUnknownId(must(inContent.querySelector('img')))).toBe(true);
+
+		const outer = createJSDOMElement(html);
+		markAttrAsDynamic(must(outer.querySelector('h2')), 'id');
+		const content = must(outer.querySelector('template')).content;
+		expect(labelledbyMayReferToUnknownId(must(content.querySelector('img')))).toBe(false);
+	});
+
+	test('[has-unknown-id-018] is false for an element that is in no tree', () => {
+		const div = createJSDOMElement(tree);
+		markAttrAsDynamic(must(div.querySelector('h2')), 'id');
+		const detached = must(div.querySelector('img')).cloneNode(false) as Element;
+		expect(labelledbyMayReferToUnknownId(detached)).toBe(false);
 	});
 });
