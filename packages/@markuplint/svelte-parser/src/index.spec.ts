@@ -1518,3 +1518,7 @@ describe('a leading BOM', () => {
 		expect(() => parse('\uFEFF<div>{#if}</div>')).toThrow(expect.objectContaining({ line: 1, col: 11 }));
 	});
 });
+
+test('says that only `foreignObject` puts what is in it in the HTML namespace, as the compiler does', () => {
+	expect(parser.integrationPoints).toBe('foreign-object');
+});

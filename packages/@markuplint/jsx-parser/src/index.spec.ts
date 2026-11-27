@@ -33,6 +33,16 @@ describe('parse', () => {
 		expect(parser.duplicateAttrPrecedence).toBe('last');
 	});
 
+	test('says that only `foreignObject` puts what is in it in the HTML namespace, as React does', () => {
+		expect(parser.integrationPoints).toBe('foreign-object');
+		const { nodeList } = parser.parse('<svg><title><b>x</b></title><foreignObject><b>y</b></foreignObject></svg>');
+		expect(
+			nodeList
+				.filter(node => node.type === 'starttag' && node.nodeName === 'b')
+				.map(node => 'namespace' in node && node.namespace),
+		).toStrictEqual(['http://www.w3.org/2000/svg', 'http://www.w3.org/1999/xhtml']);
+	});
+
 	test('Element only', () => {
 		const ast = parse('<div></div>');
 		const maps = nodeListToDebugMaps(ast.nodeList);

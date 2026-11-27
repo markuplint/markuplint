@@ -30,6 +30,10 @@ describe('MDXParser', () => {
 			expect(parser.duplicateAttrPrecedence).toBe('last');
 		});
 
+		test('says that only `foreignObject` puts what is in it in the HTML namespace', () => {
+			expect(parser.integrationPoints).toBe('foreign-object');
+		});
+
 		test('self-closing component', () => {
 			const doc = parse('<MyComponent prop="value" />');
 			const maps = nodeListToDebugMaps(doc.nodeList);
