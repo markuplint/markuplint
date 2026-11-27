@@ -537,6 +537,7 @@ export class MLCore {
 				attrNameCaseSensitive: this.#parser.attrNameCaseSensitive,
 				attrNameRoute: this.#parser.attrNameRoute,
 				duplicateAttrPrecedence: this.#parser.duplicateAttrPrecedence,
+				integrationPoints: this.#parser.integrationPoints,
 				pretenders: this.#pretenders,
 			});
 			// Collect errors from rule mapping (e.g., invalid wildcard usage).

@@ -66,6 +66,7 @@ export function createTestDocument<T extends RuleConfigValue = any, O extends Pl
 			attrNameCaseSensitive: usedParser.attrNameCaseSensitive,
 			attrNameRoute: usedParser.attrNameRoute,
 			duplicateAttrPrecedence: usedParser.duplicateAttrPrecedence,
+			integrationPoints: usedParser.integrationPoints,
 			...(options?.pretenders ? { pretenders: options.pretenders } : {}),
 		},
 	);

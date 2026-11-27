@@ -13,6 +13,7 @@ import type { MLToken } from '../token/token.js';
 import type {
 	AttrNameRoute,
 	DuplicateAttrPrecedence,
+	IntegrationPoints,
 	EndTagType,
 	ExpressionLanguage,
 	LiteralValueDeclaration,
@@ -283,6 +284,12 @@ export class MLDocument<T extends RuleConfigValue, O extends PlainData = undefin
 	readonly duplicateAttrPrecedence: DuplicateAttrPrecedence;
 
 	/**
+	 * Which integration points of SVG and MathML the language follows (`MLParser#integrationPoints`, see
+	 * `IntegrationPoints`). `"html"` when the parser does not say.
+	 */
+	readonly integrationPoints: IntegrationPoints;
+
+	/**
 	 * Common settings applied globally to all rules, such as the ARIA version.
 	 * Rules use this as a fallback when their own options do not specify a value.
 	 */
@@ -316,6 +323,7 @@ export class MLDocument<T extends RuleConfigValue, O extends PlainData = undefin
 			readonly attrNameCaseSensitive?: boolean;
 			readonly attrNameRoute?: AttrNameRoute;
 			readonly duplicateAttrPrecedence?: DuplicateAttrPrecedence;
+			readonly integrationPoints?: IntegrationPoints;
 			readonly pretenders?: readonly Pretender[];
 		},
 	) {
@@ -339,6 +347,7 @@ export class MLDocument<T extends RuleConfigValue, O extends PlainData = undefin
 		this.attrNameCaseSensitive = options?.attrNameCaseSensitive ?? false;
 		this.attrNameRoute = options?.attrNameRoute ?? 'html-parser';
 		this.duplicateAttrPrecedence = options?.duplicateAttrPrecedence ?? 'first';
+		this.integrationPoints = options?.integrationPoints ?? 'html';
 		this.ruleCommonSettings = ruleCommonSettings;
 
 		// Build UUID → AST node map for cross-reference lookups (e.g., pairNodeUuid)
