@@ -37,6 +37,8 @@ class JSXParser extends Parser<JSXNode, State> {
 				tagNameCaseSensitive: true,
 				attrNameCaseSensitive: true,
 				attrNameRoute: 'dom-api',
+				// The attributes are the props object of the element, where a later key replaces an earlier one
+				duplicateAttrPrecedence: 'last',
 			},
 			{
 				comments: [],
