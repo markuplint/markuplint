@@ -71,4 +71,4 @@ Present the plan to the user and wait for approval.
 
 ## Step 5: Hand Off to /impl
 
-Once the plan is approved, tell the user to run `/impl` — it owns the implementation pipeline (implement → carry-over approval → review → QA → lint/test → carry-over filing → commit → PR) and cannot be invoked by Claude. Do not re-negotiate the agreed scope there.
+Once the plan is approved, tell the user to run `/impl` — it owns the implementation pipeline (implement → carry-over approval → review → QA → lint/test → carry-over filing → commit → PR) and cannot be invoked by Claude. Do not re-negotiate the agreed scope there. Mention `/auto-impl` as the alternative that also opens the PR and fixes CI without stopping for approval.
