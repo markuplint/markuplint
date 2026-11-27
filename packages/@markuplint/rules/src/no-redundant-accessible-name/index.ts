@@ -5,7 +5,7 @@ import type { ComputedRole } from '@markuplint/ml-spec';
 
 import { createRule, expandConditionalBlocks, getComputedRole } from '@markuplint/ml-core';
 import { ARIA_RECOMMENDED_VERSION, isExposed } from '@markuplint/ml-spec';
-import { splitOnAsciiWhitespace } from '@markuplint/shared';
+import { hasText, splitOnAsciiWhitespace } from '@markuplint/shared';
 
 import {
 	accnameMayBeMutable,
@@ -131,7 +131,7 @@ function collectNamingSources<V extends RuleConfigValue, O extends PlainData>(
 
 	// 2. aria-label
 	const ariaLabel = el.getAttribute('aria-label');
-	if (ariaLabel && ariaLabel.trim()) {
+	if (hasText(ariaLabel)) {
 		sources.push({ label: 'aria-label' });
 	}
 
@@ -144,7 +144,7 @@ function collectNamingSources<V extends RuleConfigValue, O extends PlainData>(
 	// 4. alt — img, area, input[type=image]
 	if (el.matches('img, area, input[type=image]')) {
 		const alt = el.getAttribute('alt');
-		if (alt != null && alt.trim()) {
+		if (hasText(alt)) {
 			sources.push({ label: 'alt' });
 		}
 	}
@@ -152,8 +152,8 @@ function collectNamingSources<V extends RuleConfigValue, O extends PlainData>(
 	// 5. content — role allows nameFromContent
 	// A branch of a conditional block is content when it is rendered, so the text of any of them counts
 	if (computed.role?.accessibleNameFromContent) {
-		const text = textContentOfEveryBranch(el).trim();
-		if (text) {
+		const hasContent = hasText(textContentOfEveryBranch(el));
+		if (hasContent) {
 			sources.push({ label: 'content' });
 		}
 	}
@@ -161,7 +161,7 @@ function collectNamingSources<V extends RuleConfigValue, O extends PlainData>(
 	// 6. value — input[type=button/submit/reset]
 	if (el.matches('input[type=button], input[type=submit], input[type=reset]')) {
 		const value = el.getAttribute('value');
-		if (value != null && value.trim()) {
+		if (hasText(value)) {
 			sources.push({ label: 'value' });
 		}
 	}
@@ -179,7 +179,7 @@ function collectNamingSources<V extends RuleConfigValue, O extends PlainData>(
 	// 9. title (optional)
 	if (options.checkTitleFallback) {
 		const title = el.getAttribute('title');
-		if (title != null && title.trim()) {
+		if (hasText(title)) {
 			sources.push({ label: 'title' });
 		}
 	}
@@ -187,7 +187,7 @@ function collectNamingSources<V extends RuleConfigValue, O extends PlainData>(
 	// 10. placeholder (optional)
 	if (options.checkPlaceholderFallback) {
 		const placeholder = el.getAttribute('placeholder');
-		if (placeholder != null && placeholder.trim()) {
+		if (hasText(placeholder)) {
 			sources.push({ label: 'placeholder' });
 		}
 	}
@@ -201,7 +201,7 @@ function hasChildWithText<V extends RuleConfigValue, O extends PlainData>(
 	localName: string,
 ): boolean {
 	for (const child of expandConditionalBlocks(el.childNodes)) {
-		if (child.is(child.ELEMENT_NODE) && child.localName === localName && textContentOfEveryBranch(child).trim()) {
+		if (child.is(child.ELEMENT_NODE) && child.localName === localName && hasText(textContentOfEveryBranch(child))) {
 			return true;
 		}
 	}

@@ -2,6 +2,8 @@
 
 import type { AccnameElement, AccnameResolver, AccnameResult } from './types.js';
 
+import { hasText } from '@markuplint/shared';
+
 import { computeReferenced, resolveAriaLabel, resolveAriaLabelledby } from './aria-steps.js';
 import { getElementSpecificName } from './element-names.js';
 import { resolveNameFromContent } from './helpers.js';
@@ -150,14 +152,14 @@ export function computeAccessibleNameInternal(
 			computeAccessibleNameInternal,
 			inLabelledbyTraversal,
 		);
-		if (content.trim()) {
+		if (hasText(content)) {
 			return makeResult(content, 'content');
 		}
 	}
 
 	// AccName 1.2 §4.3.2 Step 2I: Title attribute fallback
 	const title = el.getAttribute('title');
-	if (title?.trim()) {
+	if (title != null && hasText(title)) {
 		return makeResult(title, 'title');
 	}
 

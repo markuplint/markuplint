@@ -72,6 +72,23 @@ describe('MLElement#mayHaveAccessibleName', () => {
 		expect(el.mayHaveAccessibleName('1.3')).toBe(true);
 	});
 
+	test('a name of U+00A0 only, which is not ASCII white space, is a name', async () => {
+		const el = div(await svelte('<div role="button">\u00A0{#if a}<span></span>{/if}</div>'));
+		expect(el.getAccessibleName('1.3')).toBe('\u00A0');
+		expect(el.mayHaveAccessibleName('1.3')).toBe(true);
+	});
+
+	test('a text of U+00A0 only in a branch is a name that the element may have', async () => {
+		const el = div(await svelte('<div role="button">{#if a}\u00A0{/if}</div>'));
+		expect(el.getAccessibleName('1.3')).toBe('');
+		expect(el.mayHaveAccessibleName('1.3')).toBe(true);
+	});
+
+	test('a text of ASCII white space only in a branch is not a name in any branch', async () => {
+		const el = div(await svelte('<div role="button">{#if a} \t\n{/if}</div>'));
+		expect(el.mayHaveAccessibleName('1.3')).toBe(false);
+	});
+
 	test('the answer is the same however often and for whichever version it is asked', async () => {
 		const doc = await svelte('<div role="button">{#if a}<img src="a.png">{:else}Save{/if}</div>');
 		const el = div(doc);

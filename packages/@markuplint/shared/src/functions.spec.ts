@@ -8,6 +8,7 @@ import {
 	asciiLowerCase,
 	splitOnAsciiWhitespace,
 	trimAsciiWhitespace,
+	hasText,
 } from './functions.js';
 
 test('toArrayFromStringOrArray', () => {
@@ -134,4 +135,20 @@ test('trimAsciiWhitespace', () => {
 	expect(trimAsciiWhitespace('')).toBe('');
 	// `String#trim` removes U+00A0, which is part of the value as the HTML syntax reads it
 	expect(trimAsciiWhitespace(`${nbsp}a${nbsp}`)).toBe(`${nbsp}a${nbsp}`);
+	// U+000B is removed by `String#trim`, and is not ASCII white space
+	expect(trimAsciiWhitespace('\u000Ba\u000B')).toBe('\u000Ba\u000B');
+	expect(trimAsciiWhitespace(`  a${' '.repeat(5)}b  `)).toBe(`a${' '.repeat(5)}b`);
+	expect(trimAsciiWhitespace(' \t\n\f\r ')).toBe('');
+});
+
+test('hasText', () => {
+	const nonAscii = '\u00A0\u2028\uFEFF';
+	expect(hasText(null)).toBe(false);
+	expect(hasText()).toBe(false);
+	expect(hasText('')).toBe(false);
+	expect(hasText(' \t\n\f\r ')).toBe(false);
+	expect(hasText('a')).toBe(true);
+	// `String#trim` takes these for white space, but they are characters of the value
+	expect(hasText(nonAscii)).toBe(true);
+	expect(hasText('\u000B')).toBe(true);
 });

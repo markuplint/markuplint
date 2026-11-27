@@ -147,3 +147,5 @@
 {"col":3,"line":115,"message":"Require unique accessible name","raw":"<div role=\"region\">","ruleId":"require-landmark-label","severity":"warning"}
 {"col":3,"line":124,"message":"The element should not empty","raw":"<svg role=\"img\">","ruleId":"no-empty-palpable-content","severity":"warning"}
 {"col":3,"line":124,"message":"Require accessible name","raw":"<svg role=\"img\">","ruleId":"require-accessible-name","severity":"error"}
+{"col":10,"line":130,"message":"The \"aria-checked\" ARIA state must not use on the \"input\" element. Add the \"checked\" attribute if you use the ARIA state","raw":"aria-checked=\"true\"","ruleId":"element-supports-aria-prop","severity":"error"}
+{"col":10,"line":130,"message":"The \"aria-checked\" ARIA state contradicts the implicit \"checked\" attribute","raw":"aria-checked=\"true\"","ruleId":"no-contradictory-aria-prop","severity":"error"}

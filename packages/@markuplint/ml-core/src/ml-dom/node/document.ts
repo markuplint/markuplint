@@ -47,7 +47,7 @@ import { sequentialWalker, syncWalk } from '../helper/walkers.js';
 import { nodeListToHTMLCollection, toHTMLCollection } from './node-list.js';
 import { MLParentNode } from './parent-node.js';
 import { RuleMapper } from './rule-mapper.js';
-import { splitOnAsciiWhitespace, UnexpectedCallError } from '@markuplint/shared';
+import { splitOnAsciiWhitespace, trimAsciiWhitespace, UnexpectedCallError } from '@markuplint/shared';
 
 const log = coreLog.extend('ml-dom');
 const docLog = log.extend('document');
@@ -3231,7 +3231,7 @@ export class MLDocument<T extends RuleConfigValue, O extends PlainData = undefin
 		};
 
 		const role = getComputedRole(node.ownerMLDocument.specs, node, ariaVersion);
-		const name = node.getAccessibleName(ariaVersion).trim();
+		const name = trimAsciiWhitespace(node.getAccessibleName(ariaVersion));
 		const focusable = mayBeFocusable(node, node.ownerMLDocument.specs);
 
 		const nameRequired = role.role?.accessibleNameRequired ?? false;
