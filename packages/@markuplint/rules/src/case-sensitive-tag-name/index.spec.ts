@@ -130,3 +130,21 @@ test('[case-sensitive-tag-name-016] the end tag of an element whose start tag is
 	]);
 	expect(fixedCode).toBe('<!doctype html><head></head><body></body></html>');
 });
+
+test('[case-sensitive-tag-name-017] of two end tags of `body`, the first one is the end tag of the element', async () => {
+	const { violations } = await mlRuleTest(rule, '<!doctype html><html><head></head><body></BODY></body></html>');
+	expect(violations).toStrictEqual([
+		{
+			severity: 'warning',
+			line: 1,
+			col: 41,
+			raw: '</BODY>',
+			message: 'Tag names of HTML elements should be lowercase',
+		},
+	]);
+});
+
+test('[case-sensitive-tag-name-018] of two end tags of `body`, the second one is not the end tag of the element that is checked', async () => {
+	const { violations } = await mlRuleTest(rule, '<!doctype html><html><head></head><body></body></BODY></html>');
+	expect(violations).toStrictEqual([]);
+});

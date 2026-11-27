@@ -1,6 +1,6 @@
 ---
 id: no-content-after-body
-description: body要素の終了タグの後に開始タグや非空白のテキストが出現していないかを検証します。
+description: body要素を閉じる終了タグの後に開始タグや非空白のテキストが出現していないかを検証します。
 ---
 
 # `no-content-after-body`
@@ -8,6 +8,8 @@ description: body要素の終了タグの後に開始タグや非空白のテキ
 [HTML Living Standard §13.2.6.4.17 ("after body" 挿入モード)](https://momdo.github.io/html/parsing.html#parsing-main-afterbody) により、パーサーが `</body>` を検出した後に開始タグや非空白文字が現れると、パースエラーになります。"Anything else" のケースでは挿入モードが "in body" に戻されてトークンが再処理されるため、ソース上は `</body>` の後に書かれていても、結果的には `<body>` の子要素として扱われます。
 
 `</body>` の後の空白のみの改行は、同じ挿入モード内で別途エラーにならないケースとして扱われるため、検出対象外です。
+
+body を閉じるのは最初の `</body>` です。`</body>` より前に `</html>` が書かれていれば、その `</html>` が body を閉じます。後ろの `</body>` は何も閉じません。body を閉じた `</html>` はパーサーを "after body" から [“after after body” 挿入モード](https://momdo.github.io/html/parsing.html#the-after-after-body-insertion-mode)に進め、その "Anything else" のケースも同じパースエラーになるため、その `</html>` の後のコンテンツも検出されます。このときメッセージは `html` 要素を示します。
 
 ❌ このルールに適合しない**誤った**コードの例
 
