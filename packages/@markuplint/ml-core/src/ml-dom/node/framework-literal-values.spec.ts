@@ -342,6 +342,7 @@ describeCases(
 			inJSX,
 			[
 				'alpha',
+				'customelementregistry',
 				'focusgroupstart',
 				'headingreset',
 				'ismap',
@@ -404,6 +405,7 @@ describeCases(
 			inJSX,
 			[
 				'alpha',
+				'customelementregistry',
 				'focusgroupstart',
 				'headingreset',
 				'shadowrootclonable',
@@ -440,6 +442,7 @@ describeCases(
 			inJSX,
 			[
 				'alpha',
+				'customelementregistry',
 				'focusgroupstart',
 				'headingreset',
 				'ismap',
@@ -550,7 +553,14 @@ describeCases(
 		),
 		...rowsOf(
 			inVue,
-			['alpha', 'focusgroupstart', 'headingreset', 'shadowrootcustomelementregistry', 'switch'],
+			[
+				'alpha',
+				'customelementregistry',
+				'focusgroupstart',
+				'headingreset',
+				'shadowrootcustomelementregistry',
+				'switch',
+			],
 			[
 				['true', 'true'],
 				['0', '0'],
@@ -610,6 +620,7 @@ describeCases(
 			inVue,
 			[
 				'alpha',
+				'customelementregistry',
 				'focusgroupstart',
 				'headingreset',
 				'shadowrootclonable',
