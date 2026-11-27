@@ -759,3 +759,72 @@ describe('1.3', () => {
 		});
 	});
 });
+
+/**
+ * A value is trimmed of ASCII white space only: U+00A0 and the other non-ASCII white space are characters of it.
+ *
+ * @see https://infra.spec.whatwg.org/#ascii-whitespace
+ */
+describe('the white space of a value', () => {
+	test.each(['true', ' true ', '\ttrue\n'])('takes %j as valid for aria-checked', value => {
+		const prop = c(`<div role="checkbox" aria-checked="${value}"></div>`, '1.2', 'div')['aria-checked'];
+		expect(prop?.from).toBe('aria-attr');
+	});
+
+	test.each(['true\u00A0', '\u00A0true', 'true\uFEFF'])('takes %j as invalid for aria-checked', value => {
+		const prop = c(`<div role="checkbox" aria-checked="${value}"></div>`, '1.2', 'div')['aria-checked'];
+		expect(prop).toStrictEqual({
+			name: 'aria-checked',
+			value: 'undefined',
+			deprecated: false,
+			required: true,
+			from: 'default',
+		});
+	});
+
+	test.each([
+		['token', '<div role="status" aria-live="polite\u00A0"></div>', 'aria-live'],
+		['tristate', '<div role="button" aria-pressed="true\u00A0"></div>', 'aria-pressed'],
+		['true/false', '<div role="button" aria-expanded="true\u00A0"></div>', 'aria-expanded'],
+	])('does not take the %s value with U+00A0 as valid', (_type, html, name) => {
+		expect(c(html, '1.2', 'div')[name]?.from).toBe('default');
+	});
+
+	test.each([
+		['token', '<div role="status" aria-live=" polite\n"></div>', 'aria-live'],
+		['tristate', '<div role="button" aria-pressed=" true "></div>', 'aria-pressed'],
+		['true/false', '<div role="button" aria-expanded="\ttrue"></div>', 'aria-expanded'],
+	])('takes the %s value with ASCII white space as valid', (_type, html, name) => {
+		expect(c(html, '1.2', 'div')[name]?.from).toBe('aria-attr');
+	});
+
+	test('takes the ID reference list of ASCII white space only as empty', () => {
+		expect(c('<div role="button" aria-controls=" "></div>', '1.2', 'div')['aria-controls']?.from).toBe('default');
+	});
+
+	test('takes the ID reference list of U+00A0 as one token', () => {
+		expect(c('<div role="button" aria-controls="\u00A0"></div>', '1.2', 'div')['aria-controls']?.from).toBe(
+			'aria-attr',
+		);
+	});
+
+	test.each(['5', ' 5 ', '5.5', '5.0', '.5', '-1', '1e2'])('takes %j as a number for aria-valuenow', value => {
+		const prop = c(`<div role="slider" aria-valuenow="${value}"></div>`, '1.2', 'div')['aria-valuenow'];
+		expect(prop?.from).toBe('aria-attr');
+	});
+
+	test.each(['\u00A05', '5\u00A0', '5abc', 'abc'])('does not take %j as a number for aria-valuenow', value => {
+		const prop = c(`<div role="slider" aria-valuenow="${value}"></div>`, '1.2', 'div')['aria-valuenow'];
+		expect(prop?.from).toBe('default');
+	});
+
+	test.each(['2', ' 2 '])('takes %j as an integer for aria-level', value => {
+		const prop = c(`<div role="heading" aria-level="${value}"></div>`, '1.2', 'div')['aria-level'];
+		expect(prop?.from).toBe('aria-attr');
+	});
+
+	test.each(['\u00A02', '2\u00A0', '2.5', '2abc'])('does not take %j as an integer for aria-level', value => {
+		const prop = c(`<div role="heading" aria-level="${value}"></div>`, '1.2', 'div')['aria-level'];
+		expect(prop?.from).toBe('default');
+	});
+});
