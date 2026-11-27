@@ -40,7 +40,7 @@ export function getRoleSpec(
 		accessibleNameFromContent: !!role.accessibleNameFromContent,
 		accessibleNameProhibited: !!role.accessibleNameProhibited,
 		childrenPresentational: !!role.childrenPresentational,
-		ownedProperties: role.ownedProperties ?? [],
+		ownedProperties: inheritRequired(role.ownedProperties ?? [], superClassRoles),
 		prohibitedProperties: role.prohibitedProperties ?? [],
 		superClassRoles,
 	};
@@ -83,4 +83,28 @@ function getRoleByName(specs: MLMLSpec, roleName: string, namespace: NamespaceUR
 		role = dpubRoles.find(r => r.name === roleName);
 	}
 	return role;
+}
+
+/**
+ * A property that a role inherits is required when a superclass role requires it: the data of an edition can list an
+ * inherited property without the mark (the ARIA 1.1 and 1.2 data of `menuitemradio` and `treeitem`).
+ *
+ * > States and properties specifically required for the role and subclass roles.
+ *
+ * @see https://w3c.github.io/aria/#requiredState
+ * @param ownedProperties - The properties of the role
+ * @param superClassRoles - Every superclass role of it
+ * @returns The properties, an inherited one marked required where a superclass role requires it
+ */
+function inheritRequired(
+	ownedProperties: NonNullable<ARIARoleInSchema['ownedProperties']>,
+	superClassRoles: readonly ARIARoleInSchema[],
+): NonNullable<ARIARoleInSchema['ownedProperties']> {
+	return ownedProperties.map(prop =>
+		prop.inherited &&
+		!prop.required &&
+		superClassRoles.some(sup => sup.ownedProperties?.some(p => p.name === prop.name && p.required))
+			? { ...prop, required: true }
+			: prop,
+	);
 }

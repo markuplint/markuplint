@@ -4,6 +4,7 @@ import { ariaSpecs as _ariaSpecs } from './aria-specs.js';
 
 import { getComputedRole } from './get-computed-role.js';
 import { isValidAriaValue } from './is-valid-aria-value.js';
+import { getImplicitValueOfRole } from './implicit-value.js';
 
 /**
  * A record mapping ARIA property names to their computed property details.
@@ -94,7 +95,8 @@ export function getComputedAriaProps(
 			}
 		}
 
-		let defaultValue = spec.defaultValue;
+		// The implicit value of the role takes the place of the default of the property
+		let defaultValue = getImplicitValueOfRole(role.name, spec.name) ?? spec.defaultValue;
 
 		/**
 		 * @see https://www.w3.org/TR/html-aria/#el-h1-h6
