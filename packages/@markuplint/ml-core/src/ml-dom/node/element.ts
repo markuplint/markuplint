@@ -5377,12 +5377,16 @@ function hasMutableNodes<T extends RuleConfigValue, O extends PlainData>(
 /**
  * @param el - An element
  * @returns Whether its own `contenteditable` or that of the closest ancestor that says so makes it editable (see
- *   `MLElement#isContentEditable`)
+ *   `MLElement#isContentEditable`). An element that is not in the HTML namespace has no `isContentEditable`, which
+ *   `HTMLElement` defines, so it is false there.
  */
 function isEditable(
 	// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
 	el: MLElement<any, any>,
 ): boolean {
+	if (el.namespaceURI !== HTML_NAMESPACE) {
+		return false;
+	}
 	let current: MLElement<any, any> | null = el;
 	while (current) {
 		const attr = current.namespaceURI === HTML_NAMESPACE ? current.getAttributeNode('contenteditable') : null;
