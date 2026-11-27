@@ -1143,3 +1143,39 @@ test('[require-owned-elements-100] an owner that has a text and no element is re
 	expect((await mlRuleTest(rule, '<div role="list"> \t\n</div>')).violations).toStrictEqual(expected);
 	expect((await mlRuleTest(rule, '<div role="list">\u00A0</div>')).violations).toStrictEqual(expected);
 });
+
+test('[require-owned-elements-101] an aria-owns that refers to an element a component renders owns it', async () => {
+	const pretenders = [
+		{
+			selector: 'Item',
+			as: {
+				element: 'div',
+				contents: [
+					{
+						element: 'div',
+						attrs: [
+							{ name: 'id', value: 'i' },
+							{ name: 'role', value: 'listitem' },
+						],
+					},
+				],
+			},
+		},
+	] as const;
+	const code = '<><div role="list" aria-owns="i"></div><Item /></>';
+	expect((await mlRuleTest(rule, code, { ...jsx, pretenders })).violations).toStrictEqual([]);
+
+	// Control: a reference to an id that nothing renders owns nothing
+	expect(
+		(await mlRuleTest(rule, '<><div role="list" aria-owns="x"></div><Item /></>', { ...jsx, pretenders }))
+			.violations,
+	).toStrictEqual([
+		{
+			severity: 'error',
+			line: 1,
+			col: 3,
+			message: REQUIRES_LISTITEM,
+			raw: '<div role="list" aria-owns="x">',
+		},
+	]);
+});

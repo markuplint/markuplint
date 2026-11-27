@@ -10,7 +10,7 @@ description: 同じ要素を複数の要素のaria-owns属性から参照する�
 
 [WAI-ARIA aria-owns property](https://w3c.github.io/aria/#aria-owns)より引用
 
-文書順で最初にIDを挙げたaria-owns属性より後の、同じIDを挙げるaria-owns属性をすべて警告します。IDはaria-owns属性と同じツリーの中で探します。`template`要素の内容と宣言的シャドウルートは、それぞれ別のツリーです。どの要素も持たないIDは[`no-refer-to-non-existent-id`](/docs/rules/no-refer-to-non-existent-id)が、自分自身のIDを挙げる要素は[`no-circular-aria-owns`](/docs/rules/no-circular-aria-owns)が警告します。テンプレート構文のブロックがある文書や、描画されるまで値が分からないaria-owns属性は判定しません。
+文書順で最初にIDを挙げたaria-owns属性より後の、同じIDを挙げるaria-owns属性をすべて警告します。IDはaria-owns属性と同じツリーの中で探します。`template`要素の内容と宣言的シャドウルートは、それぞれ別のツリーです。どの要素も持たないIDは[`no-refer-to-non-existent-id`](/docs/rules/no-refer-to-non-existent-id)が、自分自身のIDを挙げる要素は[`no-circular-aria-owns`](/docs/rules/no-circular-aria-owns)が警告します。テンプレート構文のブロックがある文書や、描画されるまで値が分からないaria-owns属性は判定しません。先のaria-owns属性は、コンポーネントが描画する要素([`pretenders`](/docs/guides/beyond-html#pretenders)が`contents`やスロットのラッパーとして宣言した要素)のものでもかまいません。その要素はコンポーネントのツリーにあります。
 
 <!-- textlint-disable ja-technical-writing/ja-no-mixed-period -->
 

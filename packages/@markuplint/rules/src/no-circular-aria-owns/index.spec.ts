@@ -116,3 +116,35 @@ test('[no-circular-aria-owns-009] a reference that closes a cycle once another c
 		},
 	]);
 });
+
+test('[no-circular-aria-owns-010] a cycle may go through an element that a component renders', async () => {
+	const { violations } = await mlRuleTest(rule, '<><div id="a" aria-owns="b"></div><Item /></>', {
+		parser: { '.*': '@markuplint/jsx-parser' },
+		pretenders: [
+			{
+				selector: 'Item',
+				as: {
+					element: 'div',
+					contents: [
+						{
+							element: 'div',
+							attrs: [
+								{ name: 'id', value: 'b' },
+								{ name: 'aria-owns', value: 'a' },
+							],
+						},
+					],
+				},
+			},
+		],
+	});
+	expect(violations).toStrictEqual([
+		{
+			severity: 'error',
+			line: 1,
+			col: 26,
+			message: 'Referring to the "b" ID from "aria-owns" makes a cycle',
+			raw: 'b',
+		},
+	]);
+});

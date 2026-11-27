@@ -11,7 +11,7 @@ Disallows referring to an element from the `aria-owns` of more than one element.
 
 Cite: [WAI-ARIA aria-owns property](https://w3c.github.io/aria/#aria-owns)
 
-Every `aria-owns` after the first one in document order that lists an ID is reported. An ID is looked for in the tree of the `aria-owns`: the content of a `template` element and a declarative shadow root are trees of their own. An ID that no element has is reported by [`no-refer-to-non-existent-id`](/docs/rules/no-refer-to-non-existent-id), and an element that lists its own ID by [`no-circular-aria-owns`](/docs/rules/no-circular-aria-owns). A document with a block of template syntax, and an `aria-owns` whose value is not known until it is rendered, are not judged.
+Every `aria-owns` after the first one in document order that lists an ID is reported. An ID is looked for in the tree of the `aria-owns`: the content of a `template` element and a declarative shadow root are trees of their own. An ID that no element has is reported by [`no-refer-to-non-existent-id`](/docs/rules/no-refer-to-non-existent-id), and an element that lists its own ID by [`no-circular-aria-owns`](/docs/rules/no-circular-aria-owns). A document with a block of template syntax, and an `aria-owns` whose value is not known until it is rendered, are not judged. The earlier `aria-owns` may be one of an element that a component renders (an element that a [pretender](/docs/guides/beyond-html#pretenders) declares in `contents`, or a slot wrapper), which is in the tree of the component.
 
 ❌ Examples of **incorrect** code for this rule
 

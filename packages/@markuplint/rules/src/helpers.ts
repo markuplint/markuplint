@@ -3,20 +3,14 @@ import type { Attr, ChildNode, Element, RuleConfigValue } from '@markuplint/ml-c
 import type { ARIAVersion, Attribute, MLMLSpec } from '@markuplint/ml-spec';
 import type { WritableDeep } from 'type-fest';
 
-import {
-	expandConditionalBlocks,
-	getDOMValue,
-	getRenderedChildNodes,
-	isPretenderDeclaredElement,
-} from '@markuplint/ml-core';
+import { expandConditionalBlocks, getDOMValue, hasUnknownContent } from '@markuplint/ml-core';
 import {
 	getComputedRole,
 	getOwningParentElement,
-	isAriaTrue,
 	isTransparentForOwnership,
 	labelledbyMayReferToUnknownId,
 } from '@markuplint/ml-spec';
-import { asciiLowerCase, splitOnAsciiWhitespace, trimAsciiWhitespace } from '@markuplint/shared';
+import { asciiLowerCase, trimAsciiWhitespace } from '@markuplint/shared';
 
 export { getDOMValue };
 
@@ -618,7 +612,7 @@ export function labelledbyTargetGivesKnownText(
 	target: Element<any, any>,
 	ariaVersion: ARIAVersion,
 ): boolean {
-	if (isPretenderDeclaredElement(target) || accnameMayBeMutable(target) || hasUnknownContent(target)) {
+	if (target.referencedTextMayBeUnknown() || accnameMayBeMutable(target)) {
 		return false;
 	}
 	return target.getReferencedTextAlternative(ariaVersion) !== '';
@@ -646,13 +640,11 @@ function isSlotOfUnknownAssignment(
  * traverses, of an element `aria-labelledby` refers to, or of the owned label.
  *
  * A reference to an element whose `id` the markup does not tell (`aria-labelledby={id}`, or a token that
- * refers to no element in a tree that has `<p id={id}>`) is `labelledbyMayReferToUnknownId` of
- * `@markuplint/ml-spec`, which `MLElement#mayHaveAccessibleName` reads too. It is asked here as well, so
- * that the answer does not depend on the caller having asked `mayHaveAccessibleName` first.
- *
- * An element that a pretender declares (`isPretenderDeclaredElement`) is found by its id, but it declares
- * no content (a heading declared as `h2` renders its text), so the name that a reference to it gives is
- * not known.
+ * refers to no element in a tree that has `<p id={id}>`), or to an element whose text the markup does not tell
+ * (an element that a pretender declares, which declares no content, or one with unknown content), is
+ * `labelledbyMayReferToUnknownId` of `@markuplint/ml-spec`, which `MLElement#mayHaveAccessibleName` reads too.
+ * It is asked here as well, so that the answer does not depend on the caller having asked
+ * `mayHaveAccessibleName` first.
  *
  * Not folded into {@link accnameMayBeMutable}: a component with an unknown
  * entry and a static name (`aria-label`, static text) is still decidable and
@@ -675,55 +667,8 @@ export function accnameMayComeFromUnknownContent(
 		return true;
 	}
 
-	const labelledbyAttr = el.getAttributeNode('aria-labelledby');
-	const labelledby = labelledbyAttr?.value;
-	if (labelledby) {
-		const referenced = splitOnAsciiWhitespace(labelledby).map(id => getElementByIdInTree(el, id));
-		// What a pretender declares has no content declared (a heading declared as `h2` renders its text),
-		// so the name that a reference to it gives is not known
-		if (referenced.some(target => target && (isPretenderDeclaredElement(target) || hasUnknownContent(target)))) {
-			return true;
-		}
-	}
-
 	const ownedLabel = getOwnedLabel(el);
 	return !!ownedLabel && hasUnknownContent(ownedLabel);
-}
-
-/**
- * Walks the children {@link getRenderedChildNodes} returns, with the branches of the conditional
- * blocks read as one (`everyBranch`): which branch is rendered is not known, so an element in any of
- * them may be the one whose content is unknown. A hidden child is
- * skipped because the name computation never reads it (`isHidden` in that resolver).
- *
- * A `template` whose shadow root is only maybe attached returns `true` before
- * that walk. Its content is omitted from the computed name, so an ancestor
- * whose computed name is empty is not reported: the rule calls this only after
- * the computed name is empty. Light DOM text that remains in the computed name
- * is still a name, and the rule does not reach this function.
- *
- * Unknown `contents` of a pretended component count only when no declarative
- * shadow root is attached to it: the shadow root is rendered in their place.
- */
-function hasUnknownContent(
-	// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
-	el: Element<any, any>,
-): boolean {
-	const context = el.pretenderContext;
-	if (context?.type === 'pretender' && context.slotContent?.mutable && !el.declarativeShadowRoot) {
-		return true;
-	}
-	if (context?.type !== 'pretender' && el.isHTMLTemplateElement && el.declarativeShadowRootAttachment === 'unknown') {
-		return true;
-	}
-	const children = [...getRenderedChildNodes(el, { everyBranch: true })];
-	return children.some(
-		child =>
-			child.is(child.ELEMENT_NODE) &&
-			!isAriaTrue(child.getAttribute('aria-hidden')) &&
-			!child.hasAttribute('hidden') &&
-			hasUnknownContent(child),
-	);
 }
 
 /**
