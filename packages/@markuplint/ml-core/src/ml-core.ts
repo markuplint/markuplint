@@ -536,6 +536,7 @@ export class MLCore {
 				isPassThroughComponent: this.#parser.isPassThroughComponent?.bind(this.#parser),
 				attrNameCaseSensitive: this.#parser.attrNameCaseSensitive,
 				attrNameRoute: this.#parser.attrNameRoute,
+				duplicateAttrPrecedence: this.#parser.duplicateAttrPrecedence,
 				pretenders: this.#pretenders,
 			});
 			// Collect errors from rule mapping (e.g., invalid wildcard usage).

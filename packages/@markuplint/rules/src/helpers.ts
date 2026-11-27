@@ -277,8 +277,10 @@ export function isAriaAttr<T extends RuleConfigValue, O extends PlainData>(
  * declares `MLAttr#spreadOverridesWritten` (`x-bind="obj"` of Alpine.js): it overrides the attributes
  * before it and after it, so it makes the role unknown wherever it is. A `role` that the framework
  * does not output (`role={undefined}`, `MLAttr#isAbsent`) is not returned by `getAttributeNode`, so the
- * element has no role attribute and is judged by its implicit role. `getAttributeNode` returns the
- * first `role` attribute, so a second one is not looked at.
+ * element has no role attribute and is judged by its implicit role. Of two `role` attributes,
+ * `getAttributeNode` returns the one that decides the role, the one that `getAttribute` (and so
+ * `getComputedRole`) reads: the first in the HTML syntax and in Vue, the last in JSX and MDX
+ * (`MLDocument#duplicateAttrPrecedence` of `@markuplint/ml-core`).
  *
  * The spread is read from `el.attributes`, as the role is by `getAttributeNode`, so that both follow a
  * pretender: `MLElement#hasSpreadAttr` reads the attributes that are written on the element itself and

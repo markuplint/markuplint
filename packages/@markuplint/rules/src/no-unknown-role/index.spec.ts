@@ -36,3 +36,38 @@ test('[no-unknown-role-004] the message is in Japanese with locale ja', async ()
 		},
 	]);
 });
+
+test('[no-unknown-role-005] of two `role` attributes, the one that the element has is checked', async () => {
+	const parser = { '.*': '@markuplint/jsx-parser' };
+	// In JSX, a later `role` that code sets overwrites the first, so the misspelled one is never the role
+	expect((await mlRuleTest(rule, '<div role="buton" role={x} />', { parser })).violations).toStrictEqual([]);
+
+	// In the HTML syntax, the first is kept and the second dropped
+	expect((await mlRuleTest(rule, '<div role="buton" role="x"></div>')).violations).toStrictEqual([
+		{
+			severity: 'error',
+			line: 1,
+			col: 12,
+			message: 'The "buton" role does not exist according to the WAI-ARIA specification.',
+			raw: 'buton',
+		},
+	]);
+});
+
+test('[no-unknown-role-006] Vue: of a static `role` and a bound `:role`, the first one written is the role', async () => {
+	const vue = { parser: { '.*': '@markuplint/vue-parser' }, specs: { '.*': '@markuplint/vue-spec' } };
+	expect(
+		(await mlRuleTest(rule, '<template><div role="buton" :role="r"></div></template>', vue)).violations,
+	).toStrictEqual([
+		{
+			severity: 'error',
+			line: 1,
+			col: 22,
+			message: 'The "buton" role does not exist according to the WAI-ARIA specification.',
+			raw: 'buton',
+		},
+	]);
+	expect(
+		(await mlRuleTest(rule, '<template><div :role="r" role="buton"></div></template>', vue)).violations,
+	).toStrictEqual([]);
+});

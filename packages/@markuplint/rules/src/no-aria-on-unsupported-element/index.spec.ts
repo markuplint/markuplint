@@ -56,4 +56,17 @@ describe('an attribute that the framework outputs or does not output', () => {
 		const { violations } = await mlRuleTest(rule, '<div aria-label={null}></div>', { parser, specs });
 		expect(violations).toStrictEqual([]);
 	});
+
+	test('[no-aria-on-unsupported-element-010] JSX: of two `role` attributes, the later one that code sets is reported', async () => {
+		const { violations } = await mlRuleTest(rule, '<div role="button" role="img" />', { parser, specs });
+		expect(violations).toStrictEqual([
+			{
+				severity: 'error',
+				line: 1,
+				col: 20,
+				message: 'The "role" attribute is disallowed',
+				raw: 'role="img"',
+			},
+		]);
+	});
 });

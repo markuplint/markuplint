@@ -11,6 +11,7 @@ import type {
 } from './types.js';
 import type {
 	AttrNameRoute,
+	DuplicateAttrPrecedence,
 	EndTagType,
 	ExpressionLanguage,
 	MLASTDocument,
@@ -124,6 +125,7 @@ export abstract class Parser<Node extends {} = {}, State extends unknown = null>
 	readonly #componentNameVariants: boolean = false;
 	readonly #attrNameCaseSensitive: boolean = false;
 	readonly #attrNameRoute: AttrNameRoute = 'html-parser';
+	readonly #duplicateAttrPrecedence: DuplicateAttrPrecedence = 'first';
 	readonly #selfCloseType: SelfCloseType = 'html';
 	readonly #spaceChars: readonly string[] = defaultSpaces;
 	readonly #rawTextElements: readonly string[] = ['style', 'script'];
@@ -175,6 +177,7 @@ export abstract class Parser<Node extends {} = {}, State extends unknown = null>
 		this.#componentNameVariants = options?.componentNameVariants ?? this.#componentNameVariants;
 		this.#attrNameCaseSensitive = options?.attrNameCaseSensitive ?? this.#attrNameCaseSensitive;
 		this.#attrNameRoute = options?.attrNameRoute ?? this.#attrNameRoute;
+		this.#duplicateAttrPrecedence = options?.duplicateAttrPrecedence ?? this.#duplicateAttrPrecedence;
 		this.#selfCloseType = options?.selfCloseType ?? this.#selfCloseType;
 		this.#spaceChars = options?.spaceChars ?? this.#spaceChars;
 		this.#rawTextElements = options?.rawTextElements ?? this.#rawTextElements;
@@ -291,6 +294,14 @@ export abstract class Parser<Node extends {} = {}, State extends unknown = null>
 	 */
 	get attrNameRoute(): AttrNameRoute {
 		return this.#attrNameRoute;
+	}
+
+	/**
+	 * Which of two attributes written under one name the language keeps (see `DuplicateAttrPrecedence`).
+	 * The first by default, as the HTML parser of the browser does.
+	 */
+	get duplicateAttrPrecedence(): DuplicateAttrPrecedence {
+		return this.#duplicateAttrPrecedence;
 	}
 
 	/**

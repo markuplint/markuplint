@@ -1049,6 +1049,8 @@ It accepts an attribute value. It's optional. If it is omitted, the attribute is
 
 `fromAttr` finds the attribute at the usage site by the rules of the framework that renders it. In Vue, `my-label` and `myLabel` are the same prop, but `mylabel` is not. In JSX, a prop is matched exactly, so `Label` is not `label`. In an HTML-based syntax, the name is compared as the DOM compares attribute names, without regard to ASCII case. Write the name in `fromAttr` the way the component declares its prop.
 
+When the usage site writes the attribute twice, `fromAttr` reads the one that the framework keeps: the last in JSX and MDX (a later prop replaces an earlier one), the first in Vue and in an HTML-based syntax. `<MyButton label="a" label="b" />` in JSX gives `b`.
+
 :::caution[Experimental]
 How `fromAttr` finds the attribute is **experimental** and may change in future releases.
 :::

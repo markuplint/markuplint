@@ -49,6 +49,8 @@ class MDXParser extends MarkdownAwareParser {
 			tagNameCaseSensitive: true,
 			attrNameCaseSensitive: true,
 			attrNameRoute: 'dom-api',
+			// The attributes are the props object of the element, where a later key replaces an earlier one
+			duplicateAttrPrecedence: 'last',
 			// remark strips a leading BOM itself and counts from the next character
 			leadingBom: 'strip',
 		});

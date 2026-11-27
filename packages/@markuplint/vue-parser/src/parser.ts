@@ -187,6 +187,9 @@ class VueParser extends Parser<ASTNode, State> {
 				// The compiler of Vue makes an element by `setAttribute` unless it can put the whole static tree into
 				// an HTML string, which it does only for a name it knows by its exact spelling.
 				attrNameRoute: 'dom-api',
+				// The compiler keeps the first of two static keys, as the HTML parser does
+				// @see https://github.com/vuejs/core/blob/main/packages/compiler-core/src/transforms/transformElement.ts#dedupeProperties
+				duplicateAttrPrecedence: 'first',
 				// `<slot>` is replaced with what is passed to it, not the HTML `slot` element of a shadow tree
 				// @see https://vuejs.org/guide/components/slots.html
 				slotElement: 'framework',

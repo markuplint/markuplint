@@ -12,6 +12,7 @@ import type { Walker } from '../helper/walkers.js';
 import type { MLToken } from '../token/token.js';
 import type {
 	AttrNameRoute,
+	DuplicateAttrPrecedence,
 	EndTagType,
 	ExpressionLanguage,
 	LiteralValueDeclaration,
@@ -276,6 +277,12 @@ export class MLDocument<T extends RuleConfigValue, O extends PlainData = undefin
 	readonly attrNameRoute: AttrNameRoute;
 
 	/**
+	 * Which of two attributes written under one name the language keeps (`MLParser#duplicateAttrPrecedence`, see
+	 * `DuplicateAttrPrecedence`). `"first"` when the parser does not say.
+	 */
+	readonly duplicateAttrPrecedence: DuplicateAttrPrecedence;
+
+	/**
 	 * Common settings applied globally to all rules, such as the ARIA version.
 	 * Rules use this as a fallback when their own options do not specify a value.
 	 */
@@ -308,6 +315,7 @@ export class MLDocument<T extends RuleConfigValue, O extends PlainData = undefin
 			readonly isPassThroughComponent?: (name: string) => boolean;
 			readonly attrNameCaseSensitive?: boolean;
 			readonly attrNameRoute?: AttrNameRoute;
+			readonly duplicateAttrPrecedence?: DuplicateAttrPrecedence;
 			readonly pretenders?: readonly Pretender[];
 		},
 	) {
@@ -330,6 +338,7 @@ export class MLDocument<T extends RuleConfigValue, O extends PlainData = undefin
 		this.#isPassThroughComponentRule = options?.isPassThroughComponent;
 		this.attrNameCaseSensitive = options?.attrNameCaseSensitive ?? false;
 		this.attrNameRoute = options?.attrNameRoute ?? 'html-parser';
+		this.duplicateAttrPrecedence = options?.duplicateAttrPrecedence ?? 'first';
 		this.ruleCommonSettings = ruleCommonSettings;
 
 		// Build UUID → AST node map for cross-reference lookups (e.g., pairNodeUuid)

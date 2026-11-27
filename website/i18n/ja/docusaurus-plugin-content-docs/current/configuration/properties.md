@@ -1003,6 +1003,8 @@ const MyPicture = () => {
 
 `fromAttr`は、使用箇所の属性を、それを描画するフレームワークの規則で探します。Vueでは`my-label`と`myLabel`は同じpropですが、`mylabel`は別のpropです。JSXではpropを完全一致で照合するため、`Label`と`label`は別のpropです。HTMLベースの構文では、DOMが属性名を比較するのと同じく、ASCIIの大文字・小文字を区別せずに比較します。`fromAttr`には、コンポーネントがpropを宣言している綴りのとおりに名前を書いてください。
 
+使用箇所に同じ属性が2つ書かれている場合、`fromAttr`はフレームワークが残す方を読みます。JSXとMDXでは後ろの方（後のpropが前のpropを置き換えます）、VueとHTMLベースの構文では最初の方です。JSXの`<MyButton label="a" label="b" />`は`b`になります。
+
 :::caution[実験的機能]
 `fromAttr`が属性を探す方法は**実験的**であり、将来のリリースで変更される可能性があります。
 :::
