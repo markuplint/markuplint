@@ -55,6 +55,10 @@
 		"contextmenu": {
 			"obsolete": true
 		},
+		// https://html.spec.whatwg.org/multipage/custom-elements.html#the-customelementregistry-attribute
+		"customelementregistry": {
+			"type": "Boolean"
+		},
 		// https://html.spec.whatwg.org/multipage/dom.html#attr-dir
 		"dir": {
 			"type": {
