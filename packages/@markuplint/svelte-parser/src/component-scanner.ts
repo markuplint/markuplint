@@ -2,7 +2,8 @@ import type { MLASTChildNode, MLASTDocument, MLASTElement, NamespaceURI } from '
 
 import type { SvelteAwaitBlock } from './svelte-parser/index.js';
 
-import { getNamespaceBelow } from '@markuplint/parser-utils';
+import type { NamespaceSubject } from '@markuplint/parser-utils';
+import { getEncoding, getNamespaceBelow } from '@markuplint/parser-utils';
 import { isFatalError } from '@markuplint/shared';
 
 import { parser } from './parser.js';
@@ -251,8 +252,8 @@ function getNamesBelow(
 	el: MLASTElement,
 	root: MLASTElement,
 	nodes: ReadonlyMap<string, MLASTChildNode>,
-): (string | null)[] {
-	const names: (string | null)[] = [];
+): NamespaceSubject[] {
+	const names: NamespaceSubject[] = [];
 	let current: MLASTChildNode | undefined = el;
 	while (current && current.uuid !== root.uuid) {
 		if (isElement(current) && !current.isFragment && current.nodeName !== 'template') {
@@ -263,8 +264,8 @@ function getNamesBelow(
 	return names;
 }
 
-function getNamespaceSubject(el: MLASTElement): string | null {
-	return el.elementType === 'authored' ? null : el.nodeName;
+function getNamespaceSubject(el: MLASTElement): NamespaceSubject {
+	return el.elementType === 'authored' ? null : { name: el.nodeName, encoding: getEncoding(el) };
 }
 
 function isWithin(n: MLASTChildNode, root: MLASTElement, nodes: ReadonlyMap<string, MLASTChildNode>): boolean {
