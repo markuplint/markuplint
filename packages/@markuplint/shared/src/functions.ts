@@ -68,7 +68,17 @@ export function nonNullableFilter<T>(item: Nullable<T>): item is T {
  * @returns The decoded text with HTML entities replaced by their corresponding characters.
  */
 export function decodeEntities(text: string) {
-	return decodeHtmlEntities(text, { level: 'html5' });
+	// A numeric character reference to a surrogate is U+FFFD (a surrogate-character-reference parse error), where
+	// `html-entities` would make a lone surrogate of it.
+	// @see https://html.spec.whatwg.org/multipage/parsing.html#numeric-character-reference-end-state
+	const withoutSurrogates = text.includes('&#')
+		? text.replaceAll(/&#(x[\dA-F]+|\d+);?/gi, (reference, digits: string) => {
+				const code = /^x/i.test(digits) ? Number.parseInt(digits.slice(1), 16) : Number.parseInt(digits, 10);
+				// U+D800 to U+DFFF
+				return code >= 55_296 && code <= 57_343 ? '\uFFFD' : reference;
+			})
+		: text;
+	return decodeHtmlEntities(withoutSurrogates, { level: 'html5' });
 }
 
 /**

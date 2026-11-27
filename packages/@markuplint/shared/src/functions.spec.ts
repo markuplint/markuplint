@@ -30,6 +30,18 @@ test('decodeEntities', () => {
 	expect(decodeEntities('&hybull;')).toBe('\u2043');
 });
 
+test.each([
+	['&#xD800;', '\uFFFD'],
+	['&#55296;', '\uFFFD'],
+	['&#xdfff;', '\uFFFD'],
+	['&#57343;', '\uFFFD'],
+	['&#xD7FF;', '\uD7FF'],
+	['&#xE000;', '\uE000'],
+	['&#x1F600;', '\u{1F600}'],
+])('decodeEntities makes U+FFFD of a reference to a surrogate, as the tokenizer does: %j', (text, decoded) => {
+	expect(decodeEntities(text)).toBe(decoded);
+});
+
 test('branchesToPatterns', () => {
 	expect(branchesToPatterns([])).toStrictEqual([[]]);
 	expect(branchesToPatterns([1])).toStrictEqual([[1]]);
