@@ -33,7 +33,7 @@
 		"@types/debug": "^4.1.13",
 		"debug": "^4.4.3",
 		"postcss-selector-parser": "^7.2.1",
-		"type-fest": "^6.0.2"
+		"type-fest": "^6.0.3"
 	},
 	"devDependencies": {
 		"@types/jsdom": "30.0.0",
