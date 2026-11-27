@@ -49,6 +49,31 @@ describe('Parser#parseCodeFragment', () => {
 		]);
 	});
 
+	test('a component in the fragment is closed by its end tag, and is no integration point', () => {
+		const nodes = new DefaultParser().parseCodeFragment(
+			fragment('<math><mi><Comp></Comp><mglyph></mglyph></mi><mi><Desc><b></b></Desc></mi></math>'),
+		);
+		expect(describeNodes(nodes.filter(node => node.type === 'starttag'))).toStrictEqual([
+			'math http://www.w3.org/1998/Math/MathML',
+			'mi http://www.w3.org/1998/Math/MathML',
+			'Comp html',
+			'mglyph http://www.w3.org/1998/Math/MathML',
+			'mi http://www.w3.org/1998/Math/MathML',
+			'Desc html',
+			'b html',
+		]);
+	});
+
+	test('`/>` closes an element of foreign content', () => {
+		const nodes = new DefaultParser().parseCodeFragment(fragment('<svg><foreignObject/><rect/></svg><p></p>'));
+		expect(describeNodes(nodes.filter(node => node.type === 'starttag'))).toStrictEqual([
+			'svg svg',
+			'foreignObject svg',
+			'rect svg',
+			'p html',
+		]);
+	});
+
 	test('the content of the `style` of SVG is markup, that of the `script` of HTML in SVG is text', () => {
 		const nodes = new DefaultParser().parseCodeFragment(
 			fragment(

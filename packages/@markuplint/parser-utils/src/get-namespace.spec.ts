@@ -170,3 +170,24 @@ describe('getNamespaceBelow, through integration points', () => {
 		expect(getNamespaceBelow('math', [{ name: 'annotation-xml', encoding: null }, 'svg'])).toBe(SVG);
 	});
 });
+
+describe('a language that follows `foreignObject` only', () => {
+	test('puts what is in another integration point of the HTML parser in the namespace of its parent', () => {
+		expect(getChildNamespace('div', SVG, 'foreignObject', null, 'foreign-object')).toBe(HTML);
+		expect(getChildNamespace('div', SVG, 'desc', null, 'foreign-object')).toBe(SVG);
+		expect(getChildNamespace('span', MATHML, 'mi', null, 'foreign-object')).toBe(MATHML);
+		expect(getChildNamespace('div', MATHML, 'annotation-xml', 'text/html', 'foreign-object')).toBe(MATHML);
+		expect(getChildNamespace('svg', HTML, 'div', null, 'foreign-object')).toBe(SVG);
+	});
+
+	test('takes `foreignObject` by the name as the code writes it', () => {
+		expect(getChildNamespace('div', SVG, 'foreignobject', null, 'foreign-object')).toBe(SVG);
+	});
+
+	test('below an ancestor of an unknown namespace', () => {
+		expect(getNamespaceBelow('foreignObject', ['div'], 'foreign-object')).toBe(HTML);
+		expect(getNamespaceBelow('desc', ['div'], 'foreign-object')).toBeNull();
+		expect(getNamespaceBelow('mi', ['span'], 'foreign-object')).toBeNull();
+		expect(getNamespaceBelow('svg', ['desc', 'span'], 'foreign-object')).toBe(SVG);
+	});
+});

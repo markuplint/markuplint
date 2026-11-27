@@ -2,6 +2,7 @@ import type {
 	AttrNameRoute,
 	DuplicateAttrPrecedence,
 	EndTagType,
+	IntegrationPoints,
 	ExpressionLanguage,
 	LiteralValueDeclaration,
 	MLASTParentNode,
@@ -27,6 +28,7 @@ export type ParserOptions = {
 	readonly attrNameCaseSensitive?: boolean;
 	readonly attrNameRoute?: AttrNameRoute;
 	readonly duplicateAttrPrecedence?: DuplicateAttrPrecedence;
+	readonly integrationPoints?: IntegrationPoints;
 	readonly selfCloseType?: SelfCloseType;
 	readonly spaceChars?: readonly string[];
 	readonly rawTextElements?: readonly string[];
