@@ -34,13 +34,13 @@
  * @see https://html.spec.whatwg.org/multipage/dom.html#the-id-attribute
  */
 
-import { decodeEntities, splitOnAsciiWhitespace } from '@markuplint/shared';
+import { splitOnAsciiWhitespace } from '@markuplint/shared';
 
 /**
  * The attribute as `@markuplint/ml-core` hands it over: `isDynamicValue` is true for a value that is not
- * known until it is rendered, and `isExpressionValue` for a value that is written as code.
+ * known until it is rendered.
  */
-type MLAttrLike = Attr & { readonly isDynamicValue?: boolean; readonly isExpressionValue?: boolean };
+type MLAttrLike = Attr & { readonly isDynamicValue?: boolean };
 
 /**
  * The element as `@markuplint/ml-core` hands it over: `treeMayHoldUnknownId` is the answer of its own
@@ -105,10 +105,8 @@ export function labelledbyRefersToElement(
 
 /**
  * Looks each token of the `aria-labelledby` of the element up in the tree it is in, which is the document,
- * the content of a `template` element or a shadow root, each a tree of its own. A DOM has resolved the
- * character references of a token already, but the markuplint DOM gives it as written in the markup, so
- * the token is looked for as it is, and then with its character references resolved. The value of an
- * expression (`aria-labelledby={"a"}`) is a string of the code, not markup, so it is looked for as it is.
+ * the content of a `template` element or a shadow root, each a tree of its own. The value is the one the DOM has
+ * (the markuplint DOM decodes the character references of a value written in the markup), as the ids are.
  *
  * @param el - The element that has the `aria-labelledby`
  * @returns The element each token refers to (`null` for none), or `null` for an element that is in no tree,
@@ -129,8 +127,7 @@ function resolveLabelledby(
 		return null;
 	}
 	const tree = root as Document;
-	const isExpression = !!(attr as MLAttrLike).isExpressionValue;
-	return ids.map(id => tree.getElementById(id) ?? (isExpression ? null : tree.getElementById(decodeEntities(id))));
+	return ids.map(id => tree.getElementById(id));
 }
 
 /**
