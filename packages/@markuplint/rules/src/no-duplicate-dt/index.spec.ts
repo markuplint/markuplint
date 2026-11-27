@@ -112,3 +112,21 @@ test('[no-duplicate-dt-005] the message is in Japanese with locale ja', async ()
 		},
 	]);
 });
+
+test('[no-duplicate-dt-006] a name is compared as its characters, with the character references decoded', async () => {
+	const { violations } = await mlRuleTest(rule, '<dl><dt>a&amp;b</dt><dd>x</dd><dt>a&b</dt><dd>y</dd></dl>');
+	expect(violations).toStrictEqual([
+		{
+			severity: 'warning',
+			line: 1,
+			col: 31,
+			message: 'The name duplicated',
+			raw: '<dt>',
+		},
+	]);
+});
+
+test('[no-duplicate-dt-007] a no-break space is a character of the name, not white space around it', async () => {
+	const { violations } = await mlRuleTest(rule, '<dl><dt>&nbsp;a</dt><dd>x</dd><dt>a</dt><dd>y</dd></dl>');
+	expect(violations).toStrictEqual([]);
+});

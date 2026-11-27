@@ -251,7 +251,7 @@ function transparentBranchGroups(
 				.map(childNodes =>
 					[...expandChildren(childNode, [...childNodes], mode)].filter(
 						child =>
-							!isComment(child) && !(child.is(child.TEXT_NODE) && isInterElementWhitespace(child.raw)),
+							!isComment(child) && !(child.is(child.TEXT_NODE) && isInterElementWhitespace(child.data)),
 					),
 				);
 

@@ -73,3 +73,23 @@ describe('fix with parsers', () => {
 		expect(fixedCode).toBe('Paragraph\n\n<p>text<br></p>\n');
 	});
 });
+
+test('[no-consecutive-br-009] a reference to U+0020 between two br is white space between them', async () => {
+	const { violations } = await mlRuleTest(rule, '<div><br>&#32;<br></div>');
+	expect(violations).toStrictEqual([
+		{
+			severity: 'warning',
+			line: 1,
+			col: 15,
+			message: 'Consecutive "br" elements detected',
+			raw: '<br>',
+		},
+	]);
+});
+
+test.each(['&nbsp;', '\u00A0'])(
+	'[no-consecutive-br-010] a no-break space between two br is a character between them: %j',
+	async content => {
+		expect((await mlRuleTest(rule, `<div><br>${content}<br></div>`)).violations).toStrictEqual([]);
+	},
+);

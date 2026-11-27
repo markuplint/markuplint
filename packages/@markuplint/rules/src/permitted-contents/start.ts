@@ -57,7 +57,7 @@ export function start(
 		const children = expanded.filter(child => !isComment(child) && !isIgnoredComponent(child));
 		return options.evaluateConditionalChildNodes
 			? [...children]
-			: children.filter(child => !(child.is(child.TEXT_NODE) && isInterElementWhitespace(child.raw)));
+			: children.filter(child => !(child.is(child.TEXT_NODE) && isInterElementWhitespace(child.data)));
 	});
 
 	return childNodesPatterns.flatMap<ContentModelResult>((childNodes, index) => {

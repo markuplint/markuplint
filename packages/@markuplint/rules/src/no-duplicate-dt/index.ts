@@ -1,6 +1,7 @@
 import { createRule } from '@markuplint/ml-core';
 
 import meta from './meta.js';
+import { trimAsciiWhitespace } from '@markuplint/shared';
 
 export default createRule({
 	meta: meta,
@@ -14,7 +15,7 @@ export default createRule({
 			for (const dt of dtList) {
 				// Support for alternative text for images and accessible names for contained elements
 				// is not yet implemented; currently only textContent is used for comparison.
-				const name = dt.textContent?.trim();
+				const name = trimAsciiWhitespace(dt.textContent ?? '');
 				if (!name) {
 					continue;
 				}

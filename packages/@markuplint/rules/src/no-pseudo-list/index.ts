@@ -1,5 +1,4 @@
 import { createRule } from '@markuplint/ml-core';
-import { decodeEntities } from '@markuplint/shared';
 
 import meta from './meta.js';
 
@@ -85,7 +84,7 @@ export default createRule<Bullets, Options>({
 	defaultSeverity: 'warning',
 	async verify({ document, report, t }) {
 		await document.walkOn('Text', textNode => {
-			const text = decodeEntities(textNode.raw.trim());
+			const text = textNode.data.trim();
 
 			if (!text) {
 				// empty

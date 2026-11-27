@@ -135,3 +135,30 @@ test('[no-pseudo-list-009] braces of Svelte are not the mark of a list, unless p
 		).violations.length,
 	).toBe(1);
 });
+
+test('[no-pseudo-list-010] a leading reference to U+0020 is white space before the bullet', async () => {
+	const { violations } = await mlRuleTest(rule, '<p>&#32;・ item</p>');
+	expect(violations).toStrictEqual([
+		{
+			severity: 'warning',
+			line: 1,
+			col: 4,
+			message: 'Use the "li" element',
+			raw: '&#32;・ item',
+		},
+	]);
+});
+
+test('[no-pseudo-list-011] Markdown: a bullet that a backslash escapes is a character of the paragraph', async () => {
+	const parser = { '.*': '@markuplint/markdown-parser' };
+	const { violations } = await mlRuleTest(rule, '\\- item', { parser });
+	expect(violations).toStrictEqual([
+		{
+			severity: 'warning',
+			line: 1,
+			col: 1,
+			message: 'Use the "li" element',
+			raw: '\\- item',
+		},
+	]);
+});
