@@ -16,6 +16,10 @@ describe('parser', () => {
 		expect(parser.attrNameCaseSensitive).toBe(false);
 	});
 
+	test('says that the first of two attributes of one key is kept, as the compiler of Vue keeps it', () => {
+		expect(parser.duplicateAttrPrecedence).toBe('first');
+	});
+
 	test('empty', () => {
 		const doc = parse('');
 		expect(doc.nodeList).toStrictEqual([]);
