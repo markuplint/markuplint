@@ -170,6 +170,22 @@ test('SourceSizeList', () => {
 	// <media-condition> + <source-size-value>, optionally followed by a fallback.
 	expect(check('(min-width: 600px) 200px, 100vw', 'SourceSizeList').matched).toBe(true);
 
+	// `auto` is allowed only as the first entry:
+	// <source-size-list> = auto | [ auto , ]? [ <source-size># , ]? <source-size-value>
+	expect(check('AUTO', 'SourceSizeList').matched).toBe(true);
+	expect(check('auto, 100vw', 'SourceSizeList').matched).toBe(true);
+	expect(check('auto, (min-width: 600px) 200px, 100vw', 'SourceSizeList').matched).toBe(true);
+	// Whitespace and comments around `auto` are allowed by the grammar (a
+	// `source` element's `sizes`); the literal form `img` needs is a rule's job.
+	expect(check(' auto , 100vw', 'SourceSizeList').matched).toBe(true);
+	expect(check('/* c */auto', 'SourceSizeList').matched).toBe(true);
+	// `auto` is no longer a <source-size-value> nor a <source-size>.
+	expect(check('auto, auto', 'SourceSizeList').matched).toBe(false);
+	expect(check('100vw, auto', 'SourceSizeList').matched).toBe(false);
+	expect(check('(min-width: 600px) 200px, auto', 'SourceSizeList').matched).toBe(false);
+	expect(check('(min-width: 600px) auto, 100vw', 'SourceSizeList').matched).toBe(false);
+	expect(check('auto, (min-width: 600px) 200px', 'SourceSizeList').matched).toBe(false);
+
 	// HTML LS imposes a non-negative additional constraint on <source-size-value>;
 	// css-tree's <length> grammar accepts negatives, so post-syntax checks catch them.
 	expect(check('-1px', 'SourceSizeList').matched).toBe(false);

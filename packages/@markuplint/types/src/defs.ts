@@ -915,14 +915,33 @@ export const defs: Defs = {
 				value: '<source-size-list>',
 			},
 		],
+		/**
+		 * The grammar puts `auto` only at the start of the list, so the
+		 * position of `auto` is checked here. Whitespace and comments around
+		 * it are allowed by the grammar, which is what a `source` element's
+		 * `sizes` takes. The `img` element's own `sizes` has a stricter,
+		 * element-specific requirement that a value-only type cannot express:
+		 *
+		 * > So whenever auto is specified, whether on the img element or on a
+		 * > previous sibling source element, the img element's sizes attribute
+		 * > value has to be exactly "auto" or start with "auto," (ASCII
+		 * > case-insensitive), with no comments or whitespace before or
+		 * > directly after auto.
+		 *
+		 * The `sizes-auto-requires-lazy-loading` rule of `@markuplint/rules`
+		 * checks it, together with the other conditions under which `auto`
+		 * may be specified.
+		 *
+		 * @see https://html.spec.whatwg.org/multipage/images.html#sizes-attributes
+		 */
 		is(value) {
 			const result = cssSyntaxMatch(value, {
 				ref: 'https://html.spec.whatwg.org/multipage/images.html#sizes-attributes',
 				syntax: {
 					apply: '<source-size-list>',
 					def: {
-						'source-size-list': '[ <source-size># , ]? <source-size-value>',
-						'source-size': '<media-condition> <source-size-value> | auto',
+						'source-size-list': 'auto | [ auto , ]? [ <source-size># , ]? <source-size-value>',
+						'source-size': '<media-condition> <source-size-value>',
 						/**
 						 * > Percentages are not allowed in a `<source-size-value>`,
 						 * > to avoid confusion about what it would be relative to.
@@ -931,7 +950,7 @@ export const defs: Defs = {
 						 * `<length>` doesn't allow percentages.
 						 * @see https://csstree.github.io/docs/syntax/#Type:length
 						 */
-						'source-size-value': '<length> | auto',
+						'source-size-value': '<length>',
 					},
 				},
 			});
@@ -939,9 +958,8 @@ export const defs: Defs = {
 				return result;
 			}
 			// HTML LS imposes a non-negative additional constraint on
-			// <source-size-value> ("a <length> that does not contain
-			// percentages [...] and that is greater than or equal to zero")
-			// beyond what css-tree's <length> grammar checks. A
+			// <source-size-value> ("A <source-size-value> must not be
+			// negative") beyond what css-tree's <length> grammar checks. A
 			// <source-size-value> always appears either at the start of the
 			// list, immediately after the `,` separator, or immediately after
 			// the `)` that closes a <media-condition>; a `-` followed by a

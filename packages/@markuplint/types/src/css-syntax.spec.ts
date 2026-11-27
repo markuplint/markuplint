@@ -16,9 +16,9 @@ test('Extends', () => {
 		syntax: {
 			apply: '<source-size-list>',
 			def: {
-				'source-size-list': '[ <source-size># , ]? <source-size-value>',
-				'source-size': '<media-condition> <source-size-value> | auto',
-				'source-size-value': '<length> | auto',
+				'source-size-list': 'auto | [ auto , ]? [ <source-size># , ]? <source-size-value>',
+				'source-size': '<media-condition> <source-size-value>',
+				'source-size-value': '<length>',
 			},
 		},
 	};
@@ -28,7 +28,7 @@ test('Extends', () => {
 	expect(cssSyntaxMatch('(max-width: 600px) 200px', sourceSizeList).matched).toBe(false);
 	expect(cssSyntaxMatch('100vw', sourceSizeList).matched).toBe(true);
 	expect(cssSyntaxMatch('auto', sourceSizeList).matched).toBe(true);
-	expect(cssSyntaxMatch('auto, auto', sourceSizeList).matched).toBe(true);
+	expect(cssSyntaxMatch('auto, auto', sourceSizeList).matched).toBe(false);
 	expect(cssSyntaxMatch('auto, 100vw', sourceSizeList).matched).toBe(true);
 	expect(cssSyntaxMatch('auto, 100%', sourceSizeList).matched).toBe(false);
 	expect(
