@@ -253,6 +253,9 @@ describe('decodeAttrValue', () => {
 		['&NotEqualTilde;', '\u2242\u0338'],
 		['&check;', '\u2713'],
 		['&#116', '&#116'],
+		['&#128;', '\uFFFD'],
+		['&#0;', '\uFFFD'],
+		['&#x41;', 'A'],
 	])('decodes %j as an MDX string attribute', (raw, value) => {
 		expect(decodeAttrValue(raw, 'mdx').value).toBe(value);
 	});
