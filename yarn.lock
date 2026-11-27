@@ -2367,7 +2367,7 @@ __metadata:
     "@markuplint/ml-ast": "npm:5.6.0"
     "@markuplint/parser-utils": "npm:5.6.1"
     "@markuplint/shared": "npm:5.6.0"
-    svelte: "npm:^5.57.3"
+    svelte: "npm:^5.58.1"
   languageName: unknown
   linkType: soft
 
@@ -8138,9 +8138,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"esrap@npm:^2.3.6":
-  version: 2.4.0
-  resolution: "esrap@npm:2.4.0"
+"esrap@npm:^2.4.2":
+  version: 2.4.2
+  resolution: "esrap@npm:2.4.2"
   dependencies:
     "@jridgewell/sourcemap-codec": "npm:^1.4.15"
   peerDependencies:
@@ -8148,7 +8148,7 @@ __metadata:
   peerDependenciesMeta:
     "@typescript-eslint/types":
       optional: true
-  checksum: 10c0/36718ac21957031a4f99e4ebda8376e0c11b78b6c7c40dc3494f3cdd8df14cbaf13e6c3f1216feb55cac85f6a249f98a61f3e6ef8c6b1cb8555a7f6e7364227f
+  checksum: 10c0/34de2769a26ef192abbeb409f5a2d855b245b9a15b51a7230f4eeebeaf63de867c5dde7d9e3c08b4ea3a3090e55764a3a05c604027e8713b9824ca3e3458242f
   languageName: node
   linkType: hard
 
@@ -15714,9 +15714,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"svelte@npm:^5.57.3":
-  version: 5.57.3
-  resolution: "svelte@npm:5.57.3"
+"svelte@npm:^5.58.1":
+  version: 5.59.0
+  resolution: "svelte@npm:5.59.0"
   dependencies:
     "@jridgewell/remapping": "npm:^2.3.5"
     "@jridgewell/sourcemap-codec": "npm:^1.6.0"
@@ -15728,12 +15728,12 @@ __metadata:
     clsx: "npm:^2.1.1"
     devalue: "npm:^5.9.2"
     esm-env: "npm:^1.2.1"
-    esrap: "npm:^2.3.6"
+    esrap: "npm:^2.4.2"
     is-reference: "npm:^3.0.3"
     locate-character: "npm:^3.0.0"
     magic-string: "npm:^0.30.11"
     zimmerframe: "npm:^1.1.2"
-  checksum: 10c0/7050a21fde742ae87629f43393e3101699dd8cd4b1d65f70844f035811394f78d581b1da8087c51f2444efeb4c10ed52954e4bf956329223959b644ca8e5831f
+  checksum: 10c0/1d3db80b73b30285654e99476c225fd896d0705cebaf06d29cf5ae52010b0156a7254a5448cca6d13a809396c58633ae80512dc8da7cf19c48e853a9fc291f49
   languageName: node
   linkType: hard
 
