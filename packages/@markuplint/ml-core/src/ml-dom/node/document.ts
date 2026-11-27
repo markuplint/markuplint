@@ -13,6 +13,7 @@ import type { MLToken } from '../token/token.js';
 import type {
 	AttrNameRoute,
 	DuplicateAttrPrecedence,
+	AttrValueDecoding,
 	EndTagType,
 	ExpressionLanguage,
 	LiteralValueDeclaration,
@@ -283,6 +284,26 @@ export class MLDocument<T extends RuleConfigValue, O extends PlainData = undefin
 	readonly duplicateAttrPrecedence: DuplicateAttrPrecedence;
 
 	/**
+	 * Which of two attributes written under one name a component or a custom element gets
+	 * (`MLParser#componentDuplicateAttrPrecedence`). What {@link MLDocument.duplicateAttrPrecedence} says when the
+	 * parser does not say.
+	 */
+	readonly componentDuplicateAttrPrecedence: DuplicateAttrPrecedence;
+
+	/**
+	 * How the character references of an attribute value written in the markup are decoded
+	 * (`MLParser#attrValueDecoding`, see `AttrValueDecoding`). `"html"` when the parser does not say.
+	 */
+	readonly attrValueDecoding: AttrValueDecoding;
+
+	/**
+	 * How the character references of an attribute value of a component or a custom element are decoded
+	 * (`MLParser#componentAttrValueDecoding`). What {@link MLDocument.attrValueDecoding} says when the parser does not
+	 * say.
+	 */
+	readonly componentAttrValueDecoding: AttrValueDecoding;
+
+	/**
 	 * Common settings applied globally to all rules, such as the ARIA version.
 	 * Rules use this as a fallback when their own options do not specify a value.
 	 */
@@ -316,6 +337,9 @@ export class MLDocument<T extends RuleConfigValue, O extends PlainData = undefin
 			readonly attrNameCaseSensitive?: boolean;
 			readonly attrNameRoute?: AttrNameRoute;
 			readonly duplicateAttrPrecedence?: DuplicateAttrPrecedence;
+			readonly componentDuplicateAttrPrecedence?: DuplicateAttrPrecedence;
+			readonly attrValueDecoding?: AttrValueDecoding;
+			readonly componentAttrValueDecoding?: AttrValueDecoding;
 			readonly pretenders?: readonly Pretender[];
 		},
 	) {
@@ -339,6 +363,10 @@ export class MLDocument<T extends RuleConfigValue, O extends PlainData = undefin
 		this.attrNameCaseSensitive = options?.attrNameCaseSensitive ?? false;
 		this.attrNameRoute = options?.attrNameRoute ?? 'html-parser';
 		this.duplicateAttrPrecedence = options?.duplicateAttrPrecedence ?? 'first';
+		this.componentDuplicateAttrPrecedence =
+			options?.componentDuplicateAttrPrecedence ?? this.duplicateAttrPrecedence;
+		this.attrValueDecoding = options?.attrValueDecoding ?? 'html';
+		this.componentAttrValueDecoding = options?.componentAttrValueDecoding ?? this.attrValueDecoding;
 		this.ruleCommonSettings = ruleCommonSettings;
 
 		// Build UUID → AST node map for cross-reference lookups (e.g., pairNodeUuid)

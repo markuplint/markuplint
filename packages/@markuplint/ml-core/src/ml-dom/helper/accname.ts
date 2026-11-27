@@ -21,7 +21,6 @@ import {
 	isExposedAsPresentational,
 	isNativeEmbeddedControl,
 } from '@markuplint/ml-spec';
-import { decodeEntities } from '@markuplint/shared';
 
 import { log } from '../../debug.js';
 
@@ -267,8 +266,8 @@ function createMLCoreResolver(
 	const node = el.getRootNode();
 	const root: MLDocument<any, any> | MLDocumentFragment<any, any> | null =
 		node.is(node.DOCUMENT_NODE) || node.is(node.DOCUMENT_FRAGMENT_NODE) ? node : null;
-	// The ids the algorithm hands over are the ones written in the markup (`MLElement#id` and a token of
-	// `aria-labelledby`), so the character references are resolved on both sides, as the DOM has them
+	// The ids the algorithm hands over are the values the DOM has (`MLElement#id` and a token of `aria-labelledby`,
+	// read through `MLAttr#value`, which decodes the character references)
 	return {
 		...(everyBranch
 			? {
@@ -278,13 +277,12 @@ function createMLCoreResolver(
 				}
 			: {}),
 		getElementById(id: string): AccnameElement | null {
-			return root?.getElementById(decodeEntities(id)) ?? null;
+			return root?.getElementById(id) ?? null;
 		},
 		getLabelsForId(id: string): readonly AccnameElement[] {
-			const domId = decodeEntities(id);
 			return root
 				? [...root.querySelectorAll('label[for]')].filter(
-						label => getDOMValue(label.getAttributeNode('for')) === domId,
+						label => getDOMValue(label.getAttributeNode('for')) === id,
 					)
 				: [];
 		},

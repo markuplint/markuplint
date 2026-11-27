@@ -4,7 +4,6 @@ import type { MLNode } from '../node/node.js';
 import type { PlainData, RuleConfigValue } from '@markuplint/ml-config';
 
 import { isPotentialCustomElementName } from '@markuplint/parser-utils';
-import { decodeEntities } from '@markuplint/shared';
 
 /**
  * @module
@@ -390,15 +389,13 @@ export function getShadowRootTemplate<T extends RuleConfigValue, O extends Plain
 }
 
 /**
- * The string that the DOM has for an attribute: the value with the character references in the markup
- * resolved, so that `a&#x62;` is `ab`. A value that is written as code is a string already, with no
- * character reference in it.
+ * The string that the DOM has for an attribute: its value (`MLAttr#value`, with the character references of the
+ * markup decoded, so that `a&#x62;` is `ab`), or null when it is not known.
  *
  * @template T - The rule configuration value type
  * @template O - The rule options type
  * @param attr - An attribute, or `null` for one that is missing
- * @param value - A part of the value of the attribute as it is written (one token of a list), which the
- *   attribute decides on whether it has a character reference; the whole value by default
+ * @param value - A part of the value of the attribute (one token of a list); the whole value by default
  * @returns The string, or `null` when the attribute is missing, a directive, or its value is not known
  *   until it is rendered (a dynamic value)
  * @see https://html.spec.whatwg.org/multipage/dom.html#the-id-attribute
@@ -411,6 +408,6 @@ export function getDOMValue<T extends RuleConfigValue, O extends PlainData>(
 	if (!attr || attr.isDynamicValue || attr.isDirective) {
 		return null;
 	}
-	const written = value ?? attr.value;
-	return attr.isExpressionValue ? written : decodeEntities(written);
+	// `MLAttr#value` is the value the DOM has (its character references decoded)
+	return value ?? attr.value;
 }

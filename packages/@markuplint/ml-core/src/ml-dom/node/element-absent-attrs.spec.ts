@@ -64,11 +64,8 @@ describe('an attribute that the framework does not output', () => {
 		const { el } = await jsx('<div class={null} class="a"></div>', 'div');
 		expect([...el.classList]).toStrictEqual(['a']);
 		expect((await jsx('<div class={"a b"}></div>', 'div')).el.classList.value).toBe('a b');
-		// A boolean on `class` is the string, as the default of ml-core says
-		expect([...(await jsx('<div class={false} class="a"></div>', 'div')).el.classList]).toStrictEqual([
-			'false',
-			'a',
-		]);
+		// Of two `class` props, the later one is the one the element has
+		expect([...(await jsx('<div class={false} class="a"></div>', 'div')).el.classList]).toStrictEqual(['a']);
 	});
 
 	test('does not make the attributes of the element mutable, and code that is not a literal does', async () => {

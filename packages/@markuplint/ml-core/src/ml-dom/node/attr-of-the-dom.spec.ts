@@ -129,6 +129,20 @@ describe('of two attributes of one name', () => {
 		expect([el.matches('[role=a]'), el.matches('[role=b]')]).toStrictEqual([false, true]);
 	});
 
+	test('Astro merges `class:list` with `class`, whichever comes first', async () => {
+		const parser = await parserOf('astro');
+		for (const code of ['<div class:list={[x]} class="a"></div>', '<div class="a" class:list={[x]}></div>']) {
+			const el = element(createTestDocument(code, { parser }), 'div');
+			expect(el.matches('.a')).toBe(true);
+			expect([...el.attributes].map(attr => attr.overridden)).toStrictEqual([false, false]);
+		}
+	});
+
+	test('a boolean on `class` of JSX is the string', async () => {
+		const document = createTestDocument('<div class={false} />', { parser: await parserOf('jsx') });
+		expect([...element(document, 'div').classList]).toStrictEqual(['false']);
+	});
+
 	test('an Astro component and a custom element get the last, an HTML element the first', async () => {
 		const parser = await parserOf('astro');
 		const document = createTestDocument(

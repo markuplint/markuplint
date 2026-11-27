@@ -92,6 +92,10 @@ export class MLNamedNodeMap<T extends RuleConfigValue, O extends PlainData = und
  * value is the first or the last as the language says (`MLDocument#duplicateAttrPrecedence`: the first for
  * Vue, the last for JSX), and the key keeps the place where it is first written.
  *
+ * A component or a custom element of a language that passes their attributes otherwise (Astro hands them to the
+ * component as a props object, where a later key replaces an earlier one) gets the first or the last as
+ * `MLDocument#componentDuplicateAttrPrecedence` says, whichever way its attributes are read.
+ *
  * A key whose value the framework does not output (`role={undefined}`, `MLAttr#isAbsent`) sets nothing, so the
  * key set before it decides; when no key sets anything, the element has what is written without code, if
  * anything (a static attribute of Svelte, whose dynamic attributes alone are set by code). The value a key
@@ -117,32 +121,43 @@ export function findDecidingAttr<T extends RuleConfigValue, O extends PlainData>
 	isOfName: (attr: MLAttr<T, O>) => boolean = attr => attr.isNamedBy(name),
 ): MLAttr<T, O> | null {
 	let first: MLAttr<T, O> | null = null;
+	let last: MLAttr<T, O> | null = null;
+	// A directive or an attribute that the framework merges with another (`class:list` of Astro beside `class`), which
+	// is the one asked for only when the element has no other
+	let merged: MLAttr<T, O> | null = null;
 	// The keys set by code, in the order that they are first written, each with the attribute that it keeps.
 	// Made only when there is one, as an HTML string has none.
 	let byKey: Map<string, MLAttr<T, O>> | null = null;
-	let keepsLast = false;
+	// Whether the element gets the last of two attributes of one name, read once of the element
+	let keepsLast: boolean | null = null;
 	for (const attr of attrs) {
 		if (!isOfName(attr)) {
 			continue;
 		}
+		keepsLast ??= keepsLastOf(attr.ownerElement);
 		if (attr.isSetThroughDOMAPI && !attr.isDirective && !attr.isDuplicatable) {
-			if (!byKey) {
-				byKey = new Map();
-				// One setting of the document, read once
-				keepsLast = attr.ownerElement.ownerMLDocument.duplicateAttrPrecedence === 'last';
-			}
+			byKey ??= new Map();
 			if (keepsLast || !byKey.has(attr.name)) {
 				// `Map#set` of a key that the map has keeps its place, as a key of an object literal does
 				byKey.set(attr.name, attr);
 			}
 			continue;
 		}
-		if (!attr.isAbsent) {
-			first ??= attr;
+		if (attr.isAbsent) {
+			continue;
 		}
+		if (attr.isDirective || attr.isDuplicatable) {
+			merged ??= attr;
+			continue;
+		}
+		first ??= attr;
+		last = attr;
 	}
+	first ??= merged;
+	last ??= merged;
 	if (!byKey) {
-		return first;
+		// An HTML string keeps the first; the props object of a component of a language that says so, the last
+		return keepsLast && !isHtmlElement(attrs) ? last : first;
 	}
 	const kept = [...byKey.values()];
 	for (let i = kept.length - 1; i >= 0; i--) {
@@ -154,6 +169,31 @@ export function findDecidingAttr<T extends RuleConfigValue, O extends PlainData>
 	// The keys set nothing: what the element has is what the markup gives without code (a static attribute of
 	// Svelte, whose dynamic attributes alone are set by code), if anything
 	return first;
+}
+
+/**
+ * @param el - The element of the attributes
+ * @returns Whether it gets the last of two attributes of one name
+ */
+function keepsLastOf(
+	// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
+	el: MLAttr<any, any>['ownerElement'],
+): boolean {
+	const document = el.ownerMLDocument;
+	const isComponent = el.elementType === 'authored' || el.elementType === 'web-component';
+	return (isComponent ? document.componentDuplicateAttrPrecedence : document.duplicateAttrPrecedence) === 'last';
+}
+
+/**
+ * @param attrs - The attributes of an element
+ * @returns Whether the element is not a component or a custom element, whose attributes an HTML string holds
+ */
+function isHtmlElement<T extends RuleConfigValue, O extends PlainData>(
+	// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
+	attrs: ReadonlyArray<MLAttr<T, O>>,
+): boolean {
+	const el = attrs[0]?.ownerElement;
+	return !el || (el.elementType !== 'authored' && el.elementType !== 'web-component');
 }
 
 export function toNamedNodeMap<T extends RuleConfigValue, O extends PlainData = undefined>(

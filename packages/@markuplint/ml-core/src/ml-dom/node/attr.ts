@@ -3,6 +3,7 @@ import type { AttributeNodeType } from './types.js';
 import type { LiteralRenderingContext } from '../helper/literal-values.js';
 import type { ExpressionLanguage, MLASTAttr } from '@markuplint/ml-ast';
 import type { PlainData, RuleConfigValue } from '@markuplint/ml-config';
+import type { DecodedAttrValue } from '@markuplint/shared';
 import type { LiteralExpression } from '@markuplint/parser-utils';
 
 import { resolveNamespace, compileDirectivePatterns, resolveDirective } from '@markuplint/ml-spec';
@@ -15,7 +16,7 @@ import { MLToken } from '../token/token.js';
 
 import { MLDomTokenList } from './dom-token-list.js';
 import { MLNode } from './node.js';
-import { UnexpectedCallError, asciiLowerCase, vuePropKey } from '@markuplint/shared';
+import { UnexpectedCallError, asciiLowerCase, decodeAttrValue, getPosition, vuePropKey } from '@markuplint/shared';
 
 /**
  * Represents a DOM Attr (attribute) node wrapper in the markuplint DOM tree.
@@ -116,6 +117,12 @@ export class MLAttr<T extends RuleConfigValue, O extends PlainData = undefined>
 	readonly #matchedDirectivePattern: boolean = false;
 	readonly #valueType: 'string' | 'number' | 'boolean' | 'code' = 'string';
 	#rendering?: Rendering;
+
+	/**
+	 * The value written in the markup with its character references decoded, or null for a value that is not (code,
+	 * a value that the parser gives, a directive, a spread).
+	 */
+	#decoded: DecodedAttrValue | null | undefined;
 	/**
 	 * The whitespace token after the equal sign, or null if absent.
 	 */
@@ -543,6 +550,32 @@ export class MLAttr<T extends RuleConfigValue, O extends PlainData = undefined>
 	}
 
 	/**
+	 * Whether another attribute of the same name is the one that the element has
+	 * (`MLElement#getAttributeNode`, which reads the one that the language keeps), so that no selector matches this
+	 * one. A directive, a spread, and an attribute that the framework merges with another of its name (`:class`) are
+	 * not overridden.
+	 *
+	 * @implements `SelectorAttr#overridden` of `@markuplint/selector`
+	 */
+	get overridden(): boolean {
+		if (this.#overridden !== undefined) {
+			return this.#overridden;
+		}
+		if (this.isDirective || this.isSpread || this.isDuplicatable) {
+			return false;
+		}
+		const deciding = this.ownerElement.getAttributeNode(this.name);
+		const overridden = deciding !== null && deciding !== this;
+		// Read once the element is complete: which attribute decides depends on its type (`MLElement#elementType`)
+		if (this.ownerElement.elementType !== undefined) {
+			this.#overridden = overridden;
+		}
+		return overridden;
+	}
+
+	#overridden: boolean | undefined;
+
+	/**
 	 * The name that a selector is matched with.
 	 *
 	 * @implements `SelectorAttr#domName` of `@markuplint/selector`
@@ -705,7 +738,7 @@ export class MLAttr<T extends RuleConfigValue, O extends PlainData = undefined>
 		let rendering: Rendering;
 		if (!literal) {
 			rendering = {
-				value: this.#potentialValue,
+				value: this.#decode()?.value ?? this.#potentialValue,
 				dynamic: this.isExpressionValue === true,
 				absent: false,
 				resolved: false,
@@ -736,6 +769,82 @@ export class MLAttr<T extends RuleConfigValue, O extends PlainData = undefined>
 			this.#rendering = rendering;
 		}
 		return rendering;
+	}
+
+	/**
+	 * The value written in the markup is what the language makes of it: the tokenizer of HTML (and the templates of
+	 * Vue, Svelte and Astro) decodes its character references, as JSX and MDX do by their own rules
+	 * (`MLDocument#attrValueDecoding`), and Astro passes the value of a component as written
+	 * (`MLDocument#componentAttrValueDecoding`). A value that is code, that the parser gives (`potentialValue`), or
+	 * that is not the value of the attribute (a directive, a name the parser sets) is not decoded.
+	 *
+	 * @see https://html.spec.whatwg.org/multipage/parsing.html#attribute-value-(double-quoted)-state
+	 * @returns The decoded value with the offsets of its characters in `valueNode`, or null when it is not decoded
+	 */
+	#decode(): DecodedAttrValue | null {
+		if (this.#decoded !== undefined) {
+			return this.#decoded;
+		}
+		const token = this._astToken;
+		const decodable =
+			token.type === 'attr' &&
+			token.potentialValue == null &&
+			token.potentialName == null &&
+			!this.isExpressionValue &&
+			!this.isDirective &&
+			this.valueNode != null;
+		const el = this.ownerElement;
+		const document = el.ownerMLDocument;
+		const isComponent = el.elementType === 'authored' || el.elementType === 'web-component';
+		const decoded = decodable
+			? decodeAttrValue(
+					this.valueNode?.raw ?? '',
+					isComponent ? document.componentAttrValueDecoding : document.attrValueDecoding,
+				)
+			: null;
+		// Before the owner element is complete, its type (which decides the decoding) is not final
+		if (el.elementType !== undefined) {
+			this.#decoded = decoded;
+		}
+		return decoded;
+	}
+
+	/**
+	 * Where a part of the value is in the source. The value is what the language makes of the source (its character
+	 * references decoded), so an offset in it is not an offset in `valueNode`.
+	 *
+	 * @implements `@markuplint/ml-core` API: `MLAttr`
+	 * @param start - The offset in `value` where the part starts
+	 * @param end - The offset in `value` where the part ends
+	 * @returns The part as written and where it starts, or null when the value is not a text written in the markup
+	 */
+	locateInValue(
+		start: number,
+		end: number,
+	): {
+		readonly raw: string;
+		readonly startOffset: number;
+		readonly startLine: number;
+		readonly startCol: number;
+	} | null {
+		const decoded = this.#decode();
+		const valueNode = this.valueNode;
+		if (!decoded || !valueNode) {
+			return null;
+		}
+		const rawStart = decoded.offsets[start];
+		const rawEnd = decoded.offsets[end];
+		if (rawStart === undefined || rawEnd === undefined) {
+			return null;
+		}
+		const position = getPosition(valueNode.raw, rawStart);
+		return {
+			raw: valueNode.raw.slice(rawStart, rawEnd),
+			startOffset: valueNode.startOffset + rawStart,
+			startLine: valueNode.startLine + position.line - 1,
+			// The value starts after the quote on its first line only
+			startCol: position.line > 1 ? position.column : valueNode.startCol + position.column - 1,
+		};
 	}
 
 	#renderingContext(): LiteralRenderingContext {
