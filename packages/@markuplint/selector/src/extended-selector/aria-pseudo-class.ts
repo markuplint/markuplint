@@ -1,7 +1,12 @@
 import type { SelectorElement, SelectorResult } from '../types.js';
 import type { ARIAVersion, MLMLSpec } from '@markuplint/ml-spec';
 
-import { validateAriaVersion, ARIA_RECOMMENDED_VERSION, getAccname } from '@markuplint/ml-spec';
+import {
+	validateAriaVersion,
+	ARIA_RECOMMENDED_VERSION,
+	getAccname,
+	labelledbyMayReferToUnknownId,
+} from '@markuplint/ml-spec';
 
 import { InvalidSelectorError } from '../invalid-selector-error.js';
 
@@ -22,6 +27,11 @@ import { InvalidSelectorError } from '../invalid-selector-error.js';
  * An element whose name is in a branch of a conditional block has no name as written, but may have
  * one, so `has name` matches it and `has no name` does not: the same duck-typed
  * `mayHaveAccessibleName()` is asked when the name as written is empty.
+ *
+ * An element whose `aria-labelledby` may refer to an element that the markup does not tell
+ * (`aria-labelledby={id}`, `<p id={id}>`) has a name in the same way: markuplint does not decide what it
+ * cannot know (`labelledbyMayReferToUnknownId` of `@markuplint/ml-spec`, which `mayHaveAccessibleName()`
+ * reads too).
  *
  * For elements that do **not** have the method (e.g. plain DOM `Element`
  * instances in unit tests), the function falls back to the stateless
@@ -44,15 +54,20 @@ export function ariaPseudoClass(specs: MLMLSpec) {
 				'getAccessibleName' in el && typeof (el as Record<string, unknown>).getAccessibleName === 'function'
 					? (el as unknown as { getAccessibleName(v: ARIAVersion): string }).getAccessibleName(version)
 					: getAccname(el as Element, specs, version);
-			// An element whose name is in a branch of a conditional block may have a name: the markup as
-			// written does not say which branch is rendered (`MLElement#mayHaveAccessibleName`)
+			// An element whose name is in a branch of a conditional block, or in an element that its
+			// `aria-labelledby` may refer to, may have a name: the markup as written does not say which
+			// branch is rendered or what the id is. `MLElement#mayHaveAccessibleName` answers both; a DOM
+			// element has no such method, so the reference is asked directly.
+			const hasMayHaveAccessibleName =
+				'mayHaveAccessibleName' in el &&
+				typeof (el as Record<string, unknown>).mayHaveAccessibleName === 'function';
 			const hasName =
 				!!name ||
-				('mayHaveAccessibleName' in el &&
-					typeof (el as Record<string, unknown>).mayHaveAccessibleName === 'function' &&
-					(el as unknown as { mayHaveAccessibleName(v: ARIAVersion): boolean }).mayHaveAccessibleName(
-						version,
-					));
+				(hasMayHaveAccessibleName
+					? (el as unknown as { mayHaveAccessibleName(v: ARIAVersion): boolean }).mayHaveAccessibleName(
+							version,
+						)
+					: labelledbyMayReferToUnknownId(el as Element));
 			switch (aria.type) {
 				case 'hasName': {
 					if (hasName) {
