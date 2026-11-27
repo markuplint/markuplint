@@ -326,8 +326,9 @@ class JSXParser extends Parser<JSXNode, State> {
 		return attr;
 	}
 
-	parseCodeFragment(token: ChildToken) {
+	parseCodeFragment(token: ChildToken, options?: Parameters<Parser<JSXNode, State>['parseCodeFragment']>[1]) {
 		return super.parseCodeFragment(token, {
+			...options,
 			namelessFragment: true,
 		});
 	}
