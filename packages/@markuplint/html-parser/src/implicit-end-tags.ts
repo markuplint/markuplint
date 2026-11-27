@@ -17,6 +17,11 @@ import { defaultTreeAdapter, html, Parser } from 'parse5';
 const ELEMENTS_WITH_OPTIONAL_START_TAG: ReadonlySet<string> = new Set(['html', 'head', 'body', 'tbody', 'colgroup']);
 
 /**
+ * The elements that the tree construction ends more than once, as it never pops them: see {@link ImplicitEndTagParser}.
+ */
+const ENDED_MORE_THAN_ONCE: ReadonlySet<string> = new Set(['html', 'body']);
+
+/**
  * A tree adapter that lets parse5 record the end tag of an element that it inserted without a start tag.
  *
  * parse5 gives such an element `sourceCodeLocation: null`, and `_setEndLocation` (`parse5/dist/parser/index.js`) sets
@@ -86,22 +91,62 @@ function createImplicitEndTagAdapter(): {
 }
 
 /**
- * `Parser` of parse5 that does not read the location of a token it does not have.
+ * `Parser` of parse5 that does not read the location of a token it does not have, and that keeps the first end it
+ * records for `body` and `html`.
  *
  * `onItemPop` passes `this.currentToken` to `_setEndLocation`, and parse5 sets `currentToken` only for start tags and
  * end tags. An element that is popped before the first of them (`<!doctype html>` and the end of the source) is popped with
  * `null`. parse5 never notices, because an element inserted without a tag has no location to set; with the record
  * of {@link createImplicitEndTagAdapter} it does, and `null.location` throws. No end tag can be recorded without a
  * token, so ignoring the call loses nothing.
+ *
+ * The first end that the tree construction records for `body` and for `html` is final, and a later call for it is
+ * ignored. These two are never popped: parse5 records the end of `body` at every `</body>` that it processes while
+ * `body` is in scope, and the end of `html` at every `</html>` in the after body insertion mode, so of two `</body>`
+ * the second one, the surplus, would take the place of the first. The first `</body>` (or a `</html>` before it,
+ * which ends `body` without an end tag of its own) is what closes `body`:
+ *
+ * > Switch the insertion mode to "after body".
+ *
+ * A later end tag that comes right after it reaches the after body (or after after body) insertion mode, where it is
+ * a parse error and is processed again in the in body insertion mode:
+ *
+ * > Parse error. Switch the insertion mode to "in body" and reprocess the token.
+ *
+ * It then closes nothing, and the parser takes it for an orphaned end tag. Every other element is ended once, when it
+ * is popped (`onItemPop`), so the rule is kept to `body` and `html`.
+ *
+ * Known limitation: when content comes between the two end tags (`</body>y</body>`), the parse error is the content,
+ * which takes the parser back to the in body insertion mode, and the later `</body>` closes `body` again without a
+ * parse error of its own. The syntax tree pairs an element with one end tag, so it keeps the first: the content is
+ * then after the end tag (`no-content-after-body` reports it), and the later end tag is orphaned. Keeping the later
+ * one instead would orphan the first, which is not a parse error either, and hide the content that is.
+ *
+ * @see https://html.spec.whatwg.org/multipage/parsing.html#parsing-main-inbody
+ * @see https://html.spec.whatwg.org/multipage/parsing.html#parsing-main-afterbody
+ * @see https://html.spec.whatwg.org/multipage/parsing.html#the-after-after-body-insertion-mode
  */
 class ImplicitEndTagParser extends Parser<DefaultTreeAdapterMap> {
+	readonly #ended = new WeakSet<object>();
+
 	override _setEndLocation(
 		element: Parameters<Parser<DefaultTreeAdapterMap>['_setEndLocation']>[0],
 		closingToken: Token.Token | null,
 	) {
-		if (closingToken) {
-			super._setEndLocation(element, closingToken);
+		if (!closingToken || this.#ended.has(element)) {
+			return;
 		}
+		// The condition under which `_setEndLocation` of parse5 records anything: an element is ended only by a call that
+		// records its end
+		if (
+			closingToken.location &&
+			this.treeAdapter.getNodeSourceCodeLocation(element) &&
+			this.treeAdapter.getNamespaceURI(element) === html.NS.HTML &&
+			ENDED_MORE_THAN_ONCE.has(this.treeAdapter.getTagName(element))
+		) {
+			this.#ended.add(element);
+		}
+		super._setEndLocation(element, closingToken);
 	}
 }
 

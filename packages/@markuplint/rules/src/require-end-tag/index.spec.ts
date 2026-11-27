@@ -189,3 +189,17 @@ test('[require-end-tag-010] template syntax between the tags does not make an en
 		).violations,
 	).toStrictEqual([]);
 });
+
+test('[require-end-tag-011] `body` that `</html>` closed before its end tag has no end tag of its own', async () => {
+	expect(
+		(await mlRuleTest(rule, '<!doctype html><html><head></head><body><p>x</p></html></body>')).violations,
+	).toStrictEqual([
+		{
+			severity: 'warning',
+			line: 1,
+			col: 35,
+			message: 'Missing the end tag',
+			raw: '<body>',
+		},
+	]);
+});

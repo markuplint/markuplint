@@ -150,3 +150,52 @@ test('[no-orphaned-end-tag-012] the end tag of `tr`, whose start tag the Standar
 		},
 	]);
 });
+
+test('[no-orphaned-end-tag-013] of two end tags of `body`, the second one is orphaned', async () => {
+	const { violations } = await mlRuleTest(
+		rule,
+		'<!doctype html><html><head></head><body><p>x</p></body></body></html>',
+	);
+	expect(violations).toStrictEqual([
+		{
+			severity: 'error',
+			line: 1,
+			col: 56,
+			raw: '</body>',
+			message: 'Orphaned end tag detected',
+		},
+	]);
+});
+
+test('[no-orphaned-end-tag-014] of two end tags of `html`, the second one is orphaned', async () => {
+	const { violations } = await mlRuleTest(rule, '<!doctype html><html><head></head><body></body></html></html>');
+	expect(violations).toStrictEqual([
+		{
+			severity: 'error',
+			line: 1,
+			col: 55,
+			raw: '</html>',
+			message: 'Orphaned end tag detected',
+		},
+	]);
+});
+
+test('[no-orphaned-end-tag-015] the fix removes the second end tag of `body` and keeps the first', async () => {
+	const { fixedCode } = await mlRuleTest(
+		rule,
+		'<!doctype html><html><head></head><body><p>x</p></body>y</body></html>',
+		undefined,
+		true,
+	);
+	expect(fixedCode).toBe('<!doctype html><html><head></head><body><p>x</p></body>y</html>');
+});
+
+test('[no-orphaned-end-tag-016] the fix removes the second end tag of `html` and keeps the first', async () => {
+	const { fixedCode } = await mlRuleTest(
+		rule,
+		'<!doctype html><html><head></head><body></body></html></html>',
+		undefined,
+		true,
+	);
+	expect(fixedCode).toBe('<!doctype html><html><head></head><body></body></html>');
+});
