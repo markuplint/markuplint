@@ -144,9 +144,9 @@ export function getImplicitValueOfRole(
 		if ((el.localName === 'progress' || el.localName === 'meter') && property in NATIVE_RANGE) {
 			return NATIVE_RANGE[property] ?? null;
 		}
-		// The level of a heading element is its rank
+		// The level of a heading element is its rank, which its implicit role `heading` takes
 		// @see https://www.w3.org/TR/html-aria/#el-h1-h6
-		if (property === 'aria-level' && /^h[1-6]$/.test(el.localName)) {
+		if (role === 'heading' && property === 'aria-level' && /^h[1-6]$/.test(el.localName)) {
 			return el.localName.slice(1);
 		}
 	}
