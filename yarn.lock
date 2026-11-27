@@ -2037,7 +2037,7 @@ __metadata:
     "@markuplint/ml-ast": "npm:5.6.0"
     "@markuplint/parser-utils": "npm:5.6.1"
     parse5: "npm:~8.1.1"
-    type-fest: "npm:^5.10.0"
+    type-fest: "npm:^6.0.2"
   languageName: unknown
   linkType: soft
 
@@ -2053,7 +2053,7 @@ __metadata:
     cli-progress: "npm:3.12.0"
     glob: "npm:14.0.6"
     jsonc-parser: "npm:3.3.1"
-    type-fest: "npm:5.10.0"
+    type-fest: "npm:6.0.2"
   languageName: unknown
   linkType: soft
 
@@ -2163,7 +2163,7 @@ __metadata:
     "@types/mustache": "npm:^4.2.6"
     is-plain-object: "npm:^5.1.0"
     mustache: "npm:^4.2.0"
-    type-fest: "npm:^5.10.0"
+    type-fest: "npm:^6.0.2"
   languageName: unknown
   linkType: soft
 
@@ -2184,7 +2184,7 @@ __metadata:
     "@types/debug": "npm:^4.1.13"
     debug: "npm:^4.4.3"
     is-plain-object: "npm:^5.1.0"
-    type-fest: "npm:^5.10.0"
+    type-fest: "npm:^6.0.2"
   languageName: unknown
   linkType: soft
 
@@ -2198,7 +2198,7 @@ __metadata:
     "@markuplint/types": "npm:5.6.0"
     is-plain-object: "npm:^5.1.0"
     json-schema-to-typescript: "npm:16.0.0"
-    type-fest: "npm:^5.10.0"
+    type-fest: "npm:^6.0.2"
   languageName: unknown
   linkType: soft
 
@@ -2231,7 +2231,7 @@ __metadata:
     "@typescript-eslint/typescript-estree": "npm:8.73.0"
     debug: "npm:^4.4.3"
     espree: "npm:^11.2.0"
-    type-fest: "npm:^5.10.0"
+    type-fest: "npm:^6.0.2"
   languageName: unknown
   linkType: soft
 
@@ -2322,7 +2322,7 @@ __metadata:
     chrono-node: "npm:^2.10.3"
     debug: "npm:^4.4.3"
     image-size: "npm:^2.1.0"
-    type-fest: "npm:^5.10.0"
+    type-fest: "npm:^6.0.2"
     typescript: "npm:6.0.3"
   languageName: unknown
   linkType: soft
@@ -2338,7 +2338,7 @@ __metadata:
     debug: "npm:^4.4.3"
     jsdom: "npm:31.0.1"
     postcss-selector-parser: "npm:^7.2.1"
-    type-fest: "npm:^5.10.0"
+    type-fest: "npm:^6.0.2"
   languageName: unknown
   linkType: soft
 
@@ -2404,7 +2404,7 @@ __metadata:
     glob: "npm:14.0.6"
     jsdom: "npm:31.0.1"
     textlint-rule-prh: "npm:6.1.1"
-    type-fest: "npm:5.10.0"
+    type-fest: "npm:6.0.2"
     typescript: "npm:6.0.3"
     vite: "npm:8.3.8"
     vitest: "npm:5.1.1"
@@ -2430,7 +2430,7 @@ __metadata:
     debug: "npm:^4.4.3"
     language-subtag-registry: "npm:^0.4.2"
     leven: "npm:^4.1.0"
-    type-fest: "npm:^5.10.0"
+    type-fest: "npm:^6.0.2"
     whatwg-mimetype: "npm:^5.0.0"
   languageName: unknown
   linkType: soft
@@ -11371,7 +11371,7 @@ __metadata:
     os-locale: "npm:^8.0.0"
     strict-event-emitter: "npm:^0.5.1"
     strip-ansi: "npm:^7.2.0"
-    type-fest: "npm:^5.10.0"
+    type-fest: "npm:^6.0.2"
   peerDependencies:
     "@markuplint/astro-parser": ^5.4.0
     "@markuplint/jsx-parser": ^5.4.0
@@ -16636,12 +16636,12 @@ __metadata:
   languageName: node
   linkType: hard
 
-"type-fest@npm:5.10.0, type-fest@npm:^5.10.0, type-fest@npm:^5.6.0":
-  version: 5.10.0
-  resolution: "type-fest@npm:5.10.0"
+"type-fest@npm:6.0.2, type-fest@npm:^6.0.2":
+  version: 6.0.2
+  resolution: "type-fest@npm:6.0.2"
   dependencies:
     tagged-tag: "npm:^1.0.0"
-  checksum: 10c0/313c5d0e37a3f1cc82e942f3228f897623c8b54a63a8a95532d0c2c21ab200793caa70bd8904a83fd713eb28d87ba32468b09b345ef6efa25cecb345b467226f
+  checksum: 10c0/e7307bfd1e30dd2894404aaaf31b9299716d7a1104c9892f4c0714550d7cfe784a6288e7712e4e6f0ab364e53cde7a8ec0e98786e74750c6f7375147e7f43409
   languageName: node
   linkType: hard
 
@@ -16663,6 +16663,15 @@ __metadata:
   version: 4.41.0
   resolution: "type-fest@npm:4.41.0"
   checksum: 10c0/f5ca697797ed5e88d33ac8f1fec21921839871f808dc59345c9cf67345bfb958ce41bd821165dbf3ae591cedec2bf6fe8882098dfdd8dc54320b859711a2c1e4
+  languageName: node
+  linkType: hard
+
+"type-fest@npm:^5.10.0, type-fest@npm:^5.6.0":
+  version: 5.10.0
+  resolution: "type-fest@npm:5.10.0"
+  dependencies:
+    tagged-tag: "npm:^1.0.0"
+  checksum: 10c0/313c5d0e37a3f1cc82e942f3228f897623c8b54a63a8a95532d0c2c21ab200793caa70bd8904a83fd713eb28d87ba32468b09b345ef6efa25cecb345b467226f
   languageName: node
   linkType: hard
 
