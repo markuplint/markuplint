@@ -459,3 +459,18 @@ test('[no-invalid-aria-prop-value-026] a value is read with its character refere
 		},
 	]);
 });
+
+test('[no-invalid-aria-prop-value-027] an empty value of a property that a subclass role inherits as required', async () => {
+	const { violations } = await mlRuleTest(rule, '<div role="menuitemradio" aria-checked="" tabindex="0">a</div>', {
+		rule: { value: true, options: { version: '1.2' } },
+	});
+	expect(violations).toStrictEqual([
+		{
+			severity: 'error',
+			line: 1,
+			col: 27,
+			message: 'The "" is disallowed on the "aria-checked" ARIA state',
+			raw: 'aria-checked=""',
+		},
+	]);
+});

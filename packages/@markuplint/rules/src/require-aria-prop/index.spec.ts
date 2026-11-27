@@ -203,3 +203,26 @@ test('[require-aria-prop-021] a property that a native attribute gives does not 
 		},
 	]);
 });
+
+test.each([
+	[
+		'<div role="menuitemradio" tabindex="0">a</div>',
+		'1.2',
+		'Require the "aria-checked" ARIA state on the "menuitemradio" role',
+		'<div role="menuitemradio" tabindex="0">',
+	],
+	[
+		'<div role="menuitemcheckbox" tabindex="0">a</div>',
+		'1.1',
+		'Require the "aria-checked" ARIA state on the "menuitemcheckbox" role',
+		'<div role="menuitemcheckbox" tabindex="0">',
+	],
+])(
+	'[require-aria-prop-022] a subclass role requires what its superclass requires: %s (ARIA %s)',
+	async (code, version, message, raw) => {
+		const options = { version: version as '1.1' | '1.2' };
+		expect((await mlRuleTest(rule, code, { rule: { value: true, options } })).violations).toStrictEqual([
+			{ severity: 'error', line: 1, col: 1, message, raw },
+		]);
+	},
+);
