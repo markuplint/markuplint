@@ -56,6 +56,7 @@ import { ParserError } from './parser-error.js';
 import { shiftPositions } from './shift-leading-bom.js';
 import { sortNodes } from './sort-nodes.js';
 import { getNamespace } from './get-namespace.js';
+import { decodeEntities } from '@markuplint/shared';
 
 const timer = new PerformanceTimer();
 
@@ -1584,11 +1585,21 @@ export abstract class Parser<Node extends {} = {}, State extends unknown = null>
 			return firstNode;
 		}
 
+		// The data of the joined raw (`MLASTText#data`): when a node has it, the data of each node joined, a node without
+		// it read as the tokenizer of HTML reads it
+		const data = nodes.some(n => n.data !== undefined)
+			? nodes.map(n => n.data ?? decodeEntities(n.raw)).join('')
+			: undefined;
 		const textNode: MLASTText = {
 			...firstNode,
 			uuid: randomUUID().slice(0, 8),
 			raw: nodes.map(n => n.raw).join(''),
+			data,
 		};
+		if (data === undefined) {
+			// No key, as a text node of the tokenizer of HTML has none
+			delete (textNode as { data?: string }).data;
+		}
 
 		for (const node of nodes) {
 			this.#removeChild(node.parentNode ?? null, node);
@@ -2196,6 +2207,10 @@ export abstract class Parser<Node extends {} = {}, State extends unknown = null>
 					const prevNodeRaw = prevNode.raw;
 					const prevNodeTrimmedRaw = prevNodeRaw.slice(0, nodeStartOffset - prevNode.offset);
 					this.updateRaw(prevNode, prevNodeTrimmedRaw);
+					// The data that the parser handed over is that of the whole raw (`MLASTText#data`)
+					if (prevNode.data !== undefined) {
+						delete (prevNode as { data?: string }).data;
+					}
 				}
 			}
 			newNodeList.push(node);
