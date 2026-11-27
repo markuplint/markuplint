@@ -65,6 +65,7 @@ const spec: ExtendedSpec = {
 			indeterminate: { true: '', false: null, '0': null },
 			// Boolean attributes of the spec that Svelte does not render as boolean
 			alpha: { true: 'true', false: 'false', '0': '0', '""': '' },
+			customelementregistry: { true: 'true', false: 'false', '0': '0', '""': '' },
 			focusgroupstart: { true: 'true', false: 'false', '0': '0', '""': '' },
 			headingreset: { true: 'true', false: 'false', '0': '0', '""': '' },
 			shadowrootclonable: { true: 'true', false: 'false', '0': '0', '""': '' },
