@@ -14,6 +14,7 @@ export const globalAttrs: Record<
 			'autofocus',
 			'contenteditable',
 			'contextmenu',
+			'customelementregistry',
 			'dir',
 			'draggable',
 			'dropzone',

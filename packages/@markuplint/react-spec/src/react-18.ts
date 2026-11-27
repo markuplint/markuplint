@@ -102,6 +102,7 @@ const spec: ExtendedSpec = {
 			span: { '0': null, '""': null, true: 'true' },
 			// Boolean attributes of the spec that React does not render as boolean, so it drops a boolean
 			alpha: { true: null, false: null },
+			customelementregistry: { true: null, false: null },
 			focusgroupstart: { true: null, false: null },
 			headingreset: { true: null, false: null },
 			ismap: { true: null, false: null },

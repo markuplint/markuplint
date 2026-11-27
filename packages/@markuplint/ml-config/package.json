@@ -35,6 +35,6 @@
 		"@types/mustache": "^4.2.6",
 		"is-plain-object": "^5.1.0",
 		"mustache": "^4.2.0",
-		"type-fest": "^6.0.2"
+		"type-fest": "^6.0.3"
 	}
 }
