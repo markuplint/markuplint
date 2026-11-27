@@ -752,7 +752,29 @@ export interface MLParser {
 	 * Absent means the first, as the HTML parser of the browser does.
 	 */
 	duplicateAttrPrecedence?: DuplicateAttrPrecedence;
+
+	/**
+	 * Which integration points of SVG and MathML the language follows (see {@link IntegrationPoints}). Absent means
+	 * those of the HTML parser.
+	 */
+	integrationPoints?: IntegrationPoints;
 }
+
+/**
+ * Which elements of SVG and MathML put what is in them in the HTML namespace.
+ *
+ * - `"html"`: The integration points of the HTML parser: `foreignObject`, `desc` and `title` of SVG, the MathML text
+ *   integration points (`mi`, `mo`, `mn`, `ms`, `mtext`) and an `annotation-xml` whose `encoding` is HTML. The HTML
+ *   syntax, Astro (whose output is an HTML string), and Vue, whose compiler decides the namespace of an element as the
+ *   HTML parser does.
+ * - `"foreign-object"`: `foreignObject` only. React and Svelte make an element in the namespace of its parent, and an
+ *   element in `foreignObject` in the HTML namespace.
+ *
+ * @see https://html.spec.whatwg.org/multipage/parsing.html#tree-construction-dispatcher
+ * @see https://github.com/vuejs/core/blob/main/packages/compiler-dom/src/parserOptions.ts#parserOptions
+ * @see https://github.com/facebook/react/blob/main/packages/react-dom-bindings/src/client/ReactFiberConfigDOM.js#getChildHostContextProd
+ */
+export type IntegrationPoints = 'html' | 'foreign-object';
 
 /**
  * Which of two attributes written under one name (the same spelling) a language keeps.
