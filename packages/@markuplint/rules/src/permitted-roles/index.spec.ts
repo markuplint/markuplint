@@ -192,3 +192,27 @@ describe('a role that code gives in JSX', () => {
 		]);
 	});
 });
+
+test('[permitted-roles-017] of two `role` attributes, the one that the element has is checked', async () => {
+	const parser = { '.*': '@markuplint/jsx-parser' };
+	expect((await mlRuleTest(rule, '<a href="#" role="tab" role="img" />', { parser })).violations).toStrictEqual([
+		{
+			severity: 'error',
+			line: 1,
+			col: 30,
+			message: 'Cannot overwrite the "img" role to the "a" element according to ARIA in HTML specification',
+			raw: 'img',
+		},
+	]);
+	// The later `role` is the role in JSX, and the first in the HTML syntax
+	expect((await mlRuleTest(rule, '<a href="#" role="img" role="tab" />', { parser })).violations).toStrictEqual([]);
+	expect((await mlRuleTest(rule, '<a href="#" role="img" role="tab"></a>')).violations).toStrictEqual([
+		{
+			severity: 'error',
+			line: 1,
+			col: 19,
+			message: 'Cannot overwrite the "img" role to the "a" element according to ARIA in HTML specification',
+			raw: 'img',
+		},
+	]);
+});

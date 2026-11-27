@@ -22,6 +22,18 @@ test('[role-supports-aria-prop-002] disallowed prop on role', async () => {
 			raw: 'aria-pressed="true"',
 		},
 	]);
+
+	// Control: in the HTML syntax, the first `role` is the role
+	const html = await mlRuleTest(rule, '<div role="link" role="button" aria-pressed="true"></div>');
+	expect(html.violations).toStrictEqual([
+		{
+			severity: 'error',
+			line: 1,
+			col: 32,
+			message: 'The "aria-pressed" ARIA state is disallowed on the "link" role',
+			raw: 'aria-pressed="true"',
+		},
+	]);
 });
 
 test('[role-supports-aria-prop-003] an upper-case aria-* that the role supports is not reported', async () => {
@@ -596,4 +608,40 @@ describe('an id that the markup does not tell', () => {
 			},
 		]);
 	});
+});
+
+test('[role-supports-aria-prop-039] JSX: of two `role` attributes, the one that code sets last decides the role', async () => {
+	const parser = { '.*': '@markuplint/jsx-parser' };
+	for (const unknown of [
+		'<div role="button" role={props.role} aria-pressed="true" />',
+		'<div role="heading" role={props.role} aria-pressed="true" />',
+	]) {
+		expect((await mlRuleTest(rule, unknown, { parser })).violations).toStrictEqual([]);
+	}
+
+	// Control: a later role written as a literal is the role
+	const { violations } = await mlRuleTest(rule, '<div role="button" role="link" aria-pressed="true" />', { parser });
+	expect(violations).toStrictEqual([
+		{
+			severity: 'error',
+			line: 1,
+			col: 32,
+			message: 'The "aria-pressed" ARIA state is disallowed on the "link" role',
+			raw: 'aria-pressed="true"',
+		},
+	]);
+
+	// Control: a `role` after a spread attribute is the role, whatever the spread brings
+	const afterSpread = await mlRuleTest(rule, '<div role="button" {...p} role="heading" aria-pressed="true" />', {
+		parser,
+	});
+	expect(afterSpread.violations).toStrictEqual([
+		{
+			severity: 'error',
+			line: 1,
+			col: 42,
+			message: 'The "aria-pressed" ARIA state is disallowed on the "heading" role',
+			raw: 'aria-pressed="true"',
+		},
+	]);
 });

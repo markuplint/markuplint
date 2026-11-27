@@ -173,3 +173,18 @@ test('[require-aria-prop-019] code that is not a literal may be the property', a
 	});
 	expect(violations).toStrictEqual([]);
 });
+
+test('[require-aria-prop-020] of two `role` attributes, the one that the element has is checked', async () => {
+	const parser = { '.*': '@markuplint/jsx-parser' };
+	// The later `role` is the role in JSX: `button` requires no state
+	expect((await mlRuleTest(rule, '<div role="checkbox" role="button" />', { parser })).violations).toStrictEqual([]);
+	expect((await mlRuleTest(rule, '<div role="button" role="checkbox" />', { parser })).violations).toStrictEqual([
+		{
+			severity: 'error',
+			line: 1,
+			col: 1,
+			message: 'Require the "aria-checked" ARIA state on the "checkbox" role',
+			raw: '<div role="button" role="checkbox" />',
+		},
+	]);
+});

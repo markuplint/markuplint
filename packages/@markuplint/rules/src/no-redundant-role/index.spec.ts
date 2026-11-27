@@ -39,3 +39,25 @@ test('[no-redundant-role-003] html with role=document is implicit in ARIA 1.1', 
 		},
 	]);
 });
+
+test('[no-redundant-role-004] of two `role` attributes, the one that the element has is checked', async () => {
+	const parser = { '.*': '@markuplint/jsx-parser' };
+	expect((await mlRuleTest(rule, '<button role="link" role="button" />', { parser })).violations).toStrictEqual([
+		{
+			severity: 'warning',
+			line: 1,
+			col: 27,
+			message: 'The "button" role is the implicit role of the "button" element',
+			raw: 'button',
+		},
+	]);
+	expect((await mlRuleTest(rule, '<button role="button" role="link"></button>')).violations).toStrictEqual([
+		{
+			severity: 'warning',
+			line: 1,
+			col: 15,
+			message: 'The "button" role is the implicit role of the "button" element',
+			raw: 'button',
+		},
+	]);
+});

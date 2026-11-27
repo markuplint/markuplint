@@ -514,3 +514,23 @@ describe('a template that Vue renders away', () => {
 		});
 	});
 });
+
+test('[require-parent-role-040] of two `role` attributes, the one that the element has is checked', async () => {
+	const parser = { '.*': '@markuplint/jsx-parser' };
+	// In JSX, the later `role` is the role: a `listitem` whose parent is a `section`
+	expect(
+		(await mlRuleTest(rule, '<section><div role={x} role="listitem" /></section>', { parser })).violations,
+	).toStrictEqual([
+		{
+			severity: 'error',
+			line: 1,
+			col: 30,
+			message: 'The "listitem" role requires an accessibility parent with one of the roles: "directory", "list"',
+			raw: 'listitem',
+		},
+	]);
+	// The role that code gives last is not known
+	expect(
+		(await mlRuleTest(rule, '<section><div role="listitem" role={x} /></section>', { parser })).violations,
+	).toStrictEqual([]);
+});
