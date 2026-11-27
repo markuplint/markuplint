@@ -145,8 +145,9 @@ export class MLDocument<T extends RuleConfigValue, O extends PlainData = undefin
 	/**
 	 * Whether the document has a node that a conditional render may leave out ({@link mayBeLeftOut}): a
 	 * conditional block, a loop, or an element that carries such a behavior (Vue's `v-if`). Without one, every
-	 * node is rendered, and what depends on reading every branch (`MLElement#mayHaveAccessibleName`) is what
-	 * the markup as written says. The document does not change after it is built.
+	 * node is rendered, and what depends on reading every branch (`MLElement#mayHaveAccessibleName`, apart
+	 * from its answer for an `aria-labelledby` that may refer to an element of unknown id) is what the
+	 * markup as written says. The document does not change after it is built.
 	 */
 	get hasConditionalNode(): boolean {
 		this.#hasConditionalNode ??= this.nodeList.some(node => mayBeLeftOut(node));
@@ -3194,8 +3195,9 @@ export class MLDocument<T extends RuleConfigValue, O extends PlainData = undefin
 	 * The accessible name is obtained via `node.getAccessibleName()` so that
 	 * the per-element memoization cache is shared with other consumers
 	 * (rules, selectors). See {@link MLElement.getAccessibleName}. A name that is empty as written
-	 * but may be in a branch of a conditional block ({@link MLElement.mayHaveAccessibleName}) is
-	 * `{ unknown: true }`, as the name of a slot of unknown assignment is.
+	 * but may be in a branch of a conditional block, or in an element that an `aria-labelledby` refers to and
+	 * the markup does not tell ({@link MLElement.mayHaveAccessibleName}) is `{ unknown: true }`, as the name
+	 * of a slot of unknown assignment is.
 	 *
 	 * @param node - The node to compute accessibility properties for
 	 * @param ariaVersion - The ARIA specification version to use for computation
