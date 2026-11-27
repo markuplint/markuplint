@@ -143,3 +143,27 @@ test('[no-default-aria-value-014] the level of a heading element is its rank, no
 	});
 	expect(violations).toStrictEqual([]);
 });
+
+test.each([
+	['<div role="button" disabled aria-disabled="false">a</div>', 29, 'aria-disabled="false"'],
+	['<div role="textbox" readonly aria-readonly="false">a</div>', 30, 'aria-readonly="false"'],
+])(
+	'[no-default-aria-value-015] a native attribute that does not apply to the element gives it no value: %s',
+	async (code, col, raw) => {
+		expect((await mlRuleTest(rule, code)).violations).toStrictEqual([
+			{ severity: 'warning', line: 1, col, message: 'It is default value', raw },
+		]);
+	},
+);
+
+test.each([
+	['<input type="number" value="5" aria-valuenow="0">', '1.2'],
+	['<select><option selected aria-selected="false">a</option></select>', '1.1'],
+	['<select><option selected aria-selected="false">a</option></select>', '1.2'],
+] as const)(
+	'[no-default-aria-value-016] the value of an input and the selectedness of an option are their own state: %s (ARIA %s)',
+	async (code, version) => {
+		const { violations } = await mlRuleTest(rule, code, { rule: { value: true, options: { version } } });
+		expect(violations).toStrictEqual([]);
+	},
+);

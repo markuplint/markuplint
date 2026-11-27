@@ -1,6 +1,6 @@
 import type { Options } from '../wai-aria/types.js';
 
-import { createRule, ariaSpecs, getSpec } from '@markuplint/ml-core';
+import { createRule, ariaSpecs, getAttrSpecs, getSpec } from '@markuplint/ml-core';
 import { ARIA_RECOMMENDED_VERSION, getComputedRole } from '@markuplint/ml-spec';
 
 import { checkingDefaultValue } from '../wai-aria/checkings/default-value.js';
@@ -22,10 +22,11 @@ export default createRule<boolean, Options>({
 			const ariaVersion =
 				el.rule.options?.version ?? document.ruleCommonSettings?.ariaVersion ?? ARIA_RECOMMENDED_VERSION;
 			const { props: propSpecs } = ariaSpecs(document.specs, ariaVersion);
+			const attrSpecs = getAttrSpecs(el, document.specs);
 			const roleUnknown = isRoleUnknown(el);
 			const role = roleUnknown ? null : (getComputedRole(document.specs, el, ariaVersion).role?.name ?? null);
 			for (const attr of propAttrs) {
-				report(checkingDefaultValue({ attr, propSpecs, role, roleUnknown, version: ariaVersion }));
+				report(checkingDefaultValue({ attr, attrSpecs, propSpecs, role, roleUnknown, version: ariaVersion }));
 			}
 		});
 	},

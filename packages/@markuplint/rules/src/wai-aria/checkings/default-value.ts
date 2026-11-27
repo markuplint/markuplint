@@ -1,10 +1,12 @@
 import type { Options } from '../types.js';
 import type { AttrChecker } from '@markuplint/ml-core';
-import type { ARIAProperty, ARIAVersion } from '@markuplint/ml-spec';
+import type { ARIAProperty, ARIAVersion, Attribute } from '@markuplint/ml-spec';
 
-import { getImplicitValueOfRole, hasImplicitValueOfSomeRole } from '@markuplint/ml-spec';
+import { getImplicitValueOfRole, hasImplicitValueOfSomeRole, isValueOfNativeState } from '@markuplint/ml-spec';
 
 import { asciiLowerCase, isValidFloatingPointNumber, trimAsciiWhitespace } from '@markuplint/shared';
+
+import { resolveAttrEligibility } from '../../attr-eligibility.js';
 
 /**
  * Checks whether an ARIA property is explicitly set to the value that the element has without it: the implicit value
@@ -14,6 +16,7 @@ import { asciiLowerCase, isValidFloatingPointNumber, trimAsciiWhitespace } from 
  * A keyword is compared as browsers read it, and a number as a number (`aria-valuemin="0.0"` is the 0 of a slider).
  *
  * @param attr - The ARIA attribute node to inspect.
+ * @param attrSpecs - The attribute specifications of the element, which say whether a native equivalent applies to it
  * @param propSpecs - The list of ARIA property specifications for value lookup.
  * @param role - The name of the computed role of the element, or null when it has none
  * @param roleUnknown - Whether the role is not known until it is rendered, which leaves the implicit value not known
@@ -23,9 +26,15 @@ import { asciiLowerCase, isValidFloatingPointNumber, trimAsciiWhitespace } from 
 export const checkingDefaultValue: AttrChecker<
 	boolean,
 	Options,
-	{ propSpecs: readonly ARIAProperty[]; role: string | null; roleUnknown: boolean; version: ARIAVersion }
+	{
+		attrSpecs: readonly Attribute[] | null;
+		propSpecs: readonly ARIAProperty[];
+		role: string | null;
+		roleUnknown: boolean;
+		version: ARIAVersion;
+	}
 > =
-	({ attr, propSpecs, role, roleUnknown, version }) =>
+	({ attr, attrSpecs, propSpecs, role, roleUnknown, version }) =>
 	t => {
 		if (attr.isDynamicValue) {
 			return;
@@ -35,9 +44,22 @@ export const checkingDefaultValue: AttrChecker<
 			return;
 		}
 		const propSpec = propSpecs.find(p => p.name === attr.nameKey);
-		// What the element has without the attribute is the value of its native equivalent when it has one, which
-		// `no-redundant-aria-prop` compares
-		if (propSpec?.equivalentHtmlAttrs?.some(eq => attr.ownerElement.hasAttribute(eq.htmlAttrName))) {
+		// What the element has without the attribute is the value of its native equivalent when it has one that applies
+		// to the element, which `no-redundant-aria-prop` compares
+		if (
+			propSpec?.equivalentHtmlAttrs?.some(eq => {
+				if (!attr.ownerElement.hasAttribute(eq.htmlAttrName)) {
+					return false;
+				}
+				const { status } = resolveAttrEligibility(eq.htmlAttrName, attr.ownerElement, attrSpecs ?? []);
+				return status !== 'unknown' && status !== 'condition-not-met';
+			})
+		) {
+			return;
+		}
+		// The value of an `input` and the selectedness of an `option` are their own state, which the markup does not
+		// tell in full
+		if (isValueOfNativeState(attr.ownerElement, attr.nameKey)) {
 			return;
 		}
 		const implicit = role === null ? null : getImplicitValueOfRole(attr.ownerElement, role, attr.nameKey, version);
