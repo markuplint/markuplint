@@ -330,7 +330,9 @@ export interface MLASTText extends MLASTAbstractNode {
 	 * it (`MLText#data` of `@markuplint/ml-core` decodes the character references of `raw`).
 	 *
 	 * It is the data of `raw` as the parser hands it over: `Parser` of `@markuplint/parser-utils` joins it when it
-	 * joins two text nodes that have it, and drops it when it trims `raw`.
+	 * joins text nodes (a node without it decoded as the tokenizer of HTML would), slices it with the offset spaces
+	 * of an embedded parse, and drops it when it trims `raw` to end before the next node (there the text falls back
+	 * to the reading of HTML, as no map from `raw` to `data` is kept).
 	 */
 	readonly data?: string;
 }
