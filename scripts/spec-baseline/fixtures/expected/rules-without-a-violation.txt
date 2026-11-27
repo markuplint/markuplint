@@ -8,7 +8,6 @@ no-ambiguous-navigable-target-names
 no-aria-hidden-on-hidden-until-found
 no-aria-on-unsupported-element
 no-content-after-body
-no-contradictory-aria-prop
 no-duplicate-dt
 no-duplicate-sibling-attr
 no-hardcoded-id

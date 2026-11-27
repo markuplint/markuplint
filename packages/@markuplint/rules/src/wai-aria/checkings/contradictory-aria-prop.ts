@@ -7,15 +7,30 @@ import { trimAsciiWhitespace } from '@markuplint/shared';
 import { resolveAttrEligibility } from '../../attr-eligibility.js';
 
 /**
+ * Without the native attribute, only `checked` has an implicit value that
+ * `aria-*="true"` contradicts: the checkedness of the element can be in
+ * opposition to `aria-checked`. ARIA in HTML §4.2 lets authors use
+ * `aria-required`, `aria-disabled` and `aria-readonly` in place of their native
+ * attributes, and forbids only the value `"false"` beside the native attribute.
+ *
+ * > Authors MUST NOT use the aria-checked attribute on any element where the checkedness, or the indeterminate checked value of the element can be in opposition to the current value of the aria-checked attribute.
+ *
+ * @see https://www.w3.org/TR/html-aria/#docconformance-attr
+ */
+const IMPLICIT_STATE_ATTRS: ReadonlySet<string> = new Set(['checked']);
+
+/**
  * Checks whether an ARIA property's value contradicts an equivalent native
  * HTML attribute's current or implicit value.
  *
  * Many ARIA properties have equivalent HTML attributes (e.g., `aria-required`
- * and `required`). ARIA in HTML §6 conformance requires native HTML
- * attributes to take precedence over their ARIA equivalents, so a
- * contradicting `aria-*` value is a conformance violation, not merely a
- * style preference (contrast `checkingRedundantAriaProp`, which is should-
- * level).
+ * and `required`). ARIA in HTML §4.2 has user agents ignore the `aria-*`
+ * attribute beside its native equivalent, and forbids (MUST NOT) a value that
+ * contradicts the native one, such as `aria-required="false"` beside `required`,
+ * so that is a conformance violation, not merely a style preference (contrast
+ * `checkingRedundantAriaProp`, which is should-level). Without the native
+ * attribute, only `checked` has an implicit value that `aria-*="true"`
+ * contradicts (see `IMPLICIT_STATE_ATTRS`).
  *
  * @param attr - The ARIA attribute node to inspect.
  * @param propSpecs - The list of ARIA property specifications for equivalence lookup.
@@ -75,6 +90,7 @@ export const checkingContradictoryAriaProp: AttrChecker<
 				};
 			} else if (
 				value === 'true' &&
+				IMPLICIT_STATE_ATTRS.has(equivalentHtmlAttr.htmlAttrName) &&
 				!equivalentHtmlAttr.isNotStrictEquivalent &&
 				htmlAttrSpec?.type === 'Boolean'
 			) {

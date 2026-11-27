@@ -13,9 +13,9 @@ import { resolveAttrEligibility } from '../../attr-eligibility.js';
  * default.
  *
  * Many ARIA properties have equivalent HTML attributes (e.g., `aria-required`
- * and `required`). ARIA in HTML §6 recommends using the native attribute in
- * preference to the ARIA equivalent, so restating the same value via `aria-*`
- * is superfluous.
+ * and `required`). ARIA in HTML §4.2 says authors SHOULD NOT specify both the
+ * native attribute and the equivalent `aria-*` attribute, so restating the same
+ * value via `aria-*` is superfluous.
  *
  * @param attr - The ARIA attribute node to inspect.
  * @param propSpecs - The list of ARIA property specifications for equivalence lookup.
