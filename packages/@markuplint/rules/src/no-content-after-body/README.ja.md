@@ -9,7 +9,7 @@ description: body要素を閉じる終了タグの後に開始タグや非空白
 
 `</body>` の後の空白のみの改行は、同じ挿入モード内で別途エラーにならないケースとして扱われるため、検出対象外です。
 
-body を閉じるのは最初の `</body>` です。`</body>` より前に `</html>` が書かれていれば、その `</html>` が body を閉じます。後ろの `</body>` は何も閉じません。body を閉じた `</html>` はパーサーを "after body" から [“after after body” 挿入モード](https://momdo.github.io/html/parsing.html#the-after-after-body-insertion-mode)に進め、その "Anything else" のケースも同じパースエラーになるため、その `</html>` の後のコンテンツも検出されます。このときメッセージは `html` 要素を示します。
+body を閉じるのは最初の `</body>` です。`</body>` より前に `</html>` が書かれていれば、その `</html>` が body を閉じ、その終了タグの後のコンテンツが検出されます。すぐ後ろに続く `</body>` は余分な終了タグです。コンテンツの後ろにある `</body>` は body を再び閉じますが、その前のコンテンツはすでに body の終わりの後にあります。body を閉じた `</html>` はパーサーを "after body" から [“after after body” 挿入モード](https://momdo.github.io/html/parsing.html#the-after-after-body-insertion-mode)に進め、その "Anything else" のケースも同じパースエラーになるため、その `</html>` の後のコンテンツも検出されます。このときメッセージは `html` 要素を示します。
 
 ❌ このルールに適合しない**誤った**コードの例
 
