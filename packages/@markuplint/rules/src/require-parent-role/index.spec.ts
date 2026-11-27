@@ -534,3 +534,37 @@ test('[require-parent-role-040] of two `role` attributes, the one that the eleme
 		(await mlRuleTest(rule, '<section><div role="listitem" role={x} /></section>', { parser })).violations,
 	).toStrictEqual([]);
 });
+
+test('[require-parent-role-041] an element that a component renders may own through aria-owns', async () => {
+	const parser = { '.*': '@markuplint/jsx-parser' };
+	const pretenders = [
+		{
+			selector: 'List',
+			as: {
+				element: 'div',
+				contents: [
+					{
+						element: 'div',
+						attrs: [
+							{ name: 'role', value: 'list' },
+							{ name: 'aria-owns', value: 'i' },
+						],
+					},
+				],
+			},
+		},
+	] as const;
+	const code = '<><List /><div id="i" role="listitem">a</div></>';
+	expect((await mlRuleTest(rule, code, { parser, pretenders })).violations).toStrictEqual([]);
+
+	// Control: without the component the listitem has no list
+	expect((await mlRuleTest(rule, code, { parser })).violations).toStrictEqual([
+		{
+			severity: 'error',
+			line: 1,
+			col: 29,
+			message: 'The "listitem" role requires an accessibility parent with one of the roles: "directory", "list"',
+			raw: 'listitem',
+		},
+	]);
+});

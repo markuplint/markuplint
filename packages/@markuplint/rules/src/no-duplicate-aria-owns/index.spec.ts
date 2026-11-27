@@ -117,3 +117,24 @@ test('[no-duplicate-aria-owns-010] the earlier aria-owns may be one of an elemen
 		},
 	]);
 });
+
+test('[no-duplicate-aria-owns-011] two aria-owns that refer to an element a component renders', async () => {
+	const { violations } = await mlRuleTest(rule, '<><div aria-owns="i"></div><div aria-owns="i"></div><Item /></>', {
+		parser: { '.*': '@markuplint/jsx-parser' },
+		pretenders: [
+			{
+				selector: 'Item',
+				as: { element: 'div', contents: [{ element: 'div', attrs: [{ name: 'id', value: 'i' }] }] },
+			},
+		],
+	});
+	expect(violations).toStrictEqual([
+		{
+			severity: 'error',
+			line: 1,
+			col: 44,
+			message: 'The "i" ID is already referred to by the "aria-owns" of another element',
+			raw: 'i',
+		},
+	]);
+});

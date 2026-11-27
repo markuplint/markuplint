@@ -358,3 +358,22 @@ test('[element-supports-aria-prop-031] an img named by an element that a compone
 		},
 	]);
 });
+
+test('[element-supports-aria-prop-032] an img named by an element whose content is not known is allowed', async () => {
+	const pretenders = [{ selector: 'Dyn', as: { element: 'span', contents: [{ dynamic: true }] } }] as const;
+	const code = '<div><img src="a.svg" aria-labelledby="t" /><p id="t"><Dyn /></p></div>';
+	expect((await mlRuleTest(rule, code, { ...jsx, pretenders })).violations).toStrictEqual([]);
+
+	// Control: content that the name computation does not read gives no name
+	const hidden =
+		'<div><img src="a.svg" aria-labelledby="t" /><p id="t"><span aria-hidden="true"><Dyn /></span></p></div>';
+	expect((await mlRuleTest(rule, hidden, { ...jsx, pretenders })).violations).toStrictEqual([
+		{
+			severity: 'error',
+			line: 1,
+			col: 23,
+			message: 'The "aria-labelledby" ARIA property is disallowed on the "img" element',
+			raw: 'aria-labelledby="t"',
+		},
+	]);
+});
