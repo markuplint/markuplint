@@ -14,13 +14,13 @@ describe('isInterElementWhitespace', () => {
 	test.each([
 		['', true],
 		[' \t\n\f\r', true],
-		['&#x20;&#X0A;&#9;&#10;&#13;&#32;', true],
-		['&Tab;&NewLine;', true],
+		['&#x20;&#X0A;&#9;&#10;&#13;&#32;', false],
+		['&Tab;&NewLine;', false],
 		['\u00A0', false],
 		['&nbsp;', false],
 		['\v', false],
 		['&#x21;', false],
-		['&#10 &#x20', true],
+		['&#10 &#x20', false],
 		['&#109', false],
 		['&#x9a', false],
 		['&Tab', false],
@@ -45,10 +45,10 @@ describe('isContentModelFirstChild', () => {
 		expect(isContentModelFirstChild(createJSDOMElement(html, 'style'))).toBe(expected);
 	});
 
-	test('a host that gives the text as written counts a character reference to whitespace as whitespace', () => {
+	test('a text whose data is the characters of a character reference as written is text, not whitespace', () => {
 		const text = { nodeType: 3, nodeName: '#text', parentNode: null, nodeValue: '&#x20;', previousSibling: null };
 		const el = { previousElementSibling: null, previousSibling: text } as unknown as SelectorElement;
-		expect(isContentModelFirstChild(el)).toBe(true);
+		expect(isContentModelFirstChild(el)).toBe(false);
 	});
 
 	test('a host without previousSibling is judged by the elements alone', () => {
