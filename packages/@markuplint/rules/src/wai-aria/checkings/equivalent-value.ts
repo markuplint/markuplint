@@ -12,9 +12,10 @@ import {
  * of the HTML attribute reads them: a number as a number (`max="10.0"` and `aria-valuemax="10"` are both 10), a
  * Boolean attribute by the ARIA keyword it stands for, and any other value as it is written.
  *
- * A contradiction is a different value, not a different spelling of one:
+ * A contradiction is a different value, not a different spelling of one: the native attribute and the `aria-*`
+ * attribute are compared for the semantics they give, which the native one decides:
  *
- * > Authors MUST NOT use aria-* attributes that are in opposition to the native attributes.
+ * > when HTML elements use both aria-* attributes and their host language (HTML) equivalents, user agents MUST ignore the WAI-ARIA attributes – the native HTML attributes with the same implicit ARIA semantics take precedence.
  *
  * @see https://www.w3.org/TR/html-aria/#docconformance-attr
  * @see https://html.spec.whatwg.org/multipage/common-microsyntaxes.html#rules-for-parsing-floating-point-number-values
