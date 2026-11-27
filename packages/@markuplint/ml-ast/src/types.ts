@@ -734,7 +734,36 @@ export interface MLParser {
 	 * parser of the browser reads it.
 	 */
 	attrNameRoute?: AttrNameRoute;
+
+	/**
+	 * Which of two attributes written under one name the language keeps (see {@link DuplicateAttrPrecedence}).
+	 * Absent means the first, as the HTML parser of the browser does.
+	 */
+	duplicateAttrPrecedence?: DuplicateAttrPrecedence;
 }
+
+/**
+ * Which of two attributes written under one name (the same spelling) a language keeps.
+ *
+ * - `"first"`: The first, and the later one is dropped. The HTML parser of the browser (a duplicate attribute is
+ *   a parse error, and the attribute name state removes the new one from the token), and Vue, whose compiler keeps the
+ *   first of two static keys (`dedupeProperties` of `@vue/compiler-core`, which merges only `class`, `style`
+ *   and the listeners).
+ * - `"last"`: The last, as a later key of an object literal replaces the value of an earlier one. JSX and MDX,
+ *   whose attributes are the props object of the element.
+ *
+ * Two spellings of one name that the DOM takes for one attribute (`ID` and `id` set through the DOM API) are
+ * two keys, which are set one after another, so the later one is what the element has in either case.
+ *
+ * Svelte and Astro take the default: Svelte makes two attributes of one name a compile error, and Astro writes
+ * the attributes of an HTML element into an HTML string (the props of an Astro component are an object, where a
+ * later key replaces an earlier one, which this one value for the language does not tell). TypeScript makes two props of one name in TSX an error too (TS17001), so
+ * the case of JSX is for its JavaScript.
+ *
+ * @see https://html.spec.whatwg.org/multipage/parsing.html#attribute-name-state
+ * @see https://github.com/vuejs/core/blob/main/packages/compiler-core/src/transforms/transformElement.ts#dedupeProperties
+ */
+export type DuplicateAttrPrecedence = 'first' | 'last';
 
 /**
  * How the name of an attribute gets into the DOM of the browser.
