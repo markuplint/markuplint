@@ -4575,7 +4575,7 @@ export class MLElement<T extends RuleConfigValue, O extends PlainData = undefine
 	 * `null` takes the namespace this element gives any element.
 	 */
 	#getChildNamespace(name: string | null): NamespaceURI {
-		return getChildNamespace(name, this.#namespaceURI, this._astToken.nodeName);
+		return getChildNamespace(name, this.#namespaceURI, this._astToken.nodeName, this.getAttribute('encoding'));
 	}
 
 	/**
@@ -4588,10 +4588,9 @@ export class MLElement<T extends RuleConfigValue, O extends PlainData = undefine
 	 * where no component is involved, the namespace stays what the parser gave, and when
 	 * where the component renders it is unknown.
 	 *
-	 * `getChildNamespace` leaves foreign content only at `foreignObject`, so an element
-	 * re-resolved here does not follow the other integration points (`<mi>`, `<desc>`),
-	 * nor the HTML elements that break out of foreign content in an HTML document (`<div>`
-	 * inside `<svg>`).
+	 * `getChildNamespace` follows the integration points (`foreignObject`, `desc`, `<mi>`,
+	 * `annotation-xml` by its `encoding`), but not the HTML elements that break out of
+	 * foreign content in an HTML document (`<div>` inside `<svg>`).
 	 *
 	 * A component is given no name, so that its own name is not taken for an element:
 	 * `getChildNamespace` compares names in lowercase, so `<Math>` would enter MathML.

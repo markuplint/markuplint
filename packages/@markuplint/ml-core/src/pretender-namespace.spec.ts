@@ -207,8 +207,35 @@ describe('pretender namespace', () => {
 		const doc = createTestDocument('<math><mi><x-label></x-label><span></span></mi></math>', {
 			pretenders: [{ selector: 'x-label', as: 'span' }],
 		});
-		expect(doc.querySelector('span')?.namespaceURI).toBe(MATHML);
-		expect(pretendedNamespace(doc.querySelector('x-label'))).toBe(MATHML);
+		expect(doc.querySelector('span')?.namespaceURI).toBe(HTML);
+		expect(pretendedNamespace(doc.querySelector('x-label'))).toBe(HTML);
+	});
+
+	test('a component in an SVG integration point written in capitals is HTML', () => {
+		const doc = createTestDocument(
+			'<svg><DESC><x-label></x-label></DESC><foreignobject><x-icon></x-icon></foreignobject></svg>',
+			{
+				pretenders: [
+					{ selector: 'x-label', as: 'span' },
+					{ selector: 'x-icon', as: 'span' },
+				],
+			},
+		);
+		expect(pretendedNamespace(doc.querySelector('x-label'))).toBe(HTML);
+		expect(pretendedNamespace(doc.querySelector('x-icon'))).toBe(HTML);
+	});
+
+	test('a component in an annotation-xml has the namespace that its encoding gives', () => {
+		const html = createTestDocument(
+			'<math><annotation-xml encoding="text/html"><x-label></x-label></annotation-xml></math>',
+			{ pretenders: [{ selector: 'x-label', as: 'span' }] },
+		);
+		expect(pretendedNamespace(html.querySelector('x-label'))).toBe(HTML);
+		const tex = createTestDocument(
+			'<math><annotation-xml encoding="application/x-tex"><x-label></x-label></annotation-xml></math>',
+			{ pretenders: [{ selector: 'x-label', as: 'span' }] },
+		);
+		expect(pretendedNamespace(tex.querySelector('x-label'))).toBe(MATHML);
 	});
 
 	test('children of a custom element keep the namespace they are parsed in', () => {

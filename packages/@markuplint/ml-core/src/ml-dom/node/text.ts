@@ -104,17 +104,10 @@ export class MLText<T extends RuleConfigValue, O extends PlainData = undefined>
 		) {
 			return this.raw;
 		}
-		// A CDATA section of foreign content is its characters as written, without its delimiters
-		// @see https://html.spec.whatwg.org/multipage/parsing.html#cdata-section-state
-		if (
-			parent &&
-			parent.namespaceURI !== 'http://www.w3.org/1999/xhtml' &&
-			this.raw.startsWith('<![CDATA[') &&
-			this.raw.endsWith(']]>')
-		) {
-			return this.raw.slice('<![CDATA['.length, -']]>'.length);
+		if (parent && parent.namespaceURI !== 'http://www.w3.org/1999/xhtml' && this.raw.includes(CDATA_OPEN)) {
+			return readForeignText(this.raw);
 		}
-		return this.raw.includes('&') ? decodeEntities(this.raw) : this.raw;
+		return decode(this.raw);
 	}
 
 	/**
@@ -165,14 +158,16 @@ export class MLText<T extends RuleConfigValue, O extends PlainData = undefined>
 	}
 
 	/**
-	 * Returns `true` if a parent element is `<script>` or `<style>`
+	 * Returns `true` if the parent element is the `<script>` or `<style>` of HTML
 	 *
 	 * @implements `@markuplint/ml-core` API: `MLText`
 	 * @see https://html.spec.whatwg.org/multipage/syntax.html#raw-text-elements
 	 * @returns True if this text node is the content of a raw text element
 	 */
 	isRawTextElementContent() {
-		return this.parentElement ? rawTextElements.has(this.parentElement.nodeName.toLowerCase()) : false;
+		const parent = this.parentElement;
+		// In SVG and MathML (foreign content) `script` and `style` are ordinary elements whose content is markup
+		return parent?.namespaceURI === 'http://www.w3.org/1999/xhtml' && rawTextElements.has(parent.localName);
 	}
 
 	/**
@@ -200,4 +195,42 @@ export class MLText<T extends RuleConfigValue, O extends PlainData = undefined>
 	splitText(offset: number): Text {
 		throw new UnexpectedCallError('Not supported "splitText" method');
 	}
+}
+
+const CDATA_OPEN = '<![CDATA[';
+const CDATA_CLOSE = ']]>';
+
+function decode(raw: string) {
+	return raw.includes('&') ? decodeEntities(raw) : raw;
+}
+
+/**
+ * The characters of a text of foreign content that has CDATA sections: a section is its characters as written,
+ * without its delimiters, up to the end of the source when it is not closed; the text around the sections is
+ * decoded. The parser makes one text of the character tokens of several sections and the text between them.
+ *
+ * @see https://html.spec.whatwg.org/multipage/parsing.html#cdata-section-state
+ * @param raw - The source of the text
+ * @returns Its characters
+ */
+function readForeignText(raw: string) {
+	let data = '';
+	let index = 0;
+	while (index < raw.length) {
+		const open = raw.indexOf(CDATA_OPEN, index);
+		if (open === -1) {
+			data += decode(raw.slice(index));
+			break;
+		}
+		data += decode(raw.slice(index, open));
+		const start = open + CDATA_OPEN.length;
+		const close = raw.indexOf(CDATA_CLOSE, start);
+		if (close === -1) {
+			data += raw.slice(start);
+			break;
+		}
+		data += raw.slice(start, close);
+		index = close + CDATA_CLOSE.length;
+	}
+	return data;
 }
