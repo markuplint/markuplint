@@ -413,3 +413,36 @@ export function isValidInteger(value: string): boolean {
 export function isValidFloatingPointNumber(value: string): boolean {
 	return /^-?(?:\d+|\d*\.\d+)(?:E[+-]?\d+)?$/i.test(value);
 }
+
+/**
+ * The number that a browser reads from a value by the rules for parsing floating-point number values: ASCII white
+ * space before it is skipped, and what follows the number is ignored (`" 2 "` and `"2px"` are 2). U+00A0 is not ASCII
+ * white space, so `"\u00A02"` has no number.
+ *
+ * @see https://html.spec.whatwg.org/multipage/common-microsyntaxes.html#rules-for-parsing-floating-point-number-values
+ * @param value - A string as written
+ * @returns The number, or null when the value has none
+ */
+export function parseFloatingPointNumberValue(value: string): number | null {
+	const number = /^[\t\n\f\r ]*([+-]?(?:\d+(?:\.\d+)?|\.\d+)(?:E[+-]?\d+)?)/i.exec(value)?.[1];
+	if (number === undefined) {
+		return null;
+	}
+	const n = Number(number);
+	return Number.isFinite(n) ? n : null;
+}
+
+/**
+ * The dimension that a browser reads from a value by the rules for parsing dimension values (`width` and `height` of
+ * an image): ASCII white space before it is skipped, and what follows the number is ignored but a `%`, which makes it
+ * a percentage (`" 100"` and `"100px"` are the length 100, `"100%"` the percentage 100). U+00A0 is not ASCII white
+ * space, so `"\u00A0100"` has no number.
+ *
+ * @see https://html.spec.whatwg.org/multipage/common-microsyntaxes.html#rules-for-parsing-dimension-values
+ * @param value - A string as written
+ * @returns The number and whether it is a percentage, or null when the value has none
+ */
+export function parseDimensionValue(value: string): { readonly value: number; readonly isPercentage: boolean } | null {
+	const match = /^[\t\n\f\r ]*(\d+(?:\.\d+)?)(%)?/.exec(value);
+	return match?.[1] === undefined ? null : { value: Number(match[1]), isPercentage: match[2] === '%' };
+}
