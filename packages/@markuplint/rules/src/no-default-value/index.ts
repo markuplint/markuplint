@@ -9,6 +9,10 @@ export default createRule({
 	defaultSeverity: 'warning',
 	async verify({ document, report, t }) {
 		await document.walkOn('Attr', attr => {
+			// Of two attributes of one name, the element has the other one (`no-duplicate-attr` reports this one)
+			if (attr.overridden) {
+				return;
+			}
 			const attrSpec = getAttrSpecs(attr.ownerElement, document.specs);
 
 			if (!attrSpec) {

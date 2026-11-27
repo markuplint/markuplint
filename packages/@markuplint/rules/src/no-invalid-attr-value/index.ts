@@ -58,6 +58,10 @@ export default createRule<boolean, Option>({
 		const lookupAllowed = createNameOptionLookup<AttributeType | Pattern>('Any');
 
 		await document.walkOn('Attr', attr => {
+			// Of two attributes of one name, the element has the other one (`no-duplicate-attr` reports this one)
+			if (attr.overridden) {
+				return;
+			}
 			if (attr.isDirective) {
 				return;
 			}

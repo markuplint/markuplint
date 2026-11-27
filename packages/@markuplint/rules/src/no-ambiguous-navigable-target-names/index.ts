@@ -10,6 +10,10 @@ export default createRule<boolean>({
 	defaultSeverity: 'warning',
 	async verify({ document, report, t }) {
 		await document.walkOn('Attr', attr => {
+			// Of two attributes of one name, the element has the other one (`no-duplicate-attr` reports this one)
+			if (attr.overridden) {
+				return;
+			}
 			if (!attr.valueNode) {
 				return;
 			}
@@ -31,7 +35,8 @@ export default createRule<boolean>({
 				return;
 			}
 
-			const value = attr.value.trim();
+			// A keyword is matched as written (no white space trimmed)
+			const value = attr.value;
 
 			if (value.startsWith('_')) {
 				// This is a keyword

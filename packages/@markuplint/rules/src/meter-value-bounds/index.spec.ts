@@ -173,3 +173,25 @@ test('[meter-value-bounds-016] an absent attribute is in Japanese with locale ja
 		},
 	]);
 });
+
+test.each([' 2 ', '+2', '2.', '2\u00A0'])(
+	'[meter-value-bounds-017] the number is read as the browser reads it, skipping ASCII white space before it: %j',
+	async value => {
+		const { violations } = await mlRuleTest(rule, `<meter value="${value}" max="1"></meter>`);
+		expect(violations).toStrictEqual([
+			{
+				severity: 'error',
+				line: 1,
+				col: 15,
+				message:
+					'The value of the "value" attribute must be less than or equal to the value of the "max" attribute',
+				raw: value,
+			},
+		]);
+	},
+);
+
+test('[meter-value-bounds-018] U+00A0 before the number is not ASCII white space, so the value has no number', async () => {
+	const { violations } = await mlRuleTest(rule, '<meter value="\u00A02" max="1"></meter>');
+	expect(violations).toStrictEqual([]);
+});

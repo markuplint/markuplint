@@ -12,6 +12,7 @@ import {
 } from '@markuplint/types';
 
 import meta from './meta.js';
+import { asciiLowerCase } from '@markuplint/shared';
 
 type Options = {
 	readonly allowMicroformats?: boolean | readonly string[];
@@ -59,7 +60,7 @@ export default createRule<boolean, Options>({
 
 			for (const tokenInfo of tokenList.allTokens()) {
 				const keyword = tokenInfo.value;
-				const keywordLower = keyword.toLowerCase();
+				const keywordLower = asciiLowerCase(keyword);
 
 				const message = validateKeyword(keywordLower, context, options, t);
 

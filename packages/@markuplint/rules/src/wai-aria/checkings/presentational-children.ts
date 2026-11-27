@@ -17,6 +17,7 @@ import {
 	getComposedParentElement,
 	getComputedRole,
 	getImplicitRole,
+	isAriaTrue,
 	isExposedAsPresentational,
 	isNativeEmbeddedControl,
 } from '@markuplint/ml-spec';
@@ -308,7 +309,7 @@ function takesEffect(
 	const shown = visits.filter(visit => !visit.hidden);
 	switch (namespaceKeyOf(attr)) {
 		case 'aria-hidden': {
-			return attr.value === 'true' && visits.some(visit => visit.hidden) && !el.hasAttribute('hidden');
+			return isAriaTrue(attr.value) && visits.some(visit => visit.hidden) && !el.hasAttribute('hidden');
 		}
 		case 'aria-labelledby': {
 			return labelledbyGivesText(el, ariaVersion) && shown.some(visit => !visit.inLabelledbyTraversal);

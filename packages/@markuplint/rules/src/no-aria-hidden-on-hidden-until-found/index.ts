@@ -4,6 +4,8 @@ import { createRule } from '@markuplint/ml-core';
 
 import { defaultOptions } from '../wai-aria/default-options.js';
 import meta from './meta.js';
+import { asciiLowerCase } from '@markuplint/shared';
+import { isAriaTrue } from '@markuplint/ml-spec';
 
 /**
  * ARIA in HTML, section Rules of ARIA attribute usage by HTML feature, the `hidden` row:
@@ -27,10 +29,11 @@ export default createRule<boolean, Options>({
 			if (!ariaHidden || ariaHidden.isDynamicValue) {
 				return;
 			}
-			if (ariaHidden.value.trim().toLowerCase() !== 'true') {
+			if (!isAriaTrue(ariaHidden.value)) {
 				return;
 			}
-			if (el.getAttribute('hidden')?.trim().toLowerCase() !== 'until-found') {
+			// An enumerated attribute: the keyword ASCII case-insensitively, with no white space trimmed
+			if (asciiLowerCase(el.getAttribute('hidden') ?? '') !== 'until-found') {
 				return;
 			}
 			report({

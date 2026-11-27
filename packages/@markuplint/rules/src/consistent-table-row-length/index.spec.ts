@@ -731,3 +731,10 @@ describe('Table model errors', () => {
 		expect(violations).toStrictEqual([]);
 	});
 });
+
+test('[consistent-table-row-length-028] a colspan with a plus sign spans as many columns', async () => {
+	expect(
+		(await mlRuleTest(rule, '<table><tr><td>1</td><td>2</td></tr><tr><td colspan="+2">a</td></tr></table>'))
+			.violations,
+	).toStrictEqual([]);
+});

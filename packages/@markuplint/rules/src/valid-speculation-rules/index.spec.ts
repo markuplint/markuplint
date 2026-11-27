@@ -885,3 +885,17 @@ test('[valid-speculation-rules-058] a pattern is in Japanese with locale ja', as
 		},
 	]);
 });
+
+test.each([
+	[' \n\t\r ', 'Speculation rules must contain a JSON object'],
+	['\f', 'Speculation rules must be valid JSON'],
+	['\u00A0', 'Speculation rules must be valid JSON'],
+])(
+	'[valid-speculation-rules-059] the white space of JSON is ASCII white space without form feed: %j',
+	async (content, message) => {
+		const { violations } = await mlRuleTest(rule, `<script type="speculationrules">${content}</script>`);
+		expect(violations).toStrictEqual([
+			{ severity: 'error', line: 1, col: 1, message, raw: '<script type="speculationrules">' },
+		]);
+	},
+);

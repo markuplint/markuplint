@@ -2,7 +2,7 @@ import type { Options } from '../types.js';
 import type { ElementChecker } from '@markuplint/ml-core';
 import type { ARIARole } from '@markuplint/ml-spec';
 
-import { ARIA_RECOMMENDED_VERSION, getComputedRole } from '@markuplint/ml-spec';
+import { ARIA_RECOMMENDED_VERSION, getComputedRole, isAriaTrue } from '@markuplint/ml-spec';
 import { splitOnAsciiWhitespace } from '@markuplint/shared';
 import { getDOMValue, getElementByIdInTree, querySelectorAllInTree } from '../../helpers.js';
 
@@ -34,7 +34,7 @@ export const checkingTabRequiresTabpanel: ElementChecker<
 		}
 
 		const selectedAttr = el.getAttributeNode('aria-selected');
-		if (!selectedAttr || selectedAttr.isDynamicValue || selectedAttr.value !== 'true') {
+		if (!selectedAttr || selectedAttr.isDynamicValue || !isAriaTrue(selectedAttr.value)) {
 			return;
 		}
 

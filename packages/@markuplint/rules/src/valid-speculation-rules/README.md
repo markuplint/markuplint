@@ -11,7 +11,7 @@ Split out of the former `script-content` rule, alongside [`valid-importmap`](/do
 
 The rule reports the following issues for inline speculation rules:
 
-- The element body is empty, whitespace-only, or cannot be parsed as JSON
+- The element body is empty, only the white space of JSON (tab, line feed, carriage return and space), or cannot be parsed as JSON
 - The top-level value is not a JSON object, or has no `prefetch` or `prerender` property
 - A top-level key other than `tag`, `prefetch`, or `prerender` is present
 - A `prefetch` / `prerender` value is not a JSON array, or a rule in it is not a JSON object

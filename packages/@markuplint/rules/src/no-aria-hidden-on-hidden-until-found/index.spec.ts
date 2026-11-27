@@ -45,20 +45,12 @@ test('[no-aria-hidden-on-hidden-until-found-005] an upper-case ARIA-HIDDEN attri
 	]);
 });
 
-test('[no-aria-hidden-on-hidden-until-found-006] case-insensitive and whitespace-padded values still match', async () => {
+test('[no-aria-hidden-on-hidden-until-found-006] a whitespace-padded hidden value is not the until-found keyword', async () => {
 	const { violations } = await mlRuleTest(
 		rule,
 		'<div hidden=" UNTIL-FOUND " aria-hidden=" TRUE ">Hidden content</div>',
 	);
-	expect(violations).toStrictEqual([
-		{
-			severity: 'error',
-			line: 1,
-			col: 29,
-			message: '"aria-hidden" must not be "true" on an element with "hidden" value "until-found"',
-			raw: 'aria-hidden=" TRUE "',
-		},
-	]);
+	expect(violations).toStrictEqual([]);
 });
 
 test('[no-aria-hidden-on-hidden-until-found-007] a dynamic (Vue-bound) aria-hidden value is skipped', async () => {
@@ -88,6 +80,27 @@ test('[no-aria-hidden-on-hidden-until-found-008] the values are shown as written
 			col: 27,
 			message: 'hidden属性の値が「until-found」である要素では、aria-hidden属性を「true」にしてはいけません',
 			raw: 'aria-hidden="true"',
+		},
+	]);
+});
+
+test.each([' true ', 'true\u00A0'])(
+	'[no-aria-hidden-on-hidden-until-found-009] aria-hidden with white space around it is not true, as browsers read it: %j',
+	async value => {
+		const { violations } = await mlRuleTest(rule, `<div hidden="until-found" aria-hidden="${value}">a</div>`);
+		expect(violations).toStrictEqual([]);
+	},
+);
+
+test('[no-aria-hidden-on-hidden-until-found-010] both keywords are compared ASCII case-insensitively', async () => {
+	const { violations } = await mlRuleTest(rule, '<div hidden="UNTIL-FOUND" aria-hidden="TRUE">a</div>');
+	expect(violations).toStrictEqual([
+		{
+			severity: 'error',
+			line: 1,
+			col: 27,
+			message: '"aria-hidden" must not be "true" on an element with "hidden" value "until-found"',
+			raw: 'aria-hidden="TRUE"',
 		},
 	]);
 });

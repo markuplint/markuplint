@@ -144,3 +144,16 @@ test('[no-empty-palpable-content-010] a reference to U+0020 only is white space,
 		},
 	]);
 });
+
+test('[no-empty-palpable-content-011] aria-busy is true ASCII case-insensitively, and not with white space around it', async () => {
+	expect((await mlRuleTest(rule, '<p aria-busy="TRUE"></p>')).violations).toStrictEqual([]);
+	expect((await mlRuleTest(rule, '<p aria-busy=" true "></p>')).violations).toStrictEqual([
+		{
+			severity: 'warning',
+			line: 1,
+			col: 1,
+			message: 'The element should not empty',
+			raw: '<p aria-busy=" true ">',
+		},
+	]);
+});
