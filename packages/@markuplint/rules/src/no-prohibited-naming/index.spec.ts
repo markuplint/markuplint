@@ -251,3 +251,21 @@ test('[no-prohibited-naming-021] JSX: an element whose role is not known until i
 		(await mlRuleTest(rule, '<abbr {...props} role="foo" aria-label="x">a</abbr>', { parser })).violations,
 	).toStrictEqual([{ severity: 'error', line: 1, col: 29, message, raw: 'aria-label="x"' }]);
 });
+
+test('[no-prohibited-naming-023] the role of an autonomous custom element is a set of tokens split on ASCII white space: U+00A0 is a character of one', async () => {
+	// A value of U+00A0 is a token, as `foo` is, so an explicit role is set
+	expect((await mlRuleTest(rule, '<my-widget role="\u00A0" aria-label="x">y</my-widget>')).violations).toStrictEqual(
+		[],
+	);
+
+	// Control: a value of ASCII white space has no token, so the element has no role
+	expect((await mlRuleTest(rule, '<my-widget role=" \t" aria-label="x">y</my-widget>')).violations).toStrictEqual([
+		{
+			severity: 'error',
+			line: 1,
+			col: 22,
+			message: 'The "aria-label" ARIA property is prohibited on the "my-widget" element',
+			raw: 'aria-label="x"',
+		},
+	]);
+});

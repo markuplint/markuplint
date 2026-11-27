@@ -115,3 +115,19 @@ test('[no-empty-palpable-content-008] audio, canvas, video, textarea and output 
 	expect((await mlRuleTest(rule, '<textarea></textarea>')).violations).toStrictEqual([]);
 	expect((await mlRuleTest(rule, '<output></output>')).violations).toStrictEqual([]);
 });
+
+test('[no-empty-palpable-content-009] only ASCII white space is empty: a text of U+00A0 is content', async () => {
+	// ASCII white space is inter-element whitespace, which is not content
+	expect((await mlRuleTest(rule, '<p> \t\n\f\r </p>')).violations).toStrictEqual([
+		{
+			severity: 'warning',
+			line: 1,
+			col: 1,
+			message: 'The element should not empty',
+			raw: '<p>',
+		},
+	]);
+	expect((await mlRuleTest(rule, '<p>\u00A0</p>')).violations).toStrictEqual([]);
+	expect((await mlRuleTest(rule, '<p>\u2003</p>')).violations).toStrictEqual([]);
+	expect((await mlRuleTest(rule, '<p>&nbsp;</p>')).violations).toStrictEqual([]);
+});

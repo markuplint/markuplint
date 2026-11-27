@@ -11,6 +11,7 @@ import {
 	isTransparentForOwnership,
 	resolveAriaOwnsChildren,
 } from '@markuplint/ml-spec';
+import { hasText } from '@markuplint/shared';
 
 import { expandChildren, isContentMutable } from '../../permitted-contents/slot-content.js';
 import { noTranslate } from '../../no-translate.js';
@@ -156,7 +157,7 @@ export const checkingRequiredOwnedElements: ElementChecker<
  * @returns `true` if the nodes are empty or only contain script/template elements.
  */
 function mayBeBeforeCreated(childNodes: readonly ChildNode<boolean, Options>[]) {
-	if (childNodes.every(child => child.is(child.TEXT_NODE) && child.textContent?.trim() === '')) {
+	if (childNodes.every(child => child.is(child.TEXT_NODE) && !hasText(child.textContent))) {
 		return true;
 	}
 

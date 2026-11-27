@@ -41,4 +41,23 @@ describe('checkAriaValue', () => {
 		expect(checkAriaValue('number', '-1.1', [])).toBe(true);
 		expect(checkAriaValue('number', '-1.1.1', [])).toBe(false);
 	});
+
+	test.each(['5.0', '05', '.5', '1e2', '1.5E-3'])('%j is a valid floating-point number', value => {
+		expect(checkAriaValue('number', value, [])).toBe(true);
+	});
+
+	test.each(['5.', '+5', '5abc', '\u00A05', '5\u00A0', '', 'Infinity'])(
+		'%j is not a valid floating-point number',
+		value => {
+			expect(checkAriaValue('number', value, [])).toBe(false);
+		},
+	);
+
+	test.each(['5', '05', '-5'])('%j is a valid integer', value => {
+		expect(checkAriaValue('integer', value, [])).toBe(true);
+	});
+
+	test.each(['5.0', '5abc', '+5', '\u00A05', '5\u00A0', ''])('%j is not a valid integer', value => {
+		expect(checkAriaValue('integer', value, [])).toBe(false);
+	});
 });

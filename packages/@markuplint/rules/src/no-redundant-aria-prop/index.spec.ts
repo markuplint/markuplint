@@ -65,3 +65,21 @@ test('[no-redundant-aria-prop-005] the message is in Japanese with locale ja', a
 		},
 	]);
 });
+
+test('[no-redundant-aria-prop-007] a value is trimmed of ASCII white space only: U+00A0 is a character of it', async () => {
+	expect(
+		(await mlRuleTest(rule, '<input type="checkbox" aria-checked=" true " checked />')).violations,
+	).toStrictEqual([
+		{
+			severity: 'warning',
+			line: 1,
+			col: 24,
+			message:
+				'The "aria-checked" ARIA state has the same semantics as the current "checked" attribute or the implicit "checked" attribute',
+			raw: 'aria-checked=" true "',
+		},
+	]);
+	expect(
+		(await mlRuleTest(rule, '<input type="checkbox" aria-checked="true\u00A0" checked />')).violations,
+	).toStrictEqual([]);
+});

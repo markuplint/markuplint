@@ -2,7 +2,7 @@ import type { Options } from '../types.js';
 import type { AttrChecker } from '@markuplint/ml-core';
 import type { ARIAProperty, ARIARole } from '@markuplint/ml-spec';
 
-import { splitOnAsciiWhitespace } from '@markuplint/shared';
+import { isValidFloatingPointNumber, isValidInteger, splitOnAsciiWhitespace } from '@markuplint/shared';
 
 import { noTranslate } from '../../no-translate.js';
 
@@ -108,9 +108,14 @@ function checkAria(propSpec: ARIAProperty | undefined, currentValue: string, rol
  * Supports token, token list, string, ID reference, true/false, tristate,
  * true/false/undefined, integer, and number value types.
  *
+ * Known limitation: `isValidAriaValue` of `@markuplint/ml-spec` (the computed props) reads the same value
+ * types differently: it trims ASCII white space, folds the case, and its `tristate` has no `undefined`. A
+ * value such as ` TRUE ` is valid there and disallowed here.
+ *
  * @see https://w3c.github.io/aria/#propcharacteristic_value
  * @param type - The ARIA value type (e.g., `"token"`, `"true/false"`, `"integer"`).
- * @param value - The raw attribute value to validate.
+ * @param value - The raw attribute value to validate. It is not trimmed, and `integer` and `number` take the
+ *   whole of it: see `isValidInteger` and `isValidFloatingPointNumber` of `@markuplint/shared`.
  * @param tokenEnum - The list of allowed token values for token-based types.
  * @returns `true` if the value is valid for the given type, `false` otherwise.
  */
@@ -140,10 +145,10 @@ export function checkAriaValue(type: string, value: string, tokenEnum: readonly 
 			return ['true', 'false', 'undefined'].includes(value);
 		}
 		case 'integer': {
-			return Number.parseInt(value).toString() === value;
+			return isValidInteger(value);
 		}
 		case 'number': {
-			return Number.parseFloat(value).toString() === value;
+			return isValidFloatingPointNumber(value);
 		}
 	}
 	// For skipping checking
