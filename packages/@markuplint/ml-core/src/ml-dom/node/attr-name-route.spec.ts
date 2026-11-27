@@ -38,6 +38,7 @@ async function jsx(source: string, options?: Options) {
 			tagNameCaseSensitive: true,
 			attrNameCaseSensitive: true,
 			attrNameRoute: options?.route ?? 'dom-api',
+			duplicateAttrPrecedence: jsxParser.parser.duplicateAttrPrecedence,
 			componentNameVariants: options?.componentNameVariants,
 		},
 	);
@@ -224,7 +225,12 @@ describe('the suggestion of the framework for a name', () => {
 			convertRuleset(),
 			[{ ...(spec as unknown as MLMLSpec), acceptedAttrNames: 'idl' }, {}],
 			{ ariaVersion: ARIA_RECOMMENDED_VERSION },
-			{ tagNameCaseSensitive: true, attrNameCaseSensitive: true, attrNameRoute: 'dom-api' },
+			{
+				tagNameCaseSensitive: true,
+				attrNameCaseSensitive: true,
+				attrNameRoute: 'dom-api',
+				duplicateAttrPrecedence: jsxParser.parser.duplicateAttrPrecedence,
+			},
 		);
 		const el = document.querySelector('div');
 		expect(el?.getAttributeToken('tabindex').map(attr => attr.candidate)).toStrictEqual([
@@ -344,6 +350,7 @@ describe('the fromAttr of a pretender of a component in JSX', () => {
 				tagNameCaseSensitive: true,
 				attrNameCaseSensitive: true,
 				attrNameRoute: 'dom-api',
+				duplicateAttrPrecedence: jsxParser.parser.duplicateAttrPrecedence,
 				pretenders: [
 					{
 						selector: 'Comp',
@@ -364,6 +371,10 @@ describe('the fromAttr of a pretender of a component in JSX', () => {
 	test('[ml-attr-name-route-025] reads the prop by the spelling of the pretender only', async () => {
 		expect(await labelOf('<Comp label="a" />')).toBe('a');
 		expect(await labelOf('<Comp Label="a" />')).toBeNull();
+	});
+
+	test('[ml-attr-name-route-039] reads the last of two props of one name, as the props object keeps it', async () => {
+		expect(await labelOf('<Comp label="a" label="b" />')).toBe('b');
 	});
 });
 
@@ -410,5 +421,80 @@ describe('the value of an attribute of a Vue template', () => {
 	test('[ml-attr-name-route-029] is the last of two plain spellings of a name', async () => {
 		const el = await vueDiv('<template><div id="a" ID="b"></div></template>');
 		expect(el?.getAttribute('id')).toBe('b');
+	});
+
+	test('[ml-attr-name-route-032] of a duplicatable name is the node of the static one, as its value is', async () => {
+		const el = await vueDiv('<template><div :class="b" class="a"></div></template>');
+		expect(el?.getAttributeNode('class')?.value).toBe('a');
+		expect(el?.attributes.getNamedItem('class')?.value).toBe('a');
+	});
+
+	test('[ml-attr-name-route-033] of a key written twice is the first, which the compiler keeps', async () => {
+		const staticFirst = await vueDiv('<template><div role="button" :role="r"></div></template>');
+		expect(staticFirst?.getAttribute('role')).toBe('button');
+		expect(staticFirst?.getAttributeNode('role')?.value).toBe('button');
+		expect(staticFirst?.attributes.getNamedItem('role')?.value).toBe('button');
+		const boundFirst = await vueDiv('<template><div :role="r" role="button"></div></template>');
+		expect(boundFirst?.getAttribute('role')).toBe('r');
+		expect(boundFirst?.getAttributeNode('role')).toBe(boundFirst?.getAttributeToken('role')[0]);
+	});
+
+	test('[ml-attr-name-route-034] of two spellings is the key set last, which keeps the place where it is first written', async () => {
+		const el = await vueDiv('<template><div id="a" ID="b" id="c"></div></template>');
+		expect(el?.getAttribute('id')).toBe('b');
+		expect(el?.getAttributeNode('id')?.nameNode?.raw).toBe('ID');
+	});
+});
+
+describe('the attribute node of a name that is written twice', () => {
+	/** The test document of the JSX parser, which tells what a literal value outputs. */
+	const jsxDiv = async (source: string) => {
+		const jsxParser = await import('@markuplint/jsx-parser');
+		const { createTestDocument } = await import('../../test/index.js');
+		return createTestDocument(source, { parser: jsxParser }).querySelector('div');
+	};
+
+	test('[ml-attr-name-route-035] is the first in the HTML syntax, as its value is', () => {
+		const el = html('<div role="button" role="link"></div>').querySelector('div');
+		expect(el?.getAttribute('role')).toBe('button');
+		expect(el?.getAttributeNode('role')?.value).toBe('button');
+		expect(el?.attributes.getNamedItem('role')?.value).toBe('button');
+		expect(el?.getAttributeToken('role').map(attr => attr.value)).toStrictEqual(['button', 'link']);
+	});
+
+	test('[ml-attr-name-route-036] is the last that code sets in JSX, as its value is', async () => {
+		const el = await jsxDiv('<div role="button" role="link" />');
+		const node = el?.getAttributeNode('role');
+		expect(node).toBe(el?.getAttributeToken('role')[1]);
+		expect(node?.value).toBe('link');
+		expect(el?.getAttribute('role')).toBe('link');
+		expect(el?.attributes.getNamedItem('role')).toBe(node);
+		const dynamic = await jsxDiv('<div role="button" role={props.role} />');
+		expect(dynamic?.getAttributeNode('role')).toBe(dynamic?.getAttributeToken('role')[1]);
+		expect(dynamic?.getAttributeNode('role')?.isDynamicValue).toBe(true);
+	});
+
+	test('[ml-attr-name-route-037] is none when the key that code sets last is one that the framework does not output', async () => {
+		const absentLast = await jsxDiv('<div role="button" role={undefined} />');
+		expect(absentLast?.getAttribute('role')).toBeNull();
+		expect(absentLast?.getAttributeNode('role')).toBeNull();
+		expect((await jsxDiv('<div hidden hidden={false} />'))?.getAttribute('hidden')).toBeNull();
+		expect((await jsxDiv('<div role={undefined} role="button" />'))?.getAttribute('role')).toBe('button');
+	});
+
+	test('[ml-attr-name-route-038] of two spellings in JSX is the key set last, which keeps the place where it is first written', async () => {
+		const el = await jsxDiv('<div id="a" ID="b" id="c" />');
+		expect(el?.getAttribute('id')).toBe('b');
+		expect(el?.getAttributeNode('id')?.nameNode?.raw).toBe('ID');
+	});
+
+	test('[ml-attr-name-route-040] is the static one when a key that code sets is not output, in Svelte', async () => {
+		const svelteParser = await import('@markuplint/svelte-parser');
+		const { createTestDocument } = await import('../../test/index.js');
+		const el = createTestDocument('<div id="a" ID={undefined}></div>', { parser: svelteParser }).querySelector(
+			'div',
+		);
+		expect(el?.getAttribute('id')).toBe('a');
+		expect(el?.getAttributeNode('id')?.value).toBe('a');
 	});
 });

@@ -57,7 +57,7 @@ describe('an attribute that the framework does not output', () => {
 	test('is not an id, and an id of code that is not a literal is', async () => {
 		expect((await jsx('<div id={null}></div>', 'div')).el.id).toBe('');
 		expect((await jsx('<div id={"a"}></div>', 'div')).el.id).toBe('a');
-		expect((await jsx('<div id={"a"} id={null}></div>', 'div')).el.id).toBe('a');
+		expect((await jsx('<div id={"a"} id={null}></div>', 'div')).el.id).toBe('');
 	});
 
 	test('is not a class', async () => {
@@ -99,9 +99,9 @@ describe('an attribute that the framework does not output', () => {
 		expect(document.querySelectorAll('a[title=""]')).toHaveLength(0);
 	});
 
-	test('is one of the two that has the name when the same name is written twice', async () => {
+	test('takes the place of the one written before it under the same name', async () => {
 		const { el } = await jsx('<div title="a" title={null}></div>', 'div');
-		expect(el.getAttribute('title')).toBe('a');
+		expect(el.getAttribute('title')).toBeNull();
 		expect(el.getAttributeToken('title')).toHaveLength(1);
 	});
 

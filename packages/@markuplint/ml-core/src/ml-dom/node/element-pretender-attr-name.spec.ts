@@ -20,13 +20,18 @@ const pretendersOf = (fromAttr: string): readonly Pretender[] => [
 	},
 ];
 
-function labelOf(sourceCode: string, componentNameVariants: boolean, fromAttr = 'myLabel') {
+function labelOf(sourceCode: string, componentNameVariants: boolean, fromAttr = 'myLabel', setByCode = false) {
 	const document = new MLDocument(
 		parser.parse(sourceCode),
 		convertRuleset(),
 		[spec as unknown as MLMLSpec, {}],
 		{ ariaVersion: ARIA_RECOMMENDED_VERSION },
-		{ componentNameVariants, pretenders: pretendersOf(fromAttr) },
+		{
+			componentNameVariants,
+			pretenders: pretendersOf(fromAttr),
+			// The attributes of a Vue template reach a component through code, as `@markuplint/vue-parser` says
+			...(setByCode ? { attrNameRoute: 'dom-api' as const, duplicateAttrPrecedence: 'first' as const } : {}),
+		},
 	);
 	const el = document.querySelector('x-comp');
 	return (el?.pretenderContext as { as: { getAttribute(name: string): string | null } } | null)?.as.getAttribute(
@@ -52,6 +57,12 @@ describe('a prop of a pretender and the attribute at the usage site of a compone
 		['mylabel', null],
 	])('the attribute %s gives the prop my-label the value %j', (name, label) => {
 		expect(labelOf(`<x-comp ${name}="Hi"></x-comp>`, true, 'my-label')).toBe(label);
+	});
+
+	test('of two spellings of the prop, the later one is the value, and of one spelling written twice, the first', () => {
+		expect(labelOf('<x-comp my-label="a" myLabel="b"></x-comp>', true, 'myLabel', true)).toBe('b');
+		expect(labelOf('<x-comp myLabel="a" my-label="b"></x-comp>', true, 'myLabel', true)).toBe('b');
+		expect(labelOf('<x-comp my-label="a" my-label="b"></x-comp>', true, 'myLabel', true)).toBe('a');
 	});
 
 	test('another name is not', () => {

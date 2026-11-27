@@ -69,7 +69,7 @@ import { MLAttr } from './attr.js';
 import { MLDocumentFragment } from './document-fragment.js';
 import { MLDomTokenList } from './dom-token-list.js';
 import { MLElementCloseTag } from './element-close-tag.js';
-import { toNamedNodeMap } from './named-node-map.js';
+import { findDecidingAttr, toNamedNodeMap } from './named-node-map.js';
 import { toHTMLCollection, toNodeList } from './node-list.js';
 import { MLParentNode } from './parent-node.js';
 import { MLShadowRoot } from './shadow-root.js';
@@ -4036,24 +4036,8 @@ export class MLElement<T extends RuleConfigValue, O extends PlainData = undefine
 	 * @see https://dom.spec.whatwg.org/#ref-for-dom-element-getattribute%E2%91%A0
 	 */
 	getAttribute(attrName: string) {
-		let first: MLAttr<T, O> | null = null;
-		let lastSetByCode: MLAttr<T, O> | null = null;
-		for (const attr of this.attributes) {
-			// An attribute that the framework does not output (`disabled={false}`) is not an attribute of the element
-			if (attr.isAbsent || !attr.isNamedBy(attrName)) {
-				continue;
-			}
-			first ??= attr;
-			// A directive, and an attribute that may be written twice (`class` and `:class`), are not
-			// two spellings of one name: the first is the one that is asked for
-			if (attr.isSetThroughDOMAPI && !attr.isDirective && !attr.isDuplicatable) {
-				lastSetByCode = attr;
-			}
-		}
-		// Of two attributes of one name, the HTML parser keeps the first and drops the second, while code
-		// that sets them one after another (`setAttribute`) lets the second overwrite the first.
-		// @see https://html.spec.whatwg.org/#parse-error-duplicate-attribute
-		return (lastSetByCode ?? first)?.value ?? null;
+		// The value of what `getAttributeNode` returns: of two attributes of one name, see `findDecidingAttr`
+		return findDecidingAttr(this.attributes, attrName)?.value ?? null;
 	}
 
 	/**
@@ -4076,11 +4060,15 @@ export class MLElement<T extends RuleConfigValue, O extends PlainData = undefine
 	}
 
 	/**
+	 * The attribute whose value `getAttribute` returns: of two attributes of one name, the first in the HTML
+	 * syntax and in Vue, the last in JSX and MDX (`MLDocument#duplicateAttrPrecedence`), and none when the one
+	 * that code sets last is not output (`role={undefined}`). `getAttributeToken` lists all of them.
+	 *
 	 * @implements DOM API: `Element`
 	 * @see https://dom.spec.whatwg.org/#dom-element-getattributenode
 	 */
 	getAttributeNode(qualifiedName: string): MLAttr<T, O> | null {
-		return this.getAttributeToken(qualifiedName)[0] ?? null;
+		return findDecidingAttr(this.getAttributeTokens(), qualifiedName);
 	}
 
 	/**
@@ -4107,17 +4095,14 @@ export class MLElement<T extends RuleConfigValue, O extends PlainData = undefine
 	 * @returns The attribute value, or null if the attribute is not found
 	 */
 	getAttributePretended(attrName: string) {
-		for (const attr of this.#attributes) {
-			if (!attr.isAbsent && attr.isNamedBy(attrName)) {
-				return attr.value;
-			}
-		}
-		return null;
+		// Of two attributes of one name, the one that `getAttribute` reads (see `getAttributeNode`)
+		return findDecidingAttr(this.#attributes, attrName)?.value ?? null;
 	}
 
 	/**
-	 * Returns all attribute tokens matching the given name, including duplicates.
-	 * Unlike `getAttribute`, this returns the full `MLAttr` token objects. An attribute that the
+	 * Returns all attribute tokens matching the given name, including duplicates, in the order written.
+	 * The one of them that the element has is what `getAttributeNode` returns, which is not always the first
+	 * (code that sets two of one name keeps the last). An attribute that the
 	 * framework does not output (`MLAttr#isAbsent`) is not one of them, as it is not for `getAttribute`.
 	 *
 	 * @implements `@markuplint/ml-core` API: `MLElement`
@@ -4797,12 +4782,14 @@ export class MLElement<T extends RuleConfigValue, O extends PlainData = undefine
 			} else if (value != null && 'fromAttr' in value) {
 				// The attribute of the usage site that the prop is. Vue gives a prop the attribute by the camelCase
 				// of its name (`my-label` and `myLabel` are the prop `myLabel`, and `mylabel` is another),
-				// and the prop declared as `'my-label'` is the same one, so both sides are read so. Elsewhere
-				// the attribute is read as the DOM or the framework reads it (`isNamedBy`).
+				// and the prop declared as `'my-label'` is the same one, so both sides are read so. Of two of them,
+				// the one that the element has is what `getAttributePretended` reads (`findDecidingAttr`).
 				const { fromAttr } = value;
 				const isVue = this.ownerMLDocument.componentNameVariants;
-				const origin = this.#attributes.find(attr =>
-					isVue ? vuePropKey(attr.name) === vuePropKey(fromAttr) : attr.isNamedBy(fromAttr),
+				const origin = findDecidingAttr(
+					this.#attributes,
+					fromAttr,
+					isVue ? attr => vuePropKey(attr.name) === vuePropKey(fromAttr) : undefined,
 				);
 				if (!origin && value.omitIfMissing) {
 					return [];

@@ -272,6 +272,7 @@ describe('JSX: the parser declares how a literal is rendered when it has no spec
 			tagNameCaseSensitive: base.tagNameCaseSensitive,
 			attrNameCaseSensitive: base.attrNameCaseSensitive,
 			attrNameRoute: base.attrNameRoute,
+			duplicateAttrPrecedence: base.duplicateAttrPrecedence,
 			isComponentName: name => base.isComponentName?.(name) ?? false,
 			literalValues,
 		};
