@@ -310,6 +310,76 @@ describe('main must be a hierarchically correct main element', () => {
 		expect(violations).toStrictEqual([]);
 	});
 
+	test('[no-disallowed-ancestor-054] JSX: main in a form whose aria-labelledby may refer to an element of unknown id is not reported', async () => {
+		const jsx = { parser: { '.*': '@markuplint/jsx-parser' } };
+		const { violations } = await mlRuleTest(
+			rule,
+			'<div><span id={id}>Search</span><form aria-labelledby={id}><main>text</main></form></div>',
+			jsx,
+		);
+		expect(violations).toStrictEqual([]);
+	});
+
+	test('[no-disallowed-ancestor-056] JSX: main in a section whose name is not known is still reported, as a section is never permitted', async () => {
+		const jsx = { parser: { '.*': '@markuplint/jsx-parser' } };
+		const { violations } = await mlRuleTest(rule, '<section aria-label={x}><main>text</main></section>', jsx);
+		expect(violations).toStrictEqual([
+			{
+				severity: 'error',
+				line: 1,
+				col: 25,
+				message: 'The "main" element must not appear as a descendant of the "section" element',
+				raw: '<main>',
+			},
+		]);
+	});
+
+	test('[no-disallowed-ancestor-058] JSX: main in a form that a static aria-label names is reported, whatever the dynamic title is', async () => {
+		const jsx = { parser: { '.*': '@markuplint/jsx-parser' } };
+		const { violations } = await mlRuleTest(
+			rule,
+			'<form aria-label="Search" title={x}><main>text</main></form>',
+			jsx,
+		);
+		expect(violations).toStrictEqual([
+			{
+				severity: 'error',
+				line: 1,
+				col: 37,
+				message: 'The "main" element must not appear as a descendant of the "form" element',
+				raw: '<main>',
+			},
+		]);
+	});
+
+	test('[no-disallowed-ancestor-057] JSX: main in a form whose aria-labelledby refers to a named element of known id is reported', async () => {
+		const jsx = { parser: { '.*': '@markuplint/jsx-parser' } };
+		const { violations } = await mlRuleTest(
+			rule,
+			'<div><span id="a">Search</span><form aria-labelledby="a"><main>text</main></form></div>',
+			jsx,
+		);
+		expect(violations).toStrictEqual([
+			{
+				severity: 'error',
+				line: 1,
+				col: 58,
+				message: 'The "main" element must not appear as a descendant of the "form" element',
+				raw: '<main>',
+			},
+		]);
+	});
+
+	test('[no-disallowed-ancestor-055] JSX: main in a form whose aria-labelledby refers to no element while every id is known is not reported', async () => {
+		const jsx = { parser: { '.*': '@markuplint/jsx-parser' } };
+		const { violations } = await mlRuleTest(
+			rule,
+			'<div><span id="a">Search</span><form aria-labelledby="b"><main>text</main></form></div>',
+			jsx,
+		);
+		expect(violations).toStrictEqual([]);
+	});
+
 	describe('pretenders and fragments', () => {
 		const jsx = { parser: { '.*': '@markuplint/jsx-parser' } };
 
@@ -377,32 +447,16 @@ describe('main must be a hierarchically correct main element', () => {
 			]);
 		});
 
-		// The accessible name of a form decides, and a static check reads a dynamic value as a name.
-		// Known limitation: the name may be empty at runtime, which the rule does not see.
-		test('[no-disallowed-ancestor-038] main in a form with a dynamic aria-label is reported', async () => {
+		// The accessible name of a form decides. A dynamic value may be empty at runtime, so whether the
+		// form has a name is not known, and the rule does not decide it.
+		test('[no-disallowed-ancestor-038] main in a form with a dynamic aria-label is not reported', async () => {
 			const { violations } = await mlRuleTest(rule, '<form aria-label={x}><main>text</main></form>', jsx);
-			expect(violations).toStrictEqual([
-				{
-					severity: 'error',
-					line: 1,
-					col: 22,
-					message: 'The "main" element must not appear as a descendant of the "form" element',
-					raw: '<main>',
-				},
-			]);
+			expect(violations).toStrictEqual([]);
 		});
 
-		test('[no-disallowed-ancestor-039] main in a form with a dynamic title is reported', async () => {
+		test('[no-disallowed-ancestor-039] main in a form with a dynamic title is not reported', async () => {
 			const { violations } = await mlRuleTest(rule, '<form title={x}><main>text</main></form>', jsx);
-			expect(violations).toStrictEqual([
-				{
-					severity: 'error',
-					line: 1,
-					col: 17,
-					message: 'The "main" element must not appear as a descendant of the "form" element',
-					raw: '<main>',
-				},
-			]);
+			expect(violations).toStrictEqual([]);
 		});
 	});
 

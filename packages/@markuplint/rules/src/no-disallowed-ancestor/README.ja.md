@@ -15,7 +15,7 @@ description: 要素が、コンテンツモデルで禁止されている祖先�
 
 [HTML Living Standard: main要素](https://momdo.github.io/html/grouping-content.html#the-main-element)より引用
 
-コンポーネントはカスタム要素として扱い、[`pretenders`](/docs/guides/beyond-html#pretenders)が置き換えるコンポーネントは、置き換え先の要素として判定します。`form`のアクセシブルな名前は、推奨のARIAバージョンで計算します。`aria-label`や`title`の動的な値(式やテンプレートタグ)は名前とみなすため、値が実行時に空になりうる場合でも、そのような`form`の中の`main`要素は報告されます。
+コンポーネントはカスタム要素として扱い、[`pretenders`](/docs/guides/beyond-html#pretenders)が置き換えるコンポーネントは、置き換え先の要素として判定します。`form`のアクセシブルな名前は、推奨のARIAバージョンで計算します。名前が描画されるまで分からない場合(`aria-label`や`title`の動的な値(式やテンプレートタグ)、またはマークアップからは分からない要素を参照しうる`aria-labelledby`(`aria-labelledby={id}`、または`<p id={id}>`のあるツリーで、どの要素も参照しないトークン))、その`form`は実行時に名前をもつかもしれないしもたないかもしれないため、その中の`main`要素は報告されません。
 
 `template`要素の内容は別のドキュメントフラグメントに属し、その中の要素は祖先を持ちません。そのため、検査は`template`要素を越えません。テンプレートエンジンやフレームワークが描画しない`template`要素(テンプレートエンジンのディレクティブを持つもの、またはVueの`<template v-if>`・`v-else-if`・`v-else`・`v-for`・`v-slot`)はHTMLの`template`要素ではないため、検査はそれを通り抜けます。ReactとVueでは、描画されない以外の`template`要素(ディレクティブのないもの、またはVueの`v-show`を持つもの)は子要素が文書の中にある通常の要素なので、検査は他の要素と同じようにそれを通ります。
 

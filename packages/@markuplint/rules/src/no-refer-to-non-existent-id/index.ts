@@ -26,8 +26,10 @@ import meta from './meta.js';
  * looked for: the file is taken to be the whole document.
  *
  * Whether the tree may hold such an element is `hasElementOfUnknownId` of `@markuplint/ml-spec`, which
- * `isValidLandmarkRole` of the same package (a landmark that refers to it has a name) and
- * `accnameMayComeFromUnknownContent` of `../helpers.ts` read as well, and which asks
+ * `labelledbyMayReferToUnknownId` of the same package reads as well (an element whose `aria-labelledby`
+ * refers to it has a name: `isValidLandmarkRole`, `MLElement#mayHaveAccessibleName` of
+ * `@markuplint/ml-core`, `:aria(has name)` of `@markuplint/selector` and `accnameMayComeFromUnknownContent`
+ * of `../helpers.ts` ask it), and which asks
  * `MLElement#treeMayHoldUnknownId` of `@markuplint/ml-core` (what counts is in the module comment of its
  * `helper/unknown-id.ts`): a change to it belongs to all of them.
  *

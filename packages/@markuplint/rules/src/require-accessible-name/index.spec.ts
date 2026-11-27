@@ -1044,6 +1044,22 @@ describe('an id that is not known until it is rendered', () => {
 		]);
 	});
 
+	test('[require-accessible-name-150] an img or an input whose aria-labelledby is not known may refer to the name', async () => {
+		const source = lines(
+			'<img src="a.svg" aria-labelledby={id} />',
+			'<input type="text" aria-labelledby={id} />',
+			'<p id={id}>Label</p>',
+		);
+		expect((await mlRuleTest(rule, source, { parser })).violations).toStrictEqual([]);
+	});
+
+	test('[require-accessible-name-151] an img whose aria-labelledby refers to no element while every id is known is reported', async () => {
+		const source = lines('<img src="a.svg" aria-labelledby="t" />', '<p id="a">Label</p>');
+		expect((await mlRuleTest(rule, source, { parser })).violations).toStrictEqual([
+			requireName('<img src="a.svg" aria-labelledby="t" />', 2),
+		]);
+	});
+
 	test('[require-accessible-name-066] a reference to an element that is known and has no name is reported next to an id that is not known', async () => {
 		const source = lines(
 			'<h2 id={x}>Q</h2>',
