@@ -1,4 +1,4 @@
-import type { Defs } from './types.js';
+import type { CustomSyntaxCheck, Defs } from './types.js';
 
 import { splitOnAsciiWhitespace } from '@markuplint/shared';
 
@@ -32,6 +32,7 @@ import { hasTabOrNewlineAndLessThan, isNavigableTargetName } from './whatwg/is-n
 import { checkLinkType } from './whatwg/check-link-type.js';
 import { isEmail } from './whatwg/check-email.js';
 import { isSimpleColor } from './whatwg/check-simple-color.js';
+import { findSourceSizeAuto, unescapeSourceSizeAuto } from './whatwg/source-size-list.js';
 
 // Hoist the URL Living Standard checker once so type entries that wrap it
 // (e.g. `BaseURL`, which adds the `<base>`-specific data:/javascript: filter
@@ -54,6 +55,103 @@ import { isSimpleColor } from './whatwg/check-simple-color.js';
 // All of these layer their per-attribute constraint on top of the shared
 // `checkURLOnce` so URL LS validation-error coverage stays uniform.
 const checkURLOnce = checkURL();
+
+/**
+ * The checker of a `<source-size-list>` (HTML LS § sizes attributes), shared
+ * by `SourceSizeList` and `SourceSizeListWithoutAuto`.
+ *
+ * @param value - The attribute value
+ * @returns The result of the check
+ * @see https://html.spec.whatwg.org/multipage/images.html#sizes-attributes
+ */
+const checkSourceSizeList: CustomSyntaxCheck = value => {
+	// css-tree does not decode the escapes of an ident: an escaped `auto` is
+	// written literally for the grammar match, at the same offsets.
+	const syntaxValue = unescapeSourceSizeAuto(value);
+	const result = cssSyntaxMatch(syntaxValue, {
+		ref: 'https://html.spec.whatwg.org/multipage/images.html#sizes-attributes',
+		syntax: {
+			apply: '<source-size-list>',
+			def: {
+				'source-size-list': 'auto | [ auto , ]? [ <source-size># , ]? <source-size-value>',
+				'source-size': '<media-condition> <source-size-value>',
+				/**
+				 * > Percentages are not allowed in a `<source-size-value>`,
+				 * > to avoid confusion about what it would be relative to.
+				 * > The 'vw' unit can be used for sizes relative to the viewport width.
+				 *
+				 * `<length>` doesn't allow percentages.
+				 * @see https://csstree.github.io/docs/syntax/#Type:length
+				 */
+				'source-size-value': '<length>',
+			},
+		},
+	});
+	if (!result.matched) {
+		return syntaxValue === value
+			? result
+			: { ...result, raw: value.slice(result.offset, result.offset + result.length) };
+	}
+	// HTML LS imposes a non-negative additional constraint on
+	// <source-size-value> ("A <source-size-value> must not be
+	// negative") beyond what css-tree's <length> grammar checks. A
+	// <source-size-value> always appears either at the start of the
+	// list, immediately after the `,` separator, or immediately after
+	// the `)` that closes a <media-condition>; a `-` followed by a
+	// digit at any of those boundaries is a negative length token.
+	//
+	// Regex breakdown: boundary (start-of-string | `,` | `)`)
+	// → optional whitespace → literal `-` → optional whitespace
+	// → digit. Note this only catches negative numbers that *start*
+	// a <source-size-value>; positive scientific notation like
+	// `1e-5px` is unaffected because the `-` is preceded by `e`.
+	const negativeAtSourceSizeBoundary = /(?:^|[,)])\s*-\s*\d/u;
+	if (negativeAtSourceSizeBoundary.test(value)) {
+		return unmatched(value, 'out-of-range', {
+			expects: [{ type: 'format', value: 'non-negative <length>' }],
+		});
+	}
+	// Each top-level `(<any-value>?)` group inside the sizes list is a
+	// `<media-condition>` per HTML LS. Media Queries Level 5 §3 forbids
+	// `<general-enclosed>` in author stylesheets, but css-tree accepts
+	// it grammatically (that's the point of the fallback — future syntax
+	// must parse in older UAs). Extract each balanced-parens group and
+	// route it through the media-query walker so malformed feature forms
+	// like `(min-width:)` (empty value) and `(123)` (non-ident content)
+	// surface as syntax errors rather than silently accepted GE matches.
+	let depth = 0;
+	let groupStart = -1;
+	for (let i = 0; i < value.length; i++) {
+		const c = value[i];
+		if (c === '(') {
+			if (depth === 0) {
+				// A `(` preceded by an identifier / digit character is a CSS
+				// function call (`clamp(...)`, `min(...)`, `calc(...)`, `env(...)`)
+				// inside a `<source-size-value>`, not a `<media-condition>`.
+				// Skip: its contents are function arguments, not a media query.
+				const prev = i > 0 ? (value[i - 1] ?? '') : '';
+				const isFunctionCall = /[\w-]/u.test(prev);
+				groupStart = isFunctionCall ? -1 : i;
+			}
+			depth++;
+		} else if (c === ')') {
+			depth--;
+			if (depth === 0 && groupStart >= 0) {
+				const groupText = value.slice(groupStart, i + 1);
+				const hit = findGeneralEnclosed(groupText);
+				if (hit) {
+					return new Token(hit.raw, groupStart + hit.offset, value).unmatched({
+						reason: 'syntax-error',
+						expects: [{ type: 'format', value: 'media condition' }],
+						partName: `unknown or malformed media condition ${JSON.stringify(hit.raw)} (Media Queries Level 5 §3 forbids <general-enclosed> in author stylesheets)`,
+					});
+				}
+				groupStart = -1;
+			}
+		}
+	}
+	return matched();
+};
 
 export const defs: Defs = {
 	Any: {
@@ -915,89 +1013,60 @@ export const defs: Defs = {
 				value: '<source-size-list>',
 			},
 		],
+		/**
+		 * The grammar puts `auto` only at the start of the list, so the
+		 * position of `auto` is checked here. Whitespace and comments around
+		 * it are allowed by the grammar, which is what a `source` element's
+		 * `sizes` takes. The `img` element's own `sizes` has a stricter,
+		 * element-specific requirement that a value-only type cannot express:
+		 *
+		 * > So whenever auto is specified, whether on the img element or on a
+		 * > previous sibling source element, the img element's sizes attribute
+		 * > value has to be exactly "auto" or start with "auto," (ASCII
+		 * > case-insensitive), with no comments or whitespace before or
+		 * > directly after auto.
+		 *
+		 * The `sizes-auto-requires-lazy-loading` rule of `@markuplint/rules`
+		 * checks it, together with the other conditions under which `auto`
+		 * may be specified.
+		 *
+		 * @see https://html.spec.whatwg.org/multipage/images.html#sizes-attributes
+		 */
 		is(value) {
-			const result = cssSyntaxMatch(value, {
-				ref: 'https://html.spec.whatwg.org/multipage/images.html#sizes-attributes',
-				syntax: {
-					apply: '<source-size-list>',
-					def: {
-						'source-size-list': '[ <source-size># , ]? <source-size-value>',
-						'source-size': '<media-condition> <source-size-value> | auto',
-						/**
-						 * > Percentages are not allowed in a `<source-size-value>`,
-						 * > to avoid confusion about what it would be relative to.
-						 * > The 'vw' unit can be used for sizes relative to the viewport width.
-						 *
-						 * `<length>` doesn't allow percentages.
-						 * @see https://csstree.github.io/docs/syntax/#Type:length
-						 */
-						'source-size-value': '<length> | auto',
-					},
-				},
-			});
-			if (!result.matched) {
-				return result;
-			}
-			// HTML LS imposes a non-negative additional constraint on
-			// <source-size-value> ("a <length> that does not contain
-			// percentages [...] and that is greater than or equal to zero")
-			// beyond what css-tree's <length> grammar checks. A
-			// <source-size-value> always appears either at the start of the
-			// list, immediately after the `,` separator, or immediately after
-			// the `)` that closes a <media-condition>; a `-` followed by a
-			// digit at any of those boundaries is a negative length token.
-			//
-			// Regex breakdown: boundary (start-of-string | `,` | `)`)
-			// → optional whitespace → literal `-` → optional whitespace
-			// → digit. Note this only catches negative numbers that *start*
-			// a <source-size-value>; positive scientific notation like
-			// `1e-5px` is unaffected because the `-` is preceded by `e`.
-			const negativeAtSourceSizeBoundary = /(?:^|[,)])\s*-\s*\d/u;
-			if (negativeAtSourceSizeBoundary.test(value)) {
-				return unmatched(value, 'out-of-range', {
-					expects: [{ type: 'format', value: 'non-negative <length>' }],
+			return checkSourceSizeList(value);
+		},
+	},
+
+	SourceSizeListWithoutAuto: {
+		ref: 'https://html.spec.whatwg.org/multipage/images.html#sizes-attributes',
+		expects: [
+			{
+				type: 'syntax',
+				value: '<source-size-list>',
+			},
+		],
+		/**
+		 * A sizes attribute of an element other than `source` and `img`
+		 * (`link[imagesizes]`), where `auto` is not allowed:
+		 *
+		 * > The auto keyword may be specified in the sizes attribute of source
+		 * > elements and sizes attribute of img elements, if the following
+		 * > conditions are met. Otherwise, auto must not be specified.
+		 *
+		 * `auto` is read as the grammar reads it (`findSourceSizeAuto`); `auto`
+		 * after the first entry is a syntax error of the list itself.
+		 *
+		 * @see https://html.spec.whatwg.org/multipage/images.html#sizes-attributes
+		 */
+		is(value) {
+			const auto = findSourceSizeAuto(value);
+			if (auto) {
+				return new Token(value.slice(auto.start, auto.end), auto.start, value).unmatched({
+					reason: 'unexpected-token',
+					expects: [{ type: 'format', value: 'source size list without "auto"' }],
 				});
 			}
-			// Each top-level `(<any-value>?)` group inside the sizes list is a
-			// `<media-condition>` per HTML LS. Media Queries Level 5 §3 forbids
-			// `<general-enclosed>` in author stylesheets, but css-tree accepts
-			// it grammatically (that's the point of the fallback — future syntax
-			// must parse in older UAs). Extract each balanced-parens group and
-			// route it through the media-query walker so malformed feature forms
-			// like `(min-width:)` (empty value) and `(123)` (non-ident content)
-			// surface as syntax errors rather than silently accepted GE matches.
-			let depth = 0;
-			let groupStart = -1;
-			for (let i = 0; i < value.length; i++) {
-				const c = value[i];
-				if (c === '(') {
-					if (depth === 0) {
-						// A `(` preceded by an identifier / digit character is a CSS
-						// function call (`clamp(...)`, `min(...)`, `calc(...)`, `env(...)`)
-						// inside a `<source-size-value>`, not a `<media-condition>`.
-						// Skip: its contents are function arguments, not a media query.
-						const prev = i > 0 ? (value[i - 1] ?? '') : '';
-						const isFunctionCall = /[\w-]/u.test(prev);
-						groupStart = isFunctionCall ? -1 : i;
-					}
-					depth++;
-				} else if (c === ')') {
-					depth--;
-					if (depth === 0 && groupStart >= 0) {
-						const groupText = value.slice(groupStart, i + 1);
-						const hit = findGeneralEnclosed(groupText);
-						if (hit) {
-							return new Token(hit.raw, groupStart + hit.offset, value).unmatched({
-								reason: 'syntax-error',
-								expects: [{ type: 'format', value: 'media condition' }],
-								partName: `unknown or malformed media condition ${JSON.stringify(hit.raw)} (Media Queries Level 5 §3 forbids <general-enclosed> in author stylesheets)`,
-							});
-						}
-						groupStart = -1;
-					}
-				}
-			}
-			return matched();
+			return checkSourceSizeList(value);
 		},
 	},
 

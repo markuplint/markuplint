@@ -4,7 +4,7 @@
 		"key-times": "https://svgwg.org/specs/animations/#KeyTimesAttribute"
 	},
 	"types": {
-		"source-size-list": "[ <source-size># , ]? <source-size-value>",
+		"source-size-list": "auto | [ auto , ]? [ <source-size># , ]? <source-size-value>",
 		"source-size": "<media-condition> <source-size-value>",
 		"source-size-value": "<length>",
 		"key-times": "<number> [; <number>]* [;]?"

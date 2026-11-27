@@ -1290,6 +1290,7 @@ export type ExtendedType =
   | "SerializedPermissionsPolicy"
   | "SimpleColor"
   | "SourceSizeList"
+  | "SourceSizeListWithoutAuto"
   | "Srcset"
   | "TabIndex"
   | "TimeString"

@@ -59,6 +59,7 @@
 | `ItemProp`                         | `itemprop`属性（リストとして）                         | [WHATWG](https://momdo.github.io/html/microdata.html#names:-the-itemprop-attribute)                      | ✅       |
 | `Srcset`                           | `img[srcset]`ほか                                      | [WHATWG](https://momdo.github.io/html/images.html#srcset-attributes)                                     | ✅       |
 | `SourceSizeList`                   | `img[sizes]`ほか                                       | [WHATWG](https://momdo.github.io/html/images.html#sizes-attributes)                                      | ✅       |
+| `SourceSizeListWithoutAuto`        | `link[imagesizes]`                                     | [WHATWG](https://momdo.github.io/html/images.html#sizes-attributes)                                      | ✅       |
 | `IconSize`                         | `link[sizes]`（リストとして）                          | [WHATWG](https://momdo.github.io/html/semantics.html#attr-link-sizes)                                    | ✅       |
 | `AutoComplete`                     | `input[autocomplete]`ほか                              | [WHATWG](https://momdo.github.io/html/form-control-infrastructure.html#attr-fe-autocomplete)             | ✅       |
 | `Accept`                           | `input[accept]`                                        | [WHATWG](https://momdo.github.io/html/input.html#attr-input-accept)                                      | ✅       |
