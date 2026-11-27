@@ -67,7 +67,7 @@ export function getNamespace(
  * @param parentEncoding - The `encoding` attribute of the parent element, which decides whether an `annotation-xml`
  *   is an HTML integration point (absent: it is not)
  * @param integrationPoints - Which integration points the language follows: those of the HTML parser, or only
- *   `foreignObject`, as the DOM builders of React and Svelte (see `IntegrationPoints`)
+ *   `foreignObject`, as the DOM builder of React (see `IntegrationPoints`)
  * @returns The resolved namespace URI for the element
  */
 export function getChildNamespace(

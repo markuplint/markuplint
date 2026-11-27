@@ -765,10 +765,11 @@ export interface MLParser {
  *
  * - `"html"`: The integration points of the HTML parser: `foreignObject`, `desc` and `title` of SVG, the MathML text
  *   integration points (`mi`, `mo`, `mn`, `ms`, `mtext`) and an `annotation-xml` whose `encoding` is HTML. The HTML
- *   syntax, Astro (whose output is an HTML string), and Vue, whose compiler decides the namespace of an element as the
- *   HTML parser does.
- * - `"foreign-object"`: `foreignObject` only. React and Svelte make an element in the namespace of its parent, and an
- *   element in `foreignObject` in the HTML namespace.
+ *   syntax, Astro (whose output is an HTML string), Svelte (whose compiler hands the static markup of a template to
+ *   the HTML parser as an HTML string), and Vue, whose compiler decides the namespace of an element as the HTML
+ *   parser does.
+ * - `"foreign-object"`: `foreignObject` only. React makes an element in the namespace of its parent, and an element
+ *   in `foreignObject` in the HTML namespace.
  *
  * @see https://html.spec.whatwg.org/multipage/parsing.html#tree-construction-dispatcher
  * @see https://github.com/vuejs/core/blob/main/packages/compiler-dom/src/parserOptions.ts#parserOptions
