@@ -148,9 +148,9 @@ export const benchmarkConfig: Config = {
 		'no-prohibited-naming': true,
 		'element-supports-aria-prop': true,
 		'role-supports-aria-prop': true,
-		// ARIA in HTML §6: native HTML attributes MUST take precedence over a contradicting ARIA
-		// equivalent — a real conformance violation, and no-contradictory-aria-prop already
-		// defaults to 'error' for it. Merely redundant (same-value) aria-* is a should-level
+		// ARIA in HTML §4.2: an ARIA value that contradicts the native attribute of the same
+		// element (e.g. aria-required="false" beside required) MUST NOT be used — a real
+		// conformance violation, and no-contradictory-aria-prop already defaults to 'error' for it. Merely redundant (same-value) aria-* is a should-level
 		// style preference, not something nu-validator flags, so no-redundant-aria-prop
 		// (warning by default) is intentionally not enabled here.
 		'no-contradictory-aria-prop': true,

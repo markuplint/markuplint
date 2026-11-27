@@ -121,3 +121,6 @@
 {"line":125,"col":3,"raw":"<dialog>","categories":["#flow"]}
 {"line":126,"col":3,"raw":"<div role=\"dialog\">","categories":["#flow","#palpable"]}
 {"line":127,"col":3,"raw":"<div role=\"alert\">","categories":["#flow","#palpable"]}
+{"line":128,"col":3,"raw":"<input aria-label=\"a\" aria-required=\"true\" />","categories":["#flow","#interactive","#palpable","#phrasing"]}
+{"line":129,"col":3,"raw":"<input aria-label=\"b\" aria-readonly=\"true\" />","categories":["#flow","#interactive","#palpable","#phrasing"]}
+{"line":130,"col":3,"raw":"<input aria-checked=\"true\" aria-label=\"c\" type=\"checkbox\" />","categories":["#flow","#interactive","#palpable","#phrasing"]}
