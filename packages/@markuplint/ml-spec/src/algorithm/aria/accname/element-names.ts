@@ -2,6 +2,8 @@
 
 import type { AccnameComputeFn, AccnameElement, AccnameResolver, AccnameResult } from './types.js';
 
+import { hasText } from '@markuplint/shared';
+
 import {
 	DEFAULT_IMAGE_LABEL,
 	DEFAULT_RESET_LABEL,
@@ -109,12 +111,12 @@ function handleLabelableWithTitle(
 	}
 
 	const title = el.getAttribute('title');
-	if (title?.trim()) {
+	if (title != null && hasText(title)) {
 		return makeResult(title, 'title');
 	}
 
 	const placeholder = el.getAttribute('placeholder');
-	if (placeholder?.trim()) {
+	if (placeholder != null && hasText(placeholder)) {
 		return makeResult(placeholder, 'placeholder');
 	}
 
@@ -178,12 +180,12 @@ function handleInputButton(
 	}
 
 	const value = el.getAttribute('value');
-	if (value?.trim()) {
+	if (value != null && hasText(value)) {
 		return makeResult(value, 'value');
 	}
 
 	const title = el.getAttribute('title');
-	if (title?.trim()) {
+	if (title != null && hasText(title)) {
 		return makeResult(title, 'title');
 	}
 
@@ -216,12 +218,12 @@ function handleInputImage(
 	}
 
 	const alt = el.getAttribute('alt');
-	if (alt?.trim()) {
+	if (alt != null && hasText(alt)) {
 		return makeResult(alt, 'alt');
 	}
 
 	const title = el.getAttribute('title');
-	if (title?.trim()) {
+	if (title != null && hasText(title)) {
 		return makeResult(title, 'title');
 	}
 
@@ -246,12 +248,12 @@ function handleButton(
 	}
 
 	const content = resolveNameFromContent(el, resolver, visited, computeFn, inLabelledbyTraversal);
-	if (content.trim()) {
+	if (hasText(content)) {
 		return makeResult(content, 'content');
 	}
 
 	const title = el.getAttribute('title');
-	if (title?.trim()) {
+	if (title != null && hasText(title)) {
 		return makeResult(title, 'title');
 	}
 
@@ -272,13 +274,13 @@ function handleFieldset(
 ): AccnameResult | null {
 	for (const legend of findChildrenByLocalName(el, 'legend', resolver)) {
 		const content = resolveNameFromContent(legend, resolver, visited, computeFn, inLabelledbyTraversal);
-		if (content.trim()) {
+		if (hasText(content)) {
 			return makeResult(content, 'legend');
 		}
 	}
 
 	const title = el.getAttribute('title');
-	if (title?.trim()) {
+	if (title != null && hasText(title)) {
 		return makeResult(title, 'title');
 	}
 
@@ -299,13 +301,13 @@ function handleTable(
 ): AccnameResult | null {
 	for (const caption of findChildrenByLocalName(el, 'caption', resolver)) {
 		const content = resolveNameFromContent(caption, resolver, visited, computeFn, inLabelledbyTraversal);
-		if (content.trim()) {
+		if (hasText(content)) {
 			return makeResult(content, 'caption');
 		}
 	}
 
 	const title = el.getAttribute('title');
-	if (title?.trim()) {
+	if (title != null && hasText(title)) {
 		return makeResult(title, 'title');
 	}
 
@@ -321,11 +323,11 @@ function handleTable(
 function handleImg(el: AccnameElement): AccnameResult | null {
 	if (el.hasAttribute('alt')) {
 		const alt = el.getAttribute('alt') ?? '';
-		return makeResult(alt, alt.trim() ? 'alt' : null);
+		return makeResult(alt, hasText(alt) ? 'alt' : null);
 	}
 
 	const title = el.getAttribute('title');
-	if (title?.trim()) {
+	if (title != null && hasText(title)) {
 		return makeResult(title, 'title');
 	}
 
@@ -339,12 +341,12 @@ function handleImg(el: AccnameElement): AccnameResult | null {
  */
 function handleArea(el: AccnameElement): AccnameResult | null {
 	const alt = el.getAttribute('alt');
-	if (alt?.trim()) {
+	if (alt != null && hasText(alt)) {
 		return makeResult(alt, 'alt');
 	}
 
 	const title = el.getAttribute('title');
-	if (title?.trim()) {
+	if (title != null && hasText(title)) {
 		return makeResult(title, 'title');
 	}
 
@@ -359,7 +361,7 @@ function handleArea(el: AccnameElement): AccnameResult | null {
  */
 function handleFigure(el: AccnameElement): AccnameResult | null {
 	const title = el.getAttribute('title');
-	if (title?.trim()) {
+	if (title != null && hasText(title)) {
 		return makeResult(title, 'title');
 	}
 
@@ -379,12 +381,12 @@ function handleSummary(
 	inLabelledbyTraversal: boolean,
 ): AccnameResult | null {
 	const content = resolveNameFromContent(el, resolver, visited, computeFn, inLabelledbyTraversal);
-	if (content.trim()) {
+	if (hasText(content)) {
 		return makeResult(content, 'content');
 	}
 
 	const title = el.getAttribute('title');
-	if (title?.trim()) {
+	if (title != null && hasText(title)) {
 		return makeResult(title, 'title');
 	}
 
@@ -404,12 +406,12 @@ function handleAnchor(
 	inLabelledbyTraversal: boolean,
 ): AccnameResult | null {
 	const content = resolveNameFromContent(el, resolver, visited, computeFn, inLabelledbyTraversal);
-	if (content.trim()) {
+	if (hasText(content)) {
 		return makeResult(content, 'content');
 	}
 
 	const title = el.getAttribute('title');
-	if (title?.trim()) {
+	if (title != null && hasText(title)) {
 		return makeResult(title, 'title');
 	}
 
@@ -422,7 +424,7 @@ function handleAnchor(
  */
 function handleTitleOnly(el: AccnameElement): AccnameResult | null {
 	const title = el.getAttribute('title');
-	if (title?.trim()) {
+	if (title != null && hasText(title)) {
 		return makeResult(title, 'title');
 	}
 
@@ -436,7 +438,7 @@ function handleTitleOnly(el: AccnameElement): AccnameResult | null {
 function handleSvgElement(el: AccnameElement, resolver: AccnameResolver): AccnameResult | null {
 	for (const titleEl of findChildrenByLocalName(el, 'title', resolver)) {
 		const title = getTextContent(titleEl, resolver);
-		if (title.trim()) {
+		if (title != null && hasText(title)) {
 			return makeResult(title, 'svg-title');
 		}
 	}

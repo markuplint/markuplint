@@ -2,7 +2,7 @@
 
 import type { AccnameComputeFn, AccnameElement, AccnameNode, AccnameResolver } from './types.js';
 
-import { asciiLowerCase, splitOnAsciiWhitespace } from '@markuplint/shared';
+import { asciiLowerCase, hasText, splitOnAsciiWhitespace, trimAsciiWhitespace } from '@markuplint/shared';
 
 import { ELEMENT_NODE, SVG_NAMESPACE, TEXT_NODE, TEXT_LIKE_INPUT_TYPES } from '../../../const/index.js';
 import { getTreeParentElement } from '../../dom/tree-boundary.js';
@@ -171,15 +171,15 @@ function getEmbeddedControlValue(el: AccnameElement, resolver: AccnameResolver):
 	// Range controls: slider, spinbutton, input[type=range]
 	if (role === 'slider' || role === 'spinbutton' || (el.localName === 'input' && getInputType(el) === 'range')) {
 		const valuetext = el.getAttribute('aria-valuetext');
-		if (valuetext?.trim()) {
+		if (valuetext != null && hasText(valuetext)) {
 			return valuetext;
 		}
 		const valuenow = el.getAttribute('aria-valuenow');
-		if (valuenow?.trim()) {
+		if (valuenow != null && hasText(valuenow)) {
 			return valuenow;
 		}
 		const value = el.getAttribute('value');
-		if (value?.trim()) {
+		if (value != null && hasText(value)) {
 			return value;
 		}
 		return getTextContent(el, resolver);
@@ -236,13 +236,13 @@ function getSelectedOptionText(el: AccnameElement, resolver: AccnameResolver): s
 	const selected = options.filter(opt => opt.hasAttribute('selected'));
 
 	if (selected.length > 0) {
-		return selected.map(opt => getTextContent(opt, resolver).trim()).join(' ');
+		return selected.map(opt => trimAsciiWhitespace(getTextContent(opt, resolver))).join(' ');
 	}
 
 	// No explicit selected attr: HTML spec says first non-disabled option is selected
 	// (only for non-multiple selects, but we approximate for all)
 	const first = options.find(opt => !opt.hasAttribute('disabled'));
-	return first ? getTextContent(first, resolver).trim() : '';
+	return first ? trimAsciiWhitespace(getTextContent(first, resolver)) : '';
 }
 
 /**

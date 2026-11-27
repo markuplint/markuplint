@@ -2,6 +2,8 @@
 
 import type { AccnameElement } from './types.js';
 
+import { hasText } from '@markuplint/shared';
+
 /**
  * Checks whether an SVG element has any accessible name source, without performing
  * the full name computation.
@@ -25,14 +27,14 @@ import type { AccnameElement } from './types.js';
  * @see https://www.w3.org/TR/svg-aam/#include_elements — SVG-AAM §4.1.2
  */
 export function hasSvgAccessibleNameSource(el: AccnameElement): boolean {
-	if (el.getAttribute('aria-label')?.trim()) {
+	if (hasText(el.getAttribute('aria-label'))) {
 		return true;
 	}
-	if (el.getAttribute('aria-labelledby')?.trim()) {
+	if (hasText(el.getAttribute('aria-labelledby'))) {
 		return true;
 	}
 	for (const child of el.children) {
-		if ((child.localName === 'title' || child.localName === 'desc') && child.textContent?.trim()) {
+		if ((child.localName === 'title' || child.localName === 'desc') && hasText(child.textContent)) {
 			return true;
 		}
 	}
