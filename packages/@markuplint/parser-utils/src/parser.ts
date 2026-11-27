@@ -1241,7 +1241,8 @@ export abstract class Parser<Node extends {} = {}, State extends unknown = null>
 				// A void element of HTML has no content, whatever its tag says
 				if (!isSelfClose && !(isVoidElement && tag.namespace === 'http://www.w3.org/1999/xhtml')) {
 					openElements.push({
-						name: tag.nodeName,
+						// A component is no integration point, whatever its name
+						name: tag.elementType === 'authored' ? '' : tag.nodeName,
 						namespace: tag.namespace,
 						encoding: getEncoding(tag),
 					});

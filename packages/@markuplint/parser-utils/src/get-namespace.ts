@@ -16,7 +16,10 @@ export function getNamespace(currentNodeName: string | null, parentNode: MLASTPa
 	return getChildNamespace(
 		currentNodeName,
 		getParentNamespace(parentNode),
-		parentNode?.nodeName ?? null,
+		// A component (`<Title>`, `<ForeignObject>`) is no integration point, whatever its name
+		parentNode && 'elementType' in parentNode && parentNode.elementType === 'authored'
+			? null
+			: (parentNode?.nodeName ?? null),
 		getEncoding(parentNode),
 	);
 }
@@ -119,6 +122,10 @@ export type NamespaceSubject = string | null | { readonly name: string | null; r
  * Determines the namespace URI of an element below an ancestor whose own namespace is not
  * known, such as the root of a component, which takes the namespace of where it is used.
  *
+ * The elements between the ancestor and the element are not in the tree of the document (ml-core makes the element a
+ * child of the ancestor), so the namespace is said here when they decide it. A name is taken in the namespaces that
+ * define it: `title` in MathML or `mi` in SVG is not an element of that namespace.
+ *
  * It is known once the ancestor or the elements between them cross a transition: an `svg`
  * or `math` is taken to enter its namespace, as it does from HTML, and the child of an integration point that is HTML
  * wherever it is (`foreignObject`, `desc` and `title`, which are HTML elements or SVG HTML integration points, and `mi`,
@@ -192,6 +199,10 @@ export function getEncoding(node: MLASTParentNode | null): string | null {
 	}
 	for (const attr of node.attributes) {
 		if (attr.type === 'attr' && asciiLowerCase(attr.name.raw) === 'encoding') {
+			// A string in an expression container (`encoding={"text/html"}` of JSX) is the string; other code is not known
+			if (attr.startQuote.raw === '{') {
+				return /^(["'`])([^"'\\`]*)\1$/.exec(attr.value.raw.trim())?.[2] ?? null;
+			}
 			return decodeEntities(attr.value.raw);
 		}
 	}

@@ -110,11 +110,13 @@ describe('getNamespaceBelow', () => {
 });
 
 describe('getNamespace', () => {
-	const annotationXml = (attrName: string, value: string) =>
+	const annotationXml = (attrName: string, value: string, startQuote = '"') =>
 		({
 			nodeName: 'annotation-xml',
 			namespace: MATHML,
-			attributes: [{ type: 'attr', name: { raw: attrName }, value: { raw: value } }],
+			attributes: [
+				{ type: 'attr', name: { raw: attrName }, value: { raw: value }, startQuote: { raw: startQuote } },
+			],
 		}) as unknown as MLASTElement;
 
 	test('reads the `encoding` of an `annotation-xml` of the AST', () => {
@@ -122,6 +124,28 @@ describe('getNamespace', () => {
 		expect(getNamespace('div', annotationXml('ENCODING', 'TEXT/HTML'))).toBe(HTML);
 		expect(getNamespace('div', annotationXml('encoding', 'application/x-tex'))).toBe(MATHML);
 		expect(getNamespace('div', annotationXml('encoding', 'text&#47;html'))).toBe(HTML);
+	});
+
+	test('reads a string in an expression container, and no other code', () => {
+		expect(getNamespace('div', annotationXml('encoding', '"text/html"', '{'))).toBe(HTML);
+		expect(getNamespace('div', annotationXml('encoding', 'html', '{'))).toBe(MATHML);
+	});
+
+	test('a component named like an integration point is not one', () => {
+		const component = {
+			nodeName: 'Title',
+			namespace: SVG,
+			elementType: 'authored',
+			attributes: [],
+		} as unknown as MLASTElement;
+		expect(getNamespace('path', component)).toBe(SVG);
+		const title = {
+			nodeName: 'title',
+			namespace: SVG,
+			elementType: 'html',
+			attributes: [],
+		} as unknown as MLASTElement;
+		expect(getNamespace('div', title)).toBe(HTML);
 	});
 });
 
