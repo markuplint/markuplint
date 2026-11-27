@@ -21,12 +21,11 @@ export default createRule<boolean, Options>({
 			if (propAttrs.length === 0) return;
 			const ariaVersion =
 				el.rule.options?.version ?? document.ruleCommonSettings?.ariaVersion ?? ARIA_RECOMMENDED_VERSION;
-			// A role that is not known until it is rendered gives an implicit value that is not known either
-			if (isRoleUnknown(el)) return;
 			const { props: propSpecs } = ariaSpecs(document.specs, ariaVersion);
-			const role = getComputedRole(document.specs, el, ariaVersion).role?.name ?? null;
+			const roleUnknown = isRoleUnknown(el);
+			const role = roleUnknown ? null : (getComputedRole(document.specs, el, ariaVersion).role?.name ?? null);
 			for (const attr of propAttrs) {
-				report(checkingDefaultValue({ attr, propSpecs, role }));
+				report(checkingDefaultValue({ attr, propSpecs, role, roleUnknown, version: ariaVersion }));
 			}
 		});
 	},

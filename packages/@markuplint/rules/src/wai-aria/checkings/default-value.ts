@@ -1,43 +1,65 @@
 import type { Options } from '../types.js';
 import type { AttrChecker } from '@markuplint/ml-core';
-import type { ARIAProperty } from '@markuplint/ml-spec';
+import type { ARIAProperty, ARIAVersion } from '@markuplint/ml-spec';
 
-import { getImplicitValueOfRole } from '@markuplint/ml-spec';
+import { getImplicitValueOfRole, hasImplicitValueOfSomeRole } from '@markuplint/ml-spec';
 
-import { asciiLowerCase } from '@markuplint/shared';
+import { asciiLowerCase, isValidFloatingPointNumber, trimAsciiWhitespace } from '@markuplint/shared';
 
 /**
- * Checks whether an ARIA property is explicitly set to its spec-defined default value.
+ * Checks whether an ARIA property is explicitly set to the value that the element has without it: the implicit value
+ * of its role where the role gives one (`aria-live` of `alert` is `assertive`), else the default of the property.
  *
- * Setting an ARIA property to its default value is redundant and may indicate
- * a misunderstanding of the property's behavior. This checker reports such cases
- * when the `disallowDefaultValue` option is enabled.
+ * Setting an ARIA property to that value is redundant and may indicate a misunderstanding of the property's behavior.
+ * A keyword is compared as browsers read it, and a number as a number (`aria-valuemin="0.0"` is the 0 of a slider).
  *
  * @param attr - The ARIA attribute node to inspect.
  * @param propSpecs - The list of ARIA property specifications for value lookup.
- * @returns A violation if the attribute value matches the property's default value.
+ * @param role - The name of the computed role of the element, or null when it has none
+ * @param roleUnknown - Whether the role is not known until it is rendered, which leaves the implicit value not known
+ * @param version - The ARIA version
+ * @returns A violation if the attribute value matches the value the element has without it.
  */
 export const checkingDefaultValue: AttrChecker<
 	boolean,
 	Options,
-	{ propSpecs: readonly ARIAProperty[]; role: string | null }
+	{ propSpecs: readonly ARIAProperty[]; role: string | null; roleUnknown: boolean; version: ARIAVersion }
 > =
-	({ attr, propSpecs, role }) =>
+	({ attr, propSpecs, role, roleUnknown, version }) =>
 	t => {
 		if (attr.isDynamicValue) {
 			return;
 		}
+		// A role that is not known gives an implicit value that is not known, to a property that some role gives one
+		if (roleUnknown && hasImplicitValueOfSomeRole(attr.nameKey, version)) {
+			return;
+		}
 		const propSpec = propSpecs.find(p => p.name === attr.nameKey);
-		// The value the element has without the attribute: the implicit value of its role, else the default of the
-		// property
-		const implicit = role === null ? null : getImplicitValueOfRole(role, attr.nameKey);
+		// What the element has without the attribute is the value of its native equivalent when it has one, which
+		// `no-redundant-aria-prop` compares
+		if (propSpec?.equivalentHtmlAttrs?.some(eq => attr.ownerElement.hasAttribute(eq.htmlAttrName))) {
+			return;
+		}
+		const implicit = role === null ? null : getImplicitValueOfRole(attr.ownerElement, role, attr.nameKey, version);
 		const defaultValue = implicit ?? propSpec?.defaultValue;
-		// A keyword as browsers read it: ASCII case-insensitively, not trimmed (`isAriaTrue` of `@markuplint/ml-spec`)
-		const value = asciiLowerCase(attr.value);
-		if (defaultValue != null && defaultValue === value) {
+		if (defaultValue != null && isSameValue(attr.value, defaultValue)) {
 			return {
 				scope: attr,
 				message: t('It is {0}', 'default value'),
 			};
 		}
 	};
+
+/**
+ * @param value - The value of the attribute
+ * @param defaultValue - The default value
+ * @returns Whether they are one value: a keyword as browsers read it (ASCII case-insensitively, not trimmed, see
+ *   `isAriaTrue` of `@markuplint/ml-spec`), a number as a number (the whole value with ASCII white space trimmed)
+ */
+function isSameValue(value: string, defaultValue: string): boolean {
+	if (isValidFloatingPointNumber(defaultValue)) {
+		const trimmed = trimAsciiWhitespace(value);
+		return isValidFloatingPointNumber(trimmed) && Number(trimmed) === Number(defaultValue);
+	}
+	return asciiLowerCase(value) === defaultValue;
+}

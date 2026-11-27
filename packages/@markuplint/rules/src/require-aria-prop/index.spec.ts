@@ -226,3 +226,22 @@ test.each([
 		]);
 	},
 );
+
+test('[require-aria-prop-023] a condition of the superclass goes with the property it requires', async () => {
+	expect((await mlRuleTest(rule, '<hr role="doc-pagebreak" aria-label="page 1">')).violations).toStrictEqual([]);
+});
+
+test('[require-aria-prop-024] a treeitem requires aria-selected in ARIA 1.2, as its superclass option does', async () => {
+	const { violations } = await mlRuleTest(rule, '<ul role="tree"><li role="treeitem" tabindex="0">a</li></ul>', {
+		rule: { value: true, options: { version: '1.2' } },
+	});
+	expect(violations).toStrictEqual([
+		{
+			severity: 'error',
+			line: 1,
+			col: 17,
+			message: 'Require the "aria-selected" ARIA state on the "treeitem" role',
+			raw: '<li role="treeitem" tabindex="0">',
+		},
+	]);
+});

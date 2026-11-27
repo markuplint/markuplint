@@ -105,3 +105,41 @@ test('[no-default-aria-value-010] a role that is not known until it is rendered 
 	});
 	expect(violations).toStrictEqual([]);
 });
+
+test.each([
+	['<div role={role} aria-busy="false" />', 18, 'aria-busy="false"'],
+	['<div {...p} aria-disabled="false" />', 13, 'aria-disabled="false"'],
+])(
+	'[no-default-aria-value-011] a property that no role gives an implicit value is checked whatever the role: %s',
+	async (code, col, raw) => {
+		const { violations } = await mlRuleTest(rule, code, { parser: { '.*': '@markuplint/jsx-parser' } });
+		expect(violations).toStrictEqual([{ severity: 'warning', line: 1, col, message: 'It is default value', raw }]);
+	},
+);
+
+test.each(['<input type="range" min="10" aria-valuemin="0">', '<progress max="5" aria-valuemax="100"></progress>'])(
+	'[no-default-aria-value-012] the value of a native attribute that the element has is not compared here: %s',
+	async code => {
+		expect((await mlRuleTest(rule, code)).violations).toStrictEqual([]);
+	},
+);
+
+test.each([
+	['<div role="alert" aria-atomic="true">a</div>', 19, 'aria-atomic="true"'],
+	['<div role="tab" aria-selected="false">a</div>', 17, 'aria-selected="false"'],
+	['<hr aria-orientation="horizontal">', 5, 'aria-orientation="horizontal"'],
+	['<progress aria-valuemax="1"></progress>', 11, 'aria-valuemax="1"'],
+	['<h3 aria-level="3">a</h3>', 5, 'aria-level="3"'],
+	['<div role="slider" tabindex="0" aria-valuenow="1" aria-valuemin="0.0">f</div>', 51, 'aria-valuemin="0.0"'],
+])('[no-default-aria-value-013] the value the element has without the attribute: %s', async (code, col, raw) => {
+	expect((await mlRuleTest(rule, code)).violations).toStrictEqual([
+		{ severity: 'warning', line: 1, col, message: 'It is default value', raw },
+	]);
+});
+
+test('[no-default-aria-value-014] the level of a heading element is its rank, not the implicit value of the role', async () => {
+	const { violations } = await mlRuleTest(rule, '<h3 aria-level="2">a</h3>', {
+		rule: { value: true, options: { version: '1.1' } },
+	});
+	expect(violations).toStrictEqual([]);
+});
