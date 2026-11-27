@@ -87,9 +87,29 @@ test('[no-consecutive-br-009] a reference to U+0020 between two br is white spac
 	]);
 });
 
-test.each(['&nbsp;', '\u00A0'])(
-	'[no-consecutive-br-010] a no-break space between two br is a character between them: %j',
-	async content => {
-		expect((await mlRuleTest(rule, `<div><br>${content}<br></div>`)).violations).toStrictEqual([]);
-	},
-);
+test.each([
+	['&nbsp;', 16],
+	['\u00A0', 11],
+])('[no-consecutive-br-010] a no-break space between two br does not fill the blank line: %j', async (content, col) => {
+	expect((await mlRuleTest(rule, `<div><br>${content}<br></div>`)).violations).toStrictEqual([
+		{
+			severity: 'warning',
+			line: 1,
+			col,
+			message: 'Consecutive "br" elements detected',
+			raw: '<br>',
+		},
+	]);
+});
+
+test('[no-consecutive-br-011] an ideographic space between two br does not fill the blank line', async () => {
+	expect((await mlRuleTest(rule, '<div><br>\u3000<br></div>')).violations).toStrictEqual([
+		{
+			severity: 'warning',
+			line: 1,
+			col: 11,
+			message: 'Consecutive "br" elements detected',
+			raw: '<br>',
+		},
+	]);
+});

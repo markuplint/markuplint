@@ -104,6 +104,16 @@ export class MLText<T extends RuleConfigValue, O extends PlainData = undefined>
 		) {
 			return this.raw;
 		}
+		// A CDATA section of foreign content is its characters as written, without its delimiters
+		// @see https://html.spec.whatwg.org/multipage/parsing.html#cdata-section-state
+		if (
+			parent &&
+			parent.namespaceURI !== 'http://www.w3.org/1999/xhtml' &&
+			this.raw.startsWith('<![CDATA[') &&
+			this.raw.endsWith(']]>')
+		) {
+			return this.raw.slice('<![CDATA['.length, -']]>'.length);
+		}
 		return this.raw.includes('&') ? decodeEntities(this.raw) : this.raw;
 	}
 

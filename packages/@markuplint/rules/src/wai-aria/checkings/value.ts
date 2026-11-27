@@ -1,24 +1,21 @@
 import type { Options } from '../types.js';
 import type { AttrChecker } from '@markuplint/ml-core';
-import type { ARIAProperty, ARIARole } from '@markuplint/ml-spec';
+import type { ARIAAttributeValue, ARIAProperty, ARIARole } from '@markuplint/ml-spec';
 
-import { isValidFloatingPointNumber, isValidInteger, splitOnAsciiWhitespace } from '@markuplint/shared';
+import { isValidAriaValue, isValidAriaValueType } from '@markuplint/ml-spec';
 
 import { noTranslate } from '../../no-translate.js';
 
 /**
- * Checks whether the value of an ARIA property or state conforms to its expected type.
- *
- * ARIA properties have specific value types (token, token list, true/false, tristate,
- * integer, number, string, ID reference, etc.). This checker validates the attribute
- * value against the property's expected type and allowed enum values.
- * Role-specific conditional value types are also considered.
+ * Checks whether the value of an ARIA property or state conforms to its expected type, as
+ * `isValidAriaValue` of `@markuplint/ml-spec` reads it (the reader that the computed ARIA props share): an
+ * empty value is the absent attribute, valid unless the element requires the property (`requiredProps`).
  *
  * @param attr - The ARIA attribute node to inspect.
  * @param role - The computed ARIA role, used to resolve conditional value types.
  * @param roleUnknown - The result of `isRoleUnknown` of `../../helpers.js`: the role is not known until it is
- *   rendered. The value is then valid if the base value type of the property, or the value type of any role
- *   that has its own, allows it, as the role that decides which type applies is not the computed one.
+ *   rendered (see `isValidAriaValue`); no property is then known to be required.
+ * @param requiredProps - The properties that the element requires (`requiredPropsOf` of `./required-prop.js`).
  * @param propSpecs - The list of ARIA property specifications for value type lookup.
  * @returns A violation if the attribute value does not match the expected type.
  */
@@ -28,18 +25,21 @@ export const checkingValue: AttrChecker<
 	{
 		role?: ARIARole | null;
 		roleUnknown?: boolean;
+		requiredProps?: readonly string[];
 		propSpecs: readonly ARIAProperty[];
 	}
 > =
-	({ attr, role, roleUnknown, propSpecs }) =>
+	({ attr, role, roleUnknown, requiredProps = [], propSpecs }) =>
 	t => {
 		if (attr.isDynamicValue) {
 			return;
 		}
 		const propSpec = propSpecs.find(p => p.name === attr.nameKey);
 
+		// An empty value is the absent attribute, which is an author error for a property the element requires
+		const required = !roleUnknown && requiredProps.includes(attr.nameKey);
 		// The computed role of an element whose role is not known is the fallback one, which is not the role it has
-		const result = checkAria(propSpec, attr.value, roleUnknown ? undefined : role?.name, roleUnknown);
+		const result = checkAria(propSpec, attr.value, roleUnknown ? undefined : role?.name, roleUnknown, required);
 		if (result.isValid) {
 			return;
 		}
@@ -64,9 +64,16 @@ export const checkingValue: AttrChecker<
  * @param currentValue - The current attribute value to validate.
  * @param role - The name of the computed role, used to resolve conditional value types.
  * @param roleUnknown - Whether the role is not known; every value type of the property is then a candidate.
+ * @param required - Whether the role requires the property: an empty value is then an author error.
  * @returns An object containing the validation result and, for enum types, the allowed values.
  */
-function checkAria(propSpec: ARIAProperty | undefined, currentValue: string, role?: string, roleUnknown = false) {
+function checkAria(
+	propSpec: ARIAProperty | undefined,
+	currentValue: string,
+	role?: string,
+	roleUnknown = false,
+	required = false,
+) {
 	if (!propSpec) {
 		return {
 			currentValue,
@@ -74,83 +81,49 @@ function checkAria(propSpec: ARIAProperty | undefined, currentValue: string, rol
 			isValid: true,
 		};
 	}
-
-	let valueType = propSpec.value;
-	if (
-		roleUnknown &&
-		propSpec.conditionalValue?.some(cond => checkAriaValue(cond.value, currentValue, propSpec.enum))
-	) {
-		return {
-			...propSpec,
-			currentValue,
-			isValid: true,
-		};
-	}
-	if (role && propSpec.conditionalValue) {
-		for (const cond of propSpec.conditionalValue) {
-			if (cond.role.includes(role)) {
-				valueType = cond.value;
-				break;
-			}
-		}
-	}
-	const isValid = checkAriaValue(valueType, currentValue, propSpec.enum);
 	return {
 		...propSpec,
 		currentValue,
-		isValid,
+		isValid: isValidAriaValue(propSpec, currentValue, role, roleUnknown, required),
 	};
 }
 
 /**
- * Validates a raw ARIA value against the expected value type defined in the specification.
- *
- * Supports token, token list, string, ID reference, true/false, tristate,
- * true/false/undefined, integer, and number value types.
- *
- * Known limitation: `isValidAriaValue` of `@markuplint/ml-spec` (the computed props) reads the same value
- * types differently: it trims ASCII white space, folds the case, and its `tristate` has no `undefined`. A
- * value such as ` TRUE ` is valid there and disallowed here.
+ * Whether a value is valid for an ARIA value type: `isValidAriaValueType` of `@markuplint/ml-spec`, the one reader
+ * of an ARIA value that the computed ARIA props read too. A type that it does not know is valid (no check). Kept
+ * for its unit tests (`value.spec.ts`), which pin the reading of each value type here as well.
  *
  * @see https://w3c.github.io/aria/#propcharacteristic_value
  * @param type - The ARIA value type (e.g., `"token"`, `"true/false"`, `"integer"`).
- * @param value - The raw attribute value to validate. It is not trimmed, and `integer` and `number` take the
- *   whole of it: see `isValidInteger` and `isValidFloatingPointNumber` of `@markuplint/shared`.
+ * @param value - The attribute value as written.
  * @param tokenEnum - The list of allowed token values for token-based types.
  * @returns `true` if the value is valid for the given type, `false` otherwise.
  */
 export function checkAriaValue(type: string, value: string, tokenEnum: readonly string[]) {
-	switch (type) {
-		case 'token': {
-			return tokenEnum.includes(value);
-		}
-		case 'token list': {
-			const list = splitOnAsciiWhitespace(value);
-			// `splitOnAsciiWhitespace` drops the empty tokens, so a value with none is checked here:
-			// `every` of an empty list would make it valid
-			return list.length > 0 && list.every(token => tokenEnum.includes(token));
-		}
-		case 'string':
-		case 'ID reference':
-		case 'ID reference list': {
-			return true;
-		}
-		case 'true/false': {
-			return ['true', 'false'].includes(value);
-		}
-		case 'tristate': {
-			return ['mixed', 'true', 'false', 'undefined'].includes(value);
-		}
-		case 'true/false/undefined': {
-			return ['true', 'false', 'undefined'].includes(value);
-		}
-		case 'integer': {
-			return isValidInteger(value);
-		}
-		case 'number': {
-			return isValidFloatingPointNumber(value);
-		}
-	}
-	// For skipping checking
-	return true;
+	return isAriaValueType(type) ? isValidAriaValueType(type, value, tokenEnum) : true;
+}
+
+// A `Record` of every member, so that a value type that `ARIAAttributeValue` gains is a type error here
+const ARIA_VALUE_TYPES: ReadonlySet<string> = new Set(
+	Object.keys({
+		'true/false': true,
+		tristate: true,
+		'true/false/undefined': true,
+		'ID reference': true,
+		'ID reference list': true,
+		integer: true,
+		number: true,
+		string: true,
+		token: true,
+		'token list': true,
+		URI: true,
+	} satisfies Record<ARIAAttributeValue, true>),
+);
+
+/**
+ * @param type - A value type as the spec data has it
+ * @returns `true` if it is one of the ARIA value types
+ */
+function isAriaValueType(type: string): type is ARIAAttributeValue {
+	return ARIA_VALUE_TYPES.has(type);
 }

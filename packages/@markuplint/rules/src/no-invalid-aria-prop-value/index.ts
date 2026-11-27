@@ -3,6 +3,7 @@ import type { Options } from '../wai-aria/types.js';
 import { createRule, getComputedRole, ariaSpecs, getSpec } from '@markuplint/ml-core';
 import { ARIA_RECOMMENDED_VERSION } from '@markuplint/ml-spec';
 
+import { requiredPropsOf } from '../wai-aria/checkings/required-prop.js';
 import { checkingValue } from '../wai-aria/checkings/value.js';
 import { defaultOptions } from '../wai-aria/default-options.js';
 import { getAriaAttrs, isRoleUnknown } from '../helpers.js';
@@ -23,8 +24,10 @@ export default createRule<boolean, Options>({
 			const computed = getComputedRole(document.specs, el, ariaVersion);
 			const roleUnknown = isRoleUnknown(el);
 			const { props: propSpecs } = ariaSpecs(document.specs, ariaVersion);
+			// Once for the element, not for each attribute: it matches the element against its ARIA spec
+			const requiredProps = roleUnknown ? [] : requiredPropsOf(el, computed.role);
 			for (const attr of propAttrs) {
-				report(checkingValue({ attr, role: computed.role, roleUnknown, propSpecs }));
+				report(checkingValue({ attr, role: computed.role, roleUnknown, requiredProps, propSpecs }));
 			}
 		});
 	},

@@ -222,34 +222,18 @@ test('[no-invalid-aria-prop-value-015] the shorthand of JSX is `true`', async ()
 	expect(violations).toStrictEqual([]);
 });
 
-test('[no-invalid-aria-prop-value-016] the empty string that is written is not the shorthand', async () => {
+test('[no-invalid-aria-prop-value-016] the empty string that is written is not the shorthand, and is the absent attribute', async () => {
 	const { violations } = await mlRuleTest(rule, '<div aria-hidden=""></div>', {
 		parser: { '.*': '@markuplint/jsx-parser' },
 	});
-	expect(violations).toStrictEqual([
-		{
-			severity: 'error',
-			line: 1,
-			col: 6,
-			message: 'The "" is disallowed on the "aria-hidden" ARIA state',
-			raw: 'aria-hidden=""',
-		},
-	]);
+	expect(violations).toStrictEqual([]);
 });
 
-test('[no-invalid-aria-prop-value-017] a literal of the empty string is reported', async () => {
+test('[no-invalid-aria-prop-value-017] a literal of the empty string is the absent attribute, which is not reported', async () => {
 	const { violations } = await mlRuleTest(rule, '<div aria-hidden={""}></div>', {
 		parser: { '.*': '@markuplint/jsx-parser' },
 	});
-	expect(violations).toStrictEqual([
-		{
-			severity: 'error',
-			line: 1,
-			col: 6,
-			message: 'The "" is disallowed on the "aria-hidden" ARIA state',
-			raw: 'aria-hidden={""}',
-		},
-	]);
+	expect(violations).toStrictEqual([]);
 });
 
 test('[no-invalid-aria-prop-value-018] null and code that is not a literal are not judged', async () => {
@@ -331,3 +315,115 @@ test.each([
 		]);
 	},
 );
+
+/**
+ * The table of `is-valid-aria-value.spec.ts` of `@markuplint/ml-spec`, which the computed ARIA props run too: the
+ * value is reported exactly when it is not valid.
+ */
+const v = (col: number, message: string, raw: string) => [{ severity: 'error', line: 1, col, message, raw }];
+
+test.each([
+	['checkbox', 'aria-checked', 'true', []],
+	['checkbox', 'aria-checked', ' TRUE ', []],
+	['checkbox', 'aria-checked', 'TRUE', []],
+	['checkbox', 'aria-checked', ' true ', []],
+	[
+		'checkbox',
+		'aria-checked',
+		' true',
+		v(37, 'The " true" is disallowed on the "aria-checked" ARIA state', 'aria-checked=" true"'),
+	],
+	['checkbox', 'aria-checked', 'mixed', []],
+	['slider', 'aria-valuenow', ' 5 ', []],
+	['heading', 'aria-level', ' 3 ', []],
+	['button', 'aria-pressed', 'undefined', []],
+	['button', 'aria-pressed', 'mixed', []],
+	[
+		'button',
+		'aria-expanded',
+		'mixed',
+		v(35, 'The "mixed" is disallowed on the "aria-expanded" ARIA state', 'aria-expanded="mixed"'),
+	],
+	[
+		'textbox',
+		'aria-required',
+		'undefined',
+		v(36, 'The "undefined" is disallowed on the "aria-required" ARIA property', 'aria-required="undefined"'),
+	],
+	[
+		'gridcell',
+		'aria-rowindex',
+		'2.5',
+		v(37, 'The "2.5" is disallowed on the "aria-rowindex" ARIA property', 'aria-rowindex="2.5"'),
+	],
+	['spinbutton', 'aria-valuemin', '1.0', []],
+	['region', 'aria-live', 'POLITE', []],
+	[
+		'region',
+		'aria-live',
+		'nope',
+		v(
+			35,
+			'The "nope" is disallowed on the "aria-live" ARIA property. Allowed values are: "assertive", "off", "polite"',
+			'aria-live="nope"',
+		),
+	],
+	['region', 'aria-relevant', 'ADDITIONS text', []],
+	[
+		'region',
+		'aria-relevant',
+		'additions nope',
+		v(
+			35,
+			'The "additions nope" is disallowed on the "aria-relevant" ARIA property. Allowed values are: "additions", "additions text", "all", "removals", "text"',
+			'aria-relevant="additions nope"',
+		),
+	],
+	['textbox', 'aria-activedescendant', 'a', []],
+	[
+		'textbox',
+		'aria-activedescendant',
+		'a b',
+		v(36, 'The "a b" is disallowed on the "aria-activedescendant" ARIA property', 'aria-activedescendant="a b"'),
+	],
+] as const)(
+	'[no-invalid-aria-prop-value-023] the value of %s %s=%j is read as the computed ARIA props read it',
+	async (role, attr, value, violations) => {
+		const result = await mlRuleTest(rule, `<div role="${role}" aria-label="x" ${attr}="${value}"></div>`);
+		expect(result.violations).toStrictEqual(violations);
+	},
+);
+
+test.each([
+	['<div role="button" aria-pressed="">x</div>', []],
+	['<div role="textbox" aria-describedby=""></div>', []],
+	// The implicit role of an element is satisfied by the element
+	['<input type="checkbox" aria-checked="">', []],
+	['<h2 aria-level="">x</h2>', []],
+	// A native attribute gives the required state in its place
+	['<input type="checkbox" role="switch" checked aria-checked="">', []],
+	// A separator requires a value only when it is focusable
+	['<div role="separator" aria-valuenow=""></div>', []],
+	[
+		'<div role="separator" tabindex="0" aria-valuenow=""></div>',
+		v(36, 'The "" is disallowed on the "aria-valuenow" ARIA property', 'aria-valuenow=""'),
+	],
+	[
+		'<div role="checkbox" aria-label="x" aria-checked=""></div>',
+		v(37, 'The "" is disallowed on the "aria-checked" ARIA state', 'aria-checked=""'),
+	],
+	[
+		'<div role="checkbox" aria-label="x" aria-checked=" "></div>',
+		v(37, 'The " " is disallowed on the "aria-checked" ARIA state', 'aria-checked=" "'),
+	],
+] as const)(
+	'[no-invalid-aria-prop-value-024] an empty value is the absent attribute, and an author error for a required one: %j',
+	async (code, violations) => {
+		expect((await mlRuleTest(rule, code)).violations).toStrictEqual(violations);
+	},
+);
+
+test('[no-invalid-aria-prop-value-025] JSX: an empty value of an element whose role is not known is not reported', async () => {
+	const parser = { '.*': '@markuplint/jsx-parser' };
+	expect((await mlRuleTest(rule, '<div role={r} aria-checked="" />', { parser })).violations).toStrictEqual([]);
+});

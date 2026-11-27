@@ -18,16 +18,6 @@ type State = {
 };
 
 /**
- * The directives of an element that Vue renders or leaves out, and the behavior the element carries
- * for each (`MLASTElement#blockBehavior`). The directive does not wrap the element in a block: it
- * has to stay an element for its attributes to be validated. The behavior says that the element may be
- * left out; it does not link `v-else-if` and `v-else` to the `v-if` before them, so the branches of a chain
- * are not known to be exclusive. `v-if` wins over `v-for` on one element, as Vue 3 evaluates `v-if` first.
- *
- * @see https://vuejs.org/guide/essentials/conditional.html
- * @see https://vuejs.org/guide/essentials/list.html
- */
-/**
  * The elements whose content vue-eslint-parser reads as raw text (`value` keeps the character references) and the
  * compiler of Vue decodes: the tokenizer of the compiler reads only `script` and `style` as raw text, and `title`
  * and `textarea` as RCDATA, which it decodes.
@@ -42,6 +32,16 @@ const VUE_DECODED_RAW_TEXT_ELEMENTS: ReadonlySet<string> = new Set([
 	'xmp',
 ]);
 
+/**
+ * The directives of an element that Vue renders or leaves out, and the behavior the element carries
+ * for each (`MLASTElement#blockBehavior`). The directive does not wrap the element in a block: it
+ * has to stay an element for its attributes to be validated. The behavior says that the element may be
+ * left out; it does not link `v-else-if` and `v-else` to the `v-if` before them, so the branches of a chain
+ * are not known to be exclusive. `v-if` wins over `v-for` on one element, as Vue 3 evaluates `v-if` first.
+ *
+ * @see https://vuejs.org/guide/essentials/conditional.html
+ * @see https://vuejs.org/guide/essentials/list.html
+ */
 const CONDITIONAL_DIRECTIVES: ReadonlyMap<string, MLASTBlockBehaviorType> = new Map([
 	['if', 'if'],
 	['else-if', 'if:elseif'],

@@ -2138,6 +2138,17 @@ export abstract class Parser<Node extends {} = {}, State extends unknown = null>
 			return nodeList.toSpliced(0, 1);
 		}
 
+		// The data that the parser handed over (`MLASTText#data`) loses the same offset spaces, which are white space
+		// and so one character each in the data as in the raw; data that does not start with them is dropped
+		if (firstNode.data !== undefined) {
+			const removed = firstNode.raw.slice(0, offsetOffset);
+			if (firstNode.data.startsWith(removed)) {
+				Object.assign(firstNode, { data: firstNode.data.slice(offsetOffset) });
+			} else {
+				delete (firstNode as { data?: string }).data;
+			}
+		}
+
 		this.updateRaw(firstNode, raw);
 		this.updateLocation(firstNode, {
 			offset: offsetOffset,

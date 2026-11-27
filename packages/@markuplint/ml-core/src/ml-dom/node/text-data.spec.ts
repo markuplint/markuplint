@@ -50,6 +50,10 @@ describe('MLText#data', () => {
 		expect(textIn(code, selector).data).toBe('&lt;');
 	});
 
+	test('of a CDATA section of foreign content is its characters as written, without its delimiters', () => {
+		expect(textIn('<svg><![CDATA[ &#65; ]]></svg>', 'svg').data).toBe(' &#65; ');
+	});
+
 	test('of an element of that name in another namespace is decoded', () => {
 		expect(textIn('<svg><iframe>&lt;</iframe></svg>', 'iframe').data).toBe('<');
 	});

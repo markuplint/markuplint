@@ -188,3 +188,18 @@ test('[require-aria-prop-020] of two `role` attributes, the one that the element
 		},
 	]);
 });
+
+test('[require-aria-prop-021] a property that a native attribute gives does not hide another that is missing', async () => {
+	const { violations } = await mlRuleTest(rule, '<input type="number" role="spinbutton" max="10" min="0">', {
+		rule: { options: { version: '1.1' } },
+	});
+	expect(violations).toStrictEqual([
+		{
+			severity: 'error',
+			line: 1,
+			col: 1,
+			message: 'Require the "aria-valuenow" ARIA property on the "spinbutton" role',
+			raw: '<input type="number" role="spinbutton" max="10" min="0">',
+		},
+	]);
+});

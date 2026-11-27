@@ -84,6 +84,8 @@ export default createRule<Bullets, Options>({
 	defaultSeverity: 'warning',
 	async verify({ document, report, t }) {
 		await document.walkOn('Text', textNode => {
+			// Any white space, a no-break space (`&nbsp;`) and an ideographic space included: a bullet indented with
+			// one (U+3000 before `・項目`) still looks like a list item, which is what the rule is about
 			const text = textNode.data.trim();
 
 			if (!text) {
