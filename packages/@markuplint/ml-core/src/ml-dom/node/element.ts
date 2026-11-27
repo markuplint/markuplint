@@ -73,7 +73,7 @@ import { toNamedNodeMap } from './named-node-map.js';
 import { toHTMLCollection, toNodeList } from './node-list.js';
 import { MLParentNode } from './parent-node.js';
 import { MLShadowRoot } from './shadow-root.js';
-import { UnexpectedCallError, asciiLowerCase, isFatalError, vuePropKey } from '@markuplint/shared';
+import { UnexpectedCallError, asciiLowerCase, hasText, isFatalError, vuePropKey } from '@markuplint/shared';
 
 const HTML_NAMESPACE = 'http://www.w3.org/1999/xhtml';
 
@@ -3902,7 +3902,8 @@ export class MLElement<T extends RuleConfigValue, O extends PlainData = undefine
 	 * @see https://svelte.dev/docs/svelte/if
 	 * @see https://vuejs.org/guide/essentials/conditional.html
 	 * @param version - The ARIA specification version to use for computation
-	 * @returns `true` if the accessible name is not empty, or is not empty in some branch
+	 * @returns `true` if the accessible name is not empty, or is not empty in some branch. A name of
+	 * non-ASCII white space only, such as U+00A0, is not empty.
 	 */
 	mayHaveAccessibleName(version: ARIAVersion): boolean {
 		const cached = this.#mayHaveAccessibleNameCache.get(version);
@@ -3913,7 +3914,7 @@ export class MLElement<T extends RuleConfigValue, O extends PlainData = undefine
 		// a call that the computation itself makes sees only the name as written, as `getAccessibleName` does
 		if (this.#computingEveryBranch.has(version)) {
 			everyBranchFallbacks++;
-			return !!this.getAccessibleName(version).trim();
+			return hasText(this.getAccessibleName(version));
 		}
 		this.#computingEveryBranch.add(version);
 		const fallbacksBefore = everyBranchFallbacks;
@@ -3921,8 +3922,8 @@ export class MLElement<T extends RuleConfigValue, O extends PlainData = undefine
 			// Only a name found is final: that no branch has one is not known when the computation used the
 			// name as written of an element that is being computed
 			const found =
-				!!this.getAccessibleName(version).trim() ||
-				(this.ownerMLDocument.hasConditionalNode && !!getAccnameOfEveryBranch(this, version).trim());
+				hasText(this.getAccessibleName(version)) ||
+				(this.ownerMLDocument.hasConditionalNode && hasText(getAccnameOfEveryBranch(this, version)));
 			if (found || (this.ownerMLDocument.hasConditionalNode && fallbacksBefore === everyBranchFallbacks)) {
 				this.#mayHaveAccessibleNameCache.set(version, found);
 			}

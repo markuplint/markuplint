@@ -915,6 +915,14 @@ describe('Accessibility', () => {
 		expect(a11y.name).toBe('This is button');
 	});
 
+	test('a name of U+00A0 only is a name, and of ASCII white space only is not', () => {
+		const named = createTestDocument('<button>\u00A0</button>', { specs });
+		expect(named.getAccessibilityProp(named.querySelector('button')).name).toBe('\u00A0');
+
+		const unnamed = createTestDocument('<button> \t\n</button>', { specs });
+		expect(unnamed.getAccessibilityProp(unnamed.querySelector('button')).name).toBe('');
+	});
+
 	test('has <slot>', () => {
 		const doc = createTestDocument('<button><slot></slot></button>', { specs });
 		const el = doc.querySelector('button');

@@ -771,3 +771,26 @@ test('[no-aria-on-presentational-children-056] JSX: a spread attribute after the
 		},
 	]);
 });
+
+test('[no-aria-on-presentational-children-057] aria-label of U+00A0 only on a child of a button, which reads it, is not reported', async () => {
+	const { violations } = await mlRuleTest(rule, '<button type="button"><span aria-label="\u00A0">x</span></button>');
+	expect(violations).toStrictEqual([]);
+});
+
+test('[no-aria-on-presentational-children-058] aria-valuenow beside an aria-valuetext of U+00A0 only on a range control in a button is reported as shadowed', async () => {
+	const { violations } = await mlRuleTest(
+		rule,
+		'<button><span role="slider" aria-valuetext="\u00A0" aria-valuenow="5">volume</span></button>',
+	);
+	expect(violations).toStrictEqual([
+		{ severity: 'warning', line: 1, col: 48, message: ineffective('button'), raw: 'aria-valuenow="5"' },
+	]);
+});
+
+test('[no-aria-on-presentational-children-059] aria-valuenow of U+00A0 only on a range control in a button, which reads it, is not reported', async () => {
+	const { violations } = await mlRuleTest(
+		rule,
+		'<button><span role="slider" aria-valuenow="\u00A0">volume</span></button>',
+	);
+	expect(violations).toStrictEqual([]);
+});

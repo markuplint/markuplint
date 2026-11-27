@@ -2208,3 +2208,18 @@ describe('an ID reference list is split on ASCII white space only', () => {
 		expect(violations).toStrictEqual([]);
 	});
 });
+
+describe('a text that holds non-ASCII white space only is a name', () => {
+	test('[require-accessible-name-148] a reference to a text of U+00A0 only names the control', async () => {
+		const { violations } = await mlRuleTest(
+			rule,
+			'<span id="t">\u00A0</span> <button aria-labelledby="t" type="button"></button>',
+		);
+		expect(violations).toStrictEqual([]);
+	});
+
+	test('[require-accessible-name-149] a content of U+00A0 only names the control', async () => {
+		const { violations } = await mlRuleTest(rule, '<button type="button">\u00A0</button>');
+		expect(violations).toStrictEqual([]);
+	});
+});

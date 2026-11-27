@@ -199,6 +199,13 @@ export function splitOnAsciiWhitespace(value: string): string[] {
 }
 
 /**
+ * ASCII white space: U+0009, U+000A, U+000C, U+000D and U+0020.
+ *
+ * @see https://infra.spec.whatwg.org/#ascii-whitespace
+ */
+const ASCII_WHITESPACE: ReadonlySet<string> = new Set(['\t', '\n', '\f', '\r', ' ']);
+
+/**
  * Trims ASCII white space only (U+0009, U+000A, U+000C, U+000D, U+0020).
  * `String#trim` also removes U+00A0, U+FEFF and the other non-ASCII white space, which are part of a
  * value as the HTML syntax reads it.
@@ -208,5 +215,28 @@ export function splitOnAsciiWhitespace(value: string): string[] {
  * @returns The string without the ASCII white space at both ends
  */
 export function trimAsciiWhitespace(value: string): string {
-	return value.replaceAll(/^[\t\n\f\r ]+|[\t\n\f\r ]+$/g, '');
+	// Two scans from the ends, not a regular expression with an `$` alternative, which scans the rest of
+	// a long run of white space in the middle of the string again from each of its positions.
+	let start = 0;
+	let end = value.length;
+	while (start < end && ASCII_WHITESPACE.has(value.charAt(start))) {
+		start++;
+	}
+	while (end > start && ASCII_WHITESPACE.has(value.charAt(end - 1))) {
+		end--;
+	}
+	return value.slice(start, end);
+}
+
+/**
+ * Whether a value holds a character other than ASCII white space (U+0009, U+000A, U+000C, U+000D, U+0020).
+ * `null` and `undefined` (an absent attribute) hold none. U+00A0, U+FEFF, U+2028 and the other
+ * non-ASCII white space are characters, so a value made of them only has text.
+ *
+ * @see https://infra.spec.whatwg.org/#ascii-whitespace
+ * @param value - A string as written, or an absent value
+ * @returns `true` if the value is a string that is not empty after {@link trimAsciiWhitespace}
+ */
+export function hasText(value?: string | null): boolean {
+	return value != null && trimAsciiWhitespace(value) !== '';
 }
