@@ -1131,9 +1131,8 @@ export class MLElement<T extends RuleConfigValue, O extends PlainData = undefine
 	 */
 	get classList(): MLDomTokenList {
 		// The `class` that the element has (of two, the one that the language keeps), and what the framework merges
-		// with it (`:class` of Vue, `MLAttr#isDuplicatable`)
-		const deciding = this.getAttributeNode('class');
-		const classAttrs = this.getAttributeToken('class').filter(attr => attr === deciding || attr.isDuplicatable);
+		// with it (`:class` of Vue, `class:list` of Astro, `MLAttr#isDuplicatable`)
+		const classAttrs = this.getAttributeToken('class').filter(attr => !attr.overridden);
 		const value = classAttrs.map(c => c.value).join(' ');
 		return new MLDomTokenList(value, classAttrs);
 	}

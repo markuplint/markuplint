@@ -167,10 +167,22 @@ function readReference(
 			return code <= 1_114_111 ? { chars: String.fromCodePoint(code), length: jsxNumeric[0].length } : null;
 		}
 	}
-	const numeric = /^&#(?:X[\dA-F]+|\d+)(;?)/i.exec(rest);
+	if (decoding === 'mdx') {
+		// MDX takes a code point that is a control, a surrogate, a noncharacter or out of range for U+FFFD
+		// (`decodeNumericCharacterReference` of micromark), with a semicolon
+		const mdxNumeric = /^&#(?:X([\dA-F]+)|(\d+));/i.exec(rest);
+		if (mdxNumeric) {
+			const code = mdxNumeric[1] === undefined ? Number(mdxNumeric[2]) : Number.parseInt(mdxNumeric[1], 16);
+			return {
+				chars: isMdxReplacedCodePoint(code) ? '\uFFFD' : String.fromCodePoint(code),
+				length: mdxNumeric[0].length,
+			};
+		}
+	}
+	const numeric = /^&#(?:X[\dA-F]+|\d+);?/i.exec(rest);
 	if (numeric) {
-		// JSX and MDX require the semicolon, and JSX reads it above
-		if (decoding !== 'html' && (decoding === 'jsx' || numeric[1] !== ';')) {
+		// JSX and MDX require the semicolon, and read it above
+		if (decoding !== 'html') {
 			return null;
 		}
 		return { chars: decodeEntities(numeric[0]), length: numeric[0].length };
@@ -207,6 +219,25 @@ function readReference(
 		return { chars, length };
 	}
 	return null;
+}
+
+/**
+ * @see https://github.com/micromark/micromark/blob/main/packages/micromark-util-decode-numeric-character-reference/dev/index.js#decodeNumericCharacterReference
+ * @param code - A code point of a numeric character reference
+ * @returns Whether MDX takes it for U+FFFD
+ */
+function isMdxReplacedCodePoint(code: number): boolean {
+	return (
+		code < 9 ||
+		code === 11 ||
+		(code > 13 && code < 32) ||
+		(code > 126 && code < 160) ||
+		(code > 55_295 && code < 57_344) ||
+		(code > 64_975 && code < 65_008) ||
+		(code & 65_535) === 65_535 ||
+		(code & 65_535) === 65_534 ||
+		code > 1_114_111
+	);
 }
 
 /**

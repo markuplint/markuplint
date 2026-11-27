@@ -553,7 +553,7 @@ export class MLAttr<T extends RuleConfigValue, O extends PlainData = undefined>
 	 * Whether another attribute of the same name is the one that the element has
 	 * (`MLElement#getAttributeNode`, which reads the one that the language keeps), so that no selector matches this
 	 * one. A directive, a spread, and an attribute that the framework merges with another of its name (`:class`) are
-	 * not overridden.
+	 * not overridden, and do not override the attribute they are merged with.
 	 *
 	 * @implements `SelectorAttr#overridden` of `@markuplint/selector`
 	 */
@@ -565,7 +565,8 @@ export class MLAttr<T extends RuleConfigValue, O extends PlainData = undefined>
 			return false;
 		}
 		const deciding = this.ownerElement.getAttributeNode(this.name);
-		const overridden = deciding !== null && deciding !== this;
+		// One that the framework merges with this one (`:class`, `class:list`) adds to it, and overrides nothing
+		const overridden = deciding !== null && deciding !== this && !deciding.isDuplicatable && !deciding.isDirective;
 		// Read once the element is complete: which attribute decides depends on its type (`MLElement#elementType`)
 		if (this.ownerElement.elementType !== undefined) {
 			this.#overridden = overridden;

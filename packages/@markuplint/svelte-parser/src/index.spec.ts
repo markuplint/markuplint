@@ -1519,6 +1519,6 @@ describe('a leading BOM', () => {
 	});
 });
 
-test('says that only `foreignObject` puts what is in it in the HTML namespace, as the compiler does', () => {
-	expect(parser.integrationPoints).toBe('foreign-object');
+test('follows the integration points of the HTML parser, which reads the HTML string of the template', () => {
+	expect(parser.integrationPoints).toBe('html');
 });

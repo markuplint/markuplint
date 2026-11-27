@@ -122,9 +122,6 @@ export function findDecidingAttr<T extends RuleConfigValue, O extends PlainData>
 ): MLAttr<T, O> | null {
 	let first: MLAttr<T, O> | null = null;
 	let last: MLAttr<T, O> | null = null;
-	// A directive or an attribute that the framework merges with another (`class:list` of Astro beside `class`), which
-	// is the one asked for only when the element has no other
-	let merged: MLAttr<T, O> | null = null;
 	// The keys set by code, in the order that they are first written, each with the attribute that it keeps.
 	// Made only when there is one, as an HTML string has none.
 	let byKey: Map<string, MLAttr<T, O>> | null = null;
@@ -146,15 +143,9 @@ export function findDecidingAttr<T extends RuleConfigValue, O extends PlainData>
 		if (attr.isAbsent) {
 			continue;
 		}
-		if (attr.isDirective || attr.isDuplicatable) {
-			merged ??= attr;
-			continue;
-		}
 		first ??= attr;
 		last = attr;
 	}
-	first ??= merged;
-	last ??= merged;
 	if (!byKey) {
 		// An HTML string keeps the first; the props object of a component of a language that says so, the last
 		return keepsLast && !isHtmlElement(attrs) ? last : first;
