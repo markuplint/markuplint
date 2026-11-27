@@ -6,7 +6,7 @@ import type { PlainData, RuleConfigValue } from '@markuplint/ml-config';
 import { getAssignedSlot, getFlatTreeSlot } from '../helper/slot-assignment.js';
 
 import { MLCharacterData } from './character-data.js';
-import { UnexpectedCallError } from '@markuplint/shared';
+import { UnexpectedCallError, hasText } from '@markuplint/shared';
 
 /**
  * Raw text elements
@@ -97,13 +97,16 @@ export class MLText<T extends RuleConfigValue, O extends PlainData = undefined>
 	}
 
 	/**
-	 * Checks whether this text node contains only whitespace characters.
+	 * Checks whether this text node contains only ASCII white space characters: U+00A0 and the other
+	 * non-ASCII white space are characters of the text, not white space. A text of ASCII white space only is
+	 * inter-element whitespace for HTML.
 	 *
+	 * @see https://html.spec.whatwg.org/multipage/dom.html#inter-element-whitespace
 	 * @implements `@markuplint/ml-core` API: `MLText`
-	 * @returns True if the raw content is composed entirely of whitespace
+	 * @returns True if the raw content is composed entirely of ASCII white space
 	 */
 	isWhitespace() {
-		return /^\s+$/.test(this.raw);
+		return this.raw !== '' && !hasText(this.raw);
 	}
 
 	/**

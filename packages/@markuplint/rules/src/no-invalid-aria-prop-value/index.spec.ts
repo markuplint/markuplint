@@ -294,3 +294,40 @@ test('[no-invalid-aria-prop-value-020] a prop of a component is not rendered her
 		},
 	]);
 });
+
+test.each([
+	'<div role="slider" aria-valuenow="5"></div>',
+	'<div role="slider" aria-valuenow="5.0"></div>',
+	'<div role="slider" aria-valuenow="05"></div>',
+	'<div role="slider" aria-valuenow=".5"></div>',
+	'<div role="slider" aria-valuenow="-1"></div>',
+	'<div role="slider" aria-valuenow="1e2"></div>',
+	'<h2 aria-level="05">a</h2>',
+])(
+	'[no-invalid-aria-prop-value-021] a number or an integer that is valid as a whole is not reported: %j',
+	async code => {
+		expect((await mlRuleTest(rule, code)).violations).toStrictEqual([]);
+	},
+);
+
+test.each([
+	['<div role="slider" aria-valuenow="5."></div>', 20, 'aria-valuenow', '5.'],
+	['<div role="slider" aria-valuenow="+5"></div>', 20, 'aria-valuenow', '+5'],
+	['<div role="slider" aria-valuenow="5abc"></div>', 20, 'aria-valuenow', '5abc'],
+	['<div role="slider" aria-valuenow="\u00A05"></div>', 20, 'aria-valuenow', '\u00A05'],
+	['<div role="slider" aria-valuenow="5\u00A0"></div>', 20, 'aria-valuenow', '5\u00A0'],
+	['<h2 aria-level="2.5">a</h2>', 5, 'aria-level', '2.5'],
+])(
+	'[no-invalid-aria-prop-value-022] a number or an integer that is not valid as a whole is reported: %j',
+	async (code, col, name, value) => {
+		expect((await mlRuleTest(rule, code)).violations).toStrictEqual([
+			{
+				severity: 'error',
+				line: 1,
+				col,
+				message: `The "${value}" is disallowed on the "${name}" ARIA property`,
+				raw: `${name}="${value}"`,
+			},
+		]);
+	},
+);

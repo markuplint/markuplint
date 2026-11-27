@@ -2,6 +2,8 @@ import type { Options } from '../types.js';
 import type { AttrChecker } from '@markuplint/ml-core';
 import type { ARIAProperty, Attribute } from '@markuplint/ml-spec';
 
+import { trimAsciiWhitespace } from '@markuplint/shared';
+
 import { resolveAttrEligibility } from '../../attr-eligibility.js';
 
 /**
@@ -64,7 +66,7 @@ export const checkingContradictoryAriaProp: AttrChecker<
 				continue;
 			}
 
-			const value = attr.value.trim().toLowerCase();
+			const value = trimAsciiWhitespace(attr.value).toLowerCase();
 
 			if (attr.ownerElement.hasAttribute(equivalentHtmlAttr.htmlAttrName)) {
 				const targetAttrValue = attr.ownerElement.getAttribute(equivalentHtmlAttr.htmlAttrName);

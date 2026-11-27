@@ -164,3 +164,20 @@ test('[no-contradictory-aria-prop-016] the value is compared trimmed and case-in
 		},
 	]);
 });
+
+test('[no-contradictory-aria-prop-017] a value is trimmed of ASCII white space only: U+00A0 is a character of it', async () => {
+	expect(
+		(await mlRuleTest(rule, '<input type="checkbox" checked aria-checked=" false " />')).violations,
+	).toStrictEqual([
+		{
+			severity: 'error',
+			line: 1,
+			col: 32,
+			message: 'The "aria-checked" ARIA state contradicts the current "checked" attribute',
+			raw: 'aria-checked=" false "',
+		},
+	]);
+	expect(
+		(await mlRuleTest(rule, '<input type="checkbox" checked aria-checked="false\u00A0" />')).violations,
+	).toStrictEqual([]);
+});

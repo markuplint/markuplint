@@ -1128,3 +1128,18 @@ describe('a role that code gives in JSX', () => {
 		]);
 	});
 });
+
+test('[require-owned-elements-100] an owner that has a text and no element is reported the same, whatever the text is', async () => {
+	// An owner that has no element yet may get its owned elements later
+	const expected = [
+		{
+			severity: 'error',
+			line: 1,
+			col: 1,
+			message: 'The child element requires the "listitem" role. Or, require aria-busy="true"',
+			raw: '<div role="list">',
+		},
+	];
+	expect((await mlRuleTest(rule, '<div role="list"> \t\n</div>')).violations).toStrictEqual(expected);
+	expect((await mlRuleTest(rule, '<div role="list">\u00A0</div>')).violations).toStrictEqual(expected);
+});

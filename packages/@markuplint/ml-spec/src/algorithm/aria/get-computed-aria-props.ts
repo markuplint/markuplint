@@ -1,5 +1,7 @@
 import type { ARIAAttributeValue, ARIAProperty, ARIAVersion, MLMLSpec } from '../../types/index.js';
 
+import { isValidFloatingPointNumber, isValidInteger, trimAsciiWhitespace } from '@markuplint/shared';
+
 import { ariaSpecs as _ariaSpecs } from './aria-specs.js';
 
 import { getComputedRole } from './get-computed-role.js';
@@ -113,6 +115,24 @@ export function getComputedAriaProps(
 	return props;
 }
 
+/**
+ * Whether the value of an ARIA attribute is a valid one for the value type of its property, which decides if
+ * the attribute or the default of the property is the computed one.
+ *
+ * The value is trimmed of ASCII white space only, so U+00A0 and the other non-ASCII white space are
+ * characters of it. `integer` and `number` take the whole of the value: see `isValidInteger` and
+ * `isValidFloatingPointNumber` of `@markuplint/shared`.
+ *
+ * Known limitation: `checkAriaValue` of `@markuplint/rules` (the `no-invalid-aria-prop-value` rule) reads the
+ * same value types differently: it does not trim, does not fold the case, and its `tristate` has `undefined`.
+ * A value such as ` TRUE ` is valid here and disallowed there.
+ *
+ * @param spec - The ARIA property specification
+ * @param role - The name of the computed role, used to resolve conditional value types
+ * @param value - The attribute value as written, or `undefined` for an absent one
+ * @param enumList - The allowed values of a token or a token list
+ * @returns `true` if the value is valid for the value type
+ */
 function isValidAriaValue(spec: ARIAProperty, role: string, value: string | undefined, enumList: readonly string[]) {
 	let type: ARIAAttributeValue = spec.value;
 	if (spec.conditionalValue) {
@@ -123,7 +143,8 @@ function isValidAriaValue(spec: ARIAProperty, role: string, value: string | unde
 		}
 	}
 
-	value = (value ?? '').trim();
+	// ASCII white space only: U+00A0 and the other non-ASCII white space are characters of the value
+	value = trimAsciiWhitespace(value ?? '');
 	switch (type) {
 		case 'string': {
 			return true;
@@ -133,9 +154,11 @@ function isValidAriaValue(spec: ARIAProperty, role: string, value: string | unde
 		case 'URI': {
 			return !!value;
 		}
-		case 'integer':
+		case 'integer': {
+			return isValidInteger(value);
+		}
 		case 'number': {
-			return !Number.isNaN(Number.parseFloat(value));
+			return isValidFloatingPointNumber(value);
 		}
 		case 'token':
 		case 'token list': {

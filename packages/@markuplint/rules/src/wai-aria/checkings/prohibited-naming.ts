@@ -4,6 +4,7 @@ import type { AttrChecker } from '@markuplint/ml-core';
 import type { ARIAProperty, ARIARole } from '@markuplint/ml-spec';
 
 import { ARIA_RECOMMENDED_VERSION, getARIA } from '@markuplint/ml-spec';
+import { hasText } from '@markuplint/shared';
 
 /**
  * ARIA naming attributes subject to the "naming prohibition" constraint
@@ -77,8 +78,7 @@ export const checkingProhibitedNaming: AttrChecker<
 
 		const isAutonomousCustomElement =
 			attr.ownerElement.elementType === 'web-component' && !attr.ownerElement.hasAttribute('is');
-		const hasExplicitRoleAttr =
-			isAutonomousCustomElement && (attr.ownerElement.getAttribute('role')?.trim() ?? '') !== '';
+		const hasExplicitRoleAttr = isAutonomousCustomElement && hasText(attr.ownerElement.getAttribute('role'));
 
 		if (hasExplicitRoleAttr) {
 			return;

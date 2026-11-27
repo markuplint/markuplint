@@ -4150,11 +4150,11 @@ export class MLElement<T extends RuleConfigValue, O extends PlainData = undefine
 	}
 
 	/**
-	 * Returns child elements and non-whitespace text nodes, skipping omitted elements
+	 * Returns child elements and text nodes that are not of ASCII white space only, skipping omitted elements
 	 * by flattening their children into the result. Results are cached for performance.
 	 *
 	 * @implements `@markuplint/ml-core` API: `MLElement`
-	 * @returns An array of child elements and non-whitespace text nodes
+	 * @returns An array of child elements and text nodes that are not of ASCII white space only
 	 */
 	getChildElementsAndTextNodeWithoutWhitespaces() {
 		if (this.#getChildElementsAndTextNodeWithoutWhitespacesCache) {
@@ -4456,14 +4456,14 @@ export class MLElement<T extends RuleConfigValue, O extends PlainData = undefine
 
 	/**
 	 * Checks whether this element has no meaningful child content
-	 * (only whitespace-only text nodes or no children at all).
+	 * (only text nodes of ASCII white space or no children at all).
 	 *
 	 * @implements `@markuplint/ml-core` API: `MLElement`
-	 * @returns True if the element has no non-whitespace child content
+	 * @returns True if the element has no child content other than ASCII white space
 	 */
 	isEmpty() {
 		for (const childNode of this.childNodes) {
-			if (!(childNode.is(childNode.TEXT_NODE) && childNode.textContent?.trim() === '')) {
+			if (!(childNode.is(childNode.TEXT_NODE) && !hasText(childNode.textContent))) {
 				return false;
 			}
 		}
