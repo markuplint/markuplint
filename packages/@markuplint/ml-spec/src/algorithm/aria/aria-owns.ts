@@ -7,7 +7,7 @@ import { hasDisplayNoneOrVisibilityHiddenStyle } from '../dom/inline-style.js';
 import { getAccessibilityParentElement, getComposedParentElement, isNotRendered } from '../dom/tree-boundary.js';
 import { getExplicitRole } from './get-explicit-role.js';
 import { getImplicitRole } from './get-implicit-role.js';
-import { getQueryableRoot } from './id-reference.js';
+import { getElementsInTreeOrder, getQueryableRoot } from './id-reference.js';
 import { isPresentational } from './is-presentational.js';
 import { isAriaTrue } from './is-aria-true.js';
 
@@ -42,7 +42,9 @@ import { isAriaTrue } from './is-aria-true.js';
  * first. Ignoring them gives the elements of the cycle their DOM parents, which can close another
  * cycle through the references left, so the references are removed until no cycle is left.
  *
- * An ID is looked up as `id-reference.ts` describes. Being hidden from all users is read from the
+ * An ID is looked up as `id-reference.ts` describes, among the elements of the tree and the ones that a
+ * component renders there, which the root of `@markuplint/ml-core` tells (`getElementsInTreeOrder`); an
+ * element that a component renders may own and be owned as well. Being hidden from all users is read from the
  * markup of the element and its ancestors of the flat tree, as `isExposed` reads it: the `hidden`
  * attribute, an inline style of `display: none` or `visibility: hidden`, or a light child that no slot
  * takes. Those, `aria-hidden="true"`, and an ancestor whose role has presentational children exclude an
@@ -321,15 +323,18 @@ function getOwnership(
 }
 
 function computeWrittenReferences(root: QueryableRoot): WrittenReferences {
+	// The elements that a component renders are elements of the tree as well, in the order it renders them
+	const elements = [...getElementsInTreeOrder(root)].filter(el => el.getRootNode() === root);
+
 	const elementById = new Map<string, Element>();
-	for (const el of root.querySelectorAll('[id]')) {
+	for (const el of elements) {
 		const id = el.getAttribute('id');
-		if (id && el.getRootNode() === root && !elementById.has(id)) {
+		if (id && !elementById.has(id)) {
 			elementById.set(id, el);
 		}
 	}
 
-	const referrers = [...root.querySelectorAll('[aria-owns]')].filter(el => el.getRootNode() === root);
+	const referrers = elements.filter(el => el.hasAttribute('aria-owns'));
 
 	const writtenOwnerOf = new Map<Element, Element>();
 	for (const referrer of referrers) {

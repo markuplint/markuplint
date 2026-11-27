@@ -21,6 +21,10 @@
  * criterion of its own. What counts here, and why, is in the module comment of `helper/unknown-id.ts` of
  * `@markuplint/ml-core`, which `MLElement#treeMayHoldUnknownId` answers from.
  *
+ * An `aria-labelledby` token that does find an element is undecidable too when the text of that element is not
+ * known (`MLElement#referencedTextMayBeUnknown` of `@markuplint/ml-core`: an element that a pretender declares,
+ * or one whose content is not known); {@link labelledbyMayReferToUnknownId} reads both.
+ *
  * That is a decision of markuplint, as it does not decide what it cannot know, and not text of a
  * specification: the specifications define an id and an id reference, and not an id that is not
  * known yet. An id that another file may hold (the file is a part of a page) is not counted: the
@@ -44,9 +48,13 @@ type MLAttrLike = Attr & { readonly isDynamicValue?: boolean };
 
 /**
  * The element as `@markuplint/ml-core` hands it over: `treeMayHoldUnknownId` is the answer of its own
- * tree. A DOM has no such method.
+ * tree, and `referencedTextMayBeUnknown` whether the text it gives as the target of a reference is not known
+ * (an element that a pretender declares, or one with content the markup does not tell). A DOM has neither.
  */
-type MLElementLike = Element & { readonly treeMayHoldUnknownId?: () => boolean };
+type MLElementLike = Element & {
+	readonly treeMayHoldUnknownId?: () => boolean;
+	readonly referencedTextMayBeUnknown?: () => boolean;
+};
 
 /**
  * Whether the value of the attribute is not known until it is rendered (`aria-labelledby={id}`).
@@ -63,10 +71,12 @@ export function isUnknownValueAttr(
 
 /**
  * Whether the `aria-labelledby` of the element may refer to an element that gives a name, as far as the
- * markup tells: its value is not known until it is rendered (`aria-labelledby={id}`), or a token refers
+ * markup tells: its value is not known until it is rendered (`aria-labelledby={id}`), a token refers
  * to no element of the tree while the tree may have an element whose `id` is not known
- * ({@link hasElementOfUnknownId}: `<p id={id}>`). Such a reference is not known to give nothing, and
- * markuplint does not decide what it cannot know.
+ * ({@link hasElementOfUnknownId}: `<p id={id}>`), or a token refers to an element whose text is not known
+ * (`MLElement#referencedTextMayBeUnknown` of `@markuplint/ml-core`: an element that a pretender declares,
+ * which declares no content). Such a reference is not known to give nothing, and markuplint does not decide
+ * what it cannot know.
  *
  * `isValidLandmarkRole` of `get-explicit-role.ts`, `MLElement#mayHaveAccessibleName` of
  * `@markuplint/ml-core` and `:aria(has name)` of `@markuplint/selector` read it, so the criterion is in one
@@ -86,7 +96,13 @@ export function labelledbyMayReferToUnknownId(
 		return true;
 	}
 	const resolved = resolveLabelledby(el);
-	return !!resolved && resolved.some(target => !target) && hasElementOfUnknownId(el);
+	if (!resolved) {
+		return false;
+	}
+	if (resolved.some(target => target && (target as MLElementLike).referencedTextMayBeUnknown?.() === true)) {
+		return true;
+	}
+	return resolved.some(target => !target) && hasElementOfUnknownId(el);
 }
 
 /**
