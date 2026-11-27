@@ -123,6 +123,7 @@ describe('the names that the specs type as Boolean are the ones that the tables 
 		'autoplay',
 		'checked',
 		'controls',
+		'customelementregistry',
 		'default',
 		'defer',
 		'disabled',

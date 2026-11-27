@@ -233,6 +233,7 @@ const spec: ExtendedSpec = {
 			// Boolean attributes of the spec that Vue does not render as boolean (not in `isBooleanAttr`): `ssrRenderDynamicAttr`
 			// outputs the value, and `""` is present as it is for a boolean attribute
 			alpha: { true: 'true', false: 'false', '0': '0' },
+			customelementregistry: { true: 'true', false: 'false', '0': '0' },
 			focusgroupstart: { true: 'true', false: 'false', '0': '0' },
 			headingreset: { true: 'true', false: 'false', '0': '0' },
 			shadowrootclonable: { true: 'true', false: 'false', '0': '0' },

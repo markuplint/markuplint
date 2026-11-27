@@ -63,6 +63,7 @@ const spec: ExtendedSpec = {
 			hidden: { true: 'true', '0': '0' },
 			// Boolean attributes of the spec that Alpine does not know as boolean
 			alpha: { true: 'true', '0': '0', '""': '' },
+			customelementregistry: { true: 'true', '0': '0', '""': '' },
 			disablepictureinpicture: { true: 'true', '0': '0', '""': '' },
 			disableremoteplayback: { true: 'true', '0': '0', '""': '' },
 			focusgroupstart: { true: 'true', '0': '0', '""': '' },
