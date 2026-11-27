@@ -6,6 +6,7 @@ import { EMBEDDED_CONTROL_ROLES, escapeCSS } from './accname/helpers.js';
 import { isNativeEmbeddedControl } from '../../const/index.js';
 import { getComputedRole } from './get-computed-role.js';
 import { isExposedAsPresentational } from './is-presentational.js';
+import { isAriaTrue } from './is-aria-true.js';
 
 /**
  * [Implementation-specific] Reentrant guard to prevent infinite recursion when
@@ -94,7 +95,7 @@ function createDomResolver(
 		},
 		// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
 		isHidden(target: AccnameElement): boolean {
-			if (target.getAttribute('aria-hidden') === 'true') {
+			if (isAriaTrue(target.getAttribute('aria-hidden'))) {
 				return true;
 			}
 			if (target.hasAttribute('hidden')) {

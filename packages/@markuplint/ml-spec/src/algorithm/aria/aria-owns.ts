@@ -9,6 +9,7 @@ import { getExplicitRole } from './get-explicit-role.js';
 import { getImplicitRole } from './get-implicit-role.js';
 import { getQueryableRoot } from './id-reference.js';
 import { isPresentational } from './is-presentational.js';
+import { isAriaTrue } from './is-aria-true.js';
 
 /**
  * @module
@@ -443,7 +444,7 @@ function isExcludedOwner(
 			isNotRendered(current) ||
 			current.hasAttribute('hidden') ||
 			hasDisplayNoneOrVisibilityHiddenStyle(current) ||
-			current.getAttribute('aria-hidden')?.trim().toLowerCase() === 'true'
+			isAriaTrue(current.getAttribute('aria-hidden'))
 		) {
 			return true;
 		}

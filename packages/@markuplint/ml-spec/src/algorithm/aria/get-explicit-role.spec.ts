@@ -94,3 +94,15 @@ describe('the tokens of the role attribute', () => {
 		expect(getExplicitRole(specs, el, '1.2').role).toBeNull();
 	});
 });
+
+describe('a role that is not permitted on a hidden input', () => {
+	test.each(['hidden', 'HIDDEN'])('is not exposed, as the input is never rendered: type=%j', type => {
+		const el = must(createJSDOMElement(`<div><input type="${type}" role="button"></div>`).querySelector('input'));
+		expect(getExplicitRole(specs, el, '1.2').role).toBeNull();
+	});
+
+	test.each([' hidden', 'hidden\u00A0'])('is exposed on an input whose type is not the keyword: type=%j', type => {
+		const el = must(createJSDOMElement(`<div><input type="${type}" role="button"></div>`).querySelector('input'));
+		expect(getExplicitRole(specs, el, '1.2').role?.name).toBe('button');
+	});
+});

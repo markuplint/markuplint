@@ -41,6 +41,7 @@ export * from './algorithm/aria/get-computed-role.js';
 export * from './algorithm/aria/get-implicit-role.js';
 export * from './algorithm/aria/get-permitted-roles.js';
 export * from './algorithm/aria/has-required-owned-elements.js';
+export * from './algorithm/aria/is-aria-true.js';
 export * from './algorithm/aria/is-exposed.js';
 export * from './algorithm/aria/aria-owns.js';
 export * from './algorithm/aria/aria-specs.js';
@@ -61,7 +62,7 @@ export * from './algorithm/html/get-selectors-by-content-model-category.js';
 export * from './algorithm/html/is-nothing-content-model.js';
 export * from './algorithm/html/is-palpable-elements.js';
 export * from './algorithm/html/is-void-element.js';
-export { getSelectDisplaySize } from './algorithm/html/select-display-size.js';
+export { getSelectDisplaySize, parseNonNegativeInteger } from './algorithm/html/select-display-size.js';
 
 // Shared utilities
 export * from './utils/get-attr-specs.js';
