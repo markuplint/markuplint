@@ -2248,7 +2248,7 @@ test('[no-invalid-attr-value-224] JSX: allowAttrs keeps the name as written on a
 // > The auto keyword may be specified in the sizes attribute of source elements and sizes
 // > attribute of img elements, if the following conditions are met. Otherwise, auto must not be
 // > specified.
-test('[no-invalid-attr-value-308] link: imagesizes does not accept "auto"', async () => {
+test('[no-invalid-attr-value-309] link: imagesizes does not accept "auto"', async () => {
 	const link = (sizes: string) =>
 		`<link rel="preload" as="image" href="a.png" imagesrcset="a.png 480w" imagesizes="${sizes}">`;
 	const message =
