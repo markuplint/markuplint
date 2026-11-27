@@ -2442,6 +2442,7 @@ __metadata:
     "@markuplint/html-parser": "npm:5.6.1"
     "@markuplint/ml-ast": "npm:5.6.0"
     "@markuplint/parser-utils": "npm:5.6.1"
+    "@markuplint/shared": "npm:5.6.0"
     "@vue/shared": "npm:^3.5.46"
     vue-eslint-parser: "npm:^10.4.2"
   languageName: unknown
