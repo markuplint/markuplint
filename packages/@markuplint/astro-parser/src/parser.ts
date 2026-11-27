@@ -33,6 +33,14 @@ class AstroParser extends Parser<Node> {
 			// A value in `{…}` is JavaScript
 			attrExpressionLanguage: 'javascript',
 			literalValues: ASTRO_LITERAL_VALUES,
+			// The compiler of Astro 7 (`@astrojs/compiler-rs`) writes an HTML element into an HTML string (the first of
+			// two attributes of one name), and passes the attributes of a component and of a custom element as a props
+			// object to `$$renderComponent`, where a later key replaces an earlier one
+			// @see https://github.com/withastro/compiler-rs/blob/main/crates/astro_codegen/src/printer/components.rs
+			componentDuplicateAttrPrecedence: 'last',
+			// and the string values of those props as written, with no character reference decoded (the Go compiler of
+			// Astro 5 and earlier decoded them)
+			componentAttrValueDecoding: 'none',
 			// `<slot />` is replaced with the children that the page or the layout passes to the component,
 			// not the HTML `slot` element of a shadow tree
 			// @see https://docs.astro.build/en/basics/astro-components/#slots
@@ -345,12 +353,15 @@ class AstroParser extends Parser<Node> {
 		 *
 		 * @see https://docs.astro.build/en/reference/directives-reference/
 		 */
+		// The compiler merges `class:list` with a `class` of the element into one attribute, whichever comes first
+		let isDuplicatable = attr.isDuplicatable;
 		const [, directive] = attr.name.raw.match(/^([^:]+):([^:]+)$/) ?? [];
 		if (directive) {
 			const lowerCaseDirectiveName = directive.toLowerCase();
 			switch (lowerCaseDirectiveName) {
 				case 'class': {
 					potentialName = lowerCaseDirectiveName;
+					isDuplicatable = true;
 					break;
 				}
 				default: {
@@ -363,6 +374,7 @@ class AstroParser extends Parser<Node> {
 			...attr,
 			isDynamicValue,
 			isDirective,
+			isDuplicatable,
 			potentialName,
 		};
 	}
