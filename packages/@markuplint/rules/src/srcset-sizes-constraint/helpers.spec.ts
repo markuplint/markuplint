@@ -3,7 +3,7 @@ import { describe, test, expect } from 'vitest';
 
 import { createRule } from '@markuplint/ml-core';
 
-import { hasSizesAuto } from './parse-srcset.js';
+import { hasSizesAuto, specifiesSizesAuto } from './parse-srcset.js';
 import { allowsAutoSizes, isAutoSizes, isLazyLoading } from './sibling-helpers.js';
 
 describe('hasSizesAuto', () => {
@@ -21,6 +21,26 @@ describe('hasSizesAuto', () => {
 		['', false],
 	])('hasSizesAuto(%j) is %s', (value, expected) => {
 		expect(hasSizesAuto(value)).toBe(expected);
+	});
+});
+
+describe('specifiesSizesAuto', () => {
+	test.each([
+		['auto', true],
+		['AUTO', true],
+		['auto, 100vw', true],
+		[' auto , 100vw', true],
+		['auto\t', true],
+		['/* c */auto', true],
+		['auto/* c, d */, 100vw', true],
+		['/* unclosed, auto', false],
+		['au/**/to', false],
+		['auto 100vw', false],
+		['100vw, auto', false],
+		['(min-width: 600px) 200px, 100vw', false],
+		['', false],
+	])('specifiesSizesAuto(%j) is %s', (value, expected) => {
+		expect(specifiesSizesAuto(value)).toBe(expected);
 	});
 });
 
