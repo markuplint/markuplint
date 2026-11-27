@@ -162,3 +162,22 @@ test('[no-pseudo-list-011] Markdown: a bullet that a backslash escapes is a char
 		},
 	]);
 });
+
+test.each([
+	['\u3000・項目', '\u3000・項目'],
+	['&nbsp;- item', '&nbsp;- item'],
+])(
+	'[no-pseudo-list-012] a bullet indented with a space that is not ASCII is still a bullet: %j',
+	async (content, raw) => {
+		const { violations } = await mlRuleTest(rule, `<p>${content}</p>`);
+		expect(violations).toStrictEqual([
+			{
+				severity: 'warning',
+				line: 1,
+				col: 4,
+				message: 'Use the "li" element',
+				raw,
+			},
+		]);
+	},
+);

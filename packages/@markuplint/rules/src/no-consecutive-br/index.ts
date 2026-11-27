@@ -1,7 +1,6 @@
 import { createRule } from '@markuplint/ml-core';
 
 import meta from './meta.js';
-import { hasText } from '@markuplint/shared';
 
 export default createRule({
 	meta: meta,
@@ -11,8 +10,9 @@ export default createRule({
 
 		for (const br of brList) {
 			let next = br.nextSibling;
-			// ASCII white space only: a no-break space (`&nbsp;`) is a character between the two
-			while (next && next.is(next.TEXT_NODE) && !hasText(next.nodeValue)) {
+			// Any white space, a no-break space (`&nbsp;`) and an ideographic space included: what the rule looks for is
+			// a blank line made of `br`, which such a space does not fill
+			while (next && next.is(next.TEXT_NODE) && !next.nodeValue?.trim()) {
 				next = next.nextSibling;
 			}
 			if (next && next.nodeName === 'BR') {

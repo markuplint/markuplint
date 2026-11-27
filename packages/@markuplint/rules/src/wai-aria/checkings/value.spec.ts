@@ -61,3 +61,15 @@ describe('checkAriaValue', () => {
 		expect(checkAriaValue('integer', value, [])).toBe(false);
 	});
 });
+
+describe('checkAriaValue reads a value as the computed ARIA props read it', () => {
+	test.each([
+		['true/false', ' TRUE ', true],
+		['integer', ' 5 ', true],
+		['URI', '', false],
+		['ID reference', 'a b', false],
+		['unknown', 'x', true],
+	])('%s %j is %j', (type, value, valid) => {
+		expect(checkAriaValue(type, value, [])).toBe(valid);
+	});
+});
