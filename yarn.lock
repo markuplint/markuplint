@@ -11280,7 +11280,7 @@ __metadata:
     npm-run-all2: "npm:9.0.4"
     oxfmt: "npm:0.79.0"
     oxlint: "npm:1.94.0"
-    renovate: "npm:44.257.0"
+    renovate: "npm:44.257.2"
     textlint: "npm:16.1.1"
     textlint-filter-rule-comments: "npm:1.3.0"
     textlint-rule-preset-ja-spacing: "npm:3.1.0"
@@ -14513,9 +14513,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"renovate@npm:44.257.0":
-  version: 44.257.0
-  resolution: "renovate@npm:44.257.0"
+"renovate@npm:44.257.2":
+  version: 44.257.2
+  resolution: "renovate@npm:44.257.2"
   dependencies:
     "@aws-sdk/client-codecommit": "npm:3.1139.0"
     "@aws-sdk/client-ec2": "npm:3.1139.0"
@@ -14649,7 +14649,7 @@ __metadata:
   bin:
     renovate: dist/renovate.js
     renovate-config-validator: dist/config-validator.js
-  checksum: 10c0/53bdefa47973b740a84049cc7f6765ceac96aecf58c600e80ee67e84527cdffa50b60f957613007dfd6627813d87e8be93580d4cd140c6a0241d553c6d0f41f2
+  checksum: 10c0/802ed3986101f040290e793961a627232ed1efc084009d4bb9f5b0c7d3ec147fa2b3cb4e98a52f64d0d336e71c5402e36e3d3560d2840491e766d565249db905
   languageName: node
   linkType: hard
 
