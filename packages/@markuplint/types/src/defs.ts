@@ -1,6 +1,6 @@
 import type { CustomSyntaxCheck, Defs } from './types.js';
 
-import { splitOnAsciiWhitespace } from '@markuplint/shared';
+import { asciiLowerCase, splitOnAsciiWhitespace } from '@markuplint/shared';
 
 import { checkMultiTypes } from './check-multi-types.js';
 import { cssSyntaxMatch } from './css-syntax.js';
@@ -537,7 +537,13 @@ export const defs: Defs = {
 			// validation errors (invalid-credentials, scheme-missing-solidus,
 			// invalid-reverse-solidus, etc.) are reported uniformly with
 			// `URL` / `HTTPSchemaURL` / etc.
-			const normalised = value.toLowerCase().trim();
+			// The URL parser strips the leading and trailing C0 controls and spaces, and a scheme is ASCII
+			// case-insensitive
+			// It also removes every ASCII tab and newline in the input
+			const normalised = asciiLowerCase(
+				// eslint-disable-next-line no-control-regex
+				value.replaceAll(/^[\u0000-\u0020]+|[\u0000-\u0020]+$/g, '').replaceAll(/[\t\n\r]/g, ''),
+			);
 			if (normalised.startsWith('data:') || normalised.startsWith('javascript:')) {
 				return unmatched(value, 'unexpected-token');
 			}
@@ -698,11 +704,11 @@ export const defs: Defs = {
 			// The keywords are ASCII case-insensitive, a name is not: only the keyword is compared in lower case,
 			// and the value that the message shows is the one that was written.
 			const keywords = ['_blank', '_self', '_parent', '_top'];
-			if (keywords.includes(value.toLowerCase())) {
+			if (keywords.includes(asciiLowerCase(value))) {
 				return matched();
 			}
 			if (value[0] === '_') {
-				const candidate = getCandidate(value.toLowerCase(), keywords);
+				const candidate = getCandidate(asciiLowerCase(value), keywords);
 				return unmatched(value, 'unexpected-token', { candidate });
 			}
 			const res = matches(isNavigableTargetName())(value);
@@ -737,11 +743,11 @@ export const defs: Defs = {
 		],
 		is(value) {
 			const keywords = ['_blank', '_self', '_parent', '_top'];
-			if (keywords.includes(value.toLowerCase())) {
+			if (keywords.includes(asciiLowerCase(value))) {
 				return matched();
 			}
 			if (value[0] === '_') {
-				const candidate = getCandidate(value.toLowerCase(), keywords);
+				const candidate = getCandidate(asciiLowerCase(value), keywords);
 				return unmatched(value, 'unexpected-token', { candidate });
 			}
 			return matches(isBrowserContextName())(value);
