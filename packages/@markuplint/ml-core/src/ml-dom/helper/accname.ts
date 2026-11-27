@@ -18,6 +18,7 @@ import {
 	computeReferencedTextAlternative,
 	getComputedRole,
 	EMBEDDED_CONTROL_ROLES,
+	isAriaTrue,
 	isExposedAsPresentational,
 	isNativeEmbeddedControl,
 } from '@markuplint/ml-spec';
@@ -294,7 +295,7 @@ function createMLCoreResolver(
 		},
 		// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
 		isHidden(target: AccnameElement): boolean {
-			return target.getAttribute('aria-hidden') === 'true' || target.hasAttribute('hidden');
+			return isAriaTrue(target.getAttribute('aria-hidden')) || target.hasAttribute('hidden');
 		},
 		// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
 		isEmbeddedControl(target: AccnameElement): boolean {
