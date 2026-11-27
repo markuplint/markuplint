@@ -39,7 +39,7 @@
 		"debug": "^4.4.3",
 		"language-subtag-registry": "^0.4.2",
 		"leven": "^4.1.0",
-		"type-fest": "^6.0.2",
+		"type-fest": "^6.0.3",
 		"whatwg-mimetype": "^5.0.0"
 	}
 }

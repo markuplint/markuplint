@@ -11,7 +11,7 @@ import meta from './meta.js';
 /**
  * Split from the former `wai-aria-implicit-props` rule (#3989): the
  * "contradictory" half. See `checkingContradictoryAriaProp`'s JSDoc for the
- * full spec citation. Must-level (ARIA in HTML §6 conformance), so this rule
+ * full spec citation. Must-level (ARIA in HTML §4.2 conformance), so this rule
  * uses the default `error` severity — contrast `no-redundant-aria-prop`'s
  * should-level `warning`, which the former combined rule used uniformly.
  */

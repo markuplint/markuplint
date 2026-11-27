@@ -67,3 +67,100 @@ test('[no-contradictory-aria-prop-006] the message is in Japanese with locale ja
 		},
 	]);
 });
+
+/**
+ * ARIA in HTML §4.2 lets an author use `aria-required`, `aria-disabled` and `aria-readonly`
+ * in place of their native attributes; only the value `"false"` beside the native attribute is
+ * forbidden for them. `aria-checked` is the exception: the checkedness of the element can be in
+ * opposition to it.
+ *
+ * @see https://www.w3.org/TR/html-aria/#docconformance-attr
+ */
+test.each([
+	'<input type="text" aria-required="true">',
+	'<input type="text" aria-readonly="true">',
+	'<input type="text" aria-disabled="true">',
+	'<button type="button" aria-disabled="true">Save</button>',
+])(
+	'[no-contradictory-aria-prop-008] aria-required/-readonly/-disabled="true" without the native attribute is allowed: %s',
+	async markup => {
+		expect((await mlRuleTest(rule, markup)).violations).toStrictEqual([]);
+	},
+);
+
+test.each(['<textarea aria-readonly="true"></textarea>', '<select aria-required="true"></select>'])(
+	'[no-contradictory-aria-prop-009] aria-readonly/-required="true" without the native attribute is allowed on textarea and select: %s',
+	async markup => {
+		expect((await mlRuleTest(rule, markup)).violations).toStrictEqual([]);
+	},
+);
+
+test('[no-contradictory-aria-prop-010] JSX: aria-required={true} without required is allowed', async () => {
+	const { violations } = await mlRuleTest(rule, '<input type="text" aria-required={true} />', {
+		parser: { '.*': '@markuplint/jsx-parser' },
+	});
+	expect(violations).toStrictEqual([]);
+});
+
+test('[no-contradictory-aria-prop-011] JSX: aria-required={false} beside required is reported', async () => {
+	const { violations } = await mlRuleTest(rule, '<input type="text" required aria-required={false} />', {
+		parser: { '.*': '@markuplint/jsx-parser' },
+	});
+	expect(violations).toStrictEqual([
+		{
+			severity: 'error',
+			line: 1,
+			col: 29,
+			message: 'The "aria-required" ARIA property contradicts the current "required" attribute',
+			raw: 'aria-required={false}',
+		},
+	]);
+});
+
+test('[no-contradictory-aria-prop-012] aria-checked="true" without checked still contradicts the implicit checkedness', async () => {
+	const { violations } = await mlRuleTest(rule, '<input type="checkbox" aria-checked="true" />');
+	expect(violations).toStrictEqual([
+		{
+			severity: 'error',
+			line: 1,
+			col: 24,
+			message: 'The "aria-checked" ARIA state contradicts the implicit "checked" attribute',
+			raw: 'aria-checked="true"',
+		},
+	]);
+});
+
+test.each(['<input type="text" aria-required="false">', '<input type="checkbox" aria-checked="false">'])(
+	'[no-contradictory-aria-prop-013] a "false" value without the native attribute is not reported: %s',
+	async markup => {
+		expect((await mlRuleTest(rule, markup)).violations).toStrictEqual([]);
+	},
+);
+
+test('[no-contradictory-aria-prop-014] aria-hidden="true" without the hidden attribute is allowed', async () => {
+	expect((await mlRuleTest(rule, '<div aria-hidden="true"></div>')).violations).toStrictEqual([]);
+});
+
+test.each([
+	'<div role="textbox" aria-required="true"></div>',
+	'<div role="checkbox" aria-checked="true"></div>',
+	'<input type="text" aria-checked="true">',
+])(
+	'[no-contradictory-aria-prop-015] an element to which the native attribute does not apply is not reported: %s',
+	async markup => {
+		expect((await mlRuleTest(rule, markup)).violations).toStrictEqual([]);
+	},
+);
+
+test('[no-contradictory-aria-prop-016] the value is compared trimmed and case-insensitively', async () => {
+	const { violations } = await mlRuleTest(rule, '<input type="checkbox" aria-checked=" TRUE " />');
+	expect(violations).toStrictEqual([
+		{
+			severity: 'error',
+			line: 1,
+			col: 24,
+			message: 'The "aria-checked" ARIA state contradicts the implicit "checked" attribute',
+			raw: 'aria-checked=" TRUE "',
+		},
+	]);
+});
