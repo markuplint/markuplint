@@ -2046,7 +2046,7 @@ __metadata:
   dependencies:
     "@markuplint/ml-spec": "npm:5.6.1"
     "@markuplint/test-tools": "npm:5.6.1"
-    "@mdn/browser-compat-data": "npm:8.1.9"
+    "@mdn/browser-compat-data": "npm:8.1.10"
     "@types/cli-progress": "npm:3.11.6"
     cheerio: "npm:1.2.0"
     cli-progress: "npm:3.12.0"
@@ -2313,7 +2313,7 @@ __metadata:
     "@markuplint/shared": "npm:5.6.0"
     "@markuplint/test-tools": "npm:5.6.1"
     "@markuplint/types": "npm:5.6.0"
-    "@mdn/browser-compat-data": "npm:^8.1.9"
+    "@mdn/browser-compat-data": "npm:^8.1.10"
     "@types/debug": "npm:^4.1.13"
     ansi-colors: "npm:^4.1.3"
     browserslist: "npm:^4.29.6"
@@ -2450,10 +2450,10 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@mdn/browser-compat-data@npm:8.1.9, @mdn/browser-compat-data@npm:^8.1.9":
-  version: 8.1.9
-  resolution: "@mdn/browser-compat-data@npm:8.1.9"
-  checksum: 10c0/d936157979f4b6fb8ddd4ff91bf7d1fab60a091a27d2f36cf15802e1e5f7d1ed7a2cdb02c8011302dd65c626ca698f3f440dc6d4494fed9da3bc9bb0abdbb9cc
+"@mdn/browser-compat-data@npm:8.1.10, @mdn/browser-compat-data@npm:^8.1.10":
+  version: 8.1.10
+  resolution: "@mdn/browser-compat-data@npm:8.1.10"
+  checksum: 10c0/35dd04059858ba25b50c9593e6ee92d935dbf6d0b5eafb2bcc6cade13fe446e23aa89a5ce13013c90c8c40a8834294fca5911558397e8a91641ea5dedf12e2fa
   languageName: node
   linkType: hard
 
