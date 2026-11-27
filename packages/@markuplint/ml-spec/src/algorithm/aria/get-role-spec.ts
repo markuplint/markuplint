@@ -111,8 +111,9 @@ function inheritRequired(
 			return prop;
 		}
 		// The condition of the superclass goes with it (`aria-valuenow` of `separator` only when it is focusable); a
-		// superclass that requires it without one makes it required without one
-		const condition = requiring.every(p => p.requiredCondition) ? requiring[0]?.requiredCondition : undefined;
+		// superclass that requires it without one, or under another condition, makes it required without one
+		const first = requiring[0]?.requiredCondition;
+		const condition = requiring.every(p => p.requiredCondition === first) ? first : undefined;
 		return { ...prop, required: true, ...(condition ? { requiredCondition: condition } : {}) };
 	});
 }

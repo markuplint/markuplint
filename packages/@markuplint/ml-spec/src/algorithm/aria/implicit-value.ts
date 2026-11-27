@@ -137,6 +137,9 @@ export function getImplicitValueOfRole(
 	property: string,
 	version: ARIAVersion,
 ): string | null {
+	if (el && isValueOfNativeState(el, property)) {
+		return null;
+	}
 	if (el?.namespaceURI === 'http://www.w3.org/1999/xhtml') {
 		if ((el.localName === 'progress' || el.localName === 'meter') && property in NATIVE_RANGE) {
 			return NATIVE_RANGE[property] ?? null;
@@ -148,6 +151,32 @@ export function getImplicitValueOfRole(
 		}
 	}
 	return IMPLICIT_VALUES[version][role]?.[property] ?? null;
+}
+
+/**
+ * Whether the value of the state or property of a native element is its own state, which the markup does not tell in
+ * full: the value of an `input` (its `aria-valuenow`, which the `value` attribute only starts) and the selectedness of
+ * an `option` (its `aria-selected`, which the `select` gives the first option when none has `selected`). No implicit
+ * value of its role stands for it.
+ *
+ * @see https://w3c.github.io/html-aam/#el-input-number
+ * @see https://w3c.github.io/html-aam/#el-option
+ * @param el - The element
+ * @param property - The name of the state or property
+ * @returns Whether the element gives the value from its own state
+ */
+export function isValueOfNativeState(
+	// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
+	el: Element,
+	property: string,
+): boolean {
+	if (el.namespaceURI !== 'http://www.w3.org/1999/xhtml') {
+		return false;
+	}
+	return (
+		(el.localName === 'input' && property === 'aria-valuenow') ||
+		(el.localName === 'option' && property === 'aria-selected')
+	);
 }
 
 /**
