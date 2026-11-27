@@ -1,5 +1,6 @@
 import type {
 	AttrNameRoute,
+	DuplicateAttrPrecedence,
 	EndTagType,
 	ExpressionLanguage,
 	LiteralValueDeclaration,
@@ -25,6 +26,7 @@ export type ParserOptions = {
 	readonly componentNameVariants?: boolean;
 	readonly attrNameCaseSensitive?: boolean;
 	readonly attrNameRoute?: AttrNameRoute;
+	readonly duplicateAttrPrecedence?: DuplicateAttrPrecedence;
 	readonly selfCloseType?: SelfCloseType;
 	readonly spaceChars?: readonly string[];
 	readonly rawTextElements?: readonly string[];
