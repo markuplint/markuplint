@@ -4,6 +4,7 @@ import { ARIA_RECOMMENDED_VERSION, mayBeFocusable } from '@markuplint/ml-spec';
 import { getElementByIdInTree } from '../helpers.js';
 
 import meta from './meta.js';
+import { hasText } from '@markuplint/shared';
 
 /**
  * Command values from the Invoker Commands API that relate to popover behavior.
@@ -69,8 +70,8 @@ export default createRule({
 							// Element is focusable
 							mayBeFocusable(node, node.ownerMLDocument.specs))) ||
 					(node.is(node.TEXT_NODE) &&
-						// Text node has non-whitespace characters
-						node.nodeValue?.trim())
+						// Text node has characters other than ASCII white space (a no-break space is one)
+						hasText(node.nodeValue))
 				) {
 					report({
 						scope: node,

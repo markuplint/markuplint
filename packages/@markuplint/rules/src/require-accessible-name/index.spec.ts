@@ -2239,3 +2239,26 @@ describe('a text that holds non-ASCII white space only is a name', () => {
 		expect(violations).toStrictEqual([]);
 	});
 });
+
+describe('a character reference of the content is the character that it names', () => {
+	test('[require-accessible-name-152] a content of a reference to U+0020 only is no name', async () => {
+		const { violations } = await mlRuleTest(rule, '<button type="button">&#32;</button>');
+		expect(violations).toStrictEqual([
+			{
+				severity: 'error',
+				line: 1,
+				col: 1,
+				message: 'Require accessible name',
+				raw: '<button type="button">',
+			},
+		]);
+	});
+
+	test.each(['&nbsp;', '&#xA0;', '&lt;', '&amp;'])(
+		'[require-accessible-name-153] a content of the reference %j names the control',
+		async content => {
+			const { violations } = await mlRuleTest(rule, `<button type="button">${content}</button>`);
+			expect(violations).toStrictEqual([]);
+		},
+	);
+});

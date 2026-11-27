@@ -12,6 +12,9 @@
 		},
 		{
 			"path": "../parser-utils"
+		},
+		{
+			"path": "../shared"
 		}
 	]
 }

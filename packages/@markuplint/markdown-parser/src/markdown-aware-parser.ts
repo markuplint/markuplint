@@ -230,6 +230,8 @@ export abstract class MarkdownAwareParser extends Parser<MdastNode> {
 			nodeName: '#text',
 			parentNode: startTag,
 			parentNodeUuid: startTag.uuid,
+			// A code span keeps its characters as written: no character reference is decoded in it
+			data: originNode.value,
 		};
 
 		this.appendChild(startTag, textNode);
@@ -309,6 +311,9 @@ export abstract class MarkdownAwareParser extends Parser<MdastNode> {
 						nodeName: '#text',
 						parentNode: codeTag,
 						parentNodeUuid: codeTag.uuid,
+						// A code block keeps its characters as written: no character reference is decoded in it, and
+						// its content ends with a line feed, which remark leaves out of `value`
+						data: `${originNode.value}\n`,
 					};
 
 					this.appendChild(codeTag, textNode);

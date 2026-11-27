@@ -27,8 +27,12 @@ describe('MLText#isWhitespace', () => {
 		},
 	);
 
-	test.each(['&nbsp;', '&#xA0;', '&#32;'])('is false for the character reference %j, which is not decoded', value => {
-		expect(textOf(`<div>${value}</div>`).isWhitespace()).toBe(false);
+	test.each([
+		['&nbsp;', false],
+		['&#xA0;', false],
+		['&#32;', true],
+	])('for the character reference %j, which is decoded as the DOM has it, is %j', (value, whitespace) => {
+		expect(textOf(`<div>${value}</div>`).isWhitespace()).toBe(whitespace);
 	});
 
 	test('is false for a text that has a character', () => {

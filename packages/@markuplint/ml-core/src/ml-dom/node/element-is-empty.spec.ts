@@ -25,7 +25,11 @@ describe('MLElement#isEmpty', () => {
 		},
 	);
 
-	test.each(['&nbsp;', '&#xA0;', '&#32;'])('is false for the character reference %j, which is not decoded', value => {
-		expect(isEmpty(`<div>${value}</div>`)).toBe(false);
+	test.each([
+		['&nbsp;', false],
+		['&#xA0;', false],
+		['&#32;', true],
+	])('for the character reference %j, which is decoded as the DOM has it, is %j', (value, empty) => {
+		expect(isEmpty(`<div>${value}</div>`)).toBe(empty);
 	});
 });

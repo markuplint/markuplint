@@ -150,3 +150,26 @@ test('[no-content-after-body-013] the message names `html` in Japanese with loca
 		},
 	]);
 });
+
+test('[no-content-after-body-014] a reference to U+0020 after the end tag of body is white space', async () => {
+	expect((await mlRuleTest(rule, '<html><body></body>&#32;</html>')).violations).toStrictEqual([]);
+});
+
+test.each([
+	['\u00A0', '\u00A0'],
+	['&nbsp;', '&nbsp;'],
+])(
+	'[no-content-after-body-015] U+00A0 after the end tag of body is a character, not ASCII white space: %j',
+	async (content, raw) => {
+		const { violations } = await mlRuleTest(rule, `<html><body></body>${content}</html>`);
+		expect(violations).toStrictEqual([
+			{
+				severity: 'error',
+				line: 1,
+				col: 20,
+				message: 'Content after the end tag of the "body" element is not allowed',
+				raw,
+			},
+		]);
+	},
+);

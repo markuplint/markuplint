@@ -10,25 +10,17 @@ const TEXT_NODE = 3;
 const FIRST_CHILD_ENTRY = /^([^\s>+~(),:]+):first-child$/;
 
 /**
- * A character reference to ASCII whitespace. A host that gives the text as written
- * (markuplint's own DOM) still has it undecoded, while the DOM holds the character.
- * A numeric reference without its semicolon is a parse error that the tokenizer still
- * decodes; a digit after it belongs to the number and is left as text, so `&#109`
- * (`m`) does not count.
- */
-const WHITESPACE_REFERENCE = /&(?:#[xX]0*(?:[9aAcCdD]|20);?|#0*(?:9|10|12|13|32);?|Tab;|NewLine;)/g;
-
-/**
  * Whether the data of a text node is inter-element whitespace: ASCII whitespace
- * only, so a no-break space is text. A character reference to ASCII whitespace
- * counts as the character it stands for.
+ * only, so a no-break space is text. The data is the characters of the node, with its
+ * character references decoded (`MLText#data` of `@markuplint/ml-core`), so `&#32;` in the
+ * source is a space here, and `&amp;#32;` is text.
  *
  * @param data - The data of a text node
  * @returns `true` when the text is empty or only inter-element whitespace
  * @see https://html.spec.whatwg.org/multipage/dom.html#inter-element-whitespace
  */
 export function isInterElementWhitespace(data: string): boolean {
-	return /^[\t\n\f\r ]*$/.test(data.replaceAll(WHITESPACE_REFERENCE, ' '));
+	return /^[\t\n\f\r ]*$/.test(data);
 }
 
 /**

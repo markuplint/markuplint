@@ -95,7 +95,7 @@ export function matchesSelector(
 
 	if (childNode.is(childNode.TEXT_NODE)) {
 		if (hasNonEmptyText) {
-			if (isInterElementWhitespace(childNode.raw)) {
+			if (isInterElementWhitespace(childNode.data)) {
 				if (nodeEnabled) {
 					nodeLog('<#nonEmptyText>.matches(%s) => WHITESPACE (rejected)', query);
 				}
@@ -135,7 +135,7 @@ export function matchesSelector(
 			};
 		}
 
-		if (isInterElementWhitespace(childNode.raw)) {
+		if (isInterElementWhitespace(childNode.data)) {
 			if (nodeEnabled) {
 				nodeLog('<#text>.matches(%s) => WHITESPACE', query);
 			}

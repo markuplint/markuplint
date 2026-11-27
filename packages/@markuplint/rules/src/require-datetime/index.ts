@@ -5,6 +5,7 @@ import { check } from '@markuplint/types';
 
 import meta from './meta.js';
 import { getCandidateDatetimeString } from './utils.js';
+import { trimAsciiWhitespace } from '@markuplint/shared';
 
 /**
  * Configuration options for the require-datetime rule.
@@ -26,7 +27,7 @@ export default createRule<boolean, Options>({
 				continue;
 			}
 
-			const content = time.textContent.trim();
+			const content = trimAsciiWhitespace(time.textContent);
 			const result = check(content, 'DateTime');
 
 			if (result.matched) {

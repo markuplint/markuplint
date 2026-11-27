@@ -89,11 +89,13 @@ class MarkdownParser extends MarkdownAwareParser {
 				return this.#parseHtmlRegion(originNode, offset);
 			}
 			case 'text': {
+				// The text as Markdown reads it: character references decoded, backslash escapes removed. `visitText`
+				// without searching for tags makes one text node of the token, so the value is the data of that node.
 				return this.visitText({
 					...token,
 					depth,
 					parentNode,
-				});
+				}).map(node => (node.type === 'text' ? Object.assign(node, { data: originNode.value }) : node));
 			}
 			default: {
 				return this.visitPsBlock({

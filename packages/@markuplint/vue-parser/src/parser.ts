@@ -8,6 +8,7 @@ import type {
 } from '@markuplint/ml-ast';
 
 import { ParserError, Parser, isPotentialCustomElementName, isSVGElement } from '@markuplint/parser-utils';
+import { decodeEntities } from '@markuplint/shared';
 import { isHTMLTag, isMathMLTag, isSVGTag } from '@vue/shared';
 
 import { vueParse } from './vue-parser/index.js';
@@ -26,6 +27,21 @@ type State = {
  * @see https://vuejs.org/guide/essentials/conditional.html
  * @see https://vuejs.org/guide/essentials/list.html
  */
+/**
+ * The elements whose content vue-eslint-parser reads as raw text (`value` keeps the character references) and the
+ * compiler of Vue decodes: the tokenizer of the compiler reads only `script` and `style` as raw text, and `title`
+ * and `textarea` as RCDATA, which it decodes.
+ *
+ * @see https://github.com/vuejs/core/blob/main/packages/compiler-core/src/tokenizer.ts#Tokenizer
+ */
+const VUE_DECODED_RAW_TEXT_ELEMENTS: ReadonlySet<string> = new Set([
+	'iframe',
+	'noscript',
+	'noembed',
+	'noframes',
+	'xmp',
+]);
+
 const CONDITIONAL_DIRECTIVES: ReadonlyMap<string, MLASTBlockBehaviorType> = new Map([
 	['if', 'if'],
 	['else-if', 'if:elseif'],
@@ -255,11 +271,18 @@ class VueParser extends Parser<ASTNode, State> {
 
 		switch (originNode.type) {
 			case 'VText': {
+				// The text as the compiler of Vue reads it: `value` (the character references decoded), except in an
+				// element that vue-eslint-parser reads as raw text and the compiler does not, whose text it decodes
+				// (`VUE_DECODED_RAW_TEXT_ELEMENTS`)
+				const parentName = originNode.parent.type === 'VElement' ? originNode.parent.rawName.toLowerCase() : '';
+				const data = VUE_DECODED_RAW_TEXT_ELEMENTS.has(parentName)
+					? decodeEntities(token.raw)
+					: originNode.value;
 				return this.visitText({
 					...token,
 					depth,
 					parentNode,
-				});
+				}).map(node => (node.type === 'text' ? Object.assign(node, { data }) : node));
 			}
 			case 'VExpressionContainer': {
 				// Template expressions (`{{ ... }}`) are treated as opaque

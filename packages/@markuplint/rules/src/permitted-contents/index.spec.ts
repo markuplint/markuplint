@@ -4578,3 +4578,22 @@ describe('what a framework renders away', () => {
 		});
 	});
 });
+
+test('[permitted-contents-301] a reference to U+0020 between list items is inter-element white space', async () => {
+	const vue = { parser: { '.*': '@markuplint/vue-parser' }, specs: { '.*': '@markuplint/vue-spec' } };
+	expect((await mlRuleTest(rule, '<ul>&#32;<li>x</li></ul>')).violations).toStrictEqual([]);
+	// A reference written as text (`&amp;#32;`) is the text `&#32;`, which is not white space
+	expect((await mlRuleTest(rule, '<ul>&amp;#32;<li>x</li></ul>')).violations).toStrictEqual([
+		{
+			severity: 'error',
+			line: 1,
+			col: 5,
+			message: 'The text node is not allowed in the "ul" element in this context',
+			raw: '&amp;#32;',
+		},
+	]);
+	expect(
+		(await mlRuleTest(rule, '<template><ul><li v-if="a">x</li>&#32;<li v-else>y</li></ul></template>', vue))
+			.violations,
+	).toStrictEqual([]);
+});

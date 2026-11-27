@@ -2,7 +2,6 @@ import type { Element } from '@markuplint/ml-core';
 
 import { createRule } from '@markuplint/ml-core';
 import { getSelectDisplaySize } from '@markuplint/ml-spec';
-import { decodeEntities } from '@markuplint/shared';
 
 import meta from './meta.js';
 
@@ -208,8 +207,8 @@ function htmlAwareTextContent(
 	let text = '';
 	for (const child of element.childNodes) {
 		if (child.is(child.TEXT_NODE)) {
-			// The node holds the source text; a character reference such as `&#32;` has to be decoded first.
-			text += decodeEntities(child.textContent ?? '');
+			// The data of the node, with the character references (`&#32;`) decoded
+			text += child.textContent ?? '';
 		} else if (child.is(child.ELEMENT_NODE)) {
 			const inner = htmlAwareTextContent(child);
 			if (inner === null) {

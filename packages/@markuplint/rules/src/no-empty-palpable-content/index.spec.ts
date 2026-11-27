@@ -131,3 +131,16 @@ test('[no-empty-palpable-content-009] only ASCII white space is empty: a text of
 	expect((await mlRuleTest(rule, '<p>\u2003</p>')).violations).toStrictEqual([]);
 	expect((await mlRuleTest(rule, '<p>&nbsp;</p>')).violations).toStrictEqual([]);
 });
+
+test('[no-empty-palpable-content-010] a reference to U+0020 only is white space, which is empty', async () => {
+	const { violations } = await mlRuleTest(rule, '<p>&#32;</p>');
+	expect(violations).toStrictEqual([
+		{
+			severity: 'warning',
+			line: 1,
+			col: 1,
+			message: 'The element should not empty',
+			raw: '<p>',
+		},
+	]);
+});

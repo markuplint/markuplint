@@ -323,6 +323,16 @@ export interface MLASTText extends MLASTAbstractNode {
 	readonly nodeName: '#text';
 	/** Nesting depth in the document tree */
 	readonly depth: number;
+	/**
+	 * The characters of the text as the DOM has them, when the language reads its source otherwise than the
+	 * tokenizer of HTML does (JSX decodes its own set of character references; Markdown decodes them outside a
+	 * code span and keeps a backslash escape out). Absent means the text is read as the tokenizer of HTML reads
+	 * it (`MLText#data` of `@markuplint/ml-core` decodes the character references of `raw`).
+	 *
+	 * It is the data of `raw` as the parser hands it over: `Parser` of `@markuplint/parser-utils` joins it when it
+	 * joins two text nodes that have it, and drops it when it trims `raw`.
+	 */
+	readonly data?: string;
 }
 
 /**

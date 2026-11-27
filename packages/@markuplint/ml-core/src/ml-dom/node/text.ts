@@ -6,7 +6,7 @@ import type { PlainData, RuleConfigValue } from '@markuplint/ml-config';
 import { getAssignedSlot, getFlatTreeSlot } from '../helper/slot-assignment.js';
 
 import { MLCharacterData } from './character-data.js';
-import { UnexpectedCallError, hasText } from '@markuplint/shared';
+import { UnexpectedCallError, decodeEntities, hasText } from '@markuplint/shared';
 
 /**
  * Raw text elements
@@ -14,6 +14,35 @@ import { UnexpectedCallError, hasText } from '@markuplint/shared';
  * @see https://html.spec.whatwg.org/multipage/syntax.html#raw-text-elements
  */
 const rawTextElements = new Set(['script', 'style']);
+
+/**
+ * The elements of the HTML namespace whose content the tokenizer reads without a character reference (a wider
+ * set than `rawTextElements`, which is what `isRawTextElementContent` asks about): the
+ * RAWTEXT state (`style`, `xmp`, `iframe`, `noembed`, `noframes`), the script data state (`script`) and the
+ * PLAINTEXT state (`plaintext`). `noscript` is RAWTEXT only where scripting is enabled, which markuplint does not
+ * assume (`@markuplint/html-parser` parses with scripting disabled), so its content is markup. The content of
+ * `title` and `textarea` is RCDATA, which decodes them.
+ *
+ * Which element takes which state is said by the tree construction: the generic raw text and RCDATA element
+ * parsing algorithms that the in head and in body insertion modes run for these start tags.
+ *
+ * @see https://html.spec.whatwg.org/multipage/parsing.html#generic-raw-text-element-parsing-algorithm
+ * @see https://html.spec.whatwg.org/multipage/parsing.html#parsing-main-inhead
+ * @see https://html.spec.whatwg.org/multipage/parsing.html#parsing-main-inbody
+ * @see https://html.spec.whatwg.org/multipage/parsing.html#rawtext-state
+ * @see https://html.spec.whatwg.org/multipage/parsing.html#script-data-state
+ * @see https://html.spec.whatwg.org/multipage/parsing.html#plaintext-state
+ * @see https://html.spec.whatwg.org/multipage/parsing.html#rcdata-state
+ */
+const NO_CHARACTER_REFERENCE_ELEMENTS: ReadonlySet<string> = new Set([
+	'script',
+	'style',
+	'xmp',
+	'iframe',
+	'noembed',
+	'noframes',
+	'plaintext',
+]);
 
 /**
  * Represents a DOM Text node wrapper in the markuplint DOM tree.
@@ -36,6 +65,46 @@ export class MLText<T extends RuleConfigValue, O extends PlainData = undefined>
 	 */
 	get assignedSlot(): HTMLSlotElement | null {
 		return getAssignedSlot(this) as HTMLSlotElement | null;
+	}
+
+	/**
+	 * The characters of the text, as the DOM has them: the character references of the source (`&#32;`,
+	 * `&nbsp;`, `&lt;`) are decoded, as the tokenizer decodes them in the data and RCDATA states, except in the
+	 * content of an element whose content the tokenizer reads without one (`script`, `style`, …). `raw` stays the
+	 * source text, which a rule that points at a position reads.
+	 *
+	 * A text that a template language interpolates (`{{ … }}`, `{…}`) is not a text node: its parser hands it over
+	 * as a block, so it is not decoded here.
+	 *
+	 * A language that reads its text otherwise (JSX decodes its own set of character references in every element;
+	 * Markdown keeps a code span as written; Vue and Svelte decode in `iframe` and the like) hands the characters
+	 * over itself (`MLASTText#data`), and they are the data.
+	 *
+	 * @implements DOM API: `CharacterData`
+	 * @see https://dom.spec.whatwg.org/#dom-characterdata-data
+	 * @see https://html.spec.whatwg.org/multipage/parsing.html#data-state
+	 * @see https://html.spec.whatwg.org/multipage/parsing.html#character-reference-state
+	 */
+	get data(): string {
+		this.#data ??= this.#readData();
+		return this.#data;
+	}
+
+	#data: string | undefined;
+
+	#readData(): string {
+		// The language read the text otherwise than the tokenizer of HTML (JSX, Markdown, Vue, Svelte)
+		if (this._astToken.data !== undefined) {
+			return this._astToken.data;
+		}
+		const parent = this.parentElement;
+		if (
+			parent?.namespaceURI === 'http://www.w3.org/1999/xhtml' &&
+			NO_CHARACTER_REFERENCE_ELEMENTS.has(parent.localName)
+		) {
+			return this.raw;
+		}
+		return this.raw.includes('&') ? decodeEntities(this.raw) : this.raw;
 	}
 
 	/**
@@ -103,10 +172,12 @@ export class MLText<T extends RuleConfigValue, O extends PlainData = undefined>
 	 *
 	 * @see https://html.spec.whatwg.org/multipage/dom.html#inter-element-whitespace
 	 * @implements `@markuplint/ml-core` API: `MLText`
-	 * @returns True if the raw content is composed entirely of ASCII white space
+	 * @returns True if the characters of the text (`data`, with the character references decoded) are ASCII white
+	 *   space only
 	 */
 	isWhitespace() {
-		return this.raw !== '' && !hasText(this.raw);
+		const data = this.data;
+		return data !== '' && !hasText(data);
 	}
 
 	/**

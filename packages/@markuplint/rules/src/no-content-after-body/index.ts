@@ -1,6 +1,7 @@
 import type { Element } from '@markuplint/ml-core';
 
 import { createRule } from '@markuplint/ml-core';
+import { hasText } from '@markuplint/shared';
 
 import meta from './meta.js';
 
@@ -58,7 +59,8 @@ export default createRule<boolean>({
 				continue;
 			}
 
-			if (child.is(child.TEXT_NODE) && child.raw.trim() !== '') {
+			// The characters of the text, as the tokenizer gives them (`&#32;` is a white space character token)
+			if (child.is(child.TEXT_NODE) && hasText(child.data)) {
 				report({ scope: child, message });
 			}
 		}

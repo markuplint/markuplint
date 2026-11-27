@@ -156,6 +156,12 @@ class JSXParser extends Parser<JSXNode, State> {
 
 				for (const node of nodes) {
 					this.#parentIdMap.set(node, originNode.__parentId ?? null);
+					// JSX decodes the character references of its text by its own rules (the XHTML set, with a
+					// semicolon), which `value` of typescript-estree has. `visitText` without searching for tags
+					// makes one text node of the token, so the value is the data of that node.
+					if (node.type === 'text') {
+						Object.assign(node, { data: originNode.value });
+					}
 				}
 
 				return nodes;

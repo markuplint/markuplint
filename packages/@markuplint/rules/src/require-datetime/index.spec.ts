@@ -153,3 +153,7 @@ describe('an expression, a component or a loop block that may render the date an
 		expect((await mlRuleTest(rule, '<time>{#each xs as x}{x}{/each}</time>', svelte)).violations).toStrictEqual([]);
 	});
 });
+
+test('[require-datetime-015] the content is read with its character references decoded', async () => {
+	expect((await mlRuleTest(rule, '<time>2024&#x2D;01&#x2D;01</time>')).violations).toStrictEqual([]);
+});
