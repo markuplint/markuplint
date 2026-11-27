@@ -3,6 +3,8 @@ import { test, expect } from 'vitest';
 
 import rule from './index.js';
 
+const jsx = { parser: { '.*': '@markuplint/jsx-parser' } };
+
 test('[element-supports-aria-prop-001] element with no element-specific restriction is allowed', async () => {
 	expect((await mlRuleTest(rule, '<div aria-pressed="true">y</div>')).violations).toStrictEqual([]);
 });
@@ -283,4 +285,52 @@ test('[element-supports-aria-prop-024] JSX: an upper-case aria-* on an svg eleme
 			raw: 'aria-label="x"',
 		},
 	]);
+});
+
+test('[element-supports-aria-prop-025] JSX: an img named by an aria-labelledby whose value is not known until it is rendered is allowed', async () => {
+	const source = '<div><img src="a.svg" aria-labelledby={id} /><p id={id}>Label</p></div>';
+	expect((await mlRuleTest(rule, source, jsx)).violations).toStrictEqual([]);
+});
+
+test('[element-supports-aria-prop-026] JSX: an img whose aria-labelledby refers to an element of an id that is not known until it is rendered is allowed', async () => {
+	const source = '<div><img src="a.svg" aria-labelledby="label" /><p id={id}>Label</p></div>';
+	expect((await mlRuleTest(rule, source, jsx)).violations).toStrictEqual([]);
+});
+
+test('[element-supports-aria-prop-027] JSX: an aria-labelledby that refers to no element is still reported while every id is known', async () => {
+	const source = '<div><img src="a.svg" aria-labelledby="label" /><p id="other">Label</p></div>';
+	expect((await mlRuleTest(rule, source, jsx)).violations).toStrictEqual([
+		{
+			severity: 'error',
+			line: 1,
+			col: 23,
+			message: 'The "aria-labelledby" ARIA property is disallowed on the "img" element',
+			raw: 'aria-labelledby="label"',
+		},
+	]);
+});
+
+test('[element-supports-aria-prop-028] JSX: an aria-labelledby that the framework does not output gives no name', async () => {
+	const source = '<div><img src="a.svg" aria-labelledby={undefined} aria-relevant="all" /><p id={id}>Label</p></div>';
+	expect((await mlRuleTest(rule, source, jsx)).violations).toStrictEqual([
+		{
+			severity: 'error',
+			line: 1,
+			col: 51,
+			message: 'The "aria-relevant" ARIA property is disallowed on the "img" element',
+			raw: 'aria-relevant="all"',
+		},
+	]);
+});
+
+test('[element-supports-aria-prop-029] Vue: an img named by a bound aria-labelledby is allowed', async () => {
+	const vue = { parser: { '.*': '@markuplint/vue-parser' }, specs: { '.*': '@markuplint/vue-spec' } };
+	const source = '<template><div><img src="a.svg" :aria-labelledby="id" /><p :id="id">Label</p></div></template>';
+	expect((await mlRuleTest(rule, source, vue)).violations).toStrictEqual([]);
+});
+
+test('[element-supports-aria-prop-030] Svelte: an img named by a bound aria-labelledby is allowed', async () => {
+	const svelte = { parser: { '.*': '@markuplint/svelte-parser' } };
+	const source = '<div><img src="a.svg" aria-labelledby={id} /><p {id}>Label</p></div>';
+	expect((await mlRuleTest(rule, source, svelte)).violations).toStrictEqual([]);
 });

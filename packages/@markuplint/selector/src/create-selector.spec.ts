@@ -1,5 +1,5 @@
 import specs from '@markuplint/html-spec';
-import { createJSDOMElement } from '@markuplint/test-tools';
+import { createJSDOMElement, markAttrAsDynamic } from '@markuplint/test-tools';
 import { describe, test, expect } from 'vitest';
 
 import { createSelector } from './create-selector.js';
@@ -30,6 +30,36 @@ describe('Extended Selector', () => {
 		});
 		expect(createSelector(':aria(has name)', specs).match(mayNot)).toBeFalsy();
 		expect(createSelector(':aria(has no name)', specs).match(mayNot)).toBeTruthy();
+	});
+
+	describe(':aria with an aria-labelledby of a DOM element', () => {
+		const html = '<div><h2 id="h"></h2><img aria-labelledby="t"></div>';
+
+		function must<T>(value: T | null): T {
+			expect(value).not.toBeNull();
+			return value as T;
+		}
+
+		test('a token that refers to no element, in a tree whose ids are all known, gives no name', () => {
+			const img = createJSDOMElement(html, 'img');
+			expect(createSelector(':aria(has name)', specs).match(img)).toBeFalsy();
+			expect(createSelector(':aria(has no name)', specs).match(img)).toBeTruthy();
+		});
+
+		test('a token that refers to no element, in a tree that has an element of unknown id, may give a name', () => {
+			const div = createJSDOMElement(html);
+			markAttrAsDynamic(must(div.querySelector('h2')), 'id');
+			const img = must(div.querySelector('img'));
+			expect(createSelector(':aria(has name)', specs).match(img)).toBeTruthy();
+			expect(createSelector(':aria(has no name)', specs).match(img)).toBeFalsy();
+		});
+
+		test('a value that is not known until it is rendered may give a name', () => {
+			const img = createJSDOMElement(html, 'img');
+			markAttrAsDynamic(img, 'aria-labelledby');
+			expect(createSelector(':aria(has name)', specs).match(img)).toBeTruthy();
+			expect(createSelector(':aria(has no name)', specs).match(img)).toBeFalsy();
+		});
 	});
 
 	test(':role', () => {

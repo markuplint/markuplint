@@ -12,8 +12,8 @@ import {
 import {
 	getComputedRole,
 	getOwningParentElement,
-	hasElementOfUnknownId,
 	isTransparentForOwnership,
+	labelledbyMayReferToUnknownId,
 } from '@markuplint/ml-spec';
 import { asciiLowerCase, decodeEntities, splitOnAsciiWhitespace, trimAsciiWhitespace } from '@markuplint/shared';
 
@@ -644,15 +644,10 @@ function isSlotOfUnknownAssignment(
  * `el`, of a pretended descendant among the children the name computation
  * traverses, of an element `aria-labelledby` refers to, or of the owned label.
  *
- * A token of `aria-labelledby` that refers to no element may refer to one whose `id`
- * the markup does not tell (`hasElementOfUnknownId` of `@markuplint/ml-spec` says which: `<h2 id={x}>`,
- * `<h2 {...props}>`, a component that no pretender resolved, content that is not known): such an
- * element is not found by an id, and what it renders is not known either.
- * `no-refer-to-non-existent-id` reports no reference in such a tree for the same reason. An
- * element whose attribute the framework does not output (`id={undefined}`, `isAbsent`) has no id
- * to be referred to. A value of nothing but white space has no token (`isValidLandmarkRole` of
- * `@markuplint/ml-spec` reads the same tokens), so it refers to no element and is not a reference that
- * such an element may satisfy.
+ * A reference to an element whose `id` the markup does not tell (`aria-labelledby={id}`, or a token that
+ * refers to no element in a tree that has `<p id={id}>`) is `labelledbyMayReferToUnknownId` of
+ * `@markuplint/ml-spec`, which `MLElement#mayHaveAccessibleName` reads too. It is asked here as well, so
+ * that the answer does not depend on the caller having asked `mayHaveAccessibleName` first.
  *
  * An element that a pretender declares (`isPretenderDeclaredElement`) is found by its id, but it declares
  * no content (a heading declared as `h2` renders its text), so the name that a reference to it gives is
@@ -675,6 +670,10 @@ export function accnameMayComeFromUnknownContent(
 		return true;
 	}
 
+	if (labelledbyMayReferToUnknownId(el)) {
+		return true;
+	}
+
 	const labelledbyAttr = el.getAttributeNode('aria-labelledby');
 	const labelledby = labelledbyAttr?.value;
 	if (labelledby) {
@@ -684,9 +683,6 @@ export function accnameMayComeFromUnknownContent(
 		// What a pretender declares has no content declared (a heading declared as `h2` renders its text),
 		// so the name that a reference to it gives is not known
 		if (referenced.some(target => target && (isPretenderDeclaredElement(target) || hasUnknownContent(target)))) {
-			return true;
-		}
-		if (referenced.some(target => !target) && hasElementOfUnknownId(el)) {
 			return true;
 		}
 	}

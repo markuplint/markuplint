@@ -27,7 +27,7 @@ import type {
 } from '@markuplint/ml-config';
 import type { AccnameSource, AccnameVisit, ARIAVersion } from '@markuplint/ml-spec';
 
-import { getSpecByTagName, resolveNamespace } from '@markuplint/ml-spec';
+import { getSpecByTagName, labelledbyMayReferToUnknownId, resolveNamespace } from '@markuplint/ml-spec';
 import { pretenderNamespaceToURI } from '@markuplint/ml-config';
 import { ConfigParserError, getChildNamespace } from '@markuplint/parser-utils';
 import type { SelectorMatches } from '@markuplint/selector';
@@ -3855,7 +3855,8 @@ export class MLElement<T extends RuleConfigValue, O extends PlainData = undefine
 	 *
 	 * It is the name of the markup as written, in which a conditional block is a node that the computation
 	 * does not go into. A caller that reports an element for having no name, or counts on the name it has,
-	 * asks {@link mayHaveAccessibleName} instead, as the name may be in a branch. A caller whose answer is
+	 * asks {@link mayHaveAccessibleName} instead, as the name may be in a branch, or in an element that an
+	 * `aria-labelledby` refers to and the markup does not tell. A caller whose answer is
 	 * already decided by the descendants (`require-adjacent-popover`, which reports the perceptible
 	 * text or named element in the branch itself) reads this.
 	 *
@@ -3876,7 +3877,8 @@ export class MLElement<T extends RuleConfigValue, O extends PlainData = undefine
 	/**
 	 * Whether this element has an accessible name, or may have one when a branch of a conditional
 	 * block (`if`, `switch`, `await` and their clauses) is rendered, or when an element that a conditional
-	 * directive may leave out (Vue's `v-if`) is, memoized per ARIA version like {@link getAccessibleName}.
+	 * directive may leave out (Vue's `v-if`) is, or when its `aria-labelledby` may refer to an element that
+	 * the markup does not tell, memoized per ARIA version like {@link getAccessibleName}.
 	 * What the directive changes is which `legend`, `caption` or SVG `title` is the first that gives the
 	 * name: the text of the element is in the name as written either way.
 	 *
@@ -3890,19 +3892,26 @@ export class MLElement<T extends RuleConfigValue, O extends PlainData = undefine
 	 * takes one child (`legend`, `caption`, the SVG `title`) read each that a branch may leave out
 	 * (`AccnameResolver#mayBeAbsentWith`).
 	 *
+	 * An element whose `aria-labelledby` may refer to an element that the markup does not tell
+	 * (`labelledbyMayReferToUnknownId` of `@markuplint/ml-spec`: `aria-labelledby={id}`, or a token that
+	 * refers to no element in a tree that has `<p id={id}>`) is not unnamed either: markuplint does not
+	 * decide what it cannot know. That answer does not read a branch, so it holds with or without a
+	 * conditional block in the document.
+	 *
 	 * The role of an element depends on its name (`:aria(has name)` in the spec) and its name on its
 	 * role, so this is called from inside the computation it makes. Invariants: a call for an element
-	 * that is being computed answers from the name as written and counts itself in
-	 * `everyBranchFallbacks`; a name found is final and is cached, and that no branch has one is cached
-	 * only when no such call happened during the computation, as the answer is partial then. A document
-	 * without a conditional block is answered by the name as written.
+	 * that is being computed answers from the name as written, or from the reference above, and counts
+	 * itself in `everyBranchFallbacks`; a name found is final and is cached, and that no branch has one is
+	 * cached only when no such call happened during the computation, as the answer is partial then. A
+	 * document without a conditional block is answered by the name as written and the reference above.
 	 *
 	 * @implements `@markuplint/ml-core` API: `MLElement`
 	 * @see https://w3c.github.io/accname/#comp_name_from_content
 	 * @see https://svelte.dev/docs/svelte/if
 	 * @see https://vuejs.org/guide/essentials/conditional.html
 	 * @param version - The ARIA specification version to use for computation
-	 * @returns `true` if the accessible name is not empty, or is not empty in some branch. A name of
+	 * @returns `true` if the accessible name is not empty, or is not empty in some branch, or may come from
+	 * an element that the `aria-labelledby` refers to and the markup does not tell. A name of
 	 * non-ASCII white space only, such as U+00A0, is not empty.
 	 */
 	mayHaveAccessibleName(version: ARIAVersion): boolean {
@@ -3914,7 +3923,8 @@ export class MLElement<T extends RuleConfigValue, O extends PlainData = undefine
 		// a call that the computation itself makes sees only the name as written, as `getAccessibleName` does
 		if (this.#computingEveryBranch.has(version)) {
 			everyBranchFallbacks++;
-			return hasText(this.getAccessibleName(version));
+			// The reference does not depend on the computation that is running, so it is answered here too
+			return hasText(this.getAccessibleName(version)) || labelledbyMayReferToUnknownId(this);
 		}
 		this.#computingEveryBranch.add(version);
 		const fallbacksBefore = everyBranchFallbacks;
@@ -3923,6 +3933,8 @@ export class MLElement<T extends RuleConfigValue, O extends PlainData = undefine
 			// name as written of an element that is being computed
 			const found =
 				hasText(this.getAccessibleName(version)) ||
+				// What the `aria-labelledby` refers to is not known (`aria-labelledby={id}`, `<p id={id}>`)
+				labelledbyMayReferToUnknownId(this) ||
 				(this.ownerMLDocument.hasConditionalNode && hasText(getAccnameOfEveryBranch(this, version)));
 			if (found || (this.ownerMLDocument.hasConditionalNode && fallbacksBefore === everyBranchFallbacks)) {
 				this.#mayHaveAccessibleNameCache.set(version, found);

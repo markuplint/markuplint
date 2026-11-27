@@ -49,7 +49,7 @@ export * from './algorithm/aria/get-role-spec.js';
 export * from './algorithm/aria/is-presentational.js';
 
 // DOM algorithms
-export { hasElementOfUnknownId } from './algorithm/dom/has-unknown-id.js';
+export { hasElementOfUnknownId, labelledbyMayReferToUnknownId } from './algorithm/dom/has-unknown-id.js';
 export * from './algorithm/dom/tree-boundary.js';
 
 // HTML algorithms
