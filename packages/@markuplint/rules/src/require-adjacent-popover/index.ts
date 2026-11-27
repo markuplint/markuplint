@@ -41,11 +41,7 @@ export default createRule({
 			if (!targetId) {
 				continue;
 			}
-			const target = getElementByIdInTree(
-				trigger,
-				targetId,
-				trigger.getAttributeNode(popovertarget ? 'popovertarget' : 'commandfor')?.isExpressionValue,
-			);
+			const target = getElementByIdInTree(trigger, targetId);
 			// What a pretender declares is in no list of subsequent nodes, and where the component renders it
 			// among them is not known, so adjacency is not decided against it
 			if (!target || isPretenderDeclaredElement(target)) {

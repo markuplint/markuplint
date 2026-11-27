@@ -114,14 +114,12 @@ function collectNamingSources<V extends RuleConfigValue, O extends PlainData>(
 	if (ariaLabelledbyAttr && ids.length > 0) {
 		// An IDREF resolves to the first element with that id, so with duplicate ids a
 		// reference only counts as self-referencing when this element is that first match.
-		const isSelfReferencing = ids.some(
-			id => getElementByIdInTree(el, id, ariaLabelledbyAttr.isExpressionValue) === el,
-		);
+		const isSelfReferencing = ids.some(id => getElementByIdInTree(el, id) === el);
 		// Step 2B goes on to the next step when the text of the references is empty, so a reference that gives
 		// no text is not a source; what a pretender declares, or any other element whose text is not known,
 		// is not counted either
 		const givesText = ids.some(id => {
-			const target = getElementByIdInTree(el, id, ariaLabelledbyAttr.isExpressionValue);
+			const target = getElementByIdInTree(el, id);
 			return !!target && labelledbyTargetGivesKnownText(target, ARIA_RECOMMENDED_VERSION);
 		});
 		if (givesText && !isSelfReferencing) {

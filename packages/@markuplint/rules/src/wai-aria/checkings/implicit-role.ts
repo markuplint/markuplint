@@ -26,12 +26,12 @@ export const checkingImplicitRole: AttrChecker<boolean, Options> =
 			ARIA_RECOMMENDED_VERSION;
 		const implicitRole = getImplicitRoleName(attr.ownerElement, ariaVersion, attr.ownerMLDocument.specs);
 		for (const token of tokens) {
-			if (implicitRole === token.raw) {
+			if (implicitRole === token.value) {
 				return {
 					scope: token,
 					message: t(
 						'{0} is {1}',
-						t('the "{0*}" {1}', token.raw, 'role'),
+						t('the "{0*}" {1}', token.value, 'role'),
 						t(
 							'{0} of {1}',
 							'the implicit role',

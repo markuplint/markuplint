@@ -134,6 +134,20 @@ export default createRule<boolean, Option>({
 					});
 					continue;
 				}
+				// The value is the source with its character references decoded: the part is reported where it is written
+				const offset = one.loc ? offsetInValue(value, one.loc.line, one.loc.col) : null;
+				const located =
+					one.loc && offset !== null ? attr.locateInValue(offset, offset + one.loc.raw.length) : null;
+				if (located) {
+					report({
+						scope: attr,
+						message: one.message,
+						line: located.startLine,
+						col: located.startCol,
+						raw: located.raw,
+					});
+					continue;
+				}
 				report({
 					scope: attr,
 					message: one.message,
@@ -148,3 +162,22 @@ export default createRule<boolean, Option>({
 		});
 	},
 });
+
+/**
+ * @param value - The value that is checked
+ * @param line - The line of a part of it, from 0
+ * @param col - The column of the part in its line, from 0
+ * @returns The offset of the part in the value, or null when the value has no such place
+ */
+function offsetInValue(value: string, line: number, col: number): number | null {
+	let offset = 0;
+	for (let i = 0; i < line; i++) {
+		const lineBreak = value.indexOf('\n', offset);
+		if (lineBreak === -1) {
+			return null;
+		}
+		offset = lineBreak + 1;
+	}
+	offset += col;
+	return offset <= value.length ? offset : null;
+}

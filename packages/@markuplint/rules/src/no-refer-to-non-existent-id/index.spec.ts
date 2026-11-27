@@ -717,3 +717,10 @@ describe('an ID reference list is split on ASCII white space only', () => {
 		]);
 	});
 });
+
+test('[no-refer-to-non-existent-id-050] a character reference of white space separates two ids', async () => {
+	expect(
+		(await mlRuleTest(rule, '<span id="a"></span><span id="b"></span><div aria-labelledby="a&#32;b"></div>'))
+			.violations,
+	).toStrictEqual([]);
+});

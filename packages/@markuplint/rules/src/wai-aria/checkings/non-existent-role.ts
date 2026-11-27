@@ -27,12 +27,12 @@ export const checkingNonExistentRole: AttrChecker<boolean, Options> =
 			return;
 		}
 		for (const token of tokens) {
-			let role = roles.find(r => r.name === token.raw);
+			let role = roles.find(r => r.name === token.value);
 			if (!role && attr.ownerElement.namespaceURI === 'http://www.w3.org/2000/svg') {
-				role = graphicsRoles.find(r => r.name === token.raw);
+				role = graphicsRoles.find(r => r.name === token.value);
 			}
 			if (!role) {
-				role = dpubRoles.find(r => r.name === token.raw);
+				role = dpubRoles.find(r => r.name === token.value);
 			}
 			if (!role) {
 				return {
@@ -40,7 +40,7 @@ export const checkingNonExistentRole: AttrChecker<boolean, Options> =
 					message:
 						t(
 							'{0} according to {1}',
-							t('{0} does not exist', t('the "{0*}" {1}', token.raw, 'role')),
+							t('{0} does not exist', t('the "{0*}" {1}', token.value, 'role')),
 							'the WAI-ARIA specification',
 						) + t('.'),
 				};

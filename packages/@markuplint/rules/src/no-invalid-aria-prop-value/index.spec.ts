@@ -427,3 +427,17 @@ test('[no-invalid-aria-prop-value-025] JSX: an empty value of an element whose r
 	const parser = { '.*': '@markuplint/jsx-parser' };
 	expect((await mlRuleTest(rule, '<div role={r} aria-checked="" />', { parser })).violations).toStrictEqual([]);
 });
+
+test('[no-invalid-aria-prop-value-026] a value is read with its character references decoded', async () => {
+	expect((await mlRuleTest(rule, '<div aria-hidden="&#116;rue"></div>')).violations).toStrictEqual([]);
+	expect((await mlRuleTest(rule, '<div role="button" aria-pressed="&#x20;"></div>')).violations).toStrictEqual([]);
+	expect((await mlRuleTest(rule, '<div aria-hidden="&#116;ru"></div>')).violations).toStrictEqual([
+		{
+			severity: 'error',
+			line: 1,
+			col: 6,
+			message: 'The "tru" is disallowed on the "aria-hidden" ARIA state',
+			raw: 'aria-hidden="&#116;ru"',
+		},
+	]);
+});

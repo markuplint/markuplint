@@ -57,7 +57,7 @@ export const checkingRequiredAccessibilityParentRole: ElementChecker<
 		const { roles } = ariaSpecs(el.ownerMLDocument.specs, ariaVersion);
 
 		for (const token of roleAttr.tokenList?.allTokens() ?? []) {
-			const roleSpec = roles.find(r => r.name === token.raw);
+			const roleSpec = roles.find(r => r.name === token.value);
 			if (!roleSpec) {
 				continue;
 			}

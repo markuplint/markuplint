@@ -81,3 +81,18 @@ test('[no-duplicate-aria-owns-008] an element that lists its own ID is not an ow
 		(await mlRuleTest(rule, '<div id="a" aria-owns="a"></div><div aria-owns="a"></div>')).violations,
 	).toStrictEqual([]);
 });
+
+test('[no-duplicate-aria-owns-009] an id is read with its character references decoded', async () => {
+	expect(
+		(await mlRuleTest(rule, '<div aria-owns="x"></div><div aria-owns="&#120;"></div><span id="x"></span>'))
+			.violations,
+	).toStrictEqual([
+		{
+			severity: 'error',
+			line: 1,
+			col: 42,
+			message: 'The "x" ID is already referred to by the "aria-owns" of another element',
+			raw: '&#120;',
+		},
+	]);
+});

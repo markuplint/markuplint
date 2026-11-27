@@ -54,7 +54,7 @@ export default createRule<boolean, null>({
 			if (!forAttr) return;
 			if (forAttr.isDynamicValue) return;
 
-			const target = getElementByIdInTree(el, forAttr.value, forAttr.isExpressionValue);
+			const target = getElementByIdInTree(el, forAttr.value);
 
 			// Existence is checked by `no-refer-to-non-existent-id`. If the ID does not resolve
 			// here, leave that diagnostic to the dedicated rule and stay silent.

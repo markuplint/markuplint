@@ -58,7 +58,7 @@ export default createRule<boolean, Options>({
 			const options = el.rule.options;
 
 			for (const tokenInfo of tokenList.allTokens()) {
-				const keyword = tokenInfo.raw;
+				const keyword = tokenInfo.value;
 				const keywordLower = keyword.toLowerCase();
 
 				const message = validateKeyword(keywordLower, context, options, t);

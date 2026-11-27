@@ -173,7 +173,8 @@ test('[no-duplicate-attr-010] Astro', async () => {
 		},
 	});
 
-	expect(violations.length).toBe(1);
+	// The compiler merges `class:list` with `class` into one attribute
+	expect(violations.length).toBe(0);
 });
 
 describe('fix', () => {

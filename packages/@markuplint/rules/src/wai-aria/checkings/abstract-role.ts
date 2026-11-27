@@ -25,11 +25,11 @@ export const checkingAbstractRole: AttrChecker<boolean, Options> =
 			return;
 		}
 		for (const token of tokens) {
-			const role = roles.find(r => r.name === token.raw);
+			const role = roles.find(r => r.name === token.value);
 			if (role?.isAbstract) {
 				return {
 					scope: token,
-					message: t('{0} is {1}', t('the "{0*}" {1}', token.raw, 'role'), 'the abstract role'),
+					message: t('{0} is {1}', t('the "{0*}" {1}', token.value, 'role'), 'the abstract role'),
 				};
 			}
 		}

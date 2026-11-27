@@ -371,3 +371,7 @@ test('[link-types-040] a keyword that the area element does not allow is in Japa
 		},
 	]);
 });
+
+test('[link-types-041] a keyword is read with its character references decoded', async () => {
+	expect((await mlRuleTest(rule, '<a href="x" rel="&#110;oopener">a</a>')).violations).toStrictEqual([]);
+});

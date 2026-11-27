@@ -93,9 +93,9 @@ export default createRule({
 
 			const idList = idListOfTree.get(root) ?? new Set<string>();
 
-			// The value is split before the character references are resolved: `&#32;` is not a separator
-			const decode = (id: string) => getDOMValue(attr, id) ?? id;
-			const value = decode(attr.value);
+			// `MLAttr#value` is the value the DOM has: its character references are decoded, so `&#32;` separates
+			// two ids as a space does
+			const value = attr.value;
 
 			const spec = findAttrSpec(attrSpec, attr);
 
@@ -123,7 +123,7 @@ export default createRule({
 									.split(',')
 									.map(id => trimAsciiWhitespace(id))
 									.filter(Boolean);
-					const refs = tokens.map(id => decode(id));
+					const refs = tokens;
 
 					for (const ref of refs) {
 						if (!idList.has(ref)) {
@@ -155,7 +155,7 @@ export default createRule({
 						message: t('Missing {0}', t('"{0*}" ID', value)),
 					});
 				} else if (aria.value === 'ID reference list') {
-					const refs = splitOnAsciiWhitespace(attr.value).map(id => decode(id));
+					const refs = splitOnAsciiWhitespace(attr.value);
 
 					for (const ref of refs) {
 						if (!idList.has(ref)) {
