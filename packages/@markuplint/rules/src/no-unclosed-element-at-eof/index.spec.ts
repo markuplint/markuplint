@@ -96,3 +96,16 @@ test('[no-unclosed-element-at-eof-008] the name of the element is shown as writt
 		},
 	]);
 });
+
+test('[no-unclosed-element-at-eof-009] an element after the end of foreign content is HTML, and `/>` does not close it', async () => {
+	const { violations } = await mlRuleTest(rule, '<!doctype html><body><svg><div></div><fooBar />');
+	expect(violations).toStrictEqual([
+		{
+			severity: 'error',
+			line: 1,
+			col: 38,
+			message: 'The "foobar" element is not closed at the end of the file',
+			raw: '<fooBar />',
+		},
+	]);
+});

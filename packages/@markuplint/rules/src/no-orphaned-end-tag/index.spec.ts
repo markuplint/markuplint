@@ -199,3 +199,56 @@ test('[no-orphaned-end-tag-016] the fix removes the second end tag of `html` and
 	);
 	expect(fixedCode).toBe('<!doctype html><html><head></head><body></body></html>');
 });
+
+test.each([
+	['<!doctype html><html><body></body></html>\n</html>', 2, 1],
+	['<!doctype html><html><body></body></html>x</html>', 1, 43],
+])('[no-orphaned-end-tag-017] the second end tag of `html` after text: %j', async (code, line, col) => {
+	const { violations } = await mlRuleTest(rule, code);
+	expect(violations).toStrictEqual([
+		{
+			severity: 'error',
+			line,
+			col,
+			message: 'Orphaned end tag detected',
+			raw: '</html>',
+		},
+	]);
+});
+
+test('[no-orphaned-end-tag-018] the end tag of an element that the parser makes again for a misnested formatting element', async () => {
+	const { violations } = await mlRuleTest(rule, '<!doctype html><html><body><b><i>x</b> y</i></body></html>');
+	expect(violations).toStrictEqual([]);
+});
+
+test('[no-orphaned-end-tag-019] an end tag after the one that closes the element made again is orphaned', async () => {
+	const { violations } = await mlRuleTest(rule, '<!doctype html><html><body><b><i>x</b> y</i> z</i></body></html>');
+	expect(violations).toStrictEqual([
+		{
+			severity: 'error',
+			line: 1,
+			col: 47,
+			message: 'Orphaned end tag detected',
+			raw: '</i>',
+		},
+	]);
+});
+
+test.each([
+	['<!doctype html><html><body><div></p></div></body></html>', '</p>'],
+	['<!doctype html><html><body><div></br></div></body></html>', '</br>'],
+])(
+	'[no-orphaned-end-tag-020] the end tag that makes an element is not the end tag of that element: %j',
+	async (code, raw) => {
+		const { violations } = await mlRuleTest(rule, code);
+		expect(violations).toStrictEqual([
+			{
+				severity: 'error',
+				line: 1,
+				col: 33,
+				message: 'Orphaned end tag detected',
+				raw,
+			},
+		]);
+	},
+);

@@ -173,3 +173,78 @@ test.each([
 		]);
 	},
 );
+
+test('[no-content-after-body-016] text after an orphaned end tag after the end of body', async () => {
+	const { violations } = await mlRuleTest(
+		rule,
+		'<!doctype html><html><body><p>a</p></body>b</expected>c<div>x</div></html>',
+	);
+	expect(violations).toStrictEqual([
+		{
+			severity: 'error',
+			line: 1,
+			col: 43,
+			message: 'Content after the end tag of the "body" element is not allowed',
+			raw: 'b',
+		},
+		{
+			severity: 'error',
+			line: 1,
+			col: 55,
+			message: 'Content after the end tag of the "body" element is not allowed',
+			raw: 'c',
+		},
+		{
+			severity: 'error',
+			line: 1,
+			col: 56,
+			message: 'Content after the end tag of the "body" element is not allowed',
+			raw: '<div>',
+		},
+	]);
+});
+
+test.each([
+	['<!doctype html><body><div></body><p>x</p>', 'Content after the end tag of the "body" element is not allowed'],
+	['<!doctype html><body><div></html><p>z</p>', 'Content after the end tag of the "html" element is not allowed'],
+])(
+	'[no-content-after-body-017] content in an element that is still open at the end of body: %j',
+	async (code, message) => {
+		const { violations } = await mlRuleTest(rule, code);
+		expect(violations).toStrictEqual([
+			{
+				severity: 'error',
+				line: 1,
+				col: 34,
+				message,
+				raw: '<p>',
+			},
+		]);
+	},
+);
+
+test('[no-content-after-body-018] an element still open at the end of body with nothing after the end', async () => {
+	const { violations } = await mlRuleTest(rule, '<!doctype html><body><div><p>x</p></body>');
+	expect(violations).toStrictEqual([]);
+});
+
+test('[no-content-after-body-019] content in an element that the parser makes again after the end of body', async () => {
+	const { violations } = await mlRuleTest(rule, '<!doctype html><body><p><b>x</p></body>y');
+	expect(violations).toStrictEqual([
+		{
+			severity: 'error',
+			line: 1,
+			col: 40,
+			message: 'Content after the end tag of the "body" element is not allowed',
+			raw: 'y',
+		},
+	]);
+});
+
+test.each([
+	'<!doctype html><body><template><div></body><p>x</p></div></template></body>',
+	'<!doctype html><body><table><tr><td>a</body><p>x</p></td></tr></table></body>',
+])('[no-content-after-body-020] a `</body>` that the parser ignores closes nothing: %j', async code => {
+	const { violations } = await mlRuleTest(rule, code);
+	expect(violations).toStrictEqual([]);
+});
