@@ -16,6 +16,7 @@ import { getFilePath } from '../utils/get-file-path.js';
 
 import { createQuickFixActions, createFixAllAction } from './code-actions.js';
 import { convertDiagnostics } from './convert-diagnostics.js';
+import { ariaPropLabel } from './aria-prop-label.js';
 import { getAccessibilityByLocation } from './get-accessibility-by-location.js';
 import { isPretendersNotInstalled } from './parser-load-failure.js';
 import { applySuppressionsToViolations, loadSuppressions } from './suppression-support.js';
@@ -392,9 +393,8 @@ export async function getNodeWithAccessibilityProps(
 			: `${t('None')}${aria.nameRequired ? ` ${requiredLabel}` : ''}`;
 	labels.focusable = `\`${aria.focusable}\``;
 
-	for (const [propName, { value, required }] of Object.entries(aria.props ?? {})) {
-		labels[propName] =
-			value === undefined ? t('Undefined') + (required ? ` ${requiredLabel}` : '') : `\`${value}\``;
+	for (const [propName, prop] of Object.entries(aria.props ?? {})) {
+		labels[propName] = ariaPropLabel(prop, requiredLabel);
 	}
 
 	return {
