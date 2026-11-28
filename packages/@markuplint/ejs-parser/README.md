@@ -24,32 +24,14 @@ Add `parser` option to your [configuration](https://markuplint.dev/configuration
 }
 ```
 
-## :warning: Unsupported syntaxes
+## Code in a tag
 
-It's not able to support syntaxes if one's attribute is complex.
+A block in the value of an attribute, quoted or not, makes the value dynamic. A block in the place of an attribute stands for attributes that the template does not show, as a spread attribute does (`{...props}` of JSX): the rules take the element as one that may have any attribute. A comment of the template language in a tag is no attribute.
 
-✅ Available codes
-
+<!-- prettier-ignore-start -->
 ```html
 <div attr="<%= value %>"></div>
-```
-
-<!-- prettier-ignore-start -->
-```html
-<div attr='<%= value %>'></div>
-```
-<!-- prettier-ignore-end -->
-
-```html
-<div attr="<%= value %>-<%= value2 %>-<%= value3 %>"></div>
-```
-
-❌ Unavailable codes
-
-If it doesn't nest by quotations.
-
-<!-- prettier-ignore-start -->
-```html
 <div attr=<%= value %>></div>
+<div <%= attrs %> class="a"></div>
 ```
 <!-- prettier-ignore-end -->
