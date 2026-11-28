@@ -17,7 +17,19 @@
 	},
 	"globalAttrs": {
 		"#SVGConditionalProcessingAttrs": ["requiredFeatures", "requiredExtensions", "systemLanguage"],
-		"#SVGCoreAttrs": ["id", "xml:base", "xml:lang", "xml:space", "class", "style", "part", "exportparts"],
+		"#SVGCoreAttrs": [
+			"id",
+			"xml:base",
+			"xml:lang",
+			"xml:space",
+			"class",
+			"style",
+			"part",
+			"exportparts",
+			"slot",
+			"nonce",
+			"elementtiming"
+		],
 		"#SVGPresentationAttrs": [
 			"alignment-baseline",
 			"baseline-shift",

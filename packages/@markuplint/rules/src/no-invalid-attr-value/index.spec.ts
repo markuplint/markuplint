@@ -3290,3 +3290,59 @@ test('[no-invalid-attr-value-315] the scheme of a base URL is read without the t
 		},
 	]);
 });
+
+test.each([
+	'<div customelementregistry="CUSTOMELEMENTREGISTRY"></div>',
+	'<my-element customelementregistry></my-element>',
+	'<my-element customelementregistry="CustomElementRegistry"></my-element>',
+])('[no-invalid-attr-value-316] customelementregistry takes the name of the attribute in any case: %s', async html => {
+	// > All HTML elements may have the customelementregistry content attribute set. It is a boolean attribute.
+	// @see https://html.spec.whatwg.org/multipage/custom-elements.html#the-customelementregistry-attribute
+	//
+	// > If the attribute is present, its value must either be the empty string or a value that is an ASCII case-insensitive match for the attribute's canonical name, with no leading or trailing ASCII whitespace.
+	// @see https://html.spec.whatwg.org/multipage/common-microsyntaxes.html#boolean-attributes
+	expect((await mlRuleTest(rule, html)).violations).toStrictEqual([]);
+});
+
+test.each(['true', 'false', 'foo', ' customelementregistry '])(
+	'[no-invalid-attr-value-317] customelementregistry takes no value other than the empty string and its name: %j',
+	async value => {
+		// > If the attribute is present, its value must either be the empty string or a value that is an ASCII case-insensitive match for the attribute's canonical name, with no leading or trailing ASCII whitespace.
+		// @see https://html.spec.whatwg.org/multipage/common-microsyntaxes.html#boolean-attributes
+		expect((await mlRuleTest(rule, `<div customelementregistry="${value}"></div>`)).violations).toStrictEqual([
+			{
+				severity: 'error',
+				line: 1,
+				col: 29,
+				message: 'The "customelementregistry" attribute expects either "", "customelementregistry"',
+				raw: value,
+			},
+		]);
+	},
+);
+
+test('[no-invalid-attr-value-318] xml:lang of an SVG element has the value of lang, and needs no lang', async () => {
+	// > If both the ‘lang’ attribute in no namespace and the ‘lang’ attribute in the XML namespace are specified on the same element, they must have exactly the same value when compared in an ASCII case-insensitive manner.
+	// @see https://svgwg.org/svg2-draft/struct.html#LangSpaceAttrs
+	expect(
+		(await mlRuleTest(rule, '<svg lang="en" xml:lang="fr"><g lang="en" xml:lang="fr"></g></svg>')).violations,
+	).toStrictEqual([
+		{
+			severity: 'error',
+			line: 1,
+			col: 26,
+			message: 'The "xml:lang" attribute expects "en"',
+			raw: 'fr',
+		},
+		{
+			severity: 'error',
+			line: 1,
+			col: 53,
+			message: 'The "xml:lang" attribute expects "en"',
+			raw: 'fr',
+		},
+	]);
+	expect(
+		(await mlRuleTest(rule, '<svg lang="en" xml:lang="EN"><g xml:lang="fr"></g></svg>')).violations,
+	).toStrictEqual([]);
+});

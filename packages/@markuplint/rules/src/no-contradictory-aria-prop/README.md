@@ -7,7 +7,13 @@ description: Warns when an ARIA property's value contradicts an equivalent nativ
 
 Warns when an ARIA property's value contradicts the current or implicit value of an equivalent native HTML attribute, per [ARIA in HTML §4.2](https://www.w3.org/TR/html-aria/#docconformance-attr): native HTML attributes must take precedence over their ARIA equivalents.
 
-When the element has a Boolean native attribute (`required`, `disabled`, `readonly`, `checked`), only `aria-*="false"` contradicts it; when it has any other equivalent native attribute, a differing value does. Values are compared as the value type of the native attribute reads them: a number as a number (`max="10.0"` is the same as `aria-valuemax="10"`), a keyword ASCII case-insensitively, and any other value as written.
+When the element has a Boolean native attribute (`required`, `disabled`, `readonly`, `checked`), only `aria-*="false"` contradicts it. `aria-colspan` and `aria-rowspan` contradict `colspan` and `rowspan` when the values differ, compared as the value type of the native attribute reads them: a number as a number, a keyword ASCII case-insensitively, and any other value as written.
+
+`aria-placeholder`, `aria-valuemax` and `aria-valuemin` are reported beside `placeholder`, `max` and `min` whatever the value is, the same value included:
+
+> Authors MUST NOT use the aria-placeholder attribute on any element which also has a placeholder attribute.
+
+Cite: [ARIA in HTML §4.2 Requirements for use of ARIA attributes in place of equivalent HTML attributes](https://www.w3.org/TR/html-aria/#docconformance-attr)
 
 `aria-readonly="true"` on an element that is editable (by its own `contenteditable` or by the closest ancestor that has one) is reported too:
 

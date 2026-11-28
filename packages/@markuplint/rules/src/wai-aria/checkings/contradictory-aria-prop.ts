@@ -23,6 +23,20 @@ import { isSameAsNative } from './equivalent-value.js';
 const IMPLICIT_STATE_ATTRS: ReadonlySet<string> = new Set(['checked']);
 
 /**
+ * Beside these native attributes the ARIA attribute is forbidden whatever its value, the same one included; the
+ * other rows forbid a value that differs (`aria-colspan`, `aria-rowspan`) or `"false"` (the Boolean ones).
+ *
+ * > Authors MUST NOT use the aria-placeholder attribute on any element which also has a placeholder attribute.
+ *
+ * > Authors MUST NOT use aria-valuemax on any element which also has a max attribute.
+ *
+ * > Authors MUST NOT use aria-valuemin on any element which also has a min attribute.
+ *
+ * @see https://www.w3.org/TR/html-aria/#docconformance-attr
+ */
+const FORBIDDEN_BESIDE_NATIVE_ATTRS: ReadonlySet<string> = new Set(['placeholder', 'max', 'min']);
+
+/**
  * Checks whether an ARIA property's value contradicts an equivalent native
  * HTML attribute's current or implicit value.
  *
@@ -31,7 +45,8 @@ const IMPLICIT_STATE_ATTRS: ReadonlySet<string> = new Set(['checked']);
  * attribute beside its native equivalent, and forbids (MUST NOT) a value that
  * contradicts the native one, such as `aria-required="false"` beside `required`,
  * so that is a conformance violation, not merely a style preference (contrast
- * `checkingRedundantAriaProp`, which is should-level). Without the native
+ * `checkingRedundantAriaProp`, which is should-level). Beside the attributes of
+ * `FORBIDDEN_BESIDE_NATIVE_ATTRS` any value is forbidden. Without the native
  * attribute, only `checked` has an implicit value that `aria-*="true"`
  * contradicts (see `IMPLICIT_STATE_ATTRS`).
  *
@@ -79,6 +94,11 @@ export const checkingContradictoryAriaProp: AttrChecker<
 			return;
 		}
 		for (const equivalentHtmlAttr of propSpec.equivalentHtmlAttrs) {
+			// The `contenteditable` row stands for the editable state, not for the attribute: it is the branch above
+			// that compares it, with `isContentEditable`.
+			if (equivalentHtmlAttr.condition) {
+				continue;
+			}
 			const htmlAttrSpec = attrSpecs.find(a => a.name === equivalentHtmlAttr.htmlAttrName);
 			const eligibility = resolveAttrEligibility(equivalentHtmlAttr.htmlAttrName, attr.ownerElement, attrSpecs);
 			// Skip only when the native attribute doesn't apply to this element at all
@@ -93,6 +113,7 @@ export const checkingContradictoryAriaProp: AttrChecker<
 			if (attr.ownerElement.hasAttribute(equivalentHtmlAttr.htmlAttrName)) {
 				const nativeType = eligibility.status === 'ok' ? eligibility.spec.type : htmlAttrSpec?.type;
 				if (
+					!FORBIDDEN_BESIDE_NATIVE_ATTRS.has(equivalentHtmlAttr.htmlAttrName) &&
 					isSameAsNative(
 						attr.value,
 						attr.ownerElement.getAttribute(equivalentHtmlAttr.htmlAttrName),

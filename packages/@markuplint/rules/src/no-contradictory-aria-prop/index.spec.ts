@@ -166,10 +166,18 @@ test('[no-contradictory-aria-prop-017] a value with white space around it is not
 	).toStrictEqual([]);
 });
 
-test('[no-contradictory-aria-prop-018] a number is compared as a number, and another string as written', async () => {
+test('[no-contradictory-aria-prop-018] aria-valuemax beside max and aria-placeholder beside placeholder are reported, whatever the number or the string', async () => {
 	expect(
 		(await mlRuleTest(rule, '<input type="range" max="10.0" aria-valuemax="10" aria-label="b">')).violations,
-	).toStrictEqual([]);
+	).toStrictEqual([
+		{
+			severity: 'error',
+			line: 1,
+			col: 32,
+			message: 'The "aria-valuemax" ARIA property contradicts the current "max" attribute',
+			raw: 'aria-valuemax="10"',
+		},
+	]);
 	expect(
 		(await mlRuleTest(rule, '<input type="range" max="11" aria-valuemax="10" aria-label="b">')).violations,
 	).toStrictEqual([
@@ -280,3 +288,70 @@ test('[no-contradictory-aria-prop-025] a prop of a component that no pretender r
 			.violations,
 	).toStrictEqual([]);
 });
+
+test.each([
+	'<div role="textbox" contenteditable aria-readonly="false"></div>',
+	'<div role="textbox" contenteditable="" aria-readonly="false"></div>',
+	'<div role="textbox" contenteditable="false" aria-readonly="false"></div>',
+	'<div role="textbox" contenteditable="bogus" aria-readonly="false"></div>',
+	'<div contenteditable><p role="textbox" aria-readonly="false">a</p></div>',
+])(
+	'[no-contradictory-aria-prop-026] aria-readonly="false" is the value of an editable element, and the contenteditable attribute does not oppose it: %s',
+	async code => {
+		// > Element with contenteditable=true or element without contenteditable attribute whose closest ancestor with a contenteditable attribute has contenteditable="true". […] aria-readonly="false"
+		// @see https://www.w3.org/TR/html-aria/#docconformance-attr
+		expect((await mlRuleTest(rule, code)).violations).toStrictEqual([]);
+	},
+);
+
+test.each([
+	[
+		'<input type="text" placeholder="Enter text" aria-placeholder="Enter text">',
+		45,
+		'aria-placeholder="Enter text"',
+		'aria-placeholder',
+		'placeholder',
+	],
+	[
+		'<input type="range" max="10" aria-valuemax="10" aria-label="x">',
+		30,
+		'aria-valuemax="10"',
+		'aria-valuemax',
+		'max',
+	],
+	['<input type="range" min="1" aria-valuemin="1" aria-label="x">', 29, 'aria-valuemin="1"', 'aria-valuemin', 'min'],
+	['<meter max="10" aria-valuemax="10"></meter>', 17, 'aria-valuemax="10"', 'aria-valuemax', 'max'],
+])(
+	'[no-contradictory-aria-prop-027] aria-placeholder, aria-valuemax and aria-valuemin are forbidden beside their native attribute, whatever the value: %s',
+	async (code, col, raw, ariaName, nativeName) => {
+		// > Authors MUST NOT use the aria-placeholder attribute on any element which also has a placeholder attribute.
+		// @see https://www.w3.org/TR/html-aria/#docconformance-attr
+		//
+		// > Authors MUST NOT use aria-valuemax on any element which also has a max attribute.
+		// @see https://www.w3.org/TR/html-aria/#docconformance-attr
+		//
+		// > Authors MUST NOT use aria-valuemin on any element which also has a min attribute.
+		// @see https://www.w3.org/TR/html-aria/#docconformance-attr
+		expect((await mlRuleTest(rule, code)).violations).toStrictEqual([
+			{
+				severity: 'error',
+				line: 1,
+				col,
+				message: `The "${ariaName}" ARIA property contradicts the current "${nativeName}" attribute`,
+				raw,
+			},
+		]);
+	},
+);
+
+test.each([
+	'<table><tr><td colspan="2" aria-colspan="2">a</td></tr></table>',
+	'<table><tr><td rowspan="2" aria-rowspan="2">a</td></tr></table>',
+])(
+	'[no-contradictory-aria-prop-028] aria-colspan and aria-rowspan are forbidden beside their native attribute only when the values do not match: %s',
+	async code => {
+		// > Authors MUST NOT use aria-colspan on any element which also has a colspan attribute, and the values of each attribute do not match.
+		// @see https://www.w3.org/TR/html-aria/#docconformance-attr
+		expect((await mlRuleTest(rule, code)).violations).toStrictEqual([]);
+	},
+);

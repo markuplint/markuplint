@@ -1186,3 +1186,84 @@ test('[no-unknown-attr-062] customelementregistry is known on every HTML element
 		'<div customelementregistry><span customelementregistry></span><my-element customelementregistry></my-element></div>';
 	expect((await mlRuleTest(rule, html)).violations).toStrictEqual([]);
 });
+
+test('[no-unknown-attr-063] customelementregistry is not an attribute of an SVG or a MathML element', async () => {
+	// > All HTML elements may have the customelementregistry content attribute set.
+	// @see https://html.spec.whatwg.org/multipage/custom-elements.html#the-customelementregistry-attribute
+	expect((await mlRuleTest(rule, '<svg customelementregistry></svg>')).violations).toStrictEqual([
+		{
+			severity: 'error',
+			line: 1,
+			col: 6,
+			message: 'The "customelementregistry" attribute is disallowed',
+			raw: 'customelementregistry',
+		},
+	]);
+	expect((await mlRuleTest(rule, '<math customelementregistry></math>')).violations).toStrictEqual([
+		{
+			severity: 'error',
+			line: 1,
+			col: 7,
+			message: 'The "customelementregistry" attribute is disallowed',
+			raw: 'customelementregistry',
+		},
+	]);
+});
+
+test.each([
+	['<svg hidden></svg>', 6, 'hidden'],
+	['<svg accesskey="a"></svg>', 6, 'accesskey'],
+	['<svg popover></svg>', 6, 'popover'],
+	['<svg><circle hidden></circle></svg>', 14, 'hidden'],
+	['<svg><g popover></g></svg>', 9, 'popover'],
+	['<svg><a href="#" accesskey="a"></a></svg>', 18, 'accesskey'],
+])(
+	'[no-unknown-attr-064] an SVG element does not take the global attributes of HTML elements: %s',
+	async (html, col, raw) => {
+		// > The following attributes are common to and may be specified on all HTML elements (even those not defined in this specification):
+		// @see https://html.spec.whatwg.org/multipage/dom.html#global-attributes
+		expect((await mlRuleTest(rule, html)).violations).toStrictEqual([
+			{ severity: 'error', line: 1, col, message: `The "${raw}" attribute is disallowed`, raw },
+		]);
+	},
+);
+
+test('[no-unknown-attr-067] the attributes of the HTML a element are known on the MathML a element', async () => {
+	// > The a element accepts the attributes described in 2.1.3 Global Attributes as well as corresponding attributes of the HTML <a> element: href, target, download, ping, rel, hreflang, type, referrerpolicy
+	// @see https://w3c.github.io/mathml-core/#the-a-element
+	const html =
+		'<math><a href="/x" target="_blank" download ping="https://example.com/p" rel="noopener" hreflang="en" type="text/html" referrerpolicy="origin"><mi>x</mi></a></math>';
+	expect((await mlRuleTest(rule, html)).violations).toStrictEqual([]);
+	expect((await mlRuleTest(rule, '<math><a foo="x"><mi>x</mi></a></math>')).violations).toStrictEqual([
+		{ severity: 'error', line: 1, col: 10, message: 'The "foo" attribute is disallowed', raw: 'foo' },
+	]);
+});
+
+test.each([
+	'<svg><defs slot="icon" nonce="abc" elementtiming="c"></defs><desc slot="x"></desc></svg>',
+	'<svg><linearGradient slot="icon"></linearGradient><script nonce="abc"></script></svg>',
+	'<math slot="a" nonce="b" elementtiming="c"><mi slot="x">x</mi></math>',
+])(
+	'[no-unknown-attr-066] the attributes that any element takes are known on every SVG and MathML element: %s',
+	async html => {
+		// > DOM defines the user agent requirements for the class, id, and slot attributes for any element in any namespace.
+		// @see https://html.spec.whatwg.org/multipage/dom.html#global-attributes
+		expect((await mlRuleTest(rule, html)).violations).toStrictEqual([]);
+	},
+);
+
+test.each([
+	'<svg slot="icon" nonce="abc" xml:lang="en" lang="en" part="a" exportparts="b" elementtiming="c"></svg>',
+	'<svg><g slot="icon" nonce="abc" xml:lang="en"></g><text elementtiming="c">a</text></svg>',
+	'<svg><image href="a.png" slot="icon" elementtiming="c"></image></svg>',
+])('[no-unknown-attr-065] the attributes that any element takes are known on an SVG element: %s', async html => {
+	// > DOM defines the user agent requirements for the class, id, and slot attributes for any element in any namespace.
+	// @see https://html.spec.whatwg.org/multipage/dom.html#global-attributes
+	//
+	// > Elements that have a nonce content attribute ensure that the cryptographic nonce is only exposed to script […] exposing it to script via the HTMLOrSVGOrMathMLElement interface mixin
+	// @see https://html.spec.whatwg.org/multipage/urls-and-fetching.html#nonce-attributes
+	//
+	// > Elements that have a "elementtiming" content attribute are reported in the report image element timing and the report text element timing algorithms.
+	// @see https://w3c.github.io/element-timing/#sec-elements-exposed
+	expect((await mlRuleTest(rule, html)).violations).toStrictEqual([]);
+});

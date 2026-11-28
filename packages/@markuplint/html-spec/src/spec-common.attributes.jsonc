@@ -1197,8 +1197,11 @@
 			"deprecated": true
 		},
 		// https://svgwg.org/svg2-draft/struct.html#LangSpaceAttrs
+		// > If both the ‘lang’ attribute in no namespace and the ‘lang’ attribute in the XML namespace are specified on the same element, they must have exactly the same value when compared in an ASCII case-insensitive manner.
+		// @see https://svgwg.org/svg2-draft/struct.html#LangSpaceAttrs
 		"xml:lang": {
-			"type": "BCP47"
+			"type": "BCP47",
+			"sameValueAs": "lang"
 		},
 		// https://svgwg.org/svg2-draft/changes.html#structure
 		// SVG 2 removed the attribute (Changes from SVG 1.1).
@@ -1220,6 +1223,28 @@
 			"type": {
 				"pattern": "/^\\s*(?:(?:::)?[^\\s:,]+(?:\\s*:\\s*[^\\s:,]+)?)?\\s*(?:,\\s*(?:(?:::)?[^\\s:,]+(?:\\s*:\\s*[^\\s:,]+)?)?\\s*)*$/"
 			}
+		},
+		// https://html.spec.whatwg.org/multipage/dom.html#attr-slot
+		// > DOM defines the user agent requirements for the class, id, and slot attributes for any element in any namespace.
+		// @see https://html.spec.whatwg.org/multipage/dom.html#global-attributes
+		"slot": {
+			"type": "NoEmptyAny"
+		},
+		// https://html.spec.whatwg.org/multipage/urls-and-fetching.html#nonce-attributes
+		// > Elements that have a nonce content attribute ensure that the cryptographic nonce is only exposed to script […] exposing it to script via the HTMLOrSVGOrMathMLElement interface mixin, and setting the content attribute to the empty string.
+		// @see https://html.spec.whatwg.org/multipage/urls-and-fetching.html#nonce-attributes
+		"nonce": {
+			"type": "Any"
+		},
+		// https://w3c.github.io/element-timing/#sec-elements-exposed
+		// > Elements that have a "elementtiming" content attribute are reported in the report image element timing and the report text element timing algorithms.
+		// @see https://w3c.github.io/element-timing/#sec-elements-exposed
+		//
+		// The specification extends `Element` with the attribute, so it applies to an SVG element too (`image`, text).
+		// BCD has no SVG entry for it; it flags the attribute as experimental on `html.global_attributes`.
+		"elementtiming": {
+			"type": "NoEmptyAny",
+			"experimental": true
 		}
 	},
 	"#SVGFilterPrimitiveAttrs": {
@@ -1885,6 +1910,22 @@
 			"type": {
 				"pattern": "/^\\s*(?:(?:::)?[^\\s:,]+(?:\\s*:\\s*[^\\s:,]+)?)?\\s*(?:,\\s*(?:(?:::)?[^\\s:,]+(?:\\s*:\\s*[^\\s:,]+)?)?\\s*)*$/"
 			}
+		},
+		// https://html.spec.whatwg.org/multipage/dom.html#attr-slot
+		// > DOM defines the user agent requirements for the class, id, and slot attributes for any element in any namespace.
+		// @see https://html.spec.whatwg.org/multipage/dom.html#global-attributes
+		"slot": {
+			"type": "NoEmptyAny"
+		},
+		// https://w3c.github.io/element-timing/#sec-elements-exposed
+		// > Elements that have a "elementtiming" content attribute are reported in the report image element timing and the report text element timing algorithms.
+		// @see https://w3c.github.io/element-timing/#sec-elements-exposed
+		//
+		// The specification extends `Element` with the attribute, so it applies to a MathML element too.
+		// BCD has no MathML entry for it; it flags the attribute as experimental on `html.global_attributes`.
+		"elementtiming": {
+			"type": "NoEmptyAny",
+			"experimental": true
 		}
 	},
 	"#XLinkAttrs": {

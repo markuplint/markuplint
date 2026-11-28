@@ -1523,6 +1523,9 @@ export interface GlobalAttributes {
     | "xml:base"
     | "part"
     | "exportparts"
+    | "slot"
+    | "nonce"
+    | "elementtiming"
   )[];
   /**
    * @minItems 0

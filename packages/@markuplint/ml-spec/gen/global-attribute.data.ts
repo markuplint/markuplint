@@ -287,6 +287,10 @@ export const globalAttrs: Record<
 			// CSS Shadow Module: any element in a shadow tree
 			'part',
 			'exportparts',
+			// Attributes of any element that the HTML Standard and the Element Timing API define
+			'slot',
+			'nonce',
+			'elementtiming',
 		],
 	},
 	'#SVGFilterPrimitiveAttrs': {
@@ -415,6 +419,9 @@ export const globalAttrs: Record<
 			// CSS Shadow Module: any element in a shadow tree
 			'part',
 			'exportparts',
+			// Attributes of any element that the HTML Standard and the Element Timing API define
+			'slot',
+			'elementtiming',
 		],
 	},
 	'#XLinkAttrs': {

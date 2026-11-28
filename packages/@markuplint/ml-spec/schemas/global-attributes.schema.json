@@ -258,7 +258,10 @@
 				"xml:lang",
 				"xml:base",
 				"part",
-				"exportparts"
+				"exportparts",
+				"slot",
+				"nonce",
+				"elementtiming"
 			]
 		},
 		"SVGFilterPrimitiveAttrs": { "type": "string", "enum": ["x", "y", "width", "height", "result", "in"] },
@@ -369,7 +372,9 @@
 				"style",
 				"tabindex",
 				"part",
-				"exportparts"
+				"exportparts",
+				"slot",
+				"elementtiming"
 			]
 		},
 		"XLinkAttrs": {
@@ -716,7 +721,10 @@
 				"xml:lang",
 				"xml:base",
 				"part",
-				"exportparts"
+				"exportparts",
+				"slot",
+				"nonce",
+				"elementtiming"
 			],
 			"propertyNames": { "$ref": "#/definitions/SVGCoreAttrs" },
 			"patternProperties": { ".+": { "$ref": "./attributes.schema.json#/definitions/AttributeJSON" } }
@@ -842,7 +850,9 @@
 				"style",
 				"tabindex",
 				"part",
-				"exportparts"
+				"exportparts",
+				"slot",
+				"elementtiming"
 			],
 			"propertyNames": { "$ref": "#/definitions/MathMLGlobalAttrs" },
 			"patternProperties": { ".+": { "$ref": "./attributes.schema.json#/definitions/AttributeJSON" } }

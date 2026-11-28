@@ -225,3 +225,18 @@ test('[no-deprecated-attr-019] deprecatedWhen does not judge an attribute whose 
 	expect((await mlRuleTest(rule, '<input type={t} maxlength="3" />', options)).violations).toStrictEqual([]);
 	expect((await mlRuleTest(rule, '<script type={t} />', options)).violations).toStrictEqual([]);
 });
+
+test('[no-deprecated-attr-020] href of the MathML a element is not deprecated, and that of another MathML element is', async () => {
+	// > The href, target, download, ping, rel, hreflang, type and referrerpolicy attributes have the same syntax and semantics as defined for the HTML <a> element.
+	// @see https://w3c.github.io/mathml-core/#the-a-element
+	expect((await mlRuleTest(rule, '<math><a href="/x"><mi>x</mi></a></math>')).violations).toStrictEqual([]);
+	expect((await mlRuleTest(rule, '<math><mi href="/x">x</mi></math>')).violations).toStrictEqual([
+		{
+			severity: 'warning',
+			line: 1,
+			col: 11,
+			message: 'The "href" attribute is deprecated',
+			raw: 'href',
+		},
+	]);
+});

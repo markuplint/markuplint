@@ -415,6 +415,7 @@
 		"#SVGTextContentChild": ["svg|altGlyph", "svg|textPath", "svg|tref", "svg|tspan"],
 		// https://www.w3.org/TR/mathml-core/#dom-and-javascript
 		"#MathMLPresentation": [
+			"mml|a",
 			"mml|merror",
 			"mml|mfrac",
 			"mml|mi",

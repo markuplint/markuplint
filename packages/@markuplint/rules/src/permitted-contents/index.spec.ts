@@ -4597,3 +4597,31 @@ test('[permitted-contents-301] a reference to U+0020 between list items is inter
 			.violations,
 	).toStrictEqual([]);
 });
+
+test.each([
+	'<math><mrow><a href="/x"><mi>x</mi></a></mrow></math>',
+	'<math><a href="/x"><mi>x</mi><mo>+</mo><mn>1</mn></a></math>',
+	'<math><mfrac><a href="/x"><mi>x</mi></a><mn>2</mn></mfrac></math>',
+	'<math><mrow><a><mi>x</mi></a></mrow></math>',
+])(
+	'[permitted-contents-302] the MathML a element is permitted wherever MathML Core allows its sub-expressions: %s',
+	async html => {
+		// > The a element is used to group together any number of sub-expressions equivalently to mrow.
+		// @see https://w3c.github.io/mathml-core/#the-a-element
+		expect((await mlRuleTest(rule, html)).violations).toStrictEqual([]);
+	},
+);
+
+test('[permitted-contents-303] the MathML a element takes sub-expressions only', async () => {
+	// > The a element is used to group together any number of sub-expressions equivalently to mrow.
+	// @see https://w3c.github.io/mathml-core/#the-a-element
+	expect((await mlRuleTest(rule, '<math><a href="/x"><foo></foo></a></math>')).violations).toStrictEqual([
+		{
+			severity: 'error',
+			line: 1,
+			col: 20,
+			message: 'The "foo" element is not allowed in the "a" element in this context',
+			raw: '<foo>',
+		},
+	]);
+});

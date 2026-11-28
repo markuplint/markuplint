@@ -77,7 +77,10 @@ export function getComputedAriaProps(
 			}
 		}
 
-		const equivalentHtmlAttr = spec.equivalentHtmlAttrs?.[0];
+		// An entry with a `condition` (the editable state of `contenteditable`) is not read from the attribute, and the
+		// editable state needs the ancestors of the element, which a DOM `Element` here does not give. The value that
+		// it would give, `aria-readonly="false"`, is the default of the property.
+		const equivalentHtmlAttr = spec.equivalentHtmlAttrs?.find(attr => !attr.condition);
 		if (equivalentHtmlAttr && el.hasAttribute(equivalentHtmlAttr.htmlAttrName)) {
 			const value =
 				equivalentHtmlAttr.value === null

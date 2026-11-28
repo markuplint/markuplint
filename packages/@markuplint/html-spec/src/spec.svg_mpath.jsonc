@@ -9,7 +9,20 @@
 		]
 	},
 	"globalAttrs": {
-		"#SVGCoreAttrs": ["id", "tabindex", "autofocus", "lang", "xml:space", "class", "style", "part", "exportparts"],
+		"#SVGCoreAttrs": [
+			"id",
+			"tabindex",
+			"autofocus",
+			"lang",
+			"xml:space",
+			"class",
+			"style",
+			"part",
+			"exportparts",
+			"slot",
+			"nonce",
+			"elementtiming"
+		],
 		"#GlobalEventAttrs": true,
 		"#XLinkAttrs": ["xlink:href"]
 	},

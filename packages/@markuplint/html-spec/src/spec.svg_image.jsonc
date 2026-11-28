@@ -16,10 +16,23 @@
 		]
 	},
 	"globalAttrs": {
-		"#HTMLGlobalAttrs": true,
 		"#GlobalEventAttrs": true,
 		"#ARIAAttrs": true,
-		"#SVGCoreAttrs": ["id", "tabindex", "autofocus", "lang", "xml:space", "class", "style"],
+		"#SVGCoreAttrs": [
+			"id",
+			"tabindex",
+			"autofocus",
+			"lang",
+			"xml:space",
+			"class",
+			"style",
+			"part",
+			"exportparts",
+			"xml:lang",
+			"slot",
+			"nonce",
+			"elementtiming"
+		],
 		"#SVGConditionalProcessingAttrs": ["requiredExtensions", "systemLanguage"],
 		"#SVGPresentationAttrs": [
 			"x",

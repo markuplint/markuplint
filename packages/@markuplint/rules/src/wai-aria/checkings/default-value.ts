@@ -48,7 +48,11 @@ export const checkingDefaultValue: AttrChecker<
 		// to the element, which `no-redundant-aria-prop` compares
 		if (
 			propSpec?.equivalentHtmlAttrs?.some(eq => {
-				if (!attr.ownerElement.hasAttribute(eq.htmlAttrName)) {
+				// The editable state of the `contenteditable` row gives the property its default (`aria-readonly="false"`),
+				// so the attribute makes no difference to what the element has without the ARIA attribute: the value is
+				// still the default, which this rule reports. `no-redundant-aria-prop` and `no-contradictory-aria-prop`
+				// answer another question (whether the ARIA attribute restates or opposes the native one) and say nothing.
+				if (eq.condition || !attr.ownerElement.hasAttribute(eq.htmlAttrName)) {
 					return false;
 				}
 				const { status } = resolveAttrEligibility(eq.htmlAttrName, attr.ownerElement, attrSpecs ?? []);

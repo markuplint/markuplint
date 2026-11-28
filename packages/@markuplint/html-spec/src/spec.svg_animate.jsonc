@@ -27,7 +27,20 @@
 		],
 		"#SVGAnimationValueAttrs": ["calcMode", "values", "keyTimes", "keySplines", "from", "to", "by"],
 		"#SVGConditionalProcessingAttrs": ["requiredExtensions", "systemLanguage"],
-		"#SVGCoreAttrs": ["id", "tabindex", "autofocus", "lang", "xml:space", "class", "style", "part", "exportparts"],
+		"#SVGCoreAttrs": [
+			"id",
+			"tabindex",
+			"autofocus",
+			"lang",
+			"xml:space",
+			"class",
+			"style",
+			"part",
+			"exportparts",
+			"slot",
+			"nonce",
+			"elementtiming"
+		],
 		"#SVGPresentationAttrs": [
 			"alignment-baseline",
 			"baseline-shift",
