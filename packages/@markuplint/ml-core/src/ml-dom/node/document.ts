@@ -3245,6 +3245,10 @@ export class MLDocument<T extends RuleConfigValue, O extends PlainData = undefin
 	 * the markup does not tell ({@link MLElement.mayHaveAccessibleName}) is `{ unknown: true }`, as the name
 	 * of a slot of unknown assignment is.
 	 *
+	 * `props` lists a property that the role requires of this element (`getComputedAriaProps` resolves a
+	 * `requiredCondition` against it) or whose valid value the element gives through an `aria-*` or a native
+	 * attribute; a property that is neither, whose value is its default, is left out.
+	 *
 	 * @param node - The node to compute accessibility properties for
 	 * @param ariaVersion - The ARIA specification version to use for computation
 	 * @returns The computed accessibility properties, or null for non-element nodes
@@ -3320,6 +3324,8 @@ export class MLDocument<T extends RuleConfigValue, O extends PlainData = undefin
 			aria.props[propName] = {
 				value: prop.value ?? null,
 				required: prop.required,
+				...(prop.satisfiedByElement && { satisfiedByElement: prop.satisfiedByElement }),
+				from: prop.from,
 			};
 		}
 
