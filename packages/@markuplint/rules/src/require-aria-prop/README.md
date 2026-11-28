@@ -23,7 +23,7 @@ The names of ARIA attributes are compared as [`no-unknown-attr`](/docs/rules/no-
 
 :::note Conditional required: `separator`
 
-For the `separator` role, `aria-valuenow` is required only when the element is focusable (e.g. has `tabindex`, or is interactive content like `<button>` / `<a href>`). A non-focusable `<div role="separator">` is treated as a static structural separator per [WAI-ARIA](https://w3c.github.io/aria/#separator) and does not require `aria-valuenow`.
+For the `separator` role, `aria-valuenow` is required only when the element is focusable (e.g. has `tabindex`, or is interactive content like `<button>` / `<a href>`). A non-focusable `<div role="separator">` is treated as a static structural separator per [WAI-ARIA](https://w3c.github.io/aria/#separator) and does not require `aria-valuenow`. `aria-valuemin` and `aria-valuemax` are not required in any version of WAI-ARIA, as the prose of the role asks for them only when they differ from their implicit `0` and `100`, though the table of WAI-ARIA 1.1 lists them.
 
 ```html
 <!-- ✅ Static structural separator -->

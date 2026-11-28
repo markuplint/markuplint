@@ -474,3 +474,24 @@ test('[no-invalid-aria-prop-value-027] an empty value of a property that a subcl
 		},
 	]);
 });
+
+test.each([
+	['<div role="separator" tabindex="0" aria-valuenow="5" aria-valuemin=""></div>', []],
+	['<div role="separator" tabindex="0" aria-valuenow="5" aria-valuemax=""></div>', []],
+	[
+		'<div role="separator" tabindex="0" aria-valuenow=""></div>',
+		v(36, 'The "" is disallowed on the "aria-valuenow" ARIA property', 'aria-valuenow=""'),
+	],
+] as const)(
+	'[no-invalid-aria-prop-value-028] in ARIA 1.1, an empty value of a focusable separator is an author error only for aria-valuenow: %j',
+	async (code, violations) => {
+		expect((await mlRuleTest(rule, code, { rule: { options: { version: '1.1' } } })).violations).toStrictEqual(
+			violations,
+		);
+	},
+);
+
+test('[no-invalid-aria-prop-value-029] an empty value of a property that the implicit role satisfies is the absent attribute', async () => {
+	const { violations } = await mlRuleTest(rule, '<hr tabindex="0" aria-valuenow="">');
+	expect(violations).toStrictEqual([]);
+});
