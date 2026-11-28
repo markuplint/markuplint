@@ -54,8 +54,30 @@ describe('MLText#data', () => {
 		expect(textIn('<svg><![CDATA[ &#65; ]]></svg>', 'svg').data).toBe(' &#65; ');
 	});
 
+	test.each([
+		['<svg><![CDATA[x]]>y<![CDATA[z]]></svg>', 'xyz'],
+		['<svg>a&amp;<![CDATA[&amp;]]></svg>', 'a&&amp;'],
+		['<svg><![CDATA[a]]>&lt;</svg>', 'a<'],
+	])('of foreign content with CDATA sections and text between them: %s', (code, data) => {
+		expect(textIn(code, 'svg').data).toBe(data);
+	});
+
+	test('the content of the `script` and `style` of SVG is not raw text', () => {
+		expect(textIn('<svg><style>a</style></svg>', 'style').isRawTextElementContent()).toBe(false);
+		expect(textIn('<svg><script>a</script></svg>', 'script').isRawTextElementContent()).toBe(false);
+	});
+
 	test('of an element of that name in another namespace is decoded', () => {
 		expect(textIn('<svg><iframe>&lt;</iframe></svg>', 'iframe').data).toBe('<');
+	});
+
+	test('of an HTML element in a MathML text integration point is read as in HTML', () => {
+		expect(textIn('<math><mi><iframe>&lt;</iframe></mi></math>', 'iframe').data).toBe('&lt;');
+		expect(textIn('<svg><desc><iframe>&lt;</iframe></desc></svg>', 'iframe').data).toBe('&lt;');
+	});
+
+	test('of the SVG `style` is decoded, as its content is markup there', () => {
+		expect(textIn('<svg><style>a &lt; b</style></svg>', 'style').data).toBe('a < b');
 	});
 
 	test('of JSX is decoded by the rules of JSX: the XHTML set, with a semicolon', async () => {

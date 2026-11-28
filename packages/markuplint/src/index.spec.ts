@@ -90,6 +90,7 @@ describe('basic test', () => {
 			'Orphaned end tag detected',
 			'Orphaned end tag detected',
 			'Content after the end tag of the "html" element is not allowed',
+			'The "div" element is not closed at the end of the file',
 			'The "font" element is not allowed in the "body" element in this context',
 			'The value of the "id" attribute is duplicated',
 			'Require accessible name',

@@ -1518,3 +1518,7 @@ describe('a leading BOM', () => {
 		expect(() => parse('\uFEFF<div>{#if}</div>')).toThrow(expect.objectContaining({ line: 1, col: 11 }));
 	});
 });
+
+test('follows the integration points of the HTML parser, which reads the HTML string of the template', () => {
+	expect(parser.integrationPoints).toBe('html');
+});

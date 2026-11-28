@@ -39,6 +39,9 @@ class JSXParser extends Parser<JSXNode, State> {
 				attrNameRoute: 'dom-api',
 				// The attributes are the props object of the element, where a later key replaces an earlier one
 				duplicateAttrPrecedence: 'last',
+				// React makes an element in the namespace of its parent, and one in `foreignObject` in the HTML namespace
+				// @see https://github.com/facebook/react/blob/main/packages/react-dom-bindings/src/client/ReactFiberConfigDOM.js#getChildHostContextProd
+				integrationPoints: 'foreign-object',
 			},
 			{
 				comments: [],
@@ -326,8 +329,9 @@ class JSXParser extends Parser<JSXNode, State> {
 		return attr;
 	}
 
-	parseCodeFragment(token: ChildToken) {
+	parseCodeFragment(token: ChildToken, options?: Parameters<Parser<JSXNode, State>['parseCodeFragment']>[1]) {
 		return super.parseCodeFragment(token, {
+			...options,
 			namelessFragment: true,
 		});
 	}

@@ -1,6 +1,6 @@
 import type { Replacements } from './optimize-starts-head-or-body.js';
 import type { Node, SourceRange } from './types.js';
-import type { MLASTNodeTreeItem, MLASTParentNode, MLASTParseError } from '@markuplint/ml-ast';
+import type { MLASTNodeTreeItem, MLASTParentNode, MLASTParseError, MLASTTag } from '@markuplint/ml-ast';
 import type { ChildToken, ParseOptions, ParserOptions } from '@markuplint/parser-utils';
 import type { ParserError as Parse5ParserError } from 'parse5';
 
@@ -22,6 +22,8 @@ type State = {
 	startTagOffsets: Set<number>;
 	/** Reads the end tag that parse5 processed for an element it inserted without a start tag (set by `tokenize`). */
 	implicitEndTag: ((node: Node) => SourceRange | null) | null;
+	/** The offsets of the end tags that an element of parse5's tree owns (set by `tokenize`). */
+	ownedEndTagOffsets: Set<number>;
 	afterPosition: {
 		endOffset: number;
 		endLine: number;
@@ -67,6 +69,7 @@ export class HtmlParser extends Parser<Node, State> {
 				startsHeadTagOrBodyTag: null,
 				startTagOffsets: new Set(),
 				implicitEndTag: null,
+				ownedEndTagOffsets: new Set(),
 				afterPosition: {
 					endOffset: 0,
 					endLine: 1,
@@ -118,6 +121,7 @@ export class HtmlParser extends Parser<Node, State> {
 			},
 		});
 		this.state.implicitEndTag = getImplicitEndTag;
+		this.state.ownedEndTagOffsets = collectEndTagOffsets(doc, getImplicitEndTag, rawCode);
 		const childNodes = doc.childNodes;
 
 		return {
@@ -258,9 +262,11 @@ export class HtmlParser extends Parser<Node, State> {
 	 *
 	 * The other is an element that the parser makes again where a formatting element is misnested (`<p><a href><div>`:
 	 * the `div` closes the `p`, and the `a` is made again inside the `div`), which has the location of the start tag
-	 * that it repeats. It is in the tree that the HTML Standard builds, so it is in the tree here. It has neither a
-	 * start tag to read nor an end tag, so it has no attributes: the `href` of the repeated `a` is on the first `a` only,
-	 * and a rule that reads the attributes reports the first and not this one, as it would otherwise report each twice.
+	 * that it repeats. It is in the tree that the HTML Standard builds, so it is in the tree here. It has no start tag
+	 * to read, so it has no attributes: the `href` of the repeated `a` is on the first `a` only, and a rule that reads the
+	 * attributes reports the first and not this one, as it would otherwise report each twice. An end tag that closes it
+	 * (`</i>` of `<b><i>x</b> y</i>`, where the `</b>` closes the first `i` and the parser makes it again for `y`) is
+	 * its end tag, as parse5 records it.
 	 *
 	 * @see https://html.spec.whatwg.org/multipage/parsing.html#reconstruct-the-active-formatting-elements
 	 *
@@ -300,9 +306,7 @@ export class HtmlParser extends Parser<Node, State> {
 			childNodes,
 			{
 				createEndTagToken: () => {
-					const endTagLoc =
-						this.state.implicitEndTag?.(originNode) ??
-						findHtmlEndTagAfterFrameset(this.rawCode, originNode);
+					const endTagLoc = findEndTag(originNode, this.state.implicitEndTag, this.rawCode);
 					if (!endTagLoc) {
 						return null;
 					}
@@ -365,6 +369,65 @@ export class HtmlParser extends Parser<Node, State> {
 	visitSpreadAttr() {
 		return null;
 	}
+
+	/**
+	 * An end tag in a text is one that an element of parse5's tree owns when its offset is that of the end tag that
+	 * parse5 recorded for an element: parse5 merges the text on both sides of an end tag that it processes without
+	 * closing anything into one text (`a</html>b`), and the end tag is already the element's.
+	 *
+	 * @param tag - An end tag found in the content of a text
+	 * @returns `true` if an element of the tree owns it
+	 */
+	isOwnedEndTag(tag: MLASTTag): boolean {
+		return this.state.ownedEndTagOffsets.has(tag.offset);
+	}
+}
+
+/**
+ * The end tag of an element of parse5's tree: the one that parse5 recorded for it (`ElementLocation#endTag`), the one
+ * recorded for an element inserted without a start tag, or the `</html>` after a frameset.
+ *
+ * @param node - An element of parse5's tree
+ * @param getImplicitEndTag - Reads the end tag recorded for an element inserted without a start tag
+ * @param rawCode - The source
+ * @returns The end tag, or null when the element has none
+ */
+function findEndTag(
+	node: Node,
+	getImplicitEndTag: ((node: Node) => SourceRange | null) | null,
+	rawCode: string,
+): SourceRange | null {
+	const location = ('sourceCodeLocation' in node ? node.sourceCodeLocation : null) as {
+		readonly endTag?: SourceRange;
+	} | null;
+	return location?.endTag ?? getImplicitEndTag?.(node) ?? findHtmlEndTagAfterFrameset(rawCode, node);
+}
+
+/**
+ * @param root - The root of parse5's tree
+ * @param getImplicitEndTag - Reads the end tag recorded for an element inserted without a start tag
+ * @param rawCode - The source
+ * @returns The offsets of the end tags that the elements of the tree own
+ */
+function collectEndTagOffsets(
+	root: Node,
+	getImplicitEndTag: (node: Node) => SourceRange | null,
+	rawCode: string,
+): Set<number> {
+	const offsets = new Set<number>();
+	const visit = (node: Node) => {
+		const endTag = findEndTag(node, getImplicitEndTag, rawCode);
+		if (endTag) {
+			offsets.add(endTag.startOffset);
+		}
+		const children =
+			'content' in node && node.content ? node.content.childNodes : 'childNodes' in node ? node.childNodes : [];
+		for (const child of children) {
+			visit(child);
+		}
+	};
+	visit(root);
+	return offsets;
 }
 
 /**

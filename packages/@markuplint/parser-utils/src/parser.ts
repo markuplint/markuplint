@@ -12,6 +12,7 @@ import type {
 import type {
 	AttrNameRoute,
 	DuplicateAttrPrecedence,
+	IntegrationPoints,
 	EndTagType,
 	ExpressionLanguage,
 	MLASTDocument,
@@ -55,7 +56,7 @@ import { ignoreFrontMatter } from './ignore-front-matter.js';
 import { ParserError } from './parser-error.js';
 import { shiftPositions } from './shift-leading-bom.js';
 import { sortNodes } from './sort-nodes.js';
-import { getNamespace } from './get-namespace.js';
+import { getChildNamespace, getEncoding, getNamespace } from './get-namespace.js';
 import { decodeEntities } from '@markuplint/shared';
 
 const timer = new PerformanceTimer();
@@ -127,6 +128,7 @@ export abstract class Parser<Node extends {} = {}, State extends unknown = null>
 	readonly #attrNameCaseSensitive: boolean = false;
 	readonly #attrNameRoute: AttrNameRoute = 'html-parser';
 	readonly #duplicateAttrPrecedence: DuplicateAttrPrecedence = 'first';
+	readonly #integrationPoints: IntegrationPoints = 'html';
 	readonly #selfCloseType: SelfCloseType = 'html';
 	readonly #spaceChars: readonly string[] = defaultSpaces;
 	readonly #rawTextElements: readonly string[] = ['style', 'script'];
@@ -155,6 +157,12 @@ export abstract class Parser<Node extends {} = {}, State extends unknown = null>
 	#originalRawCode = '';
 	#rawCode = '';
 	#defaultDepth = 0;
+
+	/**
+	 * Whether `visitText` is searching a remnant: source that the language's tree does not cover, as opposed to a text
+	 * that the language has placed (`parseCodeFragment`'s `inPlacedText`).
+	 */
+	#inRemnant = false;
 	#walkMethodSequentailPrevNode: MLASTNodeTreeItem | null = null;
 
 	state: State;
@@ -179,6 +187,7 @@ export abstract class Parser<Node extends {} = {}, State extends unknown = null>
 		this.#attrNameCaseSensitive = options?.attrNameCaseSensitive ?? this.#attrNameCaseSensitive;
 		this.#attrNameRoute = options?.attrNameRoute ?? this.#attrNameRoute;
 		this.#duplicateAttrPrecedence = options?.duplicateAttrPrecedence ?? this.#duplicateAttrPrecedence;
+		this.#integrationPoints = options?.integrationPoints ?? this.#integrationPoints;
 		this.#selfCloseType = options?.selfCloseType ?? this.#selfCloseType;
 		this.#spaceChars = options?.spaceChars ?? this.#spaceChars;
 		this.#rawTextElements = options?.rawTextElements ?? this.#rawTextElements;
@@ -303,6 +312,14 @@ export abstract class Parser<Node extends {} = {}, State extends unknown = null>
 	 */
 	get duplicateAttrPrecedence(): DuplicateAttrPrecedence {
 		return this.#duplicateAttrPrecedence;
+	}
+
+	/**
+	 * Which integration points of SVG and MathML the language follows (see `IntegrationPoints`). Those of the HTML
+	 * parser by default.
+	 */
+	get integrationPoints(): IntegrationPoints {
+		return this.#integrationPoints;
 	}
 
 	/**
@@ -775,7 +792,7 @@ export abstract class Parser<Node extends {} = {}, State extends unknown = null>
 		};
 
 		if (options?.researchTags) {
-			const nodes = this.parseCodeFragment(token);
+			const nodes = this.parseCodeFragment(token, { inPlacedText: !this.#inRemnant });
 			const includedStartTags = nodes.some(node => node.type === 'starttag');
 
 			// Handle invalid tags as text nodes
@@ -837,7 +854,7 @@ export abstract class Parser<Node extends {} = {}, State extends unknown = null>
 				tagOpenChar: '',
 				isGhost: true,
 				isFragment: false,
-				namespace: getNamespace(null, token.parentNode),
+				namespace: getNamespace(null, token.parentNode, this.#integrationPoints),
 				...overwriteProps,
 			};
 
@@ -948,7 +965,7 @@ export abstract class Parser<Node extends {} = {}, State extends unknown = null>
 		if (children.length === 0) {
 			return [];
 		}
-		if (parentNode && this.#rawTextElements.includes(parentNode.nodeName.toLowerCase())) {
+		if (parentNode && this.#isRawTextElement(parentNode)) {
 			return [];
 		}
 
@@ -1120,7 +1137,8 @@ export abstract class Parser<Node extends {} = {}, State extends unknown = null>
 	 * its tests are the most sensitive regression signal.
 	 *
 	 * @param token - The child token containing the code fragment to re-parse
-	 * @param options - Controls whether nameless fragments (JSX `<>`) are recognized
+	 * @param options - Whether nameless fragments (JSX `<>`) are recognized, and whether the fragment is the content of
+	 *   a text that the language has already placed (`inPlacedText`)
 	 * @returns An array of tag and text AST nodes discovered in the code fragment
 	 * @see https://html.spec.whatwg.org/multipage/syntax.html#cdata-rcdata-restrictions
 	 * @see https://github.com/markuplint/markuplint/issues/3825
@@ -1129,6 +1147,12 @@ export abstract class Parser<Node extends {} = {}, State extends unknown = null>
 		token: ChildToken,
 		options?: {
 			readonly namelessFragment?: boolean;
+			/**
+			 * The fragment is the content of a text that the language has already placed in its parent: an end tag
+			 * that no start tag of the fragment opens closes nothing (the language ignored it), so it does not move the
+			 * nodes after it to an ancestor.
+			 */
+			readonly inPlacedText?: boolean;
 		},
 	) {
 		const nodes: (MLASTTag | MLASTText)[] = [];
@@ -1145,6 +1169,16 @@ export abstract class Parser<Node extends {} = {}, State extends unknown = null>
 			// Depth
 			number
 		>();
+
+		// The elements of the fragment that are open, for the namespace of what is in them: a start tag of the fragment
+		// is in the namespace that the open element of the fragment around it gives, not the one of the text's parent
+		const openElements: {
+			readonly name: string;
+			// A component is no integration point, whatever its name
+			readonly isComponent: boolean;
+			readonly namespace: NamespaceURI;
+			readonly encoding: string | null;
+		}[] = [];
 
 		while (raw) {
 			const parsed = this.#parseTag(
@@ -1203,8 +1237,40 @@ export abstract class Parser<Node extends {} = {}, State extends unknown = null>
 				}
 			}
 
-			if (tag.type === 'starttag' && !isSelfClose) {
-				depthStack.set(tag.nodeName, depth);
+			if (tag.type === 'starttag') {
+				const parent = openElements.at(-1);
+				if (parent) {
+					const namespace = getChildNamespace(
+						tag.elementType === 'authored' ? null : tag.nodeName,
+						parent.namespace,
+						parent.isComponent ? null : parent.name,
+						parent.encoding,
+						this.#integrationPoints,
+					);
+					this.#setNamespace(tag, namespace);
+				}
+				// In foreign content `/>` closes the element (a self-closing flag that is acknowledged)
+				if (tag.namespace !== 'http://www.w3.org/1999/xhtml' && tag.tagCloseChar.startsWith('/')) {
+					isSelfClose = true;
+				}
+				if (!isSelfClose) {
+					depthStack.set(tag.nodeName, depth);
+				}
+				// A void element of HTML has no content, whatever its tag says
+				if (!isSelfClose && !(isVoidElement && tag.namespace === 'http://www.w3.org/1999/xhtml')) {
+					openElements.push({
+						name: tag.nodeName,
+						isComponent: tag.elementType === 'authored',
+						namespace: tag.namespace,
+						encoding: getEncoding(tag),
+					});
+				}
+			} else if (tag.type === 'endtag') {
+				const name = tag.nodeName.toLowerCase();
+				const index = openElements.findLastIndex(open => open.name.toLowerCase() === name);
+				if (index !== -1) {
+					openElements.splice(index);
+				}
 			}
 
 			if (tag.raw) {
@@ -1212,7 +1278,7 @@ export abstract class Parser<Node extends {} = {}, State extends unknown = null>
 					if (depthStack.has(tag.nodeName)) {
 						depth = depthStack.get(tag.nodeName)!;
 						depthStack.delete(tag.nodeName);
-					} else {
+					} else if (!options?.inPlacedText) {
 						depth = Math.max(depth - 1, this.#defaultDepth);
 					}
 					this.updateLocation(tag, {
@@ -1222,11 +1288,9 @@ export abstract class Parser<Node extends {} = {}, State extends unknown = null>
 					depth += 1;
 				}
 
-				/**
-				 * The DOM parser sometimes includes HTML closing tags as a text node child of the body element.
-				 * In that case, it is ignored.
-				 */
-				if (token.parentNode?.nodeName === 'body' && tag.nodeName === 'html' && tag.type === 'endtag') {
+				// An end tag that an element of the tree already owns, inside a text that the language merged across it
+				// (parse5 makes one text of `a</html>b` in `body`), is not made a second time
+				if (tag.type === 'endtag' && this.isOwnedEndTag(tag, token.parentNode ?? null)) {
 					continue;
 				}
 
@@ -1255,7 +1319,7 @@ export abstract class Parser<Node extends {} = {}, State extends unknown = null>
 			 * @see https://html.spec.whatwg.org/multipage/syntax.html#cdata-rcdata-restrictions
 			 * @see https://github.com/markuplint/markuplint/issues/3825
 			 */
-			if (tag.type === 'starttag' && !isSelfClose && this.#rawTextElements.includes(tag.nodeName.toLowerCase())) {
+			if (tag.type === 'starttag' && !isSelfClose && this.#isRawTextElement(tag)) {
 				const closeTagPattern = this.#getRawTextCloseTagPattern(tag.nodeName);
 				const match = closeTagPattern.exec(raw);
 				if (match) {
@@ -1646,14 +1710,24 @@ export abstract class Parser<Node extends {} = {}, State extends unknown = null>
 		const codeFragment = this.sliceFragment(start, end);
 
 		if (codeFragment.raw) {
-			const remnantNodes = this.visitText(
-				{
-					...codeFragment,
-					depth: depth,
-					parentNode: parentNode,
-				},
-				{ researchTags: true },
-			).filter((node: MLASTNodeTreeItem): node is MLASTChildNode => 'parentNode' in node);
+			const inRemnant = this.#inRemnant;
+			this.#inRemnant = true;
+			let visited: readonly MLASTNodeTreeItem[];
+			try {
+				visited = this.visitText(
+					{
+						...codeFragment,
+						depth: depth,
+						parentNode: parentNode,
+					},
+					{ researchTags: true },
+				);
+			} finally {
+				this.#inRemnant = inRemnant;
+			}
+			const remnantNodes = visited.filter(
+				(node: MLASTNodeTreeItem): node is MLASTChildNode => 'parentNode' in node,
+			);
 
 			if (remnantNodes.length > 1) {
 				this.appendChild(parentNode, ...remnantNodes);
@@ -1688,7 +1762,7 @@ export abstract class Parser<Node extends {} = {}, State extends unknown = null>
 		for (const [i, node] of nodeList.entries()) {
 			const sequentailPrevNode = nodeList[i - 1] ?? null;
 
-			if (!this.#rawTextElements.includes(node.nodeName.toLowerCase())) {
+			if (!this.#isRawTextElement(node)) {
 				const prevEndOffset = sequentailPrevNode
 					? sequentailPrevNode.offset + sequentailPrevNode.raw.length
 					: 0;
@@ -1732,12 +1806,52 @@ export abstract class Parser<Node extends {} = {}, State extends unknown = null>
 		return newNodeList;
 	}
 
+	/**
+	 * @param tag - A start tag that the fragment's own open elements put in a namespace
+	 * @param namespace - That namespace
+	 */
+	#setNamespace(tag: MLASTTag, namespace: NamespaceURI) {
+		Object.assign(tag, { namespace });
+	}
+
 	#getEndLocation(token: Token) {
 		return {
 			offset: token.offset + token.raw.length,
 			line: getEndLine(token.raw, token.line),
 			col: getEndCol(token.raw, token.col),
 		} as const;
+	}
+
+	/**
+	 * Whether an end tag found in the content of a text is one that an element of the language's tree already owns.
+	 * A language may merge the text on both sides of an end tag into one text node (parse5 does for `a</html>b` in
+	 * `body`); searching that text for tags must not make a second copy of the end tag. A parser that knows the end
+	 * tags of its tree says so by their offsets (`HtmlParser`); the default takes the `</html>` in a text of `body`.
+	 *
+	 * @param tag - An end tag found in the content of a text
+	 * @param textParent - The parent of the text
+	 * @returns `true` if an element already owns it
+	 */
+	isOwnedEndTag(tag: MLASTTag, textParent: MLASTParentNode | null): boolean {
+		// Without the end tags of the language's tree: the `</html>` in a text of `body`, which the HTML tree owns
+		return tag.nodeName.toLowerCase() === 'html' && textParent?.nodeName.toLowerCase() === 'body';
+	}
+
+	/**
+	 * Whether a node is a raw-text element (`rawTextElements`): an element of that name in the HTML namespace. The
+	 * tree construction reads the content of `style` and `script` as raw text only in the HTML namespace; in SVG and
+	 * MathML (foreign content) they are ordinary elements whose content is markup and text.
+	 *
+	 * @see https://html.spec.whatwg.org/multipage/parsing.html#parsing-main-inforeign
+	 * @param node - A node; one that has no namespace (a parser that does not resolve one) is taken by its name
+	 * @returns `true` if its content is raw text
+	 */
+	#isRawTextElement(node: MLASTNodeTreeItem | MLASTParentNode): boolean {
+		if (!this.#rawTextElements.includes(node.nodeName.toLowerCase())) {
+			return false;
+		}
+		const namespace = 'namespace' in node ? node.namespace : undefined;
+		return namespace === undefined || namespace === 'http://www.w3.org/1999/xhtml';
 	}
 
 	/**
@@ -2025,7 +2139,11 @@ export abstract class Parser<Node extends {} = {}, State extends unknown = null>
 					namespace:
 						'namespace' in token
 							? (token.namespace as NamespaceURI)
-							: getNamespace(elementType === 'authored' ? null : tagName, token.parentNode),
+							: getNamespace(
+									elementType === 'authored' ? null : tagName,
+									token.parentNode,
+									this.#integrationPoints,
+								),
 					attributes: attrs,
 					childNodes: [],
 					pairNode: null,

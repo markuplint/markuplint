@@ -11,6 +11,8 @@ description: body要素を閉じる終了タグの後に開始タグや非空白
 
 body を閉じるのは最初の `</body>` です。`</body>` より前に `</html>` が書かれていれば、その `</html>` が body を閉じ、その終了タグの後のコンテンツが検出されます。すぐ後ろに続く `</body>` は余分な終了タグです。コンテンツの後ろにある `</body>` は body を再び閉じますが、その前のコンテンツはすでに body の終わりの後にあります。body を閉じた `</html>` はパーサーを "after body" から [“after after body” 挿入モード](https://momdo.github.io/html/parsing.html#the-after-after-body-insertion-mode)に進め、その "Anything else" のケースも同じパースエラーになるため、その `</html>` の後のコンテンツも検出されます。このときメッセージは `html` 要素を示します。
 
+コンテンツはパーサーが置いた場所にかかわらず検出されます。body を閉じる終了タグの時点で body 内の要素がまだ開いていれば（`<body><div></body><p>x</p>`）、[ノードを挿入する適切な場所](https://momdo.github.io/html/parsing.html#appropriate-place-for-inserting-a-node)は現在のノードなので、再処理されたコンテンツはその要素の中に入り、そこで検出されます。
+
 ❌ このルールに適合しない**誤った**コードの例
 
 ```html

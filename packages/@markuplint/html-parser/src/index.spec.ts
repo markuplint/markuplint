@@ -862,7 +862,7 @@ describe('parser', () => {
 			expect(node.childNodes[1]?.uuid).toEqual(doc.nodeList[5]?.uuid);
 			expect(node.childNodes[3]?.uuid).toEqual(doc.nodeList[18]?.uuid);
 			expect(node.childNodes[4]?.uuid).toEqual(doc.nodeList[19]?.uuid);
-			expect(node.childNodes[6]?.uuid).toEqual(doc.nodeList[26]?.uuid);
+			expect(node.childNodes[6]?.uuid).toEqual(undefined);
 		}
 
 		// #text ⏎
@@ -960,13 +960,13 @@ describe('parser', () => {
 		expect(doc.nodeList[25]?.parentNodeUuid).toEqual(doc.nodeList[3]?.uuid);
 
 		// #text ⏎
-		expect(doc.nodeList[26]?.parentNodeUuid).toEqual(doc.nodeList[3]?.uuid);
+		expect(doc.nodeList[26]?.parentNodeUuid).toEqual(doc.nodeList[19]?.uuid);
 
 		// </html>
 		expect(doc.nodeList[27]?.parentNodeUuid).toEqual(null);
 
 		// #text ⏎
-		expect(doc.nodeList[28]?.parentNodeUuid).toEqual(null);
+		expect(doc.nodeList[28]?.parentNodeUuid).toEqual(doc.nodeList[19]?.uuid);
 	});
 
 	test('Offset', () => {

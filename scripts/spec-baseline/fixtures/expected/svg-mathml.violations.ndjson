@@ -28,6 +28,7 @@
 {"col":24,"line":48,"message":"\"async\" should be before \"href\"","raw":"async","ruleId":"attr-order","severity":"warning"}
 {"col":24,"line":48,"message":"The \"async\" attribute is experimental","raw":"async","ruleId":"no-experimental-features","severity":"warning"}
 {"col":24,"line":48,"message":"The \"async\" attribute is non-standard","raw":"async","ruleId":"no-nonstandard-features","severity":"warning"}
+{"col":12,"line":49,"message":"The \"circle\" element is not allowed in the \"script\" element in this context","raw":"<circle r=\"1\" />","ruleId":"permitted-contents","severity":"error"}
 {"col":22,"line":56,"message":"It is the default value","raw":"0","ruleId":"no-default-value","severity":"warning"}
 {"col":28,"line":56,"message":"It is the default value","raw":"0","ruleId":"no-default-value","severity":"warning"}
 {"col":42,"line":56,"message":"\"height\" should be before \"x\"","raw":"height","ruleId":"attr-order","severity":"warning"}
@@ -43,6 +44,7 @@
 {"col":31,"line":66,"message":"\"foo\" should be before \"width\"","raw":"foo","ruleId":"attr-order","severity":"warning"}
 {"col":4,"line":67,"message":"The \"unknown-svg-element\" element is not closed at the end of the file","raw":"<unknown-svg-element />","ruleId":"no-unclosed-element-at-eof","severity":"error"}
 {"col":4,"line":67,"message":"Missing the end tag","raw":"<unknown-svg-element />","ruleId":"require-end-tag","severity":"warning"}
+{"col":4,"line":68,"message":"The \"foobar\" element is not closed at the end of the file","raw":"<fooBar />","ruleId":"no-unclosed-element-at-eof","severity":"error"}
 {"col":4,"line":68,"message":"Missing the end tag","raw":"<fooBar />","ruleId":"require-end-tag","severity":"warning"}
 {"col":5,"line":68,"message":"Tag names of HTML elements should be lowercase","raw":"fooBar","ruleId":"case-sensitive-tag-name","severity":"warning"}
 {"col":3,"line":70,"message":"Orphaned end tag detected","raw":"</svg>","ruleId":"no-orphaned-end-tag","severity":"error"}
@@ -87,5 +89,6 @@
 {"col":60,"line":114,"message":"The \"mathbackground\" attribute is deprecated","raw":"mathbackground","ruleId":"no-deprecated-attr","severity":"warning"}
 {"col":8,"line":118,"message":"The \"foo\" attribute is disallowed","raw":"foo","ruleId":"no-unknown-attr","severity":"error"}
 {"col":4,"line":119,"message":"The \"unknown-math\" element is not allowed in the \"math\" element in this context","raw":"<unknown-math />","ruleId":"permitted-contents","severity":"error"}
+{"col":4,"line":121,"message":"The \"rect\" element is not closed at the end of the file","raw":"<rect />","ruleId":"no-unclosed-element-at-eof","severity":"error"}
 {"col":4,"line":121,"message":"Missing the end tag","raw":"<rect />","ruleId":"require-end-tag","severity":"warning"}
 {"col":3,"line":122,"message":"Orphaned end tag detected","raw":"</math>","ruleId":"no-orphaned-end-tag","severity":"error"}
