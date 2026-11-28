@@ -253,7 +253,11 @@ describe('decodeAttrValue', () => {
 		['&NotEqualTilde;', '\u2242\u0338'],
 		['&check;', '\u2713'],
 		['&#116', '&#116'],
-		['&#128;', '\uFFFD'],
+		['&#128;', '\u20AC'],
+		['&#1;', '\u0001'],
+		['&#xFFFF;', '\uFFFF'],
+		['&#xD800;', '\uFFFD'],
+		['&#x110000;', '\uFFFD'],
 		['&#0;', '\uFFFD'],
 		['&#x41;', 'A'],
 	])('decodes %j as an MDX string attribute', (raw, value) => {

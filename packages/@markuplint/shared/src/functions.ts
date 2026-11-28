@@ -104,6 +104,44 @@ export interface DecodedAttrValue {
 }
 
 /**
+ * The numbers that `parseEntities` reads as another character (`characterReferenceInvalid`), as the table of the
+ * numeric character reference end state of HTML does.
+ *
+ * @see https://github.com/wooorm/character-reference-invalid/blob/main/index.js#characterReferenceInvalid
+ * @see https://html.spec.whatwg.org/multipage/parsing.html#numeric-character-reference-end-state
+ */
+const MDX_INVALID_REFERENCE: Readonly<Record<number, string>> = {
+	0: '\uFFFD',
+	128: '\u20AC',
+	130: '\u201A',
+	131: '\u0192',
+	132: '\u201E',
+	133: '\u2026',
+	134: '\u2020',
+	135: '\u2021',
+	136: '\u02C6',
+	137: '\u2030',
+	138: '\u0160',
+	139: '\u2039',
+	140: '\u0152',
+	142: '\u017D',
+	145: '\u2018',
+	146: '\u2019',
+	147: '\u201C',
+	148: '\u201D',
+	149: '\u2022',
+	150: '\u2013',
+	151: '\u2014',
+	152: '\u02DC',
+	153: '\u2122',
+	154: '\u0161',
+	155: '\u203A',
+	156: '\u0153',
+	158: '\u017E',
+	159: '\u0178',
+};
+
+/**
  * Decodes the character references of an attribute value as written in the source, keeping where each character of
  * the value is in it.
  *
@@ -116,6 +154,7 @@ export interface DecodedAttrValue {
  * @see https://html.spec.whatwg.org/multipage/parsing.html#named-character-reference-state
  * @see https://github.com/typescript-eslint/typescript-eslint/blob/main/packages/typescript-estree/src/node-utils.ts#unescapeStringLiteralText
  * @see https://github.com/syntax-tree/mdast-util-mdx-jsx/blob/main/lib/index.js#exitMdxJsxTagAttributeValueLiteral
+ * @see https://github.com/wooorm/parse-entities/blob/main/lib/index.js#parseEntities
  * @param raw - The value as written, without its quotes
  * @param decoding - How the language decodes it
  * @returns The value and the offsets of its characters in `raw`
@@ -168,15 +207,18 @@ function readReference(
 		}
 	}
 	if (decoding === 'mdx') {
-		// MDX takes a code point that is a control, a surrogate, a noncharacter or out of range for U+FFFD
-		// (`decodeNumericCharacterReference` of micromark), with a semicolon
+		// MDX decodes a string attribute with `parseEntities` (`nonTerminated: false`): a semicolon is required, a
+		// surrogate or a number out of range is U+FFFD, a number of the table of invalid references of HTML
+		// (`characterReferenceInvalid`: 0 and most of 0x80 to 0x9F, as Windows-1252) is its character, and any
+		// other number is its code point
 		const mdxNumeric = /^&#(?:X([\dA-F]+)|(\d+));/i.exec(rest);
 		if (mdxNumeric) {
 			const code = mdxNumeric[1] === undefined ? Number(mdxNumeric[2]) : Number.parseInt(mdxNumeric[1], 16);
-			return {
-				chars: isMdxReplacedCodePoint(code) ? '\uFFFD' : String.fromCodePoint(code),
-				length: mdxNumeric[0].length,
-			};
+			const chars =
+				(code >= 0xD8_00 && code <= 0xDF_FF) || code > 0x10_FF_FF
+					? '\uFFFD'
+					: (MDX_INVALID_REFERENCE[code] ?? String.fromCodePoint(code));
+			return { chars, length: mdxNumeric[0].length };
 		}
 	}
 	const numeric = /^&#(?:X[\dA-F]+|\d+);?/i.exec(rest);
@@ -219,25 +261,6 @@ function readReference(
 		return { chars, length };
 	}
 	return null;
-}
-
-/**
- * @see https://github.com/micromark/micromark/blob/main/packages/micromark-util-decode-numeric-character-reference/dev/index.js#decodeNumericCharacterReference
- * @param code - A code point of a numeric character reference
- * @returns Whether MDX takes it for U+FFFD
- */
-function isMdxReplacedCodePoint(code: number): boolean {
-	return (
-		code < 9 ||
-		code === 11 ||
-		(code > 13 && code < 32) ||
-		(code > 126 && code < 160) ||
-		(code > 55_295 && code < 57_344) ||
-		(code > 64_975 && code < 65_008) ||
-		(code & 65_535) === 65_535 ||
-		(code & 65_535) === 65_534 ||
-		code > 1_114_111
-	);
 }
 
 /**
