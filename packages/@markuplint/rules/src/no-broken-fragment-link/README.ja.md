@@ -11,6 +11,8 @@ description: ハイパーリンクに指定されたフラグメントが、同�
 
 `fragmentRefersNameAttr` オプションを指定すると、`id` だけでなく要素の `name` 属性の値に一致するフラグメントも許容します。
 
+ページの一部であるファイル(フレームワークのコンポーネント、文書型宣言と`html`要素のないHTMLファイル)は、参照先を持つかもしれない別のファイルと合わせてページになるため検査しません。文書全体(`<!doctype html><html>`、または`parserOptions.documentMode`で`document`と宣言したファイル)は検査します。
+
 ❌ 間違ったコード例
 
 ```html

@@ -10,7 +10,9 @@ const HYPERLINK_SELECTOR = 'a[href], area[href]';
  * The target of a fragment link is an element of the document tree: the content of a `template`
  * element and a shadow root are not where the navigation scrolls to. So the ids and names are the ones
  * of the document (`document.querySelectorAll`, not the other trees), and a link in any tree is checked
- * against them. A dynamic id in the document, not in another tree, stops the check.
+ * against them. A dynamic id in the document, not in another tree, stops the check, and so does a file that is a
+ * part of a page (a component, a partial: `MLDocument#isFragment`), which the file that completes it may hold the
+ * target of (as `hasElementOfUnknownId` of `@markuplint/ml-spec` takes it).
  *
  * Split out of the former `no-refer-to-non-existent-id` rule. Unlike the
  * `DOMID`-typed attributes and ARIA ID references that rule covers, HTML LS
@@ -36,7 +38,7 @@ export default createRule({
 
 		const isMutable = document.nodeList.some(node => node.is(node.MARKUPLINT_PREPROCESSOR_BLOCK));
 
-		if (isMutable) {
+		if (isMutable || document.isFragment) {
 			return;
 		}
 

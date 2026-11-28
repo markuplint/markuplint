@@ -13,6 +13,10 @@ import meta from './meta.js';
  * `no-refer-to-non-existent-id` (which only tracks `id` references) never
  * covers this attribute.
  *
+ * The document of a file that is a part of a page (a component, a partial: `MLDocument#isFragment`) is completed by
+ * another file, which may hold the `map` (as `hasElementOfUnknownId` of `@markuplint/ml-spec` takes it), so a
+ * reference in it is not checked.
+ *
  * @see https://html.spec.whatwg.org/multipage/image-maps.html#attr-hyperlink-usemap
  * @see https://html.spec.whatwg.org/multipage/common-microsyntaxes.html#valid-hash-name-reference
  */
@@ -28,6 +32,7 @@ export default createRule<boolean, null>({
 			const usemapAttr = el.getAttributeNode('usemap');
 			if (!usemapAttr) return;
 			if (usemapAttr.isDynamicValue) return;
+			if (document.isFragment && el.getRootNode() === document) return;
 
 			// The character references are resolved on both sides, as the DOM has the strings
 			const value = getDOMValue(usemapAttr) ?? usemapAttr.value;
