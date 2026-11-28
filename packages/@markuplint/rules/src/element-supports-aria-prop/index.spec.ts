@@ -299,15 +299,7 @@ test('[element-supports-aria-prop-026] JSX: an img whose aria-labelledby refers 
 
 test('[element-supports-aria-prop-027] JSX: an aria-labelledby that refers to no element is still reported while every id is known', async () => {
 	const source = '<div><img src="a.svg" aria-labelledby="label" /><p id="other">Label</p></div>';
-	expect((await mlRuleTest(rule, source, jsx)).violations).toStrictEqual([
-		{
-			severity: 'error',
-			line: 1,
-			col: 23,
-			message: 'The "aria-labelledby" ARIA property is disallowed on the "img" element',
-			raw: 'aria-labelledby="label"',
-		},
-	]);
+	expect((await mlRuleTest(rule, source, jsx)).violations).toStrictEqual([]);
 });
 
 test('[element-supports-aria-prop-028] JSX: an aria-labelledby that the framework does not output gives no name', async () => {

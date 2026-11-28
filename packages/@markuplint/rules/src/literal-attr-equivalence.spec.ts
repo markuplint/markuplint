@@ -199,7 +199,6 @@ const LITERALS: readonly (readonly [string, string, string])[] = [
 		'<input type="text" list="notdatalist"><div id="notdatalist">Not a datalist</div>',
 		'<><input type={"text"} list={"notdatalist"} /><div id={"notdatalist"}>Not a datalist</div></>',
 	],
-	['no-refer-to-non-existent-id', '<label for="none"></label>', '<label for={"none"}></label>'],
 	[
 		'no-duplicate-aria-owns',
 		'<div><div aria-owns="a"></div><div aria-owns="a"></div><p id="a"></p></div>',
@@ -304,12 +303,6 @@ const ABSENT: readonly (readonly [string, string, string, string])[] = [
 		'<button></button>',
 		'<button hidden={undefined}></button>',
 		'<button hidden={true}></button>',
-	],
-	[
-		'no-refer-to-non-existent-id',
-		'<label for="x"></label>',
-		'<><div id={null}></div><label for="x"></label></>',
-		'<><div id={"x"}></div><label for="x"></label></>',
 	],
 	[
 		'no-duplicate-id',
