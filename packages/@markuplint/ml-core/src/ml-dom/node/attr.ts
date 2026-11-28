@@ -787,7 +787,10 @@ export class MLAttr<T extends RuleConfigValue, O extends PlainData = undefined>
 			return this.#decoded;
 		}
 		const token = this._astToken;
+		// The value of an attribute that a pretender makes is a string already: the value of the attribute of the usage
+		// (`fromAttr`), which is decoded, or a string of the configuration, which is no markup
 		const decodable =
+			!this.#isPretended &&
 			token.type === 'attr' &&
 			token.potentialValue == null &&
 			token.potentialName == null &&
