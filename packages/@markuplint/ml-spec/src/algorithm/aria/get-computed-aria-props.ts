@@ -95,15 +95,9 @@ export function getComputedAriaProps(
 			}
 		}
 
-		// The implicit value of the role takes the place of the default of the property
-		let defaultValue = getImplicitValueOfRole(el, role.name, spec.name, version) ?? spec.defaultValue;
-
-		/**
-		 * @see https://www.w3.org/TR/html-aria/#el-h1-h6
-		 */
-		if (ownedProp.name === 'aria-level' && /^H[1-6]$/.test(el.nodeName)) {
-			defaultValue = el.nodeName.replace('H', '');
-		}
+		// The implicit value of the role takes the place of the default of the property (the rank of a heading element
+		// for its role `heading`)
+		const defaultValue = getImplicitValueOfRole(el, role.name, spec.name, version) ?? spec.defaultValue;
 
 		props[ownedProp.name] = {
 			name: ownedProp.name,
