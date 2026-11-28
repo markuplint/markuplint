@@ -596,6 +596,57 @@ test('the non-standard attributes are the ones that were read', () => {
 });
 
 /**
+ * `#HTMLGlobalAttrs` is the global attributes of HTML elements, most of which (`hidden`, `accesskey`, `popover`, …) are
+ * defined for an HTML element only. An SVG element takes the attributes of any element from `#SVGCoreAttrs`.
+ *
+ * @see https://html.spec.whatwg.org/multipage/dom.html#global-attributes
+ */
+describe('the global attributes of an SVG element', () => {
+	const svgElements = htmlSpec.specs.filter(el => el.name.startsWith('svg:'));
+
+	/** The attributes of any element in a shadow tree or in the DOM, whatever its namespace. */
+	const ANY_ELEMENT = ['part', 'exportparts', 'slot', 'nonce', 'elementtiming'];
+
+	/** What the element resolves from the categories it selects and its own attributes. */
+	function resolvedNames(element) {
+		const { localName, namespaceURI } = resolveNamespace(element);
+		return getAttrSpecsByNames(localName, namespaceURI, htmlSpec).map(attr => attr.name);
+	}
+
+	test('are not the ones of HTML elements', () => {
+		expect(svgElements.length).toBeGreaterThan(0);
+		expect(svgElements.filter(el => el.globalAttrs?.['#HTMLGlobalAttrs']).map(el => el.name)).toStrictEqual([]);
+	});
+
+	test('are those of any element: part, exportparts, slot, nonce and elementtiming', () => {
+		// > Any element in a shadow tree can have the attribute, SVG and MathML elements too.
+		// @see https://drafts.csswg.org/css-shadow-1/#part-attr
+		//
+		// > DOM defines the user agent requirements for the class, id, and slot attributes for any element in any namespace.
+		// @see https://html.spec.whatwg.org/multipage/dom.html#global-attributes
+		const lacking = svgElements.filter(el => !ANY_ELEMENT.every(name => resolvedNames(el.name).includes(name)));
+		expect(lacking.map(el => el.name)).toStrictEqual([]);
+	});
+
+	test('carry the status of elementtiming that BCD gives the HTML one', () => {
+		// BCD has no entry of SVG or MathML for it (`CLAUDE.md`, "Data precedence").
+		const { def } = htmlSpec;
+		const html = def['#globalAttrs']['#HTMLGlobalAttrs'].elementtiming;
+		expect(html.experimental).toBe(true);
+		for (const category of ['#SVGCoreAttrs', '#MathMLGlobalAttrs']) {
+			expect(def['#globalAttrs'][category].elementtiming.experimental, category).toBe(html.experimental);
+		}
+	});
+
+	test('are those of any element for a MathML element too', () => {
+		const mathml = htmlSpec.specs.filter(el => el.name.startsWith('mml:'));
+		expect(mathml.length).toBeGreaterThan(0);
+		const lacking = mathml.filter(el => !ANY_ELEMENT.every(name => resolvedNames(el.name).includes(name)));
+		expect(lacking.map(el => el.name)).toStrictEqual([]);
+	});
+});
+
+/**
  * The elements are what the sources define: an element is added by writing its source file, and nothing in the
  * generator notices that a specification or a browser has a new one. BCD lists the elements of the browsers, so the
  * ones that it has and the data lacks are pinned here, and a change of the BCD version that adds one fails the test and

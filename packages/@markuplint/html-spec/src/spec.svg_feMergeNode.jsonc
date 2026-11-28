@@ -9,7 +9,17 @@
 		]
 	},
 	"globalAttrs": {
-		"#SVGCoreAttrs": ["id", "xml:base", "xml:lang", "xml:space", "part", "exportparts"],
+		"#SVGCoreAttrs": [
+			"id",
+			"xml:base",
+			"xml:lang",
+			"xml:space",
+			"part",
+			"exportparts",
+			"slot",
+			"nonce",
+			"elementtiming"
+		],
 		"#SVGFilterPrimitiveAttrs": ["in"]
 	},
 	"attributes": {},

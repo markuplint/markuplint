@@ -9,7 +9,17 @@
 		]
 	},
 	"globalAttrs": {
-		"#SVGCoreAttrs": ["id", "xml:base", "xml:lang", "xml:space", "part", "exportparts"]
+		"#SVGCoreAttrs": [
+			"id",
+			"xml:base",
+			"xml:lang",
+			"xml:space",
+			"part",
+			"exportparts",
+			"slot",
+			"nonce",
+			"elementtiming"
+		]
 	},
 	"attributes": {
 		// https://drafts.csswg.org/filter-effects-1/#element-attrdef-fespotlight-x

@@ -296,3 +296,18 @@ test('[no-experimental-features-019] customelementregistry is not experimental',
 	const { violations } = await mlRuleTest(rule, '<div customelementregistry></div>');
 	expect(violations).toStrictEqual([]);
 });
+
+test('[no-experimental-features-020] elementtiming is experimental on an SVG element as it is on an HTML element', async () => {
+	// > Elements that have a "elementtiming" content attribute are reported in the report image element timing and the report text element timing algorithms.
+	// @see https://w3c.github.io/element-timing/#sec-elements-exposed
+	const { violations } = await mlRuleTest(rule, '<svg><image href="a.png" elementtiming="c"></image></svg>');
+	expect(violations).toStrictEqual([
+		{
+			severity: 'warning',
+			line: 1,
+			col: 26,
+			raw: 'elementtiming',
+			message: 'The "elementtiming" attribute is experimental',
+		},
+	]);
+});

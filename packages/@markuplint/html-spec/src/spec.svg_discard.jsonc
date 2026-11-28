@@ -12,7 +12,20 @@
 	"globalAttrs": {
 		"#ARIAAttrs": true,
 		"#SVGConditionalProcessingAttrs": ["requiredExtensions", "systemLanguage"],
-		"#SVGCoreAttrs": ["id", "tabindex", "autofocus", "lang", "xml:space", "class", "style", "part", "exportparts"]
+		"#SVGCoreAttrs": [
+			"id",
+			"tabindex",
+			"autofocus",
+			"lang",
+			"xml:space",
+			"class",
+			"style",
+			"part",
+			"exportparts",
+			"slot",
+			"nonce",
+			"elementtiming"
+		]
 	},
 	"attributes": {
 		// https://www.w3.org/TR/SVGTiny12/struct.html#DiscardElementBeginAttribute

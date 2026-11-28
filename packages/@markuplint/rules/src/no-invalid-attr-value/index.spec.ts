@@ -3320,3 +3320,29 @@ test.each(['true', 'false', 'foo', ' customelementregistry '])(
 		]);
 	},
 );
+
+test('[no-invalid-attr-value-318] xml:lang of an SVG element has the value of lang, and needs no lang', async () => {
+	// > If both the ‘lang’ attribute in no namespace and the ‘lang’ attribute in the XML namespace are specified on the same element, they must have exactly the same value when compared in an ASCII case-insensitive manner.
+	// @see https://svgwg.org/svg2-draft/struct.html#LangSpaceAttrs
+	expect(
+		(await mlRuleTest(rule, '<svg lang="en" xml:lang="fr"><g lang="en" xml:lang="fr"></g></svg>')).violations,
+	).toStrictEqual([
+		{
+			severity: 'error',
+			line: 1,
+			col: 26,
+			message: 'The "xml:lang" attribute expects "en"',
+			raw: 'fr',
+		},
+		{
+			severity: 'error',
+			line: 1,
+			col: 53,
+			message: 'The "xml:lang" attribute expects "en"',
+			raw: 'fr',
+		},
+	]);
+	expect(
+		(await mlRuleTest(rule, '<svg lang="en" xml:lang="EN"><g xml:lang="fr"></g></svg>')).violations,
+	).toStrictEqual([]);
+});
