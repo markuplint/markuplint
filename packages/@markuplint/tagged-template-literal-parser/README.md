@@ -51,5 +51,4 @@ const parser = new TaggedTemplateLiteralParser(['html', 'svg']);
 ## :warning: Known Limitations
 
 - **Nested `}` in expressions**: The `${...}` masking uses a simple start/end delimiter match. Expressions containing unmatched `}` characters (e.g., `${{ key: value }}`) may be incorrectly split.
-- **Unquoted attribute values with expressions**: Template expressions inside unquoted attribute values are not supported. This is a shared limitation across all template engine parsers.
 - **`.tsx` files**: This parser uses `jsx: false` when parsing TypeScript. Files containing JSX syntax (`.tsx`) may fail to parse. Use `@markuplint/jsx-parser` for JSX/TSX files instead.
