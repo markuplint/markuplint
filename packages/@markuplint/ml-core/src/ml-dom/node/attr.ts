@@ -66,7 +66,8 @@ export class MLAttr<T extends RuleConfigValue, O extends PlainData = undefined>
 
 	/**
 	 * Whether this attribute replaces the children of the element with markup that the template does not
-	 * show (`v-html`, `x-html`, `dangerouslySetInnerHTML`: `DirectivePattern#isInnerHTML`). The elements
+	 * show (`v-html`, `x-html`, `dangerouslySetInnerHTML`: `DirectivePattern#isInnerHTML`; `set:html` of Astro:
+	 * `MLASTHTMLAttr#isInnerHTML`, as the parser declares it). The elements
 	 * that the markup holds are not all that the element has.
 	 */
 	readonly isInnerHTML?: true;
@@ -219,6 +220,7 @@ export class MLAttr<T extends RuleConfigValue, O extends PlainData = undefined>
 				this.isExpressionValue = this._astToken.isDynamicValue;
 				this.isDirective = this._astToken.isDirective;
 				this.isDuplicatable = this._astToken.isDuplicatable;
+				this.isInnerHTML = this._astToken.isInnerHTML;
 				language = ownElement.ownerMLDocument.attrExpressionLanguage;
 			}
 
@@ -248,6 +250,7 @@ export class MLAttr<T extends RuleConfigValue, O extends PlainData = undefined>
 			this.isExpressionValue = this._astToken.isDynamicValue;
 			this.isDirective = this._astToken.isDirective;
 			this.isDuplicatable = this._astToken.isDuplicatable;
+			this.isInnerHTML = this._astToken.isInnerHTML;
 		}
 
 		this.#literal = this.#readLiteral(language);
