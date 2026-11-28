@@ -355,3 +355,27 @@ describe('a fix of a report on an attribute that a pretender made', () => {
 		expect(violations[0]?.fix).toBeDefined();
 	});
 });
+
+describe('the value of an attribute that a pretender makes', () => {
+	test('is the string it is given, not decoded again', async () => {
+		const document = createTestDocument('<div><MyButton label="&amp;amp;" /></div>', {
+			parser: await jsxParser(),
+			specs,
+			pretenders: [
+				{
+					selector: 'MyButton',
+					as: {
+						element: 'button',
+						attrs: [
+							{ name: 'aria-label', value: { fromAttr: 'label' } },
+							{ name: 'title', value: 'a&amp;b' },
+						],
+					},
+				},
+			],
+		});
+		const button = document.querySelector('button');
+		// `label` is `&amp;` in the DOM (the reference of JSX decoded once); the configuration is a string, not markup
+		expect([button?.getAttribute('aria-label'), button?.getAttribute('title')]).toStrictEqual(['&amp;', 'a&amp;b']);
+	});
+});
