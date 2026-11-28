@@ -406,6 +406,12 @@ export interface MLASTHTMLAttr extends MLASTToken {
 	readonly candidate?: string;
 	/** Whether this attribute is allowed to appear multiple times on the same element (e.g. `class` in template engines that merge values) */
 	readonly isDuplicatable: boolean;
+	/**
+	 * Whether the attribute replaces the children of the element with markup that the template does not show, as
+	 * the parser of a language declares it (Astro's `set:html`). It is the source of `MLAttr#isInnerHTML` where no
+	 * `DirectivePattern` of a spec resolves the attribute.
+	 */
+	readonly isInnerHTML?: true;
 }
 
 /**
