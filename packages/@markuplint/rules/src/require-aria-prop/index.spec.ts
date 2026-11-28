@@ -245,3 +245,55 @@ test('[require-aria-prop-024] a treeitem requires aria-selected in ARIA 1.2, as 
 		},
 	]);
 });
+
+test('[require-aria-prop-025] a non-focusable separator requires no property in ARIA 1.1', async () => {
+	const { violations } = await mlRuleTest(rule, '<div role="separator"></div>', {
+		rule: { options: { version: '1.1' } },
+	});
+	expect(violations).toStrictEqual([]);
+});
+
+test('[require-aria-prop-026] a focusable separator requires aria-valuenow but not aria-valuemin / aria-valuemax in ARIA 1.1', async () => {
+	const { violations } = await mlRuleTest(rule, '<div role="separator" tabindex="0"></div>', {
+		rule: { options: { version: '1.1' } },
+	});
+	expect(violations).toStrictEqual([
+		{
+			severity: 'error',
+			line: 1,
+			col: 1,
+			message: 'Require the "aria-valuenow" ARIA property on the "separator" role',
+			raw: '<div role="separator" tabindex="0">',
+		},
+	]);
+});
+
+test('[require-aria-prop-027] a focusable separator with aria-valuenow is valid in ARIA 1.1', async () => {
+	const { violations } = await mlRuleTest(rule, '<div role="separator" tabindex="0" aria-valuenow="5"></div>', {
+		rule: { options: { version: '1.1' } },
+	});
+	expect(violations).toStrictEqual([]);
+});
+
+test('[require-aria-prop-028] a button with role="separator" requires only aria-valuenow in ARIA 1.1 (button is interactive)', async () => {
+	const { violations } = await mlRuleTest(rule, '<button role="separator">Drag</button>', {
+		rule: { options: { version: '1.1' } },
+	});
+	expect(violations).toStrictEqual([
+		{
+			severity: 'error',
+			line: 1,
+			col: 1,
+			message: 'Require the "aria-valuenow" ARIA property on the "separator" role',
+			raw: '<button role="separator">',
+		},
+	]);
+});
+
+test.each(['1.1', '1.3'] as const)(
+	'[require-aria-prop-029] a focusable hr, whose implicit role is separator, requires no property (ARIA %s)',
+	async version => {
+		const { violations } = await mlRuleTest(rule, '<hr tabindex="0">', { rule: { options: { version } } });
+		expect(violations).toStrictEqual([]);
+	},
+);

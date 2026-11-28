@@ -6,7 +6,7 @@ description: ARIAプロパティ/ステートの値が期待される型に適�
 
 ARIAプロパティ/ステートの値が期待される型に適合しない場合に警告します。
 
-値は、算出された ARIA プロパティと同じ方法で読みます。キーワード(`true`、`mixed`、`aria-live` のトークンなど)は、ブラウザと同じく ASCII の大文字・小文字を区別せず、前後に空白のない値として比較します(`" true "` は `true` ではありません)。数値は前後の ASCII 空白を無視した値全体で判定し、ID 参照は空白を含まない 1 つの ID とします。空の値は属性がないのと同じ扱いで、警告しません。ただし、明示したロールによって要素に必須となるプロパティ(`role="checkbox"` の `aria-checked`)は除きます。暗黙のロールは要素自身が満たします。
+値は、算出された ARIA プロパティと同じ方法で読みます。キーワード(`true`、`mixed`、`aria-live` のトークンなど)は、ブラウザと同じく ASCII の大文字・小文字を区別せず、前後に空白のない値として比較します(`" true "` は `true` ではありません)。数値は前後の ASCII 空白を無視した値全体で判定し、ID 参照は空白を含まない 1 つの ID とします。空の値は属性がないのと同じ扱いで、警告しません。ただし、明示したロールによって要素に必須となるプロパティ(`role="checkbox"` の `aria-checked`)は除きます。暗黙のロールは要素自身が満たします。ネイティブ属性が代わりになる場合(`<input type="checkbox" role="switch">` の `checked` 属性など)も、要素自身が満たします。
 
 > Authors MAY specify a zero-length string ("") for any supported (but not required) state or property.
 

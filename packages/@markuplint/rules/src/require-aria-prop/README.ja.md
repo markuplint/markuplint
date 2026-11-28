@@ -26,7 +26,7 @@ ARIA 属性の名前は、[`no-unknown-attr`](/docs/rules/no-unknown-attr#attrib
 
 :::note 条件付き必須: `separator`
 
-`separator`ロールにおいて、`aria-valuenow`は要素がフォーカス可能な場合（`tabindex`を持つ、`<button>`や`<a href>`などのインタラクティブコンテンツである等）にのみ必須となります。フォーカス不能な`<div role="separator">`は[WAI-ARIA](https://w3c.github.io/aria/#separator)に従い静的な構造的セパレーターとして扱われ、`aria-valuenow`は不要です。
+`separator`ロールにおいて、`aria-valuenow`は要素がフォーカス可能な場合（`tabindex`を持つ、`<button>`や`<a href>`などのインタラクティブコンテンツである等）にのみ必須となります。フォーカス不能な`<div role="separator">`は[WAI-ARIA](https://w3c.github.io/aria/#separator)に従い静的な構造的セパレーターとして扱われ、`aria-valuenow`は不要です。`aria-valuemin`と`aria-valuemax`はどのバージョンのWAI-ARIAでも必須ではありません。WAI-ARIA 1.1の表は必須として挙げていますが、ロールの本文が求めるのは値が暗黙の`0`と`100`と異なる場合だけです。
 
 <!-- textlint-disable ja-technical-writing/ja-no-mixed-period -->
 

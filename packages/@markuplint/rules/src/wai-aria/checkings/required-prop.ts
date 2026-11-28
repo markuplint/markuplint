@@ -1,13 +1,7 @@
 import type { Options } from '../types.js';
 import type { Element, ElementChecker } from '@markuplint/ml-core';
 
-import {
-	ARIA_RECOMMENDED_VERSION,
-	getARIA,
-	mayBeFocusable,
-	type ARIAProperty,
-	type ARIARole,
-} from '@markuplint/ml-spec';
+import { ARIA_RECOMMENDED_VERSION, getARIARequiredStates, type ARIAProperty, type ARIARole } from '@markuplint/ml-spec';
 
 /**
  * Checks whether the element has every ARIA state and property that it requires (`requiredPropsOf`).
@@ -45,17 +39,14 @@ export const checkingRequiredProp: ElementChecker<
 	};
 
 /**
- * The ARIA states and properties that the role of an element requires of it: the required ones of an explicit role
- * (an implicit role is satisfied by the element itself, see the quote below), less one whose
- * `requiredCondition: 'focusable'` the element does not meet (`separator`'s `aria-valuenow`), and less one that a
- * native attribute of the element gives in its place (`properties.without[].alt` of the element's ARIA spec).
+ * The ARIA states and properties that the role of an element requires of its author: the ones that
+ * `getARIARequiredStates` of `@markuplint/ml-spec` resolves as `required` and not `satisfiedByElement` (an implicit
+ * role, or a native attribute that gives the property in its place). The accessibility properties of ml-core read
+ * the same resolution, so they agree with the rules.
  *
  * `require-aria-prop` reports one that the element lacks, and `no-invalid-aria-prop-value` reports an empty value of
  * one, as an empty value is the absent attribute.
  *
- * > Features with implicit WAI-ARIA semantics satisfy WAI-ARIA structural requirements such as Required Accessibility Parent Roles, Allowed Accessibility Child Roles, required states and properties, etc. and do not require explicit WAI-ARIA semantics to be provided.
- *
- * @see https://w3c.github.io/aria/#implicit_semantics
  * @param el - The element
  * @param role - The computed role of the element
  * @returns The names of the required states and properties
@@ -65,37 +56,13 @@ export function requiredPropsOf(
 	el: Element<boolean, Options>,
 	role: (ARIARole & { isImplicit?: boolean }) | null | undefined,
 ): readonly string[] {
-	if (!role || role.isImplicit) {
-		return [];
-	}
-	const required = role.ownedProperties.filter(s => {
-		if (!s.required) return false;
-		// `requiredCondition: 'focusable'` makes the property required only when the
-		// element may be focusable (e.g. `separator`'s `aria-valuenow`).
-		if (s.requiredCondition === 'focusable' && !mayBeFocusable(el, el.ownerMLDocument.specs)) {
-			return false;
-		}
-		return true;
-	});
-	if (required.length === 0) {
+	if (!role) {
 		return [];
 	}
 	const ariaVersion =
 		el.rule.options?.version ?? el.ownerMLDocument.ruleCommonSettings?.ariaVersion ?? ARIA_RECOMMENDED_VERSION;
-	const elAriaSpec = getARIA(
-		el.ownerMLDocument.specs,
-		el.localName,
-		el.namespaceURI,
-		ariaVersion,
-		el.matches.bind(el),
-	);
-	return required
-		.filter(({ name }) => {
-			const alt =
-				elAriaSpec?.properties === false
-					? null
-					: (elAriaSpec?.properties?.without?.find(p => p.name === name)?.alt ?? null);
-			return !(alt?.method === 'set-attr' && el.hasAttribute(alt.target));
-		})
-		.map(({ name }) => name);
+	const states = getARIARequiredStates(el.ownerMLDocument.specs, el, role, ariaVersion);
+	return [...states]
+		.filter(([, { required, satisfiedByElement }]) => required && !satisfiedByElement)
+		.map(([name]) => name);
 }

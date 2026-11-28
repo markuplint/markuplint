@@ -40229,12 +40229,10 @@
 								"inherited": true
 							},
 							{
-								"name": "aria-valuemax",
-								"required": true
+								"name": "aria-valuemax"
 							},
 							{
-								"name": "aria-valuemin",
-								"required": true
+								"name": "aria-valuemin"
 							},
 							{
 								"name": "aria-valuenow",

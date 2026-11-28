@@ -245,5 +245,17 @@ export type UnknownAccessibilityProperties = {
  */
 export type AccessibilityProperty = {
 	value: string | null;
+	/** Whether the role requires it of this element (`ARIARequiredState.required` of `@markuplint/ml-spec`) */
 	required: boolean;
+	/**
+	 * Present, only together with `required: true`, when the element itself satisfies the requirement (its implicit
+	 * role, or a native attribute in its place), so that the author need not write it
+	 * (`ARIARequiredState.satisfiedByElement`). Its absence says nothing of a property that is not required.
+	 */
+	satisfiedByElement?: true;
+	/**
+	 * Where `value` comes from: an `aria-*` attribute, a native attribute in its place, or the default (the default of
+	 * the property, or the implicit value of the role), which the author did not write
+	 */
+	from: 'default' | 'html-attr' | 'aria-attr';
 };

@@ -63,6 +63,7 @@ Generated TypeScript types (do not edit directly):
 - **Role Computation** - Explicit/implicit role resolution with conflict handling (`src/algorithm/aria/get-computed-role.ts`)
 - **Accessibility Tree Computation** - Element inclusion/exclusion logic (`src/algorithm/aria/is-exposed.ts`)
 - **ARIA Property Computation** - Attribute value resolution with HTML equivalents (`src/algorithm/aria/get-computed-aria-props.ts`)
+- **Required State Resolution** - Whether a role requires a property of an element and whether the element satisfies it, shared by the accessibility properties and the rules (`src/algorithm/aria/required-state.ts`)
 - **Required Context Validation** - Composite role validation (`src/algorithm/aria/has-required-owned-elements.ts`)
 
 **Specification Integration**:
@@ -88,7 +89,7 @@ Generated TypeScript types (do not edit directly):
 
 - **Spec Resolution**: `getSpecByTagName`, `getAttrSpecs`, `getRoleSpec`
 - **Content Model Utilities**: `getContentModel`, `isPalpableElements`, `isVoidElement`
-- **ARIA Utilities**: `getAria`, `getPermittedRoles`, `hasRequiredOwnedElements`, `isValidAriaValue`, `isValidAriaValueType`
+- **ARIA Utilities**: `getARIA`, `getARIARequiredStates`, `getPermittedRoles`, `hasRequiredOwnedElements`, `isValidAriaValue`, `isValidAriaValueType`
 - **Accessibility Utilities**: `getAccname`, `isExposed`, `mayBeFocusable`
 - **Schema Utilities**: `schemaToSpec`, `resolveNamespace`, `validateAriaVersion`
 - **Framework Extension**: Merges base HTML specs with framework-specific extensions

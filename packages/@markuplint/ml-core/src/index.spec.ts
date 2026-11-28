@@ -915,6 +915,66 @@ describe('Accessibility', () => {
 		expect(a11y.name).toBe('This is button');
 	});
 
+	test('aria-valuenow of a separator is required, and listed by its default, only when the separator is focusable (ARIA 1.3)', () => {
+		const doc = createTestDocument('<div role="separator"></div><div role="separator" tabindex="0"></div>', {
+			specs,
+		});
+		const staticOne = doc.querySelector('div:not([tabindex])');
+		const focusableOne = doc.querySelector('div[tabindex]');
+		expect(doc.getAccessibilityProp(staticOne, '1.3').props?.valuenow).toBeUndefined();
+		expect(doc.getAccessibilityProp(focusableOne, '1.3').props?.valuenow).toStrictEqual({
+			value: null,
+			required: true,
+			from: 'default',
+		});
+	});
+
+	test('a focusable separator lists neither aria-valuemin nor aria-valuemax, which are not required (ARIA 1.1)', () => {
+		const doc = createTestDocument('<div role="separator" tabindex="0"></div>', { specs });
+		const props = doc.getAccessibilityProp(doc.querySelector('div'), '1.1').props;
+		expect(props?.valuenow).toStrictEqual({ value: '50', required: true, from: 'default' });
+		expect(props?.valuemin).toBeUndefined();
+		expect(props?.valuemax).toBeUndefined();
+	});
+
+	test('a separator that is not focusable lists none of the value properties (ARIA 1.1)', () => {
+		const doc = createTestDocument('<div role="separator"></div>', { specs });
+		const props = doc.getAccessibilityProp(doc.querySelector('div'), '1.1').props;
+		expect(props?.valuenow).toBeUndefined();
+		expect(props?.valuemin).toBeUndefined();
+		expect(props?.valuemax).toBeUndefined();
+	});
+
+	test('a required property that the implicit role of the element satisfies is marked so', () => {
+		const doc = createTestDocument('<hr tabindex="0">', { specs });
+		expect(doc.getAccessibilityProp(doc.querySelector('hr'), '1.3').props?.valuenow).toStrictEqual({
+			value: null,
+			required: true,
+			from: 'default',
+			satisfiedByElement: true,
+		});
+	});
+
+	test('a required state that a native attribute gives in its place is marked so only when the attribute is there', () => {
+		const doc = createTestDocument(
+			'<input type="checkbox" role="switch" checked><input type="checkbox" role="switch">',
+			{ specs },
+		);
+		expect(doc.getAccessibilityProp(doc.querySelector('input[checked]'), '1.3').props?.checked).toStrictEqual({
+			value: 'true',
+			required: true,
+			from: 'html-attr',
+			satisfiedByElement: true,
+		});
+		expect(doc.getAccessibilityProp(doc.querySelector('input:not([checked])'), '1.3').props?.checked).toStrictEqual(
+			{
+				value: 'undefined',
+				required: true,
+				from: 'default',
+			},
+		);
+	});
+
 	test('a name of U+00A0 only is a name, and of ASCII white space only is not', () => {
 		const named = createTestDocument('<button>\u00A0</button>', { specs });
 		expect(named.getAccessibilityProp(named.querySelector('button')).name).toBe('\u00A0');

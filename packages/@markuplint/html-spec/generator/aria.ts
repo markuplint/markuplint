@@ -271,13 +271,13 @@ async function getRoles(version: ARIAVersion, graphicsAria = false) {
 		}
 	}
 
-	// Manual overrides for properties whose required state is conditional on a runtime
-	// quality the W3C source markup does not encode. ARIA only requires `aria-valuenow`
-	// on a `separator` when it is focusable; the spec text says so but the
-	// `.role-required-properties` table marks it unconditionally. The literal values
-	// allowed in `requiredCondition` are defined on `ARIARoleOwnedProperties` in
-	// `@markuplint/ml-spec/src/types/index.ts` — extend that union before adding new
-	// conditions here.
+	// Manual override of `separator`: `aria-valuenow` becomes required only when focusable,
+	// and `aria-valuemin` / `aria-valuemax` (required by the ARIA 1.1 table only) lose
+	// `required`, and on purpose any `requiredCondition` with it, as a condition means
+	// nothing on a property that is not required. The WHY and the passage that decides it
+	// are in the JSDoc of `ARIARoleOwnedProperties` in `@markuplint/ml-spec/src/types/index.ts`,
+	// which also defines the literal values allowed in `requiredCondition` — extend that
+	// union before adding new conditions here.
 	//
 	// Scope boundary: overrides here must be per-role. Per-element ARIA-in-HTML
 	// data (`implicitRole`, `permittedRoles`, etc.) belongs in the manual
@@ -287,11 +287,18 @@ async function getRoles(version: ARIAVersion, graphicsAria = false) {
 		const separatorRole = roles[separatorRoleIndex]!;
 		roles[separatorRoleIndex] = {
 			...separatorRole,
-			ownedProperties: separatorRole.ownedProperties?.map(prop =>
-				prop.name === 'aria-valuenow' && prop.required
-					? { ...prop, requiredCondition: 'focusable' as const }
-					: prop,
-			),
+			ownedProperties: separatorRole.ownedProperties?.map(prop => {
+				if (prop.name === 'aria-valuenow' && prop.required) {
+					return { ...prop, requiredCondition: 'focusable' as const };
+				}
+				if ((prop.name === 'aria-valuemin' || prop.name === 'aria-valuemax') && prop.required) {
+					const rest = { ...prop };
+					delete rest.required;
+					delete rest.requiredCondition;
+					return rest;
+				}
+				return prop;
+			}),
 		};
 	}
 
