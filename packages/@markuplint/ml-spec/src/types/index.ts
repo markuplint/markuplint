@@ -565,10 +565,22 @@ export type ARIAVersion = (typeof ariaVersions)[number];
 /**
  * Describes an HTML attribute that is semantically equivalent to an ARIA property,
  * enabling automatic mapping from HTML attributes to ARIA states/properties.
+ *
+ * Without `condition`, the element has the property with `value` (or with the value of the
+ * attribute, when `value` is `null`) when it has the attribute. `condition: 'editable'` is the
+ * row of `contenteditable` in ARIA in HTML §4.2: the element has the property with `value`
+ * when it is editable (`isContentEditable`), and that is not what its own attribute tells,
+ * since an element inherits the state from its closest ancestor with the attribute. A reader
+ * that goes by the presence of the attribute must not take such an entry for one (`hasAttribute`
+ * would read `contenteditable="false"` as editable), and one that evaluates it asks the element
+ * (`MLElement#isContentEditable`).
+ *
+ * @see https://www.w3.org/TR/html-aria/#docconformance-attr
  */
 export type EquivalentHtmlAttr = {
 	readonly htmlAttrName: string;
 	readonly isNotStrictEquivalent?: true;
+	readonly condition?: 'editable';
 	readonly value: string | null;
 };
 

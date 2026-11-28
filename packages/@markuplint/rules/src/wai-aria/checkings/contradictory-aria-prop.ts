@@ -79,6 +79,11 @@ export const checkingContradictoryAriaProp: AttrChecker<
 			return;
 		}
 		for (const equivalentHtmlAttr of propSpec.equivalentHtmlAttrs) {
+			// The `contenteditable` row stands for the editable state, not for the attribute: it is the branch above
+			// that compares it, with `isContentEditable`.
+			if (equivalentHtmlAttr.condition) {
+				continue;
+			}
 			const htmlAttrSpec = attrSpecs.find(a => a.name === equivalentHtmlAttr.htmlAttrName);
 			const eligibility = resolveAttrEligibility(equivalentHtmlAttr.htmlAttrName, attr.ownerElement, attrSpecs);
 			// Skip only when the native attribute doesn't apply to this element at all

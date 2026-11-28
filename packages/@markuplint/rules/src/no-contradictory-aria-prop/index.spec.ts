@@ -280,3 +280,18 @@ test('[no-contradictory-aria-prop-025] a prop of a component that no pretender r
 			.violations,
 	).toStrictEqual([]);
 });
+
+test.each([
+	'<div role="textbox" contenteditable aria-readonly="false"></div>',
+	'<div role="textbox" contenteditable="" aria-readonly="false"></div>',
+	'<div role="textbox" contenteditable="false" aria-readonly="false"></div>',
+	'<div role="textbox" contenteditable="bogus" aria-readonly="false"></div>',
+	'<div contenteditable><p role="textbox" aria-readonly="false">a</p></div>',
+])(
+	'[no-contradictory-aria-prop-026] aria-readonly="false" is the value of an editable element, and the contenteditable attribute does not oppose it: %s',
+	async code => {
+		// > Element with contenteditable=true or element without contenteditable attribute whose closest ancestor with a contenteditable attribute has contenteditable="true". […] aria-readonly="false"
+		// @see https://www.w3.org/TR/html-aria/#docconformance-attr
+		expect((await mlRuleTest(rule, code)).violations).toStrictEqual([]);
+	},
+);

@@ -854,3 +854,54 @@ describe('the level of a heading element', () => {
 		expect(c('<ul role="tree"><h3 role="treeitem">a</h3></ul>', '1.3', 'h3')['aria-level']?.value).toBeUndefined();
 	});
 });
+
+describe('aria-readonly of a text box', () => {
+	test.each(['1.2', '1.3'] as const)(
+		'is read from the readonly attribute, whichever of the entries of the data comes first (ARIA %s)',
+		version => {
+			const ariaOfVersion = specs.def['#aria'][version];
+			const reordered = {
+				...specs,
+				def: {
+					...specs.def,
+					'#aria': {
+						...specs.def['#aria'],
+						[version]: {
+							...ariaOfVersion,
+							props: ariaOfVersion.props.map(prop =>
+								prop.name === 'aria-readonly'
+									? { ...prop, equivalentHtmlAttrs: prop.equivalentHtmlAttrs?.toReversed() }
+									: prop,
+							),
+						},
+					},
+				},
+			};
+			expect(
+				reordered.def['#aria'][version].props.find(prop => prop.name === 'aria-readonly')
+					?.equivalentHtmlAttrs?.[0]?.condition,
+			).toBe('editable');
+			expect(
+				getComputedAriaProps(reordered, _('<input type="text" readonly>'), version)['aria-readonly'],
+			).toMatchObject({
+				value: 'true',
+				from: 'html-attr',
+			});
+		},
+	);
+
+	test.each([
+		['<div role="textbox" contenteditable></div>', undefined],
+		['<div role="textbox" contenteditable="false"></div>', undefined],
+		['<div contenteditable><p role="textbox"></p></div>', 'p'],
+	])('is the default, not read from contenteditable: %s', (html, selector) => {
+		// The `contenteditable` row of ARIA in HTML stands for the editable state, which the attribute does not tell.
+		// @see https://www.w3.org/TR/html-aria/#docconformance-attr
+		for (const version of ['1.2', '1.3'] as const) {
+			expect(c(html, version, selector)['aria-readonly'], version).toMatchObject({
+				value: 'false',
+				from: 'default',
+			});
+		}
+	});
+});

@@ -44,6 +44,12 @@ export const checkingRedundantAriaProp: AttrChecker<
 			return;
 		}
 		for (const equivalentHtmlAttr of propSpec.equivalentHtmlAttrs) {
+			// The `contenteditable` row stands for the editable state, which the attribute does not tell, and ARIA in
+			// HTML has no SHOULD NOT for restating it (`aria-readonly="false"`), only the MUST NOT of
+			// `no-contradictory-aria-prop`.
+			if (equivalentHtmlAttr.condition) {
+				continue;
+			}
 			const eligibility = resolveAttrEligibility(equivalentHtmlAttr.htmlAttrName, attr.ownerElement, attrSpecs);
 			// Skip only when the native attribute doesn't apply to this element at all
 			// (unknown name or an unmet condition) — mirrors the old

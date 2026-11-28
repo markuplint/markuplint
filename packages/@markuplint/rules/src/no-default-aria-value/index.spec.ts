@@ -171,3 +171,24 @@ test.each([
 test('[no-default-aria-value-017] the rank of a heading element is not the level of another role', async () => {
 	expect((await mlRuleTest(rule, '<h2 role="treeitem" aria-level="2">a</h2>')).violations).toStrictEqual([]);
 });
+
+test.each([
+	['<div role="textbox" contenteditable aria-readonly="false"></div>', 37],
+	['<div role="textbox" contenteditable="false" aria-readonly="false"></div>', 45],
+	['<div contenteditable><p role="textbox" aria-readonly="false">a</p></div>', 40],
+])(
+	'[no-default-aria-value-018] aria-readonly="false" beside contenteditable is the default value, as it is without it: %s',
+	async (html, col) => {
+		// The editable state gives the property the value `false`, which is its default.
+		// @see https://www.w3.org/TR/html-aria/#docconformance-attr
+		expect((await mlRuleTest(rule, html)).violations).toStrictEqual([
+			{
+				severity: 'warning',
+				line: 1,
+				col,
+				message: 'It is default value',
+				raw: 'aria-readonly="false"',
+			},
+		]);
+	},
+);

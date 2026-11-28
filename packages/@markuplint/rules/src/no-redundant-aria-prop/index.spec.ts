@@ -138,3 +138,20 @@ test('[no-redundant-aria-prop-011] the zero-length value restates nothing', asyn
 		(await mlRuleTest(rule, '<input type="range" max="10" aria-valuemax="" aria-label="x">')).violations,
 	).toStrictEqual([]);
 });
+
+test.each([
+	'<div role="textbox" contenteditable aria-readonly="false"></div>',
+	'<div role="textbox" contenteditable="true" aria-readonly="false"></div>',
+	'<div role="textbox" contenteditable="false" aria-readonly="false"></div>',
+	'<div contenteditable><p role="textbox" aria-readonly="false">a</p></div>',
+])(
+	'[no-redundant-aria-prop-012] ARIA in HTML asks nothing of aria-readonly="false" beside contenteditable: %s',
+	async code => {
+		// > Authors MUST NOT set aria-readonly="true" on an element that has isContentEditable="true".
+		// @see https://www.w3.org/TR/html-aria/#docconformance-attr
+		//
+		// The row has no SHOULD NOT for restating the editable state with `aria-readonly="false"`, as the rows of
+		// `disabled` and `required` have for `="true"`.
+		expect((await mlRuleTest(rule, code)).violations).toStrictEqual([]);
+	},
+);

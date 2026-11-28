@@ -372,6 +372,7 @@ async function getProps(version: ARIAVersion, roles: readonly ARIARoleInSchema[]
 			equivalentHtmlAttrs = implicitOwnProps.map(attr => ({
 				htmlAttrName: attr.htmlAttrName,
 				value: attr.value,
+				...(attr.condition ? { condition: attr.condition } : {}),
 			}));
 		}
 
@@ -417,19 +418,40 @@ async function getProps(version: ARIAVersion, roles: readonly ARIARoleInSchema[]
 }
 
 async function getAriaInHtml() {
-	const $ = await fetch('https://www.w3.org/TR/html-aria/');
-	const implicitProps: { name: string; value: string | null; htmlAttrName: string }[] = [];
+	return readAriaInHtml(await fetch('https://www.w3.org/TR/html-aria/'));
+}
+
+/**
+ * Reads §4.2 of ARIA in HTML, "Requirements for use of ARIA attributes in place of equivalent
+ * HTML attributes": each row names a native attribute (the first link of its `th`) and the
+ * ARIA attribute it stands for (the first `code` of its first `td`, `"..."` for the value of the
+ * native attribute itself).
+ *
+ * The row of `contenteditable` is the one whose condition is not the presence of the attribute:
+ *
+ * > Element with contenteditable=true or element without contenteditable attribute whose closest ancestor with a contenteditable attribute has contenteditable="true".
+ *
+ * It is read like the others and carries `condition: 'editable'`, so that a reader does not take
+ * `contenteditable="false"` for the editable state; the ancestors are known to the element
+ * (`MLElement#isContentEditable`), not to the generator, which sees no document.
+ *
+ * @param $ - The loaded document of ARIA in HTML.
+ * @returns The ARIA attribute, its value (`null` for the value of the native attribute) and the
+ *   native attribute of each row that names an ARIA attribute.
+ * @see https://www.w3.org/TR/html-aria/#docconformance-attr
+ */
+export function readAriaInHtml($: cheerio.CheerioAPI) {
+	const implicitProps: {
+		name: string;
+		value: string | null;
+		htmlAttrName: string;
+		condition?: 'editable';
+	}[] = [];
 	const $implicitProps = $(
 		'#requirements-for-use-of-aria-attributes-in-place-of-equivalent-html-attributes table tbody tr',
 	).toArray();
 	for (const $implicitProp of $implicitProps) {
 		const htmlAttrName = $($implicitProp).find('th:nth-of-type(1) a').eq(0).text();
-		if (htmlAttrName === 'contenteditable') {
-			// FIXME: The contenteditable attribute's ARIA semantics depend on ancestor elements
-			// (an element inherits contenteditable from its parent). Evaluating this requires
-			// cross-element ancestor traversal which is not available during spec generation.
-			continue;
-		}
 		const implicitProp = $($implicitProp).find('td:nth-of-type(1) code').eq(0).text();
 		const [name, _value] = implicitProp.split('=');
 		if (!name) {
@@ -441,6 +463,7 @@ async function getAriaInHtml() {
 			name: name,
 			value: value === '...' ? null : value,
 			htmlAttrName,
+			...(htmlAttrName === 'contenteditable' ? { condition: 'editable' as const } : {}),
 		};
 		implicitProps.push(data);
 	}

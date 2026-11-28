@@ -13578,6 +13578,11 @@
 							{
 								"htmlAttrName": "readonly",
 								"value": "true"
+							},
+							{
+								"htmlAttrName": "contenteditable",
+								"value": "false",
+								"condition": "editable"
 							}
 						]
 					},
@@ -28719,6 +28724,11 @@
 							{
 								"htmlAttrName": "readonly",
 								"value": "true"
+							},
+							{
+								"htmlAttrName": "contenteditable",
+								"value": "false",
+								"condition": "editable"
 							}
 						]
 					},
@@ -42603,6 +42613,11 @@
 							{
 								"htmlAttrName": "readonly",
 								"value": "true"
+							},
+							{
+								"htmlAttrName": "contenteditable",
+								"value": "false",
+								"condition": "editable"
 							}
 						]
 					},
