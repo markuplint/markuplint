@@ -832,3 +832,25 @@ describe('the white space of a value', () => {
 		expect(prop?.from).toBe('default');
 	});
 });
+
+describe('the default of a property that the role gives an implicit value', () => {
+	test('is the implicit value of the role', () => {
+		expect(c('<div role="separator"></div>', '1.3', 'div')['aria-orientation']).toStrictEqual({
+			name: 'aria-orientation',
+			value: 'horizontal',
+			deprecated: false,
+			required: false,
+			from: 'default',
+		});
+	});
+});
+
+describe('the level of a heading element', () => {
+	test('is its rank for its role heading', () => {
+		expect(c('<h3>a</h3>', '1.3', 'h3')['aria-level']?.value).toBe('3');
+	});
+
+	test('is not its rank for another role', () => {
+		expect(c('<ul role="tree"><h3 role="treeitem">a</h3></ul>', '1.3', 'h3')['aria-level']?.value).toBeUndefined();
+	});
+});

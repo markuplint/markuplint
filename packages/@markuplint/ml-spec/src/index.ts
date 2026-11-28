@@ -41,6 +41,7 @@ export * from './algorithm/aria/get-computed-role.js';
 export * from './algorithm/aria/get-implicit-role.js';
 export * from './algorithm/aria/get-permitted-roles.js';
 export * from './algorithm/aria/has-required-owned-elements.js';
+export * from './algorithm/aria/implicit-value.js';
 export * from './algorithm/aria/is-aria-true.js';
 export * from './algorithm/aria/is-exposed.js';
 export * from './algorithm/aria/aria-owns.js';
