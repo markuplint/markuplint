@@ -116,3 +116,19 @@ describe('Tags', () => {
 		expect(parse('<%% any %>').nodeList[0].nodeName).toBe('#text');
 	});
 });
+
+describe('blocks in a start tag', () => {
+	test('a block with a `>` in it does not end the tag for a block of another pattern', () => {
+		const attrs = parse('<input <% if x > 0 %>checked<% end %> <%= attrs %> type="text">').nodeList[0].attributes;
+		expect(attrs.map(attr => [attr.type, attr.raw])).toStrictEqual([
+			['spread', '<% if x > 0 %>checked<% end %>'],
+			['spread', '<%= attrs %>'],
+			['attr', 'type="text"'],
+		]);
+	});
+
+	test('a comment is no attribute', () => {
+		const attrs = parse('<div <%# note %> class="a"></div>').nodeList[0].attributes;
+		expect(attrs.map(attr => [attr.type, attr.raw])).toStrictEqual([['attr', 'class="a"']]);
+	});
+});
