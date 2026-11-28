@@ -724,3 +724,58 @@ test('[no-refer-to-non-existent-id-050] a character reference of white space sep
 			.violations,
 	).toStrictEqual([]);
 });
+
+test.each([
+	['php', '<div <?= $attrs ?>></div>\n<label for="a"></label>'],
+	['ejs', '<div <%= attrs %>></div>\n<label for="a"></label>'],
+	['liquid', '<div {{ attrs }}></div>\n<label for="a"></label>'],
+	['erb', '<div <%= attrs %>></div>\n<label for="a"></label>'],
+	['smarty', '<div {$attrs}></div>\n<label for="a"></label>'],
+	['pug', 'div&attributes(attrs)\nlabel(for="a")'],
+])(
+	'[no-refer-to-non-existent-id-051] a block in a tag, or &attributes of Pug, may give the id: %s',
+	async (lang, code) => {
+		const { violations } = await mlRuleTest(rule, code, { parser: { '.*': `@markuplint/${lang}-parser` } });
+		expect(violations).toStrictEqual([]);
+	},
+);
+
+test('[no-refer-to-non-existent-id-052] a block in a tag before the id is overridden by it', async () => {
+	const { violations } = await mlRuleTest(rule, '<div <?= $attrs ?> id="b"></div>\n<label for="a"></label>', {
+		parser: { '.*': '@markuplint/php-parser' },
+	});
+	expect(violations).toStrictEqual([{ severity: 'error', line: 2, col: 13, message: 'Missing "a" ID', raw: 'a' }]);
+});
+
+test('[no-refer-to-non-existent-id-053] Astro: the children that set:html gives may hold the id', async () => {
+	const astro = { parser: { '.*': '@markuplint/astro-parser' } };
+	expect(
+		(await mlRuleTest(rule, '<div set:html={html}></div>\n<label for="a"></label>', astro)).violations,
+	).toStrictEqual([]);
+
+	// Control: set:text gives text, not elements
+	expect(
+		(await mlRuleTest(rule, '<div set:text={text}></div>\n<label for="a"></label>', astro)).violations,
+	).toStrictEqual([{ severity: 'error', line: 2, col: 13, message: 'Missing "a" ID', raw: 'a' }]);
+});
+
+test('[no-refer-to-non-existent-id-054] Vue: a kebab-case tag may be a component that renders the id', async () => {
+	const vue = { parser: { '.*': '@markuplint/vue-parser' }, specs: { '.*': '@markuplint/vue-spec' } };
+	expect(
+		(await mlRuleTest(rule, '<template><my-comp></my-comp><label for="a"></label></template>', vue)).violations,
+	).toStrictEqual([]);
+
+	// Control: a built-in component renders what it is given, and HTML takes the tag for a custom element
+	expect(
+		(
+			await mlRuleTest(
+				rule,
+				'<template><transition-group></transition-group><label for="a"></label></template>',
+				vue,
+			)
+		).violations,
+	).toStrictEqual([{ severity: 'error', line: 1, col: 60, message: 'Missing "a" ID', raw: 'a' }]);
+	expect((await mlRuleTest(rule, '<my-comp></my-comp><label for="a"></label>')).violations).toStrictEqual([
+		{ severity: 'error', line: 1, col: 32, message: 'Missing "a" ID', raw: 'a' },
+	]);
+});

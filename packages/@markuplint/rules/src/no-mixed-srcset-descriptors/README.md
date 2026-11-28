@@ -12,7 +12,7 @@ Split out of the former `srcset-sizes-constraint` rule, alongside [`no-unpaired-
 ## How It Works
 
 - Only `<img>` and `<source>` elements inside `<picture>` are checked.
-- Dynamic attribute values (e.g., Vue `:srcset="x"`, JSX `srcset={x}`) and elements with spread attributes (`{...props}` of JSX, `v-bind="obj"` of Vue) are skipped. A literal written as code (`srcset={"a.png 1x"}`) is evaluated as the value that the framework renders it to; a literal that the framework does not output (`null`, `false`) or renders in a way that is not known is skipped, as a dynamic value is.
+- Dynamic attribute values (e.g., Vue `:srcset="x"`, JSX `srcset={x}`) and elements with spread attributes (`{...props}` of JSX, `v-bind="obj"` and `:[key]` of Vue, `&attributes` of Pug, a block of a template language in the place of an attribute such as `<?= $attrs ?>`) are skipped. A literal written as code (`srcset={"a.png 1x"}`) is evaluated as the value that the framework renders it to; a literal that the framework does not output (`null`, `false`) or renders in a way that is not known is skipped, as a dynamic value is.
 - A descriptor-less image candidate (e.g., `image.png` without `480w` or `2x`) is treated as an implied `1x` density descriptor.
 
 ❌ Examples of **incorrect** code for this rule
