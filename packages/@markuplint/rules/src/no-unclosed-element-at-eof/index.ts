@@ -2,6 +2,7 @@ import { createRule } from '@markuplint/ml-core';
 import { isVoidElement } from '@markuplint/ml-spec';
 
 import meta from './meta.js';
+import { hasText } from '@markuplint/shared';
 
 /**
  * HTML LS "in body" insertion mode, "An end-of-file token":
@@ -95,7 +96,7 @@ export default createRule<boolean>({
 			// case this rule targets — content implicitly closing the element
 			// mid-document (e.g. a sibling autoclosing it) is out of scope.
 			const contentEnd = deepEndOffset(el);
-			if (document.raw.slice(contentEnd, eof).trim() !== '') return;
+			if (hasText(document.raw.slice(contentEnd, eof))) return;
 
 			report({
 				scope: el,

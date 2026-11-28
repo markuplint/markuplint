@@ -4,6 +4,7 @@ import { findChildren } from '../table-row-column-alignment/find-children.js';
 import { Grid, getIndexes } from '../table-row-column-alignment/grid.js';
 
 import meta from './meta.js';
+import { parseNonNegativeInteger } from '@markuplint/ml-spec';
 
 /**
  * Flags rows whose width disagrees with the table's base column count.
@@ -53,7 +54,7 @@ export default createRule<boolean>({
 					if (!unexpected) {
 						// The overshoot starts inside a spanned cell, so the `colspan` is the culprit.
 						const spanStart = cells.findLast(
-							cell => Number.parseInt(cell.getAttribute('colspan') ?? '1') > 1,
+							cell => (parseNonNegativeInteger(cell.getAttribute('colspan')) ?? 1) > 1,
 						);
 						const colSpan = spanStart?.getAttributeNode('colspan');
 						if (!colSpan) {

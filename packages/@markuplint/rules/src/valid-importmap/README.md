@@ -11,7 +11,7 @@ Split out of the former `script-content` rule, alongside [`valid-speculation-rul
 
 The rule reports the following issues for inline import maps:
 
-- The element body is empty or whitespace-only
+- The element body is empty or only the white space of JSON (tab, line feed, carriage return and space)
 - The body cannot be parsed as JSON
 - The top-level value is not a JSON object
 - The top-level value contains a key other than `imports`, `scopes`, or `integrity`

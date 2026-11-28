@@ -61,7 +61,8 @@ export default createRule<boolean, null>({
 			if (!el.closeTag) return;
 
 			const rawContent = sourceCode.slice(el.endOffset, el.closeTag.startOffset);
-			const trimmed = rawContent.trim();
+			// The white space of JSON is tab, line feed, carriage return and space
+			const isEmpty = !/[^\t\n\r ]/.test(rawContent);
 
 			const reportAt = (message: string) => {
 				report({
@@ -73,14 +74,14 @@ export default createRule<boolean, null>({
 				});
 			};
 
-			if (trimmed === '') {
+			if (isEmpty) {
 				reportAt(t('{0} must contain a JSON object', 'Speculation rules'));
 				return;
 			}
 
 			let parsed: unknown;
 			try {
-				parsed = JSON.parse(trimmed);
+				parsed = JSON.parse(rawContent);
 			} catch (error: unknown) {
 				if (!(error instanceof SyntaxError)) {
 					throw error;

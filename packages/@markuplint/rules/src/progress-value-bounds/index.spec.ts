@@ -147,3 +147,26 @@ test('[progress-value-bounds-015] an absent attribute is in Japanese with locale
 		},
 	]);
 });
+
+test.each([
+	[
+		' 2 ',
+		[
+			{
+				severity: 'error',
+				line: 1,
+				col: 18,
+				message:
+					'The value of the "value" attribute must be less than or equal to one when the "max" attribute is absent',
+				raw: ' 2 ',
+			},
+		],
+	],
+	['\u00A02', []],
+])(
+	'[progress-value-bounds-016] the number is read as the browser reads it, skipping ASCII white space only: %j',
+	async (value, expected) => {
+		const { violations } = await mlRuleTest(rule, `<progress value="${value}"></progress>`);
+		expect(violations).toStrictEqual(expected);
+	},
+);

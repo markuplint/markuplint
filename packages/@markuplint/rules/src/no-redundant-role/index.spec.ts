@@ -61,3 +61,7 @@ test('[no-redundant-role-004] of two `role` attributes, the one that the element
 		},
 	]);
 });
+
+test('[no-redundant-role-005] an input whose type has the Kelvin sign is not a checkbox', async () => {
+	expect((await mlRuleTest(rule, '<input type="chec\u212Abox" role="checkbox">')).violations).toStrictEqual([]);
+});

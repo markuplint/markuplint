@@ -3248,3 +3248,45 @@ test('[no-invalid-attr-value-312] a value with a character reference is reported
 		},
 	]);
 });
+
+test('[no-invalid-attr-value-313] a keyword is compared ASCII case-insensitively: the Kelvin sign is not `k`', async () => {
+	const { violations } = await mlRuleTest(rule, '<input type="chec\u212Abox">');
+	expect(violations).toStrictEqual([
+		{
+			severity: 'error',
+			line: 1,
+			col: 14,
+			message:
+				'The "type" attribute expects either "hidden", "text", "search", "tel", "url", "email", "password", "date", "month", "week", "time", "datetime-local", "number", "range", "color", "checkbox", "radio", "file", "submit", "image", "reset", "button"',
+			raw: 'chec\u212Abox',
+		},
+	]);
+});
+
+test('[no-invalid-attr-value-314] a navigable target keyword is compared ASCII case-insensitively', async () => {
+	const { violations } = await mlRuleTest(rule, '<a href="x" target="_blan\u212A">a</a>');
+	expect(violations).toStrictEqual([
+		{
+			severity: 'error',
+			line: 1,
+			col: 21,
+			message:
+				'It includes unexpected characters. the "target" attribute expects either "_blank", "_self", "_parent", "_top", "navigable target name". Did you mean "_blank"? (https://html.spec.whatwg.org/multipage/document-sequences.html#valid-navigable-target-name-or-keyword)',
+			raw: '_blan\u212A',
+		},
+	]);
+});
+
+test('[no-invalid-attr-value-315] the scheme of a base URL is read without the tabs and newlines in it', async () => {
+	const { violations } = await mlRuleTest(rule, '<base href="java&#9;script:alert(1)">');
+	expect(violations).toStrictEqual([
+		{
+			severity: 'error',
+			line: 1,
+			col: 13,
+			message:
+				'It includes unexpected characters (https://html.spec.whatwg.org/multipage/semantics.html#set-the-frozen-base-url)',
+			raw: 'java&#9;script:alert(1)',
+		},
+	]);
+});

@@ -794,3 +794,23 @@ test('[no-aria-on-presentational-children-059] aria-valuenow of U+00A0 only on a
 	);
 	expect(violations).toStrictEqual([]);
 });
+
+test.each([
+	['TRUE', []],
+	[
+		' true ',
+		[
+			{
+				severity: 'warning',
+				line: 1,
+				col: 15,
+				message:
+					'It may be ineffective because it has the "button" role as an ancestor that doesn\'t expose its descendants to the accessibility tree',
+				raw: 'aria-hidden=" true "',
+			},
+		],
+	],
+])('[no-aria-on-presentational-children-060] aria-hidden is true as browsers read it: %j', async (value, expected) => {
+	const { violations } = await mlRuleTest(rule, `<button><span aria-hidden="${value}">x</span>a</button>`);
+	expect(violations).toStrictEqual(expected);
+});

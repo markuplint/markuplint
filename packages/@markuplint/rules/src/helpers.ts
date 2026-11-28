@@ -12,6 +12,7 @@ import {
 import {
 	getComputedRole,
 	getOwningParentElement,
+	isAriaTrue,
 	isTransparentForOwnership,
 	labelledbyMayReferToUnknownId,
 } from '@markuplint/ml-spec';
@@ -719,7 +720,7 @@ function hasUnknownContent(
 	return children.some(
 		child =>
 			child.is(child.ELEMENT_NODE) &&
-			child.getAttribute('aria-hidden') !== 'true' &&
+			!isAriaTrue(child.getAttribute('aria-hidden')) &&
 			!child.hasAttribute('hidden') &&
 			hasUnknownContent(child),
 	);

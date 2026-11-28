@@ -12,6 +12,8 @@ import {
 	isNativeEmbeddedControl,
 } from '../../../../const/index.js';
 
+import { isAriaTrue } from '../../is-aria-true.js';
+
 interface ElementOptions {
 	readonly attrs?: Record<string, string>;
 	readonly children?: readonly (AccnameElement | AccnameNode)[];
@@ -132,7 +134,7 @@ export function createTestResolver(options: ResolverOptions = {}): AccnameResolv
 			if (hiddenIds.has(el.id)) {
 				return true;
 			}
-			if (el.getAttribute('aria-hidden') === 'true') {
+			if (isAriaTrue(el.getAttribute('aria-hidden'))) {
 				return true;
 			}
 			if (el.hasAttribute('hidden')) {

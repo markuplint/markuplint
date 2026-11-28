@@ -1,15 +1,13 @@
 import { createRule } from '@markuplint/ml-core';
 
 import meta from './meta.js';
+import { parseFloatingPointNumberValue } from '@markuplint/shared';
 
 const DEFAULT_MAX = 1;
 
 function parseFloatAttr(raw: string | undefined): number | null {
-	if (raw === undefined) return null;
-	const trimmed = raw.trim();
-	if (trimmed === '') return null;
-	const n = Number(trimmed);
-	return Number.isFinite(n) ? n : null;
+	// The number the browser reads from the value; that it is not a valid number is `no-invalid-attr-value`'s to say
+	return raw === undefined ? null : parseFloatingPointNumberValue(raw);
 }
 
 /**

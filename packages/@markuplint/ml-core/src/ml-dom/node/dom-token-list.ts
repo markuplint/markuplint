@@ -65,8 +65,8 @@ export class MLDomTokenList extends Array<string> implements DOMTokenList {
 				break;
 			}
 			const loc = this.#pick(token, offset);
+			// A token that is not located keeps the offset, so a later repeat is not taken for an earlier one
 			if (!loc) {
-				offset = 0;
 				continue;
 			}
 			offset = loc._searchedIndex;
@@ -138,27 +138,36 @@ export class MLDomTokenList extends Array<string> implements DOMTokenList {
 			return null;
 		}
 
+		// The token as a whole token of the list, not a part of another (`a` in `ab`), from where the previous one ends;
+		// one in an attribute whose value is not known is passed over
+		let startOffset = indexOfToken(this.#origin, token, _offset);
+		while (startOffset !== -1 && this.#isInDynamicAttr(startOffset)) {
+			startOffset = indexOfToken(this.#origin, token, startOffset + token.length);
+		}
+		if (startOffset === -1) {
+			return null;
+		}
+		const searchedIndex = startOffset + token.length;
+
+		// The list of several attributes (`class` and `:class`) joins their values with a space: the token is in the
+		// attribute whose part of the list holds it
+		let attrStart = 0;
 		for (const ownerAttr of this.#ownerAttrs) {
-			if (ownerAttr.isDynamicValue) {
-				continue;
-			}
-			const startOffset = this.#origin.indexOf(token, _offset);
-			if (startOffset === -1) {
+			const own = ownerAttr.value;
+			const attrEnd = attrStart + own.length;
+			const isInThis = startOffset >= attrStart && searchedIndex <= attrEnd;
+			const local = startOffset - attrStart;
+			attrStart = attrEnd + 1;
+			if (!isInThis || ownerAttr.isDynamicValue) {
 				continue;
 			}
 
 			// A value written in the markup is the source with its character references decoded: the attribute knows
-			// where each of its characters is written. The list of several attributes (`class` and `:class`) joins
-			// their values, so the token is looked for in the value of the attribute that has it.
+			// where each of its characters is written
 			if (!ownerAttr.isExpressionValue) {
-				const own = ownerAttr.value;
-				const start = own === this.#origin ? startOffset : own.indexOf(token);
-				const located = start === -1 ? null : ownerAttr.locateInValue(start, start + token.length);
+				const located = ownerAttr.locateInValue(local, local + token.length);
 				if (located) {
-					return { ...located, value: token, rule: ownerAttr.rule, _searchedIndex: startOffset };
-				}
-				if (own !== this.#origin) {
-					continue;
+					return { ...located, value: token, rule: ownerAttr.rule, _searchedIndex: searchedIndex };
 				}
 			}
 
@@ -174,7 +183,7 @@ export class MLDomTokenList extends Array<string> implements DOMTokenList {
 					raw.length >= 2 &&
 					(quote === '"' || quote === "'" || quote === '`') &&
 					raw.endsWith(quote) &&
-					raw.slice(1, -1) === this.#origin;
+					raw.slice(1, -1) === own;
 				if (!isPlainString) {
 					return {
 						raw: token,
@@ -183,28 +192,67 @@ export class MLDomTokenList extends Array<string> implements DOMTokenList {
 						startLine: ownerAttr.valueNode.startLine,
 						startCol: ownerAttr.valueNode.startCol,
 						rule: ownerAttr.rule,
-						_searchedIndex: startOffset,
+						_searchedIndex: searchedIndex,
 					};
 				}
 				shift = 1;
 			}
 
-			const position = getPosition(this.#origin, startOffset);
+			const position = getPosition(own, local);
 			const startLine = position.line;
 			const startCol = position.column;
 
 			return {
 				raw: token,
 				value: token,
-				startOffset: (base?.startOffset ?? 0) + shift + startOffset,
+				startOffset: (base?.startOffset ?? 0) + shift + local,
 				startLine: (base?.startLine ?? 0) + (startLine - 1),
 				// What starts the value (the quote) is before a token on the first line only: the column on a later line is the column in the line
 				startCol: startLine > 1 ? startCol : (base?.startCol ?? 0) + shift + (startCol - 1),
 				rule: ownerAttr.rule,
-				_searchedIndex: startOffset,
+				_searchedIndex: searchedIndex,
 			};
 		}
 
 		return null;
 	}
+
+	/**
+	 * @param offset - An offset in the joined list
+	 * @returns Whether it is in the part of an attribute whose value is not known
+	 */
+	#isInDynamicAttr(offset: number): boolean {
+		let attrStart = 0;
+		for (const ownerAttr of this.#ownerAttrs) {
+			const attrEnd = attrStart + ownerAttr.value.length;
+			if (offset >= attrStart && offset < attrEnd) {
+				return !!ownerAttr.isDynamicValue;
+			}
+			attrStart = attrEnd + 1;
+		}
+		return false;
+	}
+}
+
+/**
+ * @param list - A list of tokens separated by ASCII white space
+ * @param token - A token
+ * @param from - Where to start looking
+ * @returns Where the token is as a whole token of the list, or -1
+ */
+function indexOfToken(list: string, token: string, from: number): number {
+	let index = list.indexOf(token, from);
+	while (index !== -1) {
+		const before = list[index - 1];
+		const after = list[index + token.length];
+		if ((before === undefined || isAsciiWhitespace(before)) && (after === undefined || isAsciiWhitespace(after))) {
+			return index;
+		}
+		index = list.indexOf(token, index + 1);
+	}
+	return -1;
+}
+
+function isAsciiWhitespace(char: string): boolean {
+	return char === ' ' || char === '\t' || char === '\n' || char === '\f' || char === '\r';
 }

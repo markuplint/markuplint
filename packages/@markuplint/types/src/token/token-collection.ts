@@ -4,6 +4,7 @@ import type { Expect, Result, List, UnmatchedResult } from '../types.js';
 import { matched, unmatched } from '../match-result.js';
 
 import { Token } from './token.js';
+import { asciiLowerCase } from '@markuplint/shared';
 
 type TokenCollectionOptions = Partial<
 	Omit<List, 'token'> & {
@@ -390,8 +391,8 @@ export class TokenCollection extends Array<Token> {
 				let a = aToken.value;
 				let b = bToken.value;
 				if (this.caseInsensitive) {
-					a = a.toLowerCase();
-					b = b.toLowerCase();
+					a = asciiLowerCase(a);
+					b = asciiLowerCase(b);
 				}
 				if (a === b) {
 					return bToken;

@@ -383,7 +383,7 @@ export function getInputType(el: AccnameElement): string {
 	if (el.localName !== 'input') {
 		return '';
 	}
-	return (el.getAttribute('type') ?? 'text').toLowerCase();
+	return asciiLowerCase(el.getAttribute('type') ?? 'text');
 }
 
 export function isSvgElement(el: AccnameElement): boolean {

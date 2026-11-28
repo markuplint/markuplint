@@ -139,3 +139,19 @@ test('[tab-requires-tabpanel-013] the message is in Japanese with locale ja', as
 		},
 	]);
 });
+
+test('[tab-requires-tabpanel-014] aria-selected is true ASCII case-insensitively', async () => {
+	const { violations } = await mlRuleTest(
+		rule,
+		'<div role="tablist"><div role="tab" aria-selected="TRUE">a</div></div>',
+	);
+	expect(violations).toStrictEqual([
+		{
+			severity: 'error',
+			line: 1,
+			col: 21,
+			message: 'An active "tab" role requires a corresponding "tabpanel" role',
+			raw: '<div role="tab" aria-selected="TRUE">',
+		},
+	]);
+});

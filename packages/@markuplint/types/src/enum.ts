@@ -3,6 +3,7 @@ import type { Enum } from './types.schema.js';
 import type { ReadonlyDeep } from 'type-fest';
 
 import { matched, unmatched } from './match-result.js';
+import { asciiLowerCase, trimAsciiWhitespace } from '@markuplint/shared';
 
 /**
  * Compares a folded copy. The reported `raw` stays the authored text, including
@@ -20,12 +21,12 @@ export function checkEnum(value: string, type: ReadonlyDeep<Enum>, ref?: string)
 	const caseInsensitive = type.caseInsensitive ?? true;
 	let comparable = value;
 	if (!disallowToSurroundBySpaces) {
-		comparable = comparable.trim();
+		comparable = trimAsciiWhitespace(comparable);
 	}
 	let values = [...type.enum];
 	if (caseInsensitive) {
-		comparable = comparable.toLowerCase();
-		values = type.enum.map(token => token.toLowerCase());
+		comparable = asciiLowerCase(comparable);
+		values = type.enum.map(token => asciiLowerCase(token));
 	}
 	if (values.includes(comparable)) {
 		return matched();

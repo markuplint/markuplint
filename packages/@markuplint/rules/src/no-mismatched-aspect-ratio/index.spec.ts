@@ -412,3 +412,35 @@ test('[no-mismatched-aspect-ratio-035] the first URL of srcset is split on ASCII
 	);
 	expect(violations).toStrictEqual([]);
 });
+
+test.each([' 100', '100px'])(
+	'[no-mismatched-aspect-ratio-036] a width is read as the browser reads a dimension value: %j',
+	async width => {
+		const { violations } = await mlRuleTest(rule, `<img src="/50x50.png" width="${width}" height="50">`, {
+			rule: { value: true, options: { documentRoot: fixturesDir } },
+		});
+		expect(violations).toStrictEqual([
+			{
+				severity: 'error',
+				line: 1,
+				col: 1,
+				message: `The aspect ratio of the image (50:50) does not match the width/height attributes (${width}:50)`,
+				raw: `<img src="/50x50.png" width="${width}" height="50">`,
+			},
+		]);
+	},
+);
+
+test('[no-mismatched-aspect-ratio-037] U+00A0 before a width is not ASCII white space, so it has no number', async () => {
+	const { violations } = await mlRuleTest(rule, '<img src="/50x50.png" width="\u00A0100" height="50">', {
+		rule: { value: true, options: { documentRoot: fixturesDir } },
+	});
+	expect(violations).toStrictEqual([]);
+});
+
+test('[no-mismatched-aspect-ratio-038] a percentage is not a length, which maps to no aspect ratio', async () => {
+	const { violations } = await mlRuleTest(rule, '<img src="/50x50.png" width="100%" height="50">', {
+		rule: { value: true, options: { documentRoot: fixturesDir } },
+	});
+	expect(violations).toStrictEqual([]);
+});

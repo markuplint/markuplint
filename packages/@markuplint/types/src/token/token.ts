@@ -1,5 +1,6 @@
 import type { TokenValue } from './types.js';
 import type { UnmatchedResult, UnmatchedResultOptions, UnmatchedResultReason } from '../types.js';
+import { asciiLowerCase } from '@markuplint/shared';
 
 export class Token {
 	/**
@@ -77,8 +78,8 @@ export class Token {
 			return value.some(v => this.includes(v, caseInsensitive));
 		}
 		if (typeof value === 'string') {
-			const a = caseInsensitive ? this.value.toLowerCase() : this.value;
-			const b = caseInsensitive ? value.toLowerCase() : value;
+			const a = caseInsensitive ? asciiLowerCase(this.value) : this.value;
+			const b = caseInsensitive ? asciiLowerCase(value) : value;
 			return a.includes(b);
 		}
 		if (value instanceof RegExp) {
@@ -93,8 +94,8 @@ export class Token {
 			return value.some(v => this.matches(v, caseInsensitive));
 		}
 		if (typeof value === 'string') {
-			const a = caseInsensitive ? this.value.toLowerCase() : this.value;
-			const b = caseInsensitive ? value.toLowerCase() : value;
+			const a = caseInsensitive ? asciiLowerCase(this.value) : this.value;
+			const b = caseInsensitive ? asciiLowerCase(value) : value;
 			return a === b;
 		}
 		if (value instanceof RegExp) {

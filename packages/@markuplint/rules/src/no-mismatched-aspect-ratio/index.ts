@@ -1,5 +1,5 @@
 import { createRule } from '@markuplint/ml-core';
-import { splitOnAsciiWhitespace, trimAsciiWhitespace } from '@markuplint/shared';
+import { parseDimensionValue, splitOnAsciiWhitespace, trimAsciiWhitespace } from '@markuplint/shared';
 
 import meta from './meta.js';
 import { getImageDimensions } from './resolve-image-size.js';
@@ -71,9 +71,16 @@ export default createRule<boolean, Options>({
 			const widthStr = widthAttr.value;
 			const heightStr = heightAttr.value;
 
-			// Parse width/height as integers; skip if non-numeric
-			const attrWidth = Number.parseInt(widthStr, 10);
-			const attrHeight = Number.parseInt(heightStr, 10);
+			// The lengths the browser maps to the aspect ratio of the image; a percentage maps to none, and that a value
+			// is not valid is `no-invalid-attr-value`'s to say
+			// @see https://html.spec.whatwg.org/multipage/rendering.html#attributes-for-embedded-content-and-images
+			const width = parseDimensionValue(widthStr);
+			const height = parseDimensionValue(heightStr);
+			if (!width || !height || width.isPercentage || height.isPercentage) {
+				return;
+			}
+			const attrWidth = width.value;
+			const attrHeight = height.value;
 			if (!Number.isFinite(attrWidth) || !Number.isFinite(attrHeight) || attrWidth <= 0 || attrHeight <= 0) {
 				return;
 			}

@@ -674,8 +674,9 @@ function attrMatch(
 			// author control: values are folded only when the `i` flag is set,
 			// regardless of the element's namespace.
 			if (attr.insensitive) {
-				value = value.toLowerCase();
-				valueOfEl = valueOfEl.toLowerCase();
+				// ASCII case-insensitively, as HTML compares an attribute value (the Kelvin sign is not `k`)
+				value = asciiLowerCase(value);
+				valueOfEl = asciiLowerCase(valueOfEl);
 			}
 			switch (attr.operator) {
 				case '=': {

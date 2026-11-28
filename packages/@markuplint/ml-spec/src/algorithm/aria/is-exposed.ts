@@ -10,6 +10,7 @@ import { isPresentational } from './is-presentational.js';
 import { resolveNamespace } from '../../utils/resolve-namespace.js';
 
 import { getComputedRole } from './get-computed-role.js';
+import { isAriaTrue } from './is-aria-true.js';
 
 /**
  * The attribute of the element that `@markuplint/ml-core` hands over (`MLAttr`): the DOM `Attr` does not
@@ -130,7 +131,7 @@ function isExcluding(
 	{
 		let currentEl: Element | null = el;
 		while (currentEl) {
-			if (currentEl.getAttribute('aria-hidden') === 'true') {
+			if (isAriaTrue(currentEl.getAttribute('aria-hidden'))) {
 				return true;
 			}
 			currentEl = getComposedParentElement(currentEl);
@@ -205,7 +206,7 @@ function isIncluding(
 	 * (See Excluding Elements in the Accessibility Tree for
 	 * additional guidance on aria-hidden.)
 	 */
-	if (el.getAttribute('aria-hidden') !== 'true') {
+	if (!isAriaTrue(el.getAttribute('aria-hidden'))) {
 		const globalAria = ariaSpecs(specs, version).props.filter(prop => prop.isGlobal);
 		const { role } = getComputedRole(specs, el, version);
 		// Has an explicit role

@@ -171,7 +171,8 @@ function isNeverRendered(
 	if (NEVER_RENDERED_HTML_ELEMENTS.has(el.localName)) {
 		return true;
 	}
-	return el.localName === 'input' && el.getAttribute('type')?.trim().toLowerCase() === 'hidden';
+	// An enumerated attribute: the keyword ASCII case-insensitively, with no white space trimmed
+	return el.localName === 'input' && asciiLowerCase(el.getAttribute('type') ?? '') === 'hidden';
 }
 
 function isLandmarkRole(role: ReadonlyDeep<NonNullable<ReturnType<typeof getRoleSpec>>>) {

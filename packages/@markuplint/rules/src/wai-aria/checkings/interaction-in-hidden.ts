@@ -1,7 +1,7 @@
 import type { Options } from '../types.js';
 import type { Attr, Element, ElementChecker } from '@markuplint/ml-core';
 
-import { getComposedParentElement, mayBeFocusable } from '@markuplint/ml-spec';
+import { getComposedParentElement, isAriaTrue, mayBeFocusable } from '@markuplint/ml-spec';
 
 /**
  * Checks whether a focusable interactive element is inside an `aria-hidden=true` subtree.
@@ -59,7 +59,7 @@ function getClosestAriaHidden(
 	let current: Element<boolean, Options> | null = el;
 	while (current) {
 		const ariaHidden = current.getAttributeNode('aria-hidden');
-		if (ariaHidden?.value === 'true') {
+		if (ariaHidden && isAriaTrue(ariaHidden.value)) {
 			return ariaHidden;
 		}
 		current = getComposedParentElement(current);

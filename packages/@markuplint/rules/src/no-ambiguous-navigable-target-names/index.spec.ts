@@ -169,3 +169,11 @@ test('[no-ambiguous-navigable-target-names-012] an attribute that the framework 
 	});
 	expect(violations).toStrictEqual([]);
 });
+
+test.each([' blank', '\u00A0blank', ' _blank'])(
+	'[no-ambiguous-navigable-target-names-013] a name with white space is read as written, not as a keyword: %j',
+	async value => {
+		const { violations } = await mlRuleTest(rule, `<a href="x" target="${value}">a</a>`);
+		expect(violations).toStrictEqual([]);
+	},
+);

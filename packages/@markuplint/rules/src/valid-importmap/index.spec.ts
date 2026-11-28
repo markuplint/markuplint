@@ -475,3 +475,17 @@ test('[valid-importmap-033] the integrity key is in Japanese with locale ja', as
 		},
 	]);
 });
+
+test.each([
+	[' \n\t\r ', 'Import map must contain a JSON object'],
+	['\f', 'Import map must be valid JSON'],
+	['\u00A0', 'Import map must be valid JSON'],
+])(
+	'[valid-importmap-034] the white space of JSON is ASCII white space without form feed: %j',
+	async (content, message) => {
+		const { violations } = await mlRuleTest(rule, `<script type="importmap">${content}</script>`);
+		expect(violations).toStrictEqual([
+			{ severity: 'error', line: 1, col: 1, message, raw: '<script type="importmap">' },
+		]);
+	},
+);

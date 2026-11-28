@@ -2,6 +2,7 @@ import type { CellType } from './types.js';
 import type { Element } from '@markuplint/ml-core';
 
 import { findChildren } from './find-children.js';
+import { parseNonNegativeInteger } from '@markuplint/ml-spec';
 
 /**
  * HTML LS [§4.9.12.1 *Forming a table*](https://html.spec.whatwg.org/multipage/tables.html#forming-a-table)
@@ -336,12 +337,12 @@ function parseSpan(value: string | null | undefined, fallback: number, min: numb
 		return fallback;
 	}
 
-	const digits = /^[\t\n\f\r ]*(\d+)/.exec(value);
-	if (!digits?.[1]) {
+	const parsed = parseNonNegativeInteger(value);
+	if (parsed === null) {
 		return fallback;
 	}
 
-	return Math.min(Math.max(Number.parseInt(digits[1], 10), min), max);
+	return Math.min(Math.max(parsed, min), max);
 }
 
 /**

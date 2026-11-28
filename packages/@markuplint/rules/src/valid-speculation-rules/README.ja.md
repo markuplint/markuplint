@@ -11,7 +11,7 @@ description: '`<script type="speculationrules">` 要素の本文を、Speculatio
 
 インラインの投機ルールに対して以下を違反として報告します。
 
-- 要素本文が空・空白のみ、または JSON としてパースできない
+- 要素本文が空・JSONの空白（タブ・改行・復帰・スペース）のみ、または JSON としてパースできない
 - トップレベル値が JSON オブジェクトではない、または `prefetch` / `prerender` プロパティが存在しない
 - トップレベルに `tag` / `prefetch` / `prerender` 以外のキーが存在する
 - `prefetch` / `prerender` の値が JSON 配列ではない、またはその中のルールが JSON オブジェクトではない

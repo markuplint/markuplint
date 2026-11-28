@@ -1,5 +1,5 @@
 import { createRule } from '@markuplint/ml-core';
-import { isNothingContentModel, isPalpableElement } from '@markuplint/ml-spec';
+import { isAriaTrue, isNothingContentModel, isPalpableElement } from '@markuplint/ml-spec';
 
 import meta from './meta.js';
 
@@ -55,7 +55,7 @@ export default createRule<boolean, Options>({
 				return;
 			}
 
-			if (el.rule.options.ignoreIfAriaBusy && el.getAttribute('aria-busy') === 'true') {
+			if (el.rule.options.ignoreIfAriaBusy && isAriaTrue(el.getAttribute('aria-busy'))) {
 				return;
 			}
 

@@ -1,5 +1,7 @@
 import type { AccnameElement } from '../algorithm/aria/accname/types.js';
 
+import { asciiLowerCase } from '@markuplint/shared';
+
 /**
  * ARIA roles that are embedded controls per AccName Step 2C.
  * @see https://w3c.github.io/accname/#comp_embedded_control
@@ -71,7 +73,7 @@ export function isNativeEmbeddedControl(el: AccnameElement): boolean {
 		return true;
 	}
 	if (localName === 'input') {
-		const type = (el.getAttribute('type') ?? 'text').toLowerCase();
+		const type = asciiLowerCase(el.getAttribute('type') ?? 'text');
 		return (
 			type !== 'hidden' &&
 			type !== 'button' &&

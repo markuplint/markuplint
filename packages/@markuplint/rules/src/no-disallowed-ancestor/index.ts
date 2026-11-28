@@ -6,6 +6,8 @@ import { ARIA_RECOMMENDED_VERSION, getSpecByTagName } from '@markuplint/ml-spec'
 
 import meta from './meta.js';
 
+import { hasText } from '@markuplint/shared';
+
 /**
  * Checks the ancestors of an element against its content model, which holds them in two forms
  * that this rule reads together: `forbiddenAncestors` (a deny list, any one match is a violation)
@@ -158,7 +160,7 @@ function isNameUnknown<T extends RuleConfigValue, O extends PlainData>(
 		return true;
 	}
 	return (
-		ancestor.getAccessibleName(ARIA_RECOMMENDED_VERSION).trim() === '' &&
+		!hasText(ancestor.getAccessibleName(ARIA_RECOMMENDED_VERSION)) &&
 		ancestor.mayHaveAccessibleName(ARIA_RECOMMENDED_VERSION)
 	);
 }

@@ -375,3 +375,15 @@ test('[link-types-040] a keyword that the area element does not allow is in Japa
 test('[link-types-041] a keyword is read with its character references decoded', async () => {
 	expect((await mlRuleTest(rule, '<a href="x" rel="&#110;oopener">a</a>')).violations).toStrictEqual([]);
 });
+
+test('[link-types-042] a keyword is compared ASCII case-insensitively: the Kelvin sign is not `k`', async () => {
+	expect((await mlRuleTest(rule, '<a href="x" rel="boo\u212Amark">a</a>')).violations).toStrictEqual([
+		{
+			severity: 'error',
+			line: 1,
+			col: 18,
+			message: 'The "boo\u212Amark" keyword is not allowed',
+			raw: 'boo\u212Amark',
+		},
+	]);
+});

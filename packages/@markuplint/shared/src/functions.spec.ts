@@ -12,6 +12,8 @@ import {
 	hasText,
 	isValidInteger,
 	isValidFloatingPointNumber,
+	parseDimensionValue,
+	parseFloatingPointNumberValue,
 } from './functions.js';
 
 test('toArrayFromStringOrArray', () => {
@@ -277,5 +279,36 @@ describe('decodeAttrValue', () => {
 
 	test('maps a value without a reference to itself', () => {
 		expect(decodeAttrValue('ab')).toStrictEqual({ value: 'ab', offsets: [0, 1, 2] });
+	});
+});
+
+describe('parseFloatingPointNumberValue', () => {
+	test.each([
+		['2', 2],
+		[' 2 ', 2],
+		['\t+2', 2],
+		['2.', 2],
+		['2px', 2],
+		['-.5', -0.5],
+		['1e2', 100],
+		['\u00A02', null],
+		['', null],
+		['px', null],
+	])('reads %j as %j', (value, expected) => {
+		expect(parseFloatingPointNumberValue(value)).toBe(expected);
+	});
+});
+
+describe('parseDimensionValue', () => {
+	test.each([
+		['100', { value: 100, isPercentage: false }],
+		[' 100px', { value: 100, isPercentage: false }],
+		['50.5', { value: 50.5, isPercentage: false }],
+		['100%', { value: 100, isPercentage: true }],
+		['\u00A0100', null],
+		['-1', null],
+		['', null],
+	])('reads %j as %j', (value, expected) => {
+		expect(parseDimensionValue(value)).toStrictEqual(expected);
 	});
 });

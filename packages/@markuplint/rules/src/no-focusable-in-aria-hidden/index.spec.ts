@@ -114,3 +114,23 @@ test('[no-focusable-in-aria-hidden-010] the message for aria-hidden on an ancest
 		},
 	]);
 });
+
+test.each([
+	[
+		'TRUE',
+		[
+			{
+				severity: 'warning',
+				line: 1,
+				col: 25,
+				message: 'It may be focusable in spite of it has the ancestor that has aria-hidden=true',
+				raw: '<button>',
+			},
+		],
+	],
+	[' true ', []],
+	['true\u00A0', []],
+])('[no-focusable-in-aria-hidden-011] aria-hidden is true as browsers read it: %j', async (value, expected) => {
+	const { violations } = await mlRuleTest(rule, `<div aria-hidden="${value}"><button>a</button></div>`);
+	expect(violations).toStrictEqual(expected);
+});
