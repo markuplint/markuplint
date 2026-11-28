@@ -5389,6 +5389,11 @@ function isEditable(
 	}
 	let current: MLElement<any, any> | null = el;
 	while (current) {
+		// A component that no pretender resolved renders what the markup does not tell, and its props are not
+		// attributes of the DOM: whether it, or what it holds, is editable is not known
+		if (current.isUnresolvedComponent()) {
+			return false;
+		}
 		const attr = current.namespaceURI === HTML_NAMESPACE ? current.getAttributeNode('contenteditable') : null;
 		// A spread may set `contenteditable` (to `false`), so what the element is is not known: one where the element
 		// has no `contenteditable`, or one after it, which the later attribute overrides it with

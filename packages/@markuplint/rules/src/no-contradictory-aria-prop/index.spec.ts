@@ -269,3 +269,14 @@ test('[no-contradictory-aria-prop-024] aria-readonly on an SVG element in an edi
 	const code = '<div contenteditable><svg role="textbox" aria-readonly="true"></svg></div>';
 	expect((await mlRuleTest(rule, code)).violations).toStrictEqual([]);
 });
+
+test('[no-contradictory-aria-prop-025] a prop of a component that no pretender resolves is no contenteditable attribute', async () => {
+	const parser = { '.*': '@markuplint/jsx-parser' };
+	expect(
+		(await mlRuleTest(rule, '<Editor contenteditable aria-readonly="true" />', { parser })).violations,
+	).toStrictEqual([]);
+	expect(
+		(await mlRuleTest(rule, '<Wrapper contenteditable><div aria-readonly="true">x</div></Wrapper>', { parser }))
+			.violations,
+	).toStrictEqual([]);
+});
