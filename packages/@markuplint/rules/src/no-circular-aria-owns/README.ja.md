@@ -10,6 +10,8 @@ description: 要素を自分自身の祖先にしてしまうaria-owns属性を�
 
 [WAI-ARIA aria-owns property](https://w3c.github.io/aria/#aria-owns)より引用
 
+循環は、コンポーネントが描画する要素([`pretenders`](/docs/guides/beyond-html#pretenders)が`contents`やスロットのラッパーとして宣言した要素)を通ることもあります。その要素は、コンポーネントのツリーの中でaria-owns属性に参照されることも、aria-owns属性をもつこともできます。
+
 参照先が要素自身か、その祖先であるとき、参照は循環しています。祖先は、DOMとすべてのaria-owns属性(非表示の要素のaria-owns属性も含む)の両方をたどって求めます。循環を作る参照はすべて警告し、別の循環を取り除くと循環を作る参照も警告します。テンプレート構文のブロックがある文書や、描画されるまで値が分からないaria-owns属性は判定しません。WAI-ARIA 1.1と1.2にはこの要件の記述がありませんが、ARIAのバージョンにかかわらず警告します。
 
 <!-- textlint-disable ja-technical-writing/ja-no-mixed-period -->

@@ -623,3 +623,27 @@ test('[no-disallowed-ancestor-053] the message is in Japanese with locale ja', a
 		},
 	]);
 });
+
+test('[no-disallowed-ancestor-059] main in a form whose aria-labelledby refers to an element a component renders', async () => {
+	const parser = { '.*': '@markuplint/jsx-parser' };
+	const pretenders = [
+		{
+			selector: 'Heading',
+			as: { element: 'div', contents: [{ element: 'h2', attrs: [{ name: 'id', value: 't' }] }] },
+		},
+	] as const;
+	const code = '<><form aria-labelledby="t"><main></main></form><Heading /></>';
+	expect((await mlRuleTest(rule, code, { parser, pretenders })).violations).toStrictEqual([]);
+
+	// Control: an element of the markup with text names the form
+	const named = '<><form aria-labelledby="t"><main></main></form><span id="t">Search</span></>';
+	expect((await mlRuleTest(rule, named, { parser })).violations).toStrictEqual([
+		{
+			severity: 'error',
+			line: 1,
+			col: 29,
+			message: 'The "main" element must not appear as a descendant of the "form" element',
+			raw: '<main>',
+		},
+	]);
+});
