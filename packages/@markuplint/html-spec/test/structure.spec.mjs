@@ -651,8 +651,7 @@ describe('the global attributes of an SVG element', () => {
  * generator notices that a specification or a browser has a new one. BCD lists the elements of the browsers, so the
  * ones that it has and the data lacks are pinned here, and a change of the BCD version that adds one fails the test and
  * a person reads it: an element that a specification defines is written in `src/`, any other is added to this list.
- * `mml:a` (MathML Core) and `selectedcontent` (the HTML Standard) are defined by a specification and are not in the
- * data yet.
+ * `selectedcontent` (the HTML Standard) is defined by a specification and is not in the data yet.
  */
 test('the elements that BCD has and the data lacks are the ones that were read', async () => {
 	const { default: bcd } = await import('@mdn/browser-compat-data/forLegacyNode');
@@ -675,7 +674,6 @@ test('the elements that BCD has and the data lacks are the ones that were read',
 		'geolocation',
 		'install',
 		'microphone',
-		'mml:a',
 		'model',
 		'selectedcontent',
 		'usermedia',

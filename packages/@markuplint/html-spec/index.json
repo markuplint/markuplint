@@ -47746,6 +47746,7 @@
 			],
 			"#SVGTextContentChild": ["svg|altGlyph", "svg|textPath", "svg|tref", "svg|tspan"],
 			"#MathMLPresentation": [
+				"mml|a",
 				"mml|merror",
 				"mml|mfrac",
 				"mml|mi",
@@ -54570,6 +54571,53 @@
 			},
 			"attributes": {},
 			"cite": "https://html.spec.whatwg.org/multipage/obsolete.html#non-conforming-features"
+		},
+		{
+			"name": "mml:a",
+			"namespace": "http://www.w3.org/1998/Math/MathML",
+			"contentModel": {
+				"contents": [
+					{
+						"zeroOrMore": [
+							":model(MathMLPresentation)",
+							"mml|semantics",
+							"mml|annotation",
+							"mml|annotation-xml",
+							"mml|mtr",
+							"mml|mtd",
+							"mml|mprescripts",
+							"#text"
+						]
+					}
+				]
+			},
+			"aria": {
+				"implicitRole": false,
+				"permittedRoles": true
+			},
+			"globalAttrs": {
+				"#ARIAAttrs": true,
+				"#GlobalEventAttrs": true,
+				"#HTMLLinkAndFetchingAttrs": [
+					"href",
+					"target",
+					"download",
+					"ping",
+					"rel",
+					"hreflang",
+					"type",
+					"referrerpolicy"
+				],
+				"#MathMLGlobalAttrs": true
+			},
+			"attributes": {
+				"href": {
+					"type": "URL",
+					"nonStandard": false,
+					"deprecated": false
+				}
+			},
+			"cite": "https://w3c.github.io/mathml-core/#the-a-element"
 		},
 		{
 			"name": "mml:annotation",

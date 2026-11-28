@@ -377,3 +377,12 @@ test('[no-nonstandard-features-025] customelementregistry is not non-standard', 
 	const { violations } = await mlRuleTest(rule, '<div customelementregistry></div>');
 	expect(violations).toStrictEqual([]);
 });
+
+test('[no-nonstandard-features-026] the MathML a element and its href are standard, and href of the other elements is not', async () => {
+	// > The href, target, download, ping, rel, hreflang, type and referrerpolicy attributes have the same syntax and semantics as defined for the HTML <a> element.
+	// @see https://w3c.github.io/mathml-core/#the-a-element
+	expect((await mlRuleTest(rule, '<math><a href="/x"><mi>x</mi></a></math>')).violations).toStrictEqual([]);
+	expect((await mlRuleTest(rule, '<math><mi href="/x">x</mi></math>')).violations).toStrictEqual([
+		{ severity: 'warning', line: 1, col: 11, message: 'The "href" attribute is non-standard', raw: 'href' },
+	]);
+});

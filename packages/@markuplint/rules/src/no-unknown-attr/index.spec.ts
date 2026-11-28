@@ -1228,6 +1228,17 @@ test.each([
 	},
 );
 
+test('[no-unknown-attr-067] the attributes of the HTML a element are known on the MathML a element', async () => {
+	// > The a element accepts the attributes described in 2.1.3 Global Attributes as well as corresponding attributes of the HTML <a> element: href, target, download, ping, rel, hreflang, type, referrerpolicy
+	// @see https://w3c.github.io/mathml-core/#the-a-element
+	const html =
+		'<math><a href="/x" target="_blank" download ping="https://example.com/p" rel="noopener" hreflang="en" type="text/html" referrerpolicy="origin"><mi>x</mi></a></math>';
+	expect((await mlRuleTest(rule, html)).violations).toStrictEqual([]);
+	expect((await mlRuleTest(rule, '<math><a foo="x"><mi>x</mi></a></math>')).violations).toStrictEqual([
+		{ severity: 'error', line: 1, col: 10, message: 'The "foo" attribute is disallowed', raw: 'foo' },
+	]);
+});
+
 test.each([
 	'<svg><defs slot="icon" nonce="abc" elementtiming="c"></defs><desc slot="x"></desc></svg>',
 	'<svg><linearGradient slot="icon"></linearGradient><script nonce="abc"></script></svg>',

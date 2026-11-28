@@ -1,0 +1,53 @@
+// https://w3c.github.io/mathml-core/#the-a-element
+{
+	"contentModel": {
+		// > The a element is used to group together any number of sub-expressions equivalently to mrow.
+		// @see https://w3c.github.io/mathml-core/#the-a-element
+		"contents": [
+			{
+				"zeroOrMore": [
+					":model(MathMLPresentation)",
+					"mml|semantics",
+					"mml|annotation",
+					"mml|annotation-xml",
+					"mml|mtr",
+					"mml|mtd",
+					"mml|mprescripts",
+					"#text"
+				]
+			}
+		]
+	},
+	"globalAttrs": {
+		"#GlobalEventAttrs": true,
+		"#ARIAAttrs": true,
+		"#MathMLGlobalAttrs": true,
+		"#HTMLLinkAndFetchingAttrs": [
+			"href",
+			"target",
+			"download",
+			"ping",
+			"rel",
+			"hreflang",
+			"type",
+			"referrerpolicy"
+		]
+	},
+	"attributes": {
+		// > The href, target, download, ping, rel, hreflang, type and referrerpolicy attributes have the same syntax and semantics as defined for the HTML <a> element.
+		// @see https://w3c.github.io/mathml-core/#the-a-element
+		//
+		// The global `href` of MathML (`#MathMLGlobalAttrs`) is `deprecated` and `nonStandard`, which the data takes from BCD
+		// (`mathml.global_attributes.href`) and which is the status of the attribute on the other elements. The `a` element
+		// defines it, so it is neither.
+		"href": {
+			"type": "URL",
+			"deprecated": false,
+			"nonStandard": false
+		}
+	},
+	"aria": {
+		"implicitRole": false,
+		"permittedRoles": true
+	}
+}
