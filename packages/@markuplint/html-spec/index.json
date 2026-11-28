@@ -62197,8 +62197,7 @@
 				},
 				"path": {
 					"type": "<svg-path>",
-					"animatable": true,
-					"experimental": true
+					"animatable": true
 				},
 				"side": {
 					"type": {
