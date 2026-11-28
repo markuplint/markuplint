@@ -215,7 +215,7 @@ function readReference(
 		if (mdxNumeric) {
 			const code = mdxNumeric[1] === undefined ? Number(mdxNumeric[2]) : Number.parseInt(mdxNumeric[1], 16);
 			const chars =
-				(code >= 0xD8_00 && code <= 0xDF_FF) || code > 0x10_FF_FF
+				(code >= 55_296 && code <= 57_343) || code > 1_114_111
 					? '\uFFFD'
 					: (MDX_INVALID_REFERENCE[code] ?? String.fromCodePoint(code));
 			return { chars, length: mdxNumeric[0].length };
