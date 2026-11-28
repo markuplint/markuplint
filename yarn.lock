@@ -2367,7 +2367,7 @@ __metadata:
     "@markuplint/ml-ast": "npm:5.6.0"
     "@markuplint/parser-utils": "npm:5.6.1"
     "@markuplint/shared": "npm:5.6.0"
-    svelte: "npm:^5.59.0"
+    svelte: "npm:^5.59.1"
   languageName: unknown
   linkType: soft
 
@@ -3910,9 +3910,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@renovatebot/base-image@npm:13.174.1":
-  version: 13.174.1
-  resolution: "@renovatebot/base-image@npm:13.174.1"
+"@renovatebot/base-image@npm:13.174.2":
+  version: 13.174.2
+  resolution: "@renovatebot/base-image@npm:13.174.2"
   dependencies:
     "@containerbase/base": "npm:14.68.0"
   peerDependencies:
@@ -3920,7 +3920,7 @@ __metadata:
   peerDependenciesMeta:
     zod:
       optional: true
-  checksum: 10c0/68255a477bfb11e75c079eb82235124e0a015321c62d781882f12f9a4759160eaacd9ea1738d2656770078f649ebf08d90a306cf4cf3de6d979f08bed7ce47b7
+  checksum: 10c0/2e4cd9be9cb71d417b79b99a92de941479dd9c26bc7638142098b459aefa84089e53514b1f460070b21184138b342090cc351f861be6261a8b3092630664c455
   languageName: node
   linkType: hard
 
@@ -11281,7 +11281,7 @@ __metadata:
     npm-run-all2: "npm:9.0.4"
     oxfmt: "npm:0.79.0"
     oxlint: "npm:1.94.0"
-    renovate: "npm:44.257.2"
+    renovate: "npm:44.257.5"
     textlint: "npm:16.1.1"
     textlint-filter-rule-comments: "npm:1.3.0"
     textlint-rule-preset-ja-spacing: "npm:3.1.0"
@@ -14514,9 +14514,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"renovate@npm:44.257.2":
-  version: 44.257.2
-  resolution: "renovate@npm:44.257.2"
+"renovate@npm:44.257.5":
+  version: 44.257.5
+  resolution: "renovate@npm:44.257.5"
   dependencies:
     "@aws-sdk/client-codecommit": "npm:3.1139.0"
     "@aws-sdk/client-ec2": "npm:3.1139.0"
@@ -14549,7 +14549,7 @@ __metadata:
     "@pnpm/parse-overrides": "npm:1001.0.4"
     "@qnighy/marshal": "npm:0.1.3"
     "@redis/client": "npm:6.3.1"
-    "@renovatebot/base-image": "npm:13.174.1"
+    "@renovatebot/base-image": "npm:13.174.2"
     "@renovatebot/detect-tools": "npm:5.0.0"
     "@renovatebot/good-enough-parser": "npm:4.0.3"
     "@renovatebot/osv-offline": "npm:4.5.10"
@@ -14650,7 +14650,7 @@ __metadata:
   bin:
     renovate: dist/renovate.js
     renovate-config-validator: dist/config-validator.js
-  checksum: 10c0/802ed3986101f040290e793961a627232ed1efc084009d4bb9f5b0c7d3ec147fa2b3cb4e98a52f64d0d336e71c5402e36e3d3560d2840491e766d565249db905
+  checksum: 10c0/5ba0539eadc5a6b88d11daf9c4f20f5351038f11e382cf6ce3d17357f86f2763f9a3009a5d4405c72e74ac334b19c31e755553cac1e4560b7a272b129ab8bdf2
   languageName: node
   linkType: hard
 
@@ -15715,9 +15715,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"svelte@npm:^5.59.0":
-  version: 5.59.0
-  resolution: "svelte@npm:5.59.0"
+"svelte@npm:^5.59.1":
+  version: 5.59.1
+  resolution: "svelte@npm:5.59.1"
   dependencies:
     "@jridgewell/remapping": "npm:^2.3.5"
     "@jridgewell/sourcemap-codec": "npm:^1.6.0"
@@ -15734,7 +15734,7 @@ __metadata:
     locate-character: "npm:^3.0.0"
     magic-string: "npm:^0.30.11"
     zimmerframe: "npm:^1.1.2"
-  checksum: 10c0/1d3db80b73b30285654e99476c225fd896d0705cebaf06d29cf5ae52010b0156a7254a5448cca6d13a809396c58633ae80512dc8da7cf19c48e853a9fc291f49
+  checksum: 10c0/ddf3cb3adcc653eb369c0d27ea2f59e8606e8ac8de6217ce7cdc28a283c2f793cb58bd776f06c26cbdbef758ae3ca256744328066f8f9c8a71ab9b3c8a0a5197
   languageName: node
   linkType: hard
 
