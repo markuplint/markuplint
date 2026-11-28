@@ -16846,10 +16846,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"undici@npm:8.13.0":
-  version: 8.13.0
-  resolution: "undici@npm:8.13.0"
-  checksum: 10c0/a932546a05c996d1fc11c880ed5253ee06ec858e6a003231c70d6f8e60ba049fa6b0d86483f8e54c2e0bed6c6c51c5bca8780390fe4b4ec5b4504af60078ebde
+"undici@npm:8.13.1":
+  version: 8.13.1
+  resolution: "undici@npm:8.13.1"
+  checksum: 10c0/ee202b4da4f4a663e723696c6d6f6f27f3424aaddd652ceccf1062beaddce171809445cbdbedc50dcd53f0119a1fe8ce20f7c5d320039e71915418dfc98b58a0
   languageName: node
   linkType: hard
 
