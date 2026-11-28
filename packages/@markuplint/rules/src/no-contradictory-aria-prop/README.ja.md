@@ -7,7 +7,13 @@ description: ARIA プロパティの値が等価なネイティブ HTML 属性�
 
 [ARIA in HTML §4.2](https://www.w3.org/TR/html-aria/#docconformance-attr) に基づき、ネイティブ HTML 属性はその ARIA 等価物より優先されなければなりません。ARIA プロパティの値が、等価なネイティブ HTML 属性の現在の値または暗黙の値と矛盾している場合に警告します。
 
-要素が真偽値のネイティブ属性(`required`・`disabled`・`readonly`・`checked`)を持つ場合、それと矛盾するのは `aria-*="false"` だけです。それ以外の等価なネイティブ属性を持つ場合は、異なる値が矛盾します。値はネイティブ属性の値の型で比較します。数値は数値として(`max="10.0"` は `aria-valuemax="10"` と同じ値)、キーワードは ASCII の大文字・小文字を区別せずに、それ以外の値は書かれたとおりに比較します。
+要素が真偽値のネイティブ属性(`required`・`disabled`・`readonly`・`checked`)を持つ場合、それと矛盾するのは `aria-*="false"` だけです。`aria-colspan` と `aria-rowspan` は、値が異なる場合に `colspan` と `rowspan` と矛盾します。値はネイティブ属性の値の型で比較します。数値は数値として、キーワードは ASCII の大文字・小文字を区別せずに、それ以外の値は書かれたとおりに比較します。
+
+`aria-placeholder`・`aria-valuemax`・`aria-valuemin` は、`placeholder`・`max`・`min` と同じ要素に指定した場合、同じ値であっても値に関係なく報告します。
+
+> Authors MUST NOT use the aria-placeholder attribute on any element which also has a placeholder attribute.
+
+[ARIA in HTML §4.2 Requirements for use of ARIA attributes in place of equivalent HTML attributes](https://www.w3.org/TR/html-aria/#docconformance-attr)より引用
 
 編集可能な要素(自身の `contenteditable`、または `contenteditable` を持つ最も近い祖先による)に `aria-readonly="true"` を指定した場合も報告します。
 

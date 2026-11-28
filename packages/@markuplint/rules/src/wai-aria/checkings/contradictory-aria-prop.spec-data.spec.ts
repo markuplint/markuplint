@@ -3,7 +3,8 @@ import { describe, test, expect } from 'vitest';
 
 /**
  * `checkingContradictoryAriaProp` reports `aria-*="true"` without the native attribute only for
- * the attributes of `IMPLICIT_STATE_ATTRS`; every other equivalent is allowed by ARIA in HTML §4.2.
+ * the attributes of `IMPLICIT_STATE_ATTRS`, and beside the attributes of `FORBIDDEN_BESIDE_NATIVE_ATTRS` it reports
+ * any value; every other equivalent is allowed by ARIA in HTML §4.2.
  * That list is knowledge of the specification that the data cannot give, so a native attribute that
  * the data newly pairs with an ARIA property, or an `aria-hidden` that stops being flagged as not
  * strictly equivalent to `hidden`, fails here until §4.2 has been read for it and the checking has
