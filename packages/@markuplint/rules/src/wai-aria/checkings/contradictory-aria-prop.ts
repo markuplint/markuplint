@@ -2,9 +2,12 @@ import type { Options } from '../types.js';
 import type { AttrChecker } from '@markuplint/ml-core';
 import type { ARIAProperty, Attribute } from '@markuplint/ml-spec';
 
-import { trimAsciiWhitespace } from '@markuplint/shared';
+import { isAriaTrue, isValidAriaValueType } from '@markuplint/ml-spec';
+import { asciiLowerCase } from '@markuplint/shared';
 
 import { resolveAttrEligibility } from '../../attr-eligibility.js';
+
+import { isSameAsNative } from './equivalent-value.js';
 
 /**
  * Without the native attribute, only `checked` has an implicit value that
@@ -44,14 +47,35 @@ export const checkingContradictoryAriaProp: AttrChecker<
 > =
 	({ attr, propSpecs, attrSpecs }) =>
 	t => {
-		if (!attrSpecs) {
-			return;
-		}
 		if (attr.isDynamicValue) {
 			return;
 		}
 		const propSpec = propSpecs.find(p => p.name === attr.nameKey);
-		if (!propSpec?.equivalentHtmlAttrs) {
+		// An editable element is not read-only, whatever element it is:
+		//
+		// > Authors MUST NOT set aria-readonly="true" on an element that has isContentEditable="true".
+		//
+		// @see https://www.w3.org/TR/html-aria/#docconformance-attr
+		if (propSpec?.name === 'aria-readonly' && isAriaTrue(attr.value) && attr.ownerElement.isContentEditable) {
+			// The element's own `contenteditable`, or that of the editing host it is in
+			const own = attr.ownerElement.hasAttribute('contenteditable');
+			return {
+				scope: attr,
+				message: t(
+					'{0} contradicts {1}',
+					t('the "{0*}" {1}', attr.name, `ARIA ${propSpec.type}`),
+					own
+						? t('the current "{0*}" {1}', 'contenteditable', 'attribute')
+						: t('the "{0*}" {1}', 'contenteditable', 'attribute'),
+				),
+			};
+		}
+		if (!attrSpecs || !propSpec?.equivalentHtmlAttrs) {
+			return;
+		}
+		// The zero-length string is the absent attribute, and a value that is not valid is the default
+		// (`no-invalid-aria-prop-value` reports it): neither opposes a native attribute
+		if (attr.value === '' || !isValidAriaValueType(propSpec.value, attr.value, propSpec.enum)) {
 			return;
 		}
 		for (const equivalentHtmlAttr of propSpec.equivalentHtmlAttrs) {
@@ -66,18 +90,23 @@ export const checkingContradictoryAriaProp: AttrChecker<
 				continue;
 			}
 
-			const value = trimAsciiWhitespace(attr.value).toLowerCase();
-
 			if (attr.ownerElement.hasAttribute(equivalentHtmlAttr.htmlAttrName)) {
-				const targetAttrValue = attr.ownerElement.getAttribute(equivalentHtmlAttr.htmlAttrName);
+				const nativeType = eligibility.status === 'ok' ? eligibility.spec.type : htmlAttrSpec?.type;
 				if (
-					(equivalentHtmlAttr.value == null && targetAttrValue === value) ||
-					equivalentHtmlAttr.value === value
+					isSameAsNative(
+						attr.value,
+						attr.ownerElement.getAttribute(equivalentHtmlAttr.htmlAttrName),
+						nativeType,
+						equivalentHtmlAttr.htmlAttrName,
+						equivalentHtmlAttr.value,
+					)
 				) {
 					// Redundant, not contradictory — `checkingRedundantAriaProp`'s concern.
 					continue;
 				}
-				if (htmlAttrSpec?.type === 'Boolean' && value !== 'false') {
+				// Beside a native attribute whose presence stands for a keyword, only `"false"` contradicts it (a keyword as
+				// browsers read it)
+				if (equivalentHtmlAttr.value != null && asciiLowerCase(attr.value) !== 'false') {
 					continue;
 				}
 				return {
@@ -89,7 +118,7 @@ export const checkingContradictoryAriaProp: AttrChecker<
 					),
 				};
 			} else if (
-				value === 'true' &&
+				isAriaTrue(attr.value) &&
 				IMPLICIT_STATE_ATTRS.has(equivalentHtmlAttr.htmlAttrName) &&
 				!equivalentHtmlAttr.isNotStrictEquivalent &&
 				htmlAttrSpec?.type === 'Boolean'

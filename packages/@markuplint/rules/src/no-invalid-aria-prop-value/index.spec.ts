@@ -324,9 +324,19 @@ const v = (col: number, message: string, raw: string) => [{ severity: 'error', l
 
 test.each([
 	['checkbox', 'aria-checked', 'true', []],
-	['checkbox', 'aria-checked', ' TRUE ', []],
+	[
+		'checkbox',
+		'aria-checked',
+		' TRUE ',
+		v(37, 'The " TRUE " is disallowed on the "aria-checked" ARIA state', 'aria-checked=" TRUE "'),
+	],
 	['checkbox', 'aria-checked', 'TRUE', []],
-	['checkbox', 'aria-checked', ' true ', []],
+	[
+		'checkbox',
+		'aria-checked',
+		' true ',
+		v(37, 'The " true " is disallowed on the "aria-checked" ARIA state', 'aria-checked=" true "'),
+	],
 	[
 		'checkbox',
 		'aria-checked',
@@ -430,7 +440,15 @@ test('[no-invalid-aria-prop-value-025] JSX: an empty value of an element whose r
 
 test('[no-invalid-aria-prop-value-026] a value is read with its character references decoded', async () => {
 	expect((await mlRuleTest(rule, '<div aria-hidden="&#116;rue"></div>')).violations).toStrictEqual([]);
-	expect((await mlRuleTest(rule, '<div role="button" aria-pressed="&#x20;"></div>')).violations).toStrictEqual([]);
+	expect((await mlRuleTest(rule, '<div role="button" aria-pressed="&#x20;"></div>')).violations).toStrictEqual([
+		{
+			severity: 'error',
+			line: 1,
+			col: 20,
+			message: 'The " " is disallowed on the "aria-pressed" ARIA state',
+			raw: 'aria-pressed="&#x20;"',
+		},
+	]);
 	expect((await mlRuleTest(rule, '<div aria-hidden="&#116;ru"></div>')).violations).toStrictEqual([
 		{
 			severity: 'error',

@@ -1343,14 +1343,20 @@ export class MLElement<T extends RuleConfigValue, O extends PlainData = undefine
 	}
 
 	/**
-	 * **IT THROWS AN ERROR WHEN CALLING THIS.**
+	 * Whether the element is an editing host or editable, as the `contenteditable` attribute of it or of the closest
+	 * ancestor that says so makes it. A value that is not known until it is rendered makes it not known, which is
+	 * `false` here, as a checker does not report what it cannot tell.
 	 *
-	 * @deprecated
-	 * @unsupported
-	 * @implements DOM API: `Element`
+	 * > The isContentEditable IDL attribute, on getting, must return true if the element is either an editing host or editable, and false otherwise.
+	 *
+	 * > The attribute's missing value default and invalid value default are both the Inherit state. The inherit state indicates that the element is editable (or not) based on the parent element's state. The attribute's empty value default is the True state.
+	 *
+	 * @implements DOM API: `HTMLElement`
+	 * @see https://html.spec.whatwg.org/multipage/interaction.html#dom-iscontenteditable
+	 * @see https://html.spec.whatwg.org/multipage/interaction.html#attr-contenteditable
 	 */
 	get isContentEditable(): boolean {
-		throw new UnexpectedCallError('Not supported "isContentEditable" property');
+		return isEditable(this);
 	}
 
 	/**
@@ -5364,6 +5370,55 @@ function hasMutableNodes<T extends RuleConfigValue, O extends PlainData>(
 				return true;
 			}
 		}
+	}
+	return false;
+}
+
+/**
+ * @param el - An element
+ * @returns Whether its own `contenteditable` or that of the closest ancestor that says so makes it editable (see
+ *   `MLElement#isContentEditable`). An element that is not in the HTML namespace has no `isContentEditable`, which
+ *   `HTMLElement` defines, so it is false there.
+ */
+function isEditable(
+	// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
+	el: MLElement<any, any>,
+): boolean {
+	if (el.namespaceURI !== HTML_NAMESPACE) {
+		return false;
+	}
+	let current: MLElement<any, any> | null = el;
+	while (current) {
+		// A component that no pretender resolved renders what the markup does not tell, and its props are not
+		// attributes of the DOM: whether it, or what it holds, is editable is not known
+		if (current.isUnresolvedComponent()) {
+			return false;
+		}
+		const attr = current.namespaceURI === HTML_NAMESPACE ? current.getAttributeNode('contenteditable') : null;
+		// A spread may set `contenteditable` (to `false`), so what the element is is not known: one where the element
+		// has no `contenteditable`, or one after it, which the later attribute overrides it with
+		if (current.hasSpreadAttr) {
+			const attrs = [...current.attributes];
+			const index = attr ? attrs.indexOf(attr) : -1;
+			if (attrs.some((a, i) => a.isSpread === true && (i > index || a.spreadOverridesWritten === true))) {
+				return false;
+			}
+		}
+		if (attr) {
+			if (attr.isDynamicValue) {
+				return false;
+			}
+			// An enumerated attribute: the keyword ASCII case-insensitively
+			const keyword = asciiLowerCase(attr.value);
+			if (keyword === '' || keyword === 'true' || keyword === 'plaintext-only') {
+				return true;
+			}
+			if (keyword === 'false') {
+				return false;
+			}
+		}
+		// The content of a `template` is a tree of its own, which no editing host outside it reaches
+		current = current.treeParentElement;
 	}
 	return false;
 }

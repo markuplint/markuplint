@@ -32,8 +32,6 @@
 {"col":14,"line":30,"message":"The \"widget\" role is the abstract role","raw":"widget","ruleId":"no-abstract-role","severity":"error"}
 {"col":14,"line":30,"message":"Cannot overwrite the \"widget\" role to the \"div\" element according to ARIA in HTML specification","raw":"widget","ruleId":"permitted-roles","severity":"error"}
 {"col":8,"line":31,"message":"The \"directory\" role is deprecated","raw":"role=\"directory\"","ruleId":"no-deprecated-role","severity":"warning"}
-{"col":14,"line":34,"message":"The \"BUTTON\" role does not exist according to the WAI-ARIA specification.","raw":"BUTTON","ruleId":"no-unknown-role","severity":"error"}
-{"col":14,"line":34,"message":"Cannot overwrite the \"BUTTON\" role to the \"div\" element according to ARIA in HTML specification","raw":"BUTTON","ruleId":"permitted-roles","severity":"error"}
 {"col":3,"line":37,"message":"Require the \"aria-checked\" ARIA state on the \"checkbox\" role","raw":"<div role=\"checkbox\">","ruleId":"require-aria-prop","severity":"error"}
 {"col":3,"line":38,"message":"The accessible name from \"aria-label\" overrides \"content\"","raw":"<div role=\"checkbox\" aria-checked=\"true\" aria-label=\"checked\">","ruleId":"no-redundant-accessible-name","severity":"warning"}
 {"col":24,"line":38,"message":"\"aria-checked\" should be before \"role\"","raw":"aria-checked","ruleId":"attr-order","severity":"warning"}

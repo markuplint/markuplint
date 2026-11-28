@@ -7,7 +7,13 @@ description: ARIA プロパティの値が等価なネイティブ HTML 属性�
 
 [ARIA in HTML §4.2](https://www.w3.org/TR/html-aria/#docconformance-attr) に基づき、ネイティブ HTML 属性はその ARIA 等価物より優先されなければなりません。ARIA プロパティの値が、等価なネイティブ HTML 属性の現在の値または暗黙の値と矛盾している場合に警告します。
 
-要素が真偽値のネイティブ属性(`required`・`disabled`・`readonly`・`checked`)を持つ場合、それと矛盾するのは `aria-*="false"` だけです。それ以外の等価なネイティブ属性を持つ場合は、異なる値が矛盾します。
+要素が真偽値のネイティブ属性(`required`・`disabled`・`readonly`・`checked`)を持つ場合、それと矛盾するのは `aria-*="false"` だけです。それ以外の等価なネイティブ属性を持つ場合は、異なる値が矛盾します。値はネイティブ属性の値の型で比較します。数値は数値として(`max="10.0"` は `aria-valuemax="10"` と同じ値)、キーワードは ASCII の大文字・小文字を区別せずに、それ以外の値は書かれたとおりに比較します。
+
+編集可能な要素(自身の `contenteditable`、または `contenteditable` を持つ最も近い祖先による)に `aria-readonly="true"` を指定した場合も報告します。
+
+> Authors MUST NOT set aria-readonly="true" on an element that has isContentEditable="true".
+
+[ARIA in HTML §4.2 Requirements for use of ARIA attributes in place of equivalent HTML attributes](https://www.w3.org/TR/html-aria/#docconformance-attr)より引用
 
 要素にネイティブ属性がない場合、`aria-required`・`aria-disabled`・`aria-readonly` は `required`・`disabled`・`readonly` の代わりに使えるので、`<input type="text" aria-required="true">` は報告されません。`aria-checked` は例外です。`checked` を持てる要素で `checked` なしに `aria-checked="true"` を指定すると、暗黙の `checked` と矛盾するものとして報告されます。要素のチェック状態が `aria-checked` と食い違う場合があるためです。
 

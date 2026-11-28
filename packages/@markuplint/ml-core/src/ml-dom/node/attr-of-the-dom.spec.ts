@@ -169,3 +169,44 @@ describe('of two attributes of one name', () => {
 		expect(element(pretended, 'button').getAttributePretended('label')).toBe('b');
 	});
 });
+
+describe('MLElement#isContentEditable', () => {
+	test.each([
+		['<div contenteditable><p>a</p></div>', 'p', true],
+		['<div contenteditable="TRUE"><p>a</p></div>', 'p', true],
+		['<div contenteditable="plaintext-only"><p>a</p></div>', 'p', true],
+		['<div contenteditable="true"><p contenteditable="false">a</p></div>', 'p', false],
+		['<div contenteditable="false"><p contenteditable="bogus">a</p></div>', 'p', false],
+		['<div contenteditable="true"><p contenteditable="bogus">a</p></div>', 'p', true],
+		['<div><p>a</p></div>', 'p', false],
+		// `isContentEditable` is of `HTMLElement`
+		['<div contenteditable="true"><svg><g></g></svg></div>', 'g', false],
+	])('of %s (%s) is %j', (code, selector, editable) => {
+		expect(element(createTestDocument(code), selector).isContentEditable).toBe(editable);
+	});
+
+	test('does not reach the content of a template, which is a tree of its own', () => {
+		const template = element(
+			createTestDocument('<div contenteditable><template><p>a</p></template></div>'),
+			'template',
+		);
+		const p = [...template.childNodes].find(node => node.is(node.ELEMENT_NODE));
+		expect([template.isContentEditable, p?.is(p.ELEMENT_NODE) && p.isContentEditable]).toStrictEqual([true, false]);
+	});
+
+	test('is not known (false) where a spread may set contenteditable, or its value is code', async () => {
+		const parser = await parserOf('jsx');
+		const spread = createTestDocument('<div contenteditable="true"><p {...props}>a</p></div>', { parser });
+		expect(element(spread, 'p').isContentEditable).toBe(false);
+		const code = createTestDocument('<div contenteditable={editable}><p>a</p></div>', { parser });
+		expect(element(code, 'p').isContentEditable).toBe(false);
+	});
+
+	test('a spread after contenteditable may override it, one before it is overridden', async () => {
+		const parser = await parserOf('jsx');
+		const after = createTestDocument('<div contentEditable="true" {...props}>a</div>', { parser });
+		expect(element(after, 'div').isContentEditable).toBe(false);
+		const before = createTestDocument('<div {...props} contentEditable="true">a</div>', { parser });
+		expect(element(before, 'div').isContentEditable).toBe(true);
+	});
+});

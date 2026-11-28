@@ -2,6 +2,7 @@ import type { Options } from '../types.js';
 import type { AttrChecker } from '@markuplint/ml-core';
 
 import { ARIA_RECOMMENDED_VERSION, ariaSpecs } from '@markuplint/ml-spec';
+import { asciiLowerCase } from '@markuplint/shared';
 
 /**
  * Checks whether the `role` attribute value refers to an abstract WAI-ARIA role.
@@ -25,7 +26,7 @@ export const checkingAbstractRole: AttrChecker<boolean, Options> =
 			return;
 		}
 		for (const token of tokens) {
-			const role = roles.find(r => r.name === token.value);
+			const role = roles.find(r => r.name === asciiLowerCase(token.value));
 			if (role?.isAbstract) {
 				return {
 					scope: token,

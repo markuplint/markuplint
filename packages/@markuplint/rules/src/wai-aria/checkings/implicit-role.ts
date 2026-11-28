@@ -2,6 +2,7 @@ import type { Options } from '../types.js';
 import type { AttrChecker } from '@markuplint/ml-core';
 
 import { ARIA_RECOMMENDED_VERSION, getImplicitRoleName } from '@markuplint/ml-spec';
+import { asciiLowerCase } from '@markuplint/shared';
 
 /**
  * Checks whether the explicit `role` attribute duplicates the element's implicit (native) role.
@@ -26,7 +27,7 @@ export const checkingImplicitRole: AttrChecker<boolean, Options> =
 			ARIA_RECOMMENDED_VERSION;
 		const implicitRole = getImplicitRoleName(attr.ownerElement, ariaVersion, attr.ownerMLDocument.specs);
 		for (const token of tokens) {
-			if (implicitRole === token.value) {
+			if (implicitRole === asciiLowerCase(token.value)) {
 				return {
 					scope: token,
 					message: t(

@@ -49,7 +49,8 @@ export class MLDomTokenList extends Array<string> implements DOMTokenList {
 			this.#set.add(token);
 			this.push(token);
 		}
-		this.#origin += tokens.join(' ');
+		// A space separates the tokens added from a list that has any, as it separates the values of the attributes
+		this.#origin = this.#origin === '' ? tokens.join(' ') : `${this.#origin} ${tokens.join(' ')}`;
 	}
 
 	/**

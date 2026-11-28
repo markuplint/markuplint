@@ -766,9 +766,13 @@ describe('1.3', () => {
  * @see https://infra.spec.whatwg.org/#ascii-whitespace
  */
 describe('the white space of a value', () => {
-	test.each(['true', ' true ', '\ttrue\n'])('takes %j as valid for aria-checked', value => {
+	test.each([
+		['true', 'aria-attr'],
+		[' true ', 'default'],
+		['\ttrue\n', 'default'],
+	])('reads %j for aria-checked from %s: a keyword is not trimmed', (value, from) => {
 		const prop = c(`<div role="checkbox" aria-checked="${value}"></div>`, '1.2', 'div')['aria-checked'];
-		expect(prop?.from).toBe('aria-attr');
+		expect(prop?.from).toBe(from);
 	});
 
 	test.each(['true\u00A0', '\u00A0true', 'true\uFEFF'])('takes %j as invalid for aria-checked', value => {
@@ -794,8 +798,8 @@ describe('the white space of a value', () => {
 		['token', '<div role="status" aria-live=" polite\n"></div>', 'aria-live'],
 		['tristate', '<div role="button" aria-pressed=" true "></div>', 'aria-pressed'],
 		['true/false', '<div role="button" aria-expanded="\ttrue"></div>', 'aria-expanded'],
-	])('takes the %s value with ASCII white space as valid', (_type, html, name) => {
-		expect(c(html, '1.2', 'div')[name]?.from).toBe('aria-attr');
+	])('does not take the %s value with ASCII white space as valid', (_type, html, name) => {
+		expect(c(html, '1.2', 'div')[name]?.from).toBe('default');
 	});
 
 	test('takes the ID reference list of ASCII white space only as empty', () => {

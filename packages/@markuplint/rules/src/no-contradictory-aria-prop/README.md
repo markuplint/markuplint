@@ -7,7 +7,13 @@ description: Warns when an ARIA property's value contradicts an equivalent nativ
 
 Warns when an ARIA property's value contradicts the current or implicit value of an equivalent native HTML attribute, per [ARIA in HTML §4.2](https://www.w3.org/TR/html-aria/#docconformance-attr): native HTML attributes must take precedence over their ARIA equivalents.
 
-When the element has a Boolean native attribute (`required`, `disabled`, `readonly`, `checked`), only `aria-*="false"` contradicts it; when it has any other equivalent native attribute, a differing value does.
+When the element has a Boolean native attribute (`required`, `disabled`, `readonly`, `checked`), only `aria-*="false"` contradicts it; when it has any other equivalent native attribute, a differing value does. Values are compared as the value type of the native attribute reads them: a number as a number (`max="10.0"` is the same as `aria-valuemax="10"`), a keyword ASCII case-insensitively, and any other value as written.
+
+`aria-readonly="true"` on an element that is editable (by its own `contenteditable` or by the closest ancestor that has one) is reported too:
+
+> Authors MUST NOT set aria-readonly="true" on an element that has isContentEditable="true".
+
+Cite: [ARIA in HTML §4.2 Requirements for use of ARIA attributes in place of equivalent HTML attributes](https://www.w3.org/TR/html-aria/#docconformance-attr)
 
 When the element lacks the native attribute, an author may use `aria-required`, `aria-disabled` and `aria-readonly` in place of `required`, `disabled` and `readonly`, so `<input type="text" aria-required="true">` is not reported. `aria-checked` is the exception: on an element that allows `checked`, `aria-checked="true"` without `checked` is reported as contradicting the implicit `checked`, because the checkedness of the element can be in opposition to it:
 
