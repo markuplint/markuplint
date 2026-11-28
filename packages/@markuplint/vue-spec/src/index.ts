@@ -16,15 +16,6 @@
 import type { ExtendedSpec } from '@markuplint/ml-spec';
 
 /**
- * The Vue framework extended specification.
- *
- * Registers Vue-specific global attributes and element specs.
- * The `key` attribute is conditionally available on elements that
- * use the `v-for` directive, while `ref` is universally available
- * for accessing component instances and DOM elements. The `<slot>`
- * element is marked as allowing additional dynamic properties.
- */
-/**
  * How Vue keys a `v-bind` with a static argument and modifiers (see the shorthand pattern below for the WHY):
  * camelized by `.camel`, `^` in front by `.attr` and `.` by `.prop`. Without either prefix it binds the attribute of
  * that name (`.camel` or a modifier that Vue does not know), which is a repeat of `:name` as the element folds it.
@@ -57,6 +48,15 @@ const SHORTHAND_KEY_MODIFIERS = {
  */
 const REFLECTED_SAME_NAME = 'role|id|title|lang|dir|hidden|slot|inert';
 
+/**
+ * The Vue framework extended specification.
+ *
+ * Registers Vue-specific global attributes and element specs.
+ * The `key` attribute is conditionally available on elements that
+ * use the `v-for` directive, while `ref` is universally available
+ * for accessing component instances and DOM elements. The `<slot>`
+ * element is marked as allowing additional dynamic properties.
+ */
 const spec: ExtendedSpec = {
 	// Patterns are evaluated in order and resolution is first-match-wins
 	// (see `resolveDirective` in @markuplint/ml-spec), so any new pattern
