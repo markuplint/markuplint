@@ -505,8 +505,28 @@ export type ARIARoleInSchema = Partial<
  * required when the condition holds. The W3C ARIA source markup does not encode
  * such conditions; values are populated by manual overrides in
  * `@markuplint/html-spec/generator/aria.ts`. Currently the only value is
- * `'focusable'` (applied to `separator`'s `aria-valuenow`); the `wai-aria`
- * checker resolves this through `mayBeFocusable` from `@markuplint/ml-spec`.
+ * `'focusable'` (applied to `separator`'s `aria-valuenow`). `getARIARequiredStates`
+ * resolves it through `mayBeFocusable`, and is the one reader that both
+ * `getComputedAriaProps` and the `wai-aria` checker of `@markuplint/rules` go
+ * through; `getRoleSpec` carries it to a subclass role that inherits the property
+ * as required (`inheritRequired`).
+ *
+ * The same overrides drop `required` from `separator`'s `aria-valuemin` and
+ * `aria-valuemax`, which the ARIA 1.1 table lists as required, so the data differs
+ * from that table on purpose. The prose of the role narrows its table:
+ *
+ * > If the separator is focusable, authors MUST set the value of aria-valuenow to a number reflecting the current position of the separator and update that value when it changes. Authors SHOULD also provide the value of aria-valuemin if it is not 0 and the value of aria-valuemax if it is not 100.
+ *
+ * `aria-valuenow` is therefore required only when focusable, and `aria-valuemin` /
+ * `aria-valuemax` are never required: a SHOULD that applies only when the value
+ * differs from the implicit 0 / 100. ARIA 1.1 has the same two sentences in its
+ * separator section, which the citation watch reads as a section of the data
+ * (`scripts/spec-citations/aria.ts`); the quote above is compared with the current
+ * edition. ARIA 1.1 also gives `aria-valuenow` an implicit value of 50, which the
+ * current edition does not: that is the value a user agent falls back to, and does
+ * not lift the MUST of a focusable separator, so `aria-valuenow` stays required there.
+ *
+ * @see https://w3c.github.io/aria/#separator
  */
 export type ARIARoleOwnedProperties = {
 	readonly name: string;

@@ -5,6 +5,7 @@ import { ariaSpecs as _ariaSpecs } from './aria-specs.js';
 import { getComputedRole } from './get-computed-role.js';
 import { isValidAriaValue } from './is-valid-aria-value.js';
 import { getImplicitValueOfRole } from './implicit-value.js';
+import { getARIARequiredStates } from './required-state.js';
 
 /**
  * A record mapping ARIA property names to their computed property details.
@@ -17,7 +18,13 @@ type ARIAProps = Record<string, ARIAProp>;
 type ARIAProp = {
 	name: string;
 	value: string | undefined;
+	/** `ARIARequiredState.required`: the role's requirement, with its `requiredCondition` resolved against the element */
 	required: boolean;
+	/**
+	 * Present, only together with `required: true`, when `ARIARequiredState.satisfiedByElement` is: the element itself
+	 * satisfies the requirement
+	 */
+	satisfiedByElement?: true;
 	deprecated: boolean;
 	from: ARIAPropReferenceType;
 };
@@ -34,6 +41,8 @@ type ARIAPropReferenceType = 'default' | 'html-attr' | 'aria-attr';
  * Computes the resolved ARIA properties for an element based on its computed role.
  * Resolves property values by checking explicit `aria-*` attributes first,
  * then equivalent HTML attributes, and finally falling back to spec-defined defaults.
+ * `required` and `satisfiedByElement` come from `getARIARequiredStates`, the resolution
+ * that the rules share.
  *
  * @param specs - The full markup language specification
  * @param el - The DOM element to compute ARIA properties for
@@ -55,12 +64,18 @@ export function getComputedAriaProps(
 	}
 
 	const props: ARIAProps = {};
+	const requiredStates = getARIARequiredStates(specs, el, role, version);
 
 	for (const ownedProp of role.ownedProperties) {
 		const spec = ariaSpecs.props.find(propSpec => propSpec.name === ownedProp.name);
 		if (!spec) {
 			continue;
 		}
+
+		const required = requiredStates.get(ownedProp.name)?.required ?? false;
+		const requiredState = requiredStates.get(ownedProp.name)?.satisfiedByElement
+			? { required, satisfiedByElement: true as const }
+			: { required };
 
 		if (el.hasAttribute(spec.name)) {
 			const attrValue = el.getAttribute(spec.name);
@@ -70,7 +85,7 @@ export function getComputedAriaProps(
 					name: ownedProp.name,
 					value: attrValue,
 					deprecated: !!spec.deprecated,
-					required: !!ownedProp.required,
+					...requiredState,
 					from: 'aria-attr',
 				};
 				continue;
@@ -91,7 +106,7 @@ export function getComputedAriaProps(
 					name: ownedProp.name,
 					value,
 					deprecated: !!spec.deprecated,
-					required: !!ownedProp.required,
+					...requiredState,
 					from: 'html-attr',
 				};
 				continue;
@@ -106,7 +121,7 @@ export function getComputedAriaProps(
 			name: ownedProp.name,
 			value: defaultValue,
 			deprecated: !!spec.deprecated,
-			required: !!ownedProp.required,
+			...requiredState,
 			from: 'default',
 		};
 	}

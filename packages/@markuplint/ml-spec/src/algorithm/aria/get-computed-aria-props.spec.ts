@@ -304,6 +304,7 @@ describe('1.2', () => {
 				value: '1',
 				deprecated: false,
 				required: true,
+				satisfiedByElement: true,
 				from: 'default',
 			},
 			'aria-live': {
@@ -343,6 +344,7 @@ describe('1.2', () => {
 			value: 'true',
 			deprecated: false,
 			required: true,
+			satisfiedByElement: true,
 			from: 'html-attr',
 		});
 	});
@@ -353,6 +355,7 @@ describe('1.2', () => {
 			value: 'false',
 			deprecated: false,
 			required: true,
+			satisfiedByElement: true,
 			from: 'aria-attr',
 		});
 	});
@@ -363,6 +366,7 @@ describe('1.2', () => {
 			value: 'mixed',
 			deprecated: false,
 			required: true,
+			satisfiedByElement: true,
 			from: 'aria-attr',
 		});
 	});
@@ -696,6 +700,7 @@ describe('1.3', () => {
 				value: '1',
 				deprecated: false,
 				required: true,
+				satisfiedByElement: true,
 				from: 'default',
 			},
 			'aria-live': {
@@ -735,6 +740,7 @@ describe('1.3', () => {
 			value: 'true',
 			deprecated: false,
 			required: true,
+			satisfiedByElement: true,
 			from: 'html-attr',
 		});
 	});
@@ -745,6 +751,7 @@ describe('1.3', () => {
 			value: 'false',
 			deprecated: false,
 			required: true,
+			satisfiedByElement: true,
 			from: 'aria-attr',
 		});
 	});
@@ -755,6 +762,7 @@ describe('1.3', () => {
 			value: 'mixed',
 			deprecated: false,
 			required: true,
+			satisfiedByElement: true,
 			from: 'aria-attr',
 		});
 	});
@@ -903,5 +911,61 @@ describe('aria-readonly of a text box', () => {
 				from: 'default',
 			});
 		}
+	});
+});
+
+describe('the required state of a separator', () => {
+	test.each([
+		['<div role="separator"></div>', '1.1', false],
+		['<div role="separator"></div>', '1.2', false],
+		['<div role="separator"></div>', '1.3', false],
+		['<div role="separator" tabindex="0"></div>', '1.1', true],
+		['<div role="separator" tabindex="0"></div>', '1.2', true],
+		['<div role="separator" tabindex="0"></div>', '1.3', true],
+		['<div role="separator" aria-valuenow="5"></div>', '1.3', false],
+		['<div role="separator" tabindex="0" aria-valuenow="5"></div>', '1.3', true],
+		['<div role="separator" aria-valuenow="5"></div>', '1.1', false],
+		['<div role="separator" tabindex="0" aria-valuenow="5"></div>', '1.1', true],
+	] as const)('aria-valuenow is required only when focusable: %s (ARIA %s)', (html, version, required) => {
+		expect(c(html, version)['aria-valuenow']?.required).toBe(required);
+	});
+
+	test.each([
+		['<button role="separator">Drag</button>', '1.3', true],
+		['<div role="separator" contenteditable></div>', '1.3', true],
+		['<div role="separator" tabindex="-1"></div>', '1.3', true],
+	] as const)('aria-valuenow is required of each way to be focusable: %s (ARIA %s)', (html, version, required) => {
+		expect(c(html, version)['aria-valuenow']?.required).toBe(required);
+	});
+
+	test.each(['1.1', '1.2', '1.3'] as const)(
+		'aria-valuemin and aria-valuemax are not required of a focusable one (the generator drops the required that the ARIA 1.1 table gives them; ARIA %s)',
+		version => {
+			const props = c('<div role="separator" tabindex="0"></div>', version);
+			expect(props['aria-valuemin']?.required).toBe(false);
+			expect(props['aria-valuemax']?.required).toBe(false);
+		},
+	);
+});
+
+describe('a required property that the element satisfies itself', () => {
+	test.each([
+		// An implicit role is satisfied by the element (the implicit semantics of WAI-ARIA)
+		['<hr tabindex="0">', 'aria-valuenow', { required: true, satisfiedByElement: true }],
+		['<h2>x</h2>', 'aria-level', { required: true, satisfiedByElement: true }],
+		// The HTML checked attribute gives the state in its place
+		['<input type="checkbox" role="switch" checked>', 'aria-checked', { required: true, satisfiedByElement: true }],
+		// An explicit role whose native attribute is absent is not satisfied
+		[
+			'<div role="separator" tabindex="0"></div>',
+			'aria-valuenow',
+			{ required: true, satisfiedByElement: undefined },
+		],
+		['<input type="checkbox" role="switch">', 'aria-checked', { required: true, satisfiedByElement: undefined }],
+		// A property that is not required is not marked
+		['<hr>', 'aria-valuenow', { required: false, satisfiedByElement: undefined }],
+	] as const)('%s: %s', (html, name, expected) => {
+		const prop = c(html, '1.3')[name];
+		expect({ required: prop?.required, satisfiedByElement: prop?.satisfiedByElement }).toStrictEqual(expected);
 	});
 });
