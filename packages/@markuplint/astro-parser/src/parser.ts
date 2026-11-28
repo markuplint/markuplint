@@ -355,9 +355,20 @@ class AstroParser extends Parser<Node> {
 		 */
 		// The compiler merges `class:list` with a `class` of the element into one attribute, whichever comes first
 		let isDuplicatable = attr.isDuplicatable;
-		const [, directive] = attr.name.raw.match(/^([^:]+):([^:]+)$/) ?? [];
+		let isInnerHTML: true | undefined;
+		const [, directive, directiveName] = attr.name.raw.match(/^([^:]+):([^:]+)$/) ?? [];
 		if (directive) {
 			const lowerCaseDirectiveName = directive.toLowerCase();
+			/**
+			 * `set:html` injects a string of HTML as the children of the element, which the template does not show.
+			 *
+			 * > set:html={string} injects an HTML string into an element, similar to setting el.innerHTML.
+			 *
+			 * @see https://docs.astro.build/en/reference/directives-reference/#sethtml
+			 */
+			if (lowerCaseDirectiveName === 'set' && directiveName?.toLowerCase() === 'html') {
+				isInnerHTML = true;
+			}
 			switch (lowerCaseDirectiveName) {
 				case 'class': {
 					potentialName = lowerCaseDirectiveName;
@@ -376,6 +387,7 @@ class AstroParser extends Parser<Node> {
 			isDirective,
 			isDuplicatable,
 			potentialName,
+			...(isInnerHTML ? { isInnerHTML } : {}),
 		};
 	}
 
