@@ -27,8 +27,11 @@
  *
  * That is a decision of markuplint, as it does not decide what it cannot know, and not text of a
  * specification: the specifications define an id and an id reference, and not an id that is not
- * known yet. An id that another file may hold (the file is a part of a page) is not counted: the
- * file is taken to be the whole document.
+ * known yet. Nor do they say anything of a source file: a file that is a part of a page (a component of a
+ * framework, a partial: `MLDocument#isFragment` of `@markuplint/ml-core`, which a parser gives, an HTML file
+ * without a document type and an `html` element, or any file in `parserOptions.documentMode: 'fragment'`) is
+ * completed by another file, which may hold the id, so its document is a tree that may hold it. A file that is
+ * the whole document (`<!doctype html><html>`, or `documentMode: 'document'`) is decided by its markup.
  *
  * `treeMayHoldUnknownId` and `isDynamicValue` are read from what `@markuplint/ml-core` hands over; a DOM
  * has neither, so the scan that stands for them finds nothing in a tree of a real DOM. An
@@ -155,7 +158,8 @@ const cache = new WeakMap<object, boolean>();
 /**
  * Whether the tree that `el` is in (its `getRootNode()`: the document, the content of a `template`
  * element or a shadow root, each a tree of its own) may have an element whose `id` the markup does not
- * tell. `@markuplint/ml-core` answers for its own tree (`MLElement#treeMayHoldUnknownId`); the tree of a
+ * tell, or is the document of a file that is a part of a page (`MLDocument#isFragment`, see the module comment).
+ * `@markuplint/ml-core` answers for its own tree (`MLElement#treeMayHoldUnknownId`); the tree of a
  * DOM is scanned for an `id` that is not known until it is rendered. The answer is the same for every
  * element of the tree, so it is computed once for the tree: call it on a tree that is not changed after
  * the first call, such as the document of `@markuplint/ml-core`.
@@ -171,6 +175,10 @@ export function hasElementOfUnknownId(
 	const root = el.getRootNode();
 	if (root.nodeType !== 9 && root.nodeType !== 11) {
 		return false;
+	}
+	// The document of a file that is a part of a page (see the module comment); a DOM has no such property
+	if ((root as Node & { readonly isFragment?: boolean }).isFragment === true) {
+		return true;
 	}
 	const treeMayHoldUnknownId = (el as MLElementLike).treeMayHoldUnknownId;
 	if (typeof treeMayHoldUnknownId === 'function') {
