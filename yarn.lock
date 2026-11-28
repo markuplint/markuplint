@@ -2098,7 +2098,7 @@ __metadata:
     debug: "npm:^4.4.3"
     markuplint: "npm:5.6.1"
     semver: "npm:^7.8.6"
-    vscode-jsonrpc: "npm:10.0.0"
+    vscode-jsonrpc: "npm:10.0.1"
     vscode-languageserver: "npm:^11.0.0"
     vscode-languageserver-textdocument: "npm:^1.0.16"
   bin:
@@ -17264,6 +17264,13 @@ __metadata:
   version: 10.0.0
   resolution: "vscode-jsonrpc@npm:10.0.0"
   checksum: 10c0/c8a4b44d753e850bc61686c45eeb43d894d14751c6074ea3fa97d44903b01e4ffb498028d20468ade6ace4fe4555ba6ee764a2d1af50bdaed175c8be00449cab
+  languageName: node
+  linkType: hard
+
+"vscode-jsonrpc@npm:10.0.1":
+  version: 10.0.1
+  resolution: "vscode-jsonrpc@npm:10.0.1"
+  checksum: 10c0/bf175d89b4120dd96fffe362c542879c51d29afd6c6abb67711cae65727b0f1efbfdc11882133a445ace4b7b60f2c5334a693144ce36721429c4b05ef3d08dad
   languageName: node
   linkType: hard
 
