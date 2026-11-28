@@ -185,7 +185,6 @@ const LITERALS: readonly (readonly [string, string, string])[] = [
 		'<img srcset="a.png 1x, b.png 2w" alt="">',
 		'<img srcset={"a.png 1x, b.png 2w"} alt={""} />',
 	],
-	['usemap-references-map', '<img usemap="#none" alt="">', '<img usemap={"#none"} alt={""} />'],
 	['progress-value-bounds', '<progress value="5" max="3"></progress>', '<progress value={5} max={3}></progress>'],
 	[
 		'form-attr-references-form',
@@ -199,14 +198,12 @@ const LITERALS: readonly (readonly [string, string, string])[] = [
 		'<input type="text" list="notdatalist"><div id="notdatalist">Not a datalist</div>',
 		'<><input type={"text"} list={"notdatalist"} /><div id={"notdatalist"}>Not a datalist</div></>',
 	],
-	['no-refer-to-non-existent-id', '<label for="none"></label>', '<label for={"none"}></label>'],
 	[
 		'no-duplicate-aria-owns',
 		'<div><div aria-owns="a"></div><div aria-owns="a"></div><p id="a"></p></div>',
 		'<div><div aria-owns={"a"}></div><div aria-owns={"a"}></div><p id={"a"}></p></div>',
 	],
 	['no-circular-aria-owns', '<div id="a" aria-owns="a"></div>', '<div id={"a"} aria-owns={"a"}></div>'],
-	['no-broken-fragment-link', '<a href="#none"></a>', '<a href={"#none"}></a>'],
 	[
 		'no-unpaired-srcset-sizes',
 		'<img srcset="image-1x.png 1x, image-2x.png 2x" sizes="100vw" src="image-1x.png" alt="photo">',
@@ -304,12 +301,6 @@ const ABSENT: readonly (readonly [string, string, string, string])[] = [
 		'<button></button>',
 		'<button hidden={undefined}></button>',
 		'<button hidden={true}></button>',
-	],
-	[
-		'no-refer-to-non-existent-id',
-		'<label for="x"></label>',
-		'<><div id={null}></div><label for="x"></label></>',
-		'<><div id={"x"}></div><label for="x"></label></>',
 	],
 	[
 		'no-duplicate-id',

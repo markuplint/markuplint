@@ -9,7 +9,6 @@
 {"col":9,"line":21,"message":"The \"header\" element is not allowed in the \"footer\" element in this context","raw":"<header>","ruleId":"permitted-contents","severity":"error"}
 {"col":10,"line":22,"message":"The \"address\" element must not appear as a descendant of the \"address\" element","raw":"<address>","ruleId":"no-disallowed-ancestor","severity":"error"}
 {"col":10,"line":22,"message":"The \"address\" element is not allowed in the \"address\" element in this context","raw":"<address>","ruleId":"permitted-contents","severity":"error"}
-{"col":10,"line":23,"message":"Missing \"x\" ID","raw":"#x","ruleId":"no-broken-fragment-link","severity":"warning"}
 {"col":18,"line":24,"message":"\"alt\" should be before \"src\"","raw":"alt","ruleId":"attr-order","severity":"warning"}
 {"col":1,"line":25,"message":"Require accessible name","raw":"<input type=\"text\" />","ruleId":"require-accessible-name","severity":"error"}
 {"col":14,"line":25,"message":"It is the default value","raw":"text","ruleId":"no-default-value","severity":"warning"}

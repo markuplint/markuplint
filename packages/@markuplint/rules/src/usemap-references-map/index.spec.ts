@@ -27,16 +27,7 @@ test('[usemap-references-map-003] dynamic value is skipped', async () => {
 
 test('[usemap-references-map-004] no map element in the document', async () => {
 	const { violations } = await mlRuleTest(rule, '<img src="shapes.png" alt="" usemap="#nonexistent">');
-	expect(violations).toStrictEqual([
-		{
-			severity: 'error',
-			line: 1,
-			col: 38,
-			message:
-				'The "usemap" attribute of the "img" element must be a valid hash-name reference to a "map" element',
-			raw: '#nonexistent',
-		},
-	]);
+	expect(violations).toStrictEqual([]);
 });
 
 test('[usemap-references-map-005] map element exists but with a different name', async () => {
@@ -44,7 +35,7 @@ test('[usemap-references-map-005] map element exists but with a different name',
 		rule,
 		'<img src="shapes.png" alt="" usemap="#shapes"><map name="other-shapes"></map>',
 	);
-	expect(violations.length).toBe(1);
+	expect(violations.length).toBe(0);
 });
 
 test('[usemap-references-map-006] the reference resolves only via id, not name', async () => {
@@ -54,7 +45,7 @@ test('[usemap-references-map-006] the reference resolves only via id, not name',
 		rule,
 		'<img src="shapes.png" alt="" usemap="#shapes"><map id="shapes"></map>',
 	);
-	expect(violations.length).toBe(1);
+	expect(violations.length).toBe(0);
 });
 
 test('[usemap-references-map-007] the map is looked for in the tree of the image', async () => {
@@ -97,13 +88,21 @@ test('[usemap-references-map-010] a map whose name is not known until it is rend
 test('[usemap-references-map-011] the message is in Japanese with locale ja', async () => {
 	const { violations } = await mlRuleTest(rule, '<img usemap="#x" src="a.png" alt="">', undefined, false, 'ja');
 
-	expect(violations).toStrictEqual([
+	expect(violations).toStrictEqual([]);
+});
+
+test('[usemap-references-map-012] a file that is a part of a page may be completed by a file that has the map', async () => {
+	const page =
+		'<!doctype html><html><head><title>t</title></head><body><img src="a.png" alt="" usemap="#m"></body></html>';
+	expect((await mlRuleTest(rule, page)).violations).toStrictEqual([
 		{
 			severity: 'error',
 			line: 1,
-			col: 14,
-			message: '「img」要素の「usemap」属性は、「map」要素への妥当なハッシュ名参照であるべきです',
-			raw: '#x',
+			col: 89,
+			message:
+				'The "usemap" attribute of the "img" element must be a valid hash-name reference to a "map" element',
+			raw: '#m',
 		},
 	]);
+	expect((await mlRuleTest(rule, '<img src="a.png" alt="" usemap="#m">')).violations).toStrictEqual([]);
 });

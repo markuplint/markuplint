@@ -11,6 +11,8 @@ Split out of the former `no-refer-to-non-existent-id` rule. HTML LS does not tre
 
 The `fragmentRefersNameAttr` option additionally accepts a fragment that matches an element's `name` attribute value, not just an `id`.
 
+A file that is a part of a page (a component of a framework, or an HTML file without a document type and an `html` element) is not checked, as the file that completes it may hold the target. A whole document (`<!doctype html><html>`, or a file that `parserOptions.documentMode` declares `document`) is.
+
 ❌ Examples of **incorrect** code for this rule
 
 ```html

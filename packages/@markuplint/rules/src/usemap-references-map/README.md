@@ -9,6 +9,8 @@ Per the [HTML Living Standard](https://html.spec.whatwg.org/multipage/image-maps
 
 Matching is by `name`, not `id`, so [`no-refer-to-non-existent-id`](../no-refer-to-non-existent-id/) — which only tracks `id` references — never catches a missing or misspelled `usemap` target. This rule fills that gap.
 
+A file that is a part of a page (a component of a framework, or an HTML file without a document type and an `html` element) is not checked, as the file that completes it may hold the target. A whole document (`<!doctype html><html>`, or a file that `parserOptions.documentMode` declares `document`) is.
+
 ❌ Examples of **incorrect** code for this rule
 
 ```html

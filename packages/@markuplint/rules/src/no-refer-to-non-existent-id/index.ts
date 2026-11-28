@@ -22,8 +22,10 @@ import meta from './meta.js';
  * What it cannot tell it does not report: a tree that may hold an element whose id the markup does not
  * tell (a dynamic value, a spread attribute, a component that no pretender resolved, content that is not
  * known) is skipped, and only that tree, and a `template` that is in no tree (a declarative shadow root
- * is attached to its parent, or may be) refers to nothing. An id that another file may hold is not
- * looked for: the file is taken to be the whole document.
+ * is attached to its parent, or may be) refers to nothing. The document of a file that is a part of a page
+ * (a component, a partial: `MLDocument#isFragment`) is such a tree, as another file that completes it may hold
+ * the id; a whole document (`<!doctype html><html>`, or `parserOptions.documentMode: 'document'`) is decided by
+ * its markup.
  *
  * Whether the tree may hold such an element is `hasElementOfUnknownId` of `@markuplint/ml-spec`, which
  * `labelledbyMayReferToUnknownId` of the same package reads as well (an element whose `aria-labelledby`

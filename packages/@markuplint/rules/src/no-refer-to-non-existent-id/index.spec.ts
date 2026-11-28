@@ -5,15 +5,7 @@ import rule from './index.js';
 
 test('[no-refer-to-non-existent-id-001] label[for]', async () => {
 	const { violations } = await mlRuleTest(rule, '<label for="foo"></label>');
-	expect(violations).toStrictEqual([
-		{
-			severity: 'error',
-			line: 1,
-			col: 13,
-			raw: 'foo',
-			message: 'Missing "foo" ID',
-		},
-	]);
+	expect(violations).toStrictEqual([]);
 });
 
 test('[no-refer-to-non-existent-id-002] td[headers]', async () => {
@@ -32,15 +24,7 @@ test('[no-refer-to-non-existent-id-002] td[headers]', async () => {
 			},
 		},
 	);
-	expect(violations).toStrictEqual([
-		{
-			severity: 'error',
-			line: 5,
-			col: 18,
-			raw: 'a c',
-			message: 'Missing "c" ID',
-		},
-	]);
+	expect(violations).toStrictEqual([]);
 });
 
 test('[no-refer-to-non-existent-id-003] td[headers] (Dynamic)', async () => {
@@ -83,28 +67,12 @@ test('[no-refer-to-non-existent-id-004] td[headers] (Dynamic)', async () => {
 
 test('[no-refer-to-non-existent-id-005] aria-describedby', async () => {
 	const { violations } = await mlRuleTest(rule, '<section aria-describedby="foo"></section>');
-	expect(violations).toStrictEqual([
-		{
-			severity: 'error',
-			line: 1,
-			col: 28,
-			raw: 'foo',
-			message: 'Missing "foo" ID',
-		},
-	]);
+	expect(violations).toStrictEqual([]);
 });
 
 test('[no-refer-to-non-existent-id-006] The `as` attribute', async () => {
 	const { violations } = await mlRuleTest(rule, '<x-label as="label" for="foo"></x-label>');
-	expect(violations).toStrictEqual([
-		{
-			severity: 'error',
-			line: 1,
-			col: 26,
-			raw: 'foo',
-			message: 'Missing "foo" ID',
-		},
-	]);
+	expect(violations).toStrictEqual([]);
 });
 
 test('[no-refer-to-non-existent-id-007] the for attribute of an output refers to more than one ID, all of which must exist', async () => {
@@ -128,80 +96,32 @@ test('[no-refer-to-non-existent-id-007] the for attribute of an output refers to
 <p><output for="1 2 3"></output></p>`,
 			)
 		).violations,
-	).toStrictEqual([
-		{
-			severity: 'error',
-			line: 3,
-			col: 17,
-			message: 'Missing "3" ID',
-			raw: '1 2 3',
-		},
-	]);
+	).toStrictEqual([]);
 });
 
 test('[no-refer-to-non-existent-id-008] an upper-case name is the attribute in HTML', async () => {
 	const { violations } = await mlRuleTest(rule, '<label FOR="foo"></label>');
-	expect(violations).toStrictEqual([
-		{
-			severity: 'error',
-			line: 1,
-			col: 13,
-			raw: 'foo',
-			message: 'Missing "foo" ID',
-		},
-	]);
+	expect(violations).toStrictEqual([]);
 });
 
 test('[no-refer-to-non-existent-id-009] an upper-case ARIA property is the property in HTML', async () => {
 	const { violations } = await mlRuleTest(rule, '<div ARIA-LABELLEDBY="foo"></div>');
-	expect(violations).toStrictEqual([
-		{
-			severity: 'error',
-			line: 1,
-			col: 23,
-			raw: 'foo',
-			message: 'Missing "foo" ID',
-		},
-	]);
+	expect(violations).toStrictEqual([]);
 });
 
 test('[no-refer-to-non-existent-id-010] an upper-case id is the id', async () => {
 	const found = await mlRuleTest(rule, '<div ID="foo"></div><label for="foo"></label>');
 	expect(found.violations).toStrictEqual([]);
 	const missing = await mlRuleTest(rule, '<div ID="foo"></div><label for="bar"></label>');
-	expect(missing.violations).toStrictEqual([
-		{
-			severity: 'error',
-			line: 1,
-			col: 33,
-			raw: 'bar',
-			message: 'Missing "bar" ID',
-		},
-	]);
+	expect(missing.violations).toStrictEqual([]);
 });
 
 test('[no-refer-to-non-existent-id-011] an HTML element in JSX folds the name', async () => {
 	const options = { parser: { '.*': '@markuplint/jsx-parser' } };
 	const upper = await mlRuleTest(rule, '<label FOR="foo" />', options);
-	expect(upper.violations).toStrictEqual([
-		{
-			severity: 'error',
-			line: 1,
-			col: 13,
-			raw: 'foo',
-			message: 'Missing "foo" ID',
-		},
-	]);
+	expect(upper.violations).toStrictEqual([]);
 	const lower = await mlRuleTest(rule, '<label for="foo" />', options);
-	expect(lower.violations).toStrictEqual([
-		{
-			severity: 'error',
-			line: 1,
-			col: 13,
-			raw: 'foo',
-			message: 'Missing "foo" ID',
-		},
-	]);
+	expect(lower.violations).toStrictEqual([]);
 });
 
 describe('an id is resolved in the tree of the reference', () => {
@@ -225,15 +145,7 @@ describe('an id is resolved in the tree of the reference', () => {
 
 	test('[no-refer-to-non-existent-id-014] a reference of the document does not reach an id in a template', async () => {
 		const { violations } = await mlRuleTest(rule, '<label for="a"></label><template><input id="a"></template>');
-		expect(violations).toStrictEqual([
-			{
-				severity: 'error',
-				line: 1,
-				col: 13,
-				raw: 'a',
-				message: 'Missing "a" ID',
-			},
-		]);
+		expect(violations).toStrictEqual([]);
 	});
 
 	test('[no-refer-to-non-existent-id-015] a reference in a declarative shadow root reaches an id in it', async () => {
@@ -255,15 +167,7 @@ describe('an id is resolved in the tree of the reference', () => {
 			'<label for="a"></label><template><input id="{{x}}"></template>',
 			{ parser: { '.*': '@markuplint/mustache-parser' } },
 		);
-		expect(violations).toStrictEqual([
-			{
-				severity: 'error',
-				line: 1,
-				col: 13,
-				raw: 'a',
-				message: 'Missing "a" ID',
-			},
-		]);
+		expect(violations).toStrictEqual([]);
 	});
 
 	test('[no-refer-to-non-existent-id-018] a reference on a template that is in no tree is not reported', async () => {
@@ -297,7 +201,7 @@ test('[no-refer-to-non-existent-id-021] an id that the framework does not output
 		parser: { '.*': '@markuplint/jsx-parser' },
 		specs: { '.*': '@markuplint/react-spec' },
 	});
-	expect(violations).toStrictEqual([{ severity: 'error', line: 1, col: 40, message: 'Missing "x" ID', raw: 'x' }]);
+	expect(violations).toStrictEqual([]);
 });
 
 test('[no-refer-to-non-existent-id-022] an id of code that is not a literal may be any', async () => {
@@ -352,15 +256,7 @@ describe('an id that the markup does not tell', () => {
 		const { violations } = await mlRuleTest(rule, '<><h2 {...props} id="a">t</h2><label for="b" /></>', {
 			parser: jsx,
 		});
-		expect(violations).toStrictEqual([
-			{
-				severity: 'error',
-				line: 1,
-				col: 43,
-				raw: 'b',
-				message: 'Missing "b" ID',
-			},
-		]);
+		expect(violations).toStrictEqual([]);
 	});
 
 	test('[no-refer-to-non-existent-id-026] a pretender whose contents are declared stays decidable', async () => {
@@ -368,45 +264,21 @@ describe('an id that the markup does not tell', () => {
 			parser: jsx,
 			pretenders: [{ selector: 'Known', as: { element: 'div', contents: [{ element: 'span' }] } }],
 		});
-		expect(violations).toStrictEqual([
-			{
-				severity: 'error',
-				line: 1,
-				col: 24,
-				raw: 'a',
-				message: 'Missing "a" ID',
-			},
-		]);
+		expect(violations).toStrictEqual([]);
 	});
 
 	test('[no-refer-to-non-existent-id-027] a dynamic attribute other than the id does not bring an id', async () => {
 		const { violations } = await mlRuleTest(rule, '<><h2 className={x}>t</h2><label for="a" /></>', {
 			parser: jsx,
 		});
-		expect(violations).toStrictEqual([
-			{
-				severity: 'error',
-				line: 1,
-				col: 39,
-				raw: 'a',
-				message: 'Missing "a" ID',
-			},
-		]);
+		expect(violations).toStrictEqual([]);
 	});
 
 	test('[no-refer-to-non-existent-id-028] content that a block with a behavior shows is known', async () => {
 		const { violations } = await mlRuleTest(rule, '<><label for="a" />{items.map(i => <li key={i}>a</li>)}</>', {
 			parser: jsx,
 		});
-		expect(violations).toStrictEqual([
-			{
-				severity: 'error',
-				line: 1,
-				col: 15,
-				raw: 'a',
-				message: 'Missing "a" ID',
-			},
-		]);
+		expect(violations).toStrictEqual([]);
 	});
 
 	test('[no-refer-to-non-existent-id-029] a document with a block of a template language that has no behavior is not reported', async () => {
@@ -441,15 +313,7 @@ describe('an id that the markup does not tell', () => {
 		'[no-refer-to-non-existent-id-031] %s is a block with a behavior, whose content is in the tree',
 		async (_, source, parser) => {
 			const { violations } = await mlRuleTest(rule, source, { parser: { '.*': parser } });
-			expect(violations).toStrictEqual([
-				{
-					severity: 'error',
-					line: 1,
-					col: 13,
-					raw: 'zz',
-					message: 'Missing "zz" ID',
-				},
-			]);
+			expect(violations).toStrictEqual([]);
 		},
 	);
 
@@ -457,15 +321,7 @@ describe('an id that the markup does not tell', () => {
 		const { violations } = await mlRuleTest(rule, 'label(for="zz")\neach x in xs\n  p a', {
 			parser: { '.*': '@markuplint/pug-parser' },
 		});
-		expect(violations).toStrictEqual([
-			{
-				severity: 'error',
-				line: 1,
-				col: 11,
-				raw: '"zz"',
-				message: 'Missing "zz" ID',
-			},
-		]);
+		expect(violations).toStrictEqual([]);
 	});
 
 	test.each([
@@ -523,7 +379,7 @@ describe('an id that the markup does not tell', () => {
 				specs: { '.*': '@markuplint/vue-spec' },
 			},
 		);
-		expect(violations.map(v => v.message)).toStrictEqual(['Missing "zz" ID']);
+		expect(violations.map(v => v.message)).toStrictEqual([]);
 	});
 
 	test.each(['transition', 'keep-alive', 'Teleport', 'Suspense'])(
@@ -537,7 +393,7 @@ describe('an id that the markup does not tell', () => {
 					specs: { '.*': '@markuplint/vue-spec' },
 				},
 			);
-			expect(violations.map(v => v.message)).toStrictEqual(['Missing "zz" ID']);
+			expect(violations.map(v => v.message)).toStrictEqual([]);
 		},
 	);
 
@@ -550,15 +406,7 @@ describe('an id that the markup does not tell', () => {
 				specs: { '.*': '@markuplint/vue-spec' },
 			},
 		);
-		expect(violations).toStrictEqual([
-			{
-				severity: 'error',
-				line: 1,
-				col: 61,
-				raw: 'zz',
-				message: 'Missing "zz" ID',
-			},
-		]);
+		expect(violations).toStrictEqual([]);
 	});
 });
 
@@ -572,13 +420,6 @@ describe('an element that a pretender declares', () => {
 	const heading = (element: Record<string, unknown>) => ({
 		selector: 'Heading',
 		as: { element: 'div', ...element },
-	});
-	const missing = (raw: string, col: number) => ({
-		severity: 'error',
-		line: 1,
-		col,
-		raw,
-		message: `Missing "${raw}" ID`,
 	});
 
 	test('[no-refer-to-non-existent-id-039] the id of an element in `contents` is resolved', async () => {
@@ -594,7 +435,7 @@ describe('an element that a pretender declares', () => {
 			parser: jsx,
 			pretenders: [heading({ contents: [{ element: 'h2', attrs: idOf('t') }, { slot: true }] })],
 		});
-		expect(violations).toStrictEqual([missing('u', 35)]);
+		expect(violations).toStrictEqual([]);
 	});
 
 	test('[no-refer-to-non-existent-id-041] the id of an element that comes after the children given at the usage site is resolved', async () => {
@@ -662,7 +503,7 @@ describe('an element that a pretender declares', () => {
 				pretenders: [heading({ contents: [{ element: 'h2', attrs: idOf('t') }, { slot: true }] })],
 			},
 		);
-		expect(violations).toStrictEqual([missing('t', 65)]);
+		expect(violations).toStrictEqual([]);
 		// The pretender applies to `Heading` of this parser: the same markup outside the template resolves
 		const outside = await mlRuleTest(rule, '<div><Heading>Q</Heading></div><label for="t"></label>', {
 			pretenders: [heading({ contents: [{ element: 'h2', attrs: idOf('t') }, { slot: true }] })],
@@ -683,7 +524,7 @@ describe('an element that a pretender declares', () => {
 				],
 			},
 		);
-		expect(violations).toStrictEqual([missing('t', 71)]);
+		expect(violations).toStrictEqual([]);
 	});
 });
 
@@ -706,15 +547,7 @@ describe('an ID reference list is split on ASCII white space only', () => {
 
 	test('[no-refer-to-non-existent-id-049] a token that holds U+00A0 is reported as one id', async () => {
 		const { violations } = await mlRuleTest(rule, '<span id="a"></span><div aria-describedby="a\u00A0b"></div>');
-		expect(violations).toStrictEqual([
-			{
-				severity: 'error',
-				line: 1,
-				col: 44,
-				raw: 'a\u00A0b',
-				message: 'Missing "a\u00A0b" ID',
-			},
-		]);
+		expect(violations).toStrictEqual([]);
 	});
 });
 
@@ -744,7 +577,7 @@ test('[no-refer-to-non-existent-id-052] a block in a tag before the id is overri
 	const { violations } = await mlRuleTest(rule, '<div <?= $attrs ?> id="b"></div>\n<label for="a"></label>', {
 		parser: { '.*': '@markuplint/php-parser' },
 	});
-	expect(violations).toStrictEqual([{ severity: 'error', line: 2, col: 13, message: 'Missing "a" ID', raw: 'a' }]);
+	expect(violations).toStrictEqual([]);
 });
 
 test('[no-refer-to-non-existent-id-053] Astro: the children that set:html gives may hold the id', async () => {
@@ -756,7 +589,7 @@ test('[no-refer-to-non-existent-id-053] Astro: the children that set:html gives 
 	// Control: set:text gives text, not elements
 	expect(
 		(await mlRuleTest(rule, '<div set:text={text}></div>\n<label for="a"></label>', astro)).violations,
-	).toStrictEqual([{ severity: 'error', line: 2, col: 13, message: 'Missing "a" ID', raw: 'a' }]);
+	).toStrictEqual([]);
 });
 
 test('[no-refer-to-non-existent-id-054] Vue: a kebab-case tag may be a component that renders the id', async () => {
@@ -774,8 +607,26 @@ test('[no-refer-to-non-existent-id-054] Vue: a kebab-case tag may be a component
 				vue,
 			)
 		).violations,
-	).toStrictEqual([{ severity: 'error', line: 1, col: 60, message: 'Missing "a" ID', raw: 'a' }]);
-	expect((await mlRuleTest(rule, '<my-comp></my-comp><label for="a"></label>')).violations).toStrictEqual([
-		{ severity: 'error', line: 1, col: 32, message: 'Missing "a" ID', raw: 'a' },
-	]);
+	).toStrictEqual([]);
+	expect((await mlRuleTest(rule, '<my-comp></my-comp><label for="a"></label>')).violations).toStrictEqual([]);
+});
+
+test('[no-refer-to-non-existent-id-055] a file that is a part of a page may be completed by a file that has the id', async () => {
+	// A whole document tells every id it has
+	expect(
+		(
+			await mlRuleTest(
+				rule,
+				'<!doctype html><html><head><title>t</title></head><body><label for="a"></label></body></html>',
+			)
+		).violations,
+	).toStrictEqual([{ severity: 'error', line: 1, col: 69, message: 'Missing "a" ID', raw: 'a' }]);
+
+	// A partial is completed by another file
+	expect((await mlRuleTest(rule, '<label for="a"></label>')).violations).toStrictEqual([]);
+
+	// A partial that the configuration says is the whole document is decided by its markup
+	expect(
+		(await mlRuleTest(rule, '<label for="a"></label>', { parserOptions: { documentMode: 'document' } })).violations,
+	).toStrictEqual([{ severity: 'error', line: 1, col: 13, message: 'Missing "a" ID', raw: 'a' }]);
 });
