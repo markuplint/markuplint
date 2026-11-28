@@ -34,7 +34,7 @@ description: 設定された属性もしくは仕様上必須となっている�
 
 :::note
 
-このルールは**スプレッド属性**(JSXの`{...props}`、Vueの`v-bind="obj"`)をもつ要素は評価しません。次のコードは`img`要素が`src`を持つか評価しません。スプレッド属性に`src`が含まれているかMarkuplintは知ることができないからです。
+このルールは**スプレッド属性**(JSXの`{...props}`、Vueの`v-bind="obj"`と`:[key]`、Pugの`&attributes`、`<?= $attrs ?>`のように属性の位置にあるテンプレート言語のブロック)をもつ要素は評価しません。次のコードは`img`要素が`src`を持つか評価しません。スプレッド属性に`src`が含まれているかMarkuplintは知ることができないからです。
 
 ```jsx
 const Component = (props) => {

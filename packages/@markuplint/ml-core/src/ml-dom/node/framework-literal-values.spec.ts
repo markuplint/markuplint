@@ -169,8 +169,8 @@ describeCases('vue', [
 	// Not a literal, and not an attribute of the same name
 	['<div :class="{ a: b }"></div>', 'class', UNKNOWN],
 	['<div :title="cond ? 1 : 2"></div>', 'title', UNKNOWN],
-	// A modifier that sets the property is a directive that has no attribute name
-	['<div :title.prop="true"></div>', ':title.prop', UNKNOWN],
+	// A modifier sets the attribute of the argument in a way of its own (`.prop`), and the value is not a literal
+	['<div :title.prop="true"></div>', 'title', UNKNOWN],
 	['<button :disabled></button>', 'disabled', UNKNOWN],
 ]);
 

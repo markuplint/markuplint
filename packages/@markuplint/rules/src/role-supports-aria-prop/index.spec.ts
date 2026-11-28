@@ -645,3 +645,30 @@ test('[role-supports-aria-prop-039] JSX: of two `role` attributes, the one that 
 		},
 	]);
 });
+
+test.each([':[k]="v"', 'v-bind:[k]="v"', '.[k]="v"', ':role.prop="r"', ':role.attr="r"', ':role.camel="r"'])(
+	'[role-supports-aria-prop-040] Vue: a role that a binding of a dynamic name, or with a modifier, may give is not known: %s',
+	async attr => {
+		const code = `<template><div ${attr} aria-pressed="true"></div></template>`;
+		expect((await mlRuleTest(rule, code, vue)).violations).toStrictEqual([]);
+	},
+);
+
+test.each([
+	['@[k]="h"', 25],
+	[':title.prop="t"', 32],
+])(
+	'[role-supports-aria-prop-041] Vue: a listener of a dynamic name, or a binding of another name, gives no role: %s',
+	async (attr, col) => {
+		const code = `<template><div ${attr} aria-pressed="true"></div></template>`;
+		expect((await mlRuleTest(rule, code, vue)).violations).toStrictEqual([
+			{
+				severity: 'error',
+				line: 1,
+				col,
+				message: 'The "aria-pressed" ARIA state is disallowed on the "generic" role',
+				raw: 'aria-pressed="true"',
+			},
+		]);
+	},
+);

@@ -184,3 +184,27 @@ describe('ignoreBlock', () => {
 		});
 	});
 });
+
+describe('ignoreBlock in a start tag', () => {
+	const mask = (length: number) => ignoreBlock('', tags).maskChar.repeat(length);
+
+	test('a block in the place of an attribute is masked as the characters of a name', () => {
+		expect(ignoreBlock('<div <%= attrs %> class="a"></div>', tags).replaced).toBe(
+			`<div ${mask(12)} class="a"></div>`,
+		);
+	});
+
+	test('a block in an unquoted value is masked as the characters of the value', () => {
+		expect(ignoreBlock('<div id=<%= id %>></div>', tags).replaced).toBe(`<div id=${mask(9)}></div>`);
+	});
+
+	test('a block in a quoted value, or after the tag, is a bogus comment', () => {
+		expect(ignoreBlock('<div id="<%= id %>"></div>', tags).replaced).toBe(`<div id="<!${mask(6)}>"></div>`);
+		expect(ignoreBlock('<div title="a>b"><%= x %></div>', tags).replaced).toBe(
+			`<div title="a>b"><!${mask(5)}></div>`,
+		);
+		expect(ignoreBlock('<script>if (a<b) {}</script><%= x %>', tags).replaced).toBe(
+			`<script>if (a<b) {}</script><!${mask(5)}>`,
+		);
+	});
+});

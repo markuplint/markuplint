@@ -139,3 +139,80 @@ describe('parserOptions.documentMode propagation (#3844)', () => {
 		expect(codes).toContain('missing-doctype');
 	});
 });
+
+describe('a block in a start tag', () => {
+	test('is a spread attribute, and the attributes after it are parsed', () => {
+		const doc = parse('<div <?= $attrs ?> class="a"></div>');
+		expect(nodeListToDebugMaps(doc.nodeList, true)).toStrictEqual([
+			'[1:1]>[1:30](0,29)div: <div␣<?=␣$attrs␣?>␣class="a">',
+			'[1:6]>[1:19](5,18)#spread: <?=␣$attrs␣?>',
+			'  #spread: <?=␣$attrs␣?>',
+			'[1:20]>[1:29](19,28)class: class="a"',
+			'  [1:19]>[1:20](18,19)bN: ␣',
+			'  [1:20]>[1:25](19,24)name: class',
+			'  [1:25]>[1:25](24,24)bE: ',
+			'  [1:25]>[1:26](24,25)equal: =',
+			'  [1:26]>[1:26](25,25)aE: ',
+			'  [1:26]>[1:27](25,26)sQ: "',
+			'  [1:27]>[1:28](26,27)value: a',
+			'  [1:28]>[1:29](27,28)eQ: "',
+			'  isDirective: false',
+			'  isDynamicValue: false',
+			'[1:30]>[1:36](29,35)div: </div>',
+		]);
+	});
+});
+
+describe('blocks in a start tag', () => {
+	const attrsOf = (code: string) =>
+		(parse(code).nodeList[0] as { attributes: readonly { type: string; raw: string }[] }).attributes.map(attr => [
+			attr.type,
+			attr.raw,
+		]);
+
+	test.each([
+		[
+			'<div <?= $a > 1 ? "x" : "" ?> <?php echo $b; ?> class="a"></div>',
+			[
+				['spread', '<?= $a > 1 ? "x" : "" ?>'],
+				['spread', '<?php echo $b; ?>'],
+				['attr', 'class="a"'],
+			],
+		],
+		[
+			'<div <?php\n echo $a;\n ?> class="b"></div>',
+			[
+				['spread', '<?php\n echo $a;\n ?>'],
+				['attr', 'class="b"'],
+			],
+		],
+		[
+			'<div <?php\r\n echo $a;\r\n ?> class="b"></div>',
+			[
+				['spread', '<?php\r\n echo $a;\r\n ?>'],
+				['attr', 'class="b"'],
+			],
+		],
+		['<div title=<?php\necho 1\n?>>x</div>', [['attr', 'title=<?php\necho 1\n?>']]],
+		[
+			'<div data-<?= $k ?>="v" <?php if ($c): ?>checked<?php endif; ?>></div>',
+			[
+				['spread', 'data-<?= $k ?>="v"'],
+				['spread', '<?php if ($c): ?>checked<?php endif; ?>'],
+			],
+		],
+	])('%j', (code, attributes) => {
+		expect(attrsOf(code)).toStrictEqual(attributes);
+	});
+
+	test('a block that the name of the tag goes on into is a bogus comment, as before', () => {
+		expect(parse('<div<?= $a ?>>x</div>').nodeList[0]?.raw.startsWith('<div<!')).toBe(true);
+	});
+
+	test('masks a large file in time that grows as the code does, not as its square of squares', () => {
+		const code = '<li class="a" data-x="<?= $x ?>"><a <?= $attrs ?> title="t"><?= $y ?></a></li>\n'.repeat(1000);
+		const start = performance.now();
+		parse(code);
+		expect(performance.now() - start).toBeLessThan(5000);
+	});
+});

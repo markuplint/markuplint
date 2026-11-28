@@ -14,7 +14,8 @@ import { getPretenderDeclaredElements } from './declared-elements.js';
  *
  * - an element whose `id` is a value that code gives (`<h2 id={x}>`);
  * - an element that has a spread attribute that may carry or override the `id`: one after the `id`
- *   attribute, or one without an `id` attribute (`<h2 {...props}>`). One before it is overridden by it
+ *   attribute, or one without an `id` attribute (`<h2 {...props}>`; a block of a template language in the
+ *   place of an attribute, `<h2 <?= $attrs ?>>`, is one too). One before it is overridden by it
  *   (`<h2 {...props} id="a">` has the id `a`), as the later attribute wins for every language that has a
  *   spread attribute (`MLAttr#isSpread`). A spread of a language where the object overrides the
  *   attributes wherever they are written (`MLAttr#spreadOverridesWritten`, Alpine.js) is counted wherever it is;
@@ -23,6 +24,9 @@ import { getPretenderDeclaredElements } from './declared-elements.js';
  * - a component that no pretender resolved (`MLElement#isUnresolvedComponent`), which renders what is not
  *   known. A component that the language says renders what it is given (`MLParser#isPassThroughComponent`,
  *   Vue's built-in components) holds the elements that the markup shows, so it is not counted;
+ * - a custom element name (`<my-comp>`) in a language that resolves it to a component unless the project says
+ *   it is a custom element (`MLElement#tagNameKind` is `component`: Vue, whose `compilerOptions.isCustomElement`
+ *   markuplint does not know). A component or a custom element, what it renders is not known from the markup;
  * - a pretender whose content is not known (`PretenderSlotContent#mutable`), which has no declarative shadow
  *   root in its place: the entries of `contents` that are elements are known, so what they declare stays
  *   decidable (see the next item for an entry that is not);
@@ -132,6 +136,18 @@ function mayBringUnknownId<T extends RuleConfigValue, O extends PlainData>(
 	if (
 		node.isUnresolvedComponent() &&
 		(node.pretenderContext?.type === 'pretender' || !node.ownerMLDocument.isPassThroughComponent(node.nodeName))
+	) {
+		return true;
+	}
+
+	// A custom element name in a language that resolves it to a component unless the project says it is a custom
+	// element (Vue: `compilerOptions.isCustomElement`, which markuplint does not know): either way what it renders is
+	// not known from the markup
+	if (
+		node.elementType === 'web-component' &&
+		node.pretenderContext?.type !== 'pretender' &&
+		node.tagNameKind === 'component' &&
+		!node.ownerMLDocument.isPassThroughComponent(node.nodeName)
 	) {
 		return true;
 	}

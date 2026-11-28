@@ -16,6 +16,39 @@
 import type { ExtendedSpec } from '@markuplint/ml-spec';
 
 /**
+ * How Vue keys a `v-bind` with a static argument and modifiers (see the shorthand pattern below for the WHY):
+ * camelized by `.camel`, `^` in front by `.attr` and `.` by `.prop`. Without either prefix it binds the attribute of
+ * that name (`.camel` or a modifier that Vue does not know), which is a repeat of `:name` as the element folds it.
+ */
+const BIND_KEY_MODIFIERS = {
+	group: 2,
+	camelize: ['camel'],
+	prefixes: [
+		{ modifier: 'attr', prefix: '^' },
+		{ modifier: 'prop', prefix: '.' },
+	],
+	foldedWithoutPrefix: true,
+} as const;
+
+/**
+ * How Vue keys the `.name` shorthand, which is a property binding already: `.attr` makes it `^`.
+ */
+const SHORTHAND_KEY_MODIFIERS = {
+	group: 2,
+	camelize: ['camel'],
+	prefixes: [{ modifier: 'attr', prefix: '^' }],
+} as const;
+
+/**
+ * The global attributes whose IDL attribute reflects them under the same name, so that a binding of the property of
+ * that name (`.prop`) sets the attribute.
+ *
+ * @see https://html.spec.whatwg.org/multipage/dom.html#htmlelement
+ * @see https://w3c.github.io/aria/#ARIAMixin
+ */
+const REFLECTED_SAME_NAME = 'role|id|title|lang|dir|hidden|slot|inert';
+
+/**
  * The Vue framework extended specification.
  *
  * Registers Vue-specific global attributes and element specs.
@@ -30,16 +63,62 @@ const spec: ExtendedSpec = {
 	// must be inserted before the generic `^v-` catch-all at the end.
 	directivePatterns: [
 		/**
-		 * Dynamic attribute/event names with brackets (e.g., :[dynamicAttr], @[dynamicEvent], .[dynamicProp]).
-		 * It comes first: Vue never drops a dynamic key (`dedupeProperties` keeps every one), so the key of
-		 * the name that it makes is not the key of a repeat, and only the same spelling is (the parser reports it).
+		 * A listener of a dynamic event name (`@[event]`, `v-on:[event]`), which binds no attribute.
+		 *
+		 * This and the pattern after it come first: Vue never drops a dynamic key (`dedupeProperties` keeps every
+		 * one), so the key of the name that it makes is not the key of a repeat, and only the same spelling is (the
+		 * parser reports it).
 		 *
 		 * @see https://github.com/vuejs/core/blob/main/packages/compiler-core/src/transforms/transformElement.ts#dedupeProperties
 		 */
 		{
-			pattern: '^(?:v-bind:|:|v-on:|@|\\.)\\[',
+			pattern: '^(?:v-on:|@)\\[',
 			isDirective: true,
 			isDynamicValue: true,
+		},
+		/**
+		 * A binding of an attribute or a property whose name is an expression (`:[key]`, `v-bind:[key]`,
+		 * `.[key]`) may bind any attribute (`role` too), under a name that the template does not show: it is a
+		 * spread attribute, as `v-bind="obj"` below is. A listener of a dynamic name (above) binds no attribute.
+		 * It is keyed by the name as written, as the pattern above.
+		 *
+		 * @see https://vuejs.org/api/built-in-directives.html#v-bind
+		 * @see https://github.com/vuejs/core/blob/main/packages/compiler-core/src/transforms/transformElement.ts#dedupeProperties
+		 */
+		{
+			pattern: '^(?:v-bind:|:|\\.)\\[',
+			isDirective: true,
+			isDynamicValue: true,
+			isSpread: true,
+		},
+		/**
+		 * A property binding of `innerHTML` (`:innerHTML.prop`, `.innerHTML`) replaces the children with markup that
+		 * the template does not show, as `v-html` does (`isInnerHTML`). Vue reads the name and the modifier as
+		 * they are written.
+		 *
+		 * @see https://vuejs.org/api/built-in-directives.html#v-html
+		 */
+		{
+			pattern: '^(?:(?:v-bind:|:)innerHTML\\.prop|\\.innerHTML)$',
+			flags: '',
+			isDirective: true,
+			isDynamicValue: true,
+			isInnerHTML: true,
+			duplicateKey: '.innerHTML',
+		},
+		/**
+		 * The `.name` shorthand binds the property of that name, which is the attribute of that name for a global
+		 * attribute whose IDL attribute reflects it under the same name (`REFLECTED_SAME_NAME`), as `:name.prop`
+		 * below does. Keyed as the shorthand pattern below.
+		 */
+		{
+			pattern: `^\\.(${REFLECTED_SAME_NAME})((?:\\.(?:camel|prop))*)$`,
+			flags: '',
+			potentialName: '$1',
+			isDirective: true,
+			isDynamicValue: true,
+			duplicateKey: '.$1',
+			duplicateKeyModifiers: SHORTHAND_KEY_MODIFIERS,
 		},
 		/**
 		 * .propName shorthand (Vue 3.2+, equivalent to v-bind:propName.prop).
@@ -58,11 +137,7 @@ const spec: ExtendedSpec = {
 			isDirective: true,
 			isDynamicValue: true,
 			duplicateKey: '.$1',
-			duplicateKeyModifiers: {
-				group: 2,
-				camelize: ['camel'],
-				prefixes: [{ modifier: 'attr', prefix: '^' }],
-			},
+			duplicateKeyModifiers: SHORTHAND_KEY_MODIFIERS,
 		},
 		/**
 		 * `:class` and `:style` with modifiers that are neither `.prop` nor `.attr` make the key `class` or
@@ -77,23 +152,63 @@ const spec: ExtendedSpec = {
 			isDirective: true,
 			isDynamicValue: true,
 		},
+		/**
+		 * A modifier changes how a binding is set, not which name it binds: `.attr` sets the attribute of the
+		 * argument, `.camel` camelizes it (no change to a name without a hyphen), and `.prop` sets the property of
+		 * that name. So `.attr` and `.camel` bind the attribute of the argument (`potentialName`), which the rules
+		 * that ask for an attribute by its name find (`role` among them); a name with a hyphen keeps it with `.attr`
+		 * only, as `.camel` makes another name of it. `.prop` does so only for a global attribute whose IDL attribute
+		 * reflects it under the same name (`REFLECTED_SAME_NAME`); a property that reflects no attribute of its name
+		 * (`:value.prop`, `:innerHTML.prop`, `:class.prop`, whose property is `className`) binds none, and the
+		 * pattern after these keeps it a directive. They stay directives (`isDirective`), as their key differs from
+		 * the one of `:name` (`^name`, `.name`), so a literal in them is not checked as the value of the attribute
+		 * (`:role.attr="'foo'"` is not reported as `:role="'foo'"` is). They are keyed as the pattern below.
+		 *
+		 * > .camel - transform the kebab-case attribute name into camelCase.
+		 *
+		 * > .prop - force a binding to be set as a DOM property (3.2+).
+		 *
+		 * > .attr - force a binding to be set as a DOM attribute (3.2+).
+		 *
+		 * @see https://vuejs.org/api/built-in-directives.html#v-bind
+		 */
+		{
+			pattern: '^(?:v-bind:|:)([^.-]+)((?:\\.(?:attr|camel))+)$',
+			// Vue reads a modifier as it is written: `.PROP` is no modifier it knows
+			flags: '',
+			potentialName: '$1',
+			isDirective: true,
+			isDynamicValue: true,
+			duplicateKey: '$1',
+			duplicateKeyModifiers: BIND_KEY_MODIFIERS,
+		},
+		{
+			pattern: `^(?:v-bind:|:)(${REFLECTED_SAME_NAME})((?:\\.camel)*\\.prop(?:\\.(?:camel|prop))*)$`,
+			flags: '',
+			potentialName: '$1',
+			isDirective: true,
+			isDynamicValue: true,
+			duplicateKey: '$1',
+			duplicateKeyModifiers: BIND_KEY_MODIFIERS,
+		},
+		// A name with a hyphen binds the attribute of the argument with `.attr` only (see above)
+		{
+			pattern: '^(?:v-bind:|:)([^.]+)((?:\\.attr)+)$',
+			// Vue reads a modifier as it is written: `.PROP` is no modifier it knows
+			flags: '',
+			potentialName: '$1',
+			isDirective: true,
+			isDynamicValue: true,
+			duplicateKey: '$1',
+			duplicateKeyModifiers: BIND_KEY_MODIFIERS,
+		},
 		// v-bind/: with a modifier (.prop, .camel, .attr) → isDirective. Keyed as the shorthand above.
 		{
 			pattern: '^(?:v-bind:|:)([^.]+)((?:\\.[^.]*)+)$',
 			isDirective: true,
 			isDynamicValue: true,
 			duplicateKey: '$1',
-			duplicateKeyModifiers: {
-				group: 2,
-				camelize: ['camel'],
-				prefixes: [
-					{ modifier: 'attr', prefix: '^' },
-					{ modifier: 'prop', prefix: '.' },
-				],
-				// Without `.prop` and `.attr` it binds the attribute of that name (`.camel` or a modifier that
-				// Vue does not know), which is a repeat of `:name` as the element folds it
-				foldedWithoutPrefix: true,
-			},
+			duplicateKeyModifiers: BIND_KEY_MODIFIERS,
 		},
 		/**
 		 * `v-bind="obj"` (no argument) gives the element the attributes of an object, any of them (`role`
