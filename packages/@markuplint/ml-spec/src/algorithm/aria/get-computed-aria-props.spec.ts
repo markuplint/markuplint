@@ -844,3 +844,13 @@ describe('the default of a property that the role gives an implicit value', () =
 		});
 	});
 });
+
+describe('the level of a heading element', () => {
+	test('is its rank for its role heading', () => {
+		expect(c('<h3>a</h3>', '1.3', 'h3')['aria-level']?.value).toBe('3');
+	});
+
+	test('is not its rank for another role', () => {
+		expect(c('<ul role="tree"><h3 role="treeitem">a</h3></ul>', '1.3', 'h3')['aria-level']?.value).toBeUndefined();
+	});
+});
