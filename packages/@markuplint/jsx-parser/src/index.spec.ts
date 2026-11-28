@@ -33,6 +33,10 @@ describe('parse', () => {
 		expect(parser.duplicateAttrPrecedence).toBe('last');
 	});
 
+	test('says that a string attribute is decoded by the rules of JSX', () => {
+		expect(parser.attrValueDecoding).toBe('jsx');
+	});
+
 	test('says that only `foreignObject` puts what is in it in the HTML namespace, as React does', () => {
 		expect(parser.integrationPoints).toBe('foreign-object');
 		const { nodeList } = parser.parse('<svg><title><b>x</b></title><foreignObject><b>y</b></foreignObject></svg>');

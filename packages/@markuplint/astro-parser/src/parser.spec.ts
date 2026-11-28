@@ -1229,3 +1229,9 @@ describe('a leading BOM', () => {
 		]);
 	});
 });
+
+test('says that a component and a custom element get the last of two attributes of one name, as a props object', () => {
+	expect(parser.componentDuplicateAttrPrecedence).toBe('last');
+	expect(parser.duplicateAttrPrecedence).toBe('first');
+	expect([parser.attrValueDecoding, parser.componentAttrValueDecoding]).toStrictEqual(['html', 'none']);
+});

@@ -71,3 +71,7 @@ test('[no-unknown-role-006] Vue: of a static `role` and a bound `:role`, the fir
 		(await mlRuleTest(rule, '<template><div :role="r" role="buton"></div></template>', vue)).violations,
 	).toStrictEqual([]);
 });
+
+test('[no-unknown-role-007] a role is read with its character references decoded', async () => {
+	expect((await mlRuleTest(rule, '<div role="&#98;utton">a</div>')).violations).toStrictEqual([]);
+});

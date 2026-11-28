@@ -1,6 +1,6 @@
 import type { Nullable } from './types.js';
 
-import { decode as decodeHtmlEntities } from 'html-entities';
+import { decode as decodeHtmlEntities, decodeEntity } from 'html-entities';
 
 /**
  * Converts a given value of string, string array, null, or undefined
@@ -79,6 +79,188 @@ export function decodeEntities(text: string) {
 			})
 		: text;
 	return decodeHtmlEntities(withoutSurrogates, { level: 'html5' });
+}
+
+/**
+ * How the character references of an attribute value are decoded (`AttrValueDecoding` of `@markuplint/ml-ast`, which
+ * this package does not depend on, says which language does which): `html` as the HTML tokenizer decodes an attribute
+ * value, `jsx` as JSX decodes a string attribute (the XHTML set of names, a semicolon required), `mdx` as MDX does
+ * (the HTML set of names, a semicolon required), and `none` not at all.
+ */
+export type AttrValueDecoding = 'html' | 'jsx' | 'mdx' | 'none';
+
+/**
+ * An attribute value with its character references decoded, and where each of its characters is in the source.
+ */
+export interface DecodedAttrValue {
+	/** The value */
+	readonly value: string;
+	/**
+	 * The offset in the source of each code unit of the value, and the length of the source after the last: the code
+	 * units of a reference are at the start of the reference, so a range `[start, end)` of the value is the range
+	 * `[offsets[start], offsets[end])` of the source.
+	 */
+	readonly offsets: readonly number[];
+}
+
+/**
+ * The numbers that `parseEntities` reads as another character (`characterReferenceInvalid`), as the table of the
+ * numeric character reference end state of HTML does.
+ *
+ * @see https://github.com/wooorm/character-reference-invalid/blob/main/index.js#characterReferenceInvalid
+ * @see https://html.spec.whatwg.org/multipage/parsing.html#numeric-character-reference-end-state
+ */
+const MDX_INVALID_REFERENCE: Readonly<Record<number, string>> = {
+	0: '\uFFFD',
+	128: '\u20AC',
+	130: '\u201A',
+	131: '\u0192',
+	132: '\u201E',
+	133: '\u2026',
+	134: '\u2020',
+	135: '\u2021',
+	136: '\u02C6',
+	137: '\u2030',
+	138: '\u0160',
+	139: '\u2039',
+	140: '\u0152',
+	142: '\u017D',
+	145: '\u2018',
+	146: '\u2019',
+	147: '\u201C',
+	148: '\u201D',
+	149: '\u2022',
+	150: '\u2013',
+	151: '\u2014',
+	152: '\u02DC',
+	153: '\u2122',
+	154: '\u0161',
+	155: '\u203A',
+	156: '\u0153',
+	158: '\u017E',
+	159: '\u0178',
+};
+
+/**
+ * Decodes the character references of an attribute value as written in the source, keeping where each character of
+ * the value is in it.
+ *
+ * In the HTML syntax a named reference that does not end with a semicolon is not decoded in an attribute value when
+ * the next character is `=` or an ASCII alphanumeric (`title="&notit"` is `&notit`), as the named character reference
+ * state says:
+ *
+ * > If the character reference was consumed as part of an attribute, and the last character matched is not a U+003B SEMICOLON character (;), and the next input character is either a U+003D EQUALS SIGN character (=) or an ASCII alphanumeric, then, for historical reasons, flush code points consumed as a character reference and switch to the return state.
+ *
+ * @see https://html.spec.whatwg.org/multipage/parsing.html#named-character-reference-state
+ * @see https://github.com/typescript-eslint/typescript-eslint/blob/main/packages/typescript-estree/src/node-utils.ts#unescapeStringLiteralText
+ * @see https://github.com/syntax-tree/mdast-util-mdx-jsx/blob/main/lib/index.js#exitMdxJsxTagAttributeValueLiteral
+ * @see https://github.com/wooorm/parse-entities/blob/main/lib/index.js#parseEntities
+ * @param raw - The value as written, without its quotes
+ * @param decoding - How the language decodes it
+ * @returns The value and the offsets of its characters in `raw`
+ */
+export function decodeAttrValue(raw: string, decoding: AttrValueDecoding = 'html'): DecodedAttrValue {
+	if (decoding === 'none' || !raw.includes('&')) {
+		return { value: raw, offsets: Array.from({ length: raw.length + 1 }, (_, i) => i) };
+	}
+	let value = '';
+	const offsets: number[] = [];
+	const append = (chars: string, offset: number) => {
+		value += chars;
+		for (let i = 0; i < chars.length; i++) {
+			offsets.push(offset);
+		}
+	};
+	let index = 0;
+	while (index < raw.length) {
+		const reference = raw[index] === '&' ? readReference(raw, index, decoding) : null;
+		if (reference) {
+			append(reference.chars, index);
+			index += reference.length;
+			continue;
+		}
+		append(raw[index] ?? '', index);
+		index++;
+	}
+	offsets.push(raw.length);
+	return { value, offsets };
+}
+
+/**
+ * @param raw - The value as written
+ * @param index - The offset of a `&` in it
+ * @param decoding - How the language decodes it
+ * @returns The characters of the reference that starts there and its length in `raw`, or null if none starts there
+ */
+function readReference(
+	raw: string,
+	index: number,
+	decoding: AttrValueDecoding,
+): { readonly chars: string; readonly length: number } | null {
+	const rest = raw.slice(index);
+	if (decoding === 'jsx') {
+		// JSX takes the code point as it is, with a lower-case `x` and a semicolon (`unescapeStringLiteralText`)
+		const jsxNumeric = /^&#(?:x([\dA-Fa-f]+)|(\d+));/.exec(rest);
+		if (jsxNumeric) {
+			const code = jsxNumeric[1] === undefined ? Number(jsxNumeric[2]) : Number.parseInt(jsxNumeric[1], 16);
+			return code <= 1_114_111 ? { chars: String.fromCodePoint(code), length: jsxNumeric[0].length } : null;
+		}
+	}
+	if (decoding === 'mdx') {
+		// MDX decodes a string attribute with `parseEntities` (`nonTerminated: false`): a semicolon is required, a
+		// surrogate or a number out of range is U+FFFD, a number of the table of invalid references of HTML
+		// (`characterReferenceInvalid`: 0 and most of 0x80 to 0x9F, as Windows-1252) is its character, and any
+		// other number is its code point
+		const mdxNumeric = /^&#(?:X([\dA-F]+)|(\d+));/i.exec(rest);
+		if (mdxNumeric) {
+			const code = mdxNumeric[1] === undefined ? Number(mdxNumeric[2]) : Number.parseInt(mdxNumeric[1], 16);
+			const chars =
+				(code >= 55_296 && code <= 57_343) || code > 1_114_111
+					? '\uFFFD'
+					: (MDX_INVALID_REFERENCE[code] ?? String.fromCodePoint(code));
+			return { chars, length: mdxNumeric[0].length };
+		}
+	}
+	const numeric = /^&#(?:X[\dA-F]+|\d+);?/i.exec(rest);
+	if (numeric) {
+		// JSX and MDX require the semicolon, and read it above
+		if (decoding !== 'html') {
+			return null;
+		}
+		return { chars: decodeEntities(numeric[0]), length: numeric[0].length };
+	}
+	const run = /^&[A-Z][\dA-Z]*;?/i.exec(rest)?.[0];
+	if (!run) {
+		return null;
+	}
+	for (let length = run.length; length > 1; length--) {
+		const candidate = run.slice(0, length);
+		const hasSemicolon = candidate.endsWith(';');
+		if (decoding !== 'html') {
+			if (!hasSemicolon) {
+				continue;
+			}
+			// The XHTML set of JSX is the HTML 4 set and `apos`; MDX has the HTML set
+			const chars =
+				decoding === 'jsx' && candidate === '&apos;'
+					? "'"
+					: decodeEntity(candidate, { level: decoding === 'jsx' ? 'html4' : 'html5' });
+			if (chars !== candidate) {
+				return { chars, length };
+			}
+			continue;
+		}
+		const chars = decodeEntity(candidate, { level: 'html5' });
+		if (chars === candidate) {
+			continue;
+		}
+		const next = raw[index + length] ?? '';
+		if (!hasSemicolon && /^[\d=A-Z]$/i.test(next)) {
+			return null;
+		}
+		return { chars, length };
+	}
+	return null;
 }
 
 /**

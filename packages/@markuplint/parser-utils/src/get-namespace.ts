@@ -1,6 +1,6 @@
 import type { IntegrationPoints, MLASTParentNode, NamespaceURI } from '@markuplint/ml-ast';
 
-import { asciiLowerCase, decodeEntities } from '@markuplint/shared';
+import { asciiLowerCase, decodeAttrValue } from '@markuplint/shared';
 
 /**
  * Determines the namespace URI for a node based on its tag name and parent node context.
@@ -232,7 +232,7 @@ export function getEncoding(node: MLASTParentNode | null): string | null {
 			if (attr.startQuote.raw === '{') {
 				return /^(["'`])([^"'\\`]*)\1$/.exec(attr.value.raw.trim())?.[2] ?? null;
 			}
-			return decodeEntities(attr.value.raw);
+			return decodeAttrValue(attr.value.raw).value;
 		}
 	}
 	return null;

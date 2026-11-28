@@ -37,36 +37,36 @@ export default createRule({
 			// A declared element is not in the source: it is reported where the component is written
 			const context = node.pretenderContext;
 			const origin = isPretenderDeclaredElement(node) && context?.type === 'origin' ? context.origin : null;
-			const idAttrs = node.getAttributeToken('id');
-			for (const idAttr of idAttrs) {
-				if (idAttr.isDynamicValue || idAttr.isDirective) {
-					continue;
-				}
-				const id = getDOMValue(idAttr);
-				if (id == null) {
-					continue;
-				}
-				const root = node.getRootNode();
-				let ids = idsOfTree.get(root);
-				if (!ids) {
-					ids = new Set();
-					idsOfTree.set(root, ids);
-				}
-				if (ids.has(id)) {
-					report(
-						origin
-							? { scope: origin, message }
-							: {
-									scope: node,
-									message,
-									line: idAttr.startLine,
-									col: idAttr.startCol,
-									raw: idAttr.raw,
-								},
-					);
-				}
-				ids.add(id);
+			// The id that the element has: of two `id` attributes, the one that the language keeps (the first in the
+			// HTML syntax, the last in JSX); the other is no id of any element
+			const idAttr = node.getAttributeNode('id');
+			if (!idAttr || idAttr.isDynamicValue || idAttr.isDirective) {
+				continue;
 			}
+			const id = getDOMValue(idAttr);
+			if (id == null) {
+				continue;
+			}
+			const root = node.getRootNode();
+			let ids = idsOfTree.get(root);
+			if (!ids) {
+				ids = new Set();
+				idsOfTree.set(root, ids);
+			}
+			if (ids.has(id)) {
+				report(
+					origin
+						? { scope: origin, message }
+						: {
+								scope: node,
+								message,
+								line: idAttr.startLine,
+								col: idAttr.startCol,
+								raw: idAttr.raw,
+							},
+				);
+			}
+			ids.add(id);
 		}
 	},
 });

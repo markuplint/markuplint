@@ -30,8 +30,20 @@ describe('MDXParser', () => {
 			expect(parser.duplicateAttrPrecedence).toBe('last');
 		});
 
+		test('says that a string attribute is decoded by the rules of MDX', () => {
+			expect(parser.attrValueDecoding).toBe('mdx');
+		});
+
 		test('says that only `foreignObject` puts what is in it in the HTML namespace', () => {
 			expect(parser.integrationPoints).toBe('foreign-object');
+		});
+
+		test('puts an element that Markdown makes in `desc` of SVG in SVG, as a JSX element there', () => {
+			const doc = parse('<svg><desc>\n\n**bold**\n\n</desc></svg>');
+			const strong = doc.nodeList.find(
+				(node): node is MLASTElement => node.type === 'starttag' && node.nodeName === 'strong',
+			);
+			expect(strong?.namespace).toBe('http://www.w3.org/2000/svg');
 		});
 
 		test('self-closing component', () => {

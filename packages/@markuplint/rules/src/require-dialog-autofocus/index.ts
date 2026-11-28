@@ -36,11 +36,7 @@ export default createRule({
 				continue;
 			}
 
-			const target = getElementByIdInTree(
-				trigger,
-				targetId,
-				trigger.getAttributeNode('commandfor')?.isExpressionValue,
-			);
+			const target = getElementByIdInTree(trigger, targetId);
 			// What a pretender declares has no content declared, so an element with `autofocus` may be in it
 			if (!target || isPretenderDeclaredElement(target)) {
 				continue;

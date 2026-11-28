@@ -537,6 +537,9 @@ export class MLCore {
 				attrNameCaseSensitive: this.#parser.attrNameCaseSensitive,
 				attrNameRoute: this.#parser.attrNameRoute,
 				duplicateAttrPrecedence: this.#parser.duplicateAttrPrecedence,
+				componentDuplicateAttrPrecedence: this.#parser.componentDuplicateAttrPrecedence,
+				attrValueDecoding: this.#parser.attrValueDecoding,
+				componentAttrValueDecoding: this.#parser.componentAttrValueDecoding,
 				integrationPoints: this.#parser.integrationPoints,
 				pretenders: this.#pretenders,
 			});

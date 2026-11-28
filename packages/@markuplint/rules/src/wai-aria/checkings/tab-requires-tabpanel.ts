@@ -48,7 +48,7 @@ export const checkingTabRequiresTabpanel: ElementChecker<
 		const controlsAttr = el.getAttributeNode('aria-controls');
 		if (controlsAttr && !controlsAttr.isDynamicValue) {
 			const hasControlledTabpanel = splitOnAsciiWhitespace(controlsAttr.value).some(id => {
-				const target = getElementByIdInTree(el, id, controlsAttr.isExpressionValue);
+				const target = getElementByIdInTree(el, id);
 				return !!target && isTabpanel(target);
 			});
 			if (hasControlledTabpanel) {

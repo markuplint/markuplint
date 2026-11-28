@@ -754,11 +754,51 @@ export interface MLParser {
 	duplicateAttrPrecedence?: DuplicateAttrPrecedence;
 
 	/**
+	 * Which of two attributes written under one name a component (an `authored` element) or a custom element (a
+	 * `web-component` element) gets, where the language passes its attributes otherwise than those of an HTML element
+	 * (see {@link DuplicateAttrPrecedence}). Absent means what {@link MLParser.duplicateAttrPrecedence} says.
+	 */
+	componentDuplicateAttrPrecedence?: DuplicateAttrPrecedence;
+
+	/**
+	 * How the character references of an attribute value written in the markup are decoded (see
+	 * {@link AttrValueDecoding}). Absent means as the HTML tokenizer decodes them.
+	 */
+	attrValueDecoding?: AttrValueDecoding;
+
+	/**
+	 * How the character references of an attribute value of a component (an `authored` element) or a custom element
+	 * (a `web-component` element) are decoded, where the language passes it otherwise than that of an HTML element.
+	 * Absent means what {@link MLParser.attrValueDecoding} says.
+	 */
+	componentAttrValueDecoding?: AttrValueDecoding;
+
+	/**
 	 * Which integration points of SVG and MathML the language follows (see {@link IntegrationPoints}). Absent means
 	 * those of the HTML parser.
 	 */
 	integrationPoints?: IntegrationPoints;
 }
+
+/**
+ * How a language decodes the character references of an attribute value written in the markup (not code).
+ *
+ * - `"html"`: As the tokenizer of HTML decodes an attribute value, where a named reference without a semicolon
+ *   before `=` or an ASCII alphanumeric is kept as written. The HTML syntax, and the templates of Vue (its tokenizer
+ *   decodes an attribute value in the attribute mode of the HTML decoder), Svelte and Astro.
+ * - `"jsx"`: As JSX decodes a string attribute: the XHTML set of names, with a semicolon.
+ * - `"mdx"`: As MDX decodes a string attribute: the HTML set of names, with a semicolon.
+ * - `"none"`: Not at all: Astro passes a string attribute of a component and of a custom element to the component as
+ *   it is written.
+ *
+ * `AttrValueDecoding` of `@markuplint/shared`, which decodes, has the same values.
+ *
+ * @see https://html.spec.whatwg.org/multipage/parsing.html#named-character-reference-state
+ * @see https://github.com/vuejs/core/blob/main/packages/compiler-core/src/tokenizer.ts#Tokenizer
+ * @see https://github.com/typescript-eslint/typescript-eslint/blob/main/packages/typescript-estree/src/node-utils.ts#unescapeStringLiteralText
+ * @see https://github.com/syntax-tree/mdast-util-mdx-jsx/blob/main/lib/index.js#exitMdxJsxTagAttributeValueLiteral
+ */
+export type AttrValueDecoding = 'html' | 'jsx' | 'mdx' | 'none';
 
 /**
  * Which elements of SVG and MathML put what is in them in the HTML namespace.
@@ -791,9 +831,9 @@ export type IntegrationPoints = 'html' | 'foreign-object';
  * two keys, which are set one after another, so the later one is what the element has in either case.
  *
  * Svelte and Astro take the default: Svelte makes two attributes of one name a compile error, and Astro writes
- * the attributes of an HTML element into an HTML string (the props of an Astro component are an object, where a
- * later key replaces an earlier one, which this one value for the language does not tell). TypeScript makes two props of one name in TSX an error too (TS17001), so
- * the case of JSX is for its JavaScript.
+ * the attributes of an HTML element into an HTML string (the props of an Astro component and of a custom element are
+ * an object, where a later key replaces an earlier one, which `MLParser#componentDuplicateAttrPrecedence` says).
+ * TypeScript makes two props of one name in TSX an error too (TS17001), so the case of JSX is for its JavaScript.
  *
  * @see https://html.spec.whatwg.org/multipage/parsing.html#attribute-name-state
  * @see https://github.com/vuejs/core/blob/main/packages/compiler-core/src/transforms/transformElement.ts#dedupeProperties

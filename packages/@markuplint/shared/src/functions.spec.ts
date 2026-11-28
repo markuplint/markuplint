@@ -1,7 +1,8 @@
-import { test, expect } from 'vitest';
+import { describe, test, expect } from 'vitest';
 
 import {
 	toNoEmptyStringArrayFromStringOrArray,
+	decodeAttrValue,
 	decodeEntities,
 	branchesToPatterns,
 	regexParser,
@@ -210,4 +211,71 @@ test.each([
 	'Infinity',
 ])('isValidFloatingPointNumber: %j is not valid', value => {
 	expect(isValidFloatingPointNumber(value)).toBe(false);
+});
+
+describe('decodeAttrValue', () => {
+	test.each([
+		['a&amp;b', 'a&b'],
+		['&#116;rue', 'true'],
+		['&#x20;', ' '],
+		['&amp', '&'],
+		['&notit', '&notit'],
+		['&not=', '&not='],
+		['&not;it', '\u00ACit'],
+		['&not it', '\u00AC it'],
+		['&notin;', '\u2209'],
+		['&unknown;', '&unknown;'],
+		['&#xD800;', '\uFFFD'],
+		['a & b', 'a & b'],
+		['', ''],
+	])('decodes %j as an HTML attribute value', (raw, value) => {
+		expect(decodeAttrValue(raw).value).toBe(value);
+	});
+
+	test.each([
+		['a&amp;b', 'a&b'],
+		['&amp', '&amp'],
+		['&apos;', "'"],
+		['&NotEqualTilde;', '&NotEqualTilde;'],
+		['&#116;', 't'],
+		['&#116', '&#116'],
+		['&#X41;', '&#X41;'],
+		['&#x41;', 'A'],
+		['&#128;', '\u0080'],
+		['&#1114112;', '&#1114112;'],
+	])('decodes %j as a JSX string attribute', (raw, value) => {
+		expect(decodeAttrValue(raw, 'jsx').value).toBe(value);
+	});
+
+	test.each([
+		['a&amp;b', 'a&b'],
+		['&amp', '&amp'],
+		['&NotEqualTilde;', '\u2242\u0338'],
+		['&check;', '\u2713'],
+		['&#116', '&#116'],
+		['&#128;', '\u20AC'],
+		['&#1;', '\u0001'],
+		['&#xFFFF;', '\uFFFF'],
+		['&#xD800;', '\uFFFD'],
+		['&#x110000;', '\uFFFD'],
+		['&#0;', '\uFFFD'],
+		['&#x41;', 'A'],
+	])('decodes %j as an MDX string attribute', (raw, value) => {
+		expect(decodeAttrValue(raw, 'mdx').value).toBe(value);
+	});
+
+	test('does not decode when the language does not', () => {
+		expect(decodeAttrValue('a&amp;b', 'none').value).toBe('a&amp;b');
+	});
+
+	test('keeps where each character of the value is in the source', () => {
+		const { value, offsets } = decodeAttrValue('&#110;oopener bogus');
+		expect(value).toBe('noopener bogus');
+		expect([offsets[9], offsets[14]]).toStrictEqual([14, 19]);
+		expect([offsets[0], offsets[1]]).toStrictEqual([0, 6]);
+	});
+
+	test('maps a value without a reference to itself', () => {
+		expect(decodeAttrValue('ab')).toStrictEqual({ value: 'ab', offsets: [0, 1, 2] });
+	});
 });

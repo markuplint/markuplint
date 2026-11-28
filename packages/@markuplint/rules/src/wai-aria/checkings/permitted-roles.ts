@@ -50,7 +50,7 @@ export const checkingPermittedRoles: AttrChecker<boolean, Options> =
 					'{0} according to {1}',
 					t(
 						'Cannot overwrite {0} to {1}',
-						t('the "{0*}" {1}', firstToken.raw, 'role'),
+						t('the "{0*}" {1}', firstToken.value, 'role'),
 						t('the "{0*}" {1}', el.localName, 'element'),
 					),
 					'ARIA in HTML specification',
@@ -61,14 +61,14 @@ export const checkingPermittedRoles: AttrChecker<boolean, Options> =
 			return;
 		}
 		for (const token of tokens) {
-			if (Array.isArray(permittedRoles) && !permittedRoles.map(r => r.name).includes(token.raw)) {
+			if (Array.isArray(permittedRoles) && !permittedRoles.map(r => r.name).includes(token.value)) {
 				return {
 					scope: token,
 					message: t(
 						'{0} according to {1}',
 						t(
 							'Cannot overwrite {0} to {1}',
-							t('the "{0*}" {1}', token.raw, 'role'),
+							t('the "{0*}" {1}', token.value, 'role'),
 							t('the "{0*}" {1}', el.localName, 'element'),
 						),
 						'ARIA in HTML specification',

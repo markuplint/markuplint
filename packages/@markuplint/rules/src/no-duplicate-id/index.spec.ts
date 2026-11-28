@@ -325,3 +325,31 @@ describe('an element that a pretender declares', () => {
 		]);
 	});
 });
+
+describe('of two `id` attributes of one element, the one that the element has', () => {
+	const jsxParser = { parser: { '.*': '@markuplint/jsx-parser' } };
+	const message = 'The value of the "id" attribute is duplicated';
+
+	test('[no-duplicate-id-027] the HTML parser keeps the first: the second is no id', async () => {
+		expect((await mlRuleTest(rule, '<div id="a" id="b"></div><div id="b"></div>')).violations).toStrictEqual([]);
+		expect((await mlRuleTest(rule, '<div id="a" id="a"></div>')).violations).toStrictEqual([]);
+		expect((await mlRuleTest(rule, '<div id="a" id="b"></div><div id="a"></div>')).violations).toStrictEqual([
+			{ severity: 'error', line: 1, col: 31, message, raw: 'id="a"' },
+		]);
+	});
+
+	test('[no-duplicate-id-028] JSX keeps the last', async () => {
+		expect(
+			(await mlRuleTest(rule, '<><div id="a" id="b" /><div id="a" /></>', jsxParser)).violations,
+		).toStrictEqual([]);
+		expect(
+			(await mlRuleTest(rule, '<><div id="a" id="b" /><div id="b" /></>', jsxParser)).violations,
+		).toStrictEqual([{ severity: 'error', line: 1, col: 29, message, raw: 'id="b"' }]);
+	});
+
+	test('[no-duplicate-id-029] the id is the value with its character references decoded', async () => {
+		expect((await mlRuleTest(rule, '<div id="a&amp;b"></div><div id="a&b"></div>')).violations).toStrictEqual([
+			{ severity: 'error', line: 1, col: 30, message, raw: 'id="a&b"' },
+		]);
+	});
+});

@@ -42,7 +42,7 @@ export default createRule<boolean>({
 
 			const reported = new Set<string>();
 			for (const token of attr.tokenList?.allTokens() ?? []) {
-				const id = token.raw;
+				const id = token.value;
 				if (reported.has(id)) {
 					continue;
 				}

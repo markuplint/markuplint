@@ -1,5 +1,5 @@
 import { createRule } from '@markuplint/ml-core';
-import { decodeEntities, decodeHref } from '@markuplint/shared';
+import { decodeHref } from '@markuplint/shared';
 
 import meta from './meta.js';
 
@@ -49,8 +49,8 @@ export default createRule({
 				hasDynamicId = true;
 			}
 			if (attr.valueType !== 'code') {
-				// An expression is code, not markup: its string has no character reference to decode
-				idList.add(attr.isExpressionValue ? attr.value : decodeEntities(attr.value));
+				// `MLAttr#value` is the value the DOM has (its character references decoded)
+				idList.add(attr.value);
 			}
 		}
 
@@ -67,7 +67,7 @@ export default createRule({
 				hasDynamicName = true;
 			}
 			if (attr.valueType !== 'code') {
-				nameList.add(attr.isExpressionValue ? attr.value : decodeEntities(attr.value));
+				nameList.add(attr.value);
 			}
 		}
 

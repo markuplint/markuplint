@@ -6,7 +6,10 @@ import { getPosition } from '@markuplint/parser-utils/location';
 import { splitOnAsciiWhitespace, UnexpectedCallError } from '@markuplint/shared';
 
 type Scope = {
+	/** The token as it is written in the source */
 	raw: string;
+	/** The token: the value of the attribute is decoded, so it may differ from `raw` */
+	value: string;
 	startOffset: number;
 	startLine: number;
 	startCol: number;
@@ -69,6 +72,7 @@ export class MLDomTokenList extends Array<string> implements DOMTokenList {
 			offset = loc._searchedIndex;
 			locs.push({
 				raw: loc.raw,
+				value: loc.value,
 				startOffset: loc.startOffset,
 				startLine: loc.startLine,
 				startCol: loc.startCol,
@@ -100,6 +104,7 @@ export class MLDomTokenList extends Array<string> implements DOMTokenList {
 		}
 		return {
 			raw: r.raw,
+			value: r.value,
 			startOffset: r.startOffset,
 			startLine: r.startLine,
 			startCol: r.startCol,
@@ -142,6 +147,21 @@ export class MLDomTokenList extends Array<string> implements DOMTokenList {
 				continue;
 			}
 
+			// A value written in the markup is the source with its character references decoded: the attribute knows
+			// where each of its characters is written. The list of several attributes (`class` and `:class`) joins
+			// their values, so the token is looked for in the value of the attribute that has it.
+			if (!ownerAttr.isExpressionValue) {
+				const own = ownerAttr.value;
+				const start = own === this.#origin ? startOffset : own.indexOf(token);
+				const located = start === -1 ? null : ownerAttr.locateInValue(start, start + token.length);
+				if (located) {
+					return { ...located, value: token, rule: ownerAttr.rule, _searchedIndex: startOffset };
+				}
+				if (own !== this.#origin) {
+					continue;
+				}
+			}
+
 			// The value is what code results in (`{"a b"}`), not the text of the source: an offset in it is the offset in
 			// the source only for a string of the same characters in quotes, where the quote is one character before the
 			// value. For an escape, a wrapper or another notation, the token is reported at the start of the value.
@@ -158,6 +178,7 @@ export class MLDomTokenList extends Array<string> implements DOMTokenList {
 				if (!isPlainString) {
 					return {
 						raw: token,
+						value: token,
 						startOffset: ownerAttr.valueNode.startOffset,
 						startLine: ownerAttr.valueNode.startLine,
 						startCol: ownerAttr.valueNode.startCol,
@@ -174,6 +195,7 @@ export class MLDomTokenList extends Array<string> implements DOMTokenList {
 
 			return {
 				raw: token,
+				value: token,
 				startOffset: (base?.startOffset ?? 0) + shift + startOffset,
 				startLine: (base?.startLine ?? 0) + (startLine - 1),
 				// What starts the value (the quote) is before a token on the first line only: the column on a later line is the column in the line

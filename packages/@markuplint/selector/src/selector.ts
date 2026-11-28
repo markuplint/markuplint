@@ -641,8 +641,9 @@ function attrMatch(
 	// guard mirrors the same convention used for tag-name matching in
 	// SelectorTarget#matchWithoutCombineChecking (see `foldAttrName`).
 	return [...el.attributes].some(attrOfEl => {
-		// An attribute that the framework does not output is not an attribute of the DOM
-		if (attrOfEl.absent) {
+		// An attribute that the framework does not output, or that another of its name overrides, is not an
+		// attribute of the DOM
+		if (attrOfEl.absent || attrOfEl.overridden) {
 			return false;
 		}
 		const elAttrName = attrOfEl.domName ?? attrOfEl.localName;

@@ -201,7 +201,7 @@ function getVisits(
 		if (
 			idValue &&
 			referenced.get(current.getRootNode())?.has(idValue) &&
-			getElementByIdInTree(current, idValue, true) === current
+			getElementByIdInTree(current, idValue) === current
 		) {
 			add(current, true);
 		}
@@ -227,7 +227,7 @@ const getLabeledControls = memoizeByObject(
 			return [];
 		}
 		const forAttr = el.getAttributeNode('for');
-		const target = forAttr == null ? null : getElementByIdInTree(el, forAttr.value, forAttr.isExpressionValue);
+		const target = forAttr == null ? null : getElementByIdInTree(el, forAttr.value);
 		return [...(target ? [target] : []), ...el.querySelectorAll(labelable.join(', '))];
 	},
 );
@@ -385,7 +385,7 @@ function labelledbyGivesText(
 ): boolean {
 	const labelledbyAttr = el.getAttributeNode('aria-labelledby');
 	return splitOnAsciiWhitespace(labelledbyAttr?.value ?? '').some(id => {
-		const referenced = getElementByIdInTree(el, id, labelledbyAttr?.isExpressionValue);
+		const referenced = getElementByIdInTree(el, id);
 		return referenced != null && referenced.getReferencedTextAlternative(ariaVersion) !== '';
 	});
 }

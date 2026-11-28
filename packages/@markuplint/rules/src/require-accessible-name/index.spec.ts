@@ -2262,3 +2262,23 @@ describe('a character reference of the content is the character that it names', 
 		},
 	);
 });
+
+describe('of two attributes of one name on an Astro component, the later one is the prop it gets', () => {
+	const config = {
+		parser: { '.*': '@markuplint/astro-parser' },
+		pretenders: [{ selector: 'MyButton', as: { element: 'button', aria: { name: { fromAttr: 'label' } } } }],
+	};
+
+	test('[require-accessible-name-154] the name of the component is the later `label`', async () => {
+		expect((await mlRuleTest(rule, '<MyButton label="" label="b" />', config)).violations).toStrictEqual([]);
+		expect((await mlRuleTest(rule, '<MyButton label="a" label="" />', config)).violations).toStrictEqual([
+			{
+				severity: 'error',
+				line: 1,
+				col: 1,
+				message: 'Require accessible name',
+				raw: '<MyButton label="a" label="" />',
+			},
+		]);
+	});
+});

@@ -3213,3 +3213,38 @@ test('[no-invalid-attr-value-308] customelementregistry is a boolean attribute',
 		},
 	]);
 });
+
+test.each([
+	'<input type="&#99;heckbox">',
+	'<button type="&#115;ubmit">a</button>',
+	'<div dir="&#108;tr"></div>',
+	'<a href="x" rel="&#110;oopener">a</a>',
+])('[no-invalid-attr-value-310] a value is read with its character references decoded: %s', async code => {
+	expect((await mlRuleTest(rule, code)).violations).toStrictEqual([]);
+});
+
+test('[no-invalid-attr-value-311] a part of a value after a character reference is reported where it is written', async () => {
+	const { violations } = await mlRuleTest(rule, '<script src="a.js" blocking="&#114;ender bogus"></script>');
+	expect(violations).toStrictEqual([
+		{
+			severity: 'error',
+			line: 1,
+			col: 42,
+			message: 'The "blocking" attribute expects space-separated list. the content of the list expects render',
+			raw: 'bogus',
+		},
+	]);
+});
+
+test('[no-invalid-attr-value-312] a value with a character reference is reported as it is written', async () => {
+	const { violations } = await mlRuleTest(rule, '<div translate="&#121;es x"></div>');
+	expect(violations).toStrictEqual([
+		{
+			severity: 'error',
+			line: 1,
+			col: 17,
+			message: 'The "translate" attribute expects either "", "yes", "no"',
+			raw: '&#121;es x',
+		},
+	]);
+});

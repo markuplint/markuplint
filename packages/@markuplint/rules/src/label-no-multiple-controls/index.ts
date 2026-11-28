@@ -76,7 +76,7 @@ export default createRule<boolean, null>({
 			const forAttr = el.getAttributeNode('for');
 			const hasExternalLabeledControl = (() => {
 				if (!forAttr || forAttr.isDynamicValue) return false;
-				const target = getElementByIdInTree(el, forAttr.value, forAttr.isExpressionValue);
+				const target = getElementByIdInTree(el, forAttr.value);
 				if (!target) return false;
 				// A descendant with a matching id is still the label's labeled control
 				// per the same-tree resolution rule; treat only truly external targets

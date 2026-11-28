@@ -15,7 +15,7 @@ import {
 	isTransparentForOwnership,
 	labelledbyMayReferToUnknownId,
 } from '@markuplint/ml-spec';
-import { asciiLowerCase, decodeEntities, splitOnAsciiWhitespace, trimAsciiWhitespace } from '@markuplint/shared';
+import { asciiLowerCase, splitOnAsciiWhitespace, trimAsciiWhitespace } from '@markuplint/shared';
 
 export { getDOMValue };
 
@@ -25,13 +25,12 @@ export { getDOMValue };
  * declarative shadow root are trees of their own, so a reference there does not reach an id of the
  * document, nor the other way around.
  *
- * The reference is compared with the character references in the markup resolved, as the id is.
+ * The reference and the id are the values the DOM has (`MLAttr#value`, whose character references are decoded).
  *
  * @template T - The rule configuration value type
  * @template O - The rule options type
  * @param el - The element that has the attribute
- * @param reference - The value of the attribute, or one token of it, as written in the markup
- * @param isExpression - Whether the value is written as code, which has no character reference in it
+ * @param reference - The value of the attribute, or one token of it
  * @returns The element, or `null` when the tree has none, or `el` is in no tree
  * @see https://html.spec.whatwg.org/multipage/dom.html#the-id-attribute
  */
@@ -39,11 +38,10 @@ export function getElementByIdInTree<T extends RuleConfigValue, O extends PlainD
 	// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
 	el: Element<T, O>,
 	reference: string,
-	isExpression = false,
 ): Element<T, O> | null {
 	const root = el.getRootNode();
 	if (root.is(root.DOCUMENT_NODE) || root.is(root.DOCUMENT_FRAGMENT_NODE)) {
-		return root.getElementById(isExpression ? reference : decodeEntities(reference));
+		return root.getElementById(reference);
 	}
 	return null;
 }
@@ -679,9 +677,7 @@ export function accnameMayComeFromUnknownContent(
 	const labelledbyAttr = el.getAttributeNode('aria-labelledby');
 	const labelledby = labelledbyAttr?.value;
 	if (labelledby) {
-		const referenced = splitOnAsciiWhitespace(labelledby).map(id =>
-			getElementByIdInTree(el, id, labelledbyAttr.isExpressionValue),
-		);
+		const referenced = splitOnAsciiWhitespace(labelledby).map(id => getElementByIdInTree(el, id));
 		// What a pretender declares has no content declared (a heading declared as `h2` renders its text),
 		// so the name that a reference to it gives is not known
 		if (referenced.some(target => target && (isPretenderDeclaredElement(target) || hasUnknownContent(target)))) {

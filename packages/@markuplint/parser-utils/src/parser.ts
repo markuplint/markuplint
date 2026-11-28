@@ -12,6 +12,7 @@ import type {
 import type {
 	AttrNameRoute,
 	DuplicateAttrPrecedence,
+	AttrValueDecoding,
 	IntegrationPoints,
 	EndTagType,
 	ExpressionLanguage,
@@ -128,6 +129,9 @@ export abstract class Parser<Node extends {} = {}, State extends unknown = null>
 	readonly #attrNameCaseSensitive: boolean = false;
 	readonly #attrNameRoute: AttrNameRoute = 'html-parser';
 	readonly #duplicateAttrPrecedence: DuplicateAttrPrecedence = 'first';
+	readonly #componentDuplicateAttrPrecedence: DuplicateAttrPrecedence | undefined;
+	readonly #attrValueDecoding: AttrValueDecoding = 'html';
+	readonly #componentAttrValueDecoding: AttrValueDecoding | undefined;
 	readonly #integrationPoints: IntegrationPoints = 'html';
 	readonly #selfCloseType: SelfCloseType = 'html';
 	readonly #spaceChars: readonly string[] = defaultSpaces;
@@ -187,6 +191,9 @@ export abstract class Parser<Node extends {} = {}, State extends unknown = null>
 		this.#attrNameCaseSensitive = options?.attrNameCaseSensitive ?? this.#attrNameCaseSensitive;
 		this.#attrNameRoute = options?.attrNameRoute ?? this.#attrNameRoute;
 		this.#duplicateAttrPrecedence = options?.duplicateAttrPrecedence ?? this.#duplicateAttrPrecedence;
+		this.#componentDuplicateAttrPrecedence = options?.componentDuplicateAttrPrecedence;
+		this.#attrValueDecoding = options?.attrValueDecoding ?? this.#attrValueDecoding;
+		this.#componentAttrValueDecoding = options?.componentAttrValueDecoding;
 		this.#integrationPoints = options?.integrationPoints ?? this.#integrationPoints;
 		this.#selfCloseType = options?.selfCloseType ?? this.#selfCloseType;
 		this.#spaceChars = options?.spaceChars ?? this.#spaceChars;
@@ -312,6 +319,30 @@ export abstract class Parser<Node extends {} = {}, State extends unknown = null>
 	 */
 	get duplicateAttrPrecedence(): DuplicateAttrPrecedence {
 		return this.#duplicateAttrPrecedence;
+	}
+
+	/**
+	 * Which of two attributes written under one name a component or a custom element gets (see
+	 * `MLParser#componentDuplicateAttrPrecedence`). What `duplicateAttrPrecedence` says by default.
+	 */
+	get componentDuplicateAttrPrecedence(): DuplicateAttrPrecedence {
+		return this.#componentDuplicateAttrPrecedence ?? this.#duplicateAttrPrecedence;
+	}
+
+	/**
+	 * How the character references of an attribute value are decoded (see `AttrValueDecoding`). As the HTML
+	 * tokenizer decodes them by default.
+	 */
+	get attrValueDecoding(): AttrValueDecoding {
+		return this.#attrValueDecoding;
+	}
+
+	/**
+	 * How the character references of an attribute value of a component or a custom element are decoded (see
+	 * `MLParser#componentAttrValueDecoding`). What `attrValueDecoding` says by default.
+	 */
+	get componentAttrValueDecoding(): AttrValueDecoding {
+		return this.#componentAttrValueDecoding ?? this.#attrValueDecoding;
 	}
 
 	/**

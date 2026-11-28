@@ -50,7 +50,7 @@ export default createRule<boolean, null>({
 			if (!formAttr) return;
 			if (formAttr.isDynamicValue) return;
 
-			const target = getElementByIdInTree(el, formAttr.value, formAttr.isExpressionValue);
+			const target = getElementByIdInTree(el, formAttr.value);
 
 			// Existence is checked by `no-refer-to-non-existent-id`. If the ID does not resolve
 			// here, leave that diagnostic to the dedicated rule and stay silent.
