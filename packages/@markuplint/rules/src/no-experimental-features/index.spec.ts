@@ -289,3 +289,10 @@ test("[no-experimental-features-018] the experimental flag of an attribute is BC
 		},
 	]);
 });
+
+test('[no-experimental-features-019] customelementregistry is not experimental', async () => {
+	// The HTML Standard defines the attribute and BCD has no entry for it, so it takes no flag.
+	// @see https://html.spec.whatwg.org/multipage/custom-elements.html#the-customelementregistry-attribute
+	const { violations } = await mlRuleTest(rule, '<div customelementregistry></div>');
+	expect(violations).toStrictEqual([]);
+});

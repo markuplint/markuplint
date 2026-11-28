@@ -3290,3 +3290,33 @@ test('[no-invalid-attr-value-315] the scheme of a base URL is read without the t
 		},
 	]);
 });
+
+test.each([
+	'<div customelementregistry="CUSTOMELEMENTREGISTRY"></div>',
+	'<my-element customelementregistry></my-element>',
+	'<my-element customelementregistry="CustomElementRegistry"></my-element>',
+])('[no-invalid-attr-value-316] customelementregistry takes the name of the attribute in any case: %s', async html => {
+	// > All HTML elements may have the customelementregistry content attribute set. It is a boolean attribute.
+	// @see https://html.spec.whatwg.org/multipage/custom-elements.html#the-customelementregistry-attribute
+	//
+	// > If the attribute is present, its value must either be the empty string or a value that is an ASCII case-insensitive match for the attribute's canonical name, with no leading or trailing ASCII whitespace.
+	// @see https://html.spec.whatwg.org/multipage/common-microsyntaxes.html#boolean-attributes
+	expect((await mlRuleTest(rule, html)).violations).toStrictEqual([]);
+});
+
+test.each(['true', 'false', 'foo', ' customelementregistry '])(
+	'[no-invalid-attr-value-317] customelementregistry takes no value other than the empty string and its name: %j',
+	async value => {
+		// > If the attribute is present, its value must either be the empty string or a value that is an ASCII case-insensitive match for the attribute's canonical name, with no leading or trailing ASCII whitespace.
+		// @see https://html.spec.whatwg.org/multipage/common-microsyntaxes.html#boolean-attributes
+		expect((await mlRuleTest(rule, `<div customelementregistry="${value}"></div>`)).violations).toStrictEqual([
+			{
+				severity: 'error',
+				line: 1,
+				col: 29,
+				message: 'The "customelementregistry" attribute expects either "", "customelementregistry"',
+				raw: value,
+			},
+		]);
+	},
+);
