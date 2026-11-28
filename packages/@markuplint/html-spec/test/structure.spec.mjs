@@ -722,3 +722,22 @@ describe('schema', () => {
 		});
 	}
 });
+
+describe('the manual override of separator in the generator', () => {
+	test.each(['1.1', '1.2', '1.3'])(
+		'ARIA %s: aria-valuenow is required when focusable, aria-valuemin / aria-valuemax never',
+		version => {
+			const separator = htmlSpec.def['#aria'][version].roles.find(role => role.name === 'separator');
+			const props = Object.fromEntries(
+				separator.ownedProperties
+					.filter(p => ['aria-valuenow', 'aria-valuemin', 'aria-valuemax'].includes(p.name))
+					.map(p => [p.name, p]),
+			);
+			expect(props).toStrictEqual({
+				'aria-valuenow': { name: 'aria-valuenow', required: true, requiredCondition: 'focusable' },
+				'aria-valuemin': { name: 'aria-valuemin' },
+				'aria-valuemax': { name: 'aria-valuemax' },
+			});
+		},
+	);
+});
