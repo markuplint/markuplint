@@ -35,11 +35,12 @@ describe('MLElement#mayHaveAccessibleName with an aria-labelledby that may refer
 		[
 			'the token refers to no element and every id is known',
 			'<div><img aria-labelledby="a" /><p id="b">A</p></div>',
+			true,
 		],
-		['the attribute is not output', '<div><img aria-labelledby={undefined} /><p id={id}>A</p></div>'],
-	])('%s: no name in any case', async (_, code) => {
+		['the attribute is not output', '<div><img aria-labelledby={undefined} /><p id={id}>A</p></div>', false],
+	])('%s: a name of a file that is a part of a page is not known, no name otherwise', async (_, code, mayHave) => {
 		const el = img(await jsx(code));
-		expect(el.mayHaveAccessibleName('1.3')).toBe(false);
+		expect(el.mayHaveAccessibleName('1.3')).toBe(mayHave);
 	});
 
 	test('an element that has a target found by its id is named as written', async () => {
@@ -54,10 +55,10 @@ describe('MLElement#mayHaveAccessibleName with an aria-labelledby that may refer
 		expect(prop).toMatchObject({ exposedToTree: true, name: { unknown: true } });
 	});
 
-	test('the accessibility properties tell that there is no name when every id is known', async () => {
+	test('the accessibility properties tell that the name is not known in a file that is a part of a page', async () => {
 		const doc = await jsx('<div><img aria-labelledby="a" /><p id="b">A</p></div>');
 		const prop = doc.getAccessibilityProp(img(doc));
-		expect(prop).toMatchObject({ exposedToTree: true, name: '' });
+		expect(prop).toMatchObject({ exposedToTree: true, name: { unknown: true } });
 	});
 
 	test('a token written with a character reference is resolved, so it is not a reference to an unknown id', async () => {
