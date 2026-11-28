@@ -33,7 +33,7 @@ description: >
    - Run `gh pr checks <PR_NUMBER> --watch` in the background to monitor all CI checks (foreground runs lose output to turn timeouts).
    - **If any check fails:**
      1. Inspect the failed check logs (`gh run view <RUN_ID> --log-failed`).
-     2. Fix the issue in the worktree. Treat every failure as caused by this PR until proven otherwise — there is no such thing as an "unrelated" test failure.
+     2. Fix the issue in the worktree. Treat every failure as caused by this PR until proven otherwise — there is no such thing as an "unrelated" test failure. One proof is allowed without a change: when the failed test is outside the diff's code path, rerun the failed jobs once on the same commit (`gh run rerun <RUN_ID> --failed`, after the run ends). A pass is the proof — name the test in the report as flaky. A second failure makes it this PR's.
      3. Run the relevant local verification (`yarn lint-check`, `yarn build`, `yarn test`; plus the `cargo` checks from step 4 for `crates/` failures) to confirm the fix.
      4. Commit, push, and run `gh pr checks <PR_NUMBER> --watch` again.
      5. Repeat until all checks pass. Under the `auto-impl` skill, its Steps 14 and 15 section says when to stop and record the PR as `blocked` instead.

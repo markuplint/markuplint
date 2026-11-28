@@ -55,6 +55,7 @@ Read through the Issue body and comments carefully, then organize the following:
 2. **Reproduction**: For bugs, reproduction steps and environment
 3. **Related Code**: Identify files, functions, and rules mentioned in the Issue and explore the codebase
 4. **Impact Scope**: Packages and features potentially affected by the fix
+5. **Issues to join**: run the `analyze-issue` skill on the Issue. When it proposes other issues for the same PR, ask the user whether to join them (scope question, its proposal as the recommended option, the joining condition as the reason). Joined issues are part of the plan of Step 4 and of the branch's scope.
 
 ## Step 4: Propose a Resolution Plan
 
