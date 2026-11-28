@@ -97,3 +97,63 @@ describe('directivePatterns: v-bind without an argument', () => {
 		expect(resolveDirective(name, patterns)?.isSpread).toBeUndefined();
 	});
 });
+
+describe('directivePatterns: what a binding binds', () => {
+	test.each([':[x]', 'v-bind:[x]', '.[x]'])('%s binds a name that the template does not show: a spread', name => {
+		expect(resolveDirective(name, patterns)?.isSpread).toBe(true);
+	});
+
+	test.each(['@[x]', 'v-on:[x]'])('%s is a listener, which binds no attribute', name => {
+		expect(resolveDirective(name, patterns)?.isSpread).toBeUndefined();
+	});
+
+	test.each([
+		['.role.camel', 'role'],
+		[':role.camel', 'role'],
+		[':role.prop', 'role'],
+		['v-bind:role.camel.prop', 'role'],
+		[':aria-label.attr', 'aria-label'],
+	])('%s binds the attribute %s', (name, potentialName) => {
+		expect(resolveDirective(name, patterns)?.potentialName).toBe(potentialName);
+	});
+
+	test.each([':aria-label.camel', ':aria-label.prop', ':role.PROP', ':role.foo'])(
+		'%s binds no attribute of the argument as it is written',
+		name => {
+			expect(resolveDirective(name, patterns)?.potentialName).toBeUndefined();
+		},
+	);
+});
+
+describe('directivePatterns: the shorthand and innerHTML', () => {
+	test.each([
+		['.role', 'role'],
+		['.role.camel', 'role'],
+	])('%s binds the attribute %s', (name, potentialName) => {
+		expect(resolveDirective(name, patterns)?.potentialName).toBe(potentialName);
+	});
+
+	test.each([':innerHTML.prop', 'v-bind:innerHTML.prop', '.innerHTML'])(
+		'%s replaces the children with markup',
+		name => {
+			expect(resolveDirective(name, patterns)?.isInnerHTML).toBe(true);
+		},
+	);
+
+	test.each([':innerHTML', ':innerhtml.prop', '.innerhtml'])('%s does not set innerHTML', name => {
+		expect(resolveDirective(name, patterns)?.isInnerHTML).toBeUndefined();
+	});
+});
+
+describe('directivePatterns: a property binding binds the attribute of its name only where it reflects it', () => {
+	test.each([':value.prop', ':innerHTML.camel.prop', ':class.prop', '.textContent', ':checked.prop'])(
+		'%s binds no attribute',
+		name => {
+			expect(resolveDirective(name, patterns)?.potentialName).toBeUndefined();
+		},
+	);
+
+	test.each([':id.prop', ':hidden.prop', '.title'])('%s binds the attribute of its name', name => {
+		expect(resolveDirective(name, patterns)?.potentialName).toBe(name.replaceAll(/^[:.]|\.prop$/g, ''));
+	});
+});
