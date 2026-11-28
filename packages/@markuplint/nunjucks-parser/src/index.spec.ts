@@ -64,3 +64,15 @@ describe('Issues', () => {
 		]);
 	});
 });
+
+describe('blocks in a start tag', () => {
+	test('a comment with a `>` in it is no attribute and does not end the tag', () => {
+		const start = parse('<div {# a > b #} {{ attrs }} class="a"></div>').nodeList[0] as {
+			readonly attributes: readonly { readonly type: string; readonly raw: string }[];
+		};
+		expect(start.attributes.map(attr => [attr.type, attr.raw])).toStrictEqual([
+			['spread', '{{ attrs }}'],
+			['attr', 'class="a"'],
+		]);
+	});
+});
